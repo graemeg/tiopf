@@ -1,0 +1,68 @@
+package tiOPFCore;
+
+{$R *.res}
+{$ALIGN 1}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA OFF}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$LIBSUFFIX '60'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  vcl,
+  rtl,
+  vclx,
+  visualclx,
+  madExcept_,
+  madDisAsm_,
+  madBasic_;
+
+contains
+  tiWin32 in '..\..\Core\tiWin32.pas',
+  tiBaseObject in '..\..\Core\tiBaseObject.pas',
+  tiClassToDBMap_BOM in '..\..\Core\tiClassToDBMap_BOM.pas',
+  tiClassToDBMap_Srv in '..\..\Core\tiClassToDBMap_Srv.pas',
+  tiCommandLineParams in '..\..\Core\tiCommandLineParams.pas',
+  tiCompress in '..\..\Core\tiCompress.pas',
+  tiConstants in '..\..\Core\tiConstants.pas',
+  tiDBConnectionPool in '..\..\Core\tiDBConnectionPool.pas',
+  tiEncrypt in '..\..\Core\tiEncrypt.pas',
+  tiExcept in '..\..\Core\tiExcept.pas',
+  tiLog in '..\..\Core\tiLog.pas',
+  tiObject in '..\..\Core\tiObject.pas',
+  tiOID in '..\..\Core\tiOID.pas',
+  tiOPFManager in '..\..\Core\tiOPFManager.pas',
+  tiPool in '..\..\Core\tiPool.pas',
+  tiQuery in '..\..\Core\tiQuery.pas',
+  tiQueue in '..\..\Core\tiQueue.pas',
+  tiRegINI in '..\..\Core\tiRegINI.pas',
+  tiPersistenceLayers in '..\..\Core\tiPersistenceLayers.pas',
+  tiSingleInstanceApp in '..\..\Core\tiSingleInstanceApp.pas',
+  tiStreams in '..\..\Core\tiStreams.pas',
+  tiSyncObjs in '..\..\Core\tiSyncObjs.pas',
+  tiThread in '..\..\Core\tiThread.pas',
+  tiUtils in '..\..\Core\tiUtils.pas',
+  tiVisitor in '..\..\Core\tiVisitor.pas',
+  tiVisitorDB in '..\..\Core\tiVisitorDB.pas',
+  tiVisitorDBAutoGen in '..\..\Core\tiVisitorDBAutoGen.pas',
+  tiLogToFile in '..\..\Options\tiLogToFile.pas';
+
+end.

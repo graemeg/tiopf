@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="5"/>
+    <General>
+      <Flags>
+        <SaveOnlyProjectUnits Value="True"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=".exe"/>
+    </General>
+    <LazDoc Paths=""/>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="3">
+      <Item1>
+        <PackageName Value="tiOPF"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="FPCUnitTestRunner"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+      </Item3>
+    </RequiredPackages>
+    <Units Count="12">
+      <Unit0>
+        <Filename Value="fpcunittiopftext.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="fpcUnitTIOPFText"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiBaseObject_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiBaseObject_tst"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Common\tiDUnitDependencies.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiDUnitDependencies"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiVisitor_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiVisitor_TST"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiStreams_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiStreams_TST"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiPool_tst.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiPool_tst"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiQueue_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiQueue_TST"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiOID_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiOID_TST"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiWin32_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiWin32_TST"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiDataSet_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiDataSet_TST"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiTextParser_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiTextParser_TST"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="D:\Programming\3rdParty\tiOPF2\Source\UnitTests\Tests\tiTextParserStructCSV_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiTextParserStructCSV_TST"/>
+      </Unit11>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="fpcUnitTIOPFText.exe"/>
+    </Target>
+    <SearchPaths>
+      <OtherUnitFiles Value="..\Common\;..\Tests\"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Other>
+      <CustomOptions Value="-FU_Dcu -D STATIC_PERLAYER_LINKING
+"/>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+</CONFIG>

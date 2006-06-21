@@ -1,0 +1,171 @@
+unit tiVisitorDBAutoGen;
+
+interface
+uses
+  tiQuery
+  ,tiVisitorDB
+  ,tiVisitor
+  ;
+
+const
+  cErrorInVisitorExecute = 'Error in Visitor.Execute. Visitor: %s Visited: %s Message %s';
+
+type
+
+  TVisDBAutoGenRead = class( TVisOwnedQrySelectAbs )
+  private
+    FQueryParams : TtiQueryParams ;
+    FTableName : string;
+  protected
+    procedure OpenQuery ; override ;
+    property TableName : string read FTableName write FTableName ;
+    property QueryParams : TtiQueryParams read FQueryParams ;
+  public
+    constructor Create ; override ;
+    destructor  Destroy ; override ;
+  end ;
+
+  TVisDBAutoGenUpdate = class( TtiPerObjVisitor )
+  private
+    FQueryParams : TtiQueryParams ;
+    FQueryWhere  : TtiQueryParams ;
+    FTableName : string;
+    FQueryType: TtiQueryType;
+  protected
+    property    QueryType: TtiQueryType read FQueryType Write FQueryType;
+    property    TableName : string read FTableName write FTableName ;
+    property    QueryParams : TtiQueryParams read FQueryParams ;
+    property    QueryWhere  : TtiQueryParams read FQueryWhere ;
+  public
+    constructor Create ; override ;
+    destructor  Destroy ; override ;
+    procedure   Execute(const pData: TtiVisited ) ; override ;
+  end ;
+
+  TVisDBAutoGenDelete = class( TVisDBAutoGenUpdate )
+  protected
+    function  AcceptVisitor: Boolean ; override ;
+    procedure SetupParams; override ;
+  end ;
+
+
+implementation
+uses
+  // tiOPF
+   tiOPFManager
+  ,tiObject
+  ,tiUtils
+  ,tiConstants
+  ,tiExcept
+  // Delphi
+  ,SysUtils
+  ;
+  
+{ TVisDBAutoGenRead }
+
+constructor TVisDBAutoGenRead.Create;
+begin
+  inherited;
+  FQueryParams := TtiQueryParams.Create ;
+end;
+
+destructor TVisDBAutoGenRead.destroy;
+begin
+  FQueryParams.Free ;
+  inherited;
+end;
+
+procedure TVisDBAutoGenUpdate.Execute(const pData: TtiVisited);
+begin
+
+  if gTIOPFManager.Terminated then
+    Exit ; //==>
+
+  try
+    Inherited Execute( pData ) ;
+
+    if not AcceptVisitor then
+      Exit ; //==>
+
+    Assert( Database <> nil, 'DBConnection not set in ' + ClassName ) ;
+
+    if pData <> nil then begin
+      Visited := TtiObject( pData ) ;
+    end else begin
+      Visited := nil ;
+    end ;
+
+    SetupParams ;
+    Assert( FTableName <> '', 'TableName not assigned');
+    case FQueryType of
+      qtInsert : begin
+                   Assert( FQueryWhere.Count = 0, 'FQueryWhere.Count <> 0');
+                   Query.InsertRow( FTableName, FQueryParams ) ;
+                 end;
+      qtUpdate : begin
+                   Assert( FQueryParams.Count <> 0, 'FQueryParams.Count = 0');
+                   Query.UpdateRow( FTableName, FQueryParams, FQueryWhere ) ;
+                 end;
+      qtDelete : begin
+                   Assert( FQueryParams.Count = 0, 'FQueryParams.Count <> 0');
+                   Query.DeleteRow( FTableName, FQueryWhere);
+                 end;
+    else
+      raise Exception.Create( cTIOPFExcMsgTIQueryType );
+    end;
+
+  except
+    on e:exception do
+      raise EtiOPFProgrammerException.CreateFmt(cErrorInVisitorExecute,
+        [ClassName, Visited.ClassName, e.Message]);
+  end ;
+
+end;
+
+procedure TVisDBAutoGenRead.OpenQuery;
+begin
+  Assert( FTableName <> '', 'TableName not assigned' ) ;
+  Query.SelectRow( FTableName, FQueryParams ) ;
+end;
+
+{ TVisDBAutoGenUpdate }
+
+constructor TVisDBAutoGenUpdate.Create;
+begin
+  inherited;
+  FQueryParams := TtiQueryParams.Create ;
+  FQueryWhere  := TtiQueryParams.Create ;
+  FQueryType   := qtSelect;
+end;
+
+destructor TVisDBAutoGenUpdate.destroy;
+begin
+  FQueryParams.Free;
+  FQueryWhere.Free;
+  inherited;
+end;
+
+{ TVisDBAutoGenDelete }
+
+function TVisDBAutoGenDelete.AcceptVisitor: Boolean;
+begin
+  Result := ( Visited.ObjectState = posDelete );
+end;
+
+procedure TVisDBAutoGenDelete.SetupParams;
+{$IFDEF OID_AS_INT64}
+var
+  lData: TtiObject;
+{$ENDIF}
+begin
+  Assert( Visited.TestValid(TtiObject), cTIInvalidObjectError );
+  QueryType := qtDelete;
+  {$IFDEF OID_AS_INT64}
+    lData := (Visited as TtiObject);
+    QueryWhere.SetValueAsInteger( 'OID', lData.OID);
+  {$ELSE}
+    Assert( false, 'Under construction' ) ;
+  {$ENDIF}
+end;
+
+end.

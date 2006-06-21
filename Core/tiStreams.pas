@@ -1,0 +1,968 @@
+unit tiStreams;
+
+{$I tiDefines.inc}
+
+interface
+uses
+   tiBaseObject
+  ,Classes
+  ,Contnrs
+  ;
+
+const
+  cStreamStartSize = 2000000;
+  cStreamGrowBy    =  500000;
+
+  cErrorBlockSizeMismatch = 'BlockSize/BlockAsString size mismatch. BlockSize=%d, Lenght(BlockAsString)=%d';
+  cErrorBlockMissing = 'Block %d of %d missing from sequence';
+
+type
+
+  TtiPreSizedStream = class( TtiBaseObject )
+  private
+    FStream : TMemoryStream ;
+    FInitialSize: Int64;
+    FStreamSize : Int64;
+    FGrowBy     : Int64;
+    FDataSize   : Int64;
+  public
+    constructor Create(pInitialSize, pGrowBy : Int64);
+    destructor  Destroy; override;
+    procedure   Clear;
+    procedure   Write(const pStr: string);
+    procedure   WriteLn(const pStr: string = '');
+    function    AsString: string ;
+    procedure   SaveToFile(const pFileName: string);
+    property    Size: Int64 read FDataSize;
+  end;
+
+  {: Adds ReadLn to a TFileStream}
+  TtiFileStream = class( TFileStream )
+  private
+    // ToDo: Using regular stream methods like Position will break
+    //       this as the internal position counter, and buffer will
+    //       not be updated.
+    FLineDelim: string;
+    FPos : LongInt ;
+    FBufStr : string ;
+    FLineDelimLen : Byte ;
+    FEOF : boolean ;
+    procedure SetLineDelim(const Value: string);
+    procedure AppendToBufStr;
+  public
+    constructor Create(const pFileName: string; Mode: Word);
+    constructor CreateReadWrite( const pFileName : string ; pOverwrite : boolean = false ) ;
+    constructor CreateReadOnly(  const pFileName : string ) ;
+    property    LineDelim : string read FLineDelim write SetLineDelim ;
+    procedure   Write( const pString : string ) ; reintroduce ;
+    procedure   WriteLn( const pString : string = '' ) ;
+    function    ReadLn : string ;
+    function    EOF : boolean ;
+  end ;
+
+  {: Manage a stream in chunks, or blocks. Current interface supports access to the stream via the AsString property.
+     This can be extended to support access via TStream if required. Stream is zero indexed, so a BlockIndex=0 is the
+     first block of data.}
+  TtiBlockStream = class(TtiBaseObject)
+  private
+    FList: TObjectList;
+    FBlockSize: Longword;
+    function    GetBlockAsString(ABlockIndex: Longword): string;
+    procedure   SetBlockAsString(ABlockIndex: Longword; const AValue: string);
+    procedure   SetAsString(const AValue: string);
+    function    GetAsString: string;
+    function    GetBlockCount: Longword;
+    procedure   Sort;
+    procedure   ValidateBlockSequence;
+    function    FindByBlockIndex(ABlockIndex: Longword): TtiBaseObject;
+  public
+    constructor Create(ABlockSize: Longword); overload; virtual;
+    constructor Create(const AData: string; ABlockSize: Longword); overload; virtual;
+    destructor  Destroy; override;
+    procedure   AssignToStream(AStream: TStream);
+
+    property    BlockSize: Longword Read FBlockSize;
+    property    BlockCount: Longword Read GetBlockCount;
+    property    BlockAsString[ABlockIndex: Longword]: string Read GetBlockAsString Write SetBlockAsString;
+    property    AsString: string Read GetAsString Write SetAsString;
+
+  end;
+
+{
+Unit:           rjMime
+Version:        1.31
+Last Modified:  20. November 2000
+Author:         Ralf Junker <ralfjunker@gmx.de>
+Internet:       http://www.zeitungsjunge.de/delphi
+
+Description:    Ligtening fast Mime (Base64) Encoding and Decoding routines.
+                More detailed descriptions follow the declarations of the
+                functions and procedures below.
+
+Legal:          This software is provided 'as-is', without any express or
+                implied warranty. In no event will the author be held liable
+                for any  damages arising from the use of this software.
+
+                Permission is granted to anyone to use this software for any
+                purpose, including commercial applications, and to alter it
+                and redistribute it freely, subject to the following
+                restrictions:
+
+                1. The origin of this software must not be misrepresented,
+                   you must not claim that you wrote the original software.
+                   If you use this software in a product, an acknowledgment
+                   in the product documentation would be appreciated but is
+                   not required.
+
+                2. Altered source versions must be plainly marked as such, and
+                   must not be misrepresented as being the original software.
+
+                3. This notice may not be removed or altered from any source
+                   distribution.
+
+History:
+
+Version 1.31
+------------
+20.11.2000      Defined the OutputBuffer parameters as untyped "out"
+                in the core encoding / decoding routines. This does not
+                affect much but consistency in clarity.
+
+Version 1.30
+------------
+17.11.2000      Changed the interface part to the core encoding and decoding
+                routines from Pointer to Untyped. This way they no longer
+                have to check if the pointers are not nil.
+
+                Replaced all Integer types with Cardinal types
+                where the sign was not needed (which was in all cases).
+
+                Thanks to Robert Marqwart <robert_marquardt@gmx.de>
+                for pointing these issues out.
+
+Version 1.20
+------------
+20.06.2000      Bugfix for MimeEncodeStream: Wrong BUFFER_SIZE resulted in
+                additional bytes stuffed inbetween the OutBuffer.
+
+                Changed the order of the variables in the MimeEncode interface
+                (moved InputBytesCount from last to 2nd, just after InputBuffer).
+                Sorry for the inconvenience, but this way it is more consistent
+                with MimeDecode. Now MimeEncode has the following variable order:
+
+                procedure MimeEncode (
+                  const InputBuffer: Pointer;
+                  const InputBytesCount: Integer;
+                  const OutputBuffer: Pointer);
+
+                MimeDecode: Interface chage to make it a function: It now returns
+                the number of bytes written to the output buffer not as a var
+                but as the result of a function. This way coding is made
+                simpler since not OutputCount variable needs to be defined.
+
+                Introduced two new functions mostly for internal use:
+
+                * MimeDecodePartial: This is necessary to decode large
+                  blocks of data in multiple parts. On initialization,
+                  call MimeDecodePartial with ByteBuffer := 0 and
+                  ByteBufferSpace := 4. Then repeatedly call it again
+                  with new data loaded into the buffer. At the end of all data,
+                * MimeDecodePartialEnd writes the remaining bytes from ByteBuffer
+                  to the outputbuffer (see MimeDecodeStream for an example).
+
+                MimeDecodePartial_ are necessary to decode inconsitent data
+                (with linebreaks, tabs, whitespace) in multiple parts
+                like in MimeDecodeStream.
+
+Version 1.10
+------------
+19.04.2000      Fixed a small bug in MimeEncode which sometimes screwed up
+                the very first bytes of the encoded output.
+
+                Added the following wrapper functions:
+                * MimeEncodeString & MimeDecodeString
+                * MimeEncodeStream & MimeDecodeStream
+
+Version 1.01
+------------
+09.04.2000      Fixed a bug in MIME_DECODE_TABLE which caused wrong results
+                decoding binary files.
+
+Version 1.00
+------------
+17.01.2000      Initial Public Release
+
+Copyright (c) 2000 Ralf Junker
+}
+
+function MimeEncodeString (const s: AnsiString): AnsiString;
+{ MimeEncodeString takes a string, encodes it, and returns the result as a string.
+  To decode the result string, use MimeDecodeString. }
+
+
+function MimeDecodeString (const s: AnsiString): AnsiString;
+{ MimeDecodeString takes a a string, decodes it, and returns the result as a string.
+  Use MimeDecodeString to decode a string previously encoded with MimeEncodeString. }
+
+
+procedure MimeEncodeStream (const InputStream: TStream; const OutputStream: TStream);
+{ MimeEncodeStream encodes InputStream starting at the current position
+  up to the end and writes the result to OutputStream, again starting at
+  the current position. When done, it will not reset either stream's positions,
+  but leave InputStream at the last read position (i.e. the end) and
+  OutputStream at the last write position (which can, but most not be the end).
+  To encode the entire InputStream from beginning to end, make sure
+  that its offset is positioned at the beginning of the stream. You can
+  force this by issuing Seek (0, soFromBeginning) before calling this function. }
+
+
+procedure MimeDecodeStream (const InputStream: TStream; const OutputStream: TStream);
+{ MimeDecodeStream decodes InputStream starting at the current position
+  up to the end and writes the result to OutputStream, again starting at
+  the current position. When done, it will not reset either stream's positions,
+  but leave InputStream at the last read position (i.e. the end) and
+  OutputStream at the last write position (which can, but most not be the end).
+  To decode the entire InputStream from beginning to end, make sure
+  that its offset is positioned at the beginning of the stream. You can
+  force this by issuing Seek (0, soFromBeginning) before calling this function. }
+
+
+function MimeEncodedSize (const i: Cardinal): Cardinal;
+{ Calculates the output size of i MimeEncoded bytes. Use for MimeEncode only. }
+
+function MimeDecodedSize (const i: Cardinal): Cardinal;
+{ Calculates the maximum output size of i MimeDecoded bytes.
+  You may use it for MimeDecode to calculate the maximum amount of memory
+  required for decoding in one single pass. }
+
+procedure MimeEncode (const InputBuffer; const InputByteCount: Cardinal; out OutputBuffer);
+{ The primary Mime encoding routine.
+
+  CAUTTION: OutputBuffer must have enough memory allocated to take all encoded output.
+  MimeEncodedSize (InputBytesCount) calculates this amount in bytes. MimeEncode will
+  then fill the entire OutputBuffer, so there is no OutputBytesCount result for
+  this procedure. Preallocating all memory at once (as required by MimeEncode)
+  avoids the time-cosuming process of reallocation.
+
+  If not all data fits into memory at once, you can use MimeEncode multiple times,
+  but you must be very careful about the size of the InputBuffer.
+  See comments on BUFFER_SIZE below for details. }
+
+function MimeDecode (const InputBuffer; const InputBytesCount: Cardinal; out OutputBuffer): Cardinal;
+{ The primary Mime decoding routines.
+
+  CAUTION: OutputBuffer must have enough memory allocated to take all output.
+  MimeDecodedSize (InputBytesCount) calculates this amount in bytes. There is
+  no guarantee that all output will be filled after decoding. All decoding
+  functions therefore return the acutal number of bytes written to OutputBuffer.
+  Preallocating all memory at once (as is required by MimeDecode)
+  avoids the time-cosuming process of reallocation. After calling
+  MimeDecode, simply cut the allocated memory down to OutputBytesCount,
+  i.e. SetLength (OutString, OutputBytesCount).
+
+  If not all data fits into memory at once, you may NOT use MimeDecode multiple times.
+  Instead, you must use the MimeDecodePartial_ functions.
+  See MimeDecodeStream for an example. }
+
+function MimeDecodePartial (const InputBuffer; const InputBytesCount: Cardinal; out OutputBuffer; var ByteBuffer: Cardinal; var ByteBufferSpace: Cardinal): Cardinal;
+function MimeDecodePartialEnd (out OutputBuffer; const ByteBuffer: Cardinal; const ByteBufferSpace: Cardinal): Cardinal;
+{ The MimeDecodePartial_ functions are mostly for internal use.
+  They serve the purpose of decoding very large data in multiple parts of
+  smaller chunks, as used in MimeDecodeStream. }
+
+
+implementation
+
+uses
+   tiUtils
+  ,tiExcept
+  ,tiObject
+  ,SysUtils
+  ,Math
+  ;
+
+const
+  EQUAL_SIGN         = Byte ('=');
+  BUFFER_SIZE        = $3000;
+ { CAUTION: For MimeEncodeStream and all other kinds of multi-buffered
+   Mime encodings (i.e. Files etc.), BufferSize must be set to a multiple of 3.
+   Even though the implementation of the Mime decoding routines below
+   does not require a particular buffer size, they work fastest with sizes of
+   multiples of four. The chosen size is a multiple of 3 and of 4 as well.
+   The following numbers are, in addition, also divisible by 1024:
+   $2400, $3000, $3C00, $4800, $5400, $6000, $6C00. }
+
+ MIME_ENCODE_TABLE  : array[0..63] of Byte = (
+  065, 066, 067, 068, 069, 070, 071, 072, // 00 - 07
+  073, 074, 075, 076, 077, 078, 079, 080, // 08 - 15
+  081, 082, 083, 084, 085, 086, 087, 088, // 16 - 23
+  089, 090, 097, 098, 099, 100, 101, 102, // 24 - 31
+  103, 104, 105, 106, 107, 108, 109, 110, // 32 - 39
+  111, 112, 113, 114, 115, 116, 117, 118, // 40 - 47
+  119, 120, 121, 122, 048, 049, 050, 051, // 48 - 55
+  052, 053, 054, 055, 056, 057, 043, 047); // 56 - 63
+
+ MIME_DECODE_TABLE  : array[Byte] of Cardinal = (
+  255, 255, 255, 255, 255, 255, 255, 255, //  00 -  07
+  255, 255, 255, 255, 255, 255, 255, 255, //  08 -  15
+  255, 255, 255, 255, 255, 255, 255, 255, //  16 -  23
+  255, 255, 255, 255, 255, 255, 255, 255, //  24 -  31
+  255, 255, 255, 255, 255, 255, 255, 255, //  32 -  39
+  255, 255, 255, 062, 255, 255, 255, 063, //  40 -  47
+  052, 053, 054, 055, 056, 057, 058, 059, //  48 -  55
+  060, 061, 255, 255, 255, 255, 255, 255, //  56 -  63
+  255, 000, 001, 002, 003, 004, 005, 006, //  64 -  71
+  007, 008, 009, 010, 011, 012, 013, 014, //  72 -  79
+  015, 016, 017, 018, 019, 020, 021, 022, //  80 -  87
+  023, 024, 025, 255, 255, 255, 255, 255, //  88 -  95
+  255, 026, 027, 028, 029, 030, 031, 032, //  96 - 103
+  033, 034, 035, 036, 037, 038, 039, 040, // 104 - 111
+  041, 042, 043, 044, 045, 046, 047, 048, // 112 - 119
+  049, 050, 051, 255, 255, 255, 255, 255, // 120 - 127
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255);
+
+type
+ PByte4 = ^TByte4;
+ TByte4 = packed record
+  b1: Byte;
+  b2: Byte;
+  b3: Byte;
+  b4: Byte;
+ end;
+
+ PByte3 = ^TByte3;
+ TByte3 = packed record
+  b1: Byte;
+  b2: Byte;
+  b3: Byte;
+ end;
+
+
+{ **************************************************************************** }
+{ Wrapper functions & procedures }
+{ **************************************************************************** }
+
+function MimeEncodeString (const s: AnsiString): AnsiString;
+label
+  NothingToDo;
+var
+  l: Cardinal;
+begin
+  if Pointer(s) = nil then
+    goto NothingToDo;
+  l := Cardinal (Pointer (Cardinal (Pointer (s)) - 4)^);
+  SetLength (Result, (l + 2) div 3 * 4);
+  if Pointer (Result) = nil then
+    goto NothingToDo;
+  MimeEncode (Pointer (s)^, l, Pointer (Result)^);
+  Exit; //==>
+
+  NothingToDo:
+  Result := '';
+end;
+
+function MimeDecodeString (const s: AnsiString): AnsiString;
+label
+ NothingToDo;
+var
+ ByteBuffer, ByteBufferSpace: Cardinal;
+ l: Cardinal;
+begin
+ if Pointer (s) = nil then goto NothingToDo;
+ { l := Length (s); }
+ l := Cardinal (Pointer (Cardinal (Pointer (s)) - 4)^);
+ SetLength (Result, (l + 3) div 4 * 3);
+ if Pointer (Result) = nil then goto NothingToDo;
+ ByteBuffer := 0;
+ ByteBufferSpace := 4;
+ l := MimeDecodePartial (Pointer (s)^, l, Pointer (Result)^, ByteBuffer, ByteBufferSpace);
+ Inc (l, MimeDecodePartialEnd (Pointer (Cardinal (Result) + l)^, ByteBuffer, ByteBufferSpace));
+ SetLength (Result, l);
+ Exit;
+ NothingToDo:
+ Result := '';
+end;
+
+procedure MimeEncodeStream (const InputStream: TStream; const OutputStream: TStream);
+var
+ InputBuffer        : array[0..BUFFER_SIZE - 1] of Byte;
+ OutputBuffer       : array[0.. ((BUFFER_SIZE + 2) div 3) * 4 - 1] of Byte;
+ BytesRead          : Cardinal;
+begin
+ BytesRead := InputStream.Read (InputBuffer, SizeOf (InputBuffer));
+ while BytesRead = SizeOf (InputBuffer) do
+  begin
+   MimeEncode (InputBuffer, SizeOf (InputBuffer), OutputBuffer);
+   OutputStream.Write (OutputBuffer, SizeOf (OutputBuffer));
+   BytesRead := InputStream.Read (InputBuffer, SizeOf (InputBuffer));
+  end;
+ if BytesRead > 0 then
+  begin
+   MimeEncode (InputBuffer, BytesRead, OutputBuffer);
+   OutputStream.Write (OutputBuffer, {MimeEncodedSize (BytesRead)} (BytesRead + 2) div 3 * 4);
+  end;
+end;
+
+procedure MimeDecodeStream (const InputStream: TStream; const OutputStream: TStream);
+var
+  ByteBuffer, ByteBufferSpace: Cardinal;
+  InputBuffer        : array[0..BUFFER_SIZE - 1] of Byte;
+  OutputBuffer       : array[0.. (BUFFER_SIZE + 3) div 4 * 3 - 1] of Byte;
+  BytesRead          : Cardinal;
+begin
+  ByteBuffer := 0;
+  ByteBufferSpace := 4;
+  BytesRead := InputStream.Read (InputBuffer, SizeOf (InputBuffer));
+  while BytesRead > 0 do
+  begin
+    OutputStream.Write (OutputBuffer, MimeDecodePartial (InputBuffer, BytesRead, OutputBuffer, ByteBuffer, ByteBufferSpace));
+    BytesRead := InputStream.Read (InputBuffer, SizeOf (InputBuffer));
+  end;
+  OutputStream.Write (OutputBuffer, MimeDecodePartialEnd (OutputBuffer, ByteBuffer, ByteBufferSpace));
+end;
+
+function MimeEncodedSize (const i: Cardinal): Cardinal;
+begin
+  Result := (i + 2) div 3 * 4;
+end;
+
+function MimeDecodedSize (const i: Cardinal): Cardinal;
+begin
+  Result := (i + 3) div 4 * 3;
+end;
+
+procedure MimeEncode (const InputBuffer; const InputByteCount: Cardinal; out OutputBuffer);
+var
+  b, InMax3          : Cardinal;
+  InPtr, InLimitPtr  : ^Byte;
+  OutPtr             : PByte4;
+begin
+  if InputByteCount <= 0 then
+    Exit; //==>
+  InPtr := @InputBuffer;
+  InMax3 := InputByteCount div 3 * 3;
+  OutPtr := @OutputBuffer;
+  Cardinal (InLimitPtr) := Cardinal (InPtr) + InMax3;
+  while InPtr <> InLimitPtr do
+  begin
+    b := InPtr^;
+    b := b shl 8;
+    Inc (InPtr);
+    b := b or InPtr^;
+    b := b shl 8;
+    Inc (InPtr);
+    b := b or InPtr^;
+    Inc (InPtr);
+    // Write 4 bytes to OutputBuffer (in reverse order).
+    OutPtr^.b4 := MIME_ENCODE_TABLE[b and $3F];
+    b := b shr 6;
+    OutPtr^.b3 := MIME_ENCODE_TABLE[b and $3F];
+    b := b shr 6;
+    OutPtr^.b2 := MIME_ENCODE_TABLE[b and $3F];
+    b := b shr 6;
+    OutPtr^.b1 := MIME_ENCODE_TABLE[b];
+    Inc (OutPtr);
+  end;
+
+  case InputByteCount - InMax3 of
+    1:
+      begin
+        b := InPtr^;
+        b := b shl 4;
+        OutPtr^.b2 := MIME_ENCODE_TABLE[b and $3F];
+        b := b shr 6;
+        OutPtr^.b1 := MIME_ENCODE_TABLE[b];
+        OutPtr^.b3 := EQUAL_SIGN;            // Fill remaining 2 bytes.
+        OutPtr^.b4 := EQUAL_SIGN;
+      end;
+    2:
+      begin
+        b := InPtr^;
+        Inc (InPtr);
+        b := b shl 8;
+        b := b or InPtr^;
+        b := b shl 2;
+        OutPtr^.b3 := MIME_ENCODE_TABLE[b and $3F];
+        b := b shr 6;
+        OutPtr^.b2 := MIME_ENCODE_TABLE[b and $3F];
+        b := b shr 6;
+        OutPtr^.b1 := MIME_ENCODE_TABLE[b];
+        OutPtr^.b4 := EQUAL_SIGN;            // Fill remaining byte.
+      end;
+  end; { case }
+end;
+
+function MimeDecode (const InputBuffer; const InputBytesCount: Cardinal; out OutputBuffer): Cardinal;
+var
+ ByteBuffer, ByteBufferSpace: Cardinal;
+begin
+ ByteBuffer := 0;
+ ByteBufferSpace := 4;
+ Result := MimeDecodePartial (InputBuffer, InputBytesCount, OutputBuffer, ByteBuffer, ByteBufferSpace);
+ Inc (Result, MimeDecodePartialEnd (Pointer (Cardinal (OutputBuffer) + Result)^, ByteBuffer, ByteBufferSpace));
+end;
+
+function MimeDecodePartial (const InputBuffer; const InputBytesCount: Cardinal; out OutputBuffer; var ByteBuffer: Cardinal; var ByteBufferSpace: Cardinal): Cardinal;
+var
+ lByteBuffer, lByteBufferSpace, c: Cardinal;
+ InPtr, InLimitPtr  : ^Byte;
+ OutPtr             : PByte3;
+begin
+ if InputBytesCount > 0 then
+  begin
+   InPtr := @InputBuffer;
+   Cardinal (InLimitPtr) := Cardinal (InPtr) + InputBytesCount;
+   OutPtr := @OutputBuffer;
+   lByteBuffer := ByteBuffer;
+   lByteBufferSpace := ByteBufferSpace;
+   while InPtr <> InLimitPtr do
+    begin
+     c := MIME_DECODE_TABLE[InPtr^];    // Read from InputBuffer.
+     Inc (InPtr);
+     if c = $FF then
+      Continue;
+     lByteBuffer := lByteBuffer shl 6;
+     lByteBuffer := lByteBuffer or c;
+     Dec (lByteBufferSpace);
+     if lByteBufferSpace <> 0 then
+      Continue;                         // Read 4 bytes from InputBuffer?
+     OutPtr^.b3 := Byte (lByteBuffer);   // Write 3 bytes to OutputBuffer (in reverse order).
+     lByteBuffer := lByteBuffer shr 8;
+     OutPtr^.b2 := Byte (lByteBuffer);
+     lByteBuffer := lByteBuffer shr 8;
+     OutPtr^.b1 := Byte (lByteBuffer);
+     lByteBuffer := 0;
+     Inc (OutPtr);
+     lByteBufferSpace := 4;
+    end;
+   ByteBuffer := lByteBuffer;
+   ByteBufferSpace := lByteBufferSpace;
+   Result := Cardinal (OutPtr) - Cardinal (@OutputBuffer);
+  end
+ else
+  Result := 0;
+end;
+
+function MimeDecodePartialEnd (out OutputBuffer; const ByteBuffer: Cardinal; const ByteBufferSpace: Cardinal): Cardinal;
+var
+ lByteBuffer        : Cardinal;
+begin
+ case ByteBufferSpace of
+  1:
+   begin
+    lByteBuffer := ByteBuffer shr 2;
+    PByte3 (@OutputBuffer)^.b2 := Byte (lByteBuffer);
+    lByteBuffer := lByteBuffer shr 8;
+    PByte3 (@OutputBuffer)^.b1 := Byte (lByteBuffer);
+    Result := 2;
+   end;
+  2:
+   begin
+    lByteBuffer := ByteBuffer shr 4;
+    PByte3 (@OutputBuffer)^.b1 := Byte (lByteBuffer);
+    Result := 1;
+   end;
+  else
+   Result := 0;
+ end;
+end;
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+// *
+// * TtiFileStream
+// *
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+constructor TtiFileStream.Create(const pFileName: string; Mode: Word);
+begin
+  inherited Create(pFileName, Mode);
+  FLineDelim := CrLf ;
+  FLineDelimLen := 2 ;
+  FPos := 0 ;
+  FBufStr := '' ;
+  FEOF := Size = 0 ;
+end;
+
+function TtiFileStream.ReadLn: string;
+var
+  lPos : LongInt ;
+begin
+  lPos := Pos( LineDelim, FBufStr ) ;
+  if ( lPos = 0 ) and
+     ( FPos <> Size ) then
+  begin
+    AppendToBufStr ;
+    lPos    := Pos( LineDelim, FBufStr ) ;
+  end ;
+  if lPos > 0 then
+  begin
+    result  := Copy( FBufStr, 1, lPos - 1 ) ;
+    FBufStr := Copy( FBufStr, lPos + FLineDelimLen, Length( FBufStr ) - lPos - FLineDelimLen + 1 ) ;
+    FEOF    := ( FBufStr = '' ) and ( FPos = Size )  ;
+  end else
+  begin
+    FEOF    := true ;
+    result  := FBufStr;
+    FBufStr := '' ;
+  end
+end ;
+
+procedure TtiFileStream.AppendToBufStr ;
+var
+  lBufLen : Word ;
+  ls : string ;
+const
+  cBufLen = 1024 ;
+begin
+  if FPos + cBufLen > Size then
+    lBufLen := Size - FPos
+  else
+    lBufLen := cBufLen ;
+  SetLength(ls,  lBufLen);
+  Read( ls[1], lBufLen ) ;
+  FBufStr := FBufStr + ls ;
+  Inc( FPos, lBufLen ) ;
+end;
+
+procedure TtiFileStream.Write(const pString: string);
+begin
+  tiAppendStringToStream( pString, Self ) ;
+end;
+
+procedure TtiFileStream.WriteLn(const pString: string = '' );
+begin
+  Write( pString + FLineDelim ) ;
+end;
+
+procedure TtiFileStream.SetLineDelim(const Value: string);
+begin
+  FLineDelim := Value;
+  FLineDelimLen := Length( FLineDelim ) ;
+end;
+
+function TtiFileStream.EOF: boolean;
+begin
+  result := FEOF ;
+end;
+
+constructor TtiFileStream.CreateReadWrite(const pFileName: string; pOverwrite : boolean = false );
+begin
+  if FileExists( pFileName ) and ( not pOverwrite ) then
+    Create( pFileName, fmOpenReadWrite or fmShareDenyWrite )
+  else
+    Create( pFileName, fmCreate or fmShareDenyWrite )
+end;                        
+
+constructor TtiFileStream.CreateReadOnly(const pFileName: string);
+begin
+  Create( pFileName, fmOpenRead or fmShareDenyNone ) ;
+end;
+
+function TtiPreSizedStream.AsString: string;
+begin
+  FStream.Position := 0 ;
+  SetLength(Result,  FDataSize);
+  FStream.Read( Result[1], FDataSize ) ;
+  FStream.Seek(0, soFromEnd);
+end;
+
+procedure TtiPreSizedStream.Clear;
+begin
+  FStream.Clear;
+  FStreamSize := FInitialSize ;
+  FStream.Size := FStreamSize ;
+  FDataSize := 0 ;
+end;
+
+constructor TtiPreSizedStream.Create(pInitialSize, pGrowBy: Int64);
+begin
+  inherited Create;
+  FStream := TMemoryStream.Create;
+  FInitialSize := pInitialSize;
+  FStreamSize := FInitialSize ;
+  FGrowBy := pGrowBy;
+  FStream.Size := FStreamSize ;
+end;
+
+destructor TtiPreSizedStream.Destroy;
+begin
+  FStream.Free;
+  inherited;
+end;
+
+procedure TtiPreSizedStream.SaveToFile(const pFileName: string);
+begin
+  Assert( pFileName <> '', 'pFileName not assigned');
+  tiForceDirectories(pFileName);
+  FStream.Size := FDataSize ;
+  FStream.SaveToFile(pFileName);
+  FStream.Seek(0, soFromEnd);
+end;
+
+procedure TtiPreSizedStream.Write(const pStr: string);
+var
+  lPC : PChar ;
+  lLen : Integer ;
+begin
+  lPC := PChar( pStr ) ;
+  lLen := length( pStr ) ;
+  while FStreamSize < FDataSize + lLen do
+  begin
+    Inc( FStreamSize, FGrowBy );
+    FStream.Size := FStreamSize;
+  end ;
+  FStream.WriteBuffer( lPC^, lLen ) ;
+  Inc(FDataSize, lLen);
+end;
+
+procedure TtiPreSizedStream.WriteLn(const pStr: string);
+begin
+  Write(pStr + CrLf);
+end;
+
+type
+  TtiBlockStreamItem = class(TtiBaseObject)
+  private
+    FStream: TMemoryStream;
+    FBlockIndex: Longword;
+    function  GetAsString: string;
+    procedure SetAsString(const Value: string);
+    function  GetDataSize: Longword;
+  public
+    constructor Create(AData: string; ABlockIndex: Longword);
+    destructor  Destroy; override;
+    procedure   AppendToStream(AStream: TStream);
+
+    property    AsString: string Read GetAsString Write SetAsString;
+    property    BlockIndex: Longword Read FBlockIndex;
+    property    DataSize: Longword Read GetDataSize;
+  end;
+
+{ TtiBlockStream }
+
+constructor TtiBlockStream.Create(ABlockSize: Longword);
+begin
+  Assert(ABlockSize<>0, 'ABlockSize = 0');
+  inherited Create;
+  FList:= TObjectList.Create(True);
+  FBlockSize:= ABlockSize;
+end;
+
+
+procedure TtiBlockStream.SetAsString(const AValue: string);
+var
+  LPos: Longword;
+  LBlockIndex: Longword;
+  LS: string;
+begin
+  FList.Clear;
+  LPos:= 0;
+  LBlockIndex:= 0;
+  while LPos < Longword(Length(AValue)) do
+  begin
+    LS:= Copy(AValue, LPos+1, BlockSize);
+    FList.Add(TtiBlockStreamItem.Create(LS, LBlockIndex));
+    Inc(LPos, BlockSize);
+    Inc(LBlockIndex);
+  end;
+end;
+
+
+constructor TtiBlockStream.Create(const AData: string;ABlockSize: Longword);
+begin
+  Create(ABlockSize);
+  SetAsString(AData);
+end;
+
+
+function TtiBlockStream.GetBlockAsString(ABlockIndex: Longword): string;
+begin
+  Assert(ABlockIndex < Longword(FList.Count), 'ABlockIndex >= FList.Count');
+  Result := (FList.Items[ABlockIndex] as TtiBlockStreamItem).AsString
+end;
+
+
+procedure TtiBlockStream.SetBlockAsString(ABlockIndex: Longword;const AValue: string);
+var
+  LLast: TtiBlockStreamItem;
+  LItem: TtiBlockStreamItem;
+begin
+  if Longword(Length(AValue)) > BlockSize then
+      raise EtiOPFDataException.CreateFmt(cErrorBlockSizeMismatch, [BlockSize, Length(AValue)]);
+
+  LItem:= FindByBlockIndex(ABlockIndex) as TtiBlockStreamItem;
+  if LItem <> nil then
+    LItem.AsString:= AValue
+  else
+  begin
+    if FList.Count > 0 then
+    begin
+      LLast:= TtiBlockStreamItem(FList.Last);
+      if (LLast.DataSize <> BlockSize) and
+         (LLast.BlockIndex = Longword(FList.Count-1)) then
+        raise EtiOPFDataException.CreateFmt(cErrorBlockSizeMismatch, [BlockSize, LLast.DataSize]);
+    end;
+    FList.Add(TtiBlockStreamItem.Create(AValue, ABlockIndex));
+    Sort;
+  end;
+end;
+
+function TtiBlockStream.GetAsString: string;
+var
+  LStream: TStringStream;
+begin
+  LStream:= TStringStream.Create('');
+  try
+    AssignToStream(LStream);
+    Result:= LStream.DataString;
+  finally
+    LStream.Free;
+  end;
+end;
+
+
+function TtiBlockStream.GetBlockCount: Longword;
+begin
+  Result:= FList.Count;
+end;
+
+
+destructor TtiBlockStream.Destroy;
+begin
+  FList.Free;
+  inherited;
+end;
+
+
+function _CompareBlockStreamItems(AItem1, AItem2: Pointer): Integer;
+{$IFDEF FPC}
+  { Next FPC version will have this, so then it can be removed. }
+  function CompareValue(A, B: Cardinal): Integer;
+  begin
+    if A = B then
+      Result := 0
+    else if A < B then
+      Result := -1
+    else
+      Result := 1;
+  end;
+{$ENDIF}
+var
+  LItem1: TtiBlockStreamItem;
+  LItem2: TtiBlockStreamItem;
+begin
+  Assert(TtiBaseObject(AItem1).TestValid(TtiBlockStreamItem), cErrorTIPerObjAbsTestValid);
+  Assert(TtiBaseObject(AItem2).TestValid(TtiBlockStreamItem), cErrorTIPerObjAbsTestValid);
+  LItem1:= TtiBlockStreamItem(AItem1);
+  LItem2:= TtiBlockStreamItem(AItem2);
+  Result:= CompareValue(LItem1.BlockIndex, LItem2.BlockIndex);
+end;
+
+
+procedure TtiBlockStream.Sort;
+begin
+  FList.Sort({$IFDEF FPC}@{$ENDIF}_CompareBlockStreamItems);
+end;
+
+
+procedure TtiBlockStream.AssignToStream(AStream: TStream);
+var
+  i: Integer;
+begin
+  Assert(AStream<>nil, 'AStream not assigned');
+  ValidateBlockSequence;
+  Sort;
+  AStream.Size:= 0;
+  for i:= 0 to FList.Count-1 do
+    (FList.Items[i] as TtiBlockStreamItem).AppendToStream(AStream);
+end;
+
+
+procedure TtiBlockStream.ValidateBlockSequence;
+var
+  i: Integer;
+  LBlockIndex: Integer;
+begin
+  for i:= 0 to FList.Count - 1 do
+  begin
+    LBlockIndex:= (FList.Items[i] as TtiBlockStreamItem).BlockIndex;
+    if LBlockIndex <> i then
+      raise EtiOPFDataException.CreateFmt(cErrorBlockMissing, [i, FList.Count-1]);
+  end;
+end;
+
+
+function TtiBlockStream.FindByBlockIndex(ABlockIndex: Longword): TtiBaseObject;
+var
+  i: Integer;
+begin
+  for i:= 0 to FList.Count-1 do
+    if (FList.Items[i] as TtiBlockStreamItem).BlockIndex = ABlockIndex then
+    begin
+      Result:= FList.Items[i] as TtiBlockStreamItem;
+      Exit ; //==>
+    end;
+  Result:= nil;
+end;
+
+
+{ TtiBlockStreamItem }
+
+procedure TtiBlockStreamItem.AppendToStream(AStream: TStream);
+begin
+  Assert(AStream<>nil, 'AStream not assigned');
+  FStream.Position:= 0;
+  AStream.Position:= AStream.Size;
+  AStream.CopyFrom(FStream, FStream.Size);
+end;
+
+
+constructor TtiBlockStreamItem.Create(AData: string; ABlockIndex: Longword);
+begin
+  inherited Create;
+  FStream:= TMemoryStream.Create;
+  FBlockIndex:= ABlockIndex;
+  AsString:= AData;
+end;
+
+
+destructor TtiBlockStreamItem.Destroy;
+begin
+  FStream.Free;
+  inherited;
+end;
+
+
+function TtiBlockStreamItem.GetAsString: string;
+begin
+  Result:= tiStreamToString(FStream);
+end;
+
+
+function TtiBlockStreamItem.GetDataSize: Longword;
+begin
+  Result:= FStream.Size;
+end;
+
+
+procedure TtiBlockStreamItem.SetAsString(const Value: string);
+begin
+  tiStringToStream(Value, FStream);
+end;
+
+end.
+
