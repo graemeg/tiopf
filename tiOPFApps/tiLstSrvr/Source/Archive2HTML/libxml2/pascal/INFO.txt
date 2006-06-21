@@ -1,0 +1,65 @@
+[API]
+Name=libxml2-pas
+Version=2-5-2
+Date=05 Feb 2003
+Originated=libxml2-2-5-2
+URL=http://libxml2-pas.sourceforge.net
+Description=The XML C library for Gnome
+
+[CONVERSION]
+Number=4
+
+[CONVERSION1]
+FileName=libxml2.pas
+Status=READY-FOR-TESTING
+Version=2-5-2
+LastModify=05 Feb 2003
+OriginalFile=libxml2.h
+
+[CONVERSION2]
+FileName=libxslt.pas
+Status=READY-FOR-TESTING
+Version=1-0-24
+LastModify=05 Feb 2003
+OriginalFile=libxslt.h
+
+[CONVERSION3]
+FileName=libexslt.pas
+Status=READY-FOR-TESTING
+Version=0-7-15
+LastModify=05 Feb 2003
+OriginalFile=libxslt.h
+
+[CONVERSION4]
+FileName=iconv.pas
+Status=WORK-IN-PROGRESS
+Version=0.7
+OriginalFile=iconv.h
+
+[Platform] 
+Win95=YES
+Win98=YES
+Win2000=YES
+WinNT3=UNKNOWN
+WinNT4=YES
+Linux=YES
+Kylix=YES
+
+[Requirements]
+Req1=libxml2.dll version 2-5-2
+Req2=libxslt.dll
+Req3=libexslt.dll
+Req4=iconv.dll
+
+[Captain]
+Name=Petr Kozelka
+Email=pkozelka@email.cz
+
+[Converters]
+Converter1="Petr Kozelka";pkozelka@email.cz;http://kozelka.hyperlink.cz
+Converter2="Uwe Fechner";ufechner@4commerce.de;http://www.stud.fernuni-hagen.de/q5597331/xml-suite.htm
+
+[Testers]
+Tester1="Petr Kozelka";pkozelka@email.cz;http://kozelka.hyperlink.cz
+Tester2="Uwe Fechner";ufechner@4commerce.de;http://www.stud.fernuni-hagen.de/q5597331/xml-suite.htm
+Tester3="Martijn Brinkers";m.brinkers@pobox.com;http://sourceforge.net/projects/libxml2-pas

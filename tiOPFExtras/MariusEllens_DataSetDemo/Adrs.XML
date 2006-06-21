@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<XMLDocData>
+	<database_details generated_by="tiOPF" XML_version="1.0"/>
+	<tables>
+		<table table_name="next_oid">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+			</fields>
+			<rows>
+				<row oid="1000119"/>
+			</rows>
+		</table>
+		<table table_name="lookup_list_name">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+				<field field_name="list_name" field_kind="string" field_size="10"/>
+			</fields>
+			<rows>
+				<row oid="1" list_name="ADRS"/>
+				<row oid="2" list_name="EADRS"/>
+			</rows>
+		</table>
+		<table table_name="lookup_list_value">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+				<field field_name="owner_oid" field_kind="integer" field_size="0"/>
+				<field field_name="item_text" field_kind="string" field_size="30"/>
+			</fields>
+			<rows>
+				<row oid="3" owner_oid="1" item_text="Work - Street Address"/>
+				<row oid="4" owner_oid="1" item_text="Work - Postal"/>
+				<row oid="5" owner_oid="1" item_text="Home - Street Address"/>
+				<row oid="6" owner_oid="1" item_text="Home - Postal"/>
+				<row oid="7" owner_oid="1" item_text="Other"/>
+				<row oid="8" owner_oid="1" item_text="EMail"/>
+				<row oid="9" owner_oid="2" item_text="Web"/>
+				<row oid="10" owner_oid="2" item_text="Phone - Home"/>
+				<row oid="11" owner_oid="2" item_text="Phone - Work"/>
+				<row oid="12" owner_oid="2" item_text="Phone - Mobile"/>
+				<row oid="13" owner_oid="2" item_text="Fax"/>
+				<row oid="14" owner_oid="2" item_text="Other"/>
+			</rows>
+		</table>
+		<table table_name="company">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+				<field field_name="company_name" field_kind="string" field_size="60"/>
+				<field field_name="notes" field_kind="string" field_size="0"/>
+			</fields>
+			<rows>
+				<row oid="102" company_name="TechInsite" notes=""/>
+				<row company_name="Finalist Software Noord Nederland" notes="" oid="100010401"/></rows>
+		</table>
+		<table table_name="person">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+				<field field_name="owner_oid" field_kind="integer" field_size="0"/>
+				<field field_name="first_name" field_kind="string" field_size="60"/>
+				<field field_name="family_name" field_kind="string" field_size="60"/>
+				<field field_name="title" field_kind="string" field_size="10"/>
+				<field field_name="initials" field_kind="string" field_size="10"/>
+				<field field_name="notes" field_kind="string" field_size="0"/>
+			</fields>
+			<rows>
+				<row oid="103" owner_oid="102" first_name="Hinrichsen" family_name="Peter" title="Mr" initials="P.W." notes="The original developer of the tiOPF"/>
+				<row oid="104" owner_oid="-1" first_name="Krigsman" family_name="Ian" title="Mr" initials="I." notes="One of the first users of the tiOPF"/>
+				<row notes="" family_name="aa" first_name="Enter" title="" initials="" owner_oid="-1" oid="100010001"/><row notes="" family_name="bb" first_name="Enter" title="" initials="" owner_oid="-1" oid="100010402"/><row notes="" family_name="cc" first_name="Enter" title="" initials="" owner_oid="-1" oid="100010804"/><row notes="" family_name="dd" first_name="Enter" title="" initials="" owner_oid="-1" oid="100010901"/><row notes="" family_name="ee" first_name="Enter" title="" initials="" owner_oid="-1" oid="100011001"/><row notes="" family_name="ff" first_name="Enter" title="" initials="" owner_oid="-1" oid="100011201"/><row notes="abc
+abc
+def
+gjk" family_name="gg" first_name="Enter" title="" initials="" owner_oid="-1" oid="100011301"/><row notes="" family_name="bbb" first_name="Enter" title="" initials="" owner_oid="102" oid="100011401"/><row notes="" family_name="aaa" first_name="Enter" title="" initials="" owner_oid="102" oid="100011402"/><row notes="" family_name="cc" first_name="Enter" title="" initials="" owner_oid="102" oid="100011503"/><row notes="" family_name="hh" first_name="Enter" title="" initials="" owner_oid="-1" oid="100011502"/><row notes="" family_name="Marius" first_name="Enter" title="" initials="" owner_oid="100010401" oid="100011603"/></rows>
+		</table>
+		<table table_name="adrs">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+				<field field_name="owner_oid" field_kind="integer" field_size="0"/>
+				<field field_name="adrs_type" field_kind="integer" field_size="0"/>
+				<field field_name="lines" field_kind="string" field_size="180"/>
+				<field field_name="suburb" field_kind="string" field_size="30"/>
+				<field field_name="state" field_kind="string" field_size="30"/>
+				<field field_name="pcode" field_kind="string" field_size="20"/>
+				<field field_name="country" field_kind="string" field_size="30"/>
+			</fields>
+			<rows>
+				<row oid="106" owner_oid="102" adrs_type="4" lines="PO Box 429;Abbotsford" suburb="" state="VIC" pcode="3066" country="Australia"/>
+				<row oid="107" owner_oid="102" adrs_type="3" lines="23 Victoria Pde;Collingwood" suburb="" state="VIC" pcode="3066" country="Australia"/>
+				<row adrs_type="3" country="Australia" lines="23 Victoria Pde" suburb="" state="VIC" pcode="3066" owner_oid="103" oid="100000201"/><row adrs_type="5" country="sdf" lines="sdf" suburb="sdf" state="sdf" pcode="sdf" owner_oid="104" oid="100001501"/><row adrs_type="4" country="abc" lines="abc" suburb="abc" state="abc" pcode="abc" owner_oid="103" oid="100009901"/><row adrs_type="5" country="def" lines="def" suburb="def" state="def" pcode="def" owner_oid="100010401" oid="100010701"/><row adrs_type="8" country="" lines="blabla" suburb="" state="" pcode="" owner_oid="100010804" oid="100010806"/><row adrs_type="4" country="" lines="aa" suburb="" state="" pcode="" owner_oid="100010901" oid="100010903"/><row adrs_type="4" country="" lines="abc" suburb="" state="" pcode="" owner_oid="100011402" oid="100011602"/></rows>
+		</table>
+		<table table_name="eadrs">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+				<field field_name="owner_oid" field_kind="integer" field_size="0"/>
+				<field field_name="eadrs_type" field_kind="integer" field_size="0"/>
+				<field field_name="eadrs_text" field_kind="string" field_size="60"/>
+			</fields>
+			<rows>
+				<row oid="111" owner_oid="102" eadrs_type="11" eadrs_text="+ 61 3 9419 6456"/>
+				<row oid="112" owner_oid="103" eadrs_type="12" eadrs_text="+ 61 418 108 353"/>
+				<row oid="113" owner_oid="102" eadrs_type="13" eadrs_text="+61 3 9419 1682"/>
+				<row oid="114" owner_oid="103" eadrs_type="8" eadrs_text="peter_hinrichsen@techinsite.com.au"/>
+				<row oid="115" owner_oid="102" eadrs_type="9" eadrs_text="techinsite.com.au"/>
+				<row oid="118" owner_oid="104" eadrs_type="8" eadrs_text="ian@discoverysystems.com.au"/>
+				<row eadrs_type="9" eadrs_text="www.techinsite.com.au" owner_oid="103" oid="100000301"/>
+				<row eadrs_type="8" eadrs_text="test@hotmail.com" owner_oid="104" oid="100010201"/><row eadrs_type="4" eadrs_text="abracadabra" owner_oid="104" oid="100010301"/><row eadrs_type="4" eadrs_text="finalist@finalist.com" owner_oid="100010401" oid="100010501"/><row eadrs_type="5" eadrs_text="aa" owner_oid="100010901" oid="100010902"/><row eadrs_type="4" eadrs_text="aa" owner_oid="100011001" oid="100011002"/><row eadrs_type="5" eadrs_text="abc" owner_oid="100011402" oid="100011601"/><row eadrs_type="8" eadrs_text="finalist@home.nl" owner_oid="100011603" oid="100011604"/><row eadrs_type="4" eadrs_text="kkkkk" owner_oid="102" oid="100011701"/></rows>
+		</table>
+	</tables>
+</XMLDocData>

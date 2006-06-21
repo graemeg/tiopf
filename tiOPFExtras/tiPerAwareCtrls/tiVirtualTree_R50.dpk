@@ -1,0 +1,42 @@
+package tiVirtualTree_R50;
+
+{$R *.RES}
+{$ALIGN ON}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'Techinsite Object-Aware Virtual Treeview (Design Time)'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  vcl50,
+  Vclx50,
+  tiPersistCore,
+  ThemeManager5,
+  VirtualTreesD5;
+
+contains
+  tiVTListView in 'tiVTListView.pas',
+  tiVTFilter in 'tiVTFilter.pas' {frmLVFilter},
+  tiVTExportFactory in 'tiVTExportFactory.pas',
+  tiVTExportAbs in 'tiVTExportAbs.pas';
+
+end.

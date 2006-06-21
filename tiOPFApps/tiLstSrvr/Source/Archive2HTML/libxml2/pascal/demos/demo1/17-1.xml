@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xml" href="17-2.xsl"?>
+<PERIODIC_TABLE>
+  <ATOM STATE="GAS">
+    <NAME>Hydrogen</NAME>
+    <SYMBOL>H</SYMBOL>
+    <ATOMIC_NUMBER>1</ATOMIC_NUMBER>
+    <ATOMIC_WEIGHT>1.00794</ATOMIC_WEIGHT>
+    <BOILING_POINT UNITS="Kelvin">20.28</BOILING_POINT>
+    <MELTING_POINT UNITS="Kelvin">13.81</MELTING_POINT>
+    <DENSITY UNITS="grams/cubic centimeter">
+      <!-- At 300K, 1 atm -->
+      0.0000899
+    </DENSITY>
+  </ATOM>
+  <ATOM STATE="GAS">
+    <NAME>Helium</NAME>
+    <SYMBOL>He</SYMBOL>
+    <ATOMIC_NUMBER>2</ATOMIC_NUMBER>
+    <ATOMIC_WEIGHT>4.0026</ATOMIC_WEIGHT>
+    <BOILING_POINT UNITS="Kelvin">4.216</BOILING_POINT>
+    <MELTING_POINT UNITS="Kelvin">0.95</MELTING_POINT>
+    <DENSITY UNITS="grams/cubic centimeter"><!-- At 300K -->
+      0.0001785
+    </DENSITY>
+  </ATOM>
+</PERIODIC_TABLE>
+

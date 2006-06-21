@@ -1,0 +1,51 @@
+[Options]
+AutoDetectSystemDLLs=1
+MemoryTracking=1
+ErrorCheck=0
+ResourceTracking=0
+DynamicDLLs=1
+ParameterLogging=0
+ParameterValidation=0
+NonBorlandIsSystem=0
+UseStackFrames=0
+Arguments=-lv
+DisabledThunks=0
+[Search]
+C++Builder 1.0=0
+C++Builder 3.0=0
+C++Builder 4.0=0
+Delphi 2.0=0
+Delphi 3.0=0
+Delphi 4.0=0
+Delphi 5.0=1
+[Syntax]
+AuxPaths=
+[Filters]
+Bcb1.srf=0
+Bcb3.srf=0
+Bcb4.srf=0
+D2.srf=0
+D3.srf=0
+D3qr.SRF=0
+D4.srf=0
+D4qr.srf=0
+D5.srf=1
+Bcb1.smf=0
+Bcb3.smf=0
+Bcb4.smf=0
+D2.smf=0
+D3.smf=0
+D3qr.SMF=0
+D4.smf=0
+D4qr.smf=0
+D5.smf=1
+TechInsiteFilters.SMF=1
+Bcb1.sef=0
+Bcb3.sef=0
+Bcb4.sef=0
+D2.sef=0
+D3.sef=0
+D4.sef=0
+D4qr.sef=0
+D5.sef=1
+Orpheus 3.sef=0

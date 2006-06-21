@@ -1,0 +1,40 @@
+unit %Unit%;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ComCtrls, %TreeNodeUnit%;
+
+type
+  T%Form% = class(TForm)
+  private
+    FData: T%TreeNode%;
+    FTreeNode: TTreeNode;
+    function  GetValid: boolean;
+    procedure SetData(const Value: T%TreeNode%);
+  published
+    property Data: T%TreeNode% read FData write SetData;
+    property Valid: boolean read GetValid;
+    property TreeNode: TTreeNode read FTreeNode write FTreeNode;
+  public
+  end;
+
+implementation
+
+{$R *.dfm}
+
+{ T%Form% }
+
+function TT%Form%.GetValid: boolean;
+begin
+  Result := True;
+end;
+
+procedure TT%Form%.SetData(const Value: T%TreeNode%);
+begin
+  FData := Value;
+end;
+
+end.
+ 

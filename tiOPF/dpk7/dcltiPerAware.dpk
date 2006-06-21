@@ -1,0 +1,44 @@
+package dcltiPerAware;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$LIBSUFFIX '70'}
+{$DESIGNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  tiPerAwareGUI,
+  vcl,
+  rtl;
+
+contains
+  tiSplitterEditor in '..\tiPerAwareCtrls\tiSplitterEditor.pas',
+  tiSplitterReg in '..\tiPerAwareCtrls\tiSplitterReg.pas',
+  tiListViewReg in '..\tiPerAwareCtrls\tiListViewReg.pas',
+  tiPerAwareGUI_Reg in '..\tiPerAwareCtrls\tiPerAwareGUI_Reg.pas',
+  tiPerAwareCtrlsReg in '..\tiPerAwareCtrls\tiPerAwareCtrlsReg.pas',
+  tiTreeViewReg in '..\tiPerAwareCtrls\tiTreeViewReg.pas',
+  tiTreeviewEditor in '..\tiPerAwareCtrls\tiTreeviewEditor.pas',
+  tiDateRangeReg in '..\tiPerAwareCtrls\tiDateRangeReg.pas';
+
+end.

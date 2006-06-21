@@ -1,0 +1,135 @@
+unit %Unit%;
+
+interface
+
+uses
+  tiPtnVisPerObj
+{$IFDEF %ListOwnerUnit%}
+  , %ListOwnerUnit%
+{$ENDIF}
+{$IFDEF %ListUnit%}
+  , %ListUnit%
+{$ENDIF}
+{$IFDEF %ItemUnit%}
+  , %ItemUnit%
+{$ENDIF}
+  ;
+
+type
+{$IFDEF %ListOwner%}
+{$IFDEF %List%}
+  T%List% = class; // Forward declaration
+
+{$ENDIF}
+  T%ListOwner% = class(TPerObjAbs)
+  private
+    F%List%: T%List%;
+  protected
+    function    GetCaption: string; override;
+  published
+    property    %List%: T%List% read F%List%;
+  public
+    constructor Create; override;
+    destructor  Destroy; override;
+  end;
+{$ENDIF}
+
+{$IFDEF %List%}
+{$IFDEF %Item%}
+  T%Item% = class; // Forward declaration
+
+{$ENDIF}
+  T%List% = class(TPerObjList)
+  private
+  protected
+    function    GetItems(i: integer): T%Item%; reintroduce;
+    procedure   SetItems(i: integer; const Value: T%Item%); reintroduce;
+    function    GetOwner: T%ListOwner%; reintroduce;
+    procedure   SetOwner(const Value: T%ListOwner%); reintroduce;
+  published
+  public
+    property    Items[i: integer]: T%Item% read GetItems write SetItems;
+    procedure   Add(pObject: T%Item%; pDefDispOrdr: boolean = true); reintroduce;
+    property    Owner: T%ListOwner% read GetOwner write SetOwner;
+  end;
+{$ENDIF}
+
+{$IFDEF %Item%}
+  T%Item% = class(TPerObjAbs)
+  private
+  protected
+    function    GetOwner: T%List%; reintroduce;
+    procedure   SetOwner(const Value: T%List%); reintroduce;
+  published
+  public
+    property    Owner: T%List% read GetOwner write SetOwner;
+  end;
+{$ENDIF}
+
+implementation
+
+{$IFDEF %ListOwner%}
+{ T%ListOwner% }
+
+constructor T%ListOwner%.Create;
+begin
+  inherited;
+  F%List% := T%List%.CreateNew(Self);
+end;
+
+destructor T%ListOwner%.Destroy;
+begin
+  F%List%.Free;
+  inherited;
+end;
+
+function T%ListOwner%.GetCaption: string;
+begin
+  Result := '%ListOwnerCaption%';
+end;
+{$ENDIF}
+
+{$IFDEF %List%}
+{ T%List% }
+
+procedure T%List%.Add(pObject: T%Item%; pDefDispOrdr: boolean);
+begin
+  inherited Add(pObject, pDefDispOrdr);
+end;
+
+function T%List%.GetItems(i: integer): T%Item%;
+begin
+  Result := T%Item%(inherited GetItems(i));
+end;
+
+function T%List%.GetOwner: T%ListOwner%;
+begin
+  Result := T%ListOwner%(inherited GetOwner);
+end;
+
+procedure T%List%.SetItems(i: integer; const Value: T%Item%);
+begin
+  inherited SetItems(i, Value);
+end;
+
+procedure T%List%.SetOwner(const Value: T%ListOwner%);
+begin
+  inherited SetOwner(Value);
+end;
+{$ENDIF}
+
+{$IFDEF %Item%}
+{ T%Item% }
+
+function T%Item%.GetOwner: T%List%;
+begin
+  Result := T%List%(inherited GetOwner);
+end;
+
+procedure T%Item%.SetOwner(const Value: T%List%);
+begin
+  inherited SetOwner(Value);
+end;
+{$ENDIF}
+
+end.

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<calserver port="8888" cmdstr="?xob" host="localhost">
+   <types>
+      <type name="integer">
+         <remark>alle ganzen Zahlen</remark>
+      </type>
+      <type name="fedate">
+         <remark>datetime=y-m-d; y=nnnn; m=nn; d=nn; n=integer</remark>
+      </type>
+      <type name="datetime">
+         <remark>datetime=y-m-d h:m; y=nnnn; m=nn; d=nn; h=nn; m=nn; n=integer</remark>
+      </type>
+      <type name="string">
+         <remark>Zeichenkette</remark>
+      </type>
+      <type name="boolean">
+         <remark>T=True; F=False</remark>
+      </type>
+   </types>
+   <methods>
+      <group name="category">
+         <method name="insert">
+            <remark>die UserID sollte immer angegeben werden, es gibt aber keinen Fehler, wenn man sie nicht angibt</remark>
+            <param name="UserID" type="integer" default="-1" required="false"/>
+            <param name="name" type="string" default="NULL" required="false"/>
+         </method>
+         <method name="show">
+            <remark>gibt eine Liste der gültigen Terminkategorien aus</remark>
+            <param name="UserID" type="integer" default="*" required="false"/>
+         </method>
+         <method name="delete">
+            <remark/>
+            <param name="ID" type="integer" required="true"/>
+         </method>
+         <method name="update">
+            <remark>ändert eine bestehende Kategorie</remark>
+            <param name="ID" type="integer" required="true"/>
+            <param name="UserID" type="integer" default="keep the old value" required="false"/>
+            <param name="name" type="string" default="keep the old value" required="false"/>
+         </method>
+      </group>
+      <group name="event">
+         <method name="show">
+            <remark>zeigt alle Termine mit der UserID an</remark>
+            <param name="UserID" type="integer" default="*" required="false">
+               <remark>Ohne Angabe einer UserID werden alle events ausgegeben (Vorsicht: Kann sehr lange dauern!)</remark>
+            </param>
+            <param name="count" type="integer" default="20">
+               <remark/>
+            </param>
+            <param name="startat" type="integer" default="0">
+               <remark/>
+            </param>
+         </method>
+         <method name="insert">
+            <remark>legt einen neuen Termin an, der leer sein darf (für einen valid event sind fromdate und todate erforderlich)</remark>
+            <param name="UserID" type="integer" default="-1" required="false"/>
+            <param name="fromdate" type="datetime" required="false"/>
+            <param name="todate" type="datetime" required="false"/>
+            <param name="keywords" type="string" required="false"/>
+            <param name="selected" type="boolean" required="false"/>
+            <param name="category_id" type="integer" required="false"/>
+         </method>
+         <method name="update">
+            <remark>ändert die Attribute eines bestehenden Termins mit der Nr. ID</remark>
+            <param name="ID" type="integer" required="true"/>
+            <param name="fromdate" type="datetime" required="false"/>
+            <param name="todate" type="datetime" required="false"/>
+            <param name="keywords" type="string" required="false"/>
+            <param name="selected" type="boolean" required="false"/>
+            <param name="category_id" type="integer" required="false"/>
+         </method>
+         <method name="delete">
+            <remark>lösche den Termin mit der gegebenen Termin-ID</remark>
+            <param name="ID" type="integer" required="true"/>
+         </method>
+      </group>
+      <group name="calendar">
+         <method name="showday">
+            <remark>zeigt die Tagesansicht des Kalenders mit den eingemischten Termin der angegebenen UserID an</remark>
+            <param name="UserID" type="integer" default="*" required="false"/>
+            <param name="date" type="fedate" default="*" required="false"/>
+         </method>
+         <method name="showweek">
+            <remark>zeigt die Wochenansicht des Kalenders mit den eingemischten Termin der angegebenen UserID an</remark>
+            <param name="UserID" type="integer" default="*" required="false">für das angegegebene Datum; ohne Angabe des Datums für heute.</param>
+            <param name="date" type="fedate" default="today" required="false"/>
+         </method>
+         <method name="showmonth">
+            <remark/>
+            <param name="UserID" type="integer" default="*" required="false"/>
+            <param name="date" type="fedate" default="today" required="false"/>
+         </method>
+         <method name="minimonth">
+            <remark>gibt einen Navigationskalender ohne eingemischte Termine aus</remark>
+            <param name="date" type="fedate" default="today" required="false"/>
+         </method>
+      </group>
+   </methods>
+</calserver>

@@ -1,0 +1,13 @@
+ToDo: Object relationship demos:
+
+  1) Many to Many: Client Interests  (Unknown, Sport, Reading, Cooking, Gardening)
+
+  2) Tree of objects
+
+  3) Threaded loading in background
+
+  4) Dunit example
+
+  5) Which class of OID?
+
+  6) Proxies or primary key objects - for performance optimisation & human navigation

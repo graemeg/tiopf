@@ -1,0 +1,81 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = Demo_CreateDatabase.exe Demo_ConnectToDB_Code.exe \
+  Demo_CreateTable.exe Demo_InsertData.exe Demo_CollectionAutoMap.exe \
+  Demo_CollectionHardCoded.exe Demo_EditDataInGUI.exe Demo_VisitorBasics.exe \
+  Demo_CollectionWithFilter.exe Demo_OneToManyAutoMap.exe \
+  Demo_OneToManyHardCoded.exe Demo_InheritanceAutoMap.exe \
+  Demo_InheritanceHardCode.exe Demo_OrdinalTypes.exe Demo_LookupList.exe \
+  Demo_OneToOne.exe Demo_AdrsBook_DUnit.exe Demo_AdrsBook_TreeView.exe \
+  Demo_AdrsBook_SideBar.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+Demo_ConnectToDB_Code.exe: Demo_02_ConnectToDB\Demo_ConnectToDB_Code\Demo_ConnectToDB_Code.dpr
+  $(DCC)
+
+Demo_CreateTable.exe: Demo_03_CreateTable\Demo_CreateTable.dpr
+  $(DCC)
+
+Demo_InsertData.exe: Demo_04_InsertData\Demo_InsertData.dpr
+  $(DCC)
+
+Demo_CollectionAutoMap.exe: Demo_05_Collection_AutoMap\Demo_CollectionAutoMap.dpr
+  $(DCC)
+
+Demo_CollectionHardCoded.exe: Demo_05_Collection_HardCoded\Demo_CollectionHardCoded.dpr
+  $(DCC)
+
+Demo_EditDataInGUI.exe: Demo_06_EditDataInGUI\Demo_EditDataInGUI.dpr
+  $(DCC)
+
+Demo_CreateDatabase.exe: Demo_01_CreateDatabase\Demo_CreateDatabase.dpr
+  $(DCC)
+
+Demo_VisitorBasics.exe: Demo_07_VisitorBasics\Demo_VisitorBasics.dpr
+  $(DCC)
+
+Demo_CollectionWithFilter.exe: Demo_08_CollectionWithFilter\Demo_CollectionWithFilter.dpr
+  $(DCC)
+
+Demo_OneToManyAutoMap.exe: Demo_09_OneToMany_AutoMap\Demo_OneToManyAutoMap.dpr
+  $(DCC)
+
+Demo_OneToManyHardCoded.exe: Demo_09_OneToMany_HardCoded\Demo_OneToManyHardCoded.dpr
+  $(DCC)
+
+Demo_InheritanceAutoMap.exe: Demo_10_Inheritance_AutoMap\Demo_InheritanceAutoMap.dpr
+  $(DCC)
+
+Demo_InheritanceHardCode.exe: Demo_10_Inheritance_HardCode\Demo_InheritanceHardCode.dpr
+  $(DCC)
+
+Demo_OrdinalTypes.exe: Demo_11_OrdinalTypes\Demo_OrdinalTypes.dpr
+  $(DCC)
+
+Demo_LookupList.exe: Demo_12_LookupList\Demo_LookupList.dpr
+  $(DCC)
+
+Demo_OneToOne.exe: Demo_13_OneToOne\Demo_OneToOne.dpr
+  $(DCC)
+
+Demo_AdrsBook_DUnit.exe: Demo_30_AdrsBook\BOM\Demo_AdrsBook_DUnit.dpr
+  $(DCC)
+
+Demo_AdrsBook_SideBar.exe: Demo_30_AdrsBook\GUI_SideBar\Demo_AdrsBook_SideBar.dpr
+  $(DCC)
+
+Demo_AdrsBook_TreeView.exe: Demo_30_AdrsBook\GUI_TreeView\Demo_AdrsBook_TreeView.dpr
+  $(DCC)
+
+

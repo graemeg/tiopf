@@ -1,0 +1,74 @@
+package tiPersistCore;
+
+{$R *.res}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA OFF}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  vcl50,
+  vclx50;
+
+contains
+  tiLog in '..\tiPersist\tiLog.pas',
+  TIUtils in '..\tiPersist\tiutils.pas',
+  tiCommandLineParams in '..\tiPersist\tiCommandLineParams.pas',
+  tiPtnVis in '..\tiPersist\tiPtnVis.pas',
+  tiPtnVisMgr in '..\tiPersist\tiPtnVisMgr.pas',
+  tiPoolAbs in '..\tiPersist\tiPoolAbs.pas',
+  tiDBConnectionPool in '..\tiPersist\tiDBConnectionPool.pas',
+  tiQuery in '..\tiPersist\tiQuery.pas',
+  tiPtnVisSQL in '..\tiPersist\tiPtnVisSQL.pas',
+  tiPtnVisPerObj in '..\tiPersist\tiPtnVisPerObj.pas',
+  ctiPersist in '..\tiPersist\ctiPersist.pas',
+  tiPtnVisPerObj_Cli in '..\tiPersist\tiPtnVisPerObj_Cli.pas',
+  tiThreadProgress in '..\tiPersist\tiThreadProgress.pas',
+  tiDataSet_Cli in '..\tiPersist\tiDataSet_Cli.pas',
+  tiDataSet_BOM in '..\tiPersist\tiDataSet_BOM.pas',
+  tiXML in '..\tiPersist\tiXML.pas',
+  tiPersist in '..\tiPersist\tiPersist.pas',
+  tiRegPerLayer in '..\tiPersist\tiRegPerLayer.pas',
+  tiClassToDBMap_Srv in '..\tiPersist\tiClassToDBMap_Srv.pas',
+  tiClassToDBMap_BOM in '..\tiPersist\tiClassToDBMap_BOM.pas',
+  tiDialogs in '..\tiPersist\tiDialogs.pas',
+  tiObjAbs in '..\tiPersist\tiObjAbs.pas',
+  tiRegINI in '..\tiPersist\tiRegINI.pas',
+  tiStreams in '..\tiPersist\tiStreams.pas',
+  tiEncryptSimple in '..\tiPersist\tiEncryptSimple.pas',
+  tiEncryptNone in '..\tiPersist\tiEncryptNone.pas',
+  tiEncryptAbs in '..\tiPersist\tiEncryptAbs.pas',
+  tiPerObjOIDInteger in '..\tiPersist\tiPerObjOIDInteger.pas',
+  tiPerObjOIDGUID in '..\tiPersist\tiPerObjOIDGUID.pas',
+  tiPerObjOIDHex in '..\tiPersist\tiPerObjOIDHex.pas',
+  tiPerObjOIDAbs in '..\tiPersist\tiPerObjOIDAbs.pas',
+  tiPerObjOIDString in '..\tiPersist\tiPerObjOIDString.pas',
+  tiLogViewForm_Cli in '..\tiPersist\tiLogViewForm_Cli.pas' {LogViewForm},
+  tiLogErrorForm_Cli in '..\tiPersist\tiLogErrorForm_Cli.pas' {LogErrorForm},
+  tiWin32 in '..\tiPersist\tiWin32.pas',
+  tiRJMime in '..\tiPersist\tiRJMime.pas',
+  tiCompressNone in '..\tiPersist\tiCompressNone.pas',
+  tiCompressAbs in '..\tiPersist\tiCompressAbs.pas',
+  tiCompressZLib in '..\tiPersist\tiCompressZLib.pas',
+  tiExcept in '..\tiPersist\tiExcept.pas',
+  tiThread in '..\tiPersist\tiThread.pas';
+
+end.

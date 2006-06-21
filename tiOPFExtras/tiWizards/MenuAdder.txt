@@ -1,0 +1,71 @@
+CodePaster
+         None Default Classic Twilight Ocean Daves Daffys chrisl
+
+
+      procedure TProjectAnalyzerExpert.RegisterCommand;
+      var
+        IDEMainMenu: TMainMenu;
+        IDEProjectItem: TMenuItem;
+        IDEActionList: TActionList;
+        I: Integer;
+        ImageBmp: TBitmap;
+      begin
+        FBuildAction := TAction.Create(nil);
+        FBuildAction.Caption := Format(RsActionCaption, [RsProjectNone]);
+        FBuildAction.Visible := True;
+        FBuildAction.OnExecute := ActionExecute;
+        FBuildAction.OnUpdate := ActionUpdate;
+        ImageBmp := TBitmap.Create;
+        try
+          ImageBmp.LoadFromResourceName(FindResourceHInstance(HInstance), 
+      'PROJANALYZER');
+          FBuildAction.ImageIndex := (BorlandIDEServices as 
+      INTAServices).AddMasked(ImageBmp, clOlive);
+        finally
+          ImageBmp.Free;
+        end;
+        IDEActionList := TActionList((BorlandIDEServices as 
+      INTAServices).ActionList);
+        FBuildAction.ActionList := IDEActionList;
+        FBuildMenuItem := TMenuItem.Create(nil);
+        FBuildMenuItem.Action := FBuildAction;
+        IDEMainMenu := (BorlandIDEServices as INTAServices).MainMenu;
+        IDEProjectItem := nil;
+        with IDEMainMenu do
+          for I := 0 to Items.Count - 1 do
+            if Items[I].Name = 'ProjectMenu' then
+            begin
+              IDEProjectItem := Items[I];
+              Break;
+            end;
+        Assert(IDEProjectItem <> nil);
+        with IDEProjectItem do
+          for I := 0 to Count - 1 do
+            if Items[I].Name = 'ProjectInformationItem' then
+            begin
+              IDEProjectItem.Insert(I + 1, FBuildMenuItem);
+              System.Break;
+            end;
+        Assert(FBuildMenuItem.Parent <> nil);
+      {$IFNDEF DELPHI5_UP}
+        FSaveAllAction := nil;
+        with IDEActionList do
+          for I := 0 to ActionCount - 1 do
+            if Actions[I].Name = 'FileSaveAllCommand' then
+            begin
+              FSaveAllAction := TAction(Actions[I]);
+              Break;
+            end;
+        Assert(FSaveAllAction <> nil);
+      {$ENDIF DELPHI5_UP}
+      end;
+
+
+
+
+CodePaster is an initiative of:
+          DaveN - Dave Nottage, Pure Software Technology 
+      ChrisL - Chris Latta, website    Original concept, web code & design
+      Code Colourization, HTML
+
+

@@ -1,0 +1,69 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = tiPersistCore.bpl tiPerAwareGUI.bpl dcltiPerAware.bpl tiPersistXML70.bpl tiPersistIBX70.bpl \
+  tiPersistBDEParadox70.bpl tiPersistADOAbs70.bpl tiPersistADOAccess70.bpl tiPersistADOSQLServer70.bpl \
+  tiPersistTXTAbs.bpl tiPersistCSV70.bpl tiPersistTAB70.bpl tiPersistXMLLight.bpl tiPersistRemote70.bpl DUnitTIOPFGui.exe \
+  DUnitTIOPFText.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+
+tiPersistCore.bpl: tiPersistCore.dpk
+  $(DCC)
+
+tiPerAwareGUI.bpl: tiPerAwareGUI.dpk
+  $(DCC)
+
+dcltiPerAware.bpl: dcltiPerAware.dpk
+  $(DCC)
+
+tiPersistTXTAbs.bpl: tiPersistTXTAbs.dpk
+  $(DCC)
+
+tiPersistXMLLight.bpl: tiPersistXMLLight.dpk
+  $(DCC)
+
+DUnitTIOPFGui.exe: ..\DUnitTests\DUnitTIOPFGui.dpr
+  $(DCC)
+
+tiPersistXML70.bpl: tiPersistXML.dpk
+  $(DCC)
+
+tiPersistIBX70.bpl: tiPersistIBX.dpk
+  $(DCC)
+
+tiPersistBDEParadox70.bpl: tiPersistBDEParadox.dpk
+  $(DCC)
+
+tiPersistADOAbs70.bpl: tiPersistADOAbs.dpk
+  $(DCC)
+
+tiPersistADOAccess70.bpl: tiPersistADOAccess.dpk
+  $(DCC)
+
+tiPersistCSV70.bpl: tiPersistCSV.dpk
+  $(DCC)
+
+tiPersistTAB70.bpl: tiPersistTAB.dpk
+  $(DCC)
+
+tiPersistADOSQLServer70.bpl: tiPersistADOSQLServer.dpk
+  $(DCC)
+
+tiPersistRemote70.bpl: tiPersistRemote.dpk
+  $(DCC)
+
+DUnitTIOPFText.exe: ..\DUnitTests\DUnitTIOPFText.dpr
+  $(DCC)
+
+

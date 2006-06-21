@@ -1,0 +1,62 @@
+package tiPerAwareGUI;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'TechInsite Persistence Framework GUI Controls'}
+{$LIBSUFFIX '60'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  vcl,
+  vclx,
+  designide,
+  rtl,
+  vcljpg,
+  tiPersistCore;
+
+contains
+  tiPerAwareCtrls in '..\tiPerAwareCtrls\tiPerAwareCtrls.pas',
+  tiButtons in '..\tiPerAwareCtrls\tiButtons.pas',
+  tiPerAwareFileCombos in '..\tiPerAwareCtrls\tiPerAwareFileCombos.pas',
+  tiListView in '..\tiPerAwareCtrls\tiListView.pas',
+  tiListViewCtrls in '..\tiPerAwareCtrls\tiListViewCtrls.pas',
+  tiListViewPlus in '..\tiPerAwareCtrls\tiListViewPlus.pas',
+  tiSplitter in '..\tiPerAwareCtrls\tiSplitter.pas',
+  tiTreeView in '..\tiPerAwareCtrls\tiTreeView.pas',
+  tiMemoReadOnly in '..\tiPerAwareCtrls\tiMemoReadOnly.pas',
+  tiPerAwareMultiSelect in '..\tiPerAwareCtrls\tiPerAwareMultiSelect.pas',
+  tiReadOnly in '..\tiPerAwareCtrls\tiReadOnly.pas',
+  tiListViewDif in '..\tiPerAwareCtrls\tiListViewDif.pas',
+  tiPerAwareDateRange in '..\tiPerAwareCtrls\tiPerAwareDateRange.pas',
+  tiHyperlink in '..\tiPerAwareCtrls\tiHyperlink.pas',
+  tiFocusPanel in '..\tiPerAwareCtrls\tiFocusPanel.pas',
+  tiSpeedButton in '..\tiPerAwareCtrls\tiSpeedButton.pas',
+  tiImageMgr in '..\tiPerAwareCtrls\tiImageMgr.pas',
+  tiResources in '..\tiPerAwareCtrls\tiResources.pas',
+  tiRoundedPanel in '..\tiPerAwareCtrls\tiRoundedPanel.pas',
+  tiPerAwareDirectoryCombos in '..\tiPerAwareCtrls\tiPerAwareDirectoryCombos.pas',
+  tiPerAwareCombosAbs in '..\tiPerAwareCtrls\tiPerAwareCombosAbs.pas',
+  tiJVBrowseFolder in '..\tiPerAwareCtrls\tiJVBrowseFolder.pas';
+
+end.

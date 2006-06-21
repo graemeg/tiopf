@@ -1,0 +1,8 @@
+1. Complete unit tests
+2. Implement task list rather than hacked file list (See copy list as starting point)
+3. Better GUI when setting up copy task
+4. Implement filters.
+5. Break source into:
+     Common
+     Client
+     Server

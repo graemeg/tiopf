@@ -1,0 +1,40 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = tiFileSyncDUnit.exe tiFileSync.exe tiDBProxyServer.exe \
+  OPDMSLauncher.exe OPDMS.exe OPDMS_SYS.exe tiAppLaunch.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+
+tiFileSyncDUnit.exe: DUnit\tiFileSyncDUnit.dpr
+  $(DCC)
+
+tiFileSync.exe: Src\tiFileSync.dpr
+  $(DCC)
+
+OPDMSLauncher.exe: ..\..\..\..\OPDMSAppServerClientLauncherExtension\OPDMSLauncher.dpr
+  $(DCC)
+
+OPDMS.exe: ..\..\..\..\OPDMSLauncher\OPDMS.dpr
+  $(DCC)
+
+OPDMS_SYS.exe: ..\..\..\..\OPDMSGUI\OPDMS_SYS.dpr
+  $(DCC)
+
+tiAppLaunch.exe: ..\tiDeployMgr\tiAppLaunch.dpr
+  $(DCC)
+
+tiDBProxyServer.exe: ..\tiDBProxyServer\tiDBProxyServer.dpr
+  $(DCC)
+
+

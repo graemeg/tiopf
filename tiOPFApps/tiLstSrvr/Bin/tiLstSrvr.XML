@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<XMLDocData>
+	<database_details generated_by="tiOPF" XML_version="1.0"/>
+	<tables>
+		<table table_name="next_oid">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+			</fields>
+			<rows>
+				<row oid="1000230"/>
+			</rows>
+		</table>
+		<table table_name="list_server_config">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+				<field field_name="list_name" field_kind="string" field_size="60"/>
+				<field field_name="list_name_long" field_kind="string" field_size="256"/>
+				<field field_name="List_EMail_Adrs" field_kind="string" field_size="255"/>
+				<field field_name="List_Master_EMail_Adrs" field_kind="string" field_size="255"/>
+				<field field_name="List_Master_name" field_kind="string" field_size="255"/>
+				<field field_name="Sender_Adrs_Type" field_kind="string" field_size="20"/>
+				<field field_name="Accept_Posts_From" field_kind="string" field_size="20"/>
+				<field field_name="Max_Message_Size" field_kind="integer" field_size="0"/>
+				<field field_name="Active" field_kind="logical" field_size="0"/>
+				<field field_name="POP_Host" field_kind="string" field_size="255"/>
+				<field field_name="POP_User_ID" field_kind="string" field_size="255"/>
+				<field field_name="POP_Pass_word" field_kind="string" field_size="255"/>
+				<field field_name="SMTP_Host" field_kind="string" field_size="255"/>
+				<field field_name="Archive_Dir" field_kind="string" field_size="255"/>
+				<field field_name="Join_Message" field_kind="long string" field_size="0"/>
+				<field field_name="Leave_Message" field_kind="long string" field_size="0"/>
+				<field field_name="Reject_Message_Size_Message" field_kind="string" field_size="100"/>
+				<field field_name="Non_List_Member_Message" field_kind="long string" field_size="0"/>
+				<field field_name="Reject_Attachment_Message" field_kind="long string" field_size="0"/>
+				<field field_name="Footer_Message" field_kind="long string" field_size="0"/>
+				<field field_name="Message_Index" field_kind="integer" field_size="0"/>
+			</fields>
+			<rows>
+				<row oid="100020500" list_name="Test" list_name_long="Test list" list_email_adrs="test@techinsite.com.au" list_master_email_adrs="listmaster@techinsite.com.au" list_master_name="listmasters name" sender_adrs_type="LIST_MASTER" accept_posts_from="LIST_MEMBERS" max_message_size="100" active="TRUE" pop_host="techinsite.com.au" pop_user_id="mb10618d" pop_pass_word="test" smtp_host="smtp.tpg.com.au" archive_dir="C:\D\Delphi\tiLstSrvr\Bin\Test" join_message="Welcome to the %LIST_NAME_LONG% mailing list.
+
+To send a message to the list: mailto:%LIST_EMAIL_ADDRESS% 
+To leave the list mailto:%LIST_EMAIL_ADDRESS%?subject=leave
+
+If you have a problem with the list, you can contact me directly 
+on mailto:%LIST_MASTER_EMAIL_ADDRESS%
+
+Please note, the list does not currently accept attachments and 
+the message size limit is %MESSAGE_SIZE_LIMIT%kb
+
+We all look forward to hearing from you.
+
+Regards,
+
+%LIST_MASTER_NAME%." leave_message="Thank you for being a member of the %LIST_NAME_LONG% 
+ mailing list.
+
+To re-join the list, send a message 
+to: mailto:%LIST_EMAIL_ADDRESS%?subject=join
+
+Hope to hear from you again.
+
+Rgs,
+
+%LIST_MASTER_NAME%." reject_message_size_message="Sorry, we where not able to send you message onto the list 
+members because it is too big.
+
+You can send messages up to %MESSAGE_SIZE_LIMIT%kb in size.
+
+Please send the message again with the text reduced.
+
+Sorry for the inconvenience." non_list_member_message="Sorry, you are not currently a member of the %LIST_NAME_LONG%
+ mailing list and you post to the 
+list has been rejected.
+
+If you would like to join the list, please send a message 
+to mailto:%LIST_EMAIL_ADDRESS%?subject=join
+
+Once again, we apologise for the inconvenience and hope 
+you will understand that this is the best way to keep the 
+list membership up to date.
+
+We look forward from hearing from you again.
+
+Rgs,
+
+%LIST_MASTER_NAME%." reject_attachment_message="Sorry, you are not able to send a message with an attachment 
+to this list.
+
+Please send the message again without the attachment.
+
+You will ofter find that only a few list members will be 
+wanting to receive an attachment. The way around this is to 
+send a message asking for members who want the attachment to 
+respond directly to you. You can then send the attachment 
+straight to them.
+
+Sorry for the inconvenience.
+
+%LIST_MASTER_NAME%." footer_message="To send a message to the list 
+mailto:%LIST_EMAIL_ADDRESS%?body=your_message 
+To leave the list mailto:%LIST_EMAIL_ADDRESS%?subject=leave" message_index="22"/></rows>
+		</table>
+		<table table_name="list_members">
+			<fields>
+				<field field_name="oid" field_kind="integer" field_size="0"/>
+				<field field_name="owner_oid" field_kind="integer" field_size="0"/>
+				<field field_name="email_address" field_kind="string" field_size="255"/>
+			</fields>
+			<rows>
+				<row oid="100022800" owner_oid="100020500" email_address="peter_hinrichsen@techinsite.com.au"/></rows>
+		</table>
+	</tables>
+</XMLDocData>

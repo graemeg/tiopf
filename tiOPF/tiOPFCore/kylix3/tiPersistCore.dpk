@@ -1,0 +1,77 @@
+package tiPersistCore;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'TechInsite tiOPF for Kylix'}
+{$LIBSUFFIX 'K3'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  visualclx,
+  vcl;
+
+contains
+  ctiPersist in '../tiPersist/ctiPersist.pas',
+  tiClassToDBMap_BOM in '../tiPersist/tiClassToDBMap_BOM.pas',
+  tiClassToDBMap_Srv in '../tiPersist/tiClassToDBMap_Srv.pas',
+  tiCommandLineParams in '../tiPersist/tiCommandLineParams.pas',
+  tiDBConnectionPool in '../tiPersist/tiDBConnectionPool.pas',
+  tiDialogs in '../tiPersist/tiDialogs.pas',
+  tiEncryptAbs in '../tiPersist/tiEncryptAbs.pas',
+  tiEncryptNone in '../tiPersist/tiEncryptNone.pas',
+  tiEncryptSimple in '../tiPersist/tiEncryptSimple.pas',
+  tiLog in '../tiPersist/tiLog.pas',
+  tiObjAbs in '../tiPersist/tiObjAbs.pas',
+  tiPerObjOIDAbs in '../tiPersist/tiPerObjOIDAbs.pas',
+  tiPerObjOIDGUID in '../tiPersist/tiPerObjOIDGUID.pas',
+  tiPerObjOIDHex in '../tiPersist/tiPerObjOIDHex.pas',
+  tiPerObjOIDInteger in '../tiPersist/tiPerObjOIDInteger.pas',
+  tiPerObjOIDString in '../tiPersist/tiPerObjOIDString.pas',
+  tiPersist in '../tiPersist/tiPersist.pas',
+  tiPoolAbs in '../tiPersist/tiPoolAbs.pas',
+  tiPtnVis in '../tiPersist/tiPtnVis.pas',
+  tiPtnVisMgr in '../tiPersist/tiPtnVisMgr.pas',
+  tiPtnVisPerObj in '../tiPersist/tiPtnVisPerObj.pas',
+  tiPtnVisPerObj_Cli in '../tiPersist/tiPtnVisPerObj_Cli.pas',
+  tiPtnVisSQL in '../tiPersist/tiPtnVisSQL.pas',
+  tiQuery in '../tiPersist/tiQuery.pas',
+  tiRegINI in '../tiPersist/tiRegINI.pas',
+  tiRegPerLayer in '../tiPersist/tiRegPerLayer.pas',
+  tiUtils in '../tiPersist/tiUtils.pas',
+  tiLogErrorForm_Cli in '../tiPersist/tiLogErrorForm_Cli.pas' {LogErrorForm},
+  tiLogViewForm_Cli in '../tiPersist/tiLogViewForm_Cli.pas' {LogViewForm},
+  tiExcept in '../tiPersist/tiExcept.pas',
+  tiRJMime in '../tiPersist/tiRJMime.pas',
+  tiXML in '../tiPersist/tiXML.pas',
+  tiCompressAbs in '../tiPersist/tiCompressAbs.pas',
+  tiCompressNone in '../tiPersist/tiCompressNone.pas',
+  tiCompressZLib in '../tiPersist/tiCompressZLib.pas',
+  tiThread in '../tiPersist/tiThread.pas',
+  tiThreadProgress in '../tiPersist/tiThreadProgress.pas',
+  tiStreams in '../tiPersist/tiStreams.pas',
+  tiDataSet_BOM in '../tiPersist/tiDataSet_BOM.pas',
+  tiDataSet_Cli in '../tiPersist/tiDataSet_Cli.pas';
+
+end.

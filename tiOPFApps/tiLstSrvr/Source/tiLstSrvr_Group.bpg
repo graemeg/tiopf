@@ -1,0 +1,31 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = tiGroupMail_DUnit_GUI.exe tiGroupMail_DUnit_Text.exe tiGroupMail.exe \
+  tiGroupMailArchive2HTML.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+
+tiGroupMail.exe: tiGroupMail\tiGroupMail.dpr
+  $(DCC)
+
+tiGroupMail_DUnit_GUI.exe: DUnit\tiGroupMail_DUnit_GUI.dpr
+  $(DCC)
+
+tiGroupMail_DUnit_Text.exe: DUnit\tiGroupMail_DUnit_Text.dpr
+  $(DCC)
+
+tiGroupMailArchive2HTML.exe: Archive2HTML\tiGroupMailArchive2HTML.dpr
+  $(DCC)
+
+

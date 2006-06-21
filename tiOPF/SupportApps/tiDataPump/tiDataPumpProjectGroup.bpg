@@ -1,0 +1,36 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = tiDataPump.exe tiPersistCore70.bpl tiPersistXMLLight70.bpl \
+  tiSQLEditor.exe tiPersistDOA70.bpl tiSQLManager.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+tiDataPump.exe: tiDataPump.dpr
+  $(DCC)
+
+tiPersistCore70.bpl: ..\..\dpk7\tiPersistCore.dpk
+  $(DCC)
+
+tiPersistXMLLight70.bpl: ..\..\dpk7\tiPersistXMLLight.dpk
+  $(DCC)
+
+tiSQLEditor.exe: ..\tiSQLManager\tiSQLEditor.dpr
+  $(DCC)
+
+tiPersistDOA70.bpl: ..\..\dpk7\tiPersistDOA.dpk
+  $(DCC)
+
+tiSQLManager.exe: ..\tiSQLManager\tiSQLManager.dpr
+  $(DCC)
+
+

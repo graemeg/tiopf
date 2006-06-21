@@ -1,0 +1,6 @@
+[HKEY_CURRENT_USER\Base]
+@=""
+[HKEY_CURRENT_USER\Base\Test&#38&#93]
+@=""
+"IntegerValue"=dword:00000001
+"StringValue"="Test"

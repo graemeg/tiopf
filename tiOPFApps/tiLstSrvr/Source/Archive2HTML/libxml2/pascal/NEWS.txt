@@ -1,0 +1,112 @@
+********************************************************************
+*************************  LATEST CHANGES  *************************
+********************************************************************
+libxml2-pas 2.5.2:
+-------------------
+- translated new file: xmlreader.h
+- translated new file: relaxng.h
+
+libxslt-pas 1.0.24:
+-------------------
+- translated new file: security.h
+
+libexslt-pas 0.7.15:
+-------------------
+[unchanged]
+
+iconv 0.8:
+----------
+- iconv translation completed by Mikhail Soukhanov
+
+********************************************************************
+*************************  OLDER  CHANGES  *************************
+********************************************************************
+- Delphi 5 compatibility completed
+
+libxml2-pas 2.4.24:
+-------------------
+- experimentally implemented alternative way of handling memory (Eric Zurcher)
+- started works on FreePascal compiler compatibility (Brian Grainger)
+
+libxslt-pas 1.0.20:
+-------------------
+libexslt-pas 0.7.11:
+-------------------
+iconv 0.7: 
+----------
+[unchanged]
+
+- moved all files related to libxml2 and libxslt into CVS module "headers"
+- first attempt to produce also binary releases
+- header source distribution were merged. There is now only one deliverable, 
+  called libxml2-pas-2.4.23-src, which contains latest versions of libxml2, libxslt and libexslt.
+  The same applies to demo files and other related stuff.
+- started works on producing binary distributions
+
+
+libxml2-pas 2.4.23:
+-------------------
+
+libxslt-pas 1.0.19:
+-------------------
+- added "simplexslt" example to demos
+
+libexslt-pas 0.7.10:
+-------------------
+
+iconv 0.7: 
+----------
+[unchanged]
+
+- release process compatible with libxml part
+
+libxml2-pas 2.4.21:
+-------------------
+- added translations for new schema-related headers
+- many enums, originally translated as sets of constants, retranslated as pascal enums
+
+libxslt-pas 1.0.18:
+-------------------
+- added libexslt header file translations
+
+libexslt-pas 0.7.9:
+-------------------
+- added.
+
+libxml2-pas 2.4.20:
+-------------------
+- minor fixes
+
+libxslt-pas 1.0.17:
+-------------------
+- translations use the CVS-SIGN format which improves maintenance
+
+libxml2-pas 2.4.17:
+-------------------
+- added translation of c14n.h (see libxml_c14n.inc)
+
+libxml2-pas 2.4.16:
+-------------------
+- replaced incorrect translation of FILE* arguments by PLibXml2File generic pointer
+- added missing cdecl modifiers to all callback functions
+
+libxml2-pas 2.4.15:
+-------------------
+- nothing new, this was a quick release
+
+libxslt-pas 1.0.8:
+------------------
+- most important header files converted
+
+libxml2-pas 2.4.14:
+-------------------
+- added support for extension handling
+- comments changed to look exactly as in original
+- TAB indentation changed to 2 spaces
+- added iconv.pas translation, as work in progress
+- added unit libxml2_experimental to allow having Pascal integration experiments under revision control
+- all implementation functionality is now in the main file, libxml2.pas
+
+iconv 0.7:
+----------
+- very simple import, mostly just constants translated

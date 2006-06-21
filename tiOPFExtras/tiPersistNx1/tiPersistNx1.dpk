@@ -1,0 +1,46 @@
+package tiPersistNx1;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'tiPersistNx1 - Db engine driver for NexusDB 1.x files - runtime - RTL70'}
+{$LIBSUFFIX '70'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  vcl,
+  tiPersistCore,
+  dbrtl,
+  vcldb,
+  NexusDB104ll70,
+  NexusDB104sd70,
+  NexusDB104re70,
+  NexusDB104st70,
+  NexusDB104pt70,
+  NexusDB104tw70,
+  NexusDB104db70;
+
+contains
+  tiQueryNx1 in 'tiQueryNx1.pas';
+
+end.

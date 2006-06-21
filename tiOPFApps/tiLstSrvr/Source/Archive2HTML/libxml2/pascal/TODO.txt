@@ -1,0 +1,30 @@
+$Id: TODO.txt,v 1.2 2002/08/29 20:21:56 pkozelka Exp $
+libxml2-pas: libxml2 header translation for Pascal
+libxslt-pas: libxslt header translation for Pascal
+
+TODO
+====
+(sorted by importance):
+- FreePascal compatibility (in progress)
+- xmlXPathObject.boolval: find out if the translation is correct, or why it looks so strange
+- complete translation of iconv.pas
+- more examples
+- complete testsuite for DUnit (skeleton should be generated from libxml2-api.xml
+- error api: add a unit to make it easy to check&throw exceptions
+- translate remaining macros in all units (e.g. xpathInternals)
+- use libxml2-api.xml and libxslt-api.xml to check completeness of translation
+- automate updates of inline doc (comments) - create a script
+- generate actually defined(==turned on) DEFINE switches from the source
+
+DONE
+====
+- translate also libexslt files
+- make release process compatible with libxml part
+- translate remaining libxslt files
+- add JEDI info template
+- the INFO.txt file is generated from INFO.txt.template, using script mkrelease
+- FILE* arguments in some functions - translation corrected (reported by Robert Marquardt, Team JEDI)
+- Delphi Memory Manager is used, which allowed also translation of xmlFree()
+- autodetection of changes in header files in gnome-xml CVS base ('make checkapi')
+- all header files translated
+- Bjorn Reese modified libxml2 to not use SIGFPE which made many api functions to crash when called in Delphi programs
