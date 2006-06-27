@@ -111,8 +111,7 @@
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Other>
-      <CustomOptions Value="-FU_Dcu -D STATIC_PERLAYER_LINKING
-"/>
+      <CustomOptions Value="-FU_Dcu -D STATIC_PERLAYER_LINKING"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
