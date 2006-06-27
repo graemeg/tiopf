@@ -27,17 +27,14 @@
       </Linking>
       <Other>
         <WriteFPCLogo Value="False"/>
-        <CustomOptions Value="-dLINK_CSVx -dLINK_FBL -dUseCThreads
-"/>
+        <CustomOptions Value="-dLINK_CSVx -dLINK_FBL -dUseCThreads"/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="TechInsite Object Persistent Framework
-"/>
-    <License Value="Mozilla Public License 1.1
-"/>
+    <Description Value="TechInsite Object Persistent Framework"/>
+    <License Value="Mozilla Public License 1.1"/>
     <Version Major="2"/>
-    <Files Count="45">
+    <Files Count="46">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -155,69 +152,73 @@
         <UnitName Value="tiLogToFile"/>
       </Item29>
       <Item30>
-        <Filename Value="../../gui/tiGUIUtils.pas"/>
-        <UnitName Value="tiGUIUtils"/>
-      </Item30>
-      <Item31>
         <Filename Value="../../Options/tiOIDInteger.pas"/>
         <UnitName Value="tiOIDInteger"/>
-      </Item31>
-      <Item32>
+      </Item30>
+      <Item31>
         <Filename Value="../../Options/tiCompressNone.pas"/>
         <UnitName Value="tiCompressNone"/>
-      </Item32>
-      <Item33>
+      </Item31>
+      <Item32>
         <Filename Value="../../Options/tiCompressZLib.pas"/>
         <UnitName Value="tiCompressZLib"/>
-      </Item33>
-      <Item34>
+      </Item32>
+      <Item33>
         <Filename Value="../../Options/tiEncryptSimple.pas"/>
         <UnitName Value="tiEncryptSimple"/>
-      </Item34>
-      <Item35>
+      </Item33>
+      <Item34>
         <Filename Value="../../Options/tiEncryptNone.pas"/>
         <UnitName Value="tiEncryptNone"/>
-      </Item35>
-      <Item36>
+      </Item34>
+      <Item35>
         <Filename Value="../../Options/tiEncryptDES.pas"/>
         <UnitName Value="tiEncryptDES"/>
-      </Item36>
-      <Item37>
+      </Item35>
+      <Item36>
         <Filename Value="../../Options/tiEncryptBlowfish.pas"/>
         <UnitName Value="tiEncryptBlowfish"/>
-      </Item37>
-      <Item38>
+      </Item36>
+      <Item37>
         <Filename Value="../../Options/tiOIDString.pas"/>
         <UnitName Value="tiOIDString"/>
-      </Item38>
-      <Item39>
+      </Item37>
+      <Item38>
         <Filename Value="../../Options/tiDataBuffer_Cli.pas"/>
         <UnitName Value="tiDataBuffer_Cli"/>
-      </Item39>
-      <Item40>
+      </Item38>
+      <Item39>
         <Filename Value="../../Options/tiDataBuffer_BOM.pas"/>
         <UnitName Value="tiDataBuffer_BOM"/>
-      </Item40>
-      <Item41>
+      </Item39>
+      <Item40>
         <Filename Value="../../Options/tiQueryTXTAbs.pas"/>
         <UnitName Value="tiQueryTXTAbs"/>
-      </Item41>
-      <Item42>
+      </Item40>
+      <Item41>
         <Filename Value="../../Options/tiTextParser.pas"/>
         <UnitName Value="tiTextParser"/>
-      </Item42>
-      <Item43>
+      </Item41>
+      <Item42>
         <Filename Value="../../Options/tiTextParserStructCSV.pas"/>
         <UnitName Value="tiTextParserStructCSV"/>
-      </Item43>
-      <Item44>
+      </Item42>
+      <Item43>
         <Filename Value="../../Options/tiLogToConsole.pas"/>
         <UnitName Value="tiLogToConsole"/>
-      </Item44>
-      <Item45>
+      </Item43>
+      <Item44>
         <Filename Value="../../Options/tiXML.pas"/>
         <UnitName Value="tiXML"/>
+      </Item44>
+      <Item45>
+        <Filename Value="../../GUI/tiGUIUtils.pas"/>
+        <UnitName Value="tiGUIUtils"/>
       </Item45>
+      <Item46>
+        <Filename Value="../../GUI/tiDialogs.pas"/>
+        <UnitName Value="tiDialogs"/>
+      </Item46>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
