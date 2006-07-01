@@ -3,6 +3,10 @@ program fpcUnitTIOPFText;
 {$mode objfpc}{$H+}
 
 uses
+  {$IFDEF UNIX}{$IFDEF UseCThreads}
+  cthreads,
+  {$ENDIF}{$ENDIF}
+  Interfaces, Forms,              // this includes the LCL widgetset
   custapp, classes, sysutils, fpcunit,
   testreport, testregistry, tiDUnitDependencies;
 
