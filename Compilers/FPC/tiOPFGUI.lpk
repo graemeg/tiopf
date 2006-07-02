@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="2">
+    <Name Value="tiOPFGUI"/>
+    <Author Value="Graeme Geldunhuys"/>
+    <CompilerOptions>
+      <Version Value="5"/>
+      <SearchPaths>
+        <IncludeFiles Value="../../Core/"/>
+        <OtherUnitFiles Value="../../Core/;../../Options/;../../GUI/"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/"/>
+        <SrcPath Value="../../Core/;../../Options/;../../GUI/"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <IncludeAssertionCode Value="True"/>
+          <AllowLabel Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <CodeGeneration>
+        <Generate Value="Faster"/>
+      </CodeGeneration>
+      <Other>
+        <CustomOptions Value="-dLINK_CSVx -dLINK_TABx -dLINK_FBL -dUseCThreads"/>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="TechInsite Object Persistent Framework - visual units
+"/>
+    <License Value="Mozilla Public License 1.1
+"/>
+    <Version Major="2"/>
+    <Files Count="3">
+      <Item1>
+        <Filename Value="../../GUI/tiGUIUtils.pas"/>
+        <UnitName Value="tiGUIUtils"/>
+      </Item1>
+      <Item2>
+        <Filename Value="../../GUI/tiDialogs.pas"/>
+        <UnitName Value="tiDialogs"/>
+      </Item2>
+      <Item3>
+        <Filename Value="../../Options/tiLogToGUI.pas"/>
+        <UnitName Value="tiLogToGUI"/>
+      </Item3>
+    </Files>
+    <RequiredPkgs Count="4">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="fblib"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="tiOPF"/>
+        <MinVersion Major="2" Valid="True"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item4>
+    </RequiredPkgs>
+    <UsageOptions>
+      <IncludePath Value="../../Core/"/>
+      <UnitPath Value="$(PkgOutDir)/;../../Core/;../../Options/;../../GUI/"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
