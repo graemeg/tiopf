@@ -20,21 +20,17 @@
       <CodeGeneration>
         <Generate Value="Faster"/>
       </CodeGeneration>
-      <Linking>
-        <Debugging>
-          <GenerateDebugInfo Value="True"/>
-        </Debugging>
-      </Linking>
       <Other>
         <WriteFPCLogo Value="False"/>
-        <CustomOptions Value="-dLINK_CSVx -dLINK_FBL -dUseCThreads"/>
+        <CustomOptions Value="-dLINK_CSVx -dLINK_TABx -dLINK_FBL -dUseCThreads
+"/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
     <Description Value="TechInsite Object Persistent Framework"/>
     <License Value="Mozilla Public License 1.1"/>
     <Version Major="2"/>
-    <Files Count="46">
+    <Files Count="43">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -144,81 +140,69 @@
         <UnitName Value="tiLogReg"/>
       </Item27>
       <Item28>
-        <Filename Value="../../Options/tiLogToGUI.pas"/>
-        <UnitName Value="tiLogToGUI"/>
-      </Item28>
-      <Item29>
         <Filename Value="../../Options/tiLogToFile.pas"/>
         <UnitName Value="tiLogToFile"/>
-      </Item29>
-      <Item30>
+      </Item28>
+      <Item29>
         <Filename Value="../../Options/tiOIDInteger.pas"/>
         <UnitName Value="tiOIDInteger"/>
-      </Item30>
-      <Item31>
+      </Item29>
+      <Item30>
         <Filename Value="../../Options/tiCompressNone.pas"/>
         <UnitName Value="tiCompressNone"/>
-      </Item31>
-      <Item32>
+      </Item30>
+      <Item31>
         <Filename Value="../../Options/tiCompressZLib.pas"/>
         <UnitName Value="tiCompressZLib"/>
-      </Item32>
-      <Item33>
+      </Item31>
+      <Item32>
         <Filename Value="../../Options/tiEncryptSimple.pas"/>
         <UnitName Value="tiEncryptSimple"/>
-      </Item33>
-      <Item34>
+      </Item32>
+      <Item33>
         <Filename Value="../../Options/tiEncryptNone.pas"/>
         <UnitName Value="tiEncryptNone"/>
-      </Item34>
-      <Item35>
+      </Item33>
+      <Item34>
         <Filename Value="../../Options/tiEncryptDES.pas"/>
         <UnitName Value="tiEncryptDES"/>
-      </Item35>
-      <Item36>
+      </Item34>
+      <Item35>
         <Filename Value="../../Options/tiEncryptBlowfish.pas"/>
         <UnitName Value="tiEncryptBlowfish"/>
-      </Item36>
-      <Item37>
+      </Item35>
+      <Item36>
         <Filename Value="../../Options/tiOIDString.pas"/>
         <UnitName Value="tiOIDString"/>
-      </Item37>
-      <Item38>
+      </Item36>
+      <Item37>
         <Filename Value="../../Options/tiDataBuffer_Cli.pas"/>
         <UnitName Value="tiDataBuffer_Cli"/>
-      </Item38>
-      <Item39>
+      </Item37>
+      <Item38>
         <Filename Value="../../Options/tiDataBuffer_BOM.pas"/>
         <UnitName Value="tiDataBuffer_BOM"/>
-      </Item39>
-      <Item40>
+      </Item38>
+      <Item39>
         <Filename Value="../../Options/tiQueryTXTAbs.pas"/>
         <UnitName Value="tiQueryTXTAbs"/>
-      </Item40>
-      <Item41>
+      </Item39>
+      <Item40>
         <Filename Value="../../Options/tiTextParser.pas"/>
         <UnitName Value="tiTextParser"/>
-      </Item41>
-      <Item42>
+      </Item40>
+      <Item41>
         <Filename Value="../../Options/tiTextParserStructCSV.pas"/>
         <UnitName Value="tiTextParserStructCSV"/>
-      </Item42>
-      <Item43>
+      </Item41>
+      <Item42>
         <Filename Value="../../Options/tiLogToConsole.pas"/>
         <UnitName Value="tiLogToConsole"/>
-      </Item43>
-      <Item44>
+      </Item42>
+      <Item43>
         <Filename Value="../../Options/tiXML.pas"/>
         <UnitName Value="tiXML"/>
-      </Item44>
-      <Item45>
-        <Filename Value="../../GUI/tiGUIUtils.pas"/>
-        <UnitName Value="tiGUIUtils"/>
-      </Item45>
-      <Item46>
-        <Filename Value="../../GUI/tiDialogs.pas"/>
-        <UnitName Value="tiDialogs"/>
-      </Item46>
+      </Item43>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
@@ -230,6 +214,7 @@
       </Item2>
       <Item3>
         <PackageName Value="fblib"/>
+        <MinVersion Minor="8" Release="3" Valid="True"/>
       </Item3>
     </RequiredPkgs>
     <UsageOptions>

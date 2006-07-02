@@ -43,7 +43,7 @@ begin
     result := result + ls;
     if (Length(Result)< pSize) and
        (Length(Result) mod 60 = 0) then
-      Result := Result + #13#10;
+      Result := Result + LineEnding;
   end;
 end;
 

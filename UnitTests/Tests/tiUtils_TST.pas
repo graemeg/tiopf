@@ -11,6 +11,7 @@ uses
   ,TestFrameWork
   {$ENDIF}
   ,tiTestFramework
+  ,math
   ;
 
 const
@@ -664,7 +665,15 @@ begin
   SysUtils.DeleteFile(lFileName);
 
   tiCreateTextFileOfSize( lFileName, 100 ) ;
-  lTargetDate := EncodeDate( 2099, 12, 31 ) ;
+  {$IFDEF MSWINDOWS}
+  lTargetDate := EncodeDate( 2099, 12, 31 );
+  {$ENDIF}
+  {$IFDEF UNIX}
+  { Currently under *Unix any date later than this will rollover to zero.
+    Something like the Y2K bug, but for *Unix }
+  lTargetDate := EncodeDate( 2038, 01, 19 );
+  {$ENDIF}
+
   _SetFileDate( lFileName, lTargetDate ) ;
   tiUtils.tiReadFileDateSize( lFileName, lReadDate, lReadSize ) ;
   CheckEquals( lTargetDate, lReadDate, '#5' ) ;
@@ -696,7 +705,14 @@ begin
     tiUtils.tiSetFileDate( lFileName, lDate ) ;
     CheckEquals( lDate, FileDateToDateTime( FileAge( lFileName )), cdtOneSecond, 'Failed on 2' ) ;
 
-    lDate := EncodeDate( 2090, 12, 31 ) ;
+    {$IFDEF MSWINDOWS}
+    lDate := EncodeDate( 2090, 12, 31 );
+    {$ENDIF}
+    {$IFDEF UNIX}
+    { Currently under *Unix any date later than this will rollover to zero.
+      Something like the Y2K bug, but for *Unix }
+    lDate := EncodeDate( 2038, 01, 19 );
+    {$ENDIF}
     tiUtils.tiSetFileDate( lFileName, lDate ) ;
     CheckEquals( lDate, FileDateToDateTime( FileAge( lFileName )), cdtOneSecond, 'Failed on 3' ) ;
 
@@ -2041,16 +2057,16 @@ begin
   try
     lFields := TStringList.Create;
     try
-      {$IFNDEF FPC}
+//      {$IFNDEF FPC}
       lFields.Add('Caption');
-      {$ENDIF}
+//      {$ENDIF}
       lFields.Add('StringProp');
       lFields.Add('IntProp');
       lFields.Add('DateTimeProp');
       lFields.Add('FloatProp');
-      {$IFDEF FPC}
-      lFields.Add('Caption');
-      {$ENDIF}
+//      {$IFDEF FPC}
+//      lFields.Add('Caption');
+//      {$ENDIF}
       tiUtils.tiListToClipboard(lList);
       lString1 := ClipBoard.AsText;
       lString2 := lList.AsString(#9, #13#10, lFields);
@@ -2224,12 +2240,7 @@ begin
   Check( not tiUtils.tiIsFileNameValid( '' ), '<empty string>' ) ;
   Check( tiUtils.tiIsFileNameValid( 'a' ), 'a' ) ;
   Check( tiUtils.tiIsFileNameValid( tiUtils.tiReplicate( 'a', 255 )), tiUtils.tiReplicate( 'a', 255 ) ) ;
-  {$IFDEF FPC}
-  {$NOTE FPC has a bug in ExtractFileName (BUG ID: 4632), so test for it }
-  Check( tiUtils.tiIsFileNameValid( tiUtils.tiReplicate('a', 256) ), tiUtils.tiReplicate('a', 255) ) ;
-  {$ELSE}
   Check( not tiUtils.tiIsFileNameValid( tiUtils.tiReplicate('a', 256) ), tiUtils.tiReplicate('a', 256) ) ;
-  {$ENDIF}
   Check( not tiUtils.tiIsFileNameValid( 'test\' ), 'test\' ) ;
   Check( not tiUtils.tiIsFileNameValid( 'test/' ), 'test/' ) ;
   Check( not tiUtils.tiIsFileNameValid( 'test:' ), 'test:' ) ;
@@ -2391,7 +2402,7 @@ begin
       lsl.Free;
     end;
     tiUtils.tiFileToStream(lFileName, lSt);
-    CheckEquals(lS + #13+#10, lSt.DataString);
+    CheckEquals(lS + {$IFDEF FPC}LineEnding{$ELSE}#13#10{$ENDIF}, lSt.DataString);
   finally
     lSt.Free;
   end;
@@ -2892,7 +2903,7 @@ begin
   dt := EncodeTime(9, 10, 41, 22);
   CheckEquals('0000-00-00 09:10:41', tiUtils.tiDateTimeAsIntlDateDisp(dt), 'Failed on 4');
 
-  {$IFDEF FPC}
+  {$IFDEF FPCx}
   dt := EncodeDateTime(1652, 6, 15, 12, 34, 56, 12);
   CheckEquals('1652-06-15 12:34:56', tiUtils.tiDateTimeAsIntlDateDisp(dt), 'Failed on 5');
   {$ELSE}
@@ -2920,7 +2931,7 @@ begin
   dt := EncodeTime(9, 10, 41, 22);
   CheckEquals('00000000T091041', tiUtils.tiDateTimeAsIntlDateStor(dt), 'Failed on 4');
 
-  {$IFDEF FPC}
+  {$IFDEF FPCx}
   dt := EncodeDateTime(1652, 6, 15, 12, 34, 56, 12);
   CheckEquals('16520615T123456', tiUtils.tiDateTimeAsIntlDateStor(dt), 'Failed on 5');
   {$ELSE}

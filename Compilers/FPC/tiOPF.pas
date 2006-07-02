@@ -11,11 +11,10 @@ uses
     tiCompress, tiConstants, tiDBConnectionPool, tiEncrypt, tiExcept, tiLog, 
     tiObject, tiOID, tiOPFManager, tiPool, tiQuery, tiQueue, tiRegINI, 
     tiStreams, tiSyncObjs, tiThread, tiUtils, tiVisitor, tiVisitorDB, 
-    tiOIDGUID, tiQueryFBL, tiLogReg, tiLogToGUI, tiLogToFile, tiOIDInteger, 
-    tiCompressNone, tiCompressZLib, tiEncryptSimple, tiEncryptNone, 
-    tiEncryptDES, tiEncryptBlowfish, tiOIDString, tiDataBuffer_Cli, 
-    tiDataBuffer_BOM, tiQueryTXTAbs, tiTextParser, tiTextParserStructCSV, 
-    tiLogToConsole, tiXML, tiGUIUtils, tiDialogs; 
+    tiOIDGUID, tiQueryFBL, tiLogReg, tiLogToFile, tiOIDInteger, tiCompressNone, 
+    tiCompressZLib, tiEncryptSimple, tiEncryptNone, tiEncryptDES, 
+    tiEncryptBlowfish, tiOIDString, tiDataBuffer_Cli, tiDataBuffer_BOM, 
+    tiQueryTXTAbs, tiTextParser, tiTextParserStructCSV, tiLogToConsole, tiXML; 
 
 implementation
 

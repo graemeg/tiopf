@@ -542,7 +542,7 @@ uses
   ,Process
   ,StrUtils   // used for DelSpace1
   {$ENDIF}
- ;
+  ;
 
 //{$ifndef Delphi6OrAbove}
 //const
@@ -597,8 +597,10 @@ type
     destructor Destroy; override;
   end;
 
+
 var
   uCursorStack: TList;
+
 
 function tiGetTempFile(const pStrExt : string) : string;
 {$IFNDEF FPC}
@@ -655,6 +657,7 @@ begin
 end;
 {$ENDIF MSWINDOWS}
 
+
 // Seaches <sStr> and replaces <sDel> with <sIns>
 // Case sensitive.
 function tiStrTran(pStrValue, pStrDel, pStrIns : string) : string;
@@ -672,6 +675,7 @@ begin
   end;
   result := result + sToChange;
 end;
+
 
 function tiStrTran1(aStrValue, aStrDel, aStrIns : string) : string;
 var
@@ -793,11 +797,13 @@ begin
     end;
 
     if (i=0) and (iCount=pIntNum) then result := lsValue
-    else if (i=0) and (iCount<>pIntNum) then result := ''
-    else result := copy(lsValue, 1, i-1);
-
+    else if (i=0) and (iCount<>pIntNum) then
+      result := ''
+    else
+      result := copy(lsValue, 1, i-1);
   end;
 end;
+
 
 function tiSpace(pIntLen : integer) : string;
 var i : integer;
@@ -808,6 +814,7 @@ begin
     sString := sString + ' ';
   result := sString;
 end;
+
 
 function tiPadR(const psValue : string; piLen : integer) : string;
 var
@@ -824,6 +831,7 @@ begin
   result := ls;
 end;
 
+
 function tiPadL(pStrValue : string; pIntLen : integer) : string;
 begin
   if length(pStrValue) < pIntLen then begin
@@ -835,6 +843,7 @@ begin
     pStrValue := copy(pStrValue, length(pStrValue)-pIntLen+1, pIntLen);
   result := pStrValue;
 end;
+
 
 function  tiPadC(pStrValue : string; pIntLen : integer) : string;
 var
@@ -865,6 +874,7 @@ begin
   result := tiPadR(result, pIntLen);
 end;
 
+
 function tiPad0(pStrValue : string; pIntLen : integer) : string;
 begin
   if length(pStrValue) < pIntLen then begin
@@ -877,6 +887,7 @@ begin
   end;
   result := pStrValue;
 end;
+
 
 function tiRemoveLeading0(pStrValue : string) : string;
 var i : integer;
@@ -2270,6 +2281,7 @@ begin
 end;
 }
 
+
 procedure tiStringToStream(const pStr : string; const pStream : TStream);
 var
   lBuffer : PChar;
@@ -2282,6 +2294,7 @@ begin
   pStream.Position := 0;
 end;
 
+
 procedure tiAppendStringToStream(const pStr : string; const pStream : TStream);
 var
   lPC : PChar;
@@ -2291,6 +2304,7 @@ begin
   lPC := PChar(pStr);
   pStream.WriteBuffer(lPC^, length(pStr));
 end;
+
 
 procedure tiInsertStringToStream(const AStr : string; const AStream : TStream; APos: Longword);
 var
@@ -2323,6 +2337,7 @@ begin
   end;
 end;
 
+
 function  tiStreamToString(const pStream : TStream) : string;
 var
   lPos : integer;
@@ -2333,6 +2348,7 @@ begin
   pStream.Read(Result[1], pStream.Size);
   pStream.Position := lPos;
 end;
+
 
 function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): string;
 var
@@ -2509,7 +2525,7 @@ begin
 
   lStream := TFileStream.Create(AFileName, fmCreate);
   try
-    tiListToStream(lStream, AList, #9, #13#10, AColsSelected);
+    tiListToStream(lStream, AList, #9, CrLf, AColsSelected);
   finally
     lStream.Free;
   end;
@@ -2529,7 +2545,7 @@ begin
     lStream := TFileStream.Create(AFileName, fmCreate);
     try
       tiGetPropertyNames(AList.Items[0], lFields);
-      tiListToStream(lStream, AList, #9, #13#10, lFields);
+      tiListToStream(lStream, AList, #9, CrLf, lFields);
     finally
       lStream.Free;
     end;

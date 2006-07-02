@@ -12,7 +12,7 @@ uses
   ,tiDUnitDependencies
   ,tiDUnitINI
   ,tiPromptWhichPersistenceLayersToTest
-  , tiUtils;
+  ;
   
 
 begin
