@@ -61,10 +61,13 @@ type
   public
     {$IFDEF FPC}
     constructor Create; override;
+    function  GetName: string; virtual;
+    property  Name: string read GetName;
     {$ELSE}
     constructor Create(AMethodName: string); override;
     {$ENDIF}
-    {$IFDEF FPC}
+    {$IF defined(VER2_0_2) and defined(FPC)}
+      // DUnit interface was added after FPC 2.0.2
       {$I DUnitCompatableIntf.inc}
     {$ENDIF}
   end ;
@@ -255,6 +258,15 @@ begin
 end;
 
 
+{$IFDEF FPC}
+// DUnit compatibility interface
+function TtiTestCase.GetName: string;
+begin
+  Result := TestName;
+end;
+{$ENDIF}
+
+
 procedure TtiTestCase.Setup;
 begin
   inherited;
@@ -314,7 +326,8 @@ begin
 end;
 
 
-{$IFDEF FPC}
+{$IF defined(VER2_0_2) and defined(FPC)}
+  // DUnit interface was added after FPC 2.0.2
   {$I DUnitCompatableImpl.inc}
 {$ENDIF}
 

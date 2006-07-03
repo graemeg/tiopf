@@ -77,13 +77,13 @@ begin
 end;
 
 
-procedure TtiTestCase.CheckIs(obj: TObject; klass: TClass; msg: string);
+procedure TtiTestCase.CheckIs(obj: TObject; pClass: TClass; msg: string);
 begin
-  Assert(klass <> nil);
+  Assert(pClass <> nil);
   if obj = nil then
-    Fail(ComparisonMsg(klass.ClassName, 'nil'))
-  else if not obj.ClassType.InheritsFrom(klass) then
-    Fail(ComparisonMsg(klass.ClassName, obj.ClassName));
+    Fail(ComparisonMsg(pClass.ClassName, 'nil'))
+  else if not obj.ClassType.InheritsFrom(pClass) then
+    Fail(ComparisonMsg(pClass.ClassName, obj.ClassName));
 end;
 
 

@@ -321,6 +321,7 @@ uses
   {$ENDIF}
   ;
 
+
 procedure VisStreamToFile( pData : TtiVisited ;
                            pFileName : string ;
                            pVisClassRef : TtiVisitorClass );
@@ -346,11 +347,9 @@ begin
   end ;
 end ;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TtiVisited
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TtiVisited }
+
 function TtiVisited.CountByClass(pClass: TtiVisitedClass): integer;
 var
   lList : TList ;
@@ -364,11 +363,13 @@ begin
   end ;
 end;
 
+
 constructor TtiVisited.Create ;
 begin
   inherited create ;
   FbSelfIterate := true ;
 end;
+
 
 procedure TtiVisited.FindAllByClassType(pClass: TtiVisitedClass; pList: TList);
 var
@@ -386,10 +387,12 @@ begin
   end ;
 end;
 
+
 function TtiVisited.GetCaption: string;
 begin
   result := className ;
 end;
+
 
 procedure TtiVisited.Iterate(pVisitor: TtiVisitor) ;
 var
@@ -467,11 +470,9 @@ begin
   end ;
 end ;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TtiVisitor
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TtiVisitor }
+
 constructor TtiVisitor.Create;
 begin
   inherited create ;
@@ -481,10 +482,12 @@ begin
   FIterateDirection   := vidTopDown ;
 end;
 
+
 function TtiVisitor.AcceptVisitor: boolean;
 begin
   result := true ;
 end;
+
 
 procedure TVisStream.SetStream(const Value: TtiPreSizedStream);
 begin
@@ -492,11 +495,13 @@ begin
   FStream := Value;
 end;
 
+
 procedure TVisStream.Write(const pValue: string);
 begin
   Assert( FStream.TestValid(TtiPreSizedStream), cTIInvalidObjectError );
   FStream.Write(pValue);
 end;
+
 
 procedure TVisStream.WriteLn(const pValue: string = '' );
 begin
@@ -504,45 +509,50 @@ begin
   FStream.WriteLn(pValue);
 end ;
 
+
 procedure TtiVisitor.Execute( const pVisited: TtiVisited);
 begin
   FVisited := pVisited ;
 end;
+
 
 function TtiVisitor.VisitorControllerClass : TtiVisitorControllerClass ;
 begin
   result := TtiVisitorCtrlr ;
 end;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// *  TtiVisitorCtrlr
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TtiVisitorCtrlr }
+
 procedure TtiVisitorCtrlr.AfterExecuteAll( pVisitors : TList );
 begin
   // Do nothing
 end;
+
 
 procedure TtiVisitorCtrlr.AfterExecuteError( pVisitors : TList );
 begin
   // Do nothing
 end;
 
+
 procedure TtiVisitorCtrlr.AfterExecuteOne(pVisitor : TtiVisitor);
 begin
   // Do nothing
 end;
+
 
 procedure TtiVisitorCtrlr.BeforeExecuteAll( pVisitors : TList );
 begin
   // Do nothing
 end;
 
+
 procedure TtiVisitorCtrlr.BeforeExecuteOne(pVisitor : TtiVisitor);
 begin
   // Do nothing
 end;
+
 
 constructor TtiVisitorCtrlr.Create;
 begin
@@ -550,26 +560,27 @@ begin
   inherited ;
 end;
 
+
 function TtiVisitor.GetVisited: TtiVisited;
 begin
   result := FVisited ;
 end;
+
 
 procedure TtiVisitor.SetVisited(const Value: TtiVisited);
 begin
   FVisited := Value ;
 end;
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//*
-//* TVisClassCount
-//*
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TVisClassCount }
+
 constructor TVisClassCount.Create;
 begin
   inherited;
   FList := TStringList.Create;
 end;
+
 
 destructor TVisClassCount.Destroy;
 begin
@@ -577,32 +588,34 @@ begin
   inherited;
 end;
 
+
 procedure TVisClassCount.Execute(const pVisited: TtiVisited);
 begin
   inherited Execute(pVisited);
   ClassCount[ pVisited.ClassType ] := ClassCount[ pVisited.ClassType ] + 1 ;
 end;
 
+
 function TVisClassCount.GetClassCount(pClass : TClass): integer;
 begin
   Result := StrToIntDef( FList.Values[ pClass.ClassName ], 0 ) ;
 end;
+
 
 procedure TVisClassCount.SetClassCount(pClass : TClass; const Value: integer);
 begin
   FList.Values[ pClass.ClassName ] := IntToStr( value ) ;
 end;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TVisStringStream
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TVisStringStream }
+
 constructor TVisStringStream.Create;
 begin
   inherited;
   Stream := TtiPreSizedStream.Create(cStreamStartSize, cStreamGrowBy);
 end;
+
 
 destructor TVisStringStream.Destroy;
 begin
@@ -610,10 +623,12 @@ begin
   inherited;
 end;
 
+
 function TVisStringStream.GetText: string;
 begin
   result := FStream.AsString;
 end;
+
 
 procedure TtiVisited.IterateBottomUp(pVisitor: TtiVisitor);
 var
@@ -631,15 +646,14 @@ begin
   end ;
 end;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TtiVisGetAllToVisit
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TtiVisGetAllToVisit }
+
 function TtiVisGetAllToVisit.AcceptVisitor: boolean;
 begin
   result := FVisitor.AcceptVisitor ;
 end;
+
 
 constructor TtiVisGetAllToVisit.Create;
 begin
@@ -647,11 +661,13 @@ begin
   FList := TList.Create ;
 end;
 
+
 destructor TtiVisGetAllToVisit.Destroy;
 begin
   FList.Free ;
   inherited;
 end;
+
 
 procedure TtiVisGetAllToVisit.Execute(const pVisited: TtiVisited);
 begin
@@ -661,11 +677,14 @@ begin
     List.Add( pVisited ) ;
 end;
 
+
 { TVisFindAllByClass }
+
 function TVisFindAllByClass.AcceptVisitor: boolean;
 begin
   result := Visited is FClassTypeToFind ;
 end;
+
 
 procedure TVisFindAllByClass.Execute(const pVisited: TtiVisited);
 begin
@@ -675,10 +694,12 @@ begin
   FList.Add( pVisited ) ;
 end;
 
+
 procedure TtiVisitorCtrlr.SetPerLayerName(const Value: string);
 begin
   FPerLayerName := Value ;
 end;
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *

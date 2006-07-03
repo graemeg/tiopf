@@ -18,7 +18,7 @@
     procedure CheckNull(obj: TObject; msg: string = ''); overload;
     procedure CheckNotNull(obj: TObject; msg: string = ''); overload;
 
-    procedure CheckIs(obj :TObject; klass: TClass; msg: string = ''); overload;
+    procedure CheckIs(obj :TObject; pClass: TClass; msg: string = ''); overload;
 
     procedure CheckSame(expected, actual: TObject; msg: string = ''); overload;
     {
