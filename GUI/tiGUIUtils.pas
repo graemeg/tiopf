@@ -6,6 +6,7 @@ interface
 uses
   tiObject
   ,Graphics      // Canvas
+  ,tiDataBuffer_BOM
   ;
 
 const
@@ -24,6 +25,9 @@ function  tiPerObjAbsSaveAndClose( const pData      : TtiObject ;
                                    const psMessage  : string = cgsSaveAndClose ) : boolean ;
 function  tiPerObjAbsConfirmAndDelete( const pData : TtiObject ;
                                        const pMessage : string = '' ) : boolean ;
+                                       
+procedure ShowTIDataSet(const pDataSet: TtiDataBuffer); // For debugging
+
 
 {$IFDEF MSWINDOWS}
 {: Is the Ctrl key down?}
@@ -46,6 +50,7 @@ uses
   {$IFDEF FPC}
   ,LCLType    // TKeyboardState under FPC is not in Windows unit
   {$ENDIF}
+  ,tiDataBuffer_Cli   // used for ShowTIDataset and TIDataSetToString method
   ;
 
 
@@ -100,7 +105,7 @@ function  tiPerObjAbsSaveAndClose( const pData      : TtiObject ;
                                    var   pbCanClose : boolean ;
                                    const psMessage  : string = cgsSaveAndClose ) : boolean ;
 var
-  lResult: Word;
+  lResult: integer;
 begin
 
   result     := false;
@@ -119,8 +124,8 @@ begin
 end;
 
 
-function tiPerObjAbsConfirmAndDelete( const pData : TtiObject ;
-                                       const pMessage : string = '' ) : boolean ;
+function tiPerObjAbsConfirmAndDelete(const pData: TtiObject;
+    const pMessage: string = ''): boolean;
 var
   lMessage: string;
 begin
@@ -139,8 +144,17 @@ begin
 
   if result then
     pData.Deleted := true;
-
 end;
+
+
+procedure ShowTIDataSet(const pDataSet: TtiDataBuffer);
+var
+  ls : string ;
+begin
+  ls := TIDataSetToString(pDataSet);
+  tiShowString(ls);
+end;
+
 
 {$IFDEF MSWINDOWS}
 function tiIsCtrlDown : Boolean;
@@ -151,6 +165,7 @@ begin
    Result := ((State[vk_Control] And 128) <> 0) ;
 end;
 
+
 function tiIsShiftDown : Boolean;
 var
    State : TKeyboardState;
@@ -158,6 +173,7 @@ begin
    GetKeyboardState(State) ;
    Result := ((State[vk_Shift] and 128) <> 0) ;
 end;
+
 
 function tiIsAltDown : Boolean;
 var
@@ -167,6 +183,7 @@ begin
    Result := ((State[vk_Menu] and 128) <> 0) ;
 end;
 {$ENDIF MSWINDOWS}
+
 
 end.
 

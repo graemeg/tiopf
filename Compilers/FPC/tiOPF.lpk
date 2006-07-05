@@ -7,9 +7,8 @@
       <Version Value="5"/>
       <SearchPaths>
         <IncludeFiles Value="../../Core/"/>
-        <OtherUnitFiles Value="../../Core/;../../Options/;../../GUI/"/>
+        <OtherUnitFiles Value="../../Core/;../../Options/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-        <SrcPath Value="../../Core/;../../Options/;../../GUI/"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
@@ -27,10 +26,12 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="TechInsite Object Persistent Framework"/>
-    <License Value="Mozilla Public License 1.1"/>
+    <Description Value="TechInsite Object Persistent Framework
+"/>
+    <License Value="Mozilla Public License 1.1
+"/>
     <Version Major="2"/>
-    <Files Count="43">
+    <Files Count="42">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -136,73 +137,69 @@
         <UnitName Value="tiQueryFBL"/>
       </Item26>
       <Item27>
-        <Filename Value="../../Options/tiLogReg.pas"/>
-        <UnitName Value="tiLogReg"/>
-      </Item27>
-      <Item28>
         <Filename Value="../../Options/tiLogToFile.pas"/>
         <UnitName Value="tiLogToFile"/>
-      </Item28>
-      <Item29>
+      </Item27>
+      <Item28>
         <Filename Value="../../Options/tiOIDInteger.pas"/>
         <UnitName Value="tiOIDInteger"/>
-      </Item29>
-      <Item30>
+      </Item28>
+      <Item29>
         <Filename Value="../../Options/tiCompressNone.pas"/>
         <UnitName Value="tiCompressNone"/>
-      </Item30>
-      <Item31>
+      </Item29>
+      <Item30>
         <Filename Value="../../Options/tiCompressZLib.pas"/>
         <UnitName Value="tiCompressZLib"/>
-      </Item31>
-      <Item32>
+      </Item30>
+      <Item31>
         <Filename Value="../../Options/tiEncryptSimple.pas"/>
         <UnitName Value="tiEncryptSimple"/>
-      </Item32>
-      <Item33>
+      </Item31>
+      <Item32>
         <Filename Value="../../Options/tiEncryptNone.pas"/>
         <UnitName Value="tiEncryptNone"/>
-      </Item33>
-      <Item34>
+      </Item32>
+      <Item33>
         <Filename Value="../../Options/tiEncryptDES.pas"/>
         <UnitName Value="tiEncryptDES"/>
-      </Item34>
-      <Item35>
+      </Item33>
+      <Item34>
         <Filename Value="../../Options/tiEncryptBlowfish.pas"/>
         <UnitName Value="tiEncryptBlowfish"/>
-      </Item35>
-      <Item36>
+      </Item34>
+      <Item35>
         <Filename Value="../../Options/tiOIDString.pas"/>
         <UnitName Value="tiOIDString"/>
-      </Item36>
-      <Item37>
+      </Item35>
+      <Item36>
         <Filename Value="../../Options/tiDataBuffer_Cli.pas"/>
         <UnitName Value="tiDataBuffer_Cli"/>
-      </Item37>
-      <Item38>
+      </Item36>
+      <Item37>
         <Filename Value="../../Options/tiDataBuffer_BOM.pas"/>
         <UnitName Value="tiDataBuffer_BOM"/>
-      </Item38>
-      <Item39>
+      </Item37>
+      <Item38>
         <Filename Value="../../Options/tiQueryTXTAbs.pas"/>
         <UnitName Value="tiQueryTXTAbs"/>
-      </Item39>
-      <Item40>
+      </Item38>
+      <Item39>
         <Filename Value="../../Options/tiTextParser.pas"/>
         <UnitName Value="tiTextParser"/>
-      </Item40>
-      <Item41>
+      </Item39>
+      <Item40>
         <Filename Value="../../Options/tiTextParserStructCSV.pas"/>
         <UnitName Value="tiTextParserStructCSV"/>
-      </Item41>
-      <Item42>
+      </Item40>
+      <Item41>
         <Filename Value="../../Options/tiLogToConsole.pas"/>
         <UnitName Value="tiLogToConsole"/>
-      </Item42>
-      <Item43>
+      </Item41>
+      <Item42>
         <Filename Value="../../Options/tiXML.pas"/>
         <UnitName Value="tiXML"/>
-      </Item43>
+      </Item42>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
@@ -218,8 +215,7 @@
       </Item3>
     </RequiredPkgs>
     <UsageOptions>
-      <IncludePath Value="../../Core/"/>
-      <UnitPath Value="$(PkgOutDir)/;../../Core/;../../Options/;../../GUI/"/>
+      <UnitPath Value="$(PkgOutDir)/"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>

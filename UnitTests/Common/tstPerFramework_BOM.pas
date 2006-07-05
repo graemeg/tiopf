@@ -5,9 +5,9 @@ unit tstPerFramework_BOM;
 interface
 uses
    tiObject
-  ,tiVisitor
+//  ,tiVisitor
   ,Classes
-  ,Contnrs
+//  ,Contnrs
   ;
 
 
@@ -35,8 +35,6 @@ type
     property IntField   : Integer read FIntField   write FIntField ;
   end ;
 
-{$IFDEF TESTINT64}
-{$ENDIF}
 
 {$IFDEF TESTINT64}
   TtiOPFTestInt64Prop = class( TtiObject )

@@ -5,17 +5,15 @@ unit tiOPFTestManager;
 interface
 uses
   Classes  // needed for TStringList
-  ,tstPerFramework_BOM
+//  ,tstPerFramework_BOM
   ,tiObject
   {$IFDEF FPC}
-  ,fpcunit
-  ,testutils
   ,testregistry
   {$ELSE}
   ,TestFramework
   {$ENDIF}
-  ,INIFiles
- ;
+//  ,INIFiles
+  ;
 
 
 const
@@ -85,18 +83,18 @@ var
 implementation
 uses
   tiCommandLineParams
-  ,tiDBConnectionPool
+//  ,tiDBConnectionPool
   ,SysUtils
   ,tiOPFManager
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ,Contnrs
+//  ,Contnrs
   ,tiLog
-  ,tiGUIUtils
+//  ,tiGUIUtils
   ,tiUtils
   ,Forms
-  ,tiConstants
+//  ,tiConstants
   ,tiQuery
   {$IFDEF DELPHI5}
   ,FileCtrl

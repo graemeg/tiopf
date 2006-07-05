@@ -957,7 +957,6 @@ var
   lCurrentState: integer;
   lFileName: string;
 const
-  cReadOnly  = $00000001;
   cReadOnlyBit = 0;
 begin
   ForceDirectories(TempDirectory);
@@ -999,9 +998,11 @@ end;
 
 procedure TTestTIUtils.tiIsFileReadOnly;
 var
-  lsl : TStringList;
-  lCurrentState : integer;
-  lFileName   : string;
+  {$IFDEF MSWINDOWS}
+  lCurrentState: integer;
+  {$ENDIF}
+  lsl: TStringList;
+  lFileName: string;
 const
   cReadOnly  = $00000001;
 begin
@@ -1020,8 +1021,7 @@ begin
     tiWin32FileSetAttr( lFileName, lCurrentState xor cReadOnly );
     {$ENDIF}
     {$IFDEF UNIX}
-    lCurrentState := FileGetAttr(lFileName);
-    tiUtils.tiSetFileReadOnly(lFilename, true);
+    tiUtils.tiSetFileReadOnly(lFilename, True);
     {$ENDIF}
     Check( tiUtils.tiIsFileReadOnly( lFileName ), 'Failed on 2' );
 

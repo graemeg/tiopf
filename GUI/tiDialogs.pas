@@ -24,7 +24,7 @@ uses
   {$ENDIF}
   ,ExtCtrls
   ,Math
-  ,IniFiles
+//  ,IniFiles
   ,TypInfo
   {$IFNDEF VER130}
    ,Variants
@@ -87,9 +87,9 @@ type
   function  tiAppConfirmation( const sMessage : string ;
                                const paValues : array of const ) : boolean ; overload ;
   // Show a <Yes>, <No>, <Cancel> dialog box and return a mrValue
-  function  tiYesNoCancel(     const pMessage : string ) : word ;
+  function  tiYesNoCancel(     const pMessage : string ) : integer ;
   // Show a <Yes>, <No>, <Cancel>, <All> dialog box and return a mrValue
-  function  tiYesNoCancelAll(  sMessage : string ) : word ;
+  function  tiYesNoCancelAll(  sMessage : string ) : integer;
   // Show a dialog box with a combo box of selections. Return the selection.
   function  tiInputDialogCombo( const pStrCaption, pStrPrompt : string ;
                                 const pIntDefault : integer ;
@@ -144,7 +144,6 @@ uses
   ,Windows
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
-  ,libc
   ,Types
   {$ENDIF LINUX}
   ,tiUtils
@@ -221,7 +220,7 @@ begin
 end;
 
 
-function tiYesNoCancelAll( sMessage : string ) : word ;
+function tiYesNoCancelAll( sMessage : string ) : integer ;
 begin
   result := messageDlg( sMessage,
                         mtConfirmation,
@@ -230,7 +229,7 @@ begin
 end;
 
 
-function  tiYesNoCancel( const pMessage : string ) : word ;
+function  tiYesNoCancel( const pMessage : string ) : integer ;
 begin
   result := messageDlg( pMessage,
                         mtConfirmation,

@@ -109,8 +109,10 @@ end;
 
 
 procedure TTestTIBaseObject.TestDebug6;
+{$IFNDEF FPC}
 var
   c,i: integer;
+{$ENDIF}
 begin
   {$IFNDEF FPC}
   c := IdGetThreadObjectCount;

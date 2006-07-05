@@ -6,13 +6,13 @@ interface
 uses
   tiObject
   ,tiDataBuffer_BOM
-  ,Contnrs
+//  ,Contnrs
   ,Classes
   ,ComCtrls
-  ,tiVisitor
+//  ,tiVisitor
   ,SysUtils
   ,tiBaseObject
-  ,tiStreams
+//  ,tiStreams
   ,tiQuery
   ;
 
@@ -29,7 +29,7 @@ procedure tiDataSetToListView( pDataSet : TtiDataBuffer ; pLV : TListView ) ;
 procedure tiDataSetToListItem( pDataSet : TtiDataBuffer ; pItem : TListItem ) ;
 function  tiDataSetToHTML(     const pDataSet : TtiDataBuffer ) : string ;
 function  tiDataSetToHTMLV(    const pDataSet : TtiDataBuffer ) : string ;
-procedure ShowTIDataSet(       const pDataSet : TtiDataBuffer ) ; // For debugging
+
 
 {
   From TurboPowers SysTools help file, which is available on
@@ -80,8 +80,8 @@ uses
   ,Windows
   {$ENDIF}
   ,tiConstants
-  ,tiDialogs
   ;
+
 
 function  tiQueryToTIDataSet( const pQuery: TtiQuery; const pDataSet: TtiDataBuffer): Integer;
   procedure _AssignMetaData(const pQuery: TtiQuery; const pDataSet: TtiDataBuffer);
@@ -145,6 +145,7 @@ begin
   Result := 0 ;
 end ;
 
+
 function  tiDataSetToString( pDataSet : TtiDataBuffer ) : string ;
 var
   i, j : integer ;
@@ -171,8 +172,8 @@ begin
     Result := Result + CrLf ;
     Result := Result + lsLine ;
   end ;
-
 end;
+
 
 procedure tiDataSetToTextFile( pDataSet : TtiDataBuffer ; pFileName : TFileName ) ;
 var
@@ -182,13 +183,6 @@ begin
   tiStringToFile( ls, pFileName ) ;
 end;
 
-procedure ShowTIDataSet(       const pDataSet : TtiDataBuffer ) ; // For debugging
-var
-  ls : string ;
-begin
-  ls := TIDataSetToString(pDataSet);
-  tiShowString(ls);
-end;
 
 procedure tiDataSetToListView( pDataSet : TtiDataBuffer ; pLV : TListView ) ;
 var
@@ -221,8 +215,8 @@ begin
   {$ELSE}
     {$NOTE Double check that this may be done and that is works! }
   {$ENDIF}
-
 end ;
+
 
 procedure tiDataSetToListItem(pDataSet: TtiDataBuffer; pItem: TListItem);
 var
@@ -245,8 +239,8 @@ begin
       Max( pItem.ListView.Column[i].Width,
            Trunc(pItem.ListView.Canvas.TextWidth( lsValue )*1.1)) ;
   end ;
-
 end;
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //
@@ -258,6 +252,7 @@ end;
 // values in a data set read from a CSV file.
 //
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 {.Z+}
 type
   stLStrRec = record
@@ -266,9 +261,11 @@ type
     Length    : Longint;
   end;
 
+
 const
   stStrOffset = SizeOf(stLStrRec);
 {.Z-}
+
 
 function stCharExistsL(const S : AnsiString; C : AnsiChar) : Boolean; register;
 {$IFDEF FPC}begin{$ENDIF}
@@ -329,6 +326,7 @@ asm
   pop   ebx
 end;
 {$IFDEF FPC}end;{$ENDIF}
+
 
 function stExtractTokensL( const S : AnsiString ;
                            const Delims  : AnsiString;
@@ -536,7 +534,8 @@ begin
   end;
 end;
 
-function  tiDataSetToHTML(const pDataSet : TtiDataBuffer ) : string ;
+
+function tiDataSetToHTML(const pDataSet : TtiDataBuffer ) : string ;
 var
   i,j : integer ;
   ls : string ;
@@ -567,6 +566,7 @@ begin
   result := result + '</table>'
 end ;
 
+
 function  tiDataSetToHTMLV(const pDataSet : TtiDataBuffer ) : string ;
 var
   i,j : integer ;
@@ -594,6 +594,8 @@ begin
     end ;
   end ;
   result := result + '</table>'
-end ;
+end;
+
 
 end.
+

@@ -6,7 +6,7 @@ interface
 uses
    tiQuery
   ,Classes
-  ,tiClassToDBMap_BOM
+//  ,tiClassToDBMap_BOM
   ,tiObject
   ,tiDBConnectionPool
   {$IFDEF DELPHI5}
@@ -206,7 +206,6 @@ uses
   ,TypInfo
   ,tiOPFManager
   ,tiConstants
-  ,tiDialogs
   ,tiExcept
   {$IFDEF MSWINDOWS}
   ,Windows
