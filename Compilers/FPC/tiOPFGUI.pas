@@ -7,7 +7,7 @@ unit tiOPFGUI;
 interface
 
 uses
-  tiGUIUtils, tiDialogs, tiLogToGUI; 
+  tiGUIUtils, tiDialogs, tiLogToGUI, tiLogReg; 
 
 implementation
 

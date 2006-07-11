@@ -1,18 +1,22 @@
-// Log to a file in the \Log folder and/or to a form, but only if the -l (or lv) parameter is passed on the command line
+{
+  Log to a file in the \Log folder and/or to a form, but only if
+  the -l (or lv) parameter is passed on the command line.
+}
 unit tiLogReg;
 
 interface
 
-implementation
 
+implementation
 uses
    tiLog
-  ,tiConstants
+//  ,tiConstants    { ToDo: We should move log constant to this unit. }
   ,tiCommandLineParams
   ,tiLogToFile
   ,tiLogToGUI
   ,tiLogToConsole
   ;
+
 
 initialization
 

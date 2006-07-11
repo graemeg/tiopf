@@ -30,7 +30,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2"/>
-    <Files Count="3">
+    <Files Count="4">
       <Item1>
         <Filename Value="../../GUI/tiGUIUtils.pas"/>
         <UnitName Value="tiGUIUtils"/>
@@ -43,6 +43,10 @@
         <Filename Value="../../Options/tiLogToGUI.pas"/>
         <UnitName Value="tiLogToGUI"/>
       </Item3>
+      <Item4>
+        <Filename Value="../../Options/tiLogReg.pas"/>
+        <UnitName Value="tiLogReg"/>
+      </Item4>
     </Files>
     <RequiredPkgs Count="4">
       <Item1>
