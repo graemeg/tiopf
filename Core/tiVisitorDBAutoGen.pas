@@ -153,18 +153,16 @@ begin
 end;
 
 procedure TVisDBAutoGenDelete.SetupParams;
-{$IFDEF OID_AS_INT64}
 var
   lData: TtiObject;
-{$ENDIF}
 begin
   Assert( Visited.TestValid(TtiObject), cTIInvalidObjectError );
   QueryType := qtDelete;
+  LData := (Visited as TtiObject);
   {$IFDEF OID_AS_INT64}
-    lData := (Visited as TtiObject);
-    QueryWhere.SetValueAsInteger( 'OID', lData.OID);
+    QueryWhere.SetValueAsInteger( 'OID', LData.OID);
   {$ELSE}
-    Assert( false, 'Under construction' ) ;
+    QueryWhere.SetValueAsString( 'OID', LData.OID.AsString);
   {$ENDIF}
 end;
 
