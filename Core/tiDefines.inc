@@ -95,7 +95,7 @@
   {$DEFINE KYLIX1ORABOVE}
   {$DEFINE KYLIX2ORABOVE}
   {$DEFINE KYLIX3ORABOVE}
-  {.$MODE OBJFPC}{$MODE DELPHI}{$H+}
+  {$MODE DELPHI}{$H+}
   {$ASMMODE intel}
 
   { Due to certain bugs in 2.0.2 this is a workaround IFDEF that should only

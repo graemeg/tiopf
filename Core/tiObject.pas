@@ -2023,7 +2023,7 @@ end ;
 
 procedure TtiObjectList.SortByOID;
 begin
-  List.Sort( {$IFDEF FPC}@{$ENDIF}_DoSortByOID ) ;
+  List.Sort(_DoSortByOID);
 end;
 
 

@@ -875,7 +875,7 @@ end;
 
 procedure TtiBlockStream.Sort;
 begin
-  FList.Sort({$IFDEF FPC}@{$ENDIF}_CompareBlockStreamItems);
+  FList.Sort(_CompareBlockStreamItems);
 end;
 
 

@@ -60,7 +60,7 @@ var
   SI: TStartupInfo;
   PI: TProcessInformation;
 begin
-  GetStartupInfo({$IFDEF FPC}@{$ENDIF}SI);
+  GetStartupInfo(SI);
   CreateProcess(
     nil, PChar(pStrEXE), nil, nil,
     False, 0, nil, nil, SI, PI);

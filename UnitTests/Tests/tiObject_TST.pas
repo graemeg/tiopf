@@ -2304,7 +2304,7 @@ begin
     lList.Add(lData1);
     lList.Add(lData2);
     lList.Add(lData3);
-    lList.ForEach({$IFDEF FPC}@{$ENDIF}DoForEachMethodRegular);
+    lList.ForEach(DoForEachMethodRegular);
     CheckEquals('tested', lList.Items[0].StrProp, 'Failed on 1');
     CheckEquals('tested', lList.Items[1].StrProp, 'Failed on 2');
     CheckEquals('tested', lList.Items[2].StrProp, 'Failed on 3');
