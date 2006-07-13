@@ -119,7 +119,7 @@ constructor TtiThread.Create(CreateSuspended: Boolean);
 begin
   inherited Create(CreateSuspended);
   FreeOnTerminate := true;
-  OnTerminate := {$IFDEF FPC}@{$ENDIF}DoOnTerminate;
+  OnTerminate := DoOnTerminate;
   gTIOPFManager.ActiveThreadList.Add(Self);
 end;
 

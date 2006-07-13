@@ -1,6 +1,6 @@
 program fpcUnitTIOPFGui;
 
-{$mode objfpc}{$H+}
+{$I tiDefines.inc}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}

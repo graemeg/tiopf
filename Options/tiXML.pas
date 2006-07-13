@@ -460,7 +460,7 @@ var
 begin
   lXMLParser:= TtiXMLParseForSingleNode.Create ;
   try
-    lXMLParser.ParseForNode(pXMLFragment, '<' + pNodeName, '/>', {$IFDEF FPC}@{$ENDIF}lXMLParser.DoOnXMLNode);
+    lXMLParser.ParseForNode(pXMLFragment, '<' + pNodeName, '/>', lXMLParser.DoOnXMLNode);
     Result := lXMLParser.NodeString;
   finally
     lXMLParser.Free;
@@ -475,7 +475,7 @@ begin
   lXMLParser:= TtiXMLParseForSingleNode.Create ;
   try
     lXMLParser.TargetAttributeName := pAttrName ;
-    lXMLParser.ParseForAttributes(pXMLFragment, {$IFDEF FPC}@{$ENDIF}lXMLParser.DoOnXMLAttribute);
+    lXMLParser.ParseForAttributes(pXMLFragment, lXMLParser.DoOnXMLAttribute);
     Result := lXMLParser.AttributeValue;
   finally
     lXMLParser.Free;

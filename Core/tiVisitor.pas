@@ -1001,14 +1001,14 @@ begin
            IntToStr( lVisitors.Count ) +
            ' VisitorMgr count: ' +
            IntToStr( lVisitorMgrs.Count ), lsVisitor ) ;
-      ProcessVisitorControllers( lVisitors, lVisitorMgrs, {$IFDEF FPC}@{$ENDIF}DoBeforeExecute, 'DoBeforeExecute' ) ;
+      ProcessVisitorControllers( lVisitors, lVisitorMgrs, DoBeforeExecute, 'DoBeforeExecute' ) ;
       try
         ExecuteVisitors( lVisitors, pVisited ) ;
-        ProcessVisitorControllers( lVisitors, lVisitorMgrs, {$IFDEF FPC}@{$ENDIF}DoAfterExecute, 'DoAfterExecute' ) ;
+        ProcessVisitorControllers( lVisitors, lVisitorMgrs, DoAfterExecute, 'DoAfterExecute' ) ;
       except
         on e:exception do
         begin
-          ProcessVisitorControllers( lVisitors, lVisitorMgrs, {$IFDEF FPC}@{$ENDIF}DoAfterExecuteError, 'DoAfterExecuteError ' ) ;
+          ProcessVisitorControllers( lVisitors, lVisitorMgrs, DoAfterExecuteError, 'DoAfterExecuteError ' ) ;
           raise ;
         end ;
       end ;

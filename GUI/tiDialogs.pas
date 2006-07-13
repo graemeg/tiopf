@@ -659,7 +659,7 @@ begin
     lBtn.Width      := lBtnWidth;
     lBtn.Left       := lLHBtn + (lBtn.Width + cuiBorder) * i;
     lBtn.Caption    := pOptions[i];
-    lBtn.OnClick    := {$IFDEF FPC}@{$ENDIF}DoOnClick;
+    lBtn.OnClick    := DoOnClick;
     lBtn.TabOrder   := i;
     if i = Low(pOptions) then
       lBtn.Default := True;
@@ -791,7 +791,7 @@ begin
         Width       := MulDiv(164, DialogUnits.X, 4);
         MaxLength   := piMaxLength;
         Text        := Value;
-        OnChange    := {$IFDEF FPC}@{$ENDIF}DoOnChange ;
+        OnChange    := DoOnChange ;
         SelectAll;
       end;
       ButtonTop     := MulDiv(41, DialogUnits.Y, 8);

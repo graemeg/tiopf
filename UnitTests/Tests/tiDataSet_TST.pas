@@ -328,59 +328,59 @@ end;
 procedure TTesTtiDataBuffer.ExtractToken;
 begin
   stExtractTokensL( 'test',
-                    ',', '"', true, {$IFDEF FPC}@{$ENDIF}DoExtractToken ) ;
+                    ',', '"', true, DoExtractToken ) ;
   CheckEquals( 1, FStringList.Count, '#1' ) ;
   CheckEquals( 'test', FStringList.Strings[0], '#2' ) ;
   FStringList.Clear ;
 
   stExtractTokensL( 'test1,test2',
-                    ',', '"', true, {$IFDEF FPC}@{$ENDIF}DoExtractToken ) ;
+                    ',', '"', true, DoExtractToken ) ;
   CheckEquals( 2, FStringList.Count, '#3' ) ;
   CheckEquals( 'test1', FStringList.Strings[0], '#4' ) ;
   CheckEquals( 'test2', FStringList.Strings[1], '#5' ) ;
   FStringList.Clear ;
 
   stExtractTokensL( ',test2',
-                    ',', '"', true, {$IFDEF FPC}@{$ENDIF}DoExtractToken ) ;
+                    ',', '"', true, DoExtractToken ) ;
   CheckEquals( 2, FStringList.Count, '#6' ) ;
   CheckEquals( '', FStringList.Strings[0], '#7' ) ;
   CheckEquals( 'test2', FStringList.Strings[1], '#8' ) ;
   FStringList.Clear ;
 
   stExtractTokensL( 'test1,',
-                    ',', '"', true, {$IFDEF FPC}@{$ENDIF}DoExtractToken ) ;
+                    ',', '"', true, DoExtractToken ) ;
   CheckEquals( 2, FStringList.Count, '#9' ) ;
   CheckEquals( 'test1', FStringList.Strings[0], '#10' ) ;
   CheckEquals( '', FStringList.Strings[1], '#11' ) ;
   FStringList.Clear ;
 
   stExtractTokensL( ',,test1,,',
-                    ',', '"', false, {$IFDEF FPC}@{$ENDIF}DoExtractToken ) ;
+                    ',', '"', false, DoExtractToken ) ;
   CheckEquals( 1, FStringList.Count, '#12' ) ;
   CheckEquals( 'test1', FStringList.Strings[0], '#13' ) ;
   FStringList.Clear ;
 
   stExtractTokensL( '"test1",test2',
-                    ',', '"', true, {$IFDEF FPC}@{$ENDIF}DoExtractToken ) ;
+                    ',', '"', true, DoExtractToken ) ;
   CheckEquals( 2, FStringList.Count, '#14' ) ;
   CheckEquals( 'test1', FStringList.Strings[0], '#15' ) ;
   CheckEquals( 'test2', FStringList.Strings[1], '#16' ) ;
   FStringList.Clear ;
 
   stExtractTokensL( '"test1,test2',
-                    ',', '"', true, {$IFDEF FPC}@{$ENDIF}DoExtractToken ) ;
+                    ',', '"', true, DoExtractToken ) ;
   CheckEquals( 1, FStringList.Count, '#17' ) ;
   CheckEquals( 'test1,test2', FStringList.Strings[0], '#18' ) ;
   FStringList.Clear ;
 
   stExtractTokensL( 'test1",test2',
-                    ',', '"', true, {$IFDEF FPC}@{$ENDIF}DoExtractToken ) ;
+                    ',', '"', true, DoExtractToken ) ;
   CheckEquals( 1, FStringList.Count, '#19' ) ;
   CheckEquals( 'test1",test2', FStringList.Strings[0], '#20' ) ;
   FStringList.Clear ;
 
   stExtractTokensL( '"tes,t1","te,st2"',
-                    ',', '"', true, {$IFDEF FPC}@{$ENDIF}DoExtractToken ) ;
+                    ',', '"', true, DoExtractToken ) ;
   CheckEquals( 2, FStringList.Count, '#21' ) ;
   CheckEquals( 'tes,t1', FStringList.Strings[0], '#22' ) ;
   CheckEquals( 'te,st2', FStringList.Strings[1], '#23' ) ;

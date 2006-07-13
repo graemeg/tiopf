@@ -397,7 +397,7 @@ begin
   lXML := '<mynode attr1="result1" attr2="result2" />';
   lXMLParser := TtiXMLParser.Create;
   try
-    lXMLParser.ParseForAttributes(lXML, {$IFDEF FPC}@{$ENDIF}OnAttribute);
+    lXMLParser.ParseForAttributes(lXML, OnAttribute);
     CheckEquals(2, FAttributes.Count, 'FAttributes.Count');
     CheckEquals('result1', FAttributes.Values['attr1'], 'attr1');
     CheckEquals('result2', FAttributes.Values['attr2'], 'attr1');
@@ -414,7 +414,7 @@ begin
   lXML := '<mynode> attr1="result1" attr2="result2" </mynode>';
   lXMLParser := TtiXMLParser.Create;
   try
-    lXMLParser.ParseForAttributes(lXML, {$IFDEF FPC}@{$ENDIF}OnAttribute);
+    lXMLParser.ParseForAttributes(lXML, OnAttribute);
     CheckEquals(2, FAttributes.Count, 'FAttributes.Count');
     CheckEquals('result1', FAttributes.Values['attr1'], 'attr1');
     CheckEquals('result2', FAttributes.Values['attr2'], 'attr1');
@@ -431,7 +431,7 @@ begin
   lXML := 'attr1="result1" attr2="result2"';
   lXMLParser := TtiXMLParser.Create;
   try
-    lXMLParser.ParseForAttributes(lXML, {$IFDEF FPC}@{$ENDIF}OnAttribute);
+    lXMLParser.ParseForAttributes(lXML, OnAttribute);
     CheckEquals(2, FAttributes.Count, 'FAttributes.Count');
     CheckEquals('result1', FAttributes.Values['attr1'], 'attr1');
     CheckEquals('result2', FAttributes.Values['attr2'], 'attr1');
@@ -450,7 +450,7 @@ begin
   lXML  := '<mynode ' + lNode + ' />';
   lXMLParser := TtiXMLParser.Create;
   try
-    lXMLParser.ParseForNode('<myxml>' + lXML + '</myxml>', '<mynode', '/>', {$IFDEF FPC}@{$ENDIF}OnNode);
+    lXMLParser.ParseForNode('<myxml>' + lXML + '</myxml>', '<mynode', '/>', OnNode);
     CheckEquals(lNode, FNode);
   finally
     lXMLParser.Free;
@@ -467,7 +467,7 @@ begin
   lXML  := '<mynode>' + lNode + '</mynode>';
   lXMLParser := TtiXMLParser.Create;
   try
-    lXMLParser.ParseForNode('<myxml> ' + lXML + ' </myxml>', '<mynode>', '</mynode>', {$IFDEF FPC}@{$ENDIF}OnNode);
+    lXMLParser.ParseForNode('<myxml> ' + lXML + ' </myxml>', '<mynode>', '</mynode>', OnNode);
     CheckEquals(lNode, FNode);
   finally
     lXMLParser.Free;

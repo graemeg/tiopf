@@ -131,7 +131,7 @@ begin
     Height    := 21;
     Caption   := 'Test non-persistent classes?';
     TabOrder  := 1;
-    OnClick   := {$IFDEF FPC}@{$ENDIF}cbTestNonPersistentClassesClick;
+    OnClick   := cbTestNonPersistentClassesClick;
   end;
 
   Bevel1 := TBevel.Create(self);
@@ -188,7 +188,7 @@ begin
     Caption   := 'OK';
     default   := True;
     TabOrder  := 0;
-    OnClick   := {$IFDEF FPC}@{$ENDIF}btnPnlBtn1Click;
+    OnClick   := btnPnlBtn1Click;
     Anchors   := [akRight, akBottom];
   end;
 
@@ -203,7 +203,7 @@ begin
     Cancel    := True;
     Caption   := 'Cancel';
     TabOrder  := 1;
-    OnClick   := {$IFDEF FPC}@{$ENDIF}btnPnlBtn2Click;
+    OnClick   := btnPnlBtn2Click;
     Anchors   := [akRight, akBottom];
   end;
 
@@ -212,7 +212,7 @@ begin
   begin
     Enabled   := False;
     Interval  := 3000;
-    OnTimer   := {$IFDEF FPC}@{$ENDIF}TmrTimer;
+    OnTimer   := TmrTimer;
     Left      := 16;
     Top       := 32;
   end;
@@ -242,7 +242,7 @@ begin
     lCheckBox.Name    := 'cb' + lPerLayerName;
     lCheckBox.Tag     := i;
     lCheckBox.Checked := lPerFrameworkSetup.Enabled and lPerFrameworkSetup.Selected;
-    lCheckBox.OnClick := {$IFDEF FPC}@{$ENDIF}DoCheckBoxClick;
+    lCheckBox.OnClick := DoCheckBoxClick;
     lCheckBox.Enabled := lPerFrameworkSetup.Enabled;
   end;
   if lCheckBox <> nil then

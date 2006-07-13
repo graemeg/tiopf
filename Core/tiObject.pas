@@ -1130,12 +1130,12 @@ end;
 
 { TtiObjectList } 
 
-constructor TtiObjectList.Create ;
+constructor TtiObjectList.Create;
 begin
-  inherited Create ;
-  FList := TObjectList.Create  ;
-  FItemOwner := Self ;
-  FbAutoSetItemOwner := true ;
+  inherited Create;
+  FList := TObjectList.Create;
+  FItemOwner := Self;
+  FbAutoSetItemOwner := true;
 end;
 
 
@@ -1708,7 +1708,7 @@ begin
   Assert( Assigned( pPerObjAbs ), 'pPerObjAbs not assigned' ) ;
   lList := TList.Create ;
   try
-    FindAll( {$IFDEF FPC}@{$ENDIF}DoFindAllNotUnique, lList, pPerObjAbs ) ;
+    FindAll( DoFindAllNotUnique, lList, pPerObjAbs ) ;
     result := true ;
     for i := 0 to lList.Count - 1 do
     begin

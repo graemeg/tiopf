@@ -98,7 +98,7 @@ begin
   try
     lList := TObjectList.Create(false) ;
     try
-      lPool.OnAddPooledItem := {$IFDEF FPC}@{$ENDIF}DoOnAddItem;
+      lPool.OnAddPooledItem := DoOnAddItem;
       for i := 1 to pCount do
       begin
         lItem := lPool.Lock ;
@@ -131,7 +131,7 @@ begin
   try
     lList := TObjectList.Create(false) ;
     try
-      lPool.OnAddPooledItem := {$IFDEF FPC}@{$ENDIF}DoOnAddItem;
+      lPool.OnAddPooledItem := DoOnAddItem;
       for i := 1 to pCount do
       begin
         lItem := lPool.Lock ;
@@ -192,7 +192,7 @@ begin
   try
     lPool := TtiPool.Create ;
     try
-      lPool.OnAddPooledItem := {$IFDEF FPC}@{$ENDIF}DoOnAddItem;
+      lPool.OnAddPooledItem := DoOnAddItem;
       for i := 1 to cThreadCount do
       begin
         lThrd := TThresPoolThread.Create(true) ;
@@ -221,7 +221,7 @@ var
 begin
   lPool := TtiPool.Create ;
   try
-    lPool.OnAddPooledItem := {$IFDEF FPC}@{$ENDIF}DoOnAddItem;
+    lPool.OnAddPooledItem := DoOnAddItem;
     lPool.WaitTime := 1 ;
     lPool.MaxPoolSize := 1 ;
     lPool.Lock ;
@@ -250,7 +250,7 @@ var
 begin
   lPool := TtiPool.Create ;
   try
-    lPool.OnAddPooledItem := {$IFDEF FPC}@{$ENDIF}DoOnAddItem;
+    lPool.OnAddPooledItem := DoOnAddItem;
     lPool.TimeOut := 0 ;
     lPool.MinPoolSize := 1 ;
 
@@ -293,7 +293,7 @@ begin
   lPool := TtiPool.Create ;
   try
 
-    lPool.OnAddPooledItem := {$IFDEF FPC}@{$ENDIF}DoOnAddItem;
+    lPool.OnAddPooledItem := DoOnAddItem;
     lPool.TimeOut := 1/60 ;
 
     lPool.Lock ;
@@ -333,7 +333,7 @@ var
 begin
   lPool := TtiPool.Create ;
   try
-    lPool.OnAddPooledItem := {$IFDEF FPC}@{$ENDIF}DoOnAddItem;
+    lPool.OnAddPooledItem := DoOnAddItem;
     lPool.Lock ;
     CheckCountInPool(lPool,1,1, '1' );
     lData := TTestPoolItemData.Create ;

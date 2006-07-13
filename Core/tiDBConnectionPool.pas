@@ -286,7 +286,7 @@ constructor TDBConnectionPool.Create;
 begin
   inherited ;
   PooledItemClass  := TPooledDB ;
-  OnAddPooledItem  := {$IFDEF FPC}@{$ENDIF}DoOnAddPooledItem ;
+  OnAddPooledItem  := DoOnAddPooledItem ;
   FDBConnectParams := TDBConnectParams.Create ;
   FbInitCalled  := false ;
 end ;
@@ -410,7 +410,7 @@ begin
     Default  := True;
     ModalResult := mrNone ;
     TabOrder := 3;
-    OnClick  := {$IFDEF FPC}@{$ENDIF}DoLogonClick;
+    OnClick  := DoLogonClick;
   end ;
 
   FbbCancel := TBitBtn.Create( self ) ;
@@ -425,7 +425,7 @@ begin
     Caption  := '&Cancel';
     ModalResult := mrNone ;
     TabOrder := 4;
-    OnClick  := {$IFDEF FPC}@{$ENDIF}DoCancelClick ;
+    OnClick  := DoCancelClick ;
   end;
 
 end;

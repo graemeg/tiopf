@@ -895,7 +895,7 @@ var
 begin
   FDataSet.Fields.Clear ;
   ls := FStream.ReadLn;
-  stExtractTokensL( ls, FieldDelim, FStringDelimAsChar, false, {$IFDEF FPC}@{$ENDIF}DoExtractFieldName );
+  stExtractTokensL( ls, FieldDelim, FStringDelimAsChar, false, DoExtractFieldName );
 end;
 
 
@@ -905,9 +905,9 @@ var
 begin
   ls := FStream.ReadLn;
   if FDataSet.Fields.Count = 0 then
-    stExtractTokensL( ls, FieldDelim, FStringDelimAsChar, false, {$IFDEF FPC}@{$ENDIF}DoExtractDefaultFieldNames );
+    stExtractTokensL( ls, FieldDelim, FStringDelimAsChar, false, DoExtractDefaultFieldNames );
   FDataSetRow := FDataSet.AddInstance ;
-  stExtractTokensL( ls, FieldDelim, FStringDelimAsChar, false, {$IFDEF FPC}@{$ENDIF}DoExtractData );
+  stExtractTokensL( ls, FieldDelim, FStringDelimAsChar, false, DoExtractData );
 end;
 
 

@@ -756,7 +756,7 @@ begin
   try
     lList := TList.Create;
     try
-      lData.FindAll({$IFDEF FPC}@{$ENDIF}TstFindAll, lList);
+      lData.FindAll(TstFindAll, lList);
       CheckEquals(6, lList.Count, 'Failed on count');
       for i := 0 to 5 do
         CheckEquals(IntToStr(i), TtstPerObjAbs(lList.Items[i]).OID.AsString, 'Failed on OID');
@@ -820,7 +820,7 @@ var
 begin
   lData := CreateTestDataList;
   try
-    lFound := lData.Find({$IFDEF FPC}@{$ENDIF}TstFindMethod) as TtstPerObjAbs;
+    lFound := lData.Find(TstFindMethod) as TtstPerObjAbs;
     Check(Assigned(lFound), 'Find failed');
     CheckEquals('1', lFound.OID.AsString, 'Find failed');
   finally
@@ -845,11 +845,11 @@ var
 begin
   lData := CreateTestDataList;
   try
-    lFound := lData.Find({$IFDEF FPC}@{$ENDIF}TstFindMethodWithParam, Pointer(1)) as TtstPerObjAbs;
+    lFound := lData.Find(TstFindMethodWithParam, Pointer(1)) as TtstPerObjAbs;
     Check(Assigned(lFound), 'Find failed');
     CheckEquals('1', lFound.OID.AsString, 'Find failed');
 
-    lFound := lData.Find({$IFDEF FPC}@{$ENDIF}TstFindMethodWithParam, Pointer(100)) as TtstPerObjAbs;
+    lFound := lData.Find(TstFindMethodWithParam, Pointer(100)) as TtstPerObjAbs;
     Check(not Assigned(lFound), 'Found when it shoud have failed');
 
   finally
@@ -2274,7 +2274,7 @@ begin
     lList.Add(lData1);
     lList.Add(lData2);
     lList.Add(lData3);
-    lList.ForEach({$IFDEF FPC}@{$ENDIF}DoForEachMethod);
+    lList.ForEach(DoForEachMethod);
     CheckEquals('tested', lList.Items[0].StrProp, 'Failed on 1');
     CheckEquals('tested', lList.Items[1].StrProp, 'Failed on 2');
     CheckEquals('tested', lList.Items[2].StrProp, 'Failed on 3');
@@ -3018,7 +3018,7 @@ begin
       LList1.Add(LItemIn1Only);
       LList2.Add(LItemIn2Only);
 
-      LList1.CompareWith(LList2, {$IFDEF FPC}@{$ENDIF}InBothAndEqualsEvent, {$IFDEF FPC}@{$ENDIF}InBothAndNotEqualsEvent, {$IFDEF FPC}@{$ENDIF}In1OnlyEvent, {$IFDEF FPC}@{$ENDIF}In2OnlyEvent);
+      LList1.CompareWith(LList2, InBothAndEqualsEvent, InBothAndNotEqualsEvent, In1OnlyEvent, In2OnlyEvent);
 
       CheckEquals(1, FInBothAndEquals.Count,    'FInBothAndEquals.Count');
       CheckEquals(1, FInBothAndNotEquals.Count, 'FInBothAndNotEquals.Count');

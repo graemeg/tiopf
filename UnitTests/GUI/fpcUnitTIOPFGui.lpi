@@ -40,7 +40,7 @@
         <PackageName Value="FCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="25">
+    <Units Count="27">
       <Unit0>
         <Filename Value="fpcUnitTIOPFGui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -166,6 +166,16 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiClassToDBMap_TST"/>
       </Unit24>
+      <Unit25>
+        <Filename Value="../../../tiopf/Source/UnitTests/Tests/tiBaseObject_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiBaseObject_tst"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="../../Core/tiUtils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiUtils"/>
+      </Unit26>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

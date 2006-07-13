@@ -92,16 +92,16 @@ var
 begin
   lMD := TtiStructCSVMetaData.Create;
   try
-    lI1:= lMD.AddInstance('test1', {$IFDEF FPC}@{$ENDIF}OnGroup1Field1);
+    lI1:= lMD.AddInstance('test1', OnGroup1Field1);
     CheckNotNull(lI1, 'lI1');
     CheckEquals('test1', lI1.FieldName, 'lI2.FieldName');
-    lI2:= lMD.AddInstance('test2', {$IFDEF FPC}@{$ENDIF}OnGroup1Field1);
+    lI2:= lMD.AddInstance('test2', OnGroup1Field1);
     CheckNotNull(lI1, 'lI2');
     CheckEquals('test2', lI2.FieldName, 'lI.2FieldName');
     Check(lI1 <> lI2, 'lI1 <> lI2');
 
     try
-      lMD.AddInstance('test1', {$IFDEF FPC}@{$ENDIF}OnGroup1Field1);
+      lMD.AddInstance('test1', OnGroup1Field1);
       Fail('Exception should have been raised');
     except
       on e:Exception do
@@ -125,17 +125,17 @@ begin
     lMD1:= lMDs.FindByDataGroupName('group1');
     CheckNull(lMD1, 'lMD1' );
     lMDs.AddInstance('group1', 'field1',
-        {$IFDEF FPC}@{$ENDIF}OnGroup1Start,
-        {$IFDEF FPC}@{$ENDIF}OnGroup1Field1,
-        {$IFDEF FPC}@{$ENDIF}OnGroup1End );
+        OnGroup1Start,
+        OnGroup1Field1,
+        OnGroup1End );
     lMD1:= lMDs.FindByDataGroupName('group1');
     CheckNotNull(lMD1, 'lMD1' );
     CheckEquals('group1', lMD1.DataGroupName);
 
     lMDs.AddInstance('group2', 'field1',
-        {$IFDEF FPC}@{$ENDIF}OnGroup1Start,
-        {$IFDEF FPC}@{$ENDIF}OnGroup1Field1,
-        {$IFDEF FPC}@{$ENDIF}OnGroup1End );
+        OnGroup1Start,
+        OnGroup1Field1,
+        OnGroup1End );
     lMD2:= lMDs.FindByDataGroupName('group2');
     CheckNotNull(lMD1, 'lMD2' );
     CheckEquals('group2', lMD2.DataGroupName);
@@ -390,25 +390,25 @@ begin
   inherited;
   FParser := TTextParserStructCSV.Create;
   FParser.MetaDatas.AddInstance('GROUP_1', 'FIELD_11',
-        {$IFDEF FPC}@{$ENDIF}OnGroup1Start,
-        {$IFDEF FPC}@{$ENDIF}OnGroup1Field1,
-        {$IFDEF FPC}@{$ENDIF}OnGroup1End);
+        OnGroup1Start,
+        OnGroup1Field1,
+        OnGroup1End);
   FParser.MetaDatas.AddInstance('GROUP_1', 'FIELD_12',
-        {$IFDEF FPC}@{$ENDIF}OnGroup1Start,
-        {$IFDEF FPC}@{$ENDIF}OnGroup1Field2,
-        {$IFDEF FPC}@{$ENDIF}OnGroup1End);
+        OnGroup1Start,
+        OnGroup1Field2,
+        OnGroup1End);
   FParser.MetaDatas.AddInstance('GROUP_2', 'FIELD_21',
-        {$IFDEF FPC}@{$ENDIF}OnGroup2Start,
-        {$IFDEF FPC}@{$ENDIF}OnGroup2Field1,
-        {$IFDEF FPC}@{$ENDIF}OnGroup2End);
+        OnGroup2Start,
+        OnGroup2Field1,
+        OnGroup2End);
   FParser.MetaDatas.AddInstance('GROUP_2', 'FIELD_22',
-        {$IFDEF FPC}@{$ENDIF}OnGroup2Start,
-        {$IFDEF FPC}@{$ENDIF}OnGroup2Field2,
-        {$IFDEF FPC}@{$ENDIF}OnGroup2End);
+        OnGroup2Start,
+        OnGroup2Field2,
+        OnGroup2End);
   FParser.MetaDatas.AddInstance('GROUP_3', 'FIELD_31',
-        {$IFDEF FPC}@{$ENDIF}OnGroup3Start,
-        {$IFDEF FPC}@{$ENDIF}OnGroup3Field1,
-        {$IFDEF FPC}@{$ENDIF}OnGroup3End);
+        OnGroup3Start,
+        OnGroup3Field1,
+        OnGroup3End);
   FResults:= TStringList.Create;
 end;
 
@@ -627,24 +627,24 @@ begin
   lMDs := TtiStructCSVMetaDatas.Create;
   try
     lMD1:= lMDs.FindCreateByDataGroupName('test1',
-          {$IFDEF FPC}@{$ENDIF}OnGroup1Start,
-          {$IFDEF FPC}@{$ENDIF}OnGroup1End);
+          OnGroup1Start,
+          OnGroup1End);
     CheckEquals(1, lMDs.Count, 'lMDs.Count');
     CheckNotNull(lMD1, 'lMD1');
     CheckEquals('test1', lMD1.DataGroupName, 'lMD1.DataGroupName');
     CheckSame(lMD1, lMDs.LatestUsed, 'lMD1 <> lMDs.LatestUsed' );
 
     lMD2 := lMDs.FindCreateByDataGroupName('test2',
-          {$IFDEF FPC}@{$ENDIF}OnGroup2Start,
-          {$IFDEF FPC}@{$ENDIF}OnGroup2End);
+          OnGroup2Start,
+          OnGroup2End);
     CheckEquals(2, lMDs.Count, 'lMDs.Count');
     CheckNotNull(lMD2, 'lMD21');
     CheckEquals('test2', lMD2.DataGroupName, 'lMD2.DataGroupName');
     CheckSame(lMD2, lMDs.LatestUsed, 'lMD2 <> lMDs.LatestUsed' );
 
     lMD3:= lMDs.FindCreateByDataGroupName('test1',
-          {$IFDEF FPC}@{$ENDIF}OnGroup1Start,
-          {$IFDEF FPC}@{$ENDIF}OnGroup2End);
+          OnGroup1Start,
+          OnGroup2End);
     CheckEquals(2, lMDs.Count, 'lMDs.Count');
     CheckNotNull(lMD3, 'lMD3');
     CheckEquals('test1', lMD3.DataGroupName, 'lMD3.DataGroupName');

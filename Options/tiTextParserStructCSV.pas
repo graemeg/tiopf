@@ -225,10 +225,10 @@ constructor TTextParserStructCSV.Create;
 begin
   inherited Create;
   FTextFileParser:= TtiTextParser.Create;
-  FTextFileParser.OnNewLine   := {$IFDEF FPC}@{$ENDIF}DoOnNewLine;
-  FTextFileParser.OnEndOfLine := {$IFDEF FPC}@{$ENDIF}DoOnEndOfLine;
-  FTextFileParser.OnCellEnd   := {$IFDEF FPC}@{$ENDIF}DoOnCellEnd;
-  FTextFileParser.OnEndOfText := {$IFDEF FPC}@{$ENDIF}DoOnEndOfText;
+  FTextFileParser.OnNewLine   := DoOnNewLine;
+  FTextFileParser.OnEndOfLine := DoOnEndOfLine;
+  FTextFileParser.OnCellEnd   := DoOnCellEnd;
+  FTextFileParser.OnEndOfText := DoOnEndOfText;
   FMetaDatas:= TtiStructCSVMetaDatas.Create;
   FExceptions:= TStringList.Create;
   FInDataRow:= False;

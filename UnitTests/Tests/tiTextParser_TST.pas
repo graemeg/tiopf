@@ -171,10 +171,10 @@ procedure TtiTestParserTests.SetUp;
 begin
   inherited;
   FParser             := TtiTextParser.Create;
-  FParser.OnNewLine   := {$IFDEF FPC}@{$ENDIF}DoOnNewLine;
-  FParser.OnEndOfLine := {$IFDEF FPC}@{$ENDIF}DoOnEndOfLine;
-  FParser.OnCellEnd   := {$IFDEF FPC}@{$ENDIF}DoOnCellEnd;
-  FParser.OnEndOfText := {$IFDEF FPC}@{$ENDIF}DoOnEndOfText;
+  FParser.OnNewLine   := DoOnNewLine;
+  FParser.OnEndOfLine := DoOnEndOfLine;
+  FParser.OnCellEnd   := DoOnCellEnd;
+  FParser.OnEndOfText := DoOnEndOfText;
   FResults            := TStringList.Create;
 end;
 

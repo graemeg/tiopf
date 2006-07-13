@@ -104,11 +104,11 @@ begin
   FForm.Font.Name            := 'MS Shell Dlg 2';
   {$ENDIF}
   FForm.Font.Style           := [];
-  FForm.OnCloseQuery         := {$IFDEF FPC}@{$ENDIF}FormCloseQuery;
+  FForm.OnCloseQuery         := FormCloseQuery;
 
   FPopupMenu                 := TPopupMenu.Create(FForm);
   FPopupMenu.Name            := 'PopupMenu';
-  FPopupMenu.OnPopup         := {$IFDEF FPC}@{$ENDIF}DoOnPopup;
+  FPopupMenu.OnPopup         := DoOnPopup;
 
   FMemoLog                   := TMemo.Create(FForm);
   FMemoLog.Name              := 'MemoLog';
@@ -137,7 +137,7 @@ begin
   FViewLogMenuItem.Name      := 'Viewlogfile1';
   FViewLogMenuItem.Caption   := '&View log file';
   FViewLogMenuItem.Visible   := True;
-  FViewLogMenuItem.OnClick   := {$IFDEF FPC}@{$ENDIF}DoViewLogFile;
+  FViewLogMenuItem.OnClick   := DoViewLogFile;
   FPopupMenu.Items.Add(FViewLogMenuItem);
 
   lMenuItem                  := TMenuItem.Create(FForm);
@@ -149,20 +149,20 @@ begin
   lMenuItem.Name             := 'ClearMenuItem';
   lMenuItem.Caption          := '&Clear';
   lMenuItem.ShortCut         := 16460;
-  lMenuItem.OnClick          := {$IFDEF FPC}@{$ENDIF}FormClearMenuItemClick;
+  lMenuItem.OnClick          := FormClearMenuItemClick;
   FPopupMenu.Items.Add(lMenuItem);
 
   FWordWrapMenuItem          := TMenuItem.Create(FForm);
   FWordWrapMenuItem.Name     := 'WordWrapMenuItem';
   FWordWrapMenuItem.Caption  := '&Word wrap';
   FWordWrapMenuItem.ShortCut := 16471;
-  FWordWrapMenuItem.OnClick  := {$IFDEF FPC}@{$ENDIF}FormWordWrapMenuItemClick;
+  FWordWrapMenuItem.OnClick  := FormWordWrapMenuItemClick;
   FPopupMenu.Items.Add(FWordWrapMenuItem);
 
   FLogMenuItem               := TMenuItem.Create(FForm);
   FLogMenuItem.Name          := 'LogMenuItem';
   FLogMenuItem.Caption       := '&Log';
-  FLogMenuItem.OnClick       := {$IFDEF FPC}@{$ENDIF}FormLogMenuItemClick;
+  FLogMenuItem.OnClick       := FormLogMenuItemClick;
   FPopupMenu.Items.Add(FLogMenuItem);
 
   for lLogSev := Low(TtiLogSeverity) to High(TtiLogSeverity) do
@@ -170,7 +170,7 @@ begin
     lMenuItem               := TMenuItem.Create(FForm);
     lMenuItem.Caption       := cTILogSeverityStrings[ lLogSev ];
     lMenuItem.Tag           := Ord(lLogSev);
-    lMenuItem.OnClick       := {$IFDEF FPC}@{$ENDIF}FormLogLevelMenuItemClick;
+    lMenuItem.OnClick       := FormLogLevelMenuItemClick;
     FLogMenuItem.Add(lMenuItem);
   end;
 
@@ -187,7 +187,7 @@ begin
     lToolButton.Tag         := Ord(lLogSev);
     lToolButton.Style       := tbsCheck;
     lToolButton.Down        := lLogSev in gLog.SevToLog;
-    lToolButton.OnClick     := {$IFDEF FPC}@{$ENDIF}FormLogLevelButtonClick;
+    lToolButton.OnClick     := FormLogLevelButtonClick;
   end;
   
   {$IFDEF FPC}
