@@ -61,7 +61,9 @@ var
   PI: TProcessInformation;
 begin
   { Don't remove the IFDEF even though we use FPC in Delphi Mode. GetStartupInfo
-    is defined differently to Delphi.  I am querying this. - Graeme [2006-07-17] }
+    is defined differently to Delphi.  34 minutes after reporting this bug, it
+    was confirmed fixed. :-) I am leaving this IFDEF for now, until the next
+    FPC version is released, in a few days. - Graeme [2006-07-17] }
   GetStartupInfo({$IFDEF FPC}@{$ENDIF}SI);
  
   CreateProcess(
