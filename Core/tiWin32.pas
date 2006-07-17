@@ -60,7 +60,10 @@ var
   SI: TStartupInfo;
   PI: TProcessInformation;
 begin
-  GetStartupInfo(SI);
+  { Don't remove the IFDEF even though we use FPC in Delphi Mode. GetStartupInfo
+    is defined differently to Delphi.  I am querying this. - Graeme [2006-07-17] }
+  GetStartupInfo({$IFDEF FPC}@{$ENDIF}SI);
+ 
   CreateProcess(
     nil, PChar(pStrEXE), nil, nil,
     False, 0, nil, nil, SI, PI);
