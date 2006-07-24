@@ -23,19 +23,22 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="5">
       <Item1>
-        <PackageName Value="tiOPF"/>
+        <PackageName Value="tiOPFGUI"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="tiOPF"/>
       </Item2>
       <Item3>
-        <PackageName Value="FPCUnitTestRunner"/>
+        <PackageName Value="LCL"/>
       </Item3>
       <Item4>
-        <PackageName Value="FCL"/>
+        <PackageName Value="FPCUnitTestRunner"/>
       </Item4>
+      <Item5>
+        <PackageName Value="FCL"/>
+      </Item5>
     </RequiredPackages>
     <Units Count="12">
       <Unit0>
@@ -106,13 +109,15 @@
       <Filename Value="fpcUnitTIOPFText.exe"/>
     </Target>
     <SearchPaths>
+      <IncludeFiles Value="../../Core/"/>
       <OtherUnitFiles Value="../Common/;../Tests/"/>
     </SearchPaths>
     <CodeGeneration>
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Other>
-      <CustomOptions Value="-FU_Dcu -dSTATIC_PERLAYER_LINKINGx -dUseCThreads -dLink_FBL -dLink_TAB -dLink_CSV"/>
+      <CustomOptions Value="-FU_Dcu -dSTATIC_PERLAYER_LINKINGx -dUseCThreads -dLink_FBL -dLink_TAB -dLink_CSV
+"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

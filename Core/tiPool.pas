@@ -9,7 +9,6 @@ uses
   ,Windows
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
-//  ,cthreads
   ,pthreads
   {$ENDIF LINUX}
   ,tiObject
@@ -115,6 +114,9 @@ uses
   ,tiConstants
   ,tiExcept
   ,SysUtils
+  {$IFDEF UNIX}
+  ,baseunix
+  {$ENDIF UNIX}
   ;
 
 const
@@ -241,6 +243,10 @@ begin
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
   Log('About to call sem_wait', lsConnectionPool);
+  { TODO: The timeout option is not available in POSIX semaphores. This can be
+    achieved by issuing a non-blocking sem_trywait() within a loop, which
+    counts the timeout value: int sem_trywait(sem_t * sem).
+    i := fpgeterrno; }
   if sem_trywait(FSemaphore) <> 0 then
     raise EtiOPFInternalException.Create(cErrorTimedOutWaitingForSemaphore);
   Log('Successfully passed the sem_wait call', lsConnectionPool);
