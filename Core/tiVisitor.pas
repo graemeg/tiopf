@@ -701,11 +701,8 @@ begin
 end;
 
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TtiVisitorManager
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{ TtiVisitorManager }
+
 procedure TtiVisitorManager.AddThreadID(pThreadID: LongWord);
 begin
   if ( pThreadID = MainThreadID ) then
@@ -719,6 +716,7 @@ begin
   end;
 end;
 
+
 constructor TtiVisitorManager.Create;
 begin
   inherited ;
@@ -728,6 +726,7 @@ begin
   FHourGlassCount   := 0 ;
   FBreakOnException := True ;
 end;
+
 
 destructor TtiVisitorManager.destroy;
 var
@@ -741,23 +740,27 @@ begin
   inherited;
 end;
 
-procedure TtiVisitorManager.DoAfterExecute( pVisitorMgr : TtiVisitorCtrlr ;
-                                        pVisitors   : TList ) ;
+
+procedure TtiVisitorManager.DoAfterExecute(pVisitorMgr: TtiVisitorCtrlr;
+    pVisitors: TList);
 begin
-  pVisitorMgr.AfterExecuteAll(pVisitors) ;
+  pVisitorMgr.AfterExecuteAll(pVisitors);
 end;
+
 
 procedure TtiVisitorManager.DoAfterExecuteError(pVisitorMgr: TtiVisitorCtrlr;
-                                            pVisitors: TList);
+    pVisitors: TList);
 begin
-  pVisitorMgr.AfterExecuteError(pVisitors) ;
+  pVisitorMgr.AfterExecuteError(pVisitors);
 end;
 
+
 procedure TtiVisitorManager.DoBeforeExecute(pVisitorMgr: TtiVisitorCtrlr;
-                                        pVisitors: TList);
+    pVisitors: TList);
 begin
-  pVisitorMgr.BeforeExecuteAll(pVisitors) ;
+  pVisitorMgr.BeforeExecuteAll(pVisitors);
 end;
+
 
 function TtiVisitorManager.Execute( const psGroupName       : string;
                             const pVisited          : TtiVisited ;
@@ -768,7 +771,6 @@ var
   lPerLayerName       : string ;
   lDBConnectionName   : string ;
 begin
-
   // Don't go any further if terminated
   if gTIOPFManager.Terminated then
     Exit ; //==>
@@ -776,7 +778,6 @@ begin
   AddThreadID( GetCurrentThreadID ) ;
 
   try
-
     Log( 'About to process visitors for <' + psGroupName + '>', lsVisitor ) ;
 
     if pPerLayerName = '' then
@@ -838,12 +839,12 @@ begin
       end ;
     end ;
 
-    Log( 'Finished process visitors for <' + psGroupName + '>', lsVisitor ) ;
+    Log( 'Finished process visitors for <' + psGroupName + '>', lsVisitor );
   finally
-    RemoveThreadID( GetCurrentThreadID ) ;
-  end ;
-
+    RemoveThreadID(GetCurrentThreadID);
+  end;
 end;
+
 
 procedure TtiVisitorManager.ExecuteVisitors(pVisitors: TList; pVisited: TtiVisited);
   procedure _RunBeforeExecuteOne( pVisitor : TtiVisitor ) ;
@@ -853,6 +854,7 @@ procedure TtiVisitorManager.ExecuteVisitors(pVisitors: TList; pVisited: TtiVisit
     lsVisitor := pVisitor.ClassName ;
     pVisitor.VisitorController.BeforeExecuteOne( pVisitor ) ;
   end ;
+
 
   procedure _RunAfterExecuteOne( pVisitor : TtiVisitor ) ;
   var
@@ -864,6 +866,7 @@ procedure TtiVisitorManager.ExecuteVisitors(pVisitors: TList; pVisited: TtiVisit
     lsVisitor := pVisitor.ClassName ;
     pVisitor.VisitorController.AfterExecuteOne( pVisitor ) ;
   end ;
+
 
   procedure _RunIterate( pVisited : TtiVisited ; pVisitor : TtiVisitor );
   begin
@@ -893,6 +896,7 @@ begin
     end ;
   end ;
 end ;
+
 
 // Search for the appropriate VisitorController for each visitor
 procedure TtiVisitorManager.GetVisitorControllers( const pVisitors    : TList ;
@@ -931,6 +935,7 @@ begin
   Log( 'Done getting visitor controllers', lsVisitor ) ;
 end ;
 
+
 procedure TtiVisitorManager.GetVisitors(pVisitors: TList;const psGroupName: string);
 var
   i : integer ;
@@ -943,10 +948,12 @@ begin
       pVisitors.Add( TVisMapping( FVisMappings.Objects[i] ).ClassRef.Create ) ;
 end;
 
+
 procedure TtiVisitorManager.Lock;
 begin
   FCritSec.Enter;
 end;
+
 
 procedure TtiVisitorManager.ProcessVisitorControllers(pVisitors, pVisitorControllers: TList;
   pProc: TProcessVisitorMgrs ; psMethodName : string );
@@ -982,6 +989,7 @@ begin
     lVisitors.Free ;
   end ;
 end;
+
 
 procedure TtiVisitorManager.ProcessVisitors( const pGroupName        : string;
                                      const pVisited          : TtiVisited;
@@ -1020,6 +1028,7 @@ begin
   end ;
 end;
 
+
 procedure TtiVisitorManager.RegisterVisitor( const psGroupName : string ;
                                          const pClassRef : TVisClassRef ) ;
 var
@@ -1030,6 +1039,7 @@ begin
   lVisMapping := TVisMapping.CreateExt( lsGroupName, pClassRef ) ;
   FVisMappings.AddObject( lsGroupName, lVisMapping ) ;
 end;
+
 
 procedure TtiVisitorManager.RemoveThreadID(pThreadID: LongWord);
 var
@@ -1055,6 +1065,7 @@ begin
   end;
 end;
 
+
 function TtiVisitorManager.GetThreadCount: LongWord;
 begin
   Lock ;
@@ -1065,10 +1076,12 @@ begin
   end;
 end;
 
+
 procedure TtiVisitorManager.UnLock;
 begin
   FCritSec.Leave;
 end;
+
 
 procedure TtiVisitorManager.UnRegisterVisitors(const psGroupName: string);
 var
@@ -1084,11 +1097,9 @@ begin
     end ;
 end;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TVisMapping
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TVisMapping }
+
 constructor TVisMapping.CreateExt(const psGroupName: string;
   const pClassRef: TVisClassRef);
 begin
@@ -1096,6 +1107,7 @@ begin
   FClassRef   := pClassRef ;
   FsGroupName := upperCase( psGroupName ) ;
 end;
+
 
 procedure tiGetPropertyNames( pPersistent : TtiBaseObject ; pSL : TStringList ;
                               pPropFilter : TTypeKinds = ctkSimple ) ;
@@ -1105,6 +1117,7 @@ begin
                       pSL,
                       pPropFilter ) ;
 end ;
+
 
 procedure tiGetPropertyNames( pPersistent : TtiBaseObjectClass ;
                               pSL : TStringList ;
@@ -1139,10 +1152,12 @@ begin
   end ;
 end ;
 
+
 function tiIsReadWriteProp( const pData : TtiBaseObject ; const psPropName : string ) : boolean ;
 begin
   result :=tiIsReadWriteProp( TtiBaseObjectClass(pData.ClassType), psPropName ) ;
 end;
+
 
 function tiIsReadWriteProp( const pData : TtiBaseObjectClass ; const psPropName : string ) : boolean ;
 var
@@ -1163,8 +1178,9 @@ begin
     on e:exception do
       raise exception.CreateFmt( 'Error calling tiIsReadWriteProp with class: %s and property %s',
                                  [pData.ClassName, psPropName]);
-  end ;
+  end;
 end;
+
 
 function tiGetSimplePropType( const pPersistent : TtiBaseObject ; const psPropName : string ) : TtiTypeKind ;
 var
@@ -1235,9 +1251,9 @@ begin
                             pPersistent.ClassName +
                             '> Property name <' +
                             psPropName + '>' ) ;
-  end ;
-
+  end;
 end;
+
 
 function tiVarSimplePropType( pValue : Variant ) : TtiTypeKind ;
 begin
@@ -1290,6 +1306,7 @@ varByRef        Bit indicating variant contains a reference (rather than a value
   end ;
 end;
 
+
 function tiIsNumericProp( pPersistent : TtiBaseObject ; psPropName : string ) : boolean ;
 var
   lPropType : TTypeKind ;
@@ -1303,6 +1320,7 @@ begin
   end ;
   result := lPropType in [ tkInteger, tkInt64,tkEnumeration, tkFloat ] ;
 end;
+
 
 end.
 

@@ -17,6 +17,7 @@ type
   TTestVisitedList = class ;
   TTestVisitedOwned = class ;
 
+
   TTestTIVisitor = class(TtiTestCase)
   private
     function CreateListAndOwned : TTestVisitedList ;
@@ -25,7 +26,6 @@ type
   protected
     procedure SetUp ; override ;
   published
-
     // RTTI Support
     procedure tiGetPropertyNames;
     procedure tiGetSimplePropType;
@@ -67,18 +67,20 @@ type
 
     // Test the TFileStream visitor wrapper
     procedure VisStreamToFile;
-
   end ;
+
 
   TTestVisitor_AcceptVisitor = class( TtiVisitor )
   public
     function AcceptVisitor : boolean ; override ;
   end ;
 
+
   TTestVisitor_DoAcceptVisitor = class( TtiVisitor )
   public
     function AcceptVisitor : boolean ; override ;
   end ;
+
 
   TTestVisitor_Execute = class( TtiVisitor )
   private
@@ -88,6 +90,7 @@ type
     procedure Execute( const pVisited : TtiVisited ) ; override ;
   end ;
 
+
   TTestVisitedAbs = class( TtiVisited )
   private
     FIndex: Word;
@@ -95,7 +98,9 @@ type
     property Index : Word read FIndex write FIndex ;
   end;
 
+
   TTestVisited = class( TTestVisitedAbs ) ;
+
 
   TTestVisitedList = class( TTestVisitedAbs )
   private
@@ -107,6 +112,7 @@ type
     constructor Create ; override ;
     destructor  Destroy ; override ;
   end ;
+
 
   TTestVisitedOwned = class( TTestVisitedAbs )
   private
@@ -122,6 +128,7 @@ type
     destructor  Destroy ; override ;
   end ;
 
+
   TTestVisitorIterate = class( TtiVisitor )
   private
     FIndexes: TStringList;
@@ -132,25 +139,30 @@ type
     property    Indexes : TStringList read FIndexes ;
   end ;
 
+
   TTestVisitorContinueVisiting = class( TTestVisitorIterate )
   public
     procedure   Execute( const pVisited : TtiVisited ) ; override ;
   end ;
+
 
   TTestVisitorDepth = class( TTestVisitorIterate )
   public
     procedure   Execute( const pVisited : TtiVisited ) ; override ;
   end ;
 
+
   TTestVisitorController = class( TtiVisitor )
   public
     function VisitorControllerClass : TtiVisitorControllerClass ; override ;
   end ;
 
+
   TTestVisitorGetAllToVisit = class( TtiVisitor )
   protected
     function AcceptVisitor : boolean ; override ;
   end;
+
 
   TTestVisStream = class( TVisStream )
   public
@@ -163,7 +175,9 @@ type
 const
   cTestDoAcceptVisitorException = 'Test DoAcceptVisitor exception.' ;
 
+
 procedure RegisterTests ;
+
 
 implementation
 uses
@@ -178,10 +192,12 @@ uses
   ,tstPerFramework_BOM
   ;
 
+
 procedure RegisterTests ;
 begin
   RegisterNonPersistentTest(TTestTIVisitor);
 end ;
+
 
 { TTestTiPtnVis }
 
@@ -210,6 +226,7 @@ begin
     lVisited.Free;
   end;
 end;
+
 
 procedure TTestTIVisitor.VisFindAllByClass_Execute;
 var
@@ -250,6 +267,7 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.VisGetAllToVisit_Execute;
 var
   lVisGetAllToVisit : TtiVisGetAllToVisit ;
@@ -274,8 +292,8 @@ begin
   finally
     lVisitedList.Free;
   end;
-
 end;
+
 
 procedure TTestTIVisitor.Visited_Caption;
 var
@@ -288,6 +306,7 @@ begin
     lVisited.Free ;
   end ;
 end;
+
 
 procedure TTestTIVisitor.Visited_FindAllByClassType;
 var
@@ -315,10 +334,12 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.Visited_IterateBottomUpSingle;
 begin
   Visited_IterateSingle;
 end;
+
 
 procedure TTestTIVisitor.Visited_SelfIterate;
 var
@@ -329,7 +350,6 @@ begin
   lVisitedList  := TTestVisitedList.Create ;
   lVisitedList.Index := 1 ;
   try
-
     lVisitedOwned := TTestVisitedOwned.Create ;
     lVisitedOwned.Index := 2 ;
     lVisitedOwned.Owned1.Index := 3 ;
@@ -365,6 +385,7 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.Visitor_AcceptVisitor;
 var
   lVis : TTestVisitor_AcceptVisitor ;
@@ -376,6 +397,7 @@ begin
     lVis.Free ;
   end ;
 end;
+
 
 procedure TTestTIVisitor.Visitor_ContinueVisiting;
 var
@@ -395,6 +417,7 @@ begin
     lVisitedList.Free;
   end;
 end;
+
 
 procedure TTestTIVisitor.Visitor_Depth;
 var
@@ -427,6 +450,7 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.Visitor_DoAcceptVisitor;
 var
   lVis : TTestVisitor_DoAcceptVisitor ;
@@ -445,6 +469,7 @@ begin
     lVis.Free ;
   end ;
 end;
+
 
 procedure TTestTIVisitor.Visitor_Execute;
 var
@@ -465,6 +490,7 @@ begin
     lVisitor.Free ;
   end;
 end;
+
 
 procedure TTestTIVisitor.Visitor_VisitorController;
 var
@@ -499,6 +525,7 @@ end;
     property  Stream : TStream read FStream write SetStream ;
   end ;
 }
+
 
 procedure TTestTIVisitor.VisStream;
 var
@@ -539,6 +566,7 @@ begin
     lVis.Free ;
   end;
 end;
+
 
 procedure TTestTIVisitor.VisStreamToFile;
   procedure _CheckFileEquals( const pFileName : TFileName ;
@@ -593,6 +621,7 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.Visited_IterateList;
 var
   lVisitor : TTestVisitorIterate ;
@@ -618,6 +647,7 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.Visited_IterateOwned;
 var
   lVisitor : TTestVisitorIterate ;
@@ -641,6 +671,7 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.Visited_IterateSingle;
 var
   lVisitor : TTestVisitorIterate ;
@@ -661,6 +692,7 @@ begin
     lVisited.Free ;
   end;
 end;
+
 
 procedure TTestTIVisitor.Visited_IterateBottomUpList;
 var
@@ -686,6 +718,7 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.Visited_IterateBottomUpOwned;
 var
   lVisitor : TTestVisitorIterate ;
@@ -709,6 +742,7 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.Visited_IterateListAndOwned;
 var
   lVisitor : TTestVisitorIterate ;
@@ -731,6 +765,7 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.Visited_IterateBottupUpListAndOwned;
 var
   lVisitor : TTestVisitorIterate ;
@@ -752,6 +787,7 @@ begin
     lVisitedList.Free;
   end;
 end;
+
 
 function TTestTIVisitor.CreateListAndOwned: TTestVisitedList;
 var
@@ -781,11 +817,11 @@ begin
   result.List.Add( lVisitedOwned ) ;
 end;
 
+
 function TTestTIVisitor.CreateList: TTestVisitedList;
 var
   lData : TTestVisited ;
 begin
-
   result := TTestVisitedList.Create ;
   result.Index := 1 ;
 
@@ -804,8 +840,8 @@ begin
   lData    := TTestVisited.Create ;
   lData.Index := 5 ;
   result.List.Add( lData ) ;
-
 end;
+
 
 function TTestTIVisitor.CreateOwned: TTestVisitedOwned;
 begin
@@ -815,6 +851,7 @@ begin
   result.Owned2.Index := 3 ;
   result.Owned3.Index := 4 ;
 end;
+
 
 procedure TTestTIVisitor.Visited_ClassCount;
 var
@@ -831,17 +868,22 @@ begin
   end;
 end;
 
+
 procedure TTestTIVisitor.SetUp;
 begin
   inherited;
   gTIOPFManager.Terminated := false ;
 end;
 
+
 { TTestVisitor_DoAcceptVisitor }
+
 function TTestVisitor_DoAcceptVisitor.AcceptVisitor: boolean;
 begin
+  Result := True;   // To get rid of compiler warning
   raise exception.Create( cTestDoAcceptVisitorException ) ;
 end;
+
 
 { TTestVisitor_AcceptVisitor }
 
@@ -849,6 +891,7 @@ function TTestVisitor_AcceptVisitor.AcceptVisitor: boolean;
 begin
   result := ( inherited AcceptVisitor ) ;
 end;
+
 
 { TTestVisitor_Execute }
 
@@ -858,6 +901,7 @@ begin
   ExecuteCalled := true ;
 end;
 
+
 { TTestVisitorIterate }
 
 constructor TTestVisitorIterate.Create;
@@ -866,11 +910,13 @@ begin
   FIndexes := TStringList.Create;
 end;
 
+
 destructor TTestVisitorIterate.Destroy;
 begin
   FIndexes.Free;
   inherited;
 end;
+
 
 procedure TTestVisitorIterate.Execute(const pVisited: TtiVisited);
 begin
@@ -878,6 +924,7 @@ begin
   Assert( pVisited is TTestVisitedAbs, 'pVisited not a TTestVisitedAbs' ) ;
   FIndexes.Add( IntToStr(( pVisited as TTestVisitedAbs ).Index ));
 end;
+
 
 { TTestVisitedList }
 
@@ -887,11 +934,13 @@ begin
   FList := TObjectList.Create;
 end;
 
+
 destructor TTestVisitedList.Destroy;
 begin
   FList.Free;
   inherited;
 end;
+
 
 function TTestVisitedList.GetList: TList;
 begin
@@ -908,6 +957,7 @@ begin
   FOwned2 := TTestVisited.Create;
 end;
 
+
 destructor TTestVisitedOwned.Destroy;
 begin
   FOwned1.Free;
@@ -915,6 +965,7 @@ begin
   FOwned2.Free;
   inherited;
 end;
+
 
 { TTestVisitorDepth }
 
@@ -926,13 +977,14 @@ begin
     IntToStr( Depth ) ;
 end;
 
-{ TTestVisitorController }
 
+{ TTestVisitorController }
 
 function TTestVisitorController.VisitorControllerClass: TtiVisitorControllerClass;
 begin
   result := TtiVisitorCtrlr ;
 end;
+
 
 { TTestVisitorContinueVisiting }
 
@@ -942,12 +994,14 @@ begin
   ContinueVisiting := ( pVisited as TTestVisitedAbs ).Index < 5 ;
 end;
 
+
 { TTestVisitorGetAllToVisit }
 
 function TTestVisitorGetAllToVisit.AcceptVisitor: boolean;
 begin
   result := Visited is TTestVisitedOwned ;
 end;
+
 
 { TTestVisStream }
 
@@ -960,17 +1014,20 @@ begin
   Write( IntToStr( TTestVisitedAbs( Visited ).Index )) ;
 end;
 
+
 procedure TTestVisStream.Write(const psValue: string);
 begin
   // A protected method, so this surfaces it as public for testing
   inherited;
 end;
 
+
 procedure TTestVisStream.WriteLn(const psValue: string);
 begin
   // A protected method, so this surfaces it as public for testing
   inherited;
 end;
+
 
 procedure TTestTIVisitor.tiGetPropertyNames ;
 var
@@ -983,16 +1040,9 @@ begin
     try
       tiVisitor.tiGetPropertyNames( lObj, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF} ] ) ;
       CheckEquals( 3, lsl.Count, 'Failed on StringProp' ) ;
-      {$IFDEF FPC}
-        {$Note This has been fixed in the latest compiler version (2.1.1) }
-      CheckEquals( 'StringProp',         lsl.Strings[0], 'StringProp' ) ;
-      CheckEquals( 'ReadOnlyStringProp', lsl.Strings[1], 'ReadOnlyStringProp' ) ;
-      CheckEquals( 'Caption',            lsl.Strings[2], 'Caption' ) ;
-      {$ELSE}
       CheckEquals( 'Caption',            lsl.Strings[0], 'Caption' ) ;
       CheckEquals( 'StringProp',         lsl.Strings[1], 'StringProp' ) ;
       CheckEquals( 'ReadOnlyStringProp', lsl.Strings[2], 'ReadOnlyStringProp' ) ;
-      {$ENDIF}
 
       tiVisitor.tiGetPropertyNames( lObj, lsl, [ tkString] ) ;
       CheckEquals( 2, lsl.Count, 'Failed on ShortStringProp' ) ;
@@ -1025,8 +1075,20 @@ begin
       CheckEquals( 2, lsl.Count, 'Failed on Int64Prop' ) ;
       CheckEquals( 'Int64Prop', lsl.Strings[0], 'Failed on Int64Prop' ) ;
 
+      { Delphi doesn't have this type defined! }
+      {$IFDEF FPC}
+      tiVisitor.tiGetPropertyNames( lObj, lsl, [tkBool] ) ;
+      CheckEquals( 2, lsl.Count, 'Failed on tkBool' ) ;
+      CheckEquals( 'BoolProp',          lsl.Strings[0], 'Failed on BoolProp' ) ;
+      CheckEquals( 'ReadOnlyBoolProp',  lsl.Strings[1], 'Failed on ReadOnlyBoolProp' ) ;
+      {$ENDIF}
+
       tiVisitor.tiGetPropertyNames( lObj, lsl, ctkInt ) ;
+      {$IFDEF FPC}
+      CheckEquals( 6, lsl.Count, 'Failed testing ctkInt' ) ;
+      {$ELSE}
       CheckEquals( 4, lsl.Count, 'Failed testing ctkInt' ) ;
+      {$ENDIF}
 
       tiVisitor.tiGetPropertyNames( lObj, lsl, [tkFloat] ) ;
       CheckEquals( 4, lsl.Count, 'Failed on tkFloatProp' ) ;
@@ -1040,7 +1102,11 @@ begin
       CheckEquals( 8, lsl.Count, 'Failed testing ctkNumeric' ) ;
 
       tiVisitor.tiGetPropertyNames( lObj, lsl, ctkSimple ) ;
+      {$IFDEF FPC}
+      CheckEquals( 21, lsl.Count, 'Failed testing ctkSimple' ) ;
+      {$ELSE}
       CheckEquals( 19, lsl.Count, 'Failed testing ctkSimple' ) ;
+      {$ENDIF}
 
       tiVisitor.tiGetPropertyNames( lObj, lsl, [tkClass] ) ;
       CheckEquals( 2, lsl.Count, 'Failed on ObjectProp' ) ;
@@ -1049,21 +1115,19 @@ begin
       tiVisitor.tiGetPropertyNames( lObj, lsl, [tkMethod] ) ;
       CheckEquals( 2, lsl.Count, 'Failed on MethodProp' ) ;
       CheckEquals( 'MethodProp', lsl.Strings[0], 'Failed on MethodProp' ) ;
-
     finally
-      lObj.Free ;
-    end ;
-
+      lObj.Free;
+    end;
   finally
-    lsl.Free ;
-  end ;
-end ;
+    lsl.Free;
+  end;
+end;
+
 
 procedure TTestTIVisitor.tiGetSimplePropType ;
 var
   lObj : TTestGetPropNames ;
 begin
-
   lObj := TTestGetPropNames.Create ;
   try
 
@@ -1095,11 +1159,11 @@ begin
       on e:exception do
         CheckIs( e, Exception, 'Failed on MethodProp' ) ;
     end ;
-
   finally
     lObj.Free;
-  end ;
-end ;
+  end;
+end;
+
 
 procedure TTestTIVisitor.tiVarSimplePropType;
 begin
@@ -1109,6 +1173,7 @@ begin
   Check( tiVisitor.tiVarSimplePropType( 123.456  ) = tiTKFloat,    'Failed on tiTKFloat'    ) ;
   Check( tiVisitor.tiVarSimplePropType( Now      ) = tiTKDateTime, 'Failed on tiTKDateTime' ) ;
 end;
+
 
 procedure TTestTIVisitor.tiIsNumericProp ;
 var
@@ -1131,6 +1196,7 @@ begin
     lObj.Free ;
   end ;
 end ;
+
 
 procedure TTestTIVisitor.tiIsReadWriteProp ;
 var
@@ -1162,7 +1228,6 @@ begin
 
   lObj := TTestGetPropNames.Create ;
   try
-
     Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyStringProp' ),      'Failed on ReadOnlyStringProp'       ) ;
     Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyShortStringProp' ), 'Failed on ReadOnlyShortStringProp'  ) ;
     Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyWideStringProp' ),  'Failed on ReadOnlyWideStringProp '  ) ;
@@ -1188,10 +1253,11 @@ begin
     Check( tiVisitor.tiIsReadWriteProp( lObj, 'FloatProp' ),       'Failed on FloatProp'         ) ;
     Check( tiVisitor.tiIsReadWriteProp( lObj, 'ObjectProp' ),      'Failed on ObjectProp'        ) ;
     Check( tiVisitor.tiIsReadWriteProp( lObj, 'MethodProp' ),      'Failed on MethodProp'        ) ;
-
   finally
-    lObj.Free ;
-  end ;
-end ;
+    lObj.Free;
+  end;
+end;
+
 
 end.
+
