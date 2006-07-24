@@ -231,7 +231,7 @@ procedure TtiOPFTestSetupData.ForceTestDataDirectory;
 var
   lDir : string;
 begin
-  Exit;
+//  Exit;   // ?????
   if not CanCreateDatabase then
     Exit; //==>
   lDir := ExtractFilePath(DBName);

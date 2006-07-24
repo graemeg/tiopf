@@ -108,10 +108,7 @@ begin
   tiEncrypt_TST.RegisterTests;
   tiVisitor_TST.RegisterTests;
   tiStreams_TST.RegisterTests;
-  {$IFNDEF LINUX}
-  // temp problem with some tiPool tests that crash fpcUnit.
   tiPool_TST.RegisterTests;
-  {$ENDIF}
   tiQueue_Tst.RegisterTests;
   tiOID_TST.RegisterTests;
   {$IFDEF MSWINDOWS}
@@ -125,6 +122,7 @@ begin
   tiPersistenceLayers_tst.RegisterTests;
   tiClassToDBMap_TST.RegisterTests;
   tiXML_TST.RegisterTests;
+
   {$IFDEF FPC}
   tiOPFFBL_TST.RegisterTests;
   {$ELSE}

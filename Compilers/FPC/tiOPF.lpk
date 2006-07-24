@@ -21,7 +21,7 @@
       </CodeGeneration>
       <Other>
         <WriteFPCLogo Value="False"/>
-        <CustomOptions Value="-dLINK_CSVx -dLINK_TABx -dLINK_FBL -dUseCThreads
+        <CustomOptions Value="-dLINK_CSV -dLINK_TABx -dLINK_FBL -dUseCThreads
 "/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
@@ -31,7 +31,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2"/>
-    <Files Count="42">
+    <Files Count="44">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -200,6 +200,14 @@
         <Filename Value="../../Options/tiXML.pas"/>
         <UnitName Value="tiXML"/>
       </Item42>
+      <Item43>
+        <Filename Value="../../Options/tiQueryCSV.pas"/>
+        <UnitName Value="tiQueryCSV"/>
+      </Item43>
+      <Item44>
+        <Filename Value="../../Options/tiQueryTAB.pas"/>
+        <UnitName Value="tiQueryTAB"/>
+      </Item44>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

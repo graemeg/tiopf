@@ -40,7 +40,7 @@
         <PackageName Value="FCL"/>
       </Item5>
     </RequiredPackages>
-    <Units Count="27">
+    <Units Count="20">
       <Unit0>
         <Filename Value="fpcUnitTIOPFGui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -87,95 +87,60 @@
         <UnitName Value="tiPromptWhichPersistenceLayersToTest"/>
       </Unit8>
       <Unit9>
-        <Filename Value="../../../tiopf/Source/UnitTests/Common/tiTestFramework.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiTestFramework"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="../../../tiopf/Source/UnitTests/Common/tiOPFTestManager.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiOPFTestManager"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="../../../tiopf/Source/UnitTests/Common/tstPerFramework_BOM.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tstPerFramework_BOM"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="../../../tiopf/Source/UnitTests/Common/tiDUnitUtils.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiDUnitUtils"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="../../../tiopf/Source/UnitTests/Common/tiDUnitDependencies.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiDUnitDependencies"/>
-      </Unit13>
-      <Unit14>
         <Filename Value="../Tests/tiObject_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiObject_TST"/>
-      </Unit14>
-      <Unit15>
+      </Unit9>
+      <Unit10>
         <Filename Value="../Tests/tiCompress_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiCompress_TST"/>
-      </Unit15>
-      <Unit16>
+      </Unit10>
+      <Unit11>
         <Filename Value="../Tests/tiStreams_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiStreams_TST"/>
-      </Unit16>
-      <Unit17>
+      </Unit11>
+      <Unit12>
         <Filename Value="../Tests/tiQueue_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiQueue_TST"/>
-      </Unit17>
-      <Unit18>
+      </Unit12>
+      <Unit13>
         <Filename Value="../Tests/tiWin32_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiWin32_TST"/>
-      </Unit18>
-      <Unit19>
+      </Unit13>
+      <Unit14>
         <Filename Value="../Tests/tiDataSet_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiDataSet_TST"/>
-      </Unit19>
-      <Unit20>
+      </Unit14>
+      <Unit15>
         <Filename Value="../Tests/tiQuery_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiQuery_TST"/>
-      </Unit20>
-      <Unit21>
+      </Unit15>
+      <Unit16>
         <Filename Value="../Tests/tiQuerySQL_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiQuerySQL_TST"/>
-      </Unit21>
-      <Unit22>
+      </Unit16>
+      <Unit17>
         <Filename Value="../Tests/tiSyncObjs_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiSyncObjs_TST"/>
-      </Unit22>
-      <Unit23>
+      </Unit17>
+      <Unit18>
         <Filename Value="../Tests/tiOPFCSV_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiOPFCSV_TST"/>
-      </Unit23>
-      <Unit24>
+      </Unit18>
+      <Unit19>
         <Filename Value="../Tests/tiClassToDBMap_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiClassToDBMap_TST"/>
-      </Unit24>
-      <Unit25>
-        <Filename Value="../../../tiopf/Source/UnitTests/Tests/tiBaseObject_TST.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiBaseObject_tst"/>
-      </Unit25>
-      <Unit26>
-        <Filename Value="../../Core/tiUtils.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiUtils"/>
-      </Unit26>
+      </Unit19>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -204,8 +169,7 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-FU_Dcu -dSTATIC_PERLAYER_LINKINGx -dUseCThreads -dLINK_FBL -dLINK_TAB -dLINK_CSV
-"/>
+      <CustomOptions Value="-FU_Dcu -dSTATIC_PERLAYER_LINKINGx -dUseCThreads -dLINK_FBL -dLINK_TAB  -dLINK_CSV"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

@@ -9,9 +9,9 @@ uses
   Interfaces
   ,Forms
   ,GuiTestRunner
-  ,tiDUnitDependencies
   ,tiDUnitINI
   ,tiPromptWhichPersistenceLayersToTest
+  ,tiDUnitDependencies
   ;
   
 

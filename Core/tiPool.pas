@@ -241,7 +241,7 @@ begin
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
   Log('About to call sem_wait', lsConnectionPool);
-  if sem_wait(FSemaphore) <> 0 then
+  if sem_trywait(FSemaphore) <> 0 then
     raise EtiOPFInternalException.Create(cErrorTimedOutWaitingForSemaphore);
   Log('Successfully passed the sem_wait call', lsConnectionPool);
   {$ENDIF LINUX}
@@ -498,7 +498,7 @@ begin
   {$IFDEF LINUX}
   sem_destroy( FSemaphore );
 
-  if sem_init(FSemaphore, 0, 1) <> 0 then
+  if sem_init(FSemaphore, 0, FiMaxPoolSize) <> 0 then
     raise Exception.Create('Failed to create the semaphore');
   {$ENDIF LINUX}
 end;

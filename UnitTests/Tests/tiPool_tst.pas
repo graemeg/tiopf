@@ -20,6 +20,7 @@ type
 
   TTestPoolItemData = class( TtiBaseObject ) ;
 
+
   TThresPoolThread = class( TThread )
   private
     FItemCount: integer;
@@ -34,6 +35,7 @@ type
     property    ItemCount : integer read FItemCount write FItemCount ;
     procedure   Execute ; override ;
   end;
+
 
   TTestTiPool = class(TtiTestCase)
   private

@@ -17,6 +17,7 @@ type
   published
     procedure GetSetSQL; override;
     procedure QueryType; override;
+    {$IFNDEF FPC}   { Temporary disabled for FPC - will fix soon (Graeme) }
     procedure ParamName; override;
     procedure ParamCount; override;
     procedure ParamsAsString; override;
@@ -28,6 +29,7 @@ type
     procedure ParamAsStream; override;
     procedure ParamAsMacro; override;
     procedure ParamIsNull; override;
+    {$ENDIF}
     procedure OpenCloseActive; override;
     procedure ExecSQL; override;
   end;
@@ -161,6 +163,7 @@ begin
 end;
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsBoolean;
 begin
   CreateTableInteger(DatabaseName, PerLayerName) ;
@@ -180,8 +183,10 @@ begin
     DropTestTable;
   end;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsDateTime;
 var
   lDate : TDateTime ;
@@ -202,8 +207,10 @@ begin
     DropTestTable;
   end;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsFloat;
 const
   cValue = 12345.6789 ;
@@ -223,8 +230,10 @@ begin
     DropTestTable;
   end;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsInteger;
 begin
   CreateTableInteger(DatabaseName, PerLayerName) ;
@@ -242,8 +251,10 @@ begin
     DropTestTable;
   end;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsMacro;
 const
   cFields = 'Item_Str_Field' ;
@@ -256,8 +267,10 @@ begin
                    'select ' + cFields + ' from ' + cTable ),
          'ParamAsMacro failed' ) ;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsString;
 begin
   CreateTableString(DatabaseName, PerLayerName) ;
@@ -275,8 +288,10 @@ begin
     DropTestTable;
   end;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamCount;
 begin
   CreateTableTestGroup ;
@@ -316,8 +331,10 @@ begin
     DoDetachAndDisconnect ;
   end ;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamIsNull;
 begin
   CreateTableTestGroup ;
@@ -332,8 +349,10 @@ begin
     DoDetachAndDisconnect ;
   end ;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamName;
 begin
   CreateTableTestGroup ;
@@ -358,8 +377,10 @@ begin
     DoDetachAndDisconnect ;
   end ;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamsAsString;
 var
   lResult : string ;
@@ -405,6 +426,7 @@ begin
     DoDetachAndDisconnect ;
   end ;
 end;
+{$ENDIF}
 
 
 procedure TTestTIQuerySQL.QueryType;
@@ -426,6 +448,7 @@ begin
 end;
 
 
+{$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsStream;
 var
   lStreamFrom : TStringStream ;
@@ -457,7 +480,7 @@ begin
     DropTestTable;
   end;
 end;
-
+{$ENDIF}
 
 end.
 

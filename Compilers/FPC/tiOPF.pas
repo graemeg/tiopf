@@ -14,7 +14,8 @@ uses
     tiOIDGUID, tiQueryFBL, tiLogToFile, tiOIDInteger, tiCompressNone, 
     tiCompressZLib, tiEncryptSimple, tiEncryptNone, tiEncryptDES, 
     tiEncryptBlowfish, tiOIDString, tiDataBuffer_Cli, tiDataBuffer_BOM, 
-    tiQueryTXTAbs, tiTextParser, tiTextParserStructCSV, tiLogToConsole, tiXML; 
+    tiQueryTXTAbs, tiTextParser, tiTextParserStructCSV, tiLogToConsole, tiXML, 
+    tiQueryCSV, tiQueryTAB; 
 
 implementation
 

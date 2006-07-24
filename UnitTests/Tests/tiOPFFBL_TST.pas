@@ -28,9 +28,9 @@ type
   TTestTIDatabaseFBL = class( TTestTIDatabase )
   protected
     procedure Setup; override;
+    procedure CreateDatabase ; override ;
   published
     procedure DatabaseExists ; override ;
-    procedure CreateDatabase ; override ;
   end ;
 
 
@@ -105,11 +105,12 @@ begin
   FSelected     := FEnabled;
   FPerLayerName := cTIPersistFBL ;
   // You can specify a hostname or a local database.
-//  FDBName       := 'localhost|' + ExpandFileName( ReadFromReg( cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd' )) ;
-  FDBName       := ExpandFileName( ReadFromReg( cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd' )) ;
+  FDBName       := 'localhost|' + ReadFromReg( cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd' );
+//  FDBName       := ExpandFileName( ReadFromReg( cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd' ));
+  writeln(FDBName);
   FUsername     := ReadFromReg( cTIPersistFBL, 'Username', 'SYSDBA' ) ;
   FPassword     := ReadFromReg( cTIPersistFBL, 'Password', 'masterkey' );
-  FCanCreateDatabase := True;
+  FCanCreateDatabase := False;
   ForceTestDataDirectory;
 end;
 
@@ -190,6 +191,7 @@ begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
   inherited;
 end;
+
 
 { TTestTIClassToDBMapOperationFBL }
 
