@@ -177,9 +177,11 @@ const
   csWinTimeFormat     = 'hh:mm:ss' ;
   csWinDateTimeFormat = 'dd/MM/YYYY hh:mm:ss' ;
   {$IFDEF UNIX}
-  AllFilesWildCard = '*';
+  AllFilesWildCard    = '*';
+  cLineEnding         = #10;
   {$ELSE}
-  AllFilesWildCard = '*.*';
+  AllFilesWildCard    = '*.*';
+  cLineEnding         = #13#10;
   {$ENDIF UNIX}
 
   // Error messages

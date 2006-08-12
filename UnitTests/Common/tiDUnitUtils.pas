@@ -30,6 +30,7 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF MSWINDOWS}
+  ,tiConstants
   ;
 
 function  tiCreateStringOfSize(pSize: LongInt): string;
@@ -43,7 +44,7 @@ begin
     result := result + ls;
     if (Length(Result)< pSize) and
        (Length(Result) mod 60 = 0) then
-      Result := Result + LineEnding;
+      Result := Result + cLineEnding;
   end;
 end;
 

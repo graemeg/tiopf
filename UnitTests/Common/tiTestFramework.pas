@@ -69,7 +69,7 @@ type
     {$IF defined(VER2_0_2) and defined(FPC)}
       // DUnit interface was added after FPC 2.0.2
       {$I DUnitCompatableIntf.inc}
-    {$ENDIF}
+    {$IFEND}
   end ;
 
 
@@ -329,7 +329,7 @@ end;
 {$IF defined(VER2_0_2) and defined(FPC)}
   // DUnit interface was added after FPC 2.0.2
   {$I DUnitCompatableImpl.inc}
-{$ENDIF}
+{$IFEND}
 
 
 procedure TtiOPFTestCase.DropTableTestGroup( const pDatabase : TtiDatabase = nil ) ;

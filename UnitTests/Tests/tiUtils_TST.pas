@@ -2402,7 +2402,7 @@ begin
       lsl.Free;
     end;
     tiUtils.tiFileToStream(lFileName, lSt);
-    CheckEquals(lS + {$IFDEF FPC}LineEnding{$ELSE}#13#10{$ENDIF}, lSt.DataString);
+    CheckEquals(lS + cLineEnding, lSt.DataString);
   finally
     lSt.Free;
   end;
