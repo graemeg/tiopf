@@ -1,13 +1,19 @@
 unit tiTreeViewChildForm;
 
+{$I tiDefines.inc}
+
 interface
 uses
-  Classes
+{$IFNDEF FPC}
+  Messages
+{$ELSE}
+  LMessages
+  ,LCLIntf
+{$ENDIF}
+  ,Classes
   ,Forms
   ,Contnrs
   ,ExtCtrls
-  ,Messages
-  ,Windows
   ,Controls
   ,ComCtrls
   ,tiTreeView
@@ -20,6 +26,10 @@ const
 
 
 type
+{$IFDEF FPC}
+  TMessage = TLMessage;
+ {$ENDIF}
+
   {
     // This stub of code defines the interface a child form
     // must have if it is to be displayed as in the right
@@ -255,11 +265,13 @@ begin
   ResizeStyle := rsUpdate;
 end;
 
+
 procedure TtiTVSplitter.CMMouseEnter(var Message: TMessage);
 begin
   FbMouseOver := true;
   Paint;
 end;
+
 
 procedure TtiTVSplitter.CMMouseLeave(var Message: TMessage);
 begin
@@ -340,7 +352,7 @@ begin
   inherited;
   TV.Align := alLeft ;
   TV.OnChanging := DoOnChanging;
-  TV.ChangeDelay := 500;
+  {$IFNDEF FPC}TV.ChangeDelay := 500;{$ENDIF}
   FSplitter          := TtiTVSplitter.Create(self);
   FSplitter.Parent   := self;
   FSplitter.Left     := cuiSplitterPos;

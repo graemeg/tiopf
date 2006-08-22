@@ -23,11 +23,21 @@ Contributor(s): Michael Beck [mbeck@bigfoot.com].
 
 unit tiSpeedButton;
 
+
+{$I tiDefines.inc}
+
 interface
 
 uses
   Classes
+  {$IFNDEF FPC}
   ,Messages
+  {$ELSE}
+  ,LMessages
+  ,lcltype
+  ,lclintf
+  ,interfacebase
+  {$ENDIF}
   ,Graphics
   ,Controls
   ,Buttons
@@ -38,6 +48,10 @@ uses
   ;
 
 type
+
+ {$IFDEF FPC}
+  TMessage = TLMessage;
+ {$ENDIF}
 
   TtiSpeedButton = class(TSpeedButton)
   private

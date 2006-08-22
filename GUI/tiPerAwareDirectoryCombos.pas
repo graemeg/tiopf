@@ -53,12 +53,12 @@ type
     property    MustExist : boolean read FbMustExist write FbMustExist ;
     property    CreateDir : boolean read FbCreateDir write FbCreateDir default false ;
   public
-    constructor Create( owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
   TtiPerAwarePickDirectory = class( TtiPerAwarePickAbs )
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
 implementation
@@ -68,14 +68,16 @@ uses
   ,Controls
   ,SysUtils
   ,tiUtils
+{$IFNDEF FPC}
   ,tiJVBrowseFolder
+{$ENDIF}
   ,tiFocusPanel
 //  ,Graphics
   ;
 
 { TtiPerAwarePickDirectory }
 
-constructor TtiPerAwarePickDirectory.Create(Owner: TComponent);
+constructor TtiPerAwarePickDirectory.Create(AOwner: TComponent);
 begin
   WinControl := TtiPickDirectory.Create( self ) ;
   TtiPickDirectory( WinControl ).OnChange := DoChange ;
@@ -90,14 +92,15 @@ end;
 //* TtiPickDirectory
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-constructor TtiPickDirectory.Create( Owner : TComponent ) ;
+constructor TtiPickDirectory.Create( AOwner : TComponent ) ;
 begin
-  inherited Create( Owner ) ;
+  inherited Create( AOwner ) ;
   FbCreateDir := false ;
   self.onExit := pickDirectoryOnExit ;
   OnDblClick := DoButtonClick ;
 end ;
 
+{$IFNDEF FPC}
 procedure TtiPickDirectory.DoButtonClick( sender : TObject ) ;
 var
   lBFD : TtiJVBrowseForFolderDialog;
@@ -124,6 +127,28 @@ begin
   inherited DoButtonClick(Sender);
   ( Owner as TtiFocusPanel ).DoDrawFocusRect(True);
 end ;
+{$ELSE}
+procedure TtiPickDirectory.DoButtonClick( sender : TObject ) ;
+var
+  lBFD : TSelectDirectoryDialog;
+begin
+  lBFD := TSelectDirectoryDialog.Create(nil);
+  try
+    lBFD.Options := [ofEnableSizing,ofViewDetail];
+    lBFD.Title:= Caption;
+    if lBFD.Execute then
+    begin
+      Self.text := lBFD.FileName ;
+      DoOnChange( Self ) ;
+    end;
+  finally
+    lBFD.Free;
+  end;
+  inherited DoButtonClick(Sender);
+  ( Owner as TtiFocusPanel ).DoDrawFocusRect(True);
+end ;
+
+{$ENDIF}
 
 procedure TtiPickDirectory.PickDirectoryOnExit( sender : TObject ) ;
 var sDirectory : string ;

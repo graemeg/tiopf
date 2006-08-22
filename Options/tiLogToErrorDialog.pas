@@ -35,15 +35,12 @@ interface
 uses
   Classes
   ,SysUtils
-  {$IFDEF MSWINDOWS}
-  ,Windows, Messages, Graphics, Controls, Forms
+  ,Graphics, Controls, Forms
   ,Dialogs, ExtCtrls, StdCtrls, Buttons
+  {$IFDEF MSWINDOWS}
+  ,Windows, Messages
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  ,QGraphics, QControls, QForms, QDialogs
-  ,QExtCtrls, QStdCtrls, QButtons
-  {$ENDIF LINUX}
-  ,tiLog
+  ,tiLog,tiLogToFile
   {$IFNDEF VER130}
   ,Variants
   {$ENDIF}
@@ -89,14 +86,19 @@ type
 implementation
 uses
   tiUtils
+  {$IFDEF FPC}
+  ,LResources
+  {$ENDIF}
   ;
-  
-{$IFDEF MSWINDOWS}
+
+var
+  lLog : TtiLogToFile ;
+
+
+
+{$IFNDEF FPC}
   {$R *.dfm}
-{$ENDIF MSWINDOWS}
-{$IFDEF LINUX}
-  {$R *.xfm}
-{$ENDIF LINUX}
+{$ENDIF}
 
 const
   // Some constants for displaying the error dialog
@@ -112,9 +114,9 @@ begin
   Caption     := ' Application error log - ' + Application.Title ;
   Constraints.MinHeight := 300 ;
   Constraints.MinWidth  := 550 ;
-  {$IFDEF MSWINDOWS}
+  {$IFNDEF FPC}
   Image.Picture.Icon.Handle := LoadIcon(0, IDI_ERROR);
-  {$ENDIF MSWINDOWS}
+  {$ENDIF}
   CopyButton.Glyph.LoadFromResourceName( HInstance, 'tiLogCopyToClip' ) ;
 end;
 
@@ -212,9 +214,9 @@ begin
   ListWorking.Clear ;
 
   FForm.MemoLog.Selstart := 0;
-  {$IFDEF MSWINDOWS}
+  {$IFNDEF FPC}
   SendMessage( FForm.MemoLog.handle, em_scrollcaret, 0, 0 );
-  {$ENDIF MSWINDOWS}
+  {$ENDIF}
 
   if not FForm.Visible then begin
     FForm.Top         := ( Screen.Height - FForm.Height ) div 2 ;
@@ -234,13 +236,17 @@ begin
 end;
 
 initialization
-var
-  lLog : TtiLogToFile ;
-begin
   lLog := TtiLogToFile(gLog.RegisterLog( TtiLogToFile )) ;
+  {$IFNDEF FPC}
   lLog.OverwriteOldFile := false ;
   lLog.DateInFileName := true ;
+  {$ENDIF}
+  
   Log( 'Application <' + ParamStr( 0 ) + '> started' ) ;
   gLog.RegisterLog(TLogToError);
+  
+{$IFDEF FPC}
+{$I tiLogToErrorDialog.lrs}
+{$ENDIF}
 
 end.

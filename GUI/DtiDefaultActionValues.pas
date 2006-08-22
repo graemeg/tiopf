@@ -1,8 +1,13 @@
 unit DtiDefaultActionValues;
 
+{$I tiDefines.inc}
+
 interface
 uses
   SysUtils, Classes, ActnList
+{$IFDEF FPC}
+  ,LResources
+ {$ENDIF}
 
   ,tiPerAwareCtrls
   ;
@@ -19,6 +24,11 @@ var
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.dfm}
+{$ELSE}
+initialization
+{$I dtidefaultactionvalues.lrs}
+{$ENDIF}
 
 end.

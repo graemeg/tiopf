@@ -129,7 +129,7 @@ type
     property    ReadOnly ;
 
   public
-    Constructor Create( Owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Destructor  Destroy ; override ;
   end ;
 
@@ -155,7 +155,7 @@ const
 
 { TtiListViewListBox }
 
-constructor TtiListViewListBox.Create(Owner: TComponent);
+constructor TtiListViewListBox.Create(AOwner: TComponent);
   // We cant use the ImageList's GetResource as we may be loading from
   // inside a runtime package and this will cause it to fail.
   procedure LoadImage( const psImageName : string ) ;
@@ -273,7 +273,7 @@ begin
      ( Selected.Data <> nil ) then
     DoOnLVClick( Self,
                  Selected,
-                 Selected.Data,
+                 TtiObject(Selected.Data),
                  Columns[0] );
 end;
 
@@ -326,10 +326,10 @@ begin
   for i := 0 to Items.Count - 1 do
   begin
     LV.Selected := Items[i] ;
-    if GetIsSelected( Items[i].Data ) <> pbSelect then
+    if GetIsSelected( TtiObject(Items[i].Data) ) <> pbSelect then
       DoOnLVClick( Self,
                    Selected,
-                   Selected.Data,
+                   TtiObject(Selected.Data),
                    Columns[0] );
   end ;
   LV.Selected := lSelected ;

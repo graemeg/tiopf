@@ -162,8 +162,8 @@ type
   protected
     procedure   SetParent(AParent: TWinControl); override;
   public
-    Constructor Create( Owner : TComponent ) ; override ;
-    Constructor CreateNew( Owner : TComponent ; Dummy : integer = 0 ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
+    Constructor CreateNew( AOwner : TComponent ; Dummy : integer = 0 ) ; override ;
     Destructor  Destroy ; override ;
     Procedure   AttachThread( pThread : TtiThreadProgress ) ;
     Function    DetachThread( pThread : TtiThreadProgress ) : boolean ;
@@ -180,8 +180,10 @@ type
   TtiProgressBar = class(TProgressBar)
   private
   public
+   {$IFNDEF FPC}
     property  BevelInner ;
     property  BevelOuter ;
+   {$ENDIF}
     property  Color ;
   end ;
 
@@ -207,7 +209,7 @@ type
     procedure   SetCanCancel(const Value: boolean);
     function    GetProgressBarWidth: integer;
   public
-    Constructor Create( Owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     property    Position : integer read GetPosition  write SetPosition ;
     property    Max : integer read GetMax  write SetMax ;
     property    Min : integer read GetMin  write SetMin ;
@@ -226,7 +228,12 @@ uses
   ,tiLog
   ,tiDialogs
   ,SysUtils
+  {$IFNDEF FPC}
   ,Windows
+  {$ELSE}
+  ,Lmessages
+  ,LCLIntf
+  {$ENDIF}
   ,tiRegINI
   ,Dialogs
   ;
@@ -254,13 +261,13 @@ end;
 // * TProgInd
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TProgInd.Create(Owner: TComponent);
+constructor TProgInd.Create(AOwner: TComponent);
 begin
-  inherited Create( Owner )    ;
-  Parent       := ( Owner as TFormThreadProgress ) ;
-  BevelInner   := ( Owner as TFormThreadProgress ).PanelBevelInner ;
-  BevelOuter   := ( Owner as TFormThreadProgress ).PanelBevelOuter ;
-  Color        := ( Owner as TFormThreadProgress ).Color ;
+  inherited Create( AOwner )    ;
+  Parent       := ( AOwner as TFormThreadProgress ) ;
+  BevelInner   := ( AOwner as TFormThreadProgress ).PanelBevelInner ;
+  BevelOuter   := ( AOwner as TFormThreadProgress ).PanelBevelOuter ;
+  Color        := ( AOwner as TFormThreadProgress ).Color ;
   Height       := cuiProgIndHeight ;
   Left         := 4 ;
   Anchors      := [akLeft,akTop,akRight] ;
@@ -282,8 +289,10 @@ begin
   FProgressBar.Height     :=  17 ;
   FProgressBar.Anchors    := [akLeft, akTop, akRight] ;
   FProgressBar.Smooth     := true ;
+  {$IFNDEF FPC}
   FProgressBar.BevelInner := Self.BevelInner ;
   FProgressBar.BevelOuter := Self.BevelOuter ;
+  {$ENDIF}
   FProgressBar.Color      := ( Owner as TFormThreadProgress ).ProgressBarColor ;
 
   FSpeedButton          := TSpeedButton.Create( self ) ;
@@ -359,7 +368,7 @@ end;
 // * TFormThreadProgress
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TFormThreadProgress.CreateNew(Owner: TComponent ; Dummy : Integer = 0 );
+constructor TFormThreadProgress.CreateNew(AOwner: TComponent ; Dummy : Integer = 0 );
 begin
   inherited;
   if Application.MainForm = nil then
@@ -572,9 +581,9 @@ end;
 // * TFormThreadProgress
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TFormThreadProgress.Create(Owner: TComponent);
+constructor TFormThreadProgress.Create(AOwner: TComponent);
 begin
-  Assert( False, 'Do not call TFormThreadProgress.Create, call CreatNew instead.' ) ;
+  Assert( False, 'Do not call TFormThreadProgress.Create, call CreateNew instead.' ) ;
 end;
 
 procedure TFormThreadProgress.ArrangePanels;

@@ -1,5 +1,7 @@
 unit tiVirtualTrees;
 
+{$I tiDefines.inc}
+
 // Version 4.3.1
 //
 // The contents of this file are subject to the Mozilla Public License
@@ -65,7 +67,12 @@ interface
 {$HPPEMIT '#include <oleidl.h>'} // Necessary for BCB 6 SP 2.
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ImgList, ActiveX, StdCtrls, Menus, Printers,
+{$IFDEF FPC}
+  LCLIntf, 
+{$ELSE}
+ Messages,
+{$ENDIF}
+ SysUtils, Classes, Graphics, Controls, Forms, ImgList, ActiveX, StdCtrls, Menus, Printers,
   CommCtrl  // image lists, common controls tree structures
   {$ifdef ThemeSupport}
     {$ifndef COMPILER_7_UP}
@@ -3179,8 +3186,11 @@ implementation
 {$R tiVirtualTrees.res}
 
 uses
-  Consts, Math,
+{$IFNDEF FPC}
+  Consts,
   AxCtrls,   // TOLEStream
+{$ENDIF}
+  Math,
   {$ifdef UseFlatScrollbars}
     FlatSB,    // wrapper for systems without flat SB support
   {$endif UseFlatScrollbars}

@@ -35,14 +35,19 @@ unit tiPerAwareDateRange;
 
 interface
 uses
-  SysUtils,
-  Classes,
-  StdCtrls,
-  Buttons,
-  ExtCtrls,
-  Comctrls,
-  Registry,
-  Messages
+  SysUtils
+  ,Classes
+  ,StdCtrls
+  ,Buttons
+  ,ExtCtrls
+  ,Comctrls
+  ,Registry
+{$IFNDEF FPC}
+  ,Messages
+{$ELSE}
+  ,LMessages
+  ,EditBtn
+{$ENDIF}
   ;
 
 const
@@ -50,6 +55,10 @@ const
   ctiDateRangeMaxDate       = 2958465.0 ;
 
 type
+
+ {$IFDEF FPC}
+  TDateTimePicker = TDateEdit;
+ {$ENDIF}
 
   TRangeType  = ( rtSingleDate, rtDateRange{, rtBoth} ) ;
   TAllowRangeType = ( artSingleDate, artDateRange, artBoth ) ;
@@ -211,7 +220,11 @@ type
     procedure DoOnChangeQuick( sender : TObject ) ;
 
     procedure DoOnChange ;
+    {$IFNDEF FPC}
     procedure WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    {$ELSE}
+    procedure WMSize( var Message: TLMSize ) ; message LM_SIZE ;
+    {$ENDIF}
     function  getRangeSetterCaptions: TStrings;
     function  AppFileName : string ;
     function  RegKeyName    : string ;
@@ -248,7 +261,9 @@ type
 
   end;
 
-procedure Register ;
+
+
+
 
 implementation
 uses
@@ -261,12 +276,9 @@ const
   cuiHeight =  94 ;
   cuiWidth  = 195 ;
 
-procedure Register ;
-begin
-  RegisterComponents( 'TechInsite',
-                      [ TtiDateRange
-                      ] ) ;
-end ;
+
+
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -295,7 +307,7 @@ begin
     MinDate  := ctiDateRangeMinDate ;
     MaxDate  := ctiDateRangeMaxDate ;
     Date     := SysUtils.Date ;
-    Time     := 0.0 ;
+    {$IFNDEF FPC}Time     := 0.0 ;{$ENDIF}
   end ;
 
   FdtpTo   := TDateTimePicker.Create( self ) ;
@@ -309,7 +321,7 @@ begin
     MinDate  := ctiDateRangeMinDate ;
     MaxDate  := ctiDateRangeMaxDate ;
     Date     := SysUtils.Date ;
-    Time     := 0.0 ;
+    {$IFNDEF FPC}Time     := 0.0 ;{$ENDIF}
   end ;
 
   FlblFrom := TLabel.Create( self ) ;
@@ -559,7 +571,11 @@ begin
   //
 end;
 
+{$IFNDEF FPC}
 procedure TtiDateRange.WMSize(var Message: TWMSize);
+{$ELSE}
+procedure TtiDateRange.WMSize(var Message: TLMSize);
+{$ENDIF}
 begin
   Height := cuiHeight ;
   Width  := cuiWidth  ;
@@ -979,22 +995,28 @@ end;
 
 function TtiDateRange.GetMaxDate: TDateTime;
 begin
+{$IFNDEF FPC}
   Assert( FdtpFrom.MaxDate = FdtpTo.MaxDate,
           'FdtpFrom.MaxDate <> FdtpTo.MaxDate' ) ;
   result := FdtpFrom.MaxDate ;
+{$ENDIF}
 end;
 
 function TtiDateRange.GetMinDate: TDateTime;
 begin
+{$IFNDEF FPC}
   Assert( FdtpFrom.MinDate = FdtpTo.MinDate,
           'FdtpFrom.MinDate <> FdtpTo.MinDate' ) ;
   result := FdtpFrom.MinDate ;
+{$ENDIF}
 end ;
 
 procedure TtiDateRange.SetMaxDate(const Value: TDateTime);
 begin
+{$IFNDEF FPC}
   FdtpFrom.MaxDate := Trunc( Value ) ;
   FdtpTo.MaxDate   := Trunc( Value ) ;
+{$ENDIF}
 end ;
 
 procedure TtiDateRange.SetMinDate(const Value: TDateTime);
@@ -1007,8 +1029,10 @@ begin
     lDateTime := ctiDateRangeMinDate
   else
     lDateTime := Trunc( Value ) ;
+{$IFNDEF FPC}
   FdtpFrom.MinDate := lDateTime ;
   FdtpTo.MinDate   := lDateTime ;
+{$ENDIF}
 end ;
 
 procedure TtiDateRange.SetAllowRangeType(const Value: TAllowRangeType);
@@ -1032,14 +1056,23 @@ end ;
 
 procedure TtiDateRange.ShowInternalState;
 begin
+{$IFNDEF FPC}
 ShowMessage(
   'FdtpFrom.MinDate ' + DateTimeToStr( FdtpFrom.MinDate ) + #13 +
   'FdtpFrom.Date    ' + DateTimeToStr( FdtpFrom.Date    ) + #13 +
   'FdtpFrom.MaxDate ' + DateTimeToStr( FdtpFrom.MaxDate ) + #13 +
   'FdtpTo.MinDate   ' + DateTimeToStr( FdtpTo.MinDate   ) + #13 +
   'FdtpTo.Date      ' + DateTimeToStr( FdtpTo.Date      ) + #13 +
-  'FdtpTo.MaxDate   ' + DateTimeToStr( FdtpTo.MaxDate   )) ;
-
+  'FdtpTo.MaxDate   ' + DateTimeToStr( FdtpTo.MaxDate   )
+  ) ;
+{$ELSE}
+ShowMessage(
+  'FdtpFrom.Date    ' + DateTimeToStr( FdtpFrom.Date    ) + #13 +
+  'FdtpTo.Date      ' + DateTimeToStr( FdtpTo.Date      ) + #13 +
+  'MaxDate          ' + DateTimeToStr( MaxDate      ) + #13 +
+  'MinDate          ' + DateTimeToStr( MinDate      ) + #13
+  ) ;
+{$ENDIF}
 end;
 
 { TrsThisFinancialYear }

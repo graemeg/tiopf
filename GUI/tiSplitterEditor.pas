@@ -43,11 +43,17 @@ unit tiSplitterEditor;
 interface
 uses
    tiSplitter
+   {$IFNDEF FPC}
    {$IFNDEF VER130}
      ,DesignIntf
      ,DesignEditors
    {$ELSE}
      ,DsgnIntf
+   {$ENDIF}
+   {$ELSE}
+    ,ComponentEditors
+    ,PropEdits
+    ,LazarusPackageIntf
    {$ENDIF}
   ,Forms
   ,Classes
@@ -81,7 +87,7 @@ type
     procedure SetData(const Value: TtiSplitterPanel);
     procedure DoOnChange( Sender : TObject ) ;
   public
-    Constructor CreateNew( Owner : TComponent ; Dummy : integer = 0 ) ; override ;
+    Constructor CreateNew( AOwner : TComponent ; Dummy : integer = 0 ) ; override ;
     Property    Data : TtiSplitterPanel read FData write SetData ;
   end ;
 
@@ -90,7 +96,9 @@ uses
   Dialogs
   ,SysUtils
   ,Graphics
+{$IFNDEF FPC}
   ,Windows
+{$ENDIF}
   ;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -133,9 +141,9 @@ end;
 //* TtiSplitterPanelEditDlg
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiSplitterPanelEditDlg.CreateNew(Owner: TComponent ; Dummy : Integer = 0 );
+constructor TtiSplitterPanelEditDlg.CreateNew(AOwner: TComponent ; Dummy : Integer = 0 );
 begin
-  inherited CreateNew( Owner ) ;
+  inherited CreateNew( AOwner ,0) ;
   Left := 359 ;
   Top := 219 ;
   BorderIcons := [biSystemMenu] ;
@@ -144,12 +152,14 @@ begin
   ClientHeight := 258 ;
   ClientWidth := 196 ;
   Color := clBtnFace ;
+  {$IFNDEF FPC}
   Font.Charset := DEFAULT_CHARSET ;
+  OldCreateOrder := False ;
+  {$ENDIF}
   Font.Color := clWindowText ;
   Font.Height := -11 ;
   Font.Name := 'MS Sans Serif' ;
   Font.Style := [] ;
-  OldCreateOrder := False ;
   Position := poScreenCenter ;
   //PixelsPerInch := 96 ;
 
@@ -209,7 +219,9 @@ begin
     Top := 158;
     Width := 137 ;
     Height := 17 ;
+    {$IFNDEF FPC}
     Alignment := taLeftJustify ;
+    {$ENDIF}
     Caption := 'Keep splitter position %' ;
     TabOrder := 1 ;
     OnClick := DoOnChange ;
@@ -228,8 +240,10 @@ begin
     Orientation := trHorizontal ;
     Frequency := 10 ;
     Position := 3 ;
+    {$IFNDEF FPC}
     SelEnd := 0 ;
     SelStart := 0 ;
+    {$ENDIF}
     TabOrder := 2 ;
     TickMarks := tmBottomRight ;
     TickStyle := tsAuto ;

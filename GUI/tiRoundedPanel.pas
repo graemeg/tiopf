@@ -23,7 +23,7 @@ type
     procedure SetBorderThickness(const Value: Byte);
     procedure CalcBorderWidth;
   public
-    constructor Create(Owner : TComponent); override ;
+    constructor Create(AOwner : TComponent); override ;
     procedure Paint; override;
     property  DockManager;
   published
@@ -39,9 +39,11 @@ type
     property Enabled;
     property FullRepaint;
     property Font;
+    {$IFNDEF FPC}
     property Locked;
     {$IFDEF DELPHI7ORABOVE}
     property ParentBackground;
+    {$ENDIF}
     {$ENDIF}
     property ParentColor;
     property ParentCtl3D;
@@ -52,7 +54,9 @@ type
     property TabOrder;
     property TabStop;
     property Visible;
+    {$IFNDEF FPC}
     property OnCanResize;
+    {$ENDIF}
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -78,13 +82,15 @@ type
 
 implementation
 uses
-  Windows
-  ,Controls
+{$IFNDEF FPC}
+  Windows,
+{$ENDIF}
+  Controls
   ;
 
 { TtiRoundedPanel }
 
-constructor TtiRoundedPanel.Create(Owner: TComponent);
+constructor TtiRoundedPanel.Create(AOwner: TComponent);
 begin
   inherited;
   FCornerRadius := 5;
@@ -114,9 +120,19 @@ begin
     Canvas.FillRect(lRect);
   end;
   Canvas.Brush.Color := Color;
-  InflateRect(lRect,-FBorderThickness,-FBorderThickness);
+  {$IFNDEF FPC}
+   InflateRect(lRect,-FBorderThickness,-FBorderThickness);
+  {$ELSE}
+  lRect.Right := lRect.Right - FBorderThickness;
+  lRect.Bottom := lRect.Bottom - FBorderThickness;
+  {$ENDIF}
   _DrawBorder(lRect, Color, 2);
-  InflateRect(lRect,-FBorderThickness,-FBorderThickness);
+   {$IFNDEF FPC}
+   InflateRect(lRect,-FBorderThickness,-FBorderThickness);
+  {$ELSE} 
+  lRect.Right := lRect.Right - FBorderThickness;
+  lRect.Bottom := lRect.Bottom - FBorderThickness;
+  {$ENDIF} 
   _DrawBorder(lRect, BorderColor, 1);
 end;
 

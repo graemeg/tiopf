@@ -1,4 +1,4 @@
-{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+(* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   The contents of this file are subject to the Mozilla Public
   License Version 1.1 (the "License"); you may not use this file
   except in compliance with the License. You may obtain a copy of
@@ -29,7 +29,7 @@
 
   ToDo:
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *)
 
 {$I tiDefines.inc}
 
@@ -38,12 +38,16 @@ unit tiFocusPanel;
 interface
 
 uses
+{$IFNDEF FPC}
   Windows
+  ,Messages
+{$ELSE}
+ LClIntf
+{$ENDIF}
   ,Classes
   ,Graphics
   ,Controls
   ,extCtrls
-  ,Messages
   ;
 
 const
@@ -82,11 +86,17 @@ begin
   // Had problems with csAcceptsControls being removed at runtime.
   // It was causing flicker when the panel was resized and owned components
   // where not being redrawn properly.
+  {$IFNDEF FPC}
   if ( csDesigning in ComponentState ) then
     ControlStyle   := ControlStyle - [csAcceptsControls] ;
+  {$ENDIF}
+
 
   OnClick        := DoOnClick ;
-  ControlStyle   := ControlStyle - [csSetCaption] ;
+  {$IFDEF FPC}
+  ControlStyle   := ControlStyle + [csOwnedChildsSelectable];
+  {$ENDIF}
+  ControlStyle   := ControlStyle - [csSetCaption];
   BevelInner     := bvNone ;
   BevelOuter     := bvNone ;
   BorderStyle    := bsNone ;

@@ -32,7 +32,9 @@ uses
    Classes
   ,StdCtrls
   ,Graphics
+{$IFNDEF FPC}
   ,Messages
+{$ENDIF}
   ,Controls
   ;
 
@@ -53,7 +55,7 @@ type
     procedure DoMouseEnter( Sender : TObject ) ; virtual ;
     procedure DoMouseLeave( Sender : TObject ) ; virtual ;
   public
-    constructor Create(Owner : TComponent ) ; override ;
+    constructor Create(AOwner : TComponent ) ; override ;
   published
     property Action ;
     property Anchors ;
@@ -85,7 +87,7 @@ begin
 end;
 {$ENDIF}
 
-constructor TtiHyperLink.Create(Owner: TComponent);
+constructor TtiHyperLink.Create(AOwner: TComponent);
 begin
   inherited;
   FColorAvailable := clNavy ;

@@ -22,11 +22,17 @@
 
 unit tiImageMgr;
 
+{$I tiDefines.inc}
+
 interface
 uses
   Controls
   ,Classes
+{$IFDEF FPC}
+  ,LCLIntf
+{$ELSE}
   ,Windows
+{$ENDIF}
   ,Graphics
   ,tiSpeedButton
   ;
@@ -93,7 +99,9 @@ type
     function    ImageIndex16(const pImageName : string ) : integer ;
     function    ImageIndex24(const pImageName : string ) : integer ;
     procedure   LoadBMPFromRes(const pResName: string; const pBMP     : TBitMap);
+    {$IFNDEF FPC}
     procedure   LoadJPGFromRes(const pResName: string; const pPicture : TPicture);
+    {$ENDIF}
     procedure   LoadBMPFromImageList16(const pResName: string; const pBMP     : TBitMap);
     procedure   LoadIconFromRes(const pResName : string);
     procedure   LoadBMPToTISPeedButton16(const pResName: string; const pButton : TtiSpeedButton);
@@ -105,7 +113,9 @@ function gTIImageListMgr : TtiImageListMgr ;
 implementation
 uses
   SysUtils
+  {$IFNDEF FPC}
   ,JPeg
+  {$ENDIF}
   ,tiResources
   ,Forms
   ;
@@ -139,8 +149,10 @@ destructor TtiImageListMgr.Destroy;
 begin
   FImageNames16.Free;
   FImageNames24.Free;
+  {$IFNDEF FPC}
   if FResFileInstance <> HInstance then
     FreeLibrary(FResFileInstance);
+  {$ENDIF}
   inherited;
 end;
 
@@ -180,20 +192,29 @@ end ;
 
 procedure TtiImageListMgr.LoadResourceDLL(const pDLLName: string);
 begin
+{$IFNDEF FPC}
   FResFileInstance := LoadLibrary(PChar(pDLLName));
   if FResFileInstance = 0 then
     raise exception.CreateFmt( cErrorFailedLoadingResourceDLL,
                                [pDLLName, ClassName + '.LoadResourceDLL'] ) ;
   FResFileName := pDLLName ;
+{$ENDIF}
 end;
 
+
 procedure TtiImageListMgr.LoadBMPFromRes( const pResName : string ; const pBMP : TBitMap ) ;
+const
+  RT_BITMAP = MAKEINTRESOURCE(2);
 begin
-  if FindResource(FResFileInstance, PChar(pResName), RT_BITMAP) <> 0 then
+{$IFNDEF FPC}
+ if FindResource(FResFileInstance, PChar(pResName), RT_BITMAP) <> 0 then
     pBMP.LoadFromResourceName(FResFileInstance, pResName)
   else
     pBMP.LoadFromResourceName(HInstance, pResName)
-end ;
+{$ELSE}
+ pBMP.LoadFromLazarusResource(pResName);
+{$ENDIF}
+end;
 
 procedure TtiImageListMgr.LoadStateImagesFromResouce(const pResName, pRefName : string ; pSize : TtiImageSize ; pState : TtiImageState) ;
 var
@@ -207,23 +228,39 @@ begin
   Assert( ILHot24      <> nil, 'FILHot24      not assigned' ) ;
   Assert( ILDisabled24 <> nil, 'FILDisabled24 not assigned' ) ;
 
+  {$IFNDEF FPC}
   lBMP  := TBitMap.Create ;
+  {$ENDIF}
   try
     lResName := pResName + '_' +
                 ctiImageSizes[pSize] +
                 ctiImageStates[pState];
+    {$IFNDEF FPC}
     LoadBMPFromRes(lResName, lBMP);
+    {$ENDIF}
     if ( pSize = tiIS16 ) then
     begin
       if ( pState = tiISNormal ) then
       begin
         FImageNames16.Add(UpperCase(pRefName));
+        {$IFNDEF FPC}
         ILNormal16.AddMasked( lBMP, clDefault );
+        {$ELSE}
+        ILNormal16.AddFromLazarusResource(lResName);
+        {$ENDIF}
       end
       else if ( pState = tiISHot ) then
+        {$IFNDEF FPC}
         ILHot16.AddMasked( lBMP, clDefault )
+        {$ELSE}
+        ILHot16.AddFromLazarusResource(lResName)
+        {$ENDIF}
       else if ( pState = tiISDisabled ) then
+        {$IFNDEF FPC}
         ILDisabled16.AddMasked( lBMP, clDefault )
+        {$ELSE}
+        ILDisabled16.AddFromLazarusResource(lResName)
+        {$ENDIF}
       else
         raise Exception.CreateFmt( cErrorInvalidImageState, [ClassName + '.LoadSingleImage']);
     end
@@ -232,12 +269,24 @@ begin
       if ( pState = tiISNormal ) then
       begin
         FImageNames24.Add(UpperCase(pRefName));
+        {$IFNDEF FPC}
         ILNormal24.AddMasked( lBMP, clDefault );
+        {$ELSE}
+        ILNormal24.AddFromLazarusResource(lResName);
+        {$ENDIF}
       end
       else if ( pState = tiISHot ) then
+        {$IFNDEF FPC}
         ILHot24.AddMasked( lBMP, clDefault )
+        {$ELSE}
+        ILHot24.AddFromLazarusResource(lResName)
+        {$ENDIF}
       else if ( pState = tiISDisabled ) then
+        {$IFNDEF FPC}
         ILDisabled24.AddMasked( lBMP, clDefault )
+        {$ELSE}
+        ILDisabled24.AddFromLazarusResource(lResName)
+        {$ENDIF}
       else
         raise Exception.CreateFmt( cErrorInvalidImageState, [ClassName + '.LoadSingleImage']);
     end
@@ -245,10 +294,13 @@ begin
         raise Exception.CreateFmt( cErrorInvalidImageSize, [ClassName + '.LoadSingleImage']);
 
   finally
+   {$IFNDEF FPC}
     lBMP.Free;
+    {$ENDIF}
   end;
 end ;
 
+{$IFNDEF FPC}
 procedure TtiImageListMgr.LoadJPGFromRes( const pResName : string;
                                           const pPicture : TPicture);
 var
@@ -282,7 +334,7 @@ begin
     lMemStream.Free;
   end ;
 end;
-
+{$ENDIF}
 
 procedure TtiImageListMgr.LoadImagesFromResource(const pResName: string;
   pSizes: TtiImageSizes{; pStates: TtiImageStates});
@@ -452,7 +504,11 @@ end;
 
 procedure TtiImageListMgr.LoadIconFromRes(const pResName: string);
 begin
+{$IFNDEF FPC}
   Application.Icon.Handle := LoadIcon(FResFileInstance, PChar(pResName));
+{$ELSE}
+ {$Warning Application.Icon.Handle not supported under Lazarus}
+{$ENDIF}
 end;
 
 procedure TtiImageListMgr.LoadBMPToTISPeedButton16(const pResName: string; const pButton: TtiSpeedButton);
@@ -478,6 +534,6 @@ end;
 initialization
 
 finalization
-  uTIImageListMgr.Free;
+  if Assigned(uTIImageListMgr) then uTIImageListMgr.Free;
 
 end.

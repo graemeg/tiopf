@@ -31,7 +31,7 @@ type
   published
     property    PropName    : string read FPropName    write FPropName ;
   public
-    constructor Create( Collection : TCollection ) ; override ;
+    constructor Create( ACollection : TCollection ) ; override ;
     function    Clone : TtiLVDifPKProp ;
   end ;
 
@@ -44,7 +44,7 @@ type
   protected
     function  GetOwner : TPersistent ; override ;
   public
-    constructor Create( Owner : TComponent ) ;
+    constructor Create( AOwner : TComponent ) ;
     property    Items[Index: integer ] : TtiLVDifPKProp read GetItem write SetItem ;
     function    Add : TtiLVDifPKProp ;
   end ;
@@ -97,7 +97,7 @@ type
   protected
     procedure Refresh ;
   public
-    constructor Create( owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     destructor  Destroy ; override ;
     property    DataLHS : TList read FDataLHS write SetDataLHS ;
     property    DataRHS : TList read FDataRHS write SetDataRHS ;
@@ -139,10 +139,10 @@ const
 
   cSBTop         = 185 ;
 
-constructor TtiListViewDif.Create(owner: TComponent);
+constructor TtiListViewDif.Create(AOwner: TComponent);
 
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
   Width  := cWidth ;
   Height := 208 ;
 
@@ -168,7 +168,11 @@ begin
   FsbPrevDif.Flat := True ;
   FsbPrevDif.ParentShowHint := False ;
   FsbPrevDif.ShowHint := True ;
+  {$IFNDEF FPC}
   FsbPrevDif.Glyph.LoadFromResourceName( HInstance, 'TILVDIFARROWUP' ) ;
+  {$ELSE}
+  FsbPrevDif.Glyph.LoadFromLazarusResource('TILVDIFARROWUP' ) ;
+  {$ENDIF}
   FsbPrevDif.OnClick := DoSBPrevDifClick ;
 
   FsbNextDif := TSpeedButton.Create( self ) ;
@@ -181,7 +185,11 @@ begin
   FsbNextDif.Flat := True ;
   FsbNextDif.ParentShowHint := False ;
   FsbNextDif.ShowHint := True ;
+  {$IFNDEF FPC}
   FsbNextDif.Glyph.LoadFromResourceName( HInstance, 'TILVDIFARROWDOWN' ) ;
+  {$ELSE}
+  FsbNextDif.Glyph.LoadFromLazarusResource('TILVDIFARROWDOWN' ) ;
+  {$ENDIF}
   FsbNextDif.OnClick := DoSBNextDifClick ;
 
   FsbEditDifRules := TSpeedButton.Create( self ) ;
@@ -194,7 +202,11 @@ begin
   FsbEditDifRules.Flat := True ;
   FsbEditDifRules.ParentShowHint := False ;
   FsbEditDifRules.ShowHint := True ;
+  {$IFNDEF FPC}
   FsbEditDifRules.Glyph.LoadFromResourceName( HInstance, 'TILVDIFEDITDIFRULES' ) ;
+  {$ELSE}
+  FsbEditDifRules.Glyph.LoadFromLazarusResource('TILVDIFEDITDIFRULES' ) ;
+  {$ENDIF}
   FsbEditDifRules.OnClick := DoSBEditDifRulesClick ;
 
   FsbCols := TSpeedButton.Create( self ) ;
@@ -207,7 +219,11 @@ begin
   FsbCols.Flat := True ;
   FsbCols.ParentShowHint := False ;
   FsbCols.ShowHint := True ;
+  {$IFNDEF FPC}
   FsbCols.Glyph.LoadFromResourceName( HInstance, 'TILVDIFCOLS' ) ;
+  {$ELSE}
+  FsbCols.Glyph.LoadFromLazarusResource('TILVDIFCOLS' ) ;
+  {$ENDIF}
   FsbCols.OnClick := DoSBColsClick ;
 
   FsbFind := TSpeedButton.Create( self ) ;
@@ -220,7 +236,11 @@ begin
   FsbFind.Flat := True ;
   FsbFind.ParentShowHint := False ;
   FsbFind.ShowHint := True ;
+  {$IFNDEF FPC}
   FsbFind.Glyph.LoadFromResourceName( HInstance, 'TILVDIFFIND' ) ;
+  {$ELSE}
+  FsbFind.Glyph.LoadFromLazarusResource('TILVDIFFIND' ) ;
+  {$ENDIF}
   FsbFind.OnClick := DoSBFindClick ;
 
   FspViewDif := TtiSplitterPanel.Create( self ) ;
@@ -683,10 +703,10 @@ begin
   result := TtiLVDifPKProp( inherited add ) ;
 end;
 
-constructor TtiLVDifPKProps.Create(Owner: TComponent);
+constructor TtiLVDifPKProps.Create(AOwner: TComponent);
 begin
   inherited Create( TtiLVDifPKProp ) ;
-  FOwner := Owner ;
+  FOwner := AOwner ;
 end;
 
 function TtiLVDifPKProps.GetItem(Index: integer): TtiLVDifPKProp;
@@ -715,9 +735,9 @@ begin
   result.PropName      := Self.PropName ;
 end;
 
-constructor TtiLVDifPKProp.Create(Collection: TCollection);
+constructor TtiLVDifPKProp.Create(ACollection: TCollection);
 begin
-  inherited Create( Collection ) ;
+  inherited Create( ACollection ) ;
   FPropName := 'EnterValue' ;
 end;
 

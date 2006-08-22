@@ -1,3 +1,5 @@
+{$I tiDefines.inc}
+
 unit tiMaskEdit;
 
 interface
@@ -5,10 +7,17 @@ uses
   tiPerAwareCtrls
   ,StdCtrls
   ,Classes
+{$IFNDEF FPC}
   ,MaskUtils
+{$ELSE}
+  ,MaskEdit
+{$ENDIF}
+
   ;
 
 type
+
+  {$IFDEF FPC} TEditMask = string;{$ENDIF}
   // A wrapper for the TMaskEdit control
   TtiPerAwareMaskEdit = class( TtiPerAwareAbs )
   private
@@ -41,19 +50,21 @@ type
     property OnKeyPress ;
     property OnKeyDown ;
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
 
 implementation
 uses
-  Mask
-  ,TypInfo
+{$IFNDEF FPC}
+  Mask,
+{$ENDIF}
+  TypInfo
   ;
 
 { TtiPerAwareMaskEdit }
 
-constructor TtiPerAwareMaskEdit.Create(Owner: TComponent);
+constructor TtiPerAwareMaskEdit.Create(AOwner: TComponent);
 begin
   FWinControl := TMaskEdit.Create( self ) ;
   TEdit( FWinControl ).OnChange   := DoChange ;

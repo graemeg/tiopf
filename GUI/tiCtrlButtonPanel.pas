@@ -1,5 +1,7 @@
 unit tiCtrlButtonPanel;
 
+{$I tiDefines.inc}
+
 interface
 uses
    Classes
@@ -149,7 +151,6 @@ uses
   ,tiUtils
   ,tiResources
   ,tiImageMgr
-  // Delphi
   ,SysUtils
   ;
 

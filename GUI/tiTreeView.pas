@@ -4,7 +4,15 @@ unit tiTreeView;
 
 interface
 uses
-  ComCtrls
+{$IFNDEF FPC}
+   Messages
+  , Windows
+{$ELSE}
+  lMessages
+  ,LClIntf
+  ,LCLProc
+{$ENDIF}
+  , ComCtrls
   , CommCtrl
   , Classes
   , Menus
@@ -15,8 +23,6 @@ uses
   , Forms
 
   , Contnrs
-  , Messages
-  , Windows
   , tiFocusPanel
   , tiCtrlButtonPanel
   , tiObject
@@ -135,7 +141,7 @@ type
     property OnCanAcceptDrop: TtiTVDragDropConfirmEvent read FOnCanAcceptDrop write FOnCanAcceptDrop;
 
   public
-    constructor Create(Collection: TCollection); override;
+    constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TtiTVDataMapping); reintroduce;
   end;
@@ -173,7 +179,7 @@ type
     procedure DoExpandAll(sender: TObject);
     procedure DoOnPopup(sender: TObject);
   public
-    constructor Create(Owner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property TV: TtiTreeView read FTV write FTV;
   end;
@@ -293,7 +299,7 @@ type
     procedure DoReSize(Sender: TObject); virtual ;
     function  IsUpdating: Boolean;
   public
-    constructor Create(owner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
     procedure   SetFocus ; override ;
 
@@ -405,9 +411,9 @@ end;
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-constructor TtiTreeView.Create(owner: TComponent);
+constructor TtiTreeView.Create(AOwner: TComponent);
 begin
-  inherited create(owner);
+  inherited create(AOwner);
 
   ControlStyle := ControlStyle - [csSetCaption];
   BevelInner := bvNone;
@@ -506,12 +512,12 @@ begin
         if (NodesLoaded.IndexOf(Node.Data) = -1) then
         begin
           NodesLoaded.Add(Node.Data);
-          AddNodeChildren(Node, Node.Data);
+          AddNodeChildren(Node, TtiObject(Node.Data));
         end;
 
       { TODO : Assign parentNode and ParentData }
         if Assigned(OnSelectNode) then
-          OnSelectNode(Self, Node, Node.Data, nil, nil); // !!.01 bug fix IK
+          OnSelectNode(Self, Node, TObject(Node.Data), nil, nil); // !!.01 bug fix IK
 
   //      GetDataPage(Node.Data, Node);
 
@@ -519,7 +525,7 @@ begin
         lDataMapping := FindMapping(TObject(Node.Data) as TtiObject);
         if (lDataMapping <> nil) and
           (assigned(lDataMapping.OnGetDataPage)) then
-          lDataMapping.OnGetDataPage(Node.Data, Node);
+          lDataMapping.OnGetDataPage(TObject(Node.Data), Node);
       end;
     finally
       EndUpdate;
@@ -603,7 +609,12 @@ procedure TtiTreeView.AddNodeChildren({ptiTreeView : TtiTreeView ;}
     // Check to see if this node is already added, and if it is, then we are
     // probably doing a refresh after the user has inserted a new node.
     for i := 0 to pParentNode.Count - 1 do
+    {$IFNDEF FPC}
       if pParentNode.Item[i].Data = pData then
+    {$ELSE}
+      {$Note Probably fixed in Lazarus SVN (?)}
+      if TtiObject(pParentNode.Items[i].Data) = pData then
+    {$ENDIF}
         Exit; //==>
 
     if FbApplyFilter and Assigned(FOnFilterData) then
@@ -784,7 +795,7 @@ begin
 
     { TODO : Assign ParentNode and ParentData }
     if Assigned(FOnSelectNode) then
-      FOnSelectNode(Self, lNode, lNode.Data, nil, nil);
+      FOnSelectNode(Self, lNode, TObject(lNode.Data), nil, nil);
 
     // Is this necessary here /
     // GetDataPage(pData: TObject; pNode: TTreeNode) ;
@@ -815,9 +826,9 @@ end;
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-constructor TTVPopupMenu.Create(Owner: TComponent);
+constructor TTVPopupMenu.Create(AOwner: TComponent);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
   Images  := gTIImageListMgr.ILNormal16;
 
   FmiExpandAll := TMenuItem.Create(nil);
@@ -941,10 +952,10 @@ begin
 
   if pNode <> nil then
   begin
-    pData := pNode.Data;
+    pData := TtiObject(pNode.Data);
     pParentNode := pNode.Parent;
     if pParentNode <> nil then
-      pParentData := pParentNode.Data;
+      pParentData := TtiObject(pParentNode.Data);
   end;
 
   pMapping := FindMapping(TtiObject(pData));
@@ -963,17 +974,23 @@ begin
   // Delete all the parent's children
   for i := pTreeNode.Count - 1 downto 0 do
   begin
+    {$IFNDEF FPC}
     ptiTreeView.NodesLoaded.Remove(pTreeNode.Item[i].Data);
     ptiTreeView.Items.Delete(pTreeNode.Item[i]);
+    {$ELSE}
+    {$Note Probably fixed in Lazarus SVN}
+    ptiTreeView.NodesLoaded.Remove(pTreeNode.Items[i].Data);
+    ptiTreeView.Items.Delete(pTreeNode.Items[i]);
+    {$ENDIF}
   end;
 
   ptiTreeView.NodesLoaded.Remove(pTreeNode.Data);
 
   // Update the node text and image.
-  lDataMapping := FindMapping(pTreeNode.Data);
+  lDataMapping := FindMapping(TtiObject(pTreeNode.Data));
   if lDataMapping <> nil then begin
     pTreeNode.Text := GetPropValue(TObject(pTreeNode.Data), lDataMapping.DisplayPropName, True);
-    GetNodeImageIndex(pTreeNode, pTreeNode.Data, lDataMapping);
+    GetNodeImageIndex(pTreeNode, TtiObject(pTreeNode.Data), lDataMapping);
   end;
 
   // Collapse the parent node
@@ -983,7 +1000,7 @@ begin
 
 end;
 
-procedure TtiTreeView.DoDelete;
+procedure TtiTreeView.DoDelete(Sender: TObject);
 var
   lNode: TTreeNode;
   lData: TtiObject;
@@ -1037,18 +1054,29 @@ begin
 
     // Reposition the selected node as close as possible to the position
     // of the deleted node.
+   {$IFNDEF FPC}
     if (liNodeIndex > 0) and (lParentNode.Count > 0) then
       Selected := lParentNode.Item[liNodeIndex - 1]
     else if (liNodeIndex = 0) and (lParentNode.Count > 0) then
       Selected := lParentNode.Item[0]
     else
       Selected := lParentNode;
+    {$ELSE}
+    {$Note Probably fixed in Lazarus SVN}
+    if (liNodeIndex > 0) and (lParentNode.Count > 0) then
+      Selected := lParentNode.Items[liNodeIndex - 1]
+    else if (liNodeIndex = 0) and (lParentNode.Count > 0) then
+      Selected := lParentNode.Items[0]
+    else
+      Selected := lParentNode;
+
+    {$ENDIF}
 
   end;
 
 end;
 
-procedure TtiTreeView.DoInsert;
+procedure TtiTreeView.DoInsert(Sender: TObject);
   procedure _ExpandAndCountChildren(pNode: TTreeNode; var piCount: integer);
   begin
     piCount := 0;
@@ -1143,7 +1171,11 @@ begin
     begin
       _ExpandAndCountChildren(lNode, liCount);
       if liNodeCount <> liCount then
+       {$IFNDEF FPC}
         Selected := lNode.Item[lNode.Count - 1];
+        {$ELSE}
+        Selected := lNode.Items[lNode.Count - 1];
+        {$ENDIF}
       //CurrentChildForm.SetFocus ;
     end;
 
@@ -1152,7 +1184,11 @@ begin
     begin
       _ExpandAndCountChildren(lParentNode, liCount);
       if liParentNodeCount <> liCount then
+      {$IFNDEF FPC}
         Selected := lParentNode.Item[lParentNode.Count - 1];
+        {$ELSE}
+        Selected := lParentNode.Items[lParentNode.Count - 1];
+        {$ENDIF}
       //CurrentChildForm.SetFocus ;
     end;
 
@@ -1160,7 +1196,7 @@ begin
 
 end;
 
-procedure TtiTreeView.DoEdit;
+procedure TtiTreeView.DoEdit(Sender: TObject);
 var
   lNode: TTreeNode;
   lParentNode: TTreeNode;
@@ -1220,7 +1256,11 @@ begin
   try
     GetPropList(pPersistent.ClassInfo, [tkClass], lList);
     for i := 0 to lcount - 1 do
+     {$IFNDEF FPC}
       psl.add(lList[i].Name);
+      {$ELSE}
+      psl.add(lList^[i]^.Name);
+      {$ENDIF}
   finally
     FreeMem(lList, lSize);
   end;
@@ -1329,7 +1369,7 @@ begin
   begin
     FTV.Canvas.Brush.Color := _GetCanvasColor(clWhite);
     if Assigned( FOnGetFont ) then
-      FOnGetFont( Node, Node.Data, TV.Canvas.Font, TV.Canvas )
+      FOnGetFont( Node, TObject(Node.Data), TV.Canvas.Font, TV.Canvas )
     else
       FTV.Canvas.Font.Color := clBlack;
   end
@@ -1338,7 +1378,7 @@ begin
   begin
     FTV.Canvas.Brush.Color := _GetCanvasColor(clBtnFace{clSilver});
     if Assigned( FOnGetFont ) then
-      FOnGetFont( Node, Node.Data, TV.Canvas.Font, TV.Canvas )
+      FOnGetFont( Node, TObject(Node.Data), TV.Canvas.Font, TV.Canvas )
     else
       FTV.Canvas.Font.Color := clBlack;
   end
@@ -1347,7 +1387,7 @@ begin
   begin
     FTV.Canvas.Brush.Color := _GetCanvasColor(clWhite);
     if Assigned( FOnGetFont ) then
-      FOnGetFont( Node, Node.Data, TV.Canvas.Font, TV.Canvas )
+      FOnGetFont( Node, TObject(Node.Data), TV.Canvas.Font, TV.Canvas )
     else
       FTV.Canvas.Font.Color := clBlack;
   end;
@@ -1359,9 +1399,9 @@ end;
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-constructor TtiTVDataMapping.Create(Collection: TCollection);
+constructor TtiTVDataMapping.Create(ACollection: TCollection);
 begin
-  inherited Create(Collection);
+  inherited Create(ACollection);
   FsDisplayPropName := 'Caption';
   FsDataClassName := 'TtiObject';
   FName := ClassNameToCollectionItemName(FsDataClassName);
@@ -1564,7 +1604,11 @@ begin
     else
     begin
       if liAddress <= lNode.Count - 1 then
+      {$IFNDEF FPC}
         lNode := lNode.Item[liAddress]
+       {$ELSE}
+        lNode := lNode.Items[liAddress]
+       {$ENDIF}
       else
         lNode := nil;
     end;
@@ -1791,7 +1835,7 @@ var
 begin
   result := nil;
   for i := 0 to Items.Count - 1 do
-    if Items[i].Data = pData then
+    if TObject(Items[i].Data) = pData then
     begin
       result := Items[i];
       Break; //==>
@@ -1809,7 +1853,7 @@ procedure TtiTreeView.DoDragDrop(Sender, Source: TObject; X, Y: Integer);
   begin
     for i := 0 to pList.Count - 1 do
     begin
-      lNode := ptiTreeView.FindNodeByData(pList.Items[i]);
+      lNode := ptiTreeView.FindNodeByData(TObject(pList.Items[i]));
       if lNode <> nil then
         lNode.Expand(false);
     end;
@@ -2245,7 +2289,7 @@ begin
     Exit ; //==>
   BeginUpdate;
   try
-    lSelectedData := Selected.Data;
+    lSelectedData := TtiObject(Selected.Data);
     Selected := Selected.Parent;
     RefreshCurrentNode;
     SelectedData := lSelectedData;

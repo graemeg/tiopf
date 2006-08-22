@@ -8,10 +8,21 @@ unit tiPerAwareCtrls;
 
 interface
 uses
+ {$IFNDEF FPC}
   Windows
+  ,OleCtnrs
+  ,Messages
+  {$ELSE}
+  lmessages
+  ,lcltype
+  ,lclintf
+  ,interfacebase
+  ,editbtn
+  ,variants
+  {$ENDIF}
+  ,registry
   ,ActnList
   ,SysUtils
-  ,Messages
   ,Classes
   ,Graphics
   ,Controls
@@ -20,9 +31,7 @@ uses
   ,extCtrls
   ,comctrls
   ,Buttons
-  ,OleCtnrs
   ,Menus
-  ,registry
   ,tiFocusPanel
   ,tiResources
   ,tiObject
@@ -47,12 +56,23 @@ type
 
   // LabelStyle can have these values
   TLabelStyle = ( lsNone, lsTop, lsLeft, lsTopLeft, lsRight ) ;
+  
+  
+  TtiSubLabel = class(TCustomLabel)
+  public
+    constructor Create(AOwner: TComponent); override;
+  published
+    property Caption;
+    property OnClick;
+    property AutoSize;
+  end;
+
 
   // Abstract base class
   TtiPerAwareAbs = class( TtiFocusPanel )
   protected
     FLabelStyle : TLabelStyle;
-    FLabel      : TLabel ;
+    FLabel      : {$IFDEF FPC}TtiSubLabel{$ELSE}TLabel{$ENDIF} ;
     FWinControl : TWinControl ;
     FbCenterWhenLabelIsLeft : boolean ;
     FsFieldName: string;
@@ -71,7 +91,11 @@ type
     function    GetCaption: TCaption; virtual ;
     procedure   SetCaption(const Value: TCaption); virtual ;
     procedure   SetData(const Value: TtiObject); virtual ;
+    {$IFNDEF FPC}
     procedure   WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    {$ELSE}
+    //procedure   LMSize( var Message: TLMSize ) ; message LM_SIZE ;
+    {$ENDIF}
     procedure   PositionLabel ; virtual ;
     procedure   PositionWinControl ; virtual ;
     procedure   SetLabelWidth(const Value: Integer); virtual ;
@@ -136,7 +160,7 @@ type
     property OnChange : TNotifyEvent read FOnChange write FOnChange ;
 
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     destructor  Destroy ; override ;
     procedure   SetFocus; override ;
     property    Data       : TtiObject read FData         write SetData ;
@@ -171,7 +195,7 @@ type
     property OnKeyPress ;
     property OnKeyDown ;
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
   // A wrapper for the TMemo control
@@ -198,7 +222,7 @@ type
     property OnKeyPress ;
     property OnKeyDown ;
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
   // An abstract wrapper for the TComboBox control
@@ -219,7 +243,7 @@ type
     property    DropDownCount : integer read GetDropDownCount write SetDropDownCount ;
     property    CharCase  : TEditCharCase read GetCharCase write SetCharCase ;
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     property    ItemIndex : integer read GetItemIndex write SetItemIndex ;
     procedure   DoOnKeyPress( Sender : TObject ; var Key : Char ) ; override ;
   end ;
@@ -250,7 +274,7 @@ type
     procedure pmiClearOnClick( sender : TObject ) ;
 
   protected
-    procedure   SetValue(const Value: String); override ;
+    procedure   SetValue(const AValue: String); override ;
     procedure   Loaded ; override ;
     procedure   DoOnExit( Sender : TObject ) ;
 
@@ -261,7 +285,7 @@ type
     property OnKeyDown ;
 
   public
-    constructor Create(owner: TComponent);override;
+    constructor Create(AOwner: TComponent);override;
     destructor  Destroy ; override ;
     procedure   Save ;
     procedure   Read ;
@@ -292,7 +316,7 @@ type
     procedure   DataToWinControl ; override ;
     procedure   WinControlToData ; override ;
   public
-    constructor Create(owner: TComponent);override;
+    constructor Create(AOwner: TComponent);override;
     property    Value : TtiObject read GetValue write SetValue ;
     property    ValueAsString : string read GetValueAsString write SetValueAsString ;
     property    List : TList read FList write SetList ;
@@ -304,6 +328,13 @@ type
   end;
 
 
+  {$IFDEF FPC}
+  TDTDateMode = (dmComboBox, dmUpDown);
+  TDateTimeKind = (dtkDate, dtkTime);
+  TDateTimePicker = TDateEdit;
+  {$ENDIF}
+
+
   // A wrapper for the TDateTimePicker control
   TtiPerAwareDateTimePicker = class( TtiPerAwareAbs )
   private
@@ -311,10 +342,12 @@ type
     procedure SetValue(const Value: TDateTime);
     procedure DoOnExit(Sender: TObject);
     procedure DoKeyUp( Sender: TObject; var Key: Word; Shift: TShiftState);
+    {$IFNDEF FPC}
     function  GetMaxDate: TDateTime;
     function  GetMinDate: TDateTime;
     procedure SetMaxDate(const Value: TDateTime);
     procedure SetMinDate(const Value: TDateTime);
+    {$ENDIF}
     function  GetDateMode: TDTDateMode;
     function  GetKind: TDateTimeKind;
     procedure SetDateMode(const Value: TDTDateMode);
@@ -327,12 +360,14 @@ type
     procedure   SetReadOnly(const Value: Boolean);override ;
   published
     property Value : TDateTime read GetValue write SetValue ;
+    {$IFNDEF FPC}
     property MaxDate : TDateTime read GetMaxDate write SetMaxDate ;
     property MinDate : TDateTime read GetMinDate write SetMinDate ;
+    {$ENDIF}
     property Kind     : TDateTimeKind read GetKind write SetKind ;
     property DateMode : TDTDateMode read GetDateMode write SetDateMode ;
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     procedure   Loaded; override ;
   end ;
 
@@ -353,7 +388,7 @@ type
   published
     property    Value : boolean read GetValue write SetValue ;
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
 
@@ -421,7 +456,7 @@ type
     property    Style     : TtiFloatEditStyle read FFloatEditStyle write SetFloatEditStyle ;
 
   public
-    constructor Create( owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
   TtiPerAwareImageEditOnLoadFromFile = procedure( Sender : TObject ; var pFileName : string ; var pDefaultAction : boolean ) of object ;
@@ -597,7 +632,7 @@ type
     property    Filter : string read FFilter write FFilter ;
     property    VisibleButtons : TtiImageEditVisibleButtons read FVisibleButtons write SetVisibleButtons;
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
 {
@@ -626,18 +661,24 @@ uses
   // http://www.melander.dk/delphi/gifimage/ and extent's Delphi's TImage
   // component with GIF support.
   //,GifImage
+{$IFNDEF FPC}
   ,ShellAPI
+{$ELSE}
+  ,lclproc
+{$ENDIF}
+  ,tiImageMgr
   // ,tiUtils // For debugging
   // ,tiLog
   ,tiExcept
-  ,tiImageMgr
   ,tiUtils
   ,tiConstants
   ;
 
 // Added by Chris Latta (andromeda@froggy.com.au) because the values of some
 // constants are changed inside the Initialization section.
+{$IFNDEF FPC}
 {$J+}
+{$ENDIF}
 
 const
   cValidFloatChrs : set of char = [ '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ;
@@ -654,9 +695,17 @@ var
 //* TtiPerAwareAbs
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiPerAwareAbs.Create(Owner: TComponent);
+
+constructor TtiSubLabel.Create(AOwner : TComponent);
 begin
-  inherited Create(Owner);
+ inherited;
+ Include(FComponentStyle, csSubComponent);
+end;
+
+
+constructor TtiPerAwareAbs.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
 
   FOnChange      := nil ;
 
@@ -665,10 +714,12 @@ begin
 
   FLabelStyle    := lsLeft ;
 
-  FLabel         := TLabel.Create( Self ) ;
+  FLabel         := {$IFDEF FPC}TtiSubLabel{$ELSE}TLabel{$ENDIF}.Create( Self ) ;
   FLabel.Parent  := self ;
   // ToDo: Default Label.Caption to the component's name
   FLabel.Caption := 'Enter label &name' ;
+
+
 
   FLabel.AutoSize := false ;
   FLabel.Width    := cuiDefaultLabelWidth ;
@@ -848,11 +899,13 @@ begin
   end;
 end;
 
+{$IFNDEF FPC}
 procedure TtiPerAwareAbs.WMSize(var Message: TWMSize);
 begin
   PositionLabel ;
   PositionWinControl ;
 end;
+{$ENDIF}
 
 procedure TtiPerAwareAbs.SetData(const Value: TtiObject);
 begin
@@ -991,7 +1044,11 @@ var
   lPropInfo : PPropInfo ;
 begin
   lPropInfo := GetPropInfo( FData, FsFieldName ) ;
+  {$IFNDEF FPC}
   result    := ( lPropInfo.SetProc = nil ) ;
+  {$ELSE}
+  result    := ( lPropInfo^.SetProc = nil ) ;
+  {$ENDIF}
 end;
 
 function TtiPerAwareAbs.Focused: Boolean;
@@ -1005,7 +1062,7 @@ end;
 //* TtiPerAwareEdit
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiPerAwareEdit.Create(Owner: TComponent);
+constructor TtiPerAwareEdit.Create(AOwner: TComponent);
 begin
   FWinControl := TEdit.Create( self ) ;
   TEdit( FWinControl ).OnChange   := DoChange ;
@@ -1038,7 +1095,12 @@ begin
 { NB 3rd param of GetPropValue below is boolean for 'PreferStrings'.
      Up to and including D2005, this has a default value of True.
      In D2006 we must explicitly state it.  (Thank you Borland) }
-  TEdit( FWinControl ).Text := GetPropValue( FData, FsFieldName ) ;
+  {$IFNDEF FPC}
+   TEdit( FWinControl ).Text := GetPropValue( FData, FsFieldName );
+  {$ELSE}
+  {$Note I'm not sure if this is correct}
+   TEdit( FWinControl ).Text := VarToStr(GetPropValue( FData, FsFieldName));
+  {$ENDIF}
   SetOnChangeActive( true ) ;
 end;
 
@@ -1100,7 +1162,7 @@ end;
 //* TtiPerAwareMemo
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiPerAwareMemo.Create(Owner: TComponent);
+constructor TtiPerAwareMemo.Create(AOwner: TComponent);
 begin
   FWinControl := TMemo.Create( self ) ;
   TMemo( FWinControl ).OnChange := DoChange ;
@@ -1191,10 +1253,10 @@ end;
 //* TtiPerAwareDateTimePicker
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiPerAwareDateTimePicker.Create(Owner: TComponent);
+constructor TtiPerAwareDateTimePicker.Create(AOwner: TComponent);
 begin
   FWinControl := TDateTimePicker.Create( self ) ;
-  TDateTimePicker(FWinControl).Time := 0 ;
+  {$IFNDEF FPC}TDateTimePicker(FWinControl).Time := 0 ;{$ENDIF}
   FbCenterWhenLabelIsLeft := true ;
   inherited;
   Height := cDefaultHeightSingleRow ;
@@ -1205,8 +1267,13 @@ begin
   if not DataAndPropertyValid then
     Exit ; //==>
   SetOnChangeActive( false ) ;
+  {$IFNDEF FPC}
   TDateTimePicker( FWinControl ).DateTime :=
     Trunc( GetPropValue( FData, FsFieldName, True )) ;
+  {$ELSE}
+  TDateTimePicker( FWinControl ).Date :=
+    Trunc( GetPropValue( FData, FsFieldName, True )) ;
+  {$ENDIF}
   SetOnChangeActive( true ) ;
 end;
 
@@ -1234,13 +1301,13 @@ procedure TtiPerAwareDateTimePicker.SetOnChangeActive(Value: boolean);
 begin
   if Value then
   begin
-    TDateTimePicker( FWinControl ).OnCloseUp  := DoChange ;
+    TDateTimePicker( FWinControl ).{$IFNDEF FPC}OnCloseUp{$ELSE}OnChange{$ENDIF}  := DoChange ;
     TDateTimePicker( FWinControl ).OnExit     := DoOnExit ;
     TDateTimePicker( FWinControl ).OnKeyUp    := DoKeyUp    ;
   end
   else
   begin
-    TDateTimePicker( FWinControl ).OnCloseUp := nil ;
+    TDateTimePicker( FWinControl ).{$IFNDEF FPC}OnCloseUp{$ELSE}OnChange{$ENDIF} := nil ;
     TDateTimePicker( FWinControl ).OnExit    := nil ;
     TDateTimePicker( FWinControl ).OnKeyUp   := nil ;
   end ;
@@ -1262,13 +1329,14 @@ var
 begin
   SetOnChangeActive( false ) ;
   lDate := trunc( Value );
+{$IFNDEF FPC}
   if (TDateTimePicker(FWinControl).MaxDate <> 0) and
      (lDate > TDateTimePicker(FWinControl).MaxDate) then
     TDateTimePicker(FWinControl).MaxDate := lDate
   else if (lDate < TDateTimePicker(FWinControl).MinDate) and
            (TDateTimePicker(FWinControl).MinDate <> 0) then
     TDateTimePicker(FWinControl).MinDate := lDate;
-
+{$ENDIF}
   TDateTimePicker( FWinControl ).Date := lDate ;
   WinControlToData ;
   SetOnChangeActive( true ) ;
@@ -1282,11 +1350,16 @@ begin
     Exit ; //==>
   if ReadOnly then
     Exit ; //==>
+ {$IFNDEF FPC}
   liValue := Trunc( TDateTimePicker( FWinControl ).DateTime ) ;
+ {$ELSE}
+  liValue := Trunc( TDateTimePicker( FWinControl ).Date ) ;
+ {$ENDIF}
 
   SetPropValue( FData, FsFieldName, liValue ) ;
 end;
 
+{$IFNDEF FPC}
 function TtiPerAwareDateTimePicker.GetMaxDate: TDateTime;
 begin
   result := TDateTimePicker( FWinControl ).MaxDate ;
@@ -1306,6 +1379,7 @@ procedure TtiPerAwareDateTimePicker.SetMinDate(const Value: TDateTime);
 begin
   TDateTimePicker( FWinControl ).MinDate := Trunc(Value) ;
 end;
+{$ENDIF}
 
 procedure TtiPerAwareDateTimePicker.SetControlColor;
 begin
@@ -1331,7 +1405,7 @@ end;
 //* TtiPerAwareCheckBox
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiPerAwareCheckBox.Create(Owner: TComponent);
+constructor TtiPerAwareCheckBox.Create(AOwner: TComponent);
 begin
   FWinControl := TCheckBox.Create( self ) ;
   TCheckBox( FWinControl ).Caption := '' ;
@@ -1415,7 +1489,7 @@ end;
 //* TtiPerAwareFloatEdit
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiPerAwareFloatEdit.Create( owner : TComponent ) ;
+constructor TtiPerAwareFloatEdit.Create( AOwner : TComponent ) ;
 begin
   FWinControl := TEdit.Create( self ) ;
   FbCenterWhenLabelIsLeft := true ;
@@ -1469,7 +1543,9 @@ var rValue : real ;
 begin
   try
     rValue := strToFloat( RemoveFormatChr( sValue )) ;
-    if rValue < rValue + 1 then ; // To trick compiler warnings
+    {$IFNDEF FPC}
+     if rValue < rValue + 1 then ; // To trick compiler warnings
+    {$ENDIF}
     result := true ;
   except
     result := false ;
@@ -1640,7 +1716,7 @@ begin
 
   if FiPrecision > 0 then
   begin
-    if Pos( FsEditMask, DecimalSeparator ) <> 0 then
+    if AnsiPos( FsEditMask, DecimalSeparator ) <> 0 then
       FsEditMask := Copy( FsEditMask, 1, Pos( FsEditMask, '.' ) - 1 ) ;
     lFrac := '' ;
     for i := 1 to FiPrecision do
@@ -1806,7 +1882,7 @@ end;
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-constructor TtiPerAwareImageEdit.Create(Owner: TComponent);
+constructor TtiPerAwareImageEdit.Create(AOwner: TComponent);
 var
   i : integer ;
   lLastControl : TControl ;
@@ -1824,8 +1900,10 @@ begin
   FScrollBox.Left   := 0 ;
   FScrollBox.Color  := clWindow ;
   FScrollBox.Align  := alNone;
+{$IFNDEF FPC}
   FScrollBox.VertScrollBar.Tracking := True;
   FScrollBox.HorzScrollBar.Tracking := True;
+{$ENDIF}
   FScrollBars       := ssBoth ;
 
   FImage        := TImage.Create( Self ) ;
@@ -1846,7 +1924,11 @@ begin
     Hint   := 'Load from file' ;
     ShowHint := true ;
     OnClick  := DoLoadFromFile ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName( HInstance, 'PAILOADFROMFILE' ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource( 'PAILOADFROMFILE' ) ;
+    {$ENDIF}
   end ;
   lLastControl := FbtnLoadFromFile ;
 
@@ -1861,7 +1943,11 @@ begin
     Hint     := 'Save to file' ;
     ShowHint := true ;
     OnClick  := DoSaveToFile ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName( HInstance, 'paiSaveToFile' ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource('paiSaveToFile' ) ;
+    {$ENDIF}
   end ;
   lLastControl := FbtnSaveToFile ;
 
@@ -1876,7 +1962,11 @@ begin
     Hint     := 'Copy to clipboard' ;
     ShowHint := true ;
     OnClick  := DoCopyToClip ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName( HInstance, 'paiCopyToClipBoard' ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource('paiCopyToClipBoard' ) ;
+    {$ENDIF}
   end ;
   lLastControl := FbtnCopyToClip ;
 
@@ -1891,7 +1981,11 @@ begin
     Hint   := 'Paste from clipboard' ;
     ShowHint := true ;
     OnClick := DoPasteFromClip ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName( HInstance, 'paiPasteFromClipboard' ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource('paiPasteFromClipboard' ) ;
+    {$ENDIF}
   end ;
   lLastControl := FbtnPasteFromClip ;
 
@@ -1923,7 +2017,11 @@ begin
     Hint   := 'Edit' ;
     ShowHint := true ;
     OnClick := DoEdit ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName( HInstance, 'paiEdit' ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource('paiEdit' ) ;
+    {$ENDIF}
   end ;
   lLastControl := FbtnEdit ;
 
@@ -1938,7 +2036,11 @@ begin
     Hint   := 'Clear' ;
     ShowHint := true ;
     OnClick := DoClear ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName( HInstance, 'paiClear' ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource('paiClear' ) ;
+    {$ENDIF}
   end ;
   lLastControl := FbtnClear ;
 
@@ -1953,7 +2055,11 @@ begin
     Hint   := 'Stretch' ;
     ShowHint := true ;
     OnClick := DoStretch ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName( HInstance, 'paiStretch' ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource('paiStretch' ) ;
+    {$ENDIF}
   end ;
 
   if not( csDesigning in ComponentState ) then
@@ -2039,6 +2145,7 @@ begin
     begin
       FsFileName := lSD.FileName ;
       FImage.Picture.SaveToFile( FsFileName ) ;
+      {$IFNDEF FPC}
       FsInitialDir := ExtractFilePath( FsFileName ) ;
       if MessageDlg( 'Do you want to edit this file now?',
                      mtConfirmation,
@@ -2050,6 +2157,7 @@ begin
                        nil,
                        nil,
                        SW_SHOWNORMAL ) ;
+      {$ENDIF}
     end;
   finally
     lSD.Free ;
@@ -2195,6 +2303,7 @@ var
 begin
   Clipboard.Open;
   try
+  {$IFNDEF FPC}
     Format := EnumClipboardFormats(0);
     while Format <> 0 do
     begin
@@ -2205,6 +2314,9 @@ begin
       end;
       Format := EnumClipboardFormats(Format);
     end;
+    {$ELSE}
+     {$WARNING Not sure how to fix that}
+    {$ENDIF}
     Result := False;
   finally
     Clipboard.Close;
@@ -2407,7 +2519,7 @@ begin
   try
     for I := 0 to FList.Count - 1 do
       lItems.AddObject( GetPropValue( TObject(FList.Items [ I ]), FsFieldNameDisplay, True),
-                        FList.Items[ I ]);
+                        TObject(FList.Items[ I ]));
   except
     on e:exception do
       raise Exception.CreateFmt( 'Error adding list items to combobox ' +
@@ -2450,7 +2562,7 @@ function TtiPerAwareComboBoxDynamic.GetValue: TtiObject;
 begin
   with TComboBox( WinControl ) do
     if (ItemIndex >= 0) and (ItemIndex < FList.Count) then
-      Result:= FList [ ItemIndex ]
+      Result:= TtiObject(FList [ ItemIndex ])
     else
       Result := nil;
 end;
@@ -2479,7 +2591,7 @@ begin
     raise EtiOPFProgrammerException.Create(cErrorListHasNotBeenAssigned);
 
   for I := 0 to FList.Count - 1 do
-    if FList.Items[ I ] = Value then
+    if TtiObject(FList.Items[ I ]) = Value then
     begin
       TComboBox( WinControl ).ItemIndex := I;
       Break; //==>
@@ -2496,7 +2608,7 @@ begin
   if ReadOnly then
     Exit ; //==>
 
-  lValue := FList.Items[ComboBox.ItemIndex];
+  lValue := tTiObject(FList.Items[ComboBox.ItemIndex]);
 
   lPropType := PropType( Data, FieldName ) ;
   if lPropType = tkClass then
@@ -2522,7 +2634,7 @@ end;
 //* TtiPerAwareComboBoxAbs
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiPerAwareComboBoxAbs.Create(Owner: TComponent);
+constructor TtiPerAwareComboBoxAbs.Create(AOwner: TComponent);
 begin
   FWinControl := TComboBox.Create( self ) ;
   TComboBox( FWinControl ).OnChange := DoChange ;
@@ -2578,7 +2690,9 @@ begin
   inherited SetReadOnly( Value ) ;
   if HandleAllocated then
   begin
+  {$IFNDEF FPC}
     SendMessage(Handle, EM_SETREADONLY, Ord(Value), 0);
+  {$ENDIF}
     TComboBox( WinControl ).Style := uStyles[ Value ];
   end else if Value then
     TComboBox( WinControl ).Enabled := False
@@ -2588,9 +2702,9 @@ end;
 
 { TtiPerAwareComboBoxHistory }
 
-constructor TtiPerAwareComboBoxHistory.Create(owner: TComponent);
+constructor TtiPerAwareComboBoxHistory.Create(AOwner: TComponent);
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
   TComboBox( FWinControl ).Style := csDropDown ;
   TComboBox( FWinControl ).OnExit := DoOnExit ;
   FiHistoryCount := 5 ;
@@ -2713,25 +2827,33 @@ end;
 
 function TtiPerAwareDateTimePicker.GetDateMode: TDTDateMode;
 begin
+  {$IFNDEF FPC}
   result := TDateTimePicker( WinControl ).DateMode ;
+  {$ELSE}
+  result := dmComboBox;
+  {$ENDIF}
 end;
 
 function TtiPerAwareDateTimePicker.GetKind: TDateTimeKind;
 begin
+  {$IFNDEF FPC}
   result := TDateTimePicker( WinControl ).Kind ;
+  {$ELSE}
+  result := dtkDate;
+  {$ENDIF}
 end;
 
 procedure TtiPerAwareDateTimePicker.SetDateMode(const Value: TDTDateMode);
 begin
-  TDateTimePicker( WinControl ).DateMode := Value ;
+{$IFNDEF FPC} TDateTimePicker( WinControl ).DateMode := Value ;{$ENDIF}
 end;
 
 procedure TtiPerAwareDateTimePicker.SetKind(const Value: TDateTimeKind);
 begin
-  TDateTimePicker( WinControl ).Kind := Value ;
+{$IFNDEF FPC}  TDateTimePicker( WinControl ).Kind := Value ;{$ENDIF}
 end;
 
-procedure TtiPerAwareComboBoxHistory.SetValue(const Value: String);
+procedure TtiPerAwareComboBoxHistory.SetValue(const AValue: String);
 var
   i : integer ;
   lStrings : TStrings ;
@@ -2741,7 +2863,7 @@ begin
   lStrings := TComboBox( FWinControl ).Items ;
   lFoundIndex := -1 ;
   for i := 0 to lStrings.Count - 1 do
-    if lStrings[i] = Value then
+    if lStrings[i] = AValue then
     begin
       lFoundIndex := i ;
       Break ; //==>
@@ -2749,7 +2871,7 @@ begin
 
   if lFoundIndex = -1 then
   begin
-    lStrings.Insert(1, Value);
+    lStrings.Insert(1, AValue);
     lFoundIndex := 1 ;
   end ;
 
@@ -2800,12 +2922,16 @@ end;
 
 function TtiPerAwareComboBoxAbs.GetCharCase: TEditCharCase;
 begin
+  {$IFNDEF FPC}
   result := TComboBox( FWinControl ).CharCase ;
+  {$ELSE}
+  result := ecNormal;
+  {$ENDIF}
 end;
 
 procedure TtiPerAwareComboBoxAbs.SetCharCase(const Value: TEditCharCase);
 begin
-  TComboBox( FWinControl ).CharCase := Value ;
+  {$IFNDEF FPC}TComboBox( FWinControl ).CharCase := Value ;{$ENDIF}
 end;
 
 procedure TtiPerAwareComboBoxAbs.DoOnKeyPress(Sender: TObject; var Key: Char);
@@ -2858,7 +2984,7 @@ begin
   TDateTimePicker(FWinControl).Font.Name := cDefaultFixedFontName;
 end;
 
-constructor TtiPerAwareComboBoxDynamic.Create(owner: TComponent);
+constructor TtiPerAwareComboBoxDynamic.Create(AOwner: TComponent);
 begin
   inherited;
   FsFieldNameDisplay := 'Caption';

@@ -1,0 +1,608 @@
+LazarusResources.Add('TEMPLATE','XPM',[
+  '/* XPM */'#10'static char *TEMPLATE_xpm[] = {'#10'/* width height num_colors'
+  +' chars_per_pixel */'#10'"    24    24       16            1",'#10'/* colors'
+  +' */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #8080'
+  +'00",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c #808'
+  +'080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c #ff'
+  +'ff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m c #f'
+  +'fffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"edddddddddddd'
+  +'ddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm'
+  +'",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edd'
+  +'ddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddd'
+  +'dddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm"'
+  +','#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddd'
+  +'dddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddddddd'
+  +'ddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'
+  +#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddd'
+  +'ddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddd'
+  +'dddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIBUTTONPANEL','XPM',[
+  '/* XPM */'#10'static char *TTIBUTTONPANEL_xpm[] = {'#10'/* width height num_'
+  +'colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* '
+  +'colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c'
+  +' #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e '
+  +'c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i'
+  +' c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"'
+  +'m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"edddddd'
+  +'dddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddddddddd'
+  +'ddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10
+  +'"edddddddddddddddddddddde",'#10'"edmmmmmmm`dmmmmmmmm`ddde",'#10'"edm#ffffe`'
+  +'dmfgffgfe`ddde",'#10'"edmf#fffe`dmffggffe`ddde",'#10'"edmff#f#e`dmffggffe`d'
+  +'dde",'#10'"edmfff#fe`dmfgffgfe`ddde",'#10'"edmeeeeee`dmeeeeeee`ddde",'#10'"'
+  +'ed````````d`````````ddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddd'
+  +'dddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddddddddddddd'
+  +'de",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"e'
+  +'dddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddd'
+  +'ddddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTIDATERANGE','XPM',[
+  '/* XPM */'#10'static char *TTIDATERANGE_xpm[] = {'#10'/* width height num_co'
+  +'lors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* co'
+  +'lors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #'
+  +'808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c '
+  +'#808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c'
+  +' #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m '
+  +'c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"edddddddd'
+  +'ddddddddddddddm",'#10'"edeeeeeeeeeeeeeeeeeeeedm",'#10'"edefffffffffffffffff'
+  +'f`dm",'#10'"edeffffffeeeeeeeeeeef`dm",'#10'"edef`ff`femmmmmmmmm`f`dm",'#10
+  +'"edeff``ffebmbmbfffe`f`dm",'#10'"edeff``ffemmmmmf`fe`f`dm",'#10'"edeff``ffe'
+  +'mbmbmfffe`f`dm",'#10'"edef`ff`femmmmmeeee`f`dm",'#10'"edeffffffe``````````f'
+  +'`dm",'#10'"edeffffffffffffffffff`dm",'#10'"edeffffffffffffffffff`dm",'#10'"'
+  +'edeffffffeeeeeeeeeeef`dm",'#10'"edef`ff`femmmmmmmmm`f`dm",'#10'"edeff``ffeb'
+  +'mbmbfffe`f`dm",'#10'"edeff``ffemmmmmf`fe`f`dm",'#10'"edeff``ffembmbmfffe`f`'
+  +'dm",'#10'"edef`ff`femmmmmeeee`f`dm",'#10'"edeffffffe``````````f`dm",'#10'"e'
+  +'deffffffffffffffffff`dm",'#10'"ede```````````````````dm",'#10'"eddddddddddd'
+  +'dddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIHYPERLINK','XPM',[
+  '/* XPM */'#10'static char *TTIHYPERLINK_xpm[] = {'#10'/* width height num_co'
+  +'lors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* co'
+  +'lors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #'
+  +'808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c '
+  +'#808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c'
+  +' #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m '
+  +'c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"edddddddd'
+  +'ddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddd'
+  +'dddm",'#10'"edbddbbdddddddddbddddddm",'#10'"edbdddddddddddddbddddddm",'#10
+  +'"edbdddddddddddddbddddddm",'#10'"edbdddddddddddddbddddddm",'#10'"edbddbbddb'
+  +'dbbdddbddddbdm",'#10'"edbddbbddbbddbddbdddbddm",'#10'"edbddbbddbdddbddbddbd'
+  +'ddm",'#10'"edbddbbddbdddbddbbbbdddm",'#10'"edbddbbddbdddbddbdddbddm",'#10'"'
+  +'edbddbbddbdddbddbdddbddm",'#10'"edbddbbddbdddbddbddddbdm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"edbbbbbbbbbbbbbbbbbbbbdm",'#10'"eddddddddddddddddddddd'
+  +'dm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"e'
+  +'ddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddd'
+  +'dddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTILISTVIEW','XPM',[
+  '/* XPM */'#10'static char *TTILISTVIEW_xpm[] = {'#10'/* width height num_col'
+  +'ors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* col'
+  +'ors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #8'
+  +'08000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c #'
+  +'808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c '
+  +'#ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m c'
+  +' #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"eddddddddd'
+  +'ddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddeeeeeeeeeeeeeeeeee'
+  +'dde",'#10'"edde````````````````fdde",'#10'"edde`ffffefffefffefmfdde",'#10'"'
+  +'edde`ffffefffefffefmfdde",'#10'"edde`eeeeeeeeeeeeeeefdde",'#10'"edde`mmmmmm'
+  +'mmmmmmmmmfdde",'#10'"edde`geeemeeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmfd'
+  +'de",'#10'"edde`beeemeeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10'"e'
+  +'dde`#eeemeeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10'"edde`geeemee'
+  +'emeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10'"edde`beeemeeemeeemeefdd'
+  +'e",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10'"eddefffffffffffffffffdde",'#10'"ed'
+  +'ddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddd'
+  +'dddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTILISTVIEWDIF','XPM',[
+  '/* XPM */'#10'static char *TTILISTVIEWDIF_xpm[] = {'#10'/* width height num_'
+  +'colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* '
+  +'colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c'
+  +' #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e '
+  +'c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i'
+  +' c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"'
+  +'m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"edddddd'
+  +'dddddddddddddddde",'#10'"edeeeeeeeeeeeeeeeeeeeede",'#10'"edemmmmmmmmmmmmmmm'
+  +'mmfede",'#10'"edemmmmmmmmmmmmmmmmmfede",'#10'"edemeeeeeeemmeeeeeeefede",'#10
+  +'"edememmmmm`mmemmmmm`fede",'#10'"edememjjjm`mmemjjjm`fede",'#10'"edememmmmm'
+  +'`mmemmmmm`fede",'#10'"edememgggm`mmemjjjm`fede",'#10'"edememmmmm`mmemmmmm`f'
+  +'ede",'#10'"edememjjjm`mmemgggm`fede",'#10'"edememmmmm`mmemmmmm`fede",'#10'"'
+  +'edememjjjm`mmemjjjm`fede",'#10'"edememmmmm`mmemmmmm`fede",'#10'"edememjjjm`'
+  +'mmemgggm`fede",'#10'"edememmmmm`mmemmmmm`fede",'#10'"edememgggm`mmemjjjm`fe'
+  +'de",'#10'"edememmmmm`mmemmmmm`fede",'#10'"edem```````mm```````fede",'#10'"e'
+  +'demfffffffffffffffffede",'#10'"edefeeeeeeeeeeeeeeeeeede",'#10'"eddddddddddd'
+  +'ddddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTILISTVIEWLISTBOX','XPM',[
+  '/* XPM */'#10'static char *TTILISTVIEWLISTBOX_xpm[] = {'#10'/* width height '
+  +'num_colors chars_per_pixel */'#10'"    24    24       16            1",'#10
+  +'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"'
+  +'a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10
+  +'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"eddddd'
+  +'ddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddd'
+  +'dddddde",'#10'"eddd```````````````fddde",'#10'"eddd`ffffeffeffeffffddde",'
+  +#10'"eddd`eeeeeeeeeeeeeefddde",'#10'"eddd`ffffffmmmmmmmmfddde",'#10'"eddd`f`'
+  +'```emmmmmmmmfddde",'#10'"eddd`f`mfmemmmmmmmmfddde",'#10'"eddd`f`f`mem``m``m'
+  +'mfddde",'#10'"eddd`f`mmmemmmmmmmmfddde",'#10'"eddd`feeeeemmmmmmmmfddde",'#10
+  +'"eddd`ffffffmmmmmmmmfddde",'#10'"eddd`f````emmmmmmmmfddde",'#10'"eddd`f`mfm'
+  +'emmmmmmmmfddde",'#10'"eddd`f`f`mem``m``mmfddde",'#10'"eddd`f`mmmemmmmmmmmfd'
+  +'dde",'#10'"eddd`feeeeemmmmmmmmfddde",'#10'"edddffffffffffffffffddde",'#10'"'
+  +'edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddd'
+  +'dddddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTILISTVIEWPLUS','XPM',[
+  '/* XPM */'#10'static char *TTILISTVIEWPLUS_xpm[] = {'#10'/* width height num'
+  +'_colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/*'
+  +' colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a '
+  +'c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e'
+  +' c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"'
+  +'i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"eddddd'
+  +'ddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddeeeeeeeeeeeeee'
+  +'eeeedde",'#10'"edde````````````````fdde",'#10'"edde`ffffefffefffefmfdde",'
+  +#10'"edde`ffffefffefffefmfdde",'#10'"edde`eeeeeeeeeeeeeeefdde",'#10'"edde`mm'
+  +'mmmmmmmmmmmmmfdde",'#10'"edde`geeemeeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmm'
+  +'mmfdde",'#10'"edde`beeemeeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10
+  +'"edde`#eeemeeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10'"edde`geeem'
+  +'eeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmgfdde",'#10'"edde`beeemeeemeeemegf'
+  +'dde",'#10'"edde`mmmmmmmmmmmmmmgfdde",'#10'"eddeffffffffffffggggggde",'#10'"'
+  +'eddddddddddddddddddgddde",'#10'"eddddddddddddddddddgddde",'#10'"edddddddddd'
+  +'dddddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTIMEMOREADONLY','XPM',[
+  '/* XPM */'#10'static char *TTIMEMOREADONLY_xpm[] = {'#10'/* width height num'
+  +'_colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/*'
+  +' colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a '
+  +'c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e'
+  +' c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"'
+  +'i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"eddddd'
+  +'dddddddddddddddddm",'#10'"eddeeeeeeeeeeeeeeee`dddm",'#10'"eddefffffffffffff'
+  +'ff`dddm",'#10'"eddefbbbbbfffffffff`dddm",'#10'"eddefffffffffffffff`dddm",'
+  +#10'"eddefffffffffffffff`dddm",'#10'"eddefbbbbbbbbbbbbff`dddm",'#10'"eddefff'
+  +'ffffffffffff`dddm",'#10'"eddefbbbbbbbbbbbbff`dddm",'#10'"eddeffffffffffffff'
+  +'f`dddm",'#10'"eddefbbbbbbbbbbbbff`dddm",'#10'"eddefffffffffffffff`dddm",'#10
+  +'"eddefbbbbbbbbbbbbff`dddm",'#10'"eddefffffffffffffff`dddm",'#10'"eddefbbbbb'
+  +'bbbbbbbff`dddm",'#10'"eddefffffffffffffff`dddm",'#10'"eddefbbbbbbbbbbbbff`d'
+  +'ddm",'#10'"eddefbbbbbbbbbbbbff`dddm",'#10'"eddefffffffffffffff`dddm",'#10'"'
+  +'eddefffffffffffffff`dddm",'#10'"edde````````````````dddm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIMICROBUTTON','XPM',[
+  '/* XPM */'#10'static char *TTIMICROBUTTON_xpm[] = {'#10'/* width height num_'
+  +'colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* '
+  +'colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c'
+  +' #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e '
+  +'c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i'
+  +' c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"'
+  +'m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"edddddd'
+  +'dddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddddddddd'
+  +'ddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10
+  +'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddmmmm`fm'
+  +'mmm`fmmmm`ddde",'#10'"eddmgge`fmhhe`fmjje`ddde",'#10'"eddmgge`fmhhe`fmjje`d'
+  +'dde",'#10'"eddmeee`fmeee`fmeee`ddde",'#10'"edd`````f`````f`````ddde",'#10'"'
+  +'edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddd'
+  +'dddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddddddddddddd'
+  +'de",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"e'
+  +'dddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddd'
+  +'ddddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWARECHECKBOX','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWARECHECKBOX_xpm[] = {'#10'/* width height'
+  +' num_colors chars_per_pixel */'#10'"    24    24       16            1",'#10
+  +'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"'
+  +'a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10
+  +'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"eddddd'
+  +'dddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddddddddd'
+  +'ddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddeeeeeeeeeeeedm",'
+  +#10'"edddddddddeeeeeeeeeeeedm",'#10'"edd``dd``demmmmmmmmmm`dm",'#10'"edd`ddd'
+  +'`ddem`mmmmmm`m`dm",'#10'"edd`ddd`ddemm`mmm``mm`dm",'#10'"edd`ddd`ddemmm`m`m'
+  +'mmm`dm",'#10'"ed```````demmmm`mmmmm`dm",'#10'"edd`ddd`ddemmm`m`mmmm`dm",'#10
+  +'"edd`ddd`ddemm`mmm``mm`dm",'#10'"edd`ddd`ddem`mmmmmm`m`dm",'#10'"ed``d```dd'
+  +'emmmmmmmmmm`dm",'#10'"eddddddddde```````````dm",'#10'"edddddddddddddddddddd'
+  +'ddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"'
+  +'eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWARECOMBOBOXDYNAMIC','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWARECOMBOBOXDYNAMIC_xpm[] = {'#10'/* width'
+  +' height num_colors chars_per_pixel */'#10'"    24    24       16           '
+  +' 1",'#10'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #00800'
+  +'0",'#10'"a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #0080'
+  +'80",'#10'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00f'
+  +'f00",'#10'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00'
+  +'ffff",'#10'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'
+  +#10'"eddddddddddddddddddddddm",'#10'"ed```````dddd```````dddm",'#10'"ed`mmmm'
+  +'m`dddd`mmmmm`dddm",'#10'"ed`mbbbm``````mgggm`dddm",'#10'"ed`mmmmm`dddd`mmmm'
+  +'m`dddm",'#10'"ed```````dddd```````dddm",'#10'"eddddddddddddddd`ddddddm",'#10
+  +'"eddddddddddddddd`ddddddm",'#10'"eddddddddddddddd`ddddddm",'#10'"eddddddddd'
+  +'dddddd`ddddddm",'#10'"edddddddeeeeeeeeeeeeeeem",'#10'"ed``d``demmmmmmmmmmmm'
+  +'m`m",'#10'"ed`dd`ddembbbbmmmmmmmm`m",'#10'"ed`dd`ddembmmbmmfffffe`m",'#10'"'
+  +'ed`dd`ddembmmbmmf```fe`m",'#10'"e``````dembbbbmmff`ffe`m",'#10'"ed`dd`ddemm'
+  +'mmbmmff`ffe`m",'#10'"ed`dd`ddemmmmbmmfffffe`m",'#10'"ed`dd`ddembbbbmmeeeeee'
+  +'`m",'#10'"e``d``ddemmmmmmmmmmmmm`m",'#10'"eddddddde``````````````m",'#10'"e'
+  +'ddddddddddddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWARECOMBOBOXHISTORY','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWARECOMBOBOXHISTORY_xpm[] = {'#10'/* width'
+  +' height num_colors chars_per_pixel */'#10'"    24    24       16           '
+  +' 1",'#10'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #00800'
+  +'0",'#10'"a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #0080'
+  +'80",'#10'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00f'
+  +'f00",'#10'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00'
+  +'ffff",'#10'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'
+  +#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddd'
+  +'ddddddddddddddddm",'#10'"edeeeeeeeeeeeee`````dddm",'#10'"edemmmmmmmmmmmm`mm'
+  +'f`dddm",'#10'"edembbbbbbbbbbm```f`dddm",'#10'"edemmmmmmmmmmmm`eef`dddm",'#10
+  +'"edeeeeeeeeeeeeee`````ddm",'#10'"edeemmmmmmmmmmmmmmmf`ddm",'#10'"eddembbbbb'
+  +'bbbbbmm``f`ddm",'#10'"eddemmmmmmmmmmmmmeef`ddm",'#10'"eddeeeeeeeeeeeee`````'
+  +'`dm",'#10'"eddeemmmmmmmmmmm`mmmf`dm",'#10'"edddembbbbbbbbbb`m``f`dm",'#10'"'
+  +'edddemmmmmmmmmmm`meef`dm",'#10'"edddemmmmmmmmmmm`ffff`dm",'#10'"eddde``````'
+  +'```````````dm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddd'
+  +'dm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"e'
+  +'ddddddddddddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWARECOMBOBOXSTATIC','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWARECOMBOBOXSTATIC_xpm[] = {'#10'/* width '
+  +'height num_colors chars_per_pixel */'#10'"    24    24       16            '
+  +'1",'#10'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000'
+  +'",'#10'"a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #00808'
+  +'0",'#10'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff'
+  +'00",'#10'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00f'
+  +'fff",'#10'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'
+  +#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddd'
+  +'ddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddd'
+  +'dddddm",'#10'"edddddddeeeeeeeeeeeeeeem",'#10'"ed``d``demmmmmmmmmmmmm`m",'#10
+  +'"ed`dd`ddembbbbmmmmmmmm`m",'#10'"ed`dd`ddembmmbmmfffffe`m",'#10'"ed`dd`ddem'
+  +'bmmbmmf```fe`m",'#10'"e``````dembbbbmmff`ffe`m",'#10'"ed`dd`ddemmmmbmmff`ff'
+  +'e`m",'#10'"ed`dd`ddemmmmbmmfffffe`m",'#10'"ed`dd`ddembbbbmmeeeeee`m",'#10'"'
+  +'e``d``ddemmmmmmmmmmmmm`m",'#10'"eddddddde``````````````m",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddd'
+  +'dm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"e'
+  +'ddddddddddddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWAREDATETIMEPICKER','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWAREDATETIMEPICKER_xpm[] = {'#10'/* width '
+  +'height num_colors chars_per_pixel */'#10'"    24    24       16            '
+  +'1",'#10'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000'
+  +'",'#10'"a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #00808'
+  +'0",'#10'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff'
+  +'00",'#10'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00f'
+  +'fff",'#10'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'
+  +#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddd'
+  +'ddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddeeeeeeeeee'
+  +'eeeedm",'#10'"edddddddeeeeeeeeeeeeeedm",'#10'"ed``dd``emmmmmmmmmmmm`dm",'#10
+  +'"ed`ddd`dembbbmbmbbbbm`dm",'#10'"ed`ddd`demmmbmbmbmmbm`dm",'#10'"ed`ddd`dem'
+  +'mmbmmmbmmbm`dm",'#10'"e```d```embbbmmmbbbbm`dm",'#10'"ed`ddd`demmmbmmmbmmbm'
+  +'`dm",'#10'"ed`ddd`demmmbmbmbmmbm`dm",'#10'"ed`ddd`dembbbmbmbbbbm`dm",'#10'"'
+  +'e``dd``demmmmmmmmmmmm`dm",'#10'"eddddddde`````````````dm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddd'
+  +'dm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"e'
+  +'ddddddddddddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWAREEDIT','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWAREEDIT_xpm[] = {'#10'/* width height num'
+  +'_colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/*'
+  +' colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a '
+  +'c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e'
+  +' c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"'
+  +'i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"eddddd'
+  +'dddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddddddddd'
+  +'ddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddeeeeeeeeeeeeeeem",'
+  +#10'"edddddddeeeeeeeeeeeeeeem",'#10'"ed``dd``emmmmmmmmmmmmm`m",'#10'"ed`ddd`'
+  +'dembbbbmmbbbbbm`m",'#10'"ed`ddd`dembmmbmmbmmmmm`m",'#10'"ed`ddd`dembmmbmmbm'
+  +'mmmm`m",'#10'"e```d```embbbbmmbbbbbm`m",'#10'"ed`ddd`dembmmbmmmmmmbm`m",'#10
+  +'"ed`ddd`dembmmbmmmmmmbm`m",'#10'"ed`ddd`dembmmbmmbbbbbm`m",'#10'"e``dd``dem'
+  +'mmmmmmmmmmmm`m",'#10'"eddddddde``````````````m",'#10'"edddddddddddddddddddd'
+  +'ddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"'
+  +'eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWAREFLOATEDIT','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWAREFLOATEDIT_xpm[] = {'#10'/* width heigh'
+  +'t num_colors chars_per_pixel */'#10'"    24    24       16            1",'
+  +#10'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10
+  +'"a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10
+  +'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"eddddd'
+  +'dddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddddddddd'
+  +'ddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddeeeeeeeeeeeeeedm",'
+  +#10'"edddddddeeeeeeeeeeeeeedm",'#10'"ed``dd``emmmmmmmmmmmm`dm",'#10'"ed`ddd`'
+  +'dembbbmmmbbbbm`dm",'#10'"ed`ddd`dembmbmmmbmmbm`dm",'#10'"ed`ddd`dembmbmbmbm'
+  +'mbm`dm",'#10'"e```d```embbbmbmbbbbm`dm",'#10'"ed`ddd`demmmbmbmmmmbm`dm",'#10
+  +'"ed`ddd`demmmbmmmmmmbm`dm",'#10'"ed`ddd`dembbbmmmbbbbm`dm",'#10'"e``dd``dem'
+  +'mmmmmmmmmmm`dm",'#10'"eddddddde`````````````dm",'#10'"edddddddddddddddddddd'
+  +'ddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"'
+  +'eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWAREIMAGEEDIT','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWAREIMAGEEDIT_xpm[] = {'#10'/* width heigh'
+  +'t num_colors chars_per_pixel */'#10'"    24    24       16            1",'
+  +#10'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10
+  +'"a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10
+  +'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"eddddd'
+  +'dddddddddddddddddm",'#10'"edddddddeeeeeeeeeeeeee`m",'#10'"edddddddemmmmllll'
+  +'lllmm`m",'#10'"edddddddemmmmjjjjjjlmm`m",'#10'"edddddddemmmmjjjjjjlfm`m",'
+  +#10'"edddddddemmmmjjjjjjlfm`m",'#10'"ed``d```emmmmjjjjjjlfm`m",'#10'"ed`dd``'
+  +'demmmmjjjjjjffm`m",'#10'"ed`dd``dem.mmmfffffffm`m",'#10'"ed`dd``demg.mmmmmm'
+  +'mmmm`m",'#10'"e```````emgg..mmmmmmmm`m",'#10'"ed`dd``demgggg.mmmmmmm`m",'#10
+  +'"ed`dd``demggggmiiaammm`m",'#10'"ed`dd``demgggfiaaaaamm`m",'#10'"e``d```dem'
+  +'ggfmiaaaaafm`m",'#10'"edddddddemmfmmaaaaaafm`m",'#10'"edddddddemmmmmmaaaafm'
+  +'m`m",'#10'"edddddddemmmmmmaaaafmm`m",'#10'"edddddddemmmmmmmfffmmm`m",'#10'"'
+  +'edddddddemmmmmmmmmmmmm`m",'#10'"eddddddd```````````````m",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWAREMEMO','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWAREMEMO_xpm[] = {'#10'/* width height num'
+  +'_colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/*'
+  +' colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a '
+  +'c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e'
+  +' c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"'
+  +'i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"eddddd'
+  +'dddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddeeeeeeee'
+  +'eeee`dm",'#10'"eddddddddembbbmmbbbbm`dm",'#10'"eddddddddemmmmmmmmmmm`dm",'
+  +#10'"eddddddddemmmmmmmmmmm`dm",'#10'"ed``dd``dembbbmmbbbbm`dm",'#10'"ed`ddd`'
+  +'ddemmmmmmmmmmm`dm",'#10'"ed`ddd`ddembbbmmbbbbm`dm",'#10'"ed`ddd`ddemmmmmmmm'
+  +'mmm`dm",'#10'"e```d```dembbbmmbbbbm`dm",'#10'"ed`ddd`ddemmmmmmmmmmm`dm",'#10
+  +'"ed`ddd`ddembbbmmbbbbm`dm",'#10'"ed`ddd`ddemmmmmmmmmmm`dm",'#10'"e``d```dde'
+  +'mbbbmmbbbbm`dm",'#10'"eddddddddemmmmmmmmmmm`dm",'#10'"eddddddddembbbmmbbbbm'
+  +'`dm",'#10'"eddddddddembbbmmbbbbm`dm",'#10'"eddddddddemmmmmmmmmmm`dm",'#10'"'
+  +'edddddddde````````````dm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWAREMULTISELECT','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWAREMULTISELECT_xpm[] = {'#10'/* width hei'
+  +'ght num_colors chars_per_pixel */'#10'"    24    24       16            1",'
+  +#10'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10
+  +'"a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10
+  +'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"eddddd'
+  +'dddddddddddddddddm",'#10'"edeeeeeeeeeeeeeeeeeeeddm",'#10'"edemmmmmmmmmmmmmm'
+  +'mmmfddm",'#10'"edemffffffffffffffffeddm",'#10'"edemeeeeeeefeeeeeeefeddm",'
+  +#10'"edemeeeeeeefeeeeeeefeddm",'#10'"edememmmmm`femmmm``feddm",'#10'"edememm'
+  +'jjm`femjjm``feddm",'#10'"edememmmmm`gemmmm``feddm",'#10'"edememmjjm`femjjm`'
+  +'`feddm",'#10'"edememmmmm`gemmmm``feddm",'#10'"edememmjjm`femjjm``feddm",'#10
+  +'"edememmmmm`femmmm``feddm",'#10'"edememmjjm`gemjjm``feddm",'#10'"edememmmmm'
+  +'`femmmm``feddm",'#10'"edememmmmm`femmmm``feddm",'#10'"edem```````f```````fe'
+  +'ddm",'#10'"edem```````f```````feddm",'#10'"edemffffffffffffffffeddm",'#10'"'
+  +'edefeeeeeeeeeeeeeeeeeddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWAREPICKDIRECTORY','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWAREPICKDIRECTORY_xpm[] = {'#10'/* width h'
+  +'eight num_colors chars_per_pixel */'#10'"    24    24       16            1'
+  +'",'#10'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000"'
+  +','#10'"a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080'
+  +'",'#10'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff0'
+  +'0",'#10'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ff'
+  +'ff",'#10'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10
+  +'"eddddddddddddddddddddddm",'#10'"edeeeeeeeeeeeee```````dm",'#10'"edemmmmmmm'
+  +'mmmmm`fffff`dm",'#10'"edembbbbbbbbbbm`f```f`dm",'#10'"edemmmmmmmmmmmm`feeef'
+  +'`dm",'#10'"edemmmmmmmmmmmm`feeef`dm",'#10'"edemmmmmmmmmmmm`fffff`dm",'#10'"'
+  +'ede```````````````````dm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"eddddddddedididedddddddm",'#10'"edddddddefififieeeeeed'
+  +'dm",'#10'"edddddddefffffffffffe`dm",'#10'"eddd`dddefififififfie`dm",'#10'"e'
+  +'dd````deffifififiife`dm",'#10'"eddd`dddefififififfie`dm",'#10'"edddddddeffi'
+  +'fififiife`dm",'#10'"edddddddeffifififiife`dm",'#10'"edddddddefififififfie`d'
+  +'m",'#10'"edddddddeeeeeeeeeeeee`dm",'#10'"edddddddd`````````````dm",'#10'"ed'
+  +'dddddddddddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIPERAWAREPICKFILE','XPM',[
+  '/* XPM */'#10'static char *TTIPERAWAREPICKFILE_xpm[] = {'#10'/* width height'
+  +' num_colors chars_per_pixel */'#10'"    24    24       16            1",'#10
+  +'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"'
+  +'a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10
+  +'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"eddddd'
+  +'dddddddddddddddddm",'#10'"edeeeeeeeeeeeee```````dm",'#10'"edemmmmmmmmmmmm`f'
+  +'ffff`dm",'#10'"edembbbbbbbbbbm`f```f`dm",'#10'"edemmmmmmmmmmmm`feeef`dm",'
+  +#10'"edemmmmmmmmmmmm`feeef`dm",'#10'"edemmmmmmmmmmmm`fffff`dm",'#10'"edd````'
+  +'```````````````dm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddeeeeeeed'
+  +'dddddm",'#10'"edddddddddemmmmme``ddddm",'#10'"edddddddddemmmmmemm`dddm",'#10
+  +'"edddddddddemmmmmeeee`ddm",'#10'"edddddddddemmmmmmmmm`ddm",'#10'"edd`dddddd'
+  +'emmmmmmmmm`ddm",'#10'"ed```dddddemmmmmmmmm`ddm",'#10'"edd`ddddddemmmmmmmmm`'
+  +'ddm",'#10'"edd`ddddddemmmmmmmmm`ddm",'#10'"edddddddddemmmmmmmmm`ddm",'#10'"'
+  +'edddddddddeeeeeeeeee`ddm",'#10'"edddddddddd``````````ddm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIREADONLY','XPM',[
+  '/* XPM */'#10'static char *TTIREADONLY_xpm[] = {'#10'/* width height num_col'
+  +'ors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* col'
+  +'ors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #8'
+  +'08000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c #'
+  +'808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c '
+  +'#ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m c'
+  +' #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"eddddddddd'
+  +'ddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddd'
+  +'dde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"'
+  +'edggggggdddddggggdddddde",'#10'"edgdddddgdddgddddgddddde",'#10'"edgdddddgdd'
+  +'gddddddgdddde",'#10'"edgdddddgddgddddddgdddde",'#10'"edgdddddgddgddddddgddd'
+  +'de",'#10'"edggggggdddgddddddgdddde",'#10'"edgdddgddddgddddddgdddde",'#10'"e'
+  +'dgddddgdddgddddddgdddde",'#10'"edgddddgddddgddddgddddde",'#10'"edgdddddgddd'
+  +'dggggdddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddddd'
+  +'e",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"ed'
+  +'ddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddd'
+  +'dddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTIROUNDEDPANEL','XPM',[
+  '/* XPM */'#10'static char *TTIROUNDEDPANEL_xpm[] = {'#10'/* width height num'
+  +'_colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/*'
+  +' colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a '
+  +'c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e'
+  +' c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"'
+  +'i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"mmmmmmmmmmmmmmmmmmmmmmmf",'#10'"mddddd'
+  +'ddddddddddddddddde",'#10'"mdddddmmmmmmmmmmmdddddde",'#10'"mddddm```````````'
+  +'`ddddde",'#10'"mdddm`dddddddddddd`dddde",'#10'"mddm`dddddddddddddd`ddde",'
+  +#10'"mdm`dddddddddddddddd`dde",'#10'"mdm`dddddddddddddddd`ede",'#10'"mdm`ddd'
+  +'ddddddddddddd`ede",'#10'"mdm`dddddddddddddddd`ede",'#10'"mdm`dddddddddddddd'
+  +'dd`ede",'#10'"mdm`dddddddddddddddd`ede",'#10'"mdm`dddddddddddddddd`ede",'#10
+  +'"mdm`dddddddddddddddd`ede",'#10'"mdm`dddddddddddddddd`ede",'#10'"mdm`dddddd'
+  +'dddddddddd`ede",'#10'"mdm`dddddddddddddddd`ede",'#10'"mdd`dddddddddddddddd`'
+  +'ede",'#10'"mddd`dddddddddddddd`edde",'#10'"mdddd`dddddddddddd`eddde",'#10'"'
+  +'mddddd````````````edddde",'#10'"mddddddeeeeeeeeeeeddddde",'#10'"mdddddddddd'
+  +'dddddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTISPEEDBUTTON','XPM',[
+  '/* XPM */'#10'static char *TTISPEEDBUTTON_xpm[] = {'#10'/* width height num_'
+  +'colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* '
+  +'colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c'
+  +' #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e '
+  +'c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i'
+  +' c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"'
+  +'m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"edddddd'
+  +'ddddddddddddddddm",'#10'"eddmffffffffffffffffmddm",'#10'"eddfmmmmmmmmmmmmmm'
+  +'mm`ddm",'#10'"eddfmmmmmmmmmmmmmmmf`ddm",'#10'"eddfmmmmmm```````mmf`ddm",'#10
+  +'"eddfmmmmm`mimim`mmmf`ddm",'#10'"eddfmmmmm`imim`mmmmf`ddm",'#10'"eddfmmmm`i'
+  +'mim`mmmmmf`ddm",'#10'"eddfmmm````m````mmmf`ddm",'#10'"eddfmmmmmm`mim`mmmmf`'
+  +'ddm",'#10'"eddfmmmmmm`im`mmmmmf`ddm",'#10'"eddfmmmmm`im`mmmmmmf`ddm",'#10'"'
+  +'eddfmmmm```i```mmmmf`ddm",'#10'"eddfmmmmmm`mi`mmmmmf`ddm",'#10'"eddfmmmmm`m'
+  +'i`mmmmmmf`ddm",'#10'"eddfmmmmm`i`mmmmmmmf`ddm",'#10'"eddfmmmm`i`mmmmmmmmf`d'
+  +'dm",'#10'"eddfmmmm``mmmmmmmmmf`ddm",'#10'"eddfmfffffffffffffff`ddm",'#10'"e'
+  +'ddm````````````````mddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddd'
+  +'dddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTISPLITTER','XPM',[
+  '/* XPM */'#10'static char *TTISPLITTER_xpm[] = {'#10'/* width height num_col'
+  +'ors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* col'
+  +'ors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #8'
+  +'08000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c #'
+  +'808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c '
+  +'#ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m c'
+  +' #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"eddddddddd'
+  +'ddddddddddddde",'#10'"eddddddddmmmmeddddddddde",'#10'"eddddddddmfffeddddddd'
+  +'dde",'#10'"eddddddddmfffeddddddddde",'#10'"eddddddddmfffeddddddddde",'#10'"'
+  +'eddddddddmfffeddddddddde",'#10'"eddddddddmf`feddddddddde",'#10'"eddddddddmf'
+  +'`feddddddddde",'#10'"eddddd`ddmf`fedd`dddddde",'#10'"edddd`dddmf`feddd`dddd'
+  +'de",'#10'"eddd```````````````dddde",'#10'"eddd```````````````dddde",'#10'"e'
+  +'dddd`dddmf`feddd`ddddde",'#10'"eddddd`ddmf`fedd`dddddde",'#10'"eddddddddmf`'
+  +'feddddddddde",'#10'"eddddddddmf`feddddddddde",'#10'"eddddddddmfffeddddddddd'
+  +'e",'#10'"eddddddddmfffeddddddddde",'#10'"eddddddddmfffeddddddddde",'#10'"ed'
+  +'dddddddmfffeddddddddde",'#10'"eddddddddeeeeeddddddddde",'#10'"edddddddddddd'
+  +'dddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTISPLITTERPANEL','XPM',[
+  '/* XPM */'#10'static char *TTISPLITTERPANEL_xpm[] = {'#10'/* width height nu'
+  +'m_colors chars_per_pixel */'#10'"    24    24       16            1",'#10'/'
+  +'* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a'
+  +' c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"'
+  +'e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"eddddd'
+  +'ddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddfffeddd'
+  +'ddd`dde",'#10'"edddddddddfffedddddd`dde",'#10'"edddddddddfffedddddd`dde",'
+  +#10'"edddddddddfffedddddd`dde",'#10'"edddddddddf`fedddddd`dde",'#10'"edddddd'
+  +'dddf`fedddddd`dde",'#10'"eddddd`dddf`fedd`ddd`dde",'#10'"edddd`ddddf`feddd`'
+  +'dd`dde",'#10'"eddd```````````````d`dde",'#10'"eddd```````````````d`dde",'#10
+  +'"edddd`dddmf`feddd`dd`dde",'#10'"eddddd`ddmf`fedd`ddd`dde",'#10'"eddddddddm'
+  +'f`fedddddd`dde",'#10'"eddddddddmf`fedddddd`dde",'#10'"eddddddddmfffedddddd`'
+  +'dde",'#10'"eddddddddmfffedddddd`dde",'#10'"eddddddddmfffedddddd`dde",'#10'"'
+  +'eddddddddmfffedddddd`dde",'#10'"edd``````````````````dde",'#10'"edddddddddd'
+  +'dddddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTITOOLBAR','XPM',[
+  '/* XPM */'#10'static char *TTITOOLBAR_xpm[] = {'#10'/* width height num_colo'
+  +'rs chars_per_pixel */'#10'"    24    24       16            1",'#10'/* colo'
+  +'rs */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #80'
+  +'8000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c #8'
+  +'08080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c #'
+  +'ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m c '
+  +'#ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"edddddddddd'
+  +'dddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddddddddddddd'
+  +'de",'#10'"emmmmmmmmmm`mmmmmmmmddde",'#10'"emffffffffe`mffffffmddde",'#10'"e'
+  +'mfeeeefffe`mffffffmddde",'#10'"emfemmeeffe`mffffffmddde",'#10'"emfemmmeefe`'
+  +'mfeeeeemddde",'#10'"emfemmmmefe`mfeiifemddde",'#10'"emfemmmmefe`mfef``emddd'
+  +'e",'#10'"emfemmmm`fe`mfeiaaamddde",'#10'"emfemmmm`fe`mfeaaaemddde",'#10'"em'
+  +'femmmm`fe`mfeaaaemddde",'#10'"emfe`````fe`mfe```emddde",'#10'"emffffffffe`m'
+  +'ffffefmddde",'#10'"emeeeeeeeee`meeeeefmddde",'#10'"e````````````````ffmddde'
+  +'",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"edd'
+  +'dddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddddd'
+  +'ddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTITREEVIEW','XPM',[
+  '/* XPM */'#10'static char *TTITREEVIEW_xpm[] = {'#10'/* width height num_col'
+  +'ors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* col'
+  +'ors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #8'
+  +'08000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c #'
+  +'808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c '
+  +'#ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m c'
+  +' #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"eddddddddd'
+  +'ddddddddddddde",'#10'"edeeeeeeeeeeeeeeeeeeedde",'#10'"ede``````````````````'
+  +'dde",'#10'"ede`mmmmmmmmmmmmmmmmfdde",'#10'"ede`m```mmmmmmmbmmmmfdde",'#10'"'
+  +'ede`m`g`mmmmmmbbbmbmfdde",'#10'"ede`m```mmmmmmmbmmbmfdde",'#10'"ede`mmmmmmm'
+  +'mmmmbmmbmfdde",'#10'"ede`mm`mmm```mmbmmbmfdde",'#10'"ede`mm```m`h`mmbbmbmfd'
+  +'de",'#10'"ede`mm`mmm```mmmmmmmfdde",'#10'"ede`mm`mmmmmmmmmmmmmfdde",'#10'"e'
+  +'de`mm`mmmm`mmmm```mfdde",'#10'"ede`mm`mmmm````m`i`mfdde",'#10'"ede`mm`mmmmm'
+  +'mmmm```mfdde",'#10'"ede`mm`mmm```mmmmmmmfdde",'#10'"ede`mm```m`h`mmmmmmmfdd'
+  +'e",'#10'"ede`mmmmmm```mmmmmmmfdde",'#10'"ede`mmmmmmmmmmmmmmmmfdde",'#10'"ed'
+  +'effffffffffffffffffdde",'#10'"edddddddddddddddddddddde",'#10'"edddddddddddd'
+  +'dddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTIUSERDEFINEDPICKER','XPM',[
+  '/* XPM */'#10'static char *TTIUSERDEFINEDPICKER_xpm[] = {'#10'/* width heigh'
+  +'t num_colors chars_per_pixel */'#10'"    24    24       16            1",'
+  +#10'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10
+  +'"a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10
+  +'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeef",'#10'"eddddd'
+  +'dddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddddddddd'
+  +'ddddddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'
+  +#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edeeeee'
+  +'eeeeeeee```````dm",'#10'"edemmmmmmmmmmmm`fffff`dm",'#10'"edemmmmmmmmmmmm`ff'
+  +'fff`dm",'#10'"edembbbbbbbbbbm`f`f`f`dm",'#10'"edemmmmmmmmmmmm`fefef`dm",'#10
+  +'"edemmmmmmmmmmmm`fffff`dm",'#10'"edd```````````````````dm",'#10'"eddddddddd'
+  +'dddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddddddddddddd'
+  +'ddm",'#10'"eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"'
+  +'eddddddddddddddddddddddm",'#10'"eddddddddddddddddddddddm",'#10'"edddddddddd'
+  +'ddddddddddddm",'#10'"fmmmmmmmmmmmmmmmmmmmmmmm"'#10'};'#10
+]);
+LazarusResources.Add('TTIVTLISTVIEW','XPM',[
+  '/* XPM */'#10'static char *TTIVTLISTVIEW_xpm[] = {'#10'/* width height num_c'
+  +'olors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* c'
+  +'olors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c '
+  +'#808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c'
+  +' #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i '
+  +'c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m'
+  +' c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"eddddddd'
+  +'ddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddeeeeeeeeeeeeeeee'
+  +'eedde",'#10'"edde````````````````fdde",'#10'"edde`ffffefffefffefmfdde",'#10
+  +'"edde`ffffefffefffefmfdde",'#10'"edde`eeeeeeeeeeeeeeefdde",'#10'"edde`mmmmm'
+  +'mmmmmmmmmmfdde",'#10'"edde`geeemeeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmf'
+  +'dde",'#10'"edde`beeemeeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10'"'
+  +'edde`#eeemeeemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10'"edde`geeeme'
+  +'eemeeemeefdde",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10'"edde`beeemeeemeeemeefd'
+  +'de",'#10'"edde`mmmmmmmmmmmmmmmfdde",'#10'"eddefffffffffffffffffdde",'#10'"e'
+  +'dddddddddddddddddddddde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddd'
+  +'ddddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);
+LazarusResources.Add('TTIVTTREEVIEW','XPM',[
+  '/* XPM */'#10'static char *TTIVTTREEVIEW_xpm[] = {'#10'/* width height num_c'
+  +'olors chars_per_pixel */'#10'"    24    24       16            1",'#10'/* c'
+  +'olors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c '
+  +'#808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c'
+  +' #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i '
+  +'c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m'
+  +' c #ffffff",'#10'/* pixels */'#10'"eeeeeeeeeeeeeeeeeeeeeeee",'#10'"eddddddd'
+  +'ddddddddddddddde",'#10'"edeeeeeeeeeeeeeeeeeeedde",'#10'"ede````````````````'
+  +'``dde",'#10'"ede`mmmmmmmmmmmmmmmmfdde",'#10'"ede`m```mmmmmmmbmmmmfdde",'#10
+  +'"ede`m`g`mmmmmmbbbmbmfdde",'#10'"ede`m```mmmmmmmbmmbmfdde",'#10'"ede`mmmmmm'
+  +'mmmmmbmmbmfdde",'#10'"ede`mm`mmm```mmbmmbmfdde",'#10'"ede`mm```m`h`mmbbmbmf'
+  +'dde",'#10'"ede`mm`mmm```mmmmmmmfdde",'#10'"ede`mm`mmmmmmmmmmmmmfdde",'#10'"'
+  +'ede`mm`mmmm`mmmm```mfdde",'#10'"ede`mm`mmmm````m`i`mfdde",'#10'"ede`mm`mmmm'
+  +'mmmmm```mfdde",'#10'"ede`mm`mmm```mmmmmmmfdde",'#10'"ede`mm```m`h`mmmmmmmfd'
+  +'de",'#10'"ede`mmmmmm```mmmmmmmfdde",'#10'"ede`mmmmmmmmmmmmmmmmfdde",'#10'"e'
+  +'deffffffffffffffffffdde",'#10'"edddddddddddddddddddddde",'#10'"eddddddddddd'
+  +'ddddddddddde",'#10'"feeeeeeeeeeeeeeeeeeeeeee"'#10'};'#10
+]);

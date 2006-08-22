@@ -1,12 +1,18 @@
 unit tiPerAwareCombosAbs;
 
+{$I tiDefines.inc}
+
 interface
 uses
+{$IFNDEF FPC}
+  Messages,
+{$ELSE}
+  lmessages,
+{$ENDIF}
   tiFocusPanel
   ,StdCtrls
   ,tiSpeedButton
   ,Classes
-  ,Messages
   ,tiPerAwareCtrls
   ,ExtCtrls
   ;
@@ -19,7 +25,11 @@ type
     FSpeedButton : TtiSpeedButton ;
     FOnChange : TNotifyEvent ;
     FbReadOnly: Boolean;
+    {$IFNDEF FPC}
     procedure   WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    {$ELSE}
+    procedure   WMSize( var Message: TLMSize ) ; message LM_SIZE ;
+    {$ENDIF}
     function    GetActOnEditClick: boolean;
     procedure   SetActOnEditClick(const Value: boolean);
   protected
@@ -74,7 +84,11 @@ uses
   ,Graphics
   ,Forms
   ,TypInfo
+{$IFDEF FPC}
+  ,LCLIntf
+{$ELSE}
   ,Windows
+{$ENDIF}
   ;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -85,7 +99,7 @@ uses
 constructor TtiPickerAbs.Create( Owner : TComponent ) ;
 begin
   inherited Create( Owner ) ;
-  ControlStyle := ControlStyle - [csSetCaption] ;
+  ControlStyle := ControlStyle - [csSetCaption] {$IFDEF FPC}+ [csOwnedChildsSelectable]{$ENDIF};
 
   caption     := ' ' ;
   Color       := clBtnFace ;
@@ -99,9 +113,15 @@ begin
   FSpeedButton.top  := 0 ;
   FSpeedButton.width := 16 ;
   FSpeedButton.parent := self ;
+  {$IFNDEF FPC}
   FSpeedButton.glyph.LoadFromResourceName( HInstance, 'PAITHREEDOTS' ) ;
   FSpeedButton.glyphHot.LoadFromResourceName( HInstance, 'PAITHREEDOTS' ) ;
   FSpeedButton.GlyphDisabled.LoadFromResourceName( HInstance, 'PAITHREEDOTS_D' ) ;
+  {$ELSE}
+  FSpeedButton.glyph.LoadFromLazarusResource('PAITHREEDOTS' ) ;
+  FSpeedButton.glyphHot.LoadFromLazarusResource('PAITHREEDOTS' ) ;
+  FSpeedButton.GlyphDisabled.LoadFromLazarusResource('PAITHREEDOTS_D' ) ;
+  {$ENDIF}
   FSpeedButton.onClick  := DoButtonClick ;
 
   FEdit := TEdit.Create( self ) ;
@@ -142,7 +162,11 @@ begin
   result := FEdit.text ;
 end ;
 
+{$IFNDEF FPC}
 procedure TtiPickerAbs.WMSize( var Message : TWMSize );
+{$ELSE}
+procedure TtiPickerAbs.WMSize( var Message : TLMSize );
+{$ENDIF}
 begin
   inherited;
   FSpeedButton.left := self.clientWidth - FSpeedButton.Width ;

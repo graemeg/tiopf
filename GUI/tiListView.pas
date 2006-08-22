@@ -4,7 +4,15 @@ unit tiListView ;
 
 interface
 uses
-   tiFocusPanel
+{$IFNDEF FPC}
+   Windows
+  ,Messages
+{$ELSE}
+  LMessages
+  ,LCLIntf
+  ,LCLProc
+{$ENDIF}
+  ,tiFocusPanel
   ,tiSpeedButton
   ,tiCtrlButtonPanel
   ,tiObject
@@ -16,10 +24,8 @@ uses
   ,Contnrs
   ,ExtCtrls
   ,Graphics
-  ,Windows
   ,ImgList
   ,Buttons
-  ,Messages
   ;
 
 const
@@ -139,7 +145,7 @@ type
     property    Width : integer read FWidth write SetWidth default -1 ;
     property    Alignment : TAlignment read FAlignment write FAlignment default taRightJustify ;
   public
-    constructor Create( Collection : TCollection ) ; override ;
+    constructor Create( ACollection : TCollection ) ; override ;
     destructor  Destroy ; override ;
     function    Clone : TtiListColumn ;
   end ;
@@ -153,7 +159,7 @@ type
   protected
     function  GetOwner : TPersistent ; override ;
   public
-    constructor Create( Owner : TComponent ) ;
+    constructor Create( AOwner : TComponent ) ;
     destructor  Destroy ; override ;
     property  Items[Index: integer ] : TtiListColumn
                 read GetItem write SetItem ;
@@ -175,7 +181,7 @@ type
     property FieldName : string read FsFieldName write FsFieldName ;
     property SortDirection : TlvSortDirection read FSortDirection write FSortDirection ;
   public
-    constructor Create( Collection : TCollection ) ; override ;
+    constructor Create( ACollection : TCollection ) ; override ;
     procedure   Assign( source : TPersistent ) ; override ;
   end ;
 
@@ -188,7 +194,7 @@ type
   protected
     function  GetOwner : TPersistent ; override ;
   public
-    constructor Create( owner : TComponent ) ;
+    constructor Create( AOwner : TComponent ) ;
     property    Items[Index: integer ] : TlvSortOrder
                   read GetItem write SetItem ;
     function    Add : TlvSortOrder ;
@@ -212,9 +218,13 @@ type
   private
     FOnVScroll: TNotifyEvent;
     FVScrolled : boolean ;
+    {$IFNDEF FPC}
     procedure WMVScroll(var Message: TWMVScroll); message WM_VSCROLL;
+    {$ELSE}
+    procedure WMVScroll(var Msg: TLMScroll); message LM_VSCROLL;
+    {$ENDIF}
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     property    OnVScroll : TNotifyEvent read FOnVScroll write FOnVScroll ;
     property    VScrolled : boolean read FVScrolled write FVScrolled ;
   end ;
@@ -294,8 +304,10 @@ type
     procedure SetMultiSelect(const Value: boolean);
     function  GetOnChange: TLVChangeEvent;
     procedure SetOnChange(const Value: TLVChangeEvent);
+    {$IFNDEF FPC}
     function  GetOnChanging: TLVChangingEvent;
     procedure SetOnChanging(const Value: TLVChangingEvent);
+    {$ENDIF}
     function  GetOnKeyDown: TKeyEvent;
     procedure SetOnKeyDown(const Value: TKeyEvent);
     function  GetOnKeyPress: TKeyPressEvent;
@@ -371,7 +383,9 @@ type
     property    MultiSelect   : boolean read GetMultiSelect write SetMultiSelect ;
     property    OnDblClick    : TtiLVItemEditEvent read FOnDblClick write FOnDblClick ;
     property    OnChange      : TLVChangeEvent read GetOnChange write SetOnChange ;
+    {$IFNDEF FPC}
     property    OnChanging    : TLVChangingEvent read GetOnChanging write SetOnChanging ;
+    {$ENDIF}
     property    OnKeyDown     : TKeyEvent read GetOnKeyDown write SetOnKeyDown ;
     property    OnKeyPress    : TKeyPressEvent read GetOnKeyPress write SetOnKeyPress ;
     property    SmallImages   : TCustomImageList read GetSmallImages write SetSmallImages ;
@@ -437,7 +451,7 @@ type
     property    InfoTypeType: TtiLVInfoTypeType read FInfoTipType Write SetInfoTipType;
 
   public
-    constructor Create( owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     destructor  Destroy ; override ;
     procedure   Refresh( pReadData : boolean = true ) ; reintroduce ;
 
@@ -484,7 +498,9 @@ type
 
     // This is necessary for drag and drop, and should be replaced by a
     // 'Simple' drop method.
+    {$IFNDEF FPC}
     function    GetItemAt( X, Y : Integer ) : TListItem ;
+    {$ENDIF}
     procedure   SetFocus ; override ;
     procedure   BeginUpdate ;
     procedure   EndUpdate ;
@@ -531,12 +547,12 @@ type
     procedure   pmiEditOnClick( sender : TObject ) ;
     procedure   pmiDeleteOnClick( sender : TObject ) ;
     procedure   pmiNewOnClick( sender : TObject ) ;
-    procedure   DoOnSelectItem(Sender: TObject; Item: TListItem; Selected: boolean); override ;
+    procedure   DoOnSelectItem(Sender: TObject; Item: TListItem; ItmSelected: boolean); override ;
     procedure   SetEnabled(Value: Boolean); override ;
     procedure   SetReadOnly(const Value: boolean); override ;
     procedure   DoOnDblClick( Sender : TObject ) ; override ;
   public
-    constructor Create( owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     destructor  Destroy ; override ;
     property    OnVScroll ;
     procedure   Loaded; override ;
@@ -565,7 +581,7 @@ type
     property    MultiSelect   ;
     property    OnDblClick    ;
     property    OnChange      ;
-    property    OnChanging    ;
+   {$IFNDEF FPC} property    OnChanging    ;{$ENDIF}
     property    OnKeyDown     ;
     property    OnKeyPress    ;
     property    SmallImages   ;
@@ -647,12 +663,12 @@ var
 // *  TtiCustomListView
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiCustomListView.Create(owner: TComponent);
+constructor TtiCustomListView.Create(AOwner: TComponent);
 const
   cHeight = 97  ;
   cWidth  = 121 ;
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
   FDestroying := false ;
 
   // The listView must be able to AcceptControls to work correctly.
@@ -671,7 +687,11 @@ begin
   //FLV.Anchors     := [akLeft,akTop,akRight,akBottom] ;
 
   FLV.OnMouseDown := DoMouseDown ;
-  FLV.OnStartDrag := DoStartDrag ;
+  {$IFNDEF FPC}
+   FLV.OnStartDrag := DoStartDrag ;
+  {$ELSE}
+   {$WARNING TODO: Fix it when LCL will have better drag&drop support}
+  {$ENDIF}
   FLV.OnDragOver  := DoDragOver  ;
   FLV.OnDragDrop  := DoDragDrop  ;
   FLV.OnDblClick  := DoOnDblClick;
@@ -880,7 +900,7 @@ begin
      Assigned(FOnItemLeave) then
     FOnItemLeave(Self, lData, Selected);
 
-  FLV.OnData    := nil ;
+  {$IFNDEF FPC}FLV.OnData    := nil ;{$ENDIF}
   BeginUpdate;
   try
     DisConnectFromData ;
@@ -902,7 +922,7 @@ end ;
 
 procedure TtiCustomListView.DisConnectFromData ;
 begin
-  if ( not Assigned( FLV.OnData )) and
+  if {$IFNDEF FPC}( not Assigned( FLV.OnData )) and {$ENDIF}
      ( not FLV.OwnerData ) and
      ( FLV.Items.Count = 0 ) then
     exit ; //==>
@@ -910,8 +930,10 @@ begin
   if FbRunTimeGenCols then
     FtiListColumns.Clear ;
 
+ {$IFNDEF FPC}
   FLV.OnCustomDrawItem := nil ;
   FLV.OnData    := nil ;
+ {$ENDIF}
   FLV.OwnerData := false ;
   //FLV.Columns.Clear ;
   //ColMappings.Clear ;
@@ -933,12 +955,12 @@ begin
       DoRunTimeGenCols ;
 
     SetupCols ;
-
-    FLV.OnData      := OnGetRowData ;
+    {$IFNDEF FPC}
     Items.Count := FDataInternal.Count ;
+    FLV.OnData      := OnGetRowData ;
     if Assigned( FOnGetFont ) then
       FLV.OnCustomDrawItem :=  DoCustomDrawItem ;
-
+    {$ENDIF}
 //  end ;
 end ;
 
@@ -967,7 +989,7 @@ begin
   for i := 0 to Data.Count - 1 do
     if Data.Items[i] <> nil then
     begin
-      lData := Data.Items[i] ;
+      lData := TObject(Data.Items[i]) ;
       Break ; //==>
     end ;
 
@@ -1237,7 +1259,11 @@ begin
   try
     GetPropList(pPersistent.ClassInfo, lPropFilter, lList);
     for i := 0 to lcount - 1 do
+     {$IFNDEF FPC}
       psl.add( lList[i].Name ) ;
+      {$ELSE}
+      psl.add( lList^[i]^.Name ) ;
+      {$ENDIF}
   finally
     FreeMem( lList, lSize ) ;
   end ;
@@ -1315,9 +1341,9 @@ end;
 // * TtiListColumn
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiListColumn.Create(Collection: TCollection);
+constructor TtiListColumn.Create(ACollection: TCollection);
 begin
-  inherited Create( Collection ) ;
+  inherited Create( ACollection ) ;
   FsDisplayLabel := crsDefaultColDisplayLabel ;
   FsFieldName    := crsDefaultColFieldName ;
   FsDisplayMask  := tiListViewDisplayMaskFromDataType( lvtkString ) ;
@@ -1483,10 +1509,10 @@ begin
 end;
 
 //constructor TtiListColumns.Create(pListView: TtiCustomListView);
-constructor TtiListColumns.Create( Owner : TComponent ) ;
+constructor TtiListColumns.Create( AOwner : TComponent ) ;
 begin
   inherited Create( TtiListColumn ) ;
-  FOwner := Owner ;
+  FOwner := AOwner ;
 end;
 
 destructor TtiListColumns.Destroy;
@@ -1781,11 +1807,15 @@ begin
   // Find the first selected item
   lListItem := FLV.Selected ;
 
+  {$IFNDEF FPC}
   // Scan the rest of the items
   while lListItem <> nil do begin
     FSelectedData.Add( TObject( FDataInternal.Items[lListItem.Index] )) ;
     lListItem := FLV.GetNextItem( lListItem, sdAll, [isSelected] ) ;
   end ;
+  {$ELSE}
+   {$WARNING TODO: How to fix that ?}
+  {$ENDIF}
 
   result := FSelectedData ;
 
@@ -1801,7 +1831,7 @@ begin
   if pListItem = nil then
     Exit ; //==>
 
-  lData := pListItem.Data ;
+  lData := TObject(pListItem.Data) ;
 
   i := FSelectedData.IndexOf( lData ) ;
   if i <> -1 then
@@ -1844,10 +1874,10 @@ begin
   result := TlvSortOrder( inherited add ) ;
 end;
 
-constructor TlvSortOrders.Create( Owner : TComponent ) ;
+constructor TlvSortOrders.Create( AOwner : TComponent ) ;
 begin
   inherited Create( TlvSortOrder ) ;
-  FOwner := Owner ;
+  FOwner := AOwner ;
 end;
 
 function TlvSortOrders.GetItem(Index: integer): TlvSortOrder ;
@@ -1875,9 +1905,9 @@ begin
   inherited Assign( TlvSortOrder( source )) ;
 end;
 
-constructor TlvSortOrder.Create(Collection: TCollection);
+constructor TlvSortOrder.Create(ACollection: TCollection);
 begin
-  inherited Create( Collection ) ;
+  inherited Create( ACollection ) ;
   FieldName     := 'Enter value' ;
   SortDirection := lvsdAscending ;
 end;
@@ -1974,12 +2004,15 @@ var
 begin
   if Assigned( FOnLVClick ) then
   begin
-
+   {$IFNDEF FPC}
     lPoint.X := Mouse.CursorPos.X ;
     lPoint.Y := Mouse.CursorPos.Y ;
     lPoint   := Self.ScreenToClient( lPoint ) ;
 
     lItem := FLV.GetItemAt( lPoint.X, lPoint.Y ) ;
+    {$ELSE}
+    lItem := FLV.ItemFocused;
+    {$ENDIF}
     if lItem = nil then
       Exit ; //==>
 
@@ -2024,6 +2057,7 @@ begin
   FLV.OnChange := Value ;
 end;
 
+{$IFNDEF FPC}
 function TtiCustomListView.GetOnChanging: TLVChangingEvent;
 begin
   result := FLV.OnChanging ;
@@ -2033,6 +2067,7 @@ procedure TtiCustomListView.SetOnChanging(const Value: TLVChangingEvent);
 begin
   FLV.OnChanging := Value ;
 end;
+{$ENDIF}
 
 function TtiCustomListView.GetOnKeyDown: TKeyEvent;
 begin
@@ -2104,10 +2139,14 @@ begin
   result := FLV ;
 end;
 
+
+{$IFNDEF FPC}
 function TtiCustomListView.GetItemAt(X, Y: Integer): TListItem;
 begin
-  result := FLV.GetItemAt( X, Y ) ;
+ result := FLV.GetItemAt( X, Y ) ;
 end;
+{$ENDIF}
+
 
 function TtiCustomListView.CanMoveItem( pItem : TListItem ; piMoveBy : integer ) : boolean;
 begin
@@ -2232,13 +2271,21 @@ end;
 procedure TtiCustomListView.BeginUpdate;
 begin
 //  FLV.Columns.BeginUpdate;
-  FLV.Items.BeginUpdate ;
+{$IFNDEF FPC}
+ FLV.Items.BeginUpdate ;
+ {$ELSE}
+ FLV.BeginUpdate ;
+{$ENDIF}
 end;
 
 procedure TtiCustomListView.EndUpdate;
 begin
 //  FLV.Columns.EndUpdate;
-  FLV.Items.EndUpdate ;
+{$IFNDEF FPC}
+FLV.Items.EndUpdate ;
+{$ELSE}
+FLV.EndUpdate;
+{$ENDIF}
 end;
 
 procedure TtiCustomListView.DoDragDrop(Sender, Source: TObject; X, Y: Integer);
@@ -2247,7 +2294,7 @@ var
   lTargetData       : TtiObject ;
   lDragObject       : TtiLVDragObject ;
 begin
-
+ {$IFNDEF FPC}
   lTargetItem := FLV.GetItemAt( X, Y ) ;
   lTargetData := nil ;
 
@@ -2268,7 +2315,9 @@ begin
            lTargetData ) ;
 
   Refresh ;
-
+  {$ELSE}
+     {$WARNING TODO: Fix it when LCL will have better drag&drop support}
+  {$ENDIF}
 end;
 
 procedure TtiCustomListView.DoDragOver(Sender, Source: TObject; X,
@@ -2278,7 +2327,7 @@ var
   lData       : TtiObject ;
   lDragObject : TtiLVDragObject ;
 begin
-
+ {$IFNDEF FPC}
   Accept := false ;
 
   if Not Assigned( FOnCanAcceptDrop ) then
@@ -2297,7 +2346,9 @@ begin
                    Self,
                    lData,
                    Accept ) ;
-
+ {$ELSE}
+    {$WARNING TODO: Fix it when LCL will have better drag&drop support}
+ {$ENDIF}
 end;
 
 procedure TtiCustomListView.DoMouseDown(Sender: TObject;
@@ -2306,7 +2357,7 @@ var
   lItem : TListItem ;
   lData : TtiObject   ;
 begin
-
+{$IFNDEF FPC}
   // Only allow drag if mouse button is mbLeft or mbRight
   if ( Button <> mbLeft ) then
     Exit ; //==>
@@ -2328,7 +2379,9 @@ begin
     Exit ; //==>
 
   FLV.BeginDrag( false ) ;
-
+ {$ELSE}
+    {$WARNING TODO: Fix it when LCL will have better drag&drop support}
+ {$ENDIF}
 end;
 
 procedure TtiCustomListView.DoStartDrag(Sender: TObject; var DragObject: TDragObject);
@@ -2360,13 +2413,17 @@ end;
 
 { TtiListViewInternal }
 
-constructor TtiListViewInternal.Create(Owner: TComponent);
+constructor TtiListViewInternal.Create(AOwner: TComponent);
 begin
-  inherited Create( Owner ) ;
+  inherited Create( AOwner ) ;
   FVScrolled := false ;
 end;
 
+{$IFNDEF FPC}
 procedure TtiListViewInternal.WMVScroll(var Message: TWMVScroll);
+{$ELSE}
+procedure TtiListViewInternal.WMVScroll(var Msg: TLMScroll);
+{$ENDIF}
 begin
   inherited ;
   FVScrolled := true ;
@@ -2380,6 +2437,7 @@ var
   lScrollBy : integer ;
   lBottomItemIndex : integer ;
   lOffset : integer ;
+  item : TListItem;
 begin
 
 try
@@ -2412,6 +2470,7 @@ try
     pListView.LV.Selected := pListView.LV.Items[lBottomItemIndex];
 
   liIndex := pListView.LV.TopItem.Index ;
+  {$IFNDEF FPC}
   if (liIndex <= (FLV.Items.Count-1)) then
   begin
     lScrollBy :=
@@ -2420,7 +2479,8 @@ try
       // column headings. Must find a better way of deriving the 19.
     FLV.Scroll( 0, lScrollBy ) ;
   end ;
-
+  {$ENDIF}
+  
   liIndex := pListView.LV.TopItem.Index ;
   if (liIndex <= (FLV.Items.Count-1)) then
     FLV.Items[liIndex].MakeVisible( false ) ;
@@ -2558,7 +2618,7 @@ end;
 
 { TtiListView }
 
-constructor TtiListView.Create(owner: TComponent);
+constructor TtiListView.Create(AOwner: TComponent);
 begin
   inherited Create(Owner);
 
@@ -2690,7 +2750,7 @@ begin
   FCtrlBtnPnl.RefreshButtons ;
 end;
 
-procedure TtiListView.DoOnSelectItem(Sender: TObject; Item: TListItem;Selected: boolean);
+procedure TtiListView.DoOnSelectItem(Sender: TObject; Item: TListItem;ItmSelected: boolean);
 begin
   inherited;
   FCtrlBtnPnl.RefreshButtons ;
@@ -2713,7 +2773,7 @@ begin
   DoDelete(nil);
 end ;
 
-procedure TtiListView.DoDelete ;
+procedure TtiListView.DoDelete(Sender: TObject);
 var
   liSelected : integer ;
   lSelectedData : TtiObject ;
@@ -2743,7 +2803,7 @@ begin
   DoEdit(nil);
 end ;
 
-procedure TtiListView.DoEdit ;
+procedure TtiListView.DoEdit(Sender: TObject);
 var
   lSelectedData : TtiObject ;
 begin
@@ -2776,7 +2836,7 @@ begin
   DoNew(nil);
 end ;
 
-procedure TtiListView.DoNew ;
+procedure TtiListView.DoNew(Sender: TObject);
 var
   lData : TtiObject ;
 begin
@@ -2942,15 +3002,15 @@ begin
   case FInfoTipType of
   itNone    : begin
                 FLV.ShowHint := false ;
-                FLV.OnInfoTip := nil;
+                {$IFNDEF FPC}FLV.OnInfoTip := nil;{$ENDIF}
               end;
   itDefault : begin
                 FLV.ShowHint := True ;
-                FLV.OnInfoTip := DoTipInfo;
+                {$IFNDEF FPC}FLV.OnInfoTip := DoTipInfo;{$ENDIF}
               end;
   itCustom  : begin
                 FLV.ShowHint := True ;
-                FLV.OnInfoTip := DoTipInfo;
+                {$IFNDEF FPC}FLV.OnInfoTip := DoTipInfo;{$ENDIF}
               end;
   else
     raise ETIOPFProgrammerException.Create('Invalid TtiLVInfoTypType');

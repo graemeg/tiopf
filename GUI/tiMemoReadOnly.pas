@@ -45,7 +45,7 @@ type
   private
   published
     property Align ;
-    property Alignment ;
+    {$IFNDEF FPC}property Alignment ;{$ENDIF}
     property Anchors ;
     property Top ;
     property Left ;
@@ -57,13 +57,14 @@ type
     property OnClick ;
     property ScrollBars ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
 
 implementation
 uses
   Forms
+  ,Controls
   ;
   
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -71,9 +72,9 @@ uses
 // * TtiMemoReadOnly
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiMemoReadOnly.Create(owner: TComponent);
+constructor TtiMemoReadOnly.Create(AOwner: TComponent);
 begin
-  inherited Create( Owner ) ;
+  inherited Create( AOwner ) ;
   ReadOnly    := true ;
   ParentColor := true ;
   WordWrap    := true ;

@@ -50,7 +50,7 @@ type
   // is intended for use as the starting point for composite controls.
   TtiPanel = class( TCustomPanel )
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( Aowner : TComponent ) ; override ;
   end ;
 
   // An exception which is used in the tiFloat, tiInt, tiCurrency edits
@@ -62,7 +62,7 @@ type
   protected
   published
   public
-    constructor Create( owner : TComponent ) ; override ;
+    constructor Create( Aowner : TComponent ) ; override ;
   end ;
 
   // TtiButtonPanel
@@ -86,7 +86,7 @@ type
     property Btn2Enabled : boolean      read GetBtn2Enabled write SetBtn2Enabled ;
     property Visible ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( Aowner : TComponent ) ; override ;
     Destructor  Destroy ; override ;
     procedure   DoBtn1Click( sender : TObject ) ; virtual ;
     procedure   DoBtn2Click( sender : TObject ) ; virtual ;
@@ -94,7 +94,7 @@ type
 
   TtiMicroButton = class( TSpeedButton )
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( Aowner : TComponent ) ; override ;
   end ;
 
 implementation
@@ -103,94 +103,15 @@ uses
   ,tiResources
   ;
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//*
-//* File wide funcs and procs
-//*
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-{
-function tiNumToken( sString, sToken : string ) : integer ;
-var i, iCount : integer ;
-begin
-  iCount := 0 ;
-  i := pos( sToken, sString ) ;
-  while i <> 0 do begin
-    delete( sString, i, length( sToken )) ;
-    inc( iCount ) ;
-    i := pos( sToken, sString ) ;
-  end ;
-  result := iCount + 1 ;
-end ;
-}
-
-{
-function tiToken( sString, sToken : string; iNum : integer ) : string ;
-var i, iCount, iNumToken : integer ;
-begin
-
-  result := '' ;
-
-  iNumToken := tiNumToken( sString, sToken ) ;
-  if iNum = 1 then begin
-    if pos( sToken, sString ) = 0 then result := sString
-    else result := copy( sString, 1, pos( sToken, sString )-1) ;
-    end
-  else if (iNumToken < iNum-1) or (iNum<1) then begin
-    result := '' ;
-    end
-  else begin
-
-    // Remove leading blocks
-    iCount := 1 ;
-    i := pos( sToken, sString ) ;
-    while (i<>0) and (iCount<iNum) do begin
-      delete( sString, 1, i ) ;
-      inc( iCount ) ;
-      i := pos( sToken, sString ) ;
-    end ;
-
-    if (i=0) and (iCount=iNum) then result := sString
-    else if (i=0) and (iCount<>iNum) then result := ''
-    else result := copy( sString, 1, i-length( sToken )) ;
-
-  end ;
-end ;
-}
-
-{
-function tiStrTran( sStr, sDel, sIns : string ) : string ;
-var i : integer ;
-begin
-  i := pos( sDel, sStr ) ;
-  while i <> 0 do begin
-    delete( sStr, i, length( sDel )) ;
-    insert( sIns, sStr, i ) ;
-    i := pos( sDel, sStr ) ;
-  end ;
-  result := sStr ;
-end ;
-}
-{
-function tiRemoveExtension( sValue : string ) : string ;
-var i : integer ;
-begin
-  i := pos( '.', sValue ) ;
-  if i <> 0 then begin
-    result := copy( sValue, 1, i - 1 ) ;
-  end else begin
-    result := sValue ;
-  end ;
-end ;
-}
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
 //* TtiToolBar
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiToolBar.Create(owner: TComponent);
+constructor TtiToolBar.Create(Aowner: TComponent);
 begin
-  inherited create( owner ) ;
+  inherited create( Aowner ) ;
   Flat     := true ;
   Height   := 25 ;
   ShowHint := true ;
@@ -201,9 +122,9 @@ end;
 // * TtiPanel
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiPanel.Create(owner: TComponent);
+constructor TtiPanel.Create(Aowner: TComponent);
 begin
-  inherited Create( owner ) ;
+  inherited Create( Aowner ) ;
   ControlStyle := ControlStyle - [csSetCaption] ;
   BevelInner  := bvNone ;
   BevelOuter  := bvNone ;
@@ -216,9 +137,9 @@ end;
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 { ToDo 5 -cComponents: TtiButtonPanel: Add variable number of buttons, with var captions and glyphs }
-constructor TtiButtonPanel.Create(owner: TComponent);
+constructor TtiButtonPanel.Create(Aowner: TComponent);
 begin
-  inherited Create( owner ) ;
+  inherited Create( Aowner ) ;
   Width  := 253 ;
   Height := 33  ;
   Align  := alBottom ;
@@ -239,7 +160,9 @@ begin
     Default     := true ;
     ModalResult := mrOK ;
     NumGlyphs   := 2 ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, cResTI_Tick16ND);
+    {$ENDIF}
   end ;
 
   FBtn2 := TBitBtn.Create( nil ) ;
@@ -256,7 +179,9 @@ begin
     Cancel      := true ;
     ModalResult := mrCancel ;
     NumGlyphs   := 2 ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, cResTI_Cross16ND);
+    {$ENDIF}
   end ;
 end ;
 
@@ -319,9 +244,9 @@ end;
 
 { TtiMicroButton }
 
-constructor TtiMicroButton.Create(Owner: TComponent);
+constructor TtiMicroButton.Create(Aowner: TComponent);
 begin
-  inherited Create( Owner ) ;
+  inherited Create( Aowner ) ;
   Height := 12 ;
   Width  := 12 ;
   Flat   := true ;

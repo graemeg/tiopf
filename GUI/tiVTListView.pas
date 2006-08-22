@@ -1,14 +1,21 @@
 unit tiVTListView;
 
+{$I tiDefines.inc}
+
 interface
 uses
-{ $IFDEF _PROFILE}
-  Windows, Dialogs,
-{ $ENDIF}
-  Variants, Classes, SysUtils, Graphics, Contnrs, TypInfo, Types, ImgList, Controls, Menus,
-
-  tiVirtualTrees
-
+{.$IFDEF _PROFILE}
+  LCLIntf
+  ,Dialogs
+  ,Classes
+  ,SysUtils
+  ,Graphics
+  ,Contnrs
+  ,TypInfo
+  ,Types
+  ,ImgList
+  ,Controls
+  ,Menus
   ,tiImageMgr
   ,tiResources
   ,tiObject
@@ -19,6 +26,14 @@ uses
   ,cTIPerAwareCtrls
   ,tiVisitor
   ,tiOID
+{$IFNDEF FPC}
+  ,tiVirtualTrees
+{$ELSE}
+  ,LCLProc
+  ,VirtualTrees
+  ,VirtualStringTree
+  ,Variants
+{$ENDIF}
   ;
 
 

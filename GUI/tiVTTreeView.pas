@@ -4,7 +4,18 @@ unit tiVTTreeView;
 
 interface
 uses
-   Classes
+{$IFNDEF FPC}
+  Windows
+  ,Messages
+  ,tiVirtualTrees
+{$ELSE}
+  LMessages
+  ,LCLIntf
+  ,LCLProc
+  ,VirtualTrees
+  ,VirtualStringTree
+{$ENDIF}
+  ,Classes
   ,Menus
   ,Graphics
   ,ExtCtrls
@@ -12,12 +23,9 @@ uses
   ,ImgList
   ,Forms
   ,Contnrs
-  ,Messages
-  ,Windows
   ,tiFocusPanel
   ,tiCtrlButtonPanel
   ,tiObject
-  ,tiVirtualTrees
   ;
 
 type
@@ -77,7 +85,7 @@ type
     property OnCanEdit: TtiVTTVNodeConfirmEvent read FOnCanEdit write FOnCanEdit;
 
   public
-    constructor Create(Collection: TCollection); override;
+    constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
   end;
 
@@ -115,7 +123,7 @@ type
     procedure DoExpandAll(sender: TObject);
     procedure DoOnPopup(sender: TObject);
   public
-    constructor Create(Owner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     property VT: TtiVTTreeView read FVT write FVT;
   end;
@@ -181,7 +189,7 @@ type
     function  CalcMappingForObject(pObj: TtiObject): TtiVTTVDataMapping;
 
   public
-    constructor Create(owner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
     procedure   SetFocus ; override ;
 
@@ -285,9 +293,9 @@ end;
 // * TtiVTTreeView
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiVTTreeView.Create(owner: TComponent);
+constructor TtiVTTreeView.Create(AOwner: TComponent);
 begin
-  inherited create(owner);
+  inherited create(AOwner);
 
   ControlStyle := ControlStyle - [csSetCaption];
   Height := 120 ;
@@ -363,9 +371,9 @@ end;
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-constructor TTVPopupMenu.Create(Owner: TComponent);
+constructor TTVPopupMenu.Create(AOwner: TComponent);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
   Images  := gTIImageListMgr.ILNormal16;
 
   FmiExpandAll := TMenuItem.Create(nil);
@@ -466,7 +474,7 @@ begin
     FmiDelete.Shortcut := TextToShortcut('');
 end;
 
-procedure TtiVTTreeView.DoDelete;
+procedure TtiVTTreeView.DoDelete(Sender : TObject);
 var
   lNode: PVirtualNode;
   lData: TtiObject;
@@ -495,7 +503,7 @@ begin
     lMapping.OnDelete(self, lNode, lData);
 end;
 
-procedure TtiVTTreeView.DoInsert;
+procedure TtiVTTreeView.DoInsert(Sender : TObject);
 var
   lNode: PVirtualNode;
   lMapping: TtiVTTVDataMapping;
@@ -547,7 +555,7 @@ begin
   end;
 end;
 
-procedure TtiVTTreeView.DoEdit;
+procedure TtiVTTreeView.DoEdit(Sender : TObject);
 var
   lNode: PVirtualNode;
   lMapping: TtiVTTVDataMapping;
@@ -593,9 +601,9 @@ end;
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-constructor TtiVTTVDataMapping.Create(Collection: TCollection);
+constructor TtiVTTVDataMapping.Create(ACollection: TCollection);
 begin
-  inherited Create(Collection);
+  inherited Create(ACollection);
 end;
 
 destructor TtiVTTVDataMapping.Destroy;
@@ -659,11 +667,11 @@ begin
   if not Assigned(lNode) then
     Exit; //==>
 
-  Result := IntToStr(lNode.Index);
-  while Assigned(lNode.Parent) and (lNode <> FVT.RootNode) do // FVT.RootNode is the invisible root node
+  Result := IntToStr(lNode{$IFDEF FPC}^{$ENDIF}.Index);
+  while Assigned(lNode{$IFDEF FPC}^{$ENDIF}.Parent) and (lNode <> FVT.RootNode) do // FVT.RootNode is the invisible root node
   begin
-    lNode := lNode.Parent;
-    result := IntToStr(lNode.Index) + '.' + result;
+    lNode := lNode{$IFDEF FPC}^{$ENDIF}.Parent;
+    result := IntToStr(lNode{$IFDEF FPC}^{$ENDIF}.Index) + '.' + result;
   end;
 end;
 
@@ -959,7 +967,8 @@ end;
 procedure TtiVTTreeView.SetButtonStyle(const Value: TLVButtonStyle);
 begin
   tiCtrlButtonPanel.CreateCtrlBtnPnl( FCtrlBtnPnl, Value, Self,
-                                      CanView, CanInsert, CanEdit, CanDelete);
+                                      CanView, CanInsert,
+                                       CanEdit,CanDelete);
 
   FCtrlBtnPnl.OnNew       := DoInsert;
   FCtrlBtnPnl.OnEdit      := DoEdit;
@@ -1037,17 +1046,17 @@ end;
 
 procedure TtiVTTreeView.DoOnInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
 var
-  Data: TtiObject;
+  AData: TtiObject;
 begin
   if (FVT.GetNodeLevel(Node)) = 0 then
   begin
-    Data := FData;
+    AData := FData;
     Include(InitialStates, ivsExpanded);
   end
   else
-    Data := GetListForNode(ParentNode).Items[Node.Index];
+    AData := GetListForNode(ParentNode).Items[Node{$IFDEF FPC}^{$ENDIF}.Index];
 
-  SetObjectForNode(Node, Data);
+  SetObjectForNode(Node, AData);
 
   if CalcIfNodeHasChildren(Node) then
     Include(InitialStates, ivsHasChildren);
@@ -1082,17 +1091,17 @@ begin
     If it has published TtiObject properties, they are children
     If it has published TtiObjectList properties, those list items are children
 }
-  LNodeRec := VT.GetNodeData(Node);
-  if not Assigned(LNodeRec.NodeChildren) then
+  LNodeRec := PNodeDataRec(VT.GetNodeData(Node));
+  if not Assigned(LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren) then
   begin
-    LNodeRec.NodeChildren := TtiObjectList.Create;
-    LNodeRec.NodeChildren.OwnsObjects := False;
-    LNodeRec.NodeChildren.AutoSetItemOwner := False;
+    LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren := TtiObjectList.Create;
+    LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren.OwnsObjects := False;
+    LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren.AutoSetItemOwner := False;
   end;
-  LChildList := LNodeRec.NodeChildren;
+  LChildList := LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren;
   LChildList.Clear;
 
-  LObj := LNodeRec.NodeData;
+  LObj := LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeData;
 
   if LObj is TtiObjectList then
   begin
@@ -1108,7 +1117,11 @@ begin
   GetObjectPropInfos(LObj, LPropList);
   for LPropIndex := 0 to High(LPropList) do
   begin
+    {$IFNDEF FPC}
     LPropClass := GetObjectPropClass(LPropList[LPropIndex]);
+    {$ELSE}
+    LPropClass := GetObjectPropClass(LObj,LPropList[LPropIndex]^.Name);
+    {$ENDIF}
     if LPropClass.InheritsFrom(TtiObjectList) then
     begin
       LCandidateList := TtiObjectList(GetObjectProp(LObj, LPropList[LPropIndex]));
@@ -1134,7 +1147,7 @@ end;
 
 procedure TtiVTTreeView.DoOnFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 begin
-  FreeAndNil(PNodeDataRec(VT.GetNodeData(Node)).NodeChildren);
+  FreeAndNil(PNodeDataRec(VT.GetNodeData(Node)){$IFDEF FPC}^{$ENDIF}.NodeChildren);
 end;
 
 procedure TtiVTTreeView.DoOnGetText(
@@ -1225,25 +1238,25 @@ begin
   end;
 
   NodeRec := PNodeDataRec(FVT.GetNodeData(Node));
-  if not Assigned(NodeRec.NodeMapping) then
-    NodeRec.NodeMapping := CalcMappingForObject(NodeRec.NodeData);
+  if not Assigned(NodeRec{$IFDEF FPC}^{$ENDIF}.NodeMapping) then
+    NodeRec{$IFDEF FPC}^{$ENDIF}.NodeMapping := CalcMappingForObject(NodeRec{$IFDEF FPC}^{$ENDIF}.NodeData);
 
-  Result := NodeRec.NodeMapping;
+  Result := NodeRec{$IFDEF FPC}^{$ENDIF}.NodeMapping;
 end;
 
 function TtiVTTreeView.GetObjectForNode(Node: PVirtualNode): TtiObject;
 begin
-  Result := PNodeDataRec(FVT.GetNodeData(Node)).NodeData;
+  Result := PNodeDataRec(FVT.GetNodeData(Node)){$IFDEF FPC}^{$ENDIF}.NodeData;
 end;
 
 procedure TtiVTTreeView.SetObjectForNode(pNode: PVirtualNode; pObject: TtiObject);
 begin
-  PNodeDataRec(FVT.GetNodeData(pNode)).NodeData := pObject;
+  PNodeDataRec(FVT.GetNodeData(pNode)){$IFDEF FPC}^{$ENDIF}.NodeData := pObject;
 end;
 
 function TtiVTTreeView.GetListForNode(Node: PVirtualNode): TtiObjectList;
 begin
-  Result := PNodeDataRec(FVT.GetNOdeData(NOde)).NodeChildren;
+  Result := PNodeDataRec(FVT.GetNOdeData(NOde)){$IFDEF FPC}^{$ENDIF}.NodeChildren;
 end;
 
 procedure TtiVTTreeView.SelectObjectOrOwner(Value: TtiObject);

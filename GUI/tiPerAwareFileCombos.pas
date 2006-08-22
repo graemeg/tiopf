@@ -36,8 +36,10 @@ interface
 
 uses
   SysUtils,
+{$IFNDEF FPC}
   WinProcs,
   Messages,
+{$ENDIF}
   Classes,
   Graphics,
   Controls,
@@ -76,7 +78,7 @@ type
     property Title      : string   read FsTitle    write FsTitle ;
     property Visible ;
   public
-    constructor Create( owner : TComponent); override ;
+    constructor Create( AOwner : TComponent); override ;
   end ;
 
   TtiUserDefinedPicker = class ;
@@ -98,7 +100,7 @@ type
     procedure   SetReadOnly(const Value: Boolean);override ;
     procedure   SetControlColor ; override ;
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     property    Value : TtiObject read FValue write SetValue ;
     procedure   LinkToData(pData: TtiObject;const pFieldName, pFieldNameDisplay : string); reintroduce ;
   published
@@ -112,13 +114,13 @@ type
     function  GetDefaultExt: string;
     function  GetFilter: string;
     function  GetFilterIndex: integer;
-    procedure SetDefaultExt(const Value: string);
-    procedure SetFilter(const Value: string);
-    procedure SetFilterIndex(const Value: integer);
+    procedure SetDefaultExt(const AValue: string);
+    procedure SetFilter(const AValue: string);
+    procedure SetFilterIndex(const AValue: integer);
     function  GetInitialDir: string;
-    procedure SetInitialDir(const Value: string);
+    procedure SetInitialDir(const AValue: string);
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   published
     property DefaultExt  : string  read GetDefaultExt  write SetDefaultExt ;
     property Filter      : string  read GetFilter      write SetFilter ;
@@ -129,7 +131,9 @@ type
 implementation
 uses
   TypInfo
+{$IFNDEF FPC}
   ,Windows
+{$ENDIF}
   ,tiUtils
   ;
 
@@ -138,9 +142,9 @@ uses
 //* TtiPickFile
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-constructor TtiPickFile.Create( owner : TComponent ) ;
+constructor TtiPickFile.Create( AOwner : TComponent ) ;
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
   FsDefaultExt := '' ;
   FsFilter     := 'All files|*.*' ;
   FsTitle      := '' ;
@@ -172,7 +176,7 @@ end ;
 
 { TtiPerAwarePickFile }
 
-constructor TtiPerAwarePickFile.Create(Owner: TComponent);
+constructor TtiPerAwarePickFile.Create(AOwner: TComponent);
 begin
   WinControl := TtiPickFile.Create( self ) ;
   TtiPickFile( WinControl ).OnChange := DoChange ;
@@ -201,29 +205,29 @@ begin
   result := TtiPickFile( WinControl ).InitialDir ;
 end;
 
-procedure TtiPerAwarePickFile.SetDefaultExt(const Value: string);
+procedure TtiPerAwarePickFile.SetDefaultExt(const AValue: string);
 begin
-  TtiPickFile( WinControl ).DefaultExt := Value ;
+  TtiPickFile( WinControl ).DefaultExt := AValue ;
 end;
 
-procedure TtiPerAwarePickFile.SetFilter(const Value: string);
+procedure TtiPerAwarePickFile.SetFilter(const AValue: string);
 begin
-  TtiPickFile( WinControl ).Filter := Value ;
+  TtiPickFile( WinControl ).Filter := AValue ;
 end;
 
-procedure TtiPerAwarePickFile.SetFilterIndex(const Value: integer);
+procedure TtiPerAwarePickFile.SetFilterIndex(const AValue: integer);
 begin
-  TtiPickFile( WinControl ).FilterIndex := Value ;
+  TtiPickFile( WinControl ).FilterIndex := AValue ;
 end;
 
-procedure TtiPerAwarePickFile.SetInitialDir(const Value: string);
+procedure TtiPerAwarePickFile.SetInitialDir(const AValue: string);
 begin
-  TtiPickFile( WinControl ).InitialDir := Value ;
+  TtiPickFile( WinControl ).InitialDir := AValue ;
 end;
 
 { TtiUserDefinedPicker }
 
-constructor TtiUserDefinedPicker.Create(Owner: TComponent);
+constructor TtiUserDefinedPicker.Create(AOwner: TComponent);
 begin
   WinControl := TtiPickerAbs.Create(Self);
   TtiPickerAbs(WinControl).SpeedButton.OnClick := DoOnClick ;

@@ -28,7 +28,12 @@
   ToDo:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
+
+{$I tiDefines.inc}
+
 unit tiTreeviewEditor;
+
+
 
 interface
 
@@ -36,12 +41,19 @@ uses
   Classes
   ,tiTreeView
   ,TypInfo
+  {$IFNDEF FPC}
   {$IFNDEF VER130}
     ,DesignIntf
     ,DesignEditors
   {$ELSE}
     ,DsgnIntf
-  {$ENDIF};
+  {$ENDIF}
+  {$ELSE}
+  ,ComponentEditors
+  ,PropEdits
+  ,LazarusPackageIntf
+  {$ENDIF}
+  ;
 
 type
   TtiTVNodeEventPropertyEditor = class(TMethodProperty)
@@ -53,7 +65,12 @@ type
     //function GetValue: string; override;
     //procedure GetValues(Proc: TGetStrProc); override;
     //procedure SetValue(const AValue: string); override;
+    {$IFNDEF FPC}
     function GetFormMethodName: string; override ;
+    {$ELSE}
+    function GetFormMethodName: shortstring; override ;
+    {$ENDIF}
+    
     //function GetTrimmedEventName: string;
   end;
 
@@ -68,7 +85,11 @@ implementation
 // *   TtiTVNodeAvailableEvent
 // * Changes the default name of the event which is added to the pas file.
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{$IFNDEF FPC}
 function TtiTVNodeEventPropertyEditor.GetFormMethodName: string;
+{$ELSE}
+function TtiTVNodeEventPropertyEditor.GetFormMethodName: shortstring;
+{$ENDIF}
 var
   lData : TtiTVDataMapping ;
 begin

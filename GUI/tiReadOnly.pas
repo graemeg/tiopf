@@ -61,7 +61,7 @@ type
     procedure SetComponentsReadOnly(pReadOnly: boolean); virtual;
     function GetParentForm: TComponent;
   public
-    constructor Create(owner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
     property ReadOnly: boolean read GetReadOnly write SetReadOnly default false;
@@ -82,7 +82,7 @@ uses
 
 { TtiReadOnly }
 
-constructor TtiReadOnly.Create(owner: TComponent);
+constructor TtiReadOnly.Create(AOwner: TComponent);
 begin
   inherited;
   FReadOnly := false;

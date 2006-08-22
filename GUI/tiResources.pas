@@ -1,5 +1,8 @@
 unit tiResources;
 
+{$I tiDefines.inc}
+
+
 interface
 
 const
@@ -231,12 +234,30 @@ const
 
 
 implementation
+{$IFDEF FPC}
+uses
+LResources;
+
+initialization
+{$I tiImages.lrs}
+
+
+{$I tiListView.lrs}
+{$I tiListViewDiff.lrs}
+{$I tiPerAwareCtrls.lrs}
+
+
+{$ELSE}
+
 {$R tiImages.res}
 
 // ToDo: Move the images from these res files into tiImages.res and add to the build script
 {$R tiListView.res}
 {$R tiListViewDif.res}
 {$R tiPerAwareCtrls.res}
+
+
+{$ENDIF}
 
 end.
 

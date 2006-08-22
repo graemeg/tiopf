@@ -36,7 +36,12 @@ unit tiPerAwareMultiSelect ;
 
 interface
 uses
+{$IFNDEF FPC}
   Windows
+  ,Messages
+{$ELSE}
+  LMessages
+{$ENDIF}
   ,SysUtils
   ,Classes
   ,Graphics
@@ -47,7 +52,6 @@ uses
   ,tiSpeedButton
   ,extCtrls
   ,comctrls
-  ,Messages
   ,tiListView
   ,ImgList
   ,tiObject
@@ -59,6 +63,7 @@ type
   public
     property MultiSelect;
   end;
+
 
   // TtiPerAwareMultiSelect
   TtiPerAwareMultiSelect = class( TCustomGroupBox )
@@ -86,7 +91,11 @@ type
 
     FTimerSetData : TTimer ;
 
+    {$IFNDEF FPC}
     procedure WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    {$ELSE}
+    procedure WMSize( var Message: TLMSize ) ; message LM_SIZE ;
+    {$ENDIF}
     procedure SelectOne( pData : TtiObject ) ;
     procedure DeSelectOne( pData : TtiObject ) ;
 
@@ -139,7 +148,9 @@ type
     function  GetOnGetImageIndex: TtiLVGetImageIndexEvent;
     procedure SetOnGetImageIndex(const Value: TtiLVGetImageIndexEvent);
   protected
+  {$IFNDEF FPC}
     procedure Paint ; override ;
+  {$ENDIF}
   published
     property    Align ;
     property    Caption ;
@@ -162,7 +173,7 @@ type
     property    OnFilterData : TtiLVOnFilterDataEvent read  FOnFilterData write FOnFilterData ;
 
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     destructor  Destroy ; override ;
     procedure   DoSelectAll;
     procedure   DoDeSelectAll;
@@ -186,11 +197,11 @@ uses
 //* TtiPerAwareMultiSelect
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-constructor TtiPerAwareMultiSelect.Create( Owner : TComponent ) ;
+constructor TtiPerAwareMultiSelect.Create( AOwner : TComponent ) ;
 begin
   FbBorder          := true ;
 
-  inherited Create( Owner ) ;
+  inherited Create( AOwner ) ;
 
   // Had problems with csAcceptsControls being removed at runtime.
   // It was causing flicker when the panel was resized and owned components
@@ -268,9 +279,15 @@ begin
     height :=  25 ;
     hint   := 'Select marked' ;
     showHint := true ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(         HInstance, cResTI_Copy1Right + cResTI_16N ) ;
     GlyphHot.LoadFromResourceName(      HInstance, cResTI_Copy1Right + cResTI_16H ) ;
     GlyphDisabled.LoadFromResourceName( HInstance, cResTI_Copy1Right + cResTI_16D ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16N ) ;
+    GlyphHot.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16H ) ;
+    GlyphDisabled.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16D ) ;
+    {$ENDIF}
     onClick := DosbSelectMarkedClick ;
     flat := true ;
   end ;
@@ -283,9 +300,15 @@ begin
     height :=  25 ;
     hint   := 'Deselect marked' ;
     showHint := true ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(         HInstance, cResTI_Copy1Left + cResTI_16N ) ;
     GlyphHot.LoadFromResourceName(      HInstance, cResTI_Copy1Left + cResTI_16H ) ;
     GlyphDisabled.LoadFromResourceName( HInstance, cResTI_Copy1Left + cResTI_16D ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16N ) ;
+    GlyphHot.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16H ) ;
+    GlyphDisabled.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16D ) ;
+    {$ENDIF}
     onClick := DosbDeSelectMarkedClick ;
     flat := true ;
   end ;
@@ -297,9 +320,15 @@ begin
     width  :=  25 ;
     height :=  25 ;
     hint   := 'Select all' ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(         HInstance, cResTI_CopyAllRight + cResTI_16N ) ;
     GlyphHot.LoadFromResourceName(      HInstance, cResTI_CopyAllRight + cResTI_16H ) ;
     GlyphDisabled.LoadFromResourceName( HInstance, cResTI_CopyAllRight + cResTI_16D ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16N ) ;
+    GlyphHot.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16H ) ;
+    GlyphDisabled.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16D ) ;
+    {$ENDIF}
     onClick := DosbSelectAllClick ;
     flat := true ;
   end ;
@@ -311,9 +340,15 @@ begin
     width  :=  25 ;
     height :=  25 ;
     hint   := 'Deselect all' ;
+    {$IFNDEF FPC}
     Glyph.LoadFromResourceName(         HInstance, cResTI_CopyAllLeft + cResTI_16N ) ;
     GlyphHot.LoadFromResourceName(      HInstance, cResTI_CopyAllLeft + cResTI_16H ) ;
     GlyphDisabled.LoadFromResourceName( HInstance, cResTI_CopyAllLeft + cResTI_16D ) ;
+    {$ELSE}
+    Glyph.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16N ) ;
+    GlyphHot.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16H ) ;
+    GlyphDisabled.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16D ) ;
+    {$ENDIF}
     onClick := DosbDeSelectAllClick ;
     flat := true ;
   end ;
@@ -337,7 +372,11 @@ begin
   inherited destroy ;
 end ;
 
+{$IFNDEF FPC}
 procedure TtiPerAwareMultiSelect.WMSize(var Message: TWMSize);
+{$ELSE}
+procedure TtiPerAwareMultiSelect.WMSize( var Message: TLMSize );
+{$ENDIF}
 const
   ciBorder = 8 ;
   ciSBHeightSmall = 19 ;
@@ -499,6 +538,7 @@ begin
     DeSelectOne( FLVSelected.SelectedData as TtiObject ) ;
 end;
 
+{$IFNDEF FPC}
 // This Paint method is cloned from TCustomGroupBox, with some
 // modifications to hide the border if FbBorder is false
 procedure TtiPerAwareMultiSelect.Paint;
@@ -555,11 +595,14 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
 procedure TtiPerAwareMultiSelect.SetBorder(const Value: boolean);
 begin
   FbBorder := Value;
+{$IFNDEF FPC}
   Paint ;
+{$ENDIF}
 end;
 
 procedure TtiPerAwareMultiSelect.SetAvailable( Value: TtiObjectList);

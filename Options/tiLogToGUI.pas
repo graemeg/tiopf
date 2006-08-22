@@ -58,6 +58,9 @@ implementation
 uses
   tiUtils
   ,tiCommandLineParams
+  {$IFDEF FPC}
+  ,lclproc,lresources
+  {$ENDIF}
   ;
 
 
@@ -65,9 +68,11 @@ uses
 
 constructor TtiLogToGUI.Create;
 begin
-  FForm := CreateForm;
   inherited Create;
-  FForm.Visible := true;
+  FForm := CreateForm;
+  {$IFNDEF FPC}
+    FForm.Visible := true;
+  {$ENDIF}
   ThrdLog.Resume;
 end;
 
@@ -105,6 +110,7 @@ begin
   {$ENDIF}
   FForm.Font.Style           := [];
   FForm.OnCloseQuery         := FormCloseQuery;
+
 
   FPopupMenu                 := TPopupMenu.Create(FForm);
   FPopupMenu.Name            := 'PopupMenu';
@@ -193,8 +199,7 @@ begin
   {$IFDEF FPC}
   FToolBar.ButtonWidth      := 50;
   {$ENDIF}
-
-  Result := FForm;
+ Result := FForm;
 end;
 
 (*
@@ -282,6 +287,11 @@ procedure TtiLogToGUI.Log(const psDateTime, psThreadID, psMessage: string; pSeve
 begin
   if Terminated then
     Exit; //==>
+  {$IFDEF FPC}
+  {$Note A workaround.It seems that Lazarus does not allow to show this form
+  before Application.Run call}
+  if not FForm.Visible then FForm.Show;
+  {$ENDIF}
   inherited log(psDateTime, psThreadID, psMessage, pSeverity);
 end;
 

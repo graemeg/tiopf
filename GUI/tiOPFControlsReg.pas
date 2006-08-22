@@ -3,18 +3,21 @@
 unit tiOPFControlsReg;
 
 interface
-
-procedure Register;
-
-implementation
 uses
   Classes
   ,ActnList
+  {$IFNDEF FPC}
    {$IFNDEF VER130}
      ,DesignIntf
      ,DesignEditors
    {$ELSE}
      ,DsgnIntf
+   {$ENDIF}
+   {$ELSE}
+  ,ComponentEditors
+  ,PropEdits
+  ,LazarusPackageIntf
+  ,LResources
    {$ENDIF}
   ,DtiDefaultActionValues
   ,tiPerAwareCtrls
@@ -41,11 +44,18 @@ uses
   ,tiTreeviewEditor
   ;
 
+
+procedure Register;
+
+implementation
+
+{$IFNDEF FPC}
 {$R tiOPFControls.dcr}
+{$ENDIF}
 
 procedure Register;
 begin
-  RegisterComponents( 'TechInsite',
+  RegisterComponents( 'TechInsite Base',
                       [   TtiPerAwareEdit
                          ,TtiPerAwareMemo
                          ,TtiPerAwareComboBoxStatic
@@ -55,7 +65,14 @@ begin
                          ,TtiPerAwareCheckBox
                          ,TtiPerAwareFloatEdit
                          ,TtiPerAwareImageEdit
-                         ,TtiUserDefinedPicker
+                         ,TtiDateRange
+                      ]) ;
+
+
+
+
+  RegisterComponents( 'TechInsite Extra',
+                      [  TtiUserDefinedPicker
                          ,TtiPerAwarePickFile
                          ,TtiPerAwarePickDirectory
                          ,TtiMemoReadOnly
@@ -64,28 +81,33 @@ begin
                          ,TtiHyperLink
                          ,TtiSpeedButton
                          ,TtiRoundedPanel
+                         {$IFNDEF FPC}
                          ,TtiDateRange
+                         {$ENDIF}
                          ,TtiSplitter
                          ,TtiSplitterPanel
                          ,TtiToolBar
                          ,TtiButtonPanel
                          ,TtiMicroButton
-
-                         ,TtiListView      // Depreciated.  Use TtiVTListView in future
-                         ,TtiListViewListBox
-                         ,TtiListViewPlus
-                         ,TtiListViewDif
-
-                         ,TtiTreeView      // Depreciated.  Use TtiVTTreeView in future
-                         ,TtiTreeViewChildForm
-
                          ,TtiVTListView
                          ,TtiVTTreeView
 
                       ]) ;
 
 
-  RegisterActions( 'TechInsite',
+  RegisterComponents( 'TechInsite Old',
+                      [
+                         TtiListView      // Depreciated.  Use TtiVTListView in future
+                         ,TtiListViewListBox
+                         ,TtiListViewPlus
+                         ,TtiListViewDif
+                         ,TtiTreeView      // Depreciated.  Use TtiVTTreeView in future
+                         ,TtiTreeViewChildForm
+                      ]) ;
+
+
+
+  RegisterActions( 'TechInsite Base',
                    [
                      TtiImageLoadAction
                     ,TtiImageSaveAction
@@ -124,5 +146,10 @@ begin
                           TtiTVNodeEventPropertyEditor ) ;       // ClassRef of property editor
 
 end;
+
+{$IFDEF FPC}
+initialization
+{$i tiOPFControls.lrs}
+{$ENDIF}
 
 end.

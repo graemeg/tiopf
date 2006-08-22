@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="2">
+    <PathDelim Value="\"/>
+    <Name Value="tiOPFGUI2"/>
+    <Author Value="Bogus³aw Brandys"/>
+    <CompilerOptions>
+      <Version Value="5"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="..\..\Core\"/>
+        <OtherUnitFiles Value="..\..\Core\;..\..\Options\;..\..\GUI\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value="..\..\Core\;..\..\Options\;..\..\GUI\"/>
+      </SearchPaths>
+      <CodeGeneration>
+        <Generate Value="Faster"/>
+      </CodeGeneration>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+        <ExecuteAfter>
+          <ShowAllMessages Value="True"/>
+        </ExecuteAfter>
+      </Other>
+    </CompilerOptions>
+    <Description Value="tiOPF2 GUI controls ported to Lazarus"/>
+    <License Value="Mozilla Public License 1.1"/>
+    <Version Major="1" Build="1"/>
+    <Files Count="29">
+      <Item1>
+        <Filename Value="..\..\GUI\cTIPerAwareCtrls.pas"/>
+        <UnitName Value="cTIPerAwareCtrls"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\..\GUI\tiButtons.pas"/>
+        <UnitName Value="tiButtons"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\..\GUI\tiCtrlButtonPanel.pas"/>
+        <UnitName Value="tiCtrlButtonPanel"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\..\GUI\tiFocusPanel.pas"/>
+        <UnitName Value="tiFocusPanel"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\..\GUI\tiHyperlink.pas"/>
+        <UnitName Value="tiHyperlink"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\..\GUI\tiImageMgr.pas"/>
+        <UnitName Value="tiImageMgr"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\..\GUI\tiListView.pas"/>
+        <UnitName Value="tiListView"/>
+      </Item7>
+      <Item8>
+        <Filename Value="..\..\GUI\tiListViewCtrls.pas"/>
+        <UnitName Value="tiListViewCtrls"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\..\GUI\tiListViewDif.pas"/>
+        <UnitName Value="tiListViewDif"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\..\GUI\tiListViewPlus.pas"/>
+        <UnitName Value="tiListViewPlus"/>
+      </Item10>
+      <Item11>
+        <Filename Value="..\..\GUI\tiMemoReadOnly.pas"/>
+        <UnitName Value="tiMemoReadOnly"/>
+      </Item11>
+      <Item12>
+        <Filename Value="..\..\GUI\tiPerAwareCombosAbs.pas"/>
+        <UnitName Value="tiPerAwareCombosAbs"/>
+      </Item12>
+      <Item13>
+        <Filename Value="..\..\GUI\tiPerAwareCtrls.pas"/>
+        <UnitName Value="tiPerAwareCtrls"/>
+      </Item13>
+      <Item14>
+        <Filename Value="..\..\GUI\tiPerAwareDateRange.pas"/>
+        <UnitName Value="tiPerAwareDateRange"/>
+      </Item14>
+      <Item15>
+        <Filename Value="..\..\GUI\tiPerAwareDirectoryCombos.pas"/>
+        <UnitName Value="tiPerAwareDirectoryCombos"/>
+      </Item15>
+      <Item16>
+        <Filename Value="..\..\GUI\tiPerAwareFileCombos.pas"/>
+        <UnitName Value="tiPerAwareFileCombos"/>
+      </Item16>
+      <Item17>
+        <Filename Value="..\..\GUI\tiPerAwareMultiSelect.pas"/>
+        <UnitName Value="tiPerAwareMultiSelect"/>
+      </Item17>
+      <Item18>
+        <Filename Value="..\..\GUI\tiReadOnly.pas"/>
+        <UnitName Value="tiReadOnly"/>
+      </Item18>
+      <Item19>
+        <Filename Value="..\..\GUI\tiResources.pas"/>
+        <UnitName Value="tiResources"/>
+      </Item19>
+      <Item20>
+        <Filename Value="..\..\GUI\tiRoundedPanel.pas"/>
+        <UnitName Value="tiRoundedPanel"/>
+      </Item20>
+      <Item21>
+        <Filename Value="..\..\GUI\tiSpeedButton.pas"/>
+        <UnitName Value="tiSpeedButton"/>
+      </Item21>
+      <Item22>
+        <Filename Value="..\..\GUI\tiSplitter.pas"/>
+        <UnitName Value="tiSplitter"/>
+      </Item22>
+      <Item23>
+        <Filename Value="..\..\GUI\tiThreadProgress.pas"/>
+        <UnitName Value="tiThreadProgress"/>
+      </Item23>
+      <Item24>
+        <Filename Value="..\..\GUI\tiTreeView.pas"/>
+        <UnitName Value="tiTreeView"/>
+      </Item24>
+      <Item25>
+        <Filename Value="..\..\GUI\tiTreeViewChildForm.pas"/>
+        <UnitName Value="tiTreeViewChildForm"/>
+      </Item25>
+      <Item26>
+        <Filename Value="..\..\GUI\tiDialogs.pas"/>
+        <UnitName Value="tidialogs"/>
+      </Item26>
+      <Item27>
+        <Filename Value="..\..\GUI\DtiDefaultActionValues.lfm"/>
+        <Type Value="LFM"/>
+      </Item27>
+      <Item28>
+        <Filename Value="..\..\GUI\DtiDefaultActionValues.pas"/>
+        <UnitName Value="DtiDefaultActionValues"/>
+      </Item28>
+      <Item29>
+        <Filename Value="..\..\GUI\tiOPFControlsReg.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="tiOPFControlsReg"/>
+      </Item29>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="virtualtreeslcl"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="IDEIntf"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

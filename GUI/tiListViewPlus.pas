@@ -4,7 +4,14 @@ unit tiListViewPlus;
 
 interface
 uses
-   tiListView
+{$IFNDEF FPC}
+  Messages
+{$ELSE}
+  LMessages
+  ,LCLType
+  ,LCLProc
+{$ENDIF}
+  ,tiListView
   ,tiSpeedButton
   ,tiObject
   ,ComCtrls
@@ -17,7 +24,6 @@ uses
   ,ExtCtrls  // TCustomPanel
   ,Graphics
   ,TypInfo
-  ,Messages
   ,Controls
   ,Contnrs
   ;
@@ -85,7 +91,11 @@ type
     FbBorder: boolean;
     FOnChange: TNotifyEvent;
 
+    {$IFNDEF FPC}
     procedure WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    {$ELSE}
+    procedure WMSize( var Message: TLMSize ) ; message LM_SIZE ;
+    {$ENDIF}
     procedure sbSelectMarkedClick( sender: TObject ) ;
     procedure sbDeSelectMarkedClick( sender: TObject ) ;
     procedure sbSelectAllClick( sender: TObject ) ;
@@ -105,7 +115,9 @@ type
     procedure SetSelected(const Value: TStringList);
 
   protected
+    {$IFNDEF FPC}
     procedure Paint ; override ;
+    {$ENDIF}
     property  Caption ;
     property  Anchors ;
     property  Available : TStringList read FslAvailable write SetAvailable ;
@@ -118,7 +130,7 @@ type
     procedure DeSelectByCaption( const psCaption : string ; const piPos : integer = -1 ) ;
   published
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     destructor  Destroy ; override ;
     procedure   RefreshData ; virtual ;
     procedure   ClearSelected ;
@@ -148,7 +160,7 @@ type
   public
     constructor Create ;
     property Conj     : TFilterConj read FFilterConj write FFilterConj ;
-    property Operator : TFilterOp   read FFilterOp   write FFilterOp ;
+    property FOperator : TFilterOp   read FFilterOp   write FFilterOp ;
     property Value    : string      read FsValue     write FsValue ;
     property Field    : string      read FsField     write FsField ;
     function DoesDataPassFilter( pValue : TtiObject ) : boolean ;
@@ -212,7 +224,7 @@ type
     procedure   SetLVConfig(const Value: TtiLVConfig) ; virtual ;
   public
     Property    LVConfig : TtiLVConfig read FLVConfig write SetLVConfig ;
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Procedure   Apply( pLV : TtiListViewPlus ) ; virtual ;
   end ;
 
@@ -224,7 +236,7 @@ type
   protected
     procedure   SetLVConfig(const Value: TtiLVConfig) ; override ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Property    MultiSelect : TtiLVMultiSelect read FMultiSelect ;
     Procedure   Apply( pLV : TtiListViewPlus ) ; override ;
   end ;
@@ -243,7 +255,7 @@ type
     function    GetValid: boolean; virtual ;
     function    GetShowNextField : boolean ; virtual ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Destructor  Destroy ; override ;
     Property    FieldDisplay  : string read GetFieldDisplay {write SetFieldDisplay };
     Property    FieldPropName : string read GetFieldPropName write SetFieldPropName ;
@@ -275,10 +287,10 @@ type
     function    GetShowNextField : boolean ; override ;
     procedure   OnChangeField( sender : TObject ) ; override ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Destructor  Destroy ; override ;
     Property    Conj : TFilterConj read GetConj write SetConj ;
-    Property    Operator : TFilterOp read GetOperator write SetOperator ;
+    Property    FOperator : TFilterOp read GetOperator write SetOperator ;
     Property    Value : string read GetValue write SetValue ;
     Property    ShowConj : boolean read FbShowConj write FbShowConj ;
   end ;
@@ -295,7 +307,7 @@ type
     Function    GetValid : boolean ; override ;
     Function    GetShowNextField : boolean ; override ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Destructor  Destroy ; override ;
     Property    Direction : TlvSortDirection read GetDirection write SetDirection ;
     Property    ThenBy    : boolean read GetThenBy write SetThenBy ;
@@ -332,7 +344,7 @@ type
     Procedure   AddFieldEdit( pData : TObject       ) ; virtual ;
 
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Destructor  Destroy ; override ;
     function    FirstControl: TWinControl;
     Property    LVConfig      : TtiLVConfig  read FLVConfig      write FLVConfig ;
@@ -350,7 +362,7 @@ type
   protected
     Procedure   AddFieldEdit( pData    : TObject    ) ; override ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     // Additional proc
     Procedure   AssignFilters( pList : TList ) ;
   end ;
@@ -361,7 +373,7 @@ type
   protected
     Procedure   AddFieldEdit( pData    : TObject    ) ; override ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     // Additional proc
     Procedure   AssignSorts( pList : TList ) ;
   end ;
@@ -373,7 +385,7 @@ type
   protected
     procedure   SetLVConfig(const Value: TtiLVConfig); override ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Procedure   Apply( pLV : TtiListViewPlus ) ; override ;
   end ;
 
@@ -384,7 +396,7 @@ type
   protected
     procedure   SetLVConfig(const Value: TtiLVConfig) ; override ;
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Procedure   Apply( pLV : TtiListViewPlus ) ; override ;
   end;
 
@@ -419,7 +431,7 @@ type
     procedure   SetConfigHelpContext(pHelpContext: THelpContext);
   protected
   public
-    Constructor CreateNew( owner : TComponent ; Dummy: Integer = 0 ) ; override ;
+    Constructor CreateNew( AOwner : TComponent ; Dummy: Integer = 0 ) ; override ;
     Destructor  Destroy ; override ;
     property    LVConfig : TtiLVConfig read FLVConfig write SetLVConfig ;
     property    ActivePage : string read FsActivePage write SetActivePage ;
@@ -456,7 +468,7 @@ type
     procedure DoOnPopup( sender : TObject ) ;
 
   public
-    Constructor Create( owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Destructor  Destroy ; override ;
   end ;
 
@@ -488,7 +500,7 @@ type
     function  GetValid : boolean ;
 
   public
-    constructor CreateNew(owner: TComponent ; Dummy: Integer = 0); override ;
+    constructor CreateNew(AOwner: TComponent ; Dummy: Integer = 0); override ;
     destructor  Destroy ; override ;
     property    LVConfig : TtiLVConfig read FLVConfig write SetLVConfig ;
     property    LV : TtiListViewPlus read GetLV ;
@@ -554,7 +566,9 @@ type
     property    MultiSelect   ;
     property    OnDblClick    ;
     property    OnChange      ;
+    {$IFNDEF FPC}
     property    OnChanging    ;
+    {$ENDIF}
     property    OnKeyDown     ;
     property    OnKeyPress    ;
     property    SmallImages   ;
@@ -590,7 +604,7 @@ type
     property    ConfigHelpContext : integer read FConfigHelpContext write FConfigHelpContext ;
 
   public
-    constructor Create( owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
     destructor  Destroy ; override ;
 
     procedure   DoFind ;
@@ -625,15 +639,20 @@ procedure tiShowWithListView( pList : TList ; const pCols : array of string ) ;
 
 implementation
 uses
-  SysUtils
-  ,Windows
+{$IFNDEF FPC}
+  Windows
+  ,ShellAPI
+{$ELSE}
+  LCLIntf
+{$ENDIF}
+  ,SysUtils
   ,Dialogs
   ,Math
   ,ClipBrd
-  ,ShellAPI
   ,INIFiles
   ,tiResources
   ,tiImageMgr
+
   ;
 
 const
@@ -721,9 +740,9 @@ end ;
 // * TtiListViewPlus
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiListViewPlus.Create(owner: TComponent);
+constructor TtiListViewPlus.Create(AOwner: TComponent);
 begin
-  inherited create( owner ) ;
+  inherited create( AOwner ) ;
 
   LV.ReadOnly := true ;
   LV.HideSelection := false ;
@@ -822,7 +841,7 @@ begin
   for i := 0 to LVConfig.Filters.Count - 1 do begin
     if psMessage <> '' then psMessage := psMessage + #13 ;
     psMessage := psMessage +
-      ( TObject(FLVConfig.Filters[i]) as TtiLVFilter ).ValidateFilter( Data.Items[i] ) ;
+      ( TObject(FLVConfig.Filters[i]) as TtiLVFilter ).ValidateFilter( TtiObject(Data.Items[i]) ) ;
   end ;
   result := ( psMessage = '' ) ;
 end;
@@ -1060,9 +1079,9 @@ end;
 // * TtiLVMenu
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiLVMenu.Create(owner: TComponent);
+constructor TtiLVMenu.Create( AOwner: TComponent);
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
 
   Images  := gTIImageListMgr.ILNormal16;
   OnPopup := DoOnPopup ;
@@ -1151,7 +1170,7 @@ end;
 
 function TtiLVMenu.GetListView : TtiListViewPlus ;
 begin
-  result := ( owner as TtiListViewPlus ) ;
+  result := ( Owner as TtiListViewPlus ) ;
 end;
 
 procedure TtiLVMenu.ConfigOnClick(sender: TObject);
@@ -1217,7 +1236,11 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 procedure TtiLVConfigEdit.BtnHelpClick(sender: TObject);
 begin
+  {$IFNDEF FPC}
   Application.helpcommand(HELP_CONTEXT, HelpContext);
+  {$ELSE}
+     {$WARNING TODO: Currently missing TApplication.HelpCommand - Fix it later}
+  {$ENDIF}
 end;
 
 procedure TtiLVConfigEdit.BtnOKClick(sender: TObject);
@@ -1242,11 +1265,11 @@ begin
   // Do nothing, implement in the concrete.
 end;
 
-constructor TtiTSAbs.Create(owner: TComponent);
+constructor TtiTSAbs.Create(AOwner: TComponent);
 begin
-  inherited Create( Owner ) ;
-  Parent      := owner as TPageControl ;
-  PageControl := owner as TPageControl ;
+  inherited Create( AOwner ) ;
+  Parent      := AOwner as TPageControl ;
+  PageControl := AOwner as TPageControl ;
 end;
 
 procedure TtiTSAbs.SetLVConfig(const Value: TtiLVConfig);
@@ -1264,9 +1287,9 @@ begin
   FLVConfig.LV.RunTimeSelectedCols := true ;
 end;
 
-constructor TtiTSCols.Create(owner: TComponent);
+constructor TtiTSCols.Create(AOwner: TComponent);
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
   Caption     := cgsPageNameColumns ;
   FMultiSelect := TtiLVMultiSelect.Create( self ) ;
   FMultiSelect.Parent := self ;
@@ -1296,9 +1319,9 @@ begin
   // Do nothing, implement in the concrete
 end;
 
-constructor TtiEditConditionAbs.Create(owner: TComponent);
+constructor TtiEditConditionAbs.Create( AOwner: TComponent);
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
   FEditList               := TObjectList.Create ;
   Caption                 := '' ;
   BevelOuter              := bvNone ;
@@ -1340,7 +1363,7 @@ begin
     with ( pData as TtiLVFilter ) do
     begin
       lFilterEdit.Conj          := Conj    ;
-      lFilterEdit.Operator      := Operator;
+      lFilterEdit.FOperator      := FOperator;
       lFilterEdit.FieldPropName := Field   ;
       lFilterEdit.Value         := Value   ;
     end ;
@@ -1366,7 +1389,7 @@ begin
     begin
       lFilter := TtiLVFilter.Create ;
       lFilter.Conj     := lFilterEdit.Conj ;
-      lFilter.Operator := lFilterEdit.Operator ;
+      lFilter.FOperator := lFilterEdit.FOperator ;
       lFilter.Field    := lFilterEdit.FieldPropName ;
       lFilter.Value    := lFilterEdit.Value ;
       pList.Add( lFilter ) ;
@@ -1397,9 +1420,9 @@ begin
   FLVConfig.LV.DoCustomApplySort(false);
 end;
 
-constructor TtiTSSort.Create(owner: TComponent);
+constructor TtiTSSort.Create( AOwner: TComponent);
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
   Caption            := cgsPageNameSort ;
   FEditSort          := TtiEditSort.Create( self ) ;
   FEditSort.Parent   := self ;
@@ -1415,7 +1438,7 @@ begin
   FEditSort.LVConfig := LVConfig ;
 
   for i := 0 to LVConfig.Sorts.Count - 1 do
-    FEditSort.AddFieldEdit( FLVConfig.Sorts[i] ) ;
+    FEditSort.AddFieldEdit( TObject(FLVConfig.Sorts[i]) ) ;
 
   if FEditSort.EditList.Count = 0 then
     FEditSort.AddFieldEdit( nil ) ;
@@ -1430,9 +1453,9 @@ end;
 // * TtiLVConfigEdit
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiLVConfigEdit.CreateNew(owner: TComponent ; Dummy: Integer = 0);
+constructor TtiLVConfigEdit.CreateNew(AOwner: TComponent ; Dummy: Integer = 0);
 begin
-  inherited CreateNew( Owner ) ;
+  inherited CreateNew( AOwner,0 ) ;
 
   // Setup the form
   BorderStyle := bsDialog ;
@@ -1558,7 +1581,7 @@ constructor TtiLVFilter.Create;
 begin
   inherited;
   Conj     := fcNone ;
-  Operator := foNone ;
+  FOperator := foNone ;
   Value    := '' ;
   Field    := '' ;
 end;
@@ -1580,7 +1603,7 @@ function TtiLVFilter.DoesDataPassFilter(pValue: TtiObject): boolean;
                                 ' Called in TestStringFilter' ) ;
     end ;
     lsVal  := upperCase( Value ) ;
-    case Operator of
+    case FOperator of
     foEqual        : result := ( lsProp =  lsVal ) ;
     foNotEqual     : result := ( lsProp <> lsVal ) ;
     foGreater      : result := ( lsProp >  lsVal ) ;
@@ -1613,7 +1636,7 @@ function TtiLVFilter.DoesDataPassFilter(pValue: TtiObject): boolean;
     end;
     try liProp := StrToInt( lsProp ) except liProp := 0 end ;
     try liVal  := StrToInt( Value ) except liVal := 0 end ;
-    case Operator of
+    case FOperator of
     foEqual        : result := ( liProp =  liVal ) ;
     foNotEqual     : result := ( liProp <> liVal ) ;
     foGreater      : result := ( liProp >  liVal ) ;
@@ -1662,7 +1685,7 @@ function TtiLVFilter.DoesDataPassFilter(pValue: TtiObject): boolean;
     End;
     If lValidNum Then
     Begin
-      case Operator of
+      case FOperator of
       foEqual        : result := ( lrProp =  lrVal ) ;
       foNotEqual     : result := ( lrProp <> lrVal ) ;
       foGreater      : result := ( lrProp >  lrVal ) ;
@@ -1756,11 +1779,11 @@ end ;
 // * TtiLFFilterEdit
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiLVFilterEdit.Create(owner: TComponent);
+constructor TtiLVFilterEdit.Create(AOwner: TComponent);
 var
   i : integer ;
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
 
   FcbOperator := TComboBox.Create( self ) ;
   FcbOperator.Parent := self ;
@@ -1840,7 +1863,7 @@ end;
 function TtiLVFilterEdit.GetValid: boolean;
 begin
   result := ( not Visible ) or
-            (( Operator <> foNone ) and
+            (( FOperator <> foNone ) and
              ( FieldDisplay <> '' )) ;
 end;
 
@@ -1880,7 +1903,7 @@ end;
 // * TtiLVFindDialog
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiLVFindDialog.CreateNew(owner: TComponent; Dummy: Integer);
+constructor TtiLVFindDialog.CreateNew(AOwner: TComponent; Dummy: Integer);
 begin
   inherited ;
   Caption     := ' Find data' ;
@@ -2073,6 +2096,7 @@ end;
 
 procedure TtiListViewPlus.ViewFile( const psFileName : string ) ;
 begin
+{$IFNDEF FPC}
   if (MessageDlg( psFileName + ' has been created.' + #13 + #13 +
                  'Do you want to view it now?',
                  mtConfirmation, [mbYes,mbNo], 0 ) = mrYes) then
@@ -2082,6 +2106,13 @@ begin
                   nil,
                   nil,
                   SW_SHOWNORMAL ) ;
+{$ELSE}
+{$WARNING TODO: Fix it using TProcess ?}
+MessageDlg( psFileName + ' has been created.' + #13 + #13 +
+                 'You can to view it now.',
+                 mtInformation, [mbYes], 0 );
+{$ENDIF}
+
 end ;
 
 procedure TtiListViewPlus.DoExpToHTML ;
@@ -2150,7 +2181,7 @@ end;
 // * TtiTSFilter
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiTSFilter.Create(owner: TComponent);
+constructor TtiTSFilter.Create(AOwner: TComponent);
 begin
   inherited;
   Caption              := cgsPageNameFilter ;
@@ -2168,7 +2199,7 @@ begin
   FEditFilter.LVConfig := LVConfig ;
 
   for i := 0 to LVConfig.Filters.Count - 1 do
-    FEditFilter.AddFieldEdit( FLVConfig.Filters[i] ) ;
+    FEditFilter.AddFieldEdit( TObject(FLVConfig.Filters[i]) ) ;
 
   if FEditFilter.EditList.Count = 0 then
     FEditFilter.AddFieldEdit( nil ) ;
@@ -2256,11 +2287,12 @@ begin
   else
     i := 0 ;
 
-  lStart := LV.DataInternal.Items[ i ] ;
+  lStart := TObject(LV.DataInternal.Items[ i ]) ;
   liIndex := -1 ;
 
+
   while true do begin
-    if not LV.DoesDataPassFilter( LV.DataInternal.Items[i], LVConfig.Finds ) then begin
+    if not LV.DoesDataPassFilter( TtiObject(LV.DataInternal.Items[i]), LVConfig.Finds ) then begin
       inc( i ) ;
       if i > LV.DataInternal.Count - 1 then
         i := 0 ;
@@ -2269,7 +2301,7 @@ begin
       Break ; //==>
     end ;
 
-    if LV.DataInternal.Items[i] = lStart then
+    if TObject(LV.DataInternal.Items[i]) = lStart then
       Break ; //==>
 
   end ;
@@ -2335,12 +2367,12 @@ begin
   FcbField.ItemIndex := 0 ;
 end;
 
-constructor TtiLVFieldEdit.Create(owner: TComponent);
+constructor TtiLVFieldEdit.Create(AOwner: TComponent);
 begin
-  inherited Create( Owner ) ;
+  inherited Create( AOwner ) ;
 
   Visible := false ;
-  Parent := ( Owner as TWinControl ) ;
+  Parent := ( AOwner as TWinControl ) ;
   ControlStyle := ControlStyle - [csSetCaption] ;
   BevelInner   := bvNone ;
   BevelOuter   := bvNone ;
@@ -2354,7 +2386,7 @@ begin
   FcbField.OnChange := OnChangeField ;
 
   ClientHeight := 22 + 4 + 4 ;
-  ClientWidth  := ( owner as TWinControl ).ClientWidth - 4 - 4 ;
+  ClientWidth  := ( AOwner as TWinControl ).ClientWidth - 4 - 4 ;
 
 end;
 
@@ -2426,7 +2458,7 @@ end;
 // * TtiLVSortEdit
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiLVSortEdit.Create(owner: TComponent);
+constructor TtiLVSortEdit.Create(AOwner: TComponent);
 var
   i : TlvSortDirection ;
 begin
@@ -2463,9 +2495,9 @@ end;
 // * TtiEditFilter
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiEditFilter.Create(owner: TComponent);
+constructor TtiEditFilter.Create(AOwner: TComponent);
 begin
-  inherited Create( owner ) ;
+  inherited Create( AOwner ) ;
 end;
 
 function TtiEditConditionAbs.GetApply: boolean;
@@ -2659,7 +2691,7 @@ begin
   end ;
 end;
 
-constructor TtiEditSort.Create(owner: TComponent);
+constructor TtiEditSort.Create(AOwner: TComponent);
 begin
   inherited;
   MaxFilterCount    := 1 ;
@@ -2856,11 +2888,11 @@ end;
 //* TtiLVMultiSelect
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-constructor TtiLVMultiSelect.Create( Owner : TComponent ) ;
+constructor TtiLVMultiSelect.Create( AOwner : TComponent ) ;
 begin
   FbBorder          := true ;
 
-  inherited Create( Owner ) ;
+  inherited Create( AOwner ) ;
 
   FlblAvailable     := TLabel.Create( self ) ;
   FlblSelected      := TLabel.Create( self ) ;
@@ -2993,7 +3025,11 @@ begin
   inherited Destroy      ;
 end ;
 
+{$IFNDEF FPC}
 procedure TtiLVMultiSelect.WMSize(var Message: TWMSize);
+{$ELSE}
+procedure TtiLVMultiSelect.WMSize(var Message: TLMSize);
+{$ENDIF}
 const
   ciBorder = 8 ;
   ciSBWidth = 23 ;
@@ -3210,6 +3246,7 @@ end;
 
 // This Paint method is cloned from TCustomGroupBox, with sime
 // modifications to hide the border if FbBorder is false
+{$IFNDEF FPC}
 procedure TtiLVMultiSelect.Paint;
 var
   H: Integer;
@@ -3263,11 +3300,13 @@ begin
     end;
   end;
 end;
+{$ENDIF}
+
 
 procedure TtiLVMultiSelect.SetBorder(const Value: boolean);
 begin
   FbBorder := Value;
-  Paint ;
+  {$IFNDEF FPC}Paint ;{$ENDIF}
 end;
 
 procedure TtiLVMultiSelect.SetAvailable(const Value: TStringList);
@@ -3337,7 +3376,7 @@ function TtiLVFilter.Clone: TtiLVFilter;
 begin
   result := TtiLVFilter.Create;
   result.Conj := Conj;
-  result.Operator   := Operator;
+  result.FOperator   := FOperator;
   result.Value      := Value;
   result.Field      := Field;
 end;

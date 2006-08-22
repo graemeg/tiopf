@@ -49,10 +49,16 @@ unit tiSplitter;
 
 interface
 uses
-  Classes
-  ,Windows
-  ,Graphics
+{$IFNDEF FPC}
+  Windows
   ,Messages
+{$ELSE}
+   LMessages
+  ,LCLIntf
+  ,LCLProc
+{$ENDIF}
+  ,Classes
+  ,Graphics
   ,Controls
   ,ExtCtrls
   ,Forms
@@ -63,6 +69,11 @@ const
   cuColorGrabBar = $00FE9E83 ; // Pale navy blue
 
 type
+ {$IFDEF FPC}
+  TMessage = TLMessage;
+ {$ENDIF}
+
+
 
   TtiSplitter = class( TSplitter )
   private
@@ -73,12 +84,14 @@ type
     procedure Paint; override;
     Procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     Procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
+    {$IFNDEF FPC}
     Procedure CMDesignHitTest( Var Message : TCMDesignHitTest ) ; message CM_DESIGNHITTEST ;
+    {$ENDIF}
     Procedure DrawGrabBar( pRect : TRect ) ;
   published
     Property  ColorGrabBar : TColor read FColorGrabBar write SetColorGrabBar default cuColorGrabBar ;
   public
-    constructor Create( Owner : TComponent ) ; override ;
+    constructor Create( AOwner : TComponent ) ; override ;
   end ;
 
   TtiSplitterOrientation = ( spoVertical, spoHorizontal ) ;
@@ -146,10 +159,14 @@ type
     procedure DefineProperties(Filer: TFiler); override;
     procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override ;
 
+    {$IFNDEF FPC}
     procedure WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    {$ELSE}
+    procedure WMSize( var Message: TLMSize ) ; message LM_SIZE ;
+    {$ENDIF}
 
   public
-    Constructor Create( Owner : TComponent ) ; override ;
+    Constructor Create( AOwner : TComponent ) ; override ;
     Destructor  Destroy ; override ;
     Property    Panel1 : TtiSplitterPane read FPanel1 ;
     Property    Panel2 : TtiSplitterPane read FPanel2 ;
@@ -196,7 +213,7 @@ const
 //* TtiSplitter
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiSplitter.Create(Owner: TComponent);
+constructor TtiSplitter.Create(AOwner: TComponent);
 begin
   inherited;
   Width := ctiSplitterWidth ;
@@ -206,11 +223,13 @@ begin
   FColorGrabBar := cuColorGrabBar ;
 end;
 
+
 procedure TtiSplitter.CMMouseEnter(var Message: TMessage);
 begin
   FbMouseOver := true ;
   Paint ;
 end;
+
 
 procedure TtiSplitter.CMMouseLeave(var Message: TMessage);
 begin
@@ -218,10 +237,12 @@ begin
   Paint ;
 end;
 
+{$IFNDEF FPC}
 procedure TtiSplitter.CMDesignHitTest(var Message: TCMDesignHitTest);
 begin
   Message.Result := 1 ;
 end;
+{$ENDIF}
 
 procedure TtiSplitter.Paint;
 var
@@ -354,9 +375,9 @@ end;
 //* TtiSplitterPanel
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiSplitterPanel.Create(Owner: TComponent);
+constructor TtiSplitterPanel.Create(AOwner: TComponent);
 begin
-  inherited create( owner ) ;
+  inherited create( AOwner ) ;
 
   ControlStyle := ControlStyle - [csSetCaption] ;
   BevelInner  := bvNone ;
@@ -598,7 +619,11 @@ begin
   Writer.WriteListEnd ;
 end;
 
+{$IFNDEF FPC}
 procedure TtiSplitterPanel.WMSize(var Message: TWMSize);
+{$ELSE}
+procedure TtiSplitterPanel.WMSize(var Message: TLMSize);
+{$ENDIF}
 begin
   inherited ;
   if FbKeepSplitterPosPercent and
