@@ -139,6 +139,7 @@ uses
   ,Graphics
   ,SysUtils
   ,tiResources
+  {$IFDEF FPC},lclproc{$ENDIF}
   ;
 
 const

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="2">
+    <PathDelim Value="\"/>
+    <Name Value="tiOPFGUIDsgn"/>
+    <Author Value="Bogus³aw Brandys"/>
+    <CompilerOptions>
+      <Version Value="5"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <IncludeFiles Value="..\..\Core\"/>
+        <OtherUnitFiles Value="..\..\Core\;..\..\Options\;..\..\GUI\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value="..\..\Core\;..\..\Options\;..\..\GUI\"/>
+      </SearchPaths>
+      <CodeGeneration>
+        <Generate Value="Faster"/>
+      </CodeGeneration>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+        <ExecuteAfter>
+          <ShowAllMessages Value="True"/>
+        </ExecuteAfter>
+      </Other>
+    </CompilerOptions>
+    <Description Value="TechInsite Object Persistent Framework - visual  design controls
+"/>
+    <License Value="Mozilla Public License 1.1
+"/>
+    <Version Major="2"/>
+    <Files Count="1">
+      <Item1>
+        <Filename Value="..\..\GUI\tiOPFControlsReg.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="tiOPFControlsReg"/>
+      </Item1>
+    </Files>
+    <Type Value="DesignTime"/>
+    <RequiredPkgs Count="4">
+      <Item1>
+        <PackageName Value="virtualtreeslcl"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="tiOPFGUI"/>
+        <MinVersion Major="2" Valid="True"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="LCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="IDEIntf"/>
+      </Item4>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

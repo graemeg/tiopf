@@ -13,12 +13,12 @@ uses
    {$ELSE}
      ,DsgnIntf
    {$ENDIF}
-   {$ELSE}
+  {$ELSE}
   ,ComponentEditors
   ,PropEdits
   ,LazarusPackageIntf
   ,LResources
-   {$ENDIF}
+  {$ENDIF FPC}
   ,DtiDefaultActionValues
   ,tiPerAwareCtrls
   ,tiPerAwareFileCombos
@@ -81,9 +81,6 @@ begin
                          ,TtiHyperLink
                          ,TtiSpeedButton
                          ,TtiRoundedPanel
-                         {$IFNDEF FPC}
-                         ,TtiDateRange
-                         {$ENDIF}
                          ,TtiSplitter
                          ,TtiSplitterPanel
                          ,TtiToolBar
