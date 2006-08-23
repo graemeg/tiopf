@@ -61,6 +61,9 @@ type
 {$IFDEF MSWINDOWS}
 function gReg : TtiRegINIFile;
 {$ENDIF MSWINDOWS}
+{$IFDEF UNIX}
+function gReg : TtiINIFile;
+{$ENDIF}
 function gINI(const pFileName: string = '') : TtiINIFile;
 
 implementation
@@ -87,6 +90,13 @@ begin
     result := uReg;
 end;
 {$ENDIF MSWINDOWS}
+{$IFDEF UNIX}     // Allows us to use gReg under Linux as well
+function gReg : TtiINIFile;
+begin
+  Result := gINI;
+end;
+{$ENDIF}
+
 
 function gINI(const pFileName: string = '') : TtiINIFile;
 begin

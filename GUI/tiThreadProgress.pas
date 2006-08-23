@@ -308,43 +308,50 @@ begin
   FSpeedButton.ShowHint := true ;
   FSpeedButton.OnClick  := TerminateOnClick ;
   FSpeedButton.Visible  := false ;
-
 end;
+
 
 function TProgInd.GetMax: integer;
 begin
   result := FProgressBar.Max ;
 end;
 
+
 function TProgInd.GetMin: integer;
 begin
   result := FProgressBar.Min ;
 end;
+
 
 function TProgInd.GetPosition: integer;
 begin
   result := FProgressBar.Position ;
 end;
 
+
 procedure TProgInd.SetMax(const Value: integer);
 begin
   FProgressBar.Max := Value ;
 end;
+
 
 procedure TProgInd.SetMin(const Value: integer);
 begin
   FProgressBar.Min := Value ;
 end;
 
+
 procedure TProgInd.SetPosition(const Value: integer);
 begin
   FProgressBar.Position := Value ;
 end;
 
+
 function TProgInd.GetText: string;
 begin
   result := FLabel.Caption ;
 end;
+
 
 procedure TProgInd.SetText(const Value: string);
 begin
@@ -352,10 +359,12 @@ begin
     FLabel.Caption := Value ;
 end;
 
+
 function TProgInd.GetCaption: TCaption;
 begin
   Result := FCaption;
 end;
+
 
 procedure TProgInd.SetCaption(const Value: TCaption);
 begin
@@ -385,7 +394,7 @@ begin
   ClientHeight := 30           ;
   ClientWidth  := cuiFormWidth ;
   FCritSect    := TCriticalSection.Create ;
-  gReg.ReadFormState( self ) ;
+  gReg.ReadFormState(self);
   //Visible      := true ;
   OnCloseQuery := DoCloseQuery ;
   FTimer       := TTimer.Create( nil ) ;
@@ -412,6 +421,7 @@ begin
 
 end;
 
+
 destructor TFormThreadProgress.Destroy;
 var
   i : integer ;
@@ -420,13 +430,14 @@ begin
   for i := 0 to FProgInds.Count - 1 do
     TtiThreadProgress( FProgInds.Items[i] ).Terminate ;
 
-  gReg.WriteFormState( self ) ;
+  gReg.WriteFormState(self);
   FProgInds.Free ;
   FCritSect.Free ;
   if uFormThreadProgress = Self then
     uFormThreadProgress := nil ;
   inherited;
 end;
+
 
 procedure TFormThreadProgress.AttachThread(pThread: TtiThreadProgress);
 var
@@ -451,6 +462,7 @@ begin
   if Assigned(FOnChangeThreadCount) then
     FOnChangeThreadCount(Self);
 end;
+
 
 function TFormThreadProgress.DetachThread(pThread: TtiThreadProgress ) : boolean ;
 var
@@ -480,6 +492,7 @@ begin
   if Assigned(FOnChangeThreadCount) then
     FOnChangeThreadCount(Self);
 end ;
+
 
 function TFormThreadProgress.FindByThread( pThread : TtiThreadProgress ) : integer ;
 var
@@ -513,15 +526,18 @@ begin
   inherited;
 end;
 
+
 procedure TtiThreadProgress.DoOnTerminate( sender : TObject ) ;
 begin
   gFormThreadProgress.DetachThread( self ) ;
 end;
 
+
 procedure TtiThreadProgress.IncPosition ;
 begin
   Position := Position + 1 ;
 end;
+
 
 procedure TtiThreadProgress.SetAutoProgress(const Value: Boolean);
 begin
@@ -542,11 +558,13 @@ begin
   Synchronize( SynchronizeProgress ) ;
 end;
 
+
 procedure TtiThreadProgress.SetMin(const Value: integer);
 begin
   FiMin := Value;
   Synchronize( SynchronizeProgress ) ;
 end;
+
 
 procedure TtiThreadProgress.SetPosition(const Value: integer);
 begin
@@ -554,17 +572,20 @@ begin
   Synchronize( SynchronizeProgress ) ;
 end;
 
+
 procedure TtiThreadProgress.SetText(const Value: string);
 begin
   FsText := Value;
   Synchronize( SynchronizeProgress ) ;
 end;
 
+
 procedure TtiThreadProgress.SetCaption(const Value: TCaption);
 begin
   FsCaption := Value;
   Synchronize( SynchronizeProgress ) ;
 end;
+
 
 procedure TtiThreadProgress.SynchronizeProgress;
 begin
@@ -586,6 +607,7 @@ begin
   Assert( False, 'Do not call TFormThreadProgress.Create, call CreateNew instead.' ) ;
 end;
 
+
 procedure TFormThreadProgress.ArrangePanels;
 var
   lProgInd : TProgInd ;
@@ -596,7 +618,6 @@ var
   lLeft    : integer ;
   lWidth   : integer ;
 begin
-
   lRow := 1 ;
   lCol := 1 ;
   for i := 0 to FProgInds.Count - 1 do
@@ -637,14 +658,15 @@ begin
   end ;
 
   Visible := (FProgInds.Count > 0);
-
 end;
+
 
 procedure TFormThreadProgress.DoCloseQuery(sender: TObject ; var CanClose : boolean );
 begin
   CanClose    := false ;
   WindowState := wsMinimized ;
 end;
+
 
 procedure TFormThreadProgress.UpdateAutoProgressThreads(Sender: TObject);
 var
@@ -666,6 +688,7 @@ begin
     FCritSect.Leave ;
   end;
 end;
+
 
 procedure TProgInd.TerminateOnClick(sender: TObject);
 begin
@@ -689,21 +712,25 @@ begin
   end ;
 end;
 
+
 procedure TtiThreadProgress.SetCanCancel(const Value: boolean);
 begin
   FCanCancel := Value;
 end;
+
 
 function TProgInd.GetCanCancel: boolean;
 begin
   result := ( FSpeedButton <> nil ) and FSpeedButton.Visible ;
 end;
 
+
 procedure TProgInd.SetCanCancel(const Value: boolean);
 begin
   FSpeedButton.Visible := Value ;
   FProgressBar.Width := GetProgressBarWidth ;
 end;
+
 
 function TProgInd.GetProgressBarWidth : integer ;
 begin

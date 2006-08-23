@@ -262,16 +262,13 @@ begin
     lMemo.Lines.assign(Pstrings);
     {$IFDEF MSWINDOWS}
     lMemo.Font.Name   := 'Courier New';
-    gReg.ReadFormState(lForm);
-    lForm.ShowModal;
-    gReg.WriteFormState(lForm);
     {$ENDIF MSWINDOWS}
     {$IFDEF LINUX}
     lMemo.Font.Name   := 'courier';
-    gINI.ReadFormState(lForm);
-    lForm.ShowModal;
-    gINI.WriteFormState(lForm);
     {$ENDIF LINUX}
+    gReg.ReadFormState(lForm);
+    lForm.ShowModal;
+    gReg.WriteFormState(lForm);
   finally
     lForm.free;
   end;
@@ -346,12 +343,7 @@ begin
     lForm.Position    := poScreenCenter ;
     lForm.Name        := 'FormInputDialogCombo' ;
     lForm.BorderStyle := bsDialog ;
-    {$IFDEF MSWINDOWS}
     gReg.ReadFormState( lForm ) ;
-    {$ENDIF MSWINDOWS}
-    {$IFDEF LINUX}
-    gINI.ReadFormState( lForm ) ;
-    {$ENDIF LINUX}
 
     lLabel.Parent     := lForm ;
     lLabel.Caption    := pStrPrompt + ':' ;
@@ -389,23 +381,18 @@ begin
       result := -1 ;
     end ;
 
-    {$IFDEF MSWINDOWS}
-    gReg.WriteFormState( lForm ) ;
-    {$ENDIF MSWINDOWS}
-    {$IFDEF LINUX}
-    gINI.WriteFormState( lForm ) ;
-    {$ENDIF LINUX}
-
+    gReg.WriteFormState(lForm);
   finally
-    lForm.free ;
-  end ;
-
+    lForm.free;
+  end;
 end ;
+
 
 procedure tiShowMessage(  const pValue : variant  ) ;
 begin
   ShowMessage( VarToStr( pValue )) ;
 end ;
+
 
 procedure tiShowMessage(  const pA : Array of Const  ) ;
 const

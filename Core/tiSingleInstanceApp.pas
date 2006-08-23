@@ -40,21 +40,16 @@
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
 
+unit tiSingleInstanceApp;
 
 {$I tiDefines.inc}
-
-unit tiSingleInstanceApp;
 
 interface
 uses
   {$IFDEF MSWINDOWS}
-   Windows
-  ,Forms    // For TApplication
+   Windows,
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  QForms
-  {$ENDIF LINUX}
-
+  Forms    // For TApplication
   ;
 
 function  tiIsFirstInstance( psDatabase : string = '' ) : boolean ;
@@ -112,29 +107,22 @@ begin
 
 end ;
 
+
 procedure tiSaveWindowHandle( pForm : TForm ) ;
 begin
-  {$IFDEF MSWINDOWS}
   gReg.WriteInteger( 'FMain', 'WindowHandle', pForm.Handle ) ;
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  gINI.WriteInteger( 'FMain', 'WindowHandle', pForm.Handle ) ;
-  {$ENDIF LINUX}
 end ;
+
 
 function tiGetWindowHandle : THandle ;
 begin
-  {$IFDEF MSWINDOWS}
   result := THandle( gReg.ReadInteger( 'FMain', 'WindowHandle', 0 )) ;
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  result := THandle( gINI.ReadInteger( 'FMain', 'WindowHandle', 0 )) ;
-  {$ENDIF LINUX}
-
 end ;
+
 
 initialization
   uhMutex := 0 ;
+
 
 finalization
 
@@ -156,7 +144,7 @@ Using a Mutex
 
 There are several different kinds of kernel objects. When a kernel
 object is created it exists in the address space of the process
-and that process gets a handle to that object. This handle can’t
+and that process gets a handle to that object. This handle can't
 be passed to another process or reused by the next process to
 access the same kernel object. However a second process can obtain
 its own handle to a kernel object that already exists by using an
@@ -231,7 +219,7 @@ begin
 end.
 
 
-Why doesn’t the exit code call ReleaseMutex? Because it doesn’t own
+Why doesn't the exit code call ReleaseMutex? Because it doesn't own
 the mutex object. (A ReleaseMutex is not really necessary prior to
 a close but its a good habit to get into.) The first instance of
 the running application owns the mutex. But any other instance

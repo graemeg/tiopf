@@ -5,10 +5,9 @@ unit DtiDefaultActionValues;
 interface
 uses
   SysUtils, Classes, ActnList
-{$IFDEF FPC}
+  {$IFDEF FPC}
   ,LResources
- {$ENDIF}
-
+  {$ENDIF}
   ,tiPerAwareCtrls
   ;
 
@@ -25,10 +24,10 @@ var
 implementation
 
 {$IFNDEF FPC}
-{$R *.dfm}
+  {$R *.dfm}
 {$ELSE}
 initialization
-{$I dtidefaultactionvalues.lrs}
+  {$I DtiDefaultActionValues.lrs}
 {$ENDIF}
 
 end.
