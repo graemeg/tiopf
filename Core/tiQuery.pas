@@ -89,6 +89,7 @@ type
   TTableName          = String[ 255 ] ;
   TFieldName          = String[ 255 ] ;
 
+
  TtiDBMetaData = class( TtiObjectList )
   private
   protected
@@ -104,8 +105,8 @@ type
     procedure   Read( const pDBConnectionName: string = '' ; pPerLayerName : string = '' ) ; override ;
     procedure   Clear ; override ;
     function    FindByTableName( const pTableName : TTableName ) : TtiDBMetaDataTable ;
-  published
-  end ;
+  end;
+  
 
   TtiDBMetaDataTable = class( TtiObjectList )
   private
@@ -137,7 +138,8 @@ type
     function    Clone : TtiDBMetaDataTable ; reintroduce ;
   published
     property    Name : TTableName read FName write FName ;
-  end ;
+  end;
+  
 
   TtiDBMetaDataField = class( TtiObject )
   private
@@ -160,7 +162,8 @@ type
     property    Kind  : TtiQueryFieldKind read FKind write FKind ;
     property    KindAsStr : string read GetKindAsStr write SetKindAsStr ;
     property    Width : integer read FWidth write FWidth ;
-  end ;
+  end;
+
 
   TtiDatabase = class( TtiBaseObject )
   private
@@ -213,14 +216,14 @@ type
     procedure   UpdateRow(   const pTableName : string ;
                              const pParams : TtiQueryParams ;
                              const pWhere     : TtiQueryParams ) ; virtual ;
-  end ;
+  end;
+  
 
   TtiQuery = class( TtiBaseObject )
   private
     FContinueScan  : boolean;
     FDatabase : TtiDatabase ;
   protected
-
     //function  GetSession: TObject; virtual ; abstract ;
     //procedure SetSession(const Value: TObject); virtual ; abstract ;
     function  GetSQL: TStrings; virtual ; abstract ;
@@ -372,8 +375,8 @@ type
 
     function  ParamsAsString : string ; virtual ;
     property  QueryType    : TtiQueryType read GetQueryType ;
+  end;
 
-  end ;
 
   TtiDatabaseSQL = class( TtiDatabase )
   private
@@ -382,7 +385,8 @@ type
   public
     procedure   DropTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
     procedure   CreateTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
-  end ;
+  end;
+
 
   TtiQuerySQL = class( TtiQuery )
   private
@@ -391,48 +395,42 @@ type
     function    SQLAndParamsAsString : string ;
   public
     procedure   SelectRow( const pTableName : string ; const pWhere : TtiQueryParams ) ; override ;
-    procedure   InsertRow( const pTableName : string ; const pParams    : TtiQueryParams ) ; override ;
-    procedure   DeleteRow(   const pTableName : string ; const pWhere : TtiQueryParams ) ; override ;
+    procedure   InsertRow( const pTableName : string ; const pParams : TtiQueryParams ) ; override ;
+    procedure   DeleteRow( const pTableName : string ; const pWhere : TtiQueryParams ) ; override ;
     procedure   UpdateRow( const pTableName : string ; const pParams : TtiQueryParams ; const pWhere  : TtiQueryParams ) ; override ;
-  end ;
+  end;
+
 
   TtiQueryNonSQL = class( TtiQuery )
   private
     FParams : TtiQueryParams ;
-
   protected
     property    Params : TtiQueryParams read FParams ;
-
-    function    GetParamAsBoolean(const psName: string): boolean; override ;
-    function    GetParamAsFloat(const psName: string): extended;override ;
-    function    GetParamAsInteger(const psName: string): Int64 ;override ;
-    function    GetParamAsTextBLOB(const psName: string): string; override ;
-    function    GetParamAsDateTime(const psName: string): TDateTime ; override ;
-    function    GetParamIsNull( const psName: String): Boolean; override;
-
-    procedure   SetParamAsBoolean(const psName: string;const Value: boolean);override ;
-    procedure   SetParamAsFloat(const psName: string; const Value: extended);override ;
-    procedure   SetParamAsInteger(const psName: string;const Value: Int64);override ;
+    function    GetParamAsBoolean(const psName: string): boolean; override;
+    function    GetParamAsFloat(const psName: string): extended;override;
+    function    GetParamAsInteger(const psName: string): Int64 ;override;
+    function    GetParamAsTextBLOB(const psName: string): string; override;
+    function    GetParamAsDateTime(const psName: string): TDateTime ; override;
+    function    GetParamIsNull(const psName: String): Boolean; override;
+    procedure   SetParamAsBoolean(const psName: string;const Value: boolean);override;
+    procedure   SetParamAsFloat(const psName: string; const Value: extended);override;
+    procedure   SetParamAsInteger(const psName: string;const Value: Int64);override;
     procedure   SetParamAsTextBLOB(const psName, Value: string); override ;
     procedure   SetParamAsDateTime(const psName :string ; const Value: TDateTime); override ;
-    procedure   SetParamAsMacro( const psName: string;
-                                 const Value: string); override ;
-    procedure   SetParamIsNull( const psName: String; const Value: Boolean); override;
-
+    procedure   SetParamAsMacro(const psName: string; const Value: string); override ;
+    procedure   SetParamIsNull(const psName: String; const Value: Boolean); override;
   public
     constructor Create ; override ;
     destructor  Destroy ; override ;
-
     function    ParamCount : integer ; override ;
     function    ParamName( pIndex : integer ) : string ; override ;
     function    ParamsAsString : string ; override ;
-
     procedure   AssignParamFromStream(     const pName  : string  ; const pValue : TStream ) ; override ;
     procedure   AssignParamToStream(       const pName  : string  ; const pValue : TStream ) ; override ;
     procedure   AssignFieldAsStream(       const pName  : string  ; const pValue : TStream ) ; override ;
     procedure   AssignFieldAsStreamByIndex(      pIndex : integer ; const pValue : TStream ) ; override ;
+  end;
 
-  end ;
 
   TtiQueryClass      = class of TtiQuery ;
   TtiDatabaseClass   = class of TtiDatabase ;
@@ -452,35 +450,25 @@ type
     property    Items[i:integer] : TtiQueryParamAbs read GetItems write SetItems ;
     procedure   Add( pObject : TtiQueryParamAbs   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
     function    FindParamByName( const pName : string ) : TtiQueryParamAbs ; virtual ;
-
     property    ParamIsNull[const pName : string ] : boolean read GetParamIsNull write SetParamIsNull ;
     function    ParamName( pIndex : integer ) : string ;
     property    AsString : string read GetAsString ;
-
     procedure   SetValueAsString(const pName : string ; const pValue : string    ) ;
     function    GetValueAsString(const pName : string) : string ;
-
     procedure   SetValueAsInteger(const pName : string ; const pValue : Int64   ) ;
     function    GetValueAsInteger(const pName : string ) : Int64 ;
-
     procedure   SetValueAsFloat(const pName : string ; const pValue : real      ) ;
     function    GetValueAsFloat(const pName : string ) : Real ;
-
     procedure   SetValueAsBoolean(const pName : string ; const pValue : Boolean   ) ;
     function    GetValueAsBoolean(const pName : string ) : Boolean ;
-
     procedure   SetValueAsDateTime(const pName : string ; const pValue : TDateTime ) ;
     function    GetValueAsDateTime(const pName : string ) : TDateTime ;
-
     procedure   SetValueAsStream(const pName : string ; const pValue : TStream ) ;
     function    GetValueAsStream(const pName : string ) : TStream ;
     procedure   AssignValueToStream( const pName : string ; const pStream : TStream ) ;
-
     procedure   SetValueFromProp(const pInstance : TtiObject ; const pPropName : string ; const pParamName : string ) ;
+  end;
 
-
-  published
-  end ;
 
   TtiQueryParamAbs = class( TtiObject )
   private
@@ -502,7 +490,8 @@ type
     property    Name        : string read FName write FName ;
     property    KindAsStr   : string read GetKindAsStr ;
     property    ValueAsString : string read GetValueAsString write SetValueAsString ;
-  end ;
+  end;
+
 
   TtiQueryParamString = class( TtiQueryParamAbs )
   private
@@ -513,7 +502,8 @@ type
     function    GetValueAsString : string ; override ;
     procedure   SetValueAsString(const pValue : string ) ; override ;
     procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
-  end ;
+  end;
+  
 
   TtiQueryParamInteger = class( TtiQueryParamAbs )
   private
@@ -526,7 +516,8 @@ type
     function    GetValueAsInteger : Int64 ;
     function    GetValueAsString  : string ; override ;
     procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
-  end ;
+  end;
+  
 
   TtiQueryParamFloat = class( TtiQueryParamAbs )
   private
@@ -539,7 +530,8 @@ type
     function    GetValueAsFloat   : extended ;
     function    GetValueAsString : string ; override ;
     procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
-  end ;
+  end;
+  
 
   TtiQueryParamDateTime = class( TtiQueryParamAbs )
   private
@@ -552,7 +544,8 @@ type
     function    GetValueAsDateTime    : TDateTime ;
     function    GetValueAsString : string ; override ;
     procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
-  end ;
+  end;
+  
 
   TtiQueryParamBoolean = class( TtiQueryParamAbs )
   private
@@ -565,7 +558,8 @@ type
     function    GetValueAsBoolean : Boolean ;
     function    GetValueAsString : string ; override ;
     procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
-  end ;
+  end;
+  
 
   TtiQueryParamStream = class( TtiQueryParamAbs )
   private
@@ -581,14 +575,17 @@ type
     procedure   SetValueAsStream(const pValue : TStream ) ;
     function    GetValueAsStream : TStream ;
     procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
-  end ;
+  end;
+  
 
 const
   cgtiQueryMacroChr  = '&' ;
 
+
 function  StrToQueryFieldKind(const psFieldKind: String): TtiQueryFieldKind;
 function  QueryFieldKindToString( pFieldKind : TtiQueryFieldKind ) : string ;
 procedure QueryFieldKindsToStrings( pStrings : TStrings ) ;
+
 
 implementation
 uses

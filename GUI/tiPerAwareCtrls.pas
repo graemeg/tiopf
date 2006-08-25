@@ -58,21 +58,16 @@ type
   TLabelStyle = ( lsNone, lsTop, lsLeft, lsTopLeft, lsRight ) ;
   
   
-  TtiSubLabel = class(TCustomLabel)
-  public
-    constructor Create(AOwner: TComponent); override;
-  published
-    property Caption;
-    property OnClick;
-    property AutoSize;
-  end;
 
 
   // Abstract base class
-  TtiPerAwareAbs = class( TtiFocusPanel )
+
+  { TtiPerAwareAbs }
+
+  TtiPerAwareAbs = class(TtiFocusPanel)
   protected
     FLabelStyle : TLabelStyle;
-    FLabel      : {$IFDEF FPC}TtiSubLabel{$ELSE}TLabel{$ENDIF} ;
+    FLabel      : TLabel;
     FWinControl : TWinControl ;
     FbCenterWhenLabelIsLeft : boolean ;
     FsFieldName: string;
@@ -94,12 +89,16 @@ type
     {$IFNDEF FPC}
     procedure   WMSize( var Message: TWMSize ) ; message WM_SIZE ;
     {$ELSE}
-    //procedure   LMSize( var Message: TLMSize ) ; message LM_SIZE ;
+    procedure   DoSetBounds(ALeft, ATop, AWidth, AHeight: Integer);override;
     {$ENDIF}
     procedure   PositionLabel ; virtual ;
     procedure   PositionWinControl ; virtual ;
     procedure   SetLabelWidth(const Value: Integer); virtual ;
     procedure   SetFieldName(const Value: string); virtual ;
+
+    {$IFDEF FPC}
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    {$ENDIF}
 
     procedure   Loaded ; override ;
     procedure   DataToWinControl ; virtual ; abstract ;
@@ -128,6 +127,7 @@ type
     property    Anchors ;
     property    Constraints ;
     property    Enabled ;
+    property    Visible;
     property    Font ;
     property    Color ;
     property    TabOrder ;
@@ -187,6 +187,7 @@ type
     procedure   WinControlToData ; override ;
     procedure   SetOnChangeActive( Value : boolean ) ; override ;
     procedure   SetReadOnly(const Value: Boolean);override ;
+
   published
     property Value : String read GetValue write SetValue ;
     property MaxLength : integer read GetMaxLength write SetMaxLength ;
@@ -695,14 +696,6 @@ var
 //* TtiPerAwareAbs
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-constructor TtiSubLabel.Create(AOwner : TComponent);
-begin
- inherited;
- Include(FComponentStyle, csSubComponent);
-end;
-
-
 constructor TtiPerAwareAbs.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -714,11 +707,10 @@ begin
 
   FLabelStyle    := lsLeft ;
 
-  FLabel         := {$IFDEF FPC}TtiSubLabel{$ELSE}TLabel{$ENDIF}.Create( Self ) ;
+  FLabel         := TLabel.Create( Self ) ;
   FLabel.Parent  := self ;
   // ToDo: Default Label.Caption to the component's name
-  FLabel.Caption := 'Enter label &name' ;
-
+  FLabel.Caption := 'Enter label &name';
 
 
   FLabel.AutoSize := false ;
@@ -728,6 +720,16 @@ begin
   Assert( FWinControl <> nil, 'FWinControl not assigned' ) ;
   FWinControl.Parent := self ;
   FLabel.FocusControl := FWinControl ;
+  
+  {$IFDEF FPC}
+  Include(FLabel.ComponentStyle, csSubComponent);
+  Include(FLabel.ControlStyle, csNoDesignSelectable);
+  FLabel.FreeNotification(Self);
+  Include(FWinControl.ComponentStyle, csSubComponent);
+  Include(FWinControl.ControlStyle, csNoDesignSelectable);
+  FWinControl.FreeNotification(Self);
+  {$ENDIF}
+
 
   FiLabelWidth := cuiDefaultLabelWidth ;
 
@@ -761,25 +763,29 @@ end;
 procedure TtiPerAwareAbs.Loaded;
 begin
   inherited;
+  {$IFNDEF FPC}
   PositionLabel ;
   PositionWinControl ;
+  {$ENDIF}
 end;
 
 procedure TtiPerAwareAbs.PositionLabel;
 begin
-
-  // A little redundant, but here goes anyway...
+  if not Assigned(FLabel) then Exit;
+  FLabel.Align := alNone;
   case LabelStyle of
   lsNone    : begin
                 FLabel.Visible := false ;
               end ;
   lsTop     : begin
+                FLabel.Alignment := taLeftJustify;
                 FLabel.AutoSize := true;
                 FLabel.Visible := true ;
                 FLabel.Top     := 1 ;
                 FLabel.Left    := 1 ;
               end ;
   lsLeft    : begin
+                FLabel.Alignment := taLeftJustify;
                 FLabel.AutoSize := false ;
                 FLabel.Width   := FiLabelWidth ;
                 FLabel.Visible := true ;
@@ -790,60 +796,73 @@ begin
                   FLabel.Top     := 1 ;
               end ;
   lsTopLeft : begin
+                FLabel.Alignment := taLeftJustify;
                 FLabel.AutoSize := true ;
                 FLabel.Visible := true ;
                 FLabel.Top     := 1 ;
                 FLabel.Left    := 1 ;
               end ;
   lsRight    : begin
+                FLabel.Alignment := taRightJustify;
                 FLabel.AutoSize := true ;
                 FLabel.Visible := true ;
+                FLabel.Align := alRight;
+                {
                 FLabel.Left   := LabelWidth + 3 ;
                 if FbCenterWhenLabelIsLeft then
                   FLabel.Top     := (Height-2-FLabel.Height) div 2
                 else
-                  FLabel.Top     := 1 ;
+                  FLabel.Top     := 1 ;}
               end ;
   else
     raise EtiOPFInternalException.Create(cErrorInvalidLabelStyle);
   end ;
+  
+
 end;
 
 procedure TtiPerAwareAbs.PositionWinControl ;
+var
+ iHeight,iWidth : Integer;
 begin
-
+  if not Assigned(FWinControl) then Exit;
   case LabelStyle of
   lsNone    : begin
                 //FWinControl.Align := alClient;
                 FWinControl.SetBounds(1,1, Self.Width-2, Self.Height-2);
+                Exit;
               end ;
   lsTop     : begin
                 FWinControl.Top    := FLabel.Top + FLabel.Height + 2 ;
                 FWinControl.Left   := 1 ;
-                FWinControl.Height := Height - FWinControl.Top - 4 ;
-                FWinControl.Width  := Width  - FWinControl.Left - 4  ;
+                iHeight := Self.Height - FWinControl.Top - 4 ;
+                iWidth  := Self.Width  - FWinControl.Left - 4  ;
               end ;
   lsLeft    : begin
                 FWinControl.Top    := 1 ;
                 FWinControl.Left   := LabelWidth + 3;
-                FWinControl.Height := Height - FWinControl.Top - 4;
-                FWinControl.Width  := Width  - FWinControl.Left - 4 ;
+                iHeight := Self.Height - FWinControl.Top - 4;
+                iWidth  := Self.Width  - FWinControl.Left - 4 ;
               end ;
   lsTopLeft : begin
                 FWinControl.Top    := FLabel.Top + FLabel.Height + 3;
                 FWinControl.Left   := 24 ;
-                FWinControl.Height := Height - FWinControl.Top - 4 ;
-                FWinControl.Width  := Width  - FWinControl.Left - 4 ;
+                iHeight := Self.Height - FWinControl.Top - 4 ;
+                iWidth  := Self.Width  - FWinControl.Left - 4 ;
               end ;
   lsRight   : begin
                 FWinControl.Top    := 1 ;
                 FWinControl.Left   := 1 ;
-                FWinControl.Height := Height - FWinControl.Top - 4;
-                FWinControl.Width  := LabelWidth ;
+                iHeight := Self.Height - FWinControl.Top - 4;
+                iWidth  := Self.Width - LabelWidth -4;
               end ;
   else
     raise EtiOPFInternalException.Create(cErrorInvalidLabelStyle);
   end ;
+
+  if (iHeight<=0) or (iWidth<=0) then Exit;
+  FWinControl.Height := iHeight;
+  FWinControl.Width  := iWidth;
 
 end;
 
@@ -905,6 +924,13 @@ begin
   PositionLabel ;
   PositionWinControl ;
 end;
+{$ELSE}
+procedure TtiPerAwareAbs.DoSetBounds(ALeft, ATop, AWidth, AHeight: Integer);
+begin
+  inherited DoSetBounds(ALeft, ATop, AWidth, AHeight);
+  PositionLabel;
+  PositionWinControl;
+end;
 {$ENDIF}
 
 procedure TtiPerAwareAbs.SetData(const Value: TtiObject);
@@ -919,6 +945,16 @@ begin
   FsFieldName := Value;
   DataToWinControl ;
 end;
+
+{$IFDEF FPC}
+procedure TtiPerAwareAbs.Notification(AComponent: TComponent;
+  Operation: TOperation);
+begin
+  inherited Notification(AComponent, Operation);
+  if (AComponent = FLabel) and (Operation = opRemove) then
+    FLabel := nil;
+end;
+{$ENDIF}
 
 procedure TtiPerAwareAbs.DoChange(Sender: TObject);
 begin
@@ -1070,8 +1106,10 @@ begin
   TEdit( FWinControl ).OnKeyDown  := DoOnKeyDown ;
   FbCenterWhenLabelIsLeft := true ;
   inherited;
-  TEdit( FWinControl ).Font.Name := cDefaultFixedFontName;
-  Height := cDefaultHeightSingleRow ;
+  {$IFNDEF FPC}
+   TEdit( FWinControl ).Font.Name := cDefaultFixedFontName;
+   Height := cDefaultHeightSingleRow ;
+  {$ENDIF}
 end;
 
 function TtiPerAwareEdit.GetValue: String;
@@ -1157,6 +1195,9 @@ begin
   TEdit( FWinControl ).PasswordChar := Value ;
 end;
 
+
+
+
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
 //* TtiPerAwareMemo
@@ -1170,7 +1211,9 @@ begin
   TMemo( FWinControl ).OnKeyDown := DoOnKeyDown ;
   FbCenterWhenLabelIsLeft := false ;
   inherited;
+  {$IFNDEF FPC}
   TMemo( FWinControl ).Font.Name := cDefaultFixedFontName;
+  {$ENDIF}
 end;
 
 procedure TtiPerAwareMemo.DataToWinControl;
@@ -1259,7 +1302,9 @@ begin
   {$IFNDEF FPC}TDateTimePicker(FWinControl).Time := 0 ;{$ENDIF}
   FbCenterWhenLabelIsLeft := true ;
   inherited;
+  {$IFNDEF FPC}
   Height := cDefaultHeightSingleRow ;
+  {$ENDIF}
 end;
 
 procedure TtiPerAwareDateTimePicker.DataToWinControl;
@@ -1414,7 +1459,9 @@ begin
   FbCenterWhenLabelIsLeft := true ;
   inherited;
   FLabel.OnClick := DoLabelClick ;
+  {$IFNDEF FPC}
   Height := 17 ;
+  {$ENDIF}
 end;
 
 procedure TtiPerAwareCheckBox.DataToWinControl;
@@ -1494,7 +1541,9 @@ begin
   FWinControl := TEdit.Create( self ) ;
   FbCenterWhenLabelIsLeft := true ;
   inherited;
+  {$IFNDEF FPC}
   Height := cDefaultHeightSingleRow ;
+  {$ENDIF}
 
   TEdit( FWinControl ).OnEnter      := _DoEnter ;
   TEdit( FWinControl ).OnExit       := _DoExit ;
@@ -2643,8 +2692,10 @@ begin
   TComboBox( FWinControl ).OnKeyDown := DoOnKeyDown ;
   FbCenterWhenLabelIsLeft := true ;
   inherited;
+  {$IFNDEF FPC}
   TComboBox( FWinControl ).Font.Name := cDefaultFixedFontName;
   Height := cDefaultHeightSingleRow ;
+  {$ENDIF}
 end;
 
 {
@@ -2981,7 +3032,9 @@ end;
 procedure TtiPerAwareDateTimePicker.Loaded;
 begin
   inherited;
+  {$IFNDEF FPC}
   TDateTimePicker(FWinControl).Font.Name := cDefaultFixedFontName;
+  {$ENDIF}
 end;
 
 constructor TtiPerAwareComboBoxDynamic.Create(AOwner: TComponent);

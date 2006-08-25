@@ -122,7 +122,7 @@ type
                           const pPerLayerName     : string = ''): string; reintroduce;
     procedure   ExecSQL(  const pSQL : string ;
                           const pDBConnectionName : string = '' ;
-                          const pPerLayerName     : string = '' ) ;
+                          const pPerLayerName     : string = '' );
 
     // These execute database independant commands
     function    CreateDatabase( const pDatabaseName : string ;

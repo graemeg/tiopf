@@ -42,7 +42,7 @@ uses
   Windows
   ,Messages
 {$ELSE}
- LClIntf
+  LClIntf
 {$ENDIF}
   ,Classes
   ,Graphics
@@ -65,7 +65,9 @@ type
     procedure   DoOnClick( Sender : TObject ) ; virtual ;
   public
     constructor Create(AOwner: TComponent); override;
+    {$IFNDEF FPC}
     procedure   Paint; override;
+    {$ENDIF}
     procedure   DoDrawFocusRect( pDraw : boolean )  ; virtual ;
   published
     property    ShowFocusRect : boolean read FShowFocusRect write FShowFocusRect default cDefaultShowFocusRect ;
@@ -81,21 +83,17 @@ uses
 
 constructor TtiFocusPanel.Create(AOwner: TComponent);
 begin
-  inherited;
+  inherited Create(AOwner);
 
   // Had problems with csAcceptsControls being removed at runtime.
   // It was causing flicker when the panel was resized and owned components
   // where not being redrawn properly.
-  {$IFNDEF FPC}
   if ( csDesigning in ComponentState ) then
     ControlStyle   := ControlStyle - [csAcceptsControls] ;
-  {$ENDIF}
+
 
 
   OnClick        := DoOnClick ;
-  {$IFDEF FPC}
-  ControlStyle   := ControlStyle + [csOwnedChildsSelectable];
-  {$ENDIF}
   ControlStyle   := ControlStyle - [csSetCaption];
   BevelInner     := bvNone ;
   BevelOuter     := bvNone ;
@@ -103,12 +101,17 @@ begin
   FShowFocusRect := cDefaultShowFocusRect ;
 end;
 
+
 procedure TtiFocusPanel.DoDrawFocusRect( pDraw : boolean ) ;
 var
   lRect : TRect ;
   lPenColor : TColor ;
   lPenStyle : TPenStyle ;
 begin
+{$IFDEF FPC}
+  {$Note In Lazarus it can't work properly}
+{$ENDIF}
+{$IFNDEF FPC}
   if not FShowFocusRect then
     Exit ; //==>
   lRect := GetClientRect ;
@@ -116,11 +119,11 @@ begin
   try
     lPenStyle := Canvas.Pen.Style ;
     try
-      Canvas.Pen.Style := psDot ;
+      Canvas.Pen.Style := psDot;
       if pDraw then
-        Canvas.Pen.Color := clBlack
+      Canvas.Pen.Color := clBlack
       else
-        Canvas.Pen.Color := Color ;
+      Canvas.Pen.Color := Color;
       Canvas.Rectangle(lRect);
     finally
       Canvas.Pen.Style := lPenStyle ;
@@ -128,7 +131,9 @@ begin
   finally
     Canvas.Pen.Color := lPenColor ;
   end;
+{$ENDIF}
 end;
+
 
 procedure TtiFocusPanel.DoEnter;
 begin
@@ -136,11 +141,16 @@ begin
   inherited;
 end;
 
+
 procedure TtiFocusPanel.DoExit;
 begin
   DoDrawFocusRect(false) ;
   inherited;
 end;
+
+
+
+
 
 // Check to see if any owned controls have focus.
 // Not sure if this will be required.
@@ -152,7 +162,7 @@ begin
   result := Focused ;
   if Focused then
     Exit ; //==>
-
+    
   lActiveControl := Screen.ActiveControl ;
   for i := 0 to ControlCount - 1 do
   begin
@@ -164,11 +174,16 @@ begin
   end;
 end;
 
+
+{$IFNDEF FPC}
 procedure TtiFocusPanel.Paint;
 begin
-  inherited;
-  DoDrawFocusRect(IsFocused);
+  inherited Paint;
+  if FShowFocusRect then DoDrawFocusRect(IsFocused);
 end;
+{$ENDIF}
+
+
 
 procedure TtiFocusPanel.DoOnClick( Sender : TObject );
 begin

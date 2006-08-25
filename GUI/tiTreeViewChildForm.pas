@@ -18,6 +18,7 @@ uses
   ,ComCtrls
   ,tiTreeView
   ,tiObject
+  ,Types
   ;
 
 const
