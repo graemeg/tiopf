@@ -26,7 +26,7 @@ uses
   ,tiMemoReadOnly
   ,tiPerAwareMultiSelect
   ,tiReadOnly
-  ,tiHyperLink
+  ,tiHyperlink
   ,tiSpeedButton
   ,tiButtons
   ,tiRoundedPanel
