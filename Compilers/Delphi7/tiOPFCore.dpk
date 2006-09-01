@@ -30,10 +30,7 @@ requires
   vcl,
   rtl,
   vclx,
-  visualclx,
-  madExcept_,
-  madDisAsm_,
-  madBasic_;
+  visualclx;
 
 contains
   tiWin32 in '..\..\Core\tiWin32.pas',

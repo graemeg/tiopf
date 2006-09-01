@@ -32,9 +32,7 @@ requires
   rtl,
   designide,
   vclactnband,
-  vclx,
   vcljpg,
-  visualclx,
   tiOPFCore;
 
 contains

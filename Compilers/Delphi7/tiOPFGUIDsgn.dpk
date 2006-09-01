@@ -31,7 +31,6 @@ package tiOPFGUIDsgn;
 requires
   vcl,
   rtl,
-  vclx,
   vcljpg,
   designide,
   vclactnband,

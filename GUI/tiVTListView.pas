@@ -5,8 +5,7 @@ unit tiVTListView;
 interface
 uses
 {.$IFDEF _PROFILE}
-  LCLIntf
-  ,Dialogs
+   Dialogs
   ,Classes
   ,SysUtils
   ,Graphics
@@ -29,11 +28,12 @@ uses
 {$IFNDEF FPC}
   ,tiVirtualTrees
 {$ELSE}
+  ,LCLIntf
   ,LCLProc
   ,VirtualTrees
   ,VirtualStringTree
-  ,Variants
 {$ENDIF}
+  ,Variants
   ;
 
 

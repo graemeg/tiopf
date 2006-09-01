@@ -70,7 +70,7 @@ uses
 {$IFDEF FPC}
   LCLIntf, 
 {$ELSE}
- Messages,
+ Windows,Messages, //brandys added Windows unit .check this
 {$ENDIF}
  SysUtils, Classes, Graphics, Controls, Forms, ImgList, ActiveX, StdCtrls, Menus, Printers,
   CommCtrl  // image lists, common controls tree structures

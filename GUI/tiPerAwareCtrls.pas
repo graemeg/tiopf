@@ -57,7 +57,10 @@ type
   // LabelStyle can have these values
   TLabelStyle = ( lsNone, lsTop, lsLeft, lsTopLeft, lsRight ) ;
   
-  
+  {$IFNDEF FPC}
+   TTranslateString = string;
+  {$ENDIF}
+
 
 
   // Abstract base class
@@ -65,10 +68,14 @@ type
   { TtiPerAwareAbs }
 
   TtiPerAwareAbs = class(TtiFocusPanel)
+  private
+    FHint : TTranslateString;
+    procedure SetLayout(const Value: TTextLayout);
   protected
     FLabelStyle : TLabelStyle;
     FLabel      : TLabel;
     FWinControl : TWinControl ;
+    FLayout : TTextLayout;
     FbCenterWhenLabelIsLeft : boolean ;
     FsFieldName: string;
     FData: TtiObject;
@@ -95,10 +102,15 @@ type
     procedure   PositionWinControl ; virtual ;
     procedure   SetLabelWidth(const Value: Integer); virtual ;
     procedure   SetFieldName(const Value: string); virtual ;
-
     {$IFDEF FPC}
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure   FontChanged(Sender: TObject); override;
+    {$ELSE}
+    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
+    procedure   SetWordWrap(const Value : Boolean);
+    function    GetWordWrap : Boolean;
+
+    procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
 
     procedure   Loaded ; override ;
     procedure   DataToWinControl ; virtual ; abstract ;
@@ -106,6 +118,7 @@ type
     procedure   DoChange( Sender : TObject ) ; virtual ;
     procedure   SetOnChangeActive( Value : boolean ) ; virtual ; abstract ;
     procedure   SetEnabled( Value : boolean ) ; Override ;
+    procedure   SetHint(const Value : TTranslateString);{$IFDEF FPC} override ;{$ENDIF}
     procedure   SetReadOnly(const Value: Boolean);virtual;
     procedure   SetControlColor ; virtual ;
     procedure   SetError(const Value: boolean); virtual;
@@ -136,9 +149,17 @@ type
     property    ShowFocusRect;
     property    ShowHint ;
     property    ParentColor;
+    property    ParentFont;
     property    ParentCtl3D;
+    {$IFDEF FPC}
+    property    Hint;
+    {$ELSE}
+    property    Hint read FHint write SetHint;
+    {$ENDIF}
 
     property    LabelStyle : TLabelStyle read FLabelStyle   write SetLabelStyle default lsLeft ;
+    property    LabelLayout: TTextLayout read FLayout write SetLayout default tlCenter;
+    property    LabelWordWrap : Boolean read GetWordWrap write SetWordWrap default false;
     property    Caption    : TCaption    read GetCaption    write SetCaption ;
     property    LabelWidth : Integer     read FiLabelWidth  write SetLabelWidth default cuiDefaultLabelWidth ;
     property    ReadOnly   : Boolean     read FbReadOnly    write SetReadOnly ;
@@ -187,7 +208,9 @@ type
     procedure   WinControlToData ; override ;
     procedure   SetOnChangeActive( Value : boolean ) ; override ;
     procedure   SetReadOnly(const Value: Boolean);override ;
-
+    {$IFNDEF FPC}
+    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$ENDIF}
   published
     property Value : String read GetValue write SetValue ;
     property MaxLength : integer read GetMaxLength write SetMaxLength ;
@@ -215,6 +238,9 @@ type
     procedure   WinControlToData ; override ;
     procedure   SetOnChangeActive( Value : boolean ) ; override ;
     procedure   SetReadOnly(const Value: Boolean);override ;
+    {$IFNDEF FPC}
+    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$ENDIF}
   published
     property ScrollBars : TScrollStyle read GetScrollBars write SetScrollBars ;
     property Value : string read GetValue write SetValue ;
@@ -238,6 +264,9 @@ type
   protected
     procedure   SetOnChangeActive( Value : boolean ) ; override ;
     procedure   SetReadOnly(const Value: Boolean);override ;
+    {$IFNDEF FPC}
+    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$ENDIF}
 //    procedure   DoOnClick( Sender : TObject ) ; override ;
     function    ComboBox : TComboBox ;
   published
@@ -359,6 +388,9 @@ type
     procedure   WinControlToData ; override ;
     procedure   SetOnChangeActive( Value : boolean ) ; override ;
     procedure   SetReadOnly(const Value: Boolean);override ;
+    {$IFNDEF FPC}
+    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$ENDIF}
   published
     property Value : TDateTime read GetValue write SetValue ;
     {$IFNDEF FPC}
@@ -442,6 +474,9 @@ type
     procedure   WinControlToData ; override ;
     procedure   SetOnChangeActive( Value : boolean ) ; override ;
     procedure   SetReadOnly(const Value: Boolean);override ;
+    {$IFNDEF FPC}
+    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$ENDIF}
   published
 
     property    TextBefore : string read FsTextBefore write setTextBefore ;
@@ -611,7 +646,9 @@ type
     function GetProportional: Boolean;
     procedure SetProportional(const Value: Boolean);
   protected
-
+    {$IFNDEF FPC}
+    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$ENDIF}
     procedure   SetReadOnly(const Value: Boolean);override ;
     procedure   SetControlColor ; override ;
     procedure   DataToWinControl ; override ;
@@ -705,10 +742,12 @@ begin
   Constraints.MinHeight := cDefaultHeightSingleRow ;
   OnClick        := DoOnClick ;
 
-  FLabelStyle    := lsLeft ;
+  FLabelStyle    := lsLeft;
+
 
   FLabel         := TLabel.Create( Self ) ;
   FLabel.Parent  := self ;
+  FLabel.ParentFont := true;
   // ToDo: Default Label.Caption to the component's name
   FLabel.Caption := 'Enter label &name';
 
@@ -720,18 +759,19 @@ begin
   Assert( FWinControl <> nil, 'FWinControl not assigned' ) ;
   FWinControl.Parent := self ;
   FLabel.FocusControl := FWinControl ;
-  
+
   {$IFDEF FPC}
   Include(FLabel.ComponentStyle, csSubComponent);
   Include(FLabel.ControlStyle, csNoDesignSelectable);
-  FLabel.FreeNotification(Self);
   Include(FWinControl.ComponentStyle, csSubComponent);
   Include(FWinControl.ControlStyle, csNoDesignSelectable);
-  FWinControl.FreeNotification(Self);
   {$ENDIF}
+  FLabel.FreeNotification(Self);
+  FWinControl.FreeNotification(Self);
 
 
   FiLabelWidth := cuiDefaultLabelWidth ;
+
 
   FbError     := False;
   FErrorColor := clYellow;
@@ -771,8 +811,10 @@ end;
 
 procedure TtiPerAwareAbs.PositionLabel;
 begin
-  if not Assigned(FLabel) then Exit;
+  if FLabel=nil then Exit;
   FLabel.Align := alNone;
+
+
   case LabelStyle of
   lsNone    : begin
                 FLabel.Visible := false ;
@@ -786,14 +828,14 @@ begin
               end ;
   lsLeft    : begin
                 FLabel.Alignment := taLeftJustify;
-                FLabel.AutoSize := false ;
-                FLabel.Width   := FiLabelWidth ;
                 FLabel.Visible := true ;
-                FLabel.Left    := 1 ;
+                FLabel.AutoSize := false ;
+                FLabel.Align   := alLeft;
+                FLabel.Width   := FiLabelWidth ;
                 if FbCenterWhenLabelIsLeft then
-                  FLabel.Top     := (Height-2-FLabel.Height) div 2
+                  SetLayout(tlCenter)
                 else
-                  FLabel.Top     := 1 ;
+                  SetLayout(tlTop);
               end ;
   lsTopLeft : begin
                 FLabel.Alignment := taLeftJustify;
@@ -801,23 +843,23 @@ begin
                 FLabel.Visible := true ;
                 FLabel.Top     := 1 ;
                 FLabel.Left    := 1 ;
-              end ;
+               end ;
   lsRight    : begin
                 FLabel.Alignment := taRightJustify;
-                FLabel.AutoSize := true ;
+                FLabel.AutoSize := false;
                 FLabel.Visible := true ;
                 FLabel.Align := alRight;
-                {
-                FLabel.Left   := LabelWidth + 3 ;
+                FLabel.Width   := FiLabelWidth ;
+                //FLabel.Left   := FiLabelWidth + 3 ;
                 if FbCenterWhenLabelIsLeft then
-                  FLabel.Top     := (Height-2-FLabel.Height) div 2
+                  SetLayout(tlCenter)
                 else
-                  FLabel.Top     := 1 ;}
-              end ;
+                  SetLayout(tlTop);
+               end ;
   else
     raise EtiOPFInternalException.Create(cErrorInvalidLabelStyle);
   end ;
-  
+
 
 end;
 
@@ -825,50 +867,63 @@ procedure TtiPerAwareAbs.PositionWinControl ;
 var
  iHeight,iWidth : Integer;
 begin
-  if not Assigned(FWinControl) then Exit;
+  if FWinControl=nil then Exit;
+  if FLabel=nil then Exit;
+
+
+
   case LabelStyle of
   lsNone    : begin
                 //FWinControl.Align := alClient;
-                FWinControl.SetBounds(1,1, Self.Width-2, Self.Height-2);
+                FWinControl.SetBounds(1,1, Self.Width-1, Self.Height-1);
                 Exit;
               end ;
   lsTop     : begin
-                FWinControl.Top    := FLabel.Top + FLabel.Height + 2 ;
+                FWinControl.Top    := FLabel.Top + FLabel.Height + 1 ;
                 FWinControl.Left   := 1 ;
-                iHeight := Self.Height - FWinControl.Top - 4 ;
-                iWidth  := Self.Width  - FWinControl.Left - 4  ;
+                iHeight := Self.Height - FWinControl.Top - 1 ;
+                iWidth  := Self.Width  - FWinControl.Left - 1  ;
               end ;
   lsLeft    : begin
                 FWinControl.Top    := 1 ;
-                FWinControl.Left   := LabelWidth + 3;
-                iHeight := Self.Height - FWinControl.Top - 4;
-                iWidth  := Self.Width  - FWinControl.Left - 4 ;
+                FWinControl.Left   := LabelWidth + 2;
+                iHeight := Self.Height - FWinControl.Top - 1;
+                iWidth  := Self.Width  - FWinControl.Left - 1 ;
               end ;
   lsTopLeft : begin
-                FWinControl.Top    := FLabel.Top + FLabel.Height + 3;
+                FWinControl.Top := FLabel.Top + FLabel.Height + 1;
                 FWinControl.Left   := 24 ;
-                iHeight := Self.Height - FWinControl.Top - 4 ;
-                iWidth  := Self.Width  - FWinControl.Left - 4 ;
+                iHeight := Self.Height - FWinControl.Top - 1 ;
+                iWidth  := Self.Width  - FWinControl.Left - 1 ;
               end ;
   lsRight   : begin
                 FWinControl.Top    := 1 ;
                 FWinControl.Left   := 1 ;
-                iHeight := Self.Height - FWinControl.Top - 4;
-                iWidth  := Self.Width - LabelWidth -4;
+                iHeight := Self.Height - FWinControl.Top - 1;
+                iWidth  := Self.Width - LabelWidth -1;
               end ;
   else
     raise EtiOPFInternalException.Create(cErrorInvalidLabelStyle);
   end ;
 
-  if (iHeight<=0) or (iWidth<=0) then Exit;
-  FWinControl.Height := iHeight;
-  FWinControl.Width  := iWidth;
+                if (iHeight<=0) or (iWidth<=0) then Exit;
+                FWinControl.Height := iHeight;
+                FWinControl.Width  := iWidth;
 
 end;
 
 procedure TtiPerAwareAbs.SetCaption(const Value: TCaption);
 begin
   FLabel.Caption := Value ;
+end;
+
+procedure TtiPerAwareAbs.SetLayout(const Value: TTextLayout);
+begin
+if  FLayout <> Value then
+ begin
+  FLabel.Layout := Value;
+  FLayout := Value;
+  end;
 end;
 
 procedure TtiPerAwareAbs.SetLabelStyle(const Value: TLabelStyle);
@@ -901,11 +956,13 @@ end;
 
 procedure TtiPerAwareAbs.SetLabelWidth(const Value: Integer);
 begin
+  if FLabel.Width = Value then Exit;
   FiLabelWidth := Value ;
-  FLabel.Width := Value ;
+  FLabel.Width := Value;
   PositionLabel ;
   PositionWinControl ;
 end;
+
 
 procedure TtiPerAwareAbs.SetEnabled( Value: Boolean);
 begin
@@ -917,6 +974,17 @@ begin
     FWinControl.Refresh ;
   end;
 end;
+
+procedure TtiPerAwareAbs.SetHint(const Value: TTranslateString);
+begin
+  {$IFDEF FPC}
+  inherited SetHint(Value);
+  {$ENDIF}
+  FLabel.Hint := Value ;
+  FWinControl.Hint := Value;
+  FHint := Value;
+end;
+
 
 {$IFNDEF FPC}
 procedure TtiPerAwareAbs.WMSize(var Message: TWMSize);
@@ -945,16 +1013,52 @@ begin
   FsFieldName := Value;
   DataToWinControl ;
 end;
-
 {$IFDEF FPC}
+procedure TtiPerAwareAbs.FontChanged(Sender: TObject);
+begin
+  inherited FontChanged(Sender);
+  if not Assigned(FLabel) then Exit;
+  if not Assigned(FWinControl) then Exit;
+  FLabel.Font.Assign(Self.Font);
+  FWinControl.Font.Assign(Self.Font);
+  PositionLabel;
+  PositionWinControl ;
+end;
+{$ELSE}
+procedure TtiPerAwareAbs.CMFontChanged(var Message: TMessage);
+begin
+  OutputDebugString('TtiPerAwareAbs.CNFontChanged');
+  inherited;
+  if not Assigned(FLabel) then Exit;
+  FLabel.Font.Assign(Self.Font);
+  {Later use Realign when FWinControl will be also aligned};
+  PositionLabel;
+  PositionWinControl ;
+end;
+{$ENDIF}
+
+procedure TtiPerAwareAbs.SetWordWrap(const Value: Boolean);
+begin
+  FLabel.WordWrap := Value;
+end;
+
+function TtiPerAwareAbs.GetWordWrap: Boolean;
+begin
+ Result := FLabel.WordWrap;
+end;
+
+
+
 procedure TtiPerAwareAbs.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
   inherited Notification(AComponent, Operation);
   if (AComponent = FLabel) and (Operation = opRemove) then
     FLabel := nil;
+  if (AComponent = FWinControl) and (Operation = opRemove) then
+    FWinControl := nil;
 end;
-{$ENDIF}
+
 
 procedure TtiPerAwareAbs.DoChange(Sender: TObject);
 begin
@@ -1106,10 +1210,8 @@ begin
   TEdit( FWinControl ).OnKeyDown  := DoOnKeyDown ;
   FbCenterWhenLabelIsLeft := true ;
   inherited;
-  {$IFNDEF FPC}
-   TEdit( FWinControl ).Font.Name := cDefaultFixedFontName;
-   Height := cDefaultHeightSingleRow ;
-  {$ENDIF}
+  TEdit( FWinControl ).ParentFont  := true;
+  Height := cDefaultHeightSingleRow ;
 end;
 
 function TtiPerAwareEdit.GetValue: String;
@@ -1136,7 +1238,7 @@ begin
   {$IFNDEF FPC}
    TEdit( FWinControl ).Text := GetPropValue( FData, FsFieldName );
   {$ELSE}
-  {$Note I'm not sure if this is correct}
+  {$Note Fixme.I'm not sure if this is correct}
    TEdit( FWinControl ).Text := VarToStr(GetPropValue( FData, FsFieldName));
   {$ENDIF}
   SetOnChangeActive( true ) ;
@@ -1195,7 +1297,14 @@ begin
   TEdit( FWinControl ).PasswordChar := Value ;
 end;
 
-
+{$IFNDEF FPC}
+procedure TtiPerAwareEdit.CMFontChanged(var Message: TMessage);
+begin
+ TEdit( FWinControl ).Font.Assign(Self.Font);
+ inherited;
+ OutputDebugString('TtiPerAwareEdit.CMFontChanged');
+end;
+{$ENDIF}
 
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1211,9 +1320,7 @@ begin
   TMemo( FWinControl ).OnKeyDown := DoOnKeyDown ;
   FbCenterWhenLabelIsLeft := false ;
   inherited;
-  {$IFNDEF FPC}
-  TMemo( FWinControl ).Font.Name := cDefaultFixedFontName;
-  {$ENDIF}
+  TMemo( FWinControl ).ParentFont := true;
 end;
 
 procedure TtiPerAwareMemo.DataToWinControl;
@@ -1291,6 +1398,16 @@ begin
   SetPropValue( FData, FsFieldName, TMemo( FWinControl ).Lines.Text ) ;
 end;
 
+{$IFNDEF FPC}
+procedure TtiPerAwareMemo.CMFontChanged(var Message: TMessage);
+begin
+ TMemo( FWinControl ).Font.Assign(Self.Font);
+ inherited;
+ OutputDebugString('TtiPerAwareMemo.CMFontChanged');
+end;
+{$ENDIF}
+
+
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
 //* TtiPerAwareDateTimePicker
@@ -1302,9 +1419,8 @@ begin
   {$IFNDEF FPC}TDateTimePicker(FWinControl).Time := 0 ;{$ENDIF}
   FbCenterWhenLabelIsLeft := true ;
   inherited;
-  {$IFNDEF FPC}
+  TDateTimePicker( FWinControl ).ParentFont := true;
   Height := cDefaultHeightSingleRow ;
-  {$ENDIF}
 end;
 
 procedure TtiPerAwareDateTimePicker.DataToWinControl;
@@ -1435,6 +1551,16 @@ begin
     TDateTimePicker( FWinControl ).Color := clBtnFace ;
 end;
 
+{$IFNDEF FPC}
+procedure TtiPerAwareDateTimePicker.CMFontChanged(var Message: TMessage);
+begin
+ TDateTimePicker( FWinControl ).Font.Assign(Self.Font);
+ inherited;
+ OutputDebugString('TtiPerAwareDateTimePicker.CMFontChanged');
+end;
+{$ENDIF}
+
+
 {
 procedure TtiPerAwareDateTimePicker.DoOnClick(Sender: TObject);
 begin
@@ -1459,9 +1585,7 @@ begin
   FbCenterWhenLabelIsLeft := true ;
   inherited;
   FLabel.OnClick := DoLabelClick ;
-  {$IFNDEF FPC}
   Height := 17 ;
-  {$ENDIF}
 end;
 
 procedure TtiPerAwareCheckBox.DataToWinControl;
@@ -1541,9 +1665,8 @@ begin
   FWinControl := TEdit.Create( self ) ;
   FbCenterWhenLabelIsLeft := true ;
   inherited;
-  {$IFNDEF FPC}
   Height := cDefaultHeightSingleRow ;
-  {$ENDIF}
+
 
   TEdit( FWinControl ).OnEnter      := _DoEnter ;
   TEdit( FWinControl ).OnExit       := _DoExit ;
@@ -1560,6 +1683,7 @@ begin
   FsBeforeApplyKey := '' ;
   Precision := 0 ;
   Value := 0 ;
+  TEdit( FWinControl ).ParentFont := true;
 
 end ;
 
@@ -1701,7 +1825,7 @@ begin
     TEdit( FWinControl ).text := FloatToStr( FrUnknownValue )
   else
     TEdit( FWinControl ).text := RemoveFormatChr( TEdit( FWinControl ).text ) ;
-    
+
   TEdit( FWinControl ).selectAll ;
   FOnChange := lSaveOnChange ;
 
@@ -1925,6 +2049,16 @@ begin
 end;
 
 
+{$IFNDEF FPC}
+procedure TtiPerAwareFloatEdit.CMFontChanged(var Message: TMessage);
+begin
+ TEdit( FWinControl ).Font.Assign(Self.Font);
+ inherited;
+ OutputDebugString('TtiPerAwareFloatEdit.CMFontChanged');
+end;
+{$ENDIF}
+
+
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
 //* TtiPerAwareImageEdit
@@ -1942,6 +2076,7 @@ begin
   TPanel( FWinControl ).BevelInner  := bvNone   ; //bvRaised ;
   TPanel( FWinControl ).BevelOuter  := bvNone   ;
   TPanel( FWinControl ).BorderStyle := bsNone   ;
+  TPanel( FWinControl ).ParentFont  := true     ;
 
   FScrollBox  := TScrollBox.Create( Self ) ;
   FScrollBox.Parent := FWinControl ;
@@ -1966,6 +2101,7 @@ begin
   with FbtnLoadFromFile do
   begin
     Parent := FWinControl ;
+    ParentFont := true;
     Top    := 0 ;
     Left   := 0 ;
     Height := 12 ;
@@ -1985,6 +2121,7 @@ begin
   with FbtnSaveToFile do
   begin
     Parent   := FWinControl ;
+    ParentFont := true;
     Top      := 0 ;
     Left     := lLastControl.Left + lLastControl.Width + 4 ;
     Height   := 12 ;
@@ -2004,6 +2141,7 @@ begin
   with FbtnCopyToClip do
   begin
     Parent   := FWinControl ;
+    ParentFont := true;
     Top      := 0 ;
     Left     := lLastControl.Left + lLastControl.Width + 4 ;
     Height   := 12 ;
@@ -2023,6 +2161,7 @@ begin
   with FbtnPasteFromClip do
   begin
     Parent := FWinControl ;
+    ParentFont := true;
     Top    := 0 ;
     Left   := lLastControl.Left + lLastControl.Width + 4 ;
     Height := 12 ;
@@ -2059,6 +2198,7 @@ begin
   with FbtnEdit do
   begin
     Parent := FWinControl ;
+    ParentFont := true;
     Top    := 0 ;
     Left   := lLastControl.Left + lLastControl.Width + 4 ;
     Height := 12 ;
@@ -2078,6 +2218,7 @@ begin
   with FbtnClear do
   begin
     Parent := FWinControl ;
+    ParentFont := true;
     Top    := 0 ;
     Left   := lLastControl.Left + lLastControl.Width + 4 ;
     Height := 12 ;
@@ -2097,6 +2238,7 @@ begin
   with FbtnStretch do
   begin
     Parent := FWinControl ;
+    ParentFont := true;
     Top    := 0 ;
     Left   := lLastControl.Left + lLastControl.Width + 4 ;
     Height := 12 ;
@@ -2449,6 +2591,15 @@ begin
   FImage.Proportional := Value;
 end;
 
+{$IFNDEF FPC}
+procedure TtiPerAwareImageEdit.CMFontChanged(var Message: TMessage);
+begin
+ TPanel( FWinControl ).Font.Assign(Self.Font);
+ inherited;
+ OutputDebugString('TtiPerAwareImageEdit.CMFontChanged');
+end;
+{$ENDIF}
+
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
@@ -2692,10 +2843,8 @@ begin
   TComboBox( FWinControl ).OnKeyDown := DoOnKeyDown ;
   FbCenterWhenLabelIsLeft := true ;
   inherited;
-  {$IFNDEF FPC}
-  TComboBox( FWinControl ).Font.Name := cDefaultFixedFontName;
+  TComboBox( FWinControl ).ParentFont := true;
   Height := cDefaultHeightSingleRow ;
-  {$ENDIF}
 end;
 
 {
@@ -2930,7 +3079,7 @@ begin
 
   WinControlToData ;
   SetOnChangeActive( false ) ;
-  
+
 end;
 
 function TtiPerAwareComboBoxDynamic.GetValueAsString: string;
@@ -2947,7 +3096,7 @@ begin
     Exit ; //==>
   TCheckBox( FWinControl ).Checked := not TCheckBox( FWinControl ).Checked ;
 end;
-                                    
+
 procedure TtiPerAwareComboBoxDynamic.SetValueAsString(const Value: string);
 begin
   if not Assigned(FList) then
@@ -2993,6 +3142,15 @@ begin
     Key := #0;
 end;
 
+{$IFNDEF FPC}
+procedure TtiPerAwareComboBoxAbs.CMFontChanged(var Message: TMessage);
+begin
+ TComboBox( FWinControl ).Font.Assign(Self.Font);
+ inherited;
+ OutputDebugString('TtiPerAwareComboBoxAbs.CMFontChanged'); 
+end;
+{$ENDIF}
+
 procedure TtiPerAwareImageEdit.SetVisibleButtons(const Value: TtiImageEditVisibleButtons);
 begin
   FVisibleButtons := Value;
@@ -3032,9 +3190,6 @@ end;
 procedure TtiPerAwareDateTimePicker.Loaded;
 begin
   inherited;
-  {$IFNDEF FPC}
-  TDateTimePicker(FWinControl).Font.Name := cDefaultFixedFontName;
-  {$ENDIF}
 end;
 
 constructor TtiPerAwareComboBoxDynamic.Create(AOwner: TComponent);
@@ -3058,7 +3213,7 @@ end;
 
 function TtiPerAwareImageEditAction.IsDisabledIfNoHandler: Boolean;
 begin
-  Result := DisableIfNoHandler and not Assigned(OnExecute); 
+  Result := DisableIfNoHandler and not Assigned(OnExecute);
 end;
 
 function TtiPerAwareImageEditAction.IsEnabledReadOnly: Boolean;
