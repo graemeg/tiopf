@@ -926,7 +926,7 @@ begin
       {$IFDEF FPC}
       tkAString     : SetStrProp(Self, psPropName, GetStrProp(pSource, psPropName));
       {$ENDIF}
-      tkInteger     : SetInt64Prop(Self, psPropName, GetInt64Prop(pSource, psPropName));
+      tkInteger     : SetOrdProp(Self, psPropName, GetOrdProp(pSource, psPropName));
       tkInt64       : SetInt64Prop(Self, psPropName, GetInt64Prop(pSource, psPropName));
       tkFloat       : SetFloatProp(Self, psPropName, GetFloatProp(pSource, psPropName));
       tkVariant     : SetVariantProp(Self, psPropName, GetVariantProp(pSource, psPropName));
