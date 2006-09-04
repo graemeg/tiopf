@@ -1,6 +1,6 @@
-{$I tiDefines.inc}
-
 unit tiCompress;
+
+{$I tiDefines.inc}
 
 interface
 uses

@@ -1297,16 +1297,16 @@ end;
 
 procedure TtiObjectList.Empty;
 var
-  i : integer ;
+  i: integer;
 begin
   for i := Count - 1 downto 0 do
-    FList.Extract( FList.Items[i] ) ;
+    FList.Extract(FList.Items[i]);
 end;
 
 
 function TtiObjectList.GetCount: integer;
 begin
-  result := FList.Count ;
+  result := FList.Count;
 end;
 
 
