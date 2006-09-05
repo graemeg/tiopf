@@ -2620,7 +2620,7 @@ end;
 
 constructor TtiListView.Create(AOwner: TComponent);
 begin
-  inherited Create(Owner);
+  inherited Create(AOwner);
 
   // Create the popup menu
   FPopupMenu := TPopupMenu.Create( self ) ;
