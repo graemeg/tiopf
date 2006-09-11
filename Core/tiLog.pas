@@ -13,6 +13,7 @@ uses
   ,SysUtils
   ,tiBaseObject
   ,tiThread
+  ,types
   ;
 
 const

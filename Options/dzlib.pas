@@ -29,11 +29,6 @@ uses
 
 
 type
-  TAlloc = alloc_func;
-    {function (AppData: Pointer; Items, Size: Integer): Pointer;}
-  TFree = free_func;
-    {procedure (AppData, Block: Pointer);}
-
   { Internal structure.  Ignore. }
   TZStreamRec = z_stream;
 

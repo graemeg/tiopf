@@ -128,13 +128,17 @@ begin
   FEdit.left := 0 ;
   FEdit.top  := 0 ;
   FEdit.parent := self ;
+
+  {$IFNDEF FPC}
   FEdit.ParentColor := true ;
-  FEdit.borderStyle := bsNone ;
   FEdit.ctl3D := false ;
+  FEdit.OnDblClick := DoButtonClick;
+  {$ENDIF}
+
+  FEdit.borderStyle := bsNone ;
   FEdit.onChange := DoOnChange ;
   FEdit.TabStop := true ;
   FEdit.TabOrder := 1 ;
-  FEdit.OnDblClick := DoButtonClick;
   FEdit.Font.Name := cDefaultFixedFontName;
 
 end ;
