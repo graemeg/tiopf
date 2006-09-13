@@ -107,7 +107,7 @@ begin
   // You can specify a hostname or a local database.
   FDBName       := 'localhost|' + ReadFromReg( cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd' );
 //  FDBName       := ExpandFileName( ReadFromReg( cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd' ));
-  writeln(FDBName);
+//  writeln(FDBName);
   FUsername     := ReadFromReg( cTIPersistFBL, 'Username', 'SYSDBA' ) ;
   FPassword     := ReadFromReg( cTIPersistFBL, 'Password', 'masterkey' );
   FCanCreateDatabase := False;

@@ -70,11 +70,9 @@ type
   function tiIsReadWriteProp( const pData : TtiBaseObjectClass ; const psPropName : string ) : boolean ; overload ;
 
 type
-  // This FPC bug has been reported and fixed. The IFDEFs will be removed with
-  // the next FPC release.
-  {$IFNDEF FPC}{$M+}{$ENDIF}
+  {$M+}
   TtiVisited = class ;
-  {$IFNDEF FPC}{$M-}{$ENDIF}
+  {$M-}
   TtiVisitor = class ;
                        
   TtiVisitorCtrlr = class( TtiBaseObject )
@@ -158,9 +156,6 @@ type
 
   // TtiVisited
   // The class that gets visited.
-  {$IFDEF FPC}
-  {$M+}
-  {$ENDIF}
   TtiVisited = class( TtiBaseObject )
   private
     FbSelfIterate: boolean;
@@ -176,10 +171,7 @@ type
     procedure   FindAllByClassType( pClass : TtiVisitedClass ; pList : TList ) ;
     function    CountByClass( pClass : TtiVisitedClass ) : integer ;
   end ;
-  {$IFDEF FPC}
-  {$M-}
-  {$ENDIF}
-  
+
   // A wrapper for the TtiPreSizedStream which allows text to be written to the stream
   // with each visit.
   TVisStream = class( TtiVisitor )
@@ -1153,36 +1145,35 @@ begin
 end ;
 
 
-function tiIsReadWriteProp( const pData : TtiBaseObject ; const psPropName : string ) : boolean ;
+function tiIsReadWriteProp(const pData: TtiBaseObject;
+    const psPropName: string): boolean;
 begin
-  result :=tiIsReadWriteProp( TtiBaseObjectClass(pData.ClassType), psPropName ) ;
+  result := tiIsReadWriteProp(TtiBaseObjectClass(pData.ClassType), psPropName);
 end;
 
 
-function tiIsReadWriteProp( const pData : TtiBaseObjectClass ; const psPropName : string ) : boolean ;
+function tiIsReadWriteProp(const pData: TtiBaseObjectClass;
+    const psPropName: string): boolean;
 var
   lPropInfo : PPropInfo ;
 begin
-  Assert( pData <> nil, 'pData not assigned' ) ;
-  Assert( IsPublishedProp( pData, psPropName ), psPropName + ' not a published property on ' + pData.ClassName ) ;
+  Assert(pData <> nil, 'pData not assigned');
+  Assert(IsPublishedProp(pData, psPropName), psPropName
+      + ' not a published property on ' + pData.ClassName);
   try
     lPropInfo := GetPropInfo( pData, psPropName ) ;
-
-    {$IFDEF FPC}
-    {$NOTE Remove this as soon as it is fixed in FPC }
-    result    := (lPropInfo^.GetProc <> Pointer($01)) and (lPropInfo^.SetProc <> Pointer($01));
-    {$ELSE}
-    result    := ( lPropInfo^.GetProc <> nil ) and ( lPropInfo^.SetProc <> nil ) ;
-    {$ENDIF}
+    result    := (lPropInfo^.GetProc <> nil) and (lPropInfo^.SetProc <> nil);
   except
     on e:exception do
-      raise exception.CreateFmt( 'Error calling tiIsReadWriteProp with class: %s and property %s',
-                                 [pData.ClassName, psPropName]);
+      raise exception.CreateFmt(
+          'Error calling tiIsReadWriteProp with class: %s and property %s',
+          [pData.ClassName, psPropName]);
   end;
 end;
 
 
-function tiGetSimplePropType( const pPersistent : TtiBaseObject ; const psPropName : string ) : TtiTypeKind ;
+function tiGetSimplePropType(const pPersistent: TtiBaseObject;
+    const psPropName: string): TtiTypeKind;
 var
   lPropType : TTypeKind ;
   lPropTypeName : string ;
