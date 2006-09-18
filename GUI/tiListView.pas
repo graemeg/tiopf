@@ -1145,54 +1145,55 @@ end ;
 
 function TtiCustomListView.ValueFromProperty( ptiListColumn : TtiListColumn ; pData : TtiObject ) : string ;
 var
-  lsFieldName   : string ;
+  lsFieldName   : string;
   lCurrency     : Currency;
-  lFloat        : real ;
-  lInt          : integer ;
-  lDate         : TDateTime ;
-  lsDisplayMask : string ;
+  lFloat        : double;
+  lInt          : integer;
+  lDate         : TDateTime;
+  lsDisplayMask : string;
 begin
-  If Assigned(pTiListColumn.FOnGetCaption) Then
-  Begin
-    Try
+  if Assigned(pTiListColumn.FOnGetCaption) then
+  begin
+    try
       ptiListColumn.FOnGetCaption(Self, pData, ptiListColumn, Result);
-    Except
+    except
       On E : Exception Do
         Result := 'Error in OnGetCaption. Message : ' + E.Message;
-    End;
-  End
-  Else
-  Begin
-  lsFieldName   := ptiListColumn.FieldName ;
-  lsDisplayMask := ptiListColumn.DisplayMask ;
-  try
-    case ptiListColumn.DataType of
-    lvtkString   : result := GetPropValue( pData, lsFieldName ) ;
-    lvtkCurrency : Begin
-                     lCurrency := GetPropValue( pData, lsFieldName ) ;
-                     Result := Format('%m',[lCurrency]);
-                   End;
-    lvtkFloat    : begin
-                     lFloat := GetPropValue( pData, lsFieldName ) ;
-                     result := FormatFloat( lsDisplayMask, lFloat ) ;
-                   end ;
-    lvtkDateTime : begin
-                     lDate  := GetPropValue( pData, lsFieldName ) ;
-                     result := FormatDateTime( lsDisplayMask, lDate ) ;
-                   end ;
-    lvtkInt      : begin
-                     lInt   := GetPropValue( pData, lsFieldName ) ;
-                     result := FormatFloat( lsDisplayMask, lInt ) ;
-                   end ;
-    end ;
-  except
-    on e:exception do
-      result := 'Error reading <' + lsFieldName +
-                '> in _ValueFromProperty. Message:' +
-                e.message ;
-  end ;
-end ;
-end ;
+    end;
+  end
+  else
+  begin
+    lsFieldName   := ptiListColumn.FieldName;
+    lsDisplayMask := ptiListColumn.DisplayMask;
+    try
+      case ptiListColumn.DataType of
+      lvtkString   : result := GetPropValue( pData, lsFieldName );
+      lvtkCurrency : begin
+                       lCurrency := GetPropValue( pData, lsFieldName );
+                       Result := Format('%m',[lCurrency]);
+                     end;
+      lvtkFloat    : begin
+                       lFloat := GetPropValue( pData, lsFieldName );
+                       result := FormatFloat( lsDisplayMask, lFloat );
+                     end;
+      lvtkDateTime : begin
+                       lDate  := GetPropValue( pData, lsFieldName );
+                       result := FormatDateTime( lsDisplayMask, lDate );
+                     end;
+      lvtkInt      : begin
+                       lInt   := GetPropValue( pData, lsFieldName );
+                       result := FormatFloat( lsDisplayMask, lInt );
+                     end;
+      end;
+    except
+      on e: exception do
+        result := 'Error reading <' + lsFieldName +
+                  '> in _ValueFromProperty. Message:' +
+                  e.message ;
+    end;
+  end;  { if }
+end;
+
 
 function TtiCustomListView.ValueFromDerivedProperty( ptiListColumn : TtiListColumn ; pData : TtiObject ) : string ;
 begin

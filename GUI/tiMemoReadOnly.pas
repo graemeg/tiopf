@@ -54,6 +54,9 @@ type
     property Lines ;
     property WordWrap ;
     property Font ;
+    property ParentFont;
+    property ShowHint;
+    property PopupMenu;
     property OnClick ;
     property ScrollBars ;
   public

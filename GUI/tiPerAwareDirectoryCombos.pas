@@ -125,7 +125,6 @@ begin
     lBFD.Free;
   end;
   inherited DoButtonClick(Sender);
-  ( Owner as TtiFocusPanel ).DoDrawFocusRect(True);
 end ;
 {$ELSE}
 procedure TtiPickDirectory.DoButtonClick( sender : TObject ) ;
@@ -145,7 +144,6 @@ begin
     lBFD.Free;
   end;
   inherited DoButtonClick(Sender);
-  ( Owner as TtiFocusPanel ).DoDrawFocusRect(True);
 end ;
 
 {$ENDIF}
@@ -159,10 +157,10 @@ begin
 
   sDirectory := self.text ;
   if not DirectoryExists( sDirectory ) then begin
-    if not messageDlg( 'Directory <' + sDirectory +
+    if messageDlg( 'Directory <' + sDirectory +
                        '> does not exist.' + #13 +
                        'Do you want to create it ?',
-                       mtConfirmation, [mbYes, mbNo], 0 ) = mrYes then begin
+                       mtConfirmation, [mbYes, mbNo], 0 ) = mrNo then begin
       self.setFocus ;
       exit ; //==>
     end ;

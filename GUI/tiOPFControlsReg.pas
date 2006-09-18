@@ -73,6 +73,8 @@ begin
 
   RegisterComponents( 'TechInsite Extra',
                       [  TtiUserDefinedPicker
+                         ,TtiPickFile
+                         ,TtiPickDirectory
                          ,TtiPerAwarePickFile
                          ,TtiPerAwarePickDirectory
                          ,TtiMemoReadOnly

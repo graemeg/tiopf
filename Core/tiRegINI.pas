@@ -58,12 +58,20 @@ type
   TUserINIFile = class(TtiINIFile);
 
 // These are both singletons
+(* 2006-09-18: This will be used again, as soon as the TRegIniFile patch is applied to FPC
 {$IFDEF MSWINDOWS}
 function gReg : TtiRegINIFile;
 {$ENDIF MSWINDOWS}
 {$IFDEF UNIX}
 function gReg : TtiINIFile;
 {$ENDIF}
+*)
+{$IFNDEF FPC}
+function gReg : TtiRegINIFile;
+{$ELSE}
+function gReg : TtiINIFile;
+{$ENDIF}
+
 function gINI(const pFileName: string = '') : TtiINIFile;
 
 implementation
@@ -236,7 +244,7 @@ end;
 {$IFDEF MSWINDOWS}
 constructor TtiRegINIFile.CreateExt;
 begin
-  Create(tiExtractFileNameOnly(application.exeName));
+  Create('Software\' + tiExtractFileNameOnly(application.exeName));
 end;
 {$ENDIF MSWINDOWS}
 

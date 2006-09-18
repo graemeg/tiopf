@@ -99,6 +99,9 @@ type
     procedure   SetOnChangeActive( Value : boolean ) ; override ;
     procedure   SetReadOnly(const Value: Boolean);override ;
     procedure   SetControlColor ; override ;
+    {$IFNDEF FPC}
+    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
+    {$ENDIF}
   public
     constructor Create( AOwner : TComponent ) ; override ;
     property    Value : TtiObject read FValue write SetValue ;
@@ -236,6 +239,15 @@ begin
   inherited;
   Height := cuiMinHeight ;
 end;
+
+{$IFNDEF FPC}
+procedure TtiUserDefinedPicker.CMFontChanged(var Message: TMessage);
+begin
+ inherited;
+end;
+{$ENDIF}
+
+
 
 procedure TtiUserDefinedPicker.DataToWinControl;
 var

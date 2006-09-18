@@ -253,6 +253,7 @@ var
   p: TPoint;
 begin
   Assert( pPopupMenu <> nil, 'pPopupMenu not Assigned');
+  if pPopupMenu=nil then Exit;
   p.x := BoundsRect.TopLeft.X;
   p.y := BoundsRect.BottomRight.Y;
   p   := Parent.ClientToScreen(p);

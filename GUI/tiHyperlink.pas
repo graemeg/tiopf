@@ -64,6 +64,7 @@ type
     property Hint ;
     property ShowHint ;
     property Enabled ;
+    property ParentFont;
     property Font ;
     property ColorAvailable : TColor read FColorAvailable write SetColorAvailable default clNavy ;
     property ColorHilight   : TColor read FColorHilight   write FColorHilight default clRed ;

@@ -47,7 +47,6 @@ const
   cuiDefaultLabelWidth    = 80;
   cDefaultHeightSingleRow = 24;
   cDefaultHeightMultiRow  = 41;
-  cDefaultFixedFontName = 'Courier new';
   cCaption = 'Caption';
 
 type
@@ -95,18 +94,15 @@ type
     procedure   SetData(const Value: TtiObject); virtual ;
     {$IFNDEF FPC}
     procedure   WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ELSE}
     procedure   DoSetBounds(ALeft, ATop, AWidth, AHeight: Integer);override;
+    procedure   FontChanged(Sender: TObject); override;
     {$ENDIF}
     procedure   PositionLabel ; virtual ;
     procedure   PositionWinControl ; virtual ;
     procedure   SetLabelWidth(const Value: Integer); virtual ;
     procedure   SetFieldName(const Value: string); virtual ;
-    {$IFDEF FPC}
-    procedure   FontChanged(Sender: TObject); override;
-    {$ELSE}
-    procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
-    {$ENDIF}
     procedure   SetWordWrap(const Value : Boolean);
     function    GetWordWrap : Boolean;
 
@@ -428,6 +424,7 @@ type
   // The TtiPerAwareFloatEdit can be of these types
   TtiFloatEditStyle = ( fesUser, fesInteger, fesFloat, fesCurrency, fesPercent ) ;
 
+
   // A wrapper for the TEdit control, with some additional methods to implement
   // number editing.
   TtiPerAwareFloatEdit   = class( TtiPerAwareAbs )
@@ -437,9 +434,9 @@ type
     FsTextBefore : string ;
     FsTextAfter  : string ;
     FsTextUnknown: string ;
-    FrMinValue   : real ;
-    FrMaxValue   : real ;
-    FrUnknownValue   : real ;
+    FrMinValue   : double ;
+    FrMaxValue   : double ;
+    FrUnknownValue   : double ;
     FsBeforeApplyKey : string ;
     FFloatEditStyle: TtiFloatEditStyle;
 
@@ -451,24 +448,23 @@ type
 
     function  RemoveFormatChr( sValue : string ) : string ;
     function  IsValidFloat( sValue : string ) : boolean ;
-    function  WithinMinMaxLimits( value : real ) : boolean;
-    function  CustomStrToFloat(var pStrValue: string): real;
+    function  WithinMinMaxLimits( value : double ) : boolean;
+    function  CustomStrToFloat(var pStrValue: string): double;
 
     function  GetValueAsString : string ;
     procedure SetValueAsString( sValue: string);
-    procedure SetValue( rValue : real ) ;
-    function  GetValue : real ;
+    procedure SetValue( rValue : double ) ;
+    function  GetValue : double ;
     procedure SetPrecision( iValue : integer ) ;
     procedure SetTextAfter( sValue : string ) ;
     procedure SetTextBefore( sValue : string ) ;
     procedure SetTextUnknown(const sValue: string);
-    procedure SetMinValue( rValue : real ) ;
-    procedure SetMaxValue( rValue : real ) ;
+    procedure SetMinValue( rValue : double ) ;
+    procedure SetMaxValue( rValue : double ) ;
     procedure SetFloatEditStyle(const Value: TtiFloatEditStyle);
-    procedure SetUnknownValue(const rValue: real);
+    procedure SetUnknownValue(const rValue: double);
     function GetIsKnown: boolean;
     procedure SetIsKnown(const bValue: boolean);
-
   protected
     procedure   DataToWinControl ; override ;
     procedure   WinControlToData ; override ;
@@ -478,22 +474,21 @@ type
     procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
   published
-
     property    TextBefore : string read FsTextBefore write setTextBefore ;
     property    TextAfter  : string read FsTextAfter  write setTextAfter ;
     property    TextUnknown  : string read FsTextUnknown  write setTextUnknown ;
     property    ValueAsString  : string read GetValueAsString write SetValueAsString ;
-    property    Value     : real    read GetValue   write SetValue  ;
+    property    Value     : double    read GetValue   write SetValue  ;
     property    Precision : integer read FiPrecision write setPrecision ;
-    property    MinValue  : real    read FrMinValue write setMinValue ;
-    property    MaxValue  : real    read FrMaxValue write setMaxValue ;
-    property    UnknownValue  : real    read FrUnknownValue write SetUnknownValue ;
+    property    MinValue  : double    read FrMinValue write setMinValue ;
+    property    MaxValue  : double    read FrMaxValue write setMaxValue ;
+    property    UnknownValue  : double    read FrUnknownValue write SetUnknownValue ;
     property    IsKnown  : boolean    read GetIsKnown write SetIsKnown;
     property    Style     : TtiFloatEditStyle read FFloatEditStyle write SetFloatEditStyle ;
-
   public
-    constructor Create( AOwner : TComponent ) ; override ;
-  end ;
+    constructor Create(AOwner: TComponent); override;
+  end;
+  
 
   TtiPerAwareImageEditOnLoadFromFile = procedure( Sender : TObject ; var pFileName : string ; var pDefaultAction : boolean ) of object ;
 
@@ -987,12 +982,33 @@ end;
 
 
 {$IFNDEF FPC}
+procedure TtiPerAwareAbs.CMFontChanged(var Message: TMessage);
+begin
+  inherited;
+  if not Assigned(FLabel) then Exit;
+  FLabel.Font.Assign(Self.Font);
+  {Later use Realign when FWinControl will be also aligned};
+  PositionLabel;
+  PositionWinControl ;
+end;
+
 procedure TtiPerAwareAbs.WMSize(var Message: TWMSize);
 begin
   PositionLabel ;
   PositionWinControl ;
 end;
 {$ELSE}
+procedure TtiPerAwareAbs.FontChanged(Sender: TObject);
+begin
+  inherited FontChanged(Sender);
+  if not Assigned(FLabel) then Exit;
+  if not Assigned(FWinControl) then Exit;
+  FLabel.Font.Assign(Self.Font);
+  FWinControl.Font.Assign(Self.Font);
+  PositionLabel;
+  PositionWinControl ;
+end;
+
 procedure TtiPerAwareAbs.DoSetBounds(ALeft, ATop, AWidth, AHeight: Integer);
 begin
   inherited DoSetBounds(ALeft, ATop, AWidth, AHeight);
@@ -1013,29 +1029,6 @@ begin
   FsFieldName := Value;
   DataToWinControl ;
 end;
-{$IFDEF FPC}
-procedure TtiPerAwareAbs.FontChanged(Sender: TObject);
-begin
-  inherited FontChanged(Sender);
-  if not Assigned(FLabel) then Exit;
-  if not Assigned(FWinControl) then Exit;
-  FLabel.Font.Assign(Self.Font);
-  FWinControl.Font.Assign(Self.Font);
-  PositionLabel;
-  PositionWinControl ;
-end;
-{$ELSE}
-procedure TtiPerAwareAbs.CMFontChanged(var Message: TMessage);
-begin
-  OutputDebugString('TtiPerAwareAbs.CNFontChanged');
-  inherited;
-  if not Assigned(FLabel) then Exit;
-  FLabel.Font.Assign(Self.Font);
-  {Later use Realign when FWinControl will be also aligned};
-  PositionLabel;
-  PositionWinControl ;
-end;
-{$ENDIF}
 
 procedure TtiPerAwareAbs.SetWordWrap(const Value: Boolean);
 begin
@@ -1302,7 +1295,6 @@ procedure TtiPerAwareEdit.CMFontChanged(var Message: TMessage);
 begin
  TEdit( FWinControl ).Font.Assign(Self.Font);
  inherited;
- OutputDebugString('TtiPerAwareEdit.CMFontChanged');
 end;
 {$ENDIF}
 
@@ -1323,6 +1315,7 @@ begin
   TMemo( FWinControl ).ParentFont := true;
 end;
 
+
 procedure TtiPerAwareMemo.DataToWinControl;
 begin
   if not DataAndPropertyValid then
@@ -1332,30 +1325,36 @@ begin
   SetOnChangeActive( true ) ;
 end;
 
+
 function TtiPerAwareMemo.GetMaxLength: integer;
 begin
   result := TMemo( FWinControl ).MaxLength ;
 end;
+
 
 function TtiPerAwareMemo.GetScrollBars: TScrollStyle;
 begin
   result := TMemo( FWinControl ).ScrollBars ;
 end;
 
+
 function TtiPerAwareMemo.GetValue: string;
 begin
   result := TMemo( FWinControl ).Lines.Text ;
 end;
+
 
 function TtiPerAwareMemo.GetWordWrap: boolean;
 begin
   result := TMemo( FWinControl ).WordWrap ;
 end;
 
+
 procedure TtiPerAwareMemo.SetMaxLength(const Value: integer);
 begin
   TMemo( FWinControl ).MaxLength := Value ;
 end;
+
 
 procedure TtiPerAwareMemo.SetOnChangeActive(Value: boolean);
 begin
@@ -1365,16 +1364,19 @@ begin
     TMemo( FWinControl ).OnChange := nil ;
 end;
 
+
 procedure TtiPerAwareMemo.SetReadOnly(const Value: Boolean);
 begin
   inherited SetReadOnly( Value ) ;
   TMemo( FWinControl ).ReadOnly := Value ;
 end;
 
+
 procedure TtiPerAwareMemo.SetScrollBars(const Value: TScrollStyle);
 begin
   TMemo( FWinControl ).ScrollBars := Value ;
 end;
+
 
 procedure TtiPerAwareMemo.SetValue(const Value: string);
 begin
@@ -1384,10 +1386,12 @@ begin
   SetOnChangeActive( true ) ;
 end;
 
+
 procedure TtiPerAwareMemo.SetWordWrap(const Value: boolean);
 begin
   TMemo( FWinControl ).WordWrap := Value ;
 end;
+
 
 procedure TtiPerAwareMemo.WinControlToData;
 begin
@@ -1398,21 +1402,18 @@ begin
   SetPropValue( FData, FsFieldName, TMemo( FWinControl ).Lines.Text ) ;
 end;
 
+
 {$IFNDEF FPC}
 procedure TtiPerAwareMemo.CMFontChanged(var Message: TMessage);
 begin
  TMemo( FWinControl ).Font.Assign(Self.Font);
  inherited;
- OutputDebugString('TtiPerAwareMemo.CMFontChanged');
 end;
 {$ENDIF}
 
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//*
-//* TtiPerAwareDateTimePicker
-//*
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{ TtiPerAwareDateTimePicker }
+
 constructor TtiPerAwareDateTimePicker.Create(AOwner: TComponent);
 begin
   FWinControl := TDateTimePicker.Create( self ) ;
@@ -1422,6 +1423,7 @@ begin
   TDateTimePicker( FWinControl ).ParentFont := true;
   Height := cDefaultHeightSingleRow ;
 end;
+
 
 procedure TtiPerAwareDateTimePicker.DataToWinControl;
 begin
@@ -1438,6 +1440,7 @@ begin
   SetOnChangeActive( true ) ;
 end;
 
+
 procedure TtiPerAwareDateTimePicker.DoKeyUp(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
@@ -1445,10 +1448,12 @@ begin
     DoChange( Sender ) ;
 end;
 
+
 procedure TtiPerAwareDateTimePicker.DoOnExit(Sender: TObject);
 begin
   DoChange( Sender ) ;
 end;
+
 
 function TtiPerAwareDateTimePicker.GetValue: TDateTime;
 begin
@@ -1457,6 +1462,7 @@ begin
   else
     result := TDateTimePicker( FWinControl ).Date ;
 end;
+
 
 procedure TtiPerAwareDateTimePicker.SetOnChangeActive(Value: boolean);
 begin
@@ -1474,6 +1480,7 @@ begin
   end ;
 end;
 
+
 procedure TtiPerAwareDateTimePicker.SetReadOnly(const Value: Boolean);
 begin
   inherited SetReadOnly( Value ) ;
@@ -1483,6 +1490,7 @@ begin
     TDateTimePicker( FWinControl ).Enabled := Enabled ;
   SetControlColor;
 end;
+
 
 procedure TtiPerAwareDateTimePicker.SetValue(const Value: TDateTime);
 var
@@ -1503,6 +1511,7 @@ begin
   SetOnChangeActive( true ) ;
 end;
 
+
 procedure TtiPerAwareDateTimePicker.WinControlToData;
 var
   liValue : integer ;
@@ -1520,27 +1529,32 @@ begin
   SetPropValue( FData, FsFieldName, liValue ) ;
 end;
 
+
 {$IFNDEF FPC}
 function TtiPerAwareDateTimePicker.GetMaxDate: TDateTime;
 begin
   result := TDateTimePicker( FWinControl ).MaxDate ;
 end;
 
+
 function TtiPerAwareDateTimePicker.GetMinDate: TDateTime;
 begin
   result := TDateTimePicker( FWinControl ).MinDate ;
 end;
+
 
 procedure TtiPerAwareDateTimePicker.SetMaxDate(const Value: TDateTime);
 begin
   TDateTimePicker( FWinControl ).MaxDate := (Trunc(Value) + 1 ) - cdtOneMiliSecond  ;
 end;
 
+
 procedure TtiPerAwareDateTimePicker.SetMinDate(const Value: TDateTime);
 begin
   TDateTimePicker( FWinControl ).MinDate := Trunc(Value) ;
 end;
 {$ENDIF}
+
 
 procedure TtiPerAwareDateTimePicker.SetControlColor;
 begin
@@ -1551,12 +1565,12 @@ begin
     TDateTimePicker( FWinControl ).Color := clBtnFace ;
 end;
 
+
 {$IFNDEF FPC}
 procedure TtiPerAwareDateTimePicker.CMFontChanged(var Message: TMessage);
 begin
  TDateTimePicker( FWinControl ).Font.Assign(Self.Font);
  inherited;
- OutputDebugString('TtiPerAwareDateTimePicker.CMFontChanged');
 end;
 {$ENDIF}
 
@@ -1571,11 +1585,9 @@ begin
 end;
 }
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//*
-//* TtiPerAwareCheckBox
-//*
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TtiPerAwareCheckBox }
+
 constructor TtiPerAwareCheckBox.Create(AOwner: TComponent);
 begin
   FWinControl := TCheckBox.Create( self ) ;
@@ -1588,6 +1600,7 @@ begin
   Height := 17 ;
 end;
 
+
 procedure TtiPerAwareCheckBox.DataToWinControl;
 begin
   if not DataAndPropertyValid then
@@ -1597,10 +1610,12 @@ begin
   SetOnChangeActive( true ) ;
 end;
 
+
 function TtiPerAwareCheckBox.GetValue: boolean;
 begin
   result := TCheckBox( FWinControl ).Checked ;
 end;
+
 
 procedure TtiPerAwareCheckBox.SetControlColor;
 var
@@ -1612,6 +1627,7 @@ begin
   FWinControl.Refresh ;
 end;
 
+
 procedure TtiPerAwareCheckBox.SetOnChangeActive(Value: boolean);
 begin
   if Value then
@@ -1619,6 +1635,7 @@ begin
   else
     TCheckBox( FWinControl ).OnClick := nil ;
 end;
+
 
 procedure TtiPerAwareCheckBox.SetReadOnly(const Value: Boolean);
 begin
@@ -1629,11 +1646,13 @@ begin
     TCheckBox( FWinControl ).Enabled := Enabled ;
 end;
 
+
 procedure TtiPerAwareCheckBox.DoOnClick(Sender: TObject);
 begin
   Inherited DoOnClick( Sender ) ;
   DoLabelClick(nil);
 end;
+
 
 procedure TtiPerAwareCheckBox.SetValue(const Value: boolean);
 begin
@@ -1642,6 +1661,7 @@ begin
   WinControlToData ;
   SetOnChangeActive( true ) ;
 end;
+
 
 procedure TtiPerAwareCheckBox.WinControlToData;
 var
@@ -1655,11 +1675,9 @@ begin
   SetPropValue( FData, FsFieldName, li ) ;
 end;
 
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//*
-//* TtiPerAwareFloatEdit
-//*
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TtiPerAwareFloatEdit }
+
 constructor TtiPerAwareFloatEdit.Create( AOwner : TComponent ) ;
 begin
   FWinControl := TEdit.Create( self ) ;
@@ -1684,8 +1702,8 @@ begin
   Precision := 0 ;
   Value := 0 ;
   TEdit( FWinControl ).ParentFont := true;
+end;
 
-end ;
 
 procedure TtiPerAwareFloatEdit.setValueAsString( sValue : string ) ;
 begin
@@ -1704,29 +1722,34 @@ begin
   Value := Value ;
   SetOnChangeActive( true ) ;
 
-end ;
+end;
+
 
 function  TtiPerAwareFloatEdit.getValueAsString : string ;
 begin
   result := TEdit( FWinControl ).text ;
 end ;
 
-function TtiPerAwareFloatEdit.isValidFloat( sValue : string ) : boolean ;
-var rValue : real ;
+
+function TtiPerAwareFloatEdit.isValidFloat(sValue: string ): boolean;
+var
+  rValue: double;
 begin
   try
-    rValue := strToFloat( RemoveFormatChr( sValue )) ;
+    rValue := strToFloat(RemoveFormatChr(sValue));
     {$IFNDEF FPC}
      if rValue < rValue + 1 then ; // To trick compiler warnings
     {$ENDIF}
-    result := true ;
+    result := true;
   except
-    result := false ;
-  end ;
-end ;
+    result := false;
+  end;
+end;
 
-function TtiPerAwareFloatEdit.getValue : real ;
-var lStr : string ;
+
+function TtiPerAwareFloatEdit.getValue : double ;
+var
+  lStr : string ;
 begin
   lStr := TEdit( FWinControl ).text ;
   if (FsTextUnknown <> '')
@@ -1736,7 +1759,8 @@ begin
     result := CustomStrToFloat( lStr ) ;
 end ;
 
-function TtiPerAwareFloatEdit.customStrToFloat( var pStrValue : string ) : real ;
+
+function TtiPerAwareFloatEdit.customStrToFloat( var pStrValue : string ) : double ;
 var lStrValue : string ;
 begin
   lStrValue := RemoveFormatChr( pStrValue ) ;
@@ -1752,10 +1776,12 @@ begin
   end ;
 end ;
 
-procedure TtiPerAwareFloatEdit.setValue( rValue : real ) ;
-var sValue : string ;
-    sMinValue : string ;
-    sMaxValue : string ;
+
+procedure TtiPerAwareFloatEdit.setValue(rValue: double);
+var
+  sValue : string ;
+  sMinValue : string ;
+  sMaxValue : string ;
 begin
   SetOnChangeActive( false ) ;
 
@@ -1779,7 +1805,8 @@ begin
   SetOnChangeActive( true ) ;
 end ;
 
-function TtiPerAwareFloatEdit.withinMinMaxLimits( value : real ) : boolean ;
+
+function TtiPerAwareFloatEdit.withinMinMaxLimits( value : double ) : boolean ;
 begin
   result := not ((( FrMinValue <> 0 ) and ( value < FrMinValue )) or
                  (( FrMaxValue <> 0 ) and ( value > FrMaxValue ))) ;
@@ -1787,25 +1814,29 @@ begin
   // Require some code to handle these situations
 end ;
 
-procedure TtiPerAwareFloatEdit.setMinValue( rValue : real ) ;
+
+procedure TtiPerAwareFloatEdit.setMinValue( rValue : double ) ;
 begin
   if (FrMaxValue <> 0 ) and (rValue >= FrMaxValue) then rValue := 0 ;
   FrMinValue := rValue ;
   Value := Value ;
 end ;
 
-procedure TtiPerAwareFloatEdit.setMaxValue( rValue : real ) ;
+
+procedure TtiPerAwareFloatEdit.setMaxValue( rValue : double ) ;
 begin
   if (FrMinValue <> 0) and (rValue <= FrMinValue) then rValue := 0 ;
   FrMaxValue := rValue ;
   Value := Value ;
 end ;
 
-procedure TtiPerAwareFloatEdit.SetUnknownValue(const rValue: real);
+
+procedure TtiPerAwareFloatEdit.SetUnknownValue(const rValue: double);
 begin
   FrUnknownValue := rValue;
   Value := rValue ;
 end;
+
 
 procedure TtiPerAwareFloatEdit._DoEnter( sender : TObject ) ;
 var
@@ -1828,17 +1859,16 @@ begin
 
   TEdit( FWinControl ).selectAll ;
   FOnChange := lSaveOnChange ;
+end;
 
-end ;
 
 procedure TtiPerAwareFloatEdit._DoExit( sender : TObject ) ;
 var
-  rValue : real ;
-  lSaveOnChange : TNotifyEvent ;
+  rValue: double;
+  lSaveOnChange: TNotifyEvent;
 begin
-
   if ReadOnly then
-    Exit ; //==============================================> ReadOnly
+    Exit ; //==>
 
   lSaveOnChange := FOnChange ;
   FOnChange := nil ;
@@ -1860,6 +1890,7 @@ begin
 
 end ;
 
+
 function TtiPerAwareFloatEdit.removeFormatChr( sValue : string ) : string ;
 var i : integer ;
 begin
@@ -1870,6 +1901,7 @@ begin
     end ;
   end ;
 end ;
+
 
 procedure TtiPerAwareFloatEdit.setPrecision( iValue : integer ) ;
 var
@@ -1900,9 +1932,9 @@ begin
 
 end ;
 
+
 procedure TtiPerAwareFloatEdit._DoKeyPress(Sender: TObject;var Key: Char);
 begin
-
   FsBeforeApplyKey := TEdit( FWinControl ).text ;
 
   // A non character key?
@@ -1911,15 +1943,17 @@ begin
   end ;
 
   // A numeric key?
-  if not ( key in cValidFloatChrs ) then begin
-    key := char( 0 ) ;
-  end ;
+  if not (key in cValidFloatChrs) then
+  begin
+    key := char(0);
+  end;
+end;
 
-end ;
 
 procedure TtiPerAwareFloatEdit._DoChange( sender : TObject ) ;
-var lReal : real ;
-    lIntPos : integer ;
+var
+  lReal: double;
+  lIntPos: integer;
 begin
   lReal := Value ;
   if not WithinMinMaxLimits( lReal ) then begin
@@ -1931,7 +1965,8 @@ begin
   WinControlToData ;
   if Assigned( FOnChange ) then
     FOnChange( self ) ;
-end ;
+end;
+
 
 procedure TtiPerAwareFloatEdit.setTextAfter( sValue : string ) ;
 begin
@@ -1947,6 +1982,7 @@ begin
 //  Value := Value ;
 end ;
 
+
 procedure TtiPerAwareFloatEdit.setTextBefore( sValue : string ) ;
 begin
   if FsTextBefore <> sValue then        //ipk 2001-03-01
@@ -1960,6 +1996,7 @@ begin
 //  Value := Value ;
 end ;
 
+
 procedure TtiPerAwareFloatEdit.setTextUnknown(const sValue: string);
 begin
   FsTextUnknown := sValue;
@@ -1971,6 +2008,7 @@ procedure TtiPerAwareFloatEdit._DoClick( sender : TObject ) ;
 begin
   TEdit( FWinControl ).SelectAll ;
 end;
+
 
 procedure TtiPerAwareFloatEdit.SetFloatEditStyle(const Value: TtiFloatEditStyle);
 begin
@@ -2003,14 +2041,16 @@ begin
   FFloatEditStyle := Value; //ipk 2001-03-01  Likely to be changed to fesUser
 end;
 
+
 procedure TtiPerAwareFloatEdit.DataToWinControl;
 begin
   if not DataAndPropertyValid then
-    Exit ; //==>
-  SetOnChangeActive( false ) ;
-  Value := GetPropValue( FData, FsFieldName, True ) ;
-  SetOnChangeActive( true ) ;
+    Exit; //==>
+  SetOnChangeActive(false);
+  Value := GetPropValue(FData, FsFieldName, True);
+  SetOnChangeActive(true);
 end;
+
 
 procedure TtiPerAwareFloatEdit.SetOnChangeActive(Value: boolean);
 begin
@@ -2020,11 +2060,13 @@ begin
     TEdit( FWinControl ).OnChange := nil ;
 end;
 
+
 procedure TtiPerAwareFloatEdit.SetReadOnly(const Value: Boolean);
 begin
   inherited SetReadOnly( Value ) ;
   TEdit( FWinControl ).ReadOnly := Value ;
 end;
+
 
 procedure TtiPerAwareFloatEdit.WinControlToData;
 begin
@@ -2034,6 +2076,7 @@ begin
     Exit ; //==>
   SetPropValue( FData, FsFieldName, Value ) ;
 end;
+
 
 function TtiPerAwareFloatEdit.GetIsKnown: boolean;
 begin
@@ -2054,7 +2097,6 @@ procedure TtiPerAwareFloatEdit.CMFontChanged(var Message: TMessage);
 begin
  TEdit( FWinControl ).Font.Assign(Self.Font);
  inherited;
- OutputDebugString('TtiPerAwareFloatEdit.CMFontChanged');
 end;
 {$ENDIF}
 
@@ -2596,7 +2638,6 @@ procedure TtiPerAwareImageEdit.CMFontChanged(var Message: TMessage);
 begin
  TPanel( FWinControl ).Font.Assign(Self.Font);
  inherited;
- OutputDebugString('TtiPerAwareImageEdit.CMFontChanged');
 end;
 {$ENDIF}
 
@@ -3147,7 +3188,6 @@ procedure TtiPerAwareComboBoxAbs.CMFontChanged(var Message: TMessage);
 begin
  TComboBox( FWinControl ).Font.Assign(Self.Font);
  inherited;
- OutputDebugString('TtiPerAwareComboBoxAbs.CMFontChanged'); 
 end;
 {$ENDIF}
 

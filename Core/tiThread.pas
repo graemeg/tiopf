@@ -142,7 +142,7 @@ end;
 
 procedure TtiSleepThread.SetThreadName(const Name: string);
 begin
-  Assert(GetCurrentThreadId = Self.ThreadID);
+  //Assert(GetCurrentThreadId = Self.ThreadID); //<-- always fail
   FName := Name; // Need to store the name in the heap
   SetIdeDebuggerThreadName(Self.ThreadID, PChar(FName));
 end;

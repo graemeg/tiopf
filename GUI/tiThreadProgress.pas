@@ -252,7 +252,7 @@ const
 function gFormThreadProgress : TFormThreadProgress ;
 begin
   if uFormThreadProgress = nil then
-    uFormThreadProgress := TFormThreadProgress.CreateNew( nil ) ;
+    uFormThreadProgress := TFormThreadProgress.CreateNew(nil);
   result := uFormThreadProgress ;
 end;
 
@@ -379,7 +379,7 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TFormThreadProgress.CreateNew(AOwner: TComponent ; Dummy : Integer = 0 );
 begin
-  inherited;
+  inherited CreateNew(AOwner,Dummy);
   if Application.MainForm = nil then
     FormStyle := fsNormal
   else if Application.MainForm.FormStyle = fsMDIForm then
@@ -387,6 +387,7 @@ begin
   else
     FormStyle    := fsStayOnTop ;
 
+  Name := 'ThreadProgress';
   FProgInds := TList.Create ;
   BorderIcons  := [biSystemMenu,biMinimize] ;
   BorderStyle  := bsSizeable   ;
@@ -395,29 +396,25 @@ begin
   ClientWidth  := cuiFormWidth ;
   FCritSect    := TCriticalSection.Create ;
   gReg.ReadFormState(self);
-  //Visible      := true ;
   OnCloseQuery := DoCloseQuery ;
-  FTimer       := TTimer.Create( nil ) ;
+  FTimer       := TTimer.Create(Self) ;
   FTimer.OnTimer := UpdateAutoProgressThreads ;
   FPanelBevelInner   := bvLowered    ;
   FPanelBevelOuter   := bvNone       ;
   FProgressBarColor  := Color ;
   FColumnCount       := 1 ;
-
+  
+  {//Is this needed ?
   if Application.MainForm <> nil then
   begin
     Constraints.MinHeight := Height ;
     Constraints.MinWidth  := cuiFormWidth ;
     Constraints.MaxHeight := Height ;
     Constraints.MaxWidth  := cuiFormWidth ;
-  end {else
-  begin
-    Constraints.MinHeight := 0 ;
-    Constraints.MinWidth  := 0 ;
-    Constraints.MaxHeight := 0 ;
-    Constraints.MaxWidth  := 0 ;
-  end} ;
-  uFormThreadProgress := nil ;
+  end;
+  uFormThreadProgress := nil ;}
+
+
 
 end;
 
@@ -426,13 +423,12 @@ destructor TFormThreadProgress.Destroy;
 var
   i : integer ;
 begin
-  FTimer.Free ;
   for i := 0 to FProgInds.Count - 1 do
     TtiThreadProgress( FProgInds.Items[i] ).Terminate ;
-
+  FTimer.Free ;
   gReg.WriteFormState(self);
-  FProgInds.Free ;
-  FCritSect.Free ;
+  FProgInds.Free;
+  FCritSect.Free;
   if uFormThreadProgress = Self then
     uFormThreadProgress := nil ;
   inherited;
@@ -474,8 +470,7 @@ begin
     FCritSect.Enter ;
     try
       i := FindByThread( pThread ) ;
-      Assert( i <> -1, 'Thread not attached.' ) ;
-
+      Assert(i <>-1,'Thread not attached');
       lProgInd := TProgInd( FProgInds.Items[i] ) ;
       lProgInd.Thread := nil ;
       pThread.ProgInd := nil ;
@@ -492,6 +487,7 @@ begin
   if Assigned(FOnChangeThreadCount) then
     FOnChangeThreadCount(Self);
 end ;
+
 
 
 function TFormThreadProgress.FindByThread( pThread : TtiThreadProgress ) : integer ;
@@ -644,6 +640,7 @@ begin
 
   ClientHeight := lRow * ( cuiProgIndHeight + 4 ) + 4 ;
 
+  {//Why this is needed ?
   if Parent = nil then
   begin
     Constraints.MaxHeight := 0 ;
@@ -655,7 +652,7 @@ begin
       Constraints.MaxHeight := Height ;
       Constraints.MaxWidth  := cuiFormWidth ;
     end
-  end ;
+  end ;}
 
   Visible := (FProgInds.Count > 0);
 end;
@@ -678,7 +675,7 @@ begin
   try
     for i := 0 to FProgInds.Count - 1 do begin
       lProgInds := TProgInd( FProgInds.Items[i] ) ;
-      if lProgInds.Thread.AutoProgress then
+      if (not lProgInds.Thread.Suspended) and lProgInds.Thread.AutoProgress then
         if lProgInds.Thread.Position < lProgInds.Thread.Max then
           lProgInds.Thread.Position := lProgInds.Thread.Position + 1
         else
@@ -692,24 +689,20 @@ end;
 
 procedure TProgInd.TerminateOnClick(sender: TObject);
 begin
-//  tiAppWarning( 'Sorry, this feature is not yet available.' ) ;
+  Thread.Suspend;
   if (not Thread.ConfirmCancel)
   or tiAppConfirmation( 'Are you sure you want to terminate <' + Text + '> ?' ) then
   begin
     if Assigned(Thread.OnCancel) then
       Thread.OnCancel( Thread );
     FSpeedButton.Enabled := false ;
-//    Thread.OnTerminate := nil ;
     Thread.ReturnValue := 1;
+    Thread.Resume;
     Thread.Terminate ;
     Text := cuWaitForTerminate ;
-//    if gFormThreadProgress.DetachThread( Thread ) then
-//    begin
-//      uFormThreadProgress.Free ;
-//      uFormThreadProgress := nil ;
-//    end ;
-//    Thread.WaitFor ;
-  end ;
+  end
+  else
+  Thread.Resume;//do not terminate ,so resume
 end;
 
 
