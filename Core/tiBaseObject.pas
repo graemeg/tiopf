@@ -158,7 +158,6 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF MSWINDOWS}
-  ,Forms
   ,SyncObjs
   ;
                       
@@ -174,7 +173,7 @@ begin
   if not IsConsole then
   begin
     {$IFDEF LINUX}
-    Application.MessageBox(PChar(AContent), PChar(ATitle), 0)
+    Writeln(ATitle + ': ' + AContent);
     {$ENDIF}
     {$IFDEF MSWINDOWS}
     MessageBox(0, PChar(AContent), PChar(ATitle), mb_ok);
