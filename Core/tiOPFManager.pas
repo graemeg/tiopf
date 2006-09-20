@@ -162,6 +162,7 @@ type
                              const pDBConnectionName : string = '' ;
                              const pPerLayerName     : string = '' ) ;
     procedure   Terminate ;
+    function    TerminateThreads(const Timeout : Integer=0) : Boolean;
     property    Terminated : boolean read FTerminated write FTerminated ;
     property    TerminateOnFailedDBConnection : boolean read FTerminateOnFailedDBConnection write FTerminateOnFailedDBConnection ;
     property    ActiveThreadList : TtiActiveThreadList read FActiveThreadList ;
@@ -455,6 +456,23 @@ begin
   result := FClassDBMappingMgr ;
 end;
 
+function TtiOPFManager.TerminateThreads(const Timeout : Integer=0) : Boolean;
+var
+  LStart: Cardinal;
+  ACheckFor : Cardinal;
+begin
+  Result := false;
+  ACheckFor := Timeout*1000;
+  LStart := tiGetTickCount;
+  ActiveThreadList.Terminate;
+  while ActiveThreadList.RunningThreadCount >0 do
+  begin
+    Sleep(10);
+    Application.ProcessMessages;
+    if (ACheckFor>0) and ((tiGetTickCount - LStart) > ACheckFor) then Exit;
+  end;
+  Result := (ActiveThreadList.RunningThreadCount =0);
+end;
 
 procedure TtiOPFManager.Terminate;
 begin

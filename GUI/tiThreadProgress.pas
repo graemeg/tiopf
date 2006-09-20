@@ -29,7 +29,7 @@
   Revision History:
     Feb 1999, PWH, Created
 
-  Useage:
+  Usage:
 
     TThrdMyProcess = class( TtiThreadProgress )
     protected
@@ -41,6 +41,33 @@
       // call inherited.
       procedure Execute ; override ;
     end ;
+    
+  Notes:
+  
+   Under Lazarus+FPC there is AV when closing application with running
+   TtiThreadProgress threads.
+   Possible solutions (if you worry about this AV):
+   
+   1.Put into mainform OnClose or OnDestroy event:
+
+    gtiOPFManager.TerminateThreads(Period)
+    (where Period could be 0 if not waiting
+    or X seconds to wait)
+    
+
+   or
+   
+   2. Put into mainform OnCloseQuery event:
+      (gTIOPFManager.ActiveThreadList.RunningThreadCount could also be used)
+      
+     if gFormThreadProgress.ThreadCount>0 then
+     begin
+      tiAppWarning('Cannot exit now.Cancel running threads and try again.');
+      CanClose := false;
+     end;
+     
+     and of course thread Execute method should use try..except and test
+     Terminated property
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
 
@@ -66,7 +93,7 @@ type
 
   TProgInd = class ;
 
-  {$IFNDEF NOTHREADS}
+  {$IFDEF NOTHREADS}
   // A dummy stub with the same interface as a TThread which can be used for
   // debugging processes which will eventually be run in a TtiThreadProgress.
   // Use of the TThreadDebugger as the parent of TtiThreadProgress makes
@@ -74,14 +101,19 @@ type
   // a thread.
   // Note: This class still needs a little work as OnTerminate will not be called
   //       when the thread finished.
+
+  { TThreadDebugger }
+
   TThreadDebugger = class( TObject )
   private
     FbTerminated: boolean;
     FOnTerminate: TNotifyEvent;
     FbSuspended: boolean;
     FbFreeOnTerminate: boolean;
+    FReturnValue: Integer;
   protected
     procedure   Synchronize( Method : TThreadMethod ) ;
+    procedure   DoOnTerminate( sender : TObject ) ; virtual;
   public
     constructor Create( Suspended : boolean ) ; virtual ;
     procedure   Terminate ; virtual ;
@@ -93,6 +125,7 @@ type
     property    OnTerminate : TNotifyEvent read FOnTerminate write FOnTerminate ;
     property    Suspended   : boolean read FbSuspended write FbSuspended ;
     property    FreeOnTerminate : boolean read FbFreeOnTerminate write FbFreeOnTerminate ;
+    property    ReturnValue : Integer read FReturnValue write FReturnValue;
   end ;
   {$ENDIF}
 
@@ -187,6 +220,8 @@ type
     property  Color ;
   end ;
 
+  { TProgInd }
+
   TProgInd = class( TCustomPanel )
   private
     FLabel       : TLabel ;
@@ -208,6 +243,9 @@ type
     function    GetCanCancel: boolean;
     procedure   SetCanCancel(const Value: boolean);
     function    GetProgressBarWidth: integer;
+    {$IFDEF FPC}
+    procedure Async(Data: PtrInt);
+    {$ENDIF}
   public
     Constructor Create( AOwner : TComponent ) ; override ;
     property    Position : integer read GetPosition  write SetPosition ;
@@ -469,15 +507,15 @@ begin
   try
     FCritSect.Enter ;
     try
-      i := FindByThread( pThread ) ;
-      Assert(i <>-1,'Thread not attached');
-      lProgInd := TProgInd( FProgInds.Items[i] ) ;
-      lProgInd.Thread := nil ;
-      pThread.ProgInd := nil ;
-      lProgInd.Free ;
-      FProgInds.Delete( i ) ;
-      ArrangePanels ;
-      result := ( FProgInds.Count = 0 ) ;
+        i := FindByThread( pThread ) ;
+        Assert(i <>-1,'Thread not attached');
+        lProgInd := TProgInd( FProgInds.Items[i] ) ;
+        lProgInd.Thread := nil ;
+        pThread.ProgInd := nil ;
+        lProgInd.Free ;
+        FProgInds.Delete( i ) ;
+        ArrangePanels ;
+        result := ( FProgInds.Count = 0 ) ;
     finally
       FCritSect.Leave ;
     end ;
@@ -689,20 +727,33 @@ end;
 
 procedure TProgInd.TerminateOnClick(sender: TObject);
 begin
-  Thread.Suspend;
   if (not Thread.ConfirmCancel)
   or tiAppConfirmation( 'Are you sure you want to terminate <' + Text + '> ?' ) then
   begin
+    {$IF Defined(FPC) and Defined(UNIX) }
+    {Under GTK event should not continue if object has already gone.
+     We need to do it asynchronously,because if user confirmed too late
+     and thread terminated - this object (TProgInd) has been destroyed
+     in DetachThread}
+    Application.QueueAsyncCall(Async,PtrInt(Thread));
+    {$ELSE}
+    if uFormThreadProgress.FindByThread(Thread)=-1 then Exit;
+    try
     if Assigned(Thread.OnCancel) then
       Thread.OnCancel( Thread );
-    FSpeedButton.Enabled := false ;
     Thread.ReturnValue := 1;
     Thread.Resume;
     Thread.Terminate ;
+    FSpeedButton.Enabled := false ;
     Text := cuWaitForTerminate ;
-  end
-  else
-  Thread.Resume;//do not terminate ,so resume
+    except
+      {In rare situation AV occur - when thread finished
+       after FindByThread check.
+       (for example when OnCancel has taken too much time)
+      }
+    end;
+     {$IFEND}
+  end;
 end;
 
 
@@ -732,7 +783,30 @@ begin
     Dec( Result, cuCancelButtonSize ) ;
 end;
 
-{$IFNDEF NOTHREADS}
+{$IFDEF FPC}
+procedure TProgInd.Async(Data: PtrInt);
+var
+ Thread : TtiThreadProgress;
+begin
+    Thread := TtiThreadProgress(Data);
+    if uFormThreadProgress.FindByThread(Thread)=-1 then Exit;
+    try
+    if Assigned(Thread.OnCancel) then
+      Thread.OnCancel( Thread );
+    Thread.ReturnValue := 1;
+    Thread.Terminate ;
+    FSpeedButton.Enabled := false ;
+    Text := cuWaitForTerminate ;
+    except
+      {In rare situation AV occur - when thread finished
+       after FindByThread check.
+       (for example when OnCancel has taken too much time)
+      }
+    end;
+end;
+{$ENDIF}
+
+{$IFDEF NOTHREADS}
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
   // * TThreadDebugger
@@ -762,6 +836,10 @@ end;
   procedure TThreadDebugger.Terminate;
   begin
     Terminated := true ;
+  end;
+  
+  procedure  TThreadDebugger.DoOnTerminate( sender : TObject ) ;
+  begin
   end;
 {$ENDIF}
 

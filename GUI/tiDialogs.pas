@@ -132,7 +132,8 @@ type
   // Show the contents of a stream
   procedure tiShowStream( const pValue : TStream ; const pHeading : string = 'Show stream' ) ;
 
-
+  procedure tiProcessing(const pMessage : String);
+  procedure tiEndProcessing;
 
 implementation
 uses
@@ -153,13 +154,20 @@ uses
   ,lcltype
   {$ENDIF}
   ;
+  
+var
+  pWorkingForm : TForm;
 
 procedure tiAppError( const pMessage : string ) ;
 begin
+{$IFDEF MSWINDOWS}
+MessageBox(0,PChar(pMessage),'Error',mb_ok+mb_iconhand);
+{$ELSE}
   messageDlg( pMessage,
               mtError,
               [mbOK],
               0 );
+{$ENDIF}
 end;
 
 
@@ -235,6 +243,54 @@ begin
                         mtConfirmation,
                         [mbYes, mbNo, mbCancel],
                         0 ) ;
+end;
+
+
+procedure tiProcessing(const pMessage : String);
+var
+ lLabel : TLabel;
+ shape : TShape;
+begin
+  if pWorkingForm <> nil then Exit;
+  pWorkingForm  := TForm.Create(Application);
+  pWorkingForm.Position  := poScreenCenter;
+  pWorkingForm.BorderIcons := [];
+  pWorkingForm.BorderStyle := bsNone;
+  pWorkingForm.Height := 150;
+  pWorkingForm.Width := 400;
+  pWorkingForm.Color := clBtnHighlight;
+  shape  := TShape.Create(pWorkingForm);
+  shape.Parent := pWorkingForm;
+  shape.Align := alClient;
+  shape.Brush.Style := bsClear;
+  lLabel := TLabel.Create(pWorkingForm);
+  with lLabel do
+  begin
+    Parent    := pWorkingForm;
+    Caption   := pMessage;
+    WordWrap  := true;
+    AutoSize  := true;
+    Alignment := taCenter;
+    Layout    := tlCenter;
+    Align     := alClient;
+    Cursor    := crHourGlass;
+    Font.Size := 10;
+    Transparent := true;
+  end;
+  Screen.Cursor := crHourGlass;
+  Application.MainForm.Enabled := false;
+  pWorkingForm.Show;
+  pWorkingForm.Invalidate;
+  Application.ProcessMessages;
+end;
+
+procedure tiEndProcessing;
+begin
+ if pWorkingForm =nil then Exit;
+ Screen.Cursor := crDefault;
+ Application.MainForm.Enabled := true;
+ pWorkingForm.Free;
+ pWorkingForm := nil;
 end;
 
 
@@ -482,7 +538,7 @@ begin
   begin
     Caption       := ' Application error log - ' + Application.Title;
     BorderIcons   := [];
-    BorderStyle   := bsDialog;
+    BorderStyle   := bsSizeable;
     Position      := poScreenCenter;
   end;
 

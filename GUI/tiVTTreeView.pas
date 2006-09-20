@@ -320,7 +320,10 @@ begin
   FPopupMenu.VT := self;
   FVT.PopupMenu := FPopupMenu;
 
+  {$IFDEF WINDOWS}
   FVT.DragMode := dmManual;
+  {$ENDIF}
+
 
   FVT.OnEnter     := DoOnEnter;
   FVT.OnExit      := DoOnExit;

@@ -2,20 +2,19 @@ unit tiRegINI;
 
 {$I tiDefines.inc}
 
+
+
 interface
 uses
    Classes
   ,IniFiles
-  {$IFDEF MSWINDOWS}
   ,registry
-  {$ENDIF MSWINDOWS}
   ,Forms
   ;
 
 type
 
   // Registry manipulation - Registry key with the same name as the application
-  {$IFDEF MSWINDOWS}
   TtiRegINIFile = class(TRegINIFile)
   public
     constructor CreateExt;
@@ -29,7 +28,7 @@ type
 
   // Don't use this class, use TtiRegINIFile
   TUserRegistry = class(TtiRegINIFile);
-  {$ENDIF MSWINDOWS}
+
 
   // INI file manipulation - INI file name the same as the application
   // or in the same directory with a file name you specify
@@ -58,21 +57,11 @@ type
   TUserINIFile = class(TtiINIFile);
 
 // These are both singletons
-(* 2006-09-18: This will be used again, as soon as the TRegIniFile patch is applied to FPC
-{$IFDEF MSWINDOWS}
 function gReg : TtiRegINIFile;
-{$ENDIF MSWINDOWS}
-{$IFDEF UNIX}
-function gReg : TtiINIFile;
-{$ENDIF}
-*)
-{$IFNDEF FPC}
-function gReg : TtiRegINIFile;
-{$ELSE}
-function gReg : TtiINIFile;
-{$ENDIF}
-
 function gINI(const pFileName: string = '') : TtiINIFile;
+
+var
+ DefaultRegistryCompany : String = '';//better hierarchy in registry key
 
 implementation
 uses
@@ -85,25 +74,16 @@ uses
   ;
 
 var
-  {$IFDEF MSWINDOWS}
   uReg : TtiRegINIFile;
-  {$ENDIF MSWINDOWS}
   uINI : TtiINIFile;
 
-{$IFDEF MSWINDOWS}
+
 function gReg : TtiRegINIFile;
 begin
   if uReg = nil then
     uReg := TtiRegINIFile.CreateExt;
     result := uReg;
 end;
-{$ENDIF MSWINDOWS}
-{$IFDEF UNIX}     // Allows us to use gReg under Linux as well
-function gReg : TtiINIFile;
-begin
-  Result := gINI;
-end;
-{$ENDIF}
 
 
 function gINI(const pFileName: string = '') : TtiINIFile;
@@ -118,7 +98,7 @@ end;
 // * TtiRegINIFile
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-{$IFDEF MSWINDOWS}
+
 procedure TtiRegINIFile.ReadFormState(AForm: TForm);
 var
   sRegKey : string;
@@ -164,9 +144,9 @@ begin
   end;
   AForm.WindowState := TWindowState(ReadInteger(sRegKey, 'WindowState', ord(wsNormal)));
 end;
-{$ENDIF MSWINDOWS}
 
-{$IFDEF MSWINDOWS}
+
+
 procedure TtiRegINIFile.WriteFormState(AForm : TForm);
 var
   sRegKey : string;
@@ -184,9 +164,9 @@ begin;
     end;
   end;
 end;
-{$ENDIF MSWINDOWS}
 
-{$IFDEF MSWINDOWS}
+
+
 function TtiRegINIFile.ReadDate(const pStrSection : string; pStrIndent : string; pDTDefault : TDateTime) : TDateTime;
 var sDate : string;
 begin
@@ -197,9 +177,9 @@ begin
     result := date;
   end;
 end;
-{$ENDIF MSWINDOWS}
 
-{$IFDEF MSWINDOWS}
+
+
 procedure TtiRegINIFile.WriteDate(const pStrSection : string; pStrIndent : string; pDTValue : TDateTime);
 var sDate : string;
 begin
@@ -210,9 +190,9 @@ begin
   end;
   gReg.writeString(pStrSection, pStrIndent, sDate);
 end;
-{$ENDIF MSWINDOWS}
 
-{$IFDEF MSWINDOWS}
+
+
 procedure TtiRegINIFile.WriteStrings(const pStrSection : string; pStrings : TStrings);
 var i : integer;
 begin
@@ -221,9 +201,9 @@ begin
     self.writeString(pStrSection, 'line' + intToStr(i), pStrings.strings[i]);
   end;
 end;
-{$ENDIF MSWINDOWS}
 
-{$IFDEF MSWINDOWS}
+
+
 procedure TtiRegINIFile.ReadStrings(const pStrSection : string; pStrings : TStrings);
 var i : integer;
     sectionValues : TStringList;
@@ -239,14 +219,17 @@ begin
     sectionValues.free;
   end;
 end;
-{$ENDIF MSWINDOWS}
 
-{$IFDEF MSWINDOWS}
+
+
 constructor TtiRegINIFile.CreateExt;
 begin
-  Create('Software\' + tiExtractFileNameOnly(application.exeName));
+  if DefaultRegistryCompany<>'' then
+  Create('Software\' + DefaultRegistryCompany + '\' + tiExtractFileNameOnly(application.exeName))
+  else
+  Create('Software\' + tiExtractFileNameOnly(application.exeName))
 end;
-{$ENDIF MSWINDOWS}
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -407,11 +390,12 @@ begin
 end;
 
 initialization
+uReg := nil;//to be sure
+uINI := nil;
+DefaultRegistryCompany := '';
 
 finalization
-  {$IFDEF MSWINDOWS}
-  uReg.free;
-  {$ENDIF MSWINDOWS}
-  uINI.Free;
+  if uReg<>nil then uReg.free;
+  if uINI<>nil then uINI.Free;
 
 end.
