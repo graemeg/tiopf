@@ -2525,7 +2525,7 @@ begin
 
   lStream := TFileStream.Create(AFileName, fmCreate);
   try
-    tiListToStream(lStream, AList, #9, CrLf, AColsSelected);
+    tiListToStream(lStream, AList, ',', CrLf, AColsSelected);
   finally
     lStream.Free;
   end;
@@ -2545,7 +2545,7 @@ begin
     lStream := TFileStream.Create(AFileName, fmCreate);
     try
       tiGetPropertyNames(AList.Items[0], lFields);
-      tiListToStream(lStream, AList, #9, CrLf, lFields);
+      tiListToStream(lStream, AList, ',', CrLf, lFields);
     finally
       lStream.Free;
     end;
@@ -3184,6 +3184,16 @@ var
 begin
     DecodeDate(pDateTime, lY, lM, lD);
     DecodeTime(pDateTime, lH, lMi, lS, lMs);
+    {$IFDEF DATEFORMAT_YYYYMMDD}
+    Result :=
+      _IntToStr(lY, 4) + '-' +    // NB '-' separator deliberate
+      _IntToStr(lM, 2) + '-' +
+      _IntToStr(lD, 2) + ' ' +
+      _IntToStr(lH, 2) + ':' +
+      _IntToStr(lMi, 2) + ':' +
+      _IntToStr(lS, 2) + ':' +
+      _IntToStr(lMs, 3);
+    {$ELSE}
     Result :=
       _IntToStr(lD, 2) + '/' +
       _IntToStr(lM, 2) + '/' +
@@ -3192,6 +3202,7 @@ begin
       _IntToStr(lMi, 2) + ':' +
       _IntToStr(lS, 2) + ':' +
       _IntToStr(lMs, 3);
+    {$ENDIF}
 
   { What about using the ISO 8601 standard!  See cISODateTimeFmt1 in
     tiConstants.
@@ -3200,35 +3211,40 @@ end;
 
 function tiXMLStringToDateTime(const pValue : string) : TDateTime;
 var
-  lY, lM, lD, lH, lMi, lS, lMs : Word;
-  lStr : string;
+  lY, lM, lD, lH, lMi, lS, lMs : Word ;
 begin
   if pValue = '' then
   begin
     Result := 0;
-    Exit; //==>
+    Exit ; //==>
   end;
 
   try
     //          1         2
     // 12345678901234567890123
-    // YYYY/MM/DD HH:MM:SS:NNN
-    // DD/MM/YYYY HH:MM:SS:NNN
-    lD  := StrToInt(Copy(pValue, 1, 2));
-    lM  := StrToInt(Copy(pValue, 4, 2));
-    lY  := StrToInt(Copy(pValue, 7, 4));
-//    if Length(pValue) >= 12 then
-//    begin
-      lStr := Copy(pValue, 12, 2); lH  := StrToIntDef(lStr, 0);
-      lStr := Copy(pValue, 15, 2); lMi := StrToIntDef(lStr, 0);
-      lStr := Copy(pValue, 18, 2); lS  := StrToIntDef(lStr, 0);
-      lStr := Copy(pValue, 21, 3); lMs := StrToIntDef(lStr, 0);
-      result :=
-        EncodeDate(lY, lM, lD) +
-        EncodeTime(lH, lMi, lS, lMs);
-//    end else
-//      result :=
-//        EncodeDate(lY, lM, lD);
+    // YYYY/MM/DD HH:MM:SS:NN   (legacy format)
+    // DD/MM/YYYY HH:MM:SS:NN   (current format - see function above)
+    if  (Length(pValue) > 3)
+    and (pValue[3] <> '/') then // assume lecacy format
+    begin
+      lY  := StrToInt( Copy( pValue, 1, 4 )) ;
+      lM  := StrToInt( Copy( pValue, 6, 2 )) ;
+      lD  := StrToInt( Copy( pValue, 9, 2 )) ;
+    end
+    else
+    begin
+      lD  := StrToInt( Copy( pValue, 1, 2 )) ;
+      lM  := StrToInt( Copy( pValue, 4, 2 )) ;
+      lY  := StrToInt( Copy( pValue, 7, 4 )) ;
+    end ;
+
+    lH  := StrToInt( Copy( pValue, 12, 2 )) ;
+    lMi := StrToIntDef( Copy( pValue, 15, 2 ), 0) ;
+    lS  := StrToIntDef( Copy( pValue, 18, 2 ), 0) ;
+    lMs := StrToIntDef( Copy( pValue, 21, 3 ), 0) ;
+    result :=
+      EncodeDate( lY, lM, lD ) +
+      EncodeTime( lH, lMi, lS, lMs ) ;
   except
     on e:Exception do
       raise Exception.CreateFmt(cErrorXMLStringToDate, [pValue, e.message]);
