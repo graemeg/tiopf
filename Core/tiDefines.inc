@@ -118,7 +118,23 @@
 // For old tiOPF applications where TOID was an Int64, not an object
 {.$DEFINE OID_AS_INT64}
 
-// Some databases do not have a native boolean type, so you must roll it yourself
+// Determine format for date/time to string conversion
+// This is currently only referenced in tiDateTimeAsXMLString
+// and should be replaced by a more suitable solution
+// cf: Support NG thread starting 15/08/2006
+{.$DEFINE DATEFORMAT_YYYYMMDD}
+
+// Determine format for boolean to string conversion
+// This is currently only referenced in TtiQueryParamBoolean.GetValueAsString
+// and should be replaced by a more suitable solution
+// (along with BOOLEAN_CHAR_1)
+// Note: If enabled, this value overrides BOOLEAN_CHAR_1
+// It is only used for setting parameters because when converting from string 
+// back to boolean, a multi-test is generally performed (ie. if 'TRUE', 'T', '1')
+// cf: Support NG thread starting 15/08/2006
+{.$DEFINE BOOLEAN_NUM_1}
+
+// Some databases do not have a native boolean type, so you must roll it yourself 
 // from a CHAR or VARCHAR. The tiOPF will use 'T' & 'F' or 'TRUE ' & 'FALSE'. This
 // can be controled with the compiler directive below:
 {$DEFINE BOOLEAN_CHAR_1}
@@ -134,6 +150,11 @@
 // If ThridPartyExceptionHandling is on, then an exception will usually cause
 // a scrolling exception window to display, but will not cause the application
 // to stop running.
+// A couple of signature changes were made between madExcept v2 and v3.
+// Refer routine tiExcept.tiMailBugReport
+{$IFDEF MadExcept3}
+  {$DEFINE MadExcept}
+{$ENDIF}
 {$IFDEF MadExcept}
   {$DEFINE ThirdPartyExceptionHandling}
 {$ENDIF}

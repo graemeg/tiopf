@@ -1865,16 +1865,23 @@ end;
 
 function TtiQueryParamBoolean.GetValueAsString: string;
 begin
-{$IFDEF BOOLEAN_CHAR_1}
+{$IFDEF BOOLEAN_NUM_1}
   if FValue then
-    result := 'TRUE'
+    result := '1'
   else
-    result := 'FALSE' ;
+    result := '0' ;
 {$ELSE}
+{$IFDEF BOOLEAN_CHAR_1}
   if FValue then
     result := 'T'
   else
     result := 'F' ;
+{$ELSE}
+  if FValue then
+    result := 'TRUE'
+  else
+    result := 'FALSE' ;
+{$ENDIF}
 {$ENDIF}
 end;
 
