@@ -159,16 +159,25 @@ procedure tiMailBugReport(E: Exception);
     ls: string;
 {$ENDIF}
 begin
+  {$IFDEF madexcept3}
+  ls := MadExcept.CreateBugReport(etNormal, e, nil, GetCurrentThreadID);
+  tiMailBugReport(ls);
+  {$ELSE}
   {$IFDEF madexcept}
   ls := MadExcept.CreateBugReport(False, e, nil, GetCurrentThreadID, 0, 0, False, nil);
   tiMailBugReport(ls);
+  {$ENDIF}
   {$ENDIF}
 end;
 
 procedure tiMailBugReport(const pText: string);
 begin
+  {$IFDEF madexcept3}
+  MadExcept.AutoSendBugReport(pText, nil);
+  {$ELSE}
   {$IFDEF madexcept}
   MadExcept.AutoMailBugReport(pText, '');
+  {$ENDIF}
   {$ENDIF}
 end;
 
