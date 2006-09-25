@@ -247,8 +247,8 @@ const
 function tiXMLTagEnd( const psTag : String ) : string ;
 function tiXMLTag( const psTag : String ) : string ;
 function tiXMLDataTag( const psTag : String ; psData : string ) : string ;
-function tiDateTimeAsXMLString(const pDateTime: TDateTime): string;
-function tiXMLStringToDateTime( const pValue : string ) : TDateTime ;
+// function tiDateTimeAsXMLString(const pDateTime: TDateTime): string;  // Use version in tiUtils
+// function tiXMLStringToDateTime( const pValue : string ) : TDateTime ; // Use version in tiUtils
 function CreateXMLReservedCharsTranslator: IXMLReservedCharsTranslator;
 function tiDeCompressDecode(const pValue: string; const pCompression : string = cgsCompressZLib): string;
 function tiCompressEncode(const pValue: string ; const pCompression : string = cgsCompressZLib ): string;
@@ -309,6 +309,7 @@ begin
 end ;
 
 
+(* This is defined in tiUtils
 function tiDateTimeAsXMLString(const pDateTime: TDateTime): string;
   function _IntToStr( pValue, pSize : integer ) : string ;
   begin
@@ -329,8 +330,9 @@ begin
       _IntToStr( lS, 2 ) + ':' +
       _IntToStr( lMs, 3 ) ;
 end;
+*)
 
-
+(* This is defined in tiUtils
 function tiXMLStringToDateTime( const pValue : string ) : TDateTime ;
 var
   lY, lM, lD, lH, lMi, lS, lMs : Word ;
@@ -372,6 +374,7 @@ begin
       raise Exception.CreateFmt(cErrorXMLStringToDate, [pValue, e.message]);
   end;
 end ;
+*)
 
 
 function tiStringToOptXMLDBSize(const pValue: string): TtiOptXMLDBSize ;
