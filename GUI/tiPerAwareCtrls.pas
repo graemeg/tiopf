@@ -47,6 +47,11 @@ const
   cuiDefaultLabelWidth    = 80;
   cDefaultHeightSingleRow = 24;
   cDefaultHeightMultiRow  = 41;
+  {$IFDEF GUI_FIXED_FONT}
+  cDefaultFixedFontName   = 'Courier New';
+  {$ELSE}
+  cDefaultFixedFontName   = 'MS Sans Serif';
+  {$ENDIF}
   cCaption = 'Caption';
 
 type
@@ -69,6 +74,10 @@ type
   TtiPerAwareAbs = class(TtiFocusPanel)
   private
     FHint : TTranslateString;
+    function GetLabelFont: TFont;
+    function GetLabelParentFont: Boolean;
+    procedure SetLabelFont(const Value: TFont);
+    procedure SetLabelParentFont(const Value: Boolean);
     procedure SetLayout(const Value: TTextLayout);
   protected
     FLabelStyle : TLabelStyle;
@@ -145,8 +154,8 @@ type
     property    ShowFocusRect;
     property    ShowHint ;
     property    ParentColor;
-    property    ParentFont;
     property    ParentCtl3D;
+    property    ParentFont;
     {$IFDEF FPC}
     property    Hint;
     {$ELSE}
@@ -158,6 +167,8 @@ type
     property    LabelWordWrap : Boolean read GetWordWrap write SetWordWrap default false;
     property    Caption    : TCaption    read GetCaption    write SetCaption ;
     property    LabelWidth : Integer     read FiLabelWidth  write SetLabelWidth default cuiDefaultLabelWidth ;
+    property    LabelFont  : TFont       read GetLabelFont  write SetLabelFont;
+    property    LabelParentFont : Boolean read GetLabelParentFont write SetLabelParentFont;
     property    ReadOnly   : Boolean     read FbReadOnly    write SetReadOnly ;
 
     property    FieldName  : string      read FsFieldName   write SetFieldName ;
@@ -795,6 +806,16 @@ begin
   result := FLabel.Caption ;
 end;
 
+function TtiPerAwareAbs.GetLabelFont: TFont;
+begin
+  result := fLabel.Font;
+end;
+
+function TtiPerAwareAbs.GetLabelParentFont: Boolean;
+begin
+  result := fLabel.ParentFont;
+end;
+
 procedure TtiPerAwareAbs.Loaded;
 begin
   inherited;
@@ -910,6 +931,16 @@ end;
 procedure TtiPerAwareAbs.SetCaption(const Value: TCaption);
 begin
   FLabel.Caption := Value ;
+end;
+
+procedure TtiPerAwareAbs.SetLabelFont(const Value: TFont);
+begin
+  FLabel.Font.Assign( Value ) ;
+end;
+
+procedure TtiPerAwareAbs.SetLabelParentFont(const Value: Boolean);
+begin
+  FLabel.ParentFont := Value ;
 end;
 
 procedure TtiPerAwareAbs.SetLayout(const Value: TTextLayout);
