@@ -1,0 +1,32 @@
+Setup for Integrated Help under Lazarus
+---------------------------------------
+
+This is not ideal yet, but it does work! For the Integrated Help to work, the 
+tiOPFHelpIntegration package has been setup to find the help in 
+the /Compilers/FPC/html directory.
+
+Under Linux:
+You can create a symbolic link called "html" and let it point to the location
+of your actual Docs/html directory.
+
+Under Windows:
+You need to copy the generated fpdoc /html directory to the /Compilers/FPC/html
+directory.
+
+
+My directory layout looks like this:
+
+/tiOPF2
+  /Docs      <== from https://svn.sourceforge.net/svnroot/tiopf/tiOPF2_Docs
+    /html
+    /xml
+  /Source    <== from https://svn.sourceforge.net/svnroot/tiopf/tiOPF2/Trunk
+    /Compilers
+      /Delphi7
+      /Delphi2006
+      /FPC
+        /html    <== symlink or copy of Docs/html directory
+
+
+Regards,
+  - Graeme Geldenhuys -
