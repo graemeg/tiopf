@@ -139,6 +139,11 @@
 // can be controled with the compiler directive below:
 {$DEFINE BOOLEAN_CHAR_1}
 
+// tiPerAwareCtrls will use either "Courier New" or "MS Sans Serif"
+// for GUI controls based on this directive.
+// Enable for Courier New
+{$DEFINE GUI_FIXED_FONT}
+
 // The MSXML and XMLLight persistence layers use a custom XML format that mapps
 // roughly into a database schema. If this OPTIMISE_XMLDB_SIZE is not $DEFINEd,
 // then the XML will include tags like <table_name> and <field_name>. IF
