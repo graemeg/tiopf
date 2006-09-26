@@ -7,14 +7,14 @@ uses
 {$IFNDEF FPC}
   Windows
   ,Messages
-  ,tiVirtualTrees
+//  ,tiVirtualTrees
 {$ELSE}
   LMessages
   ,LCLIntf
   ,LCLProc
-  ,VirtualTrees
   ,VirtualStringTree
 {$ENDIF}
+  ,VirtualTrees
   ,Classes
   ,Menus
   ,Graphics
@@ -173,6 +173,8 @@ type
     function  TestObjectAgainstFilter(Value: TtiObject): Boolean;
 
     procedure SelectObjectOrOwner(Value: TtiObject);
+    function GetDefaultText: WideString;
+    procedure SetDefaultText(const Value: WideString);
   protected
     procedure SetEnabled(Value: Boolean); override;
 
@@ -186,6 +188,7 @@ type
 
     function  CalcIfNodeHasChildren(Node: PVirtualNode): Boolean;
     function  CalcNodeChildren(Node: PVirtualNode): Integer;
+    function  IsMappingForObject(AtiVTTVDataMapping: TtiVTTVDataMapping; AObj: TtiObject): Boolean;
     function  CalcMappingForObject(pObj: TtiObject): TtiVTTVDataMapping;
 
   public
@@ -227,6 +230,7 @@ type
     property DataMappings: TtiVTTVDataMappings read FVTDataMappings write SetTVDataMappings;
 
     property ApplyFilter: Boolean read FApplyFilter write SetApplyFilter default False;
+    property DefaultText: WideString read GetDefaultText write SetDefaultText;
     property ReadOnly: Boolean read FReadOnly write SetReadOnly default false;
     property ButtonStyle : TLVButtonStyle read GetButtonStyle write SetButtonStyle default lvbsMicroButtons ;
     property VisibleButtons : TtiLVVisibleButtons read GetVisibleButtons write SetVisibleButtons default [] ;
@@ -362,10 +366,20 @@ begin
 
   FData := Value;
 
-  if Assigned(FData) and (DataMappings.Count > 0) then
-    VT.RootNodeCount := 1 //FData --- probably should have a "ShowRootNode" property like the TTreeView
+  if  Assigned(FData) and (DataMappings.Count > 0) then
+    VT.RootNodeCount := 1 //FData --- probably should have a "ShowRootNode" property like the TTreeView.  ipk: See TODO below.
   else
     VT.RootNodeCount := 0;
+
+{ TODO : We have this: (toShowRoot in TreeOptions.PaintOptions)
+         which is currently ignored.  I tried including it in above test
+         but a RootNodeCount := 0 results in nothing showing.
+         Do we need to set RootNodeCount to actual (first level) count? }
+end;
+
+procedure TtiVTTreeView.SetDefaultText(const Value: WideString);
+begin
+  VT.DefaultText := Value;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -962,6 +976,11 @@ begin
   Result := FCtrlBtnPnl.ButtonStyle;
 end;
 
+function TtiVTTreeView.GetDefaultText: WideString;
+begin
+  Result := VT.DefaultText;
+end;
+
 function TtiVTTreeView.GetVisibleButtons: TtiLVVisibleButtons;
 begin
   result := FCtrlBtnPnl.VisibleButtons ;
@@ -1082,7 +1101,7 @@ var
   LChildList: TtiObjectList;
   LPropList: TPropInfoArray;
   LPropClass: TClass;
-  LPropIndex: Integer;
+  LPropIndex, lDMIndex: Integer;
 
   LCandidateList: TtiObjectList;
   LCandidateIndex: Integer;
@@ -1118,31 +1137,38 @@ begin
   end;
 
   GetObjectPropInfos(LObj, LPropList);
-  for LPropIndex := 0 to High(LPropList) do
+
+  for lDMIndex := 0 to Pred(DataMappings.Count) do
   begin
-    {$IFNDEF FPC}
-    LPropClass := GetObjectPropClass(LPropList[LPropIndex]);
-    {$ELSE}
-    LPropClass := GetObjectPropClass(LObj,LPropList[LPropIndex]^.Name);
-    {$ENDIF}
-    if LPropClass.InheritsFrom(TtiObjectList) then
+    for LPropIndex := 0 to High(LPropList) do
     begin
-      LCandidateList := TtiObjectList(GetObjectProp(LObj, LPropList[LPropIndex]));
-      for LCandidateIndex := 0 to Pred(LCandidateList.Count) do
+      {$IFNDEF FPC}
+      LPropClass := GetObjectPropClass(LPropList[LPropIndex]);
+      {$ELSE}
+      LPropClass := GetObjectPropClass(LObj,LPropList[LPropIndex]^.Name);
+      {$ENDIF}
+      if LPropClass.InheritsFrom(TtiObjectList) then
       begin
-        LCandidate:= LCandidateList[LCandidateIndex];
-        if Assigned(CalcMappingForObject(LCandidate)) and
+        LCandidateList := TtiObjectList(GetObjectProp(LObj, LPropList[LPropIndex]));
+        for LCandidateIndex := 0 to Pred(LCandidateList.Count) do
+        begin
+          LCandidate:= LCandidateList[LCandidateIndex];
+//        if Assigned(CalcMappingForObject(LCandidate)) and
+          if IsMappingForObject(DataMappings.Items[lDMIndex], LCandidate) and
+             TestObjectAgainstFilter(LCandidate) then
+            LChildList.Add(LCandidate);
+        end;
+      end
+      else if LPropClass.InheritsFrom(TtiObject) then
+      begin
+        LCandidate := TtiObject(GetObjectProp(LObj, LPropList[LPropIndex]));
+//      if Assigned(CalcMappingForObject(LCandidate)) and
+        if IsMappingForObject(DataMappings.Items[lDMIndex], LCandidate) and
            TestObjectAgainstFilter(LCandidate) then
           LChildList.Add(LCandidate);
       end;
-    end
-    else if LPropClass.InheritsFrom(TtiObject) then
-    begin
-      LCandidate := TtiObject(GetObjectProp(LObj, LPropList[LPropIndex]));
-      if Assigned(CalcMappingForObject(LCandidate)) and
-         TestObjectAgainstFilter(LCandidate) then
-        LChildList.Add(LCandidate);
     end;
+
   end;
 
   Result := LChildList.Count;
@@ -1285,6 +1311,14 @@ begin
     if Assigned(LSelected) then
       SelectObjectOrOwner(LSelected);
   end;
+end;
+
+function TtiVTTreeView.IsMappingForObject(AtiVTTVDataMapping: TtiVTTVDataMapping; AObj: TtiObject): Boolean;
+begin
+  Result := Assigned( AtiVTTVDataMapping ) and Assigned( AObj );
+  if Result then
+    Result := IsClassOfType  (AObj, AtiVTTVDataMapping.DataClass.ClassName)
+          and IsPublishedProp(AObj, AtiVTTVDataMapping.DisplayPropName    );
 end;
 
 function TtiVTTreeView.CalcMappingForObject(pObj: TtiObject): TtiVTTVDataMapping;
