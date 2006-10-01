@@ -6,9 +6,11 @@ uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
   {$ENDIF}{$ENDIF}
-  Interfaces, Forms,              // this includes the LCL widgetset
+//  Interfaces, Forms,              // this includes the LCL widgetset
   custapp, classes, sysutils, fpcunit,
-  testreport, testregistry, tiDUnitDependencies;
+  testreport,
+  xmlreporter, 
+  testregistry, tiDUnitDependencies, xmlwrite;
 
 
 const
@@ -21,7 +23,7 @@ const
 type
   TTestRunner = class(TCustomApplication)
   private
-    FXMLResultsWriter: TXMLResultsWriter;
+    FXMLResultsWriter: xmlreporter.TXMLResultsWriter;
   protected
     procedure DoRun ; override;
     procedure doTestRun(aTest: TTest); virtual;
@@ -51,9 +53,9 @@ begin
   testResult := TTestResult.Create;
   try
     testResult.AddListener(FXMLResultsWriter);
-    FXMLResultsWriter.WriteHeader;
     aTest.Run(testResult);
     FXMLResultsWriter.WriteResult(testResult);
+    WriteXMLFile(FXMLResultsWriter.Document, output);
   finally
     testResult.Free;
   end;
