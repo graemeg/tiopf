@@ -153,7 +153,7 @@ type
   private
     FBoolProp: boolean;
     FIntProp: integer;
-    FFloatProp: real;
+    FFloatProp: extended;
     FStrProp: string;
     FDateProp: TDateTime;
     FOrdProp: TtstOrdProp;
@@ -171,7 +171,7 @@ type
   published
     property    StrProp   : string      read FStrProp   write FStrProp;
     property    IntProp   : integer     read FIntProp   write FIntProp;
-    property    FloatProp : real        read FFloatProp write FFloatProp;
+    property    FloatProp : extended    read FFloatProp write FFloatProp;
     property    DateProp  : TDateTime   read FDateProp  write FDateProp;
     property    BoolProp  : boolean     read FBoolProp  write FBoolProp;
     property    OrdProp   : TtstOrdProp read FOrdProp   write FOrdProp;
@@ -1215,7 +1215,7 @@ var
   lOrd  : String;
   lStr : string;      
   lInt : integer;
-  lFloat : real;
+  lFloat : extended;
 begin
   lData := TtstPerObjAbs.Create;
   try

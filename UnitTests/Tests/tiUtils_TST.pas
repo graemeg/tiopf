@@ -1813,13 +1813,7 @@ begin
   _tiIsVariantOfType(lVar,varInteger,'Failed with Integer');
 
   lVar:=VarAsType(123.456,varSingle);
-  {$IFDEF FPC}
-  {$Note FPC has a bug (ID: 4634), so this will fail. It has been fixed in
-    the next FPC releas, but test for it for now. }
-  _tiIsVariantOfType(lVar,varDouble,'Failed with VarSingle');
-  {$ELSE}
   _tiIsVariantOfType(lVar,varSingle,'Failed with VarSingle');
-  {$ENDIF}
 
   lVar:=lDouble;
   _tiIsVariantOfType(lVar,varDouble,'Failed with VarDouble');
@@ -1989,18 +1983,12 @@ begin
     SysUtils.DeleteFile(lFileName);
     lFields := TStringList.Create;
     try
-      {$IFNDEF FPC202}
       lFields.Add('Caption');
-      {$ENDIF}
       lFields.Add('StringProp');
       lFields.Add('IntProp');
       lFields.Add('DateTimeProp');
       lFields.Add('FloatProp');
-      {$IFDEF FPC202}
-        {$Note Remove this after FPC 2.0.3 has been released}
-      lFields.Add('Caption');   { Due to a bug in FPC 2.0.2 that has been reported. }
-      {$ENDIF}
-      lString2 := lList.AsString(#9, #13#10, lFields);
+      lString2 := lList.AsString(',', #13#10, lFields);
     finally
       lFields.Free;
     end;
@@ -2033,7 +2021,7 @@ begin
       tiUtils.tiListToCSV( lList, lFileName, lFields ) ;
       lString1 := tiUtils.tiFileToString(lFileName);
       SysUtils.DeleteFile(lFileName);
-      lString2 := lList.AsString(#9, #13#10, lFields);
+      lString2 := lList.AsString(',', #13#10, lFields);
     finally
       lFields.Free;
     end;

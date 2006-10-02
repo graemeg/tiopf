@@ -1525,7 +1525,7 @@ begin
     CheckNotNull(lParams, 'NotNull failed' ) ;
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class' ) ;
     CheckEquals( True, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed') ;
-    CheckEquals( 'TRUE', lParams.GetValueAsString('param1'), 'GetValueAsString failed') ;
+    CheckEquals( 'T', lParams.GetValueAsString('param1'), 'GetValueAsString failed') ;
 
     lParams.SetValueAsString('param1', 'False');
     CheckEquals( 1, lParams.Count, 'Count');
@@ -1533,7 +1533,7 @@ begin
     CheckNotNull(lParams, 'NotNull failed' ) ;
     CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class' ) ;
     CheckEquals( False, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed') ;
-    CheckEquals( 'FALSE', lParams.GetValueAsString('param1'), 'GetValueAsString failed') ;
+    CheckEquals( 'F', lParams.GetValueAsString('param1'), 'GetValueAsString failed') ;
 
   finally
     lParams.Free;

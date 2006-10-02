@@ -343,32 +343,32 @@ type
     {: returns the object at the top of the hierarchy}
     function    TopOfHierarchy : TtiObject ; virtual ;
     {: Set every object in the hierarchy's ObjectState to pObjectState }
-    procedure   SetAllObjectStates( const pObjectState : TPerObjectState ); virtual;
+    procedure   SetAllObjectStates(const pObjectState: TPerObjectState); virtual;
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid( const pErrors : TPerObjErrors ) : boolean ; overload ; virtual ;
+    function    IsValid(const pErrors: TPerObjErrors): boolean; overload; virtual;
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid( var pErrorMessage : string ) : boolean ; overload ; // Don't override this one
+    function    IsValid(var pErrorMessage: string): boolean; overload; // Don't override this one
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid( const pStrings : TStrings ) : boolean ; overload ; // Don't override this one
+    function    IsValid(const pStrings: TStrings): boolean; overload; // Don't override this one
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid( const pStrings : TStrings ; pAppend : boolean ) : boolean ; overload ; // Don't override this one
+    function    IsValid(const pStrings: TStrings; pAppend: boolean): boolean; overload; // Don't override this one
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid : boolean ; overload ; // Don't override this one
+    function    IsValid: boolean; overload; // Don't override this one
     {: Read in the primary Key values only from the database for this object.}
-    procedure   ReadPK(   const pDBConnectionName : string ; pPerLayerName : string = '' ) ; overload ; virtual ;
+    procedure   ReadPK(const pDBConnectionName: string; pPerLayerName: string = ''); overload; virtual;
     {: Read in the primary Key values only from the database for this object.}
-    procedure   ReadPK ; overload ; virtual ;
+    procedure   ReadPK; overload; virtual;
     {: Read this object, but no owned objects from the database }
-    procedure   ReadThis( const pDBConnectionName : string ; pPerLayerName : string = ''  ) ; overload ;  virtual ;
+    procedure   ReadThis(const pDBConnectionName: string; pPerLayerName: string = ''); overload; virtual;
     {: Read this object, but no owned objects from the database }
-    procedure   ReadThis ; overload ;  virtual ;
+    procedure   ReadThis; overload;  virtual;
     {: Read this object, along with any owned objects from the database }
-    procedure   Read(     const pDBConnectionName : string ; pPerLayerName : string = ''  ) ; overload ;  virtual ;
+    procedure   Read(const pDBConnectionName: string; pPerLayerName: string = ''); overload; virtual;
     {: Read this object, along with any owned objects from the database }
-    procedure   Read ; overload ;  virtual ;
+    procedure   Read; overload;  virtual;
     {: Updates the database with the current property values for this object.}
-    procedure   Save(     const pDBConnectionName : string ; pPerLayerName : string = ''  ) ; overload ;  virtual ;
-    procedure   Save ; overload ;  virtual ;
+    procedure   Save(const pDBConnectionName: string; pPerLayerName: string = ''); overload; virtual;
+    procedure   Save; overload; virtual;
 
     procedure   AssignFieldList(var pFieldList: TtiFieldList);
     {: ForceAsCreate will get a new OID, and set ObjectState := posCreate}

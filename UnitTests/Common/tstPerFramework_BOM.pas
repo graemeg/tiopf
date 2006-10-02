@@ -50,9 +50,9 @@ type
 
   TtiOPFTestFloatProp = class( TtiObject )
   private
-    FFloatField: real;
+    FFloatField: Extended;
   published
-    property FloatField : real    read FFloatField write FFloatField ;
+    property FloatField : Extended read FFloatField write FFloatField ;
   end ;
 
 
@@ -107,7 +107,7 @@ type
   TtiOPFTestGroup = class( TtiObjectList )
   private
     FIntField: integer;
-    FFloatField: real;
+    FFloatField: Extended;
     FStrField: string;
     FDateField: TDateTime;
     FBoolField: Boolean;
@@ -125,7 +125,7 @@ type
     property    OIDAsInteger : integer read GetOIDAsInteger ;
     property    StrField   : string  read FStrField   write FStrField ;
     property    IntField   : integer read FIntField   write FIntField ;
-    property    FloatField : real    read FFloatField write FFloatField ;
+    property    FloatField : Extended read FFloatField write FFloatField ;
     property    DateField  : TDateTime read FDateField write FDateField ;
     property    BoolField  : Boolean read FBoolField write FBoolField ;
     property    NotesField : string  read FNotesField write FNotesField ;
@@ -135,7 +135,7 @@ type
   TtiOPFTestItem = class( TtiObject )
   private
     FIntField: integer;
-    FFloatField: real;
+    FFloatField: Extended;
     FStrField: string;
     FDateField: TDateTime;
     FBoolField: Boolean;
@@ -150,7 +150,7 @@ type
     property OIDAsInteger : integer read GetOIDAsInteger ;
     property StrField   : string  read FStrField   write FStrField ;
     property IntField   : integer read FIntField   write FIntField ;
-    property FloatField : real    read FFloatField write FFloatField ;
+    property FloatField : Extended read FFloatField write FFloatField ;
     property DateField  : TDateTime read FDateField write FDateField ;
     property BoolField  : Boolean read FBoolField write FBoolField ;
     property NotesField : string  read FNotesField write FNotesField ;
@@ -164,13 +164,13 @@ type
   private
     FStrField: string;
     FIntField: integer;
-    FFloatField: real;
+    FFloatField: Extended;
     FDateField: TDateTime;
   public
   published
     property StrField   : string  read FStrField   write FStrField ;
     property IntField   : integer read FIntField   write FIntField ;
-    property FloatField : real    read FFloatField write FFloatField ;
+    property FloatField : Extended read FFloatField write FFloatField ;
     property DateField  : TDateTime read FDateField write FDateField ;
   end;
 
