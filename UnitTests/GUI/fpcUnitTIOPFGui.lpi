@@ -169,7 +169,8 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-FU_Dcu -dSTATIC_PERLAYER_LINKINGx -dUseCThreads -dLINK_FBL -dLINK_TAB  -dLINK_CSV"/>
+      <CustomOptions Value="-FU_Dcu -dSTATIC_PERLAYER_LINKING -dUseCThreads -dLINK_FBL -dLINK_TAB  -dLINK_CSV
+"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

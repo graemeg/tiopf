@@ -121,7 +121,7 @@ type
 {$IFDEF TESTINT64}
     procedure PopulateTableInt64(    const pValue : Int64     ) ;
 {$ENDIF}
-    procedure PopulateTableReal(     const pValue : Real      ) ;
+    procedure PopulateTableReal(     const pValue : Extended      ) ;
     procedure PopulateTableBoolean(  const pValue : Boolean   ) ;
     procedure PopulateTableDateTime( const pValue : TDateTime ) ;
     procedure PopulateTableStream(   const pValue : TStream ) ;
@@ -1458,7 +1458,7 @@ begin
   try FDatabase.DropTable( cTIQueryTableName ) except end ;
 end;
 
-procedure TTestTIQueryAbs.PopulateTableReal(const pValue: Real);
+procedure TTestTIQueryAbs.PopulateTableReal(const pValue: Extended);
 var
   lParams : TtiQueryParams ;
 begin
@@ -1952,7 +1952,7 @@ var
   i : Integer ;
   lByName  : DWOrd ;
   lByIndex : DWord;
-//  lRatio   : real;
+//  lRatio   : Extended;
 begin
   CreateTableString(FDatabase) ;
   try

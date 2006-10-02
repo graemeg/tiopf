@@ -1983,7 +1983,7 @@ end;
 
 procedure TtiPerAwareFloatEdit._DoChange( sender : TObject ) ;
 var
-  lReal: double;
+  lReal: Extended;
   lIntPos: integer;
 begin
   lReal := Value ;

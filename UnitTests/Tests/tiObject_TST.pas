@@ -2152,7 +2152,7 @@ var
   xInt : integer;
   xDate : TDateTime;
   xStr : string;
-  xFloat : real;
+  xFloat : Extended;
   xBool : boolean;
 begin
   xList:=CreateList;

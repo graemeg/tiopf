@@ -15,15 +15,15 @@ type
   private
     procedure CopyFile( const psFrom, psTo : string ) ;
   public
-    function  CompressStream(   pFrom : TStream ; pTo : TStream ) : real ; override ;
+    function  CompressStream(   pFrom : TStream ; pTo : TStream ) : Extended ; override ;
     procedure DecompressStream( pFrom : TStream ; pTo : TStream ) ; override ;
     function  CompressBuffer(   const pFrom: Pointer  ; const piFromSize : Integer;
-                                out   pTo:   Pointer  ; out   piToSize   : Integer) : real ; override ;
+                                out   pTo:   Pointer  ; out   piToSize   : Integer) : Extended ; override ;
     procedure DecompressBuffer( const pFrom: Pointer  ; const piFromSize : Integer;
                                 out   pTo:   Pointer  ; out   piToSize   : Integer) ; override ;
-    function  CompressString(   const psFrom : string ; var psTo : string )   : real ; override ;
+    function  CompressString(   const psFrom : string ; var psTo : string )   : Extended ; override ;
     procedure DecompressString( const psFrom : string ; var psTo : string )   ; override ;
-    function  CompressFile(     const psFrom : string ; const psTo : string ) : real ; override ;
+    function  CompressFile(     const psFrom : string ; const psTo : string ) : Extended ; override ;
     procedure DecompressFile(   const psFrom : string ; const psTo : string ) ; override ;
   end;
   
@@ -43,7 +43,7 @@ uses
   
 // Compress a buffer
 function TtiCompressNone.CompressBuffer(const pFrom: Pointer;
-  const piFromSize: Integer; out pTo: Pointer; out piToSize: Integer) : real ;
+  const piFromSize: Integer; out pTo: Pointer; out piToSize: Integer) : Extended ;
 begin
   Assert( false, 'Not implemented yet.' ) ;
   result := 0 ;
@@ -51,7 +51,7 @@ end;
 
 
 // Compress a file
-function TtiCompressNone.CompressFile(const psFrom, psTo: string) : real ;
+function TtiCompressNone.CompressFile(const psFrom, psTo: string) : Extended ;
 begin
   CopyFile(psFrom, psTo);
   result := 1;
@@ -59,7 +59,7 @@ end;
 
 
 // Compress a TStream
-function TtiCompressNone.CompressStream(pFrom, pTo: TStream) : real ;
+function TtiCompressNone.CompressStream(pFrom, pTo: TStream) : Extended ;
 begin
   pFrom.Seek(0, soFromBeginning);
   pTo.CopyFrom(pFrom, pFrom.Size);
@@ -71,7 +71,7 @@ end;
 
 // Compress a string
 function TtiCompressNone.CompressString(const psFrom: string;
-  var psTo: string) : real ;
+  var psTo: string) : Extended ;
 begin
   psTo := psFrom ;
   result := 100 ;

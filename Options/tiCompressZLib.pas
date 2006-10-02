@@ -14,15 +14,15 @@ type
   TtiCompressZLib = class( TtiCompressAbs )
   private
   public
-    function  CompressStream(   pFrom : TStream ; pTo : TStream ) : real ; override ;
+    function  CompressStream(   pFrom : TStream ; pTo : TStream ) : Extended ; override ;
     procedure DecompressStream( pFrom : TStream ; pTo : TStream ) ; override ;
     function  CompressBuffer(   const pFrom: Pointer  ; const piFromSize : Integer;
-                                out   pTo:   Pointer  ; out   piToSize   : Integer) : real ; override ;
+                                out   pTo:   Pointer  ; out   piToSize   : Integer) : Extended ; override ;
     procedure DecompressBuffer( const pFrom: Pointer  ; const piFromSize : Integer;
                                 out   pTo:   Pointer  ; out   piToSize   : Integer) ; override ;
-    function  CompressString(   const psFrom : string ; var psTo : string )   : real ; override ;
+    function  CompressString(   const psFrom : string ; var psTo : string )   : Extended ; override ;
     procedure DecompressString( const psFrom : string ; var psTo : string )   ; override ;
-    function  CompressFile(     const psFrom : string ; const psTo : string ) : real ; override ;
+    function  CompressFile(     const psFrom : string ; const psTo : string ) : Extended ; override ;
     procedure DecompressFile(   const psFrom : string ; const psTo : string ) ; override ;
   end ;
 
@@ -45,7 +45,7 @@ uses
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // Compress a buffer
 function TtiCompressZLib.CompressBuffer(const pFrom: Pointer;
-  const piFromSize: Integer; out pTo: Pointer; out piToSize: Integer) : real ;
+  const piFromSize: Integer; out pTo: Pointer; out piToSize: Integer) : Extended ;
 {$IFDEF FPC}
 //var
 //  vFromSize, vToSize : Cardinal;
@@ -67,7 +67,7 @@ begin
 end;
 
 // Compress a file
-function TtiCompressZLib.CompressFile(const psFrom : string ; const psTo: string) : real ;
+function TtiCompressZLib.CompressFile(const psFrom : string ; const psTo: string) : Extended ;
 var
   lStreamFrom : TFileStream ;
   lStreamTo   : TFileStream ;
@@ -86,7 +86,7 @@ begin
 end;
 
 // Compress a stream
-function TtiCompressZLib.CompressStream(pFrom, pTo: TStream) : real ;
+function TtiCompressZLib.CompressStream(pFrom, pTo: TStream) : Extended ;
 var
   liFromSize : integer ;
   liToSize   : integer ;
@@ -134,7 +134,7 @@ end;
 
 // Compress a string
 function TtiCompressZLib.CompressString(const psFrom: string;
-  var psTo: string) : real ;
+  var psTo: string) : Extended ;
 var
   lStreamFrom : TStringStream ;
   lStreamTo   : TStringStream ;

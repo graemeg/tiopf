@@ -14,16 +14,16 @@ type
   // Pure abstract class defining interface of TtiCompress classes
   TtiCompressAbs = class( TObject )
   public
-    function  CompressStream(   pFrom : TStream ; pTo : TStream ) : real ; virtual ; abstract ;
-    procedure DecompressStream( pFrom : TStream ; pTo : TStream ) ; virtual ; abstract ;
+    function  CompressStream(   pFrom : TStream ; pTo : TStream ): Extended; virtual; abstract;
+    procedure DecompressStream( pFrom : TStream ; pTo : TStream ); virtual; abstract;
     function  CompressBuffer(   const pFrom: Pointer  ; const piFromSize : Integer;
-                                out   pTo:   Pointer  ; out   piToSize   : Integer) : real ; virtual ; abstract ;
+                                out   pTo:   Pointer  ; out   piToSize   : Integer): Extended; virtual; abstract;
     procedure DecompressBuffer( const pFrom: Pointer  ; const piFromSize : Integer;
-                                out   pTo:   Pointer  ; out   piToSize   : Integer) ; virtual ; abstract ;
-    function  CompressString(   const psFrom : string ; var psTo : string )   : real ; virtual ; abstract ;
-    procedure DecompressString( const psFrom : string ; var psTo : string )   ; virtual ; abstract ;
-    function  CompressFile(     const psFrom : string ; const psTo : string ) : real ; virtual ; abstract ;
-    procedure DecompressFile(   const psFrom : string ; const psTo : string ) ; virtual ; abstract ;
+                                out   pTo:   Pointer  ; out   piToSize   : Integer); virtual; abstract;
+    function  CompressString(   const psFrom : string ; var psTo : string ): Extended; virtual; abstract;
+    procedure DecompressString( const psFrom : string ; var psTo : string ); virtual; abstract;
+    function  CompressFile(     const psFrom : string ; const psTo : string ): Extended; virtual; abstract;
+    procedure DecompressFile(   const psFrom : string ; const psTo : string ); virtual; abstract;
   end ;
 
   // A class reference for the TtiCompress descendants

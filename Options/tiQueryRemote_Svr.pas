@@ -69,7 +69,7 @@ type
     FNextTransID : Integer ;
     FCritSect: TCriticalSection;
     FThrdStatefulDBConnectionPoolMonitor : TThrdStatefulDBConnectionPoolMonitor ;
-    FTimeOut : real ;
+    FTimeOut : Extended;
     function    GetNextTransID: string;
     property    NextTransID : string read GetNextTransID ;
     procedure   DoCommit( pDBConnection : TPooledDB ) ;
@@ -83,7 +83,7 @@ type
     destructor  Destroy ; override ;
     property    Count : integer read GetCount ;
     procedure   SweepForTimeOuts ;
-    property    TimeOut : real read FTimeOut write FTimeOut ;
+    property    TimeOut : Extended read FTimeOut write FTimeOut ;
 
     function    FindSavedDBConnectionHolder( const pTransactionID : string ) : TSavedDBConnectionHolder ;
     function    FindSavedDBConnection( const pTransactionID : string ) : TtiDatabase ;

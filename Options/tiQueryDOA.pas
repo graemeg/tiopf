@@ -281,7 +281,7 @@ end;
 
 function TtiQueryDOA.GetParamAsInteger(const psName: string): Int64;
 var
-  lr : real ;
+  lr : Extended;
 begin
   lr := FQuery.GetVariable( psName ) ;
   result := trunc( lr ) ;
@@ -379,7 +379,7 @@ end;
 procedure TtiQueryDOA.SetParamAsInteger(const psName: string;
   const Value: Int64 );
 var
-  lr : real ;
+  lr : Extended ;
 begin
   DeclareVariable( psName, otFloat ) ;
   lr := Value ;
@@ -1012,7 +1012,8 @@ begin
     {$IFDEF BOOLEAN_CHAR_1}
     qfkLogical    : result := 'Char( 1 ) default ''F'' check( ' + lFieldName + ' in ( ''T'', ''F'' ))' ;
     {$ELSE}
-    qfkLogical    : result := 'VarChar( 5 ) default ''FALSE'' check( ' + lFieldName + ' in ( ''TRUE'', ''FALSE'' )) ' ;    {$ENDIF}
+    qfkLogical    : result := 'VarChar( 5 ) default ''FALSE'' check( ' + lFieldName + ' in ( ''TRUE'', ''FALSE'' )) ' ;
+    {$ENDIF}
     qfkBinary     : result := 'BLOB' ;
     qfkLongString : result := 'CLOB' ;
   else

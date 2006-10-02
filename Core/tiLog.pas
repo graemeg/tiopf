@@ -202,7 +202,7 @@ function  gLog : TtiLog;
 // Some global proces to make logging easier
 procedure Log(const pMessage : string ; pSeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const pMessage : integer; pSeverity : TtiLogSeverity = lsNormal); overload;
-procedure Log(const pMessage : real   ; pSeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const pMessage : Extended; pSeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const pMessage : boolean; pSeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const pA : Array of Const; pSeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const psMessage : string; const pA : Array of Const; pSeverity : TtiLogSeverity = lsNormal); overload;
@@ -314,7 +314,7 @@ begin
 end;
 
 
-procedure Log(const pMessage : real  ; pSeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const pMessage: Extended; pSeverity : TtiLogSeverity = lsNormal); overload;
 begin
   Log(FloatToStr(pMessage), pSeverity);
 end;

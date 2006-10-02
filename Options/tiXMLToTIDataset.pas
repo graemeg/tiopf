@@ -141,7 +141,7 @@ type
     procedure   AddRow ;
     procedure   AddCellAsString(  const pName : string; const pValue : string) ;
     procedure   AddCellAsInteger( const pName : string; const pValue : Int64) ;
-    procedure   AddCellAsFloat(   const pName : string; const pValue : Real) ;
+    procedure   AddCellAsFloat(   const pName : string; const pValue : Extended) ;
     procedure   AddCellAsDateTime(const pName : string; const pValue : TDateTime) ;
     procedure   AddCellAsBoolean( const pName : string; const pValue : Boolean) ;
     procedure   AddCellAsStream(  const pName : string; const pValue : TStream) ;
@@ -639,7 +639,7 @@ begin
   DoAddCellAsString(pName, tiDateTimeAsXMLString(pValue));
 end;
 
-procedure TtiDataBufferToXMLWriter.AddCellAsFloat(const pName: string;const pValue: Real);
+procedure TtiDataBufferToXMLWriter.AddCellAsFloat(const pName: string;const pValue: Extended);
 begin
   DoAddCellAsString(pName, FloatToStr(pValue));
 end;

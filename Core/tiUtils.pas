@@ -226,7 +226,7 @@ type
       drRndUp);  {Round away from zero.}
 
   // Set the precision of pValue to pPrecision decimal places
-  function  tiSetPrecision(const AValue : Extended; const APrecision : integer = 3) : real;
+  function  tiSetPrecision(const AValue : Extended; const APrecision : integer = 3) : Extended;
   { The following functions have a two times "epsilon" error built in for the
     single, double, and extended argument respectively: }
   Function tiDecimalRoundSgl(AValue: single;   ANDFD: Integer; ACtrl: TtiDecimalRoundingCtrl = drHalfUp): Extended;
@@ -406,7 +406,7 @@ type
      @param ACondition Result of a boolean evaluation.
      @param AResultTrue Value to return if ACondition is true.
      @param AResultFalse Value to return if ACondition is false.}
-  function tiIf(ACondition: Boolean; AResultTrue, AResultFalse: Real): Real; overload;
+  function tiIf(ACondition: Boolean; AResultTrue, AResultFalse: Extended): Extended; overload;
   {: If ACondition is true, return AResultTrue, otherwise, return AResultFalse.
      @param ACondition Result of a boolean evaluation.
      @param AResultTrue Value to return if ACondition is true.
@@ -1362,7 +1362,7 @@ begin
 end;
 
 
-function tiIf(ACondition: Boolean; AResultTrue, AResultFalse: Real): Real;
+function tiIf(ACondition: Boolean; AResultTrue, AResultFalse: Extended): Extended;
 begin
   if ACondition then
     Result := AResultTrue
@@ -3577,7 +3577,7 @@ begin
   Result := tiDecimalRound(AValue, ANDFD, MaxRelErrExt, ACtrl);
 end;
 
-function tiSetPrecision(const AValue : Extended; const APrecision : integer = 3) : real;
+function tiSetPrecision(const AValue : Extended; const APrecision : integer = 3) : Extended;
 begin
   Result:= tiDecimalRoundDbl(AValue, APrecision);
 end;

@@ -70,7 +70,7 @@ type
     procedure InsertTIOPFTestData ;
     function  CreateTIOPFTestData : TtiOPFTestData ;
     procedure UpdateTIOPFTestData( pData : TtiOPFTestData ) ;
-    function  TestIntToFloat( pInt : Integer ) : real ;
+    function  TestIntToFloat( pInt : Integer ) : extended ;
     function  TestIntToDate( pInt : Integer ) : TDateTime ;
     function  TestIntToBool( pInt : Integer ) : Boolean ;
     procedure InsertTIOPFTestDataInherited( const pParentTableName, pTableName : string ; pI: Integer ; pOwnerOID : integer );
@@ -83,7 +83,7 @@ type
 {$IFDEF TESTINT64}
     procedure DoReadWriteInt64(pValue: Int64);
 {$ENDIF}
-    procedure DoReadWriteFloat(pValue: real);
+    procedure DoReadWriteFloat(pValue: extended);
     procedure DoReadWriteBoolean(pValue: boolean);
     procedure DoReadWriteDateTime(pValue: TDateTime);
   public
@@ -1561,7 +1561,7 @@ begin
   end ;
 end;
 
-function TTestTIClassToDBMapOperation.TestIntToFloat(pInt: Integer): real;
+function TTestTIClassToDBMapOperation.TestIntToFloat(pInt: Integer): extended;
 begin
   result := pInt*2 / 10 ;
 end;
@@ -2021,7 +2021,7 @@ begin
   DoReadWriteFloat(123.456);
 end;
 
-procedure TTestTIClassToDBMapOperation.DoReadWriteFloat(pValue : real);
+procedure TTestTIClassToDBMapOperation.DoReadWriteFloat(pValue : extended);
 var
   lData : TtiOPFTestFloatProp;
 begin

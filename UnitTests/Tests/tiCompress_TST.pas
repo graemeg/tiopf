@@ -56,7 +56,7 @@ end ;
 procedure TTestTICompress.Do_FileCompression( const pCompressionType : string ; pValue: string) ;
 var
   lCompress : TtiCompressAbs ;
-  //lRatio   : real ;
+  //lRatio   : Extended ;
   lBefore : string ;
   lAfter : string ;
   lFileNameBefore : string ;
@@ -93,7 +93,7 @@ var
   lCompressed : TStringStream ;
   lAfter : TStringStream ;
   lCompress : TtiCompressAbs ;
-  //lRatio   : real ;
+  //lRatio   : Extended ;
 begin
 
   lBefore := TStringStream.Create( pValue ) ;
@@ -123,7 +123,7 @@ var
   lBefore     : string ;
   lCompressed   : string ;
   lAfter : string ;
-  //lRatio      : real ;
+  //lRatio      : Extended ;
 begin
 
   // Create the appropriate TtiCompress concrete

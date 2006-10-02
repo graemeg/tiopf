@@ -1334,7 +1334,7 @@ procedure TTestTIXMLtoTIDataSet.DoXMLToDataSetReaderPerformanceAbsolute(
 var
   lStart : DWord;
   lWrite : DWord;
-  lMSPer100Rows : real;
+  lMSPer100Rows : Extended;
   ls: string;
   lXMLToTIDataSets     : TtiXMLToDataSetReadWriter;
   lDataSets : TtiDataBuffers;
@@ -1366,7 +1366,7 @@ procedure TTestTIXMLtoTIDataSet.DoXMLToDataSetWriterPerformanceAbsolute(pXMLFiel
 var
   lStart : DWord;
   lWrite : DWord;
-  lMSPer100Rows:  real;
+  lMSPer100Rows:  Extended;
   lsWrite: string;
 begin
 

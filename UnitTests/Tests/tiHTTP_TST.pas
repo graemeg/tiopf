@@ -446,7 +446,7 @@ var
   LHTTP : TtiHTTPAbs;
   i : Integer;
   lStart : DWord;
-  lMSPer10Calls: real;
+  lMSPer10Calls: Extended;
 begin
   FHTTPServer.OnCommandGet:= HTTPGet_Event;
   FHTTPServer.Active:= True;
@@ -474,7 +474,7 @@ var
   LHTTP : TtiHTTPAbs;
   i : Integer;
   lStart : DWord;
-  lMSPer10Calls: real;
+  lMSPer10Calls: Extended;
 begin
   FHTTPServer.OnCommandGet:= HTTPGet_Event;
   FHTTPServer.Active:= True;

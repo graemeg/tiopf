@@ -21,7 +21,7 @@
       </CodeGeneration>
       <Other>
         <WriteFPCLogo Value="False"/>
-        <CustomOptions Value="-dLINK_CSV -dLINK_TABx -dLINK_FBL -dUseCThreads
+        <CustomOptions Value="-dLINK_CSV -dLINK_TAB -dLINK_FBL -dUseCThreads
 "/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
@@ -30,7 +30,7 @@
 "/>
     <License Value="Mozilla Public License 1.1
 "/>
-    <Version Major="2"/>
+    <Version Major="2" Release="1"/>
     <Files Count="44">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>

@@ -20,13 +20,16 @@
         <Generate Value="Faster"/>
       </CodeGeneration>
       <Other>
-        <CustomOptions Value="-dLINK_CSVx -dLINK_TABx -dLINK_FBL -dUseCThreads"/>
+        <CustomOptions Value="-dLINK_CSV -dLINK_TAB -dLINK_FBL -dUseCThreads
+"/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="TechInsite Object Persistent Framework - visual units"/>
-    <License Value="Mozilla Public License 1.1"/>
-    <Version Major="2"/>
+    <Description Value="TechInsite Object Persistent Framework - visual units
+"/>
+    <License Value="Mozilla Public License 1.1
+"/>
+    <Version Major="2" Release="1"/>
     <Files Count="31">
       <Item1>
         <Filename Value="../../GUI/tiGUIUtils.pas"/>

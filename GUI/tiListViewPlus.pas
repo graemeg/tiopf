@@ -1656,8 +1656,8 @@ function TtiLVFilter.DoesDataPassFilter(pValue: TtiObject): boolean;
   function TestFloatFilter( pValue : TtiObject ) : boolean ;
   var
     lsProp : string ;
-    lrProp : real ;
-    lrVal  : real ;
+    lrProp : Extended ;
+    lrVal  : Extended ;
     lRetCode : Integer;
     lValidNum : Boolean;
   begin

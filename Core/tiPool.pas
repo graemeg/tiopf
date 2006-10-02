@@ -73,7 +73,7 @@ type
     {$ENDIF LINUX}
     FiMinPoolSize: integer;
     FiMaxPoolSize: integer;
-    FTimeOut: real;
+    FTimeOut: Extended;
     FOnAddPooledItem: TAddPooledItemEvent;
     FPooledItemClass: TPooledItemClass;
     FThrdPoolMonitor : TThrdPoolMonitor ;
@@ -83,10 +83,10 @@ type
     function  GetCount: integer;
     function  GetCountLocked: integer;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Clear ;
-    property    TimeOut     : real    read FTimeOut      write FTimeOut ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Clear;
+    property    TimeOut     : Extended read FTimeOut     write FTimeOut ;
     property    MinPoolSize : integer read FiMinPoolSize write FiMinPoolSize ;
     property    MaxPoolSize : integer read FiMaxPoolSize write SetMaxPoolSize ;
     property    WaitTime    : integer read FWaitTime     write FWaitTime ;

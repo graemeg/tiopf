@@ -109,11 +109,11 @@ type
     function  GetName: string;
     function  GetValueAsBool: Boolean;
     function  GetValueAsDateTime: TDateTime;
-    function  GetValueAsFloat: real;
+    function  GetValueAsFloat: Extended;
     function  GetValueAsInt: Int64;
     procedure SetValueAsBool(const Value: Boolean);
     procedure SetValueAsDateTime(const Value: TDateTime);
-    procedure SetValueAsFloat(const Value: real);
+    procedure SetValueAsFloat(const Value: Extended);
     procedure SetValueAsInt(const Value: Int64);
   protected
     function  GetIndex : integer ;
@@ -125,7 +125,7 @@ type
     property  ValueAsInteger : Int64 read GetValueAsInt Write SetValueAsInt ;
     property  ValueAsDateTime : TDateTime read GetValueAsDateTime Write SetValueAsDateTime;
     property  ValueAsBool : Boolean read GetValueAsBool Write SetValueAsBool ;
-    property  ValueAsFloat: real read GetValueAsFloat Write SetValueAsFloat;
+    property  ValueAsFloat: Extended read GetValueAsFloat Write SetValueAsFloat;
     procedure AssignToStream(pStream: TStream);
     procedure AssignFromStream(pStream: TStream);
     property  Name : string read GetName ;
@@ -426,7 +426,7 @@ begin
   end ;
 end;
 
-function TtiDataBufferCell.GetValueAsFloat: real;
+function TtiDataBufferCell.GetValueAsFloat: Extended;
 begin
   try
     Result := StrToFloatDef(FValue, 0);
@@ -456,7 +456,7 @@ begin
   FValue := tiDateTimeAsXMLString(Value);
 end;
 
-procedure TtiDataBufferCell.SetValueAsFloat(const Value: real);
+procedure TtiDataBufferCell.SetValueAsFloat(const Value: Extended);
 begin
   FValue:= FloatToStr(Value);
 end;

@@ -51,13 +51,13 @@ type
     function    TempFileName(const AFilename: string = ''): string;
     property    LongString : string    read GetLongString ;
     function    tstIntToStr(pInt:Integer):string;
-    function    tstIntToBool(pInt:Integer):boolean;
-    function    tstIntToFloat(pInt:Integer):real;
-    function    tstIntToDateTime(pInt:Integer):TDateTime;
+    function    tstIntToBool(pInt:Integer): boolean;
+    function    tstIntToFloat(pInt:Integer): Extended;
+    function    tstIntToDateTime(pInt:Integer): TDateTime;
     procedure   tstIntToStream(pInt:Integer; const pStream : TStream);
     function    AreStreamContentsSame( const pStream1, pStream2 : TStream ; var pMessage : string ) : boolean ;
     procedure   CheckStreamContentsSame( const pStream1, pStream2 : TStream ) ;
-    procedure   CheckNearEnough(AExpected, AActual: real; const AMessage: string);
+    procedure   CheckNearEnough(AExpected, AActual: Extended; const AMessage: string);
   public
     {$IFDEF FPC}
     constructor Create; override;
@@ -129,7 +129,7 @@ type
     procedure   CreateNextOIDIntTable;
     procedure   CreateNextOIDStrTable;
 
-    procedure   WriteTimingResult(const pAction, pPerLayerName : string ; pValue : real);
+    procedure   WriteTimingResult(const pAction, pPerLayerName : string ; pValue : Extended);
 
   public
     {$IFDEF FPC}
@@ -308,7 +308,7 @@ begin
 end;
 
 
-function TtiTestCase.tstIntToFloat(pInt: Integer): real;
+function TtiTestCase.tstIntToFloat(pInt: Integer): Extended;
 begin
   Result := pInt / 1000 ;
 end;
@@ -969,7 +969,7 @@ begin
 end;
 
 
-procedure TtiOPFTestCase.WriteTimingResult(const pAction, pPerLayerName : string ; pValue : real);
+procedure TtiOPFTestCase.WriteTimingResult(const pAction, pPerLayerName : string ; pValue : Extended);
 var
   lFileName : string ;
   lINI : TINIFile ;
@@ -1040,10 +1040,12 @@ begin
   result:= FtiOPFTestSetupData.PerLayerName;
 end;
 
-procedure TtiTestCase.CheckNearEnough(AExpected, AActual: real; const AMessage: string);
+
+procedure TtiTestCase.CheckNearEnough(AExpected, AActual: Extended; const AMessage: string);
 begin
   CheckEquals(AExpected, AActual, 0.000001, AMessage);
 end;
+
 
 function TtiTestCase.GetLongString: string;
 begin
@@ -1051,6 +1053,7 @@ begin
     ULongString:= tiCreateStringOfSize(3000);
   result:= ULongString;
 end;
+
 
 end.
 

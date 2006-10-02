@@ -455,10 +455,10 @@ type
     property    AsString : string read GetAsString ;
     procedure   SetValueAsString(const pName : string ; const pValue : string    ) ;
     function    GetValueAsString(const pName : string) : string ;
-    procedure   SetValueAsInteger(const pName : string ; const pValue : Int64   ) ;
-    function    GetValueAsInteger(const pName : string ) : Int64 ;
-    procedure   SetValueAsFloat(const pName : string ; const pValue : real      ) ;
-    function    GetValueAsFloat(const pName : string ) : Real ;
+    procedure   SetValueAsInteger(const pName: string; const pValue: Int64);
+    function    GetValueAsInteger(const pName: string): Int64;
+    procedure   SetValueAsFloat(const pName: string; const pValue: Extended);
+    function    GetValueAsFloat(const pName: string): Extended;
     procedure   SetValueAsBoolean(const pName : string ; const pValue : Boolean   ) ;
     function    GetValueAsBoolean(const pName : string ) : Boolean ;
     procedure   SetValueAsDateTime(const pName : string ; const pValue : TDateTime ) ;
@@ -1267,7 +1267,7 @@ begin
 end;
 }
 
-procedure TtiQueryParams.SetValueAsFloat(const pName: string;const pValue: real);
+procedure TtiQueryParams.SetValueAsFloat(const pName: string;const pValue: Extended);
 var
   lParam : TtiQueryParamFloat ;
 begin
@@ -1276,7 +1276,7 @@ begin
 end;
 
 {
-function TtiQueryParams.ParamAsFloat(const pName: string): real;
+function TtiQueryParams.ParamAsFloat(const pName: string): Extended;
 var
   lParam : TtiQueryParamFloat ;
 begin
@@ -1550,14 +1550,14 @@ end;
 
 procedure TtiQueryParams.SetValueFromProp(const pInstance: TtiObject; const pPropName, pParamName: string);
 var
-  lString   : string  ;
-  lInteger  : Int64   ;
-  lFloat    : real    ;
-  lDate     : TDateTime ;
-  lBoolean  : boolean ;
-  lStream   : TStream ;
-  lTypeKind : TtiTypeKind ;
-  lPropType : TTypeKind ;
+  lString   : string;
+  lInteger  : Int64;
+  lFloat    : Extended;
+  lDate     : TDateTime;
+  lBoolean  : boolean;
+  lStream   : TStream;
+  lTypeKind : TtiTypeKind;
+  lPropType : TTypeKind;
 begin
   Assert( pInstance.TestValid(TtiObject), cTIInvalidObjectError );
   Assert( pPropName <> '', 'pPropName not assigned');
@@ -1624,7 +1624,7 @@ begin
   result := TtiQueryParamDateTime(lParam).GetValueAsDateTime ;
 end;
 
-function TtiQueryParams.GetValueAsFloat(const pName: string): Real;
+function TtiQueryParams.GetValueAsFloat(const pName: string): Extended;
 var
   lParam : TtiQueryParamAbs ;
 begin
