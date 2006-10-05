@@ -2423,15 +2423,15 @@ Details:
               <Property name="UseEhlo" type="WordBool">False</Property>
               <Property name="UseGlobalOptions" type="Boolean">False</Property>
               <Property MultiValue="0" name="UserId" type="WideString"></Property>
-              <Object Class="TFBEmailAddress" XMLID="{45DA17C3-01AC-4983-AE9E-C168C26BEA48}"><Property MultiValue="0" name="Address" type="WideString">DailyBuild@techinsite.com.au</Property>
+              <Object Class="TFBEmailAddress" XMLID="{45DA17C3-01AC-4983-AE9E-C168C26BEA48}"><Property MultiValue="0" name="Address" type="WideString">%report_sender_email%</Property>
                 <Property MultiValue="0" name="AddressType" type="WideString">from</Property>
                 <Property name="Enabled" type="Boolean">True</Property>
-                <Property MultiValue="0" name="Name" type="WideString">tiOPF Daily Build</Property>
+                <Property MultiValue="0" name="Name" type="WideString">%report_sender_name%</Property>
                 </Object>
-              <Object Class="TFBEmailAddress" XMLID="{5031F019-9EA2-46DD-AD9D-49F4F436F0FB}"><Property MultiValue="0" name="Address" type="WideString">DailyBuild@techinsite.com.au</Property>
+              <Object Class="TFBEmailAddress" XMLID="{5031F019-9EA2-46DD-AD9D-49F4F436F0FB}"><Property MultiValue="0" name="Address" type="WideString">%report_sender_email%</Property>
                 <Property MultiValue="0" name="AddressType" type="WideString">sender</Property>
                 <Property name="Enabled" type="Boolean">True</Property>
-                <Property MultiValue="0" name="Name" type="WideString">tiOPF Daily Build</Property>
+                <Property MultiValue="0" name="Name" type="WideString">%report_sender_name%</Property>
                 </Object>
               <Object Class="TFBAddressList" XMLID="{602EEB3D-1EB3-40B5-98D2-ACBB37FAA264}"><Property MultiValue="0" name="ListType" type="string">replyto</Property>
                 </Object>
@@ -2441,7 +2441,7 @@ Details:
                 <Property MultiValue="0" name="Name" type="WideString"></Property>
                 </Object>
               <Object Class="TFBAddressList" XMLID="{9D12846E-FB8C-406C-B220-6D6D40AAA7EA}"><Property MultiValue="0" name="ListType" type="string">recipients</Property>
-                <Object Class="TFBEmailAddress" XMLID="{01DAAABB-03DD-4195-A456-2F4EC05B5C62}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
+                <Object Class="TFBEmailAddress" XMLID="{90025E4C-7F4F-4F9F-9259-5D1F14E3FB4C}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
                   <Property MultiValue="0" name="AddressType" type="WideString"></Property>
                   <Property name="Enabled" type="Boolean">True</Property>
                   <Property MultiValue="0" name="Name" type="WideString"></Property>
@@ -2618,15 +2618,15 @@ Details:
                 <Property name="UseEhlo" type="WordBool">False</Property>
                 <Property name="UseGlobalOptions" type="Boolean">False</Property>
                 <Property MultiValue="0" name="UserId" type="WideString"></Property>
-                <Object Class="TFBEmailAddress" XMLID="{9F0A7AE6-E0E3-47CB-B18C-768A38F5D701}"><Property MultiValue="0" name="Address" type="WideString">DailyBuild@techinsite.com.au</Property>
+                <Object Class="TFBEmailAddress" XMLID="{9F0A7AE6-E0E3-47CB-B18C-768A38F5D701}"><Property MultiValue="0" name="Address" type="WideString">%report_sender_email%</Property>
                   <Property MultiValue="0" name="AddressType" type="WideString">from</Property>
                   <Property name="Enabled" type="Boolean">True</Property>
-                  <Property MultiValue="0" name="Name" type="WideString">tiOPF Daily Build</Property>
+                  <Property MultiValue="0" name="Name" type="WideString">%report_sender_name%</Property>
                   </Object>
-                <Object Class="TFBEmailAddress" XMLID="{9FBFA8E9-41F6-428B-B8B3-0FA87C1C5072}"><Property MultiValue="0" name="Address" type="WideString">DailyBuild@techinsite.com.au</Property>
+                <Object Class="TFBEmailAddress" XMLID="{9FBFA8E9-41F6-428B-B8B3-0FA87C1C5072}"><Property MultiValue="0" name="Address" type="WideString">%report_sender_email%</Property>
                   <Property MultiValue="0" name="AddressType" type="WideString">sender</Property>
                   <Property name="Enabled" type="Boolean">True</Property>
-                  <Property MultiValue="0" name="Name" type="WideString">tiOPF Daily Build</Property>
+                  <Property MultiValue="0" name="Name" type="WideString">%report_sender_name%</Property>
                   </Object>
                 <Object Class="TFBAddressList" XMLID="{98E23AD8-210F-4394-8F6D-CACDA5975EFA}"><Property MultiValue="0" name="ListType" type="string">replyto</Property>
                   </Object>
@@ -2636,7 +2636,7 @@ Details:
                   <Property MultiValue="0" name="Name" type="WideString"></Property>
                   </Object>
                 <Object Class="TFBAddressList" XMLID="{8F2721A4-2835-442C-A12F-1CE84CA8AE9D}"><Property MultiValue="0" name="ListType" type="string">recipients</Property>
-                  <Object Class="TFBEmailAddress" XMLID="{C0A34E05-5CF6-4F46-9302-E1E8C91D275F}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
+                  <Object Class="TFBEmailAddress" XMLID="{BE2B574A-8F9B-418B-A9DB-E338FB2C674A}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
                     <Property MultiValue="0" name="AddressType" type="WideString"></Property>
                     <Property name="Enabled" type="Boolean">True</Property>
                     <Property MultiValue="0" name="Name" type="WideString"></Property>
