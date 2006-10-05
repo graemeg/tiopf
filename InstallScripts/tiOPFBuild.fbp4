@@ -49,6 +49,7 @@
               <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
               <Property name="FailIfVariableNotInIniFile" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
               <Property MultiValue="0" name="INIFile" type="string">%path_to_ini_file%</Property>
               <Property name="IsAction" type="Boolean">True</Property>
               <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -92,6 +93,7 @@ String
               <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
               <Property name="FailIfVariableNotInIniFile" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
               <Property MultiValue="0" name="INIFile" type="string">%FBPROJECTDIR%\Version.ini</Property>
               <Property name="IsAction" type="Boolean">True</Property>
               <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -102,14 +104,12 @@ String
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property MultiValue="0" name="SectionName" type="string">tiOPF</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property name="Variables" type="TStrings"><![CDATA[version_build
-version_major
+              <Property name="Variables" type="TStrings"><![CDATA[version_major
 version_minor
 version_release
 ]]>
                 </Property>
               <Property name="VariableTypes" type="TStrings"><![CDATA[String
-String
 String
 String
 ]]>
@@ -635,7 +635,7 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">False</Property>
+            <Property name="NodeCollapsed" type="Boolean">True</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -1013,7 +1013,7 @@ Comments=
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">False</Property>
+            <Property name="NodeCollapsed" type="Boolean">True</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -1349,7 +1349,7 @@ p_delphi_version=2006
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">False</Property>
+            <Property name="NodeCollapsed" type="Boolean">True</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -1857,6 +1857,7 @@ p_file_path=%path_to_working_compilers%\Delphi2006
                   <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
                   <Property name="FailIfVariableNotInIniFile" type="Boolean">False</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
+                  <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
                   <Property MultiValue="0" name="INIFile" type="string">%path_to_working_dunit_inifile%</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
                   <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -1892,6 +1893,7 @@ String
                   <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
                   <Property name="FailIfVariableNotInIniFile" type="Boolean">False</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
+                  <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
                   <Property MultiValue="0" name="INIFile" type="string">%path_to_working_dunit_inifile%</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
                   <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -2488,7 +2490,7 @@ Details:
 ]]>
                   </Property>
                 <Property MultiValue="0" name="Description" type="string">NNTP News Post</Property>
-                <Property MultiValue="0" name="EmailAddress" type="string">DailyBuild@techinsite.com.au</Property>
+                <Property MultiValue="0" name="EmailAddress" type="string">%report_sender_email%</Property>
                 <Property name="Enabled" type="WordBool">True</Property>
                 <Property MultiValue="0" name="Encoding" type="string"></Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
@@ -2505,9 +2507,9 @@ Details:
                 <Property name="NodeCollapsed" type="Boolean">False</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="Port" type="Cardinal">119</Property>
-                <Property MultiValue="0" name="ReplyTo" type="string">DailyBuild@techinsite.com.au</Property>
+                <Property MultiValue="0" name="ReplyTo" type="string">%report_sender_email%</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property MultiValue="0" name="SenderName" type="string">tiOPF Daily Build</Property>
+                <Property MultiValue="0" name="SenderName" type="string">%report_sender_name%</Property>
                 <Property MultiValue="0" name="Subject" type="string">%report_subject_line%</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                 <Property name="TimeOut" type="Integer">0</Property>
@@ -2860,6 +2862,7 @@ Details:
               <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
               <Property name="FailIfVariableNotInIniFile" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
               <Property MultiValue="0" name="INIFile" type="string">%path_to_ini_file%</Property>
               <Property name="IsAction" type="Boolean">True</Property>
               <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -3791,13 +3794,11 @@ Comments=
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             </Object>
           </Object>
-        <Object Class="TFBActionListParametersCollection" XMLID="{5F2EB33F-9B54-48B2-9238-0F0140FC5561}"><Object Class="TFBActionListParameter" XMLID="{802FBD2D-4AE7-4981-8172-F6BB1ADCC0F3}"><Property name="AsVariant" type="Variant">11</Property>
-            <Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
+        <Object Class="TFBActionListParametersCollection" XMLID="{5F2EB33F-9B54-48B2-9238-0F0140FC5561}"><Object Class="TFBActionListParameter" XMLID="{802FBD2D-4AE7-4981-8172-F6BB1ADCC0F3}"><Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{D208A059-6C19-4330-BCFE-52CDEA4372BA}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paInteger</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{6A226D0D-3121-4903-B8D8-9CEF3F10D001}"><Property name="AsVariant" type="Variant">2006</Property>
-            <Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
+          <Object Class="TFBActionListParameter" XMLID="{6A226D0D-3121-4903-B8D8-9CEF3F10D001}"><Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{A02DE2D5-4305-4C04-99C0-C4C9EA133B16}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
@@ -4513,28 +4514,23 @@ Comments=
               </Object>
             </Object>
           </Object>
-        <Object Class="TFBActionListParametersCollection" XMLID="{142366F9-FF02-48C2-9EB7-97D8ADDBBA60}"><Object Class="TFBActionListParameter" XMLID="{FE3FC0DF-87B5-4E33-8171-2A5DC513A890}"><Property name="AsVariant" type="Variant">0/0</Property>
-            <Property MultiValue="0" name="Name" type="string">p_short_error_message</Property>
+        <Object Class="TFBActionListParametersCollection" XMLID="{142366F9-FF02-48C2-9EB7-97D8ADDBBA60}"><Object Class="TFBActionListParameter" XMLID="{FE3FC0DF-87B5-4E33-8171-2A5DC513A890}"><Property MultiValue="0" name="Name" type="string">p_short_error_message</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{A2DF802F-D0AD-4547-908F-58D7D7C8A650}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{9CF43A5D-75CC-4DC9-95D0-50707F8DCE04}"><Property name="AsVariant" type="Variant">2006</Property>
-            <Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
+          <Object Class="TFBActionListParameter" XMLID="{9CF43A5D-75CC-4DC9-95D0-50707F8DCE04}"><Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{78F621C5-62E3-4770-AC5E-3260F941B279}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{7E49373A-5126-4530-9759-93B47CA89DDA}"><Property name="AsVariant" type="Variant">100</Property>
-            <Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
+          <Object Class="TFBActionListParameter" XMLID="{7E49373A-5126-4530-9759-93B47CA89DDA}"><Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{F376DF41-144D-471D-8EB7-85062DAED2A9}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{A05C8E71-48B7-465C-B221-C653A1BCA7F3}"><Property name="AsVariant" type="Variant">Failed to compile</Property>
-            <Property MultiValue="0" name="Name" type="string">p_report_long</Property>
+          <Object Class="TFBActionListParameter" XMLID="{A05C8E71-48B7-465C-B221-C653A1BCA7F3}"><Property MultiValue="0" name="Name" type="string">p_report_long</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{5111F95C-183B-4CCE-AA79-3132EA603E5F}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{DC8B1DCE-08B6-43C8-8E89-4CB1243D29E5}"><Property name="AsVariant" type="Variant">;link_adoaccess;link_bdeparadox;link_csv;link_doa;link_ibx;link_tab;link_xml;link_xmllight</Property>
-            <Property MultiValue="0" name="Name" type="string">p_persistence_layers</Property>
+          <Object Class="TFBActionListParameter" XMLID="{DC8B1DCE-08B6-43C8-8E89-4CB1243D29E5}"><Property MultiValue="0" name="Name" type="string">p_persistence_layers</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{E8EB0BCA-29BB-4C28-BAAE-1C74C84CF545}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
@@ -4577,6 +4573,7 @@ Comments=
             <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="ParserVer" type="TParserVer">HighestMSXML</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
+            <Property name="PreserveWhitespace" type="Boolean">False</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             <Property MultiValue="0" name="XMLSourceFile" type="string">%p_file_path%\%p_file_name%.bdsproj</Property>
@@ -4600,6 +4597,7 @@ Comments=
             <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="ParserVer" type="TParserVer">HighestMSXML</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
+            <Property name="PreserveWhitespace" type="Boolean">False</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             <Property MultiValue="0" name="XMLSourceFile" type="string">%p_file_path%\%p_file_name%.bdsproj</Property>
@@ -4623,6 +4621,7 @@ Comments=
             <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="ParserVer" type="TParserVer">HighestMSXML</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
+            <Property name="PreserveWhitespace" type="Boolean">False</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             <Property MultiValue="0" name="XMLSourceFile" type="string">%p_file_path%\%p_file_name%.bdsproj</Property>
@@ -4646,19 +4645,18 @@ Comments=
             <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="ParserVer" type="TParserVer">HighestMSXML</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
+            <Property name="PreserveWhitespace" type="Boolean">False</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             <Property MultiValue="0" name="XMLSourceFile" type="string">%p_file_path%\%p_file_name%.bdsproj</Property>
             <Property MultiValue="0" name="XPathNode" type="string">%xpath_directories%[@Name="Conditionals"]</Property>
             </Object>
           </Object>
-        <Object Class="TFBActionListParametersCollection" XMLID="{64401434-BE07-48E7-ACE3-B06C848F97DF}"><Object Class="TFBActionListParameter" XMLID="{CEA43D7D-835A-4723-B9BC-6AE287416BC2}"><Property name="AsVariant" type="Variant">tiOPFGUIDsgn</Property>
-            <Property MultiValue="0" name="Name" type="string">p_file_name</Property>
+        <Object Class="TFBActionListParametersCollection" XMLID="{64401434-BE07-48E7-ACE3-B06C848F97DF}"><Object Class="TFBActionListParameter" XMLID="{CEA43D7D-835A-4723-B9BC-6AE287416BC2}"><Property MultiValue="0" name="Name" type="string">p_file_name</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{E39F26DA-C25D-472C-BCC7-A7B0C6F3577B}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{5410AB68-B264-4696-9A2E-694272A2FEE8}"><Property name="AsVariant" type="Variant">c:\Temp\tiOPFBuild\tiOPF2\Compilers\Delphi2006</Property>
-            <Property MultiValue="0" name="Name" type="string">p_file_path</Property>
+          <Object Class="TFBActionListParameter" XMLID="{5410AB68-B264-4696-9A2E-694272A2FEE8}"><Property MultiValue="0" name="Name" type="string">p_file_path</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{99F4FC1C-13FF-46F4-9BA5-F9B2B9DD62A7}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
@@ -5182,6 +5180,20 @@ Comments=
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">xpath_directories</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{FE41939F-0CE2-4466-9908-F26C3301F0C1}"><Property MultiValue="0" name="DefaultValue" type="string">Win32 Daily build</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">report_sender_name</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{F8CC367E-35F7-4250-A77C-8CC4A8778A5C}"><Property MultiValue="0" name="DefaultValue" type="string">DailyBuild@techinsite.com.au</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">report_sender_email</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       </Object>
