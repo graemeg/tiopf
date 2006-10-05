@@ -1031,16 +1031,20 @@ www.discoverysystems.com.au
 
 class procedure TtiDatabaseIBX.CreateDatabase(const pDatabaseName,pUserName, pPassword: string);
 var
-  lDatabase : TtiDatabaseIBX ;
+  LDatabase : TtiDatabaseIBX ;
+  LPath: string;
 begin
-  lDatabase := TtiDatabaseIBX.Create ;
+  LPath:= ExtractFilePath(pDatabaseName);
+  if not DirectoryExists(LPath) then
+    ForceDirectories(LPath);
+  LDatabase := TtiDatabaseIBX.Create ;
   try
-    lDatabase.FDatabase.DatabaseName := pDatabaseName;
-    lDatabase.FDatabase.Params.Add('USER "' + pUserName + '"');
-    lDatabase.FDatabase.Params.Add('PASSWORD "' + pPassword + '"');
-    lDatabase.FDatabase.CreateDatabase ;
+    LDatabase.FDatabase.DatabaseName := pDatabaseName;
+    LDatabase.FDatabase.Params.Add('USER "' + pUserName + '"');
+    LDatabase.FDatabase.Params.Add('PASSWORD "' + pPassword + '"');
+    LDatabase.FDatabase.CreateDatabase ;
   finally
-    lDatabase.Free;
+    LDatabase.Free;
   end ;
 end;
 
