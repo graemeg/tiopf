@@ -184,6 +184,24 @@ String
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               </Object>
+            <Object Class="TCreateDirectoryAction" XMLID="{A9845EE3-4BE3-480E-B236-08F2EF3B55C3}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Create Directory [ %path_to_working_deploy% ]</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property MultiValue="0" name="Description" type="string">Create Directory [ %path_to_working_deploy% ]</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_deploy%</Property>
+              <Property name="Force" type="Boolean">True</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IsAction" type="Boolean">True</Property>
+              <Property name="IsBreakPoint" type="WordBool">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              </Object>
             </Object>
           <Object Class="TGroupAction" XMLID="{5AB69CBE-3CC3-4F59-852E-742BE5496FF7}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Prepare working copy of files</Property>
@@ -211,7 +229,7 @@ String
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="NodeCollapsed" type="Boolean">True</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -392,7 +410,7 @@ Comments=
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="NodeCollapsed" type="Boolean">True</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -567,7 +585,7 @@ Comments=
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Compile tiOPF &amp;amp; run unit tests</Property>
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
             <Property MultiValue="0" name="Description" type="string">Compile tiOPF &amp;amp; run unit tests</Property>
-            <Property name="Enabled" type="WordBool">False</Property>
+            <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
             <Property name="IsAction" type="Boolean">True</Property>
@@ -903,14 +921,14 @@ p_delphi_version=2006
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Prepare setup programs</Property>
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
             <Property MultiValue="0" name="Description" type="string">Prepare setup programs</Property>
-            <Property name="Enabled" type="WordBool">False</Property>
+            <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
             <Property name="IsAction" type="Boolean">True</Property>
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -925,7 +943,7 @@ p_delphi_version=2006
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -933,14 +951,14 @@ p_delphi_version=2006
                 <Property MultiValue="0" name="ActionLogTitle" type="WideString">Delphi 2005</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                 <Property MultiValue="0" name="Description" type="string">Delphi 2005</Property>
-                <Property name="Enabled" type="WordBool">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
                 <Property name="IsAction" type="Boolean">True</Property>
                 <Property name="IsBreakPoint" type="WordBool">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property name="NodeCollapsed" type="Boolean">True</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -949,7 +967,7 @@ p_delphi_version=2006
                   <Property MultiValue="0" name="ActionLogTitle" type="WideString">Run Action List [ Setup package bdsproj file ] - tiOPFCore</Property>
                   <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                   <Property MultiValue="0" name="Description" type="string">Run Action List [ Setup package bdsproj file ] - tiOPFCore</Property>
-                  <Property name="Enabled" type="WordBool">False</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
                   <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
@@ -970,7 +988,7 @@ p_file_path=%path_to_working_compilers%\Delphi2005
                   <Property MultiValue="0" name="ActionLogTitle" type="WideString">Run Action List [ Setup package bdsproj file ] - tiOPFGUI</Property>
                   <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                   <Property MultiValue="0" name="Description" type="string">Run Action List [ Setup package bdsproj file ] - tiOPFGUI</Property>
-                  <Property name="Enabled" type="WordBool">False</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
                   <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
@@ -991,7 +1009,7 @@ p_file_path=%path_to_working_compilers%\Delphi2005
                   <Property MultiValue="0" name="ActionLogTitle" type="WideString">Run Action List [ Setup package bdsproj file ] - tiOPFGUIDsgn</Property>
                   <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                   <Property MultiValue="0" name="Description" type="string">Run Action List [ Setup package bdsproj file ] - tiOPFGUIDsgn</Property>
-                  <Property name="Enabled" type="WordBool">False</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
                   <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
@@ -1012,14 +1030,14 @@ p_file_path=%path_to_working_compilers%\Delphi2005
                 <Property MultiValue="0" name="ActionLogTitle" type="WideString">Delphi 2006</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                 <Property MultiValue="0" name="Description" type="string">Delphi 2006</Property>
-                <Property name="Enabled" type="WordBool">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
                 <Property name="IsAction" type="Boolean">True</Property>
                 <Property name="IsBreakPoint" type="WordBool">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property name="NodeCollapsed" type="Boolean">True</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -1028,7 +1046,7 @@ p_file_path=%path_to_working_compilers%\Delphi2005
                   <Property MultiValue="0" name="ActionLogTitle" type="WideString">Run Action List [ Setup package bdsproj file ] - tiOPFCore</Property>
                   <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                   <Property MultiValue="0" name="Description" type="string">Run Action List [ Setup package bdsproj file ] - tiOPFCore</Property>
-                  <Property name="Enabled" type="WordBool">False</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
                   <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
@@ -1049,7 +1067,7 @@ p_file_path=%path_to_working_compilers%\Delphi2006
                   <Property MultiValue="0" name="ActionLogTitle" type="WideString">Run Action List [ Setup package bdsproj file ] - tiOPFGUI</Property>
                   <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                   <Property MultiValue="0" name="Description" type="string">Run Action List [ Setup package bdsproj file ] - tiOPFGUI</Property>
-                  <Property name="Enabled" type="WordBool">False</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
                   <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
@@ -1070,7 +1088,7 @@ p_file_path=%path_to_working_compilers%\Delphi2006
                   <Property MultiValue="0" name="ActionLogTitle" type="WideString">Run Action List [ Setup package bdsproj file ] - tiOPFGUIDsgn</Property>
                   <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                   <Property MultiValue="0" name="Description" type="string">Run Action List [ Setup package bdsproj file ] - tiOPFGUIDsgn</Property>
-                  <Property name="Enabled" type="WordBool">False</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
                   <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
@@ -1137,7 +1155,7 @@ p_file_path=%path_to_working_compilers%\Delphi2006
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Prepare website</Property>
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
             <Property MultiValue="0" name="Description" type="string">Prepare website</Property>
-            <Property name="Enabled" type="WordBool">False</Property>
+            <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
             <Property name="IsAction" type="Boolean">True</Property>
@@ -1920,7 +1938,7 @@ p_persistence_layers=%report_persistence_layers_d2006%
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Send notifications</Property>
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
             <Property MultiValue="0" name="Description" type="string">Send notifications</Property>
-            <Property name="Enabled" type="WordBool">False</Property>
+            <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
             <Property name="IsAction" type="Boolean">True</Property>
@@ -3352,12 +3370,12 @@ Comments=
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             </Object>
           </Object>
-        <Object Class="TFBActionListParametersCollection" XMLID="{5F2EB33F-9B54-48B2-9238-0F0140FC5561}"><Object Class="TFBActionListParameter" XMLID="{802FBD2D-4AE7-4981-8172-F6BB1ADCC0F3}"><Property name="AsVariant" type="Variant"></Property>
+        <Object Class="TFBActionListParametersCollection" XMLID="{5F2EB33F-9B54-48B2-9238-0F0140FC5561}"><Object Class="TFBActionListParameter" XMLID="{802FBD2D-4AE7-4981-8172-F6BB1ADCC0F3}"><Property name="AsVariant" type="Variant">11</Property>
             <Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{D208A059-6C19-4330-BCFE-52CDEA4372BA}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paInteger</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{6A226D0D-3121-4903-B8D8-9CEF3F10D001}"><Property name="AsVariant" type="Variant"></Property>
+          <Object Class="TFBActionListParameter" XMLID="{6A226D0D-3121-4903-B8D8-9CEF3F10D001}"><Property name="AsVariant" type="Variant">2006</Property>
             <Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{A02DE2D5-4305-4C04-99C0-C4C9EA133B16}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
@@ -4074,22 +4092,22 @@ Comments=
               </Object>
             </Object>
           </Object>
-        <Object Class="TFBActionListParametersCollection" XMLID="{142366F9-FF02-48C2-9EB7-97D8ADDBBA60}"><Object Class="TFBActionListParameter" XMLID="{FE3FC0DF-87B5-4E33-8171-2A5DC513A890}"><Property name="AsVariant" type="Variant"></Property>
+        <Object Class="TFBActionListParametersCollection" XMLID="{142366F9-FF02-48C2-9EB7-97D8ADDBBA60}"><Object Class="TFBActionListParameter" XMLID="{FE3FC0DF-87B5-4E33-8171-2A5DC513A890}"><Property name="AsVariant" type="Variant">11/636</Property>
             <Property MultiValue="0" name="Name" type="string">p_short_error_message</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{A2DF802F-D0AD-4547-908F-58D7D7C8A650}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{9CF43A5D-75CC-4DC9-95D0-50707F8DCE04}"><Property name="AsVariant" type="Variant"></Property>
+          <Object Class="TFBActionListParameter" XMLID="{9CF43A5D-75CC-4DC9-95D0-50707F8DCE04}"><Property name="AsVariant" type="Variant">2006</Property>
             <Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{78F621C5-62E3-4770-AC5E-3260F941B279}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{7E49373A-5126-4530-9759-93B47CA89DDA}"><Property name="AsVariant" type="Variant"></Property>
+          <Object Class="TFBActionListParameter" XMLID="{7E49373A-5126-4530-9759-93B47CA89DDA}"><Property name="AsVariant" type="Variant">100</Property>
             <Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{F376DF41-144D-471D-8EB7-85062DAED2A9}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{A05C8E71-48B7-465C-B221-C653A1BCA7F3}"><Property name="AsVariant" type="Variant"></Property>
+          <Object Class="TFBActionListParameter" XMLID="{A05C8E71-48B7-465C-B221-C653A1BCA7F3}"><Property name="AsVariant" type="Variant">Tests run: 636, Failures: 11, Errors: 0</Property>
             <Property MultiValue="0" name="Name" type="string">p_report_long</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{5111F95C-183B-4CCE-AA79-3132EA603E5F}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
@@ -4504,7 +4522,7 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">delphi_user_lib</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{0B99FFAB-2B03-4126-9345-4215A9ED8DB4}"><Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_root%\tiOPF2\UnitTests</Property>
+      <Object Class="TFBVariable" XMLID="{0B99FFAB-2B03-4126-9345-4215A9ED8DB4}"><Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_root%\UnitTests</Property>
         <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
@@ -4728,7 +4746,7 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">path_to_log_text</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{570405F5-8F22-477C-8EB4-60459C8DD828}"><Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_root%\tiOPF2\Compilers</Property>
+      <Object Class="TFBVariable" XMLID="{570405F5-8F22-477C-8EB4-60459C8DD828}"><Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_root%\Compilers</Property>
         <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>

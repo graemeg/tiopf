@@ -56,10 +56,19 @@ Source: {#PATH_TO_WORKING_TIOPF2}\GUI\*.*; DestDir: {app}\tiOPF2\GUI; Flags: rec
 Source: {#PATH_TO_WORKING_TIOPF2}\Options\*.*; DestDir: {app}\tiOPF2\Options; Flags: recursesubdirs; components: tiOPF2
 Source: {#PATH_TO_WORKING_TIOPF2}\UnitTests\*.*; DestDir: {app}\tiOPF2\UnitTests; Flags: recursesubdirs; components: tiOPF2
 
-Source: {#PATH_TO_WORKING_3RDPARTY}\DUnit\*.*; DestDir: {app}\3rdParty\DUnit; Flags: recursesubdirs; components: TrdParty\DUnit
-Source: {#PATH_TO_WORKING_3RDPARTY}\FastMM\*.*; DestDir: {app}\3rdParty\FastMM; Flags: recursesubdirs; components: TrdParty\FastMM
-Source: {#PATH_TO_WORKING_3RDPARTY}\Indy\*.*; DestDir: {app}\3rdParty\Indy; Flags: recursesubdirs; components: TrdParty\Indy
-Source: {#PATH_TO_WORKING_3RDPARTY}\JCL\*.*; DestDir: {app}\3rdParty\JCL; Flags: recursesubdirs; components: TrdParty\JCL
+Source: {#PATH_TO_WORKING_3RDPARTY}\DUnit\*.*; DestDir: {app}\tiOPF2\3rdParty\DUnit; Flags: recursesubdirs; components: TrdParty\DUnit
+Source: {#PATH_TO_WORKING_3RDPARTY}\FastMM\*.*; DestDir: {app}\tiOPF2\3rdParty\FastMM; Flags: recursesubdirs; components: TrdParty\FastMM
+Source: {#PATH_TO_WORKING_3RDPARTY}\Indy\*.*; DestDir: {app}\tiOPF2\3rdParty\Indy; Flags: recursesubdirs; components: TrdParty\Indy
+Source: {#PATH_TO_WORKING_3RDPARTY}\JCL\*.*; DestDir: {app}\tiOPF2\3rdParty\JCL; Flags: recursesubdirs; components: TrdParty\JCL
+
+[Dirs]
+Name: {app}\tiOPF2\Compilers\Delphi6\_dcu
+Name: {app}\tiOPF2\Compilers\Delphi7\_dcu
+Name: {app}\tiOPF2\Compilers\Delphi2005\_dcu
+Name: {app}\tiOPF2\Compilers\Delphi2006\_dcu
+Name: {app}\tiOPF2\UnitTests\Text\_dcu
+Name: {app}\tiOPF2\UnitTests\GUI\_dcu
+Name: {app}\tiOPF2\_bin
 
 [Icons]
 Name: {app}\Uninstall tiOPF; Filename: {uninstallexe}
