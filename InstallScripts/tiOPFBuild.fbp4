@@ -202,6 +202,24 @@ String
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               </Object>
+            <Object Class="TCreateDirectoryAction" XMLID="{533BC34A-DD45-4E39-BA79-0A5142813622}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Create Directory [ %path_to_working_bin% ]</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property MultiValue="0" name="Description" type="string">Create Directory [ %path_to_working_bin% ]</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_bin%</Property>
+              <Property name="Force" type="Boolean">True</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IsAction" type="Boolean">True</Property>
+              <Property name="IsBreakPoint" type="WordBool">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              </Object>
             </Object>
           <Object Class="TGroupAction" XMLID="{5AB69CBE-3CC3-4F59-852E-742BE5496FF7}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Prepare working copy of files</Property>
