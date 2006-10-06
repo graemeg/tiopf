@@ -35,7 +35,7 @@
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -49,7 +49,6 @@
               <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
               <Property name="FailIfVariableNotInIniFile" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
               <Property MultiValue="0" name="INIFile" type="string">%path_to_ini_file%</Property>
               <Property name="IsAction" type="Boolean">True</Property>
               <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -93,7 +92,6 @@ String
               <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
               <Property name="FailIfVariableNotInIniFile" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
               <Property MultiValue="0" name="INIFile" type="string">%FBPROJECTDIR%\Version.ini</Property>
               <Property name="IsAction" type="Boolean">True</Property>
               <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -127,7 +125,7 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -153,10 +151,10 @@ String
               <Property name="UseNow" type="Boolean">True</Property>
               </Object>
             </Object>
-          <Object Class="TGroupAction" XMLID="{FCDF4E19-4BE7-4A15-9BBC-F98D63F999AF}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-            <Property MultiValue="0" name="ActionLogTitle" type="WideString">Get working copy of source</Property>
+          <Object Class="TGroupAction" XMLID="{0D0AD6AE-C941-41F5-B3E1-69A4865E41D9}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+            <Property MultiValue="0" name="ActionLogTitle" type="WideString">Action Group - Setup some directories</Property>
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-            <Property MultiValue="0" name="Description" type="string">Get working copy of source</Property>
+            <Property MultiValue="0" name="Description" type="string">Action Group - Setup some directories</Property>
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
@@ -164,87 +162,11 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-            <Object Class="TDeleteDirectoryAction" XMLID="{81601394-8F04-43EC-9BB7-A7D982AA0298}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Delete Directory [ %path_to_working_root% ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="DeleteHidden" type="WordBool">False</Property>
-              <Property name="DeleteReadOnly" type="WordBool">False</Property>
-              <Property name="DeleteTree" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Delete Directory [ %path_to_working_root% ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_root%</Property>
-              <Property name="Force" type="Boolean">False</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property name="LogDeletedFiles" type="Boolean">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              </Object>
-            <Object Class="TCreateDirectoryAction" XMLID="{449AFAD8-BA0C-45CB-8219-79DCA16F9ED3}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Create Directory [ %path_to_working_root% ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="0" name="Description" type="string">Create Directory [ %path_to_working_root% ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_root%</Property>
-              <Property name="Force" type="Boolean">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              </Object>
-            <Object Class="TCreateDirectoryAction" XMLID="{51B7176F-F0DD-4DC2-9E4E-612712DA31C3}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Create Directory [ %path_to_working_deploy% ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="0" name="Description" type="string">Create Directory [ %path_to_working_deploy% ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_deploy%</Property>
-              <Property name="Force" type="Boolean">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              </Object>
-            <Object Class="TCreateDirectoryAction" XMLID="{3FE843AC-190F-479C-9667-081B659FE7A2}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Create Directory [ %path_to_working_bin% ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="0" name="Description" type="string">Create Directory [ %path_to_working_bin% ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_bin%</Property>
-              <Property name="Force" type="Boolean">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              </Object>
-            <Object Class="TCreateDirectoryAction" XMLID="{B05E18D1-D3A3-44F8-95FB-E729AC685833}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+            <Object Class="TCreateDirectoryAction" XMLID="{83FD3685-386A-4671-940E-8070B1232DFF}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="0" name="ActionLogTitle" type="WideString">Create Directory [ %path_to_working_dcu% ]</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property MultiValue="0" name="Description" type="string">Create Directory [ %path_to_working_dcu% ]</Property>
@@ -262,367 +184,6 @@ String
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               </Object>
-            <Object Class="TCreateDirectoryAction" XMLID="{8399F6BA-4FC0-4F80-924D-D10DD1FB8D77}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Create Directory [ %path_to_working_3rdParty% ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="0" name="Description" type="string">Create Directory [ %path_to_working_3rdParty% ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_3rdParty%</Property>
-              <Property name="Force" type="Boolean">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              </Object>
-            <Object Class="TCreateDirectoryAction" XMLID="{C3DCBA47-4FF8-4220-8C60-C231FF4EF070}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Create Directory [ %path_to_working_tiOPF2% ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="0" name="Description" type="string">Create Directory [ %path_to_working_tiOPF2% ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_tiOPF2%</Property>
-              <Property name="Force" type="Boolean">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{AAE08CB8-40F9-4F8A-ADA0-65355B2A75EA}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\Compilers\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\Compilers\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\tiOPF2\Trunk\Compilers\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_root%\tiOPF2\Compilers</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{4178F465-7682-430F-8019-3AED159C8465}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\Core\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\Core\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\tiOPF2\Trunk\Core\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_root%\tiOPF2\Core</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{C776E42F-5A17-456F-BA1F-039BB1D0A713}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\GUI\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\GUI\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\tiOPF2\Trunk\GUI\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_root%\tiOPF2\GUI</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{95D02BBD-14E8-455A-8417-6D6E0A791186}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\Options\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\Options\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\tiOPF2\Trunk\Options\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_root%\tiOPF2\Options</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{CEA35DE1-3880-4DB2-A5B5-5BCAC12215F2}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\UnitTests\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\UnitTests\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\tiOPF2\Trunk\UnitTests\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_unittests%</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{79133CF1-1DA3-43E7-AC5E-17CD5B7913C2}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\InstallScripts\DeployAppSource\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\InstallScripts\DeployAppSource\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\tiOPF2\Trunk\InstallScripts\DeployAppSource\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_root%\tiOPF2\InstallScripts\DeployAppSource</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{64E20B08-ED3E-4AE8-8CA3-6494C9F9828F}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\InstallScripts\Reports\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\InstallScripts\Reports\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\tiOPF2\Trunk\InstallScripts\Reports\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_root%\tiOPF2\InstallScripts\Reports</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{F58BF1E4-7A16-4A6B-8401-D9C15166E780}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\InstallScripts\Setup\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\tiOPF2\Trunk\InstallScripts\Setup\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\tiOPF2\Trunk\InstallScripts\Setup\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_root%\tiOPF2\InstallScripts\Setup</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{5C64E5CF-7C77-4FEA-8848-9B2C53D5514C}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\3rdParty\DUnit\Trunk\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\3rdParty\DUnit\Trunk\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\3rdParty\DUnit\Trunk\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_3rdparty%\DUnit</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{2F01FEFC-E6CC-4D9B-B374-9D7E25110037}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\3rdParty\FastMM\Trunk\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\3rdParty\FastMM\Trunk\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\3rdParty\FastMM\Trunk\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_3rdparty%\FastMM</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{75300B16-0985-42C4-9495-CF0B96FAE6D3}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\3rdParty\JCL\Trunk\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\3rdParty\JCL\Trunk\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\3rdParty\JCL\Trunk\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_3rdparty%\JCL</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{9F2E67CB-A025-48F5-A830-32D2EDF58A56}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\3rdParty\Indy\Trunk\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\3rdParty\Indy\Trunk\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\3rdParty\Indy\Trunk\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_3rdparty%\Indy</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
-            <Object Class="TCopyFilesAction" XMLID="{9E679319-81F0-4513-8BB2-006BAEB09373}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionLogTitle" type="WideString">Copy File(s) [ %path_to_local%\3rdParty\DOA\Trunk\*.* ]</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="ClearAttributes" type="WordBool">True</Property>
-              <Property MultiValue="0" name="Description" type="string">Copy File(s) [ %path_to_local%\3rdParty\DOA\Trunk\*.* ]</Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="FailIfExists" type="WordBool">False</Property>
-              <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property MultiValue="0" name="FileSpec" type="WideString">%path_to_local%\3rdParty\DOA\Trunk\*.*</Property>
-              <Property name="Force" type="WordBool">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="OverwriteReadOnly" type="WordBool">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="Recurse" type="WordBool">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Target" type="WideString">%path_to_working_3rdparty%\DOA</Property>
-              <Property name="TargetIsDir" type="WordBool">True</Property>
-              </Object>
             </Object>
           <Object Class="TGroupAction" XMLID="{5AB69CBE-3CC3-4F59-852E-742BE5496FF7}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Prepare working copy of files</Property>
@@ -635,7 +196,7 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -650,7 +211,7 @@ String
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -683,7 +244,7 @@ String
                 <Property name="BuildAll" type="WordBool">True</Property>
                 <Property name="BuildVersion" type="Integer">0</Property>
                 <Property name="CodePage" type="Integer">1252</Property>
-                <Property name="CompilerVersion" type="Integer">4</Property>
+                <Property name="CompilerVersion" type="Integer">11</Property>
                 <Property name="DebugVersionNumbers" type="Boolean">False</Property>
                 <Property MultiValue="0" name="Description" type="string">Compile Delphi Win32 Project [ %path_to_working_installscripts%\DeployAppSource\DeleteHistoryListsInDofFiles.dpr ]</Property>
                 <Property name="Enabled" type="WordBool">True</Property>
@@ -768,7 +329,7 @@ Comments=
                   <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
                   <Property name="IncludeTD32" type="WordBool">False</Property>
                   <Property name="IOChecking" type="WordBool">True</Property>
-                  <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+                  <Property MultiValue="0" name="LibraryPath" type="WideString">$(BDS)\lib;$(BDS)\Imports;$(BDS)\Lib\Indy10;c:\documents and settings\peterhi\my documents\borland studio projects\bpl;C:\Program Files\Borland\madCollection\madBasic\DeXter;C:\Program Files\Borland\madCollection\madDisAsm\DeXter;C:\Program Files\Borland\madCollection\madExcept\DeXter;C:\NEMMCODev\OPDMS\trunk\3rdParty\FastMM;C:\NEMMCODev\OPDMS\trunk\3rdParty\DOA;C:\NEMMCODev\OPDMS\trunk\3rdParty\tiOPF\Source\Core;C:\NEMMCODev\OPDMS\trunk\3rdParty\tiOPF\Source\GUI;C:\NEMMCODev\OPDMS\trunk\3rdParty\tiOPF\Source\Options;C:\NEMMCODev\OPDMS\branches\Peter\3rdParty\tiOPF\Source\Core;C:\NEMMCODev\OPDMS\branches\Peter\3rdParty\tiOPF\Source\Options;C:\NEMMCODev\OPDMS\branches\Peter\3rdParty\tiOPF\Source\GUI;C:\TechInsite\tiOPF2\Trunk\Corex;C:\TechInsite\tiOPF2\Trunk\GUIx;C:\TechInsite\tiOPF2\Trunk\Optionsx</Property>
                   <Property name="LinkerOutput" type="Integer">0</Property>
                   <Property name="LocalSymbols" type="WordBool">True</Property>
                   <Property name="Mapfile" type="Integer">0</Property>
@@ -831,7 +392,7 @@ Comments=
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -864,7 +425,7 @@ Comments=
                 <Property name="BuildAll" type="WordBool">True</Property>
                 <Property name="BuildVersion" type="Integer">0</Property>
                 <Property name="CodePage" type="Integer">1252</Property>
-                <Property name="CompilerVersion" type="Integer">4</Property>
+                <Property name="CompilerVersion" type="Integer">11</Property>
                 <Property name="DebugVersionNumbers" type="Boolean">False</Property>
                 <Property MultiValue="0" name="Description" type="string">Compile Delphi Project [DeleteHistoryListsInDofFiles.dpr ]</Property>
                 <Property name="Enabled" type="WordBool">True</Property>
@@ -949,7 +510,7 @@ Comments=
                   <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
                   <Property name="IncludeTD32" type="WordBool">False</Property>
                   <Property name="IOChecking" type="WordBool">True</Property>
-                  <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+                  <Property MultiValue="0" name="LibraryPath" type="WideString">$(BDS)\lib;$(BDS)\Imports;$(BDS)\Lib\Indy10;c:\documents and settings\peterhi\my documents\borland studio projects\bpl;C:\Program Files\Borland\madCollection\madBasic\DeXter;C:\Program Files\Borland\madCollection\madDisAsm\DeXter;C:\Program Files\Borland\madCollection\madExcept\DeXter;C:\NEMMCODev\OPDMS\trunk\3rdParty\FastMM;C:\NEMMCODev\OPDMS\trunk\3rdParty\DOA;C:\NEMMCODev\OPDMS\trunk\3rdParty\tiOPF\Source\Core;C:\NEMMCODev\OPDMS\trunk\3rdParty\tiOPF\Source\GUI;C:\NEMMCODev\OPDMS\trunk\3rdParty\tiOPF\Source\Options;C:\NEMMCODev\OPDMS\branches\Peter\3rdParty\tiOPF\Source\Core;C:\NEMMCODev\OPDMS\branches\Peter\3rdParty\tiOPF\Source\Options;C:\NEMMCODev\OPDMS\branches\Peter\3rdParty\tiOPF\Source\GUI;C:\TechInsite\tiOPF2\Trunk\Corex;C:\TechInsite\tiOPF2\Trunk\GUIx;C:\TechInsite\tiOPF2\Trunk\Optionsx</Property>
                   <Property name="LinkerOutput" type="Integer">0</Property>
                   <Property name="LocalSymbols" type="WordBool">True</Property>
                   <Property name="Mapfile" type="Integer">0</Property>
@@ -1006,7 +567,7 @@ Comments=
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Compile tiOPF &amp;amp; run unit tests</Property>
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
             <Property MultiValue="0" name="Description" type="string">Compile tiOPF &amp;amp; run unit tests</Property>
-            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="Enabled" type="WordBool">False</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
             <Property name="IsAction" type="Boolean">True</Property>
@@ -1342,7 +903,7 @@ p_delphi_version=2006
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Prepare setup programs</Property>
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
             <Property MultiValue="0" name="Description" type="string">Prepare setup programs</Property>
-            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="Enabled" type="WordBool">False</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
             <Property name="IsAction" type="Boolean">True</Property>
@@ -1576,7 +1137,7 @@ p_file_path=%path_to_working_compilers%\Delphi2006
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Prepare website</Property>
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
             <Property MultiValue="0" name="Description" type="string">Prepare website</Property>
-            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="Enabled" type="WordBool">False</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
             <Property name="IsAction" type="Boolean">True</Property>
@@ -1857,7 +1418,6 @@ p_file_path=%path_to_working_compilers%\Delphi2006
                   <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
                   <Property name="FailIfVariableNotInIniFile" type="Boolean">False</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
                   <Property MultiValue="0" name="INIFile" type="string">%path_to_working_dunit_inifile%</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
                   <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -1893,7 +1453,6 @@ String
                   <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
                   <Property name="FailIfVariableNotInIniFile" type="Boolean">False</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
                   <Property MultiValue="0" name="INIFile" type="string">%path_to_working_dunit_inifile%</Property>
                   <Property name="IsAction" type="Boolean">True</Property>
                   <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -2361,14 +1920,14 @@ p_persistence_layers=%report_persistence_layers_d2006%
             <Property MultiValue="0" name="ActionLogTitle" type="WideString">Send notifications</Property>
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
             <Property MultiValue="0" name="Description" type="string">Send notifications</Property>
-            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="Enabled" type="WordBool">False</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
             <Property name="IsAction" type="Boolean">True</Property>
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">False</Property>
+            <Property name="NodeCollapsed" type="Boolean">True</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -2862,7 +2421,6 @@ Details:
               <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
               <Property name="FailIfVariableNotInIniFile" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
               <Property MultiValue="0" name="INIFile" type="string">%path_to_ini_file%</Property>
               <Property name="IsAction" type="Boolean">True</Property>
               <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -3794,11 +3352,13 @@ Comments=
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             </Object>
           </Object>
-        <Object Class="TFBActionListParametersCollection" XMLID="{5F2EB33F-9B54-48B2-9238-0F0140FC5561}"><Object Class="TFBActionListParameter" XMLID="{802FBD2D-4AE7-4981-8172-F6BB1ADCC0F3}"><Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
+        <Object Class="TFBActionListParametersCollection" XMLID="{5F2EB33F-9B54-48B2-9238-0F0140FC5561}"><Object Class="TFBActionListParameter" XMLID="{802FBD2D-4AE7-4981-8172-F6BB1ADCC0F3}"><Property name="AsVariant" type="Variant"></Property>
+            <Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{D208A059-6C19-4330-BCFE-52CDEA4372BA}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paInteger</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{6A226D0D-3121-4903-B8D8-9CEF3F10D001}"><Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
+          <Object Class="TFBActionListParameter" XMLID="{6A226D0D-3121-4903-B8D8-9CEF3F10D001}"><Property name="AsVariant" type="Variant"></Property>
+            <Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{A02DE2D5-4305-4C04-99C0-C4C9EA133B16}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
@@ -4514,23 +4074,28 @@ Comments=
               </Object>
             </Object>
           </Object>
-        <Object Class="TFBActionListParametersCollection" XMLID="{142366F9-FF02-48C2-9EB7-97D8ADDBBA60}"><Object Class="TFBActionListParameter" XMLID="{FE3FC0DF-87B5-4E33-8171-2A5DC513A890}"><Property MultiValue="0" name="Name" type="string">p_short_error_message</Property>
+        <Object Class="TFBActionListParametersCollection" XMLID="{142366F9-FF02-48C2-9EB7-97D8ADDBBA60}"><Object Class="TFBActionListParameter" XMLID="{FE3FC0DF-87B5-4E33-8171-2A5DC513A890}"><Property name="AsVariant" type="Variant"></Property>
+            <Property MultiValue="0" name="Name" type="string">p_short_error_message</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{A2DF802F-D0AD-4547-908F-58D7D7C8A650}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{9CF43A5D-75CC-4DC9-95D0-50707F8DCE04}"><Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
+          <Object Class="TFBActionListParameter" XMLID="{9CF43A5D-75CC-4DC9-95D0-50707F8DCE04}"><Property name="AsVariant" type="Variant"></Property>
+            <Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{78F621C5-62E3-4770-AC5E-3260F941B279}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{7E49373A-5126-4530-9759-93B47CA89DDA}"><Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
+          <Object Class="TFBActionListParameter" XMLID="{7E49373A-5126-4530-9759-93B47CA89DDA}"><Property name="AsVariant" type="Variant"></Property>
+            <Property MultiValue="0" name="Name" type="string">p_compiler_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{F376DF41-144D-471D-8EB7-85062DAED2A9}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{A05C8E71-48B7-465C-B221-C653A1BCA7F3}"><Property MultiValue="0" name="Name" type="string">p_report_long</Property>
+          <Object Class="TFBActionListParameter" XMLID="{A05C8E71-48B7-465C-B221-C653A1BCA7F3}"><Property name="AsVariant" type="Variant"></Property>
+            <Property MultiValue="0" name="Name" type="string">p_report_long</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{5111F95C-183B-4CCE-AA79-3132EA603E5F}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{DC8B1DCE-08B6-43C8-8E89-4CB1243D29E5}"><Property MultiValue="0" name="Name" type="string">p_persistence_layers</Property>
+          <Object Class="TFBActionListParameter" XMLID="{DC8B1DCE-08B6-43C8-8E89-4CB1243D29E5}"><Property name="AsVariant" type="Variant"></Property>
+            <Property MultiValue="0" name="Name" type="string">p_persistence_layers</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{E8EB0BCA-29BB-4C28-BAAE-1C74C84CF545}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
@@ -4652,11 +4217,13 @@ Comments=
             <Property MultiValue="0" name="XPathNode" type="string">%xpath_directories%[@Name="Conditionals"]</Property>
             </Object>
           </Object>
-        <Object Class="TFBActionListParametersCollection" XMLID="{64401434-BE07-48E7-ACE3-B06C848F97DF}"><Object Class="TFBActionListParameter" XMLID="{CEA43D7D-835A-4723-B9BC-6AE287416BC2}"><Property MultiValue="0" name="Name" type="string">p_file_name</Property>
+        <Object Class="TFBActionListParametersCollection" XMLID="{64401434-BE07-48E7-ACE3-B06C848F97DF}"><Object Class="TFBActionListParameter" XMLID="{CEA43D7D-835A-4723-B9BC-6AE287416BC2}"><Property name="AsVariant" type="Variant"></Property>
+            <Property MultiValue="0" name="Name" type="string">p_file_name</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{E39F26DA-C25D-472C-BCC7-A7B0C6F3577B}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
-          <Object Class="TFBActionListParameter" XMLID="{5410AB68-B264-4696-9A2E-694272A2FEE8}"><Property MultiValue="0" name="Name" type="string">p_file_path</Property>
+          <Object Class="TFBActionListParameter" XMLID="{5410AB68-B264-4696-9A2E-694272A2FEE8}"><Property name="AsVariant" type="Variant"></Property>
+            <Property MultiValue="0" name="Name" type="string">p_file_path</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{99F4FC1C-13FF-46F4-9BA5-F9B2B9DD62A7}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
             </Object>
@@ -4839,13 +4406,6 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">prompt_build_type</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{CA8F9E2F-C299-43CE-A89E-2E56189BBAFB}"><Property MultiValue="0" name="DefaultValue" type="string">%FBPROJECTDIR%\..\..\..\</Property>
-        <Property name="IsMacro" type="Boolean">True</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">path_to_local</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
       <Object Class="TFBVariable" XMLID="{549901E4-3EE7-4CD9-9C3C-02231FD7D22F}"><Property MultiValue="0" name="DefaultValue" type="string">0</Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
@@ -4902,8 +4462,8 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">path_to_working_installscripts</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{F426B321-2D76-4A89-8642-6B4CBD26D4FE}"><Property MultiValue="0" name="DefaultValue" type="string">c:\Temp\tiOPFBuild</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
+      <Object Class="TFBVariable" XMLID="{F426B321-2D76-4A89-8642-6B4CBD26D4FE}"><Property MultiValue="0" name="DefaultValue" type="string">%path_to_checkout%</Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">path_to_working_root</Property>
@@ -4923,7 +4483,7 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">path_to_working_dcu</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{9315E9C9-91E7-42C9-8BBD-B82D6C739621}"><Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_root%\tiOPF2</Property>
+      <Object Class="TFBVariable" XMLID="{9315E9C9-91E7-42C9-8BBD-B82D6C739621}"><Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_root%</Property>
         <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
@@ -5194,6 +4754,13 @@ Comments=
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_sender_email</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{1EEB1D81-3B16-43D4-81D5-8B02845F6A36}"><Property MultiValue="0" name="DefaultValue" type="string">%FBPROJECTDIR%\..</Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_checkout</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       </Object>

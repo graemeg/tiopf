@@ -26,7 +26,7 @@ uses
   ,tiVisitor
   ,tiOID
   ,Variants
-  ,VirtualTrees
+  ,tiVirtualTrees
 {$IFNDEF FPC}
 //  ,tiVirtualTrees
 {$ELSE}
@@ -197,10 +197,10 @@ type
     procedure DoGetText(Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var Text: WideString); override;
     procedure DoFocusChange(Node: PVirtualNode; Column: TColumnIndex); override;
 // DoGetImageIndex signature was changed between 4.3.x and 4.4.3
-    function DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-      var Ghosted: Boolean; var Index: Integer): TCustomImageList; override;
-//    procedure DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-//       var Ghosted: Boolean; var Index: Integer); override;
+//    function DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+//      var Ghosted: Boolean; var Index: Integer): TCustomImageList; override;
+    procedure DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+       var Ghosted: Boolean; var Index: Integer); override;
     procedure DoInitChildren(Node: PVirtualNode; var ChildCount: Cardinal); override;
     procedure DoInitNode(Parent, Node: PVirtualNode; var InitStates: TVirtualNodeInitStates); override;
 
@@ -1710,18 +1710,18 @@ begin
   inherited;
 end;
 
-function TtiInternalVirtualTree.DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-      var Ghosted: Boolean; var Index: Integer): TCustomImageList; 
-begin
-  FtiOwner.VTGetImageIndex(Node, Kind, Column, Ghosted, Index);
-end;
-
-//procedure TtiInternalVirtualTree.DoGetImageIndex(Node: PVirtualNode;
-//  Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean;
-//  var Index: Integer);
+//function TtiInternalVirtualTree.DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+//      var Ghosted: Boolean; var Index: Integer): TCustomImageList;
 //begin
 //  FtiOwner.VTGetImageIndex(Node, Kind, Column, Ghosted, Index);
 //end;
+
+procedure TtiInternalVirtualTree.DoGetImageIndex(Node: PVirtualNode;
+  Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean;
+  var Index: Integer);
+begin
+  FtiOwner.VTGetImageIndex(Node, Kind, Column, Ghosted, Index);
+end;
 
 procedure TtiInternalVirtualTree.DoGetText(Node: PVirtualNode;
   Column: TColumnIndex; TextType: TVSTTextType; var Text: WideString);

@@ -14,7 +14,7 @@ uses
   ,LCLProc
   ,VirtualStringTree
 {$ENDIF}
-  ,VirtualTrees
+  ,tiVirtualTrees
   ,Classes
   ,Menus
   ,Graphics

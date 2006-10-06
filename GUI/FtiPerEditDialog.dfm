@@ -18,9 +18,6 @@ object FormTIPerEditDialog: TFormTIPerEditDialog
   OnDestroy = FormDestroy
   OnKeyPress = FormKeyPress
   OnShow = FormShow
-  DesignSize = (
-    323
-    186)
   PixelsPerInch = 96
   TextHeight = 13
   object btnOK: TBitBtn

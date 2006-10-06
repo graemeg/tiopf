@@ -110,7 +110,7 @@ ActiveLang=
 ProjectLang=
 RootDir=C:\Program Files\Borland\Delphi7\Bin\
 [Version Info]
-IncludeVerInfo=1
+IncludeVerInfo=0
 AutoIncBuild=0
 MajorVer=0
 MinorVer=0
@@ -133,22 +133,3 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=
-[HistoryLists\hlConditionals]
-Count=5
-Item0=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;ManualLeakReportingControl;USE_JEDI_JCL;LINK_XML;LINK_IBX;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_ADOSQLSERVERx;LINK_CSV;LINK_TAB;LINK_XMLLIGHT;LINK_REMOTEx;LINK_DOA;madExcept
-Item1=LINK_IBX
-Item2=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;ManualLeakReportingControl;USE_JEDI_JCL;LINK_XML;LINK_IBX;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_ADOSQLSERVERx;LINK_CSV;LINK_TAB;LINK_XMLLIGHT;LINK_REMOTEx;LINK_DOA
-Item3=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;ManualLeakReportingControl;USE_JEDI_JCL;LINK_XMLx;LINK_IBXx;LINK_BDEPARADOXx;LINK_ADOACCESSx;LINK_ADOSQLSERVERx;LINK_CSVx;LINK_TABx;LINK_XMLLIGHT;LINK_REMOTEx;LINK_DOAx
-Item4=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;ManualLeakReportingControl;USE_JEDI_JCL;LINK_XMLx;LINK_IBXx;LINK_BDEPARADOXx;LINK_ADOACCESSx;LINK_ADOSQLSERVERx;LINK_CSVx;LINK_TABx;LINK_XMLLIGHTx;LINK_REMOTEx;LINK_DOAx
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=1
-Item0=..\..\Core;..\..\Options;..\..\GUI;..\Common;..\Tests;..\..\..\..\3rdParty\DUnit\Trunk;..\..\..\..\3rdParty\Indy\Trunk\Core;..\..\..\..\3rdParty\Indy\Trunk\Protocols;..\..\..\..\3rdParty\Indy\Trunk\System;..\..\..\..\3rdParty\JCL\Trunk\common;..\..\..\..\3rdParty\JCL\Trunk\windows;..\..\..\..\3rdParty\FastMM\Trunk
-[HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=.\_Dcu
-[HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=..\..\..\..\_Bin

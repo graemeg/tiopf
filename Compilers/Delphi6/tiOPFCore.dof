@@ -30,6 +30,54 @@ Z=1
 ShowHints=1
 ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+SymbolDeprecated=1
+SymbolLibrary=1
+SymbolPlatform=0
+UnitLibrary=0
+UnitPlatform=0
+UnitDeprecated=1
+HResultCompat=1
+HidingMember=1
+HiddenVirtual=1
+Garbage=1
+BoundsError=1
+ZeroNilCompat=1
+StringConstTruncated=1
+ForLoopVarVarPar=1
+TypedConstVarPar=1
+AsgToTypedConst=1
+CaseLabelRange=1
+ForVariable=1
+ConstructingAbstract=1
+ComparisonFalse=1
+ComparisonTrue=1
+ComparingSignedUnsigned=1
+CombiningSignedUnsigned=1
+UnsupportedConstruct=1
+FileOpen=1
+FileOpenUnitSrc=1
+BadGlobalSymbol=1
+DuplicateConstructorDestructor=1
+InvalidDirective=1
+PackageNoLink=1
+PackageThreadVar=1
+ImplicitImport=1
+HPPEMITIgnored=1
+NoRetVal=1
+UseBeforeDef=1
+ForLoopVarUndef=1
+UnitNameMismatch=1
+NoCFGFileFound=1
+MessageDirective=1
+ImplicitVariants=1
+UnicodeToLocale=1
+LocaleToUnicode=1
+ImagebaseMultiple=1
+SuspiciousTypecast=1
+PrivatePropAccessor=1
+UnsafeType=0
+UnsafeCode=0
+UnsafeCast=0
 [Linker]
 MapFile=3
 OutputObjs=0
@@ -61,7 +109,7 @@ ActiveLang=
 ProjectLang=
 RootDir=C:\Program Files\Borland\Delphi7\Bin\
 [Version Info]
-IncludeVerInfo=1
+IncludeVerInfo=0
 AutoIncBuild=0
 MajorVer=0
 MinorVer=0
@@ -83,36 +131,4 @@ LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
-ProductVersion=1.0.0.0
-[Excluded Packages]
-C:\TechInsite\bin\dcltiPerAware60.bpl=(untitled)
-C:\NEMMCO\OPDMS\Source\OPDMSConnectivityTest\AdvHttp6.bpl=Advanced Http
-C:\Program Files\Borland\Delphi6\Projects\Bpl\JclDebugIde60.bpl='JCL Debug IDE extension for Delphi 6'
-C:\Program Files\Borland\Delphi6\Projects\Bpl\ProjectAnalyzer60.bpl='JCL Project Analyzer for Delphi 6'
-C:\Program Files\Borland\Delphi6\Projects\Bpl\IdeOpenDlgFavorite60.bpl='JCL Open and Save IDE dialogs with favorite folders for Delphi 6'
-C:\Program Files\Borland\Delphi6\Projects\Bpl\ThreadNameExpert60.bpl='JCL Thread Name IDE expert for Delphi 6'
-C:\Program Files\Borland\Delphi6\Projects\Bpl\JVCL200_D60.bpl='JEDI-VCL Components'
-[HistoryLists\hlConditionals]
-Count=8
-Item0=PACKAGE
-Item1=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;USE_JEDI_JCL;LINK_XMLx;LINK_IBXx;LINK_BDEPARADOXx;LINK_ADOACCESSx;LINK_ADOSQLSERVERx;LINK_CSVx;LINK_TABx;LINK_XMLLIGHT;LINK_REMOTEx;LINK_DOAx
-Item2=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;ManualLeakReportingControl;USE_JEDI_JCL;LINK_XMLx;LINK_IBXx;LINK_BDEPARADOXx;LINK_ADOACCESSx;LINK_ADOSQLSERVERx;LINK_CSVx;LINK_TABx;LINK_XMLLIGHT;LINK_REMOTEx;LINK_DOAx;madExcept
-Item3=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;ManualLeakReportingControl;USE_JEDI_JCL;LINK_XML;LINK_IBX;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_ADOSQLSERVERx;LINK_CSV;LINK_TAB;LINK_XMLLIGHT;LINK_REMOTEx;LINK_DOA;madExcept
-Item4=LINK_IBX
-Item5=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;ManualLeakReportingControl;USE_JEDI_JCL;LINK_XML;LINK_IBX;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_ADOSQLSERVERx;LINK_CSV;LINK_TAB;LINK_XMLLIGHT;LINK_REMOTEx;LINK_DOA
-Item6=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;ManualLeakReportingControl;USE_JEDI_JCL;LINK_XMLx;LINK_IBXx;LINK_BDEPARADOXx;LINK_ADOACCESSx;LINK_ADOSQLSERVERx;LINK_CSVx;LINK_TABx;LINK_XMLLIGHT;LINK_REMOTEx;LINK_DOAx
-Item7=CLASS_TRACKING;OBJECT_TRACKING;FASTMM;ManualLeakReportingControl;USE_JEDI_JCL;LINK_XMLx;LINK_IBXx;LINK_BDEPARADOXx;LINK_ADOACCESSx;LINK_ADOSQLSERVERx;LINK_CSVx;LINK_TABx;LINK_XMLLIGHTx;LINK_REMOTEx;LINK_DOAx
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=2
-Item0=..\..\Core;..\..\Options;..\..\GUI
-Item1=..\..\Core;..\..\Options;..\..\GUI;..\Common;..\Tests;..\..\..\..\3rdParty\DUnit\Trunk;..\..\..\..\3rdParty\Indy\Trunk\Core;..\..\..\..\3rdParty\Indy\Trunk\Protocols;..\..\..\..\3rdParty\Indy\Trunk\System;..\..\..\..\3rdParty\JCL\Trunk\common;..\..\..\..\3rdParty\JCL\Trunk\windows;..\..\..\..\3rdParty\FastMM\Trunk
-[HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=.\_Dcu
-[HistoryLists\hlOutputDirectorry]
-Count=2
-Item0=.\_bin
-Item1=..\..\..\..\_Bin
+ProductVersion=
