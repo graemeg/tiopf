@@ -679,6 +679,9 @@ begin
 
     FDBase.User       := UserName;
     FDBase.Password   := Password;
+    { Should we parse self.Params: TStringList for these and assign them? }
+//    FDBase.Role
+//    FDBase.CharacterSet
 
     FDBase.Connect;
   except
