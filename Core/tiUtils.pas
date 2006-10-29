@@ -1850,12 +1850,12 @@ begin
       {$ENDIF MSWINDOWS}
       {$IFDEF LINUX}
       try
-        if sysUtils.FindFirst(lsStartDir + psWildCard,
+        if sysUtils.FindFirst(lsStartDir + AWildCard,
                                faAnyFile-faSysFile-faDirectory,
                                SearchRec) = 0 then begin
-          AddFile(searchRec, lsStartDir, psWildCard, slResult, pbRecurse);
+          AddFile(searchRec, lsStartDir, AWildCard, AResults, ARecurse);
           while sysUtils.findNext(searchRec) = 0 do begin
-            AddFile(searchRec, lsStartDir, psWildCard, slResult, pbRecurse);
+            AddFile(searchRec, lsStartDir, AWildCard, AResults, ARecurse);
           end;
         end;
       finally
@@ -2092,7 +2092,7 @@ begin
   tiWin32RunEXEAndWait(AEXE);
 {$ENDIF MSWINDOWS}
 {$IFDEF LINUX}
-  tiLinuxRunEXEAndWait(pStrEXE);
+  tiLinuxRunEXEAndWait(AEXE);
 {$ENDIF}
 end;
 
