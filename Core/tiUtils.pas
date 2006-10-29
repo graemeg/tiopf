@@ -166,11 +166,11 @@ type
   // Remove the drive letter from a file name
   function  tiRemoveDrive(             AValue : string): string;
   // Removed part of a directory
-  function  tiRemoveDirectory(         const AFileName: string; const AToRemove: string): string;
+  function  tiRemoveDirectory(const AFileName: string; const AToRemove: string): string;
   // Set a file's readonly attribute
-  procedure tiSetFileReadOnly(         AFileName : string; AReadOnly : boolean);
+  procedure tiSetFileReadOnly(AFileName: string; AReadOnly: boolean);
   // Is a file's readonly attribute set?
-  function  tiIsFileReadOnly(AValue : string): boolean;
+  function  tiIsFileReadOnly(AValue: string): boolean;
   // Copy all the directories, starting at pStrStartDir to the stringList slTree
   procedure tiDirectoryTreeToStringList(const AStartDir : string; const ADirList : TStringList; ARecurse : boolean);
   // Copy all the files, from the directory pStrStartDir, matching the wildcard pStrWildCard
@@ -1671,7 +1671,7 @@ end;
 
 
 {$IFDEF MSWINDOWS}
-procedure tiSetFileReadOnly(AFileName : string; AReadOnly : boolean);
+procedure tiSetFileReadOnly(AFileName: string; AReadOnly: boolean);
 const // This is copied from sysUtils, as in it's native form,
       // there is confusion with ordinals defined in DB.PAS
       cReadOnly  = $00000001;
@@ -1691,32 +1691,30 @@ end;
 {$ENDIF MSWINDOWS}
 {$IFDEF LINUX}
 { Works on Owner rights only. Unix has 3 sets of rights: Owner, Group and Global }
-procedure tiSetFileReadOnly(pStrFileTo : string; pBoolReadOnly : boolean);
+procedure tiSetFileReadOnly(AFileName: string; AReadOnly: boolean);
 var
   lAttr: LongInt;
   Info: Stat;
 begin
-  lAttr := FileGetAttr(pStrFileTo);
+  lAttr := FileGetAttr(AFileName);
   if lAttr <> -1 then
   begin
-    if FpStat(pStrFileTo, Info) < 0 then
+    if FpStat(AFileName, Info) < 0 then
       raise Exception.Create('Unable to set ReadOnly attribute');
 
-    if pBoolReadOnly then
-      FpChmod(pStrFileTo, Info.st_mode xor S_IWUSR)   // remove write access. Owner rights only.
+    if AReadOnly then
+      FpChmod(AFileName, Info.st_mode xor S_IWUSR)   // remove write access. Owner rights only.
     else
-      FpChmod(pStrFileTo, Info.st_mode or S_IWUSR);   // add write access.
+      FpChmod(AFileName, Info.st_mode or S_IWUSR);   // add write access.
   end
   else
-  begin
     raise Exception.Create('Unable to set ReadOnly attribute');
-  end
 end;
 {$ENDIF LINUX}
 
 
 {$IFDEF MSWINDOWS}
-function tiIsFileReadOnly(AValue : string): boolean;
+function tiIsFileReadOnly(AValue: string): boolean;
 const // This is copied from sysUtils, as in it's native form,
       // there is confusion with ordinals defined in DB.PAS
       cReadOnly  = $00000001;
@@ -1727,9 +1725,9 @@ begin
 end;
 {$ENDIF MSWINDOWS}
 {$IFDEF LINUX}
-function tiIsFileReadOnly(pStrFileTo : string): boolean;
+function tiIsFileReadOnly(AValue: string): boolean;
 begin
-  Result := FileIsReadOnly(pStrFileTo);
+  Result := FileIsReadOnly(AValue);
 end;
 {$ENDIF LINUX}
 
