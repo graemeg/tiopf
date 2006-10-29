@@ -3,12 +3,13 @@
 //------------------------------------------------------------------------------
 // Used for compatability with DUnit test formats!
 //------------------------------------------------------------------------------
-function TtiTestCase.GetName: string;
+{function TtiTestCase.GetName: string;
 begin
   Result := TestName;
 end;
+}
 
-
+{$IFDEF VER2_0_2}
 procedure TtiTestCase.Check(AValue: boolean; AMessage: string);
 begin
   AssertTrue(AMessage, AValue);
@@ -91,8 +92,10 @@ procedure TtiTestCase.CheckSame(expected, actual: TObject; msg: string);
 begin
    AssertSame(msg, expected, actual);
 end;
+{$ENDIF}
 
 
+{$IFDEF VER2_0_4}
 procedure TtiTestCase.CheckNotEquals(expected, actual: integer; msg: string);
 begin
   if (expected = actual) then
@@ -120,5 +123,6 @@ procedure TtiTestCase.FailNotEquals(expected, actual: string; msg: string;
 begin
   Fail(msg + ComparisonMsg(Expected, Actual));
 end;
+{$ENDIF}
 
 

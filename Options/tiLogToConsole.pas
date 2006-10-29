@@ -1,9 +1,11 @@
 unit tiLogToConsole;
 
+{$I tiDefines.inc}
+
 interface
 uses
   tiLog
- ;
+  ;
 
 type
 
@@ -16,7 +18,6 @@ type
                            ASeverity : TtiLogSeverity): boolean; override;
     procedure WriteToOutput; override; 
   public
-    constructor Create; override;
     destructor  Destroy; override;
     procedure   Log(const ADateTime : string;
                      const AThreadID : string;
@@ -24,27 +25,27 @@ type
                      ASeverity : TtiLogSeverity); override;
   end;
 
+
 implementation
 uses
   tiCommandLineParams
   ,tiUtils
-  , SysUtils;
+  ,SysUtils
+  ;
 
 { TLogToConsole }
 
 function TtiLogToConsole.AcceptEvent(const ADateTime, AMessage: string;
   ASeverity: TtiLogSeverity): boolean;
 begin
+  Assert(ADateTime = ADateTime);  // Getting rid of compiler hints
+  Assert(AMessage = AMessage);    // regarding params not used.
+  
   if gCommandLineParams.IsParam(csLogVisual) then
     result := (ASeverity = lsUserInfo) or (ASeverity in gLog.SevToLog)
   else
     result :=
       ASeverity in [lsUserInfo];
-end;
-
-constructor TtiLogToConsole.Create;
-begin
-  inherited;
 end;
 
 destructor TtiLogToConsole.Destroy;
@@ -83,6 +84,8 @@ var
   lLogEvent : TtiLogEvent;
   lMessage: string;
 begin
+  Assert(AThreadID = AThreadID);  // Getting rid of compiler hints, unused params
+
   if not AcceptEvent(ADateTime, AMessage, ASeverity) then
     Exit; //==>
 

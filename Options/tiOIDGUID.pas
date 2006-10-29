@@ -130,21 +130,17 @@ begin
 end;
 
 
+{ TNextOIDGeneratorGUID }
 
-const
-  cuLowRange = 100;
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TNextOIDGeneratorGUID
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TNextOIDGeneratorGUID.AssignNextOID(const AAssignTo: TOID; const ADatabaseName : string; APersistenceLayerName : string);
+procedure TNextOIDGeneratorGUID.AssignNextOID(const AAssignTo: TOID; const ADatabaseName: string; APersistenceLayerName: string);
 var
   lValue : string;
 const
   cGUIDLength = 38;
 begin
+  Assert(ADatabaseName = ADatabaseName);  // Getting rid of compiler hints, param not used.
+  Assert(APersistenceLayerName = APersistenceLayerName);  // Getting rid of compiler hints, param not used.
+
   Assert(AAssignTo.TestValid(TOID), cTIInvalidObjectError);
   lValue := tiCreateGUIDString;
 

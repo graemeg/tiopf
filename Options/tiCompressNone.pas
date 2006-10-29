@@ -45,6 +45,10 @@ uses
 function TtiCompressNone.CompressBuffer(const AFrom: Pointer;
   const AFromSize: Integer; out ATo: Pointer; out AToSize: Integer): Extended;
 begin
+  Assert(AFrom = AFrom);            // Getting rid of compiler hints, unused params
+  Assert(AFromSize = AFromSize);    // "
+  Assert(ATo = ATo);                // "
+  Assert(AToSize = AToSize);        // "
   Assert(false, 'Not implemented yet.');
   result := 0;
 end;
@@ -112,6 +116,10 @@ end;
 procedure TtiCompressNone.DecompressBuffer(const AFrom: Pointer;
   const AFromSize: Integer; out ATo: Pointer; out AToSize: Integer);
 begin
+  Assert(AFrom = AFrom);            // Getting rid of compiler hints, unused params
+  Assert(AFromSize = AFromSize);    //  "
+  Assert(ATo = ATo);                //  "
+  Assert(AToSize = AToSize);        //  "
   Assert(false, 'Not implemented yet.');
 end;
 

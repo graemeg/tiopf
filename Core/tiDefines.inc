@@ -61,33 +61,9 @@
   {$DEFINE DELPHI5ORABOVE}
   {$DEFINE DELPHI6ORABOVE}
   {$DEFINE DELPHI7ORABOVE}
-  {$DEFINE KYLIX1ORABOVE}
-  {$DEFINE KYLIX2ORABOVE}
-  {$DEFINE KYLIX3ORABOVE}
+
   {$MODE DELPHI}{$H+}
   {$ASMMODE intel}
-
-(*
-
-//  The first line of the ifdef is giving a compiler warning (in every unit
-//  that uses tiDefines.inc).
-//  "[Pascal Warning] tiDefines.inc(72): W1023 Comparing signed and unsigned
-//                    types - widened both operands"
-//  This is happening in BDS2006 - go figure...
-//
-//  Hacked out for the time being.
-
-  { Due to certain bugs in 2.0.2 this is a workaround IFDEF that should only
-    be used in the unit tests. }
-  {$if defined(ver1) or (defined(ver2_0) and (fpc_patch<2))}
-    {$fatal tiOPF2 requires at least FPC 2.0.2}
-  {$ELSEIF (defined(ver2_0) and (fpc_patch=2))}
-    {$DEFINE FPC202}
-  {$ELSE}
-    {$DEFINE FPC202OrAbove}
-  {$IFEND}
-*)
-
 {$ENDIF}
 
 // Cloned from IndySoap

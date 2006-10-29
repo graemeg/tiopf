@@ -518,30 +518,35 @@ end;
 
 procedure TtiVisitorCtrlr.AfterExecuteAll(AVisitors : TList);
 begin
+  Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
 procedure TtiVisitorCtrlr.AfterExecuteError(AVisitors : TList);
 begin
+  Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
 procedure TtiVisitorCtrlr.AfterExecuteOne(AVisitor : TtiVisitor);
 begin
+  Assert(AVisitor = AVisitor);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
 procedure TtiVisitorCtrlr.BeforeExecuteAll(AVisitors : TList);
 begin
+  Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
 procedure TtiVisitorCtrlr.BeforeExecuteOne(AVisitor : TtiVisitor);
 begin
+  Assert(AVisitor = AVisitor);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
@@ -954,6 +959,7 @@ var
   lVisitorController : TtiVisitorCtrlr;
   lVisitors  : TList;
 begin
+  Assert(psMethodName = psMethodName);  // Getting rid of compiler hints, param not used.
 
   if gTIOPFManager.Terminated then
     Exit; //==>
@@ -1121,6 +1127,7 @@ var
   i : integer;
   lPropFilter : TTypeKinds;
 begin
+  lList := nil;
   Assert(AStringList <> nil, 'pSL not assigned.');
   lPropFilter := APropFilter;
 

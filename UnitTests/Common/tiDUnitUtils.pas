@@ -83,10 +83,11 @@ type
     procedure CheckEquals(AValue: Boolean;   AField: TtiFieldBoolean); overload;
     procedure CheckEquals(AValue: TDateTime; AField: TtiFieldDateTime); overload;
     procedure CheckEquals(AValue: TStream;   AField: TStream); overload;
-
     procedure CheckEquals(AValue: String;   AField: TtiFieldInteger); overload;
-
     procedure CheckEquals(const AExpected: string; AActual: integer); overload;
+    {$IFDEF FPC}
+      {$I DUnitCompatableIntf.inc}
+    {$ENDIF}
   end;
 
 function  tiCreateStringOfSize(pSize : LongInt): string;
@@ -523,6 +524,12 @@ procedure TtiTestCase.CheckNearEnough(AExpected, AActual: TtiFieldFloat);
 begin
   CheckNearEnough(AExpected.AsFloat, AActual.AsFloat);
 end;
+
+
+{$IFDEF FPC}
+  {$I DUnitCompatableImpl.inc}
+{$ENDIF}
+
 
 { TtiPerformanceCounter }
 

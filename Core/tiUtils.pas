@@ -3,6 +3,7 @@ unit tiUtils;
 {$I tiDefines.inc}
 
 interface
+
 uses
    tiBaseObject
   ,tiVisitor 
@@ -617,24 +618,20 @@ var
 begin
   {$IFDEF FPC}
   Result := SysUtils.GetTempFileName('', '');    // prefix of TMP is default
-  if pStrExt = '' then
-    Result := tiRemoveExtension(Result)
-  else
-    Result := Copy(Result, 1, Pos('.', Result)) + pStrExt;
   {$ELSE}
   strPCopy(pcApp, copy(extractFileName(application.exeName), 1, 3));
   getTempPath(cMaxPathLen, pcPath);
   getTempFileName(pcPath, pcApp, 0, pcTemp);
   deleteFile(pcTemp); // This is using the Window deleteFile, not Delphi's
   result := strPas(pcTemp);
-  if pos('.', result) <> 0 then begin
-    if AValue = '' then begin
-      result := tiRemoveExtension(result);
-    end else begin
-      result := copy(result, 1, pos('.', result)) + AValue;
-    end;
-  end;
   {$ENDIF}
+  if pos('.', result) <> 0 then
+  begin
+    if AValue = '' then
+      result := tiRemoveExtension(result)
+    else
+      result := copy(result, 1, pos('.', result)) + AValue;
+  end;
 end;
 
 
@@ -1141,7 +1138,7 @@ begin
   copyFile(pChar(AFrom), pChar(ATo), false);
   iErrorCode := getLastError();
 {$ELSE}
-  if fpcCopyFile(pStrFileFrom, pStrFileTo) then
+  if fpcCopyFile(AFrom, ATo) then
     iErrorCode := 0
   else
     iErrorCode := GetLastOSError;
@@ -3080,7 +3077,7 @@ begin
       Pal.palNumEntries := GetSystemPaletteEntries(WinDC, 0, 256, Pal.palPalEntry);
       if Pal.PalNumEntries <> 0 then
         {$IFDEF FPC}
-        bm.Palette := CreatePalette(LPLOGPALETTE(@Pal)^);
+        ABitmap.Palette := CreatePalette(LPLOGPALETTE(@Pal)^);
         {$else}
         ABitmap.Palette := CreatePalette(PLogPalette(@Pal)^);
         {$endif}

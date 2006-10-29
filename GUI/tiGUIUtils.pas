@@ -45,12 +45,14 @@ function tiIsAltDown : Boolean;
 
   // Screen, monitor and desktop
 {$IFDEF MSWINDOWS}
+  {$IFNDEF FPC}
   // Get monitor position information for given window.
   function tiGetWindowMonitorPos(WindowHandle: HWND; var r: TRect;
                                  var MonitorToLeft: Boolean; var MonitorToRight: Boolean;
                                  var MonitorAbove: Boolean; var MonitorBelow: Boolean): Boolean;
   // Is the given window off screen (positioned outside visible monitors)
   function tiFormOffScreen(AForm: TForm): Boolean;
+  {$ENDIF}
 {$ENDIF MSWINDOWS}
 
   procedure ReadFormState(Ini: TtiINIFile; AForm: TForm; AHeight: integer = -1; AWidth: integer = -1); overload;
@@ -62,14 +64,16 @@ uses
   ,tiConstants
   ,Controls // mrYes
   {$IFDEF MSWINDOWS}
+    {$IFNDEF FPC}
   ,MultiMon
+    {$ENDIF}
   {$ENDIF MSWINDOWS}
   ,tiDialogs
   {$IFDEF FPC}
   ,LCLType    // TKeyboardState under FPC is not in Windows unit
   {$ENDIF}
   ,tiDataBuffer_Cli   // used for ShowTIDataset and TIDataSetToString method
- ;
+  ;
 
 
 { Global funcs and procs }
@@ -203,6 +207,7 @@ end;
 {$ENDIF MSWINDOWS}
 
 {$IFDEF MSWINDOWS}
+  {$IFNDEF FPC}
 function tiGetWindowMonitorPos(WindowHandle: HWND; var r: TRect;
                                var MonitorToLeft: Boolean; var MonitorToRight: Boolean;
                                var MonitorAbove: Boolean; var MonitorBelow: Boolean): Boolean;
@@ -263,9 +268,11 @@ begin
   except
   end;
 end;
+  {$ENDIF}
 {$ENDIF MSWINDOWS}
 
 {$IFDEF MSWINDOWS}
+  {$IFNDEF FPC}
 function tiFormOffScreen(AForm: TForm): Boolean;
 var
   lR: TRect;
@@ -286,6 +293,7 @@ begin
       Result := True;
   end;
 end;
+  {$ENDIF}
 {$ENDIF MSWINDOWS}
 
 procedure ReadFormState(Ini: TtiINIFile; AForm: TForm; AHeight: integer = -1; AWidth: integer = -1);
@@ -296,7 +304,8 @@ begin
   // If the form is off screen (positioned outside all monitor screens) then
   // center the form on screen.
 {$IFDEF MSWINDOWS}
-  if (AForm.FormStyle <> fsMDIChild) and tiFormOffScreen(AForm) then begin
+  if (AForm.FormStyle <> fsMDIChild) {$IFNDEF FPC} and tiFormOffScreen(AForm) {$ENDIF} then
+  begin
     if Assigned(Application.MainForm) and (Application.MainForm <> AForm) then
       AForm.Position := poMainFormCenter
     else
@@ -313,7 +322,8 @@ begin
   // If the form is off screen (positioned outside all monitor screens) then
   // center the form on screen.
 {$IFDEF MSWINDOWS}
-  if (AForm.FormStyle <> fsMDIChild) and tiFormOffScreen(AForm) then begin
+  if (AForm.FormStyle <> fsMDIChild) {$IFNDEF FPC} and tiFormOffScreen(AForm) {$ENDIF} then
+  begin
     if Assigned(Application.MainForm) and (Application.MainForm <> AForm) then
       AForm.Position := poMainFormCenter
     else

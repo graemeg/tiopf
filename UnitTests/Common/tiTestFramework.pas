@@ -66,10 +66,10 @@ type
     {$ELSE}
     constructor Create(AMethodName: string); override;
     {$ENDIF}
-    {$IF defined(VER2_0_2) and defined(FPC)}
-      // DUnit interface was added after FPC 2.0.2
+    // DUnit interface was added after FPC 2.0.2
+    {$IFDEF FPC}
       {$I DUnitCompatableIntf.inc}
-    {$IFEND}
+    {$ENDIF}
   end;
 
 
@@ -326,10 +326,10 @@ begin
 end;
 
 
-{$IF defined(VER2_0_2) and defined(FPC)}
+{$IFDEF FPC}
   // DUnit interface was added after FPC 2.0.2
   {$I DUnitCompatableImpl.inc}
-{$IFEND}
+{$ENDIF}
 
 
 procedure TtiOPFTestCase.DropTableTestGroup(const ADatabase : TtiDatabase = nil);

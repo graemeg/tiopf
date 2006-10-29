@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="/"/>
+    <PathDelim Value="\"/>
     <Version Value="5"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -18,7 +18,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="5">
@@ -47,97 +47,97 @@
         <UnitName Value="fpcUnitTIOPFGui"/>
       </Unit0>
       <Unit1>
-        <Filename Value="../Tests/tiBaseObject_TST.pas"/>
+        <Filename Value="..\Tests\tiBaseObject_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiBaseObject_TST"/>
       </Unit1>
       <Unit2>
-        <Filename Value="../Common/tiTestFramework.pas"/>
+        <Filename Value="..\Common\tiTestFramework.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiTestFramework"/>
       </Unit2>
       <Unit3>
-        <Filename Value="../Common/tiOPFTestManager.pas"/>
+        <Filename Value="..\Common\tiOPFTestManager.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiOPFTestManager"/>
       </Unit3>
       <Unit4>
-        <Filename Value="../Common/tstPerFramework_BOM.pas"/>
+        <Filename Value="..\Common\tstPerFramework_BOM.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tstPerFramework_BOM"/>
       </Unit4>
       <Unit5>
-        <Filename Value="../Common/tiDUnitUtils.pas"/>
+        <Filename Value="..\Common\tiDUnitUtils.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiDUnitUtils"/>
       </Unit5>
       <Unit6>
-        <Filename Value="../Common/tiDUnitDependencies.pas"/>
+        <Filename Value="..\Common\tiDUnitDependencies.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiDUnitDependencies"/>
       </Unit6>
       <Unit7>
-        <Filename Value="../Common/tiDUnitINI.pas"/>
+        <Filename Value="..\Common\tiDUnitINI.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiDUnitINI"/>
       </Unit7>
       <Unit8>
-        <Filename Value="../Common/tiPromptWhichPersistenceLayersToTest.pas"/>
+        <Filename Value="..\Common\tiPromptWhichPersistenceLayersToTest.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiPromptWhichPersistenceLayersToTest"/>
       </Unit8>
       <Unit9>
-        <Filename Value="../Tests/tiObject_TST.pas"/>
+        <Filename Value="..\Tests\tiObject_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiObject_TST"/>
       </Unit9>
       <Unit10>
-        <Filename Value="../Tests/tiCompress_TST.pas"/>
+        <Filename Value="..\Tests\tiCompress_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiCompress_TST"/>
       </Unit10>
       <Unit11>
-        <Filename Value="../Tests/tiStreams_TST.pas"/>
+        <Filename Value="..\Tests\tiStreams_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiStreams_TST"/>
       </Unit11>
       <Unit12>
-        <Filename Value="../Tests/tiQueue_TST.pas"/>
+        <Filename Value="..\Tests\tiQueue_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiQueue_TST"/>
       </Unit12>
       <Unit13>
-        <Filename Value="../Tests/tiWin32_TST.pas"/>
+        <Filename Value="..\Tests\tiWin32_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiWin32_TST"/>
       </Unit13>
       <Unit14>
-        <Filename Value="../Tests/tiDataSet_TST.pas"/>
+        <Filename Value="..\Tests\tiDataSet_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiDataSet_TST"/>
       </Unit14>
       <Unit15>
-        <Filename Value="../Tests/tiQuery_TST.pas"/>
+        <Filename Value="..\Tests\tiQuery_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiQuery_TST"/>
       </Unit15>
       <Unit16>
-        <Filename Value="../Tests/tiQuerySQL_TST.pas"/>
+        <Filename Value="..\Tests\tiQuerySQL_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiQuerySQL_TST"/>
       </Unit16>
       <Unit17>
-        <Filename Value="../Tests/tiSyncObjs_TST.pas"/>
+        <Filename Value="..\Tests\tiSyncObjs_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiSyncObjs_TST"/>
       </Unit17>
       <Unit18>
-        <Filename Value="../Tests/tiOPFCSV_TST.pas"/>
+        <Filename Value="..\Tests\tiOPFCSV_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiOPFCSV_TST"/>
       </Unit18>
       <Unit19>
-        <Filename Value="../Tests/tiClassToDBMap_TST.pas"/>
+        <Filename Value="..\Tests\tiClassToDBMap_TST.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiClassToDBMap_TST"/>
       </Unit19>
@@ -145,12 +145,13 @@
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
+    <PathDelim Value="\"/>
     <Target>
       <Filename Value="fpcUnitTIOPFGui"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="../../Core/"/>
-      <OtherUnitFiles Value="../Common/;../Tests/;../GUI/"/>
+      <IncludeFiles Value="..\..\Core\"/>
+      <OtherUnitFiles Value="..\Common\;..\Tests\;..\GUI\"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>

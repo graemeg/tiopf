@@ -159,6 +159,7 @@ procedure tiMailBugReport(E: Exception);
     ls: string;
 {$ENDIF}
 begin
+  Assert(E = E);  // Getting rid of compiler hints, param not used.
   {$IFDEF madexcept3}
   ls := MadExcept.CreateBugReport(etNormal, e, nil, GetCurrentThreadID);
   tiMailBugReport(ls);
@@ -172,6 +173,7 @@ end;
 
 procedure tiMailBugReport(const AText: string);
 begin
+  Assert(AText = AText);  // Getting rid of compiler hints, param not used.
   {$IFDEF madexcept3}
   MadExcept.AutoSendBugReport(AText, nil);
   {$ELSE}
