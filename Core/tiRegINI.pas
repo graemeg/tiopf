@@ -10,7 +10,7 @@ uses
   ,IniFiles
   ,registry
   ,Forms
-  ;
+ ;
 
 type
 
@@ -18,12 +18,12 @@ type
   TtiRegINIFile = class(TRegINIFile)
   public
     constructor CreateExt;
-    procedure   ReadFormState( AForm : TForm);
+    procedure   ReadFormState(AForm : TForm);
     procedure   WriteFormState(AForm : TForm);
-    function    ReadDate(      const pStrSection : string; pStrIndent : string; pDTDefault : TDateTime) : TDateTime;
-    procedure   WriteDate(     const pStrSection : string; pStrIndent : string; pDTValue : TDateTime);
-    procedure   ReadStrings(   const pStrSection : string; pStrings : TStrings);
-    procedure   WriteStrings(  const pStrSection : string; pStrings : TStrings);
+    function    ReadDate(     const ASection : string; AIndent : string; ADefault : TDateTime): TDateTime;
+    procedure   WriteDate(    const ASection : string; AIndent : string; ADateTime : TDateTime);
+    procedure   ReadStrings(  const ASection : string; AStrings : TStrings);
+    procedure   WriteStrings( const ASection : string; AStrings : TStrings);
   end;
 
   // Don't use this class, use TtiRegINIFile
@@ -38,15 +38,15 @@ type
   private
     FReadOnly : Boolean;
   public
-    constructor CreateExt(const pFileName : string = ''; pReadOnly: Boolean = false);
+    constructor CreateExt(const AFileName : string = ''; pReadOnly: Boolean = false);
 
-    function    ReadString(const Section, Ident, Default: string): string; override;
-    function    ReadInteger(const Section, Ident: string; Default: Longint): Longint; override;
-    function    ReadBool(const Section, Ident: string; Default: Boolean): Boolean; override;
-    function    ReadDate(const Section, Name: string; Default: TDateTime): TDateTime; override;
-    function    ReadDateTime(const Section, Name: string; Default: TDateTime): TDateTime; override;
-    function    ReadFloat(const Section, Name: string; Default: Double): Double; override;
-    function    ReadTime(const Section, Name: string; Default: TDateTime): TDateTime; override;
+    function    ReadString(const ASection, AIdent, ADefault: string): string; override;
+    function    ReadInteger(const ASection, AIdent: string; ADefault: Longint): Longint; override;
+    function    ReadBool(const ASection, AIdent: string; ADefault: Boolean): Boolean; override;
+    function    ReadDate(const ASection, AName: string; ADefault: TDateTime): TDateTime; override;
+    function    ReadDateTime(const ASection, AName: string; ADefault: TDateTime): TDateTime; override;
+    function    ReadFloat(const ASection, AName: string; ADefault: Double): Double; override;
+    function    ReadTime(const ASection, AName: string; ADefault: TDateTime): TDateTime; override;
 
     procedure   ReadFormState(AForm: TForm; AHeight: integer = -1; AWidth: integer = -1);
     procedure   WriteFormState(AForm : TForm);
@@ -58,7 +58,7 @@ type
 
 // These are both singletons
 function gReg : TtiRegINIFile;
-function gINI(const pFileName: string = '') : TtiINIFile;
+function gINI(const AFileName: string = ''): TtiINIFile;
 
 var
  DefaultRegistryCompany : String = '';//better hierarchy in registry key
@@ -71,7 +71,7 @@ uses
   ,Controls        // used for TFormBorderStyle
   {$ENDIF}
   ,tiConstants
-  ;
+ ;
 
 var
   uReg : TtiRegINIFile;
@@ -86,10 +86,10 @@ begin
 end;
 
 
-function gINI(const pFileName: string = '') : TtiINIFile;
+function gINI(const AFileName: string = ''): TtiINIFile;
 begin
   if uINI = nil then
-    uINI := TUserINIFile.CreateExt(pFileName);
+    uINI := TUserINIFile.CreateExt(AFileName);
   result := uINI;
 end;
 
@@ -102,37 +102,37 @@ end;
 procedure TtiRegINIFile.ReadFormState(AForm: TForm);
 var
   sRegKey : string;
-  liTop  : integer;
+  liTop : integer;
   liLeft : integer;
   lHeight : integer;
-  lWidth  : integer;
+  lWidth : integer;
 begin
   sRegKey := AForm.name + 'State';
   // Only set the form size if a bsSizable window
   if AForm.borderStyle = bsSizeable then
   begin
     lHeight := readInteger(sRegKey, 'Height', -1);
-    lWidth  := readInteger(sRegKey, 'Width',  -1);
+    lWidth := readInteger(sRegKey, 'Width',  -1);
     if (lHeight = -1) or (lWidth = -1) then
     begin
       lHeight := Screen.Height div 10 * 9;
-      lWidth  := Screen.Width  div 10 * 9;
+      lWidth := Screen.Width  div 10 * 9;
     end;
     AForm.Height := lHeight;
-    AForm.Width  := lWidth;
+    AForm.Width := lWidth;
   end;
 
   // Do not read position if an MDIChild form
   if AForm.FormStyle <> fsMDIChild then
   begin
     // Read form position, -1 if not stored in registry
-    liTop  := readInteger(sRegKey, 'Top',    -1);
+    liTop := readInteger(sRegKey, 'Top',    -1);
     liLeft := readInteger(sRegKey, 'Left',   -1);
     // The form pos was found in the registr
     if (liTop <> -1) and (liLeft <> -1) then begin
-      AForm.Top    := readInteger(sRegKey, 'Top',    AForm.Top);
-      AForm.Left   := readInteger(sRegKey, 'Left',   AForm.Left);
-      AForm.Position  := poDesigned;
+      AForm.Top   := readInteger(sRegKey, 'Top',    AForm.Top);
+      AForm.Left  := readInteger(sRegKey, 'Left',   AForm.Left);
+      AForm.Position := poDesigned;
     // No form pos in the registry, so default to screen center
     end else
     begin
@@ -167,10 +167,10 @@ end;
 
 
 
-function TtiRegINIFile.ReadDate(const pStrSection : string; pStrIndent : string; pDTDefault : TDateTime) : TDateTime;
+function TtiRegINIFile.ReadDate(const ASection : string; AIndent : string; ADefault : TDateTime): TDateTime;
 var sDate : string;
 begin
-  sDate  := gReg.readString(pStrSection, pStrIndent, DateTimeToStr(pDTDefault));
+  sDate := gReg.readString(ASection, AIndent, DateTimeToStr(ADefault));
   try
     result := StrToDateTime(sDate);
   except
@@ -180,40 +180,40 @@ end;
 
 
 
-procedure TtiRegINIFile.WriteDate(const pStrSection : string; pStrIndent : string; pDTValue : TDateTime);
+procedure TtiRegINIFile.WriteDate(const ASection : string; AIndent : string; ADateTime : TDateTime);
 var sDate : string;
 begin
   try
-    sDate := formatDateTime(csWinDateTimeFormat, pDTValue);
+    sDate := formatDateTime(csWinDateTimeFormat, ADateTime);
   except
     sDate := formatDateTime(csWinDateTimeFormat, date);
   end;
-  gReg.writeString(pStrSection, pStrIndent, sDate);
+  gReg.writeString(ASection, AIndent, sDate);
 end;
 
 
 
-procedure TtiRegINIFile.WriteStrings(const pStrSection : string; pStrings : TStrings);
+procedure TtiRegINIFile.WriteStrings(const ASection : string; AStrings : TStrings);
 var i : integer;
 begin
-  self.eraseSection(pStrSection);
-  for i := 0 to pStrings.count - 1 do begin
-    self.writeString(pStrSection, 'line' + intToStr(i), pStrings.strings[i]);
+  self.eraseSection(ASection);
+  for i := 0 to AStrings.count - 1 do begin
+    self.writeString(ASection, 'line' + intToStr(i), AStrings.strings[i]);
   end;
 end;
 
 
 
-procedure TtiRegINIFile.ReadStrings(const pStrSection : string; pStrings : TStrings);
+procedure TtiRegINIFile.ReadStrings(const ASection : string; AStrings : TStrings);
 var i : integer;
     sectionValues : TStringList;
 begin
   sectionValues := TStringList.Create;
-  pStrings.clear;
+  AStrings.clear;
   try
-    self.readSectionValues(pStrSection, sectionValues);
+    self.readSectionValues(ASection, sectionValues);
     for i := 0 to sectionValues.count - 1 do begin
-      pStrings.add(self.readString(pStrSection, 'line' + intToStr(i), ''));
+      AStrings.add(self.readString(ASection, 'line' + intToStr(i), ''));
     end;
   finally
     sectionValues.free;
@@ -236,14 +236,14 @@ end;
 // * TtiINIFile
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiINIFile.CreateExt(const pFileName : string = ''; pReadOnly: Boolean = false);
+constructor TtiINIFile.CreateExt(const AFileName : string = ''; pReadOnly: Boolean = false);
 var
-  lDir      : string;
+  lDir     : string;
   lFileName : string;
 begin
   FReadOnly := pReadOnly;
-  lDir := ExtractFilePath(pFileName);
-  lFileName := ExtractFileName(pFileName);
+  lDir := ExtractFilePath(AFileName);
+  lFileName := ExtractFileName(AFileName);
 
   if lDir = '' then
     lDir := ExtractFilePath(ParamStr(0));
@@ -264,48 +264,48 @@ begin
 
 end;
 
-function TtiINIFile.ReadBool(const Section, Ident: string;Default: Boolean): Boolean;
+function TtiINIFile.ReadBool(const ASection, AIdent: string;ADefault: Boolean): Boolean;
 var
   lValueExists: Boolean;
 begin
-  lValueExists:= ValueExists(Section, Ident);
+  lValueExists:= ValueExists(ASection, AIdent);
   if (not lValueExists) and
      (not FReadOnly) then
-    WriteBool(Section, Ident, Default);
-  result := inherited ReadBool(Section, Ident, Default);
+    WriteBool(ASection, AIdent, ADefault);
+  result := inherited ReadBool(ASection, AIdent, ADefault);
 end;
 
-function TtiINIFile.ReadDate(const Section, Name: string;Default: TDateTime): TDateTime;
+function TtiINIFile.ReadDate(const ASection, AName: string;ADefault: TDateTime): TDateTime;
 begin
-  if (not ValueExists(Section, Name)) and
+  if (not ValueExists(ASection, AName)) and
      (not FReadOnly) then
-    WriteDate(Section, Name, Default);
-  result := inherited ReadDate(Section, Name, Default);
+    WriteDate(ASection, AName, ADefault);
+  result := inherited ReadDate(ASection, AName, ADefault);
 end;
 
-function TtiINIFile.ReadDateTime(const Section, Name: string; Default: TDateTime): TDateTime;
+function TtiINIFile.ReadDateTime(const ASection, AName: string; ADefault: TDateTime): TDateTime;
 begin
-  if (not ValueExists(Section, Name)) and
+  if (not ValueExists(ASection, AName)) and
      (not FReadOnly) then
-    WriteDateTime(Section, Name, Default);
-  result := inherited ReadDateTime(Section, Name, Default);
+    WriteDateTime(ASection, AName, ADefault);
+  result := inherited ReadDateTime(ASection, AName, ADefault);
 end;
 
-function TtiINIFile.ReadFloat(const Section, Name: string; Default: Double): Double;
+function TtiINIFile.ReadFloat(const ASection, AName: string; ADefault: Double): Double;
 begin
-  if (not ValueExists(Section, Name)) and
+  if (not ValueExists(ASection, AName)) and
      (not FReadOnly) then
-    WriteFloat(Section, Name, Default);
-  result := inherited ReadFloat(Section, Name, Default);
+    WriteFloat(ASection, AName, ADefault);
+  result := inherited ReadFloat(ASection, AName, ADefault);
 end;
 
 procedure TtiINIFile.ReadFormState(AForm: TForm; AHeight : integer = -1; AWidth : integer = -1);
 var
   sRegKey : string;
-  liTop  : integer;
+  liTop : integer;
   liLeft : integer;
   lHeight : integer;
-  lWidth  : integer;
+  lWidth : integer;
 begin
   Assert(AForm <> nil, 'pForm not assigned');
   sRegKey := AForm.name + 'State';
@@ -313,14 +313,14 @@ begin
   if AForm.formStyle <> fsMDIChild then
   begin
     // Read form position, -1 if not stored in registry
-    liTop  := readInteger(sRegKey, 'Top',    -1);
+    liTop := readInteger(sRegKey, 'Top',    -1);
     liLeft := readInteger(sRegKey, 'Left',   -1);
     // The form pos was found in the registr
     if (liTop <> -1) and (liLeft <> -1) then
     begin
-      AForm.Top    := readInteger(sRegKey, 'Top',    AForm.Top);
-      AForm.Left   := readInteger(sRegKey, 'Left',   AForm.Left);
-      AForm.Position  := poDesigned;
+      AForm.Top   := readInteger(sRegKey, 'Top',    AForm.Top);
+      AForm.Left  := readInteger(sRegKey, 'Left',   AForm.Left);
+      AForm.Position := poDesigned;
     // No form pos in the registry, so default to screen center
     end else
     begin
@@ -342,33 +342,33 @@ begin
     else
       lWidth := AWidth;
     AForm.Height := readInteger(sRegKey, 'Height', lHeight);
-    AForm.Width  := readInteger(sRegKey, 'Width',  lWidth);
+    AForm.Width := readInteger(sRegKey, 'Width',  lWidth);
   end;
   AForm.WindowState := TWindowState(ReadInteger(sRegKey, 'WindowState', ord(wsNormal)));
 end;
 
-function TtiINIFile.ReadInteger(const Section, Ident: string;Default: Integer): Longint;
+function TtiINIFile.ReadInteger(const ASection, AIdent: string;ADefault: Integer): Longint;
 begin
-  if (not ValueExists(Section, Ident)) and
+  if (not ValueExists(ASection, AIdent)) and
      (not FReadOnly) then
-    WriteInteger(Section, Ident, Default);
-  result := inherited ReadInteger(Section, Ident, Default);
+    WriteInteger(ASection, AIdent, ADefault);
+  result := inherited ReadInteger(ASection, AIdent, ADefault);
 end;
 
-function TtiINIFile.ReadString(const Section, Ident,Default: string): string;
+function TtiINIFile.ReadString(const ASection, AIdent,ADefault: string): string;
 begin
-  result := inherited ReadString(Section, Ident, Default);
-  if (not ValueExists(Section, Ident)) and
+  result := inherited ReadString(ASection, AIdent, ADefault);
+  if (not ValueExists(ASection, AIdent)) and
      (not FReadOnly) then
-    WriteString(Section, Ident, Default);
+    WriteString(ASection, AIdent, ADefault);
 end;
 
-function TtiINIFile.ReadTime(const Section, Name: string;Default: TDateTime): TDateTime;
+function TtiINIFile.ReadTime(const ASection, AName: string;ADefault: TDateTime): TDateTime;
 begin
-  if (not ValueExists(Section, Name)) and
+  if (not ValueExists(ASection, AName)) and
      (not FReadOnly) then
-    WriteTime(Section, Name, Default);
-  result := inherited ReadTime(Section, Name, Default);
+    WriteTime(ASection, AName, ADefault);
+  result := inherited ReadTime(ASection, AName, ADefault);
 end;
 
 procedure TtiINIFile.WriteFormState(AForm: TForm);
@@ -399,3 +399,11 @@ finalization
   if uINI<>nil then uINI.Free;
 
 end.
+
+
+
+
+
+
+
+

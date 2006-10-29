@@ -13,7 +13,7 @@ uses
   ,tiUtils
   ,tiExcept
   ,tiVisitor
-  ;
+ ;
 
 const
   cErrorInvalidQueryFieldKind    = 'Invalid TtiQueryFieldKind';
@@ -33,7 +33,7 @@ type
                         qfkBinary,
                         qfkMacro,
                         qfkLongString
-                       ) ;
+                      );
 const
   cgaQueryFieldKind : array[TtiQueryFieldKind] of string = (
     'String'     ,
@@ -44,7 +44,7 @@ const
     'Binary'     ,
     'Macro'      ,
     'Long string'
-  ) ;
+ );
 (*
   cgaQueryFieldKind : array[TtiQueryFieldKind] of string = (
     {$IFNDEF OPTIMISE_XMLDB_SIZE}'String'     {$ELSE} 's' {$ENDIF},
@@ -55,7 +55,7 @@ const
     {$IFNDEF OPTIMISE_XMLDB_SIZE}'Binary'     {$ELSE} 'n' {$ENDIF},
     {$IFNDEF OPTIMISE_XMLDB_SIZE}'Macro'      {$ELSE} 'm' {$ENDIF},
     {$IFNDEF OPTIMISE_XMLDB_SIZE}'Long string'{$ELSE} 'l' {$ENDIF}
-  ) ;
+ );
 *)
   cgaQueryFieldKindSQLMgr : array[TtiQueryFieldKind] of string = (
     'String',
@@ -66,9 +66,9 @@ const
     'Binary',
     'Macro',
     'Long string'
-  ) ;
+ );
 
-function tiTypeKindToQueryFieldKind( pValue : TtiTypeKind ) : TtiQueryFieldKind ;
+function tiTypeKindToQueryFieldKind(AValue : TtiTypeKind): TtiQueryFieldKind;
 
 type
 
@@ -78,513 +78,549 @@ type
                    qtUpdate,
                    qtDelete,
                    qtDDL
-                  ) ;
+                 );
 
-  TtiQuery            = class ;
-  TtiDBMetaData       = class ;
-  TtiDBMetaDataTable  = class ;
-  TtiDBMetaDataField  = class ;
-  TtiQueryParams      = class ;
-  TtiQueryParamAbs    = class ;
-  TTableName          = String[ 255 ] ;
-  TFieldName          = String[ 255 ] ;
+  TtiQuery            = class;
+  TtiDBMetaData       = class;
+  TtiDBMetaDataTable  = class;
+  TtiDBMetaDataField  = class;
+  TtiQueryParams      = class;
+  TtiQueryParamAbs    = class;
+  TTableName          = String[ 255 ];
+  TFieldName          = String[ 255 ];
 
 
- TtiDBMetaData = class( TtiObjectList )
+ TtiDBMetaData = class(TtiObjectList)
   private
   protected
-    function    GetItems(i: integer): TtiDBMetaDataTable ; reintroduce ;
-    procedure   SetItems(i: integer; const Value: TtiDBMetaDataTable); reintroduce ;
-    function    GetCaption : string ; override ;
-    function    GetOwner: TtiObject; reintroduce ;
-    procedure   SetOwner(const Value: TtiObject); reintroduce ;
+    function    GetItems(i: integer): TtiDBMetaDataTable; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiDBMetaDataTable); reintroduce;
+    function    GetCaption : string; override;
+    function    GetOwner: TtiObject; reintroduce;
+    procedure   SetOwner(const AValue: TtiObject); reintroduce;
   public
-    property    Items[i:integer] : TtiDBMetaDataTable read GetItems write SetItems ;
-    procedure   Add( pObject : TtiDBMetaDataTable ; pbDefaultDispOrder : boolean = true ) ; reintroduce ;
-    property    Owner        : TtiObject   read GetOwner      write SetOwner ;
-    procedure   Read( const pDBConnectionName: string = '' ; pPerLayerName : string = '' ) ; override ;
-    procedure   Clear ; override ;
-    function    FindByTableName( const pTableName : TTableName ) : TtiDBMetaDataTable ;
+    property    Items[i:integer]: TtiDBMetaDataTable read GetItems write SetItems;
+    procedure   Add(AObject : TtiDBMetaDataTable; ADefaultDispOrder : boolean = true); reintroduce;
+    property    Owner       : TtiObject   read GetOwner      write SetOwner;
+    procedure   Read(const ADBConnectionName: string = ''; APersistenceLayerName : string = ''); override;
+    procedure   Clear; override;
+    function    FindByTableName(const ATableName : TTableName): TtiDBMetaDataTable;
   end;
   
 
-  TtiDBMetaDataTable = class( TtiObjectList )
+  TtiDBMetaDataTable = class(TtiObjectList)
   private
-    FName : TTableName ;
-    FMaxFieldWidth : word ;
+    FName : TTableName;
+    FMaxFieldWidth : word;
   protected
-    function    GetItems(i: integer):TtiDBMetaDataField  ; reintroduce ;
-    procedure   SetItems(i: integer; const Value: TtiDBMetaDataField); reintroduce ;
-    function    GetOwner: TtiDBMetaData; reintroduce ;
-    procedure   SetOwner(const Value: TtiDBMetaData); reintroduce ;
-    function    GetCaption : string ; override ;
+    function    GetItems(i: integer):TtiDBMetaDataField ; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiDBMetaDataField); reintroduce;
+    function    GetOwner: TtiDBMetaData; reintroduce;
+    procedure   SetOwner(const AValue: TtiDBMetaData); reintroduce;
+    function    GetCaption : string; override;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    property    Items[i:integer] : TtiDBMetaDataField read GetItems write SetItems ;
-    property    Owner       : TtiDBMetaData   read GetOwner      write SetOwner ;
-    procedure   Add( pObject : TtiDBMetaDataField ; pbDefaultDispOrder : boolean = true ) ; reintroduce ;
-    function    AddInstance( const pFieldName : string ;
-                             const pFieldKind : TtiQueryFieldKind ;
-                             pFieldWidth : integer = 0 ) : TtiDBMetaDataField ; overload ;
-    function    AddInstance : TtiDBMetaDataField ; overload ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    property    Items[i:integer]: TtiDBMetaDataField read GetItems write SetItems;
+    property    Owner      : TtiDBMetaData   read GetOwner      write SetOwner;
+    procedure   Add(AObject : TtiDBMetaDataField; ADefaultDispOrder : boolean = true); reintroduce;
+    function    AddInstance(const AFieldName : string;
+                             const AFieldKind : TtiQueryFieldKind;
+                             AFieldWidth : integer = 0): TtiDBMetaDataField; overload;
+    function    AddInstance : TtiDBMetaDataField; overload;
     // Don't use AddField. Use AddInstance instead
-    procedure   AddField( const pFieldName : string ;
-                          const pFieldKind : TtiQueryFieldKind ;
-                          pFieldWidth : integer = 0 ) ;
-    procedure   Read( const pDBConnectionName: string  = '' ; pPerLayerName : string = '' ) ; override ;
-    function    FindByFieldName( const pFieldName : TFieldName ) : TtiDBMetaDataField ;
-    function    MaxFieldNameWidth : word ;
-    function    Clone : TtiDBMetaDataTable ; reintroduce ;
+    procedure   AddField(const AFieldName : string;
+                          const AFieldKind : TtiQueryFieldKind;
+                          AFieldWidth : integer = 0);
+    procedure   Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = ''); override;
+    function    FindByFieldName(const AFieldName : TFieldName): TtiDBMetaDataField;
+    function    MaxFieldNameWidth : word;
+    function    Clone : TtiDBMetaDataTable; reintroduce;
   published
-    property    Name : TTableName read FName write FName ;
+    property    Name : TTableName read FName write FName;
   end;
   
 
-  TtiDBMetaDataField = class( TtiObject )
+  TtiDBMetaDataField = class(TtiObject)
   private
     FName: TFieldName;
     FWidth: integer;
     FKind: TtiQueryFieldKind;
     function    GetKindAsStr: string;
-    procedure   SetKindAsStr(const Value: string);
+    procedure   SetKindAsStr(const AValue: string);
   protected
     function    GetRPadName: TFieldName;
-    function    GetOwner: TtiDBMetaDataTable; reintroduce ;
-    procedure   SetOwner(const Value: TtiDBMetaDataTable); reintroduce ;
-    function    GetCaption : string ; override ;
+    function    GetOwner: TtiDBMetaDataTable; reintroduce;
+    procedure   SetOwner(const AValue: TtiDBMetaDataTable); reintroduce;
+    function    GetCaption : string; override;
   public
-    property    Owner       : TtiDBMetaDataTable             read GetOwner      write SetOwner ;
-    property    RPadName : TFieldName read GetRPadName ;
-    function    Clone : TtiDBMetaDataField ; reintroduce ;
+    property    Owner      : TtiDBMetaDataTable             read GetOwner      write SetOwner;
+    property    RPadName : TFieldName read GetRPadName;
+    function    Clone : TtiDBMetaDataField; reintroduce;
   published
-    property    Name  : TFieldName read FName write FName ;
-    property    Kind  : TtiQueryFieldKind read FKind write FKind ;
-    property    KindAsStr : string read GetKindAsStr write SetKindAsStr ;
-    property    Width : integer read FWidth write FWidth ;
+    property    Name : TFieldName read FName write FName;
+    property    Kind : TtiQueryFieldKind read FKind write FKind;
+    property    KindAsStr : string read GetKindAsStr write SetKindAsStr;
+    property    Width : integer read FWidth write FWidth;
   end;
 
 
-  TtiDatabase = class( TtiBaseObject )
+  TtiDatabase = class(TtiBaseObject)
   private
-    FsUserName     : string;
-    FsPassword     : string;
-    FsDatabaseName : string;
-    FParams        : TStringList;
-    FiTraceLevel   : integer;
+    FUserName    : string;
+    FPassword    : string;
+    FDatabaseName : string;
+    FParams       : TStringList;
+    FTraceLevel  : integer;
     FErrorInLastCall: boolean;
   protected
     // Implement these in the concrete
-    procedure   SetConnected( pbValue : boolean ) ; virtual ; abstract ;
-    function    GetConnected : boolean ; virtual ; abstract ;
+    procedure   SetConnected(AValue : boolean); virtual; abstract;
+    function    GetConnected : boolean; virtual; abstract;
     property    Params : TStringList read FParams;
   public
-    constructor Create ; virtual ;
-    destructor  Destroy ; override ;
+    constructor Create; virtual;
+    destructor  Destroy; override;
 
-    procedure   Connect( const psDatabaseName, psUserName, psPassword, pParams : string) ;
+    procedure   Connect(const ADatabaseName, AUserName, APassword, AParams : string);
 
-    property    DatabaseName : string  read FsDatabaseName  write FsDatabaseName ;
-    property    UserName     : string  read FsUserName      write FsUserName     ;
-    property    Password     : string  read FsPassword      write FsPassword     ;
-    property    Connected    : boolean read GetConnected    write SetConnected   ;
-    property    TraceLevel   : integer read FiTraceLevel    write FiTraceLevel   ;
-    property    ErrorInLastCall : boolean read FErrorInLastCall write FErrorInLastCall ;
+    property    DatabaseName : string  read FDatabaseName  write FDatabaseName;
+    property    UserName    : string  read FUserName      write FUserName    ;
+    property    Password    : string  read FPassword      write FPassword    ;
+    property    Connected   : boolean read GetConnected    write SetConnected  ;
+    property    TraceLevel  : integer read FTraceLevel    write FTraceLevel  ;
+    property    ErrorInLastCall : boolean read FErrorInLastCall write FErrorInLastCall;
 
     // Implement these in the concrete
-    class function  DatabaseExists( const psDatabaseName, psUserName, psPassword : string ) : boolean ; virtual ; abstract ;
-    class procedure CreateDatabase( const psDatabaseName, psUserName, psPassword : string ) ; virtual ; abstract ;
-    class function  TestConnectTo(  const psDatabaseName, psUserName, psPassword, pParams : string ) : boolean ; virtual ;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; virtual; abstract;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); virtual; abstract;
+    class function  TestConnectTo( const ADatabaseName, AUserName, APassword, AParams : string): boolean; virtual;
 
-    procedure   StartTransaction ; virtual ; abstract;
-    function    InTransaction : boolean ; virtual ; abstract ;
-    procedure   Commit ; virtual ; abstract ;
-    procedure   RollBack ; virtual ; abstract ;
-    function    Test : boolean ; virtual ; abstract ;
-    function    CreateTIQuery : TtiQuery ;
-    procedure   ReadMetaDataTables( pData : TtiDBMetaData ) ; virtual ; abstract ;
-    procedure   ReadMetaDataFields( pData : TtiDBMetaDataTable ) ; virtual ; abstract ;
-    procedure   ExecSQL( const pSQL : string ; pParams : TtiQueryParams = nil ) ; virtual ; // ToDo: Refactor down...
+    procedure   StartTransaction; virtual; abstract;
+    function    InTransaction : boolean; virtual; abstract;
+    procedure   Commit; virtual; abstract;
+    procedure   RollBack; virtual; abstract;
+    function    Test : boolean; virtual; abstract;
+    function    CreateTIQuery : TtiQuery;
+    procedure   ReadMetaDataTables(AData : TtiDBMetaData); virtual; abstract;
+    procedure   ReadMetaDataFields(AData : TtiDBMetaDataTable); virtual; abstract;
+    procedure   ExecSQL(const pSQL : string; AParams : TtiQueryParams = nil); virtual; // ToDo: Refactor down...
 
-    procedure   DropTable( const pTableName : TTableName ) ; overload ;
-    procedure   DropTable( const pTableMetaData : TtiDBMetaDataTable ) ; overload ; virtual ; abstract ;
-    procedure   CreateTable( const pTableMetaData : TtiDBMetaDataTable ) ; virtual ; abstract ;
-    procedure   DeleteRow(   const pTableName : string ;
-                             const pWhere : TtiQueryParams ) ; virtual ;
-    procedure   InsertRow(   const pTableName : string ;
-                             const pParams    : TtiQueryParams ) ; virtual ;
-    procedure   UpdateRow(   const pTableName : string ;
-                             const pParams : TtiQueryParams ;
-                             const pWhere     : TtiQueryParams ) ; virtual ;
+    procedure   DropTable(const ATableName : TTableName); overload;
+    procedure   DropTable(const ATableMetaData : TtiDBMetaDataTable); overload; virtual; abstract;
+    procedure   CreateTable(const ATableMetaData : TtiDBMetaDataTable); virtual; abstract;
+    procedure   DeleteRow(  const ATableName : string;
+                             const AWhere : TtiQueryParams); virtual;
+    procedure   InsertRow(  const ATableName : string;
+                             const AParams   : TtiQueryParams); virtual;
+    procedure   UpdateRow(  const ATableName : string;
+                             const AParams : TtiQueryParams;
+                             const AWhere    : TtiQueryParams); virtual;
   end;
   
 
-  TtiQuery = class( TtiBaseObject )
+  TtiQuery = class(TtiBaseObject)
   private
-    FContinueScan  : boolean;
-    FDatabase : TtiDatabase ;
+    FContinueScan : boolean;
+    FDatabase : TtiDatabase;
+    FOptions: TStringList;
   protected
-    //function  GetSession: TObject; virtual ; abstract ;
-    //procedure SetSession(const Value: TObject); virtual ; abstract ;
-    function  GetSQL: TStrings; virtual ; abstract ;
-    procedure SetSQL(const Value: TStrings); virtual ; abstract ;
+    //function  GetSession: TObject; virtual; abstract;
+    //procedure SetSession(const AValue: TObject); virtual; abstract;
+    function  GetSQL: TStrings; virtual; abstract;
+    procedure SetSQL(const AValue: TStrings); virtual; abstract;
     function  GetQueryType: TtiQueryType;virtual;
     function  GetSQLText: string;virtual;
-    procedure SetSQLText(const Value: string);virtual;
-    function  GetActive: boolean; virtual ; abstract ;
-    procedure SetActive(const Value: boolean); virtual ; abstract ;
-    function  GetEOF: boolean; virtual ; abstract ;
+    procedure SetSQLText(const AValue: string);virtual;
+    function  GetActive: boolean; virtual; abstract;
+    procedure SetActive(const AValue: boolean); virtual; abstract;
+    function  GetEOF: boolean; virtual; abstract;
 
-    function  GetParamAsString( const psName: string): string; virtual ; abstract ;
-    procedure SetParamAsString( const psName, Value: string); virtual ; abstract ;
-    function  GetParamAsBoolean(const psName: string): boolean; virtual ; abstract ;
-    procedure SetParamAsBoolean(const psName: string;const Value: boolean);virtual ; abstract ;
-    function  GetParamAsFloat(const psName: string): extended;virtual ; abstract ;
-    procedure SetParamAsFloat(const psName: string; const Value: extended);virtual ; abstract ;
-    function  GetParamAsInteger(const psName: string): Int64;virtual ; abstract ;
-    procedure SetParamAsInteger(const psName: string;const Value: Int64 );virtual ; abstract ;
-    function  GetParamAsTextBLOB(const psName: string): string; virtual ; abstract ;
-    procedure SetParamAsTextBLOB(const psName, Value: string); virtual ; abstract ;
-    function  GetParamAsDateTime(const psName: string): TDateTime;virtual ;abstract ;
-    procedure SetParamAsDateTime(const psName: string; const Value: TDateTime); virtual ; abstract ;
-    procedure SetParamAsMacro(const psName: string; const Value: string); virtual ;
-    function  GetParamIsNull(const psName: String): Boolean; virtual; abstract;
-    procedure SetParamIsNull(const psName: String; const Value: Boolean); virtual; abstract;
+    function  GetParamAsString(const AName: string): string; virtual; abstract;
+    procedure SetParamAsString(const AName, AValue: string); virtual; abstract;
+    function  GetParamAsBoolean(const AName: string): boolean; virtual; abstract;
+    procedure SetParamAsBoolean(const AName: string;const AValue: boolean);virtual; abstract;
+    function  GetParamAsFloat(const AName: string): extended;virtual; abstract;
+    procedure SetParamAsFloat(const AName: string; const AValue: extended);virtual; abstract;
+    function  GetParamAsInteger(const AName: string): Int64;virtual; abstract;
+    procedure SetParamAsInteger(const AName: string;const AValue: Int64);virtual; abstract;
+    function  GetParamAsTextBLOB(const AName: string): string; virtual; abstract;
+    procedure SetParamAsTextBLOB(const AName, AValue: string); virtual; abstract;
+    function  GetParamAsDateTime(const AName: string): TDateTime;virtual;abstract;
+    procedure SetParamAsDateTime(const AName: string; const AValue: TDateTime); virtual; abstract;
+    procedure SetParamAsMacro(const AName: string; const AValue: string); virtual;
+    function  GetParamIsNull(const AName: String): Boolean; virtual; abstract;
+    procedure SetParamIsNull(const AName: String; const AValue: Boolean); virtual; abstract;
 
-    function  GetFieldAsString(const psName: string): string ; virtual ; abstract ;
-    function  GetFieldAsFloat(const psName: string): extended ; virtual ; abstract ;
-    function  GetFieldAsBoolean(const psName: string): boolean ; virtual ; abstract ;
-    function  GetFieldAsInteger(const psName: string): Int64 ; virtual ; abstract ;
-    function  GetFieldAsDateTime(const psName: string):TDateTime ; virtual ; abstract ;
-    function  GetFieldIsNull(const psName: string): Boolean; virtual ; abstract ;
+    function  GetFieldAsString(const AName: string): string; virtual; abstract;
+    function  GetFieldAsFloat(const AName: string): extended; virtual; abstract;
+    function  GetFieldAsBoolean(const AName: string): boolean; virtual; abstract;
+    function  GetFieldAsInteger(const AName: string): Int64; virtual; abstract;
+    function  GetFieldAsDateTime(const AName: string):TDateTime; virtual; abstract;
+    function  GetFieldIsNull(const AName: string): Boolean; virtual; abstract;
 
-    function  GetFieldAsStringByIndex(pIndex: Integer): string     ; virtual ; abstract ;
-    function  GetFieldAsFloatByIndex(pIndex: Integer)   : extended ; virtual ; abstract ;
-    function  GetFieldAsBooleanByIndex(pIndex: Integer) : boolean  ; virtual ; abstract ;
-    function  GetFieldAsIntegerByIndex(pIndex: Integer) : Int64    ; virtual ; abstract ;
-    function  GetFieldAsDateTimeByIndex(pIndex: Integer):TDateTime ; virtual ; abstract ;
-    function  GetFieldIsNullByIndex(pIndex: Integer):Boolean       ; virtual ; abstract ;
+    function  GetFieldAsStringByIndex(AIndex: Integer): string    ; virtual; abstract;
+    function  GetFieldAsFloatByIndex(AIndex: Integer)  : extended; virtual; abstract;
+    function  GetFieldAsBooleanByIndex(AIndex: Integer): boolean ; virtual; abstract;
+    function  GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ; virtual; abstract;
+    function  GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime; virtual; abstract;
+    function  GetFieldIsNullByIndex(AIndex: Integer):Boolean      ; virtual; abstract;
 
+    function  GetOptions: TStringList; virtual;
+    procedure DoChangeOptions(Sender: TObject); virtual;
   public
-    constructor Create ; virtual ;
-    destructor  Destroy ; override ;
-    procedure   AssignParams( const pParams : TtiQueryParams ; const pWhere : TtiQueryParams = nil ) ; virtual ;
+    constructor Create; virtual;
+    destructor  Destroy; override;
+    property    Options: TStringList read GetOptions;
+    procedure   AssignParams(const AParams : TtiQueryParams; const AWhere : TtiQueryParams = nil); virtual;
 
-    property  ParamAsString[ const psName : string ] : string
+    property  ParamAsString[ const AName : string ]: string
                 read  GetParamAsString
-                write SetParamAsString ;
-    property  ParamAsInteger[ const psName : string ] : Int64
+                write SetParamAsString;
+    property  ParamAsInteger[ const AName : string ]: Int64
                 read  GetParamAsInteger
-                write SetParamAsInteger ;
+                write SetParamAsInteger;
 
-    property  ParamAsBoolean[ const psName : string ] : boolean
+    property  ParamAsBoolean[ const AName : string ]: boolean
                 read  GetParamAsBoolean
-                write SetParamAsBoolean ;
+                write SetParamAsBoolean;
 
-    property  ParamAsFloat[ const psName : string ] : extended
+    property  ParamAsFloat[ const AName : string ]: extended
                 read  GetParamAsFloat
-                write SetParamAsFloat ;
+                write SetParamAsFloat;
 
-    property  ParamAsDateTime[ const psName : string ] : TDateTime
+    property  ParamAsDateTime[ const AName : string ]: TDateTime
                 read GetParamAsDateTime
-                write SetParamAsDateTime ;
+                write SetParamAsDateTime;
 
-    property  ParamAsTextBLOB[ const psName : string ] : string
+    property  ParamAsTextBLOB[ const AName : string ]: string
                 read GetParamAsTextBLOB
-                write SetParamAsTextBLOB ;
+                write SetParamAsTextBLOB;
 
-//    property  ParamAsStream[ const psName : string ] : TStream
-//                write  SetParamAsStream ;
+//    property  ParamAsStream[ const AName : string ]: TStream
+//                write  SetParamAsStream;
 
-    property  ParamAsMacro[ const psName : string ] : string
-                write SetParamAsMacro ;
+    property  ParamAsMacro[ const AName : string ]: string
+                write SetParamAsMacro;
 
-    property  ParamIsNull[const psName: String ] : boolean
+    property  ParamIsNull[const AName: String ]: boolean
                 read GetParamIsNull
-                write SetParamIsNull ;
+                write SetParamIsNull;
 
 
-    property  FieldAsString[ const psName : string ] : string
-                read GetFieldAsString ;
+    property  FieldAsString[ const AName : string ]: string
+                read GetFieldAsString;
 
-    property  FieldAsFloat[ const psName : string ] : extended
-                read  GetFieldAsFloat ;
+    property  FieldAsFloat[ const AName : string ]: extended
+                read  GetFieldAsFloat;
 
-    property  FieldAsBoolean[ const psName : string ]  : boolean
-                read GetFieldAsBoolean ;
+    property  FieldAsBoolean[ const AName : string ] : boolean
+                read GetFieldAsBoolean;
 
-    property  FieldAsInteger[ const psName : string ] : Int64
-                read GetFieldAsInteger ;
+    property  FieldAsInteger[ const AName : string ]: Int64
+                read GetFieldAsInteger;
 
-    property  FieldAsDateTime[ const psName : string ] : TDateTime
-                read GetFieldAsDateTime ;
+    property  FieldAsDateTime[ const AName : string ]: TDateTime
+                read GetFieldAsDateTime;
 
-    property  FieldIsNull[ const psName : string ] : Boolean
-                read GetFieldIsNull ;
+    property  FieldIsNull[ const AName : string ]: Boolean
+                read GetFieldIsNull;
 
-    property FieldAsStringByIndex[ pIndex: Integer ] : string
-                read GetFieldAsStringByIndex ;
-    property FieldAsFloatByIndex[ pIndex: Integer ] : extended
-                read GetFieldAsFloatByIndex ;
-    property FieldAsBooleanByIndex[ pIndex: Integer ] : Boolean
-                read GetFieldAsBooleanByIndex ;
-    property FieldAsIntegerByIndex[ pIndex: Integer ] : Int64
-                read GetFieldAsIntegerByIndex ;
-    property FieldAsDateTimeByIndex[ pIndex: Integer ] : TDateTime
-                read GetFieldAsDateTimeByIndex ;
-    property FieldIsNullByIndex[ pIndex: Integer ] : Boolean
-                read GetFieldIsNullByIndex ;
+    property FieldAsStringByIndex[ AIndex: Integer ]: string
+                read GetFieldAsStringByIndex;
+    property FieldAsFloatByIndex[ AIndex: Integer ]: extended
+                read GetFieldAsFloatByIndex;
+    property FieldAsBooleanByIndex[ AIndex: Integer ]: Boolean
+                read GetFieldAsBooleanByIndex;
+    property FieldAsIntegerByIndex[ AIndex: Integer ]: Int64
+                read GetFieldAsIntegerByIndex;
+    property FieldAsDateTimeByIndex[ AIndex: Integer ]: TDateTime
+                read GetFieldAsDateTimeByIndex;
+    property FieldIsNullByIndex[ AIndex: Integer ]: Boolean
+                read GetFieldIsNullByIndex;
 
-    property SQL          : TStrings read GetSQL    write SetSQL ;
+    property SQL         : TStrings read GetSQL    write SetSQL;
     // Don't use SQL.Text as there may be some code in SetSQL that must execute
-    property SQLText      : string   read GetSQLText write SetSQLText ;
-    property Active       : boolean  read GetActive write SetActive ;
-    property EOF          : boolean  read GetEOF ;
+    property SQLText     : string   read GetSQLText write SetSQLText;
+    property Active      : boolean  read GetActive write SetActive;
+    property EOF         : boolean  read GetEOF;
     property ContinueScan : boolean  read fContinueScan write fContinueScan;
 
-    procedure Open ; virtual ; abstract ;
-    procedure Close ; virtual ; abstract ;
-    procedure ExecSQL ; virtual ; abstract ;
+    procedure Open; virtual; abstract;
+    procedure Close; virtual; abstract;
+    procedure ExecSQL; virtual; abstract;
 
-    procedure SelectRow( const pTableName : string ; const pWhere  : TtiQueryParams ) ; virtual ; abstract ;
-    procedure InsertRow( const pTableName : string ; const pParams : TtiQueryParams ) ; virtual ; abstract ;
-    procedure DeleteRow( const pTableName : string ; const pWhere  : TtiQueryParams ) ; virtual ; abstract ;
-    procedure UpdateRow( const pTableName : string ; const pParams : TtiQueryParams ; const pWhere  : TtiQueryParams ) ; virtual ; abstract ;
+    procedure SelectRow(const ATableName : string; const AWhere : TtiQueryParams); virtual; abstract;
+    procedure InsertRow(const ATableName : string; const AParams : TtiQueryParams); virtual; abstract;
+    procedure DeleteRow(const ATableName : string; const AWhere : TtiQueryParams); virtual; abstract;
+    procedure UpdateRow(const ATableName : string; const AParams : TtiQueryParams; const AWhere : TtiQueryParams); virtual; abstract;
 
-    procedure Next ; virtual ; abstract ;
+    procedure Next; virtual; abstract;
 
-    function  ParamCount : integer ; virtual ; abstract ;
-    function  ParamName( pIndex : integer ) : string ; virtual ; abstract ;
+    function  ParamCount : integer; virtual; abstract;
+    function  ParamName(AIndex : integer): string; virtual; abstract;
 
-    function  FieldCount : integer ; virtual ; abstract ;
-    function  FieldName( pIndex : integer ) : string ; virtual ; abstract ;
-    function  FieldIndex( const psName : string ) : integer ; virtual ; abstract ;
-    function  FieldKind( pIndex : integer ) : TtiQueryFieldKind ; virtual ; abstract ;
-    function  FieldSize( pIndex : integer ) : integer ; virtual ; abstract ;
-    function  HasNativeLogicalType : boolean ; virtual ; abstract ;
+    function  FieldCount : integer; virtual; abstract;
+    function  FieldName(AIndex : integer): string; virtual; abstract;
+    function  FieldIndex(const AName : string): integer; virtual; abstract;
+    function  FieldKind(AIndex : integer): TtiQueryFieldKind; virtual; abstract;
+    function  FieldSize(AIndex : integer): integer; virtual; abstract;
+    function  HasNativeLogicalType : boolean; virtual; abstract;
 
-    procedure   AssignParamFromStream(     const pName  : string  ; const pVaule : TStream ) ; virtual ; abstract ;
-    procedure   AssignParamToStream(       const pName  : string  ; const pVaule : TStream ) ; virtual ; abstract ;
-    procedure   AssignFieldAsStream(       const pName  : string  ; const pVaule : TStream ) ; virtual ; abstract ;
-    procedure   AssignFieldAsStreamByIndex(      pIndex : integer ; const pValue : TStream ) ; virtual ; abstract ;
+    procedure   AssignParamFromStream(    const AName : string ; const AValue : TStream); virtual; abstract;
+    procedure   AssignParamToStream(      const AName : string ; const AValue : TStream); virtual; abstract;
+    procedure   AssignFieldAsStream(      const AName : string ; const AValue : TStream); virtual; abstract;
+    procedure   AssignFieldAsStreamByIndex(     AIndex : integer; const AValue : TStream); virtual; abstract;
 
-    property  Database : TtiDatabase read FDatabase write FDatabase ;
-    procedure AttachDatabase( pDatabase : TtiDatabase ) ; virtual ;
-    procedure DetachDatabase ;  virtual ;
-    procedure Reset ; virtual ; abstract ;
+    property  Database : TtiDatabase read FDatabase write FDatabase;
+    procedure AttachDatabase(ADatabase : TtiDatabase); virtual;
+    procedure DetachDatabase;  virtual;
+    procedure Reset; virtual; abstract;
 
-    function  ParamsAsString : string ; virtual ;
-    property  QueryType    : TtiQueryType read GetQueryType ;
+    function  ParamsAsString : string; virtual;
+    property  QueryType   : TtiQueryType read GetQueryType;
+
+    procedure AssignToFieldString(const AField: TtiFieldString; const AName: string);
+    procedure AssignFromFieldString(const AField: TtiFieldString; const AName: string);
+
+    procedure AssignToFieldInteger(const AField: TtiFieldInteger; const AName: string);
+    procedure AssignFromFieldInteger(const AField: TtiFieldInteger; const AName: string);
+
+    procedure AssignToFieldFloat(const AField: TtiFieldFloat; const AName: string);
+    procedure AssignFromFieldFloat(const AField: TtiFieldFloat; const AName: string);
+
+    procedure AssignToFieldBoolean(const AField: TtiFieldBoolean; const AName: string);
+    procedure AssignFromFieldBoolean(const AField: TtiFieldBoolean; const AName: string);
+
+    procedure AssignToFieldDateTime(const AField: TtiFieldDateTime; const AName: string);
+    procedure AssignFromFieldDateTime(const AField: TtiFieldDateTime; const AName: string);
+
   end;
 
 
-  TtiDatabaseSQL = class( TtiDatabase )
+  TtiDatabaseSQL = class(TtiDatabase)
   private
   protected
-    function FieldMetaDataToSQLCreate( const pFieldMetaData : TtiDBMetaDataField ) : string ; virtual ; abstract ;
+    function FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; virtual; abstract;
   public
-    procedure   DropTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
-    procedure   CreateTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
+    procedure   DropTable(const ATableMetaData : TtiDBMetaDataTable); override;
+    procedure   CreateTable(const ATableMetaData : TtiDBMetaDataTable); override;
   end;
 
 
-  TtiQuerySQL = class( TtiQuery )
+  TtiQuerySQL = class(TtiQuery)
   private
   protected
-    function    WhereClause( const pWhere: TtiQueryParams ) : string ;
-    function    SQLAndParamsAsString : string ;
+    function    WhereClause(const AWhere: TtiQueryParams): string;
+    function    SQLAndParamsAsString : string;
   public
-    procedure   SelectRow( const pTableName : string ; const pWhere : TtiQueryParams ) ; override ;
-    procedure   InsertRow( const pTableName : string ; const pParams : TtiQueryParams ) ; override ;
-    procedure   DeleteRow( const pTableName : string ; const pWhere : TtiQueryParams ) ; override ;
-    procedure   UpdateRow( const pTableName : string ; const pParams : TtiQueryParams ; const pWhere  : TtiQueryParams ) ; override ;
+    procedure   SelectRow(const ATableName : string; const AWhere : TtiQueryParams); override;
+    procedure   InsertRow(const ATableName : string; const AParams : TtiQueryParams); override;
+    procedure   DeleteRow(const ATableName : string; const AWhere : TtiQueryParams); override;
+    procedure   UpdateRow(const ATableName : string; const AParams : TtiQueryParams; const AWhere : TtiQueryParams); override;
   end;
 
 
-  TtiQueryNonSQL = class( TtiQuery )
+  TtiQueryNonSQL = class(TtiQuery)
   private
-    FParams : TtiQueryParams ;
+    FParams : TtiQueryParams;
   protected
-    property    Params : TtiQueryParams read FParams ;
-    function    GetParamAsBoolean(const psName: string): boolean; override;
-    function    GetParamAsFloat(const psName: string): extended;override;
-    function    GetParamAsInteger(const psName: string): Int64 ;override;
-    function    GetParamAsTextBLOB(const psName: string): string; override;
-    function    GetParamAsDateTime(const psName: string): TDateTime ; override;
-    function    GetParamIsNull(const psName: String): Boolean; override;
-    procedure   SetParamAsBoolean(const psName: string;const Value: boolean);override;
-    procedure   SetParamAsFloat(const psName: string; const Value: extended);override;
-    procedure   SetParamAsInteger(const psName: string;const Value: Int64);override;
-    procedure   SetParamAsTextBLOB(const psName, Value: string); override ;
-    procedure   SetParamAsDateTime(const psName :string ; const Value: TDateTime); override ;
-    procedure   SetParamAsMacro(const psName: string; const Value: string); override ;
-    procedure   SetParamIsNull(const psName: String; const Value: Boolean); override;
+    property    Params : TtiQueryParams read FParams;
+    function    GetParamAsBoolean(const AName: string): boolean; override;
+    function    GetParamAsFloat(const AName: string): extended;override;
+    function    GetParamAsInteger(const AName: string): Int64;override;
+    function    GetParamAsTextBLOB(const AName: string): string; override;
+    function    GetParamAsDateTime(const AName: string): TDateTime; override;
+    function    GetParamIsNull(const AName: String): Boolean; override;
+    procedure   SetParamAsBoolean(const AName: string;const AValue: boolean);override;
+    procedure   SetParamAsFloat(const AName: string; const AValue: extended);override;
+    procedure   SetParamAsInteger(const AName: string;const AValue: Int64);override;
+    procedure   SetParamAsTextBLOB(const AName, AValue: string); override;
+    procedure   SetParamAsDateTime(const AName :string; const AValue: TDateTime); override;
+    procedure   SetParamAsMacro(const AName: string; const AValue: string); override;
+    procedure   SetParamIsNull(const AName: String; const AValue: Boolean); override;
+
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    function    ParamCount : integer ; override ;
-    function    ParamName( pIndex : integer ) : string ; override ;
-    function    ParamsAsString : string ; override ;
-    procedure   AssignParamFromStream(     const pName  : string  ; const pValue : TStream ) ; override ;
-    procedure   AssignParamToStream(       const pName  : string  ; const pValue : TStream ) ; override ;
-    procedure   AssignFieldAsStream(       const pName  : string  ; const pValue : TStream ) ; override ;
-    procedure   AssignFieldAsStreamByIndex(      pIndex : integer ; const pValue : TStream ) ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
+
+    function    ParamCount : integer; override;
+    function    ParamName(AIndex : integer): string; override;
+    function    ParamsAsString : string; override;
+
+    procedure   AssignParamFromStream(    const AName : string ; const AValue : TStream); override;
+    procedure   AssignParamToStream(      const AName : string ; const AValue : TStream); override;
+    procedure   AssignFieldAsStream(      const AName : string ; const AValue : TStream); override;
+    procedure   AssignFieldAsStreamByIndex(     AIndex : integer; const AValue : TStream); override;
+
   end;
 
+  TtiQueryClass      = class of TtiQuery;
+  TtiDatabaseClass   = class of TtiDatabase;
+  TtiQueryParamClass = class of TtiQueryParamAbs;
 
-  TtiQueryClass      = class of TtiQuery ;
-  TtiDatabaseClass   = class of TtiDatabase ;
-  TtiQueryParamClass = class of TtiQueryParamAbs ;
 
-
-  TtiQueryParams = class( TtiObjectList )
+  TtiQueryParams = class(TtiObjectList)
   private
-    function    GetParamIsNull( const pName : string  ): boolean;
-    procedure   SetParamIsNull( const pName : string ; Value: boolean);
+    function    GetParamIsNull(const AName : string ): boolean;
+    procedure   SetParamIsNull(const AName : string; AValue: boolean);
     function    GetAsString: string;
   protected
-    function    GetItems(i: integer): TtiQueryParamAbs ; reintroduce ;
-    procedure   SetItems(i: integer; const Value: TtiQueryParamAbs); reintroduce ;
-    function    FindCreateParamByName( const pName : string ; const pClass : TtiQueryParamClass ) : TtiQueryParamAbs ; virtual ;
+    function    GetItems(i: integer): TtiQueryParamAbs; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiQueryParamAbs); reintroduce;
+    function    FindCreateParamByName(const AName : string; const AClass : TtiQueryParamClass): TtiQueryParamAbs; virtual;
   public
-    property    Items[i:integer] : TtiQueryParamAbs read GetItems write SetItems ;
-    procedure   Add( pObject : TtiQueryParamAbs   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
-    function    FindParamByName( const pName : string ) : TtiQueryParamAbs ; virtual ;
-    property    ParamIsNull[const pName : string ] : boolean read GetParamIsNull write SetParamIsNull ;
-    function    ParamName( pIndex : integer ) : string ;
-    property    AsString : string read GetAsString ;
-    procedure   SetValueAsString(const pName : string ; const pValue : string    ) ;
-    function    GetValueAsString(const pName : string) : string ;
-    procedure   SetValueAsInteger(const pName: string; const pValue: Int64);
-    function    GetValueAsInteger(const pName: string): Int64;
-    procedure   SetValueAsFloat(const pName: string; const pValue: Extended);
-    function    GetValueAsFloat(const pName: string): Extended;
-    procedure   SetValueAsBoolean(const pName : string ; const pValue : Boolean   ) ;
-    function    GetValueAsBoolean(const pName : string ) : Boolean ;
-    procedure   SetValueAsDateTime(const pName : string ; const pValue : TDateTime ) ;
-    function    GetValueAsDateTime(const pName : string ) : TDateTime ;
-    procedure   SetValueAsStream(const pName : string ; const pValue : TStream ) ;
-    function    GetValueAsStream(const pName : string ) : TStream ;
-    procedure   AssignValueToStream( const pName : string ; const pStream : TStream ) ;
-    procedure   SetValueFromProp(const pInstance : TtiObject ; const pPropName : string ; const pParamName : string ) ;
+    property    Items[i:integer]: TtiQueryParamAbs read GetItems write SetItems;
+    procedure   Add(AObject : TtiQueryParamAbs  ; ADefDispOrdr : boolean = true); reintroduce;
+    function    FindParamByName(const AName : string): TtiQueryParamAbs; virtual;
+
+    property    ParamIsNull[const AName : string ]: boolean read GetParamIsNull write SetParamIsNull;
+    function    ParamName(AIndex : integer): string;
+    property    AsString : string read GetAsString;
+
+    procedure   SetValueAsString(const AName : string; const AValue : string   );
+    function    GetValueAsString(const AName : string): string;
+    procedure   AssignFromFieldString(const AField: TtiFieldString; const AName: string);
+
+    procedure   SetValueAsInteger(const AName: string; const AValue: Int64);
+    function    GetValueAsInteger(const AName: string): Int64;
+    procedure   AssignFromFieldInteger(const AField: TtiFieldInteger; const AName: string);
+
+    procedure   SetValueAsFloat(const AName: string; const AValue: Extended);
+    function    GetValueAsFloat(const AName: string): Extended;
+    procedure   AssignFromFieldFloat(const AField: TtiFieldFloat; const AName: string);
+
+    procedure   SetValueAsBoolean(const AName : string; const AValue : Boolean  );
+    function    GetValueAsBoolean(const AName : string): Boolean;
+    procedure   AssignFromFieldBoolean(const AField: TtiFieldBoolean; const AName: string);
+
+    procedure   SetValueAsDateTime(const AName : string; const AValue : TDateTime);
+    function    GetValueAsDateTime(const AName : string): TDateTime;
+    procedure   AssignFromFieldDateTime(const AField: TtiFieldDateTime; const AName: string);
+
+    procedure   SetValueAsStream(const AName : string; const AValue : TStream);
+    function    GetValueAsStream(const AName : string): TStream;
+    procedure   AssignValueToStream(const AName : string; const AStream : TStream);
+
+    procedure   SetValueFromProp(const AFieldMetaData : TtiObject; const APropName : string; const pParamName : string);
   end;
 
 
-  TtiQueryParamAbs = class( TtiObject )
+  TtiQueryParamAbs = class(TtiObject)
   private
     FName: string;
     FIsNull: boolean;
     function    GetKindAsStr: string;
   protected
-    function    GetOwner: TtiQueryParams; reintroduce ;
-    procedure   SetOwner(const Value: TtiQueryParams); reintroduce ;
-    function    GetKind : TtiQueryFieldKind ; virtual ; abstract ;
+    function    GetOwner: TtiQueryParams; reintroduce;
+    procedure   SetOwner(const AValue: TtiQueryParams); reintroduce;
+    function    GetKind : TtiQueryFieldKind; virtual; abstract;
   public
-    property    Owner       : TtiQueryParams             read GetOwner      write SetOwner ;
-    property    Kind        : TtiQueryFieldKind read GetKind ;
-    function    GetValueAsString : string ; virtual ; abstract ;
-    procedure   SetValueAsString(const pValue : string ) ; virtual ; abstract ;
-    procedure   AssignToTIQuery(const pQuery : TtiQuery); virtual ; abstract ;
-    property    IsNull      : boolean read FIsNull write FIsNull ;
+    property    Owner      : TtiQueryParams             read GetOwner      write SetOwner;
+    property    Kind       : TtiQueryFieldKind read GetKind;
+    function    GetValueAsString : string; virtual; abstract;
+    procedure   SetValueAsString(const AValue : string); virtual; abstract;
+    procedure   AssignToTIQuery(const AQuery : TtiQuery); virtual; abstract;
+    property    IsNull     : boolean read FIsNull write FIsNull;
   published
-    property    Name        : string read FName write FName ;
-    property    KindAsStr   : string read GetKindAsStr ;
-    property    ValueAsString : string read GetValueAsString write SetValueAsString ;
+    property    Name       : string read FName write FName;
+    property    KindAsStr  : string read GetKindAsStr;
+    property    ValueAsString : string read GetValueAsString write SetValueAsString;
   end;
 
 
-  TtiQueryParamString = class( TtiQueryParamAbs )
+  TtiQueryParamString = class(TtiQueryParamAbs)
   private
-    FValue : string ;
+    FValue : string;
   protected
-    function    GetKind : TtiQueryFieldKind ; override ;
+    function    GetKind : TtiQueryFieldKind; override;
   public
-    function    GetValueAsString : string ; override ;
-    procedure   SetValueAsString(const pValue : string ) ; override ;
-    procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
-  end;
-  
-
-  TtiQueryParamInteger = class( TtiQueryParamAbs )
-  private
-    FValue : Int64 ;
-  protected
-    function    GetKind : TtiQueryFieldKind ; override ;
-  public
-    procedure   SetValueAsString(const pValue : string ) ; override ;
-    procedure   SetValueAsInteger(const pValue : Int64 ) ;
-    function    GetValueAsInteger : Int64 ;
-    function    GetValueAsString  : string ; override ;
-    procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
+    function    GetValueAsString : string; override;
+    procedure   SetValueAsString(const AValue : string); override;
+    procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
   
 
-  TtiQueryParamFloat = class( TtiQueryParamAbs )
+  TtiQueryParamInteger = class(TtiQueryParamAbs)
   private
-    FValue : extended ;
+    FValue : Int64;
   protected
-    function    GetKind : TtiQueryFieldKind ; override ;
+    function    GetKind : TtiQueryFieldKind; override;
   public
-    procedure   SetValueAsString(const pValue : string ) ; override ;
-    procedure   SetValueAsFloat(const pValue : extended ) ;
-    function    GetValueAsFloat   : extended ;
-    function    GetValueAsString : string ; override ;
-    procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
+    procedure   SetValueAsString(const AValue : string); override;
+    procedure   SetValueAsInteger(const AValue : Int64);
+    function    GetValueAsInteger : Int64;
+    function    GetValueAsString : string; override;
+    procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
   
 
-  TtiQueryParamDateTime = class( TtiQueryParamAbs )
+  TtiQueryParamFloat = class(TtiQueryParamAbs)
   private
-    FValue : TDateTime ;
+    FValue : extended;
   protected
-    function    GetKind : TtiQueryFieldKind ; override ;
+    function    GetKind : TtiQueryFieldKind; override;
   public
-    procedure   SetValueAsString(const pValue : string ) ; override ;
-    procedure   SetValueAsDateTime(const pValue : TDateTime ) ;
-    function    GetValueAsDateTime    : TDateTime ;
-    function    GetValueAsString : string ; override ;
-    procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
+    procedure   SetValueAsString(const AValue : string); override;
+    procedure   SetValueAsFloat(const AValue : extended);
+    function    GetValueAsFloat  : extended;
+    function    GetValueAsString : string; override;
+    procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
   
 
-  TtiQueryParamBoolean = class( TtiQueryParamAbs )
+  TtiQueryParamDateTime = class(TtiQueryParamAbs)
   private
-    FValue : Boolean ;
+    FValue : TDateTime;
   protected
-    function    GetKind : TtiQueryFieldKind ; override ;
+    function    GetKind : TtiQueryFieldKind; override;
   public
-    procedure   SetValueAsString(const pValue : string ) ; override ;
-    procedure   SetValueAsBoolean(const pValue : Boolean ) ;
-    function    GetValueAsBoolean : Boolean ;
-    function    GetValueAsString : string ; override ;
-    procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
+    procedure   SetValueAsString(const AValue : string); override;
+    procedure   SetValueAsDateTime(const AValue : TDateTime);
+    function    GetValueAsDateTime   : TDateTime;
+    function    GetValueAsString : string; override;
+    procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
   
 
-  TtiQueryParamStream = class( TtiQueryParamAbs )
+  TtiQueryParamBoolean = class(TtiQueryParamAbs)
   private
-    FStream : TMemoryStream ;
+    FValue : Boolean;
   protected
-    function    GetKind : TtiQueryFieldKind ; override ;
+    function    GetKind : TtiQueryFieldKind; override;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
+    procedure   SetValueAsString(const AValue : string); override;
+    procedure   SetValueAsBoolean(const AValue : Boolean);
+    function    GetValueAsBoolean : Boolean;
+    function    GetValueAsString : string; override;
+    procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
+  end;
+  
+
+  TtiQueryParamStream = class(TtiQueryParamAbs)
+  private
+    FStream : TMemoryStream;
+  protected
+    function    GetKind : TtiQueryFieldKind; override;
+  public
+    constructor Create; override;
+    destructor  Destroy; override;
     // ValuesAsString assumes the MIME encode
-    procedure   SetValueAsString(const pValue : string ) ; override ;
-    function    GetValueAsString : string ; override ;
-    procedure   SetValueAsStream(const pValue : TStream ) ;
-    function    GetValueAsStream : TStream ;
-    procedure   AssignToTIQuery(const pQuery : TtiQuery); override ;
+    procedure   SetValueAsString(const AValue : string); override;
+    function    GetValueAsString : string; override;
+    procedure   SetValueAsStream(const AValue : TStream);
+    function    GetValueAsStream : TStream;
+    procedure   AssignToTIQuery(const AQuery : TtiQuery); override;
   end;
   
 
 const
-  cgtiQueryMacroChr  = '&' ;
+  cgtiQueryMacroChr  = '&';
 
 
-function  StrToQueryFieldKind(const psFieldKind: String): TtiQueryFieldKind;
-function  QueryFieldKindToString( pFieldKind : TtiQueryFieldKind ) : string ;
-procedure QueryFieldKindsToStrings( pStrings : TStrings ) ;
+function  StrToQueryFieldKind(const AFieldKind: String): TtiQueryFieldKind;
+function  QueryFieldKindToString(AFieldKind : TtiQueryFieldKind): string;
+procedure QueryFieldKindsToStrings(AStrings : TStrings);
 
 
 implementation
@@ -599,48 +635,48 @@ uses
   ,Forms
   ,Math
   ,TypInfo
-  ;
+ ;
 
-function StrToQueryFieldKind(const psFieldKind: String): TtiQueryFieldKind;
+function StrToQueryFieldKind(const AFieldKind: String): TtiQueryFieldKind;
 var
   Index: TtiQueryFieldKind;
 begin
   for Index := Low(TtiQueryFieldKind) to High(TtiQueryFieldKind) do
-    if SameText( cgaQueryFieldKind[Index], psFieldKind ) then
+    if SameText(cgaQueryFieldKind[Index], AFieldKind) then
     begin
       Result := Index;
-      Exit ; //==>
+      Exit; //==>
     end;
-  raise EtiOPFInternalException.CreateFmt(cErrorInvalidQueryFieldKindStr, [psFieldKind]);
+  raise EtiOPFInternalException.CreateFmt(cErrorInvalidQueryFieldKindStr, [AFieldKind]);
   Result := Low(TtiQueryFieldKind);
 end;
 
-function QueryFieldKindToString( pFieldKind : TtiQueryFieldKind ) : string ;
+function QueryFieldKindToString(AFieldKind : TtiQueryFieldKind): string;
 begin
-  result := cgaQueryFieldKind[pFieldKind] ;
-end ;
+  result := cgaQueryFieldKind[AFieldKind];
+end;
 
-procedure QueryFieldKindsToStrings( pStrings : TStrings ) ;
+procedure QueryFieldKindsToStrings(AStrings : TStrings);
 var
   Index: TtiQueryFieldKind;
 begin
-  pStrings.Clear ;
+  AStrings.Clear;
   for Index := Low(TtiQueryFieldKind) to High(TtiQueryFieldKind) do
-    pStrings.Add( cgaQueryFieldKind[Index] ) ;
-end ;
+    AStrings.Add(cgaQueryFieldKind[Index]);
+end;
 
-function tiTypeKindToQueryFieldKind( pValue : TtiTypeKind ) : TtiQueryFieldKind ;
+function tiTypeKindToQueryFieldKind(AValue : TtiTypeKind): TtiQueryFieldKind;
 begin
-  case pValue of
-  tiTKInteger  : result := qfkInteger ;
-  tiTKFloat    : result := qfkFloat ;
-  tiTKString   : result := qfkString ;
-  tiTKDateTime : result := qfkDateTime ;
-  tiTKBoolean  : result := qfkLogical ;
+  case AValue of
+  tiTKInteger : result := qfkInteger;
+  tiTKFloat   : result := qfkFloat;
+  tiTKString  : result := qfkString;
+  tiTKDateTime : result := qfkDateTime;
+  tiTKBoolean : result := qfkLogical;
   else
-    raise EtiOPFInternalException.Create(cErrorInvalidTtiQueryFieldKind) ;
-    result := qfkInteger ; // Just to shut the compiler up. Wont get here.
-  end ;
+    raise EtiOPFInternalException.Create(cErrorInvalidTtiQueryFieldKind);
+    result := qfkInteger; // Just to shut the compiler up. Wont get here.
+  end;
   //qfkBinary,
   //qfkMacro,
   //qfkLongString
@@ -648,124 +684,124 @@ end;
 
 { TtiDBMetaData }
 
-procedure TtiDBMetaData.Add(pObject: TtiDBMetaDataTable; pbDefaultDispOrder: boolean);
+procedure TtiDBMetaData.Add(AObject: TtiDBMetaDataTable; ADefaultDispOrder: boolean);
 begin
-  inherited Add( pObject, pbDefaultDispOrder ) ;
+  inherited Add(AObject, ADefaultDispOrder);
 end;
 
 procedure TtiDBMetaData.Clear;
 begin
-  inherited Clear ;
-  ObjectState := posEmpty ;
+  inherited Clear;
+  ObjectState := posEmpty;
 end;
 
-function TtiDBMetaData.FindByTableName( const pTableName: TTableName): TtiDBMetaDataTable;
+function TtiDBMetaData.FindByTableName(const ATableName: TTableName): TtiDBMetaDataTable;
 var
-  i : integer ;
+  i : integer;
 begin
-  // result := TtiDBMetaDataTable( Inherited FindByProps( ['Name'], [pTableName] )) ;
+  // result := TtiDBMetaDataTable(Inherited FindByProps(['Name'], [ATableName]));
   // Hard coding the check is faster, and more stable
-  result := nil ;
+  result := nil;
   for i := 0 to Count - 1 do
-    if SameText( Items[i].Name, pTableName ) then
+    if SameText(Items[i].Name, ATableName) then
     begin
       result := Items[i];
-      Exit ; //==>
-    end ;
+      Exit; //==>
+    end;
 end;
 
 function TtiDBMetaData.GetCaption: string;
 begin
-  Assert( Owner <> nil, 'Owner is nill' ) ;
-  result := TDBConnectionPool( Owner ).DBConnectParams.DatabaseName ;
+  Assert(Owner <> nil, 'Owner is nill');
+  result := TDBConnectionPool(Owner).DBConnectParams.DatabaseName;
 end;
 
 function TtiDBMetaData.GetItems(i: integer): TtiDBMetaDataTable;
 begin
-  result := TtiDBMetaDataTable( inherited GetItems( i ) );
+  result := TtiDBMetaDataTable(inherited GetItems(i));
 end;
 
 function TtiDBMetaData.GetOwner: TtiObject;
 begin
-  result := TDBConnectionPool( inherited GetOwner ) ;
+  result := TDBConnectionPool(inherited GetOwner);
 end;
 
-procedure TtiDBMetaData.Read( const pDBConnectionName: string  = '' ; pPerLayerName : string = '' );
+procedure TtiDBMetaData.Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = '');
 var
-  lPooledDB : TPooledDB ;
-  lCursor : TCursor ;
+  lPooledDB : TPooledDB;
+  lCursor : TCursor;
 begin
   if ObjectState <> posEmpty then
-    Exit ; //==>
-  lCursor := Screen.Cursor ;
-  Screen.Cursor := crHourGlass ;
+    Exit; //==>
+  lCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
   try
-    lPooledDB := TDBConnectionPool( Owner ).Lock ;
+    lPooledDB := TDBConnectionPool(Owner).Lock;
     try
-      Clear ;
-      lPooledDB.Database.ReadMetaDataTables( Self ) ;
+      Clear;
+      lPooledDB.Database.ReadMetaDataTables(Self);
     finally
-      TDBConnectionPool( Owner ).UnLock( lPooledDB ) ;
-    end ;
+      TDBConnectionPool(Owner).UnLock(lPooledDB);
+    end;
   finally
-    Screen.Cursor := lCursor ;
-  end ;
+    Screen.Cursor := lCursor;
+  end;
 end;
 
 procedure TtiDBMetaData.SetItems(i: integer;
-  const Value: TtiDBMetaDataTable);
+  const AValue: TtiDBMetaDataTable);
 begin
-  inherited SetItems( i, Value ) ;
+  inherited SetItems(i, AValue);
 end;
 
-procedure TtiDBMetaData.SetOwner(const Value: TtiObject);
+procedure TtiDBMetaData.SetOwner(const AValue: TtiObject);
 begin
-  inherited SetOwner( Value as TtiObject ) ;
+  inherited SetOwner(AValue as TtiObject);
 end;
 
 { TtiDBMetaDataTable }
 
-procedure TtiDBMetaDataTable.Add(pObject: TtiDBMetaDataField;
-  pbDefaultDispOrder: boolean);
+procedure TtiDBMetaDataTable.Add(AObject: TtiDBMetaDataField;
+  ADefaultDispOrder: boolean);
 begin
-  inherited Add( pObject, pbDefaultDispOrder ) ;
-  FMaxFieldWidth := 0 ;
+  inherited Add(AObject, ADefaultDispOrder);
+  FMaxFieldWidth := 0;
 end;
 
 // Don't use AddField. Use AddInstance instead
-procedure TtiDBMetaDataTable.AddField(const pFieldName: string;
-  const pFieldKind: TtiQueryFieldKind; pFieldWidth: integer);
+procedure TtiDBMetaDataTable.AddField(const AFieldName: string;
+  const AFieldKind: TtiQueryFieldKind; AFieldWidth: integer);
 begin
-  AddInstance( pFieldName, pFieldKind, pFieldWidth ) ;
+  AddInstance(AFieldName, AFieldKind, AFieldWidth);
 end;
 
-function TtiDBMetaDataTable.AddInstance(const pFieldName: string;
-  const pFieldKind: TtiQueryFieldKind; pFieldWidth: integer = 0 ): TtiDBMetaDataField;
+function TtiDBMetaDataTable.AddInstance(const AFieldName: string;
+  const AFieldKind: TtiQueryFieldKind; AFieldWidth: integer = 0): TtiDBMetaDataField;
 begin
   { 9 Jan 2006, Graeme:  Please do not remove the 'Self.' part. Free Pascal
     needs it for some reason!!  This gave me a lot of extra grey hairs. }
   Result := Self.AddInstance;
-  Result.Name  := pFieldName ;
-  Result.Kind  := pFieldKind ;
-  Result.Width := pFieldWidth ;
-  Result.ObjectState := posClean ;
+  Result.Name := AFieldName;
+  Result.Kind := AFieldKind;
+  Result.Width := AFieldWidth;
+  Result.ObjectState := posClean;
 end;
 
 function TtiDBMetaDataTable.AddInstance: TtiDBMetaDataField;
 begin
-  Result := TtiDBMetaDataField.Create ;
-  Add( Result ) ;
+  Result := TtiDBMetaDataField.Create;
+  Add(Result);
 end;
 
 function TtiDBMetaDataTable.Clone: TtiDBMetaDataTable;
 begin
-  result := TtiDBMetaDataTable( inherited Clone ) ;
+  result := TtiDBMetaDataTable(inherited Clone);
 end;
 
 constructor TtiDBMetaDataTable.Create;
 begin
   inherited;
-  FMaxFieldWidth := 0 ;
+  FMaxFieldWidth := 0;
 end;
 
 destructor TtiDBMetaDataTable.Destroy;
@@ -773,115 +809,115 @@ begin
   inherited;
 end;
 
-function TtiDBMetaDataTable.FindByFieldName( const pFieldName: TFieldName): TtiDBMetaDataField;
+function TtiDBMetaDataTable.FindByFieldName(const AFieldName: TFieldName): TtiDBMetaDataField;
 var
-  i : integer ;
+  i : integer;
 begin
   result := nil;
   for i := 0 to Count - 1 do
-    if SameText( Items[i].Name, pFieldName ) then
+    if SameText(Items[i].Name, AFieldName) then
     begin
       result := Items[i];
-      Exit ; //==>
-    end ;
+      Exit; //==>
+    end;
 end;
 
 function TtiDBMetaDataTable.GetCaption: string;
 begin
-  result := Name ;
+  result := Name;
 end;
 
 function TtiDBMetaDataTable.GetItems(i: integer): TtiDBMetaDataField;
 begin
-  result := TtiDBMetaDataField( inherited GetItems( i )) ;
+  result := TtiDBMetaDataField(inherited GetItems(i));
 end;
 
 function TtiDBMetaDataTable.GetOwner: TtiDBMetaData;
 begin
-  result := TtiDBMetaData( inherited GetOwner ) ;
+  result := TtiDBMetaData(inherited GetOwner);
 end;
 
 function TtiDBMetaDataTable.MaxFieldNameWidth: word;
 var
-  i : integer ;
+  i : integer;
 begin
   if FMaxFieldWidth <> 0 then
   begin
-    result := FMaxFieldWidth ;
-    Exit ; //==>
-  end ;
+    result := FMaxFieldWidth;
+    Exit; //==>
+  end;
   for i := 0 to Count - 1 do
-    FMaxFieldWidth := Max( FMaxFieldWidth, Length( Items[i].Name )) ;
-  result := FMaxFieldWidth ;
+    FMaxFieldWidth := Max(FMaxFieldWidth, Length(Items[i].Name));
+  result := FMaxFieldWidth;
 end;
 
-procedure TtiDBMetaDataTable.Read( const pDBConnectionName: string  = '' ; pPerLayerName : string = '' );
+procedure TtiDBMetaDataTable.Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = '');
 var
-  lPooledDB : TPooledDB ;
-  lCursor : TCursor ;
+  lPooledDB : TPooledDB;
+  lCursor : TCursor;
 begin
   if ObjectState <> posPK then
-    Exit ; //==>
-  lCursor := Screen.Cursor ;
-  Screen.Cursor := crHourGlass ;
+    Exit; //==>
+  lCursor := Screen.Cursor;
+  Screen.Cursor := crHourGlass;
   try
-    lPooledDB := TDBConnectionPool( Owner.Owner ).Lock ;
+    lPooledDB := TDBConnectionPool(Owner.Owner).Lock;
     try
-    lPooledDB.Database.ReadMetaDataFields( Self ) ;
+    lPooledDB.Database.ReadMetaDataFields(Self);
     finally
-      TDBConnectionPool( Owner.Owner ).UnLock( lPooledDB ) ;
-    end ;
+      TDBConnectionPool(Owner.Owner).UnLock(lPooledDB);
+    end;
   finally
-    Screen.Cursor := lCursor ;
-  end ;
+    Screen.Cursor := lCursor;
+  end;
 end;
 
 procedure TtiDBMetaDataTable.SetItems(i: integer;
-  const Value: TtiDBMetaDataField);
+  const AValue: TtiDBMetaDataField);
 begin
-  inherited SetItems( i, Value ) ;
+  inherited SetItems(i, AValue);
 end;
 
-procedure TtiDBMetaDataTable.SetOwner(const Value: TtiDBMetaData);
+procedure TtiDBMetaDataTable.SetOwner(const AValue: TtiDBMetaData);
 begin
-  inherited SetOwner( Value ) ;
+  inherited SetOwner(AValue);
 end;
 
 { TtiDBMetaDataField }
 
 function TtiDBMetaDataField.Clone: TtiDBMetaDataField;
 begin
-  result := TtiDBMetaDataField( inherited Clone ) ;
+  result := TtiDBMetaDataField(inherited Clone);
 end;
 
 function TtiDBMetaDataField.GetCaption: string;
 begin
-  result := name ;
+  result := name;
 end;
 
 function TtiDBMetaDataField.GetKindAsStr: string;
 begin
-  result := QueryFieldKindToString( Kind ) ;
+  result := QueryFieldKindToString(Kind);
 end;
 
 function TtiDBMetaDataField.GetOwner: TtiDBMetaDataTable;
 begin
-  result := TtiDBMetaDataTable( inherited GetOwner ) ;
+  result := TtiDBMetaDataTable(inherited GetOwner);
 end;
 
 function TtiDBMetaDataField.GetRPadName: TFieldName;
 begin
-  result := tiPadR( Name, Owner.MaxFieldNameWidth ) ;
+  result := tiPadR(Name, Owner.MaxFieldNameWidth);
 end;
 
-procedure TtiDBMetaDataField.SetKindAsStr(const Value: string);
+procedure TtiDBMetaDataField.SetKindAsStr(const AValue: string);
 begin
-  Kind := StrToQueryFieldKind( Value ) ;
+  Kind := StrToQueryFieldKind(AValue);
 end;
 
-procedure TtiDBMetaDataField.SetOwner(const Value: TtiDBMetaDataTable);
+procedure TtiDBMetaDataField.SetOwner(const AValue: TtiDBMetaDataTable);
 begin
-  inherited SetOwner( Value ) ;
+  inherited SetOwner(AValue);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -889,31 +925,31 @@ end;
 // *  tiDatabase
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDatabase.Connect(const psDatabaseName, psUserName, psPassword, pParams: string);
+procedure TtiDatabase.Connect(const ADatabaseName, AUserName, APassword, AParams: string);
 var
-  i : Integer ;
+  i : Integer;
 begin
-  Log( 'Attempting to connect to: %s Params: %s', [psDatabaseName, pParams], lsConnectionPool ) ;
-  DatabaseName     := psDatabaseName ;
-  UserName         := psUserName     ;
-  Password         := psPassword     ;
-  for i := 1 to tiNumToken(pParams, ',') do
-    FParams.Add(tiToken(pParams, ',', i));
-  if gCommandLineParams.IsParam( 'VerboseDBConnection' ) then
-    Log( 'Connected. Database: ' + psDatabaseName +
-         ' UserName: ' + psUserName +
-         ' Password: ' + psPassword ) ;
+  Log('Attempting to connect to: %s Params: %s', [ADatabaseName, AParams], lsConnectionPool);
+  DatabaseName    := ADatabaseName;
+  UserName        := AUserName    ;
+  Password        := APassword    ;
+  for i := 1 to tiNumToken(AParams, ',') do
+    FParams.Add(tiToken(AParams, ',', i));
+  if gCommandLineParams.IsParam('VerboseDBConnection') then
+    Log('Connected. Database: ' + ADatabaseName +
+         ' UserName: ' + AUserName +
+         ' Password: ' + APassword);
   if Connected then
-    Connected := false ;
-  Connected := true ;
-  Log( 'Connect to %s successful.', [psDatabaseName], lsConnectionPool ) ;
+    Connected := false;
+  Connected := true;
+  Log('Connect to %s successful.', [ADatabaseName], lsConnectionPool);
 end;
 
 constructor TtiDatabase.Create;
 begin
-  inherited ;
-  FErrorInLastCall := false ;
-  FParams          := TStringList.Create;
+  inherited;
+  FErrorInLastCall := false;
+  FParams         := TStringList.Create;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -923,46 +959,92 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiQuery.Create;
 begin
-  inherited ;
+  inherited;
 end;
 
 destructor TtiQuery.destroy;
 begin
   inherited;
+  FOptions.Free;
 end;
 
-procedure TtiQuery.AttachDatabase(pDatabase: TtiDatabase);
+procedure TtiQuery.AssignToFieldBoolean(const AField: TtiFieldBoolean; const AName: string);
 begin
-  FDatabase := pDatabase ;
+  if not FieldIsNull[AName] then
+    AField.AsBoolean:= FieldAsBoolean[AName]
+  else
+    AField.IsNull:= true;
+end;
+
+procedure TtiQuery.AssignToFieldDateTime(const AField: TtiFieldDateTime; const AName: string);
+begin
+  if not FieldIsNull[AName] then
+    AField.AsDateTime:= FieldAsDateTime[AName]
+  else
+    AField.IsNull:= true;
+end;
+
+procedure TtiQuery.AssignToFieldFloat(const AField: TtiFieldFloat; const AName: string);
+begin
+  if not FieldIsNull[AName] then
+    AField.AsFloat:= FieldAsFloat[AName]
+  else
+    AField.IsNull:= true;
+end;
+
+procedure TtiQuery.AssignToFieldInteger(const AField: TtiFieldInteger; const AName: string);
+begin
+  if not FieldIsNull[AName] then
+    AField.AsInteger:= FieldAsInteger[AName]
+  else
+    AField.IsNull:= true;
+end;
+
+procedure TtiQuery.AssignToFieldString(const AField: TtiFieldString; const AName: string);
+begin
+  if not FieldIsNull[AName] then
+    AField.AsString:= FieldAsString[AName]
+  else
+    AField.IsNull:= true;
+end;
+
+procedure TtiQuery.AttachDatabase(ADatabase: TtiDatabase);
+begin
+  FDatabase := ADatabase;
 end;
 
 function TtiQuery.ParamsAsString: string;
 var
-  i : integer ;
+  i : integer;
 begin
   try
-    result := '' ;
+    result := '';
     for i := 0 to ParamCount - 1 do
     begin
-      result := tiAddTrailingValue( result, CrLf, true ) ;
+      result := tiAddTrailingValue(result, CrLf, true);
       result := result +
-                ParamName( i ) + ' := ';
-      if ParamIsNull[ ParamName( i )] then      // Display the fact
+                ParamName(i) + ' := ';
+      if ParamIsNull[ ParamName(i)] then      // Display the fact
         result := result + 'Null'
       else
-        result := result + tiAddEllipsis(ParamAsString[ ParamName( i )], 120) ;
-    end ;
+        result := result + tiAddEllipsis(ParamAsString[ ParamName(i)], 120);
+    end;
   except
     on e:exception do
-      result := 'Unknown' ;
-  end ;
+      result := 'Unknown';
+  end;
 end;
 
 procedure TtiQuery.DetachDatabase;
 begin
   if Active then
-    Active := false ;
-  FDatabase := nil ;
+    Active := false;
+  FDatabase := nil;
+end;
+
+procedure TtiQuery.DoChangeOptions(Sender: TObject);
+begin
+  // Do nothing. Implement in concrete if requred
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -970,86 +1052,95 @@ end;
 // * TtiQuerySQL
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiQuerySQL.DeleteRow(const pTableName: string; const pWhere: TtiQueryParams);
+procedure TtiQuerySQL.DeleteRow(const ATableName: string; const AWhere: TtiQueryParams);
 var
-  lSQL : string ;
+  lSQL : string;
 begin
-  lSQL := 'delete from ' + pTableName ;
-  lSQL := lSQL + WhereClause( pWhere ) ;
-  SQLText := lSQL ;
-  AssignParams( pWhere ) ;
-  ExecSQL ;
+  lSQL := 'delete from ' + ATableName;
+  lSQL := lSQL + WhereClause(AWhere);
+  SQLText := lSQL;
+  AssignParams(AWhere);
+  ExecSQL;
 end;
 
-procedure TtiQuerySQL.InsertRow(const pTableName: string; const pParams: TtiQueryParams);
+procedure TtiQuerySQL.InsertRow(const ATableName: string; const AParams: TtiQueryParams);
 var
-  lSQL : string ;
-  lFields : string ;
-  lParams : string ;
-  i : integer ;
+  lSQL : string;
+  lFields : string;
+  lParams : string;
+  i : integer;
 begin
-  lSQL := 'insert into ' + pTableName ;
-  lFields := '' ;
-  lParams := '' ;
-  for i := 0 to pParams.Count - 1 do
+  lSQL := 'insert into ' + ATableName;
+  lFields := '';
+  lParams := '';
+  for i := 0 to AParams.Count - 1 do
   begin
-    lFields := tiAddTrailingValue( lFields, ',' + CrLf ) ;
-    lParams := tiAddTrailingValue( lParams, ',' + CrLf ) ;
-    lFields := lFields + pParams.Items[i].Name ;
-    lParams := lParams + ':' + pParams.Items[i].Name ;
-  end ;
+    lFields := tiAddTrailingValue(lFields, ',' + CrLf);
+    lParams := tiAddTrailingValue(lParams, ',' + CrLf);
+    lFields := lFields + AParams.Items[i].Name;
+    lParams := lParams + ':' + AParams.Items[i].Name;
+  end;
   lSQL := lSQL + CrLf +
           '(' + lFields +
           ')' + CrLf +
           'values' + CrLf +
           '(' + CrLf +
           lParams + CrLf +
-          ')' ;
-  SQLText := lSQL ;
-  AssignParams( pParams ) ;
-  ExecSQL ;
+          ')';
+  SQLText := lSQL;
+  AssignParams(AParams);
+  ExecSQL;
 end;
 
-procedure TtiQuerySQL.SelectRow(const pTableName: string; const pWhere: TtiQueryParams);
+procedure TtiQuerySQL.SelectRow(const ATableName: string; const AWhere: TtiQueryParams);
 var
-  lSQL : string ;
-  i : integer ;
-  lWhere : string ;
+  lSQL : string;
+  i : integer;
+  lWhere : string;
 begin
 
-  lWhere := '' ;
+  lWhere := '';
   // This code is cloned from tiDatabaseSQL
-  if ( pWhere <> nil ) then
-    for i := 0 to pWhere.Count - 1 do
+  if (AWhere <> nil) then
+    for i := 0 to AWhere.Count - 1 do
     begin
-      lWhere := tiAddTrailingValue( lWhere, ' and ' + CrLf ) ;
+      lWhere := tiAddTrailingValue(lWhere, ' and ' + CrLf);
       lWhere := lWhere +
-                pWhere.Items[i].Name + ' = :' +
-                pWhere.Items[i].Name ;
-    end ;
+                AWhere.Items[i].Name + ' =:' +
+                AWhere.Items[i].Name;
+    end;
 
   if lWhere <> '' then
-    lSQL := 'select * from ' + pTableName + CrLf +
+    lSQL := 'select * from ' + ATableName + CrLf +
             'where' + CrLf +
             lWhere
   else
-    lSQL := 'select * from ' + pTableName ;
+    lSQL := 'select * from ' + ATableName;
 
-  SQLText := lSQL ;
-  AssignParams( pWhere ) ;
-  Open ;
+  SQLText := lSQL;
+  AssignParams(AWhere);
+  Open;
 end;
 
+function TtiQuery.GetOptions: TStringList;
+begin
+  if FOptions = nil then
+  begin
+    FOptions:= TStringList.Create;
+    FOptions.OnChange:= DoChangeOptions;
+  end;
+  result:= FOptions;
+end;
 function TtiQuery.GetQueryType: TtiQueryType;
 var
-  lSQL : string ;
+  lSQL : string;
 begin
   // Must strip comments before this will work in all cases.
-  lSQL := SQLText ;
-  lSQL := LowerCase(Trim(lSQL)) ;
+  lSQL := SQLText;
+  lSQL := LowerCase(Trim(lSQL));
   lSQL := tiStrTran(lSQL, #10, '');
   lSQL := tiStrTran(lSQL, #13, ' ');
-  lSQL := Copy( lSQL, 1, Pos( ' ', lSQL)-1);
+  lSQL := Copy(lSQL, 1, Pos(' ', lSQL)-1);
   if      lSQL = 'select' then
     result := qtSelect
   else if lSQL = 'insert' then
@@ -1068,29 +1159,29 @@ begin
     raise Exception.CreateFmt(cTIOPFExcCanNotDetermineSQLType, [lSQL]);
 end;
 
-procedure TtiQuery.SetParamAsMacro(const psName, Value: string);
+procedure TtiQuery.SetParamAsMacro(const AName, AValue: string);
 begin
   // ToDo: ParamAsMacro will only work once on any given SQL statement because
-  //       it replaces the macro character with 'Value' If this is to work more
+  //       it replaces the macro character with 'AValue' If this is to work more
   //       than once, then the SQL must be saved, or the macro values must be
   //       cached.
   SQLText :=
-    tiCIStrTran( SQLText,
-                 cgtiQueryMacroChr + psName,
-                 Value ) ;
+    tiCIStrTran(SQLText,
+                 cgtiQueryMacroChr + AName,
+                 AValue);
 end;
 
-procedure TtiDatabase.DropTable(const pTableName: TTableName);
+procedure TtiDatabase.DropTable(const ATableName: TTableName);
 var
-  lDBMetaDataTable : TtiDBMetaDataTable ;
+  lDBMetaDataTable : TtiDBMetaDataTable;
 begin
-  lDBMetaDataTable := TtiDBMetaDataTable.Create ;
+  lDBMetaDataTable := TtiDBMetaDataTable.Create;
   try
-    lDBMetaDataTable.Name := pTableName ;
-    DropTable( lDBMetaDataTable ) ;
+    lDBMetaDataTable.Name := ATableName;
+    DropTable(lDBMetaDataTable);
   finally
     lDBMetaDataTable.Free;
-  end ;
+  end;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1098,226 +1189,226 @@ end;
 // * TtiDatabaseSQL
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDatabaseSQL.CreateTable( const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseSQL.CreateTable(const ATableMetaData: TtiDBMetaDataTable);
 var
-  lSQL : string ;
-  i : integer ;
+  lSQL : string;
+  i : integer;
 begin
 
-  lSQL := '' ;
-  for i := 0 to pTableMetaData.Count - 1 do
+  lSQL := '';
+  for i := 0 to ATableMetaData.Count - 1 do
   begin
-    lSQL := tiAddTrailingValue( lSQL, ',' + CrLf ) ;
+    lSQL := tiAddTrailingValue(lSQL, ',' + CrLf);
     lSQL := lSQL +
-            pTableMetaData.Items[i].Name + ' ' +
-            FieldMetaDataToSQLCreate( pTableMetaData.Items[i] ) ;
-  end ;
-  lSQL := 'create table ' + pTableMetaData.Name + CrLf + '(' + CrLf +
+            ATableMetaData.Items[i].Name + ' ' +
+            FieldMetaDataToSQLCreate(ATableMetaData.Items[i]);
+  end;
+  lSQL := 'create table ' + ATableMetaData.Name + CrLf + '(' + CrLf +
           lSQL + CrLf +
-          ')' ;
-  ExecSQL( lSQL ) ;
+          ')';
+  ExecSQL(lSQL);
 end;
 
-procedure TtiDatabase.DeleteRow(const pTableName: string; const pWhere: TtiQueryParams);
+procedure TtiDatabase.DeleteRow(const ATableName: string; const AWhere: TtiQueryParams);
 var
-  lQuery : TtiQuery ;
-  lHadToStartTransaction : boolean ;
+  lQuery : TtiQuery;
+  lHadToStartTransaction : boolean;
 begin
-  lQuery    := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType)) ;
+  lQuery   := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
-    lQuery.AttachDatabase( Self ) ;
-    lHadToStartTransaction := not InTransaction ;
+    lQuery.AttachDatabase(Self);
+    lHadToStartTransaction := not InTransaction;
     if lHadToStartTransaction then
-      StartTransaction ;
+      StartTransaction;
     try
-      lQuery.DeleteRow( pTableName, pWhere ) ;
+      lQuery.DeleteRow(ATableName, AWhere);
       if lHadToStartTransaction then
-        Commit ;
+        Commit;
     except
       on e:exception do
       begin
         if lHadToStartTransaction then
-          RollBack ;
-        raise ;
-      end ;
-    end ;
+          RollBack;
+        raise;
+      end;
+    end;
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 end;
 
-procedure TtiDatabaseSQL.DropTable( const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseSQL.DropTable(const ATableMetaData: TtiDBMetaDataTable);
 var
-  lSQL : string ;
+  lSQL : string;
 begin
-  lSQL := 'drop table ' + pTableMetaData.Name ;
-  ExecSQL( lSQL ) ;
+  lSQL := 'drop table ' + ATableMetaData.Name;
+  ExecSQL(lSQL);
 end;
 
 { TtiQueryParams }
 
-procedure TtiQueryParams.Add(pObject: TtiQueryParamAbs; pDefDispOrdr: boolean);
+procedure TtiQueryParams.Add(AObject: TtiQueryParamAbs; ADefDispOrdr: boolean);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add(AObject, ADefDispOrdr);
 end;
 
-function TtiQueryParams.FindCreateParamByName(const pName: string ; const pClass : TtiQueryParamClass ): TtiQueryParamAbs;
+function TtiQueryParams.FindCreateParamByName(const AName: string; const AClass : TtiQueryParamClass): TtiQueryParamAbs;
 begin
-  result := FindParamByName(pName);
+  result := FindParamByName(AName);
   if result = nil then
   begin
-    result := pClass.Create ;
-    result.Name := pName ;
+    result := AClass.Create;
+    result.Name := AName;
     Add(result);
   end;
 end;
 
-function TtiQueryParams.FindParamByName( const pName: string): TtiQueryParamAbs;
+function TtiQueryParams.FindParamByName(const AName: string): TtiQueryParamAbs;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := nil ;
+  result := nil;
   for i := 0 to Count - 1 do
-    if SameText( Items[i].Name, pName ) then
+    if SameText(Items[i].Name, AName) then
     begin
-      result := Items[i] ;
-      Break ; //==>
-    end ;
+      result := Items[i];
+      Break; //==>
+    end;
 end;
 
 function TtiQueryParams.GetAsString: string;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := '' ;
+  result := '';
   for i := 0 to Count - 1 do
   begin
-    if result <> '' then result := result + ', ' ;
-    result := result + Items[i].Name + '=' + Items[i].GetValueAsString ;
+    if result <> '' then result := result + ', ';
+    result := result + Items[i].Name + '=' + Items[i].GetValueAsString;
   end;
 end;
 
 function TtiQueryParams.GetItems(i: integer): TtiQueryParamAbs;
 begin
-  result := TtiQueryParamAbs( inherited GetItems( i )) ;
+  result := TtiQueryParamAbs(inherited GetItems(i));
 end;
 
-function TtiQueryParams.GetParamIsNull( const pName : string ): boolean;
+function TtiQueryParams.GetParamIsNull(const AName : string): boolean;
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := FindParamByName( pName ) ;
-  result := ( lParam = nil ) or ( lParam.IsNull );
+  lParam := FindParamByName(AName);
+  result := (lParam = nil) or (lParam.IsNull);
 end;
 
-procedure TtiQueryParams.SetValueAsString(const pName, pValue: string);
+procedure TtiQueryParams.SetValueAsString(const AName, AValue: string);
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamString) ;
-  lParam.SetValueAsString(pValue) ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamString);
+  lParam.SetValueAsString(AValue);
 end;
 
-function TtiQueryParams.GetValueAsString(const pName: string): string;
+function TtiQueryParams.GetValueAsString(const AName: string): string;
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := FindParamByName(pName) ;
-  Assert( lParam.TestValid(TtiQueryParamAbs), cTIInvalidObjectError );
-  result := lParam.GetValueAsString ;
+  lParam := FindParamByName(AName);
+  Assert(lParam.TestValid(TtiQueryParamAbs), cTIInvalidObjectError);
+  result := lParam.GetValueAsString;
 end;
 
-function TtiQueryParams.ParamName(pIndex: integer): string;
+function TtiQueryParams.ParamName(AIndex: integer): string;
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := Items[pIndex] ;
-  result := lParam.Name ;
+  lParam := Items[AIndex];
+  result := lParam.Name;
 end;
 
-procedure TtiQueryParams.SetItems(i: integer; const Value: TtiQueryParamAbs);
+procedure TtiQueryParams.SetItems(i: integer; const AValue: TtiQueryParamAbs);
 begin
-  inherited SetItems( i, Value ) ;
+  inherited SetItems(i, AValue);
 end;
 
-procedure TtiQueryParams.SetParamIsNull( const pName : string ; Value: boolean);
+procedure TtiQueryParams.SetParamIsNull(const AName : string; AValue: boolean);
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := FindParamByName( pName ) ;
+  lParam := FindParamByName(AName);
   if lParam <> nil then
-    lParam.IsNull := Value ;
+    lParam.IsNull := AValue;
 end;
 
-procedure TtiQueryParams.SetValueAsInteger(const pName: string;const pValue: Int64);
+procedure TtiQueryParams.SetValueAsInteger(const AName: string;const AValue: Int64);
 var
-  lParam : TtiQueryParamInteger ;
+  lParam : TtiQueryParamInteger;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamInteger) as TtiQueryParamInteger;
-  lParam.SetValueAsInteger(pValue) ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamInteger) as TtiQueryParamInteger;
+  lParam.SetValueAsInteger(AValue);
 end;
 
 {
-function TtiQueryParams.ParamAsInteger(const pName: string): Integer;
+function TtiQueryParams.ParamAsInteger(const AName: string): Integer;
 var
-  lParam : TtiQueryParamInteger ;
+  lParam : TtiQueryParamInteger;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamInteger) as TtiQueryParamInteger;
-  result := lParam.GetValue ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamInteger) as TtiQueryParamInteger;
+  result := lParam.GetValue;
 end;
 }
 
-procedure TtiQueryParams.SetValueAsFloat(const pName: string;const pValue: Extended);
+procedure TtiQueryParams.SetValueAsFloat(const AName: string;const AValue: Extended);
 var
-  lParam : TtiQueryParamFloat ;
+  lParam : TtiQueryParamFloat;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamFloat) as TtiQueryParamFloat;
-  lParam.SetValueAsFloat(pValue) ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamFloat) as TtiQueryParamFloat;
+  lParam.SetValueAsFloat(AValue);
 end;
 
 {
-function TtiQueryParams.ParamAsFloat(const pName: string): Extended;
+function TtiQueryParams.ParamAsFloat(const AName: string): Extended;
 var
-  lParam : TtiQueryParamFloat ;
+  lParam : TtiQueryParamFloat;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamFloat) as TtiQueryParamFloat;
-  result := lParam.GetValue ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamFloat) as TtiQueryParamFloat;
+  result := lParam.GetValue;
 end;
 }
 
-procedure TtiQueryParams.SetValueAsDateTime(const pName: string;const pValue: TDateTime);
+procedure TtiQueryParams.SetValueAsDateTime(const AName: string;const AValue: TDateTime);
 var
-  lParam : TtiQueryParamDateTime ;
+  lParam : TtiQueryParamDateTime;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamDateTime) as TtiQueryParamDateTime;
-  lParam.SetValueAsDateTime(pValue) ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamDateTime) as TtiQueryParamDateTime;
+  lParam.SetValueAsDateTime(AValue);
 end;
 
 {
-function TtiQueryParams.ParamAsDateTime(const pName: string): TDateTime;
+function TtiQueryParams.ParamAsDateTime(const AName: string): TDateTime;
 var
-  lParam : TtiQueryParamDateTime ;
+  lParam : TtiQueryParamDateTime;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamDateTime) as TtiQueryParamDateTime;
-  result := lParam.GetValue ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamDateTime) as TtiQueryParamDateTime;
+  result := lParam.GetValue;
 end;
 }
 
-procedure TtiQueryParams.SetValueAsBoolean(const pName: string;const pValue: Boolean);
+procedure TtiQueryParams.SetValueAsBoolean(const AName: string;const AValue: Boolean);
 var
-  lParam : TtiQueryParamBoolean ;
+  lParam : TtiQueryParamBoolean;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamBoolean) as TtiQueryParamBoolean;
-  lParam.SetValueAsBoolean(pValue) ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamBoolean) as TtiQueryParamBoolean;
+  lParam.SetValueAsBoolean(AValue);
 end;
 
 {
-function TtiQueryParams.ParamAsBoolean(const pName: string): Boolean;
+function TtiQueryParams.ParamAsBoolean(const AName: string): Boolean;
 var
-  lParam : TtiQueryParamBoolean ;
+  lParam : TtiQueryParamBoolean;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamBoolean) as TtiQueryParamBoolean;
-  result := lParam.GetValue ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamBoolean) as TtiQueryParamBoolean;
+  result := lParam.GetValue;
 end;
 }
 
@@ -1325,368 +1416,438 @@ end;
 
 function TtiQueryParamAbs.GetKindAsStr: string;
 begin
-  result := QueryFieldKindToString( Kind ) ;
+  result := QueryFieldKindToString(Kind);
 end;
 
 function TtiQueryParamAbs.GetOwner: TtiQueryParams;
 begin
-  result := TtiQueryParams( inherited GetOwner ) ;
+  result := TtiQueryParams(inherited GetOwner);
 end;
 
-procedure TtiQueryParamAbs.SetOwner(const Value: TtiQueryParams);
+procedure TtiQueryParamAbs.SetOwner(const AValue: TtiQueryParams);
 begin
-  inherited SetOwner( Value ) ;
+  inherited SetOwner(AValue);
 end;
 
-procedure TtiDatabase.ExecSQL(const pSQL: string ; pParams : TtiQueryParams = nil );
+procedure TtiDatabase.ExecSQL(const pSQL: string; AParams : TtiQueryParams = nil);
 var
-  lQuery : TtiQuery ;
-  lHadToStartTransaction : boolean ;
-  lMessage : string ;
+  lQuery : TtiQuery;
+  lHadToStartTransaction : boolean;
+  lMessage : string;
 begin
-  lQuery    := CreateTIQuery ;
+  lQuery   := CreateTIQuery;
   try
-    lQuery.AttachDatabase( Self ) ;
-    lHadToStartTransaction := not InTransaction ;
+    lQuery.AttachDatabase(Self);
+    lHadToStartTransaction := not InTransaction;
     if lHadToStartTransaction then
-      StartTransaction ;
-    lQuery.SQLText := pSQL ;
-    lQuery.AssignParams( pParams ) ;
+      StartTransaction;
+    lQuery.SQLText := pSQL;
+    lQuery.AssignParams(AParams);
     try
-      lQuery.ExecSQL ;
+      lQuery.ExecSQL;
       if lHadToStartTransaction then
-        Commit ;
+        Commit;
     except
       on e:exception do
       begin
-        lMessage := e.message ;
-        if ( lHadToStartTransaction {and InTransaction} ) then
+        lMessage := e.message;
+        if (lHadToStartTransaction {and InTransaction}) then
         begin
           try
-            RollBack ;
+            RollBack;
           except
             on e:exception do
               lMessage := lMessage + Cr +
-                'Error rolling transaction after SQL failed:' + Cr + e.message ;
+                'Error rolling transaction after SQL failed:' + Cr + e.message;
           end;
-        end ;
+        end;
         raise EtiOPFProgrammerException.Create(lMessage);
-      end ;
-    end ;
+      end;
+    end;
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 end;
 
-procedure TtiDatabase.InsertRow( const pTableName : string ;
-                                    const pParams    : TtiQueryParams ) ;
+procedure TtiDatabase.InsertRow(const ATableName : string;
+                                    const AParams   : TtiQueryParams);
 var
-  lQuery : TtiQuery ;
-  lHadToStartTransaction : boolean ;
+  lQuery : TtiQuery;
+  lHadToStartTransaction : boolean;
 begin
-  lQuery    := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType)) ;
+  lQuery   := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
-    lQuery.AttachDatabase( Self ) ;
-    lHadToStartTransaction := not InTransaction ;
+    lQuery.AttachDatabase(Self);
+    lHadToStartTransaction := not InTransaction;
     if lHadToStartTransaction then
-      StartTransaction ;
+      StartTransaction;
     try
-      lQuery.InsertRow( pTableName, pParams ) ;
+      lQuery.InsertRow(ATableName, AParams);
       if lHadToStartTransaction then
-        Commit ;
+        Commit;
     except
       on e:exception do
       begin
         if lHadToStartTransaction then
-          RollBack ;
-        raise ;
-      end ;
-    end ;
+          RollBack;
+        raise;
+      end;
+    end;
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 end;
 
-procedure TtiDatabase.UpdateRow(   const pTableName : string ;
-                                   const pParams : TtiQueryParams ;
-                                   const pWhere  : TtiQueryParams ) ;
+procedure TtiDatabase.UpdateRow(  const ATableName : string;
+                                   const AParams : TtiQueryParams;
+                                   const AWhere : TtiQueryParams);
 var
-  lQuery : TtiQuery ;
-  lHadToStartTransaction : boolean ;
+  lQuery : TtiQuery;
+  lHadToStartTransaction : boolean;
 begin
-  lQuery    := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType)) ;
+  lQuery   := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
-    lQuery.AttachDatabase( Self ) ;
-    lHadToStartTransaction := not InTransaction ;
+    lQuery.AttachDatabase(Self);
+    lHadToStartTransaction := not InTransaction;
     if lHadToStartTransaction then
-      StartTransaction ;
+      StartTransaction;
     try
-      lQuery.UpdateRow( pTableName, pWhere, pParams ) ;
+      lQuery.UpdateRow(ATableName, AWhere, AParams);
       if lHadToStartTransaction then
-        Commit ;
+        Commit;
     except
       on e:exception do
       begin
         if lHadToStartTransaction then
-          RollBack ;
-        raise ;
-      end ;
-    end ;
+          RollBack;
+        raise;
+      end;
+    end;
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 
   {
 var
-  lSQL : string ;
-  lFields : string ;
-  i : integer ;
-  lMergedParams : TtiQueryParams ;
+  lSQL : string;
+  lFields : string;
+  i : integer;
+  lMergedParams : TtiQueryParams;
 begin
-  lSQL := 'update ' + pTableName + ' set ' ;
-  lFields := '' ;
-  for i := 0 to pParams.Count - 1 do
+  lSQL := 'update ' + ATableName + ' set ';
+  lFields := '';
+  for i := 0 to AParams.Count - 1 do
   begin
-    lFields := tiAddTrailingValue( lFields, ',' + CrLf ) ;
-    lFields := lFields + pParams.Items[i].Name + ' = :' + pParams.Items[i].Name ;
-  end ;
+    lFields := tiAddTrailingValue(lFields, ',' + CrLf);
+    lFields := lFields + AParams.Items[i].Name + ' =:' + AParams.Items[i].Name;
+  end;
 
   lSQL := lSQL + CrLf +
           lFields +
-          WhereClause( pParams ) ;
+          WhereClause(AParams);
 
-  lMergedParams := TtiQueryParams.Create ;
-  lMergedParams.OwnsObjects := false ;
+  lMergedParams := TtiQueryParams.Create;
+  lMergedParams.OwnsObjects := false;
   try
-    for i := 0 to pWhere.Count - 1 do
-      lMergedParams.Add( pWhere.Items[i] ) ;
-    for i := 0 to pParams.Count - 1 do
-      lMergedParams.Add( pParams.Items[i] ) ;
+    for i := 0 to AWhere.Count - 1 do
+      lMergedParams.Add(AWhere.Items[i]);
+    for i := 0 to AParams.Count - 1 do
+      lMergedParams.Add(AParams.Items[i]);
 
-    ExecSQL( lSQL, lMergedParams ) ;
+    ExecSQL(lSQL, lMergedParams);
   finally
-    lMergedParams.Free ;
-  end ;
+    lMergedParams.Free;
+  end;
 }
 
 end;
 
-procedure TtiQuery.AssignParams(const pParams: TtiQueryParams ; const pWhere : TtiQueryParams = nil );
-var
-  i : integer ;
+procedure TtiQuery.AssignFromFieldBoolean(const AField: TtiFieldBoolean; const AName: string);
 begin
-  if pParams <> nil then
-    For i := 0 to pParams.Count - 1 do
-      pParams.Items[i].AssignToTIQuery(Self);
-  if pWhere <> nil then
-    For i := 0 to pWhere.Count - 1 do
-      pWhere.Items[i].AssignToTIQuery(Self);
+  if not AField.IsNull then
+    ParamAsBoolean[AName]:= AField.AsBoolean
+  else
+    ParamIsNull[AName]:= True;
+end;
+
+procedure TtiQuery.AssignFromFieldDateTime(const AField: TtiFieldDateTime; const AName: string);
+begin
+  if not AField.IsNull then
+    ParamAsDateTime[AName]:= AField.AsDateTime
+  else
+    ParamIsNull[AName]:= True;
+end;
+
+procedure TtiQuery.AssignFromFieldFloat(const AField: TtiFieldFloat; const AName: string);
+begin
+  if not AField.IsNull then
+    ParamAsFloat[AName]:= AField.AsFloat
+  else
+    ParamIsNull[AName]:= True;
+end;
+
+procedure TtiQuery.AssignFromFieldInteger(const AField: TtiFieldInteger; const AName: string);
+begin
+  if not AField.IsNull then
+    ParamAsInteger[AName]:= AField.AsInteger
+  else
+    ParamIsNull[AName]:= True;
+end;
+
+procedure TtiQuery.AssignFromFieldString(const AField: TtiFieldString; const AName: string);
+begin
+  if not AField.IsNull then
+    ParamAsString[AName]:= AField.AsString
+  else
+    ParamIsNull[AName]:= True;
+end;
+
+procedure TtiQuery.AssignParams(const AParams: TtiQueryParams; const AWhere : TtiQueryParams = nil);
+var
+  i : integer;
+begin
+  if AParams <> nil then
+    For i := 0 to AParams.Count - 1 do
+      AParams.Items[i].AssignToTIQuery(Self);
+  if AWhere <> nil then
+    For i := 0 to AWhere.Count - 1 do
+      AWhere.Items[i].AssignToTIQuery(Self);
 end;
 
 function TtiQuerySQL.SQLAndParamsAsString: string;
 var
-  i : integer ;
+  i : integer;
   lParams: string;
 begin
   result := 'SQL:';
   for i := 0 to SQL.Count - 1 do
-    result := result + Cr + '    ' + SQL.Strings[i] ;
+    result := result + Cr + '    ' + SQL.Strings[i];
   lParams := '';
   for i := 0 to ParamCount - 1 do
   begin
    lParams := lParams + Cr + '    ' +
-              ParamName( i ) + ' := ';
-    if ParamIsNull[ ParamName( i )] then      // Display the fact
+              ParamName(i) + ':= ';
+    if ParamIsNull[ ParamName(i)] then      // Display the fact
       lParams := lParams + 'Null'
     else
-      lParams := lParams + tiAddEllipsis(ParamAsString[ ParamName( i )], 120) ;
-  end ;
+      lParams := lParams + tiAddEllipsis(ParamAsString[ ParamName(i)], 120);
+  end;
   if lParams <> '' then
-    result := result + Cr(2) + 'Params:' + lParams ;
+    result := result + Cr(2) + 'Params:' + lParams;
 
 end;
 
-procedure TtiQuerySQL.UpdateRow(const pTableName: string; const pParams, pWhere: TtiQueryParams);
+procedure TtiQuerySQL.UpdateRow(const ATableName: string; const AParams, AWhere: TtiQueryParams);
 var
-  lSQL : string ;
-  lFields : string ;
-  i : integer ;
+  lSQL : string;
+  lFields : string;
+  i : integer;
 begin
-  lSQL := 'update ' + pTableName + ' set ' ;
-  lFields := '' ;
-  for i := 0 to pParams.Count - 1 do
+  lSQL := 'update ' + ATableName + ' set ';
+  lFields := '';
+  for i := 0 to AParams.Count - 1 do
   begin
-    lFields := tiAddTrailingValue( lFields, ',' + CrLf ) ;
-    lFields := lFields + pParams.Items[i].Name + ' = :' + pParams.Items[i].Name ;
-  end ;
+    lFields := tiAddTrailingValue(lFields, ',' + CrLf);
+    lFields := lFields + AParams.Items[i].Name + ' =:' + AParams.Items[i].Name;
+  end;
 
   lSQL := lSQL + CrLf +
           lFields +
-          WhereClause( pWhere ) ;
+          WhereClause(AWhere);
 
-  SQLText := lSQL ;
-  AssignParams( pParams, pWhere ) ;
-  ExecSQL ;
+  SQLText := lSQL;
+  AssignParams(AParams, AWhere);
+  ExecSQL;
 end;
 
-function TtiQuerySQL.WhereClause(const pWhere: TtiQueryParams): string;
+function TtiQuerySQL.WhereClause(const AWhere: TtiQueryParams): string;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := '' ;
-  if ( pWhere = nil ) or
-     ( pWhere.Count = 0 ) then
-    Exit ;
-  for i := 0 to pWhere.Count - 1 do
+  result := '';
+  if (AWhere = nil) or
+     (AWhere.Count = 0) then
+    Exit;
+  for i := 0 to AWhere.Count - 1 do
   begin
-    result := tiAddTrailingValue( Result, CrLf ) ;
+    result := tiAddTrailingValue(Result, CrLf);
     result := result +
-              pWhere.Items[i].Name + ' = :' +
-              pWhere.Items[i].Name ;
-  end ;
+              AWhere.Items[i].Name + ' =:' +
+              AWhere.Items[i].Name;
+  end;
   if result <> '' then
-    result := CrLf + 'where' + CrLf + result ;
+    result := CrLf + 'where' + CrLf + result;
 end;
 
-procedure TtiQueryParams.SetValueFromProp(const pInstance: TtiObject; const pPropName, pParamName: string);
+procedure TtiQueryParams.SetValueFromProp(const AFieldMetaData: TtiObject; const APropName, pParamName: string);
 var
-  lString   : string;
-  lInteger  : Int64;
-  lFloat    : Extended;
-  lDate     : TDateTime;
-  lBoolean  : boolean;
-  lStream   : TStream;
+  lString  : string;
+  lInteger : Int64;
+  lFloat   : Extended;
+  lDate    : TDateTime;
+  lBoolean : boolean;
+  lStream  : TStream;
   lTypeKind : TtiTypeKind;
   lPropType : TTypeKind;
 begin
-  Assert( pInstance.TestValid(TtiObject), cTIInvalidObjectError );
-  Assert( pPropName <> '', 'pPropName not assigned');
-  Assert( pParamName <> '', 'pParamName not assigned');
-  Assert( IsPublishedProp( pInstance, pPropName ), pPropName + ' is not a published property on ' + pInstance.ClassName ) ;
+  Assert(AFieldMetaData.TestValid(TtiObject), cTIInvalidObjectError);
+  Assert(APropName <> '', 'APropName not assigned');
+  Assert(pParamName <> '', 'pParamName not assigned');
+  Assert(IsPublishedProp(AFieldMetaData, APropName), APropName + ' is not a published property on ' + AFieldMetaData.ClassName);
   try
     // If it's an object type...
     // else
 // ToDo: Better to return a qfkXXX here
-    lTypeKind := tiGetSimplePropType( pInstance, pPropName ) ;
+    lTypeKind := tiGetSimplePropType(AFieldMetaData, APropName);
     case lTypeKind of
-    tiTKString   : begin
-                     lString := TypInfo.GetStrProp( pInstance, pPropName ) ;
+    tiTKString  : begin
+                     lString := TypInfo.GetStrProp(AFieldMetaData, APropName);
                      SetValueAsString(pParamName, lString);
-                   end ;
-    tiTKInteger  : begin
-                     lPropType := TypInfo.PropType( pInstance, pPropName ) ;
-                     if ( lPropType = tkInt64 ) then
-                       lInteger := TypInfo.GetInt64Prop( pInstance, pPropName )
+                   end;
+    tiTKInteger : begin
+                     lPropType := TypInfo.PropType(AFieldMetaData, APropName);
+                     if (lPropType = tkInt64) then
+                       lInteger := TypInfo.GetInt64Prop(AFieldMetaData, APropName)
                      else
-                       lInteger := TypInfo.GetOrdProp( pInstance, pPropName ) ;
+                       lInteger := TypInfo.GetOrdProp(AFieldMetaData, APropName);
                      SetValueAsInteger(pParamName, lInteger);
-                   end ;
-    tiTKFloat    : begin
-                     lFloat := TypInfo.GetFloatProp( pInstance, pPropName ) ;
+                   end;
+    tiTKFloat   : begin
+                     lFloat := TypInfo.GetFloatProp(AFieldMetaData, APropName);
                      SetValueAsFloat(pParamName, lFloat);
-                   end ;
+                   end;
     tiTKDateTime : begin
-                     lDate := TypInfo.GetFloatProp( pInstance, pPropName ) ;
+                     lDate := TypInfo.GetFloatProp(AFieldMetaData, APropName);
                      SetValueAsDateTime(pParamName, lDate);
                    end;
     tiTKBoolean :  begin
-                     lBoolean := Boolean(TypInfo.GetOrdProp( pInstance, pPropName )) ;
+                     lBoolean := Boolean(TypInfo.GetOrdProp(AFieldMetaData, APropName));
                      SetValueAsBoolean(pParamName, lBoolean);
                    end;
-    tiTKBinary  :  begin
-                     lStream := (TypInfo.GetObjectProp( pInstance, pPropName ) as TStream) ;
+    tiTKBinary :  begin
+                     lStream := (TypInfo.GetObjectProp(AFieldMetaData, APropName) as TStream);
                      SetValueAsStream(pParamName, lStream);
-                   end ;
+                   end;
     else
-      raise EtiOPFProgrammerException.Create(cErrorInvalidTtiTypeKind) ;
-    end ;
+      raise EtiOPFProgrammerException.Create(cErrorInvalidTtiTypeKind);
+    end;
   except
     on e:exception do
-      EtiOPFProgrammerException.CreateFmt(cErrorSettingPropValue, [pPropName, pInstance.ClassName, e.Message]);
-  end ;
+      EtiOPFProgrammerException.CreateFmt(cErrorSettingPropValue, [APropName, AFieldMetaData.ClassName, e.Message]);
+  end;
 end;
 
-function TtiQueryParams.GetValueAsBoolean(const pName: string): Boolean;
+function TtiQueryParams.GetValueAsBoolean(const AName: string): Boolean;
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := FindParamByName(pName) ;
-  Assert( lParam.TestValid(TtiQueryParamBoolean), cTIInvalidObjectError );
-  result := TtiQueryParamBoolean(lParam).GetValueAsBoolean ;
+  lParam := FindParamByName(AName);
+  Assert(lParam.TestValid(TtiQueryParamBoolean), cTIInvalidObjectError);
+  result := TtiQueryParamBoolean(lParam).GetValueAsBoolean;
 end;
 
-function TtiQueryParams.GetValueAsDateTime(const pName: string): TDateTime;
+function TtiQueryParams.GetValueAsDateTime(const AName: string): TDateTime;
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := FindParamByName(pName) ;
-  Assert( lParam.TestValid(TtiQueryParamDateTime), cTIInvalidObjectError );
-  result := TtiQueryParamDateTime(lParam).GetValueAsDateTime ;
+  lParam := FindParamByName(AName);
+  Assert(lParam.TestValid(TtiQueryParamDateTime), cTIInvalidObjectError);
+  result := TtiQueryParamDateTime(lParam).GetValueAsDateTime;
 end;
 
-function TtiQueryParams.GetValueAsFloat(const pName: string): Extended;
+function TtiQueryParams.GetValueAsFloat(const AName: string): Extended;
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := FindParamByName(pName) ;
-  Assert( lParam.TestValid(TtiQueryParamFloat), cTIInvalidObjectError );
-  result := TtiQueryParamFloat(lParam).GetValueAsFloat ;
+  lParam := FindParamByName(AName);
+  Assert(lParam.TestValid(TtiQueryParamFloat), cTIInvalidObjectError);
+  result := TtiQueryParamFloat(lParam).GetValueAsFloat;
 end;
 
-function TtiQueryParams.GetValueAsinteger(const pName: string): Int64;
+function TtiQueryParams.GetValueAsinteger(const AName: string): Int64;
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := FindParamByName(pName) ;
-  Assert( lParam.TestValid(TtiQueryParamInteger), cTIInvalidObjectError );
-  result := TtiQueryParamInteger(lParam).GetValueAsInteger ;
+  lParam := FindParamByName(AName);
+  Assert(lParam.TestValid(TtiQueryParamInteger), cTIInvalidObjectError);
+  result := TtiQueryParamInteger(lParam).GetValueAsInteger;
 end;
 
-function TtiQueryParams.GetValueAsStream(const pName: string): TStream;
+function TtiQueryParams.GetValueAsStream(const AName: string): TStream;
 var
-  lParam : TtiQueryParamAbs ;
+  lParam : TtiQueryParamAbs;
 begin
-  lParam := FindParamByName(pName) ;
-  Assert( lParam.TestValid(TtiQueryParamStream), cTIInvalidObjectError );
-  result := TtiQueryParamStream(lParam).GetValueAsStream ;
+  lParam := FindParamByName(AName);
+  Assert(lParam.TestValid(TtiQueryParamStream), cTIInvalidObjectError);
+  result := TtiQueryParamStream(lParam).GetValueAsStream;
 end;
 
-procedure TtiQueryParams.SetValueAsStream(const pName: string; const pValue: TStream);
+procedure TtiQueryParams.SetValueAsStream(const AName: string; const AValue: TStream);
 var
-  lParam : TtiQueryParamStream ;
+  lParam : TtiQueryParamStream;
 begin
-  lParam := FindCreateParamByName(pName, TtiQueryParamStream) as TtiQueryParamStream;
-  lParam.SetValueAsStream(pValue) ;
+  lParam := FindCreateParamByName(AName, TtiQueryParamStream) as TtiQueryParamStream;
+  lParam.SetValueAsStream(AValue);
 end;
 
-procedure TtiQueryParams.AssignValueToStream(const pName: string; const pStream: TStream);
-var
-  lStream : TStream ;
-  lPos : integer ;
+procedure TtiQueryParams.AssignFromFieldString(const AField: TtiFieldString; const AName: string);
 begin
-  lStream := GetValueAsStream(pName);
-  lPos := lStream.Position ;
-  pStream.Size := 0 ;
-  pStream.CopyFrom( lStream, lStream.Size ) ;
-  pStream.Seek(0, soFromBeginning);
-  lStream.Seek( lPos, soFromBeginning ) ;
+  Assert(AField.TestValid, cTIInvalidObjectError);
+  SetValueAsString(AName, AField.AsString);
+end;
+
+procedure TtiQueryParams.AssignFromFieldBoolean(const AField: TtiFieldBoolean; const AName: string);
+begin
+  Assert(AField.TestValid, cTIInvalidObjectError);
+  SetValueAsBoolean(AName, AField.AsBoolean);
+end;
+
+procedure TtiQueryParams.AssignFromFieldDateTime(const AField: TtiFieldDateTime; const AName: string);
+begin
+  Assert(AField.TestValid, cTIInvalidObjectError);
+  SetValueAsDateTime(AName, AField.AsDateTime);
+end;
+
+procedure TtiQueryParams.AssignFromFieldFloat(const AField: TtiFieldFloat;const AName: string);
+begin
+  Assert(AField.TestValid, cTIInvalidObjectError);
+  SetValueAsFloat(AName, AField.AsFloat);
+end;
+
+procedure TtiQueryParams.AssignFromFieldInteger(const AField: TtiFieldInteger; const AName: string);
+begin
+  Assert(AField.TestValid, cTIInvalidObjectError);
+  SetValueAsInteger(AName, AField.AsInteger);
+end;
+
+procedure TtiQueryParams.AssignValueToStream(const AName: string; const AStream: TStream);
+var
+  lStream : TStream;
+  lPos : integer;
+begin
+  lStream := GetValueAsStream(AName);
+  lPos := lStream.Position;
+  AStream.Size := 0;
+  AStream.CopyFrom(lStream, lStream.Size);
+  AStream.Seek(0, soFromBeginning);
+  lStream.Seek(lPos, soFromBeginning);
 end;
 
 function TtiQuery.GetSQLText: string;
 begin
-  result := SQL.Text ;
+  result := SQL.Text;
 end;
 
-procedure TtiQuery.SetSQLText(const Value: string);
+procedure TtiQuery.SetSQLText(const AValue: string);
 var
-  lsl : TStringList ;
+  lsl : TStringList;
 begin
   // This will force any extra code in SetSQL to be executed.
   // Have had problems using SQL.Text as this extra code gets missed.
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
-    lsl.Text := Value ;
-    SQL := lsl ;
+    lsl.Text := AValue;
+    SQL := lsl;
   finally
     lsl.Free;
   end;
@@ -1694,10 +1855,10 @@ end;
 
 { TtiQueryParamString }
 
-procedure TtiQueryParamString.AssignToTIQuery(const pQuery: TtiQuery);
+procedure TtiQueryParamString.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert( pQuery.TestValid(TtiQuery), cTIInvalidObjectError );
-  pQuery.ParamAsString[Name] := GetValueAsString ;
+  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  AQuery.ParamAsString[Name]:= GetValueAsString;
 end;
 
 function TtiQueryParamString.GetKind: TtiQueryFieldKind;
@@ -1707,21 +1868,21 @@ end;
 
 function TtiQueryParamString.GetValueAsString: string;
 begin
-  result := FValue ;
+  result := FValue;
 end;
 
-procedure TtiQueryParamString.SetValueAsString(const pValue: string);
+procedure TtiQueryParamString.SetValueAsString(const AValue: string);
 begin
-  FValue := pValue ;
-  IsNull := false ;
+  FValue := AValue;
+  IsNull := false;
 end;
 
 { TtiQueryParamInteger }
 
-procedure TtiQueryParamInteger.AssignToTIQuery(const pQuery: TtiQuery);
+procedure TtiQueryParamInteger.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert( pQuery.TestValid(TtiQuery), cTIInvalidObjectError );
-  pQuery.ParamAsInteger[Name] := GetValueAsInteger ;
+  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  AQuery.ParamAsInteger[Name]:= GetValueAsInteger;
 end;
 
 function TtiQueryParamInteger.GetKind: TtiQueryFieldKind;
@@ -1731,50 +1892,50 @@ end;
 
 function TtiQueryParamInteger.GetValueAsInteger: Int64;
 begin
-  result := FValue ;
+  result := FValue;
 end;
 
 function TtiQueryParamInteger.GetValueAsString: string;
 begin
-  result := IntToStr( FValue ) ;
+  result := IntToStr(FValue);
 end;
 
-procedure TtiQueryParamInteger.SetValueAsInteger(const pValue: Int64);
+procedure TtiQueryParamInteger.SetValueAsInteger(const AValue: Int64);
 begin
-  FValue := pValue ;
-  IsNull := false ;
+  FValue := AValue;
+  IsNull := false;
 end;
 
-procedure TtiQueryParamInteger.SetValueAsString(const pValue: string);
+procedure TtiQueryParamInteger.SetValueAsString(const AValue: string);
 begin
-  if pValue <> '' then
-    FValue := StrToInt64(pValue)
+  if AValue <> '' then
+    FValue := StrToInt64(AValue)
   else
     FValue := 0;
-  IsNull := false ;
+  IsNull := false;
 end;
 
-procedure TtiQueryParamBoolean.SetValueAsBoolean(const pValue: Boolean);
+procedure TtiQueryParamBoolean.SetValueAsBoolean(const AValue: Boolean);
 begin
-  FValue := pValue ;
-  IsNull := false ;
+  FValue := AValue;
+  IsNull := false;
 end;
 
-procedure TtiQueryParamBoolean.SetValueAsString(const pValue: string);
+procedure TtiQueryParamBoolean.SetValueAsString(const AValue: string);
 begin
   FValue :=
-     SameText( pValue, 'TRUE' ) or
-     SameText( pValue, 'T' ) or
-     SameText( pValue, '1' ) ;
-  IsNull := false ;
+     SameText(AValue, 'TRUE') or
+     SameText(AValue, 'T') or
+     SameText(AValue, '1');
+  IsNull := false;
 end;
 
 { TtiQueryParamFloat }
 
-procedure TtiQueryParamFloat.AssignToTIQuery(const pQuery: TtiQuery);
+procedure TtiQueryParamFloat.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert( pQuery.TestValid(TtiQuery), cTIInvalidObjectError );
-  pQuery.ParamAsFloat[Name] := GetValueAsFloat ;
+  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  AQuery.ParamAsFloat[Name]:= GetValueAsFloat;
 end;
 
 function TtiQueryParamFloat.GetKind: TtiQueryFieldKind;
@@ -1784,35 +1945,35 @@ end;
 
 function TtiQueryParamFloat.GetValueAsFloat: extended;
 begin
-  result := FValue ;
+  result := FValue;
 end;
 
 function TtiQueryParamFloat.GetValueAsString: string;
 begin
-  result := FloatToStr( GetValueAsFloat ) ;
+  result := FloatToStr(GetValueAsFloat);
 end;
 
-procedure TtiQueryParamFloat.SetValueAsFloat(const pValue: extended);
+procedure TtiQueryParamFloat.SetValueAsFloat(const AValue: extended);
 begin
-  FValue := pValue ;
-  IsNull := false ;
+  FValue := AValue;
+  IsNull := false;
 end;
 
-procedure TtiQueryParamFloat.SetValueAsString(const pValue: string);
+procedure TtiQueryParamFloat.SetValueAsString(const AValue: string);
 begin
-  if pValue <> '' then
-    FValue := StrToFloat(pValue)
+  if AValue <> '' then
+    FValue := StrToFloat(AValue)
   else
     FValue := 0;
-  IsNull := false ;
+  IsNull := false;
 end;
 
 { TtiQueryParamDateTime }
 
-procedure TtiQueryParamDateTime.AssignToTIQuery(const pQuery: TtiQuery);
+procedure TtiQueryParamDateTime.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert( pQuery.TestValid(TtiQuery), cTIInvalidObjectError );
-  pQuery.ParamAsDateTime[Name] := GetValueAsDateTime ;
+  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  AQuery.ParamAsDateTime[Name]:= GetValueAsDateTime;
 end;
 
 function TtiQueryParamDateTime.GetKind: TtiQueryFieldKind;
@@ -1822,7 +1983,7 @@ end;
 
 function TtiQueryParamDateTime.GetValueAsDateTime: TDateTime;
 begin
-  result := FValue ;
+  result := FValue;
 end;
 
 function TtiQueryParamDateTime.GetValueAsString: string;
@@ -1830,37 +1991,37 @@ begin
   result := tiDateTimeAsXMLString(GetValueAsDateTime);
 end;
 
-procedure TtiQueryParamDateTime.SetValueAsDateTime(const pValue: TDateTime);
+procedure TtiQueryParamDateTime.SetValueAsDateTime(const AValue: TDateTime);
 begin
-  FValue := pValue ;
-  IsNull := false ;
+  FValue := AValue;
+  IsNull := false;
 end;
 
-procedure TtiQueryParamDateTime.SetValueAsString(const pValue: string);
+procedure TtiQueryParamDateTime.SetValueAsString(const AValue: string);
 begin
-  if pValue <> '' then
-    FValue := tiXMLStringToDateTime(pValue)
+  if AValue <> '' then
+    FValue := tiXMLStringToDateTime(AValue)
   else
-    FValue := 0 ;
-  IsNull := false ;
+    FValue := 0;
+  IsNull := false;
 end;
 
 { TtiQueryParamBoolean }
 
-procedure TtiQueryParamBoolean.AssignToTIQuery(const pQuery: TtiQuery);
+procedure TtiQueryParamBoolean.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert( pQuery.TestValid(TtiQuery), cTIInvalidObjectError );
-  pQuery.ParamAsBoolean[Name] := GetValueAsBoolean ;
+  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  AQuery.ParamAsBoolean[Name]:= GetValueAsBoolean;
 end;
 
 function TtiQueryParamBoolean.GetKind: TtiQueryFieldKind;
 begin
-  result := qfkLogical ;
+  result := qfkLogical;
 end;
 
 function TtiQueryParamBoolean.GetValueAsBoolean: Boolean;
 begin
-  result := FValue ;
+  result := FValue;
 end;
 
 function TtiQueryParamBoolean.GetValueAsString: string;
@@ -1869,87 +2030,87 @@ begin
   if FValue then
     result := '1'
   else
-    result := '0' ;
+    result := '0';
 {$ELSE}
 {$IFDEF BOOLEAN_CHAR_1}
   if FValue then
     result := 'T'
   else
-    result := 'F' ;
+    result := 'F';
 {$ELSE}
   if FValue then
     result := 'TRUE'
   else
-    result := 'FALSE' ;
+    result := 'FALSE';
 {$ENDIF}
 {$ENDIF}
 end;
 
 { TtiQueryParamStream }
 
-procedure TtiQueryParamStream.AssignToTIQuery(const pQuery: TtiQuery);
+procedure TtiQueryParamStream.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert( pQuery.TestValid(TtiQuery), cTIInvalidObjectError );
-  pQuery.AssignParamFromStream(Name, FStream);
+  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  AQuery.AssignParamFromStream(Name, FStream);
 end;
 
 constructor TtiQueryParamStream.Create;
 begin
   inherited;
-  FStream := TMemoryStream.Create ;
+  FStream := TMemoryStream.Create;
 end;
 
 destructor TtiQueryParamStream.Destroy;
 begin
-  FStream.Free ;
+  FStream.Free;
   inherited;
 end;
 
 function TtiQueryParamStream.GetKind: TtiQueryFieldKind;
 begin
-  result := qfkBinary ;
+  result := qfkBinary;
 end;
 
 function TtiQueryParamStream.GetValueAsStream: TStream;
 begin
-  result := FStream ;
+  result := FStream;
 end;
 
 function TtiQueryParamStream.GetValueAsString: string;
 var
-  lStream : TStringStream ;
+  lStream : TStringStream;
 begin
-  lStream := TStringStream.Create('') ;
+  lStream := TStringStream.Create('');
   try
-    FStream.Position := 0 ;
+    FStream.Position := 0;
     MimeEncodeStream(FStream, lStream);
-    result := lStream.DataString ;
+    result := lStream.DataString;
   finally
     lStream.Free;
   end;
 end;
 
-procedure TtiQueryParamStream.SetValueAsStream(const pValue: TStream);
+procedure TtiQueryParamStream.SetValueAsStream(const AValue: TStream);
 var
-  lPos : integer ;
+  lPos : integer;
 begin
-  lPos := pValue.Position ;
-  FStream.Size := 0 ;
-  pValue.Seek(0, soFromBeginning);
-  FStream.CopyFrom( pValue, pValue.Size ) ;
+  lPos := AValue.Position;
+  FStream.Size := 0;
+  AValue.Seek(0, soFromBeginning);
+  FStream.CopyFrom(AValue, AValue.Size);
   FStream.Seek(0, soFromBeginning);
-  pValue.Seek( lPos, soFromBeginning ) ;
+  AValue.Seek(lPos, soFromBeginning);
 end;
 
-procedure TtiQueryParamStream.SetValueAsString(const pValue: string);
+procedure TtiQueryParamStream.SetValueAsString(const AValue: string);
 var
-  lStream : TStringStream ;
+  lStream : TStringStream;
 begin
-  lStream := TStringStream.Create(pValue) ;
+  lStream := TStringStream.Create(AValue);
   try
-    FStream.Size := 0 ;
+    FStream.Size := 0;
     MimeDecodeStream(lStream, FStream);
-    FStream.Position := 0 ;
+    FStream.Position := 0;
   finally
     lStream.Free;
   end;
@@ -1960,7 +2121,7 @@ end;
 constructor TtiQueryNonSQL.Create;
 begin
   inherited;
-  FParams := TtiQueryParams.Create ;
+  FParams := TtiQueryParams.Create;
 end;
 
 destructor TtiQueryNonSQL.Destroy;
@@ -1969,148 +2130,148 @@ begin
   inherited;
 end;
 
-procedure TtiQueryNonSQL.AssignFieldAsStream(const pName: string; const pValue: TStream);
+procedure TtiQueryNonSQL.AssignFieldAsStream(const AName: string; const AValue: TStream);
 var
-  ls : string ;
-  lStream : TStringStream ;
+  ls : string;
+  lStream : TStringStream;
 begin
-  ls := GetFieldAsString(pName);
-  lStream := TStringStream.Create(ls) ;
+  ls := GetFieldAsString(AName);
+  lStream := TStringStream.Create(ls);
   try
-    pValue.Size := 0 ;
-    MimeDecodeStream(lStream, pValue);
-    pValue.Position := 0 ;
+    AValue.Size := 0;
+    MimeDecodeStream(lStream, AValue);
+    AValue.Position := 0;
   finally
     lStream.Free;
   end;
 end;
 
-procedure TtiQueryNonSQL.AssignParamFromStream(const pName: string; const pValue: TStream);
+procedure TtiQueryNonSQL.AssignParamFromStream(const AName: string; const AValue: TStream);
 begin
-  FParams.SetValueAsStream(pName, pValue);
+  FParams.SetValueAsStream(AName, AValue);
 end;
 
-procedure TtiQueryNonSQL.AssignParamToStream(const pName: string; const pValue: TStream);
+procedure TtiQueryNonSQL.AssignParamToStream(const AName: string; const AValue: TStream);
 begin
-  FParams.AssignValueToStream(pName, pValue);
+  FParams.AssignValueToStream(AName, AValue);
 end;
 
-function TtiQueryNonSQL.GetParamAsBoolean(const psName: string): boolean;
+function TtiQueryNonSQL.GetParamAsBoolean(const AName: string): boolean;
 begin
-  result := Params.GetValueAsBoolean(psName);
+  result := Params.GetValueAsBoolean(AName);
 end;
 
-function TtiQueryNonSQL.GetParamAsDateTime(const psName: string): TDateTime;
+function TtiQueryNonSQL.GetParamAsDateTime(const AName: string): TDateTime;
 begin
-  result := Params.GetValueAsDateTime(psName);
+  result := Params.GetValueAsDateTime(AName);
 end;
 
-function TtiQueryNonSQL.GetParamAsFloat(const psName: string): extended;
+function TtiQueryNonSQL.GetParamAsFloat(const AName: string): extended;
 begin
-  result := Params.GetValueAsFloat(psName);
+  result := Params.GetValueAsFloat(AName);
 end;
 
-function TtiQueryNonSQL.GetParamAsInteger(const psName: string): Int64;
+function TtiQueryNonSQL.GetParamAsInteger(const AName: string): Int64;
 begin
-  result := Params.GetValueAsInteger(psName);
+  result := Params.GetValueAsInteger(AName);
 end;
 
-function TtiQueryNonSQL.GetParamAsTextBLOB(const psName: string): string;
+function TtiQueryNonSQL.GetParamAsTextBLOB(const AName: string): string;
 begin
-  result := Params.GetValueAsString(psName);
+  result := Params.GetValueAsString(AName);
 end;
 
 function TtiQueryNonSQL.ParamCount: integer;
 begin
-  result := Params.Count ;
+  result := Params.Count;
 end;
 
-function TtiQueryNonSQL.ParamName(pIndex: integer): string;
+function TtiQueryNonSQL.ParamName(AIndex: integer): string;
 begin
-  result := Params.ParamName(pIndex) ;
+  result := Params.ParamName(AIndex);
 end;
 
-procedure TtiQueryNonSQL.SetParamAsBoolean(const psName: string; const Value: boolean);
+procedure TtiQueryNonSQL.SetParamAsBoolean(const AName: string; const AValue: boolean);
 begin
-  Params.SetValueAsBoolean(psName, Value);
+  Params.SetValueAsBoolean(AName, AValue);
 end;
 
-procedure TtiQueryNonSQL.SetParamAsDateTime(const psName : string ; const Value: TDateTime);
+procedure TtiQueryNonSQL.SetParamAsDateTime(const AName : string; const AValue: TDateTime);
 begin
-  Params.SetValueAsDateTime(psName, Value);
+  Params.SetValueAsDateTime(AName, AValue);
 end;
 
-procedure TtiQueryNonSQL.SetParamAsFloat(const psName: string; const Value: extended);
+procedure TtiQueryNonSQL.SetParamAsFloat(const AName: string; const AValue: extended);
 begin
-  Params.SetValueAsFloat(psName, Value);
+  Params.SetValueAsFloat(AName, AValue);
 end;
 
-procedure TtiQueryNonSQL.SetParamAsInteger(const psName: string; const Value: Int64);
+procedure TtiQueryNonSQL.SetParamAsInteger(const AName: string; const AValue: Int64);
 begin
-  Params.SetValueAsInteger(psName, Value);
+  Params.SetValueAsInteger(AName, AValue);
 end;
 
-procedure TtiQueryNonSQL.SetParamAsTextBLOB(const psName, Value: string);
+procedure TtiQueryNonSQL.SetParamAsTextBLOB(const AName, AValue: string);
 begin
-  Params.SetValueAsString(psName, Value);
+  Params.SetValueAsString(AName, AValue);
 end;
 
-procedure TtiQueryNonSQL.SetParamAsMacro(const psName, Value: string);
+procedure TtiQueryNonSQL.SetParamAsMacro(const AName, AValue: string);
 begin
-  Assert( false, 'Not implemented in ' + ClassName ) ;
+  Assert(false, 'Not implemented in ' + ClassName);
 end;
 
-function TtiQueryNonSQL.GetParamIsNull(const psName: String): Boolean;
+function TtiQueryNonSQL.GetParamIsNull(const AName: String): Boolean;
 begin
-  Result := Params.ParamIsNull[psName];
+  Result := Params.ParamIsNull[AName];
 end;
 
-procedure TtiQueryNonSQL.SetParamIsNull(const psName: String; const Value: Boolean);
+procedure TtiQueryNonSQL.SetParamIsNull(const AName: String; const AValue: Boolean);
 begin
-  Params.ParamIsNull[ psName ] := Value ;
+  Params.ParamIsNull[ AName ]:= AValue;
 end;
 
 function TtiQueryNonSQL.ParamsAsString: string;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := '' ;
+  result := '';
   for i := 0 to ParamCount - 1 do
   begin
-    result := tiAddTrailingValue( result, CrLf ) ;
+    result := tiAddTrailingValue(result, CrLf);
     result := result +
-              ParamName( i ) + ' := ' +
-              ParamAsString[ ParamName( i )] ;
-  end ;
+              ParamName(i) + ':= ' +
+              ParamAsString[ ParamName(i)];
+  end;
 end;
 
 function TtiDatabase.CreateTIQuery: TtiQuery;
 begin
-  result := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType)) ;
+  result := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
 end;
 
-class function TtiDatabase.TestConnectTo(const psDatabaseName, psUserName,
-                                         psPassword, pParams: string): boolean;
+class function TtiDatabase.TestConnectTo(const ADatabaseName, AUserName,
+                                         APassword, AParams: string): boolean;
 var
-  lDatabase : TtiDatabase ;
+  lDatabase : TtiDatabase;
 begin
-  result := false ;
-  lDatabase := Create ;
+  result := false;
+  lDatabase := Create;
   try
     try
       // ToDo: Pass this params value
-      lDatabase.Connect(psDatabaseName, psUserName, psPassword, pParams);
-      result := true ;
+      lDatabase.Connect(ADatabaseName, AUserName, APassword, AParams);
+      result := true;
     except
       on e:EtiOPFDBExceptionWrongServerVersion do
-        raise ;
+        raise;
       on e:exception do
-        result := false ;
-    end ;
-    lDatabase.Connected := false ;
+        result := false;
+    end;
+    lDatabase.Connected := false;
   finally
     lDatabase.Free;
-  end ;
+  end;
 end;
 
 destructor TtiDatabase.destroy;
@@ -2119,22 +2280,38 @@ begin
   inherited;
 end;
 
-procedure TtiQueryNonSQL.AssignFieldAsStreamByIndex(pIndex: Integer; const pValue: TStream);
+procedure TtiQueryNonSQL.AssignFieldAsStreamByIndex(AIndex: Integer; const AValue: TStream);
 var
-  ls : string ;
-  lStream : TStringStream ;
+  ls : string;
+  lStream : TStringStream;
 begin
-  ls := GetFieldAsStringByIndex(pIndex);
-  lStream := TStringStream.Create(ls) ;
+  ls := GetFieldAsStringByIndex(AIndex);
+  lStream := TStringStream.Create(ls);
   try
-    pValue.Size := 0 ;
-    MimeDecodeStream(lStream, pValue);
-    pValue.Position := 0 ;
+    AValue.Size := 0;
+    MimeDecodeStream(lStream, AValue);
+    AValue.Position := 0;
   finally
     lStream.Free;
   end;
 end;
 
 end.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

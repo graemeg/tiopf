@@ -8,7 +8,7 @@ uses
   ,IdCustomHTTPServer
   ,tiWebServer
   ,Classes
- ;
+;
 
 type
 
@@ -18,14 +18,18 @@ type
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var   AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   TtiDBPS_ExecuteRemoteXML = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var   AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   // For a legacy system. Use TtiDBPS_TestAlive1 in new applications
@@ -33,28 +37,36 @@ type
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var   AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   TtiDBPS_TestAlive1 = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var   AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   TtiDBPS_TestHTML = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var   AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   TtiDBPS_TestXML = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var   AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   TtiDBProxyServer = class(TtiWebServer)
@@ -63,7 +75,7 @@ type
   public
     constructor Create(APort: integer); override;
     destructor  Destroy; override;
-    property    XMLTags            : TtiXMLTags read FXMLTags;
+    property    XMLTags           : TtiXMLTags read FXMLTags;
   end;
 
 
@@ -80,11 +92,11 @@ uses
   ,tiDBProxyServerStats
   ,tiDBConnectionPool
   ,tiOPFManager
-
+  ,tiWebServerVersion
   ,SysUtils
   ,Math
 
- ;
+;
 
 { TtiDBProxyServer }
 
@@ -95,11 +107,11 @@ begin
   FXMLTags.OptXMLDBSize := optDBSizeOn;
 
   ServerActions.Add(TtiDBPS_ExecuteRemoteXML.Create(Self, 10));
-  ServerActions.Add(TtiDBPS_ServerVersion.Create(   Self, 11));
-  ServerActions.Add(TtiDBPS_TestAlive1.Create(      Self, 12));
-  ServerActions.Add(TtiDBPS_TestHTML.Create(        Self, 13));
-  ServerActions.Add(TtiDBPS_TestXML.Create(         Self, 14));
-  ServerActions.Add(TtiDBPS_TestAlive.Create(       Self, 15));
+  ServerActions.Add(TtiDBPS_ServerVersion.Create(  Self, 11));
+  ServerActions.Add(TtiDBPS_TestAlive1.Create(     Self, 12));
+  ServerActions.Add(TtiDBPS_TestHTML.Create(       Self, 13));
+  ServerActions.Add(TtiDBPS_TestXML.Create(        Self, 14));
+  ServerActions.Add(TtiDBPS_TestAlive.Create(      Self, 15));
   Sort;
 
 end;
@@ -119,7 +131,10 @@ end;
 
 procedure TtiDBPS_ExecuteRemoteXML.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 begin
   tiStringToStream(ExecuteRemoteXML(ARequestParams), AResponse);
 end;
@@ -133,27 +148,35 @@ end;
 
 procedure TtiDBPS_TestAlive1.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 var
   lPooledDB : TPooledDB;
-  lResult   : string;
+  lResult  : string;
   lDBConnectionName : string;
+  LAppServerVersion: TtiAppServerVersion;
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
-  lDBConnectionName := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;
+  LAppServerVersion:= TtiAppServerVersion.Create;
   try
-    lPooledDB := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+    LAppServerVersion.LoadDefaultValues;
+    lDBConnectionName := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;
     try
-      if lPooledDB.Database.Test then
-        lResult := (Owner as TtiDBProxyServer).XMLTags.ProxyTestPassed
-      else
-        lResult := (Owner as TtiDBProxyServer).XMLTags.ProxyTestFailed;
-    finally
-      gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, lPooledDB);
+      lPooledDB := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+      try
+        LAppServerVersion.SetConnectionStatus(lPooledDB.Database.Test);
+      finally
+        gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, lPooledDB);
+      end;
+    except
+      on e:exception do
+        LAppServerVersion.SetConnectionStatus(False);
     end;
-  except
-    on e:exception do
-      lResult := (Owner as TtiDBProxyServer).XMLTags.ProxyTestFailed;
+    LResult:= LAppServerVersion.AsString;
+  finally
+   LAppServerVersion.Free;
   end;
   tiStringToStream(LResult, AResponse);
 end;
@@ -167,7 +190,10 @@ end;
 
 procedure TtiDBPS_TestHTML.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 var
   lDBProxyServerStats : TtiDBProxyServerStats;
 begin
@@ -194,7 +220,10 @@ end;
 
 procedure TtiDBPS_TestXML.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 var
   lDBProxyServerStats : TtiDBProxyServerStats;
 begin
@@ -217,11 +246,27 @@ end;
 
 procedure TtiDBPS_TestAlive.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 var
   lPooledDB : TPooledDB;
-  lResult   : string;
+  lResult  : string;
   lDBConnectionName : string;
+const
+  cPassed =
+          '<?xml version="1.0" ?>' +
+          '<a>' +
+          '<tidbproxytestalive status="passed" />' +
+          '</a>';
+
+  cFailed =
+          '<?xml version="1.0" ?>' +
+          '<a>' +
+          '<tidbproxytestalive status="failed" />' +
+          '</a>';
+
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   lDBConnectionName := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;
@@ -229,23 +274,15 @@ begin
     lPooledDB := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
     try
       if lPooledDB.Database.Test then
-        lResult :=
-          '<?xml version="1.0" ?>' +
-          '<a>' +
-          '<tidbproxytestalive status="passed" />' +
-          '</a>'
+        lResult := cPassed
       else
-        lResult :=
-          '<?xml version="1.0" ?>' +
-          '<a>' +
-          '<tidbproxytestalive status="failed" />' +
-          '</a>'
+        lResult := cFailed;
     finally
       gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, lPooledDB);
     end;
   except
     on e:exception do
-      lResult := (Owner as TtiDBProxyServer).XMLTags.ProxyTestFailed;
+      lResult := cFailed;
   end;
   tiStringToStream(lResult, AResponse);
 end;
@@ -254,12 +291,15 @@ end;
 
 function TtiDBPS_ServerVersion.CanExecute(const ADocument: string): boolean;
 begin
-  result := SameText(ADocument, cgTIDBProxyServerVersion); 
+  result := SameText(ADocument, cgTIDBProxyServerVersion);
 end;
 
 procedure TtiDBPS_ServerVersion.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 begin
   tiStringToStream((Owner as TtiDBProxyServer).XMLTags.XMLVersion, AResponse);
 end;

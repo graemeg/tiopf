@@ -1,7 +1,7 @@
 {:@summary The base unit for tiOPF.
    @desc Contains all the base classes used throughout the framework.}
 
-unit tiObject ;
+unit tiObject;
 
 {$I tiDefines.inc}
 
@@ -17,14 +17,14 @@ uses
   ,Windows
   {$ENDIF MSWINDOWS}
   ,SyncObjs   // This must come after the Windows unit!
-  ;
+ ;
 
 const
 
   cErrorFieldNotAssigned = 'Field <%s> is null. OID=%d';
   cErrorFieldTooLong = 'Field <%s> field too long. Allowed length %d, current length %d';
   cErrorUnableToDetermineFieldName = 'Unable to determine field name on <%s>';
-  cErrorTIPerObjAbsTestValid = 'tiOPF Internal Error: TtiBaseObject.TestValid failed' ;
+  cErrorTIPerObjAbsTestValid = 'tiOPF Internal Error: TtiBaseObject.TestValid failed';
   cErrorSettingProperty      = 'Error setting property %s.%s Message %s';
   cErrorGettingProperty      = 'Error getting property %s.%s Message %s';
   cErrorInvalidObjectState   = 'Invalid ObjectState';
@@ -50,48 +50,48 @@ type
                       posDelete,
                       posDeleted,
                       posClean
-                     ) ;
+                    );
 
-  TtiObject = class ;
-  TtiObjectList = class ;
-  TPerObjErrors = class ;
-  TPerObjError  = class ;
+  TtiObject = class;
+  TtiObjectList = class;
+  TPerObjErrors = class;
+  TPerObjError  = class;
 
-  TPerObjFindMethod = procedure( pPerObjAbs : TtiObject; var pbFound : boolean ) of object ;
-  TPerObjFindMethodExt = procedure( pPerObjAbs : TtiObject; var pbFound : boolean; pUserContext: Pointer ) of object ;
-  TPerObjFindMethodData = procedure( pPerObjAbs : TtiObject; var pbFound : boolean; pData : TtiObject ) of object ;
-  TPerObjForEachMethod        = procedure( pPerObjAbs : TtiObject) of object ;
-  TPerObjForEachMethodRegular = procedure( pPerObjAbs : TtiObject) ;
-  TtiObjectEvent = procedure( const pData: TtiObject ) of object ;
+  TPerObjFindMethod = procedure(AObject : TtiObject; var AFound : boolean) of object;
+  TPerObjFindMethodExt = procedure(AObject : TtiObject; var AFound : boolean; AUserContext: Pointer) of object;
+  TPerObjFindMethodData = procedure(AObject : TtiObject; var AFound : boolean; AData : TtiObject) of object;
+  TPerObjForEachMethod        = procedure(AObject : TtiObject) of object;
+  TPerObjForEachMethodRegular = procedure(AObject : TtiObject);
+  TtiObjectEvent = procedure(const AData: TtiObject) of object;
 
 {
   // Template for creating TPerVisList and TtiObjectstubs...
-  TMyClasses = class ;
-  TMyClass   = class ;
+  TMyClasses = class;
+  TMyClass   = class;
 
-  TMyClasses = class( TtiObjectList )
+  TMyClasses = class(TtiObjectList)
   private
   protected
-    function    GetItems(i: integer): TMyClass ; reintroduce ;
-    procedure   SetItems(i: integer; const Value: TMyClass); reintroduce ;
-    function    GetOwner: TMyClasses; reintroduce ;
-    procedure   SetOwner(const Value: TMyClasses); reintroduce ;
+    function    GetItems(i: integer): TMyClass; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TMyClass); reintroduce;
+    function    GetOwner: TMyClasses; reintroduce;
+    procedure   SetOwner(const AValue: TMyClasses); reintroduce;
   public
-    property    Items[i:integer] : TMyClass read GetItems write SetItems ;
-    procedure   Add( pObject : TMyClass   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
-    property    Owner : TMyClass read GetOwner      write SetOwner ;
+    property    Items[i:integer]: TMyClass read GetItems write SetItems;
+    procedure   Add(AObject : TMyClass  ; ADefDispOrdr : boolean = true); reintroduce;
+    property    Owner : TMyClass read GetOwner      write SetOwner;
   published
-  end ;
+  end;
 
-  TMyClass = class( TtiObject)
+  TMyClass = class(TtiObject)
   private
   protected
-    function    GetOwner: TMyClasses; reintroduce ;
-    procedure   SetOwner(const Value: TMyClasses ); reintroduce ;
+    function    GetOwner: TMyClasses; reintroduce;
+    procedure   SetOwner(const AValue: TMyClasses); reintroduce;
   public
-    property    Owner       : TMyClasses             read GetOwner      write SetOwner ;
+    property    Owner      : TMyClasses             read GetOwner      write SetOwner;
   published
-  end ;
+  end;
 }
 
   {: Does the field allow null values. This is one of the possibly many tests
@@ -99,14 +99,13 @@ type
   TtiNullValidation = (
                         nvAllowNull = 0
                        ,nvNotNull = 1
-                      );
+                     );
 
   {: Is the TtiObjectList sorted by OID or not sorted at all?}
   TtiPerObjListSortType =
-                       (  stNone
+                       ( stNone
                          ,stOID
-                       );
-
+                      );
 
   {: Abstract persistent field for use with TtiObject The usual way to add
      data to TtiObjectis with published properties. These can be simple data
@@ -114,32 +113,34 @@ type
      define. Simple data types will not handle NULL values so if NULL management
      is required, you should use persistent fields. Using persistent fields
      however, makes the code more complex and harder to maintain.}
-  TtiFieldAbs = class( TtiBaseObject )
+  TtiFieldAbs = class(TtiBaseObject)
   private
     FOwner: TtiObject;
     FFieldName: string;
     FNullValidation: TtiNullValidation;
-    FIsNull: Boolean ;
-    procedure SetIsNull(const Value: Boolean);
+    FIsNull: Boolean;
+    procedure SetIsNull(const AValue: Boolean);
   protected
-    procedure   Clear; virtual ;
-    procedure   SetValue; virtual ;
-    procedure   SetAsString(const pValue: string); virtual ; abstract ;
-    function    GetAsString: string;               virtual ; abstract ;
-    function    GetFieldName: string; virtual ;
+    procedure   Clear; virtual;
+    procedure   SetValue; virtual;
+    procedure   SetAsString(const AValue: string); virtual; abstract;
+    function    GetAsString: string;               virtual; abstract;
+    function    GetFieldName: string; virtual;
+    procedure   SetFieldName(const AValue: string); virtual;
   public
-    constructor Create(const pOwner: TtiObject); overload ; virtual ;
-    constructor Create(const pOwner: TtiObject; const pNullValidation: TtiNullValidation); overload ; virtual ;
-    function    IsValidValue(const pErrors : TPerObjErrors = nil): Boolean ; virtual ;
-    function    Equals(pCompareWith: TtiFieldAbs): Boolean ; virtual ; abstract ;
+    constructor Create(const AOwner: TtiObject); overload; virtual;
+    constructor Create(const AOwner: TtiObject; const ANullValidation: TtiNullValidation); overload; virtual;
+    function    IsValidValue(const AErrors : TPerObjErrors = nil): Boolean; virtual;
+    function    Equals(ACompareWith: TtiFieldAbs): Boolean; virtual; abstract;
+    procedure   Assign(AAssignFrom: TtiFieldAbs); virtual; abstract;
 
-    property    Owner:            TtiObject        read FOwner ;
-    property    FieldName:        string            read GetFieldName;
+    property    Owner:            TtiObject         read FOwner;
+    property    FieldName:        string            read GetFieldName write SetFieldName;
     property    NullValidation:   TtiNullValidation read FNullValidation write FNullValidation;
     property    AsString:         string            read GetAsString Write SetAsString;
     property    IsNull:           Boolean           read FIsNull write SetIsNull;
-  end ;
 
+  end;
 
   {: Concrete persistent string field}
   TtiFieldString = class(TtiFieldAbs)
@@ -147,43 +148,63 @@ type
     FValue: string;
     FMaxLength: Integer;
   protected
-    procedure   Clear; override ;
-    procedure   SetAsString(const pValue: string); override ;
-    function    GetAsString: string;              override ;
+    procedure   Clear; override;
+    procedure   SetAsString(const AValue: string); override;
+    function    GetAsString: string;              override;
   public
     // A maximum length of 0 (zero) means no maximum length
-    constructor Create(const pOwner: TtiObject;
-                       const pNullValidation: TtiNullValidation = nvAllowNull;
-                       const pMaxLength: Integer = 0); reintroduce; overload ;
-    function    IsValidValue(const pErrors : TPerObjErrors = nil): Boolean ; override ;
-    function    Equals(pCompareWith: TtiFieldAbs): Boolean ; override ;
+    constructor Create(const AOwner: TtiObject;
+                       const ANullValidation: TtiNullValidation = nvAllowNull;
+                       const AMaxLength: Integer = 0); reintroduce; overload; virtual;
+    function    IsValidValue(const AErrors : TPerObjErrors = nil): Boolean; override;
+    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
 
     property    MaxLength: Integer read FMaxLength;
   end;
 
+  TtiFieldStringMethod = class;
+  TtiStringFieldMethodReadEvent = procedure(ASender: TtiFieldStringMethod; var AValue: string) of object;
 
+  {: Concrete persistent string field that uses a user defined method to access it's data}
+  TtiFieldStringMethod = class(TtiFieldString)
+  private
+    FReadEvent: TtiStringFieldMethodReadEvent;
+  protected
+    procedure   Clear; override;
+    procedure   SetAsString(const AValue: string); override;
+    function    GetAsString: string;              override;
+  public
+    constructor Create(const AOwner: TtiObject;
+                       const AReadMethod: TtiStringFieldMethodReadEvent); reintroduce; overload; virtual;
+    function    IsValidValue(const AErrors : TPerObjErrors = nil): Boolean; override;
+    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
+  end;
+
+  // ToDo: Implement checking for null in GetAsString
   {: Concrete persistent Int64 field}
   TtiFieldInteger = class(TtiFieldAbs)
   private
     FValue: Int64;
     FMaxDigits: Integer;
-    procedure   SetAsInteger(const pValue: Int64);
   protected
-    procedure   Clear; override ;
-    procedure   SetAsString(const pValue: string);  override ;
-    function    GetAsString: string;               override ;
+    procedure   Clear; override;
+    procedure   SetAsString(const AValue: string);  override;
+    function    GetAsString: string;               override;
+    procedure   SetAsInteger(const AValue: Int64); virtual;
   public
     // A maximum digits of 0 (zero) means no maximum digits
-    constructor Create(const pOwner: TtiObject;
-                       const pNullValidation: TtiNullValidation = nvAllowNull;
-                       const pMaxDigits: Integer = 0); reintroduce; overload ;
-    function    IsValidValue(const pErrors : TPerObjErrors = nil): Boolean ; override ;
-    function    Equals(pCompareWith: TtiFieldAbs): Boolean ; override ;
+    constructor Create(const AOwner: TtiObject;
+                       const ANullValidation: TtiNullValidation = nvAllowNull;
+                       const AMaxDigits: Integer = 0); reintroduce; overload; virtual;
+    function    IsValidValue(const AErrors : TPerObjErrors = nil): Boolean; override;
+    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
 
     property    AsInteger : Int64 read FValue Write SetAsInteger;
     property    MaxDigits : Integer read FMaxDigits;
   end;
-
 
   {: Concrete persistent float field}
   TtiFieldFloat = class(TtiFieldAbs)
@@ -192,70 +213,69 @@ type
     FPrecision: Integer;
     FEpsilon: Extended;
   protected
-    procedure   Clear; override ;
-    procedure   SetAsString(const pValue: string);  override ;
-    function    GetAsString: string;               override ;
-    procedure   SetAsFloat(const pValue: Extended); virtual ;
-    procedure   SetPrecision(const Value: Integer); virtual ;
+    procedure   Clear; override;
+    procedure   SetAsString(const AValue: string);  override;
+    function    GetAsString: string;               override;
+    procedure   SetAsFloat(const AValue: Extended); virtual;
+    procedure   SetPrecision(const AValue: Integer); virtual;
   public
-    constructor Create(const pOwner: TtiObject); overload; override;
-    constructor Create(const pOwner: TtiObject;
-                       const pNullValidation: TtiNullValidation); overload; override;
-    constructor Create(const pOwner: TtiObject;
-                       const pNullValidation: TtiNullValidation;
-                       const pPrecision: Integer); reintroduce; overload ;
-    function    Equals(pCompareWith: TtiFieldAbs): Boolean ; override ;
+    constructor Create(const AOwner: TtiObject); overload; override;
+    constructor Create(const AOwner: TtiObject;
+                       const ANullValidation: TtiNullValidation); overload; override;
+    constructor Create(const AOwner: TtiObject;
+                       const ANullValidation: TtiNullValidation;
+                       const APrecision: Integer); reintroduce; overload;
+    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
     property    AsFloat: Extended read FValue Write SetAsFloat;
     property    Precision: Integer Read FPrecision Write SetPrecision;
     property    Epsilon: Extended Read FEpsilon Write FEpsilon;
   end;
 
-
   {: Concrete persistent boolean field}
   TtiFieldBoolean = class(TtiFieldAbs)
   private
     FValue: Boolean;
-    procedure   SetAsBoolean(const pValue: Boolean);
+    procedure   SetAsBoolean(const AValue: Boolean);
   protected
-    procedure   Clear; override ;
-    procedure   SetAsString(const pValue: string);  override ;
-    function    GetAsString: string;               override ;
+    procedure   Clear; override;
+    procedure   SetAsString(const AValue: string);  override;
+    function    GetAsString: string;               override;
   public
-    function    Equals(pCompareWith: TtiFieldAbs): Boolean ; override ;
+    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
     property    AsBoolean: Boolean read FValue Write SetAsBoolean;
   end;
-
 
   {: Concrete persistent TDateTime field}
   TtiFieldDateTime = class(TtiFieldAbs)
   private
     FValue: TDateTime;
-    procedure   SetAsDateTime(const pValue: TDateTime);
+    procedure   SetAsDateTime(const AValue: TDateTime);
   protected
-    procedure   Clear; override ;
-    procedure   SetAsString(const pValue: string);  override ;
-    function    GetAsString: string;               override ;
+    procedure   Clear; override;
+    procedure   SetAsString(const AValue: string);  override;
+    function    GetAsString: string;               override;
   public
-    function    Equals(pCompareWith: TtiFieldAbs): Boolean ; override ;
+    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
     property    AsDateTime: TDateTime read FValue Write SetAsDateTime;
   end;
 
-  
   TtiFieldList = class(TObjectlist)
   protected
-    function  GetItem(Index: Integer): TtiFieldAbs;
-    procedure SetItem(Index: Integer; AObject: TtiFieldAbs);
+    function  GetItem(AIndex: Integer): TtiFieldAbs;
+    procedure SetItem(AIndex: Integer; AObject: TtiFieldAbs);
   public
     constructor Create;
     function Add(AObject: TtiFieldAbs): Integer;
     property Items[Index: Integer]: TtiFieldAbs read GetItem write SetItem; default;
   end;
 
-
-  TtiObject = class( TtiVisited )
+  TtiObject = class(TtiVisited)
   private
-    FOID : TOID ;
-    FObjectState : TPerObjectState ;
+    FOID : TOID;
+    FObjectState : TPerObjectState;
     FObserverList: TList;
     FUpdateCount: Integer;
     function GetObserverList: TList;
@@ -264,241 +284,242 @@ type
                         // go get access without going through the GetOwner and
                         // SetOwner as these may have been typecase in a way
                         // which causes incompatabilities.
-    function    GetDeleted: boolean; virtual ;
-    procedure   SetDeleted(const Value: boolean); virtual ;
-    procedure   SetDirty(const Value: boolean); virtual ;
-    procedure   SetObjectState(const pValue: TPerObjectState) ; virtual ;
-    function    GetOID: TOID; virtual ;
-    procedure   SetOID(const Value: TOID); virtual;
-    function    GetDirty : boolean ; virtual ;
-    function    GetOwner: TtiObject; reintroduce ; virtual ;
-    procedure   SetOwner(const Value: TtiObject); virtual ;
-    procedure   AssignPublicProps(pSource: TtiObject);virtual ;
-    procedure   AssignPublishedProp(pSource: TtiObject; psPropName: string);
-    function    CountPropsByType(pSource: TtiObject; pPropFilter: TTypeKinds): integer;
-    procedure   AssignPublishedProps(pSource: TtiObject; pPropFilter: TTypeKinds = [] );
+    function    GetDeleted: boolean; virtual;
+    procedure   SetDeleted(const AValue: boolean); virtual;
+    procedure   SetDirty(const AValue: boolean); virtual;
+    procedure   SetObjectState(const AValue: TPerObjectState); virtual;
+    function    GetOID: TOID; virtual;
+    procedure   SetOID(const AValue: TOID); virtual;
+    function    GetDirty : boolean; virtual;
+    function    GetOwner: TtiObject; reintroduce; virtual;
+    procedure   SetOwner(const AValue: TtiObject); virtual;
+    procedure   AssignPublicProps(ASource: TtiObject);virtual;
+    procedure   AssignPublishedProp(ASource: TtiObject; APropName: string);
+    function    CountPropsByType(ASource: TtiObject; APropFilter: TTypeKinds): integer;
+    procedure   AssignPublishedProps(ASource: TtiObject; APropFilter: TTypeKinds = []);
     // You must override this in the concrete if there are class properties
-    procedure   AssignClassProps(pSource: TtiObject); virtual ;
-    function    GetIndex : integer ;
-//    function    GetDispOrder: integer; virtual ;
-    procedure   DoFindAllNotUnique( pPerObjAbs: TtiObject; var pbFound: boolean; pData: TtiObject ); virtual;
-    function    GetPropValue(const pPropName: string): Variant; virtual ;
-    procedure   SetPropValue(const pPropName: string; const pPropValue: Variant); virtual ;
+    procedure   AssignClassProps(ASource: TtiObject); virtual;
+    function    GetIndex : integer;
+//    function    GetDispOrder: integer; virtual;
+    procedure   DoFindAllNotUnique(AObject: TtiObject; var AFound: boolean; AData: TtiObject); virtual;
+    function    GetPropValue(const APropName: string): Variant; virtual;
+    procedure   SetPropValue(const APropName: string; const APropValue: Variant); virtual;
 
   public
     {: Creates a new instance of the class}
-    constructor Create  ; override ;
+    constructor Create ; override;
     {: Creates a new instance of the class and initialises it's OID with next available value}
-    constructor CreateNew( const pOwner : TtiObject ; const pDatabaseName : string = '' ; const pPerLayerName : string = '' ) ; overload ; virtual ;
-    constructor CreateNew( const pDatabaseName : string = '' ; const pPerLayerName : string = '' ) ; overload ; virtual ;
-    destructor  Destroy ; override ;
+    constructor CreateNew(const AOwner : TtiObject; const ADatabaseName : string = ''; const APersistenceLayerName : string = ''); overload; virtual;
+    constructor CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = ''); overload; virtual;
+    destructor  Destroy; override;
     {: Dos this object equal another? }
-    function    Equals( const pData : TtiObject ) : boolean ; virtual ;
+    function    Equals(const AData : TtiObject): boolean; virtual;
     {: The OID of this object }
    {$IFDEF OID_AS_INT64}
-      property    OID         : TOID                   read GetOID write SetOID ;
+      property    OID        : TOID                   read GetOID write SetOID;
    {$ELSE}
-      property    OID         : TOID                   read GetOID        ;
+      property    OID        : TOID                   read GetOID       ;
    {$ENDIF}
 //    {: The display order of this object}
-//    property    DispOrder   : integer                read GetDispOrder  write FiDispOrder ;
+//    property    DispOrder  : integer                read GetDispOrder  write FiDispOrder;
     {: The current state of this object}
     property    ObjectState: TPerObjectState read FObjectState write SetObjectState;
     {: The type of class that owns this object}
-    property    Owner: TtiObject read GetOwner write SetOwner ;
-    {: Returns the value of the property specified in pPropName.}
-    property    PropValue[const pPropName: string]: Variant read GetPropValue write SetPropValue;
+    property    Owner: TtiObject read GetOwner write SetOwner;
+    {: Returns the value of the property specified in APropName.}
+    property    PropValue[const APropName: string]: Variant read GetPropValue write SetPropValue;
     {: Is the specified property read and write?}
-    function    IsReadWriteProp( const pPropName : string ) : boolean ; virtual ;
+    function    IsReadWriteProp(const APropName : string): boolean; virtual;
     {: Return the TtiTypeKind (simple property type) of the property}
-    function    PropType(const pPropName: string): TtiTypeKind;
+    function    PropType(const APropName: string): TtiTypeKind;
     {: Is this object deleted? }
-    property    Deleted : boolean                    read GetDeleted    write SetDeleted ;
+    property    Deleted : boolean                    read GetDeleted    write SetDeleted;
     {: Is this object out of sync with the persistence layer?}
-    property    Dirty   : boolean                    read GetDirty      write SetDirty ;
+    property    Dirty  : boolean                    read GetDirty      write SetDirty;
 
-    property    Index : integer                      read GetIndex ;
+    property    Index : integer                      read GetIndex;
     {: Returns this objects state as a string value.}
-    function    ObjectStateAsString : string ;
+    function    ObjectStateAsString : string;
     {: Find an object in the hierarchy by OID with the OID passed as a string}
-    function    Find( pOIDToFindAsString : string ) : TtiObject ;  overload ; virtual ;
+    function    Find(AOIDToFindAsString : string): TtiObject;  overload; virtual;
     {: Find an object in the hierarchy by OID with the OID passed as a TOID object}
-    function    Find( pOIDToFind : TOID ) : TtiObject ;  overload ; virtual ;
+    function    Find(AOIDToFind : TOID): TtiObject;  overload; virtual;
     {: Find an object in the hierarchy using the find method passed}
-    function    Find( pPerObjFindMethod : TPerObjFindMethod ) : TtiObject ; overload ;
+    function    Find(AtiObjectFindMethod : TPerObjFindMethod): TtiObject; overload;
     {: Find an object in the hierarchy using the extended find method passed}
-    function    Find( pPerObjFindMethodExt : TPerObjFindMethodExt; pUserContext: Pointer ) : TtiObject ; overload;
+    function    Find(ATIObjectFindMethodExt : TPerObjFindMethodExt; AUserContext: Pointer): TtiObject; overload;
     {: Find all objects in the hierarchy using the find method passed}
-    function    FindAll( pPerObjFindMethod : TPerObjFindMethod; pList : TList ) : integer ; overload ;
+    function    FindAll(AtiObjectFindMethod : TPerObjFindMethod; AList : TList): integer; overload;
     {: Find all objects in the hierarchy using the find method passed}
-    function    FindAll( pPerObjFindMethodExt : TPerObjFindMethodExt; pList : TList; pUserContext: Pointer ) : integer ; overload ;
+    function    FindAll(ATIObjectFindMethodExt : TPerObjFindMethodExt; AList : TList; AUserContext: Pointer): integer; overload;
     {: Find all objects in the hierarchy using the find method passed}
-    function    FindAll( pPerObjFindMethodData : TPerObjFindMethodData; pList : TList; pData : TtiObject ) : integer ; overload ;
+    function    FindAll(ATIObjectFindMethodData : TPerObjFindMethodData; AList : TList; AData : TtiObject): integer; overload;
     {:Is this obect unique in the hierarchy?}
-    function    IsUnique( const pPerObjAbs : TtiObject ) : boolean ; virtual ;
+    function    IsUnique(const AObject : TtiObject): boolean; virtual;
     {: Creates a cloned instance of this object. }
-    function    Clone : TtiObject ; virtual ; // Must override and typecast if to be used
+    function    Clone : TtiObject; virtual; // Must override and typecast if to be used
     {: Copy this object to another.}
-    procedure   Assign( const pSource : TtiObject ) ; reintroduce ; virtual ;
+    procedure   Assign(const ASource : TtiObject); reintroduce; virtual;
     {: returns the object at the top of the hierarchy}
-    function    TopOfHierarchy : TtiObject ; virtual ;
-    {: Set every object in the hierarchy's ObjectState to pObjectState }
-    procedure   SetAllObjectStates(const pObjectState: TPerObjectState); virtual;
+    function    TopOfHierarchy : TtiObject; virtual;
+    {: Set every object in the hierarchy's ObjectState to AObjectState }
+    procedure   SetAllObjectStates(const AObjectState: TPerObjectState); virtual;
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid(const pErrors: TPerObjErrors): boolean; overload; virtual;
+    function    IsValid(const AErrors: TPerObjErrors): boolean; overload; virtual;
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid(var pErrorMessage: string): boolean; overload; // Don't override this one
+    function    IsValid(var AErrorMessage: string): boolean; overload; // Don't override this one
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid(const pStrings: TStrings): boolean; overload; // Don't override this one
+    function    IsValid(const AStrings: TStrings): boolean; overload; // Don't override this one
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid(const pStrings: TStrings; pAppend: boolean): boolean; overload; // Don't override this one
+    function    IsValid(const AStrings: TStrings; AAppend: boolean): boolean; overload; // Don't override this one
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
     function    IsValid: boolean; overload; // Don't override this one
     {: Read in the primary Key values only from the database for this object.}
-    procedure   ReadPK(const pDBConnectionName: string; pPerLayerName: string = ''); overload; virtual;
+    procedure   ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Read in the primary Key values only from the database for this object.}
     procedure   ReadPK; overload; virtual;
     {: Read this object, but no owned objects from the database }
-    procedure   ReadThis(const pDBConnectionName: string; pPerLayerName: string = ''); overload; virtual;
+    procedure   ReadThis(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Read this object, but no owned objects from the database }
     procedure   ReadThis; overload;  virtual;
     {: Read this object, along with any owned objects from the database }
-    procedure   Read(const pDBConnectionName: string; pPerLayerName: string = ''); overload; virtual;
+    procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Read this object, along with any owned objects from the database }
     procedure   Read; overload;  virtual;
     {: Updates the database with the current property values for this object.}
-    procedure   Save(const pDBConnectionName: string; pPerLayerName: string = ''); overload; virtual;
+    procedure   Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     procedure   Save; overload; virtual;
 
-    procedure   AssignFieldList(var pFieldList: TtiFieldList);
+    procedure   AssignFieldList(var AFieldList: TtiFieldList);
     {: ForceAsCreate will get a new OID, and set ObjectState := posCreate}
-    procedure   ForceAsCreate(const pDatabaseName : string = '' ; const pPerLayerName : string = '');
+    procedure   ForceAsCreate(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
     {: Display the object tree as a string for debugging (will show all published properties.)}
-    function    AsDebugString: string; virtual ;
+    function    AsDebugString: string; virtual;
     {:Assign the published property names to a TStringList}
 //    procedure   GetPropNames(AList: TStringList; APropFilter: TtiPropTypes = []);
-    {: Return the propery count filter by pPropFilter }
-    function    PropCount(pPropFilter: TTypeKinds = ctkSimple ): integer;
+    {: Return the propery count filter by APropFilter }
+    function    PropCount(APropFilter: TTypeKinds = ctkSimple): integer;
 
     { Observer pattern implementation below }
     {: Attach a new observer }
-    procedure   AttachObserver(pObserver: TtiObject); virtual;
+    procedure   AttachObserver(AObserver: TtiObject); virtual;
     {: Detach a existing observer }
-    procedure   DetachObserver(pObserver: TtiObject); virtual;
+    procedure   DetachObserver(AObserver: TtiObject); virtual;
     {: Start a update process. This will allow us to update multiple things,
       before we notify the observers of the updates. }
     procedure   BeginUpdate;
     {: End a update process }
     procedure   EndUpdate;
     {: Only needed if performing a observing role }
-    procedure   Update(pSubject: TtiObject); virtual;
+    procedure   Update(ASubject: TtiObject); virtual;
     {: Notify all the attached observers about a change }
     procedure   NotifyObservers; virtual;
     {: Used to get access to the internal observer list. This has been surfaced
        so that the MGM List Views can atttach/detach observers to the selected
        object. Not a great way of doing it - we need a different design. }
     property    ObserverList: TList read GetObserverList write FObserverList;
-  end ;
+  end;
 
 
-  TtiObjectListCompareEvent = procedure(AItem1, AItem2: TtiObject) of object ;
+  TtiObjectListCompareEvent = procedure(AItem1, AItem2: TtiObject) of object;
 
-
-  TtiObjectList = class( TtiObject )
+  TtiObjectList = class(TtiObject)
   private
-    FList : TObjectList ;
+    FList : TObjectList;
     FItemOwner: TtiObject;
     FbAutoSetItemOwner: boolean;
     function    GetList: TList;
-//    procedure   AssignDispOrder(pData: TtiObject);
+//    procedure   AssignDispOrder(AData: TtiObject);
     function    GetCountNotDeleted: integer;
     function    GetOwnsObjects: boolean;
-    procedure   SetOwnsObjects(const Value: boolean);
-    function    DoCompareByProps( pItem1   : Pointer ; pItem2   : Pointer ;
-                const pSortProps : array of string; pAscendingOrder : Boolean = True) : integer ;
+    procedure   SetOwnsObjects(const AValue: boolean);
+    function    DoCompareByProps(AItem1  : Pointer; AItem2  : Pointer;
+                const ASortProps : array of string; AAscendingOrder : Boolean = True): integer;
     procedure   QuickSortByProps(SortList: PPointerList; L, R: Integer;
-                const pSortProps : array of string; pAscendingOrder : Boolean = True);
+                const ASortProps : array of string; AAscendingOrder : Boolean = True);
   protected
-    function    GetCount: integer; virtual ;
-    function    GetItems(i: integer): TtiObject ; virtual ;
-    procedure   SetItems(i: integer; const Value: TtiObject); virtual ;
-    procedure   SetItemOwner(const Value: TtiObject); virtual ;
-    procedure   AssignPublicProps( pSource : TtiObject ) ; override ;
-    procedure   AssignClassProps(pSource: TtiObject); override ;
-    function    IndexOfBinary(AOIDToFind : TOID) : integer ; virtual;
-    function    IndexOfFullScan(AOIDToFind : TOID) : integer ; virtual;
+    function    GetCount: integer; virtual;
+    function    GetItems(i: integer): TtiObject; virtual;
+    procedure   SetItems(i: integer; const AValue: TtiObject); virtual;
+    procedure   SetItemOwner(const AValue: TtiObject); virtual;
+    procedure   AssignPublicProps(ASource : TtiObject); override;
+    procedure   AssignClassProps(ASource: TtiObject); override;
+    function    IndexOfBinary(AOIDToFind : TOID): integer; virtual;
+    function    IndexOfFullScan(AOIDToFind : TOID): integer; virtual;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
 
-    procedure   Assign( const pSource : TtiObject ) ; override ;
+    procedure   Assign(const ASource : TtiObject); override;
     {: The number of items in the list.}
-    property    Count : integer read GetCount ;
+    property    Count : integer read GetCount;
     {: The number of items in the list that are not marked as deleted.}
-    property    CountNotDeleted : integer read GetCountNotDeleted ;
-    property    Items[i:integer] : TtiObject read GetItems write SetItems ; default ;
+    property    CountNotDeleted : integer read GetCountNotDeleted;
+    property    Items[i:integer]: TtiObject read GetItems write SetItems; default;
 
     {: Does the list own the objects it contains? i.e. Will the objects be freed when the list is cleared/destroyed?}
-    property    OwnsObjects : boolean read GetOwnsObjects write SetOwnsObjects ;
-    property    ItemOwner      : TtiObject read FItemOwner    write SetItemOwner ;
-    property    AutoSetItemOwner : boolean read FbAutoSetItemOwner write FbAutoSetItemOwner ;
+    property    OwnsObjects : boolean read GetOwnsObjects write SetOwnsObjects;
+    property    ItemOwner     : TtiObject read FItemOwner    write SetItemOwner;
+    property    AutoSetItemOwner : boolean read FbAutoSetItemOwner write FbAutoSetItemOwner;
 
     {: Finds the object in the list whose OID value matches.}
-    function    Find( pOIDToFindAsString : string ) : TtiObject ;  override ;
+    function    Find(AOIDToFindAsString : string): TtiObject;  override;
     {: Finds the object in the list whose OID value matches.}
-    function    Find( pOIDToFind : TOID ) : TtiObject ; override ;
+    function    Find(AOIDToFind : TOID): TtiObject; override;
     {: Finds the object in the list whose OID value matches. Faster search if sorted by OID. }
-    function    Find( pOIDToFind : TOID; pSortType: TtiPerObjListSortType ) : TtiObject ; overload ;
+    function    Find(AOIDToFind : TOID; ASortType: TtiPerObjListSortType): TtiObject; overload;
     {: Finds the object in the list whose OID value matches. Will search the list, and if not found, will search all owned objects }
-    function    FindInHierarchy( pOIDToFind : TOID) : TtiObject ; overload ;
-    {: Performs the method pMethod on every object in the list.}
-    procedure   ForEach( pMethod : TPerObjForEachMethod        ; pbIncludeDeleted : boolean = false ) ; overload ; virtual ;
-    {: Performs the method pMethod on every object in the list.}
-    procedure   ForEach( pMethod : TPerObjForEachMethodRegular ; pbIncludeDeleted : boolean = false ) ; overload ; virtual ;
+    function    FindInHierarchy(AOIDToFind : TOID): TtiObject; overload;
+    {: Performs the method AMethod on every object in the list.}
+    procedure   ForEach(AMethod : TPerObjForEachMethod       ; AIncludeDeleted : boolean = false); overload; virtual;
+    {: Performs the method AMethod on every object in the list.}
+    procedure   ForEach(AMethod : TPerObjForEachMethodRegular; AIncludeDeleted : boolean = false); overload; virtual;
     {: Add an object to the list.
-       Don't override Add( pObject : TtiObject  ; pDefDispOrdr : boolean = true ),
-       It's an old method for backward compatibility . Override Add(const pObject:TtiObject).}
-    procedure   Add( pObject : TtiObject  ; pDefDispOrdr : Boolean ) ; overload ; virtual ;
+       Don't override Add(AObject : TtiObject ; ADefDispOrdr : boolean = true),
+       It's an old method for backward compatibility . Override Add(const AObject:TtiObject).}
+    procedure   Add(AObject : TtiObject ; ADefDispOrdr : Boolean); overload; virtual;
     {: Add an object to the list.}
-    procedure   Add( const pObject : TtiObject ) ; overload ; virtual ;
+    procedure   Add(const AObject : TtiObject); overload; virtual;
     {: Empty list and delete all owned objects}
-    procedure   Clear ; virtual ;
+    procedure   Clear; virtual;
     {: Empty list, but do not delete owned objects }
-    procedure   Empty ; virtual ;
+    procedure   Empty; virtual;
     {: The index of the specified object in the list.}
-    function    IndexOf( pData : TObject ) : integer ; overload ; virtual ;
+    function    IndexOf(AData : TObject): integer; overload; virtual;
     {: The index of the object in the list whose OID value matches. Faster search if sorted by OID. }
-    function    IndexOf( pOIDToFind : TOID; pSortType: TtiPerObjListSortType = stNone) : integer ; overload ; virtual ;
+    function    IndexOf(AOIDToFind : TOID; ASortType: TtiPerObjListSortType = stNone): integer; overload; virtual;
     {: The last object in the list.}
-    function    Last  : TtiObject ; virtual ;
+    function    Last : TtiObject; virtual;
     {: The first object in the list.}
-    function    First : TtiObject ; virtual ;
+    function    First : TtiObject; virtual;
     {: Returns the first item in the list that hasn't been marked deleted.}
-    function    FirstExcludeDeleted : TtiObject ; virtual ;
+    function    FirstExcludeDeleted : TtiObject; virtual;
     {: Returns the last item in the list that hasn't been marked deleted.}
-    function    LastExcludeDeleted : TtiObject ; virtual ;
+    function    LastExcludeDeleted : TtiObject; virtual;
     {: Removes the object at a specified position and (if OwnsObject is True) frees the object.}
-    procedure   Delete( i : integer ) ; virtual ;
+    procedure   Delete(i : integer); virtual;
     {: Removes the specified item from the list and (if OwnsObject is True) frees the object.}
-    function    Remove( pData : TtiObject ) : integer ; virtual ;
+    function    Remove(AData : TtiObject): integer; virtual;
     {: Removes the specified object from the list without freeing the object.}
-    procedure   Extract( pData : TtiObject ) ; virtual ;
+    procedure   Extract(AData : TtiObject); virtual;
     {: Adds an object to the list at the position specified by Index.}
-    procedure   Insert( const piIndex : integer ; pData : TtiObject ) ; overload ; virtual ;
-    procedure   Insert( pInsertBefore : TtiObject ; pData : TtiObject ) ; overload ; virtual ;
+    procedure   Insert(const AIndex : integer; AData : TtiObject); overload; virtual;
+    procedure   Insert(AInsertBefore : TtiObject; AData : TtiObject); overload; virtual;
     {: Sets all items in the list as ready for deletion}
-    procedure   MarkListItemsForDeletion ; virtual ;
+    procedure   MarkListItemsForDeletion; virtual;
+    {: Scan the list and remove, then free all objects with ObjectState = posDeleted}
+    procedure   FreeDeleted;
     {: Sets all items in the list as needing updating to the database}
-    procedure   MarkListItemsDirty ; virtual ;
-    procedure   PropToStrings(const pStrings: TStrings ; const pPropName : string = 'caption' ); virtual ;
-    {: Finds the first object whose properties passed in pProps match the values specified.}
-    function    FindByProps( const pProps : array of string ;
-                             const pVals  : array of variant;
-                             pCaseSensitive : boolean = true  ) : TtiObject ; virtual ;
+    procedure   MarkListItemsDirty; virtual;
+    procedure   PropToStrings(const AStrings: TStrings; const APropName : string = 'caption'); virtual;
+    {: Finds the first object whose properties passed in AProps match the values specified.}
+    function    FindByProps(const AProps : array of string;
+                             const AVals : array of variant;
+                             ACaseSensitive : boolean = true ): TtiObject; virtual;
     {: Sorts the list by the properties specified}
-    procedure   SortByProps( const pSortProps : array of string; pAscendingOrder : Boolean = True) ; virtual ;
+    procedure   SortByProps(const ASortProps : array of string; AAscendingOrder : Boolean = True); virtual;
     {: Sorts the list by each member's OID value.}
-    procedure   SortByOID ; virtual ;
+    procedure   SortByOID; virtual;
 
     {: Compare Self with AList. Fire an event for each object depending on the differences}
     procedure   CompareWith(AList: TtiObjectList;
@@ -515,156 +536,147 @@ type
 //                            AIn2Only: TtiObjectList); overload;
   published
     // This must be published so it can be used by the tiPerAware controls.
-    property    List  : TList read GetList ;
-  end ;
+    property    List : TList read GetList;
+  end;
 
-  TtiClass  = class of TtiObject ;
+  TtiClass  = class of TtiObject;
   TtiObjectClass = class of TtiObject;
-  TPerObjListClass = class of TtiObjectList ;
-  TtiObjectListClass = class of TtiObjectList ;
+  TPerObjListClass = class of TtiObjectList;
+  TtiObjectListClass = class of TtiObjectList;
 
-
-  TPerObjErrors = class( TtiObjectList )
+  TPerObjErrors = class(TtiObjectList)
   private
   protected
-    function    GetItems(i: integer): TPerObjError ; reintroduce ;
-    procedure   SetItems(i: integer; const Value: TPerObjError); reintroduce ;
-    function    GetAsString: string; virtual ;
+    function    GetItems(i: integer): TPerObjError; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TPerObjError); reintroduce;
+    function    GetAsString: string; virtual;
   public
-    property    Items[i:integer] : TPerObjError read GetItems write SetItems ;
-    procedure   Add( pObject : TPerObjError   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
-    procedure   AddError( const pErrorProperty : string ; const pErrorMessage : string ; pErrorCode : integer ) ; overload ;
-    procedure   AddError( const pErrorProperty : string ; const pErrorMessage : string ) ; overload ;
-    procedure   AddError( const pErrorMessage : string ) ; overload ;
-    function    FindByMessage( const pMessage : string ) : TPerObjError ;
+    property    Items[i:integer]: TPerObjError read GetItems write SetItems;
+    procedure   Add(AObject : TPerObjError  ; ADefDispOrdr : boolean = true); reintroduce;
+    procedure   AddError(const AErrorProperty : string; const AErrorMessage : string; AErrorCode : integer); overload;
+    procedure   AddError(const AErrorProperty : string; const AErrorMessage : string); overload;
+    procedure   AddError(const AErrorMessage : string); overload;
+    function    FindByMessage(const AMessage : string): TPerObjError;
     property    AsString: string Read GetAsString;
   published
-  end ;
+  end;
 
-  
-  TPerObjError = class( TtiObject )
+  TPerObjError = class(TtiObject)
   private
     FErrorMessage: string;
     FErrorProperty: string;
     FErrorCode: Word;
   protected
-    function    GetOwner: TPerObjErrors; reintroduce ;
-    procedure   SetOwner(const Value: TPerObjErrors ); reintroduce ;
+    function    GetOwner: TPerObjErrors; reintroduce;
+    procedure   SetOwner(const AValue: TPerObjErrors); reintroduce;
   public
-    property    Owner       : TPerObjErrors             read GetOwner      write SetOwner ;
+    property    Owner      : TPerObjErrors             read GetOwner      write SetOwner;
   published
-    property    ErrorProperty : string read FErrorProperty write FErrorProperty ;
-    property    ErrorMessage  : string read FErrorMessage  write FErrorMessage ;
-    property    ErrorCode     : Word   read FErrorCode     write FErrorCode ;
-  end ;
+    property    ErrorProperty : string read FErrorProperty write FErrorProperty;
+    property    ErrorMessage : string read FErrorMessage  write FErrorMessage;
+    property    ErrorCode    : Word   read FErrorCode     write FErrorCode;
+  end;
 
-
-  TPerObjClassMapping = class( TtiBaseObject )
+  TPerObjClassMapping = class(TtiBaseObject)
   private
     FPerObjAbsClassName: string;
     FPerObjAbsClass: TtiClass;
   public
-    constructor Create ; virtual ;
-    property PerObjAbsClassName : string read FPerObjAbsClassName write FPerObjAbsClassName ;
-    property PerObjAbsClass : TtiClass read FPerObjAbsClass write FPerObjAbsClass ;
-  end ;
+    constructor Create; virtual;
+    property PerObjAbsClassName : string read FPerObjAbsClassName write FPerObjAbsClassName;
+    property PerObjAbsClass : TtiClass read FPerObjAbsClass write FPerObjAbsClass;
+  end;
 
-
-  TPerObjFactory = class( TtiBaseObject )
+  TPerObjFactory = class(TtiBaseObject)
   private
-    FList : TObjectList ;
+    FList : TObjectList;
   protected
-    function FindByClassName( const pClassName : string ) : TPerObjClassMapping ; virtual ;
-    function GetItems(pIndex: integer): TPerObjClassMapping; virtual ;
+    function FindByClassName(const AClassName : string): TPerObjClassMapping; virtual;
+    function GetItems(AIndex: integer): TPerObjClassMapping; virtual;
   public
-    constructor Create ; virtual ;
-    destructor  Destroy ; override ;
-    procedure   RegisterClass( const pClassName : string ; pClass : TtiClass ) ;
-    procedure   UnRegisterClass( const pClassName : string ) ;
-    function    CreateInstance( const pClassName : string ) : TtiObject ;
-    function    CreateNewInstance( const pClassName : string; pOwner : TtiObject = nil ) : TtiObject ;
-    function    IsRegistered( const pClassName : string ) : boolean ;
-    property    Items[pIndex : integer] : TPerObjClassMapping read GetItems ;
-    function    Count : integer ;
-  end ;
+    constructor Create; virtual;
+    destructor  Destroy; override;
+    procedure   RegisterClass(const AClassName : string; AClass : TtiClass);
+    procedure   UnRegisterClass(const AClassName : string);
+    function    CreateInstance(const AClassName : string): TtiObject;
+    function    CreateNewInstance(const AClassName : string; AOwner : TtiObject = nil): TtiObject;
+    function    IsRegistered(const AClassName : string): boolean;
+    property    Items[AIndex : integer]: TPerObjClassMapping read GetItems;
+    function    Count : integer;
+  end;
 
-  
-  TPerStream = class( TtiObject )
+  TPerStream = class(TtiObject)
   private
-    FStream : TMemoryStream ;
-    function  GetSize     : integer;
+    FStream : TMemoryStream;
+    function  GetSize    : integer;
     function  GetAsString : string;
-    procedure SetAsString(const Value: string);
-    procedure SetSize(const Value: integer);
+    procedure SetAsString(const AValue: string);
+    procedure SetSize(const AValue: integer);
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    property    Stream : TMemoryStream read FStream write FStream ;
-    property    Size   : integer       read GetSize write SetSize ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    property    Stream : TMemoryStream read FStream write FStream;
+    property    Size  : integer       read GetSize write SetSize;
 
-    procedure   SaveToFile( const psFileName : string ) ;
-    procedure   LoadFromFile( const psFileName : string ) ;
-    procedure   Clear ;
-    property    AsString : string read GetAsString write SetAsString ;
-  end ;
+    procedure   SaveToFile(const AFileName : string);
+    procedure   LoadFromFile(const AFileName : string);
+    procedure   Clear;
+    property    AsString : string read GetAsString write SetAsString;
+  end;
 
-
-  TPerStringStream = class( TtiObject )
+  TPerStringStream = class(TtiObject)
   private
-    FStream : TStringStream ;
+    FStream : TStringStream;
     function GetAsString: string;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    property    Stream : TStringStream read FStream write FStream ;
-    procedure   Write( const psValue : string ) ;
-    procedure   WriteLn( const psValue : string ) ;
-    property    AsString : string read GetAsString ;
-  end ;
-
+    constructor Create; override;
+    destructor  Destroy; override;
+    property    Stream : TStringStream read FStream write FStream;
+    procedure   Write(const AValue : string);
+    procedure   WriteLn(const AValue : string);
+    property    AsString : string read GetAsString;
+  end;
 
   {:The thread-safe version of <See Class="TtiObjectList">}
-  TPerObjThreadList = class( TtiObjectList )
+  TPerObjThreadList = class(TtiObjectList)
   private
     FCriticalSection: TCriticalSection;
     //FRaiseLockException : Boolean;
   protected
-    function    GetCount: integer; override ;
-    procedure   SetItems(i: integer; const Value: TtiObject); override ;
-    procedure   SetItemOwner(const Value: TtiObject); override ;
+    function    GetCount: integer; override;
+    procedure   SetItems(i: integer; const AValue: TtiObject); override;
+    procedure   SetItemOwner(const AValue: TtiObject); override;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
     {: Locks the list to prevent other threads gaining access.}
-    procedure   Lock ;
+    procedure   Lock;
     {: Unlocks the list to allow other threads access.}
-    procedure   UnLock ;
+    procedure   UnLock;
 
-    procedure   Delete( i : integer ) ; override ;
-    procedure   Add( pObject : TtiObject  ; pDefDispOrdr : boolean = true ) ; override ;
-    procedure   Clear ; override ; // Empty list and delete all owned objects
-    procedure   Empty ; override ; // Empty list, but do not delete owned objects
-    function    IndexOf( pData : TObject ) : integer ; override ;
-    function    Last  : TtiObject ; override ;
-    function    First : TtiObject ; override ;
-    function    FirstExcludeDeleted : TtiObject ; override ;
-    function    LastExcludeDeleted : TtiObject ; override ;
-    function    Remove( pData : TtiObject ) : integer ; override ;
-    procedure   MarkListItemsForDeletion ; override ;
-    procedure   MarkListItemsDirty ; override ;
-    procedure   SortByOID ; override ;
-    procedure   SortByProps( const pSortProps : array of string; pAscendingOrder : Boolean = True ) ; override ;
+    procedure   Delete(i : integer); override;
+    procedure   Add(AObject : TtiObject ; ADefDispOrdr : boolean = true); override;
+    procedure   Clear; override; // Empty list and delete all owned objects
+    procedure   Empty; override; // Empty list, but do not delete owned objects
+    function    IndexOf(AData : TObject): integer; override;
+    function    Last : TtiObject; override;
+    function    First : TtiObject; override;
+    function    FirstExcludeDeleted : TtiObject; override;
+    function    LastExcludeDeleted : TtiObject; override;
+    function    Remove(AData : TtiObject): integer; override;
+    procedure   MarkListItemsForDeletion; override;
+    procedure   MarkListItemsDirty; override;
+    procedure   SortByOID; override;
+    procedure   SortByProps(const ASortProps : array of string; AAscendingOrder : Boolean = True); override;
     {:Does a lock failure raise an exception or just log an error?}
     //Property RaiseLockException : Boolean Read FRaiseLockException Write FRaiseLockException;
-  end ;
-
+  end;
 
   // TPerVisList is here for backward compatibility.
   // Do not use. Use TtiObjectList instead.
-  TPerVisList = class( TtiObjectList ) ;
+  TPerVisList = class(TtiObjectList);
 
-
-  TVisPerObjFind = class( TtiVisitor )
+  TVisPerObjFind = class(TtiVisitor)
   private
     FUserContext: Pointer;
     FFound: TtiObject;
@@ -674,66 +686,61 @@ type
     FData: TtiObject;
     FPerObjFindMethodData: TPerObjFindMethodData;
   protected
-    function    AcceptVisitor : boolean ; override ;
+    function    AcceptVisitor : boolean; override;
   public
-    constructor Create ; override ;
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-    property    Found : TtiObject read FFound ;
-    property    PerObjFindMethod : TPerObjFindMethod read FPerObjFindMethod write FPerObjFindMethod ;
+    constructor Create; override;
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    Found : TtiObject read FFound;
+    property    PerObjFindMethod : TPerObjFindMethod read FPerObjFindMethod write FPerObjFindMethod;
     property    PerObjFindMethodExt: TPerObjFindMethodExt read FPerObjFindMethodExt write FPerObjFindMethodExt;
     property    PerObjFindMethodData: TPerObjFindMethodData read FPerObjFindMethodData write FPerObjFindMethodData;
-    property    FoundList : TList read FFoundList write FFoundList ;
-    property    UserContext : Pointer read FUserContext write FUserContext ;
-    property    Data : TtiObject read FData write FData ;
-  end ;
+    property    FoundList : TList read FFoundList write FFoundList;
+    property    UserContext : Pointer read FUserContext write FUserContext;
+    property    Data : TtiObject read FData write FData;
+  end;
 
-  
-  TVisPerObjFindByOID = class( TtiVisitor )
+  TVisPerObjFindByOID = class(TtiVisitor)
   private
     FOIDToFind: TOID;
     FFound: TtiObject;
   protected
-    function    AcceptVisitor : boolean ; override ;
+    function    AcceptVisitor : boolean; override;
   public
-    constructor Create ; override ;
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-    property    Found : TtiObject read FFound ;
-    property    OIDToFind : TOID read FOIDToFind write FOIDToFind ;
-  end ;
+    constructor Create; override;
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    Found : TtiObject read FFound;
+    property    OIDToFind : TOID read FOIDToFind write FOIDToFind;
+  end;
 
-
-  TVisPerObjDel = class( TtiVisitor )
+  TVisPerObjDel = class(TtiVisitor)
   protected
-    function    AcceptVisitor : boolean ; override ;
+    function    AcceptVisitor : boolean; override;
   public
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-  end ;
+    procedure   Execute(const AVisited : TtiVisited); override;
+  end;
 
-
-  TVisSetAllObjectStates = class( TtiVisitor )
+  TVisSetAllObjectStates = class(TtiVisitor)
   private
     FObjectState: TPerObjectState;
   protected
-    function    AcceptVisitor : boolean ; override ;
+    function    AcceptVisitor : boolean; override;
   public
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-    property    ObjectState : TPerObjectState read FObjectState write FObjectState ;
-  end ;
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    ObjectState : TPerObjectState read FObjectState write FObjectState;
+  end;
 
-
-  TVisPerObjIsDirty = class( TtiVisitor )
+  TVisPerObjIsDirty = class(TtiVisitor)
   private
     FbDirty: boolean;
   protected
-    function    AcceptVisitor : boolean ; override ;
+    function    AcceptVisitor : boolean; override;
   public
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-    property    Dirty : boolean read FbDirty write FbDirty ;
-  end ;
-
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    Dirty : boolean read FbDirty write FbDirty;
+  end;
 
   // Stream a TtiObject out as text
-  TVisTIObjectAsDebugString = class( TVisStringStream )
+  TVisTIObjectAsDebugString = class(TVisStringStream)
   private
     FbIncludeDeleted: Boolean;
     FbDataOnly: Boolean;
@@ -741,22 +748,19 @@ type
     function    AcceptVisitor: Boolean; override;
   public
     constructor Create; overload; override;
-    constructor Create(pIncludeDeleted: Boolean; pDataOnly: Boolean = False); overload;
-    procedure   Execute(const pVisited: TtiVisited); override;
+    constructor Create(AIncludeDeleted: Boolean; pDataOnly: Boolean = False); reintroduce; overload;
+    procedure   Execute(const AVisited: TtiVisited); override;
     function    Indent: string;
-    property    IncludeDeleted: Boolean read FbIncludeDeleted write FbIncludeDeleted ;
-    property    DataOnly: Boolean read FbDataOnly write FbDataOnly ;
-  end ;
-
+    property    IncludeDeleted: Boolean read FbIncludeDeleted write FbIncludeDeleted;
+    property    DataOnly: Boolean read FbDataOnly write FbDataOnly;
+  end;
 
 const
-  cgNullDBInteger            = -1  ;
-  cgNullDBString             = ''  ;
-  cgNullDBDate               = 0.0 ;
+  cgNullDBInteger            = -1 ;
+  cgNullDBString             = '' ;
+  cgNullDBDate               = 0.0;
 
-
-function ObjectStateToString( pObjectState : TPerObjectState ) : string ;
-
+function ObjectStateToString(AObjectState : TPerObjectState): string;
 
 implementation
 uses
@@ -772,26 +776,26 @@ uses
   {$IFNDEF VER130}
    ,Variants
   {$ENDIF}
-  ;
+ ;
 
 
-function ObjectStateToString( pObjectState : TPerObjectState ) : string ;
+function ObjectStateToString(AObjectState : TPerObjectState): string;
 begin
-  result := GetEnumName( TypeInfo( TPerObjectState ),
-                         Ord( pObjectState )) ;
-end ;
+  result := GetEnumName(TypeInfo(TPerObjectState),
+                         Ord(AObjectState));
+end;
 
 
 { TtiObject } 
 
-constructor TtiObject.Create ;
+constructor TtiObject.Create;
 begin
-  inherited Create ;
-  FObjectState := posEmpty ;
+  inherited Create;
+  FObjectState := posEmpty;
   {$IFDEF OID_AS_INT64}
   FOID := cNullOIDInteger;
   {$ENDIF}
-  FOwner       := nil ;
+  FOwner      := nil;
   FUpdateCount := 0;
 end;
 
@@ -805,99 +809,95 @@ end;
   typecast if you are going to use it. }
 function TtiObject.Clone: TtiObject;
 var
-  lClass : TtiClass ;
+  lClass : TtiClass;
 begin
-  lClass := TtiClass( ClassType ) ;
-  result := TtiObject( lClass.Create );
-  result.Assign( self ) ;
+  lClass := TtiClass(ClassType);
+  result := TtiObject(lClass.Create);
+  result.Assign(self);
 end;
 
-
 {: When you create a concrete class that contains object type properties
-  you will have to override AssignClassProps( ) and implement the necessary
+  you will have to override AssignClassProps() and implement the necessary
   behaviour to copy, clone or create new instances of these properties. }
-procedure TtiObject.Assign( const pSource: TtiObject);
+procedure TtiObject.Assign(const ASource: TtiObject);
 begin
-  Assert(( pSource is Self.ClassType ) or
-          ( Self is pSource.ClassType ),
-          pSource.ClassName +
+  Assert((ASource is Self.ClassType) or
+          (Self is ASource.ClassType),
+          ASource.ClassName +
           ' and ' +
           ClassName +
-          ' are not assignment compatable' ) ;
+          ' are not assignment compatable');
 
-  AssignPublicProps(    pSource ) ;
-  AssignPublishedProps( pSource ) ;
-  AssignClassProps(     pSource ) ;
+  AssignPublicProps(   ASource);
+  AssignPublishedProps(ASource);
+  AssignClassProps(    ASource);
 
   // When you create a concrete class that contains object type properties
-  // you will have to override AssignClassProps( ) and implement
+  // you will have to override AssignClassProps() and implement
   // the necessary behaviour to copy, clone or create new instances
   // of these properties.
 
 end;
 
-
-procedure TtiObject.AssignPublishedProps( pSource : TtiObject ;
-                                           pPropFilter : TTypeKinds = [] ) ;
+procedure TtiObject.AssignPublishedProps(ASource : TtiObject;
+                                           APropFilter : TTypeKinds = []);
 var
-  lsl : TStringList ;
-  i : integer ;
-  lsPropName : string ;
-  lPropFilter : TTypeKinds ;
+  lsl : TStringList;
+  i : integer;
+  lsPropName : string;
+  lPropFilter : TTypeKinds;
 begin
-  if pPropFilter = [] then
+  if APropFilter = [] then
     lPropFilter := ctkSimple + [tkEnumeration, tkVariant]
   else
-    lPropFilter := pPropFilter ;
+    lPropFilter := APropFilter;
 
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
-    tiGetPropertyNames( self, lsl, lPropFilter ) ;
+    tiGetPropertyNames(self, lsl, lPropFilter);
     for i := 0 to lsl.Count - 1 do
     begin
-      lsPropName := lsl.Strings[i] ;
+      lsPropName := lsl.Strings[i];
       try
         // Only clone read/write properties
-        if ( tiIsReadWriteProp( Self, lsPropName )) and
-           ( IsPublishedProp( pSource, lsPropName )) then
-          AssignPublishedProp( pSource, lsPropName );
+        if (tiIsReadWriteProp(Self, lsPropName)) and
+           (IsPublishedProp(ASource, lsPropName)) then
+          AssignPublishedProp(ASource, lsPropName);
       except
         on e:exception do
           raise EtiOPFProgrammerException.CreateFmt(cErrorSettingProperty,
             [ClassName, lsPropName, e.Message]);
-      end ;
-    end ;
+      end;
+    end;
   finally
-    lsl.Free ;
-  end ;
-end ;
+    lsl.Free;
+  end;
+end;
 
-
-function TtiObject.CountPropsByType( pSource : TtiObject ;
-                                      pPropFilter : TTypeKinds ) : integer ;
+function TtiObject.CountPropsByType(ASource : TtiObject;
+                                      APropFilter : TTypeKinds): integer;
 var
-  lsl : TStringList ;
+  lsl : TStringList;
 begin
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
-    tiGetPropertyNames( self, lsl, pPropFilter ) ;
-    result := lsl.Count ;
+    tiGetPropertyNames(self, lsl, APropFilter);
+    result := lsl.Count;
   finally
-    lsl.Free ;
-  end ;
-end ;
+    lsl.Free;
+  end;
+end;
 
-
-procedure TtiObject.AssignPublicProps( pSource : TtiObject ) ;
+procedure TtiObject.AssignPublicProps(ASource : TtiObject);
 begin
-  Assert( pSource.TestValid(TtiObject), cTIInvalidObjectError );
-  Assert( pSource.Owner.TestValid(TtiObject, true), cTIInvalidObjectError );
+  Assert(ASource.TestValid(TtiObject), cTIInvalidObjectError);
+  Assert(ASource.Owner.TestValid(TtiObject, true), cTIInvalidObjectError);
   {$IFDEF OID_AS_INT64}
-    OID := pSource.OID ;
+    OID := ASource.OID;
   {$ELSE}
-    OID.Assign( pSource.OID ) ;
+    OID.Assign(ASource.OID);
   {$ENDIF}
-  ObjectState := pSource.ObjectState ;
+  ObjectState := ASource.ObjectState;
   // 1. If we are cloning a list element to edit, then we will probably
   //    want it's Owner property set to the list. This will be done here.
   // 2. If we are editing a list, then we want each list element to be cloned
@@ -905,54 +905,53 @@ begin
   //    this will be done in TtiObjectList.AssignClassProps.
   // 3. If we are editing a compound object, then Owner will be set in
   //    the classes constructor.
-  if pSource.Owner is TtiObjectList then
-    Owner := pSource.Owner;
+  if ASource.Owner is TtiObjectList then
+    Owner := ASource.Owner;
 end;
 
 
-procedure TtiObject.AssignPublishedProp(pSource: TtiObject; psPropName: string);
+procedure TtiObject.AssignPublishedProp(ASource: TtiObject; APropName: string);
 var
   lPropType: TTypeKind;
 begin
-  lPropType := TypInfo.PropType(pSource, psPropName);
+  lPropType := TypInfo.PropType(ASource, APropName);
   if lPropType in ctkSimple + [tkVariant, tkEnumeration] then
   begin
     case lPropType of
-      tkChar        : SetOrdProp(Self, psPropName, GetOrdProp(pSource, psPropName));
-      tkWChar       : SetOrdProp(Self, psPropName, GetOrdProp(pSource, psPropName));
-      tkString      : SetStrProp(Self, psPropName, GetStrProp(pSource, psPropName));
-      tkLString     : SetStrProp(Self, psPropName, GetStrProp(pSource, psPropName));
-      tkWString     : SetWideStrProp(Self, psPropName, GetWideStrProp(pSource, psPropName));
+      tkChar       : SetOrdProp(Self, APropName, GetOrdProp(ASource, APropName));
+      tkWChar      : SetOrdProp(Self, APropName, GetOrdProp(ASource, APropName));
+      tkString     : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
+      tkLString    : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
+      tkWString    : SetWideStrProp(Self, APropName, GetWideStrProp(ASource, APropName));
       {$IFDEF FPC}
-      tkAString     : SetStrProp(Self, psPropName, GetStrProp(pSource, psPropName));
+      tkAString    : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
       {$ENDIF}
-      tkInteger     : SetOrdProp(Self, psPropName, GetOrdProp(pSource, psPropName));
-      tkInt64       : SetInt64Prop(Self, psPropName, GetInt64Prop(pSource, psPropName));
-      tkFloat       : SetFloatProp(Self, psPropName, GetFloatProp(pSource, psPropName));
-      tkVariant     : SetVariantProp(Self, psPropName, GetVariantProp(pSource, psPropName));
-      tkEnumeration : SetOrdProp(Self, psPropName, GetOrdProp(pSource, psPropName));
+      tkInteger    : SetOrdProp(Self, APropName, GetOrdProp(ASource, APropName));
+      tkInt64      : SetInt64Prop(Self, APropName, GetInt64Prop(ASource, APropName));
+      tkFloat      : SetFloatProp(Self, APropName, GetFloatProp(ASource, APropName));
+      tkVariant    : SetVariantProp(Self, APropName, GetVariantProp(ASource, APropName));
+      tkEnumeration : SetOrdProp(Self, APropName, GetOrdProp(ASource, APropName));
       {$IFDEF FPC}
-      tkBool        : SetInt64Prop(Self, psPropName, GetInt64Prop(pSource, psPropName));
+      tkBool       : SetInt64Prop(Self, APropName, GetInt64Prop(ASource, APropName));
       {$ENDIF}
     end;
   end
   else
     raise EtiOPFProgrammerException.CreateFmt(cErrorSettingProperty,
-      [ClassName, psPropName, 'Unknown property type']);
+      [ClassName, APropName, 'Unknown property type']);
 end;
 
 
-procedure TtiObject.AssignClassProps( pSource : TtiObject ) ;
+procedure TtiObject.AssignClassProps(ASource : TtiObject);
 begin
-  Assert( CountPropsByType( pSource, [tkClass] ) = 0,
-          'Trying to call ' + ClassName + '.Assign( ) on a class that contains ' +
-          'object type properties. AssignClassProps( ) must be overridden in the concrete class.' ) ;
+  Assert(CountPropsByType(ASource, [tkClass]) = 0,
+          'Trying to call ' + ClassName + '.Assign() on a class that contains ' +
+          'object type properties. AssignClassProps() must be overridden in the concrete class.');
 end;
-
 
 { Note: This functionality has not been tested fully. Bit of a hack really :(
-        Talk about thrashing the CPU with out need. :( :( :( !  }
-function TtiObject.Equals(const pData: TtiObject): boolean;
+        Talk about thrashing the CPU with out need.:(:(:(!  }
+function TtiObject.Equals(const AData: TtiObject): boolean;
 var
   lVisComp : TVisTIObjectAsDebugString;
   lVisSelf : TVisTIObjectAsDebugString;
@@ -962,77 +961,75 @@ begin
   try
     lVisSelf := TVisTIObjectAsDebugString.Create(False, True);
     try
-      Self.Iterate( lVisSelf ) ;
-      pData.Iterate( lVisComp ) ;
-      result := lVisSelf.Text = lVisComp.Text ;
+      Self.Iterate(lVisSelf);
+      AData.Iterate(lVisComp);
+      result := lVisSelf.Text = lVisComp.Text;
     finally
-      lVisSelf.Free ;
-    end ;
+      lVisSelf.Free;
+    end;
   finally
-    lVisComp.Free ;
-  end ;
+    lVisComp.Free;
+  end;
 end;
 
 
 function TtiObject.GetDeleted: boolean;
 begin
-  result := ( ObjectState = posDelete ) or
-            ( ObjectState = posDeleted ) ;
+  result := (ObjectState = posDelete) or
+            (ObjectState = posDeleted);
 end;
-
 
 function TtiObject.GetDirty: boolean;
 var
-  lVis : TVisPerObjIsDirty ;
+  lVis : TVisPerObjIsDirty;
 begin
-  lVis := TVisPerObjIsDirty.Create ;
+  lVis := TVisPerObjIsDirty.Create;
   try
-    self.Iterate( lVis ) ;
-    result := lVis.Dirty ;
+    self.Iterate(lVis);
+    result := lVis.Dirty;
   finally
-    lVis.Free ;
-  end ;
+    lVis.Free;
+  end;
 end;
 
-
-procedure TtiObject.SetDeleted(const Value: boolean);
+procedure TtiObject.SetDeleted(const AValue: boolean);
 var
-  lVis : TVisPerObjDel ;
+  lVis : TVisPerObjDel;
 begin
-  if Value and not Deleted then
+  if AValue and not Deleted then
   begin
-    lVis := TVisPerObjDel.Create ;
+    lVis := TVisPerObjDel.Create;
     try
-      self.Iterate( lVis ) ;
+      self.Iterate(lVis);
     finally
-      lVis.Free ;
-    end ;
-  end ;
+      lVis.Free;
+    end;
+  end;
 end;
 
 
-procedure TtiObject.SetDirty(const Value: boolean);
+procedure TtiObject.SetDirty(const AValue: boolean);
 begin
-  if Value then
+  if AValue then
   begin   // Dirty set to True
     case ObjectState of
-      posEmpty   : begin
-                     ObjectState := posCreate    ;
+      posEmpty  : begin
+                     ObjectState := posCreate   ;
                      {$IFDEF OID_AS_INT64}
                        if OID = cNullOIDInteger then
-                         OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID ;
+                         OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
                      {$ELSE}
                        if OID.IsNull then
-                           Assert( false, 'Under construction' ) ;
-                         // OID.GetNextValue ;
+                           Assert(false, 'Under construction');
+                         // OID.GetNextValue;
                      {$ENDIF}
-                   end ;
-      posPK      : ObjectState := posUpdate    ;
-      posCreate  : ; // Do nothing
-      posUpdate  : ; // Do nothing
-      posDelete  : ; // Do nothing
-      posDeleted : ; // Do nothing
-      posClean   : ObjectState := posUpdate ;
+                   end;
+      posPK     : ObjectState := posUpdate   ;
+      posCreate :; // Do nothing
+      posUpdate :; // Do nothing
+      posDelete :; // Do nothing
+      posDeleted :; // Do nothing
+      posClean  : ObjectState := posUpdate;
     else
       raise EtiOPFInternalException.Create(cErrorInvalidObjectState);
     end;
@@ -1048,43 +1045,42 @@ end;
 
 function TVisPerObjDel.AcceptVisitor : boolean;
 begin
-  result := ( Visited is TtiObject );
+  result := (Visited is TtiObject);
   if not result then
-    Exit ; //==>
+    Exit; //==>
 
-  result := ( TtiObject(Visited).ObjectState <> posDeleted );
+  result := (TtiObject(Visited).ObjectState <> posDeleted);
   if not result then
-    Exit ; //==>
+    Exit; //==>
 
   if VisitedsOwner = nil then
-    Exit ; //==>
+    Exit; //==>
 
   if VisitedsOwner = Visited then
-    Exit ; //==>
+    Exit; //==>
 
   // Check to see that the object currently being visited  actually
   // has an owner of the next object up the tree.
   // If it does, then assume it is owned by the previous object,
   // if it does not, then assume it is just a pointer to this object.
-  result := ( VisitedsOwner = TtiObject(Visited).Owner );
+  result := (VisitedsOwner = TtiObject(Visited).Owner);
   if result then
-    Exit ; //==>
+    Exit; //==>
 
   if VisitedsOwner is TtiObjectList then
-    result := ( TtiObjectList(VisitedsOwner).ItemOwner =
-                TtiObject(Visited).Owner );
+    result := (TtiObjectList(VisitedsOwner).ItemOwner =
+                TtiObject(Visited).Owner);
 
 end;
 
-
-procedure TVisPerObjDel.Execute(const pVisited: TtiVisited) ;
+procedure TVisPerObjDel.Execute(const AVisited: TtiVisited);
 begin
-  Inherited Execute( pVisited ) ;
+  Inherited Execute(AVisited);
 
   if not AcceptVisitor then
-    exit ; //==>
+    exit; //==>
 
-  TtiObject(pVisited).ObjectState := posDelete ;
+  TtiObject(AVisited).ObjectState := posDelete;
 end;
 
 
@@ -1092,27 +1088,26 @@ end;
 
 function TVisPerObjIsDirty.AcceptVisitor : boolean;
 begin
-  result := (( Visited is TtiObject ) or
-            ( Visited is TtiObjectList )) and
-            ( not Dirty ) ;
+  result := ((Visited is TtiObject) or
+            (Visited is TtiObjectList)) and
+            (not Dirty);
 end;
 
-
-procedure TVisPerObjIsDirty.Execute(const pVisited: TtiVisited);
+procedure TVisPerObjIsDirty.Execute(const AVisited: TtiVisited);
 begin
-  inherited Execute( pVisited ) ;
+  inherited Execute(AVisited);
 
   if not AcceptVisitor then
-    exit ; //==>
+    exit; //==>
 
   if Visited is TtiObject then
-    Dirty := TtiObject( pVisited ).ObjectState in
+    Dirty := TtiObject(AVisited).ObjectState in
               [ posCreate,  // The object is new and must be created in the DB
                 posUpdate,  // The object has been changed, the DB must be updated
                 posDelete   // The object has been deleted, it must be deleted from the DB
               ]
   else
-    Assert( false, 'Invalid visited type' ) ;
+    Assert(false, 'Invalid visited type');
 
   // Use this to debug problems when you think you have set an object's state
   // to posClean or posDeleted, but it's parent object is still showing dirty.
@@ -1122,8 +1117,8 @@ begin
           Dirty,
           Visited.ClassName,
           Visited.Caption,
-          GetEnumName( TypeInfo( TPerObjectState ),
-                       ord( TtiObject( pVisited ).ObjectState ))]) ;
+          GetEnumName(TypeInfo(TPerObjectState),
+                       ord(TtiObject(AVisited).ObjectState))]);
 }
 end;
 
@@ -1141,35 +1136,31 @@ end;
 
 destructor TtiObjectList.Destroy;
 begin
-  FList.Free ;
+  FList.Free;
   inherited;
 end;
 
-
-procedure TtiObjectList.Add(pObject: TtiObject ; pDefDispOrdr : boolean);
+procedure TtiObjectList.Add(AObject: TtiObject; ADefDispOrdr : boolean);
 begin
-  Add(pObject);
+  Add(AObject);
 end;
 
-
-procedure TtiObjectList.Add( const pObject : TtiObject ) ;
+procedure TtiObjectList.Add(const AObject : TtiObject);
 begin
   if FbAutoSetItemOwner then
-    pObject.Owner := FItemOwner ;
-  FList.Add( pObject ) ;
-end ;
-
+    AObject.Owner := FItemOwner;
+  FList.Add(AObject);
+end;
 
 procedure TtiObjectList.Clear;
 begin
-  FList.Clear ;
+  FList.Clear;
   // Should Clear set the ObjectState to posEmpty. Originally we thought yes,
   // then got burnt by side effects, so this was removed 26/09/2001
   { 2005-08-25 graemeg: I thought I would take my chances as it makes sence
     to set the ObjectState }
-  ObjectState := posEmpty ;
+  ObjectState := posEmpty;
 end;
-
 
 {: Call Delete to remove the object at Index from the list. (The first object 
   is indexed as 0, the second object is indexed as 1, and so forth.) After an 
@@ -1185,8 +1176,8 @@ end;
 procedure TtiObjectList.Delete(i: integer);
 begin
   if AutoSetItemOwner then
-    TtiObject( Items[i] ).Owner := nil ;
-  FList.Delete( i ) ;
+    TtiObject(Items[i]).Owner := nil;
+  FList.Delete(i);
 end;
 
 
@@ -1194,106 +1185,105 @@ end;
 
 function TVisTIObjectAsDebugString.AcceptVisitor : boolean;
 begin
-  result := ( Visited is TtiObject ) and
-            (( not TtiObject( Visited ).Deleted ) or
-             ( TtiObject( Visited ).Deleted and IncludeDeleted )) ;
+  result := (Visited is TtiObject) and
+            ((not TtiObject(Visited).Deleted) or
+             (TtiObject(Visited).Deleted and IncludeDeleted));
 end;
 
 constructor TVisTIObjectAsDebugString.Create;
 begin
   inherited;
-  FbIncludeDeleted  := False ;
-  FbDataOnly        := False ;
+  FbIncludeDeleted := False;
+  FbDataOnly       := False;
 end;
 
-constructor TVisTIObjectAsDebugString.Create(pIncludeDeleted: Boolean;
+constructor TVisTIObjectAsDebugString.Create(AIncludeDeleted: Boolean;
   pDataOnly: Boolean);
 begin
   Create;
-  FbIncludeDeleted  := pIncludeDeleted;
-  FbDataOnly        := pDataOnly;
+  FbIncludeDeleted := AIncludeDeleted;
+  FbDataOnly       := pDataOnly;
 end;
 
 
-procedure TVisTIObjectAsDebugString.Execute(const pVisited: TtiVisited);
+procedure TVisTIObjectAsDebugString.Execute(const AVisited: TtiVisited);
 var
-  i : integer ;
-  lslProps : TStringList ;
-  lsValue : string ;
-  lsPropName : string ;
+  i : integer;
+  lslProps : TStringList;
+  lsValue : string;
+  lsPropName : string;
 begin
-  inherited Execute( pVisited ) ;
+  inherited Execute(AVisited);
 
   if not AcceptVisitor then
-    Exit ; //==>
+    Exit; //==>
 
-  Write( Indent + pVisited.Caption ) ;
+  Write(Indent + AVisited.Caption);
   if not FbDataOnly then
   begin
-    Write( ', ' ) ;
-    Write( TtiObject( pVisited ).ObjectStateAsString ) ;
-    Write( ', ' ) ;
-    if pVisited.ClassName <> ( pVisited ).Caption then
+    Write(', ');
+    Write(TtiObject(AVisited).ObjectStateAsString);
+    Write(', ');
+    if AVisited.ClassName <> (AVisited).Caption then
     begin
-      Write( TtiObject( pVisited ).Caption ) ;
-      Write( ', ' ) ;
+      Write(TtiObject(AVisited).Caption);
+      Write(', ');
     end;
     {$IFDEF OID_AS_INT64}
-      Write( IntToStr( TtiObject( pVisited ).OID )) ;
+      Write(IntToStr(TtiObject(AVisited).OID));
     {$ELSE}
       if gTIOPFManager.DefaultOIDClassName <> '' then
-        Write( 'OID=' +TtiObject( pVisited ).OID.AsString )
+        Write('OID=' +TtiObject(AVisited).OID.AsString)
       else
         Write('OID=Null');
     {$ENDIF}
-    if TtiObject( pVisited ).Dirty then
-      Write( ', *< Dirty >*' ) ;
-  end ;
+    if TtiObject(AVisited).Dirty then
+      Write(', *< Dirty >*');
+  end;
 
-  WriteLn( '' ) ;
+  WriteLn('');
 
-  lslProps := TStringList.Create ;
+  lslProps := TStringList.Create;
   try
-    tiGetPropertyNames( TtiBaseObject( pVisited ),
+    tiGetPropertyNames(TtiBaseObject(AVisited),
                         lslProps,
-                        ctkSimple + [tkVariant, tkEnumeration] ) ;
+                        ctkSimple + [tkVariant, tkEnumeration]);
 
     // dean.millam@duffersgreens.com, modified to format TDateTime
     for i := 0 to lslProps.Count - 1 do
     begin
-      lsPropName := lslProps.Strings[i] ;
-      if not SameText( lsPropName, 'Caption' ) then
+      lsPropName := lslProps.Strings[i];
+      if not SameText(lsPropName, 'Caption') then
       begin
         try
-          lsValue := TtiObject( pVisited ).PropValue[lsPropName];
-          if TtiObject(pVisited).PropType(lsPropName) = tiTKDateTime then
-            lsValue := tiDateTimeAsIntlDateDisp(TtiObject(pVisited).PropValue[lsPropName])
+          lsValue := TtiObject(AVisited).PropValue[lsPropName];
+          if TtiObject(AVisited).PropType(lsPropName) = tiTKDateTime then
+            lsValue := tiDateTimeAsIntlDateDisp(TtiObject(AVisited).PropValue[lsPropName])
           else
-            lsValue := TtiObject(pVisited).PropValue[lsPropName];
+            lsValue := TtiObject(AVisited).PropValue[lsPropName];
         except
           on e:exception do
-            lsValue := 'Error: ' + e.Message ;
-        end ;
+            lsValue := 'Error: ' + e.Message;
+        end;
 
         lsValue := '  ' +
                    lslProps.Strings[i] +
                    ' = ' +
-                   lsValue ;
-        WriteLn( Indent + lsValue ) ;
-      end ;
-    end ;
+                   lsValue;
+        WriteLn(Indent + lsValue);
+      end;
+    end;
   finally
-    lslProps.Free ;
-  end ;
+    lslProps.Free;
+  end;
 end;
 
 
-procedure TtiObject.SetObjectState(const pValue: TPerObjectState);
+procedure TtiObject.SetObjectState(const AValue: TPerObjectState);
 begin
-  if FObjectState = pValue then exit;
-  FObjectState := pValue;
+  if FObjectState = AValue then exit;
+  FObjectState := AValue;
 end;
-
 
 procedure TtiObjectList.Empty;
 var
@@ -1303,73 +1293,64 @@ begin
     FList.Extract(FList.Items[i]);
 end;
 
-
 function TtiObjectList.GetCount: integer;
 begin
   result := FList.Count;
 end;
 
-
-function TtiObjectList.GetItems(i: integer): TtiObject ;
+function TtiObjectList.GetItems(i: integer): TtiObject;
 begin
-  result := TtiObject( FList.Items[ i ] ) ;
+  result := TtiObject(FList.Items[ i ]);
 end;
-
 
 function TtiObjectList.GetList: TList;
 begin
-  result := FList ;
+  result := FList;
 end;
 
-
-function TtiObjectList.IndexOf(pData: TObject): integer;
+function TtiObjectList.IndexOf(AData: TObject): integer;
 begin
-  result := FList.IndexOf( pData ) ;
+  result := FList.IndexOf(AData);
 end;
-
 
 function TtiObjectList.Last: TtiObject;
 begin
   // TList can't handle this. Strange!
   if FList.Count > 0 then
 // Under some circumstances, this will AV. Why?  
-//    result := TtiObject( FList.Last )
-    result := TtiObject( FList.Items[FList.Count-1] )
+//    result := TtiObject(FList.Last)
+    result := TtiObject(FList.Items[FList.Count-1])
   else
-    result := nil ;
+    result := nil;
 end;
-
 
 function TtiObjectList.LastExcludeDeleted: TtiObject;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := Count-1 downto 0 do
     if not Items[i].Deleted then
     begin
-      result := Items[i] ;
-      Exit ; //==>
-    end ;
-  result := nil ;
+      result := Items[i];
+      Exit; //==>
+    end;
+  result := nil;
 end;
 
-
-procedure TtiObjectList.SetItems(i: integer; const Value: TtiObject );
+procedure TtiObjectList.SetItems(i: integer; const AValue: TtiObject);
 begin
-  FList.Items[ i ] := Value ;
+  FList.Items[ i ]:= AValue;
 end;
-
 
 function TtiObject.ObjectStateAsString: string;
 begin
-  result := GetEnumName( TypeInfo( TPerObjectState ),
-                         Ord( ObjectState )) ;
+  result := GetEnumName(TypeInfo(TPerObjectState),
+                         Ord(ObjectState));
 end;
-
 
 function TVisTIObjectAsDebugString.Indent: string;
 begin
-  result := tiSpace(( Depth - 1 ) * 2) ;
+  result := tiSpace((Depth - 1) * 2);
 end;
 
 
@@ -1378,65 +1359,57 @@ end;
 constructor TPerStream.Create;
 begin
   inherited;
-  FStream := nil ;
-  Clear ;
+  FStream := nil;
+  Clear;
 end;
-
 
 destructor TPerStream.Destroy;
 begin
-  FStream.Free ;
+  FStream.Free;
   inherited;
 end;
-
 
 procedure TPerStream.Clear;
 begin
   if FStream <> nil then
-    FStream.Free ;
-  FStream := TMemoryStream.Create ;
+    FStream.Free;
+  FStream := TMemoryStream.Create;
 end;
-
 
 function TPerStream.GetSize: integer;
 begin
-  result := FStream.Size ;
+  result := FStream.Size;
 end;
 
-
-procedure TPerStream.LoadFromFile(const psFileName: string);
+procedure TPerStream.LoadFromFile(const AFileName: string);
 begin
-  FStream.LoadFromFile( psFileName ) ;
+  FStream.LoadFromFile(AFileName);
 end;
 
-
-procedure TPerStream.SaveToFile( const psFileName: string);
+procedure TPerStream.SaveToFile(const AFileName: string);
 begin
-  FStream.Position := 0 ;
-  FStream.SaveToFile( psFileName ) ;
+  FStream.Position := 0;
+  FStream.SaveToFile(AFileName);
 end;
-
 
 function TPerStream.GetAsString: string;
 var
-  ls : string ;
+  ls : string;
 begin
-  FStream.Seek( 0,soFromBeginning ) ;
-  SetString( ls, nil, FStream.Size );
-  Stream.Read( Pointer( ls )^, FStream.Size);
-  Result := ls ;
+  FStream.Seek(0,soFromBeginning);
+  SetString(ls, nil, FStream.Size);
+  Stream.Read(Pointer(ls)^, FStream.Size);
+  Result := ls;
 end;
 
-
-procedure TPerStream.SetAsString(const Value: string);
+procedure TPerStream.SetAsString(const AValue: string);
 var
-  lpcText : PChar ;
+  lpcText : PChar;
 begin
-  FStream.Clear ;
-  lpcText := PChar( Value ) ;
-  FStream.WriteBuffer( lpcText^, length( lpcText )) ;
+  FStream.Clear;
+  lpcText := PChar(AValue);
+  FStream.WriteBuffer(lpcText^, length(lpcText));
 end;
-
 
 {: Call Remove to delete a specific object from the list when its index is 
   unknown. The value returned is the index of the object in the Items array 
@@ -1450,24 +1423,22 @@ end;
   list. To use an index position (rather than an object reference) to specify 
   the object to be removed, call Delete. To remove an object from the list 
   without freeing it, call Extract. }
-function TtiObjectList.Remove(pData: TtiObject):integer;
+function TtiObjectList.Remove(AData: TtiObject):integer;
 begin
   if AutoSetItemOwner then
-    pData.Owner := nil ;
-  result := FList.Remove( pData ) ;
+    AData.Owner := nil;
+  result := FList.Remove(AData);
 end;
-
 
 {: Call Extract to remove an object from the list without freeing the object
   itself. After an object is removed, all the objects that follow it are moved 
   up in index position and Count is decremented.}
-procedure TtiObjectList.Extract(pData: TtiObject);
+procedure TtiObjectList.Extract(AData: TtiObject);
 begin
   if AutoSetItemOwner then
-    pData.Owner := nil ;
-  FList.Extract( pData ) ;
+    AData.Owner := nil;
+  FList.Extract(AData);
 end;
-
 
 {: Call Insert to add an object at a specified position in the list, shifting 
   the item that previously occupied that position (and all subsequent items) up.
@@ -1475,62 +1446,61 @@ end;
   value of Capacity. The Index parameter is zero-based, so the first position 
   in the list has an index of 0. To replace a nil reference with a new object 
   without growing the array, set the Items property directly. }
-procedure TtiObjectList.Insert(const piIndex: integer; pData: TtiObject);
+procedure TtiObjectList.Insert(const AIndex: integer; AData: TtiObject);
 begin
-  FList.Insert( piIndex, pData ) ;
-  pData.Owner := self ;
-//  AssignDispOrder( pData ) ;
+  FList.Insert(AIndex, AData);
+  AData.Owner := self;
+//  AssignDispOrder(AData);
 end;
 
 //{: @TODO AssignDispOrder logic requires work. }
-//procedure TtiObjectList.AssignDispOrder( pData: TtiObject ) ;
+//procedure TtiObjectList.AssignDispOrder(AData: TtiObject);
 //var
-//  i : integer ;
-//  lBefore : TtiObject ;
-//  lAfter  : TtiObject ;
+//  i : integer;
+//  lBefore : TtiObject;
+//  lAfter : TtiObject;
 //begin
-//  i := IndexOf( pData ) ;
+//  i := IndexOf(AData);
 //  if i > 0 then
 //    lBefore := Items[i-1]
 //  else
-//    lBefore := nil ;
+//    lBefore := nil;
 //
 //  if i < Count-1 then
 //    lAfter := Items[i+1]
 //  else
-//    lAfter := nil ;
+//    lAfter := nil;
 //
-//  if      ( lBefore = nil ) and ( lAfter = nil ) then
+//  if      (lBefore = nil) and (lAfter = nil) then
 //  begin
-//    pData.DispOrder := cuiDispOrderInc ;
+//    AData.DispOrder := cuiDispOrderInc;
 //  end
-//  else if ( lBefore <> nil ) and ( lAfter = nil ) then
+//  else if (lBefore <> nil) and (lAfter = nil) then
 //  begin
-//    pData.DispOrder := ( lBefore.DispOrder div cuiDispOrderInc + 1 ) * cuiDispOrderInc ;
+//    AData.DispOrder := (lBefore.DispOrder div cuiDispOrderInc + 1) * cuiDispOrderInc;
 //  end
-//  else if ( lBefore = nil ) and ( lAfter <> nil ) then
+//  else if (lBefore = nil) and (lAfter <> nil) then
 //  begin
-//    pData.DispOrder := ( lAfter.DispOrder div cuiDispOrderInc - 1 ) * cuiDispOrderInc ;
+//    AData.DispOrder := (lAfter.DispOrder div cuiDispOrderInc - 1) * cuiDispOrderInc;
 //  end
-//  else if ( lBefore <> nil ) and ( lAfter <> nil ) then
+//  else if (lBefore <> nil) and (lAfter <> nil) then
 //  begin
-//    pData.DispOrder := ( lBefore.DispOrder + lAfter.DispOrder ) div 2 ;
-//  end ;
-//  pData.Dirty := true ;
-//end ;
+//    AData.DispOrder := (lBefore.DispOrder + lAfter.DispOrder) div 2;
+//  end;
+//  AData.Dirty := true;
+//end;
 
-
-procedure TtiObjectList.Insert(pInsertBefore, pData: TtiObject);
+procedure TtiObjectList.Insert(AInsertBefore, AData: TtiObject);
 var
-  i : integer ;
+  i : integer;
 begin
-  i := FList.IndexOf( pInsertBefore ) ;
+  i := FList.IndexOf(AInsertBefore);
   if i >= 0 then
-    Insert( i, pData )
+    Insert(i, AData)
   else
   begin
-    Add( pData ) ;
-  end ;
+    Add(AData);
+  end;
 end;
 
 
@@ -1538,342 +1508,315 @@ end;
  
 function TVisPerObjFindByOID.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TtiObject ) and
-            ( FFound = nil ) ;
+  result := (Visited is TtiObject) and
+            (FFound = nil);
 end;
-
 
 constructor TVisPerObjFindByOID.Create;
 begin
   inherited;
-  FFound := nil ;
+  FFound := nil;
 end;
 
-
-procedure TVisPerObjFindByOID.Execute(const pVisited: TtiVisited);
+procedure TVisPerObjFindByOID.Execute(const AVisited: TtiVisited);
 begin
-  inherited Execute( pVisited ) ;
+  inherited Execute(AVisited);
   if not AcceptVisitor then
-    Exit ; //==>
+    Exit; //==>
 
-  if OIDEquals( TtiObject( Visited ).OID ,FOIDToFind ) then
-    FFound := TtiObject( Visited ) ;
+  if OIDEquals(TtiObject(Visited).OID ,FOIDToFind) then
+    FFound := TtiObject(Visited);
 end;
 
-
-function TtiObject.Find(pPerObjFindMethod: TPerObjFindMethod): TtiObject;
+function TtiObject.Find(AtiObjectFindMethod: TPerObjFindMethod): TtiObject;
 var
-  lVis : TVisPerObjFind ;
+  lVis : TVisPerObjFind;
 begin
-  lVis := TVisPerObjFind.Create ;
+  lVis := TVisPerObjFind.Create;
   try
-    lVis.PerObjFindMethod := pPerObjFindMethod ;
-    self.Iterate( lVis ) ;
-    result := lVis.Found ;
+    lVis.PerObjFindMethod := AtiObjectFindMethod;
+    self.Iterate(lVis);
+    result := lVis.Found;
   finally
-    lVis.Free ;
-  end ;
-end ;
-
-
-function TtiObject.Find( pPerObjFindMethodExt : TPerObjFindMethodExt; pUserContext: Pointer ) : TtiObject ;
-var
-  lVis : TVisPerObjFind ;
-begin
-  lVis := TVisPerObjFind.Create ;
-  try
-    lVis.PerObjFindMethodExt := pPerObjFindMethodExt ;
-    lVis.UserContext := pUserContext;
-    self.Iterate( lVis ) ;
-    result := lVis.Found ;
-  finally
-    lVis.Free ;
-  end ;
-end ;
-
-
-function TtiObject.FindAll( pPerObjFindMethod: TPerObjFindMethod ; pList : TList ): integer;
-var
-  lVis : TVisPerObjFind ;
-begin
-  if pList <> nil then
-    pList.Clear ;
-  lVis := TVisPerObjFind.Create ;
-  try
-    lVis.FoundList := pList ;
-    lVis.PerObjFindMethod := pPerObjFindMethod ;
-    self.Iterate( lVis ) ;
-  finally
-    lVis.Free ;
-  end ;
-  result := pList.Count ;
+    lVis.Free;
+  end;
 end;
 
-
-function TtiObject.Find( pOIDToFind : TOID ) : TtiObject;
+function TtiObject.Find(ATIObjectFindMethodExt : TPerObjFindMethodExt; AUserContext: Pointer): TtiObject;
 var
-  lVis : TVisPerObjFindByOID ;
+  lVis : TVisPerObjFind;
 begin
-  lVis := TVisPerObjFindByOID.Create ;
+  lVis := TVisPerObjFind.Create;
   try
-    lVis.OIDToFind := pOIDToFind ;
-    self.Iterate( lVis ) ;
-    result := lVis.Found ;
+    lVis.PerObjFindMethodExt := ATIObjectFindMethodExt;
+    lVis.UserContext := AUserContext;
+    self.Iterate(lVis);
+    result := lVis.Found;
   finally
-    lVis.Free ;
-  end ;
+    lVis.Free;
+  end;
 end;
 
+function TtiObject.FindAll(AtiObjectFindMethod: TPerObjFindMethod; AList : TList): integer;
+var
+  lVis : TVisPerObjFind;
+begin
+  if AList <> nil then
+    AList.Clear;
+  lVis := TVisPerObjFind.Create;
+  try
+    lVis.FoundList := AList;
+    lVis.PerObjFindMethod := AtiObjectFindMethod;
+    self.Iterate(lVis);
+  finally
+    lVis.Free;
+  end;
+  result := AList.Count;
+end;
+
+function TtiObject.Find(AOIDToFind : TOID): TtiObject;
+var
+  lVis : TVisPerObjFindByOID;
+begin
+  lVis := TVisPerObjFindByOID.Create;
+  try
+    lVis.OIDToFind := AOIDToFind;
+    self.Iterate(lVis);
+    result := lVis.Found;
+  finally
+    lVis.Free;
+  end;
+end;
 
 procedure TtiObjectList.MarkListItemsForDeletion;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to Count - 1 do
-    Items[i].Deleted := true ;
+    Items[i].Deleted := true;
 end;
-
 
 procedure TtiObjectList.MarkListItemsDirty;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to Count - 1 do
-    Items[i].Dirty := true ;
+    Items[i].Dirty := true;
 end;
-
 
 { TVisPerObjFind }
 
 function TVisPerObjFind.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TtiObject ) and
-            (( FFound = nil ) or ( FFoundList <> nil )) ;
+  result := (Visited is TtiObject) and
+            ((FFound = nil) or (FFoundList <> nil));
 end;
-
 
 constructor TVisPerObjFind.Create;
 begin
   inherited;
+
 end;
 
-
-procedure TVisPerObjFind.Execute(const pVisited: TtiVisited);
+procedure TVisPerObjFind.Execute(const AVisited: TtiVisited);
 var
-  lbFound : boolean ;
+  lbFound : boolean;
 begin
-  inherited Execute( pVisited ) ;
+  inherited Execute(AVisited);
   if not AcceptVisitor then
-    Exit ; //==>
+    Exit; //==>
 
-  lbFound := false ;
+  lbFound := false;
   if Assigned(FPerObjFindMethod) then
-    FPerObjFindMethod( TtiObject( Visited ), lbFound )
-  else if Assigned( FPerObjFindMethodExt ) then
-    PerObjFindMethodExt( TtiObject( Visited ), lbFound, FUserContext )
-  else if Assigned( FPerObjFindMethodData ) then
-    PerObjFindMethodData( TtiObject( Visited ), lbFound, Data )
+    FPerObjFindMethod(TtiObject(Visited), lbFound)
+  else if Assigned(FPerObjFindMethodExt) then
+    PerObjFindMethodExt(TtiObject(Visited), lbFound, FUserContext)
+  else if Assigned(FPerObjFindMethodData) then
+    PerObjFindMethodData(TtiObject(Visited), lbFound, Data)
   else
     raise EtiOPFProgrammerException.Create(cErrorNoFindMethodAssigned);
 
   if lbFound then
     if FoundList = nil then
-      FFound := TtiObject( Visited )
+      FFound := TtiObject(Visited)
     else
-      FoundList.Add( Visited ) ;
-end;
+      FoundList.Add(Visited);
 
+end;
 
 function TtiObject.GetOwner: TtiObject;
 begin
-  //Assert( FOwner <> Nil, 'Owner has not been assigned in ' + ClassName ) ;
+  //Assert(FOwner <> Nil, 'Owner has not been assigned in ' + ClassName);
   Result := FOwner;
 end;
 
-
-procedure TtiObject.SetOwner(const Value: TtiObject);
+procedure TtiObject.SetOwner(const AValue: TtiObject);
 begin
-  FOwner := Value ;
+  FOwner := AValue;
 end;
-
 
 { By default, IsUnique will check all objects in the collection (from
   the current object down the tree) for uniqueness by OID. Override
   DoFindAllNotUnique to change the properties that are tested. } 
-function TtiObject.IsUnique(const pPerObjAbs: TtiObject ) : boolean ;
+function TtiObject.IsUnique(const AObject: TtiObject): boolean;
 var
-  lList : TList ;
-  i : integer ;
+  lList : TList;
+  i : integer;
 begin
-  Assert( Assigned( pPerObjAbs ), 'pPerObjAbs not assigned' ) ;
-  lList := TList.Create ;
+  Assert(Assigned(AObject), 'AObject not assigned');
+  lList := TList.Create;
   try
-    FindAll( DoFindAllNotUnique, lList, pPerObjAbs ) ;
-    result := true ;
+    FindAll(DoFindAllNotUnique, lList, AObject);
+    result := true;
     for i := 0 to lList.Count - 1 do
     begin
-      if ( TtiObject(lList.Items[i]) <> pPerObjAbs ) {and
-         ( lList.Items[i] <> Self )} and
-         ( OIDEquals( TtiObject( lList.Items[i] ).OID, pPerObjAbs.OID )) then
+      if (TtiObject(lList.Items[i]) <> AObject) {and
+         (lList.Items[i] <> Self)} and
+         (OIDEquals(TtiObject(lList.Items[i]).OID, AObject.OID)) then
       begin
-        result := false ;
-        Exit ; //==>
-      end ;
-    end ;
+        result := false;
+        Exit; //==>
+      end;
+    end;
   finally
-    lList.Free ;
-  end ;
+    lList.Free;
+  end;
 end;
 
-
-procedure TtiObjectList.ForEach(pMethod: TPerObjForEachMethod; pbIncludeDeleted: boolean=false);
+procedure TtiObjectList.ForEach(AMethod: TPerObjForEachMethod; AIncludeDeleted: boolean=false);
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to Count - 1 do
-    if not Items[i].Deleted or pbIncludeDeleted then
-      pMethod( Items[i] ) ;
+    if not Items[i].Deleted or AIncludeDeleted then
+      AMethod(Items[i]);
 end;
 
-
-procedure TtiObjectList.ForEach(pMethod: TPerObjForEachMethodRegular; pbIncludeDeleted: boolean);
+procedure TtiObjectList.ForEach(AMethod: TPerObjForEachMethodRegular; AIncludeDeleted: boolean);
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to Count - 1 do
-    if not Items[i].Deleted or pbIncludeDeleted then
-      pMethod( Items[i] ) ;
+    if not Items[i].Deleted or AIncludeDeleted then
+      AMethod(Items[i]);
 end;
 
-
-procedure TtiObjectList.PropToStrings(const pStrings: TStrings ; const pPropName : string = 'caption' );
+procedure TtiObjectList.PropToStrings(const AStrings: TStrings; const APropName : string = 'caption');
 var
-  i : integer ;
-  lPropValue : string ;
+  i : integer;
+  lPropValue : string;
 begin
-  pStrings.Clear ;
+  AStrings.Clear;
   for i := 0 to Count - 1 do
   begin
-    lPropValue := TypInfo.GetPropValue( Items[i], pPropName );
-    pStrings.AddObject( lPropValue, Items[i] ) ;
-  end ;
+    lPropValue := TypInfo.GetPropValue(Items[i], APropName);
+    AStrings.AddObject(lPropValue, Items[i]);
+  end;
 end;
-
 
 function TtiObjectList.GetCountNotDeleted: integer;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := 0 ;
+  result := 0;
   for i := 0 to Count - 1 do
     if not Items[i].Deleted then
-      Inc( result ) ;
+      Inc(result);
 end;
-
 
 { TPerStringStream }
 
 constructor TPerStringStream.Create;
 begin
-  FStream := TStringStream.Create( '' ) ;
+  FStream := TStringStream.Create('');
   inherited;
 end;
-
 
 destructor TPerStringStream.Destroy;
 begin
-  FStream.Free ;
+  FStream.Free;
   inherited;
 end;
 
-
 function TPerStringStream.GetAsString: string;
 begin
-//  FStream.Position := 0 ;
-  result := FStream.DataString ;
+//  FStream.Position := 0;
+  result := FStream.DataString;
 end;
 
-
-procedure TPerStringStream.Write(const psValue: string);
+procedure TPerStringStream.Write(const AValue: string);
 begin
-  FStream.WriteString( psValue ) ;
+  FStream.WriteString(AValue);
 end;
 
-
-procedure TPerStringStream.WriteLn(const psValue: string);
+procedure TPerStringStream.WriteLn(const AValue: string);
 begin
-  FStream.WriteString( psValue + CrLf ) ;
+  FStream.WriteString(AValue + CrLf);
 end;
 
-
-procedure TtiObjectList.SetItemOwner(const Value: TtiObject);
+procedure TtiObjectList.SetItemOwner(const AValue: TtiObject);
 var
-  i : integer ;
+  i : integer;
 begin
-  FItemOwner := Value;
+  FItemOwner := AValue;
   for I := 0 to Count - 1 do
-    Items[ I ].Owner := FItemOwner ;
-end ;
+    Items[ I ].Owner := FItemOwner;
+end;
 
-
-procedure TtiObjectList.AssignClassProps(pSource: TtiObject);
+procedure TtiObjectList.AssignClassProps(ASource: TtiObject);
 var
-  i : integer ;
-  lClass : TtiClass ;
-  lSource : TtiObject ;
-  lTarget : TtiObject ;
+  i : integer;
+  lClass : TtiClass;
+  lSource : TtiObject;
+  lTarget : TtiObject;
 begin
-  Assert( pSource is TtiObjectList,
-          'pSource not a TtiObjectList' ) ;
+  Assert(ASource is TtiObjectList,
+          'ASource not a TtiObjectList');
 
   if OwnsObjects then
   begin
-    for i := 0 to TtiObjectList( pSource ).Count - 1 do
+    for i := 0 to TtiObjectList(ASource).Count - 1 do
     begin
-      lSource := TtiObjectList( pSource ).Items[i] ;
-      lClass := TtiClass( lSource.ClassType ) ;
-      lTarget  := TtiObject( lClass.Create );
-      Add( lTarget ) ;
-      lTarget.Assign( lSource ) ;
+      lSource := TtiObjectList(ASource).Items[i];
+      lClass := TtiClass(lSource.ClassType);
+      lTarget := TtiObject(lClass.Create);
+      Add(lTarget);
+      lTarget.Assign(lSource);
       if AutoSetItemOwner then
-        lTarget.Owner := ItemOwner ;
+        lTarget.Owner := ItemOwner;
 
-    end ;
+    end;
   end
   else
-    for i := 0 to TtiObjectList( pSource ).Count - 1 do
-      Add( TtiObjectList( pSource ).Items[i] );
+    for i := 0 to TtiObjectList(ASource).Count - 1 do
+      Add(TtiObjectList(ASource).Items[i]);
 end;
-
 
 function TtiObjectList.GetOwnsObjects: boolean;
 begin
-  result := FList.OwnsObjects ;
+  result := FList.OwnsObjects;
 end;
 
-
-procedure TtiObjectList.SetOwnsObjects(const Value: boolean);
+procedure TtiObjectList.SetOwnsObjects(const AValue: boolean);
 begin
-  FList.OwnsObjects := Value ;
+  FList.OwnsObjects := AValue;
 end;
-
 
 function TtiObject.GetIndex: integer;
 begin
-  Assert( Owner <> nil,
-          'Owner not assigned' ) ;
-  Assert( Owner is TtiObjectList,              
-          'Owner not a TtiObjectList, its a ' + Owner.ClassName ) ;
-  result := TtiObjectList( Owner ).IndexOf( self ) ;
+  Assert(Owner <> nil,
+          'Owner not assigned');
+  Assert(Owner is TtiObjectList,              
+          'Owner not a TtiObjectList, its a ' + Owner.ClassName);
+  result := TtiObjectList(Owner).IndexOf(self);
 end;
 
-
-function TtiObjectList.FindByProps( const pProps : array of string ;
-                                  const pVals  : array of variant;
-                                  pCaseSensitive : boolean = true ): TtiObject;
+function TtiObjectList.FindByProps(const AProps : array of string;
+                                  const AVals : array of variant;
+                                  ACaseSensitive : boolean = true): TtiObject;
 var
   j: Integer;
-  i : integer ;
+  i : integer;
   lFound : boolean;
 
   function PropertyMatch(Idx: Integer; PropName: string; PropValue: variant): boolean;
@@ -1890,9 +1833,9 @@ var
       if Assigned(tiFieldAbs) then
         lItem := tiFieldAbs.AsString
       else
-        lItem := TypInfo.GetPropValue( Items[Idx], PropName );
+        lItem := TypInfo.GetPropValue(Items[Idx], PropName);
     end else
-      lItem := TypInfo.GetPropValue( Items[Idx], PropName );
+      lItem := TypInfo.GetPropValue(Items[Idx], PropName);
     lVarType := VarType(lItem);
 
     // This part should be wrote in a better way (more efficient...)
@@ -1908,24 +1851,24 @@ var
 
     // PWH Changed for D5 compat
     if (tiIsVariantOfType(lSearch,varOleStr) or
-        tiIsVariantOfType(lSearch,varString)) and not pCaseSensitive then
+        tiIsVariantOfType(lSearch,varString)) and not ACaseSensitive then
       result := SameText(lSearch,lItem)
     else
       result := (lSearch = lItem);
   end;
 
 begin
-  Assert( High( pProps ) = High( pVals ),
-          'Props and Vals must have the same number of elements' ) ;
+  Assert(High(AProps) = High(AVals),
+          'Props and Vals must have the same number of elements');
 
   result := nil;
   lFound := False;
   for i := 0 to Count - 1 do
   begin
     // Iterate over each property and value to see if it matches
-    for j := 0 to High(pProps) do    // Iterate
+    for j := 0 to High(AProps) do    // Iterate
     begin
-      lFound := PropertyMatch(i,pProps[j],pVals[j]);
+      lFound := PropertyMatch(i,AProps[j],AVals[j]);
 
       if not lFound then
         break;
@@ -1933,29 +1876,27 @@ begin
 
     if lFound then
     begin
-      result := Items[i] ;
-      Break ; //==>
-    end ;
+      result := Items[i];
+      Break; //==>
+    end;
   end; // for i
 end;
 
-
-procedure TPerStream.SetSize(const Value: integer);
+procedure TPerStream.SetSize(const AValue: integer);
 begin
-  FStream.Size := Value ;
+  FStream.Size := AValue;
 end;
 
-
 function TtiObject.TopOfHierarchy: TtiObject;
-  function _TopOfHierarchy( Value : TtiObject ) : TtiObject ;
+  function _TopOfHierarchy(AValue : TtiObject): TtiObject;
   begin
-    if Value.Owner = nil then
-      result := Value
+    if AValue.Owner = nil then
+      result := AValue
     else
-      result := _TopOfHierarchy( Value.Owner ) ;
-  end ;
+      result := _TopOfHierarchy(AValue.Owner);
+  end;
 begin
-  result := _TopOfHierarchy( Self ) ;
+  result := _TopOfHierarchy(Self);
 end;
 
 
@@ -1964,120 +1905,114 @@ begin
   // Create OID on demand
   {$IFNDEF OID_AS_INT64}
     if FOID = nil then
-      FOID := gTIOPFManager.OIDFactory.CreateOID ;
+      FOID := gTIOPFManager.OIDFactory.CreateOID;
   {$ENDIF}
-  result := FOID ;
+  result := FOID;
 end;
 
 
-constructor TtiObject.CreateNew( const pOwner : TtiObject ; const pDatabaseName : string = '' ; const pPerLayerName : string = '' );
+constructor TtiObject.CreateNew(const AOwner : TtiObject; const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
 begin
-  Create ;
-  if pOwner <> nil then
-    Owner := pOwner ;
-  ObjectState := posCreate ;
+  Create;
+  if AOwner <> nil then
+    Owner := AOwner;
+  ObjectState := posCreate;
   {$IFDEF OID_AS_INT64}
-    OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID ;
+    OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
-    OID.GetNextValue( pDatabaseName, pPerLayerName ) ;
+    OID.GetNextValue(ADatabaseName, APersistenceLayerName);
   {$ENDIF}
 end;
 
-
-constructor TtiObject.CreateNew( const pDatabaseName : string = '' ; const pPerLayerName : string = '' );
+constructor TtiObject.CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
 begin
-  Create ;
-  ObjectState := posCreate ;
+  Create;
+  ObjectState := posCreate;
   {$IFDEF OID_AS_INT64}
-    OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID ;
+    OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
-    OID.GetNextValue( pDatabaseName, pPerLayerName ) ;
+    OID.GetNextValue(ADatabaseName, APersistenceLayerName);
   {$ENDIF}
 end;
-
 
 function TtiObjectList.First: TtiObject;
 begin
   // TList can't handle this. Strange!
   if FList.Count > 0 then
-    result := TtiObject( FList.First )
+    result := TtiObject(FList.First)
   else
-    result := nil ;
+    result := nil;
 end;
 
-
-function _DoSortByOID( Item1, Item2 : pointer ) : integer ;
+function _DoSortByOID(Item1, Item2 : pointer): integer;
 begin
   {$IFDEF OID_AS_INT64}
-    if TtiObject( Item1 ).OID < TtiObject( Item2 ).OID then
+    if TtiObject(Item1).OID < TtiObject(Item2).OID then
       result := -1
-    else if TtiObject( Item1 ).OID > TtiObject( Item2 ).OID then
+    else if TtiObject(Item1).OID > TtiObject(Item2).OID then
       result := 1
     else
-      result := 0 ;
+      result := 0;
   {$ELSE}
-    result := TtiObject( Item1 ).OID.Compare( TtiObject( Item2 ).OID ) ;
+    result := TtiObject(Item1).OID.Compare(TtiObject(Item2).OID);
   {$ENDIF}
-end ;
-
+end;
 
 procedure TtiObjectList.SortByOID;
 begin
   List.Sort(_DoSortByOID);
 end;
 
-
 //procedure TtiObjectList.SortByDispOrder;
 //begin
 //  SortByProps(['DispOrder']);
 //end;
 
-
 function TtiObjectList.DoCompareByProps(
-  pItem1   : Pointer ;
-  pItem2   : Pointer ;
-  const pSortProps : array of string;
-  pAscendingOrder : Boolean = True) : integer ;
+  AItem1  : Pointer;
+  AItem2  : Pointer;
+  const ASortProps : array of string;
+  AAscendingOrder : Boolean = True): integer;
 var
-  i : integer ;
-  lsPropName : string ;
-  lValue1 : variant ;
-  lValue2 : variant ;
+  i : integer;
+  lsPropName : string;
+  lValue1 : variant;
+  lValue2 : variant;
 begin
-  result := 0 ;
+  result := 0;
   try
-    for i := Low( pSortProps ) to High( pSortProps ) do
+    for i := Low(ASortProps) to High(ASortProps) do
     begin
-      lsPropName := pSortProps[i] ;
-      lValue1 := TtiObject( pItem1 ).GetPropValue( lsPropName ) ;
-      lValue2 := TtiObject( pItem2 ).GetPropValue( lsPropName ) ;
+      lsPropName := ASortProps[i];
+      lValue1 := TtiObject(AItem1).GetPropValue(lsPropName);
+      lValue2 := TtiObject(AItem2).GetPropValue(lsPropName);
 
       if lValue1 < lValue2 then
       Begin
-        If (pAscendingOrder) Then
+        If (AAscendingOrder) Then
           result := -1
         Else
           Result := 1;
       End
       else if lValue1 > lValue2 then
       Begin
-        If (pAscendingOrder) Then
+        If (AAscendingOrder) Then
           result := 1
         Else
           Result := -1;
       End;
       if result <> 0 then
-        Break ; //==>
-    end ;
+        Break; //==>
+    end;
 
   except
     on e:exception do
       raise exception.Create(
         'Error in TtiObjectList._DoCompare PropName <' +
-        lsPropName + '>' + e.Message ) ;
-  end ;
+        lsPropName + '>' + e.Message);
+  end;
 
-end ;
+end;
 
 // This method was cloned from Classes.TList.Sort and
 // was added here to introduce an array of strings to
@@ -2085,8 +2020,8 @@ end ;
 procedure TtiObjectList.QuickSortByProps(
   SortList: PPointerList;
   L, R: Integer;
-  const pSortProps: array of string;
-  pAscendingOrder : Boolean = True);
+  const ASortProps: array of string;
+  AAscendingOrder : Boolean = True);
 var
   I, J: Integer;
   P, T: Pointer;
@@ -2096,78 +2031,70 @@ begin
     J := R;
     P := SortList^[(L + R) shr 1];
     repeat
-      while DoCompareByProps(SortList^[I], P, pSortProps, pAscendingOrder) < 0 do
+      while DoCompareByProps(SortList^[I], P, ASortProps, AAscendingOrder) < 0 do
         Inc(I);
-      while DoCompareByProps(SortList^[J], P, pSortProps, pAscendingOrder) > 0 do
+      while DoCompareByProps(SortList^[J], P, ASortProps, AAscendingOrder) > 0 do
         Dec(J);
       if I <= J then
       begin
         T := SortList^[I];
-        SortList^[I] := SortList^[J];
-        SortList^[J] := T;
+        SortList^[I]:= SortList^[J];
+        SortList^[J]:= T;
         Inc(I);
         Dec(J);
       end;
     until I > J;
     if L < J then
-      QuickSortByProps(SortList, L, J, pSortProps, pAscendingOrder);
+      QuickSortByProps(SortList, L, J, ASortProps, AAscendingOrder);
     L := I;
   until I >= R;
 end;
 
-
-procedure TtiObjectList.SortByProps(const pSortProps: array of string; pAscendingOrder : Boolean = True);
+procedure TtiObjectList.SortByProps(const ASortProps: array of string; AAscendingOrder : Boolean = True);
 begin
   if (FList <> nil) and (Count > 0) then
-    QuickSortByProps(FList.List, 0, Count - 1, pSortProps, pAscendingOrder);
+    QuickSortByProps(FList.List, 0, Count - 1, ASortProps, AAscendingOrder);
 end;
 
-
-procedure TtiObject.Read(const pDBConnectionName: string ; pPerLayerName : string = '' );
+procedure TtiObject.Read(const ADBConnectionName: string; APersistenceLayerName : string = '');
 begin
-  gTIOPFManager.Read( Self, pDBConnectionName, pPerlayerName ) ;
+  gTIOPFManager.Read(Self, ADBConnectionName, APersistenceLayerName);
 end;
-
 
 procedure TtiObject.Read;
 begin
-  Read( '', '' ) ;
+  Read('', '');
 end;
 
-
-procedure TtiObject.ReadPK(const pDBConnectionName: string ; pPerLayerName : string = '' );
+procedure TtiObject.ReadPK(const ADBConnectionName: string; APersistenceLayerName : string = '');
 begin
-  gTIOPFManager.ReadPK( Self, pDBConnectionName, pPerLayerName ) ;
+  gTIOPFManager.ReadPK(Self, ADBConnectionName, APersistenceLayerName);
 end;
-
 
 procedure TtiObject.ReadPK;
 begin
-  ReadPK( '', '' ) ;
+  ReadPK('', '');
 end;
 
-
-procedure TtiObject.Save(const pDBConnectionName: string ; pPerLayerName : string = '' );
+procedure TtiObject.Save(const ADBConnectionName: string; APersistenceLayerName : string = '');
 begin
-  gTIOPFManager.Save( Self, pDBConnectionName, pPerLayerName ) ;
+  gTIOPFManager.Save(Self, ADBConnectionName, APersistenceLayerName);
 end;
-
 
 procedure TtiObject.Save;
 begin
-  Save( '', '' ) ;
+  Save('', '');
 end;
 
-
-procedure TtiObject.AssignFieldList(var pFieldList: TtiFieldList);
+procedure TtiObject.AssignFieldList(var AFieldList: TtiFieldList);
 var
   i, lCount: Integer;
   lPropInfo: PPropInfo;
   lTempList: PPropList;
   lObject: TObject;
 begin
-  Assert(Assigned(pFieldList), 'Stringlist passed as parameter to GetPropListAsStrings is nil');
-  pFieldList.Clear;
+  Assert(Assigned(AFieldList), 'Stringlist passed as parameter to GetPropListAsStrings is nil');
+  AFieldList.Clear;
   lCount := GetPropList(PTypeInfo(Self.ClassInfo), lTempList);
   try
     for i := 0 to lCount - 1 do
@@ -2179,7 +2106,7 @@ begin
         lObject := GetObjectProp(self, lPropInfo);
         if (lObject <> nil) and (lObject is TtiFieldAbs) then
         begin
-          pFieldList.Add(TtiFieldAbs(lObject));
+          AFieldList.Add(TtiFieldAbs(lObject));
         end;
       end;
     end;
@@ -2190,24 +2117,24 @@ end;
 
 { TPerObjThreadList }
 
-procedure TPerObjThreadList.Add(pObject: TtiObject; pDefDispOrdr: boolean);
+procedure TPerObjThreadList.Add(AObject: TtiObject; ADefDispOrdr: boolean);
 begin
   Lock;
   try
-    inherited Add( pObject, pDefDispOrdr ) ;
+    inherited Add(AObject, ADefDispOrdr);
   finally
     Unlock;
-  end ;
+  end;
 end;
 
 procedure TPerObjThreadList.Clear;
 begin
   Lock;
   try
-    inherited Clear ;
+    inherited Clear;
   finally
     Unlock;
-  end ;
+  end;
 end;
 
 constructor TPerObjThreadList.Create;
@@ -2220,10 +2147,10 @@ procedure TPerObjThreadList.Delete(i: integer);
 begin
   Lock;
   try
-    inherited Delete( i ) ;
+    inherited Delete(i);
   finally
     Unlock;
-  end ;
+  end;
 end;
 
 destructor TPerObjThreadList.Destroy;
@@ -2236,60 +2163,60 @@ procedure TPerObjThreadList.Empty;
 begin
   Lock;
   try
-    inherited Empty ;
+    inherited Empty;
   finally
     Unlock;
-  end ;
+  end;
 end;
 
 function TPerObjThreadList.First: TtiObject;
 begin
   Lock;
   try
-    result := inherited First ;
+    result := inherited First;
   finally
     Unlock;
-  end ;
+  end;
 end;
 
 function TPerObjThreadList.GetCount: integer;
 begin
   Lock;
   try
-    result := inherited GetCount ;
+    result := inherited GetCount;
   finally
     Unlock;
-  end ;
+  end;
 end;
 
-function TPerObjThreadList.IndexOf(pData: TObject): integer;
+function TPerObjThreadList.IndexOf(AData: TObject): integer;
 begin
   Lock;
   try
-    result := inherited IndexOf( pData ) ;
+    result := inherited IndexOf(AData);
   finally
     Unlock;
-  end ;
+  end;
 end;
 
 function TPerObjThreadList.Last: TtiObject;
 begin
   Lock;
   try
-    result := inherited Last ;
+    result := inherited Last;
   finally
     Unlock;
-  end ;
+  end;
 end;
 
 function TPerObjThreadList.LastExcludeDeleted: TtiObject;
 begin
   Lock;
   try
-    result := inherited LastExcludeDeleted ;
+    result := inherited LastExcludeDeleted;
   finally
     Unlock;
-  end ;
+  end;
 end;
 
 procedure TPerObjThreadList.Lock;
@@ -2301,348 +2228,320 @@ procedure TPerObjThreadList.MarkListItemsDirty;
 begin
   Lock;
   try
-    inherited MarkListItemsDirty ;
+    inherited MarkListItemsDirty;
   finally
     Unlock;
-  end ;
+  end;
 end;
 
 procedure TPerObjThreadList.MarkListItemsForDeletion;
 begin
   Lock;
   try
-    inherited MarkListItemsForDeletion ;
+    inherited MarkListItemsForDeletion;
   finally
     Unlock;
-  end ;
+  end;
 end;
 
-function TPerObjThreadList.Remove(pData: TtiObject): integer;
+function TPerObjThreadList.Remove(AData: TtiObject): integer;
 begin
   Lock;
   try
-    result := inherited Remove( pData ) ;
+    result := inherited Remove(AData);
   finally
     Unlock;
-  end ;
+  end;
 end;
 
-procedure TPerObjThreadList.SetItemOwner(const Value: TtiObject);
+procedure TPerObjThreadList.SetItemOwner(const AValue: TtiObject);
 begin
   Lock;
   try
-    inherited SetItemOwner( Value ) ;
+    inherited SetItemOwner(AValue);
   finally
     Unlock;
-  end ;
+  end;
 end;
 
-procedure TPerObjThreadList.SetItems(i: integer; const Value: TtiObject);
+procedure TPerObjThreadList.SetItems(i: integer; const AValue: TtiObject);
 begin
   Lock;
   try
-    inherited SetItems( i, Value ) ;
+    inherited SetItems(i, AValue);
   finally
     Unlock;
-  end ;
+  end;
 end;
 
-procedure TPerObjThreadList.SortByProps(const pSortProps: array of string; pAscendingOrder : Boolean = True);
+procedure TPerObjThreadList.SortByProps(const ASortProps: array of string; AAscendingOrder : Boolean = True);
 begin
   Lock;
   try
-    inherited SortByProps( pSortProps, pAscendingOrder ) ;
+    inherited SortByProps(ASortProps, AAscendingOrder);
   finally
     Unlock;
-  end ;
+  end;
 end;
-
 
 procedure TPerObjThreadList.SortByOID;
 begin
   Lock;
   try
-    inherited SortByOID ;
+    inherited SortByOID;
   finally
     Unlock;
-  end ;
+  end;
 end;
-
 
 procedure TPerObjThreadList.UnLock;
 begin
   FCriticalSection.Leave;
 end;
 
-
 function TPerObjThreadList.FirstExcludeDeleted: TtiObject;
 begin
   Lock;
   try
-    result := inherited FirstExcludeDeleted ;
+    result := inherited FirstExcludeDeleted;
   finally
     Unlock;
-  end ;
+  end;
 end;
-
 
 { TPerObjFactory }
 
 function TPerObjFactory.Count: integer;
 begin
-  result := FList.Count ;
+  result := FList.Count;
 end;
-
 
 constructor TPerObjFactory.Create;
 begin
-  inherited ;
-  FList := TObjectList.Create ;
+  inherited;
+  FList := TObjectList.Create;
 end;
 
-
-function TPerObjFactory.CreateInstance( const pClassName: string): TtiObject;
+function TPerObjFactory.CreateInstance(const AClassName: string): TtiObject;
 var
-  lPerObjClassMapping : TPerObjClassMapping ;
+  lPerObjClassMapping : TPerObjClassMapping;
 begin
-  lPerObjClassMapping := FindByClassName( pClassName ) ;
-  Assert( lPerObjClassMapping <> nil,
+  lPerObjClassMapping := FindByClassName(AClassName);
+  Assert(lPerObjClassMapping <> nil,
           'Request for unrgister class <' +
-          pClassName + '>' ) ;
+          AClassName + '>');
   result := lPerObjClassMapping.PerObjAbsClass.Create;
 end;
 
-
-function TPerObjFactory.CreateNewInstance(const pClassName: string; pOwner : TtiObject = nil ): TtiObject;
+function TPerObjFactory.CreateNewInstance(const AClassName: string; AOwner : TtiObject = nil): TtiObject;
 var
-  lPerObjClassMapping : TPerObjClassMapping ;
+  lPerObjClassMapping : TPerObjClassMapping;
 begin
-  lPerObjClassMapping := FindByClassName( pClassName ) ;
-  Assert( lPerObjClassMapping <> nil,
+  lPerObjClassMapping := FindByClassName(AClassName);
+  Assert(lPerObjClassMapping <> nil,
           'Request for unrgister class <' +
-          pClassName + '>' ) ;
-  result := lPerObjClassMapping.PerObjAbsClass.CreateNew(pOwner) ;
+          AClassName + '>');
+  result := lPerObjClassMapping.PerObjAbsClass.CreateNew(AOwner);
 end;
-
 
 destructor TPerObjFactory.destroy;
 begin
-  FList.Free ;
+  FList.Free;
   inherited;
 end;
 
-
-function TPerObjFactory.FindByClassName( const pClassName: string): TPerObjClassMapping;
+function TPerObjFactory.FindByClassName(const AClassName: string): TPerObjClassMapping;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := nil ;
+  result := nil;
   for i := 0 to FList.Count - 1 do
-    if SameText( TPerObjClassMapping( FList.Items[i] ).PerObjAbsClassName,
-                 pClassName ) then
+    if SameText(TPerObjClassMapping(FList.Items[i]).PerObjAbsClassName,
+                 AClassName) then
     begin
-      result := TPerObjClassMapping( FList.Items[i] ) ;
-      Break ; //==>
-    end ;
+      result := TPerObjClassMapping(FList.Items[i]);
+      Break; //==>
+    end;
 end;
 
-
-function TPerObjFactory.GetItems(pIndex: integer): TPerObjClassMapping;
+function TPerObjFactory.GetItems(AIndex: integer): TPerObjClassMapping;
 begin
-  result := TPerObjClassMapping( FList.Items[pIndex] ) ;
+  result := TPerObjClassMapping(FList.Items[AIndex]);
 end;
 
-
-function TPerObjFactory.IsRegistered(const pClassName: string): boolean;
+function TPerObjFactory.IsRegistered(const AClassName: string): boolean;
 begin
-  result := FindByClassName( pClassName ) <> nil ;
+  result := FindByClassName(AClassName) <> nil;
 end;
 
-
-procedure TPerObjFactory.RegisterClass(const pClassName: string ; pClass : TtiClass);
+procedure TPerObjFactory.RegisterClass(const AClassName: string; AClass : TtiClass);
 var
-  lPerObjClassMapping : TPerObjClassMapping ;
+  lPerObjClassMapping : TPerObjClassMapping;
 begin
-  lPerObjClassMapping := FindByClassName( pClassName ) ;
-  Assert( lPerObjClassMapping = nil,
+  lPerObjClassMapping := FindByClassName(AClassName);
+  Assert(lPerObjClassMapping = nil,
           'Attempt to register duplicate class mapping <' +
-          pClassName + '>' ) ;
-  lPerObjClassMapping := TPerObjClassMapping.Create ;
-  lPerObjClassMapping.PerObjAbsClassName := pClassName ;
-  lPerObjClassMapping.PerObjAbsClass := pClass ;
-  FList.Add( lPerObjClassMapping ) ;
+          AClassName + '>');
+  lPerObjClassMapping := TPerObjClassMapping.Create;
+  lPerObjClassMapping.PerObjAbsClassName := AClassName;
+  lPerObjClassMapping.PerObjAbsClass := AClass;
+  FList.Add(lPerObjClassMapping);
 end;
 
 
-procedure TtiObjectList.Assign(const pSource: TtiObject);
+procedure TtiObjectList.Assign(const ASource: TtiObject);
 begin
-  Clear ;
-  inherited Assign( pSource ) ;
+  Clear;
+  inherited Assign(ASource);
 end;
-
 
 //function TtiObject.GetDispOrder: integer;
 //begin
 //  Result := FiDispOrder;
 //end;
 
-
-procedure TtiObject.SetAllObjectStates(const pObjectState: TPerObjectState);
+procedure TtiObject.SetAllObjectStates(const AObjectState: TPerObjectState);
 var
-  lVis : TVisSetAllObjectStates ;
+  lVis : TVisSetAllObjectStates;
 begin
-  lVis := TVisSetAllObjectStates.Create ;
+  lVis := TVisSetAllObjectStates.Create;
   try
-    lVis.ObjectState := pObjectState ;
-    Iterate( lVis ) ;
+    lVis.ObjectState := AObjectState;
+    Iterate(lVis);
   finally
-    lVis.Free ;
-  end ;
+    lVis.Free;
+  end;
 end;
 
-
-procedure TPerObjFactory.UnRegisterClass(const pClassName: string);
+procedure TPerObjFactory.UnRegisterClass(const AClassName: string);
 var
-  lPerObjClassMapping : TPerObjClassMapping ;
+  lPerObjClassMapping : TPerObjClassMapping;
 begin
-  lPerObjClassMapping := FindByClassName( pClassName ) ;
-  Assert( lPerObjClassMapping <> nil, 'Attempt to unregister class that is not retistered.' ) ;
-  FList.Remove( lPerObjClassMapping ) ;
+  lPerObjClassMapping := FindByClassName(AClassName);
+  Assert(lPerObjClassMapping <> nil, 'Attempt to unregister class that is not retistered.');
+  FList.Remove(lPerObjClassMapping);
 end;
-
 
 { TVisSetAllObjectStates }
 
 function TVisSetAllObjectStates.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TtiObject ) and
-            ( TtiObject( Visited ).ObjectState in [ posClean, posUpdate ]) ;
+  result := (Visited is TtiObject) and
+            (TtiObject(Visited).ObjectState in [ posClean, posUpdate ]);
 end;
 
-
-procedure TVisSetAllObjectStates.Execute(const pVisited: TtiVisited);
+procedure TVisSetAllObjectStates.Execute(const AVisited: TtiVisited);
 begin
-  Inherited Execute( pVisited ) ;
+  Inherited Execute(AVisited);
 
   if not AcceptVisitor then
-    exit ; //==>
+    exit; //==>
 
-  TtiObject( Visited ).ObjectState := FObjectState ;
+  TtiObject(Visited).ObjectState := FObjectState;
 end;
 
-
-procedure TtiObject.ReadThis(const pDBConnectionName: string ; pPerLayerName : string = '' );
+procedure TtiObject.ReadThis(const ADBConnectionName: string; APersistenceLayerName : string = '');
 begin
   {$IFDEF OID_AS_INT64}
-    Assert( OID <> cNullOIDInteger, 'OID not assigned');
+    Assert(OID <> cNullOIDInteger, 'OID not assigned');
   {$ELSE}
-    Assert( not OID.IsNull, 'OID not assigned');
+    Assert(not OID.IsNull, 'OID not assigned');
   {$ENDIF}
-  gTIOPFManager.ReadThis( Self, pDBConnectionName, pPerLayerName ) ;
+  gTIOPFManager.ReadThis(Self, ADBConnectionName, APersistenceLayerName);
 end;
-
 
 procedure TtiObject.ReadThis;
 begin
-  ReadThis( '', '' ) ;
+  ReadThis('', '');
 end;
 
-
-procedure TtiObjectList.AssignPublicProps(pSource: TtiObject);
+procedure TtiObjectList.AssignPublicProps(ASource: TtiObject);
 begin
-  inherited AssignPublicProps(pSource) ;
+  inherited AssignPublicProps(ASource);
   
 // Don't set these here, they will be set in a classes constructor  
-//  OwnsObjects := TtiObjectList(pSource).OwnsObjects;
-//  AutoSetItemOwner := TtiObjectList(pSource).AutoSetItemOwner;
+//  OwnsObjects := TtiObjectList(ASource).OwnsObjects;
+//  AutoSetItemOwner := TtiObjectList(ASource).AutoSetItemOwner;
 end;
 
-
-function TtiObjectList.Find(pOIDToFind: TOID): TtiObject;
+function TtiObjectList.Find(AOIDToFind: TOID): TtiObject;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to Count - 1 do
-    if OIDEquals( Items[i].OID, pOIDToFind ) then
+    if OIDEquals(Items[i].OID, AOIDToFind) then
     begin
       result := Items[i];
-      Exit ; //==>
-    end ;
+      Exit; //==>
+    end;
   result := nil;
 end;
 
-
-function TtiObjectList.Find(pOIDToFind: TOID; pSortType: TtiPerObjListSortType): TtiObject;
+function TtiObjectList.Find(AOIDToFind: TOID; ASortType: TtiPerObjListSortType): TtiObject;
 var
   FindIndex: Integer;
 begin
-  FindIndex := IndexOf(pOIDToFind, pSortType);
+  FindIndex := IndexOf(AOIDToFind, ASortType);
   if FindIndex >= 0 then
     Result := Items[FindIndex]
   else
-    Result := nil ;
+    Result := nil;
 end;
 
-
-function TtiObjectList.IndexOf(pOIDToFind: TOID; pSortType: TtiPerObjListSortType = stNone): integer;
+function TtiObjectList.IndexOf(AOIDToFind: TOID; ASortType: TtiPerObjListSortType = stNone): integer;
 begin
-  case pSortType of
-  stOID : Result := IndexOfBinary(pOIDToFind);
-  stNone: Result := IndexOfFullScan(pOIDToFind);
+  case ASortType of
+  stOID : Result := IndexOfBinary(AOIDToFind);
+  stNone: Result := IndexOfFullScan(AOIDToFind);
   else
     raise EtiOPFInternalException.Create(cErrorInvalidSortType);
   end;
 end;
 
-
 { TPerObjErrors }
 
-procedure TPerObjErrors.Add(pObject: TPerObjError; pDefDispOrdr: boolean);
+procedure TPerObjErrors.Add(AObject: TPerObjError; ADefDispOrdr: boolean);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add(AObject, ADefDispOrdr);
 end;
-
 
 procedure TPerObjErrors.AddError(
-  const pErrorProperty : string ;
-  const pErrorMessage: string;
-  pErrorCode: integer);
+  const AErrorProperty : string;
+  const AErrorMessage: string;
+  AErrorCode: integer);
 var
-  lError : TPerObjError ;
+  lError : TPerObjError;
 begin
-  lError := TPerObjError.Create ;
-  lError.ErrorProperty := pErrorProperty ;
-  lError.ErrorMessage  := pErrorMessage ;
-  lError.ErrorCode     := pErrorCode ;
-  Add( lError ) ;
+  lError := TPerObjError.Create;
+  lError.ErrorProperty := AErrorProperty;
+  lError.ErrorMessage := AErrorMessage;
+  lError.ErrorCode    := AErrorCode;
+  Add(lError);
 end;
 
-
-procedure TPerObjErrors.AddError(const pErrorMessage: string);
+procedure TPerObjErrors.AddError(const AErrorMessage: string);
 begin
-  AddError('', pErrorMessage, -1);
+  AddError('', AErrorMessage, -1);
 end;
-
 
 procedure TPerObjErrors.AddError(
-  const pErrorProperty : string ;
-  const pErrorMessage: string);
+  const AErrorProperty : string;
+  const AErrorMessage: string);
 begin
-  AddError(pErrorProperty, pErrorMessage, -1);
+  AddError(AErrorProperty, AErrorMessage, -1);
 end;
 
-
-function TPerObjErrors.FindByMessage(const pMessage: string): TPerObjError;
+function TPerObjErrors.FindByMessage(const AMessage: string): TPerObjError;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := nil ;
+  result := nil;
   for i := 0 to Count - 1 do
-    if SameText( Items[i].ErrorMessage, pMessage ) then
+    if SameText(Items[i].ErrorMessage, AMessage) then
     begin
-      result := Items[i] ;
-      Exit ; //==>
-    end ;
+      result := Items[i];
+      Exit; //==>
+    end;
 end;
 
 function TPerObjErrors.GetAsString: string;
@@ -2658,392 +2557,379 @@ begin
   end;
 end;
 
-
 function TPerObjErrors.GetItems(i: integer): TPerObjError;
 begin
-  result := TPerObjError( inherited GetItems( i )) ;
+  result := TPerObjError(inherited GetItems(i));
 end;
 
-
-procedure TPerObjErrors.SetItems(i: integer; const Value: TPerObjError);
+procedure TPerObjErrors.SetItems(i: integer; const AValue: TPerObjError);
 begin
-  inherited SetItems( i, Value ) ;
+  inherited SetItems(i, AValue);
 end;
-
 
 { TPerObjError }
 
 function TPerObjError.GetOwner: TPerObjErrors;
 begin
-  result := TPerObjErrors( inherited GetOwner );
+  result := TPerObjErrors(inherited GetOwner);
 end;
 
-
-procedure TPerObjError.SetOwner(const Value: TPerObjErrors);
+procedure TPerObjError.SetOwner(const AValue: TPerObjErrors);
 begin
-  inherited SetOwner( Value ) ;
+  inherited SetOwner(AValue);
 end;
 
-
-function TtiObject.IsValid(const pErrors: TPerObjErrors): boolean;
+function TtiObject.IsValid(const AErrors: TPerObjErrors): boolean;
 begin
-  Assert( pErrors.TestValid(TPerObjErrors), cTIInvalidObjectError ) ;
-  result := true ;
-  pErrors.Clear ;
+  Assert(AErrors.TestValid(TPerObjErrors), cTIInvalidObjectError);
+  result := true;
+  AErrors.Clear;
 end;
 
-
-function TtiObject.IsValid(var pErrorMessage: string): boolean;
+function TtiObject.IsValid(var AErrorMessage: string): boolean;
 var
-  lErrors : TPerObjErrors ;
-  i : integer ;
+  lErrors : TPerObjErrors;
+  i : integer;
 begin
-  lErrors := TPerObjErrors.Create ;
+  lErrors := TPerObjErrors.Create;
   try
-    result := IsValid( lErrors ) ;
+    result := IsValid(lErrors);
     for i := 0 to lErrors.Count - 1 do
     begin
-      pErrorMessage := tiAddTrailingValue( pErrorMessage, Cr ) ;
-      pErrorMessage := pErrorMessage + lErrors.Items[i].ErrorMessage ;
-    end ;
+      AErrorMessage := tiAddTrailingValue(AErrorMessage, Cr);
+      AErrorMessage := AErrorMessage + lErrors.Items[i].ErrorMessage;
+    end;
   finally
-    lErrors.Free ;
-  end ;
-end;
-
-
-function TtiObject.IsValid: boolean;
-var
-  lErrors : TPerObjErrors ;
-begin
-  lErrors := TPerObjErrors.Create ;
-  try
-    result := IsValid( lErrors ) ;
-  finally
-    lErrors.Free ;
-  end ;
-end;
-
-
-function TtiObject.IsValid(const pStrings: TStrings): boolean;
-var
-  lMessage : string ;
-begin
-  result := IsValid( lMessage ) ;
-  pStrings.Text := lMessage ;
-end;
-
-
-function TtiObject.IsValid( const pStrings : TStrings ; pAppend : boolean ) : boolean ; 
-var
-  lsl : TStringList ;
-  i   : integer ;
-begin
-  lsl := TStringList.Create ;
-  try
-    result := IsValid( lsl ) ;
-    if not pAppend then
-      pStrings.Clear ;
-    for i := 0 to lsl.count - 1 do
-      pStrings.Add(lsl.strings[i]);
-  finally
-    lsl.Free ;
+    lErrors.Free;
   end;
 end;
 
+function TtiObject.IsValid: boolean;
+var
+  lErrors : TPerObjErrors;
+begin
+  lErrors := TPerObjErrors.Create;
+  try
+    result := IsValid(lErrors);
+  finally
+    lErrors.Free;
+  end;
+end;
+
+function TtiObject.IsValid(const AStrings: TStrings): boolean;
+var
+  lMessage : string;
+begin
+  result := IsValid(lMessage);
+  AStrings.Text := lMessage;
+end;
+
+function TtiObject.IsValid(const AStrings : TStrings; AAppend : boolean): boolean; 
+var
+  lsl : TStringList;
+  i  : integer;
+begin
+  lsl := TStringList.Create;
+  try
+    result := IsValid(lsl);
+    if not AAppend then
+      AStrings.Clear;
+    for i := 0 to lsl.count - 1 do
+      AStrings.Add(lsl.strings[i]);
+  finally
+    lsl.Free;
+  end;
+end;
 
 destructor TtiObject.Destroy;
 begin
   {$IFNDEF OID_AS_INT64}
-    FOID.Free ;
+    FOID.Free;
   {$ENDIF}
   FObserverList.Free;
   FObserverList := nil;
   inherited;
 end;
 
-
-function TtiObject.Find(pOIDToFindAsString: string): TtiObject;
+function TtiObject.Find(AOIDToFindAsString: string): TtiObject;
 {$IFNDEF OID_AS_INT64}
   var
-    lOID : TOID ;
+    lOID : TOID;
 {$ENDIF}
 begin
   {$IFDEF OID_AS_INT64}
-    result := Find( StrToInt( pOIDToFindAsString )) ;
+    result := Find(StrToInt(AOIDToFindAsString));
   {$ELSE}
-    lOID := gTIOPFManager.OIDFactory.CreateOID ;
+    lOID := gTIOPFManager.OIDFactory.CreateOID;
     try
-      lOID.AsString := pOIDToFindAsString ;
-     result := Find( lOID ) ;
+      lOID.AsString := AOIDToFindAsString;
+     result := Find(lOID);
     finally
-      lOID.Free ;
-    end ;
+      lOID.Free;
+    end;
   {$ENDIF}
 end;
 
-
-function TtiObjectList.Find(pOIDToFindAsString: string): TtiObject;
+function TtiObjectList.Find(AOIDToFindAsString: string): TtiObject;
 var
-  i : integer ;
+  i : integer;
 {$IFNDEF OID_AS_INT64}
-  lOIDToFind : TOID ;
+  lOIDToFind : TOID;
 {$ENDIF}
 begin
   {$IFDEF OID_AS_INT64}
     for i := 0 to Count - 1 do
-      if Items[i].OID = StrToInt( pOIDToFindAsString ) then
+      if Items[i].OID = StrToInt(AOIDToFindAsString) then
       begin
         result := Items[i];
-        Exit ; //==>
-      end ;
-    result := nil ;
+        Exit; //==>
+      end;
+    result := nil;
   {$ELSE}
-    lOIDToFind := gTIOPFManager.OIDFactory.CreateOID ;
+    lOIDToFind := gTIOPFManager.OIDFactory.CreateOID;
     try
-      lOIDToFind.AsString := pOIDToFindAsString ;
+      lOIDToFind.AsString := AOIDToFindAsString;
       for i := 0 to Count - 1 do
-        if Items[i].OID.Equals( lOIDToFind ) then
+        if Items[i].OID.Equals(lOIDToFind) then
         begin
           result := Items[i];
-          Exit ; //==>
-        end ;
+          Exit; //==>
+        end;
       result := nil;
     finally
-      lOIDToFind.Free ;
-    end ;
+      lOIDToFind.Free;
+    end;
   {$ENDIF}
 end;
 
-
-function TtiObject.FindAll(pPerObjFindMethodExt: TPerObjFindMethodExt; pList: TList; pUserContext: Pointer ): integer;
+function TtiObject.FindAll(ATIObjectFindMethodExt: TPerObjFindMethodExt; AList: TList; AUserContext: Pointer): integer;
 var
-  lVis : TVisPerObjFind ;
+  lVis : TVisPerObjFind;
 begin
-  if pList <> nil then
-    pList.Clear ;
-  lVis := TVisPerObjFind.Create ;
+  if AList <> nil then
+    AList.Clear;
+  lVis := TVisPerObjFind.Create;
   try
-    lVis.FoundList := pList ;
-    lVis.UserContext := pUserContext ;
-    lVis.FPerObjFindMethodExt := pPerObjFindMethodExt ;
-    self.Iterate( lVis ) ;
+    lVis.FoundList := AList;
+    lVis.UserContext := AUserContext;
+    lVis.FPerObjFindMethodExt := ATIObjectFindMethodExt;
+    self.Iterate(lVis);
   finally
-    lVis.Free ;
-  end ;
-  result := pList.Count ;
+    lVis.Free;
+  end;
+  result := AList.Count;
 end;
 
-
-procedure TtiObject.DoFindAllNotUnique(pPerObjAbs: TtiObject;
-  var pbFound: boolean; pData : TtiObject);
+procedure TtiObject.DoFindAllNotUnique(AObject: TtiObject;
+  var AFound: boolean; AData : TtiObject);
 begin
-  Assert( Assigned( pData ), 'pData not assigned' ) ;
-  pbFound :=
-    ( OIDEquals( pPerObjAbs.OID, pData.OID )) and
-    ( pPerObjAbs <> pData ) and
-    ( not pPerObjAbs.Deleted ) ;
+  Assert(Assigned(AData), 'AData not assigned');
+  AFound :=
+    (OIDEquals(AObject.OID, AData.OID)) and
+    (AObject <> AData) and
+    (not AObject.Deleted);
 end;
 
-
-function TtiObject.FindAll(pPerObjFindMethodData: TPerObjFindMethodData;
-  pList: TList; pData: TtiObject): integer;
+function TtiObject.FindAll(ATIObjectFindMethodData: TPerObjFindMethodData;
+  AList: TList; AData: TtiObject): integer;
 var
-  lVis : TVisPerObjFind ;
+  lVis : TVisPerObjFind;
 begin
-  if pList <> nil then
-    pList.Clear ;
-  lVis := TVisPerObjFind.Create ;
+  if AList <> nil then
+    AList.Clear;
+  lVis := TVisPerObjFind.Create;
   try
-    lVis.FoundList := pList ;
-    lVis.Data := pData ;
-    lVis.PerObjFindMethodData := pPerObjFindMethodData ;
-    self.Iterate( lVis ) ;
+    lVis.FoundList := AList;
+    lVis.Data := AData;
+    lVis.PerObjFindMethodData := ATIObjectFindMethodData;
+    self.Iterate(lVis);
   finally
-    lVis.Free ;
-  end ;
-  result := pList.Count ;
+    lVis.Free;
+  end;
+  result := AList.Count;
 end;
 
-
-function TtiObject.GetPropValue(const pPropName: string): Variant;
+function TtiObject.GetPropValue(const APropName: string): Variant;
 var
-  lDate : TDateTime ;
-  lbValue : boolean ;
-  lTypeKind : TtiTypeKind ;
+  lDate : TDateTime;
+  lbValue : boolean;
+  lTypeKind : TtiTypeKind;
 begin
-  if SameText( pPropName, 'OID' ) then
+  if SameText(APropName, 'OID') then
   {$IFDEF OID_AS_INT64}
     result := Integer(OID)
   {$ELSE}
     result := OID.AsVariant
   {$ENDIF}
-//  else if SameText( pPropName, 'DispOrder' ) then
+//  else if SameText(APropName, 'DispOrder') then
 //    result := DispOrder
   else
   begin
-    Assert( IsPublishedProp( Self, pPropName ), pPropName + ' is not a published property on ' + ClassName ) ;
+    Assert(IsPublishedProp(Self, APropName), APropName + ' is not a published property on ' + ClassName);
     try
-      lTypeKind := tiGetSimplePropType( Self, pPropName ) ;
+      lTypeKind := tiGetSimplePropType(Self, APropName);
       case lTypeKind of
       tiTKDateTime : begin
-                       lDate := TypInfo.GetPropValue( Self, pPropName ) ;
-                       result := lDate ;
+                       lDate := TypInfo.GetPropValue(Self, APropName);
+                       result := lDate;
                      end;
       tiTKBoolean :  begin
-                       lbValue := TypInfo.GetPropValue( Self, pPropName ) ;
-                       result := lbValue ;
+                       lbValue := TypInfo.GetPropValue(Self, APropName);
+                       result := lbValue;
                      end;
       else
-        result := TypInfo.GetPropValue( Self, pPropName ) ;
-      end ;
+        result := TypInfo.GetPropValue(Self, APropName);
+      end;
     except
       on e:exception do
         raise EtiOPFProgrammerException.CreateFmt(
-          cErrorGettingProperty, [pPropName, ClassName, e.Message]);
-    end ;
-  end ;
+          cErrorGettingProperty, [APropName, ClassName, e.Message]);
+    end;
+  end;
 end;
 
-
-procedure TtiObject.SetPropValue(const pPropName: string; const pPropValue: Variant);
+procedure TtiObject.SetPropValue(const APropName: string; const APropValue: Variant);
 var
-  ldtValue : TDateTime ;
-  lsValue : string ;
-  liValue : integer ;
-  lbValue : boolean ;
-  lPropTypeKind : TtiTypeKind ;
-  lValueTypeKind : TtiTypeKind ;
+  ldtValue : TDateTime;
+  lsValue : string;
+  liValue : integer;
+  lbValue : boolean;
+  lPropTypeKind : TtiTypeKind;
+  lValueTypeKind : TtiTypeKind;
 begin
+
   // OID is a special case. Should we publish OID?
-  if SameText( pPropName, 'OID' ) then
+  if SameText(APropName, 'OID') then
   begin
     {$IFDEF OID_AS_INT64}
-      OID := Integer(pPropValue) ;
+      OID := Integer(APropValue);
     {$ELSE}
-      OID.AsVariant := pPropValue ;
+      OID.AsVariant := APropValue;
     {$ENDIF}
-    Exit ; //==>
-  end ;
+    Exit; //==>
+  end;
 
-  if not IsPublishedProp( Self, pPropName ) then
+  if not IsPublishedProp(Self, APropName) then
     raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToSetNonPublishedProperty,
-      [pPropName,ClassName, VarToStr(pPropValue) ]);
+      [APropName,ClassName, VarToStr(APropValue) ]);
 
   try
 
-    lPropTypeKind := tiGetSimplePropType( Self, pPropName ) ;
+    lPropTypeKind := tiGetSimplePropType(Self, APropName);
     case lPropTypeKind of
     tiTKDateTime : begin
-                     ldtValue := VarToDateTime( pPropValue ) ;
-                     TypInfo.SetPropValue( Self, pPropName, ldtValue ) ;
+                     ldtValue := VarToDateTime(APropValue);
+                     TypInfo.SetPropValue(Self, APropName, ldtValue);
                    end;
     tiTKBoolean : begin
-                    lValueTypeKind := tiVarSimplePropType( pPropValue ) ;
+                    lValueTypeKind := tiVarSimplePropType(APropValue);
                     case lValueTypeKind of
                     tiTKString : begin
-                                   lsValue := pPropValue ;
-                                   if SameText( lsValue, 'true' ) or
-                                     ( lsValue = '1' ) or
-                                     SameText( lsValue, 't' ) then
-                                     TypInfo.SetPropValue( Self, pPropName, 1 )
+                                   lsValue := APropValue;
+                                   if SameText(lsValue, 'true') or
+                                     (lsValue = '1') or
+                                     SameText(lsValue, 't') then
+                                     TypInfo.SetPropValue(Self, APropName, 1)
                                    else
-                                     TypInfo.SetPropValue( Self, pPropName, 0 );
-                                 end ;
+                                     TypInfo.SetPropValue(Self, APropName, 0);
+                                 end;
                     tiTKInteger : begin
-                                    liValue := pPropValue ;
+                                    liValue := APropValue;
                                     if liValue = 0 then
-                                      TypInfo.SetPropValue( Self, pPropName, 0 )
+                                      TypInfo.SetPropValue(Self, APropName, 0)
                                     else
-                                      TypInfo.SetPropValue( Self, pPropName, 1 );
-                                  end ;
+                                      TypInfo.SetPropValue(Self, APropName, 1);
+                                  end;
                     tiTKBoolean : begin
-                                    lbValue := pPropValue ;
+                                    lbValue := APropValue;
                                     if lbValue then
-                                      TypInfo.SetPropValue( Self, pPropName, 1 )
+                                      TypInfo.SetPropValue(Self, APropName, 1)
                                     else
-                                      TypInfo.SetPropValue( Self, pPropName, 0 );
-                                  end ;
+                                      TypInfo.SetPropValue(Self, APropName, 0);
+                                  end;
                     else
                       raise EtiOPFProgrammerException.CreateFmt(cErrorSettingProperty,
-                        [ClassName, pPropName, 'Unknown type' ]);
+                        [ClassName, APropName, 'Unknown type' ]);
                     end
-                  end ;
+                  end;
     else
-      TypInfo.SetPropValue( Self, pPropName, pPropValue ) ;
-    end ;
+      TypInfo.SetPropValue(Self, APropName, APropValue);
+    end;
 
   except
     on e:exception do
       raise EtiOPFProgrammerException.CreateFmt(cErrorSettingProperty,
-        [ClassName, pPropName, e.message ]);
-  end ;
+        [ClassName, APropName, e.message ]);
+  end;
 end;
 
-
-function TtiObject.IsReadWriteProp(const pPropName: string): boolean;
+function TtiObject.IsReadWriteProp(const APropName: string): boolean;
 begin
   result :=
-    SameText( pPropName, 'OID' ) or
-    tiIsReadWriteProp( Self, pPropName ) ;   
+    SameText(APropName, 'OID') or
+    tiIsReadWriteProp(Self, APropName);   
 end;
-
 
 { TPerObjClassMapping }
 
 constructor TPerObjClassMapping.Create;
 begin
-  inherited ;
+  inherited;
 end;
-
 
 { TPerObjFieldAbs }
 
-constructor TtiFieldAbs.Create(const pOwner: TtiObject; const pNullValidation: TtiNullValidation);
+constructor TtiFieldAbs.Create(const AOwner: TtiObject; const ANullValidation: TtiNullValidation);
 begin
   inherited Create;
-  FOwner := pOwner ;
-  FNullValidation := pNullValidation;
+  FOwner := AOwner;
+  FNullValidation := ANullValidation;
   Clear;
 end;
 
-
-constructor TtiFieldAbs.Create(const pOwner: TtiObject);
+constructor TtiFieldAbs.Create(const AOwner: TtiObject);
 begin
-  Create(pOwner, nvAllowNull);
+  Create(AOwner, nvAllowNull);
 end;
 
 
 procedure TtiFieldAbs.Clear;
 begin
-  FIsNull := True ;
+  FIsNull := True;
 end;
-
 
 procedure TtiFieldAbs.SetValue;
 begin
   FIsNull := False;
 end;
 
-
-function TtiFieldAbs.IsValidValue(const pErrors: TPerObjErrors): Boolean;
+function TtiFieldAbs.IsValidValue(const AErrors: TPerObjErrors): Boolean;
 begin
-  Assert( Owner.TestValid(TtiObject), cTIInvalidObjectError );
+  Assert(Owner.TestValid(TtiObject), cTIInvalidObjectError);
   Result := (NullValidation = nvAllowNull) or (not IsNull);
-  if Assigned(pErrors) and (not Result) then
-    pErrors.AddError(FieldName,
+  if Assigned(AErrors) and (not Result) then
+    AErrors.AddError(FieldName,
                      Format(cErrorFieldNotAssigned, [Owner.ClassName + '.' + FieldName, Owner.OID]));
 end;
 
 { TtiFieldString }
 
 constructor TtiFieldString.Create(
-  const pOwner: TtiObject;
-  const pNullValidation: TtiNullValidation;
-  const pMaxLength: Integer);
+  const AOwner: TtiObject;
+  const ANullValidation: TtiNullValidation;
+  const AMaxLength: Integer);
 begin
-  inherited Create(pOwner, pNullValidation);
-  FMaxLength := pMaxLength;
+  inherited Create(AOwner, ANullValidation);
+  FMaxLength := AMaxLength;
+end;
+
+procedure TtiFieldString.Assign(AAssignFrom: TtiFieldAbs);
+begin
+  Assert(AAssignFrom.TestValid(TtiFieldString), cErrorTIPerObjAbsTestValid);
+  if AAssignFrom.IsNull then
+    IsNull:= true
+  else
+    AsString:= AAssignFrom.AsString;
 end;
 
 procedure TtiFieldString.Clear;
@@ -3057,39 +2943,50 @@ begin
   Result := FValue;
 end;
 
-procedure TtiFieldString.SetAsString(const pValue: string);
+procedure TtiFieldString.SetAsString(const AValue: string);
 begin
-  FValue := pValue;
+  FValue := AValue;
   SetValue;
 end;
 
-function TtiFieldString.IsValidValue(const pErrors : TPerObjErrors): Boolean;
+function TtiFieldString.IsValidValue(const AErrors : TPerObjErrors): Boolean;
 begin
-  Result := inherited IsValidValue(pErrors);
+  Result := inherited IsValidValue(AErrors);
   if Result then begin
     Result := (MaxLength = 0) or (Length(AsString) <= MaxLength);
-    if Assigned(pErrors) and (not Result) then
-      pErrors.AddError(FieldName,
+    if Assigned(AErrors) and (not Result) then
+      AErrors.AddError(FieldName,
                        Format(cErrorFieldTooLong,
                               [ClassName + '.' + FieldName, MaxLength, Length(AsString)]));
   end;
 end;
 
-function TtiFieldString.Equals(pCompareWith: TtiFieldAbs): Boolean;
+function TtiFieldString.Equals(ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert( pCompareWith.TestValid(TtiFieldString), cErrorTIPerObjAbsTestValid );
-  Result := AsString = pCompareWith.AsString;
+  Assert(ACompareWith.TestValid(TtiFieldString), cErrorTIPerObjAbsTestValid);
+  Result :=
+    (IsNull = ACompareWith.IsNull) and
+    (AsString = ACompareWith.AsString);
 end;
 
 { TtiFieldInteger }
 
 constructor TtiFieldInteger.Create(
-  const pOwner: TtiObject;
-  const pNullValidation: TtiNullValidation;
-  const pMaxDigits: Integer);
+  const AOwner: TtiObject;
+  const ANullValidation: TtiNullValidation;
+  const AMaxDigits: Integer);
 begin
-  inherited Create(pOwner, pNullValidation);
-  FMaxDigits := pMaxDigits;
+  inherited Create(AOwner, ANullValidation);
+  FMaxDigits := AMaxDigits;
+end;
+
+procedure TtiFieldInteger.Assign(AAssignFrom: TtiFieldAbs);
+begin
+  Assert(AAssignFrom.TestValid(TtiFieldInteger), cErrorTIPerObjAbsTestValid);
+  if AAssignFrom.IsNull then
+    IsNull:= true
+  else
+    AsInteger:= (AAssignFrom as TtiFieldInteger).AsInteger;
 end;
 
 procedure TtiFieldInteger.Clear;
@@ -3100,82 +2997,98 @@ end;
 
 function TtiFieldInteger.GetAsString: string;
 begin
-  Result := IntToStr(FValue);
+  if not IsNull then
+    Result := IntToStr(FValue)
+  else
+    Result:= '';
 end;
 
-procedure TtiFieldInteger.SetAsString(const pValue: string);
+procedure TtiFieldInteger.SetAsString(const AValue: string);
 begin
-  if pValue <> '' then
-    FValue := StrToInt(pValue)
+  if AValue <> '' then
+    FValue := StrToInt(AValue)
   else
     FValue := 0;
   SetValue;
 end;
 
-procedure TtiFieldInteger.SetAsInteger(const pValue: Int64);
+procedure TtiFieldInteger.SetAsInteger(const AValue: Int64);
 begin
-  FValue := pValue;
+  FValue := AValue;
   SetValue;
 end;
 
-function TtiFieldInteger.IsValidValue(const pErrors : TPerObjErrors): Boolean;
+function TtiFieldInteger.IsValidValue(const AErrors : TPerObjErrors): Boolean;
 begin
-  Result := inherited IsValidValue(pErrors);
+  Result := inherited IsValidValue(AErrors);
   if Result then begin
     // The sign of the number is not considered to be a digit. ie. A maximum
     // digits = 3 can validly store 999 and -999 but not 9999 or -9999
     Result := (MaxDigits = 0) or
               ((AsInteger >= 0) and (Length(AsString) <= MaxDigits)) or
               ((AsInteger < 0) and (Length(AsString) <= (MaxDigits+1)));
-    if Assigned(pErrors) and (not Result) then
-      pErrors.AddError(FieldName,
+    if Assigned(AErrors) and (not Result) then
+      AErrors.AddError(FieldName,
                        Format(cErrorFieldTooLong,
                               [ClassName + '.' + FieldName, MaxDigits, Length(AsString)]));
   end;
 end;
 
-function TtiFieldInteger.Equals(pCompareWith: TtiFieldAbs): Boolean;
+function TtiFieldInteger.Equals(ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert( pCompareWith.TestValid(TtiFieldAbs), cErrorTIPerObjAbsTestValid );
-  Result := AsInteger = (pCompareWith as TtiFieldInteger).AsInteger;
+  Assert(ACompareWith.TestValid(TtiFieldAbs), cErrorTIPerObjAbsTestValid);
+  Result :=
+    (IsNull = ACompareWith.IsNull) and
+    (AsInteger = (ACompareWith as TtiFieldInteger).AsInteger);
 end;
 
 { TtiFieldFloat }
 
+procedure TtiFieldFloat.Assign(AAssignFrom: TtiFieldAbs);
+begin
+  Assert(AAssignFrom.TestValid(TtiFieldFloat), cErrorTIPerObjAbsTestValid);
+  if AAssignFrom.IsNull then
+    IsNull:= true
+  else
+    AsFloat:= (AAssignFrom as TtiFieldFloat).AsFloat;
+end;
+
 procedure TtiFieldFloat.Clear;
 begin
   inherited;
-  FValue := 0 ;
+  FValue := 0;
 end;
 
-constructor TtiFieldFloat.Create(const pOwner: TtiObject;
-  const pNullValidation: TtiNullValidation; const pPrecision: Integer);
+constructor TtiFieldFloat.Create(const AOwner: TtiObject;
+  const ANullValidation: TtiNullValidation; const APrecision: Integer);
 begin
-  inherited Create(pOwner, pNullValidation);
-  SetPrecision(pPrecision);
+  inherited Create(AOwner, ANullValidation);
+  SetPrecision(APrecision);
 end;
 
-constructor TtiFieldFloat.Create(const pOwner: TtiObject);
+constructor TtiFieldFloat.Create(const AOwner: TtiObject);
 begin
-  Create(pOwner, nvAllowNull);
+  Create(AOwner, nvAllowNull);
 end;
 
-constructor TtiFieldFloat.Create(const pOwner: TtiObject;
-  const pNullValidation: TtiNullValidation);
+constructor TtiFieldFloat.Create(const AOwner: TtiObject;
+  const ANullValidation: TtiNullValidation);
 begin
   // Precision of 0 will return a string to what ever precision the float values is stored
-  Create(pOwner, pNullValidation, 0);
+  Create(AOwner, ANullValidation, 0);
 end;
 
-function TtiFieldFloat.Equals(pCompareWith: TtiFieldAbs): Boolean;
+function TtiFieldFloat.Equals(ACompareWith: TtiFieldAbs): Boolean;
 var
   lF1: extended;
   lF2: extended;
 begin
-  Assert( pCompareWith.TestValid(TtiFieldFloat), cErrorTIPerObjAbsTestValid );
+  Assert(ACompareWith.TestValid(TtiFieldFloat), cErrorTIPerObjAbsTestValid);
   lF1 := AsFloat;
-  lF2 := (pCompareWith as TtiFieldFloat).AsFloat;
-  Result := SameValue(lF1, lF2, Epsilon);
+  lF2 := (ACompareWith as TtiFieldFloat).AsFloat;
+  Result :=
+    (IsNull = ACompareWith.IsNull) and
+    (SameValue(lF1, lF2, Epsilon));
 end;
 
 function TtiFieldFloat.GetAsString: string;
@@ -3186,33 +3099,42 @@ begin
     Result := tiFloatToStr(FValue, FPrecision);
 end;
 
-procedure TtiFieldFloat.SetAsFloat(const pValue: Extended);
+procedure TtiFieldFloat.SetAsFloat(const AValue: Extended);
 begin
-  FValue := pValue;
+  FValue := AValue;
   SetValue;
 end;
 
-procedure TtiFieldFloat.SetAsString(const pValue: string);
+procedure TtiFieldFloat.SetAsString(const AValue: string);
 begin
-  if pValue <> '' then
-    FValue := StrToFloat(pValue)
+  if AValue <> '' then
+    FValue := StrToFloat(AValue)
   else
     FValue := 0;
   SetValue;
 end;
 
-procedure TtiFieldFloat.SetPrecision(const Value: Integer);
+procedure TtiFieldFloat.SetPrecision(const AValue: Integer);
 begin
-  FPrecision := Value;
-  FEpsilon := Power(10, -(Value+1))*2;
+  FPrecision := AValue;
+  FEpsilon := Power(10, -(AValue+1))*2;
 end;
 
 { TtiFieldBoolean }
 
+procedure TtiFieldBoolean.Assign(AAssignFrom: TtiFieldAbs);
+begin
+  Assert(AAssignFrom.TestValid(TtiFieldBoolean), cErrorTIPerObjAbsTestValid);
+  if AAssignFrom.IsNull then
+    IsNull:= true
+  else
+    AsBoolean:= (AAssignFrom as TtiFieldBoolean).AsBoolean;
+end;
+
 procedure TtiFieldBoolean.Clear;
 begin
   inherited;
-  FValue := False ;
+  FValue := False;
 end;
 
 function TtiFieldBoolean.GetAsString: string;
@@ -3221,54 +3143,61 @@ begin
   if FValue then
     result := 'T'
   else
-    result := 'F' ;
+    result := 'F';
 {$ELSE}
   if FValue then
     result := 'TRUE'
   else
-    result := 'FALSE' ;
+    result := 'FALSE';
 {$ENDIF}
 end;
 
-
-procedure TtiFieldBoolean.SetAsString(const pValue: string);
+procedure TtiFieldBoolean.SetAsString(const AValue: string);
 begin
-  if SameText( pValue, 'TRUE' ) or
-     SameText( pValue, 'T' ) or
-     SameText( pValue, 'Y' ) or
-     ( pValue = '1' ) then
+  if SameText(AValue, 'TRUE') or
+     SameText(AValue, 'T') or
+     SameText(AValue, 'Y') or
+     (AValue = '1') then
   begin
     FValue := True;
     SetValue;
   end
-  else if SameText( pValue, 'FALSE' ) or
-     SameText( pValue, 'F' ) or
-     SameText( pValue, 'N' ) or
-     ( pValue = '0' ) then
+  else if SameText(AValue, 'FALSE') or
+     SameText(AValue, 'F') or
+     SameText(AValue, 'N') or
+     (AValue = '0') then
   begin
     FValue := False;
     SetValue;
   end
   else
-    Clear; //Value is null
+    Clear; //AValue is null
 end;
 
-
-procedure TtiFieldBoolean.SetAsBoolean(const pValue: Boolean);
+procedure TtiFieldBoolean.SetAsBoolean(const AValue: Boolean);
 begin
-  FValue := pValue;
+  FValue := AValue;
   SetValue;
 end;
 
-
-function TtiFieldBoolean.Equals(pCompareWith: TtiFieldAbs): Boolean;
+function TtiFieldBoolean.Equals(ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert( pCompareWith.TestValid(TtiFieldBoolean), cErrorTIPerObjAbsTestValid );
-  Result := AsBoolean = (pCompareWith as TtiFieldBoolean).AsBoolean;
+  Assert(ACompareWith.TestValid(TtiFieldBoolean), cErrorTIPerObjAbsTestValid);
+  Result :=
+    (IsNull = ACompareWith.IsNull) and
+    (AsBoolean = (ACompareWith as TtiFieldBoolean).AsBoolean);
 end;
 
-
 { TtiFieldDateTime }
+
+procedure TtiFieldDateTime.Assign(AAssignFrom: TtiFieldAbs);
+begin
+  Assert(AAssignFrom.TestValid(TtiFieldDateTime), cErrorTIPerObjAbsTestValid);
+  if AAssignFrom.IsNull then
+    IsNull:= true
+  else
+    AsDateTime:= (AAssignFrom as TtiFieldDateTime).AsDateTime;
+end;
 
 procedure TtiFieldDateTime.Clear;
 begin
@@ -3276,26 +3205,22 @@ begin
   FValue := 0;
 end;
 
-
 function TtiFieldDateTime.GetAsString: string;
 begin
   Result := tiDateTimeAsXMLString(FValue);
 end;
 
-
-procedure TtiFieldDateTime.SetAsString(const pValue: string);
+procedure TtiFieldDateTime.SetAsString(const AValue: string);
 begin
-  FValue := tiXMLStringToDateTime(pValue);
+  FValue := tiXMLStringToDateTime(AValue);
   SetValue;
 end;
 
-
-procedure TtiFieldDateTime.SetAsDateTime(const pValue: TDateTime);
+procedure TtiFieldDateTime.SetAsDateTime(const AValue: TDateTime);
 begin
-  FValue := pValue;
+  FValue := AValue;
   SetValue;
 end;
-
 
 function TtiFieldAbs.GetFieldName: string;
 var
@@ -3304,7 +3229,7 @@ var
 begin
   if FFieldName = '' then
   begin
-    Assert( Owner.TestValid(TtiObject), cTIInvalidObjectError );
+    Assert(Owner.TestValid(TtiObject), cTIInvalidObjectError);
     lsl:= TStringList.Create;
     try
       tiGetPropertyNames(Owner,lsl, [tkClass]);
@@ -3312,22 +3237,23 @@ begin
         if GetObjectProp(Owner, lsl.Strings[i]) = Self then
         begin
           FFieldName := lsl.Strings[i];
-          Break ; //==>
+          Break; //==>
         end;
         if FFieldName = '' then
           raise Exception.CreateFmt(cErrorUnableToDetermineFieldName, [Owner.ClassName]);
     finally
       lsl.Free;
     end;
-  end ;
+  end;
   Result := FFieldName;
 end;
 
-
-function TtiFieldDateTime.Equals(pCompareWith: TtiFieldAbs): Boolean;
+function TtiFieldDateTime.Equals(ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert( pCompareWith.TestValid(TtiFieldDateTime), cErrorTIPerObjAbsTestValid );
-  Result := SameValue(AsDateTime, (pCompareWith as TtiFieldDateTime).AsDateTime, cdtOneSecond/2);
+  Assert(ACompareWith.TestValid(TtiFieldDateTime), cErrorTIPerObjAbsTestValid);
+  Result :=
+    (IsNull = ACompareWith.IsNull) and
+    (SameValue(AsDateTime, (ACompareWith as TtiFieldDateTime).AsDateTime, cdtOneSecond/2));
 end;
 
 
@@ -3342,54 +3268,47 @@ begin
   OwnsObjects := False;
 end;
 
-
 function TtiFieldList.Add(AObject: TtiFieldAbs): Integer;
 begin
   Result := inherited Add(AObject);
 end;
 
-
-function TtiFieldList.GetItem(Index: Integer): TtiFieldAbs;
+function TtiFieldList.GetItem(AIndex: Integer): TtiFieldAbs;
 begin
-  Result := TtiFieldAbs(inherited Items[Index]);
+  Result := TtiFieldAbs(inherited Items[AIndex]);
 end;
 
-
-procedure TtiFieldList.SetItem(Index: Integer; AObject: TtiFieldAbs);
+procedure TtiFieldList.SetItem(AIndex: Integer; AObject: TtiFieldAbs);
 begin
-  inherited Items[Index] := AObject;
+  inherited Items[AIndex]:= AObject;
 end;
 
-
-procedure TtiObject.ForceAsCreate(const pDatabaseName : string = '' ; const pPerLayerName : string = '');
+procedure TtiObject.ForceAsCreate(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
 begin
   {$IFDEF OID_AS_INT64}
-    OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID ;
+    OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
-    OID.GetNextValue( pDatabaseName, pPerLayerName ) ;
+    OID.GetNextValue(ADatabaseName, APersistenceLayerName);
   {$ENDIF}
   ObjectState := posCreate;
 end;
 
-
-function TtiObject.PropType(const pPropName: string): TtiTypeKind;
+function TtiObject.PropType(const APropName: string): TtiTypeKind;
 begin
-  Assert(pPropName <> '', 'pPropName not assigned');
-  Result := tiGetSimplePropType(Self, pPropName);
+  Assert(APropName <> '', 'APropName not assigned');
+  Result := tiGetSimplePropType(Self, APropName);
 end;
 
-
-function TtiObjectList.FindInHierarchy(pOIDToFind: TOID): TtiObject;
+function TtiObjectList.FindInHierarchy(AOIDToFind: TOID): TtiObject;
 begin
-  Result := Find(pOIDToFind);
+  Result := Find(AOIDToFind);
   if Result = nil then
-    Result := inherited Find(pOIDToFind);
+    Result := inherited Find(AOIDToFind);
 end;
-
 
 function TtiObject.AsDebugString: string;
 var
-  lVisitor : TVisTIObjectAsDebugString ;
+  lVisitor : TVisTIObjectAsDebugString;
 begin
   lVisitor := TVisTIObjectAsDebugString.Create(True);
   try
@@ -3400,35 +3319,36 @@ begin
   end;
 end;
 
-
-procedure TtiObject.SetOID(const Value: TOID);
+procedure TtiObject.SetOID(const AValue: TOID);
 begin
-  FOID := Value;
+  FOID := AValue;
 end;
 
-
-function TtiObject.PropCount(pPropFilter: TTypeKinds = ctkSimple): integer;
+function TtiObject.PropCount(APropFilter: TTypeKinds = ctkSimple): integer;
 var
-  lsl : TStringList ;
+  lsl : TStringList;
 begin
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
-    tiGetPropertyNames( Self, lsl, pPropFilter ) ;
-    result := lsl.Count ;
+    tiGetPropertyNames(Self, lsl, APropFilter);
+    result := lsl.Count;
   finally
-    lsl.Free ;
-  end ;
+    lsl.Free;
+  end;
 end;
 
-
-procedure TtiFieldAbs.SetIsNull(const Value: Boolean);
+procedure TtiFieldAbs.SetFieldName(const AValue: string);
 begin
-  if Value then
+  FFieldName:= AValue;
+end;
+
+procedure TtiFieldAbs.SetIsNull(const AValue: Boolean);
+begin
+  if AValue then
     Clear
   else
     FIsNull := false;
 end;
-
 
 function TtiObjectList.IndexOfBinary(AOIDToFind: TOID): integer;
 var
@@ -3442,47 +3362,44 @@ begin
   while LLow <= LHigh do
   begin
     LMid := ((LHigh + LLow) div 2);    // Floor((LHigh + LLow) / 2);
-    LCompareResult := OIDCompare( Items[LMid].OID, AOIDToFind );
+    LCompareResult := OIDCompare(Items[LMid].OID, AOIDToFind);
     if LCompareResult > 0 then
       LHigh := LMid - 1
     else if LCompareResult < 0 then
       LLow := LMid + 1
     else begin
       Result := LMid;
-      Exit ; //==>
+      Exit; //==>
     end;
   end;
   Result := -1;
 end;
 
-
 function TtiObjectList.IndexOfFullScan(AOIDToFind: TOID): integer;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to Count - 1 do
-    if OIDEquals( Items[i].OID, AOIDToFind ) then
+    if OIDEquals(Items[i].OID, AOIDToFind) then
     begin
       Result := i;
-      Exit ; //==>
-    end ;
+      Exit; //==>
+    end;
   Result := -1;
 end;
 
-
 function TtiObjectList.FirstExcludeDeleted: TtiObject;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to Count-1 do
     if not Items[i].Deleted then
     begin
-      result := Items[i] ;
-      Exit ; //==>
-    end ;
-  result := nil ;
+      result := Items[i];
+      Exit; //==>
+    end;
+  result := nil;
 end;
-
 
 procedure TtiObjectList.CompareWith(AList: TtiObjectList; AInBothAndEquals,
   AInBothAndNotEquals, AIn1Only, AIn2Only: TtiObjectListCompareEvent);
@@ -3516,26 +3433,23 @@ begin
 
 end;
 
-
-procedure TtiObject.AttachObserver(pObserver: TtiObject);
+procedure TtiObject.AttachObserver(AObserver: TtiObject);
 begin
   { To conserve memory, we only create FObserverList when needed }
   if not Assigned(FObserverList) then
       FObserverList := TList.Create;
-  if FObserverList.IndexOf( pObserver ) = -1 then
-    FObserverList.Add( pObserver );
+  if FObserverList.IndexOf(AObserver) = -1 then
+    FObserverList.Add(AObserver);
 end;
-
 
 procedure TtiObject.BeginUpdate;
 begin
   Inc(FUpdateCount);
 end;
 
-
-procedure TtiObject.DetachObserver(pObserver: TtiObject);
+procedure TtiObject.DetachObserver(AObserver: TtiObject);
 begin
-  FObserverList.Remove( pObserver );
+  FObserverList.Remove(AObserver);
   { To conserve memory, we free FObserverList when not used anymore }
   if FObserverList.Count = 0 then
   begin
@@ -3544,14 +3458,12 @@ begin
   end;
 end;
 
-
 procedure TtiObject.EndUpdate;
 begin
   Dec(FUpdateCount);
   if FUpdateCount = 0 then
     NotifyObservers;
 end;
-
 
 procedure TtiObject.NotifyObservers;
 var
@@ -3564,16 +3476,14 @@ begin
   for ObjectIndex := 0 to FObserverList.Count - 1 do
   begin
     Observer := TtiObject(FObserverList.Items[ObjectIndex]);
-    Observer.Update( self );
+    Observer.Update(self);
   end;
 end;
 
-
-procedure TtiObject.Update(pSubject: TtiObject);
+procedure TtiObject.Update(ASubject: TtiObject);
 begin
   { Do nothing here. This will be implemented in decendant classes when needed }
 end;
-
 
 function TtiObject.GetObserverList: TList;
 begin
@@ -3582,6 +3492,105 @@ begin
   Result := FObserverList;
 end;
 
+procedure TtiObjectList.FreeDeleted;
+var
+  i: Integer;
+begin
+  // ToDo: What if OwnsObjects = False?
+  for i:= Pred(Count) downto 0 do
+    if Items[i].ObjectState = posDeleted then
+      Delete(i);
+end;
+
+{ TtiFieldStringMethod }
+
+procedure TtiFieldStringMethod.Assign(AAssignFrom: TtiFieldAbs);
+begin
+  Assert(False, 'Assign not implemented');
+end;
+
+procedure TtiFieldStringMethod.Clear;
+begin
+  // Do nothing
+end;
+
+constructor TtiFieldStringMethod.Create(const AOwner: TtiObject;
+  const AReadMethod: TtiStringFieldMethodReadEvent);
+begin
+  Assert(Assigned(AOwner), 'AOwner not assigned');
+  Assert(Assigned(AReadMethod), 'AReadMethod not assigned');
+  inherited Create(AOwner);
+  FReadEvent:= AReadMethod;
+end;
+
+function TtiFieldStringMethod.Equals(ACompareWith: TtiFieldAbs): Boolean;
+begin
+  Assert(ACompareWith.TestValid(TtiFieldString), cErrorTIPerObjAbsTestValid);
+  Result :=(AsString = ACompareWith.AsString);
+end;
+
+function TtiFieldStringMethod.GetAsString: string;
+var
+  LS: string;
+begin
+  Assert(Assigned(FReadEvent), 'FReadEvent not assigned');
+  LS:= '';
+  FReadEvent(Self, LS);
+  Result:= LS;
+end;
+
+function TtiFieldStringMethod.IsValidValue(const AErrors: TPerObjErrors): Boolean;
+begin
+  result:= false;
+  Assert(False, 'Not implemented');
+end;
+
+procedure TtiFieldStringMethod.SetAsString(const AValue: string);
+begin
+  Assert(False, 'Not implemented');
+end;
 
 end.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

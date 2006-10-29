@@ -13,132 +13,136 @@ uses
   ,Classes
   ,Contnrs
   ,Oracle
-  ;
+ ;
+
+const
+  CtiQueryOptionDOAReadBuffer = 'ReadBuffer';
 
 type
 
   EtiOPFDOAException = EtiOPFException;
 
-  TtiDBConnectionPoolDataDOA = Class( TtiDBConnectionPoolDataAbs )
+  TtiDBConnectionPoolDataDOA = Class(TtiDBConnectionPoolDataAbs)
   private
-    procedure AddEntryToTNSNames(const psDBSid: string); overload ;
-    procedure AddEntryToTNSNames(const psFileName, psDBSid, psHost : string); overload ;
+    procedure AddEntryToTNSNames(const psDBSid: string); overload;
+    procedure AddEntryToTNSNames(const AFileName, psDBSid, psHost : string); overload;
     function  CheckTNSNamesForSid(const psDBSid: string): boolean;
   public
-    procedure InitDBConnectionPool ; override ;
-  end ;
+    procedure InitDBConnectionPool; override;
+  end;
 
-  TtiDatabaseDOA = class( TtiDatabaseSQL )
+  TtiDatabaseDOA = class(TtiDatabaseSQL)
   private
     FOracleSession: TOracleSession;
-    FInTransaction : boolean ;
-    property OracleSession : TOracleSession read FOracleSession write FOracleSession ;
+    FInTransaction : boolean;
+    property OracleSession : TOracleSession read FOracleSession write FOracleSession;
   protected
-    procedure SetConnected( pbValue : boolean ) ; override;
-    function  GetConnected : boolean ; override ;
-    function  FieldMetaDataToSQLCreate( const pFieldMetaData : TtiDBMetaDataField ) : string ; override ;
+    procedure SetConnected(AValue : boolean); override;
+    function  GetConnected : boolean; override;
+    function  FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; override;
   public
-    constructor     create ; override ;
-    destructor      destroy ; override ;
-    class procedure CreateDatabase(const psDatabaseName, psUserName,psPassword: string); override ;
-    class function  DatabaseExists(const psDatabaseName, psUserName, psPassword: string): boolean; override ;
-    procedure       StartTransaction ; override ;
-    function        InTransaction : boolean ; override ;
-    procedure       Commit ; override ;
-    procedure       RollBack ; override ;
-    procedure       ReadMetaDataTables( pData : TtiDBMetaData ) ; override ;
-    procedure       ReadMetaDataFields( pData : TtiDBMetaDataTable ) ; override ;
-    function        Test : boolean ; override ;
-  end ;
+    constructor     Create; override;
+    destructor      Destroy; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName,APassword: string); override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean; override;
+    procedure       StartTransaction; override;
+    function        InTransaction : boolean; override;
+    procedure       Commit; override;
+    procedure       RollBack; override;
+    procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
+    procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
+    function        Test : boolean; override;
+  end;
 
-  TtiDOABinParamItem = class( TtiBaseObject )
+  TtiDOABinParamItem = class(TtiBaseObject)
   private
     FParamName: string;
     FLOBLocator: TLOBLocator;
   public
     constructor Create(ASession: TOracleSession; AOracleDataType: Byte);
-    destructor  Destroy ; override ;
-    property    ParamName : string read FParamName write FParamName ;
+    destructor  Destroy; override;
+    property    ParamName : string read FParamName write FParamName;
     property    LOBLocator: TLOBLocator Read FLOBLocator;
-    procedure   LoadFromStream(const pStream : TStream) ;
-    procedure   SaveToStream(const pStream : TStream);
+    procedure   LoadFromStream(const AStream : TStream);
+    procedure   SaveToStream(const AStream : TStream);
   end;
 
-  TtiQueryDOA = class( TtiQuerySQL )
+  TtiQueryDOA = class(TtiQuerySQL)
   private
-    FQuery : TOracleQuery ;
-    FbActive : boolean ;
-    FslVariables : TStringList ;
-    FDOABinParamList : TObjectList ;
-    procedure DeclareVariable( const psName : string ; piOracleType : integer ) ;
-    function  OracleErrorMessage : string ;
-    function  FindCreateBinParam(const pName: string; AOracleDataType: byte): TtiDOABinParamItem;
+    FQuery : TOracleQuery;
+    FbActive : boolean;
+    FslVariables : TStringList;
+    FDOABinParamList : TObjectList;
+    procedure DeclareVariable(const AName : string; piOracleType : integer);
+    function  OracleErrorMessage : string;
+    function  FindCreateBinParam(const AName: string; AOracleDataType: byte): TtiDOABinParamItem;
   protected
-    function  GetSQL: TStrings; override ;
-    procedure SetSQL(const Value: TStrings); override ;
-    function  GetActive: boolean; override ;
-    procedure SetActive(const Value: boolean); override ;
-    function  GetEOF: boolean; override ;
+    function  GetSQL: TStrings; override;
+    procedure SetSQL(const AValue: TStrings); override;
+    function  GetActive: boolean; override;
+    procedure SetActive(const AValue: boolean); override;
+    function  GetEOF: boolean; override;
 
-    function  GetFieldAsString(const psName: string): string      ; override ;
-    function  GetFieldAsFloat(const psName: string): extended     ; override ;
-    function  GetFieldAsBoolean(const psName: string): boolean    ; override ;
-    function  GetFieldAsInteger(const psName: string): Int64      ; override ;
-    function  GetFieldAsDateTime(const psName: string):TDateTime  ; override ;
-    function  GetFieldIsNull(const psName: string): Boolean       ; override ;
+    function  GetFieldAsString(const AName: string): string     ; override;
+    function  GetFieldAsFloat(const AName: string): extended    ; override;
+    function  GetFieldAsBoolean(const AName: string): boolean   ; override;
+    function  GetFieldAsInteger(const AName: string): Int64     ; override;
+    function  GetFieldAsDateTime(const AName: string):TDateTime ; override;
+    function  GetFieldIsNull(const AName: string): Boolean      ; override;
 
-    function  GetFieldAsStringByIndex(pIndex: Integer)  : string   ; override ;
-    function  GetFieldAsFloatByIndex(pIndex: Integer)   : extended ; override ;
-    function  GetFieldAsBooleanByIndex(pIndex: Integer) : boolean  ; override ;
-    function  GetFieldAsIntegerByIndex(pIndex: Integer) : Int64    ; override ;
-    function  GetFieldAsDateTimeByIndex(pIndex: Integer):TDateTime ; override ;
-    function  GetFieldIsNullByIndex(pIndex: Integer):Boolean       ; override ;
+    function  GetFieldAsStringByIndex(AIndex: Integer) : string  ; override;
+    function  GetFieldAsFloatByIndex(AIndex: Integer)  : extended; override;
+    function  GetFieldAsBooleanByIndex(AIndex: Integer): boolean ; override;
+    function  GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ; override;
+    function  GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime; override;
+    function  GetFieldIsNullByIndex(AIndex: Integer):Boolean      ; override;
 
-    function  GetParamAsString( const psName: string): string; override ;
-    procedure SetParamAsString( const psName, Value: string); override ;
-    function  GetParamAsBoolean(const psName: string): boolean; override ;
-    procedure SetParamAsBoolean(const psName: string;const Value: boolean);override ;
-    function  GetParamAsFloat(const psName: string): extended;override ;
-    procedure SetParamAsFloat(const psName: string; const Value: extended);override ;
-    function  GetParamAsInteger(const psName: string): Int64;override ;
-    procedure SetParamAsInteger(const psName: string;const Value: Int64);override ;
-    function  GetParamAsDateTime(const psName: string): TDateTime ; override ;
-    procedure SetParamAsDateTime(const psName :string ; const Value: TDateTime); override ;
+    function  GetParamAsString(const AName: string): string; override;
+    procedure SetParamAsString(const AName, AValue: string); override;
+    function  GetParamAsBoolean(const AName: string): boolean; override;
+    procedure SetParamAsBoolean(const AName: string;const AValue: boolean);override;
+    function  GetParamAsFloat(const AName: string): extended;override;
+    procedure SetParamAsFloat(const AName: string; const AValue: extended);override;
+    function  GetParamAsInteger(const AName: string): Int64;override;
+    procedure SetParamAsInteger(const AName: string;const AValue: Int64);override;
+    function  GetParamAsDateTime(const AName: string): TDateTime; override;
+    procedure SetParamAsDateTime(const AName :string; const AValue: TDateTime); override;
 
-    procedure SetParamAsMacro( const psName: string;
-                               const Value: string); override ;
+    procedure SetParamAsMacro(const AName: string;
+                               const AValue: string); override;
 
-    function  GetParamIsNull( const psName: String): Boolean; override;
-    procedure SetParamIsNull( const psName: String; const Value: Boolean); override;
+    function  GetParamIsNull(const AName: String): Boolean; override;
+    procedure SetParamIsNull(const AName: String; const AValue: Boolean); override;
 
+    procedure DoChangeOptions(Sender: TObject); override;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Open    ; override ;
-    procedure   Close   ; override ;
-    procedure   Next    ; override ;
-    procedure   ExecSQL ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Open   ; override;
+    procedure   Close  ; override;
+    procedure   Next   ; override;
+    procedure   ExecSQL; override;
 
-    function    ParamCount : integer ; override ;
-    function    ParamName( pIndex : integer ) : string ; override ;
+    function    ParamCount : integer; override;
+    function    ParamName(AIndex : integer): string; override;
 
-    function    FieldCount : integer ; override ;
-    function    FieldName( pIndex : integer ) : string ; override ;
-    function    FieldIndex( const psName : string ) : integer ; override ;
-    function    FieldKind( pIndex : integer ) : TtiQueryFieldKind ; override ;
-    function    FieldSize( pIndex : integer ) : integer ; override ;
-    function    HasNativeLogicalType : boolean ; override ;
+    function    FieldCount : integer; override;
+    function    FieldName(AIndex : integer): string; override;
+    function    FieldIndex(const AName : string): integer; override;
+    function    FieldKind(AIndex : integer): TtiQueryFieldKind; override;
+    function    FieldSize(AIndex : integer): integer; override;
+    function    HasNativeLogicalType : boolean; override;
 
-    procedure   AssignParamFromStream( const pName  : string  ; const pValue  : TStream ) ; override ;
-    procedure   AssignParamToStream(   const pName  : string  ; const pValue  : TStream ) ; override ;
-    procedure   AssignFieldAsStream(   const pName  : string  ; const pValue  : TStream ) ; override ;
-    procedure   AssignFieldAsStreamByIndex(  pIndex : integer ; const pValue  : TStream ) ; override ;
+    procedure   AssignParamFromStream(const AName : string ; const AValue : TStream); override;
+    procedure   AssignParamToStream(  const AName : string ; const AValue : TStream); override;
+    procedure   AssignFieldAsStream(  const AName : string ; const AValue : TStream); override;
+    procedure   AssignFieldAsStreamByIndex( AIndex : integer; const AValue : TStream); override;
 
-    procedure   AttachDatabase( pDatabase : TtiDatabase ) ; override ;
-    procedure   DetachDatabase ; override ;
-    procedure   Reset ; override ;
+    procedure   AttachDatabase(ADatabase : TtiDatabase); override;
+    procedure   DetachDatabase; override;
+    procedure   Reset; override;
 
-  end ;
+  end;
 
 
 implementation
@@ -158,10 +162,10 @@ uses
   {$ENDIF}
 
   ,OracleCI
-  ;
+ ;
 
 const
-  cSavePoint = 'DOA_Save_Point' ;
+  cSavePoint = 'DOA_Save_Point';
   
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -171,288 +175,288 @@ const
 constructor TtiQueryDOA.Create;
 begin
   inherited;
-  FQuery       := TOracleQuery.Create( nil ) ;
-  FslVariables := TStringList.Create ;
-  FbActive     := false ;
+  FQuery      := TOracleQuery.Create(nil);
+  FslVariables := TStringList.Create;
+  FbActive    := false;
 end;
 
 destructor TtiQueryDOA.Destroy;
 begin
-  FQuery.ClearVariables ;
-  FQuery.Free ;
-  FslVariables.Free ;
-  FDOABinParamList.Free ;
+  FQuery.ClearVariables;
+  FQuery.Free;
+  FslVariables.Free;
+  FDOABinParamList.Free;
   inherited;
 end;
 
 procedure TtiQueryDOA.Close;
 begin
-  Active := false ;
+  Active := false;
 end;
 
 procedure TtiQueryDOA.ExecSQL;
 begin
   try
-    FQuery.Execute ;
+    FQuery.Execute;
     if Assigned(FDOABinParamList) then
       FDOABinParamList.Clear;
   except
     on e:exception do
     begin
-      Database.ErrorInLastCall := true ;
+      Database.ErrorInLastCall := true;
       raise EtiOPFDOAException.Create(e.message + ' ' + #13 + OracleErrorMessage);
-    end ;
+    end;
   end;
 end;
 
-function TtiQueryDOA.GetFieldAsBoolean(const psName: string): boolean;
+function TtiQueryDOA.GetFieldAsBoolean(const AName: string): boolean;
 var
-  lsValue : string ;
+  lsValue : string;
 begin
-  lsValue := upperCase( FQuery.Field( psName )) ;
-  result := ( lsValue = 'T'    ) or
-            ( lsValue = 'TRUE' ) or
-            ( lsValue = 'Y'    ) or
-            ( lsValue = 'YES'  ) or
-            ( lsValue = '1'    ) ;
+  lsValue := upperCase(FQuery.Field(AName));
+  result := (lsValue = 'T'   ) or
+            (lsValue = 'TRUE') or
+            (lsValue = 'Y'   ) or
+            (lsValue = 'YES' ) or
+            (lsValue = '1'   );
 end;
 
-function TtiQueryDOA.GetFieldAsDateTime(const psName: string): TDateTime;
+function TtiQueryDOA.GetFieldAsDateTime(const AName: string): TDateTime;
 begin
-  result := FQuery.FieldAsDate( psName ) ;
+  result := FQuery.FieldAsDate(AName);
 end;
 
-function TtiQueryDOA.GetFieldAsFloat(const psName: string): extended;
+function TtiQueryDOA.GetFieldAsFloat(const AName: string): extended;
 begin
-  result := FQuery.FieldAsFloat( psName ) ;
+  result := FQuery.FieldAsFloat(AName);
 end;
 
-function TtiQueryDOA.GetFieldAsInteger(const psName: string): Int64;
+function TtiQueryDOA.GetFieldAsInteger(const AName: string): Int64;
 var
-  lr : double ;
+  lr : double;
 begin
   // Delphi real types
   // Real48	2.9 x 10^–39 .. 1.7 x 10^38	11–12	6
   // Single	1.5 x 10^–45 .. 3.4 x 10^38	7–8	4
   // Double	5.0 x 10^–324 .. 1.7 x 10^308	15–16	8
   // Extended	3.6 x 10^–4951 .. 1.1 x 10^4932	19–20	10
-  // An OID is Number( 15 ) so we must read it as a double, then convert to an integer.
-  lr := FQuery.Field( psName ) ;
-  result := Trunc( lr ) ;
+  // An OID is Number(15) so we must read it as a double, then convert to an integer.
+  lr := FQuery.Field(AName);
+  result := Trunc(lr);
 end;
 
-function TtiQueryDOA.GetFieldAsString(const psName: string): string;
+function TtiQueryDOA.GetFieldAsString(const AName: string): string;
 begin
-  result := FQuery.FieldAsString( psName ) ;
+  result := FQuery.FieldAsString(AName);
 end;
 
 function TtiQueryDOA.GetActive: boolean;
 begin
-  result := FbActive ;
+  result := FbActive;
 end;
 
 function TtiQueryDOA.GetEOF: boolean;
 begin
-  result := FQuery.EOF ;
+  result := FQuery.EOF;
 end;
 
-function TtiQueryDOA.GetParamAsBoolean(const psName: string): boolean;
+function TtiQueryDOA.GetParamAsBoolean(const AName: string): boolean;
 var
-  ls : string ;
+  ls : string;
 begin
-  ls := FQuery.GetVariable( psName ) ;
+  ls := FQuery.GetVariable(AName);
   result :=
-    SameText( ls, 'TRUE' ) or
-    SameText( ls, 'T' ) or
-    SameText( ls, 'YES' ) or
-    SameText( ls, 'Y' ) or
-    ( ls = '1' ) ;
+    SameText(ls, 'TRUE') or
+    SameText(ls, 'T') or
+    SameText(ls, 'YES') or
+    SameText(ls, 'Y') or
+    (ls = '1');
 end;
 
-function TtiQueryDOA.GetParamAsDateTime(const psName: string): TDateTime;
+function TtiQueryDOA.GetParamAsDateTime(const AName: string): TDateTime;
 begin
-  result := FQuery.GetVariable( psName ) ;
+  result := FQuery.GetVariable(AName);
 end;
 
-function TtiQueryDOA.GetParamAsFloat(const psName: string): extended;
+function TtiQueryDOA.GetParamAsFloat(const AName: string): extended;
 begin
-  result := FQuery.GetVariable( psName ) ;
+  result := FQuery.GetVariable(AName);
 end;
 
-function TtiQueryDOA.GetParamAsInteger(const psName: string): Int64;
+function TtiQueryDOA.GetParamAsInteger(const AName: string): Int64;
 var
-  lr : Extended;
+  lr : real;
 begin
-  lr := FQuery.GetVariable( psName ) ;
-  result := trunc( lr ) ;
+  lr := FQuery.GetVariable(AName);
+  result := trunc(lr);
 end;
 
-function TtiQueryDOA.GetParamAsString(const psName: string): string;
+function TtiQueryDOA.GetParamAsString(const AName: string): string;
 begin
-  result := FQuery.GetVariable( psName ) ;
+  result := FQuery.GetVariable(AName);
 end;
 
 function TtiQueryDOA.GetSQL: TStrings;
 begin
-  result := FQuery.SQL ;
+  result := FQuery.SQL;
 end;
 
 procedure TtiQueryDOA.Next;
 begin
   try
-    FQuery.Next ;
+    FQuery.Next;
   except
     on e:exception do
     begin
-      Database.ErrorInLastCall := true ;
-      raise ;
-    end ;
-  end ;
+      Database.ErrorInLastCall := true;
+      raise;
+    end;
+  end;
 end;
 
 procedure TtiQueryDOA.Open;
 begin
-  Active := true ;
+  Active := true;
 end;
 
 function TtiQueryDOA.ParamCount: integer;
 begin
-  result := FQuery.VariableCount ;
+  result := FQuery.VariableCount;
 end;
 
-function TtiQueryDOA.ParamName(pIndex: integer): string;
+function TtiQueryDOA.ParamName(AIndex: integer): string;
 var
-  ls : string ;
+  ls : string;
 begin
-  ls := FQuery.VariableName( pIndex ) ;
-  result := tiStrTran( ls, ':', '' ) ;
+  ls := FQuery.VariableName(AIndex);
+  result := tiStrTran(ls, ':', '');
 end;
 
-procedure TtiQueryDOA.SetActive(const Value: boolean);
+procedure TtiQueryDOA.SetActive(const AValue: boolean);
 begin
-  if Value then
+  if AValue then
   begin
     try
-      FQuery.Execute ;
-      FbActive := true ;
+      FQuery.Execute;
+      FbActive := true;
     except
       on e:exception do
-        raise EtiOPFDOAException.Create( SQLAndParamsAsString + #13 + 'Message: ' + e.message) ;
+        raise EtiOPFDOAException.Create(SQLAndParamsAsString + #13 + 'Message: ' + e.message);
     end;
   end else
   begin
-    FQuery.Close ;
-    FbActive := false ;
-  end ;
-end;
-
-procedure TtiQueryDOA.SetParamAsBoolean(const psName: string;
-  const Value: boolean);
-begin
-  DeclareVariable( psName, otString ) ;
-  if Value then
-    FQuery.SetVariable( psName, 'T' )
-  else
-    FQuery.SetVariable( psName, 'F' )
-end;
-
-procedure TtiQueryDOA.SetParamAsDateTime(const psName : string ; const Value: TDateTime);
-begin
-  DeclareVariable( psName, otDate ) ;
-  FQuery.SetVariable( psName, DateTimeToStr(Value));
-
-  // This was causing conversion error in StrToDateTime when called in Oracle.pas
-  //FQuery.SetVariable( psName, FormatDateTime( 'dd/mm/yyyy hh:nn:ss', Value )) ;
-
-  // Not sure why this was commented out. Think it might have been because of
-  // problems converting TDateTime (float)
-  //FQuery.SetVariable( psName, Value ) ;
-end;
-
-procedure TtiQueryDOA.SetParamAsFloat(const psName: string;
-  const Value: extended);
-begin
-  DeclareVariable( psName, otFloat ) ;
-  FQuery.SetVariable( psName, Value ) ;
-end;
-
-procedure TtiQueryDOA.SetParamAsInteger(const psName: string;
-  const Value: Int64 );
-var
-  lr : Extended ;
-begin
-  DeclareVariable( psName, otFloat ) ;
-  lr := Value ;
-  FQuery.SetVariable( psName, lr ) ;
-end;
-
-procedure TtiQueryDOA.SetParamAsString(const psName, Value: string);
-var
-  lBinParam : TtiDOABinParamItem ;
-begin
-  if Length( Value ) < 4000 then
-  begin
-    DeclareVariable(psName, otString);
-    FQuery.SetVariable( psName, Value ) ;
-  end else
-  begin
-    DeclareVariable(psName, otCLOB);
-    lBinParam := FindCreateBinParam(psName, otCLOB);
-    lBinParam.LOBLocator.AsString := Value ;
-    FQuery.SetComplexVariable(psName, LBinParam.LOBLocator);
+    FQuery.Close;
+    FbActive := false;
   end;
 end;
 
-procedure TtiQueryDOA.SetSQL(const Value: TStrings);
+procedure TtiQueryDOA.SetParamAsBoolean(const AName: string;
+  const AValue: boolean);
 begin
-  FQuery.DeleteVariables ;
-  FslVariables.Clear ;
-  FQuery.SQL.Assign( Value ) ;
+  DeclareVariable(AName, otString);
+  if AValue then
+    FQuery.SetVariable(AName, 'T')
+  else
+    FQuery.SetVariable(AName, 'F')
+end;
+
+procedure TtiQueryDOA.SetParamAsDateTime(const AName : string; const AValue: TDateTime);
+begin
+  DeclareVariable(AName, otDate);
+  FQuery.SetVariable(AName, DateTimeToStr(AValue));
+
+  // This was causing conversion error in StrToDateTime when called in Oracle.pas
+  //FQuery.SetVariable(AName, FormatDateTime('dd/mm/yyyy hh:nn:ss', AValue));
+
+  // Not sure why this was commented out. Think it might have been because of
+  // problems converting TDateTime (float)
+  //FQuery.SetVariable(AName, AValue);
+end;
+
+procedure TtiQueryDOA.SetParamAsFloat(const AName: string;
+  const AValue: extended);
+begin
+  DeclareVariable(AName, otFloat);
+  FQuery.SetVariable(AName, AValue);
+end;
+
+procedure TtiQueryDOA.SetParamAsInteger(const AName: string;
+  const AValue: Int64);
+var
+  lr : real;
+begin
+  DeclareVariable(AName, otFloat);
+  lr := AValue;
+  FQuery.SetVariable(AName, lr);
+end;
+
+procedure TtiQueryDOA.SetParamAsString(const AName, AValue: string);
+var
+  lBinParam : TtiDOABinParamItem;
+begin
+  if Length(AValue) < 4000 then
+  begin
+    DeclareVariable(AName, otString);
+    FQuery.SetVariable(AName, AValue);
+  end else
+  begin
+    DeclareVariable(AName, otCLOB);
+    lBinParam := FindCreateBinParam(AName, otCLOB);
+    lBinParam.LOBLocator.AsString := AValue;
+    FQuery.SetComplexVariable(AName, LBinParam.LOBLocator);
+  end;
+end;
+
+procedure TtiQueryDOA.SetSQL(const AValue: TStrings);
+begin
+  FQuery.DeleteVariables;
+  FslVariables.Clear;
+  FQuery.SQL.Assign(AValue);
 end;
 
 {
-function TtiQueryDOA.GetFieldAsStream(const psName: string): TStream;
+function TtiQueryDOA.GetFieldAsStream(const AName: string): TStream;
 const
-  cmiBuffer = 12000 ;
+  cmiBuffer = 12000;
 var
-  liOffset : integer ;
-  liLen    : integer ;
-  lBuffer  : array [0..cmiBuffer-1] of byte ;
+  liOffset : integer;
+  liLen   : integer;
+  lBuffer : array [0..cmiBuffer-1] of byte;
 begin
 
   // If the stream does not exist, then create it
 //  if FStream = nil then
 //    FStream := TMemoryStream.Create
 //  else
-//    FStream.Clear ;
+//    FStream.Clear;
 
   if FStream <> nil then
-    FStream.Free ;
-  FStream := TMemoryStream.Create ;
+    FStream.Free;
+  FStream := TMemoryStream.Create;
 
-  liOffset := 0 ;
+  liOffset := 0;
   repeat
-    liLen := FQuery.GetLongField( psName,
-                                  @lBuffer, liOffset, cmiBuffer ) ;
-    FStream.Write( lBuffer, liLen ) ;
-    inc( liOffset, cmiBuffer ) ;
-  until liLen < cmiBuffer ;
+    liLen := FQuery.GetLongField(AName,
+                                  @lBuffer, liOffset, cmiBuffer);
+    FStream.Write(lBuffer, liLen);
+    inc(liOffset, cmiBuffer);
+  until liLen < cmiBuffer;
 
-  result := FStream ;
+  result := FStream;
 
-end ;
+end;
 }
 
-procedure TtiQueryDOA.AssignFieldAsStream(const pName: string; const pValue: TStream );
+procedure TtiQueryDOA.AssignFieldAsStream(const AName: string; const AValue: TStream);
 var
   LLOB: TLOBLocator;
 begin
-  Assert( pValue <> nil, 'Stream not assigned' ) ;
-  pValue.Size := 0 ;
-  LLOB := FQuery.LOBField(pName);
+  Assert(AValue <> nil, 'Stream not assigned');
+  AValue.Size := 0;
+  LLOB := FQuery.LOBField(AName);
   if not LLOB.IsNull then
-    pValue.CopyFrom(LLOB, LLOB.Size);
-  pValue.Position := 0;
+    AValue.CopyFrom(LLOB, LLOB.Size);
+  AValue.Position := 0;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -463,30 +467,30 @@ end;
 procedure TtiDatabaseDOA.Commit;
 begin
   try
-    Assert( FInTransaction, 'Attempt to call commit when a transaction is not open' ) ;
+    Assert(FInTransaction, 'Attempt to call commit when a transaction is not open');
     try
       // mmm what happens if a commit fails. Should we roll back?
-      FOracleSession.Commit ;
+      FOracleSession.Commit;
     finally
-      FInTransaction := false ;
-    end ;
+      FInTransaction := false;
+    end;
   except
     on e:exception do
     begin
-      ErrorInLastCall := true ;
-      raise ;
-    end ;
-  end ;
+      ErrorInLastCall := true;
+      raise;
+    end;
+  end;
 end;
 
 constructor TtiDatabaseDOA.Create;
 begin
   inherited;
-  FOracleSession := TOracleSession.Create( nil ) ;
+  FOracleSession := TOracleSession.Create(nil);
   // If these are commented out, DOA will determine which version of OCI to use
-  // FOracleSession.UseOCI80 := false ;
-  // FOracleSession.Preferences.UseOCI7 := true ;
-  FInTransaction := false ;
+  // FOracleSession.UseOCI80 := false;
+  // FOracleSession.Preferences.UseOCI7 := true;
+  FInTransaction := false;
 end;
 
 destructor TtiDatabaseDOA.destroy;
@@ -495,254 +499,260 @@ begin
   // the pool after Oracle has gone down. An exception will be raised by
   // DOA in this case.
   try
-    FOracleSession.Connected := false ;
-  except end ;
-  FOracleSession.Free ;
+    FOracleSession.Connected := false;
+  except end;
+  FOracleSession.Free;
   inherited;
 end;
 
-procedure TtiQueryDOA.AttachDatabase(pDatabase: TtiDatabase);
+procedure TtiQueryDOA.AttachDatabase(ADatabase: TtiDatabase);
 begin
-  inherited AttachDatabase( pDatabase ) ;
-  FQuery.Session := TtiDatabaseDOA( pDatabase ).OracleSession ;
+  inherited AttachDatabase(ADatabase);
+  FQuery.Session := TtiDatabaseDOA(ADatabase).OracleSession;
 end;
 
 procedure TtiQueryDOA.DetachDatabase;
 begin
-  inherited DetachDatabase ;
-  FQuery.Session := nil ;
+  inherited DetachDatabase;
+  FQuery.Session := nil;
+end;
+
+procedure TtiQueryDOA.DoChangeOptions(Sender: TObject);
+begin
+  if Options.IndexOfName(CtiQueryOptionDOAReadBuffer) <> -1 then
+    FQuery.ReadBuffer:= StrToInt(Options.Values[CtiQueryOptionDOAReadBuffer]);
 end;
 
 procedure TtiDatabaseDOA.StartTransaction;
 begin
   try
-    Assert( not FInTransaction, 'Attempt to start a transaction when one is already open' ) ;
-  //  FOracleSession.SavePoint( cSavePoint ) ;
-    FInTransaction := true ;
+    Assert(not FInTransaction, 'Attempt to start a transaction when one is already open');
+  //  FOracleSession.SavePoint(cSavePoint);
+    FInTransaction := true;
   except
     on e:exception do
     begin
-      ErrorInLastCall := true ;
+      ErrorInLastCall := true;
       raise;
-    end ;
-  end ;
+    end;
+  end;
 end;
 
 function TtiDatabaseDOA.InTransaction: boolean;
 begin
   try
-    result := FInTransaction ;
-  //  result := FOracleSession.InTransaction ;
+    result := FInTransaction;
+  //  result := FOracleSession.InTransaction;
   except
     on e:exception do
     begin
-      ErrorInLastCall := true ;
-      raise ;
-    end ;
-  end ;
+      ErrorInLastCall := true;
+      raise;
+    end;
+  end;
 end;
 
 procedure TtiDatabaseDOA.RollBack;
 begin
   if not FInTransaction then
-    Exit ; //==>
+    Exit; //==>
   try
-    // FOracleSession.RollBackToSavePoint( cSavePoint ) ;
+    // FOracleSession.RollBackToSavePoint(cSavePoint);
     // The DBConnection might be broken, so a rollback will raise an
     // exception. Assume the DB will rollback if the connection has been
     // broken.
     try
-      FOracleSession.Rollback ;
+      FOracleSession.Rollback;
     except
       on e:exception do
-        ErrorInLastCall := true ;
-    end ;
+        ErrorInLastCall := true;
+    end;
   finally
-    FInTransaction := false ;
-  end ;
+    FInTransaction := false;
+  end;
 end;
 
 function TtiQueryDOA.FieldCount: integer;
 begin
-  result := FQuery.FieldCount ;
+  result := FQuery.FieldCount;
 end;
 
-function TtiQueryDOA.FieldName(pIndex: integer): string;
+function TtiQueryDOA.FieldName(AIndex: integer): string;
 begin
-  result := FQuery.FieldName( pIndex ) ;
+  result := FQuery.FieldName(AIndex);
 end;
 
 // Reset the query, same as calling SQL.Clear and DeleteVariables
 procedure TtiQueryDOA.Reset;
 begin
-  Active := false ;
-  FQuery.SQL.Clear ;
-  FQuery.DeleteVariables ;
-  FslVariables.Clear ;
+  Active := false;
+  FQuery.SQL.Clear;
+  FQuery.DeleteVariables;
+  FslVariables.Clear;
 end;
 
-function TtiQueryDOA.FieldIndex(const psName: string): integer;
+function TtiQueryDOA.FieldIndex(const AName: string): integer;
 begin
-  result := FQuery.FieldIndex( psName ) ;
+  result := FQuery.FieldIndex(AName);
 end;
 
-procedure TtiQueryDOA.SetParamAsMacro(const psName, Value: string);
+procedure TtiQueryDOA.SetParamAsMacro(const AName, AValue: string);
 begin
   SQLText :=
-    tiCIStrTran( SQLText,
-                 cgtiQueryMacroChr + psName,
-                 Value ) ;
+    tiCIStrTran(SQLText,
+                 cgtiQueryMacroChr + AName,
+                 AValue);
 end;
 
-function  TtiQueryDOA.GetParamIsNull( const psName: String): Boolean;
+function  TtiQueryDOA.GetParamIsNull(const AName: String): Boolean;
 var
   AValue: Variant;
 begin
-  AValue := FQuery.GetVariable( psName);
+  AValue := FQuery.GetVariable(AName);
   Result := VarIsNull(AValue) or VarIsEmpty(AValue);
 end;
 
-procedure TtiQueryDOA.SetParamIsNull( const psName: String; const Value: Boolean);
+procedure TtiQueryDOA.SetParamIsNull(const AName: String; const AValue: Boolean);
 begin
-  if Value then
+  if AValue then
   begin
     // Keep an eye on this for errors. A variable must be declared before it can be used.
     // If a var is is set to nill in the first call, then a value in the second, and it's not a
     // string, there may be problems...
-    DeclareVariable( psName, otString ) ;
-    FQuery.SetVariable(psName, null)
+    DeclareVariable(AName, otString);
+    FQuery.SetVariable(AName, null)
   end
   else
-    raise EtiOPFDOAException.Create('Parameter <' + psName + '> cannot be explicitly set to non-null');
+    raise EtiOPFDOAException.Create('Parameter <' + AName + '> cannot be explicitly set to non-null');
 end;
 
-function TtiQueryDOA.FieldKind(pIndex: integer): TtiQueryFieldKind;
+function TtiQueryDOA.FieldKind(AIndex: integer): TtiQueryFieldKind;
 var
-  lPrecision : integer ;
-  lScale : integer ;
+  lPrecision : integer;
+  lScale : integer;
 begin
-  case FQuery.FieldType( pIndex ) of
-  otString  : result := qfkString     ;
-  otInteger : result := qfkInteger    ;
-  otFloat   : result := qfkFloat      ;
-  otDate    : result := qfkDateTime   ;
-  otLong    : result := qfkLongString ;
-  otCLOB    : result := qfkLongString ;
-  otLongRaw : result := qfkBinary     ;
-  otBLOB    : result := qfkBinary     ;
+  case FQuery.FieldType(AIndex) of
+  otString : result := qfkString    ;
+  otInteger : result := qfkInteger   ;
+  otFloat  : result := qfkFloat     ;
+  otDate   : result := qfkDateTime  ;
+  otLong   : result := qfkLongString;
+  otCLOB   : result := qfkLongString;
+  otLongRaw : result := qfkBinary    ;
+  otBLOB   : result := qfkBinary    ;
   else
-    raise EtiOPFDOAException.Create( 'Invalid oracle field type <' +
-                    IntToStr(FQuery.FieldType(pIndex)) + '>');
-  end ;
+    raise EtiOPFDOAException.Create('Invalid oracle field type <' +
+                    IntToStr(FQuery.FieldType(AIndex)) + '>');
+  end;
 
   if (result = qfkFloat) then
   begin
-    lPrecision := FQuery.FieldPrecision(pIndex) ;
-    lScale     := FQuery.FieldScale(pIndex) ;
-    if ( lPrecision <> 0 ) and ( lScale = 0 ) then
-      result := qfkInteger ;
-  end ;
+    lPrecision := FQuery.FieldPrecision(AIndex);
+    lScale    := FQuery.FieldScale(AIndex);
+    if (lPrecision <> 0) and (lScale = 0) then
+      result := qfkInteger;
+  end;
 
 end;
 
-function TtiQueryDOA.FieldSize(pIndex: integer): integer;
+function TtiQueryDOA.FieldSize(AIndex: integer): integer;
 //var
-//  lValue : string ;
+//  lValue : string;
 begin
-  case FieldKind( pIndex ) of
-    qfkString     : begin
-                      result := FQuery.FieldSize( pIndex ) ;
+  case FieldKind(AIndex) of
+    qfkString    : begin
+                      result := FQuery.FieldSize(AIndex);
                       //  Can not detect field size for a logical as it will be stored as a string
-                      //  qfkLogical    : result := 0 ;
+                      //  qfkLogical   : result := 0;
                       // ToDo: What it it's a logical, but there is no data
                       //       returned. Can't check the field width then
 (*
                       if (result = 1) or (result = 5) then
                       begin
-                        lValue := FieldAsString[FieldName(pIndex)] ;
+                        lValue := FieldAsString[FieldName(AIndex)];
                         {$IFDEF BOOLEAN_CHAR_1}
-                           if ( result = 1 ) and
-                              ( SameText( lValue, 'T' ) or SameText( lValue, 'F' )) then
-                             result := 0 ;
+                           if (result = 1) and
+                              (SameText(lValue, 'T') or SameText(lValue, 'F')) then
+                             result := 0;
                         {$ELSE}
-                           if ( result = 5 ) and
-                              ( SameText( lValue, 'TRUE' ) or SameText( lValue, 'FALSE' )) then
-                             result := 0 ;
+                           if (result = 5) and
+                              (SameText(lValue, 'TRUE') or SameText(lValue, 'FALSE')) then
+                             result := 0;
                         {$ENDIF}
-                      end ;
+                      end;
 *)                      
-                    end ;
-    qfkLongString : result := 0 ;
-    qfkInteger    : result := 0 ;
-    qfkFloat      : result := 0 ;
-    qfkDateTime   : result := 0 ;
-    qfkBinary     : result := 0 ;
+                    end;
+    qfkLongString : result := 0;
+    qfkInteger   : result := 0;
+    qfkFloat     : result := 0;
+    qfkDateTime  : result := 0;
+    qfkBinary    : result := 0;
   else
-    raise EtiOPFDOAException.CreateFmt( 'Invalid oracle field type <%s>',
-                    [FQuery.FieldType(pIndex)]) ;
-  end ;
+    raise EtiOPFDOAException.CreateFmt('Invalid oracle field type <%s>',
+                    [FQuery.FieldType(AIndex)]);
+  end;
 end;
 
-procedure TtiQueryDOA.DeclareVariable(const psName: string; piOracleType: integer);
+procedure TtiQueryDOA.DeclareVariable(const AName: string; piOracleType: integer);
 var
-  lsName : string ;
+  lsName : string;
 begin
-  lsName := UpperCase( psName ) ;
+  lsName := UpperCase(AName);
   // Not sure if this check before declaring a parameter is necessary. Test later.
-  if FslVariables.IndexOf( lsName ) = -1 then
+  if FslVariables.IndexOf(lsName) = -1 then
   begin
-    FslVariables.Add( lsName ) ;
-    FQuery.DeclareVariable( psName, piOracleType ) ;
-  end ;
-//  FQuery.DeclareVariable( psName, otFloat ) ;
-//  FQuery.DeclareVariable( psName, otString ) ;
-//  FQuery.DeclareVariable( psName, otDate ) ;
-//  FQuery.DeclareVariable( psName, otLong ) ;
-//  FQuery.DeclareVariable( psName, otLongRaw ) ;
+    FslVariables.Add(lsName);
+    FQuery.DeclareVariable(AName, piOracleType);
+  end;
+//  FQuery.DeclareVariable(AName, otFloat);
+//  FQuery.DeclareVariable(AName, otString);
+//  FQuery.DeclareVariable(AName, otDate);
+//  FQuery.DeclareVariable(AName, otLong);
+//  FQuery.DeclareVariable(AName, otLongRaw);
 
 end;
 
-procedure TtiDatabaseDOA.SetConnected(pbValue: boolean);
+procedure TtiDatabaseDOA.SetConnected(AValue: boolean);
 var
-  FOldCursor : TCursor ;
+  FOldCursor : TCursor;
 begin
 
-  if ( not pbValue ) then
+  if (not AValue) then
   begin
-    Log( 'Disconnecting from %s', [DatabaseName], lsConnectionPool ) ;
-    FOracleSession.Connected := false ;
-    FInTransaction := false ;
-    Exit ; //==>
-  end ;
+    Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);
+    FOracleSession.Connected := false;
+    FInTransaction := false;
+    Exit; //==>
+  end;
 
-  FOracleSession.LogonDatabase := DatabaseName ;
-  FOracleSession.LogonUserName := UserName ;
-  FOracleSession.LogonPassword := Password ;
+  FOracleSession.LogonDatabase := DatabaseName;
+  FOracleSession.LogonUserName := UserName;
+  FOracleSession.LogonPassword := Password;
 
   try
-    FOldCursor := FOracleSession.Cursor ;
+    FOldCursor := FOracleSession.Cursor;
     if GetCurrentThreadId <> MainThreadID then
       FOracleSession.Cursor := Screen.Cursor;
     try
-      FOracleSession.Connected     := true ;
+      FOracleSession.Connected    := true;
     finally
-      FOracleSession.Cursor := FOldCursor ;
+      FOracleSession.Cursor := FOldCursor;
     end;
   except
     on e:exception do
-      raise EtiOPFDBExceptionCanNotConnect.Create( ctiPersistDOA, DatabaseName, UserName, Password, e.message ) ;
-  end ;
+      raise EtiOPFDBExceptionCanNotConnect.Create(ctiPersistDOA, DatabaseName, UserName, Password, e.message);
+  end;
 
 end;
 
 function TtiDatabaseDOA.GetConnected: boolean;
 begin
-  result := FOracleSession.Connected ;
+  result := FOracleSession.Connected;
 end;
 
-function TtiQueryDOA.GetFieldIsNull(const psName: string): Boolean;
+function TtiQueryDOA.GetFieldIsNull(const AName: string): Boolean;
 begin
-  result := FQuery.FieldIsNull( FieldIndex( psName )) ;
+  result := FQuery.FieldIsNull(FieldIndex(AName));
 end;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -750,72 +760,72 @@ end;
 //* TtiDBConnectionPoolDataDOA
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDBConnectionPoolDataDOA.InitDBConnectionPool ;
+procedure TtiDBConnectionPoolDataDOA.InitDBConnectionPool;
 var
-  lsDBSid : string ;
+  lsDBSid : string;
 begin
   // Commented our because of bug running DSA system
 
-  lsDBSid := DBConnectionPool.DBConnectParams.DatabaseName ;
-  if CheckTNSNamesForSid( lsDBSid ) then
-    Exit ; //==>
+  lsDBSid := DBConnectionPool.DBConnectParams.DatabaseName;
+  if CheckTNSNamesForSid(lsDBSid) then
+    Exit; //==>
 
 
   // If you get here, then the DBSid was not found in TNSNames, so it must be
   // added
-  AddEntryToTNSNames( lsDBSid ) ;
+  AddEntryToTNSNames(lsDBSid);
 
   // Confirm we where able to add the database to TNSNames
-  if not CheckTNSNamesForSid( lsDBSid ) then
+  if not CheckTNSNamesForSid(lsDBSid) then
     raise EtiOPFDOAException.CreateFmt(
       'TNSNames.ora does not contain an entry for %s',
                     [lsDBSid]);
 end;
 
-function TtiDBConnectionPoolDataDOA.CheckTNSNamesForSid( const psDBSid : string ) : boolean ;
+function TtiDBConnectionPoolDataDOA.CheckTNSNamesForSid(const psDBSid : string): boolean;
 var
-  i : integer ;
+  i : integer;
 begin
-  BuildOracleAliasList ;
-  result := false ;
+  BuildOracleAliasList;
+  result := false;
   for i := 0 to OracleAliasList.Count - 1 do
-    if SameText( psDBSid, OracleAliasList.Strings[i] ) then
+    if SameText(psDBSid, OracleAliasList.Strings[i]) then
     begin
-      result := true ;
-      Break ; //==>
-    end ;
-end ;
+      result := true;
+      Break; //==>
+    end;
+end;
 
-procedure TtiDBConnectionPoolDataDOA.AddEntryToTNSNames( const psDBSid : string ) ;
+procedure TtiDBConnectionPoolDataDOA.AddEntryToTNSNames(const psDBSid : string);
 var
-  lsl : TStringList ;
-  lsStartDir : string ;
-  i : integer ;
+  lsl : TStringList;
+  lsStartDir : string;
+  i : integer;
 begin
-  lsStartDir := tiExtractDirToLevel( OCIDLL, 1 ) ;
-  lsl := TStringList.Create ;
+  lsStartDir := tiExtractDirToLevel(OCIDLL, 1);
+  lsl := TStringList.Create;
   try
-    tiFilesToStringList( lsStartDir,
+    tiFilesToStringList(lsStartDir,
                          'TNSNames.Ora',
                          lsl,
-                         true ) ;
+                         true);
     for i := 0 to lsl.Count - 1 do
-      AddEntryToTNSNames( lsl.Strings[i],
+      AddEntryToTNSNames(lsl.Strings[i],
                           psDBSid,
                           DBConnectionPool.DBConnectParams.HostName
-                         ) ;
+                        );
 
   finally
-    lsl.Free ;
-  end ;
+    lsl.Free;
+  end;
 
-end ;
+end;
 
-procedure TtiDBConnectionPoolDataDOA.AddEntryToTNSNames(const psFileName, psDBSid, psHost : string);
+procedure TtiDBConnectionPoolDataDOA.AddEntryToTNSNames(const AFileName, psDBSid, psHost : string);
 var
-  lStream : TFileStream ;
-  ls : string ;
-  lb : PChar ;
+  lStream : TFileStream;
+  ls : string;
+  lb : PChar;
 begin
   ls :=
     CrLf +
@@ -826,32 +836,32 @@ begin
     '          (PROTOCOL = TCP)'     + CrLf +
     '          (Host = %s)'          + CrLf +
     '          (Port = 1521)'        + CrLf +
-    '        )'                      + CrLf +
-    '    )'                          + CrLf +
+    '       )'                      + CrLf +
+    '   )'                          + CrLf +
     '    (CONNECT_DATA = (SID = %s)' + CrLf +
-    '    )'                          + CrLf +
-    '  )'                            + CrLf ;
-  ls :=  Format( ls, [psDBSid, psHost, psDBSid ]) ;
-  lb := PChar( ls ) ;
-  lStream := TFileStream.Create( psFileName, fmOpenReadWrite or fmShareDenyNone	 )  ;
+    '   )'                          + CrLf +
+    ' )'                            + CrLf;
+  ls :=  Format(ls, [psDBSid, psHost, psDBSid ]);
+  lb := PChar(ls);
+  lStream := TFileStream.Create(AFileName, fmOpenReadWrite or fmShareDenyNone	) ;
   try
-    lStream.Position := lStream.Size ;
-    lStream.WriteBuffer( lb^, Length( ls )) ;
+    lStream.Position := lStream.Size;
+    lStream.WriteBuffer(lb^, Length(ls));
   finally
-    lStream.Free ;
-  end ;
-end ;
+    lStream.Free;
+  end;
+end;
 
-procedure TtiDatabaseDOA.ReadMetaDataTables(pData: TtiDBMetaData);
+procedure TtiDatabaseDOA.ReadMetaDataTables(AData: TtiDBMetaData);
 var
-  lQuery : TtiQuery ;
-  lMetaData : TtiDBMetaData ;
-  lTable : TtiDBMetaDataTable ;
+  lQuery : TtiQuery;
+  lMetaData : TtiDBMetaData;
+  lTable : TtiDBMetaDataTable;
 begin
-  lMetaData := ( pData as TtiDBMetaData ) ;
+  lMetaData := (AData as TtiDBMetaData);
   lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
-    lQuery.AttachDatabase( Self ) ;
+    lQuery.AttachDatabase(Self);
     lQuery.SQLText :=
     'select ' +
     '   table_name ' +
@@ -869,7 +879,7 @@ begin
     'and owner <> ''SYS'' ' +
     ' ' +
     'order by ' +
-    '  table_name ' ;
+    '  table_name ';
 
 {
     'select ' +
@@ -892,34 +902,34 @@ begin
 //    'and owner <> ''SYS'' ' +
     ' ' +
     'order by ' +
-    '  table_name ' ;
+    '  table_name ';
 }
-    lQuery.Open ;
+    lQuery.Open;
     while not lQuery.EOF do
     begin
-      lTable := TtiDBMetaDataTable.Create ;
-      lTable.Name := lQuery.FieldAsString[ 'table_name' ] ;
-      lTable.ObjectState := posPK ;
-      lMetaData.Add( lTable ) ;
-      lQuery.Next ;
-    end ;
-    lQuery.DetachDatabase ;
-    lMetaData.ObjectState := posClean ;
+      lTable := TtiDBMetaDataTable.Create;
+      lTable.Name := lQuery.FieldAsString[ 'table_name' ];
+      lTable.ObjectState := posPK;
+      lMetaData.Add(lTable);
+      lQuery.Next;
+    end;
+    lQuery.DetachDatabase;
+    lMetaData.ObjectState := posClean;
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 end;
 
-procedure TtiDatabaseDOA.ReadMetaDataFields(pData: TtiDBMetaDataTable);
+procedure TtiDatabaseDOA.ReadMetaDataFields(AData: TtiDBMetaDataTable);
 var
-  lQuery : TtiQuery ;
-  lTable : TtiDBMetaDataTable ;
-  lField : TtiDBMetaDataField ;
+  lQuery : TtiQuery;
+  lTable : TtiDBMetaDataTable;
+  lField : TtiDBMetaDataField;
 begin
-  lTable := ( pData as TtiDBMetaDataTable ) ;
+  lTable := (AData as TtiDBMetaDataTable);
   lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
-    lQuery.AttachDatabase( Self ) ;
+    lQuery.AttachDatabase(Self);
     lQuery.SQLText :=
       'select ' +
       '     COLUMN_NAME ' +
@@ -937,135 +947,135 @@ begin
       '   table_name = ''' + lTable.Name + '''' {+
       'order by ' +
       '    column_name ' +
-      ' ' } ;
-    lQuery.Open ;
+      ' ' };
+    lQuery.Open;
     while not lQuery.EOF do
     begin
-      lField := TtiDBMetaDataField.Create ;
-      lField.Name := lQuery.FieldAsString[ 'COLUMN_NAME' ] ;
-      lField.ObjectState := posClean ;
-      lTable.Add( lField ) ;
-      lQuery.Next ;
-    end ;
-    lQuery.DetachDatabase ;
-    lTable.ObjectState := posClean ;
+      lField := TtiDBMetaDataField.Create;
+      lField.Name := lQuery.FieldAsString[ 'COLUMN_NAME' ];
+      lField.ObjectState := posClean;
+      lTable.Add(lField);
+      lQuery.Next;
+    end;
+    lQuery.DetachDatabase;
+    lTable.ObjectState := posClean;
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 end;
 
-function TtiQueryDOA.FindCreateBinParam(const pName: string; AOracleDataType: byte): TtiDOABinParamItem;
+function TtiQueryDOA.FindCreateBinParam(const AName: string; AOracleDataType: byte): TtiDOABinParamItem;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := nil ;
+  result := nil;
   if FDOABinParamList = nil then
     FDOABinParamList := TObjectList.Create(True);
   for i := 0 to FDOABinParamList.Count - 1 do
-    if SameText( TtiDOABinParamItem(FDOABinParamList.Items[i]).ParamName, pName) then
+    if SameText(TtiDOABinParamItem(FDOABinParamList.Items[i]).ParamName, AName) then
     begin
       result := TtiDOABinParamItem(FDOABinParamList.Items[i]);
-      Break ; //==>
-    end ;
+      Break; //==>
+    end;
   if result = nil then
   begin
     result := TtiDOABinParamItem.Create((Database as TtiDatabaseDOA).OracleSession, AOracleDataType);
-    result.ParamName := pName ;
+    result.ParamName := AName;
     FDOABinParamList.Add(result);
   end;
 end;
 
-procedure TtiQueryDOA.AssignParamFromStream(const pName: string; const pValue: TStream);
+procedure TtiQueryDOA.AssignParamFromStream(const AName: string; const AValue: TStream);
 var
-  LBinParam : TtiDOABinParamItem ;
+  LBinParam : TtiDOABinParamItem;
 begin
-  DeclareVariable( pName, otBLOB ) ;
-  LBinParam := FindCreateBinParam(pName, otBLOB);
-  LBinParam.LoadFromStream(pValue);
-  FQuery.SetComplexVariable(pName, LBinParam.LOBLocator);
+  DeclareVariable(AName, otBLOB);
+  LBinParam := FindCreateBinParam(AName, otBLOB);
+  LBinParam.LoadFromStream(AValue);
+  FQuery.SetComplexVariable(AName, LBinParam.LOBLocator);
 end;
 
-procedure TtiQueryDOA.AssignParamToStream(const pName: string; const pValue: TStream);
+procedure TtiQueryDOA.AssignParamToStream(const AName: string; const AValue: TStream);
 var
-  lBinParam : TtiDOABinParamItem ;
+  lBinParam : TtiDOABinParamItem;
 begin
-  lBinParam := FindCreateBinParam(pName, otBLOB);
-  lBinParam.SaveToStream(pValue);
+  lBinParam := FindCreateBinParam(AName, otBLOB);
+  lBinParam.SaveToStream(AValue);
 end;
 
-function TtiDatabaseDOA.FieldMetaDataToSQLCreate( const pFieldMetaData: TtiDBMetaDataField): string;
+function TtiDatabaseDOA.FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string;
 var
-  lFieldName : string ;
+  lFieldName : string;
 begin
-  lFieldName := pFieldMetaData.Name ;
-  case pFieldMetaData.Kind of
-    qfkString     : result := 'VarChar2( ' + IntToStr( pFieldMetaData.Width ) + ')' ;
+  lFieldName := AFieldMetaData.Name;
+  case AFieldMetaData.Kind of
+    qfkString    : result := 'VarChar2(' + IntToStr(AFieldMetaData.Width) + ')';
 // Change by ZL
 // was Number(12,0) - Number(12) looks cleaner and is used by Oracle it self
-    qfkInteger    : result := 'Number( 12 )' ;
+    qfkInteger   : result := 'Number(12)';
 //Change by ZL
 // was Numeric(11,5) - better Number than we can cover whole Real range.
 // this is equal to Number(*) and means Maximal precision and scale.
 // Numeric(11,5) is subset og Number so there is back-compability
-    qfkFloat      : result := 'Number' ;
-    qfkDateTime   : result := 'Date' ;
+    qfkFloat     : result := 'Number';
+    qfkDateTime  : result := 'Date';
     {$IFDEF BOOLEAN_CHAR_1}
-    qfkLogical    : result := 'Char( 1 ) default ''F'' check( ' + lFieldName + ' in ( ''T'', ''F'' ))' ;
+    qfkLogical   : result := 'Char(1) default ''F'' check(' + lFieldName + ' in (''T'', ''F''))';
     {$ELSE}
-    qfkLogical    : result := 'VarChar( 5 ) default ''FALSE'' check( ' + lFieldName + ' in ( ''TRUE'', ''FALSE'' )) ' ;
+    qfkLogical   : result := 'VarChar(5) default ''FALSE'' check(' + lFieldName + ' in (''TRUE'', ''FALSE'')) ';
     {$ENDIF}
-    qfkBinary     : result := 'BLOB' ;
-    qfkLongString : result := 'CLOB' ;
+    qfkBinary    : result := 'BLOB';
+    qfkLongString : result := 'CLOB';
   else
-    raise EtiOPFDOAException.Create( 'Invalid FieldKind') ;
-  end ;
+    raise EtiOPFDOAException.Create('Invalid FieldKind');
+  end;
 end;
 
-class procedure TtiDatabaseDOA.CreateDatabase(const psDatabaseName,psUserName, psPassword: string);
+class procedure TtiDatabaseDOA.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
 begin
-  Assert( false, 'CreateDatabase not implemented in ' + ClassName);
+  Assert(false, 'CreateDatabase not implemented in ' + ClassName);
 end;
 
-class function TtiDatabaseDOA.DatabaseExists(const psDatabaseName,psUserName, psPassword: string):boolean;
+class function TtiDatabaseDOA.DatabaseExists(const ADatabaseName,AUserName, APassword: string):boolean;
 begin
-  result := false ;
-  Assert( false, 'DatabaseExists not implemented in ' + ClassName);
+  result := false;
+  Assert(false, 'DatabaseExists not implemented in ' + ClassName);
 end;
 
 function TtiQueryDOA.HasNativeLogicalType: boolean;
 begin
-  result := false ;
+  result := false;
 end;
 
 function TtiQueryDOA.OracleErrorMessage: string;
 var
-  lRow : integer ;
-  lCol  : integer ;
-  lArrow : string ;
-  i : integer ;
-  ls : string ;
+  lRow : integer;
+  lCol : integer;
+  lArrow : string;
+  i : integer;
+  ls : string;
 begin
-  ls     := SQLAndParamsAsString;
-  lRow   := FQuery.ErrorLine ;
-  lCol   := FQuery.ErrorPosition ;
+  ls    := SQLAndParamsAsString;
+  lRow  := FQuery.ErrorLine;
+  lCol  := FQuery.ErrorPosition;
 
-  if ( lRow <> 0 ) and ( lCol <> 0 ) then
+  if (lRow <> 0) and (lCol <> 0) then
   begin
-    result := '' ;
-    lArrow := tiReplicate( '-', lCol ) + '---^';
-    for i := 1 to tiNumToken( ls, Cr ) do
+    result := '';
+    lArrow := tiReplicate('-', lCol) + '---^';
+    for i := 1 to tiNumToken(ls, Cr) do
     begin
       if i = lRow+2 then
-        result := result + Cr + lArrow ;
-      result := result + Cr + tiToken( ls, Cr, i ) ;
+        result := result + Cr + lArrow;
+      result := result + Cr + tiToken(ls, Cr, i);
     end;
   end else
-    result := ls ;
+    result := ls;
 
   result :=
-    result + ' ' + Cr( 2 ) + 
-    'Error row: ' + IntToStr( lRow ) + ' ' +
-    'Error col: ' + IntToStr( lCol ) ;
+    result + ' ' + Cr(2) + 
+    'Error row: ' + IntToStr(lRow) + ' ' +
+    'Error col: ' + IntToStr(lCol);
 
 end;
 
@@ -1086,111 +1096,111 @@ end;
 
 function TtiDatabaseDOA.Test: boolean;
 var
-  lQuery : TtiQuery ;
+  lQuery : TtiQuery;
 begin
-  result := false ;
+  result := false;
   try
     lQuery := CreateTIQuery;
     try
-      lQuery.AttachDatabase( Self ) ;
-      lQuery.SQLText := 'select null from dual' ;
-      lQuery.Open ;
-      while ( not lQuery.EOF ) and
-            ( not result ) do
-        result := true ;
-      lQuery.DetachDatabase ;
+      lQuery.AttachDatabase(Self);
+      lQuery.SQLText := 'select null from dual';
+      lQuery.Open;
+      while (not lQuery.EOF) and
+            (not result) do
+        result := true;
+      lQuery.DetachDatabase;
     finally
-      lQuery.Free ;
-    end ;
+      lQuery.Free;
+    end;
   except
     on e:exception do
-      result := false ;
-  end ;
+      result := false;
+  end;
   if not result then
-    ErrorInLastCall := true ;
+    ErrorInLastCall := true;
 end;
 
-function TtiQueryDOA.GetFieldAsStringByIndex(pIndex: Integer): string;
+function TtiQueryDOA.GetFieldAsStringByIndex(AIndex: Integer): string;
 begin
-  result := FQuery.Field(pIndex);
+  result := FQuery.Field(AIndex);
 end;
 
-function TtiQueryDOA.GetFieldAsBooleanByIndex(pIndex: Integer): boolean;
+function TtiQueryDOA.GetFieldAsBooleanByIndex(AIndex: Integer): boolean;
 var
-  lsValue : string ;
+  lsValue : string;
 begin
-  lsValue := upperCase( FQuery.Field( pIndex )) ;
-  result := ( lsValue = 'T'    ) or
-            ( lsValue = 'TRUE' ) or
-            ( lsValue = 'Y'    ) or
-            ( lsValue = 'YES'  ) or
-            ( lsValue = '1'    ) ;
+  lsValue := upperCase(FQuery.Field(AIndex));
+  result := (lsValue = 'T'   ) or
+            (lsValue = 'TRUE') or
+            (lsValue = 'Y'   ) or
+            (lsValue = 'YES' ) or
+            (lsValue = '1'   );
 end;
 
-function TtiQueryDOA.GetFieldAsDateTimeByIndex(pIndex: Integer): TDateTime;
+function TtiQueryDOA.GetFieldAsDateTimeByIndex(AIndex: Integer): TDateTime;
 begin
-  result := FQuery.FieldAsDate( pIndex ) ;
+  result := FQuery.FieldAsDate(AIndex);
 end;
 
-function TtiQueryDOA.GetFieldAsFloatByIndex(pIndex: Integer): extended;
+function TtiQueryDOA.GetFieldAsFloatByIndex(AIndex: Integer): extended;
 begin
-  result := FQuery.FieldAsFloat( pIndex ) ;
+  result := FQuery.FieldAsFloat(AIndex);
 end;
 
-function TtiQueryDOA.GetFieldAsIntegerByIndex(pIndex: Integer): Int64;
+function TtiQueryDOA.GetFieldAsIntegerByIndex(AIndex: Integer): Int64;
 var
-  lr : double ;
+  lr : double;
 begin
   // Delphi real types
   // Real48	2.9 x 10^–39 .. 1.7 x 10^38	11–12	6
   // Single	1.5 x 10^–45 .. 3.4 x 10^38	7–8	4
   // Double	5.0 x 10^–324 .. 1.7 x 10^308	15–16	8
   // Extended	3.6 x 10^–4951 .. 1.1 x 10^4932	19–20	10
-  // An OID is Number( 15 ) so we must read it as a double, then convert to an integer.
-  lr := FQuery.Field( pIndex ) ;
-  result := Trunc( lr ) ;
+  // An OID is Number(15) so we must read it as a double, then convert to an integer.
+  lr := FQuery.Field(AIndex);
+  result := Trunc(lr);
 end;
 
-function TtiQueryDOA.GetFieldIsNullByIndex(pIndex: Integer): Boolean;
+function TtiQueryDOA.GetFieldIsNullByIndex(AIndex: Integer): Boolean;
 begin
-  result := FQuery.FieldIsNull( pIndex ) ;
+  result := FQuery.FieldIsNull(AIndex);
 end;
 
-procedure TtiQueryDOA.AssignFieldAsStreamByIndex(pIndex: Integer;const pValue: TStream);
+procedure TtiQueryDOA.AssignFieldAsStreamByIndex(AIndex: Integer;const AValue: TStream);
 var
   LLOB: TLOBLocator;
   LPosition: Integer;
 begin
-  Assert( pValue <> nil, 'Stream not assigned' ) ;
-  pValue.Size := 0 ;
-  LLOB := FQuery.LOBField(pIndex);
+  Assert(AValue <> nil, 'Stream not assigned');
+  AValue.Size := 0;
+  LLOB := FQuery.LOBField(AIndex);
   LPosition := LLOB.Position;
   LLOB.Position := 0;
   if not LLOB.IsNull then
-    pValue.CopyFrom(LLOB, LLOB.Size);
-  pValue.Position := 0;
+    AValue.CopyFrom(LLOB, LLOB.Size);
+  AValue.Position := 0;
   LLOB.Position := LPosition;
 end;
 
-procedure TtiDOABinParamItem.LoadFromStream(const pStream: TStream);
+procedure TtiDOABinParamItem.LoadFromStream(const AStream: TStream);
 var
   LPosition: Integer;
 begin
-  Assert(pStream<>nil, 'pStream not assigned');
-  LPosition:= pStream.Position;
-  pStream.Position := 0;
+  Assert(AStream<>nil, 'AStream not assigned');
+  LPosition:= AStream.Position;
+  AStream.Position := 0;
   FLOBLocator.Size := 0;
-  FLOBLocator.CopyFrom(pStream, pStream.Size);
-  pStream.Position := LPosition;
+  FLOBLocator.CopyFrom(AStream, AStream.Size);
+  AStream.Position := LPosition;
 end;
 
-procedure TtiDOABinParamItem.SaveToStream(const pStream: TStream);
+procedure TtiDOABinParamItem.SaveToStream(const AStream: TStream);
 begin
-  Assert(pStream<>nil, 'pStream not assigned');
+  Assert(AStream<>nil, 'AStream not assigned');
   FLOBLocator.Position := 0;
-  pStream.Size := 0;
-  pStream.CopyFrom(FLOBLocator, FLOBLocator.Size);
-  pStream.Position := 0;
+  AStream.Size := 0;
+  AStream.CopyFrom(FLOBLocator, FLOBLocator.Size);
+  AStream.Position := 0;
 end;
 
 initialization
@@ -1198,11 +1208,11 @@ initialization
               cTIPersistDOA,
               TtiDBConnectionPoolDataAbs,
               TtiQueryDOA,
-              TtiDatabaseDOA ) ;
+              TtiDatabaseDOA);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer( cTIPersistDOA ) ;
+    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistDOA);
 
 end.
 

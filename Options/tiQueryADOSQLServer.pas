@@ -13,15 +13,15 @@ type
   TtiDatabaseADOSQLServer = class(TtiDatabaseADOAbs)
   private
   protected
-    procedure   SetupDBParams ; override ;
-    function    FieldMetaDataToSQLCreate( const pFieldMetaData : TtiDBMetaDataField ) : string ; override ;
+    procedure   SetupDBParams; override;
+    function    FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; override;
   public
-    class function  DatabaseExists( const psDatabaseName, psUserName, psPassword : string ):boolean ; override ;
-    class procedure CreateDatabase( const psDatabaseName, psUserName, psPassword : string ) ; override ;
-    procedure       ReadMetaDataTables( pData : TtiDBMetaData ) ; override ;
-    procedure       ReadMetaDataFields( pData : TtiDBMetaDataTable ) ; override ;
-    function        Test : boolean ; override ;
-  end ;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
+    procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
+    function        Test : boolean; override;
+  end;
 
   TtiQueryADOSQLServer = class(TtiQueryADO);
 
@@ -39,85 +39,85 @@ uses
   ,tiConstants
   ,tiExcept
   ,SysUtils
-  ;
+ ;
 
 { TtiDatabaseADOSQLServer }
 
-class procedure TtiDatabaseADOSQLServer.CreateDatabase(const psDatabaseName, psUserName, psPassword: string);
+class procedure TtiDatabaseADOSQLServer.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
 begin
-  Assert( false, 'CreateDatabase not implemented in ' + ClassName);
+  Assert(false, 'CreateDatabase not implemented in ' + ClassName);
 end;
 
-class function TtiDatabaseADOSQLServer.DatabaseExists(const psDatabaseName, psUserName, psPassword: string):boolean;
+class function TtiDatabaseADOSQLServer.DatabaseExists(const ADatabaseName, AUserName, APassword: string):boolean;
 begin
-  result := false ;
-  Assert( false, 'DatabaseExists not implemented in ' + ClassName);
+  result := false;
+  Assert(false, 'DatabaseExists not implemented in ' + ClassName);
 end;
 
 function TtiDatabaseADOSQLServer.FieldMetaDataToSQLCreate(
-  const pFieldMetaData: TtiDBMetaDataField): string;
+  const AFieldMetaData: TtiDBMetaDataField): string;
 begin
-  case pFieldMetaData.Kind of
-    qfkString     : result := 'VarChar( ' + IntToStr( pFieldMetaData.Width ) + ' )' ;
-    qfkInteger    : result := 'Integer' ;
-    qfkFloat      : result := 'float' ;
-    qfkDateTime   : result := 'datetime' ;
-    qfkLogical    : result := 'bit';
-    qfkBinary     : result := 'Image' ;
-    qfkLongString : result := 'text' ;
+  case AFieldMetaData.Kind of
+    qfkString    : result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
+    qfkInteger   : result := 'Integer';
+    qfkFloat     : result := 'float';
+    qfkDateTime  : result := 'datetime';
+    qfkLogical   : result := 'bit';
+    qfkBinary    : result := 'Image';
+    qfkLongString : result := 'text';
   else
-    raise Exception.Create( 'Invalid FieldKind') ;
-  end ;
+    raise Exception.Create('Invalid FieldKind');
+  end;
 end;
 
-procedure TtiDatabaseADOSQLServer.ReadMetaDataFields(pData: TtiDBMetaDataTable);
+procedure TtiDatabaseADOSQLServer.ReadMetaDataFields(AData: TtiDBMetaDataTable);
 var
-  lTable : TtiDBMetaDataTable ;
-  lField : TtiDBMetaDataField ;
-  lDelphiTable : TADOTable ;
-  i : integer ;
+  lTable : TtiDBMetaDataTable;
+  lField : TtiDBMetaDataField;
+  lDelphiTable : TADOTable;
+  i : integer;
 begin
-  lTable := ( pData as TtiDBMetaDataTable ) ;
-  lDelphiTable := TADOTable.Create( nil ) ;
+  lTable := (AData as TtiDBMetaDataTable);
+  lDelphiTable := TADOTable.Create(nil);
   try
-    lDelphiTable.Connection := Connection ;
-    lDelphiTable.TableName := lTable.Name ;
-    lDelphiTable.FieldDefs.Update ;
+    lDelphiTable.Connection := Connection;
+    lDelphiTable.TableName := lTable.Name;
+    lDelphiTable.FieldDefs.Update;
     for i := 0 to lDelphiTable.FieldDefs.Count - 1 do
     begin
-      lField := TtiDBMetaDataField.Create ;
-      lField.Name := lDelphiTable.FieldDefs[i].Name ;
-      lField.ObjectState := posClean ;
-      lTable.Add( lField ) ;
-    end ;
-    lTable.ObjectState := posClean ;
+      lField := TtiDBMetaDataField.Create;
+      lField.Name := lDelphiTable.FieldDefs[i].Name;
+      lField.ObjectState := posClean;
+      lTable.Add(lField);
+    end;
+    lTable.ObjectState := posClean;
   finally
     lDelphiTable.Free;
-  end ;
+  end;
 end;
 
-procedure TtiDatabaseADOSQLServer.ReadMetaDataTables(pData: TtiDBMetaData);
+procedure TtiDatabaseADOSQLServer.ReadMetaDataTables(AData: TtiDBMetaData);
 var
-  lMetaData : TtiDBMetaData ;
-  lTable : TtiDBMetaDataTable ;
-  lsl : TStringList ;
-  i : integer ;
+  lMetaData : TtiDBMetaData;
+  lTable : TtiDBMetaDataTable;
+  lsl : TStringList;
+  i : integer;
 begin
-  lMetaData := ( pData as TtiDBMetaData ) ;
-  lsl := TStringList.Create ;
+  lMetaData := (AData as TtiDBMetaData);
+  lsl := TStringList.Create;
   try
     Connection.GetTableNames(lsl, false);
     for i := 0 to lsl.Count - 1 do
     begin
-      lTable := TtiDBMetaDataTable.Create ;
-      lTable.Name := lsl.Strings[i] ;
-      lTable.ObjectState := posPK ;
-      lMetaData.Add( lTable ) ;
-      lMetaData.ObjectState := posClean ;
-    end ;
+      lTable := TtiDBMetaDataTable.Create;
+      lTable.Name := lsl.Strings[i];
+      lTable.ObjectState := posPK;
+      lMetaData.Add(lTable);
+      lMetaData.ObjectState := posClean;
+    end;
   finally
     lsl.Free;
-  end ;
+  end;
 end;
 
 procedure TtiDatabaseADOSQLServer.SetupDBParams;
@@ -136,9 +136,9 @@ begin
     l_Database := Copy(DatabaseName,l_Delimiter + 1,Length(DatabaseName));
   end
   else
-    raise Exception.Create( 'Invalid DatabaseName.' );
+    raise Exception.Create('Invalid DatabaseName.');
   Connection.LoginPrompt := false;
-  Connection.IsolationLevel := ilReadCommitted ;
+  Connection.IsolationLevel := ilReadCommitted;
 
   if UpperCase(UserName) <> 'NULL' then
   begin
@@ -160,8 +160,8 @@ end;
 
 function TtiDatabaseADOSQLServer.Test: boolean;
 begin
-  result := false ;
-  Assert( false, 'Under construction' ) ;
+  result := false;
+  Assert(false, 'Under construction');
 end;
 
 Initialization
@@ -169,11 +169,11 @@ Initialization
                cTIPersistADOSQLServer,
                TtiDBConnectionPoolDataAbs,
                TtiQueryADOSQLServer,
-               TtiDatabaseADOSQLServer ) ;
+               TtiDatabaseADOSQLServer);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-   gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer( cTIPersistADOSQLServer ) ;
+   gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistADOSQLServer);
 
 end.
 

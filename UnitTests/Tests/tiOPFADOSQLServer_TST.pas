@@ -9,41 +9,41 @@ uses
   ,tiOPFTestManager
   ,tiClassToDBMap_TST
   ,tiOID_tst
-  ;
+ ;
 
 type
 
-  TtiOPFTestSetupDataADOSQLServer = class( TtiOPFTestSetupData )
+  TtiOPFTestSetupDataADOSQLServer = class(TtiOPFTestSetupData)
   public
-    constructor Create ; override ;
-  end ;
-
-  TTestTIPersistenceLayersADOSQLServer = class( TTestTIPersistenceLayers )
-  protected
-    procedure Setup; override;
+    constructor Create; override;
   end;
 
-  TTestTIDatabaseADOSQLServer = class( TTestTIDatabase )
+  TTestTIPersistenceLayersADOSQLServer = class(TTestTIPersistenceLayers)
   protected
-    procedure Setup; override;
-  published
-    procedure DatabaseExists ; override ;
-    procedure CreateDatabase ; override ;
-  end ;
+    procedure SetUp; override;
+  end;
 
-  TTestTIQueryADOSQLServer = class( TTestTIQuerySQL )
+  TTestTIDatabaseADOSQLServer = class(TTestTIDatabase)
   protected
-    procedure Setup; override;
+    procedure SetUp; override;
+  published
+    procedure DatabaseExists; override;
+    procedure CreateDatabase; override;
+  end;
+
+  TTestTIQueryADOSQLServer = class(TTestTIQuerySQL)
+  protected
+    procedure SetUp; override;
   end;
 
   TTestTIClassToDBMapOperationADOSQLServer = class(TTestTIClassToDBMapOperation)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
   TTestTIOIDManagerADOSQLServer = class(TTestTIOIDManager)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
 procedure RegisterTests;
@@ -56,9 +56,9 @@ uses
   ,tiUtils
   ,tiLog
   ,tiDUnitDependencies
-  ;
+ ;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistADOSQLServer) then
   begin
@@ -68,7 +68,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIOIDManagerADOSQLServer.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIClassToDBMapOperationADOSQLServer.Suite);
   end;
-end ;
+end;
 
 { TtiOPFTestSetupDataADOSQLServer }
 
@@ -85,50 +85,50 @@ begin
     {$ENDIF}
   {$ENDIF}
   FSelected:= FEnabled;
-  FPerLayerName := cTIPersistADOSQLServer ;
-  FDBName   := ReadFromReg( cTIPersistADOSQLServer, 'DBName', 'EnterValueHere' ) ;
-  FUserName := ReadFromReg( cTIPersistADOSQLServer, 'UserName', 'null') ;
-  FPassword := ReadFromReg( cTIPersistADOSQLServer, 'Password', 'null') ;
-  FCanCreateDatabase := false ;
+  FPerLayerName := cTIPersistADOSQLServer;
+  FDBName  := ReadFromReg(cTIPersistADOSQLServer, 'DBName', 'EnterValueHere');
+  FUserName := ReadFromReg(cTIPersistADOSQLServer, 'UserName', 'null');
+  FPassword := ReadFromReg(cTIPersistADOSQLServer, 'Password', 'null');
+  FCanCreateDatabase := false;
 end;
 
 procedure TTestTIDatabaseADOSQLServer.CreateDatabase;
 begin
   try
-    FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password );
+    FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
     Fail('Exception not raised when it should have been');
   except
     on e:exception do
     begin
       CheckIs(e, EAssertionFailed);
       Check(Pos('CreateDatabase not implemented in ' + FDatabaseClass.ClassName, e.Message)<>0);
-    end ;
-  end ;
+    end;
+  end;
 end;
 
 procedure TTestTIDatabaseADOSQLServer.DatabaseExists;
 begin
   try
-    FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password );
+    FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
     Fail('Exception not raised when it should have been');
   except
     on e:exception do
     begin
       CheckIs(e, EAssertionFailed);
       Check(Pos('DatabaseExists not implemented in ' + FDatabaseClass.ClassName, e.Message)<>0);
-    end ;
-  end ;
+    end;
+  end;
 end;
 
 { TTestTIPersistenceLayersADOSQLServer }
 
-procedure TTestTIPersistenceLayersADOSQLServer.Setup;
+procedure TTestTIPersistenceLayersADOSQLServer.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOSQLServer);
   inherited;
 end;
 
-procedure TTestTIDatabaseADOSQLServer.Setup;
+procedure TTestTIDatabaseADOSQLServer.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOSQLServer);
   inherited;
@@ -136,7 +136,7 @@ end;
 
 { TTestTIQueryADOSQLServer }
 
-procedure TTestTIQueryADOSQLServer.Setup;
+procedure TTestTIQueryADOSQLServer.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOSQLServer);
   inherited;
@@ -144,7 +144,7 @@ end;
 
 { TTestTIClassToDBMapOperationADOSQLServer }
 
-procedure TTestTIClassToDBMapOperationADOSQLServer.Setup;
+procedure TTestTIClassToDBMapOperationADOSQLServer.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOSQLServer);
   inherited;
@@ -152,7 +152,7 @@ end;
 
 { TTestTIOIDManagerADOSQLServer }
 
-procedure TTestTIOIDManagerADOSQLServer.Setup;
+procedure TTestTIOIDManagerADOSQLServer.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOSQLServer);
   inherited;

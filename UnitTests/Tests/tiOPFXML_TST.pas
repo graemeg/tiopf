@@ -10,44 +10,44 @@ uses
   ,tiTestFramework
   ,tiClassToDBMap_TST
   ,tiOID_tst
-  ;
+ ;
 
 type
 
-  TtiOPFTestSetupDataXML = class( TtiOPFTestSetupData )
+  TtiOPFTestSetupDataXML = class(TtiOPFTestSetupData)
   public
-    constructor Create ; override ;
-  end ;
-
-  TTestTIPersistenceLayersXML = class( TTestTIPersistenceLayers )
-  protected
-    procedure Setup; override;
+    constructor Create; override;
   end;
 
-  TTestTIDatabaseXML = class( TTestTIDatabase )
+  TTestTIPersistenceLayersXML = class(TTestTIPersistenceLayers)
   protected
-    procedure   Setup; override;
+    procedure SetUp; override;
+  end;
+
+  TTestTIDatabaseXML = class(TTestTIDatabase)
+  protected
+    procedure   SetUp; override;
   published
-    procedure DatabaseExists ; override ;
-    procedure CreateDatabase ; override ;
-    procedure ThreadedDBConnectionPool ; override ;
+    procedure DatabaseExists; override;
+    procedure CreateDatabase; override;
+    procedure ThreadedDBConnectionPool; override;
   end;
 
-  TTestTIQueryXML = class( TTestTIQueryNonSQL )
+  TTestTIQueryXML = class(TTestTIQueryNonSQL)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   published
     procedure FieldByNameVSFieldByIndex; override;
   end;
 
   TTestTIClassToDBMapOperationXM = class(TTestTIClassToDBMapOperation)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
   TTestTIOIDManagerXML = class(TTestTIOIDManager)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
 procedure RegisterTests;
@@ -60,9 +60,9 @@ uses
   ,tiUtils
   ,tiLog
   ,tiDUnitDependencies
-  ;
+ ;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistXML) then
   begin
@@ -72,7 +72,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIClassToDBMapOperationXM.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIOIDManagerXML.Suite);
   end;
-end ;
+end;
 
 { TtiOPFTestSetupDataXML }
 
@@ -89,43 +89,43 @@ begin
     {$ENDIF}
   {$ENDIF}
   FSelected:= FEnabled;
-  FPerLayerName := cTIPersistXML ;
-  FDBName   := ExpandFileName(ReadFromReg( cTIPersistXML, 'DBName', gTestDataRoot + '_MSXML.xml' )) ;
-  FUsername := ReadFromReg( cTIPersistXML, 'Username', 'null') ;
-  FPassword := ReadFromReg( cTIPersistXML, 'Password', 'null') ;
-  FCanCreateDatabase := true ;
-  ForceTestDataDirectory ;
+  FPerLayerName := cTIPersistXML;
+  FDBName  := ExpandFileName(ReadFromReg(cTIPersistXML, 'DBName', gTestDataRoot + '_MSXML.xml'));
+  FUsername := ReadFromReg(cTIPersistXML, 'Username', 'null');
+  FPassword := ReadFromReg(cTIPersistXML, 'Password', 'null');
+  FCanCreateDatabase := true;
+  ForceTestDataDirectory;
 end;
 
 { TTestTIDatabaseXML }
 
 procedure TTestTIDatabaseXML.CreateDatabase;
 var
-  lFileName : string ;
+  lFileName : string;
 begin
-  lFileName := PerFrameworkSetup.DBName ;
-  SysUtils.DeleteFile(lFileName);
+  lFileName := PerFrameworkSetup.DBName;
+  tiDeleteFile(lFileName);
   Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password );
+  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
   Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
 end;
 
 procedure TTestTIDatabaseXML.DatabaseExists;
 var
-  lFileName : string ;
+  lFileName : string;
 begin
-  lFileName := PerFrameworkSetup.DBName ;
-  SysUtils.DeleteFile(lFileName);
+  lFileName := PerFrameworkSetup.DBName;
+  tiDeleteFile(lFileName);
   Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password ),
+  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
         'FDatabaseClass.DatabaseExists()=true when it should =false');
   tiStringToFile('test',lFileName);
   Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password ),
+  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
         'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 
-procedure TTestTIDatabaseXML.Setup;
+procedure TTestTIDatabaseXML.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
   inherited;
@@ -133,8 +133,8 @@ end;
 
 procedure TTestTIDatabaseXML.ThreadedDBConnectionPool;
 begin
-  LogWarning( 'The XML persistence layer can only manage one thread.' ) ;
-  DoThreadedDBConnectionPool( 1 ) ;
+  LogWarning('The XML persistence layer can only manage one thread.');
+  DoThreadedDBConnectionPool(1);
 end;
 
 { TtiOPFTestSetupDecoratorXML }
@@ -146,7 +146,7 @@ begin
   Check(True); // Dont test because it will always fail.
 end;
 
-procedure TTestTIQueryXML.Setup;
+procedure TTestTIQueryXML.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
   inherited;
@@ -154,7 +154,7 @@ end;
 
 { TTestTIClassToDBMapOperationXM }
 
-procedure TTestTIClassToDBMapOperationXM.Setup;
+procedure TTestTIClassToDBMapOperationXM.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
   inherited;
@@ -162,7 +162,7 @@ end;
 
 { TTestTIOIDManagerXML }
 
-procedure TTestTIOIDManagerXML.Setup;
+procedure TTestTIOIDManagerXML.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
   inherited;
@@ -170,7 +170,7 @@ end;
 
 { TTestTIPersistenceLayersXML }
 
-procedure TTestTIPersistenceLayersXML.Setup;
+procedure TTestTIPersistenceLayersXML.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
   inherited;

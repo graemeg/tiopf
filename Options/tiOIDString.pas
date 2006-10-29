@@ -10,99 +10,99 @@ uses
   ,tiVisitorDB
   ,tiVisitor
   ,tiConstants
-  ;
+ ;
 
 const
   cErrorInvalidStartID = 'Invalid start ID <%s>';
 
 type
 
-  TNextOIDGeneratorString = class ;
+  TNextOIDGeneratorString = class;
 
-  TOIDString = class( TOID )
+  TOIDString = class(TOID)
   private
-    FAsString : String ;
+    FAsString : String;
   protected
-    function  GetAsString: ShortString; override ;
-    procedure SetAsString(const Value: ShortString); override ;
+    function  GetAsString: ShortString; override;
+    procedure SetAsString(const AValue: ShortString); override;
     function  GetAsVariant: Variant;override;
-    procedure SetAsVariant(const Value: Variant);override;
+    procedure SetAsVariant(const AValue: Variant);override;
   public
-    function  IsNull : boolean ; override ;
-    procedure AssignToTIQueryParam( const pFieldName : string ; const pParams : TtiBaseObject ) ; override ;
-    procedure AssignToTIQuery( const pFieldName : string ; const pQuery : TtiBaseObject ) ; override ;
-    procedure AssignFromTIQuery( const pFieldName : string ; const pQuery : TtiBaseObject ) ; override ;
-    function  EqualsQueryField( const pFieldName : string ; const pQuery : TtiBaseObject ) : boolean ; override;
-    procedure Assign( const pSource : TOID ) ; override ;
-    function  Compare( const pCompareWith : TOID ) : Integer ; override ;
+    function  IsNull : boolean; override;
+    procedure AssignToTIQueryParam(const AFieldName : string; const AParams : TtiBaseObject); override;
+    procedure AssignToTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
+    procedure AssignFromTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
+    function  EqualsQueryField(const AFieldName : string; const AQuery : TtiBaseObject): boolean; override;
+    procedure Assign(const ASource : TOID); override;
+    function  Compare(const ACompareWith : TOID): Integer; override;
     procedure SetToNull; override;
-    function  NullOIDAsString: String; override ;
-  end ;
+    function  NullOIDAsString: String; override;
+  end;
 
-  TNextOIDData = class( TtiObject )
+  TNextOIDData = class(TtiObject)
   private
     FNextOID: String;
     FOIDGenerator: TNextOIDGeneratorString;
   public
-    property NextOID : String read FNextOID write FNextOID ;
-    property OIDGenerator : TNextOIDGeneratorString read FOIDGenerator write FOIDGenerator ;
-  end ;
+    property NextOID : String read FNextOID write FNextOID;
+    property OIDGenerator : TNextOIDGeneratorString read FOIDGenerator write FOIDGenerator;
+  end;
 
-  TNextOIDGeneratorString = class( TNextOIDGenerator )
+  TNextOIDGeneratorString = class(TNextOIDGenerator)
   private
-    FOIDChars : array of char ;
-    FLow  : String ;
+    FOIDChars : array of char;
+    FLow : String;
     FDirty: boolean;
-    FNextOIDData : TNextOIDData ;
+    FNextOIDData : TNextOIDData;
     FOIDLength: Byte;
     FOIDPrefix: string;
-    function  NextOID( const pDatabaseName : string ; pPerLayerName : string ) : String ;
+    function  NextOID(const ADatabaseName : string; APersistenceLayerName : string): String;
     function  GetOIDChars: string;
-    procedure SetOIDChars(const Value: string);
-    function  PadToLength(const Value : string ) : string ;
+    procedure SetOIDChars(const AValue: string);
+    function  PadToLength(const AValue : string): string;
     function  GetHighOIDLength: Byte;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   AssignNextOID( const pAssignTo : TOID ; const pDatabaseName : string ; pPerLayerName : string ) ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   AssignNextOID(const AAssignTo : TOID; const ADatabaseName : string; APersistenceLayerName : string); override;
     function    IncOID(const pCurrentOID: String): String;
-    property    HighOIDLength : Byte read GetHighOIDLength ;
+    property    HighOIDLength : Byte read GetHighOIDLength;
 
     // You might want to set these at startup
-    property    OIDChars : string read GetOIDChars write SetOIDChars ;
-    property    OIDLength : Byte read FOIDLength write FOIDLength ;
-    property    OIDPrefix : string read FOIDPrefix write FOIDPrefix ;
-  end ;
+    property    OIDChars : string read GetOIDChars write SetOIDChars;
+    property    OIDLength : Byte read FOIDLength write FOIDLength;
+    property    OIDPrefix : string read FOIDPrefix write FOIDPrefix;
+  end;
 
-  TVisDBNextOIDAmblerRead = class( TtiPerObjVisitor )
+  TVisDBNextOIDAmblerRead = class(TtiPerObjVisitor)
   protected
-    function    AcceptVisitor  : boolean ; override ;
+    function    AcceptVisitor : boolean; override;
   public
-    procedure   Execute( const pData : TtiVisited ) ; override ;
-  end ;
+    procedure   Execute(const AData : TtiVisited); override;
+  end;
 
-  TVisDBNextOIDAmblerUpdate = class( TtiPerObjVisitor )
+  TVisDBNextOIDAmblerUpdate = class(TtiPerObjVisitor)
   protected
-    function    AcceptVisitor  : boolean ; override ;
+    function    AcceptVisitor : boolean; override;
   public
-    procedure   Execute( const pData : TtiVisited ) ; override ;
-  end ;
+    procedure   Execute(const AData : TtiVisited); override;
+  end;
 
 const
-  cOIDClassNameString = 'OIDClassNameString' ;
-  cNextOIDTableName   = 'Next_OID' ;
-  cNextOIDFieldName   = 'OID' ;
+  cOIDClassNameString = 'OIDClassNameString';
+  cNextOIDTableName   = 'Next_OID';
+  cNextOIDFieldName   = 'OID';
   // '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
   // 88 Characters, so if the OID string is 4 characters long, there are
-  // Power( 88, 4 ) available OIDs = 59969536
-  // Power( 88, 5 ) available OIDs = 5277319168
+  // Power(88, 4) available OIDs = 59969536
+  // Power(88, 5) available OIDs = 5277319168
   // Integer gives                   2147483647
   // Int64 gives                     4610000000000000000
 
   cOIDChars           = '!#$%&()*+,-./0123456789:;<=>?@'+
                         'ABCDEFGHIJKLMNOPQRSTUVWXYZ'+
                         '[\]^_' +
-                        'abcdefghijklmnopqrstuvwxyz' ;
+                        'abcdefghijklmnopqrstuvwxyz';
 
 
 implementation
@@ -113,174 +113,174 @@ uses
   ,tiLog
   ,tiExcept
   ,SysUtils
-  ;
+ ;
 
 { TOIDString }
 
 function TOIDString.getAsString: ShortString;
 begin
-  result := FAsString ;
+  result := FAsString;
 end;
 
-procedure TOIDString.SetAsString(const Value: ShortString);
+procedure TOIDString.SetAsString(const AValue: ShortString);
 begin
-  FAsString := Value ;
+  FAsString := AValue;
 end;
 
 function TOIDString.IsNull: boolean;
 begin
-  result := FAsString = NullOIDAsString ;
+  result := FAsString = NullOIDAsString;
 end;
 
-procedure TOIDString.AssignFromTIQuery(const pFieldName : string ; const pQuery: TtiBaseObject);
+procedure TOIDString.AssignFromTIQuery(const AFieldName : string; const AQuery: TtiBaseObject);
 var
-  lQuery : TtiQuery ;
+  lQuery : TtiQuery;
 begin
-  Assert( pQuery is TtiQuery, 'pQuery not a TtiQuery' ) ;
-  lQuery := TtiQuery( pQuery ) ;
-  FAsString := lQuery.FieldAsString[ pFieldName ] ;
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery := TtiQuery(AQuery);
+  FAsString := lQuery.FieldAsString[ AFieldName ];
 end;
 
-procedure TOIDString.AssignToTIQuery(const pFieldName : string ; const pQuery: TtiBaseObject);
+procedure TOIDString.AssignToTIQuery(const AFieldName : string; const AQuery: TtiBaseObject);
 var
-  lQuery : TtiQuery ;
+  lQuery : TtiQuery;
 begin
-  Assert( pQuery is TtiQuery, 'pQuery not a TtiQuery' ) ;
-  lQuery := TtiQuery( pQuery ) ;
-  lQuery.ParamAsString[ pFieldName ] := FAsString ;
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery := TtiQuery(AQuery);
+  lQuery.ParamAsString[ AFieldName ]:= FAsString;
 end;
 
-function TOIDString.EqualsQueryField(const pFieldName: string; const pQuery: TtiBaseObject): boolean;
+function TOIDString.EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean;
 var
-  lQuery : TtiQuery ;
+  lQuery : TtiQuery;
 begin
-  Assert( pQuery is TtiQuery, 'pQuery not a TtiQuery' ) ;
-  lQuery := TtiQuery( pQuery ) ;
-  result := ( FAsString = lQuery.FieldAsString[ pFieldName ] ) ;
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery := TtiQuery(AQuery);
+  result := (FAsString = lQuery.FieldAsString[ AFieldName ]);
 end;
 
-procedure TOIDString.Assign(const pSource: TOID);
+procedure TOIDString.Assign(const ASource: TOID);
 begin
-  AsString := pSource.AsString ;
+  AsString := ASource.AsString;
 end;
 
-function TOIDString.Compare(const pCompareWith: TOID): Integer;
+function TOIDString.Compare(const ACompareWith: TOID): Integer;
 begin
-  Assert( pCompareWith is TOIDString, 'pCompareWith not a pCompareWith' ) ;
-  if AsString < TOIDString(pCompareWith).AsString then
+  Assert(ACompareWith is TOIDString, 'ACompareWith not a ACompareWith');
+  if AsString < TOIDString(ACompareWith).AsString then
     result := -1
-  else if AsString > TOIDString(pCompareWith).AsString then
+  else if AsString > TOIDString(ACompareWith).AsString then
     result := 1
   else
-    result := 0 ;
+    result := 0;
 end;
 
 const
-  cuLowRange = 100 ;
+  cuLowRange = 100;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TNextOIDGeneratorString
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TNextOIDGeneratorString.AssignNextOID(const pAssignTo: TOID; const pDatabaseName : string ; pPerLayerName : string );
+procedure TNextOIDGeneratorString.AssignNextOID(const AAssignTo: TOID; const ADatabaseName : string; APersistenceLayerName : string);
 begin
-  Assert( pAssignTo.TestValid(TOID), cTIInvalidObjectError ) ;
-  pAssignTo.AsString := NextOID( pDatabaseName, pPerLayerName ) ;
+  Assert(AAssignTo.TestValid(TOID), cTIInvalidObjectError);
+  AAssignTo.AsString := NextOID(ADatabaseName, APersistenceLayerName);
 end;
 
 constructor TNextOIDGeneratorString.Create;
 begin
   inherited;
   SetOIDChars(cOIDChars);
-  OIDLength := 10 ;
-  FDirty := true ;
-  FNextOIDData := TNextOIDData.Create ;
+  OIDLength := 10;
+  FDirty := true;
+  FNextOIDData := TNextOIDData.Create;
 end;
 
 destructor TNextOIDGeneratorString.Destroy;
 begin
-  FNextOIDData.Free ;
+  FNextOIDData.Free;
   inherited;
 end;
 
-function TNextOIDGeneratorString.NextOID(const pDatabaseName : string ; pPerLayerName : string ): String;
+function TNextOIDGeneratorString.NextOID(const ADatabaseName : string; APersistenceLayerName : string): String;
 begin
   if FDirty then
   begin
-    FLow := FOIDChars[0] ;
-    FNextOIDData.OIDGenerator := Self ;
-    gTIOPFManager.VisitorManager.Execute( cNextOIDReadHigh, FNextOIDData, pDatabaseName, pPerLayerName ) ;
-    FDirty := false ;
+    FLow := FOIDChars[0];
+    FNextOIDData.OIDGenerator := Self;
+    gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData, ADatabaseName, APersistenceLayerName);
+    FDirty := false;
   end else
   begin
-    FLow := IncOID( FLow ) ;
+    FLow := IncOID(FLow);
     if FLow = FOIDChars[High(FOIDChars)] then
-      FDirty := true ;
-  end ;
+      FDirty := true;
+  end;
 
-  result := FOIDPrefix + FNextOIDData.NextOID + FLow ;
+  result := FOIDPrefix + FNextOIDData.NextOID + FLow;
 end;
 
 procedure TOIDString.SetToNull;
 begin
-  FAsString := NullOIDAsString ;
+  FAsString := NullOIDAsString;
 end;
 
 function TOIDString.GetAsVariant: Variant;
 begin
-  result := FAsString ;
+  result := FAsString;
 end;
 
-procedure TOIDString.SetAsVariant(const Value: Variant);
+procedure TOIDString.SetAsVariant(const AValue: Variant);
 begin
-  FAsString := Value ;
+  FAsString := AValue;
 end;
 
 function TOIDString.NullOIDAsString: String;
 begin
-  result := '' ;
+  result := '';
 end;
 
-procedure TOIDString.AssignToTIQueryParam(const pFieldName: string;const pParams: TtiBaseObject);
+procedure TOIDString.AssignToTIQueryParam(const AFieldName: string;const AParams: TtiBaseObject);
 var
-  lParams : TtiQueryParams ;
+  lParams : TtiQueryParams;
 begin
-  Assert( pParams is TtiQueryParams, 'pQuery not a TtiQuery' ) ;
-  lParams := TtiQueryParams( pParams ) ;
-  lParams.SetValueAsString(pFieldName, FAsString);
+  Assert(AParams is TtiQueryParams, 'AQuery not a TtiQuery');
+  lParams := TtiQueryParams(AParams);
+  lParams.SetValueAsString(AFieldName, FAsString);
 end;
 
 { TVisDBNextOIDAmblerRead }
 
 function TVisDBNextOIDAmblerRead.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TNextOIDData ) ;
+  result := (Visited is TNextOIDData);
 end;
 
-procedure TVisDBNextOIDAmblerRead.Execute(const pData: TtiVisited);
+procedure TVisDBNextOIDAmblerRead.Execute(const AData: TtiVisited);
 var
-  lNextOIDData : TNextOIDData ;
-  lNextOID : String ;
+  lNextOIDData : TNextOIDData;
+  lNextOID : String;
 begin
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  Inherited Execute( pData ) ;
+  Inherited Execute(AData);
 
   if not AcceptVisitor then
-    Exit ; //==>
+    Exit; //==>
 
-  Query.SelectRow( cNextOIDTableName, nil ) ;
+  Query.SelectRow(cNextOIDTableName, nil);
   try
-    lNextOID := Query.FieldAsString[ cNextOIDFieldName ] ;
+    lNextOID := Query.FieldAsString[ cNextOIDFieldName ];
   finally
-    Query.Close ;
-  end ;
-  lNextOIDData := ( Visited as TNextOIDData ) ;
-  TNextOIDData( Visited ).NextOID :=
-    lNextOIDData.OIDGenerator.PadToLength( lNextOID ) ;
+    Query.Close;
+  end;
+  lNextOIDData := (Visited as TNextOIDData);
+  TNextOIDData(Visited).NextOID :=
+    lNextOIDData.OIDGenerator.PadToLength(lNextOID);
 
 end;
 
@@ -288,18 +288,18 @@ end;
 
 function TVisDBNextOIDAmblerUpdate.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TNextOIDData ) ;
+  result := (Visited is TNextOIDData);
 end;
 
 function TNextOIDGeneratorString.IncOID(const pCurrentOID: String): String;
-  function _GeTNextIDGenerator( const pCurrentOID: String ) : String ;
+  function _GeTNextIDGenerator(const pCurrentOID: String): String;
   var
-    i : integer ;
-    lLastPos  : integer ;
-    lLastChar : Char ;
+    i : integer;
+    lLastPos : integer;
+    lLastChar : Char;
   begin
     result := pCurrentOID;
-    lLastPos := Length(pCurrentOID) ;
+    lLastPos := Length(pCurrentOID);
     lLastChar := pCurrentOID[lLastPos];
     if lLastChar = FOIDChars[High(FOIDChars)] then
     begin
@@ -308,104 +308,104 @@ function TNextOIDGeneratorString.IncOID(const pCurrentOID: String): String;
           Copy(pCurrentOID,1, lLastPos-1));
       result := result + FOIDChars[Low(FOIDChars)];
       if lLastPos = 1 then
-        result := FOIDChars[Low(FOIDChars)+1] + result ;
-      Exit ; //==>
-    end ;
+        result := FOIDChars[Low(FOIDChars)+1] + result;
+      Exit; //==>
+    end;
 
     for i := Low(FOIDChars) to High(FOIDChars)-1 do
       if FOIDChars[i] = lLastChar then
       begin
-        result := Copy( pCurrentOID, 1, Length(pCurrentOID)-1 ) + FOIDChars[i+1] ;
-        Exit ; //==>
-      end ;
-    end ;
+        result := Copy(pCurrentOID, 1, Length(pCurrentOID)-1) + FOIDChars[i+1];
+        Exit; //==>
+      end;
+    end;
 var
-  i, j : integer ;
-  lChar : Char ;
-  lCurrentOID : string ;
+  i, j : integer;
+  lChar : Char;
+  lCurrentOID : string;
 begin
-  lCurrentOID := pCurrentOID ;     
-  for i := 1 to Length( lCurrentOID ) do
-    for j := Low( FOIDChars ) to High( FOIDChars ) do
+  lCurrentOID := pCurrentOID;     
+  for i := 1 to Length(lCurrentOID) do
+    for j := Low(FOIDChars) to High(FOIDChars) do
     begin
-      lChar := lCurrentOID[i] ;
+      lChar := lCurrentOID[i];
       if lChar = FOIDChars[j] then
         Break //==>
-      else if j < High( FOIDChars ) then
-        Continue ; //==>
+      else if j < High(FOIDChars) then
+        Continue; //==>
       // Should only get here if there is an invalid character
       raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidStartID, [lCurrentOID]);
-    end ;
+    end;
   result := _GetNextIDGenerator(lCurrentOID);
 end;
 
-procedure TVisDBNextOIDAmblerUpdate.Execute(const pData: TtiVisited);
+procedure TVisDBNextOIDAmblerUpdate.Execute(const AData: TtiVisited);
 var
-  lParams : TtiQueryParams ;
-  lNextOID : string ;
-  lNextOIDData : TNextOIDData ;
+  lParams : TtiQueryParams;
+  lNextOID : string;
+  lNextOIDData : TNextOIDData;
 begin
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  Inherited Execute( pData ) ;
+  Inherited Execute(AData);
 
   if not AcceptVisitor then
-    Exit ; //==>
+    Exit; //==>
 
-  lNextOIDData := ( Visited as TNextOIDData ) ;
-  lParams := TtiQueryParams.Create ;
+  lNextOIDData := (Visited as TNextOIDData);
+  lParams := TtiQueryParams.Create;
   try
-    lNextOID := lNextOIDData.OIDGenerator.IncOID( lNextOIDData.NextOID );
-    lParams.SetValueAsString(cNextOIDFieldName, lNextOID)  ;
-    Query.UpdateRow( cNextOIDTableName, lParams, nil ) ;
+    lNextOID := lNextOIDData.OIDGenerator.IncOID(lNextOIDData.NextOID);
+    lParams.SetValueAsString(cNextOIDFieldName, lNextOID) ;
+    Query.UpdateRow(cNextOIDTableName, lParams, nil);
   finally
-    lParams.Free ;
-  end ;
+    lParams.Free;
+  end;
 end;
 
 function TNextOIDGeneratorString.GetOIDChars: string;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := '' ;
+  result := '';
   for i := Low(FOIDChars) to High(FOIDChars) do
     result := result + FOIDChars[i];
 end;
 
-procedure TNextOIDGeneratorString.SetOIDChars(const Value: string);
+procedure TNextOIDGeneratorString.SetOIDChars(const AValue: string);
 var
-  i : integer ;
+  i : integer;
 begin
-  SetLength( FOIDChars, Length(Value) ) ;
-  for i := 1 to Length(Value) do
-    FOIDChars[i-1] := Value[i];
+  SetLength(FOIDChars, Length(AValue));
+  for i := 1 to Length(AValue) do
+    FOIDChars[i-1]:= AValue[i];
 end;
 
-function TNextOIDGeneratorString.PadToLength(const Value: string): string;
+function TNextOIDGeneratorString.PadToLength(const AValue: string): string;
 begin
-  Result := Value ;
-  if length( Value ) < HighOIDLength then begin
-    while length( Result ) < HighOIDLength do begin
-      result := OIDChars[1] + result ;
-    end ;
+  Result := AValue;
+  if length(AValue) < HighOIDLength then begin
+    while length(Result) < HighOIDLength do begin
+      result := OIDChars[1] + result;
+    end;
   end
-  else if length( Value ) > HighOIDLength then
-    result := copy( Value, length( Value )-HighOIDLength+1, HighOIDLength ) ;
+  else if length(AValue) > HighOIDLength then
+    result := copy(AValue, length(AValue)-HighOIDLength+1, HighOIDLength);
 end;
 
 function TNextOIDGeneratorString.GetHighOIDLength: Byte;
 begin
-  result := OIDLength - 1 - Length( FOIDPrefix ) ;
+  result := OIDLength - 1 - Length(FOIDPrefix);
 end;
 
 initialization
 
-  gTIOPFManager.OIDFactory.RegisterMapping( cOIDClassNameString, TOIDString, TNextOIDGeneratorString )  ;
+  gTIOPFManager.OIDFactory.RegisterMapping(cOIDClassNameString, TOIDString, TNextOIDGeneratorString) ;
   if gTIOPFManager.DefaultOIDClassName = '' then
-    gTIOPFManager.DefaultOIDClassName := cOIDClassNameString ;
+    gTIOPFManager.DefaultOIDClassName := cOIDClassNameString;
 
-  gTIOPFManager.VisitorManager.RegisterVisitor( cNextOIDReadHigh, TVisDBNextOIDAmblerRead ) ;
-  gTIOPFManager.VisitorManager.RegisterVisitor( cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate ) ;
+  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
 
 end.

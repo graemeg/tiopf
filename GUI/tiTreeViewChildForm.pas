@@ -19,7 +19,7 @@ uses
   ,tiTreeView
   ,tiObject
   ,Types
-  ;
+ ;
 
 const
   cuColorSplitterGrabBar = $00FE9E83; // Pale navy blue
@@ -40,11 +40,11 @@ type
       FData: TPersistent; // Can be any TPersistent descendant
       FTreeNode: TTreeNode;
       function  GetValid: boolean;
-      procedure SetData(const Value: TPersistent);
+      procedure SetData(const AValue: TPersistent);
     published
-      property Data : TPersistent read FData write SetData ;
-      property Valid : boolean    read GetValid ;
-      property TreeNode : TTreeNode read FTreeNode write FTreeNode ;
+      property Data : TPersistent read FData write SetData;
+      property Valid : boolean    read GetValid;
+      property TreeNode : TTreeNode read FTreeNode write FTreeNode;
     public
     end;
   }
@@ -82,7 +82,7 @@ type
     constructor Create(Owner: TComponent); override;
   end;
 
-  TtiTreeViewChildForm = class( TtiTreeView )
+  TtiTreeViewChildForm = class(TtiTreeView)
   private
     FSplitter: TtiTVSplitter;
     FFormInstances: TtiTVFormInstances;
@@ -90,15 +90,15 @@ type
     FOnAfterGetChildForm: TTVOnGetChildFormEvent;
     FDataFormMappings: TtiTVDataFormMappings;
     function GetSplitterVisible: boolean;
-    procedure SetSplitterVisible(const Value: boolean);
+    procedure SetSplitterVisible(const AValue: boolean);
     function GetSplitterPos: integer;
-    procedure SetSplitterPos(const Value: integer);
+    procedure SetSplitterPos(const AValue: integer);
   protected
-    procedure DoSetData(Sender: TObject); override ;
-    procedure SetData(const Value: TtiObject); override;
+    procedure DoSetData(Sender: TObject); override;
+    procedure SetData(const AValue: TtiObject); override;
     procedure DoOnChanging(Sender: TObject; Node: TTreeNode; var AllowChange: Boolean);
-    procedure GetDataPage(pData: TObject; pNode: TTreeNode);
-    procedure DoReSize(Sender: TObject); override ;
+    procedure GetDataPage(AData: TObject; pNode: TTreeNode);
+    procedure DoReSize(Sender: TObject); override;
   public
     constructor Create(owner: TComponent); override;
     destructor  Destroy; override;
@@ -123,7 +123,7 @@ uses
   TypInfo
   ,SysUtils
   ,Graphics
-  ;
+ ;
   
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
@@ -351,18 +351,18 @@ end;
 constructor TtiTreeViewChildForm.Create(owner: TComponent);
 begin
   inherited;
-  TV.Align := alLeft ;
+  TV.Align := alLeft;
   TV.OnChanging := DoOnChanging;
   {$IFNDEF FPC}TV.ChangeDelay := 500;{$ENDIF}
-  FSplitter          := TtiTVSplitter.Create(self);
-  FSplitter.Parent   := self;
-  FSplitter.Left     := cuiSplitterPos;
-  FSplitter.Align    := alLeft;
-  FSplitter.Beveled  := false;
-  FSplitter.Width    := 0;
-  FSplitter.Visible  := true;
-  FSplitter.AutoSnap := false ;
-  FSplitter.MinSize  := 10 ;
+  FSplitter         := TtiTVSplitter.Create(self);
+  FSplitter.Parent  := self;
+  FSplitter.Left    := cuiSplitterPos;
+  FSplitter.Align   := alLeft;
+  FSplitter.Beveled := false;
+  FSplitter.Width   := 0;
+  FSplitter.Visible := true;
+  FSplitter.AutoSnap := false;
+  FSplitter.MinSize := 10;
   FDataFormMappings := TtiTVDataFormMappings.Create;
   FFormInstances := TtiTVFormInstances.Create;
   VisibleButtons := [];
@@ -388,16 +388,16 @@ begin
   result := FSplitter.Visible;
 end;
 
-procedure TtiTreeViewChildForm.SetSplitterVisible(const Value: boolean);
+procedure TtiTreeViewChildForm.SetSplitterVisible(const AValue: boolean);
 begin
-  FSplitter.Visible := Value;
+  FSplitter.Visible := AValue;
 end;
 
-procedure TtiTreeViewChildForm.SetSplitterPos(const Value: integer);
+procedure TtiTreeViewChildForm.SetSplitterPos(const AValue: integer);
 var
-  lValue : integer ;
+  lValue : integer;
 begin
-  lValue := Value ;
+  lValue := AValue;
   TV.Width := lValue;
   FSplitter.Left := lValue;
 {
@@ -441,8 +441,8 @@ function TtiTreeViewChildForm.IsCurrentChildFormValid: boolean;
 begin
   result := true;
   if (FCurrentChildForm <> nil) and
-    //     ( IsPublishedProp( FCurrentChildForm, 'Data' )      ) and
-//     ( GetObjectProp( FCurrentChildForm, 'Data' ) <> nil ) and
+    //     (IsPublishedProp(FCurrentChildForm, 'Data')     ) and
+//     (GetObjectProp(FCurrentChildForm, 'Data') <> nil) and
   (IsPublishedProp(FCurrentChildForm, 'Valid')) then
     result := GetPropValue(FCurrentChildForm, 'Valid', false);
 end;
@@ -457,10 +457,10 @@ begin
   FCurrentChildForm := nil;
 end;
 
-procedure TtiTreeViewChildForm.SetData(const Value: TtiObject);
+procedure TtiTreeViewChildForm.SetData(const AValue: TtiObject);
 begin
   inherited;
-  if Value = nil then
+  if AValue = nil then
     ClearCurrentChildForm;
 end;
 
@@ -469,7 +469,7 @@ begin
   AllowChange := IsCurrentChildFormValid;
 end;
 
-procedure TtiTreeViewChildForm.GetDataPage(pData: TObject; pNode: TTreeNode);
+procedure TtiTreeViewChildForm.GetDataPage(AData: TObject; pNode: TTreeNode);
 begin
 
   // If CurrentChildForm was assigned, then do some cleaning up.
@@ -478,7 +478,7 @@ begin
 
   // Find a childForm for editing the Data class attached to the selected node.
   FCurrentChildForm :=
-    FDataFormMappings.FindByDataClass(pData.ClassType).FormInstance;
+    FDataFormMappings.FindByDataClass(AData.ClassType).FormInstance;
 
   // There was a form for this node, so setup the form
   if FCurrentChildForm <> nil then
@@ -487,11 +487,11 @@ begin
     // To here...
     if Assigned(FOnAfterGetChildForm) then
       FOnAfterGetChildForm(FCurrentChildForm,
-        pData,
+        AData,
         pNode);
 
     SetObjectProp(FCurrentChildForm, 'TreeNode', pNode);
-    SetObjectProp(FCurrentChildForm, 'Data', pData);
+    SetObjectProp(FCurrentChildForm, 'Data', AData);
     FCurrentChildForm.Visible := true;
 
   end;

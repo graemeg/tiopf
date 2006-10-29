@@ -7,32 +7,32 @@ uses
   ,tiCommandLineParams
   ,INIFiles
   ,Classes
-  ;
+ ;
 
-procedure _INIToXML(const pINIFile : TINIFile ; const pXMLFile : TStringList ;
-                    const pIndent : string );
+procedure _INIToXML(const pINIFile : TINIFile; const pXMLFile : TStringList;
+                    const pIndent : string);
 var
-  ls : string ;
+  ls : string;
 begin
   WriteLn('  Processing ' + pIndent);
   ls := '        <' + pIndent + '>' +
         pINIFile.ReadString('Report_Summary', pIndent, 'Unknown') +
-        '</' + pIndent + '>' ;
+        '</' + pIndent + '>';
   pXMLFile.Add(ls);
-end ;
+end;
 
 
 var
-  lINIFileName : string ;
-  lXMLFileName : string ;
-  lINIFile     : TINIFile ;
-  lXMLFile     : TStringList ;
+  lINIFileName : string;
+  lXMLFileName : string;
+  lINIFile    : TINIFile;
+  lXMLFile    : TStringList;
 begin
   try
     lINIFileName := gCommandLineParams.GetParam('ini');
     lXMLFileName := gCommandLineParams.GetParam('xml');
-    WriteLn('Converting ' + lINIFileName ) ;
-    WriteLn('To         ' + lXMLFileName ) ;
+    WriteLn('Converting ' + lINIFileName);
+    WriteLn('To         ' + lXMLFileName);
     lINIFile := TINIFile.Create(lINIFileName);
     try
       lXMLFile := TStringList.Create;
@@ -56,15 +56,15 @@ begin
         lXMLFile.SaveToFile(lXMLFileName);
       finally
         lXMLFile.Free;
-      end ;
+      end;
     finally
       lINIFile.Free;
-    end ;
+    end;
   except
     on e:exception do
     begin
       WriteLn(e.message);
-      ExitCode := 1 ;
-    end ;
-  end ;
+      ExitCode := 1;
+    end;
+  end;
 end.

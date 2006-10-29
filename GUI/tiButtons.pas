@@ -1,36 +1,6 @@
-{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  The contents of this file are subject to the Mozilla Public
-  License Version 1.1 (the "License"); you may not use this file
-  except in compliance with the License. You may obtain a copy of
-  the License at http://www.mozilla.org/MPL/
-
-  Software distributed under the License is distributed on an "AS
-  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  implied. See the License for the specific language governing
-  rights and limitations under the License.
-
-  Originally developed and released by Peter Hinrichsen, TechInsite Pty. Ltd.
-  as the tiOPF (TechInsite Object Persistence Framework)
-
-    23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-    PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-    Phone: +61 3 9419 6456 Fax:   +61 3 9419 1682
-    Latest source:   www.techinsite.com.au/tiOPF/Download.htm
-    Documentation:   www.techinsite.com.au/tiOPF/Doc/
-    Support:         www.techinsite.com.au/tiOPF/MailingList.htm
-
-  Please submit changes to tiOPF@techinsite.com.au
-
-  Created: Mid 1998
-
-  Purpose: Custom controls and components found on the TechInsite component
-           pallet
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
+unit tiButtons;
 
 {$I tiDefines.inc}
-
-unit tiButtons;
 
 interface
 
@@ -41,67 +11,67 @@ uses
   ,buttons
   ,extCtrls
   ,comctrls
-  ;
+ ;
 
 type
 
   // A TCustomPanel with the border set to none, and the caption turned off.
   // This control is not registered with the component pallet, as it
   // is intended for use as the starting point for composite controls.
-  TtiPanel = class( TCustomPanel )
+  TtiPanel = class(TCustomPanel)
   public
-    Constructor Create( Aowner : TComponent ) ; override ;
-  end ;
+    Constructor Create(Aowner : TComponent); override;
+  end;
 
   // An exception which is used in the tiFloat, tiInt, tiCurrency edits
-  RangeException = class( Exception ) ;
+  RangeException = class(Exception);
 
   // TtiToolBar
-  TtiToolBar = class( TToolBar )
+  TtiToolBar = class(TToolBar)
   private
   protected
   published
   public
-    constructor Create( Aowner : TComponent ) ; override ;
-  end ;
+    constructor Create(Aowner : TComponent); override;
+  end;
 
   // TtiButtonPanel
-  TtiButtonPanel = class( TCustomPanel )
+  TtiButtonPanel = class(TCustomPanel)
   private
     FOnBtn2Click: TNotifyEvent;
     FOnBtn1Click: TNotifyEvent;
-    FBtn1 : TBitBtn ;
-    FBtn2 : TBitBtn ;
-    procedure SetOnBtn1Click(const Value: TNotifyEvent);
-    procedure SetOnBtn2Click(const Value: TNotifyEvent);
+    FBtn1 : TBitBtn;
+    FBtn2 : TBitBtn;
+    procedure SetOnBtn1Click(const AValue: TNotifyEvent);
+    procedure SetOnBtn2Click(const AValue: TNotifyEvent);
     function GetBtn1Enabled: boolean;
     function GetBtn2Enabled: boolean;
-    procedure SetBtn1Enabled(const Value: boolean);
-    procedure SetBtn2Enabled(const Value: boolean);
+    procedure SetBtn1Enabled(const AValue: boolean);
+    procedure SetBtn2Enabled(const AValue: boolean);
   protected
   published
-    property OnBtn1Click : TNotifyEvent read FOnBtn1Click write SetOnBtn1Click ;
-    property OnBtn2Click : TNotifyEvent read FOnBtn2Click write SetOnBtn2Click ;
-    property Btn1Enabled : boolean      read GetBtn1Enabled write SetBtn1Enabled ;
-    property Btn2Enabled : boolean      read GetBtn2Enabled write SetBtn2Enabled ;
-    property Visible ;
+    property OnBtn1Click : TNotifyEvent read FOnBtn1Click write SetOnBtn1Click;
+    property OnBtn2Click : TNotifyEvent read FOnBtn2Click write SetOnBtn2Click;
+    property Btn1Enabled : boolean      read GetBtn1Enabled write SetBtn1Enabled;
+    property Btn2Enabled : boolean      read GetBtn2Enabled write SetBtn2Enabled;
+    property Visible;
   public
-    Constructor Create( Aowner : TComponent ) ; override ;
-    Destructor  Destroy ; override ;
-    procedure   DoBtn1Click( sender : TObject ) ; virtual ;
-    procedure   DoBtn2Click( sender : TObject ) ; virtual ;
-  end ;
+    Constructor Create(Aowner : TComponent); override;
+    Destructor  Destroy; override;
+    procedure   DoBtn1Click(sender : TObject); virtual;
+    procedure   DoBtn2Click(sender : TObject); virtual;
+  end;
 
-  TtiMicroButton = class( TSpeedButton )
+  TtiMicroButton = class(TSpeedButton)
   public
-    constructor Create( Aowner : TComponent ) ; override ;
-  end ;
+    constructor Create(Aowner : TComponent); override;
+  end;
 
 implementation
 uses
   Forms
   ,tiResources
-  ;
+ ;
 
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -111,10 +81,10 @@ uses
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiToolBar.Create(Aowner: TComponent);
 begin
-  inherited create( Aowner ) ;
-  Flat     := true ;
-  Height   := 25 ;
-  ShowHint := true ;
+  inherited create(Aowner);
+  Flat    := true;
+  Height  := 25;
+  ShowHint := true;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -124,11 +94,11 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiPanel.Create(Aowner: TComponent);
 begin
-  inherited Create( Aowner ) ;
-  ControlStyle := ControlStyle - [csSetCaption] ;
-  BevelInner  := bvNone ;
-  BevelOuter  := bvNone ;
-  BorderStyle := bsNone ;
+  inherited Create(Aowner);
+  ControlStyle := ControlStyle - [csSetCaption];
+  BevelInner := bvNone;
+  BevelOuter := bvNone;
+  BorderStyle := bsNone;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -139,117 +109,117 @@ end;
 { ToDo 5 -cComponents: TtiButtonPanel: Add variable number of buttons, with var captions and glyphs }
 constructor TtiButtonPanel.Create(Aowner: TComponent);
 begin
-  inherited Create( Aowner ) ;
-  Width  := 253 ;
-  Height := 33  ;
-  Align  := alBottom ;
-  BevelOuter := bvNone ;
-  ControlStyle := ControlStyle - [csSetCaption] ;
+  inherited Create(Aowner);
+  Width := 253;
+  Height := 33 ;
+  Align := alBottom;
+  BevelOuter := bvNone;
+  ControlStyle := ControlStyle - [csSetCaption];
 
-  FBtn1 := TBitBtn.Create( nil ) ;
+  FBtn1 := TBitBtn.Create(nil);
   with FBtn1 do begin
-    Parent      := self ;
-    Left        := 94 ;
-    Top         := 4  ;
-    Width       := 75 ;
-    Height      := 25 ;
-    Anchors     := [akRight, akBottom] ;
-    TabOrder    := 0  ;
-    Caption     := '&OK' ;
-    OnClick     := DoBtn1Click ;
-    Default     := true ;
-    ModalResult := mrOK ;
-    NumGlyphs   := 2 ;
+    Parent     := self;
+    Left       := 94;
+    Top        := 4 ;
+    Width      := 75;
+    Height     := 25;
+    Anchors    := [akRight, akBottom];
+    TabOrder   := 0 ;
+    Caption    := '&OK';
+    OnClick    := DoBtn1Click;
+    Default    := true;
+    ModalResult := mrOK;
+    NumGlyphs  := 2;
     {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, cResTI_Tick16ND);
     {$ENDIF}
-  end ;
+  end;
 
-  FBtn2 := TBitBtn.Create( nil ) ;
+  FBtn2 := TBitBtn.Create(nil);
   with FBtn2 do begin
-    Parent      := self ;
-    Left        := 174 ;
-    Top         := 4 ;
-    Width       := 75 ;
-    Height      := 25 ;
-    Anchors     := [akRight, akBottom] ;
-    TabOrder    := 1 ;
-    Caption     := '&Cancel' ;
-    OnClick     := DoBtn2Click ;
-    Cancel      := true ;
-    ModalResult := mrCancel ;
-    NumGlyphs   := 2 ;
+    Parent     := self;
+    Left       := 174;
+    Top        := 4;
+    Width      := 75;
+    Height     := 25;
+    Anchors    := [akRight, akBottom];
+    TabOrder   := 1;
+    Caption    := '&Cancel';
+    OnClick    := DoBtn2Click;
+    Cancel     := true;
+    ModalResult := mrCancel;
+    NumGlyphs  := 2;
     {$IFNDEF FPC}
     Glyph.LoadFromResourceName(HInstance, cResTI_Cross16ND);
     {$ENDIF}
-  end ;
-end ;
+  end;
+end;
 
 destructor TtiButtonPanel.Destroy;
 begin
-  FBtn1.Free ;
-  FBtn2.Free ;
+  FBtn1.Free;
+  FBtn2.Free;
   inherited;
 end;
 
 procedure TtiButtonPanel.DoBtn1Click(sender: TObject);
 begin
-  if Assigned( FOnBtn1Click ) then
-    FOnBtn1Click( self ) ;
+  if Assigned(FOnBtn1Click) then
+    FOnBtn1Click(self);
 end;
 
 procedure TtiButtonPanel.DoBtn2Click(sender: TObject);
 begin
-  if Assigned( FOnBtn2Click ) then
-    FOnBtn2Click( self ) ;
+  if Assigned(FOnBtn2Click) then
+    FOnBtn2Click(self);
 end;
 
 function TtiButtonPanel.GetBtn1Enabled: boolean;
 begin
-  result := FBtn1.Enabled ;
+  result := FBtn1.Enabled;
 end;
 
 function TtiButtonPanel.GetBtn2Enabled: boolean;
 begin
-  result := FBtn2.Enabled ;
+  result := FBtn2.Enabled;
 end;
 
-procedure TtiButtonPanel.SetBtn1Enabled(const Value: boolean);
+procedure TtiButtonPanel.SetBtn1Enabled(const AValue: boolean);
 begin
-  FBtn1.Enabled := Value ;
+  FBtn1.Enabled := AValue;
 end;
 
-procedure TtiButtonPanel.SetBtn2Enabled(const Value: boolean);
+procedure TtiButtonPanel.SetBtn2Enabled(const AValue: boolean);
 begin
-  FBtn2.Enabled := Value ;
+  FBtn2.Enabled := AValue;
 end;
 
-procedure TtiButtonPanel.SetOnBtn1Click(const Value: TNotifyEvent);
+procedure TtiButtonPanel.SetOnBtn1Click(const AValue: TNotifyEvent);
 begin
-  FOnBtn1Click := Value;
-  if Assigned( FOnBtn1Click ) then
+  FOnBtn1Click := AValue;
+  if Assigned(FOnBtn1Click) then
     FBtn1.ModalResult := mrNone
   else
-    FBtn1.ModalResult := mrOK ;
+    FBtn1.ModalResult := mrOK;
 end;
 
-procedure TtiButtonPanel.SetOnBtn2Click(const Value: TNotifyEvent);
+procedure TtiButtonPanel.SetOnBtn2Click(const AValue: TNotifyEvent);
 begin
-  FOnBtn2Click := Value;
-  if Assigned( FOnBtn2Click ) then
+  FOnBtn2Click := AValue;
+  if Assigned(FOnBtn2Click) then
     FBtn2.ModalResult := mrNone
   else
-    FBtn2.ModalResult := mrCancel ;
+    FBtn2.ModalResult := mrCancel;
 end;
 
 { TtiMicroButton }
 
 constructor TtiMicroButton.Create(Aowner: TComponent);
 begin
-  inherited Create( Aowner ) ;
-  Height := 12 ;
-  Width  := 12 ;
-  Flat   := true ;
+  inherited Create(Aowner);
+  Height := 12;
+  Width := 12;
+  Flat  := true;
 end;
 
 end.

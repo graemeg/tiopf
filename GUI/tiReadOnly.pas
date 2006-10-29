@@ -1,43 +1,11 @@
-{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  The contents of this file are subject to the Mozilla Public
-  License Version 1.1 (the "License"); you may not use this file
-  except in compliance with the License. You may obtain a copy of
-  the License at http://www.mozilla.org/MPL/
-
-  Software distributed under the License is distributed on an "AS
-  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  implied. See the License for the specific language governing
-  rights and limitations under the License.
-                         
-  Originally developed and released by Peter Hinrichsen, TechInsite Pty. Ltd.
-  as the tiOPF (TechInsite Object Persistence Framework)
-
-    23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-    PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-    Phone: +61 3 9419 6456 Fax:   +61 3 9419 1682
-    Latest source:   www.techinsite.com.au/tiOPF/Download.htm
-    Documentation:   www.techinsite.com.au/tiOPF/Doc/
-    Support:         www.techinsite.com.au/tiOPF/MailingList.htm
-
-  Please submit changes to tiOPF@techinsite.com.au
-
-  Revision history:
-    Aug 2002 Ian Krigsman  Added OnProcessEvent
-
-  Purpose:
-
-  ToDo:
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
+unit tiReadOnly;
 
 {$I tiDefines.inc}
-
-unit tiReadOnly;
 
 interface
 uses
   Classes
-  ;
+ ;
 
 type
   TtiOnChangeReadOnlyEvent = procedure(pSender: TObject; pReadOnly: boolean) of object;
@@ -54,10 +22,10 @@ type
     FOnProcessFrm: TtiOnProcessFrmEvent;
     FProcessFormAndFrame: boolean;
     FOnGetParent: TtiOnGetPArentEvent;
-    procedure SetEnabled(const Value: boolean);
+    procedure SetEnabled(const AValue: boolean);
   protected
     function GetReadOnly: boolean; virtual;
-    procedure SetReadOnly(const Value: boolean); virtual;
+    procedure SetReadOnly(const AValue: boolean); virtual;
     procedure SetComponentsReadOnly(pReadOnly: boolean); virtual;
     function GetParentForm: TComponent;
   public
@@ -78,7 +46,7 @@ uses
   Forms
   , TypInfo
   , Dialogs
-  ;
+ ;
 
 { TtiReadOnly }
 
@@ -152,19 +120,19 @@ begin
   _SetComponentsReadOnly(GetParentForm);
 end;
 
-procedure TtiReadOnly.SetEnabled(const Value: boolean);
+procedure TtiReadOnly.SetEnabled(const AValue: boolean);
 begin
-  FEnabled := Value;
+  FEnabled := AValue;
 // Removed IPK
 //  if FEnabled then
 //    SetReadOnly(FReadOnly);
 end;
 
-procedure TtiReadOnly.SetReadOnly(const Value: boolean);
+procedure TtiReadOnly.SetReadOnly(const AValue: boolean);
 begin
   if not FEnabled then
     Exit; //==>
-  FReadOnly := Value;
+  FReadOnly := AValue;
   SetComponentsReadOnly(FReadOnly);
   if Assigned(FOnChange) then
     FOnChange(Self, FReadOnly);

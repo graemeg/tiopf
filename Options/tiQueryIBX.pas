@@ -13,7 +13,7 @@ uses
   , IBHeader
   , tiClassToDBMap_BOM
   , tiObject
-  ;
+ ;
 
 // Turn this on if you have upgraded you IBX from the version that comes
 // out of the box with Delphi. If you have not upgraded your IBX components,
@@ -31,24 +31,24 @@ type
     FDatabase: TIBDataBase;
     FIBTransaction: TIBTransaction;
   protected
-    procedure SetConnected(pbValue: boolean); override;
+    procedure SetConnected(AValue: boolean); override;
     function  GetConnected: boolean; override;
-    function  FieldMetaDataToSQLCreate(const pFieldMetaData: TtiDBMetaDataField): string; override;
+    function  FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string; override;
 
   public
     constructor Create; override;
     destructor Destroy; override;
 
-    class function  DatabaseExists( const pDatabaseName, pUserName, pPassword : string ) : boolean ; override ;
-    class procedure CreateDatabase( const pDatabaseName, pUserName, pPassword : string ) ; override ;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
     property        IBDatabase: TIBDatabase read FDatabase write FDatabase;
     procedure       StartTransaction; override;
     function        InTransaction: boolean; override;
     procedure       Commit; override;
     procedure       RollBack; override;
-    procedure       ReadMetaDataTables(pData: TtiDBMetaData); override;
-    procedure       ReadMetaDataFields(pData: TtiDBMetaDataTable); override;
-    function        Test : boolean ; override ;
+    procedure       ReadMetaDataTables(AData: TtiDBMetaData); override;
+    procedure       ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
+    function        Test : boolean; override;
 
   end;
 
@@ -58,45 +58,45 @@ type
     FbActive: boolean;
     // If you build is falling over here, see the note around line 50 on IBX versions.
     {$IFDEF IBXx08ORABOVE}
-      function IBFieldKindToTIFieldKind(pData : TSQLVAR): TtiQueryFieldKind;
+      function IBFieldKindToTIFieldKind(AData : TSQLVAR): TtiQueryFieldKind;
     {$ELSE}
-      function IBFieldKindToTIFieldKind(pData : PXSQLVAR): TtiQueryFieldKind;
+      function IBFieldKindToTIFieldKind(AData : PXSQLVAR): TtiQueryFieldKind;
     {$ENDIF}
     procedure Prepare;
   protected
 
-    function  GetFieldAsString(const psName: string): string; override;
-    function  GetFieldAsFloat(const psName: string): extended; override;
-    function  GetFieldAsBoolean(const psName: string): boolean; override;
-    function  GetFieldAsInteger(const psName: string): Int64; override;
-    function  GetFieldAsDateTime(const psName: string): TDateTime; override;
+    function  GetFieldAsString(const AName: string): string; override;
+    function  GetFieldAsFloat(const AName: string): extended; override;
+    function  GetFieldAsBoolean(const AName: string): boolean; override;
+    function  GetFieldAsInteger(const AName: string): Int64; override;
+    function  GetFieldAsDateTime(const AName: string): TDateTime; override;
 
-    function  GetFieldAsStringByIndex(pIndex: Integer): string     ; override ;
-    function  GetFieldAsFloatByIndex(pIndex: Integer)   : extended     ; override ;
-    function  GetFieldAsBooleanByIndex(pIndex: Integer) : boolean  ; override ;
-    function  GetFieldAsIntegerByIndex(pIndex: Integer) : Int64    ; override ;
-    function  GetFieldAsDateTimeByIndex(pIndex: Integer):TDateTime ; override ;
-    function  GetFieldIsNullByIndex(pIndex: Integer):Boolean       ; override ;
+    function  GetFieldAsStringByIndex(AIndex: Integer): string    ; override;
+    function  GetFieldAsFloatByIndex(AIndex: Integer)  : extended    ; override;
+    function  GetFieldAsBooleanByIndex(AIndex: Integer): boolean ; override;
+    function  GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ; override;
+    function  GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime; override;
+    function  GetFieldIsNullByIndex(AIndex: Integer):Boolean      ; override;
 
     function  GetSQL: TStrings; override;
-    procedure SetSQL(const Value: TStrings); override;
+    procedure SetSQL(const AValue: TStrings); override;
     function  GetActive: boolean; override;
-    procedure SetActive(const Value: boolean); override;
+    procedure SetActive(const AValue: boolean); override;
     function  GetEOF: boolean; override;
-    function  GetParamAsString(const psName: string): string; override;
-    function  GetParamAsBoolean(const psName: string): boolean; override;
-    function  GetParamAsFloat(const psName: string): extended; override;
-    function  GetParamAsInteger(const psName: string): Int64; override;
-    procedure SetParamAsString(const psName, Value: string); override;
-    procedure SetParamAsBoolean(const psName: string; const Value: boolean); override;
-    procedure SetParamAsFloat(const psName: string; const Value: extended); override;
-    procedure SetParamAsInteger(const psName: string; const Value: Int64); override;
-    function  GetParamAsDateTime(const psName: string): TDateTime; override;
-    procedure SetParamAsDateTime(const psName: string; const Value: TDateTime); override;
+    function  GetParamAsString(const AName: string): string; override;
+    function  GetParamAsBoolean(const AName: string): boolean; override;
+    function  GetParamAsFloat(const AName: string): extended; override;
+    function  GetParamAsInteger(const AName: string): Int64; override;
+    procedure SetParamAsString(const AName, AValue: string); override;
+    procedure SetParamAsBoolean(const AName: string; const AValue: boolean); override;
+    procedure SetParamAsFloat(const AName: string; const AValue: extended); override;
+    procedure SetParamAsInteger(const AName: string; const AValue: Int64); override;
+    function  GetParamAsDateTime(const AName: string): TDateTime; override;
+    procedure SetParamAsDateTime(const AName: string; const AValue: TDateTime); override;
 
-    function  GetParamIsNull(const psName: string): Boolean; override;
-    procedure SetParamIsNull(const psName: string; const Value: Boolean); override;
-    function  GetFieldIsNull(const psName: string): Boolean; override;
+    function  GetParamIsNull(const AName: string): Boolean; override;
+    procedure SetParamIsNull(const AName: string; const AValue: Boolean); override;
+    function  GetFieldIsNull(const AName: string): Boolean; override;
 
   public
     constructor Create; override;
@@ -107,24 +107,24 @@ type
     procedure   ExecSQL; override;
 
     function    ParamCount: integer; override;
-    function    ParamName(pIndex: integer): string; override;
+    function    ParamName(AIndex: integer): string; override;
 
-    procedure   AssignParamFromStream(const pName: string; const pStream: TStream); override;
-    procedure   AssignParamToStream(const pName: string; const pStream: TStream); override;
-    procedure   AssignFieldAsStream(const pName: string; const pStream: TStream); override;
-    procedure   AssignFieldAsStreamByIndex(      pIndex : integer ; const pValue : TStream ) ; override ;
-    procedure   AssignParams(const pParams: TtiQueryParams; const pWhere: TtiQueryParams = nil); override;
+    procedure   AssignParamFromStream(const AName: string; const AStream: TStream); override;
+    procedure   AssignParamToStream(const AName: string; const AStream: TStream); override;
+    procedure   AssignFieldAsStream(const AName: string; const AStream: TStream); override;
+    procedure   AssignFieldAsStreamByIndex(     AIndex : integer; const AValue : TStream); override;
+    procedure   AssignParams(const AParams: TtiQueryParams; const AWhere: TtiQueryParams = nil); override;
 
-    procedure   AttachDatabase(pDatabase: TtiDatabase); override;
+    procedure   AttachDatabase(ADatabase: TtiDatabase); override;
     procedure   DetachDatabase; override;
     procedure   Reset; override;
 
     function    FieldCount: integer; override;
-    function    FieldName(pIndex: integer): string; override;
-    function    FieldIndex(const psName: string): integer; override;
-    function    FieldKind(pIndex: integer): TtiQueryFieldKind; override;
-    function    FieldSize(pIndex: integer): integer; override;
-    function    HasNativeLogicalType : boolean ; override ;
+    function    FieldName(AIndex: integer): string; override;
+    function    FieldIndex(const AName: string): integer; override;
+    function    FieldKind(AIndex: integer): TtiQueryFieldKind; override;
+    function    FieldSize(AIndex: integer): integer; override;
+    function    HasNativeLogicalType : boolean; override;
 
   end;
 
@@ -141,7 +141,7 @@ uses
 {$IFDEF DELPHI6ORABOVE}
   ,Variants
 {$ENDIF}
-  ;
+ ;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -171,16 +171,16 @@ end;
 
 procedure TtiQueryIBX.ExecSQL;
 begin
-  Prepare ;
+  Prepare;
   FIBSQL.ExecQuery;
 end;
 
 
-function TtiQueryIBX.GetFieldAsBoolean(const psName: string): boolean;
+function TtiQueryIBX.GetFieldAsBoolean(const AName: string): boolean;
 var
   lsValue: string;
 begin
-  lsValue := Trim( upperCase(FIBSQL.FieldByName(UpperCase(psName)).AsString));
+  lsValue := Trim(upperCase(FIBSQL.FieldByName(UpperCase(AName)).AsString));
   result := (lsValue = 'T') or
     (lsValue = 'TRUE') or
     (lsValue = 'Y') or
@@ -189,43 +189,43 @@ begin
 end;
 
 
-function TtiQueryIBX.GetFieldAsDateTime(const psName: string): TDateTime;
+function TtiQueryIBX.GetFieldAsDateTime(const AName: string): TDateTime;
 begin
-  result := FIBSQL.FieldByName(UpperCase(psName)).AsDateTime;
+  result := FIBSQL.FieldByName(UpperCase(AName)).AsDateTime;
 end;
 
 
-function TtiQueryIBX.GetFieldAsFloat(const psName: string): extended;
+function TtiQueryIBX.GetFieldAsFloat(const AName: string): extended;
 begin
-  result := FIBSQL.FieldByName(UpperCase(psName)).AsDouble;
+  result := FIBSQL.FieldByName(UpperCase(AName)).AsDouble;
 end;
 
 
-function TtiQueryIBX.GetFieldAsInteger(const psName: string): Int64;
+function TtiQueryIBX.GetFieldAsInteger(const AName: string): Int64;
 begin
-  result := FIBSQL.FieldByName(UpperCase(psName)).AsInt64;
+  result := FIBSQL.FieldByName(UpperCase(AName)).AsInt64;
 end;
 
-function TtiQueryIBX.GetFieldAsString(const psName: string): string;
+function TtiQueryIBX.GetFieldAsString(const AName: string): string;
 begin
-  result := FIBSQL.FieldByName(UpperCase(psName)).AsString;
+  result := FIBSQL.FieldByName(UpperCase(AName)).AsString;
 end;
 
-function TtiQueryIBX.GetFieldAsStringByIndex(pIndex: Integer): string     ;
+function TtiQueryIBX.GetFieldAsStringByIndex(AIndex: Integer): string    ;
 begin
-  Result := FIBSQL.Fields[pIndex].AsString;
+  Result := FIBSQL.Fields[AIndex].AsString;
 end;
 
-function TtiQueryIBX.GetFieldAsFloatByIndex(pIndex: Integer)   : extended     ;
+function TtiQueryIBX.GetFieldAsFloatByIndex(AIndex: Integer)  : extended    ;
 begin
-  Result := FIBSQL.Fields[pIndex].AsDouble;
+  Result := FIBSQL.Fields[AIndex].AsDouble;
 end;
 
-function TtiQueryIBX.GetFieldAsBooleanByIndex(pIndex: Integer) : boolean  ;
+function TtiQueryIBX.GetFieldAsBooleanByIndex(AIndex: Integer): boolean ;
 var
   lsValue: string;
 begin
-  lsValue := Trim( FIBSQL.Fields[pIndex].AsString);
+  lsValue := Trim(FIBSQL.Fields[AIndex].AsString);
   result := (lsValue = 'T') or
     (lsValue = 'TRUE') or
     (lsValue = 'Y') or
@@ -233,19 +233,19 @@ begin
     (lsValue = '1');
 end;
 
-function TtiQueryIBX.GetFieldAsIntegerByIndex(pIndex: Integer) : Int64    ;
+function TtiQueryIBX.GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ;
 begin
-  Result := FIBSQL.Fields[pIndex].AsInt64;
+  Result := FIBSQL.Fields[AIndex].AsInt64;
 end;
 
-function TtiQueryIBX.GetFieldAsDateTimeByIndex(pIndex: Integer):TDateTime ;
+function TtiQueryIBX.GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime;
 begin
-  Result := FIBSQL.Fields[pIndex].AsDateTime;
+  Result := FIBSQL.Fields[AIndex].AsDateTime;
 end;
 
-function TtiQueryIBX.GetFieldIsNullByIndex(pIndex: Integer):Boolean       ;
+function TtiQueryIBX.GetFieldIsNullByIndex(AIndex: Integer):Boolean      ;
 begin
-  Result := FIBSQL.Fields[pIndex].IsNull;
+  Result := FIBSQL.Fields[AIndex].IsNull;
 end;
 
 function TtiQueryIBX.GetActive: boolean;
@@ -258,11 +258,11 @@ begin
   result := FIBSQL.EOF;
 end;
 
-function TtiQueryIBX.GetParamAsBoolean(const psName: string): boolean;
+function TtiQueryIBX.GetParamAsBoolean(const AName: string): boolean;
 var
   lValue: string;
 begin
-  lValue := FIBSQL.Params.ByName(UpperCase(psName)).AsString;
+  lValue := FIBSQL.Params.ByName(UpperCase(AName)).AsString;
 {$IFDEF BOOLEAN_CHAR_1}
   result := SameText(lValue, 'T');
 {$ELSE}
@@ -271,26 +271,26 @@ begin
 end;
 
 
-function TtiQueryIBX.GetParamAsDateTime(const psName: string): TDateTime;
+function TtiQueryIBX.GetParamAsDateTime(const AName: string): TDateTime;
 begin
-  result := FIBSQL.Params.ByName(UpperCase(psName)).AsDateTime;
+  result := FIBSQL.Params.ByName(UpperCase(AName)).AsDateTime;
 end;
 
 
-function TtiQueryIBX.GetParamAsFloat(const psName: string): extended;
+function TtiQueryIBX.GetParamAsFloat(const AName: string): extended;
 begin
-  result := FIBSQL.Params.ByName(UpperCase(psName)).AsDouble;
+  result := FIBSQL.Params.ByName(UpperCase(AName)).AsDouble;
 end;
 
 
-function TtiQueryIBX.GetParamAsInteger(const psName: string): Int64;
+function TtiQueryIBX.GetParamAsInteger(const AName: string): Int64;
 begin
-  result := FIBSQL.Params.ByName(UpperCase(psName)).AsInt64;
+  result := FIBSQL.Params.ByName(UpperCase(AName)).AsInt64;
 end;
 
-function TtiQueryIBX.GetParamAsString(const psName: string): string;
+function TtiQueryIBX.GetParamAsString(const AName: string): string;
 begin
-  result := FIBSQL.Params.ByName(UpperCase(psName)).AsString;
+  result := FIBSQL.Params.ByName(UpperCase(AName)).AsString;
 end;
 
 function TtiQueryIBX.GetSQL: TStrings;
@@ -315,16 +315,16 @@ begin
 end;
 
 
-function TtiQueryIBX.ParamName(pIndex: integer): string;
+function TtiQueryIBX.ParamName(AIndex: integer): string;
 begin
-  result := FIBSQL.Params[pIndex].Name;
+  result := FIBSQL.Params[AIndex].Name;
 end;
 
 
-procedure TtiQueryIBX.SetActive(const Value: boolean);
+procedure TtiQueryIBX.SetActive(const AValue: boolean);
 begin
-  Assert( Database.TestValid(TtiDatabase), cTIInvalidObjectError );
-  if Value then
+  Assert(Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  if AValue then
   begin
     FIBSQL.ExecQuery;
     FbActive := true;
@@ -336,106 +336,106 @@ begin
 end;
 
 
-procedure TtiQueryIBX.SetParamAsBoolean(const psName: string; const Value: boolean);
+procedure TtiQueryIBX.SetParamAsBoolean(const AName: string; const AValue: boolean);
 begin
-  Prepare ;
+  Prepare;
 {$IFDEF BOOLEAN_CHAR_1}
-  if Value then
-    FIBSQL.Params.ByName(UpperCase(psName)).AsString := 'T'
+  if AValue then
+    FIBSQL.Params.ByName(UpperCase(AName)).AsString := 'T'
   else
-    FIBSQL.Params.ByName(UpperCase(psName)).AsString := 'F';
+    FIBSQL.Params.ByName(UpperCase(AName)).AsString := 'F';
 {$ELSE}
-  if Value then
-    FIBSQL.Params.ByName(UpperCase(psName)).AsString := 'TRUE'
+  if AValue then
+    FIBSQL.Params.ByName(UpperCase(AName)).AsString := 'TRUE'
   else
-    FIBSQL.Params.ByName(UpperCase(psName)).AsString := 'FALSE';
+    FIBSQL.Params.ByName(UpperCase(AName)).AsString := 'FALSE';
 {$ENDIF} // BOOLEAN_CHAR_1
 end;
 
 
-procedure TtiQueryIBX.SetParamAsDateTime(const psName: string; const Value: TDateTime);
+procedure TtiQueryIBX.SetParamAsDateTime(const AName: string; const AValue: TDateTime);
 begin
-  Prepare ;
-  FIBSQL.Params.ByName(UpperCase(psName)).AsDateTime := Value;
+  Prepare;
+  FIBSQL.Params.ByName(UpperCase(AName)).AsDateTime := AValue;
 end;
 
 
-procedure TtiQueryIBX.SetParamAsFloat(const psName: string; const Value: extended);
+procedure TtiQueryIBX.SetParamAsFloat(const AName: string; const AValue: extended);
 begin
-  Prepare ;
-  FIBSQL.Params.ByName(UpperCase(psName)).AsDouble := Value;
+  Prepare;
+  FIBSQL.Params.ByName(UpperCase(AName)).AsDouble := AValue;
 end;
 
 
-procedure TtiQueryIBX.SetParamAsInteger(const psName: string; const Value: Int64);
+procedure TtiQueryIBX.SetParamAsInteger(const AName: string; const AValue: Int64);
 begin
-  Prepare ;
+  Prepare;
 //  Log('Param as integer : '+psNAme,lsUserInfo);
-//  if High(Integer) < Value then
+//  if High(Integer) < AValue then
 //  begin
 //    Log('Int64',lsUserInfo);
-//    FIBSQL.Params.ByName(UpperCase(psName)).AsInt64 := Value;
+//    FIBSQL.Params.ByName(UpperCase(AName)).AsInt64 := AValue;
 //  end
 //  else
 //  begin
 //    Log('Integer',lsUserInfo);
-//    FIBSQL.Params.ByName(UpperCase(psName)).AsInteger :=  Integer(Value);
-    FIBSQL.Params.ByName(UpperCase(psName)).AsInt64 :=  Value;
+//    FIBSQL.Params.ByName(UpperCase(AName)).AsInteger :=  Integer(AValue);
+    FIBSQL.Params.ByName(UpperCase(AName)).AsInt64 :=  AValue;
 //  end;
 end;
 
-procedure TtiQueryIBX.SetParamAsString(const psName, Value: string);
+procedure TtiQueryIBX.SetParamAsString(const AName, AValue: string);
 begin
-  Prepare ;
-  FIBSQL.Params.ByName(UpperCase(psName)).AsString := Value;
+  Prepare;
+  FIBSQL.Params.ByName(UpperCase(AName)).AsString := AValue;
 end;
 
-procedure TtiQueryIBX.SetSQL(const Value: TStrings);
+procedure TtiQueryIBX.SetSQL(const AValue: TStrings);
 begin
-  FIBSQL.SQL.Assign(Value);
+  FIBSQL.SQL.Assign(AValue);
 end;
 
 procedure TtiQueryIBX.Prepare;
 begin
   if FIBSQL.Prepared then
-    Exit ; //==>
+    Exit; //==>
   FIBSQL.Prepare;
 end;
 
-procedure TtiQueryIBX.AssignParamFromStream(const pName: string; const pStream: TStream);
+procedure TtiQueryIBX.AssignParamFromStream(const AName: string; const AStream: TStream);
 begin
-  Assert(pStream <> nil, 'Stream not assigned');
-  pStream.Position := 0;
-  Prepare ;
-  FIBSQL.Params.ByName(UpperCase(pName)).LoadFromStream(pStream);
+  Assert(AStream <> nil, 'Stream not assigned');
+  AStream.Position := 0;
+  Prepare;
+  FIBSQL.Params.ByName(UpperCase(AName)).LoadFromStream(AStream);
 end;
 
-procedure TtiQueryIBX.AssignParamToStream(const pName: string; const pStream: TStream);
+procedure TtiQueryIBX.AssignParamToStream(const AName: string; const AStream: TStream);
 begin
-  Assert(pStream <> nil, 'Stream not assigned');
-  FIBSQL.Params.ByName(UpperCase(pName)).SaveToStream(pStream);
-  pStream.Position := 0;
+  Assert(AStream <> nil, 'Stream not assigned');
+  FIBSQL.Params.ByName(UpperCase(AName)).SaveToStream(AStream);
+  AStream.Position := 0;
 end;
 
 
-procedure TtiQueryIBX.AssignFieldAsStream(const pName: string; const pStream: TStream);
+procedure TtiQueryIBX.AssignFieldAsStream(const AName: string; const AStream: TStream);
 begin
-  Assert(pStream <> nil, 'Stream not assigned');
-  pStream.Position := 0;
-  FIBSQL.FieldByName(UpperCase(pName)).SaveToStream(pStream);
+  Assert(AStream <> nil, 'Stream not assigned');
+  AStream.Position := 0;
+  FIBSQL.FieldByName(UpperCase(AName)).SaveToStream(AStream);
 end;
 
-procedure TtiQueryIBX.AssignFieldAsStreamByIndex( pIndex : integer ; const pValue : TStream ) ;
+procedure TtiQueryIBX.AssignFieldAsStreamByIndex(AIndex : integer; const AValue : TStream);
 begin
-  Assert(pValue <> nil, 'Stream not assigned');
-  pValue.Position := 0;
-  FIBSQL.Fields[pIndex].SaveToStream(pValue);
+  Assert(AValue <> nil, 'Stream not assigned');
+  AValue.Position := 0;
+  FIBSQL.Fields[AIndex].SaveToStream(AValue);
 end;
 
-procedure TtiQueryIBX.AttachDatabase(pDatabase: TtiDatabase);
+procedure TtiQueryIBX.AttachDatabase(ADatabase: TtiDatabase);
 begin
-  inherited AttachDatabase(pDatabase);
-  FIBSQL.Database := TtiDatabaseIBX(pDatabase).IBDatabase;
+  inherited AttachDatabase(ADatabase);
+  FIBSQL.Database := TtiDatabaseIBX(ADatabase).IBDatabase;
 end;
 
 
@@ -457,9 +457,9 @@ begin
 end;
 
 
-function TtiQueryIBX.FieldName(pIndex: integer): string;
+function TtiQueryIBX.FieldName(AIndex: integer): string;
 begin
-  result := FIBSQL.Fields[pIndex].Name;
+  result := FIBSQL.Fields[AIndex].Name;
 end;
 
 
@@ -469,9 +469,9 @@ begin
   FIBSQL.SQL.Clear;
 end;
 
-function TtiQueryIBX.FieldIndex(const psName: string): integer;
+function TtiQueryIBX.FieldIndex(const AName: string): integer;
 begin
-  result := FIBSQL.FieldByName(UpperCase(psName)).Index;
+  result := FIBSQL.FieldByName(UpperCase(AName)).Index;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -539,19 +539,19 @@ end;
 // This code is cloned in TtiQueryBDEAbs - Looks like we need to abstract more
 // and introduce a TDataSet version of the TtiQuery
 
-function TtiQueryIBX.FieldKind(pIndex: integer): TtiQueryFieldKind;
+function TtiQueryIBX.FieldKind(AIndex: integer): TtiQueryFieldKind;
 var
   lValue: string;
 begin
   // See note at top of this file re IBX versions
   {$IFDEF IBXx08ORABOVE}
-    result := IBFieldKindToTIFieldKind(FIBSQL.Fields[pIndex].SqlVar);
+    result := IBFieldKindToTIFieldKind(FIBSQL.Fields[AIndex].SqlVar);
   {$ELSE}
-    result := IBFieldKindToTIFieldKind(FIBSQL.Fields[pIndex].AsXSQLVAR);
+    result := IBFieldKindToTIFieldKind(FIBSQL.Fields[AIndex].AsXSQLVAR);
   {$ENDIF}
   if (result = qfkString) then
   begin
-    lValue := FIBSQL.Fields[pIndex].AsString;
+    lValue := FIBSQL.Fields[AIndex].AsString;
     // ToDo: How to detect a logical field in a SQL database
     //       where logicals are represented as VarChar or Char?
     //       In the IBX layer we are currently looking for a value of
@@ -563,7 +563,7 @@ begin
          SameText(lValue, 'F') then
         result := qfkLogical;
     {$ELSE}
-      if SameText(lValue, 'TRUE' ) or
+      if SameText(lValue, 'TRUE') or
          SameText(lValue, 'TRUE ') or
          SameText(lValue, 'FALSE') then
     {$ENDIF} // BOOLEAN_CHAR_1
@@ -574,22 +574,22 @@ end;
 // and introduce a TDataSet version of the TtiQuery
 
 {$IFDEF IBXx08ORABOVE}
-function TtiQueryIBX.IBFieldKindToTIFieldKind(pData : TSQLVar ): TtiQueryFieldKind;
+function TtiQueryIBX.IBFieldKindToTIFieldKind(AData : TSQLVar): TtiQueryFieldKind;
 begin
-  case ( pData.sqltype and ( not 1 ))of
+  case (AData.sqltype and (not 1))of
 {$ELSE}
-function TtiQueryIBX.IBFieldKindToTIFieldKind(pData : PXSQLVAR ): TtiQueryFieldKind;
+function TtiQueryIBX.IBFieldKindToTIFieldKind(AData : PXSQLVAR): TtiQueryFieldKind;
 begin
-  case ( pData^.sqltype and ( not 1 ))of
+  case (AData^.sqltype and (not 1))of
 {$ENDIF}
     SQL_TEXT, SQL_VARYING:                       result := qfkString;
-    SQL_LONG, SQL_SHORT, SQL_INT64, SQL_QUAD:    if pData.SqlScale = 0 then
+    SQL_LONG, SQL_SHORT, SQL_INT64, SQL_QUAD:    if AData.SqlScale = 0 then
                                                    result := qfkInteger
                                                  else
                                                    result := qfkFloat;
     SQL_DOUBLE, SQL_FLOAT, SQL_D_FLOAT:          result := qfkFloat;
     SQL_BLOB: begin
-                case pData.sqlsubtype of
+                case AData.sqlsubtype of
                 isc_blob_untyped:                result := qfkBinary;
                 isc_blob_text:                   result := qfkLongString;
 //  isc_blob_blr                   =          2;
@@ -601,8 +601,8 @@ begin
 //  isc_blob_extfile               =          8;
                 else
                   raise EtiOPFInternalException.Create('Invalid Interbase/FireBird/IBX sqlsubtype');
-                end ;
-              end ;
+                end;
+              end;
     SQL_TIMESTAMP, SQL_TYPE_TIME, SQL_TYPE_DATE: result := qfkDateTime;
   else
     raise EtiOPFInternalException.Create('Invalid Interbase sqltype');
@@ -636,24 +636,24 @@ begin
 
 end;
 
-function TtiQueryIBX.FieldSize(pIndex: integer): integer;
+function TtiQueryIBX.FieldSize(AIndex: integer): integer;
 begin
-  if FieldKind(pIndex) in [ qfkInteger, qfkFloat, qfkDateTime,
+  if FieldKind(AIndex) in [ qfkInteger, qfkFloat, qfkDateTime,
                             qfkLogical, qfkLongString ] then
     result := 0
   else
-    result := FIBSQL.Fields[pIndex].Size;
+    result := FIBSQL.Fields[AIndex].Size;
 end;
 
-function TtiQueryIBX.GetParamIsNull(const psName: string): Boolean;
+function TtiQueryIBX.GetParamIsNull(const AName: string): Boolean;
 begin
-  result := FIBSQL.Params.ByName(UpperCase(psName)).IsNull;
+  result := FIBSQL.Params.ByName(UpperCase(AName)).IsNull;
 end;
 
-procedure TtiQueryIBX.SetParamIsNull(const psName: string; const Value: Boolean);
+procedure TtiQueryIBX.SetParamIsNull(const AName: string; const AValue: Boolean);
 begin
-  Prepare ;
-  FIBSQL.Params.ByName(UpperCase(psName)).IsNull := true;
+  Prepare;
+  FIBSQL.Params.ByName(UpperCase(AName)).IsNull := true;
 end;
 
 function TtiDatabaseIBX.GetConnected: boolean;
@@ -661,22 +661,22 @@ begin
   Result := FDatabase.Connected;
 end;
 
-procedure TtiDatabaseIBX.SetConnected(pbValue: boolean);
+procedure TtiDatabaseIBX.SetConnected(AValue: boolean);
 var
-  lMessage : string ;
+  lMessage : string;
 begin
 
   try
-    if (not pbValue) then
+    if (not AValue) then
     begin
-      Log( 'Disconnecting from %s', [DatabaseName], lsConnectionPool ) ;
+      Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);
       FDatabase.Connected := false;
       Exit; //==>
     end;
 
     FDatabase.DatabaseName := DatabaseName;
-    FDatabase.Params.Values['user_name'] := UserName;
-    FDatabase.Params.Values['password'] := Password;
+    FDatabase.Params.Values['user_name']:= UserName;
+    FDatabase.Params.Values['password']:= Password;
 
 { Defined in IB unit:
   TTraceFlag = (tfQPrepare, tfQExecute, tfQFetch, tfError, tfStmt, tfConnect, tfTransact, tfBlob, tfService, tfMisc);
@@ -707,37 +707,37 @@ begin
     begin
       // Invalid username / password error
       if (EIBError(E).IBErrorCode = 335544472) then
-        raise EtiOPFDBExceptionUserNamePassword.Create( cTIPersistIBX, DatabaseName, UserName, Password )
+        raise EtiOPFDBExceptionUserNamePassword.Create(cTIPersistIBX, DatabaseName, UserName, Password)
       else
       begin
         lMessage :=
           'Error attempting to connect to database.' + Cr +
           e.Message + Cr +
           'Error code: ' + IntToStr(EIBError(E).IBErrorCode);
-        raise EtiOPFDBExceptionUserNamePassword.Create( cTIPersistIBX, DatabaseName, UserName, Password, lMessage )
+        raise EtiOPFDBExceptionUserNamePassword.Create(cTIPersistIBX, DatabaseName, UserName, Password, lMessage)
       end;
     end
   else
-    raise EtiOPFDBException.Create( cTIPersistIBX, DatabaseName, UserName, Password )
+    raise EtiOPFDBException.Create(cTIPersistIBX, DatabaseName, UserName, Password)
   end;
 end;
 
-function TtiQueryIBX.GetFieldIsNull(const psName: string): Boolean;
+function TtiQueryIBX.GetFieldIsNull(const AName: string): Boolean;
 begin
-  result := FIBSQL.FieldByName(UpperCase(psName)).IsNull;
+  result := FIBSQL.FieldByName(UpperCase(AName)).IsNull;
 end;
 
 // See borland communit article:
 //   http://community.borland.com/article/0,1410,25259,00.html
 // for more system table queries, or search google on 'interbase system tables'
 
-procedure TtiDatabaseIBX.ReadMetaDataTables(pData: TtiDBMetaData);
+procedure TtiDatabaseIBX.ReadMetaDataTables(AData: TtiDBMetaData);
 var
   lQuery: TtiQuery;
   lMetaData: TtiDBMetaData;
   lTable: TtiDBMetaDataTable;
 begin
-  lMetaData := (pData as TtiDBMetaData);
+  lMetaData := (AData as TtiDBMetaData);
   lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
@@ -769,14 +769,14 @@ begin
   end;
 end;
 
-procedure TtiDatabaseIBX.ReadMetaDataFields(pData: TtiDBMetaDataTable);
+procedure TtiDatabaseIBX.ReadMetaDataFields(AData: TtiDBMetaDataTable);
 var
-  lTableName : string ;
+  lTableName : string;
   lQuery: TtiQuery;
   lTable: TtiDBMetaDataTable;
   lField: TtiDBMetaDataField;
-  lFieldType : integer ;
-  lFieldLength  : integer ;
+  lFieldType : integer;
+  lFieldLength : integer;
 const
 // Interbase field types
 //   select * from rdb$types
@@ -798,8 +798,8 @@ const
   cIBField_CSTRING    = 40;
   cIBField_BLOB_ID    = 45;
 begin
-  lTable := (pData as TtiDBMetaDataTable);
-  lTableName := UpperCase(lTable.Name) ;
+  lTable := (AData as TtiDBMetaDataTable);
+  lTableName := UpperCase(lTable.Name);
   lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
@@ -823,34 +823,34 @@ begin
       begin
         lField := TtiDBMetaDataField.Create;
         lField.Name := Trim(lQuery.FieldAsString['field_name']);
-        lFieldType := lQuery.FieldAsInteger['field_type'] ;
-        lFieldLength  := lQuery.FieldAsInteger['field_length'] ;
+        lFieldType := lQuery.FieldAsInteger['field_type'];
+        lFieldLength := lQuery.FieldAsInteger['field_length'];
 
-        lField.Width := 0 ;
+        lField.Width := 0;
 
         case lFieldType of
-          cIBField_LONG       : lField.Kind := qfkInteger;
-          cIBField_DOUBLE     : lField.Kind := qfkFloat;
+          cIBField_LONG      : lField.Kind := qfkInteger;
+          cIBField_DOUBLE    : lField.Kind := qfkFloat;
           cIBField_TIMESTAMP,
           cIBField_DATE,
-          cIBField_TIME       : lField.Kind := qfkDateTime;
+          cIBField_TIME      : lField.Kind := qfkDateTime;
           cIBField_VARYING,
-          cIBField_TEXT       : begin
-                                  lField.Kind := qfkString ;
-                                  lField.Width := lFieldLength ;
-                                end ;
-          cIBField_BLOB       : begin
-                                  Assert( not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null' ) ;
+          cIBField_TEXT      : begin
+                                  lField.Kind := qfkString;
+                                  lField.Width := lFieldLength;
+                                end;
+          cIBField_BLOB      : begin
+                                  Assert(not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
                                   if lQuery.FieldAsInteger['field_sub_type'] = 0 then
                                     lField.Kind := qfkBinary
                                   else
                                   if lQuery.FieldAsInteger['field_sub_type'] = 1 then
                                     lField.Kind := qfkLongString
                                   else
-                                    raise EtiOPFInternalException.Create( 'Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>') ;
-                                end ;
+                                    raise EtiOPFInternalException.Create('Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>');
+                                end;
         else
-          raise EtiOPFInternalException.Create( 'Invalid Interbase FieldType <' + IntToStr( lFieldType ) + '>') ;
+          raise EtiOPFInternalException.Create('Invalid Interbase FieldType <' + IntToStr(lFieldType) + '>');
         end;
         lField.ObjectState := posClean;
         lTable.Add(lField);
@@ -880,15 +880,15 @@ begin
 
 end;
 
-function TtiDatabaseIBX.FieldMetaDataToSQLCreate(const pFieldMetaData: TtiDBMetaDataField): string;
+function TtiDatabaseIBX.FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string;
 var
-  lFieldName : string ;
+  lFieldName : string;
 begin
-  lFieldName := pFieldMetaData.Name ;
-  case pFieldMetaData.Kind of
-    qfkString: result := 'VarChar( ' + IntToStr(pFieldMetaData.Width) + ' )';
+  lFieldName := AFieldMetaData.Name;
+  case AFieldMetaData.Kind of
+    qfkString: result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
     qfkInteger: result := 'Integer';
-//    qfkFloat: result := 'Decimal( 10, 5 )';
+//    qfkFloat: result := 'Decimal(10, 5)';
     qfkFloat: result := 'DOUBLE PRECISION';
     // Just for new version of IB (6.x)
     // DATE holds only DATE without TIME...
@@ -897,9 +897,9 @@ begin
       else
         result := 'Date';
     {$IFDEF BOOLEAN_CHAR_1}
-    qfkLogical    : result := 'Char( 1 ) default ''F'' check( ' + lFieldName + ' in ( ''T'', ''F'' ))' ;
+    qfkLogical   : result := 'Char(1) default ''F'' check(' + lFieldName + ' in (''T'', ''F''))';
     {$ELSE}
-    qfkLogical    : result := 'VarChar( 5 ) default ''FALSE'' check( ' + lFieldName + ' in ( ''TRUE'', ''FALSE'' )) ' ;
+    qfkLogical   : result := 'VarChar(5) default ''FALSE'' check(' + lFieldName + ' in (''TRUE'', ''FALSE'')) ';
     {$ENDIF}
     qfkBinary: result := 'Blob sub_type 0';
     qfkLongString: result := 'Blob sub_type 1';
@@ -909,12 +909,12 @@ begin
 end;
 
 // ToDo: Shouldn't this be in the abstract?
-procedure TtiQueryIBX.AssignParams(const pParams, pWhere: TtiQueryParams);
+procedure TtiQueryIBX.AssignParams(const AParams, AWhere: TtiQueryParams);
 begin
-  if pParams = nil then
+  if AParams = nil then
     Exit;
-  Prepare ;
-  inherited ;
+  Prepare;
+  inherited;
 end;
 
 
@@ -965,18 +965,18 @@ var
   saveCursor: TCursor;
 begin
   result := False;
-  StatusBar.SimpleCaption    := '';
+  StatusBar.SimpleCaption   := '';
 
   IBServerProperties.Params.Clear;
-  IBServerProperties.Params.Append( 'user_name=' + uUser );
-  IBServerProperties.Params.Append( 'password=' + uPwd );
+  IBServerProperties.Params.Append('user_name=' + uUser);
+  IBServerProperties.Params.Append('password=' + uPwd);
 
   IBDatabase.Params.Clear;
-  IBDatabase.Params.Append( 'user_name=' + uUser );
-  IBDatabase.Params.Append( 'password=' + uPwd );
+  IBDatabase.Params.Append('user_name=' + uUser);
+  IBDatabase.Params.Append('password=' + uPwd);
 
-  IBServerProperties.ServerName   := IBXLocationServerEdit.Text;
-  if SameText( IBServerProperties.ServerName, sLocalhost ) then
+  IBServerProperties.ServerName  := IBXLocationServerEdit.Text;
+  if SameText(IBServerProperties.ServerName, sLocalhost) then
     IBServerProperties.Protocol := Local
   else
     IBServerProperties.Protocol := TCP;
@@ -989,34 +989,34 @@ begin
     Screen.Cursor := crHourGlass;
     IBXTestAction.Enabled := False;
     try
-      IBServerProperties.Active  := True;
+      IBServerProperties.Active := True;
       IBServerProperties.FetchVersionInfo;
-      IBXTestVersionLabel.Caption   :=
+      IBXTestVersionLabel.Caption  :=
 IBServerProperties.VersionInfo.ServerVersion;
 
-      IBDatabase.DatabaseName    := ExpandIBFileName(
-IBXLocationServerEdit.Text, IBXLocationDatabaseNameEdit.Text );
-      IBDatabase.Connected       := True;
-      IBDatabase.Connected       := False;
+      IBDatabase.DatabaseName   := ExpandIBFileName(
+IBXLocationServerEdit.Text, IBXLocationDatabaseNameEdit.Text);
+      IBDatabase.Connected      := True;
+      IBDatabase.Connected      := False;
 
       IBXTestResultLabel.Font.Color := clGreen;
-      IBXTestResultLabel.Caption    := 'OK';
-      IBServerProperties.Active  := False;
-      result                     := True;
+      IBXTestResultLabel.Caption   := 'OK';
+      IBServerProperties.Active := False;
+      result                    := True;
     except
       on e: Exception do begin
         IBXTestResultLabel.Font.Color := clRed;
-        IBXTestResultLabel.Caption    := 'Failed';
-        StatusBar.SimpleCaption    := 'Connection Error: ' + e.Message;
-        MessageBox( 0, PChar( e.Message ), PChar( 'Connection Failed' ),
-MB_OK + MB_ICONWARNING );
+        IBXTestResultLabel.Caption   := 'Failed';
+        StatusBar.SimpleCaption   := 'Connection Error: ' + e.Message;
+        MessageBox(0, PChar(e.Message), PChar('Connection Failed'),
+MB_OK + MB_ICONWARNING);
         end;
       end;
   finally
-    Screen.Cursor             := saveCursor;
-    IBXTestAction.Enabled        := True;
+    Screen.Cursor            := saveCursor;
+    IBXTestAction.Enabled       := True;
     IBServerProperties.Active := False;
-    IBDatabase.Connected      := False;
+    IBDatabase.Connected     := False;
     end;
 end;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1029,23 +1029,23 @@ www.discoverysystems.com.au
 
 
 
-class procedure TtiDatabaseIBX.CreateDatabase(const pDatabaseName,pUserName, pPassword: string);
+class procedure TtiDatabaseIBX.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
 var
-  LDatabase : TtiDatabaseIBX ;
+  LDatabase : TtiDatabaseIBX;
   LPath: string;
 begin
-  LPath:= ExtractFilePath(pDatabaseName);
+  LPath:= ExtractFilePath(ADatabaseName);
   if not DirectoryExists(LPath) then
     ForceDirectories(LPath);
-  LDatabase := TtiDatabaseIBX.Create ;
+  LDatabase := TtiDatabaseIBX.Create;
   try
-    LDatabase.FDatabase.DatabaseName := pDatabaseName;
-    LDatabase.FDatabase.Params.Add('USER "' + pUserName + '"');
-    LDatabase.FDatabase.Params.Add('PASSWORD "' + pPassword + '"');
-    LDatabase.FDatabase.CreateDatabase ;
+    LDatabase.FDatabase.DatabaseName := ADatabaseName;
+    LDatabase.FDatabase.Params.Add('USER "' + AUserName + '"');
+    LDatabase.FDatabase.Params.Add('PASSWORD "' + APassword + '"');
+    LDatabase.FDatabase.CreateDatabase;
   finally
     LDatabase.Free;
-  end ;
+  end;
 end;
 
 // Test is an Interbase server is available. Will not test for the existance of a GDB
@@ -1064,73 +1064,73 @@ end;
 //  Rules: If there is only one ':', then assume it's a file name only.
 //  If there are two ':', then assume a machine name.
 {
-function TtiDatabaseIBX.TestServer(const pServerIPAddress : string ; var pServerVersion : string ): boolean;
+function TtiDatabaseIBX.TestServer(const pServerIPAddress : string; var pServerVersion : string): boolean;
 var
   lIBSP: TIBServerProperties;
 begin
   lIBSP:= TIBServerProperties.Create(nil);
   try
-    lIBSP.LoginPrompt := false ;
+    lIBSP.LoginPrompt := false;
     lIBSP.Params.Clear;
-    lIBSP.Params.Append( 'user_name=' + uUser );
-    lIBSP.Params.Append( 'password=' + uPwd );
-    lIBSP.ServerName   := pServerIPAddress ;
-    if SameText( lIBSP.ServerName, 'LocalHost' ) then
+    lIBSP.Params.Append('user_name=' + uUser);
+    lIBSP.Params.Append('password=' + uPwd);
+    lIBSP.ServerName  := pServerIPAddress;
+    if SameText(lIBSP.ServerName, 'LocalHost') then
       lIBSP.Protocol := Local
     else
       lIBSP.Protocol := TCP;
     lIBSP.Options := [Version];
     try
       try
-        lIBSP.Active  := True;
+        lIBSP.Active := True;
         lIBSP.FetchVersionInfo;
-        pServerVersion := lIBSP.VersionInfo.ServerVersion ;
-        result := true ;
-        lIBSP.Active  := False;
+        pServerVersion := lIBSP.VersionInfo.ServerVersion;
+        result := true;
+        lIBSP.Active := False;
       except
         on e: Exception do
-          result := false ;
+          result := false;
         end;
     finally
       lIBSP.Active := False;
     end;
   finally
     lIBSP.Free;
-  end ;
+  end;
 end;
 }
 
-class function TtiDatabaseIBX.DatabaseExists(const pDatabaseName,pUserName, pPassword: string): boolean;
+class function TtiDatabaseIBX.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
 var
-  lDatabase : TtiDatabaseIBX ;
+  lDatabase : TtiDatabaseIBX;
 begin
-  lDatabase := TtiDatabaseIBX.Create ;
+  lDatabase := TtiDatabaseIBX.Create;
   try
-    lDatabase.FDatabase.DatabaseName := pDatabaseName;
-    lDatabase.FDatabase.Params.Values['user_name'] := pUserName;
-    lDatabase.FDatabase.Params.Values['password'] := pPassword;
+    lDatabase.FDatabase.DatabaseName := ADatabaseName;
+    lDatabase.FDatabase.Params.Values['user_name']:= AUserName;
+    lDatabase.FDatabase.Params.Values['password']:= APassword;
     try
-      lDatabase.FDatabase.Connected := true ;
-      result := true ;
+      lDatabase.FDatabase.Connected := true;
+      result := true;
     except
       on e:exception do
-        result := false ;
-    end ;
-    lDatabase.FDatabase.Connected := false ;
+        result := false;
+    end;
+    lDatabase.FDatabase.Connected := false;
   finally
     lDatabase.Free;
-  end ;
+  end;
 end;
 
 function TtiQueryIBX.HasNativeLogicalType: boolean;
 begin
-  result := false ;
+  result := false;
 end;
 
 function TtiDatabaseIBX.Test: boolean;
 begin
-  result := false ;
-  Assert( false, 'Under construction' ) ;  
+  result := false;
+  Assert(false, 'Under construction');  
 end;
 
 initialization

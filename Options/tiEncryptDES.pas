@@ -1,49 +1,15 @@
-{ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  Originally developed by TechInsite Pty. Ltd.
-  23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-  PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-  Phone: +61 3 9419 6456
-  Fax:   +61 3 9419 1682           
-  Web:   www.techinsite.com.au
-
-  This code is made available on the TechInsite web site as open source.
-  You may use this code in any way you like, except to sell it to other
-  developers. Please be sure to leave the file header and list of
-  contributors unchanged.
-
-  If you make any changes or enhancements, which you think will benefit other
-  developers and will not break any existing code, please forward your changes
-  (well commented) to TechInsite and I will make them available in the next
-  version.
-
-  Purpose:
-    Provide String, Stream and File (via TStrings) encryption & decryption.
-
-  Classes:
-    TEncryptSimple - Simple encryption
-
-  Revision History:
-    ???,  ????, Scott Maskiel, Created
-
-  ToDo:
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
+unit tiEncryptDES;
 
 {$I tiDefines.inc}
-
-// Turn off writable const
-(*$J-*)
-
-unit tiEncryptDES;
 
 interface
 uses
   tiEncryptBlockCipher
- ;
+;
 
 
 const
-  cgsEncryptionDES = 'EncryptionDES' ;
+  cgsEncryptionDES = 'EncryptionDES';
 
 
 type
@@ -56,7 +22,7 @@ type
   private
     FKeySchedule: TtiDESKeySchedule;
   protected
-    procedure SetIntSeed(const Value: Int64 ); override ;
+    procedure SetIntSeed(const AValue: Int64); override;
   public
     procedure EncryptBlock(var pPlaintext); override;
     procedure DecryptBlock(var pCiphertext); override;
@@ -68,7 +34,7 @@ type
 implementation
 uses
   tiEncrypt
- ;
+;
 
 type
   TInitialPermutation = array [Byte] of DWORD;
@@ -106,7 +72,7 @@ const
    $88080800, $88080880, $88080808, $88080888, $88088800, $88088880, $88088808, $88088888,
    $88880000, $88880080, $88880008, $88880088, $88888000, $88888080, $88888008, $88888088,
    $88880800, $88880880, $88880808, $88880888, $88888800, $88888880, $88888808, $88888888
-  );
+ );
 
   IPInv: TInitialPermutation = (
    $00000000, $02000000, $00020000, $02020000, $00000200, $02000200, $00020200, $02020200,
@@ -141,7 +107,7 @@ const
    $00010103, $02010103, $00030103, $02030103, $00010303, $02010303, $00030303, $02030303,
    $01010101, $03010101, $01030101, $03030101, $01010301, $03010301, $01030301, $03030301,
    $01010103, $03010103, $01030103, $03030103, $01010303, $03010303, $01030303, $03030303
-  );
+ );
 
 const
   LowSixBits = $3f;
@@ -208,7 +174,7 @@ const
     $00808202, $0080C202, $40808202, $4080C202, $00808212, $0080C212,
     $40808212, $4080C212, $00888202, $0088C202, $40888202, $4088C202,
     $00888212, $0088C212, $40888212, $4088C212
-  );
+ );
 
   PBox2: TPBox = (
    $00000000, $80000000, $00400000, $80400000, $00001000, $80001000, $00401000, $80401000,
@@ -243,7 +209,7 @@ const
    $00010144, $80010144, $00410144, $80410144, $00011144, $80011144, $00411144, $80411144,
    $04010104, $84010104, $04410104, $84410104, $04011104, $84011104, $04411104, $84411104,
    $04010144, $84010144, $04410144, $84410144, $04011144, $84011144, $04411144, $84411144
-  );
+ );
 
   PBox3: TPBox = (
    $00000000, $00002000, $00200000, $00202000, $00000008, $00002008, $00200008, $00202008,
@@ -278,7 +244,7 @@ const
    $11040080, $11042080, $11240080, $11242080, $11040088, $11042088, $11240088, $11242088,
    $21040080, $21042080, $21240080, $21242080, $21040088, $21042088, $21240088, $21242088,
    $31040080, $31042080, $31240080, $31242080, $31040088, $31042088, $31240088, $31242088
-  );
+ );
 
   PBox4: TPBox = (
    $00000000, $00000800, $00020000, $00020800, $00000020, $00000820, $00020020, $00020820,
@@ -313,7 +279,7 @@ const
    $08100401, $08100C01, $08120401, $08120C01, $08100421, $08100C21, $08120421, $08120C21,
    $02100401, $02100C01, $02120401, $02120C01, $02100421, $02100C21, $02120421, $02120C21,
    $0A100401, $0A100C01, $0A120401, $0A120C01, $0A100421, $0A100C21, $0A120421, $0A120C21
-  );
+ );
   
 type
   TSBox = array [0..63] of Integer;
@@ -324,56 +290,56 @@ const
      48, 160, 160,  96,  96, 192, 192, 176,  80, 144, 144,  80,   0,  48, 112, 128,
      64, 240,  16, 192, 224, 128, 128,  32, 208,  64,  96, 144,  32,  16, 176, 112,
     240,  80, 192, 176, 144,  48, 112, 224,  48, 160, 160,   0,  80,  96,   0, 208
-  );
+ );
 
   SBox2: TSBox = (
     15,  3,  1, 13,  8,  4, 14,  7,  6, 15, 11,  2,  3,  8,  4, 14,
      9, 12,  7,  0,  2,  1, 13, 10, 12,  6,  0,  9,  5, 11, 10,  5,
      0, 13, 14,  8,  7, 10, 11,  1, 10,  3,  4, 15, 13,  4,  1,  2,
      5, 11,  8,  6, 12,  7,  6, 12,  9,  0,  3,  5,  2, 14, 15,  9
-  );
+ );
 
   SBox3: TSBox = (
     160, 208,   0, 112, 144,   0, 224, 144,  96,  48,  48,  64,  240,  96,  80, 160,
      16,  32, 208, 128, 192,  80, 112, 224, 176, 192,  64, 176,   32, 240, 128,  16,
     208,  16,  96, 160,  64, 208, 144,   0, 128,  96, 240, 144,   48, 128,   0, 112,
     176,  64,  16, 240,  32, 224, 192,  48,  80, 176, 160,  80, 224,   32, 112, 192
-  );
+ );
 
   SBox4: TSBox = (
      7, 13, 13,  8, 14, 11,  3,  5,  0,  6,  6, 15,  9,  0, 10,  3,
      1,  4,  2,  7,  8,  2,  5, 12, 11,  1, 12, 10,  4, 14, 15,  9,
     10,  3,  6, 15,  9,  0,  0,  6, 12, 10, 11,  1,  7, 13, 13,  8,
     15,  9,  1,  4,  3,  5, 14, 11,  5, 12,  2,  7,  8,  2,  4, 14
-  );
+ );
 
   SBox5: TSBox = (
      32, 224, 192, 176,  64,  32,  16, 192, 112,  64, 160, 112, 176, 208,  96,  16,
     128,  80,  80,   0,  48, 240, 240, 160, 208,  48,   0, 144, 224, 128, 144,  96,
      64, 176,  32, 128,  16, 192, 176, 112, 160,  16, 208, 224, 112,  32, 128, 208,
     240,  96, 144, 240, 192,   0,  80, 144,  96, 160,  48,  64,   0,  80, 224,  48
-  );
+ );
 
   SBox6: TSBox = (
     12, 10,  1, 15, 10,  4, 15,  2,  9,  7,  2, 12,  6,  9,  8,  5,
      0,  6, 13,  1,  3, 13,  4, 14, 14,  0,  7, 11,  5,  3, 11,  8,
      9,  4, 14,  3, 15,  2,  5, 12,  2,  9,  8,  5, 12, 15,  3, 10,
      7, 11,  0, 14,  4,  1, 10,  7,  1,  6, 13,  0, 11,  8,  6, 13
-  );
+ );
 
   SBox7: TSBox = (
      64, 208, 176,   0,  32, 176, 224, 112, 240,  64,   0, 144, 128,  16, 208, 160,
      48, 224, 192,  48, 144,  80, 112, 192,  80,  32, 160, 240,  96, 128,  16,  96,
      16,  96,  64, 176, 176, 208, 208, 128, 192,  16,  48,  64, 112, 160, 224, 112,
     160, 144, 240,  80,  96,   0, 128, 240,   0, 224,  80,  32, 144,  48,  32, 192
-  );
+ );
 
   SBox8: TSBox = (
     13,  1,  2, 15,  8, 13,  4,  8,  6, 10, 15,  3, 11,  7,  1,  4,
     10, 12,  9,  5,  3,  6, 14, 11,  5,  0,  0, 14, 12,  9,  7,  2,
      7,  2, 11,  1,  4, 14,  1,  7,  9,  4, 12, 10, 14,  8,  2, 13,
      0, 15,  6, 12, 10,  9, 13,  0, 15,  3,  3,  5,  5,  6,  8, 11
-  );
+ );
 
 function ExpandedSubstitutedAndPermutedDWORD(const D: DWORD;
                                              const K: TtiSixBitArray): DWORD;
@@ -434,11 +400,11 @@ const
     0, 17,  7, 12,  8, 23, 11,  5,
    16, 26,  1,  9, 19, 25,  4, 15,
    26, 15,  8,  1, 21, 12, 20,  2
-  );
+ );
   MapH: array [0..15] of Byte = (
    24, 16,  9,  5, 18,  7, 22, 13,
     0, 25, 23, 27,  4, 17, 11, 14
-  );
+ );
 var
   I: Integer;
   ResultHL: TDoubleDWORD absolute Result;
@@ -656,26 +622,26 @@ begin
                             or IPInv[DH        and $FF];
 end;
 
-procedure TEncryptDES.SetIntSeed(const Value: Int64 );
+procedure TEncryptDES.SetIntSeed(const AValue: Int64);
 // Moved from original TDESCipher.CreateKeySchedule
 type
   THalfArray = array [0..27] of Integer;
 const
   V: array [TtiDESKeyScheduleRange] of Byte = (
     1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
-  );
+ );
   PC1C: THalfArray = (
      7, 15, 23, 31, 39, 47, 55,
     63,  6, 14, 22, 30, 38, 46,
     54, 62,  5, 13, 21, 29, 37,
     45, 53, 61,  4, 12, 20, 28
-  );
+ );
   PC1D: THalfArray = (
      1,  9, 17, 25, 33, 41, 49,
     57,  2, 10, 18, 26, 34, 42,
     50, 58,  3, 11, 19, 27, 35,
     43, 51, 59, 36, 44, 52, 60
-  );
+ );
 var
   C, D: DWORD;
   I, J: Integer;
@@ -688,8 +654,8 @@ var
   K: TDoubleDWORD absolute K1;
 begin
   inherited;
-  C := BitSelection(Value, PC1C, High(PC1C) - Low(PC1C) + 1);
-  D := BitSelection(Value, PC1D, High(PC1D) - Low(PC1D) + 1);
+  C := BitSelection(AValue, PC1C, High(PC1C) - Low(PC1C) + 1);
+  D := BitSelection(AValue, PC1D, High(PC1D) - Low(PC1D) + 1);
   J := High(V);
   for I := Low(V) to High(V) do begin
     C := CircularSHL28(C, V[I]);
@@ -697,15 +663,15 @@ begin
     { Select 48 bits from the concatenation of C and D. (C is the high DWORD.) }
     K1 := PC2(C, D);
     { Pre-calc the six-bit chunks and store them. }
-    FKeySchedule[J][0] := K.R shr 10 and LowSixBits;
-    FKeySchedule[J][1] := K.R shr  4 and LowSixBits;
-    FKeySchedule[J][2] := K.R shl  2 and LowSixBits or
+    FKeySchedule[J][0]:= K.R shr 10 and LowSixBits;
+    FKeySchedule[J][1]:= K.R shr  4 and LowSixBits;
+    FKeySchedule[J][2]:= K.R shl  2 and LowSixBits or
                           K.L shr 30 and LowTwoBits;
-    FKeySchedule[J][3] := K.L shr 24 and LowSixBits;
-    FKeySchedule[J][4] := K.L shr 18 and LowSixBits;
-    FKeySchedule[J][5] := K.L shr 12 and LowSixBits;
-    FKeySchedule[J][6] := K.L shr  6 and LowSixBits;
-    FKeySchedule[J][7] := K.L        and LowSixBits;
+    FKeySchedule[J][3]:= K.L shr 24 and LowSixBits;
+    FKeySchedule[J][4]:= K.L shr 18 and LowSixBits;
+    FKeySchedule[J][5]:= K.L shr 12 and LowSixBits;
+    FKeySchedule[J][6]:= K.L shr  6 and LowSixBits;
+    FKeySchedule[J][7]:= K.L        and LowSixBits;
     Dec(J);
   end;
 end;
@@ -713,8 +679,8 @@ end;
 
 initialization
   // Register the TtiEncrypt with the EncryptFactory
-  gEncryptFactory.RegisterClass( cgsEncryptionDES, TEncryptDES ) ;
-  gtiEncryptClass := TEncryptDES ;
+  gEncryptFactory.RegisterClass(cgsEncryptionDES, TEncryptDES);
+  gtiEncryptClass := TEncryptDES;
 
 
 end.

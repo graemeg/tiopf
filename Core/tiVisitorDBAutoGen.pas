@@ -5,48 +5,48 @@ uses
   tiQuery
   ,tiVisitorDB
   ,tiVisitor
-  ;
+ ;
 
 const
   cErrorInVisitorExecute = 'Error in Visitor.Execute. Visitor: %s Visited: %s Message %s';
 
 type
 
-  TVisDBAutoGenRead = class( TVisOwnedQrySelectAbs )
+  TVisDBAutoGenRead = class(TVisOwnedQrySelectAbs)
   private
-    FQueryParams : TtiQueryParams ;
+    FQueryParams : TtiQueryParams;
     FTableName : string;
   protected
-    procedure OpenQuery ; override ;
-    property TableName : string read FTableName write FTableName ;
-    property QueryParams : TtiQueryParams read FQueryParams ;
+    procedure OpenQuery; override;
+    property TableName : string read FTableName write FTableName;
+    property QueryParams : TtiQueryParams read FQueryParams;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-  end ;
+    constructor Create; override;
+    destructor  Destroy; override;
+  end;
 
-  TVisDBAutoGenUpdate = class( TtiPerObjVisitor )
+  TVisDBAutoGenUpdate = class(TtiPerObjVisitor)
   private
-    FQueryParams : TtiQueryParams ;
-    FQueryWhere  : TtiQueryParams ;
+    FQueryParams : TtiQueryParams;
+    FQueryWhere : TtiQueryParams;
     FTableName : string;
     FQueryType: TtiQueryType;
   protected
     property    QueryType: TtiQueryType read FQueryType Write FQueryType;
-    property    TableName : string read FTableName write FTableName ;
-    property    QueryParams : TtiQueryParams read FQueryParams ;
-    property    QueryWhere  : TtiQueryParams read FQueryWhere ;
+    property    TableName : string read FTableName write FTableName;
+    property    QueryParams : TtiQueryParams read FQueryParams;
+    property    QueryWhere : TtiQueryParams read FQueryWhere;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Execute(const pData: TtiVisited ) ; override ;
-  end ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Execute(const AData: TtiVisited); override;
+  end;
 
-  TVisDBAutoGenDelete = class( TVisDBAutoGenUpdate )
+  TVisDBAutoGenDelete = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor: Boolean ; override ;
-    procedure SetupParams; override ;
-  end ;
+    function  AcceptVisitor: Boolean; override;
+    procedure SetupParams; override;
+  end;
 
 
 implementation
@@ -59,73 +59,73 @@ uses
   ,tiExcept
   // Delphi
   ,SysUtils
-  ;
+ ;
   
 { TVisDBAutoGenRead }
 
 constructor TVisDBAutoGenRead.Create;
 begin
   inherited;
-  FQueryParams := TtiQueryParams.Create ;
+  FQueryParams := TtiQueryParams.Create;
 end;
 
 destructor TVisDBAutoGenRead.destroy;
 begin
-  FQueryParams.Free ;
+  FQueryParams.Free;
   inherited;
 end;
 
-procedure TVisDBAutoGenUpdate.Execute(const pData: TtiVisited);
+procedure TVisDBAutoGenUpdate.Execute(const AData: TtiVisited);
 begin
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
   try
-    Inherited Execute( pData ) ;
+    Inherited Execute(AData);
 
     if not AcceptVisitor then
-      Exit ; //==>
+      Exit; //==>
 
-    Assert( Database <> nil, 'DBConnection not set in ' + ClassName ) ;
+    Assert(Database <> nil, 'DBConnection not set in ' + ClassName);
 
-    if pData <> nil then begin
-      Visited := TtiObject( pData ) ;
+    if AData <> nil then begin
+      Visited := TtiObject(AData);
     end else begin
-      Visited := nil ;
-    end ;
+      Visited := nil;
+    end;
 
-    SetupParams ;
-    Assert( FTableName <> '', 'TableName not assigned');
+    SetupParams;
+    Assert(FTableName <> '', 'TableName not assigned');
     case FQueryType of
       qtInsert : begin
-                   Assert( FQueryWhere.Count = 0, 'FQueryWhere.Count <> 0');
-                   Query.InsertRow( FTableName, FQueryParams ) ;
+                   Assert(FQueryWhere.Count = 0, 'FQueryWhere.Count <> 0');
+                   Query.InsertRow(FTableName, FQueryParams);
                  end;
       qtUpdate : begin
-                   Assert( FQueryParams.Count <> 0, 'FQueryParams.Count = 0');
-                   Query.UpdateRow( FTableName, FQueryParams, FQueryWhere ) ;
+                   Assert(FQueryParams.Count <> 0, 'FQueryParams.Count = 0');
+                   Query.UpdateRow(FTableName, FQueryParams, FQueryWhere);
                  end;
       qtDelete : begin
-                   Assert( FQueryParams.Count = 0, 'FQueryParams.Count <> 0');
-                   Query.DeleteRow( FTableName, FQueryWhere);
+                   Assert(FQueryParams.Count = 0, 'FQueryParams.Count <> 0');
+                   Query.DeleteRow(FTableName, FQueryWhere);
                  end;
     else
-      raise Exception.Create( cTIOPFExcMsgTIQueryType );
+      raise Exception.Create(cTIOPFExcMsgTIQueryType);
     end;
 
   except
     on e:exception do
       raise EtiOPFProgrammerException.CreateFmt(cErrorInVisitorExecute,
         [ClassName, Visited.ClassName, e.Message]);
-  end ;
+  end;
 
 end;
 
 procedure TVisDBAutoGenRead.OpenQuery;
 begin
-  Assert( FTableName <> '', 'TableName not assigned' ) ;
-  Query.SelectRow( FTableName, FQueryParams ) ;
+  Assert(FTableName <> '', 'TableName not assigned');
+  Query.SelectRow(FTableName, FQueryParams);
 end;
 
 { TVisDBAutoGenUpdate }
@@ -133,9 +133,9 @@ end;
 constructor TVisDBAutoGenUpdate.Create;
 begin
   inherited;
-  FQueryParams := TtiQueryParams.Create ;
-  FQueryWhere  := TtiQueryParams.Create ;
-  FQueryType   := qtSelect;
+  FQueryParams := TtiQueryParams.Create;
+  FQueryWhere := TtiQueryParams.Create;
+  FQueryType  := qtSelect;
 end;
 
 destructor TVisDBAutoGenUpdate.destroy;
@@ -149,20 +149,20 @@ end;
 
 function TVisDBAutoGenDelete.AcceptVisitor: Boolean;
 begin
-  Result := ( Visited.ObjectState = posDelete );
+  Result := (Visited.ObjectState = posDelete);
 end;
 
 procedure TVisDBAutoGenDelete.SetupParams;
 var
   lData: TtiObject;
 begin
-  Assert( Visited.TestValid(TtiObject), cTIInvalidObjectError );
+  Assert(Visited.TestValid(TtiObject), cTIInvalidObjectError);
   QueryType := qtDelete;
   LData := (Visited as TtiObject);
   {$IFDEF OID_AS_INT64}
-    QueryWhere.SetValueAsInteger( 'OID', LData.OID);
+    QueryWhere.SetValueAsInteger('OID', LData.OID);
   {$ELSE}
-    QueryWhere.SetValueAsString( 'OID', LData.OID.AsString);
+    QueryWhere.SetValueAsString('OID', LData.OID.AsString);
   {$ENDIF}
 end;
 

@@ -12,30 +12,30 @@ uses
   ,IdTCPConnection
   ,IdTCPClient
   ,IdHTTP
-  ;
+ ;
 
 type
 
   {:Uses the Adapter pattern to wrapper a TidHTTP giving a starndard interface.}
-  TtiHTTPIndy = class( TtiHTTPAbs )
+  TtiHTTPIndy = class(TtiHTTPAbs)
   private
-    FHTTP : TidHTTP ;
+    FHTTP : TidHTTP;
   protected
     procedure   DoGet(const AURL : string; AInput, AOutput: TStringStream); override;
     procedure   DoPost(const AURL : string; AInput, AOutput: TStringStream); override;
 
     function    GetProxyPort: integer; override;
     function    GetProxyServer: string; override;
-    procedure   SetProxyPort(const Value: integer); override;
-    procedure   SetProxyServer(const Value: string); override;
-    function    GetResponseCode: Integer; override ;
-    function    GetResponseText: string; override ;
-    function    GetResponseHeaders: TtiHTTPHeaders; override;
+    procedure   SetProxyPort(const AValue: integer); override;
+    procedure   SetProxyServer(const AValue: string); override;
+    function    GetResponseCode: Integer; override;
+    function    GetResponseText: string; override;
+    function    GetResponseHeaders: TStringList; override;
   public
-    Constructor Create ; override;
-    Destructor  Destroy ; override;
-    class function MappingName: string ; override;
-  end ;
+    Constructor Create; override;
+    Destructor  Destroy; override;
+    class function MappingName: string; override;
+  end;
 
 implementation
 uses
@@ -43,18 +43,18 @@ uses
   ,tiConstants
   ,SysUtils
   ,tiExcept
-  ;
+ ;
 
 constructor TtiHTTPIndy.Create;
 begin
-  inherited ;
-  FHTTP := TidHTTP.Create( nil ) ;
-  FHTTP.ProtocolVersion := pv1_0 ;
+  inherited;
+  FHTTP := TidHTTP.Create(nil);
+  FHTTP.ProtocolVersion := pv1_0;
 end;
 
 destructor TtiHTTPIndy.Destroy;
 begin
-  FHTTP.Free ;
+  FHTTP.Free;
   inherited;
 end;
 
@@ -68,7 +68,7 @@ begin
     FHTTP.Response.KeepAlive:= False;
     FHTTP.Request.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= RequestTIOPFBlockHeader;
     AOutput.Size:= 0;
-    FHTTP.Get( AURL + '?' + AInput.DataString, AOutput ) ;
+    FHTTP.Get(AURL + '?' + AInput.DataString, AOutput);
   except
     on e:exception do
     begin
@@ -77,8 +77,8 @@ begin
           [e.message, 'Get', AURL, AInput.DataString])
       else
         raise;
-    end ;
-  end ;
+    end;
+  end;
 end;
 
 procedure TtiHTTPIndy.DoPost(const AURL : string; AInput, AOutput: TStringStream);
@@ -94,7 +94,7 @@ begin
     // http://groups.google.com.au/group/borland.public.delphi.internet.winsock/browse_thread/thread/21285265e0ab0f69/a6d9c0608aeb691e?lnk=st&q=TidHTTP+%22Socket+Error+%23+10054+Connection+reset+by+peer%22&rnum=1&hl=en#a6d9c0608aeb691e
     FHTTP.Response.KeepAlive:= False;
     FHTTP.Request.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= RequestTIOPFBlockHeader;
-    FHTTP.Post( AURL, AInput, AOutput ) ;
+    FHTTP.Post(AURL, AInput, AOutput);
   except
     on e:exception do
     begin
@@ -103,11 +103,11 @@ begin
           [e.message, 'Post', AURL, AInput.DataString])
       else
         raise;
-    end ;
-  end ;
+    end;
+  end;
 end;
 
-function TtiHTTPIndy.GetResponseHeaders: TtiHTTPHeaders;
+function TtiHTTPIndy.GetResponseHeaders: TStringList;
 var
   i: Integer;
 begin
@@ -119,12 +119,12 @@ end;
 
 function TtiHTTPIndy.GetProxyPort: integer;
 begin
-  result := FHTTP.ProxyParams.ProxyPort ;
+  result := FHTTP.ProxyParams.ProxyPort;
 end;
 
 function TtiHTTPIndy.GetProxyServer: string;
 begin
-  result := FHTTP.ProxyParams.ProxyServer ;
+  result := FHTTP.ProxyParams.ProxyServer;
 end;
 
 function TtiHTTPIndy.GetResponseCode: Integer;
@@ -142,18 +142,18 @@ begin
   Result := cHTTPIndy;
 end;
 
-procedure TtiHTTPIndy.SetProxyPort(const Value: integer);
+procedure TtiHTTPIndy.SetProxyPort(const AValue: integer);
 begin
-  FHTTP.ProxyParams.ProxyPort := Value ;
+  FHTTP.ProxyParams.ProxyPort := AValue;
 end;
 
-procedure TtiHTTPIndy.SetProxyServer(const Value: string);
+procedure TtiHTTPIndy.SetProxyServer(const AValue: string);
 begin
-  FHTTP.ProxyParams.ProxyServer := Value ;
+  FHTTP.ProxyParams.ProxyServer := AValue;
 end;
 
 initialization
-  gTIHTTPClass := TtiHTTPIndy ;
+  gTIHTTPClass := TtiHTTPIndy;
   gTIHTTPFactory.RegisterMapping(cHTTPIndy, TtiHTTPIndy);
 
 end.

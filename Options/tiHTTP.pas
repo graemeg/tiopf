@@ -13,7 +13,7 @@ uses
   ,IdTCPClient
   ,IdHTTP
   ,tiConstants
-  ;
+ ;
 
 const
   cErrorDuplicateHTTPClassMapping    = 'Attempt to register duplicate TtiHTTP class mapping <%s>';
@@ -28,6 +28,7 @@ const
   ctiOPFHTTPBlockHeader= 'tiOPFBlockID';
   ctiOPFHTTPBlockDelim = '/';
   ctiOPDHTTPNullBlockSize = 0;
+  ctiOPFHTTPErrorCode= 'tiOPFErrorCode';
 
 type
 
@@ -35,19 +36,17 @@ type
   TtiHTTPCheckTerminatedEvent = procedure(var ATerminated: Boolean) of object;
 
   TtiHTTPGetOrPostMethod = procedure (const AURL : string;
-                                      AInput, AOutput: TStringStream) of object ;
-
-  TtiHTTPHeaders = class;
+                                      AInput, AOutput: TStringStream) of object;
 
   {: An abstract HTTP class, used as a wrapper around TidHTTP and MSHTTPXML giving the same interface.
      Adds support for returning large quantities of data in blocks (to avoid proxy server timeout).
      This blocking functionality is supported by TtiDBProxyServer}
-  TtiHTTPAbs = class( TtiBaseObject )
+  TtiHTTPAbs = class(TtiBaseObject)
   private
-    FInput  : TStringStream ;
-    FOutput : TStringStream ;
+    FInput : TStringStream;
+    FOutput : TStringStream;
     FFormatExceptions: Boolean;
-    FHeaders: TtiHTTPHeaders;
+    FHeaders: TStringList;
     FRequestTIOPFBlockHeader: string;
     FDeriveRequestTIOPFBlockHeader: Boolean;
     FOnProgress: TtiHTTPProgressEvent;
@@ -55,95 +54,84 @@ type
     function    GetResponseHeader(const AName: string): string;
     procedure   SetResponseHeader(const AName, AValue: string);
     function    GetResponseTIOPFBlockHeader: string;
+    function    GetResponseTIOPFErrorCode: Byte;
     procedure   DoProgressEvent(ABlockIndex, ABlockCount, ABlockSize: Longword);
     function    IsTerminated: Boolean;
 
   protected
     procedure   DoGetOrPost(const AURL : string; AGetOrPostMethod: TtiHTTPGetOrPostMethod);
-    procedure   DoGet(const AURL : string; AInput, AOutput: TStringStream); virtual ; abstract ;
-    procedure   DoPost(const AURL : string; AInput, AOutput: TStringStream); virtual ; abstract ;
+    procedure   DoGet(const AURL : string; AInput, AOutput: TStringStream); virtual; abstract;
+    procedure   DoPost(const AURL : string; AInput, AOutput: TStringStream); virtual; abstract;
 
-    function    GetProxyPort: integer; virtual ; abstract ;
-    function    GetProxyServer: string; virtual ; abstract ;
-    procedure   SetProxyPort(const Value: integer); virtual ; abstract ;
-    procedure   SetProxyServer(const Value: string); virtual ; abstract ;
-    function    GetResponseCode: Integer; virtual ; abstract ;
-    function    GetResponseText: string; virtual ; abstract ;
-    function    GetResponseHeaders: TtiHTTPHeaders; virtual;
+    function    GetProxyPort: integer; virtual; abstract;
+    function    GetProxyServer: string; virtual; abstract;
+    procedure   SetProxyPort(const AValue: integer); virtual; abstract;
+    procedure   SetProxyServer(const AValue: string); virtual; abstract;
+    function    GetResponseCode: Integer; virtual; abstract;
+    function    GetResponseText: string; virtual; abstract;
+    function    GetResponseHeaders: TStringList; virtual;
 
   public
-    class function MappingName: string ; virtual ; abstract ;
+    class function MappingName: string; virtual; abstract;
 
-    Constructor Create ; virtual ;
-    Destructor  Destroy ; override ;
+    Constructor Create; virtual;
+    Destructor  Destroy; override;
 
-    procedure   Clear ;
+    procedure   Clear;
     procedure   Post(const AURL : string);
     procedure   Get(const AURL : string);
 
-    function    CorrectURL(const pURL: string): string ;
-    function    GetMappingName: string ;
+    function    CorrectURL(const pURL: string): string;
+    function    GetMappingName: string;
 
-    property    Input : TStringStream read FInput ;
-    property    Output : TStringStream read FOutput ;
+    property    Input : TStringStream read FInput;
+    property    Output : TStringStream read FOutput;
 
-    property    ProxyServer : string read GetProxyServer write SetProxyServer ;
-    property    ProxyPort   : integer read GetProxyPort  write SetProxyPort ;
+    property    ProxyServer : string read GetProxyServer write SetProxyServer;
+    property    ProxyPort  : integer read GetProxyPort  write SetProxyPort;
     property    ResponseCode: Integer read GetResponseCode;
     property    ResponseText: string  read GetResponseText;
     property    FormatExceptions: Boolean read FFormatExceptions Write FFormatExceptions;
 
-    property    ResponseHeaders: TtiHTTPHeaders Read GetResponseHeaders;
+    property    ResponseHeaders: TStringList Read GetResponseHeaders;
     property    ResponseHeader[const AName: string]: string Read GetResponseHeader Write SetResponseHeader;
 
     {: True by default. Can set to False for testing passing of custom headers between client & server}
     property    DeriveRequestTIOPFBlockHeader: Boolean Read FDeriveRequestTIOPFBlockHeader Write FDeriveRequestTIOPFBlockHeader;
     property    RequestTIOPFBlockHeader: string Read FRequestTIOPFBlockHeader Write FRequestTIOPFBlockHeader;
     property    ResponseTIOPFBlockHeader: string Read GetResponseTIOPFBlockHeader;
+    property    ResponseTIOPFErrorCode: Byte read GetResponseTIOPFErrorCode;
 
     property    OnProgress: TtiHTTPProgressEvent Read FOnProgress Write FOnProgress;
     property    OnCheckTerminated: TtiHTTPCheckTerminatedEvent Read FOnCheckTerminated Write FOnCheckTerminated;
 
-  end ;
-
-  TtiHTTPClass = class of TtiHTTPAbs ;
-
-  TtiHTTPFactory = class( TtiBaseObject )
-  private
-    FList: TClassList ;
-    function FindMapping(const pMappingName: string): Integer;
-  public
-    constructor Create ;
-    destructor  Destroy ; override ;
-    procedure   RegisterMapping(const pMappingName: string; const pMappingClass: TtiHTTPClass);
-    function    CreateInstance(const pMappingName: string): TtiHTTPAbs ;
-    function    IsInstanceOfType(const pInstance: TtiHTTPAbs; const pMappingName: string) : Boolean ;
-  end ;
-
-  TtiHTTPHeaders = class(TStringList)
-  private
-    FNameValueSeparator: string;
-  protected
-    function  IndexByName(const AName: string): Integer;
-    function  GetValue(const AName: string): string;
-    procedure SetValue(const AName, Value: string);
-  public
-    constructor Create; 
-    property    Values[const AName: string]: string read GetValue write SetValue;
   end;
 
+  TtiHTTPClass = class of TtiHTTPAbs;
 
-function  gTIHTTPFactory: TtiHTTPFactory ;
+  TtiHTTPFactory = class(TtiBaseObject)
+  private
+    FList: TClassList;
+    function FindMapping(const pMappingName: string): Integer;
+  public
+    constructor Create;
+    destructor  Destroy; override;
+    procedure   RegisterMapping(const pMappingName: string; const pMappingClass: TtiHTTPClass);
+    function    CreateInstance(const pMappingName: string): TtiHTTPAbs;
+    function    IsInstanceOfType(const AFieldMetaData: TtiHTTPAbs; const pMappingName: string): Boolean;
+  end;
+
+function  gTIHTTPFactory: TtiHTTPFactory;
 procedure SetDefaultHTTPClass(const pMappingName: string);
 function  tiMakeTIOPFHTTPBlockHeader(ABlockIndex, ABlockCount, ABlockSize, ATransID: Integer): string;
 procedure tiParseTIOPFHTTPBlockHeader(const AValue: string; var ABlockIndex, ABlockCount, ABlockSize, ATransID: LongWord);
 function  tiGetTIOPFHTTPBlockIndex(const AValue: string): LongWord;
 
 const
-  cLocalHost = 'http://localhost' ;
+  cLocalHost = 'http://localhost';
 
 var
-  gTIHTTPClass : TtiHTTPClass ;
+  gTIHTTPClass : TtiHTTPClass;
   gTIOPFHTTPDefaultBlockSize: Longword;
 
 implementation
@@ -153,7 +141,7 @@ uses
   ,SysUtils
   ,tiUtils
   ,tiXML
-  ;
+ ;
 
 var
   uTIHTTPFactory : TtiHTTPFactory;
@@ -167,15 +155,15 @@ end;
 
 procedure SetDefaultHTTPClass(const pMappingName: string);
 var
-  lHTTP : TtiHTTPAbs ;
+  lHTTP : TtiHTTPAbs;
 begin
   lHTTP := gTIHTTPFactory.CreateInstance(pMappingName);
   try
-    gTIHTTPClass := TtiHTTPClass(lHTTP.ClassType) ;
+    gTIHTTPClass := TtiHTTPClass(lHTTP.ClassType);
   finally
     lHTTP.Free;
   end;
-end ;
+end;
 
 function  tiMakeTIOPFHTTPBlockHeader(ABlockIndex, ABlockCount, ABlockSize, ATransID: Integer): string;
 begin
@@ -214,25 +202,25 @@ end;
 
 constructor TtiHTTPAbs.Create;
 begin
-  Inherited ;
-  FInput            := TStringStream.Create( '' ) ;
-  FOutput           := TStringStream.Create( '' ) ;
-  FFormatExceptions := True ;
+  Inherited;
+  FInput           := TStringStream.Create('');
+  FOutput          := TStringStream.Create('');
+  FFormatExceptions := True;
   FDeriveRequestTIOPFBlockHeader:= True;
 end;
 
 destructor TtiHTTPAbs.Destroy;
 begin
-  FInput.Free ;
-  FOutput.Free ;
+  FInput.Free;
+  FOutput.Free;
   FreeAndNil(FHeaders);
   inherited;
 end;
 
 procedure TtiHTTPAbs.Clear;
 begin
-  FInput.Size := 0 ;
-  FOutput.Size := 0 ;
+  FInput.Size := 0;
+  FOutput.Size := 0;
   FreeAndNil(FHeaders);
 end;
 
@@ -241,17 +229,17 @@ end;
 constructor TtiHTTPFactory.Create;
 begin
   inherited;
-  FList:= TClassList.Create ;
+  FList:= TClassList.Create;
 end;
 
 function TtiHTTPFactory.CreateInstance(const pMappingName: string): TtiHTTPAbs;
 var
-  lIndex: Integer ;
+  lIndex: Integer;
 begin
-  lIndex := FindMapping(pMappingName) ;
+  lIndex := FindMapping(pMappingName);
   if lIndex = -1 then
     raise Exception.CreateFmt(cErrorUnRegisteredHTTPClassMapping, [pMappingName]);
-  Result := TtiHTTPClass(FList.Items[lIndex]).Create as TtiHTTPAbs ;
+  Result := TtiHTTPClass(FList.Items[lIndex]).Create as TtiHTTPAbs;
 end;
 
 destructor TtiHTTPFactory.Destroy;
@@ -262,21 +250,21 @@ end;
 
 function TtiHTTPFactory.FindMapping(const pMappingName: string): integer;
 var
-  i : Integer ;
+  i : Integer;
 begin
-  Result := -1 ;
+  Result := -1;
   for i := 0 to FList.Count - 1 do
     if SameText(TtiHTTPClass(FList.Items[i]).MappingName, pMappingName) then
     begin
       Result := i;
-      Exit ; //==>
+      Exit; //==>
     end;
 end;
 
-function TtiHTTPFactory.IsInstanceOfType(const pInstance: TtiHTTPAbs; const pMappingName: string): Boolean;
+function TtiHTTPFactory.IsInstanceOfType(const AFieldMetaData: TtiHTTPAbs; const pMappingName: string): Boolean;
 begin
-  Assert(pInstance<> nil, 'pInstance not assigned');
-  Result := SameText(pInstance.MappingName, pMappingName);
+  Assert(AFieldMetaData<> nil, 'AFieldMetaData not assigned');
+  Result := SameText(AFieldMetaData.MappingName, pMappingName);
 end;
 
 procedure TtiHTTPFactory.RegisterMapping(const pMappingName: string;const pMappingClass: TtiHTTPClass);
@@ -289,13 +277,13 @@ end;
 
 function TtiHTTPAbs.GetMappingName: string;
 begin
-  Result := TtiHTTPAbs( ClassType ).MappingName ;
+  Result := TtiHTTPAbs(ClassType).MappingName;
 end;
 
 function TtiHTTPAbs.CorrectURL(const pURL: string): string;
 var
-  lPosSlash: Integer ;
-  lPosParams: Integer ;
+  lPosSlash: Integer;
+  lPosParams: Integer;
   lLHS: string;
   lRHS: string;
 begin
@@ -303,7 +291,7 @@ begin
   if lPosSlash = 0 then
   begin
     Result := pURL;
-    Exit ; //==>
+    Exit; //==>
   end;
 
   lPosParams := Pos('?', pURL);
@@ -312,27 +300,28 @@ begin
   else begin
     lLHS := Copy(pURL, 1, lPosParams-1);
     lRHS := Copy(pURL, lPosParams, Length(pURL));
-    Result := tiStrTran(lLHS, '\', '/') + lRHS ;
-  end ;
+    Result := tiStrTran(lLHS, '\', '/') + lRHS;
+  end;
 end;
 
-function TtiHTTPAbs.GetResponseHeaders: TtiHTTPHeaders;
+function TtiHTTPAbs.GetResponseHeaders: TStringList;
 begin
   if FHeaders = nil then
   begin
-    FHeaders:= TtiHTTPHeaders.Create;
+    FHeaders:= TStringList.Create;
+    FHeaders.NameValueSeparator:= ':';
   end;
   Result:= FHeaders;
 end;
 
 function TtiHTTPAbs.GetResponseHeader(const AName: string): string;
 begin
-  Result:= {Trim(}ResponseHeaders.Values[AName]{)};
+  Result:= Trim(ResponseHeaders.Values[AName]);
 end;
 
 procedure TtiHTTPAbs.SetResponseHeader(const AName, AValue: string);
 begin
-  ResponseHeaders.Values[AName]:= {' ' +} AValue;
+  ResponseHeaders.Values[AName]:= ' ' + AValue;
 end;
 
 procedure TtiHTTPAbs.Get(const AURL: string);
@@ -350,6 +339,11 @@ begin
   Result:= ResponseHeader[ctiOPFHTTPBlockHeader];
 end;
 
+function TtiHTTPAbs.GetResponseTIOPFErrorCode: Byte;
+begin
+  Result:= StrToIntDef(ResponseHeader[ctiOPFHTTPErrorCode], 0);
+end;
+
 procedure TtiHTTPAbs.DoGetOrPost(const AURL: string; AGetOrPostMethod: TtiHTTPGetOrPostMethod);
 var
   LBlockIndex: Longword;
@@ -360,8 +354,8 @@ var
   LInput: TStringStream;
   LOutput: TStringStream;
 begin
-  Input.Position := 0 ;
-  Output.Size := 0 ;
+  Input.Position := 0;
+  Output.Size := 0;
   // ToDo: Add code to make this ASync in multiple threads
   //       This will involve storing a TtiBlockedStream and managing the variable order the blocks
   //       may be returned.
@@ -383,7 +377,7 @@ begin
           AGetOrPostMethod(AURL, LInput, LOutput);
           Output.CopyFrom(LOutput, 0);
           if IsTerminated then
-            Break ; //==>
+            Break; //==>
         end;
       finally
         LOutput.Free;
@@ -406,59 +400,6 @@ begin
     OnCheckTerminated(Result)
   else
     Result:= False;
-end;
-
-{ TtiHTTPHeaders }
-
-constructor TtiHTTPHeaders.Create;
-begin
-  inherited;
-  FNameValueSeparator:= ': ';
-end;
-
-function TtiHTTPHeaders.GetValue(const AName: string): string;
-var
-  LIndex: Integer;
-  LLine: string;
-begin
-  LIndex:= IndexByName(AName);
-  if LIndex <> -1 then
-  begin
-    LLine:= Strings[LIndex];
-    Result:= Copy(LLine, Pos(FNameValueSeparator, LLine) + Length(FNameValueSeparator), Length(LLine))
-  end
-  else
-    Result:= '';
-end;
-
-function TtiHTTPHeaders.IndexByName(const AName: string): Integer;
-var
-  i: Integer;
-  LName: string;
-begin
-  for i:= 0 to Count - 1 do
-  begin
-    LName:= Copy(Strings[i], 0, Pos(FNameValueSeparator, Strings[i])-1);
-    if SameText(LName, AName) then
-    begin
-      Result:= i;
-      Exit ; //==>
-    end;
-  end;
-  Result:= -1;
-end;
-
-procedure TtiHTTPHeaders.SetValue(const AName, Value: string);
-var
-  LIndex: Integer;
-  LLine: string;
-begin
-  LLine:= AName + FNameValueSeparator + Value;
-  LIndex:= IndexByName(AName);
-  if LIndex <> -1 then
-    Strings[LIndex]:= LLine
-  else
-    Add(LLine);
 end;
 
 initialization

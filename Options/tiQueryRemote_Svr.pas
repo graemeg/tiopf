@@ -15,7 +15,7 @@ uses
   ,tiXMLToTIDataSet
   ,tiStreams
   ,SyncObjs
-  ;
+ ;
 
 const
   cErrorTransactionTimedOut = 'Transaction ID#%s timed out';
@@ -26,15 +26,15 @@ type
   TSavedDBConnectionHolder = class;
   TtiStatefulDBConnectionPool = class;
 
-  TThrdStatefulDBConnectionPoolMonitor = class( TThread )
+  TThrdStatefulDBConnectionPoolMonitor = class(TThread)
   private
-    FPool : TtiStatefulDBConnectionPool ;
+    FPool : TtiStatefulDBConnectionPool;
   public
-    constructor CreateExt( pPool : TtiStatefulDBConnectionPool ) ;
-    procedure   Execute ; override ;
-  end ;
+    constructor CreateExt(APool : TtiStatefulDBConnectionPool);
+    procedure   Execute; override;
+  end;
 
-  TSavedDBConnectionHolder = class( TtiBaseObject )
+  TSavedDBConnectionHolder = class(TtiBaseObject)
   private
     FTransactionID: string;
     FDBConnection: TPooledDB;
@@ -46,104 +46,104 @@ type
     FComputerName: string;
     function GetSecToTimeOut: integer;
     function GetSecInUse: integer;
-    procedure SetInUse(const Value: boolean);
+    procedure SetInUse(const AValue: boolean);
   public
-    constructor Create ;
-    property Owner : TtiStatefulDBConnectionPool read FOwner write FOwner ;
-    property TransactionID : string read FTransactionID write FTransactionID ;
-    property DBConnection : TPooledDB read FDBConnection write FDBConnection ;
-    property DBConnectionName : string read FDBConnectionName write FDBConnectionName ;
-    property LastUsed : TDateTime read FLastUsed write FLastUsed ;
-    property InUse : boolean read FInUse write SetInUse ;
-    property SecToTimeOut : integer read GetSecToTimeOut ;
+    constructor Create;
+    property Owner : TtiStatefulDBConnectionPool read FOwner write FOwner;
+    property TransactionID : string read FTransactionID write FTransactionID;
+    property DBConnection : TPooledDB read FDBConnection write FDBConnection;
+    property DBConnectionName : string read FDBConnectionName write FDBConnectionName;
+    property LastUsed : TDateTime read FLastUsed write FLastUsed;
+    property InUse : boolean read FInUse write SetInUse;
+    property SecToTimeOut : integer read GetSecToTimeOut;
     property SecInUse : integer read GetSecInUse;
-    property ComputerName : string read FComputerName write FComputerName ;
-    property UserName : string read FUserName write FUserName ;
-  end ;
+    property ComputerName : string read FComputerName write FComputerName;
+    property UserName : string read FUserName write FUserName;
+  end;
 
-  TSavedDBConnectionHolderEvent = procedure( const pItem : TSavedDBConnectionHolder ) of object ;
+  TSavedDBConnectionHolderEvent = procedure(const AItem : TSavedDBConnectionHolder) of object;
 
-  TtiStatefulDBConnectionPool = class( TtiBaseObject )
+  TtiStatefulDBConnectionPool = class(TtiBaseObject)
   private
-    FSavedDBConnections : TObjectList ;
-    FNextTransID : Integer ;
+    FSavedDBConnections : TObjectList;
+    FNextTransID : Integer;
     FCritSect: TCriticalSection;
-    FThrdStatefulDBConnectionPoolMonitor : TThrdStatefulDBConnectionPoolMonitor ;
+    FThrdStatefulDBConnectionPoolMonitor : TThrdStatefulDBConnectionPoolMonitor;
     FTimeOut : Extended;
     function    GetNextTransID: string;
-    property    NextTransID : string read GetNextTransID ;
-    procedure   DoCommit( pDBConnection : TPooledDB ) ;
-    procedure   DoRollBack( pDBConnection : TPooledDB ) ;
+    property    NextTransID : string read GetNextTransID;
+    procedure   DoCommit(pDBConnection : TPooledDB);
+    procedure   DoRollBack(pDBConnection : TPooledDB);
     function    GetCount: integer;
-    procedure   UnLock(           const pTransactionID : string ; pMethod : TPooledDBEvent ) ;
-    function    Lock(             const pDBConnectionName : string ) : TSavedDBConnectionHolder ;
+    procedure   UnLock(          const pTransactionID : string; AMethod : TPooledDBEvent);
+    function    Lock(            const ADBConnectionName : string): TSavedDBConnectionHolder;
 
   public
-    constructor Create ;
-    destructor  Destroy ; override ;
-    property    Count : integer read GetCount ;
-    procedure   SweepForTimeOuts ;
-    property    TimeOut : Extended read FTimeOut write FTimeOut ;
+    constructor Create;
+    destructor  Destroy; override;
+    property    Count : integer read GetCount;
+    procedure   SweepForTimeOuts;
+    property    TimeOut : Extended read FTimeOut write FTimeOut;
 
-    function    FindSavedDBConnectionHolder( const pTransactionID : string ) : TSavedDBConnectionHolder ;
-    function    FindSavedDBConnection( const pTransactionID : string ) : TtiDatabase ;
-    function    StartTransaction( const pDBConnectionName, pComputerName, pUserName : string) : string ;
-    procedure   Commit(           const pTransactionID : string ) ;
-    procedure   RollBack(         const pTransactionID : string ) ;
+    function    FindSavedDBConnectionHolder(const pTransactionID : string): TSavedDBConnectionHolder;
+    function    FindSavedDBConnection(const pTransactionID : string): TtiDatabase;
+    function    StartTransaction(const ADBConnectionName, pComputerName, AUserName : string): string;
+    procedure   Commit(          const pTransactionID : string);
+    procedure   RollBack(        const pTransactionID : string);
 
-    procedure   GetSummaryStats( var pTotalStatefulDBConnections : integer ;
-                                 var pInUseStatefulDBConnections : integer ;
-                                 var pWaitingStatefulDBConnections : integer );
-    procedure   ForEach(const pMethod : TSavedDBConnectionHolderEvent);
+    procedure   GetSummaryStats(var pTotalStatefulDBConnections : integer;
+                                 var pInUseStatefulDBConnections : integer;
+                                 var pWaitingStatefulDBConnections : integer);
+    procedure   ForEach(const AMethod : TSavedDBConnectionHolderEvent);
 
-  end ;
+  end;
 
-  TtiQueryRemoteExec = class( TtiBaseObject )
+  TtiQueryRemoteExec = class(TtiBaseObject)
   private
-    FDBRequest          : TtiDatabaseXMLLight;
-    //FDBResponse         : TtiDatabaseXMLLight;
-    FErrorMessage       : string ;
+    FDBRequest         : TtiDatabaseXMLLight;
+    //FDBResponse        : TtiDatabaseXMLLight;
+    FErrorMessage      : string;
 
-    FRemoteCommandType  : TtiRemoteCommandType ;
-    FRemoteCommandText  : string ;
-    FTransactionID      : string ;
-    FRemoteComputerName : string ;
-    FRemoteUserName     : string ;
-    FRowCount           : integer ;
-    FQueryParams        : TtiQueryTransParams ;
+    FRemoteCommandType : TtiRemoteCommandType;
+    FRemoteCommandText : string;
+    FTransactionID     : string;
+    FRemoteComputerName : string;
+    FRemoteUserName    : string;
+    FRowCount          : integer;
+    FQueryParams       : TtiQueryTransParams;
 
-    FXMLWriterData      : TtiDataBufferToXMLWriter ;
-    FXMLWriterMessage   : TtiDataBufferToXMLWriter ;
+    FXMLWriterData     : TtiDataBufferToXMLWriter;
+    FXMLWriterMessage  : TtiDataBufferToXMLWriter;
 
-    procedure ParseRequest ;
-    procedure ExecuteRequest ;
+    procedure ParseRequest;
+    procedure ExecuteRequest;
 
-    procedure DBRequestToQuery ;
-    procedure DBRequestToQueryParams ;
-    procedure GetRemoteCommandType ;
+    procedure DBRequestToQuery;
+    procedure DBRequestToQueryParams;
+    procedure GetRemoteCommandType;
 
-    procedure DoStartTransaction ;
-    procedure DoCommit ;
-    procedure DoRollBack ;
-    procedure DoExecSQL ;
+    procedure DoStartTransaction;
+    procedure DoCommit;
+    procedure DoRollBack;
+    procedure DoExecSQL;
 
-    procedure DoCreateTable ;
-    procedure DoDropTable ;
-    procedure DoReadMetaDataTables ;
-    procedure DoReadMetaDataFields ;
+    procedure DoCreateTable;
+    procedure DoDropTable;
+    procedure DoReadMetaDataTables;
+    procedure DoReadMetaDataFields;
 
     procedure CreateResponseMetaDataTable;
     procedure InsertResponseMessageData;
 
   public
-    constructor create ;
-    destructor  destroy ; override ;
-    function    ExecuteRemoteXML( const pInput : string ) : string ;
+    constructor create;
+    destructor  destroy; override;
+    function    ExecuteRemoteXML(const pInput : string): string;
   protected
-  end ;
+  end;
 
-function ExecuteRemoteXML( const pInput : string ) : string ;
-function gStatefulDBConnectionPool : TtiStatefulDBConnectionPool ;
+function ExecuteRemoteXML(const pInput : string): string;
+function gStatefulDBConnectionPool : TtiStatefulDBConnectionPool;
 
 implementation
 uses
@@ -159,29 +159,29 @@ uses
   ,tiXML
   ,tiExcept
   ,SysUtils
-  ;
+ ;
 
 var
-  uStatefulDBConnectionPool : TtiStatefulDBConnectionPool ;
-  uXMLTags : TtiXMLTags ;
+  uStatefulDBConnectionPool : TtiStatefulDBConnectionPool;
+  uXMLTags : TtiXMLTags;
 
-function ExecuteRemoteXML( const pInput : string ) : string ;
+function ExecuteRemoteXML(const pInput : string): string;
 var
   lQueryRemoteExec : TtiQueryRemoteExec;
 begin
-  lQueryRemoteExec := TtiQueryRemoteExec.Create ;
+  lQueryRemoteExec := TtiQueryRemoteExec.Create;
   try
     result := lQueryRemoteExec.ExecuteRemoteXML(pInput);
   finally
-    lQueryRemoteExec.Free ;
-  end ;
-end ;
+    lQueryRemoteExec.Free;
+  end;
+end;
 
-function gStatefulDBConnectionPool : TtiStatefulDBConnectionPool ;
+function gStatefulDBConnectionPool : TtiStatefulDBConnectionPool;
 begin
   if uStatefulDBConnectionPool = nil then
-    uStatefulDBConnectionPool := TtiStatefulDBConnectionPool.Create ;
-  result := uStatefulDBConnectionPool ;
+    uStatefulDBConnectionPool := TtiStatefulDBConnectionPool.Create;
+  result := uStatefulDBConnectionPool;
 end;
 
 { TtiQueryRemoteExec }
@@ -189,28 +189,28 @@ end;
 constructor TtiQueryRemoteExec.create;
 begin
   inherited;
-  FDBRequest        := TtiDatabaseXMLLight.Create;
-  FDBRequest.PersistToFile := false ;
-  FDBRequest.OptXMLDBSize := optDBSizeOn ;
-  FDBRequest.XMLFieldNameStyle := xfnsInteger ;
+  FDBRequest       := TtiDatabaseXMLLight.Create;
+  FDBRequest.PersistToFile := false;
+  FDBRequest.OptXMLDBSize := optDBSizeOn;
+  FDBRequest.XMLFieldNameStyle := xfnsInteger;
 
-  FRemoteCommandType := rctUnknown ;
-  FTransactionID     := cNullTransactionID;
-  FRowCount          := 0 ;
-  FXMLWriterMessage  := TtiDataBufferToXMLWriter.Create ;
-  FXMLWriterMessage.OptXMLDBSize := optDBSizeOn ;
-  FXMLWriterMessage.XMLFieldNameStyle := xfnsInteger ;
+  FRemoteCommandType := rctUnknown;
+  FTransactionID    := cNullTransactionID;
+  FRowCount         := 0;
+  FXMLWriterMessage := TtiDataBufferToXMLWriter.Create;
+  FXMLWriterMessage.OptXMLDBSize := optDBSizeOn;
+  FXMLWriterMessage.XMLFieldNameStyle := xfnsInteger;
 
-  FXMLWriterData     := TtiDataBufferToXMLWriter.Create ;
-  FXMLWriterData.OptXMLDBSize := optDBSizeOn ;
-  FXMLWriterData.XMLFieldNameStyle := xfnsInteger ;
+  FXMLWriterData    := TtiDataBufferToXMLWriter.Create;
+  FXMLWriterData.OptXMLDBSize := optDBSizeOn;
+  FXMLWriterData.XMLFieldNameStyle := xfnsInteger;
 
 end;
 
 destructor TtiQueryRemoteExec.destroy;
 begin
   FDBRequest.Free;
-  FQueryParams.Free ;
+  FQueryParams.Free;
   FXMLWriterMessage.Free;
   FXMLWriterData.Free;
   inherited;
@@ -218,90 +218,90 @@ end;
 
 function TtiQueryRemoteExec.ExecuteRemoteXML(const pInput: string): string;
 var
-  lRequest  : string ;
-  lResponse : string ;
+  lRequest : string;
+  lResponse : string;
 begin
   try
     try
       lRequest := tiDecompressDecode(pInput, cgsCompressZLib);
-      FDBRequest.AsString := lRequest ;
-      ParseRequest ;
-      ExecuteRequest ;
+      FDBRequest.AsString := lRequest;
+      ParseRequest;
+      ExecuteRequest;
     except
       on e:exception do
-        FErrorMessage := e.Message ;
-    end ;
+        FErrorMessage := e.Message;
+    end;
     InsertResponseMessageData;
     lResponse :=
       uXMLTags.DatabaseHeader +
       FXMLWriterMessage.TableData +
       FXMLWriterData.TableData +
       uXMLTags.DatabaseFooter;
-    lResponse := tiCompressEncode(lResponse, cgsCompressZLib) ;
+    lResponse := tiCompressEncode(lResponse, cgsCompressZLib);
     result := lResponse;
-    Assert( Trim( result ) <> '', 'Error in result string.' ) ;
+    Assert(Trim(result) <> '', 'Error in result string.');
   except
     on e:exception do
-      Log( 'Error:'    + Cr + e.Message + Cr(2) +
+      Log('Error:'    + Cr + e.Message + Cr(2) +
            'Request:'  + Cr + lRequest  + Cr(2) +
-           'Response:' + Cr + lResponse) ;
+           'Response:' + Cr + lResponse);
   end;
 end;
 
-procedure TtiQueryRemoteExec.ParseRequest ;
+procedure TtiQueryRemoteExec.ParseRequest;
 begin
-  GetRemoteCommandType ;
+  GetRemoteCommandType;
   if FRemoteCommandType = rctExecSQL then
   begin
-    FQueryParams      := TtiQueryTransParams.Create ;
-    DBRequestToQuery ;
-    DBRequestToQueryParams ;
-  end ;
+    FQueryParams     := TtiQueryTransParams.Create;
+    DBRequestToQuery;
+    DBRequestToQueryParams;
+  end;
   if FDBRequest.InTransaction then
-    FDBRequest.RollBack ;
-end ;
+    FDBRequest.RollBack;
+end;
 
-procedure TtiQueryRemoteExec.ExecuteRequest ;
+procedure TtiQueryRemoteExec.ExecuteRequest;
 begin
-  GetRemoteCommandType ;
+  GetRemoteCommandType;
   case FRemoteCommandType of
-  rctStartTransaction   : DoStartTransaction ;
-  rctCommit             : DoCommit ;
-  rctRollBack           : DoRollBack ;
-  rctExecSQL            : DoExecSQL ;
-  rctCreateTable        : DoCreateTable ;
-  rctDropTable          : DoDropTable ;
-  rctReadMetaDataTables : DoReadMetaDataTables ;
-  rctReadMetaDataFields : DoReadMetaDataFields ;
+  rctStartTransaction  : DoStartTransaction;
+  rctCommit            : DoCommit;
+  rctRollBack          : DoRollBack;
+  rctExecSQL           : DoExecSQL;
+  rctCreateTable       : DoCreateTable;
+  rctDropTable         : DoDropTable;
+  rctReadMetaDataTables : DoReadMetaDataTables;
+  rctReadMetaDataFields : DoReadMetaDataFields;
   else
-    EtiOPFProgrammerException.Create( 'Invalid TtiRemoteCommandType') ;
-  end ;
-end ;
+    EtiOPFProgrammerException.Create('Invalid TtiRemoteCommandType');
+  end;
+end;
 
-procedure TtiQueryRemoteExec.DBRequestToQuery ;
+procedure TtiQueryRemoteExec.DBRequestToQuery;
 var
-  lQuery : TtiQueryXMLLight ;
+  lQuery : TtiQueryXMLLight;
 begin
-  Assert( FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError );
-  lQuery := TtiQueryXMLLight.Create ;
+  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError);
+  lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(FDBRequest);
     lQuery.SelectRow(uXMLTags.TableNameQuery);
     if lQuery.EOF then
-      EtiOPFProgrammerException.Create('Invalid data query request') ;
+      EtiOPFProgrammerException.Create('Invalid data query request');
     FQueryParams.SQL := FRemoteCommandText;
   finally
-    lQuery.Free ;
-  end ;
-end ;
+    lQuery.Free;
+  end;
+end;
 
-procedure TtiQueryRemoteExec.DBRequestToQueryParams ;
+procedure TtiQueryRemoteExec.DBRequestToQueryParams;
 var
-  lQuery : TtiQueryXMLLight ;
+  lQuery : TtiQueryXMLLight;
 begin
-  Assert( FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError );
-  Assert( FQueryParams.TestValid(TtiQueryTransParams), cTIInvalidObjectError );
-  lQuery := TtiQueryXMLLight.Create ;
+  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError);
+  Assert(FQueryParams.TestValid(TtiQueryTransParams), cTIInvalidObjectError);
+  lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(FDBRequest);
     lQuery.SelectRow(uXMLTags.TableNameQueryParam);
@@ -311,68 +311,68 @@ begin
         lQuery.FieldAsString[uXMLTags.FieldNameParamName],
         lQuery.FieldAsString[uXMLTags.FieldNameParamKind],
         lQuery.FieldAsString[uXMLTags.FieldNameParamValue]);
-      lQuery.Next ;
-    end ;
+      lQuery.Next;
+    end;
   finally
-    lQuery.Free ;
-  end ;
-end ;
+    lQuery.Free;
+  end;
+end;
 
 procedure TtiQueryRemoteExec.GetRemoteCommandType;
 var
-  lQuery : TtiQueryXMLLight ;
-  lCommandType : string ;
+  lQuery : TtiQueryXMLLight;
+  lCommandType : string;
 begin
-  Assert( FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError );
-  lQuery := TtiQueryXMLLight.Create ;
+  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError);
+  lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(FDBRequest);
     lQuery.SelectRow(uXMLTags.TableNameQuery);
     if lQuery.EOF then
-      EtiOPFProgrammerException.Create('Invalid data query request') ;
-    lCommandType        := lQuery.FieldAsString[uXMLTags.FieldNameCommandType];
-    FRemoteCommandType  := StrToRemoteCommandType(lCommandType);
-    FTransactionID      := lQuery.FieldAsString[uXMLTags.FieldNameTransactionID];
-    FRemoteCommandText  := lQuery.FieldAsString[uXMLTags.FieldNameQuerySQL];
+      EtiOPFProgrammerException.Create('Invalid data query request');
+    lCommandType       := lQuery.FieldAsString[uXMLTags.FieldNameCommandType];
+    FRemoteCommandType := StrToRemoteCommandType(lCommandType);
+    FTransactionID     := lQuery.FieldAsString[uXMLTags.FieldNameTransactionID];
+    FRemoteCommandText := lQuery.FieldAsString[uXMLTags.FieldNameQuerySQL];
     FRemoteComputerName := lQuery.FieldAsString[uXMLTags.FieldNameComputerName];
-    FRemoteUserName     := lQuery.FieldAsString[uXMLTags.FieldNameUserName];
+    FRemoteUserName    := lQuery.FieldAsString[uXMLTags.FieldNameUserName];
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 end;
 
 procedure TtiQueryRemoteExec.DoCommit;
 begin
-  Assert( gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError );
+  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError);
   gStatefulDBConnectionPool.Commit(FTransactionID);
-  FTransactionID := cNullTransactionID ;
+  FTransactionID := cNullTransactionID;
 end;
 
 procedure TtiQueryRemoteExec.DoRollBack;
 begin
-  Assert( gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError );
+  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError);
   gStatefulDBConnectionPool.RollBack(FTransactionID);
-  FTransactionID := cNullTransactionID ;
+  FTransactionID := cNullTransactionID;
 end;
 
 procedure TtiQueryRemoteExec.DoExecSQL;
 var
-  lSavedDBConnectionHolder : TSavedDBConnectionHolder ;
-  lDatabase : TtiDatabase ;
-  lQuery : TtiQuery ;
-  lStart : DWord ;
-  lSQL : string ;
+  lSavedDBConnectionHolder : TSavedDBConnectionHolder;
+  lDatabase : TtiDatabase;
+  lQuery : TtiQuery;
+  lStart : DWord;
+  lSQL : string;
 begin
-  Assert( gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError );
+  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError);
   Assert(FTransactionID <> '', 'TransactionID not assigned');
-  lQuery := gTIOPFManager.DefaultPerLayer.tiQueryClass.Create ;
+  lQuery := gTIOPFManager.DefaultPerLayer.tiQueryClass.Create;
   try
     lSavedDBConnectionHolder := gStatefulDBConnectionPool.FindSavedDBConnectionHolder(FTransactionID);
-    lSavedDBConnectionHolder.InUse := true ;
+    lSavedDBConnectionHolder.InUse := true;
     try
-      Assert( lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError );
-      Assert( lSavedDBConnectionHolder.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError );
-      Assert( lSavedDBConnectionHolder.DBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError );
+      Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
+      Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError);
+      Assert(lSavedDBConnectionHolder.DBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError);
       lDatabase := lSavedDBConnectionHolder.DBConnection.Database;
       lQuery.AttachDatabase(lDatabase);
       FQueryParams.AssignToQuery(lQuery);
@@ -383,20 +383,20 @@ begin
       lSQL:= tiAddEllipsis(lSQL, 975);
       Log('About to run SQL: ' + lSQL);
       lStart:= GetTickCount;
-      lQuery.Active := true ;
+      lQuery.Active := true;
       FRowCount := FXMLWriterData.AssignFromTIQuery(uXMLTags.TableNameResultSet, lQuery);
       Log('  Rows returned: ' + IntToStr(FRowCount) + ' taking ' + IntToStr(GetTickCount-lStart) + 'ms');
     finally
-      lSavedDBConnectionHolder.InUse := false ;
-    end ;
+      lSavedDBConnectionHolder.InUse := false;
+    end;
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 end;
 
 procedure TtiQueryRemoteExec.DoStartTransaction;
 begin
-  Assert( gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError );
+  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError);
   FTransactionID :=
     gStatefulDBConnectionPool.StartTransaction(
       gTIOPFManager.DefaultDBConnectionName,
@@ -405,31 +405,31 @@ end;
 
 procedure TtiQueryRemoteExec.InsertResponseMessageData;
 begin
-  Assert( FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), cTIInvalidObjectError );
+  Assert(FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), cTIInvalidObjectError);
   FXMLWriterMessage.AddTable(uXMLTags.TableNameResultMessage);
   FXMLWriterMessage.AddField(uXMLTags.FieldNameResultError, qfkString, 9999);
   FXMLWriterMessage.AddField(uXMLTags.FieldNameTransactionID, qfkString, 9999);
   FXMLWriterMessage.AddField(uXMLTags.FieldNameResultRowCount, qfkInteger);
   FXMLWriterMessage.AddRow;
-  FXMLWriterMessage.AddCellAsString(uXMLTags.FieldNameResultError, FErrorMessage) ;
-  FXMLWriterMessage.AddCellAsString(uXMLTags.FieldNameTransactionID, FTransactionID) ;
-  FXMLWriterMessage.AddCellAsInteger(uXMLTags.FieldNameResultRowCount, FRowCount) ;
+  FXMLWriterMessage.AddCellAsString(uXMLTags.FieldNameResultError, FErrorMessage);
+  FXMLWriterMessage.AddCellAsString(uXMLTags.FieldNameTransactionID, FTransactionID);
+  FXMLWriterMessage.AddCellAsInteger(uXMLTags.FieldNameResultRowCount, FRowCount);
 end;
 
 procedure TtiQueryRemoteExec.DoCreateTable;
 var
-  lQuery : TtiQueryXMLLight ;
-  lMD : TtiDBMetaDataTable ;
+  lQuery : TtiQueryXMLLight;
+  lMD : TtiDBMetaDataTable;
 begin
-  Assert( FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError );
-  lMD := TtiDBMetaDataTable.Create ;
+  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError);
+  lMD := TtiDBMetaDataTable.Create;
   try
-    lQuery := TtiQueryXMLLight.Create ;
+    lQuery := TtiQueryXMLLight.Create;
     try
       lQuery.AttachDatabase(FDBRequest);
       lQuery.SelectRow(uXMLTags.TableNameMetaData);
       if lQuery.EOF then
-        EtiOPFProgrammerException.Create('Unable to find table metadata') ;
+        EtiOPFProgrammerException.Create('Unable to find table metadata');
       lMD.Name := lQuery.FieldAsString[uXMLTags.FieldNameMetaDataTableName];
       while not lQuery.EOF do
       begin
@@ -437,11 +437,11 @@ begin
           lQuery.FieldAsString[uXMLTags.FieldNameMetaDataFieldName],
           StrToQueryFieldKind(lQuery.FieldAsString[uXMLTags.FieldNameMetaDataFieldKind]),
           lQuery.FieldAsInteger[uXMLTags.FieldNameMetaDataFieldWIdth]);
-        lQuery.Next ;
+        lQuery.Next;
       end;
     finally
-      lQuery.Free ;
-    end ;
+      lQuery.Free;
+    end;
     gTIOPFManager.CreateTable(lMD);
   finally
     lMD.Free;
@@ -450,9 +450,9 @@ end;
 
 procedure TtiQueryRemoteExec.DoDropTable;
 var
-  lMD : TtiDBMetaDataTable ;
+  lMD : TtiDBMetaDataTable;
 begin
-  lMD := TtiDBMetaDataTable.Create ;
+  lMD := TtiDBMetaDataTable.Create;
   try
     gTIOPFManager.DropTable(FRemoteCommandText);
   finally
@@ -462,20 +462,20 @@ end;
 
 procedure TtiQueryRemoteExec.DoReadMetaDataFields;
 var
-  lPooledDB : TPooledDB ;
-  lDatabase : TtiDatabase ;
-  lMD       : TtiDBMetaDataTable ;
-  i         : integer ;
+  lPooledDB : TPooledDB;
+  lDatabase : TtiDatabase;
+  lMD      : TtiDBMetaDataTable;
+  i        : integer;
 begin
-  Assert( FXMLWriterData.TestValid(TtiDataBufferToXMLWriter), cTIInvalidObjectError );
+  Assert(FXMLWriterData.TestValid(TtiDataBufferToXMLWriter), cTIInvalidObjectError);
   CreateResponseMetaDataTable;
 
-  lPooledDB := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock ;
-  lDatabase := lPooledDB.Database ;
+  lPooledDB := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
+  lDatabase := lPooledDB.Database;
   try
-    lMD := TtiDBMetaDataTable.Create ;
+    lMD := TtiDBMetaDataTable.Create;
     try
-      lMD.Name := FRemoteCommandText ;
+      lMD.Name := FRemoteCommandText;
       lDatabase.ReadMetaDataFields(lMD);
       for i := 0 to lMD.Count - 1 do
       begin
@@ -484,28 +484,28 @@ begin
         FXMLWriterData.AddCellAsString(uXMLTags.FieldNameMetaDataFieldName, lMD.Items[i].Name);
         FXMLWriterData.AddCellAsString(uXMLTags.FieldNameMetaDataFieldKind, lMD.Items[i].KindAsStr);
         FXMLWriterData.AddCellAsInteger(uXMLTags.FieldNameMetaDataFieldWidth, lMD.Items[i].Width);
-      end ;
+      end;
     finally
       lMD.Free;
     end;
   finally
     gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.UnLock(lPooledDB);
-  end ;
+  end;
 end;
 
 procedure TtiQueryRemoteExec.DoReadMetaDataTables;
 var
-  lPooledDB : TPooledDB ;
-  lDatabase : TtiDatabase ;
-  lMD       : TtiDBMetaData ;
-  i         : integer ;
+  lPooledDB : TPooledDB;
+  lDatabase : TtiDatabase;
+  lMD      : TtiDBMetaData;
+  i        : integer;
 begin
-  Assert( FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), cTIInvalidObjectError );
+  Assert(FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), cTIInvalidObjectError);
   CreateResponseMetaDataTable;
-  lPooledDB := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock ;
-  lDatabase := lPooledDB.Database ;
+  lPooledDB := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
+  lDatabase := lPooledDB.Database;
   try
-    lMD := TtiDBMetaData.Create ;
+    lMD := TtiDBMetaData.Create;
     try
       lDatabase.ReadMetaDataTables(lMD);
       for i := 0 to lMD.Count - 1 do
@@ -515,34 +515,34 @@ begin
         FXMLWriterData.AddCellAsString(uXMLTags.FieldNameMetaDataFieldName,   '');
         FXMLWriterData.AddCellAsString(uXMLTags.FieldNameMetaDataFieldKind,   cgaQueryFieldKind[qfkString]);
         FXMLWriterData.AddCellAsInteger(uXMLTags.FieldNameMetaDataFieldWidth, 0);
-      end ;
+      end;
     finally
       lMD.Free;
     end;
   finally
     gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.UnLock(lPooledDB);
-  end ;
+  end;
 end;
 
 procedure TtiQueryRemoteExec.CreateResponseMetaDataTable;
 begin
   FXMLWriterData.AddTable(uXMLTags.TableNameMetaData);
-  FXMLWriterData.AddField(uXMLTags.FieldNameMetaDataTableName,  qfkString, 255 ) ;
-  FXMLWriterData.AddField(uXMLTags.FieldNameMetaDataFieldName,  qfkString, 255 ) ;
-  FXMLWriterData.AddField(uXMLTags.FieldNameMetaDataFieldKind,  qfkString, 20 ) ;
-  FXMLWriterData.AddField(uXMLTags.FieldNameMetaDataFieldWidth, qfkInteger ) ;
+  FXMLWriterData.AddField(uXMLTags.FieldNameMetaDataTableName,  qfkString, 255);
+  FXMLWriterData.AddField(uXMLTags.FieldNameMetaDataFieldName,  qfkString, 255);
+  FXMLWriterData.AddField(uXMLTags.FieldNameMetaDataFieldKind,  qfkString, 20);
+  FXMLWriterData.AddField(uXMLTags.FieldNameMetaDataFieldWidth, qfkInteger);
 end;
 
 { TtiStatefulDBConnectionPool }
 
 constructor TtiStatefulDBConnectionPool.Create;
 begin
-  inherited ;
-  FSavedDBConnections := TObjectList.Create ;
-  FNextTransID := 1 ;
+  inherited;
+  FSavedDBConnections := TObjectList.Create;
+  FNextTransID := 1;
   FCritSect:= TCriticalSection.Create;
-  FTimeOut := cDBProxyServerTimeOut ;
-  FThrdStatefulDBConnectionPoolMonitor := TThrdStatefulDBConnectionPoolMonitor.CreateExt(Self) ;
+  FTimeOut := cDBProxyServerTimeOut;
+  FThrdStatefulDBConnectionPoolMonitor := TThrdStatefulDBConnectionPoolMonitor.CreateExt(Self);
 end;
 
 destructor TtiStatefulDBConnectionPool.Destroy;
@@ -550,248 +550,248 @@ begin
   FThrdStatefulDBConnectionPoolMonitor.Terminate;
   FThrdStatefulDBConnectionPoolMonitor.WaitFor;
   FThrdStatefulDBConnectionPoolMonitor.Free;
-  FSavedDBConnections.Free ;
+  FSavedDBConnections.Free;
   FCritSect.Free;
   inherited;
 end;
 
-function TtiStatefulDBConnectionPool.Lock( const pDBConnectionName : string ) : TSavedDBConnectionHolder ;
+function TtiStatefulDBConnectionPool.Lock(const ADBConnectionName : string): TSavedDBConnectionHolder;
 begin
   FCritSect.Enter;
   try
-    result := TSavedDBConnectionHolder.Create ;
-    result.DBConnectionName := pDBConnectionName ;
-    result.TransactionID    := NextTransID ;
-    result.DBConnection := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock( pDBConnectionName ) ;
-    result.Owner := Self ;
-    Assert( result.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError );
-    FSavedDBConnections.Add( result ) ;
-    result.LastUsed       := now ;
+    result := TSavedDBConnectionHolder.Create;
+    result.DBConnectionName := ADBConnectionName;
+    result.TransactionID   := NextTransID;
+    result.DBConnection := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(ADBConnectionName);
+    result.Owner := Self;
+    Assert(result.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError);
+    FSavedDBConnections.Add(result);
+    result.LastUsed      := now;
   finally
     FCritSect.Leave;
-  end ;
+  end;
 end;
 
 function TtiStatefulDBConnectionPool.FindSavedDBConnectionHolder(
-            const pTransactionID: string ): TSavedDBConnectionHolder;
+            const pTransactionID: string): TSavedDBConnectionHolder;
 var
-  i : integer ;
-  lSavedDBConnectionHolder : TSavedDBConnectionHolder ;
+  i : integer;
+  lSavedDBConnectionHolder : TSavedDBConnectionHolder;
 begin
-  result := nil ;
+  result := nil;
   for i := 0 to FSavedDBConnections.Count - 1 do
   begin
-    lSavedDBConnectionHolder := TSavedDBConnectionHolder( FSavedDBConnections.Items[i] ) ;
-    Assert( lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError );
-    if ( lSavedDBConnectionHolder.TransactionID = pTransactionID ) then
+    lSavedDBConnectionHolder := TSavedDBConnectionHolder(FSavedDBConnections.Items[i]);
+    Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
+    if (lSavedDBConnectionHolder.TransactionID = pTransactionID) then
     begin
-      lSavedDBConnectionHolder.LastUsed := now ;
-      result := lSavedDBConnectionHolder ;
-      Break ; //==>
-    end ;
-  end ;
+      lSavedDBConnectionHolder.LastUsed := now;
+      result := lSavedDBConnectionHolder;
+      Break; //==>
+    end;
+  end;
   if result = nil then
-    raise exception.CreateFmt( cErrorTransactionTimedOut, [pTransactionID] ) ;
-end ;
+    raise exception.CreateFmt(cErrorTransactionTimedOut, [pTransactionID]);
+end;
 
 function TtiStatefulDBConnectionPool.GetNextTransID: string;
 begin
-  result := IntToStr(FNextTransID) ;
-  Inc( FNextTransID ) ;
+  result := IntToStr(FNextTransID);
+  Inc(FNextTransID);
 end;
 
-procedure TtiStatefulDBConnectionPool.DoCommit( pDBConnection: TPooledDB);
+procedure TtiStatefulDBConnectionPool.DoCommit(pDBConnection: TPooledDB);
 begin
-  Assert( pDBConnection.TestValid(TPooledDB), cTIInvalidObjectError );
-  Assert( pDBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError );
-  pDBConnection.Database.Commit ;
+  Assert(pDBConnection.TestValid(TPooledDB), cTIInvalidObjectError);
+  Assert(pDBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  pDBConnection.Database.Commit;
 end;
 
 procedure TtiStatefulDBConnectionPool.DoRollBack(pDBConnection: TPooledDB);
 begin
-  Assert( pDBConnection.TestValid(TPooledDB), cTIInvalidObjectError );
-  Assert( pDBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError );
-  pDBConnection.Database.RollBack ;
+  Assert(pDBConnection.TestValid(TPooledDB), cTIInvalidObjectError);
+  Assert(pDBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  pDBConnection.Database.RollBack;
 end;
 
-procedure TtiStatefulDBConnectionPool.UnLock(const pTransactionID : string ;
-                                             pMethod: TPooledDBEvent );
+procedure TtiStatefulDBConnectionPool.UnLock(const pTransactionID : string;
+                                             AMethod: TPooledDBEvent);
 var
-  lSavedDBConnection : TSavedDBConnectionHolder ;
-  i : integer ;
+  lSavedDBConnection : TSavedDBConnectionHolder;
+  i : integer;
 begin
   FCritSect.Enter;
   try
-    lSavedDBConnection := FindSavedDBConnectionHolder( pTransactionID ) ;
-    Assert( lSavedDBConnection.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError );
-    Assert( lSavedDBConnection.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError );
-    pMethod( lSavedDBConnection.DBConnection ) ;
-    gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock( lSavedDBConnection.DBConnectionName,
-                                 lSavedDBConnection.DBConnection ) ;
-    i := FSavedDBConnections.IndexOf( lSavedDBConnection ) ;
-    FSavedDBConnections.Delete( i ) ;
+    lSavedDBConnection := FindSavedDBConnectionHolder(pTransactionID);
+    Assert(lSavedDBConnection.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
+    Assert(lSavedDBConnection.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError);
+    AMethod(lSavedDBConnection.DBConnection);
+    gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lSavedDBConnection.DBConnectionName,
+                                 lSavedDBConnection.DBConnection);
+    i := FSavedDBConnections.IndexOf(lSavedDBConnection);
+    FSavedDBConnections.Delete(i);
   finally
     FCritSect.Leave;
-  end ;
+  end;
 end;
 
 function TtiStatefulDBConnectionPool.GetCount: integer;
 begin
-  result := FSavedDBConnections.Count ;
+  result := FSavedDBConnections.Count;
 end;
 
-function TtiStatefulDBConnectionPool.StartTransaction(const pDBConnectionName, pComputerName, pUserName : string): string;
+function TtiStatefulDBConnectionPool.StartTransaction(const ADBConnectionName, pComputerName, AUserName : string): string;
 var
-  lSavedDBConnectionHolder : TSavedDBConnectionHolder ;
+  lSavedDBConnectionHolder : TSavedDBConnectionHolder;
 begin
-  lSavedDBConnectionHolder := Lock(pDBConnectionName);
-  Assert( lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError );
-  Assert( lSavedDBConnectionHolder.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError );
-  Assert( lSavedDBConnectionHolder.DBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError );
-  lSavedDBConnectionHolder.ComputerName := pComputerName ;
-  lSavedDBConnectionHolder.UserName := pUserName ;
-  result := lSavedDBConnectionHolder.TransactionID ;
-  lSavedDBConnectionHolder.DBConnection.Database.StartTransaction ;
+  lSavedDBConnectionHolder := Lock(ADBConnectionName);
+  Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
+  Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError);
+  Assert(lSavedDBConnectionHolder.DBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  lSavedDBConnectionHolder.ComputerName := pComputerName;
+  lSavedDBConnectionHolder.UserName := AUserName;
+  result := lSavedDBConnectionHolder.TransactionID;
+  lSavedDBConnectionHolder.DBConnection.Database.StartTransaction;
 end;
 
 procedure TtiStatefulDBConnectionPool.Commit(const pTransactionID: string);
 begin
-  UnLock( pTransactionID, DoCommit ) ;
+  UnLock(pTransactionID, DoCommit);
 end;
 
 procedure TtiStatefulDBConnectionPool.RollBack(const pTransactionID: string);
 begin
-  UnLock( pTransactionID, DoRollBack ) ;
+  UnLock(pTransactionID, DoRollBack);
 end;
 
 function TtiStatefulDBConnectionPool.FindSavedDBConnection(const pTransactionID: string): TtiDatabase;
 var
-  lSavedDBConnectionHolder : TSavedDBConnectionHolder ;
+  lSavedDBConnectionHolder : TSavedDBConnectionHolder;
 begin
   lSavedDBConnectionHolder := FindSavedDBConnectionHolder(pTransactionID);
   if lSavedDBConnectionHolder <> nil then
   begin
-    Assert( lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError );
-    Assert( lSavedDBConnectionHolder.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError );
-    Assert( lSavedDBConnectionHolder.DBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError );
+    Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
+    Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError);
+    Assert(lSavedDBConnectionHolder.DBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError);
     result := lSavedDBConnectionHolder.DBConnection.Database;
   end else
-    result := nil ;
+    result := nil;
 end;
 
-constructor TThrdStatefulDBConnectionPoolMonitor.CreateExt(pPool: TtiStatefulDBConnectionPool);
+constructor TThrdStatefulDBConnectionPoolMonitor.CreateExt(APool: TtiStatefulDBConnectionPool);
 begin
-  Create( true ) ;
-  FreeOnTerminate := false ;
-  FPool := pPool ;
-  Resume ;
-end ;
+  Create(true);
+  FreeOnTerminate := false;
+  FPool := APool;
+  Resume;
+end;
 
 procedure TThrdStatefulDBConnectionPoolMonitor.Execute;
 var
-  i : integer ;
+  i : integer;
 begin
   while not terminated do
   begin
     // Sleep for 10 seconds, but keep checking terminated
-    i := 0 ;
-    while ( i < 10 ) and
-          ( not terminated ) do
+    i := 0;
+    while (i < 10) and
+          (not terminated) do
     begin
-      Inc( i ) ;
-      sleep( 1000 ) ;
-    end ;
+      Inc(i);
+      sleep(1000);
+    end;
     if not Terminated then
-      FPool.SweepForTimeOuts ;
-  end ;
+      FPool.SweepForTimeOuts;
+  end;
 
 end;
 
 procedure TtiStatefulDBConnectionPool.SweepForTimeOuts;
 var
-  i : integer ;
-  lSavedDBConnectionHolder : TSavedDBConnectionHolder ;
+  i : integer;
+  lSavedDBConnectionHolder : TSavedDBConnectionHolder;
 begin
   FCritSect.Enter;
   try
     if Count = 0 then
-      Exit ; //==>
+      Exit; //==>
     // TimeOut is in minutes, so convert to TDateTime
     for i :=  Count - 1 downto 0 do
     begin
-      lSavedDBConnectionHolder := FSavedDBConnections.Items[i] as TSavedDBConnectionHolder ;
-      Assert( lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError );
-      Assert( lSavedDBConnectionHolder.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError );
-      Assert( lSavedDBConnectionHolder.DBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError );
-      if ( not lSavedDBConnectionHolder.InUse ) and
-         ( lSavedDBConnectionHolder.SecToTimeOut <= 0 ) then
+      lSavedDBConnectionHolder := FSavedDBConnections.Items[i] as TSavedDBConnectionHolder;
+      Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
+      Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TPooledDB), cTIInvalidObjectError);
+      Assert(lSavedDBConnectionHolder.DBConnection.Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+      if (not lSavedDBConnectionHolder.InUse) and
+         (lSavedDBConnectionHolder.SecToTimeOut <= 0) then
       begin
         if lSavedDBConnectionHolder.DBConnection.Database.InTransaction then
-            lSavedDBConnectionHolder.DBConnection.Database.Rollback ;
-        gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock( lSavedDBConnectionHolder.DBConnectionName,
-                                     lSavedDBConnectionHolder.DBConnection ) ;
-        FSavedDBConnections.Delete( i ) ;
-      end ;
-    end ;
+            lSavedDBConnectionHolder.DBConnection.Database.Rollback;
+        gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lSavedDBConnectionHolder.DBConnectionName,
+                                     lSavedDBConnectionHolder.DBConnection);
+        FSavedDBConnections.Delete(i);
+      end;
+    end;
   finally
     FCritSect.Leave;
-  end ;
+  end;
 end;
 
 procedure TtiStatefulDBConnectionPool.GetSummaryStats(
   var pTotalStatefulDBConnections, pInUseStatefulDBConnections,
   pWaitingStatefulDBConnections: integer);
 var
-  i : integer ;
-  lSavedDBConnectionHolder : TSavedDBConnectionHolder ;
+  i : integer;
+  lSavedDBConnectionHolder : TSavedDBConnectionHolder;
 begin
-  pTotalStatefulDBConnections   := 0 ;
-  pInUseStatefulDBConnections   := 0 ;
-  pWaitingStatefulDBConnections := 0 ;
+  pTotalStatefulDBConnections  := 0;
+  pInUseStatefulDBConnections  := 0;
+  pWaitingStatefulDBConnections := 0;
   FCritSect.Enter;
   try
     for i := 0 to FSavedDBConnections.Count - 1 do
     begin
-      lSavedDBConnectionHolder := TSavedDBConnectionHolder( FSavedDBConnections.Items[i] ) ;
+      lSavedDBConnectionHolder := TSavedDBConnectionHolder(FSavedDBConnections.Items[i]);
       if lSavedDBConnectionHolder.InUse then
         Inc(pInUseStatefulDBConnections)
       else
         Inc(pWaitingStatefulDBConnections);
       Inc(pTotalStatefulDBConnections);
-    end ;
+    end;
   finally
     FCritSect.Leave;
-  end ;
+  end;
 end;
 
-procedure TtiStatefulDBConnectionPool.ForEach(const pMethod: TSavedDBConnectionHolderEvent);
+procedure TtiStatefulDBConnectionPool.ForEach(const AMethod: TSavedDBConnectionHolderEvent);
 var
-  lSavedDBConnection : TSavedDBConnectionHolder ;
-  i : integer ;
+  lSavedDBConnection : TSavedDBConnectionHolder;
+  i : integer;
 begin
   FCritSect.Enter;
   try
     for i := 0 to FSavedDBConnections.Count - 1 do
     begin
-      lSavedDBConnection := TSavedDBConnectionHolder(FSavedDBConnections.Items[i]) ;
-      pMethod(lSavedDBConnection);
-    end ;
+      lSavedDBConnection := TSavedDBConnectionHolder(FSavedDBConnections.Items[i]);
+      AMethod(lSavedDBConnection);
+    end;
   finally
     FCritSect.Leave;
-  end ;
+  end;
 end;
 
 { TSavedDBConnectionHolder }
 
 constructor TSavedDBConnectionHolder.Create;
 begin
-  inherited ;
-  FInUse := false ;
+  inherited;
+  FInUse := false;
 end;
 
 function TSavedDBConnectionHolder.GetSecInUse: integer;
 begin
-  result := Trunc(( Now - LastUsed ) * 24 * 60 * 60  ) ;
+  result := Trunc((Now - LastUsed) * 24 * 60 * 60 );
 end;
 
 function TSavedDBConnectionHolder.GetSecToTimeOut: integer;
@@ -799,21 +799,21 @@ begin
   if FInUse then
     result := cSecToTimeOutLocked
   else
-    result := Trunc( Owner.TimeOut * 60 ) - SecInUse ;
+    result := Trunc(Owner.TimeOut * 60) - SecInUse;
 end;
 
-procedure TSavedDBConnectionHolder.SetInUse(const Value: boolean);
+procedure TSavedDBConnectionHolder.SetInUse(const AValue: boolean);
 begin
-  FInUse := Value;
-  LastUsed := Now ;
+  FInUse := AValue;
+  LastUsed := Now;
 end;
 
 initialization
   uXMLTags := TtiXMLTags.Create;
-  uXMLTags.OptXMLDBSize := optDBSizeOn ;
+  uXMLTags.OptXMLDBSize := optDBSizeOn;
 
 finalization
-  uStatefulDBConnectionPool.Free ;
+  uStatefulDBConnectionPool.Free;
   uXMLTags.Free;
 
 end.

@@ -11,20 +11,20 @@ uses
   ,tiTestFramework
   ,tiVisitor
   ,Contnrs
-  ;
+ ;
 
 type
-  TTestVisitedList = class ;
-  TTestVisitedOwned = class ;
+  TTestVisitedList = class;
+  TTestVisitedOwned = class;
 
 
   TTestTIVisitor = class(TtiTestCase)
   private
-    function CreateListAndOwned : TTestVisitedList ;
-    function CreateList : TTestVisitedList ;
-    function CreateOwned : TTestVisitedOwned ;
+    function CreateListAndOwned : TTestVisitedList;
+    function CreateList : TTestVisitedList;
+    function CreateOwned : TTestVisitedOwned;
   protected
-    procedure SetUp ; override ;
+    procedure SetUp; override;
   published
     // RTTI Support
     procedure tiGetPropertyNames;
@@ -55,7 +55,7 @@ type
 
     procedure Visited_SelfIterate;
     procedure Visited_FindAllByClassType;
-    procedure Visited_ClassCount ;
+    procedure Visited_ClassCount;
 
     // Test some other special visitors
     procedure VisGetAllToVisit_Execute;
@@ -67,54 +67,54 @@ type
 
     // Test the TFileStream visitor wrapper
     procedure VisStreamToFile;
-  end ;
-
-
-  TTestVisitor_AcceptVisitor = class( TtiVisitor )
-  public
-    function AcceptVisitor : boolean ; override ;
-  end ;
-
-
-  TTestVisitor_DoAcceptVisitor = class( TtiVisitor )
-  public
-    function AcceptVisitor : boolean ; override ;
-  end ;
-
-
-  TTestVisitor_Execute = class( TtiVisitor )
-  private
-    FExecuteCalled: boolean;
-  public
-    property  ExecuteCalled : boolean read FExecuteCalled write FExecuteCalled ;
-    procedure Execute( const pVisited : TtiVisited ) ; override ;
-  end ;
-
-
-  TTestVisitedAbs = class( TtiVisited )
-  private
-    FIndex: Word;
-  public
-    property Index : Word read FIndex write FIndex ;
   end;
 
 
-  TTestVisited = class( TTestVisitedAbs ) ;
+  TTestVisitor_AcceptVisitor = class(TtiVisitor)
+  public
+    function AcceptVisitor : boolean; override;
+  end;
 
 
-  TTestVisitedList = class( TTestVisitedAbs )
+  TTestVisitor_DoAcceptVisitor = class(TtiVisitor)
+  public
+    function AcceptVisitor : boolean; override;
+  end;
+
+
+  TTestVisitor_Execute = class(TtiVisitor)
+  private
+    FExecuteCalled: boolean;
+  public
+    property  ExecuteCalled : boolean read FExecuteCalled write FExecuteCalled;
+    procedure Execute(const AVisited : TtiVisited); override;
+  end;
+
+
+  TTestVisitedAbs = class(TtiVisited)
+  private
+    FIndex: Word;
+  public
+    property Index : Word read FIndex write FIndex;
+  end;
+
+
+  TTestVisited = class(TTestVisitedAbs);
+
+
+  TTestVisitedList = class(TTestVisitedAbs)
   private
     FList: TObjectList;
     function GetList: TList;
   published
-    property    List : TList read GetList ;
+    property    List : TList read GetList;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-  end ;
+    constructor Create; override;
+    destructor  Destroy; override;
+  end;
 
 
-  TTestVisitedOwned = class( TTestVisitedAbs )
+  TTestVisitedOwned = class(TTestVisitedAbs)
   private
     FOwned1: TTestVisited;
     FOwned3: TTestVisited;
@@ -124,59 +124,59 @@ type
     property Owned2 : TTestVisited read FOwned2;
     property Owned3 : TTestVisited read FOwned3;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-  end ;
-
-
-  TTestVisitorIterate = class( TtiVisitor )
-  private
-    FIndexes: TStringList;
-  public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-    property    Indexes : TStringList read FIndexes ;
-  end ;
-
-
-  TTestVisitorContinueVisiting = class( TTestVisitorIterate )
-  public
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-  end ;
-
-
-  TTestVisitorDepth = class( TTestVisitorIterate )
-  public
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-  end ;
-
-
-  TTestVisitorController = class( TtiVisitor )
-  public
-    function VisitorControllerClass : TtiVisitorControllerClass ; override ;
-  end ;
-
-
-  TTestVisitorGetAllToVisit = class( TtiVisitor )
-  protected
-    function AcceptVisitor : boolean ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
   end;
 
 
-  TTestVisStream = class( TVisStream )
+  TTestVisitorIterate = class(TtiVisitor)
+  private
+    FIndexes: TStringList;
   public
-    procedure Execute( const pVisited : TtiVisited ) ; override ;
-    procedure Write( const psValue : string ) ; override ;
-    procedure WriteLn( const psValue : string = '') ; override ;
-  end ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    Indexes : TStringList read FIndexes;
+  end;
+
+
+  TTestVisitorContinueVisiting = class(TTestVisitorIterate)
+  public
+    procedure   Execute(const AVisited : TtiVisited); override;
+  end;
+
+
+  TTestVisitorDepth = class(TTestVisitorIterate)
+  public
+    procedure   Execute(const AVisited : TtiVisited); override;
+  end;
+
+
+  TTestVisitorController = class(TtiVisitor)
+  public
+    function VisitorControllerClass : TtiVisitorControllerClass; override;
+  end;
+
+
+  TTestVisitorGetAllToVisit = class(TtiVisitor)
+  protected
+    function AcceptVisitor : boolean; override;
+  end;
+
+
+  TTestVisStream = class(TVisStream)
+  public
+    procedure Execute(const AVisited : TtiVisited); override;
+    procedure Write(const AValue : string); override;
+    procedure WriteLn(const AValue : string = ''); override;
+  end;
 
 
 const
-  cTestDoAcceptVisitorException = 'Test DoAcceptVisitor exception.' ;
+  cTestDoAcceptVisitorException = 'Test DoAcceptVisitor exception.';
 
 
-procedure RegisterTests ;
+procedure RegisterTests;
 
 
 implementation
@@ -190,38 +190,38 @@ uses
   ,tiDUnitDependencies
   ,tiStreams
   ,tstPerFramework_BOM
-  ;
+ ;
 
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIVisitor);
-end ;
+end;
 
 
 { TTestTiPtnVis }
 
 procedure TTestTIVisitor.VisClassCount_Execute;
 var
-  lVisited  : TTestVisitedList ;
+  lVisited : TTestVisitedList;
   lVis : TVisClassCount;
 begin
-  lVisited := CreateListAndOwned ;
+  lVisited := CreateListAndOwned;
   try
-      lVis := TVisClassCount.Create ;
+      lVis := TVisClassCount.Create;
       try
-        lVisited.Iterate( lVis ) ;
-        CheckEquals( 1,  lVis.ClassCount[TTestVisitedList],  'Failed TTestVisitedList' );
-        CheckEquals( 3,  lVis.ClassCount[TTestVisitedOwned], 'Failed TTestVisitedOwned' );
+        lVisited.Iterate(lVis);
+        CheckEquals(1,  lVis.ClassCount[TTestVisitedList],  'Failed TTestVisitedList');
+        CheckEquals(3,  lVis.ClassCount[TTestVisitedOwned], 'Failed TTestVisitedOwned');
         // Probably not what you would expect (13 is more logical) because
         // TTestVisitedList and TTestVisitedOwned are both TestVisited, but
         // TVisClassCount does not know about inheritance.
         // This should be fixed when TVisClassCount is next being used.
-        CheckEquals( 9,  lVis.ClassCount[TTestVisited],      'Failed TTestVisited' );
-        CheckEquals( 0, lVis.ClassCount[TtiVisited],        'Failed TtiVisited' );
+        CheckEquals(9,  lVis.ClassCount[TTestVisited],      'Failed TTestVisited');
+        CheckEquals(0, lVis.ClassCount[TtiVisited],        'Failed TtiVisited');
       finally
-        lVis.Free ;
-      end ;
+        lVis.Free;
+      end;
   finally
     lVisited.Free;
   end;
@@ -230,38 +230,38 @@ end;
 
 procedure TTestTIVisitor.VisFindAllByClass_Execute;
 var
-  lVisited  : TTestVisitedList ;
+  lVisited : TTestVisitedList;
   lVis : TVisFindAllByClass;
-  lList : TList ;
+  lList : TList;
 begin
-  lVisited := CreateListAndOwned ;
+  lVisited := CreateListAndOwned;
   try
-    lList := TList.Create ;
+    lList := TList.Create;
     try
-      lVis := TVisFindAllByClass.Create ;
+      lVis := TVisFindAllByClass.Create;
       try
-        lVis.List := lList ;
+        lVis.List := lList;
 
-        lVis.ClassTypeToFind := TTestVisitedList ;
-        lVisited.Iterate( lVis ) ;
-        CheckEquals( 1, lList.Count, 'Failed TTestVisitedList' );
+        lVis.ClassTypeToFind := TTestVisitedList;
+        lVisited.Iterate(lVis);
+        CheckEquals(1, lList.Count, 'Failed TTestVisitedList');
 
-        lList.Clear ;
-        lVis.ClassTypeToFind := TTestVisitedOwned ;
-        lVisited.Iterate( lVis ) ;
-        CheckEquals( 3, lList.Count, 'Failed TTestVisitedOwned' );
+        lList.Clear;
+        lVis.ClassTypeToFind := TTestVisitedOwned;
+        lVisited.Iterate(lVis);
+        CheckEquals(3, lList.Count, 'Failed TTestVisitedOwned');
 
-        lList.Clear ;
-        lVis.ClassTypeToFind := TtiVisited ;
-        lVisited.Iterate( lVis ) ;
-        CheckEquals( 13, lList.Count, 'Failed TtiVisited' );
+        lList.Clear;
+        lVis.ClassTypeToFind := TtiVisited;
+        lVisited.Iterate(lVis);
+        CheckEquals(13, lList.Count, 'Failed TtiVisited');
 
       finally
-        lVis.Free ;
-      end ;
+        lVis.Free;
+      end;
     finally
-      lList.Free ;
-    end ;
+      lList.Free;
+    end;
   finally
     lVisited.Free;
   end;
@@ -270,24 +270,24 @@ end;
 
 procedure TTestTIVisitor.VisGetAllToVisit_Execute;
 var
-  lVisGetAllToVisit : TtiVisGetAllToVisit ;
-  lVisitor : TTestVisitorGetAllToVisit ;
-  lVisitedList  : TTestVisitedList ;
+  lVisGetAllToVisit : TtiVisGetAllToVisit;
+  lVisitor : TTestVisitorGetAllToVisit;
+  lVisitedList : TTestVisitedList;
 begin
-  lVisitedList := CreateListAndOwned ;
+  lVisitedList := CreateListAndOwned;
   try
-    lVisitor := TTestVisitorGetAllToVisit.Create ;
+    lVisitor := TTestVisitorGetAllToVisit.Create;
     try
-      lVisGetAllToVisit := TtiVisGetAllToVisit.Create ;
+      lVisGetAllToVisit := TtiVisGetAllToVisit.Create;
       try
-        lVisGetAllToVisit.Visitor := lVisitor ;
-        lVisitedList.Iterate( lVisGetAllToVisit ) ;
-        CheckEquals( 3, lVisGetAllToVisit.List.Count ) ;
+        lVisGetAllToVisit.Visitor := lVisitor;
+        lVisitedList.Iterate(lVisGetAllToVisit);
+        CheckEquals(3, lVisGetAllToVisit.List.Count);
       finally
-        lVisGetAllToVisit.Free ;
-      end ;
+        lVisGetAllToVisit.Free;
+      end;
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
     lVisitedList.Free;
@@ -297,38 +297,38 @@ end;
 
 procedure TTestTIVisitor.Visited_Caption;
 var
-  lVisited : TtiVisited ;
+  lVisited : TtiVisited;
 begin
-  lVisited := TtiVisited.Create ;
+  lVisited := TtiVisited.Create;
   try
-    CheckEquals( lVisited.Caption, lVisited.ClassName ) ;
+    CheckEquals(lVisited.Caption, lVisited.ClassName);
   finally
-    lVisited.Free ;
-  end ;
+    lVisited.Free;
+  end;
 end;
 
 
 procedure TTestTIVisitor.Visited_FindAllByClassType;
 var
-  lVisitedList  : TTestVisitedList ;
-  lList : TList ;
+  lVisitedList : TTestVisitedList;
+  lList : TList;
 begin
-  lVisitedList := CreateListAndOwned ;
+  lVisitedList := CreateListAndOwned;
   try
-    lList := TList.Create ;
+    lList := TList.Create;
     try
-      lVisitedList.FindAllByClassType( TTestVisitedList,  lList ) ;
-      CheckEquals( 1, lList.Count, 'Failed on FindAllByClassType( TTestVisitedList )' );
+      lVisitedList.FindAllByClassType(TTestVisitedList,  lList);
+      CheckEquals(1, lList.Count, 'Failed on FindAllByClassType(TTestVisitedList)');
 
-      lVisitedList.FindAllByClassType( TTestVisitedOwned, lList ) ;
-      CheckEquals( 3, lList.Count, 'Failed on FindAllByClassType( TTestVisitedOwned )' );
+      lVisitedList.FindAllByClassType(TTestVisitedOwned, lList);
+      CheckEquals(3, lList.Count, 'Failed on FindAllByClassType(TTestVisitedOwned)');
 
-      lVisitedList.FindAllByClassType( TtiVisited,  lList ) ;
-      CheckEquals( 13, lList.Count, 'Failed on FindAllByClassType( TtiVisitor )' );
+      lVisitedList.FindAllByClassType(TtiVisited,  lList);
+      CheckEquals(13, lList.Count, 'Failed on FindAllByClassType(TtiVisitor)');
 
     finally
-      lList.Free ;
-    end ;
+      lList.Free;
+    end;
   finally
     lVisitedList.Free;
   end;
@@ -343,42 +343,42 @@ end;
 
 procedure TTestTIVisitor.Visited_SelfIterate;
 var
-  lVisitor : TTestVisitorIterate ;
-  lVisitedOwned : TTestVisitedOwned ;
-  lVisitedList  : TTestVisitedList ;
+  lVisitor : TTestVisitorIterate;
+  lVisitedOwned : TTestVisitedOwned;
+  lVisitedList : TTestVisitedList;
 begin
-  lVisitedList  := TTestVisitedList.Create ;
-  lVisitedList.Index := 1 ;
+  lVisitedList := TTestVisitedList.Create;
+  lVisitedList.Index := 1;
   try
-    lVisitedOwned := TTestVisitedOwned.Create ;
-    lVisitedOwned.Index := 2 ;
-    lVisitedOwned.Owned1.Index := 3 ;
-    lVisitedOwned.Owned2.Index := 4 ;
-    lVisitedOwned.Owned3.Index := 5 ;
-    lVisitedList.List.Add( lVisitedOwned ) ;
+    lVisitedOwned := TTestVisitedOwned.Create;
+    lVisitedOwned.Index := 2;
+    lVisitedOwned.Owned1.Index := 3;
+    lVisitedOwned.Owned2.Index := 4;
+    lVisitedOwned.Owned3.Index := 5;
+    lVisitedList.List.Add(lVisitedOwned);
 
-    lVisitedOwned := TTestVisitedOwned.Create ;
-    lVisitedOwned.Index := 6 ;
-    lVisitedOwned.Owned1.Index := 7 ;
-    lVisitedOwned.Owned2.Index := 8 ;
-    lVisitedOwned.Owned3.Index := 9 ;
-    lVisitedList.List.Add( lVisitedOwned ) ;
+    lVisitedOwned := TTestVisitedOwned.Create;
+    lVisitedOwned.Index := 6;
+    lVisitedOwned.Owned1.Index := 7;
+    lVisitedOwned.Owned2.Index := 8;
+    lVisitedOwned.Owned3.Index := 9;
+    lVisitedList.List.Add(lVisitedOwned);
 
-    lVisitedOwned := TTestVisitedOwned.Create ;
-    lVisitedOwned.Index := 10 ;
-    lVisitedOwned.Owned1.Index := 11 ;
-    lVisitedOwned.Owned2.Index := 12 ;
-    lVisitedOwned.Owned3.Index := 13 ;
-    lVisitedList.List.Add( lVisitedOwned ) ;
+    lVisitedOwned := TTestVisitedOwned.Create;
+    lVisitedOwned.Index := 10;
+    lVisitedOwned.Owned1.Index := 11;
+    lVisitedOwned.Owned2.Index := 12;
+    lVisitedOwned.Owned3.Index := 13;
+    lVisitedList.List.Add(lVisitedOwned);
 
-    lVisitedList.SelfIterate := false ;
-    lVisitor := TTestVisitorIterate.Create ;
+    lVisitedList.SelfIterate := false;
+    lVisitor := TTestVisitorIterate.Create;
     try
-      lVisitedList.Iterate( lVisitor ) ;
-      CheckEquals( 1, lVisitor.Indexes.Count ) ;
-      CheckEquals( '1', lVisitor.Indexes.Strings[0] ) ;
+      lVisitedList.Iterate(lVisitor);
+      CheckEquals(1, lVisitor.Indexes.Count);
+      CheckEquals('1', lVisitor.Indexes.Strings[0]);
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
     lVisitedList.Free;
@@ -388,30 +388,30 @@ end;
 
 procedure TTestTIVisitor.Visitor_AcceptVisitor;
 var
-  lVis : TTestVisitor_AcceptVisitor ;
+  lVis : TTestVisitor_AcceptVisitor;
 begin
-  lVis := TTestVisitor_AcceptVisitor.Create ;
+  lVis := TTestVisitor_AcceptVisitor.Create;
   try
-    Check( lVis.AcceptVisitor ) ;
+    Check(lVis.AcceptVisitor);
   finally
-    lVis.Free ;
-  end ;
+    lVis.Free;
+  end;
 end;
 
 
 procedure TTestTIVisitor.Visitor_ContinueVisiting;
 var
-  lVisitor : TTestVisitorContinueVisiting ;
-  lVisitedList  : TTestVisitedList ;
+  lVisitor : TTestVisitorContinueVisiting;
+  lVisitedList : TTestVisitedList;
 begin
-  lVisitedList := CreateListAndOwned ;
+  lVisitedList := CreateListAndOwned;
   try
-    lVisitor := TTestVisitorContinueVisiting.Create ;
+    lVisitor := TTestVisitorContinueVisiting.Create;
     try
-      lVisitedList.Iterate( lVisitor ) ;
-      CheckEquals( 5, lVisitor.Indexes.Count ) ;
+      lVisitedList.Iterate(lVisitor);
+      CheckEquals(5, lVisitor.Indexes.Count);
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
     lVisitedList.Free;
@@ -421,29 +421,29 @@ end;
 
 procedure TTestTIVisitor.Visitor_Depth;
 var
-  lVisitor : TTestVisitorDepth ;
-  lVisitedList  : TTestVisitedList ;
+  lVisitor : TTestVisitorDepth;
+  lVisitedList : TTestVisitedList;
 begin
-  lVisitedList := CreateListAndOwned ;
+  lVisitedList := CreateListAndOwned;
   try
-    lVisitor := TTestVisitorDepth.Create ;
+    lVisitor := TTestVisitorDepth.Create;
     try
-      lVisitedList.Iterate( lVisitor ) ;
-      CheckEquals( '1', lVisitor.Indexes.Values['1'] );
-      CheckEquals( '2', lVisitor.Indexes.Values['2'] );
-      CheckEquals( '3', lVisitor.Indexes.Values['3'] );
-      CheckEquals( '3', lVisitor.Indexes.Values['4'] );
-      CheckEquals( '3', lVisitor.Indexes.Values['5'] );
-      CheckEquals( '2', lVisitor.Indexes.Values['6'] );
-      CheckEquals( '3', lVisitor.Indexes.Values['7'] );
-      CheckEquals( '3', lVisitor.Indexes.Values['8'] );
-      CheckEquals( '3', lVisitor.Indexes.Values['9'] );
-      CheckEquals( '2', lVisitor.Indexes.Values['10'] );
-      CheckEquals( '3', lVisitor.Indexes.Values['11'] );
-      CheckEquals( '3', lVisitor.Indexes.Values['12'] );
-      CheckEquals( '3', lVisitor.Indexes.Values['13'] );
+      lVisitedList.Iterate(lVisitor);
+      CheckEquals('1', lVisitor.Indexes.Values['1']);
+      CheckEquals('2', lVisitor.Indexes.Values['2']);
+      CheckEquals('3', lVisitor.Indexes.Values['3']);
+      CheckEquals('3', lVisitor.Indexes.Values['4']);
+      CheckEquals('3', lVisitor.Indexes.Values['5']);
+      CheckEquals('2', lVisitor.Indexes.Values['6']);
+      CheckEquals('3', lVisitor.Indexes.Values['7']);
+      CheckEquals('3', lVisitor.Indexes.Values['8']);
+      CheckEquals('3', lVisitor.Indexes.Values['9']);
+      CheckEquals('2', lVisitor.Indexes.Values['10']);
+      CheckEquals('3', lVisitor.Indexes.Values['11']);
+      CheckEquals('3', lVisitor.Indexes.Values['12']);
+      CheckEquals('3', lVisitor.Indexes.Values['13']);
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
     lVisitedList.Free;
@@ -453,312 +453,312 @@ end;
 
 procedure TTestTIVisitor.Visitor_DoAcceptVisitor;
 var
-  lVis : TTestVisitor_DoAcceptVisitor ;
+  lVis : TTestVisitor_DoAcceptVisitor;
 begin
-  lVis := TTestVisitor_DoAcceptVisitor.Create ;
+  lVis := TTestVisitor_DoAcceptVisitor.Create;
   try
     try
-      lVis.AcceptVisitor ;
-      Check( False, 'Exception not raised' ) ;
+      lVis.AcceptVisitor;
+      Check(False, 'Exception not raised');
     except
       on e:exception do
-        Check( Pos( cTestDoAcceptVisitorException,
-                    e.Message ) <> 0, 'Exception does not contain correct error message.' ) ;
+        Check(Pos(cTestDoAcceptVisitorException,
+                    e.Message) <> 0, 'Exception does not contain correct error message.');
     end;
   finally
-    lVis.Free ;
-  end ;
+    lVis.Free;
+  end;
 end;
 
 
 procedure TTestTIVisitor.Visitor_Execute;
 var
-  lVisitor : TTestVisitor_Execute ;
-  lVisited : TtiVisited ;
+  lVisitor : TTestVisitor_Execute;
+  lVisited : TtiVisited;
 begin
-  lVisitor := TTestVisitor_Execute.Create ;
+  lVisitor := TTestVisitor_Execute.Create;
   try
-    lVisited := TtiVisited.Create ;
+    lVisited := TtiVisited.Create;
     try
-      lVisitor.ExecuteCalled := false ;
-      lVisitor.Execute( lVisited ) ;
-      Check( lVisitor.ExecuteCalled ) ;
+      lVisitor.ExecuteCalled := false;
+      lVisitor.Execute(lVisited);
+      Check(lVisitor.ExecuteCalled);
     finally
-      lVisited.Free ;
-    end ;
+      lVisited.Free;
+    end;
   finally
-    lVisitor.Free ;
+    lVisitor.Free;
   end;
 end;
 
 
 procedure TTestTIVisitor.Visitor_VisitorController;
 var
-  lVis : TtiVisitor ;
+  lVis : TtiVisitor;
 begin
-  lVis := TTestVisitorController.Create ;
+  lVis := TTestVisitorController.Create;
   try
-    CheckEquals( lVis.VisitorControllerClass, TtiVisitorCtrlr ) ;
-    CheckNull( lVis.VisitorController ) ;
-    lVis.VisitorController := lVis.VisitorControllerClass.Create ;
+    CheckEquals(lVis.VisitorControllerClass, TtiVisitorCtrlr);
+    CheckNull(lVis.VisitorController);
+    lVis.VisitorController := lVis.VisitorControllerClass.Create;
     try
-      CheckNotNull( lVis.VisitorController ) ;
-      CheckIs( lVis.VisitorController, TtiVisitorCtrlr ) ;
+      CheckNotNull(lVis.VisitorController);
+      CheckIs(lVis.VisitorController, TtiVisitorCtrlr);
     finally
       lVis.VisitorController.Free;
     end;
   finally
-    lVis.Free ;
-  end ;
+    lVis.Free;
+  end;
 end;
 
 {
-  TVisStream = class( TtiVisitor )
+  TVisStream = class(TtiVisitor)
   private
-    FStream : TStream ;
+    FStream : TStream;
   protected
-    procedure Write( const psValue : string ) ;
-    procedure WriteLn ; overload ;
-    procedure WriteLn( const psValue : string ) ; overload ;
-    procedure SetStream(const Value: TStream) ; virtual ;
+    procedure Write(const AValue : string);
+    procedure WriteLn; overload;
+    procedure WriteLn(const AValue : string); overload;
+    procedure SetStream(const AValue: TStream); virtual;
   public
-    property  Stream : TStream read FStream write SetStream ;
-  end ;
+    property  Stream : TStream read FStream write SetStream;
+  end;
 }
 
 
 procedure TTestTIVisitor.VisStream;
 var
-  lVis : TTestVisStream ;
-  lStream : TtiPreSizedStream ;
-  lVisitedList  : TTestVisitedList ;
+  lVis : TTestVisStream;
+  lStream : TtiPreSizedStream;
+  lVisitedList : TTestVisitedList;
 const
-  cATestLine = 'A test line' ;
+  cATestLine = 'A test line';
 begin
-  lVis := TTestVisStream.Create ;
+  lVis := TTestVisStream.Create;
   try
-    lStream := TtiPreSizedStream.Create( 1000, 100 ) ;
+    lStream := TtiPreSizedStream.Create(1000, 100);
     try
-      lVis.Stream := lStream ;
-      lVis.Write( cATestLine ) ;
-      CheckEquals( cATestLine, lStream.AsString, 'Failed on Write' ) ;
-
-      lStream.Clear ;
-      lVis.WriteLn ;
-      CheckEquals( #13 + #10, lStream.AsString, 'Failed on WriteLn' ) ;
+      lVis.Stream := lStream;
+      lVis.Write(cATestLine);
+      CheckEquals(cATestLine, lStream.AsString, 'Failed on Write');
 
       lStream.Clear;
-      lVis.WriteLn( cATestLine ) ;
-      CheckEquals( cATestLine + #13 + #10, lStream.AsString, 'Failed on WriteLn( cATestLine )' ) ;
+      lVis.WriteLn;
+      CheckEquals(#13 + #10, lStream.AsString, 'Failed on WriteLn');
 
       lStream.Clear;
-      lVisitedList := CreateListAndOwned ;
+      lVis.WriteLn(cATestLine);
+      CheckEquals(cATestLine + #13 + #10, lStream.AsString, 'Failed on WriteLn(cATestLine)');
+
+      lStream.Clear;
+      lVisitedList := CreateListAndOwned;
       try
-        lVisitedList.Iterate( lVis ) ;
-        CheckEquals( '1,2,3,4,5,6,7,8,9,10,11,12,13', lStream.AsString )
+        lVisitedList.Iterate(lVis);
+        CheckEquals('1,2,3,4,5,6,7,8,9,10,11,12,13', lStream.AsString)
       finally
         lVisitedList.Free;
       end;
     finally
-      lStream.Free ;
-    end ;
+      lStream.Free;
+    end;
   finally
-    lVis.Free ;
+    lVis.Free;
   end;
 end;
 
 
 procedure TTestTIVisitor.VisStreamToFile;
-  procedure _CheckFileEquals( const pFileName : TFileName ;
-                              const pValue : string ) ;
+  procedure _CheckFileEquals(const AFileName : TFileName;
+                              const AValue : string);
   var
-    lFileStream : TFileStream ;
-    lStringStream : TStringStream ;
+    lFileStream : TFileStream;
+    lStringStream : TStringStream;
   begin
     lFileStream :=
-      TFileStream.Create( pFileName,
-                          fmOpenRead or fmShareDenyNone ) ;
+      TFileStream.Create(AFileName,
+                          fmOpenRead or fmShareDenyNone);
     try
-      lStringStream := TStringStream.Create( '' ) ;
+      lStringStream := TStringStream.Create('');
       try
-        lStringStream.CopyFrom( lFileStream, lFileStream.Size ) ;
-        CheckEquals( pValue, lStringStream.DataString ) ;
+        lStringStream.CopyFrom(lFileStream, lFileStream.Size);
+        CheckEquals(AValue, lStringStream.DataString);
       finally
-        lStringStream.Free ;
-      end ;
+        lStringStream.Free;
+      end;
     finally
-      lFileStream.Free ;
-    end ;
-  end ;
+      lFileStream.Free;
+    end;
+  end;
 
 var
-  LVisitedList  : TTestVisitedList ;
-  LFileName : TFileName ;
+  LVisitedList : TTestVisitedList;
+  LFileName : TFileName;
 begin
-  LFileName := TempFileName ;
+  LFileName := TempFileName;
   try
-    LVisitedList := CreateListAndOwned ;
+    LVisitedList := CreateListAndOwned;
     try
-      tiVisitor.VisStreamToFile( LVisitedList,
-                                LFileName,
-                                TTestVisStream );
-      _CheckFileEquals( LFileName, '1,2,3,4,5,6,7,8,9,10,11,12,13' ) ;
-
-      tiVisitor.VisStreamToFile( LVisitedList,
+      tiVisitor.VisStreamToFile(LVisitedList,
                                 LFileName,
                                 TTestVisStream);
-      _CheckFileEquals( LFileName, '1,2,3,4,5,6,7,8,9,10,11,12,13' ) ;
+      _CheckFileEquals(LFileName, '1,2,3,4,5,6,7,8,9,10,11,12,13');
 
-      tiVisitor.VisStreamToFile( LVisitedList,
+      tiVisitor.VisStreamToFile(LVisitedList,
+                                LFileName,
+                                TTestVisStream);
+      _CheckFileEquals(LFileName, '1,2,3,4,5,6,7,8,9,10,11,12,13');
+
+      tiVisitor.VisStreamToFile(LVisitedList,
                                 LFileName,
                                 TTestVisStream);
 
     finally
-      LVisitedList.Free ;
-    end ;
+      LVisitedList.Free;
+    end;
   finally
-    DeleteFile(LFileName);
+    tiDeleteFile(LFileName);
   end;
 end;
 
 
 procedure TTestTIVisitor.Visited_IterateList;
 var
-  lVisitor : TTestVisitorIterate ;
+  lVisitor : TTestVisitorIterate;
   lVisited : TTestVisitedList;
 begin
-  lVisited := CreateList ;
+  lVisited := CreateList;
   try
-    lVisitor := TTestVisitorIterate.Create ;
+    lVisitor := TTestVisitorIterate.Create;
     try
-      lVisited.Iterate( lVisitor ) ;
-      CheckEquals( lVisitor.Indexes.Count, 5 ) ;
-      CheckEquals( '1', lVisitor.Indexes.Strings[0] ) ;
-      CheckEquals( '2', lVisitor.Indexes.Strings[1] ) ;
-      CheckEquals( '3', lVisitor.Indexes.Strings[2] ) ;
-      CheckEquals( '4', lVisitor.Indexes.Strings[3] ) ;
-      CheckEquals( '5', lVisitor.Indexes.Strings[4] ) ;
+      lVisited.Iterate(lVisitor);
+      CheckEquals(lVisitor.Indexes.Count, 5);
+      CheckEquals('1', lVisitor.Indexes.Strings[0]);
+      CheckEquals('2', lVisitor.Indexes.Strings[1]);
+      CheckEquals('3', lVisitor.Indexes.Strings[2]);
+      CheckEquals('4', lVisitor.Indexes.Strings[3]);
+      CheckEquals('5', lVisitor.Indexes.Strings[4]);
 
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
-    lVisited.Free ;
+    lVisited.Free;
   end;
 end;
 
 
 procedure TTestTIVisitor.Visited_IterateOwned;
 var
-  lVisitor : TTestVisitorIterate ;
-  lVisited : TTestVisitedOwned ;
+  lVisitor : TTestVisitorIterate;
+  lVisited : TTestVisitedOwned;
 begin
-  lVisited := CreateOwned ;
+  lVisited := CreateOwned;
   try
-    lVisitor := TTestVisitorIterate.Create ;
+    lVisitor := TTestVisitorIterate.Create;
     try
-      lVisited.Iterate( lVisitor ) ;
-      CheckEquals( 4, lVisitor.Indexes.Count ) ;
-      CheckEquals( '1', lVisitor.Indexes.Strings[0] ) ;
-      CheckEquals( '2', lVisitor.Indexes.Strings[1] ) ;
-      CheckEquals( '3', lVisitor.Indexes.Strings[2] ) ;
-      CheckEquals( '4', lVisitor.Indexes.Strings[3] ) ;
+      lVisited.Iterate(lVisitor);
+      CheckEquals(4, lVisitor.Indexes.Count);
+      CheckEquals('1', lVisitor.Indexes.Strings[0]);
+      CheckEquals('2', lVisitor.Indexes.Strings[1]);
+      CheckEquals('3', lVisitor.Indexes.Strings[2]);
+      CheckEquals('4', lVisitor.Indexes.Strings[3]);
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
-    lVisited.Free ;
+    lVisited.Free;
   end;
 end;
 
 
 procedure TTestTIVisitor.Visited_IterateSingle;
 var
-  lVisitor : TTestVisitorIterate ;
-  lVisited : TTestVisitedAbs ;
+  lVisitor : TTestVisitorIterate;
+  lVisited : TTestVisitedAbs;
 begin
-  lVisited := TTestVisitedAbs.Create ;
+  lVisited := TTestVisitedAbs.Create;
   try
-    lVisited.Index := 1 ;
-    lVisitor := TTestVisitorIterate.Create ;
+    lVisited.Index := 1;
+    lVisitor := TTestVisitorIterate.Create;
     try
-      lVisited.Iterate( lVisitor ) ;
-      CheckEquals( 1, lVisitor.Indexes.Count ) ;
-      CheckEquals( '1', lVisitor.Indexes.Strings[0] ) ;
+      lVisited.Iterate(lVisitor);
+      CheckEquals(1, lVisitor.Indexes.Count);
+      CheckEquals('1', lVisitor.Indexes.Strings[0]);
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
-    lVisited.Free ;
+    lVisited.Free;
   end;
 end;
 
 
 procedure TTestTIVisitor.Visited_IterateBottomUpList;
 var
-  lVisitor : TTestVisitorIterate ;
+  lVisitor : TTestVisitorIterate;
   lVisited : TTestVisitedList;
 begin
-  lVisited := CreateList ;
+  lVisited := CreateList;
   try
-    lVisitor := TTestVisitorIterate.Create ;
+    lVisitor := TTestVisitorIterate.Create;
     try
-      lVisited.IterateBottomUp( lVisitor ) ;
-      CheckEquals( lVisitor.Indexes.Count, 5 ) ;
-      CheckEquals( '5', lVisitor.Indexes.Strings[0] ) ;
-      CheckEquals( '4', lVisitor.Indexes.Strings[1] ) ;
-      CheckEquals( '3', lVisitor.Indexes.Strings[2] ) ;
-      CheckEquals( '2', lVisitor.Indexes.Strings[3] ) ;
-      CheckEquals( '1', lVisitor.Indexes.Strings[4] ) ;
+      lVisited.IterateBottomUp(lVisitor);
+      CheckEquals(lVisitor.Indexes.Count, 5);
+      CheckEquals('5', lVisitor.Indexes.Strings[0]);
+      CheckEquals('4', lVisitor.Indexes.Strings[1]);
+      CheckEquals('3', lVisitor.Indexes.Strings[2]);
+      CheckEquals('2', lVisitor.Indexes.Strings[3]);
+      CheckEquals('1', lVisitor.Indexes.Strings[4]);
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
-    lVisited.Free ;
+    lVisited.Free;
   end;
 end;
 
 
 procedure TTestTIVisitor.Visited_IterateBottomUpOwned;
 var
-  lVisitor : TTestVisitorIterate ;
-  lVisited : TTestVisitedOwned ;
+  lVisitor : TTestVisitorIterate;
+  lVisited : TTestVisitedOwned;
 begin
-  lVisited := CreateOwned ;
+  lVisited := CreateOwned;
   try
-    lVisitor := TTestVisitorIterate.Create ;
+    lVisitor := TTestVisitorIterate.Create;
     try
-      lVisited.IterateBottomUp( lVisitor ) ;
-      CheckEquals( 4, lVisitor.Indexes.Count ) ;
-      CheckEquals( '4', lVisitor.Indexes.Strings[0] ) ;
-      CheckEquals( '3', lVisitor.Indexes.Strings[1] ) ;
-      CheckEquals( '2', lVisitor.Indexes.Strings[2] ) ;
-      CheckEquals( '1', lVisitor.Indexes.Strings[3] ) ;
+      lVisited.IterateBottomUp(lVisitor);
+      CheckEquals(4, lVisitor.Indexes.Count);
+      CheckEquals('4', lVisitor.Indexes.Strings[0]);
+      CheckEquals('3', lVisitor.Indexes.Strings[1]);
+      CheckEquals('2', lVisitor.Indexes.Strings[2]);
+      CheckEquals('1', lVisitor.Indexes.Strings[3]);
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
-    lVisited.Free ;
+    lVisited.Free;
   end;
 end;
 
 
 procedure TTestTIVisitor.Visited_IterateListAndOwned;
 var
-  lVisitor : TTestVisitorIterate ;
-  lVisitedList  : TTestVisitedList ;
-  i : integer ;
+  lVisitor : TTestVisitorIterate;
+  lVisitedList : TTestVisitedList;
+  i : integer;
 begin
-  lVisitedList := CreateListAndOwned ;
+  lVisitedList := CreateListAndOwned;
   try
-    lVisitor := TTestVisitorIterate.Create ;
+    lVisitor := TTestVisitorIterate.Create;
     try
-      lVisitedList.Iterate( lVisitor ) ;
-      CheckEquals( 13, lVisitor.Indexes.Count ) ;
+      lVisitedList.Iterate(lVisitor);
+      CheckEquals(13, lVisitor.Indexes.Count);
       for i := 1 to 13 do
-        CheckEquals( IntToStr( i ), lVisitor.Indexes.Strings[i-1] ) ;
+        CheckEquals(IntToStr(i), lVisitor.Indexes.Strings[i-1]);
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
     lVisitedList.Free;
@@ -768,20 +768,20 @@ end;
 
 procedure TTestTIVisitor.Visited_IterateBottupUpListAndOwned;
 var
-  lVisitor : TTestVisitorIterate ;
-  lVisitedList  : TTestVisitedList ;
-  i : integer ;
+  lVisitor : TTestVisitorIterate;
+  lVisitedList : TTestVisitedList;
+  i : integer;
 begin
-  lVisitedList  := CreateListAndOwned ;
+  lVisitedList := CreateListAndOwned;
   try
-    lVisitor := TTestVisitorIterate.Create ;
+    lVisitor := TTestVisitorIterate.Create;
     try
-      lVisitedList.IterateBottomUp( lVisitor ) ;
-      CheckEquals( 13, lVisitor.Indexes.Count ) ;
+      lVisitedList.IterateBottomUp(lVisitor);
+      CheckEquals(13, lVisitor.Indexes.Count);
       for i := 1 to 13 do
-        CheckEquals( IntToStr( i ), lVisitor.Indexes.Strings[13-i] ) ;
+        CheckEquals(IntToStr(i), lVisitor.Indexes.Strings[13-i]);
     finally
-      lVisitor.Free ;
+      lVisitor.Free;
     end;
   finally
     lVisitedList.Free;
@@ -791,78 +791,78 @@ end;
 
 function TTestTIVisitor.CreateListAndOwned: TTestVisitedList;
 var
-  lVisitedOwned : TTestVisitedOwned ;
+  lVisitedOwned : TTestVisitedOwned;
 begin
-  result  := TTestVisitedList.Create ;
-  result.Index := 1 ;
-  lVisitedOwned := TTestVisitedOwned.Create ;
-  lVisitedOwned.Index := 2 ;
-  lVisitedOwned.Owned1.Index := 3 ;
-  lVisitedOwned.Owned2.Index := 4 ;
-  lVisitedOwned.Owned3.Index := 5 ;
-  result.List.Add( lVisitedOwned ) ;
+  result := TTestVisitedList.Create;
+  result.Index := 1;
+  lVisitedOwned := TTestVisitedOwned.Create;
+  lVisitedOwned.Index := 2;
+  lVisitedOwned.Owned1.Index := 3;
+  lVisitedOwned.Owned2.Index := 4;
+  lVisitedOwned.Owned3.Index := 5;
+  result.List.Add(lVisitedOwned);
 
-  lVisitedOwned := TTestVisitedOwned.Create ;
-  lVisitedOwned.Index := 6 ;
-  lVisitedOwned.Owned1.Index := 7 ;
-  lVisitedOwned.Owned2.Index := 8 ;
-  lVisitedOwned.Owned3.Index := 9 ;
-  result.List.Add( lVisitedOwned ) ;
+  lVisitedOwned := TTestVisitedOwned.Create;
+  lVisitedOwned.Index := 6;
+  lVisitedOwned.Owned1.Index := 7;
+  lVisitedOwned.Owned2.Index := 8;
+  lVisitedOwned.Owned3.Index := 9;
+  result.List.Add(lVisitedOwned);
 
-  lVisitedOwned := TTestVisitedOwned.Create ;
-  lVisitedOwned.Index := 10 ;
-  lVisitedOwned.Owned1.Index := 11 ;
-  lVisitedOwned.Owned2.Index := 12 ;
-  lVisitedOwned.Owned3.Index := 13 ;
-  result.List.Add( lVisitedOwned ) ;
+  lVisitedOwned := TTestVisitedOwned.Create;
+  lVisitedOwned.Index := 10;
+  lVisitedOwned.Owned1.Index := 11;
+  lVisitedOwned.Owned2.Index := 12;
+  lVisitedOwned.Owned3.Index := 13;
+  result.List.Add(lVisitedOwned);
 end;
 
 
 function TTestTIVisitor.CreateList: TTestVisitedList;
 var
-  lData : TTestVisited ;
+  lData : TTestVisited;
 begin
-  result := TTestVisitedList.Create ;
-  result.Index := 1 ;
+  result := TTestVisitedList.Create;
+  result.Index := 1;
 
-  lData    := TTestVisited.Create ;
-  lData.Index := 2 ;
-  result.List.Add( lData ) ;
+  lData   := TTestVisited.Create;
+  lData.Index := 2;
+  result.List.Add(lData);
 
-  lData    := TTestVisited.Create ;
-  lData.Index := 3 ;
-  result.List.Add( lData ) ;
+  lData   := TTestVisited.Create;
+  lData.Index := 3;
+  result.List.Add(lData);
 
-  lData    := TTestVisited.Create ;
-  lData.Index := 4 ;
-  result.List.Add( lData ) ;
+  lData   := TTestVisited.Create;
+  lData.Index := 4;
+  result.List.Add(lData);
 
-  lData    := TTestVisited.Create ;
-  lData.Index := 5 ;
-  result.List.Add( lData ) ;
+  lData   := TTestVisited.Create;
+  lData.Index := 5;
+  result.List.Add(lData);
 end;
 
 
 function TTestTIVisitor.CreateOwned: TTestVisitedOwned;
 begin
-  result := TTestVisitedOwned.Create ;
-  result.Index := 1 ;
-  result.Owned1.Index := 2 ;
-  result.Owned2.Index := 3 ;
-  result.Owned3.Index := 4 ;
+  result := TTestVisitedOwned.Create;
+  result.Index := 1;
+  result.Owned1.Index := 2;
+  result.Owned2.Index := 3;
+  result.Owned3.Index := 4;
 end;
 
 
 procedure TTestTIVisitor.Visited_ClassCount;
 var
-  lVisited  : TTestVisitedList ;
+  lVisited : TTestVisitedList;
 begin
-  lVisited := CreateListAndOwned ;
+  lVisited := CreateListAndOwned;
   try
-    CheckEquals( 1,  lVisited.CountByClass(TTestVisitedList),  'Failed TTestVisitedList' );
-    CheckEquals( 3,  lVisited.CountByClass(TTestVisitedOwned), 'Failed TTestVisitedOwned' );
-    CheckEquals( 9,  lVisited.CountByClass(TTestVisited),       'Failed TTestVisited' );
-    CheckEquals( 13, lVisited.CountByClass(TtiVisited),        'Failed TtiVisited' );
+    CheckEquals(1,  lVisited.CountByClass(TTestVisitedList),  'Failed TTestVisitedList');
+    CheckEquals(3,  lVisited.CountByClass(TTestVisitedOwned), 'Failed TTestVisitedOwned');
+    CheckEquals(9,  lVisited.CountByClass(TTestVisited),       'Failed TTestVisited');
+    CheckEquals(13, lVisited.CountByClass(TtiVisited),        'Failed TtiVisited');
   finally
     lVisited.Free;
   end;
@@ -872,7 +872,7 @@ end;
 procedure TTestTIVisitor.SetUp;
 begin
   inherited;
-  gTIOPFManager.Terminated := false ;
+  gTIOPFManager.Terminated := false;
 end;
 
 
@@ -880,8 +880,8 @@ end;
 
 function TTestVisitor_DoAcceptVisitor.AcceptVisitor: boolean;
 begin
+  raise exception.Create(cTestDoAcceptVisitorException);
   Result := True;   // To get rid of compiler warning
-  raise exception.Create( cTestDoAcceptVisitorException ) ;
 end;
 
 
@@ -889,16 +889,16 @@ end;
 
 function TTestVisitor_AcceptVisitor.AcceptVisitor: boolean;
 begin
-  result := ( inherited AcceptVisitor ) ;
+  result := (inherited AcceptVisitor);
 end;
 
 
 { TTestVisitor_Execute }
 
-procedure TTestVisitor_Execute.Execute( const pVisited : TtiVisited ) ;
+procedure TTestVisitor_Execute.Execute(const AVisited : TtiVisited);
 begin
-  inherited Execute( pVisited ) ;
-  ExecuteCalled := true ;
+  inherited Execute(AVisited);
+  ExecuteCalled := true;
 end;
 
 
@@ -918,11 +918,11 @@ begin
 end;
 
 
-procedure TTestVisitorIterate.Execute(const pVisited: TtiVisited);
+procedure TTestVisitorIterate.Execute(const AVisited: TtiVisited);
 begin
-  inherited Execute( pVisited );
-  Assert( pVisited is TTestVisitedAbs, 'pVisited not a TTestVisitedAbs' ) ;
-  FIndexes.Add( IntToStr(( pVisited as TTestVisitedAbs ).Index ));
+  inherited Execute(AVisited);
+  Assert(AVisited is TTestVisitedAbs, 'AVisited not a TTestVisitedAbs');
+  FIndexes.Add(IntToStr((AVisited as TTestVisitedAbs).Index));
 end;
 
 
@@ -944,7 +944,7 @@ end;
 
 function TTestVisitedList.GetList: TList;
 begin
-  result := FList ;
+  result := FList;
 end;
 
 { TTestVisitedOwned }
@@ -969,12 +969,12 @@ end;
 
 { TTestVisitorDepth }
 
-procedure TTestVisitorDepth.Execute(const pVisited: TtiVisited);
+procedure TTestVisitorDepth.Execute(const AVisited: TtiVisited);
 begin
-  Visited := pVisited ;
-  Assert( pVisited is TTestVisitedAbs, 'pVisited not a TTestVisitedAbs' ) ;
-  FIndexes.Values[ IntToStr(( pVisited as TTestVisitedAbs ).Index )] :=
-    IntToStr( Depth ) ;
+  Visited := AVisited;
+  Assert(AVisited is TTestVisitedAbs, 'AVisited not a TTestVisitedAbs');
+  FIndexes.Values[ IntToStr((AVisited as TTestVisitedAbs).Index)]:=
+    IntToStr(Depth);
 end;
 
 
@@ -982,16 +982,16 @@ end;
 
 function TTestVisitorController.VisitorControllerClass: TtiVisitorControllerClass;
 begin
-  result := TtiVisitorCtrlr ;
+  result := TtiVisitorCtrlr;
 end;
 
 
 { TTestVisitorContinueVisiting }
 
-procedure TTestVisitorContinueVisiting.Execute(const pVisited: TtiVisited);
+procedure TTestVisitorContinueVisiting.Execute(const AVisited: TtiVisited);
 begin
-  inherited Execute( pVisited ) ;
-  ContinueVisiting := ( pVisited as TTestVisitedAbs ).Index < 5 ;
+  inherited Execute(AVisited);
+  ContinueVisiting := (AVisited as TTestVisitedAbs).Index < 5;
 end;
 
 
@@ -999,122 +999,122 @@ end;
 
 function TTestVisitorGetAllToVisit.AcceptVisitor: boolean;
 begin
-  result := Visited is TTestVisitedOwned ;
+  result := Visited is TTestVisitedOwned;
 end;
 
 
 { TTestVisStream }
 
-procedure TTestVisStream.Execute(const pVisited: TtiVisited);
+procedure TTestVisStream.Execute(const AVisited: TtiVisited);
 begin
   inherited;
-  Assert( pVisited is TTestVisitedAbs, 'pVisited not a TTestVisitedAbs' ) ;
+  Assert(AVisited is TTestVisitedAbs, 'AVisited not a TTestVisitedAbs');
   if Stream.Size > 0 then
-    Write( ',' ) ;
-  Write( IntToStr( TTestVisitedAbs( Visited ).Index )) ;
+    Write(',');
+  Write(IntToStr(TTestVisitedAbs(Visited).Index));
 end;
 
 
-procedure TTestVisStream.Write(const psValue: string);
+procedure TTestVisStream.Write(const AValue: string);
 begin
   // A protected method, so this surfaces it as public for testing
   inherited;
 end;
 
 
-procedure TTestVisStream.WriteLn(const psValue: string);
+procedure TTestVisStream.WriteLn(const AValue: string);
 begin
   // A protected method, so this surfaces it as public for testing
   inherited;
 end;
 
 
-procedure TTestTIVisitor.tiGetPropertyNames ;
+procedure TTestTIVisitor.tiGetPropertyNames;
 var
-  lsl : TStringList ;
-  lObj : TtiVisited ;
+  lsl : TStringList;
+  lObj : TtiVisited;
 begin
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
-    lObj := TTestGetPropNames.Create ;
+    lObj := TTestGetPropNames.Create;
     try
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF} ] ) ;
-      CheckEquals( 3, lsl.Count, 'Failed on StringProp' ) ;
-      CheckEquals( 'Caption',            lsl.Strings[0], 'Caption' ) ;
-      CheckEquals( 'StringProp',         lsl.Strings[1], 'StringProp' ) ;
-      CheckEquals( 'ReadOnlyStringProp', lsl.Strings[2], 'ReadOnlyStringProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF} ]);
+      CheckEquals(3, lsl.Count, 'Failed on StringProp');
+      CheckEquals('Caption',            lsl.Strings[0], 'Caption');
+      CheckEquals('StringProp',         lsl.Strings[1], 'StringProp');
+      CheckEquals('ReadOnlyStringProp', lsl.Strings[2], 'ReadOnlyStringProp');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [ tkString] ) ;
-      CheckEquals( 2, lsl.Count, 'Failed on ShortStringProp' ) ;
-      CheckEquals( 'ShortStringProp', lsl.Strings[0], 'Failed on ShortStringProp' ) ;
-      CheckEquals( 'ReadOnlyShortStringProp', lsl.Strings[1], 'Failed on ReadOnlyShortStringProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [ tkString]);
+      CheckEquals(2, lsl.Count, 'Failed on ShortStringProp');
+      CheckEquals('ShortStringProp', lsl.Strings[0], 'Failed on ShortStringProp');
+      CheckEquals('ReadOnlyShortStringProp', lsl.Strings[1], 'Failed on ReadOnlyShortStringProp');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [ tkWString ] ) ;
-      CheckEquals( 2, lsl.Count, 'Failed on WideStringProp' ) ;
-      CheckEquals( 'WideStringProp', lsl.Strings[0], 'Failed on WideStringProp' ) ;
-      CheckEquals( 'ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [ tkWString ]);
+      CheckEquals(2, lsl.Count, 'Failed on WideStringProp');
+      CheckEquals('WideStringProp', lsl.Strings[0], 'Failed on WideStringProp');
+      CheckEquals('ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [tkChar] ) ;
-      CheckEquals( 2, lsl.Count, 'Failed on CharProp' ) ;
-      CheckEquals( 'CharProp', lsl.Strings[0], 'Failed on CharProp' ) ;
-      CheckEquals( 'ReadOnlyCharProp', lsl.Strings[1], 'Failed on ReadOnlyCharProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkChar]);
+      CheckEquals(2, lsl.Count, 'Failed on CharProp');
+      CheckEquals('CharProp', lsl.Strings[0], 'Failed on CharProp');
+      CheckEquals('ReadOnlyCharProp', lsl.Strings[1], 'Failed on ReadOnlyCharProp');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [tkWChar] ) ;
-      CheckEquals( 2, lsl.Count, 'Failed on WideCharProp' ) ;
-      CheckEquals( 'WideCharProp', lsl.Strings[0], 'Failed on WideCharProp' ) ;
-      CheckEquals( 'ReadOnlyWideCharProp', lsl.Strings[1], 'Failed on ReadOnlyWideCharProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkWChar]);
+      CheckEquals(2, lsl.Count, 'Failed on WideCharProp');
+      CheckEquals('WideCharProp', lsl.Strings[0], 'Failed on WideCharProp');
+      CheckEquals('ReadOnlyWideCharProp', lsl.Strings[1], 'Failed on ReadOnlyWideCharProp');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, ctkString ) ;
-      CheckEquals( 11, lsl.Count, 'Failed testing ctkString' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkString);
+      CheckEquals(11, lsl.Count, 'Failed testing ctkString');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [tkInteger] ) ;
-      CheckEquals( 2, lsl.Count, 'Failed on IntProp' ) ;
-      CheckEquals( 'IntProp', lsl.Strings[0], 'Failed on IntProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkInteger]);
+      CheckEquals(2, lsl.Count, 'Failed on IntProp');
+      CheckEquals('IntProp', lsl.Strings[0], 'Failed on IntProp');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [tkInt64] ) ;
-      CheckEquals( 2, lsl.Count, 'Failed on Int64Prop' ) ;
-      CheckEquals( 'Int64Prop', lsl.Strings[0], 'Failed on Int64Prop' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkInt64]);
+      CheckEquals(2, lsl.Count, 'Failed on Int64Prop');
+      CheckEquals('Int64Prop', lsl.Strings[0], 'Failed on Int64Prop');
 
       { Delphi doesn't have this type defined! }
       {$IFDEF FPC}
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [tkBool] ) ;
-      CheckEquals( 2, lsl.Count, 'Failed on tkBool' ) ;
-      CheckEquals( 'BoolProp',          lsl.Strings[0], 'Failed on BoolProp' ) ;
-      CheckEquals( 'ReadOnlyBoolProp',  lsl.Strings[1], 'Failed on ReadOnlyBoolProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkBool]);
+      CheckEquals(2, lsl.Count, 'Failed on tkBool');
+      CheckEquals('BoolProp',          lsl.Strings[0], 'Failed on BoolProp');
+      CheckEquals('ReadOnlyBoolProp',  lsl.Strings[1], 'Failed on ReadOnlyBoolProp');
       {$ENDIF}
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, ctkInt ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkInt);
       {$IFDEF FPC}
-      CheckEquals( 6, lsl.Count, 'Failed testing ctkInt' ) ;
+      CheckEquals(6, lsl.Count, 'Failed testing ctkInt');
       {$ELSE}
-      CheckEquals( 4, lsl.Count, 'Failed testing ctkInt' ) ;
+      CheckEquals(4, lsl.Count, 'Failed testing ctkInt');
       {$ENDIF}
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [tkFloat] ) ;
-      CheckEquals( 4, lsl.Count, 'Failed on tkFloatProp' ) ;
-      CheckEquals( 'DateTimeProp', lsl.Strings[0], 'Failed on tkFloatProp' ) ;
-      CheckEquals( 'FloatProp',    lsl.Strings[1], 'Failed on tkFloatProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkFloat]);
+      CheckEquals(4, lsl.Count, 'Failed on tkFloatProp');
+      CheckEquals('DateTimeProp', lsl.Strings[0], 'Failed on tkFloatProp');
+      CheckEquals('FloatProp',    lsl.Strings[1], 'Failed on tkFloatProp');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, ctkFloat ) ;
-      CheckEquals( 4, lsl.Count, 'Failed testing ctkFloat' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkFloat);
+      CheckEquals(4, lsl.Count, 'Failed testing ctkFloat');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, ctkNumeric ) ;
-      CheckEquals( 8, lsl.Count, 'Failed testing ctkNumeric' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkNumeric);
+      CheckEquals(8, lsl.Count, 'Failed testing ctkNumeric');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, ctkSimple ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkSimple);
       {$IFDEF FPC}
-      CheckEquals( 21, lsl.Count, 'Failed testing ctkSimple' ) ;
+      CheckEquals(21, lsl.Count, 'Failed testing ctkSimple');
       {$ELSE}
-      CheckEquals( 19, lsl.Count, 'Failed testing ctkSimple' ) ;
+      CheckEquals(19, lsl.Count, 'Failed testing ctkSimple');
       {$ENDIF}
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [tkClass] ) ;
-      CheckEquals( 2, lsl.Count, 'Failed on ObjectProp' ) ;
-      CheckEquals( 'ObjectProp', lsl.Strings[0], 'Failed on ObjectProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkClass]);
+      CheckEquals(2, lsl.Count, 'Failed on ObjectProp');
+      CheckEquals('ObjectProp', lsl.Strings[0], 'Failed on ObjectProp');
 
-      tiVisitor.tiGetPropertyNames( lObj, lsl, [tkMethod] ) ;
-      CheckEquals( 2, lsl.Count, 'Failed on MethodProp' ) ;
-      CheckEquals( 'MethodProp', lsl.Strings[0], 'Failed on MethodProp' ) ;
+      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkMethod]);
+      CheckEquals(2, lsl.Count, 'Failed on MethodProp');
+      CheckEquals('MethodProp', lsl.Strings[0], 'Failed on MethodProp');
     finally
       lObj.Free;
     end;
@@ -1124,41 +1124,41 @@ begin
 end;
 
 
-procedure TTestTIVisitor.tiGetSimplePropType ;
+procedure TTestTIVisitor.tiGetSimplePropType;
 var
-  lObj : TTestGetPropNames ;
+  lObj : TTestGetPropNames;
 begin
-  lObj := TTestGetPropNames.Create ;
+  lObj := TTestGetPropNames.Create;
   try
 
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'StringProp' )      = tiTKString, 'Failed on StringProp' ) ;
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'ShortStringProp' ) = tiTKString, 'Failed on ShortStringProp' ) ;
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'WideStringProp' )  = tiTKString, 'Failed on WideStringProp' ) ;
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'CharProp' )        = tiTKString, 'Failed on CharProp' ) ;
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'WideCharProp' )    = tiTKString, 'Failed on WideCharProp' ) ;
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'StringProp')      = tiTKString, 'Failed on StringProp');
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'ShortStringProp') = tiTKString, 'Failed on ShortStringProp');
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'WideStringProp')  = tiTKString, 'Failed on WideStringProp');
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'CharProp')        = tiTKString, 'Failed on CharProp');
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'WideCharProp')    = tiTKString, 'Failed on WideCharProp');
 
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'IntProp' )         = tiTKInteger, 'Failed on IntProp' ) ;
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'Int64Prop' )       = tiTKInteger, 'Failed on Int64Prop' ) ;
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'BoolProp' )        = tiTKBoolean, 'Failed on BoolProp' ) ;
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'IntProp')         = tiTKInteger, 'Failed on IntProp');
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'Int64Prop')       = tiTKInteger, 'Failed on Int64Prop');
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'BoolProp')        = tiTKBoolean, 'Failed on BoolProp');
 
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'FloatProp' )       = tiTKFloat, 'Failed on FloatProp' ) ;
-    Check( tiVisitor.tiGetSimplePropType( lObj, 'DateTimeProp' )    = tiTKDateTime, 'Failed on DateTimeProp' ) ;
-
-    try
-      tiVisitor.tiGetSimplePropType( lObj, 'ObjectProp' ) ;
-      Check( false, 'Failed on ObjectProp' ) ;
-    except
-      on e:exception do
-        CheckIs( e, Exception, 'Failed on ObjectProp' ) ;
-    end ;
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'FloatProp')       = tiTKFloat, 'Failed on FloatProp');
+    Check(tiVisitor.tiGetSimplePropType(lObj, 'DateTimeProp')    = tiTKDateTime, 'Failed on DateTimeProp');
 
     try
-      tiVisitor.tiGetSimplePropType( lObj, 'MethodProp' ) ;
-      Check( false, 'Failed on MethodProp' ) ;
+      tiVisitor.tiGetSimplePropType(lObj, 'ObjectProp');
+      Check(false, 'Failed on ObjectProp');
     except
       on e:exception do
-        CheckIs( e, Exception, 'Failed on MethodProp' ) ;
-    end ;
+        CheckIs(e, Exception, 'Failed on ObjectProp');
+    end;
+
+    try
+      tiVisitor.tiGetSimplePropType(lObj, 'MethodProp');
+      Check(false, 'Failed on MethodProp');
+    except
+      on e:exception do
+        CheckIs(e, Exception, 'Failed on MethodProp');
+    end;
   finally
     lObj.Free;
   end;
@@ -1167,92 +1167,92 @@ end;
 
 procedure TTestTIVisitor.tiVarSimplePropType;
 begin
-  Check( tiVisitor.tiVarSimplePropType( 'string' ) = tiTKString,   'Failed on tiTKString'   ) ;
-  Check( tiVisitor.tiVarSimplePropType( 123      ) = tiTKInteger,  'Failed on tiTKInteger'  ) ;
-  Check( tiVisitor.tiVarSimplePropType( true     ) = tiTKBoolean,  'Failed on tiTKBoolean'  ) ;
-  Check( tiVisitor.tiVarSimplePropType( 123.456  ) = tiTKFloat,    'Failed on tiTKFloat'    ) ;
-  Check( tiVisitor.tiVarSimplePropType( Now      ) = tiTKDateTime, 'Failed on tiTKDateTime' ) ;
+  Check(tiVisitor.tiVarSimplePropType('string') = tiTKString,   'Failed on tiTKString'  );
+  Check(tiVisitor.tiVarSimplePropType(123     ) = tiTKInteger,  'Failed on tiTKInteger' );
+  Check(tiVisitor.tiVarSimplePropType(true    ) = tiTKBoolean,  'Failed on tiTKBoolean' );
+  Check(tiVisitor.tiVarSimplePropType(123.456 ) = tiTKFloat,    'Failed on tiTKFloat'   );
+  Check(tiVisitor.tiVarSimplePropType(Now     ) = tiTKDateTime, 'Failed on tiTKDateTime');
 end;
 
 
-procedure TTestTIVisitor.tiIsNumericProp ;
+procedure TTestTIVisitor.tiIsNumericProp;
 var
-  lObj : TTestGetPropNames ;
+  lObj : TTestGetPropNames;
 begin
-  lObj := TTestGetPropNames.Create ;
+  lObj := TTestGetPropNames.Create;
   try
-    Check( not tiVisitor.tiIsNumericProp( lObj, 'StringProp'      ), 'Failed on StringProp' ) ;
-    Check( not tiVisitor.tiIsNumericProp( lObj, 'ShortStringProp' ), 'Failed on ShortStringProp' ) ;
-    Check( not tiVisitor.tiIsNumericProp( lObj, 'WideStringProp'  ), 'Failed on WideStringProp' ) ;
-    Check( not tiVisitor.tiIsNumericProp( lObj, 'CharProp'        ), 'Failed on CharProp' ) ;
-    Check( not tiVisitor.tiIsNumericProp( lObj, 'WideCharProp'    ), 'Failed on WideCharProp' ) ;
-    Check(     tiVisitor.tiIsNumericProp( lObj, 'IntProp'         ), 'Failed on IntProp' ) ;
-    Check(     tiVisitor.tiIsNumericProp( lObj, 'Int64Prop'       ), 'Failed on Int64Prop' ) ;
-    Check(     tiVisitor.tiIsNumericProp( lObj, 'DateTimeProp'    ), 'Failed on DateTimeProp' ) ;
-    Check(     tiVisitor.tiIsNumericProp( lObj, 'FloatProp'       ), 'Failed on FloatProp' ) ;
-    Check( not tiVisitor.tiIsNumericProp( lObj, 'ObjectProp'      ), 'Failed on ObjectProp' ) ;
-    Check( not tiVisitor.tiIsNumericProp( lObj, 'MethodProp'      ), 'Failed on MethodProp' ) ;
+    Check(not tiVisitor.tiIsNumericProp(lObj, 'StringProp'     ), 'Failed on StringProp');
+    Check(not tiVisitor.tiIsNumericProp(lObj, 'ShortStringProp'), 'Failed on ShortStringProp');
+    Check(not tiVisitor.tiIsNumericProp(lObj, 'WideStringProp' ), 'Failed on WideStringProp');
+    Check(not tiVisitor.tiIsNumericProp(lObj, 'CharProp'       ), 'Failed on CharProp');
+    Check(not tiVisitor.tiIsNumericProp(lObj, 'WideCharProp'   ), 'Failed on WideCharProp');
+    Check(    tiVisitor.tiIsNumericProp(lObj, 'IntProp'        ), 'Failed on IntProp');
+    Check(    tiVisitor.tiIsNumericProp(lObj, 'Int64Prop'      ), 'Failed on Int64Prop');
+    Check(    tiVisitor.tiIsNumericProp(lObj, 'DateTimeProp'   ), 'Failed on DateTimeProp');
+    Check(    tiVisitor.tiIsNumericProp(lObj, 'FloatProp'      ), 'Failed on FloatProp');
+    Check(not tiVisitor.tiIsNumericProp(lObj, 'ObjectProp'     ), 'Failed on ObjectProp');
+    Check(not tiVisitor.tiIsNumericProp(lObj, 'MethodProp'     ), 'Failed on MethodProp');
   finally
-    lObj.Free ;
-  end ;
-end ;
+    lObj.Free;
+  end;
+end;
 
 
-procedure TTestTIVisitor.tiIsReadWriteProp ;
+procedure TTestTIVisitor.tiIsReadWriteProp;
 var
-  lObj : TTestGetPropNames ;
+  lObj : TTestGetPropNames;
 begin
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyStringProp' ),      'Failed on ReadOnlyStringProp'       ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyShortStringProp' ), 'Failed on ReadOnlyShortStringProp'  ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyWideStringProp' ),  'Failed on ReadOnlyWideStringProp '  ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyCharProp' ),        'Failed on ReadOnlyCharProp'         ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyWideCharProp' ),    'Failed on ReadOnlyWideCharProp'     ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyIntProp' ),         'Failed on ReadOnlyIntProp'          ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyInt64Prop' ),       'Failed on ReadOnlyInt64Prop'        ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyDateTimeProp' ),    'Failed on ReadOnlyDateTimeProp'     ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyFloatProp' ),       'Failed on ReadOnlyFloatProp'        ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyObjectProp' ),      'Failed on ReadOnlyObjectProp'       ) ;
-  Check( not tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ReadOnlyMethodProp' ),      'Failed on ReadOnlyMethodProp'       ) ;
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyStringProp'),      'Failed on ReadOnlyStringProp'      );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyShortStringProp'), 'Failed on ReadOnlyShortStringProp' );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyWideStringProp'),  'Failed on ReadOnlyWideStringProp ' );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyCharProp'),        'Failed on ReadOnlyCharProp'        );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyWideCharProp'),    'Failed on ReadOnlyWideCharProp'    );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyIntProp'),         'Failed on ReadOnlyIntProp'         );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyInt64Prop'),       'Failed on ReadOnlyInt64Prop'       );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyDateTimeProp'),    'Failed on ReadOnlyDateTimeProp'    );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyFloatProp'),       'Failed on ReadOnlyFloatProp'       );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyObjectProp'),      'Failed on ReadOnlyObjectProp'      );
+  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyMethodProp'),      'Failed on ReadOnlyMethodProp'      );
 
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'StringProp' ),  'Failed on OnlyStringProp'    ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ShortStringProp' ), 'Failed on ShortStringProp'   ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'WideStringProp' ),  'Failed on WideStringProp '   ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'CharProp' ),        'Failed on CharProp'          ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'WideCharProp' ),    'Failed on WideCharProp'      ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'IntProp' ),         'Failed on IntProp'           ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'Int64Prop' ),       'Failed on Int64Prop'         ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'DateTimeProp' ),    'Failed on DateTimeProp'      ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'FloatProp' ),       'Failed on FloatProp'         ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'ObjectProp' ),      'Failed on ObjectProp'        ) ;
-  Check( tiVisitor.tiIsReadWriteProp( TTestGetPropNames, 'MethodProp' ),      'Failed on MethodProp'        ) ;
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'StringProp'),  'Failed on OnlyStringProp'   );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ShortStringProp'), 'Failed on ShortStringProp'  );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'WideStringProp'),  'Failed on WideStringProp '  );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'CharProp'),        'Failed on CharProp'         );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'WideCharProp'),    'Failed on WideCharProp'     );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'IntProp'),         'Failed on IntProp'          );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'Int64Prop'),       'Failed on Int64Prop'        );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'DateTimeProp'),    'Failed on DateTimeProp'     );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'FloatProp'),       'Failed on FloatProp'        );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ObjectProp'),      'Failed on ObjectProp'       );
+  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'MethodProp'),      'Failed on MethodProp'       );
 
-  lObj := TTestGetPropNames.Create ;
+  lObj := TTestGetPropNames.Create;
   try
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyStringProp' ),      'Failed on ReadOnlyStringProp'       ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyShortStringProp' ), 'Failed on ReadOnlyShortStringProp'  ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyWideStringProp' ),  'Failed on ReadOnlyWideStringProp '  ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyCharProp' ),        'Failed on ReadOnlyCharProp'         ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyWideCharProp' ),    'Failed on ReadOnlyWideCharProp'     ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyIntProp' ),         'Failed on ReadOnlyIntProp'          ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyInt64Prop' ),       'Failed on ReadOnlyInt64Prop'        ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyBoolProp' ),        'Failed on ReadOnlyBoolProp'         ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyDateTimeProp' ),    'Failed on ReadOnlyDateTimeProp'     ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyFloatProp' ),       'Failed on ReadOnlyFloatProp'        ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyObjectProp' ),      'Failed on ReadOnlyObjectProp'       ) ;
-    Check( not tiVisitor.tiIsReadWriteProp( lObj, 'ReadOnlyMethodProp' ),      'Failed on ReadOnlyMethodProp'       ) ;
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyStringProp'),      'Failed on ReadOnlyStringProp'      );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyShortStringProp'), 'Failed on ReadOnlyShortStringProp' );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyWideStringProp'),  'Failed on ReadOnlyWideStringProp ' );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyCharProp'),        'Failed on ReadOnlyCharProp'        );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyWideCharProp'),    'Failed on ReadOnlyWideCharProp'    );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyIntProp'),         'Failed on ReadOnlyIntProp'         );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyInt64Prop'),       'Failed on ReadOnlyInt64Prop'       );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyBoolProp'),        'Failed on ReadOnlyBoolProp'        );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyDateTimeProp'),    'Failed on ReadOnlyDateTimeProp'    );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyFloatProp'),       'Failed on ReadOnlyFloatProp'       );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyObjectProp'),      'Failed on ReadOnlyObjectProp'      );
+    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyMethodProp'),      'Failed on ReadOnlyMethodProp'      );
 
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'StringProp' ),  'Failed on OnlyStringProp'    ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'ShortStringProp' ), 'Failed on ShortStringProp'   ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'WideStringProp' ),  'Failed on WideStringProp '   ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'CharProp' ),        'Failed on CharProp'          ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'WideCharProp' ),    'Failed on WideCharProp'      ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'IntProp' ),         'Failed on IntProp'           ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'Int64Prop' ),       'Failed on Int64Prop'         ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'BoolProp' ),        'Failed on BoolProp'          ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'DateTimeProp' ),    'Failed on DateTimeProp'      ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'FloatProp' ),       'Failed on FloatProp'         ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'ObjectProp' ),      'Failed on ObjectProp'        ) ;
-    Check( tiVisitor.tiIsReadWriteProp( lObj, 'MethodProp' ),      'Failed on MethodProp'        ) ;
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'StringProp'),  'Failed on OnlyStringProp'   );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'ShortStringProp'), 'Failed on ShortStringProp'  );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'WideStringProp'),  'Failed on WideStringProp '  );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'CharProp'),        'Failed on CharProp'         );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'WideCharProp'),    'Failed on WideCharProp'     );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'IntProp'),         'Failed on IntProp'          );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'Int64Prop'),       'Failed on Int64Prop'        );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'BoolProp'),        'Failed on BoolProp'         );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'DateTimeProp'),    'Failed on DateTimeProp'     );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'FloatProp'),       'Failed on FloatProp'        );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'ObjectProp'),      'Failed on ObjectProp'       );
+    Check(tiVisitor.tiIsReadWriteProp(lObj, 'MethodProp'),      'Failed on MethodProp'       );
   finally
     lObj.Free;
   end;

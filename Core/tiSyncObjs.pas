@@ -11,10 +11,10 @@ uses
   {$ENDIF}
   ,tiObject
   ,SyncObjs
-  ;
+ ;
 
 const
-  cDefaultReTryLockFrequency = 5000 ; // ms
+  cDefaultReTryLockFrequency = 5000; // ms
 
 type
   TtiObjectLockList = class(TtiBaseObject)
@@ -32,9 +32,9 @@ type
   end;
 
 
-function  tiWaitForMutex(const pMutexName: string): Boolean ; overload;
-function  tiWaitForMutex(const pMutexName: string; ASecondsToWait: Word): Boolean ; overload;
-procedure tiReleaseMutex(const pMutexName: string);
+function  tiWaitForMutex(const AMutexName: string): Boolean; overload;
+function  tiWaitForMutex(const AMutexName: string; ASecondsToWait: Word): Boolean; overload;
+procedure tiReleaseMutex(const AMutexName: string);
 
 
 implementation
@@ -44,14 +44,14 @@ uses
   ,cthreads
   {$ENDIF}
   ,SysUtils    // used for Sleep under Free Pascal
-  ;
+ ;
 
 var
-  uMutexes : TObjectList ;
+  uMutexes : TObjectList;
 
 type
 
-  TtiMutex = class( TtiBaseObject )
+  TtiMutex = class(TtiBaseObject)
   private
     FMutexName: string;
     FMutexHandle: THandle;
@@ -60,34 +60,34 @@ type
 //    InitializeMutex(pCritSec: TRTLCriticalSection);
     {$ENDIF}
   public
-    constructor Create( const pMutexName: string );
-    destructor  Destroy; override ;
+    constructor Create(const AMutexName: string);
+    destructor  Destroy; override;
     property    MutexName: string read FMutexName;
-    property    MutexHandle: THandle read FMutexHandle ;
-  end ;
+    property    MutexHandle: THandle read FMutexHandle;
+  end;
 
 
-function _MutexName(const pMutexName: string): string;
+function _MutexName(const AMutexName: string): string;
 begin
-  Result := tiStrTran(pMutexName, ' ', '');
+  Result := tiStrTran(AMutexName, ' ', '');
   Result := tiStrTran(Result,  ':', '');
   Result := tiStrTran(Result,  '/', '');
 end;
 
 
-function tiWaitForMutex(const pMutexName: string): Boolean ;
+function tiWaitForMutex(const AMutexName: string): Boolean;
 begin
-  Result:= tiWaitForMutex(pMutexName, 3*60);
-end ;
+  Result:= tiWaitForMutex(AMutexName, 3*60);
+end;
 
 
-function tiWaitForMutex(const pMutexName: string; ASecondsToWait: Word): Boolean ;
+function tiWaitForMutex(const AMutexName: string; ASecondsToWait: Word): Boolean;
 var
-  lMutexName : string ;
-  lMutex : TtiMutex ;
+  lMutexName : string;
+  lMutex : TtiMutex;
 begin
-  lMutexName := _MutexName(pMutexName);
-  lMutex := TtiMutex.Create(lMutexName) ;
+  lMutexName := _MutexName(AMutexName);
+  lMutex := TtiMutex.Create(lMutexName);
   {$IFDEF MSWINDOWS}
   if WaitForSingleObject(lMutex.MutexHandle, ASecondsToWait*1000) = Wait_Object_0 then
   begin
@@ -103,20 +103,20 @@ begin
     {$Warning This needs to be completed! }
 //  pthread_mutex_lock
   {$ENDIF}
-end ;
+end;
 
 
-procedure tiReleaseMutex(const pMutexName: string);
+procedure tiReleaseMutex(const AMutexName: string);
 var
-  lMutex : TtiMutex ;
-  lMutexName : string ;
-  i : Integer ;
+  lMutex : TtiMutex;
+  lMutexName : string;
+  i : Integer;
 begin
-  lMutexName := _MutexName(pMutexName);
+  lMutexName := _MutexName(AMutexName);
   for i := 0 to uMutexes.Count - 1 do
-    if lMutexName = ( uMutexes.Items[i] as TtiMutex ).MutexName then
+    if lMutexName = (uMutexes.Items[i] as TtiMutex).MutexName then
     begin
-      lMutex := uMutexes.Items[i] as TtiMutex ;
+      lMutex := uMutexes.Items[i] as TtiMutex;
       uMutexes.Remove(lMutex);
     end;
 end;
@@ -124,10 +124,10 @@ end;
 
 { TtiMutex }
 
-constructor TtiMutex.Create(const pMutexName: string);
+constructor TtiMutex.Create(const AMutexName: string);
 begin
   inherited Create;
-  FMutexName := pMutexName ;
+  FMutexName := AMutexName;
   {$IFDEF MSWINDOWS}
   FMutexHandle := CreateMutex(nil, False, PChar(FMutexName));
   {$ENDIF}
@@ -224,7 +224,7 @@ end;
 
 
 initialization
-  uMutexes := TObjectList.Create(True) ;
+  uMutexes := TObjectList.Create(True);
 
 
 finalization
@@ -232,3 +232,4 @@ finalization
 
 
 end.
+

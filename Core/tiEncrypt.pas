@@ -7,7 +7,7 @@ interface
 uses
   Classes
   ,Contnrs
-  ;
+ ;
 
 const
   cuSeedString : String = '12%6348i(oikruK**9oi57&^1`!@bd)';
@@ -17,65 +17,65 @@ type
   // Base encryption component. Wrappers Scott's encryption algorithm and
   // exposes the EncryptString & EncryptStream interface. Indroduces the
   // NewSeed method to increase security in comms apps
-  TtiEncryptAbs = class( TObject )
+  TtiEncryptAbs = class(TObject)
   private
-    FSeed : string ;
+    FSeed : string;
     FIntSeed : Int64;
   protected
-    procedure SetSeed   (const Value: string); virtual ;
-    procedure SetIntSeed(const Value: Int64 ); virtual ;
+    procedure SetSeed   (const AValue: string); virtual;
+    procedure SetIntSeed(const AValue: Int64); virtual;
   public
-    constructor Create ; virtual ;
-    function    EncryptString( const psData : string ) : string ; virtual ; abstract ;
-    function    DecryptString( const psData : string ) : string ; virtual ; abstract ;
-    procedure   EncryptStream( const pSrc, pDest : TStream ) ; virtual ; abstract ;
-    procedure   DecryptStream( const pSrc, pDest : TStream ) ; virtual ; abstract ;
-    property    Seed    : string read FSeed    write SetSeed ;
-    property    IntSeed : Int64  read FIntSeed write SetIntSeed ;
-    procedure   NewSeed ;
-  end ;
+    constructor Create; virtual;
+    function    EncryptString(const psData : string): string; virtual; abstract;
+    function    DecryptString(const psData : string): string; virtual; abstract;
+    procedure   EncryptStream(const pSrc, pDest : TStream); virtual; abstract;
+    procedure   DecryptStream(const pSrc, pDest : TStream); virtual; abstract;
+    property    Seed   : string read FSeed    write SetSeed;
+    property    IntSeed : Int64  read FIntSeed write SetIntSeed;
+    procedure   NewSeed;
+  end;
 
   // A class reference for the TtiEncrypt descendants
-  TtiEncryptClass = class of TtiEncryptAbs ;
+  TtiEncryptClass = class of TtiEncryptAbs;
 
   // A class to hold the TtiEncrypt class mappings. The factory maintains
   // a list of these and uses the EncryptClass property to create the objects.
-  TtiEncryptClassMapping = class( TObject )
+  TtiEncryptClassMapping = class(TObject)
   private
-    FsMappingName  : string;
+    FsMappingName : string;
     FEncryptClass : TtiEncryptClass;
   public
-    Constructor Create( const psMappingName : string ;
-                        pEncryptClass      : TtiEncryptClass ) ;
-    property    MappingName : string read FsMappingName ;
-    property    EncryptClass : TtiEncryptClass read FEncryptClass ;
-  end ;
+    Constructor Create(const AMappingName : string;
+                        pEncryptClass     : TtiEncryptClass);
+    property    MappingName : string read FsMappingName;
+    property    EncryptClass : TtiEncryptClass read FEncryptClass;
+  end;
 
   // Factory pattern - Create a descendant of the TtiEncrypt at runtime.
-  TtiEncryptFactory = class( TObject )
+  TtiEncryptFactory = class(TObject)
   private
-    FList : TObjectList ;
+    FList : TObjectList;
     FsDefaultEncryptionType: string;
   public
-    constructor Create ;
-    destructor  Destroy ; override ;
-    procedure   RegisterClass( const psEncryptionType : string ;
-                                     pEncryptClass : TtiEncryptClass ) ;
-    function    CreateInstance( const psEncryptionType : string ) : TtiEncryptAbs ; overload ;
-    function    CreateInstance : TtiEncryptAbs ; overload ;
-    procedure   AssignEncryptionTypes( pStrings : TStrings ) ;
+    constructor Create;
+    destructor  Destroy; override;
+    procedure   RegisterClass(const psEncryptionType : string;
+                                     pEncryptClass : TtiEncryptClass);
+    function    CreateInstance(const psEncryptionType : string): TtiEncryptAbs; overload;
+    function    CreateInstance : TtiEncryptAbs; overload;
+    procedure   AssignEncryptionTypes(AStrings : TStrings);
     property    DefaultEncryptionType : string
                 read  FsDefaultEncryptionType
-                write FsDefaultEncryptionType ;
+                write FsDefaultEncryptionType;
 
-  end ;
+  end;
 
 
 // The EncryptFactory is a singleton
-function gEncryptFactory : TtiEncryptFactory ;
+function gEncryptFactory : TtiEncryptFactory;
 
 var
-  gTiEncryptClass : TtiEncryptClass ;
+  gTiEncryptClass : TtiEncryptClass;
 
 implementation
 uses
@@ -83,7 +83,7 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF MSWINDOWS}
-  ;
+ ;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -93,31 +93,31 @@ uses
 constructor TtiEncryptAbs.Create;
 begin
   inherited;
-  FSeed := cuSeedString ;
+  FSeed := cuSeedString;
 end;
 
 procedure TtiEncryptAbs.NewSeed;
 var
-  i : integer ;
-  ls : string ;
+  i : integer;
+  ls : string;
 begin
-  ls := '' ;
-  for i := 1 to length( FSeed ) do
-    ls := ls + Char( Random( 254 ) + 1 ) ;
-  FSeed := ls ;
+  ls := '';
+  for i := 1 to length(FSeed) do
+    ls := ls + Char(Random(254) + 1);
+  FSeed := ls;
 end;
 
 // A var to hold our single instance of the TtiEncryptFactory
 var
-  uEncryptFactory : TtiEncryptFactory ;
+  uEncryptFactory : TtiEncryptFactory;
 
 // The EncryptFactory is a singleton
-function gEncryptFactory : TtiEncryptFactory ;
+function gEncryptFactory : TtiEncryptFactory;
 begin
   if uEncryptFactory = nil then
-    uEncryptFactory := TtiEncryptFactory.Create ;
-  result := uEncryptFactory ;
-end ;
+    uEncryptFactory := TtiEncryptFactory.Create;
+  result := uEncryptFactory;
+end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -126,49 +126,49 @@ end ;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiEncryptFactory.Create;
 begin
-  inherited ;
-  FList := TObjectList.Create ;
+  inherited;
+  FList := TObjectList.Create;
 end;
 
 // Assing the registered list of TtiEncrypt names to a stringList
 // This can be used to populate a combobox with the available TtiEncrypt
 // class types.
-procedure TtiEncryptFactory.AssignEncryptionTypes(pStrings: TStrings);
+procedure TtiEncryptFactory.AssignEncryptionTypes(AStrings: TStrings);
 var
-  i : integer ;
+  i : integer;
 begin
-  pStrings.Clear ;
+  AStrings.Clear;
   for i := 0 to FList.Count - 1 do
-    pStrings.Add( TtiEncryptClassMapping( FList.Items[i] ).MappingName ) ;
+    AStrings.Add(TtiEncryptClassMapping(FList.Items[i]).MappingName);
 end;
 
 // Call the factory to create an instance of TtiEncrypt
-function TtiEncryptFactory.CreateInstance( const psEncryptionType: string): TtiEncryptAbs;
+function TtiEncryptFactory.CreateInstance(const psEncryptionType: string): TtiEncryptAbs;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := nil ;
+  result := nil;
   for i := 0 to FList.Count - 1 do
-    if UpperCase( TtiEncryptClassMapping( FList.Items[i] ).MappingName ) =
-         UpperCase( psEncryptionType ) then begin
-      result := TtiEncryptClassMapping( FList.Items[i] ).EncryptClass.Create ;
-      Break ; //==>
-    end ;
+    if UpperCase(TtiEncryptClassMapping(FList.Items[i]).MappingName) =
+         UpperCase(psEncryptionType) then begin
+      result := TtiEncryptClassMapping(FList.Items[i]).EncryptClass.Create;
+      Break; //==>
+    end;
 
-  Assert( result <> nil,
-          Format( '<%s> does not identify a registered Encryption class.',
-                   [psEncryptionType] )) ;
+  Assert(result <> nil,
+          Format('<%s> does not identify a registered Encryption class.',
+                   [psEncryptionType]));
 
 end;
 
 function TtiEncryptFactory.CreateInstance: TtiEncryptAbs;
 begin
-  result := CreateInstance( FsDefaultEncryptionType ) ;
+  result := CreateInstance(FsDefaultEncryptionType);
 end;
 
 destructor TtiEncryptFactory.Destroy;
 begin
-  FList.Free ;
+  FList.Free;
   inherited;
 end;
 
@@ -176,16 +176,16 @@ end;
 procedure TtiEncryptFactory.RegisterClass(
   const psEncryptionType: string; pEncryptClass: TtiEncryptClass);
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to FList.Count - 1 do
-    if UpperCase( TtiEncryptClassMapping( FList.Items[i] ).MappingName ) =
-         UpperCase( psEncryptionType ) then
-      Assert( false,
-              Format( 'Encryption class <%s> already registered.',
-                      [psEncryptionType] )) ;
-  FList.Add( TtiEncryptClassMapping.Create( psEncryptionType, pEncryptClass )) ;
-  FsDefaultEncryptionType := UpperCase( psEncryptionType ) ;
+    if UpperCase(TtiEncryptClassMapping(FList.Items[i]).MappingName) =
+         UpperCase(psEncryptionType) then
+      Assert(false,
+              Format('Encryption class <%s> already registered.',
+                      [psEncryptionType]));
+  FList.Add(TtiEncryptClassMapping.Create(psEncryptionType, pEncryptClass));
+  FsDefaultEncryptionType := UpperCase(psEncryptionType);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -195,29 +195,29 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // Overloaded constructor - used to create an instance ot TtiEncryptClassMapping
 // and to preset it's properties.
-constructor TtiEncryptClassMapping.Create(const psMappingName: string;
+constructor TtiEncryptClassMapping.Create(const AMappingName: string;
   pEncryptClass: TtiEncryptClass);
 begin
-  inherited Create ;
-  FsMappingName :=  psMappingName ;
-  FEncryptClass := pEncryptClass ;
+  inherited Create;
+  FsMappingName :=  AMappingName;
+  FEncryptClass := pEncryptClass;
 end;
 
-procedure TtiEncryptAbs.SetIntSeed( const Value: Int64 );
+procedure TtiEncryptAbs.SetIntSeed(const AValue: Int64);
 begin
-  FIntSeed := Value;
+  FIntSeed := AValue;
 end;
 
-procedure TtiEncryptAbs.SetSeed( const Value: string );
+procedure TtiEncryptAbs.SetSeed(const AValue: string);
 begin
-  FSeed := Value;
+  FSeed := AValue;
 end;
 
 initialization
 
 finalization
   // Free the TtiEncryptFactory
-  uEncryptFactory.Free ;
+  uEncryptFactory.Free;
 
 end.
 

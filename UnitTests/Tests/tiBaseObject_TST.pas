@@ -27,7 +27,7 @@ uses
   {$ENDIF}
   tiBaseObject
   ,tiTestFramework
-  ;
+ ;
 
 type
   TtiObjAbsTestClass = class (TtiBaseObject)
@@ -49,13 +49,13 @@ procedure RegisterTests;
 implementation
 uses
   tiDUnitDependencies
-  ;
+ ;
 
 var
   GTest : TtiObjAbsTestClass;
 
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIBaseObject);
 end;

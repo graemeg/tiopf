@@ -4,7 +4,7 @@ IndySOAP: This unit tracks objects to prevent object leaks
 {
 Version History:
   21-Mar 2003   Grahame Grieve                  Finish adding TIdSoapHashTable support
-  18-Mar 2003   Grahame Grieve                  Add Hash function for Java bigots ;-)
+  18-Mar 2003   Grahame Grieve                  Add Hash function for Java bigots;-)
   25-Feb 2003   Grahame Grieve                  Fix typo
   17-Sep 2002   Grahame Grieve                  Fix Compile problems
   13-Aug 2002   Grahame Grieve                  Suppress Leak reporting
@@ -125,7 +125,7 @@ type
   end;
   {$ENDIF}
 
-  TtiBaseObjectClass = class of TtiBaseObject ;
+  TtiBaseObjectClass = class of TtiBaseObject;
 
 {$IFNDEF EXCLUDE_FROM_DOC}
 function  IdObjectRegister(AObject: TObject): Cardinal;
@@ -159,7 +159,7 @@ uses
   ,Windows
   {$ENDIF MSWINDOWS}
   ,SyncObjs
-  ;
+ ;
                       
 const
   ASSERT_UNIT = 'IdSoapDebug';
@@ -186,32 +186,32 @@ end;
 
 
 {$IFDEF OBJECT_TRACKING}
-procedure LogMessage( const pMessage : string ) ;
+procedure LogMessage(const AMessage : string);
 var
   lsl : TStringList;
-  lFileName : string ;
+  lFileName : string;
 begin
   lFileName :=
-    ChangeFileExt( ParamStr(0), '' ) + '_Leaks.txt';
-  lsl := TStringList.Create ;
+    ChangeFileExt(ParamStr(0), '') + '_Leaks.txt';
+  lsl := TStringList.Create;
   try
-    lsl.Text := pMessage ;
-    lsl.SaveToFile( lFileName ) ;
+    lsl.Text := AMessage;
+    lsl.SaveToFile(lFileName);
   finally
-    lsl.Free ;
+    lsl.Free;
   end;
 end;
 {$ENDIF}
 
 
-procedure _Assert( pCondition : boolean ; const pMessage : string ) ;
+procedure _Assert(pCondition : boolean; const AMessage : string);
 begin
   if not pCondition then
   begin
-    SystemMessage( 'Assertion failed', pMessage ) ;
-    Abort ;
+    SystemMessage('Assertion failed', AMessage);
+    Abort;
   end;
-end ;
+end;
 
 
 {$IFNDEF DELPHI5ORABOVE}
@@ -220,7 +220,7 @@ var
   Temp: TObject;
 begin
   Temp := TObject(Obj);
-  Pointer(Obj) := nil;
+  Pointer(Obj):= nil;
   Temp.Free;
 end;
 {$ENDIF}
@@ -330,7 +330,7 @@ begin
       Grow;
     if I < FCount then
       System.Move(FItems^[i], FItems^[i + 1], (FCount - I) * SizeOf(Cardinal));
-    FItems^[i] := AObj;
+    FItems^[i]:= AObj;
     Inc(FCount);
   end;
 end;
@@ -414,7 +414,7 @@ begin
   _Assert(assigned(FHashTable), ASSERT_LOCATION+': Failed to assign memory for Hash Table');
   for i := 0 to HASH_SIZE - 1 do
   begin
-    FHashtable^[i] := TIdDebugObjectSubList.Create;
+    FHashtable^[i]:= TIdDebugObjectSubList.Create;
     FHashtable^[i].FVal := i;
   end;
 end;
@@ -575,7 +575,7 @@ begin
     {$IFDEF OBJECT_TRACKING}
     LogMessage(ls);
     {$ENDIF}
-    SystemMessage(RS_ERR_DEBUG_LEAKING_OBJECTS, ls );
+    SystemMessage(RS_ERR_DEBUG_LEAKING_OBJECTS, ls);
   end;
   {$IFDEF OBJECT_TRACKING}
   FreeAndNil(gFullObjectList);
@@ -601,12 +601,12 @@ begin
     begin
       i := GIDObjectsCount.AddObject(AObject.ClassName, NIL);
     end;
-    GIDObjectsCount.objects[i] := TObject(Integer(GIDObjectsCount.objects[i]) + 1);
+    GIDObjectsCount.objects[i]:= TObject(Integer(GIDObjectsCount.objects[i]) + 1);
     {$IFDEF OBJECT_TRACKING}
     inc(gLastObjectID);
     Result := gLastObjectID;
     _Assert(Cardinal(Result) <> 0, ASSERT_LOCATION+': Error getting Unique number for Object');
-    gFullObjectList.Exists[AObject] := True;
+    gFullObjectList.Exists[AObject]:= True;
     {$ELSE}
     Result := 0;
     {$ENDIF}
@@ -675,11 +675,11 @@ begin
       if gBreakPointList.Exists[AObject] then
       begin
         IdBreakpoint;
-        gBreakPointList.Exists[AObject] := False;
+        gBreakPointList.Exists[AObject]:= False;
       end;
-      gFullObjectList.Exists[AObject] := False;
+      gFullObjectList.Exists[AObject]:= False;
       {$ENDIF}
-      GIDObjectsCount.objects[i] := TObject(Integer(GIDObjectsCount.objects[i]) - 1);
+      GIDObjectsCount.objects[i]:= TObject(Integer(GIDObjectsCount.objects[i]) - 1);
       if Integer(GIDObjectsCount.objects[i]) = 0 then
       begin
         GIDObjectsCount.Delete(i);
@@ -700,7 +700,7 @@ begin
   {$IFDEF OBJECT_TRACKING}
   gObjectTrackingLock.Enter;
   try
-    gBreakPointList.Exists[AObject] := True;
+    gBreakPointList.Exists[AObject]:= True;
   finally
     gObjectTrackingLock.Leave;
     end;

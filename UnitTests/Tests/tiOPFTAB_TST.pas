@@ -9,42 +9,42 @@ uses
   ,tiOPFTestManager
   ,tiClassToDBMap_TST
   ,tiOID_tst
-  ;
+ ;
 
 type
 
-  TtiOPFTestSetupDataTAB = class( TtiOPFTestSetupData )
+  TtiOPFTestSetupDataTAB = class(TtiOPFTestSetupData)
   public
-    constructor Create ; override ;
-  end ;
-
-  TTestTIPersistenceLayersTab = class( TTestTIPersistenceLayers )
-  protected
-    procedure Setup; override;
+    constructor Create; override;
   end;
 
-  TTestTIDatabaseTAB = class( TTestTIDatabase )
+  TTestTIPersistenceLayersTab = class(TTestTIPersistenceLayers)
   protected
-    procedure Setup; override;
+    procedure SetUp; override;
+  end;
+
+  TTestTIDatabaseTAB = class(TTestTIDatabase)
+  protected
+    procedure SetUp; override;
   published
-    procedure DatabaseExists ; override ;
-    procedure CreateDatabase ; override ;
-    procedure ThreadedDBConnectionPool ; override ;
+    procedure DatabaseExists; override;
+    procedure CreateDatabase; override;
+    procedure ThreadedDBConnectionPool; override;
   end;
 
-  TTestTIQueryTAB = class( TTestTIQueryNonSQL )
+  TTestTIQueryTAB = class(TTestTIQueryNonSQL)
   protected
-    procedure Setup; override;
+    procedure SetUp; override;
   end;
 
   TTestTIClassToDBMapOperationTab = class(TTestTIClassToDBMapOperation)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
   TTestTIOIDManagerTab = class(TTestTIOIDManager)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
 
@@ -65,9 +65,9 @@ uses
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
-  ;
+ ;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistTab) then
   begin
@@ -85,7 +85,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIClassToDBMapOperationTab.Suite);
     {$ENDIF}
   end;
-end ;
+end;
 
 { TtiOPFTestSetupDataTAB }
 
@@ -102,43 +102,43 @@ begin
     {$ENDIF}
   {$ENDIF}
   FSelected:= FEnabled;
-  FPerLayerName := cTIPersistTAB ;
-  FDBName   := ExpandFileName(ReadFromReg( cTIPersistTAB, 'DBName', gTestDataRoot + 'TAB' )) ;
-  FUserName := ReadFromReg( cTIPersistTAB, 'UserName', 'null') ;
-  FPassword := ReadFromReg( cTIPersistTAB, 'Password', 'null') ;
-  FCanCreateDatabase := true ;
-  ForceTestDataDirectory ;
+  FPerLayerName := cTIPersistTAB;
+  FDBName  := ExpandFileName(ReadFromReg(cTIPersistTAB, 'DBName', gTestDataRoot + 'TAB'));
+  FUserName := ReadFromReg(cTIPersistTAB, 'UserName', 'null');
+  FPassword := ReadFromReg(cTIPersistTAB, 'Password', 'null');
+  FCanCreateDatabase := true;
+  ForceTestDataDirectory;
 end;
 
 { TTestTIDatabaseTAB }
 
 procedure TTestTIDatabaseTAB.CreateDatabase;
 var
-  lDir : string ;
+  lDir : string;
 begin
-  lDir := PerFrameworkSetup.DBName ;
+  lDir := PerFrameworkSetup.DBName;
   tiForceRemoveDir(lDir);
   Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password );
+  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
   Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
 end;
 
 procedure TTestTIDatabaseTAB.DatabaseExists;
 var
-  lDir : string ;
+  lDir : string;
 begin
-  lDir := PerFrameworkSetup.DBName ;
+  lDir := PerFrameworkSetup.DBName;
   tiForceRemoveDir(lDir);
   Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password ),
+  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
         'FDatabaseClass.DatabaseExists()=true when it should =false');
   ForceDirectories(lDir);
   Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password ),
+  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
         'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 
-procedure TTestTIDatabaseTAB.Setup;
+procedure TTestTIDatabaseTAB.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistTAB);
   inherited;
@@ -146,15 +146,15 @@ end;
 
 procedure TTestTIDatabaseTAB.ThreadedDBConnectionPool;
 begin
-  LogWarning( 'The TAB persistence layer can only manage one thread.' ) ;
-  DoThreadedDBConnectionPool( 1 ) ;
+  LogWarning('The TAB persistence layer can only manage one thread.');
+  DoThreadedDBConnectionPool(1);
 end;
 
 { TtiOPFTestSetupDecoratorTAB }
 
 { TTestTIQueryTAB }
 
-procedure TTestTIQueryTAB.Setup;
+procedure TTestTIQueryTAB.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistTAB);
   inherited;
@@ -162,7 +162,7 @@ end;
 
 { TTestTIPersistenceLayersTab }
 
-procedure TTestTIPersistenceLayersTab.Setup;
+procedure TTestTIPersistenceLayersTab.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistTAB);
   inherited;
@@ -170,7 +170,7 @@ end;
 
 { TTestTIClassToDBMapOperationTab }
 
-procedure TTestTIClassToDBMapOperationTab.Setup;
+procedure TTestTIClassToDBMapOperationTab.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistTAB);
   inherited;
@@ -178,7 +178,7 @@ end;
 
 { TTestTIOIDManagerTab }
 
-procedure TTestTIOIDManagerTab.Setup;
+procedure TTestTIOIDManagerTab.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistTAB);
   inherited;

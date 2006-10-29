@@ -21,24 +21,24 @@ implementation
 uses
   tiUtils
   ,tiRegINI
-  ;
+ ;
 
 
 {$R *.DFM}
 
 procedure TFormTiDialogAbs.FormCreate(Sender: TObject);
 begin
-  gReg.ReadFormState( self ) ;
+  gReg.ReadFormState(self);
 end;
 
 procedure TFormTiDialogAbs.FormDestroy(Sender: TObject);
 begin
-  gReg.WriteFormState( self ) ;
+  gReg.WriteFormState(self);
 end;
 
 procedure TFormTiDialogAbs.FormClose(Sender: TObject;  var Action: TCloseAction);
 begin
-  ActiveControl := nil ;
+  ActiveControl := nil;
 end;
 
 end.

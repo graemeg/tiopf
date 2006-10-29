@@ -1,37 +1,6 @@
-{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  The contents of this file are subject to the Mozilla Public
-  License Version 1.1 (the "License"); you may not use this file
-  except in compliance with the License. You may obtain a copy of
-  the License at http://www.mozilla.org/MPL/
-
-  Software distributed under the License is distributed on an "AS
-  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  implied. See the License for the specific language governing
-  rights and limitations under the License.
-
-  Originally developed and released by Peter Hinrichsen, TechInsite Pty. Ltd.
-  as the tiOPF (TechInsite Object Persistence Framework)
-
-    23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-    PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-    Phone: +61 3 9419 6456 Fax:   +61 3 9419 1682
-    Latest source:   www.techinsite.com.au/tiOPF/Download.htm
-    Documentation:   www.techinsite.com.au/tiOPF/Doc/
-    Support:         www.techinsite.com.au/tiOPF/MailingList.htm
-
-  Please submit changes to tiOPF@techinsite.com.au
-
-  Purpose:
-    Visual component for selecting a date range.
-
-  ToDo:
-    Add Last Summer, Last Autumn, Last Winter, Last Spring to the date range setter.
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
+unit tiPerAwareDateRange;
 
 {$I tiDefines.inc}
-
-unit tiPerAwareDateRange;
 
 interface
 uses
@@ -48,11 +17,11 @@ uses
   ,LMessages
   ,EditBtn
 {$ENDIF}
-  ;
+ ;
 
 const
-  ctiDateRangeMinDate       = 1.0 ;
-  ctiDateRangeMaxDate       = 2958465.0 ;
+  ctiDateRangeMinDate       = 1.0;
+  ctiDateRangeMaxDate       = 2958465.0;
 
 type
 
@@ -60,204 +29,207 @@ type
   TDateTimePicker = TDateEdit;
  {$ENDIF}
 
-  TRangeType  = ( rtSingleDate, rtDateRange{, rtBoth} ) ;
-  TAllowRangeType = ( artSingleDate, artDateRange, artBoth ) ;
+  TRangeType  = (rtSingleDate, rtDateRange{, rtBoth});
+  TAllowRangeType = (artSingleDate, artDateRange, artBoth);
 
-  TtiDateRange = class ;
+  TtiDateRange = class;
 
   // An abstract range setter - Used to set the date range to values like:
   // Tomorrow, Yesterday, Today, Last Week, Last Month, Year to date, etc
-  TRangeSetter = class( TObject )
+  TRangeSetter = class(TObject)
   private
     FsCaption: string;
     FRangeType: TRangeType;
-    FtiDateRange : TtiDateRange ;
-    function  GetDateFrom : TDateTime ;
-    function  GetDateTo   : TDateTime;
-    procedure SetDateFrom(const Value: TDateTime);
-    procedure SetDateTo(const Value: TDateTime);
-    function  Month : word ;
-    function  Year  : word ;
-    function  DayOfWeek : word ;
+    FtiDateRange : TtiDateRange;
+    function  GetDateFrom : TDateTime;
+    function  GetDateTo  : TDateTime;
+    procedure SetDateFrom(const AValue: TDateTime);
+    procedure SetDateTo(const AValue: TDateTime);
+    function  Month : word;
+    function  Year : word;
+    function  DayOfWeek : word;
   protected
-    property DateFrom : TDateTime read GetDateFrom write SetDateFrom ;
-    property DateTo : TDateTime read GetDateTo write SetDateTo ;
+    property DateFrom : TDateTime read GetDateFrom write SetDateFrom;
+    property DateTo : TDateTime read GetDateTo write SetDateTo;
   public
-    Constructor Create ; virtual ;
-    property    RangeType : TRangeType read FRangeType write FRangeType ;
-    property    Caption   : string     read FsCaption  write FsCaption ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; virtual ;
-  end ;
+    Constructor Create; virtual;
+    property    RangeType : TRangeType read FRangeType write FRangeType;
+    property    Caption  : string     read FsCaption  write FsCaption;
+    procedure   Apply(ptiDateRange : TtiDateRange); virtual;
+  end;
 
-  TrsCustomSingleDate = class( TRangeSetter )
+  TrsCustomSingleDate = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsCustomDateRange = class( TRangeSetter )
+  TrsCustomDateRange = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsToday = class( TRangeSetter )
+  TrsToday = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsYesterday = class( TRangeSetter )
+  TrsYesterday = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsThisWeek = class( TRangeSetter )
+  TrsThisWeek = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsLastWeek = class( TRangeSetter )
+  TrsLastWeek = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsThisMonth = class( TRangeSetter )
+  TrsThisMonth = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsLastMonth = class( TRangeSetter )
+  TrsLastMonth = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsCalYearToDate = class( TRangeSetter )
+  TrsCalYearToDate = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsAllDates = class( TRangeSetter )
+  TrsAllDates = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsThisFinancialYear = class( TRangeSetter )
+  TrsThisFinancialYear = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TrsLastFinancialYear = class( TRangeSetter )
+  TrsLastFinancialYear = class(TRangeSetter)
   public
-    Constructor Create ; override ;
-    procedure   Apply( ptiDateRange : TtiDateRange ) ; override ;
-  end ;
+    Constructor Create; override;
+    procedure   Apply(ptiDateRange : TtiDateRange); override;
+  end;
 
-  TRangeSetterClass = class of TRangeSetter ;
+  TRangeSetterClass = class of TRangeSetter;
 
   // Factory to create range setters as required.
-  TFactoryRangeSetter = class( TStringList )
+  TFactoryRangeSetter = class(TStringList)
   private
     FtiDateRange: TtiDateRange;
 
   public
-    Constructor CreateExt( ptiDateRange : TtiDateRange ) ;
-    Destructor Destroy ; override ;
-    Procedure  RegisterRangeSetter( pClass : TRangeSetterClass ) ;
-    property   tiDateRange : TtiDateRange read FtiDateRange write FtiDateRange ;
-    procedure  Apply( const psCaption : string ;
-                      pRangeType : TRangeType ) ;
-    procedure  ReadRangeSetterCaptions ;
-    function   FindRangeSetter( const psCaption : string ;
-                                pRangeType : TRangeType ) : TRangeSetter ;
-  end ;
+    Constructor CreateExt(ptiDateRange : TtiDateRange);
+    Destructor Destroy; override;
+    Procedure  RegisterRangeSetter(AClass : TRangeSetterClass);
+    property   tiDateRange : TtiDateRange read FtiDateRange write FtiDateRange;
+    procedure  Apply(const psCaption : string;
+                      pRangeType : TRangeType);
+    procedure  ReadRangeSetterCaptions;
+    function   FindRangeSetter(const psCaption : string;
+                                pRangeType : TRangeType): TRangeSetter;
+  end;
 
-  TtiDateRangeOption = ( droptShowRememberNextTime );
+  TtiDateRangeOption = (droptShowRememberNextTime);
   TtiDateRangeOptions = set of TtiDateRangeOption;
 
   // TDateRange component
-  TtiDateRange  = class( TCustomGroupBox )
+  TtiDateRange  = class(TCustomGroupBox)
   private
-    FlblFrom  : TLabel ;
-    FlblTo    : TLabel ;
-    FlblQuick : TLabel ;
+    FlblFrom : TLabel;
+    FlblTo   : TLabel;
+    FlblQuick : TLabel;
 
-    FdtpFrom : TDateTimePicker ;
-    FdtpTo   : TDateTimePicker ;
+    FdtpFrom : TDateTimePicker;
+    FdtpTo  : TDateTimePicker;
 
-    FrbSingleDate       : TRadioButton ;
-    FrbDateRange        : TRadioButton ;
+    FrbSingleDate      : TRadioButton;
+    FrbDateRange       : TRadioButton;
 
-    FcbQuick : TComboBox ;
-    FiQuick : integer ;
-    FchbSave : TCheckBox ;
+    FcbQuick : TComboBox;
+    FiQuick : integer;
+    FchbSave : TCheckBox;
 
-    FRangeType             : TRangeType   ;
+    FRangeType            : TRangeType  ;
 
-    FOnChange               : TNotifyEvent ;
+    FOnChange              : TNotifyEvent;
 
-    FFactoryRangeSetter     : TFactoryRangeSetter ;
+    FFactoryRangeSetter    : TFactoryRangeSetter;
     FAllowRangeType: TAllowRangeType;
     FOptions: TtiDateRangeOptions;
 
-    procedure rbRangeTypeClick( sender: TObject) ;
-    procedure chbSaveClick( sender: TObject) ;
-    function  GetDateFrom : TDateTime                 ;
-    procedure SetDateFrom( const pDate : TDateTime )        ;
-    function  GetDateTo : TDateTime                   ;
-    procedure SetDateTo( const pDate : TDateTime )          ;
-    procedure SetRangeType( const dgDateGroup : TRangeType ) ;
-    procedure DoOnChangeDateFrom( sender : TObject ) ;
-    procedure DoOnChangeDateTo( sender : TObject ) ;
-    procedure DoOnChangeQuick( sender : TObject ) ;
+    procedure rbRangeTypeClick(sender: TObject);
+    procedure chbSaveClick(sender: TObject);
+    function  GetDateFrom : TDateTime                ;
+    procedure SetDateFrom(const pDate : TDateTime)       ;
+    function  GetDateTo : TDateTime                  ;
+    procedure SetDateTo(const pDate : TDateTime)         ;
+    procedure SetRangeType(const dgDateGroup : TRangeType);
+    procedure DoOnChangeDateFrom(sender : TObject);
+    procedure DoOnChangeDateTo(sender : TObject);
+    procedure DoOnChangeQuick(sender : TObject);
 
-    procedure DoOnChange ;
+    procedure DoOnChange;
     {$IFNDEF FPC}
-    procedure WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    procedure WMSize(var Message: TWMSize); message WM_SIZE;
     {$ELSE}
-    procedure WMSize( var Message: TLMSize ) ; message LM_SIZE ;
+    procedure WMSize(var Message: TLMSize); message LM_SIZE;
     {$ENDIF}
     function  getRangeSetterCaptions: TStrings;
-    function  AppFileName : string ;
-    function  RegKeyName    : string ;
+    function  AppFileName : string;
+    function  RegKeyName   : string;
     function  GetMaxDate: TDateTime;
     function  GetMinDate: TDateTime;
-    procedure SetMaxDate(const Value: TDateTime);
-    procedure SetMinDate(const Value: TDateTime);
-    procedure SetAllowRangeType(const Value: TAllowRangeType);
-    procedure SetOptions(const Value: TtiDateRangeOptions);
+    procedure SetMaxDate(const AValue: TDateTime);
+    procedure SetMinDate(const AValue: TDateTime);
+    procedure SetAllowRangeType(const AValue: TAllowRangeType);
+    procedure SetOptions(const AValue: TtiDateRangeOptions);
+    function  GetRangeSetterIndex: Integer;
+    procedure SetRangeSetterIndex(const AValue: Integer);
 
   protected
-    procedure Loaded; override ;
-    Property  RangeSetterCaptions : TStrings read getRangeSetterCaptions ;
+    procedure Loaded; override;
+    Property  RangeSetterCaptions : TStrings read getRangeSetterCaptions;
 
   published
-    property MinDate   : TDateTime    read GetMinDate  write SetMinDate ;
-    property MaxDate   : TDateTime    read GetMaxDate  write SetMaxDate ;
-    property DateFrom  : TDateTime    read getDateFrom write SetDateFrom        ;
-    property DateTo    : TDateTime    read getDateTo   write SetDateTo          ;
-    property RangeType : TRangeType   read FRangeType  write SetRangeType default rtDateRange ;
-    property Options   : TtiDateRangeOptions Read FOptions Write SetOptions default [droptShowRememberNextTime] ;
-    property OnChange  : TNotifyEvent read FOnChange   write FOnChange ;
-    property AllowRangeType : TAllowRangeType read FAllowRangeType write SetAllowRangeType default artBoth ;
-    property Caption ;
+    property MinDate  : TDateTime    read GetMinDate  write SetMinDate;
+    property MaxDate  : TDateTime    read GetMaxDate  write SetMaxDate;
+    property DateFrom : TDateTime    read getDateFrom write SetDateFrom       ;
+    property DateTo   : TDateTime    read getDateTo   write SetDateTo         ;
+    property RangeType : TRangeType   read FRangeType  write SetRangeType default rtDateRange;
+    property RangeSetterIndex: Integer Read GetRangeSetterIndex Write SetRangeSetterIndex;
+    property Options  : TtiDateRangeOptions Read FOptions Write SetOptions default [droptShowRememberNextTime];
+    property OnChange : TNotifyEvent read FOnChange   write FOnChange;
+    property AllowRangeType : TAllowRangeType read FAllowRangeType write SetAllowRangeType default artBoth;
+    property Caption;
     property Anchors;
   public
-    Constructor Create( oOwner : TComponent ) ; override ;
-    Destructor  Destroy ; override ;
+    Constructor Create(oOwner : TComponent); override;
+    Destructor  Destroy; override;
 
-    procedure Save ;
-    procedure Read ;
+    procedure Save;
+    procedure Read;
 
-    procedure ShowInternalState ;
+    procedure ShowInternalState;
 
   end;
 
@@ -270,11 +242,11 @@ uses
   Forms
   ,Math
   ,Dialogs // for debuggin
-  ;
+ ;
 
 const
-  cuiHeight =  94 ;
-  cuiWidth  = 195 ;
+  cuiHeight =  94;
+  cuiWidth  = 195;
 
 
 
@@ -285,284 +257,284 @@ const
 // * TtiDateRange
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-constructor TtiDateRange.Create( oOwner : TComponent ) ;
+constructor TtiDateRange.Create(oOwner : TComponent);
 begin
-  inherited create( oOwner ) ;
+  inherited create(oOwner);
 
-  FRangeType := rtDateRange ;
-  Width  := cuiWidth ;
-  Height := cuiHeight ;
-  Caption := ' &Date range ' ;
+  FRangeType := rtDateRange;
+  Width := cuiWidth;
+  Height := cuiHeight;
+  Caption := ' &Date range ';
 
-  FdtpFrom := TDateTimePicker.Create( self ) ;
+  FdtpFrom := TDateTimePicker.Create(self);
   with FdtpFrom do begin
-    parent   := self ;
-    top      := 16 ;
-    left     := 40 ;
-    height   := 22 ;
-    width    := 130 ;
-    OnChange := DoOnChangeDateFrom ;
-    //MinDate  := StrToDate( '01/01/0001' ) ;
-    //MaxDate  := StrToDate( '31/12/9999' ) ;
-    MinDate  := ctiDateRangeMinDate ;
-    MaxDate  := ctiDateRangeMaxDate ;
-    Date     := SysUtils.Date ;
-    {$IFNDEF FPC}Time     := 0.0 ;{$ENDIF}
-  end ;
+    parent  := self;
+    top     := 16;
+    left    := 40;
+    height  := 22;
+    width   := 130;
+    OnChange := DoOnChangeDateFrom;
+    //MinDate := StrToDate('01/01/0001');
+    //MaxDate := StrToDate('31/12/9999');
+    MinDate := ctiDateRangeMinDate;
+    MaxDate := ctiDateRangeMaxDate;
+    Date    := SysUtils.Date;
+    {$IFNDEF FPC}Time    := 0.0;{$ENDIF}
+  end;
 
-  FdtpTo   := TDateTimePicker.Create( self ) ;
+  FdtpTo  := TDateTimePicker.Create(self);
   with FdtpTo do begin
-    parent   := self ;
-    top      := 40 ;
-    left     := 40 ;
-    height   := 22 ;
-    width    := 130 ;
-    OnChange := DoOnChangeDateTo ;
-    MinDate  := ctiDateRangeMinDate ;
-    MaxDate  := ctiDateRangeMaxDate ;
-    Date     := SysUtils.Date ;
-    {$IFNDEF FPC}Time     := 0.0 ;{$ENDIF}
-  end ;
+    parent  := self;
+    top     := 40;
+    left    := 40;
+    height  := 22;
+    width   := 130;
+    OnChange := DoOnChangeDateTo;
+    MinDate := ctiDateRangeMinDate;
+    MaxDate := ctiDateRangeMaxDate;
+    Date    := SysUtils.Date;
+    {$IFNDEF FPC}Time    := 0.0;{$ENDIF}
+  end;
 
-  FlblFrom := TLabel.Create( self ) ;
+  FlblFrom := TLabel.Create(self);
   with FlblFrom do begin
-    parent  := self ;
-    top     := 20 ;
-    left    :=  8 ;
-    caption := '&From' ;
-    FocusControl := FdtpFrom ;
-  end ;
+    parent := self;
+    top    := 20;
+    left   :=  8;
+    caption := '&From';
+    FocusControl := FdtpFrom;
+  end;
 
-  FlblTo := TLabel.Create( self ) ;
+  FlblTo := TLabel.Create(self);
   with FlblTo do begin
-    parent  := self ;
-    top     :=  44  ;
-    left    :=   8  ;
-    caption := '&To' ;
-    FocusControl := FdtpTo ;
-  end ;
+    parent := self;
+    top    :=  44 ;
+    left   :=   8 ;
+    caption := '&To';
+    FocusControl := FdtpTo;
+  end;
 
-  FrbSingleDate    := TRadioButton.Create( self ) ;
+  FrbSingleDate   := TRadioButton.Create(self);
   with FrbSingleDate do begin
-    parent   := self ;
-    top      := FdtpFrom.Top + ( FdtpFrom.Height - Height ) div 2   ;
-    left     := FdtpFrom.Left + FdtpFrom.Width + 4   ;
-    width    := 14 ;
-    caption  := '' ;
-    onClick  := rbRangeTypeClick ;
-    tag      := 0 ;
-    Hint     := 'Select a single date' ;
-    ShowHint := true ;
-  end ;
+    parent  := self;
+    top     := FdtpFrom.Top + (FdtpFrom.Height - Height) div 2  ;
+    left    := FdtpFrom.Left + FdtpFrom.Width + 4  ;
+    width   := 14;
+    caption := '';
+    onClick := rbRangeTypeClick;
+    tag     := 0;
+    Hint    := 'Select a single date';
+    ShowHint := true;
+  end;
 
-  FrbDateRange   := TRadioButton.Create( self ) ;
+  FrbDateRange  := TRadioButton.Create(self);
   with FrbDateRange do begin
-    parent   := self ;
-    top      := FdtpTo.Top   ;
-    top      := FdtpTo.Top + ( FdtpTo.Height - Height ) div 2   ;
-    left     := FdtpTo.Left + FdtpTo.Width + 4   ;
-    width    := 14 ;
-    caption  := '' ;
-    checked  := true ;
-    onClick  := rbRangeTypeClick ;
-    tag      := 1 ;
-    Hint     := 'Select a date range' ;
-    ShowHint := true ;
-  end ;
+    parent  := self;
+    top     := FdtpTo.Top  ;
+    top     := FdtpTo.Top + (FdtpTo.Height - Height) div 2  ;
+    left    := FdtpTo.Left + FdtpTo.Width + 4  ;
+    width   := 14;
+    caption := '';
+    checked := true;
+    onClick := rbRangeTypeClick;
+    tag     := 1;
+    Hint    := 'Select a date range';
+    ShowHint := true;
+  end;
 
-  FcbQuick   := TComboBox.Create( self ) ;
+  FcbQuick  := TComboBox.Create(self);
   with FcbQuick do begin
-    parent   := self ;
-    top      := FdtpTo.Top + FdtpTo.Height + 4 ;
-    left     := 40 ;
-    height   := 22 ;
-    width    := 130 ;
-    style    := csDropDownList ;
-    OnChange := DoOnChangeQuick ;
-  end ;
+    parent  := self;
+    top     := FdtpTo.Top + FdtpTo.Height + 4;
+    left    := 40;
+    height  := 22;
+    width   := 130;
+    style   := csDropDownList;
+    OnChange := DoOnChangeQuick;
+  end;
 
-  FlblQuick := TLabel.Create( self ) ;
+  FlblQuick := TLabel.Create(self);
   with FlblQuick do begin
-    parent  := self ;
-    top     :=  FcbQuick.Top + ( FcbQuick.Height - Height ) div 2  ;
-    left    :=   8  ;
-    caption := '&Quick' ;
-    FocusControl := FcbQuick ;
-  end ;
+    parent := self;
+    top    :=  FcbQuick.Top + (FcbQuick.Height - Height) div 2 ;
+    left   :=   8 ;
+    caption := '&Quick';
+    FocusControl := FcbQuick;
+  end;
 
-  FchbSave := TCheckBox.Create( self ) ;
+  FchbSave := TCheckBox.Create(self);
   with FchbSave do begin
-    parent   := self ;
-    top      := FcbQuick.Top + ( FcbQuick.Height - Height ) div 2   ;
-    left     := FcbQuick.Left + FcbQuick.Width + 4   ;
-    width    := 14 ;
-    caption  := '' ;
-    onClick  := chbSaveClick ;
-    Hint     := 'Remember these settings next time' ;
-    ShowHint := true ;
-  end ;
+    parent  := self;
+    top     := FcbQuick.Top + (FcbQuick.Height - Height) div 2  ;
+    left    := FcbQuick.Left + FcbQuick.Width + 4  ;
+    width   := 14;
+    caption := '';
+    onClick := chbSaveClick;
+    Hint    := 'Remember these settings next time';
+    ShowHint := true;
+  end;
 
-  FFactoryRangeSetter := TFactoryRangeSetter.CreateExt( self ) ;
+  FFactoryRangeSetter := TFactoryRangeSetter.CreateExt(self);
 
-//  DateFrom := Date ;
-//  DateTo   := Date ;
-  FrbDateRange.Checked := true ;
-  AllowRangeType := artBoth ;
+//  DateFrom := Date;
+//  DateTo  := Date;
+  FrbDateRange.Checked := true;
+  AllowRangeType := artBoth;
   FOptions := [droptShowRememberNextTime];
 
-end ;
+end;
 
 destructor TtiDateRange.Destroy;
 begin
-  Save ;
-  FlblFrom.Free            ;
-  FlblTo.Free              ;
-  FdtpFrom.Free            ;
-  FdtpTo.Free              ;
-  FrbSingleDate.Free       ;
-  FrbDateRange.Free        ;
-  FFactoryRangeSetter.Free ;
+  Save;
+  FlblFrom.Free           ;
+  FlblTo.Free             ;
+  FdtpFrom.Free           ;
+  FdtpTo.Free             ;
+  FrbSingleDate.Free      ;
+  FrbDateRange.Free       ;
+  FFactoryRangeSetter.Free;
   inherited;
 end;
 
-procedure TtiDateRange.Loaded ;
+procedure TtiDateRange.Loaded;
 begin
-  inherited ;
+  inherited;
 
   FcbQuick.ItemIndex := 0;
-  FiQuick := 0 ;
-  FFactoryRangeSetter.ReadRangeSetterCaptions ;
-  FcbQuick.DropDownCount := FcbQuick.Items.Count ;
+  FiQuick := 0;
+  FFactoryRangeSetter.ReadRangeSetterCaptions;
+  FcbQuick.DropDownCount := FcbQuick.Items.Count;
   SetOptions(FOptions);
-  Read ;
+  Read;
 
-end ;
+end;
 
 
 procedure TtiDateRange.rbRangeTypeClick(Sender: TObject);
 begin
-  RangeType := TRangeType(( Sender as TRadioButton ).Tag ) ;
+  RangeType := TRangeType((Sender as TRadioButton).Tag);
   FcbQuick.ItemIndex := 0;
-  DoOnChange ;
+  DoOnChange;
 end;
 
-function  TtiDateRange.getDateFrom : TDateTime                 ;
+function  TtiDateRange.getDateFrom : TDateTime                ;
 begin
-  result := trunc( FdtpFrom.Date ) ;
-end ;
+  result := trunc(FdtpFrom.Date);
+end;
 
-procedure TtiDateRange.SetDateFrom( const pDate : TDateTime )        ;
+procedure TtiDateRange.SetDateFrom(const pDate : TDateTime)       ;
 var
-  lDate : TDateTime ;
+  lDate : TDateTime;
 begin
-  lDate := trunc( pDate ) ;
-  lDate := Max( lDate, MinDate ) ;
-  lDate := Min( lDate, MaxDate ) ;
+  lDate := trunc(pDate);
+  lDate := Max(lDate, MinDate);
+  lDate := Min(lDate, MaxDate);
 
-  FdtpFrom.Date := lDate ;
+  FdtpFrom.Date := lDate;
 
   if RangeType = rtSingleDate then
-    FdtpTo.Date := lDate ;
+    FdtpTo.Date := lDate;
 
   if DateFrom > DateTo then
-    DateTo := DateFrom ;
+    DateTo := DateFrom;
 
-  Assert( DateFrom = lDate,
+  Assert(DateFrom = lDate,
           'Failed setting DateFrom: ' +
-          FloatToStr( DateFrom ) + ' <> ' +
-          FloatToStr( lDate )) ;
-end ;
+          FloatToStr(DateFrom) + ' <> ' +
+          FloatToStr(lDate));
+end;
 
-function TtiDateRange.getDateTo : TDateTime                   ;
+function TtiDateRange.getDateTo : TDateTime                  ;
 begin
   if FRangeType = rtSingleDate then
-    result := trunc( FdtpFrom.Date )
+    result := trunc(FdtpFrom.Date)
   else
-    result := trunc( FdtpTo.Date ) ;
-end ;
+    result := trunc(FdtpTo.Date);
+end;
 
-procedure TtiDateRange.SetDateTo( const pDate : TDateTime )          ;
+procedure TtiDateRange.SetDateTo(const pDate : TDateTime)         ;
 var
-  lDate : TDateTime ;
+  lDate : TDateTime;
 begin                                                       
-  lDate := trunc( pDate ) ;
-  lDate := Max( lDate, MinDate ) ;
-  lDate := Min( lDate, MaxDate ) ;
+  lDate := trunc(pDate);
+  lDate := Max(lDate, MinDate);
+  lDate := Min(lDate, MaxDate);
 
-  FdtpTo.Date := lDate ;
+  FdtpTo.Date := lDate;
   if RangeType = rtSingleDate then
-    FdtpFrom.Date := lDate ;
+    FdtpFrom.Date := lDate;
   if DateFrom > DateTo then
-    DateFrom := DateTo ;
-  Assert( DateTo = lDate,
+    DateFrom := DateTo;
+  Assert(DateTo = lDate,
           'Failed setting DateTo: ' +
-          FloatToStr( DateTo ) + ' <> ' +
-          FloatToStr( lDate )) ;
+          FloatToStr(DateTo) + ' <> ' +
+          FloatToStr(lDate));
 
-end ;
+end;
 
-procedure TtiDateRange.SetRangeType( const dgDateGroup : TRangeType ) ;
+procedure TtiDateRange.SetRangeType(const dgDateGroup : TRangeType);
 begin
   if FRangeType = dgDateGroup then
-    exit ; //==>
+    exit; //==>
 
-  FRangeType := dgDateGroup ;
+  FRangeType := dgDateGroup;
   case FRangeType of
   rtSingleDate : begin
-                   FrbSingleDate.Checked := true ;
-                   FlblTo.Visible := false ;
-                   FdtpTo.Visible := false ;
-                   FlblFrom.Caption := '&Date' ;
-                 end ;
-  rtDateRange  : begin
-                   FrbDateRange.Checked := true ;
-                   FlblTo.Visible := true ;
-                   FdtpTo.Visible := true ;
-                   FlblFrom.Caption := '&From' ;
-                 end ;
+                   FrbSingleDate.Checked := true;
+                   FlblTo.Visible := false;
+                   FdtpTo.Visible := false;
+                   FlblFrom.Caption := '&Date';
+                 end;
+  rtDateRange : begin
+                   FrbDateRange.Checked := true;
+                   FlblTo.Visible := true;
+                   FdtpTo.Visible := true;
+                   FlblFrom.Caption := '&From';
+                 end;
   else
-    raise exception.Create( 'Invalid RangeType passed to TtiDateRange.SetRangeType' ) ;
-  end ;
+    raise exception.Create('Invalid RangeType passed to TtiDateRange.SetRangeType');
+  end;
 
-  FFactoryRangeSetter.ReadRangeSetterCaptions ;
-  FcbQuick.DropDownCount := FcbQuick.Items.Count ;
-end ;
+  FFactoryRangeSetter.ReadRangeSetterCaptions;
+  FcbQuick.DropDownCount := FcbQuick.Items.Count;
+end;
 
 procedure TtiDateRange.DoOnChange;
 begin
-  if Assigned( FOnChange ) then
-    FOnChange( self ) ;
+  if Assigned(FOnChange) then
+    FOnChange(self);
 end;
 
 procedure TtiDateRange.DoOnChangeDateFrom(sender: TObject);
 begin
   // This will force the validation of the DateFrom value
-  DateFrom := FdtpFrom.Date ;
-  FcbQuick.ItemIndex := 0 ;
-  FiQuick := 0 ;
-  DoOnChange ;
+  DateFrom := FdtpFrom.Date;
+  FcbQuick.ItemIndex := 0;
+  FiQuick := 0;
+  DoOnChange;
 end;
 
 procedure TtiDateRange.DoOnChangeDateTo(sender: TObject);
 begin
   // This will force the validation of the DateTo value
-  DateTo := FdtpTo.Date ;
-  FcbQuick.ItemIndex := 0 ;
-  FiQuick := 0 ;
-  DoOnChange ;
+  DateTo := FdtpTo.Date;
+  FcbQuick.ItemIndex := 0;
+  FiQuick := 0;
+  DoOnChange;
 end;
 
 procedure TtiDateRange.DoOnChangeQuick(sender: TObject);
 begin
 
   if FcbQuick.ItemIndex = -1 then
-    exit ;
+    exit;
 
-  FiQuick := FcbQuick.ItemIndex ;
-  FFactoryRangeSetter.Apply( FcbQuick.Items[ FcbQuick.ItemIndex ],
-                             RangeType ) ;
+  FiQuick := FcbQuick.ItemIndex;
+  FFactoryRangeSetter.Apply(FcbQuick.Items[ FcbQuick.ItemIndex ],
+                             RangeType);
 
-  DoOnChange ;
+  DoOnChange;
 
 end;
 
@@ -577,8 +549,8 @@ procedure TtiDateRange.WMSize(var Message: TWMSize);
 procedure TtiDateRange.WMSize(var Message: TLMSize);
 {$ENDIF}
 begin
-  Height := cuiHeight ;
-  Width  := cuiWidth  ;
+  Height := cuiHeight;
+  Width := cuiWidth ;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -588,90 +560,90 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TFactoryRangeSetter.CreateExt(ptiDateRange: TtiDateRange);
 begin
-  Create ;
-  FtiDateRange := ptiDateRange ;
-  RegisterRangeSetter( TrsCustomSingleDate ) ;
-  RegisterRangeSetter( TrsToday     ) ;
-  RegisterRangeSetter( TrsYesterday ) ;
+  Create;
+  FtiDateRange := ptiDateRange;
+  RegisterRangeSetter(TrsCustomSingleDate);
+  RegisterRangeSetter(TrsToday    );
+  RegisterRangeSetter(TrsYesterday);
 
-  RegisterRangeSetter( TrsCustomDateRange )  ;
-  RegisterRangeSetter( TrsThisWeek ) ;
-  RegisterRangeSetter( TrsLastWeek ) ;
-  RegisterRangeSetter( TrsThisMonth ) ;
-  RegisterRangeSetter( TrsLastMonth ) ;
-  RegisterRangeSetter( TrsCalYearToDate ) ;
-  RegisterRangeSetter( TrsThisFinancialYear ) ;
-  RegisterRangeSetter( TrsLastFinancialYear ) ;
-  RegisterRangeSetter( TrsAllDates ) ;
+  RegisterRangeSetter(TrsCustomDateRange) ;
+  RegisterRangeSetter(TrsThisWeek);
+  RegisterRangeSetter(TrsLastWeek);
+  RegisterRangeSetter(TrsThisMonth);
+  RegisterRangeSetter(TrsLastMonth);
+  RegisterRangeSetter(TrsCalYearToDate);
+  RegisterRangeSetter(TrsThisFinancialYear);
+  RegisterRangeSetter(TrsLastFinancialYear);
+  RegisterRangeSetter(TrsAllDates);
 
 end;
 
 destructor TFactoryRangeSetter.Destroy;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to Count - 1 do
-    TObject( Objects[i] ).Free ;
+    TObject(Objects[i]).Free;
   inherited;
 end;
 
-procedure TFactoryRangeSetter.Apply( const psCaption: string ;
-                                     pRangeType : TRangeType );
+procedure TFactoryRangeSetter.Apply(const psCaption: string;
+                                     pRangeType : TRangeType);
 var
-  lRangeSetter : TRangeSetter ;
+  lRangeSetter : TRangeSetter;
 begin
-  lRangeSetter := FindRangeSetter( psCaption, pRangeType ) ;
-  Assert( lRangeSetter <> nil,
+  lRangeSetter := FindRangeSetter(psCaption, pRangeType);
+  Assert(lRangeSetter <> nil,
           'RangeSetter <' +
           psCaption +
-          '> not found' ) ;
-  lRangeSetter.Apply( FtiDateRange ) ;
+          '> not found');
+  lRangeSetter.Apply(FtiDateRange);
 end;
 
-function TFactoryRangeSetter.FindRangeSetter( const psCaption: string;
+function TFactoryRangeSetter.FindRangeSetter(const psCaption: string;
                                    pRangeType: TRangeType): TRangeSetter;
 var
-  i : integer ;
-  lRangeSetter : TRangeSetter ;
+  i : integer;
+  lRangeSetter : TRangeSetter;
 begin
-  result := nil ;
+  result := nil;
   for i := 0 to Count - 1 do begin
-    lRangeSetter := TRangeSetter( Objects[i] ) ;
-    if ( lRangeSetter.Caption = psCaption ) and
-       ( lRangeSetter.RangeType = pRangeType ) then begin
-      result := lRangeSetter ;
-      break ;
-    end ;
-  end ;
+    lRangeSetter := TRangeSetter(Objects[i]);
+    if (lRangeSetter.Caption = psCaption) and
+       (lRangeSetter.RangeType = pRangeType) then begin
+      result := lRangeSetter;
+      break;
+    end;
+  end;
 end;
 
-procedure TFactoryRangeSetter.ReadRangeSetterCaptions ;
+procedure TFactoryRangeSetter.ReadRangeSetterCaptions;
 var
-  i : integer ;
-  lRangeSetter : TRangeSetter ;
+  i : integer;
+  lRangeSetter : TRangeSetter;
 begin
-  tiDateRange.RangeSetterCaptions.Clear ;
+  tiDateRange.RangeSetterCaptions.Clear;
   for i := 0 to count - 1 do begin
-    lRangeSetter := TRangeSetter( Objects[i] ) ;
+    lRangeSetter := TRangeSetter(Objects[i]);
     if lRangeSetter.RangeType = tiDateRange.RangeType then
-      tiDateRange.RangeSetterCaptions.Add( lRangeSetter.Caption ) ;
-  end ;
+      tiDateRange.RangeSetterCaptions.Add(lRangeSetter.Caption);
+  end;
 end;
 
-procedure TFactoryRangeSetter.RegisterRangeSetter( pClass: TRangeSetterClass);
+procedure TFactoryRangeSetter.RegisterRangeSetter(AClass: TRangeSetterClass);
 var
-  lRangeSetter : TRangeSetter ;
+  lRangeSetter : TRangeSetter;
 begin
-  lRangeSetter := pClass.Create ;
-  Assert( FindRangeSetter( lRangeSetter.Caption, lRangeSetter.RangeType ) = nil,
+  lRangeSetter := AClass.Create;
+  Assert(FindRangeSetter(lRangeSetter.Caption, lRangeSetter.RangeType) = nil,
           'Attempt to register duplicate RangeSetter <' +
-          lRangeSetter.Caption + '>' ) ;
-  AddObject( lRangeSetter.Caption, lRangeSetter ) ;
+          lRangeSetter.Caption + '>');
+  AddObject(lRangeSetter.Caption, lRangeSetter);
 end;
 
 function TtiDateRange.getRangeSetterCaptions: TStrings;
 begin
-  result := FcbQuick.Items ;
+  result := FcbQuick.Items;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -682,15 +654,13 @@ end;
 constructor TrsCustomSingleDate.Create;
 begin
   inherited;
-  RangeType := rtSingleDate ;
-  Caption   := 'You choose' ;
+  RangeType := rtSingleDate;
+  Caption  := 'You choose';
 end;
 
 procedure TrsCustomSingleDate.Apply(ptiDateRange: TtiDateRange);
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := date ;
-  DateTo   := DateFrom ;
+  inherited Apply(ptiDateRange);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -700,16 +670,14 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 procedure TrsCustomDateRange.Apply(ptiDateRange: TtiDateRange);
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := Date ;
-  DateTo   := Date ;
+  inherited Apply(ptiDateRange);
 end;
 
 constructor TrsCustomDateRange.Create;
 begin
   inherited;
-  RangeType := rtDateRange ;
-  Caption   := 'You choose' ;
+  RangeType := rtDateRange;
+  Caption  := 'You choose';
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -719,54 +687,54 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 procedure TRangeSetter.Apply(ptiDateRange: TtiDateRange);
 begin
-  FtiDateRange := ptiDateRange ;
+  FtiDateRange := ptiDateRange;
 end;
 
 constructor TRangeSetter.Create;
 begin
-  inherited ;
+  inherited;
   // Do nothing, implemented here for the concretes.
 end;
 
 function TRangeSetter.DayOfWeek: word;
 var
-  li : word ;
+  li : word;
 begin
-  li := SysUtils.DayOfWeek( date ) ;
+  li := SysUtils.DayOfWeek(date);
   case li of
-  1 : result := 7 ;
-  2..7 : result := li - 1 ;
+  1 : result := 7;
+  2..7 : result := li - 1;
   else
-    raise exception.Create( 'Invalid dayOfWeek passed to TRangeSetter.DayOfWeek' ) ;
-  end ;
+    raise exception.Create('Invalid dayOfWeek passed to TRangeSetter.DayOfWeek');
+  end;
 end;
 
-function TRangeSetter.GetDateFrom: TDateTime ;
+function TRangeSetter.GetDateFrom: TDateTime;
 begin
-  result := FtiDateRange.DateFrom ;
+  result := FtiDateRange.DateFrom;
 end;
 
 function TRangeSetter.GetDateTo: TDateTime;
 begin
-  result := FtiDateRange.DateTo ;
+  result := FtiDateRange.DateTo;
 end;
 
 function TRangeSetter.Month: word;
 var
-  liD, liM, liY : Word ;
+  liD, liM, liY : Word;
 begin
-  DecodeDate( Date, liY, liM, liD ) ;
-  result := liM ;
+  DecodeDate(Date, liY, liM, liD);
+  result := liM;
 end;
 
-procedure TRangeSetter.SetDateFrom(const Value: TDateTime );
+procedure TRangeSetter.SetDateFrom(const AValue: TDateTime);
 begin
-  FtiDateRange.DateFrom := Value ;
+  FtiDateRange.DateFrom := AValue;
 end;
 
-procedure TRangeSetter.SetDateTo(const Value: TDateTime);
+procedure TRangeSetter.SetDateTo(const AValue: TDateTime);
 begin
-  FtiDateRange.DateTo := Value ;
+  FtiDateRange.DateTo := AValue;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -777,16 +745,16 @@ end;
 constructor TrsToday.Create;
 begin
   inherited;
-  RangeType := rtSingleDate ;
-  Caption   := 'Today' ;
-end ;
+  RangeType := rtSingleDate;
+  Caption  := 'Today';
+end;
 
 procedure TrsToday.Apply(ptiDateRange: TtiDateRange);
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := Date ;
-  DateTo   := DateFrom ;
-end ;
+  inherited Apply(ptiDateRange);
+  DateFrom := Date;
+  DateTo  := DateFrom;
+end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -796,23 +764,23 @@ end ;
 constructor TrsYesterday.Create;
 begin
   inherited;
-  RangeType := rtSingleDate ;
-  Caption   := 'Yesterday' ;
-end ;
+  RangeType := rtSingleDate;
+  Caption  := 'Yesterday';
+end;
 
 procedure TrsYesterday.Apply(ptiDateRange: TtiDateRange);
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := Date - 1 ;
-  DateTo   := DateFrom ;
-end ;
+  inherited Apply(ptiDateRange);
+  DateFrom := Date - 1;
+  DateTo  := DateFrom;
+end;
 
 function TRangeSetter.Year: word;
 var
-  liD, liM, liY : Word ;
+  liD, liM, liY : Word;
 begin
-  DecodeDate( Date, liY, liM, liD ) ;
-  result := liY ;
+  DecodeDate(Date, liY, liM, liD);
+  result := liY;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -823,15 +791,15 @@ end;
 constructor TrsThisWeek.Create;
 begin
   inherited;
-  RangeType := rtDateRange ;
-  Caption   := 'This week' ;
+  RangeType := rtDateRange;
+  Caption  := 'This week';
 end;
 
 procedure TrsThisWeek.Apply(ptiDateRange: TtiDateRange);
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := Date - ( DayOfWeek - 1 ) ;
-  DateTo   := Date + ( 7 - DayOfWeek ) ;
+  inherited Apply(ptiDateRange);
+  DateFrom := Date - (DayOfWeek - 1);
+  DateTo  := Date + (7 - DayOfWeek);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -842,15 +810,15 @@ end;
 constructor TrsLastWeek.Create;
 begin
   inherited;
-  RangeType := rtDateRange ;
-  Caption   := 'Last week' ;
+  RangeType := rtDateRange;
+  Caption  := 'Last week';
 end;
 
 procedure TrsLastWeek.Apply(ptiDateRange: TtiDateRange);
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := Date - ( DayOfWeek - 1 ) - 7 ;
-  DateTo   := Date + ( 7 - DayOfWeek ) - 7 ;
+  inherited Apply(ptiDateRange);
+  DateFrom := Date - (DayOfWeek - 1) - 7;
+  DateTo  := Date + (7 - DayOfWeek) - 7;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -861,15 +829,22 @@ end;
 constructor TrsThisMonth.Create;
 begin
   inherited;
-  RangeType := rtDateRange ;
-  Caption   := 'This month' ;
+  RangeType := rtDateRange;
+  Caption  := 'This month';
 end;
 
 procedure TrsThisMonth.Apply(ptiDateRange: TtiDateRange);
+var
+  LYear: Word;
+  LMonth: Word;
+  LDay: Word;
+  LDate: TDateTime;
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := EncodeDate( Year, Month, 1 ) ;
-  DateTo   := IncMonth( DateFrom, 1 ) - 1 ;
+  inherited Apply(ptiDateRange);
+  DecodeDate(Date, LYear, LMonth, LDay);
+  LDate:= EncodeDate(LYear, LMonth, 1);
+  DateFrom := LDate;
+  DateTo  := IncMonth(LDate) -1;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -880,15 +855,15 @@ end;
 constructor TrsLastMonth.Create;
 begin
   inherited;
-  RangeType := rtDateRange ;
-  Caption   := 'Last month' ;
+  RangeType := rtDateRange;
+  Caption  := 'Last month';
 end;
 
 procedure TrsLastMonth.Apply(ptiDateRange: TtiDateRange);
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := IncMonth( EncodeDate( Year, Month, 1 ), -1 ) ;
-  DateTo   := IncMonth( DateFrom, 1 ) - 1 ;
+  inherited Apply(ptiDateRange);
+  DateFrom := IncMonth(EncodeDate(Year, Month, 1), -1);
+  DateTo  := IncMonth(DateFrom, 1) - 1;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -899,16 +874,16 @@ end;
 constructor TrsCalYearToDate.Create;
 begin
   inherited;
-  RangeType := rtDateRange ;
-  Caption   := 'Year to date' ;
+  RangeType := rtDateRange;
+  Caption  := 'Year to date';
 end;
 
 procedure TrsCalYearToDate.Apply(ptiDateRange: TtiDateRange);
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := EncodeDate( Year, 1, 1 ) ;
-  DateTo   := Date ;
-end ;
+  inherited Apply(ptiDateRange);
+  DateFrom := EncodeDate(Year, 1, 1);
+  DateTo  := Date;
+end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -918,160 +893,160 @@ end ;
 constructor TrsAllDates.Create;
 begin
   inherited;
-  RangeType := rtDateRange ;
-  Caption   := 'All dates' ;
+  RangeType := rtDateRange;
+  Caption  := 'All dates';
 end;
 
 procedure TrsAllDates.Apply(ptiDateRange: TtiDateRange);
 begin
-  inherited Apply( ptiDateRange ) ;
-  DateFrom := FtiDateRange.MinDate ;
-  DateTo   := FtiDateRange.MaxDate ;
+  inherited Apply(ptiDateRange);
+  DateFrom := FtiDateRange.MinDate;
+  DateTo  := FtiDateRange.MaxDate;
 end;
 
 procedure TtiDateRange.Read;
 var
-  lReg : TRegINIFile ;
+  lReg : TRegINIFile;
 begin
-  lReg := TRegINIFile.Create( AppFileName ) ;
+  lReg := TRegINIFile.Create(AppFileName);
   try
-    if lReg.ReadInteger( RegKeyName, 'Save', 0 ) = 1 then begin
-      FchbSave.Checked := true ;
-      RangeType := TRangeType( lReg.ReadInteger(   RegKeyName, 'RangeType', 0 )) ;
+    if lReg.ReadInteger(RegKeyName, 'Save', 0) = 1 then begin
+      FchbSave.Checked := true;
+      RangeType := TRangeType(lReg.ReadInteger(  RegKeyName, 'RangeType', 0));
 
-      FcbQuick.ItemIndex := lReg.ReadInteger( RegKeyName, 'QuickIndex', 0 ) ;
-      FiQuick := FcbQuick.ItemIndex ;
-      DoOnChangeQuick( FcbQuick ) ;
+      FcbQuick.ItemIndex := lReg.ReadInteger(RegKeyName, 'QuickIndex', 0);
+      FiQuick := FcbQuick.ItemIndex;
+      DoOnChangeQuick(FcbQuick);
 
-      DateFrom := StrToDate( lReg.ReadString( RegKeyName, 'DateFrom', DateToStr( Date ))) ;
-      DateTo   := StrToDate( lReg.ReadString( RegKeyName, 'DateTo',   DateToStr( Date ))) ;
+      DateFrom := StrToDate(lReg.ReadString(RegKeyName, 'DateFrom', DateToStr(Date)));
+      DateTo  := StrToDate(lReg.ReadString(RegKeyName, 'DateTo',   DateToStr(Date)));
 
     end else begin
-      FcbQuick.ItemIndex := 0 ;
-      FiQuick            := 0 ;
-    end ;
+      FcbQuick.ItemIndex := 0;
+      FiQuick           := 0;
+    end;
   finally
-    lReg.Free ;
-  end ;
-end ;
+    lReg.Free;
+  end;
+end;
 
-procedure TtiDateRange.Save ;
+procedure TtiDateRange.Save;
 var
-  lReg : TRegINIFile ;
+  lReg : TRegINIFile;
 begin
-  lReg := TRegINIFile.Create( AppFileName ) ;
+  lReg := TRegINIFile.Create(AppFileName);
   try
     if FchbSave.Checked then begin
-      lReg.WriteInteger( RegKeyName, 'Save', 1 ) ;
-      lReg.WriteInteger( RegKeyName, 'RangeType', Ord( RangeType )) ;
-      lReg.WriteInteger( RegKeyName, 'QuickIndex', FiQuick ) ;
-      lReg.WriteString(  RegKeyName, 'DateFrom', DateToStr( DateFrom )) ;
-      lReg.WriteString(  RegKeyName, 'DateTo',   DateToStr( DateTo )) ;
+      lReg.WriteInteger(RegKeyName, 'Save', 1);
+      lReg.WriteInteger(RegKeyName, 'RangeType', Ord(RangeType));
+      lReg.WriteInteger(RegKeyName, 'QuickIndex', FiQuick);
+      lReg.WriteString( RegKeyName, 'DateFrom', DateToStr(DateFrom));
+      lReg.WriteString( RegKeyName, 'DateTo',   DateToStr(DateTo));
     end else begin
-      lReg.WriteInteger( RegKeyName, 'Save', 0 ) ;
-    end ;
+      lReg.WriteInteger(RegKeyName, 'Save', 0);
+    end;
   finally
-    lReg.Free ;
-  end ;
+    lReg.Free;
+  end;
 end;
 
 function TtiDateRange.AppFileName: string;
 begin
-  result := Application.EXEName ;
-  result := ExtractFileName( result ) ;
-  result := ChangeFileExt( result, '' ) ;
+  result := Application.EXEName;
+  result := ExtractFileName(result);
+  result := ChangeFileExt(result, '');
 end;
 
 function TtiDateRange.RegKeyName: string;
 var
-  lComponent : TComponent ;
+  lComponent : TComponent;
 begin
-  lComponent := TComponent( Owner ) ;
-  while not ( lComponent is TForm ) do begin
-    lComponent := lComponent.Owner ;
-  end ;
-  result := lComponent.Name ;
+  lComponent := TComponent(Owner);
+  while not (lComponent is TForm) do begin
+    lComponent := lComponent.Owner;
+  end;
+  result := lComponent.Name;
 end;
 
 function TtiDateRange.GetMaxDate: TDateTime;
 begin
 {$IFNDEF FPC}
-  Assert( FdtpFrom.MaxDate = FdtpTo.MaxDate,
-          'FdtpFrom.MaxDate <> FdtpTo.MaxDate' ) ;
-  result := FdtpFrom.MaxDate ;
+  Assert(FdtpFrom.MaxDate = FdtpTo.MaxDate,
+          'FdtpFrom.MaxDate <> FdtpTo.MaxDate');
+  result := FdtpFrom.MaxDate;
 {$ENDIF}
 end;
 
 function TtiDateRange.GetMinDate: TDateTime;
 begin
 {$IFNDEF FPC}
-  Assert( FdtpFrom.MinDate = FdtpTo.MinDate,
-          'FdtpFrom.MinDate <> FdtpTo.MinDate' ) ;
-  result := FdtpFrom.MinDate ;
+  Assert(FdtpFrom.MinDate = FdtpTo.MinDate,
+          'FdtpFrom.MinDate <> FdtpTo.MinDate');
+  result := FdtpFrom.MinDate;
 {$ENDIF}
-end ;
+end;
 
-procedure TtiDateRange.SetMaxDate(const Value: TDateTime);
+procedure TtiDateRange.SetMaxDate(const AValue: TDateTime);
 begin
 {$IFNDEF FPC}
-  FdtpFrom.MaxDate := Trunc( Value ) ;
-  FdtpTo.MaxDate   := Trunc( Value ) ;
+  FdtpFrom.MaxDate := Trunc(AValue);
+  FdtpTo.MaxDate  := Trunc(AValue);
 {$ENDIF}
-end ;
+end;
 
-procedure TtiDateRange.SetMinDate(const Value: TDateTime);
+procedure TtiDateRange.SetMinDate(const AValue: TDateTime);
 var
-  lDateTime : TDateTime ;
+  lDateTime : TDateTime;
 begin
-//  Assert( Value > 0,
-//          FloatToStr( Value ) + ' is not a valid TtiDateRange date' ) ;
-  if Value <= 0 then
+//  Assert(AValue > 0,
+//          FloatToStr(AValue) + ' is not a valid TtiDateRange date');
+  if AValue <= 0 then
     lDateTime := ctiDateRangeMinDate
   else
-    lDateTime := Trunc( Value ) ;
+    lDateTime := Trunc(AValue);
 {$IFNDEF FPC}
-  FdtpFrom.MinDate := lDateTime ;
-  FdtpTo.MinDate   := lDateTime ;
+  FdtpFrom.MinDate := lDateTime;
+  FdtpTo.MinDate  := lDateTime;
 {$ENDIF}
-end ;
+end;
 
-procedure TtiDateRange.SetAllowRangeType(const Value: TAllowRangeType);
+procedure TtiDateRange.SetAllowRangeType(const AValue: TAllowRangeType);
 begin
-  FAllowRangeType := Value ;
+  FAllowRangeType := AValue;
 
   if FAllowRangeType in [artSingleDate] then
-    RangeType      := rtSingleDate
+    RangeType     := rtSingleDate
   else
-    RangeType      := rtDateRange ;
+    RangeType     := rtDateRange;
 
   if FAllowRangeType in [artBoth] then begin
-    FrbSingleDate.Visible := true ;
-    FrbDateRange.Visible  := true ;
+    FrbSingleDate.Visible := true;
+    FrbDateRange.Visible := true;
   end else begin
-    FrbSingleDate.Visible := false ;
-    FrbDateRange.Visible  := false ;
-  end ;
+    FrbSingleDate.Visible := false;
+    FrbDateRange.Visible := false;
+  end;
 
-end ;
+end;
 
 procedure TtiDateRange.ShowInternalState;
 begin
 {$IFNDEF FPC}
 ShowMessage(
-  'FdtpFrom.MinDate ' + DateTimeToStr( FdtpFrom.MinDate ) + #13 +
-  'FdtpFrom.Date    ' + DateTimeToStr( FdtpFrom.Date    ) + #13 +
-  'FdtpFrom.MaxDate ' + DateTimeToStr( FdtpFrom.MaxDate ) + #13 +
-  'FdtpTo.MinDate   ' + DateTimeToStr( FdtpTo.MinDate   ) + #13 +
-  'FdtpTo.Date      ' + DateTimeToStr( FdtpTo.Date      ) + #13 +
-  'FdtpTo.MaxDate   ' + DateTimeToStr( FdtpTo.MaxDate   )
-  ) ;
+  'FdtpFrom.MinDate ' + DateTimeToStr(FdtpFrom.MinDate) + #13 +
+  'FdtpFrom.Date    ' + DateTimeToStr(FdtpFrom.Date   ) + #13 +
+  'FdtpFrom.MaxDate ' + DateTimeToStr(FdtpFrom.MaxDate) + #13 +
+  'FdtpTo.MinDate   ' + DateTimeToStr(FdtpTo.MinDate  ) + #13 +
+  'FdtpTo.Date      ' + DateTimeToStr(FdtpTo.Date     ) + #13 +
+  'FdtpTo.MaxDate   ' + DateTimeToStr(FdtpTo.MaxDate  )
+ );
 {$ELSE}
 ShowMessage(
-  'FdtpFrom.Date    ' + DateTimeToStr( FdtpFrom.Date    ) + #13 +
-  'FdtpTo.Date      ' + DateTimeToStr( FdtpTo.Date      ) + #13 +
-  'MaxDate          ' + DateTimeToStr( MaxDate      ) + #13 +
-  'MinDate          ' + DateTimeToStr( MinDate      ) + #13
-  ) ;
+  'FdtpFrom.Date    ' + DateTimeToStr(FdtpFrom.Date   ) + #13 +
+  'FdtpTo.Date      ' + DateTimeToStr(FdtpTo.Date     ) + #13 +
+  'MaxDate          ' + DateTimeToStr(MaxDate     ) + #13 +
+  'MinDate          ' + DateTimeToStr(MinDate     ) + #13
+ );
 {$ENDIF}
 end;
 
@@ -1079,60 +1054,73 @@ end;
 
 procedure TrsThisFinancialYear.Apply(ptiDateRange: TtiDateRange);
 var
-  liD, liM, liY : Word ;
+  liD, liM, liY : Word;
 begin
-  inherited Apply( ptiDateRange ) ;
-  DecodeDate( Date, liY, liM, liD ) ;
+  inherited Apply(ptiDateRange);
+  DecodeDate(Date, liY, liM, liD);
   if liM <= 6 then
   begin
-    DateFrom := EncodeDate( liY-1, 7, 1 ) ;
-    DateTo   := EncodeDate( liY, 7, 1 ) -1 ;
+    DateFrom := EncodeDate(liY-1, 7, 1);
+    DateTo  := EncodeDate(liY, 7, 1) -1;
   end
   else
   begin
-    DateFrom := EncodeDate( liY, 7, 1 ) ;
-    DateTo   := EncodeDate( liY+1, 7, 1 ) -1 ;
+    DateFrom := EncodeDate(liY, 7, 1);
+    DateTo  := EncodeDate(liY+1, 7, 1) -1;
   end;
 end;
 
 constructor TrsThisFinancialYear.Create;
 begin
   inherited;
-  RangeType := rtDateRange ;
-  Caption   := 'This financial year' ;
+  RangeType := rtDateRange;
+  Caption  := 'This financial year';
 end;
 
 { TrsLastFinancialYear }
 
 procedure TrsLastFinancialYear.Apply(ptiDateRange: TtiDateRange);
 var
-  liD, liM, liY : Word ;
+  liD, liM, liY : Word;
 begin
-  inherited Apply( ptiDateRange ) ;
-  DecodeDate( Date, liY, liM, liD ) ;
+  inherited Apply(ptiDateRange);
+  DecodeDate(Date, liY, liM, liD);
   if liM <= 6 then
   begin
-    DateFrom := EncodeDate( liY-2, 7, 1 ) ;
-    DateTo   := EncodeDate( liY-1, 7, 1 ) -1 ;
+    DateFrom := EncodeDate(liY-2, 7, 1);
+    DateTo  := EncodeDate(liY-1, 7, 1) -1;
   end
   else
   begin
-    DateFrom := EncodeDate( liY-1, 7, 1 ) ;
-    DateTo   := EncodeDate( liY, 7, 1 ) -1 ;
+    DateFrom := EncodeDate(liY-1, 7, 1);
+    DateTo  := EncodeDate(liY, 7, 1) -1;
   end;
 end;
 
 constructor TrsLastFinancialYear.Create;
 begin
   inherited;
-  RangeType := rtDateRange ;
-  Caption   := 'Last financial year' ;
+  RangeType := rtDateRange;
+  Caption  := 'Last financial year';
 end;
 
-procedure TtiDateRange.SetOptions(const Value: TtiDateRangeOptions);
+procedure TtiDateRange.SetOptions(const AValue: TtiDateRangeOptions);
 begin
-  FOptions := Value;
+  FOptions := AValue;
   FchbSave.Visible := (droptShowRememberNextTime in FOptions);
 end;
 
+function TtiDateRange.GetRangeSetterIndex: Integer;
+begin
+  Result:= FcbQuick.ItemIndex;
+end;
+
+procedure TtiDateRange.SetRangeSetterIndex(const AValue: Integer);
+begin
+  if AValue < FcbQuick.Items.Count then
+    FcbQuick.ItemIndex:= AValue
+  else
+    FcbQuick.ItemIndex:= 0;
+  DoOnChangeQuick(nil);
+end;
 end.

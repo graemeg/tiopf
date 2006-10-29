@@ -4,13 +4,13 @@ interface
 uses
   INIFiles
   ,Registry
-  ;
+ ;
 
 const
-  cErrorCanNotSetINIFileToReadWrite = 'INI file <%s> is read-only and can not be set to read-write.' ;
+  cErrorCanNotSetINIFileToReadWrite = 'INI file <%s> is read-only and can not be set to read-write.';
 
-function gDUnitINI : TINIFile ;
-function gDUnitReg : TRegINIFile ;
+function gDUnitINI : TINIFile;
+function gDUnitReg : TRegINIFile;
 
 
 implementation
@@ -18,16 +18,16 @@ uses
   tiUtils
   ,tiExcept
   ,SysUtils
-  ;
+ ;
 
 var
-  uINI : TINIFile ;
-  uReg : TRegINIFile ;
+  uINI : TINIFile;
+  uReg : TRegINIFile;
 
 
-function gDUnitINI : TINIFile ;
+function gDUnitINI : TINIFile;
 var
-  lFileName : string ;
+  lFileName : string;
 begin
   if uINI = nil then
   begin
@@ -40,25 +40,25 @@ begin
         raise EtiOPFUserException.CreateFmt(cErrorCanNotSetINIFileToReadWrite,
                    [lFileName]);
     end;
-    uINI := TINIFile.Create( lFileName ) ;
-  end ;
+    uINI := TINIFile.Create(lFileName);
+  end;
   result := uINI;
 end;
 
 
-function gDUnitReg : TRegINIFile ;
+function gDUnitReg : TRegINIFile;
 begin                      
   if uReg = nil then
-    uReg := TRegINIFile.Create( 'DUnitTIOPF' ) ;
+    uReg := TRegINIFile.Create('DUnitTIOPF');
   result := uReg;
-end ;
+end;
 
 
 initialization
 
 finalization
-  uINI.Free ;
-  uReg.Free ;
+  uINI.Free;
+  uReg.Free;
   
 end.
 

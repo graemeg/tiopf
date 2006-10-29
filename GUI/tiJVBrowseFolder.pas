@@ -74,7 +74,7 @@ type
     ocNetPrinterSrch,   //SHCONTF_NETPRINTERSRCH,
     ocSharable,         //SHCONTF_SHAREABLE,
     ocStorage           //SHCONTF_STORAGE
-  );
+ );
   TJvBrowsableObjectClasses = set of TJvBrowsableObjectClass;
 
   TJvBrowseAcceptChange = procedure(Sender: TObject; const NewFolder: string;
@@ -153,7 +153,7 @@ type
     fdResourcesLocalized,
     fdCommonOEMLinks, { CSIDL_COMMON_OEM_LINKS }
     fdComputersNearMe { CSIDL_COMPUTERSNEARME }
-    );
+   );
 
   TJvFolderPos = (fpDefault, fpScreenCenter, fpFormCenter, fpTopLeft,
     fpTopRight, fpBottomLeft, fpBottomRight);
@@ -204,9 +204,9 @@ type
     procedure WMSize(var Msg: TWMSize); message WM_SIZE;
     function GetRootDirectoryPath: string;
     function IsRootDirectoryPathStored: Boolean;
-    procedure SetRootDirectory(const Value: TFromDirectory);
-    procedure SetRootDirectoryPath(const Value: string);
-    procedure SetOptions(const Value: TOptionsDir);
+    procedure SetRootDirectory(const AValue: TFromDirectory);
+    procedure SetRootDirectoryPath(const AValue: string);
+    procedure SetOptions(const AValue: TOptionsDir);
   protected
     { Messages from the browser }
     procedure DoInitialized;
@@ -235,7 +235,7 @@ type
     procedure SetSelection(IDList: PItemIDList); overload;
     procedure SetStatusText(const AText: string);
     procedure SetStatusTextW(const AText: WideString);
-    procedure SetOKEnabled(const Value: Boolean);
+    procedure SetOKEnabled(const AValue: Boolean);
     procedure SetOKText(const AText: string);
     procedure SetOKTextW(const AText: WideString);
     procedure SetExpanded(const APath: string); overload;
@@ -641,7 +641,7 @@ const
     { fdComputersNearMe }
     (CSIDL: CSIDL_COMPUTERSNEARME; MinVersion: $00060000; OnlyNT: False;
     CanSimulate: False; Alternative: fdNoSpecialFolder)
-    );
+   );
 
 procedure InitSHFolder;
 const
@@ -763,16 +763,16 @@ begin
   (* These GUID's seem pretty portable, you can enter them at RootDirectoryPath
      or Directory, ie the "::{GUID}" part (only tested on Windows XP).
 
-    ::{00020D75-0000-0000-C000-000000000046} - Inbox
-    ::{20D04FE0-3AEA-1069-A2D8-08002B30309D} - CSIDL_DRIVES
-    ::{208D2C60-3AEA-1069-A2D7-08002B30309D} - CSIDL_NETWORK, CSIDL_NETHOOD
-    ::{21EC2020-3AEA-1069-A2DD-08002B30309D} - CSIDL_CONTROLS
-    ::{2227A280-3AEA-1069-A2DE-08002B30309D} - CSIDL_PRINTERS, CSIDL_PRINTHOOD
-    ::{450D8FBA-AD25-11D0-98A8-0800361B1103} - CSIDL_PERSONAL
-    ::{645FF040-5081-101B-9F08-00AA002F954E} - CSIDL_BITBUCKET
-    ::{7007ACC7-3202-11D1-AAD2-00805FC1270E} - CSIDL_CONNECTIONS
-    ::{871C5380-42A0-1069-A2EA-08002B30309D} - CSIDL_INTERNET
-    ::{D6277990-4C6A-11CF-8D87-00AA0060F5BF} - Scheduled Tasks
+   ::{00020D75-0000-0000-C000-000000000046} - Inbox
+   ::{20D04FE0-3AEA-1069-A2D8-08002B30309D} - CSIDL_DRIVES
+   ::{208D2C60-3AEA-1069-A2D7-08002B30309D} - CSIDL_NETWORK, CSIDL_NETHOOD
+   ::{21EC2020-3AEA-1069-A2DD-08002B30309D} - CSIDL_CONTROLS
+   ::{2227A280-3AEA-1069-A2DE-08002B30309D} - CSIDL_PRINTERS, CSIDL_PRINTHOOD
+   ::{450D8FBA-AD25-11D0-98A8-0800361B1103} - CSIDL_PERSONAL
+   ::{645FF040-5081-101B-9F08-00AA002F954E} - CSIDL_BITBUCKET
+   ::{7007ACC7-3202-11D1-AAD2-00805FC1270E} - CSIDL_CONNECTIONS
+   ::{871C5380-42A0-1069-A2EA-08002B30309D} - CSIDL_INTERNET
+   ::{D6277990-4C6A-11CF-8D87-00AA0060F5BF} - Scheduled Tasks
   *)
 end;
 
@@ -1036,7 +1036,7 @@ begin
     * If the location specified by the pidl parameter is not part of the file
       system, this function will fail.
     * If the pidl parameter specifies a shortcut, the pszPath will contain the
-      path to the shortcut, not to the shortcut's target. (if not win XP )
+      path to the shortcut, not to the shortcut's target. (if not win XP)
 
     Could also use IDListToPath
   }
@@ -1202,7 +1202,7 @@ begin
     if pgrfFlags and CBrowseObjectClasses[Obj] = CBrowseObjectClasses[Obj] then
       Include(Flags, Obj);
 
-  { This seems not to work ?? : }
+  { This seems not to work ??: }
   //if psf.GetDisplayNameOf(pidlFolder, SHGDN_NORMAL or SHGDN_FORPARSING, StrRet) <> S_OK then
   //  Exit;
   try
@@ -1304,10 +1304,10 @@ begin
     SendMessage(FDialogWindow, BFFM_SETEXPANDED, WPARAM(True), LPARAM(PWideChar(APath)));
 end;
 
-procedure TtiJvBrowseForFolderDialog.SetOKEnabled(const Value: Boolean);
+procedure TtiJvBrowseForFolderDialog.SetOKEnabled(const AValue: Boolean);
 begin
   if FDialogWindow <> 0 then
-    SendMessage(FDialogWindow, BFFM_ENABLEOK, 0, LPARAM(Value));
+    SendMessage(FDialogWindow, BFFM_ENABLEOK, 0, LPARAM(AValue));
 end;
 
 procedure TtiJvBrowseForFolderDialog.SetOKText(const AText: string);
@@ -1323,17 +1323,17 @@ begin
     SendMessage(FDialogWindow, BFFM_SETOKTEXT, 0, LPARAM(PWideChar(AText)));
 end;
 
-procedure TtiJvBrowseForFolderDialog.SetOptions(const Value: TOptionsDir);
+procedure TtiJvBrowseForFolderDialog.SetOptions(const AValue: TOptionsDir);
 var
   AddedOptions, RemovedOptions: TOptionsDir;
 begin
-  if FOptions = Value then
+  if FOptions = AValue then
     Exit;
 
-  AddedOptions := Value - (FOptions * Value);
-  RemovedOptions := FOptions - (FOptions * Value);
+  AddedOptions := AValue - (FOptions * AValue);
+  RemovedOptions := FOptions - (FOptions * AValue);
 
-  FOptions := Value;
+  FOptions := AValue;
 
   { Force correct options }
   if odIncludeUrls in AddedOptions then
@@ -1364,19 +1364,19 @@ begin
 end;
 
 procedure TtiJvBrowseForFolderDialog.SetRootDirectory(
-  const Value: TFromDirectory);
+  const AValue: TFromDirectory);
 begin
-  if (Value = fdNoSpecialFolder) and (FRootDirectory <> fdNoSpecialFolder) then
+  if (AValue = fdNoSpecialFolder) and (FRootDirectory <> fdNoSpecialFolder) then
     FRootDirectoryPath := GetRootDirectoryPath;
 
-  FRootDirectory := Value;
+  FRootDirectory := AValue;
 end;
 
 procedure TtiJvBrowseForFolderDialog.SetRootDirectoryPath(
-  const Value: string);
+  const AValue: string);
 begin
   FRootDirectory := fdNoSpecialFolder;
-  FRootDirectoryPath := Value;
+  FRootDirectoryPath := AValue;
 end;
 
 procedure TtiJvBrowseForFolderDialog.SetSelection(const APath: string);

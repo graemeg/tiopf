@@ -7,10 +7,10 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   tiObject, ActnList, StdCtrls, Buttons, FtiDialogAbs, tiReadOnly,
-  ExtCtrls, ComCtrls, ToolWin, tiBaseObject, Contnrs ;
+  ExtCtrls, ComCtrls, ToolWin, tiBaseObject, Contnrs;
 
 const
-  TI_CLOSEACTIVEFORM = WM_USER + 1000 ;
+  TI_CLOSEACTIVEFORM = WM_USER + 1000;
   cCaptionClose       = 'Close  [Esc]';
   cCaptionUndo        = 'Undo  [Ctrl+Z]';
   cCaptionCancelClose = 'Cancel and close  [Esc]';
@@ -19,22 +19,22 @@ const
 type
 
   TtiUserFeedbackMessageType = (tiufmtInfo, tiufmtError);
-  TFormTIFormMgrForm = class ;
-  TtiOnShowFormEvent = procedure( const pForm : TFormTIFormMgrForm ) of object;
-  TtiOnFormMessageEvent = procedure( const pMessage: string; pMessageType: TtiUserFeedbackMessageType ) of object ;
-  TLogEvent = procedure( const pMessage : string ) of object ;
+  TFormTIFormMgrForm = class;
+  TtiOnShowFormEvent = procedure(const pForm : TFormTIFormMgrForm) of object;
+  TtiOnFormMessageEvent = procedure(const AMessage: string; pMessageType: TtiUserFeedbackMessageType) of object;
+  TLogEvent = procedure(const AMessage : string) of object;
   TtiFormMgr = class;
 
-  TtiButtonsVisible = ( btnVisNone, btnVisReadOnly, btnVisReadWrite);
+  TtiButtonsVisible = (btnVisNone, btnVisReadOnly, btnVisReadWrite);
 
 // Paste this into the concrete class
 //  protected
-//    procedure SetData(const Value: TtiObject); override ;
-//    function  FormIsValid : boolean ; override ;
+//    procedure SetData(const AValue: TtiObject); override;
+//    function  FormIsValid : boolean; override;
 
 
   // ToDo: Remove pnlCaption - but this will require some effort as it may be referenced by child forms
-  TFormTIFormMgrForm = class( TForm )
+  TFormTIFormMgrForm = class(TForm)
     pnlCaption: TPanel;
     lblCaption: TLabel;
     procedure FormCreate(Sender: TObject);
@@ -42,16 +42,16 @@ type
     procedure cbEnterAsTabClick(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
-    FAL         : TActionList ;
-    FaClose      : TAction ;
-    FaUndo       : TAction ;
-    FaSaveClose  : TAction ;
-    FaCancelClose: TAction ;
-    FaDummy      : TAction ;
+    FAL        : TActionList;
+    FaClose     : TAction;
+    FaUndo      : TAction;
+    FaSaveClose : TAction;
+    FaCancelClose: TAction;
+    FaDummy     : TAction;
 
     FButtonsVisible: TtiButtonsVisible;
     FForceCanLeave: boolean;
-    FIsModal : boolean ;
+    FIsModal : boolean;
     FOnFormMessageEvent: TtiOnFormMessageEvent;
     FFormErrorMessage: string;
     FFormInfoMessage: string;
@@ -62,31 +62,31 @@ type
     FLastActiveControl: TWinControl;
 
     function  GetFormCaption: string;
-    procedure SetFormCaption(const Value: string);
-    procedure SetButtonsVisible(const Value: TtiButtonsVisible);
+    procedure SetFormCaption(const AValue: string);
+    procedure SetButtonsVisible(const AValue: TtiButtonsVisible);
     function  GetBorderColor: TColor;
-    procedure SetBorderColor(const Value: TColor);
-    procedure SetFormErrorMessage(const Value: string);
-    procedure SetFormInfoMessage(const Value: string);
+    procedure SetBorderColor(const AValue: TColor);
+    procedure SetFormErrorMessage(const AValue: string);
+    procedure SetFormInfoMessage(const AValue: string);
     // These are set by the FormMgr so can be hidden from outside view
     property  OnEditsSave: TtiObjectEvent read FOnEditsSave Write FOnEditsSave;
     property  OnEditsCancel: TtiObjectEvent read FOnEditsCancel Write FOnEditsCancel;
-    procedure SetIsModal(const Value: Boolean);
+    procedure SetIsModal(const AValue: Boolean);
 
   protected
-    FData        : TtiObject ;
-    FDataBuffer  : TtiObject ;
-    FUpdateButtons : boolean ;
+    FData       : TtiObject;
+    FDataBuffer : TtiObject;
+    FUpdateButtons : boolean;
 
     procedure alUpdate(Action: TBasicAction; var Handled: Boolean);virtual;
     function  AddAction(const pCaption: string;
-                        const pOnExecute: TNotifyEvent ;
+                        const pOnExecute: TNotifyEvent;
                         const pHint: string = '';
                               pImageIndex: Integer = -1;
-                              pHelpContext: Integer = -1 ) : TAction; overload ;
+                              pHelpContext: Integer = -1): TAction; overload;
     function  AddAction(const pCaption: string; const pHint: string;
                         const pOnExecute: TNotifyEvent;
-                        pShortCutKey: Word; pShortCutShiftState: TShiftState ) : TAction; overload ;
+                        pShortCutKey: Word; pShortCutShiftState: TShiftState): TAction; overload;
 
     procedure aUndoExecute(Sender: TObject);virtual;
     procedure aSaveCloseExecute(Sender: TObject);virtual;
@@ -94,43 +94,43 @@ type
     procedure aCloseExecute(Sender: TObject);virtual;
     procedure aDummyExecute(Sender: TObject);
 
-    function  FormIsValid : boolean ; virtual ;
-    function  FormIsDirty : boolean ; virtual ;
-    procedure SetData(const Value: TtiObject); virtual ;
-    function  Databuffer : TtiObject; virtual ;
+    function  FormIsValid : boolean; virtual;
+    function  FormIsDirty : boolean; virtual;
+    procedure SetData(const AValue: TtiObject); virtual;
+    function  Databuffer : TtiObject; virtual;
     function  GetData: TtiObject; virtual;
 
     // Implement these in the concrete...
-    property  ButtonsVisible : TtiButtonsVisible read FButtonsVisible write SetButtonsVisible ;
-    property  ForceCanLeave : boolean read FForceCanLeave write FForceCanLeave ;
-    procedure DoBeforeSave ; virtual ;
-    procedure DoAfterSave ; virtual ;
-    procedure DoAfterDiscard ; virtual ;
-    procedure SetupButtons ; virtual ;
+    property  ButtonsVisible : TtiButtonsVisible read FButtonsVisible write SetButtonsVisible;
+    property  ForceCanLeave : boolean read FForceCanLeave write FForceCanLeave;
+    procedure DoBeforeSave; virtual;
+    procedure DoAfterSave; virtual;
+    procedure DoAfterDiscard; virtual;
+    procedure SetupButtons; virtual;
     procedure SelectFirstControl; virtual;
 
-    property  UpdateButtons : boolean read FUpdateButtons write FUpdateButtons ;
+    property  UpdateButtons : boolean read FUpdateButtons write FUpdateButtons;
     property  LastActiveControl: TWinControl read FLastActiveControl Write FLastActiveControl;
 
   public
-    procedure AssignActions(const pList: TList);
-    property  Data : TtiObject read GetData write SetData ;
-    property  FormCaption : string read GetFormCaption write SetFormCaption ;
-    property  IsModal : Boolean read FIsModal write SetIsModal ;
-    property  BorderColor : TColor read GetBorderColor write SetBorderColor ;
-    property  OnFormMessage : TtiOnFormMessageEvent read FOnFormMessageEvent Write FOnFormMessageEvent ;
+    procedure AssignActions(const AList: TList);
+    property  Data : TtiObject read GetData write SetData;
+    property  FormCaption : string read GetFormCaption write SetFormCaption;
+    property  IsModal : Boolean read FIsModal write SetIsModal;
+    property  BorderColor : TColor read GetBorderColor write SetBorderColor;
+    property  OnFormMessage : TtiOnFormMessageEvent read FOnFormMessageEvent Write FOnFormMessageEvent;
     property  FormErrorMessage: string read FFormErrorMessage Write SetFormErrorMessage;
     property  FormInfoMessage:  string read FFormInfoMessage Write SetFormInfoMessage;
-    property  FormMgr: TtiFormMgr read FFormMgr Write FFormMgr ;
+    property  FormMgr: TtiFormMgr read FFormMgr Write FFormMgr;
   end;
 
-  TFormTIFormMgrFormClass = class of TFormTIFormMgrForm ;
+  TFormTIFormMgrFormClass = class of TFormTIFormMgrForm;
 
-  TtiFormMgr = class( TtiBaseObject )
+  TtiFormMgr = class(TtiBaseObject)
   private
-    FForms : TObjectList ;
-    FModalForms : TObjectList ;
-    FActiveForm : TFormTIFormMgrForm ;
+    FForms : TObjectList;
+    FModalForms : TObjectList;
+    FActiveForm : TFormTIFormMgrForm;
     FParentPnl: TPanel;
     FBorderColor: TColor;
     FOnShowForm: TtiOnShowFormEvent;
@@ -140,64 +140,64 @@ type
     function    GetNextForm: TFormTIFormMgrForm;
     function    GetPrevForm: TFormTIFormMgrForm;
     function    GetForms(i: integer): TFormTIFormMgrForm;
-    procedure   SetForms(i: integer; const Value: TFormTIFormMgrForm);
+    procedure   SetForms(i: integer; const AValue: TFormTIFormMgrForm);
     function    GetActiveForm: TFormTIFormMgrForm;
-    procedure   SetActiveForm(const Value: TFormTIFormMgrForm);
-    procedure   Add( const pForm : TFormTIFormMgrForm ) ;
-    procedure   DoCloseForm( const pForm : TFormTIFormMgrForm ) ;
-    function    CloseCurrentFormActivatePreviousForm( pClose : boolean ) : boolean ;
-    procedure   SetBorderColor(const Value: TColor);
+    procedure   SetActiveForm(const AValue: TFormTIFormMgrForm);
+    procedure   Add(const pForm : TFormTIFormMgrForm);
+    procedure   DoCloseForm(const pForm : TFormTIFormMgrForm);
+    function    CloseCurrentFormActivatePreviousForm(pClose : boolean): boolean;
+    procedure   SetBorderColor(const AValue: TColor);
     procedure   DoOnShowForm(const pForm : TFormTIFormMgrForm);
-    procedure   SetParentPnl(const Value: TPanel);
+    procedure   SetParentPnl(const AValue: TPanel);
     procedure   DoBeginUpdate;
     procedure   DoEndUpdate;
     procedure   HideActiveForm;
     function    GetFormCount: Integer;
   public
-    constructor Create ;
-    destructor  Destroy ; override ;
+    constructor Create;
+    destructor  Destroy; override;
 
-    procedure   ShowForm(      const pFormClass      : TFormTIFormMgrFormClass ;
-                               const pData           : TtiObject = nil ;
-                                     pModal          : Boolean = False ;
-                               const pOnEditsSave    : TtiObjectEvent = nil;
-                               const pOnEditsCancel  : TtiObjectEvent = nil;
-                                     pReadOnly       : boolean = False ) ; overload ;
-    procedure   ShowForm(      const pForm           : TFormTIFormMgrForm      ;
-                               const pData           : TtiObject = nil ;
-                                     pModal          : Boolean = False ;
-                               const pOnEditsSave    : TtiObjectEvent = nil;
-                               const pOnEditsCancel  : TtiObjectEvent = nil;
-                                     pReadOnly       : boolean = False ) ; overload ;
-    procedure   ShowFormModal( const pFormClass      : TFormTIFormMgrFormClass ;
-                               const pData           : TtiObject ;
-                               const pOnEditsSave    : TtiObjectEvent = nil;
-                               const pOnEditsCancel  : TtiObjectEvent = nil);
+    procedure   ShowForm(     const pFormClass     : TFormTIFormMgrFormClass;
+                               const AData          : TtiObject = nil;
+                                     pModal         : Boolean = False;
+                               const pOnEditsSave   : TtiObjectEvent = nil;
+                               const pOnEditsCancel : TtiObjectEvent = nil;
+                                     pReadOnly      : boolean = False); overload;
+    procedure   ShowForm(     const pForm          : TFormTIFormMgrForm     ;
+                               const AData          : TtiObject = nil;
+                                     pModal         : Boolean = False;
+                               const pOnEditsSave   : TtiObjectEvent = nil;
+                               const pOnEditsCancel : TtiObjectEvent = nil;
+                                     pReadOnly      : boolean = False); overload;
+    procedure   ShowFormModal(const pFormClass     : TFormTIFormMgrFormClass;
+                               const AData          : TtiObject;
+                               const pOnEditsSave   : TtiObjectEvent = nil;
+                               const pOnEditsCancel : TtiObjectEvent = nil);
 
-    procedure   BringToFront( const pForm : TFormTIFormMgrForm ; pFocusFirstControl : Boolean ) ;
+    procedure   BringToFront(const pForm : TFormTIFormMgrForm; pFocusFirstControl : Boolean);
 
-    function    FindForm( const pFormClass : TFormTIFormMgrFormClass ; const pData : TtiObject ) : TFormTIFormMgrForm ;
-    function    IndexOf( const pForm : TFormTIFormMgrForm ) : integer ;
+    function    FindForm(const pFormClass : TFormTIFormMgrFormClass; const AData : TtiObject): TFormTIFormMgrForm;
+    function    IndexOf(const pForm : TFormTIFormMgrForm): integer;
 
-    procedure   CloseForm( const pForm : TFormTIFormMgrForm ) ;
-    procedure   CloseAllForms ;
-    procedure   RemoveForm( const pForm : TFormTIFormMgrForm ) ;
+    procedure   CloseForm(const pForm : TFormTIFormMgrForm);
+    procedure   CloseAllForms;
+    procedure   RemoveForm(const pForm : TFormTIFormMgrForm);
 
-    property    ActiveForm : TFormTIFormMgrForm read GetActiveForm write SetActiveForm ;
-    property    Forms[i:integer] : TFormTIFormMgrForm read GetForms write SetForms ;
+    property    ActiveForm : TFormTIFormMgrForm read GetActiveForm write SetActiveForm;
+    property    Forms[i:integer]: TFormTIFormMgrForm read GetForms write SetForms;
     property    FormCount: Integer read GetFormCount;
-    property    ParentPnl : TPanel read FParentPnl write SetParentPnl ;
-    procedure   ShowPrevForm ;
-    procedure   ShowNextForm ;
-    property    NextForm : TFormTIFormMgrForm read GetNextForm ;
-    property    PrevForm : TFOrmTIFormMgrForm read GetPrevForm ;
-    property    BorderColor : TColor read FBorderColor write SetBorderColor ;
-    property    OnShowForm : TtiOnShowFormEvent read FOnShowForm write FOnShowForm ;
+    property    ParentPnl : TPanel read FParentPnl write SetParentPnl;
+    procedure   ShowPrevForm;
+    procedure   ShowNextForm;
+    property    NextForm : TFormTIFormMgrForm read GetNextForm;
+    property    PrevForm : TFOrmTIFormMgrForm read GetPrevForm;
+    property    BorderColor : TColor read FBorderColor write SetBorderColor;
+    property    OnShowForm : TtiOnShowFormEvent read FOnShowForm write FOnShowForm;
     property    OnFormMessage: TtiOnFormMessageEvent read FOnFormMessageEvent write FOnFormMessageEvent;
     property    OnBeginUpdate: TNotifyEvent read FOnBeginUpdate Write FOnBeginUpdate;
     property    OnEndUpdate:   TNotifyEvent read FOnEndUpdate Write FOnEndUpdate;
-    procedure   AssignFormList(const pStrings : TStrings);
-  end ;
+    procedure   AssignFormList(const AStrings : TStrings);
+  end;
 
 implementation
 uses
@@ -209,18 +209,18 @@ uses
   ,tiImageMgr
   ,tiResources
   ,tiExcept
-  ;
+ ;
 
 {$R *.DFM}
 
 procedure TFormTIFormMgrForm.FormCreate(Sender: TObject);
 begin
   inherited;
-//  FButtonsSetup := False ;
-  KeyPreview := true ;
+//  FButtonsSetup := False;
+  KeyPreview := true;
 
-  FAL := TActionList.Create( Self ) ;
-  FAL.OnUpdate := ALUpdate ;
+  FAL := TActionList.Create(Self);
+  FAL.OnUpdate := ALUpdate;
 
   FaClose := AddAction(cCaptionClose, 'Close this page' + ClassName , aCloseExecute, VK_ESCAPE, []);
   FaClose.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_CloseWindow);
@@ -237,18 +237,18 @@ begin
   FaDummy := AddAction('DymmyAction', aDummyExecute);
   lblCaption.Action := FaDummy;
 
-  FForceCanLeave := false ;
-  FIsModal := false ;
-  FUpdateButtons := true ;
+  FForceCanLeave := false;
+  FIsModal := false;
+  FUpdateButtons := true;
 
-  pnlCaption.TabOrder := ControlCount - 1 ;
+  pnlCaption.TabOrder := ControlCount - 1;
 
   // A hack to remove the pnlCaption, without going through all the pain
   // of removing references in descendants of TFormTIFormMgrForm
   // This pnl contains a TLable, which is hooked up to a TAction - necessary to get the form's
   // ActionList.OnUpdate event to fire. (This is where form validation takes place)
   pnlCaption.Visible := True;
-  pnlCaption.Height := 0 ;
+  pnlCaption.Height := 0;
 
 end;
 
@@ -260,21 +260,21 @@ begin
   // with the associated AV. The If statement below stops this.
   if FormMgr.IndexOf(Self) <> -1 then
     FormMgr.RemoveForm(Self);
-  FreeAndNil(FDataBuffer) ;
+  FreeAndNil(FDataBuffer);
   inherited;
 end;
 
-procedure TFormTIFormMgrForm.SetData(const Value: TtiObject);
+procedure TFormTIFormMgrForm.SetData(const AValue: TtiObject);
 begin
-  FAL.OnUpdate := nil ;
+  FAL.OnUpdate := nil;
   try
-    FData := Value;
-    FreeAndNil(FDataBuffer) ;
+    FData := AValue;
+    FreeAndNil(FDataBuffer);
     if FData <> nil then
-      FDataBuffer := FData.Clone ;
+      FDataBuffer := FData.Clone;
   finally
-    FAL.OnUpdate := ALUpdate ;
-  end ;
+    FAL.OnUpdate := ALUpdate;
+  end;
 end;
 
 procedure TFormTIFormMgrForm.alUpdate(Action: TBasicAction; var Handled: Boolean);
@@ -282,19 +282,19 @@ var
   lFormIsDirty : Boolean;
   lFormIsValid : Boolean;
 begin
-  Handled := true ;
-  Assert( FData.TestValid(TtiObject, true), cTIInvalidObjectError + ' <FData>') ;
-  Assert( FDataBuffer.TestValid(TtiObject, true ), cTIInvalidObjectError + '<FDataBuffer>') ;
+  Handled := true;
+  Assert(FData.TestValid(TtiObject, true), cTIInvalidObjectError + ' <FData>');
+  Assert(FDataBuffer.TestValid(TtiObject, true), cTIInvalidObjectError + '<FDataBuffer>');
   lFormIsDirty := FormIsDirty;
   lFormIsValid := FormIsValid;
   if FUpdateButtons then
   begin
     case FButtonsVisible of
-    btnVisNone      : ; // Do nothing
-    btnVisReadOnly  : ; // Do nothing
+    btnVisNone     :; // Do nothing
+    btnVisReadOnly :; // Do nothing
     btnVisReadWrite : begin
-                        FaUndo.Enabled := ( FData <> nil ) and lFormIsDirty ;
-                        FaSaveClose.Enabled := ( FData <> nil ) and lFormIsValid and lFormIsDirty ;
+                        FaUndo.Enabled := (FData <> nil) and lFormIsDirty;
+                        FaSaveClose.Enabled := (FData <> nil) and lFormIsValid and lFormIsDirty;
                         if lFormIsDirty then
                           FaCancelClose.Caption := cCaptionCancelClose
                         else
@@ -310,30 +310,30 @@ function TFormTIFormMgrForm.FormIsValid: boolean;
 var
   ls: string;
 begin
-  Assert( DataBuffer.TestValid(TtiObject, true), cTIInvalidObjectError );
+  Assert(DataBuffer.TestValid(TtiObject, true), cTIInvalidObjectError);
   if DataBuffer <> nil then
   begin
     Result := DataBuffer.IsValid(ls);
     if ls <> FFormErrorMessage then
       FormErrorMessage := ls;
   end else
-    result := true ;
+    result := true;
 end;
 
 
 procedure TFormTIFormMgrForm.cbEnterAsTabClick(Sender: TObject);
 begin
   inherited;
-  SetupButtons ;
+  SetupButtons;
 end;
 
-procedure TFormTIFormMgrForm.SetupButtons ;
+procedure TFormTIFormMgrForm.SetupButtons;
 begin
   if not FUpdateButtons then
-   Exit ; //==>
+   Exit; //==>
   // No data
-  if ( FData = nil ) or
-     ( FDataBuffer = nil ) then
+  if (FData = nil) or
+     (FDataBuffer = nil) then
     ButtonsVisible := btnVisReadOnly
   else
   begin
@@ -343,7 +343,7 @@ begin
     else
       ButtonsVisible := btnVisReadOnly;
   end;
-end ;
+end;
 
 procedure TFormTIFormMgrForm.FormKeyPress(Sender: TObject; var Key: Char);
 begin
@@ -359,25 +359,25 @@ end;
 
 function TFormTIFormMgrForm.GetFormCaption: string;
 begin
-  result := lblCaption.Caption ;
+  result := lblCaption.Caption;
 end;
 
-procedure TFormTIFormMgrForm.SetFormCaption(const Value: string);
+procedure TFormTIFormMgrForm.SetFormCaption(const AValue: string);
 begin
-  lblCaption.Caption := Value ;
+  lblCaption.Caption := AValue;
 end;
 
 procedure TFormTIFormMgrForm.aSaveCloseExecute(Sender: TObject);
 begin
-  Assert( FData <> nil, 'FData not assigned' ) ;
-  Assert( FDataBuffer <> nil, 'FDataBuffer not assigned' ) ;
+  Assert(FData <> nil, 'FData not assigned');
+  Assert(FDataBuffer <> nil, 'FDataBuffer not assigned');
   try
-    FAL.OnUpdate := nil ;
-    Visible := False ;
-    DoBeforeSave ;
-    FDataBuffer.Dirty := true ;
-    FData.Assign( FDataBuffer ) ;
-    FDataBuffer.ObjectState := Data.ObjectState ;
+    FAL.OnUpdate := nil;
+    Visible := False;
+    DoBeforeSave;
+    FDataBuffer.Dirty := true;
+    FData.Assign(FDataBuffer);
+    FDataBuffer.ObjectState := Data.ObjectState;
     DoAfterSave;
   finally
     FormMgr.CloseForm(Self);
@@ -387,8 +387,8 @@ end;
 procedure TFormTIFormMgrForm.aCancelCloseExecute(Sender: TObject);
 begin
   try
-    FAL.OnUpdate := nil ;
-    Visible := False ;
+    FAL.OnUpdate := nil;
+    Visible := False;
     DoAfterDiscard;
   finally
     FormMgr.CloseForm(Self);
@@ -399,10 +399,10 @@ procedure TFormTIFormMgrForm.aUndoExecute(Sender: TObject);
 var
   lFocusControl: TWinControl;
 begin
-  FAL.OnUpdate := nil ;
+  FAL.OnUpdate := nil;
   try
     lFocusControl := Screen.ActiveControl;
-    SetData( Data ) ;
+    SetData(Data);
     if (lFocusControl <> nil) and
        (lFocusControl.CanFocus) then
     begin
@@ -410,7 +410,7 @@ begin
       lFocusControl.SetFocus;
     end;
   finally
-    FAL.OnUpdate := ALUpdate ;
+    FAL.OnUpdate := ALUpdate;
   end;
 end;
 
@@ -419,27 +419,27 @@ begin
   aCancelCloseExecute(nil);
 end;
 
-procedure TFormTIFormMgrForm.SetButtonsVisible(const Value: TtiButtonsVisible);
+procedure TFormTIFormMgrForm.SetButtonsVisible(const AValue: TtiButtonsVisible);
 begin
 //  FButtonsSetup := True;
-  FButtonsVisible := Value;
+  FButtonsVisible := AValue;
   case FButtonsVisible of
-  btnVisNone      : begin
-                      FaClose.Visible       := False;
-                      FaUndo.Visible        := False;
-                      FaSaveClose.Visible   := False;
+  btnVisNone     : begin
+                      FaClose.Visible      := False;
+                      FaUndo.Visible       := False;
+                      FaSaveClose.Visible  := False;
                       FaCancelClose.Visible := False;
                     end;
-  btnVisReadOnly  : begin
-                      FaClose.Visible       := True;
-                      FaUndo.Visible        := False;
-                      FaSaveClose.Visible   := False;
+  btnVisReadOnly : begin
+                      FaClose.Visible      := True;
+                      FaUndo.Visible       := False;
+                      FaSaveClose.Visible  := False;
                       FaCancelClose.Visible := False;
                     end;
   btnVisReadWrite : begin
-                      FaClose.Visible       := False;
-                      FaUndo.Visible        := True;
-                      FaSaveClose.Visible   := True;
+                      FaClose.Visible      := False;
+                      FaUndo.Visible       := True;
+                      FaSaveClose.Visible  := True;
                       FaCancelClose.Visible := True;
                     end;
   else
@@ -460,22 +460,22 @@ end;
 
 function TFormTIFormMgrForm.FormIsDirty: boolean;
 begin
-  Assert( Data.TestValid(TtiBaseObject, true), cTIInvalidObjectError );
-  Assert( DataBuffer.TestValid(TtiBaseObject, true), cTIInvalidObjectError );
-  if ( Data <> nil ) and ( DataBuffer <> nil ) then
-    Result := ( not Data.Equals( DataBuffer ))
+  Assert(Data.TestValid(TtiBaseObject, true), cTIInvalidObjectError);
+  Assert(DataBuffer.TestValid(TtiBaseObject, true), cTIInvalidObjectError);
+  if (Data <> nil) and (DataBuffer <> nil) then
+    Result := (not Data.Equals(DataBuffer))
   else
     Result := False;
 end;
 
 function TFormTIFormMgrForm.GetBorderColor: TColor;
 begin
-  result := pnlCaption.Color ;
+  result := pnlCaption.Color;
 end;
 
-procedure TFormTIFormMgrForm.SetBorderColor(const Value: TColor);
+procedure TFormTIFormMgrForm.SetBorderColor(const AValue: TColor);
 begin
-  pnlCaption.Color := Value ;
+  pnlCaption.Color := AValue;
 end;
 
 function TFormTIFormMgrForm.AddAction(
@@ -483,13 +483,13 @@ function TFormTIFormMgrForm.AddAction(
   const pOnExecute:   TNotifyEvent;
   const pHint:        string = '';
         pImageIndex:  Integer = -1;
-        pHelpContext: Integer = -1 ): TAction;
+        pHelpContext: Integer = -1): TAction;
 begin
-  Result := TAction.Create( FAL ) ;
-  Result.ActionList := FAL ;
-  Result.Caption   := pCaption ;
-  Result.OnExecute := pOnExecute ;
-  Result.Hint      := pHint ;
+  Result := TAction.Create(FAL);
+  Result.ActionList := FAL;
+  Result.Caption  := pCaption;
+  Result.OnExecute := pOnExecute;
+  Result.Hint     := pHint;
   Result.ImageIndex := pImageIndex;
   Result.HelpContext := pHelpContext;
 end;
@@ -497,8 +497,8 @@ end;
 function TFormTIFormMgrForm.AddAction(const pCaption, pHint: string;
   const pOnExecute: TNotifyEvent; pShortCutKey: Word; pShortCutShiftState: TShiftState): TAction;
 begin
-  Result := AddAction(pCaption, pOnExecute, pHint );
-  Result.ShortCut  := Shortcut(Word(pShortCutKey), pShortCutShiftState);
+  Result := AddAction(pCaption, pOnExecute, pHint);
+  Result.ShortCut := Shortcut(Word(pShortCutKey), pShortCutShiftState);
 end;
 
 function TFormTIFormMgrForm.Databuffer: TtiObject;
@@ -506,52 +506,52 @@ begin
   Result := FDataBuffer;
 end;
 
-procedure TFormTIFormMgrForm.SetFormErrorMessage(const Value: string);
+procedure TFormTIFormMgrForm.SetFormErrorMessage(const AValue: string);
 begin
-  FFormErrorMessage := Value;
+  FFormErrorMessage := AValue;
   if Assigned(FOnFormMessageEvent) then
     FOnFormMessageEvent(FFormErrorMessage, tiufmtError);
 end;
 
 procedure TtiFormMgr.Add(const pForm: TFormTIFormMgrForm);
 begin
-  pForm.BorderStyle := bsNone ;
-  pForm.Parent := ParentPnl ;
-  pForm.Align := alClient ;
+  pForm.BorderStyle := bsNone;
+  pForm.Parent := ParentPnl;
+  pForm.Align := alClient;
   FForms.Add(pForm);
 end;
 
-procedure TtiFormMgr.BringToFront(const pForm: TFormTIFormMgrForm ; pFocusFirstControl : Boolean );
+procedure TtiFormMgr.BringToFront(const pForm: TFormTIFormMgrForm; pFocusFirstControl : Boolean);
 begin
   Assert(pForm<>nil, 'pForm not assigned');
   if pForm = FActiveForm then
-    Exit ; //==>
+    Exit; //==>
 
   // Move to the end of the list
   FForms.Extract(pForm);
   FForms.Add(pForm);
 
-  pForm.Visible := true ;
+  pForm.Visible := true;
   pForm.SetFocus;
 
-  if ( pForm.LastActiveControl <> nil ) then
+  if (pForm.LastActiveControl <> nil) then
           pForm.LastActiveControl.SetFocus
   else
     pForm.SelectFirstControl;
 
   if FActiveForm <> nil then
-    FActiveForm.Visible := false ;
-  FActiveForm := pForm ;
+    FActiveForm.Visible := false;
+  FActiveForm := pForm;
   DoOnShowForm(FActiveForm);
 end;
 
 procedure TtiFormMgr.CloseAllForms;
 var
-  i : Integer ;
+  i : Integer;
 begin
   for i := FForms.Count - 1 downto 0 do
     if (FForms.Items[i] as TFormTIFormMgrForm).ButtonsVisible in [btnVisReadOnly, btnVisReadWrite] then
-      DoCloseForm( Forms[i] ) ;
+      DoCloseForm(Forms[i]);
 end;
 
 procedure TtiFormMgr.DoCloseForm(const pForm: TFormTIFormMgrForm);
@@ -561,9 +561,9 @@ begin
     if GetPrevForm <> nil then
       ActiveForm := GetPrevForm
     else
-      ActiveForm := GetNextForm ;
-  end ;
-  FForms.Extract( pForm ) ;
+      ActiveForm := GetNextForm;
+  end;
+  FForms.Extract(pForm);
   if FModalForms.IndexOf(pForm) <> -1 then
     FModalForms.Extract(pForm);
   if ActiveForm = pForm then
@@ -574,58 +574,58 @@ end;
 
 constructor TtiFormMgr.Create;
 begin
-  inherited ;
-  FForms := TObjectList.Create(false) ;
-  FModalForms := TObjectList.Create(false) ;
+  inherited;
+  FForms := TObjectList.Create(false);
+  FModalForms := TObjectList.Create(false);
 end;
 
 destructor TtiFormMgr.Destroy;
 var
-  i : integer ;
-  lForm : TFormTIFormMgrForm ;
-  lName : string ;
+  i : integer;
+  lForm : TFormTIFormMgrForm;
+  lName : string;
 begin
   for i := FForms.Count - 1 downto 0 do
   begin
-    lForm := FForms.Items[i] as TFormTIFormMgrForm ;
-    lName := lForm.ClassName ;
+    lForm := FForms.Items[i] as TFormTIFormMgrForm;
+    lName := lForm.ClassName;
     FForms.Extract(lForm);
     try
-      FreeAndNil(lForm) ;
+      FreeAndNil(lForm);
     except
       on e:exception do
-        ShowMessage( 'Error destroying form <' + lName + '>' + Cr +
+        ShowMessage('Error destroying form <' + lName + '>' + Cr +
                      'Message: ' + e.Message + Cr +
-                     'Location: ' + ClassName + '.Destroy' ) ;
-    end ;
-  end ;
-  FreeAndNil(FForms) ;
+                     'Location: ' + ClassName + '.Destroy');
+    end;
+  end;
+  FreeAndNil(FForms);
   FreeAndNil(FModalForms);
   inherited;
 end;
 
-function TtiFormMgr.FindForm(const pFormClass: TFormTIFormMgrFormClass ; const pData : TtiObject ) : TFormTIFormMgrForm ;
+function TtiFormMgr.FindForm(const pFormClass: TFormTIFormMgrFormClass; const AData : TtiObject): TFormTIFormMgrForm;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := nil ;
+  result := nil;
   for i := 0 to FForms.Count - 1 do
-    if ( FForms.Items[i] is pFormClass ) and
-       ( TFormTIFormMgrForm( FForms.Items[i] ).Data = pData ) then
+    if (FForms.Items[i] is pFormClass) and
+       (TFormTIFormMgrForm(FForms.Items[i]).Data = AData) then
     begin
-      result := FForms.Items[i] as TFormTIFormMgrForm ;
-      Exit ; //==>
-    end ;
+      result := FForms.Items[i] as TFormTIFormMgrForm;
+      Exit; //==>
+    end;
 end;
 
 function TtiFormMgr.GetActiveForm: TFormTIFormMgrForm;
 begin
-  result := FActiveForm ;
+  result := FActiveForm;
 end;
 
 function TtiFormMgr.GetForms(i: integer): TFormTIFormMgrForm;
 begin
-  result := FForms[i] as TFormTIFormMgrForm ;
+  result := FForms[i] as TFormTIFormMgrForm;
 end;
 
 function TtiFormMgr.GetNextForm: TFormTIFormMgrForm;
@@ -633,7 +633,7 @@ begin
   if FForms.Count > 0 then
     result := Forms[0]
   else
-    result := nil ;
+    result := nil;
 end;
 
 function TtiFormMgr.GetPrevForm: TFormTIFormMgrForm;
@@ -657,88 +657,93 @@ begin
   FForms.Remove(pForm)
 end;
 
-procedure TtiFormMgr.SetActiveForm(const Value: TFormTIFormMgrForm);
+procedure TtiFormMgr.SetActiveForm(const AValue: TFormTIFormMgrForm);
 begin
-  if Value = nil then
+  if AValue = nil then
   begin
-    FActiveForm := Value ;
-    Exit ; //==>
-  end ;
-  ShowForm(Value, Value.Data);
+    FActiveForm := AValue;
+    Exit; //==>
+  end;
+  ShowForm(AValue, AValue.Data);
 end;
 
-procedure TtiFormMgr.SetForms(i: integer; const Value: TFormTIFormMgrForm);
+procedure TtiFormMgr.SetForms(i: integer; const AValue: TFormTIFormMgrForm);
 begin
-  FForms[i] := Value ;
+  FForms[i]:= AValue;
 end;
 
 procedure  TtiFormMgr.ShowForm(
-      const pForm          : TFormTIFormMgrForm;
-      const pData          : TtiObject = nil;
-            pModal         : Boolean = False;
-      const pOnEditsSave   : TtiObjectEvent = nil;
+      const pForm         : TFormTIFormMgrForm;
+      const AData         : TtiObject = nil;
+            pModal        : Boolean = False;
+      const pOnEditsSave  : TtiObjectEvent = nil;
       const pOnEditsCancel : TtiObjectEvent = nil;
-            pReadOnly      : boolean = False ) ;
+            pReadOnly     : boolean = False);
 begin
-  ShowForm( TFormTIFormMgrFormClass(pForm.ClassType), pData, pModal, pOnEditsSave, pOnEditsCancel, pReadOnly );
-end ;
+  ShowForm(TFormTIFormMgrFormClass(pForm.ClassType), AData, pModal, pOnEditsSave, pOnEditsCancel, pReadOnly);
+end;
 
 procedure TtiFormMgr.ShowForm(
-      const pFormClass      : TFormTIFormMgrFormClass ;
-      const pData : TtiObject = nil ;
-            pModal: Boolean = False ;
-      const pOnEditsSave   : TtiObjectEvent = nil;
+      const pFormClass     : TFormTIFormMgrFormClass;
+      const AData : TtiObject = nil;
+            pModal: Boolean = False;
+      const pOnEditsSave  : TtiObjectEvent = nil;
       const pOnEditsCancel : TtiObjectEvent = nil;
             pReadOnly : boolean = False
-      );
+     );
 var
-  lForm : TFormTIFormMgrForm ;
+  LForm : TFormTIFormMgrForm;
+  LCursor: TCursor;
 begin
-  Assert( ParentPnl <> nil, 'ParentPnl not assigned' ) ;
-  tiAutoCursor;
-  DoBeginUpdate;
+  Assert(ParentPnl <> nil, 'ParentPnl not assigned');
+  LCursor:= Screen.Cursor; // tiAutoCursor not working here - I don't understand why
   try
-    if ( FActiveForm <> nil ) and
-       ( not FActiveForm.IsModal ) and
-       ( not CloseCurrentFormActivatePreviousForm(false) ) then
-      Exit ; //==>
-    lForm := FindForm( pFormClass, pData ) ;
-    if lForm <> nil then
-      BringToFront( lForm, false )
-    else
-    begin
-      HideActiveForm;
-      lForm := pFormClass.Create(nil);
-      lForm.BorderColor    := BorderColor ;
-      lForm.OnFormMessage  := FOnFormMessageEvent;
-      lForm.OnEditsSave    := pOnEditsSave;
-      lForm.OnEditsCancel  := pOnEditsCancel;
-      lForm.IsModal        := pModal;
-      lForm.FormMgr        := Self;
-      // ToDo: Not sure of the need for FModalForms any more
-      if pModal then
-        FModalForms.Add(lForm);
-      Add(lForm);
-      if lForm.Data <> pData then
-        lForm.Data := pData ;
-      lForm.SetupButtons;
-      BringToFront( lForm, true );
-    end ;
+    DoBeginUpdate;
+    try
+      if (FActiveForm <> nil) and
+         (not FActiveForm.IsModal) and
+         (not CloseCurrentFormActivatePreviousForm(false)) then
+        Exit; //==>
+      LForm := FindForm(pFormClass, AData);
+      if LForm <> nil then
+        BringToFront(LForm, false)
+      else
+      begin
+        HideActiveForm;
+        LForm := pFormClass.Create(nil);
+        LForm.BorderColor   := BorderColor;
+        LForm.OnFormMessage := FOnFormMessageEvent;
+        LForm.OnEditsSave   := pOnEditsSave;
+        LForm.OnEditsCancel := pOnEditsCancel;
+        LForm.IsModal       := pModal;
+        LForm.FormMgr       := Self;
+        // ToDo: Not sure of the need for FModalForms any more
+        if pModal then
+          FModalForms.Add(LForm);
+        Add(LForm);
+        if LForm.Data <> AData then
+          LForm.Data := AData;
+        LForm.SetupButtons;
+        BringToFront(LForm, true);
+      end;
+    finally
+      DoEndUpdate;
+    end;
   finally
-    DoEndUpdate;
+    Screen.Cursor:= LCursor;
   end;
 end;
 
 procedure TtiFormMgr.CloseForm(const pForm: TFormTIFormMgrForm);
 begin
-  Assert( FActiveForm = pForm, 'Close for can only be called with currently active form');
-  CloseCurrentFormActivatePreviousForm( true ) ;
+  Assert(FActiveForm = pForm, 'Close for can only be called with currently active form');
+  CloseCurrentFormActivatePreviousForm(true);
 end;
 
-function TtiFormMgr.CloseCurrentFormActivatePreviousForm( pClose : boolean ) : boolean;
+function TtiFormMgr.CloseCurrentFormActivatePreviousForm(pClose : boolean): boolean;
 var
-  lForm : TFormTIFormMgrForm ;
-  lActiveForm : TFormTIFormMgrForm ;
+  lForm : TFormTIFormMgrForm;
+  lActiveForm : TFormTIFormMgrForm;
 begin
   DoBeginUpdate;
   try
@@ -749,25 +754,25 @@ begin
         lActiveForm := GetPrevForm
       else
         lActiveForm := GetNextForm;
-      lForm := FActiveForm ;
+      lForm := FActiveForm;
       HideActiveForm;
-      FForms.Extract( lForm ) ;
+      FForms.Extract(lForm);
       FreeAndNil(lForm);
       ActiveForm := lActiveForm;
-      result := true ;
+      result := true;
       DoOnShowForm(ActiveForm);
     end else
     begin
       if pClose then
       begin
         DoCloseForm(FActiveForm);
-        result := true ;
+        result := true;
       end
       else begin
-        HideActiveForm ;
-        result := true ;
+        HideActiveForm;
+        result := true;
         DoOnShowForm(Nil);
-      end ;
+      end;
     end;
   finally
     DoEndUpdate;
@@ -779,60 +784,52 @@ var
   lForm : TFormTIFormMgrForm;
   lActiveForm: TFormTIFormMgrForm;
 begin
-  lForm := GetNextForm ;
-  if lForm = nil then
-    ShowForm(nil, nil)
-  else
-  begin
-    lActiveForm := ActiveForm;
-    FForms.Extract(lActiveForm);
-    FForms.Add(lActiveForm);
-    ShowForm(lForm, lForm.Data) ;
-  end;
+  lForm := GetNextForm;
+  Assert(LForm<>nil, 'GetNextForm returned nil');
+  lActiveForm := ActiveForm;
+  FForms.Extract(lActiveForm);
+  FForms.Add(lActiveForm);
+  ShowForm(lForm, lForm.Data);
 end;
 
 procedure TtiFormMgr.ShowPrevForm;
 var
-  lForm : TFormTIFormMgrForm;
-  lActiveForm: TFormTIFormMgrForm;
+  LForm : TFormTIFormMgrForm;
+  LActiveForm: TFormTIFormMgrForm;
 begin
-  lForm := GetPrevForm ;
-  if lForm = nil then
-    ShowForm(nil, nil)
-  else
-  begin
-    lActiveForm := ActiveForm;
-    FForms.Extract(lActiveForm);
-    FForms.Insert(0, lActiveForm);
-    ShowForm(lForm, lForm.Data) ;
-  end;
+  LForm := GetPrevForm;
+  Assert(LForm<>nil, 'GetNextForm returned nil');
+  LActiveForm := ActiveForm;
+  FForms.Extract(LActiveForm);
+  FForms.Insert(0, LActiveForm);
+  ShowForm(LForm, LForm.Data);
 end;
 
-procedure TtiFormMgr.SetBorderColor(const Value: TColor);
+procedure TtiFormMgr.SetBorderColor(const AValue: TColor);
 var
-  i : integer ;
+  i : integer;
 begin
-  FBorderColor := Value;
+  FBorderColor := AValue;
   for i := 0 to FForms.Count - 1 do
-    ( FForms.Items[i] as TFormTIFormMgrForm ).BorderColor := FBorderColor ;
+    (FForms.Items[i] as TFormTIFormMgrForm).BorderColor := FBorderColor;
 end;
 
-procedure TtiFormMgr.AssignFormList(const pStrings: TStrings);
+procedure TtiFormMgr.AssignFormList(const AStrings: TStrings);
 var
-  i : integer ;
+  i : integer;
 begin
-  pStrings.Clear ;
+  AStrings.Clear;
   for i := 0 to FForms.Count - 1 do
     if FForms.Items[i] <> ActiveForm then
-      pStrings.AddObject(( FForms.Items[i] as TFormTIFormMgrForm ).FormCaption,
-                          FForms.Items[i] ) ;
+      AStrings.AddObject((FForms.Items[i] as TFormTIFormMgrForm).FormCaption,
+                          FForms.Items[i]);
 end;
 
 procedure TtiFormMgr.DoOnShowForm(const pForm : TFormTIFormMgrForm);
 begin
   if assigned(FOnShowForm) then
     FOnShowForm(pForm);
-  if ( pForm <> nil ) then
+  if (pForm <> nil) then
   begin
     if Assigned(FOnFormMessageEvent) then
     begin
@@ -847,18 +844,18 @@ begin
 end;
 
 
-procedure TtiFormMgr.SetParentPnl(const Value: TPanel);
+procedure TtiFormMgr.SetParentPnl(const AValue: TPanel);
 begin
-  FParentPnl := Value;
+  FParentPnl := AValue;
 end;
 
 procedure TtiFormMgr.ShowFormModal(
-  const pFormClass : TFormTIFormMgrFormClass ;
-  const pData : TtiObject ;
-  const pOnEditsSave   : TtiObjectEvent = nil;
+  const pFormClass : TFormTIFormMgrFormClass;
+  const AData : TtiObject;
+  const pOnEditsSave  : TtiObjectEvent = nil;
   const pOnEditsCancel : TtiObjectEvent = nil);
 begin
-  ShowForm( pFormClass, pData, True, pOnEditsSave, pOnEditsCancel, False );
+  ShowForm(pFormClass, AData, True, pOnEditsSave, pOnEditsCancel, False);
 end;
 
 procedure TFormTIFormMgrForm.DoAfterSave;
@@ -872,21 +869,21 @@ begin
   // Do nothing. Dummy action is just to get the ActionLists OnUpdate method to fire
 end;
 
-procedure TFormTIFormMgrForm.AssignActions(const pList: TList);
+procedure TFormTIFormMgrForm.AssignActions(const AList: TList);
 var
   i : Integer;
 begin
-  pList.Clear;
+  AList.Clear;
   for i := 0 to FAL.ActionCount - 1 do
     if (FAL.Actions[i] <> FaDummy) and
        ((FAL.Actions[i] as TAction).Visible) then
-      pList.Add(FAL.Actions[i]);
+      AList.Add(FAL.Actions[i]);
 end;
 
 
-procedure TFormTIFormMgrForm.SetIsModal(const Value: Boolean);
+procedure TFormTIFormMgrForm.SetIsModal(const AValue: Boolean);
 begin
-  FIsModal := Value;
+  FIsModal := AValue;
 end;
 
 procedure TtiFormMgr.DoBeginUpdate;
@@ -908,13 +905,13 @@ begin
     if FActiveForm.ContainsControl(Screen.ActiveControl) then
       FActiveForm.LastActiveControl := Screen.ActiveControl;
     FActiveForm.Visible := False;
-    FActiveForm := nil ;
+    FActiveForm := nil;
   end;
 end;
 
 function TtiFormMgr.GetFormCount: Integer;
 begin
-  Result := FForms.Count ;
+  Result := FForms.Count;
 end;
 
 function TFormTIFormMgrForm.GetData: TtiObject;
@@ -922,9 +919,9 @@ begin
   Result := FData;
 end;
 
-procedure TFormTIFormMgrForm.SetFormInfoMessage(const Value: string);
+procedure TFormTIFormMgrForm.SetFormInfoMessage(const AValue: string);
 begin
-  FFormInfoMessage := Value;
+  FFormInfoMessage := AValue;
   if Assigned(FOnFormMessageEvent) then
     FOnFormMessageEvent(FFormInfoMessage, tiufmtInfo);
 end;

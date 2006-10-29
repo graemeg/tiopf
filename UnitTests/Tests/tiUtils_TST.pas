@@ -12,7 +12,7 @@ uses
   {$ENDIF}
   ,tiTestFramework
   ,math
-  ;
+ ;
 
 const
   cINIMachineSettings = 'MachineSettings';
@@ -23,8 +23,8 @@ type
 
   TTestTIUtils = class(TtiTestCase)
   private
-    function  BuildLongString : string ;
-    procedure CheckReadingFromNT( const pValue, pRegKey, pDescription : string ) ;
+    function  BuildLongString : string;
+    procedure CheckReadingFromNT(const AValue, pRegKey, pDescription : string);
   protected
     // These methods exist in tiUtils, but have not been DUnit tested because
     // I can not work our a reliable way of performing the tests (or I don't
@@ -47,7 +47,7 @@ type
 //    procedure tiDirectoryTreeToStringList;
 //    procedure tiExtractDirToLevel;
 //  protected
-    procedure tiForceRemoveDir ; // Must be one of the first things tested as it's used in TearDown
+    procedure tiForceRemoveDir; // Must be one of the first things tested as it's used in TearDown
 
     procedure _tiFloatToStr;
     procedure Cr;
@@ -109,10 +109,10 @@ type
     procedure tiIntlDateStorAsDateTime;
     procedure tiIntToCommaStr;
     procedure tiIntToStrHide0;
-    procedure tiIsEMailAddressValid ;
-    procedure tiIsFileNameValid ;
+    procedure tiIsEMailAddressValid;
+    procedure tiIsFileNameValid;
     procedure tiIsFileReadOnly;
-    procedure tiIsNearEnough ;
+    procedure tiIsNearEnough;
     procedure tiIsVariantOfType;
     procedure tiJoinPath;
     procedure tiListToClipboardDefault;
@@ -175,7 +175,7 @@ type
   end;
   
 
-procedure RegisterTests ;
+procedure RegisterTests;
 
 implementation
 uses
@@ -185,7 +185,7 @@ uses
   ,tiDialogs
   {$IFDEF MSWINDOWS}
   ,tiWin32
-//  ,Windows
+  ,Windows
   {$ENDIF}
   ,tiDUnitDependencies
 //  ,tiObject
@@ -203,665 +203,665 @@ uses
   ,ClipBrd
   ,Forms
   ,DateUtils
-  ;
+ ;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIUtils);
-end ;
+end;
 
 
-procedure TTestTIUtils.tiStrTran ;
+procedure TTestTIUtils.tiStrTran;
 begin
-  CheckEquals( 'one two three', tiUtils.tiStrTran( 'one two three', 'ONE', 'a' ),     'Failed test 1' ) ;
-  CheckEquals( 'a two three',   tiUtils.tiStrTran( 'one two three', 'one', 'a' ),     'Failed test 2' ) ;
-  CheckEquals( 'one b three',   tiUtils.tiStrTran( 'one two three', 'two', 'b' ),     'Failed test 3' ) ;
-  CheckEquals( 'one two c',     tiUtils.tiStrTran( 'one two three', 'three', 'c' ),   'Failed test 4' ) ;
-  CheckEquals( 'd d two three', tiUtils.tiStrTran( 'one one two three', 'one', 'd' ), 'Failed test 5' ) ;
-  CheckEquals( 'one e three e', tiUtils.tiStrTran( 'one two three two', 'two', 'e' ), 'Failed test 6' ) ;
-end ;
+  CheckEquals('one two three', tiUtils.tiStrTran('one two three', 'ONE', 'a'),     'Failed test 1');
+  CheckEquals('a two three',   tiUtils.tiStrTran('one two three', 'one', 'a'),     'Failed test 2');
+  CheckEquals('one b three',   tiUtils.tiStrTran('one two three', 'two', 'b'),     'Failed test 3');
+  CheckEquals('one two c',     tiUtils.tiStrTran('one two three', 'three', 'c'),   'Failed test 4');
+  CheckEquals('d d two three', tiUtils.tiStrTran('one one two three', 'one', 'd'), 'Failed test 5');
+  CheckEquals('one e three e', tiUtils.tiStrTran('one two three two', 'two', 'e'), 'Failed test 6');
+end;
 
 
-procedure TTestTIUtils.tiStrTran1 ;
+procedure TTestTIUtils.tiStrTran1;
 begin
-  CheckEquals( 'one two three', tiUtils.tiStrTran1( 'one two three', 'ONE', 'a' ),     'Failed test 1' ) ;
-  CheckEquals( 'a two three',   tiUtils.tiStrTran1( 'one two three', 'one', 'a' ),     'Failed test 2' ) ;
-  CheckEquals( 'one b three',   tiUtils.tiStrTran1( 'one two three', 'two', 'b' ),     'Failed test 3' ) ;
-  CheckEquals( 'one two c',     tiUtils.tiStrTran1( 'one two three', 'three', 'c' ),   'Failed test 4' ) ;
-  CheckEquals( 'd d two three', tiUtils.tiStrTran1( 'one one two three', 'one', 'd' ), 'Failed test 5' ) ;
-  CheckEquals( 'one e three e', tiUtils.tiStrTran1( 'one two three two', 'two', 'e' ), 'Failed test 6' ) ;
-end ;
+  CheckEquals('one two three', tiUtils.tiStrTran1('one two three', 'ONE', 'a'),     'Failed test 1');
+  CheckEquals('a two three',   tiUtils.tiStrTran1('one two three', 'one', 'a'),     'Failed test 2');
+  CheckEquals('one b three',   tiUtils.tiStrTran1('one two three', 'two', 'b'),     'Failed test 3');
+  CheckEquals('one two c',     tiUtils.tiStrTran1('one two three', 'three', 'c'),   'Failed test 4');
+  CheckEquals('d d two three', tiUtils.tiStrTran1('one one two three', 'one', 'd'), 'Failed test 5');
+  CheckEquals('one e three e', tiUtils.tiStrTran1('one two three two', 'two', 'e'), 'Failed test 6');
+end;
 
 
-procedure TTestTIUtils.tiCIStrTran ;
+procedure TTestTIUtils.tiCIStrTran;
 begin
-  Check( tiUtils.tiCIStrTran( 'one two three', 'ONE', 'a' ) = 'a two three', 'Failed test 1' ) ;
-  Check( tiUtils.tiCIStrTran( 'one two three', 'TWO', 'b' ) = 'one b three', 'Failed test 2' ) ;
-  Check( tiUtils.tiCIStrTran( 'one two three', 'THREE', 'c' ) = 'one two c', 'Failed test 3' ) ;
-  Check( tiUtils.tiCIStrTran( 'one two three', 'one', 'a' ) = 'a two three', 'Failed test 4' ) ;
-  Check( tiUtils.tiCIStrTran( 'one two three', 'two', 'b' ) = 'one b three', 'Failed test 5' ) ;
-  Check( tiUtils.tiCIStrTran( 'one two three', 'three', 'c' ) = 'one two c', 'Failed test 6' ) ;
-end ;
+  Check(tiUtils.tiCIStrTran('one two three', 'ONE', 'a') = 'a two three', 'Failed test 1');
+  Check(tiUtils.tiCIStrTran('one two three', 'TWO', 'b') = 'one b three', 'Failed test 2');
+  Check(tiUtils.tiCIStrTran('one two three', 'THREE', 'c') = 'one two c', 'Failed test 3');
+  Check(tiUtils.tiCIStrTran('one two three', 'one', 'a') = 'a two three', 'Failed test 4');
+  Check(tiUtils.tiCIStrTran('one two three', 'two', 'b') = 'one b three', 'Failed test 5');
+  Check(tiUtils.tiCIStrTran('one two three', 'three', 'c') = 'one two c', 'Failed test 6');
+end;
 
 
-procedure TTestTIUtils.tiNumToken ;
+procedure TTestTIUtils.tiNumToken;
 begin
-  CheckEquals( 0, tiUtils.tiNumToken( '', ',' ), 'Failed on 1' ) ;
-  CheckEquals( 1, tiUtils.tiNumToken( 'adf adf', ',' ), 'Failed on 2' ) ;
-  CheckEquals( 2, tiUtils.tiNumToken( 'adf,', ',' ), 'Failed on 3' ) ;
-  CheckEquals( 2, tiUtils.tiNumToken( 'adf,adf', ',' ), 'Failed on 4' ) ;
-  CheckEquals( 3, tiUtils.tiNumToken( 'adf,adf,adf', ',' ), 'Failed on 5' ) ;
-end ;
+  CheckEquals(0, tiUtils.tiNumToken('', ','), 'Failed on 1');
+  CheckEquals(1, tiUtils.tiNumToken('adf adf', ','), 'Failed on 2');
+  CheckEquals(2, tiUtils.tiNumToken('adf,', ','), 'Failed on 3');
+  CheckEquals(2, tiUtils.tiNumToken('adf,adf', ','), 'Failed on 4');
+  CheckEquals(3, tiUtils.tiNumToken('adf,adf,adf', ','), 'Failed on 5');
+end;
 
 
-procedure TTestTIUtils.tiToken ;
+procedure TTestTIUtils.tiToken;
 begin
-  CheckEquals( '', tiUtils.tiToken( '', ',', 1 ), 'Failed on 1' ) ;
-  CheckEquals( 'a', tiUtils.tiToken( 'a,b,c', ',', 1 ), 'Failed on 2' ) ;
-  CheckEquals( 'b', tiUtils.tiToken( 'a,b,c', ',', 2 ), 'Failed on 3' ) ;
-  CheckEquals( 'c', tiUtils.tiToken( 'a,b,c', ',', 3 ), 'Failed on 4' ) ;
-  CheckEquals( '', tiUtils.tiToken( 'a,b,c', ',', 4 ), 'Failed on 5' ) ;
-  CheckEquals( 'aa', tiUtils.tiToken( 'aa,bb,cc', ',', 1 ), 'Failed on 6' ) ;
-  CheckEquals( 'bb', tiUtils.tiToken( 'aa,bb,cc', ',', 2 ), 'Failed on 7' ) ;
-  CheckEquals( 'cc', tiUtils.tiToken( 'aa,bb,cc', ',', 3 ), 'Failed on 8' ) ;
-  CheckEquals( '', tiUtils.tiToken( 'aa,bb,cc', ',', 4 ), 'Failed on 9' ) ;
-end ;
+  CheckEquals('', tiUtils.tiToken('', ',', 1), 'Failed on 1');
+  CheckEquals('a', tiUtils.tiToken('a,b,c', ',', 1), 'Failed on 2');
+  CheckEquals('b', tiUtils.tiToken('a,b,c', ',', 2), 'Failed on 3');
+  CheckEquals('c', tiUtils.tiToken('a,b,c', ',', 3), 'Failed on 4');
+  CheckEquals('', tiUtils.tiToken('a,b,c', ',', 4), 'Failed on 5');
+  CheckEquals('aa', tiUtils.tiToken('aa,bb,cc', ',', 1), 'Failed on 6');
+  CheckEquals('bb', tiUtils.tiToken('aa,bb,cc', ',', 2), 'Failed on 7');
+  CheckEquals('cc', tiUtils.tiToken('aa,bb,cc', ',', 3), 'Failed on 8');
+  CheckEquals('', tiUtils.tiToken('aa,bb,cc', ',', 4), 'Failed on 9');
+end;
 
 
-procedure TTestTIUtils.tiSpace ;
+procedure TTestTIUtils.tiSpace;
 begin
-  CheckEquals( '', tiUtils.tiSpace(  0 ), 'Failed on  0' ) ;
-  CheckEquals( ' ', tiUtils.tiSpace(  1 ), 'Failed on  1' ) ;
-  CheckEquals( '  ', tiUtils.tiSpace(  2 ), 'Failed on  2' ) ;
-  CheckEquals( '     ', tiUtils.tiSpace(  5 ), 'Failed on  5' ) ;
-  CheckEquals( '          ', tiUtils.tiSpace( 10 ), 'Failed on 10' ) ;
-end ;
+  CheckEquals('', tiUtils.tiSpace( 0), 'Failed on  0');
+  CheckEquals(' ', tiUtils.tiSpace( 1), 'Failed on  1');
+  CheckEquals('  ', tiUtils.tiSpace( 2), 'Failed on  2');
+  CheckEquals('     ', tiUtils.tiSpace( 5), 'Failed on  5');
+  CheckEquals('          ', tiUtils.tiSpace(10), 'Failed on 10');
+end;
 
 
-procedure TTestTIUtils.tiPadR ;
+procedure TTestTIUtils.tiPadR;
 begin
-  CheckEquals( 'x', tiUtils.tiPadR( 'x', 1 ), 'Failed on 1' ) ;
-  CheckEquals( 'x ', tiUtils.tiPadR( 'x', 2 ), 'Failed on 2' ) ;
-  CheckEquals( 'x  ', tiUtils.tiPadR( 'x', 3 ), 'Failed on 3' ) ;
-  CheckEquals( 'abc', tiUtils.tiPadR( 'abc', 3 ), 'Failed on 4' ) ;
-  CheckEquals( 'ab', tiUtils.tiPadR( 'abc', 2 ), 'Failed on 5' ) ;
-  CheckEquals( 'a', tiUtils.tiPadR( 'abc', 1 ), 'Failed on 6' ) ;
-end ;
+  CheckEquals('x', tiUtils.tiPadR('x', 1), 'Failed on 1');
+  CheckEquals('x ', tiUtils.tiPadR('x', 2), 'Failed on 2');
+  CheckEquals('x  ', tiUtils.tiPadR('x', 3), 'Failed on 3');
+  CheckEquals('abc', tiUtils.tiPadR('abc', 3), 'Failed on 4');
+  CheckEquals('ab', tiUtils.tiPadR('abc', 2), 'Failed on 5');
+  CheckEquals('a', tiUtils.tiPadR('abc', 1), 'Failed on 6');
+end;
 
 
-procedure TTestTIUtils.tiPadL ;
+procedure TTestTIUtils.tiPadL;
 begin
-  CheckEquals( 'x', tiUtils.tiPadL( 'x', 1 ), 'Failed on 1' ) ;
-  CheckEquals( ' x', tiUtils.tiPadL( 'x', 2 ), 'Failed on 2' ) ;
-  CheckEquals( '  x', tiUtils.tiPadL( 'x', 3 ), 'Failed on 3' ) ;
-  CheckEquals( 'abc', tiUtils.tiPadL( 'abc', 3 ), 'Failed on 4' ) ;
-  CheckEquals( 'bc', tiUtils.tiPadL( 'abc', 2 ), 'Failed on 5' ) ;
-  CheckEquals( 'c', tiUtils.tiPadL( 'abc', 1 ), 'Failed on 6' ) ;
-end ;
+  CheckEquals('x', tiUtils.tiPadL('x', 1), 'Failed on 1');
+  CheckEquals(' x', tiUtils.tiPadL('x', 2), 'Failed on 2');
+  CheckEquals('  x', tiUtils.tiPadL('x', 3), 'Failed on 3');
+  CheckEquals('abc', tiUtils.tiPadL('abc', 3), 'Failed on 4');
+  CheckEquals('bc', tiUtils.tiPadL('abc', 2), 'Failed on 5');
+  CheckEquals('c', tiUtils.tiPadL('abc', 1), 'Failed on 6');
+end;
 
 
-procedure TTestTIUtils.tiPadC ;
+procedure TTestTIUtils.tiPadC;
 begin
-  CheckEquals( 'x', tiUtils.tiPadC( 'x', 1 ), 'Failed on 1' ) ;
-  CheckEquals( 'x ', tiUtils.tiPadC( 'x', 2 ), 'Failed on 2' ) ;
-  CheckEquals( ' x ', tiUtils.tiPadC( 'x', 3 ), 'Failed on 3' ) ;
-  CheckEquals( ' x  ', tiUtils.tiPadC( 'x', 4 ), 'Failed on 4' ) ;
-  CheckEquals( '  x  ', tiUtils.tiPadC( 'x', 5 ), 'Failed on 5' ) ;
-  CheckEquals( 'xx', tiUtils.tiPadC( 'xx', 2 ), 'Failed on 6' ) ;
-  CheckEquals( 'xx ', tiUtils.tiPadC( 'xx', 3 ), 'Failed on 7' ) ;
-  CheckEquals( ' xx ', tiUtils.tiPadC( 'xx', 4 ), 'Failed on 8' ) ;
+  CheckEquals('x', tiUtils.tiPadC('x', 1), 'Failed on 1');
+  CheckEquals('x ', tiUtils.tiPadC('x', 2), 'Failed on 2');
+  CheckEquals(' x ', tiUtils.tiPadC('x', 3), 'Failed on 3');
+  CheckEquals(' x  ', tiUtils.tiPadC('x', 4), 'Failed on 4');
+  CheckEquals('  x  ', tiUtils.tiPadC('x', 5), 'Failed on 5');
+  CheckEquals('xx', tiUtils.tiPadC('xx', 2), 'Failed on 6');
+  CheckEquals('xx ', tiUtils.tiPadC('xx', 3), 'Failed on 7');
+  CheckEquals(' xx ', tiUtils.tiPadC('xx', 4), 'Failed on 8');
 
   try
-    tiUtils.tiPadC( 'xx', 1 ) ;
-    Check( false, 'Exception was not raised' ) ;
+    tiUtils.tiPadC('xx', 1);
+    Check(false, 'Exception was not raised');
   except
     // Do nothing
-  end ;
-end ;
+  end;
+end;
 
 
-procedure TTestTIUtils.tiPad0 ;
+procedure TTestTIUtils.tiPad0;
 begin
-  CheckEquals( '1', tiUtils.tiPad0( '1', 1 ), 'Failed on 1' ) ;
-  CheckEquals( '01', tiUtils.tiPad0( '1', 2 ), 'Failed on 2' ) ;
-  CheckEquals( '001', tiUtils.tiPad0( '1', 3 ), 'Failed on 3' ) ;
-  CheckEquals( '000', tiUtils.tiPad0( '', 3 ), 'Failed on 4' ) ;
+  CheckEquals('1', tiUtils.tiPad0('1', 1), 'Failed on 1');
+  CheckEquals('01', tiUtils.tiPad0('1', 2), 'Failed on 2');
+  CheckEquals('001', tiUtils.tiPad0('1', 3), 'Failed on 3');
+  CheckEquals('000', tiUtils.tiPad0('', 3), 'Failed on 4');
   // Perhaps not what you would expect, but anyway...
-  CheckEquals( '123',   tiUtils.tiPad0( '1234', 3 ), 'Failed on 1' ) ;
-end ;
+  CheckEquals('123',   tiUtils.tiPad0('1234', 3), 'Failed on 1');
+end;
 
 
-procedure TTestTIUtils.tiRemoveLeading0 ;
+procedure TTestTIUtils.tiRemoveLeading0;
 begin
-  CheckEquals( '', tiUtils.tiRemoveLeading0( '0' ), 'Failed on 1' ) ;
-  CheckEquals( '', tiUtils.tiRemoveLeading0( '00' ), 'Failed on 2' ) ;
-  CheckEquals( '123', tiUtils.tiRemoveLeading0( '123' ), 'Failed on 3' ) ;
-  CheckEquals( '123', tiUtils.tiRemoveLeading0( '0123' ), 'Failed on 4' ) ;
-  CheckEquals( '123', tiUtils.tiRemoveLeading0( '00123' ), 'Failed on 5' ) ;
-  CheckEquals( 'a0123', tiUtils.tiRemoveLeading0( 'a0123' ), 'Failed on 6' ) ;
-end ;
+  CheckEquals('', tiUtils.tiRemoveLeading0('0'), 'Failed on 1');
+  CheckEquals('', tiUtils.tiRemoveLeading0('00'), 'Failed on 2');
+  CheckEquals('123', tiUtils.tiRemoveLeading0('123'), 'Failed on 3');
+  CheckEquals('123', tiUtils.tiRemoveLeading0('0123'), 'Failed on 4');
+  CheckEquals('123', tiUtils.tiRemoveLeading0('00123'), 'Failed on 5');
+  CheckEquals('a0123', tiUtils.tiRemoveLeading0('a0123'), 'Failed on 6');
+end;
 
 
-procedure TTestTIUtils.tiMixedCase ;
+procedure TTestTIUtils.tiMixedCase;
 begin
-  CheckEquals( 'A B C D', tiUtils.tiMixedCase( 'a B c D' ), 'Failed on ''a B c D''' ) ;
-  CheckEquals( 'Abc', tiUtils.tiMixedCase( 'abc' ), 'Failed on ''abc''' ) ;
-  CheckEquals( 'Abc', tiUtils.tiMixedCase( 'ABC' ), 'Failed on ''ABC''' ) ;
+  CheckEquals('A B C D', tiUtils.tiMixedCase('a B c D'), 'Failed on ''a B c D''');
+  CheckEquals('Abc', tiUtils.tiMixedCase('abc'), 'Failed on ''abc''');
+  CheckEquals('Abc', tiUtils.tiMixedCase('ABC'), 'Failed on ''ABC''');
   // Not what we would really want. Use tiStringUtils instead
-  CheckEquals( 'A.b.c.', tiUtils.tiMixedCase( 'a.b.c.' ), 'Failed on ''a.b..''' ) ;
+  CheckEquals('A.b.c.', tiUtils.tiMixedCase('a.b.c.'), 'Failed on ''a.b..''');
   // Not what we would really want. Use tiStringUtils instead
-  CheckEquals( 'King Charles Iii', tiUtils.tiMixedCase( 'king charles iii' ), 'Failed on ''king charles iii''' ) ;
-end ;
+  CheckEquals('King Charles Iii', tiUtils.tiMixedCase('king charles iii'), 'Failed on ''king charles iii''');
+end;
 
 
-procedure TTestTIUtils.tiReplicate ;
+procedure TTestTIUtils.tiReplicate;
 var
   s1: string;
   i: integer;
 begin
-  CheckEquals( 'x', tiUtils.tiReplicate( 'x', 1 ), 'Failed on 1' ) ;
-  CheckEquals( 'xx', tiUtils.tiReplicate( 'x', 2 ), 'Failed on 2' ) ;
-  CheckEquals( 'xxxxxxxxxx', tiUtils.tiReplicate( 'x', 10 ), 'Failed on 3' ) ;
-  CheckEquals( '12', tiUtils.tiReplicate( '12', 1 ), 'Failed on 4' ) ;
-  CheckEquals( '1212', tiUtils.tiReplicate( '12', 2 ), 'Failed on 5' ) ;
-  CheckEquals( '121212', tiUtils.tiReplicate( '12', 3 ), 'Failed on 6' ) ;
-  CheckEquals( '12121212', tiUtils.tiReplicate( '12', 4 ), 'Failed on 7' ) ;
+  CheckEquals('x', tiUtils.tiReplicate('x', 1), 'Failed on 1');
+  CheckEquals('xx', tiUtils.tiReplicate('x', 2), 'Failed on 2');
+  CheckEquals('xxxxxxxxxx', tiUtils.tiReplicate('x', 10), 'Failed on 3');
+  CheckEquals('12', tiUtils.tiReplicate('12', 1), 'Failed on 4');
+  CheckEquals('1212', tiUtils.tiReplicate('12', 2), 'Failed on 5');
+  CheckEquals('121212', tiUtils.tiReplicate('12', 3), 'Failed on 6');
+  CheckEquals('12121212', tiUtils.tiReplicate('12', 4), 'Failed on 7');
   
   s1 := '';
   for i := 1 to 256 do
     s1 := s1 + 'a';
-  CheckEquals( s1, tiUtils.tiReplicate( 'a', 256 ), 'Failed on 8');
-end ;
+  CheckEquals(s1, tiUtils.tiReplicate('a', 256), 'Failed on 8');
+end;
 
 
-procedure TTestTIUtils.tiAddTrailingValue ;
+procedure TTestTIUtils.tiAddTrailingValue;
 begin
-  Check( tiUtils.tiAddTrailingValue( '', 'x', true )     = '',      'Failed on <empty string>' ) ;
-  Check( tiUtils.tiAddTrailingValue( 'a', 'x', true )    = 'ax',    'Failed on <a>' ) ;
-  Check( tiUtils.tiAddTrailingValue( 'axb', 'x', true )  = 'axbx',  'Failed on <axb>' ) ;
-  Check( tiUtils.tiAddTrailingValue( 'axbx', 'x', true ) = 'axbxx', 'Failed on <axbx>' ) ;
-  Check( tiUtils.tiAddTrailingValue( '', 'x', false )     = '',      'Failed on <empty string>' ) ;
-  Check( tiUtils.tiAddTrailingValue( 'a', 'x', false )    = 'ax',    'Failed on <a>' ) ;
-  Check( tiUtils.tiAddTrailingValue( 'axb', 'x', false )  = 'axbx',  'Failed on <axb>' ) ;
-  Check( tiUtils.tiAddTrailingValue( 'axbx', 'x', false ) = 'axbx',  'Failed on <axbx>' ) ;
-end ;
+  Check(tiUtils.tiAddTrailingValue('', 'x', true)     = '',      'Failed on <empty string>');
+  Check(tiUtils.tiAddTrailingValue('a', 'x', true)    = 'ax',    'Failed on <a>');
+  Check(tiUtils.tiAddTrailingValue('axb', 'x', true)  = 'axbx',  'Failed on <axb>');
+  Check(tiUtils.tiAddTrailingValue('axbx', 'x', true) = 'axbxx', 'Failed on <axbx>');
+  Check(tiUtils.tiAddTrailingValue('', 'x', false)     = '',      'Failed on <empty string>');
+  Check(tiUtils.tiAddTrailingValue('a', 'x', false)    = 'ax',    'Failed on <a>');
+  Check(tiUtils.tiAddTrailingValue('axb', 'x', false)  = 'axbx',  'Failed on <axb>');
+  Check(tiUtils.tiAddTrailingValue('axbx', 'x', false) = 'axbx',  'Failed on <axbx>');
+end;
 
 
-procedure TTestTIUtils.tiRemoveTrailingValue ;
+procedure TTestTIUtils.tiRemoveTrailingValue;
 begin
-  CheckEquals( '', tiUtils.tiRemoveTrailingValue( 'x', 'x' ), 'Failed on 1' ) ;
-  CheckEquals( '\abc', tiUtils.tiRemoveTrailingValue( '\abcx', 'x'  ), 'Failed on 2' ) ;
-  CheckEquals( '\abc', tiUtils.tiRemoveTrailingValue( '\abc', 'x'  ), 'Failed on 3' ) ;
-  CheckEquals( '\abc\def', tiUtils.tiRemoveTrailingValue( '\abc\defx', 'x'  ), 'Failed on 4' ) ;
-  CheckEquals( '\abc\def', tiUtils.tiRemoveTrailingValue( '\abc\defx', 'x'  ), 'Failed on 5' ) ;
-  CheckEquals( 'c:\abc\def', tiUtils.tiRemoveTrailingValue( 'c:\abc\defx', 'x'  ), 'Failed on 6' ) ;
+  CheckEquals('', tiUtils.tiRemoveTrailingValue('x', 'x'), 'Failed on 1');
+  CheckEquals('\abc', tiUtils.tiRemoveTrailingValue('\abcx', 'x' ), 'Failed on 2');
+  CheckEquals('\abc', tiUtils.tiRemoveTrailingValue('\abc', 'x' ), 'Failed on 3');
+  CheckEquals('\abc\def', tiUtils.tiRemoveTrailingValue('\abc\defx', 'x' ), 'Failed on 4');
+  CheckEquals('\abc\def', tiUtils.tiRemoveTrailingValue('\abc\defx', 'x' ), 'Failed on 5');
+  CheckEquals('c:\abc\def', tiUtils.tiRemoveTrailingValue('c:\abc\defx', 'x' ), 'Failed on 6');
 
-  CheckEquals( 'x', tiUtils.tiRemoveTrailingValue( 'x', 'xx' ), 'Failed on 7' ) ;
-  CheckEquals( '', tiUtils.tiRemoveTrailingValue( 'xx', 'xx' ), 'Failed on 8' ) ;
-  CheckEquals( '\abc', tiUtils.tiRemoveTrailingValue( '\abcxx', 'xx'  ), 'Failed on 9' ) ;
-  CheckEquals( '\abc', tiUtils.tiRemoveTrailingValue( '\abc', 'xx'  ), 'Failed on 10' ) ;
-  CheckEquals( '\abc\def', tiUtils.tiRemoveTrailingValue( '\abc\defxx', 'xx'  ), 'Failed on 11' ) ;
-  CheckEquals( '\abc\def', tiUtils.tiRemoveTrailingValue( '\abc\defxx', 'xx'  ), 'Failed on 12' ) ;
-  CheckEquals( 'c:\abc\def', tiUtils.tiRemoveTrailingValue( 'c:\abc\defxx', 'xx'  ), 'Failed on 13' ) ;
-end ;
+  CheckEquals('x', tiUtils.tiRemoveTrailingValue('x', 'xx'), 'Failed on 7');
+  CheckEquals('', tiUtils.tiRemoveTrailingValue('xx', 'xx'), 'Failed on 8');
+  CheckEquals('\abc', tiUtils.tiRemoveTrailingValue('\abcxx', 'xx' ), 'Failed on 9');
+  CheckEquals('\abc', tiUtils.tiRemoveTrailingValue('\abc', 'xx' ), 'Failed on 10');
+  CheckEquals('\abc\def', tiUtils.tiRemoveTrailingValue('\abc\defxx', 'xx' ), 'Failed on 11');
+  CheckEquals('\abc\def', tiUtils.tiRemoveTrailingValue('\abc\defxx', 'xx' ), 'Failed on 12');
+  CheckEquals('c:\abc\def', tiUtils.tiRemoveTrailingValue('c:\abc\defxx', 'xx' ), 'Failed on 13');
+end;
 
 
-procedure TTestTIUtils.tiAddTrailingComma ;
+procedure TTestTIUtils.tiAddTrailingComma;
 begin
-  Check( tiUtils.tiAddTrailingComma( '' )     = '',      'Failed on 1' ) ;
-  Check( tiUtils.tiAddTrailingComma( 'a' )    = 'a,',    'Failed on 2' ) ;
-  Check( tiUtils.tiAddTrailingComma( 'a,b' )  = 'a,b,',  'Failed on 3' ) ;
-  Check( tiUtils.tiAddTrailingComma( 'a,b,' ) = 'a,b,,', 'Failed on 4' ) ;
-end ;
+  Check(tiUtils.tiAddTrailingComma('')     = '',      'Failed on 1');
+  Check(tiUtils.tiAddTrailingComma('a')    = 'a,',    'Failed on 2');
+  Check(tiUtils.tiAddTrailingComma('a,b')  = 'a,b,',  'Failed on 3');
+  Check(tiUtils.tiAddTrailingComma('a,b,') = 'a,b,,', 'Failed on 4');
+end;
 
 
-procedure TTestTIUtils.tiAddTrailingAnd ;
+procedure TTestTIUtils.tiAddTrailingAnd;
 begin
-  Check( tiUtils.tiAddTrailingAnd( '' )         = '',         'Failed on 1' ) ;
-  Check( tiUtils.tiAddTrailingAnd( 'a=b' )      = 'a=b and ', 'Failed on 2' ) ;
-  Check( tiUtils.tiAddTrailingAnd( 'a=b and ' ) = 'a=b and ', 'Failed on 3' ) ;
-end ;
+  Check(tiUtils.tiAddTrailingAnd('')         = '',         'Failed on 1');
+  Check(tiUtils.tiAddTrailingAnd('a=b')      = 'a=b and ', 'Failed on 2');
+  Check(tiUtils.tiAddTrailingAnd('a=b and ') = 'a=b and ', 'Failed on 3');
+end;
 
 
-procedure TTestTIUtils.tiAddTrailingOr ;
+procedure TTestTIUtils.tiAddTrailingOr;
 begin
-  Check( tiUtils.tiAddTrailingOr( '' )        = '',        'Failed on 1' ) ;
-  Check( tiUtils.tiAddTrailingOr( 'a=b' )     = 'a=b or ', 'Failed on 2' ) ;
-  Check( tiUtils.tiAddTrailingOr( 'a=b or ' ) = 'a=b or ', 'Failed on 3' ) ;
-end ;
+  Check(tiUtils.tiAddTrailingOr('')        = '',        'Failed on 1');
+  Check(tiUtils.tiAddTrailingOr('a=b')     = 'a=b or ', 'Failed on 2');
+  Check(tiUtils.tiAddTrailingOr('a=b or ') = 'a=b or ', 'Failed on 3');
+end;
 
 
-procedure TTestTIUtils.tiAddTrailingSpace ;
+procedure TTestTIUtils.tiAddTrailingSpace;
 begin
-  Check( tiUtils.tiAddTrailingSpace( '' )     = '',      'Failed on 1' ) ;
-  Check( tiUtils.tiAddTrailingSpace( 'a' )    = 'a ',    'Failed on 2' ) ;
-  Check( tiUtils.tiAddTrailingSpace( 'a b' )  = 'a b ',  'Failed on 3' ) ;
-  Check( tiUtils.tiAddTrailingSpace( 'a b ' ) = 'a b  ', 'Failed on 4' ) ;
-end ;
+  Check(tiUtils.tiAddTrailingSpace('')     = '',      'Failed on 1');
+  Check(tiUtils.tiAddTrailingSpace('a')    = 'a ',    'Failed on 2');
+  Check(tiUtils.tiAddTrailingSpace('a b')  = 'a b ',  'Failed on 3');
+  Check(tiUtils.tiAddTrailingSpace('a b ') = 'a b  ', 'Failed on 4');
+end;
 
 
-// Return the first position of pStrValue in pStrTarget from the right.
-procedure TTestTIUtils.tiPosR ;
+// Return the first position of AValue in ATarget from the right.
+procedure TTestTIUtils.tiPosR;
 begin
-  CheckEquals( 1, tiUtils.tiPosR( 'a',   'axxxxx' ), 'Failed on 1' ) ;
-  CheckEquals( 2, tiUtils.tiPosR( 'a',   'xaxxxx' ), 'Failed on 2' ) ;
-  CheckEquals( 6, tiUtils.tiPosR( 'a',   'xxxxxa' ), 'Failed on 3' ) ;
-  CheckEquals( 1, tiUtils.tiPosR( 'abc', 'abcxxxxxx' ), 'Failed on 4' ) ;
-  CheckEquals( 2, tiUtils.tiPosR( 'abc', 'xabcxxxxx' ), 'Failed on 5' ) ;
-  CheckEquals( 4, tiUtils.tiPosR( 'abc', 'xxxabcxxx' ), 'Failed on 6' ) ;
-  CheckEquals( 7, tiUtils.tiPosR( 'abc', 'xxxxxxabc' ), 'Failed on 7' ) ;
-end ;
+  CheckEquals(1, tiUtils.tiPosR('a',   'axxxxx'), 'Failed on 1');
+  CheckEquals(2, tiUtils.tiPosR('a',   'xaxxxx'), 'Failed on 2');
+  CheckEquals(6, tiUtils.tiPosR('a',   'xxxxxa'), 'Failed on 3');
+  CheckEquals(1, tiUtils.tiPosR('abc', 'abcxxxxxx'), 'Failed on 4');
+  CheckEquals(2, tiUtils.tiPosR('abc', 'xabcxxxxx'), 'Failed on 5');
+  CheckEquals(4, tiUtils.tiPosR('abc', 'xxxabcxxx'), 'Failed on 6');
+  CheckEquals(7, tiUtils.tiPosR('abc', 'xxxxxxabc'), 'Failed on 7');
+end;
 
 
-procedure TTestTIUtils.tiWildcardMatch ;
+procedure TTestTIUtils.tiWildcardMatch;
 begin
-  Check( tiUtils.tiWildCardMatch( 'c:\temp.txt', '*.txt' ), 'Failed on 1' ) ;
-  Check( tiUtils.tiWildCardMatch( 'temp.txt', '*.txt' ), 'Failed on 2' ) ;
-  Check( tiUtils.tiWildCardMatch( 'C:\Program files\System32\MyAp.exe', '*.exe' ), 'Failed on 3' ) ;
+  Check(tiUtils.tiWildCardMatch('c:\temp.txt', '*.txt'), 'Failed on 1');
+  Check(tiUtils.tiWildCardMatch('temp.txt', '*.txt'), 'Failed on 2');
+  Check(tiUtils.tiWildCardMatch('C:\Program files\System32\MyAp.exe', '*.exe'), 'Failed on 3');
 
-  Check( not tiUtils.tiWildCardMatch( 'c:\temp.txt', '*.TXT', true ), 'Failed on 4' ) ;
-  Check( not tiUtils.tiWildCardMatch( 'temp.txt', '*.TXT', true ), 'Failed on 5' ) ;
-  Check( not tiUtils.tiWildCardMatch( 'C:\Program files\System32\MyAp.exe', '*.EXE', true ), 'Failed on 6' ) ;
+  Check(not tiUtils.tiWildCardMatch('c:\temp.txt', '*.TXT', true), 'Failed on 4');
+  Check(not tiUtils.tiWildCardMatch('temp.txt', '*.TXT', true), 'Failed on 5');
+  Check(not tiUtils.tiWildCardMatch('C:\Program files\System32\MyAp.exe', '*.EXE', true), 'Failed on 6');
 
-  Check(     tiUtils.tiWildCardMatch( 'abcdefg', 'abc*' ),    'Failed on 7' ) ;
-  Check(     tiUtils.tiWildCardMatch( 'abcdefg', '*abc*' ),   'Failed on 8' ) ;
-  Check( not tiUtils.tiWildCardMatch( 'abcdefg', '?bcd' ),    'Failed on 9' ) ;
-  Check(     tiUtils.tiWildCardMatch( 'abcdefg', '?bcd*' ),   'Failed on 9' ) ;
-  Check(     tiUtils.tiWildCardMatch( 'abcdefg', 'abc??fg' ), 'Failed on 10' ) ;
-end ;
+  Check(    tiUtils.tiWildCardMatch('abcdefg', 'abc*'),    'Failed on 7');
+  Check(    tiUtils.tiWildCardMatch('abcdefg', '*abc*'),   'Failed on 8');
+  Check(not tiUtils.tiWildCardMatch('abcdefg', '?bcd'),    'Failed on 9');
+  Check(    tiUtils.tiWildCardMatch('abcdefg', '?bcd*'),   'Failed on 9');
+  Check(    tiUtils.tiWildCardMatch('abcdefg', 'abc??fg'), 'Failed on 10');
+end;
 
 
-procedure TTestTIUtils.tiSubStr ;
+procedure TTestTIUtils.tiSubStr;
 begin
-  CheckEquals( '', tiUtils.tiSubStr( '','','' ),                     'Failed on 1' ) ;
-  CheckEquals( 'abc', tiUtils.tiSubStr( 'xxxabcyyy','xxx','yyy' ),   'Failed on 2' ) ;
-  CheckEquals( 'abc', tiUtils.tiSubStr( 'xxx,abc;xxx',',',';' ),     'Failed on 3' ) ;
-  CheckEquals( 'abc', tiUtils.tiSubStr( '<d>abc</d>','<d>','</d>' ), 'Failed on 4' ) ;
-end ;
+  CheckEquals('', tiUtils.tiSubStr('','',''),                     'Failed on 1');
+  CheckEquals('abc', tiUtils.tiSubStr('xxxabcyyy','xxx','yyy'),   'Failed on 2');
+  CheckEquals('abc', tiUtils.tiSubStr('xxx,abc;xxx',',',';'),     'Failed on 3');
+  CheckEquals('abc', tiUtils.tiSubStr('<d>abc</d>','<d>','</d>'), 'Failed on 4');
+end;
 
 
-procedure TTestTIUtils.tiAddEllipsis ;
+procedure TTestTIUtils.tiAddEllipsis;
 begin
-  Check( tiUtils.tiAddEllipsis( 'XXXXXXXXXX', 13 ) = 'XXXXXXXXXX', 'Failed on 13' ) ;
-  Check( tiUtils.tiAddEllipsis( 'XXXXXXXXXX', 12 ) = 'XXXXXXXXXX', 'Failed on 12' ) ;
-  Check( tiUtils.tiAddEllipsis( 'XXXXXXXXXX', 11 ) = 'XXXXXXXXXX', 'Failed on 11' ) ;
-  Check( tiUtils.tiAddEllipsis( 'XXXXXXXXXX', 10 ) = 'XXXXXXXXXX', 'Failed on 10' ) ;
-  Check( tiUtils.tiAddEllipsis( 'XXXXXXXXXX',  9 ) = 'XXXXXX...',  'Failed on 9'  ) ;
-  Check( tiUtils.tiAddEllipsis( 'XXXXXXXXXX',  8 ) = 'XXXXX...',   'Failed on 8'  ) ;
-  Check( tiUtils.tiAddEllipsis( 'XXXXXXXXXX',  7 ) = 'XXXX...',    'Failed on 7'  ) ;
-  Check( tiUtils.tiAddEllipsis( 'XXXXXXXXXX',  6 ) = 'XXX...',     'Failed on 6'  ) ;
-  Check( tiUtils.tiAddEllipsis( 'XXXXXXXXXX',  5 ) = 'XX...',      'Failed on 5'  ) ;
-end ;
+  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX', 13) = 'XXXXXXXXXX', 'Failed on 13');
+  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX', 12) = 'XXXXXXXXXX', 'Failed on 12');
+  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX', 11) = 'XXXXXXXXXX', 'Failed on 11');
+  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX', 10) = 'XXXXXXXXXX', 'Failed on 10');
+  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  9) = 'XXXXXX...',  'Failed on 9' );
+  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  8) = 'XXXXX...',   'Failed on 8' );
+  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  7) = 'XXXX...',    'Failed on 7' );
+  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  6) = 'XXX...',     'Failed on 6' );
+  Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  5) = 'XX...',      'Failed on 5' );
+end;
 
 
-procedure TTestTIUtils.tiTrimR ;
+procedure TTestTIUtils.tiTrimR;
 begin
-  CheckEquals( '', tiUtils.tiTrimR( 'abc', 'abc', true  ), 'Failed on 1' ) ;
-  CheckEquals( '', tiUtils.tiTrimR( 'abc', 'aBc', false ), 'Failed on 2' ) ;
-  CheckEquals( '', tiUtils.tiTrimR( 'abcdef', 'abc', true ), 'Failed on 3' ) ;
-  CheckEquals( '', tiUtils.tiTrimR( 'abcdef', 'aBc', false ), 'Failed on 4' ) ;
-  CheckEquals( 'abc', tiUtils.tiTrimR( 'abcdefGhI', 'def', true ), 'Failed on 5' ) ;
-  CheckEquals( 'abc', tiUtils.tiTrimR( 'abcDeFGhI', 'dEf', false ), 'Failed on 6' ) ;
-end ;
+  CheckEquals('', tiUtils.tiTrimR('abc', 'abc', true ), 'Failed on 1');
+  CheckEquals('', tiUtils.tiTrimR('abc', 'aBc', false), 'Failed on 2');
+  CheckEquals('', tiUtils.tiTrimR('abcdef', 'abc', true), 'Failed on 3');
+  CheckEquals('', tiUtils.tiTrimR('abcdef', 'aBc', false), 'Failed on 4');
+  CheckEquals('abc', tiUtils.tiTrimR('abcdefGhI', 'def', true), 'Failed on 5');
+  CheckEquals('abc', tiUtils.tiTrimR('abcDeFGhI', 'dEf', false), 'Failed on 6');
+end;
 
 
-procedure TTestTIUtils.tiTrimL ;
+procedure TTestTIUtils.tiTrimL;
 begin
-  CheckEquals( '', tiUtils.tiTrimL( 'abc', 'abc', true  ), 'Failed on 1' ) ;
-  CheckEquals( '', tiUtils.tiTrimL( 'abc', 'aBc', false ), 'Failed on 2' ) ;
-  CheckEquals( '', tiUtils.tiTrimL( 'abcdef', 'def', true ), 'Failed on 3' ) ;
-  CheckEquals( '', tiUtils.tiTrimL( 'abcdef', 'dEf', false ), 'Failed on 4' ) ;
-  CheckEquals( 'GhI', tiUtils.tiTrimL( 'abcdefGhI', 'def', true ), 'Failed on 5' ) ;
-  CheckEquals( 'GhI', tiUtils.tiTrimL( 'abcDeFGhI', 'dEf', false ), 'Failed on 6' ) ;
-end ;
+  CheckEquals('', tiUtils.tiTrimL('abc', 'abc', true ), 'Failed on 1');
+  CheckEquals('', tiUtils.tiTrimL('abc', 'aBc', false), 'Failed on 2');
+  CheckEquals('', tiUtils.tiTrimL('abcdef', 'def', true), 'Failed on 3');
+  CheckEquals('', tiUtils.tiTrimL('abcdef', 'dEf', false), 'Failed on 4');
+  CheckEquals('GhI', tiUtils.tiTrimL('abcdefGhI', 'def', true), 'Failed on 5');
+  CheckEquals('GhI', tiUtils.tiTrimL('abcDeFGhI', 'dEf', false), 'Failed on 6');
+end;
 
 
-procedure TTestTIUtils.tiRemoveCrLf ;
+procedure TTestTIUtils.tiRemoveCrLf;
 const
-  lCr = #13 ;
-  lLf = #10 ;
+  lCr = #13;
+  lLf = #10;
 begin
-  CheckEquals( ' ', tiUtils.tiRemoveCrLf( lCr + lLf ), 'Failed on 1' ) ;
-  CheckEquals( 'abc ', tiUtils.tiRemoveCrLf( 'abc' + lCr + lLf ), 'Failed on 2' ) ;
-  CheckEquals( 'abc  ', tiUtils.tiRemoveCrLf( 'abc' + lCr + lLf + lCr + lLf ), 'Failed on 3' ) ;
-  CheckEquals( 'abc   ', tiUtils.tiRemoveCrLf( 'abc' + lCr + lLf + lCr + lLf + lCr + lLf ), 'Failed on 4' ) ;
-  CheckEquals( 'abc   def', tiUtils.tiRemoveCrLf( 'abc' + lCr + lLf + lCr + lLf + lCr + lLf + 'def' ), 'Failed on 5' ) ;
-  CheckEquals( ' ', tiUtils.tiRemoveCrLf( lCr ), 'Failed on 6' ) ;
-  CheckEquals( '  ', tiUtils.tiRemoveCrLf( lCr + lCr ), 'Failed on 7' ) ;
-  CheckEquals( 'abc  ', tiUtils.tiRemoveCrLf( 'abc' + lCr + lCr ), 'Failed on 8' ) ;
-end ;
+  CheckEquals(' ', tiUtils.tiRemoveCrLf(lCr + lLf), 'Failed on 1');
+  CheckEquals('abc ', tiUtils.tiRemoveCrLf('abc' + lCr + lLf), 'Failed on 2');
+  CheckEquals('abc  ', tiUtils.tiRemoveCrLf('abc' + lCr + lLf + lCr + lLf), 'Failed on 3');
+  CheckEquals('abc   ', tiUtils.tiRemoveCrLf('abc' + lCr + lLf + lCr + lLf + lCr + lLf), 'Failed on 4');
+  CheckEquals('abc   def', tiUtils.tiRemoveCrLf('abc' + lCr + lLf + lCr + lLf + lCr + lLf + 'def'), 'Failed on 5');
+  CheckEquals(' ', tiUtils.tiRemoveCrLf(lCr), 'Failed on 6');
+  CheckEquals('  ', tiUtils.tiRemoveCrLf(lCr + lCr), 'Failed on 7');
+  CheckEquals('abc  ', tiUtils.tiRemoveCrLf('abc' + lCr + lCr), 'Failed on 8');
+end;
 
 
-// Remove all the trailing white space characters ( #32, #10, #13 )
-procedure TTestTIUtils.tiTrimTrailingWhiteSpace ;
+// Remove all the trailing white space characters (#32, #10, #13)
+procedure TTestTIUtils.tiTrimTrailingWhiteSpace;
 const
-  lCr = #13 ;
-  lLf = #10 ;
+  lCr = #13;
+  lLf = #10;
 begin
-  CheckEquals( '', tiUtils.tiTrimTrailingWhiteSpace( '' ), 'Failed on 1' ) ;
-  CheckEquals( 'abc', tiUtils.tiTrimTrailingWhiteSpace( 'abc' ), 'Failed on 2' ) ;
-  CheckEquals( 'abc', tiUtils.tiTrimTrailingWhiteSpace( 'abc ' ), 'Failed on 3' ) ;
-  CheckEquals( 'abc', tiUtils.tiTrimTrailingWhiteSpace( 'abc ' + lCr ), 'Failed on 4' ) ;
-  CheckEquals( 'abc', tiUtils.tiTrimTrailingWhiteSpace( 'abc ' + lCr + lLf ), 'Failed on 5' ) ;
-  CheckEquals( 'abc', tiUtils.tiTrimTrailingWhiteSpace( 'abc ' + lCr + lLf + lCr + lLf ), 'Failed on 6' ) ;
-  CheckEquals( 'abc' + lCr + lLf + 'def', tiUtils.tiTrimTrailingWhiteSpace( 'abc' + lCr + lLf + 'def' ), 'Failed on 7' ) ;
-end ;
+  CheckEquals('', tiUtils.tiTrimTrailingWhiteSpace(''), 'Failed on 1');
+  CheckEquals('abc', tiUtils.tiTrimTrailingWhiteSpace('abc'), 'Failed on 2');
+  CheckEquals('abc', tiUtils.tiTrimTrailingWhiteSpace('abc '), 'Failed on 3');
+  CheckEquals('abc', tiUtils.tiTrimTrailingWhiteSpace('abc ' + lCr), 'Failed on 4');
+  CheckEquals('abc', tiUtils.tiTrimTrailingWhiteSpace('abc ' + lCr + lLf), 'Failed on 5');
+  CheckEquals('abc', tiUtils.tiTrimTrailingWhiteSpace('abc ' + lCr + lLf + lCr + lLf), 'Failed on 6');
+  CheckEquals('abc' + lCr + lLf + 'def', tiUtils.tiTrimTrailingWhiteSpace('abc' + lCr + lLf + 'def'), 'Failed on 7');
+end;
 
 
-procedure TTestTIUtils.tiGetTempFile ;
+procedure TTestTIUtils.tiGetTempFile;
 var
-  i : integer ;
-  lFileName : string ;
-  lsl : TStringList ;
+  i : integer;
+  lFileName : string;
+  lsl : TStringList;
 const
-  cFileCount = 100 ;
+  cFileCount = 100;
 begin
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
-    lsl.Duplicates := dupError	 ;
+    lsl.Duplicates := dupError	;
     for i := 1 to cFileCount do
     begin
-      lFileName := tiUtils.tiGetTempFile( 'tmp' ) ;
-      lsl.Add( lFileName ) ;
-      Check( not FileExists( lFileName ), 'File already exists' ) ;
-      tiUtils.tiStringToFile( 'test', lFileName ) ;
-    end ;
-    CheckEquals( cFileCount, lsl.Count, 'Duplicate file names detected' ) ;
+      lFileName := tiUtils.tiGetTempFile('tmp');
+      lsl.Add(lFileName);
+      Check(not FileExists(lFileName), 'File already exists');
+      tiUtils.tiStringToFile('test', lFileName);
+    end;
+    CheckEquals(cFileCount, lsl.Count, 'Duplicate file names detected');
     for i := 0 to cFileCount - 1 do
-      SysUtils.DeleteFile( lsl.Strings[i] ) ;
+      tiDeleteFile(lsl.Strings[i]);
   finally
-    lsl.Free ;
-  end ;
-end ;
-
-
-procedure TTestTIUtils.tiAddTrailingSlash ;
-begin
-  Check( tiUtils.tiAddTrailingSlash( '' )     = '',     'Failed on 1' ) ;
-  Check( tiUtils.tiAddTrailingSlash( 'a' )    = tiFixPathDelim('a\'),   'Failed on 2' ) ;
-  Check( tiUtils.tiAddTrailingSlash( tiFixPathDelim('a\b') )  = tiFixPathDelim('a\b\'), 'Failed on 3' ) ;
-  Check( tiUtils.tiAddTrailingSlash( tiFixPathDelim('a\b\') ) = tiFixPathDelim('a\b\'), 'Failed on 4' ) ;
+    lsl.Free;
+  end;
 end;
 
 
-procedure TTestTIUtils.tiRemoveTrailingSlash ;
+procedure TTestTIUtils.tiAddTrailingSlash;
 begin
-  CheckEquals( '', tiUtils.tiRemoveTrailingSlash( '\' ), 'Failed on 1' ) ;
-  CheckEquals( tiFixPathDelim('\abc'), tiUtils.tiRemoveTrailingSlash( '\abc\' ), 'Failed on 2' ) ;
-  CheckEquals( tiFixPathDelim('\abc'), tiUtils.tiRemoveTrailingSlash( '\abc' ), 'Failed on 3' ) ;
-  CheckEquals( tiFixPathDelim('\abc\def'), tiUtils.tiRemoveTrailingSlash( '\abc\def\' ), 'Failed on 4' ) ;
-  CheckEquals( tiFixPathDelim('\abc\def'), tiUtils.tiRemoveTrailingSlash( '\abc\def\' ), 'Failed on 2' ) ;
-  CheckEquals( tiFixPathDelim('c:\abc\def'), tiUtils.tiRemoveTrailingSlash( 'c:\abc\def\' ), 'Failed on 2' ) ;
+  Check(tiUtils.tiAddTrailingSlash('')     = '',     'Failed on 1');
+  Check(tiUtils.tiAddTrailingSlash('a')    = tiFixPathDelim('a\'),   'Failed on 2');
+  Check(tiUtils.tiAddTrailingSlash(tiFixPathDelim('a\b'))  = tiFixPathDelim('a\b\'), 'Failed on 3');
+  Check(tiUtils.tiAddTrailingSlash(tiFixPathDelim('a\b\')) = tiFixPathDelim('a\b\'), 'Failed on 4');
 end;
 
 
-procedure TTestTIUtils.tiRemoveLeadingSlash ;
+procedure TTestTIUtils.tiRemoveTrailingSlash;
 begin
-  CheckEquals( '', tiUtils.tiRemoveLeadingSlash( '\' ), 'Failed on 1' ) ;
-  CheckEquals( 'abc', tiUtils.tiRemoveLeadingSlash( '\abc' ), 'Failed on 2' ) ;
-  CheckEquals( 'abc', tiUtils.tiRemoveLeadingSlash( 'abc' ), 'Failed on 3' ) ;
-  CheckEquals( tiFixPathDelim('abc\def'), tiUtils.tiRemoveLeadingSlash( '\abc\def' ), 'Failed on 4' ) ;
-  CheckEquals( tiFixPathDelim('abc\def\'), tiUtils.tiRemoveLeadingSlash( '\abc\def\' ), 'Failed on 5' ) ;
-end ;
+  CheckEquals('', tiUtils.tiRemoveTrailingSlash('\'), 'Failed on 1');
+  CheckEquals(tiFixPathDelim('\abc'), tiUtils.tiRemoveTrailingSlash('\abc\'), 'Failed on 2');
+  CheckEquals(tiFixPathDelim('\abc'), tiUtils.tiRemoveTrailingSlash('\abc'), 'Failed on 3');
+  CheckEquals(tiFixPathDelim('\abc\def'), tiUtils.tiRemoveTrailingSlash('\abc\def\'), 'Failed on 4');
+  CheckEquals(tiFixPathDelim('\abc\def'), tiUtils.tiRemoveTrailingSlash('\abc\def\'), 'Failed on 2');
+  CheckEquals(tiFixPathDelim('c:\abc\def'), tiUtils.tiRemoveTrailingSlash('c:\abc\def\'), 'Failed on 2');
+end;
 
 
-procedure TTestTIUtils.tiGetTempDir    ;
+procedure TTestTIUtils.tiRemoveLeadingSlash;
+begin
+  CheckEquals('', tiUtils.tiRemoveLeadingSlash('\'), 'Failed on 1');
+  CheckEquals('abc', tiUtils.tiRemoveLeadingSlash('\abc'), 'Failed on 2');
+  CheckEquals('abc', tiUtils.tiRemoveLeadingSlash('abc'), 'Failed on 3');
+  CheckEquals(tiFixPathDelim('abc\def'), tiUtils.tiRemoveLeadingSlash('\abc\def'), 'Failed on 4');
+  CheckEquals(tiFixPathDelim('abc\def\'), tiUtils.tiRemoveLeadingSlash('\abc\def\'), 'Failed on 5');
+end;
+
+
+procedure TTestTIUtils.tiGetTempDir   ;
 begin
   CheckReadingFromNT(
-    tiUtils.tiRemoveTrailingSlash( tiUtils.tiGetTempDir ),
+    tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetTempDir),
     'TempDir',
     'TEMP directory (No trailing path delimiter)'
-   ) ;
-end ;
+  );
+end;
 
 
-procedure TTestTIUtils.tiGetWindowsSysDir  ;
+procedure TTestTIUtils.tiGetWindowsSysDir ;
 begin
   {$IFDEF MSWINDOWS}
   CheckReadingFromNT(
     tiUtils.tiGetWindowsSysDir,
     'WindowsSysDir',
     'Windows System Directory'
-   ) ;
+  );
   {$ENDIF}
   {$IFDEF UNIX}
   Check(True, 'Not applicable');
   {$ENDIF}
-end ;
+end;
 
 
-procedure TTestTIUtils.tiReadFileDateSize ;
-  procedure _SetFileDate( pFileName : string ; pDate : TDateTime ) ;
+procedure TTestTIUtils.tiReadFileDateSize;
+  procedure _SetFileDate(AFileName : string; pDate : TDateTime);
   var
-    lFileHandle : Integer ;
-    lFileDate   : integer ;
+    lFileHandle : Integer;
+    lFileDate  : integer;
   begin
-    lFileDate   := DateTimeToFileDate( pDate ) ;
-    lFileHandle := FileOpen( pFileName, fmOpenWrite or fmShareDenyNone);
+    lFileDate  := DateTimeToFileDate(pDate);
+    lFileHandle := FileOpen(AFileName, fmOpenWrite or fmShareDenyNone);
     try
-      FileSetDate( lFileHandle, lFileDate ) ;
+      FileSetDate(lFileHandle, lFileDate);
     finally
-      FileClose( lFileHandle ) ;
-    end ;
-  end ;
+      FileClose(lFileHandle);
+    end;
+  end;
 
 var
-  lTargetDate : TDateTime ;
-  lReadDate   : TDateTime ;
-  lReadSize   : integer ;
-  lFileName   : string ;
+  lTargetDate : TDateTime;
+  lReadDate  : TDateTime;
+  lReadSize  : integer;
+  lFileName  : string;
 
 begin
   ForceDirectories(TempDirectory);
-  lFileName := TempFileName( 'DUnitTest.txt' );
-  tiCreateTextFileOfSize( lFileName, 100 ) ;
-  lTargetDate := EncodeDate( 1980, 1, 1 ) ;
-  _SetFileDate( lFileName, lTargetDate ) ;
-  tiUtils.tiReadFileDateSize( lFileName, lReadDate, lReadSize ) ;
-  CheckEquals( lTargetDate, lReadDate, '#1' ) ;
-  CheckEquals( lTargetDate, tiReadFileDate(LFileName), '#2' ) ;
-  CheckEquals( 100, lReadSize, '#3' ) ;
-  CheckEquals( 100, tiReadFileSize(LFileName), '#4' ) ;
-  SysUtils.DeleteFile(lFileName);
+  lFileName := TempFileName('DUnitTest.txt');
+  tiCreateTextFileOfSize(lFileName, 100);
+  lTargetDate := EncodeDate(1980, 1, 1);
+  _SetFileDate(lFileName, lTargetDate);
+  tiUtils.tiReadFileDateSize(lFileName, lReadDate, lReadSize);
+  CheckEquals(lTargetDate, lReadDate, '#1');
+  CheckEquals(lTargetDate, tiReadFileDate(LFileName), '#2');
+  CheckEquals(100, lReadSize, '#3');
+  CheckEquals(100, tiReadFileSize(LFileName), '#4');
+  tiDeleteFile(lFileName);
 
-  tiCreateTextFileOfSize( lFileName, 100 ) ;
+  tiCreateTextFileOfSize(lFileName, 100);
   {$IFDEF MSWINDOWS}
-  lTargetDate := EncodeDate( 2099, 12, 31 );
+  lTargetDate := EncodeDate(2099, 12, 31);
   {$ENDIF}
   {$IFDEF UNIX}
   { Currently under *Unix any date later than this will rollover to zero.
     Something like the Y2K bug, but for *Unix }
-  lTargetDate := EncodeDate( 2038, 01, 19 );
+  lTargetDate := EncodeDate(2038, 01, 19);
   {$ENDIF}
 
-  _SetFileDate( lFileName, lTargetDate ) ;
-  tiUtils.tiReadFileDateSize( lFileName, lReadDate, lReadSize ) ;
-  CheckEquals( lTargetDate, lReadDate, '#5' ) ;
-  CheckEquals( lTargetDate, tiReadFileDate(LFileName), '#6' ) ;
-  CheckEquals( 100, lReadSize, '#7' ) ;
-  CheckEquals( 100, tiReadFileSize(LFileName), '#8' ) ;
-  SysUtils.DeleteFile(lFileName);
-end ;
+  _SetFileDate(lFileName, lTargetDate);
+  tiUtils.tiReadFileDateSize(lFileName, lReadDate, lReadSize);
+  CheckEquals(lTargetDate, lReadDate, '#5');
+  CheckEquals(lTargetDate, tiReadFileDate(LFileName), '#6');
+  CheckEquals(100, lReadSize, '#7');
+  CheckEquals(100, tiReadFileSize(LFileName), '#8');
+  tiDeleteFile(lFileName);
+end;
 
 
-procedure TTestTIUtils.tiSetFileDate ;
+procedure TTestTIUtils.tiSetFileDate;
 var
-  lsl : TStringList ;
-  lDate : TDateTime ;
-  lFileName   : string ;
+  lsl : TStringList;
+  lDate : TDateTime;
+  lFileName  : string;
 begin
   ForceDirectories(TempDirectory);
-  lFileName := TempFileName( 'DUnitTest.txt' );
-  lsl := TStringList.Create ;
+  lFileName := TempFileName('DUnitTest.txt');
+  lsl := TStringList.Create;
   try
-    lsl.Text := BuildLongString ;
-    lsl.SaveToFile( lFileName ) ;
+    lsl.Text := BuildLongString;
+    lsl.SaveToFile(lFileName);
 
-    lDate := EncodeDate( 1980, 1, 1 ) ;
-    tiUtils.tiSetFileDate( lFileName, lDate ) ;
-    CheckEquals( lDate, FileDateToDateTime( FileAge( lFileName )), cdtOneSecond, 'Failed on 1' ) ;
+    lDate := EncodeDate(1980, 1, 1);
+    tiUtils.tiSetFileDate(lFileName, lDate);
+    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 1');
 
-    lDate := EncodeDate( 1980, 1, 1 ) ;
-    tiUtils.tiSetFileDate( lFileName, lDate ) ;
-    CheckEquals( lDate, FileDateToDateTime( FileAge( lFileName )), cdtOneSecond, 'Failed on 2' ) ;
+    lDate := EncodeDate(1980, 1, 1);
+    tiUtils.tiSetFileDate(lFileName, lDate);
+    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 2');
 
     {$IFDEF MSWINDOWS}
-    lDate := EncodeDate( 2090, 12, 31 );
+    lDate := EncodeDate(2090, 12, 31);
     {$ENDIF}
     {$IFDEF UNIX}
     { Currently under *Unix any date later than this will rollover to zero.
       Something like the Y2K bug, but for *Unix }
-    lDate := EncodeDate( 2038, 01, 19 );
+    lDate := EncodeDate(2038, 01, 19);
     {$ENDIF}
-    tiUtils.tiSetFileDate( lFileName, lDate ) ;
-    CheckEquals( lDate, FileDateToDateTime( FileAge( lFileName )), cdtOneSecond, 'Failed on 3' ) ;
+    tiUtils.tiSetFileDate(lFileName, lDate);
+    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 3');
 
-    lDate := EncodeDate( 2002, 1, 1 ) + EncodeTime( 1, 0, 0, 0 ) ;
-    tiUtils.tiSetFileDate( lFileName, lDate ) ;
-    CheckEquals( lDate, FileDateToDateTime( FileAge( lFileName )), cdtOneSecond, 'Failed on 4' ) ;
+    lDate := EncodeDate(2002, 1, 1) + EncodeTime(1, 0, 0, 0);
+    tiUtils.tiSetFileDate(lFileName, lDate);
+    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 4');
 
-    lDate := EncodeDate( 2002, 1, 1 ) + EncodeTime( 12, 0, 0, 0 ) ;
-    tiUtils.tiSetFileDate( lFileName, lDate ) ;
-    CheckEquals( lDate, FileDateToDateTime( FileAge( lFileName )), cdtOneSecond, 'Failed on 5' ) ;
+    lDate := EncodeDate(2002, 1, 1) + EncodeTime(12, 0, 0, 0);
+    tiUtils.tiSetFileDate(lFileName, lDate);
+    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 5');
 
-    lDate := EncodeDate( 2002, 1, 1 ) + EncodeTime( 23, 59, 59, 0 ) ;
-    tiUtils.tiSetFileDate( lFileName, lDate ) ;
-    CheckEquals( lDate, FileDateToDateTime( FileAge( lFileName )), cdtOneSecond, 'Failed on 6' ) ;
+    lDate := EncodeDate(2002, 1, 1) + EncodeTime(23, 59, 59, 0);
+    tiUtils.tiSetFileDate(lFileName, lDate);
+    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 6');
 
-    lDate := EncodeDate( 2002, 1, 1 ) + EncodeTime( 06, 06, 06, 0 );
-    tiUtils.tiSetFileDate( lFileName, lDate ) ;
-    CheckEquals( lDate, FileDateToDateTime( FileAge( lFileName )), cdtOneSecond, 'Failed on 7' ) ;
-    SysUtils.DeleteFile(lFileName);
+    lDate := EncodeDate(2002, 1, 1) + EncodeTime(06, 06, 06, 0);
+    tiUtils.tiSetFileDate(lFileName, lDate);
+    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 7');
+    tiDeleteFile(lFileName);
 
   finally
     lsl.Free;
-  end ;
-end ;
+  end;
+end;
 
 
-procedure TTestTIUtils.tiExtractFileNameOnly ;
+procedure TTestTIUtils.tiExtractFileNameOnly;
 begin
-  Check( tiUtils.tiExtractFileNameOnly( 'test.txt' ) = 'test', 'Failed on 1' ) ;
-  Check( tiUtils.tiExtractFileNameOnly( 'c:\temp\test.txt' ) = 'test', 'Failed on 2' ) ;
-  Check( tiUtils.tiExtractFileNameOnly( 'c:\temp\test.' ) = 'test', 'Failed on 3' ) ;
-  Check( tiUtils.tiExtractFileNameOnly( 'c:\temp\test' ) = 'test', 'Failed on 4' ) ;
-  Check( tiUtils.tiExtractFileNameOnly( '\temp\test.txt' ) = 'test', 'Failed on 5' ) ;
-  Check( tiUtils.tiExtractFileNameOnly( '\test.txt' ) = 'test', 'Failed on 6' ) ;
-  Check( tiUtils.tiExtractFileNameOnly( '..\test.txt' ) = 'test', 'Failed on 2' ) ;
-end ;
+  Check(tiUtils.tiExtractFileNameOnly('test.txt') = 'test', 'Failed on 1');
+  Check(tiUtils.tiExtractFileNameOnly('c:\temp\test.txt') = 'test', 'Failed on 2');
+  Check(tiUtils.tiExtractFileNameOnly('c:\temp\test.') = 'test', 'Failed on 3');
+  Check(tiUtils.tiExtractFileNameOnly('c:\temp\test') = 'test', 'Failed on 4');
+  Check(tiUtils.tiExtractFileNameOnly('\temp\test.txt') = 'test', 'Failed on 5');
+  Check(tiUtils.tiExtractFileNameOnly('\test.txt') = 'test', 'Failed on 6');
+  Check(tiUtils.tiExtractFileNameOnly('..\test.txt') = 'test', 'Failed on 2');
+end;
 
 
-procedure TTestTIUtils.tiRemoveExtension ;
+procedure TTestTIUtils.tiRemoveExtension;
 begin
-  Check( tiUtils.tiRemoveExtension( 'test.txt' ) = 'test', 'Failed on 1' ) ;
-  Check( tiUtils.tiRemoveExtension( 'c:\temp\test.txt' ) = 'c:\temp\test', 'Failed on 2' ) ;
-  Check( tiUtils.tiRemoveExtension( 'c:\temp\test.' ) = 'c:\temp\test', 'Failed on 3' ) ;
-  Check( tiUtils.tiRemoveExtension( 'c:\temp\test' ) = 'c:\temp\test', 'Failed on 4' ) ;
-  Check( tiUtils.tiRemoveExtension( '\temp\test.txt' ) = '\temp\test', 'Failed on 5' ) ;
-  Check( tiUtils.tiRemoveExtension( '\test.txt' ) = '\test', 'Failed on 6' ) ;
-  Check( tiUtils.tiRemoveExtension( '..\test.txt' ) = '..\test', 'Failed on 2' ) ;
-end ;
+  Check(tiUtils.tiRemoveExtension('test.txt') = 'test', 'Failed on 1');
+  Check(tiUtils.tiRemoveExtension('c:\temp\test.txt') = 'c:\temp\test', 'Failed on 2');
+  Check(tiUtils.tiRemoveExtension('c:\temp\test.') = 'c:\temp\test', 'Failed on 3');
+  Check(tiUtils.tiRemoveExtension('c:\temp\test') = 'c:\temp\test', 'Failed on 4');
+  Check(tiUtils.tiRemoveExtension('\temp\test.txt') = '\temp\test', 'Failed on 5');
+  Check(tiUtils.tiRemoveExtension('\test.txt') = '\test', 'Failed on 6');
+  Check(tiUtils.tiRemoveExtension('..\test.txt') = '..\test', 'Failed on 2');
+end;
 
 
-procedure TTestTIUtils.tiSwapExt ;
+procedure TTestTIUtils.tiSwapExt;
 begin
-  CheckEquals( 'test.txt',         tiUtils.tiSwapExt( 'test.txt', 'txt' ), 'Failed on 1' ) ;
-  CheckEquals( 'test.hos',         tiUtils.tiSwapExt( 'test.txt', 'hos' ), 'Failed on 2' ) ;
-  CheckEquals( 'c:\temp\test.txt', tiUtils.tiSwapExt( 'c:\temp\test.txt', 'txt' ), 'Failed on 3' ) ;
-  CheckEquals( 'c:\temp\test.hos', tiUtils.tiSwapExt( 'c:\temp\test.txt', 'hos' ), 'Failed on 3' ) ;
-  CheckEquals( 'c:\temp\test.txt', tiUtils.tiSwapExt( 'c:\temp\test', 'txt' ), 'Failed on 4' ) ;
-  CheckEquals( 'c:\temp\test.',     tiUtils.tiSwapExt( 'c:\temp\test.txt', '' ), 'Failed on 5' ) ;
-end ;
+  CheckEquals('test.txt',         tiUtils.tiSwapExt('test.txt', 'txt'), 'Failed on 1');
+  CheckEquals('test.hos',         tiUtils.tiSwapExt('test.txt', 'hos'), 'Failed on 2');
+  CheckEquals('c:\temp\test.txt', tiUtils.tiSwapExt('c:\temp\test.txt', 'txt'), 'Failed on 3');
+  CheckEquals('c:\temp\test.hos', tiUtils.tiSwapExt('c:\temp\test.txt', 'hos'), 'Failed on 3');
+  CheckEquals('c:\temp\test.txt', tiUtils.tiSwapExt('c:\temp\test', 'txt'), 'Failed on 4');
+  CheckEquals('c:\temp\test.',     tiUtils.tiSwapExt('c:\temp\test.txt', ''), 'Failed on 5');
+end;
 
 
-procedure TTestTIUtils.tiExtractExtension ;
+procedure TTestTIUtils.tiExtractExtension;
 begin
-  Check( tiUtils.tiExtractExtension( 'test.txt' ) = 'txt', 'Failed on 1' ) ;
-  Check( tiUtils.tiExtractExtension( 'c:\temp\test.txt' ) = 'txt', 'Failed on 2' ) ;
-  Check( tiUtils.tiExtractExtension( 'c:\temp\test.' ) = '', 'Failed on 3' ) ;
-  Check( tiUtils.tiExtractExtension( 'c:\temp\test' ) = '', 'Failed on 4' ) ;
-end ;
+  Check(tiUtils.tiExtractExtension('test.txt') = 'txt', 'Failed on 1');
+  Check(tiUtils.tiExtractExtension('c:\temp\test.txt') = 'txt', 'Failed on 2');
+  Check(tiUtils.tiExtractExtension('c:\temp\test.') = '', 'Failed on 3');
+  Check(tiUtils.tiExtractExtension('c:\temp\test') = '', 'Failed on 4');
+end;
 
 
-procedure TTestTIUtils.tiCopyFile ;
+procedure TTestTIUtils.tiCopyFile;
 var
-  lslFrom : TStringList ;
-  lslTo   : TStringList ;
-  lFrom   : string ;
-  lTo     : string ;
+  lslFrom : TStringList;
+  lslTo  : TStringList;
+  lFrom  : string;
+  lTo    : string;
 
 begin
   ForceDirectories(TempDirectory);
 
-  lFrom := TempFileName( 'DUnitTest_From.txt' );
-  lTo   := TempFileName( 'DUnitTest_To.txt' );
+  lFrom := TempFileName('DUnitTest_From.txt');
+  lTo  := TempFileName('DUnitTest_To.txt');
 
-  if FileExists( lFrom ) then
-    SysUtils.DeleteFile( lFrom ) ;
-  if FileExists( lTo ) then
-    SysUtils.DeleteFile( lTo ) ;
-  lslFrom := TStringList.Create ;
+  if FileExists(lFrom) then
+    tiDeleteFile(lFrom);
+  if FileExists(lTo) then
+    tiDeleteFile(lTo);
+  lslFrom := TStringList.Create;
   try
-    lslTo   := TStringList.Create ;
+    lslTo  := TStringList.Create;
     try
-      lslFrom.Text := BuildLongString ;
-      lslFrom.SaveToFile( lFrom ) ;
-      tiUtils.tiCopyFile( lFrom, lTo ) ;
-      lslTo.LoadFromFile( lTo ) ;
-      Check( lslFrom.Text = lslTo.Text ) ;
+      lslFrom.Text := BuildLongString;
+      lslFrom.SaveToFile(lFrom);
+      tiUtils.tiCopyFile(lFrom, lTo);
+      lslTo.LoadFromFile(lTo);
+      Check(lslFrom.Text = lslTo.Text);
     finally
-      lslTo.Free ;
-    end ;
+      lslTo.Free;
+    end;
   finally
-    lslFrom.Free ;
-  end ;
-end ;
+    lslFrom.Free;
+  end;
+end;
 
 
-procedure TTestTIUtils.tiMoveFile ;
+procedure TTestTIUtils.tiMoveFile;
 var
-  lslFrom : TStringList ;
-  lslTo   : TStringList ;
-  ls : string ;
-  i : integer ;
-  j : integer ;
-  lFrom   : string ;
-  lTo     : string ;
+  lslFrom : TStringList;
+  lslTo  : TStringList;
+  ls : string;
+  i : integer;
+  j : integer;
+  lFrom  : string;
+  lTo    : string;
 begin
   ForceDirectories(TempDirectory);
 
-  lFrom := TempFileName( 'DUnitTest_From.txt' );
-  lTo   := TempFileName( 'DUnitTest_To.txt' );
+  lFrom := TempFileName('DUnitTest_From.txt');
+  lTo  := TempFileName('DUnitTest_To.txt');
 
-  if FileExists( lFrom ) then
-    SysUtils.DeleteFile( lFrom ) ;
-  if FileExists( lTo ) then
-    SysUtils.DeleteFile( lTo ) ;
+  if FileExists(lFrom) then
+    tiDeleteFile(lFrom);
+  if FileExists(lTo) then
+    tiDeleteFile(lTo);
 
-  lslFrom := TStringList.Create ;
+  lslFrom := TStringList.Create;
   try
-    lslTo   := TStringList.Create ;
+    lslTo  := TStringList.Create;
     try
       for i := 0 to 1000 do
       begin
         for j := 1 to 255 do
-          ls := ls + Chr( j ) ;
-        ls := ls + #13 ;
-      end ;
-      lslFrom.Text := ls ;
-      lslFrom.SaveToFile( lFrom ) ;
-      tiUtils.tiMoveFile( lFrom, lTo ) ;
-      lslTo.LoadFromFile( lTo ) ;
-      Check( FileExists( lTo ), 'To file does not exist' ) ;
-      Check( not FileExists( lFrom ), 'From file exists' ) ;
-      Check( lslFrom.Text = lslTo.Text ) ;
+          ls := ls + Chr(j);
+        ls := ls + #13;
+      end;
+      lslFrom.Text := ls;
+      lslFrom.SaveToFile(lFrom);
+      tiUtils.tiMoveFile(lFrom, lTo);
+      lslTo.LoadFromFile(lTo);
+      Check(FileExists(lTo), 'To file does not exist');
+      Check(not FileExists(lFrom), 'From file exists');
+      Check(lslFrom.Text = lslTo.Text);
     finally
-      lslTo.Free ;
-    end ;
+      lslTo.Free;
+    end;
   finally
-    lslFrom.Free ;
-  end ;
-end ;
+    lslFrom.Free;
+  end;
+end;
 
 
 procedure TTestTIUtils.tiNormalizeStr;
@@ -885,70 +885,70 @@ end;
 
 
 {
-procedure TTestTIUtils._CreateFileOfSize( pFileName : string ; pSize : LongInt ) ;
+procedure TTestTIUtils._CreateFileOfSize(AFileName : string; pSize : LongInt);
 var
-  lFileStream : TFileStream ;
-  lBuffer   : PChar ;
-  lLen      : integer ;
-  ls : string ;
-  i : integer ;
+  lFileStream : TFileStream;
+  lBuffer  : PChar;
+  lLen     : integer;
+  ls : string;
+  i : integer;
 begin
-  ls := '' ;
+  ls := '';
   for i := 1 to pSize do
-    ls := ls + Chr( Random( 255 + 1 )) ;
-  if FileExists( pFileName ) then
-    DeleteFile( pFileName ) ;
-  lFileStream := TFileStream.Create( pFileName,
-                                     fmCreate or fmShareCompat ) ;
+    ls := ls + Chr(Random(255 + 1));
+  if FileExists(AFileName) then
+    DeleteFile(AFileName);
+  lFileStream := TFileStream.Create(AFileName,
+                                     fmCreate or fmShareCompat);
   try
-    lBuffer := PChar( ls ) ;
-    lLen := length( ls ) ;
-    lFileStream.write( lBuffer^, lLen ) ;
+    lBuffer := PChar(ls);
+    lLen := length(ls);
+    lFileStream.write(lBuffer^, lLen);
   finally
-    lFileStream.Free ;
-  end ;
-end ;
+    lFileStream.Free;
+  end;
+end;
 }
 
 
-procedure TTestTIUtils.tiGetFileSize ;
+procedure TTestTIUtils.tiGetFileSize;
 var
-  lFileName   : string ;
+  lFileName  : string;
 begin
   ForceDirectories(TempDirectory);
 
-  lFileName := TempFileName( 'filesizetest.txt' );
+  lFileName := TempFileName('filesizetest.txt');
 
-  tiCreateTextFileOfSize( lFileName, 0 ) ;
-  CheckEquals( 0, tiUtils.tiGetFileSize( lFileName ), 'Failed on 5' ) ;
+  tiCreateTextFileOfSize(lFileName, 0);
+  CheckEquals(0, tiUtils.tiGetFileSize(lFileName), 'Failed on 5');
 
-  tiCreateTextFileOfSize( lFileName, 1 ) ;
-  CheckEquals( 1, tiUtils.tiGetFileSize( lFileName ), 'Failed on 5' ) ;
+  tiCreateTextFileOfSize(lFileName, 1);
+  CheckEquals(1, tiUtils.tiGetFileSize(lFileName), 'Failed on 5');
 
-  tiCreateTextFileOfSize( lFileName, 10 ) ;
-  CheckEquals( 10, tiUtils.tiGetFileSize( lFileName ), 'Failed on 5' ) ;
+  tiCreateTextFileOfSize(lFileName, 10);
+  CheckEquals(10, tiUtils.tiGetFileSize(lFileName), 'Failed on 5');
 
-  tiCreateTextFileOfSize( lFileName, 100 ) ;
-  CheckEquals( 100, tiUtils.tiGetFileSize( lFileName ), 'Failed on 5' ) ;
+  tiCreateTextFileOfSize(lFileName, 100);
+  CheckEquals(100, tiUtils.tiGetFileSize(lFileName), 'Failed on 5');
 
-  tiCreateTextFileOfSize( lFileName, 1000 ) ;
-  CheckEquals( 1000, tiUtils.tiGetFileSize( lFileName ), 'Failed on 5' ) ;
+  tiCreateTextFileOfSize(lFileName, 1000);
+  CheckEquals(1000, tiUtils.tiGetFileSize(lFileName), 'Failed on 5');
 end;
 
 
-procedure TTestTIUtils.tiRemoveDrive ;
+procedure TTestTIUtils.tiRemoveDrive;
 begin
   {$IFDEF FPC202}
   {$NOTE FPC 2.0.2 has a bug in ExtractFileDrive (BUG ID: 4585), so lets test for it }
-  CheckEquals( '', ExtractFileDrive( 'c:' ), 'Failed on 1.1 (fpc)' ) ;
-  CheckEquals( 'c:', tiUtils.tiRemoveDrive( 'c:' ), 'Failed on 1.2 (fpc)' ) ;
+  CheckEquals('', ExtractFileDrive('c:'), 'Failed on 1.1 (fpc)');
+  CheckEquals('c:', tiUtils.tiRemoveDrive('c:'), 'Failed on 1.2 (fpc)');
   {$ELSE}
-  CheckEquals( '', tiUtils.tiRemoveDrive( 'c:' ), 'Failed on 1' ) ;
+  CheckEquals('', tiUtils.tiRemoveDrive('c:'), 'Failed on 1');
   {$ENDIF}
-  CheckEquals( '\temp', tiUtils.tiRemoveDrive( 'c:\temp' ), 'Failed on 2' ) ;
-  CheckEquals( '\temp\hos.txt', tiUtils.tiRemoveDrive( 'c:\temp\hos.txt' ), 'Failed on 3' ) ;
-  CheckEquals( '\Program Files\My Program\run.bat', tiUtils.tiRemoveDrive( 'c:\Program Files\My Program\run.bat' ), 'Failed on 4' ) ;
-end ;
+  CheckEquals('\temp', tiUtils.tiRemoveDrive('c:\temp'), 'Failed on 2');
+  CheckEquals('\temp\hos.txt', tiUtils.tiRemoveDrive('c:\temp\hos.txt'), 'Failed on 3');
+  CheckEquals('\Program Files\My Program\run.bat', tiUtils.tiRemoveDrive('c:\Program Files\My Program\run.bat'), 'Failed on 4');
+end;
 
 
 procedure TTestTIUtils.tiSetFileReadOnly;
@@ -961,34 +961,34 @@ const
 begin
   ForceDirectories(TempDirectory);
 
-  lFileName := TempFileName( 'DUnitTest.txt' );
+  lFileName := TempFileName('DUnitTest.txt');
 
   lsl := TStringList.Create;
   try
     lsl.Text := BuildLongString;
-    lsl.SaveToFile( lFileName );
+    lsl.SaveToFile(lFileName);
     try
       {$IFDEF MSWINDOWS}
-      lCurrentState := tiWin32FileGetAttr( lFileName );
+      lCurrentState := tiWin32FileGetAttr(lFileName);
       {$ENDIF}
       {$IFDEF UNIX}
       lCurrentState := FileGetAttr(lFileName);
       {$ENDIF}
-      Check((lCurrentState and (1 shl cReadOnlyBit)) = 0, 'Failed on 1' );
+      Check((lCurrentState and (1 shl cReadOnlyBit)) = 0, 'Failed on 1');
 
-      tiUtils.tiSetFileReadOnly( lFileName, true );
+      tiUtils.tiSetFileReadOnly(lFileName, true);
       
       {$IFDEF MSWINDOWS}
-      lCurrentState := tiWin32FileGetAttr( lFileName );
+      lCurrentState := tiWin32FileGetAttr(lFileName);
       {$ENDIF}
       {$IFDEF UNIX}
       lCurrentState := FileGetAttr(lFileName);
       {$ENDIF}
-      Check((lCurrentState and (1 shl cReadOnlyBit)) <> 0, 'Failed on 2' );
+      Check((lCurrentState and (1 shl cReadOnlyBit)) <> 0, 'Failed on 2');
 
-      tiUtils.tiSetFileReadOnly( lFileName, false );
+      tiUtils.tiSetFileReadOnly(lFileName, false);
     finally
-      SysUtils.DeleteFile( lFileName );
+      tiDeleteFile(lFileName);
     end;
   finally
     lsl.Free;
@@ -1008,27 +1008,27 @@ const
 begin
   ForceDirectories(TempDirectory);
 
-  lFileName := TempFileName( 'DUnitTest.txt' );
+  lFileName := TempFileName('DUnitTest.txt');
 
   lsl := TStringList.Create;
   try
     lsl.Text := BuildLongString;
-    lsl.SaveToFile( lFileName );
+    lsl.SaveToFile(lFileName);
 
-    Check( Not tiUtils.tiIsFileReadOnly( lFileName ), 'Failed on 1' );
+    Check(Not tiUtils.tiIsFileReadOnly(lFileName), 'Failed on 1');
     {$IFDEF MSWINDOWS}
-    lCurrentState := tiWin32FileGetAttr( lFileName );
-    tiWin32FileSetAttr( lFileName, lCurrentState xor cReadOnly );
+    lCurrentState := tiWin32FileGetAttr(lFileName);
+    tiWin32FileSetAttr(lFileName, lCurrentState xor cReadOnly);
     {$ENDIF}
     {$IFDEF UNIX}
     tiUtils.tiSetFileReadOnly(lFilename, True);
     {$ENDIF}
-    Check( tiUtils.tiIsFileReadOnly( lFileName ), 'Failed on 2' );
+    Check(tiUtils.tiIsFileReadOnly(lFileName), 'Failed on 2');
 
     // Clean up
     {$IFDEF MSWINDOWS}
-    lCurrentState := tiWin32FileGetAttr( lFileName );
-    tiWin32FileSetAttr( lFileName, lCurrentState xor cReadOnly );
+    lCurrentState := tiWin32FileGetAttr(lFileName);
+    tiWin32FileSetAttr(lFileName, lCurrentState xor cReadOnly);
     {$ENDIF}
     {$IFDEF UNIX}
     tiUtils.tiSetFileReadOnly(lFileName, False);
@@ -1039,223 +1039,223 @@ begin
 end;
 
 
-procedure TTestTIUtils.tiDirectoryTreeToStringList ;
+procedure TTestTIUtils.tiDirectoryTreeToStringList;
 var
-  lsl : TStringList ;
-  lTempPath : string ;
+  lsl : TStringList;
+  lTempPath : string;
 begin
-  lTempPath := TempFileName( 'DUnitTests' ) ;
+  lTempPath := TempFileName('DUnitTests');
 
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
 
-    ForceDirectories( lTempPath ) ;
-    tiUtils.tiDirectoryTreeToStringList( lTempPath, lsl, true ) ;
-    CheckEquals( 1, lsl.Count ) ;
-    Check( SameText( lsl.Strings[0], lTempPath ),      'Failed on 00' ) ;
+    ForceDirectories(lTempPath);
+    tiUtils.tiDirectoryTreeToStringList(lTempPath, lsl, true);
+    CheckEquals(1, lsl.Count);
+    Check(SameText(lsl.Strings[0], lTempPath),      'Failed on 00');
 
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-1') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-2') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-3') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-1') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-2') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-3') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-1') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-2') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-3') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-1') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-2') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-3') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-1') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-2') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-3') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-1') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-2') );
-    ForceDirectories( tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-3') );
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-1'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-2'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-3'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-1'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-2'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-3'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-1'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-2'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-3'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-1'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-2'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-3'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-1'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-2'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-3'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-1'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-2'));
+    ForceDirectories(tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-3'));
 
-    tiUtils.tiDirectoryTreeToStringList( lTempPath, lsl, false );
-    CheckEquals( 3, lsl.Count, 'Failed on 000' );
-    Check( SameText( lsl.Strings[0], lTempPath ),      'Failed on 0' );
-    Check( SameText( lsl.Strings[1], tiFixPathDelim(lTempPath + '\Dir1') ), 'Failed on 1' );
-    Check( SameText( lsl.Strings[2], tiFixPathDelim(lTempPath + '\Dir2') ), 'Failed on 2' );
+    tiUtils.tiDirectoryTreeToStringList(lTempPath, lsl, false);
+    CheckEquals(3, lsl.Count, 'Failed on 000');
+    Check(SameText(lsl.Strings[0], lTempPath),      'Failed on 0');
+    Check(SameText(lsl.Strings[1], tiFixPathDelim(lTempPath + '\Dir1')), 'Failed on 1');
+    Check(SameText(lsl.Strings[2], tiFixPathDelim(lTempPath + '\Dir2')), 'Failed on 2');
 
-    tiUtils.tiDirectoryTreeToStringList( tiFixPathDelim(lTempPath + '\'), lsl, false );
-    Check( SameText( lsl.Strings[0], lTempPath ),      'Failed on 0a' );
-    Check( SameText( lsl.Strings[1], tiFixPathDelim(lTempPath + '\Dir1') ), 'Failed on 1a' );
-    Check( SameText( lsl.Strings[2], tiFixPathDelim(lTempPath + '\Dir2') ), 'Failed on 2a' );
+    tiUtils.tiDirectoryTreeToStringList(tiFixPathDelim(lTempPath + '\'), lsl, false);
+    Check(SameText(lsl.Strings[0], lTempPath),      'Failed on 0a');
+    Check(SameText(lsl.Strings[1], tiFixPathDelim(lTempPath + '\Dir1')), 'Failed on 1a');
+    Check(SameText(lsl.Strings[2], tiFixPathDelim(lTempPath + '\Dir2')), 'Failed on 2a');
 
-    tiUtils.tiDirectoryTreeToStringList( lTempPath, lsl, true );
-    Check( SameText( lsl.Strings[0],  lTempPath ), 'Failed on 3' );
-    Check( SameText( lsl.Strings[1],  tiFixPathDelim(lTempPath + '\Dir1') ), 'Failed on 4' );
-    Check( SameText( lsl.Strings[2],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-1') ), 'Failed on 5' );
-    Check( SameText( lsl.Strings[3],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-1') ), 'Failed on 6' );
-    Check( SameText( lsl.Strings[4],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-2') ), 'Failed on 7' );
-    Check( SameText( lsl.Strings[5],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-3') ), 'Failed on 8' );
-    Check( SameText( lsl.Strings[6],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-2') ), 'Failed on 9' );
-    Check( SameText( lsl.Strings[7],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-1') ), 'Failed on 10' );
-    Check( SameText( lsl.Strings[8],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-2') ), 'Failed on 11' );
-    Check( SameText( lsl.Strings[9],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-3') ), 'Failed on 12' );
-    Check( SameText( lsl.Strings[10], tiFixPathDelim(lTempPath + '\Dir1\Dir1-3') ), 'Failed on 1' );
-    Check( SameText( lsl.Strings[11], tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-1') ), 'Failed on 13' );
-    Check( SameText( lsl.Strings[12], tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-2') ), 'Failed on 14' );
-    Check( SameText( lsl.Strings[13], tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-3') ), 'Failed on 15' );
-    Check( SameText( lsl.Strings[14], tiFixPathDelim(lTempPath + '\Dir2') ), 'Failed on 16' );
-    Check( SameText( lsl.Strings[15], tiFixPathDelim(lTempPath + '\Dir2\Dir2-1') ), 'Failed on 17' );
-    Check( SameText( lsl.Strings[16], tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-1') ), 'Failed on 18' );
-    Check( SameText( lsl.Strings[17], tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-2') ), 'Failed on 19' );
-    Check( SameText( lsl.Strings[18], tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-3') ), 'Failed on 20' );
-    Check( SameText( lsl.Strings[19], tiFixPathDelim(lTempPath + '\Dir2\Dir2-2') ), 'Failed on 21' );
-    Check( SameText( lsl.Strings[20], tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-1') ), 'Failed on 22' );
-    Check( SameText( lsl.Strings[21], tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-2') ), 'Failed on 23' );
-    Check( SameText( lsl.Strings[22], tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-3') ), 'Failed on 24' );
-    Check( SameText( lsl.Strings[23], tiFixPathDelim(lTempPath + '\Dir2\Dir2-3') ), 'Failed on 25' );
-    Check( SameText( lsl.Strings[24], tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-1') ), 'Failed on 26' );
-    Check( SameText( lsl.Strings[25], tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-2') ), 'Failed on 27' );
-    Check( SameText( lsl.Strings[26], tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-3') ), 'Failed on 28' );
+    tiUtils.tiDirectoryTreeToStringList(lTempPath, lsl, true);
+    Check(SameText(lsl.Strings[0],  lTempPath), 'Failed on 3');
+    Check(SameText(lsl.Strings[1],  tiFixPathDelim(lTempPath + '\Dir1')), 'Failed on 4');
+    Check(SameText(lsl.Strings[2],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-1')), 'Failed on 5');
+    Check(SameText(lsl.Strings[3],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-1')), 'Failed on 6');
+    Check(SameText(lsl.Strings[4],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-2')), 'Failed on 7');
+    Check(SameText(lsl.Strings[5],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-1\Dir1-1-3')), 'Failed on 8');
+    Check(SameText(lsl.Strings[6],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-2')), 'Failed on 9');
+    Check(SameText(lsl.Strings[7],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-1')), 'Failed on 10');
+    Check(SameText(lsl.Strings[8],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-2')), 'Failed on 11');
+    Check(SameText(lsl.Strings[9],  tiFixPathDelim(lTempPath + '\Dir1\Dir1-2\Dir1-2-3')), 'Failed on 12');
+    Check(SameText(lsl.Strings[10], tiFixPathDelim(lTempPath + '\Dir1\Dir1-3')), 'Failed on 1');
+    Check(SameText(lsl.Strings[11], tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-1')), 'Failed on 13');
+    Check(SameText(lsl.Strings[12], tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-2')), 'Failed on 14');
+    Check(SameText(lsl.Strings[13], tiFixPathDelim(lTempPath + '\Dir1\Dir1-3\Dir1-3-3')), 'Failed on 15');
+    Check(SameText(lsl.Strings[14], tiFixPathDelim(lTempPath + '\Dir2')), 'Failed on 16');
+    Check(SameText(lsl.Strings[15], tiFixPathDelim(lTempPath + '\Dir2\Dir2-1')), 'Failed on 17');
+    Check(SameText(lsl.Strings[16], tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-1')), 'Failed on 18');
+    Check(SameText(lsl.Strings[17], tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-2')), 'Failed on 19');
+    Check(SameText(lsl.Strings[18], tiFixPathDelim(lTempPath + '\Dir2\Dir2-1\Dir2-1-3')), 'Failed on 20');
+    Check(SameText(lsl.Strings[19], tiFixPathDelim(lTempPath + '\Dir2\Dir2-2')), 'Failed on 21');
+    Check(SameText(lsl.Strings[20], tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-1')), 'Failed on 22');
+    Check(SameText(lsl.Strings[21], tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-2')), 'Failed on 23');
+    Check(SameText(lsl.Strings[22], tiFixPathDelim(lTempPath + '\Dir2\Dir2-2\Dir2-2-3')), 'Failed on 24');
+    Check(SameText(lsl.Strings[23], tiFixPathDelim(lTempPath + '\Dir2\Dir2-3')), 'Failed on 25');
+    Check(SameText(lsl.Strings[24], tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-1')), 'Failed on 26');
+    Check(SameText(lsl.Strings[25], tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-2')), 'Failed on 27');
+    Check(SameText(lsl.Strings[26], tiFixPathDelim(lTempPath + '\Dir2\Dir2-3\Dir2-3-3')), 'Failed on 28');
 
   finally
-    lsl.Free ;
-  end ;
+    lsl.Free;
+  end;
 
-  tiDUnitForceRemoveDir( lTempPath ) ;
-end ;
+  tiDUnitForceRemoveDir(lTempPath);
+end;
 
 
 procedure TTestTIUtils.TestCreateDir;
 var
-  lRoot : string ;
+  lRoot : string;
 begin
-  lRoot := TempFileName( 'DUnit2' ) ;
-  tiDUnitForceRemoveDir( lRoot ) ;
-  Check( not DirectoryExists( lRoot ), 'Directory exists when it should not <' + lRoot + '>' ) ;
-  if not ForceDirectories( lRoot ) then
+  lRoot := TempFileName('DUnit2');
+  tiDUnitForceRemoveDir(lRoot);
+  Check(not DirectoryExists(lRoot), 'Directory exists when it should not <' + lRoot + '>');
+  if not ForceDirectories(lRoot) then
     Fail('Unable to create directory <' + lRoot + '>');
-  Check( DirectoryExists( lRoot ), 'Unable to create directory <' + lRoot + '>' ) ;
+  Check(DirectoryExists(lRoot), 'Unable to create directory <' + lRoot + '>');
   tiDUnitForceRemoveDir(lRoot);
 end;
 
 
-procedure TTestTIUtils.TestCreateFile ;
+procedure TTestTIUtils.TestCreateFile;
 var
-  lsl : TStringList ;
-  lRoot : string ;
+  lsl : TStringList;
+  lRoot : string;
 begin
-  lRoot := TempFileName( 'DUnitTests' ) ;
-  tiDUnitForceRemoveDir( lRoot ) ;
-  if not ForceDirectories( lRoot ) then
+  lRoot := TempFileName('DUnitTests');
+  tiDUnitForceRemoveDir(lRoot);
+  if not ForceDirectories(lRoot) then
     Fail('Unable to create directory <' + lRoot + '>');
-  Check( DirectoryExists( lRoot ), 'Unable to create directory <' + lRoot + '>' ) ;
-  lsl := TStringList.Create ;
+  Check(DirectoryExists(lRoot), 'Unable to create directory <' + lRoot + '>');
+  lsl := TStringList.Create;
   try
     lsl.Text := 'test';
-    lsl.SaveToFile(lRoot + '\temp.txt' ) ;
-    Check( SysUtils.FileExists( lRoot + '\temp.txt'), 'File not found' ) ;
+    lsl.SaveToFile(lRoot + '\temp.txt');
+    Check(SysUtils.FileExists(lRoot + '\temp.txt'), 'File not found');
   finally
     lsl.Free;
   end;
-  tiDUnitForceRemoveDir( lRoot ) ;
-end ;
+  tiDUnitForceRemoveDir(lRoot);
+end;
 
 
 // Copy all the files, from the directory pStrStartDir, matching the wildcard pStrWildCard
-procedure TTestTIUtils.tiFilesToStringList ;
+procedure TTestTIUtils.tiFilesToStringList;
 var
-  lsl : TStringList ;
-  i : integer ;
-  lRoot : string ;
+  lsl : TStringList;
+  i : integer;
+  lRoot : string;
 begin
-  lRoot := TempFileName( 'DUnit' ) ;
-  tiDUnitForceRemoveDir( lRoot ) ;
-  if not ForceDirectories( lRoot ) then
+  lRoot := TempFileName('DUnit');
+  tiDUnitForceRemoveDir(lRoot);
+  if not ForceDirectories(lRoot) then
     Fail('Unable to create directory <' + lRoot + '>');
-  Check( DirectoryExists( lRoot ), 'Unable to create directory <' + lRoot + '>' ) ;
+  Check(DirectoryExists(lRoot), 'Unable to create directory <' + lRoot + '>');
   for i := 0 to 100000 do begin end;
 
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
-    lsl.Text := 'test' ;
-    lsl.SaveToFile( tiFixPathDelim(lRoot + '\file1.txt') );
-    lsl.SaveToFile( tiFixPathDelim(lRoot + '\file2.csv') );
-    lsl.SaveToFile( tiFixPathDelim(lRoot + '\file3.exe') );
-    lsl.SaveToFile( tiFixPathDelim(lRoot + '\file4.txt') );
-    tiUtils.tiFilesToStringList( lRoot, AllFilesWildCard, lsl, false ) ;
+    lsl.Text := 'test';
+    lsl.SaveToFile(tiFixPathDelim(lRoot + '\file1.txt'));
+    lsl.SaveToFile(tiFixPathDelim(lRoot + '\file2.csv'));
+    lsl.SaveToFile(tiFixPathDelim(lRoot + '\file3.exe'));
+    lsl.SaveToFile(tiFixPathDelim(lRoot + '\file4.txt'));
+    tiUtils.tiFilesToStringList(lRoot, AllFilesWildCard, lsl, false);
 
-    CheckEquals( 4, lsl.Count, 'Count' ) ;
-    CheckEquals( UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt'))) ;
-    CheckEquals( UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file2.csv'))) ;
-    CheckEquals( UpperCase(lsl.Strings[2]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe'))) ;
-    CheckEquals( UpperCase(lsl.Strings[3]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt'))) ;
+    CheckEquals(4, lsl.Count, 'Count');
+    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')));
+    CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file2.csv')));
+    CheckEquals(UpperCase(lsl.Strings[2]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')));
+    CheckEquals(UpperCase(lsl.Strings[3]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')));
 
-    tiUtils.tiFilesToStringList( lRoot, '*.txt', lsl, false ) ;
-    CheckEquals( 2, lsl.Count, 'Count' ) ;
-    CheckEquals( UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt'))) ;
-    CheckEquals( UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt'))) ;
-    tiUtils.tiFilesToStringList( lRoot, '*3.*', lsl, false ) ;
-    CheckEquals( 1, lsl.Count, 'Count' ) ;
-    CheckEquals( UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe'))) ;
+    tiUtils.tiFilesToStringList(lRoot, '*.txt', lsl, false);
+    CheckEquals(2, lsl.Count, 'Count');
+    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')));
+    CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')));
+    tiUtils.tiFilesToStringList(lRoot, '*3.*', lsl, false);
+    CheckEquals(1, lsl.Count, 'Count');
+    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')));
 
-    if not ForceDirectories( tiFixPathDelim(lRoot + '\Dir1\') ) then
-      Fail( 'Unable to create directory <' + tiFixPathDelim(lRoot + '\Dir1\') + '>' );
-    Check( DirectoryExists( tiFixPathDelim(lRoot + '\Dir1\') ), 'Unable to create directory <' + tiFixPathDelim(lRoot + '\Dir1\') + '>' );
-    lsl.Text := 'test' ;
+    if not ForceDirectories(tiFixPathDelim(lRoot + '\Dir1\')) then
+      Fail('Unable to create directory <' + tiFixPathDelim(lRoot + '\Dir1\') + '>');
+    Check(DirectoryExists(tiFixPathDelim(lRoot + '\Dir1\')), 'Unable to create directory <' + tiFixPathDelim(lRoot + '\Dir1\') + '>');
+    lsl.Text := 'test';
 
-    lsl.SaveToFile( tiFixPathDelim(lRoot + '\Dir1\file1.txt') );
-    lsl.SaveToFile( tiFixPathDelim(lRoot + '\Dir1\file2.txt') );
-    lsl.SaveToFile( tiFixPathDelim(lRoot + '\Dir1\file3.txt') );
-    lsl.SaveToFile( tiFixPathDelim(lRoot + '\Dir1\file4.txt') );
+    lsl.SaveToFile(tiFixPathDelim(lRoot + '\Dir1\file1.txt'));
+    lsl.SaveToFile(tiFixPathDelim(lRoot + '\Dir1\file2.txt'));
+    lsl.SaveToFile(tiFixPathDelim(lRoot + '\Dir1\file3.txt'));
+    lsl.SaveToFile(tiFixPathDelim(lRoot + '\Dir1\file4.txt'));
 
-    tiUtils.tiFilesToStringList( lRoot, AllFilesWildCard, lsl, true ) ;
-    CheckEquals( 8, lsl.Count, 'Count' ) ;
-    CheckEquals( UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')));
-    CheckEquals( UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file2.csv')));
-    CheckEquals( UpperCase(lsl.Strings[2]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')));
-    CheckEquals( UpperCase(lsl.Strings[3]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')));
-    CheckEquals( UpperCase(lsl.Strings[4]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file1.txt')));
-    CheckEquals( UpperCase(lsl.Strings[5]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file2.txt')));
-    CheckEquals( UpperCase(lsl.Strings[6]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file3.txt')));
-    CheckEquals( UpperCase(lsl.Strings[7]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file4.txt')));
+    tiUtils.tiFilesToStringList(lRoot, AllFilesWildCard, lsl, true);
+    CheckEquals(8, lsl.Count, 'Count');
+    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')));
+    CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file2.csv')));
+    CheckEquals(UpperCase(lsl.Strings[2]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')));
+    CheckEquals(UpperCase(lsl.Strings[3]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')));
+    CheckEquals(UpperCase(lsl.Strings[4]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file1.txt')));
+    CheckEquals(UpperCase(lsl.Strings[5]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file2.txt')));
+    CheckEquals(UpperCase(lsl.Strings[6]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file3.txt')));
+    CheckEquals(UpperCase(lsl.Strings[7]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file4.txt')));
 
   finally
     lsl.Free;
   end;
-  tiDUnitForceRemoveDir( lRoot ) ;
-end ;
+  tiDUnitForceRemoveDir(lRoot);
+end;
 
 
-procedure TTestTIUtils.tiHasSubDirectory ;
+procedure TTestTIUtils.tiHasSubDirectory;
 var
-  lDirRoot : string ;
+  lDirRoot : string;
 begin
-  lDirRoot := TempFileName( 'HasSubDir' ) ;
-  tiDUnitForceRemoveDir( lDirRoot ) ;
-  Check( not tiUtils.tiHasSubDirectory( lDirRoot ), 'Failed on call 1' ) ;
-  ForceDirectories( lDirRoot ) ;
-  Check( not tiUtils.tiHasSubDirectory( lDirRoot + '\' ), 'Failed on call 2' ) ;
-  ForceDirectories( tiFixPathDelim(lDirRoot + '\Level1') ) ;
-  Check( tiUtils.tiHasSubDirectory( lDirRoot ), 'Failed on call 3' ) ;
-  ForceDirectories( tiFixPathDelim(lDirRoot + '\Level1\') ) ;
-  Check( tiUtils.tiHasSubDirectory( lDirRoot ), 'Failed on call 4' ) ;
-  Check( not tiUtils.tiHasSubDirectory( lDirRoot + '\Level1\HOS' ), 'Failed on call 5' ) ;
-  Check( not tiUtils.tiHasSubDirectory( lDirRoot + '\Level1\HOS\' ), 'Failed on call 6' ) ;
-  tiDUnitForceRemoveDir( lDirRoot ) ;
-end ;
+  lDirRoot := TempFileName('HasSubDir');
+  tiDUnitForceRemoveDir(lDirRoot);
+  Check(not tiUtils.tiHasSubDirectory(lDirRoot), 'Failed on call 1');
+  ForceDirectories(lDirRoot);
+  Check(not tiUtils.tiHasSubDirectory(lDirRoot + '\'), 'Failed on call 2');
+  ForceDirectories(tiFixPathDelim(lDirRoot + '\Level1'));
+  Check(tiUtils.tiHasSubDirectory(lDirRoot), 'Failed on call 3');
+  ForceDirectories(tiFixPathDelim(lDirRoot + '\Level1\'));
+  Check(tiUtils.tiHasSubDirectory(lDirRoot), 'Failed on call 4');
+  Check(not tiUtils.tiHasSubDirectory(lDirRoot + '\Level1\HOS'), 'Failed on call 5');
+  Check(not tiUtils.tiHasSubDirectory(lDirRoot + '\Level1\HOS\'), 'Failed on call 6');
+  tiDUnitForceRemoveDir(lDirRoot);
+end;
 
 
-procedure TTestTIUtils.tiStringToFile ;
+procedure TTestTIUtils.tiStringToFile;
 var
-  lFileStream : TFileStream ;
+  lFileStream : TFileStream;
   lStringStream: TStringStream;
-  lsFrom : string ;
-  lsTo : string ;
-  lFileName : string ;
+  lsFrom : string;
+  lsTo : string;
+  lFileName : string;
 begin
   ForceDirectories(TempDirectory);
-  lFileName := TempFileName( 'DUnitTest.txt' ) ;
+  lFileName := TempFileName('DUnitTest.txt');
 
-  lsFrom := BuildLongString ;
-  tiUtils.tiStringToFile( lsFrom, lFileName ) ;
-  lFileStream := TFileStream.Create( lFileName,
-                                     fmOpenReadWrite or fmShareDenyNone ) ;
+  lsFrom := BuildLongString;
+  tiUtils.tiStringToFile(lsFrom, lFileName);
+  lFileStream := TFileStream.Create(lFileName,
+                                     fmOpenReadWrite or fmShareDenyNone);
   try
     LFileStream.Position:= 0;
     LStringStream:= TStringStream.Create('');
@@ -1267,43 +1267,43 @@ begin
       LStringStream.Free;
     end;
   finally
-    lFileStream.Free ;
-  end ;
+    lFileStream.Free;
+  end;
 
-  CheckEquals( lsFrom, lsTo ) ;
-  SysUtils.DeleteFile(lFileName);
+  CheckEquals(lsFrom, lsTo);
+  tiDeleteFile(lFileName);
 
-end ;
+end;
 
 
-procedure TTestTIUtils.tiFileToString ;
+procedure TTestTIUtils.tiFileToString;
 var
-  lFileStream : TFileStream ;
+  lFileStream : TFileStream;
   LStringStream: TStringStream;
-  lsFrom : string ;
-  lsTo : string ;
-  lFileName : string ;
+  lsFrom : string;
+  lsTo : string;
+  lFileName : string;
 begin
   ForceDirectories(TempDirectory);
-  lFileName := TempFileName( 'DUnitTest.txt' ) ;
-  lsFrom := BuildLongString ;
-  lFileStream := TFileStream.Create( lFileName,
-                                     fmCreate or fmShareDenyNone ) ;
+  lFileName := TempFileName('DUnitTest.txt');
+  lsFrom := BuildLongString;
+  lFileStream := TFileStream.Create(lFileName,
+                                     fmCreate or fmShareDenyNone);
   try
     LStringStream:= TStringStream.Create(lsFrom);
     LFileStream.CopyFrom(LStringStream, LStringStream.Size);
   finally
-    lFileStream.Free ;
-  end ;
-  lsTo := tiUtils.tiFileToString( lFileName ) ;
-  CheckEquals( lsFrom, lsTo ) ;
-end ;
+    lFileStream.Free;
+  end;
+  lsTo := tiUtils.tiFileToString(lFileName);
+  CheckEquals(lsFrom, lsTo);
+end;
 
 
   // Extract a directory name to a certain level.
-  // eg tiExtractDirToLevel( 'c:\temp\dir', 0 ) gives 'c:'
-  //    tiExtractDirToLevel( 'c:\temp\dir', 1 ) gives 'c:\temp'
-procedure TTestTIUtils.tiExtractDirToLevel ;
+  // eg tiExtractDirToLevel('c:\temp\dir', 0) gives 'c:'
+  //    tiExtractDirToLevel('c:\temp\dir', 1) gives 'c:\temp'
+procedure TTestTIUtils.tiExtractDirToLevel;
 const
   {$IFDEF UNIX}
   cDir = '/Temp/DUnitTests/Dir1/Dir1-1/Dir1-1-3';
@@ -1312,159 +1312,159 @@ const
   {$ENDIF}
 begin
   {$IFDEF UNIX}
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 0 ), '/' ), 'Failed on 1' ) ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 1 ), '/Temp' ), 'Failed on 2') ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 2 ), '/Temp/DUnitTests' ), 'Failed on 3') ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 3 ), '/Temp/DUnitTests/Dir1' ), 'Failed on 4' ) ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 4 ), '/Temp/DUnitTests/Dir1/Dir1-1' ), 'Failed on 5') ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 5 ), '/Temp/DUnitTests/Dir1/Dir1-1/Dir1-1-3' ), 'Failed on 6') ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 6 ), '/Temp/DUnitTests/Dir1/Dir1-1/Dir1-1-3' ), 'Failed on 7') ;
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 0), '/'), 'Failed on 1');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 1), '/Temp'), 'Failed on 2');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 2), '/Temp/DUnitTests'), 'Failed on 3');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 3), '/Temp/DUnitTests/Dir1'), 'Failed on 4');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 4), '/Temp/DUnitTests/Dir1/Dir1-1'), 'Failed on 5');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 5), '/Temp/DUnitTests/Dir1/Dir1-1/Dir1-1-3'), 'Failed on 6');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 6), '/Temp/DUnitTests/Dir1/Dir1-1/Dir1-1-3'), 'Failed on 7');
   {$ELSE}
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 0 ), 'C:' ), 'Failed on 1' ) ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 1 ), 'C:\Temp' ), 'Failed on 2') ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 2 ), 'C:\Temp\DUnitTests' ), 'Failed on 3') ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 3 ), 'C:\Temp\DUnitTests\Dir1' ), 'Failed on 4' ) ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 4 ), 'C:\Temp\DUnitTests\Dir1\Dir1-1' ), 'Failed on 5') ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 5 ), 'C:\Temp\DUnitTests\Dir1\Dir1-1\Dir1-1-3' ), 'Failed on 6') ;
-  Check( SameText( tiUtils.tiExtractDirToLevel( cDir, 6 ), 'C:\Temp\DUnitTests\Dir1\Dir1-1\Dir1-1-3' ), 'Failed on 7') ;
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 0), 'C:'), 'Failed on 1');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 1), 'C:\Temp'), 'Failed on 2');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 2), 'C:\Temp\DUnitTests'), 'Failed on 3');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 3), 'C:\Temp\DUnitTests\Dir1'), 'Failed on 4');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 4), 'C:\Temp\DUnitTests\Dir1\Dir1-1'), 'Failed on 5');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 5), 'C:\Temp\DUnitTests\Dir1\Dir1-1\Dir1-1-3'), 'Failed on 6');
+  Check(SameText(tiUtils.tiExtractDirToLevel(cDir, 6), 'C:\Temp\DUnitTests\Dir1\Dir1-1\Dir1-1-3'), 'Failed on 7');
   {$ENDIF}
-end ;
-
-
-procedure TTestTIUtils.tiSafeDiv ;
-begin
-  CheckEquals( 0, tiUtils.tiSafeDiv( 100, 0 ), 'Failed on 1' ) ;
-  CheckEquals( 10, tiUtils.tiSafeDiv( 100, 10 ), 'Failed on 2' ) ;
-  CheckEquals( 222.222, tiUtils.tiSafeDiv( 444.444, 2 ), cDUnitTestFloatPrecision, 'Failed on 3' ) ;
-  CheckEquals( 0, tiUtils.tiSafeDiv( 444.444, 0 ), 'Failed on 4' ) ;
-end ;
-
-
-procedure TTestTIUtils.tiSetPrecision ;
-begin
-  CheckEquals( 1,       tiUtils.tiSetPrecision(  1.2345, 0 ), cDUnitTestFloatPrecision, 'Failed on  1' ) ;
-  CheckEquals( 12,      tiUtils.tiSetPrecision(  12.345, 0 ), cDUnitTestFloatPrecision, 'Failed on  2' ) ;
-  CheckEquals( 123,     tiUtils.tiSetPrecision(  123.45, 0 ), cDUnitTestFloatPrecision, 'Failed on  3' ) ;
-  CheckEquals( 1235,    tiUtils.tiSetPrecision(  1234.5, 0 ), cDUnitTestFloatPrecision, 'Failed on  4' ) ;
-  CheckEquals( 12345,   tiUtils.tiSetPrecision(  12345,  0 ), cDUnitTestFloatPrecision, 'Failed on  5' ) ;
-
-  CheckEquals( 1.2,      tiUtils.tiSetPrecision( 1.2345, 1 ), cDUnitTestFloatPrecision, 'Failed on  6' ) ;
-  CheckEquals( 12.3,     tiUtils.tiSetPrecision( 12.345, 1 ), cDUnitTestFloatPrecision, 'Failed on  7' ) ;
-  CheckEquals( 123.5,    tiUtils.tiSetPrecision( 123.45, 1 ), cDUnitTestFloatPrecision, 'Failed on  8' ) ;
-  CheckEquals( 1234.5,   tiUtils.tiSetPrecision( 1234.5, 1 ), cDUnitTestFloatPrecision, 'Failed on  9' ) ;
-  CheckEquals( 12345.0,  tiUtils.tiSetPrecision( 12345,  1 ), cDUnitTestFloatPrecision, 'Failed on 10' ) ;
-
-  CheckEquals( 1.23,     tiUtils.tiSetPrecision( 1.2345, 2 ), cDUnitTestFloatPrecision, 'Failed on 11' ) ;
-  CheckEquals( 12.35,    tiUtils.tiSetPrecision( 12.345, 2 ), cDUnitTestFloatPrecision, 'Failed on 12' ) ;
-  CheckEquals( 123.45,   tiUtils.tiSetPrecision( 123.45, 2 ), cDUnitTestFloatPrecision, 'Failed on 13' ) ;
-  CheckEquals( 1234.50,  tiUtils.tiSetPrecision( 1234.5, 2 ), cDUnitTestFloatPrecision, 'Failed on 14' ) ;
-  CheckEquals( 12345.00, tiUtils.tiSetPrecision( 12345,  2 ), cDUnitTestFloatPrecision, 'Failed on 15' ) ;
-
-  CheckEquals( 1.235,     tiUtils.tiSetPrecision( 1.2345, 3 ), cDUnitTestFloatPrecision, 'Failed on 12' ) ;
-  CheckEquals( 12.345,    tiUtils.tiSetPrecision( 12.345, 3 ), cDUnitTestFloatPrecision, 'Failed on 13' ) ;
-  CheckEquals( 123.450,   tiUtils.tiSetPrecision( 123.45, 3 ), cDUnitTestFloatPrecision, 'Failed on 14' ) ;
-  CheckEquals( 1234.500,  tiUtils.tiSetPrecision( 1234.5, 3 ), cDUnitTestFloatPrecision, 'Failed on 15' ) ;
-  CheckEquals( 12345.000, tiUtils.tiSetPrecision( 12345,  3 ), cDUnitTestFloatPrecision, 'Failed on 16' ) ;
-
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 1.2345, -1 ), cDUnitTestFloatPrecision, 'Failed on 17' ) ;
-  CheckEquals( 10,        tiUtils.tiSetPrecision( 12.345, -1 ), cDUnitTestFloatPrecision, 'Failed on 18' ) ;
-  CheckEquals( 120,       tiUtils.tiSetPrecision( 123.45, -1 ), cDUnitTestFloatPrecision, 'Failed on 19' ) ;
-  CheckEquals( 1230,      tiUtils.tiSetPrecision( 1234.5, -1 ), cDUnitTestFloatPrecision, 'Failed on 20' ) ;
-  CheckEquals( 12350,     tiUtils.tiSetPrecision( 12345,  -1 ), cDUnitTestFloatPrecision, 'Failed on 21' ) ;
-
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 1.2345, -2 ), cDUnitTestFloatPrecision, 'Failed on 22' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 12.345, -2 ), cDUnitTestFloatPrecision, 'Failed on 23' ) ;
-  CheckEquals( 100,       tiUtils.tiSetPrecision( 123.45, -2 ), cDUnitTestFloatPrecision, 'Failed on 24' ) ;
-  CheckEquals( 1200,      tiUtils.tiSetPrecision( 1234.5, -2 ), cDUnitTestFloatPrecision, 'Failed on 25' ) ;
-  CheckEquals( 12300,     tiUtils.tiSetPrecision( 12345,  -2 ), cDUnitTestFloatPrecision, 'Failed on 26' ) ;
-
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 1.2345, -3 ), cDUnitTestFloatPrecision, 'Failed on 27' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 12.345, -3 ), cDUnitTestFloatPrecision, 'Failed on 28' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 123.45, -3 ), cDUnitTestFloatPrecision, 'Failed on 29' ) ;
-  CheckEquals( 1000,      tiUtils.tiSetPrecision( 1234.5, -3 ), cDUnitTestFloatPrecision, 'Failed on 30' ) ;
-  CheckEquals( 12000,     tiUtils.tiSetPrecision( 12345,  -3 ), cDUnitTestFloatPrecision, 'Failed on 31' ) ;
-
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 1.2345, -4 ), cDUnitTestFloatPrecision, 'Failed on 32' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 12.345, -4 ), cDUnitTestFloatPrecision, 'Failed on 33' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 123.45, -4 ), cDUnitTestFloatPrecision, 'Failed on 34' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 1234.5, -4 ), cDUnitTestFloatPrecision, 'Failed on 35' ) ;
-  CheckEquals( 10000,     tiUtils.tiSetPrecision( 12345,  -4 ), cDUnitTestFloatPrecision, 'Failed on 36' ) ;
-
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 1.2345, -5 ), cDUnitTestFloatPrecision, 'Failed on 37' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 12.345, -5 ), cDUnitTestFloatPrecision, 'Failed on 38' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 123.45, -5 ), cDUnitTestFloatPrecision, 'Failed on 39' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 1234.5, -5 ), cDUnitTestFloatPrecision, 'Failed on 40' ) ;
-  CheckEquals( 0,         tiUtils.tiSetPrecision( 12345,  -5 ), cDUnitTestFloatPrecision, 'Failed on 41' ) ;
-
-end ;
-
-
-procedure TTestTIUtils.tiDateToPreviousWeekDayDate ;
-begin
-  Check( tiUtils.tiDateToPreviousWeekDayDate( EncodeDate( 2002, 2, 25 )) =
-         EncodeDate( 2002, 2, 22 ), 'Failed on 1') ;
-  Check( tiUtils.tiDateToPreviousWeekDayDate( EncodeDate( 2002, 2, 26 )) =
-         EncodeDate( 2002, 2, 25 ), 'Failed on 2') ;
-  Check( tiUtils.tiDateToPreviousWeekDayDate( EncodeDate( 2002, 2, 27 )) =
-         EncodeDate( 2002, 2, 26 ), 'Failed on 3') ;
-  Check( tiUtils.tiDateToPreviousWeekDayDate( EncodeDate( 2002, 2, 28 )) =
-         EncodeDate( 2002, 2, 27 ), 'Failed on 4') ;
-  Check( tiUtils.tiDateToPreviousWeekDayDate( EncodeDate( 2002, 3, 1 )) =
-         EncodeDate( 2002, 2, 28 ), 'Failed on 5') ;
-  Check( tiUtils.tiDateToPreviousWeekDayDate( EncodeDate( 2002, 3, 2 )) =
-         EncodeDate( 2002, 3, 1), 'Failed on 6') ;
-  Check( tiUtils.tiDateToPreviousWeekDayDate( EncodeDate( 2002, 3, 3 )) =
-         EncodeDate( 2002, 3, 1), 'Failed on 7') ;
-end ;
-
-
-procedure TTestTIUtils.tiYear  ;
-var
-  lDate : TDateTime ;
-begin
-  lDate := EncodeDate( 2000, 1, 1 ) + EncodeTime( 6, 30, 15, 10 ) ;
-  CheckEquals( 2000, tiUtils.tiYear( lDate )) ;
-end ;
-
-
-procedure TTestTIUtils.tiStrToInt ;
-begin
-  CheckEquals( 0, tiUtils.tiStrToInt( '0' )) ;
-  CheckEquals( 0, tiUtils.tiStrToInt( 'hos' )) ;
-  CheckEquals( 0, tiUtils.tiStrToInt( '1+1' )) ;
-  CheckEquals( 1000, tiUtils.tiStrToInt( '1,000' )) ;
-  CheckEquals( 1000000, tiUtils.tiStrToInt( '1,000,000' )) ;
-  CheckEquals( 1000, tiUtils.tiStrToInt( '$ 1,000' )) ;
-end ;
-
-
-procedure TTestTIUtils.tiStrToFloat ;
-begin
-  CheckEquals( 0, tiUtils.tiStrToFloat( '0' ), 'Failed on ''0''' ) ;
-  CheckEquals( 0, tiUtils.tiStrToFloat( 'hos' ), 'Failed on ''hos''') ;
-  CheckEquals( 0, tiUtils.tiStrToFloat( '1+1' ), 'Failed on ''1+1''') ;
-  CheckEquals( 1000, tiUtils.tiStrToFloat( '1,000' ), 'Failed on ''1,000''') ;
-  CheckEquals( 1000000, tiUtils.tiStrToFloat( '1,000,000' ), 'Failed on ''1,000,000''') ;
-  CheckEquals( 1000, tiUtils.tiStrToFloat( '$ 1,000' ), 'Failed on ''$ 1,000''') ;
-end ;
-
-
-procedure TTestTIUtils.tiDateToStr ;
-const
-  cExpected = '01%s01%s2000';
-var
-  lDate : TDateTime ;
-  lExpected: string;
-begin
-  lExpected := Format(cExpected, [DateSeparator, DateSeparator]);
-  lDate := EncodeDate( 2000, 1, 1 ) + EncodeTime( 6, 30, 15, 10 ) ;
-  Check( tiUtils.tiDateToStr( lDate ) =
-         lExpected,
-         'Got <' + tiUtils.tiDateTimeToStr( lDate ) + '> expected <' + lExpected + '>' ) ;
 end;
 
 
-procedure TTestTIUtils.tiDateTimeToStr ;
+procedure TTestTIUtils.tiSafeDiv;
+begin
+  CheckEquals(0, tiUtils.tiSafeDiv(100, 0), 'Failed on 1');
+  CheckEquals(10, tiUtils.tiSafeDiv(100, 10), 'Failed on 2');
+  CheckEquals(222.222, tiUtils.tiSafeDiv(444.444, 2), cDUnitTestFloatPrecision, 'Failed on 3');
+  CheckEquals(0, tiUtils.tiSafeDiv(444.444, 0), 'Failed on 4');
+end;
+
+
+procedure TTestTIUtils.tiSetPrecision;
+begin
+  CheckEquals(1,       tiUtils.tiSetPrecision( 1.2345, 0), cDUnitTestFloatPrecision, 'Failed on  1');
+  CheckEquals(12,      tiUtils.tiSetPrecision( 12.345, 0), cDUnitTestFloatPrecision, 'Failed on  2');
+  CheckEquals(123,     tiUtils.tiSetPrecision( 123.45, 0), cDUnitTestFloatPrecision, 'Failed on  3');
+  CheckEquals(1235,    tiUtils.tiSetPrecision( 1234.5, 0), cDUnitTestFloatPrecision, 'Failed on  4');
+  CheckEquals(12345,   tiUtils.tiSetPrecision( 12345,  0), cDUnitTestFloatPrecision, 'Failed on  5');
+
+  CheckEquals(1.2,      tiUtils.tiSetPrecision(1.2345, 1), cDUnitTestFloatPrecision, 'Failed on  6');
+  CheckEquals(12.3,     tiUtils.tiSetPrecision(12.345, 1), cDUnitTestFloatPrecision, 'Failed on  7');
+  CheckEquals(123.5,    tiUtils.tiSetPrecision(123.45, 1), cDUnitTestFloatPrecision, 'Failed on  8');
+  CheckEquals(1234.5,   tiUtils.tiSetPrecision(1234.5, 1), cDUnitTestFloatPrecision, 'Failed on  9');
+  CheckEquals(12345.0,  tiUtils.tiSetPrecision(12345,  1), cDUnitTestFloatPrecision, 'Failed on 10');
+
+  CheckEquals(1.23,     tiUtils.tiSetPrecision(1.2345, 2), cDUnitTestFloatPrecision, 'Failed on 11');
+  CheckEquals(12.35,    tiUtils.tiSetPrecision(12.345, 2), cDUnitTestFloatPrecision, 'Failed on 12');
+  CheckEquals(123.45,   tiUtils.tiSetPrecision(123.45, 2), cDUnitTestFloatPrecision, 'Failed on 13');
+  CheckEquals(1234.50,  tiUtils.tiSetPrecision(1234.5, 2), cDUnitTestFloatPrecision, 'Failed on 14');
+  CheckEquals(12345.00, tiUtils.tiSetPrecision(12345,  2), cDUnitTestFloatPrecision, 'Failed on 15');
+
+  CheckEquals(1.235,     tiUtils.tiSetPrecision(1.2345, 3), cDUnitTestFloatPrecision, 'Failed on 12');
+  CheckEquals(12.345,    tiUtils.tiSetPrecision(12.345, 3), cDUnitTestFloatPrecision, 'Failed on 13');
+  CheckEquals(123.450,   tiUtils.tiSetPrecision(123.45, 3), cDUnitTestFloatPrecision, 'Failed on 14');
+  CheckEquals(1234.500,  tiUtils.tiSetPrecision(1234.5, 3), cDUnitTestFloatPrecision, 'Failed on 15');
+  CheckEquals(12345.000, tiUtils.tiSetPrecision(12345,  3), cDUnitTestFloatPrecision, 'Failed on 16');
+
+  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -1), cDUnitTestFloatPrecision, 'Failed on 17');
+  CheckEquals(10,        tiUtils.tiSetPrecision(12.345, -1), cDUnitTestFloatPrecision, 'Failed on 18');
+  CheckEquals(120,       tiUtils.tiSetPrecision(123.45, -1), cDUnitTestFloatPrecision, 'Failed on 19');
+  CheckEquals(1230,      tiUtils.tiSetPrecision(1234.5, -1), cDUnitTestFloatPrecision, 'Failed on 20');
+  CheckEquals(12350,     tiUtils.tiSetPrecision(12345,  -1), cDUnitTestFloatPrecision, 'Failed on 21');
+
+  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -2), cDUnitTestFloatPrecision, 'Failed on 22');
+  CheckEquals(0,         tiUtils.tiSetPrecision(12.345, -2), cDUnitTestFloatPrecision, 'Failed on 23');
+  CheckEquals(100,       tiUtils.tiSetPrecision(123.45, -2), cDUnitTestFloatPrecision, 'Failed on 24');
+  CheckEquals(1200,      tiUtils.tiSetPrecision(1234.5, -2), cDUnitTestFloatPrecision, 'Failed on 25');
+  CheckEquals(12300,     tiUtils.tiSetPrecision(12345,  -2), cDUnitTestFloatPrecision, 'Failed on 26');
+
+  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -3), cDUnitTestFloatPrecision, 'Failed on 27');
+  CheckEquals(0,         tiUtils.tiSetPrecision(12.345, -3), cDUnitTestFloatPrecision, 'Failed on 28');
+  CheckEquals(0,         tiUtils.tiSetPrecision(123.45, -3), cDUnitTestFloatPrecision, 'Failed on 29');
+  CheckEquals(1000,      tiUtils.tiSetPrecision(1234.5, -3), cDUnitTestFloatPrecision, 'Failed on 30');
+  CheckEquals(12000,     tiUtils.tiSetPrecision(12345,  -3), cDUnitTestFloatPrecision, 'Failed on 31');
+
+  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -4), cDUnitTestFloatPrecision, 'Failed on 32');
+  CheckEquals(0,         tiUtils.tiSetPrecision(12.345, -4), cDUnitTestFloatPrecision, 'Failed on 33');
+  CheckEquals(0,         tiUtils.tiSetPrecision(123.45, -4), cDUnitTestFloatPrecision, 'Failed on 34');
+  CheckEquals(0,         tiUtils.tiSetPrecision(1234.5, -4), cDUnitTestFloatPrecision, 'Failed on 35');
+  CheckEquals(10000,     tiUtils.tiSetPrecision(12345,  -4), cDUnitTestFloatPrecision, 'Failed on 36');
+
+  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -5), cDUnitTestFloatPrecision, 'Failed on 37');
+  CheckEquals(0,         tiUtils.tiSetPrecision(12.345, -5), cDUnitTestFloatPrecision, 'Failed on 38');
+  CheckEquals(0,         tiUtils.tiSetPrecision(123.45, -5), cDUnitTestFloatPrecision, 'Failed on 39');
+  CheckEquals(0,         tiUtils.tiSetPrecision(1234.5, -5), cDUnitTestFloatPrecision, 'Failed on 40');
+  CheckEquals(0,         tiUtils.tiSetPrecision(12345,  -5), cDUnitTestFloatPrecision, 'Failed on 41');
+
+end;
+
+
+procedure TTestTIUtils.tiDateToPreviousWeekDayDate;
+begin
+  Check(tiUtils.tiDateToPreviousWeekDayDate(EncodeDate(2002, 2, 25)) =
+         EncodeDate(2002, 2, 22), 'Failed on 1');
+  Check(tiUtils.tiDateToPreviousWeekDayDate(EncodeDate(2002, 2, 26)) =
+         EncodeDate(2002, 2, 25), 'Failed on 2');
+  Check(tiUtils.tiDateToPreviousWeekDayDate(EncodeDate(2002, 2, 27)) =
+         EncodeDate(2002, 2, 26), 'Failed on 3');
+  Check(tiUtils.tiDateToPreviousWeekDayDate(EncodeDate(2002, 2, 28)) =
+         EncodeDate(2002, 2, 27), 'Failed on 4');
+  Check(tiUtils.tiDateToPreviousWeekDayDate(EncodeDate(2002, 3, 1)) =
+         EncodeDate(2002, 2, 28), 'Failed on 5');
+  Check(tiUtils.tiDateToPreviousWeekDayDate(EncodeDate(2002, 3, 2)) =
+         EncodeDate(2002, 3, 1), 'Failed on 6');
+  Check(tiUtils.tiDateToPreviousWeekDayDate(EncodeDate(2002, 3, 3)) =
+         EncodeDate(2002, 3, 1), 'Failed on 7');
+end;
+
+
+procedure TTestTIUtils.tiYear ;
+var
+  lDate : TDateTime;
+begin
+  lDate := EncodeDate(2000, 1, 1) + EncodeTime(6, 30, 15, 10);
+  CheckEquals(2000, tiUtils.tiYear(lDate));
+end;
+
+
+procedure TTestTIUtils.tiStrToInt;
+begin
+  CheckEquals(0, tiUtils.tiStrToInt('0'));
+  CheckEquals(0, tiUtils.tiStrToInt('hos'));
+  CheckEquals(0, tiUtils.tiStrToInt('1+1'));
+  CheckEquals(1000, tiUtils.tiStrToInt('1,000'));
+  CheckEquals(1000000, tiUtils.tiStrToInt('1,000,000'));
+  CheckEquals(1000, tiUtils.tiStrToInt('$ 1,000'));
+end;
+
+
+procedure TTestTIUtils.tiStrToFloat;
+begin
+  CheckEquals(0, tiUtils.tiStrToFloat('0'), 'Failed on ''0''');
+  CheckEquals(0, tiUtils.tiStrToFloat('hos'), 'Failed on ''hos''');
+  CheckEquals(0, tiUtils.tiStrToFloat('1+1'), 'Failed on ''1+1''');
+  CheckEquals(1000, tiUtils.tiStrToFloat('1,000'), 'Failed on ''1,000''');
+  CheckEquals(1000000, tiUtils.tiStrToFloat('1,000,000'), 'Failed on ''1,000,000''');
+  CheckEquals(1000, tiUtils.tiStrToFloat('$ 1,000'), 'Failed on ''$ 1,000''');
+end;
+
+
+procedure TTestTIUtils.tiDateToStr;
+const
+  cExpected = '01%s01%s2000';
+var
+  lDate : TDateTime;
+  lExpected: string;
+begin
+  lExpected := Format(cExpected, [DateSeparator, DateSeparator]);
+  lDate := EncodeDate(2000, 1, 1) + EncodeTime(6, 30, 15, 10);
+  Check(tiUtils.tiDateToStr(lDate) =
+         lExpected,
+         'Got <' + tiUtils.tiDateTimeToStr(lDate) + '> expected <' + lExpected + '>');
+end;
+
+
+procedure TTestTIUtils.tiDateTimeToStr;
 const
   cExpected = '01%s01%s2000 06%s30%s15';
 {  cExpected = '01' + DateSeparator + '01' + DateSeparator + '2000 06' +
@@ -1476,188 +1476,188 @@ var
 begin
   lExpected := Format(cExpected, [DateSeparator, DateSeparator, TimeSeparator, TimeSeparator]);
   lDate := EncodeDate(2000, 1, 1) + EncodeTime(6, 30, 15, 10);
-  Check( tiUtils.tiDateTimeToStr(lDate) =
+  Check(tiUtils.tiDateTimeToStr(lDate) =
          lExpected,
          'Got <' + tiUtils.tiDateTimeToStr(lDate) + '> expected <' + lExpected + '>');
 end;
 
 
-procedure TTestTIUtils.tiTimeToStr ;
+procedure TTestTIUtils.tiTimeToStr;
 var
-  lDate : TDateTime ;
+  lDate : TDateTime;
 const
-  cExpected = '06:30:15' ;
+  cExpected = '06:30:15';
 begin
-  lDate := EncodeDate( 2000, 1, 1 ) + EncodeTime( 6, 30, 15, 10 ) ;
-  Check( tiUtils.tiTimeToStr( lDate ) =
+  lDate := EncodeDate(2000, 1, 1) + EncodeTime(6, 30, 15, 10);
+  Check(tiUtils.tiTimeToStr(lDate) =
          cExpected,
-         'Got <' + tiUtils.tiTimeToStr( lDate ) + '> expected <' + cExpected + '>' ) ;
-end ;
+         'Got <' + tiUtils.tiTimeToStr(lDate) + '> expected <' + cExpected + '>');
+end;
 
 
-procedure TTestTIUtils.tiIntToStrHide0 ;
+procedure TTestTIUtils.tiIntToStrHide0;
 begin
-  CheckEquals( '',  tiUtils.tiIntToStrHide0( 0 ), 'Failed on 0' ) ;
-  CheckEquals( '10', tiUtils.tiIntToStrHide0( 10 ), 'Failed on 10' ) ;
-  CheckEquals( '-10', tiUtils.tiIntToStrHide0( -10 ), 'Failed on -10' ) ;
-end ;
+  CheckEquals('',  tiUtils.tiIntToStrHide0(0), 'Failed on 0');
+  CheckEquals('10', tiUtils.tiIntToStrHide0(10), 'Failed on 10');
+  CheckEquals('-10', tiUtils.tiIntToStrHide0(-10), 'Failed on -10');
+end;
 
 
-procedure TTestTIUtils.tiIntToCommaStr ;
+procedure TTestTIUtils.tiIntToCommaStr;
 begin
-  CheckEquals( '0', tiUtils.tiIntToCommaStr( 0 ), 'Failed on 0' ) ;
-  CheckEquals( '10', tiUtils.tiIntToCommaStr( 10 ), 'Failed on 10' ) ;
-  CheckEquals( '100', tiUtils.tiIntToCommaStr( 100 ), 'Failed on 100' ) ;
-  CheckEquals( '1,000', tiUtils.tiIntToCommaStr( 1000 ), 'Failed on 1000' ) ;
-  CheckEquals( '10,000', tiUtils.tiIntToCommaStr( 10000 ), 'Failed on 10000' ) ;
-  CheckEquals( '100,000', tiUtils.tiIntToCommaStr( 100000 ), 'Failed on 100000' ) ;
-  CheckEquals( '1,000,000', tiUtils.tiIntToCommaStr( 1000000 ), 'Failed on 1000000' ) ;
-  CheckEquals( '-10', tiUtils.tiIntToCommaStr( -10 ), 'Failed on -10' ) ;
-  CheckEquals( '-100', tiUtils.tiIntToCommaStr( -100 ), 'Failed on -100' ) ;
-  CheckEquals( '-1,000', tiUtils.tiIntToCommaStr( -1000 ), 'Failed on -1000' ) ;
-  CheckEquals( '-10,000', tiUtils.tiIntToCommaStr( -10000 ), 'Failed on -10000' ) ;
-  CheckEquals( '-100,000', tiUtils.tiIntToCommaStr( -100000 ), 'Failed on -100000' ) ;
-  CheckEquals( '-1,000,000', tiUtils.tiIntToCommaStr( -1000000 ), 'Failed on -1000000' ) ;
-end ;
+  CheckEquals('0', tiUtils.tiIntToCommaStr(0), 'Failed on 0');
+  CheckEquals('10', tiUtils.tiIntToCommaStr(10), 'Failed on 10');
+  CheckEquals('100', tiUtils.tiIntToCommaStr(100), 'Failed on 100');
+  CheckEquals('1,000', tiUtils.tiIntToCommaStr(1000), 'Failed on 1000');
+  CheckEquals('10,000', tiUtils.tiIntToCommaStr(10000), 'Failed on 10000');
+  CheckEquals('100,000', tiUtils.tiIntToCommaStr(100000), 'Failed on 100000');
+  CheckEquals('1,000,000', tiUtils.tiIntToCommaStr(1000000), 'Failed on 1000000');
+  CheckEquals('-10', tiUtils.tiIntToCommaStr(-10), 'Failed on -10');
+  CheckEquals('-100', tiUtils.tiIntToCommaStr(-100), 'Failed on -100');
+  CheckEquals('-1,000', tiUtils.tiIntToCommaStr(-1000), 'Failed on -1000');
+  CheckEquals('-10,000', tiUtils.tiIntToCommaStr(-10000), 'Failed on -10000');
+  CheckEquals('-100,000', tiUtils.tiIntToCommaStr(-100000), 'Failed on -100000');
+  CheckEquals('-1,000,000', tiUtils.tiIntToCommaStr(-1000000), 'Failed on -1000000');
+end;
 
 
-procedure TTestTIUtils.tiFloatToCurrencyHide0 ;
+procedure TTestTIUtils.tiFloatToCurrencyHide0;
 begin
-  CheckEquals( '', tiUtils.tiFloatToCurrencyHide0( 0 ), 'Failed on 1');
-  CheckEquals( '$ 0.01', tiUtils.tiFloatToCurrencyHide0( 0.01 ), 'Failed on 2');
-  CheckEquals( '', tiUtils.tiFloatToCurrencyHide0( 0.001 ), 'Failed on 3');
-  CheckEquals( '$ 0.01', tiUtils.tiFloatToCurrencyHide0( 0.005 ), 'Failed on 4');
-  CheckEquals( '$ 100.00', tiUtils.tiFloatToCurrencyHide0( 100 ), 'Failed on 5');
-  CheckEquals( '$ 1,000.00', tiUtils.tiFloatToCurrencyHide0( 1000 ), 'Failed on 6');
-  CheckEquals( '$ 1,000,000.00', tiUtils.tiFloatToCurrencyHide0( 1000000 ), 'Failed on 7');
-end ;
+  CheckEquals('', tiUtils.tiFloatToCurrencyHide0(0), 'Failed on 1');
+  CheckEquals('$ 0.01', tiUtils.tiFloatToCurrencyHide0(0.01), 'Failed on 2');
+  CheckEquals('', tiUtils.tiFloatToCurrencyHide0(0.001), 'Failed on 3');
+  CheckEquals('$ 0.01', tiUtils.tiFloatToCurrencyHide0(0.005), 'Failed on 4');
+  CheckEquals('$ 100.00', tiUtils.tiFloatToCurrencyHide0(100), 'Failed on 5');
+  CheckEquals('$ 1,000.00', tiUtils.tiFloatToCurrencyHide0(1000), 'Failed on 6');
+  CheckEquals('$ 1,000,000.00', tiUtils.tiFloatToCurrencyHide0(1000000), 'Failed on 7');
+end;
 
 
-procedure TTestTIUtils.tiFloatToCurrency ;
+procedure TTestTIUtils.tiFloatToCurrency;
 begin
-  CheckEquals( '$ 0.00', tiUtils.tiFloatToCurrency( 0 ), 'Failed on 1');
-  CheckEquals( '$ 0.01', tiUtils.tiFloatToCurrency( 0.01 ), 'Failed on 2');
-  CheckEquals( '$ 0.00', tiUtils.tiFloatToCurrency( 0.001 ), 'Failed on 3');
-  CheckEquals( '$ 0.01', tiUtils.tiFloatToCurrency( 0.005 ), 'Failed on 4');
-  CheckEquals( '$ 100.00', tiUtils.tiFloatToCurrency( 100 ), 'Failed on 5');
-  CheckEquals( '$ 1,000.00', tiUtils.tiFloatToCurrency( 1000 ), 'Failed on 6');
-  CheckEquals( '$ 1,000,000.00', tiUtils.tiFloatToCurrency( 1000000 ), 'Failed on 7');
-end ;
+  CheckEquals('$ 0.00', tiUtils.tiFloatToCurrency(0), 'Failed on 1');
+  CheckEquals('$ 0.01', tiUtils.tiFloatToCurrency(0.01), 'Failed on 2');
+  CheckEquals('$ 0.00', tiUtils.tiFloatToCurrency(0.001), 'Failed on 3');
+  CheckEquals('$ 0.01', tiUtils.tiFloatToCurrency(0.005), 'Failed on 4');
+  CheckEquals('$ 100.00', tiUtils.tiFloatToCurrency(100), 'Failed on 5');
+  CheckEquals('$ 1,000.00', tiUtils.tiFloatToCurrency(1000), 'Failed on 6');
+  CheckEquals('$ 1,000,000.00', tiUtils.tiFloatToCurrency(1000000), 'Failed on 7');
+end;
 
-procedure TTestTIUtils.tiBooleanToStr ;
+procedure TTestTIUtils.tiBooleanToStr;
 begin
-  Check( SameText( tiUtils.tiBooleanToStr( true ), cTrueDB ), 'Failed on <true>' ) ;
-  Check( SameText( tiUtils.tiBooleanToStr( false ), cFalseDB ), 'Failed on <false>' ) ;
-end ;
+  Check(SameText(tiUtils.tiBooleanToStr(true), cTrueDB), 'Failed on <true>');
+  Check(SameText(tiUtils.tiBooleanToStr(false), cFalseDB), 'Failed on <false>');
+end;
 
 
-procedure TTestTIUtils.tiStrToBool ;
+procedure TTestTIUtils.tiStrToBool;
 begin                                    
-  CheckEquals( false, tiUtils.tiStrToBool( 'false' ), 'Failed on false' ) ;
-  CheckEquals( false, tiUtils.tiStrToBool( 'False' ), 'Failed on False' ) ;
-  CheckEquals( true,  tiUtils.tiStrToBool( 'true' ),  'Failed on true' ) ;
-  CheckEquals( true,  tiUtils.tiStrToBool( 'True' ),  'Failed on True' ) ;
-  CheckEquals( true,  tiUtils.tiStrToBool( 't' ),     'Failed on t' ) ;
-  CheckEquals( true,  tiUtils.tiStrToBool( 'T' ),     'Failed on T' ) ;
-  CheckEquals( false, tiUtils.tiStrToBool( 'f' ),     'Failed on f' ) ;
-  CheckEquals( false, tiUtils.tiStrToBool( 'F' ),     'Failed on F' ) ;
-  CheckEquals( true,  tiUtils.tiStrToBool( '1' ),     'Failed on 1' ) ;
-  CheckEquals( false, tiUtils.tiStrToBool( '0' ),     'Failed on 0' ) ;
-  CheckEquals( false, tiUtils.tiStrToBool( 'AnyOtherStrings' ), 'Failed on AnyOtherString' ) ;
-end ;
+  CheckEquals(false, tiUtils.tiStrToBool('false'), 'Failed on false');
+  CheckEquals(false, tiUtils.tiStrToBool('False'), 'Failed on False');
+  CheckEquals(true,  tiUtils.tiStrToBool('true'),  'Failed on true');
+  CheckEquals(true,  tiUtils.tiStrToBool('True'),  'Failed on True');
+  CheckEquals(true,  tiUtils.tiStrToBool('t'),     'Failed on t');
+  CheckEquals(true,  tiUtils.tiStrToBool('T'),     'Failed on T');
+  CheckEquals(false, tiUtils.tiStrToBool('f'),     'Failed on f');
+  CheckEquals(false, tiUtils.tiStrToBool('F'),     'Failed on F');
+  CheckEquals(true,  tiUtils.tiStrToBool('1'),     'Failed on 1');
+  CheckEquals(false, tiUtils.tiStrToBool('0'),     'Failed on 0');
+  CheckEquals(false, tiUtils.tiStrToBool('AnyOtherStrings'), 'Failed on AnyOtherString');
+end;
 
 
-procedure TTestTIUtils.tiFloatToStr ;
+procedure TTestTIUtils.tiFloatToStr;
 begin
-  Check( tiUtils.tiFloatToStr( 1,      0 ) = '1' ) ;
-  Check( tiUtils.tiFloatToStr( 12,     0 ) = '12' ) ;
-  Check( tiUtils.tiFloatToStr( 123,    0 ) = '123' ) ;
-  Check( tiUtils.tiFloatToStr( 1234,   0 ) = '1234' ) ;
-  Check( tiUtils.tiFloatToStr( 1.1,    0 ) = '1' ) ;
-  Check( tiUtils.tiFloatToStr( 12.1,   0 ) = '12' ) ;
-  Check( tiUtils.tiFloatToStr( 123.1,  0 ) = '123' ) ;
-  Check( tiUtils.tiFloatToStr( 1234.1, 0 ) = '1234' ) ;
-  Check( tiUtils.tiFloatToStr( 1,      1 ) = '1.0' ) ;
-  Check( tiUtils.tiFloatToStr( 12,     1 ) = '12.0' ) ;
-  Check( tiUtils.tiFloatToStr( 123,    1 ) = '123.0' ) ;
-  Check( tiUtils.tiFloatToStr( 1234,   1 ) = '1234.0' ) ;
-  Check( tiUtils.tiFloatToStr( 1.1,    1 ) = '1.1' ) ;
-  Check( tiUtils.tiFloatToStr( 12.1,   1 ) = '12.1' ) ;
-  Check( tiUtils.tiFloatToStr( 123.1,  1 ) = '123.1' ) ;
-  Check( tiUtils.tiFloatToStr( 1234.1, 1 ) = '1234.1' ) ;
-  Check( tiUtils.tiFloatToStr( 1,      2 ) = '1.00' ) ;
-  Check( tiUtils.tiFloatToStr( 12,     2 ) = '12.00' ) ;
-  Check( tiUtils.tiFloatToStr( 123,    2 ) = '123.00' ) ;
-  Check( tiUtils.tiFloatToStr( 1234,   2 ) = '1234.00' ) ;
-  Check( tiUtils.tiFloatToStr( 1.1,    2 ) = '1.10' ) ;
-  Check( tiUtils.tiFloatToStr( 12.1,   2 ) = '12.10' ) ;
-  Check( tiUtils.tiFloatToStr( 123.1,  2 ) = '123.10' ) ;
-  Check( tiUtils.tiFloatToStr( 1234.1, 2 ) = '1234.10' ) ;
-  Check( tiUtils.tiFloatToStr( 1.14,   1 ) = '1.1' ) ;
-  Check( tiUtils.tiFloatToStr( 12.15,  1 ) = '12.2' ) ;
-end ;
+  Check(tiUtils.tiFloatToStr(1,      0) = '1');
+  Check(tiUtils.tiFloatToStr(12,     0) = '12');
+  Check(tiUtils.tiFloatToStr(123,    0) = '123');
+  Check(tiUtils.tiFloatToStr(1234,   0) = '1234');
+  Check(tiUtils.tiFloatToStr(1.1,    0) = '1');
+  Check(tiUtils.tiFloatToStr(12.1,   0) = '12');
+  Check(tiUtils.tiFloatToStr(123.1,  0) = '123');
+  Check(tiUtils.tiFloatToStr(1234.1, 0) = '1234');
+  Check(tiUtils.tiFloatToStr(1,      1) = '1.0');
+  Check(tiUtils.tiFloatToStr(12,     1) = '12.0');
+  Check(tiUtils.tiFloatToStr(123,    1) = '123.0');
+  Check(tiUtils.tiFloatToStr(1234,   1) = '1234.0');
+  Check(tiUtils.tiFloatToStr(1.1,    1) = '1.1');
+  Check(tiUtils.tiFloatToStr(12.1,   1) = '12.1');
+  Check(tiUtils.tiFloatToStr(123.1,  1) = '123.1');
+  Check(tiUtils.tiFloatToStr(1234.1, 1) = '1234.1');
+  Check(tiUtils.tiFloatToStr(1,      2) = '1.00');
+  Check(tiUtils.tiFloatToStr(12,     2) = '12.00');
+  Check(tiUtils.tiFloatToStr(123,    2) = '123.00');
+  Check(tiUtils.tiFloatToStr(1234,   2) = '1234.00');
+  Check(tiUtils.tiFloatToStr(1.1,    2) = '1.10');
+  Check(tiUtils.tiFloatToStr(12.1,   2) = '12.10');
+  Check(tiUtils.tiFloatToStr(123.1,  2) = '123.10');
+  Check(tiUtils.tiFloatToStr(1234.1, 2) = '1234.10');
+  Check(tiUtils.tiFloatToStr(1.14,   1) = '1.1');
+  Check(tiUtils.tiFloatToStr(12.15,  1) = '12.2');
+end;
 
 
-procedure TTestTIUtils.tiFloatToCommaStr ;
+procedure TTestTIUtils.tiFloatToCommaStr;
 begin
-  Check( tiUtils.tiFloatToCommaStr( 1,      0 ) = '1' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 12,     0 ) = '12' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 123,    0 ) = '123' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1234,   0 ) = '1,234' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1.1,    0 ) = '1' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 12.1,   0 ) = '12' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 123.1,  0 ) = '123' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1234.1, 0 ) = '1,234' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1,      1 ) = '1.0' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 12,     1 ) = '12.0' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 123,    1 ) = '123.0' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1234,   1 ) = '1,234.0' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1.1,    1 ) = '1.1' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 12.1,   1 ) = '12.1' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 123.1,  1 ) = '123.1' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1234.1, 1 ) = '1,234.1' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1,      2 ) = '1.00' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 12,     2 ) = '12.00' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 123,    2 ) = '123.00' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1234,   2 ) = '1,234.00' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1.1,    2 ) = '1.10' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 12.1,   2 ) = '12.10' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 123.1,  2 ) = '123.10' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1234.1, 2 ) = '1,234.10' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 1.14,   1 ) = '1.1' ) ;
-  Check( tiUtils.tiFloatToCommaStr( 12.15,  1 ) = '12.2' ) ;
-end ;
+  Check(tiUtils.tiFloatToCommaStr(1,      0) = '1');
+  Check(tiUtils.tiFloatToCommaStr(12,     0) = '12');
+  Check(tiUtils.tiFloatToCommaStr(123,    0) = '123');
+  Check(tiUtils.tiFloatToCommaStr(1234,   0) = '1,234');
+  Check(tiUtils.tiFloatToCommaStr(1.1,    0) = '1');
+  Check(tiUtils.tiFloatToCommaStr(12.1,   0) = '12');
+  Check(tiUtils.tiFloatToCommaStr(123.1,  0) = '123');
+  Check(tiUtils.tiFloatToCommaStr(1234.1, 0) = '1,234');
+  Check(tiUtils.tiFloatToCommaStr(1,      1) = '1.0');
+  Check(tiUtils.tiFloatToCommaStr(12,     1) = '12.0');
+  Check(tiUtils.tiFloatToCommaStr(123,    1) = '123.0');
+  Check(tiUtils.tiFloatToCommaStr(1234,   1) = '1,234.0');
+  Check(tiUtils.tiFloatToCommaStr(1.1,    1) = '1.1');
+  Check(tiUtils.tiFloatToCommaStr(12.1,   1) = '12.1');
+  Check(tiUtils.tiFloatToCommaStr(123.1,  1) = '123.1');
+  Check(tiUtils.tiFloatToCommaStr(1234.1, 1) = '1,234.1');
+  Check(tiUtils.tiFloatToCommaStr(1,      2) = '1.00');
+  Check(tiUtils.tiFloatToCommaStr(12,     2) = '12.00');
+  Check(tiUtils.tiFloatToCommaStr(123,    2) = '123.00');
+  Check(tiUtils.tiFloatToCommaStr(1234,   2) = '1,234.00');
+  Check(tiUtils.tiFloatToCommaStr(1.1,    2) = '1.10');
+  Check(tiUtils.tiFloatToCommaStr(12.1,   2) = '12.10');
+  Check(tiUtils.tiFloatToCommaStr(123.1,  2) = '123.10');
+  Check(tiUtils.tiFloatToCommaStr(1234.1, 2) = '1,234.10');
+  Check(tiUtils.tiFloatToCommaStr(1.14,   1) = '1.1');
+  Check(tiUtils.tiFloatToCommaStr(12.15,  1) = '12.2');
+end;
 
 
-procedure TTestTIUtils._tiFloatToStr ;
+procedure TTestTIUtils._tiFloatToStr;
 begin
-  Check( tiUtils._tiFloatToStr( 1,      0, '###0' ) = '1' ) ;
-  Check( tiUtils._tiFloatToStr( 12,     0, '###0' ) = '12' ) ;
-  Check( tiUtils._tiFloatToStr( 123,    0, '###0' ) = '123' ) ;
-  Check( tiUtils._tiFloatToStr( 1234,   0, '###0' ) = '1234' ) ;
-  Check( tiUtils._tiFloatToStr( 1.1,    0, '###0' ) = '1' ) ;
-  Check( tiUtils._tiFloatToStr( 12.1,   0, '###0' ) = '12' ) ;
-  Check( tiUtils._tiFloatToStr( 123.1,  0, '###0' ) = '123' ) ;
-  Check( tiUtils._tiFloatToStr( 1234.1, 0, '###0' ) = '1234' ) ;
-  Check( tiUtils._tiFloatToStr( 1,      1, '###0' ) = '1.0' ) ;
-  Check( tiUtils._tiFloatToStr( 12,     1, '###0' ) = '12.0' ) ;
-  Check( tiUtils._tiFloatToStr( 123,    1, '###0' ) = '123.0' ) ;
-  Check( tiUtils._tiFloatToStr( 1234,   1, '###0' ) = '1234.0' ) ;
-  Check( tiUtils._tiFloatToStr( 1.1,    1, '###0' ) = '1.1' ) ;
-  Check( tiUtils._tiFloatToStr( 12.1,   1, '###0' ) = '12.1' ) ;
-  Check( tiUtils._tiFloatToStr( 123.1,  1, '###0' ) = '123.1' ) ;
-  Check( tiUtils._tiFloatToStr( 1234.1, 1, '###0' ) = '1234.1' ) ;
-  Check( tiUtils._tiFloatToStr( 1,      2, '###0' ) = '1.00' ) ;
-  Check( tiUtils._tiFloatToStr( 12,     2, '###0' ) = '12.00' ) ;
-  Check( tiUtils._tiFloatToStr( 123,    2, '###0' ) = '123.00' ) ;
-  Check( tiUtils._tiFloatToStr( 1234,   2, '###0' ) = '1234.00' ) ;
-  Check( tiUtils._tiFloatToStr( 1.1,    2, '###0' ) = '1.10' ) ;
-  Check( tiUtils._tiFloatToStr( 12.1,   2, '###0' ) = '12.10' ) ;
-  Check( tiUtils._tiFloatToStr( 123.1,  2, '###0' ) = '123.10' ) ;
-  Check( tiUtils._tiFloatToStr( 1234.1, 2, '###0' ) = '1234.10' ) ;
-  Check( tiUtils._tiFloatToStr( 1.14,   1, '###0' ) = '1.1' ) ;
-  Check( tiUtils._tiFloatToStr( 12.15,  1, '###0' ) = '12.2' ) ;
-end ;
+  Check(tiUtils._tiFloatToStr(1,      0, '###0') = '1');
+  Check(tiUtils._tiFloatToStr(12,     0, '###0') = '12');
+  Check(tiUtils._tiFloatToStr(123,    0, '###0') = '123');
+  Check(tiUtils._tiFloatToStr(1234,   0, '###0') = '1234');
+  Check(tiUtils._tiFloatToStr(1.1,    0, '###0') = '1');
+  Check(tiUtils._tiFloatToStr(12.1,   0, '###0') = '12');
+  Check(tiUtils._tiFloatToStr(123.1,  0, '###0') = '123');
+  Check(tiUtils._tiFloatToStr(1234.1, 0, '###0') = '1234');
+  Check(tiUtils._tiFloatToStr(1,      1, '###0') = '1.0');
+  Check(tiUtils._tiFloatToStr(12,     1, '###0') = '12.0');
+  Check(tiUtils._tiFloatToStr(123,    1, '###0') = '123.0');
+  Check(tiUtils._tiFloatToStr(1234,   1, '###0') = '1234.0');
+  Check(tiUtils._tiFloatToStr(1.1,    1, '###0') = '1.1');
+  Check(tiUtils._tiFloatToStr(12.1,   1, '###0') = '12.1');
+  Check(tiUtils._tiFloatToStr(123.1,  1, '###0') = '123.1');
+  Check(tiUtils._tiFloatToStr(1234.1, 1, '###0') = '1234.1');
+  Check(tiUtils._tiFloatToStr(1,      2, '###0') = '1.00');
+  Check(tiUtils._tiFloatToStr(12,     2, '###0') = '12.00');
+  Check(tiUtils._tiFloatToStr(123,    2, '###0') = '123.00');
+  Check(tiUtils._tiFloatToStr(1234,   2, '###0') = '1234.00');
+  Check(tiUtils._tiFloatToStr(1.1,    2, '###0') = '1.10');
+  Check(tiUtils._tiFloatToStr(12.1,   2, '###0') = '12.10');
+  Check(tiUtils._tiFloatToStr(123.1,  2, '###0') = '123.10');
+  Check(tiUtils._tiFloatToStr(1234.1, 2, '###0') = '1234.10');
+  Check(tiUtils._tiFloatToStr(1.14,   1, '###0') = '1.1');
+  Check(tiUtils._tiFloatToStr(12.15,  1, '###0') = '12.2');
+end;
 
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1666,51 +1666,51 @@ end ;
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-procedure TTestTIUtils.tiGetUserName  ;
+procedure TTestTIUtils.tiGetUserName ;
 begin
   CheckReadingFromNT(
     tiUtils.tiGetUserName,
     'UserName',
     'User''s name'
-   ) ;
-end ;
+  );
+end;
 
 
-procedure TTestTIUtils.tiGetComputerName  ;
+procedure TTestTIUtils.tiGetComputerName ;
 begin
   CheckReadingFromNT(
     tiUtils.tiGetComputerName,
     'ComputerName',
     'name'
-   ) ;
-end ;
+  );
+end;
 
 
 // This test is really inadequate, but then tiVariantArrayToString should be
 // re-worked to remove the TStringList as the working holder of the data.
-procedure TTestTIUtils.tiVariantArrayToString ;
+procedure TTestTIUtils.tiVariantArrayToString;
 var
-  lFrom : OleVariant ;
-  lTo   : string ;
+  lFrom : OleVariant;
+  lTo  : string;
 const
-  lCrLf = #13 + #10 ;
+  lCrLf = #13 + #10;
 begin
   lFrom := VarArrayOf(['xxx']);
   lTo :=
     '[' + lCrLf +
     ' ' + 'xxx' +
     lCrLf + ']' +
-    lCrLf ;
+    lCrLf;
 
-  CheckEquals( lTo, tiUtils.tiVariantArrayToString( lFrom ), 'Failed on 1 ('+IntToStr(VarType(lFrom))+')' ) ;
+  CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 1 ('+IntToStr(VarType(lFrom))+')');
 
   lFrom := VarArrayOf(['xxx', 'yyy']);
   lTo :=
     '[' + lCrLf +
     ' ' + 'xxx' + lCrLf +
     ' ' + 'yyy' + lCrLf +
-    ']' + lCrLf ;
-  CheckEquals( lTo, tiUtils.tiVariantArrayToString( lFrom ), 'Failed on 2' ) ;
+    ']' + lCrLf;
+  CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 2');
 
   lFrom := VarArrayOf(['xxx', 'yyy', 'zzz' ]);
   lTo :=
@@ -1718,8 +1718,8 @@ begin
     ' ' + 'xxx' + lCrLf +
     ' ' + 'yyy' + lCrLf +
     ' ' + 'zzz' + lCrLf +
-    ']' + lCrLf ;
-  CheckEquals( lTo, tiUtils.tiVariantArrayToString( lFrom ), 'Failed on 3' ) ;
+    ']' + lCrLf;
+  CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 3');
 
   lFrom := VarArrayOf(['xxx', VarArrayOf(['yyy'])]);
   lTo :=
@@ -1728,9 +1728,9 @@ begin
     '   [' + lCrLf +
     '    ' + 'yyy' + lCrLf +
     '   ]' + lCrLf +
-    ']' + lCrLf ;
+    ']' + lCrLf;
 
-  CheckEquals( lTo, tiUtils.tiVariantArrayToString( lFrom ), 'Failed on 3' ) ;
+  CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 3');
 
   lFrom := VarArrayOf(['xxx', VarArrayOf(['yyy', 'zzz'])]);
   lTo :=
@@ -1740,28 +1740,28 @@ begin
     '    ' + 'yyy' + lCrLf +
     '    ' + 'zzz' + lCrLf +
     '   ]' + lCrLf +
-    ']' + lCrLf ;
+    ']' + lCrLf;
 
-  CheckEquals( lTo, tiUtils.tiVariantArrayToString( lFrom ), 'Failed on 3' ) ;
+  CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 3');
 
-//  tiShowString( '|' +
-//    tiUtils.tiVariantArrayToString( lFrom ) +
+//  tiShowString('|' +
+//    tiUtils.tiVariantArrayToString(lFrom) +
 //    '|' + CrLf + CrLf +
-//    '|' + lTo + '|' ) ;
+//    '|' + lTo + '|');
 
-end ;
+end;
 
 
-procedure TTestTIUtils.tiIsVariantOfType ;
+procedure TTestTIUtils.tiIsVariantOfType;
 
   procedure _tiIsVariantOfType(xVar : variant; xExpected : TVarType; xMsg : string);
 
     procedure __tiIsVariantOfType(xxCheck : TVarType; xxMsg : string);
     begin
       if xxCheck=xExpected then
-        Check( tiUtils.tiIsVariantOfType( xVar, xxCheck ), xMsg )
+        Check(tiUtils.tiIsVariantOfType(xVar, xxCheck), xMsg)
       else
-        Check( not tiUtils.tiIsVariantOfType( xVar, xxCheck ), xMsg + ' - '+xxMsg);
+        Check(not tiUtils.tiIsVariantOfType(xVar, xxCheck), xMsg + ' - '+xxMsg);
     end;
 
   begin
@@ -1776,8 +1776,8 @@ procedure TTestTIUtils.tiIsVariantOfType ;
     __tiIsVariantOfType(varOleStr,'varOleStr');
   end;
 var
-  lVar : Variant ;
-//  lShortString : Char ;
+  lVar : Variant;
+//  lShortString : Char;
   lSmallInt : Smallint;
   lInteger : Integer;
   lDouble : Double;      
@@ -1802,7 +1802,7 @@ begin
 //  lVar := VarAsType('',varEmpty);
   _tiIsVariantOfType(lVar,varEmpty,'Failed with varEmpty');
 
-  lVar := Null ;
+  lVar := Null;
   _tiIsVariantOfType(lVar,varNull,'Failed with varNull');
 
   // There is no other way to receive variant of type small int...
@@ -1823,7 +1823,7 @@ begin
 
   lVar:=lDateTimeNow;
   _tiIsVariantOfType(lVar,varDate,'Failed with varDate - NOW');
-  Check( tiUtils.tiIsVariantOfType( lVar, varDate ), 'Failed with varDate' ) ;
+  Check(tiUtils.tiIsVariantOfType(lVar, varDate), 'Failed with varDate');
 
   lVar:=lBoolean;
   _tiIsVariantOfType(lVar,varBoolean,'Failed with varBoolean');
@@ -1832,8 +1832,8 @@ begin
   _tiIsVariantOfType(lVar,varOLEStr,'Failed with varOLEStr');
 
 // Can't make this one work
-//  lVar := 'test' ;
-//  Check( tiUtils.tiIsVariantOfType( lVar, varString ), 'Failed with varString' ) ;
+//  lVar := 'test';
+//  Check(tiUtils.tiIsVariantOfType(lVar, varString), 'Failed with varString');
 
   lVar:=lCurrency;
   _tiIsVariantOfType(lVar,varCurrency,'Failed with varCurrency');
@@ -1847,46 +1847,46 @@ begin
 // varTypeMask	Bit mask for extracting type code.
 // varArray	Bit indicating variant array.
 // varByRef	Bit indicating variant contains a reference (rather than a value).
-end ;
+end;
 
 
-procedure TTestTIUtils.Lf ;
+procedure TTestTIUtils.Lf;
 begin
-  Check( tiUtils.Lf = #10 ) ;
-  Check( tiUtils.Lf( 1 ) = #10 ) ;
-  Check( tiUtils.Lf( 2 ) = #10 + #10 ) ;
-  Check( tiUtils.Lf( 3 ) = #10 + #10 + #10 ) ;
-  Check( tiUtils.Lf( 4 ) = #10 + #10 + #10 + #10 ) ;
-  Check( tiUtils.Lf( 5 ) = #10 + #10 + #10 + #10 + #10 ) ;
-end ;
+  Check(tiUtils.Lf = #10);
+  Check(tiUtils.Lf(1) = #10);
+  Check(tiUtils.Lf(2) = #10 + #10);
+  Check(tiUtils.Lf(3) = #10 + #10 + #10);
+  Check(tiUtils.Lf(4) = #10 + #10 + #10 + #10);
+  Check(tiUtils.Lf(5) = #10 + #10 + #10 + #10 + #10);
+end;
 
 
-procedure TTestTIUtils.Cr ;
+procedure TTestTIUtils.Cr;
 begin
-  Check( tiUtils.Cr = #13 ) ;
-  Check( tiUtils.Cr( 1 ) = #13 ) ;
-  Check( tiUtils.Cr( 2 ) = #13 + #13 ) ;
-  Check( tiUtils.Cr( 3 ) = #13 + #13 + #13 ) ;
-  Check( tiUtils.Cr( 4 ) = #13 + #13 + #13 + #13 ) ;
-  Check( tiUtils.Cr( 5 ) = #13 + #13 + #13 + #13 + #13 ) ;
-end ;
+  Check(tiUtils.Cr = #13);
+  Check(tiUtils.Cr(1) = #13);
+  Check(tiUtils.Cr(2) = #13 + #13);
+  Check(tiUtils.Cr(3) = #13 + #13 + #13);
+  Check(tiUtils.Cr(4) = #13 + #13 + #13 + #13);
+  Check(tiUtils.Cr(5) = #13 + #13 + #13 + #13 + #13);
+end;
 
 
-procedure TTestTIUtils.CrLf ;
+procedure TTestTIUtils.CrLf;
 begin
-  Check( tiUtils.CrLF = #13 + #10 ) ;
-  Check( tiUtils.CrLF( 1 ) = #13 + #10 ) ;
-  Check( tiUtils.CrLF( 2 ) = #13 + #10 + #13 + #10 ) ;
-  Check( tiUtils.CrLF( 3 ) = #13 + #10 + #13 + #10 + #13 + #10 ) ;
-  Check( tiUtils.CrLF( 4 ) = #13 + #10 + #13 + #10 + #13 + #10 + #13 + #10 ) ;
-  Check( tiUtils.CrLF( 5 ) = #13 + #10 + #13 + #10 + #13 + #10 + #13 + #10 + #13 + #10 ) ;
-end ;
+  Check(tiUtils.CrLF = #13 + #10);
+  Check(tiUtils.CrLF(1) = #13 + #10);
+  Check(tiUtils.CrLF(2) = #13 + #10 + #13 + #10);
+  Check(tiUtils.CrLF(3) = #13 + #10 + #13 + #10 + #13 + #10);
+  Check(tiUtils.CrLF(4) = #13 + #10 + #13 + #10 + #13 + #10 + #13 + #10);
+  Check(tiUtils.CrLF(5) = #13 + #10 + #13 + #10 + #13 + #10 + #13 + #10 + #13 + #10);
+end;
 
 
 procedure TTestTIUtils.tiListToStreamDefault;
 var
   lStream : TStringStream;
-  lList   : TTestListOfPersistents;
+  lList  : TTestListOfPersistents;
 begin
   lStream := TStringStream.Create('');
   try
@@ -1904,15 +1904,15 @@ begin
 end;
 
 
-procedure TTestTIUtils.tiListToStreamDelims ;
+procedure TTestTIUtils.tiListToStreamDelims;
 var
-  lStream : TStringStream ;
-  lList   : TTestListOfPersistents ;
+  lStream : TStringStream;
+  lList  : TTestListOfPersistents;
   lFields : TStringList;
 begin
-  lStream := TStringStream.Create( '' ) ;
+  lStream := TStringStream.Create('');
   try
-    lList   := TTestListOfPersistents.Create ;
+    lList  := TTestListOfPersistents.Create;
     try
       lFields := TStringList.Create;
       try
@@ -1921,49 +1921,49 @@ begin
         lFields.Add('IntProp');
         lFields.Add('DateTimeProp');
         lFields.Add('FloatProp');
-        tiUtils.tiListToStream( lStream, lList, #9, '|', lFields ) ;
-        CheckEquals( Length( lList.AsString(#9, '|', lFields)), lStream.Size ) ;
-        CheckEquals( lList.AsString(#9, '|', lFields), lStream.DataString ) ;
+        tiUtils.tiListToStream(lStream, lList, #9, '|', lFields);
+        CheckEquals(Length(lList.AsString(#9, '|', lFields)), lStream.Size);
+        CheckEquals(lList.AsString(#9, '|', lFields), lStream.DataString);
       finally
         lFields.Free;
       end;
     finally
-      lList.Free ;
-    end ;
+      lList.Free;
+    end;
   finally
     lStream.Free;
-  end ;
-end ;
+  end;
+end;
 
 
-procedure TTestTIUtils.tiListToStreamFields ;
+procedure TTestTIUtils.tiListToStreamFields;
 var
-  lStream : TStringStream ;
-  lList   : TTestListOfPersistents ;
+  lStream : TStringStream;
+  lList  : TTestListOfPersistents;
   lFields : TStringList;
 begin
-  lStream := TStringStream.Create( '' ) ;
+  lStream := TStringStream.Create('');
   try
-    lList   := TTestListOfPersistents.Create ;
+    lList  := TTestListOfPersistents.Create;
     try
       lFields := TStringList.Create;
       try
         lFields.Add('StringProp');
         lFields.Add('IntProp');
         lFields.Add('FloatProp');
-        tiUtils.tiListToStream( lStream, lList, ',', #13#10, lFields ) ;
-        CheckEquals( Length( lList.AsString(',', #13#10, lFields)), lStream.Size ) ;
-        CheckEquals( lList.AsString(',', #13#10, lFields), lStream.DataString ) ;
+        tiUtils.tiListToStream(lStream, lList, ',', #13#10, lFields);
+        CheckEquals(Length(lList.AsString(',', #13#10, lFields)), lStream.Size);
+        CheckEquals(lList.AsString(',', #13#10, lFields), lStream.DataString);
       finally
         lFields.Free;
       end;
     finally
-      lList.Free ;
-    end ;
+      lList.Free;
+    end;
   finally
     lStream.Free;
-  end ;
-end ;
+  end;
+end;
 
 
 procedure TTestTIUtils.tiListToCSVDefault;
@@ -1980,7 +1980,7 @@ begin
   try
     tiUtils.tiListToCSV(lList, lFileName);
     lString1 := tiUtils.tiFileToString(lFileName);
-    SysUtils.DeleteFile(lFileName);
+    tiDeleteFile(lFileName);
     lFields := TStringList.Create;
     try
       lFields.Add('Caption');
@@ -1993,48 +1993,48 @@ begin
       lFields.Free;
     end;
   finally
-    lList.Free ;
-  end ;
+    lList.Free;
+  end;
 
   CheckEquals(Length(lString1), Length(lString2), 'Failed on 1');
   CheckEquals(lString1, lString2, 'Failed on 2');
-end ;
+end;
 
 
-procedure TTestTIUtils.tiListToCSVFields ;
+procedure TTestTIUtils.tiListToCSVFields;
 var
-  lList       : TTestListOfPersistents ;
-  lString1: string ;
-  lString2 : string ;
-  lFileName : string ;
+  lList      : TTestListOfPersistents;
+  lString1: string;
+  lString2 : string;
+  lFileName : string;
   lFields: TStringList;
 begin
   ForceDirectories(TempDirectory);
-  lFileName := TempFileName( 'DUnitTest.txt' ) ;
-  lList   := TTestListOfPersistents.Create ;
+  lFileName := TempFileName('DUnitTest.txt');
+  lList  := TTestListOfPersistents.Create;
   try
     lFields:= TStringList.Create;
     try
       lFields.Add('StringProp');
       lFields.Add('IntProp');
       lFields.Add('FloatProp');
-      tiUtils.tiListToCSV( lList, lFileName, lFields ) ;
+      tiUtils.tiListToCSV(lList, lFileName, lFields);
       lString1 := tiUtils.tiFileToString(lFileName);
-      SysUtils.DeleteFile(lFileName);
+      tiDeleteFile(lFileName);
       lString2 := lList.AsString(',', #13#10, lFields);
     finally
       lFields.Free;
     end;
   finally
-    lList.Free ;
-  end ;
+    lList.Free;
+  end;
 
   CheckEquals(Length(lString1), Length(lString2), 'Length');
   CheckEquals(lString1, lString2, 'String');
-end ;
+end;
 
 
-procedure TTestTIUtils.tiListToClipboardDefault ;
+procedure TTestTIUtils.tiListToClipboardDefault;
 var
   lList: TTestListOfPersistents;
   lString1: string;
@@ -2070,154 +2070,154 @@ begin
 end;
 
 
-procedure TTestTIUtils.tiListToClipboardFields ;
+procedure TTestTIUtils.tiListToClipboardFields;
 var
-  lList       : TTestListOfPersistents ;
-  lString1: string ;
-  lString2 : string ;
+  lList      : TTestListOfPersistents;
+  lString1: string;
+  lString2 : string;
   lFields: TStringList;
 begin
-  lList   := TTestListOfPersistents.Create ;
+  lList  := TTestListOfPersistents.Create;
   try
     lFields:= TStringList.Create;
     try
       lFields.Add('StringProp');
       lFields.Add('IntProp');
       lFields.Add('FloatProp');
-      tiUtils.tiListToClipboard( lList, lFields ) ;
+      tiUtils.tiListToClipboard(lList, lFields);
       lString1 := ClipBoard.AsText;
       lString2 := lList.AsString(#9, #13#10, lFields);
     finally
       lFields.Free;
     end;
   finally
-    lList.Free ;
-  end ;
+    lList.Free;
+  end;
 
   CheckEquals(Length(lString1), Length(lString2), 'Length');
   CheckEquals(lString1, lString2, 'String');
-end ;
+end;
 
 
 function TTestTIUtils.BuildLongString: string;
 var
-  i, j : integer ;
+  i, j : integer;
 begin
-  result := ''  ;
+  result := '' ;
   for i := 0 to 1000 do
   begin
     for j := 32 to 255 do
-      result := result + Chr( j ) ;
-    result := result + #13 ;
-  end ;
+      result := result + Chr(j);
+    result := result + #13;
+  end;
 end;
 
 
 type
 {$M+}
-  TCheckRTTI_1 = class( TObject ) ;
+  TCheckRTTI_1 = class(TObject);
 {$M-}
 
-  TCheckRTTI_2 = class( TObject ) ;
+  TCheckRTTI_2 = class(TObject);
 
 
 procedure TTestTIUtils.tiHasRTTIOnClass;
 begin
-  Check( not tiHasRTTI( TObject ), 'tiHasRTTI( TObject ) <> false' ) ;
-  Check( tiHasRTTI( TPersistent ), 'tiHasRTTI( TPersistent ) <> true' ) ;
-  Check( tiHasRTTI( TCheckRTTI_1 ), 'tiHasRTTI( TCheckRTTI_1 ) <> true' ) ;
-  Check( not tiHasRTTI( TCheckRTTI_2 ), 'iHasRTTI( TCheckRTTI_2 ) <> false' ) ;
+  Check(not tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> false');
+  Check(tiHasRTTI(TPersistent), 'tiHasRTTI(TPersistent) <> true');
+  Check(tiHasRTTI(TCheckRTTI_1), 'tiHasRTTI(TCheckRTTI_1) <> true');
+  Check(not tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> false');
 end;
 
 
 procedure TTestTIUtils.tiHasRTTIOnObject;
 var
-  lObj : TObject ;
+  lObj : TObject;
 begin
-  lObj := TObject.Create ;
-  Check( not tiHasRTTI( lObj ), 'tiHasRTTI( TObject ) <> false' ) ;
-  lObj.Free ;
+  lObj := TObject.Create;
+  Check(not tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> false');
+  lObj.Free;
 
-  lObj := TPersistent.Create ;
-  Check( tiHasRTTI( lObj ), 'tiHasRTTI( TObject ) <> true' ) ;
-  lObj.Free ;
+  lObj := TPersistent.Create;
+  Check(tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> true');
+  lObj.Free;
 
-  lObj := TCheckRTTI_1.Create ;
-  Check( tiHasRTTI( lObj ), 'tiHasRTTI( TCheckRTTI_1 ) <> true' ) ;
-  lObj.Free ;
+  lObj := TCheckRTTI_1.Create;
+  Check(tiHasRTTI(lObj), 'tiHasRTTI(TCheckRTTI_1) <> true');
+  lObj.Free;
 
-  lObj := TCheckRTTI_2.Create ;
-  Check( not tiHasRTTI( lObj ), 'iHasRTTI( TCheckRTTI_2 ) <> false' ) ;
-  lObj.Free ;
+  lObj := TCheckRTTI_2.Create;
+  Check(not tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> false');
+  lObj.Free;
 end;
 
 
-procedure TTestTIUtils.CheckReadingFromNT( const pValue, pRegKey, pDescription : string ) ;
+procedure TTestTIUtils.CheckReadingFromNT(const AValue, pRegKey, pDescription : string);
 var
-  lEntered : string ;
+  lEntered : string;
 begin
   {$IFDEF FPC}
-  lEntered := gDUnitINI.ReadString( cINIMachineSettings, pRegKey, '' ) ;
+  lEntered := gDUnitINI.ReadString(cINIMachineSettings, pRegKey, '');
   {$ELSE}
-  lEntered := gDUnitReg.ReadString( cINIMachineSettings, pRegKey, '' ) ;
+  lEntered := gDUnitReg.ReadString(cINIMachineSettings, pRegKey, '');
   {$ENDIF}
 
   if lEntered = '' then
   begin
-    tiInputQuery( lEntered,
-                  'What is this computer''s ' + pDescription + '?' ) ;
-    lEntered := lEntered ;
+    tiInputQuery(lEntered,
+                  'What is this computer''s ' + pDescription + '?');
+    lEntered := lEntered;
     {$IFDEF FPC}
-    gDUnitINI.WriteString( cINIMachineSettings, pRegKey, lEntered ) ;
+    gDUnitINI.WriteString(cINIMachineSettings, pRegKey, lEntered);
     {$ELSE}
-    gDUnitReg.WriteString( cINIMachineSettings, pRegKey, lEntered ) ;
+    gDUnitReg.WriteString(cINIMachineSettings, pRegKey, lEntered);
     {$ENDIF}
-  end ;
-  CheckEquals( UpperCase( lEntered ),
-               UpperCase( pValue ), 'Confirm this computer''s ' + pDescription + ' ' + lEntered ) ;
+  end;
+  CheckEquals(UpperCase(lEntered),
+               UpperCase(AValue), 'Confirm this computer''s ' + pDescription + ' ' + lEntered);
 end;
 
 
 procedure TTestTIUtils.tiForceRemoveDir;
 var
-  lRoot : string ;
+  lRoot : string;
 begin
-  lRoot := TempFileName( tiFixPathDelim('DUnitTests\ForceRemoveDir') );
-  ForceDirectories( lRoot ) ;
-  tiCreateTextFileOfSize( tiFixPathDelim(lRoot + '\file1.txt'), 100 );
-  ForceDirectories( tiFixPathDelim(lRoot + '\dir1') );
-  tiCreateTextFileOfSize( tiFixPathDelim(lRoot + '\dir1\file2.txt'), 100 );
-  tiUtils.tiSetFileReadOnly( tiFixPathDelim(lRoot + '\dir1\file2.txt'), true );
-  ForceDirectories( tiFixPathDelim(lRoot + '\dir2') );
-  tiUtils.tiForceRemoveDir( lRoot );
-  Check( Not DirectoryExists( lRoot ));
-  tiDUnitForceRemoveDir( lRoot );
+  lRoot := TempFileName(tiFixPathDelim('DUnitTests\ForceRemoveDir'));
+  ForceDirectories(lRoot);
+  tiCreateTextFileOfSize(tiFixPathDelim(lRoot + '\file1.txt'), 100);
+  ForceDirectories(tiFixPathDelim(lRoot + '\dir1'));
+  tiCreateTextFileOfSize(tiFixPathDelim(lRoot + '\dir1\file2.txt'), 100);
+  tiUtils.tiSetFileReadOnly(tiFixPathDelim(lRoot + '\dir1\file2.txt'), true);
+  ForceDirectories(tiFixPathDelim(lRoot + '\dir2'));
+  tiUtils.tiForceRemoveDir(lRoot);
+  Check(Not DirectoryExists(lRoot));
+  tiDUnitForceRemoveDir(lRoot);
 end;
 
 
 procedure TTestTIUtils.tiIsEMailAddressValid;
 begin
-  Check( not tiUtils.tiIsEMailAddressValid( '' ), 'Failed on <>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'pwh' ), 'Failed on <pwh>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'pwh@' ), 'Failed on <pwh@>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'pwh@techinsite' ), 'Failed on <pwh@techinsite>' ) ;
-  Check(     tiUtils.tiIsEMailAddressValid( 'pwh@techinsite.com' ), 'Failed on <pwh@techinsite.com>' ) ;
-  Check(     tiUtils.tiIsEMailAddressValid( 'pwh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p(wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p)wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p<wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p>wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p@wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p,wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p;wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p:wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p/wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p/wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p"wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check(     tiUtils.tiIsEMailAddressValid( 'p.wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p[wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( 'p]wh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
-  Check( not tiUtils.tiIsEMailAddressValid( #127+'pwh@techinsite.com.au' ), 'Failed on <pwh@techinsite.com.au>' ) ;
+  Check(not tiUtils.tiIsEMailAddressValid(''), 'Failed on <>');
+  Check(not tiUtils.tiIsEMailAddressValid('pwh'), 'Failed on <pwh>');
+  Check(not tiUtils.tiIsEMailAddressValid('pwh@'), 'Failed on <pwh@>');
+  Check(not tiUtils.tiIsEMailAddressValid('pwh@techinsite'), 'Failed on <pwh@techinsite>');
+  Check(    tiUtils.tiIsEMailAddressValid('pwh@techinsite.com'), 'Failed on <pwh@techinsite.com>');
+  Check(    tiUtils.tiIsEMailAddressValid('pwh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p(wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p)wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p<wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p>wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p@wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p,wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p;wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p:wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p/wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p/wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p"wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(    tiUtils.tiIsEMailAddressValid('p.wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p[wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid('p]wh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
+  Check(not tiUtils.tiIsEMailAddressValid(#127+'pwh@techinsite.com.au'), 'Failed on <pwh@techinsite.com.au>');
   //ToDo: These tests could be more complete. For example, the
   //      name part of an email address has not been tested.
 end;
@@ -2225,31 +2225,31 @@ end;
 
 procedure TTestTIUtils.tiIsFileNameValid;
 begin
-  Check( not tiUtils.tiIsFileNameValid( '' ), '<empty string>' ) ;
-  Check( tiUtils.tiIsFileNameValid( 'a' ), 'a' ) ;
-  Check( tiUtils.tiIsFileNameValid( tiUtils.tiReplicate( 'a', 255 )), tiUtils.tiReplicate( 'a', 255 ) ) ;
-  Check( not tiUtils.tiIsFileNameValid( tiUtils.tiReplicate('a', 256) ), tiUtils.tiReplicate('a', 256) ) ;
-  Check( not tiUtils.tiIsFileNameValid( 'test\' ), 'test\' ) ;
-  Check( not tiUtils.tiIsFileNameValid( 'test/' ), 'test/' ) ;
-  Check( not tiUtils.tiIsFileNameValid( 'test:' ), 'test:' ) ;
-  Check( not tiUtils.tiIsFileNameValid( 'test*' ), 'test*' ) ;
-  Check( not tiUtils.tiIsFileNameValid( 'test?' ), 'test?' ) ;
-  Check( not tiUtils.tiIsFileNameValid( 'test"' ), 'test"' ) ;
-  Check( not tiUtils.tiIsFileNameValid( 'test>' ), 'test>' ) ;
-  Check( not tiUtils.tiIsFileNameValid( 'test<' ), 'test<' ) ;
-  Check( not tiUtils.tiIsFileNameValid( 'test|' ), 'test|' ) ;
+  Check(not tiUtils.tiIsFileNameValid(''), '<empty string>');
+  Check(tiUtils.tiIsFileNameValid('a'), 'a');
+  Check(tiUtils.tiIsFileNameValid(tiUtils.tiReplicate('a', 255)), tiUtils.tiReplicate('a', 255));
+  Check(not tiUtils.tiIsFileNameValid(tiUtils.tiReplicate('a', 256)), tiUtils.tiReplicate('a', 256));
+  Check(not tiUtils.tiIsFileNameValid('test\'), 'test\');
+  Check(not tiUtils.tiIsFileNameValid('test/'), 'test/');
+  Check(not tiUtils.tiIsFileNameValid('test:'), 'test:');
+  Check(not tiUtils.tiIsFileNameValid('test*'), 'test*');
+  Check(not tiUtils.tiIsFileNameValid('test?'), 'test?');
+  Check(not tiUtils.tiIsFileNameValid('test"'), 'test"');
+  Check(not tiUtils.tiIsFileNameValid('test>'), 'test>');
+  Check(not tiUtils.tiIsFileNameValid('test<'), 'test<');
+  Check(not tiUtils.tiIsFileNameValid('test|'), 'test|');
 end;
 
 
 procedure TTestTIUtils.tiCheckSum;
 begin
-  Check( tiUtils.tiCheckSum( '0' ) = 0, 'CheckSum of "0" <> 0' );
-  Check( tiUtils.tiCheckSum( '01' ) = 9, 'CheckSum of "01" <> 9' );
-  Check( tiUtils.tiCheckSum( '10' ) = 7, 'CheckSum of "10" <> 7' );
+  Check(tiUtils.tiCheckSum('0') = 0, 'CheckSum of "0" <> 0');
+  Check(tiUtils.tiCheckSum('01') = 9, 'CheckSum of "01" <> 9');
+  Check(tiUtils.tiCheckSum('10') = 7, 'CheckSum of "10" <> 7');
   // non-numeric chars should be treated as zero
-  Check( tiUtils.tiCheckSum( '1A3' ) = 8, 'CheckSum of "1A3" <> 8' );
-  Check( tiUtils.tiCheckSum( 'DEF67' ) = 3, 'CheckSum of "DEF67" <> 3' );
-  Check( tiUtils.tiCheckSum( '08137919805' ) = 5, 'CheckSum of "08137919805" <> 5' );
+  Check(tiUtils.tiCheckSum('1A3') = 8, 'CheckSum of "1A3" <> 8');
+  Check(tiUtils.tiCheckSum('DEF67') = 3, 'CheckSum of "DEF67" <> 3');
+  Check(tiUtils.tiCheckSum('08137919805') = 5, 'CheckSum of "08137919805" <> 5');
 end;
 
 
@@ -2277,9 +2277,9 @@ end;
 
 procedure TTestTIUtils.tiStreamToString1;
 var
-  lStream : TStringStream ;
-  lsFrom : string ;
-  lsTo : string ;
+  lStream : TStringStream;
+  lsFrom : string;
+  lsTo : string;
 begin
   lsFrom := tiCreateStringOfSize(3000);
   lStream := TStringStream.Create(lsFrom);
@@ -2288,15 +2288,15 @@ begin
     CheckEquals(lsFrom, lsTo);
   finally
     lStream.Free;
-  end ;
+  end;
 end;
 
 
 procedure TTestTIUtils.tiStreamToString2;
 var
-  LStream : TStringStream ;
-  LFrom : string ;
-  LTo : string ;
+  LStream : TStringStream;
+  LFrom : string;
+  LTo : string;
 begin
   //                  10
   //        0123456789012
@@ -2341,7 +2341,7 @@ begin
 
   finally
     lStream.Free;
-  end ;
+  end;
 end;
 
 
@@ -2423,56 +2423,56 @@ end;
 
 procedure TTestTIUtils.tiStringToStream;
 var
-  lStream : TStringStream ;
-  lsFrom : string ;
-  lsTo : string ;
+  lStream : TStringStream;
+  lsFrom : string;
+  lsTo : string;
 begin
   lsFrom := tiCreateStringOfSize(3000);
   lStream := TStringStream.Create('');
   try
     tiUtils.tiStringToStream(lsFrom, lStream);
-    lsTo := lStream.DataString ;
+    lsTo := lStream.DataString;
     CheckEquals(lsFrom, lsTo);
   finally
     lStream.Free;
-  end ;
+  end;
 end;
 
 
 procedure TTestTIUtils.tiAppendStringToStream;
 var
-  lStream : TStringStream ;
-  lsFrom : string ;
-  lsTo : string ;
+  lStream : TStringStream;
+  lsFrom : string;
+  lsTo : string;
   lsStart: string;
 begin
-  lsStart := 'aaa' ;
-  lsFrom := 'bbb' ;
+  lsStart := 'aaa';
+  lsFrom := 'bbb';
   lStream := TStringStream.Create(lsStart);
   try
     tiUtils.tiAppendStringToStream(lsFrom, lStream);
-    lsTo := lStream.DataString ;
+    lsTo := lStream.DataString;
     CheckEquals(lsStart + lsFrom, lsTo);
   finally
     lStream.Free;
-  end ;
+  end;
 
   lsStart := tiCreateStringOfSize(1000);
-  lsFrom  := tiCreateStringOfSize(3000);
+  lsFrom := tiCreateStringOfSize(3000);
   lStream := TStringStream.Create(lsStart);
   try
     tiUtils.tiAppendStringToStream(lsFrom, lStream);
-    lsTo := lStream.DataString ;
+    lsTo := lStream.DataString;
     CheckEquals(lsStart + lsFrom, lsTo);
   finally
     lStream.Free;
-  end ;
+  end;
 end;
 
 
 procedure TTestTIUtils.tiInsertStringToStream;
 var
-  LStream : TStringStream ;
+  LStream : TStringStream;
   LS: string;
 begin
 
@@ -2483,7 +2483,7 @@ begin
     CheckEquals('abc', LS, 'Failed on 1');
   finally
     LStream.Free;
-  end ;
+  end;
 
   LStream := TStringStream.Create('DEF');
   try
@@ -2492,7 +2492,7 @@ begin
     CheckEquals('abcDEF', LS, 'Failed on 2');
   finally
     LStream.Free;
-  end ;
+  end;
 
   LStream := TStringStream.Create('abc');
   try
@@ -2501,7 +2501,7 @@ begin
     CheckEquals('abcDEF', LS, 'Failed on 3');
   finally
     LStream.Free;
-  end ;
+  end;
 
   LStream := TStringStream.Create('abcghi');
   try
@@ -2510,7 +2510,7 @@ begin
     CheckEquals('abcDEFghi', LS, 'Failed on 4');
   finally
     LStream.Free;
-  end ;
+  end;
 
   LStream := TStringStream.Create('abc');
   try
@@ -2523,22 +2523,22 @@ begin
     end;
   finally
     LStream.Free;
-  end ;
+  end;
 end;
 
 
 procedure TTestTIUtils.tiEncodeDecodeWordBase26;
 var
-  i   : Integer ;
-  ls  : String ;
-  li  : Integer ;
+  i  : Integer;
+  ls : String;
+  li : Integer;
 begin
   for i := Low(Word) to (High(Word) div 10) do
   begin
     ls := tiEncodeWordBase26(i);
     li := tiDecodeWordBase26(ls);
-    CheckEquals(i, li, 'Failed on ' + IntToStr( i ) + ' ' + ls ) ;
-  end ;
+    CheckEquals(i, li, 'Failed on ' + IntToStr(i) + ' ' + ls);
+  end;
 end;
 
 
@@ -2586,8 +2586,8 @@ procedure TTestTIUtils.tiDateWithinRange;
 var
   lD, lDFrom, lDTo: TDateTime;
 begin
-  lDFrom := EncodeDate( 2005, 06, 01);
-  lDTo := EncodeDate( 2005, 06, 03);
+  lDFrom := EncodeDate(2005, 06, 01);
+  lDTo := EncodeDate(2005, 06, 03);
 
   // On lower limit
   lD := EncodeDate(2005, 06, 01);
@@ -2610,7 +2610,7 @@ begin
   Check(not tiUtils.tiDateWithinRange(lD, lDFrom, lDTo), '#5');
 
   // On upper limit with time portion
-  lD := EncodeDate(2005, 06, 03) + 0.5 ;
+  lD := EncodeDate(2005, 06, 03) + 0.5;
   Check(tiUtils.tiDateWithinRange(lD, lDFrom, lDTo), '#6');
 end;
 
@@ -2645,7 +2645,7 @@ var
   lPath: string;
 begin
   lPath := tiFixPathDelim('Level1\Level2\Level3');
-  lDir  := TempDirectory + PathDelim + lPath;
+  lDir := TempDirectory + PathDelim + lPath;
   CheckEquals(lPath, tiUtils.tiRemoveDirectory(lDir, TempDirectory), '#1');
   CheckEquals(lPath, tiUtils.tiRemoveDirectory(lDir, UpperCase(TempDirectory)), '#2');
   CheckEquals(UpperCase(lPath), tiUtils.tiRemoveDirectory(UpperCase(lDir), TempDirectory), '#3');
@@ -2657,7 +2657,7 @@ begin
   {$IFDEF MSWINDOWS}
   ForceDirectories(TempDirectory+'\From\Level1');
   try
-    Check(DirectoryExists(TempDirectory+'\From'), '#1' );
+    Check(DirectoryExists(TempDirectory+'\From'), '#1');
     Check(DirectoryExists(TempDirectory+'\From\Level1'), '#2');
 
     tiUtils.tiStringToFile('test', TempDirectory + '\From\File1.txt');
@@ -2668,7 +2668,7 @@ begin
 
     tiUtils.tiXCopy(TempDirectory + '\From', TempDirectory+'\To');
     try
-      Check(DirectoryExists(TempDirectory+'\To'), '#5' );
+      Check(DirectoryExists(TempDirectory+'\To'), '#5');
       Check(DirectoryExists(TempDirectory+'\To\Level1'), '#6');
       Check(FileExists(TempDirectory+'\To\File1.txt'), '#7');
       Check(FileExists(TempDirectory+'\To\Level1\File2.txt'), '#8');
@@ -2683,7 +2683,7 @@ begin
   {$IFDEF UNIX}
   ForceDirectories(TempDirectory+'/From/Level1');
   try
-    Check(DirectoryExists(TempDirectory+'/From'), '#1' );
+    Check(DirectoryExists(TempDirectory+'/From'), '#1');
     Check(DirectoryExists(TempDirectory+'/From/Level1'), '#2');
 
     tiUtils.tiStringToFile('test', TempDirectory + '/From/File1.txt');
@@ -2694,7 +2694,7 @@ begin
 
     tiUtils.tiXCopy(TempDirectory + '/From', TempDirectory + '/To');
     try
-      Check(DirectoryExists(TempDirectory+'/To'), '#5' );
+      Check(DirectoryExists(TempDirectory+'/To'), '#5');
       Check(DirectoryExists(TempDirectory+'/To/Level1'), '#6');
       Check(FileExists(TempDirectory+'/To/File1.txt'), '#7');
       Check(FileExists(TempDirectory+'/To/Level1/File2.txt'), '#8');
@@ -2776,13 +2776,13 @@ end;
 
 procedure TTestTIUtils.tiYearToStartAusFinancialYear;
 begin
-  CheckEquals( EncodeDate(2004, 07, 01), tiUtils.tiYearToStartAusFinancialYear(2005));
+  CheckEquals(EncodeDate(2004, 07, 01), tiUtils.tiYearToStartAusFinancialYear(2005));
 end;
 
 
 procedure TTestTIUtils.tiYearToEndAusFinancialYear;
 begin
-  CheckEquals( EncodeDate(2005, 06, 30), tiUtils.tiYearToEndAusFinancialYear(2005));
+  CheckEquals(EncodeDate(2005, 06, 30), tiUtils.tiYearToEndAusFinancialYear(2005));
 end;
 
 
@@ -2804,8 +2804,8 @@ end;
 
 procedure TTestTIUtils.tiDeleteFiles;
 var
-  Lsl : TStringList ;
-  LTempPath : string ;
+  Lsl : TStringList;
+  LTempPath : string;
 begin
   lTempPath := TempFileName('tiDeleteFiles');
   ForceDirectories(LTempPath);
@@ -2814,26 +2814,26 @@ begin
     tiUtils.tiStringToFile('test', tiFixPathDelim(LTempPath + '\File2.abc'));
     tiUtils.tiStringToFile('test', tiFixPathDelim(LTempPath + '\File3.def'));
 
-    Lsl := TStringList.Create ;
+    Lsl := TStringList.Create;
     try
-      tiUtils.tiFilesToStringList( tiFixPathDelim(lTempPath + '\'), AllFilesWildCard, lsl, true ) ;
-      CheckEquals( 3, lsl.Count ) ;
+      tiUtils.tiFilesToStringList(tiFixPathDelim(lTempPath + '\'), AllFilesWildCard, lsl, true);
+      CheckEquals(3, lsl.Count);
     finally
-      lsl.Free ;
-    end ;
+      lsl.Free;
+    end;
 
     tiUtils.tiDeleteFiles(LTempPath, '*.abc');
 
     Check(DirectoryExists(LTempPath));
-    Lsl := TStringList.Create ;
+    Lsl := TStringList.Create;
     try
-      tiUtils.tiFilesToStringList( tiFixPathDelim(lTempPath + '\'), AllFilesWildCard, lsl, true ) ;
-      CheckEquals( 1, lsl.Count ) ;
+      tiUtils.tiFilesToStringList(tiFixPathDelim(lTempPath + '\'), AllFilesWildCard, lsl, true);
+      CheckEquals(1, lsl.Count);
     finally
-      lsl.Free ;
-    end ;
+      lsl.Free;
+    end;
   finally
-    tiDUnitForceRemoveDir( lTempPath ) ;
+    tiDUnitForceRemoveDir(lTempPath);
   end;
 end;
 
@@ -2999,4 +2999,5 @@ begin
 end;
 
 end.
+
 

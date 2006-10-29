@@ -13,7 +13,7 @@ uses
   ,tiObject
   ,tiSyncObjs
   ,Classes
-  ;
+ ;
 
 
 type
@@ -23,7 +23,7 @@ type
   published
     procedure tiObjectLockList_SingleThread;
     procedure tiObjectLockList_MultiThread;
-  end ;
+  end;
 
 
   TThreadTestObjectLockList = class(TThread)
@@ -36,7 +36,7 @@ type
   end;
 
 
-procedure RegisterTests ;
+procedure RegisterTests;
 
 
 implementation
@@ -47,12 +47,12 @@ uses
   ,Windows
   {$ENDIF}
   ,SysUtils     // used for Sleep under Free Pascal
-  ;
+ ;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTISyncObjs);
-end ;
+end;
 
 
 { TTestTISyncObjs }

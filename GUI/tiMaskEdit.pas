@@ -13,45 +13,45 @@ uses
   ,MaskEdit
 {$ENDIF}
 
-  ;
+ ;
 
 type
 
   {$IFDEF FPC} TEditMask = string;{$ENDIF}
   // A wrapper for the TMaskEdit control
-  TtiPerAwareMaskEdit = class( TtiPerAwareAbs )
+  TtiPerAwareMaskEdit = class(TtiPerAwareAbs)
   private
     function  GetValue: String;
-    procedure SetValue(const Value: String);
+    procedure SetValue(const AValue: String);
     function  GetMaxLength: integer;
-    procedure SetMaxLength(const Value: integer);
+    procedure SetMaxLength(const AValue: integer);
     function  GetCharCase: TEditCharCase;
-    procedure SetCharCase(const Value: TEditCharCase);
+    procedure SetCharCase(const AValue: TEditCharCase);
     function  GetPasswordChar: Char;
-    procedure SetPasswordChar(const Value: Char);
+    procedure SetPasswordChar(const AValue: Char);
     function  GetEditMask: TEditMask;
-    procedure SetEditMask(const Value: TEditMask);
+    procedure SetEditMask(const AValue: TEditMask);
     function  GetEditText: string;
-    procedure SetEditText(const Value: string);
+    procedure SetEditText(const AValue: string);
     function  GetIsMasked: Boolean;
   protected
-    procedure   DataToWinControl ; override ;
-    procedure   WinControlToData ; override ;
-    procedure   SetOnChangeActive( Value : boolean ) ; override ;
-    procedure   SetReadOnly(const Value: Boolean);override ;
+    procedure   DataToWinControl; override;
+    procedure   WinControlToData; override;
+    procedure   SetOnChangeActive(AValue : boolean); override;
+    procedure   SetReadOnly(const AValue: Boolean);override;
   published
-    property Value : String read GetValue write SetValue ;
-    property MaxLength : integer read GetMaxLength write SetMaxLength ;
-    property CharCase  : TEditCharCase read GetCharCase write SetCharCase ;
-    property PasswordChar : Char read GetPasswordChar write SetPasswordChar ;
-    property EditMask : TEditMask read GetEditMask write SetEditMask ;
-    property EditText : string read GetEditText write SetEditText ;
-    property IsMasked : Boolean read GetIsMasked ;
-    property OnKeyPress ;
-    property OnKeyDown ;
+    property AValue : String read GetValue write SetValue;
+    property MaxLength : integer read GetMaxLength write SetMaxLength;
+    property CharCase : TEditCharCase read GetCharCase write SetCharCase;
+    property PasswordChar : Char read GetPasswordChar write SetPasswordChar;
+    property EditMask : TEditMask read GetEditMask write SetEditMask;
+    property EditText : string read GetEditText write SetEditText;
+    property IsMasked : Boolean read GetIsMasked;
+    property OnKeyPress;
+    property OnKeyDown;
   public
-    constructor Create( AOwner : TComponent ) ; override ;
-  end ;
+    constructor Create(AOwner : TComponent); override;
+  end;
 
 
 implementation
@@ -60,120 +60,120 @@ uses
   Mask,
 {$ENDIF}
   TypInfo
-  ;
+ ;
 
 { TtiPerAwareMaskEdit }
 
 constructor TtiPerAwareMaskEdit.Create(AOwner: TComponent);
 begin
-  FWinControl := TMaskEdit.Create( self ) ;
-  TEdit( FWinControl ).OnChange   := DoChange ;
-  TEdit( FWinControl ).OnKeyPress := DoOnKeyPress ;
-  TEdit( FWinControl ).OnKeyDown  := DoOnKeyDown ;
-  FbCenterWhenLabelIsLeft := true ;
+  FWinControl := TMaskEdit.Create(self);
+  TEdit(FWinControl).OnChange  := DoChange;
+  TEdit(FWinControl).OnKeyPress := DoOnKeyPress;
+  TEdit(FWinControl).OnKeyDown := DoOnKeyDown;
+  FbCenterWhenLabelIsLeft := true;
   inherited;
-  TMaskEdit( FWinControl ).Font.Name := cDefaultFixedFontName;
-  Height := cDefaultHeightSingleRow ;
+  TMaskEdit(FWinControl).Font.Name := cDefaultFixedFontName;
+  Height := cDefaultHeightSingleRow;
 end;
 
 procedure TtiPerAwareMaskEdit.DataToWinControl;
 begin
   if not DataAndPropertyValid then
-    Exit ; //==>
-  SetOnChangeActive( false ) ;
-  TMaskEdit( FWinControl ).Text := GetPropValue( FData, FsFieldName ) ;
-  SetOnChangeActive( true ) ;
+    Exit; //==>
+  SetOnChangeActive(false);
+  TMaskEdit(FWinControl).Text := GetPropValue(FData, FsFieldName);
+  SetOnChangeActive(true);
 end;
 
 function TtiPerAwareMaskEdit.GetCharCase: TEditCharCase;
 begin
-  result := TMaskEdit( FWinControl ).CharCase;
+  result := TMaskEdit(FWinControl).CharCase;
 end;
 
 function TtiPerAwareMaskEdit.GetEditMask: TEditMask;
 begin
-  result := TMaskEdit( FWinControl ).EditMask;
+  result := TMaskEdit(FWinControl).EditMask;
 end;
 
 function TtiPerAwareMaskEdit.GetEditText: string;
 begin
-  result := TMaskEdit( FWinControl ).EditText;
+  result := TMaskEdit(FWinControl).EditText;
 end;
 
 function TtiPerAwareMaskEdit.GetIsMasked: Boolean;
 begin
-  result := TMaskEdit( FWinControl ).IsMasked;
+  result := TMaskEdit(FWinControl).IsMasked;
 end;
 
 function TtiPerAwareMaskEdit.GetMaxLength: integer;
 begin
-  result := TMaskEdit( FWinControl ).MaxLength ;
+  result := TMaskEdit(FWinControl).MaxLength;
 end;
 
 function TtiPerAwareMaskEdit.GetPasswordChar: Char;
 begin
-  result := TMaskEdit( FWinControl ).PasswordChar ;
+  result := TMaskEdit(FWinControl).PasswordChar;
 end;
 
 function TtiPerAwareMaskEdit.GetValue: String;
 begin
-  result := TMaskEdit( FWinControl ).Text;
+  result := TMaskEdit(FWinControl).Text;
 end;
 
-procedure TtiPerAwareMaskEdit.SetCharCase(const Value: TEditCharCase);
+procedure TtiPerAwareMaskEdit.SetCharCase(const AValue: TEditCharCase);
 begin
-  TMaskEdit( FWinControl ).CharCase := Value ;
+  TMaskEdit(FWinControl).CharCase := AValue;
 end;
 
-procedure TtiPerAwareMaskEdit.SetEditMask(const Value: TEditMask);
+procedure TtiPerAwareMaskEdit.SetEditMask(const AValue: TEditMask);
 begin
-  TMaskEdit( FWinControl ).EditMask := Value ;
+  TMaskEdit(FWinControl).EditMask := AValue;
 end;
 
-procedure TtiPerAwareMaskEdit.SetEditText(const Value: string);
+procedure TtiPerAwareMaskEdit.SetEditText(const AValue: string);
 begin
-  TMaskEdit( FWinControl ).EditText := Value;
+  TMaskEdit(FWinControl).EditText := AValue;
 end;
 
-procedure TtiPerAwareMaskEdit.SetMaxLength(const Value: integer);
+procedure TtiPerAwareMaskEdit.SetMaxLength(const AValue: integer);
 begin
-  TMaskEdit( FWinControl ).MaxLength := Value ;
+  TMaskEdit(FWinControl).MaxLength := AValue;
 end;
 
-procedure TtiPerAwareMaskEdit.SetOnChangeActive(Value: boolean);
+procedure TtiPerAwareMaskEdit.SetOnChangeActive(AValue: boolean);
 begin
-  if Value then
-    TMaskEdit( FWinControl ).OnChange := DoChange
+  if AValue then
+    TMaskEdit(FWinControl).OnChange := DoChange
   else
-    TMaskEdit( FWinControl ).OnChange := nil ;
+    TMaskEdit(FWinControl).OnChange := nil;
 end;
 
-procedure TtiPerAwareMaskEdit.SetPasswordChar(const Value: Char);
+procedure TtiPerAwareMaskEdit.SetPasswordChar(const AValue: Char);
 begin
-  TMaskEdit( FWinControl ).PasswordChar := Value ;
+  TMaskEdit(FWinControl).PasswordChar := AValue;
 end;
 
-procedure TtiPerAwareMaskEdit.SetReadOnly(const Value: Boolean);
+procedure TtiPerAwareMaskEdit.SetReadOnly(const AValue: Boolean);
 begin
-  inherited SetReadOnly( Value ) ;
-  TMaskEdit( FWinControl ).ReadOnly := Value ;
+  inherited SetReadOnly(AValue);
+  TMaskEdit(FWinControl).ReadOnly := AValue;
 end;
 
-procedure TtiPerAwareMaskEdit.SetValue(const Value: String);
+procedure TtiPerAwareMaskEdit.SetValue(const AValue: String);
 begin
-  SetOnChangeActive( false ) ;
-  TMaskEdit( FWinControl ).Text := Value ;
-  WinControlToData ;
-  SetOnChangeActive( true ) ;
+  SetOnChangeActive(false);
+  TMaskEdit(FWinControl).Text := AValue;
+  WinControlToData;
+  SetOnChangeActive(true);
 end;
 
 procedure TtiPerAwareMaskEdit.WinControlToData;
 begin
   if not DataAndPropertyValid then
-    Exit ; //==>
+    Exit; //==>
   if ReadOnly then
-    Exit ; //==>
-  SetPropValue( FData, FsFieldName, TMaskEdit( FWinControl ).Text ) ;
+    Exit; //==>
+  SetPropValue(FData, FsFieldName, TMaskEdit(FWinControl).Text);
 end;
 
 end.

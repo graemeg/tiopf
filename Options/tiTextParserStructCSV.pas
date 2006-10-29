@@ -10,16 +10,16 @@ uses
   ,SysUtils
   ,Contnrs
   ,tiTextParser
-  ;
+ ;
 
 const
   cErrorInvalidTextParserState = 'Invalid tiOPF text parser - state.';
-  cErrorIGroupNotFound         = 'Data group in an "I" row not found in registered property setters' ;
-  cErrorDGroupNotFound         = 'Data group in an "D" row not found in registered property setters' ;
+  cErrorIGroupNotFound         = 'Data group in an "I" row not found in registered property setters';
+  cErrorDGroupNotFound         = 'Data group in an "D" row not found in registered property setters';
   cErrorDuplicateGroupName     = 'Duplicate group name in an "I" row';
   cErrorDuplicateColumnName    = 'Duplicate column name in an "I" row';
-  cErrorFirstCharNotIorD       = 'First character not an "I" or "D"' ;
-  cErrorIColumnNotFound        = 'Column in an "I" row not found in registered property setters' ;
+  cErrorFirstCharNotIorD       = 'First character not an "I" or "D"';
+  cErrorIColumnNotFound        = 'Column in an "I" row not found in registered property setters';
   cErrorMoreDataThanMetaData   = 'More columns of data than meta data';
   cErrorMoreMetaDataThanData   = 'More columns of meta data than data';
   cErrorInFieldSetter          = 'Error in field setter';
@@ -27,77 +27,77 @@ const
 
 type
 
-  ETextParserStructCSVException = class( Exception )
+  ETextParserStructCSVException = class(Exception)
   private
     FRow: Integer;
     FCol: Integer;
     FToken: string;
     FUnFormattedMessage: string;
   public
-    constructor Create( const pMessage: string ;
-                        pRow: Integer ; pCol: Integer ;
-                        const pToken: string ) ;
-    property Row: Integer read FRow Write FRow ;
-    property Col: Integer read FCol Write FCol ;
+    constructor Create(const AMessage: string;
+                        pRow: Integer; pCol: Integer;
+                        const pToken: string);
+    property Row: Integer read FRow Write FRow;
+    property Col: Integer read FCol Write FCol;
     property Token: string read FToken Write FToken;
-    property UnFormattedMessage: string read FUnFormattedMessage ;
-  end ;
+    property UnFormattedMessage: string read FUnFormattedMessage;
+  end;
 
   ETextParserStructCSVOnRowException = class(ETextParserStructCSVException)
   private
     FDataGroupName: string;
     FEventMessage: string;
   public
-    constructor Create( const pMessage: string ;
-                        pRow: Integer ; pCol: Integer ;
+    constructor Create(const AMessage: string;
+                        pRow: Integer; pCol: Integer;
                         const pDataGroup: string;
-                        const pEventMessage: string ) ;
+                        const pEventMessage: string);
     property DataGroupName: string read FDataGroupName Write FDataGroupName;
     property EventMessage: string read FEventMessage Write FEventMessage;
-  end ;
+  end;
 
   ETextParserStructCSVDataGroupException = class(ETextParserStructCSVException)
   private
     FDataGroupName: string;
   public
-    constructor Create( const pMessage: string ;
-                        pRow: Integer ; pCol: Integer ;
+    constructor Create(const AMessage: string;
+                        pRow: Integer; pCol: Integer;
                         const pDataGroup: string;
-                        const pToken: string ) ;
+                        const pToken: string);
     property DataGroupName: string read FDataGroupName Write FDataGroupName;
-  end ;
+  end;
 
   ETextParserStructCSVSetterException = class(ETextParserStructCSVException)
   private
     FSetterErrorMessage: string;
   public
-    constructor Create( const pMessage: string ;
-                        pRow: Integer ; pCol: Integer ;
+    constructor Create(const AMessage: string;
+                        pRow: Integer; pCol: Integer;
                         const pDataGroup: string;
-                        const pField: string ;
-                        const pValue: string;
-                        const pSetterErrorMessage: string ) ;
+                        const pField: string;
+                        const AValue: string;
+                        const pSetterErrorMessage: string);
     property SetterErrorMessage: string read FSetterErrorMessage Write FSetterErrorMessage;
-  end ;
+  end;
 
   TtiStructCSVMetaDatas = class;
   TtiStructCSVMetaData = class;
   TtiStructCSVMetaDataItem = class;
-  TtiTextParserRowEvent    = procedure( const pDataGroup: string) of object ;
-  TtiTextParserSetterEvent = procedure( const pDataGroup: string ;
-                                        const pFieldName: string ;
-                                        const pValue: string) of object ;
+  TtiTextParserRowEvent    = procedure(const pDataGroup: string) of object;
+  TtiTextParserSetterEvent = procedure(const pDataGroup: string;
+                                        const AFieldName: string;
+                                        const AValue: string) of object;
 
 
   TtiStructCSVMetaDatas = class(TtiObjectList)
   private
     FLatestUsed : TtiStructCSVMetaData;
   protected
-    function    GetItems(i: integer): TtiStructCSVMetaData ; reintroduce ;
-    procedure   SetItems(i: integer; const Value: TtiStructCSVMetaData); reintroduce ;
+    function    GetItems(i: integer): TtiStructCSVMetaData; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiStructCSVMetaData); reintroduce;
   public
-    property    Items[i:integer] : TtiStructCSVMetaData read GetItems write SetItems ;
-    procedure   Add( pObject : TtiStructCSVMetaData   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    property    Items[i:integer]: TtiStructCSVMetaData read GetItems write SetItems;
+    procedure   Add(AObject : TtiStructCSVMetaData  ; ADefDispOrdr : boolean = true); reintroduce;
 
     function    FindByDataGroupName(const pDataGroupName: string): TtiStructCSVMetaData;
     function    FindCreateByDataGroupName(const pDataGroupName: string;
@@ -105,59 +105,59 @@ type
                                           const pRowEndEvent:   TtiTextParserRowEvent): TtiStructCSVMetaData;
 
     property    LatestUsed: TtiStructCSVMetaData read FLatestUsed;
-    function    AddInstance(const pGroupName     : string ;
-                            const pFieldName     : string;
+    function    AddInstance(const AGroupName    : string;
+                            const AFieldName    : string;
                             const pRowStartEvent : TtiTextParserRowEvent;
-                            const pSetter        : TtiTextParserSetterEvent;
-                            const pRowEndEvent   : TtiTextParserRowEvent):TtiStructCSVMetaDataItem;
+                            const pSetter       : TtiTextParserSetterEvent;
+                            const pRowEndEvent  : TtiTextParserRowEvent):TtiStructCSVMetaDataItem;
     procedure   ClearIndexedItems;
   end;
 
-  TtiStructCSVMetaData = class( TtiObjectList )
+  TtiStructCSVMetaData = class(TtiObjectList)
   private
     FDataGroupName: string;
     FIndexList: TObjectList;
     FOnRowStartEvent: TtiTextParserRowEvent;
     FOnRowEndEvent: TtiTextParserRowEvent;
-    procedure SetDataGroupName(const Value: string);
+    procedure SetDataGroupName(const AValue: string);
     function  GetIndexedItems(i: Integer): TtiStructCSVMetaDataItem;
     function  GetIndexedCount: Integer;
   protected
-    function    GetItems(i: integer): TtiStructCSVMetaDataItem ; reintroduce ;
-    procedure   SetItems(i: integer; const Value: TtiStructCSVMetaDataItem); reintroduce ;
+    function    GetItems(i: integer): TtiStructCSVMetaDataItem; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiStructCSVMetaDataItem); reintroduce;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    property    Items[i:integer] : TtiStructCSVMetaDataItem read GetItems write SetItems ;
-    procedure   Add( pObject : TtiStructCSVMetaDataItem   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    property    Items[i:integer]: TtiStructCSVMetaDataItem read GetItems write SetItems;
+    procedure   Add(AObject : TtiStructCSVMetaDataItem  ; ADefDispOrdr : boolean = true); reintroduce;
     property    DataGroupName: string read FDataGroupName Write SetDataGroupName;
     property    OnRowStartEvent: TtiTextParserRowEvent read FOnRowStartEvent Write FOnRowStartEvent;
     property    OnRowEndEvent:   TtiTextParserRowEvent read FOnRowEndEvent Write FOnRowEndEvent;
-    function    AddInstance(const pFieldName: string; const pSetter: TtiTextParserSetterEvent ):TtiStructCSVMetaDataItem;
-    function    FindByFieldName(const pFieldName: string):TtiStructCSVMetaDataItem;
-    function    AddToIndex(const pFieldName: string):Boolean;
+    function    AddInstance(const AFieldName: string; const pSetter: TtiTextParserSetterEvent):TtiStructCSVMetaDataItem;
+    function    FindByFieldName(const AFieldName: string):TtiStructCSVMetaDataItem;
+    function    AddToIndex(const AFieldName: string):Boolean;
     property    IndexedItems[i:Integer]:TtiStructCSVMetaDataItem read GetIndexedItems;
     property    IndexedCount: Integer read GetIndexedCount;
-    function    FindInIndex(const pFieldName: string):TtiStructCSVMetaDataItem;
+    function    FindInIndex(const AFieldName: string):TtiStructCSVMetaDataItem;
     procedure   ClearIndexedItems;
-  end ;
+  end;
 
-  TtiStructCSVMetaDataItem = class( TtiObject )
+  TtiStructCSVMetaDataItem = class(TtiObject)
   private
     FFieldName: string;
     FFieldSetter: TtiTextParserSetterEvent;
   public
-    property FieldName: string read FFieldName Write FFieldName ;
+    property FieldName: string read FFieldName Write FFieldName;
     property FieldSetter: TtiTextParserSetterEvent read FFieldSetter Write FFieldSetter;
-  end ;
+  end;
 
 
-  TtpemsState = ( tpemsStartOfRow,
+  TtpemsState = (tpemsStartOfRow,
                   tpemsStartOfIRow, tpemsICell,
-                  tpemsStartOfDRow, tpemsDCell );
+                  tpemsStartOfDRow, tpemsDCell);
 
 
-  TTextParserStructCSV = class( TtiBaseObject )
+  TTextParserStructCSV = class(TtiBaseObject)
   private
     FTextFileParser: TtiTextParser;
     FState: TtpemsState;
@@ -168,50 +168,50 @@ type
     FInDataRow: Boolean;
     procedure Clear;
   private
-    procedure DoOnNewLine ;
-    procedure DoOnEndOfLine ;
-    procedure DoOnEndOfText ;
-    procedure DoOnCellEnd( const pString: string );
-    procedure RaiseStructCSVException( const pMessage: string ;
-                        pRow: Integer ; pCol: Integer ;
-                        const pToken: string );
-    procedure RaiseStructCSVDataGroupException( const pMessage: string ;
-                        pRow: Integer ; pCol: Integer ;
+    procedure DoOnNewLine;
+    procedure DoOnEndOfLine;
+    procedure DoOnEndOfText;
+    procedure DoOnCellEnd(const AString: string);
+    procedure RaiseStructCSVException(const AMessage: string;
+                        pRow: Integer; pCol: Integer;
+                        const pToken: string);
+    procedure RaiseStructCSVDataGroupException(const AMessage: string;
+                        pRow: Integer; pCol: Integer;
                         const pDataGroup: string;
-                        const pToken: string ) ;
-    procedure RaiseStructCSVSetterExceptionCreate( const pMessage: string ;
-                        pRow: Integer ; pCol: Integer ;
+                        const pToken: string);
+    procedure RaiseStructCSVSetterExceptionCreate(const AMessage: string;
+                        pRow: Integer; pCol: Integer;
                         const pDataGroup: string;
                         const pField: string;
-                        const pValue: string ;
-                        const pSetterErrorMessage: string );
+                        const AValue: string;
+                        const pSetterErrorMessage: string);
 
     procedure RaiseStructCSVOnRowExceptionCreate(
-                        const pMessage : string ;
-                        pRow: Integer ; pCol: Integer ;
+                        const AMessage : string;
+                        pRow: Integer; pCol: Integer;
                         const pDataGroup: string;
-                        const pEventMessage: string ) ;
+                        const pEventMessage: string);
 
   public
     constructor Create;
-    destructor  Destroy ; override ;
-    procedure   ParseString(const pString: string);
-    procedure   ParseFile(const pFileName: string);
+    destructor  Destroy; override;
+    procedure   ParseString(const AString: string);
+    procedure   ParseFile(const AFileName: string);
     procedure   ParseStream(AStream: TStream);
     property    MetaDatas: TtiStructCSVMetaDatas read FMetaDatas;
     property    LogExceptions: Boolean read FLogExceptions Write FLogExceptions;
     property    ExceptionMessages: TStringList read FExceptions;
     function    Row: Integer;
-    function    Col(const pToken: string): Integer; overload ;
-    function    Col: Integer; overload ;
-  end ;
+    function    Col(const pToken: string): Integer; overload;
+    function    Col: Integer; overload;
+  end;
 
 
 implementation
 uses
   tiConstants
   ,tiExcept
-  ;
+ ;
 
 
 const
@@ -225,9 +225,9 @@ constructor TTextParserStructCSV.Create;
 begin
   inherited Create;
   FTextFileParser:= TtiTextParser.Create;
-  FTextFileParser.OnNewLine   := DoOnNewLine;
+  FTextFileParser.OnNewLine  := DoOnNewLine;
   FTextFileParser.OnEndOfLine := DoOnEndOfLine;
-  FTextFileParser.OnCellEnd   := DoOnCellEnd;
+  FTextFileParser.OnCellEnd  := DoOnCellEnd;
   FTextFileParser.OnEndOfText := DoOnEndOfText;
   FMetaDatas:= TtiStructCSVMetaDatas.Create;
   FExceptions:= TStringList.Create;
@@ -244,7 +244,7 @@ begin
 end;
 
 
-procedure TTextParserStructCSV.DoOnCellEnd(const pString: string);
+procedure TTextParserStructCSV.DoOnCellEnd(const AString: string);
 var
   lMetaData: TtiStructCSVMetaData;
   lMetaDataItem: TtiStructCSVMetaDataItem;
@@ -252,104 +252,104 @@ var
 begin
   case FState of
   tpemsStartOfRow :    begin
-                         if pString = cDPrefix then
+                         if AString = cDPrefix then
                            FState := tpemsStartOfDRow
-                         else if pString = cIPrefix then
+                         else if AString = cIPrefix then
                            FState := tpemsStartOfIRow
                          else
                            RaiseStructCSVException(
                                    cErrorFirstCharNotIorD,
-                                   Row, Col(pString),
-                                   pString ) ;
+                                   Row, Col(AString),
+                                   AString);
                          FInDataRow := (FState = tpemsStartOfDRow);
-                       end ;
-  tpemsStartOfIRow  :  begin
-                         FState := tpemsICell ;
-                         FCellIndex := 0 ;
-                         lMetaData := FMetaDatas.FindByDataGroupName(pString);
+                       end;
+  tpemsStartOfIRow :  begin
+                         FState := tpemsICell;
+                         FCellIndex := 0;
+                         lMetaData := FMetaDatas.FindByDataGroupName(AString);
                          if lMetaData = nil then
                            RaiseStructCSVException(
                                    cErrorIGroupNotFound,
-                                   Row, Col(pString),
-                                   pString )
+                                   Row, Col(AString),
+                                   AString)
                          else if lMetaData.IndexedCount <> 0 then
                            RaiseStructCSVDataGroupException(
                                    cErrorDuplicateGroupName,
-                                   Row, Col(pString),
-                                   pString,
-                                   '' ) ;
-                       end ;
-  tpemsICell   :       begin
+                                   Row, Col(AString),
+                                   AString,
+                                   '');
+                       end;
+  tpemsICell  :       begin
                          Inc(FCellIndex);
-                         if FMetaDatas.LatestUsed.FindInIndex(pString) <> nil then
+                         if FMetaDatas.LatestUsed.FindInIndex(AString) <> nil then
                            RaiseStructCSVDataGroupException(
                                    cErrorDuplicateColumnName,
-                                   Row, Col(pString),
+                                   Row, Col(AString),
                                    FMetaDatas.LatestUsed.DataGroupName,
-                                   pString )
-                         else if not FMetaDatas.LatestUsed.AddToIndex(pString) then
+                                   AString)
+                         else if not FMetaDatas.LatestUsed.AddToIndex(AString) then
                            RaiseStructCSVDataGroupException(
                                    cErrorIColumnNotFound,
-                                   Row, Col(pString),
+                                   Row, Col(AString),
                                    FMetaDatas.LatestUsed.DataGroupName,
-                                   pString ) ;
-                       end ;
-  tpemsStartOfDRow  :  begin
-                         FState := tpemsDCell ;
-                         FCellIndex := 0 ;
-                         if FMetaDatas.FindByDataGroupName(pString) = nil then
+                                   AString);
+                       end;
+  tpemsStartOfDRow :  begin
+                         FState := tpemsDCell;
+                         FCellIndex := 0;
+                         if FMetaDatas.FindByDataGroupName(AString) = nil then
                            RaiseStructCSVException(
                                    cErrorDGroupNotFound,
-                                   Row, Col(pString),
-                                   pString ) ;
-                         Assert( FMetaDatas.LatestUsed.TestValid(TtiStructCSVMetaData), cTIInvalidObjectError );
+                                   Row, Col(AString),
+                                   AString);
+                         Assert(FMetaDatas.LatestUsed.TestValid(TtiStructCSVMetaData), cTIInvalidObjectError);
                          try
-                           FMetaDatas.LatestUsed.OnRowStartEvent(pString);
+                           FMetaDatas.LatestUsed.OnRowStartEvent(AString);
                          except
                            on e:Exception do
                              RaiseStructCSVOnRowExceptionCreate(
                                    cErrorInOnRowEvent,
-                                   Row, Col(pString),
+                                   Row, Col(AString),
                                    FMetaDatas.LatestUsed.DataGroupName,
-                                   e.message ) ;
+                                   e.message);
                          end;
-                       end ;
-  tpemsDCell   :       begin
-                         Assert( FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError );
+                       end;
+  tpemsDCell  :       begin
+                         Assert(FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError);
                          Inc(FCellIndex);
-                         // Only trigger the setter if pString contains a value
-                         if pString <> '' then
+                         // Only trigger the setter if AString contains a value
+                         if AString <> '' then
                          begin
                            try
                              lMetaDataItem := FMetaDatas.LatestUsed.IndexedItems[FCellIndex-1];
-                             Assert( lMetaDataItem.TestValid, cTIInvalidObjectError );
+                             Assert(lMetaDataItem.TestValid, cTIInvalidObjectError);
                              lFieldSetter := lMetaDataItem.FieldSetter;
                              try
                                lFieldSetter(FMetaDatas.LatestUsed.DataGroupName,
                                             lMetaDataItem.FieldName,
-                                            pString);
+                                            AString);
                              except
                                on e:Exception do
                                  RaiseStructCSVSetterExceptionCreate(
                                        cErrorInFieldSetter,
-                                       Row, Col(pString),
+                                       Row, Col(AString),
                                        FMetaDatas.LatestUsed.DataGroupName,
                                        lMetaDataItem.FieldName,
-                                       pString,
-                                       e.message ) ;
-                             end ;
+                                       AString,
+                                       e.message);
+                             end;
                            except
                              on e:EListError do
                                RaiseStructCSVDataGroupException(
                                      cErrorMoreDataThanMetaData,
-                                     Row, Col(pString),
+                                     Row, Col(AString),
                                      FMetaDatas.LatestUsed.DataGroupName,
-                                     pString ) ;
+                                     AString);
                              on e:Exception do
-                               raise ;
-                           end ;
+                               raise;
+                           end;
                          end;
-                       end ;
+                       end;
   else
     raise Exception.Create(cErrorInvalidTextParserState);
   end;
@@ -358,37 +358,37 @@ end;
 
 procedure TTextParserStructCSV.DoOnNewLine;
 begin
-  Assert( FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError );
-  FState := tpemsStartOfRow ;
+  Assert(FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError);
+  FState := tpemsStartOfRow;
   if FCellIndex < FMetaDatas.LatestUsed.IndexedCount then
     RaiseStructCSVDataGroupException(
          cErrorMoreMetaDataThanData,
          Row, Col(FTextFileParser.Token),
          FMetaDatas.LatestUsed.DataGroupName,
-         FTextFileParser.Token ) ;
+         FTextFileParser.Token);
 end;
 
-procedure TTextParserStructCSV.ParseFile(const pFileName: string);
+procedure TTextParserStructCSV.ParseFile(const AFileName: string);
 begin
-  Assert(pFileName <> '', 'pFileName not assigned');
-  Assert(FileExists(pFileName), 'File not found <' + pFileName + '>');
+  Assert(AFileName <> '', 'AFileName not assigned');
+  Assert(FileExists(AFileName), 'File not found <' + AFileName + '>');
   Clear;
-  FTextFileParser.ParseFile(pFileName);
+  FTextFileParser.ParseFile(AFileName);
 end;
 
 procedure TTextParserStructCSV.Clear;
 begin
-  FCellIndex := 0 ;
+  FCellIndex := 0;
   FState := tpemsStartOfRow;
   FExceptions.Clear;
   FMetaDatas.ClearIndexedItems;
   FInDataRow:= False;
 end;
 
-procedure TTextParserStructCSV.ParseString(const pString: string);
+procedure TTextParserStructCSV.ParseString(const AString: string);
 begin
   Clear;
-  FTextFileParser.ParseString(pString);
+  FTextFileParser.ParseString(AString);
 end;
 
 function TTextParserStructCSV.Col(const pToken: string): Integer;
@@ -408,23 +408,23 @@ end;
 
 procedure TTextParserStructCSV.DoOnEndOfText;
 begin
-  Assert( FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError );
-  // FState := tpemsStartOfRow ;
-  if {(FState = tpemsDCell ) and}
+  Assert(FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError);
+  // FState := tpemsStartOfRow;
+  if {(FState = tpemsDCell) and}
      (FCellIndex < FMetaDatas.LatestUsed.IndexedCount) then
     RaiseStructCSVDataGroupException(
          cErrorMoreMetaDataThanData,
          Row, Col(FTextFileParser.Token),
          FMetaDatas.LatestUsed.DataGroupName,
-         FTextFileParser.Token ) ;
+         FTextFileParser.Token);
 end;
 
 procedure TTextParserStructCSV.RaiseStructCSVException(
-  const pMessage: string; pRow, pCol: Integer; const pToken: string);
+  const AMessage: string; pRow, pCol: Integer; const pToken: string);
 var
-  lE : ETextParserStructCSVException ;
+  lE : ETextParserStructCSVException;
 begin
-  lE := ETextParserStructCSVException.Create( pMessage, pRow, pCol, pToken ) ;
+  lE := ETextParserStructCSVException.Create(AMessage, pRow, pCol, pToken);
   if FLogExceptions then
     FExceptions.Add(lE.Message)
   else
@@ -433,13 +433,13 @@ begin
 end;
 
 procedure TTextParserStructCSV.RaiseStructCSVDataGroupException(
-  const pMessage: string; pRow, pCol: Integer; const pDataGroup,
+  const AMessage: string; pRow, pCol: Integer; const pDataGroup,
   pToken: string);
 var
   lE : ETextParserStructCSVDataGroupException;
 begin
   lE := ETextParserStructCSVDataGroupException.Create(
-      pMessage, pRow, pCol, pDataGroup, pToken );
+      AMessage, pRow, pCol, pDataGroup, pToken);
   if FLogExceptions then
     FExceptions.Add(lE.Message)
   else
@@ -448,18 +448,18 @@ begin
 end;
 
 procedure TTextParserStructCSV.RaiseStructCSVSetterExceptionCreate(
-  const pMessage: string; pRow, pCol: Integer; const pDataGroup, pField, pValue,
+  const AMessage: string; pRow, pCol: Integer; const pDataGroup, pField, AValue,
   pSetterErrorMessage: string);
 var
   lE : ETextParserStructCSVSetterException;
 begin
   lE := ETextParserStructCSVSetterException.Create(
-              pMessage,
+              AMessage,
               pRow, pCol,
               pDataGroup,
               pField,
-              pValue,
-              pSetterErrorMessage );
+              AValue,
+              pSetterErrorMessage);
   if FLogExceptions then
     FExceptions.Add(lE.Message)
   else
@@ -468,16 +468,16 @@ begin
 end;
 
 procedure TTextParserStructCSV.RaiseStructCSVOnRowExceptionCreate(
-  const pMessage: string; pRow, pCol: Integer; const pDataGroup,
+  const AMessage: string; pRow, pCol: Integer; const pDataGroup,
   pEventMessage: string);
 var
   lE : ETextParserStructCSVOnRowException;
 begin
   lE := ETextParserStructCSVOnRowException.Create(
-              pMessage,
+              AMessage,
               pRow, pCol,
               pDataGroup,
-              pEventMessage );
+              pEventMessage);
   if FLogExceptions then
     FExceptions.Add(lE.Message)
   else
@@ -490,8 +490,8 @@ var
   lMetaDataItem: TtiStructCSVMetaData;
 begin
   if not FInDataRow then
-    Exit ; //==>
-  Assert( FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError );
+    Exit; //==>
+  Assert(FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError);
   lMetaDataItem := FMetaDatas.LatestUsed;
   lMetaDataItem.OnRowEndEvent(FMetaDatas.LatestUsed.DataGroupName);
 end;
@@ -506,25 +506,25 @@ end;
 
 { TtiStructCSVMetaDatas }
 
-procedure TtiStructCSVMetaDatas.Add(pObject: TtiStructCSVMetaData; pDefDispOrdr: boolean);
+procedure TtiStructCSVMetaDatas.Add(AObject: TtiStructCSVMetaData; ADefDispOrdr: boolean);
 begin
-  inherited Add( pObject, false ) ;
+  inherited Add(AObject, false);
 end;
 
 function TtiStructCSVMetaDatas.AddInstance(
-  const pGroupName     : string;
-  const pFieldName     : string;
+  const AGroupName    : string;
+  const AFieldName    : string;
   const pRowStartEvent : TtiTextParserRowEvent;
-  const pSetter        : TtiTextParserSetterEvent;
-  const pRowEndEvent   : TtiTextParserRowEvent): TtiStructCSVMetaDataItem;
+  const pSetter       : TtiTextParserSetterEvent;
+  const pRowEndEvent  : TtiTextParserRowEvent): TtiStructCSVMetaDataItem;
 var
   lStructCSVMetaData : TtiStructCSVMetaData;
 begin
-  lStructCSVMetaData := FindCreateByDataGroupName(pGroupName, pRowStartEvent, pRowEndEvent);
+  lStructCSVMetaData := FindCreateByDataGroupName(AGroupName, pRowStartEvent, pRowEndEvent);
   if lStructCSVMetaData <> nil then
-    Result := lStructCSVMetaData.AddInstance(pFieldName, pSetter)
+    Result := lStructCSVMetaData.AddInstance(AFieldName, pSetter)
   else
-    Result := nil ;
+    Result := nil;
 end;
 
 procedure TtiStructCSVMetaDatas.ClearIndexedItems;
@@ -537,24 +537,24 @@ end;
 
 function TtiStructCSVMetaDatas.FindByDataGroupName(const pDataGroupName: string): TtiStructCSVMetaData;
 var
-  i : Integer ;
+  i : Integer;
 begin
 
-  if ( FLatestUsed <> nil ) and
-     ( FLatestUsed.DataGroupName = pDataGroupName ) then
+  if (FLatestUsed <> nil) and
+     (FLatestUsed.DataGroupName = pDataGroupName) then
   begin
     Result := FLatestUsed;
-    Exit ; //==>
+    Exit; //==>
   end;
 
   for i := 0 to Count - 1 do
     if Items[i].DataGroupName = pDataGroupName then
     begin
       Result := Items[i];
-      FLatestUsed := Result ;
-      Exit ; //==>
+      FLatestUsed := Result;
+      Exit; //==>
     end;
-  Result := nil ;
+  Result := nil;
 
 end;
 
@@ -567,54 +567,54 @@ begin
   Assert(Assigned(pRowEndEvent), 'pRowEndEvent not assigned');
 
   Result := FindByDataGroupName(pDataGroupName);
-  if ( Result <> nil ) then
-    Exit ; //==>
-  Result                 := TtiStructCSVMetaData.Create;
-  Result.DataGroupName   := pDataGroupName;
+  if (Result <> nil) then
+    Exit; //==>
+  Result                := TtiStructCSVMetaData.Create;
+  Result.DataGroupName  := pDataGroupName;
   Result.OnRowStartEvent := pRowStartEvent;
-  Result.OnRowEndEvent   := pRowEndEvent;
+  Result.OnRowEndEvent  := pRowEndEvent;
   Add(Result);
-  FLatestUsed := Result ;
+  FLatestUsed := Result;
 end;
 
 function TtiStructCSVMetaDatas.GetItems(i: integer): TtiStructCSVMetaData;
 begin
-  result := TtiStructCSVMetaData( inherited GetItems( i )) ;
+  result := TtiStructCSVMetaData(inherited GetItems(i));
 end;
 
-procedure TtiStructCSVMetaDatas.SetItems(i: Integer; const Value: TtiStructCSVMetaData);
+procedure TtiStructCSVMetaDatas.SetItems(i: Integer; const AValue: TtiStructCSVMetaData);
 begin
-  inherited SetItems( i, Value ) ;
+  inherited SetItems(i, AValue);
 end;
 
 { TtiStructCSVMetaData }
 
-procedure TtiStructCSVMetaData.Add(pObject: TtiStructCSVMetaDataItem; pDefDispOrdr: boolean);
+procedure TtiStructCSVMetaData.Add(AObject: TtiStructCSVMetaDataItem; ADefDispOrdr: boolean);
 begin
-  inherited Add( pObject, false ) ;
+  inherited Add(AObject, false);
 end;
 
-function TtiStructCSVMetaData.AddInstance(const pFieldName: string; const pSetter: TtiTextParserSetterEvent ): TtiStructCSVMetaDataItem;
+function TtiStructCSVMetaData.AddInstance(const AFieldName: string; const pSetter: TtiTextParserSetterEvent): TtiStructCSVMetaDataItem;
 begin
-  Assert(FindByFieldName(pFieldName) = nil, 'Attempt to add duplicate instance <' + pFieldName + '>' ) ;
+  Assert(FindByFieldName(AFieldName) = nil, Format('Attempt to add duplicate TtiTextParserSetterEvent "%s" to DataGroup "%s"', [AFieldName, DataGroupName]));
   Assert(Assigned(pSetter), 'pSetter not assigned');
   Result := TtiStructCSVMetaDataItem.Create;
-  Result.FieldName := pFieldName;
+  Result.FieldName := AFieldName;
   Result.FieldSetter := pSetter;
   Add(Result);
 end;
 
-function TtiStructCSVMetaData.AddToIndex(const pFieldName: string): Boolean;
+function TtiStructCSVMetaData.AddToIndex(const AFieldName: string): Boolean;
 var
   lo : TtiStructCSVMetaDataItem;
 begin
-  lo := FindByFieldName(pFieldName);
+  lo := FindByFieldName(AFieldName);
   if lo = nil then
   begin
     Result := False;
-    Exit ; //==>
+    Exit; //==>
   end;
-  Assert( lo.TestValid(TtiStructCSVMetaDataItem), cTIInvalidObjectError );
+  Assert(lo.TestValid(TtiStructCSVMetaDataItem), cTIInvalidObjectError);
   FIndexList.Add(lo);
   Result := True;
 end;
@@ -636,30 +636,30 @@ begin
   inherited;
 end;
 
-function TtiStructCSVMetaData.FindByFieldName(const pFieldName: string): TtiStructCSVMetaDataItem;
+function TtiStructCSVMetaData.FindByFieldName(const AFieldName: string): TtiStructCSVMetaDataItem;
 var
   i: Integer;
 begin
-  Result := nil ;
+  Result := nil;
   for i := 0 to Count - 1 do
-    if Items[i].FieldName = pFieldName then
+    if Items[i].FieldName = AFieldName then
     begin
       Result := Items[i];
-      Exit ; //==>
+      Exit; //==>
     end;
 end;
 
-function TtiStructCSVMetaData.FindInIndex(const pFieldName: string): TtiStructCSVMetaDataItem;
+function TtiStructCSVMetaData.FindInIndex(const AFieldName: string): TtiStructCSVMetaDataItem;
 var
   i: Integer;
 begin
   for i := 0 to FIndexList.Count - 1 do
-    if TtiStructCSVMetaDataItem(FIndexList.Items[i]).FieldName = pFieldName then
+    if TtiStructCSVMetaDataItem(FIndexList.Items[i]).FieldName = AFieldName then
     begin
       Result := TtiStructCSVMetaDataItem(FIndexList.Items[i]);
-      Exit ; //==>
+      Exit; //==>
     end;
-  Result := nil ;
+  Result := nil;
 end;
 
 function TtiStructCSVMetaData.GetIndexedCount: Integer;
@@ -675,32 +675,32 @@ end;
 function TtiStructCSVMetaData.GetItems(
   i: integer): TtiStructCSVMetaDataItem;
 begin
-  result := TtiStructCSVMetaDataItem( inherited GetItems( i )) ;
+  result := TtiStructCSVMetaDataItem(inherited GetItems(i));
 end;
 
-procedure TtiStructCSVMetaData.SetDataGroupName(const Value: string);
+procedure TtiStructCSVMetaData.SetDataGroupName(const AValue: string);
 begin
-  FDataGroupName := Value;
+  FDataGroupName := AValue;
 end;
 
-procedure TtiStructCSVMetaData.SetItems(i: Integer; const Value: TtiStructCSVMetaDataItem);
+procedure TtiStructCSVMetaData.SetItems(i: Integer; const AValue: TtiStructCSVMetaDataItem);
 begin
-  inherited SetItems( i, Value ) ;
+  inherited SetItems(i, AValue);
 end;
 
 { ETextParserStructCSVException }
 
-constructor ETextParserStructCSVException.Create(const pMessage: string;
+constructor ETextParserStructCSVException.Create(const AMessage: string;
   pRow, pCol: Integer; const pToken: string);
 var
-  lMessage : string ;
+  lMessage : string;
 begin
-  FRow   := pRow;
-  FCol   := pCol;
+  FRow  := pRow;
+  FCol  := pCol;
   FToken := pToken;
-  FUnFormattedMessage := pMessage ;
+  FUnFormattedMessage := AMessage;
   lMessage :=
-    pMessage +
+    AMessage +
     '. Column name: ' + pToken +
     '; Row in data file: ' + IntToStr(FRow) +
     '; Col in data file: ' + IntToStr(FCol);
@@ -710,13 +710,13 @@ end;
 { ETextParserStructCSVDataGroupException }
 
 constructor ETextParserStructCSVDataGroupException.Create(
-  const pMessage: string; pRow, pCol: Integer; const pDataGroup,
+  const AMessage: string; pRow, pCol: Integer; const pDataGroup,
   pToken: string);
 begin
-  inherited Create(pMessage, pRow, pCol, pToken);
+  inherited Create(AMessage, pRow, pCol, pToken);
   FDataGroupName := pDataGroup;
   Message :=
-    pMessage +
+    AMessage +
     '. Group name: ' + pDataGroup +
     '; Column name: ' + pToken +
     '; Row in data file: ' + IntToStr(pRow) +
@@ -726,32 +726,32 @@ end;
 { ETextParserStructCSVSetterException }
 
 constructor ETextParserStructCSVSetterException.Create(
-  const pMessage: string; pRow, pCol: Integer; const pDataGroup, pField, pValue,
+  const AMessage: string; pRow, pCol: Integer; const pDataGroup, pField, AValue,
   pSetterErrorMessage: string);
 begin
-  inherited Create(pMessage, pRow, pCol, pValue);
+  inherited Create(AMessage, pRow, pCol, AValue);
   Message :=
-    pMessage +
+    AMessage +
     '. Group name: ' + pDataGroup +
     '; Column name: ' + pField +
-    '; Value: ' + pValue +
+    '; AValue: ' + AValue +
     '; Row in data file: ' + IntToStr(pRow) +
     '; Col in data file: ' + IntToStr(pCol) +
-    '; Error message: ' + pSetterErrorMessage ;
-  FSetterErrorMessage := pSetterErrorMessage ;
+    '; Error message: ' + pSetterErrorMessage;
+  FSetterErrorMessage := pSetterErrorMessage;
 end;
 
 { ETextParserStructCSVOnRowException }
 
 constructor ETextParserStructCSVOnRowException.Create(
-  const pMessage: string; pRow, pCol: Integer; const pDataGroup,
+  const AMessage: string; pRow, pCol: Integer; const pDataGroup,
   pEventMessage: string);
 begin
-  inherited Create(pMessage, pRow, pCol, pDataGroup);
+  inherited Create(AMessage, pRow, pCol, pDataGroup);
   FDataGroupName := pDataGroup;
-  FEventMessage  := pEventMessage;
+  FEventMessage := pEventMessage;
   Message :=
-    pMessage +
+    AMessage +
     '. Group name: ' + pDataGroup +
     '; Event message: ' + pEventMessage +
     '; Row in data file: ' + IntToStr(pRow) +

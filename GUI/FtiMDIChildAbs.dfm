@@ -1,9 +1,9 @@
 object FormMDIChildAbs: TFormMDIChildAbs
   Left = 412
   Top = 265
-  Width = 313
-  Height = 220
   Caption = 'FormMDIChildAbs'
+  ClientHeight = 186
+  ClientWidth = 305
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

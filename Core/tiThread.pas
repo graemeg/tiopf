@@ -11,12 +11,10 @@ uses
   ,Windows
   {$ENDIF}
   ,SyncObjs   // This unit must always appear after the Windows unit!
-  ;
-
+ ;
 
 const
   cDefaultSleepResponse = 100; // Will check Terminated while sleeping every 100ms
-
 
 type
   // ToDo: TtiThread should be renamed to TtiRegisteredThread and descend
@@ -30,14 +28,15 @@ type
   public
     constructor Create(ASuspended: boolean); virtual;
     destructor  Destroy; override;
-    procedure   SetThreadName(const Name: string);
+    procedure   SetThreadName(const AName: string);
   end;
 
   TtiThread = class(TtiSleepThread)
   protected
-    procedure   DoOnTerminate(Sender: TObject); virtual ;
+    procedure   DoOnTerminate(Sender: TObject); virtual;
   public
-    constructor Create(CreateSuspended: Boolean); overload; override;
+    constructor Create; reintroduce; overload;
+    constructor Create(ACreateSuspended: Boolean); overload; override;
     constructor CreateAndResume; virtual; // See note in body of method
     destructor  Destroy; override;
   end;
@@ -45,20 +44,24 @@ type
 
   TtiActiveThreadList = class(TtiBaseObject)
   private
-    FList: TObjectList;
-    FCritSect: TCriticalSection;
+    FList : TObjectList;
+    FCritSect : TCriticalSection;
+    FOnThreadCountChange: TThreadMethod;
+    FThreadCount: integer;
+    procedure DoThreadCountChange(AThreadCount: Integer; const AThread: TThread);
+    procedure SetOnThreadCountChange(const AValue: TThreadMethod);
   public
     constructor Create;
     destructor  Destroy; override;
-    procedure   Add(const pThrd: TtiThread);
-    procedure   Remove(const pThrd: TtiThread);
+    procedure   Add(const AThread : TtiThread);
+    procedure   Remove(const AThread : TtiThread);
     procedure   Terminate;
-    function    RunningThreadCount: integer;
-  end ;
-
+    property    OnThreadCountChange: TThreadMethod read FOnThreadCountChange write SetOnThreadCountChange;
+    property    Count: integer read FThreadCount;
+  end;
 
 {$IFDEF MSWINDOWS}
-procedure SetIdeDebuggerThreadName(ThreadID: DWORD; ThreadName: PChar);
+procedure SetIdeDebuggerThreadName(AThreadID: DWORD; AThreadName: PChar);
 {$ENDIF}
 
 
@@ -70,11 +73,11 @@ uses
   {$ENDIF MSWINDOWS}
   ,tiUtils
   ,SysUtils    // Used by FPC for the Sleep method.
-  ;
+ ;
 
 
 {$IFDEF MSWINDOWS}
-procedure SetIdeDebuggerThreadName(ThreadID: DWORD; ThreadName: PChar);
+procedure SetIdeDebuggerThreadName(AThreadID: DWORD; AThreadName: PChar);
 type
   TThreadNameInfo = record
     FType: LongWord;     // must be 0x1000
@@ -86,7 +89,7 @@ var
   ThreadNameInfo: TThreadNameInfo;
 begin
   ThreadNameInfo.FType := $1000;
-  ThreadNameInfo.FName := ThreadName;
+  ThreadNameInfo.FName := AThreadName;
   ThreadNameInfo.FThreadID := $FFFFFFFF; //ThreadID;
   ThreadNameInfo.FFlags := 0;
   try
@@ -95,7 +98,7 @@ begin
   end;
 end;
 {$ELSE}
-procedure SetIdeDebuggerThreadName(ThreadID: Integer; const ThreadName: string);
+procedure SetIdeDebuggerThreadName(AThreadID: Integer; const AThreadName: string);
 begin
   // In .NET there is a method... thread.setname or something
   // In Linux - who knows
@@ -115,9 +118,9 @@ begin
 end;
 
 
-constructor TtiThread.Create(CreateSuspended: Boolean);
+constructor TtiThread.Create(ACreateSuspended: Boolean);
 begin
-  inherited Create(CreateSuspended);
+  inherited Create(ACreateSuspended);
   FreeOnTerminate := true;
   OnTerminate := DoOnTerminate;
   gTIOPFManager.ActiveThreadList.Add(Self);
@@ -139,22 +142,27 @@ begin
   // Implement in the concrete
 end;
 
+constructor TtiThread.Create;
+begin
+  Create(true);
+end;
 
-procedure TtiSleepThread.SetThreadName(const Name: string);
+procedure TtiSleepThread.SetThreadName(const AName: string);
 begin
   //Assert(GetCurrentThreadId = Self.ThreadID); //<-- always fail
-  FName := Name; // Need to store the name in the heap
+  FName := AName; // Need to store the name in the heap
   SetIdeDebuggerThreadName(Self.ThreadID, PChar(FName));
 end;
 
 
 { TtiActiveThreadList }
 
-procedure TtiActiveThreadList.Add(const pThrd: TtiThread);
+procedure TtiActiveThreadList.Add(const AThread: TtiThread);
 begin
   FCritSect.Enter;
   try
-    FList.Add(pThrd);
+    FList.Add(AThread);
+    DoThreadCountChange(FList.Count, AThread);
   finally
     FCritSect.Leave;
   end;
@@ -164,10 +172,10 @@ end;
 constructor TtiActiveThreadList.Create;
 begin
   inherited;
-  FList := TObjectList.Create(false) ;
-  FCritSect := TCriticalSection.Create ;
+  FList := TObjectList.Create(false);
+  FCritSect := TCriticalSection.Create;
+  FThreadCount:= 0;
 end;
-
 
 destructor TtiActiveThreadList.Destroy;
 begin
@@ -176,37 +184,51 @@ begin
   inherited;
 end;
 
+procedure TtiActiveThreadList.DoThreadCountChange(AThreadCount: integer; const AThread: TThread);
+begin
+  if FThreadCount <> AThreadCount then
+  begin
+    FThreadCount:= AThreadCount;
+    if Assigned(FOnThreadCountChange) then
+      TThread.Synchronize(AThread, FOnThreadCountChange);
+  end;
+end;
 
-procedure TtiActiveThreadList.Remove(const pThrd: TtiThread);
+procedure TtiActiveThreadList.Remove(const AThread: TtiThread);
+var
+  LIndex: integer;
 begin
   FCritSect.Enter;
   try
-    FList.Remove(pThrd);
+    LIndex:= FList.IndexOf(AThread);
+    if LIndex <> -1 then
+    begin
+      FList.Delete(LIndex);
+      DoThreadCountChange(FList.Count, AThread);
+    end;
   finally
     FCritSect.Leave;
   end;
 end;
 
-
-function TtiActiveThreadList.RunningThreadCount: integer;
+procedure TtiActiveThreadList.SetOnThreadCountChange(const AValue: TThreadMethod);
 begin
   FCritSect.Enter;
   try
-    result := FList.Count ;
+    FOnThreadCountChange := AValue;
   finally
     FCritSect.Leave;
   end;
 end;
-
 
 procedure TtiActiveThreadList.Terminate;
 var
-  i : integer ;
+  i : integer;
 begin
   FCritSect.Enter;
   try
     for i := FList.Count - 1 downto 0 do
-      (FList.Items[i] as TtiThread ).Terminate;
+      (FList.Items[i] as TtiThread).Terminate;
   finally
     FCritSect.Leave;
   end;
@@ -247,4 +269,5 @@ end;
 
 
 end.
+
 

@@ -16,7 +16,7 @@ uses
   ,Classes
   ,tiPerAwareCtrls
   ,ExtCtrls
-  ;
+ ;
 
 type
 
@@ -27,38 +27,38 @@ type
 
   { TtiPickerAbs }
 
-  TtiPickerAbs = class( TCustomPanel )
+  TtiPickerAbs = class(TCustomPanel)
   private
     FHint : TTranslateString;
-    FEdit   : TEdit ;
-    FSpeedButton : TtiSpeedButton ;
-    FOnChange : TNotifyEvent ;
+    FEdit  : TEdit;
+    FSpeedButton : TtiSpeedButton;
+    FOnChange : TNotifyEvent;
     FbReadOnly: Boolean;
     function    GetActOnEditClick: boolean;
-    procedure   SetActOnEditClick(const Value: boolean);
+    procedure   SetActOnEditClick(const AValue: boolean);
   protected
-    procedure   DoOnChange( sender : TObject ) ; virtual;
-    procedure   DoButtonClick( sender : TObject ) ; virtual;
-    procedure   SetText( sValue : string ) ; virtual ;
-    function    GetText : string ; virtual ;
-    procedure   SetEnabled( Value : boolean ) ; Override ;
-    procedure   SetReadOnly(const Value: Boolean);virtual;
+    procedure   DoOnChange(sender : TObject); virtual;
+    procedure   DoButtonClick(sender : TObject); virtual;
+    procedure   SetText(sValue : string); virtual;
+    function    GetText : string; virtual;
+    procedure   SetEnabled(AValue : boolean); Override;
+    procedure   SetReadOnly(const AValue: Boolean);virtual;
     procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
-    procedure   SetHint(const Value : TTranslateString);{$IFDEF FPC} override ;{$ENDIF}
+    procedure   SetHint(const AValue : TTranslateString);{$IFDEF FPC} override;{$ENDIF}
     {$IFNDEF FPC}
-    procedure   WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    procedure   WMSize(var Message: TWMSize); message WM_SIZE;
     procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ELSE}
     procedure   DoSetBounds(ALeft, ATop, AWidth, AHeight: Integer);override;
     procedure   FontChanged(Sender: TObject); override;
     {$ENDIF}
-    property    OnClick ;
+    property    OnClick;
 
   published
-    property    Anchors ;
-    property    ActOnEditClick : boolean read GetActOnEditClick write SetActOnEditClick ;
-    property    Text : string read getText write setText ;
-    property    Font ;
+    property    Anchors;
+    property    ActOnEditClick : boolean read GetActOnEditClick write SetActOnEditClick;
+    property    Text : string read getText write setText;
+    property    Font;
     {$IFDEF FPC}
     property    Hint;
     {$ELSE}
@@ -66,41 +66,41 @@ type
     {$ENDIF}
     property    ShowHint;
     property    ParentFont;
-    property    Enabled ;
-    property    ReadOnly   : Boolean     read FbReadOnly    write SetReadOnly ;
-    property    OnChange : TNotifyEvent read FOnChange write FOnChange ;
+    property    Enabled;
+    property    ReadOnly  : Boolean     read FbReadOnly    write SetReadOnly;
+    property    OnChange : TNotifyEvent read FOnChange write FOnChange;
   public
-    constructor Create( AOwner : TComponent ) ; override ;
-    procedure   SetFocus ; override ;
+    constructor Create(AOwner : TComponent); override;
+    procedure   SetFocus; override;
     property    Edit : TEdit read FEdit;
     property    SpeedButton: TtiSpeedButton read FSpeedButton;
-  end ;
+  end;
 
-  TtiPerAwarePickAbs = class( TtiPerAwareAbs )
+  TtiPerAwarePickAbs = class(TtiPerAwareAbs)
   private
     function    GetValue: String;
-    procedure   SetValue(const Value: String);
+    procedure   SetValue(const AValue: String);
   protected
-    procedure   DataToWinControl ; override ;
-    procedure   WinControlToData ; override ;
-    procedure   SetOnChangeActive( Value : boolean ) ; override ;
-    procedure   SetReadOnly(const Value: Boolean);override ;
-    procedure   SetControlColor ; override ;
+    procedure   DataToWinControl; override;
+    procedure   WinControlToData; override;
+    procedure   SetOnChangeActive(AValue : boolean); override;
+    procedure   SetReadOnly(const AValue: Boolean);override;
+    procedure   SetControlColor; override;
     {$IFNDEF FPC}
   //  procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
   published
-    property    Value : String read GetValue write SetValue ;
+    property    AValue : String read GetValue write SetValue;
   public
-    constructor Create( Owner : TComponent ) ; override ;
-  end ;
+    constructor Create(Owner : TComponent); override;
+  end;
 
 
 const
-  cuiMinHeight          =  23 ;
-  cuiMinWidth           = 121 ;
-  cuiDefaultHeight      =  23 ;
-  cuiDefaultWidth       = 145 ;
+  cuiMinHeight          =  23;
+  cuiMinWidth           = 121;
+  cuiDefaultHeight      =  23;
+  cuiDefaultWidth       = 145;
 
 implementation
 uses
@@ -115,57 +115,57 @@ uses
 {$ELSE}
   ,Windows
 {$ENDIF}
-  ;
+ ;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
 //* TtiPickerAbs
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-constructor TtiPickerAbs.Create( AOwner : TComponent ) ;
+constructor TtiPickerAbs.Create(AOwner : TComponent);
 begin
-  inherited Create( AOwner ) ;
+  inherited Create(AOwner);
   ControlStyle := ControlStyle - [csSetCaption];
 
-  caption     := ' ' ;
-  Color       := clBtnFace ;
-  BevelOuter  := bvNone ;
-  BorderWidth := 1 ;
-  BorderStyle := bsSingle ;
+  caption    := ' ';
+  Color      := clBtnFace;
+  BevelOuter := bvNone;
+  BorderWidth := 1;
+  BorderStyle := bsSingle;
 
-  FSpeedButton := TtiSpeedButton.Create( self ) ;
-  FSpeedButton.top  := 0 ;
-  FSpeedButton.width := 22 ;
-  FSpeedButton.parent := self ;
+  FSpeedButton := TtiSpeedButton.Create(self);
+  FSpeedButton.top := 0;
+  FSpeedButton.width := 22;
+  FSpeedButton.parent := self;
   FSpeedButton.ParentFont := true;
   {$IFNDEF FPC}
-  FSpeedButton.glyph.LoadFromResourceName( HInstance, 'PAITHREEDOTS' ) ;
-  FSpeedButton.glyphHot.LoadFromResourceName( HInstance, 'PAITHREEDOTS' ) ;
-  FSpeedButton.GlyphDisabled.LoadFromResourceName( HInstance, 'PAITHREEDOTS_D' ) ;
+  FSpeedButton.glyph.LoadFromResourceName(HInstance, 'PAITHREEDOTS');
+  FSpeedButton.glyphHot.LoadFromResourceName(HInstance, 'PAITHREEDOTS');
+  FSpeedButton.GlyphDisabled.LoadFromResourceName(HInstance, 'PAITHREEDOTS_D');
   {$ELSE}
-  FSpeedButton.Layout := blGlyphRight ;
-  FSpeedButton.glyph.LoadFromLazarusResource('PAITHREEDOTS' ) ;
-  FSpeedButton.glyphHot.LoadFromLazarusResource('PAITHREEDOTS' ) ;
-  FSpeedButton.GlyphDisabled.LoadFromLazarusResource('PAITHREEDOTS_D' ) ;
+  FSpeedButton.Layout := blGlyphRight;
+  FSpeedButton.glyph.LoadFromLazarusResource('PAITHREEDOTS');
+  FSpeedButton.glyphHot.LoadFromLazarusResource('PAITHREEDOTS');
+  FSpeedButton.GlyphDisabled.LoadFromLazarusResource('PAITHREEDOTS_D');
   {$ENDIF}
-  FSpeedButton.onClick  := DoButtonClick ;
+  FSpeedButton.onClick := DoButtonClick;
 
 
-  FEdit := TEdit.Create( self ) ;
-  FEdit.left := 0 ;
-  FEdit.top  := 0 ;
-  FEdit.parent := self ;
+  FEdit := TEdit.Create(self);
+  FEdit.left := 0;
+  FEdit.top := 0;
+  FEdit.parent := self;
 
   {$IFNDEF FPC}
-  FEdit.ParentColor := true ;
-  FEdit.ctl3D := false ;
+  FEdit.ParentColor := true;
+  FEdit.ctl3D := false;
   FEdit.OnDblClick := DoButtonClick;
   {$ENDIF}
 
-  FEdit.borderStyle := bsNone ;
-  FEdit.onChange := DoOnChange ;
-  FEdit.TabStop := true ;
-  FEdit.TabOrder := 1 ;
+  FEdit.borderStyle := bsNone;
+  FEdit.onChange := DoOnChange;
+  FEdit.TabStop := true;
+  FEdit.TabOrder := 1;
   FEdit.ParentFont := true;
 
   {$IFDEF FPC}
@@ -177,33 +177,33 @@ begin
   FEdit.FreeNotification(Self);
   FSpeedButton.FreeNotification(Self);
 
-  height      := cuiDefaultHeight  ;
-  width       := cuiDefaultWidth   ;
+  height     := cuiDefaultHeight ;
+  width      := cuiDefaultWidth  ;
 
-end ;
+end;
 
-procedure TtiPickerAbs.DoButtonClick( sender : TObject ) ;
+procedure TtiPickerAbs.DoButtonClick(sender : TObject);
 begin
-  SetFocus ;
-  if Assigned( OnExit ) then
-    OnExit( self ) ;
+  SetFocus;
+  if Assigned(OnExit) then
+    OnExit(self);
 end;
 
 procedure TtiPickerAbs.DoOnChange(sender: TObject);
 begin
-  if assigned( FOnChange ) then
-    FOnChange( sender ) ;
+  if assigned(FOnChange) then
+    FOnChange(sender);
 end;
 
-procedure TtiPickerAbs.setText( sValue : string ) ;
+procedure TtiPickerAbs.setText(sValue : string);
 begin
-  FEdit.text := sValue ;
-end ;
+  FEdit.text := sValue;
+end;
 
-function  TtiPickerAbs.getText : string ;
+function  TtiPickerAbs.getText : string;
 begin
-  result := FEdit.text ;
-end ;
+  result := FEdit.text;
+end;
 
 
 {$IFNDEF FPC}
@@ -221,13 +221,13 @@ var
 begin
   inherited;
   if (FEdit=nil) or (FSpeedButton=nil) then Exit;
-  iWidth := self.clientWidth - FSpeedButton.Width ;
-  iHeight := self.ClientHeight ;
+  iWidth := self.clientWidth - FSpeedButton.Width;
+  iHeight := self.ClientHeight;
   if (iWidth<=1) or (iHeight<=0) then Exit;
   FSpeedButton.left := iWidth;
   FSpeedButton.height := iHeight;
-  FEdit.height := iHeight ;
-  FEdit.width  := iWidth - 1 ;
+  FEdit.height := iHeight;
+  FEdit.width := iWidth - 1;
 end;
 {$ELSE}
 procedure TtiPickerAbs.FontChanged(Sender: TObject);
@@ -244,13 +244,13 @@ var
 begin
   inherited DoSetBounds(ALeft, ATop, AWidth, AHeight);
   if (FEdit=nil) or (FSpeedButton=nil) then Exit;
-  iWidth := self.clientWidth - FSpeedButton.Width ;
-  iHeight := self.ClientHeight ;
+  iWidth := self.clientWidth - FSpeedButton.Width;
+  iHeight := self.ClientHeight;
   if (iWidth<=1) or (iHeight<=0) then Exit;
   FSpeedButton.left := iWidth;
   FSpeedButton.height := iHeight;
-  FEdit.height := iHeight ;
-  FEdit.width  := iWidth ;
+  FEdit.height := iHeight;
+  FEdit.width := iWidth;
 end;
 {$ENDIF}
 
@@ -261,32 +261,32 @@ end;
 
 function TtiPickerAbs.GetActOnEditClick: boolean;
 begin
-  result := Assigned( FEdit.onClick ) ;
+  result := Assigned(FEdit.onClick);
 end;
 
-procedure TtiPickerAbs.SetActOnEditClick(const Value: boolean);
+procedure TtiPickerAbs.SetActOnEditClick(const AValue: boolean);
 begin
   if (FEdit=nil) or (FSpeedButton=nil) then Exit;
-  if Value then
+  if AValue then
     FEdit.onClick := DoButtonClick
   else
-    FEdit.onClick := nil ;
+    FEdit.onClick := nil;
 end;
 
 procedure TtiPickerAbs.SetFocus;
 begin
   inherited;
   if (FEdit=nil) or (FSpeedButton=nil) then Exit;
-  FEdit.SetFocus ;
-  FEdit.SelectAll ;
+  FEdit.SetFocus;
+  FEdit.SelectAll;
 end;
 
-procedure TtiPickerAbs.SetReadOnly(const Value: Boolean);
+procedure TtiPickerAbs.SetReadOnly(const AValue: Boolean);
 begin
-  FbReadOnly           := Value;
+  FbReadOnly          := AValue;
   if (FEdit=nil) or (FSpeedButton=nil) then Exit;
-  FEdit.ReadOnly       := Value ;
-  FSpeedButton.Enabled := ( not Value ) and Enabled ;
+  FEdit.ReadOnly      := AValue;
+  FSpeedButton.Enabled := (not AValue) and Enabled;
 end;
 
 procedure TtiPickerAbs.Notification(AComponent: TComponent;
@@ -299,99 +299,99 @@ begin
     FSpeedButton := nil;
 end;
 
-procedure TtiPickerAbs.SetHint(const Value: TTranslateString);
+procedure TtiPickerAbs.SetHint(const AValue: TTranslateString);
 begin
   {$IFDEF FPC}
-  inherited SetHint(Value);
+  inherited SetHint(AValue);
   {$ENDIF}
   if (FEdit=nil) or (FSpeedButton=nil) then Exit;
-  FEdit.Hint := Value ;
-  FSpeedButton.Hint := Value;
-  FHint := Value;
+  FEdit.Hint := AValue;
+  FSpeedButton.Hint := AValue;
+  FHint := AValue;
 end;
 
-procedure TtiPickerAbs.SetEnabled(Value: boolean);
+procedure TtiPickerAbs.SetEnabled(AValue: boolean);
 begin
-  inherited SetEnabled( Value ) ;
+  inherited SetEnabled(AValue);
   if (FEdit=nil) or (FSpeedButton=nil) then Exit;
-  FEdit.Enabled        := Value ;
-  FSpeedButton.Enabled := Value and ( not FbReadOnly ) ;
+  FEdit.Enabled       := AValue;
+  FSpeedButton.Enabled := AValue and (not FbReadOnly);
 end;
 
 { TtiPerAwarePickAbs }
 
 constructor TtiPerAwarePickAbs.Create(Owner: TComponent);
 begin
-  CenterWhenLabelIsLeft := true ;
+  CenterWhenLabelIsLeft := true;
   inherited;
-  Height := cuiMinHeight ;
+  Height := cuiMinHeight;
 end;
 
 procedure TtiPerAwarePickAbs.DataToWinControl;
 begin
   if not DataAndPropertyValid then
-    Exit ; //==>
-  SetOnChangeActive( false ) ;
-  TtiPickerAbs( WinControl ).Text := GetPropValue( Data, FieldName ) ;
-  SetOnChangeActive( true ) ;
+    Exit; //==>
+  SetOnChangeActive(false);
+  TtiPickerAbs(WinControl).Text := GetPropValue(Data, FieldName);
+  SetOnChangeActive(true);
 end;
 
 function TtiPerAwarePickAbs.GetValue: String;
 begin
-  result := TtiPickerAbs( WinControl ).Text ;
+  result := TtiPickerAbs(WinControl).Text;
 end;
 
 procedure TtiPerAwarePickAbs.SetControlColor;
 begin
-  inherited ;
+  inherited;
 
   // First condition, control is read only
   if ReadOnly then
   begin
-    TtiPickerAbs( FWinControl ).Edit.Brush.Color := clBtnFace ;
-  end ;
+    TtiPickerAbs(FWinControl).Edit.Brush.Color := clBtnFace;
+  end;
 
   // Second condition, the control is not enabled.
   if not Enabled then
   begin
-    TtiPickerAbs( FWinControl ).Edit.Brush.Color := clBtnFace ;
-  end ;
+    TtiPickerAbs(FWinControl).Edit.Brush.Color := clBtnFace;
+  end;
 
   // Third condition, the control is enabled, and not read only
   if Enabled and Not ReadOnly then
   begin
-    TtiPickerAbs( FWinControl ).Edit.Brush.Color := clWindow ;
-  end ;
+    TtiPickerAbs(FWinControl).Edit.Brush.Color := clWindow;
+  end;
 
-  TtiPickerAbs( FWinControl ).Edit.Refresh ;
+  TtiPickerAbs(FWinControl).Edit.Refresh;
 end;
 
-procedure TtiPerAwarePickAbs.SetOnChangeActive(Value: boolean);
+procedure TtiPerAwarePickAbs.SetOnChangeActive(AValue: boolean);
 begin
-  if Value then
-    TtiPickerAbs( WinControl ).OnChange := DoChange
+  if AValue then
+    TtiPickerAbs(WinControl).OnChange := DoChange
   else
-    TtiPickerAbs( WinControl ).OnChange := nil ;
+    TtiPickerAbs(WinControl).OnChange := nil;
 end;
 
-procedure TtiPerAwarePickAbs.SetReadOnly(const Value: Boolean);
+procedure TtiPerAwarePickAbs.SetReadOnly(const AValue: Boolean);
 begin
-  inherited SetReadOnly( Value ) ;
-  TtiPickerAbs( WinControl ).ReadOnly := Value ;
+  inherited SetReadOnly(AValue);
+  TtiPickerAbs(WinControl).ReadOnly := AValue;
 end;
 
-procedure TtiPerAwarePickAbs.SetValue(const Value: String);
+procedure TtiPerAwarePickAbs.SetValue(const AValue: String);
 begin
-  TtiPickerAbs( WinControl ).Text := Value ;
+  TtiPickerAbs(WinControl).Text := AValue;
 end;
 
 procedure TtiPerAwarePickAbs.WinControlToData;
 begin
   if not DataAndPropertyValid then
-    Exit ; //==>
+    Exit; //==>
   if ReadOnly then
-    Exit ; //==>
-  SetPropValue( Data, FieldName, TtiPickerAbs( WinControl ).Text ) ;
+    Exit; //==>
+  SetPropValue(Data, FieldName, TtiPickerAbs(WinControl).Text);
 end;
 
 

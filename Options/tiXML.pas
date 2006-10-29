@@ -7,7 +7,7 @@ uses
   Classes
   ,tiConstants
   ,tiBaseObject
-  ;
+ ;
 
 {$IFDEF OPTIMISE_XMLDB_SIZE}
   OPTIMISE_XMLDB_SIZE is no longer a valid compiler directive
@@ -16,8 +16,8 @@ uses
 
 const
   cTIOPFXMLVersion= '2.0';
-  cErrorInvalidOptXMLDBSizeValue = 'Invalid OptXMLDBSize value' ;
-  cErrorInvalidOptXMLDBSizeStringValue = 'Invalid OptXMLDBSize value <%s>' ;
+  cErrorInvalidOptXMLDBSizeValue = 'Invalid OptXMLDBSize value';
+  cErrorInvalidOptXMLDBSizeStringValue = 'Invalid OptXMLDBSize value <%s>';
   cErrorInvalidParamToCompressEncode   = 'Invalid param to tiCompressEncode <%s>';
   cErrorInvalidTXMLAttributeParseState = 'Invalid TXMLAttributeParseState';
   cErrorInvalidTXMLNodeParseState = 'Invalid TXMLNodeParseState';
@@ -27,19 +27,19 @@ type
   TtiXMLNodeParseState      = (xnpsWaitForBlock, xnpsInBlock);
   TtiXMLAttributeParseState = (xapsWaitForAttr, xapsInAttrName, xapsWaitForAttrValue, xapsInAttrValue);
 
-  TtiOnXMLNodeMethod = procedure ( const pStr : string ) of object ;
-  TtiOnXMLAttributeMethod = procedure ( const pName, pValue : string ) of object ;
+  TtiOnXMLNodeMethod = procedure (const AStr : string) of object;
+  TtiOnXMLAttributeMethod = procedure (const AName, AValue : string) of object;
 
 
-  TtiXMLParser = class( TtiBaseObject )
+  TtiXMLParser = class(TtiBaseObject)
   private
   public
-    procedure  ParseForNode(const pStr, pStartToken, pEndToken: string; pOnFind: TtiOnXMLNodeMethod);
-    procedure  ParseForAttributes(const pStr: string; pOnFind: TtiOnXMLAttributeMethod);
-  end ;
+    procedure  ParseForNode(const AStr, pStartToken, pEndToken: string; pOnFind: TtiOnXMLNodeMethod);
+    procedure  ParseForAttributes(const AStr: string; pOnFind: TtiOnXMLAttributeMethod);
+  end;
 
 
-  TtiReservedChar = ( rcUnassigned, rcXML, rcMSXML, rcCSV, rcTAB );
+  TtiReservedChar = (rcUnassigned, rcXML, rcMSXML, rcCSV, rcTAB);
 
 
   IXMLReservedCharsTranslator = interface
@@ -51,19 +51,19 @@ type
   end;
 
 
-  TtiOptXMLDBSize = ( optDBSizeOff, optDBSizeOn  ) ;
+  TtiOptXMLDBSize = (optDBSizeOff, optDBSizeOn );
 
 
 const
   cOptXMLDBSize : array[TtiOptXMLDBSize] of string =
-    ( 'optDBSizeOff', 'optDBSizeOn' ) ;
+    ('optDBSizeOff', 'optDBSizeOn');
 
 
-  function tiStringToOptXMLDBSize(const pValue: string): TtiOptXMLDBSize ;
+  function tiStringToOptXMLDBSize(const AValue: string): TtiOptXMLDBSize;
 
 
 type
-  TtiXMLTags = class( TtiBaseObject )
+  TtiXMLTags = class(TtiBaseObject)
   private
     FOptXMLDBSize: TtiOptXMLDBSize;
     FRow: string;
@@ -77,8 +77,6 @@ type
     FTablesEnd: string;
     FLenTablesEnd: Byte;
     FDocData: string;
-    FProxyTestFailed: string;
-    FProxyTestPassed: string;
     FTable: string;
     FLenTableStart: Byte;
     FTableStart: string;
@@ -131,30 +129,28 @@ type
     FFieldNameResultRowCount: string;
     FFieldNameParamKind: string;
     FFieldNameUserName: string;
-    procedure   SetOptXMLDBSize(pValue: TtiOptXMLDBSize);
+    procedure   SetOptXMLDBSize(AValue: TtiOptXMLDBSize);
     procedure   DeriveInternalValues;
-    procedure   SetOptXMLDBSizeAsString(const Value: string);
+    procedure   SetOptXMLDBSizeAsString(const AValue: string);
     function    GetOptXMLDBSizeAsString: string;
   public
     constructor Create;
-    class function DefaultDocHeader : string ; 
+    class function DefaultDocHeader : string; 
     property    OptXMLDBSize: TtiOptXMLDBSize read FOptXMLDBSize Write SetOptXMLDBSize;
     property    OptXMLDBSizeAsString: string read GetOptXMLDBSizeAsString Write SetOptXMLDBSizeAsString;
     property    DocData: string read FDocData;
-    property    ProxyTestPassed : string read FProxyTestPassed;
-    property    ProxyTestFailed : string read FProxyTestFailed;
     property    Tables : string read FTables;
-    property    TablesStart: string read FTablesStart ;
-    property    LenTablesStart: Byte read FLenTablesStart ;
+    property    TablesStart: string read FTablesStart;
+    property    LenTablesStart: Byte read FLenTablesStart;
     property    TablesEnd:     string read FTablesEnd;
     property    LenTablesEnd: Byte read FLenTablesEnd;
     property    Table: string read FTable;
-    property    TableStart: string read FTableStart ;
+    property    TableStart: string read FTableStart;
     property    LenTableStart: Byte read FLenTableStart;
     property    TableEnd: string read FTableEnd;
     property    LenTableEnd: Byte read FLenTableEnd;
     property    TableName: string read FTableName;
-    property    Fields: string read FFields ;
+    property    Fields: string read FFields;
     property    FieldsStart: string read FFieldsStart;
     property    LenFieldsStart: Byte read FLenFieldsStart;
     property    FieldsEnd: string read FFieldsEnd;
@@ -168,28 +164,28 @@ type
     property    FieldKind: string read FFieldKind;
     property    FieldSize: string read FFieldSize;
     property    Rows: string read FRows;
-    property    RowsStart: string read FRowsStart ;
+    property    RowsStart: string read FRowsStart;
     property    LenRowsStart: Byte read FLenRowsStart;
     property    RowsEnd: string read FRowsEnd;
     property    LenRowsEnd: Byte read FLenRowsEnd;
     property    RowsStartEnd: string read FRowsStartEnd;
     property    LenRowsStartEnd: Byte read FLenRowsStartEnd;
 
-    property    Row    : string read FRow;
-    property    RowStart : string read FRowStart ;
+    property    Row   : string read FRow;
+    property    RowStart : string read FRowStart;
     property    RowEnd: string read FRowEnd;
-    property    LenRowStart: Byte read FLenRowStart ;
+    property    LenRowStart: Byte read FLenRowStart;
     property    LenRowEnd: Byte read FLenRowEnd;
 
-    property    Value : string read FValue ;
-    property    DocHeader : string read FDocHeader ;
+    property    AValue : string read FValue;
+    property    DocHeader : string read FDocHeader;
     property    DatabaseDetails : string read FDatabaseDetails;
-    property    XMLVersion : string read FXMLVersion ;
-    property    DatabaseHeader: string read FDatabaseHeader ;
-    property    DatabaseFooter: string read FDatabaseFooter ;
+    property    XMLVersion : string read FXMLVersion;
+    property    DatabaseHeader: string read FDatabaseHeader;
+    property    DatabaseFooter: string read FDatabaseFooter;
 
     function    MakeXMLDatabase: string;
-    function    MakeXMLDoc(const pString: string): string;
+    function    MakeXMLDoc(const AString: string): string;
 
     property    TableNameQuery : string read FTableNameQuery;
     property    FieldNameQuerySQL : string read FFieldNameQuerySQL;
@@ -223,42 +219,42 @@ type
 
 
 const
-  cgXMLTagOptXMLDBSize    = 'optxmldbsize' ;
-  cgXMLFieldNameStyle     = 'xmlfieldnamestyle' ;
+  cgXMLTagOptXMLDBSize    = 'optxmldbsize';
+  cgXMLFieldNameStyle     = 'xmlfieldnamestyle';
+  cDefaultXMLDocHeader       = '<?xml version="1.0"?>';
 
   // These may be passed as the document name in a HTTP.Post()
   // ToDo: Improve the way the simple XML packets are build up
-  cgTIDBProxy                = 'tidbproxy' ;
-  cgTIDBProxyTestHTML        = 'test' ;
-  cgTIDBProxyTestXML         = 'testxml' ;
+  cgTIDBProxy                = 'tidbproxy';
+  cgTIDBProxyTestHTML        = 'test';
+  cgTIDBProxyTestXML         = 'testxml';
   // For a legacy system. Use cgTIDBProxyTestAlive1 in new systems.
-  cgTIDBProxyTestAlive       = 'tidbproxytestalive' ;
-  cgTIDBProxyTestAlive1      = 'tidbproxytestalive1' ;
-  cgTIDBProxyServerVersion   = 'tidbproxyserverversion' ;
+  cgTIDBProxyTestAlive       = 'tidbproxytestalive';
+  cgTIDBProxyTestAlive1      = 'tidbproxytestalive1';
+  cgTIDBProxyServerVersion   = 'tidbproxyserverversion';
 
   cgXMLNodeTIOPF             = 'tiopf';
   cgXMLAttrTIOPFVersion      = 'version'; // <tiopf version="9.999"/>
-  cgXMLNodeDBProxyTestAlive  = 'proxytestalive' ;
-  cgXMLAttrDBProxyTestAlive  = 'status' ; // <tidbproxytestalive status="passed"/>
-  cgXMLAttrDBProxyTestPassed = 'passed' ;
-  cgXMLAttrDBProxyTestFailed = 'failed' ;
+  cgXMLNodeDBProxyTestAlive  = 'proxytestalive';
+  cgXMLAttrDBProxyTestAlive  = 'status'; // <tidbproxytestalive status="passed"/>
+  cgXMLAttrDBProxyTestPassed = 'passed';
+  cgXMLAttrDBProxyTestFailed = 'failed';
 
 
-function tiXMLTagEnd( const psTag : String ) : string ;
-function tiXMLTag( const psTag : String ) : string ;
-function tiXMLDataTag( const psTag : String ; psData : string ) : string ;
-// function tiDateTimeAsXMLString(const pDateTime: TDateTime): string;  // Use version in tiUtils
-// function tiXMLStringToDateTime( const pValue : string ) : TDateTime ; // Use version in tiUtils
+function tiXMLTagEnd(const psTag : String): string;
+function tiXMLTag(const psTag : String): string;
+function tiXMLDataTag(const psTag : String; psData : string): string;
+function tiXMLNodeAttrData(const ANode, AAttr, AData: string): string;
 function CreateXMLReservedCharsTranslator: IXMLReservedCharsTranslator;
-function tiDeCompressDecode(const pValue: string; const pCompression : string = cgsCompressZLib): string;
-function tiCompressEncode(const pValue: string ; const pCompression : string = cgsCompressZLib ): string;
+function tiDeCompressDecode(const AValue: string; const pCompression : string = cgsCompressZLib): string;
+function tiCompressEncode(const AValue: string; const pCompression : string = cgsCompressZLib): string;
 function tiParseForSingleNode(const pXMLFragment, pNodeName: string): string;
-function tiParseForSingleAttribute(const pXMLFragment, pAttrName: string): string;
-function tiParseForSingleNodeAttribute(const pXMLFragment, pNodeName, pAttrName: string): string ;
+function tiParseForSingleAttribute(const pXMLFragment, AAttrName: string): string;
+function tiParseForSingleNodeAttribute(const pXMLFragment, pNodeName, AAttrName: string): string;
 
 
 var
-  gDefaultOptXMLDBSize : TtiOptXMLDBSize ;
+  gDefaultOptXMLDBSize : TtiOptXMLDBSize;
 
 
 implementation
@@ -272,10 +268,10 @@ uses
   ,SysUtils
   ,TypInfo
   ,Math
-  ;
+ ;
 
 
-function tiXMLTagEnd( const psTag : String ) : string ;
+function tiXMLTagEnd(const psTag : String): string;
 var
   pResult: PChar;
 begin
@@ -283,125 +279,65 @@ begin
   pResult := Pointer(result);
   pResult := StrECopy(pResult, PChar('</'));
   pResult := StrECopy(pResult, Pointer(psTag));
-  pResult^ := '>';
-//  result := '</' + psTag + '>' ;
-end ;
+  pResult^:= '>';
+//  result := '</' + psTag + '>';
+end;
 
 
-function tiXMLTag( const psTag : String ) : string ;
+function tiXMLTag(const psTag : String): string;
 var
   pResult: PChar;
 
 begin
-//  result := '<' + psTag + '>' ;
+//  result := '<' + psTag + '>';
   SetLength(result, Length(psTag) + 2);
   pResult := Pointer(result);
-  pResult^ := '<';
+  pResult^:= '<';
   Inc(pResult);
   pResult := StrECopy(pResult, Pointer(psTag));
-  pResult^ := '>';
-end ;
-
-
-function tiXMLDataTag( const psTag : String ; psData : string ) : string ;
-begin
-  result := '<' + psTag + ' ' + psData + '/>' ;
-end ;
-
-
-(* This is defined in tiUtils
-function tiDateTimeAsXMLString(const pDateTime: TDateTime): string;
-  function _IntToStr( pValue, pSize : integer ) : string ;
-  begin
-    result := IntToStr( pValue ) ;
-    result := tiPad0( result, pSize ) ;
-  end ;
-var
-  lY, lM, lD, lH, lMi, lS, lMs : Word ;
-begin
-    DecodeDate( pDateTime, lY, lM, lD ) ;
-    DecodeTime( pDateTime, lH, lMi, lS, lMs ) ;
-    Result :=
-      _IntToStr( lD, 2 ) + '/' +
-      _IntToStr( lM, 2 ) + '/' +
-      _IntToStr( lY, 4 ) + ' ' +
-      _IntToStr( lH, 2 ) + ':' +
-      _IntToStr( lMi, 2 ) + ':' +
-      _IntToStr( lS, 2 ) + ':' +
-      _IntToStr( lMs, 3 ) ;
+  pResult^:= '>';
 end;
-*)
 
-(* This is defined in tiUtils
-function tiXMLStringToDateTime( const pValue : string ) : TDateTime ;
-var
-  lY, lM, lD, lH, lMi, lS, lMs : Word ;
+
+function tiXMLDataTag(const psTag : String; psData : string): string;
 begin
-  if pValue = '' then
-  begin
-    Result := 0;
-    Exit ; //==>
-  end;
+  result := '<' + psTag + ' ' + psData + '/>';
+end;
 
-  try
-    //          1         2
-    // 12345678901234567890123
-    // YYYY/MM/DD HH:MM:SS:NN   (legacy format)
-    // DD/MM/YYYY HH:MM:SS:NN   (current format - see function above)
-    if  (Length(pValue) > 3)
-    and (pValue[3] <> '/') then // assume lecacy format
-    begin
-      lY  := StrToInt( Copy( pValue, 1, 4 )) ;
-      lM  := StrToInt( Copy( pValue, 6, 2 )) ;
-      lD  := StrToInt( Copy( pValue, 9, 2 )) ;
-    end
-    else
-    begin
-      lD  := StrToInt( Copy( pValue, 1, 2 )) ;
-      lM  := StrToInt( Copy( pValue, 4, 2 )) ;
-      lY  := StrToInt( Copy( pValue, 7, 4 )) ;
-    end ;
+function tiXMLNodeAttrData(const ANode, AAttr, AData: string): string;
+begin
+  result:=
+    '<' + ANode +
+    ' ' + AAttr +
+    '="' + AData +
+    '"/>';
+end;
 
-    lH  := StrToInt( Copy( pValue, 12, 2 )) ;
-    lMi := StrToIntDef( Copy( pValue, 15, 2 ), 0) ;
-    lS  := StrToIntDef( Copy( pValue, 18, 2 ), 0) ;
-    lMs := StrToIntDef( Copy( pValue, 21, 3 ), 0) ;
-    result :=
-      EncodeDate( lY, lM, lD ) +
-      EncodeTime( lH, lMi, lS, lMs ) ;
-  except
-    on e:Exception do
-      raise Exception.CreateFmt(cErrorXMLStringToDate, [pValue, e.message]);
-  end;
-end ;
-*)
-
-
-function tiStringToOptXMLDBSize(const pValue: string): TtiOptXMLDBSize ;
+function tiStringToOptXMLDBSize(const AValue: string): TtiOptXMLDBSize;
 var
-  i : TtiOptXMLDBSize ;
+  i : TtiOptXMLDBSize;
 begin
 //  Result:= Low(TtiOptXMLDBSize); // To shut the compiler up
   for i := Low(TtiOptXMLDBSize) to High(TtiOptXMLDBSize) do
-    if SameText( pValue, cOptXMLDBSize[i]) then
+    if SameText(AValue, cOptXMLDBSize[i]) then
     begin
-      result := i ;
-      Exit ; //==>
-    end ;
-  raise Exception.CreateFmt(cErrorInvalidOptXMLDBSizeStringValue, [pValue]);
+      result := i;
+      Exit; //==>
+    end;
+  raise Exception.CreateFmt(cErrorInvalidOptXMLDBSizeStringValue, [AValue]);
 end;
 
 
-function tiDeCompressDecode(const pValue: string; const pCompression : string): string;
+function tiDeCompressDecode(const AValue: string; const pCompression : string): string;
 var
-  lCompress : TtiCompressAbs ;
-  ls : string ;
+  lCompress : TtiCompressAbs;
+  ls : string;
 begin
   Result := '';   // lets keep the compiler happy
   // Should be pooling these, or using the one instance (is that thread safe?)
   lCompress := gCompressFactory.CreateInstance(pCompression);
   try
-    ls := MimeDecodeString(pValue);
+    ls := MimeDecodeString(AValue);
     lCompress.DeCompressString(ls, Result);
   finally
     lCompress.Free;
@@ -409,75 +345,75 @@ begin
 end;
 
 
-function tiCompressEncode(const pValue: string ; const pCompression : string ): string;
+function tiCompressEncode(const AValue: string; const pCompression : string): string;
 var
-  lCompress : TtiCompressAbs ;
-  ls : string ;
+  lCompress : TtiCompressAbs;
+  ls : string;
 begin
   try
     lCompress := gCompressFactory.CreateInstance(pCompression);
     try
-      lCompress.CompressString(pValue,ls);
+      lCompress.CompressString(AValue,ls);
       result := MimeEncodeString(ls);
     finally
       lCompress.Free;
     end;
   except
     on e:Exception do
-      raise EtiOPFInternalException.CreateFmt( cErrorInvalidParamToCompressEncode, [pValue]);
+      raise EtiOPFInternalException.CreateFmt(cErrorInvalidParamToCompressEncode, [AValue]);
   end;
 end;
 
 
 type
-  TtiXMLParseForSingleNode = class( TtiXMLParser )
+  TtiXMLParseForSingleNode = class(TtiXMLParser)
   private
     FNodeString: string;
     FTargetAttributeName: string;
     FAttributeValue: string;
   public
-    procedure DoOnXMLNode( const pStr : string );
-    procedure DoOnXMLAttribute( const pName, pValue : string );
+    procedure DoOnXMLNode(const AStr : string);
+    procedure DoOnXMLAttribute(const AName, AValue : string);
     property  TargetAttributeName: string read FTargetAttributeName Write FTargetAttributeName;
     property  AttributeValue: string read FAttributeValue Write FAttributeValue;
     property  NodeString: string read FNodeString Write FNodeString;
   end;
 
 
-procedure TtiXMLParseForSingleNode.DoOnXMLNode( const pStr : string );
+procedure TtiXMLParseForSingleNode.DoOnXMLNode(const AStr : string);
 begin
-  FNodeString := pStr;
+  FNodeString := AStr;
 end;
 
 
-procedure TtiXMLParseForSingleNode.DoOnXMLAttribute( const pName, pValue : string );
+procedure TtiXMLParseForSingleNode.DoOnXMLAttribute(const AName, AValue : string);
 begin
-  if pName = FTargetAttributeName then
-    FAttributeValue := pValue ;
+  if AName = FTargetAttributeName then
+    FAttributeValue := AValue;
 end;
 
 
 function tiParseForSingleNode(const pXMLFragment, pNodeName: string): string;
 var
-  lXMLParser: TtiXMLParseForSingleNode ;
+  lXMLParser: TtiXMLParseForSingleNode;
 begin
-  lXMLParser:= TtiXMLParseForSingleNode.Create ;
+  lXMLParser:= TtiXMLParseForSingleNode.Create;
   try
     lXMLParser.ParseForNode(pXMLFragment, '<' + pNodeName, '/>', lXMLParser.DoOnXMLNode);
     Result := lXMLParser.NodeString;
   finally
     lXMLParser.Free;
   end;
-end ;
+end;
 
 
-function tiParseForSingleAttribute(const pXMLFragment, pAttrName: string): string;
+function tiParseForSingleAttribute(const pXMLFragment, AAttrName: string): string;
 var
-  lXMLParser: TtiXMLParseForSingleNode ;
+  lXMLParser: TtiXMLParseForSingleNode;
 begin
-  lXMLParser:= TtiXMLParseForSingleNode.Create ;
+  lXMLParser:= TtiXMLParseForSingleNode.Create;
   try
-    lXMLParser.TargetAttributeName := pAttrName ;
+    lXMLParser.TargetAttributeName := AAttrName;
     lXMLParser.ParseForAttributes(pXMLFragment, lXMLParser.DoOnXMLAttribute);
     Result := lXMLParser.AttributeValue;
   finally
@@ -486,16 +422,16 @@ begin
 end;
 
 
-function tiParseForSingleNodeAttribute(const pXMLFragment, pNodeName, pAttrName: string): string ;
+function tiParseForSingleNodeAttribute(const pXMLFragment, pNodeName, AAttrName: string): string;
 var
-  lNode : string ;
+  lNode : string;
 begin
   lNode := tiParseForSingleNode(pXMLFragment, pNodeName);
   if lNode <> '' then
-    Result := tiParseForSingleAttribute(lNode, pAttrName)  
+    Result := tiParseForSingleAttribute(lNode, AAttrName)  
   else
-    Result := '' ;
-end ;
+    Result := '';
+end;
 
 
 type
@@ -503,7 +439,7 @@ type
   TtiXMLReservedChar1 = record
     ResChar : Char;
     EscWith : string;
-    EscLen  : Byte;
+    EscLen : Byte;
   end;
 
 // redeclare these arrays (local to this unit) to pick up redefinition above..
@@ -529,7 +465,7 @@ const cTICSVReservedChr: array [0..2] of TtiXMLReservedChar1 =
 const cTITABReservedChr: array [0..2] of TtiXMLReservedChar1 =
   ((ResChar: #10;  EscWith: '&lf;';   EscLen: 4),
    (ResChar: #13;  EscWith: '&cr;';   EscLen: 4),
-   (ResChar: #9;   EscWith: '&tab;';  EscLen: 5)) ;
+   (ResChar: #9;   EscWith: '&tab;';  EscLen: 5));
 
 
 type
@@ -596,7 +532,7 @@ end;
 
 
 (*
-procedure TtiXMLParser.ParseForAttributes(const pStr:string; pOnFind: TtiOnXMLAttributeMethod);
+procedure TtiXMLParser.ParseForAttributes(const AStr:string; pOnFind: TtiOnXMLAttributeMethod);
 const
   attrNameSet = ['a'..'z', 'A'..'Z', '0'..'9' ];
   nodeStart = '<';
@@ -619,7 +555,7 @@ begin
   // As in PH's implementation, this method allows for a leading node tag
   // and node closure tag
 
-  pSrc := Pointer(pStr);
+  pSrc := Pointer(AStr);
 
   if (pSrc = nil) or (not Assigned(pOnFind)) then
     exit;
@@ -675,119 +611,119 @@ begin
       Inc(pSrc);
 
   end;
-end ;
+end;
 *)
 
 
-procedure TtiXMLParser.ParseForAttributes(const pStr:string; pOnFind: TtiOnXMLAttributeMethod);
+procedure TtiXMLParser.ParseForAttributes(const AStr:string; pOnFind: TtiOnXMLAttributeMethod);
 var
-  i          : integer ;
-  lStrSize   : integer ;
-  lState     : TtiXMLAttributeParseState ;
-  lStart     : integer ;
-  lChar      : Char ;
-  lName      : string ;
-  lValue     : string ;
-  lContainsNodeTag : Boolean ;
+  i         : integer;
+  lStrSize  : integer;
+  lState    : TtiXMLAttributeParseState;
+  lStart    : integer;
+  lChar     : Char;
+  lName     : string;
+  lValue    : string;
+  lContainsNodeTag : Boolean;
 begin
-  lStrSize   := Length(pStr);
-  lState     := xapsWaitForAttr ;
-  lStart     := 0 ; // To fix a compiler warning
-  lContainsNodeTag := ( lStrSize >= 1 ) and ( pStr[1] = '<' ) ;
+  lStrSize  := Length(AStr);
+  lState    := xapsWaitForAttr;
+  lStart    := 0; // To fix a compiler warning
+  lContainsNodeTag := (lStrSize >= 1) and (AStr[1] = '<');
 
   for i := 1 to lStrSize do
   begin
-    lChar := pStr[i] ;
+    lChar := AStr[i];
     case lState of
     xapsWaitForAttr : begin
-                        if (( lContainsNodeTag ) and ( lChar = ' ' )) or
-                           (( not lContainsNodeTag ) and ( lChar in ['a'..'z', 'A'..'Z', '0'..'9' ] )) then
-                        begin
-                          Inc(lState) ;
-                          if ( not lContainsNodeTag ) then
-                            lStart := i-1
-                          else
-                            lStart := i ;
-                        end;
-                      end ;
-
-    xapsInAttrName  : begin
-                        if lChar = '=' then
-                        begin
-                          Inc(lState) ;
-                          lName := Copy( pStr, lStart+1, i - lStart - 1 );
-                        end ;
-                      end ;
-    xapsWaitForAttrValue : begin
-                        if ( lChar = '"' ) then
+                        if ((lContainsNodeTag) and (lChar = ' ')) or
+                           ((not lContainsNodeTag) and (lChar in ['a'..'z', 'A'..'Z', '0'..'9' ])) then
                         begin
                           Inc(lState);
-                          lStart := i ;
+                          if (not lContainsNodeTag) then
+                            lStart := i-1
+                          else
+                            lStart := i;
                         end;
-                      end ;
-    xapsInAttrValue : begin
-                        if ( lChar = '"' ) then
+                      end;
+
+    xapsInAttrName : begin
+                        if lChar = '=' then
                         begin
-                          lState := Low(TtiXMLAttributeParseState) ;
-                          lValue := Copy( pStr, lStart+1, i - lStart - 1 );
+                          Inc(lState);
+                          lName := Copy(AStr, lStart+1, i - lStart - 1);
+                        end;
+                      end;
+    xapsWaitForAttrValue : begin
+                        if (lChar = '"') then
+                        begin
+                          Inc(lState);
+                          lStart := i;
+                        end;
+                      end;
+    xapsInAttrValue : begin
+                        if (lChar = '"') then
+                        begin
+                          lState := Low(TtiXMLAttributeParseState);
+                          lValue := Copy(AStr, lStart+1, i - lStart - 1);
                           pOnFind(lName, lValue);
                         end;
-                      end ;
+                      end;
     else
-      raise EtiOPFInternalException.Create(cErrorInvalidTXMLAttributeParseState) ;
+      raise EtiOPFInternalException.Create(cErrorInvalidTXMLAttributeParseState);
     end;
-  end ;
+  end;
 end;
 
 
-procedure TtiXMLParser.ParseForNode( const pStr, pStartToken, pEndToken : string ; pOnFind : TtiOnXMLNodeMethod ) ;
+procedure TtiXMLParser.ParseForNode(const AStr, pStartToken, pEndToken : string; pOnFind : TtiOnXMLNodeMethod);
 var
-  i          : integer ;
-  lStrSize   : integer ;
-  lBlockSize : integer ;
-  lState     : TtiXMLNodeParseState ;
-  lNode      : string ;
-  lPos       : integer ;
-  lStartTokenLen : integer ;
-  lEndTokenLen   : integer ;
+  i         : integer;
+  lStrSize  : integer;
+  lBlockSize : integer;
+  lState    : TtiXMLNodeParseState;
+  lNode     : string;
+  lPos      : integer;
+  lStartTokenLen : integer;
+  lEndTokenLen  : integer;
 begin
   lStartTokenLen := Length(pStartToken);
-  lEndTokenLen   := Length(pEndToken);
-  lStrSize := Length(pStr) ;
-  lPos := 0 ;
-  lState    := Low(TtiXMLNodeParseState) ;
-  lBlockSize := 0 ;
+  lEndTokenLen  := Length(pEndToken);
+  lStrSize := Length(AStr);
+  lPos := 0;
+  lState   := Low(TtiXMLNodeParseState);
+  lBlockSize := 0;
   for i := 1 to lStrSize do
   begin
     case lState of
     xnpsWaitForBlock : begin
-                        if Copy( pStr, lPos, lStartTokenLen ) = pStartToken then
+                        if Copy(AStr, lPos, lStartTokenLen) = pStartToken then
                         begin
-                          Inc(lState) ;
-                          lBlockSize := 0 ;
+                          Inc(lState);
+                          lBlockSize := 0;
                         end;
-                      end ;
-    xnpsInBlock        : begin
-                          if Copy( pStr, lPos, lEndTokenLen ) = pEndToken then
+                      end;
+    xnpsInBlock       : begin
+                          if Copy(AStr, lPos, lEndTokenLen) = pEndToken then
                           begin
-                            lState    := Low(TtiXMLNodeParseState) ;
+                            lState   := Low(TtiXMLNodeParseState);
 
-                            lNode := Copy( pStr,
+                            lNode := Copy(AStr,
                                            lPos - lBlockSize - 1,
-                                           lBlockSize + lEndTokenLen + 1 ) ;
-                            lNode := Copy( lNode,
+                                           lBlockSize + lEndTokenLen + 1);
+                            lNode := Copy(lNode,
                                            lStartTokenLen+1,
-                                           Length(lNode) - lStartTokenLen - lEndTokenLen ) ;
-                            pOnFind(Trim(lNode)) ;
-                            lBlockSize := 0 ;
+                                           Length(lNode) - lStartTokenLen - lEndTokenLen);
+                            pOnFind(Trim(lNode));
+                            lBlockSize := 0;
                           end else
                             Inc(lBlockSize);
-                        end ;
+                        end;
     else
-      raise EtiOPFProgrammerException.Create(cErrorInvalidTXMLNodeParseState) ;
+      raise EtiOPFProgrammerException.Create(cErrorInvalidTXMLNodeParseState);
     end;
     Inc(lPos);
-  end ;
+  end;
 end;
 
 
@@ -803,7 +739,7 @@ begin
   for idx := Low(AReplacements) to High(AReplacements) do
   begin
     New(pEntry);
-    ALookup[AReplacements[idx].ResChar] := pEntry;
+    ALookup[AReplacements[idx].ResChar]:= pEntry;
     pEntry^.Replacement := AReplacements[idx].EscWith;
     pEntry^.ReplacementLength := AReplacements[idx].EscLen;
   end;
@@ -861,10 +797,10 @@ var
 begin
   if ASource = '' then begin
     Result := '';
-    Exit ; //==>
+    Exit; //==>
   end;
 
-  // max possible length = every char in pSource requires substitution
+  // max possible length = every char in ASource requires substitution
   // with maximum length escaped char
   SetLength(result, Length(ASource) * ASubstMaxLength);
   pSrc := Pointer(ASource);
@@ -887,7 +823,7 @@ begin
     else
     begin
       // copy current char
-      pResult^ := pSrc^;
+      pResult^:= pSrc^;
       Inc(pResult);
     end;
 
@@ -895,7 +831,7 @@ begin
   end;
 
   // add null terminator
-  pResult^ := #0;
+  pResult^:= #0;
   // resync (Delphi string) length of result after pchar manipulations
   ResyncString(Result, pResult);
 end;
@@ -909,7 +845,7 @@ var
 begin
   if ASource = '' then begin
     Result := '';
-    Exit ; //==>
+    Exit; //==>
   end;
 
   // copy of source as starting point
@@ -927,18 +863,19 @@ begin
          // pointer to portion of string beyond this instance of EscWith
          pRemainder := pointer(cardinal(pMatch) + EscLen);
          // insert ResChar
-         pMatch^ := ResChar;
+         pMatch^:= ResChar;
          Inc(pMatch);
          // move remainder of string (beyond EscWith) down
          Move(pRemainder^, pMatch^, cardinal(pNull) - cardinal(pRemainder));
          // adjust position of null to match shift down of remainder
          Dec(pNull, EscLen - 1);
          // apply null terminator at end of "moved" block
-         pNull^ := #0;
+         pNull^:= #0;
          // search for next EscWith...
          pMatch := tiStrPos(pMatch, Pointer(EscWith));
-       end; { while } 
-     end; { with } 
+       end;
+
+     end;
   ResyncString(result, pNull);
 end;
 
@@ -967,16 +904,15 @@ end;
 
 class function TtiXMLTags.DefaultDocHeader: string;
 begin
-  result := '<?xml version="1.0"?>' ;
+  result := cDefaultXMLDocHeader;
 end;
+// Make DocHeader visible from the meta class
 
-
-{ Make DocHeader visible from the meta class } 
 constructor TtiXMLTags.Create;
 begin
   inherited Create;
-  FDocHeader       := DefaultDocHeader ;
-  FXMLVersion         := 'xmlversion' ;
+  FDocHeader      := DefaultDocHeader;
+  FXMLVersion        := 'xmlversion';
   SetOptXMLDBSize(gDefaultOptXMLDBSize);
 end;
 
@@ -984,182 +920,167 @@ end;
 procedure TtiXMLTags.DeriveInternalValues;
 begin
 
-  FTablesStart    := '<'  + fTables + '>' ;
+  FTablesStart   := '<'  + fTables + '>';
   FLenTablesStart := Length(FTablesStart);
-  FTablesEnd      := '</' + FTables + '>' ;
-  FLenTablesEnd   := Length(FTablesEnd);
+  FTablesEnd     := '</' + FTables + '>';
+  FLenTablesEnd  := Length(FTablesEnd);
 
-  FTableStart     := '<' + FTable + ' ';
-  FLenTableStart  := Length(FTableStart);
-  FTableEnd       := '</' + FTable + '>';
-  FLenTableEnd    := Length(FTableEnd);
+  FTableStart    := '<' + FTable + ' ';
+  FLenTableStart := Length(FTableStart);
+  FTableEnd      := '</' + FTable + '>';
+  FLenTableEnd   := Length(FTableEnd);
 
-  FFieldsStart    := '<' + FFields + '>'  ;
+  FFieldsStart   := '<' + FFields + '>' ;
   FLenFieldsStart := Length(FFieldsStart);
-  FFieldsEnd      := '</' + FFields + '>' ;
-  FLenFieldsEnd   := Length(FFieldsEnd);
+  FFieldsEnd     := '</' + FFields + '>';
+  FLenFieldsEnd  := Length(FFieldsEnd);
 
-  FFieldStart     := '<' + FField + ' '   ;
-  FLenFieldStart  := Length(FFieldStart);
-  FFieldEnd       := '/>' ;
-  FLenFieldEnd    := Length(FFieldEnd);
+  FFieldStart    := '<' + FField + ' '  ;
+  FLenFieldStart := Length(FFieldStart);
+  FFieldEnd      := '/>';
+  FLenFieldEnd   := Length(FFieldEnd);
 
-  FRowsStart      := '<' + FRows + '>'    ;
-  FLenRowsStart   := Length(FRowsStart);
-  FRowsEnd        := '</' + FRows + '>'   ;
-  FLenRowsEnd     := Length(FRowsEnd);
-  FRowsStartEnd   := '<' + FRows + '/>'    ;
+  FRowsStart     := '<' + FRows + '>'   ;
+  FLenRowsStart  := Length(FRowsStart);
+  FRowsEnd       := '</' + FRows + '>'  ;
+  FLenRowsEnd    := Length(FRowsEnd);
+  FRowsStartEnd  := '<' + FRows + '/>'   ;
   FLenRowsStartEnd:= Length(FRowsStartEnd);
 
-  FRowStart  := '<'  + FRow   + ' ';
-  FRowEnd    := '/>';
+  FRowStart := '<'  + FRow   + ' ';
+  FRowEnd   := '/>';
   FLenRowEnd := Length(FRowEnd);
 
   FLenRowStart := Length(FRowStart);
 
   FDatabaseDetails := '<' + cgXMLNodeTIOPF + ' ' + cgXMLAttrTIOPFVersion +
-                      '="' + cTIOPFXMLVersion + '"/>' ;
+                      '="' + cTIOPFXMLVersion + '"/>';
 
   FDatabaseHeader := FDocHeader + '<' + FDocData + '>' + FDatabaseDetails +
-                     '<' + FTables + '>' ;
+                     '<' + FTables + '>';
 
-  FDatabaseFooter:= '</' + FTables + '>' + '</' + FDocData + '>' ;
+  FDatabaseFooter:= '</' + FTables + '>' + '</' + FDocData + '>';
 
-  FProxyTestPassed    := FDocHeader + '<' + FDocData + '>' +
-                         '<' + cgXMLNodeDBProxyTestAlive + ' ' +
-                         cgXMLAttrDBProxyTestAlive + '="' +
-                         cgXMLAttrDBProxyTestPassed +
-                         '"/>' +
-                         FDatabaseDetails +
-                         '</' + FDocData + '>' ;
-  FProxyTestFailed    := FDocHeader + '<' + FDocData + '>' +
-                         '<' + cgXMLNodeDBProxyTestAlive + ' ' +
-                         cgXMLAttrDBProxyTestAlive + '="' +
-                         cgXMLAttrDBProxyTestFailed +
-                         '"/>' +
-                        '</' + FDocData + '>' ;
 end;
 
-
-procedure TtiXMLTags.SetOptXMLDBSize(pValue: TtiOptXMLDBSize);
+procedure TtiXMLTags.SetOptXMLDBSize(AValue: TtiOptXMLDBSize);
 begin
-  FOptXMLDBSize := pValue;
+  FOptXMLDBSize := AValue;
   case FOptXMLDBSize of
   optDBSizeOff : begin
-                   FDocData         := 'xmldocdata' ;
-                   FTables          := 'tables'     ;
-                   FTable           := 'table'      ;
-                   FTableName       := 'table_name' ;
-                   FFields          := 'fields'     ;
-                   FField           := 'field'      ;
-                   FFieldName       := 'field_name' ;
-                   FFieldKind       := 'field_kind' ;
-                   FFieldSize       := 'field_Size' ;
-                   FRows            := 'rows'       ;
-                   FRow             := 'row'        ;
-                   FValue           := 'value'      ;
+                   FDocData        := 'xmldocdata';
+                   FTables         := 'tables'    ;
+                   FTable          := 'table'     ;
+                   FTableName      := 'table_name';
+                   FFields         := 'fields'    ;
+                   FField          := 'field'     ;
+                   FFieldName      := 'field_name';
+                   FFieldKind      := 'field_kind';
+                   FFieldSize      := 'field_Size';
+                   FRows           := 'rows'      ;
+                   FRow            := 'row'       ;
+                   FValue          := 'value'     ;
 
-                   FTableNameQuery              := 'query';
-                   FFieldNameQuerySQL           := 'query_sql';
-                   FFieldNameTransactionID      := 'transaction_id';
-                   FFieldNameCommandType        := 'command_type';
-                   FFieldNameComputerName       := 'computer_name';
-                   FFieldNameUserName           := 'user_name';
+                   FTableNameQuery             := 'query';
+                   FFieldNameQuerySQL          := 'query_sql';
+                   FFieldNameTransactionID     := 'transaction_id';
+                   FFieldNameCommandType       := 'command_type';
+                   FFieldNameComputerName      := 'computer_name';
+                   FFieldNameUserName          := 'user_name';
 
                    // Request Query_Param table
-                   FTableNameQueryParam         := 'query_param';
-                   FFieldNameTableName          := 'table_name';
-                   FFieldNameParamName          := 'param_name';
-                   FFieldNameParamKind          := 'param_kind';
-                   FFieldNameParamValue         := 'param_value';
+                   FTableNameQueryParam        := 'query_param';
+                   FFieldNameTableName         := 'table_name';
+                   FFieldNameParamName         := 'param_name';
+                   FFieldNameParamKind         := 'param_kind';
+                   FFieldNameParamValue        := 'param_value';
 
                    // Response message table
-                   FTableNameResultMessage      := 'result_message';
-                   FFieldNameResultError        := 'error_message';
-                   FFieldNameResultRowCount     := 'row_count';
+                   FTableNameResultMessage     := 'result_message';
+                   FFieldNameResultError       := 'error_message';
+                   FFieldNameResultRowCount    := 'row_count';
 
                    // MetaData structure
-                   FTableNameMetaData           := 'table_metadata';
-                   FFieldNameMetaDataTableName  := 'md_table_name';
-                   FFieldNameMetaDataFieldName  := 'md_field_name';
-                   FFieldNameMetaDataFieldKind  := 'md_field_kind';
+                   FTableNameMetaData          := 'table_metadata';
+                   FFieldNameMetaDataTableName := 'md_table_name';
+                   FFieldNameMetaDataFieldName := 'md_field_name';
+                   FFieldNameMetaDataFieldKind := 'md_field_kind';
                    FFieldNameMetaDataFieldWidth := 'md_field_width';
 
                    // Response set table
-                   FTableNameResultSet          := 'result_set';
-                 end ;
-  optDBSizeOn  : begin
-                   FDocData         := 'a';
-                   FTables          := 'b';
-                   FTable           := 'c';
-                   FTableName       := 'd';
-                   FFields          := 'e';
-                   FField           := 'f';
-                   FFieldName       := 'g';
-                   FFieldKind       := 'h';
-                   FFieldSize       := 'i';
-                   FRows            := 'j';
-                   FRow             := 'k';
-                   FValue           := 'l';
-                   FTableNameQuery              := 'm';
-                   FFieldNameQuerySQL           := 'n';
-                   FFieldNameTransactionID      := 'o';
-                   FFieldNameCommandType        := 'p';
-                   FFieldNameComputerName       := 'q';
-                   FFieldNameUserName           := 'r';
+                   FTableNameResultSet         := 'result_set';
+                 end;
+  optDBSizeOn : begin
+                   FDocData        := 'a';
+                   FTables         := 'b';
+                   FTable          := 'c';
+                   FTableName      := 'd';
+                   FFields         := 'e';
+                   FField          := 'f';
+                   FFieldName      := 'g';
+                   FFieldKind      := 'h';
+                   FFieldSize      := 'i';
+                   FRows           := 'j';
+                   FRow            := 'k';
+                   FValue          := 'l';
+                   FTableNameQuery             := 'm';
+                   FFieldNameQuerySQL          := 'n';
+                   FFieldNameTransactionID     := 'o';
+                   FFieldNameCommandType       := 'p';
+                   FFieldNameComputerName      := 'q';
+                   FFieldNameUserName          := 'r';
 
                    // Request Query_Param table
-                   FTableNameQueryParam         := 's';
-                   FFieldNameTableName          := 't';
-                   FFieldNameParamName          := 'u';
-                   FFieldNameParamKind          := 'v';
-                   FFieldNameParamValue         := 'w';
+                   FTableNameQueryParam        := 's';
+                   FFieldNameTableName         := 't';
+                   FFieldNameParamName         := 'u';
+                   FFieldNameParamKind         := 'v';
+                   FFieldNameParamValue        := 'w';
 
                    // Response message table
-                   FTableNameResultMessage      := 'x';
-                   FFieldNameResultError        := 'y';
-                   FFieldNameResultRowCount     := 'z';
+                   FTableNameResultMessage     := 'x';
+                   FFieldNameResultError       := 'y';
+                   FFieldNameResultRowCount    := 'z';
 
                    // MetaData structure
-                   FTableNameMetaData           := 'aa';
-                   FFieldNameMetaDataTableName  := 'ab';
-                   FFieldNameMetaDataFieldName  := 'ac';
-                   FFieldNameMetaDataFieldKind  := 'ad';
+                   FTableNameMetaData          := 'aa';
+                   FFieldNameMetaDataTableName := 'ab';
+                   FFieldNameMetaDataFieldName := 'ac';
+                   FFieldNameMetaDataFieldKind := 'ad';
                    FFieldNameMetaDataFieldWidth := 'ae';
 
                    // Response set table
-                   FTableNameResultSet          := 'af';
-                 end ;
+                   FTableNameResultSet         := 'af';
+                 end;
   else
-    raise Exception.Create( cErrorInvalidOptXMLDBSizeValue ) ;
-  end ;
+    raise Exception.Create(cErrorInvalidOptXMLDBSizeValue);
+  end;
   DeriveInternalValues;
 end;
 
 
-function TtiXMLTags.MakeXMLDoc( const pString : string ) : string ;
+function TtiXMLTags.MakeXMLDoc(const AString : string): string;
 begin
   result :=
-      FDocHeader 
-      + tiXMLTag(FDocData) 
-      + FDatabaseDetails 
-      + pString 
-      + tiXMLTagEnd(FDocData);
+    FDocHeader +
+    tiXMLTag(FDocData) +
+    FDatabaseDetails +
+    AString +
+    tiXMLTagEnd(FDocData);
 end;
 
-
-function TtiXMLTags.MakeXMLDatabase : string ;
+function TtiXMLTags.MakeXMLDatabase : string;
 begin
   Result :=
     MakeXMLDoc(
     tiXMLTag(FTables) +
     tiXMLTagEnd(FTables));
-end ;
+end;
 
 
-procedure TtiXMLTags.SetOptXMLDBSizeAsString(const Value: string);
+procedure TtiXMLTags.SetOptXMLDBSizeAsString(const AValue: string);
 begin
-  FOptXMLDBSize := tiStringToOptXMLDBSize(Value);
+  FOptXMLDBSize := tiStringToOptXMLDBSize(AValue);
 end;
 
 

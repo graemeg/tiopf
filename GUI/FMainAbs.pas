@@ -1,37 +1,6 @@
-{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  The contents of this file are subject to the Mozilla Public
-  License Version 1.1 (the "License"); you may not use this file
-  except in compliance with the License. You may obtain a copy of
-  the License at http://www.mozilla.org/MPL/
-
-  Software distributed under the License is distributed on an "AS
-  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  implied. See the License for the specific language governing
-  rights and limitations under the License.
-
-  Originally developed and released by Peter Hinrichsen, TechInsite Pty. Ltd.
-  as the tiOPF (TechInsite Object Persistence Framework)
-
-    23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-    PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-    Phone: +61 3 9419 6456 Fax:   +61 3 9419 1682
-    Latest source:   www.techinsite.com.au/tiOPF/Download.htm
-    Documentation:   www.techinsite.com.au/tiOPF/Doc/
-    Support:         www.techinsite.com.au/tiOPF/MailingList.htm
-
-  Please submit changes to tiOPF@techinsite.com.au
-
-  Revision history:
-
-  Purpose:
-
-  ToDo:
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
+unit FMainAbs;
 
 {$I tiDefines.inc}
-
-unit FMainAbs;
 
 interface
 
@@ -80,31 +49,31 @@ type
 
 var
   FormMainAbs: TFormMainAbs;
-  gFormAboutClass : TFormClass ;
+  gFormAboutClass : TFormClass;
 
 implementation
 uses
   tiUtils,
   tiGUISupport,
   tiRegINI
-  ;
+ ;
 
 {$R *.DFM}
 
 procedure TFormMainAbs.FormCreate(Sender: TObject);
 begin
-  gReg.ReadFormState( Self ) ;
-  gGUIPackageMgr.MainForm := self ;
+  gReg.ReadFormState(Self);
+  gGUIPackageMgr.MainForm := self;
 end;
 
 procedure TFormMainAbs.FormDestroy(Sender: TObject);
 begin
-  gReg.WriteFormState( Self ) ;
+  gReg.WriteFormState(Self);
 end;
 
 procedure TFormMainAbs.aExitExecute(Sender: TObject);
 begin
-  Close ;
+  Close;
 end;
 
 procedure TFormMainAbs.aTileVerticallyExecute(Sender: TObject);
@@ -121,29 +90,29 @@ end;
 
 procedure TFormMainAbs.aCloseAllExecute(Sender: TObject);
 var
-  i : integer ;
+  i : integer;
 begin
   for I := MDIChildCount - 1 downto 0 do
-    MDIChildren[I].Close ;
+    MDIChildren[I].Close;
 end;
 
 procedure TFormMainAbs.aCascadeExecute(Sender: TObject);
 begin
-  Cascade ;
+  Cascade;
 end;
 
 procedure TFormMainAbs.aAboutExecute(Sender: TObject);
 var
-  lForm : TForm ;
+  lForm : TForm;
 begin
-  Assert( gFormAboutClass <> nil,
-          'gFormAboutClass not assigned.' ) ;
-  lForm := gFormAboutClass.Create( nil ) ;
+  Assert(gFormAboutClass <> nil,
+          'gFormAboutClass not assigned.');
+  lForm := gFormAboutClass.Create(nil);
   try
-    lForm.ShowModal ;
+    lForm.ShowModal;
   finally
-    lForm.Free ;
-  end ;
+    lForm.Free;
+  end;
 end;
 
 end.

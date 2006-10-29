@@ -9,9 +9,9 @@ begin
 end;
 
 
-procedure TtiTestCase.Check(pValue: boolean; pMessage: string);
+procedure TtiTestCase.Check(AValue: boolean; AMessage: string);
 begin
-  AssertTrue(pMessage, pValue);
+  AssertTrue(AMessage, AValue);
 end;
 
 
@@ -77,13 +77,13 @@ begin
 end;
 
 
-procedure TtiTestCase.CheckIs(obj: TObject; pClass: TClass; msg: string);
+procedure TtiTestCase.CheckIs(obj: TObject; AClass: TClass; msg: string);
 begin
-  Assert(pClass <> nil);
+  Assert(AClass <> nil);
   if obj = nil then
-    Fail(ComparisonMsg(pClass.ClassName, 'nil'))
-  else if not obj.ClassType.InheritsFrom(pClass) then
-    Fail(ComparisonMsg(pClass.ClassName, obj.ClassName));
+    Fail(ComparisonMsg(AClass.ClassName, 'nil'))
+  else if not obj.ClassType.InheritsFrom(AClass) then
+    Fail(ComparisonMsg(AClass.ClassName, obj.ClassName));
 end;
 
 
@@ -91,4 +91,34 @@ procedure TtiTestCase.CheckSame(expected, actual: TObject; msg: string);
 begin
    AssertSame(msg, expected, actual);
 end;
+
+
+procedure TtiTestCase.CheckNotEquals(expected, actual: integer; msg: string);
+begin
+  if (expected = actual) then
+    Fail(msg + ComparisonMsg(IntToStr(expected), IntToStr(actual)));
+end;
+
+
+procedure TtiTestCase.CheckNotEquals(expected, actual: boolean; msg: string);
+begin
+  if (expected = actual) then
+    Fail(msg + ComparisonMsg(BoolToStr(expected), BoolToStr(actual)));
+end;
+
+
+procedure TtiTestCase.CheckNotEquals(expected: extended; actual: extended;
+  delta: extended; msg: string);
+begin
+  if (abs(expected-actual) <= delta) then
+      FailNotEquals(FloatToStr(expected), FloatToStr(actual), msg, nil);
+end;
+
+
+procedure TtiTestCase.FailNotEquals(expected, actual: string; msg: string;
+  errorAddr: Pointer);
+begin
+  Fail(msg + ComparisonMsg(Expected, Actual));
+end;
+
 

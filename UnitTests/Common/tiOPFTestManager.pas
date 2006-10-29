@@ -13,7 +13,7 @@ uses
   ,TestFramework
   {$ENDIF}
 //  ,INIFiles
-  ;
+ ;
 
 
 const
@@ -30,28 +30,28 @@ type
   protected
     FSelected: Boolean;
     FPerLayerName : string;
-    FDBName       : string;
-    FUsername     : string;
-    FPassword     : string;
+    FDBName      : string;
+    FUsername    : string;
+    FPassword    : string;
     FEnabled: boolean;
     FCanCreateDatabase: boolean;
     // Gives you the chance to override default database, username
     // and password values for the unit tests.
-    function  ReadFromReg(const pPerLayer, pProp, pDefault : string) : string;
+    function  ReadFromReg(const pPerLayer, pProp, pDefault : string): string;
   public
     constructor Create; override;
     destructor  Destroy; override;
     procedure   Read; override;
     procedure   Save; override;
-    property    PerLayerName  : string read FPerLayerName;
-    property    DBName        : string read FDBName     ;
-    property    Username      : string read FUsername   ;
-    property    Password      : string read FPassword   ;
+    property    PerLayerName : string read FPerLayerName;
+    property    DBName       : string read FDBName    ;
+    property    Username     : string read FUsername  ;
+    property    Password     : string read FPassword  ;
     property    CanCreateDatabase : boolean read FCanCreateDatabase;
     procedure   ForceTestDataDirectory;
-    property    Selected      : boolean read FSelected write FSelected;
-    property    Enabled       : boolean read FEnabled;
-    property    ToRun         : boolean read GetToRun;
+    property    Selected     : boolean read FSelected write FSelected;
+    property    Enabled      : boolean read FEnabled;
+    property    ToRun        : boolean read GetToRun;
   end;
 
 
@@ -61,16 +61,16 @@ type
     FTestNonPersistentClasses: boolean;
   protected
     function    GetItems(i: integer):TtiOPFTestSetupData; reintroduce;
-    procedure   SetItems(i: integer; const Value: TtiOPFTestSetupData); reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiOPFTestSetupData); reintroduce;
   public
     constructor Create; override;
     property    TestNonPersistentClasses : boolean read FTestNonPersistentClasses write FTestNonPersistentClasses;
     function    ToRun(const pClassID : string):boolean;
-    property    TestAll : boolean read FTestAll ;
-    property    Items[i:integer] : TtiOPFTestSetupData read GetItems write SetItems;
-    procedure   Add(pObject : TtiOPFTestSetupData  ; pDefDispOrdr : boolean = true); reintroduce;
-    function    IsRegistered(const APerLayerName : string) : boolean;
-    function    FindByPerLayerName(const APerLayerName : string) : TtiOPFTestSetupData;
+    property    TestAll : boolean read FTestAll;
+    property    Items[i:integer]: TtiOPFTestSetupData read GetItems write SetItems;
+    procedure   Add(AObject : TtiOPFTestSetupData ; ADefDispOrdr : boolean = true); reintroduce;
+    function    IsRegistered(const APerLayerName : string): boolean;
+    function    FindByPerLayerName(const APerLayerName : string): TtiOPFTestSetupData;
     procedure   UnloadPersistenceLayersNotSelected;
     procedure   Read; override;
     procedure   Save; override;
@@ -100,14 +100,14 @@ uses
   ,FileCtrl
   {$ENDIF}
   ,tiDUnitINI
-  ;
+ ;
 
 
 { TtiOPFTestManager }
 
-procedure TtiOPFTestManager.Add(pObject: TtiOPFTestSetupData;pDefDispOrdr: boolean);
+procedure TtiOPFTestManager.Add(AObject: TtiOPFTestSetupData;ADefDispOrdr: boolean);
 begin
-  inherited Add(pObject, pDefDispOrdr);
+  inherited Add(AObject, ADefDispOrdr);
 end;
 
 
@@ -167,9 +167,9 @@ begin
 end;
 
 
-procedure TtiOPFTestManager.SetItems(i: integer;const Value: TtiOPFTestSetupData);
+procedure TtiOPFTestManager.SetItems(i: integer;const AValue: TtiOPFTestSetupData);
 begin
-  inherited SetItems(i, Value);
+  inherited SetItems(i, AValue);
 end;
 
 
@@ -212,11 +212,11 @@ const
   cUnknown = 'Unknown';
 begin
   inherited;
-  FPerLayerName     := cUnknown;
-  FDBName           := cUnknown;
-  FUsername         := cUnknown;
-  FPassword         := cUnknown;
-  FEnabled          := false;
+  FPerLayerName    := cUnknown;
+  FDBName          := cUnknown;
+  FUsername        := cUnknown;
+  FPassword        := cUnknown;
+  FEnabled         := false;
   FCanCreateDatabase:= false;
 end;
 

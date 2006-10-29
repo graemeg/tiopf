@@ -9,7 +9,7 @@ uses
   ,tiQueryTXTAbs
   ,tiXML
   ,tiXMLTotiDataSet
-  ;
+ ;
 
 const
   cDBParamReadOnly = 'readonly';
@@ -18,51 +18,51 @@ const
 
 type
 
-  TtiDBConnectionPoolDataXMLLight = Class( TtiDBConnectionPoolDataTXTAbs );
+  TtiDBConnectionPoolDataXMLLight = Class(TtiDBConnectionPoolDataTXTAbs);
 
-  TtiDatabaseXMLLight = class( TtiDatabaseTXTAbs )
+  TtiDatabaseXMLLight = class(TtiDatabaseTXTAbs)
   private
-    FAsString : string ;
+    FAsString : string;
     FPersistToFile: boolean;
     FReadOnly: Boolean;
     FCompress: string;
     FOptXMLDBSize: TtiOptXMLDBSize;
     FXMLFieldNameStyle: TtiXMLFieldNameStyle;
     function        GetAsString: string;
-    procedure       SetAsString(const Value: string);
+    procedure       SetAsString(const AValue: string);
   protected
-    procedure       SetConnected( pbValue : boolean ) ; override;
-    procedure       Read ; virtual ;
-    procedure       Save ; virtual ;
+    procedure       SetConnected(AValue : boolean); override;
+    procedure       Read; virtual;
+    procedure       Save; virtual;
   public
-    constructor     Create ; override ;
-    class function  DatabaseExists( const psDatabaseName, psUserName, psPassword : string ):boolean ; override ;
-    class procedure CreateDatabase( const psDatabaseName, psUserName, psPassword : string ) ; override ;
-    procedure       CreateTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
-    procedure       DropTable( const pTableMetaData: TtiDBMetaDataTable); override ;
-    procedure       Commit ; override ;
-    procedure       RollBack ; override ;
+    constructor     Create; override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    procedure       CreateTable(const ATableMetaData : TtiDBMetaDataTable); override;
+    procedure       DropTable(const ATableMetaData: TtiDBMetaDataTable); override;
+    procedure       Commit; override;
+    procedure       RollBack; override;
 
-    property        PersistToFile : boolean read FPersistToFile write FPersistToFile ;
-    property        AsString : string read GetAsString write SetAsString ;
-    function        Test : boolean ; override ;
+    property        PersistToFile : boolean read FPersistToFile write FPersistToFile;
+    property        AsString : string read GetAsString write SetAsString;
+    function        Test : boolean; override;
     property        ReadOnly : Boolean read FReadOnly Write FReadOnly;
-    property        OptXMLDBSize: TtiOptXMLDBSize read FOptXMLDBSize Write FOptXMLDBSize ;
+    property        OptXMLDBSize: TtiOptXMLDBSize read FOptXMLDBSize Write FOptXMLDBSize;
     property        XMLFieldNameStyle: TtiXMLFieldNameStyle read FXMLFieldNameStyle Write FXMLFieldNameStyle;
 
   end;
 
-  TtiQueryXMLLight = class( TtiQueryTXTAbs )
+  TtiQueryXMLLight = class(TtiQueryTXTAbs)
   public
-    constructor Create ; override ;
-    procedure   SelectRow( const pTableName : string ; const pWhere : TtiQueryParams = nil ) ; override ;
-    procedure   InsertRow( const pTableName : string ; const pParams : TtiQueryParams ) ; override ;
-    procedure   DeleteRow( const pTableName : string ; const pWhere  : TtiQueryParams = nil ) ; override ;
-    procedure   UpdateRow( const pTableName : string ; const pParams : TtiQueryParams ; const pWhere  : TtiQueryParams ) ; override ;
+    constructor Create; override;
+    procedure   SelectRow(const ATableName : string; const AWhere : TtiQueryParams = nil); override;
+    procedure   InsertRow(const ATableName : string; const AParams : TtiQueryParams); override;
+    procedure   DeleteRow(const ATableName : string; const AWhere : TtiQueryParams = nil); override;
+    procedure   UpdateRow(const ATableName : string; const AParams : TtiQueryParams; const AWhere : TtiQueryParams); override;
   end;
 
-function tiMakeXMLLightParams( pReadOnly: Boolean ; const pCompress: string ;
-                               pOptDBSize: TtiOptXMLDBSize ;
+function tiMakeXMLLightParams(pReadOnly: Boolean; const pCompress: string;
+                               pOptDBSize: TtiOptXMLDBSize;
                                pFieldNameSyle: TtiXMLFieldNameStyle): string;
 
 
@@ -76,10 +76,10 @@ uses
   ,tiExcept
   ,SysUtils
 
-  ;
+ ;
 
-function tiMakeXMLLightParams( pReadOnly: Boolean ; const pCompress: string ;
-                               pOptDBSize: TtiOptXMLDBSize ;
+function tiMakeXMLLightParams(pReadOnly: Boolean; const pCompress: string;
+                               pOptDBSize: TtiOptXMLDBSize;
                                pFieldNameSyle: TtiXMLFieldNameStyle): string;
 var
   lReadOnly: string;
@@ -88,9 +88,9 @@ var
   lFieldNamesStyle: string;
 begin
 
-  lReadOnly        := 'readonly=' + tiBoolToStr(pReadOnly);
-  lCompress        := cDBParamCompress + '=' + pCompress;
-  lOptXMLDBSize    := cgXMLTagOptXMLDBSize + '=' + cOptXMLDBSize[pOptDBSize];
+  lReadOnly       := 'readonly=' + tiBoolToStr(pReadOnly);
+  lCompress       := cDBParamCompress + '=' + pCompress;
+  lOptXMLDBSize   := cgXMLTagOptXMLDBSize + '=' + cOptXMLDBSize[pOptDBSize];
   lFieldNamesStyle := cgXMLFieldNameStyle + '=' + cXMLFieldNameStyles[pFieldNameSyle];
 
   result :=
@@ -108,55 +108,55 @@ SelectRow, etc. should probably be in the parent class
 since it is generic except for reference to TtiDatabaseCSV.
 cf  TODO for SaveDataSet above.
  }
-procedure TtiQueryXMLLight.SelectRow(const pTableName: string;const pWhere: TtiQueryParams);
+procedure TtiQueryXMLLight.SelectRow(const ATableName: string;const AWhere: TtiQueryParams);
 var
-  lDataSet : TtiDataBuffer ;
+  lDataSet : TtiDataBuffer;
 begin
-  lDataSet := ( Database as TtiDatabaseXMLLight ).FindDataSetByName( pTableName ) ;
+  lDataSet := (Database as TtiDatabaseXMLLight).FindDataSetByName(ATableName);
   if lDataSet = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindTable, [pTableName]);
-  DoSelectRows(lDataSet, pWhere);
-  CurrentRecordIndex := 0 ;
+    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindTable, [ATableName]);
+  DoSelectRows(lDataSet, AWhere);
+  CurrentRecordIndex := 0;
 end;
 
-procedure TtiQueryXMLLight.DeleteRow(const pTableName: string; const pWhere: TtiQueryParams);
+procedure TtiQueryXMLLight.DeleteRow(const ATableName: string; const AWhere: TtiQueryParams);
 var
-  lDataSet : TtiDataBuffer ;
-  i : integer ;
+  lDataSet : TtiDataBuffer;
+  i : integer;
 begin
-  lDataSet := ( Database as TtiDatabaseXMLLight ).FindDataSetByName( pTableName ) ;
+  lDataSet := (Database as TtiDatabaseXMLLight).FindDataSetByName(ATableName);
   if lDataSet = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindTable, [pTableName]);
-  DoSelectRows(lDataSet, pWhere);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindTable, [ATableName]);
+  DoSelectRows(lDataSet, AWhere);
   for i := SelectedRows.Count - 1 downto 0 do
-    lDataSet.Remove( TtiDataBufferRow( SelectedRows.Items[i] )) ;
-  SelectedRows.Clear ;
+    lDataSet.Remove(TtiDataBufferRow(SelectedRows.Items[i]));
+  SelectedRows.Clear;
 end;
 
-procedure TtiQueryXMLLight.InsertRow(const pTableName: string; const pParams: TtiQueryParams);
+procedure TtiQueryXMLLight.InsertRow(const ATableName: string; const AParams: TtiQueryParams);
 var
-  lDataSet : TtiDataBuffer ;
-  lDataSetRow : TtiDataBufferRow ;
+  lDataSet : TtiDataBuffer;
+  lDataSetRow : TtiDataBufferRow;
 begin
-  lDataSet := ( Database as TtiDatabaseXMLLight ).FindDataSetByName( pTableName ) ;
+  lDataSet := (Database as TtiDatabaseXMLLight).FindDataSetByName(ATableName);
   if lDataSet = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindTable, [pTableName]);
-  lDataSetRow := lDataSet.AddInstance ;
-  DoUpdateRow( lDataSetRow, pParams ) ;
+    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindTable, [ATableName]);
+  lDataSetRow := lDataSet.AddInstance;
+  DoUpdateRow(lDataSetRow, AParams);
 end;
 
-procedure TtiQueryXMLLight.UpdateRow(const pTableName: string; const pParams, pWhere : TtiQueryParams);
+procedure TtiQueryXMLLight.UpdateRow(const ATableName: string; const AParams, AWhere : TtiQueryParams);
 var
-  lDataSet : TtiDataBuffer ;
-  i : integer ;
+  lDataSet : TtiDataBuffer;
+  i : integer;
 begin
-  lDataSet := TtiDatabaseXMLLight( Database ).FindDataSetByName( pTableName ) ;
+  lDataSet := TtiDatabaseXMLLight(Database).FindDataSetByName(ATableName);
   if lDataSet = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindTable, [pTableName]);
-  DoSelectRows(lDataSet, pWhere);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindTable, [ATableName]);
+  DoSelectRows(lDataSet, AWhere);
   for i := 0 to SelectedRows.Count - 1 do
-    DoUpdateRow( TtiDataBufferRow( SelectedRows.Items[i]), pParams ) ;
-  SelectedRows.Clear ;
+    DoUpdateRow(TtiDataBufferRow(SelectedRows.Items[i]), AParams);
+  SelectedRows.Clear;
 end;
 
 
@@ -164,125 +164,125 @@ end;
 
 procedure TtiDatabaseXMLLight.Commit;
 begin
-  Save ;
-  SetInTransaction(False) ;
+  Save;
+  SetInTransaction(False);
 end;
 
 constructor TtiDatabaseXMLLight.Create;
 begin
   inherited Create;
-  FPersistToFile := true ;
-  FReadOnly := False ;
-  FOptXMLDBSize := optDBSizeOff ;
-  FXMLFieldNameStyle := xfnsString ;
+  FPersistToFile := true;
+  FReadOnly := False;
+  FOptXMLDBSize := optDBSizeOff;
+  FXMLFieldNameStyle := xfnsString;
   FCompress := cgsCompressNone;
 end;
 
-class procedure TtiDatabaseXMLLight.CreateDatabase(const psDatabaseName,
-  psUserName, psPassword: string);
+class procedure TtiDatabaseXMLLight.CreateDatabase(const ADatabaseName,
+  AUserName, APassword: string);
 var
-  lDatabase : TtiDatabaseXMLLight ;
+  lDatabase : TtiDatabaseXMLLight;
 begin
-  lDatabase := TtiDatabaseXMLLight.Create ;
+  lDatabase := TtiDatabaseXMLLight.Create;
   try
-    lDatabase.DatabaseName := psDatabaseName ;
-    lDatabase.Save ;
+    lDatabase.DatabaseName := ADatabaseName;
+    lDatabase.Save;
   finally
     lDatabase.Free;
-  end ;
+  end;
 end;
 
-procedure TtiDatabaseXMLLight.CreateTable(const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseXMLLight.CreateTable(const ATableMetaData: TtiDBMetaDataTable);
 begin
-  inherited CreateTable(pTableMetaData);
-  Save ;
+  inherited CreateTable(ATableMetaData);
+  Save;
 end;
 
-class function TtiDatabaseXMLLight.DatabaseExists(const psDatabaseName,
-  psUserName, psPassword: string): boolean;
+class function TtiDatabaseXMLLight.DatabaseExists(const ADatabaseName,
+  AUserName, APassword: string): boolean;
 begin
-  result := FileExists(psDatabaseName);
+  result := FileExists(ADatabaseName);
 end;
 
-procedure TtiDatabaseXMLLight.DropTable(const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseXMLLight.DropTable(const ATableMetaData: TtiDBMetaDataTable);
 begin
-  inherited DropTable(pTableMetaData);
-  Save ;
+  inherited DropTable(ATableMetaData);
+  Save;
 end;
 
 function TtiDatabaseXMLLight.GetAsString: string;
 begin
-  Assert( not FPersistToFile, 'AsString not available when PersistToFile = True' ) ;
+  Assert(not FPersistToFile, 'AsString not available when PersistToFile = True');
   if InTransaction then
-    Save ;
-  result := FAsString ;
+    Save;
+  result := FAsString;
 end;
 
 procedure TtiDatabaseXMLLight.Read;
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter ;
+  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
 begin
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create ;
+  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
-    lXMLToTIDataSets.DataSets := DataSets ;
-    lXMLToTIDataSets.OptXMLDBSize := FOptXMLDBSize ;
-    lXMLToTIDataSets.XMLFieldNameStyle := FXMLFieldNameStyle ;
-    lXMLToTIDataSets.Compress := FCompress ;
+    lXMLToTIDataSets.DataSets := DataSets;
+    lXMLToTIDataSets.OptXMLDBSize := FOptXMLDBSize;
+    lXMLToTIDataSets.XMLFieldNameStyle := FXMLFieldNameStyle;
+    lXMLToTIDataSets.Compress := FCompress;
     if PersistToFile then
     begin
       lXMLToTIDataSets.LoadFromFile(DatabaseName, ReadOnly)
     end
     else
-      lXMLToTIDataSets.AsString := FAsString ;
+      lXMLToTIDataSets.AsString := FAsString;
   finally
     lXMLToTIDataSets.Free;
-  end ;
+  end;
 end;
 
 procedure TtiDatabaseXMLLight.RollBack;
 begin
-  Read ;
-  SetInTransaction(false) ;
+  Read;
+  SetInTransaction(false);
 end;
 
 procedure TtiDatabaseXMLLight.Save;
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter ;
+  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
 begin
   if FReadOnly then
-    Exit ; //==>
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create ;
+    Exit; //==>
+  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
-    lXMLToTIDataSets.DataSets := DataSets ;
-    lXMLToTIDataSets.OptXMLDBSize := OptXMLDBSize ;
-    lXMLToTIDataSets.XMLFieldNameStyle := FXMLFieldNameStyle ;
-    lXMLToTIDataSets.Compress := FCompress ;
+    lXMLToTIDataSets.DataSets := DataSets;
+    lXMLToTIDataSets.OptXMLDBSize := OptXMLDBSize;
+    lXMLToTIDataSets.XMLFieldNameStyle := FXMLFieldNameStyle;
+    lXMLToTIDataSets.Compress := FCompress;
     if PersistToFile then
       lXMLToTIDataSets.SaveToFile(DatabaseName)
     else
-      FAsString := lXMLToTIDataSets.AsString ;
+      FAsString := lXMLToTIDataSets.AsString;
   finally
     lXMLToTIDataSets.Free;
-  end ;
+  end;
 end;
 
-procedure TtiDatabaseXMLLight.SetAsString(const Value: string);
+procedure TtiDatabaseXMLLight.SetAsString(const AValue: string);
 begin
-  Assert( not FPersistToFile, 'AsString not available when PersistToFile = True' ) ;
-  FAsString := Value ;
-  Read ;
+  Assert(not FPersistToFile, 'AsString not available when PersistToFile = True');
+  FAsString := AValue;
+  Read;
 end;
 
-procedure TtiDatabaseXMLLight.SetConnected(pbValue: boolean);
+procedure TtiDatabaseXMLLight.SetConnected(AValue: boolean);
 var
   lCompress: string;
 begin
-  if ( not pbValue ) then
+  if (not AValue) then
   begin
-    Log( 'Disconnecting from %s', [DatabaseName], lsConnectionPool ) ;
-    DataSets.Clear ;
-    FConnected := false ;
-    Exit ; //==>
+    Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);
+    DataSets.Clear;
+    FConnected := false;
+    Exit; //==>
   end;
   ReadOnly := tiStrToBool(Params.Values[cDBParamReadOnly]);
   lCompress := Params.Values[cDBParamCompress];
@@ -291,17 +291,17 @@ begin
   else
     FCompress := lCompress;
   if Params.Values[cgXMLTagOptXMLDBSize] <> '' then
-    FOptXMLDBSize  := tiStringToOptXMLDBSize(Params.Values[cgXMLTagOptXMLDBSize]);
+    FOptXMLDBSize := tiStringToOptXMLDBSize(Params.Values[cgXMLTagOptXMLDBSize]);
   if Params.Values[cgXMLFieldNameStyle] <> '' then
     XMLFieldNameStyle := tiStringToXMLFieldNameStyle(Params.Values[cgXMLFieldNameStyle]);
-  Read ;
-  FConnected := true ;
+  Read;
+  FConnected := true;
 end;
 
 function TtiDatabaseXMLLight.Test: boolean;
 begin
-  result := false ;
-  Assert( false, 'Under construction' ) ;
+  result := false;
+  Assert(false, 'Under construction');
 end;
 
 constructor TtiQueryXMLLight.Create;
@@ -315,11 +315,11 @@ Initialization
               cTIPersistXMLLight,
               TtiDBConnectionPoolDataXMLLight,
               TtiQueryXMLLight,
-              TtiDatabaseXMLLight ) ;
+              TtiDatabaseXMLLight);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer( cTIPersistXMLLight ) ;
+    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXMLLight);
 
 
 end.

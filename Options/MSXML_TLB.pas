@@ -37,22 +37,24 @@ unit MSXML_TLB;
 //   Hint: Parameter 'type' of IXMLDOMDocument.CreateNode changed to 'type_'
 //   Hint: Member 'type' of 'IXMLElement' changed to 'type_'
 //   Hint: Member 'type' of 'IXMLElement2' changed to 'type_'
-//   Error creating palette bitmap of (TDOMDocument) : No Server registered for this CoClass
-//   Error creating palette bitmap of (TDOMFreeThreadedDocument) : No Server registered for this CoClass
-//   Error creating palette bitmap of (TXMLHTTPRequest) : No Server registered for this CoClass
-//   Error creating palette bitmap of (TXMLDSOControl) : No Server registered for this CoClass
-//   Error creating palette bitmap of (TXMLDocument) : No Server registered for this CoClass
+//   Error creating palette bitmap of (TDOMDocument): No Server registered for this CoClass
+//   Error creating palette bitmap of (TDOMFreeThreadedDocument): No Server registered for this CoClass
+//   Error creating palette bitmap of (TXMLHTTPRequest): No Server registered for this CoClass
+//   Error creating palette bitmap of (TXMLDSOControl): No Server registered for this CoClass
+//   Error creating palette bitmap of (TXMLDocument): No Server registered for this CoClass
 // ************************************************************************ //
 {$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
 interface
+
+{$I tiDefines.inc}
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, OleCtrls, StdVCL;
 
 // *********************************************************************//
 // GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
+//   Type Libraries    : LIBID_xxxx                                      
+//   CoClasses         : CLASS_xxxx                                      
+//   DISPInterfaces    : DIID_xxxx                                       
 //   Non-DISP interfaces: IID_xxxx                                        
 // *********************************************************************//
 const
@@ -1699,12 +1701,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TDOMDocument
-// Help String      : W3C-DOM XML Document
+// Server Object   : TDOMDocument
+// Help String     : W3C-DOM XML Document
 // Default Interface: IXMLDOMDocument
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: XMLDOMDocumentEvents
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TDOMDocumentProperties= class;
@@ -1786,7 +1788,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TDOMDocument
+// Server Object   : TDOMDocument
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -1840,12 +1842,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TDOMFreeThreadedDocument
-// Help String      : W3C-DOM XML Document (Apartment)
+// Server Object   : TDOMFreeThreadedDocument
+// Help String     : W3C-DOM XML Document (Apartment)
 // Default Interface: IXMLDOMDocument
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: XMLDOMDocumentEvents
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TDOMFreeThreadedDocumentProperties= class;
@@ -1927,7 +1929,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TDOMFreeThreadedDocument
+// Server Object   : TDOMFreeThreadedDocument
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -1981,12 +1983,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TXMLHTTPRequest
-// Help String      : XML HTTP Request class.
+// Server Object   : TXMLHTTPRequest
+// Help String     : XML HTTP Request class.
 // Default Interface: IXMLHttpRequest
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TXMLHTTPRequestProperties= class;
@@ -2045,7 +2047,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TXMLHTTPRequest
+// Server Object   : TXMLHTTPRequest
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -2085,12 +2087,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TXMLDSOControl
-// Help String      : XML Data Source Object
+// Server Object   : TXMLDSOControl
+// Help String     : XML Data Source Object
 // Default Interface: IXMLDSOControl
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TXMLDSOControlProperties= class;
@@ -2129,7 +2131,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TXMLDSOControl
+// Server Object   : TXMLDSOControl
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -2168,12 +2170,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TXMLDocument
-// Help String      : XMLDocument extends IXML Document.  It is obsolete.  You should use DOMDocument.  This object should not be confused with the XMLDocument property on the XML data island.
+// Server Object   : TXMLDocument
+// Help String     : XMLDocument extends IXML Document.  It is obsolete.  You should use DOMDocument.  This object should not be confused with the XMLDocument property on the XML data island.
 // Default Interface: IXMLDocument2
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TXMLDocumentProperties= class;
@@ -2215,7 +2217,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TXMLDocument
+// Server Object   : TXMLDocument
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//

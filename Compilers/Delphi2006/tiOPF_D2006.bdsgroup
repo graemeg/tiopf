@@ -10,12 +10,14 @@
 	</PersonalityInfo>
 	<Default.Personality>  <Projects>
       <Projects Name="tiOPFCore100.bpl">tiOPFCore.bdsproj</Projects>
+      <Projects Name="tiOPFOptions100.bpl">tiOPFOptions.bdsproj</Projects>
       <Projects Name="tiOPFGUI100.bpl">tiOPFGUI.bdsproj</Projects>
       <Projects Name="tiOPFGUIDsgn100.bpl">tiOPFGUIDsgn.bdsproj</Projects>
       <Projects Name="DUnitTIOPFGui.exe">..\..\UnitTests\GUI\DUnitTIOPFGui.bdsproj</Projects>
       <Projects Name="DUnitTIOPFText.exe">..\..\UnitTests\Text\DUnitTIOPFText.bdsproj</Projects>
-      <Projects Name="Targets">tiOPFCore100.bpl tiOPFGUI100.bpl tiOPFGUIDsgn100.bpl DUnitTIOPFGui.exe DUnitTIOPFText.exe</Projects>
+      <Projects Name="Targets">tiOPFCore100.bpl tiOPFOptions100.bpl tiOPFGUI100.bpl tiOPFGUIDsgn100.bpl DUnitTIOPFGui.exe DUnitTIOPFText.exe</Projects>
     </Projects>
     <Dependencies/>
-  </Default.Personality>
+  </Default.Personality>  <StarTeamAssociation></StarTeamAssociation>
+  <StarTeamNonRelativeFiles></StarTeamNonRelativeFiles>
 </BorlandProject>

@@ -14,13 +14,13 @@ uses
   ,tiBaseObject
   ,tiThread
   ,types
-  ;
+ ;
 
 const
   crsSeverityNotFound = 'Severity <%s> not found';
   cErrorCanNotCreateLogDirectory = 'Can not create directory for log files <%s>';
   // Command line parameters
-  csLog         = 'l' ; // Command line parameter to turn logging on (default log to file)
+  csLog         = 'l'; // Command line parameter to turn logging on (default log to file)
   csLogVisual   = 'lv'; // Command line parameter to turn visual logging on
   csLogConsole  = 'lc'; // Command line parameter to turn console logging on
 
@@ -41,7 +41,7 @@ type
                    ,lsWarning
                    ,lsError
                    ,lsSQL
-                );
+               );
 
 const
 
@@ -57,7 +57,7 @@ const
                    ,'Warn'
                    ,'Error'
                    ,'SQL'
-                );
+               );
 
 
 type
@@ -73,22 +73,22 @@ type
   TtiLogEvent = class(TtiBaseObject)
   private
     FLogMessage : String;
-    FsDateTime  : String;
-    FSeverity   : TtiLogSeverity;
-    FsThreadID  : string;
+    FDateTime : String;
+    FSeverity  : TtiLogSeverity;
+    FThreadID : string;
     function  GetSeverityAsString: string;
-    procedure SetSeverityAsString(const Value: string);
+    procedure SetSeverityAsString(const AValue: string);
     function  GetShortLogMessage: string;
     function  GetFormattedMessageTimeStamp: string;
   published
-    property DateTime   : string       read FsDateTime  write FsDateTime ;
+    property DateTime  : string       read FDateTime  write FDateTime;
     property LogMessage : String       read FLogMessage write FLogMessage;
     property ShortLogMessage : string  read GetShortLogMessage;
-    property Severity   : TtiLogSeverity read FSeverity   write FSeverity ;
-    property ThreadID   : string       read FsThreadID  write FsThreadID;
+    property Severity  : TtiLogSeverity read FSeverity   write FSeverity;
+    property ThreadID  : string       read FThreadID  write FThreadID;
     property SeverityAsString : string read GetSeverityAsString write SetSeverityAsString;
   public
-    function AsString   : string;
+    function AsString  : string;
     function AsStringStripCrLf : string;
     function AsLeftPaddedString: string;
   end;
@@ -98,12 +98,12 @@ type
   TtiLogEvents = class(TtiBaseObject)
   private
     FList: TObjectList;
-    function GetItems(pIndex: Integer): TtiLogEvent;
+    function GetItems(AIndex: Integer): TtiLogEvent;
   public
     constructor Create;
     destructor  Destroy; override;
-    procedure   Add(pItem: TtiLogEvent);
-    property    Items[pIndex: Integer]: TtiLogEvent Read GetItems;
+    procedure   Add(AItem: TtiLogEvent);
+    property    Items[AIndex: Integer]: TtiLogEvent Read GetItems;
     function    Count: Integer;
     procedure   Clear;
   end;
@@ -115,18 +115,18 @@ type
     FSevToLog: TtiSevToLog;
     FTerminated: Boolean;
   protected
-    function  AcceptEvent(const psDateTime : string;
-                           const psMessage  : string;
-                           pSeverity  : TtiLogSeverity) : boolean; virtual;
+    function  AcceptEvent(const ADateTime : string;
+                           const AMessage : string;
+                           ASeverity : TtiLogSeverity): boolean; virtual;
     { Only used by decendant classes that use caching and threading while logging }
     procedure WriteToOutput; virtual; abstract;
-    procedure SetSevToLog(const Value: TtiSevToLog); virtual;
+    procedure SetSevToLog(const AValue: TtiSevToLog); virtual;
   public
     constructor Create; virtual;
-    procedure   Log(const psDateTime : string;
-                     const psThreadID : string;
-                     const psMessage  : string;
-                     pSeverity  : TtiLogSeverity); virtual; abstract;
+    procedure   Log(const ADateTime : string;
+                     const AThreadID : string;
+                     const AMessage : string;
+                     ASeverity : TtiLogSeverity); virtual; abstract;
     property    SevToLog : TtiSevToLog read FSevToLog Write SetSevToLog;
     { Placeholder method for any terminating code you might require. }
     procedure   Terminate; virtual;
@@ -143,13 +143,13 @@ type
   TtiThrdLog = class(TtiSleepThread)
   private
     FLogTo : TtiLogToCacheAbs;
-    procedure   SetLogTo(const Value: TtiLogToCacheAbs);
+    procedure   SetLogTo(const AValue: TtiLogToCacheAbs);
     procedure   WriteToOutput;
   public
-    constructor CreateExt(pLogTo : TtiLogToCacheAbs);
+    constructor CreateExt(ALogTo : TtiLogToCacheAbs);
     procedure   Execute; override;
     property    Terminated;  // surfaced from protected
-    procedure   tiSynchronize(Method: TThreadMethod); // surfaced Synchronize from protected
+    procedure   tiSynchronize(AMethod: TThreadMethod); // surfaced Synchronize from protected
     property    LogTo : TtiLogToCacheAbs  read FLogTo write SetLogTo;
   end;
 
@@ -168,10 +168,10 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-    procedure   Log(const psDateTime : string;
-                    const psThreadID : string;
-                    const psMessage  : string;
-                    pSeverity: TtiLogSeverity); override;
+    procedure   Log(const ADateTime : string;
+                    const AThreadID : string;
+                    const AMessage : string;
+                    ASeverity: TtiLogSeverity); override;
     procedure Terminate; override;
   end;
 
@@ -181,16 +181,16 @@ type
   private
     FLogToList : TList;
     FSevToLog: TtiSevToLog;
-    procedure SetSevToLog(const Value: TtiSevToLog);
-    function  IsRegistered(const ALogToClass : TtiLogToClass) : boolean;
+    procedure SetSevToLog(const AValue: TtiSevToLog);
+    function  IsRegistered(const ALogToClass : TtiLogToClass): boolean;
   public
-    constructor Create ;
+    constructor Create;
     destructor  Destroy; override;
     procedure   RegisterLog(ALogTo : TtiLogToAbs); overload;
     procedure   RegisterLog(ALogTo : TtiLogToClass); overload;
-    function    FindByLogClass(ALogToClass : TtiLogToClass) : TtiLogToAbs;
-    procedure   Log(const psMessage : string;
-                     const pSeverity : TtiLogSeverity = lsNormal);
+    function    FindByLogClass(ALogToClass : TtiLogToClass): TtiLogToAbs;
+    procedure   Log(const AMessage : string;
+                     const ASeverity : TtiLogSeverity = lsNormal);
     property    SevToLog : TtiSevToLog read FSevToLog write SetSevToLog;
     function    LogToFileName: string;
   end;
@@ -200,16 +200,16 @@ type
 function  gLog : TtiLog;
 
 // Some global proces to make logging easier
-procedure Log(const pMessage : string ; pSeverity : TtiLogSeverity = lsNormal); overload;
-procedure Log(const pMessage : integer; pSeverity : TtiLogSeverity = lsNormal); overload;
-procedure Log(const pMessage : Extended; pSeverity : TtiLogSeverity = lsNormal); overload;
-procedure Log(const pMessage : boolean; pSeverity : TtiLogSeverity = lsNormal); overload;
-procedure Log(const pA : Array of Const; pSeverity : TtiLogSeverity = lsNormal); overload;
-procedure Log(const psMessage : string; const pA : Array of Const; pSeverity : TtiLogSeverity = lsNormal); overload;
-procedure LogWarning(const psMessage : string); overload;
-procedure LogError(const psMessage : string; pRaiseException : boolean = true); overload;
-procedure LogError(const pException : Exception; pRaiseException : boolean = true); overload;
-procedure LogError(const psMessage : string; const pA : Array of Const); overload;
+procedure Log(const AMessage : string; ASeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const AMessage : integer; ASeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const AMessage : Extended; ASeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const AMessage : boolean; ASeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const AArray : Array of Const; ASeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const AMessage : string; const AArray : Array of Const; ASeverity : TtiLogSeverity = lsNormal); overload;
+procedure LogWarning(const AMessage : string); overload;
+procedure LogError(const AMessage : string; ARaiseException : boolean = true); overload;
+procedure LogError(const AException : Exception; ARaiseException : boolean = true); overload;
+procedure LogError(const AMessage : string; const AArray : Array of Const); overload;
 
 
 const
@@ -231,7 +231,7 @@ uses
   {$ELSE}
   ,FileCtrl
   {$ENDIF}
-  ;
+ ;
 
 
 var
@@ -270,11 +270,11 @@ begin
 end;
 
 
-function _IsParam(const psParam: string): boolean;
+function _IsParam(const AParam: string): boolean;
   //------------
-  function _IsThisParam(const psParam, psDelim, psCommandLineParams: string): boolean;
+  function _IsThisParam(const AParam, psDelim, psCommandLineParams: string): boolean;
   begin
-    result := (pos(psDelim + UpperCase(psParam) + ' ',
+    result := (pos(psDelim + UpperCase(AParam) + ' ',
                      psCommandLineParams) <> 0)
   end;
 
@@ -288,93 +288,93 @@ function _IsParam(const psParam: string): boolean;
       result :=
         result +
         upperCase(ParamStr(i)) + ' ';
-    end ;
+    end;
   end;
 var
   lsCommandLineParams : string;
 begin
   lsCommandLineParams := _ReadCommandLineParams;
-  result := _IsThisParam(psParam, '-', lsCommandLineParams) or
-            _IsThisParam(psParam, '/', lsCommandLineParams) or
-            _IsThisParam(psParam, '\', lsCommandLineParams);
+  result := _IsThisParam(AParam, '-', lsCommandLineParams) or
+            _IsThisParam(AParam, '/', lsCommandLineParams) or
+            _IsThisParam(AParam, '\', lsCommandLineParams);
 end;
 
 
-procedure Log(const pMessage : string; pSeverity : TtiLogSeverity = lsNormal);
+procedure Log(const AMessage : string; ASeverity : TtiLogSeverity = lsNormal);
 begin
   if ubFinalization then
     Exit; //==>
-  gLog.Log(pMessage, pSeverity);
+  gLog.Log(AMessage, ASeverity);
 end;
 
 
-procedure Log(const pMessage : integer; pSeverity : TtiLogSeverity = lsNormal);
+procedure Log(const AMessage : integer; ASeverity : TtiLogSeverity = lsNormal);
 begin
-  Log(IntToStr(pMessage), pSeverity);
+  Log(IntToStr(AMessage), ASeverity);
 end;
 
 
-procedure Log(const pMessage: Extended; pSeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const AMessage: Extended; ASeverity : TtiLogSeverity = lsNormal); overload;
 begin
-  Log(FloatToStr(pMessage), pSeverity);
+  Log(FloatToStr(AMessage), ASeverity);
 end;
 
 
-procedure Log(const pMessage : boolean; pSeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const AMessage : boolean; ASeverity : TtiLogSeverity = lsNormal); overload;
 begin
-  Log(tiBoolToStr(pMessage), pSeverity);
+  Log(tiBoolToStr(AMessage), ASeverity);
 end;
 
 
-procedure LogError(const psMessage : string; pRaiseException : boolean = true);
+procedure LogError(const AMessage : string; ARaiseException : boolean = true);
 begin
   if ubFinalization then
     Exit; //==>
-  gLog.Log(psMessage, lsError);
+  gLog.Log(AMessage, lsError);
   {$IFDEF ThirdPartyExceptionHandling}
-    if pRaiseException then
-      raise exception.Create(psMessage);
+    if ARaiseException then
+      raise exception.Create(AMessage);
   {$ENDIF}
 end;
 
 
-procedure LogError(const pException : Exception; pRaiseException : boolean = true);
+procedure LogError(const AException : Exception; ARaiseException : boolean = true);
 begin
   if ubFinalization then
     Exit; //==>
-  gLog.Log(pException.Message, lsError);
+  gLog.Log(AException.Message, lsError);
   {$IFDEF ThirdPartyExceptionHandling}
-    if pRaiseException then
-      raise Exception(pException.ClassType).Create(pException.Message);
+    if ARaiseException then
+      raise Exception(AException.ClassType).Create(AException.Message);
   {$ENDIF}
 end;
 
 
-procedure LogError(const psMessage : string; const pA : Array of Const);
+procedure LogError(const AMessage : string; const AArray : Array of Const);
 var
   ls : string;
 begin
   if ubFinalization then
     Exit; //==>
   try
-    ls := Format(psMessage, pA);
+    ls := Format(AMessage, AArray);
   except
     on e:exception do
-      ls := 'Unable to evaluate log message <' + psMessage + '> reason: ' + e.Message;
+      ls := 'Unable to evaluate log message <' + AMessage + '> reason: ' + e.Message;
   end;
   gLog.Log(ls, lsError);
 end;
 
 
-procedure LogWarning(const psMessage : string);
+procedure LogWarning(const AMessage : string);
 begin
   if ubFinalization then
     Exit; //==>
-  gLog.Log(psMessage, lsWarning);
+  gLog.Log(AMessage, lsWarning);
 end;
 
 
-procedure Log(const pA : Array of Const; pSeverity : TtiLogSeverity = lsNormal);
+procedure Log(const AArray : Array of Const; ASeverity : TtiLogSeverity = lsNormal);
 const
   BoolChars: array[Boolean] of Char = ('F', 'T');
 var
@@ -382,10 +382,10 @@ var
   lsLine : string;
 begin
   lsLine := '';
-  for I := 0 to High(pA) do begin
+  for I := 0 to High(AArray) do begin
     if lsLine <> '' then
       lsLine := lsLine + ', ';
-    with pA[i] do
+    with AArray[i] do
       case VType of
         vtInteger:    lsLine := lsLine + IntToStr(VInteger);
         vtBoolean:    lsLine := lsLine + BoolChars[VBoolean];
@@ -407,63 +407,63 @@ begin
         raise exception.Create('Invalid variant type passed to LogArray');
     end;
   end;
-  Log(lsLine, pSeverity);
+  Log(lsLine, ASeverity);
 end;
 
 
-procedure Log(const psMessage : string; const pA : Array of Const; pSeverity : TtiLogSeverity = lsNormal);
+procedure Log(const AMessage : string; const AArray : Array of Const; ASeverity : TtiLogSeverity = lsNormal);
 var
   lMessage : string;
 begin
   try
-    lMessage := Format(psMessage, pA);
+    lMessage := Format(AMessage, AArray);
   except
     on e:exception do
-      LogError('Unable to evaluate log message <' + psMessage + '> reason: ' + e.Message);
+      LogError('Unable to evaluate log message <' + AMessage + '> reason: ' + e.Message);
   end;
-  Log(lMessage, pSeverity);
+  Log(lMessage, ASeverity);
 end;
 
 
-function _StrTran(pStrValue, pStrDel, pStrIns : string) : string;
+function _StrTran(AValue, ADel, AIns : string): string;
 var i : integer;
     sToChange : string;
 begin
   result := '';
-  sToChange := pStrValue;
-  i := pos(pStrDel, sToChange);
+  sToChange := AValue;
+  i := pos(ADel, sToChange);
   while i <> 0 do begin
-    result := result + copy(sToChange, 1, i-1) + pStrIns;
-    delete(sToChange, 1, i+length(pStrDel)-1);
-    i := pos(pStrDel, sToChange);
+    result := result + copy(sToChange, 1, i-1) + AIns;
+    delete(sToChange, 1, i+length(ADel)-1);
+    i := pos(ADel, sToChange);
   end;
   result := result + sToChange;
 end;
 
 
-function _PadR(pStrValue : string; pIntLen : integer) : string;
+function _PadR(AValue : string; ALen : integer): string;
 begin
-  if length(pStrValue) < pIntLen then begin
-    while length(pStrValue) < pIntLen do begin
-      pStrValue := pStrValue + ' ';
+  if length(AValue) < ALen then begin
+    while length(AValue) < ALen do begin
+      AValue := AValue + ' ';
     end;
   end
-  else if length(pStrValue) > pIntLen then
-    pStrValue := copy(pStrValue, 1, pIntLen);
-  result := pStrValue;
+  else if length(AValue) > ALen then
+    AValue := copy(AValue, 1, ALen);
+  result := AValue;
 end;
 
 
-function _PadL(pStrValue : string; pIntLen : integer) : string;
+function _PadL(AValue : string; ALen : integer): string;
 begin
-  if length(pStrValue) < pIntLen then begin
-    while length(pStrValue) < pIntLen do begin
-      pStrValue := ' ' + pStrValue;
+  if length(AValue) < ALen then begin
+    while length(AValue) < ALen do begin
+      AValue := ' ' + AValue;
     end;
   end
-  else if length(pStrValue) > pIntLen then
-    pStrValue := copy(pStrValue, length(pStrValue)-pIntLen, pIntLen);
-  result := pStrValue;
+  else if length(AValue) > ALen then
+    AValue := copy(AValue, length(AValue)-ALen, ALen);
+  result := AValue;
 end;
 
 
@@ -472,8 +472,8 @@ end;
 constructor TtiLog.Create;
 begin
   inherited;
-  FLogToList := TList.Create ;
-  FSevToLog  := cSevToLog;
+  FLogToList := TList.Create;
+  FSevToLog := cSevToLog;
 end;
 
 
@@ -482,7 +482,7 @@ var
   i : integer;
   lLog : TtiLogToAbs;
 begin
-  for i  := FLogToList.Count - 1 downto 0 do
+  for i := FLogToList.Count - 1 downto 0 do
   begin
     lLog := TtiLogToAbs(FLogToList.Items[i]);
     FLogToList.Delete(i);
@@ -510,18 +510,18 @@ begin
 end;
 
 
-procedure TtiLog.Log(const psMessage: string; const pSeverity: TtiLogSeverity = lsNormal);
+procedure TtiLog.Log(const AMessage: string; const ASeverity: TtiLogSeverity = lsNormal);
 var
-  lsNow      : string;
-  i          : integer;
-  lsMessage  : string;
+  lsNow     : string;
+  i         : integer;
+  lsMessage : string;
   lsThreadID : string;
 begin
   if ubFinalization then
     Exit; //==>
 
   lsNow := _PadR(FormatDateTime(cIntlDateTimeDisp, Now), Length(cIntlDateTimeDisp));
-  lsMessage  := psMessage;
+  lsMessage := AMessage;
 
   lsThreadID := IntToStr(GetCurrentThreadID);
   lsThreadID := _PadL(lsThreadID, cuiWidthThread);
@@ -530,7 +530,7 @@ begin
     TtiLogToAbs(FLogToList.Items[i]).Log(lsNow,
                                           lsThreadID,
                                           lsMessage,
-                                          pSeverity);
+                                          ASeverity);
 end;
 
 
@@ -542,21 +542,21 @@ begin
 end;
 
 
-function TtiLogToAbs.AcceptEvent(const psDateTime : string;
-                                const psMessage  : string;
-                                pSeverity  : TtiLogSeverity): boolean;
+function TtiLogToAbs.AcceptEvent(const ADateTime : string;
+                                const AMessage : string;
+                                ASeverity : TtiLogSeverity): boolean;
 begin
-  result := (pSeverity in FSevToLog);
+  result := (ASeverity in FSevToLog);
 end;
 
 
 constructor TtiLogToCacheAbs.Create;
 begin
   inherited Create;
-  FList         := TList.Create;
-  FListWorking  := TtiLogEvents.Create;
-  FCritSect     := TCriticalSection.Create;
-  FThrdLog      := TtiThrdLog.CreateExt(self); // Must call FThrdLog.Resume in the descandant classes
+  FList        := TList.Create;
+  FListWorking := TtiLogEvents.Create;
+  FCritSect    := TCriticalSection.Create;
+  FThrdLog     := TtiThrdLog.CreateExt(self); // Must call FThrdLog.Resume in the descandant classes
 end;
 
 
@@ -575,24 +575,24 @@ begin
 end;
 
 
-procedure TtiLogToCacheAbs.Log(const psDateTime : string;
-                              const psThreadID : string;
-                              const psMessage  : string;
-                              pSeverity  : TtiLogSeverity);
+procedure TtiLogToCacheAbs.Log(const ADateTime : string;
+                              const AThreadID : string;
+                              const AMessage : string;
+                              ASeverity : TtiLogSeverity);
 var
   lLogEvent : TtiLogEvent;
 begin
 
-  if not AcceptEvent(psDateTime, psMessage, pSeverity) then
+  if not AcceptEvent(ADateTime, AMessage, ASeverity) then
     Exit; //==>
 
   FCritSect.Enter;
   try
     lLogEvent := TtiLogEvent.Create;
-    lLogEvent.DateTime   := psDateTime;
-    lLogEvent.LogMessage := psMessage;
-    lLogEvent.Severity   := pSeverity;
-    lLogEvent.ThreadID   := psThreadID;
+    lLogEvent.DateTime  := ADateTime;
+    lLogEvent.LogMessage := AMessage;
+    lLogEvent.Severity  := ASeverity;
+    lLogEvent.ThreadID  := AThreadID;
     FList.Add(lLogEvent);
   finally
     FCritSect.Leave;
@@ -666,7 +666,7 @@ function TtiLogEvent.GetFormattedMessageTimeStamp: string;
 begin
   Result :=
     DateTime   + ' ' +
-              FsThreadID + ' ' +
+              FThreadID + ' ' +
               _PadR(cTILogSeverityStrings[ Severity ], cuiWidthSeverity) + ' ';
 end;
 
@@ -689,12 +689,12 @@ begin
 end;
 
 
-procedure TtiLogEvent.SetSeverityAsString(const Value: string);
+procedure TtiLogEvent.SetSeverityAsString(const AValue: string);
 var
   i : TtiLogSeverity;
   lsSeverity : string;
 begin
-  lsSeverity := Trim(Value);
+  lsSeverity := Trim(AValue);
   for i := Low(TtiLogSeverity) to High(TtiLogSeverity) do
   begin
     if lsSeverity = cTILogSeverityStrings[ i ] then
@@ -703,15 +703,15 @@ begin
       Exit; //==>
     end;
   end;
-  Assert(false, 'Severity <' + Value + '> unknown');
+  Assert(false, 'Severity <' + AValue + '> unknown');
 end;
 
 
-constructor TtiThrdLog.CreateExt(pLogTo : TtiLogToCacheAbs);
+constructor TtiThrdLog.CreateExt(ALogTo : TtiLogToCacheAbs);
 begin
   Create(true);
-  Priority  := tpLower;
-  FLogTo    := pLogTo;
+  Priority := tpLower;
+  FLogTo   := ALogTo;
 end;
 
 
@@ -721,9 +721,9 @@ begin
     WriteToOutput;
 end;
 
-procedure TtiThrdLog.SetLogTo(const Value: TtiLogToCacheAbs);
+procedure TtiThrdLog.SetLogTo(const AValue: TtiLogToCacheAbs);
 begin
-  FLogTo := Value;
+  FLogTo := AValue;
 end;
 
 function TtiLog.LogToFileName: string;
@@ -757,12 +757,12 @@ begin
 end;
 
 
-procedure TtiThrdLog.tiSynchronize(Method: TThreadMethod);
+procedure TtiThrdLog.tiSynchronize(AMethod: TThreadMethod);
 begin
 { I just wanted to surface this from protected for tiLogErrorForm
   (in another unit). Brain went to sleep on correct syntax.
   (OK with property, but not with procedure.) }
-  Synchronize(Method);
+  Synchronize(AMethod);
 end;
 
 
@@ -772,9 +772,9 @@ begin
 end;
 
 
-procedure TtiLogToAbs.SetSevToLog(const Value: TtiSevToLog);
+procedure TtiLogToAbs.SetSevToLog(const AValue: TtiSevToLog);
 begin
-  FSevToLog := Value;
+  FSevToLog := AValue;
 end;
 
 
@@ -784,9 +784,9 @@ begin
 end;
 
 
-procedure TtiLogEvents.Add(pItem: TtiLogEvent);
+procedure TtiLogEvents.Add(AItem: TtiLogEvent);
 begin
-  FList.Add(pItem);
+  FList.Add(AItem);
 end;
 
 
@@ -816,30 +816,30 @@ begin
 end;
 
 
-function TtiLogEvents.GetItems(pIndex: Integer): TtiLogEvent;
+function TtiLogEvents.GetItems(AIndex: Integer): TtiLogEvent;
 begin
-  Result := FList.Items[pIndex] as TtiLogEvent;
+  Result := FList.Items[AIndex] as TtiLogEvent;
 end;
 
 
-procedure TtiLog.SetSevToLog(const Value: TtiSevToLog);
+procedure TtiLog.SetSevToLog(const AValue: TtiSevToLog);
 var
-  lCritSect: TCriticalSection ;
-  i : integer ;
+  lCritSect: TCriticalSection;
+  i : integer;
 begin
-  lCritSect := TCriticalSection.Create ;
+  lCritSect := TCriticalSection.Create;
   try
-    lCritSect.Enter ;
+    lCritSect.Enter;
     try
-      FSevToLog := Value;
+      FSevToLog := AValue;
       for i := 0 to FLogToList.Count - 1 do
-        TtiLogToAbs( FLogToList.Items[i] ).SevToLog := Value ;
+        TtiLogToAbs(FLogToList.Items[i]).SevToLog := AValue;
     finally
-      lCritSect.Leave ;
-    end ;
+      lCritSect.Leave;
+    end;
   finally
-    lCritSect.Free ;
-  end ;
+    lCritSect.Free;
+  end;
 end;
 
 
@@ -851,4 +851,14 @@ finalization
   uLog.Free;
 
 end.
+
+
+
+
+
+
+
+
+
+
 

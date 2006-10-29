@@ -1,20 +1,21 @@
 unit tiTextParser;
 
+interface
+
 {$I tiDefines.inc}
 
-interface
 uses
   tiBaseObject
   ,Classes
   ,SysUtils
-  ;
+ ;
 
 type
 
-  TtiTextParserNewLineEvent = procedure of object ;
-  TtiTextParserCellEndEvent = procedure( const pString: string ) of object ;
+  TtiTextParserNewLineEvent = procedure of object;
+  TtiTextParserCellEndEvent = procedure(const AString: string) of object;
 
-  TtiTextParser = class( TtiBaseObject )
+  TtiTextParser = class(TtiBaseObject)
   private
     FStream: TMemoryStream;
     FBuffer: string;
@@ -28,9 +29,9 @@ type
     procedure Execute;
   public
     constructor Create;
-    destructor  Destroy ; override ;
-    procedure   ParseFile(const pFileName: string);
-    procedure   ParseString(const pString: string);
+    destructor  Destroy; override;
+    procedure   ParseFile(const AFileName: string);
+    procedure   ParseString(const AString: string);
     procedure   ParseStream(AStream: TStream);
     property    OnNewLine:       TtiTextParserNewLineEvent read FOnNewLine   Write FOnNewLine;
     property    OnEndOfLine:     TtiTextParserNewLineEvent read FOnEndOfLine Write FOnEndOfLine;
@@ -39,16 +40,16 @@ type
     property    Row:             Integer read FRow;
     property    Col:             Integer read FCol;
     property    Token:           string read FToken;
-  end ;
+  end;
 
 implementation
 uses
   tiConstants
   ,tiUtils
-  ;
+ ;
 
 const
-  cDefaultBufferLength = 256 ;
+  cDefaultBufferLength = 256;
 
 { TtiTextParser }
 
@@ -66,14 +67,14 @@ begin
 end;
 
 procedure TtiTextParser.Execute;
-  procedure _DoCellEnd(var pIndex: Integer);
+  procedure _DoCellEnd(var AIndex: Integer);
   begin
-    FToken := Copy(FBuffer,1,pIndex);
-    pIndex := 0 ;
+    FToken := Copy(FBuffer,1,AIndex);
+    AIndex := 0;
     FOnCellEnd(FToken);
-  end ;
+  end;
 var
-  i : Integer ;
+  i : Integer;
   lChar: Char;
   lIndex: Integer;
 begin
@@ -81,9 +82,9 @@ begin
   Assert(Assigned(FOnEndOfLine), 'OnEndOfLine not assigned');
   Assert(Assigned(FOnCellEnd), 'OnCellEnd not assigned');
   Assert(Assigned(FOnEndOfText),  'OnEndOfText not assigned');
-  lIndex := 0 ;
-  FRow:= 0 ;
-  FCol:= 0 ;
+  lIndex := 0;
+  FRow:= 0;
+  FCol:= 0;
   for i := 0 to FStream.Size - 1 do
   begin
     FStream.readBuffer(lChar, 1);
@@ -102,27 +103,27 @@ begin
     '%', '?',
     '"', '+',
     '`'
-        : begin
+       : begin
             Inc(lIndex);
-            FBuffer[lIndex] := lChar;
-          end ;
-    ',' : begin
+            FBuffer[lIndex]:= lChar;
+          end;
+    ',': begin
             _DoCellEnd(lIndex);
-          end ;
+          end;
     #13 : begin
             _DoCellEnd(lIndex);
             FOnEndOfLine;
             FOnNewLine;
             Inc(FRow);
-            FCol:= 0 ;
-          end ;
+            FCol:= 0;
+          end;
     #10 : begin
-            FCol:= 0 ;
-          end ;
+            FCol:= 0;
+          end;
     else
       // Add positional info here
-      raise Exception.Create('Invalid character <' + lChar + '>');
-    end ;
+      raise Exception.Create('Invalid character "' + lChar + '" at position ' + IntToStr(i));
+    end;
   end;
   if lIndex <> 0 then
   begin
@@ -132,11 +133,11 @@ begin
   end;
 end;
 
-procedure TtiTextParser.ParseFile(const pFileName: string);
+procedure TtiTextParser.ParseFile(const AFileName: string);
 begin
-  Assert(pFileName <> '', 'pFileName not assigned');
-  Assert(FileExists(pFileName), 'File not found <' + pFileName + '>');
-  FStream.LoadFromFile(pFileName);
+  Assert(AFileName <> '', 'AFileName not assigned');
+  Assert(FileExists(AFileName), 'File not found <' + AFileName + '>');
+  FStream.LoadFromFile(AFileName);
   Execute;
 end;
 
@@ -147,9 +148,9 @@ begin
   Execute;
 end;
 
-procedure TtiTextParser.ParseString(const pString: string);
+procedure TtiTextParser.ParseString(const AString: string);
 begin
-  tiStringToStream(pString, FStream);
+  tiStringToStream(AString, FStream);
   Execute;
 end;
 

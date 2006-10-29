@@ -9,7 +9,7 @@ uses
   ,LResources
   {$ENDIF}
   ,tiPerAwareCtrls
-  ;
+ ;
 
 type
   TtidmDefaultActionValues = class(TDataModule)

@@ -6,30 +6,29 @@ interface
 uses
   tiObject
   ,tiDataBuffer_BOM
-//  ,Contnrs
+  ,Contnrs
   ,Classes
   ,ComCtrls
-//  ,tiVisitor
+  ,tiVisitor
   ,SysUtils
   ,tiBaseObject
-//  ,tiStreams
+  ,tiStreams
   ,tiQuery
-  ;
+ ;
 
 type
 
-  TTextFileMetaData = ( tfmdFieldName{, tfmdFieldKind, tfmdFieldWidth} ) ;
-  TTextFileMetaDatas = set of TTextFileMetaData ;
+  TTextFileMetaData = (tfmdFieldName{, tfmdFieldKind, tfmdFieldWidth});
+  TTextFileMetaDatas = set of TTextFileMetaData;
 
 
-function  tiQueryToTIDataSet( const pQuery: TtiQuery; const pDataSet: TtiDataBuffer): Integer;
-function  tiDataSetToString( pDataSet : TtiDataBuffer ) : string ;
-procedure tiDataSetToTextFile( pDataSet : TtiDataBuffer ; pFileName : TFileName ) ;
-procedure tiDataSetToListView( pDataSet : TtiDataBuffer ; pLV : TListView ) ;
-procedure tiDataSetToListItem( pDataSet : TtiDataBuffer ; pItem : TListItem ) ;
-function  tiDataSetToHTML(     const pDataSet : TtiDataBuffer ) : string ;
-function  tiDataSetToHTMLV(    const pDataSet : TtiDataBuffer ) : string ;
-
+function  tiQueryToTIDataSet(const AQuery: TtiQuery; const pDataSet: TtiDataBuffer): Integer;
+function  tiDataSetToString(pDataSet : TtiDataBuffer): string;
+procedure tiDataSetToTextFile(pDataSet : TtiDataBuffer; AFileName : TFileName);
+procedure tiDataSetToListView(pDataSet : TtiDataBuffer; pLV : TListView);
+procedure tiDataSetToListItem(pDataSet : TtiDataBuffer; AItem : TListItem);
+function  tiDataSetToHTML(    const pDataSet : TtiDataBuffer): string;
+function  tiDataSetToHTMLV(   const pDataSet : TtiDataBuffer): string;
 
 {
   From TurboPowers SysTools help file, which is available on
@@ -63,13 +62,13 @@ function  tiDataSetToHTMLV(    const pDataSet : TtiDataBuffer ) : string ;
 }
 
 type
-  TExtractTokenEvent = procedure( pIndex : integer ; const pValue : string ) of object ;
+  TExtractTokenEvent = procedure(AIndex : integer; const AValue : string) of object;
 
-function stExtractTokensL( const S : AnsiString ;
-                           const Delims  : AnsiString;
-                           QuoteChar  : AnsiChar;
+function stExtractTokensL(const S : AnsiString;
+                           const Delims : AnsiString;
+                           QuoteChar : AnsiChar;
                            AllowNulls : Boolean;
-                           pExtractTokenEvent : TExtractTokenEvent ) : Cardinal;
+                           pExtractTokenEvent : TExtractTokenEvent): Cardinal;
 
 implementation
 uses
@@ -80,167 +79,164 @@ uses
   ,Windows
   {$ENDIF}
   ,tiConstants
-  ;
+ ;
 
-
-function  tiQueryToTIDataSet( const pQuery: TtiQuery; const pDataSet: TtiDataBuffer): Integer;
-  procedure _AssignMetaData(const pQuery: TtiQuery; const pDataSet: TtiDataBuffer);
+function  tiQueryToTIDataSet(const AQuery: TtiQuery; const pDataSet: TtiDataBuffer): Integer;
+  procedure _AssignMetaData(const AQuery: TtiQuery; const pDataSet: TtiDataBuffer);
     var
-    i : integer ;
-    lField : TtiDBMetaDataField ;
+    i : integer;
+    lField : TtiDBMetaDataField;
   begin
-    for i := 0 to pQuery.FieldCount - 1 do
+    for i := 0 to AQuery.FieldCount - 1 do
     begin
-      lField := TtiDBMetaDataField.Create ;
-      lField.ObjectState := posClean ;
-      lField.Name := pQuery.FieldName( i ) ;
-      lField.Kind := pQuery.FieldKind( i ) ;
-      pDataSet.Fields.Add( lField ) ;
-    end ;
+      lField := TtiDBMetaDataField.Create;
+      lField.ObjectState := posClean;
+      lField.Name := AQuery.FieldName(i);
+      lField.Kind := AQuery.FieldKind(i);
+      pDataSet.Fields.Add(lField);
+    end;
   end;
 
-  procedure _QueryRowToDataSet(const pQuery: TtiQuery; const pDataSet: TtiDataBuffer);
+  procedure _QueryRowToDataSet(const AQuery: TtiQuery; const pDataSet: TtiDataBuffer);
   var
-    i     : integer ;
-    lRow  : TtiDataBufferRow ;
-    lCell : TtiDataBufferCell ;
+    i    : integer;
+    lRow : TtiDataBufferRow;
+    lCell : TtiDataBufferCell;
     lStream : TMemoryStream;
   begin
-    lRow := TtiDataBufferRow.Create ;
-    pDataSet.Add( lRow ) ;
-    for i := 0 to pQuery.FieldCount - 1 do
+    lRow := TtiDataBufferRow.Create;
+    pDataSet.Add(lRow);
+    for i := 0 to AQuery.FieldCount - 1 do
     begin
-      lCell := TtiDataBufferCell.Create ;
-      case pQuery.FieldKind(i) of
+      lCell := TtiDataBufferCell.Create;
+      case AQuery.FieldKind(i) of
       qfkString,                                  
-      qfkLongString : lCell.ValueAsString   := pQuery.FieldAsStringByIndex[i];
-      qfkInteger    : lCell.ValueAsInteger  := pQuery.FieldAsIntegerByIndex[i];
-      qfkFloat      : lCell.ValueAsFloat    := pQuery.FieldAsFloatByIndex[i];
-      qfkDateTime   : lCell.ValueAsDateTime := pQuery.FieldAsDateTimeByIndex[i];
-      qfkLogical    : lCell.ValueAsBool     := pQuery.FieldAsBooleanByIndex[i];
-      qfkBinary     : begin
+      qfkLongString : lCell.ValueAsString  := AQuery.FieldAsStringByIndex[i];
+      qfkInteger   : lCell.ValueAsInteger := AQuery.FieldAsIntegerByIndex[i];
+      qfkFloat     : lCell.ValueAsFloat   := AQuery.FieldAsFloatByIndex[i];
+      qfkDateTime  : lCell.ValueAsDateTime := AQuery.FieldAsDateTimeByIndex[i];
+      qfkLogical   : lCell.ValueAsBool    := AQuery.FieldAsBooleanByIndex[i];
+      qfkBinary    : begin
                         lStream := TMemoryStream.Create;
                         try
-                          pQuery.AssignFieldAsStreamByIndex(i,lStream);
+                          AQuery.AssignFieldAsStreamByIndex(i,lStream);
                           lCell.AssignFromStream(lStream);
                         finally
                           lStream.Free;
                         end;
-                      end ;
+                      end;
       else
-        raise Exception.Create('Invalid tiQuery.FieldKind') ;
-      end ;
-      lRow.Add( lCell ) ;
-    end ;
+        raise Exception.Create('Invalid tiQuery.FieldKind');
+      end;
+      lRow.Add(lCell);
+    end;
   end;
 begin
-  Assert( pQuery.TestValid(TtiQuery), cTIInvalidObjectError );
-  Assert( pDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError );
-  _AssignMetaData(pQuery, pDataSet);
-  while not pQuery.EOF do
+  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(pDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  _AssignMetaData(AQuery, pDataSet);
+  while not AQuery.EOF do
   begin
-    _QueryRowToDataSet(pQuery, pDataSet);
-    pQuery.Next;
+    _QueryRowToDataSet(AQuery, pDataSet);
+    AQuery.Next;
   end;
-  Result := 0 ;
-end ;
+  Result := 0;
+end;
 
-
-function  tiDataSetToString( pDataSet : TtiDataBuffer ) : string ;
+function  tiDataSetToString(pDataSet : TtiDataBuffer): string;
 var
-  i, j : integer ;
-  lsLine : string ;
+  i, j : integer;
+  lsLine : string;
 begin
 
-  Result := '' ;
+  Result := '';
 
   for i := 0 to pDataSet.Fields.Count-1 do
   begin
-    Result := tiAddTrailingValue( Result, ',' ) ;
-    Result := Result + pDataSet.Fields.Items[i].Name ;
-  end ;
-  Result := Result + CrLf ;
+    Result := tiAddTrailingValue(Result, ',');
+    Result := Result + pDataSet.Fields.Items[i].Name;
+  end;
+  Result := Result + CrLf;
 
   for i := 0 to pDataSet.Count - 1 do
   begin
-    lsLine := '' ;
+    lsLine := '';
     for j := 0 to pDataSet.Items[i].Count-1 do
     begin
-      lsLine := tiAddTrailingValue( lsLine, ',' ) ;
-      lsLine := lsLine + pDataSet.Items[i].Items[j].ValueAsString ;
-    end ;
-    Result := Result + CrLf ;
-    Result := Result + lsLine ;
-  end ;
+      lsLine := tiAddTrailingValue(lsLine, ',');
+      lsLine := lsLine + pDataSet.Items[i].Items[j].ValueAsString;
+    end;
+    Result := Result + CrLf;
+    Result := Result + lsLine;
+  end;
+
 end;
 
-
-procedure tiDataSetToTextFile( pDataSet : TtiDataBuffer ; pFileName : TFileName ) ;
+procedure tiDataSetToTextFile(pDataSet : TtiDataBuffer; AFileName : TFileName);
 var
-  ls : string ;
+  ls : string;
 begin
   ls := tiDataSetToString(pDataSet);
-  tiStringToFile( ls, pFileName ) ;
+  tiStringToFile(ls, AFileName);
 end;
 
-
-procedure tiDataSetToListView( pDataSet : TtiDataBuffer ; pLV : TListView ) ;
+procedure tiDataSetToListView(pDataSet : TtiDataBuffer; pLV : TListView);
 var
-  lCol : TListColumn ;
-  i : integer ;
+  lCol : TListColumn;
+  i : integer;
 begin
 
-  Assert( pLV <> nil, 'ListView not assigned' ) ;
+  Assert(pLV <> nil, 'ListView not assigned');
 
   {$IFDEF FPC}
   pLV.Items.Clear;
   {$ELSE}
-  pLV.Items.Count := 0 ;
+  pLV.Items.Count := 0;
   {$ENDIF}
-  pLV.Columns.Clear ;
+  pLV.Columns.Clear;
 
   if pDataSet = nil then
-    Exit ; //==>
+    Exit; //==>
 
   for i := 0 to pDataSet.Fields.Count-1 do
   begin
-    lCol := pLV.Columns.Add ;
-    lCol.Caption := pDataSet.Fields.Items[i].Name ;
-    lCol.Width   := Trunc( pLV.Canvas.TextWidth( pDataSet.Fields.Items[ i ].Name ) * 1.2 ) ;
-  end ;
+    lCol := pLV.Columns.Add;
+    lCol.Caption := pDataSet.Fields.Items[i].Name;
+    lCol.Width  := Trunc(pLV.Canvas.TextWidth(pDataSet.Fields.Items[ i ].Name) * 1.2);
+  end;
 
   {$IFNDEF FPC}
-  pLV.OwnerData   := true ;
-  pLV.Items.Count := pDataSet.Count ;
+  pLV.OwnerData  := true;
+  pLV.Items.Count := pDataSet.Count;
   {$ELSE}
     {$NOTE Double check that this may be done and that is works! }
   {$ENDIF}
-end ;
 
+end;
 
-procedure tiDataSetToListItem(pDataSet: TtiDataBuffer; pItem: TListItem);
+procedure tiDataSetToListItem(pDataSet: TtiDataBuffer; AItem: TListItem);
 var
-  i : integer ;
-  lsValue : string ;
+  i : integer;
+  lsValue : string;
 begin
   // Setup the listItem for column 0
-  lsValue := pDataSet.Items[pItem.Index].Items[0].ValueAsString ;
-  pItem.Caption := lsValue ;
-  pItem.ListView.Column[0].Width :=
-      Max( pItem.ListView.Column[0].Width,
-           Trunc(pItem.ListView.Canvas.TextWidth( lsValue )*1.1)) ;
+  lsValue := pDataSet.Items[AItem.Index].Items[0].ValueAsString;
+  AItem.Caption := lsValue;
+  AItem.ListView.Column[0].Width :=
+      Max(AItem.ListView.Column[0].Width,
+           Trunc(AItem.ListView.Canvas.TextWidth(lsValue)*1.1));
 
   // Setup the listItem for columns 1..n
   for i := 1 to pDataSet.Fields.Count-1 do
   begin
-    lsValue := pDataSet.Items[pItem.Index].Items[i].ValueAsString ;
-    pItem.SubItems.Add( lsValue ) ;
-    pItem.ListView.Column[i].Width :=
-      Max( pItem.ListView.Column[i].Width,
-           Trunc(pItem.ListView.Canvas.TextWidth( lsValue )*1.1)) ;
-  end ;
-end;
+    lsValue := pDataSet.Items[AItem.Index].Items[i].ValueAsString;
+    AItem.SubItems.Add(lsValue);
+    AItem.ListView.Column[i].Width :=
+      Max(AItem.ListView.Column[i].Width,
+           Trunc(AItem.ListView.Canvas.TextWidth(lsValue)*1.1));
+  end;
 
+end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //
@@ -252,22 +248,19 @@ end;
 // values in a data set read from a CSV file.
 //
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
 {.Z+}
 type
   stLStrRec = record
     AllocSize : Longint;
-    RefCount  : Longint;
-    Length    : Longint;
+    RefCount : Longint;
+    Length   : Longint;
   end;
-
 
 const
   stStrOffset = SizeOf(stLStrRec);
 {.Z-}
 
-
-function stCharExistsL(const S : AnsiString; C : AnsiChar) : Boolean; register;
+function stCharExistsL(const S : AnsiString; C : AnsiChar): Boolean; register;
 {$IFDEF FPC}begin{$ENDIF}
   {-Count the number of a given character in a string. }
 asm
@@ -327,22 +320,21 @@ asm
 end;
 {$IFDEF FPC}end;{$ENDIF}
 
-
-function stExtractTokensL( const S : AnsiString ;
-                           const Delims  : AnsiString;
-                           QuoteChar  : AnsiChar;
+function stExtractTokensL(const S : AnsiString;
+                           const Delims : AnsiString;
+                           QuoteChar : AnsiChar;
                            AllowNulls : Boolean;
-                           pExtractTokenEvent : TExtractTokenEvent ) : Cardinal;
+                           pExtractTokenEvent : TExtractTokenEvent): Cardinal;
 var
   State : (ScanStart,
            ScanQuotedToken,
            ScanQuotedTokenEnd,
            ScanNormalToken,
            ScanNormalTokenWithQuote);
-  CurChar    : AnsiChar;
+  CurChar   : AnsiChar;
   TokenStart : integer;
-  Inx        : integer;
-  lResult    : string ;
+  Inx       : integer;
+  lResult   : string;
 begin
   {Notes: this routine implements the following state machine
     start ----> ScanStart
@@ -534,43 +526,41 @@ begin
   end;
 end;
 
-
-function tiDataSetToHTML(const pDataSet : TtiDataBuffer ) : string ;
+function  tiDataSetToHTML(const pDataSet : TtiDataBuffer): string;
 var
-  i,j : integer ;
-  ls : string ;
+  i,j : integer;
+  ls : string;
 begin
   result :=
     '<table border=2 align="centre">' +
     '<tr>' +
-    '<th align="centre" colspan=' + IntToStr( pDataSet.Fields.Count ) + '>' +
+    '<th align="centre" colspan=' + IntToStr(pDataSet.Fields.Count) + '>' +
     '<p>' + pDataSet.Name + '</p>' +
     '</td>' +
     '</tr>' +
-    '<tr>' ;
+    '<tr>';
   for i := 0 to pDataSet.Fields.Count - 1 do
-    result := result + '<th>' + pDataSet.Fields.Items[i].Name ;
+    result := result + '<th>' + pDataSet.Fields.Items[i].Name;
 
   for i := 0 to pDataSet.Count - 1 do
   begin
-    result := result + '<tr>' ;
+    result := result + '<tr>';
     for j := 0 to pDataSet.Items[i].Count - 1 do
     begin
       if pDataSet.Items[i].Items[j] <> nil then
         ls := pDataSet.Items[i].Items[j].ValueAsString
       else
-        ls := '*' ; // This will add a '*' for empty rows
-      result := result + '<td>' + ls ;
-    end ;
-  end ;
+        ls := '*'; // This will add a '*' for empty rows
+      result := result + '<td>' + ls;
+    end;
+  end;
   result := result + '</table>'
-end ;
+end;
 
-
-function  tiDataSetToHTMLV(const pDataSet : TtiDataBuffer ) : string ;
+function  tiDataSetToHTMLV(const pDataSet : TtiDataBuffer): string;
 var
-  i,j : integer ;
-  ls : string ;
+  i,j : integer;
+  ls : string;
 begin
   result :=
     '<table border=2 align="centre">' +
@@ -579,23 +569,21 @@ begin
     '<p>' + pDataSet.Name + '</p>' +
     '</td>' +
     '</tr>' +
-    '<tr>' ;
+    '<tr>';
   for i := 0 to pDataSet.Fields.Count - 1 do
   begin
-    result := result + '<tr>' ;
-    result := result + '<td>' + pDataSet.Fields.Items[i].Name ;
+    result := result + '<tr>';
+    result := result + '<td>' + pDataSet.Fields.Items[i].Name;
     for j := 0 to pDataSet.Count - 1 do
     begin
       if pDataSet.Items[j].Items[i] <> nil then
         ls := pDataSet.Items[j].Items[i].ValueAsString
       else
-        ls := '*' ; // This will add a '*' for empty rows
-      result := result + '<td>' + ls ;
-    end ;
-  end ;
+        ls := '*'; // This will add a '*' for empty rows
+      result := result + '<td>' + ls;
+    end;
+  end;
   result := result + '</table>'
 end;
 
-
 end.
-

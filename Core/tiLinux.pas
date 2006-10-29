@@ -6,7 +6,7 @@ unit tiLinux;
 interface
 uses
   SysUtils
-  ;
+ ;
 
   { Wraps the Linux call in a method with the equavalent Windows name }
   function  GetCurrentThreadID: Cardinal;
@@ -22,7 +22,7 @@ uses
   ,Process
   ,LCLIntf      // Delphi compatabilty unit for Linux
   ,unix
-  ;
+ ;
 
 
 function GetCurrentThreadID: Cardinal;

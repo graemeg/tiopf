@@ -34,13 +34,13 @@ unit ADOX_TLB;
 //   Hint: Parameter 'Type' of Keys.Append changed to 'Type_'
 //   Hint: Symbol 'Type' renamed to 'type_'
 //   Hint: Symbol 'Type' renamed to 'type_'
-//   Error creating palette bitmap of (TADOXTable) : Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXColumn) : Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXIndex) : Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXKey) : Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXGroup) : Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXUser) : Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
-//   Error creating palette bitmap of (TADOXCatalog) : Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXTable): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXColumn): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXIndex): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXKey): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXGroup): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXUser): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
+//   Error creating palette bitmap of (TADOXCatalog): Server C:\Program Files\Common Files\System\ADO\msadox.dll contains no icons
 // ************************************************************************ //
 // *************************************************************************//
 // NOTE:                                                                      
@@ -68,9 +68,9 @@ uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL
 
 // *********************************************************************//
 // GUIDS declared in the TypeLibrary. Following prefixes are used:        
-//   Type Libraries     : LIBID_xxxx                                      
-//   CoClasses          : CLASS_xxxx                                      
-//   DISPInterfaces     : DIID_xxxx                                       
+//   Type Libraries    : LIBID_xxxx                                      
+//   CoClasses         : CLASS_xxxx                                      
+//   DISPInterfaces    : DIID_xxxx                                       
 //   Non-DISP interfaces: IID_xxxx                                        
 // *********************************************************************//
 const
@@ -612,7 +612,7 @@ type
     function Get_type_: DataTypeEnum; safecall;
     function Get_Attributes: Integer; safecall;
     procedure Set_Attributes(plAttributes: Integer); safecall;
-    property Value: OleVariant read Get_Value write Set_Value;
+    property AValue: OleVariant read Get_Value write Set_Value;
     property Name: WideString read Get_Name;
     property type_: DataTypeEnum read Get_type_;
     property Attributes: Integer read Get_Attributes write Set_Attributes;
@@ -625,7 +625,7 @@ type
 // *********************************************************************//
   Property_Disp = dispinterface
     ['{00000503-0000-0010-8000-00AA006D2EA4}']
-    property Value: OleVariant dispid 0;
+    property AValue: OleVariant dispid 0;
     property Name: WideString readonly dispid 1;
     property type_: DataTypeEnum readonly dispid 2;
     property Attributes: Integer dispid 3;
@@ -1140,12 +1140,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TADOXTable
-// Help String      : 
+// Server Object   : TADOXTable
+// Help String     : 
 // Default Interface: _Table
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TADOXTableProperties= class;
@@ -1197,7 +1197,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TADOXTable
+// Server Object   : TADOXTable
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -1243,12 +1243,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TADOXColumn
-// Help String      : 
+// Server Object   : TADOXColumn
+// Help String     : 
 // Default Interface: _Column
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TADOXColumnProperties= class;
@@ -1309,7 +1309,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TADOXColumn
+// Server Object   : TADOXColumn
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -1370,12 +1370,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TADOXIndex
-// Help String      : 
+// Server Object   : TADOXIndex
+// Help String     : 
 // Default Interface: _Index
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TADOXIndexProperties= class;
@@ -1425,7 +1425,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TADOXIndex
+// Server Object   : TADOXIndex
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -1474,12 +1474,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TADOXKey
-// Help String      : 
+// Server Object   : TADOXKey
+// Help String     : 
 // Default Interface: _Key
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TADOXKeyProperties= class;
@@ -1527,7 +1527,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TADOXKey
+// Server Object   : TADOXKey
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -1575,12 +1575,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TADOXGroup
-// Help String      : 
+// Server Object   : TADOXGroup
+// Help String     : 
 // Default Interface: _Group
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TADOXGroupProperties= class;
@@ -1617,7 +1617,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TADOXGroup
+// Server Object   : TADOXGroup
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -1654,12 +1654,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TADOXUser
-// Help String      : 
+// Server Object   : TADOXUser
+// Help String     : 
 // Default Interface: _User
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TADOXUserProperties= class;
@@ -1696,7 +1696,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TADOXUser
+// Server Object   : TADOXUser
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//
@@ -1733,12 +1733,12 @@ type
 
 // *********************************************************************//
 // OLE Server Proxy class declaration
-// Server Object    : TADOXCatalog
-// Help String      : 
+// Server Object   : TADOXCatalog
+// Help String     : 
 // Default Interface: _Catalog
-// Def. Intf. DISP? : No
+// Def. Intf. DISP?: No
 // Event   Interface: 
-// TypeFlags        : (2) CanCreate
+// TypeFlags       : (2) CanCreate
 // *********************************************************************//
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
   TADOXCatalogProperties= class;
@@ -1790,7 +1790,7 @@ type
 {$IFDEF LIVE_SERVER_AT_DESIGN_TIME}
 // *********************************************************************//
 // OLE Server Properties Proxy Class
-// Server Object    : TADOXCatalog
+// Server Object   : TADOXCatalog
 // (This object is used by the IDE's Property Inspector to allow editing
 //  of the properties of this server)
 // *********************************************************************//

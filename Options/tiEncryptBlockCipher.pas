@@ -1,31 +1,10 @@
 { * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  Originally developed by TechInsite Pty. Ltd.
-  23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-  PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-  Phone: +61 3 9419 6456
-  Fax:   +61 3 9419 1682
-  Web:   www.techinsite.com.au
-
-  This code is made available on the TechInsite web site as open source.
-  You may use this code in any way you like, except to sell it to other
-  developers. Please be sure to leave the file header and list of
-  contributors unchanged.
-
-  If you make any changes or enhancements, which you think will benefit other
-  developers and will not break any existing code, please forward your changes
-  (well commented) to TechInsite and I will make them available in the next
-  version.
 
   Purpose:
     Provide String, Stream and File (via TStrings) encryption & decryption.
 
   Classes:
     TtiEncryptBlockCipher - Base class for DES and Blow Fish encryption
-
-  Revision History:
-    ???,  ????, Scott Maskiel, Created
-
-  ToDo:
 
   Acknowledgements:
     This code was found on the web and refactored to fit the TtiEncryptXxxxxx interface.
@@ -101,15 +80,12 @@
   performance degredation.
 }
 
+unit tiEncryptBlockCipher;
 
 {$I tiDefines.inc}
 
 // Turn off writable const
 (*$J-*)
-
-
-
-unit tiEncryptBlockCipher;
 
 interface
 
@@ -117,11 +93,11 @@ uses
    SysUtils
   ,Classes
   ,tiEncrypt
-  ;
+ ;
 
 type
   PDWORD = ^DWORD;
-  DWORD = Longword ;
+  DWORD = Longword;
   TDoubleDWORD = packed record
     L, R: DWORD;
   end;
@@ -147,10 +123,10 @@ type
 
     // from TtiEncrypt...
     constructor Create; override;
-    function    EncryptString( const psData : string ) : string ; override ;
-    function    DecryptString( const psData : string ) : string ; override ;
-    procedure   EncryptStream( const pSrc, pDest : TStream ) ; override ;
-    procedure   DecryptStream( const pSrc, pDest : TStream ) ; override ;
+    function    EncryptString(const psData : string): string; override;
+    function    DecryptString(const psData : string): string; override;
+    procedure   EncryptStream(const pSrc, pDest : TStream); override;
+    procedure   DecryptStream(const pSrc, pDest : TStream); override;
   end;
 
 implementation
@@ -189,8 +165,8 @@ var
   Buf: Pointer;
   P: ^Byte;
 begin
-  pSrc.Position := 0 ;
-  pDest.Size := 0 ;
+  pSrc.Position := 0;
+  pDest.Size := 0;
   ThisBlockSize := BlockSize;
   Count := pSrc.Size - pSrc.Position;
   if (Count = 0) or (Count mod ThisBlockSize <> 0) then
@@ -229,8 +205,8 @@ var
   P: ^Byte;
   LastBuf: Boolean;
 begin
-  pSrc.Position := 0 ;
-  pDest.Size := 0 ;
+  pSrc.Position := 0;
+  pDest.Size := 0;
   P := nil; // Suppresses superfluous compiler warning.
   Count := 0; // Ditto.
   ThisBlockSize := BlockSize;
@@ -257,7 +233,7 @@ begin
   // extra padding bytes will be ThisBlockSize, i.e. the entire final block
   // is junk. In any other case, the last block has at least some ciphertext.
   Inc(P, ThisBlockSize - 1);
-  P^ := Byte(ThisBlockSize - Count mod ThisBlockSize);
+  P^:= Byte(ThisBlockSize - Count mod ThisBlockSize);
   Inc(Count, P^);
   Dec(P, ThisBlockSize - 1);
   EncryptBlock(P^);
@@ -280,7 +256,7 @@ begin
   lPS := Pointer(psData);
   lPD := Pointer(Result);
   for I := 1 to lNumBlocks do begin
-    lPD^ := EncryptedBlock(lPS^);
+    lPD^:= EncryptedBlock(lPS^);
     Inc(lPS);
     Inc(lPD);
   end;
@@ -297,7 +273,7 @@ begin
    address without dereferencing.
   }
   Move(lPS^, lSource, SizeOf(Int64) - lNumPadBytes);
-  lPD^ := EncryptedBlock(lSource);
+  lPD^:= EncryptedBlock(lSource);
 end;
 
 function TtiEncryptBlockCipher.DecryptString(const psData: string): string;
@@ -327,7 +303,7 @@ begin
   lPS := Pointer(psData);
   lPD := Pointer(Result);
   for I := 1 to Length(Result) div SizeOf(Int64) do begin
-    lPD^ := DecryptedBlock(lPS^);
+    lPD^:= DecryptedBlock(lPS^);
     Inc(lPS);
     Inc(lPD);
   end;

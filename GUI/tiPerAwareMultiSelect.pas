@@ -1,38 +1,6 @@
-{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  The contents of this file are subject to the Mozilla Public
-  License Version 1.1 (the "License"); you may not use this file
-  except in compliance with the License. You may obtain a copy of
-  the License at http://www.mozilla.org/MPL/
-
-  Software distributed under the License is distributed on an "AS
-  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  implied. See the License for the specific language governing
-  rights and limitations under the License.
-
-  Originally developed and released by Peter Hinrichsen, TechInsite Pty. Ltd.
-  as the tiOPF (TechInsite Object Persistence Framework)
-
-    23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-    PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-    Phone: +61 3 9419 6456 Fax:   +61 3 9419 1682
-    Latest source:   www.techinsite.com.au/tiOPF/Download.htm
-    Documentation:   www.techinsite.com.au/tiOPF/Doc/
-    Support:         www.techinsite.com.au/tiOPF/MailingList.htm
-
-  Please submit changes to tiOPF@techinsite.com.au
-
-  Change history:
-    June 1998, PWH, Created
-    July 2001, PHW, Changed to be TtiListView based
-
-  Purpose:
-    Component for drag-and-drop selection of 0-n items from a list.
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
+unit tiPerAwareMultiSelect;
 
 {$I tiDefines.inc}
-
-unit tiPerAwareMultiSelect ;
 
 interface
 uses
@@ -55,78 +23,78 @@ uses
   ,tiListView
   ,ImgList
   ,tiObject
-  ;
+ ;
 
 type
 
-  TtiMultiSelectListView = class( TtiCustomListView )
+  TtiMultiSelectListView = class(TtiCustomListView)
   public
     property MultiSelect;
   end;
 
 
   // TtiPerAwareMultiSelect
-  TtiPerAwareMultiSelect = class( TCustomGroupBox )
+  TtiPerAwareMultiSelect = class(TCustomGroupBox)
   private
-    FlblAvailable     : TLabel ;
-    FlblSelected      : TLabel ;
-    FlvAvailable      : TtiMultiSelectListView ;
-    FlvSelected       : TtiMultiSelectListView ;
-    FsbSelectMarked   : TtiSpeedButton ;
-    FsbDeSelectMarked : TtiSpeedButton ;
-    FsbSelectAll      : TtiSpeedButton ;
-    FsbDeSelectAll    : TtiSpeedButton ;
+    FlblAvailable    : TLabel;
+    FlblSelected     : TLabel;
+    FlvAvailable     : TtiMultiSelectListView;
+    FlvSelected      : TtiMultiSelectListView;
+    FsbSelectMarked  : TtiSpeedButton;
+    FsbDeSelectMarked : TtiSpeedButton;
+    FsbSelectAll     : TtiSpeedButton;
+    FsbDeSelectAll   : TtiSpeedButton;
 
-    FAvailable : TtiObjectList ;
-    FSelected  : TtiObjectList ;
+    FAvailable : TtiObjectList;
+    FSelected : TtiObjectList;
 
     FbBorder: boolean;
     FOnChange: TNotifyEvent;
 
-    FSelectedIndex : integer ;
-    FAvailableIndex : integer ;
-//    FListColumns : TtiListColumns ;
+    FSelectedIndex : integer;
+    FAvailableIndex : integer;
+//    FListColumns : TtiListColumns;
     FApplyFilter: Boolean;
     FOnFilterData: TtiLVOnFilterDataEvent;
 
-    FTimerSetData : TTimer ;
+    FTimerSetData : TTimer;
 
     {$IFNDEF FPC}
-    procedure WMSize( var Message: TWMSize ) ; message WM_SIZE ;
+    procedure WMSize(var Message: TWMSize); message WM_SIZE;
     {$ELSE}
-    procedure WMSize( var Message: TLMSize ) ; message LM_SIZE ;
+    procedure WMSize(var Message: TLMSize); message LM_SIZE;
     {$ENDIF}
-    procedure SelectOne( pData : TtiObject ) ;
-    procedure DeSelectOne( pData : TtiObject ) ;
+    procedure SelectOne(AData : TtiObject);
+    procedure DeSelectOne(AData : TtiObject);
 
-    procedure DosbSelectMarkedClick( sender: TObject ) ;
-    procedure DosbDeSelectMarkedClick( sender: TObject ) ;
+    procedure DosbSelectMarkedClick(sender: TObject);
+    procedure DosbDeSelectMarkedClick(sender: TObject);
 
-    procedure DosbSelectAllClick( sender: TObject ) ;
-    procedure DosbDeSelectAllClick( sender: TObject ) ;
+    procedure DosbSelectAllClick(sender: TObject);
+    procedure DosbDeSelectAllClick(sender: TObject);
 
-    procedure DoLVAvailableKeyPress( Sender: TObject; var Key: Char ) ;
-    procedure DoLVSelectedKeyPress( Sender: TObject; var Key: Char ) ;
+    procedure DoLVAvailableKeyPress(Sender: TObject; var Key: Char);
+    procedure DoLVSelectedKeyPress(Sender: TObject; var Key: Char);
 
-    procedure DoLVAvailableDblClick( pLV: TtiCustomListView;
-                                     pData: TtiObject;
-                                     pItem: TListItem);
+    procedure DoLVAvailableDblClick(pLV: TtiCustomListView;
+                                     AData: TtiObject;
+                                     AItem: TListItem);
 
-    procedure DoLVSelectedDblClick(  pLV: TtiCustomListView;
-                                     pData: TtiObject;
-                                     pItem: TListItem);
-    procedure DoLVAvailableFilterData( pData: TtiObject;
+    procedure DoLVSelectedDblClick( pLV: TtiCustomListView;
+                                     AData: TtiObject;
+                                     AItem: TListItem);
+    procedure DoLVAvailableFilterData(AData: TtiObject;
                                        var pbInclude: Boolean);
 
-    procedure SetBorder(const Value: boolean);
-    procedure SetAvailable( Value: TtiObjectList);
-    procedure SetSelected( Value: TtiObjectList);
+    procedure SetBorder(const AValue: boolean);
+    procedure SetAvailable(AValue: TtiObjectList);
+    procedure SetSelected(AValue: TtiObjectList);
     function  GetCaptionAvailable: string;
     function  GetCaptionSelected: string;
-    procedure SetCaptionAvailable(const Value: string);
-    procedure SetCaptionSelected(const Value: string);
-    procedure BeginUpdate ;
-    procedure EndUpdate ;
+    procedure SetCaptionAvailable(const AValue: string);
+    procedure SetCaptionSelected(const AValue: string);
+    procedure BeginUpdate;
+    procedure EndUpdate;
     procedure DoLVAvailableCanAcceptDrop(ptiLVSource: TtiCustomListView;
       pDataSource: TtiObject; ptiLVTarget: TtiCustomListView;
       pDataTarget: TtiObject; var pbConfirm: Boolean);
@@ -139,403 +107,403 @@ type
     procedure DoLVSelectedDrop(ptiLVSource: TtiCustomListView;
       pDataSource: TtiObject; ptiLVTarget: TtiCustomListView;
       pDataTarget: TtiObject);
-    procedure DoOnChange ;
+    procedure DoOnChange;
     function  GetRunTimeSelectedCols: boolean;
-    procedure SetRunTimeSelectedCols(const Value: boolean);
+    procedure SetRunTimeSelectedCols(const AValue: boolean);
     procedure DoOnTimerSetData(Sender: TObject);
     function  GetImages: TCustomImageList;
     procedure SetImages(const pImages: TCustomImageList);
     function  GetOnGetImageIndex: TtiLVGetImageIndexEvent;
-    procedure SetOnGetImageIndex(const Value: TtiLVGetImageIndexEvent);
+    procedure SetOnGetImageIndex(const AValue: TtiLVGetImageIndexEvent);
   protected
   {$IFNDEF FPC}
-    procedure Paint ; override ;
+    procedure Paint; override;
   {$ENDIF}
   published
-    property    Align ;
-    property    Caption ;
-    property    Anchors ;
-    property    ShowHint ;
-    property    Border : boolean read FbBorder write SetBorder ;
-    property    OnChange : TNotifyEvent read FOnChange write FOnChange ;
-    property    CaptionAvailable : string read GetCaptionAvailable write SetCaptionAvailable ;
-    property    CaptionSelected  : string read GetCaptionSelected  write SetCaptionSelected ;
+    property    Align;
+    property    Caption;
+    property    Anchors;
+    property    ShowHint;
+    property    Border : boolean read FbBorder write SetBorder;
+    property    OnChange : TNotifyEvent read FOnChange write FOnChange;
+    property    CaptionAvailable : string read GetCaptionAvailable write SetCaptionAvailable;
+    property    CaptionSelected : string read GetCaptionSelected  write SetCaptionSelected;
 //    property    ListColumns : TtiListColumns
 //                  read FListColumns
-//                  write FListColumns ;
+//                  write FListColumns;
     property    RunTimeSelectedCols : boolean
                     read GetRunTimeSelectedCols
-                    write SetRunTimeSelectedCols ;
-    property    Visible ;
+                    write SetRunTimeSelectedCols;
+    property    Visible;
     property    Images: TCustomImageList read GetImages Write SetImages;
-    property    OnGetImageIndex : TtiLVGetImageIndexEvent read GetOnGetImageIndex Write SetOnGetImageIndex ;
-    property    ApplyFilter : boolean read FApplyFilter write FApplyFilter ;
-    property    OnFilterData : TtiLVOnFilterDataEvent read  FOnFilterData write FOnFilterData ;
+    property    OnGetImageIndex : TtiLVGetImageIndexEvent read GetOnGetImageIndex Write SetOnGetImageIndex;
+    property    ApplyFilter : boolean read FApplyFilter write FApplyFilter;
+    property    OnFilterData : TtiLVOnFilterDataEvent read  FOnFilterData write FOnFilterData;
 
   public
-    constructor Create( AOwner : TComponent ) ; override ;
-    destructor  Destroy ; override ;
+    constructor Create(AOwner : TComponent); override;
+    destructor  Destroy; override;
     procedure   DoSelectAll;
     procedure   DoDeSelectAll;
-    property    Available : TtiObjectList read FAvailable write SetAvailable ;
-    property    Selected  : TtiObjectList read FSelected  write SetSelected  ;
-    procedure   RefreshData ;
-    procedure   AddColumn( const pFieldName : string ;
-                           const pDataType  : TlvTypeKind ;
-                           const pDisplayLabel : string = '' ;
-                           pColWidth : integer = -1 );
+    property    Available : TtiObjectList read FAvailable write SetAvailable;
+    property    Selected : TtiObjectList read FSelected  write SetSelected ;
+    procedure   RefreshData;
+    procedure   AddColumn(const AFieldName : string;
+                           const pDataType : TlvTypeKind;
+                           const pDisplayLabel : string = '';
+                           pColWidth : integer = -1);
   end;
 
 implementation
 uses
   tiResources
   ,tiConstants
-  ;
+ ;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
 //* TtiPerAwareMultiSelect
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-constructor TtiPerAwareMultiSelect.Create( AOwner : TComponent ) ;
+constructor TtiPerAwareMultiSelect.Create(AOwner : TComponent);
 begin
-  FbBorder          := true ;
+  FbBorder         := true;
 
-  inherited Create( AOwner ) ;
+  inherited Create(AOwner);
 
   // Had problems with csAcceptsControls being removed at runtime.
   // It was causing flicker when the panel was resized and owned components
   // where not being redrawn properly.
-  if ( csDesigning in ComponentState ) then
-    ControlStyle   := ControlStyle - [csAcceptsControls] ;
+  if (csDesigning in ComponentState) then
+    ControlStyle  := ControlStyle - [csAcceptsControls];
 
-  FlblAvailable     := TLabel.Create( self ) ;
-  FlblSelected      := TLabel.Create( self ) ;
-  FlvAvailable      := TtiMultiSelectListView.Create( self ) ;
-  FlvSelected       := TtiMultiSelectListView.Create( self ) ;
-  FsbSelectMarked   := TtiSpeedButton.Create( self ) ;
-  FsbDeSelectMarked := TtiSpeedButton.Create( self ) ;
-  FsbSelectAll      := TtiSpeedButton.Create( self ) ;
-  FsbDeSelectAll    := TtiSpeedButton.Create( self ) ;
+  FlblAvailable    := TLabel.Create(self);
+  FlblSelected     := TLabel.Create(self);
+  FlvAvailable     := TtiMultiSelectListView.Create(self);
+  FlvSelected      := TtiMultiSelectListView.Create(self);
+  FsbSelectMarked  := TtiSpeedButton.Create(self);
+  FsbDeSelectMarked := TtiSpeedButton.Create(self);
+  FsbSelectAll     := TtiSpeedButton.Create(self);
+  FsbDeSelectAll   := TtiSpeedButton.Create(self);
 
-  self.height      := 200 ;
-  self.width       := 200 ;
-  self.Constraints.MinHeight := 157 ;
-  self.Constraints.MinWidth  := 149 ;
+  self.height     := 200;
+  self.width      := 200;
+  self.Constraints.MinHeight := 157;
+  self.Constraints.MinWidth := 149;
 
   with FlblAvailable do begin
-    parent := self ;
-    top    :=  16 ;
-    left   :=   8 ;
-    caption := '&Available' ;
-    FocusControl := FlvAvailable ;
-  end ;
+    parent := self;
+    top   :=  16;
+    left  :=   8;
+    caption := '&Available';
+    FocusControl := FlvAvailable;
+  end;
 
   with FlblSelected do begin
-    parent := self ;
-    top    :=  16 ;
-    left   := 272 ;
-    caption := '&Selected' ;
-    FocusControl := FlvSelected ;
-  end ;
+    parent := self;
+    top   :=  16;
+    left  := 272;
+    caption := '&Selected';
+    FocusControl := FlvSelected;
+  end;
 
   with FlvAvailable do begin
-    parent := self ;
-    top    :=  40 ;
-    left   :=   8 ;
-    width  := 193 ;
-    height := 201 ;
-    multiSelect := true ;
-    onDblClick  := DoLVAvailableDblClick ;
-    onKeyPress  := DoLVAvailableKeyPress ;
-    OnCanAcceptDrop := DoLVAvailableCanAcceptDrop ;
-    OnDrop       := DoLVAvailableDrop ;
-    CanStartDrag := true ;
-    name         := 'lbAvailable' ;
-    OnFilterData := DoLVAvailableFilterData ;
-    ApplyFilter  := true ;
-  end ;
+    parent := self;
+    top   :=  40;
+    left  :=   8;
+    width := 193;
+    height := 201;
+    multiSelect := true;
+    onDblClick := DoLVAvailableDblClick;
+    onKeyPress := DoLVAvailableKeyPress;
+    OnCanAcceptDrop := DoLVAvailableCanAcceptDrop;
+    OnDrop      := DoLVAvailableDrop;
+    CanStartDrag := true;
+    name        := 'lbAvailable';
+    OnFilterData := DoLVAvailableFilterData;
+    ApplyFilter := true;
+  end;
 
   with FlvSelected do begin
-    parent := self ;
-    top    :=  40 ;
-    left   := 272 ;
-    width  := 193 ;
-    height := 201 ;
-    multiSelect := true ;
-    onDblClick  := DoLVSelectedDblClick ;
-    onKeyPress  := DoLVSelectedKeyPress ;
-    OnCanAcceptDrop := DoLVSelectedCanAcceptDrop ;
-    OnDrop          := DoLVSelectedDrop ;
-    CanStartDrag := true ;
-    name        := 'lbSelected' ;
-  end ;
+    parent := self;
+    top   :=  40;
+    left  := 272;
+    width := 193;
+    height := 201;
+    multiSelect := true;
+    onDblClick := DoLVSelectedDblClick;
+    onKeyPress := DoLVSelectedKeyPress;
+    OnCanAcceptDrop := DoLVSelectedCanAcceptDrop;
+    OnDrop         := DoLVSelectedDrop;
+    CanStartDrag := true;
+    name       := 'lbSelected';
+  end;
 
   with FsbSelectMarked do begin
-    parent := self ;
-    top    :=  56 ;
-    left   := 224 ;
-    width  :=  25 ;
-    height :=  25 ;
-    hint   := 'Select marked' ;
-    showHint := true ;
+    parent := self;
+    top   :=  56;
+    left  := 224;
+    width :=  25;
+    height :=  25;
+    hint  := 'Select marked';
+    showHint := true;
     {$IFNDEF FPC}
-    Glyph.LoadFromResourceName(         HInstance, cResTI_Copy1Right + cResTI_16N ) ;
-    GlyphHot.LoadFromResourceName(      HInstance, cResTI_Copy1Right + cResTI_16H ) ;
-    GlyphDisabled.LoadFromResourceName( HInstance, cResTI_Copy1Right + cResTI_16D ) ;
+    Glyph.LoadFromResourceName(        HInstance, cResTI_Copy1Right + cResTI_16N);
+    GlyphHot.LoadFromResourceName(     HInstance, cResTI_Copy1Right + cResTI_16H);
+    GlyphDisabled.LoadFromResourceName(HInstance, cResTI_Copy1Right + cResTI_16D);
     {$ELSE}
-    Glyph.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16N ) ;
-    GlyphHot.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16H ) ;
-    GlyphDisabled.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16D ) ;
+    Glyph.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16N);
+    GlyphHot.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16H);
+    GlyphDisabled.LoadFromLazarusResource(cResTI_Copy1Right + cResTI_16D);
     {$ENDIF}
-    onClick := DosbSelectMarkedClick ;
-    flat := true ;
-  end ;
+    onClick := DosbSelectMarkedClick;
+    flat := true;
+  end;
 
   with FsbDeSelectMarked do begin
-    parent := self ;
-    top    :=  88 ;
-    left   := 224 ;
-    width  :=  25 ;
-    height :=  25 ;
-    hint   := 'Deselect marked' ;
-    showHint := true ;
+    parent := self;
+    top   :=  88;
+    left  := 224;
+    width :=  25;
+    height :=  25;
+    hint  := 'Deselect marked';
+    showHint := true;
     {$IFNDEF FPC}
-    Glyph.LoadFromResourceName(         HInstance, cResTI_Copy1Left + cResTI_16N ) ;
-    GlyphHot.LoadFromResourceName(      HInstance, cResTI_Copy1Left + cResTI_16H ) ;
-    GlyphDisabled.LoadFromResourceName( HInstance, cResTI_Copy1Left + cResTI_16D ) ;
+    Glyph.LoadFromResourceName(        HInstance, cResTI_Copy1Left + cResTI_16N);
+    GlyphHot.LoadFromResourceName(     HInstance, cResTI_Copy1Left + cResTI_16H);
+    GlyphDisabled.LoadFromResourceName(HInstance, cResTI_Copy1Left + cResTI_16D);
     {$ELSE}
-    Glyph.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16N ) ;
-    GlyphHot.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16H ) ;
-    GlyphDisabled.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16D ) ;
+    Glyph.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16N);
+    GlyphHot.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16H);
+    GlyphDisabled.LoadFromLazarusResource(cResTI_Copy1Left + cResTI_16D);
     {$ENDIF}
-    onClick := DosbDeSelectMarkedClick ;
-    flat := true ;
-  end ;
+    onClick := DosbDeSelectMarkedClick;
+    flat := true;
+  end;
 
   with FsbSelectAll do begin
-    parent := self ;
-    top    := 152 ;
-    left   := 224 ;
-    width  :=  25 ;
-    height :=  25 ;
-    hint   := 'Select all' ;
+    parent := self;
+    top   := 152;
+    left  := 224;
+    width :=  25;
+    height :=  25;
+    hint  := 'Select all';
     {$IFNDEF FPC}
-    Glyph.LoadFromResourceName(         HInstance, cResTI_CopyAllRight + cResTI_16N ) ;
-    GlyphHot.LoadFromResourceName(      HInstance, cResTI_CopyAllRight + cResTI_16H ) ;
-    GlyphDisabled.LoadFromResourceName( HInstance, cResTI_CopyAllRight + cResTI_16D ) ;
+    Glyph.LoadFromResourceName(        HInstance, cResTI_CopyAllRight + cResTI_16N);
+    GlyphHot.LoadFromResourceName(     HInstance, cResTI_CopyAllRight + cResTI_16H);
+    GlyphDisabled.LoadFromResourceName(HInstance, cResTI_CopyAllRight + cResTI_16D);
     {$ELSE}
-    Glyph.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16N ) ;
-    GlyphHot.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16H ) ;
-    GlyphDisabled.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16D ) ;
+    Glyph.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16N);
+    GlyphHot.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16H);
+    GlyphDisabled.LoadFromLazarusResource(cResTI_CopyAllRight + cResTI_16D);
     {$ENDIF}
-    onClick := DosbSelectAllClick ;
-    flat := true ;
-  end ;
+    onClick := DosbSelectAllClick;
+    flat := true;
+  end;
 
   with FsbDeSelectAll do begin
-    parent := self ;
-    top    := 184 ;
-    left   := 224 ;
-    width  :=  25 ;
-    height :=  25 ;
-    hint   := 'Deselect all' ;
+    parent := self;
+    top   := 184;
+    left  := 224;
+    width :=  25;
+    height :=  25;
+    hint  := 'Deselect all';
     {$IFNDEF FPC}
-    Glyph.LoadFromResourceName(         HInstance, cResTI_CopyAllLeft + cResTI_16N ) ;
-    GlyphHot.LoadFromResourceName(      HInstance, cResTI_CopyAllLeft + cResTI_16H ) ;
-    GlyphDisabled.LoadFromResourceName( HInstance, cResTI_CopyAllLeft + cResTI_16D ) ;
+    Glyph.LoadFromResourceName(        HInstance, cResTI_CopyAllLeft + cResTI_16N);
+    GlyphHot.LoadFromResourceName(     HInstance, cResTI_CopyAllLeft + cResTI_16H);
+    GlyphDisabled.LoadFromResourceName(HInstance, cResTI_CopyAllLeft + cResTI_16D);
     {$ELSE}
-    Glyph.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16N ) ;
-    GlyphHot.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16H ) ;
-    GlyphDisabled.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16D ) ;
+    Glyph.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16N);
+    GlyphHot.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16H);
+    GlyphDisabled.LoadFromLazarusResource(cResTI_CopyAllLeft + cResTI_16D);
     {$ENDIF}
-    onClick := DosbDeSelectAllClick ;
-    flat := true ;
-  end ;
+    onClick := DosbDeSelectAllClick;
+    flat := true;
+  end;
 
-//  FListColumns := TtiListColumns.Create( Self ) ;
+//  FListColumns := TtiListColumns.Create(Self);
 
-  FTimerSetData := TTimer.Create( nil ) ;
-  FTimerSetData.Enabled := false ;
-  FTimerSetData.Interval := 15 ;
-  FTimerSetData.OnTimer := DoOnTimerSetData ;
+  FTimerSetData := TTimer.Create(nil);
+  FTimerSetData.Enabled := false;
+  FTimerSetData.Interval := 15;
+  FTimerSetData.OnTimer := DoOnTimerSetData;
 
-  Application.processMessages ;
-end ;
+  Application.processMessages;
+end;
 
-destructor TtiPerAwareMultiSelect.destroy ;
+destructor TtiPerAwareMultiSelect.destroy;
 begin
-  FAvailable := nil ;
-  FSelected  := nil ;
-//  FListColumns.Free ;
-  FTimerSetData.Free ;
-  inherited destroy ;
-end ;
+  FAvailable := nil;
+  FSelected := nil;
+//  FListColumns.Free;
+  FTimerSetData.Free;
+  inherited destroy;
+end;
 
 {$IFNDEF FPC}
 procedure TtiPerAwareMultiSelect.WMSize(var Message: TWMSize);
 {$ELSE}
-procedure TtiPerAwareMultiSelect.WMSize( var Message: TLMSize );
+procedure TtiPerAwareMultiSelect.WMSize(var Message: TLMSize);
 {$ENDIF}
 const
-  ciBorder = 8 ;
-  ciSBHeightSmall = 19 ;
+  ciBorder = 8;
+  ciSBHeightSmall = 19;
 var
-  liLBHeight : integer ;
-  liTop      : integer ;
-  liSBHeight : integer ;
-  liSBLeft   : integer ;
+  liLBHeight : integer;
+  liTop     : integer;
+  liSBHeight : integer;
+  liSBLeft  : integer;
 begin
-  Inherited ;
+  Inherited;
 
   // Set the height of the listBoxes
-  liLBHeight          := ClientHeight - FlvAvailable.Top - ciBorder ;
-  FlvAvailable.Height := liLBHeight ;
-  FlvSelected.Height  := liLBHeight ;
+  liLBHeight         := ClientHeight - FlvAvailable.Top - ciBorder;
+  FlvAvailable.Height := liLBHeight;
+  FlvSelected.Height := liLBHeight;
 
   // Set the size of the speed buttons
-  liTop                 := FlvAvailable.Top ;
-  liSBHeight := ciSBHeightSmall ;
+  liTop                := FlvAvailable.Top;
+  liSBHeight := ciSBHeightSmall;
 
-  FsbSelectMarked.Height   := liSBHeight ;
-  FsbDeSelectMarked.Height := liSBHeight ;
-  FsbSelectAll.Height      := liSBHeight ;
-  FsbDeSelectAll.Height    := liSBHeight ;
+  FsbSelectMarked.Height  := liSBHeight;
+  FsbDeSelectMarked.Height := liSBHeight;
+  FsbSelectAll.Height     := liSBHeight;
+  FsbDeSelectAll.Height   := liSBHeight;
 
-  FsbSelectMarked.Width    := liSBHeight ;
-  FsbDeSelectMarked.Width  := liSBHeight ;
-  FsbSelectAll.Width       := liSBHeight ;
-  FsbDeSelectAll.Width     := liSBHeight ;
+  FsbSelectMarked.Width   := liSBHeight;
+  FsbDeSelectMarked.Width := liSBHeight;
+  FsbSelectAll.Width      := liSBHeight;
+  FsbDeSelectAll.Width    := liSBHeight;
 
-  FlvAvailable.Width := ( ClientWidth - ( ciBorder * 4 ) - liSBHeight ) div 2 ;
-  FlvSelected.Width  := FlvAvailable.Width ;
-  FlvAvailable.Left := ciBorder ;
-  FlvSelected.Left := ClientWidth - ciBorder - FlvSelected.Width ;
-  FlblSelected.Left := FlvSelected.Left ;
+  FlvAvailable.Width := (ClientWidth - (ciBorder * 4) - liSBHeight) div 2;
+  FlvSelected.Width := FlvAvailable.Width;
+  FlvAvailable.Left := ciBorder;
+  FlvSelected.Left := ClientWidth - ciBorder - FlvSelected.Width;
+  FlblSelected.Left := FlvSelected.Left;
 
-  liSBLeft               := ( FlvAvailable.Left + FlvAvailable.Width ) +
-                            ( FlvSelected.Left -
-                              ( FlvAvailable.Left + FlvAvailable.Width ) - liSBHeight ) div 2;
+  liSBLeft              := (FlvAvailable.Left + FlvAvailable.Width) +
+                            (FlvSelected.Left -
+                              (FlvAvailable.Left + FlvAvailable.Width) - liSBHeight) div 2;
 
-  FsbSelectMarked.Left   := liSBLeft ;
-  FsbDeSelectMarked.Left := liSBLeft ;
-  FsbSelectAll.Left      := liSBLeft ;
-  FsbDeSelectAll.Left    := liSBLeft ;
+  FsbSelectMarked.Left  := liSBLeft;
+  FsbDeSelectMarked.Left := liSBLeft;
+  FsbSelectAll.Left     := liSBLeft;
+  FsbDeSelectAll.Left   := liSBLeft;
 
-  FsbSelectMarked.Top   := liTop + ( liLBHeight div 4 ) - liSBHeight - ( ciBorder div 2 );
-  FsbDeSelectMarked.Top := liTop + ( liLBHeight div 4 ) + ( ciBorder div 2 );
-  FsbSelectAll.Top      := liTop + ( liLBHeight div 4 * 3 ) - liSBHeight - ( ciBorder div 2 );
-  FsbDeSelectAll.Top    := liTop + ( liLBHeight div 4 * 3 ) + ( ciBorder div 2 );
+  FsbSelectMarked.Top  := liTop + (liLBHeight div 4) - liSBHeight - (ciBorder div 2);
+  FsbDeSelectMarked.Top := liTop + (liLBHeight div 4) + (ciBorder div 2);
+  FsbSelectAll.Top     := liTop + (liLBHeight div 4 * 3) - liSBHeight - (ciBorder div 2);
+  FsbDeSelectAll.Top   := liTop + (liLBHeight div 4 * 3) + (ciBorder div 2);
 
   // The LH list view is not re-painting when the width or caption are changed. Why?
   FlvAvailable.LV.Invalidate;
 
 end;
 
-procedure TtiPerAwareMultiSelect.DosbSelectMarkedClick( sender: TObject ) ;
+procedure TtiPerAwareMultiSelect.DosbSelectMarkedClick(sender: TObject);
 var
-  i : integer ;
-  lList : TList ;
+  i : integer;
+  lList : TList;
 begin
-  if ( FlvAvailable = nil )or
-     ( FlvSelected  = nil ) then
-    Exit ; //==>
+  if (FlvAvailable = nil)or
+     (FlvSelected  = nil) then
+    Exit; //==>
 
-  BeginUpdate ;
+  BeginUpdate;
   try
-    lList := FLVAvailable.SelectedDataList ;
+    lList := FLVAvailable.SelectedDataList;
     for i := 0 to lList.Count - 1 do
-      FSelected.Add( TtiObject( lList.Items[i] )) ;
+      FSelected.Add(TtiObject(lList.Items[i]));
     if lList.Count > 0 then
     begin
-      RefreshData ;
-      DoOnChange ;
-    end ;
+      RefreshData;
+      DoOnChange;
+    end;
   finally
-    EndUpdate ;
-  end ;
+    EndUpdate;
+  end;
 end;
 
-procedure TtiPerAwareMultiSelect.DosbDeSelectMarkedClick( sender: TObject ) ;
+procedure TtiPerAwareMultiSelect.DosbDeSelectMarkedClick(sender: TObject);
 var
-  i : integer ;
-  lList : TList ;
+  i : integer;
+  lList : TList;
 begin
-  if ( FlvAvailable = nil )or
-     ( FlvSelected  = nil ) then
-    Exit ; //==>
+  if (FlvAvailable = nil)or
+     (FlvSelected  = nil) then
+    Exit; //==>
 
-  BeginUpdate ;
+  BeginUpdate;
   try
-    lList := FLVSelected.SelectedDataList ;
+    lList := FLVSelected.SelectedDataList;
     for i := 0 to lList.Count - 1 do
-      FSelected.Remove( TtiObject( lList.Items[i] )) ;
+      FSelected.Remove(TtiObject(lList.Items[i]));
     if lList.Count > 0 then
     begin
-      RefreshData ;
-      DoOnChange ;
-    end ;
+      RefreshData;
+      DoOnChange;
+    end;
   finally
-    EndUpdate ;
-  end ;
+    EndUpdate;
+  end;
 end;
 
 procedure TtiPerAwareMultiSelect.DosbSelectAllClick(Sender: TObject);
 begin
-  DoSelectAll ;
-end ;
+  DoSelectAll;
+end;
 
 procedure TtiPerAwareMultiSelect.DosbDeSelectAllClick(Sender: TObject);
 begin
-  DoDeSelectAll ;
+  DoDeSelectAll;
 end;
 
-procedure TtiPerAwareMultiSelect.DoSelectAll ;
+procedure TtiPerAwareMultiSelect.DoSelectAll;
 var
-  i : integer ;
-  lbChange : boolean ;
+  i : integer;
+  lbChange : boolean;
 begin
-  BeginUpdate ;
+  BeginUpdate;
   try
-    FSelected.Clear ;
-    lbChange := ( FSelected.Count < FAvailable.Count ) ;
+    FSelected.Clear;
+    lbChange := (FSelected.Count < FAvailable.Count);
     for i := 0 to FAvailable.Count - 1 do
       if not FAvailable.Items[i].Deleted then
-        FSelected.Add( FAvailable.Items[i] ) ;
+        FSelected.Add(FAvailable.Items[i]);
   finally
-    EndUpdate ;
-  end ;
+    EndUpdate;
+  end;
   if lbChange then
-    DoOnChange ;
+    DoOnChange;
 end;
 
-procedure TtiPerAwareMultiSelect.DoDeSelectAll ;
+procedure TtiPerAwareMultiSelect.DoDeSelectAll;
 var
-  lbChange : boolean ;
+  lbChange : boolean;
 begin
-  BeginUpdate ;
+  BeginUpdate;
   try
-    lbChange := ( FSelected.Count > 0 ) and ( FAvailable.Count > 0 ) ;
-    FSelected.Clear ;
+    lbChange := (FSelected.Count > 0) and (FAvailable.Count > 0);
+    FSelected.Clear;
   finally
-    EndUpdate ;
-  end ;
+    EndUpdate;
+  end;
   if lbChange then
-    DoOnChange ;
+    DoOnChange;
 end;
 
 procedure TtiPerAwareMultiSelect.DoLVAvailableKeyPress(Sender: TObject; var Key: Char);
 begin
-  if ( key = ' ' ) and
-     ( FLVAvailable.SelectedData <> nil ) then
-    SelectOne( FLVAvailable.SelectedData as TtiObject ) ;
+  if (key = ' ') and
+     (FLVAvailable.SelectedData <> nil) then
+    SelectOne(FLVAvailable.SelectedData as TtiObject);
 end;
 
 procedure TtiPerAwareMultiSelect.DoLVSelectedKeyPress(Sender: TObject; var Key: Char);
 begin
-  if ( key = ' ' ) and
-     ( FLVSelected.SelectedData <> nil ) then
-    DeSelectOne( FLVSelected.SelectedData as TtiObject ) ;
+  if (key = ' ') and
+     (FLVSelected.SelectedData <> nil) then
+    DeSelectOne(FLVSelected.SelectedData as TtiObject);
 end;
 
 {$IFNDEF FPC}
@@ -547,7 +515,7 @@ var
   R: TRect;
   Flags: Longint;
 begin
-  inherited Paint ;
+  inherited Paint;
   with Canvas do
   begin
     Font := Self.Font;
@@ -561,7 +529,7 @@ begin
       if FbBorder then
         Brush.Color := clBtnHighlight
       else
-        Brush.Color := Color ;
+        Brush.Color := Color;
 
       FrameRect(R);
       OffsetRect(R, -1, -1);
@@ -569,16 +537,16 @@ begin
       if FbBorder then
         Brush.Color := clBtnShadow
       else
-        Brush.Color := Color ;
+        Brush.Color := Color;
 
     end else begin
 
       if FbBorder then
         Brush.Color := clWindowFrame
       else
-        Brush.Color := Color ;
+        Brush.Color := Color;
 
-    end ;
+    end;
 
     FrameRect(R);
 
@@ -597,163 +565,163 @@ begin
 end;
 {$ENDIF}
 
-procedure TtiPerAwareMultiSelect.SetBorder(const Value: boolean);
+procedure TtiPerAwareMultiSelect.SetBorder(const AValue: boolean);
 begin
-  FbBorder := Value;
+  FbBorder := AValue;
 {$IFNDEF FPC}
-  Paint ;
+  Paint;
 {$ENDIF}
 end;
 
-procedure TtiPerAwareMultiSelect.SetAvailable( Value: TtiObjectList);
+procedure TtiPerAwareMultiSelect.SetAvailable(AValue: TtiObjectList);
 begin
-  Assert( Value.TestValid(TtiObjectList), cTIInvalidObjectError );
-  FAvailable := Value ;
+  Assert(AValue.TestValid(TtiObjectList), cTIInvalidObjectError);
+  FAvailable := AValue;
   if FAvailable <> nil then
     FLVAvailable.Data := FAvailable.List
   else
-    FLVAvailable.Data := nil ;
-  FTimerSetData.Enabled := false ;
-  FTimerSetData.Enabled := true ;
+    FLVAvailable.Data := nil;
+  FTimerSetData.Enabled := false;
+  FTimerSetData.Enabled := true;
 end;
 
-procedure TtiPerAwareMultiSelect.SetSelected( Value: TtiObjectList);
+procedure TtiPerAwareMultiSelect.SetSelected(AValue: TtiObjectList);
 begin
-  Assert( Value.TestValid(TtiObjectList), cTIInvalidObjectError );
-  if Value <> nil then
+  Assert(AValue.TestValid(TtiObjectList), cTIInvalidObjectError);
+  if AValue <> nil then
   begin
-    Assert( Value.OwnsObjects = False, 'Value.OwnsObjects <> false' );
-    Assert( Value.AutoSetItemOwner = False, 'Value.AutoSetItemOwner <> false');
+    Assert(AValue.OwnsObjects = False, 'AValue.OwnsObjects <> false');
+    Assert(AValue.AutoSetItemOwner = False, 'AValue.AutoSetItemOwner <> false');
   end;
-  FSelected := Value ;
+  FSelected := AValue;
   if FLVSelected <> nil then
     FLVSelected.Data := FSelected.List
   else
-    FLVSelected.Data := nil ;
-  FTimerSetData.Enabled := false ;
-  FTimerSetData.Enabled := true ;
+    FLVSelected.Data := nil;
+  FTimerSetData.Enabled := false;
+  FTimerSetData.Enabled := true;
 end;
 
 function TtiPerAwareMultiSelect.GetCaptionAvailable: string;
 begin
-  result := FlblAvailable.Caption ;
+  result := FlblAvailable.Caption;
 end;
 
 function TtiPerAwareMultiSelect.GetCaptionSelected: string;
 begin
-  result := FlblSelected.Caption ;
+  result := FlblSelected.Caption;
 end;
 
-procedure TtiPerAwareMultiSelect.SetCaptionAvailable(const Value: string);
+procedure TtiPerAwareMultiSelect.SetCaptionAvailable(const AValue: string);
 begin
-  FlblAvailable.Caption := Value ;
+  FlblAvailable.Caption := AValue;
 end;
 
-procedure TtiPerAwareMultiSelect.SetCaptionSelected(const Value: string);
+procedure TtiPerAwareMultiSelect.SetCaptionSelected(const AValue: string);
 begin
-  FlblSelected.Caption := Value ;
+  FlblSelected.Caption := AValue;
 end;
 
 procedure TtiPerAwareMultiSelect.DoLVAvailableDblClick(
-  pLV: TtiCustomListView; pData: TtiObject; pItem: TListItem);
+  pLV: TtiCustomListView; AData: TtiObject; AItem: TListItem);
 begin
-  SelectOne( pData as TtiObject ) ;
+  SelectOne(AData as TtiObject);
 end;
 
 procedure TtiPerAwareMultiSelect.DoLVSelectedDblClick(
-  pLV: TtiCustomListView; pData: TtiObject; pItem: TListItem);
+  pLV: TtiCustomListView; AData: TtiObject; AItem: TListItem);
 begin
-  DeSelectOne( pData as TtiObject ) ;
+  DeSelectOne(AData as TtiObject);
 end;
 
-procedure TtiPerAwareMultiSelect.DeSelectOne(pData: TtiObject);
+procedure TtiPerAwareMultiSelect.DeSelectOne(AData: TtiObject);
 begin
-  BeginUpdate ;
+  BeginUpdate;
   try
-    FSelected.Remove( pData ) ;
+    FSelected.Remove(AData);
   finally
-    EndUpdate ;
-  end ;
-  DoOnChange ;
+    EndUpdate;
+  end;
+  DoOnChange;
 end;
 
-procedure TtiPerAwareMultiSelect.SelectOne(pData: TtiObject);
+procedure TtiPerAwareMultiSelect.SelectOne(AData: TtiObject);
 begin
-  BeginUpdate ;
+  BeginUpdate;
   try
-    FSelected.Add( pData ) ;
+    FSelected.Add(AData);
   finally
-    EndUpdate ;
-  end ;
-  DoOnChange ;
+    EndUpdate;
+  end;
+  DoOnChange;
 end;
 
 procedure TtiPerAwareMultiSelect.RefreshData;
 begin
-  FlvAvailable.Refresh ;
-  FlvSelected.Refresh ;
+  FlvAvailable.Refresh;
+  FlvSelected.Refresh;
 end;
 
 procedure TtiPerAwareMultiSelect.DoLVAvailableFilterData(
-  pData: TtiObject; var pbInclude: Boolean);
+  AData: TtiObject; var pbInclude: Boolean);
 begin
   if FSelected = nil then
-    Exit ; //==>
-  pbInclude := FSelected.IndexOf( pData ) = -1 ;
+    Exit; //==>
+  pbInclude := FSelected.IndexOf(AData) = -1;
   if pbInclude and FApplyFilter and Assigned(FOnFilterData) then
-    FOnFilterData(pData, pbInclude);
+    FOnFilterData(AData, pbInclude);
 end;
 
 procedure TtiPerAwareMultiSelect.BeginUpdate;
 begin
-  FSelectedIndex  := FLVSelected.SelectedIndex ;
-  FAvailableIndex := FLVAvailable.SelectedIndex ;
-  FLVSelected.BeginUpdate ;
-  FLVAvailable.BeginUpdate ;
+  FSelectedIndex := FLVSelected.SelectedIndex;
+  FAvailableIndex := FLVAvailable.SelectedIndex;
+  FLVSelected.BeginUpdate;
+  FLVAvailable.BeginUpdate;
 end;
 
 procedure TtiPerAwareMultiSelect.EndUpdate;
 begin
-  FLVSelected.EndUpdate ;
-  FLVAvailable.EndUpdate ;
-  RefreshData ;
-  FLVSelected.PositionCursor( FSelectedIndex ) ;
-  FLVAvailable.PositionCursor( FAvailableIndex ) ;
+  FLVSelected.EndUpdate;
+  FLVAvailable.EndUpdate;
+  RefreshData;
+  FLVSelected.PositionCursor(FSelectedIndex);
+  FLVAvailable.PositionCursor(FAvailableIndex);
 end;
 
 procedure TtiPerAwareMultiSelect.DoLVSelectedCanAcceptDrop(ptiLVSource: TtiCustomListView;
   pDataSource: TtiObject; ptiLVTarget: TtiCustomListView;
   pDataTarget: TtiObject; var pbConfirm: Boolean);
 begin
-  pbConfirm := true ;
+  pbConfirm := true;
 end;
 
 procedure TtiPerAwareMultiSelect.DoLVAvailableCanAcceptDrop(ptiLVSource: TtiCustomListView;
   pDataSource: TtiObject; ptiLVTarget: TtiCustomListView;
   pDataTarget: TtiObject; var pbConfirm: Boolean);
 begin
-  pbConfirm := ptiLVSource <> ptiLVTarget ;
+  pbConfirm := ptiLVSource <> ptiLVTarget;
 end;
 
 procedure TtiPerAwareMultiSelect.DoLVAvailableDrop(ptiLVSource: TtiCustomListView;
   pDataSource: TtiObject; ptiLVTarget: TtiCustomListView;
   pDataTarget: TtiObject);
 var
-  lList : TList ;
+  lList : TList;
 begin
   if ptiLVSource = ptiLVTarget then
-    Exit ; //==>
+    Exit; //==>
 
-  lList := ptiLVSource.Data ;
+  lList := ptiLVSource.Data;
   if lList = nil then
-    Exit ; //==>
-  BeginUpdate ;
+    Exit; //==>
+  BeginUpdate;
   try
-    lList.Remove( pDataSource ) ;
-    DoOnChange ;
+    lList.Remove(pDataSource);
+    DoOnChange;
   finally
-    EndUpdate ;
-  end ;
+    EndUpdate;
+  end;
 
 end;
 
@@ -761,58 +729,58 @@ procedure TtiPerAwareMultiSelect.DoLVSelectedDrop(ptiLVSource: TtiCustomListView
   pDataSource: TtiObject; ptiLVTarget: TtiCustomListView;
   pDataTarget: TtiObject);
 var
-  i : integer ;
-  lList : TList ;
+  i : integer;
+  lList : TList;
 begin
-  lList := ptiLVTarget.Data ;
+  lList := ptiLVTarget.Data;
   if lList = nil then
-    Exit ; //==>
+    Exit; //==>
 
-  BeginUpdate ;
+  BeginUpdate;
   try
     if ptiLVSource = ptiLVTarget then
-      lList.Remove( pDataSource ) ;
+      lList.Remove(pDataSource);
     if pDataTarget = nil then
-      lList.Add( pDataSource )
+      lList.Add(pDataSource)
     else
     begin
       // If we are dragging and dropping from the same list
-      i := lList.IndexOf( pDataTarget ) ;
+      i := lList.IndexOf(pDataTarget);
       if i = -1 then
-        lList.Add( pDataSource )
+        lList.Add(pDataSource)
       else
-        lList.Insert( i, pDataSource ) ;
-    end ;
-    DoOnChange ;
+        lList.Insert(i, pDataSource);
+    end;
+    DoOnChange;
   finally
-    EndUpdate ;
-  end ;
+    EndUpdate;
+  end;
 end;
 
 procedure TtiPerAwareMultiSelect.DoOnChange;
 begin
-  if Assigned( FOnChange ) then
-    FOnChange( self ) ;
+  if Assigned(FOnChange) then
+    FOnChange(self);
 end;
 
 function TtiPerAwareMultiSelect.GetRunTimeSelectedCols: boolean;
 begin
-  result := FLVAvailable.RuntimeGenCols ;
+  result := FLVAvailable.RuntimeGenCols;
 end;
 
-procedure TtiPerAwareMultiSelect.SetRunTimeSelectedCols(const Value: boolean);
+procedure TtiPerAwareMultiSelect.SetRunTimeSelectedCols(const AValue: boolean);
 begin
-  FLVAvailable.RuntimeGenCols := Value ;
-  FLVSelected.RuntimeGenCols  := Value ;
+  FLVAvailable.RuntimeGenCols := AValue;
+  FLVSelected.RuntimeGenCols := AValue;
 end;
 
 procedure TtiPerAwareMultiSelect.DoOnTimerSetData(Sender: TObject);
 begin
   if not Showing then
-    Exit ; //==>
+    Exit; //==>
 
-  TTimer( Sender ).Enabled := false ;
-  RefreshData ;
+  TTimer(Sender).Enabled := false;
+  RefreshData;
   
 end;
 
@@ -827,16 +795,16 @@ begin
   FlvSelected.SmallImages := pImages;
 end;
 
-procedure TtiPerAwareMultiSelect.AddColumn(const pFieldName: string;
+procedure TtiPerAwareMultiSelect.AddColumn(const AFieldName: string;
   const pDataType: TlvTypeKind; const pDisplayLabel: string;
   pColWidth: Integer);
 //var
 //  lCol: TtiListColumn;
 begin
-  FlvAvailable.AddColumn(pFieldName, pDataType, pDisplayLabel, pColWidth);
-  FlvSelected.AddColumn(pFieldName, pDataType, pDisplayLabel, pColWidth);
+  FlvAvailable.AddColumn(AFieldName, pDataType, pDisplayLabel, pColWidth);
+  FlvSelected.AddColumn(AFieldName, pDataType, pDisplayLabel, pColWidth);
 //  lCol := FListColumns.Add;
-//  lCol.FieldName := pFieldName;
+//  lCol.FieldName := AFieldName;
 //  lCol.DataType := pDataType;
 //  lCol.DisplayLabel := pDisplayLabel;
 //  lCol.Width := pColWidth;
@@ -847,10 +815,10 @@ begin
   Result := FlvAvailable.OnGetImageIndex;
 end;
 
-procedure TtiPerAwareMultiSelect.SetOnGetImageIndex(const Value: TtiLVGetImageIndexEvent);
+procedure TtiPerAwareMultiSelect.SetOnGetImageIndex(const AValue: TtiLVGetImageIndexEvent);
 begin
-  FlvAvailable.OnGetImageIndex := Value ;
-  FlvSelected.OnGetImageIndex := Value ;
+  FlvAvailable.OnGetImageIndex := AValue;
+  FlvSelected.OnGetImageIndex := AValue;
 end;
 
 end.

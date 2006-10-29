@@ -14,7 +14,7 @@ uses
   {$ENDIF MSWINDOWS}
   ,tiObject
   ,tiOID
- ;
+;
 
 const
   cErrorUnableToFindPerLayerToUnload = 'Unable to determine which persistence layer to unload.';
@@ -30,47 +30,47 @@ type
   private
     FDefaultPerLayer : TtiPersistenceLayer;
     FLayerLoadingStyle: TtiPerLayerLoadingStyle;
-    function    PackageIDToPackageName(const pPackageID: string): TFileName;
+    function    PackageIDToPackageName(const APackageID: string): TFileName;
     function    GetDefaultPerLayer: TtiPersistenceLayer;
-    procedure   SetDefaultPerLayer(const Value: TtiPersistenceLayer);
+    procedure   SetDefaultPerLayer(const AValue: TtiPersistenceLayer);
     function    GetDefaultPerLayerName: string;
-    procedure   SetDefaultPerLayerName(const Value: string);
+    procedure   SetDefaultPerLayerName(const AValue: string);
   protected
     function    GetItems(i: integer): TtiPersistenceLayer; reintroduce;
-    procedure   SetItems(i: integer; const Value: TtiPersistenceLayer); reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiPersistenceLayer); reintroduce;
     function    GetOwner: TtiPersistenceLayer; reintroduce;
-    procedure   SetOwner(const Value: TtiPersistenceLayer); reintroduce;
+    procedure   SetOwner(const AValue: TtiPersistenceLayer); reintroduce;
   public
     constructor Create; override;
     destructor  Destroy; override;
-    property    Items[i:integer] : TtiPersistenceLayer read GetItems write SetItems;
-    procedure   Add(pObject : TtiPersistenceLayer); reintroduce;
+    property    Items[i:integer]: TtiPersistenceLayer read GetItems write SetItems;
+    procedure   Add(AObject : TtiPersistenceLayer); reintroduce;
 
     // These manage the loading and unloading of the packages
-    function    LoadPersistenceLayer(const pPerLayerName : string) : TtiPersistenceLayer;
-    procedure   UnLoadPersistenceLayer(const pPerLayerName : string);
-    function    IsLoaded(const pPerLayerName : string) : boolean;
+    function    LoadPersistenceLayer(const APersistenceLayerName : string): TtiPersistenceLayer;
+    procedure   UnLoadPersistenceLayer(const APersistenceLayerName : string);
+    function    IsLoaded(const APersistenceLayerName : string): boolean;
 
-    function    FindByPerLayerName(const pLayerName : string) : TtiPersistenceLayer;
-    function    FindByTIDatabaseClass(const pTIDatabaseClass : TtiDatabaseClass) : TtiPersistenceLayer;
-    property    DefaultPerLayer     : TtiPersistenceLayer read GetDefaultPerLayer     write SetDefaultPerLayer;
+    function    FindByPerLayerName(const ALayerName : string): TtiPersistenceLayer;
+    function    FindByTIDatabaseClass(const ADatabaseClass : TtiDatabaseClass): TtiPersistenceLayer;
+    property    DefaultPerLayer    : TtiPersistenceLayer read GetDefaultPerLayer     write SetDefaultPerLayer;
     property    DefaultPerLayerName : string         read GetDefaultPerLayerName write SetDefaultPerLayerName;
     property    LoadingStyle: TtiPerLayerLoadingStyle read FLayerLoadingStyle write FLayerLoadingStyle;
 
     // Do not call these your self. They are called in the initialization section
     // of tiQueryXXX.pas that contains the concrete classes.
-    procedure   __RegisterPersistenceLayer(const pLayerName: string;
-                                          pDBConnectionPoolDataClass : TtiDBConnectionPoolDataClass;
-                                          ptiQueryClass : TtiQueryClass;
-                                          ptiDatabaseClass : TtiDatabaseClass);
-    procedure   __UnRegisterPersistenceLayer(const pLayerName: string);
+    procedure   __RegisterPersistenceLayer(const ALayerName: string;
+                                          ADBConnectionPoolDataClass : TtiDBConnectionPoolDataClass;
+                                          AQueryClass : TtiQueryClass;
+                                          ADatabaseClass : TtiDatabaseClass);
+    procedure   __UnRegisterPersistenceLayer(const ALayerName: string);
 
-    function    CreateTIQuery(const pLayerName : string {= '' })            : TtiQuery; overload;
-    function    CreateTIQuery(const pTIDatabaseClass : TtiDatabaseClass) : TtiQuery; overload;
-    function    CreateTIDatabase(const pLayerName : string {= '' })     : TtiDatabase;
-    function    CreateTIDBConnectionPoolData(const pLayerName : string {= ''}) : TtiDBConnectionPoolDataAbs;
-    function    LockDatabase(const pDBConnectionName : string; pPerLayerName : string) : TtiDatabase;
-    procedure   UnLockDatabase(const pDatabase : TtiDatabase;const pDBConnectionName : string; pPerLayerName : string);
+    function    CreateTIQuery(const ALayerName : string {= '' })           : TtiQuery; overload;
+    function    CreateTIQuery(const ADatabaseClass : TtiDatabaseClass): TtiQuery; overload;
+    function    CreateTIDatabase(const ALayerName : string {= '' })    : TtiDatabase;
+    function    CreateTIDBConnectionPoolData(const ALayerName : string {= ''}): TtiDBConnectionPoolDataAbs;
+    function    LockDatabase(const ADBConnectionName : string; APersistenceLayerName : string): TtiDatabase;
+    procedure   UnLockDatabase(const ADatabase : TtiDatabase;const ADBConnectionName : string; APersistenceLayerName : string);
 
     {$IFDEF FPC}
     {$I tiPersistenceLayersIntf.inc}
@@ -90,32 +90,32 @@ type
     FDynamicallyLoaded: boolean;
     function  GetDefaultDBConnectionPool: TDBConnectionPool;
     function  GetDefaultDBConnectionName: string;
-    procedure SetDefaultDBConnectionName(const Value: string);
+    procedure SetDefaultDBConnectionName(const AValue: string);
   protected
     function    GetOwner: TtiPersistenceLayers; reintroduce;
-    procedure   SetOwner(const Value: TtiPersistenceLayers); reintroduce;
+    procedure   SetOwner(const AValue: TtiPersistenceLayers); reintroduce;
   public
     constructor Create; override;
     destructor  Destroy; override;
-    property    Owner       : TtiPersistenceLayers            read GetOwner      write SetOwner;
+    property    Owner      : TtiPersistenceLayers            read GetOwner      write SetOwner;
 
     // Properties that are set when the persistence layer is loaded (set in
     // initialization section of TtiQueryXXX.pas that contains the concrete)
     property  tiDBConnectionPoolDataClass : TtiDBConnectionPoolDataClass read FTiDBConnectionPoolDataClass write FTiDBConnectionPoolDataClass;
-    property  tiQueryClass                : TtiQueryClass read FTiQueryClass        write FTiQueryClass;
-    property  tiDatabaseClass             : TtiDatabaseClass read FTiDatabaseClass  write FTiDatabaseClass;
-    property  PerLayerName                : string read FPerLayerName write FPerLayerName;
-    property  DynamicallyLoaded           : boolean read FDynamicallyLoaded write FDynamicallyLoaded;
+    property  tiQueryClass               : TtiQueryClass read FTiQueryClass        write FTiQueryClass;
+    property  tiDatabaseClass            : TtiDatabaseClass read FTiDatabaseClass  write FTiDatabaseClass;
+    property  PerLayerName               : string read FPerLayerName write FPerLayerName;
+    property  DynamicallyLoaded          : boolean read FDynamicallyLoaded write FDynamicallyLoaded;
 
-    property  ModuleID                    : HModule read FModuleID write FModuleID;
-    property  DefaultDBConnectionName     : string read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
-    property  DefaultDBConnectionPool     : TDBConnectionPool read GetDefaultDBConnectionPool;
-    property  DBConnectionPools           : TDBConnectionPools read FDBConnectionPools;
-    property  NextOIDMgr                  : TNextOIDMgr read FNextOIDMgr;
+    property  ModuleID                   : HModule read FModuleID write FModuleID;
+    property  DefaultDBConnectionName    : string read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
+    property  DefaultDBConnectionPool    : TDBConnectionPool read GetDefaultDBConnectionPool;
+    property  DBConnectionPools          : TDBConnectionPools read FDBConnectionPools;
+    property  NextOIDMgr                 : TNextOIDMgr read FNextOIDMgr;
 
-    function  DatabaseExists(const pDatabaseName, pUserName, pPassword : string) : boolean;
-    procedure CreateDatabase(const pDatabaseName, pUserName, pPassword : string);
-    function  TestConnectToDatabase(const pDatabaseName, pUserName, pPassword, pParams : string) : boolean;
+    function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean;
+    procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string);
+    function  TestConnectToDatabase(const ADatabaseName, AUserName, APassword, AParams : string): boolean;
   end;
 
 
@@ -126,7 +126,7 @@ uses
   ,tiConstants
   ,tiOPFManager
   ,tiExcept
- ;
+;
 
 constructor TtiPersistenceLayer.Create;
 begin
@@ -142,17 +142,17 @@ begin
   FDynamicallyLoaded := false;
 end;
 
-procedure TtiPersistenceLayers.Add(pObject: TtiPersistenceLayer);
+procedure TtiPersistenceLayers.Add(AObject: TtiPersistenceLayer);
 begin
-  inherited Add(pObject);
+  inherited Add(AObject);
 end;
 
-function TtiPersistenceLayers.FindByPerLayerName(const pLayerName: string): TtiPersistenceLayer;
+function TtiPersistenceLayers.FindByPerLayerName(const ALayerName: string): TtiPersistenceLayer;
 var
   i : integer;
 begin
   result := nil;
-  if (pLayerName = '') and
+  if (ALayerName = '') and
      (Count = 1) then
   begin
     result := Items[0];
@@ -160,7 +160,7 @@ begin
   end;
 
   for i := 0 to Count - 1 do
-    if SameText(Items[i].PerLayerName, pLayerName) then
+    if SameText(Items[i].PerLayerName, ALayerName) then
     begin
       result := Items[i];
       Exit; //==>
@@ -178,73 +178,73 @@ begin
 end;
 
 procedure TtiPersistenceLayers.__RegisterPersistenceLayer(
-  const pLayerName: string;
-  pDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-  ptiQueryClass: TtiQueryClass; ptiDatabaseClass: TtiDatabaseClass);
+  const ALayerName: string;
+  ADBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+  AQueryClass: TtiQueryClass; ADatabaseClass: TtiDatabaseClass);
 var
   lData : TtiPersistenceLayer;
 begin
-  if IsLoaded(pLayerName) then
+  if IsLoaded(ALayerName) then
     Exit; //==>
   lData := TtiPersistenceLayer.Create;
-  lData.PerLayerName := pLayerName;
-  lData.tiDBConnectionPoolDataClass := pDBConnectionPoolDataClass;
-  lData.tiQueryClass          := ptiQueryClass   ;
-  lData.tiDatabaseClass       := ptiDatabaseClass;
+  lData.PerLayerName := ALayerName;
+  lData.tiDBConnectionPoolDataClass := ADBConnectionPoolDataClass;
+  lData.tiQueryClass         := AQueryClass  ;
+  lData.tiDatabaseClass      := ADatabaseClass;
   Add(lData);
 end;
 
-procedure TtiPersistenceLayers.SetItems(i: integer; const Value: TtiPersistenceLayer);
+procedure TtiPersistenceLayers.SetItems(i: integer; const AValue: TtiPersistenceLayer);
 begin
-  inherited SetItems(i, Value);
+  inherited SetItems(i, AValue);
 end;
 
-procedure TtiPersistenceLayers.SetOwner(const Value: TtiPersistenceLayer);
+procedure TtiPersistenceLayers.SetOwner(const AValue: TtiPersistenceLayer);
 begin
-  inherited SetOwner(Value);
+  inherited SetOwner(AValue);
 end;
 
-function TtiPersistenceLayers.CreateTIDatabase(const pLayerName : string {= ''}) : TtiDatabase;
+function TtiPersistenceLayers.CreateTIDatabase(const ALayerName : string {= ''}): TtiDatabase;
 var
   lData : TtiPersistenceLayer;
 begin
-  lData := FindByPerLayerName(pLayerName);
+  lData := FindByPerLayerName(ALayerName);
   if lData = nil then
-    raise Exception.Create('Request for unregistered persistence layer <' + pLayerName + '>');
+    raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
   result := lData.tiDatabaseClass.Create;
 end;
 
-function TtiPersistenceLayers.CreateTIQuery(const pLayerName : string {= ''}): TtiQuery;
+function TtiPersistenceLayers.CreateTIQuery(const ALayerName : string {= ''}): TtiQuery;
 var
   lData : TtiPersistenceLayer;
 begin
-  lData := FindByPerLayerName(pLayerName);
+  lData := FindByPerLayerName(ALayerName);
   if lData = nil then
-    raise Exception.Create('Request for unregistered persistence layer <' + pLayerName + '>');
+    raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
   result := lData.tiQueryClass.Create;
 end;
 
-function TtiPersistenceLayers.CreateTIDBConnectionPoolData(const pLayerName : string {= ''}) : TtiDBConnectionPoolDataAbs;
+function TtiPersistenceLayers.CreateTIDBConnectionPoolData(const ALayerName : string {= ''}): TtiDBConnectionPoolDataAbs;
 var
   lData : TtiPersistenceLayer;
 begin
-  lData := FindByPerLayerName(pLayerName);
+  lData := FindByPerLayerName(ALayerName);
   if lData = nil then
-    raise Exception.Create('Request for unregistered persistence layer <' + pLayerName + '>');
+    raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
   result := lData.tiDBConnectionPoolDataClass.Create;
 end;
 
-procedure TtiPersistenceLayer.CreateDatabase(const pDatabaseName, pUserName,
-  pPassword: string);
+procedure TtiPersistenceLayer.CreateDatabase(const ADatabaseName, AUserName,
+  APassword: string);
 begin
   Assert(FTiDatabaseClass<>nil, 'FTiDatabaseClass not assigned');
-  FTiDatabaseClass.CreateDatabase(pDatabaseName, pUserName, pPassword);
+  FTiDatabaseClass.CreateDatabase(ADatabaseName, AUserName, APassword);
 end;
 
-function TtiPersistenceLayer.DatabaseExists(const pDatabaseName, pUserName, pPassword: string): boolean;
+function TtiPersistenceLayer.DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean;
 begin
   Assert(FTiDatabaseClass<>nil, 'FTiDatabaseClass not assigned');
-  result := FTiDatabaseClass.DatabaseExists(pDatabaseName, pUserName, pPassword);
+  result := FTiDatabaseClass.DatabaseExists(ADatabaseName, AUserName, APassword);
 end;
 
 destructor TtiPersistenceLayer.Destroy;
@@ -291,15 +291,15 @@ begin
   result := TtiPersistenceLayers(inherited GetOwner);
 end;
 
-procedure TtiPersistenceLayer.SetDefaultDBConnectionName(const Value: string);
+procedure TtiPersistenceLayer.SetDefaultDBConnectionName(const AValue: string);
 begin
-  FDefaultDBConnectionPool := FDBConnectionPools.Find(Value);
+  FDefaultDBConnectionPool := FDBConnectionPools.Find(AValue);
   Assert(FDefaultDBConnectionPool.TestValid(TDBConnectionPool, true), cTIInvalidObjectError);
 end;
 
-procedure TtiPersistenceLayer.SetOwner(const Value: TtiPersistenceLayers);
+procedure TtiPersistenceLayer.SetOwner(const AValue: TtiPersistenceLayers);
 begin
-  inherited SetOwner(Value);
+  inherited SetOwner(AValue);
 end;
 
 destructor TtiPersistenceLayers.Destroy;
@@ -313,11 +313,11 @@ begin
   inherited;
 end;
 
-procedure TtiPersistenceLayers.__UnRegisterPersistenceLayer(const pLayerName: string);
+procedure TtiPersistenceLayers.__UnRegisterPersistenceLayer(const ALayerName: string);
 var
   lData : TtiPersistenceLayer;
 begin
-  lData := FindByPerLayerName(pLayerName);
+  lData := FindByPerLayerName(ALayerName);
   if lData = nil then
     Exit; //==>
   if gTIOPFManager.DefaultPerLayer = lData then
@@ -325,53 +325,53 @@ begin
   Remove(lData);
 end;
 
-function TtiPersistenceLayers.IsLoaded(const pPerLayerName: string): boolean;
+function TtiPersistenceLayers.IsLoaded(const APersistenceLayerName: string): boolean;
 begin
-  result := (FindByPerLayerName(pPerLayerName) <> nil);
+  result := (FindByPerLayerName(APersistenceLayerName) <> nil);
 end;
 
 function TtiPersistenceLayers.CreateTIQuery(
-  const pTIDatabaseClass: TtiDatabaseClass): TtiQuery;
+  const ADatabaseClass: TtiDatabaseClass): TtiQuery;
 var
   lData : TtiPersistenceLayer;
 begin
-  lData := FindByTIDatabaseClass(pTIDatabaseClass);
+  lData := FindByTIDatabaseClass(ADatabaseClass);
   if lData = nil then
-    raise Exception.Create('Unable to find persistence layer for database class <' + pTIDatabaseClass.ClassName + '>');
+    raise Exception.Create('Unable to find persistence layer for database class <' + ADatabaseClass.ClassName + '>');
   result := lData.tiQueryClass.Create;
 end;
 
 function TtiPersistenceLayers.FindByTIDatabaseClass(
-  const pTIDatabaseClass: TtiDatabaseClass): TtiPersistenceLayer;
+  const ADatabaseClass: TtiDatabaseClass): TtiPersistenceLayer;
 var
   i : integer;
 begin
-  Assert(pTIDatabaseClass <> nil, 'pTIDatabaseClass <> nil');
+  Assert(ADatabaseClass <> nil, 'ADatabaseClass <> nil');
   result := nil;
   for i := 0 to Count - 1 do
-    if Items[i].TIDatabaseClass = pTIDatabaseClass then
+    if Items[i].TIDatabaseClass = ADatabaseClass then
     begin
       result := Items[i];
       Exit; //==>
     end;
 end;
 
-function TtiPersistenceLayers.LoadPersistenceLayer(const pPerLayerName: string) : TtiPersistenceLayer;
+function TtiPersistenceLayers.LoadPersistenceLayer(const APersistenceLayerName: string): TtiPersistenceLayer;
 var
   lPackageName : TFileName;
   lPackageModule : HModule;
   lMessage : string;
 begin
-  result := FindByPerLayerName(pPerLayerName);
+  result := FindByPerLayerName(APersistenceLayerName);
   if result <> nil then
     Exit; //==>
 
-  lPackageName := PackageIDToPackageName(pPerLayerName);
+  lPackageName := PackageIDToPackageName(APersistenceLayerName);
   Log('Loading %s', [lPackageName], lsConnectionPool);
 
   try
     lPackageModule := LoadPackage(ExtractFileName(lPackageName));
-    result   := FindByPerLayerName(pPerLayerName);
+    result  := FindByPerLayerName(APersistenceLayerName);
     if result = nil then
       raise exception.Create('Unable to locate package in memory after it was loaded.' + Cr +
                               'Check that this application was build with the runtime package tiPersistCore');
@@ -381,7 +381,7 @@ begin
     on e:exception do
     begin
       lMessage := 'Unable to initialize persistence layer <' +
-                  pPerLayerName + '> Package name <' +
+                  APersistenceLayerName + '> Package name <' +
                   lPackageName + '>' + Cr(2) +
                   'Error message: ' + e.message;
       raise Exception.Create(lMessage);
@@ -389,18 +389,18 @@ begin
   end;
 end;
 
-function TtiPersistenceLayers.PackageIDToPackageName(const pPackageID : string) : TFileName;
+function TtiPersistenceLayers.PackageIDToPackageName(const APackageID : string): TFileName;
 begin
   result :=
     tiAddTrailingSlash(tiGetEXEPath) +
     cTIPersistPackageRootName +
-    pPackageID +
+    APackageID +
     cPackageSuffix +
     '.bpl';
 end;
 
 {
-function TtiPersistenceLayers.PackageNameToPackageID(const pPackageName : TFileName) : string;
+function TtiPersistenceLayers.PackageNameToPackageID(const pPackageName : TFileName): string;
 begin
   result := tiExtractFileNameOnly(pPackageName);
   result := tiStrTran(result, cPackageSuffix, '');
@@ -410,22 +410,22 @@ begin
 end;
 }
 
-procedure TtiPersistenceLayers.UnLoadPersistenceLayer(const pPerLayerName: string);
+procedure TtiPersistenceLayers.UnLoadPersistenceLayer(const APersistenceLayerName: string);
 var
-  lPackageID     : string;
-  lRegPerLayer  : TtiPersistenceLayer;
+  lPackageID    : string;
+  lRegPerLayer : TtiPersistenceLayer;
 begin
-  if pPerLayerName <> '' then
-    lPackageID := pPerLayerName
+  if APersistenceLayerName <> '' then
+    lPackageID := APersistenceLayerName
   else if Count = 1 then
-    lPackageID   := Items[0].PerLayerName
+    lPackageID  := Items[0].PerLayerName
   else
     raise EtiOPFProgrammerException.Create(cErrorUnableToFindPerLayerToUnload);
 
-  if not IsLoaded(pPerLayerName) then
+  if not IsLoaded(APersistenceLayerName) then
     raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToLoadPerLayerThatsNotLoaded, [lPackageID]);
 
-  lRegPerLayer := FindByPerLayerName(pPerLayerName);
+  lRegPerLayer := FindByPerLayerName(APersistenceLayerName);
   Assert(lRegPerLayer.TestValid, cTIInvalidObjectError);
 
   lRegPerLayer.DBConnectionPools.DisConnectAll;
@@ -442,47 +442,47 @@ begin
     DefaultPerLayer:= nil;
 end;
 
-function TtiPersistenceLayers.LockDatabase(const pDBConnectionName: string;pPerLayerName: string): TtiDatabase;
+function TtiPersistenceLayers.LockDatabase(const ADBConnectionName: string;APersistenceLayerName: string): TtiDatabase;
 var
   lRegPerLayer : TtiPersistenceLayer;
   lDBConnectionName : string;
   lPooledDB : TPooledDB;
 begin
-  if pPerLayerName <> '' then
-    lRegPerLayer := FindByPerLayerName(pPerLayerName)
+  if APersistenceLayerName <> '' then
+    lRegPerLayer := FindByPerLayerName(APersistenceLayerName)
   else
     lRegPerLayer := DefaultPerLayer;
 
   Assert(lRegPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
 
-  if pDBConnectionName <> '' then
-    lDBConnectionName := pDBConnectionName
+  if ADBConnectionName <> '' then
+    lDBConnectionName := ADBConnectionName
   else
     lDBConnectionName := lRegPerLayer.DefaultDBConnectionName;
 
   lPooledDB := lRegPerLayer.DBConnectionPools.Lock(lDBConnectionName);
-  result    := lPooledDB.Database;
+  result   := lPooledDB.Database;
 end;
 
-procedure TtiPersistenceLayers.UnLockDatabase(const pDatabase: TtiDatabase;
-  const pDBConnectionName: string; pPerLayerName: string);
+procedure TtiPersistenceLayers.UnLockDatabase(const ADatabase: TtiDatabase;
+  const ADBConnectionName: string; APersistenceLayerName: string);
 var
   lDBConnectionName : string;
   lRegPerLayer : TtiPersistenceLayer;
 begin
-  if pPerLayerName <> '' then
-    lRegPerLayer := FindByPerLayerName(pPerLayerName)
+  if APersistenceLayerName <> '' then
+    lRegPerLayer := FindByPerLayerName(APersistenceLayerName)
   else
     lRegPerLayer := DefaultPerLayer;
 
   Assert(lRegPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
 
-  if pDBConnectionName <> '' then
-    lDBConnectionName := pDBConnectionName
+  if ADBConnectionName <> '' then
+    lDBConnectionName := ADBConnectionName
   else
     lDBConnectionName := lRegPerLayer.DefaultDBConnectionName;
 
-  lRegPerLayer.DBConnectionPools.UnLockByData(lDBConnectionName, pDatabase);
+  lRegPerLayer.DBConnectionPools.UnLockByData(lDBConnectionName, ADatabase);
 end;
 
 function TtiPersistenceLayers.GetDefaultPerLayer: TtiPersistenceLayer;
@@ -503,9 +503,9 @@ begin
   result := FDefaultPerLayer;
 end;
 
-procedure TtiPersistenceLayers.SetDefaultPerLayer(const Value: TtiPersistenceLayer);
+procedure TtiPersistenceLayers.SetDefaultPerLayer(const AValue: TtiPersistenceLayer);
 begin
-  FDefaultPerLayer := Value;
+  FDefaultPerLayer := AValue;
 end;
 
 function TtiPersistenceLayers.GetDefaultPerLayerName: string;
@@ -516,17 +516,17 @@ begin
     result := '';
 end;
 
-procedure TtiPersistenceLayers.SetDefaultPerLayerName(const Value: string);
+procedure TtiPersistenceLayers.SetDefaultPerLayerName(const AValue: string);
 begin
-  FDefaultPerLayer := FindByPerLayerName(Value);
+  FDefaultPerLayer := FindByPerLayerName(AValue);
 end;
 
-function TtiPersistenceLayer.TestConnectToDatabase(const pDatabaseName,
-  pUserName, pPassword, pParams: string): boolean;
+function TtiPersistenceLayer.TestConnectToDatabase(const ADatabaseName,
+  AUserName, APassword, AParams: string): boolean;
 begin
   Assert(FTiDatabaseClass<>nil, 'FTiDatabaseClass not assigned');
-  result := FTiDatabaseClass.TestConnectTo(pDatabaseName, pUserName, pPassword,
-                                           pParams);
+  result := FTiDatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword,
+                                           AParams);
 end;
 
 constructor TtiPersistenceLayers.Create;
@@ -540,3 +540,11 @@ end;
 {$ENDIF}
 
 end.
+
+
+
+
+
+
+
+

@@ -1,27 +1,4 @@
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  The contents of this file are subject to the Mozilla Public
-  License Version 1.1 (the "License"); you may not use this file
-  except in compliance with the License. You may obtain a copy of
-  the License at http://www.mozilla.org/MPL/
-
-  Software distributed under the License is distributed on an "AS
-  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  implied. See the License for the specific language governing
-  rights and limitations under the License.
-
-  Originally developed and released by Peter Hinrichsen, TechInsite Pty. Ltd.
-  as the tiOPF (TechInsite Object Persistence Framework)
-
-    23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-    PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-    Phone: +61 3 9419 6456 Fax:   +61 3 9419 1682
-    Latest source:   www.techinsite.com.au/tiOPF/Download.htm
-    Documentation:   www.techinsite.com.au/tiOPF/Doc/
-    Support:         www.techinsite.com.au/tiOPF/MailingList.htm
-
-  Please submit changes to tiOPF@techinsite.com.au
-
-  Created: Mid 1998
 
   Purpose: A TThread descendant which knows how to register it self with an
            Observer [GoF 293] which keeps track of the progress of the thread.
@@ -31,41 +8,41 @@
 
   Usage:
 
-    TThrdMyProcess = class( TtiThreadProgress )
+    TThrdMyProcess = class(TtiThreadProgress)
     protected
       // Put some code to be run when the thread is finished, but call
       // inherited first.
-      procedure   DoOnTerminate( sender : TObject ) ; override ;
+      procedure   DoOnTerminate(sender : TObject); override;
     public
       // Put your working code here, but Execute is an abstract so don't
       // call inherited.
-      procedure Execute ; override ;
-    end ;
-    
+      procedure Execute; override;
+    end;
+
   Notes:
-  
+
    Under Lazarus+FPC there is AV when closing application with running
    TtiThreadProgress threads.
    Possible solutions (if you worry about this AV):
-   
+
    1.Put into mainform OnClose or OnDestroy event:
 
     gtiOPFManager.TerminateThreads(Period)
     (where Period could be 0 if not waiting
     or X seconds to wait)
-    
+
 
    or
-   
+
    2. Put into mainform OnCloseQuery event:
       (gTIOPFManager.ActiveThreadList.RunningThreadCount could also be used)
-      
+
      if gFormThreadProgress.ThreadCount>0 then
      begin
       tiAppWarning('Cannot exit now.Cancel running threads and try again.');
       CanClose := false;
      end;
-     
+
      and of course thread Execute method should use try..except and test
      Terminated property
 
@@ -87,11 +64,11 @@ uses
   ,SyncObjs
   ,tiThread
   ,Graphics
-  ;
+ ;
 
 type
 
-  TProgInd = class ;
+  TProgInd = class;
 
   {$IFDEF NOTHREADS}
   // A dummy stub with the same interface as a TThread which can be used for
@@ -104,7 +81,7 @@ type
 
   { TThreadDebugger }
 
-  TThreadDebugger = class( TObject )
+  TThreadDebugger = class(TObject)
   private
     FbTerminated: boolean;
     FOnTerminate: TNotifyEvent;
@@ -112,21 +89,21 @@ type
     FbFreeOnTerminate: boolean;
     FReturnValue: Integer;
   protected
-    procedure   Synchronize( Method : TThreadMethod ) ;
-    procedure   DoOnTerminate( sender : TObject ) ; virtual;
+    procedure   Synchronize(Method : TThreadMethod);
+    procedure   DoOnTerminate(sender : TObject); virtual;
   public
-    constructor Create( Suspended : boolean ) ; virtual ;
-    procedure   Terminate ; virtual ;
-    procedure   Resume ;
+    constructor Create(Suspended : boolean); virtual;
+    procedure   Terminate; virtual;
+    procedure   Resume;
 
-    procedure   Execute ; virtual ; abstract ;
+    procedure   Execute; virtual; abstract;
 
-    property    Terminated : boolean read FbTerminated write FbTerminated ;
-    property    OnTerminate : TNotifyEvent read FOnTerminate write FOnTerminate ;
-    property    Suspended   : boolean read FbSuspended write FbSuspended ;
-    property    FreeOnTerminate : boolean read FbFreeOnTerminate write FbFreeOnTerminate ;
+    property    Terminated : boolean read FbTerminated write FbTerminated;
+    property    OnTerminate : TNotifyEvent read FOnTerminate write FOnTerminate;
+    property    Suspended  : boolean read FbSuspended write FbSuspended;
+    property    FreeOnTerminate : boolean read FbFreeOnTerminate write FbFreeOnTerminate;
     property    ReturnValue : Integer read FReturnValue write FReturnValue;
-  end ;
+  end;
   {$ENDIF}
 
 
@@ -134,131 +111,131 @@ type
   // use TThreadDebugger as the parent of TtiThreadProgress.
   // To make long processes multi-threaded, use TThread as the parent.
   {$IFDEF NOTHREADS}
-    TtiThreadProgress = class( TThreadDebugger )
+    TtiThreadProgress = class(TThreadDebugger)
   {$ELSE}
-    TtiThreadProgress = class( TtiThread )
+    TtiThreadProgress = class(TtiThread)
   {$ENDIF}
   private
-    FProgInd : TProgInd ;
-    FiPosition  : integer ;
-    FsText : string ;
+    FProgInd : TProgInd;
+    FiPosition : integer;
+    FsText : string;
     FiMin: integer;
     FiMax: integer;
-    FbAutoProgress: boolean ;
+    FbAutoProgress: boolean;
     FsCaption: TCaption;
     FCanCancel: boolean;
-    FConfirmCancel : boolean ;
+    FConfirmCancel : boolean;
     FOnCancel : TNotifyEvent;
-    procedure SynchronizeProgress ;
-    procedure SetPosition(const Value: integer);
-    procedure SetMax(const Value: integer);
-    procedure SetMin(const Value: integer);
-    procedure SetText(const Value: string);
-    procedure SetAutoProgress(const Value: Boolean);
-    procedure SetCaption(const Value: TCaption);
-    procedure SetCanCancel(const Value: boolean);
+    procedure SynchronizeProgress;
+    procedure SetPosition(const AValue: integer);
+    procedure SetMax(const AValue: integer);
+    procedure SetMin(const AValue: integer);
+    procedure SetText(const AValue: string);
+    procedure SetAutoProgress(const AValue: Boolean);
+    procedure SetCaption(const AValue: TCaption);
+    procedure SetCanCancel(const AValue: boolean);
   protected
-    procedure   DoOnTerminate( sender : TObject ) ; override ;
+    procedure   DoOnTerminate(sender : TObject); override;
   public
-    constructor Create(CreateSuspended: Boolean); override ;
-    Destructor  Destroy ; override ;
-    Property    ProgInd : TProgInd     read FProgInd       write FProgInd ;
-    Property    Max     : integer      read FiMax          write SetMax ;
-    Property    Min     : integer      read FiMin          write SetMin ;
-    Property    Position : integer     read FiPosition     write SetPosition ;
-    Property    Text     : string      read FsText         write SetText ;
-    Property    Caption  : TCaption    read FsCaption      write SetCaption ;
-    Property    AutoProgress : Boolean read FbAutoProgress write SetAutoProgress ;
-    Property    CanCancel : boolean    read FCanCancel     write SetCanCancel ;
-    property    ConfirmCancel : boolean    read FConfirmCancel   write FConfirmCancel ;
-    property    OnCancel      : TNotifyEvent read FOnCancel      write FOnCancel ;
-    Procedure   IncPosition ; virtual;
+    constructor Create(ACreateSuspended: Boolean); override;
+    Destructor  Destroy; override;
+    Property    ProgInd : TProgInd     read FProgInd       write FProgInd;
+    Property    Max    : integer      read FiMax          write SetMax;
+    Property    Min    : integer      read FiMin          write SetMin;
+    Property    Position : integer     read FiPosition     write SetPosition;
+    Property    Text    : string      read FsText         write SetText;
+    Property    Caption : TCaption    read FsCaption      write SetCaption;
+    Property    AutoProgress : Boolean read FbAutoProgress write SetAutoProgress;
+    Property    CanCancel : boolean    read FCanCancel     write SetCanCancel;
+    property    ConfirmCancel : boolean    read FConfirmCancel   write FConfirmCancel;
+    property    OnCancel     : TNotifyEvent read FOnCancel      write FOnCancel;
+    Procedure   IncPosition; virtual;
     //DO NOT call inherited in the overridden execute method !!!
-  end ;
+  end;
 
-  TFormThreadProgress = class( TForm )
+  TFormThreadProgress = class(TForm)
   private
-    FTimer    : TTimer ;
-    FProgInds : TList ;
-    FCritSect : TCriticalSection ;
-    FPanelBevelInner : TBevelCut ;
-    FPanelBevelOuter : TBevelCut ;
+    FTimer   : TTimer;
+    FProgInds : TList;
+    FCritSect : TCriticalSection;
+    FPanelBevelInner : TBevelCut;
+    FPanelBevelOuter : TBevelCut;
     FColumnCount: integer;
     FProgressBarColor: TColor;
     FOnChangeThreadCount: TNotifyEvent;
 
-    function    FindByThread( pThread : TtiThreadProgress ) : integer ;
-    procedure   ArrangePanels ;
-    procedure   DoCloseQuery( sender : TObject ; var CanClose : boolean ) ;
-    procedure   UpdateAutoProgressThreads( Sender : TObject ) ;
+    function    FindByThread(pThread : TtiThreadProgress): integer;
+    procedure   ArrangePanels;
+    procedure   DoCloseQuery(sender : TObject; var CanClose : boolean);
+    procedure   UpdateAutoProgressThreads(Sender : TObject);
     function    GetThreadCount: integer;
   protected
     procedure   SetParent(AParent: TWinControl); override;
   public
-    Constructor Create( AOwner : TComponent ) ; override ;
-    Constructor CreateNew( AOwner : TComponent ; Dummy : integer = 0 ) ; override ;
-    Destructor  Destroy ; override ;
-    Procedure   AttachThread( pThread : TtiThreadProgress ) ;
-    Function    DetachThread( pThread : TtiThreadProgress ) : boolean ;
+    Constructor Create(AOwner : TComponent); override;
+    Constructor CreateNew(AOwner : TComponent; Dummy : integer = 0); override;
+    Destructor  Destroy; override;
+    Procedure   AttachThread(pThread : TtiThreadProgress);
+    Function    DetachThread(pThread : TtiThreadProgress): boolean;
 
-    property    PanelBevelInner     : TBevelCut    read FPanelBevelInner  write FPanelBevelInner ;
-    property    PanelBevelOuter     : TBevelCut    read FPanelBevelOuter  write FPanelBevelOuter ;
-    property    ProgressBarColor    : TColor       read FProgressBarColor write FProgressBarColor ;
-    property    ColumnCount         : integer      read FColumnCount      write FColumnCount ;
-    property    OnChangeThreadCount : TNotifyEvent read FOnChangeThreadCount   write FOnChangeThreadCount ;
-    property    ThreadCount         : integer      read GetThreadCount ;
+    property    PanelBevelInner    : TBevelCut    read FPanelBevelInner  write FPanelBevelInner;
+    property    PanelBevelOuter    : TBevelCut    read FPanelBevelOuter  write FPanelBevelOuter;
+    property    ProgressBarColor   : TColor       read FProgressBarColor write FProgressBarColor;
+    property    ColumnCount        : integer      read FColumnCount      write FColumnCount;
+    property    OnChangeThreadCount : TNotifyEvent read FOnChangeThreadCount   write FOnChangeThreadCount;
+    property    ThreadCount        : integer      read GetThreadCount;
 
-  end ;
+  end;
 
   TtiProgressBar = class(TProgressBar)
   private
   public
    {$IFNDEF FPC}
-    property  BevelInner ;
-    property  BevelOuter ;
+    property  BevelInner;
+    property  BevelOuter;
    {$ENDIF}
-    property  Color ;
-  end ;
+    property  Color;
+  end;
 
   { TProgInd }
 
-  TProgInd = class( TCustomPanel )
+  TProgInd = class(TCustomPanel)
   private
-    FLabel       : TLabel ;
-    FProgressBar : TtiProgressBar ;
-    FSpeedButton : TSpeedButton ;
-    FThread      : TtiThreadProgress ;
-    FCaption     : TCaption ;
+    FLabel      : TLabel;
+    FProgressBar : TtiProgressBar;
+    FSpeedButton : TSpeedButton;
+    FThread     : TtiThreadProgress;
+    FCaption    : TCaption;
     function    GetMax: integer;
     function    GetMin: integer;
     function    GetPosition: integer;
-    function    GetText: String ;
-    procedure   SetMax(const Value: integer);
-    procedure   SetMin(const Value: integer);
-    procedure   SetPosition(const Value: integer);
-    procedure   SetText(const Value: string);
-    procedure   TerminateOnClick( sender : TObject ) ;
+    function    GetText: String;
+    procedure   SetMax(const AValue: integer);
+    procedure   SetMin(const AValue: integer);
+    procedure   SetPosition(const AValue: integer);
+    procedure   SetText(const AValue: string);
+    procedure   TerminateOnClick(sender : TObject);
     function    GetCaption: TCaption;
-    procedure   SetCaption(const Value: TCaption);
+    procedure   SetCaption(const AValue: TCaption);
     function    GetCanCancel: boolean;
-    procedure   SetCanCancel(const Value: boolean);
+    procedure   SetCanCancel(const AValue: boolean);
     function    GetProgressBarWidth: integer;
     {$IFDEF FPC}
     procedure Async(Data: PtrInt);
     {$ENDIF}
   public
-    Constructor Create( AOwner : TComponent ) ; override ;
-    property    Position : integer read GetPosition  write SetPosition ;
-    property    Max : integer read GetMax  write SetMax ;
-    property    Min : integer read GetMin  write SetMin ;
-    property    Text : string read GetText write SetText ;
-    Property    Caption : TCaption read GetCaption write SetCaption ;
-    property    Thread : TtiThreadProgress read FThread write FThread ;
-    property    CanCancel : boolean read GetCanCancel write SetCanCancel ;
-  end ;
+    Constructor Create(AOwner : TComponent); override;
+    property    Position : integer read GetPosition  write SetPosition;
+    property    Max : integer read GetMax  write SetMax;
+    property    Min : integer read GetMin  write SetMin;
+    property    Text : string read GetText write SetText;
+    Property    Caption : TCaption read GetCaption write SetCaption;
+    property    Thread : TtiThreadProgress read FThread write FThread;
+    property    CanCancel : boolean read GetCanCancel write SetCanCancel;
+  end;
 
 // The FormThreadProgress is a Singleton
-function gFormThreadProgress : TFormThreadProgress ;
+function gFormThreadProgress : TFormThreadProgress;
 
 implementation
 uses
@@ -274,24 +251,24 @@ uses
   {$ENDIF}
   ,tiRegINI
   ,Dialogs
-  ;
+ ;
 
 var
-  uFormThreadProgress : TFormThreadProgress ;
-  uFormThreadProgressIsOwned : boolean ;
+  uFormThreadProgress : TFormThreadProgress;
+  uFormThreadProgressIsOwned : boolean;
 
 const
-  cuiProgIndHeight   =  24 ;
-  cuiFormWidth       = 450 ;
-  cuiLabelWidth      = 150 ;
-  cuCancelButtonSize = 17 ;
-  cuWaitForTerminate = 'Waiting to terminate' ;
+  cuiProgIndHeight   =  24;
+  cuiFormWidth       = 450;
+  cuiLabelWidth      = 150;
+  cuCancelButtonSize = 17;
+  cuWaitForTerminate = 'Waiting to terminate';
 
-function gFormThreadProgress : TFormThreadProgress ;
+function gFormThreadProgress : TFormThreadProgress;
 begin
   if uFormThreadProgress = nil then
     uFormThreadProgress := TFormThreadProgress.CreateNew(nil);
-  result := uFormThreadProgress ;
+  result := uFormThreadProgress;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -301,100 +278,100 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TProgInd.Create(AOwner: TComponent);
 begin
-  inherited Create( AOwner )    ;
-  Parent       := ( AOwner as TFormThreadProgress ) ;
-  BevelInner   := ( AOwner as TFormThreadProgress ).PanelBevelInner ;
-  BevelOuter   := ( AOwner as TFormThreadProgress ).PanelBevelOuter ;
-  Color        := ( AOwner as TFormThreadProgress ).Color ;
-  Height       := cuiProgIndHeight ;
-  Left         := 4 ;
-  Anchors      := [akLeft,akTop,akRight] ;
-  Width        := TForm( Owner ).ClientWidth - 8 ;
+  inherited Create(AOwner)   ;
+  Parent      := (AOwner as TFormThreadProgress);
+  BevelInner  := (AOwner as TFormThreadProgress).PanelBevelInner;
+  BevelOuter  := (AOwner as TFormThreadProgress).PanelBevelOuter;
+  Color       := (AOwner as TFormThreadProgress).Color;
+  Height      := cuiProgIndHeight;
+  Left        := 4;
+  Anchors     := [akLeft,akTop,akRight];
+  Width       := TForm(Owner).ClientWidth - 8;
 
-  FLabel                  := TLabel.Create( self ) ;
-  FLabel.Parent           := self ;
-  FLabel.Left             :=  10 ;
-  FLabel.Top              :=   6 ;
-  FLabel.Width            := cuiLabelWidth ;
-  FLabel.Height           :=  13 ;
+  FLabel                 := TLabel.Create(self);
+  FLabel.Parent          := self;
+  FLabel.Left            :=  10;
+  FLabel.Top             :=   6;
+  FLabel.Width           := cuiLabelWidth;
+  FLabel.Height          :=  13;
 
-  FProgressBar            := TtiProgressBar.Create( self ) ;
-  FProgressBar.Parent     := self ;
-  FProgressBar.Left       := 124 ;
-  FProgressBar.Left       := cuiLabelWidth + 20 ;
-  FProgressBar.Top        :=   4 ;
-  FProgressBar.Width      := GetProgressBarWidth ;
-  FProgressBar.Height     :=  17 ;
-  FProgressBar.Anchors    := [akLeft, akTop, akRight] ;
-  FProgressBar.Smooth     := true ;
+  FProgressBar           := TtiProgressBar.Create(self);
+  FProgressBar.Parent    := self;
+  FProgressBar.Left      := 124;
+  FProgressBar.Left      := cuiLabelWidth + 20;
+  FProgressBar.Top       :=   4;
+  FProgressBar.Width     := GetProgressBarWidth;
+  FProgressBar.Height    :=  17;
+  FProgressBar.Anchors   := [akLeft, akTop, akRight];
+  FProgressBar.Smooth    := true;
   {$IFNDEF FPC}
-  FProgressBar.BevelInner := Self.BevelInner ;
-  FProgressBar.BevelOuter := Self.BevelOuter ;
+  FProgressBar.BevelInner := Self.BevelInner;
+  FProgressBar.BevelOuter := Self.BevelOuter;
   {$ENDIF}
-  FProgressBar.Color      := ( Owner as TFormThreadProgress ).ProgressBarColor ;
+  FProgressBar.Color     := (Owner as TFormThreadProgress).ProgressBarColor;
 
-  FSpeedButton          := TSpeedButton.Create( self ) ;
-  FSpeedButton.Parent   := self ;
-  FSpeedButton.Left     := Self.ClientWidth - cuCancelButtonSize - 4 ;
-  FSpeedButton.Top      :=   4 ;
-  FSpeedButton.Width    :=  cuCancelButtonSize ;
-  FSpeedButton.Height   :=  cuCancelButtonSize ;
-  FSpeedButton.Anchors  := [akTop, akRight] ;
-  FSpeedButton.Flat     := True  ;
-  FSpeedButton.Caption  := 'X' ;
-  FSpeedButton.Hint     := 'Cancel this process' ;
-  FSpeedButton.ShowHint := true ;
-  FSpeedButton.OnClick  := TerminateOnClick ;
-  FSpeedButton.Visible  := false ;
+  FSpeedButton         := TSpeedButton.Create(self);
+  FSpeedButton.Parent  := self;
+  FSpeedButton.Left    := Self.ClientWidth - cuCancelButtonSize - 4;
+  FSpeedButton.Top     :=   4;
+  FSpeedButton.Width   :=  cuCancelButtonSize;
+  FSpeedButton.Height  :=  cuCancelButtonSize;
+  FSpeedButton.Anchors := [akTop, akRight];
+  FSpeedButton.Flat    := True ;
+  FSpeedButton.Caption := 'X';
+  FSpeedButton.Hint    := 'Cancel this process';
+  FSpeedButton.ShowHint := true;
+  FSpeedButton.OnClick := TerminateOnClick;
+  FSpeedButton.Visible := false;
 end;
 
 
 function TProgInd.GetMax: integer;
 begin
-  result := FProgressBar.Max ;
+  result := FProgressBar.Max;
 end;
 
 
 function TProgInd.GetMin: integer;
 begin
-  result := FProgressBar.Min ;
+  result := FProgressBar.Min;
 end;
 
 
 function TProgInd.GetPosition: integer;
 begin
-  result := FProgressBar.Position ;
+  result := FProgressBar.Position;
 end;
 
 
-procedure TProgInd.SetMax(const Value: integer);
+procedure TProgInd.SetMax(const AValue: integer);
 begin
-  FProgressBar.Max := Value ;
+  FProgressBar.Max := AValue;
 end;
 
 
-procedure TProgInd.SetMin(const Value: integer);
+procedure TProgInd.SetMin(const AValue: integer);
 begin
-  FProgressBar.Min := Value ;
+  FProgressBar.Min := AValue;
 end;
 
 
-procedure TProgInd.SetPosition(const Value: integer);
+procedure TProgInd.SetPosition(const AValue: integer);
 begin
-  FProgressBar.Position := Value ;
+  FProgressBar.Position := AValue;
 end;
 
 
 function TProgInd.GetText: string;
 begin
-  result := FLabel.Caption ;
+  result := FLabel.Caption;
 end;
 
 
-procedure TProgInd.SetText(const Value: string);
+procedure TProgInd.SetText(const AValue: string);
 begin
   if FLabel.Caption <> cuWaitForTerminate then
-    FLabel.Caption := Value ;
+    FLabel.Caption := AValue;
 end;
 
 
@@ -404,9 +381,9 @@ begin
 end;
 
 
-procedure TProgInd.SetCaption(const Value: TCaption);
+procedure TProgInd.SetCaption(const AValue: TCaption);
 begin
-  FCaption := Value;
+  FCaption := AValue;
   if (Owner is TCustomForm) then TCustomForm(Owner).Caption := ' Progress : ' + FCaption;
 end;
 
@@ -415,135 +392,138 @@ end;
 // * TFormThreadProgress
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TFormThreadProgress.CreateNew(AOwner: TComponent ; Dummy : Integer = 0 );
+constructor TFormThreadProgress.CreateNew(AOwner: TComponent; Dummy : Integer = 0);
 begin
   inherited CreateNew(AOwner,Dummy);
   if Application.MainForm = nil then
     FormStyle := fsNormal
   else if Application.MainForm.FormStyle = fsMDIForm then
-    FormStyle    := fsMDIChild
+    FormStyle   := fsMDIChild
   else
-    FormStyle    := fsStayOnTop ;
+    FormStyle   := fsStayOnTop;
 
   Name := 'ThreadProgress';
-  FProgInds := TList.Create ;
-  BorderIcons  := [biSystemMenu,biMinimize] ;
-  BorderStyle  := bsSizeable   ;
-  Caption      := ' Progress'  ;
-  ClientHeight := 30           ;
-  ClientWidth  := cuiFormWidth ;
-  FCritSect    := TCriticalSection.Create ;
+  FProgInds := TList.Create;
+  BorderIcons := [biSystemMenu,biMinimize];
+  BorderStyle := bsSizeable  ;
+  Caption     := ' Progress' ;
+  ClientHeight := 30          ;
+  ClientWidth := cuiFormWidth;
+  FCritSect   := TCriticalSection.Create;
   gReg.ReadFormState(self);
-  OnCloseQuery := DoCloseQuery ;
-  FTimer       := TTimer.Create(Self) ;
-  FTimer.OnTimer := UpdateAutoProgressThreads ;
-  FPanelBevelInner   := bvLowered    ;
-  FPanelBevelOuter   := bvNone       ;
-  FProgressBarColor  := Color ;
-  FColumnCount       := 1 ;
-  
-  {//Is this needed ?
+  OnCloseQuery := DoCloseQuery;
+  FTimer      := TTimer.Create(Self);
+  FTimer.OnTimer := UpdateAutoProgressThreads;
+  FPanelBevelInner  := bvLowered   ;
+  FPanelBevelOuter  := bvNone      ;
+  FProgressBarColor := Color;
+  FColumnCount      := 1;
+
   if Application.MainForm <> nil then
   begin
-    Constraints.MinHeight := Height ;
-    Constraints.MinWidth  := cuiFormWidth ;
-    Constraints.MaxHeight := Height ;
-    Constraints.MaxWidth  := cuiFormWidth ;
-  end;
-  uFormThreadProgress := nil ;}
-
-
+    Constraints.MinHeight := Height;
+    Constraints.MinWidth := cuiFormWidth;
+    Constraints.MaxHeight := Height;
+    Constraints.MaxWidth := cuiFormWidth;
+  end {else
+  begin
+    Constraints.MinHeight := 0;
+    Constraints.MinWidth := 0;
+    Constraints.MaxHeight := 0;
+    Constraints.MaxWidth := 0;
+  end};
+  uFormThreadProgress := nil;
 
 end;
 
 
 destructor TFormThreadProgress.Destroy;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to FProgInds.Count - 1 do
-    TtiThreadProgress( FProgInds.Items[i] ).Terminate ;
-  FTimer.Free ;
+    TtiThreadProgress(FProgInds.Items[i]).Terminate;
+  FTimer.Free;
   gReg.WriteFormState(self);
   FProgInds.Free;
   FCritSect.Free;
   if uFormThreadProgress = Self then
-    uFormThreadProgress := nil ;
+    uFormThreadProgress := nil;
   inherited;
 end;
 
 
 procedure TFormThreadProgress.AttachThread(pThread: TtiThreadProgress);
 var
-  lProgInd : TProgInd ;
+  lProgInd : TProgInd;
 begin
-  FTimer.Enabled := false ;
+  FTimer.Enabled := false;
   try
-    FCritSect.Enter ;
+    FCritSect.Enter;
     try
-      Assert( FindByThread( pThread ) = -1, 'Thread already attached.' ) ;
-      lProgInd := TProgInd.Create( self ) ;
-      lProgInd.Thread := pThread ;
-      pThread.ProgInd := lProgInd ;
-      FProgInds.Add( lProgInd ) ;
-      ArrangePanels ;
+      Assert(FindByThread(pThread) = -1, 'Thread already attached.');
+      lProgInd := TProgInd.Create(self);
+      lProgInd.Thread := pThread;
+      pThread.ProgInd := lProgInd;
+      FProgInds.Add(lProgInd);
+      ArrangePanels;
     finally
-      FCritSect.Leave ;
-    end ;
+      FCritSect.Leave;
+    end;
   finally
-    FTimer.Enabled := true ;
-  end ;
+    FTimer.Enabled := true;
+  end;
   if Assigned(FOnChangeThreadCount) then
     FOnChangeThreadCount(Self);
 end;
 
 
-function TFormThreadProgress.DetachThread(pThread: TtiThreadProgress ) : boolean ;
+function TFormThreadProgress.DetachThread(pThread: TtiThreadProgress): boolean;
 var
-  i : integer ;
-  lProgInd : TProgInd ;
+  i : integer;
+  lProgInd : TProgInd;
 begin
-  FTimer.Enabled := false ;
+  FTimer.Enabled := false;
   try
-    FCritSect.Enter ;
+    FCritSect.Enter;
     try
-        i := FindByThread( pThread ) ;
+        i := FindByThread(pThread);
         Assert(i <>-1,'Thread not attached');
-        lProgInd := TProgInd( FProgInds.Items[i] ) ;
-        lProgInd.Thread := nil ;
-        pThread.ProgInd := nil ;
-        lProgInd.Free ;
-        FProgInds.Delete( i ) ;
-        ArrangePanels ;
-        result := ( FProgInds.Count = 0 ) ;
+        lProgInd := TProgInd(FProgInds.Items[i]);
+        lProgInd.Thread := nil;
+        pThread.ProgInd := nil;
+        lProgInd.Free;
+        FProgInds.Delete(i);
+        ArrangePanels;
+        result := (FProgInds.Count = 0);
     finally
-      FCritSect.Leave ;
-    end ;
+      FCritSect.Leave;
+    end;
   finally
-    FTimer.Enabled := true ;
+    FTimer.Enabled := true;
   end;
   if Assigned(FOnChangeThreadCount) then
     FOnChangeThreadCount(Self);
-end ;
+end;
 
 
 
-function TFormThreadProgress.FindByThread( pThread : TtiThreadProgress ) : integer ;
+function TFormThreadProgress.FindByThread(pThread : TtiThreadProgress): integer;
 var
-  i : integer ;
+  i : integer;
 begin
-  FCritSect.Enter ;
+  FCritSect.Enter;
   try
-    result := -1 ;
+    result := -1;
     for i := 0 to FProgInds.Count - 1 do
-      if TProgInd( FProgInds.Items[i] ).Thread = pThread then begin
-        result := i ;
-        Break ; //==>
-      end ;
+      if TProgInd(FProgInds.Items[i]).Thread = pThread then begin
+        result := i;
+        Break; //==>
+      end;
   finally
-    FCritSect.Leave ;
-  end ;
-end ;
+    FCritSect.Leave;
+  end;
+end;
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -554,81 +534,81 @@ end ;
 destructor TtiThreadProgress.Destroy;
 begin
   if AutoProgress then
-    gReg.WriteInteger( 'ThreadProgress',
+    gReg.WriteInteger('ThreadProgress',
                        ClassName,
-                       FiPosition + 1 );   // Was: Trunc( FiPosition * 1.1 )) ;
+                       FiPosition + 1);   // Was: Trunc(FiPosition * 1.1));
   inherited;
 end;
 
 
-procedure TtiThreadProgress.DoOnTerminate( sender : TObject ) ;
+procedure TtiThreadProgress.DoOnTerminate(sender : TObject);
 begin
-  gFormThreadProgress.DetachThread( self ) ;
+  gFormThreadProgress.DetachThread(self);
 end;
 
 
-procedure TtiThreadProgress.IncPosition ;
+procedure TtiThreadProgress.IncPosition;
 begin
-  Position := Position + 1 ;
+  Position := Position + 1;
 end;
 
 
-procedure TtiThreadProgress.SetAutoProgress(const Value: Boolean);
+procedure TtiThreadProgress.SetAutoProgress(const AValue: Boolean);
 begin
-  FbAutoProgress := Value;
+  FbAutoProgress := AValue;
   if AutoProgress then begin
-    FiPosition := 0 ;
-    FiMin      := 0 ;
-    Max := gReg.ReadInteger( 'ThreadProgress', ClassName, 10 ) ;
+    FiPosition := 0;
+    FiMin     := 0;
+    Max := gReg.ReadInteger('ThreadProgress', ClassName, 10);
     if Max = 0 then
-      Max := 10 ;
-  end ;
+      Max := 10;
+  end;
 end;
 
 
-procedure TtiThreadProgress.SetMax(const Value: integer);
+procedure TtiThreadProgress.SetMax(const AValue: integer);
 begin
-  FiMax := Value;
-  Synchronize( SynchronizeProgress ) ;
+  FiMax := AValue;
+  Synchronize(SynchronizeProgress);
 end;
 
 
-procedure TtiThreadProgress.SetMin(const Value: integer);
+procedure TtiThreadProgress.SetMin(const AValue: integer);
 begin
-  FiMin := Value;
-  Synchronize( SynchronizeProgress ) ;
+  FiMin := AValue;
+  Synchronize(SynchronizeProgress);
 end;
 
 
-procedure TtiThreadProgress.SetPosition(const Value: integer);
+procedure TtiThreadProgress.SetPosition(const AValue: integer);
 begin
-  FiPosition := Value ;
-  Synchronize( SynchronizeProgress ) ;
+  FiPosition := AValue;
+  Synchronize(SynchronizeProgress);
 end;
 
 
-procedure TtiThreadProgress.SetText(const Value: string);
+procedure TtiThreadProgress.SetText(const AValue: string);
 begin
-  FsText := Value;
-  Synchronize( SynchronizeProgress ) ;
+  FsText := AValue;
+  Synchronize(SynchronizeProgress);
 end;
 
 
-procedure TtiThreadProgress.SetCaption(const Value: TCaption);
+procedure TtiThreadProgress.SetCaption(const AValue: TCaption);
 begin
-  FsCaption := Value;
-  Synchronize( SynchronizeProgress ) ;
+  FsCaption := AValue;
+  Synchronize(SynchronizeProgress);
 end;
 
 
 procedure TtiThreadProgress.SynchronizeProgress;
 begin
-  FProgInd.Max      := FiMax ;
-  FProgInd.Min      := FiMin ;
-  FProgInd.Position := FiPosition ;
-  FProgInd.Text     := FsText ;
-  FProgInd.Caption  := FsCaption ;
-  FProgInd.CanCancel := FCancancel ;
+  FProgInd.Max     := FiMax;
+  FProgInd.Min     := FiMin;
+  FProgInd.Position := FiPosition;
+  FProgInd.Text    := FsText;
+  FProgInd.Caption := FsCaption;
+  FProgInd.CanCancel := FCancancel;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -638,89 +618,88 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TFormThreadProgress.Create(AOwner: TComponent);
 begin
-  Assert( False, 'Do not call TFormThreadProgress.Create, call CreateNew instead.' ) ;
+  Assert(False, 'Do not call TFormThreadProgress.Create, call CreateNew instead.');
 end;
 
 
 procedure TFormThreadProgress.ArrangePanels;
 var
-  lProgInd : TProgInd ;
-  i        : integer ;
-  lRow     : integer ;
-  lCol     : integer ;
-  lTop     : integer ;
-  lLeft    : integer ;
-  lWidth   : integer ;
+  lProgInd : TProgInd;
+  i       : integer;
+  lRow    : integer;
+  lCol    : integer;
+  lTop    : integer;
+  lLeft   : integer;
+  lWidth  : integer;
 begin
-  lRow := 1 ;
-  lCol := 1 ;
+  lRow := 1;
+  lCol := 1;
   for i := 0 to FProgInds.Count - 1 do
   begin
-    lProgInd := TProgInd( FProgInds.items[i] ) ;
+    lProgInd := TProgInd(FProgInds.items[i]);
 
     if lCol = 1 then
       lLeft := 4
     else
-      lLeft := ( ClientWidth div ColumnCount ) {+ 8} ;
+      lLeft := (ClientWidth div ColumnCount) {+ 8};
 
-    lWidth := ( ClientWidth div ColumnCount ) {- 8} ;
-    lTop := ( lRow - 1 ) * ( lProgInd.Height + 2 ) + 2 ;
+    lWidth := (ClientWidth div ColumnCount) {- 8};
+    lTop := (lRow - 1) * (lProgInd.Height + 2) + 2;
 
-    lProgInd.SetBounds(lLeft, lTop, lWidth, cuiProgIndHeight );
+    lProgInd.SetBounds(lLeft, lTop, lWidth, cuiProgIndHeight);
 
     if lCol < ColumnCount then
       Inc(lCol)
     else begin
-      lCol := 1 ;
+      lCol := 1;
       Inc(lRow);
     end;
-  end ;
+  end;
 
-  ClientHeight := lRow * ( cuiProgIndHeight + 4 ) + 4 ;
+  ClientHeight := lRow * (cuiProgIndHeight + 4) + 4;
 
-  {//Why this is needed ?
   if Parent = nil then
   begin
-    Constraints.MaxHeight := 0 ;
-    Constraints.MinHeight := 0 ;
+    Constraints.MaxHeight := 0;
+    Constraints.MinHeight := 0;
     if FProgInds.Count > 0 then
     begin
-      Constraints.MinHeight := Height ;
-      Constraints.MinWidth  := cuiFormWidth ;
-      Constraints.MaxHeight := Height ;
-      Constraints.MaxWidth  := cuiFormWidth ;
+      Constraints.MinHeight := Height;
+      Constraints.MinWidth := cuiFormWidth;
+      Constraints.MaxHeight := Height;
+      Constraints.MaxWidth := cuiFormWidth;
     end
-  end ;}
+  end;
 
   Visible := (FProgInds.Count > 0);
 end;
 
 
-procedure TFormThreadProgress.DoCloseQuery(sender: TObject ; var CanClose : boolean );
+procedure TFormThreadProgress.DoCloseQuery(sender: TObject; var CanClose : boolean);
 begin
-  CanClose    := false ;
-  WindowState := wsMinimized ;
+  CanClose   := false;
+  WindowState := wsMinimized;
 end;
 
 
 procedure TFormThreadProgress.UpdateAutoProgressThreads(Sender: TObject);
 var
-  i : integer ;
-  lProgInds : TProgInd ;
+  i : integer;
+  lProgInds : TProgInd;
 begin
   {TODO 1 -oFramework: Change the critical section in TFormThreadProgress.UpdateAutoProgressThreads to a semaphore. }
-  FCritSect.Enter ;
+  FCritSect.Enter;
   try
     for i := 0 to FProgInds.Count - 1 do begin
-      lProgInds := TProgInd( FProgInds.Items[i] ) ;
+      lProgInds := TProgInd(FProgInds.Items[i]);
       if (not lProgInds.Thread.Suspended) and lProgInds.Thread.AutoProgress then
         if lProgInds.Thread.Position < lProgInds.Thread.Max then
           lProgInds.Thread.Position := lProgInds.Thread.Position + 1
         else
-          lProgInds.Thread.Max := Trunc( lProgInds.Thread.Max * 2 ) ;
-    end ;
+          lProgInds.Thread.Max := Trunc(lProgInds.Thread.Max * 2);
+    end;
   finally
-    FCritSect.Leave ;
+    FCritSect.Leave;
   end;
 end;
 
@@ -728,7 +707,7 @@ end;
 procedure TProgInd.TerminateOnClick(sender: TObject);
 begin
   if (not Thread.ConfirmCancel)
-  or tiAppConfirmation( 'Are you sure you want to terminate <' + Text + '> ?' ) then
+  or tiAppConfirmation('Are you sure you want to terminate <' + Text + '> ?') then
   begin
     {$IF Defined(FPC) and Defined(UNIX) }
     {Under GTK event should not continue if object has already gone.
@@ -740,12 +719,12 @@ begin
     if uFormThreadProgress.FindByThread(Thread)=-1 then Exit;
     try
     if Assigned(Thread.OnCancel) then
-      Thread.OnCancel( Thread );
+      Thread.OnCancel(Thread);
     Thread.ReturnValue := 1;
     Thread.Resume;
-    Thread.Terminate ;
-    FSpeedButton.Enabled := false ;
-    Text := cuWaitForTerminate ;
+    Thread.Terminate;
+    FSpeedButton.Enabled := false;
+    Text := cuWaitForTerminate;
     except
       {In rare situation AV occur - when thread finished
        after FindByThread check.
@@ -757,30 +736,30 @@ begin
 end;
 
 
-procedure TtiThreadProgress.SetCanCancel(const Value: boolean);
+procedure TtiThreadProgress.SetCanCancel(const AValue: boolean);
 begin
-  FCanCancel := Value;
+  FCanCancel := AValue;
 end;
 
 
 function TProgInd.GetCanCancel: boolean;
 begin
-  result := ( FSpeedButton <> nil ) and FSpeedButton.Visible ;
+  result := (FSpeedButton <> nil) and FSpeedButton.Visible;
 end;
 
 
-procedure TProgInd.SetCanCancel(const Value: boolean);
+procedure TProgInd.SetCanCancel(const AValue: boolean);
 begin
-  FSpeedButton.Visible := Value ;
-  FProgressBar.Width := GetProgressBarWidth ;
+  FSpeedButton.Visible := AValue;
+  FProgressBar.Width := GetProgressBarWidth;
 end;
 
 
-function TProgInd.GetProgressBarWidth : integer ;
+function TProgInd.GetProgressBarWidth : integer;
 begin
-  result := Self.ClientWidth - FProgressBar.Left - 8 ;
+  result := Self.ClientWidth - FProgressBar.Left - 8;
   if CanCancel then
-    Dec( Result, cuCancelButtonSize ) ;
+    Dec(Result, cuCancelButtonSize);
 end;
 
 {$IFDEF FPC}
@@ -792,11 +771,11 @@ begin
     if uFormThreadProgress.FindByThread(Thread)=-1 then Exit;
     try
     if Assigned(Thread.OnCancel) then
-      Thread.OnCancel( Thread );
+      Thread.OnCancel(Thread);
     Thread.ReturnValue := 1;
-    Thread.Terminate ;
-    FSpeedButton.Enabled := false ;
-    Text := cuWaitForTerminate ;
+    Thread.Terminate;
+    FSpeedButton.Enabled := false;
+    Text := cuWaitForTerminate;
     except
       {In rare situation AV occur - when thread finished
        after FindByThread check.
@@ -814,52 +793,52 @@ end;
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   constructor TThreadDebugger.Create(Suspended: boolean);
   begin
-    inherited Create ;
-    FbSuspended := Suspended ;
-    FbTerminated := false ;
+    inherited Create;
+    FbSuspended := Suspended;
+    FbTerminated := false;
     if not Suspended then
-      Resume ;
+      Resume;
   end;
 
   procedure TThreadDebugger.Resume;
   begin
-    FbSuspended := false ;
-    Execute ;
+    FbSuspended := false;
+    Execute;
   end;
 
   procedure TThreadDebugger.Synchronize(Method: TThreadMethod);
   begin
-    if Assigned( Method ) then
-      Method ;
+    if Assigned(Method) then
+      Method;
   end;
 
   procedure TThreadDebugger.Terminate;
   begin
-    Terminated := true ;
+    Terminated := true;
   end;
   
-  procedure  TThreadDebugger.DoOnTerminate( sender : TObject ) ;
+  procedure  TThreadDebugger.DoOnTerminate(sender : TObject);
   begin
   end;
 {$ENDIF}
 
-constructor TtiThreadProgress.Create(CreateSuspended: Boolean);
+constructor TtiThreadProgress.Create(ACreateSuspended: Boolean);
 begin
   inherited Create(true);
-  gFormThreadProgress.AttachThread( self ) ;
-  AutoProgress := true ;
-  CanCancel := false ;
-  ConfirmCancel  := True ;
-  ReturnValue    := 0;
-  if not CreateSuspended then
-    Resume ;
+  gFormThreadProgress.AttachThread(self);
+  AutoProgress := true;
+  CanCancel := false;
+  ConfirmCancel := True;
+  ReturnValue   := 0;
+  if not ACreateSuspended then
+    Resume;
 end;
 
 function TFormThreadProgress.GetThreadCount: integer;
 begin
   FCritSect.Enter;
   try
-    result := FProgInds.Count ;
+    result := FProgInds.Count;
   finally
     FCritSect.Leave;
   end;
@@ -868,12 +847,12 @@ end;
 procedure TFormThreadProgress.SetParent(AParent: TWinControl);
 begin
   inherited SetParent(AParent);
-  uFormThreadProgressIsOwned := ( AParent <> nil ) ;
+  uFormThreadProgressIsOwned := (AParent <> nil);
 end;
 
 initialization
-  uFormThreadProgress := nil ;
-  uFormThreadProgressIsOwned := false ;
+  uFormThreadProgress := nil;
+  uFormThreadProgressIsOwned := false;
 
 finalization
 

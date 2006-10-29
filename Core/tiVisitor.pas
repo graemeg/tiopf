@@ -1,4 +1,4 @@
-unit tiVisitor ;
+unit tiVisitor;
 
 {$I tiDefines.inc}
 
@@ -13,7 +13,7 @@ uses
   {$ENDIF MSWINDOWS}
   ,Controls   // For Cusror - watch for GUI dependencies
   ,SyncObjs   // This unit must always appear after the Windows unit!
-  ;
+ ;
 
 const
   cErrorInVisitorExecute = 'Error in %s.Execute(%s) Message: %s';
@@ -22,15 +22,15 @@ const
 
   // Type kinds for use with tiGetPropertyNames
   // All string type properties
-  ctkString = [ tkChar, tkString, tkWChar, tkLString, tkWString {$IFDEF FPC},tkAString{$ENDIF} ] ;
+  ctkString = [ tkChar, tkString, tkWChar, tkLString, tkWString {$IFDEF FPC},tkAString{$ENDIF} ];
   // Integer type properties
-  ctkInt    = [ tkInteger, tkInt64 {$IFDEF FPC},tkBool{$ENDIF}] ;
+  ctkInt    = [ tkInteger, tkInt64 {$IFDEF FPC},tkBool{$ENDIF}];
   // Float type properties
-  ctkFloat  = [ tkFloat ] ;
+  ctkFloat  = [ tkFloat ];
   // Numeric type properties
   ctkNumeric = [tkInteger, tkInt64, tkFloat];
   // All simple types (string, int, float)
-  ctkSimple = ctkString + ctkInt + ctkFloat ;
+  ctkSimple = ctkString + ctkInt + ctkFloat;
 
   // These are the leftovers
   // tkUnknown
@@ -42,259 +42,259 @@ const
   // tkString, tkSet, tkClass, tkMethod, tkWChar, tkLString, tkWString,
   // tkVariant, tkArray, tkRecord, tkInterface, tkInt64, tkDynArray);
 
-  cErrorInvalidTtiTypeKind = 'Invalid TtiTypeKind' ;
+  cErrorInvalidTtiTypeKind = 'Invalid TtiTypeKind';
 
 type
   // Simple TypeKinds, as summary of the TTypeKinds available in TypInfo
-  TtiTypeKind =  ( tiTKInteger, tiTKFloat , tiTKString, tiTKDateTime, tiTKBoolean, tiTKBinary ) ;
+  TtiTypeKind =  (tiTKInteger, tiTKFloat , tiTKString, tiTKDateTime, tiTKBoolean, tiTKBinary);
 
   // Convert a property from Delphi's TTypeKind to TtiSimpleTypeKind
   // EG: Change tkInteger, tkInt64 and tkEnumeration to tkInteger
-  function tiGetSimplePropType( const pPersistent : TtiBaseObject ; const psPropName : string ) : TtiTypeKind ;
-  function tiVarSimplePropType( pValue : Variant ) : TtiTypeKind ;
+  function tiGetSimplePropType(const AObject : TtiBaseObject; const APropName : string): TtiTypeKind;
+  function tiVarSimplePropType(AValue : Variant): TtiTypeKind;
 
   // Is this a numeric property ?
-  function tiIsNumericProp( pPersistent : TtiBaseObject ; psPropName : string ) : boolean ;
+  function tiIsNumericProp(AObject : TtiBaseObject; APropName : string): boolean;
 
   // Read a TtiBaseObject's published properties into a TStringList
-  procedure tiGetPropertyNames( pPersistent : TtiBaseObject ;
-                                pSL : TStringList ;
-                                pPropFilter : TTypeKinds = ctkSimple ) ; overload ;
+  procedure tiGetPropertyNames(AObject : TtiBaseObject;
+                                AStringList : TStringList;
+                                APropFilter : TTypeKinds = ctkSimple); overload;
 
-  procedure tiGetPropertyNames( pPersistent : TtiBaseObjectClass ;
-                                pSL : TStringList ;
-                                pPropFilter : TTypeKinds = ctkSimple ) ; overload ;
+  procedure tiGetPropertyNames(AClass : TtiBaseObjectClass;
+                                AStringList : TStringList;
+                                APropFilter : TTypeKinds = ctkSimple); overload;
 
   // Is a property a read & write property
-  function tiIsReadWriteProp( const pData : TtiBaseObject ; const psPropName : string ) : boolean ; overload ;
-  function tiIsReadWriteProp( const pData : TtiBaseObjectClass ; const psPropName : string ) : boolean ; overload ;
+  function tiIsReadWriteProp(const AData : TtiBaseObject; const APropName : string): boolean; overload;
+  function tiIsReadWriteProp(const AData : TtiBaseObjectClass; const APropName : string): boolean; overload;
 
 type
   {$M+}
-  TtiVisited = class ;
+  TtiVisited = class;
   {$M-}
-  TtiVisitor = class ;
+  TtiVisitor = class;
                        
-  TtiVisitorCtrlr = class( TtiBaseObject )
+  TtiVisitorCtrlr = class(TtiBaseObject)
   private
     FDBConnectionName: string;
     FSQLMgrDataSource: string;
-    FPerLayerName    : string ;
+    FPerLayerName   : string;
   protected
-    procedure SetPerLayerName(const Value: string); virtual ;
+    procedure SetPerLayerName(const AValue: string); virtual;
   public
-    constructor Create ; virtual ;
-    procedure BeforeExecuteAll( pVisitors : TList )      ; virtual ;
-    procedure BeforeExecuteOne( pVisitor : TtiVisitor ) ; virtual ;
+    constructor Create; virtual;
+    procedure BeforeExecuteAll(AVisitors : TList)     ; virtual;
+    procedure BeforeExecuteOne(AVisitor : TtiVisitor); virtual;
     // Visitors are executed here...
-    procedure AfterExecuteOne( pVisitor : TtiVisitor  ) ; virtual ;
-    procedure AfterExecuteAll( pVisitors : TList )       ; virtual ;
+    procedure AfterExecuteOne(AVisitor : TtiVisitor ); virtual;
+    procedure AfterExecuteAll(AVisitors : TList)      ; virtual;
     // Executed if there was an error
-    procedure AfterExecuteError( pVisitors : TList )     ; virtual ;
+    procedure AfterExecuteError(AVisitors : TList)    ; virtual;
     // The property DBConnectionName is really only required in DBVisitors, but
     // must be introduce here so it can be set at a generic level by the
     // VisitorMgr. The alternative is to use RTTI or TypeInfo and only set the
     // property on DBVisitorMgr(s), but that would be an ever worse hack.
-    property  PerLayerName     : string read FPerLayerName     write SetPerLayerName ;
-    property  DBConnectionName : string read FDBConnectionName write FDBConnectionName ;
+    property  PerLayerName    : string read FPerLayerName     write SetPerLayerName;
+    property  DBConnectionName : string read FDBConnectionName write FDBConnectionName;
     // ToDo: Remove SQLMgrDataSource from TVisitorController
-    property  SQLMgrDataSource : string read FSQLMgrDataSource write FSQLMgrDataSource ;
-  end ;
+    property  SQLMgrDataSource : string read FSQLMgrDataSource write FSQLMgrDataSource;
+  end;
 
-  TtiVisitorControllerClass = class of TtiVisitorCtrlr ;
+  TtiVisitorControllerClass = class of TtiVisitorCtrlr;
 
-  TtiVisitorIterateDirection = ( vidTopDown, vidBottomUp ) ;
+  TtiVisitorIterateDirection = (vidTopDown, vidBottomUp);
 
   // TtiVisitor: The class that does the visiting
-  TtiVisitor = class( TtiBaseObject )
+  TtiVisitor = class(TtiBaseObject)
   private
-    FVisited           : TtiVisited ;
-    FbContinueVisiting : boolean;
+    FVisited          : TtiVisited;
+    FContinueVisiting : boolean;
     FVisitorController : TtiVisitorCtrlr;
-    FiDepth: integer;
+    FDepth: integer;
     FIterateDirection: TtiVisitorIterateDirection;
     FVisitedsOwner: TtiVisited;
   protected
-    function    AcceptVisitor : boolean ; overload ; virtual ;
-    function    GetVisited: TtiVisited ; virtual ;
-    procedure   SetVisited(const Value: TtiVisited); virtual ;
+    function    AcceptVisitor : boolean; overload; virtual;
+    function    GetVisited: TtiVisited; virtual;
+    procedure   SetVisited(const AValue: TtiVisited); virtual;
   public
-    constructor Create ; virtual;
+    constructor Create; virtual;
 
-    procedure   Execute( const pVisited : TtiVisited ) ; virtual ;
-    function    VisitorControllerClass : TtiVisitorControllerClass ; virtual ;
+    procedure   Execute(const AVisited : TtiVisited); virtual;
+    function    VisitorControllerClass : TtiVisitorControllerClass; virtual;
 
-    property    Visited : TtiVisited read GetVisited write SetVisited ;
-    property    ContinueVisiting : boolean read FbContinueVisiting write FbContinueVisiting ;
-    property    VisitorController : TtiVisitorCtrlr read FVisitorController write FVisitorController ;
-    property    Depth : integer read FiDepth write FiDepth ;
+    property    Visited : TtiVisited read GetVisited write SetVisited;
+    property    ContinueVisiting : boolean read FContinueVisiting write FContinueVisiting;
+    property    VisitorController : TtiVisitorCtrlr read FVisitorController write FVisitorController;
+    property    Depth : integer read FDepth write FDepth;
     property    IterateDirection : TtiVisitorIterateDirection
                   read  FIterateDirection
-                  write FIterateDirection ;
-    property    VisitedsOwner : TtiVisited read FVisitedsOwner write FVisitedsOwner ;
-  end ;
+                  write FIterateDirection;
+    property    VisitedsOwner : TtiVisited read FVisitedsOwner write FVisitedsOwner;
+  end;
 
-  TtiVisGetAllToVisit = class( TtiVisitor )
+  TtiVisGetAllToVisit = class(TtiVisitor)
   private
-    FList : TList ;
-    FVisitor : TtiVisitor ;
+    FList : TList;
+    FVisitor : TtiVisitor;
   protected
-    function AcceptVisitor : boolean ; override ;
+    function AcceptVisitor : boolean; override;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-    property    Visitor : TtiVisitor read FVisitor write FVisitor ;
-    property    List : TList read FList ;
-  end ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    Visitor : TtiVisitor read FVisitor write FVisitor;
+    property    List : TList read FList;
+  end;
 
   // TVisitorClass reference
-  TtiVisitorClass = class of TtiVisitor ;
+  TtiVisitorClass = class of TtiVisitor;
 
   // TtiVisited class reference
-  TtiVisitedClass = class of TtiVisited ;
+  TtiVisitedClass = class of TtiVisited;
 
   // TtiVisited
   // The class that gets visited.
-  TtiVisited = class( TtiBaseObject )
+  TtiVisited = class(TtiBaseObject)
   private
-    FbSelfIterate: boolean;
+    FSelfIterate: boolean;
   protected
-    function    GetCaption : string ; virtual ;
+    function    GetCaption : string; virtual;
   published
-    property    Caption    : string  read GetCaption ;
+    property    Caption   : string  read GetCaption;
   public
-    constructor Create ; virtual ;
-    procedure   Iterate( pVisitor : TtiVisitor ) ; virtual ;
-    procedure   IterateBottomUp( pVisitor: TtiVisitor ) ; virtual ;
-    property    SelfIterate : boolean read FbSelfIterate write FbSelfIterate ;
-    procedure   FindAllByClassType( pClass : TtiVisitedClass ; pList : TList ) ;
-    function    CountByClass( pClass : TtiVisitedClass ) : integer ;
-  end ;
+    constructor Create; virtual;
+    procedure   Iterate(AVisitor : TtiVisitor); virtual;
+    procedure   IterateBottomUp(AVisitor: TtiVisitor); virtual;
+    property    SelfIterate : boolean read FSelfIterate write FSelfIterate;
+    procedure   FindAllByClassType(AClass : TtiVisitedClass; AList : TList);
+    function    CountByClass(AClass : TtiVisitedClass): integer;
+  end;
 
   // A wrapper for the TtiPreSizedStream which allows text to be written to the stream
   // with each visit.
-  TVisStream = class( TtiVisitor )
+  TVisStream = class(TtiVisitor)
   private
-    FStream : TtiPreSizedStream ;
+    FStream : TtiPreSizedStream;
   protected
-    procedure Write( const pValue : string ) ; virtual ;
-    procedure WriteLn( const pValue : string = '' ) ; virtual ;
-    procedure SetStream(const Value: TtiPreSizedStream) ; virtual ;
+    procedure Write(const AValue : string); virtual;
+    procedure WriteLn(const AValue : string = ''); virtual;
+    procedure SetStream(const AValue: TtiPreSizedStream); virtual;
   public
-    property  Stream : TtiPreSizedStream read FStream write SetStream ;
-  end ;
+    property  Stream : TtiPreSizedStream read FStream write SetStream;
+  end;
 
-  TVisStringStream = class( TVisStream )
+  TVisStringStream = class(TVisStream)
   protected
     function    GetText: string; virtual;
   public
-    Constructor Create ; override ;
-    Destructor  Destroy ; override ;
-    Property    Text : string read GetText ;
-  end ;
+    Constructor Create; override;
+    Destructor  Destroy; override;
+    Property    Text : string read GetText;
+  end;
 
   // A visitor to count the number of instances of each class owned by the
   // passed object
-  TVisClassCount = class( TtiVisitor )
+  TVisClassCount = class(TtiVisitor)
   private
     FList: TStringList;
-    function GetClassCount(pClass : TClass): integer;
-    procedure SetClassCount(pClass : TClass; const Value: integer);
+    function GetClassCount(AClass : TClass): integer;
+    procedure SetClassCount(AClass : TClass; const AValue: integer);
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-    property    ClassCount[ pClass : TClass]: integer
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    ClassCount[ AClass : TClass]: integer
                   read GetClassCount
-                  write SetClassCount ;
-  end ;
+                  write SetClassCount;
+  end;
 
   // A visitor to find all owned objects of a given class
-  TVisFindAllByClass = class( TtiVisitor )
+  TVisFindAllByClass = class(TtiVisitor)
   private
     FList: TList;
     FClassTypeToFind: TtiVisitedClass;
   protected
-    function    AcceptVisitor : boolean ; override ;
+    function    AcceptVisitor : boolean; override;
   public
-    procedure   Execute( const pVisited : TtiVisited ) ; override ;
-    property    ClassTypeToFind : TtiVisitedClass read FClassTypeToFind write FClassTypeToFind ;
-    property    List : TList read FList write FList ;
-  end ;
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    ClassTypeToFind : TtiVisitedClass read FClassTypeToFind write FClassTypeToFind;
+    property    List : TList read FList write FList;
+  end;
 
-  TVisStreamClass = class of TVisStream ;
+  TVisStreamClass = class of TVisStream;
 
-  TVisClassRef = class of TtiVisitor ;
+  TVisClassRef = class of TtiVisitor;
 
-  TVisMapping = class( TObject )
+  TVisMapping = class(TObject)
   private
-    FsGroupName : string;
-    FClassRef   : TVisClassRef;
+    FGroupName : string;
+    FClassRef  : TVisClassRef;
   public
-    constructor CreateExt( const psGroupName : string ;
-                           const pClassRef : TVisClassRef ) ;
-    property    GroupName : string read FsGroupName write FsGroupName ;
-    property    ClassRef  : TVisClassRef read FClassRef write FClassRef ;
-  end ;
+    constructor CreateExt(const AGroupName : string;
+                           const AClassRef : TVisClassRef);
+    property    GroupName : string read FGroupName write FGroupName;
+    property    ClassRef : TVisClassRef read FClassRef write FClassRef;
+  end;
 
   // A procedural type to define the signature used for
   // BeforeExecute, AfterExecute and AfterExecuteError
-  TProcessVisitorMgrs = procedure( pVisitorController : TtiVisitorCtrlr ;
-                                   pVisitors   : TList ) of object ;
+  TProcessVisitorMgrs = procedure(AVisitorController : TtiVisitorCtrlr;
+                                   AVisitors  : TList) of object;
 
   // The Visitor Manager
-  TtiVisitorManager = class( TtiBaseObject )
+  TtiVisitorManager = class(TtiBaseObject)
   private
-    FVisMappings : TStringList ;
-    FHourGlassCount : integer ;
+    FVisMappings : TStringList;
+    FHourGlassCount : integer;
     FCritSec: TCriticalSection;
-    FThreadIDList : TList ;
+    FThreadIDList : TList;
     FBreakOnException: boolean;
-    FSavedCursor : TCursor ;
-    procedure GetVisitors(       pVisitors : TList ; const psGroupName : string ) ;
-    procedure GetVisitorControllers( const pVisitors         : TList ;
-                                     const pVisitorMgrs      : TList ;
-                                     const pDBConnectionName : string ;
-                                     const pPerLayerName     : string ) ;
+    FSavedCursor : TCursor;
+    procedure GetVisitors(      AVisitors : TList; const AGroupName : string);
+    procedure GetVisitorControllers(const AVisitors        : TList;
+                                     const AVisitorMgrs     : TList;
+                                     const ADBConnectionName : string;
+                                     const APersistenceLayerName    : string);
     procedure ProcessVisitorControllers(
-        pVisitors, pVisitorControllers : TList ;
-        pProc : TProcessVisitorMgrs ;
-        psMethodName : string ) ;
+        AVisitors, pVisitorControllers : TList;
+        pProc : TProcessVisitorMgrs;
+        psMethodName : string);
     // These call ProcessVisitorMgrs to scan for visitors and visitorMgrs
     // by passing the appropriate method of VisitorMgr to execute.
-    procedure DoBeforeExecute(     pVisitorMgr : TtiVisitorCtrlr ; pVisitors   : TList ) ;
-    procedure DoAfterExecute(      pVisitorMgr : TtiVisitorCtrlr ; pVisitors   : TList ) ;
-    procedure DoAfterExecuteError( pVisitorMgr : TtiVisitorCtrlr ; pVisitors   : TList ) ;
-    procedure ExecuteVisitors(   pVisitors    : TList ; pVisited : TtiVisited ) ;
-    procedure ProcessVisitors( const pGroupName : string ;
-                               const pVisited : TtiVisited ;
-                               const pDBConnectionName : string;
-                               const pPerLayerName      : string) ;
-    procedure Lock ;
-    procedure UnLock ;
-    procedure AddThreadID(    pThreadID : LongWord ) ;
-    procedure RemoveThreadID( pThreadID : LongWord ) ;
-    function  GetThreadCount : LongWord ;
+    procedure DoBeforeExecute(    AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
+    procedure DoAfterExecute(     AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
+    procedure DoAfterExecuteError(AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
+    procedure ExecuteVisitors(  AVisitors   : TList; AVisited : TtiVisited);
+    procedure ProcessVisitors(const AGroupName : string;
+                               const AVisited : TtiVisited;
+                               const ADBConnectionName : string;
+                               const APersistenceLayerName     : string);
+    procedure Lock;
+    procedure UnLock;
+    procedure AddThreadID(   AThreadID : LongWord);
+    procedure RemoveThreadID(AThreadID : LongWord);
+    function  GetThreadCount : LongWord;
   public
-    constructor Create ; virtual ;
-    destructor  Destroy ; override ;
-    procedure   RegisterVisitor( const psGroupName : string ;
-                                 const pClassRef   : TVisClassRef ) ;
-    procedure   UnRegisterVisitors( const psGroupName : string ) ;
-    function    Execute( const psGroupName       : string ;
-                         const pVisited          : TtiVisited ;
-                         const pDBConnectionName : string = '' ;
-                         const pPerLayerName     : string = '' ) : string ;
-    property    ThreadCount : LongWord read GetThreadCount ;
-    property    BreakOnException : boolean read FBreakOnException write FBreakOnException ;
-  end ;
+    constructor Create; virtual;
+    destructor  Destroy; override;
+    procedure   RegisterVisitor(const AGroupName : string;
+                                 const AClassRef  : TVisClassRef);
+    procedure   UnRegisterVisitors(const AGroupName : string);
+    function    Execute(const AGroupName      : string;
+                         const AVisited         : TtiVisited;
+                         const ADBConnectionName : string = '';
+                         const APersistenceLayerName    : string = ''): string;
+    property    ThreadCount : LongWord read GetThreadCount;
+    property    BreakOnException : boolean read FBreakOnException write FBreakOnException;
+  end;
 
 
 // Global proc to write a apply a TVisStream (as a TFileStream) to a TtiVisited.
-procedure VisStreamToFile( pData        : TtiVisited ;
-                           pFileName   : string ;
-                           pVisClassRef : TtiVisitorClass );
+procedure VisStreamToFile(AData       : TtiVisited;
+                           AFileName  : string;
+                           AVisClassRef : TtiVisitorClass);
 
 
 implementation
@@ -311,236 +311,236 @@ uses
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
-  ;
+ ;
 
 
-procedure VisStreamToFile( pData : TtiVisited ;
-                           pFileName : string ;
-                           pVisClassRef : TtiVisitorClass );
+procedure VisStreamToFile(AData : TtiVisited;
+                           AFileName : string;
+                           AVisClassRef : TtiVisitorClass);
 var
-  lVisitor : TVisStream ;
-  lStream  : TtiPreSizedStream ;
-  lDir     : string ;
+  lVisitor : TVisStream;
+  lStream : TtiPreSizedStream;
+  lDir    : string;
 begin
-  lDir := ExtractFilePath( pFileName ) ;
-  tiForceDirectories(pFileName);
-  lStream := TtiPreSizedStream.Create( cStreamStartSize, cStreamGrowBy );
+  lDir := ExtractFilePath(AFileName);
+  tiForceDirectories(AFileName);
+  lStream := TtiPreSizedStream.Create(cStreamStartSize, cStreamGrowBy);
   try
-    lVisitor   := TVisStream( pVisClassRef.Create ) ;
+    lVisitor  := TVisStream(AVisClassRef.Create);
     try
-      lVisitor.Stream := lStream ;
-      pData.Iterate( lVisitor ) ;
+      lVisitor.Stream := lStream;
+      AData.Iterate(lVisitor);
     finally
-      lVisitor.Free ;
-    end ;
-    lStream.SaveToFile(pFileName);
+      lVisitor.Free;
+    end;
+    lStream.SaveToFile(AFileName);
   finally
-     lStream.Free ;
-  end ;
-end ;
+     lStream.Free;
+  end;
+end;
 
 
 { TtiVisited }
 
-function TtiVisited.CountByClass(pClass: TtiVisitedClass): integer;
+function TtiVisited.CountByClass(AClass: TtiVisitedClass): integer;
 var
-  lList : TList ;
+  lList : TList;
 begin
-  lList := TList.Create ;
+  lList := TList.Create;
   try
-    FindAllByClassType( pClass, lList ) ;
-    result := lList.Count ;
+    FindAllByClassType(AClass, lList);
+    result := lList.Count;
   finally
-    lList.Free ;
-  end ;
+    lList.Free;
+  end;
 end;
 
 
-constructor TtiVisited.Create ;
+constructor TtiVisited.Create;
 begin
-  inherited create ;
-  FbSelfIterate := true ;
+  inherited create;
+  FSelfIterate := true;
 end;
 
 
-procedure TtiVisited.FindAllByClassType(pClass: TtiVisitedClass; pList: TList);
+procedure TtiVisited.FindAllByClassType(AClass: TtiVisitedClass; AList: TList);
 var
-  lVis : TVisFindAllByClass ;
+  lVis : TVisFindAllByClass;
 begin
-  Assert( pList <> nil, 'pList not assigned' ) ;
-  pList.Clear ;
-  lVis := TVisFindAllByClass.Create ;
+  Assert(AList <> nil, 'AList not assigned');
+  AList.Clear;
+  lVis := TVisFindAllByClass.Create;
   try
-    lVis.ClassTypeToFind := pClass ;
-    lVis.List := pList ;
-    Iterate( lVis ) ;
+    lVis.ClassTypeToFind := AClass;
+    lVis.List := AList;
+    Iterate(lVis);
   finally
-    lVis.Free ;
-  end ;
+    lVis.Free;
+  end;
 end;
 
 
 function TtiVisited.GetCaption: string;
 begin
-  result := className ;
+  result := className;
 end;
 
 
-procedure TtiVisited.Iterate(pVisitor: TtiVisitor) ;
+procedure TtiVisited.Iterate(AVisitor: TtiVisitor);
 var
-  lClassPropNames : TStringList ;
-  i        : integer ;
-  j        : integer ;
-  lVisited : TObject ;
-  lVisitedsOwner : TtiVisited ;
+  lClassPropNames : TStringList;
+  i       : integer;
+  j       : integer;
+  lVisited : TObject;
+  lVisitedsOwner : TtiVisited;
 begin
-  Assert( pVisitor <> nil, 'Visitor unassigned' ) ;
+  Assert(AVisitor <> nil, 'Visitor unassigned');
 
   // Don't go any further if terminated
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  if not pVisitor.ContinueVisiting then
-    Exit ; //==>
+  if not AVisitor.ContinueVisiting then
+    Exit; //==>
 
-  pVisitor.Depth := pVisitor.Depth + 1 ;
+  AVisitor.Depth := AVisitor.Depth + 1;
   try
 
-    pVisitor.Execute( self ) ;
-    lVisitedsOwner := pVisitor.VisitedsOwner ;
-    pVisitor.VisitedsOwner := Self ;
+    AVisitor.Execute(self);
+    lVisitedsOwner := AVisitor.VisitedsOwner;
+    AVisitor.VisitedsOwner := Self;
 
     // If SelfIterate is true, then use RTTI to scan through all the
     // properties of type TtiVisited
     if SelfIterate and
-       ( not gTIOPFManager.Terminated ) then
+       (not gTIOPFManager.Terminated) then
     begin
       // Create a string list to hold the property names
-      lClassPropNames := TStringList.Create ;
+      lClassPropNames := TStringList.Create;
       try
         // Get all property names of type tkClass
-        tiGetPropertyNames( self, lClassPropNames, [tkClass] ) ;
+        tiGetPropertyNames(self, lClassPropNames, [tkClass]);
 
         // Scan through these properties
         for i := 0 to lClassPropNames.Count - 1 do
         begin
 
           // Get a pointer to the property
-          lVisited := GetObjectProp( self, lClassPropNames.Strings[i] ) ;
+          lVisited := GetObjectProp(self, lClassPropNames.Strings[i]);
 
           // If the property is a TtiVisited, then visit it.
-          if ( lVisited is TtiVisited ) and
-             ( pVisitor.ContinueVisiting ) and
-             ( not gTIOPFManager.Terminated ) then
+          if (lVisited is TtiVisited) and
+             (AVisitor.ContinueVisiting) and
+             (not gTIOPFManager.Terminated) then
           begin
-            TtiVisited( lVisited ).Iterate( pVisitor ) ;
-            continue ; //==>
-          end ;
+            TtiVisited(lVisited).Iterate(AVisitor);
+            continue; //==>
+          end;
 
           // If the property is a TList, then visit it's items
-          if (lVisited is TList ) then
+          if (lVisited is TList) then
           begin
-            for j := 0 to TList( lVisited ).Count - 1 do
-              if ( TObject( TList( lVisited ).Items[j] ) is TtiVisited ) and
-                 ( pVisitor.ContinueVisiting ) and
-                 ( not gTIOPFManager.Terminated ) then
+            for j := 0 to TList(lVisited).Count - 1 do
+              if (TObject(TList(lVisited).Items[j]) is TtiVisited) and
+                 (AVisitor.ContinueVisiting) and
+                 (not gTIOPFManager.Terminated) then
               begin
-                TtiVisited( TList( lVisited ).Items[j] ).Iterate( pVisitor ) ;
-              end ;
-            continue ; //==>
-          end ;
+                TtiVisited(TList(lVisited).Items[j]).Iterate(AVisitor);
+              end;
+            continue; //==>
+          end;
 
-        end ;
-        pVisitor.VisitedsOwner := lVisitedsOwner ;
+        end;
+        AVisitor.VisitedsOwner := lVisitedsOwner;
       finally
-        lClassPropNames.Free ;
-      end ;
-    end ;
+        lClassPropNames.Free;
+      end;
+    end;
 
   finally
-    pVisitor.Depth := pVisitor.Depth - 1 ;
-  end ;
-end ;
+    AVisitor.Depth := AVisitor.Depth - 1;
+  end;
+end;
 
 
 { TtiVisitor }
 
 constructor TtiVisitor.Create;
 begin
-  inherited create ;
-  FbContinueVisiting  := true ;
-  FVisitorController  := nil ;
-  FiDepth             := 0 ;
-  FIterateDirection   := vidTopDown ;
+  inherited create;
+  FContinueVisiting := true;
+  FVisitorController := nil;
+  FDepth            := 0;
+  FIterateDirection  := vidTopDown;
 end;
 
 
 function TtiVisitor.AcceptVisitor: boolean;
 begin
-  result := true ;
+  result := true;
 end;
 
 
-procedure TVisStream.SetStream(const Value: TtiPreSizedStream);
+procedure TVisStream.SetStream(const AValue: TtiPreSizedStream);
 begin
-  Assert( Value.TestValid(TtiPreSizedStream), cTIInvalidObjectError );
-  FStream := Value;
+  Assert(AValue.TestValid(TtiPreSizedStream), cTIInvalidObjectError);
+  FStream := AValue;
 end;
 
 
-procedure TVisStream.Write(const pValue: string);
+procedure TVisStream.Write(const AValue: string);
 begin
-  Assert( FStream.TestValid(TtiPreSizedStream), cTIInvalidObjectError );
-  FStream.Write(pValue);
+  Assert(FStream.TestValid(TtiPreSizedStream), cTIInvalidObjectError);
+  FStream.Write(AValue);
 end;
 
 
-procedure TVisStream.WriteLn(const pValue: string = '' );
+procedure TVisStream.WriteLn(const AValue: string = '');
 begin
-  Assert( FStream.TestValid(TtiPreSizedStream), cTIInvalidObjectError );
-  FStream.WriteLn(pValue);
-end ;
-
-
-procedure TtiVisitor.Execute( const pVisited: TtiVisited);
-begin
-  FVisited := pVisited ;
+  Assert(FStream.TestValid(TtiPreSizedStream), cTIInvalidObjectError);
+  FStream.WriteLn(AValue);
 end;
 
 
-function TtiVisitor.VisitorControllerClass : TtiVisitorControllerClass ;
+procedure TtiVisitor.Execute(const AVisited: TtiVisited);
 begin
-  result := TtiVisitorCtrlr ;
+  FVisited := AVisited;
+end;
+
+
+function TtiVisitor.VisitorControllerClass : TtiVisitorControllerClass;
+begin
+  result := TtiVisitorCtrlr;
 end;
 
 
 { TtiVisitorCtrlr }
 
-procedure TtiVisitorCtrlr.AfterExecuteAll( pVisitors : TList );
+procedure TtiVisitorCtrlr.AfterExecuteAll(AVisitors : TList);
 begin
   // Do nothing
 end;
 
 
-procedure TtiVisitorCtrlr.AfterExecuteError( pVisitors : TList );
+procedure TtiVisitorCtrlr.AfterExecuteError(AVisitors : TList);
 begin
   // Do nothing
 end;
 
 
-procedure TtiVisitorCtrlr.AfterExecuteOne(pVisitor : TtiVisitor);
+procedure TtiVisitorCtrlr.AfterExecuteOne(AVisitor : TtiVisitor);
 begin
   // Do nothing
 end;
 
 
-procedure TtiVisitorCtrlr.BeforeExecuteAll( pVisitors : TList );
+procedure TtiVisitorCtrlr.BeforeExecuteAll(AVisitors : TList);
 begin
   // Do nothing
 end;
 
 
-procedure TtiVisitorCtrlr.BeforeExecuteOne(pVisitor : TtiVisitor);
+procedure TtiVisitorCtrlr.BeforeExecuteOne(AVisitor : TtiVisitor);
 begin
   // Do nothing
 end;
@@ -549,19 +549,19 @@ end;
 constructor TtiVisitorCtrlr.Create;
 begin
   // So we can create an instance ot TVisitorMgr from a class reference var.
-  inherited ;
+  inherited;
 end;
 
 
 function TtiVisitor.GetVisited: TtiVisited;
 begin
-  result := FVisited ;
+  result := FVisited;
 end;
 
 
-procedure TtiVisitor.SetVisited(const Value: TtiVisited);
+procedure TtiVisitor.SetVisited(const AValue: TtiVisited);
 begin
-  FVisited := Value ;
+  FVisited := AValue;
 end;
 
 
@@ -581,22 +581,22 @@ begin
 end;
 
 
-procedure TVisClassCount.Execute(const pVisited: TtiVisited);
+procedure TVisClassCount.Execute(const AVisited: TtiVisited);
 begin
-  inherited Execute(pVisited);
-  ClassCount[ pVisited.ClassType ] := ClassCount[ pVisited.ClassType ] + 1 ;
+  inherited Execute(AVisited);
+  ClassCount[ AVisited.ClassType ]:= ClassCount[ AVisited.ClassType ] + 1;
 end;
 
 
-function TVisClassCount.GetClassCount(pClass : TClass): integer;
+function TVisClassCount.GetClassCount(AClass : TClass): integer;
 begin
-  Result := StrToIntDef( FList.Values[ pClass.ClassName ], 0 ) ;
+  Result := StrToIntDef(FList.Values[ AClass.ClassName ], 0);
 end;
 
 
-procedure TVisClassCount.SetClassCount(pClass : TClass; const Value: integer);
+procedure TVisClassCount.SetClassCount(AClass : TClass; const AValue: integer);
 begin
-  FList.Values[ pClass.ClassName ] := IntToStr( value ) ;
+  FList.Values[ AClass.ClassName ]:= IntToStr(AValue);
 end;
 
 
@@ -611,7 +611,7 @@ end;
 
 destructor TVisStringStream.Destroy;
 begin
-  Stream.Free ;
+  Stream.Free;
   inherited;
 end;
 
@@ -622,20 +622,20 @@ begin
 end;
 
 
-procedure TtiVisited.IterateBottomUp(pVisitor: TtiVisitor);
+procedure TtiVisited.IterateBottomUp(AVisitor: TtiVisitor);
 var
-  lVisitor : TtiVisGetAllToVisit ;
-  i : integer ;
+  lVisitor : TtiVisGetAllToVisit;
+  i : integer;
 begin
-  lVisitor := TtiVisGetAllToVisit.Create ;
+  lVisitor := TtiVisGetAllToVisit.Create;
   try
-    lVisitor.Visitor := pVisitor ;
-    Self.Iterate( lVisitor ) ;
+    lVisitor.Visitor := AVisitor;
+    Self.Iterate(lVisitor);
     for i := lVisitor.List.Count - 1 downto 0 do
-      pVisitor.Execute( TtiVisited( lVisitor.List.Items[i] )) ;
+      AVisitor.Execute(TtiVisited(lVisitor.List.Items[i]));
   finally
-    lVisitor.Free ;
-  end ;
+    lVisitor.Free;
+  end;
 end;
 
 
@@ -643,30 +643,30 @@ end;
 
 function TtiVisGetAllToVisit.AcceptVisitor: boolean;
 begin
-  result := FVisitor.AcceptVisitor ;
+  result := FVisitor.AcceptVisitor;
 end;
 
 
 constructor TtiVisGetAllToVisit.Create;
 begin
   inherited;
-  FList := TList.Create ;
+  FList := TList.Create;
 end;
 
 
 destructor TtiVisGetAllToVisit.Destroy;
 begin
-  FList.Free ;
+  FList.Free;
   inherited;
 end;
 
 
-procedure TtiVisGetAllToVisit.Execute(const pVisited: TtiVisited);
+procedure TtiVisGetAllToVisit.Execute(const AVisited: TtiVisited);
 begin
-  inherited Execute( pVisited ) ;
-  FVisitor.Visited := pVisited ;
+  inherited Execute(AVisited);
+  FVisitor.Visited := AVisited;
   if AcceptVisitor then
-    List.Add( pVisited ) ;
+    List.Add(AVisited);
 end;
 
 
@@ -674,270 +674,270 @@ end;
 
 function TVisFindAllByClass.AcceptVisitor: boolean;
 begin
-  result := Visited is FClassTypeToFind ;
+  result := Visited is FClassTypeToFind;
 end;
 
 
-procedure TVisFindAllByClass.Execute(const pVisited: TtiVisited);
+procedure TVisFindAllByClass.Execute(const AVisited: TtiVisited);
 begin
-  inherited Execute( pVisited ) ;
+  inherited Execute(AVisited);
   if not AcceptVisitor then
-    Exit ; //==>
-  FList.Add( pVisited ) ;
+    Exit; //==>
+  FList.Add(AVisited);
 end;
 
 
-procedure TtiVisitorCtrlr.SetPerLayerName(const Value: string);
+procedure TtiVisitorCtrlr.SetPerLayerName(const AValue: string);
 begin
-  FPerLayerName := Value ;
+  FPerLayerName := AValue;
 end;
 
 
 { TtiVisitorManager }
 
-procedure TtiVisitorManager.AddThreadID(pThreadID: LongWord);
+procedure TtiVisitorManager.AddThreadID(AThreadID: LongWord);
 begin
-  if ( pThreadID = MainThreadID ) then
-    Exit ; //==>
-  Lock ;
+  if (AThreadID = MainThreadID) then
+    Exit; //==>
+  Lock;
   try
-    if FThreadIDList.IndexOf( TObject( pThreadID )) = -1 then
-      FThreadIDList.Add( TObject( pThreadID )) ;
+    if FThreadIDList.IndexOf(TObject(AThreadID)) = -1 then
+      FThreadIDList.Add(TObject(AThreadID));
   finally
-    UnLock ;
+    UnLock;
   end;
 end;
 
 
 constructor TtiVisitorManager.Create;
 begin
-  inherited ;
-  FThreadIDList     := TList.Create ;
-  FCritSec          := TCriticalSection.Create;
-  FVisMappings      := TStringList.Create ;
-  FHourGlassCount   := 0 ;
-  FBreakOnException := True ;
+  inherited;
+  FThreadIDList    := TList.Create;
+  FCritSec         := TCriticalSection.Create;
+  FVisMappings     := TStringList.Create;
+  FHourGlassCount  := 0;
+  FBreakOnException := True;
 end;
 
 
 destructor TtiVisitorManager.destroy;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := FVisMappings.Count-1 downto 0 do
-    TObject( FVisMappings.Objects[i] ).Free ;
-  FVisMappings.Free ;
+    TObject(FVisMappings.Objects[i]).Free;
+  FVisMappings.Free;
   FreeAndNil(FCritSec);
-  FThreadIDList.Free ;
+  FThreadIDList.Free;
   inherited;
 end;
 
 
-procedure TtiVisitorManager.DoAfterExecute(pVisitorMgr: TtiVisitorCtrlr;
-    pVisitors: TList);
+procedure TtiVisitorManager.DoAfterExecute(AVisitorMgr: TtiVisitorCtrlr;
+    AVisitors: TList);
 begin
-  pVisitorMgr.AfterExecuteAll(pVisitors);
+  AVisitorMgr.AfterExecuteAll(AVisitors);
 end;
 
 
-procedure TtiVisitorManager.DoAfterExecuteError(pVisitorMgr: TtiVisitorCtrlr;
-    pVisitors: TList);
+procedure TtiVisitorManager.DoAfterExecuteError(AVisitorMgr: TtiVisitorCtrlr;
+    AVisitors: TList);
 begin
-  pVisitorMgr.AfterExecuteError(pVisitors);
+  AVisitorMgr.AfterExecuteError(AVisitors);
 end;
 
 
-procedure TtiVisitorManager.DoBeforeExecute(pVisitorMgr: TtiVisitorCtrlr;
-    pVisitors: TList);
+procedure TtiVisitorManager.DoBeforeExecute(AVisitorMgr: TtiVisitorCtrlr;
+    AVisitors: TList);
 begin
-  pVisitorMgr.BeforeExecuteAll(pVisitors);
+  AVisitorMgr.BeforeExecuteAll(AVisitors);
 end;
 
 
-function TtiVisitorManager.Execute( const psGroupName       : string;
-                            const pVisited          : TtiVisited ;
-                            const pDBConnectionName : string = '' ;
-                            const pPerLayerName     : string = '' ) : string ;
+function TtiVisitorManager.Execute(const AGroupName      : string;
+                            const AVisited         : TtiVisited;
+                            const ADBConnectionName : string = '';
+                            const APersistenceLayerName    : string = ''): string;
 var
-  lbHourGlassRequired : boolean ;
-  lPerLayerName       : string ;
-  lDBConnectionName   : string ;
+  lbHourGlassRequired : boolean;
+  lPerLayerName      : string;
+  lDBConnectionName  : string;
 begin
   // Don't go any further if terminated
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  AddThreadID( GetCurrentThreadID ) ;
+  AddThreadID(GetCurrentThreadID);
 
   try
-    Log( 'About to process visitors for <' + psGroupName + '>', lsVisitor ) ;
+    Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
 
-    if pPerLayerName = '' then
+    if APersistenceLayerName = '' then
     begin
-      Assert( gTIOPFManager.DefaultPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError );
+      Assert(gTIOPFManager.DefaultPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
       lPerLayerName := gTIOPFManager.DefaultPerLayer.PerLayerName
     end else
-      lPerLayerName := pPerLayerName ;
+      lPerLayerName := APersistenceLayerName;
 
-    if pDBConnectionName = '' then
+    if ADBConnectionName = '' then
       lDBConnectionName := gTIOPFManager.DefaultDBConnectionName
     else
-      lDBConnectionName := pDBConnectionName ;
+      lDBConnectionName := ADBConnectionName;
 
-    Assert( lDBConnectionName <> '',
+    Assert(lDBConnectionName <> '',
             'Either the gTIOPFManager.DefaultDBConnectionName must be set, ' +
             'or the DBConnectionName must be passed as a parameter to ' +
-            'gVisMgr.Execute( )' ) ;
+            'gVisMgr.Execute()');
 
     // If we are in the main thread, and Application.MainForm <> nil,
     // then we require an hourglass
     lbHourGlassRequired :=
-      ( GetCurrentThreadID = MainThreadID ) and
-      ( Application.MainForm <> nil ) ;
+      (GetCurrentThreadID = MainThreadID) and
+      (Application.MainForm <> nil);
 
     // If an hourglass is required, then turn it on and inc the counter
     if lbHourGlassRequired then
     begin
-      if ( FHourGlassCount = 0 ) then
+      if (FHourGlassCount = 0) then
       begin
-        FSavedCursor := Screen.Cursor ;
-        Screen.Cursor := crHourGlass ;
-      end ;
-      Inc( FHourGlassCount ) ;
-    end ;
+        FSavedCursor := Screen.Cursor;
+        Screen.Cursor := crHourGlass;
+      end;
+      Inc(FHourGlassCount);
+    end;
 
     try
-      Result := '' ;
+      Result := '';
       try
-        ProcessVisitors( psGroupName, pVisited, lDBConnectionName, lPerLayerName ) ;
+        ProcessVisitors(AGroupName, AVisited, lDBConnectionName, lPerLayerName);
       finally
         // If an hourglass was required, then dec the counter and turn it off
         if lbHourGlassRequired then
         begin
-          Dec( FHourGlassCount ) ;
-          if ( FHourGlassCount = 0 ) then
-            Screen.Cursor := FSavedCursor ;
-        end ;
-      end ;
+          Dec(FHourGlassCount);
+          if (FHourGlassCount = 0) then
+            Screen.Cursor := FSavedCursor;
+        end;
+      end;
 
     except
       // Log and display any error messages
       on e:exception do
       begin
-        Result := e.message ;
-        LogError( e.message, false ) ;
+        Result := e.message;
+        LogError(e.message, false);
         if BreakOnException then
-          raise ;
-      end ;
-    end ;
+          raise;
+      end;
+    end;
 
-    Log( 'Finished process visitors for <' + psGroupName + '>', lsVisitor );
+    Log('Finished process visitors for <' + AGroupName + '>', lsVisitor);
   finally
     RemoveThreadID(GetCurrentThreadID);
   end;
 end;
 
 
-procedure TtiVisitorManager.ExecuteVisitors(pVisitors: TList; pVisited: TtiVisited);
-  procedure _RunBeforeExecuteOne( pVisitor : TtiVisitor ) ;
+procedure TtiVisitorManager.ExecuteVisitors(AVisitors: TList; AVisited: TtiVisited);
+  procedure _RunBeforeExecuteOne(AVisitor : TtiVisitor);
   var
-    lsVisitor : string ;
+    lsVisitor : string;
   begin
-    lsVisitor := pVisitor.ClassName ;
-    pVisitor.VisitorController.BeforeExecuteOne( pVisitor ) ;
-  end ;
+    lsVisitor := AVisitor.ClassName;
+    AVisitor.VisitorController.BeforeExecuteOne(AVisitor);
+  end;
 
 
-  procedure _RunAfterExecuteOne( pVisitor : TtiVisitor ) ;
+  procedure _RunAfterExecuteOne(AVisitor : TtiVisitor);
   var
-    lsVisitor : string ;
+    lsVisitor : string;
   begin
     // Don't go any further if terminated
     if gTIOPFManager.Terminated then
-      Exit ; //==>
-    lsVisitor := pVisitor.ClassName ;
-    pVisitor.VisitorController.AfterExecuteOne( pVisitor ) ;
-  end ;
+      Exit; //==>
+    lsVisitor := AVisitor.ClassName;
+    AVisitor.VisitorController.AfterExecuteOne(AVisitor);
+  end;
 
 
-  procedure _RunIterate( pVisited : TtiVisited ; pVisitor : TtiVisitor );
+  procedure _RunIterate(AVisited : TtiVisited; AVisitor : TtiVisitor);
   begin
-    if pVisitor.IterateDirection = vidTopDown then
-      pVisited.Iterate( pVisitor )
+    if AVisitor.IterateDirection = vidTopDown then
+      AVisited.Iterate(AVisitor)
     else
-      pVisited.IterateBottomUp( pVisitor ) ;
-  end ;
+      AVisited.IterateBottomUp(AVisitor);
+  end;
 var
-  lVisitor : TtiVisitor ;
-  i : integer ;
+  lVisitor : TtiVisitor;
+  i : integer;
 begin
-  for i := 0 to pVisitors.Count - 1 do
+  for i := 0 to AVisitors.Count - 1 do
   begin
     // Don't go any further if terminated
     if gTIOPFManager.Terminated then
-      Exit ; //==>
-    lVisitor  := TtiVisitor( pVisitors.Items[i] ) ;
-    _RunBeforeExecuteOne( lVisitor ) ;
+      Exit; //==>
+    lVisitor := TtiVisitor(AVisitors.Items[i]);
+    _RunBeforeExecuteOne(lVisitor);
     try
-      if pVisited <> nil then
-        _RunIterate( pVisited, lVisitor )
+      if AVisited <> nil then
+        _RunIterate(AVisited, lVisitor)
       else
-        lVisitor.Execute( nil ) ;
+        lVisitor.Execute(nil);
     finally
-      _RunAfterExecuteOne( lVisitor ) ;
-    end ;
-  end ;
-end ;
+      _RunAfterExecuteOne(lVisitor);
+    end;
+  end;
+end;
 
 
 // Search for the appropriate VisitorController for each visitor
-procedure TtiVisitorManager.GetVisitorControllers( const pVisitors    : TList ;
-                                           const pVisitorMgrs : TList ;
-                                           const pDBConnectionName : string ;
-                                           const pPerLayerName : string );
+procedure TtiVisitorManager.GetVisitorControllers(const AVisitors   : TList;
+                                           const AVisitorMgrs : TList;
+                                           const ADBConnectionName : string;
+                                           const APersistenceLayerName : string);
 var
-  i, j : integer ;
-  lVisitor : TtiVisitor ;
+  i, j : integer;
+  lVisitor : TtiVisitor;
 begin
-  Log( 'Getting visitor controllers', lsVisitor ) ;
+  Log('Getting visitor controllers', lsVisitor);
   // Scan all the visitors
-  for i := 0 to pVisitors.Count - 1 do begin
+  for i := 0 to AVisitors.Count - 1 do begin
     // Get a local pointer to the visitor
-    lVisitor := TtiVisitor( pVisitors.Items[i] ) ;
+    lVisitor := TtiVisitor(AVisitors.Items[i]);
 
     // Search the list of visitor controllers already created for a match
     // with this visitor.
-    for j := 0 to pVisitorMgrs.Count - 1 do begin
-      if (lVisitor.VisitorControllerClass.ClassName = TObject( pVisitorMgrs.Items[j] ).ClassName ) then begin
-        lVisitor.VisitorController := TtiVisitorCtrlr( pVisitorMgrs.Items[j] ) ;
-        break ; //==>
-      end ;
-    end ;
+    for j := 0 to AVisitorMgrs.Count - 1 do begin
+      if (lVisitor.VisitorControllerClass.ClassName = TObject(AVisitorMgrs.Items[j]).ClassName) then begin
+        lVisitor.VisitorController := TtiVisitorCtrlr(AVisitorMgrs.Items[j]);
+        break; //==>
+      end;
+    end;
 
     // The visitor controller was not found, so add a new one.
     if lVisitor.VisitorController = nil then begin
-      lVisitor.VisitorController := lVisitor.VisitorControllerClass.Create ;
-      lVisitor.VisitorController.PerLayerName := pPerLayerName ;
-      lVisitor.VisitorController.DBConnectionName := pDBConnectionName ;
+      lVisitor.VisitorController := lVisitor.VisitorControllerClass.Create;
+      lVisitor.VisitorController.PerLayerName := APersistenceLayerName;
+      lVisitor.VisitorController.DBConnectionName := ADBConnectionName;
       // ToDo: Remove the need to set lVisitor.VisitorController.SQLMgrDataSource
-      lVisitor.VisitorController.SQLMgrDataSource := pDBConnectionName ;
-      pVisitorMgrs.Add( lVisitor.VisitorController ) ;
-    end ;
-  end ;
-  Log( 'Done getting visitor controllers', lsVisitor ) ;
-end ;
+      lVisitor.VisitorController.SQLMgrDataSource := ADBConnectionName;
+      AVisitorMgrs.Add(lVisitor.VisitorController);
+    end;
+  end;
+  Log('Done getting visitor controllers', lsVisitor);
+end;
 
 
-procedure TtiVisitorManager.GetVisitors(pVisitors: TList;const psGroupName: string);
+procedure TtiVisitorManager.GetVisitors(AVisitors: TList;const AGroupName: string);
 var
-  i : integer ;
-  lsGroupName : string ;
+  i : integer;
+  lsGroupName : string;
 begin
-  pVisitors.Clear ;
-  lsGroupName := upperCase( psGroupName ) ;
+  AVisitors.Clear;
+  lsGroupName := upperCase(AGroupName);
   for i := 0 to FVisMappings.Count - 1 do
     if FVisMappings.Strings[i] = lsGroupName then
-      pVisitors.Add( TVisMapping( FVisMappings.Objects[i] ).ClassRef.Create ) ;
+      AVisitors.Add(TVisMapping(FVisMappings.Objects[i]).ClassRef.Create);
 end;
 
 
@@ -947,16 +947,16 @@ begin
 end;
 
 
-procedure TtiVisitorManager.ProcessVisitorControllers(pVisitors, pVisitorControllers: TList;
-  pProc: TProcessVisitorMgrs ; psMethodName : string );
+procedure TtiVisitorManager.ProcessVisitorControllers(AVisitors, pVisitorControllers: TList;
+  pProc: TProcessVisitorMgrs; psMethodName : string);
 var
-  i, j : integer ;
-  lVisitorController : TtiVisitorCtrlr ;
-  lVisitors   : TList ;
+  i, j : integer;
+  lVisitorController : TtiVisitorCtrlr;
+  lVisitors  : TList;
 begin
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
   lVisitors := TList.Create;
   try
@@ -966,105 +966,105 @@ begin
 
       // Don't go any further if terminated
       if gTIOPFManager.Terminated then
-        Exit ; //==>
+        Exit; //==>
 
-      lVisitorController := TtiVisitorCtrlr( pVisitorControllers.Items[i] ) ;
-      for j := 0 to pVisitors.Count-1 do
-        if ( TtiVisitor( pVisitors.Items[j] ).VisitorControllerClass =
-           lVisitorController.ClassType ) and
-           ( not gTIOPFManager.Terminated ) then
-          lVisitors.Add( pVisitors.Items[j] ) ;
-        pProc( lVisitorController, lVisitors ) ;
+      lVisitorController := TtiVisitorCtrlr(pVisitorControllers.Items[i]);
+      for j := 0 to AVisitors.Count-1 do
+        if (TtiVisitor(AVisitors.Items[j]).VisitorControllerClass =
+           lVisitorController.ClassType) and
+           (not gTIOPFManager.Terminated) then
+          lVisitors.Add(AVisitors.Items[j]);
+        pProc(lVisitorController, lVisitors);
 
-    end ;
+    end;
   finally
-    lVisitors.Free ;
-  end ;
+    lVisitors.Free;
+  end;
 end;
 
 
-procedure TtiVisitorManager.ProcessVisitors( const pGroupName        : string;
-                                     const pVisited          : TtiVisited;
-                                     const pDBConnectionName : string;
-                                     const pPerLayerName     : string );
+procedure TtiVisitorManager.ProcessVisitors(const AGroupName       : string;
+                                     const AVisited         : TtiVisited;
+                                     const ADBConnectionName : string;
+                                     const APersistenceLayerName    : string);
 var
-  lVisitors           : TObjectList ;
-  lVisitorMgrs        : TObjectList ;
+  lVisitors          : TObjectList;
+  lVisitorMgrs       : TObjectList;
 begin
-  lVisitors := TObjectList.Create ;
+  lVisitors := TObjectList.Create;
   try
-    lVisitorMgrs := TObjectList.Create ;
+    lVisitorMgrs := TObjectList.Create;
     try
-      GetVisitors(    lVisitors, pGroupName  ) ;
-      GetVisitorControllers( lVisitors, lVisitorMgrs, pDBConnectionName, pPerLayerName ) ;
-      Log( 'Visitor count: ' +
-           IntToStr( lVisitors.Count ) +
+      GetVisitors(   lVisitors, AGroupName );
+      GetVisitorControllers(lVisitors, lVisitorMgrs, ADBConnectionName, APersistenceLayerName);
+      Log('Visitor count: ' +
+           IntToStr(lVisitors.Count) +
            ' VisitorMgr count: ' +
-           IntToStr( lVisitorMgrs.Count ), lsVisitor ) ;
-      ProcessVisitorControllers( lVisitors, lVisitorMgrs, DoBeforeExecute, 'DoBeforeExecute' ) ;
+           IntToStr(lVisitorMgrs.Count), lsVisitor);
+      ProcessVisitorControllers(lVisitors, lVisitorMgrs, DoBeforeExecute, 'DoBeforeExecute');
       try
-        ExecuteVisitors( lVisitors, pVisited ) ;
-        ProcessVisitorControllers( lVisitors, lVisitorMgrs, DoAfterExecute, 'DoAfterExecute' ) ;
+        ExecuteVisitors(lVisitors, AVisited);
+        ProcessVisitorControllers(lVisitors, lVisitorMgrs, DoAfterExecute, 'DoAfterExecute');
       except
         on e:exception do
         begin
-          ProcessVisitorControllers( lVisitors, lVisitorMgrs, DoAfterExecuteError, 'DoAfterExecuteError ' ) ;
-          raise ;
-        end ;
-      end ;
+          ProcessVisitorControllers(lVisitors, lVisitorMgrs, DoAfterExecuteError, 'DoAfterExecuteError ');
+          raise;
+        end;
+      end;
     finally
-      lVisitorMgrs.Free ;
-    end ;
+      lVisitorMgrs.Free;
+    end;
   finally
-    lVisitors.Free ;
-  end ;
+    lVisitors.Free;
+  end;
 end;
 
 
-procedure TtiVisitorManager.RegisterVisitor( const psGroupName : string ;
-                                         const pClassRef : TVisClassRef ) ;
+procedure TtiVisitorManager.RegisterVisitor(const AGroupName : string;
+                                         const AClassRef : TVisClassRef);
 var
-  lVisMapping : TVisMapping ;
-  lsGroupName : string ;
+  lVisMapping : TVisMapping;
+  lsGroupName : string;
 begin
-  lsGroupName := UpperCase( psGroupName ) ;
-  lVisMapping := TVisMapping.CreateExt( lsGroupName, pClassRef ) ;
-  FVisMappings.AddObject( lsGroupName, lVisMapping ) ;
+  lsGroupName := UpperCase(AGroupName);
+  lVisMapping := TVisMapping.CreateExt(lsGroupName, AClassRef);
+  FVisMappings.AddObject(lsGroupName, lVisMapping);
 end;
 
 
-procedure TtiVisitorManager.RemoveThreadID(pThreadID: LongWord);
+procedure TtiVisitorManager.RemoveThreadID(AThreadID: LongWord);
 var
-  i : integer ;
+  i : integer;
 begin
-  if ( pThreadID = MainThreadID ) then
-    Exit ; //==>
+  if (AThreadID = MainThreadID) then
+    Exit; //==>
   if gTIOPFManager.Terminated then
-    Exit ; //==>
-  Lock ;
+    Exit; //==>
+  Lock;
   try
     if not gTIOPFManager.Terminated then
     begin
-      i := -1 ;
+      i := -1;
       try
-        i := FThreadIDList.IndexOf( TObject( pThreadID )) ;
-      except end ;
+        i := FThreadIDList.IndexOf(TObject(AThreadID));
+      except end;
       if i <> -1 then
-       FThreadIDList.Delete( i ) ;
-    end ;
+       FThreadIDList.Delete(i);
+    end;
   finally
-    UnLock ;
+    UnLock;
   end;
 end;
 
 
 function TtiVisitorManager.GetThreadCount: LongWord;
 begin
-  Lock ;
+  Lock;
   try
-    result := FThreadIDList.Count ;
+    result := FThreadIDList.Count;
   finally
-    UnLock ;
+    UnLock;
   end;
 end;
 
@@ -1075,154 +1075,154 @@ begin
 end;
 
 
-procedure TtiVisitorManager.UnRegisterVisitors(const psGroupName: string);
+procedure TtiVisitorManager.UnRegisterVisitors(const AGroupName: string);
 var
-  i : integer ;
-  lsGroupName : string ;
+  i : integer;
+  lsGroupName : string;
 begin
-  lsGroupName := upperCase( psGroupName ) ;
+  lsGroupName := upperCase(AGroupName);
   for i := FVisMappings.Count - 1 downto 0 do
     if FVisMappings.Strings[i] = lsGroupName then
     begin
-      TVisMapping( FVisMappings.Objects[i] ).Free ;
-      FVisMappings.Delete( i ) ;
-    end ;
+      TVisMapping(FVisMappings.Objects[i]).Free;
+      FVisMappings.Delete(i);
+    end;
 end;
 
 
 { TVisMapping }
 
-constructor TVisMapping.CreateExt(const psGroupName: string;
-  const pClassRef: TVisClassRef);
+constructor TVisMapping.CreateExt(const AGroupName: string;
+  const AClassRef: TVisClassRef);
 begin
-  Create ;
-  FClassRef   := pClassRef ;
-  FsGroupName := upperCase( psGroupName ) ;
+  Create;
+  FClassRef  := AClassRef;
+  FGroupName := upperCase(AGroupName);
 end;
 
 
-procedure tiGetPropertyNames( pPersistent : TtiBaseObject ; pSL : TStringList ;
-                              pPropFilter : TTypeKinds = ctkSimple ) ;
+procedure tiGetPropertyNames(AObject : TtiBaseObject; AStringList : TStringList;
+                              APropFilter : TTypeKinds = ctkSimple);
 begin
-  Assert( pPersistent <> nil, 'pPersistent not assigned.' ) ;
-  tiGetPropertyNames( TtiBaseObjectClass( pPersistent.ClassType ),
-                      pSL,
-                      pPropFilter ) ;
-end ;
+  Assert(AObject <> nil, 'pPersistent not assigned.');
+  tiGetPropertyNames(TtiBaseObjectClass(AObject.ClassType),
+                      AStringList,
+                      APropFilter);
+end;
 
 
-procedure tiGetPropertyNames( pPersistent : TtiBaseObjectClass ;
-                              pSL : TStringList ;
-                              pPropFilter : TTypeKinds = ctkSimple ) ;
+procedure tiGetPropertyNames(AClass : TtiBaseObjectClass;
+                              AStringList : TStringList;
+                              APropFilter : TTypeKinds = ctkSimple);
 var
-  lCount : integer ;
-  lSize  : integer ;
-  lList  : PPropList ;
-  i : integer ;
-  lPropFilter : TTypeKinds ;
+  lCount : integer;
+  lSize : integer;
+  lList : PPropList;
+  i : integer;
+  lPropFilter : TTypeKinds;
 begin
-  Assert( pSL <> nil, 'pSL not assigned.' ) ;
-  lPropFilter := pPropFilter ;
+  Assert(AStringList <> nil, 'pSL not assigned.');
+  lPropFilter := APropFilter;
 
-  pSL.Clear ;
+  AStringList.Clear;
 
-  lCount  := GetPropList(pPersistent.ClassInfo
+  lCount := GetPropList(AClass.ClassInfo
                          ,lPropFilter
                          ,nil
                          {$ifdef Delphi6OrAbove},false{$endif});
-  lSize   := lCount * SizeOf(Pointer);
+  lSize  := lCount * SizeOf(Pointer);
   GetMem(lList, lSize);
   try
-     GetPropList(pPersistent.ClassInfo
+     GetPropList(AClass.ClassInfo
                  ,lPropFilter
                  ,LList
                  {$ifdef Delphi6OrAbove},false{$endif});
     for i := 0 to lcount - 1 do
-      pSL.Add( lList^[i]^.Name ) ;
+      AStringList.Add(lList^[i]^.Name);
   finally
-    FreeMem( lList, lSize ) ;
-  end ;
-end ;
-
-
-function tiIsReadWriteProp(const pData: TtiBaseObject;
-    const psPropName: string): boolean;
-begin
-  result := tiIsReadWriteProp(TtiBaseObjectClass(pData.ClassType), psPropName);
-end;
-
-
-function tiIsReadWriteProp(const pData: TtiBaseObjectClass;
-    const psPropName: string): boolean;
-var
-  lPropInfo : PPropInfo ;
-begin
-  Assert(pData <> nil, 'pData not assigned');
-  Assert(IsPublishedProp(pData, psPropName), psPropName
-      + ' not a published property on ' + pData.ClassName);
-  try
-    lPropInfo := GetPropInfo( pData, psPropName ) ;
-    result    := (lPropInfo^.GetProc <> nil) and (lPropInfo^.SetProc <> nil);
-  except
-    on e:exception do
-      raise exception.CreateFmt(
-          'Error calling tiIsReadWriteProp with class: %s and property %s',
-          [pData.ClassName, psPropName]);
+    FreeMem(lList, lSize);
   end;
 end;
 
 
-function tiGetSimplePropType(const pPersistent: TtiBaseObject;
-    const psPropName: string): TtiTypeKind;
-var
-  lPropType : TTypeKind ;
-  lPropTypeName : string ;
+function tiIsReadWriteProp(const AData: TtiBaseObject;
+    const APropName: string): boolean;
 begin
+  result := tiIsReadWriteProp(TtiBaseObjectClass(AData.ClassType), APropName);
+end;
 
-  Assert( pPersistent <> nil, 'pPersistent is nil' ) ;
 
-  lPropTypeName := GetPropInfo(pPersistent, psPropName)^.PropType^.Name ;
-
-  // Check for a TDateTime
-  if SameText( lPropTypeName, 'TDateTime' ) then
-  begin
-    result := tiTKDateTime ;
-    Exit ; //==>
-  end ;
-
-  // Check for a Boolean
-  if SameText( lPropTypeName, 'Boolean' ) then
-  begin
-    result := tiTKBoolean ;
-    Exit ; //==>
-  end ;
-
+function tiIsReadWriteProp(const AData: TtiBaseObjectClass;
+    const APropName: string): boolean;
+var
+  lPropInfo : PPropInfo;
+begin
+  Assert(AData <> nil, 'AData not assigned');
+  Assert(IsPublishedProp(AData, APropName), APropName
+      + ' not a published property on ' + AData.ClassName);
   try
-    lPropType := PropType( pPersistent, psPropName ) ;
+    lPropInfo := GetPropInfo(AData, APropName);
+    result   := (lPropInfo^.GetProc <> nil) and (lPropInfo^.SetProc <> nil);
   except
     on e:exception do
-      raise exception.Create( 'Error in tiGetSimpleTypeKind ' + Cr +
-                              'Property name: ' + psPropName + Cr +
-                              'Message: ' + e.message ) ;
-  end ;
+      raise exception.CreateFmt(
+          'Error calling tiIsReadWriteProp with class: %s and property %s',
+          [AData.ClassName, APropName]);
+  end;
+end;
+
+
+function tiGetSimplePropType(const AObject: TtiBaseObject;
+    const APropName: string): TtiTypeKind;
+var
+  lPropType : TTypeKind;
+  lPropTypeName : string;
+begin
+
+  Assert(AObject <> nil, 'pPersistent is nil');
+
+  lPropTypeName := GetPropInfo(AObject, APropName)^.PropType^.Name;
+
+  // Check for a TDateTime
+  if SameText(lPropTypeName, 'TDateTime') then
+  begin
+    result := tiTKDateTime;
+    Exit; //==>
+  end;
+
+  // Check for a Boolean
+  if SameText(lPropTypeName, 'Boolean') then
+  begin
+    result := tiTKBoolean;
+    Exit; //==>
+  end;
+
+  try
+    lPropType := PropType(AObject, APropName);
+  except
+    on e:exception do
+      raise exception.Create('Error in tiGetSimpleTypeKind ' + Cr +
+                              'Property name: ' + APropName + Cr +
+                              'Message: ' + e.message);
+  end;
 
   // ToDo: Detection of stream properties could be better
-  if ( lPropType = tkClass ) and
-     (( SameText( 'TStream', lPropTypeName )) or
-      ( SameText( 'TMemoryStream', lPropTypeName )) or
-      ( SameText( 'TFileStream', lPropTypeName )) or
-      ( SameText( 'TStringStream', lPropTypeName ))) then
+  if (lPropType = tkClass) and
+     ((SameText('TStream', lPropTypeName)) or
+      (SameText('TMemoryStream', lPropTypeName)) or
+      (SameText('TFileStream', lPropTypeName)) or
+      (SameText('TStringStream', lPropTypeName))) then
   begin
-    result := tiTKBinary ;
-    Exit ; //==>
-  end ;
+    result := tiTKBinary;
+    Exit; //==>
+  end;
 
   case lPropType of
   tkInteger,
   tkInt64,
-  tkEnumeration : result := tiTKInteger ;
+  tkEnumeration : result := tiTKInteger;
 
-  tkFloat       : result := tiTKFloat ;
+  tkFloat      : result := tiTKFloat;
 
   tkString,
   tkChar,
@@ -1231,22 +1231,22 @@ begin
   {$IFDEF FPC}
   tkAString,
   {$ENDIF}
-  tkWString     : result := tiTKString ;
+  tkWString    : result := tiTKString;
 
   {$IFDEF FPC}
-  tkBool        : result := tiTKBoolean;
+  tkBool       : result := tiTKBoolean;
   {$ENDIF}
   else
-    raise exception.Create( 'Invalid property type passed to ' +
+    raise exception.Create('Invalid property type passed to ' +
                             'tiGetSimplePropType. ClassName <' +
-                            pPersistent.ClassName +
+                            AObject.ClassName +
                             '> Property name <' +
-                            psPropName + '>' ) ;
+                            APropName + '>');
   end;
 end;
 
 
-function tiVarSimplePropType( pValue : Variant ) : TtiTypeKind ;
+function tiVarSimplePropType(AValue : Variant): TtiTypeKind;
 begin
 {
 varEmpty        The variant is Unassigned.
@@ -1269,49 +1269,60 @@ varArray        Bit indicating variant array.
 varByRef        Bit indicating variant contains a reference (rather than a value).
 }
 
-  if tiIsVariantOfType( pValue, varSmallint ) or
-     tiIsVariantOfType( pValue, varInteger ) or
+  if tiIsVariantOfType(AValue, varSmallint) or
+     tiIsVariantOfType(AValue, varInteger) or
      {$ifdef Delphi6OrAbove}
-     tiIsVariantOfType( pValue, varWord ) or
-     tiIsVariantOfType( pValue, varLongWord ) or
-     tiIsVariantOfType( pValue, varInt64 ) or
-     tiIsVariantOfType( pValue, varShortInt ) or
+     tiIsVariantOfType(AValue, varWord) or
+     tiIsVariantOfType(AValue, varLongWord) or
+     tiIsVariantOfType(AValue, varInt64) or
+     tiIsVariantOfType(AValue, varShortInt) or
      {$endif}
-     tiIsVariantOfType( pValue, varByte ) then
+     tiIsVariantOfType(AValue, varByte) then
     Result := tiTKInteger
-  else if tiIsVariantOfType( pValue, varSingle ) or
-          tiIsVariantOfType( pValue, varDouble ) or
-          tiIsVariantOfType( pValue, varCurrency ) then
+  else if tiIsVariantOfType(AValue, varSingle) or
+          tiIsVariantOfType(AValue, varDouble) or
+          tiIsVariantOfType(AValue, varCurrency) then
     Result := tiTKFloat
-  else if tiIsVariantOfType( pValue, varString ) or
-          tiIsVariantOfType( pValue, varOLEStr ) then
+  else if tiIsVariantOfType(AValue, varString) or
+          tiIsVariantOfType(AValue, varOLEStr) then
     Result := tiTKString
-  else if tiIsVariantOfType( pValue, varDate ) then
+  else if tiIsVariantOfType(AValue, varDate) then
     Result := tiTKDateTime
-  else if tiIsVariantOfType( pValue, varBoolean ) then
+  else if tiIsVariantOfType(AValue, varBoolean) then
     Result := tiTKBoolean
   else
   begin
-    raise EtiOPFInternalException.Create(cErrorInvalidVariantType ) ;
-    Result := tiTKInteger ; // Just to shut the compiler up. Won't get here.
-  end ;
+    raise EtiOPFInternalException.Create(cErrorInvalidVariantType);
+    Result := tiTKInteger; // Just to shut the compiler up. Won't get here.
+  end;
 end;
 
 
-function tiIsNumericProp( pPersistent : TtiBaseObject ; psPropName : string ) : boolean ;
+function tiIsNumericProp(AObject : TtiBaseObject; APropName : string): boolean;
 var
-  lPropType : TTypeKind ;
+  lPropType : TTypeKind;
 begin
   try
-    lPropType := PropType( pPersistent, psPropName ) ;
+    lPropType := PropType(AObject, APropName);
   except
     on e:exception do
-      raise exception.Create( 'Error in tiGetSimpleTypeKind ' +
-                              'Message: ' + e.message ) ;
-  end ;
-  result := lPropType in [ tkInteger, tkInt64,tkEnumeration, tkFloat ] ;
+      raise exception.Create('Error in tiGetSimpleTypeKind ' +
+                              'Message: ' + e.message);
+  end;
+  result := lPropType in [ tkInteger, tkInt64,tkEnumeration, tkFloat ];
 end;
 
 
 end.
+
+
+
+
+
+
+
+
+
+
+
 

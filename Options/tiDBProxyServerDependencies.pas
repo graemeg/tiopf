@@ -5,14 +5,11 @@ unit tiDBProxyServerDependencies;
 interface
 uses
    tiDBProxyServer
-  ,tiRegINI
-  ;
+ ;
 
 procedure ConnectToDatabase;
-function  GetDBConnectionMessage:string ;
-function  GetDBProxyServerApplicationTitle: string;
-function  ProxyServerINI: TtiINIFile;
-function  gTIDBProxy: TtiDBProxyServer ;
+function  GetDBConnectionMessage:string;
+function  gTIDBProxy: TtiDBProxyServer;
 
 implementation
 uses
@@ -25,67 +22,61 @@ uses
   ,tiOPFManager
   ,tiQueryRemote_Svr
   ,tiDBProxyServerStats
+  ,tiDBProxyServerConfig
   ,tiOIDGUID
   {$IFDEF madExcept}
   ,madExcept
   ,madLinkDisAsm
   {$ENDIF}
-  ;
+ ;
 
 var
-  uINI          : TtiINIFile ;
-  utiDBProxy : TtiDBProxyServer ;
-
-function  ProxyServerINI: TtiINIFile;
-begin
-  Result := uINI;
-end;
+  utiDBProxy : TtiDBProxyServer;
 
 procedure ConnectToDatabase;
 var
-  lDatabaseName : string ;
-  lUsername     : string ;
-  lPassword     : string ;
-  lTimeOut      : integer ;
+  LINI: TtiDBProxyServerConfig;
+  lDatabaseName : string;
+  lUsername    : string;
+  lPassword    : string;
+  lTimeOut     : integer;
 begin
-  lDatabaseName        := uINI.ReadString('DatabaseConnection', 'DatabaseName', ExpandFileName('..\_Data\Demo.gdb')) ;
-  lUserName            := uINI.ReadString('DatabaseConnection', 'UserName', 'SYSDBA' ) ;
-  lPassword            := uINI.ReadString('DatabaseConnection', 'Password', 'masterkey' ) ;
+  LINI:= TtiDBProxyServerConfig.Create;
+  try
+    lDatabaseName       := LINI.DatabaseName;
+    lUserName           := LINI.UserName;
+    lPassword           := LINI.Password;
+    lTimeOut            := LINI.TransactionTimeout;
+  finally
+    LINI.Free;
+  end;
 
-  gTIOPFManager.TerminateOnFailedDBConnection := false ;
-  gTIOPFManager.ConnectDatabase( lDatabaseName, lUserName, lPassword) ;
+  gTIOPFManager.TerminateOnFailedDBConnection := false;
+  gTIOPFManager.ConnectDatabase(lDatabaseName, lUserName, lPassword);
 
-  lTimeOut := uINI.ReadInteger('DatabaseConnection', 'TimeOut', 1 ) ;
-  gStatefulDBConnectionPool.TimeOut := lTimeOut ;
+  gStatefulDBConnectionPool.TimeOut := lTimeOut;
 
   Log(GetDBConnectionMessage);
 
-end ;
+end;
 
 function GetDBConnectionMessage: string;
 begin
   result :=
     gTIOPFManager.DefaultDBConnectionPool.DetailsAsString + Cr(2) +
-    'Transaction timeout:     ' + FloatToStr( gStatefulDBConnectionPool.TimeOut ) + ' min';
+    'Transaction timeout:     ' + FloatToStr(gStatefulDBConnectionPool.TimeOut) + ' min';
   Result := Result + Cr(2) + 'Static pages read from: ' + uTIDBProxy.StaticPageLocation;
 end;
 
-function GetDBProxyServerApplicationTitle: string;
-begin
-  uINI.ReadString('System', 'ApplicationTitle', cRemoteServerMainFormCaption )
-end;
-
-function  gTIDBProxy : TtiDBProxyServer ;
+function  gTIDBProxy : TtiDBProxyServer;
 begin
   Result := utiDBProxy;
 end;
 
 initialization
-  uINI          := TtiINIFile.Create( tiAddTrailingSlash(tiGetEXEPath) + cTIDBProxyServerININame) ;
   utiDBProxy := TtiDBProxyServer.Create(80);
 
 finalization
-  uINI.Free;
   utiDBProxy.Free;
 
 

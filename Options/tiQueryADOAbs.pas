@@ -7,111 +7,111 @@ uses
   ,Windows
   ,ADODb
   ,DB
-  ;
+ ;
 
 {$I tiDefines.inc}
 
 const
-  cDelphi5ADOErrorString = 'Either BOF or EOF is True, or the current record has been deleted. Requested operation requires a current record' ;
+  cDelphi5ADOErrorString = 'Either BOF or EOF is True, or the current record has been deleted. Requested operation requires a current record';
   cErrorADOCoInitialize  = 'Attempt to access TtiDatabaseADOAbs in thread other than the one the ADOConnection was created in';
 type
 
-  TtiDatabaseADOAbs = class( TtiDatabaseSQL )
+  TtiDatabaseADOAbs = class(TtiDatabaseSQL)
   private
-    FADOConnection      : TADOConnection;
+    FADOConnection     : TADOConnection;
     FCurrentThreadID: DWord;
     FInTransaction: Boolean;
     function GetADOConnection: TADOConnection;
   protected
     property  Connection : TADOConnection read GetADOConnection;
-    procedure SetConnected( pbValue : boolean ) ; override;
-    function  GetConnected : boolean ; override ;
-    procedure SetupDBParams ; virtual ; abstract ;
+    procedure SetConnected(AValue : boolean); override;
+    function  GetConnected : boolean; override;
+    procedure SetupDBParams; virtual; abstract;
     function  FieldDataTypeToTIQueryFieldKind(pDataType: TFieldType): TtiQueryFieldKind;
 
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
 
-    class function  DatabaseExists( const pDatabaseName, pUserName, pPassword : string ) : boolean ; override ;
-    class procedure CreateDatabase( const pDatabaseName, pUserName, pPassword : string ) ; override ;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
 
-    procedure   StartTransaction ; override ;
-    function    InTransaction : boolean ; override ;
-    procedure   Commit ; override ;
-    procedure   RollBack ; override ;
+    procedure   StartTransaction; override;
+    function    InTransaction : boolean; override;
+    procedure   Commit; override;
+    procedure   RollBack; override;
 
-  end ;
+  end;
 
-  TtiQueryADO = class( TtiQuerySQL )
+  TtiQueryADO = class(TtiQuerySQL)
   private
-    FADOQuery : TADOQuery ;
+    FADOQuery : TADOQuery;
   {:FSQL is used as a private placeholder for converting the WideString version (in D2006+). Ref GetSQL}
-    FSQL      : TStringList;
+    FSQL     : TStringList;
     procedure DoOnChangeSQL(Sender: TObject);
   protected
 
-    function  GetFieldAsString(const psName: string): string     ; override ;
-    function  GetFieldAsFloat(const psName: string): extended    ; override ;
-    function  GetFieldAsBoolean(const psName: string): boolean   ; override ;
-    function  GetFieldAsInteger(const psName: string): Int64     ; override ;
-    function  GetFieldAsDateTime(const psName: string):TDateTime ; override ;
+    function  GetFieldAsString(const AName: string): string    ; override;
+    function  GetFieldAsFloat(const AName: string): extended   ; override;
+    function  GetFieldAsBoolean(const AName: string): boolean  ; override;
+    function  GetFieldAsInteger(const AName: string): Int64    ; override;
+    function  GetFieldAsDateTime(const AName: string):TDateTime; override;
 
-    function  GetFieldAsStringByIndex(pIndex: Integer): string     ; override ;
-    function  GetFieldAsFloatByIndex(pIndex: Integer)   : extended ; override ;
-    function  GetFieldAsBooleanByIndex(pIndex: Integer) : boolean  ; override ;
-    function  GetFieldAsIntegerByIndex(pIndex: Integer) : Int64    ; override ;
-    function  GetFieldAsDateTimeByIndex(pIndex: Integer):TDateTime ; override ;
-    function  GetFieldIsNullByIndex(pIndex: Integer):Boolean       ; override ;
+    function  GetFieldAsStringByIndex(AIndex: Integer): string    ; override;
+    function  GetFieldAsFloatByIndex(AIndex: Integer)  : extended; override;
+    function  GetFieldAsBooleanByIndex(AIndex: Integer): boolean ; override;
+    function  GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ; override;
+    function  GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime; override;
+    function  GetFieldIsNullByIndex(AIndex: Integer):Boolean      ; override;
 
-    function  GetSQL: TStrings; override ;
-    procedure SetSQL(const Value: TStrings); override ;
-    function  GetActive: boolean; override ;
-    procedure SetActive(const Value: boolean); override ;
-    function  GetEOF: boolean; override ;
-    function  GetParamAsString( const psName: string): string; override ;
-    function  GetParamAsBoolean(const psName: string): boolean; override ;
-    function  GetParamAsFloat(const psName: string): extended;override ;
-    function  GetParamAsInteger(const psName: string): Int64 ;override ;
-    procedure SetParamAsString( const psName, Value: string); override ;
-    procedure SetParamAsBoolean(const psName: string;const Value: boolean);override ;
-    procedure SetParamAsFloat(const psName: string; const Value: extended);override ;
-    procedure SetParamAsInteger(const psName: string;const Value: Int64);override ;
-    function  GetParamAsDateTime(const psName: string): TDateTime ; override ;
-    procedure SetParamAsDateTime(const psName :string ; const Value: TDateTime); override ;
+    function  GetSQL: TStrings; override;
+    procedure SetSQL(const AValue: TStrings); override;
+    function  GetActive: boolean; override;
+    procedure SetActive(const AValue: boolean); override;
+    function  GetEOF: boolean; override;
+    function  GetParamAsString(const AName: string): string; override;
+    function  GetParamAsBoolean(const AName: string): boolean; override;
+    function  GetParamAsFloat(const AName: string): extended;override;
+    function  GetParamAsInteger(const AName: string): Int64;override;
+    procedure SetParamAsString(const AName, AValue: string); override;
+    procedure SetParamAsBoolean(const AName: string;const AValue: boolean);override;
+    procedure SetParamAsFloat(const AName: string; const AValue: extended);override;
+    procedure SetParamAsInteger(const AName: string;const AValue: Int64);override;
+    function  GetParamAsDateTime(const AName: string): TDateTime; override;
+    procedure SetParamAsDateTime(const AName :string; const AValue: TDateTime); override;
 
-    function  GetParamIsNull( const psName: String): Boolean; override;
-    procedure SetParamIsNull( const psName: String; const Value: Boolean); override;
-    function  GetFieldIsNull(const psName: string): Boolean; override ;
+    function  GetParamIsNull(const AName: String): Boolean; override;
+    procedure SetParamIsNull(const AName: String; const AValue: Boolean); override;
+    function  GetFieldIsNull(const AName: string): Boolean; override;
 
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Open    ; override ;
-    procedure   Close   ; override ;
-    procedure   Next    ; override ;
-    procedure   ExecSQL ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Open   ; override;
+    procedure   Close  ; override;
+    procedure   Next   ; override;
+    procedure   ExecSQL; override;
 
-    function    ParamCount : integer ; override ;
-    function    ParamName( pIndex : integer ) : string ; override ;
+    function    ParamCount : integer; override;
+    function    ParamName(AIndex : integer): string; override;
 
-    procedure   AssignParamToStream(   const pName : string ;  const pValue : TStream ) ; override ;
-    procedure   AssignParamFromStream( const pName : string ;  const pValue : TStream ) ; override ;
-    procedure   AssignFieldAsStream(   const pName : string ;  const pValue : TStream ) ; override ;
-    procedure   AssignFieldAsStreamByIndex( pIndex : integer ; const pValue : TStream ) ; override ;
+    procedure   AssignParamToStream(  const AName : string;  const AValue : TStream); override;
+    procedure   AssignParamFromStream(const AName : string;  const AValue : TStream); override;
+    procedure   AssignFieldAsStream(  const AName : string;  const AValue : TStream); override;
+    procedure   AssignFieldAsStreamByIndex(AIndex : integer; const AValue : TStream); override;
 
-    procedure   AttachDatabase( pDatabase : TtiDatabase ) ; override ;
-    procedure   DetachDatabase ;  override ;
-    procedure   Reset ; override ;
+    procedure   AttachDatabase(ADatabase : TtiDatabase); override;
+    procedure   DetachDatabase;  override;
+    procedure   Reset; override;
 
-    function    FieldCount : integer ; override ;
-    function    FieldName( pIndex : integer ) : string ; override ;
-    function    FieldIndex( const psName : string ) : integer ; override ;
-    function    FieldKind( pIndex : integer ) : TtiQueryFieldKind ; override ;
-    function    FieldSize( pIndex : integer ) : integer ; override ;
-    function    HasNativeLogicalType : boolean ; override ;
+    function    FieldCount : integer; override;
+    function    FieldName(AIndex : integer): string; override;
+    function    FieldIndex(const AName : string): integer; override;
+    function    FieldKind(AIndex : integer): TtiQueryFieldKind; override;
+    function    FieldSize(AIndex : integer): integer; override;
+    function    HasNativeLogicalType : boolean; override;
 
-  end ;
+  end;
 
 
 implementation
@@ -127,240 +127,240 @@ uses
   {$IFNDEF VER130}
   ,Variants
   {$ENDIF}
-  ;
+ ;
 
 constructor TtiQueryADO.Create;
 begin
   inherited;
-  tiWin32CoInitialize ;
-  FADOQuery := TADOQuery.Create( nil ) ;
-  FADOQuery.CursorType := ctOpenForwardOnly ;
-  FADOQuery.CursorLocation := clUseServer ;
+  tiWin32CoInitialize;
+  FADOQuery := TADOQuery.Create(nil);
+  FADOQuery.CursorType := ctOpenForwardOnly;
+  FADOQuery.CursorLocation := clUseServer;
   FSQL := TStringList.Create;
   FSQL.OnChange:= DoOnChangeSQL;
 end;
 
 destructor TtiQueryADO.Destroy;
 begin
-  FADOQuery.Free ;
+  FADOQuery.Free;
   FSQL.Free;
   inherited;
 end;
 
 procedure TtiQueryADO.Close;
 begin
-  Active := false ;
+  Active := false;
 end;
 
 procedure TtiQueryADO.ExecSQL;
 var
-  ls : string ;
+  ls : string;
 begin
   try
     FADOQuery.Prepared:=true;
-    FADOQuery.ExecSQL ;
+    FADOQuery.ExecSQL;
   except
     on e:exception do
     begin
-      ls := e.Message ;
+      ls := e.Message;
       Log(ls);
       raise;
-    end ;
+    end;
   end;
 end;
 
-function TtiQueryADO.GetFieldAsBoolean(const psName: string): boolean;
+function TtiQueryADO.GetFieldAsBoolean(const AName: string): boolean;
 var
-  lValue : variant ;
+  lValue : variant;
 begin
-  lValue := FADOQuery.FieldByName( psName ).Value ;
-  result := lValue = -1 ;
+  lValue := FADOQuery.FieldByName(AName).AValue;
+  result := lValue = -1;
 end;
 
-function TtiQueryADO.GetFieldAsDateTime(const psName: string): TDateTime;
+function TtiQueryADO.GetFieldAsDateTime(const AName: string): TDateTime;
 begin
-  result := FADOQuery.FieldByName( psName ).AsDateTime ;
+  result := FADOQuery.FieldByName(AName).AsDateTime;
 end;
 
-function TtiQueryADO.GetFieldAsFloat(const psName: string): extended;
+function TtiQueryADO.GetFieldAsFloat(const AName: string): extended;
 begin
-  result := FADOQuery.FieldByName( psName ).AsFloat ;
+  result := FADOQuery.FieldByName(AName).AsFloat;
 end;
 
-function TtiQueryADO.GetFieldAsInteger(const psName: string): Int64;
+function TtiQueryADO.GetFieldAsInteger(const AName: string): Int64;
 begin
-  result := FADOQuery.FieldByName( psName ).AsInteger ;
+  result := FADOQuery.FieldByName(AName).AsInteger;
 end;
 
-function TtiQueryADO.GetFieldAsString(const psName: string): string;
+function TtiQueryADO.GetFieldAsString(const AName: string): string;
 begin
-  result := FADOQuery.FieldByName( psName ).AsString ;
+  result := FADOQuery.FieldByName(AName).AsString;
 end;
 
 function TtiQueryADO.GetActive: boolean;
 begin
-  result := FADOQuery.Active ;
+  result := FADOQuery.Active;
 end;
 
 function TtiQueryADO.GetEOF: boolean;
 begin
-  result := FADOQuery.EOF ;
+  result := FADOQuery.EOF;
 end;
 
-function TtiQueryADO.GetParamAsBoolean(const psName: string): boolean;
+function TtiQueryADO.GetParamAsBoolean(const AName: string): boolean;
 var
-  lValue : variant ;
+  lValue : variant;
 begin
-  lValue := FADOQuery.Parameters.ParamByName( psName ).Value ;
-  result := lValue = -1 ;
+  lValue := FADOQuery.Parameters.ParamByName(AName).AValue;
+  result := lValue = -1;
 end;
 
-function TtiQueryADO.GetParamAsDateTime(const psName: string): TDateTime;
+function TtiQueryADO.GetParamAsDateTime(const AName: string): TDateTime;
 var
-  lValue : string ;
+  lValue : string;
 begin
   // ToDo: Should have some protection against different date time formats...
-  lValue := FADOQuery.Parameters.ParamByName( psName ).Value ;
-  result := StrToDateTime( lValue ) ;
+  lValue := FADOQuery.Parameters.ParamByName(AName).AValue;
+  result := StrToDateTime(lValue);
 end;
 
-function TtiQueryADO.GetParamAsFloat(const psName: string): extended;
+function TtiQueryADO.GetParamAsFloat(const AName: string): extended;
 begin
-  result := FADOQuery.Parameters.ParamByName( psName ).Value ;
+  result := FADOQuery.Parameters.ParamByName(AName).AValue;
 end;
 
-function TtiQueryADO.GetParamAsInteger(const psName: string): Int64;
+function TtiQueryADO.GetParamAsInteger(const AName: string): Int64;
 begin
-  result := Longint(FADOQuery.Parameters.ParamByName( psName ).Value) ;
+  result := Longint(FADOQuery.Parameters.ParamByName(AName).AValue);
 end;
 
-function TtiQueryADO.GetParamAsString(const psName: string): string;
+function TtiQueryADO.GetParamAsString(const AName: string): string;
 begin
-  result := FADOQuery.Parameters.ParamByName( psName ).Value ;
+  result := FADOQuery.Parameters.ParamByName(AName).AValue;
 end;
 
 function TtiQueryADO.GetSQL: TStrings;
 begin
   FSQL.OnChange:= nil;
   try
-    FSQL.Assign( FADOQuery.SQL );
+    FSQL.Assign(FADOQuery.SQL);
   finally
     FSQL.OnChange:= DoOnChangeSQL;
   end;
-  result := FSQL ;
+  result := FSQL;
 end;
 
 procedure TtiQueryADO.Next;
 begin
-  FADOQuery.Next ;
+  FADOQuery.Next;
 end;
 
 procedure TtiQueryADO.Open;
 begin
   FADOQuery.Prepared := False;
-  Active := true ;
+  Active := true;
 end;
 
 function TtiQueryADO.ParamCount: integer;
 begin
-  result := FADOQuery.Parameters.Count ;
+  result := FADOQuery.Parameters.Count;
 end;
 
-function TtiQueryADO.ParamName(pIndex: integer): string;
+function TtiQueryADO.ParamName(AIndex: integer): string;
 begin
-  result := FADOQuery.Parameters.Items[ pIndex ].Name ;
+  result := FADOQuery.Parameters.Items[ AIndex ].Name;
 end;
 
-procedure TtiQueryADO.SetActive(const Value: boolean);
+procedure TtiQueryADO.SetActive(const AValue: boolean);
 begin
-  if Value = FADOQuery.Active then
-    Exit ; //==>
+  if AValue = FADOQuery.Active then
+    Exit; //==>
 
   try
-    FADOQuery.Active := Value ;
+    FADOQuery.Active := AValue;
   except
     on e:exception do
-      raise Exception.Create( SQLAndParamsAsString + ' Message: ' + e.message );
+      raise Exception.Create(SQLAndParamsAsString + ' Message: ' + e.message);
   end;
 
 end;
 
-procedure TtiQueryADO.SetParamAsBoolean(const psName: string; const Value: boolean);
+procedure TtiQueryADO.SetParamAsBoolean(const AName: string; const AValue: boolean);
 begin
-  if Value then
-    FADOQuery.Parameters.ParamByName( psName ).Value := True
+  if AValue then
+    FADOQuery.Parameters.ParamByName(AName).AValue := True
   else
-    FADOQuery.Parameters.ParamByName( psName ).Value := False ;
+    FADOQuery.Parameters.ParamByName(AName).AValue := False;
 end;
 
-procedure TtiQueryADO.SetParamAsDateTime(const psName : string ; const Value: TDateTime);
+procedure TtiQueryADO.SetParamAsDateTime(const AName : string; const AValue: TDateTime);
 begin
-  FADOQuery.Parameters.ParamByName( psName ).Value := Value ;
+  FADOQuery.Parameters.ParamByName(AName).AValue := AValue;
 end;
 
-procedure TtiQueryADO.SetParamAsFloat(const psName: string;
-  const Value: extended);
+procedure TtiQueryADO.SetParamAsFloat(const AName: string;
+  const AValue: extended);
 begin
-  FADOQuery.Parameters.ParamByName( psName ).Value := Value ;
+  FADOQuery.Parameters.ParamByName(AName).AValue := AValue;
 end;
 
-procedure TtiQueryADO.SetParamAsInteger(const psName: string; const Value: Int64);
+procedure TtiQueryADO.SetParamAsInteger(const AName: string; const AValue: Int64);
 begin
-  FADOQuery.Parameters.ParamByName( psName ).Value := Longint(Value) ;
+  FADOQuery.Parameters.ParamByName(AName).AValue := Longint(AValue);
 end;
 
-procedure TtiQueryADO.SetParamAsString(const psName, Value: string);
+procedure TtiQueryADO.SetParamAsString(const AName, AValue: string);
 begin
-  FADOQuery.Parameters.ParamByName( psName ).Value := Value ;
+  FADOQuery.Parameters.ParamByName(AName).AValue := AValue;
 end;
 
-procedure TtiQueryADO.SetSQL(const Value: TStrings);
+procedure TtiQueryADO.SetSQL(const AValue: TStrings);
 begin
-  FSQL.Assign(Value);
+  FSQL.Assign(AValue);
 end;
 
-procedure TtiQueryADO.AssignParamToStream(const pName: string; const pValue: TStream );
+procedure TtiQueryADO.AssignParamToStream(const AName: string; const AValue: TStream);
 var
   lBinData: OleVariant;
   lDataPtr: Pointer;
   lHigh, lLow, lLen: Integer;
-  lParameter : TParameter ;
+  lParameter : TParameter;
 begin
-  Assert(pValue <> nil, 'Stream not assigned');
-  lParameter := FADOQuery.Parameters.ParamByName(pName);
-  lLow     := VarArrayLowBound(lParameter.Value, 1);
-  lHigh    := VarArrayHighBound(lParameter.Value, 1);
-  lLen     := lHigh - lLow + 1 ;
+  Assert(AValue <> nil, 'Stream not assigned');
+  lParameter := FADOQuery.Parameters.ParamByName(AName);
+  lLow    := VarArrayLowBound(lParameter.AValue, 1);
+  lHigh   := VarArrayHighBound(lParameter.AValue, 1);
+  lLen    := lHigh - lLow + 1;
   lBinData := VarArrayCreate([0, lLen], varByte);
-  lBinData := lParameter.Value ;
+  lBinData := lParameter.AValue;
   lDataPtr := VarArrayLock(lBinData);
   try
-    pValue.WriteBuffer(lDataPtr^, lLen);
+    AValue.WriteBuffer(lDataPtr^, lLen);
   finally
     VarArrayUnlock(lBinData);
   end;
 end;
 
-procedure TtiQueryADO.AssignParamFromStream(const pName: string; const pValue: TStream );
+procedure TtiQueryADO.AssignParamFromStream(const AName: string; const AValue: TStream);
 begin
-  Assert( pValue <> nil, 'Stream not assigned' ) ;
-  FADOQuery.Parameters.ParamByName( pName ).LoadFromStream( pValue, ftBlob );
+  Assert(AValue <> nil, 'Stream not assigned');
+  FADOQuery.Parameters.ParamByName(AName).LoadFromStream(AValue, ftBlob);
 end;
 
-procedure TtiQueryADO.AssignFieldAsStream(const pName: string; const pValue: TStream );
+procedure TtiQueryADO.AssignFieldAsStream(const AName: string; const AValue: TStream);
 begin
   // This does not look right, but it's the best I can do in the time available.
   // DUnit tests pass, but then at the time of writing, we don't have any
   // tests for 'real' binary data, just strings in a TStream.
   // Updated 2005-05-17 ipk  NB qfkBinary field type mapped to 'image' in MS SQL
-  Assert(pValue <> nil, 'Stream not assigned');
-  pValue.Position := 0 ;
-  (FADOQuery.FieldByName(pName) as TBlobField).SaveToStream(pValue);
+  Assert(AValue <> nil, 'Stream not assigned');
+  AValue.Position := 0;
+  (FADOQuery.FieldByName(AName) as TBlobField).SaveToStream(AValue);
 end;
 
-procedure TtiQueryADO.AttachDatabase(pDatabase: TtiDatabase);
+procedure TtiQueryADO.AttachDatabase(ADatabase: TtiDatabase);
 var
-  lSQL : string ;
+  lSQL : string;
 begin
   // This mess is to work around the problem (that is only happening with ADO,
   // not other data access layers) of the query parameters not being accessable
@@ -370,46 +370,46 @@ begin
   // assign the SQL. This would tidy the SQLVisitor framework up nicely as it
   // is quite a mess. The QueryFactory was a concept from the early days and
   // has now been replaced by the plugable persistence layers as packages.
-  lSQL := FADOQuery.SQL.Text ;
-  FADOQuery.SQL.Clear ;
-  FADOQuery.Connection := (pDatabase as TtiDatabaseADOAbs).Connection ;
-  FADOQuery.SQL.Text := lSQL ;
-  Database := pDatabase ;
+  lSQL := FADOQuery.SQL.Text;
+  FADOQuery.SQL.Clear;
+  FADOQuery.Connection := (ADatabase as TtiDatabaseADOAbs).Connection;
+  FADOQuery.SQL.Text := lSQL;
+  Database := ADatabase;
 end;
 
 procedure TtiQueryADO.DetachDatabase;
 begin
-  inherited DetachDatabase ;
+  inherited DetachDatabase;
   if FADOQuery.Active then
-    FADOQuery.Active := false ;
-  FADOQuery.Connection := nil ;
+    FADOQuery.Active := false;
+  FADOQuery.Connection := nil;
 end;
 
 function TtiQueryADO.FieldCount: integer;
 begin
-  result := FADOQuery.FieldCount ;
+  result := FADOQuery.FieldCount;
 end;
 
-function TtiQueryADO.FieldName(pIndex: integer): string;
+function TtiQueryADO.FieldName(AIndex: integer): string;
 begin
-  result := FADOQuery.Fields[pIndex].FieldName ;
+  result := FADOQuery.Fields[AIndex].FieldName;
 end;
 
 procedure TtiQueryADO.Reset;
 begin
-  Active := false ;
-  FADOQuery.SQL.Clear ;
-  FADOQuery.Parameters.Clear ;
+  Active := false;
+  FADOQuery.SQL.Clear;
+  FADOQuery.Parameters.Clear;
 end;
 
-function TtiQueryADO.FieldIndex(const psName: string): integer;
+function TtiQueryADO.FieldIndex(const AName: string): integer;
 begin
-  result := FADOQuery.FieldByName( psName ).Index ;
+  result := FADOQuery.FieldByName(AName).Index;
 end;
 
 constructor TtiDatabaseADOAbs.Create;
 begin
-  inherited Create ;
+  inherited Create;
   FCurrentThreadID:= 0;
   Connection;
 end;
@@ -425,8 +425,8 @@ procedure TtiDatabaseADOAbs.Commit;
 begin
   Assert(FCurrentThreadID = GetCurrentThreadID, cErrorADOCoInitialize);
   if not InTransaction then
-    raise Exception.Create( 'Attempt to commit but not in a transaction.') ;
-  FADOConnection.CommitTrans ;
+    raise Exception.Create('Attempt to commit but not in a transaction.');
+  FADOConnection.CommitTrans;
   FInTransaction:= False;
 end;
 
@@ -438,25 +438,25 @@ end;
 procedure TtiDatabaseADOAbs.RollBack;
 begin
   Assert(FCurrentThreadID = GetCurrentThreadID, cErrorADOCoInitialize);
-  FADOConnection.RollbackTrans ;
+  FADOConnection.RollbackTrans;
   FInTransaction:= False;
 end;
 
 procedure TtiDatabaseADOAbs.StartTransaction;
 begin
   if InTransaction then
-    raise Exception.Create( 'Attempt to start a transaction but transaction already exists.') ;
-  Connection.BeginTrans ;
+    raise Exception.Create('Attempt to start a transaction but transaction already exists.');
+  Connection.BeginTrans;
   FInTransaction:= True;
 end;
 
 // This code is cloned in TtiQueryIB - Looks like we need to abstract more
 // and introduce a TDataSet version of the TtiQuery
-function TtiQueryADO.FieldKind(pIndex: integer): TtiQueryFieldKind;
+function TtiQueryADO.FieldKind(AIndex: integer): TtiQueryFieldKind;
 var
-  lDataType : TFieldType ;
+  lDataType : TFieldType;
 begin
-  lDataType := FADOQuery.Fields[ pIndex ].DataType ;
+  lDataType := FADOQuery.Fields[ AIndex ].DataType;
 
   // These are the available field types for a TDataSet descendant
 //  TFieldType = (ftUnknown, ftString, ftSmallint, ftInteger, ftWord,
@@ -477,20 +477,20 @@ begin
 //  qfkLongString
 
     case lDataType of
-    ftString, ftWideString :                    result := qfkString   ;
-    ftSmallint, ftInteger, ftWord, ftLargeint : result := qfkInteger  ;
-    ftBoolean :                                 result := qfkLogical  ;
-    ftFloat, ftCurrency, ftBCD :                result := qfkFloat    ;
-    ftDate, ftTime, ftDateTime :                result := qfkDateTime ;
-    ftBlob, ftGraphic, ftVarBytes :             result := qfkBinary   ;
-    ftMemo, ftFmtMemo:                          result := qfkLongString ;
+    ftString, ftWideString :                    result := qfkString  ;
+    ftSmallint, ftInteger, ftWord, ftLargeint : result := qfkInteger ;
+    ftBoolean :                                 result := qfkLogical ;
+    ftFloat, ftCurrency, ftBCD :                result := qfkFloat   ;
+    ftDate, ftTime, ftDateTime :                result := qfkDateTime;
+    ftBlob, ftGraphic, ftVarBytes :             result := qfkBinary  ;
+    ftMemo, ftFmtMemo:                          result := qfkLongString;
     {$ifdef DELPHI10ORABOVE}
-    ftWideMemo :                                result := qfkLongString ;
+    ftWideMemo :                                result := qfkLongString;
     {$endif}
     else
-      raise Exception.Create( 'Invalid FADOQuery.Fields[ pIndex ].DataType <' +
-                      GetEnumName( TypeInfo( TFieldType ), Ord( lDataType ))) ;
-    end ;
+      raise Exception.Create('Invalid FADOQuery.Fields[ AIndex ].DataType <' +
+                      GetEnumName(TypeInfo(TFieldType), Ord(lDataType)));
+    end;
 //    ftUnknown,
 //    ftBytes, ftVarBytes, ftAutoInc,
 //    ftParadoxOle, ftDBaseOle, ftTypedBinary, ftCursor, ftFixedChar,
@@ -499,78 +499,78 @@ begin
 
 end;
 
-function TtiQueryADO.FieldSize(pIndex: integer): integer;
+function TtiQueryADO.FieldSize(AIndex: integer): integer;
 begin
-  case FieldKind( pIndex ) of
-    qfkString     : result := FADOQuery.FieldDefs[ pIndex ].Size ;
-    qfkLongString : result := 0 ;
-    qfkInteger    : result := 0 ;
-    qfkFloat      : result := 0 ;
-    qfkDateTime   : result := 0 ;
-    qfkBinary     : result := 0 ;
-    qfkLogical    : result := 0 ;
+  case FieldKind(AIndex) of
+    qfkString    : result := FADOQuery.FieldDefs[ AIndex ].Size;
+    qfkLongString : result := 0;
+    qfkInteger   : result := 0;
+    qfkFloat     : result := 0;
+    qfkDateTime  : result := 0;
+    qfkBinary    : result := 0;
+    qfkLogical   : result := 0;
   else
-    raise Exception.Create( 'Invalid field type') ;
-  end ;
+    raise Exception.Create('Invalid field type');
+  end;
 end;
 
-function TtiQueryADO.GetParamIsNull(const psName: String): Boolean;
+function TtiQueryADO.GetParamIsNull(const AName: String): Boolean;
 begin
-  result := VarIsNull( FADOQuery.Parameters.ParamByName( psName ).Value ) ;
+  result := VarIsNull(FADOQuery.Parameters.ParamByName(AName).AValue);
 end;
 
-procedure TtiQueryADO.SetParamIsNull(const psName: String; const Value: Boolean);
+procedure TtiQueryADO.SetParamIsNull(const AName: String; const AValue: Boolean);
 begin
-  if Value then
-    FADOQuery.Parameters.ParamByName( psName ).Value := Null ;
+  if AValue then
+    FADOQuery.Parameters.ParamByName(AName).AValue := Null;
 end;
 
 function TtiDatabaseADOAbs.GetConnected: boolean;
 begin
   Assert(FCurrentThreadID = GetCurrentThreadID, cErrorADOCoInitialize);
-  Result := FADOConnection.Connected ;
+  Result := FADOConnection.Connected;
 end;
 
-procedure TtiDatabaseADOAbs.SetConnected(pbValue: boolean);
+procedure TtiDatabaseADOAbs.SetConnected(AValue: boolean);
 var
-  lsErrorMessage : string ;
+  lsErrorMessage : string;
 begin
   Assert(FCurrentThreadID = GetCurrentThreadID, cErrorADOCoInitialize);
 
-  if ( not pbValue ) then
+  if (not AValue) then
   begin
-    Log( 'Disconnecting from %s', [DatabaseName], lsConnectionPool) ;
-    FADOConnection.Connected := false ;
-    Exit ; //==>
-  end ;
+    Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);
+    FADOConnection.Connected := false;
+    Exit; //==>
+  end;
 
-  SetupDBParams ;
-  lsErrorMessage := '' ;
+  SetupDBParams;
+  lsErrorMessage := '';
   try
-    FADOConnection.Connected := true ;
+    FADOConnection.Connected := true;
   except
     on e:exception do
     begin
-      lsErrorMessage := e.message ;
-      raise EtiOPFDBExceptionCanNotConnect.Create( 'Unknown', DatabaseName, UserName, Password, lsErrorMessage );
-    end ;
+      lsErrorMessage := e.message;
+      raise EtiOPFDBExceptionCanNotConnect.Create('Unknown', DatabaseName, UserName, Password, lsErrorMessage);
+    end;
     on e:EADOError do
     begin
       lsErrorMessage :=
-        'Error class: '   + EADOError( e ).classname + Cr +
-        'Error message: ' + EADOError( e ).Message;
-      raise EtiOPFDBExceptionCanNotConnect.Create( 'Unknown', DatabaseName, UserName, Password, lsErrorMessage );
-    end ;
-  end ;
+        'Error class: '   + EADOError(e).classname + Cr +
+        'Error message: ' + EADOError(e).Message;
+      raise EtiOPFDBExceptionCanNotConnect.Create('Unknown', DatabaseName, UserName, Password, lsErrorMessage);
+    end;
+  end;
 end;
 
-function TtiQueryADO.GetFieldIsNull(const psName: string): Boolean;
+function TtiQueryADO.GetFieldIsNull(const AName: string): Boolean;
 begin
-  result := FADOQuery.FieldByName( psName ).IsNull ;
+  result := FADOQuery.FieldByName(AName).IsNull;
 end;
 
 // This function is cloned in tiQueryBDEAbs - must move it to a common location, but without pulling DB.pas into any packages where it is not required
-function TtiDatabaseADOAbs.FieldDataTypeToTIQueryFieldKind( pDataType : TFieldType ) : TtiQueryFieldKind ;
+function TtiDatabaseADOAbs.FieldDataTypeToTIQueryFieldKind(pDataType : TFieldType): TtiQueryFieldKind;
 begin
   // These are the available field types for a TDataSet descendant
 //  TFieldType = (ftUnknown, ftString, ftSmallint, ftInteger, ftWord,
@@ -591,21 +591,21 @@ begin
 //  qfkLongString
 
     case pDataType of
-    ftString, ftWideString :                    result := qfkString   ;
-    ftSmallint, ftInteger, ftWord, ftLargeint : result := qfkInteger  ;
-    ftBoolean :                                 result := qfkLogical  ;
-    ftFloat, ftCurrency, ftBCD :                result := qfkFloat    ;
-    ftDate, ftTime, ftDateTime :                result := qfkDateTime ;
-    ftBlob, ftGraphic, ftVarBytes :             result := qfkBinary   ;
-    ftMemo, ftFmtMemo:                          result := qfkLongString ;
+    ftString, ftWideString :                    result := qfkString  ;
+    ftSmallint, ftInteger, ftWord, ftLargeint : result := qfkInteger ;
+    ftBoolean :                                 result := qfkLogical ;
+    ftFloat, ftCurrency, ftBCD :                result := qfkFloat   ;
+    ftDate, ftTime, ftDateTime :                result := qfkDateTime;
+    ftBlob, ftGraphic, ftVarBytes :             result := qfkBinary  ;
+    ftMemo, ftFmtMemo:                          result := qfkLongString;
     {$ifdef DELPHI10ORABOVE}
-    ftWideMemo :                                result := qfkLongString ;
+    ftWideMemo :                                result := qfkLongString;
     {$endif}
     else
-      raise Exception.Create( 'Invalid FQuery.Fields[ pIndex ].DataType <' +
-                      GetEnumName( TypeInfo( TFieldType ), Ord( pDataType )) +
-                      '>') ;
-    end ;
+      raise Exception.Create('Invalid FQuery.Fields[ AIndex ].DataType <' +
+                      GetEnumName(TypeInfo(TFieldType), Ord(pDataType)) +
+                      '>');
+    end;
 //    ftUnknown,
 //    ftBytes, ftVarBytes, ftAutoInc,
 //    ftParadoxOle, ftDBaseOle, ftTypedBinary, ftCursor, ftFixedChar,
@@ -617,62 +617,62 @@ end;
 
 function TtiQueryADO.HasNativeLogicalType: boolean;
 begin
-  result := true ;
+  result := true;
 end;
 
-class procedure TtiDatabaseADOAbs.CreateDatabase(const pDatabaseName, pUserName, pPassword: string);
+class procedure TtiDatabaseADOAbs.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
 begin
-  Assert( false, 'Not implemented in ' + ClassName ) ;
+  Assert(false, 'Not implemented in ' + ClassName);
 end;
 
-class function TtiDatabaseADOAbs.DatabaseExists(const pDatabaseName,
-  pUserName, pPassword: string): boolean;
+class function TtiDatabaseADOAbs.DatabaseExists(const ADatabaseName,
+  AUserName, APassword: string): boolean;
 begin
-  result := false ;
-  Assert( false, 'Not implemented in ' + ClassName ) ;
+  result := false;
+  Assert(false, 'Not implemented in ' + ClassName);
 end;
 
-procedure TtiQueryADO.AssignFieldAsStreamByIndex(pIndex: Integer;const pValue: TStream);
+procedure TtiQueryADO.AssignFieldAsStreamByIndex(AIndex: Integer;const AValue: TStream);
 begin
   // This does not look right, but it's the best I can do in the time available.
   // DUnit tests pass, but then at the time of writing, we don't have any
   // tests for 'real' binary data, just strings in a TStream.
-  Assert(pValue <> nil, 'Stream not assigned');
-  pValue.Position := 0 ;
-  TBlobField(FADOQuery.Fields[pIndex]).SaveToStream(pValue);
+  Assert(AValue <> nil, 'Stream not assigned');
+  AValue.Position := 0;
+  TBlobField(FADOQuery.Fields[AIndex]).SaveToStream(AValue);
 end;
 
-function TtiQueryADO.GetFieldAsBooleanByIndex(pIndex: Integer): boolean;
+function TtiQueryADO.GetFieldAsBooleanByIndex(AIndex: Integer): boolean;
 var
-  lValue : variant ;
+  lValue : variant;
 begin
-  lValue := FADOQuery.Fields[pIndex].Value ;
-  result := lValue = -1 ;
+  lValue := FADOQuery.Fields[AIndex].AValue;
+  result := lValue = -1;
 end;
 
-function TtiQueryADO.GetFieldAsDateTimeByIndex(pIndex: Integer): TDateTime;
+function TtiQueryADO.GetFieldAsDateTimeByIndex(AIndex: Integer): TDateTime;
 begin
-  result := FADOQuery.Fields[pIndex].AsDateTime ;
+  result := FADOQuery.Fields[AIndex].AsDateTime;
 end;
 
-function TtiQueryADO.GetFieldAsFloatByIndex(pIndex: Integer): extended;
+function TtiQueryADO.GetFieldAsFloatByIndex(AIndex: Integer): extended;
 begin
-  result := FADOQuery.Fields[pIndex].AsFloat ;
+  result := FADOQuery.Fields[AIndex].AsFloat;
 end;
 
-function TtiQueryADO.GetFieldAsIntegerByIndex(pIndex: Integer): Int64;
+function TtiQueryADO.GetFieldAsIntegerByIndex(AIndex: Integer): Int64;
 begin
-  result := FADOQuery.Fields[pIndex].AsInteger ;
+  result := FADOQuery.Fields[AIndex].AsInteger;
 end;
 
-function TtiQueryADO.GetFieldAsStringByIndex(pIndex: Integer): string;
+function TtiQueryADO.GetFieldAsStringByIndex(AIndex: Integer): string;
 begin
-  result := FADOQuery.Fields[pIndex].AsString ;
+  result := FADOQuery.Fields[AIndex].AsString;
 end;
 
-function TtiQueryADO.GetFieldIsNullByIndex(pIndex: Integer): Boolean;
+function TtiQueryADO.GetFieldIsNullByIndex(AIndex: Integer): Boolean;
 begin
-  result := FADOQuery.Fields[pIndex].IsNull ;
+  result := FADOQuery.Fields[AIndex].IsNull;
 end;
 
 procedure TtiQueryADO.DoOnChangeSQL(Sender: TObject);
@@ -690,8 +690,8 @@ begin
     FreeAndNil(FADOConnection);
     FCurrentThreadID:= LCurrentThreadID;
     tiWin32CoInitialize;
-    FADOConnection := TADOConnection.Create( nil ) ;
-    FADOConnection.LoginPrompt := false ;
+    FADOConnection := TADOConnection.Create(nil);
+    FADOConnection.LoginPrompt := false;
     FInTransaction:= False;
   end;
   Result:= FADOConnection;

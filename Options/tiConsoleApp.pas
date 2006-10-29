@@ -1,4 +1,7 @@
 unit tiConsoleApp;
+
+{$I tiDefines.inc}
+
 interface
 uses
   SysUtils,
@@ -136,7 +139,7 @@ function tiExecConsoleApp(const ApplicationName,
                         var AppOutput: string;       {will receive output of child process}
                         OnNewLine: TNotifyEvent;     {if assigned called on each new line}
                         ptiGetConsoleExecutableInfo: Boolean  {Confirm the exe can be run - requires exclusive access to the exe}
-                        ): DWORD;
+                       ): DWORD;
 {Parameters
   ApplicationName.
   This is passed seperate from Parameters so that the the filetype can be checked
@@ -201,7 +204,7 @@ BUG
 }
 
 {this function is used by tiExecConsoleApp but might be useful for other purposes}
-procedure tiGetConsoleExecutableInfo( const Filename: String; var BinaryType, Subsystem: DWORD);
+procedure tiGetConsoleExecutableInfo(const Filename: String; var BinaryType, Subsystem: DWORD);
 {Binary Type may return:
 
   The following constants are defined by Windows for the GetBinaryType function
@@ -237,7 +240,7 @@ const
 implementation
 
 
-procedure tiGetConsoleExecutableInfo( const Filename: String; var BinaryType, Subsystem: DWORD);
+procedure tiGetConsoleExecutableInfo(const Filename: String; var BinaryType, Subsystem: DWORD);
 var
   f: File;
   ImageDosHeader: IMAGE_DOS_HEADER;
@@ -299,7 +302,7 @@ function tiExecConsoleApp(const ApplicationName, Parameters: String;
                         var   AppOutput: string;     {will receive output of child process}
                         OnNewLine: TNotifyEvent;     {if assigned called on each new line}
                         ptiGetConsoleExecutableInfo: Boolean  {Confirm the exe can be run - requires exclusive access to the exe}
-                        ): DWORD;
+                       ): DWORD;
 
 {we assume that child process requires no input. I have not thought about the
 possible consequences of this assumption. I expect we could come up with some
@@ -353,7 +356,7 @@ begin
   if NewLine then
     AppOutput := AppOutput + #13#10 + LineBuf
   else
-    AppOutput := AppOutput + LineBuf ;
+    AppOutput := AppOutput + LineBuf;
 {
   with AppOutput do
   if Newline then
@@ -558,7 +561,7 @@ begin
       GetExitCodeProcess(ProcessInfo.hProcess, Result);
       OutputLine {flush the line buffer}
 
-{$IFDEF DEBUG} ;  {that's how much I dislike null statements!
+{$IFDEF DEBUG};  {that's how much I dislike null statements!
                    Is there a nobel prize for pedantry?}
       if PerfFreq > 0 then
       begin

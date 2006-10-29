@@ -7,76 +7,76 @@
 //----------------------------------------------------------------------------------------------------------------------
 // The following symbols are defined:
 //
-// - COMPILER_1    : Kylix/Delphi/BCB 1.x is the compiler.
+// - COMPILER_1   : Kylix/Delphi/BCB 1.x is the compiler.
 // - COMPILER_1_UP : Kylix/Delphi/BCB 1.x or higher is the compiler.
-// - COMPILER_2    : Kylix/Delphi 2.x or BCB 1.x is the compiler.
+// - COMPILER_2   : Kylix/Delphi 2.x or BCB 1.x is the compiler.
 // - COMPILER_2_UP : Kylix/Delphi 2.x or higher, or BCB 1.x or higher is the compiler.
-// - COMPILER_3    : Kylix/Delphi/BCB 3.x is the compiler.
+// - COMPILER_3   : Kylix/Delphi/BCB 3.x is the compiler.
 // - COMPILER_3_UP : Kylix/Delphi/BCB 3.x or higher is the compiler.
-// - COMPILER_4    : Kylix/Delphi/BCB 4.x is the compiler.
+// - COMPILER_4   : Kylix/Delphi/BCB 4.x is the compiler.
 // - COMPILER_4_UP : Kylix/Delphi/BCB 4.x or higher is the compiler.
-// - COMPILER_5    : Kylix/Delphi/BCB 5.x is the compiler.
+// - COMPILER_5   : Kylix/Delphi/BCB 5.x is the compiler.
 // - COMPILER_5_UP : Kylix/Delphi/BCB 5.x or higher is the compiler.
-// - COMPILER_6    : Kylix/Delphi/BCB 6.x is the compiler.
+// - COMPILER_6   : Kylix/Delphi/BCB 6.x is the compiler.
 // - COMPILER_6_UP : Kylix/Delphi/BCB 6.x or higher is the compiler.
-// - COMPILER_7    : Kylix/Delphi/BCB 7.x is the compiler.
+// - COMPILER_7   : Kylix/Delphi/BCB 7.x is the compiler.
 // - COMPILER_7_UP : Kylix/Delphi/BCB 7.x or higher is the compiler.
-// - COMPILER_8    : Kylix/Delphi/BCB 8.x is the compiler.
+// - COMPILER_8   : Kylix/Delphi/BCB 8.x is the compiler.
 // - COMPILER_8_UP : Kylix/Delphi/BCB 8.x or higher is the compiler.
-// - COMPILER_9    : Kylix/Delphi/BCB 9.x is the compiler.
+// - COMPILER_9   : Kylix/Delphi/BCB 9.x is the compiler.
 // - COMPILER_9_UP : Kylix/Delphi/BCB 9.x or higher is the compiler.
-// - COMPILER_10   : Kylix/Delphi/BCB 10.x is the compiler.
+// - COMPILER_10  : Kylix/Delphi/BCB 10.x is the compiler.
 // - COMPILER_10_UP: Kylix/Delphi/BCB 10.x or higher is the compiler.
 //
 // Only defined if Windows is the target:
-// - CPPB        : Any version of BCB is being used.
-// - CPPB_1      : BCB v1.x is being used.
-// - CPPB_3      : BCB v3.x is being used.
-// - CPPB_3_UP   : BCB v3.x or higher is being used.
-// - CPPB_4      : BCB v4.x is being used.
-// - CPPB_4_UP   : BCB v4.x or higher is being used.
-// - CPPB_5      : BCB v5.x is being used.
-// - CPPB_5_UP   : BCB v5.x or higher is being used.
-// - CPPB_6      : BCB v6.x is being used.
-// - CPPB_6_UP   : BCB v6.x or higher is being used.
+// - CPPB       : Any version of BCB is being used.
+// - CPPB_1     : BCB v1.x is being used.
+// - CPPB_3     : BCB v3.x is being used.
+// - CPPB_3_UP  : BCB v3.x or higher is being used.
+// - CPPB_4     : BCB v4.x is being used.
+// - CPPB_4_UP  : BCB v4.x or higher is being used.
+// - CPPB_5     : BCB v5.x is being used.
+// - CPPB_5_UP  : BCB v5.x or higher is being used.
+// - CPPB_6     : BCB v6.x is being used.
+// - CPPB_6_UP  : BCB v6.x or higher is being used.
 //
 // Only defined if Windows is the target:
-// - DELPHI      : Any version of Delphi is being used.
-// - DELPHI_1    : Delphi v1.x is being used.
-// - DELPHI_2    : Delphi v2.x is being used.
+// - DELPHI     : Any version of Delphi is being used.
+// - DELPHI_1   : Delphi v1.x is being used.
+// - DELPHI_2   : Delphi v2.x is being used.
 // - DELPHI_2_UP : Delphi v2.x or higher is being used.
-// - DELPHI_3    : Delphi v3.x is being used.
+// - DELPHI_3   : Delphi v3.x is being used.
 // - DELPHI_3_UP : Delphi v3.x or higher is being used.
-// - DELPHI_4    : Delphi v4.x is being used.
+// - DELPHI_4   : Delphi v4.x is being used.
 // - DELPHI_4_UP : Delphi v4.x or higher is being used.
-// - DELPHI_5    : Delphi v5.x is being used.
+// - DELPHI_5   : Delphi v5.x is being used.
 // - DELPHI_5_UP : Delphi v5.x or higher is being used.
-// - DELPHI_6    : Delphi v6.x is being used.
+// - DELPHI_6   : Delphi v6.x is being used.
 // - DELPHI_6_UP : Delphi v6.x or higher is being used.
-// - DELPHI_7    : Delphi v7.x is being used.
+// - DELPHI_7   : Delphi v7.x is being used.
 // - DELPHI_7_UP : Delphi v7.x or higher is being used.
-// - DELPHI_8    : Delphi v8.x is being used.
+// - DELPHI_8   : Delphi v8.x is being used.
 // - DELPHI_8_UP : Delphi v8.x or higher is being used.
-// - DELPHI_9    : Delphi v9.x is being used.
+// - DELPHI_9   : Delphi v9.x is being used.
 // - DELPHI_9_UP : Delphi v9.x or higher is being used.
-// - DELPHI_10   : Delphi v10.x is being used.
+// - DELPHI_10  : Delphi v10.x is being used.
 // - DELPHI_10_UP: Delphi v10.x or higher is being used.
 //
 // Only defined if Linux is the target:
-// - KYLIX       : Any version of Kylix is being used.
-// - KYLIX_1     : Kylix 1.x is being used.
-// - KYLIX_1_UP  : Kylix 1.x or higher is being used.
-// - KYLIX_2     : Kylix 2.x is being used.
-// - KYLIX_2_UP  : Kylix 2.x or higher is being used.
-// - KYLIX_3     : Kylix 3.x is being used.
-// - KYLIX_3_UP  : Kylix 3.x or higher is being used.
+// - KYLIX      : Any version of Kylix is being used.
+// - KYLIX_1    : Kylix 1.x is being used.
+// - KYLIX_1_UP : Kylix 1.x or higher is being used.
+// - KYLIX_2    : Kylix 2.x is being used.
+// - KYLIX_2_UP : Kylix 2.x or higher is being used.
+// - KYLIX_3    : Kylix 3.x is being used.
+// - KYLIX_3_UP : Kylix 3.x or higher is being used.
 //
 // Only defined if Linux is the target:
-// - QT_CLX      : Trolltech's QT library is being used.
+// - QT_CLX     : Trolltech's QT library is being used.
 //
 // Only defined if Delphi.NET is the target:
-// - DELPHI.NET      : Any version of Delphi.NET is being used.
-// - DELPHI.NET_1    : Delphi.NET version 1.x is being used.
+// - DELPHI.NET     : Any version of Delphi.NET is being used.
+// - DELPHI.NET_1   : Delphi.NET version 1.x is being used.
 // - DELPHI.NET_1_UP : Delphi.NET version 1.x is being used.
 //----------------------------------------------------------------------------------------------------------------------
 

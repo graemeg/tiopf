@@ -42,7 +42,7 @@ uses
   ,tiVTListView
   ,tiVTTreeView
   ,tiTreeviewEditor
-  ;
+ ;
 
 
 procedure Register;
@@ -55,7 +55,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents( 'TechInsite Base',
+  RegisterComponents('TechInsite Base',
                       [   TtiPerAwareEdit
                          ,TtiPerAwareMemo
                          ,TtiPerAwareComboBoxStatic
@@ -66,12 +66,12 @@ begin
                          ,TtiPerAwareFloatEdit
                          ,TtiPerAwareImageEdit
                          ,TtiDateRange
-                      ]) ;
+                      ]);
 
 
 
 
-  RegisterComponents( 'TechInsite Extra',
+  RegisterComponents('TechInsite Extra',
                       [  TtiUserDefinedPicker
                          ,TtiPickFile
                          ,TtiPickDirectory
@@ -91,10 +91,10 @@ begin
                          ,TtiVTListView
                          ,TtiVTTreeView
 
-                      ]) ;
+                      ]);
 
 
-  RegisterComponents( 'TechInsite Old',
+  RegisterComponents('TechInsite Old',
                       [
                          TtiListView      // Depreciated.  Use TtiVTListView in future
                          ,TtiListViewListBox
@@ -102,11 +102,11 @@ begin
                          ,TtiListViewDif
                          ,TtiTreeView      // Depreciated.  Use TtiVTTreeView in future
                          ,TtiTreeViewChildForm
-                      ]) ;
+                      ]);
 
 
 
-  RegisterActions( 'TechInsite Base',
+  RegisterActions('TechInsite Base',
                    [
                      TtiImageLoadAction
                     ,TtiImageSaveAction
@@ -119,30 +119,30 @@ begin
                     ,TtiImageNewAction
                     ,TtiImageExportAction
                    ],
-                   TtidmDefaultActionValues );
+                   TtidmDefaultActionValues);
 
-  RegisterComponentEditor( TtiSplitterPanel, TtiSplitterPanelEditor );
+  RegisterComponentEditor(TtiSplitterPanel, TtiSplitterPanelEditor);
 
-  RegisterPropertyEditor( TypeInfo( TtiTVNodeEvent ),            // TypeInfo of property
+  RegisterPropertyEditor(TypeInfo(TtiTVNodeEvent),            // TypeInfo of property
                           TtiTVDataMapping,                      // ClassRef of component containing property
                           '',                                    // Name of property
-                          TtiTVNodeEventPropertyEditor ) ;       // ClassRef of property editor
+                          TtiTVNodeEventPropertyEditor);       // ClassRef of property editor
 
-  RegisterPropertyEditor( TypeInfo( TtiTVNodeConfirmEvent ),     // TypeInfo of property
+  RegisterPropertyEditor(TypeInfo(TtiTVNodeConfirmEvent),     // TypeInfo of property
                           nil,                                   // ClassRef of component containing property
                           '',                                    // Name of property
-                          TtiTVNodeEventPropertyEditor ) ;       // ClassRef of property editor
+                          TtiTVNodeEventPropertyEditor);       // ClassRef of property editor
 
 
-  RegisterPropertyEditor( TypeInfo( TtiTVDragDropEvent ),        // TypeInfo of property
+  RegisterPropertyEditor(TypeInfo(TtiTVDragDropEvent),        // TypeInfo of property
                           nil,                                   // ClassRef of component containing property
                           '',                                    // Name of property
-                          TtiTVNodeEventPropertyEditor ) ;       // ClassRef of property editor
+                          TtiTVNodeEventPropertyEditor);       // ClassRef of property editor
 
-  RegisterPropertyEditor( TypeInfo( TtiTVDragDropConfirmEvent ), // TypeInfo of property
+  RegisterPropertyEditor(TypeInfo(TtiTVDragDropConfirmEvent), // TypeInfo of property
                           nil,                                   // ClassRef of component containing property
                           '',                                    // Name of property
-                          TtiTVNodeEventPropertyEditor ) ;       // ClassRef of property editor
+                          TtiTVNodeEventPropertyEditor);       // ClassRef of property editor
 
 end;
 

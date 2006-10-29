@@ -5,80 +5,80 @@ unit tiExcept;
 interface
 uses
   SysUtils
-  ;
+ ;
 
 const
-  cTIOPFExcMsgCanNotConnectToDatabase = 'Can not connect to database' ;
-  cTIOPFExcMsgCanNotFindDatabase      = 'Can not find database' ;
-  cTIOPFExcMsgInvalidUserNamePassword = 'Invalid username and password combination' ;
-  cTIOPFExcMsgCanNotCreateDatabase    = 'Can not create database' ;
-  cTIOPFExcMsgDatabaseAlreadyExists   = 'Database already exists' ;
+  cTIOPFExcMsgCanNotConnectToDatabase = 'Can not connect to database';
+  cTIOPFExcMsgCanNotFindDatabase      = 'Can not find database';
+  cTIOPFExcMsgInvalidUserNamePassword = 'Invalid username and password combination';
+  cTIOPFExcMsgCanNotCreateDatabase    = 'Can not create database';
+  cTIOPFExcMsgDatabaseAlreadyExists   = 'Database already exists';
   cTIOPFExcCanNotDetermineSQLType     = 'Can not determine the type of the SQL (SELECT, UPDATE, ALTER, etc)'#13#13'%s';
-  cTIOPFExcMsgTIQueryType             = 'Invalid TtiQueryType' ;
+  cTIOPFExcMsgTIQueryType             = 'Invalid TtiQueryType';
 
 type
 
   // Abstract tiOPF Exception
-  EtiOPFException = class( Exception )
-  ;
+  EtiOPFException = class(Exception)
+ ;
 
   // Abstract exception for tiOPF internal errors
-  EtiOPFInternalException = class( ETIOPFException )
-  ;
+  EtiOPFInternalException = class(ETIOPFException)
+ ;
 
   // Abstract exception for tiOPF errors, caused by a programmer using the framework
-  EtiOPFProgrammerException = class( ETIOPFException )
-  ;
+  EtiOPFProgrammerException = class(ETIOPFException)
+ ;
 
   // Abstract exception for errors caused by bad user input
-  EtiOPFUserException = class( ETIOPFException )
-  ;
+  EtiOPFUserException = class(ETIOPFException)
+ ;
 
   // Abstract exception for errors caused by bad data
-  EtiOPFDataException = class( ETIOPFException )
-  ;
+  EtiOPFDataException = class(ETIOPFException)
+ ;
 
   // Error in the file system
-  EtiOPFFileSystemException = class( ETIOPFException )
-  ;
+  EtiOPFFileSystemException = class(ETIOPFException)
+ ;
 
   // For providing user feedback. Not to be trapped by MadExcept
-  EtiOPFUserFeedbackException = class( ETIOPFException )
-  ;
+  EtiOPFUserFeedbackException = class(ETIOPFException)
+ ;
 
-  EtiOPFDBException = class( EtiOPFException )
-    constructor Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ; virtual ;
-  end ;
+  EtiOPFDBException = class(EtiOPFException)
+    constructor Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = ''); virtual;
+  end;
 
   // Can not connect to database, reason unknown
-  EtiOPFDBExceptionCanNotConnect = class( EtiOPFDBException )
-    constructor Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ; override ;
-  end ;
+  EtiOPFDBExceptionCanNotConnect = class(EtiOPFDBException)
+    constructor Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = ''); override;
+  end;
 
   // Can not find the database
-  EtiOPDDBCanNotFindException = class( EtiOPFDBExceptionCanNotConnect )
-    constructor Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ; override ;
-  end ;
+  EtiOPDDBCanNotFindException = class(EtiOPFDBExceptionCanNotConnect)
+    constructor Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = ''); override;
+  end;
 
   // Invalid user name or password
-  EtiOPFDBExceptionUserNamePassword = class( EtiOPFDBExceptionCanNotConnect )
-    constructor Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ; override ;
-  end ;
+  EtiOPFDBExceptionUserNamePassword = class(EtiOPFDBExceptionCanNotConnect)
+    constructor Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = ''); override;
+  end;
 
   // Could not create a database
-  EtiOPFDBExceptionCanNotCreateDatabase = class( EtiOPFDBException )
-    constructor Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ; override ;
-  end ;
+  EtiOPFDBExceptionCanNotCreateDatabase = class(EtiOPFDBException)
+    constructor Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = ''); override;
+  end;
 
   // Could not create the database because it already exists
-  EtiOPFDBExceptionAlreadyExists = class( EtiOPFDBException )
-    constructor Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ; override ;
-  end ;
+  EtiOPFDBExceptionAlreadyExists = class(EtiOPFDBException)
+    constructor Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = ''); override;
+  end;
 
-  EtiOPFDBExceptionWrongServerVersion = class( EtiOPFDBException );
+  EtiOPFDBExceptionWrongServerVersion = class(EtiOPFDBException);
 
-  procedure tiMailBugReport(E: Exception); overload ;
-  procedure tiMailBugReport(const pText: string); overload ;
+  procedure tiMailBugReport(E: Exception); overload;
+  procedure tiMailBugReport(const AText: string); overload;
 
 implementation
 uses
@@ -87,70 +87,70 @@ uses
   ,MadExcept
   ,Windows
   {$ENDIF}
-  ;
+ ;
 
 { EtiDBAlreadyExists }
 
-constructor EtiOPFDBExceptionAlreadyExists.Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ;
+constructor EtiOPFDBExceptionAlreadyExists.Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = '');
 begin
-  inherited Create( pPerLayerName, pDatabaseName, pUserName, pPassword, pMessage ) ;
+  inherited Create(APersistenceLayerName, ADatabaseName, AUserName, APassword, AMessage);
   Message :=
     cTIOPFExcMsgDatabaseAlreadyExists + Cr +
-    Message ;
+    Message;
 end;
 
 { EtiDBFailedCreatingDatabase }
 
-constructor EtiOPFDBExceptionCanNotCreateDatabase.Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ;
+constructor EtiOPFDBExceptionCanNotCreateDatabase.Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = '');
 begin
-  inherited Create( pPerLayerName, pDatabaseName, pUserName, pPassword, pMessage ) ;
+  inherited Create(APersistenceLayerName, ADatabaseName, AUserName, APassword, AMessage);
   Message :=
     cTIOPFExcMsgCanNotCreateDatabase + Cr +
-    Message ;
+    Message;
 end;
 
 { EtiDBException }
 
-constructor EtiOPFDBException.Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ;
+constructor EtiOPFDBException.Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = '');
 begin
   Message :=
-    'Database name:       ' + pDatabaseName + Cr +
-    'User name:           ' + pUserName     + Cr +
-    'Password:            ' + tiReplicate( 'X', Length( pPassword )) + Cr +
-    'Persistence layer:   ' + pPerLayerName ;
-  if pMessage <> '' then
+    'Database name:       ' + ADatabaseName + Cr +
+    'User name:           ' + AUserName     + Cr +
+    'Password:            ' + tiReplicate('X', Length(APassword)) + Cr +
+    'Persistence layer:   ' + APersistenceLayerName;
+  if AMessage <> '' then
     Message := Message + Cr(2) +
-      'Message:' + Cr+ pMessage ;
+      'Message:' + Cr+ AMessage;
 end;
 
 { EtiDBCanNotConnectToDBException }
 
-constructor EtiOPFDBExceptionCanNotConnect.Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ;
+constructor EtiOPFDBExceptionCanNotConnect.Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = '');
 begin
-  inherited Create( pPerLayerName, pDatabaseName, pUserName, pPassword, pMessage ) ;
+  inherited Create(APersistenceLayerName, ADatabaseName, AUserName, APassword, AMessage);
   Message :=
     cTIOPFExcMsgCanNotConnectToDatabase + Cr(2) +
-    Message ;
+    Message;
 end;
 
 { EtiDBCanNotFindException }
 
-constructor EtiOPDDBCanNotFindException.Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ;
+constructor EtiOPDDBCanNotFindException.Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = '');
 begin
-  inherited Create( pPerLayerName, pDatabaseName, pUserName, pPassword, pMessage ) ;
+  inherited Create(APersistenceLayerName, ADatabaseName, AUserName, APassword, AMessage);
   Message :=
     cTIOPFExcMsgCanNotFindDatabase + Cr +
-    Message ;
+    Message;
 end;
 
 { EtiDBUserNamePasswordException }
 
-constructor EtiOPFDBExceptionUserNamePassword.Create( const pPerLayerName, pDatabaseName, pUserName, pPassword : string ; const pMessage: string = '' ) ;
+constructor EtiOPFDBExceptionUserNamePassword.Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = '');
 begin
-  inherited Create( pPerLayerName, pDatabaseName, pUserName, pPassword, pMessage ) ;
+  inherited Create(APersistenceLayerName, ADatabaseName, AUserName, APassword, AMessage);
   Message :=
     cTIOPFExcMsgInvalidUserNamePassword + Cr +
-    Message ;
+    Message;
 end;
 
 procedure tiMailBugReport(E: Exception);
@@ -170,15 +170,17 @@ begin
   {$ENDIF}
 end;
 
-procedure tiMailBugReport(const pText: string);
+procedure tiMailBugReport(const AText: string);
 begin
   {$IFDEF madexcept3}
-  MadExcept.AutoSendBugReport(pText, nil);
+  MadExcept.AutoSendBugReport(AText, nil);
   {$ELSE}
   {$IFDEF madexcept}
-  MadExcept.AutoMailBugReport(pText, '');
+  MadExcept.AutoMailBugReport(AText, '');
   {$ENDIF}
   {$ENDIF}
 end;
 
 end.
+
+

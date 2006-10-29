@@ -67,6 +67,16 @@
   {$MODE DELPHI}{$H+}
   {$ASMMODE intel}
 
+(*
+
+//  The first line of the ifdef is giving a compiler warning (in every unit
+//  that uses tiDefines.inc).
+//  "[Pascal Warning] tiDefines.inc(72): W1023 Comparing signed and unsigned
+//                    types - widened both operands"
+//  This is happening in BDS2006 - go figure...
+//
+//  Hacked out for the time being.
+
   { Due to certain bugs in 2.0.2 this is a workaround IFDEF that should only
     be used in the unit tests. }
   {$if defined(ver1) or (defined(ver2_0) and (fpc_patch<2))}
@@ -76,6 +86,7 @@
   {$ELSE}
     {$DEFINE FPC202OrAbove}
   {$IFEND}
+*)
 
 {$ENDIF}
 
@@ -182,3 +193,15 @@
 {$IFDEF LINK_SQLDB_IB}    {$DEFINE STATIC_PERLAYER_LINKING} {$ENDIF}
 {$IFDEF LINK_FBL}         {$DEFINE STATIC_PERLAYER_LINKING} {$ENDIF}
 
+{$IFDEF DELPHI6ORABOVE}
+  {$WARN SYMBOL_DEPRECATED OFF}
+  {$WARN SYMBOL_PLATFORM OFF}
+  {$WARN SYMBOL_LIBRARY OFF}
+  {$WARN UNIT_LIBRARY OFF}
+  {$WARN UNIT_PLATFORM OFF}
+  {$IFDEF DELPHI7ORABOVE}
+    {$WARN UNSAFE_TYPE OFF}
+    {$WARN UNSAFE_CODE OFF}
+    {$WARN UNSAFE_CAST OFF}
+  {$ENDIF}
+{$ENDIF}

@@ -1,28 +1,4 @@
-{-----------------------------------------------------------------------------
-The contents of this file are subject to the Mozilla Public License
-Version 1.1 (the "License"); you may not use this file except in compliance
-with the License. You may obtain a copy of the License at
-http://www.mozilla.org/MPL/MPL-1.1.html
-
-Software distributed under the License is distributed on an "AS IS" basis,
-WITHOUT WARRANTY OF ANY KIND, either expressed or implied. See the License for
-the specific language governing rights and limitations under the License.
-
-The Original Code is: JvSpeedButton.PAS, released on 2001-02-28.
-
-The Initial Developer of the Original Code is Sébastien Buysse [sbuysse@buypin.com]
-Portions created by Sébastien Buysse are Copyright (C) 2001 Sébastien Buysse.
-All Rights Reserved.
-
-Contributor(s): Michael Beck [mbeck@bigfoot.com].
-
-2000-02-28: Last Modified
-2004-01-20: Peter Hinrichsen added DisabledGlyph
-
------------------------------------------------------------------------------}
-
 unit tiSpeedButton;
-
 
 {$I tiDefines.inc}
 
@@ -45,7 +21,7 @@ uses
   ,tiPerAwareCtrls
   ,tiResources
   ,Menus
-  ;
+ ;
 
 type
 
@@ -64,14 +40,14 @@ type
     FImageResName: TtiImageRes;
     FColorAvailable: TColor;
     FColorHilight: TColor;
-    procedure SetGlyphHot(Value: TBitmap);
-    procedure SetGlyphDisabled(const Value: TBitmap);
-    procedure SetImageResName(const Value: TtiImageRes);
+    procedure SetGlyphHot(AValue: TBitmap);
+    procedure SetGlyphDisabled(const AValue: TBitmap);
+    procedure SetImageResName(const AValue: TtiImageRes);
   protected
     procedure CMMouseEnter(var Msg: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
-    procedure SetEnabled(Value: Boolean); override ;
-    procedure ShowCorrectGlyph ;
+    procedure SetEnabled(AValue: Boolean); override;
+    procedure ShowCorrectGlyph;
     procedure ActionChange(Sender: TObject; CheckDefaults: Boolean); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -80,34 +56,34 @@ type
     procedure   ShowPopupMenu(const pPopupMenu: TPopupMenu);
   published
     property    Align;
-    property    ImageRes : TtiImageRes read FImageResName write SetImageResName ;
+    property    ImageRes : TtiImageRes read FImageResName write SetImageResName;
     property    GlyphHot: TBitmap read FGlyphHot write SetGlyphHot;
     property    GlyphDisabled: TBitmap read FGlyphDisabled write SetGlyphDisabled;
     property    OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
     property    OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property    ColorAvailable: TColor read FColorAvailable Write FColorAvailable default clNavy ;
-    property    ColorHilight: TColor read FColorHilight Write FColorHilight default clRed ;
+    property    ColorAvailable: TColor read FColorAvailable Write FColorAvailable default clNavy;
+    property    ColorHilight: TColor read FColorHilight Write FColorHilight default clRed;
   end;
 
 implementation
 uses
   tiImageMgr
   ,Types
-  ;
+ ;
 
 constructor TtiSpeedButton.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FOver           := False;
-  FGlyphHot       := TBitmap.Create;
-  FGlyphNormal    := TBitmap.Create;
-  FGlyphDisabled  := TBitmap.Create;
-  Flat            := True ;
-  FColorAvailable := clNavy ;
-  FColorHilight   := clRed ;
-  Font.Style      := [fsUnderline] ;
-  Font.Color      := FColorAvailable;
-  Cursor          := crHandPoint ;
+  FOver          := False;
+  FGlyphHot      := TBitmap.Create;
+  FGlyphNormal   := TBitmap.Create;
+  FGlyphDisabled := TBitmap.Create;
+  Flat           := True;
+  FColorAvailable := clNavy;
+  FColorHilight  := clRed;
+  Font.Style     := [fsUnderline];
+  Font.Color     := FColorAvailable;
+  Cursor         := crHandPoint;
 end;
 
 destructor TtiSpeedButton.Destroy;
@@ -118,9 +94,9 @@ begin
   inherited Destroy;
 end;
 
-procedure TtiSpeedButton.SetGlyphHot(Value: TBitmap);
+procedure TtiSpeedButton.SetGlyphHot(AValue: TBitmap);
 begin
-  FGlyphHot.Assign(Value);
+  FGlyphHot.Assign(AValue);
 end;
 
 procedure TtiSpeedButton.CMMouseEnter(var Msg: TMessage);
@@ -132,7 +108,7 @@ begin
   if not FOver then
   begin
     FOver := True;
-    ShowCorrectGlyph ;
+    ShowCorrectGlyph;
   end;
   if Assigned(FOnMouseEnter) then
     FOnMouseEnter(Self);
@@ -147,66 +123,66 @@ begin
   if FOver then
   begin
     FOver := False;
-    ShowCorrectGlyph ;
+    ShowCorrectGlyph;
   end;
   if Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self);
 end;
 
-procedure TtiSpeedButton.SetEnabled(Value: Boolean);
+procedure TtiSpeedButton.SetEnabled(AValue: Boolean);
 var
   lOldValue: Boolean;
 begin
-  lOldValue := Enabled ;
+  lOldValue := Enabled;
   inherited;
-  if Value <> lOldValue then
+  if AValue <> lOldValue then
   begin
     // for D7...
     if csDesigning in ComponentState then
       Exit;
     FOver := False;
-    ShowCorrectGlyph ;
+    ShowCorrectGlyph;
   end;
 end;
 
 procedure TtiSpeedButton.ShowCorrectGlyph;
 begin
   if FGlyphNormal.Empty and (not Glyph.Empty) then
-    FGlyphNormal.Assign(Glyph) ;
+    FGlyphNormal.Assign(Glyph);
 
-  if ( Not Enabled ) and ( not FGlyphDisabled.Empty ) then
+  if (Not Enabled) and (not FGlyphDisabled.Empty) then
   begin
-    Glyph.FreeImage ;
-    Glyph.Height := FGlyphDisabled.Height ;
-    Glyph.Width  := FGlyphDisabled.Width * 2 ;
+    Glyph.FreeImage;
+    Glyph.Height := FGlyphDisabled.Height;
+    Glyph.Width := FGlyphDisabled.Width * 2;
     Glyph.Canvas.Draw(FGlyphDisabled.Width,0,FGlyphDisabled);
-    NumGlyphs := 2 ;
-    Font.Color   := FColorAvailable ;
+    NumGlyphs := 2;
+    Font.Color  := FColorAvailable;
   end
   else if FOver then
   begin
     Glyph.Assign(FGlyphHot);
-    NumGlyphs := 1 ;
-    Font.Color   := FColorHilight ;
+    NumGlyphs := 1;
+    Font.Color  := FColorHilight;
   end else
   begin
     Glyph.Assign(FGlyphNormal);
-    NumGlyphs := 1 ;
-    Font.Color   := FColorAvailable ;
-  end ;
+    NumGlyphs := 1;
+    Font.Color  := FColorAvailable;
+  end;
 end;               
 
-procedure TtiSpeedButton.SetGlyphDisabled(const Value: TBitmap);
+procedure TtiSpeedButton.SetGlyphDisabled(const AValue: TBitmap);
 begin
-  FGlyphDisabled.Assign(Value);
+  FGlyphDisabled.Assign(AValue);
 end;
 
-procedure TtiSpeedButton.SetImageResName(const Value: TtiImageRes);
+procedure TtiSpeedButton.SetImageResName(const AValue: TtiImageRes);
 var
-  lResName : string ;
-  lImageIndex : integer ;
+  lResName : string;
+  lImageIndex : integer;
 begin
-  FImageResName := Value;
+  FImageResName := AValue;
   lResName := cImageRes[FImageResName];
   if FImageResName = tiRINone then
     ClearGlyphs
@@ -217,11 +193,11 @@ begin
       SetImageResName(tiRINone)
     else
     begin
-      ClearGlyphs ;
-      gTIImageListMgr.ILNormal16.GetBitmap(lImageIndex, Glyph ) ;
-      gTIImageListMgr.ILHot16.GetBitmap(lImageIndex, GlyphHot ) ;
-      gTIImageListMgr.ILDisabled16.GetBitmap(lImageIndex, GlyphDisabled ) ;
-    end ;
+      ClearGlyphs;
+      gTIImageListMgr.ILNormal16.GetBitmap(lImageIndex, Glyph);
+      gTIImageListMgr.ILHot16.GetBitmap(lImageIndex, GlyphHot);
+      gTIImageListMgr.ILDisabled16.GetBitmap(lImageIndex, GlyphDisabled);
+    end;
   end;
 end;
 
@@ -231,7 +207,7 @@ begin
   Glyph.Assign(nil);
   GlyphHot.Assign(nil);
   GlyphDisabled.Assign(nil);
-end ;
+end;
 
 procedure TtiSpeedButton.ActionChange(Sender: TObject; CheckDefaults: Boolean);
 begin
@@ -241,9 +217,9 @@ begin
     if TtiAction(Sender).ImageIndex >= 0 then
     begin
       ClearGlyphs;
-      gTIImageListMgr.ILNormal16.GetBitmap(TtiAction(Sender).ImageIndex, Glyph ) ;
-      gTIImageListMgr.ILHot16.GetBitmap(TtiAction(Sender).ImageIndex, GlyphHot ) ;
-      gTIImageListMgr.ILDisabled16.GetBitmap(TtiAction(Sender).ImageIndex, GlyphDisabled ) ;
+      gTIImageListMgr.ILNormal16.GetBitmap(TtiAction(Sender).ImageIndex, Glyph);
+      gTIImageListMgr.ILHot16.GetBitmap(TtiAction(Sender).ImageIndex, GlyphHot);
+      gTIImageListMgr.ILDisabled16.GetBitmap(TtiAction(Sender).ImageIndex, GlyphDisabled);
     end;
   end;
 end;
@@ -252,11 +228,11 @@ procedure TtiSpeedButton.ShowPopupMenu(const pPopupMenu: TPopupMenu);
 var
   p: TPoint;
 begin
-  Assert( pPopupMenu <> nil, 'pPopupMenu not Assigned');
+  Assert(pPopupMenu <> nil, 'pPopupMenu not Assigned');
   if pPopupMenu=nil then Exit;
   p.x := BoundsRect.TopLeft.X;
   p.y := BoundsRect.BottomRight.Y;
-  p   := Parent.ClientToScreen(p);
+  p  := Parent.ClientToScreen(p);
   pPopupMenu.Popup(p.x, p.y);
 end;
 

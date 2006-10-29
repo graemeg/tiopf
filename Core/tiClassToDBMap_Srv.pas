@@ -30,108 +30,107 @@ uses
   ,tiClassToDBMap_BOM
   ,tiExcept
   ,Classes
-  ;
+ ;
 
 const
   cErrorInvalid = '';
 
 type
 
-  TVisAutoAbs = class( TtiPerObjVisitor )
+  TVisAutoAbs = class(TtiPerObjVisitor)
   protected
-    FWhereAttrColMaps : TtiAttrColMaps ;
-    FAttrColMaps : TtiAttrColMaps ;
-    FWhere  : TtiQueryParams ;
-    FParams : TtiQueryParams ;
-    FVisitedClassType : TtiClass ;
-    procedure AddToParams( const pParams : TtiQueryParams ;
-                           const pAttrColMaps : TtiAttrColMaps ;
-                           const pData : TtiObject ) ; virtual ;
-    procedure QueryResultToObject( const pTarget : TtiObject ; const pAttrColMaps : TtiAttrColMaps ) ;
+    FWhereAttrColMaps : TtiAttrColMaps;
+    FAttrColMaps : TtiAttrColMaps;
+    FWhere : TtiQueryParams;
+    FParams : TtiQueryParams;
+    FVisitedClassType : TtiClass;
+    procedure AddToParams(const AParams : TtiQueryParams;
+                           const pAttrColMaps : TtiAttrColMaps;
+                           const AData : TtiObject); virtual;
+    procedure QueryResultToObject(const ATarget : TtiObject; const pAttrColMaps : TtiAttrColMaps);
   protected
-    procedure GetWhereAttrColMaps ; virtual ; abstract ;
-    procedure GetAttrColMaps ; virtual ; abstract ;
-    procedure SetupParams; override ;
-    function  ParamsToString( const pParams : TtiQueryParams ) : string ;
+    procedure GetWhereAttrColMaps; virtual; abstract;
+    procedure GetAttrColMaps; virtual; abstract;
+    procedure SetupParams; override;
+    function  ParamsToString(const AParams : TtiQueryParams): string;
   public
-    procedure   Execute( const pData : TtiVisited ) ; override ;
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-  end ;
+    procedure   Execute(const AData : TtiVisited); override;
+    constructor Create; override;
+    destructor  Destroy; override;
+  end;
 
-  TVisAutoReadThis = class( TVisAutoAbs )
+  TVisAutoReadThis = class(TVisAutoAbs)
   protected
-    FSetObjectState : boolean ;
-    procedure   GetWhereAttrColMaps ; override ;
-    procedure   GetAttrColMaps ; override ;
-    function    AcceptVisitor : boolean ; override ;
-    procedure   MapRowToObject ;
-    procedure   DoExecute ;
-    procedure   Final ; override ;
+    FSetObjectState : boolean;
+    procedure   GetWhereAttrColMaps; override;
+    procedure   GetAttrColMaps; override;
+    function    AcceptVisitor : boolean; override;
+    procedure   MapRowToObject;
+    procedure   DoExecute;
+    procedure   Final; override;
   public
-    procedure   Execute( const pData : TtiVisited ) ; override ;
-  end ;
+    procedure   Execute(const AData : TtiVisited); override;
+  end;
 
-  TVisAutoCollectionRead = class( TVisAutoAbs )
+  TVisAutoCollectionRead = class(TVisAutoAbs)
   private
-    FClassDBCollection : TtiClassDBCollection ;
-    FClassToCreate : TtiClass ;
-    FHasParent: Boolean ;
-    FClassesWithParent : TList ;
-//    procedure PopulateIfChildClasses;
-    procedure ReadDataForParentClass(pCollection: TtiClassDBCollection);
-    procedure ReadDataForChildClasses(pCollection: TtiClassDBCollection);
+    FClassDBCollection : TtiClassDBCollection;
+    FClassToCreate : TtiClass;
+    FHasParent: Boolean;
+    FClassesWithParent : TList;
+    procedure ReadDataForParentClass(ACollection: TtiClassDBCollection);
+    procedure ReadDataForChildClasses(ACollection: TtiClassDBCollection);
 
   protected
-    FSetObjectState : boolean ;
-    procedure   GetWhereAttrColMaps ; override ;
-    procedure   GetAttrColMaps ; override ;
-    function    AcceptVisitor : boolean ; override ;
-    procedure   MapRowToObject( pCheckForDuplicates : boolean ) ;
-    procedure   SetContinueVisiting ; virtual ;
+    FSetObjectState : boolean;
+    procedure   GetWhereAttrColMaps; override;
+    procedure   GetAttrColMaps; override;
+    function    AcceptVisitor : boolean; override;
+    procedure   MapRowToObject(ACheckForDuplicates : boolean);
+    procedure   SetContinueVisiting; virtual;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Execute( const pData : TtiVisited ) ; override ;
-  end ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Execute(const AData : TtiVisited); override;
+  end;
 
-  TVisAutoCollectionPKRead = class( TVisAutoCollectionRead )
+  TVisAutoCollectionPKRead = class(TVisAutoCollectionRead)
   protected
-    procedure   GetAttrColMaps ; override ;
-    procedure   SetContinueVisiting ; override ;
-  end ;
+    procedure   GetAttrColMaps; override;
+    procedure   SetContinueVisiting; override;
+  end;
 
-  TVisAutoUpdateAbs = class( TVisAutoAbs )
+  TVisAutoUpdateAbs = class(TVisAutoAbs)
   protected
-    procedure  GetWhereAttrColMaps ; override ;
-    procedure  GetAttrColMaps ; override ;
-    procedure  DoExecuteQuery ; virtual ; abstract ;
+    procedure  GetWhereAttrColMaps; override;
+    procedure  GetAttrColMaps; override;
+    procedure  DoExecuteQuery; virtual; abstract;
   public
-    procedure  Execute( const pData : TtiVisited ) ; override ;
-  end ;
+    procedure  Execute(const AData : TtiVisited); override;
+  end;
 
-  TVisAutoDelete = class( TVisAutoUpdateAbs )
+  TVisAutoDelete = class(TVisAutoUpdateAbs)
   protected
-    procedure  GetAttrColMaps ; override ;
-    function   AcceptVisitor : boolean ; override ;
-    procedure  DoExecuteQuery ; override ;
+    procedure  GetAttrColMaps; override;
+    function   AcceptVisitor : boolean; override;
+    procedure  DoExecuteQuery; override;
   public
-    constructor Create ; override ;
-  end ;
+    constructor Create; override;
+  end;
 
-  TVisAutoUpdate = class( TVisAutoUpdateAbs )
+  TVisAutoUpdate = class(TVisAutoUpdateAbs)
   protected
-    function   AcceptVisitor : boolean ; override ;
-    procedure  DoExecuteQuery ; override ;
-  end ;
+    function   AcceptVisitor : boolean; override;
+    procedure  DoExecuteQuery; override;
+  end;
 
-  TVisAutoCreate = class( TVisAutoUpdateAbs )
+  TVisAutoCreate = class(TVisAutoUpdateAbs)
   protected
-    procedure GetWhereAttrColMaps ; override ;
-    procedure GetAttrColMaps ; override ;
-    function  AcceptVisitor : boolean ; override ;
-    procedure DoExecuteQuery ; override ;
-  end ;
+    procedure GetWhereAttrColMaps; override;
+    procedure GetAttrColMaps; override;
+    function  AcceptVisitor : boolean; override;
+    procedure DoExecuteQuery; override;
+  end;
 
 implementation
 uses
@@ -141,7 +140,7 @@ uses
   ,tiUtils
   ,TypInfo
   ,tiOID
-  ;
+ ;
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -149,74 +148,74 @@ uses
 // * TVisAutoAbs
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TVisAutoAbs.AddToParams( const pParams : TtiQueryParams ; const pAttrColMaps : TtiAttrColMaps ; const pData : TtiObject ) ;
-  procedure _SetOIDParam( const pParams : TtiQueryParams ; const pData : TtiObject ; const pColName : string ; const pPropName : string ) ;
+procedure TVisAutoAbs.AddToParams(const AParams : TtiQueryParams; const pAttrColMaps : TtiAttrColMaps; const AData : TtiObject);
+  procedure _SetOIDParam(const AParams : TtiQueryParams; const AData : TtiObject; const AColName : string; const APropName : string);
   begin
     {$IFDEF OID_AS_INT64}
-      if Pos( 'OWNER', UpperCase( pPropName )) <> 0 then
+      if Pos('OWNER', UpperCase(APropName)) <> 0 then
       begin
         // If we are calling create (or update?) then we will want to set Owner.OID
         if Self is TVisAutoUpdateAbs then
         begin
-          Assert( pData.Owner <> nil, 'Attempting to read a collection but the collections''s Visited.Owner is not assigned' ) ;
-          pParams.SetValueAsInteger(pColName, pData.Owner.OID)
+          Assert(AData.Owner <> nil, 'Attempting to read a collection but the collections''s Visited.Owner is not assigned');
+          AParams.SetValueAsInteger(AColName, AData.Owner.OID)
         end else
-          pParams.SetValueAsInteger(pColName, pData.OID)
+          AParams.SetValueAsInteger(AColName, AData.OID)
       end else
-        pParams.SetValueAsInteger(pColName, pData.OID);
+        AParams.SetValueAsInteger(AColName, AData.OID);
     {$ELSE}
-      if Pos( 'OWNER', UpperCase( pPropName )) <> 0 then
+      if Pos('OWNER', UpperCase(APropName)) <> 0 then
       begin
         // If we are calling create (or update?) then we will want to set Owner.OID
         if Self is TVisAutoUpdateAbs then
         begin
-          Assert( pData.Owner <> nil, 'Attempting to read a collection but the collections''s Visited.Owner is not assigned' ) ;
-          pData.Owner.OID.AssignToTIQueryParam(pColName, pParams);
+          Assert(AData.Owner <> nil, 'Attempting to read a collection but the collections''s Visited.Owner is not assigned');
+          AData.Owner.OID.AssignToTIQueryParam(AColName, AParams);
         end else
-          pData.OID.AssignToTIQueryParam(pColName, pParams);
+          AData.OID.AssignToTIQueryParam(AColName, AParams);
       end else
-        pData.OID.AssignToTIQueryParam(pColName, pParams);
+        AData.OID.AssignToTIQueryParam(AColName, AParams);
     {$ENDIF}
   end;
 var
-  lAttrColMap : TtiAttrColMap ;
-  i : integer ;
-  lColName : string ;
-  lPropName : string ;
+  lAttrColMap : TtiAttrColMap;
+  i : integer;
+  lColName : string;
+  lPropName : string;
 begin
-  Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
-  pParams.Clear ;
+  Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
+  AParams.Clear;
   for i := 0 to pAttrColMaps.Count - 1 do
   begin
-    lAttrColMap := pAttrColMaps.Items[i] ;
-    lColName  := lAttrColMap.DBColMap.ColName ;
-    lPropName := lAttrColMap.AttrMap.AttrName ;
-    if  ( Pos( 'OID', UpperCase(lPropName)) <> 0 )
-    and ( Pos( '_OID', UpperCase(lPropName)) = 0 ) then
-      _SetOIDParam( pParams, pData, lColName, lPropName )
+    lAttrColMap := pAttrColMaps.Items[i];
+    lColName := lAttrColMap.DBColMap.ColName;
+    lPropName := lAttrColMap.AttrMap.AttrName;
+    if  (Pos('OID', UpperCase(lPropName)) <> 0)
+    and (Pos('_OID', UpperCase(lPropName)) = 0) then
+      _SetOIDParam(AParams, AData, lColName, lPropName)
     else
-      pParams.SetValueFromProp( pData, lPropName, lColName ) ;
-  end ;
+      AParams.SetValueFromProp(AData, lPropName, lColName);
+  end;
 end;
 
 constructor TVisAutoAbs.Create;
 begin
   inherited;
-  FWhereAttrColMaps := TtiAttrColMaps.Create ;
-  FWhereAttrColMaps.OwnsObjects := false ;
-  FWhereAttrColMaps.AutoSetItemOwner := false ;
-  FWhere  := TtiQueryParams.Create ;
+  FWhereAttrColMaps := TtiAttrColMaps.Create;
+  FWhereAttrColMaps.OwnsObjects := false;
+  FWhereAttrColMaps.AutoSetItemOwner := false;
+  FWhere := TtiQueryParams.Create;
 
-  FAttrColMaps := TtiAttrColMaps.Create ;
-  FAttrColMaps.OwnsObjects := false ;
-  FAttrColMaps.AutoSetItemOwner := false ;
-  FParams := TtiQueryParams.Create ;
+  FAttrColMaps := TtiAttrColMaps.Create;
+  FAttrColMaps.OwnsObjects := false;
+  FAttrColMaps.AutoSetItemOwner := false;
+  FParams := TtiQueryParams.Create;
 
 end;
 
 destructor TVisAutoAbs.Destroy;
 begin
-  FWhereAttrColMaps.Free ;
+  FWhereAttrColMaps.Free;
   FWhere.Free;
   FParams.Free;
   FAttrColMaps.Free;
@@ -233,207 +232,207 @@ begin
     ((Visited.ObjectState = posEmpty) or
      (Visited.ObjectState = posPK)) and
     (gTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
-     TtiClass(Visited.ClassType))) ;
+     TtiClass(Visited.ClassType)));
 end;
 
-procedure TVisAutoCollectionRead.Execute(const pData: TtiVisited);
+procedure TVisAutoCollectionRead.Execute(const AData: TtiVisited);
 var
-  lCollections : TList ;
-  i : integer ;
+  lCollections : TList;
+  i : integer;
 begin
-  inherited Execute( pData ) ;
+  inherited Execute(AData);
   if not AcceptVisitor then
-    Exit ; //==>
-  FSetObjectState := false ;
-  FClassesWithParent.Clear ;
-  lCollections := TList.Create ;
+    Exit; //==>
+  FSetObjectState := false;
+  FClassesWithParent.Clear;
+  lCollections := TList.Create;
   try
-    lCollections.Clear ;
+    lCollections.Clear;
     gTIOPFManager.ClassDBMappingMgr.Collections.FindByCollection(
       FVisitedClassType,
-      lCollections ) ;
-    ReadDataForParentClass( TtiClassDBCollection(lCollections.Items[0]) );
+      lCollections);
+    ReadDataForParentClass(TtiClassDBCollection(lCollections.Items[0]));
     for i := 1 to lCollections.Count - 1 do
-      ReadDataForChildClasses( TtiClassDBCollection(lCollections.Items[i]) );
+      ReadDataForChildClasses(TtiClassDBCollection(lCollections.Items[i]));
   finally
-    lCollections.Free ;
-  end ;
-  SetContinueVisiting ;
+    lCollections.Free;
+  end;
+  SetContinueVisiting;
 end;
 
-procedure TVisAutoCollectionRead.ReadDataForParentClass( pCollection : TtiClassDBCollection ) ;
+procedure TVisAutoCollectionRead.ReadDataForParentClass(ACollection : TtiClassDBCollection);
 var
-  lTableName : string ;
-  lParams : string ;
+  lTableName : string;
+  lParams : string;
 begin
-  FClassDBCollection := pCollection ;
+  FClassDBCollection := ACollection;
   SetupParams;
-  lTableName := FWhereAttrColMaps.TableName ;
-  lParams := ParamsToString( FWhere ) ;
-  Query.SelectRow( FAttrColMaps.TableName, FWhere ) ;
+  lTableName := FWhereAttrColMaps.TableName;
+  lParams := ParamsToString(FWhere);
+  Query.SelectRow(FAttrColMaps.TableName, FWhere);
   while not Query.EOF do
   begin
-    MapRowToObject( false ) ;
-    Query.Next ;
-  end ;
-  Query.Close ;
-end ;
+    MapRowToObject(false);
+    Query.Next;
+  end;
+  Query.Close;
+end;
 
-procedure TVisAutoCollectionRead.ReadDataForChildClasses( pCollection : TtiClassDBCollection ) ;
+procedure TVisAutoCollectionRead.ReadDataForChildClasses(ACollection : TtiClassDBCollection);
 
-  procedure _GetWhereAttrColMaps( const pData : TtiObject ) ;
+  procedure _GetWhereAttrColMaps(const AData : TtiObject);
   var
-    i : integer ;
+    i : integer;
   begin
-    Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
+    Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
 
     gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-      TtiClass( FClassDBCollection.PerObjAbsClass ), FWhereAttrColMaps ) ;
+      TtiClass(FClassDBCollection.PerObjAbsClass), FWhereAttrColMaps);
 
     // Remove any mappings that are not foreign key mappings
     for i := FWhereAttrColMaps.Count - 1 downto 0 do
-      if ( not ( pktFK in FWhereAttrColMaps.Items[i].DBColMap.PKInfo )) then
+      if (not (pktFK in FWhereAttrColMaps.Items[i].DBColMap.PKInfo)) then
         FWhereAttrColMaps.Delete(i);
 
-    AddToParams( FWhere, FWhereAttrColMaps, pData ) ;
+    AddToParams(FWhere, FWhereAttrColMaps, AData);
 
-  end ;
+  end;
 
 var
-  i : integer ;
-  lCount : integer ;
-  lTableName : string ;
+  i : integer;
+  lCount : integer;
+  lTableName : string;
 begin
-  FClassDBCollection := pCollection ;
-  GetAttrColMaps ;
+  FClassDBCollection := ACollection;
+  GetAttrColMaps;
   for i := 0 to TtiObjectList(Visited).Count - 1 do
   begin
-    _GetWhereAttrColMaps(TtiObjectList(Visited).Items[i]) ;
-    lTableName := FWhereAttrColMaps.TableName ;
+    _GetWhereAttrColMaps(TtiObjectList(Visited).Items[i]);
+    lTableName := FWhereAttrColMaps.TableName;
     Assert(lTableName <> '', 'Unable to find table name. FWhereAttrColMaps.Count = '
            + IntToStr(FWhereAttrColMaps.Count) + '. Suspect a missing [pktFK] value ' 
-           + 'in the child classes RegisterMapping calls.' );
-    Query.SelectRow( lTableName, FWhere ) ;
-    lCount := 0 ;
+           + 'in the child classes RegisterMapping calls.');
+    Query.SelectRow(lTableName, FWhere);
+    lCount := 0;
     while not Query.EOF do
     begin
-      MapRowToObject( true ) ;
-      Query.Next ;
-      Inc( lCount ) ;
-    end ;
-    Query.Close ;
-    Assert( lCount <= 1, 'Query returned rowcount > 1 it was ' + IntToStr( lCount )) ;
-  end ;
-end ;
+      MapRowToObject(true);
+      Query.Next;
+      Inc(lCount);
+    end;
+    Query.Close;
+    Assert(lCount <= 1, 'Query returned rowcount > 1 it was ' + IntToStr(lCount));
+  end;
+end;
 
 
 {
-procedure TVisAutoCollectionRead.PopulateIfChildClasses ;
+procedure TVisAutoCollectionRead.PopulateIfChildClasses;
 var
-  i : integer ;
-  lVisAutoReadThis : TVisAutoReadThis ;
+  i : integer;
+  lVisAutoReadThis : TVisAutoReadThis;
 begin
   // If a class has a registered parent, then only its PK info will
   // have been read. This will read remaining data on these classes.
   // It was tempting to just call ReadThis on each object in the list, but
   // that caused another database connection to be created which failed if
   // the dbConnectionPool.MaxCount value was 1
-  // (as it is for the XML persistence layer. )
+  // (as it is for the XML persistence layer.)
   if FClassesWithParent.Count <> 0 then
   begin
-    lVisAutoReadThis := TVisAutoReadThis.Create ;
+    lVisAutoReadThis := TVisAutoReadThis.Create;
     try
-      lVisAutoReadThis.DBConnection := Self.DBConnection ;
+      lVisAutoReadThis.DBConnection := Self.DBConnection;
       for i := 0 to FClassesWithParent.Count - 1 do
-        TtiObject( FClassesWithParent.Items[i] ).Iterate( lVisAutoReadThis ) ;
+        TtiObject(FClassesWithParent.Items[i]).Iterate(lVisAutoReadThis);
 
       // Force Final to be called (calling Final is usually handled by the visitor manager)
       for i := 0 to FClassesWithParent.Count - 1 do
       begin
-        lVisAutoReadThis.Visited := TtiObject( FClassesWithParent.Items[i] ) ;
-        lVisAutoReadThis.Final ;
-      end ;
+        lVisAutoReadThis.Visited := TtiObject(FClassesWithParent.Items[i]);
+        lVisAutoReadThis.Final;
+      end;
 
     finally
-      lVisAutoReadThis.Free ;
-    end ;
-  end ;
-end ;
+      lVisAutoReadThis.Free;
+    end;
+  end;
+end;
 }
 
-procedure TVisAutoCollectionRead.MapRowToObject( pCheckForDuplicates : boolean ) ;
-  function _DoesOwnObjects( pData : TtiObject ) : Boolean ;
+procedure TVisAutoCollectionRead.MapRowToObject(ACheckForDuplicates : boolean);
+  function _DoesOwnObjects(AData : TtiObject): Boolean;
   var
-    lList : TList ;
-    i : integer ;
+    lList : TList;
+    i : integer;
   begin
-    result := ( pData.PropCount( [tkClass] ) > 0 ) ;
+    result := (AData.PropCount([tkClass]) > 0);
     if not result then
-      Exit ; //==>
-    result := false ;
-    lList := TList.Create ;
+      Exit; //==>
+    result := false;
+    lList := TList.Create;
     try
-      pData.FindAllByClassType( TtiObject, lList ) ;
+      AData.FindAllByClassType(TtiObject, lList);
       for i := 0 to lList.Count - 1 do
-        if TtiObject( lList.Items[i] ).Owner = pData then
+        if TtiObject(lList.Items[i]).Owner = AData then
         begin
-          result := true ;
-          Break ; //==>
-        end ;
+          result := true;
+          Break; //==>
+        end;
     finally
-      lList.Free ;
-    end ;
-  end ;
+      lList.Free;
+    end;
+  end;
 
-  function _DuplicateObject( var pIndex : integer ) : boolean ;
+  function _DuplicateObject(var AIndex : integer): boolean;
   var
-    lData : TtiObject ;
-    lOID : TOID ;
-    lPKColName : string ;
-    i : integer ;
+    lData : TtiObject;
+    lOID : TOID;
+    lPKColName : string;
+    i : integer;
   begin
 
-    lPKColName := '' ;
+    lPKColName := '';
     for i := 0 to FAttrColMaps.Count - 1 do
-      if ( pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo ) then
+      if (pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo) then
       begin
         lPKColName := FAttrColMaps.Items[i].DBColMap.ColName;
-        Break ; //==>
-      end ;
+        Break; //==>
+      end;
 
-    Assert( lPKColName <> '', 'Can not determine primary key column. FAttrColMaps.Count <> 1' ) ;
+    Assert(lPKColName <> '', 'Can not determine primary key column. FAttrColMaps.Count <> 1');
     {$IFDEF OID_AS_INT64}
       lOID := Query.FieldAsInteger[lPKColName];
-      lData := TtiObjectList( Visited ).Find(lOID) ;
-      result := ( lData <> nil ) ;
+      lData := TtiObjectList(Visited).Find(lOID);
+      result := (lData <> nil);
       if result then
-        pIndex := TtiObjectList( Visited ).IndexOf(lData)
+        AIndex := TtiObjectList(Visited).IndexOf(lData)
       else
-        pIndex := -1 ;
+        AIndex := -1;
     {$ELSE}
-      lOID := gTIOPFManager.OIDFactory.CreateOID ;
+      lOID := gTIOPFManager.OIDFactory.CreateOID;
       try
         lOID.AssignFromTIQuery(lPKColName, Query);
-        lData := TtiObjectList( Visited ).Find(lOID) ;
-        result := ( lData <> nil ) ;
+        lData := TtiObjectList(Visited).Find(lOID);
+        result := (lData <> nil);
         if result then
-          pIndex := TtiObjectList( Visited ).IndexOf(lData)
+          AIndex := TtiObjectList(Visited).IndexOf(lData)
         else
-          pIndex := -1 ;
+          AIndex := -1;
       finally
-        lOID.Free ;
+        lOID.Free;
       end;
     {$ENDIF}
-  end ;
+  end;
 
 var
-  lDataOld : TtiObject ;
-  lDataNew : TtiObject ;
-  lIndex   : integer ;
-  lList    : TtiObjectList ;
+  lDataOld : TtiObject;
+  lDataNew : TtiObject;
+  lIndex  : integer;
+  lList   : TtiObjectList;
 begin
   if FAttrColMaps.Count = 0 then
-    Exit ; //==>
+    Exit; //==>
 
   // If we are working with a collection of objects of different types, there
   // is a chance that the object will be read more than once from more than one
@@ -445,137 +444,137 @@ begin
   // will be read and if there is a record there, then the first object will
   // be of the wrong type. To fix this, the original instance is removed and
   // a new copy created.
-  lList := TtiObjectList( Visited ) ;
-  if pCheckForDuplicates and _DuplicateObject(lIndex) then
+  lList := TtiObjectList(Visited);
+  if ACheckForDuplicates and _DuplicateObject(lIndex) then
   begin
-    lDataOld := lList.Items[lIndex] ;
-    lDataNew := FClassToCreate.Create ;
+    lDataOld := lList.Items[lIndex];
+    lDataNew := FClassToCreate.Create;
     lDataNew.Assign(lDataOld);
-    lIndex   := lList.IndexOf(lDataOld) ;
-    lList.Insert(lIndex, lDataNew );
+    lIndex  := lList.IndexOf(lDataOld);
+    lList.Insert(lIndex, lDataNew);
     lList.Remove(lDataOld);
   end else
   begin
-    lDataNew  := FClassToCreate.Create ;
-    lList.Add( lDataNew ) ;
-  end ;
+    lDataNew := FClassToCreate.Create;
+    lList.Add(lDataNew);
+  end;
 
-  QueryResultToObject( lDataNew, FAttrColMaps ) ;
+  QueryResultToObject(lDataNew, FAttrColMaps);
 
   // Can do better than this rather messy call
   // (If its a collection, or it owns objects - not totally reliable
   if ((gTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(FClassToCreate)) or
-      ( _DoesOwnObjects( lDataNew ))) {or
-      ( FHasParent )} then
+      (_DoesOwnObjects(lDataNew))) {or
+      (FHasParent)} then
     lDataNew.ObjectState := posPK
   else
-    lDataNew.ObjectState := posClean ;
+    lDataNew.ObjectState := posClean;
 
   if FHasParent then
-    FClassesWithParent.Add( lDataNew ) ;
+    FClassesWithParent.Add(lDataNew);
 
 end;
 
 { TVisAutoUpdateAbs }
 
-procedure TVisAutoUpdateAbs.Execute(const pData: TtiVisited);
+procedure TVisAutoUpdateAbs.Execute(const AData: TtiVisited);
 var
-  lClassMaps : TtiClassMaps ;
-  i : integer ;
+  lClassMaps : TtiClassMaps;
+  i : integer;
 begin
-  inherited Execute( pData ) ;
+  inherited Execute(AData);
   if not AcceptVisitor then
-    Exit ; //==>
+    Exit; //==>
 
 // Attached by the VisitorCtrlr
-//  Query.AttachDatabase( DBConnection.Database ) ;
+//  Query.AttachDatabase(DBConnection.Database);
 //  try
-    lClassMaps := TtiClassMaps.Create ;
+    lClassMaps := TtiClassMaps.Create;
     try
-      lClassMaps.OwnsObjects := false ;
+      lClassMaps.OwnsObjects := false;
       gTIOPFManager.ClassDBMappingMgr.ClassMaps.FindAllParents(
-        FVisitedClassType, lClassMaps ) ;
+        FVisitedClassType, lClassMaps);
       // For Create and Update
       if IterateDirection = vidTopDown then
       begin
         for i := 0 to lClassMaps.Count - 1 do
         begin
-          FVisitedClassType := lClassMaps.Items[i].PerObjAbsClass ;
-          SetupParams ;
-          DoExecuteQuery ;
-        end ;
+          FVisitedClassType := lClassMaps.Items[i].PerObjAbsClass;
+          SetupParams;
+          DoExecuteQuery;
+        end;
       end
       else
       // For Delete
       begin
         for i := lClassMaps.Count - 1 downto 0 do
         begin
-          FVisitedClassType := lClassMaps.Items[i].PerObjAbsClass ;
-          SetupParams ;
-          DoExecuteQuery ;
-        end ;
-      end ;
+          FVisitedClassType := lClassMaps.Items[i].PerObjAbsClass;
+          SetupParams;
+          DoExecuteQuery;
+        end;
+      end;
     finally
       lClassMaps.Free;
-    end ;
+    end;
 //  finally
-//    Query.DetachDatabase ;
-//  end ;
+//    Query.DetachDatabase;
+//  end;
 end;
 
 procedure TVisAutoUpdateAbs.GetAttrColMaps;
 var
-  i : integer ;
+  i : integer;
 begin
-  Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
+  Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
   gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-    FVisitedClassType, FAttrColMaps ) ;
+    FVisitedClassType, FAttrColMaps);
     
   // Remove any mappings that are primary key mappings
   for i := FAttrColMaps.Count - 1 downto 0 do
-    if (( pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo )) then
+    if ((pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo)) then
       FAttrColMaps.Delete(i);
 
   // Remove any mappings that are foreign key mappings
   for i := FAttrColMaps.Count - 1 downto 0 do
-    if (( pktFK in FAttrColMaps.Items[i].DBColMap.PKInfo )) then
+    if ((pktFK in FAttrColMaps.Items[i].DBColMap.PKInfo)) then
       FAttrColMaps.Delete(i);
 
-  AddToParams( FParams, FAttrColMaps, Visited ) ;
+  AddToParams(FParams, FAttrColMaps, Visited);
 end;
 
 procedure TVisAutoUpdateAbs.GetWhereAttrColMaps;
 var
-  i : integer ;
+  i : integer;
 begin
-  Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
+  Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
   gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-    FVisitedClassType, FWhereAttrColMaps ) ;
+    FVisitedClassType, FWhereAttrColMaps);
   // Remove any mappings that are not primary key mappings
   for i := FWhereAttrColMaps.Count - 1 downto 0 do
-    if ( not ( pktDB in FWhereAttrColMaps.Items[i].DBColMap.PKInfo )) then
+    if (not (pktDB in FWhereAttrColMaps.Items[i].DBColMap.PKInfo)) then
       FWhereAttrColMaps.Delete(i);
-  AddToParams( FWhere,  FWhereAttrColMaps, Visited ) ;
+  AddToParams(FWhere,  FWhereAttrColMaps, Visited);
 end;
 
 { TVisAutoDelete }
 
 function TVisAutoDelete.AcceptVisitor: boolean;
 begin
-  result := ( Visited.ObjectState = posDelete ) and
-            ( gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
-              TtiClass(Visited.ClassType))) ;
+  result := (Visited.ObjectState = posDelete) and
+            (gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
+              TtiClass(Visited.ClassType)));
 end;
 
 constructor TVisAutoDelete.Create;
 begin
   inherited;
-  IterateDirection := vidBottomUp ;
+  IterateDirection := vidBottomUp;
 end;
 
 procedure TVisAutoDelete.DoExecuteQuery;
 begin
-  Query.DeleteRow( FWhereAttrColMaps.TableName, FWhere ) ;
+  Query.DeleteRow(FWhereAttrColMaps.TableName, FWhere);
 end;
 
 procedure TVisAutoDelete.GetAttrColMaps;
@@ -587,43 +586,43 @@ end;
 
 function TVisAutoUpdate.AcceptVisitor: boolean;
 begin
-  result := ( Visited.ObjectState = posUpdate ) and
-            ( gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
-              TtiClass(Visited.ClassType))) ;
+  result := (Visited.ObjectState = posUpdate) and
+            (gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
+              TtiClass(Visited.ClassType)));
 end;
 
 {
 procedure TVisAutoUpdate.DoSetupQuery;
 begin
-  Query.SetupForUpdate( FAttrColMaps, nil ) ;
+  Query.SetupForUpdate(FAttrColMaps, nil);
 end;
 }
 
 procedure TVisAutoUpdate.DoExecuteQuery;
 begin
-  Query.UpdateRow( FWhereAttrColMaps.TableName, FParams, FWhere ) ;
+  Query.UpdateRow(FWhereAttrColMaps.TableName, FParams, FWhere);
 end;
 
 { TVisAutoCreate }
 
 function TVisAutoCreate.AcceptVisitor: boolean;
 begin
-  result := ( Visited.ObjectState = posCreate ) and
-            ( gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
-              TtiClass(Visited.ClassType))) ;
+  result := (Visited.ObjectState = posCreate) and
+            (gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
+              TtiClass(Visited.ClassType)));
 end;
 
 procedure TVisAutoCreate.DoExecuteQuery;
 begin
-  Query.InsertRow( FAttrColMaps.TableName, FParams ) ;
+  Query.InsertRow(FAttrColMaps.TableName, FParams);
 end;
 
 procedure TVisAutoCreate.GetAttrColMaps;
 begin
-  Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
+  Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
   gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-    FVisitedClassType, FAttrColMaps ) ;
- AddToParams( FParams, FAttrColMaps, Visited ) ;
+    FVisitedClassType, FAttrColMaps);
+ AddToParams(FParams, FAttrColMaps, Visited);
 end;
 
 procedure TVisAutoCreate.GetWhereAttrColMaps;
@@ -638,57 +637,57 @@ begin
   result :=
     ((Visited.ObjectState = posEmpty) or
      (Visited.ObjectState = posPK)) and
-    ( gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(TtiClass(Visited.ClassType))) ;
+    (gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(TtiClass(Visited.ClassType)));
 end;
 
 procedure TVisAutoReadThis.DoExecute;
 var
-  lCount : integer ;
-  lTableName : string ;
+  lCount : integer;
+  lTableName : string;
 begin
   SetupParams;
-  lTableName := FWhereAttrColMaps.TableName ;
-  Query.SelectRow( lTableName, FWhere ) ;
+  lTableName := FWhereAttrColMaps.TableName;
+  Query.SelectRow(lTableName, FWhere);
   try
-    lCount := 0 ;
+    lCount := 0;
     while not Query.EOF do
     begin
       if lCount>0 then
-        raise exception.Create( 'Query returned more than one row');
-      MapRowToObject ;
-      Query.Next ;
+        raise exception.Create('Query returned more than one row');
+      MapRowToObject;
+      Query.Next;
       Inc(lCount);
-    end ;
+    end;
   finally
-    Query.Close ;
-  end ;
+    Query.Close;
+  end;
 end;
 
-procedure TVisAutoReadThis.Execute(const pData: TtiVisited);
+procedure TVisAutoReadThis.Execute(const AData: TtiVisited);
 var
-  lClassMaps : TtiClassMaps ;
-  i : integer ;
+  lClassMaps : TtiClassMaps;
+  i : integer;
 begin
-  inherited Execute( pData ) ;
+  inherited Execute(AData);
 
   if not AcceptVisitor then
-    Exit ; //==>
+    Exit; //==>
 
-  FSetObjectState := false ;
+  FSetObjectState := false;
 
-  lClassMaps := TtiClassMaps.Create ;
+  lClassMaps := TtiClassMaps.Create;
   try
-    lClassMaps.OwnsObjects := false ;
+    lClassMaps.OwnsObjects := false;
     gTIOPFManager.ClassDBMappingMgr.ClassMaps.FindAllParents(
-    FVisitedClassType, lClassMaps ) ;
+    FVisitedClassType, lClassMaps);
     for i := 0 to lClassMaps.Count - 1 do
     begin
-      FVisitedClassType := lClassMaps.Items[i].PerObjAbsClass ;
-      DoExecute ;
-    end ;
+      FVisitedClassType := lClassMaps.Items[i].PerObjAbsClass;
+      DoExecute;
+    end;
   finally
-    lClassMaps.Free ;
-  end ;
+    lClassMaps.Free;
+  end;
   // If we are going to check object state in AcceptVisitor, then we will have to set
   // it in a reliable way after visiting. At the moment, it is set to
   // posClean or posDeleted in TVisPerObjAwareAbs. It will have to set it to
@@ -706,142 +705,142 @@ begin
            (Visited.ObjectState = posPK),
            'Object state on ' + Visited.ClassName +
            ' not posEmpty or posPK it''s ' +
-          Visited.ObjectStateAsString ) ;
+          Visited.ObjectStateAsString);
     if (gTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
        TtiClass(Visited.ClassType))) then
       Visited.ObjectState := posPK
     else
-      Visited.ObjectState := posClean ;
-  end ;
+      Visited.ObjectState := posClean;
+  end;
 end;
 
 procedure TVisAutoReadThis.GetAttrColMaps;
 var
-  i : integer ;
+  i : integer;
 begin
-  Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
+  Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
   gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-    FVisitedClassType, FAttrColMaps ) ;
+    FVisitedClassType, FAttrColMaps);
   for i := FAttrColMaps.Count - 1 downto 0 do
-    if (( pktFK in FAttrColMaps.Items[i].DBColMap.PKInfo )) then
+    if ((pktFK in FAttrColMaps.Items[i].DBColMap.PKInfo)) then
       FAttrColMaps.Delete(i);
 end;
 
 procedure TVisAutoReadThis.GetWhereAttrColMaps;
 begin
-  Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
+  Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
   gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllPKMappingsByMapToClass(
-    FVisitedClassType, FWhereAttrColMaps ) ;
-  AddToParams( FWhere, FWhereAttrColMaps, Visited ) ;
+    FVisitedClassType, FWhereAttrColMaps);
+  AddToParams(FWhere, FWhereAttrColMaps, Visited);
 end;
 
 procedure TVisAutoReadThis.MapRowToObject;
 begin
-  Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
-  QueryResultToObject( Visited, FAttrColMaps ) ;
-  FSetObjectState := true ;
-end ;
+  Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
+  QueryResultToObject(Visited, FAttrColMaps);
+  FSetObjectState := true;
+end;
 
-procedure TVisAutoAbs.QueryResultToObject( const pTarget : TtiObject ; const pAttrColMaps: TtiAttrColMaps);
-  procedure _SetPropValue( const pTarget : TtiObject ; const pAttrColMap : TtiAttrColMap ) ;
+procedure TVisAutoAbs.QueryResultToObject(const ATarget : TtiObject; const pAttrColMaps: TtiAttrColMaps);
+  procedure _SetPropValue(const ATarget : TtiObject; const pAttrColMap : TtiAttrColMap);
   var
-    lPropName  : string ;
-    lColName   : string ;
-    lFieldKind : TtiQueryFieldKind ;
-    lPropType  : TTypeKind ;
-    lInt       : Int64 ;
-    lStream    : TStream ;
-    lString    : string ;
+    lPropName : string;
+    lColName  : string;
+    lFieldKind : TtiQueryFieldKind;
+    lPropType : TTypeKind;
+    lInt      : Int64;
+    lStream   : TStream;
+    lString   : string;
   begin
-    lColName  := pAttrColMap.DBColMap.ColName ;
-    lPropName := pAttrColMap.AttrMap.AttrName ;
+    lColName := pAttrColMap.DBColMap.ColName;
+    lPropName := pAttrColMap.AttrMap.AttrName;
 
     // Some hacking around OIDs. Tidy this up
-    if SameText( lPropName, 'OID' ) then
+    if SameText(lPropName, 'OID') then
     begin
       {$IFDEF OID_AS_INT64}
-         pTarget.OID := Query.FieldAsInteger[lColName];
+         ATarget.OID := Query.FieldAsInteger[lColName];
        {$ELSE}
-         pTarget.OID.AssignFromTIQuery(lColName, Query);
+         ATarget.OID.AssignFromTIQuery(lColName, Query);
       {$ENDIF}
-      Exit ; //==>
-    end ;
+      Exit; //==>
+    end;
 
-//    if SameText( lPropName, 'DispOrder' ) then
+//    if SameText(lPropName, 'DispOrder') then
 //    begin
 //      lInt := Query.FieldAsInteger[ lColName ];
-//      pTarget.DispOrder := lInt;
-//      Exit ; //==>
-//    end ;
+//      ATarget.DispOrder := lInt;
+//      Exit; //==>
+//    end;
 
     // ToDo: When setting a property in the auto map visitors, might be better to determine
     //       which set method to use based on the property type, rather than the db-field type.
-    lFieldKind := Query.FieldKind( Query.FieldIndex( lColName )) ;
-    if ( pTarget.IsReadWriteProp( lPropName )) or
-       ( lFieldKind = qfkBinary ) then
+    lFieldKind := Query.FieldKind(Query.FieldIndex(lColName));
+    if (ATarget.IsReadWriteProp(lPropName)) or
+       (lFieldKind = qfkBinary) then
     begin
       case lFieldKind of                          
       qfkString,
       qfkLongString : begin
-                      lString := Query.FieldAsString[  lColName] ;
+                      lString := Query.FieldAsString[  lColName];
                       {$IFDEF BOOLEAN_CHAR_1}
-                        if ((UpperCase( lString ) = 'T' ) or
-                            ( UpperCase( lString ) = 'F' )) and
-                           ( tiGetSimplePropType(pTarget, lPropName) = tiTKBoolean ) then
-                         TypInfo.SetOrdProp(pTarget, lPropName, Ord( UpperCase(lString) = 'T' )) ;
+                        if ((UpperCase(lString) = 'T') or
+                            (UpperCase(lString) = 'F')) and
+                           (tiGetSimplePropType(ATarget, lPropName) = tiTKBoolean) then
+                         TypInfo.SetOrdProp(ATarget, lPropName, Ord(UpperCase(lString) = 'T'));
                       {$ELSE}
-                        if ((UpperCase( lString ) = 'TRUE' ) or
-                            ( UpperCase( lString ) = 'FALSE' )) and
-                           ( tiGetSimplePropType(pTarget, lPropName) = tiTKBoolean ) then
-                         TypInfo.SetOrdProp(pTarget, lPropName, Ord( UpperCase(lString) = 'TRUE' )) ;
+                        if ((UpperCase(lString) = 'TRUE') or
+                            (UpperCase(lString) = 'FALSE')) and
+                           (tiGetSimplePropType(ATarget, lPropName) = tiTKBoolean) then
+                         TypInfo.SetOrdProp(ATarget, lPropName, Ord(UpperCase(lString) = 'TRUE'));
                       {$ENDIF}
-                      TypInfo.SetStrProp(pTarget,   lPropName, lString);
-                      end ;
-      qfkInteger    : begin
-                        lPropType := PropType( pTarget, lPropName ) ;
+                      TypInfo.SetStrProp(ATarget,   lPropName, lString);
+                      end;
+      qfkInteger   : begin
+                        lPropType := PropType(ATarget, lPropName);
                         lInt := Query.FieldAsInteger[lColName];
-                        if ( lPropType = tkInt64 ) then
-                           // and (( lInt < Low(LongInt)) or ( lInt > High(LongInt ))) then
+                        if (lPropType = tkInt64) then
+                           // and ((lInt < Low(LongInt)) or (lInt > High(LongInt))) then
                         begin
-                          TypInfo.SetInt64Prop(pTarget, lPropName, lInt);
+                          TypInfo.SetInt64Prop(ATarget, lPropName, lInt);
                         end else
-                          TypInfo.SetOrdProp(pTarget, lPropName, lInt);
-                      end ;
-      qfkFloat      : TypInfo.SetFloatProp(pTarget, lPropName, Query.FieldAsFloat[   lColName]);
-      qfkDateTime   : TypInfo.SetFloatProp(pTarget, lPropName, Query.FieldAsDateTime[lColName]);
-      qfkLogical    : TypInfo.SetOrdProp(pTarget, lPropName, Ord( Query.FieldAsBoolean[ lColName]));
-      qfkBinary     : begin
-                        lStream := TypInfo.GetObjectProp(pTarget, lPropName) as TStream ;
+                          TypInfo.SetOrdProp(ATarget, lPropName, lInt);
+                      end;
+      qfkFloat     : TypInfo.SetFloatProp(ATarget, lPropName, Query.FieldAsFloat[   lColName]);
+      qfkDateTime  : TypInfo.SetFloatProp(ATarget, lPropName, Query.FieldAsDateTime[lColName]);
+      qfkLogical   : TypInfo.SetOrdProp(ATarget, lPropName, Ord(Query.FieldAsBoolean[ lColName]));
+      qfkBinary    : begin
+                        lStream := TypInfo.GetObjectProp(ATarget, lPropName) as TStream;
                         Query.AssignFieldAsStream(lColName, lStream);
-                      end ;
+                      end;
       else
-        raise EtiOPFInternalException.Create(cErrorInvalidQueryFieldKind) ;
-      end ;
-    end ;
-  end ;
+        raise EtiOPFInternalException.Create(cErrorInvalidQueryFieldKind);
+      end;
+    end;
+  end;
 
 var
-  i : integer ;
-  lAttrColMap : TtiAttrColMap ;
+  i : integer;
+  lAttrColMap : TtiAttrColMap;
 begin
   for i := 0 to FAttrColMaps.Count - 1 do
   begin
-    lAttrColMap := FAttrColMaps.Items[i] ;
-    _SetPropValue( pTarget, lAttrColMap ) ;
-  end ;
-end ;
+    lAttrColMap := FAttrColMaps.Items[i];
+    _SetPropValue(ATarget, lAttrColMap);
+  end;
+end;
 
 procedure TVisAutoCollectionRead.GetAttrColMaps;
 var
-  i : integer ;
+  i : integer;
 begin
-  Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
+  Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
 
   gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-    TtiClass( FClassDBCollection.PerObjAbsClass ), FAttrColMaps ) ;
+    TtiClass(FClassDBCollection.PerObjAbsClass), FAttrColMaps);
 
-  FClassToCreate := FAttrColMaps.Items[0].AttrMap.Owner.PerObjAbsClass ;
-  FHasParent := gTIOPFManager.ClassDBMappingMgr.ClassMaps.HasParent( FClassToCreate );
+  FClassToCreate := FAttrColMaps.Items[0].AttrMap.Owner.PerObjAbsClass;
+  FHasParent := gTIOPFManager.ClassDBMappingMgr.ClassMaps.HasParent(FClassToCreate);
 
   // If the class we are reading is a concrete class and it
   // has parents registered, the we should only read its
@@ -851,7 +850,7 @@ begin
 {
     // Remove any mappings that are not PK mappings
     for i := FAttrColMaps.Count - 1 downto 0 do
-      if not( pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo ) then
+      if not(pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo) then
         FAttrColMaps.Delete(i);
 }        
   end
@@ -861,25 +860,25 @@ begin
     for i := FAttrColMaps.Count - 1 downto 0 do
       if pktFK in FAttrColMaps.Items[i].DBColMap.PKInfo then
         FAttrColMaps.Delete(i);
-  end ;
+  end;
 
 end;
 
 procedure TVisAutoCollectionRead.GetWhereAttrColMaps;
 var
-  i : integer ;
+  i : integer;
 begin
-  Assert( FVisitedClassType <> nil, 'FVisitedClassType = nil' ) ;
+  Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
 
   gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-    TtiClass( FClassDBCollection.PerObjAbsClass ), FWhereAttrColMaps ) ;
+    TtiClass(FClassDBCollection.PerObjAbsClass), FWhereAttrColMaps);
 
   // Remove any mappings that are not foreign key mappings
   for i := FWhereAttrColMaps.Count - 1 downto 0 do
-    if ( not ( pktFK in FWhereAttrColMaps.Items[i].DBColMap.PKInfo )) then
+    if (not (pktFK in FWhereAttrColMaps.Items[i].DBColMap.PKInfo)) then
       FWhereAttrColMaps.Delete(i);
 
-  AddToParams( FWhere, FWhereAttrColMaps, Visited ) ;
+  AddToParams(FWhere, FWhereAttrColMaps, Visited);
 
 end;
 
@@ -887,18 +886,18 @@ end;
 
 //procedure TVisAutoCollectionPKRead.Final;
 //begin
-//  Visited.ObjectState := posPK ;
+//  Visited.ObjectState := posPK;
 //end;
 
 procedure TVisAutoCollectionPKRead.GetAttrColMaps;
 var
-  i : integer ;
+  i : integer;
 begin
   inherited;
   // Remove any mappings that are not primary key, or primary key -readable
   for i := FAttrColMaps.Count - 1 downto 0 do
-    if ( not ( pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo )) and
-       ( not ( pktReadable in FAttrColMaps.Items[i].DBColMap.PKInfo )) then
+    if (not (pktDB in FAttrColMaps.Items[i].DBColMap.PKInfo)) and
+       (not (pktReadable in FAttrColMaps.Items[i].DBColMap.PKInfo)) then
       FAttrColMaps.Delete(i);
 end;
 
@@ -909,10 +908,10 @@ begin
   GetAttrColMaps;
 end;
 
-procedure TVisAutoAbs.Execute(const pData: TtiVisited);
+procedure TVisAutoAbs.Execute(const AData: TtiVisited);
 begin
-  inherited Execute( pData ) ;
-  FVisitedClassType := TtiClass(pData.ClassType);
+  inherited Execute(AData);
+  FVisitedClassType := TtiClass(AData.ClassType);
 end;
 
 //procedure TVisAutoCollectionRead.Final;
@@ -922,7 +921,7 @@ end;
 //       TtiClass(Visited.ClassType))) then
 //      Visited.ObjectState := posPK
 //    else
-//      Visited.ObjectState := posClean ;
+//      Visited.ObjectState := posClean;
 //end;
 
 procedure TVisAutoCollectionRead.SetContinueVisiting;
@@ -932,44 +931,48 @@ end;
 
 //function TVisAutoCollectionPKRead.GetObjectState: TPerObjectState;
 //begin
-//  result := posPK ;
+//  result := posPK;
 //end;
 
 procedure TVisAutoCollectionPKRead.SetContinueVisiting;
 begin
-  ContinueVisiting := false ;
+  ContinueVisiting := false;
 end;
 
 //function TVisAutoCollectionRead.GetObjectState: TPerObjectState;
 //begin
-//  result := posClean ;
+//  result := posClean;
 //end;
 
 constructor TVisAutoCollectionRead.Create;
 begin
   inherited;
-  FClassesWithParent := TList.Create ;
+  FClassesWithParent := TList.Create;
 end;
 
 destructor TVisAutoCollectionRead.Destroy;
 begin
-  FClassesWithParent.Free ;
+  FClassesWithParent.Free;
   inherited;
 end;
 
-function TVisAutoAbs.ParamsToString(const pParams: TtiQueryParams): string;
+function TVisAutoAbs.ParamsToString(const AParams: TtiQueryParams): string;
 var
-  i : integer ;
-  lName : string ;
-  lValue : string ;
+  i : integer;
+  lName : string;
+  lValue : string;
 begin
-  result := '' ;
-  for i := 0 to pParams.Count - 1 do
+  result := '';
+  for i := 0 to AParams.Count - 1 do
   begin
-    lName  := pParams.ParamName(i) ;
-    lValue := pParams.Items[i].GetValueAsString ;
-    result := result + lName + ' = ' + lValue + ', ' ;
-  end ;
+    lName := AParams.ParamName(i);
+    lValue := AParams.Items[i].GetValueAsString;
+    result := result + lName + ' = ' + lValue + ', ';
+  end;
 end;
 
 end.
+
+
+
+

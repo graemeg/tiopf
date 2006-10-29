@@ -9,45 +9,45 @@ uses
   ,tiOPFTestManager
   ,tiClassToDBMap_TST
   ,tiOID_tst
-  ;
+ ;
 
 type
 
-  TtiOPFTestSetupDataBDEParadox = class( TtiOPFTestSetupData )
+  TtiOPFTestSetupDataBDEParadox = class(TtiOPFTestSetupData)
   public
-    constructor Create ; override ;
-  end ;
-
-  TTestTIPersistenceLayersBDEParadox = class( TTestTIPersistenceLayers )
-  protected
-    procedure Setup; override;
+    constructor Create; override;
   end;
 
-  TTestTIDatabaseBDEParadox = class( TTestTIDatabase )
+  TTestTIPersistenceLayersBDEParadox = class(TTestTIPersistenceLayers)
   protected
-    procedure   Setup; override;
-  published
-    procedure DatabaseExists ; override ;
-    procedure CreateDatabase ; override ;
-    procedure Transaction_RollBack ; override ;
-  end ;
+    procedure SetUp; override;
+  end;
 
-  TTestTIQueryBDEParadox = class( TTestTIQuerySQL )
+  TTestTIDatabaseBDEParadox = class(TTestTIDatabase)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
+  published
+    procedure DatabaseExists; override;
+    procedure CreateDatabase; override;
+    procedure Transaction_RollBack; override;
+  end;
+
+  TTestTIQueryBDEParadox = class(TTestTIQuerySQL)
+  protected
+    procedure   SetUp; override;
   published
     // Testing of stream support under construction
-    // procedure ParamAsStream ; override ;
-  end ;
+    // procedure ParamAsStream; override;
+  end;
 
   TTestTIClassToDBMapOperationBDEParadox = class(TTestTIClassToDBMapOperation)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
   TTestTIOIDManagerBDEParadox = class(TTestTIOIDManager)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
 procedure RegisterTests;
@@ -65,7 +65,7 @@ uses
   ,tiLog
   , tiTestFramework;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistBDEParadox) then
   begin
@@ -75,7 +75,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIOIDManagerBDEParadox.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIClassToDBMapOperationBDEParadox.Suite);
   end;
-end ;
+end;
 
 { TtiOPFTestSetupDataBDEParadox }
 
@@ -92,23 +92,23 @@ begin
     {$ENDIF}
   {$ENDIF}
   FSelected:= FEnabled;
-  FPerLayerName := cTIPersistBDEParadox ;
-  FDBName   := ExpandFileName(ReadFromReg( cTIPersistBDEParadox, 'DBName', gTestDataRoot + 'Paradox' ));
-  FUserName := ReadFromReg( cTIPersistBDEParadox, 'UserName', 'null' ) ;
-  FPassword := ReadFromReg( cTIPersistBDEParadox, 'Password', 'null' ) ;
-  FCanCreateDatabase := true ;
-  ForceTestDataDirectory ;
+  FPerLayerName := cTIPersistBDEParadox;
+  FDBName  := ExpandFileName(ReadFromReg(cTIPersistBDEParadox, 'DBName', gTestDataRoot + 'Paradox'));
+  FUserName := ReadFromReg(cTIPersistBDEParadox, 'UserName', 'null');
+  FPassword := ReadFromReg(cTIPersistBDEParadox, 'Password', 'null');
+  FCanCreateDatabase := true;
+  ForceTestDataDirectory;
 end;
 
 procedure TTestTIDatabaseBDEParadox.CreateDatabase;
 var
-  lDir : string ;
+  lDir : string;
 begin
   lDir := tiGetTempFile('');
   try
   tiForceRemoveDir(lDir);
   Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  FDatabaseClass.CreateDatabase(lDir, 'null', 'null' );
+  FDatabaseClass.CreateDatabase(lDir, 'null', 'null');
   Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
   finally
     tiForceRemoveDir(lDir);
@@ -117,24 +117,24 @@ end;
 
 procedure TTestTIDatabaseBDEParadox.DatabaseExists;
 var
-  lDir : string ;
+  lDir : string;
 begin
   lDir := tiSwapExt(TempFileName, '');
   try
   tiForceRemoveDir(lDir);
   Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(lDir, 'null', 'null' ),
+  Check(not FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
         'FDatabaseClass.DatabaseExists()=true when it should =false');
   ForceDirectories(lDir);
   Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(lDir, 'null', 'null' ),
+  Check(FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
         'FDatabaseClass.DatabaseExists()=false when it should =true');
   finally
     tiForceRemoveDir(lDir);
   end;
 end;
 
-procedure TTestTIDatabaseBDEParadox.Setup;
+procedure TTestTIDatabaseBDEParadox.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
   inherited;
@@ -148,14 +148,14 @@ begin
   // Not may users of the BDEParadox layer these days so we won't spend the
   // time implementing a test.
   Check(True);
-  LogWarning( ClassName + '.RollBack not tested' ) ;
+  LogWarning(ClassName + '.RollBack not tested');
 end;
 
 { TtiOPFTestSetupDecoratorBDEParadox }
 
 { TTestTIPersistenceLayersBDEParadox }
 
-procedure TTestTIPersistenceLayersBDEParadox.Setup;
+procedure TTestTIPersistenceLayersBDEParadox.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
   inherited;
@@ -163,7 +163,7 @@ end;
 
 { TTestTIClassToDBMapOperationBDEParadox }
 
-procedure TTestTIClassToDBMapOperationBDEParadox.Setup;
+procedure TTestTIClassToDBMapOperationBDEParadox.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
   inherited;
@@ -171,7 +171,7 @@ end;
 
 { TTestTIOIDManagerBDEParadox }
 
-procedure TTestTIOIDManagerBDEParadox.Setup;
+procedure TTestTIOIDManagerBDEParadox.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
   inherited;
@@ -179,7 +179,7 @@ end;
 
 { TTestTIQueryBDEParadox }
 
-procedure TTestTIQueryBDEParadox.Setup;
+procedure TTestTIQueryBDEParadox.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
   inherited;

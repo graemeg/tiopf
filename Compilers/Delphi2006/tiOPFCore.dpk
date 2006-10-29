@@ -43,6 +43,7 @@ contains
   tiEncrypt in '..\..\Core\tiEncrypt.pas',
   tiExcept in '..\..\Core\tiExcept.pas',
   tiLog in '..\..\Core\tiLog.pas',
+  tiLogToFile in '..\..\Core\tiLogToFile.pas',
   tiObject in '..\..\Core\tiObject.pas',
   tiOID in '..\..\Core\tiOID.pas',
   tiOPFManager in '..\..\Core\tiOPFManager.pas',

@@ -34,7 +34,8 @@ requires
   vclactnband,
   vclx,
   vcljpg,
-  tiOPFCore;
+  tiOPFCore,
+  tiOPFOptions;
 
 contains
   tiDialogs in '..\..\GUI\tiDialogs.pas',
@@ -66,6 +67,7 @@ contains
   tiTreeView in '..\..\GUI\tiTreeView.pas',
   tiTreeViewChildForm in '..\..\GUI\tiTreeViewChildForm.pas',
   tiVTListView in '..\..\GUI\tiVTListView.pas',
-  tiVTTreeView in '..\..\GUI\tiVTTreeView.pas';
+  tiVTTreeView in '..\..\GUI\tiVTTreeView.pas',
+  tiGUIUtils in '..\..\GUI\tiGUIUtils.pas';
 
 end.

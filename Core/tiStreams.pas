@@ -7,7 +7,7 @@ uses
    tiBaseObject
   ,Classes
   ,Contnrs
-  ;
+ ;
 
 const
   cStreamStartSize = 2000000;
@@ -18,47 +18,47 @@ const
 
 type
 
-  TtiPreSizedStream = class( TtiBaseObject )
+  TtiPreSizedStream = class(TtiBaseObject)
   private
-    FStream : TMemoryStream ;
+    FStream : TMemoryStream;
     FInitialSize: Int64;
     FStreamSize : Int64;
-    FGrowBy     : Int64;
-    FDataSize   : Int64;
+    FGrowBy    : Int64;
+    FDataSize  : Int64;
   public
-    constructor Create(pInitialSize, pGrowBy : Int64);
+    constructor Create(AInitialSize, AGrowBy : Int64);
     destructor  Destroy; override;
     procedure   Clear;
-    procedure   Write(const pStr: string);
-    procedure   WriteLn(const pStr: string = '');
-    function    AsString: string ;
-    procedure   SaveToFile(const pFileName: string);
+    procedure   Write(const AStr: string);
+    procedure   WriteLn(const AStr: string = '');
+    function    AsString: string;
+    procedure   SaveToFile(const AFileName: string);
     property    Size: Int64 read FDataSize;
   end;
 
   {: Adds ReadLn to a TFileStream}
-  TtiFileStream = class( TFileStream )
+  TtiFileStream = class(TFileStream)
   private
     // ToDo: Using regular stream methods like Position will break
     //       this as the internal position counter, and buffer will
     //       not be updated.
     FLineDelim: string;
-    FPos : LongInt ;
-    FBufStr : string ;
-    FLineDelimLen : Byte ;
-    FEOF : boolean ;
-    procedure SetLineDelim(const Value: string);
+    FPos : LongInt;
+    FBufStr : string;
+    FLineDelimLen : Byte;
+    FEOF : boolean;
+    procedure SetLineDelim(const AValue: string);
     procedure AppendToBufStr;
   public
-    constructor Create(const pFileName: string; Mode: Word);
-    constructor CreateReadWrite( const pFileName : string ; pOverwrite : boolean = false ) ;
-    constructor CreateReadOnly(  const pFileName : string ) ;
-    property    LineDelim : string read FLineDelim write SetLineDelim ;
-    procedure   Write( const pString : string ) ; reintroduce ;
-    procedure   WriteLn( const pString : string = '' ) ;
-    function    ReadLn : string ;
-    function    EOF : boolean ;
-  end ;
+    constructor Create(const AFileName: string; Mode: Word);
+    constructor CreateReadWrite(const AFileName : string; pOverwrite : boolean = false);
+    constructor CreateReadOnly( const AFileName : string);
+    property    LineDelim : string read FLineDelim write SetLineDelim;
+    procedure   Write(const AString : string); reintroduce;
+    procedure   WriteLn(const AString : string = '');
+    function    ReadLn : string;
+    function    EOF : boolean;
+  end;
 
   {: Manage a stream in chunks, or blocks. Current interface supports access to the stream via the AsString property.
      This can be extended to support access via TStream if required. Stream is zero indexed, so a BlockIndex=0 is the
@@ -279,7 +279,7 @@ uses
   ,tiObject
   ,SysUtils
   ,Math
-  ;
+ ;
 
 const
   EQUAL_SIGN         = Byte ('=');
@@ -292,7 +292,7 @@ const
    The following numbers are, in addition, also divisible by 1024:
    $2400, $3000, $3C00, $4800, $5400, $6000, $6C00. }
 
- MIME_ENCODE_TABLE  : array[0..63] of Byte = (
+ MIME_ENCODE_TABLE : array[0..63] of Byte = (
   065, 066, 067, 068, 069, 070, 071, 072, // 00 - 07
   073, 074, 075, 076, 077, 078, 079, 080, // 08 - 15
   081, 082, 083, 084, 085, 086, 087, 088, // 16 - 23
@@ -302,7 +302,7 @@ const
   119, 120, 121, 122, 048, 049, 050, 051, // 48 - 55
   052, 053, 054, 055, 056, 057, 043, 047); // 56 - 63
 
- MIME_DECODE_TABLE  : array[Byte] of Cardinal = (
+ MIME_DECODE_TABLE : array[Byte] of Cardinal = (
   255, 255, 255, 255, 255, 255, 255, 255, //  00 -  07
   255, 255, 255, 255, 255, 255, 255, 255, //  08 -  15
   255, 255, 255, 255, 255, 255, 255, 255, //  16 -  23
@@ -400,9 +400,9 @@ end;
 
 procedure MimeEncodeStream (const InputStream: TStream; const OutputStream: TStream);
 var
- InputBuffer        : array[0..BUFFER_SIZE - 1] of Byte;
- OutputBuffer       : array[0.. ((BUFFER_SIZE + 2) div 3) * 4 - 1] of Byte;
- BytesRead          : Cardinal;
+ InputBuffer       : array[0..BUFFER_SIZE - 1] of Byte;
+ OutputBuffer      : array[0.. ((BUFFER_SIZE + 2) div 3) * 4 - 1] of Byte;
+ BytesRead         : Cardinal;
 begin
  BytesRead := InputStream.Read (InputBuffer, SizeOf (InputBuffer));
  while BytesRead = SizeOf (InputBuffer) do
@@ -421,9 +421,9 @@ end;
 procedure MimeDecodeStream (const InputStream: TStream; const OutputStream: TStream);
 var
   ByteBuffer, ByteBufferSpace: Cardinal;
-  InputBuffer        : array[0..BUFFER_SIZE - 1] of Byte;
-  OutputBuffer       : array[0.. (BUFFER_SIZE + 3) div 4 * 3 - 1] of Byte;
-  BytesRead          : Cardinal;
+  InputBuffer       : array[0..BUFFER_SIZE - 1] of Byte;
+  OutputBuffer      : array[0.. (BUFFER_SIZE + 3) div 4 * 3 - 1] of Byte;
+  BytesRead         : Cardinal;
 begin
   ByteBuffer := 0;
   ByteBufferSpace := 4;
@@ -448,16 +448,16 @@ end;
 
 procedure MimeEncode (const InputBuffer; const InputByteCount: Cardinal; out OutputBuffer);
 var
-  b, InMax3          : Cardinal;
-  InPtr, InLimitPtr  : ^Byte;
-  OutPtr             : PByte4;
+  b, InMax3         : Cardinal;
+  InPtr, InLimitPtr : ^Byte;
+  OutPtr            : PByte4;
 begin
   if InputByteCount <= 0 then
     Exit; //==>
   InPtr := @InputBuffer;
   InMax3 := InputByteCount div 3 * 3;
   OutPtr := @OutputBuffer;
-  Cardinal (InLimitPtr) := Cardinal (InPtr) + InMax3;
+  Cardinal (InLimitPtr):= Cardinal (InPtr) + InMax3;
   while InPtr <> InLimitPtr do
   begin
     b := InPtr^;
@@ -520,13 +520,13 @@ end;
 function MimeDecodePartial (const InputBuffer; const InputBytesCount: Cardinal; out OutputBuffer; var ByteBuffer: Cardinal; var ByteBufferSpace: Cardinal): Cardinal;
 var
  lByteBuffer, lByteBufferSpace, c: Cardinal;
- InPtr, InLimitPtr  : ^Byte;
- OutPtr             : PByte3;
+ InPtr, InLimitPtr : ^Byte;
+ OutPtr            : PByte3;
 begin
  if InputBytesCount > 0 then
   begin
    InPtr := @InputBuffer;
-   Cardinal (InLimitPtr) := Cardinal (InPtr) + InputBytesCount;
+   Cardinal (InLimitPtr):= Cardinal (InPtr) + InputBytesCount;
    OutPtr := @OutputBuffer;
    lByteBuffer := ByteBuffer;
    lByteBufferSpace := ByteBufferSpace;
@@ -560,7 +560,7 @@ end;
 
 function MimeDecodePartialEnd (out OutputBuffer; const ByteBuffer: Cardinal; const ByteBufferSpace: Cardinal): Cardinal;
 var
- lByteBuffer        : Cardinal;
+ lByteBuffer       : Cardinal;
 begin
  case ByteBufferSpace of
   1:
@@ -587,115 +587,115 @@ end;
 // * TtiFileStream
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiFileStream.Create(const pFileName: string; Mode: Word);
+constructor TtiFileStream.Create(const AFileName: string; Mode: Word);
 begin
-  inherited Create(pFileName, Mode);
-  FLineDelim := CrLf ;
-  FLineDelimLen := 2 ;
-  FPos := 0 ;
-  FBufStr := '' ;
-  FEOF := Size = 0 ;
+  inherited Create(AFileName, Mode);
+  FLineDelim := CrLf;
+  FLineDelimLen := 2;
+  FPos := 0;
+  FBufStr := '';
+  FEOF := Size = 0;
 end;
 
 function TtiFileStream.ReadLn: string;
 var
-  lPos : LongInt ;
+  lPos : LongInt;
 begin
-  lPos := Pos( LineDelim, FBufStr ) ;
-  if ( lPos = 0 ) and
-     ( FPos <> Size ) then
+  lPos := Pos(LineDelim, FBufStr);
+  if (lPos = 0) and
+     (FPos <> Size) then
   begin
-    AppendToBufStr ;
-    lPos    := Pos( LineDelim, FBufStr ) ;
-  end ;
+    AppendToBufStr;
+    lPos   := Pos(LineDelim, FBufStr);
+  end;
   if lPos > 0 then
   begin
-    result  := Copy( FBufStr, 1, lPos - 1 ) ;
-    FBufStr := Copy( FBufStr, lPos + FLineDelimLen, Length( FBufStr ) - lPos - FLineDelimLen + 1 ) ;
-    FEOF    := ( FBufStr = '' ) and ( FPos = Size )  ;
+    result := Copy(FBufStr, 1, lPos - 1);
+    FBufStr := Copy(FBufStr, lPos + FLineDelimLen, Length(FBufStr) - lPos - FLineDelimLen + 1);
+    FEOF   := (FBufStr = '') and (FPos = Size) ;
   end else
   begin
-    FEOF    := true ;
-    result  := FBufStr;
-    FBufStr := '' ;
+    FEOF   := true;
+    result := FBufStr;
+    FBufStr := '';
   end
-end ;
+end;
 
-procedure TtiFileStream.AppendToBufStr ;
+procedure TtiFileStream.AppendToBufStr;
 var
-  lBufLen : Word ;
-  ls : string ;
+  lBufLen : Word;
+  ls : string;
 const
-  cBufLen = 1024 ;
+  cBufLen = 1024;
 begin
   if FPos + cBufLen > Size then
     lBufLen := Size - FPos
   else
-    lBufLen := cBufLen ;
+    lBufLen := cBufLen;
   SetLength(ls,  lBufLen);
-  Read( ls[1], lBufLen ) ;
-  FBufStr := FBufStr + ls ;
-  Inc( FPos, lBufLen ) ;
+  Read(ls[1], lBufLen);
+  FBufStr := FBufStr + ls;
+  Inc(FPos, lBufLen);
 end;
 
-procedure TtiFileStream.Write(const pString: string);
+procedure TtiFileStream.Write(const AString: string);
 begin
-  tiAppendStringToStream( pString, Self ) ;
+  tiAppendStringToStream(AString, Self);
 end;
 
-procedure TtiFileStream.WriteLn(const pString: string = '' );
+procedure TtiFileStream.WriteLn(const AString: string = '');
 begin
-  Write( pString + FLineDelim ) ;
+  Write(AString + FLineDelim);
 end;
 
-procedure TtiFileStream.SetLineDelim(const Value: string);
+procedure TtiFileStream.SetLineDelim(const AValue: string);
 begin
-  FLineDelim := Value;
-  FLineDelimLen := Length( FLineDelim ) ;
+  FLineDelim := AValue;
+  FLineDelimLen := Length(FLineDelim);
 end;
 
 function TtiFileStream.EOF: boolean;
 begin
-  result := FEOF ;
+  result := FEOF;
 end;
 
-constructor TtiFileStream.CreateReadWrite(const pFileName: string; pOverwrite : boolean = false );
+constructor TtiFileStream.CreateReadWrite(const AFileName: string; pOverwrite : boolean = false);
 begin
-  if FileExists( pFileName ) and ( not pOverwrite ) then
-    Create( pFileName, fmOpenReadWrite or fmShareDenyWrite )
+  if FileExists(AFileName) and (not pOverwrite) then
+    Create(AFileName, fmOpenReadWrite or fmShareDenyWrite)
   else
-    Create( pFileName, fmCreate or fmShareDenyWrite )
+    Create(AFileName, fmCreate or fmShareDenyWrite)
 end;                        
 
-constructor TtiFileStream.CreateReadOnly(const pFileName: string);
+constructor TtiFileStream.CreateReadOnly(const AFileName: string);
 begin
-  Create( pFileName, fmOpenRead or fmShareDenyNone ) ;
+  Create(AFileName, fmOpenRead or fmShareDenyNone);
 end;
 
 function TtiPreSizedStream.AsString: string;
 begin
-  FStream.Position := 0 ;
+  FStream.Position := 0;
   SetLength(Result,  FDataSize);
-  FStream.Read( Result[1], FDataSize ) ;
+  FStream.Read(Result[1], FDataSize);
   FStream.Seek(0, soFromEnd);
 end;
 
 procedure TtiPreSizedStream.Clear;
 begin
   FStream.Clear;
-  FStreamSize := FInitialSize ;
-  FStream.Size := FStreamSize ;
-  FDataSize := 0 ;
+  FStreamSize := FInitialSize;
+  FStream.Size := FStreamSize;
+  FDataSize := 0;
 end;
 
-constructor TtiPreSizedStream.Create(pInitialSize, pGrowBy: Int64);
+constructor TtiPreSizedStream.Create(AInitialSize, AGrowBy: Int64);
 begin
   inherited Create;
   FStream := TMemoryStream.Create;
-  FInitialSize := pInitialSize;
-  FStreamSize := FInitialSize ;
-  FGrowBy := pGrowBy;
-  FStream.Size := FStreamSize ;
+  FInitialSize := AInitialSize;
+  FStreamSize := FInitialSize;
+  FGrowBy := AGrowBy;
+  FStream.Size := FStreamSize;
 end;
 
 destructor TtiPreSizedStream.Destroy;
@@ -704,34 +704,34 @@ begin
   inherited;
 end;
 
-procedure TtiPreSizedStream.SaveToFile(const pFileName: string);
+procedure TtiPreSizedStream.SaveToFile(const AFileName: string);
 begin
-  Assert( pFileName <> '', 'pFileName not assigned');
-  tiForceDirectories(pFileName);
-  FStream.Size := FDataSize ;
-  FStream.SaveToFile(pFileName);
+  Assert(AFileName <> '', 'AFileName not assigned');
+  tiForceDirectories(AFileName);
+  FStream.Size := FDataSize;
+  FStream.SaveToFile(AFileName);
   FStream.Seek(0, soFromEnd);
 end;
 
-procedure TtiPreSizedStream.Write(const pStr: string);
+procedure TtiPreSizedStream.Write(const AStr: string);
 var
-  lPC : PChar ;
-  lLen : Integer ;
+  lPC : PChar;
+  lLen : Integer;
 begin
-  lPC := PChar( pStr ) ;
-  lLen := length( pStr ) ;
+  lPC := PChar(AStr);
+  lLen := length(AStr);
   while FStreamSize < FDataSize + lLen do
   begin
-    Inc( FStreamSize, FGrowBy );
+    Inc(FStreamSize, FGrowBy);
     FStream.Size := FStreamSize;
-  end ;
-  FStream.WriteBuffer( lPC^, lLen ) ;
+  end;
+  FStream.WriteBuffer(lPC^, lLen);
   Inc(FDataSize, lLen);
 end;
 
-procedure TtiPreSizedStream.WriteLn(const pStr: string);
+procedure TtiPreSizedStream.WriteLn(const AStr: string);
 begin
-  Write(pStr + CrLf);
+  Write(AStr + CrLf);
 end;
 
 type
@@ -740,7 +740,7 @@ type
     FStream: TMemoryStream;
     FBlockIndex: Longword;
     function  GetAsString: string;
-    procedure SetAsString(const Value: string);
+    procedure SetAsString(const AValue: string);
     function  GetDataSize: Longword;
   public
     constructor Create(AData: string; ABlockIndex: Longword);
@@ -914,7 +914,7 @@ begin
     if (FList.Items[i] as TtiBlockStreamItem).BlockIndex = ABlockIndex then
     begin
       Result:= FList.Items[i] as TtiBlockStreamItem;
-      Exit ; //==>
+      Exit; //==>
     end;
   Result:= nil;
 end;
@@ -959,10 +959,13 @@ begin
 end;
 
 
-procedure TtiBlockStreamItem.SetAsString(const Value: string);
+procedure TtiBlockStreamItem.SetAsString(const AValue: string);
 begin
-  tiStringToStream(Value, FStream);
+  tiStringToStream(AValue, FStream);
 end;
 
 end.
+
+
+
 

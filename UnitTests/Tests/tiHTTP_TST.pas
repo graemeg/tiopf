@@ -11,7 +11,7 @@ uses
   ,IdCustomHTTPServer
   ,IdContext
   ,tiHTTP
- ;
+;
 
 type
 
@@ -57,7 +57,7 @@ type
     procedure tiHTTPGetBlockResponseTest(AClass: TtiHTTPClass);
     procedure tiHTTPPostBlockResponseInputTest(AClass: TtiHTTPClass);
 
-    function  MakeXMLResponse(const pDocName, pParams: string): string;
+    function  MakeXMLResponse(const pDocName, AParams: string): string;
     procedure CheckTIOPFBlockHeader(const ABlockHeader: string;
                                     const ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword);
     function  GetRandom: string;
@@ -122,11 +122,8 @@ uses
   ,tiHTTPIndy
   ,tiHTTPMSXML
   ,tiConstants
-
   ,tiLog
-  ,tiCom
-
- ;
+;
 
 const
   cTestDocName = 'testdoc';
@@ -162,9 +159,9 @@ begin
   FHTTPServer := TidHTTPServer.Create(nil);
   FHTTPServer.OnCommandGet := HTTPGet_Event;
   FHTTPServer.DefaultPort:= cHTTPPortToTestWith;
-  FRequest  := TMemoryStream.Create;
+  FRequest := TMemoryStream.Create;
   FResponse := TMemoryStream.Create;
-  FDocName  := cTestDocName;
+  FDocName := cTestDocName;
 end;
 
 destructor TTestTIHTTP.Destroy;
@@ -184,13 +181,13 @@ procedure TTestTIHTTP.HTTPGet_Event(AContext:TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
 begin
   FDocName := Copy(ARequestInfo.Document, 2, Length(ARequestInfo.Document) - 1);
-  FParams  := ARequestInfo.UnparsedParams;
+  FParams := ARequestInfo.UnparsedParams;
   AResponseInfo.ContentText := MakeXMLResponse(FDocName, FParams);
 end;
 
-function TTestTIHTTP.MakeXMLResponse(const pDocName, pParams: string) : string;
+function TTestTIHTTP.MakeXMLResponse(const pDocName, AParams: string): string;
 begin
-  Result := '<xml> docname="' + pDocName + '" params="' + pParams + '"</xml>';
+  Result := '<xml> docname="' + pDocName + '" params="' + AParams + '"</xml>';
 end;
 
 procedure TTestTIHTTP.SetUp;
@@ -223,9 +220,9 @@ procedure TTestTIHTTP.tiHTTPGetTest(AClass: TtiHTTPClass);
 var
   LHTTP : TtiHTTPAbs;
   lExpected : string;
-  lActual   : string;
+  lActual  : string;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   FHTTPServer.OnCommandGet:= HTTPGet_Event;
   FHTTPServer.Active:= True;
   try
@@ -257,9 +254,9 @@ procedure TTestTIHTTP.tiHTTPPostTest(AClass: TtiHTTPClass);
 var
   LHTTP : TtiHTTPAbs;
   lExpected : string;
-  lActual   : string;
+  lActual  : string;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   FHTTPServer.OnCommandGet:= HTTPGet_Event;
   FHTTPServer.Active:= True;
   try
@@ -312,7 +309,7 @@ procedure TTestTIHTTP.tiHTTPGetErrorTest(AClass: TtiHTTPClass);
 var
   LHTTP : TtiHTTPAbs;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   FHTTPServer.OnCommandGet := HTTPGet_ErrorEvent;
   FHTTPServer.Active:= True;
   try
@@ -342,9 +339,9 @@ procedure TTestTIHTTP.tiHTTPPostErrorTest(AClass: TtiHTTPClass);
 var
   LHTTP : TtiHTTPAbs;
   lExpected : string;
-  lActual   : string;
+  lActual  : string;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   FHTTPServer.OnCommandGet := HTTPGet_ErrorEvent;
   FHTTPServer.Active:= True;
   try
@@ -457,7 +454,7 @@ begin
       lStart := GetTickCount;
       for i := 1 to ACount do
         LHTTP.Post(MakeTestURL(cTestDocName));
-      lMSPer10Calls := (GetTickCount - lStart) / ACount ;
+      lMSPer10Calls := (GetTickCount - lStart) / ACount;
       Check(lMSPer10Calls < ATimePerCall, Format('Not fast enough %f ms per call. Should be %d ms per call.',
                                         [lMSPer10Calls, ATimePerCall]));
       CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, 0);
@@ -485,7 +482,7 @@ begin
       lStart := GetTickCount;
       for i := 1 to ACount do
         LHTTP.Post(MakeTestURL(cTestDocName));
-      lMSPer10Calls := (GetTickCount - lStart) / ACount ;
+      lMSPer10Calls := (GetTickCount - lStart) / ACount;
       if ATimePerCall <> 0 then
         Check(lMSPer10Calls < ATimePerCall, Format('Not fast enough %f ms per call. Should be %d ms per call.', [lMSPer10Calls, ATimePerCall]));
       CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 0, 1, ctiOPDHTTPNullBlockSize, 0);
@@ -534,7 +531,7 @@ var
   LHTTP : TtiHTTPAbs;
   LRandom: string;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   LRandom:= GetRandom;
   FHTTPServer.OnCommandGet := HTTPGet_CustomHeaderOutputEvent;
   FHTTPServer.Active:= True;
@@ -542,7 +539,7 @@ begin
     LHTTP := AClass.Create;
     try
       LHTTP.Get(MakeTestURL(cTestDocName+LRandom));
-      CheckEquals(ctiOPFBlockIDValue, LHTTP.ResponseHeaders.Values[ctiOPFHTTPBlockHeader]);
+      CheckEquals(' ' + ctiOPFBlockIDValue, LHTTP.ResponseHeaders.Values[ctiOPFHTTPBlockHeader]);
       CheckEquals(ctiOPFBlockIDValue, LHTTP.ResponseHeader[ctiOPFHTTPBlockHeader]);
       CheckEquals(LHTTP.ResponseHeader[ctiOPFHTTPBlockHeader], LHTTP.ResponseTIOPFBlockHeader);
       CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 2, 3, 4, 5);
@@ -558,14 +555,14 @@ procedure TTestTIHTTP.tiHTTPPostCustomHeaderOutputTest(AClass: TtiHTTPClass);
 var
   LHTTP : TtiHTTPAbs;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   FHTTPServer.OnCommandGet := HTTPGet_CustomHeaderOutputEvent;
   FHTTPServer.Active:= True;
   try
     LHTTP := AClass.Create;
     try
       LHTTP.Post(MakeTestURL(cTestDocName));
-      CheckEquals(ctiOPFBlockIDValue, LHTTP.ResponseHeaders.Values[ctiOPFHTTPBlockHeader]);
+      CheckEquals(' ' + ctiOPFBlockIDValue, LHTTP.ResponseHeaders.Values[ctiOPFHTTPBlockHeader]);
       CheckEquals(ctiOPFBlockIDValue, LHTTP.ResponseHeader[ctiOPFHTTPBlockHeader]);
       CheckEquals(LHTTP.ResponseHeader[ctiOPFHTTPBlockHeader], LHTTP.ResponseTIOPFBlockHeader);
       CheckTIOPFBlockHeader(LHTTP.ResponseTIOPFBlockHeader, 2, 3, 4, 5);
@@ -581,9 +578,9 @@ procedure TTestTIHTTP.HTTPGet_CustomHeaderOutputEvent(AContext: TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
 begin
   FDocName := Copy(ARequestInfo.Document, 2, Length(ARequestInfo.Document) - 1);
-  FParams  := ARequestInfo.UnparsedParams;
+  FParams := ARequestInfo.UnparsedParams;
   AResponseInfo.ContentText := MakeXMLResponse(FDocName, FParams);
-  AResponseInfo.CustomHeaders.Values[ctiOPFHTTPBlockHeader] := ctiOPFBlockIDValue;
+  AResponseInfo.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= ctiOPFBlockIDValue;
 end;
 
 procedure TTestTIHTTP.TIHTTPIndyGetCustomHeaderOutput;
@@ -709,7 +706,7 @@ var
   LHeader: string;
   LRandom: string;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   LRandom:= GetRandom;
   FHTTPServer.OnCommandGet := HTTPGet_CustomHeaderInputEvent;
   FHTTPServer.Active:= True;
@@ -749,7 +746,7 @@ var
   LHTTP : TtiHTTPAbs;
   LHeader: string;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   FHTTPServer.OnCommandGet := HTTPGet_CustomHeaderInputEvent;
   FHTTPServer.Active:= True;
   try
@@ -833,7 +830,7 @@ var
   LHTTP : TtiHTTPAbs;
   LRandom: string;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   LRandom:= GetRandom;
   FHTTPServer.OnCommandGet := HTTPGet_BlockResponseEvent;
   FHTTPServer.Active:= True;
@@ -855,7 +852,7 @@ var
   LHTTP : TtiHTTPAbs;
   LRandom: string;
 begin
-  Assert(AClass<>nil, 'pClass not assigned');
+  Assert(AClass<>nil, 'AClass not assigned');
   LRandom:= GetRandom;
   FHTTPServer.OnCommandGet := HTTPGet_BlockResponseEvent;
   FHTTPServer.Active:= True;
@@ -875,7 +872,7 @@ end;
 procedure TTestTIHTTP.tiHTTPMSXMLHTTPGetCacheFeature;
 var
   LHTTP : TtiHTTPMSXML;
-  LActual   : string;
+  LActual  : string;
   LRandom: string;
 begin
 

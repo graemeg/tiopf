@@ -17,7 +17,7 @@ uses
   ,tiThread
   ,SyncObjs   // This unit must always appear after the Windows unit!
   ,Contnrs
-  ;
+ ;
 
 const
   cErrorUnableToFindPerLayer = 'Unable to find persistence layer <%s>';
@@ -43,150 +43,150 @@ type
     {$IFNDEF OID_AS_INT64}
       FDefaultOIDClassName: string;
       FOIDFactory: TOIDFactory;
-      procedure SetDefaultOIDClassName(const Value: string);
+      procedure SetDefaultOIDClassName(const AValue: string);
     {$ENDIF}
 
     function  GetDefaultDBConnectionName: string;
-    procedure SetDefaultDBConnectionName(const Value: string);
+    procedure SetDefaultDBConnectionName(const AValue: string);
     function  GetDefaultDBConnectionPool: TDBConnectionPool;
     function  GetDefaultPerLayerName: string;
     function  GetClassDBMappingMgr: TtiClassDBMappingMgr;
     function  GetDefaultPerLayer: TtiPersistenceLayer;
-    procedure SetDefaultPerLayer(const Value: TtiPersistenceLayer);
-    procedure SetDefaultPerLayerName(const Value: string);
+    procedure SetDefaultPerLayer(const AValue: TtiPersistenceLayer);
+    procedure SetDefaultPerLayerName(const AValue: string);
     function  GetApplicationData: TList;
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
 
     {: Load a persistence layer }
-    procedure   LoadPersistenceLayer( Const pPackageID : string ) ;
+    procedure   LoadPersistenceLayer(Const APackageID : string);
     {: Unload a persistence layer and all its database connections.
        If no parameter is passed, the default persistence layer will be unloaded.}
-    procedure   UnLoadPersistenceLayer( const pPackageID : string = '' ) ;
+    procedure   UnLoadPersistenceLayer(const APackageID : string = '');
 
-    procedure   ConnectDatabase(           const ADatabaseName : string;
-                                           const AUserName     : string;
-                                           const APassword     : string;
-                                           const AParams       : string;
-                                           const APackageID    : string); overload ;
+    procedure   ConnectDatabase(          const ADatabaseName : string;
+                                           const AUserName    : string;
+                                           const APassword    : string;
+                                           const AParams      : string;
+                                           const APackageID   : string); overload;
 
-    procedure   ConnectDatabase(           const ADatabaseName : string;
-                                           const AUserName     : string;
-                                           const APassword     : string;
-                                           const AParams       : string); overload ;
+    procedure   ConnectDatabase(          const ADatabaseName : string;
+                                           const AUserName    : string;
+                                           const APassword    : string;
+                                           const AParams      : string); overload;
 
-    procedure   ConnectDatabase(           const ADatabaseName : string;
-                                           const AUserName     : string;
-                                           const APassword     : string); overload ;
+    procedure   ConnectDatabase(          const ADatabaseName : string;
+                                           const AUserName    : string;
+                                           const APassword    : string); overload;
 
-    function   TestThenConnectDatabase(    const ADatabaseName : string;
-                                           const AUserName     : string;
-                                           const APassword     : string;
-                                           const AParams       : string;
-                                           const APackageID    : string): boolean; overload ;
+    function   TestThenConnectDatabase(   const ADatabaseName : string;
+                                           const AUserName    : string;
+                                           const APassword    : string;
+                                           const AParams      : string;
+                                           const APackageID   : string): boolean; overload;
 
-    function   TestThenConnectDatabase(    const ADatabaseName : string;
-                                           const AUserName     : string;
-                                           const APassword     : string;
-                                           const AParams       : string): boolean; overload ;
+    function   TestThenConnectDatabase(   const ADatabaseName : string;
+                                           const AUserName    : string;
+                                           const APassword    : string;
+                                           const AParams      : string): boolean; overload;
 
-    function    TestThenConnectDatabase(   const ADatabaseName : string;
-                                           const AUserName     : string;
-                                           const APassword     : string): boolean; overload ;
+    function    TestThenConnectDatabase(  const ADatabaseName : string;
+                                           const AUserName    : string;
+                                           const APassword    : string): boolean; overload;
 
-    procedure   DisconnectDatabase(        const ADatabaseName : string;
-                                           const APackageID    : string); overload ;
-    procedure   DisconnectDatabase(        const ADatabaseName : string ); overload ;
-    procedure   DisconnectDatabase ; overload ;
+    procedure   DisconnectDatabase(       const ADatabaseName : string;
+                                           const APackageID   : string); overload;
+    procedure   DisconnectDatabase(       const ADatabaseName : string); overload;
+    procedure   DisconnectDatabase; overload;
 
     // These register visitors
-    procedure   RegisterVisitor( const psGroupName : string ; const pClassRef   : TVisClassRef ) ;
-    procedure   RegReadPKVisitor( const pClassRef : TVisClassRef ) ;
-    procedure   RegReadThisVisitor( const pClassRef : TVisClassRef ) ;
-    procedure   RegReadVisitor(   const pClassRef : TVisClassRef ) ;
-    procedure   RegSaveVisitor(   const pClassRef : TVisClassRef ) ;
+    procedure   RegisterVisitor(const AGroupName : string; const AClassRef  : TVisClassRef);
+    procedure   RegReadPKVisitor(const AClassRef : TVisClassRef);
+    procedure   RegReadThisVisitor(const AClassRef : TVisClassRef);
+    procedure   RegReadVisitor(  const AClassRef : TVisClassRef);
+    procedure   RegSaveVisitor(  const AClassRef : TVisClassRef);
 
     // These call visitors
-    function    ReadPK(   const pVisited          : TtiVisited ;
-                          const pDBConnectionName : string = '' ;
-                          const pPerLayerName     : string = '' ): string; reintroduce;
-    function    ReadThis( const pVisited : TtiVisited ;
-                          const pDBConnectionName : string = '' ;
-                          const pPerLayerName     : string = '' ): string; reintroduce;
-    function    Read(     const pVisited : TtiVisited ;
-                          const pDBConnectionName : string = '' ;
-                          const pPerLayerName     : string = '' ): string; reintroduce;
-    function    Save(     const pVisited : TtiVisited ;
-                          const pDBConnectionName : string = '' ;
-                          const pPerLayerName     : string = ''): string; reintroduce;
-    procedure   ExecSQL(  const pSQL : string ;
-                          const pDBConnectionName : string = '' ;
-                          const pPerLayerName     : string = '' );
+    function    ReadPK(  const AVisited         : TtiVisited;
+                          const ADBConnectionName : string = '';
+                          const APersistenceLayerName    : string = ''): string; reintroduce;
+    function    ReadThis(const AVisited : TtiVisited;
+                          const ADBConnectionName : string = '';
+                          const APersistenceLayerName    : string = ''): string; reintroduce;
+    function    Read(    const AVisited : TtiVisited;
+                          const ADBConnectionName : string = '';
+                          const APersistenceLayerName    : string = ''): string; reintroduce;
+    function    Save(    const AVisited : TtiVisited;
+                          const ADBConnectionName : string = '';
+                          const APersistenceLayerName    : string = ''): string; reintroduce;
+    procedure   ExecSQL( const pSQL : string;
+                          const ADBConnectionName : string = '';
+                          const APersistenceLayerName    : string = '');
 
     // These execute database independant commands
-    function    CreateDatabase( const pDatabaseName : string ;
-                                const pUserName     : string ;
-                                const pUserPassword : string ;
-                                const pPackageID    : string = '' ): string ;
-    procedure   DropTable(   const pTableName        : TTableName ;
-                             const pDBConnectionName : string = '' ;
-                             const pPerLayerName     : string = '' ) ; overload ;
-    procedure   DropTable(   const pTableMetaData : TtiDBMetaDataTable ;
-                             const pDBConnectionName : string = '' ;
-                             const pPerLayerName     : string = '' ) ; overload ;
-    procedure   CreateTable( const pTableMetaData    : TtiDBMetaDataTable ;
-                             const pDBConnectionName : string = '' ;
-                             const pPerLayerName     : string = '') ;
-    procedure   DeleteRow(   const pTableName        : string ;
-                             const pWhere            : TtiQueryParams ;
-                             const pDBConnectionName : string = '' ;
-                             const pPerLayerName     : string = '' ) ; virtual ;
-    procedure   InsertRow(   const pTableName        : string ;
-                             const pParams           : TtiQueryParams ;
-                             const pDBConnectionName : string = '' ;
-                             const pPerLayerName     : string = '' ) ; virtual ;
-    procedure   UpdateRow(   const pTableName        : string ;
-                             const pWhere            : TtiQueryParams ;
-                             const pParams           : TtiQueryParams ;
-                             const pDBConnectionName : string = '' ;
-                             const pPerLayerName     : string = '' ) ; virtual ;
-    function    TableExists( const pTableName        : string ;
-                             const pDBConnectionName : string = '' ;
-                             const pPerLayerName     : string = '' ) : boolean ; virtual ;
+    function    CreateDatabase(const ADatabaseName : string;
+                                const AUserName    : string;
+                                const pUserPassword : string;
+                                const APackageID   : string = ''): string;
+    procedure   DropTable(  const ATableName       : TTableName;
+                             const ADBConnectionName : string = '';
+                             const APersistenceLayerName    : string = ''); overload;
+    procedure   DropTable(  const ATableMetaData : TtiDBMetaDataTable;
+                             const ADBConnectionName : string = '';
+                             const APersistenceLayerName    : string = ''); overload;
+    procedure   CreateTable(const ATableMetaData   : TtiDBMetaDataTable;
+                             const ADBConnectionName : string = '';
+                             const APersistenceLayerName    : string = '');
+    procedure   DeleteRow(  const ATableName       : string;
+                             const AWhere           : TtiQueryParams;
+                             const ADBConnectionName : string = '';
+                             const APersistenceLayerName    : string = ''); virtual;
+    procedure   InsertRow(  const ATableName       : string;
+                             const AParams          : TtiQueryParams;
+                             const ADBConnectionName : string = '';
+                             const APersistenceLayerName    : string = ''); virtual;
+    procedure   UpdateRow(  const ATableName       : string;
+                             const AWhere           : TtiQueryParams;
+                             const AParams          : TtiQueryParams;
+                             const ADBConnectionName : string = '';
+                             const APersistenceLayerName    : string = ''); virtual;
+    function    TableExists(const ATableName       : string;
+                             const ADBConnectionName : string = '';
+                             const APersistenceLayerName    : string = ''): boolean; virtual;
 
-    procedure   ReadMetaDataTables( pDBMetaData : TtiDBMetaData ;
-                             const pDBConnectionName : string = '' ;
-                             const pPerLayerName     : string = '' ) ;
-    procedure   ReadMetaDataFields( pDBMetaDataTable : TtiDBMetaDataTable ;
-                             const pDBConnectionName : string = '' ;
-                             const pPerLayerName     : string = '' ) ;
-    procedure   Terminate ;
-    function    TerminateThreads(const Timeout : Integer=0) : Boolean;
-    property    Terminated : boolean read FTerminated write FTerminated ;
-    property    TerminateOnFailedDBConnection : boolean read FTerminateOnFailedDBConnection write FTerminateOnFailedDBConnection ;
-    property    ActiveThreadList : TtiActiveThreadList read FActiveThreadList ;
-    property    ApplicationData : TList read GetApplicationData ;
-    property    ApplicationStartTime : TDateTime read FApplicationStartTime ;
+    procedure   ReadMetaDataTables(pDBMetaData : TtiDBMetaData;
+                             const ADBConnectionName : string = '';
+                             const APersistenceLayerName    : string = '');
+    procedure   ReadMetaDataFields(pDBMetaDataTable : TtiDBMetaDataTable;
+                             const ADBConnectionName : string = '';
+                             const APersistenceLayerName    : string = '');
+    procedure   Terminate;
+    function    TerminateThreads(const Timeout : Integer=0): Boolean;
+    property    Terminated : boolean read FTerminated write FTerminated;
+    property    TerminateOnFailedDBConnection : boolean read FTerminateOnFailedDBConnection write FTerminateOnFailedDBConnection;
+    property    ActiveThreadList : TtiActiveThreadList read FActiveThreadList;
+    property    ApplicationData : TList read GetApplicationData;
+    property    ApplicationStartTime : TDateTime read FApplicationStartTime;
 
   published
-    property    DefaultPerLayer         : TtiPersistenceLayer    read GetDefaultPerLayer write SetDefaultPerLayer ;
-    property    DefaultPerLayerName     : string            read GetDefaultPerLayerName write SetDefaultPerLayerName ;
-    property    DefaultDBConnectionPool : TDBConnectionPool read GetDefaultDBConnectionPool ;
-    property    DefaultDBConnectionName : string            read GetDefaultDBConnectionName write SetDefaultDBConnectionName ;
+    property    DefaultPerLayer        : TtiPersistenceLayer    read GetDefaultPerLayer write SetDefaultPerLayer;
+    property    DefaultPerLayerName    : string            read GetDefaultPerLayerName write SetDefaultPerLayerName;
+    property    DefaultDBConnectionPool : TDBConnectionPool read GetDefaultDBConnectionPool;
+    property    DefaultDBConnectionName : string            read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
 
-    property    PersistenceLayers       : TtiPersistenceLayers read FPersistenceLayers ;
-    property    VisMgr                  : TtiVisitorManager read FVisitorManager ; // Don't use VisMgr. It will be removed
-    property    VisitorManager          : TtiVisitorManager read FVisitorManager ;
+    property    PersistenceLayers      : TtiPersistenceLayers read FPersistenceLayers;
+    property    VisMgr                 : TtiVisitorManager read FVisitorManager; // Don't use VisMgr. It will be removed
+    property    VisitorManager         : TtiVisitorManager read FVisitorManager;
 
     // ToDo: How to relate the ClassDBMappingMgr to a persistence layer -
     //       The code exists inside the ClassDBMappingMgr but is is stubbed out as it
     //       loads before a persistence layer is available hence is not working.
-    property    ClassDBMappingMgr      : TtiClassDBMappingMgr read GetClassDBMappingMgr ;
+    property    ClassDBMappingMgr     : TtiClassDBMappingMgr read GetClassDBMappingMgr;
 
     {$IFNDEF OID_AS_INT64}
-    property    DefaultOIDClassName     : string read FDefaultOIDClassName write SetDefaultOIDClassName ;
-    property    OIDFactory             : TOIDFactory read FOIDFactory ;
+    property    DefaultOIDClassName    : string read FDefaultOIDClassName write SetDefaultOIDClassName;
+    property    OIDFactory            : TOIDFactory read FOIDFactory;
     {$ENDIF}
   end;
 
@@ -197,10 +197,10 @@ procedure FreeAndNilTIPerMgr;
 
 
 const
-  cuStandardTask_ReadPK   = 'StandardTask_ReadPK'   ;
-  cuStandardTask_ReadThis = 'StandardTask_ReadThis' ;
-  cuStandardTask_Read     = 'StandardTask_Read'     ;
-  cuStandardTask_Save     = 'StandardTask_Save'     ;
+  cuStandardTask_ReadPK   = 'StandardTask_ReadPK'  ;
+  cuStandardTask_ReadThis = 'StandardTask_ReadThis';
+  cuStandardTask_Read     = 'StandardTask_Read'    ;
+  cuStandardTask_Save     = 'StandardTask_Save'    ;
 
 
 implementation
@@ -227,33 +227,33 @@ uses
   {$IFDEF LINK_FBL}          ,tiQueryFBL          {$ENDIF}
 
   ,Forms
-  ;
+ ;
 
 
 var
-  uTIOPFManager : TtiOPFManager ;
+  uTIOPFManager : TtiOPFManager;
   uShuttingDown: Boolean;
 
 
-function gTIOPFManager : TtiOPFManager ;
+function gTIOPFManager : TtiOPFManager;
 begin
   if uTIOPFManager = nil then
   begin
     if ShuttingDown then
       raise Exception.Create(cErrorCallToTIPerMgrWhileShuttingDown);
-    uTIOPFManager := TtiOPFManager.Create ;
+    uTIOPFManager := TtiOPFManager.Create;
   end;
-  result := uTIOPFManager ;
-end ;
+  result := uTIOPFManager;
+end;
 
 
-procedure FreeAndNilTIPerMgr ;
+procedure FreeAndNilTIPerMgr;
 begin
   FreeAndNil(uTIOPFManager);
 end;
 
 
-function ShuttingDown: Boolean ;
+function ShuttingDown: Boolean;
 begin
   Result := uShuttingDown;
 end;
@@ -263,54 +263,54 @@ function TtiOPFManager.GetDefaultDBConnectionName: string;
 var
   lRegPerLayer : TtiPersistenceLayer;
 begin
-  lRegPerLayer := DefaultPerLayer ;
+  lRegPerLayer := DefaultPerLayer;
   if lRegPerLayer <> nil then
     result := lRegPerLayer.DefaultDBConnectionName
   else
-    result := '' ;
+    result := '';
 end;
 
 
-procedure TtiOPFManager.SetDefaultDBConnectionName( const Value: string);
+procedure TtiOPFManager.SetDefaultDBConnectionName(const AValue: string);
 var
   lRegPerLayer : TtiPersistenceLayer;
 begin
-  lRegPerLayer := DefaultPerLayer ;
+  lRegPerLayer := DefaultPerLayer;
   if lRegPerLayer <> nil then
-    lRegPerLayer.DefaultDBConnectionName := Value ;
+    lRegPerLayer.DefaultDBConnectionName := AValue;
 end;
 
 
 constructor TtiOPFManager.Create;
 begin
-  inherited ;
-  FCriticalSection := TCriticalSection.Create ;
-  FPersistenceLayers := TtiPersistenceLayers.Create ;
-  FVisitorManager := TtiVisitorManager.Create ;
+  inherited;
+  FCriticalSection := TCriticalSection.Create;
+  FPersistenceLayers := TtiPersistenceLayers.Create;
+  FVisitorManager := TtiVisitorManager.Create;
 
-  FDefaultPackageName := '' ;
-  FTerminated := false ;
+  FDefaultPackageName := '';
+  FTerminated := false;
 
   {$IFNDEF OID_AS_INT64}
-  FOIDFactory := TOIDFactory.Create ;
+  FOIDFactory := TOIDFactory.Create;
   {$ENDIF}
 
-  FTerminateOnFailedDBConnection := true ;
-  FActiveThreadList := TtiActiveThreadList.Create ;
-  FApplicationData  := TObjectList.Create(true) ;
-  FApplicationStartTime := Now ;
+  FTerminateOnFailedDBConnection := true;
+  FActiveThreadList := TtiActiveThreadList.Create;
+  FApplicationData := TObjectList.Create(true);
+  FApplicationStartTime := Now;
 end;
 
 
 destructor TtiOPFManager.Destroy;
 begin
   Terminate;
-  FVisitorManager.Free ;
+  FVisitorManager.Free;
   {$IFNDEF OID_AS_INT64}
-    FOIDFactory.Free ;
+    FOIDFactory.Free;
   {$ENDIF}
   FClassDBMappingMgr.Free;
-  FPersistenceLayers.Free ;
+  FPersistenceLayers.Free;
   FActiveThreadList.Free;
   FApplicationData.Free;
   FCriticalSection.Free;
@@ -318,12 +318,12 @@ begin
 end;
 
 
-procedure TtiOPFManager.LoadPersistenceLayer(const pPackageID : string );
+procedure TtiOPFManager.LoadPersistenceLayer(const APackageID : string);
 begin
   // ToDo: Terminated must be related to each loaded persistence layer. This
   //       would make it possible to terminate a single layer at the time.
-  FTerminated := false ;
-  PersistenceLayers.LoadPersistenceLayer(pPackageID);
+  FTerminated := false;
+  PersistenceLayers.LoadPersistenceLayer(APackageID);
 end;
 
 
@@ -331,7 +331,7 @@ function TtiOPFManager.GetDefaultDBConnectionPool: TDBConnectionPool;
 var
   lRegPerLayer : TtiPersistenceLayer;
 begin
-  lRegPerLayer := DefaultPerLayer ;
+  lRegPerLayer := DefaultPerLayer;
   if lRegPerLayer <> nil then
     result := lRegPerLayer.DefaultDBConnectionPool
   else
@@ -343,7 +343,7 @@ function TtiOPFManager.GetDefaultPerLayerName: string;
 var
   lRegPerLayer : TtiPersistenceLayer;
 begin
-  lRegPerLayer := DefaultPerLayer ;
+  lRegPerLayer := DefaultPerLayer;
   if lRegPerLayer <> nil then
     result := lRegPerLayer.PerLayerName
   else
@@ -351,88 +351,88 @@ begin
 end;
 
 
-procedure TtiOPFManager.RegReadPKVisitor(const pClassRef: TVisClassRef);
+procedure TtiOPFManager.RegReadPKVisitor(const AClassRef: TVisClassRef);
 begin
-  Assert( FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid );
-  FVisitorManager.RegisterVisitor( cuStandardTask_ReadPK, pClassRef ) ;
+  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  FVisitorManager.RegisterVisitor(cuStandardTask_ReadPK, AClassRef);
 end;
 
 
-procedure TtiOPFManager.RegReadVisitor(const pClassRef: TVisClassRef);
+procedure TtiOPFManager.RegReadVisitor(const AClassRef: TVisClassRef);
 begin
-  Assert( FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid );
-  FVisitorManager.RegisterVisitor( cuStandardTask_Read, pClassRef ) ;
+  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  FVisitorManager.RegisterVisitor(cuStandardTask_Read, AClassRef);
 end;
 
 
-procedure TtiOPFManager.RegSaveVisitor(const pClassRef: TVisClassRef);
+procedure TtiOPFManager.RegSaveVisitor(const AClassRef: TVisClassRef);
 begin
-  Assert( FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid );
-  FVisitorManager.RegisterVisitor( cuStandardTask_Save, pClassRef ) ;
+  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  FVisitorManager.RegisterVisitor(cuStandardTask_Save, AClassRef);
 end;
 
 
-function TtiOPFManager.Read(const pVisited          : TtiVisited;
-                        const pDBConnectionName : string = '';
-                        const pPerLayerName     : string = ''): string;
+function TtiOPFManager.Read(const AVisited         : TtiVisited;
+                        const ADBConnectionName : string = '';
+                        const APersistenceLayerName    : string = ''): string;
 begin
-  Assert( FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid );
+  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
   result :=
-      FVisitorManager.Execute( cuStandardTask_Read,
-                       pVisited,
-                       pDBConnectionName,
-                       pPerLayerName ) ;
+      FVisitorManager.Execute(cuStandardTask_Read,
+                       AVisited,
+                       ADBConnectionName,
+                       APersistenceLayerName);
 end;
 
 
-function TtiOPFManager.ReadPK(const pVisited          : TtiVisited;
-                          const pDBConnectionName : string = '' ;
-                          const pPerLayerName     : string = '' ): string;
+function TtiOPFManager.ReadPK(const AVisited         : TtiVisited;
+                          const ADBConnectionName : string = '';
+                          const APersistenceLayerName    : string = ''): string;
 begin
-  Assert( FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid );
+  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
   result :=
-      FVisitorManager.Execute( cuStandardTask_ReadPK,
-                       pVisited,
-                       pDBConnectionName,
-                       pPerLayerName ) ;
+      FVisitorManager.Execute(cuStandardTask_ReadPK,
+                       AVisited,
+                       ADBConnectionName,
+                       APersistenceLayerName);
 end;
 
 
-function TtiOPFManager.Save(const pVisited          : TtiVisited;
-                        const pDBConnectionName : string = '' ;
-                        const pPerLayerName     : string = '' ): string;
+function TtiOPFManager.Save(const AVisited         : TtiVisited;
+                        const ADBConnectionName : string = '';
+                        const APersistenceLayerName    : string = ''): string;
 begin
-  Assert( FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid );
+  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
   result :=
-      FVisitorManager.Execute( cuStandardTask_Save,
-                       pVisited,
-                       pDBConnectionName,
-                       pPerLayerName ) ;
+      FVisitorManager.Execute(cuStandardTask_Save,
+                       AVisited,
+                       ADBConnectionName,
+                       APersistenceLayerName);
 end;
 
 
 procedure TtiOPFManager.ConnectDatabase(
   const ADatabaseName : string;
-  const AUserName     : string;
+  const AUserName    : string;
   const APassword : string;
-  const AParams       : string;
-  const APackageID    : string);
+  const AParams      : string;
+  const APackageID   : string);
 var
-  lRegPerLayer   : TtiPersistenceLayer ;
+  lRegPerLayer  : TtiPersistenceLayer;
 begin
-  Assert(APackageID <> '', 'pPackageID not assigned');
-  Assert(ADatabaseName <> '', 'pDatabaseName not assigned');
+  Assert(APackageID <> '', 'APackageID not assigned');
+  Assert(ADatabaseName <> '', 'ADatabaseName not assigned');
 
-  lRegPerLayer := FPersistenceLayers.FindByPerLayerName( APackageID ) ;
+  lRegPerLayer := FPersistenceLayers.FindByPerLayerName(APackageID);
 
   if lRegPerLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
 
-  lRegPerLayer.DBConnectionPools.Connect( ADatabaseName, AUserName,
-                                          APassword, AParams );
+  lRegPerLayer.DBConnectionPools.Connect(ADatabaseName, AUserName,
+                                          APassword, AParams);
 
   if lRegPerLayer.DefaultDBConnectionName = '' then
-     lRegPerLayer.DefaultDBConnectionName := ADatabaseName ;
+     lRegPerLayer.DefaultDBConnectionName := ADatabaseName;
 
 end;
 
@@ -441,22 +441,22 @@ function TtiOPFManager.GetClassDBMappingMgr: TtiClassDBMappingMgr;
 begin
   if FClassDBMappingMgr = nil then
   begin
-    FClassDBMappingMgr := TtiClassDBMappingMgr.Create ;
-    FClassDBMappingMgr.Owner := self ;
+    FClassDBMappingMgr := TtiClassDBMappingMgr.Create;
+    FClassDBMappingMgr.Owner := self;
     // Register the visitors that work with the persistence mapping classes
-    VisitorManager.RegisterVisitor( cuStandardTask_ReadPK,   TVisAutoCollectionPKRead ) ;
-    VisitorManager.RegisterVisitor( cuStandardTask_ReadThis, TVisAutoReadThis ) ;
-//    VisMgr.RegisterVisitor( cuStandardTask_ReadThis, TVisAutoCollectionRead ) ;
-    VisitorManager.RegisterVisitor( cuStandardTask_Read,     TVisAutoReadThis ) ;
-    VisitorManager.RegisterVisitor( cuStandardTask_Read,     TVisAutoCollectionRead ) ;
-    VisitorManager.RegisterVisitor( cuStandardTask_Save,     TVisAutoDelete ) ;
-    VisitorManager.RegisterVisitor( cuStandardTask_Save,     TVisAutoUpdate ) ;
-    VisitorManager.RegisterVisitor( cuStandardTask_Save,     TVisAutoCreate ) ;
-  end ;
-  result := FClassDBMappingMgr ;
+    VisitorManager.RegisterVisitor(cuStandardTask_ReadPK,   TVisAutoCollectionPKRead);
+    VisitorManager.RegisterVisitor(cuStandardTask_ReadThis, TVisAutoReadThis);
+//    VisMgr.RegisterVisitor(cuStandardTask_ReadThis, TVisAutoCollectionRead);
+    VisitorManager.RegisterVisitor(cuStandardTask_Read,     TVisAutoReadThis);
+    VisitorManager.RegisterVisitor(cuStandardTask_Read,     TVisAutoCollectionRead);
+    VisitorManager.RegisterVisitor(cuStandardTask_Save,     TVisAutoDelete);
+    VisitorManager.RegisterVisitor(cuStandardTask_Save,     TVisAutoUpdate);
+    VisitorManager.RegisterVisitor(cuStandardTask_Save,     TVisAutoCreate);
+  end;
+  result := FClassDBMappingMgr;
 end;
 
-function TtiOPFManager.TerminateThreads(const Timeout : Integer=0) : Boolean;
+function TtiOPFManager.TerminateThreads(const Timeout : Integer=0): Boolean;
 var
   LStart: Cardinal;
   ACheckFor : Cardinal;
@@ -465,23 +465,23 @@ begin
   ACheckFor := Timeout*1000;
   LStart := tiGetTickCount;
   ActiveThreadList.Terminate;
-  while ActiveThreadList.RunningThreadCount >0 do
+  while ActiveThreadList.Count >0 do
   begin
     Sleep(10);
     Application.ProcessMessages;
     if (ACheckFor>0) and ((tiGetTickCount - LStart) > ACheckFor) then Exit;
   end;
-  Result := (ActiveThreadList.RunningThreadCount =0);
+  Result := (ActiveThreadList.Count =0);
 end;
 
 procedure TtiOPFManager.Terminate;
 begin
-  FCriticalSection.Enter ;
+  FCriticalSection.Enter;
   try
-    FTerminated := true ;
+    FTerminated := true;
   finally
-    FCriticalSection.Leave ;
-  end ;
+    FCriticalSection.Leave;
+  end;
   FActiveThreadList.Terminate;
 {
   // This little gem is here to force the application to wait until all threads
@@ -499,252 +499,252 @@ begin
   // thread is not of this type.
   while FVisMgr.ThreadCount > 0 do
   begin
-    Sleep( 100 ) ;
-    Application.ProcessMessages ;
-  end ;
+    Sleep(100);
+    Application.ProcessMessages;
+  end;
 }
 end;
 
 
-procedure TtiOPFManager.ExecSQL(const pSQL              : string;
-                            const pDBConnectionName : string = '' ;
-                            const pPerLayerName     : string = '' );
+procedure TtiOPFManager.ExecSQL(const pSQL             : string;
+                            const ADBConnectionName : string = '';
+                            const APersistenceLayerName    : string = '');
 var
-  lDBConnectionName : string ;
-  lPooledDB : TPooledDB ;
+  lDBConnectionName : string;
+  lPooledDB : TPooledDB;
 begin
-Assert( pPerLayerName = '', 'Not implemented whe pPreLayerName <> ''' ) ;
-  Assert( DefaultPerLayer <> nil, 'DefaultPerLayer not assigned' ) ;
-  if pDBConnectionName = '' then
+Assert(APersistenceLayerName = '', 'Not implemented whe pPreLayerName <> ''');
+  Assert(DefaultPerLayer <> nil, 'DefaultPerLayer not assigned');
+  if ADBConnectionName = '' then
     lDBConnectionName := DefaultDBConnectionName
   else
-    lDBConnectionName := pDBConnectionName ;
-  lPooledDB := DefaultPerLayer.DBConnectionPools.Lock( lDBConnectionName ) ;
+    lDBConnectionName := ADBConnectionName;
+  lPooledDB := DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
   try
-    lPooledDB.Database.ExecSQL( pSQL ) ;
+    lPooledDB.Database.ExecSQL(pSQL);
   finally
-    DefaultPerLayer.DBConnectionPools.UnLock( lDBConnectionName, lPooledDB ) ;
-  end ;
+    DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, lPooledDB);
+  end;
 end;
 
 
 procedure TtiOPFManager.DisconnectDatabase(
   const ADatabaseName : string;
-  const APackageID    : string);
+  const APackageID   : string);
 var
-  lRegPerLayer   : TtiPersistenceLayer ;
+  lRegPerLayer  : TtiPersistenceLayer;
 begin
   Assert(ADatabaseName <> '', 'ADatabaseName not assigned');
   Assert(APackageID <> '', 'APackageID not assigned');
 
-  lRegPerLayer := FPersistenceLayers.FindByPerLayerName( APackageID ) ;
+  lRegPerLayer := FPersistenceLayers.FindByPerLayerName(APackageID);
   if lRegPerLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
 
   if lRegPerLayer.NextOIDMgr.FindByDatabaseName(ADatabaseName) <> nil then
-    lRegPerLayer.NextOIDMgr.UnloadNextOIDGenerator( ADatabaseName ) ;
+    lRegPerLayer.NextOIDMgr.UnloadNextOIDGenerator(ADatabaseName);
 
-  if ( SameText( lRegPerLayer.DefaultDBConnectionName, ADatabaseName )) then
-    lRegPerLayer.DefaultDBConnectionName := '' ;
-  lRegPerLayer.DBConnectionPools.DisConnect( ADatabaseName ) ;
+  if (SameText(lRegPerLayer.DefaultDBConnectionName, ADatabaseName)) then
+    lRegPerLayer.DefaultDBConnectionName := '';
+  lRegPerLayer.DBConnectionPools.DisConnect(ADatabaseName);
 
 end;
 
 
-procedure TtiOPFManager.CreateTable(const pTableMetaData: TtiDBMetaDataTable;
-                                const pDBConnectionName : string = '';
-                                const pPerLayerName     : string = '');
+procedure TtiOPFManager.CreateTable(const ATableMetaData: TtiDBMetaDataTable;
+                                const ADBConnectionName : string = '';
+                                const APersistenceLayerName    : string = '');
 var
-  lDB : TtiDatabase ;
+  lDB : TtiDatabase;
 begin
-  lDB := PersistenceLayers.LockDatabase( pDBConnectionName, pPerLayerName ) ;
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-    lDB.CreateTable(pTableMetaData) ;
+    lDB.CreateTable(ATableMetaData);
   finally
-    PersistenceLayers.UnLockDatabase( lDB, pDBConnectionName, pPerLayerName ) ;
-  end ;
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+  end;
 end;
 
 
-procedure TtiOPFManager.DropTable(const pTableName: TTableName;
-                              const pDBConnectionName: string = '';
-                              const pPerLayerName : string = '');
+procedure TtiOPFManager.DropTable(const ATableName: TTableName;
+                              const ADBConnectionName: string = '';
+                              const APersistenceLayerName : string = '');
 var
-  lDB : TtiDatabase ;
+  lDB : TtiDatabase;
 begin
-  lDB := PersistenceLayers.LockDatabase( pDBConnectionName, pPerLayerName ) ;
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-    lDB.DropTable(pTableName);
+    lDB.DropTable(ATableName);
   finally
-    PersistenceLayers.UnLockDatabase( lDB, pDBConnectionName, pPerLayerName ) ;
-  end ;
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+  end;
 end;
 
 
-procedure TtiOPFManager.DropTable(const pTableMetaData    : TtiDBMetaDataTable;
-                              const pDBConnectionName : string = '' ;
-                              const pPerLayerName     : string = '');
+procedure TtiOPFManager.DropTable(const ATableMetaData   : TtiDBMetaDataTable;
+                              const ADBConnectionName : string = '';
+                              const APersistenceLayerName    : string = '');
 var
-  lDB : TtiDatabase ;
+  lDB : TtiDatabase;
 begin
-  lDB := PersistenceLayers.LockDatabase( pDBConnectionName, pPerLayerName ) ;
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-    lDB.DropTable(pTableMetaData);
+    lDB.DropTable(ATableMetaData);
   finally
-    PersistenceLayers.UnLockDatabase( lDB, pDBConnectionName, pPerLayerName ) ;
-  end ;
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+  end;
 end;
 
 
-procedure TtiOPFManager.DeleteRow(const pTableName        : string;
-                              const pWhere            : TtiQueryParams ;
-                              const pDBConnectionName : string = '';
-                              const pPerLayerName     : string = '');
+procedure TtiOPFManager.DeleteRow(const ATableName       : string;
+                              const AWhere           : TtiQueryParams;
+                              const ADBConnectionName : string = '';
+                              const APersistenceLayerName    : string = '');
 var
-  lDB : TtiDatabase ;
+  lDB : TtiDatabase;
 begin
-  lDB := PersistenceLayers.LockDatabase( pDBConnectionName, pPerLayerName ) ;
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-    lDB.DeleteRow( pTableName, pWhere ) ;
+    lDB.DeleteRow(ATableName, AWhere);
   finally
-    PersistenceLayers.UnLockDatabase( lDB, pDBConnectionName, pPerLayerName ) ;
-  end ;
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+  end;
 end;
 
 
-procedure TtiOPFManager.InsertRow(const pTableName        : string ;
-                              const pParams           : TtiQueryParams ;
-                              const pDBConnectionName : string = '' ;
-                              const pPerLayerName     : string = '' );
+procedure TtiOPFManager.InsertRow(const ATableName       : string;
+                              const AParams          : TtiQueryParams;
+                              const ADBConnectionName : string = '';
+                              const APersistenceLayerName    : string = '');
 var
-  lDB : TtiDatabase ;
+  lDB : TtiDatabase;
 begin
-  lDB := PersistenceLayers.LockDatabase( pDBConnectionName, pPerLayerName ) ;
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-    lDB.InsertRow( pTableName, pParams ) ;
+    lDB.InsertRow(ATableName, AParams);
   finally
-    PersistenceLayers.UnLockDatabase( lDB, pDBConnectionName, pPerLayerName ) ;
-  end ;
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+  end;
 end;
 
 
-procedure TtiOPFManager.UpdateRow(const pTableName : string;
-                              const pWhere     : TtiQueryParams ;
-                              const pParams    : TtiQueryParams ;
-                              const pDBConnectionName : string = '' ;
-                              const pPerLayerName     : string = '' );
+procedure TtiOPFManager.UpdateRow(const ATableName : string;
+                              const AWhere    : TtiQueryParams;
+                              const AParams   : TtiQueryParams;
+                              const ADBConnectionName : string = '';
+                              const APersistenceLayerName    : string = '');
 var
-  lDB : TtiDatabase ;
+  lDB : TtiDatabase;
 begin
-  lDB := PersistenceLayers.LockDatabase( pDBConnectionName, pPerLayerName ) ;
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-   lDB.UpdateRow( pTableName, pWhere, pParams ) ;
+   lDB.UpdateRow(ATableName, AWhere, AParams);
   finally
-    PersistenceLayers.UnLockDatabase( lDB, pDBConnectionName, pPerLayerName ) ;
-  end ;
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+  end;
 end;
 
 
-procedure TtiOPFManager.RegReadThisVisitor(const pClassRef: TVisClassRef);
+procedure TtiOPFManager.RegReadThisVisitor(const AClassRef: TVisClassRef);
 begin
-  Assert( FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid );
-  FVisitorManager.RegisterVisitor( cuStandardTask_ReadThis, pClassRef ) ;
+  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  FVisitorManager.RegisterVisitor(cuStandardTask_ReadThis, AClassRef);
 end;
 
 
-function TtiOPFManager.ReadThis(const pVisited          : TtiVisited;
-                            const pDBConnectionName : string = '' ;
-                            const pPerLayerName     : string = '' ): string;
+function TtiOPFManager.ReadThis(const AVisited         : TtiVisited;
+                            const ADBConnectionName : string = '';
+                            const APersistenceLayerName    : string = ''): string;
 begin
-  Assert( FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid );
+  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
   result :=
-      FVisitorManager.Execute( cuStandardTask_ReadThis,
-                       pVisited,
-                       pDBConnectionName,
-                       pPerLayerName ) ;
+      FVisitorManager.Execute(cuStandardTask_ReadThis,
+                       AVisited,
+                       ADBConnectionName,
+                       APersistenceLayerName);
 end;
 
 
 function TtiOPFManager.GetDefaultPerLayer: TtiPersistenceLayer;
 begin
-  result := FPersistenceLayers.DefaultPerLayer ;
+  result := FPersistenceLayers.DefaultPerLayer;
 end;
 
 
-function TtiOPFManager.TableExists(const pTableName: string;
-                               const pDBConnectionName: string = '' ;
-                               const pPerLayerName : string = '' ): boolean;
+function TtiOPFManager.TableExists(const ATableName: string;
+                               const ADBConnectionName: string = '';
+                               const APersistenceLayerName : string = ''): boolean;
 var
-  lDBMetaData : TtiDBMetaData ;
-  lDB : TtiDatabase ;
+  lDBMetaData : TtiDBMetaData;
+  lDB : TtiDatabase;
 begin
-  lDB := PersistenceLayers.LockDatabase( pDBConnectionName, pPerLayerName ) ;
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-    lDBMetaData := TtiDBMetaData.Create ;
+    lDBMetaData := TtiDBMetaData.Create;
     try
       lDB.ReadMetaDataTables(lDBMetaData);
-      result := lDBMetaData.FindByTableName(pTableName) <> nil;
+      result := lDBMetaData.FindByTableName(ATableName) <> nil;
     finally
       lDBMetaData.Free;
     end;
   finally
-    PersistenceLayers.UnLockDatabase( lDB, pDBConnectionName, pPerLayerName ) ;
-  end ;
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+  end;
 end;
 
 
-procedure TtiOPFManager.UnLoadPersistenceLayer(const pPackageID: string);
+procedure TtiOPFManager.UnLoadPersistenceLayer(const APackageID: string);
 begin
-  PersistenceLayers.UnLoadPersistenceLayer(pPackageID);
+  PersistenceLayers.UnLoadPersistenceLayer(APackageID);
 end;
 
 
-procedure TtiOPFManager.SetDefaultPerLayer(const Value: TtiPersistenceLayer);
+procedure TtiOPFManager.SetDefaultPerLayer(const AValue: TtiPersistenceLayer);
 begin
-  FPersistenceLayers.DefaultPerLayer := Value ;
+  FPersistenceLayers.DefaultPerLayer := AValue;
 end;
 
 
-procedure TtiOPFManager.SetDefaultPerLayerName(const Value: string);
+procedure TtiOPFManager.SetDefaultPerLayerName(const AValue: string);
 begin
-  FPersistenceLayers.DefaultPerLayerName := Value ;
+  FPersistenceLayers.DefaultPerLayerName := AValue;
 end;
 
 procedure TtiOPFManager.ReadMetaDataFields(
-  pDBMetaDataTable: TtiDBMetaDataTable; const pDBConnectionName,
-  pPerLayerName: string);
+  pDBMetaDataTable: TtiDBMetaDataTable; const ADBConnectionName,
+  APersistenceLayerName: string);
 var
-  lDB : TtiDatabase ;
+  lDB : TtiDatabase;
 begin
   Assert(pDBMetaDataTable.TestValid(TtiDBMetaDataTable), cTIInvalidObjectError);
-  lDB := PersistenceLayers.LockDatabase( pDBConnectionName, pPerLayerName ) ;
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
     lDB.ReadMetaDataFields(pDBMetaDataTable);
   finally
-    PersistenceLayers.UnLockDatabase( lDB, pDBConnectionName, pPerLayerName ) ;
-  end ;
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+  end;
 end;
 
 
 procedure TtiOPFManager.ReadMetaDataTables(pDBMetaData: TtiDBMetaData;
-  const pDBConnectionName, pPerLayerName: string);
+  const ADBConnectionName, APersistenceLayerName: string);
 var
-  lDB : TtiDatabase ;
+  lDB : TtiDatabase;
 begin
   Assert(pDBMetaData.TestValid(TtiDBMetaData), cTIInvalidObjectError);
-  lDB := PersistenceLayers.LockDatabase( pDBConnectionName, pPerLayerName ) ;
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
     lDB.ReadMetaDataTables(pDBMetaData);
   finally
-    PersistenceLayers.UnLockDatabase( lDB, pDBConnectionName, pPerLayerName ) ;
-  end ;
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+  end;
 end;
 
 
 {$IFNDEF OID_AS_INT64}
-  procedure TtiOPFManager.SetDefaultOIDClassName(const Value: string);
+  procedure TtiOPFManager.SetDefaultOIDClassName(const AValue: string);
   begin
-    FDefaultOIDClassName := Value;
+    FDefaultOIDClassName := AValue;
   end;
 {$ENDIF}
 
@@ -757,43 +757,43 @@ end;
 
 function TtiOPFManager.TestThenConnectDatabase(
   const ADatabaseName : string;
-  const AUserName     : string;
+  const AUserName    : string;
   const APassword : string;
-  const AParams       : string;
-  const APackageID    : string): boolean;
+  const AParams      : string;
+  const APackageID   : string): boolean;
 var
-  lRegPerLayer : TtiPersistenceLayer ;
+  lRegPerLayer : TtiPersistenceLayer;
 begin
-  Assert( APackageID <> '', 'APackageID not assigned' ) ;
-  lRegPerLayer := FPersistenceLayers.FindByPerLayerName( APackageID ) ;
+  Assert(APackageID <> '', 'APackageID not assigned');
+  lRegPerLayer := FPersistenceLayers.FindByPerLayerName(APackageID);
   if lRegPerLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
   if lRegPerLayer.tiDatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword, AParams) then
   begin
     lRegPerLayer.DBConnectionPools.Connect(ADatabaseName, AUserName, APassword, AParams);
-    result := true ;
+    result := true;
   end else
     Result := false;
 end;
 
 
-function TtiOPFManager.CreateDatabase(const pDatabaseName, pUserName,
-  pUserPassword, pPackageID: string): string;
+function TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
+  pUserPassword, APackageID: string): string;
 var
   lRegPerLayer : TtiPersistenceLayer;
 begin
   Result := '';   { Graeme: What is this function supposed to return? }
-  lRegPerLayer := PersistenceLayers.FindByPerLayerName( pPackageID ) ;
+  lRegPerLayer := PersistenceLayers.FindByPerLayerName(APackageID);
   if lRegPerLayer = nil then
-    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[pPackageID]);
-  lRegPerLayer.tiDatabaseClass.CreateDatabase( pDatabaseName, pUserName, pUserPassword);
+    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
+  lRegPerLayer.tiDatabaseClass.CreateDatabase(ADatabaseName, AUserName, pUserPassword);
 end;
 
 
-procedure TtiOPFManager.RegisterVisitor(const psGroupName: string; const pClassRef: TVisClassRef);
+procedure TtiOPFManager.RegisterVisitor(const AGroupName: string; const AClassRef: TVisClassRef);
 begin
-  Assert( FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid );
-  FVisitorManager.RegisterVisitor( psGroupName, pClassRef ) ;
+  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  FVisitorManager.RegisterVisitor(AGroupName, AClassRef);
 end;
 
 
@@ -801,7 +801,7 @@ procedure TtiOPFManager.ConnectDatabase(const ADatabaseName, AUserName, APasswor
 var
   lRegPerLayer: TtiPersistenceLayer;
 begin
-  lRegPerLayer := DefaultPerLayer ;
+  lRegPerLayer := DefaultPerLayer;
   if lRegPerLayer = nil then
     raise EtiOPFInternalException.Create(cErrorUnableToFindDefaultPerLayer);
   ConnectDatabase(ADatabaseName, AUserName, APassword, AParams, lRegPerLayer.PerLayerName);
@@ -818,7 +818,7 @@ procedure TtiOPFManager.DisconnectDatabase(const ADatabaseName: string);
 var
   lRegPerLayer: TtiPersistenceLayer;
 begin
-  lRegPerLayer := DefaultPerLayer ;
+  lRegPerLayer := DefaultPerLayer;
   if lRegPerLayer = nil then
     raise EtiOPFInternalException.Create(cErrorUnableToFindDefaultPerLayer);
   DisconnectDatabase(ADatabaseName, lRegPerLayer.PerLayerName);
@@ -830,7 +830,7 @@ function TtiOPFManager.TestThenConnectDatabase(const ADatabaseName,
 var
   lPerLayer: TtiPersistenceLayer;
 begin
-  lPerLayer := DefaultPerLayer ;
+  lPerLayer := DefaultPerLayer;
   Assert(lPerLayer <> nil, cErrorUnableToFindDefaultPerLayer);
   Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, AParams, lPerLayer.PerLayerName);
 end;
@@ -848,7 +848,7 @@ var
   lRegPerLayer: TtiPersistenceLayer;
   lDatabaseName: string;
 begin
-  lRegPerLayer := DefaultPerLayer ;
+  lRegPerLayer := DefaultPerLayer;
   Assert(lRegPerLayer <> nil, cErrorUnableToFindDefaultPerLayer);
   lDatabaseName := lRegPerLayer.DefaultDBConnectionName;
   Assert(lDatabaseName <> '', cErrorUnableToFindDefaultDatabase);
@@ -857,7 +857,7 @@ end;
 
 
 initialization
-  uShuttingDown := False ;
+  uShuttingDown := False;
 
   // This works if there is only one persistence layer linked in via a compiler
   // directive, but not if there are more.
@@ -889,4 +889,5 @@ finalization
   FreeAndNilTIPerMgr;
 
 end.
+
 

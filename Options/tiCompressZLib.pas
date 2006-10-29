@@ -6,25 +6,25 @@ interface
 uses
   tiCompress
   ,Classes
-  ;
+ ;
 
 type
 
   // Implement TtiCompress using the ZLib library that comes with Delphi
-  TtiCompressZLib = class( TtiCompressAbs )
+  TtiCompressZLib = class(TtiCompressAbs)
   private
   public
-    function  CompressStream(   pFrom : TStream ; pTo : TStream ) : Extended ; override ;
-    procedure DecompressStream( pFrom : TStream ; pTo : TStream ) ; override ;
-    function  CompressBuffer(   const pFrom: Pointer  ; const piFromSize : Integer;
-                                out   pTo:   Pointer  ; out   piToSize   : Integer) : Extended ; override ;
-    procedure DecompressBuffer( const pFrom: Pointer  ; const piFromSize : Integer;
-                                out   pTo:   Pointer  ; out   piToSize   : Integer) ; override ;
-    function  CompressString(   const psFrom : string ; var psTo : string )   : Extended ; override ;
-    procedure DecompressString( const psFrom : string ; var psTo : string )   ; override ;
-    function  CompressFile(     const psFrom : string ; const psTo : string ) : Extended ; override ;
-    procedure DecompressFile(   const psFrom : string ; const psTo : string ) ; override ;
-  end ;
+    function  CompressStream(  AFrom : TStream; ATo : TStream): Extended; override;
+    procedure DecompressStream(AFrom : TStream; ATo : TStream); override;
+    function  CompressBuffer(  const AFrom: Pointer ; const AFromSize : Integer;
+                                out   ATo:   Pointer ; out   AToSize  : Integer): Extended; override;
+    procedure DecompressBuffer(const AFrom: Pointer ; const AFromSize : Integer;
+                                out   ATo:   Pointer ; out   AToSize  : Integer); override;
+    function  CompressString(  const AFrom : string; var ATo : string)  : Extended; override;
+    procedure DecompressString(const AFrom : string; var ATo : string)  ; override;
+    function  CompressFile(    const AFrom : string; const ATo : string): Extended; override;
+    procedure DecompressFile(  const AFrom : string; const ATo : string); override;
+  end;
 
 implementation
 uses
@@ -36,7 +36,7 @@ uses
   {$ENDIF}
   ,SysUtils
   ,tiConstants
-  ;
+ ;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -44,222 +44,222 @@ uses
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // Compress a buffer
-function TtiCompressZLib.CompressBuffer(const pFrom: Pointer;
-  const piFromSize: Integer; out pTo: Pointer; out piToSize: Integer) : Extended ;
+function TtiCompressZLib.CompressBuffer(const AFrom: Pointer;
+  const AFromSize: Integer; out ATo: Pointer; out AToSize: Integer): Extended;
 {$IFDEF FPC}
 //var
 //  vFromSize, vToSize : Cardinal;
 {$ENDIF}
 begin
   {$IFDEF FPC}
-  dzLib.CompressBuf( pFrom, piFromSize, pTo, piToSize ) ;
+  dzLib.CompressBuf(AFrom, AFromSize, ATo, AToSize);
   { Could possibly use PasZLib directly in the future }
-//  vFromSize := piFromSize;
-//  vToSize := piToSize;
-//  PasZLib.Compress( pTo, vToSize, pFrom, vFromSize ) ;
+//  vFromSize := AFromSize;
+//  vToSize := AToSize;
+//  PasZLib.Compress(ATo, vToSize, AFrom, vFromSize);
   {$ELSE}
-  ZLib.CompressBuf( pFrom, piFromSize, pTo, piToSize ) ;
+  ZLib.CompressBuf(AFrom, AFromSize, ATo, AToSize);
   {$ENDIF}
-  if piFromSize <> 0 then
-    result := piToSize / piFromSize * 100
+  if AFromSize <> 0 then
+    result := AToSize / AFromSize * 100
   else
-    result := 0 ;
+    result := 0;
 end;
 
 // Compress a file
-function TtiCompressZLib.CompressFile(const psFrom : string ; const psTo: string) : Extended ;
+function TtiCompressZLib.CompressFile(const AFrom : string; const ATo: string): Extended;
 var
-  lStreamFrom : TFileStream ;
-  lStreamTo   : TFileStream ;
+  lStreamFrom : TFileStream;
+  lStreamTo  : TFileStream;
 begin
-  lStreamFrom := TFileStream.Create( psFrom, fmOpenRead or fmShareExclusive ) ;
+  lStreamFrom := TFileStream.Create(AFrom, fmOpenRead or fmShareExclusive);
   try
-    lStreamTo   := TFileStream.Create( psTo, fmCreate or fmShareExclusive ) ;
+    lStreamTo  := TFileStream.Create(ATo, fmCreate or fmShareExclusive);
     try
-      result := CompressStream( lStreamFrom, lStreamTo ) ;
+      result := CompressStream(lStreamFrom, lStreamTo);
     finally
-      lStreamTo.Free ;
+      lStreamTo.Free;
     end;
   finally
-    lStreamFrom.Free ;
+    lStreamFrom.Free;
   end;
 end;
 
 // Compress a stream
-function TtiCompressZLib.CompressStream(pFrom, pTo: TStream) : Extended ;
+function TtiCompressZLib.CompressStream(AFrom, ATo: TStream): Extended;
 var
-  liFromSize : integer ;
-  liToSize   : integer ;
-  lBufFrom   : Pointer ;
-  lBufTo     : Pointer ;
+  liFromSize : integer;
+  liToSize  : integer;
+  lBufFrom  : Pointer;
+  lBufTo    : Pointer;
 begin
-  Assert( pFrom <> nil, 'From stream unassigned' ) ;
-  Assert( pTo <> nil, 'To stream unassigned' ) ;
+  Assert(AFrom <> nil, 'From stream unassigned');
+  Assert(ATo <> nil, 'To stream unassigned');
 
   try
-    pFrom.Position := 0 ;
+    AFrom.Position := 0;
 
-    if pFrom.Size = 0 then
+    if AFrom.Size = 0 then
     begin
-      pTo.Size := 0 ;
-      result := 0 ;
-      Exit ; //==>
-    end ;
+      ATo.Size := 0;
+      result := 0;
+      Exit; //==>
+    end;
 
-    liFromSize := pFrom.Size ;
-    GetMem( lBufFrom, liFromSize ) ;
+    liFromSize := AFrom.Size;
+    GetMem(lBufFrom, liFromSize);
     try
-      pFrom.ReadBuffer( lBufFrom^, liFromSize ) ;
+      AFrom.ReadBuffer(lBufFrom^, liFromSize);
       try
-        result := CompressBuffer( lBufFrom, liFromSize, lBufTo, liToSize ) ;
-        pTo.Size := 0 ;
-        pTo.WriteBuffer( lBufTo^, liToSize ) ;
+        result := CompressBuffer(lBufFrom, liFromSize, lBufTo, liToSize);
+        ATo.Size := 0;
+        ATo.WriteBuffer(lBufTo^, liToSize);
       finally
-        FreeMem( lBufTo ) ;
-      end ;
+        FreeMem(lBufTo);
+      end;
     finally
-      FreeMem( lBufFrom ) ;
-    end ;
+      FreeMem(lBufFrom);
+    end;
 
-    pFrom.Position := 0 ;
-    pTo.Position := 0 ;
+    AFrom.Position := 0;
+    ATo.Position := 0;
 
   except
     on e:exception do
-      raise exception.Create( 'Error in TtiCompressZLib.CompressStream. Message: ' +
-                              e.message ) ;
-  end ;
+      raise exception.Create('Error in TtiCompressZLib.CompressStream. Message: ' +
+                              e.message);
+  end;
 
 end;
 
 // Compress a string
-function TtiCompressZLib.CompressString(const psFrom: string;
-  var psTo: string) : Extended ;
+function TtiCompressZLib.CompressString(const AFrom: string;
+  var ATo: string): Extended;
 var
-  lStreamFrom : TStringStream ;
-  lStreamTo   : TStringStream ;
+  lStreamFrom : TStringStream;
+  lStreamTo  : TStringStream;
 begin
   { TODO : Perform this compression directly on the string as a buffer,
            don't go through the stream stage. }
-  lStreamFrom := TStringStream.Create( psFrom ) ;
+  lStreamFrom := TStringStream.Create(AFrom);
   try
-    lStreamTo   := TStringStream.Create( '' ) ;
+    lStreamTo  := TStringStream.Create('');
     try
-      result := CompressStream( lStreamFrom, lStreamTo ) ;
-      psTo   := lStreamTo.DataString ;
+      result := CompressStream(lStreamFrom, lStreamTo);
+      ATo  := lStreamTo.DataString;
     finally
-      lStreamTo.Free ;
+      lStreamTo.Free;
     end;
   finally
-    lStreamFrom.Free ;
+    lStreamFrom.Free;
   end;
 end;
 
 // Decompress a buffer
-procedure TtiCompressZLib.DecompressBuffer(const pFrom: Pointer;
-  const piFromSize: Integer; out pTo: Pointer; out piToSize: Integer);
+procedure TtiCompressZLib.DecompressBuffer(const AFrom: Pointer;
+  const AFromSize: Integer; out ATo: Pointer; out AToSize: Integer);
 {$IFDEF FPC}
 //var
 //  vFromSize, vToSize : cardinal;
 {$ENDIF}
 begin
   {$IFDEF FPC}
-  dzlib.DecompressBuf( pFrom, piFromSize, piFromSize*2, pTo, piToSize ) ;
+  dzlib.DecompressBuf(AFrom, AFromSize, AFromSize*2, ATo, AToSize);
   { Could possibly use PasZLib directly in the future }
-//  vFromSize := piFromSize;
-//  vToSize := piToSize;
-//  PasZLib.uncompress( pTo, vToSize, pFrom, vFromSize) ;
+//  vFromSize := AFromSize;
+//  vToSize := AToSize;
+//  PasZLib.uncompress(ATo, vToSize, AFrom, vFromSize);
   {$ELSE}
-  ZLib.DecompressBuf( pFrom, piFromSize, piFromSize*2, pTo, piToSize ) ;
+  ZLib.DecompressBuf(AFrom, AFromSize, AFromSize*2, ATo, AToSize);
   {$ENDIF}
 end;
 
 // Decompress a file
-procedure TtiCompressZLib.DecompressFile(const psFrom, psTo: string);
+procedure TtiCompressZLib.DecompressFile(const AFrom, ATo: string);
 var
-  lStreamFrom : TFileStream ;
-  lStreamTo   : TFileStream ;
+  lStreamFrom : TFileStream;
+  lStreamTo  : TFileStream;
 begin
-  lStreamFrom := TFileStream.Create( psFrom, fmOpenRead or fmShareExclusive ) ;
+  lStreamFrom := TFileStream.Create(AFrom, fmOpenRead or fmShareExclusive);
   try
-    lStreamTo   := TFileStream.Create( psTo, fmCreate or fmShareExclusive ) ;
+    lStreamTo  := TFileStream.Create(ATo, fmCreate or fmShareExclusive);
     try
-      DecompressStream( lStreamFrom, lStreamTo ) ;
+      DecompressStream(lStreamFrom, lStreamTo);
     finally
-      lStreamTo.Free ;
+      lStreamTo.Free;
     end;
   finally
-    lStreamFrom.Free ;
+    lStreamFrom.Free;
   end;
 end;
 
 // Decompress a stream
-procedure TtiCompressZLib.DecompressStream(pFrom, pTo: TStream);
+procedure TtiCompressZLib.DecompressStream(AFrom, ATo: TStream);
 var
-  liToSize : integer ;
-  liFromSize : integer ;
-  lBufFrom : Pointer ;
-  lBufTo   : Pointer ;
+  liToSize : integer;
+  liFromSize : integer;
+  lBufFrom : Pointer;
+  lBufTo  : Pointer;
 begin
 
   try
-    if pFrom.Size = 0 then
+    if AFrom.Size = 0 then
     begin
-      pTo.Size := 0 ;
-      Exit ; //==>
-    end ;
+      ATo.Size := 0;
+      Exit; //==>
+    end;
 
-    pFrom.Position := 0 ;
-    pTo.Size := 0 ;
-    liFromSize := pFrom.Size ;
-    GetMem( lBufFrom,    liFromSize ) ;
+    AFrom.Position := 0;
+    ATo.Size := 0;
+    liFromSize := AFrom.Size;
+    GetMem(lBufFrom,    liFromSize);
     try
       try
-        pFrom.ReadBuffer( lBufFrom^, liFromSize ) ;
-        DecompressBuffer( lBufFrom, liFromSize, lBufTo, liToSize ) ;
-        pTo.Size := 0 ;
-        pTo.WriteBuffer( lBufTo^, liToSize ) ;
+        AFrom.ReadBuffer(lBufFrom^, liFromSize);
+        DecompressBuffer(lBufFrom, liFromSize, lBufTo, liToSize);
+        ATo.Size := 0;
+        ATo.WriteBuffer(lBufTo^, liToSize);
       finally
-        FreeMem( lBufTo ) ;
-      end ;
+        FreeMem(lBufTo);
+      end;
     finally
-      FreeMem( lBufFrom ) ;
-    end ;
-    pFrom.Position := 0 ;
-    pTo.Position := 0 ;
+      FreeMem(lBufFrom);
+    end;
+    AFrom.Position := 0;
+    ATo.Position := 0;
   except
     on e:exception do
-      raise exception.Create( 'Error in TtiCompressZLib.DeCompressStream. Message: ' +
-                              e.message ) ;
-  end ;
+      raise exception.Create('Error in TtiCompressZLib.DeCompressStream. Message: ' +
+                              e.message);
+  end;
 
 end;
 
 // Decompress a string
-procedure TtiCompressZLib.DecompressString(const psFrom: string;
-  var psTo: string);
+procedure TtiCompressZLib.DecompressString(const AFrom: string;
+  var ATo: string);
 var
-  lStreamFrom : TStringStream ;
-  lStreamTo   : TStringStream ;
+  lStreamFrom : TStringStream;
+  lStreamTo  : TStringStream;
 begin
-  lStreamFrom := TStringStream.Create( psFrom ) ;
+  lStreamFrom := TStringStream.Create(AFrom);
   try
-    lStreamTo   := TStringStream.Create( '' ) ;
+    lStreamTo  := TStringStream.Create('');
     try
-      DecompressStream( lStreamFrom, lStreamTo ) ;
-      psTo   := lStreamTo.DataString ;
+      DecompressStream(lStreamFrom, lStreamTo);
+      ATo  := lStreamTo.DataString;
     finally
-      lStreamTo.Free ;
+      lStreamTo.Free;
     end;
   finally
-    lStreamFrom.Free ;
+    lStreamFrom.Free;
   end;
 end;
 
 initialization
   // Register the TtiCompressZLib class with the factory
-  gCompressFactory.RegisterClass( cgsCompressZLib, TtiCompressZLib ) ;
-  gtiCompressClass := TtiCompressZLib ;
+  gCompressFactory.RegisterClass(cgsCompressZLib, TtiCompressZLib);
+  gtiCompressClass := TtiCompressZLib;
   
 end.
 

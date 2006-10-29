@@ -15,7 +15,7 @@ uses
   ,tiLogToFile
   ,tiLogToGUI
   ,tiLogToConsole
-  ;
+ ;
 
 
 initialization

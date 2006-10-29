@@ -7,15 +7,15 @@ interface
 uses
   tiObject
   ,FtiPerEditDialog
-  ;
+ ;
 
 type
 
-  TFormTIPerAutoEditDialog = class( TFormTIPerEditDialog )
+  TFormTIPerAutoEditDialog = class(TFormTIPerEditDialog)
   private
   public
-    procedure SetData(const Value: TtiObject ); override ;
-  end ;
+    procedure SetData(const AValue: TtiObject); override;
+  end;
 
 
 implementation
@@ -24,69 +24,69 @@ uses
   ,Classes
   ,tiPerAwareCtrls
   ,TypInfo
-  ;
+ ;
 
 { TFormTIPerAutoEditDialog }
 
-procedure TFormTIPerAutoEditDialog.SetData(const Value: TtiObject );
+procedure TFormTIPerAutoEditDialog.SetData(const AValue: TtiObject);
 var
-  lsl : TStringList ;
-  i   : integer ;
-  lpa : TtiPerAwareAbs ;
-  lRow : integer ;
-  lCol : integer ;
+  lsl : TStringList;
+  i  : integer;
+  lpa : TtiPerAwareAbs;
+  lRow : integer;
+  lCol : integer;
 const
-  cBorder = 6 ;
-  cCtrlHeight = 21 ;
-  cCtrlWidth  = 180 ;
-  cMaxRowCount = 10 ;
+  cBorder = 6;
+  cCtrlHeight = 21;
+  cCtrlWidth  = 180;
+  cMaxRowCount = 10;
 begin
 
-  inherited SetData( Value ) ;
+  inherited SetData(AValue);
 
   if RO.ReadOnly then
-    Caption := ' View ' + Value.Caption
+    Caption := ' View ' + AValue.Caption
   else
-    Caption := ' Edit ' + Value.Caption ;
+    Caption := ' Edit ' + AValue.Caption;
 
-  lsl := TStringList.Create ;
-  lRow := 0 ;
-  lCol := 0 ;
+  lsl := TStringList.Create;
+  lRow := 0;
+  lCol := 0;
   try
-    tiGetPropertyNames( TtiObject( Value ),
+    tiGetPropertyNames(TtiObject(AValue),
                         lsl,
-                        ctkSimple + [tkVariant, tkEnumeration] ) ;
+                        ctkSimple + [tkVariant, tkEnumeration]);
     for i := 0 to lsl.Count - 1 do
     begin
-      lpa := TtiPerAwareEdit.Create( self ) ;
-      lpa.Parent := self ;
-      lpa.Top  := cBorder + ( cCtrlHeight + cBorder ) * lRow ;
-      lpa.Left := cBorder + ( cBorder + cCtrlWidth ) * lCol ;
-      lpa.Width := cCtrlWidth ;
-      lpa.LinkToData( Value, lsl.Strings[i] ) ;
-      lpa.Caption := lsl.Strings[i] ;
-      lpa.ReadOnly := RO.ReadOnly ;
-      Inc( lRow ) ;
+      lpa := TtiPerAwareEdit.Create(self);
+      lpa.Parent := self;
+      lpa.Top := cBorder + (cCtrlHeight + cBorder) * lRow;
+      lpa.Left := cBorder + (cBorder + cCtrlWidth) * lCol;
+      lpa.Width := cCtrlWidth;
+      lpa.LinkToData(AValue, lsl.Strings[i]);
+      lpa.Caption := lsl.Strings[i];
+      lpa.ReadOnly := RO.ReadOnly;
+      Inc(lRow);
       if lRow >= cMaxRowCount then
       begin
-        lRow := 0 ;
+        lRow := 0;
         if i <> lsl.Count - 1 then
-          Inc( lCol ) ;
-      end ;
-    end ;
+          Inc(lCol);
+      end;
+    end;
 
     if lsl.Count - 1 > cMaxRowCount then
-      lRow := cMaxRowCount ;
+      lRow := cMaxRowCount;
 
-    Self.ClientHeight := ( cCtrlHeight + cBorder ) * lRow +
-                         self.btnOK.Height + cBorder * 2 ;
+    Self.ClientHeight := (cCtrlHeight + cBorder) * lRow +
+                         self.btnOK.Height + cBorder * 2;
 
-    Self.ClientWidth := ( cCtrlWidth + cBorder ) * ( lCol + 1 )
-                         + cBorder ;
+    Self.ClientWidth := (cCtrlWidth + cBorder) * (lCol + 1)
+                         + cBorder;
 
   finally
-    lsl.Free ;
-  end ;
+    lsl.Free;
+  end;
 
 end;
 

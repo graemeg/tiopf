@@ -197,15 +197,15 @@ begin
   FillChar(strm, sizeof(strm), 0);
   {$ifdef fpc202}
   strm.zalloc := @zlibAllocMem;
-  strm.zfree  := @zlibFreeMem;
+  strm.zfree := @zlibFreeMem;
   {$endif}
   OutBytes := ((InBytes + (InBytes div 10) + 12) + 255) and not 255;
   GetMem(OutBuf, OutBytes);
   try
-    strm.next_in    := InBuf;
-    strm.avail_in   := InBytes;
-    strm.next_out   := OutBuf;
-    strm.avail_out  := OutBytes;
+    strm.next_in   := InBuf;
+    strm.avail_in  := InBytes;
+    strm.next_out  := OutBuf;
+    strm.avail_out := OutBytes;
     CCheck(deflateInit_(@strm, Z_BEST_COMPRESSION, zlib_version, sizeof(strm)));
     try
       while deflate(strm, Z_FINISH) <> Z_STREAM_END do
@@ -238,7 +238,7 @@ begin
   FillChar(strm, sizeof(strm), 0);
   {$ifdef fpc202}
   strm.zalloc := @zlibAllocMem;
-  strm.zfree  := @zlibFreeMem;
+  strm.zfree := @zlibFreeMem;
   {$endif}
   BufInc := (InBytes + 255) and not 255;
   if OutEstimate = 0 then
@@ -247,10 +247,10 @@ begin
     OutBytes := OutEstimate;
   GetMem(OutBuf, OutBytes);
   try
-    strm.next_in    := InBuf;
-    strm.avail_in   := InBytes;
-    strm.next_out   := OutBuf;
-    strm.avail_out  := OutBytes;
+    strm.next_in   := InBuf;
+    strm.avail_in  := InBytes;
+    strm.next_out  := OutBuf;
+    strm.avail_out := OutBytes;
     DCheck(inflateInit_(@strm, zlib_version, sizeof(strm)));
     try
       while inflate(strm, Z_FINISH) <> Z_STREAM_END do
@@ -278,11 +278,11 @@ end;
 constructor TCustomZLibStream.Create(Strm: TStream);
 begin
   inherited Create;
-  FStrm         := Strm;
-  FStrmPos      := Strm.Position;
+  FStrm        := Strm;
+  FStrmPos     := Strm.Position;
   {$ifdef fpc202}
-  FZRec.zalloc  := @zlibAllocMem;
-  FZRec.zfree   := @zlibFreeMem;
+  FZRec.zalloc := @zlibAllocMem;
+  FZRec.zfree  := @zlibFreeMem;
   {$endif}
 end;
 
@@ -302,7 +302,7 @@ const
     (Z_NO_COMPRESSION, Z_BEST_SPEED, Z_DEFAULT_COMPRESSION, Z_BEST_COMPRESSION);
 begin
   inherited Create(Dest);
-  FZRec.next_out  := @FBuffer;
+  FZRec.next_out := @FBuffer;
   FZRec.avail_out := sizeof(FBuffer);
   CCheck(deflateInit_(@FZRec, Levels[CompressionLevel], zlib_version, sizeof(FZRec)));
 end;
@@ -310,15 +310,15 @@ end;
 
 destructor TCompressionStream.Destroy;
 begin
-  FZRec.next_in   := nil;
-  FZRec.avail_in  := 0;
+  FZRec.next_in  := nil;
+  FZRec.avail_in := 0;
   try
     if FStrm.Position <> FStrmPos then FStrm.Position := FStrmPos;
     while (CCheck(deflate(FZRec, Z_FINISH)) <> Z_STREAM_END)
       and (FZRec.avail_out = 0) do
     begin
       FStrm.WriteBuffer(FBuffer, sizeof(FBuffer));
-      FZRec.next_out  := @FBuffer;
+      FZRec.next_out := @FBuffer;
       FZRec.avail_out := sizeof(FBuffer);
     end;
     if FZRec.avail_out < sizeof(FBuffer) then
@@ -338,8 +338,8 @@ end;
 
 function TCompressionStream.Write(const Buffer; Count: Longint): Longint;
 begin
-  FZRec.next_in   := @Buffer;
-  FZRec.avail_in  := Count;
+  FZRec.next_in  := @Buffer;
+  FZRec.avail_in := Count;
   if FStrm.Position <> FStrmPos then FStrm.Position := FStrmPos;
   while (FZRec.avail_in > 0) do
   begin
@@ -347,9 +347,9 @@ begin
     if FZRec.avail_out = 0 then
     begin
       FStrm.WriteBuffer(FBuffer, sizeof(FBuffer));
-      FZRec.next_out  := @FBuffer;
+      FZRec.next_out := @FBuffer;
       FZRec.avail_out := sizeof(FBuffer);
-      FStrmPos        := FStrm.Position;
+      FStrmPos       := FStrm.Position;
       Progress(Self);
     end;
   end;
@@ -380,8 +380,8 @@ end;
 constructor TDecompressionStream.Create(Source: TStream);
 begin
   inherited Create(Source);
-  FZRec.next_in   := @FBuffer;
-  FZRec.avail_in  := 0;
+  FZRec.next_in  := @FBuffer;
+  FZRec.avail_in := 0;
   DCheck(inflateInit_(@FZRec, zlib_version, sizeof(FZRec)));
 end;
 
@@ -395,7 +395,7 @@ end;
 
 function TDecompressionStream.Read(var Buffer; Count: Longint): Longint;
 begin
-  FZRec.next_out  := @Buffer;
+  FZRec.next_out := @Buffer;
   FZRec.avail_out := Count;
   if FStrm.Position <> FStrmPos then FStrm.Position := FStrmPos;
   while (FZRec.avail_out > 0) do
@@ -432,13 +432,13 @@ begin
   if (Offset = 0) and (Origin = soFromBeginning) then
   begin
     DCheck(inflateReset(FZRec));
-    FZRec.next_in   := @FBuffer;
-    FZRec.avail_in  := 0;
-    FStrm.Position  := 0;
+    FZRec.next_in  := @FBuffer;
+    FZRec.avail_in := 0;
+    FStrm.Position := 0;
     FStrmPos := 0;
   end
-  else if ( (Offset >= 0) and (Origin = soFromCurrent)) or
-          ( ((Offset - FZRec.total_out) > 0) and (Origin = soFromBeginning)) then
+  else if ((Offset >= 0) and (Origin = soFromCurrent)) or
+          (((Offset - FZRec.total_out) > 0) and (Origin = soFromBeginning)) then
   begin
     if Origin = soFromBeginning then Dec(Offset, FZRec.total_out);
     if Offset > 0 then

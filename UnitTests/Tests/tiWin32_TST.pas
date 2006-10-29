@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   ,tiTestFramework
   ,Classes
-  ;
+ ;
 
 
 type
@@ -31,7 +31,7 @@ type
   end;
   
 
-procedure RegisterTests ;
+procedure RegisterTests;
 
 
 implementation
@@ -43,13 +43,13 @@ uses
   ,tiDUnitINI
   ,Contnrs
   ,Windows
-  ;
+ ;
 
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIWin32);
-end ;
+end;
 
 
 { TTestTIWin32 }

@@ -17,6 +17,7 @@ begin
   if not TtiPromptWhichPersistenceLayersToTest.Execute then
     Halt;
   Application.Initialize;
-  tiDUnitDependencies.RegisterTests ;
+  tiDUnitDependencies.RegisterTests;
   GUITestRunner.RunRegisteredTests;
 end.
+

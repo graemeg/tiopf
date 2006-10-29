@@ -7,28 +7,28 @@ uses
    tiQuery
   ,tiDataBuffer_BOM
   ,tiQueryTXTAbs
-  ;
+ ;
 
 type
 
-  TtiDBConnectionPoolDataTAB = Class( TtiDBConnectionPoolDataTXTAbs );
+  TtiDBConnectionPoolDataTAB = Class(TtiDBConnectionPoolDataTXTAbs);
 
-  TtiDatabaseTAB = class( TtiDatabaseTXTFlatFileAbs )
+  TtiDatabaseTAB = class(TtiDatabaseTXTFlatFileAbs)
   protected
-    procedure   SaveDataSet(const pDataSet : TtiDataBuffer); override ;
-    procedure   ReadDataSet(const pDataSet : TtiDataBuffer); override ;
+    procedure   SaveDataSet(const pDataSet : TtiDataBuffer); override;
+    procedure   ReadDataSet(const pDataSet : TtiDataBuffer); override;
   public
-    constructor Create ; override ;
+    constructor Create; override;
   end;
 
-  TtiQueryTAB = class( TtiQueryTXTAbs )
+  TtiQueryTAB = class(TtiQueryTXTAbs)
   protected
   public
     constructor Create; override;
-    procedure   SelectRow( const pTableName : string ; const pWhere : TtiQueryParams = nil ) ; override ;
-    procedure   InsertRow( const pTableName : string ; const pParams : TtiQueryParams ) ; override ;
-    procedure   DeleteRow( const pTableName : string ; const pWhere  : TtiQueryParams = nil ) ; override ;
-    procedure   UpdateRow( const pTableName : string ; const pParams : TtiQueryParams ; const pWhere  : TtiQueryParams ) ; override ;
+    procedure   SelectRow(const ATableName : string; const AWhere : TtiQueryParams = nil); override;
+    procedure   InsertRow(const ATableName : string; const AParams : TtiQueryParams); override;
+    procedure   DeleteRow(const ATableName : string; const AWhere : TtiQueryParams = nil); override;
+    procedure   UpdateRow(const ATableName : string; const AParams : TtiQueryParams; const AWhere : TtiQueryParams); override;
   end;
 
 
@@ -40,7 +40,7 @@ uses
   ,tiXML
   ,tiExcept
   ,SysUtils
-  ;
+ ;
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -60,14 +60,14 @@ eg.
 
 procedure TtiDatabaseTAB.SaveDataSet(const pDataSet: TtiDataBuffer);
 var
-  lWriter : TTABToTIDataSet ;
-  lFileName : string ;
+  lWriter : TTABToTIDataSet;
+  lFileName : string;
 begin
   lWriter := TTABToTIDataSet.Create;
   try
     // Set the writers properties, based on optional parameters passed to the DB
-    lFileName := ExpandFileName(pDataSet.Name) ;
-    lWriter.Save(pDataSet, lFileName );
+    lFileName := ExpandFileName(pDataSet.Name);
+    lWriter.Save(pDataSet, lFileName);
   finally
     lWriter.Free;
   end;
@@ -75,15 +75,15 @@ end;
 
 procedure TtiDatabaseTAB.ReadDataSet(const pDataSet: TtiDataBuffer);
 var
-  lFileName : string ;
+  lFileName : string;
   lWriter : TTABToTIDataSet;
 begin
   lWriter := TTABToTIDataSet.Create;
   try
     // Set the writers properties, based on optional parameters passed to the DB
-    lFileName := ExpandFileName(pDataSet.Name) ;
-    pDataSet.Clear ;
-    lWriter.Read(pDataSet, lFileName );
+    lFileName := ExpandFileName(pDataSet.Name);
+    pDataSet.Clear;
+    lWriter.Read(pDataSet, lFileName);
   finally
     lWriter.Free;
   end;
@@ -98,64 +98,64 @@ SelectRow, etc. should probably be in the parent class
 since it is generic except for reference to TtiDatabaseTAB.
 cf  TODO for SaveDataSet above.
  }
-procedure TtiQueryTAB.SelectRow(const pTableName: string;const pWhere: TtiQueryParams);
+procedure TtiQueryTAB.SelectRow(const ATableName: string;const AWhere: TtiQueryParams);
 var
-  lDataSet : TtiDataBuffer ;
+  lDataSet : TtiDataBuffer;
 begin
-  lDataSet := ( Database as TtiDatabaseTAB ).FindDataSetByName( pTableName ) ;
+  lDataSet := (Database as TtiDatabaseTAB).FindDataSetByName(ATableName);
   if lDataSet = nil then
-    raise Exception.Create( 'Unable to find table <' + pTableName + '>') ;
-  DoSelectRows(lDataSet, pWhere);
-  CurrentRecordIndex := 0 ;
+    raise Exception.Create('Unable to find table <' + ATableName + '>');
+  DoSelectRows(lDataSet, AWhere);
+  CurrentRecordIndex := 0;
 end;
 
-procedure TtiQueryTAB.DeleteRow(const pTableName: string; const pWhere: TtiQueryParams);
+procedure TtiQueryTAB.DeleteRow(const ATableName: string; const AWhere: TtiQueryParams);
 var
-  lDataSet : TtiDataBuffer ;
-  i : integer ;
-  lSetDirty : boolean ;
+  lDataSet : TtiDataBuffer;
+  i : integer;
+  lSetDirty : boolean;
 begin
-  lDataSet := ( Database as TtiDatabaseTAB ).FindDataSetByName( pTableName ) ;
+  lDataSet := (Database as TtiDatabaseTAB).FindDataSetByName(ATableName);
   if lDataSet = nil then
-    raise EtiOPFInternalException.Create( 'Unable to find table <' + pTableName + '>') ;
-  DoSelectRows(lDataSet, pWhere);
-  lSetDirty := SelectedRows.Count > 0 ;
+    raise EtiOPFInternalException.Create('Unable to find table <' + ATableName + '>');
+  DoSelectRows(lDataSet, AWhere);
+  lSetDirty := SelectedRows.Count > 0;
   for i := SelectedRows.Count - 1 downto 0 do
-    lDataSet.Remove( TtiDataBufferRow( SelectedRows.Items[i] )) ;
+    lDataSet.Remove(TtiDataBufferRow(SelectedRows.Items[i]));
   if lSetDirty then
     (Database as TtiDatabaseTAB).SetDirty(lDataSet,true);
-  SelectedRows.Clear ;
+  SelectedRows.Clear;
 end;
 
-procedure TtiQueryTAB.InsertRow(const pTableName: string; const pParams: TtiQueryParams);
+procedure TtiQueryTAB.InsertRow(const ATableName: string; const AParams: TtiQueryParams);
 var
-  lDataSet : TtiDataBuffer ;
-  lDataSetRow : TtiDataBufferRow ;
+  lDataSet : TtiDataBuffer;
+  lDataSetRow : TtiDataBufferRow;
 begin
-  lDataSet := ( Database as TtiDatabaseTAB ).FindDataSetByName( pTableName ) ;
+  lDataSet := (Database as TtiDatabaseTAB).FindDataSetByName(ATableName);
   if lDataSet = nil then
-    raise EtiOPFInternalException.Create( 'Unable to find table <' + pTableName + '>') ;
-  lDataSetRow := lDataSet.AddInstance ;
-  DoUpdateRow( lDataSetRow, pParams ) ;
+    raise EtiOPFInternalException.Create('Unable to find table <' + ATableName + '>');
+  lDataSetRow := lDataSet.AddInstance;
+  DoUpdateRow(lDataSetRow, AParams);
   (Database as TtiDatabaseTAB).SetDirty(lDataSet,true);
 end;
 
-procedure TtiQueryTAB.UpdateRow(const pTableName: string; const pParams, pWhere : TtiQueryParams);
+procedure TtiQueryTAB.UpdateRow(const ATableName: string; const AParams, AWhere : TtiQueryParams);
 var
-  lDataSet : TtiDataBuffer ;
-  i : integer ;
-  lSetDirty : boolean ;
+  lDataSet : TtiDataBuffer;
+  i : integer;
+  lSetDirty : boolean;
 begin
-  lDataSet := TtiDatabaseTAB( Database ).FindDataSetByName( pTableName ) ;
+  lDataSet := TtiDatabaseTAB(Database).FindDataSetByName(ATableName);
   if lDataSet = nil then
-     raise EtiOPFInternalException.Create( 'Unable to find table <' + pTableName + '>') ;
-  DoSelectRows(lDataSet, pWhere);
-  lSetDirty := SelectedRows.Count > 0 ;
+     raise EtiOPFInternalException.Create('Unable to find table <' + ATableName + '>');
+  DoSelectRows(lDataSet, AWhere);
+  lSetDirty := SelectedRows.Count > 0;
   for i := 0 to SelectedRows.Count - 1 do
-    DoUpdateRow( TtiDataBufferRow( SelectedRows.Items[i]), pParams ) ;
+    DoUpdateRow(TtiDataBufferRow(SelectedRows.Items[i]), AParams);
   if lSetDirty then
     TtiDatabaseTAB(Database).SetDirty(lDataSet,true);
-  SelectedRows.Clear ;
+  SelectedRows.Clear;
 end;
 
 constructor TtiDatabaseTAB.Create;
@@ -175,11 +175,11 @@ Initialization
               cTIPersistTAB,
               TtiDBConnectionPoolDataTAB,
               TtiQueryTAB,
-              TtiDatabaseTAB ) ;
+              TtiDatabaseTAB);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer( cTIPersistTAB ) ;
+    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistTAB);
 
 
 end.

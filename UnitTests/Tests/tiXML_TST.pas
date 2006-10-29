@@ -12,16 +12,16 @@ uses
   ,Classes
   ,tiXML
   ,tiTestFramework
-  ;
+ ;
 
 type
 
-  TTestTIXML = class( TtiTestCase )
+  TTestTIXML = class(TtiTestCase)
   private
     FXMLRCTrans: IXMLReservedCharsTranslator;
-    function    tiReplicate1(const pStrValue: string;  pRepCount: Word): string;
+    function    tiReplicate1(const AValue : string ; ACount : Word): string;
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override ;
+    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
   published
     procedure TestTIReplicate1;
     procedure XMLTag;
@@ -68,18 +68,18 @@ type
     procedure tiParseForSingleNodeAttribute;
     procedure tiParseForSingleNodeAttribute1;
 
-  end ;
+  end;
 
   TTestTIXMLParser = class(TtiTestCase)
   private
-    FNode : string ;
-    FAttributes : TStringList ;
-    procedure   OnNode(const pStr : string );
-    procedure   OnAttribute(const pName, pValue : string);
+    FNode : string;
+    FAttributes : TStringList;
+    procedure   OnNode(const AStr : string);
+    procedure   OnAttribute(const AName, AValue : string);
   protected
-    procedure   SetUp; override ;
+    procedure   SetUp; override;
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override ;
+    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
     destructor  Destroy; override;
   published
     procedure   ParseForNode1;
@@ -87,12 +87,12 @@ type
     procedure   ParseForAttribute1;
     procedure   ParseForAttribute2;
     procedure   ParseForAttribute3;
-  end ;
+  end;
 
 type
   TClockTick = int64;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 function GetTickCount1: int64;
 
 implementation
@@ -103,18 +103,18 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ;
+ ;
 
 const
 
-  cWithResCharsXML    = 'yet &another <test> "string''ie"' ;
-  cWithoutResCharsXML = 'yet &amp;another &lt;test&gt; &quot;string&apos;ie&quot;' ;
+  cWithResCharsXML    = 'yet &another <test> "string''ie"';
+  cWithoutResCharsXML = 'yet &amp;another &lt;test&gt; &quot;string&apos;ie&quot;';
 
-  cWithResCharsCSV    = 'yet, another'#13#10'test,'#10'string'#13 ;
-  cWithoutResCharsCSV = 'yet&com; another&cr;&lf;test&com;&lf;string&cr;' ;
+  cWithResCharsCSV    = 'yet, another'#13#10'test,'#10'string'#13;
+  cWithoutResCharsCSV = 'yet&com; another&cr;&lf;test&com;&lf;string&cr;';
 
-  cWithResCharsTAB    = 'yet'#9' another'#13#10'test'#9''#10'string'#13 ;
-  cWithoutResCharsTAB = 'yet&tab; another&cr;&lf;test&tab;&lf;string&cr;' ;
+  cWithResCharsTAB    = 'yet'#9' another'#13#10'test'#9''#10'string'#13;
+  cWithoutResCharsTAB = 'yet&tab; another&cr;&lf;test&tab;&lf;string&cr;';
 
   // Set your performance testing values here
   cStrReplicateLongString =  10; // What size string to work with
@@ -122,7 +122,7 @@ const
   cImprovement            =   2; // How much faster than PH do you want to go
 
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIXML);
   RegisterNonPersistentTest(TTestTIXMLParser);
@@ -144,145 +144,145 @@ end;
 
 procedure TTestTIXML.DateTimeAsXMLString;
 var
-  lDate : TDateTime ;
-  ls : string ;
+  lDate : TDateTime;
+  ls : string;
 begin
-  lDate := EncodeDate( 2004, 01, 01 ) + EncodeTime( 13, 32, 45, 01 ) ;
+  lDate := EncodeDate(2004, 01, 01) + EncodeTime(13, 32, 45, 01);
   ls := tiDateTimeAsXMLString(lDate);
-  CheckEquals( '01/01/2004 13:32:45:001', ls );
+  CheckEquals('01/01/2004 13:32:45:001', ls);
 end;
 
 procedure TTestTIXML.XMLDataTag;
 begin
-  CheckEquals( '<mytag somedata/>', tiXMLDataTag('mytag', 'somedata')) ;
+  CheckEquals('<mytag somedata/>', tiXMLDataTag('mytag', 'somedata'));
 end;
 
 procedure TTestTIXML.XMLInsertReservedCharsCSV;
 var
-  lBefore   : string ;
-  lAfter    : string ;
-  lExpected : string ;
+  lBefore  : string;
+  lAfter   : string;
+  lExpected : string;
 begin
-  lBefore   := cWithoutResCharsCSV ;
-  lAfter    := FXMLRCTrans.InsertReserved( rcCSV, lBefore ) ;
-  lExpected := cWithResCharsCSV ;
-  CheckEquals( lExpected, lAfter ) ;
+  lBefore  := cWithoutResCharsCSV;
+  lAfter   := FXMLRCTrans.InsertReserved(rcCSV, lBefore);
+  lExpected := cWithResCharsCSV;
+  CheckEquals(lExpected, lAfter);
 end;
 
 
 procedure TTestTIXML.XMLInsertReservedCharsTAB;
 var
-  lBefore   : string ;
-  lAfter    : string ;
-  lExpected : string ;
+  lBefore  : string;
+  lAfter   : string;
+  lExpected : string;
 begin
-  lBefore   := cWithoutResCharsTAB ;
-  lAfter    := FXMLRCTrans.InsertReserved( rcTab, lBefore) ;
-  lExpected := cWithResCharsTAB ;
-  CheckEquals( lExpected, lAfter ) ;
+  lBefore  := cWithoutResCharsTAB;
+  lAfter   := FXMLRCTrans.InsertReserved(rcTab, lBefore);
+  lExpected := cWithResCharsTAB;
+  CheckEquals(lExpected, lAfter);
 end;
 
 procedure TTestTIXML.XMLInsertReservedCharsXML;
 var
-  lBefore   : string ;
-  lAfter    : string ;
-  lExpected : string ;
+  lBefore  : string;
+  lAfter   : string;
+  lExpected : string;
 begin
-  lBefore   := cWithoutResCharsXML ;
-  lAfter    := FXMLRCTrans.InsertReserved( rcXML, lBefore ) ;
-  lExpected   := cWithResCharsXML ;
-  CheckEquals( lExpected, lAfter ) ;
+  lBefore  := cWithoutResCharsXML;
+  lAfter   := FXMLRCTrans.InsertReserved(rcXML, lBefore);
+  lExpected  := cWithResCharsXML;
+  CheckEquals(lExpected, lAfter);
 end;
 
 procedure TTestTIXML.XMLRemoveReservedCharsCSV;
 var
-  lBefore   : string ;
-  lAfter    : string ;
-  lExpected : string ;
+  lBefore  : string;
+  lAfter   : string;
+  lExpected : string;
 begin
-  lBefore   := cWithResCharsCSV ;
-  lAfter    := FXMLRCTrans.RemoveReserved( rcCSV, lBefore ) ;
-  lExpected := cWithoutResCharsCSV ;
-  CheckEquals( lExpected, lAfter ) ;
+  lBefore  := cWithResCharsCSV;
+  lAfter   := FXMLRCTrans.RemoveReserved(rcCSV, lBefore);
+  lExpected := cWithoutResCharsCSV;
+  CheckEquals(lExpected, lAfter);
 end;
 
 procedure TTestTIXML.XMLRemoveReservedCharsTAB;
 var
-  lBefore   : string ;
-  lAfter    : string ;
-  lExpected : string ;
+  lBefore  : string;
+  lAfter   : string;
+  lExpected : string;
 begin
-  lBefore   := cWithResCharsTAB ;
-  lAfter    := FXMLRCTrans.RemoveReserved( rcTab, lBefore ) ;
-  lExpected := cWithoutResCharsTAB ;
-  CheckEquals( lExpected, lAfter ) ;
+  lBefore  := cWithResCharsTAB;
+  lAfter   := FXMLRCTrans.RemoveReserved(rcTab, lBefore);
+  lExpected := cWithoutResCharsTAB;
+  CheckEquals(lExpected, lAfter);
 end;
 
 procedure TTestTIXML.XMLRemoveReservedCharsXML;
 var
-  lBefore   : string ;
-  lAfter    : string ;
-  lExpected : string ;
+  lBefore  : string;
+  lAfter   : string;
+  lExpected : string;
 begin
-  lBefore   := cWithResCharsXML ;
-  lAfter    := FXMLRCTrans.RemoveReserved( rcXML, lBefore ) ;
-  lExpected := cWithoutResCharsXML ;
-  CheckEquals( lExpected, lAfter ) ;
+  lBefore  := cWithResCharsXML;
+  lAfter   := FXMLRCTrans.RemoveReserved(rcXML, lBefore);
+  lExpected := cWithoutResCharsXML;
+  CheckEquals(lExpected, lAfter);
 end;
 
 procedure TTestTIXML.XMLStringToDateTime;
 var
-  lDate : TDateTime ;
+  lDate : TDateTime;
 begin
-  lDate := tiXMLStringToDateTime( '01/01/2004 13:32:45:001' ) ;
-  CheckEquals( EncodeDate( 2004, 01, 01 ) + EncodeTime( 13, 32, 45, 01 ), lDate, 0.00001 ) ;
+  lDate := tiXMLStringToDateTime('01/01/2004 13:32:45:001');
+  CheckEquals(EncodeDate(2004, 01, 01) + EncodeTime(13, 32, 45, 01), lDate, 0.00001);
 end;
 
 procedure TTestTIXML.XMLTag;
 begin
-  CheckEquals( '<mytag>', tiXMLTag('mytag')) ;
+  CheckEquals('<mytag>', tiXMLTag('mytag'));
 end;
 
 procedure TTestTIXML.XMLTagEnd;
 begin
-  CheckEquals( '</mytag>', tiXMLTagEnd('mytag')) ;
+  CheckEquals('</mytag>', tiXMLTagEnd('mytag'));
 end;
 
 procedure TTestTIXML.XMLInsertReservedCharsXML2;
 var
-  lBefore   : string ;
-  lAfter    : string ;
-  lExpected : string ;
+  lBefore  : string;
+  lAfter   : string;
+  lExpected : string;
 begin
-  lBefore   := 'X&apos;d' ;
-  lAfter    := FXMLRCTrans.InsertReserved( rcXML, lBefore ) ;
-  lExpected   := 'X''d' ;
-  CheckEquals( lExpected, lAfter ) ;
+  lBefore  := 'X&apos;d';
+  lAfter   := FXMLRCTrans.InsertReserved(rcXML, lBefore);
+  lExpected  := 'X''d';
+  CheckEquals(lExpected, lAfter);
 end;
 
 procedure TTestTIXML.XMLRemoveReservedCharsXML2;
 var
-  lBefore   : string ;
-  lAfter    : string ;
-  lExpected : string ;
+  lBefore  : string;
+  lAfter   : string;
+  lExpected : string;
 begin
-  lBefore   := 'X''d' ;
-  lAfter    := FXMLRCTrans.RemoveReserved( rcXML, lBefore ) ;
-  lExpected := 'X&apos;d' ;
-  CheckEquals( lExpected, lAfter ) ;
+  lBefore  := 'X''d';
+  lAfter   := FXMLRCTrans.RemoveReserved(rcXML, lBefore);
+  lExpected := 'X&apos;d';
+  CheckEquals(lExpected, lAfter);
 end;
 
 procedure TTestTIXML.TestTIReplicate1;
 var
-  ls, ls1 : string ;
+  ls, ls1 : string;
 begin
-  CheckEquals( 'x',          tiReplicate1( 'x', 1 ), 'Failed on 1' ) ;
-  CheckEquals( 'xx',         tiReplicate1( 'x', 2 ), 'Failed on 2' ) ;
-  CheckEquals( 'xxxxxxxxxx', tiReplicate1( 'x', 10 ), 'Failed on 3' ) ;
-  CheckEquals( '12',         tiReplicate1( '12', 1 ), 'Failed on 4' ) ;
-  CheckEquals( '1212',       tiReplicate1( '12', 2 ), 'Failed on 5' ) ;
-  CheckEquals( '121212',     tiReplicate1( '12', 3 ), 'Failed on 6' ) ;
-  CheckEquals( '12121212',   tiReplicate1( '12', 4 ), 'Failed on 7' ) ;
+  CheckEquals('x',          tiReplicate1('x', 1), 'Failed on 1');
+  CheckEquals('xx',         tiReplicate1('x', 2), 'Failed on 2');
+  CheckEquals('xxxxxxxxxx', tiReplicate1('x', 10), 'Failed on 3');
+  CheckEquals('12',         tiReplicate1('12', 1), 'Failed on 4');
+  CheckEquals('1212',       tiReplicate1('12', 2), 'Failed on 5');
+  CheckEquals('121212',     tiReplicate1('12', 3), 'Failed on 6');
+  CheckEquals('12121212',   tiReplicate1('12', 4), 'Failed on 7');
 
   ls := tiReplicate(cWithResCharsXML, cStrReplicateLongString);
   ls1 := tiReplicate1(cWithResCharsXML, cStrReplicateLongString);
@@ -290,7 +290,7 @@ begin
 
   ls := tiReplicate(cWithResCharsCSV, cStrReplicateLongString);
   ls1 := tiReplicate1(cWithResCharsCSV, cStrReplicateLongString);
-  CheckEquals(ls, ls1, cWithResCharsCSV );
+  CheckEquals(ls, ls1, cWithResCharsCSV);
 
   ls := tiReplicate(cWithResCharsTAB, cStrReplicateLongString);
   ls1 := tiReplicate1(cWithResCharsTAB, cStrReplicateLongString);
@@ -308,7 +308,7 @@ procedure TTestTIXML.tiParseForSingleAttribute;
 const
   cXML = '<mynode attr1="result1" attr2="result2" />';
 var
-  lResult : string ;
+  lResult : string;
 begin
   lResult := tiXML.tiParseForSingleAttribute(cXML, 'attr1');
   CheckEquals('result1', lResult, '#1');
@@ -323,7 +323,7 @@ var
   lResult : string;
 begin
   lResult := tiXML.tiParseForSingleNode(cXML, 'mydata');
-  CheckEquals( 'attr1="test1"', lResult ) ;
+  CheckEquals('attr1="test1"', lResult);
 end;
 
 procedure TTestTIXML.tiParseForSingleNodeAttribute;
@@ -345,7 +345,7 @@ var
   lResult : string;
 begin
   lResult := tiXML.tiParseForSingleNode(cXML, 'mydata');
-  CheckEquals( 'attr1="test1"', lResult ) ;
+  CheckEquals('attr1="test1"', lResult);
 end;
 
 procedure TTestTIXML.tiParseForSingleNodeAttribute1;
@@ -370,28 +370,28 @@ end;
 constructor TTestTIXMLParser.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
-  FAttributes := TStringList.Create ;
+  FAttributes := TStringList.Create;
 end;
 
 destructor TTestTIXMLParser.Destroy;
 begin
-  FAttributes.Free ;
+  FAttributes.Free;
   inherited;
 end;
 
-procedure TTestTIXMLParser.OnAttribute(const pName, pValue: string);
+procedure TTestTIXMLParser.OnAttribute(const AName, AValue: string);
 begin
-  FAttributes.Values[pName] := pValue ;
+  FAttributes.Values[AName]:= AValue;
 end;
 
-procedure TTestTIXMLParser.OnNode(const pStr: string);
+procedure TTestTIXMLParser.OnNode(const AStr: string);
 begin
-  FNode := pStr ;
+  FNode := AStr;
 end;
 
 procedure TTestTIXMLParser.ParseForAttribute1;
 var
-  lXML : string ;
+  lXML : string;
   lXMLParser : TtiXMLParser;
 begin
   lXML := '<mynode attr1="result1" attr2="result2" />';
@@ -408,7 +408,7 @@ end;
 
 procedure TTestTIXMLParser.ParseForAttribute2;
 var
-  lXML : string ;
+  lXML : string;
   lXMLParser : TtiXMLParser;
 begin
   lXML := '<mynode> attr1="result1" attr2="result2" </mynode>';
@@ -425,7 +425,7 @@ end;
 
 procedure TTestTIXMLParser.ParseForAttribute3;
 var
-  lXML : string ;
+  lXML : string;
   lXMLParser : TtiXMLParser;
 begin
   lXML := 'attr1="result1" attr2="result2"';
@@ -442,12 +442,12 @@ end;
 
 procedure TTestTIXMLParser.ParseForNode1;
 var
-  lXML : string ;
-  lNode : string ;
+  lXML : string;
+  lNode : string;
   lXMLParser : TtiXMLParser;
 begin
   lNode := 'attr1="test"';
-  lXML  := '<mynode ' + lNode + ' />';
+  lXML := '<mynode ' + lNode + ' />';
   lXMLParser := TtiXMLParser.Create;
   try
     lXMLParser.ParseForNode('<myxml>' + lXML + '</myxml>', '<mynode', '/>', OnNode);
@@ -459,12 +459,12 @@ end;
 
 procedure TTestTIXMLParser.ParseForNode2;
 var
-  lXML : string ;
-  lNode : string ;
+  lXML : string;
+  lNode : string;
   lXMLParser : TtiXMLParser;
 begin
   lNode := 'attr1="test"';
-  lXML  := '<mynode>' + lNode + '</mynode>';
+  lXML := '<mynode>' + lNode + '</mynode>';
   lXMLParser := TtiXMLParser.Create;
   try
     lXMLParser.ParseForNode('<myxml> ' + lXML + ' </myxml>', '<mynode>', '</mynode>', OnNode);
@@ -481,24 +481,24 @@ begin
   FAttributes.Clear;
 end;
 
-function TTestTIXML.tiReplicate1( const pStrValue : string ; pRepCount : Word ) : string ;
+function TTestTIXML.tiReplicate1(const AValue : string ; ACount : Word): string ;
 var
-  pResult, pValue: PChar;
-  lenValue: cardinal;
+  LResult, LValue: PChar;
+  LLen: cardinal;
 
 begin
-  if (pRepCount = 0) or (Pointer(pStrValue) = nil) then
+  if (ACount = 0) or (Pointer(AValue) = nil) then
     exit;
-  lenValue := Length(pStrValue);
-  SetLength(Result, lenValue * pRepCount);
-  pResult := Pointer(Result);
-  pValue := Pointer(pStrValue);
+  LLen := Length(AValue);
+  SetLength(Result, LLen * ACount);
+  LResult := Pointer(Result);
+  LValue := Pointer(AValue);
 
-  while pRepCount <> 0 do
+  while ACount <> 0 do
   begin
-    Move(pValue^, pResult^, lenValue);
-    Inc(pResult, lenValue);
-    Dec(pRepCount);
+    Move(LValue^, LResult^, LLen);
+    Inc(LResult, LLen);
+    Dec(ACount);
   end;
 end;
 

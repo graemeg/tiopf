@@ -8,7 +8,7 @@ uses
   ExtCtrls
   ,Classes
   ,Graphics
-  ;
+ ;
 
 
 type
@@ -18,17 +18,17 @@ type
     FCornerRadius: Byte;
     FBorderColor: TColor;
     FBorderThickness: Byte;
-    procedure SetCornerRadius(const Value: Byte);
-    procedure SetBorderColor(const Value: TColor);
-    procedure SetBorderThickness(const Value: Byte);
+    procedure SetCornerRadius(const AValue: Byte);
+    procedure SetBorderColor(const AValue: TColor);
+    procedure SetBorderThickness(const AValue: Byte);
     procedure CalcBorderWidth;
   public
-    constructor Create(AOwner : TComponent); override ;
+    constructor Create(AOwner : TComponent); override;
     procedure Paint; override;
     property  DockManager;
   published
-    property CornerRadius : Byte read FCornerRadius write SetCornerRadius ;
-    property BorderColor : TColor read FBorderColor write SetBorderColor ;
+    property CornerRadius : Byte read FCornerRadius write SetCornerRadius;
+    property BorderColor : TColor read FBorderColor write SetBorderColor;
     property BorderThickness : Byte read FBorderThickness write SetBorderThickness;
     property Align;
     property Alignment;
@@ -86,7 +86,7 @@ uses
   Windows,
 {$ENDIF}
   Controls
-  ;
+ ;
 
 { TtiRoundedPanel }
 
@@ -100,9 +100,9 @@ begin
 end;
 
 procedure TtiRoundedPanel.Paint;
-  procedure _DrawBorder(const pRect : TRect ; const pColor : TColor ;pPenFactor : integer);
+  procedure _DrawBorder(const pRect : TRect; const pColor : TColor;pPenFactor : integer);
   begin
-    Canvas.Pen.Color := pColor ;
+    Canvas.Pen.Color := pColor;
     Canvas.Pen.Width := FBorderThickness * pPenFactor;
     Canvas.RoundRect(pRect.Left, pRect.Top, pRect.Right, pRect.Bottom,
                      FCornerRadius*2, FCornerRadius*2);
@@ -114,7 +114,7 @@ var
   lRect: TRect;
 begin
   lRect := Rect(0,0,Width,Height);
-  if ( Parent <> nil ) then
+  if (Parent <> nil) then
   begin
     Canvas.Brush.Color := Parent.Brush.Color;
     Canvas.FillRect(lRect);
@@ -136,22 +136,22 @@ begin
   _DrawBorder(lRect, BorderColor, 1);
 end;
 
-procedure TtiRoundedPanel.SetBorderColor(const Value: TColor);
+procedure TtiRoundedPanel.SetBorderColor(const AValue: TColor);
 begin
-  FBorderColor := Value;
+  FBorderColor := AValue;
   Invalidate;
 end;
 
-procedure TtiRoundedPanel.SetBorderThickness(const Value: Byte);
+procedure TtiRoundedPanel.SetBorderThickness(const AValue: Byte);
 begin
-  FBorderThickness := Value;
+  FBorderThickness := AValue;
   CalcBorderWidth;
   Invalidate;
 end;
 
-procedure TtiRoundedPanel.SetCornerRadius(const Value: Byte);
+procedure TtiRoundedPanel.SetCornerRadius(const AValue: Byte);
 begin
-  FCornerRadius := Value;
+  FCornerRadius := AValue;
   CalcBorderWidth;
   Invalidate;
 end;
@@ -159,7 +159,7 @@ end;
 
 procedure TtiRoundedPanel.CalcBorderWidth;
 begin
-  BorderWidth := (FCornerRadius div 2 + BorderThickness * 2) + 1 ;
+  BorderWidth := (FCornerRadius div 2 + BorderThickness * 2) + 1;
 end;
 
 end.

@@ -1,9 +1,9 @@
 object FormMainAbs: TFormMainAbs
   Left = 424
   Top = 202
-  Width = 234
-  Height = 184
   Caption = ' Main form'
+  ClientHeight = 130
+  ClientWidth = 226
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,10 +20,9 @@ object FormMainAbs: TFormMainAbs
     Left = 0
     Top = 0
     Width = 226
-    Height = 24
+    Height = 22
     AutoSize = True
     Caption = 'ToolBar'
-    Flat = True
     Images = ImageList
     ParentShowHint = False
     ShowHint = True

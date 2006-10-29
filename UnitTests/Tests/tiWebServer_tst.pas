@@ -5,7 +5,7 @@ unit tiWebServer_tst;
 interface
 uses
    tiTestFrameWork
-  ;
+ ;
 
 type
 
@@ -38,9 +38,10 @@ type
     procedure tiDBProxyServer_TestXML;
     procedure tiDBProxyServer_TestAlive;
 
-  end ;
+    procedure tiWebServerVersion;
+  end;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 
 implementation
 uses
@@ -55,6 +56,7 @@ uses
 //  ,tiDBProxyServerDependencies
 
   ,tiWebServerConstants
+  ,tiWebServerVersion
   ,tiHTTPIndy
   ,tiLog
 
@@ -62,7 +64,7 @@ uses
 
   , tiHTTP;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TtestTIWebServer);
 end;
@@ -139,6 +141,54 @@ begin
 
 end;
 
+procedure TTestTIWebServer.tiWebServerVersion;
+var
+  L: TtiAppServerVersion;
+  LS: string;
+begin
+
+  L:= TtiAppServerVersion.Create;
+  try
+    CheckEquals(cWebServerStatus_unknown, L.ConnectionStatus);
+    CheckEquals('', L.XMLVersion);
+    CheckEquals('', L.FileSyncVersion);
+
+    L.LoadDefaultValues;
+    CheckEquals(cWebServerStatus_unknown, L.ConnectionStatus);
+    CheckEquals(cXMLVersion,              L.XMLVersion);
+    CheckEquals(cFileSyncVersion,         L.FileSyncVersion);
+
+    L.SetConnectionStatus(True);
+    CheckEquals(cWebServerStatus_passed, L.ConnectionStatus);
+
+    L.SetConnectionStatus(False);
+    CheckEquals(cWebServerStatus_failed, L.ConnectionStatus);
+
+  finally
+    L.free;
+  end;
+
+  L:= TtiAppServerVersion.Create;
+  try
+    L.ConnectionStatus:= 'test1';
+    L.XMLVersion:= 'test2';
+    L.FileSyncVersion:= 'test3';
+    LS:= L.AsString;
+  finally
+    L.free;
+  end;
+
+  L:= TtiAppServerVersion.Create;
+  try
+    L.AsString:= LS;
+    CheckEquals('test1', L.ConnectionStatus);
+    CheckEquals('test2', L.XMLVersion);
+    CheckEquals('test3', L.FileSyncVersion);
+  finally
+    L.free;
+  end;
+
+end;
 procedure TtestTIWebServer.tiWebServer_CanFindPage;
 var
   LO: TtiWebServer;
@@ -159,7 +209,7 @@ begin
     LResult:= TestHTTPRequest('testpage');
     CheckEquals(LPage, LResult);
 
-    DeleteFile(LFileName);
+    tiDeleteFile(LFileName);
     LFileName:= tiSwapExt(LFileName, 'html');
     tiStringToFile(LPage, LFileName);
 
@@ -240,7 +290,7 @@ begin
   LO:= TtiWebServer.Create(cPort);
   try
     LO.Start;
-    DeleteFile(LFileName);
+    tiDeleteFile(LFileName);
     tiStringToFile(LPage, LFileName);
     LResult:= TestHTTPRequest(cgTIDBProxyGetLog);
     CheckEquals('<HTML><PRE>'+LPage+'</PRE></HTML>', LResult);
@@ -355,13 +405,13 @@ begin
     L.AddBlockStream('abcDEFgh', 3, LBlockText, LBlockCount, LTransID);
     CheckEquals(1, L.Count);
     CheckEquals('abc', LBlockText);
-    CheckEquals( 3, LBlockCount);
+    CheckEquals(3, LBlockCount);
     CheckEquals(1, LTransID);
 
     L.AddBlockStream('jklMNOpq', 3, LBlockText, LBlockCount, LTransID);
     CheckEquals(2, L.Count);
     CheckEquals('jkl', LBlockText);
-    CheckEquals( 3, LBlockCount);
+    CheckEquals(3, LBlockCount);
     CheckEquals(2, LTransID);
 
     L.ReadBlock(2, 0, LBlockText);

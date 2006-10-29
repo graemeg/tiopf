@@ -7,44 +7,44 @@ interface
 uses
   tiOID
   ,tiBaseObject
-  ;
+ ;
 
 
 type
 
-  TOIDGUID = class( TOID )
+  TOIDGUID = class(TOID)
   private
-    FAsString : string ;
+    FAsString : string;
   protected
-    function  GetAsString: ShortString; override ;
-    procedure SetAsString(const Value: ShortString); override ;
+    function  GetAsString: ShortString; override;
+    procedure SetAsString(const AValue: ShortString); override;
     function  GetAsVariant: Variant;override;
-    procedure SetAsVariant(const Value: Variant);override;
+    procedure SetAsVariant(const AValue: Variant);override;
   public
-    function  IsNull : boolean ; override ;
-    procedure AssignToTIQueryParam( const pFieldName : string ; const pParams : TtiBaseObject ) ; override ;
-    procedure AssignToTIQuery( const pFieldName : string ; const pQuery : TtiBaseObject ) ; override ;
-    procedure AssignFromTIQuery( const pFieldName : string ; const pQuery : TtiBaseObject ) ; override ;
-    function  EqualsQueryField( const pFieldName : string ; const pQuery : TtiBaseObject ) : boolean ; override;
-    procedure Assign( const pSource : TOID ) ; override ;
-    function  Compare( const pCompareWith : TOID ) : integer ; override ;
+    function  IsNull : boolean; override;
+    procedure AssignToTIQueryParam(const AFieldName : string; const AParams : TtiBaseObject); override;
+    procedure AssignToTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
+    procedure AssignFromTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
+    function  EqualsQueryField(const AFieldName : string; const AQuery : TtiBaseObject): boolean; override;
+    procedure Assign(const ASource : TOID); override;
+    function  Compare(const ACompareWith : TOID): integer; override;
     procedure SetToNull; override;
-    function  NullOIDAsString : string ; override ;
-    procedure GetNextValue( const pDatabaseName : string ; const pPerLayerName : string ) ; override ;
-  end ;
+    function  NullOIDAsString : string; override;
+    procedure GetNextValue(const ADatabaseName : string; const APersistenceLayerName : string); override;
+  end;
 
 
-  TNextOIDGeneratorGUID = class( TNextOIDGenerator )
+  TNextOIDGeneratorGUID = class(TNextOIDGenerator)
   private
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   AssignNextOID( const pAssignTo : TOID ; const pDatabaseName : string ; pPerLayerName : string ) ; override ;
-  end ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   AssignNextOID(const AAssignTo : TOID; const ADatabaseName : string; APersistenceLayerName : string); override;
+  end;
 
 
 const
-  cOIDClassNameGUID = 'OIDClassNameGUID' ;
+  cOIDClassNameGUID = 'OIDClassNameGUID';
 
 
 implementation
@@ -54,20 +54,20 @@ uses
   ,tiLog
   ,tiConstants
   ,tiUtils
-  ;
+ ;
 
 
 { TOIDGUID }
 
 function TOIDGUID.getAsString: ShortString;
 begin
-  result := FAsString ;
+  result := FAsString;
 end;
 
 
-procedure TOIDGUID.SetAsString(const Value: ShortString);
+procedure TOIDGUID.SetAsString(const AValue: ShortString);
 begin
-  FAsString := Value ;
+  FAsString := AValue;
 end;
 
 
@@ -77,75 +77,75 @@ begin
 end;
 
 
-procedure TOIDGUID.AssignFromTIQuery(const pFieldName : string ; const pQuery: TtiBaseObject);
+procedure TOIDGUID.AssignFromTIQuery(const AFieldName : string; const AQuery: TtiBaseObject);
 var
-  lQuery : TtiQuery ;
+  lQuery : TtiQuery;
 begin
-  Assert( pQuery is TtiQuery, 'pQuery not a TtiQuery' ) ;
-  lQuery := TtiQuery( pQuery ) ;
-  FAsString := lQuery.FieldAsString[ pFieldName ] ;
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery := TtiQuery(AQuery);
+  FAsString := lQuery.FieldAsString[ AFieldName ];
 end;
 
 
-procedure TOIDGUID.AssignToTIQuery(const pFieldName : string ; const pQuery: TtiBaseObject);
+procedure TOIDGUID.AssignToTIQuery(const AFieldName : string; const AQuery: TtiBaseObject);
 var
-  lQuery : TtiQuery ;
+  lQuery : TtiQuery;
 begin
-  Assert( pQuery is TtiQuery, 'pQuery not a TtiQuery' ) ;
-  lQuery := TtiQuery( pQuery ) ;
-  lQuery.ParamAsString[ pFieldName ] := FAsString ;
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery := TtiQuery(AQuery);
+  lQuery.ParamAsString[ AFieldName ]:= FAsString;
 end;
 
 
-function TOIDGUID.EqualsQueryField(const pFieldName: string; const pQuery: TtiBaseObject): boolean;
+function TOIDGUID.EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean;
 var
-  lQuery : TtiQuery ;
+  lQuery : TtiQuery;
 begin
-  Assert( pQuery is TtiQuery, 'pQuery not a TtiQuery' ) ;
-  lQuery := TtiQuery( pQuery ) ;
-  result := ( FAsString = lQuery.FieldAsString[ pFieldName ] ) ;
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery := TtiQuery(AQuery);
+  result := (FAsString = lQuery.FieldAsString[ AFieldName ]);
 end;
 
 
-procedure TOIDGUID.Assign(const pSource: TOID);
+procedure TOIDGUID.Assign(const ASource: TOID);
 begin
-  FAsString := pSource.AsString ;
+  FAsString := ASource.AsString;
 end;
 
 
-function TOIDGUID.Compare(const pCompareWith: TOID): integer;
+function TOIDGUID.Compare(const ACompareWith: TOID): integer;
 begin
-  if AsString < pCompareWith.AsString then
+  if AsString < ACompareWith.AsString then
     result := -1
-  else if AsString > pCompareWith.AsString then
+  else if AsString > ACompareWith.AsString then
     result := 1
   else
-    result := 0 ;
+    result := 0;
 end;
 
 
 procedure TOIDGUID.SetToNull;
 begin
-  FAsString := NullOIDAsString ;
+  FAsString := NullOIDAsString;
 end;
 
 
 
 const
-  cuLowRange = 100 ;
+  cuLowRange = 100;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TNextOIDGeneratorGUID
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TNextOIDGeneratorGUID.AssignNextOID(const pAssignTo: TOID; const pDatabaseName : string ; pPerLayerName : string );
+procedure TNextOIDGeneratorGUID.AssignNextOID(const AAssignTo: TOID; const ADatabaseName : string; APersistenceLayerName : string);
 var
-  lValue : string ;
+  lValue : string;
 const
-  cGUIDLength = 38 ;
+  cGUIDLength = 38;
 begin
-  Assert( pAssignTo.TestValid(TOID), cTIInvalidObjectError ) ;
+  Assert(AAssignTo.TestValid(TOID), cTIInvalidObjectError);
   lValue := tiCreateGUIDString;
 
 //           10        20        30
@@ -154,16 +154,16 @@ begin
 // A GUID will be 38 chars long when created,
 // or 36 chars long when {} are removed.
 
-  if ( lValue[1] = '{' ) and
-     ( lValue[cGUIDLength] = '}' ) then
-    lValue := Copy( lValue, 2, cGUIDLength - 2 ) ;
-  pAssignTo.AsString := lValue ;
+  if (lValue[1] = '{') and
+     (lValue[cGUIDLength] = '}') then
+    lValue := Copy(lValue, 2, cGUIDLength - 2);
+  AAssignTo.AsString := lValue;
 end;
 
 
 constructor TNextOIDGeneratorGUID.Create;
 begin
-  inherited ;
+  inherited;
 end;
 
 
@@ -175,50 +175,50 @@ end;
 
 function TOIDGUID.GetAsVariant: Variant;
 begin
-  result := FAsString ;
+  result := FAsString;
 end;
 
 
-procedure TOIDGUID.SetAsVariant(const Value: Variant);
+procedure TOIDGUID.SetAsVariant(const AValue: Variant);
 begin
-  FAsString := Value ;
+  FAsString := AValue;
 end;
 
 
 function TOIDGUID.NullOIDAsString: string;
 begin
-  result := '' ;
+  result := '';
 end;
 
 
-procedure TOIDGUID.GetNextValue(const pDatabaseName, pPerLayerName: string);
+procedure TOIDGUID.GetNextValue(const ADatabaseName, APersistenceLayerName: string);
 var
-  lNextOIDGenerator : TNextOIDGeneratorGUID ;
+  lNextOIDGenerator : TNextOIDGeneratorGUID;
 begin
-  lNextOIDGenerator := TNextOIDGeneratorGUID.Create ;
+  lNextOIDGenerator := TNextOIDGeneratorGUID.Create;
   try
-    lNextOIDGenerator.AssignNextOID(Self, pDatabaseName, pPerLayerName );
+    lNextOIDGenerator.AssignNextOID(Self, ADatabaseName, APersistenceLayerName);
   finally
     lNextOIDGenerator.Free;
   end;
 end;
 
 
-procedure TOIDGUID.AssignToTIQueryParam(const pFieldName: string;const pParams: TtiBaseObject);
+procedure TOIDGUID.AssignToTIQueryParam(const AFieldName: string;const AParams: TtiBaseObject);
 var
-  lParams : TtiQueryParams ;
+  lParams : TtiQueryParams;
 begin
-  Assert( pParams is TtiQueryParams, 'pQuery not a TtiQuery' ) ;
-  lParams := TtiQueryParams( pParams ) ;
-  lParams.SetValueAsString(pFieldName, FAsString);
+  Assert(AParams is TtiQueryParams, 'AQuery not a TtiQuery');
+  lParams := TtiQueryParams(AParams);
+  lParams.SetValueAsString(AFieldName, FAsString);
 end;
 
 
 initialization
 
-  gTIOPFManager.OIDFactory.RegisterMapping( cOIDClassNameGUID, TOIDGUID, TNextOIDGeneratorGUID )  ;
+  gTIOPFManager.OIDFactory.RegisterMapping(cOIDClassNameGUID, TOIDGUID, TNextOIDGeneratorGUID) ;
   if gTIOPFManager.DefaultOIDClassName = '' then
-    gTIOPFManager.DefaultOIDClassName := cOIDClassNameGUID ;
+    gTIOPFManager.DefaultOIDClassName := cOIDClassNameGUID;
 
 {$ELSE}
 interface

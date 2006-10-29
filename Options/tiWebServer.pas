@@ -19,6 +19,7 @@ const
   cErrorInvalidCachedBlockStreamTransID = 'Invalid cached block TransID "%d"';
   cDefaultBlockStreamCacheTimeout= 120;
   cDefaultBlockStreamCacheSweepEvery= 120;
+  cDefaultSleepSec= 10;
 
 type
 
@@ -36,7 +37,9 @@ type
     constructor Create(const AOwner : TtiWebServer; ASortOrder: Byte);
     function    CanExecute(const ADocument: string): boolean; virtual; abstract;
     procedure   Execute(const ADocument: string; const ARequestParams: string;
-                        const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); virtual; abstract;
+                        const AResponse: TStream; var AContentType: string;
+                        var   AResponseCode: Integer;
+                        const AResponseInfo: TIdHTTPResponseInfo); virtual; abstract;
 
     property    Owner : TtiWebServer read FOwner write FOwner;
     property    SortOrder: Byte Read FSortOrder;
@@ -47,7 +50,9 @@ type
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   // A hack to ignore a single request currently being used by a web switch
@@ -56,28 +61,36 @@ type
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   TtiWebServerAction_CanNotFindPage = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   TtiWebServerAction_GetLogFile = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   TtiWebServerAction_CanFindPage = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   // ToDo: Not a true CGI interface, but a hack. Change this to support true CGI
@@ -85,7 +98,9 @@ type
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
-                      const AResponse: TStream; var AContentType: string; var AResponseCode: Integer); override;
+                      const AResponse: TStream; var AContentType: string;
+                      var AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
   TtiCachedBlockStream = class(TtiBlockStream)
@@ -141,8 +156,6 @@ type
     FStaticPageLocation: string;
     FCGIBinLocation: string;
     FBlockStreamCache: TtiBlockStreamCache;
-    procedure SetCGIBinLocation(const Value: string);
-    procedure SetStaticPageLocation(const Value: string);
   protected
     property  ServerActions: TObjectList Read FServerActions;
 
@@ -150,7 +163,9 @@ type
                                        ARequestInfo: TIdHTTPRequestInfo;
                                        AResponseInfo: TIdHTTPResponseInfo); virtual;
     procedure ProcessHTTPGet(const ADocument: string; const AParams: string;
-                             const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+                             const AResponse: TStream; var AContentType: string;
+                             var   AResponseCode: Integer;
+                             const AResponseInfo: TIdHTTPResponseInfo);
     procedure ApplyResponseStreamToHTTPResponse(
                              AResponseInfo: TIdHTTPResponseInfo; AResponse: TStream;
                              const AResponseType: string; AResponseCode: Integer);
@@ -161,8 +176,8 @@ type
     constructor Create(APort: integer); virtual;
     destructor  Destroy; override;
 
-    property    StaticPageLocation : string read FStaticPageLocation write SetStaticPageLocation;
-    property    CGIBinLocation     : string read FCGIBinLocation     write SetCGIBinLocation;
+    property    StaticPageLocation : string read FStaticPageLocation;
+    property    CGIBinLocation    : string read FCGIBinLocation;
 
     procedure   Start;
     procedure   Stop;
@@ -180,7 +195,7 @@ uses
   ,tiLog
   ,tiConsoleApp
   ,tiHTTP
-
+  ,tiWebServerConfig
   ,Math
   ,SysUtils
   {$IFDEF DELPHI5}
@@ -195,15 +210,12 @@ begin
   inherited Create;
 
   FServerActions:= TObjectList.Create(true);
-  FServerActions.Add(TtiWebServerAction_Ignore.Create(        Self,  1));
-  FServerActions.Add(TtiWebServerAction_Default.Create(       Self,  2));
-  FServerActions.Add(TtiWebServerAction_CanFindPage.Create(   Self,  3));
-  FServerActions.Add(TtiWebServerAction_GetLogFile.Create(    Self,  4));
+  FServerActions.Add(TtiWebServerAction_Ignore.Create(       Self,  1));
+  FServerActions.Add(TtiWebServerAction_Default.Create(      Self,  2));
+  FServerActions.Add(TtiWebServerAction_CanFindPage.Create(  Self,  3));
+  FServerActions.Add(TtiWebServerAction_GetLogFile.Create(   Self,  4));
   FServerActions.Add(TtiWebServerAction_RunCGIExtension.Create(Self, 5));
   FServerActions.Add(TtiWebServerAction_CanNotFindPage.Create(Self, High(Byte)));
-
-  StaticPageLocation := tiGetEXEPath + PathDelim + cStaticPageDir;
-  CGIBinLocation     := tiGetEXEPath + PathDelim + cCGIBinDir;
 
   FIdHTTPServer := TIdHTTPServer.Create(Nil);
   FIdHTTPServer.OnCommandGet := DoIDHTTPServerCommandGet;
@@ -257,13 +269,13 @@ begin
     // BlockSize = 0, so don't block result
     if (LBlockSize = 0) then
     begin
-      ProcessHTTPGet(LDocument, LParams, LResponse, LContentType, LResponseCode);
+      ProcessHTTPGet(LDocument, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
       LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, 0, 0, 0);
     end
     // BlockSize <> 0 and TransID = 0, a new blocked request
     else if (LBlockSize <> 0) and (LTransID = 0) then
     begin
-      ProcessHTTPGet(LDocument, LParams, LResponse, LContentType, LResponseCode);
+      ProcessHTTPGet(LDocument, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
       FBlockStreamCache.AddBlockStream(tiStreamToString(LResponse), LBlockSize, LTemp, LBlockCount, LTransID);
       tiStringToStream(LTemp, LResponse);
       if LBlockCount > 1 then
@@ -314,7 +326,9 @@ end;
 
 procedure TtiWebServer.ProcessHTTPGet(
   const ADocument: string; const AParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream; var AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 var
   i : integer;
   LServerAction : TtiWebServerAction;
@@ -325,7 +339,8 @@ begin
       if (FServerActions.Items[i] as TtiWebServerAction).CanExecute(ADocument) then
       begin
         LServerAction := (FServerActions.Items[i] as TtiWebServerAction);
-        LServerAction.Execute(ADocument, AParams, AResponse, AContentType, AResponseCode);
+        LServerAction.Execute(ADocument, AParams, AResponse,
+                              AContentType, AResponseCode, AResponseInfo);
         Exit; //==>
       end;
     // Should not get here - unless can not find page.
@@ -342,7 +357,16 @@ end;
 { TtiWebServerAction_ExecuteRemoteXML }
 
 procedure TtiWebServer.Start;
+var
+  LConfig: TtiWebServerConfig;
 begin
+  LConfig:= TtiWebServerConfig.Create;
+  try
+    FStaticPageLocation:= tiAddTrailingSlash(LConfig.PathToStaticPages);
+    FCGIBinLocation:= tiAddTrailingSlash(LConfig.PathToCGIBin);
+  finally
+    LConfig.Free;
+  end;
 
   if not DirectoryExists(StaticPageLocation) then
     ForceDirectories(StaticPageLocation);
@@ -351,7 +375,7 @@ begin
   if not FileExists(StaticPageLocation + 'default.htm') then
     CreateDefaultPage;
 
-  Log('Attempting to start HTTP server on port ' + IntToStr(FidHTTPServer.DefaultPort ));
+  Log('Attempting to start HTTP server on port ' + IntToStr(FidHTTPServer.DefaultPort));
   FIdHTTPServer.Active := true;
   Log('HTTP server started');
   Log('Static web pages location <' + StaticPageLocation + '>');
@@ -379,16 +403,6 @@ begin
   FServerActions.Sort(_CompareWebServerActions);
 end;
 
-procedure TtiWebServer.SetCGIBinLocation(const Value: string);
-begin
-  FCGIBinLocation := tiAddTrailingSlash(Value);
-end;
-
-procedure TtiWebServer.SetStaticPageLocation(const Value: string);
-begin
-  FStaticPageLocation := tiAddTrailingSlash(Value);
-end;
-
 { TtiWebServerAction_Default }
 
 function TtiWebServerAction_Default.CanExecute(const ADocument: string): boolean;
@@ -401,7 +415,10 @@ end;
 
 procedure TtiWebServerAction_Default.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream; var
+        AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   GetReturnPage(StaticPageLocation + cDefaultPageName, AResponse, AContentType);
@@ -513,7 +530,10 @@ end;
 
 procedure TtiWebServerAction_CanNotFindPage.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   tiStringToStream(Format(cErrorCanNotFindPage, [ADocument]), AResponse);
@@ -539,7 +559,10 @@ end;
 
 procedure TtiWebServerAction_CanFindPage.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   GetReturnPage(StaticPageLocation + ADocument, AResponse, AContentType);
@@ -554,7 +577,10 @@ end;
 
 procedure TtiWebServerAction_GetLogFile.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 var
   lFileName: string;
 begin
@@ -582,7 +608,10 @@ end;
 
 procedure TtiWebServerAction_RunCGIExtension.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 var
   lCGI : string;
   ls : string;
@@ -604,7 +633,8 @@ begin
       // This will cause a browser to fail which is a problem with OPDMSMonitor.exe
       // Req an exit code in the returned XML
       //pResponseInfo.ResponseNo := cHTTPResponseCodeInternalError;
-      tiStringToStream(ls, AResponse)
+      tiStringToStream(ls, AResponse);
+      AResponseInfo.CustomHeaders.Values[ctiOPFHTTPErrorCode]:= IntToStr(lExitCode);
     end;
   except
     on e:exception do
@@ -633,7 +663,10 @@ end;
 
 procedure TtiWebServerAction_Ignore.Execute(
   const ADocument: string; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string; var AResponseCode: Integer);
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 begin
   AResponse.Size:= 0;
   AContentType:= cHTTPContentTypeTextHTML;
@@ -670,7 +703,7 @@ begin
   FCritSect:= TCriticalSection.Create;
   FTimeOutSec:= cDefaultBlockStreamCacheTimeout;
   FSweepEverySec:= cDefaultBlockStreamCacheSweepEvery;
-  FSleepSec:= Max(10, cDefaultBlockStreamCacheSweepEvery div 10);
+  FSleepSec:= cDefaultSleepSec;
   FSweeper:= TtiThreadBlockStreamCacheSweepForTimeouts.Create(Self);
 end;
 
@@ -744,7 +777,7 @@ end;
 
 function TtiCachedBlockStream.GetSecInUse: Word;
 begin
-  result := Trunc(( Now - LastAccessed ) * 24 * 60 * 60  );
+  result := Trunc((Now - LastAccessed) * 24 * 60 * 60 );
 end;
 
 { TtiThreadBlockStreamCacheSweepForTimeouts }
@@ -767,7 +800,7 @@ begin
     LStart:= Now;
     while (not Terminated) and
           ((Now - LStart) <= (cdtOneSecond * FBlockStreamCache.SweepEverySec)) do
-      Sleep(FBlockStreamCache.SleepSec); // Higher value uses less resouce, but will take longer to shut down.
+      Sleep(FBlockStreamCache.SleepSec*1000); // Higher value uses less resouce, but will take longer to shut down.
     FBlockStreamCache.SweepForTimeOuts;
   end;
 end;

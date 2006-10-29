@@ -1,68 +1,61 @@
 unit tiLogToConsole;
 
-{$I tiDefines.inc}
-
 interface
 uses
   tiLog
-  ;
-
+ ;
 
 type
-  { Log to a console and log immediately, not using any cache }
-  TtiLogToConsole = class( TtiLogToAbs )
+
+  // Log to a console
+  TtiLogToConsole = class(TtiLogToAbs)
   private
   protected
-    function  AcceptEvent( const psDateTime : string ;
-                           const psMessage  : string;
-                           pSeverity  : TtiLogSeverity ) : boolean ; override ;
+    function  AcceptEvent(const ADateTime : string;
+                           const AMessage : string;
+                           ASeverity : TtiLogSeverity): boolean; override;
     procedure WriteToOutput; override; 
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Log( const psDateTime : string ;
-                     const psThreadID : string ;
-                     const psMessage  : string;
-                     pSeverity  : TtiLogSeverity ) ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Log(const ADateTime : string;
+                     const AThreadID : string;
+                     const AMessage : string;
+                     ASeverity : TtiLogSeverity); override;
   end;
 
 implementation
 uses
   tiCommandLineParams
   ,tiUtils
-  ,SysUtils
-  ;
+  , SysUtils;
 
 { TLogToConsole }
 
-{ Seems we always want to log lsUserInfo events }
-function TtiLogToConsole.AcceptEvent(const psDateTime, psMessage: string;
-  pSeverity: TtiLogSeverity): boolean;
+function TtiLogToConsole.AcceptEvent(const ADateTime, AMessage: string;
+  ASeverity: TtiLogSeverity): boolean;
 begin
-//  if gCommandLineParams.IsParam( csLogVisual ) then
-    result := ( pSeverity = lsUserInfo ) or (pSeverity in gLog.SevToLog)
-//  else
-//    result := pSeverity in [lsUserInfo];
+  if gCommandLineParams.IsParam(csLogVisual) then
+    result := (ASeverity = lsUserInfo) or (ASeverity in gLog.SevToLog)
+  else
+    result :=
+      ASeverity in [lsUserInfo];
 end;
-
 
 constructor TtiLogToConsole.Create;
 begin
   inherited;
 end;
 
-
 destructor TtiLogToConsole.Destroy;
 begin
-  Terminate ;
+  Terminate;
   inherited;
 end;
 
+procedure TtiLogToConsole.Log(const ADateTime, AThreadID,
+  AMessage: string; ASeverity: TtiLogSeverity);
 
-procedure TtiLogToConsole.Log(const psDateTime, psThreadID,
-    psMessage: string; pSeverity: TtiLogSeverity);
-
-  //------------
   procedure _WriteRemainingLines(const AText: string);
   var
     LMessage: string;
@@ -75,7 +68,6 @@ procedure TtiLogToConsole.Log(const psDateTime, psThreadID,
       WriteLn(tiSpace(cMargin) + tiToken(LMessage, #13#10, i));
   end;
 
-  //------------
   procedure _WriteLines(const AText: string);
   var
     LMessage: string;
@@ -88,16 +80,16 @@ procedure TtiLogToConsole.Log(const psDateTime, psThreadID,
   end;
 
 var
-  lLogEvent: TtiLogEvent;
+  lLogEvent : TtiLogEvent;
   lMessage: string;
 begin
-  if not AcceptEvent( psDateTime, psMessage, pSeverity ) then
+  if not AcceptEvent(ADateTime, AMessage, ASeverity) then
     Exit; //==>
 
   lLogEvent := TtiLogEvent.Create;
   try
-    lLogEvent.LogMessage := psMessage;
-    lMessage    := lLogEvent.AsStringStripCrLf ;
+    lLogEvent.LogMessage := AMessage;
+    lMessage   := lLogEvent.AsStringStripCrLf;
     lMessage := Copy(lMessage, cuiWidthSeverity+4, Length(lMessage));
     if Length(lMessage) > 79 then
     begin
@@ -109,11 +101,12 @@ begin
   end;
 end;
 
-
 procedure TtiLogToConsole.WriteToOutput;
 begin
-  { do nothing }
+
 end;
 
+initialization
+  gLog.RegisterLog(TtiLogToConsole.Create);
 
 end.

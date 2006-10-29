@@ -19,7 +19,7 @@ uses
   ,tiStreams
   ,SysUtils
   ,tiXML
-  ;
+ ;
 
 const
   cErrorInvalidFieldName = 'Invalid field name <%s>';
@@ -31,170 +31,170 @@ const
 
 type
 
-  TtiDatabaseTXTAbs = class ;
+  TtiDatabaseTXTAbs = class;
 
-  TtiDBConnectionPoolDataTXTAbs = Class( TtiDBConnectionPoolDataAbs )
+  TtiDBConnectionPoolDataTXTAbs = Class(TtiDBConnectionPoolDataAbs)
   public
-    procedure InitDBConnectionPool ; override ;
-  end ;
-
-  TtiDatabaseTXTAbs = class( TtiDatabase )
-  private
-    FDataSets : TtiDataBuffers ;
-    FInTransaction : boolean ;
-  protected
-    FConnected : boolean ;
-    procedure   SetInTransaction(pValue : Boolean);
-    function    GetConnected : boolean ; override ;
-    property    DataSets : TtiDataBuffers read FDataSets ;
-  public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   StartTransaction ; override ;
-    function    InTransaction : boolean ; override ;
-    procedure   ReadMetaDataTables( pData : TtiDBMetaData ) ; override ;
-    procedure   ReadMetaDataFields( pData : TtiDBMetaDataTable ) ; override ;
-    function    FindDataSetByName(const pName : string ) : TtiDataBuffer ;
-    procedure   CreateTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
-    procedure   DropTable( const pTableMetaData: TtiDBMetaDataTable); override ;
-    function    Test : boolean ; override ;
+    procedure InitDBConnectionPool; override;
   end;
 
-  TtiDatabaseTXTFlatFileAbs = class( TtiDatabaseTXTAbs )
+  TtiDatabaseTXTAbs = class(TtiDatabase)
   private
-    FDirtyList : TObjectList ;
-    FFilenameExt : string ;
+    FDataSets : TtiDataBuffers;
+    FInTransaction : boolean;
+  protected
+    FConnected : boolean;
+    procedure   SetInTransaction(AValue : Boolean);
+    function    GetConnected : boolean; override;
+    property    DataSets : TtiDataBuffers read FDataSets;
+  public
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   StartTransaction; override;
+    function    InTransaction : boolean; override;
+    procedure   ReadMetaDataTables(AData : TtiDBMetaData); override;
+    procedure   ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
+    function    FindDataSetByName(const AName : string): TtiDataBuffer;
+    procedure   CreateTable(const ATableMetaData : TtiDBMetaDataTable); override;
+    procedure   DropTable(const ATableMetaData: TtiDBMetaDataTable); override;
+    function    Test : boolean; override;
+  end;
+
+  TtiDatabaseTXTFlatFileAbs = class(TtiDatabaseTXTAbs)
+  private
+    FDirtyList : TObjectList;
+    FFilenameExt : string;
 
 
   protected
     function    GetDataSetCount: integer;
-    function    ExpandFileName( const pTableName : string ) : string ;
-    procedure   SetDirty(const pDataSet : TtiDataBuffer; pDirty : boolean) ;
-    function    IsDirty(const pDataSet : TtiDataBuffer) : boolean ;
-    procedure   SetConnected( pbValue : boolean ) ; override;
-    property    DataSetCount : integer read GetDataSetCount ;
-    procedure   SaveDataSet(const pDataSet : TtiDataBuffer); virtual ;
-    procedure   ReadDataSet(const pDataSet : TtiDataBuffer); virtual ;
+    function    ExpandFileName(const ATableName : string): string;
+    procedure   SetDirty(const pDataSet : TtiDataBuffer; pDirty : boolean);
+    function    IsDirty(const pDataSet : TtiDataBuffer): boolean;
+    procedure   SetConnected(AValue : boolean); override;
+    property    DataSetCount : integer read GetDataSetCount;
+    procedure   SaveDataSet(const pDataSet : TtiDataBuffer); virtual;
+    procedure   ReadDataSet(const pDataSet : TtiDataBuffer); virtual;
     property    FilenameExt : string  read FFilenameExt write FFilenameExt;
 
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
 
-    class function  DatabaseExists( const psDatabaseName, psUserName, psPassword : string ):boolean ; override ;
-    class procedure CreateDatabase( const psDatabaseName, psUserName, psPassword : string ) ; override ;
-    procedure   Commit ; override ;
-    procedure   RollBack ; override ;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    procedure   Commit; override;
+    procedure   RollBack; override;
 
-    procedure   DropTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
-    procedure   CreateTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
+    procedure   DropTable(const ATableMetaData : TtiDBMetaDataTable); override;
+    procedure   CreateTable(const ATableMetaData : TtiDBMetaDataTable); override;
 
-  end ;
+  end;
 
-  TtiQueryTXTAbs = class( TtiQueryNonSQL )
+  TtiQueryTXTAbs = class(TtiQueryNonSQL)
   private
-    FCurrentRecordIndex : integer ;
-    FSelectedRows : TObjectList ;
-    FActive : boolean ;
+    FCurrentRecordIndex : integer;
+    FSelectedRows : TObjectList;
+    FActive : boolean;
   protected
     FXMLRCTrans: IXMLReservedCharsTranslator;
-    FReservedChars : TtiReservedChar ;
+    FReservedChars : TtiReservedChar;
 
-    procedure   DoSelectRows( const pDataSet : TtiDataBuffer ; pWhere : TtiQueryParams ) ;
-    procedure   DoUpdateRow(  const pDataSetRow : TtiDataBufferRow ; pParams : TtiQueryParams ) ;
-    function    GetParamAsString(const psName: string): string; override ;
-    procedure   SetParamAsString(const psName, Value: string); override ;
-    procedure   DoAssignParamToCell( const pCell : TtiDataBufferCell ; pParam : TtiQueryParamAbs ) ;
+    procedure   DoSelectRows(const pDataSet : TtiDataBuffer; AWhere : TtiQueryParams);
+    procedure   DoUpdateRow( const pDataSetRow : TtiDataBufferRow; AParams : TtiQueryParams);
+    function    GetParamAsString(const AName: string): string; override;
+    procedure   SetParamAsString(const AName, AValue: string); override;
+    procedure   DoAssignParamToCell(const pCell : TtiDataBufferCell; pParam : TtiQueryParamAbs);
 
-    function    CurrentRow : TtiDataBufferRow ;
+    function    CurrentRow : TtiDataBufferRow;
 
-    function    GetFieldAsString(const psName: string): string;     override;
-    function    GetFieldAsFloat(const psName: string): Extended;    override;
-    function    GetFieldAsBoolean(const psName: string): boolean;   override;
-    function    GetFieldAsInteger(const psName: string): Int64;     override;
-    function    GetFieldAsDateTime(const psName: string):TDateTime; override;
-    function    GetFieldIsNull(const psName: string): Boolean;      override;
+    function    GetFieldAsString(const AName: string): string;     override;
+    function    GetFieldAsFloat(const AName: string): Extended;    override;
+    function    GetFieldAsBoolean(const AName: string): boolean;   override;
+    function    GetFieldAsInteger(const AName: string): Int64;     override;
+    function    GetFieldAsDateTime(const AName: string):TDateTime; override;
+    function    GetFieldIsNull(const AName: string): Boolean;      override;
 
-    function    GetFieldAsStringByIndex(pIndex: Integer): string     ; override;
-    function    GetFieldAsFloatByIndex(pIndex: Integer)   : extended ; override;
-    function    GetFieldAsBooleanByIndex(pIndex: Integer) : boolean  ; override;
-    function    GetFieldAsIntegerByIndex(pIndex: Integer) : Int64    ; override;
-    function    GetFieldAsDateTimeByIndex(pIndex: Integer):TDateTime ; override;
-    function    GetFieldIsNullByIndex(pIndex: Integer):Boolean       ; override;
+    function    GetFieldAsStringByIndex(AIndex: Integer): string    ; override;
+    function    GetFieldAsFloatByIndex(AIndex: Integer)  : extended; override;
+    function    GetFieldAsBooleanByIndex(AIndex: Integer): boolean ; override;
+    function    GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ; override;
+    function    GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime; override;
+    function    GetFieldIsNullByIndex(AIndex: Integer):Boolean      ; override;
 
-    function    GetSQL: TStrings; override ;
-    procedure   SetSQL(const Value: TStrings); override ;
-    function    GetActive: boolean; override ;
-    procedure   SetActive(const Value: boolean); override ;
-    function    GetEOF: boolean; override ;
+    function    GetSQL: TStrings; override;
+    procedure   SetSQL(const AValue: TStrings); override;
+    function    GetActive: boolean; override;
+    procedure   SetActive(const AValue: boolean); override;
+    function    GetEOF: boolean; override;
 
     property    CurrentRecordIndex : Integer     read FCurrentRecordIndex write FCurrentRecordIndex;
-    property    SelectedRows      : TObjectList read FSelectedRows       write FSelectedRows;
+    property    SelectedRows     : TObjectList read FSelectedRows       write FSelectedRows;
 
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Open    ; override ;
-    procedure   Close   ; override ;
-    procedure   Next    ; override ;
-    procedure   ExecSQL ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Open   ; override;
+    procedure   Close  ; override;
+    procedure   Next   ; override;
+    procedure   ExecSQL; override;
 
-    procedure    AttachDatabase( pDatabase : TtiDatabase ) ; override ;
-    procedure    DetachDatabase ;  override ;
-    procedure    Reset ; override ;
+    procedure    AttachDatabase(ADatabase : TtiDatabase); override;
+    procedure    DetachDatabase;  override;
+    procedure    Reset; override;
 
-    function     FieldCount : integer ; override ;
-    function     FieldName( pIndex : integer ) : string ; override ;
-    function     FieldIndex( const psName : string ) : integer ; override ;
-    function     FieldKind( pIndex : integer ) : TtiQueryFieldKind ; override ;
-    function     FieldSize( pIndex : integer ) : integer ; override ;
-    function     HasNativeLogicalType : boolean ; override ;
+    function     FieldCount : integer; override;
+    function     FieldName(AIndex : integer): string; override;
+    function     FieldIndex(const AName : string): integer; override;
+    function     FieldKind(AIndex : integer): TtiQueryFieldKind; override;
+    function     FieldSize(AIndex : integer): integer; override;
+    function     HasNativeLogicalType : boolean; override;
 
   public
 
   published
 
-  end ;
+  end;
 
 
-  TTXTToTIDataSetAbs = class( TtiBaseObject )
+  TTXTToTIDataSetAbs = class(TtiBaseObject)
   private
     FTextFileMetaData: TTextFileMetaDatas;
     FFieldDelim: string;
     FStringDelim: string;
     FStringDelimAsChar: AnsiChar;
-    FRowDelim   : string;
-    FStream     : TtiFileStream ;
-    FDataSet    : TtiDataBuffer ;
-    FDataSetRow : TtiDataBufferRow ;
-    function  QuoteStr(const pStr : string):string;
+    FRowDelim  : string;
+    FStream    : TtiFileStream;
+    FDataSet   : TtiDataBuffer;
+    FDataSetRow : TtiDataBufferRow;
+    function  QuoteStr(const AStr : string):string;
     procedure WriteFieldNames;
     procedure WriteRow(const pRow : TtiDataBufferRow);
-    procedure ReadFieldNames ;
-    procedure ReadRow ;
-    procedure DoExtractFieldName( pIndex : integer ; const pValue : string ) ;
-    procedure DoExtractData( pIndex : integer ; const pValue : string ) ;
-    procedure DoExtractDefaultFieldNames( pIndex : integer ; const pValue : string ) ;
-    procedure SetStringDelim(const Value: string);
+    procedure ReadFieldNames;
+    procedure ReadRow;
+    procedure DoExtractFieldName(AIndex : integer; const AValue : string);
+    procedure DoExtractData(AIndex : integer; const AValue : string);
+    procedure DoExtractDefaultFieldNames(AIndex : integer; const AValue : string);
+    procedure SetStringDelim(const AValue: string);
   protected
   public
-    constructor Create ; virtual ;
-    property    TextFileMetaData : TTextFileMetaDatas read FTextFileMetaData write FTextFileMetaData ;
-    property    FieldDelim  : string read FFieldDelim write FFieldDelim ;
-    property    StringDelim : string read FStringDelim write SetStringDelim ;
-    property    RowDelim    : string read FRowDelim write FRowDelim ;
-    procedure   Save( pDataSet : TtiDataBuffer ; pFileName : TFileName ) ;
-    procedure   Read( pDataSet : TtiDataBuffer ; pFileName : TFileName ) ;
-  end ;
-
-  TCSVToTIDataSet = class( TTXTToTIDataSetAbs )
-  public
-    constructor Create; override ;
+    constructor Create; virtual;
+    property    TextFileMetaData : TTextFileMetaDatas read FTextFileMetaData write FTextFileMetaData;
+    property    FieldDelim : string read FFieldDelim write FFieldDelim;
+    property    StringDelim : string read FStringDelim write SetStringDelim;
+    property    RowDelim   : string read FRowDelim write FRowDelim;
+    procedure   Save(pDataSet : TtiDataBuffer; AFileName : TFileName);
+    procedure   Read(pDataSet : TtiDataBuffer; AFileName : TFileName);
   end;
 
-  TTABToTIDataSet = class( TTXTToTIDataSetAbs )
+  TCSVToTIDataSet = class(TTXTToTIDataSetAbs)
   public
-    constructor Create; override ;
+    constructor Create; override;
+  end;
+
+  TTABToTIDataSet = class(TTXTToTIDataSetAbs)
+  public
+    constructor Create; override;
   end;
 
 
@@ -210,24 +210,24 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ;
+ ;
 
 const
-  cuXMLTagTable     = 'table' ;
-  cuXMLTagTables    = 'tables' ;
-  cuXMLTagTableName = 'table_name' ;
-  cuXMLTagFields    = 'fields' ;
-  cuXMLTagField     = 'field' ;
-  cuXMLTagFieldName = 'field_name' ;
-  cuXMLTagFieldKind = 'field_kind' ;
-  cuXMLTagFieldSize = 'field_Size' ;
-  cuXMLTagRows      = 'rows' ;
-  cuXMLTagRow       = 'row' ;
+  cuXMLTagTable     = 'table';
+  cuXMLTagTables    = 'tables';
+  cuXMLTagTableName = 'table_name';
+  cuXMLTagFields    = 'fields';
+  cuXMLTagField     = 'field';
+  cuXMLTagFieldName = 'field_name';
+  cuXMLTagFieldKind = 'field_kind';
+  cuXMLTagFieldSize = 'field_Size';
+  cuXMLTagRows      = 'rows';
+  cuXMLTagRow       = 'row';
 
   // ToDo: Implement escape chars for strings
-  cDSCharCr    = #13 ; cgDSSubstCharCr    = '&cr;' ;
-  cDSCharLf    = #10 ; cgDSSubstCharLf    = '&lf;' ;
-  cDSCharComma = #13 ; cgDSSubstCharComma = '&cr;' ;
+  cDSCharCr    = #13; cgDSSubstCharCr    = '&cr;';
+  cDSCharLf    = #10; cgDSSubstCharLf    = '&lf;';
+  cDSCharComma = #13; cgDSSubstCharComma = '&cr;';
 
 
 { TtiQueryTXTAbs }
@@ -235,9 +235,9 @@ const
 constructor TtiQueryTXTAbs.Create;
 begin
   inherited;
-  FXMLRCTrans:= CreateXMLReservedCharsTranslator ;
-  FSelectedRows := TObjectList.Create(false) ;
-  FActive := false ;
+  FXMLRCTrans:= CreateXMLReservedCharsTranslator;
+  FSelectedRows := TObjectList.Create(false);
+  FActive := false;
 end;
 
 
@@ -250,68 +250,68 @@ end;
 
 procedure TtiQueryTXTAbs.Close;
 begin
-  Active := false ;
+  Active := false;
 end;
 
 
 procedure TtiQueryTXTAbs.ExecSQL;
 begin
-  Assert( false, 'Not implemented in ' + ClassName ) ;
+  Assert(false, 'Not implemented in ' + ClassName);
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsBoolean(const psName: string): boolean;
+function TtiQueryTXTAbs.GetFieldAsBoolean(const AName: string): boolean;
 var
-  lCell : TtiDataBufferCell ;
+  lCell : TtiDataBufferCell;
 begin
-  lCell := CurrentRow.FindByFieldName(psName);
+  lCell := CurrentRow.FindByFieldName(AName);
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [psName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [AName]);
   result :=
-     SameText( lCell.ValueAsString, 'TRUE' ) or
-     SameText( lCell.ValueAsString, 'T' ) ;
+     SameText(lCell.ValueAsString, 'TRUE') or
+     SameText(lCell.ValueAsString, 'T');
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsDateTime(const psName: string): TDateTime;
+function TtiQueryTXTAbs.GetFieldAsDateTime(const AName: string): TDateTime;
 var
-  lCell : TtiDataBufferCell ;
+  lCell : TtiDataBufferCell;
 begin
-  lCell := CurrentRow.FindByFieldName(psName);
+  lCell := CurrentRow.FindByFieldName(AName);
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [psName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [AName]);
   if lCell.ValueAsString <> '' then
-    result := tiXMLStringToDateTime( lCell.ValueAsString )
+    result := tiXMLStringToDateTime(lCell.ValueAsString)
   else
-    result := 0 ;
+    result := 0;
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsString(const psName: string): string;
+function TtiQueryTXTAbs.GetFieldAsString(const AName: string): string;
 var
-  lCell : TtiDataBufferCell ;
-  ls : string ;
+  lCell : TtiDataBufferCell;
+  ls : string;
 begin
   Assert(FReservedChars <> rcUnassigned, 'FReservedChars not assigned');
-  lCell := CurrentRow.FindByFieldName(psName);
+  lCell := CurrentRow.FindByFieldName(AName);
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [psName]);
-  ls := lCell.ValueAsString ;
-  result := FXMLRCTrans.InsertReserved( FReservedChars, ls ) ;
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [AName]);
+  ls := lCell.ValueAsString;
+  result := FXMLRCTrans.InsertReserved(FReservedChars, ls);
 end;
 
 
-function TtiQueryTXTAbs.GetParamAsString(const psName: string): string;
+function TtiQueryTXTAbs.GetParamAsString(const AName: string): string;
 begin
   Assert(FReservedChars <> rcUnassigned, 'FReservedChars not assigned');
-  result := FXMLRCTrans.InsertReserved( FReservedChars, Params.GetValueAsString(psName));
+  result := FXMLRCTrans.InsertReserved(FReservedChars, Params.GetValueAsString(AName));
 end;
 
 
-procedure TtiQueryTXTAbs.SetParamAsString(const psName, Value: string);
+procedure TtiQueryTXTAbs.SetParamAsString(const AName, AValue: string);
 begin
   Assert(FReservedChars <> rcUnassigned, 'FReservedChars not assigned');
-  Params.SetValueAsString(psName, FXMLRCTrans.InsertReserved( FReservedChars, Value ));
+  Params.SetValueAsString(AName, FXMLRCTrans.InsertReserved(FReservedChars, AValue));
 end;
 
 
@@ -325,97 +325,97 @@ begin
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsFloat(const psName: string): extended;
+function TtiQueryTXTAbs.GetFieldAsFloat(const AName: string): extended;
 var
-  lCell : TtiDataBufferCell ;
+  lCell : TtiDataBufferCell;
 begin
-  lCell := CurrentRow.FindByFieldName(psName);
+  lCell := CurrentRow.FindByFieldName(AName);
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [psName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [AName]);
   if lCell.ValueAsString <> '' then
-    result := StrToFloat( lCell.ValueAsString )
+    result := StrToFloat(lCell.ValueAsString)
   else
-    result := 0 ;
+    result := 0;
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsInteger(const psName: string): Int64;
+function TtiQueryTXTAbs.GetFieldAsInteger(const AName: string): Int64;
 var
-  lCell : TtiDataBufferCell ;
-  lValue : Int64 ;
+  lCell : TtiDataBufferCell;
+  lValue : Int64;
 begin
-  lCell := CurrentRow.FindByFieldName(psName);
+  lCell := CurrentRow.FindByFieldName(AName);
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [psName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [AName]);
   if lCell.ValueAsString <> '' then
     lValue := StrToInt64(lCell.ValueAsString)
   else
-    lValue := 0 ;
-  result := lValue ;
+    lValue := 0;
+  result := lValue;
 end;
 
 
 function TtiQueryTXTAbs.GetActive: boolean;
 begin
-  result := FActive ;
+  result := FActive;
 end;
 
 
 function TtiQueryTXTAbs.GetEOF: boolean;
 begin
-  result := FCurrentRecordIndex >= FSelectedRows.Count ;
+  result := FCurrentRecordIndex >= FSelectedRows.Count;
 end;
 
 
 function TtiQueryTXTAbs.GetSQL: TStrings;
 begin
-  Assert( false, ClassName + '.GetSQL not implemented' ) ;
-  result := nil ;
+  Assert(false, ClassName + '.GetSQL not implemented');
+  result := nil;
 end;
 
 
 procedure TtiQueryTXTAbs.Next;
 begin
-  Inc( FCurrentRecordIndex ) ;
+  Inc(FCurrentRecordIndex);
 end;
 
 
 procedure TtiQueryTXTAbs.Open;
 begin
-  Active := true ;
+  Active := true;
 end;
 
 
-procedure TtiQueryTXTAbs.SetActive(const Value: boolean);
+procedure TtiQueryTXTAbs.SetActive(const AValue: boolean);
 begin
-  if Active = Value then
-    Exit ; //==>
-  if Active and Not Value then
+  if Active = AValue then
+    Exit; //==>
+  if Active and Not AValue then
   begin
-    FCurrentRecordIndex := -1 ;
-    FSelectedRows.Clear ;
-    FActive := false ;
-    Exit ; //==>
-  end ;
-  Assert( false, 'Can not call ' + ClassName + '.SetActive(true)' ) ;
+    FCurrentRecordIndex := -1;
+    FSelectedRows.Clear;
+    FActive := false;
+    Exit; //==>
+  end;
+  Assert(false, 'Can not call ' + ClassName + '.SetActive(true)');
 end;
 
 
-procedure TtiQueryTXTAbs.SetSQL(const Value: TStrings);
+procedure TtiQueryTXTAbs.SetSQL(const AValue: TStrings);
 begin
-  Assert( false, ClassName + '.SetSQL not implemented' ) ;
+  Assert(false, ClassName + '.SetSQL not implemented');
 end;
 
 
-procedure TtiQueryTXTAbs.AttachDatabase(pDatabase: TtiDatabase);
+procedure TtiQueryTXTAbs.AttachDatabase(ADatabase: TtiDatabase);
 begin
-  inherited AttachDatabase(pDatabase);
+  inherited AttachDatabase(ADatabase);
 end;
 
 
 procedure TtiQueryTXTAbs.DetachDatabase;
 begin
-  inherited DetachDatabase ;
+  inherited DetachDatabase;
 end;
 
 
@@ -424,34 +424,34 @@ begin
   if CurrentRow = nil then
   begin
     raise EtiOPFProgrammerException.Create(cErrorNoRowsSelected);
-    result := 0 ;
+    result := 0;
   end
   else
-    result := CurrentRow.Count ;
+    result := CurrentRow.Count;
 end;
 
 
-function TtiQueryTXTAbs.FieldName(pIndex: integer): string;
+function TtiQueryTXTAbs.FieldName(AIndex: integer): string;
 begin
   if CurrentRow = nil then
     raise EtiOPFProgrammerException.Create(cErrorNoRowsSelected)
   else
-    result := CurrentRow.Items[pIndex].DataSetField.Name ;
+    result := CurrentRow.Items[AIndex].DataSetField.Name;
 end;
 
 
 procedure TtiQueryTXTAbs.Reset;
 begin
-  Assert( false, 'Under construction' ) ;
+  Assert(false, 'Under construction');
 end;
 
 
-function TtiQueryTXTAbs.FieldIndex(const psName: string): integer;
+function TtiQueryTXTAbs.FieldIndex(const AName: string): integer;
 begin
   if CurrentRow = nil then
     raise EtiOPFProgrammerException.Create(cErrorNoRowsSelected)
   else
-    result := CurrentRow.FindByFieldName(psName).Index ;
+    result := CurrentRow.FindByFieldName(AName).Index;
 end;
 
 
@@ -459,9 +459,9 @@ end;
 
 constructor TtiDatabaseTXTFlatFileAbs.Create;
 begin
-  inherited ;
+  inherited;
   FFilenameExt := 'XXX'; //  This should be overridden
-  FDirtyList := TObjectList.Create(false) ;
+  FDirtyList := TObjectList.Create(false);
 end;
 
 
@@ -474,50 +474,50 @@ end;
 
 procedure TtiDatabaseTXTFlatFileAbs.Commit;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to FDataSets.Count - 1 do
     if IsDirty(FDataSets.Items[i]) then
     begin
       SaveDataSet(FDataSets.Items[i]);
     end;
-  FInTransaction := false ;
+  FInTransaction := false;
 end;
 
 
 function TtiDatabaseTXTAbs.InTransaction: boolean;
 begin
-  result := FInTransaction ;
+  result := FInTransaction;
 end;
 
 
 procedure TtiDatabaseTXTFlatFileAbs.RollBack;
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to FDataSets.Count - 1 do
     if IsDirty(FDataSets.Items[i]) then
       ReadDataSet(FDataSets.Items[i]);
-  FInTransaction := false ;
+  FInTransaction := false;
 end;
 
 
 procedure TtiDatabaseTXTAbs.StartTransaction;
 begin
-  FInTransaction := true ;
+  FInTransaction := true;
 end;
 
 
-procedure TtiDatabaseTXTAbs.ReadMetaDataFields(pData: TtiDBMetaDataTable);
+procedure TtiDatabaseTXTAbs.ReadMetaDataFields(AData: TtiDBMetaDataTable);
 var
-  lTable      : TtiDBMetaDataTable ;
-  lDataSet    : TtiDataBuffer ;
+  lTable     : TtiDBMetaDataTable;
+  lDataSet   : TtiDataBuffer;
   i : integer;
 begin
-  lTable := ( pData as TtiDBMetaDataTable ) ;
-  lDataSet := FDataSets.FindByName(lTable.Name ) ;
-  Assert( lDataSet <> nil,
-          'Can not find metadata for <' + lTable.Name + '>' ) ;
+  lTable := (AData as TtiDBMetaDataTable);
+  lDataSet := FDataSets.FindByName(lTable.Name);
+  Assert(lDataSet <> nil,
+          'Can not find metadata for <' + lTable.Name + '>');
   for i := 0 to lDataSet.Fields.Count - 1 do
     lTable.AddInstance(lDataSet.Fields.Items[i].Name,
                        lDataSet.Fields.Items[i].Kind,
@@ -525,73 +525,73 @@ begin
 end;
 
 
-procedure TtiDatabaseTXTAbs.ReadMetaDataTables(pData: TtiDBMetaData);
+procedure TtiDatabaseTXTAbs.ReadMetaDataTables(AData: TtiDBMetaData);
 var
-  lMetaData : TtiDBMetaData ;
-  lTable : TtiDBMetaDataTable ;
-  i : integer ;
+  lMetaData : TtiDBMetaData;
+  lTable : TtiDBMetaDataTable;
+  i : integer;
 begin
-  lMetaData := ( pData as TtiDBMetaData ) ;
+  lMetaData := (AData as TtiDBMetaData);
   for i := 0 to FDataSets.Count - 1 do
   begin
-    lTable := TtiDBMetaDataTable.Create ;
-    lTable.Name := FDataSets.Items[i].Name ;
-    lTable.ObjectState := posPK ;
-    lMetaData.Add( lTable ) ;
-    lMetaData.ObjectState := posClean ;
-  end ;
+    lTable := TtiDBMetaDataTable.Create;
+    lTable.Name := FDataSets.Items[i].Name;
+    lTable.ObjectState := posPK;
+    lMetaData.Add(lTable);
+    lMetaData.ObjectState := posClean;
+  end;
 end;
 
 
 // This code is cloned in TtiQueryIB - Looks like we need to abstract more
 // and introduce a TDataSet version of the TtiQuery
-function TtiQueryTXTAbs.FieldKind(pIndex: integer): TtiQueryFieldKind;
+function TtiQueryTXTAbs.FieldKind(AIndex: integer): TtiQueryFieldKind;
 begin
   if CurrentRow = nil then
     raise EtiOPFProgrammerException.Create(cErrorNoRowsSelected)
   else
-    result := CurrentRow.Items[pIndex].DataSetField.Kind ;
+    result := CurrentRow.Items[AIndex].DataSetField.Kind;
 end;
 
 
-function TtiQueryTXTAbs.FieldSize(pIndex: integer): integer;
+function TtiQueryTXTAbs.FieldSize(AIndex: integer): integer;
 begin
   if CurrentRow = nil then
     raise EtiOPFProgrammerException.Create(cErrorNoRowsSelected)
   else
-    result := CurrentRow.Items[pIndex].DataSetField.Width ;
+    result := CurrentRow.Items[AIndex].DataSetField.Width;
 end;
 
 
-procedure TtiDatabaseTXTFlatFileAbs.SetConnected(pbValue: boolean);
+procedure TtiDatabaseTXTFlatFileAbs.SetConnected(AValue: boolean);
 var
-  lsl : TStringList ;
-  i : integer ;
-  lDataSet : TtiDataBuffer ;
+  lsl : TStringList;
+  i : integer;
+  lDataSet : TtiDataBuffer;
 begin
 
-  if ( not pbValue ) then
+  if (not AValue) then
   begin
-    Log( 'Disconnecting from %s', [DatabaseName], lsConnectionPool ) ;
-    FDataSets.Clear ;
-    FConnected := false ;
-    Exit ; //==>
+    Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);
+    FDataSets.Clear;
+    FConnected := false;
+    Exit; //==>
   end;
 
-  if ( not DirectoryExists( DatabaseName )) then
+  if (not DirectoryExists(DatabaseName)) then
   begin
-    ForceDirectories( DatabaseName ) ;
-    if not DirectoryExists( DatabaseName ) then
+    ForceDirectories(DatabaseName);
+    if not DirectoryExists(DatabaseName) then
       raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToAccessDirectory, [DatabaseName]);
 
   end;
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
     tiFilesToStringList(DatabaseName, '*.' + FilenameExt, lsl, false);
     for i := 0 to lsl.Count - 1 do
     begin
-      lDataSet := TtiDataBuffer.Create ;
-      lDataSet.Name := tiRemoveExtension (ExtractFileName( lsl.Strings[i]) );
+      lDataSet := TtiDataBuffer.Create;
+      lDataSet.Name := tiRemoveExtension (ExtractFileName(lsl.Strings[i]));
       // ToDo: Should read datasets on demand, not all at once in the
       //       Connect method. Perpahs maintain another list of datasets that
       //       have been read.
@@ -601,44 +601,44 @@ begin
   finally
     lsl.Free;
   end;
-  FConnected := true ;
+  FConnected := true;
 end;
 
 
-function TtiQueryTXTAbs.GetFieldIsNull(const psName: string): Boolean;
+function TtiQueryTXTAbs.GetFieldIsNull(const AName: string): Boolean;
 var
-  lCell : TtiDataBufferCell ;
+  lCell : TtiDataBufferCell;
 begin
-  lCell := CurrentRow.FindByFieldName(psName);
+  lCell := CurrentRow.FindByFieldName(AName);
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [psName]);
-  result := lCell.ValueAsString = '' ;
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [AName]);
+  result := lCell.ValueAsString = '';
 end;
 
 
-procedure TtiDatabaseTXTFlatFileAbs.CreateTable( const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseTXTFlatFileAbs.CreateTable(const ATableMetaData: TtiDBMetaDataTable);
 var
-  lDataSet : TtiDataBuffer ;
+  lDataSet : TtiDataBuffer;
 begin
-  inherited CreateTable(pTableMetaData);
-  lDataSet := FDataSets.FindByName( pTableMetaData.Name ) ;
-  Assert( lDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError ) ;
+  inherited CreateTable(ATableMetaData);
+  lDataSet := FDataSets.FindByName(ATableMetaData.Name);
+  Assert(lDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
   SaveDataSet(lDataSet);
 end;
 
 
-procedure TtiDatabaseTXTFlatFileAbs.DropTable( const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseTXTFlatFileAbs.DropTable(const ATableMetaData: TtiDBMetaDataTable);
 var
   lDataSet : TtiDataBuffer;
-  lFileName : string ;
+  lFileName : string;
 begin
-  lDataSet := FDataSets.FindByName( pTableMetaData.Name ) ;
-  Assert( lDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError ) ;
+  lDataSet := FDataSets.FindByName(ATableMetaData.Name);
+  Assert(lDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
   lFileName := ExpandFileName(lDataSet.Name);
-  inherited DropTable(pTableMetaData);
-  Assert( FileExists( lFileName ), 'File <' + lFileName + '> does not exist' ) ;
-  SysUtils.DeleteFile( lFileName ) ;
-  Assert( not FileExists( lFileName ), 'Unable to delete file <' + lFileName + '>' ) ;
+  inherited DropTable(ATableMetaData);
+  Assert(FileExists(lFileName), 'File <' + lFileName + '> does not exist');
+  SysUtils.DeleteFile(lFileName);
+  Assert(not FileExists(lFileName), 'Unable to delete file <' + lFileName + '>');
 end;
 
 
@@ -649,37 +649,37 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 procedure TtiDBConnectionPoolDataTXTAbs.InitDBConnectionPool;
 begin
-  DBConnectionPool.MinPoolSize := 0 ;
-  DBConnectionPool.MaxPoolSize := 1 ;
+  DBConnectionPool.MinPoolSize := 0;
+  DBConnectionPool.MaxPoolSize := 1;
 end;
 
 
 function TtiDatabaseTXTFlatFileAbs.GetDataSetCount: integer;
 begin
-  result := FDataSets.Count ;
+  result := FDataSets.Count;
 end;
 
 
-function TtiDatabaseTXTFlatFileAbs.ExpandFileName(const pTableName: string): string;
+function TtiDatabaseTXTFlatFileAbs.ExpandFileName(const ATableName: string): string;
 var
-  lFileName : string ;
+  lFileName : string;
 begin
-  if tiExtractExtension(pTableName) = '' then
-    lFileName := tiSwapExt(pTableName, FilenameExt)
+  if tiExtractExtension(ATableName) = '' then
+    lFileName := tiSwapExt(ATableName, FilenameExt)
   else
-    lFileName := pTableName ;
+    lFileName := ATableName;
   result :=
-    tiAddTrailingSlash( DatabaseName ) +
-    lFileName ;
+    tiAddTrailingSlash(DatabaseName) +
+    lFileName;
 end;
 
 
 procedure TtiDatabaseTXTFlatFileAbs.SetDirty(const pDataSet : TtiDataBuffer; pDirty : boolean);
 var
-  lDirty : boolean ;
+  lDirty : boolean;
 begin
-  lDirty := IsDirty(pDataSet) ;
-  if (pDirty) and ( not lDirty) then
+  lDirty := IsDirty(pDataSet);
+  if (pDirty) and (not lDirty) then
     FDirtyList.Add(pDataSet)
   else if (not pDirty) and (lDirty)then
     FDirtyList.Remove(pDataSet);
@@ -694,14 +694,14 @@ end;
 
 procedure TtiDatabaseTXTFlatFileAbs.SaveDataSet(const pDataSet: TtiDataBuffer);
 var
-  lWriter : TTXTToTIDataSetAbs ;
-  lFileName : string ;
+  lWriter : TTXTToTIDataSetAbs;
+  lFileName : string;
 begin
   lWriter := TTXTToTIDataSetAbs.Create;
   try
     // Set the writers properties, based on optional parameters passed to the DB
-    lFileName := ExpandFileName(pDataSet.Name) ;
-    lWriter.Save(pDataSet, lFileName );
+    lFileName := ExpandFileName(pDataSet.Name);
+    lWriter.Save(pDataSet, lFileName);
   finally
     lWriter.Free;
   end;
@@ -710,113 +710,113 @@ end;
 
 procedure TtiDatabaseTXTFlatFileAbs.ReadDataSet(const pDataSet: TtiDataBuffer);
 var
-  lFileName : string ;
+  lFileName : string;
   lWriter : TTXTToTIDataSetAbs;
 begin
   lWriter := TTXTToTIDataSetAbs.Create;
   try
     // Set the writers properties, based on optional parameters passed to the DB
-    lFileName := ExpandFileName(pDataSet.Name) ;
-    pDataSet.Clear ;
-    lWriter.Read(pDataSet, lFileName );
+    lFileName := ExpandFileName(pDataSet.Name);
+    pDataSet.Clear;
+    lWriter.Read(pDataSet, lFileName);
   finally
     lWriter.Free;
   end;
 end;
 
 
-procedure TtiQueryTXTAbs.DoSelectRows(const pDataSet: TtiDataBuffer; pWhere: TtiQueryParams);
-  function _SelectRow( const pDataSetRow : TtiDataBufferRow ; pWhere : TtiQueryParams ) : boolean ;
+procedure TtiQueryTXTAbs.DoSelectRows(const pDataSet: TtiDataBuffer; AWhere: TtiQueryParams);
+  function _SelectRow(const pDataSetRow : TtiDataBufferRow; AWhere : TtiQueryParams): boolean;
   var
-    i : integer ;
-    lCell : TtiDataBufferCell ;
-    lParamVal : String ;
+    i : integer;
+    lCell : TtiDataBufferCell;
+    lParamVal : String;
   begin
-    result := true ;
-    for i := 0 to pWhere.Count - 1 do
+    result := true;
+    for i := 0 to AWhere.Count - 1 do
     begin
-      lCell := pDataSetRow.FindByFieldName( pWhere.Items[i].Name );
+      lCell := pDataSetRow.FindByFieldName(AWhere.Items[i].Name);
       if lCell = nil then
-        raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [pWhere.Items[i].Name]);
-      lParamVal := pWhere.Items[i].GetValueAsString ;
+        raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [AWhere.Items[i].Name]);
+      lParamVal := AWhere.Items[i].GetValueAsString;
       if lCell.ValueAsString <> lParamVal then
       begin
         result := false;
-        Exit ; //==>
+        Exit; //==>
       end;
-    end ;
+    end;
   end;
 var
-  i : integer ;
+  i : integer;
 begin
-  FSelectedRows.Clear ;
-  FCurrentRecordIndex := 0 ;
-  if pWhere = nil then
+  FSelectedRows.Clear;
+  FCurrentRecordIndex := 0;
+  if AWhere = nil then
     for i := 0 to pDataSet.Count - 1 do
-      FSelectedRows.Add( pDataSet.Items[i] )
+      FSelectedRows.Add(pDataSet.Items[i])
   else
     for i := 0 to pDataSet.Count - 1 do
-      if _SelectRow( pDataSet.Items[i], pWhere ) then
-        FSelectedRows.Add( pDataSet.Items[i] ) ;
+      if _SelectRow(pDataSet.Items[i], AWhere) then
+        FSelectedRows.Add(pDataSet.Items[i]);
 end;
 
 
-procedure TtiQueryTXTAbs.DoUpdateRow(const pDataSetRow: TtiDataBufferRow;pParams: TtiQueryParams);
+procedure TtiQueryTXTAbs.DoUpdateRow(const pDataSetRow: TtiDataBufferRow;AParams: TtiQueryParams);
 var
-  i : integer ;
-  lCell : TtiDataBufferCell ;
+  i : integer;
+  lCell : TtiDataBufferCell;
 begin
-  FSelectedRows.Clear ;
-  FCurrentRecordIndex := 0 ;
-  for i := 0 to pParams.Count - 1 do
+  FSelectedRows.Clear;
+  FCurrentRecordIndex := 0;
+  for i := 0 to AParams.Count - 1 do
   begin
-    lCell := pDataSetRow.FindByFieldName( pParams.Items[i].Name );
+    lCell := pDataSetRow.FindByFieldName(AParams.Items[i].Name);
     if lCell = nil then
-      raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [pParams.Items[i].Name]);
-    DoAssignParamToCell( lCell, pParams.Items[i] ) ;
-  end ;
+      raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldName, [AParams.Items[i].Name]);
+    DoAssignParamToCell(lCell, AParams.Items[i]);
+  end;
 end;
 
 
-function TtiDatabaseTXTAbs.FindDataSetByName(const pName : string ) : TtiDataBuffer ;
+function TtiDatabaseTXTAbs.FindDataSetByName(const AName : string): TtiDataBuffer;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := nil ;
+  result := nil;
   for i := 0 to FDataSets.Count - 1 do
-    if SameText( pName, TtiDataBuffer( FDataSets.Items[i] ).Name ) then
+    if SameText(AName, TtiDataBuffer(FDataSets.Items[i]).Name) then
     begin
-      result := TtiDataBuffer( FDataSets.Items[i] );
-      Exit ; //==>
+      result := TtiDataBuffer(FDataSets.Items[i]);
+      Exit; //==>
     end
 end;
 
 
 function TtiQueryTXTAbs.CurrentRow: TtiDataBufferRow;
 begin
-  Assert( FCurrentRecordIndex < FSelectedRows.Count, 'FCurrentRecordIndex >= FSelectedRows.Count' ) ;
+  Assert(FCurrentRecordIndex < FSelectedRows.Count, 'FCurrentRecordIndex >= FSelectedRows.Count');
   if FSelectedRows.Count > 0 then
   begin
     result := TtiDataBufferRow(FSelectedRows.Items[FCurrentRecordIndex]);
-    Assert( Result.TestValid, cTIInvalidObjectError );
+    Assert(Result.TestValid, cTIInvalidObjectError);
   end
   else
-    result := nil ;
+    result := nil;
 end;
 
 
-class procedure TtiDatabaseTXTFlatFileAbs.CreateDatabase(const psDatabaseName,psUserName, psPassword: string);
+class procedure TtiDatabaseTXTFlatFileAbs.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
 begin
-  if DatabaseExists(psDatabaseName,psUserName,psPassword) then
-    raise EtiOPFDBExceptionAlreadyExists.Create('Generic flat file persistence layer', psDatabaseName, psUserName, psPassword);
-  if not ForceDirectories(psDatabaseName) then
-    raise EtiOPFDBExceptionCanNotCreateDatabase.Create('Generic flat file persistence layer', psDatabaseName, psUserName, psPassword);
+  if DatabaseExists(ADatabaseName,AUserName,APassword) then
+    raise EtiOPFDBExceptionAlreadyExists.Create('Generic flat file persistence layer', ADatabaseName, AUserName, APassword);
+  if not ForceDirectories(ADatabaseName) then
+    raise EtiOPFDBExceptionCanNotCreateDatabase.Create('Generic flat file persistence layer', ADatabaseName, AUserName, APassword);
 end;
 
 
-class function TtiDatabaseTXTFlatFileAbs.DatabaseExists(const psDatabaseName,psUserName, psPassword: string):boolean;
+class function TtiDatabaseTXTFlatFileAbs.DatabaseExists(const ADatabaseName,AUserName, APassword: string):boolean;
 begin
-  result := DirectoryExists( psDatabaseName ) ;
+  result := DirectoryExists(ADatabaseName);
 end;
 
 
@@ -825,65 +825,65 @@ end;
 constructor TTXTToTIDataSetAbs.Create;
 begin
   inherited Create;
-  TextFileMetaData  := [tfmdFieldName];
-  FFieldDelim       := ',' ;
-  StringDelim       := '"' ;
-  FRowDelim         := CrLf ;
+  TextFileMetaData := [tfmdFieldName];
+  FFieldDelim      := ',';
+  StringDelim      := '"';
+  FRowDelim        := CrLf;
 end;
 
 
-procedure TTXTToTIDataSetAbs.DoExtractData(pIndex: integer; const pValue: string);
+procedure TTXTToTIDataSetAbs.DoExtractData(AIndex: integer; const AValue: string);
 var
-  lCell : TtiDataBufferCell ;
+  lCell : TtiDataBufferCell;
 begin
-  Assert( FDataSetRow.TestValid, cTIInvalidObjectError );
-  if FDataSetRow.Count < pIndex then
+  Assert(FDataSetRow.TestValid, cTIInvalidObjectError);
+  if FDataSetRow.Count < AIndex then
   begin
-    lCell := FDataSetRow.AddInstance ;
-    lCell.ValueAsString := pValue ;
+    lCell := FDataSetRow.AddInstance;
+    lCell.ValueAsString := AValue;
   end 
   else
-    FDataSetRow.Items[pIndex-1].ValueAsString := pValue ;
+    FDataSetRow.Items[AIndex-1].ValueAsString := AValue;
 end;
 
 
-procedure TTXTToTIDataSetAbs.DoExtractDefaultFieldNames(pIndex: integer; const pValue: string);
+procedure TTXTToTIDataSetAbs.DoExtractDefaultFieldNames(AIndex: integer; const AValue: string);
 begin
-  if FDataSet.Fields.Count < pIndex then
-    FDataSet.Fields.AddInstance( 'Field'+IntToStr(pIndex), qfkString )
+  if FDataSet.Fields.Count < AIndex then
+    FDataSet.Fields.AddInstance('Field'+IntToStr(AIndex), qfkString)
   else
-    FDataSet.Fields.Items[pIndex-1].Name := 'Field'+IntToStr(pIndex) ;
+    FDataSet.Fields.Items[AIndex-1].Name := 'Field'+IntToStr(AIndex);
 end;
 
 
-procedure TTXTToTIDataSetAbs.DoExtractFieldName(pIndex: integer; const pValue: string);
+procedure TTXTToTIDataSetAbs.DoExtractFieldName(AIndex: integer; const AValue: string);
 begin
-  if FDataSet.Fields.Count < pIndex then
-    FDataSet.Fields.AddInstance( pValue, qfkString )
+  if FDataSet.Fields.Count < AIndex then
+    FDataSet.Fields.AddInstance(AValue, qfkString)
   else
-    FDataSet.Fields.Items[pIndex-1].Name := pValue ;
+    FDataSet.Fields.Items[AIndex-1].Name := AValue;
 end;
 
 
-function TTXTToTIDataSetAbs.QuoteStr(const pStr: string): string;
+function TTXTToTIDataSetAbs.QuoteStr(const AStr: string): string;
 begin
-  result := StringDelim + pStr + StringDelim ;
+  result := StringDelim + AStr + StringDelim;
 end;
 
 
-procedure TTXTToTIDataSetAbs.Read(pDataSet: TtiDataBuffer; pFileName: TFileName);
+procedure TTXTToTIDataSetAbs.Read(pDataSet: TtiDataBuffer; AFileName: TFileName);
 begin
-  Assert( pDataSet.TestValid, cTIInvalidObjectError );
-  FDataSet := pDataSet ;
-  FStream := TtiFileStream.CreateReadOnly(pFileName) ;
+  Assert(pDataSet.TestValid, cTIInvalidObjectError);
+  FDataSet := pDataSet;
+  FStream := TtiFileStream.CreateReadOnly(AFileName);
   try
-    FStream.LineDelim := RowDelim ;
+    FStream.LineDelim := RowDelim;
     if tfmdFieldName in TextFileMetaData then
-      ReadFieldNames ;
+      ReadFieldNames;
     while not FStream.EOF do
-      ReadRow ;
+      ReadRow;
   finally
-    FDataSet := nil ;
+    FDataSet := nil;
     FreeAndNil(FStream);
   end;
 end;
@@ -891,50 +891,50 @@ end;
 
 procedure TTXTToTIDataSetAbs.ReadFieldNames;
 var
-  ls : string ;
+  ls : string;
 begin
-  FDataSet.Fields.Clear ;
+  FDataSet.Fields.Clear;
   ls := FStream.ReadLn;
-  stExtractTokensL( ls, FieldDelim, FStringDelimAsChar, false, DoExtractFieldName );
+  stExtractTokensL(ls, FieldDelim, FStringDelimAsChar, false, DoExtractFieldName);
 end;
 
 
 procedure TTXTToTIDataSetAbs.ReadRow;
 var
-  ls : string ;
+  ls : string;
 begin
   ls := FStream.ReadLn;
   if FDataSet.Fields.Count = 0 then
-    stExtractTokensL( ls, FieldDelim, FStringDelimAsChar, false, DoExtractDefaultFieldNames );
-  FDataSetRow := FDataSet.AddInstance ;
-  stExtractTokensL( ls, FieldDelim, FStringDelimAsChar, false, DoExtractData );
+    stExtractTokensL(ls, FieldDelim, FStringDelimAsChar, false, DoExtractDefaultFieldNames);
+  FDataSetRow := FDataSet.AddInstance;
+  stExtractTokensL(ls, FieldDelim, FStringDelimAsChar, false, DoExtractData);
 end;
 
 
-procedure TTXTToTIDataSetAbs.Save(pDataSet: TtiDataBuffer; pFileName: TFileName);
+procedure TTXTToTIDataSetAbs.Save(pDataSet: TtiDataBuffer; AFileName: TFileName);
 var
-  i : integer ;             
+  i : integer;             
 begin
-  Assert( pDataSet.TestValid, cTIInvalidObjectError );
-  FDataSet := pDataSet ;
-  FStream := TtiFileStream.CreateReadWrite(pFileName, true ) ;
+  Assert(pDataSet.TestValid, cTIInvalidObjectError);
+  FDataSet := pDataSet;
+  FStream := TtiFileStream.CreateReadWrite(AFileName, true);
   try
-    FStream.LineDelim := RowDelim ;
+    FStream.LineDelim := RowDelim;
     if tfmdFieldName in TextFileMetaData then
-      WriteFieldNames ;
+      WriteFieldNames;
     for i := 0 to FDataSet.Count - 1 do
-      WriteRow( FDataSet.Items[i] );
+      WriteRow(FDataSet.Items[i]);
   finally
-    FDataSet := nil ;
+    FDataSet := nil;
     FreeAndNil(FStream);
   end;
 end;
 
 
-procedure TTXTToTIDataSetAbs.SetStringDelim(const Value: string);
+procedure TTXTToTIDataSetAbs.SetStringDelim(const AValue: string);
 begin
-  Assert(Length(Value)<=1, 'StringDelim must be a single character');
-  FStringDelim := Value;
+  Assert(Length(AValue)<=1, 'StringDelim must be a single character');
+  FStringDelim := AValue;
   if FStringDelim = '' then
     FStringDelimAsChar := #0
   else
@@ -944,25 +944,25 @@ end;
 
 procedure TTXTToTIDataSetAbs.WriteFieldNames;
 var
-  i : integer ;
+  i : integer;
 begin
-  Assert(FStream<>nil, 'FStream not assigned' ) ;
-  Assert( FDataSet.TestValid, cTIInvalidObjectError );
+  Assert(FStream<>nil, 'FStream not assigned');
+  Assert(FDataSet.TestValid, cTIInvalidObjectError);
   for i := 0 to FDataSet.Fields.Count - 1 do
   begin
-    Assert( FDataSet.Fields.Items[i].TestValid, cTIInvalidObjectError );
+    Assert(FDataSet.Fields.Items[i].TestValid, cTIInvalidObjectError);
     if i >= 1 then
       FStream.Write(FieldDelim);
     FStream.Write(QuoteStr(FDataSet.Fields.Items[i].Name));
-  end ;
+  end;
   if FDataSet.Fields.Count > 0 then
-    FStream.WriteLn ;
-end ;
+    FStream.WriteLn;
+end;
 
 
 procedure TTXTToTIDataSetAbs.WriteRow(const pRow: TtiDataBufferRow);
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to pRow.Count - 1 do
   begin
@@ -974,7 +974,7 @@ begin
       FStream.Write(pRow.Items[i].ValueAsString);
   end;
   if FDataSet.Fields.Count > 0 then
-    FStream.WriteLn ;
+    FStream.WriteLn;
 end;
 
 
@@ -982,10 +982,10 @@ end;
 
 constructor TCSVToTIDataSet.Create;
 begin
-  inherited Create ;
-  FieldDelim      := ',' ;
-  StringDelim     := '"' ;
-  RowDelim        := CrLf ;
+  inherited Create;
+  FieldDelim     := ',';
+  StringDelim    := '"';
+  RowDelim       := CrLf;
 end;
 
 
@@ -993,16 +993,16 @@ end;
 
 constructor TTABToTIDataSet.Create;
 begin
-  inherited Create ;
-  FieldDelim      := #09 ;
-  StringDelim     := '"' ;
-  RowDelim        := CrLf ;
+  inherited Create;
+  FieldDelim     := #09;
+  StringDelim    := '"';
+  RowDelim       := CrLf;
 end;
 
 
 function TtiQueryTXTAbs.HasNativeLogicalType: boolean;
 begin
-  result := false ;
+  result := false;
 end;
 
 
@@ -1011,9 +1011,9 @@ end;
 constructor TtiDatabaseTXTAbs.Create;
 begin
   inherited;
-  FConnected := false ;
-  FInTransaction := false ;
-  FDataSets := TtiDataBuffers.Create ;
+  FConnected := false;
+  FInTransaction := false;
+  FDataSets := TtiDataBuffers.Create;
 end;
 
 
@@ -1024,135 +1024,135 @@ begin
 end;
 
 
-procedure TtiDatabaseTXTAbs.CreateTable(const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseTXTAbs.CreateTable(const ATableMetaData: TtiDBMetaDataTable);
 var
-  lDataSet : TtiDataBuffer ;
-  i : integer ;
+  lDataSet : TtiDataBuffer;
+  i : integer;
 begin
-  lDataSet := FDataSets.FindByName( pTableMetaData.Name ) ;
+  lDataSet := FDataSets.FindByName(ATableMetaData.Name);
   if lDataSet <> nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToCreateDuplicateTableName, [pTableMetaData.Name]);
-  lDataSet := TtiDataBuffer.Create ;
-  FDataSets.Add( lDataSet ) ;
-  lDataSet.Name := tiExtractFileNameOnly(pTableMetaData.Name);
-  for i := 0 to pTableMetaData.Count - 1 do
-    lDataSet.Fields.AddInstance(pTableMetaData.Items[i].Name,
-                                pTableMetaData.Items[i].Kind,
-                                pTableMetaData.Items[i].Width);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToCreateDuplicateTableName, [ATableMetaData.Name]);
+  lDataSet := TtiDataBuffer.Create;
+  FDataSets.Add(lDataSet);
+  lDataSet.Name := tiExtractFileNameOnly(ATableMetaData.Name);
+  for i := 0 to ATableMetaData.Count - 1 do
+    lDataSet.Fields.AddInstance(ATableMetaData.Items[i].Name,
+                                ATableMetaData.Items[i].Kind,
+                                ATableMetaData.Items[i].Width);
 end;
 
 
-procedure TtiDatabaseTXTAbs.DropTable(const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseTXTAbs.DropTable(const ATableMetaData: TtiDBMetaDataTable);
 var
   lDataSet : TtiDataBuffer;
 begin
-  lDataSet := FDataSets.FindByName( pTableMetaData.Name ) ;
+  lDataSet := FDataSets.FindByName(ATableMetaData.Name);
   if lDataSet = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToDeleteNonExistantTable, [pTableMetaData.Name]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToDeleteNonExistantTable, [ATableMetaData.Name]);
   FDataSets.Remove(lDataSet);
-  Assert( FDataSets.FindByName( pTableMetaData.Name ) = nil,
-          'Unable to remove metadata for <' + pTableMetaData.Name + '>' ) ;
+  Assert(FDataSets.FindByName(ATableMetaData.Name) = nil,
+          'Unable to remove metadata for <' + ATableMetaData.Name + '>');
 end;
 
 
 function TtiDatabaseTXTAbs.GetConnected: boolean;
 begin
-  result := FConnected ;
+  result := FConnected;
 end;
 
 
-procedure TtiDatabaseTXTAbs.SetInTransaction(pValue: Boolean);
+procedure TtiDatabaseTXTAbs.SetInTransaction(AValue: Boolean);
 begin
-  FInTransaction := pValue ;
+  FInTransaction := AValue;
 end;
 
 
 function TtiDatabaseTXTAbs.Test: boolean;
 begin
   result := false;
-  Assert( false, 'Under construction' ) ;  
+  Assert(false, 'Under construction');  
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsBooleanByIndex(pIndex: Integer): boolean;
+function TtiQueryTXTAbs.GetFieldAsBooleanByIndex(AIndex: Integer): boolean;
 var
-  lCell : TtiDataBufferCell ;
+  lCell : TtiDataBufferCell;
 begin
-  lCell := CurrentRow.Items[pIndex];
+  lCell := CurrentRow.Items[AIndex];
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [pIndex]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [AIndex]);
   result :=
-     SameText( lCell.ValueAsString, 'TRUE' ) or
-     SameText( lCell.ValueAsString, 'T' ) ;
+     SameText(lCell.ValueAsString, 'TRUE') or
+     SameText(lCell.ValueAsString, 'T');
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsDateTimeByIndex(pIndex: Integer): TDateTime;
+function TtiQueryTXTAbs.GetFieldAsDateTimeByIndex(AIndex: Integer): TDateTime;
 var
-  lCell : TtiDataBufferCell ;
+  lCell : TtiDataBufferCell;
 begin
-  lCell := CurrentRow.Items[pIndex];
+  lCell := CurrentRow.Items[AIndex];
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [pIndex]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [AIndex]);
   if lCell.ValueAsString <> '' then
-    result := tiXMLStringToDateTime( lCell.ValueAsString )
+    result := tiXMLStringToDateTime(lCell.ValueAsString)
   else
-    result := 0 ;
+    result := 0;
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsFloatByIndex(pIndex: Integer): extended;
+function TtiQueryTXTAbs.GetFieldAsFloatByIndex(AIndex: Integer): extended;
 var
-  lCell : TtiDataBufferCell ;
+  lCell : TtiDataBufferCell;
 begin
-  lCell := CurrentRow.Items[pIndex];
+  lCell := CurrentRow.Items[AIndex];
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [pIndex]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [AIndex]);
   if lCell.ValueAsString <> '' then
-    result := StrToFloat( lCell.ValueAsString )
+    result := StrToFloat(lCell.ValueAsString)
   else
-    result := 0 ;
+    result := 0;
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsIntegerByIndex(pIndex: Integer): Int64;
+function TtiQueryTXTAbs.GetFieldAsIntegerByIndex(AIndex: Integer): Int64;
 var
-  lCell : TtiDataBufferCell ;
-  lValue : Int64 ;
+  lCell : TtiDataBufferCell;
+  lValue : Int64;
 begin
-  lCell := CurrentRow.Items[pIndex];
+  lCell := CurrentRow.Items[AIndex];
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [pIndex]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [AIndex]);
   if lCell.ValueAsString <> '' then
     lValue := StrToInt64(lCell.ValueAsString)
   else
-    lValue := 0 ;
-  result := lValue ;
+    lValue := 0;
+  result := lValue;
 end;
 
 
-function TtiQueryTXTAbs.GetFieldAsStringByIndex(pIndex: Integer): string;
+function TtiQueryTXTAbs.GetFieldAsStringByIndex(AIndex: Integer): string;
 var
-  lCell : TtiDataBufferCell ;
-  ls : string ;
+  lCell : TtiDataBufferCell;
+  ls : string;
 begin
   Assert(FReservedChars <> rcUnassigned, 'FReservedChars not assigned');
-  lCell := CurrentRow.Items[pIndex];
+  lCell := CurrentRow.Items[AIndex];
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [pIndex]);
-  ls := lCell.ValueAsString ;
-  result := FXMLRCTrans.InsertReserved( FReservedChars, ls ) ;
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [AIndex]);
+  ls := lCell.ValueAsString;
+  result := FXMLRCTrans.InsertReserved(FReservedChars, ls);
 end;
 
 
-function TtiQueryTXTAbs.GetFieldIsNullByIndex(pIndex: Integer): Boolean;
+function TtiQueryTXTAbs.GetFieldIsNullByIndex(AIndex: Integer): Boolean;
 var
-  lCell : TtiDataBufferCell ;
+  lCell : TtiDataBufferCell;
 begin
-  lCell := CurrentRow.Items[pIndex];
+  lCell := CurrentRow.Items[AIndex];
   if lCell = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [pIndex]);
-  result := lCell.ValueAsString = '' ;
+    raise EtiOPFProgrammerException.CreateFmt(cErrorInvalidFieldIndex, [AIndex]);
+  result := lCell.ValueAsString = '';
 end;
 
 

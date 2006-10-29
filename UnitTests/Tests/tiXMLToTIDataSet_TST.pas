@@ -11,7 +11,7 @@ uses
   ,tiXMLToTIDataSet
   ,tiDataBuffer_BOM
   ,tiXML
- ;
+;
 
 type
 
@@ -32,10 +32,10 @@ type
     property    DataSets;
     property    Pos;
     property    Len;
-    procedure   DoAddTable(const pTableName : string); override;
-    procedure   DoAddField(const pFieldName, pFieldKind, pFieldSize : string); override;
+    procedure   DoAddTable(const ATableName : string); override;
+    procedure   DoAddField(const AFieldName, AFieldKind, pFieldSize : string); override;
     procedure   DoAddRow; override;
-    procedure   DoAddCell(const pFieldName: string; pFieldValue: string); override;
+    procedure   DoAddCell(const AFieldName: string; pFieldValue: string); override;
     procedure   Next; override;
     function    RestOfString: string;
     function    NextChars(pNoOfChars: Cardinal): string;
@@ -48,10 +48,10 @@ type
     FXMLTags : TtiXMLTags;
 
     function  MakeXMLDatabase(const pTableString : string): string;
-    function  MakeXMLDatabaseWithMetaData(const pFieldName: string;pFieldKind: TtiQueryFieldKind; pFieldSize: Integer): string;
+    function  MakeXMLDatabaseWithMetaData(const AFieldName: string;AFieldKind: TtiQueryFieldKind; pFieldSize: Integer): string;
     function  MakeXMLDatabaseWithData(
-                const pFieldName: string;pFieldKind: TtiQueryFieldKind;
-                pFieldSize: Integer; const pValue : string;
+                const AFieldName: string;AFieldKind: TtiQueryFieldKind;
+                pFieldSize: Integer; const AValue : string;
                 pXMLFieldNameStyle: TtiXMLFieldNameStyle): string;
 
     procedure CompoundDataToDataSets(const pDataSets: TtiDataBuffers;
@@ -62,21 +62,21 @@ type
                 pDataSetCount: Integer; pRowCount: Integer;
                 pIncludeBinField : Boolean;
                 pXMLFieldNameStyle: TtiXMLFieldNameStyle): string;
-    procedure CheckXMLDatabaseWithCompoundData(const pValue: string; pDataSetCount, pRowCount: Integer; pIncludeBinField: Boolean);
+    procedure CheckXMLDatabaseWithCompoundData(const AValue: string; pDataSetCount, pRowCount: Integer; pIncludeBinField: Boolean);
 
-    procedure DoXMLToDataSetMetaDataBuffered(const pFieldName: string;pFieldKind: TtiQueryFieldKind; pFieldSize: Integer);
-    procedure DoXMLToDataSetDataBuffered(const pFieldName: string;pFieldKind: TtiQueryFieldKind; pFieldSize: integer; const pValue : string);
+    procedure DoXMLToDataSetMetaDataBuffered(const AFieldName: string;AFieldKind: TtiQueryFieldKind; pFieldSize: Integer);
+    procedure DoXMLToDataSetDataBuffered(const AFieldName: string;AFieldKind: TtiQueryFieldKind; pFieldSize: integer; const AValue : string);
 
-    procedure DoXMLDBParserMetaData(const pFieldName: string;pFieldKind: TtiQueryFieldKind; pFieldSize: integer);
-    procedure DoXMLDBParser(const pFieldName: string;pFieldKind: TtiQueryFieldKind; pFieldSize: integer; const pValue : string);
+    procedure DoXMLDBParserMetaData(const AFieldName: string;AFieldKind: TtiQueryFieldKind; pFieldSize: integer);
+    procedure DoXMLDBParser(const AFieldName: string;AFieldKind: TtiQueryFieldKind; pFieldSize: integer; const AValue : string);
 
     procedure DoXMLToDataSetMetaDataWriteOnly(
-      const pFieldName: string;pFieldKind: TtiQueryFieldKind;
+      const AFieldName: string;AFieldKind: TtiQueryFieldKind;
       pFieldSize: Integer; pXMLFieldNameStyle : TtiXMLFieldNameStyle);
 
     procedure DoXMLToDataSetDataWriteOnly(
-      const pFieldName: string;pFieldKind: TtiQueryFieldKind;
-      pFieldSize: integer; const pValue : string;
+      const AFieldName: string;AFieldKind: TtiQueryFieldKind;
+      pFieldSize: integer; const AValue : string;
       pXMLFieldNameStyle : TtiXMLFieldNameStyle);
 
     procedure DoXMLToDataSetWriterPerformanceAbsolute(pXMLFieldNameStyle : TtiXMLFieldNameStyle);
@@ -172,7 +172,7 @@ uses
   ,Windows
   ,tiDUnitUtils
   ,Dialogs
- ;
+;
 
 const
 
@@ -198,8 +198,8 @@ end;
 procedure TTestTIXMLtoTIDataSet.XMLToDataSetEmptyFile_Read;
 var
   lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lResult          : string;
-  lTarget          : string;
+  lResult         : string;
+  lTarget         : string;
 begin
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
@@ -214,8 +214,8 @@ end;
 procedure TTestTIXMLtoTIDataSet.XMLToDataSetEmptyFile_Write;
 var
   lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets        : TtiDataBuffers;
-  ls               : string;
+  lDataSets       : TtiDataBuffers;
+  ls              : string;
 begin
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
@@ -244,25 +244,25 @@ begin
 end;
 
 procedure TTestTIXMLtoTIDataSet.DoXMLToDataSetMetaDataBuffered(
-  const pFieldName : string; pFieldKind : TtiQueryFieldKind;
+  const AFieldName : string; AFieldKind : TtiQueryFieldKind;
   pFieldSize : Integer);
 var
   lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets        : TtiDataBuffers;
-  lDataSet         : TtiDataBuffer;
-  lResult          : string;
-  lAsString        : string;
+  lDataSets       : TtiDataBuffers;
+  lDataSet        : TtiDataBuffer;
+  lResult         : string;
+  lAsString       : string;
 begin
-  lAsString := MakeXMLDatabaseWithMetaData(pFieldName, pFieldKind, pFieldSize);
+  lAsString := MakeXMLDatabaseWithMetaData(AFieldName, AFieldKind, pFieldSize);
 
   // Test Read
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
-    lDataSets        := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBuffers.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lDataSet := lDataSets.AddInstance('test');
-      lDataSet.Fields.AddInstance(pFieldName, pFieldKind, pFieldSize);
+      lDataSet.Fields.AddInstance(AFieldName, AFieldKind, pFieldSize);
       lResult := lXMLToTIDataSets.AsString;
       CheckEquals(lAsString, lResult);
     finally
@@ -275,15 +275,15 @@ begin
   // Test Write
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
-    lDataSets        := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBuffers.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := lAsString;
       CheckEquals(1, lDataSets.Count, 'lDataSets.Count');
       CheckEquals(1, lDataSets.Items[0].Fields.Count, 'lDataSets.Items[0].Fields.Count');
       CheckEquals(0, lDataSets.Items[0].Count, 'lDataSets.Items[0].Count');
-      CheckEquals(pFieldName, lDataSets.Items[0].Fields.Items[0].Name, 'Name');
-      CheckEquals(cgaQueryFieldKind[pFieldKind], lDataSets.Items[0].Fields.Items[0].KindAsStr, 'KindAsStr');
+      CheckEquals(AFieldName, lDataSets.Items[0].Fields.Items[0].Name, 'Name');
+      CheckEquals(cgaQueryFieldKind[AFieldKind], lDataSets.Items[0].Fields.Items[0].KindAsStr, 'KindAsStr');
       CheckEquals(pFieldSize, lDataSets.Items[0].Fields.Items[0].Width, 'Width');
       CheckEquals(lAsString, lResult);
     finally
@@ -314,27 +314,27 @@ begin
   DoXMLToDataSetMetaDataBuffered('test_field', qfkFloat, 0);
 end;
 
-procedure TTestTIXMLtoTIDataSet.DoXMLToDataSetDataBuffered(const pFieldName: string;pFieldKind: TtiQueryFieldKind; pFieldSize: integer;const pValue : string);
+procedure TTestTIXMLtoTIDataSet.DoXMLToDataSetDataBuffered(const AFieldName: string;AFieldKind: TtiQueryFieldKind; pFieldSize: integer;const AValue : string);
 var
   lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets        : TtiDataBuffers;
-  lDataSet         : TtiDataBuffer;
-  lDataSetRow      : TtiDataBufferRow;
-  lResult          : string;
-  lAsString        : string;
+  lDataSets       : TtiDataBuffers;
+  lDataSet        : TtiDataBuffer;
+  lDataSetRow     : TtiDataBufferRow;
+  lResult         : string;
+  lAsString       : string;
 begin
-  lAsString := MakeXMLDatabaseWithData(pFieldName, pFieldKind, pFieldSize, pValue, xfnsString);
+  lAsString := MakeXMLDatabaseWithData(AFieldName, AFieldKind, pFieldSize, AValue, xfnsString);
 
   // Test Read
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
-    lDataSets        := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBuffers.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lDataSet := lDataSets.AddInstance('test');
-      lDataSet.Fields.AddInstance(pFieldName, pFieldKind, pFieldSize);
+      lDataSet.Fields.AddInstance(AFieldName, AFieldKind, pFieldSize);
       lDataSetRow := lDataSet.AddInstance;
-      lDataSetRow.FindByFieldName(pFieldName).ValueAsString := pValue;
+      lDataSetRow.FindByFieldName(AFieldName).ValueAsString := AValue;
       lResult := lXMLToTIDataSets.AsString;
       CheckEquals(lAsString, lResult);
     finally
@@ -347,18 +347,18 @@ begin
   // Test Write
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
-    lDataSets        := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBuffers.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := lAsString;
       CheckEquals(1, lDataSets.Count, 'lDataSets.Count');
       CheckEquals(1, lDataSets.Items[0].Fields.Count, 'lDataSets.Items[0].Fields.Count');
       CheckEquals(1, lDataSets.Items[0].Count, 'lDataSets.Items[0].Count');
-      CheckEquals(pFieldName, lDataSets.Items[0].Fields.Items[0].Name, 'Name');
-      CheckEquals(cgaQueryFieldKind[pFieldKind], lDataSets.Items[0].Fields.Items[0].KindAsStr, 'KindAsStr');
+      CheckEquals(AFieldName, lDataSets.Items[0].Fields.Items[0].Name, 'Name');
+      CheckEquals(cgaQueryFieldKind[AFieldKind], lDataSets.Items[0].Fields.Items[0].KindAsStr, 'KindAsStr');
       CheckEquals(pFieldSize, lDataSets.Items[0].Fields.Items[0].Width, 'Width');
       CheckEquals(1, lDataSets.Items[0].Count, 'lDataSets.Items[0].Count');
-      CheckEquals(pValue, lDataSets.Items[0].Items[0].FindByFieldName(pFieldName).ValueAsString, 'lDataSets.Items[0].Items[0].FindByFieldName(pFieldName).ValueAsString');
+      CheckEquals(AValue, lDataSets.Items[0].Items[0].FindByFieldName(AFieldName).ValueAsString, 'lDataSets.Items[0].Items[0].FindByFieldName(AFieldName).ValueAsString');
       CheckEquals(lAsString, lResult);
     finally
       lDataSets.Free;
@@ -400,14 +400,14 @@ end;
 
 procedure TTestTIXMLtoTIDataSet.XMLToDataSetCompound;
 var
-  ls       : string;
+  ls      : string;
 begin
   ls := MakeXMLDatabaseCompoundWithReadWrite(10, 20, True, xfnsString);
   CheckXMLDatabaseWithCompoundData(ls, 10, 20, true);
 end;
 
 function TTestTIXMLtoTIDataSet.MakeXMLDatabaseWithMetaData(
-  const pFieldName: string; pFieldKind: TtiQueryFieldKind;
+  const AFieldName: string; AFieldKind: TtiQueryFieldKind;
   pFieldSize: Integer): string;
 var
   ls : string;
@@ -415,8 +415,8 @@ begin
   ls :=
     '<'  + FXMLTags.Table + ' ' + FXMLTags.TableName + '="test"' + '>' +
     '<'  + FXMLTags.Fields + '>' +
-    '<' + FXMLTags.Field + ' ' + FXMLTags.FieldName + '="' + pFieldName + '" '
-                              + FXMLTags.FieldKind + '="' + LowerCase(cgaQueryFieldKind[pFieldKind]) + '" '
+    '<' + FXMLTags.Field + ' ' + FXMLTags.FieldName + '="' + AFieldName + '" '
+                              + FXMLTags.FieldKind + '="' + LowerCase(cgaQueryFieldKind[AFieldKind]) + '" '
                               + FXMLTags.FieldSize + '="' + IntToStr(pFieldSize) + '"/>' +
     '</' + FXMLTags.Fields + '>' +
     '<'  + FXMLTags.Rows + '>' +
@@ -426,8 +426,8 @@ begin
 end;
 
 function TTestTIXMLtoTIDataSet.MakeXMLDatabaseWithData(
-  const pFieldName: string; pFieldKind: TtiQueryFieldKind;
-  pFieldSize: Integer; const pValue : string;
+  const AFieldName: string; AFieldKind: TtiQueryFieldKind;
+  pFieldSize: Integer; const AValue : string;
   pXMLFieldNameStyle: TtiXMLFieldNameStyle): string;
 var
   ls : string;
@@ -435,7 +435,7 @@ var
 begin
 
   case pXMLFieldNameStyle of
-    xfnsString : lFieldName := pFieldName;
+    xfnsString : lFieldName := AFieldName;
     xfnsInteger: lFieldName := tiEncodeWordBase26(0);
   else
     raise Exception.Create(cErrorInvalidXMLFieldNameStyle);
@@ -444,12 +444,12 @@ begin
   ls :=
     '<'  + FXMLTags.Table + ' ' + FXMLTags.TableName + '="test"' + '>' +
     '<'  + FXMLTags.Fields + '>' +
-    '<' + FXMLTags.Field + ' ' + FXMLTags.FieldName + '="' + pFieldName + '" '
-                              + FXMLTags.FieldKind + '="' + LowerCase(cgaQueryFieldKind[pFieldKind]) + '" '
+    '<' + FXMLTags.Field + ' ' + FXMLTags.FieldName + '="' + AFieldName + '" '
+                              + FXMLTags.FieldKind + '="' + LowerCase(cgaQueryFieldKind[AFieldKind]) + '" '
                               + FXMLTags.FieldSize + '="' + IntToStr(pFieldSize) + '"/>' +
     '</' + FXMLTags.Fields + '>' +
     '<'  + FXMLTags.Rows + '>' +
-    '<' + FXMLTags.Row   + ' ' + lFieldName + '="' + pValue + '"/>' +
+    '<' + FXMLTags.Row   + ' ' + lFieldName + '="' + AValue + '"/>' +
     '</' + FXMLTags.Rows + '>' +
     '</' + FXMLTags.Table + '>';
 
@@ -457,25 +457,25 @@ begin
 end;
 
 procedure TTestTIXMLtoTIDataSet.DoXMLToDataSetDataWriteOnly(
-  const pFieldName: string; pFieldKind: TtiQueryFieldKind;
-  pFieldSize: integer; const pValue: string;
+  const AFieldName: string; AFieldKind: TtiQueryFieldKind;
+  pFieldSize: integer; const AValue: string;
   pXMLFieldNameStyle : TtiXMLFieldNameStyle);
 var
   lXMLWriter : TtiDataBufferToXMLWriter;
-  lResult          : string;
-  lAsString        : string;
+  lResult         : string;
+  lAsString       : string;
 begin
   lAsString :=
-    MakeXMLDatabaseWithData(pFieldName, pFieldKind, pFieldSize, pValue, pXMLFieldNameStyle);
+    MakeXMLDatabaseWithData(AFieldName, AFieldKind, pFieldSize, AValue, pXMLFieldNameStyle);
 
   // Test Read
   lXMLWriter := TtiDataBufferToXMLWriter.Create;
   try
     lXMLWriter.XMLFieldNameStyle := pXMLFieldNameStyle;
     lXMLWriter.AddTable('test');
-    lXMLWriter.AddField(pFieldName, pFieldKind, pFieldSize);
+    lXMLWriter.AddField(AFieldName, AFieldKind, pFieldSize);
     lXMLWriter.AddRow;
-    lXMLWriter.AddCellAsString(pFieldName, pValue);
+    lXMLWriter.AddCellAsString(AFieldName, AValue);
     lResult := lXMLWriter.AsString;
     CheckEquals(lAsString, lResult);
   finally
@@ -484,20 +484,20 @@ begin
 end;
 
 procedure TTestTIXMLtoTIDataSet.DoXMLToDataSetMetaDataWriteOnly(
-  const pFieldName: string; pFieldKind: TtiQueryFieldKind;
+  const AFieldName: string; AFieldKind: TtiQueryFieldKind;
   pFieldSize: integer; pXMLFieldNameStyle : TtiXMLFieldNameStyle);
 var
   lXMLWriter : TtiDataBufferToXMLWriter;
-  lResult    : string;
-  lAsString  : string;
+  lResult   : string;
+  lAsString : string;
 begin
-  lAsString := MakeXMLDatabaseWithMetaData(pFieldName, pFieldKind, pFieldSize);
+  lAsString := MakeXMLDatabaseWithMetaData(AFieldName, AFieldKind, pFieldSize);
 
   lXMLWriter := TtiDataBufferToXMLWriter.Create;
   try
     lXMLWriter.XMLFieldNameStyle := pXMLFieldNameStyle;
     lXMLWriter.AddTable('test');
-    lXMLWriter.AddField(pFieldName, pFieldKind, pFieldSize);
+    lXMLWriter.AddField(AFieldName, AFieldKind, pFieldSize);
     lResult := lXMLWriter.AsString;
     CheckEquals(lAsString, lResult);
   finally
@@ -664,29 +664,29 @@ begin
 end;
 
 procedure TTestTIXMLtoTIDataSet.CheckXMLDatabaseWithCompoundData(
-  const pValue: string; pDataSetCount : Integer;
+  const AValue: string; pDataSetCount : Integer;
   pRowCount : Integer;
   pIncludeBinField : Boolean);
 var
   lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets        : TtiDataBuffers;
-  lDataSet         : TtiDataBuffer;
-  lDataSetRow      : TtiDataBufferRow;
-  lAsString2       : string;
-  lDataSetCount    : integer;
-  lRowCount        : integer;
-  lVal             : integer;
-  lStream1         : TStringStream;
-  lStream2         : TMemoryStream;
+  lDataSets       : TtiDataBuffers;
+  lDataSet        : TtiDataBuffer;
+  lDataSetRow     : TtiDataBufferRow;
+  lAsString2      : string;
+  lDataSetCount   : integer;
+  lRowCount       : integer;
+  lVal            : integer;
+  lStream1        : TStringStream;
+  lStream2        : TMemoryStream;
 begin
 
   // Test Write
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
-    lDataSets        := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBuffers.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
-      lXMLToTIDataSets.AsString := pValue;
+      lXMLToTIDataSets.AsString := AValue;
       CheckEquals(pDataSetCount, lDataSets.Count, 'lDataSets.Count');
       for lDataSetCount := 0 to pDataSetCount - 1 do
       begin
@@ -727,7 +727,7 @@ begin
           lDataSetRow := lDataSet.Items[lRowCount];
           CheckEquals(tstIntToStr(lVal), lDataSetRow.FindByFieldName('string_field').ValueAsString, 'string_field');
           CheckEquals(lVal, lDataSetRow.FindByFieldName('integer_field').ValueAsInteger, 'integer_field');
-          CheckEquals(tstIntToFloat(lVal), lDataSetRow.FindByFieldName('float_field').ValueAsFloat, 'float_field');
+          CheckNearEnough(tstIntToFloat(lVal), lDataSetRow.FindByFieldName('float_field').ValueAsFloat, 'float_field');
           CheckEquals(tstIntToBool(lVal), lDataSetRow.FindByFieldName('boolean_field').ValueAsBool, 'boolean_field');
           CheckEquals(tstIntToDateTime(lVal), lDataSetRow.FindByFieldName('date_field').ValueAsDateTime, 5, 'date_field');
           if pIncludeBinField then
@@ -754,7 +754,7 @@ begin
   finally
     lXMLToTIDataSets.free;
   end;
-  CheckEquals(pValue,lAsString2);
+  CheckEquals(AValue,lAsString2);
 end;
 
 function TTestTIXMLtoTIDataSet.MakeXMLDatabaseCompoundWithReadWrite(
@@ -763,12 +763,12 @@ function TTestTIXMLtoTIDataSet.MakeXMLDatabaseCompoundWithReadWrite(
            pXMLFieldNameStyle: TtiXMLFieldNameStyle): string;
 var
   lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets        : TtiDataBuffers;
+  lDataSets       : TtiDataBuffers;
 begin
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
     lXMLToTIDataSets.XMLFieldNameStyle := pXMLFieldNameStyle;
-    lDataSets        := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBuffers.Create;
     try
       CompoundDataToDataSets(lDataSets, pDataSetCount, pRowCount, pIncludeBinField);
       lXMLToTIDataSets.DataSets := lDataSets;
@@ -782,29 +782,29 @@ begin
 end;
 
 procedure TTestTIXMLtoTIDataSet.DoXMLDBParser(
-  const pFieldName: string; pFieldKind: TtiQueryFieldKind;
-  pFieldSize: integer; const pValue: string);
+  const AFieldName: string; AFieldKind: TtiQueryFieldKind;
+  pFieldSize: integer; const AValue: string);
 var
   lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets        : TtiDataBuffers;
-  lAsString        : string;
+  lDataSets       : TtiDataBuffers;
+  lAsString       : string;
 begin
-  lAsString := MakeXMLDatabaseWithData(pFieldName, pFieldKind, pFieldSize, pValue, xfnsString);
+  lAsString := MakeXMLDatabaseWithData(AFieldName, AFieldKind, pFieldSize, AValue, xfnsString);
   // Test Write
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
-    lDataSets        := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBuffers.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := lAsString;
       CheckEquals(1, lDataSets.Count, 'lDataSets.Count');
       CheckEquals(1, lDataSets.Items[0].Fields.Count, 'lDataSets.Items[0].Fields.Count');
       CheckEquals(1, lDataSets.Items[0].Count, 'lDataSets.Items[0].Count');
-      CheckEquals(pFieldName, lDataSets.Items[0].Fields.Items[0].Name, 'Name');
-      CheckEquals(cgaQueryFieldKind[pFieldKind], lDataSets.Items[0].Fields.Items[0].KindAsStr, 'KindAsStr');
+      CheckEquals(AFieldName, lDataSets.Items[0].Fields.Items[0].Name, 'Name');
+      CheckEquals(cgaQueryFieldKind[AFieldKind], lDataSets.Items[0].Fields.Items[0].KindAsStr, 'KindAsStr');
       CheckEquals(pFieldSize, lDataSets.Items[0].Fields.Items[0].Width, 'Width');
       CheckEquals(1, lDataSets.Items[0].Count, 'lDataSets.Items[0].Count');
-      CheckEquals(pValue, lDataSets.Items[0].Items[0].FindByFieldName(pFieldName).ValueAsString, 'lDataSets.Items[0].Items[0].FindByFieldName(pFieldName).ValueAsString');
+      CheckEquals(AValue, lDataSets.Items[0].Items[0].FindByFieldName(AFieldName).ValueAsString, 'lDataSets.Items[0].Items[0].FindByFieldName(AFieldName).ValueAsString');
     finally
       lDataSets.Free;
     end;
@@ -814,26 +814,26 @@ begin
 end;
 
 procedure TTestTIXMLtoTIDataSet.DoXMLDBParserMetaData(
-  const pFieldName: string; pFieldKind: TtiQueryFieldKind;
+  const AFieldName: string; AFieldKind: TtiQueryFieldKind;
   pFieldSize: integer);
 var
   lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets        : TtiDataBuffers;
-  lAsString        : string;
+  lDataSets       : TtiDataBuffers;
+  lAsString       : string;
 begin
-  lAsString := MakeXMLDatabaseWithMetaData(pFieldName, pFieldKind, pFieldSize);
+  lAsString := MakeXMLDatabaseWithMetaData(AFieldName, AFieldKind, pFieldSize);
   // Test Write
   lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
   try
-    lDataSets        := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBuffers.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := lAsString;
       CheckEquals(1, lDataSets.Count, 'lDataSets.Count');
       CheckEquals(1, lDataSets.Items[0].Fields.Count, 'lDataSets.Items[0].Fields.Count');
       CheckEquals(0, lDataSets.Items[0].Count, 'lDataSets.Items[0].Count');
-      CheckEquals(pFieldName, lDataSets.Items[0].Fields.Items[0].Name, 'Name');
-      CheckEquals(cgaQueryFieldKind[pFieldKind], lDataSets.Items[0].Fields.Items[0].KindAsStr, 'KindAsStr');
+      CheckEquals(AFieldName, lDataSets.Items[0].Fields.Items[0].Name, 'Name');
+      CheckEquals(cgaQueryFieldKind[AFieldKind], lDataSets.Items[0].Fields.Items[0].KindAsStr, 'KindAsStr');
       CheckEquals(pFieldSize, lDataSets.Items[0].Fields.Items[0].Width, 'Width');
     finally
       lDataSets.Free;
@@ -934,18 +934,18 @@ const
   '</a>';
 {
 
-                   FDocData         := 'a';
-                   FTables          := 'b';
-                   FTable           := 'c';
-                   FTableName       := 'd';
-                   FFields          := 'e';
-                   FField           := 'f';
-                   FFieldName       := 'g';
-                   FFieldKind       := 'h';
-                   FFieldSize       := 'i';
-                   FRows            := 'j';
-                   FRow             := 'k';
-                   FValue           := 'l';
+                   FDocData        := 'a';
+                   FTables         := 'b';
+                   FTable          := 'c';
+                   FTableName      := 'd';
+                   FFields         := 'e';
+                   FField          := 'f';
+                   FFieldName      := 'g';
+                   FFieldKind      := 'h';
+                   FFieldSize      := 'i';
+                   FRows           := 'j';
+                   FRow            := 'k';
+                   FValue          := 'l';
 }
 var
   lXMLDBParser : TXMLToDataSetReaderTest;
@@ -1283,15 +1283,15 @@ begin
   inherited;
 end;
 
-procedure TXMLToDataSetReaderTest.DoAddCell(const pFieldName: string;pFieldValue: string);
+procedure TXMLToDataSetReaderTest.DoAddCell(const AFieldName: string;pFieldValue: string);
 begin
-  Attributes.Values[pFieldName] := pFieldValue;
+  Attributes.Values[AFieldName]:= pFieldValue;
 end;
 
-procedure TXMLToDataSetReaderTest.DoAddField(const pFieldName, pFieldKind,pFieldSize: string);
+procedure TXMLToDataSetReaderTest.DoAddField(const AFieldName, AFieldKind,pFieldSize: string);
 begin
-  FFieldName:= pFieldName;
-  FFieldKind:= pFieldKind;
+  FFieldName:= AFieldName;
+  FFieldKind:= AFieldKind;
   FFieldSize:= pFieldSize;
 end;
 
@@ -1300,9 +1300,9 @@ begin
   //
 end;
 
-procedure TXMLToDataSetReaderTest.DoAddTable(const pTableName: string);
+procedure TXMLToDataSetReaderTest.DoAddTable(const ATableName: string);
 begin
-  FTableName:= pTableName;
+  FTableName:= ATableName;
 end;
 
 procedure TXMLToDataSetReaderTest.Next;
@@ -1336,7 +1336,7 @@ var
   lWrite : DWord;
   lMSPer100Rows : Extended;
   ls: string;
-  lXMLToTIDataSets     : TtiXMLToDataSetReadWriter;
+  lXMLToTIDataSets    : TtiXMLToDataSetReadWriter;
   lDataSets : TtiDataBuffers;
 begin
 
@@ -1392,12 +1392,12 @@ procedure TTestTIXMLtoTIDataSet.CompoundDataToDataSets(
   const pDataSets: TtiDataBuffers; pDataSetCount, pRowCount: Integer;
   pIncludeBinField: Boolean);
 var
-  lDataSet         : TtiDataBuffer;
-  lDataSetRow      : TtiDataBufferRow;
-  lDataSetCount    : integer;
-  lRowCount        : integer;
-  lVal             : integer;
-  lStream          : TStringStream;
+  lDataSet        : TtiDataBuffer;
+  lDataSetRow     : TtiDataBufferRow;
+  lDataSetCount   : integer;
+  lRowCount       : integer;
+  lVal            : integer;
+  lStream         : TStringStream;
 begin
   Assert(pDataSets<>nil, 'pDataSets not assigned');
   for lDataSetCount := 0 to pDataSetCount - 1 do
@@ -1414,11 +1414,11 @@ begin
     begin
       lVal := (lDataSetCount+1)*1000+lRowCount;
       lDataSetRow := lDataSet.AddInstance;
-      lDataSetRow.FindByFieldName('string_field').ValueAsString   := tstIntToStr(lVal);
+      lDataSetRow.FindByFieldName('string_field').ValueAsString  := tstIntToStr(lVal);
       lDataSetRow.FindByFieldName('integer_field').ValueAsInteger := lVal;
-      lDataSetRow.FindByFieldName('float_field').ValueAsFloat     := tstIntToFloat(lVal);
-      lDataSetRow.FindByFieldName('boolean_field').ValueAsBool    := tstIntToBool(lVal);
-      lDataSetRow.FindByFieldName('date_field').ValueAsDateTime   := tstIntToDateTime(lVal);
+      lDataSetRow.FindByFieldName('float_field').ValueAsFloat    := tstIntToFloat(lVal);
+      lDataSetRow.FindByFieldName('boolean_field').ValueAsBool   := tstIntToBool(lVal);
+      lDataSetRow.FindByFieldName('date_field').ValueAsDateTime  := tstIntToDateTime(lVal);
       if pIncludeBinField then
       begin
         lStream := TStringStream.Create(LongString);

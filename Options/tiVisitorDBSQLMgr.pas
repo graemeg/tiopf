@@ -11,100 +11,100 @@ uses
   ,Classes
   ,tiObject
   ,tiVisitorDB
-  ;
+ ;
 
 type
 
-  TSQLMgrDatabaseMappings = class ;
-  TSQLMgrDatabaseMapping  = class ;
+  TSQLMgrDatabaseMappings = class;
+  TSQLMgrDatabaseMapping  = class;
 
-  TSQLMgrDatabaseMappings = class( TtiObjectList )
+  TSQLMgrDatabaseMappings = class(TtiObjectList)
   private
   protected
-    function    GetItems(i: integer): TSQLMgrDatabaseMapping ; reintroduce ;
-    procedure   SetItems(i: integer; const Value: TSQLMgrDatabaseMapping); reintroduce ;
+    function    GetItems(i: integer): TSQLMgrDatabaseMapping; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TSQLMgrDatabaseMapping); reintroduce;
   public
-    property    Items[i:integer] : TSQLMgrDatabaseMapping read GetItems write SetItems ;
-    procedure   Add( pObject : TSQLMgrDatabaseMapping   ; pbDefaultDispOrder : boolean = true ) ; reintroduce ;
-    procedure   RegisterMapping( const pDatabaseName : string ; pSQLMgrDataSource : string ) ;
-    procedure   UnRegisterMapping( const pDatabaseName : string ) ;
-    function    FindSQLMgrDataSourceByDatabaseName( const pDatabaseName : string ) : string ;
+    property    Items[i:integer]: TSQLMgrDatabaseMapping read GetItems write SetItems;
+    procedure   Add(AObject : TSQLMgrDatabaseMapping  ; ADefaultDispOrder : boolean = true); reintroduce;
+    procedure   RegisterMapping(const ADatabaseName : string; pSQLMgrDataSource : string);
+    procedure   UnRegisterMapping(const ADatabaseName : string);
+    function    FindSQLMgrDataSourceByDatabaseName(const ADatabaseName : string): string;
   published
-  end ;
+  end;
 
-  TSQLMgrDatabaseMapping  = class( TtiObject )
+  TSQLMgrDatabaseMapping  = class(TtiObject)
   private
     FDatabaseName: string;
     FSQLMgrDataSource: string;
   protected
-    function    GetOwner: TSQLMgrDatabaseMappings; reintroduce ;
-    procedure   SetOwner(const Value: TSQLMgrDatabaseMappings); reintroduce ;
+    function    GetOwner: TSQLMgrDatabaseMappings; reintroduce;
+    procedure   SetOwner(const AValue: TSQLMgrDatabaseMappings); reintroduce;
   public
-    property    Owner       : TSQLMgrDatabaseMappings read GetOwner      write SetOwner ;
+    property    Owner      : TSQLMgrDatabaseMappings read GetOwner      write SetOwner;
   published
-    property SQLMgrDataSource : string read FSQLMgrDataSource write FSQLMgrDataSource ;
-    property DatabaseName     : string read FDatabaseName     write FDatabaseName ;
-  end ;
+    property SQLMgrDataSource : string read FSQLMgrDataSource write FSQLMgrDataSource;
+    property DatabaseName    : string read FDatabaseName     write FDatabaseName;
+  end;
 
   // Uses the SQLManager to get the SQL
-  TVisSQLMgrAbs = class( TtiPerObjVisitor )
+  TVisSQLMgrAbs = class(TtiPerObjVisitor)
   private
-    FsQueryName      : string ;
-    FbInitCalled     : boolean ;
-    FbGetQueryCalled : boolean ;
+    FsQueryName     : string;
+    FbInitCalled    : boolean;
+    FbGetQueryCalled : boolean;
 
   protected
-    procedure   Init            ; virtual ;
-    procedure   DoInit ;
+    procedure   Init           ; virtual;
+    procedure   DoInit;
 
-    procedure   DoSetupParams ;
-    procedure   DoGetQuery ;
-    procedure   AssignSQLFromSQLManager( pQuery : TtiQuery ; pSQLMgrDataSource : string ; pQueryName : string ) ;
+    procedure   DoSetupParams;
+    procedure   DoGetQuery;
+    procedure   AssignSQLFromSQLManager(AQuery : TtiQuery; pSQLMgrDataSource : string; pQueryName : string);
 
   public
-    Constructor Create ; override ;
-    procedure   Execute( const pData : TtiVisited ) ; override ;
-    property    QueryName : string read FsQueryName write FsQueryName ;
+    Constructor Create; override;
+    procedure   Execute(const AData : TtiVisited); override;
+    property    QueryName : string read FsQueryName write FsQueryName;
 
-  end ;
+  end;
 
   // Perhaps this could be replaced with a property on the TtiObject which stops
   // the object state being set to diryt in the first place - or even better, just another
   // object state would do.
-  TVisSQLMgrObjectStateDeleted = class( TVisSQLMgrAbs )
+  TVisSQLMgrObjectStateDeleted = class(TVisSQLMgrAbs)
   protected
-    function  AcceptVisitor  : boolean ; override ;
-    procedure Init              ; override ;
-    procedure SetupParams       ; override ;
-    procedure Final             ; override ;
-  end ;
+    function  AcceptVisitor : boolean; override;
+    procedure Init             ; override;
+    procedure SetupParams      ; override;
+    procedure Final            ; override;
+  end;
 
-  TVisSQLMgrSelect = class( TVisSQLMgrAbs )
+  TVisSQLMgrSelect = class(TVisSQLMgrAbs)
   protected
-    procedure MapRowToObject ; virtual ;
+    procedure MapRowToObject; virtual;
   public
-    constructor Create ; override ;
-    procedure   Execute( const pData : TtiVisited ) ; override ;
-  end ;
+    constructor Create; override;
+    procedure   Execute(const AData : TtiVisited); override;
+  end;
 
-  TVisSQLMgrUpdate = class( TVisSQLMgrAbs )
+  TVisSQLMgrUpdate = class(TVisSQLMgrAbs)
   public
-    procedure   Execute( const pData : TtiVisited ) ; override ;
-  end ;
+    procedure   Execute(const AData : TtiVisited); override;
+  end;
 
-  TVisSQLMgrDelete = class( TVisSQLMgrUpdate )
+  TVisSQLMgrDelete = class(TVisSQLMgrUpdate)
   protected
     // Override this and check the visitor's class type
-    function  AcceptVisitor : boolean ; override ;
+    function  AcceptVisitor : boolean; override;
     // Override this to set the query name
-    // procedure Init              ; override ;
+    // procedure Init             ; override;
     // (We could set the table name using a macro param, but this will reduce
     //  the value of any compile time checking against the db structure, so it
     //  is not done.)
-    procedure SetupParams       ; override ;
-  end ;
+    procedure SetupParams      ; override;
+  end;
 
-function gSQLMgrDatabaseMappings : TSQLMgrDatabaseMappings ;
+function gSQLMgrDatabaseMappings : TSQLMgrDatabaseMappings;
 
 implementation
 uses
@@ -116,16 +116,16 @@ uses
   ,tiExcept
   ,Dialogs
   ,Windows
-  ;
+ ;
 
 var
-  uSQLMgrDatabaseMappings : TSQLMgrDatabaseMappings ;
+  uSQLMgrDatabaseMappings : TSQLMgrDatabaseMappings;
 
-function gSQLMgrDatabaseMappings : TSQLMgrDatabaseMappings ;
+function gSQLMgrDatabaseMappings : TSQLMgrDatabaseMappings;
 begin
   if uSQLMgrDatabaseMappings = nil then
-    uSQLMgrDatabaseMappings := TSQLMgrDatabaseMappings.Create ;
-  result := uSQLMgrDatabaseMappings ;
+    uSQLMgrDatabaseMappings := TSQLMgrDatabaseMappings.Create;
+  result := uSQLMgrDatabaseMappings;
 end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -143,180 +143,180 @@ begin
   inherited;
 end;
 
-procedure TVisSQLMgrSelect.Execute( const pData : TtiVisited ) ;
-  procedure _OpenQuery ;
+procedure TVisSQLMgrSelect.Execute(const AData : TtiVisited);
+  procedure _OpenQuery;
   begin
     if gTIOPFManager.Terminated then
-      Exit ; //==>
-    Query.Open ;
-  end ;
+      Exit; //==>
+    Query.Open;
+  end;
 
-  procedure _ScanQuery ;
+  procedure _ScanQuery;
   begin
     Query.ContinueScan := True;
-    while ( not Query.EOF ) and
-          ( Query.ContinueScan ) and
-          ( not gTIOPFManager.Terminated ) do
+    while (not Query.EOF) and
+          (Query.ContinueScan) and
+          (not gTIOPFManager.Terminated) do
     begin
-      MapRowToObject ;
-      Query.Next ;
-    end ;
-    Query.Close ;
-  end ;
+      MapRowToObject;
+      Query.Next;
+    end;
+    Query.Close;
+  end;
 var
-  liStart : DWord ;
-  liQueryTime : DWord ;
+  liStart : DWord;
+  liQueryTime : DWord;
 begin
 
-  if gTIOPFManager.Terminated then Exit ; //==>
+  if gTIOPFManager.Terminated then Exit; //==>
   try
-    Inherited Execute( pData ) ;
+    Inherited Execute(AData);
 
     if not AcceptVisitor then
-      Exit ; //==>
+      Exit; //==>
 
-    Assert( Database <> nil, 'Database not set in ' + ClassName ) ;
+    Assert(Database <> nil, 'Database not set in ' + ClassName);
 
-    if pData <> nil then begin
-      Visited := TtiObject( pData ) ;
+    if AData <> nil then begin
+      Visited := TtiObject(AData);
     end else begin
-      Visited := nil ;
-    end ;
+      Visited := nil;
+    end;
 
-    DoInit ;
-    DoGetQuery ;
-    DoSetupParams ;
-    liStart := GetTickCount ;
-    _OpenQuery ;
+    DoInit;
+    DoGetQuery;
+    DoSetupParams;
+    liStart := GetTickCount;
+    _OpenQuery;
     try
-      liQueryTime := GetTickCount - liStart ;
-      liStart := GetTickCount ;
-      _ScanQuery ;
-      LogQueryTiming( QueryName, liQueryTime, GetTickCount-liStart ) ;
+      liQueryTime := GetTickCount - liStart;
+      liStart := GetTickCount;
+      _ScanQuery;
+      LogQueryTiming(QueryName, liQueryTime, GetTickCount-liStart);
     finally
-      Query.Close ;
-    end ;
+      Query.Close;
+    end;
   except
     on e:exception do
       raise EtiOPFInternalException.Create(
                       'Visited:        ' + Visited.ClassName + Cr +
-                      '  OID:          ' + OIDToString( TtiObject( Visited ).OID) + Cr +
-                      '  ObjectState:  ' + TtiObject( Visited ).ObjectStateAsString + Cr +
+                      '  OID:          ' + OIDToString(TtiObject(Visited).OID) + Cr +
+                      '  ObjectState:  ' + TtiObject(Visited).ObjectStateAsString + Cr +
                       '  DatabaseName: ' + Database.DatabaseName + Cr +
                       '  Message:      ' + e.Message);
 
-  end ;
+  end;
 
-end ;
+end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TVisSQLMgrUpdate
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TVisSQLMgrUpdate.Execute(const  pData: TtiVisited);
-  procedure _ExecuteQuery ;
+procedure TVisSQLMgrUpdate.Execute(const  AData: TtiVisited);
+  procedure _ExecuteQuery;
   var
-    liStart : DWord ;
+    liStart : DWord;
   begin
-    liStart := GetTickCount ;
-    Query.ExecSQL ;
-    LogQueryTiming( QueryName, GetTickCount - liStart, 0 ) ;
-  end ;
+    liStart := GetTickCount;
+    Query.ExecSQL;
+    LogQueryTiming(QueryName, GetTickCount - liStart, 0);
+  end;
 begin
   try
-    Inherited Execute( pData ) ;
+    Inherited Execute(AData);
     if not AcceptVisitor then
-      exit ; //==>
+      exit; //==>
 
-    Init ;
-    DoGetQuery ;
-      DoSetupParams ;
-      _ExecuteQuery ;
+    Init;
+    DoGetQuery;
+      DoSetupParams;
+      _ExecuteQuery;
   except
     on e:exception do
       raise EtiOPFInternalException.Create(
                       'Visited:        ' + Visited.ClassName + Cr +
-                      '  OID:          ' + OIDToString(TtiObject( Visited ).OID) + Cr +
-                      '  ObjectState:  ' + TtiObject( Visited ).ObjectStateAsString + Cr +
+                      '  OID:          ' + OIDToString(TtiObject(Visited).OID) + Cr +
+                      '  ObjectState:  ' + TtiObject(Visited).ObjectStateAsString + Cr +
                       '  DatabaseName: ' + Database.DatabaseName + Cr +
                       '  Message:      ' + e.Message);
 
-  end ;
+  end;
 
 end;
 
 
 procedure TVisSQLMgrAbs.Init;
 begin
-  raise exception.Create( 'Init has not been ' +
-                          'overridden in the concrete: ' + ClassName ) ;
+  raise exception.Create('Init has not been ' +
+                          'overridden in the concrete: ' + ClassName);
 end;
 
 procedure TVisSQLMgrSelect.MapRowToObject;
 begin
-  raise exception.Create( 'MapRowToObject has not been ' +
-                          'overridden in the concrete: ' + ClassName ) ;
+  raise exception.Create('MapRowToObject has not been ' +
+                          'overridden in the concrete: ' + ClassName);
 end;
 
 constructor TVisSQLMgrAbs.Create;
 begin
   inherited;
-  FbInitCalled     := false ;
-  FbGetQueryCalled := false ;
+  FbInitCalled    := false;
+  FbGetQueryCalled := false;
 end;
 
-procedure TVisSQLMgrAbs.Execute(const pData: TtiVisited);
+procedure TVisSQLMgrAbs.Execute(const AData: TtiVisited);
 begin
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  inherited Execute( pData ) ;
+  inherited Execute(AData);
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  Assert( pData <> nil,
-          'Visited is nil' ) ;
-  Assert( ( pData is TtiObject ),
+  Assert(AData <> nil,
+          'Visited is nil');
+  Assert((AData is TtiObject),
           'Visited is not a TtiObject' + #13 +
-          'Visited: ' + pData.ClassName + #13 +
-         'Visitor: ' + ClassName + #13 ) ;
+          'Visited: ' + AData.ClassName + #13 +
+         'Visitor: ' + ClassName + #13);
 end;
 
 procedure TVisSQLMgrAbs.DoInit;
 begin
   if FbInitCalled then
-    Exit ; //==>
+    Exit; //==>
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
     
-  Init ;
-  FbInitCalled := true ;
-  Assert( QueryName <> '', 'QueryName unassigned.' ) ;
+  Init;
+  FbInitCalled := true;
+  Assert(QueryName <> '', 'QueryName unassigned.');
 end;
 
 procedure TVisSQLMgrAbs.DoSetupParams;
 begin
   if gTIOPFManager.Terminated then
-    Exit ; //==>
-  SetupParams ;
+    Exit; //==>
+  SetupParams;
 end;
 
 procedure TVisSQLMgrAbs.DoGetQuery;
 var
-  lSQLMgrDataSource : string ;
+  lSQLMgrDataSource : string;
 begin
   if FbGetQueryCalled then
-    Exit ; //==>
+    Exit; //==>
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  Assert( QueryName <> '', 'QueryName not assigned' ) ;
-  Assert( VisitorController <> nil, 'VisitorMgr not assigned' ) ;
-  Assert( VisitorController.SQLMgrDataSource <> '', 'SQLMgrDataSource not assigned' ) ;
+  Assert(QueryName <> '', 'QueryName not assigned');
+  Assert(VisitorController <> nil, 'VisitorMgr not assigned');
+  Assert(VisitorController.SQLMgrDataSource <> '', 'SQLMgrDataSource not assigned');
 
   // This will fail in the tiAppLaunchWeb because it is linking in the
   // tiQueryHTTP directly, and there is no mapping between query factory and
@@ -324,16 +324,16 @@ begin
 
   lSQLMgrDataSource :=
     gSQLMgrDatabaseMappings.FindSQLMgrDataSourceByDatabaseName(
-      VisitorController.DBConnectionName ) ;
+      VisitorController.DBConnectionName);
 
-  Assert( lSQLMgrDataSource <> '', 'SQLMgrDataSource not assigned.' ) ;
+  Assert(lSQLMgrDataSource <> '', 'SQLMgrDataSource not assigned.');
 
-  AssignSQLFromSQLManager( Query, lSQLMgrDataSource, QueryName ) ;
+  AssignSQLFromSQLManager(Query, lSQLMgrDataSource, QueryName);
 
-  FbGetQueryCalled := true ;
-  Assert( Query <> nil, 'Query not assigned' ) ;
+  FbGetQueryCalled := true;
+  Assert(Query <> nil, 'Query not assigned');
 
-  Assert( Database <> nil, 'DBConnection not set in ' + ClassName ) ;
+  Assert(Database <> nil, 'DBConnection not set in ' + ClassName);
 
 end;
 
@@ -341,15 +341,15 @@ end;
 
 function TVisSQLMgrObjectStateDeleted.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TtiObject ) and
-            ( TtiObject( Visited ).ObjectState = posDelete ) ;
+  result := (Visited is TtiObject) and
+            (TtiObject(Visited).ObjectState = posDelete);
 end;
 
 procedure TVisSQLMgrObjectStateDeleted.Final;
 begin
   if gTIOPFManager.Terminated then
-    Exit ; //==>
-  TtiObject( Visited ).ObjectState := posDeleted ;
+    Exit; //==>
+  TtiObject(Visited).ObjectState := posDeleted;
 end;
 
 procedure TVisSQLMgrObjectStateDeleted.Init;
@@ -366,111 +366,111 @@ end;
 
 function TVisSQLMgrDelete.AcceptVisitor: boolean;
 begin
-  result := ( Visited.ObjectState = posDelete ) ;
+  result := (Visited.ObjectState = posDelete);
 end;
 
 procedure TVisSQLMgrDelete.SetupParams;
 begin
   {$IFDEF OID_AS_INT64}
-    Query.ParamAsInteger['OID'] := Visited.OID ;
+    Query.ParamAsInteger['OID']:= Visited.OID;
   {$ELSE}
-    Visited.OID.AssignToTIQuery( 'OID', Query ) ;
+    Visited.OID.AssignToTIQuery('OID', Query);
   {$ENDIF}
 end;
 
 { TSQLMgrDatabaseMappings }
 
-procedure TSQLMgrDatabaseMappings.Add(pObject: TSQLMgrDatabaseMapping; pbDefaultDispOrder: boolean);
+procedure TSQLMgrDatabaseMappings.Add(AObject: TSQLMgrDatabaseMapping; ADefaultDispOrder: boolean);
 begin
-  inherited Add( pObject, pbDefaultDispOrder ) ;
+  inherited Add(AObject, ADefaultDispOrder);
 end;
 
 function TSQLMgrDatabaseMappings.FindSQLMgrDataSourceByDatabaseName(
-  const pDatabaseName: string): string;
+  const ADatabaseName: string): string;
 var
-  lData : TSQLMgrDatabaseMapping ;
+  lData : TSQLMgrDatabaseMapping;
 begin
-  lData := TSQLMgrDatabaseMapping( FindByProps( ['DatabaseName'], [LowerCase(pDatabaseName)] )) ;
-  Assert( lData <> nil,
+  lData := TSQLMgrDatabaseMapping(FindByProps(['DatabaseName'], [LowerCase(ADatabaseName)]));
+  Assert(lData <> nil,
           'Unable to find SQLMgrDatabaseMapping for <' +
-          pDatabaseName + '>' ) ;
-  result := lData.SQLMgrDataSource ;
+          ADatabaseName + '>');
+  result := lData.SQLMgrDataSource;
 end;
 
-function TSQLMgrDatabaseMappings.GetItems( i: integer): TSQLMgrDatabaseMapping;
+function TSQLMgrDatabaseMappings.GetItems(i: integer): TSQLMgrDatabaseMapping;
 begin
-  result := TSQLMgrDatabaseMapping( inherited GetItems( i ));
+  result := TSQLMgrDatabaseMapping(inherited GetItems(i));
 end;
 
 procedure TSQLMgrDatabaseMappings.RegisterMapping(
-  const pDatabaseName: string; pSQLMgrDataSource: string);
+  const ADatabaseName: string; pSQLMgrDataSource: string);
 var
-  lData : TSQLMgrDatabaseMapping ;
+  lData : TSQLMgrDatabaseMapping;
 begin
-  lData := TSQLMgrDatabaseMapping.Create ;
-  lData.DatabaseName := LowerCase(pDatabaseName) ;
-  lData.SQLMgrDataSource := LowerCase(pSQLMgrDataSource) ;
-  Add( lData ) ;
+  lData := TSQLMgrDatabaseMapping.Create;
+  lData.DatabaseName := LowerCase(ADatabaseName);
+  lData.SQLMgrDataSource := LowerCase(pSQLMgrDataSource);
+  Add(lData);
 end;
 
-procedure TSQLMgrDatabaseMappings.SetItems(i: integer; const Value: TSQLMgrDatabaseMapping);
+procedure TSQLMgrDatabaseMappings.SetItems(i: integer; const AValue: TSQLMgrDatabaseMapping);
 begin
-  inherited SetItems( i, Value ) ;
+  inherited SetItems(i, AValue);
 end;
 
-procedure TSQLMgrDatabaseMappings.UnRegisterMapping( const pDatabaseName: string);
+procedure TSQLMgrDatabaseMappings.UnRegisterMapping(const ADatabaseName: string);
 var
-  lData : TSQLMgrDatabaseMapping ;
+  lData : TSQLMgrDatabaseMapping;
 begin
-  lData := TSQLMgrDatabaseMapping( FindByProps( ['DatabaseName'], [LowerCase(pDatabaseName)] )) ;
+  lData := TSQLMgrDatabaseMapping(FindByProps(['DatabaseName'], [LowerCase(ADatabaseName)]));
   if lData <> nil then
-    Remove( lData ) ;
+    Remove(lData);
 end;
 
 { TSQLMgrDatabaseMapping }
 
 function TSQLMgrDatabaseMapping.GetOwner: TSQLMgrDatabaseMappings;
 begin
-  result := TSQLMgrDatabaseMappings( inherited GetOwner ) ;
+  result := TSQLMgrDatabaseMappings(inherited GetOwner);
 end;
 
-procedure TSQLMgrDatabaseMapping.SetOwner( const Value: TSQLMgrDatabaseMappings);
+procedure TSQLMgrDatabaseMapping.SetOwner(const AValue: TSQLMgrDatabaseMappings);
 begin
-  inherited SetOwner( Value ) ;
+  inherited SetOwner(AValue);
 end;
 
-procedure TVisSQLMgrAbs.AssignSQLFromSQLManager(pQuery: TtiQuery; pSQLMgrDataSource, pQueryName: string);
+procedure TVisSQLMgrAbs.AssignSQLFromSQLManager(AQuery: TtiQuery; pSQLMgrDataSource, pQueryName: string);
 var
-  lSQLMgr : TSQLMgr ;
-  lSQLMgrQuery   : TSQLMgrQuery ;
-  lsl : TStringList ;
+  lSQLMgr : TSQLMgr;
+  lSQLMgrQuery  : TSQLMgrQuery;
+  lsl : TStringList;
 begin
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  lSQLMgr := gSQLMgrs.FindByDatabaseName( pSQLMgrDataSource ) ;
+  lSQLMgr := gSQLMgrs.FindByDatabaseName(pSQLMgrDataSource);
   if lSQLMgr = nil then
-    raise EtiOPFInternalException.Create( 'Unable to find SQLMgr for database <' +
-                    pSQLMgrDataSource + '>') ;
+    raise EtiOPFInternalException.Create('Unable to find SQLMgr for database <' +
+                    pSQLMgrDataSource + '>');
 
-  lSQLMgrQuery := lSQLMgr.FindCreateQueryByName( pQueryName ) ;
+  lSQLMgrQuery := lSQLMgr.FindCreateQueryByName(pQueryName);
 
   if lSQLMgrQuery = nil then
-    raise EtiOPFInternalException.Create( 'Query <' +
+    raise EtiOPFInternalException.Create('Query <' +
                     pQueryName +
                    '> not found in query factory.');
   // This was added in an attempt to force SetSQL to be called.
   // (SetSQL might contain some custom code that will not execute
   //  when SQL.Text := bla is called.
-  lsl := TStringList.Create ;
+  lsl := TStringList.Create;
   try
     lsl.Text :=
     '/*' + lSQLMgrQuery.QueryName + '*/' + CrLf +
-    lSQLMgrQuery.SQL ;
-    pQuery.SQL := lsl ;
+    lSQLMgrQuery.SQL;
+    AQuery.SQL := lsl;
   finally
-    lsl.Free ;
+    lsl.Free;
   end;
 
 end;

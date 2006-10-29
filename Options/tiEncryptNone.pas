@@ -7,20 +7,20 @@ interface
 uses
   Classes
   ,tiEncrypt
-  ;
+ ;
 
 const
-  cgsEncryptionNone = 'EncryptionNone' ;
+  cgsEncryptionNone = 'EncryptionNone';
 
 type
 
-  TEncryptNone = class( TtiEncryptAbs )
+  TEncryptNone = class(TtiEncryptAbs)
   public
-    function    EncryptString( const pData : string ) : string ; override ;
-    function    DecryptString( const pData : string ) : string ; override ;
-    procedure   EncryptStream( const pSrc, pDest : TStream ) ; override ;
-    procedure   DecryptStream( const pSrc, pDest : TStream ) ; override ;
-  end ;
+    function    EncryptString(const AData : string): string; override;
+    function    DecryptString(const AData : string): string; override;
+    procedure   EncryptStream(const pSrc, pDest : TStream); override;
+    procedure   DecryptStream(const pSrc, pDest : TStream); override;
+  end;
 
 
 implementation
@@ -31,37 +31,37 @@ implementation
 // *  TEncryptNone
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-function TEncryptNone.EncryptString( const pData : string ) : string ;
+function TEncryptNone.EncryptString(const AData : string): string;
 begin
-  result := pData ;
+  result := AData;
 end;
 
 
-function TEncryptNone.DecryptString( const pData : string ) : string ;
+function TEncryptNone.DecryptString(const AData : string): string;
 begin
-  result := pData ;
+  result := AData;
 end;
 
 
-procedure TEncryptNone.EncryptStream( const pSrc, pDest : TStream ) ;
+procedure TEncryptNone.EncryptStream(const pSrc, pDest : TStream);
 begin
-  pSrc.Position := 0 ;
-  pDest.Size := 0 ;
-  pDest.CopyFrom( pSrc, pSrc.Size ) ;
+  pSrc.Position := 0;
+  pDest.Size := 0;
+  pDest.CopyFrom(pSrc, pSrc.Size);
 end;
 
 
-procedure TEncryptNone.DecryptStream( const pSrc, pDest : TStream ) ;
+procedure TEncryptNone.DecryptStream(const pSrc, pDest : TStream);
 begin
-  pSrc.Position := 0 ;
-  pDest.Size := 0 ;
-  pDest.CopyFrom( pSrc, pSrc.Size ) ;
+  pSrc.Position := 0;
+  pDest.Size := 0;
+  pDest.CopyFrom(pSrc, pSrc.Size);
 end;
 
 
 initialization
   // Register the TtiEncrypt with the EncryptFactory
-  gEncryptFactory.RegisterClass( cgsEncryptionNone, TEncryptNone) ;
-  gtiEncryptClass := TEncryptNone ;
+  gEncryptFactory.RegisterClass(cgsEncryptionNone, TEncryptNone);
+  gtiEncryptClass := TEncryptNone;
 
 end.

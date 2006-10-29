@@ -51,6 +51,8 @@ Andre "Carlos" Morales-Bahnik
 
 unit tiCRC32;
 
+{$I tiDefines.inc}
+
 interface
 
 uses Windows, SysUtils, Classes;
@@ -58,7 +60,7 @@ uses Windows, SysUtils, Classes;
 function tiCRC32FromFile(const AFilename: string): Longword;
 function tiCRC32FromStream(AStream: TStream): Longword;
 function tiCRC32FromStreamFirstNBytes(AStream: TStream; ACountOfBytesToCheck : Longint): Longword;
-function tiCRC32FromString( const AString : string ) : Longword;
+function tiCRC32FromString(const AString : string): Longword;
 
 const
  BufferSize: integer = 65536;
@@ -136,20 +138,20 @@ const
  $B3667A2E,$C4614AB8,$5D681B02,$2A6F2B94,
  $B40BBE37,$C30C8EA1,$5A05DF1B,$2D02EF8D);
 
-function UpdateCrc32(Value: integer; var Buffer: array of byte; Count: integer): Longword;
+function UpdateCrc32(AValue: integer; var Buffer: array of byte; Count: integer): Longword;
 var
  i: integer;
 begin
- Result:=Value;
+ Result:=AValue;
  for i:=0 to Count-1 do
  begin
   Result:=((Result shr 8) and $00FFFFFF) xor Crc32Table[(Result xor Buffer[i]) and $000000FF];
  end;
 end;
 
-function AsmUpdateCrc32(Value: integer; Buffer: pointer; Count: integer): integer; assembler;
+function AsmUpdateCrc32(AValue: integer; Buffer: pointer; Count: integer): integer; assembler;
 asm
- {Input = eax: Value, edx: Points to Buffer, ecx: Count}
+ {Input = eax: AValue, edx: Points to Buffer, ecx: Count}
  {Output= eax: CRC32}
  push ebx
  push edi
@@ -211,28 +213,28 @@ end;
 
 function tiCRC32FromStream(AStream: TStream): Longword;
 var
-  Value: byte;
+  AValue: byte;
 begin
   Assert(AStream<>nil, 'AStream not assigned');
   Result:=$FFFFFFFF;
-  while (AStream.Read(Value,1)=1) do
-    Result:=((Result shr 8) and $00FFFFFF) xor Crc32Table[(Result xor Value) and $000000FF];
+  while (AStream.Read(AValue,1)=1) do
+    Result:=((Result shr 8) and $00FFFFFF) xor Crc32Table[(Result xor AValue) and $000000FF];
   Result:=not Result;
 end;
 
 function tiCRC32FromStreamFirstNBytes(AStream: TStream; ACountOfBytesToCheck : Longint): Longword;
 var
-  Value: byte;
+  AValue: byte;
   LPos: Longint;
 begin
   Assert(AStream<>nil, 'AStream not assigned');
   Assert(ACountOfBytesToCheck > 0, 'ACountOfBytesToCheck <= 0');
   Result:=$FFFFFFFF;
   LPos:= 1;
-  while (AStream.Read(Value,1)=1) and
+  while (AStream.Read(AValue,1)=1) and
         (LPos <= ACountOfBytesToCheck) do
   begin
-    Result:=((Result shr 8) and $00FFFFFF) xor Crc32Table[(Result xor Value) and $000000FF];
+    Result:=((Result shr 8) and $00FFFFFF) xor Crc32Table[(Result xor AValue) and $000000FF];
     Inc(LPos);
   end;
   Result:=not Result;
@@ -245,17 +247,17 @@ begin
  Result:=not Result;
 end;
 
-function tiCRC32FromString( const AString : string ) : Longword;
+function tiCRC32FromString(const AString : string): Longword;
 var
-  lStringStream : TStringStream ;
+  lStringStream : TStringStream;
 begin
   lStringStream := TStringStream.Create(AString);
   try
-    lStringStream.Position := 0 ;
-    result := tiCRC32FromStream( lStringStream ) ;
+    lStringStream.Position := 0;
+    result := tiCRC32FromStream(lStringStream);
   finally
-    lStringStream.Free ;
-  end ;
-end ;
+    lStringStream.Free;
+  end;
+end;
 
 end.

@@ -7,107 +7,107 @@ uses
   Classes
   ,Contnrs
   ,tiConstants
-  ;
+ ;
 
 type
 
   // Pure abstract class defining interface of TtiCompress classes
-  TtiCompressAbs = class( TObject )
+  TtiCompressAbs = class(TObject)
   public
-    function  CompressStream(   pFrom : TStream ; pTo : TStream ): Extended; virtual; abstract;
-    procedure DecompressStream( pFrom : TStream ; pTo : TStream ); virtual; abstract;
-    function  CompressBuffer(   const pFrom: Pointer  ; const piFromSize : Integer;
-                                out   pTo:   Pointer  ; out   piToSize   : Integer): Extended; virtual; abstract;
-    procedure DecompressBuffer( const pFrom: Pointer  ; const piFromSize : Integer;
-                                out   pTo:   Pointer  ; out   piToSize   : Integer); virtual; abstract;
-    function  CompressString(   const psFrom : string ; var psTo : string ): Extended; virtual; abstract;
-    procedure DecompressString( const psFrom : string ; var psTo : string ); virtual; abstract;
-    function  CompressFile(     const psFrom : string ; const psTo : string ): Extended; virtual; abstract;
-    procedure DecompressFile(   const psFrom : string ; const psTo : string ); virtual; abstract;
-  end ;
+    function  CompressStream(  AFrom : TStream; ATo : TStream): Extended; virtual; abstract;
+    procedure DecompressStream(AFrom : TStream; ATo : TStream); virtual; abstract;
+    function  CompressBuffer(  const AFrom: Pointer ; const AFromSize : Integer;
+                                out   ATo:   Pointer ; out   AToSize  : Integer): Extended; virtual; abstract;
+    procedure DecompressBuffer(const AFrom: Pointer ; const AFromSize : Integer;
+                                out   ATo:   Pointer ; out   AToSize  : Integer); virtual; abstract;
+    function  CompressString(  const AFrom : string; var ATo : string): Extended; virtual; abstract;
+    procedure DecompressString(const AFrom : string; var ATo : string); virtual; abstract;
+    function  CompressFile(    const AFrom : string; const ATo : string): Extended; virtual; abstract;
+    procedure DecompressFile(  const AFrom : string; const ATo : string); virtual; abstract;
+  end;
 
   // A class reference for the TtiCompress descendants
-  TtiCompressClass = class of TtiCompressAbs ;
+  TtiCompressClass = class of TtiCompressAbs;
 
   // A class to hold the TtiCompress class mappings. The factory maintains
   // a list of these and uses the CompressClass property to create the objects.
-  TtiCompressClassMapping = class( TObject )
+  TtiCompressClassMapping = class(TObject)
   private
-    FsMappingName  : string;
+    FsMappingName : string;
     FCompressClass : TtiCompressClass;
   public
-    Constructor Create( const psMappingName : string ;
-                        pCompressClass      : TtiCompressClass ) ;
-    property    MappingName : string read FsMappingName ;
-    property    CompressClass : TtiCompressClass read FCompressClass ;
-  end ;
+    Constructor Create(const AMappingName : string;
+                        ACompressClass     : TtiCompressClass);
+    property    MappingName : string read FsMappingName;
+    property    CompressClass : TtiCompressClass read FCompressClass;
+  end;
 
   // Factory pattern - Create a descendant of the TtiCompress at runtime.
-  TtiCompressFactory = class( TObject )
+  TtiCompressFactory = class(TObject)
   private
-    FList : TObjectList ;
-    FsDefaultCompressionType: string;
+    FList : TObjectList;
+    FDefaultCompressionType: string;
   public
-    constructor Create ;
-    destructor  Destroy ; override ;
-    procedure   RegisterClass( const psCompressionType : string ;
-                                     pCompressClass : TtiCompressClass ) ;
-    function    CreateInstance( const psCompressionType : string ) : TtiCompressAbs ; overload ;
-    function    CreateInstance : TtiCompressAbs ; overload ;
-    procedure   AssignCompressionTypes( pStrings : TStrings ) ;
+    constructor Create;
+    destructor  Destroy; override;
+    procedure   RegisterClass(const ACompressionName : string;
+                                     ACompressClass : TtiCompressClass);
+    function    CreateInstance(const ACompressionName : string): TtiCompressAbs; overload;
+    function    CreateInstance : TtiCompressAbs; overload;
+    procedure   AssignCompressionTypes(AStrings : TStrings);
     property    DefaultCompressionType : string
-                read  FsDefaultCompressionType
-                write FsDefaultCompressionType ;
+                read  FDefaultCompressionType
+                write FDefaultCompressionType;
 
-  end ;
+  end;
 
 
 // The CompressFactory is a singleton
-function  gCompressFactory : TtiCompressFactory ;
-function  tiCompressString(const pString: string; const pCompress: string = cgsCompressZLib): string;
-function  tiDeCompressString(const pString: string; const pCompress: string = cgsCompressZLib): string;
+function  gCompressFactory : TtiCompressFactory;
+function  tiCompressString(const AString: string; const pCompress: string = cgsCompressZLib): string;
+function  tiDeCompressString(const AString: string; const pCompress: string = cgsCompressZLib): string;
 procedure tiDeCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
 procedure tiCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
 
 var
-  gTiCompressClass : TtiCompressClass ;
+  gTiCompressClass : TtiCompressClass;
 
 implementation
 uses
   SysUtils
-  ;
+ ;
 
 // A var to hold our single instance of the TtiCompressFactory
 var
-  uCompressFactory : TtiCompressFactory ;
+  uCompressFactory : TtiCompressFactory;
 
 // The CompressFactory is a singleton
-function gCompressFactory : TtiCompressFactory ;
+function gCompressFactory : TtiCompressFactory;
 begin
   if uCompressFactory = nil then
-    uCompressFactory := TtiCompressFactory.Create ;
-  result := uCompressFactory ;
-end ;
+    uCompressFactory := TtiCompressFactory.Create;
+  result := uCompressFactory;
+end;
 
-function tiCompressString(const pString: string; const pCompress: string = cgsCompressZLib): string;
+function tiCompressString(const AString: string; const pCompress: string = cgsCompressZLib): string;
 var
-  lCompress: TtiCompressAbs ;
+  lCompress: TtiCompressAbs;
 begin
   lCompress:= gCompressFactory.CreateInstance(pCompress);
   try
-    lCompress.CompressString(pString, result);
+    lCompress.CompressString(AString, result);
   finally
     lCompress.Free;
   end;
 end;
 
-function tiDeCompressString(const pString: string; const pCompress: string = cgsCompressZLib): string;
+function tiDeCompressString(const AString: string; const pCompress: string = cgsCompressZLib): string;
 var
-  lCompress: TtiCompressAbs ;
+  lCompress: TtiCompressAbs;
 begin
   lCompress:= gCompressFactory.CreateInstance(pCompress);
   try
-    lCompress.DeCompressString(pString, result);
+    lCompress.DeCompressString(AString, result);
   finally
     lCompress.Free;
   end;
@@ -115,7 +115,7 @@ end;
 
 procedure tiCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
 var
-  lCompress: TtiCompressAbs ;
+  lCompress: TtiCompressAbs;
 begin
   Assert(AStreamFrom<>nil, 'AStreamFrom not assigned');
   Assert(AStreamTo<>nil, 'AStreamTo not assigned');
@@ -129,7 +129,7 @@ end;
 
 procedure tiDeCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
 var
-  lCompress: TtiCompressAbs ;
+  lCompress: TtiCompressAbs;
 begin
   Assert(AStreamFrom<>nil, 'AStreamFrom not assigned');
   Assert(AStreamTo<>nil, 'AStreamTo not assigned');
@@ -148,66 +148,66 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiCompressFactory.Create;
 begin
-  inherited ;
-  FList := TObjectList.Create ;
+  inherited;
+  FList := TObjectList.Create;
 end;
 
 // Assing the registered list of TtiCompress names to a stringList
 // This can be used to populate a combobox with the available TtiCompress
 // class types.
-procedure TtiCompressFactory.AssignCompressionTypes(pStrings: TStrings);
+procedure TtiCompressFactory.AssignCompressionTypes(AStrings: TStrings);
 var
-  i : integer ;
+  i : integer;
 begin
-  pStrings.Clear ;
+  AStrings.Clear;
   for i := 0 to FList.Count - 1 do
-    pStrings.Add( TtiCompressClassMapping( FList.Items[i] ).MappingName ) ;
+    AStrings.Add(TtiCompressClassMapping(FList.Items[i]).MappingName);
 end;
 
 // Call the factory to create an instance of TtiCompress
-function TtiCompressFactory.CreateInstance( const psCompressionType: string): TtiCompressAbs;
+function TtiCompressFactory.CreateInstance(const ACompressionName: string): TtiCompressAbs;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := nil ;
+  result := nil;
   for i := 0 to FList.Count - 1 do
-    if UpperCase( TtiCompressClassMapping( FList.Items[i] ).MappingName ) =
-         UpperCase( psCompressionType ) then begin
-      result := TtiCompressClassMapping( FList.Items[i] ).CompressClass.Create ;
-      Break ; //==>
-    end ;
+    if UpperCase(TtiCompressClassMapping(FList.Items[i]).MappingName) =
+         UpperCase(ACompressionName) then begin
+      result := TtiCompressClassMapping(FList.Items[i]).CompressClass.Create;
+      Break; //==>
+    end;
 
-  Assert( result <> nil,
-          Format( '<%s> does not identify a registered compression class.',
-                   [psCompressionType] )) ;
+  Assert(result <> nil,
+          Format('<%s> does not identify a registered compression class.',
+                   [ACompressionName]));
 
 end;
 
 function TtiCompressFactory.CreateInstance: TtiCompressAbs;
 begin
-  result := CreateInstance( FsDefaultCompressionType ) ;
+  result := CreateInstance(FDefaultCompressionType);
 end;
 
 destructor TtiCompressFactory.Destroy;
 begin
-  FList.Free ;
+  FList.Free;
   inherited;
 end;
 
 // Register a TtiCompress class for creation by the factory
 procedure TtiCompressFactory.RegisterClass(
-  const psCompressionType: string; pCompressClass: TtiCompressClass);
+  const ACompressionName: string; ACompressClass: TtiCompressClass);
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to FList.Count - 1 do
-    if UpperCase( TtiCompressClassMapping( FList.Items[i] ).MappingName ) =
-         UpperCase( psCompressionType ) then
-      Assert( false,
-              Format( 'Compression class <%s> already registered.',
-                      [psCompressionType] )) ;
-  FList.Add( TtiCompressClassMapping.Create( psCompressionType, pCompressClass )) ;
-  FsDefaultCompressionType := UpperCase( psCompressionType ) ;
+    if UpperCase(TtiCompressClassMapping(FList.Items[i]).MappingName) =
+         UpperCase(ACompressionName) then
+      Assert(false,
+              Format('Compression class <%s> already registered.',
+                      [ACompressionName]));
+  FList.Add(TtiCompressClassMapping.Create(ACompressionName, ACompressClass));
+  FDefaultCompressionType := UpperCase(ACompressionName);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -217,21 +217,32 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // Overloaded constructor - used to create an instance ot TtiCompressClassMapping
 // and to preset it's properties.
-constructor TtiCompressClassMapping.Create(const psMappingName: string;
-  pCompressClass: TtiCompressClass);
+constructor TtiCompressClassMapping.Create(const AMappingName: string;
+  ACompressClass: TtiCompressClass);
 begin
-  inherited Create ;
-  FsMappingName :=  psMappingName ;
-  FCompressClass := pCompressClass ;
+  inherited Create;
+  FsMappingName :=  AMappingName;
+  FCompressClass := ACompressClass;
 end;
 
 initialization
 
 finalization
   // Free the TtiCompressFactory
-  uCompressFactory.Free ;
+  uCompressFactory.Free;
 
 end.
+
+
+
+
+
+
+
+
+
+
+
 
 
 

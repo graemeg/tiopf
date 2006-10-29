@@ -11,7 +11,7 @@ uses
   ,tiXMLToTIDataSet
   ,tiXML
   ,Windows
-  ;
+ ;
 
 const
 
@@ -20,8 +20,8 @@ const
                                       'a) The server address is wrong; or' + #13 +
                                       'b) the server is not available (or running); or' + #13 +
                                       'c) the connection is being blocked by a firewall or network fault.' + #13 + #13 +
-                                      'The application will now shut down' ;
-  cTIOPFExcMsgErrorOnRemoteServer = 'Error reading response from remote server:' + #13 + '%s' ;
+                                      'The application will now shut down';
+  cTIOPFExcMsgErrorOnRemoteServer = 'Error reading response from remote server:' + #13 + '%s';
   cTIOPFErrorAttemptedToConnectTo = 'Attempted to connect to';
 
   cParamProxyServer = 'proxyserver';
@@ -30,37 +30,37 @@ const
   cRetrySleep       = 2000;
 
 {
-  cTableNameQuery              = 'query'           ;
-  cFieldNameQuerySQL           = 'query_sql'       ;
-  cFieldNameTransactionID      = 'transaction_id'  ;
-  cFieldNameCommandType        = 'command_type'    ;
-  cFieldNameComputerName       = 'computer_name'   ;
-  cFieldNameUserName           = 'user_name'       ;
+  cTableNameQuery              = 'query'          ;
+  cFieldNameQuerySQL           = 'query_sql'      ;
+  cFieldNameTransactionID      = 'transaction_id' ;
+  cFieldNameCommandType        = 'command_type'   ;
+  cFieldNameComputerName       = 'computer_name'  ;
+  cFieldNameUserName           = 'user_name'      ;
 
   // Request Query_Param table
-  cTableNameQueryParam         = 'query_param'     ;
-  cFieldNameTableName          = 'table_name'      ;
-  cFieldNameParamName          = 'param_name'      ;
-  cFieldNameParamKind          = 'param_kind'      ;
-  cFieldNameParamValue         = 'param_value'     ;
+  cTableNameQueryParam         = 'query_param'    ;
+  cFieldNameTableName          = 'table_name'     ;
+  cFieldNameParamName          = 'param_name'     ;
+  cFieldNameParamKind          = 'param_kind'     ;
+  cFieldNameParamValue         = 'param_value'    ;
 
   // Response message table
-  cTableNameResultMessage      = 'result_message'  ;
-  cFieldNameResultError        = 'error_message'   ;
-  cFieldNameResultRowCount     = 'row_count'       ;
+  cTableNameResultMessage      = 'result_message' ;
+  cFieldNameResultError        = 'error_message'  ;
+  cFieldNameResultRowCount     = 'row_count'      ;
 
   // MetaData structure
-  cTableNameMetaData           = 'table_metadata' ;
-  cFieldNameMetaDataTableName  = 'md_table_name'   ;
-  cFieldNameMetaDataFieldName  = 'md_field_name'   ;
-  cFieldNameMetaDataFieldKind  = 'md_field_kind'   ;
-  cFieldNameMetaDataFieldWidth = 'md_field_width'  ;
+  cTableNameMetaData           = 'table_metadata';
+  cFieldNameMetaDataTableName  = 'md_table_name'  ;
+  cFieldNameMetaDataFieldName  = 'md_field_name'  ;
+  cFieldNameMetaDataFieldKind  = 'md_field_kind'  ;
+  cFieldNameMetaDataFieldWidth = 'md_field_width' ;
 
   // Response set table
-  cTableNameResultSet          = 'result_set'      ;
+  cTableNameResultSet          = 'result_set'     ;
 }
 
-  cNullTransactionID           = '' ;
+  cNullTransactionID           = '';
 
 type
   TtiRemoteCommandType = (
@@ -73,7 +73,7 @@ type
     ,rctDropTable
     ,rctReadMetaDataTables
     ,rctReadMetaDataFields
-    ) ;
+   );
 
 const
   cRemoteCommandTypes : array[TtiRemoteCommandType] of string = (
@@ -86,7 +86,7 @@ const
     ,'DROP_TABLE'
     ,'READ_METADATA_TABLES'
     ,'READ_METADATA_FIELDS'
-    ) ;
+   );
 
 (*
   cRemoteCommandTypes : array[TtiRemoteCommandType] of string = (
@@ -99,137 +99,137 @@ const
     ,{$IFNDEF OPTIMISE_XMLDB_SIZE} 'DROP_TABLE'            {$ELSE} 'd' {$ENDIF}
     ,{$IFNDEF OPTIMISE_XMLDB_SIZE} 'READ_METADATA_TABLES'  {$ELSE} 'm' {$ENDIF}
     ,{$IFNDEF OPTIMISE_XMLDB_SIZE} 'READ_METADATA_FIELDS'  {$ELSE} 't' {$ENDIF}
-    ) ;
+   );
 *)
 
-function StrToRemoteCommandType( const pValue : string ) : TtiRemoteCommandType ;
+function StrToRemoteCommandType(const AValue : string): TtiRemoteCommandType;
 
 type
 
-  TtiQueryTransParams = class ;
+  TtiQueryTransParams = class;
 
-  TtiQueryTransParams = class( TtiQueryParams )
+  TtiQueryTransParams = class(TtiQueryParams)
   private
     FTransID: integer;
     FSQL: string;
     FQueryKindAsString: string;
   protected
   public
-    function    AddInstance( pName, pKind, pValue : string ) : TtiQueryParamAbs ;
-    procedure   AssignToQuery(const pQuery : TtiQuery);
+    function    AddInstance(AName, pKind, AValue : string): TtiQueryParamAbs;
+    procedure   AssignToQuery(const AQuery : TtiQuery);
   published
-    property    SQL : string read FSQL write FSQL ;
-    property    TransID : integer read FTransID write FTransID ;
-    property    QueryKindAsString : string read FQueryKindAsString write FQueryKindAsString ;
-  end ;
+    property    SQL : string read FSQL write FSQL;
+    property    TransID : integer read FTransID write FTransID;
+    property    QueryKindAsString : string read FQueryKindAsString write FQueryKindAsString;
+  end;
 
-  TtiDatabaseRemoteXML = class( TtiDatabase )
+  TtiDatabaseRemoteXML = class(TtiDatabase)
   private
-    FConnected : boolean ;
-    FInTransaction : boolean ;
+    FConnected : boolean;
+    FInTransaction : boolean;
 
     FHTTP: TtiHTTPAbs;
     FCurrentThreadID: DWord;
 
-    FDBResponseXML    : TtiDatabaseXMLLight ;
-    FDBRequestXML     : TtiDatabaseXMLLight ;
-    FResponse         : string ;
-    FRequest          : string ;
+    FDBResponseXML   : TtiDatabaseXMLLight;
+    FDBRequestXML    : TtiDatabaseXMLLight;
+    FResponse        : string;
+    FRequest         : string;
 
-    FTransactionID : string ;
-    FHasResultSet  : boolean ;
-    FMetaDataTableCreated : boolean ;
+    FTransactionID : string;
+    FHasResultSet : boolean;
+    FMetaDataTableCreated : boolean;
 
     procedure RefreshHTTPInstance;
-    procedure CreateRequestTableQuery ;
-    procedure CreateRequestTableQueryParams ;
-    procedure ReadMessagesFromResponse ;
-    procedure CreateMetaDataTable( const pDatabase : TtiDatabaseXMLLight ) ;
-    procedure InsertMetaData( const pDatabase : TtiDatabaseXMLLight ; const pMetaData : TtiDBMetaDataTable ) ;
-    procedure InsertMetaDataRow( const pDatabase : TtiDatabaseXMLLight ; const pTableName : string ; const pFieldName : string ; pFieldKind : TtiQueryFieldKind ; pFieldWidth : integer ) ;
+    procedure CreateRequestTableQuery;
+    procedure CreateRequestTableQueryParams;
+    procedure ReadMessagesFromResponse;
+    procedure CreateMetaDataTable(const ADatabase : TtiDatabaseXMLLight);
+    procedure InsertMetaData(const ADatabase : TtiDatabaseXMLLight; const pMetaData : TtiDBMetaDataTable);
+    procedure InsertMetaDataRow(const ADatabase : TtiDatabaseXMLLight; const ATableName : string; const AFieldName : string; AFieldKind : TtiQueryFieldKind; AFieldWidth : integer);
 
     // ToDo: Rename SQLText CommandText, as it is now used for flat info like table names
     procedure InsertRemoteRequest(pRemoteCommandType: TtiRemoteCommandType; const pSQLText: string);
     procedure TryHTTPPost(const AInput: string);
 
   protected
-    procedure SetConnected( pbValue : boolean ) ; override;
-    function  GetConnected : boolean ; override ;
+    procedure SetConnected(AValue : boolean); override;
+    function  GetConnected : boolean; override;
   public
-    constructor create ; override ;
-    destructor  Destroy ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
 
-    class function DatabaseExists( const psDatabaseName, psUserName, psPassword : string ) : boolean ; override ;
-    class procedure CreateDatabase( const psDatabaseName, psUserName, psPassword : string ) ; override ;
-    procedure   StartTransaction ; override ;
-    function    InTransaction : boolean ; override ;
-    procedure   Commit ; override ;
-    procedure   RollBack ; override ;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    procedure   StartTransaction; override;
+    function    InTransaction : boolean; override;
+    procedure   Commit; override;
+    procedure   RollBack; override;
 
-    procedure   ReadMetaDataTables( pData : TtiDBMetaData ) ; override ;
-    procedure   ReadMetaDataFields( pData : TtiDBMetaDataTable ) ; override ;
-    procedure   DropTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
-    procedure   CreateTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
+    procedure   ReadMetaDataTables(AData : TtiDBMetaData); override;
+    procedure   ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
+    procedure   DropTable(const ATableMetaData : TtiDBMetaDataTable); override;
+    procedure   CreateTable(const ATableMetaData : TtiDBMetaDataTable); override;
 
-    property    DBResponseXML : TtiDatabaseXMLLight read FDBResponseXML write FDBResponseXML ;
-    property    DBRequestXML : TtiDatabaseXMLLight read FDBRequestXML write FDBRequestXML ;
-    property    Response : string read FResponse write FResponse ;
-    property    Request  : string read FRequest  write FRequest ;
-    procedure   ExecuteRemoteCall ;
-    property    HasResultSet : boolean read FHasResultSet ;
-    procedure   ClearRequest ;
-    function    Test : boolean ; override ;
+    property    DBResponseXML : TtiDatabaseXMLLight read FDBResponseXML write FDBResponseXML;
+    property    DBRequestXML : TtiDatabaseXMLLight read FDBRequestXML write FDBRequestXML;
+    property    Response : string read FResponse write FResponse;
+    property    Request : string read FRequest  write FRequest;
+    procedure   ExecuteRemoteCall;
+    property    HasResultSet : boolean read FHasResultSet;
+    procedure   ClearRequest;
+    function    Test : boolean; override;
 
-  end ;
+  end;
 
   TtiQueryRemoteXML = class(TtiQuerySQL)
   private
-    FQueryResponseXML : TtiQueryXMLLight ;
+    FQueryResponseXML : TtiQueryXMLLight;
 
-    FParams : TtiQueryTransParams ;
-    FSQL : TStringList ;
-    FActive : boolean ;
+    FParams : TtiQueryTransParams;
+    FSQL : TStringList;
+    FActive : boolean;
 
-    function DBRemoteXML   : TtiDatabaseRemoteXML ;
+    function DBRemoteXML  : TtiDatabaseRemoteXML;
 
   protected
 
-    function    GetFieldAsString(const psName: string): string       ; override ;
-    function    GetFieldAsFloat(const psName: string): extended          ; override ;
-    function    GetFieldAsBoolean(const psName: string): boolean     ; override ;
-    function    GetFieldAsInteger(const psName: string): Int64       ; override ;
-    function    GetFieldAsDateTime(const psName: string):TDateTime   ; override ;
-    function    GetFieldIsNull(const psName: string): Boolean        ; override ;
+    function    GetFieldAsString(const AName: string): string      ; override;
+    function    GetFieldAsFloat(const AName: string): extended         ; override;
+    function    GetFieldAsBoolean(const AName: string): boolean    ; override;
+    function    GetFieldAsInteger(const AName: string): Int64      ; override;
+    function    GetFieldAsDateTime(const AName: string):TDateTime  ; override;
+    function    GetFieldIsNull(const AName: string): Boolean       ; override;
 
-    function    GetFieldAsStringByIndex(pIndex: Integer): string     ; override;
-    function    GetFieldAsFloatByIndex(pIndex: Integer)   : extended ; override;
-    function    GetFieldAsBooleanByIndex(pIndex: Integer) : boolean  ; override;
-    function    GetFieldAsIntegerByIndex(pIndex: Integer) : Int64    ; override;
-    function    GetFieldAsDateTimeByIndex(pIndex: Integer):TDateTime ; override;
-    function    GetFieldIsNullByIndex(pIndex: Integer):Boolean       ; override;
+    function    GetFieldAsStringByIndex(AIndex: Integer): string    ; override;
+    function    GetFieldAsFloatByIndex(AIndex: Integer)  : extended; override;
+    function    GetFieldAsBooleanByIndex(AIndex: Integer): boolean ; override;
+    function    GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ; override;
+    function    GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime; override;
+    function    GetFieldIsNullByIndex(AIndex: Integer):Boolean      ; override;
 
-    function    GetSQL: TStrings; override ;
-    procedure   SetSQL(const Value: TStrings); override ;
-    procedure   SetSQLText(const Value: string);override;
-    function    GetActive: boolean; override ;
-    procedure   SetActive(const Value: boolean); override ;
-    function    GetEOF: boolean; override ;
+    function    GetSQL: TStrings; override;
+    procedure   SetSQL(const AValue: TStrings); override;
+    procedure   SetSQLText(const AValue: string);override;
+    function    GetActive: boolean; override;
+    procedure   SetActive(const AValue: boolean); override;
+    function    GetEOF: boolean; override;
 
-    function    GetParamAsString( const psName: string): string; override ;
-    function    GetParamAsBoolean(const psName: string): boolean; override ;
-    function    GetParamAsFloat(const psName: string): extended;override ;
-    function    GetParamAsInteger(const psName: string): Int64 ;override ;
-    function    GetParamAsDateTime(const psName: string): TDateTime ; override ;
-    function    GetParamIsNull( const psName: String): Boolean; override;
+    function    GetParamAsString(const AName: string): string; override;
+    function    GetParamAsBoolean(const AName: string): boolean; override;
+    function    GetParamAsFloat(const AName: string): extended;override;
+    function    GetParamAsInteger(const AName: string): Int64;override;
+    function    GetParamAsDateTime(const AName: string): TDateTime; override;
+    function    GetParamIsNull(const AName: String): Boolean; override;
 
-    procedure   SetParamAsString( const psName, Value: string); override ;
-    procedure   SetParamAsBoolean(const psName: string;const Value: boolean);override ;
-    procedure   SetParamAsFloat(const psName: string; const Value: Extended);override ;
-    procedure   SetParamAsInteger(const psName: string;const Value: Int64); override ;
-    procedure   SetParamAsDateTime(const psName :string ; const Value: TDateTime); override ;
-    procedure   SetParamAsMacro( const psName: string;
-                                 const Value: string); override ;
-    procedure   SetParamIsNull( const psName: String; const Value: Boolean); override;
+    procedure   SetParamAsString(const AName, AValue: string); override;
+    procedure   SetParamAsBoolean(const AName: string;const AValue: boolean);override;
+    procedure   SetParamAsFloat(const AName: string; const AValue: Extended);override;
+    procedure   SetParamAsInteger(const AName: string;const AValue: Int64); override;
+    procedure   SetParamAsDateTime(const AName :string; const AValue: TDateTime); override;
+    procedure   SetParamAsMacro(const AName: string;
+                                 const AValue: string); override;
+    procedure   SetParamIsNull(const AName: String; const AValue: Boolean); override;
 
   public
     constructor Create; override;
@@ -240,30 +240,30 @@ type
     procedure   ExecSQL; override;
 
     function    ParamCount: integer; override;
-    function    ParamName(pIndex: integer): string; override;
+    function    ParamName(AIndex: integer): string; override;
 
-    procedure   AssignParamFromStream(      const pName  : string;  const pValue: TStream); override;
-    procedure   AssignParamToStream(        const pName  : string;  const pValue: TStream); override;
-    procedure   AssignFieldAsStream(        const pName  : string;  const pValue: TStream); override;
-    procedure   AssignFieldAsStreamByIndex(       pIndex : integer; const pValue: TStream); override;
+    procedure   AssignParamFromStream(     const AName : string;  const AValue: TStream); override;
+    procedure   AssignParamToStream(       const AName : string;  const AValue: TStream); override;
+    procedure   AssignFieldAsStream(       const AName : string;  const AValue: TStream); override;
+    procedure   AssignFieldAsStreamByIndex(      AIndex : integer; const AValue: TStream); override;
 
-    procedure   AttachDatabase(pDatabase: TtiDatabase); override;
+    procedure   AttachDatabase(ADatabase: TtiDatabase); override;
     procedure   DetachDatabase; override;
     procedure   Reset; override;
 
     function    FieldCount: integer; override;
-    function    FieldName(pIndex: integer): string; override;
-    function    FieldIndex(const psName: string): integer; override;
-    function    FieldKind(pIndex: integer): TtiQueryFieldKind; override;
-    function    FieldSize(pIndex: integer): integer; override;
-    function    HasNativeLogicalType : boolean ; override ;
+    function    FieldName(AIndex: integer): string; override;
+    function    FieldIndex(const AName: string): integer; override;
+    function    FieldKind(AIndex: integer): TtiQueryFieldKind; override;
+    function    FieldSize(AIndex: integer): integer; override;
+    function    HasNativeLogicalType : boolean; override;
 
-  end ;
+  end;
 
 // Move these calls to tiXML
 function  tiFormatRemoteConnectionErrorString(const pDatabaseList : string): string;
 
-procedure RegisterMappings ;
+procedure RegisterMappings;
 
 implementation
 uses
@@ -281,19 +281,20 @@ uses
   ,tiCompressZLib
   ,tiExcept
   ,tiStreams
+  ,tiWebServerVersion
   ,SysUtils
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
 
 var
-  uXMLTags : TtiXMLTags ;
+  uXMLTags : TtiXMLTags;
 
 function tiFormatRemoteConnectionErrorString(const pDatabaseList : string): string;
 var
-  lCount   : integer ;
-  i : integer ;
+  lCount  : integer;
+  i : integer;
 begin
   lCount := tiNumToken(pDatabaseList, cDatabaseNameDelim);
   if lCount <= 1 then
@@ -301,116 +302,116 @@ begin
   else begin
     for i := 1 to lCount do
     begin
-      if Result <> '' then Result := Result + Cr ;
+      if Result <> '' then Result := Result + Cr;
       Result := Result + '  ' + tiToken(pDatabaseList,cDatabaseNameDelim,i);
-    end ;
-    Result := cTIOPFErrorAttemptedToConnectTo + ':' + Cr + Result ;
-  end ;
+    end;
+    Result := cTIOPFErrorAttemptedToConnectTo + ':' + Cr + Result;
+  end;
   Result := Result + Cr(2) + cTIOPFExcMsgCanNotConnectToServer;
-end ;
+end;
 
-procedure RegisterMappings ;
+procedure RegisterMappings;
 begin
   if not gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(TtiQueryParamAbs) then
   begin
-    gTIOPFManager.ClassDBMappingMgr.RegisterMapping( TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'Name',          'Name', [pktDB]);
-    gTIOPFManager.ClassDBMappingMgr.RegisterMapping( TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'KindAsStr',     'Kind' );
-    gTIOPFManager.ClassDBMappingMgr.RegisterMapping( TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'ValueAsString', 'Value' );
+    gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'Name',          'Name', [pktDB]);
+    gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'KindAsStr',     'Kind');
+    gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'ValueAsString', 'AValue');
     gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiQueryTransParams, TtiQueryParamAbs);
   end;
-end ;
+end;
 
-function StrToRemoteCommandType( const pValue : string ) : TtiRemoteCommandType ;
+function StrToRemoteCommandType(const AValue : string): TtiRemoteCommandType;
 var
-  i : TtiRemoteCommandType ;
+  i : TtiRemoteCommandType;
 begin
   result := rctUnknown;
   for i := Low(TtiRemoteCommandType) to High(TtiRemoteCommandType) do
-    if SameText( cRemoteCommandTypes[i], pValue ) then
+    if SameText(cRemoteCommandTypes[i], AValue) then
     begin
-      result := i ;
-      Exit ; //==>
+      result := i;
+      Exit; //==>
     end;
 end;
 
-procedure TtiDatabaseRemoteXML.CreateMetaDataTable( const pDatabase : TtiDatabaseXMLLight ) ;
+procedure TtiDatabaseRemoteXML.CreateMetaDataTable(const ADatabase : TtiDatabaseXMLLight);
 var
-  lMetaData : TtiDBMetaDataTable ;
+  lMetaData : TtiDBMetaDataTable;
 begin
   // Should normalise this into two tables...
-  lMetaData := TtiDBMetaDataTable.Create ;
+  lMetaData := TtiDBMetaDataTable.Create;
   try
     lMetaData.Name := uXMLTags.TableNameMetaData;
-    lMetaData.AddInstance(uXMLTags.FieldNameMetaDataTableName,  qfkString, 255 ) ;
-    lMetaData.AddInstance(uXMLTags.FieldNameMetaDataFieldName,  qfkString, 255 ) ;
-    lMetaData.AddInstance(uXMLTags.FieldNameMetaDataFieldKind,  qfkString, 20 ) ;
-    lMetaData.AddInstance(uXMLTags.FieldNameMetaDataFieldWidth, qfkInteger ) ;
-    pDatabase.CreateTable(lMetaData);
+    lMetaData.AddInstance(uXMLTags.FieldNameMetaDataTableName,  qfkString, 255);
+    lMetaData.AddInstance(uXMLTags.FieldNameMetaDataFieldName,  qfkString, 255);
+    lMetaData.AddInstance(uXMLTags.FieldNameMetaDataFieldKind,  qfkString, 20);
+    lMetaData.AddInstance(uXMLTags.FieldNameMetaDataFieldWidth, qfkInteger);
+    ADatabase.CreateTable(lMetaData);
   finally
     lMetaData.Free;
   end;
 end;
 
-procedure TtiDatabaseRemoteXML.InsertMetaData( const pDatabase : TtiDatabaseXMLLight ; const pMetaData : TtiDBMetaDataTable ) ;
+procedure TtiDatabaseRemoteXML.InsertMetaData(const ADatabase : TtiDatabaseXMLLight; const pMetaData : TtiDBMetaDataTable);
 var
-  i : integer ;
+  i : integer;
 begin
   for i := 0 to pMetaData.Count - 1 do
-    InsertMetaDataRow( pDatabase,
+    InsertMetaDataRow(ADatabase,
                        pMetaData.Name,
                        pMetaData.Items[i].Name,
                        pMetaData.Items[i].Kind,
                        pMetaData.Items[i].Width);
 end;
 
-procedure TtiDatabaseRemoteXML.InsertMetaDataRow( const pDatabase : TtiDatabaseXMLLight ;
-                             const pTableName : string ;
-                             const pFieldName : string ;
-                             pFieldKind : TtiQueryFieldKind ;
-                             pFieldWidth : integer ) ;
+procedure TtiDatabaseRemoteXML.InsertMetaDataRow(const ADatabase : TtiDatabaseXMLLight;
+                             const ATableName : string;
+                             const AFieldName : string;
+                             AFieldKind : TtiQueryFieldKind;
+                             AFieldWidth : integer);
 var
   lParams : TtiQueryParams;
 begin
   lParams := TtiQueryParams.Create;
   try
-    lParams.SetValueAsString(uXMLTags.FieldNameMetaDataTableName, pTableName);
-    lParams.SetValueAsString(uXMLTags.FieldNameMetaDataFieldName, pFieldName);
-    lParams.SetValueAsString(uXMLTags.FieldNameMetaDataFieldKind, cgaQueryFieldKind[pFieldKind]);
-    lParams.SetValueAsInteger(uXMLTags.FieldNameMetaDataFieldWidth, pFieldWidth);
-    pDatabase.InsertRow(uXMLTags.TableNameMetaData, lParams);
+    lParams.SetValueAsString(uXMLTags.FieldNameMetaDataTableName, ATableName);
+    lParams.SetValueAsString(uXMLTags.FieldNameMetaDataFieldName, AFieldName);
+    lParams.SetValueAsString(uXMLTags.FieldNameMetaDataFieldKind, cgaQueryFieldKind[AFieldKind]);
+    lParams.SetValueAsInteger(uXMLTags.FieldNameMetaDataFieldWidth, AFieldWidth);
+    ADatabase.InsertRow(uXMLTags.TableNameMetaData, lParams);
   finally
     lParams.Free;
   end;
-end ;
+end;
 
 { TtiQueryTransParams }
 
-function TtiQueryTransParams.AddInstance(pName, pKind,
-  pValue: string): TtiQueryParamAbs;
+function TtiQueryTransParams.AddInstance(AName, pKind,
+  AValue: string): TtiQueryParamAbs;
 begin
   case StrToQueryFieldKind(pKind) of
-  qfkString   : result := TtiQueryParamString.Create;
-  qfkInteger  : result := TtiQueryParamInteger.Create;
-  qfkFloat    : result := TtiQueryParamFloat.Create;
+  qfkString  : result := TtiQueryParamString.Create;
+  qfkInteger : result := TtiQueryParamInteger.Create;
+  qfkFloat   : result := TtiQueryParamFloat.Create;
   qfkDateTime : result := TtiQueryParamDateTime.Create;
-  qfkLogical  : result := TtiQueryParamBoolean.Create;
-  qfkBinary   : result := TtiQueryParamStream.Create;
+  qfkLogical : result := TtiQueryParamBoolean.Create;
+  qfkBinary  : result := TtiQueryParamStream.Create;
   else
-    raise Exception.Create('Invalid ParamKind') ;
-  end ;
-  result.Name := pName ;
-  result.SetValueAsString(pValue);
+    raise Exception.Create('Invalid ParamKind');
+  end;
+  result.Name := AName;
+  result.SetValueAsString(AValue);
   Add(result);
 
 end;
 
-procedure TtiQueryTransParams.AssignToQuery(const pQuery: TtiQuery);
+procedure TtiQueryTransParams.AssignToQuery(const AQuery: TtiQuery);
 var
-  i : integer ;
+  i : integer;
 begin
-  pQuery.SQL.Text := SQL ;
+  AQuery.SQL.Text := SQL;
   for i := 0 to Count - 1 do
-    Items[i].AssignToTIQuery(pQuery);
+    Items[i].AssignToTIQuery(AQuery);
 //    qfkBinary,
 //    qfkMacro,
 end;
@@ -419,93 +420,93 @@ end;
 
 procedure TtiDatabaseRemoteXML.Commit;
 begin
-  FInTransaction := false ;
-  ClearRequest ;
+  FInTransaction := false;
+  ClearRequest;
   InsertRemoteRequest(rctCommit, '');
-  ExecuteRemoteCall ;
+  ExecuteRemoteCall;
 end;
 
 constructor TtiDatabaseRemoteXML.create;
 begin
   inherited;
 
-  FDBRequestXML := TtiDatabaseXMLLight.Create ;
-  FDBRequestXML.PersistToFile := false ;
-  FDBRequestXML.OptXMLDBSize := optDBSizeOn ;
-  FDBRequestXML.XMLFieldNameStyle := xfnsInteger ;
+  FDBRequestXML := TtiDatabaseXMLLight.Create;
+  FDBRequestXML.PersistToFile := false;
+  FDBRequestXML.OptXMLDBSize := optDBSizeOn;
+  FDBRequestXML.XMLFieldNameStyle := xfnsInteger;
 
-  CreateRequestTableQuery ;
-  CreateRequestTableQueryParams ;
+  CreateRequestTableQuery;
+  CreateRequestTableQueryParams;
 
-  FDBResponseXML := TtiDatabaseXMLLight.Create ;
-  FDBResponseXML.PersistToFile := false ;
-  FDBResponseXML.OptXMLDBSize := optDBSizeOn ;
-  FDBResponseXML.XMLFieldNameStyle := xfnsInteger ;
+  FDBResponseXML := TtiDatabaseXMLLight.Create;
+  FDBResponseXML.PersistToFile := false;
+  FDBResponseXML.OptXMLDBSize := optDBSizeOn;
+  FDBResponseXML.XMLFieldNameStyle := xfnsInteger;
 
-  FMetaDataTableCreated := false ;
+  FMetaDataTableCreated := false;
   FCurrentThreadID:= 0;
 
 end;
 
-class procedure TtiDatabaseRemoteXML.CreateDatabase(const psDatabaseName,
-  psUserName, psPassword: string);
+class procedure TtiDatabaseRemoteXML.CreateDatabase(const ADatabaseName,
+  AUserName, APassword: string);
 begin
-  Assert( false, 'CreateDatabase not implemented in ' + ClassName);
+  Assert(false, 'CreateDatabase not implemented in ' + ClassName);
 end;
 
-procedure TtiDatabaseRemoteXML.CreateTable(const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseRemoteXML.CreateTable(const ATableMetaData: TtiDBMetaDataTable);
 begin
-  ClearRequest ;
+  ClearRequest;
   // ToDo: Perhaps table name would be better in the second param of InsertRemoteRequest
-  InsertRemoteRequest(rctCreateTable, pTableMetaData.Name);
+  InsertRemoteRequest(rctCreateTable, ATableMetaData.Name);
   if not FMetaDataTableCreated then
   begin
-    CreateMetadataTable( DBRequestXML ) ;
-    FMetaDataTableCreated := true ;
-  end ;
-  InsertMetaData( DBRequestXML, pTableMetaData ) ;
-  ExecuteRemoteCall ;
+    CreateMetadataTable(DBRequestXML);
+    FMetaDataTableCreated := true;
+  end;
+  InsertMetaData(DBRequestXML, ATableMetaData);
+  ExecuteRemoteCall;
 end;
 
 procedure TtiDatabaseRemoteXML.CreateRequestTableQueryParams;
 var
-  lTableMetaData : TtiDBMetaDataTable ;
+  lTableMetaData : TtiDBMetaDataTable;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData := TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := uXMLTags.TableNameQueryParam ;
-    lTableMetaData.AddField( uXMLTags.FieldNameParamName,       qfkString, 9999 ) ;
-    lTableMetaData.AddField( uXMLTags.FieldNameParamKind,       qfkString, 9999 ) ;
-    lTableMetaData.AddField( uXMLTags.FieldNameParamValue,      qfkString, 9999 ) ;
-    DBRequestXML.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name := uXMLTags.TableNameQueryParam;
+    lTableMetaData.AddField(uXMLTags.FieldNameParamName,       qfkString, 9999);
+    lTableMetaData.AddField(uXMLTags.FieldNameParamKind,       qfkString, 9999);
+    lTableMetaData.AddField(uXMLTags.FieldNameParamValue,      qfkString, 9999);
+    DBRequestXML.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 end;
 
 procedure TtiDatabaseRemoteXML.CreateRequestTableQuery;
 var
-  lTableMetaData : TtiDBMetaDataTable ;
+  lTableMetaData : TtiDBMetaDataTable;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData := TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := uXMLTags.TableNameQuery ;
-    lTableMetaData.AddField( uXMLTags.FieldNameQuerySQL,      qfkString, 9999 ) ;
-    lTableMetaData.AddField( uXMLTags.FieldNameTransactionID, qfkString, 10 ) ;
-    lTableMetaData.AddField( uXMLTags.FieldNameCommandType,   qfkString, 9999 ) ;
-    lTableMetaData.AddField( uXMLTags.FieldNameUserName,      qfkString, 9999 ) ;
-    lTableMetaData.AddField( uXMLTags.FieldNameComputerName,  qfkString, 9999 ) ;
-    DBRequestXML.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name := uXMLTags.TableNameQuery;
+    lTableMetaData.AddField(uXMLTags.FieldNameQuerySQL,      qfkString, 9999);
+    lTableMetaData.AddField(uXMLTags.FieldNameTransactionID, qfkString, 10);
+    lTableMetaData.AddField(uXMLTags.FieldNameCommandType,   qfkString, 9999);
+    lTableMetaData.AddField(uXMLTags.FieldNameUserName,      qfkString, 9999);
+    lTableMetaData.AddField(uXMLTags.FieldNameComputerName,  qfkString, 9999);
+    DBRequestXML.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 end;
 
-class function TtiDatabaseRemoteXML.DatabaseExists(const psDatabaseName,
-  psUserName, psPassword: string): boolean;
+class function TtiDatabaseRemoteXML.DatabaseExists(const ADatabaseName,
+  AUserName, APassword: string): boolean;
 begin
-  result := false ;
-  Assert( false, 'DatabaseExists not implemented in ' + ClassName);
+  result := false;
+  Assert(false, 'DatabaseExists not implemented in ' + ClassName);
 end;
 
 destructor TtiDatabaseRemoteXML.Destroy;
@@ -516,42 +517,42 @@ begin
   inherited;
 end;
 
-procedure TtiDatabaseRemoteXML.DropTable(const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseRemoteXML.DropTable(const ATableMetaData: TtiDBMetaDataTable);
 begin
-  ClearRequest ;
-  InsertRemoteRequest(rctDropTable, pTableMetaData.Name);
-  ExecuteRemoteCall ;
+  ClearRequest;
+  InsertRemoteRequest(rctDropTable, ATableMetaData.Name);
+  ExecuteRemoteCall;
 end;
 
 function TtiDatabaseRemoteXML.GetConnected: boolean;
 begin
   // ToDo: Must have some kind of PING command to check server can be reached
-  Result := FConnected ;
+  Result := FConnected;
 end;
 
 function TtiDatabaseRemoteXML.InTransaction: boolean;
 begin
   // ToDo: Implement transaction management
-  result := FInTransaction ;
+  result := FInTransaction;
 end;
 
-procedure TtiDatabaseRemoteXML.ReadMetaDataFields(pData: TtiDBMetaDataTable);
+procedure TtiDatabaseRemoteXML.ReadMetaDataFields(AData: TtiDBMetaDataTable);
 var
-  lTableMetaData : TtiDBMetaDataTable ;
-  lQuery : TtiQueryXMLLight ;
+  lTableMetaData : TtiDBMetaDataTable;
+  lQuery : TtiQueryXMLLight;
 begin
-  ClearRequest ;
-  lTableMetaData := pData as TtiDBMetaDataTable ;
+  ClearRequest;
+  lTableMetaData := AData as TtiDBMetaDataTable;
   InsertRemoteRequest(rctReadMetaDataFields, lTableMetaData.Name);
 
-  ExecuteRemoteCall ;
+  ExecuteRemoteCall;
 
-  lQuery := TtiQueryXMLLight.Create ;
+  lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(DBResponseXML);
     lQuery.SelectRow(uXMLTags.TableNameMetaData);
     if lQuery.EOF then
-      raise Exception.CreateFmt( cTIOPFExcMsgErrorOnRemoteServer, ['No meta data available']);
+      raise Exception.CreateFmt(cTIOPFExcMsgErrorOnRemoteServer, ['No meta data available']);
 
    while not lQuery.EOF do
    begin
@@ -559,115 +560,115 @@ begin
        lQuery.FieldAsString[uXMLTags.FieldNameMetaDataFieldName],
        StrToQueryFieldKind(lQuery.FieldAsString[uXMLTags.FieldNameMetaDataFieldKind]),
        lQuery.FieldAsInteger[uXMLTags.FieldNameMetaDataFieldWidth]);
-     lQuery.Next ;
-   end ;
+     lQuery.Next;
+   end;
 
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 
 end;
 
-procedure TtiDatabaseRemoteXML.ReadMetaDataTables(pData: TtiDBMetaData);
+procedure TtiDatabaseRemoteXML.ReadMetaDataTables(AData: TtiDBMetaData);
 var
-  lDBMetaData : TtiDBMetaData ;
-  lTableMetaData : TtiDBMetaDataTable ;
-  lQuery : TtiQueryXMLLight ;
+  lDBMetaData : TtiDBMetaData;
+  lTableMetaData : TtiDBMetaDataTable;
+  lQuery : TtiQueryXMLLight;
 begin
-  ClearRequest ;
+  ClearRequest;
   InsertRemoteRequest(rctReadMetaDataTables, '');
-  ExecuteRemoteCall ;
+  ExecuteRemoteCall;
   // ToDo: Should pass the database name as a param
-  lDBMetaData := pData as TtiDBMetaData ;
+  lDBMetaData := AData as TtiDBMetaData;
   // ToDo: Require a custom table structure here, rather than the default meta data struct.
-  lQuery := TtiQueryXMLLight.Create ;
+  lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(DBResponseXML);
     lQuery.SelectRow(uXMLTags.TableNameMetaData);
     while not lQuery.EOF do
     begin
-      lTableMetaData := TtiDBMetaDataTable.Create ;
+      lTableMetaData := TtiDBMetaDataTable.Create;
       lTableMetaData.Name := lQuery.FieldAsString[uXMLTags.FieldNameMetaDataTableName];
       lDBMetaData.Add(lTableMetaData);
-      lQuery.Next ;
-    end ;
+      lQuery.Next;
+    end;
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 end;
 
 procedure TtiDatabaseRemoteXML.RollBack;
 begin
-  FInTransaction := false ;
-  ClearRequest ;
+  FInTransaction := false;
+  ClearRequest;
   InsertRemoteRequest(rctRollBack, '');
-  ExecuteRemoteCall ;
+  ExecuteRemoteCall;
 end;
 
-procedure TtiDatabaseRemoteXML.SetConnected(pbValue: boolean);
+procedure TtiDatabaseRemoteXML.SetConnected(AValue: boolean);
   procedure _TestConnection;
   var
-    ls : string ;
+    ls : string;
   begin
-    FHTTP.Clear ;
+    FHTTP.Clear;
     try
-      FHTTP.Post(DatabaseName + cgTIDBProxyTestAlive1 );
-      ls := FHTTP.Output.DataString ;
+      FHTTP.Post(DatabaseName + cgTIDBProxyTestAlive1);
+      ls := FHTTP.Output.DataString;
     except
       on e:exception do
-        raise EtiOPFDBExceptionCanNotConnect.Create( cTIPersistRemote, DatabaseName, UserName, Password, cTIOPFExcMsgCanNotConnectToServer ) ;
-    end ;
-    if ls <> uXMLTags.ProxyTestPassed then
-      raise exception.createFmt(cTIOPFExcMsgConnectionConfirmationFormatWrong, [uXMLTags.ProxyTestPassed, ls]) ;
-  end ;
+        raise EtiOPFDBExceptionCanNotConnect.Create(cTIPersistRemote, DatabaseName, UserName, Password, cTIOPFExcMsgCanNotConnectToServer);
+    end;
+    if not TtiAppServerVersion.IsXMLValid(LS) then
+      raise exception.createFmt(cTIOPFExcMsgConnectionConfirmationFormatWrong, [TtiAppServerVersion.ExpectedAsString, ls]);
+  end;
   procedure _TestServerVersion;
   var
-    ls : string ;
+    ls : string;
   begin
-    FHTTP.Clear ;
+    FHTTP.Clear;
     try
-      FHTTP.Post(DatabaseName + cgTIDBProxyServerVersion );
-      //FHTTP.Post(DatabaseName + 'version' );
-      ls := FHTTP.Output.DataString ;
+      FHTTP.Post(DatabaseName + cgTIDBProxyServerVersion);
+      //FHTTP.Post(DatabaseName + 'version');
+      ls := FHTTP.Output.DataString;
     except
       on e:exception do
-        raise EtiOPFDBExceptionCanNotConnect.Create( cTIPersistRemote, DatabaseName, UserName, Password, cTIOPFExcMsgCanNotConnectToServer ) ;
-    end ;
+        raise EtiOPFDBExceptionCanNotConnect.Create(cTIPersistRemote, DatabaseName, UserName, Password, cTIOPFExcMsgCanNotConnectToServer);
+    end;
     if ls <> uXMLTags.XMLVersion then
-      raise EtiOPFDBExceptionWrongServerVersion.Create( cTIPersistRemote, DatabaseName, UserName, Password, cTIOPFExcMsgWrongServerVersion ) ;
-  end ;
+      raise EtiOPFDBExceptionWrongServerVersion.Create(cTIPersistRemote, DatabaseName, UserName, Password, cTIOPFExcMsgWrongServerVersion);
+  end;
 begin
-  if not pbValue then
+  if not AValue then
   begin
-    FConnected := false ;
-    Exit ; //==>
-  end ;
+    FConnected := false;
+    Exit; //==>
+  end;
 
   RefreshHTTPInstance;
-  FConnected := false ;
-  DatabaseName := tiAddTrailingValue( DatabaseName, '/' ) ;
+  FConnected := false;
+  DatabaseName := tiAddTrailingValue(DatabaseName, '/');
   _TestConnection;
   _TestServerVersion;
-  FConnected := true ;
+  FConnected := true;
 end;
 
 procedure TtiDatabaseRemoteXML.StartTransaction;
 begin
-  ClearRequest ;
+  ClearRequest;
   InsertRemoteRequest(rctStartTransaction, '');
-  ExecuteRemoteCall ;
-  FInTransaction := true ;
+  ExecuteRemoteCall;
+  FInTransaction := true;
 end;
 
 procedure TtiDatabaseRemoteXML.ExecuteRemoteCall;
 var
-  ls : string ;
-//  lDifTime : DWord ;
+  ls : string;
+//  lDifTime : DWord;
 begin
   if DBRequestXML.InTransaction then
-    DBRequestXML.Commit ;
+    DBRequestXML.Commit;
 
-  ls := DBRequestXML.AsString ;
+  ls := DBRequestXML.AsString;
   ls := tiCompressEncode(ls,cgsCompressZLib);
 
   // This is to stop the HTTP Server melting down.
@@ -687,13 +688,13 @@ begin
   // and here
   // http://groups.google.com.au/groups?hl=en&lr=&ie=UTF-8&oe=UTF-8&threadm=404cf7a4%241%40newsgroups.borland.com&rnum=3&prev=/groups%3Fq%3DSocket%2BError%2B%2523%2B10048%2BTidHTTP%26hl%3Den%26lr%3D%26ie%3DUTF-8%26oe%3DUTF-8%26selm%3D404cf7a4%25241%2540newsgroups.borland.com%26rnum%3D3
 
-//  lDifTime := GetTickCount - FLastCallTime ;
+//  lDifTime := GetTickCount - FLastCallTime;
 //  if (lDifTime <= 75) and
 //     (not gTIOPFManager.Terminated) then
 //    Sleep(75-lDifTime);
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
   RefreshHTTPInstance;
 
@@ -703,7 +704,7 @@ begin
   TryHTTPPost(ls);
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
   ls := FHTTP.Output.DataString;
   ls := tiDecompressDecode(ls,cgsCompressZLib);
@@ -711,76 +712,76 @@ begin
 //  Log(ls);
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  DBResponseXML.AsString := ls ;
+  DBResponseXML.AsString := ls;
 
   if gTIOPFManager.Terminated then
-    Exit ; //==>
+    Exit; //==>
 
-  ReadMessagesFromResponse ;
+  ReadMessagesFromResponse;
 
 end;
 
 procedure TtiDatabaseRemoteXML.ReadMessagesFromResponse;
 var
-  lQuery : TtiQueryXMLLight ;
-  lRowCount : integer ;
-  lErrorMessage : string ;
+  lQuery : TtiQueryXMLLight;
+  lRowCount : integer;
+  lErrorMessage : string;
 begin
-  lQuery := TtiQueryXMLLight.Create ;
+  lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(DBResponseXML);
     lQuery.SelectRow(uXMLTags.TableNameResultMessage);
     if lQuery.EOF then
-      raise Exception.CreateFmt( cTIOPFExcMsgErrorOnRemoteServer,
-                      ['Unable to extract response messages']) ;
-    lErrorMessage  := lQuery.FieldAsString[uXMLTags.FieldNameResultError] ;
+      raise Exception.CreateFmt(cTIOPFExcMsgErrorOnRemoteServer,
+                      ['Unable to extract response messages']);
+    lErrorMessage := lQuery.FieldAsString[uXMLTags.FieldNameResultError];
     if lErrorMessage <> '' then
-      raise Exception.CreateFmt( cTIOPFExcMsgErrorOnRemoteServer,
+      raise Exception.CreateFmt(cTIOPFExcMsgErrorOnRemoteServer,
                                  [lErrorMessage]);
-    FTransactionID := lQuery.FieldAsString[uXMLTags.FieldNameTransactionID] ;
-    lRowCount := lQuery.FieldAsInteger[uXMLTags.FieldNameResultRowCount] ;
-    FHasResultSet := lRowCount > 0 ;  
+    FTransactionID := lQuery.FieldAsString[uXMLTags.FieldNameTransactionID];
+    lRowCount := lQuery.FieldAsInteger[uXMLTags.FieldNameResultRowCount];
+    FHasResultSet := lRowCount > 0;  
   finally
-    lQuery.Free ;
-  end ;
+    lQuery.Free;
+  end;
 end;
 
 procedure TtiDatabaseRemoteXML.InsertRemoteRequest(
-             pRemoteCommandType : TtiRemoteCommandType ;
-             const pSQLText : string ) ;
+             pRemoteCommandType : TtiRemoteCommandType;
+             const pSQLText : string);
 var
-  lParams : TtiQueryTransParams ;
-  lQuery : TtiQuery ;
+  lParams : TtiQueryTransParams;
+  lQuery : TtiQuery;
 begin
-  lQuery := TtiQueryXMLLight.Create ;
+  lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(DBRequestXML);
-    lParams := TtiQueryTransParams.Create ;
+    lParams := TtiQueryTransParams.Create;
     try
       lParams.SetValueAsString(uXMLTags.FieldNameQuerySQL, pSQLText);
-      lParams.SetValueAsString(uXMLTags.FieldNameTransactionID, FTransactionID) ;
-      lParams.SetValueAsString(uXMLTags.FieldNameCommandType,  cRemoteCommandTypes[pRemoteCommandType]) ;
-      lParams.SetValueAsString(uXMLTags.FieldNameComputerName, tiGetComputerName) ;
-      lParams.SetValueAsString(uXMLTags.FieldNameUserName,     tiGetUserName) ;
+      lParams.SetValueAsString(uXMLTags.FieldNameTransactionID, FTransactionID);
+      lParams.SetValueAsString(uXMLTags.FieldNameCommandType,  cRemoteCommandTypes[pRemoteCommandType]);
+      lParams.SetValueAsString(uXMLTags.FieldNameComputerName, tiGetComputerName);
+      lParams.SetValueAsString(uXMLTags.FieldNameUserName,     tiGetUserName);
       lQuery.InsertRow(uXMLTags.TableNameQuery, lParams);
     finally
       lParams.Free;
     end;
   finally
     lQuery.Free;
-  end ;
+  end;
 end;
 
 procedure TtiDatabaseRemoteXML.ClearRequest;
 var
-  lQuery : TtiQuery ;
+  lQuery : TtiQuery;
 begin
   //ToDo: Remove this hard-coded tiQuery once the framework can handle multiple persistence layers
-  lQuery := TtiQueryXMLLight.Create ;
+  lQuery := TtiQueryXMLLight.Create;
   try
-    lQuery.AttachDatabase( DBRequestXML ) ;
+    lQuery.AttachDatabase(DBRequestXML);
     lQuery.DeleteRow(uXMLTags.TableNameQuery, nil);
     lQuery.DeleteRow(uXMLTags.TableNameQueryParam, nil);
     //DBRequestXML.DeleteRow(cTableNameQuery, nil);
@@ -795,8 +796,8 @@ end;
 
 function TtiDatabaseRemoteXML.Test: boolean;
 begin
-  result := false ;
-  Assert( false, 'Under construction' ) ;  
+  result := false;
+  Assert(false, 'Under construction');  
 end;
 
 procedure TtiDatabaseRemoteXML.TryHTTPPost(const AInput: string);
@@ -809,8 +810,8 @@ begin
   while (not LTrySuccessful) do
   begin
     try
-      FHTTP.Clear ;
-      FHTTP.Input.WriteString(AInput) ;
+      FHTTP.Clear;
+      FHTTP.Input.WriteString(AInput);
       FHTTP.Post(DatabaseName + cgTIDBProxy);
       LTrySuccessful:= True;
     except
@@ -830,9 +831,9 @@ end;
 procedure TtiDatabaseRemoteXML.RefreshHTTPInstance;
 var
   lProxyServer: string;
-  lProxyPort  : Integer ;
+  lProxyPort : Integer;
   lProxyActive: Boolean;
-  LHTTPClassMapping : string ;
+  LHTTPClassMapping : string;
   LCurrentThreadID: DWord;
 begin
 
@@ -849,23 +850,23 @@ begin
       FHTTP := gTIHTTPFactory.CreateInstance(LHTTPClassMapping)
     else
     begin
-      Assert( gTIHTTPClass <> nil, 'gTIHTTPClass not assigned');
+      Assert(gTIHTTPClass <> nil, 'gTIHTTPClass not assigned');
       FHTTP:= gTIHTTPClass.Create;
     end;
 
-    if not SameText( cHTTPMSXML, FHTTP.MappingName ) then
+    if not SameText(cHTTPMSXML, FHTTP.MappingName) then
     begin
       lProxyActive := tiStrToBool(Params.Values[cHTTPProxyServeractive]);
       lProxyServer := Params.Values[cHTTPProxyServerName];
-      lProxyPort   := StrToIntDef(Params.Values[cHTTPProxyPort], 0);
+      lProxyPort  := StrToIntDef(Params.Values[cHTTPProxyPort], 0);
       if (lProxyActive) and
          (lProxyServer <> '') and
          (lProxyPort <> 0) then
       begin
         FHTTP.ProxyServer := lProxyServer;
-        FHTTP.ProxyPort   := lProxyPort;
+        FHTTP.ProxyPort  := lProxyPort;
       end;
-    end ;
+    end;
   end;
 
 end;
@@ -875,38 +876,38 @@ end;
 constructor TtiQueryRemoteXML.Create;
 begin
   inherited;
-  FQueryResponseXML    := TtiQueryXMLLight.Create ;
-  FParams := TtiQueryTransParams.Create ;
-  FSQL    := TStringList.Create ;
-  FActive := false ;
+  FQueryResponseXML   := TtiQueryXMLLight.Create;
+  FParams := TtiQueryTransParams.Create;
+  FSQL   := TStringList.Create;
+  FActive := false;
 end;
 
 
 destructor TtiQueryRemoteXML.Destroy;
 begin
   FSQL.Free;
-  FParams.Free ;
+  FParams.Free;
   FQueryResponseXML.Free;
   inherited;
 end;
 
 procedure TtiQueryRemoteXML.ExecSQL;
-  procedure _SaveParams( const pDatabase : TtiDatabase ) ;
+  procedure _SaveParams(const ADatabase : TtiDatabase);
   var
-    i : integer ;
-    lParams : TtiQueryTransParams ;
-    lQuery : TtiQuery ;
+    i : integer;
+    lParams : TtiQueryTransParams;
+    lQuery : TtiQuery;
   begin
-    lQuery := TtiQueryXMLLight.Create ;
+    lQuery := TtiQueryXMLLight.Create;
     try
-      lQuery.AttachDatabase(pDatabase);
-      lParams := TtiQueryTransParams.Create ;
+      lQuery.AttachDatabase(ADatabase);
+      lParams := TtiQueryTransParams.Create;
       try
         for i := 0 to FParams.Count - 1 do
         begin
-          lParams.SetValueAsString(uXMLTags.FieldNameParamName, FParams.Items[i].Name) ;
-          lParams.SetValueAsString(uXMLTags.FieldNameParamKind, FParams.Items[i].KindAsStr) ;
-          lParams.SetValueAsString(uXMLTags.FieldNameParamValue, FParams.Items[i].GetValueAsString) ;
+          lParams.SetValueAsString(uXMLTags.FieldNameParamName, FParams.Items[i].Name);
+          lParams.SetValueAsString(uXMLTags.FieldNameParamKind, FParams.Items[i].KindAsStr);
+          lParams.SetValueAsString(uXMLTags.FieldNameParamValue, FParams.Items[i].GetValueAsString);
           lQuery.InsertRow(uXMLTags.TableNameQueryParam, lParams);
         end;
       finally
@@ -914,18 +915,18 @@ procedure TtiQueryRemoteXML.ExecSQL;
       end;
     finally
       lQuery.Free;
-    end ;
+    end;
   end;
 
 begin
 
-  DBRemoteXML.ClearRequest ;
+  DBRemoteXML.ClearRequest;
 
   DBRemoteXML.DBRequestXML.StartTransaction;
   DBRemoteXML.InsertRemoteRequest(rctExecSQL, SQLText);
-  _SaveParams(DBRemoteXML.DBRequestXML) ;
-  DBRemoteXML.DBRequestXML.Commit ;
-  DBRemoteXML.ExecuteRemoteCall ;
+  _SaveParams(DBRemoteXML.DBRequestXML);
+  DBRemoteXML.DBRequestXML.Commit;
+  DBRemoteXML.ExecuteRemoteCall;
 
   if DBRemoteXML.HasResultSet then
     FQueryResponseXML.SelectRow(uXMLTags.TableNameResultSet);
@@ -934,32 +935,32 @@ end;
 
 function TtiQueryRemoteXML.FieldCount: integer;
 begin
-  result := FQueryResponseXML.FieldCount ;
+  result := FQueryResponseXML.FieldCount;
 end;
 
-function TtiQueryRemoteXML.FieldIndex(const psName: string): integer;
+function TtiQueryRemoteXML.FieldIndex(const AName: string): integer;
 begin
-  result := FQueryResponseXML.FieldIndex(psName);
+  result := FQueryResponseXML.FieldIndex(AName);
 end;
 
-function TtiQueryRemoteXML.FieldKind(pIndex: integer): TtiQueryFieldKind;
+function TtiQueryRemoteXML.FieldKind(AIndex: integer): TtiQueryFieldKind;
 begin
-  result := FQueryResponseXML.FieldKind(pIndex);
+  result := FQueryResponseXML.FieldKind(AIndex);
 end;
 
-function TtiQueryRemoteXML.FieldName(pIndex: integer): string;
+function TtiQueryRemoteXML.FieldName(AIndex: integer): string;
 begin
-  result := FQueryResponseXML.FieldName(pIndex);
+  result := FQueryResponseXML.FieldName(AIndex);
 end;
 
-function TtiQueryRemoteXML.FieldSize(pIndex: integer): integer;
+function TtiQueryRemoteXML.FieldSize(AIndex: integer): integer;
 begin
-  result := FQueryResponseXML.FieldSize(pIndex);
+  result := FQueryResponseXML.FieldSize(AIndex);
 end;
 
 function TtiQueryRemoteXML.GetActive: boolean;
 begin
-  result := FActive ;
+  result := FActive;
 end;
 
 function TtiQueryRemoteXML.GetEOF: boolean;
@@ -969,69 +970,69 @@ begin
     FQueryResponseXML.EOF;
 end;
 
-function TtiQueryRemoteXML.GetFieldAsBoolean(const psName: string): boolean;
+function TtiQueryRemoteXML.GetFieldAsBoolean(const AName: string): boolean;
 begin
-  result := FQueryResponseXML.FieldAsBoolean[psName];
+  result := FQueryResponseXML.FieldAsBoolean[AName];
 end;
 
-function TtiQueryRemoteXML.GetFieldAsDateTime(const psName: string): TDateTime;
+function TtiQueryRemoteXML.GetFieldAsDateTime(const AName: string): TDateTime;
 begin
-  result := FQueryResponseXML.FieldAsDateTime[psName];
+  result := FQueryResponseXML.FieldAsDateTime[AName];
 end;
 
-function TtiQueryRemoteXML.GetFieldAsFloat(const psName: string): extended;
+function TtiQueryRemoteXML.GetFieldAsFloat(const AName: string): extended;
 begin
-  result := FQueryResponseXML.FieldAsFloat[psName];
+  result := FQueryResponseXML.FieldAsFloat[AName];
 end;
 
-function TtiQueryRemoteXML.GetFieldAsInteger(const psName: string): Int64;
+function TtiQueryRemoteXML.GetFieldAsInteger(const AName: string): Int64;
 begin
-  result := FQueryResponseXML.FieldAsInteger[psName];
+  result := FQueryResponseXML.FieldAsInteger[AName];
 end;
 
-function TtiQueryRemoteXML.GetFieldAsString(const psName: string): string;
+function TtiQueryRemoteXML.GetFieldAsString(const AName: string): string;
 begin
-  result := FQueryResponseXML.FieldAsString[psName];
+  result := FQueryResponseXML.FieldAsString[AName];
 end;
 
-function TtiQueryRemoteXML.GetFieldIsNull(const psName: string): Boolean;
+function TtiQueryRemoteXML.GetFieldIsNull(const AName: string): Boolean;
 begin
-  result := FQueryResponseXML.FieldIsNull[psName];
+  result := FQueryResponseXML.FieldIsNull[AName];
 end;
 
-function TtiQueryRemoteXML.GetParamAsBoolean(const psName: string): boolean;
+function TtiQueryRemoteXML.GetParamAsBoolean(const AName: string): boolean;
 begin
-  result := FParams.GetValueAsBoolean( psName ) ;
+  result := FParams.GetValueAsBoolean(AName);
 end;
 
-function TtiQueryRemoteXML.GetParamAsDateTime(const psName: string): TDateTime;
+function TtiQueryRemoteXML.GetParamAsDateTime(const AName: string): TDateTime;
 begin
-  result := FParams.GetValueAsDateTime( psName ) ;
+  result := FParams.GetValueAsDateTime(AName);
 end;
 
-function TtiQueryRemoteXML.GetParamAsFloat(const psName: string): Extended;
+function TtiQueryRemoteXML.GetParamAsFloat(const AName: string): Extended;
 begin
-  result := FParams.GetValueAsFloat(psName);
+  result := FParams.GetValueAsFloat(AName);
 end;
 
-function TtiQueryRemoteXML.GetParamAsInteger(const psName: string): Int64;
+function TtiQueryRemoteXML.GetParamAsInteger(const AName: string): Int64;
 begin
-  result := FParams.GetValueAsInteger(psName);
+  result := FParams.GetValueAsInteger(AName);
 end;
 
-function TtiQueryRemoteXML.GetParamAsString(const psName: string): string;
+function TtiQueryRemoteXML.GetParamAsString(const AName: string): string;
 begin
-  result := FParams.GetValueAsString(psName) ;
+  result := FParams.GetValueAsString(AName);
 end;
 
-function TtiQueryRemoteXML.GetParamIsNull(const psName: String): Boolean;
+function TtiQueryRemoteXML.GetParamIsNull(const AName: String): Boolean;
 begin
-  result := FParams.ParamIsNull[psName];
+  result := FParams.ParamIsNull[AName];
 end;
 
 function TtiQueryRemoteXML.GetSQL: TStrings;
 begin
-  result := FSQL ;
+  result := FSQL;
 end;
 
 function TtiQueryRemoteXML.HasNativeLogicalType: boolean;
@@ -1044,9 +1045,9 @@ begin
   result := FParams.Count;
 end;
 
-function TtiQueryRemoteXML.ParamName(pIndex: integer): string;
+function TtiQueryRemoteXML.ParamName(AIndex: integer): string;
 begin
-  result := FParams.ParamName(pIndex);
+  result := FParams.ParamName(AIndex);
 end;
 
 procedure TtiQueryRemoteXML.Reset;
@@ -1054,71 +1055,71 @@ begin
   // Not sure what to put in here
 end;
 
-procedure TtiQueryRemoteXML.SetActive(const Value: boolean);
+procedure TtiQueryRemoteXML.SetActive(const AValue: boolean);
 begin
-  if FActive <> Value then
+  if FActive <> AValue then
   begin
-    FActive := Value ;
+    FActive := AValue;
     if FActive then
-      ExecSQL ;
+      ExecSQL;
   end;
 end;
 
-procedure TtiQueryRemoteXML.SetParamAsBoolean(const psName: string; const Value: boolean);
+procedure TtiQueryRemoteXML.SetParamAsBoolean(const AName: string; const AValue: boolean);
 begin
-  FParams.SetValueAsBoolean(psName, Value) ;
+  FParams.SetValueAsBoolean(AName, AValue);
 end;
 
-procedure TtiQueryRemoteXML.SetParamAsDateTime(const psName: string; const Value: TDateTime);
+procedure TtiQueryRemoteXML.SetParamAsDateTime(const AName: string; const AValue: TDateTime);
 begin
-  FParams.SetValueAsDateTime(psName, Value ) ;
+  FParams.SetValueAsDateTime(AName, AValue);
 end;
 
-procedure TtiQueryRemoteXML.SetParamAsFloat(const psName: string; const Value: Extended);
+procedure TtiQueryRemoteXML.SetParamAsFloat(const AName: string; const AValue: Extended);
 begin
-  FParams.SetValueAsFloat(psName, Value) ;
+  FParams.SetValueAsFloat(AName, AValue);
 end;
 
-procedure TtiQueryRemoteXML.SetParamAsInteger(const psName: string; const Value: Int64);
+procedure TtiQueryRemoteXML.SetParamAsInteger(const AName: string; const AValue: Int64);
 begin
-  FParams.SetValueAsInteger(psName, Value ) ;
+  FParams.SetValueAsInteger(AName, AValue);
 end;
 
-procedure TtiQueryRemoteXML.SetParamAsMacro(const psName, Value: string);
+procedure TtiQueryRemoteXML.SetParamAsMacro(const AName, AValue: string);
 begin
   SQLText :=
-    tiCIStrTran( SQLText,
-                 cgtiQueryMacroChr + psName,
-                 Value ) ;
+    tiCIStrTran(SQLText,
+                 cgtiQueryMacroChr + AName,
+                 AValue);
 end;
 
-procedure TtiQueryRemoteXML.SetParamAsString(const psName, Value: string);
+procedure TtiQueryRemoteXML.SetParamAsString(const AName, AValue: string);
 begin
-  FParams.SetValueAsString(psName, Value );
+  FParams.SetValueAsString(AName, AValue);
 end;
 
-procedure TtiQueryRemoteXML.SetParamIsNull(const psName: String; const Value: Boolean);
+procedure TtiQueryRemoteXML.SetParamIsNull(const AName: String; const AValue: Boolean);
 begin
-  FParams.ParamIsNull[ psName ] := Value ;
+  FParams.ParamIsNull[ AName ]:= AValue;
 end;
 
-procedure TtiQueryRemoteXML.SetSQL(const Value: TStrings);
+procedure TtiQueryRemoteXML.SetSQL(const AValue: TStrings);
 begin
-  FSQL.Assign(Value);
-  FParams.Clear ;
+  FSQL.Assign(AValue);
+  FParams.Clear;
 end;
 
-procedure TtiQueryRemoteXML.AssignFieldAsStream(const pName: string;const pValue: TStream);
+procedure TtiQueryRemoteXML.AssignFieldAsStream(const AName: string;const AValue: TStream);
 var
-  ls : string ;
-  lStream : TStringStream ;
+  ls : string;
+  lStream : TStringStream;
 begin
-  ls := GetFieldAsString(pName);
-  lStream := TStringStream.Create(ls) ;
+  ls := GetFieldAsString(AName);
+  lStream := TStringStream.Create(ls);
   try
-    pValue.Size := 0 ;
-    MimeDecodeStream(lStream, pValue);
-    pValue.Position := 0 ;
+    AValue.Size := 0;
+    MimeDecodeStream(lStream, AValue);
+    AValue.Position := 0;
   finally
     lStream.Free;
   end;
@@ -1129,39 +1130,39 @@ begin
   FQueryResponseXML.Next;
 end;
 
-procedure TtiQueryRemoteXML.AssignParamFromStream(const pName: string;const pValue: TStream);
+procedure TtiQueryRemoteXML.AssignParamFromStream(const AName: string;const AValue: TStream);
 begin
-  FParams.SetValueAsStream(pName, pValue);
+  FParams.SetValueAsStream(AName, AValue);
 end;
 
-procedure TtiQueryRemoteXML.AssignParamToStream(const pName: string; const pValue: TStream);
+procedure TtiQueryRemoteXML.AssignParamToStream(const AName: string; const AValue: TStream);
 begin
-  FParams.AssignValueToStream(pName, pValue);
+  FParams.AssignValueToStream(AName, AValue);
 end;
 
 procedure TtiQueryRemoteXML.Close;
 begin
-  Active := false ;
+  Active := false;
 end;
 
 procedure TtiQueryRemoteXML.Open;
 begin
-  Active := true ;
+  Active := true;
 end;
 
 function TtiQueryRemoteXML.DBRemoteXML: TtiDatabaseRemoteXML;
 begin
-  result := ( Database as TtiDatabaseRemoteXML ) ;
+  result := (Database as TtiDatabaseRemoteXML);
 end;
 
 //var
-//  lRegPerLayer : TtiRegPerLayer ;
+//  lRegPerLayer : TtiRegPerLayer;
 
-procedure TtiQueryRemoteXML.AttachDatabase(pDatabase: TtiDatabase);
+procedure TtiQueryRemoteXML.AttachDatabase(ADatabase: TtiDatabase);
 begin
-  inherited AttachDatabase(pDatabase);
-  if pDatabase <> nil then
-    FQueryResponseXML.AttachDatabase((pDatabase as TtiDatabaseRemoteXML).DBResponseXML);
+  inherited AttachDatabase(ADatabase);
+  if ADatabase <> nil then
+    FQueryResponseXML.AttachDatabase((ADatabase as TtiDatabaseRemoteXML).DBResponseXML);
 end;
 
 procedure TtiQueryRemoteXML.DetachDatabase;
@@ -1170,82 +1171,82 @@ begin
   FQueryResponseXML.DetachDatabase;
 end;
 
-procedure TtiQueryRemoteXML.SetSQLText(const Value: string);
+procedure TtiQueryRemoteXML.SetSQLText(const AValue: string);
 begin
-  FSQL.Text := Value ;
-  FParams.Clear ;
+  FSQL.Text := AValue;
+  FParams.Clear;
 end;
 
-procedure TtiQueryRemoteXML.AssignFieldAsStreamByIndex(pIndex: Integer; const pValue: TStream);
+procedure TtiQueryRemoteXML.AssignFieldAsStreamByIndex(AIndex: Integer; const AValue: TStream);
 var
-  ls : string ;
-  lStream : TStringStream ;
+  ls : string;
+  lStream : TStringStream;
 begin
-  ls := GetFieldAsStringByIndex(pIndex);
-  lStream := TStringStream.Create(ls) ;
+  ls := GetFieldAsStringByIndex(AIndex);
+  lStream := TStringStream.Create(ls);
   try
-    pValue.Size := 0 ;
-    MimeDecodeStream(lStream, pValue);
-    pValue.Position := 0 ;
+    AValue.Size := 0;
+    MimeDecodeStream(lStream, AValue);
+    AValue.Position := 0;
   finally
     lStream.Free;
   end;
 end;
 
-function TtiQueryRemoteXML.GetFieldAsBooleanByIndex(pIndex: Integer): boolean;
+function TtiQueryRemoteXML.GetFieldAsBooleanByIndex(AIndex: Integer): boolean;
 begin
-  result := FQueryResponseXML.FieldAsBooleanByIndex[pIndex];
+  result := FQueryResponseXML.FieldAsBooleanByIndex[AIndex];
 end;
 
-function TtiQueryRemoteXML.GetFieldAsDateTimeByIndex(pIndex: Integer): TDateTime;
+function TtiQueryRemoteXML.GetFieldAsDateTimeByIndex(AIndex: Integer): TDateTime;
 begin
-  result := FQueryResponseXML.FieldAsDateTimeByIndex[pIndex];
+  result := FQueryResponseXML.FieldAsDateTimeByIndex[AIndex];
 end;
 
-function TtiQueryRemoteXML.GetFieldAsFloatByIndex(pIndex: Integer): extended;
+function TtiQueryRemoteXML.GetFieldAsFloatByIndex(AIndex: Integer): extended;
 begin
-  result := FQueryResponseXML.FieldAsFloatByIndex[pIndex];
+  result := FQueryResponseXML.FieldAsFloatByIndex[AIndex];
 end;
 
-function TtiQueryRemoteXML.GetFieldAsIntegerByIndex(pIndex: Integer): Int64;
+function TtiQueryRemoteXML.GetFieldAsIntegerByIndex(AIndex: Integer): Int64;
 begin
-  result := FQueryResponseXML.FieldAsIntegerByIndex[pIndex];
+  result := FQueryResponseXML.FieldAsIntegerByIndex[AIndex];
 end;
 
-function TtiQueryRemoteXML.GetFieldAsStringByIndex(pIndex: Integer): string;
+function TtiQueryRemoteXML.GetFieldAsStringByIndex(AIndex: Integer): string;
 begin
-  result := FQueryResponseXML.FieldAsStringByIndex[pIndex];
+  result := FQueryResponseXML.FieldAsStringByIndex[AIndex];
 end;
 
-function TtiQueryRemoteXML.GetFieldIsNullByIndex(pIndex: Integer): Boolean;
+function TtiQueryRemoteXML.GetFieldIsNullByIndex(AIndex: Integer): Boolean;
 begin
-  result := FQueryResponseXML.FieldIsNullByIndex[pIndex];
+  result := FQueryResponseXML.FieldIsNullByIndex[AIndex];
 end;
 
 Initialization
 begin
-  uXMLTags := TtiXMLTags.Create ;
+  uXMLTags := TtiXMLTags.Create;
   uXMLTags.OptXMLDBSize := optDBSizeOn;
 
-  RegisterMappings ;
+  RegisterMappings;
 
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
               cTIPersistRemote,
               TtiDBConnectionPoolDataAbs,
               TtiQueryRemoteXML,
-              TtiDatabaseRemoteXML ) ;
+              TtiDatabaseRemoteXML);
 
   // Change the default package from XML to Remote
-  if (gTIOPFManager.PersistenceLayers.FindByPerLayerName(cTIPersistXMLLight) <> nil ) and
-     (gTIOPFManager.PersistenceLayers.DefaultPerLayerName = cTIPersistXMLLight ) then
-    gTIOPFManager.PersistenceLayers.DefaultPerLayerName := cTIPersistRemote ;
+  if (gTIOPFManager.PersistenceLayers.FindByPerLayerName(cTIPersistXMLLight) <> nil) and
+     (gTIOPFManager.PersistenceLayers.DefaultPerLayerName = cTIPersistXMLLight) then
+    gTIOPFManager.PersistenceLayers.DefaultPerLayerName := cTIPersistRemote;
 
 end;
 
 finalization
-  uXMLTags.Free ;
+  uXMLTags.Free;
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer( cTIPersistRemote ) ;
+    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistRemote);
     
 end.
 

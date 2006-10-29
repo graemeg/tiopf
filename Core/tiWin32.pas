@@ -7,13 +7,13 @@ interface
 uses
   SysUtils
   ,Windows
-  ;
+ ;
 
-  procedure tiWin32RunEXEAndWait( pStrEXE : string ) ;
-  function  tiWin32FileGetAttr( const pFileName : string ) : integer ;
-  function  tiWin32FileSetAttr(const pFileName: string; pAttr: Integer): Integer;
-  function  tiWin32FindFirstFile(const Path: string; var  F: TSearchRec): Integer;
-  function  tiWin32CoCreateGUID : String ;
+  procedure tiWin32RunEXEAndWait(AEXE : string);
+  function  tiWin32FileGetAttr(const AFileName : string): integer;
+  function  tiWin32FileSetAttr(const AFileName: string; pAttr: Integer): Integer;
+  function  tiWin32FindFirstFile(const APath: string; var  ASearchRec: TSearchRec): Integer;
+  function  tiWin32CoCreateGUID : String;
   procedure tiWin32CoInitialize;
   procedure tiWin32CoUnInitialize;
   function  tiWin32HasCoInitializeBeenCalled: Boolean;
@@ -31,7 +31,7 @@ uses
   ,ActiveX
   ,Classes
   ,SyncObjs
-  ;
+ ;
 
 type
 
@@ -48,51 +48,51 @@ type
   end;
 
 var
-  uTICoInitializeManager : TtiCoInitializeManager ;
+  uTICoInitializeManager : TtiCoInitializeManager;
 
 //{$ifdef DELPHI6ORABOVE}
 //  {$WARN SYMBOL_PLATFORM OFF}
 //{$endif}
 
 
-procedure tiWin32RunEXEAndWait( pStrEXE : string ) ;
+procedure tiWin32RunEXEAndWait(AEXE : string);
 var
   SI: TStartupInfo;
   PI: TProcessInformation;
 begin
   { Don't remove the IFDEF even though we use FPC in Delphi Mode. GetStartupInfo
     is defined differently to Delphi.  34 minutes after reporting this bug, it
-    was confirmed fixed. :-) I am leaving this IFDEF for now, until the next
+    was confirmed fixed.:-) I am leaving this IFDEF for now, until the next
     FPC version is released, in a few days. - Graeme [2006-07-17] }
   GetStartupInfo({$IFDEF FPC}@{$ENDIF}SI);
  
   CreateProcess(
-    nil, PChar(pStrEXE), nil, nil,
+    nil, PChar(AEXE), nil, nil,
     False, 0, nil, nil, SI, PI);
   WaitForInputIdle(PI.hProcess, Infinite);
   WaitForSingleObject(PI.hProcess, Infinite);
-end ;
-
-
-function tiWin32FileGetAttr( const pFileName : string ) : integer ;
-begin
-  result := fileGetAttr( pFileName ) ;
 end;
 
 
-function tiWin32FileSetAttr(const pFileName: string; pAttr: Integer): Integer;
+function tiWin32FileGetAttr(const AFileName : string): integer;
 begin
-  result := FileSetAttr( pFileName, pAttr);
+  result := fileGetAttr(AFileName);
 end;
 
 
-function tiWin32FindFirstFile(const Path: string; var  F: TSearchRec): Integer;
+function tiWin32FileSetAttr(const AFileName: string; pAttr: Integer): Integer;
 begin
-  result := FindFirst(Path, faAnyFile-faVolumeID-faSYSFile-faDirectory, F);
-end ;
+  result := FileSetAttr(AFileName, pAttr);
+end;
 
 
-function tiWin32CoCreateGUID : string ;
+function tiWin32FindFirstFile(const APath: string; var  ASearchRec: TSearchRec): Integer;
+begin
+  result := FindFirst(APath, faAnyFile-faVolumeID-faSYSFile-faDirectory, ASearchRec);
+end;
+
+
+function tiWin32CoCreateGUID : string;
 var
   lGuid : TGUID;
 begin
@@ -108,18 +108,18 @@ end;
 // E_INVALIDARG - Indicates the argument is invalid.
 // E_UNEXPECTED - Indicates an unexpected error occurred.
 
-procedure tiWin32CoInitialize ;
+procedure tiWin32CoInitialize;
 begin
   if uTICoInitializeManager = nil then
-    uTICoInitializeManager := TtiCoInitializeManager.Create ;
+    uTICoInitializeManager := TtiCoInitializeManager.Create;
   uTICoInitializeManager.CoInitialize;
 end;
 
 
-procedure tiWin32CoUnInitialize ;
+procedure tiWin32CoUnInitialize;
 begin
   if uTICoInitializeManager = nil then
-    uTICoInitializeManager := TtiCoInitializeManager.Create ;
+    uTICoInitializeManager := TtiCoInitializeManager.Create;
   uTICoInitializeManager.CoUnInitialize;
 end;
 
@@ -127,7 +127,7 @@ end;
 function  tiWin32HasCoInitializeBeenCalled: Boolean;
 begin
   if uTICoInitializeManager = nil then
-    uTICoInitializeManager := TtiCoInitializeManager.Create ;
+    uTICoInitializeManager := TtiCoInitializeManager.Create;
   Result:= uTICoInitializeManager.HasBeenCalled;
 end;
 
@@ -171,7 +171,7 @@ begin
   try
     if FList.IndexOf(LCurrentThreadID) = -1 then
     begin
-      ActiveX.CoInitialize( nil );
+      ActiveX.CoInitialize(nil);
       FList.Add(LCurrentThreadID);
     end;
   finally
@@ -212,11 +212,11 @@ end;
 
 function TtiCoInitializeManager.HasBeenCalled: Boolean;
 var
-  LThreadID : integer ;
+  LThreadID : integer;
 begin
   FCritSect.Enter;
   try
-    LThreadID := GetCurrentThreadID ;
+    LThreadID := GetCurrentThreadID;
     Result:= FList.IndexOf(LThreadID) <> -1;
   finally
     FCritSect.Leave;

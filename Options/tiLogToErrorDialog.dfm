@@ -1,10 +1,10 @@
 object LogErrorForm: TLogErrorForm
   Left = 66
   Top = 225
-  Width = 813
-  Height = 546
   BorderIcons = [biSystemMenu]
   Caption = 'Application error log'
+  ClientHeight = 512
+  ClientWidth = 805
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

@@ -48,13 +48,13 @@
 			<Compiler Name="NamespacePrefix"></Compiler>
 			<Compiler Name="GenerateDocumentation">False</Compiler>
 			<Compiler Name="DefaultNamespace"></Compiler>
-			<Compiler Name="SymbolDeprecated">False</Compiler>
+			<Compiler Name="SymbolDeprecated">True</Compiler>
 			<Compiler Name="SymbolLibrary">True</Compiler>
-			<Compiler Name="SymbolPlatform">False</Compiler>
+			<Compiler Name="SymbolPlatform">True</Compiler>
 			<Compiler Name="SymbolExperimental">True</Compiler>
-			<Compiler Name="UnitLibrary">False</Compiler>
-			<Compiler Name="UnitPlatform">False</Compiler>
-			<Compiler Name="UnitDeprecated">False</Compiler>
+			<Compiler Name="UnitLibrary">True</Compiler>
+			<Compiler Name="UnitPlatform">True</Compiler>
+			<Compiler Name="UnitDeprecated">True</Compiler>
 			<Compiler Name="UnitExperimental">True</Compiler>
 			<Compiler Name="HResultCompat">True</Compiler>
 			<Compiler Name="HidingMember">True</Compiler>
@@ -94,9 +94,9 @@
 			<Compiler Name="ImagebaseMultiple">True</Compiler>
 			<Compiler Name="SuspiciousTypecast">True</Compiler>
 			<Compiler Name="PrivatePropAccessor">True</Compiler>
-			<Compiler Name="UnsafeType">False</Compiler>
-			<Compiler Name="UnsafeCode">False</Compiler>
-			<Compiler Name="UnsafeCast">False</Compiler>
+			<Compiler Name="UnsafeType">True</Compiler>
+			<Compiler Name="UnsafeCode">True</Compiler>
+			<Compiler Name="UnsafeCast">True</Compiler>
 			<Compiler Name="OptionTruncated">True</Compiler>
 			<Compiler Name="WideCharReduced">True</Compiler>
 			<Compiler Name="DuplicatesIgnored">True</Compiler>
@@ -123,7 +123,7 @@
 			<Directories Name="UnitOutputDir">.\_Dcu</Directories>
 			<Directories Name="PackageDLLOutputDir"></Directories>
 			<Directories Name="PackageDCPOutputDir"></Directories>
-			<Directories Name="SearchPath">..\..\Core;..\..\Options;..\..\GUI</Directories>
+			<Directories Name="SearchPath">..\..\Core</Directories>
 			<Directories Name="Packages"></Directories>
 			<Directories Name="Conditionals"></Directories>
 			<Directories Name="DebugSourceDirs"></Directories>
@@ -170,6 +170,8 @@
 			<VersionInfoKeys Name="ProductName"></VersionInfoKeys>
 			<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 			<VersionInfoKeys Name="Comments"></VersionInfoKeys>
-		</VersionInfoKeys>
-	</Delphi.Personality>
+		</VersionInfoKeys>  <Excluded_Packages>
+      <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcltee100.bpl">TeeChart Components</Excluded_Packages>
+    </Excluded_Packages>
+  </Delphi.Personality>
 </BorlandProject>

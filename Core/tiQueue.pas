@@ -16,7 +16,7 @@ uses
   ,Libc
   {$ENDIF LINUX}
   ,tiObject
-  ;
+ ;
 
 type
   TtiObjQueue = class
@@ -28,14 +28,14 @@ type
     Function GetCapacity : Integer;
   Protected
     Procedure Grow;
-    Procedure qError(Const pMethod : String);
+    Procedure qError(Const AMethod : String);
   Public
-    Constructor Create(pCapacity : Integer);
+    Constructor Create(ACapacity : Integer);
     Destructor Destroy; Override;
     {: Clears the Queue of all enqueued objects}
     Procedure Clear; Virtual;
     Function DeQueue : TtiObject; Virtual;
-    Procedure EnQueue(pItem : TtiObject); Virtual;
+    Procedure EnQueue(AItem : TtiObject); Virtual;
     {:Examines the object at the "front" of the queue without removing it}
     Function Examine : TtiObject; Virtual;
     Function IsEmpty : Boolean; Virtual;
@@ -50,26 +50,26 @@ type
   TtiObjThreadQueue = Class(TtiObjQueue)
   Private
     {$IFDEF MSWINDOWS}
-    FSemaphore : THandle ;
+    FSemaphore : THandle;
     {$ENDIF MSWINDOWS}
     {$IFDEF LINUX}
-    FSemaphore : TSemaphore ;
+    FSemaphore : TSemaphore;
     {$ENDIF LINUX}
     FLockCount : Integer;
-    Procedure InternalLock(pExternalLock : boolean);
-    Procedure InternalUnLock(pExternalLock : boolean);
+    Procedure InternalLock(AExternalLock : boolean);
+    Procedure InternalUnLock(AExternalLock : boolean);
   Public
     {:Locks the queue to prevent other threads from disturbing it.}
     Procedure Lock;
     {:Unlocks the queue to allow other threads access.}
     Procedure Unlock;
-    {: Creates a thread-safe queue with capacity for pCapacity objects}
-    Constructor Create(pCapacity : Integer);
+    {: Creates a thread-safe queue with capacity for ACapacity objects}
+    Constructor Create(ACapacity : Integer);
     Destructor Destroy; Override;
     {: Clears the Queue of all enqueued objects}
     Procedure Clear; Override;
     Function DeQueue : TtiObject; Override;
-    Procedure EnQueue(pItem : TtiObject); Override;
+    Procedure EnQueue(AItem : TtiObject); Override;
     {:Examines the object at the "front" of the queue without removing it}
     Function Examine : TtiObject; Override;
   End;
@@ -83,7 +83,7 @@ const
 implementation
 uses
   tiLog
-  ;
+ ;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -110,20 +110,20 @@ End;
 
 {: Creates an instance of TtiObjQueue
 
-@param pCapacity  The initial capacity of the queue. If 0 will default to 16.
+@param ACapacity  The initial capacity of the queue. If 0 will default to 16.
 @example The following code creates an instance of a queue with a capacity of 10 objects :-
 <code>
 gObjectQueue := TtiObjQueue.Create(10);
 </code>
 }
 
-Constructor TtiObjQueue.Create(pCapacity : Integer);
+Constructor TtiObjQueue.Create(ACapacity : Integer);
 Begin
   Inherited Create;
   FList := TList.Create;
-  If (pCapacity <= 1) Then
-    pCapacity := 16;
-  FList.Count := pCapacity;
+  If (ACapacity <= 1) Then
+    ACapacity := 16;
+  FList.Count := ACapacity;
 End;
 
 {: Gets the next object from the "front" of the queue.
@@ -161,7 +161,7 @@ Begin
 End;
 
 {: Adds an object to the "back" of the queue.
-@param pItem  The object to be added to the "back" of the queue.
+@param AItem  The object to be added to the "back" of the queue.
 
 @example The following code adds an order to the despatch queue if if has been paid.
 
@@ -171,9 +171,9 @@ If ThisOrder.Paid Then
 </code>
 }
 
-Procedure TtiObjQueue.EnQueue(pItem : TtiObject);
+Procedure TtiObjQueue.EnQueue(AItem : TtiObject);
 Begin
-  FList[FTail] := pItem;
+  FList[FTail]:= AItem;
   FTail := (FTail + 1) Mod FList.Count;
   Inc(FCount);
   If (FTail = FHead) Then
@@ -221,7 +221,7 @@ Begin
     For I := Pred(Count) Downto FHead Do
     Begin
       Dec(ToInx);
-      FList[ToInx] := FList[I];
+      FList[ToInx]:= FList[I];
     End;
     FHead := ToInx;
   End;
@@ -237,8 +237,8 @@ Begin
   End;
 End;
 
-{: Creates a thread-safe object queue with an initial size of pCapacity objects.}
-Constructor TtiObjThreadQueue.Create(pCapacity : Integer);
+{: Creates a thread-safe object queue with an initial size of ACapacity objects.}
+Constructor TtiObjThreadQueue.Create(ACapacity : Integer);
 Var
   lSemaphoreName : String;
   {$IFDEF LINUX}
@@ -277,10 +277,10 @@ var
 {$ENDIF LINUX}
 begin
   {$IFDEF MSWINDOWS}
-  CloseHandle( FSemaphore ) ;
+  CloseHandle(FSemaphore);
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
-  error := sem_destroy( FSemaphore );
+  error := sem_destroy(FSemaphore);
   if error <> 0 then
     raise Exception.Create('Failed to destroy the semaphore');
   {$ENDIF LINUX}
@@ -288,14 +288,14 @@ begin
 end;
 
 {: Adds an object to the "back" of the queue.
-@param pItem  The object to be added to the "back" of the queue.
+@param AItem  The object to be added to the "back" of the queue.
 }
 
-Procedure TtiObjThreadQueue.EnQueue(pItem : TtiObject);
+Procedure TtiObjThreadQueue.EnQueue(AItem : TtiObject);
 Begin
   InternalLock(False);
   Try
-    Inherited EnQueue(pItem);
+    Inherited EnQueue(AItem);
   Finally
     InternalUnlock(False);
   End;
@@ -311,9 +311,9 @@ Begin
   End;
 End;
 
-Procedure TtiObjThreadQueue.InternalLock(pExternalLock : boolean);
+Procedure TtiObjThreadQueue.InternalLock(AExternalLock : boolean);
 Begin
-  If (Not pExternalLock) And
+  If (Not AExternalLock) And
     (FLockCount > 0) Then
   Begin
     Inc(FLockCount);
@@ -332,20 +332,20 @@ Begin
   Inc(FLockCount);
 End;
 
-Procedure TtiObjThreadQueue.InternalUnLock(pExternalLock : boolean);
+Procedure TtiObjThreadQueue.InternalUnLock(AExternalLock : boolean);
 {$IFDEF LINUX}
 var
   error: integer;
 {$ENDIF LINUX}
 Begin
-  If (Not pExternalLock) And (FLockCount > 1) Then
+  If (Not AExternalLock) And (FLockCount > 1) Then
   Begin
     Dec(FLockCount);
     Exit;
   End;
 
   {$IFDEF MSWINDOWS}
-  ReleaseSemaphore( FSemaphore, 1, nil ) ;
+  ReleaseSemaphore(FSemaphore, 1, nil);
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
   error := sem_post(FSemaphore);
@@ -375,9 +375,9 @@ End;
 
 {: Raises an exception of class EQueueError if an exception ocurred internally}
 
-Procedure TtiObjQueue.qError(Const pMethod : String);
+Procedure TtiObjQueue.qError(Const AMethod : String);
 Begin
-  Raise EQueueError.CreateFmt(msgEmptyQueue, [pMethod]);
+  Raise EQueueError.CreateFmt(msgEmptyQueue, [AMethod]);
 End;
 
 {: Unlocks the queue to allow other threads access, should the need arise.}
@@ -388,4 +388,6 @@ Begin
 End;
 
 End.
+
+
 

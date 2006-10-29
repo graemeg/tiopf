@@ -1,27 +1,4 @@
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  The contents of this file are subject to the Mozilla Public
-  License Version 1.1 (the "License"); you may not use this file
-  except in compliance with the License. You may obtain a copy of
-  the License at http://www.mozilla.org/MPL/
-
-  Software distributed under the License is distributed on an "AS
-  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  implied. See the License for the specific language governing
-  rights and limitations under the License.
-
-  Originally developed and released by Peter Hinrichsen, TechInsite Pty. Ltd.
-  as the tiOPF (TechInsite Object Persistence Framework)
-
-    23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-    PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-    Phone: +61 3 9419 6456 Fax:   +61 3 9419 1682
-    Latest source:   www.techinsite.com.au/tiOPF/Download.htm
-    Documentation:   www.techinsite.com.au/tiOPF/Doc/
-    Support:         www.techinsite.com.au/tiOPF/MailingList.htm
-
-  Please submit changes to tiOPF@techinsite.com.au
-
-  Created: 01/09/1999
 
   Notes: To allow only one instance of an application to run on a given machine,
          use this unit, tiSingleInstanceApp towards the top of the list
@@ -34,9 +11,9 @@
   Usage: 1. Add the following two lines before any other code in the
             application's DPR file:
               if not tiSingleInstanceApp.IsFirstInstance then
-                exit ; //==>
+                exit; //==>
          2. Add the following line in the main form's OnCreate event:
-             tiSingleInstanceApp.SaveWindowHandle( self ) ;
+             tiSingleInstanceApp.SaveWindowHandle(self);
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
 
@@ -50,86 +27,86 @@ uses
    Windows,
   {$ENDIF MSWINDOWS}
   Forms    // For TApplication
-  ;
+ ;
 
-function  tiIsFirstInstance( psDatabase : string = '' ) : boolean ;
-procedure tiSaveWindowHandle( pForm : TForm ) ;
-function  tiGetWindowHandle : THandle ;
+function  tiIsFirstInstance(ADatabase : string = ''): boolean;
+procedure tiSaveWindowHandle(pForm : TForm);
+function  tiGetWindowHandle : THandle;
 
 implementation
 uses
    tiUtils
   ,SysUtils
   ,tiRegINI
-  ;
+ ;
 
 var
-  uhMutex : THandle ;
-  upcMutexName : PChar ;
+  uhMutex : THandle;
+  upcMutexName : PChar;
 
-function tiIsFirstInstance( psDatabase : string = '' ) : boolean ;
+function tiIsFirstInstance(ADatabase : string = ''): boolean;
 var
-  lsMutexName : string ;
-  lhWindow : THandle ;
+  lsMutexName : string;
+  lhWindow : THandle;
 begin
-  lsMutexName := ParamStr( 0 ) + psDatabase ;
+  lsMutexName := ParamStr(0) + ADatabase;
 
-  lsMutexName := tiStrTran( lsMutexName, '\', '' ) ;
-  lsMutexName := tiStrTran( lsMutexName, ':', '' ) ;
-  lsMutexName := tiStrTran( lsMutexName, '.', '' ) ;
-  lsMutexName := upperCase( lsMutexName ) ;
-  upcMutexName := PChar( lsMutexName ) ;
+  lsMutexName := tiStrTran(lsMutexName, '\', '');
+  lsMutexName := tiStrTran(lsMutexName, ':', '');
+  lsMutexName := tiStrTran(lsMutexName, '.', '');
+  lsMutexName := upperCase(lsMutexName);
+  upcMutexName := PChar(lsMutexName);
 
-  uhMutex := OpenMutex( MUTEX_ALL_ACCESS, false, upcMutexName );
+  uhMutex := OpenMutex(MUTEX_ALL_ACCESS, false, upcMutexName);
 
   if uhMutex <> 0 then begin
-    result := false ;
-    CloseHandle( uhMutex ) ;
-    lhWindow := tiGetWindowHandle ;
+    result := false;
+    CloseHandle(uhMutex);
+    lhWindow := tiGetWindowHandle;
     if lhWindow <> 0 then begin
-      // tiShowMessage( lhWindow ) ;
-      // ShowWindow( lhWindow, SW_HIDE	 ) ;
-      // ShowWindow( lhWindow, SW_SHOWMAXIMIZED  ) ;
-      // ShowWindow( lhWindow, SW_SHOWMINIMIZED	 ) ;
-      ShowWindow( lhWindow, SW_RESTORE	 ) ;
-      // ShowWindow( lhWindow, SW_SHOW	 ) ;
-      // ShowWindow( lhWindow, SW_SHOWDEFAULT	 ) ;
-      // ShowWindow( lhWindow, SW_SHOWNA	 ) ;
-      // ShowWindow( lhWindow, SW_SHOWNOACTIVATE	 ) ;
-      // ShowWindow( lhWindow, SW_SHOWNORMAL	 ) ;
-      SetForegroundWindow( lhWindow ) ;
-    end ;
+      // tiShowMessage(lhWindow);
+      // ShowWindow(lhWindow, SW_HIDE	);
+      // ShowWindow(lhWindow, SW_SHOWMAXIMIZED );
+      // ShowWindow(lhWindow, SW_SHOWMINIMIZED	);
+      ShowWindow(lhWindow, SW_RESTORE	);
+      // ShowWindow(lhWindow, SW_SHOW	);
+      // ShowWindow(lhWindow, SW_SHOWDEFAULT	);
+      // ShowWindow(lhWindow, SW_SHOWNA	);
+      // ShowWindow(lhWindow, SW_SHOWNOACTIVATE	);
+      // ShowWindow(lhWindow, SW_SHOWNORMAL	);
+      SetForegroundWindow(lhWindow);
+    end;
 
   end else begin
-    result := true ;
-    CreateMutex( nil, true, upcMutexName ) ;
-  end ;
+    result := true;
+    CreateMutex(nil, true, upcMutexName);
+  end;
 
-end ;
+end;
 
 
-procedure tiSaveWindowHandle( pForm : TForm ) ;
+procedure tiSaveWindowHandle(pForm : TForm);
 begin
-  gReg.WriteInteger( 'FMain', 'WindowHandle', pForm.Handle ) ;
-end ;
+  gReg.WriteInteger('FMain', 'WindowHandle', pForm.Handle);
+end;
 
 
-function tiGetWindowHandle : THandle ;
+function tiGetWindowHandle : THandle;
 begin
-  result := THandle( gReg.ReadInteger( 'FMain', 'WindowHandle', 0 )) ;
-end ;
+  result := THandle(gReg.ReadInteger('FMain', 'WindowHandle', 0));
+end;
 
 
 initialization
-  uhMutex := 0 ;
+  uhMutex := 0;
 
 
 finalization
 
   if uhMutex <> 0 then begin
-    ReleaseMutex( uhMutex ) ;
-    CloseHandle(  uhMutex ) ;
-  end ;
+    ReleaseMutex(uhMutex);
+    CloseHandle( uhMutex);
+  end;
 
 {$Warnings Off}
 
@@ -229,3 +206,4 @@ The above code samples demonstrate that multiple processes can
 access the same kernel objects. This is achieved via usage counts.
 
 *)
+

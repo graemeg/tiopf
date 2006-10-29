@@ -9,7 +9,7 @@ uses
   ,tiHTTP
   ,Windows
   ,MSXML_TLB
-  ;
+ ;
 
 const
   cErrorHTTPServer = 'HTTP/1.1 %d Internal Server Error';
@@ -18,29 +18,29 @@ const
 type
 
   {:Uses the Adapter pattern to wrapper a IXMLHttpRequest giving a starndard interface.}
-  TtiHTTPMSXML = class( TtiHTTPAbs )
+  TtiHTTPMSXML = class(TtiHTTPAbs)
   private
-    FHTTP : IXMLHttpRequest ;
+    FHTTP : IXMLHttpRequest;
     FThreadIDCreatedIn: DWord;
     FAutoFlushCache: boolean;
     FLastCallTime: DWord;
   protected
-    procedure   DoGet(const AURL : string; AInput, AOutput: TStringStream); override ;
-    procedure   DoPost(const AURL : string; AInput, AOutput: TStringStream); override ;
+    procedure   DoGet(const AURL : string; AInput, AOutput: TStringStream); override;
+    procedure   DoPost(const AURL : string; AInput, AOutput: TStringStream); override;
 
     function    GetProxyPort: integer; override;
     function    GetProxyServer: string; override;
-    procedure   SetProxyPort(const Value: integer); override;
-    procedure   SetProxyServer(const Value: string); override;
-    function    GetResponseCode: Integer ; override ;
-    function    GetResponseText: string; override ;
-    function    GetResponseHeaders: TtiHTTPHeaders; override;
+    procedure   SetProxyPort(const AValue: integer); override;
+    procedure   SetProxyServer(const AValue: string); override;
+    function    GetResponseCode: Integer; override;
+    function    GetResponseText: string; override;
+    function    GetResponseHeaders: TStringList; override;
   public
-    Constructor Create ; override ;
-    Destructor  Destroy ; override ;
-    class function MappingName: string ; override ;
+    Constructor Create; override;
+    Destructor  Destroy; override;
+    class function MappingName: string; override;
     property    AutoFlushCache: boolean read FAutoFlushCache write FAutoFlushCache;
-  end ;
+  end;
 
 implementation
 uses
@@ -51,14 +51,14 @@ uses
   ,SysUtils
   ,Math
 
-  ;
+ ;
 
 var
   FCacheFlushParam: DWord;
 
 constructor TtiHTTPMSXML.Create;
 begin
-  inherited ;
+  inherited;
   FAutoFlushCache:= True;
   FLastCallTime:= GetTickCount;
   FThreadIDCreatedIn:=GetCurrentThreadID;
@@ -68,14 +68,13 @@ end;
 
 destructor TtiHTTPMSXML.Destroy;
 begin
-  FHTTP:= nil;
   tiWin32CoUnInitialize;
   inherited;
 end;
 
 procedure TtiHTTPMSXML.DoGet(const AURL : string; AInput, AOutput: TStringStream);
 var
-  lURL: string ;
+  lURL: string;
 begin
   lURL := CorrectURL(AURL);
   // Hack around the MSXML 'feature' of caching pages, which may not be what
@@ -87,13 +86,13 @@ begin
   end;
 
   try
-    FHTTP.open('GET', lURL, False, '', '' );
+    FHTTP.open('GET', lURL, False, '', '');
     if RequestTIOPFBlockHeader <> '' then
       FHTTP.setRequestHeader(ctiOPFHTTPBlockHeader, RequestTIOPFBlockHeader);
     FHTTP.Send(AInput.DataString);
     if FHTTP.Get_Status <> 200 then
       raise Exception.CreateFmt(cErrorHTTPServer, [FHTTP.Get_Status]);
-    AOutput.Size := 0 ;
+    AOutput.Size := 0;
     AOutput.WriteString(FHTTP.responseText);
   except
     on e:exception do
@@ -103,13 +102,13 @@ begin
           [e.message, 'Get', AURL, Input.DataString])
       else
         raise;
-    end ;
-  end ;
+    end;
+  end;
 end;
 
 procedure TtiHTTPMSXML.DoPost(const AURL : string; AInput, AOutput: TStringStream);
 var
-  lURL: string ;
+  lURL: string;
   LTimeSinceLastCall: DWord;
 begin
   lURL := CorrectURL(AURL);
@@ -128,13 +127,13 @@ begin
   FLastCallTime:= GetTickCount;
 
   try
-    FHTTP.open('POST', lURL, False, '', '' );
+    FHTTP.open('POST', lURL, False, '', '');
     if RequestTIOPFBlockHeader <> '' then
       FHTTP.setRequestHeader(ctiOPFHTTPBlockHeader, RequestTIOPFBlockHeader);
     FHTTP.Send(AInput.DataString);
     if FHTTP.Get_Status <> 200 then
       raise Exception.CreateFmt(cErrorHTTPServer, [FHTTP.Get_Status]);
-    AOutput.Size := 0 ;
+    AOutput.Size := 0;
     AOutput.WriteString(FHTTP.responseText);
 
   except
@@ -145,11 +144,11 @@ begin
           [e.message, 'Post', AURL, Input.DataString])
       else
         raise;
-    end ;
-  end ;
+    end;
+  end;
 end;
 
-function TtiHTTPMSXML.GetResponseHeaders: TtiHTTPHeaders;
+function TtiHTTPMSXML.GetResponseHeaders: TStringList;
 begin
   Result:= inherited GetResponseHeaders;
   Result.Text:= FHTTP.getAllResponseHeaders;
@@ -158,13 +157,13 @@ end;
 function TtiHTTPMSXML.GetProxyPort: integer;
 begin
   Assert(False, 'GetProxyPort not available in ' + ClassName);
-  Result := 0 ;
+  Result := 0;
 end;
 
 function TtiHTTPMSXML.GetProxyServer: string;
 begin
   Assert(False, 'GetProxyServer not available in ' + ClassName);
-  result := '' ;
+  result := '';
 end;
 
 function TtiHTTPMSXML.GetResponseCode: Integer;
@@ -185,21 +184,21 @@ end;
 
 class function TtiHTTPMSXML.MappingName: string;
 begin
-  Result := cHTTPMsXml ;
+  Result := cHTTPMsXml;
 end;
 
-procedure TtiHTTPMSXML.SetProxyPort(const Value: integer);
+procedure TtiHTTPMSXML.SetProxyPort(const AValue: integer);
 begin
   Assert(False, 'SetProxyPort not available in ' + ClassName);
 end;
 
-procedure TtiHTTPMSXML.SetProxyServer(const Value: string);
+procedure TtiHTTPMSXML.SetProxyServer(const AValue: string);
 begin
   Assert(False, 'SetProxyServer not available in ' + ClassName);
 end;
 
 initialization
-  gTIHTTPClass := TtiHTTPMSXML ;
+  gTIHTTPClass := TtiHTTPMSXML;
   gTIHTTPFactory.RegisterMapping(cHTTPMsXml, TtiHTTPMSXML);
   FCacheFlushParam:= 0;
 

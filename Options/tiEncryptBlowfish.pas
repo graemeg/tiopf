@@ -1,49 +1,24 @@
 { * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  Originally developed by TechInsite Pty. Ltd.
-  23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-  PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-  Phone: +61 3 9419 6456
-  Fax:   +61 3 9419 1682           
-  Web:   www.techinsite.com.au
-
-  This code is made available on the TechInsite web site as open source.
-  You may use this code in any way you like, except to sell it to other
-  developers. Please be sure to leave the file header and list of
-  contributors unchanged.
-
-  If you make any changes or enhancements, which you think will benefit other
-  developers and will not break any existing code, please forward your changes
-  (well commented) to TechInsite and I will make them available in the next
-  version.
 
   Purpose:
     Provide String, Stream and File (via TStrings) encryption & decryption.
-
-  Classes:
-    TEncryptSimple - Simple encryption
-
-  Revision History:
-    ???,  ????, Scott Maskiel, Created
 
   ToDo:
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
 
-{$I tiDefines.inc}
-
-// Turn off writable const
-(*$J-*)
-
 unit tiEncryptBlowfish;
+
+{$I tiDefines.inc}
 
 interface
 uses
   tiEncryptBlockCipher
- ;
+;
 
 
 const
-  cgsEncryptionBlowfish = 'EncryptionBlowfish' ;
+  cgsEncryptionBlowfish = 'EncryptionBlowfish';
 
 type
 
@@ -55,7 +30,7 @@ type
     FSBox1, FSBox2, FSBox3, FSBox4: TtiBlowfishSBox;
     FPArray: TtiBlowfishPArray;
   protected
-    procedure SetIntSeed(const Value: Int64 ); override ;
+    procedure SetIntSeed(const AValue: Int64); override;
   public
     procedure EncryptBlock(var pPlaintext); override;
     procedure DecryptBlock(var pCiphertext); override;
@@ -66,7 +41,7 @@ type
 implementation
 uses
   tiEncrypt
- ;
+;
 
 const
   InitialSBox1: TtiBlowfishSBox = (
@@ -113,7 +88,7 @@ const
     $d60f573f, $bc9bc6e4, $2b60a476, $81e67400, $08ba6fb5, $571be91f,
     $f296ec6b, $2a0dd915, $b6636521, $e7b9f9b6, $ff34052e, $c5855664,
     $53b02d5d, $a99f8fa1, $08ba4799, $6e85076a
-  );
+ );
 
   InitialSBox2: TtiBlowfishSBox = (
     $4b7a70e9, $b5b32944, $db75092e, $c4192623, $ad6ea6b0, $49a7df7d,
@@ -159,7 +134,7 @@ const
     $9e447a2e, $c3453484, $fdd56705, $0e1e9ec9, $db73dbd3, $105588cd,
     $675fda79, $e3674340, $c5c43465, $713e38d8, $3d28f89e, $f16dff20,
     $153e21e7, $8fb03d4a, $e6e39f2b, $db83adf7
-  );
+ );
 
   InitialSBox3: TtiBlowfishSBox = (
     $e93d5a68, $948140f7, $f64c261c, $94692934, $411520f7, $7602d4f7,
@@ -205,7 +180,7 @@ const
     $ed545578, $08fca5b5, $d83d7cd3, $4dad0fc4, $1e50ef5e, $b161e6f8,
     $a28514d9, $6c51133c, $6fd5c7e7, $56e14ec4, $362abfce, $ddc6c837,
     $d79a3234, $92638212, $670efa8e, $406000e0
-  );
+ );
 
   InitialSBox4: TtiBlowfishSBox = (
     $3a39ce37, $d3faf5cf, $abc27737, $5ac52d1b, $5cb0679e, $4fa33742,
@@ -251,13 +226,13 @@ const
     $85cbfe4e, $8ae88dd8, $7aaaf9b0, $4cf9aa7e, $1948c25c, $02fb8a8c,
     $01c36ae4, $d6ebe1f9, $90d4f869, $a65cdea0, $3f09252d, $c208e69f,
     $b74e6132, $ce77e25b, $578fdfe3, $3ac372e6
-  );
+ );
 
   InitialPArray: TtiBlowfishPArray = (
     $243f6a88, $85a308d3, $13198a2e, $03707344, $a4093822, $299f31d0,
     $082efa98, $ec4e6c89, $452821e6, $38d01377, $be5466cf, $34e90c6c,
     $c0ac29b7, $c97c50dd, $3f84d5b5, $b5470917, $9216d5d9, $8979fb1b
-  );
+ );
 
 { TEncryptBlowfish }
 
@@ -557,7 +532,7 @@ begin
   TDoubleDWORD(Result).R := L xor FPArray[16];
 end;
 
-procedure TEncryptBlowfish.SetIntSeed(const Value: Int64 );
+procedure TEncryptBlowfish.SetIntSeed(const AValue: Int64);
 var
   lPtrKey: ^Byte;
   I, J, K: Integer;
@@ -570,55 +545,55 @@ begin
   FSBox3 := InitialSBox3;
   FSBox4 := InitialSBox4;
   J := 0;
-  lPtrKey := Addr(Value);
+  lPtrKey := Addr(AValue);
   for I := Low(FPArray) to High(FPArray) do begin
     lData := 0;
     for K := 1 to 4 do begin
       lData := lData shl 8 or lPtrKey^;
-      J := Succ(J) mod SizeOf(Value);
-      if J = 0 then lPtrKey := Addr(Value) else Inc(lPtrKey);
+      J := Succ(J) mod SizeOf(AValue);
+      if J = 0 then lPtrKey := Addr(AValue) else Inc(lPtrKey);
     end;
-    FPArray[I] := InitialPArray[I] xor lData;
+    FPArray[I]:= InitialPArray[I] xor lData;
   end;
   lP := 0;
   I := Low(FPArray);
   while I <= High(FPArray) do begin
     lP := EncryptedBlock(lP);
-    FPArray[I] := TDoubleDWORD(lP).L;
+    FPArray[I]:= TDoubleDWORD(lP).L;
     Inc(I);
-    FPArray[I] := TDoubleDWORD(lP).R;
+    FPArray[I]:= TDoubleDWORD(lP).R;
     Inc(I);
   end;
   J := Low(FSBox1);
   while J <= High(FSBox1) do begin
     lP := EncryptedBlock(lP);
-    FSBox1[J] := TDoubleDWORD(lP).L;
+    FSBox1[J]:= TDoubleDWORD(lP).L;
     Inc(J);
-    FSBox1[J] := TDoubleDWORD(lP).R;
+    FSBox1[J]:= TDoubleDWORD(lP).R;
     Inc(J);
   end;
   J := Low(FSBox2);
   while J <= High(FSBox2) do begin
     lP := EncryptedBlock(lP);
-    FSBox2[J] := TDoubleDWORD(lP).L;
+    FSBox2[J]:= TDoubleDWORD(lP).L;
     Inc(J);
-    FSBox2[J] := TDoubleDWORD(lP).R;
+    FSBox2[J]:= TDoubleDWORD(lP).R;
     Inc(J);
   end;
   J := Low(FSBox3);
   while J <= High(FSBox3) do begin
     lP := EncryptedBlock(lP);
-    FSBox3[J] := TDoubleDWORD(lP).L;
+    FSBox3[J]:= TDoubleDWORD(lP).L;
     Inc(J);
-    FSBox3[J] := TDoubleDWORD(lP).R;
+    FSBox3[J]:= TDoubleDWORD(lP).R;
     Inc(J);
   end;
   J := Low(FSBox4);
   while J <= High(FSBox4) do begin
     lP := EncryptedBlock(lP);
-    FSBox4[J] := TDoubleDWORD(lP).L;
+    FSBox4[J]:= TDoubleDWORD(lP).L;
     Inc(J);
-    FSBox4[J] := TDoubleDWORD(lP).R;
+    FSBox4[J]:= TDoubleDWORD(lP).R;
     Inc(J);
   end;
 end;
@@ -626,8 +601,8 @@ end;
 
 initialization
   // Register the TtiEncrypt with the EncryptFactory
-  gEncryptFactory.RegisterClass( cgsEncryptionBlowfish, TEncryptBlowfish ) ;
-  gtiEncryptClass := TEncryptBlowfish ;
+  gEncryptFactory.RegisterClass(cgsEncryptionBlowfish, TEncryptBlowfish);
+  gtiEncryptClass := TEncryptBlowfish;
 
 
 end.

@@ -9,98 +9,98 @@ uses
   ,DBTables
   ,tiClassToDBMap_BOM
   ,tiObject
-  ;
+ ;
 
 type
 
-  TtiDatabaseBDEAbs = class( TtiDatabaseSQL )
+  TtiDatabaseBDEAbs = class(TtiDatabaseSQL)
   private
-    FDatabase      : TDataBase;
-    FSession       : TSession ;
+    FDatabase     : TDataBase;
+    FSession      : TSession;
   protected
-    property  Database : TDatabase read FDatabase write FDatabase ;
-    procedure SetConnected( pbValue : boolean ) ; override;
-    function  GetConnected : boolean ; override ;
-    procedure SetupDBParams ; virtual ; abstract ;
+    property  Database : TDatabase read FDatabase write FDatabase;
+    procedure SetConnected(AValue : boolean); override;
+    function  GetConnected : boolean; override;
+    procedure SetupDBParams; virtual; abstract;
 
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
 
-    procedure   StartTransaction ; override ;
-    function    InTransaction : boolean ; override ;
-    procedure   Commit ; override ;
-    procedure   RollBack ; override ;
+    procedure   StartTransaction; override;
+    function    InTransaction : boolean; override;
+    procedure   Commit; override;
+    procedure   RollBack; override;
 
-  end ;
+  end;
 
 
-  TtiQueryBDE = class( TtiQuerySQL )
+  TtiQueryBDE = class(TtiQuerySQL)
   private
-    FQuery : TQuery ;
+    FQuery : TQuery;
   protected
 
-    function    GetFieldAsString(const psName: string): string   ; override ;
-    function    GetFieldAsFloat(const psName: string): extended  ; override ;
-    function    GetFieldAsBoolean(const psName: string): boolean    ; override ;
-    function    GetFieldAsInteger(const psName: string): Int64 ; override ;
-    function    GetFieldAsDateTime(const psName: string):TDateTime ; override ;
+    function    GetFieldAsString(const AName: string): string  ; override;
+    function    GetFieldAsFloat(const AName: string): extended ; override;
+    function    GetFieldAsBoolean(const AName: string): boolean   ; override;
+    function    GetFieldAsInteger(const AName: string): Int64; override;
+    function    GetFieldAsDateTime(const AName: string):TDateTime; override;
 
-    function    GetFieldAsStringByIndex(pIndex: Integer): string     ; override ;
-    function    GetFieldAsFloatByIndex(pIndex: Integer)   : extended ; override ;
-    function    GetFieldAsBooleanByIndex(pIndex: Integer) : boolean  ; override ;
-    function    GetFieldAsIntegerByIndex(pIndex: Integer) : Int64    ; override ;
-    function    GetFieldAsDateTimeByIndex(pIndex: Integer):TDateTime ; override ;
-    function    GetFieldIsNullByIndex(pIndex: Integer):Boolean       ; override ;
+    function    GetFieldAsStringByIndex(AIndex: Integer): string    ; override;
+    function    GetFieldAsFloatByIndex(AIndex: Integer)  : extended; override;
+    function    GetFieldAsBooleanByIndex(AIndex: Integer): boolean ; override;
+    function    GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ; override;
+    function    GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime; override;
+    function    GetFieldIsNullByIndex(AIndex: Integer):Boolean      ; override;
 
-    function    GetSQL: TStrings; override ;
-    procedure   SetSQL(const Value: TStrings); override ;
-    function    GetActive: boolean; override ;
-    procedure   SetActive(const Value: boolean); override ;
-    function    GetEOF: boolean; override ;
-    function    GetParamAsString( const psName: string): string; override ;
-    function    GetParamAsBoolean(const psName: string): boolean; override ;
-    function    GetParamAsFloat(const psName: string): extended;override ;
-    function    GetParamAsInteger(const psName: string): Int64 ;override ;
-    procedure   SetParamAsString( const psName, Value: string); override ;
-    procedure   SetParamAsBoolean(const psName: string;const Value: boolean);override ;
-    procedure   SetParamAsFloat(const psName: string; const Value: extended);override ;
-    procedure   SetParamAsInteger(const psName: string;const Value: Int64);override ;
-    function    GetParamAsDateTime(const psName: string): TDateTime ; override ;
-    procedure   SetParamAsDateTime(const psName :string ; const Value: TDateTime); override ;
+    function    GetSQL: TStrings; override;
+    procedure   SetSQL(const AValue: TStrings); override;
+    function    GetActive: boolean; override;
+    procedure   SetActive(const AValue: boolean); override;
+    function    GetEOF: boolean; override;
+    function    GetParamAsString(const AName: string): string; override;
+    function    GetParamAsBoolean(const AName: string): boolean; override;
+    function    GetParamAsFloat(const AName: string): extended;override;
+    function    GetParamAsInteger(const AName: string): Int64;override;
+    procedure   SetParamAsString(const AName, AValue: string); override;
+    procedure   SetParamAsBoolean(const AName: string;const AValue: boolean);override;
+    procedure   SetParamAsFloat(const AName: string; const AValue: extended);override;
+    procedure   SetParamAsInteger(const AName: string;const AValue: Int64);override;
+    function    GetParamAsDateTime(const AName: string): TDateTime; override;
+    procedure   SetParamAsDateTime(const AName :string; const AValue: TDateTime); override;
 
-    function    GetParamIsNull( const psName: String): Boolean; override;
-    procedure   SetParamIsNull( const psName: String; const Value: Boolean); override;
-    function    GetFieldIsNull(const psName: string): Boolean; override ;
+    function    GetParamIsNull(const AName: String): Boolean; override;
+    procedure   SetParamIsNull(const AName: String; const AValue: Boolean); override;
+    function    GetFieldIsNull(const AName: string): Boolean; override;
 
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Open    ; override ;
-    procedure   Close   ; override ;
-    procedure   Next    ; override ;
-    procedure   ExecSQL ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Open   ; override;
+    procedure   Close  ; override;
+    procedure   Next   ; override;
+    procedure   ExecSQL; override;
 
-    function    ParamCount : integer ; override ;
-    function    ParamName( pIndex : integer ) : string ; override ;
+    function    ParamCount : integer; override;
+    function    ParamName(AIndex : integer): string; override;
 
-    procedure   AssignParamToStream( const pName : string ; const pStream : TStream ) ; override ;
-    procedure   AssignParamFromStream( const pName : string ; const pStream : TStream ) ; override ;
-    procedure   AssignFieldAsStream( const pName : string ; const pStream : TStream ) ; override ;
-    procedure   AssignFieldAsStreamByIndex(      pIndex : integer ; const pValue : TStream ) ; override ;
+    procedure   AssignParamToStream(const AName : string; const AStream : TStream); override;
+    procedure   AssignParamFromStream(const AName : string; const AStream : TStream); override;
+    procedure   AssignFieldAsStream(const AName : string; const AStream : TStream); override;
+    procedure   AssignFieldAsStreamByIndex(     AIndex : integer; const AValue : TStream); override;
 
-    procedure   AttachDatabase( pDatabase : TtiDatabase ) ; override ;
-    procedure   DetachDatabase ;  override ;
-    procedure   Reset ; override ;
+    procedure   AttachDatabase(ADatabase : TtiDatabase); override;
+    procedure   DetachDatabase;  override;
+    procedure   Reset; override;
 
-    function    FieldCount : integer ; override ;
-    function    FieldName( pIndex : integer ) : string ; override ;
-    function    FieldIndex( const psName : string ) : integer ; override ;
-    function    FieldKind( pIndex : integer ) : TtiQueryFieldKind ; override ;
-    function    FieldSize( pIndex : integer ) : integer ; override ;
-    function    HasNativeLogicalType : boolean ; override ;
+    function    FieldCount : integer; override;
+    function    FieldName(AIndex : integer): string; override;
+    function    FieldIndex(const AName : string): integer; override;
+    function    FieldKind(AIndex : integer): TtiQueryFieldKind; override;
+    function    FieldSize(AIndex : integer): integer; override;
+    function    HasNativeLogicalType : boolean; override;
 
-  end ;
+  end;
 
 
 implementation
@@ -109,15 +109,14 @@ uses
   ,tiLog
   ,tiUtils
   ,tiOPFManager
-  ,tiDialogs
   ,tiExcept
   ,SysUtils
   ,DB
   ,TypInfo
-  ;
+ ;
 
 var
-  uSessionCount : integer ;
+  uSessionCount : integer;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -127,225 +126,225 @@ var
 constructor TtiQueryBDE.Create;
 begin
   inherited;
-  FQuery := TQuery.Create( nil ) ;
+  FQuery := TQuery.Create(nil);
 end;
 
 destructor TtiQueryBDE.Destroy;
 begin
-  FQuery.Free ;
+  FQuery.Free;
   inherited;
 end;
 
 procedure TtiQueryBDE.Close;
 begin
-  Active := false ;
+  Active := false;
 end;
 
 procedure TtiQueryBDE.ExecSQL;
 begin
-  FQuery.ExecSQL ;
+  FQuery.ExecSQL;
 end;
 
-function TtiQueryBDE.GetFieldAsBoolean(const psName: string): boolean;
+function TtiQueryBDE.GetFieldAsBoolean(const AName: string): boolean;
 var
-  lsValue : string ;
+  lsValue : string;
 begin
-  lsValue := upperCase( FQuery.FieldByName( psName ).AsString ) ;
-  result := ( lsValue = 'T'    ) or
-            ( lsValue = 'TRUE' ) or
-            ( lsValue = 'Y'    ) or
-            ( lsValue = 'YES'  ) or
-            ( lsValue = '1'    ) ;
+  lsValue := upperCase(FQuery.FieldByName(AName).AsString);
+  result := (lsValue = 'T'   ) or
+            (lsValue = 'TRUE') or
+            (lsValue = 'Y'   ) or
+            (lsValue = 'YES' ) or
+            (lsValue = '1'   );
 end;
 
-function TtiQueryBDE.GetFieldAsDateTime(const psName: string): TDateTime;
+function TtiQueryBDE.GetFieldAsDateTime(const AName: string): TDateTime;
 begin
-  result := FQuery.FieldByName( psName ).AsDateTime ;
+  result := FQuery.FieldByName(AName).AsDateTime;
 end;
 
-function TtiQueryBDE.GetFieldAsFloat(const psName: string): extended;
+function TtiQueryBDE.GetFieldAsFloat(const AName: string): extended;
 begin
-  result := FQuery.FieldByName( psName ).AsFloat ;
+  result := FQuery.FieldByName(AName).AsFloat;
 end;
 
-function TtiQueryBDE.GetFieldAsInteger(const psName: string): Int64;
+function TtiQueryBDE.GetFieldAsInteger(const AName: string): Int64;
 begin
-  result := FQuery.FieldByName( psName ).AsInteger ;
+  result := FQuery.FieldByName(AName).AsInteger;
 end;
 
-function TtiQueryBDE.GetFieldAsString(const psName: string): string;
+function TtiQueryBDE.GetFieldAsString(const AName: string): string;
 var
-  lField : TField ;
-  lStream : TStringStream ;
+  lField : TField;
+  lStream : TStringStream;
 begin
-  lField := FQuery.FieldByName( psName ) ;
+  lField := FQuery.FieldByName(AName);
   if lField is TMemoField then
   begin
-    lStream := TStringStream.Create('') ;
+    lStream := TStringStream.Create('');
     try
       TMemoField(lField).SaveToStream(lStream);
-      lStream.Position := 0 ;
-      result := lStream.DataString ;
+      lStream.Position := 0;
+      result := lStream.DataString;
     finally
-      lStream.Free ;
-    end ;
+      lStream.Free;
+    end;
   end
   else
-    result := lField.AsString ;
+    result := lField.AsString;
 end;
 
 function TtiQueryBDE.GetActive: boolean;
 begin
-  result := FQuery.Active ;
+  result := FQuery.Active;
 end;
 
 function TtiQueryBDE.GetEOF: boolean;
 begin
-  result := FQuery.EOF ;
+  result := FQuery.EOF;
 end;
 
-function TtiQueryBDE.GetParamAsBoolean(const psName: string): boolean;
+function TtiQueryBDE.GetParamAsBoolean(const AName: string): boolean;
 begin
-  result := FQuery.ParamByName( psName ).AsBoolean ;
+  result := FQuery.ParamByName(AName).AsBoolean;
 end;
 
-function TtiQueryBDE.GetParamAsDateTime(const psName: string): TDateTime;
+function TtiQueryBDE.GetParamAsDateTime(const AName: string): TDateTime;
 begin
-  result := FQuery.ParamByName( psName ).AsDateTime ;
+  result := FQuery.ParamByName(AName).AsDateTime;
 end;
 
-function TtiQueryBDE.GetParamAsFloat(const psName: string): extended;
+function TtiQueryBDE.GetParamAsFloat(const AName: string): extended;
 begin
-  result := FQuery.ParamByName( psName ).AsFloat ;
+  result := FQuery.ParamByName(AName).AsFloat;
 end;
 
-function TtiQueryBDE.GetParamAsInteger(const psName: string): Int64;
+function TtiQueryBDE.GetParamAsInteger(const AName: string): Int64;
 begin
-  result := FQuery.ParamByName( psName ).AsInteger ;
+  result := FQuery.ParamByName(AName).AsInteger;
 end;
 
-function TtiQueryBDE.GetParamAsString(const psName: string): string;
+function TtiQueryBDE.GetParamAsString(const AName: string): string;
 begin
-  result := FQuery.ParamByName( psName ).AsString ;
+  result := FQuery.ParamByName(AName).AsString;
 end;
 
 function TtiQueryBDE.GetSQL: TStrings;
 begin
-  result := FQuery.SQL ;
+  result := FQuery.SQL;
 end;
 
 procedure TtiQueryBDE.Next;
 begin
-  FQuery.Next ;
+  FQuery.Next;
 end;
 
 procedure TtiQueryBDE.Open;
 begin
-  Active := true ;
+  Active := true;
 end;
 
 function TtiQueryBDE.ParamCount: integer;
 begin
-  result := FQuery.ParamCount ;
+  result := FQuery.ParamCount;
 end;
 
-function TtiQueryBDE.ParamName(pIndex: integer): string;
+function TtiQueryBDE.ParamName(AIndex: integer): string;
 begin
-  result := FQuery.Params.Items[ pIndex ].Name ;
+  result := FQuery.Params.Items[ AIndex ].Name;
 end;
 
-procedure TtiQueryBDE.SetActive(const Value: boolean);
+procedure TtiQueryBDE.SetActive(const AValue: boolean);
 begin
-  FQuery.Active := Value ;
+  FQuery.Active := AValue;
 end;
 
-procedure TtiQueryBDE.SetParamAsBoolean(const psName: string; const Value: boolean);
-begin
-  if not FQuery.Prepared then
-    FQuery.Prepare ;
-  FQuery.ParamByName( psName ).AsBoolean := Value ;
-end;
-
-procedure TtiQueryBDE.SetParamAsDateTime(const psName : string ; const Value: TDateTime);
+procedure TtiQueryBDE.SetParamAsBoolean(const AName: string; const AValue: boolean);
 begin
   if not FQuery.Prepared then
-    FQuery.Prepare ;
-  FQuery.ParamByName( psName ).AsDateTime := Value ;
+    FQuery.Prepare;
+  FQuery.ParamByName(AName).AsBoolean := AValue;
 end;
 
-procedure TtiQueryBDE.SetParamAsFloat(const psName: string;
-  const Value: extended);
+procedure TtiQueryBDE.SetParamAsDateTime(const AName : string; const AValue: TDateTime);
 begin
   if not FQuery.Prepared then
-    FQuery.Prepare ;
-  FQuery.ParamByName( psName ).AsFloat := Value ;
+    FQuery.Prepare;
+  FQuery.ParamByName(AName).AsDateTime := AValue;
 end;
 
-procedure TtiQueryBDE.SetParamAsInteger(const psName: string; const Value: Int64);
+procedure TtiQueryBDE.SetParamAsFloat(const AName: string;
+  const AValue: extended);
 begin
   if not FQuery.Prepared then
-    FQuery.Prepare ;
-  FQuery.ParamByName( psName ).AsInteger := Value ;
+    FQuery.Prepare;
+  FQuery.ParamByName(AName).AsFloat := AValue;
 end;
 
-procedure TtiQueryBDE.SetParamAsString(const psName, Value: string);
+procedure TtiQueryBDE.SetParamAsInteger(const AName: string; const AValue: Int64);
+begin
+  if not FQuery.Prepared then
+    FQuery.Prepare;
+  FQuery.ParamByName(AName).AsInteger := AValue;
+end;
+
+procedure TtiQueryBDE.SetParamAsString(const AName, AValue: string);
 var
-  lParam : TParam ;
+  lParam : TParam;
 begin
   if not FQuery.Prepared then
-    FQuery.Prepare ;
-  lParam := FQuery.ParamByName( psName ) ;
-  if length( Value ) <= 255 then
-    lParam.AsString := Value
+    FQuery.Prepare;
+  lParam := FQuery.ParamByName(AName);
+  if length(AValue) <= 255 then
+    lParam.AsString := AValue
   else
-    lParam.AsMemo := Value ;
+    lParam.AsMemo := AValue;
 end;
 
-procedure TtiQueryBDE.SetSQL(const Value: TStrings);
+procedure TtiQueryBDE.SetSQL(const AValue: TStrings);
 begin
-  FQuery.SQL.Assign( Value ) ;
+  FQuery.SQL.Assign(AValue);
 end;
 
-procedure TtiQueryBDE.AssignFieldAsStream(const pName: string; const pStream: TStream );
+procedure TtiQueryBDE.AssignFieldAsStream(const AName: string; const AStream: TStream);
 var
-  lField : TField ;
+  lField : TField;
 begin
-  lField := FQuery.FieldByName(pName);
-  Assert(lField is TBlobField, 'Field <' + pName + '> not a TBlobField' ) ;
-  ( lField as TBlobField ).SaveToStream(pStream);
+  lField := FQuery.FieldByName(AName);
+  Assert(lField is TBlobField, 'Field <' + AName + '> not a TBlobField');
+  (lField as TBlobField).SaveToStream(AStream);
 end;
 
-procedure TtiQueryBDE.AttachDatabase(pDatabase: TtiDatabase);
+procedure TtiQueryBDE.AttachDatabase(ADatabase: TtiDatabase);
 begin
-  FQuery.DatabaseName := TtiDatabaseBDEAbs( pDatabase ).Database.DatabaseName ;
-  Database := pDatabase ;
+  FQuery.DatabaseName := TtiDatabaseBDEAbs(ADatabase).Database.DatabaseName;
+  Database := ADatabase;
 end;
 
 procedure TtiQueryBDE.DetachDatabase;
 begin
-  inherited DetachDatabase ;
+  inherited DetachDatabase;
 end;
 
 function TtiQueryBDE.FieldCount: integer;
 begin
-  result := FQuery.FieldCount ;
+  result := FQuery.FieldCount;
 end;
 
-function TtiQueryBDE.FieldName(pIndex: integer): string;
+function TtiQueryBDE.FieldName(AIndex: integer): string;
 begin
-  result := FQuery.Fields[pIndex].FieldName ;
+  result := FQuery.Fields[AIndex].FieldName;
 end;
 
 procedure TtiQueryBDE.Reset;
 begin
-  Active := false ;
-  FQuery.SQL.Clear ;
-  FQuery.Params.Clear ;
+  Active := false;
+  FQuery.SQL.Clear;
+  FQuery.Params.Clear;
 end;
 
-function TtiQueryBDE.FieldIndex(const psName: string): integer;
+function TtiQueryBDE.FieldIndex(const AName: string): integer;
 begin
-  result := FQuery.FieldByName( psName ).Index ;
+  result := FQuery.FieldByName(AName).Index;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -355,21 +354,21 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiDatabaseBDEAbs.Create;
 begin
-  inherited Create ;
-  FDatabase := TDataBase.Create( nil ) ;
-  FDatabase.LoginPrompt := false ;
-  FSession       := TSession.Create( nil ) ;
-  FSession.AutoSessionName := true ;
-  FDatabase.SessionName := FSession.Name ;
+  inherited Create;
+  FDatabase := TDataBase.Create(nil);
+  FDatabase.LoginPrompt := false;
+  FSession      := TSession.Create(nil);
+  FSession.AutoSessionName := true;
+  FDatabase.SessionName := FSession.Name;
   // Must come up with a better way of doing this.
-  FDatabase.DatabaseName := 'DB_' + FSession.SessionName ;
+  FDatabase.DatabaseName := 'DB_' + FSession.SessionName;
   Inc(uSessionCount);
 end;
 
 destructor TtiDatabaseBDEAbs.Destroy;
 begin
   FDatabase.Free;
-  FSession.Free ;
+  FSession.Free;
   Dec(uSessionCount);
   inherited;
 end;
@@ -377,18 +376,18 @@ end;
 procedure TtiDatabaseBDEAbs.Commit;
 begin
   if not InTransaction then
-    raise EtiOPFInternalException.Create( 'Attempt to commit but not in a transaction.');
-  FDatabase.Commit ;
+    raise EtiOPFInternalException.Create('Attempt to commit but not in a transaction.');
+  FDatabase.Commit;
 end;
 
 function TtiDatabaseBDEAbs.InTransaction: boolean;
 begin
-  result := FDatabase.InTransaction ;
+  result := FDatabase.InTransaction;
 end;
 
 procedure TtiDatabaseBDEAbs.RollBack;
 begin
-  FDatabase.RollBack ;
+  FDatabase.RollBack;
 end;
 
 procedure TtiDatabaseBDEAbs.StartTransaction;
@@ -396,16 +395,16 @@ begin
   if InTransaction then
     raise EtiOPFInternalException.Create(
       'Attempt to start a transaction but transaction already exists.');
-  FDatabase.StartTransaction ;
+  FDatabase.StartTransaction;
 end;
 
 // This code is cloned in TtiQueryIB - Looks like we need to abstract more
 // and introduce a TDataSet version of the TtiQuery
-function TtiQueryBDE.FieldKind(pIndex: integer): TtiQueryFieldKind;
+function TtiQueryBDE.FieldKind(AIndex: integer): TtiQueryFieldKind;
 var
-  lDataType : TFieldType ;
+  lDataType : TFieldType;
 begin
-  lDataType := FQuery.Fields[ pIndex ].DataType ;
+  lDataType := FQuery.Fields[ AIndex ].DataType;
 
   // These are the available field types for a TDataSet descendant
 //  TFieldType = (ftUnknown, ftString, ftSmallint, ftInteger, ftWord,
@@ -426,18 +425,18 @@ begin
 //  qfkLongString
 
     case lDataType of
-    ftString, ftWideString :                    result := qfkString   ;
-    ftSmallint, ftInteger, ftWord, ftLargeint : result := qfkInteger  ;
-    ftBoolean :                                 result := qfkLogical  ;
-    ftFloat, ftCurrency, ftBCD :                result := qfkFloat    ;
-    ftDate, ftTime, ftDateTime :                result := qfkDateTime ;
-    ftBlob, ftGraphic :                         result := qfkBinary   ;
-    ftMemo, ftFmtMemo :                         result := qfkLongString ;
+    ftString, ftWideString :                    result := qfkString  ;
+    ftSmallint, ftInteger, ftWord, ftLargeint : result := qfkInteger ;
+    ftBoolean :                                 result := qfkLogical ;
+    ftFloat, ftCurrency, ftBCD :                result := qfkFloat   ;
+    ftDate, ftTime, ftDateTime :                result := qfkDateTime;
+    ftBlob, ftGraphic :                         result := qfkBinary  ;
+    ftMemo, ftFmtMemo :                         result := qfkLongString;
     else
       raise EtiOPFInternalException.Create(
-        'Invalid FQuery.Fields[ pIndex ].DataType <' +
-                      GetEnumName( TypeInfo( TFieldType ), Ord( lDataType )) + '>') ;
-    end ;
+        'Invalid FQuery.Fields[ AIndex ].DataType <' +
+                      GetEnumName(TypeInfo(TFieldType), Ord(lDataType)) + '>');
+    end;
 //    ftUnknown,
 //    ftBytes, ftVarBytes, ftAutoInc,
 //    ftParadoxOle, ftDBaseOle, ftTypedBinary, ftCursor, ftFixedChar,
@@ -446,55 +445,55 @@ begin
 
 end;
 
-function TtiQueryBDE.FieldSize(pIndex: integer): integer;
+function TtiQueryBDE.FieldSize(AIndex: integer): integer;
 begin
-  case FieldKind( pIndex ) of
-    qfkString     : result := FQuery.FieldDefs[ pIndex ].Size ;
-    qfkLongString : result := 0 ;
-    qfkInteger    : result := 0 ;
-    qfkFloat      : result := 0 ;
-    qfkDateTime   : result := 0 ;
-    qfkBinary     : result := 0 ;
-    qfkLogical    : result := 0 ;
+  case FieldKind(AIndex) of
+    qfkString    : result := FQuery.FieldDefs[ AIndex ].Size;
+    qfkLongString : result := 0;
+    qfkInteger   : result := 0;
+    qfkFloat     : result := 0;
+    qfkDateTime  : result := 0;
+    qfkBinary    : result := 0;
+    qfkLogical   : result := 0;
   else
-    raise EtiOPFInternalException.Create( 'Invalid field type') ;
-  end ;
+    raise EtiOPFInternalException.Create('Invalid field type');
+  end;
 end;
 
-function TtiQueryBDE.GetParamIsNull(const psName: String): Boolean;
+function TtiQueryBDE.GetParamIsNull(const AName: String): Boolean;
 begin
-  result := FQuery.ParamByName( psName ).IsNull ;
+  result := FQuery.ParamByName(AName).IsNull;
 end;
 
-procedure TtiQueryBDE.SetParamIsNull(const psName: String; const Value: Boolean);
+procedure TtiQueryBDE.SetParamIsNull(const AName: String; const AValue: Boolean);
 begin
-  FQuery.ParamByName( psName ).Clear ;
+  FQuery.ParamByName(AName).Clear;
 end;
 
 function TtiDatabaseBDEAbs.GetConnected: boolean;
 begin
-  Result := FDatabase.Connected ;
+  Result := FDatabase.Connected;
 end;
 
-procedure TtiDatabaseBDEAbs.SetConnected(pbValue: boolean);
+procedure TtiDatabaseBDEAbs.SetConnected(AValue: boolean);
 var
-  i : integer ;
-  lsErrorMessage : string ;
+  i : integer;
+  lsErrorMessage : string;
 begin
 
-  if ( not pbValue ) then
+  if (not AValue) then
   begin
-    Log( 'Disconnecting from %s', [DatabaseName], lsConnectionPool ) ;
-    FDatabase.Connected := false ;
-    FSession.Active := false ;
-    Exit ; //==>
-  end ;
+    Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);
+    FDatabase.Connected := false;
+    FSession.Active := false;
+    Exit; //==>
+  end;
 
-  SetupDBParams ;
-  lsErrorMessage := '' ;
+  SetupDBParams;
+  lsErrorMessage := '';
   try
-    FDatabase.Connected := true ;
-    FSession.Active := true ;
+    FDatabase.Connected := true;
+    FSession.Active := true;
   except
     // ToDo: Find a generic way of trapping an invalid password error, and
     //       re-raising this exception so the logon screen in activated again.
@@ -502,112 +501,112 @@ begin
     //       so this may be tricky.
     on e:EDBEngineError do
     begin
-      lsErrorMessage := '' ;
-      for i := 0 to EDBEngineError( e ).ErrorCount-1 do
+      lsErrorMessage := '';
+      for i := 0 to EDBEngineError(e).ErrorCount-1 do
       begin
-        if lsErrorMessage <> '' then lsErrorMessage := lsErrorMessage + CrLf( 2 ) ;
+        if lsErrorMessage <> '' then lsErrorMessage := lsErrorMessage + CrLf(2);
         lsErrorMessage := lsErrorMessage +
-                          'Error class: '   + EDBEngineError( e ).classname + Cr +
-                          'Error message: ' + EDBEngineError( e ).Errors[i].Message + Cr +
-                          'Error Code: ' + IntToStr( EDBEngineError( e ).Errors[i].ErrorCode ) + Cr +
-                          'Native error code: ' + IntToStr( EDBEngineError( e ).Errors[i].NativeError ) ;
-      end ;
-      raise EtiOPFDBExceptionCanNotConnect.Create( 'Unknown', DatabaseName, UserName, Password, lsErrorMessage ) ;
-    end ;
+                          'Error class: '   + EDBEngineError(e).classname + Cr +
+                          'Error message: ' + EDBEngineError(e).Errors[i].Message + Cr +
+                          'Error Code: ' + IntToStr(EDBEngineError(e).Errors[i].ErrorCode) + Cr +
+                          'Native error code: ' + IntToStr(EDBEngineError(e).Errors[i].NativeError);
+      end;
+      raise EtiOPFDBExceptionCanNotConnect.Create('Unknown', DatabaseName, UserName, Password, lsErrorMessage);
+    end;
     on e:exception do
-      raise EtiOPFDBExceptionCanNotConnect.Create( 'Unknown', DatabaseName, UserName, Password, e.message ) ;
-  end ;
+      raise EtiOPFDBExceptionCanNotConnect.Create('Unknown', DatabaseName, UserName, Password, e.message);
+  end;
 end;
 
-function TtiQueryBDE.GetFieldIsNull(const psName: string): Boolean;
+function TtiQueryBDE.GetFieldIsNull(const AName: string): Boolean;
 begin
-  result := FQuery.FieldByName( psName ).IsNull ;
+  result := FQuery.FieldByName(AName).IsNull;
 end;
 
-procedure TtiQueryBDE.AssignParamToStream(const pName: string; const pStream : TStream);
+procedure TtiQueryBDE.AssignParamToStream(const AName: string; const AStream : TStream);
 var
-  ls : string ;
+  ls : string;
 begin
-  Assert( pStream <> nil, 'Stream not assigned' ) ;
-  ls := FQuery.ParamByName(pName).Value ;
-  tiStringToStream(ls, pStream);
+  Assert(AStream <> nil, 'Stream not assigned');
+  ls := FQuery.ParamByName(AName).Value;
+  tiStringToStream(ls, AStream);
 end;
 
-procedure TtiQueryBDE.AssignParamFromStream(const pName: string; const pStream : TStream);
+procedure TtiQueryBDE.AssignParamFromStream(const AName: string; const AStream : TStream);
 begin
-  Assert( pStream <> nil, 'Stream not assigned' ) ;
-  FQuery.ParamByName( pName ).LoadFromStream( pStream, ftBlob );
+  Assert(AStream <> nil, 'Stream not assigned');
+  FQuery.ParamByName(AName).LoadFromStream(AStream, ftBlob);
 end;
 
 function TtiQueryBDE.HasNativeLogicalType: boolean;
 begin
-  result := true ;
+  result := true;
 end;
 
-procedure TtiQueryBDE.AssignFieldAsStreamByIndex(pIndex: Integer;const pValue: TStream);
+procedure TtiQueryBDE.AssignFieldAsStreamByIndex(AIndex: Integer;const AValue: TStream);
 var
-  lField : TField ;
+  lField : TField;
 begin
-  lField := FQuery.Fields[pIndex];
-  Assert(lField is TBlobField, 'Field index <' + IntToStr(pIndex) + '> not a TBlobField' ) ;
-  ( lField as TBlobField ).SaveToStream(pValue);
+  lField := FQuery.Fields[AIndex];
+  Assert(lField is TBlobField, 'Field index <' + IntToStr(AIndex) + '> not a TBlobField');
+  (lField as TBlobField).SaveToStream(AValue);
 end;
 
-function TtiQueryBDE.GetFieldAsBooleanByIndex(pIndex: Integer): boolean;
+function TtiQueryBDE.GetFieldAsBooleanByIndex(AIndex: Integer): boolean;
 var
-  lsValue : string ;
+  lsValue : string;
 begin
-  lsValue := upperCase( FQuery.Fields[ pIndex ].AsString ) ;
-  result := ( lsValue = 'T'    ) or
-            ( lsValue = 'TRUE' ) or
-            ( lsValue = 'Y'    ) or
-            ( lsValue = 'YES'  ) or
-            ( lsValue = '1'    ) ;
+  lsValue := upperCase(FQuery.Fields[ AIndex ].AsString);
+  result := (lsValue = 'T'   ) or
+            (lsValue = 'TRUE') or
+            (lsValue = 'Y'   ) or
+            (lsValue = 'YES' ) or
+            (lsValue = '1'   );
 end;
 
-function TtiQueryBDE.GetFieldAsDateTimeByIndex(pIndex: Integer): TDateTime;
+function TtiQueryBDE.GetFieldAsDateTimeByIndex(AIndex: Integer): TDateTime;
 begin
-  result := FQuery.Fields[ pIndex ].AsDateTime ;
+  result := FQuery.Fields[ AIndex ].AsDateTime;
 end;
 
-function TtiQueryBDE.GetFieldAsFloatByIndex(pIndex: Integer): extended;
+function TtiQueryBDE.GetFieldAsFloatByIndex(AIndex: Integer): extended;
 begin
-  result := FQuery.Fields[ pIndex ].AsFloat ;
+  result := FQuery.Fields[ AIndex ].AsFloat;
 end;
 
-function TtiQueryBDE.GetFieldAsIntegerByIndex(pIndex: Integer): Int64;
+function TtiQueryBDE.GetFieldAsIntegerByIndex(AIndex: Integer): Int64;
 begin
-  result := FQuery.Fields[ pIndex ].AsInteger ;
+  result := FQuery.Fields[ AIndex ].AsInteger;
 end;
 
-function TtiQueryBDE.GetFieldAsStringByIndex(pIndex: Integer): string;
+function TtiQueryBDE.GetFieldAsStringByIndex(AIndex: Integer): string;
 var
-  lField : TField ;
-  lStream : TStringStream ;
+  lField : TField;
+  lStream : TStringStream;
 begin
-  lField := FQuery.Fields[pIndex] ;
+  lField := FQuery.Fields[AIndex];
   if lField is TMemoField then
   begin
-    lStream := TStringStream.Create('') ;
+    lStream := TStringStream.Create('');
     try
       TMemoField(lField).SaveToStream(lStream);
-      lStream.Position := 0 ;
-      result := lStream.DataString ;
+      lStream.Position := 0;
+      result := lStream.DataString;
     finally
-      lStream.Free ;
-    end ;
+      lStream.Free;
+    end;
   end
   else
-    result := lField.AsString ;
+    result := lField.AsString;
 end;
 
-function TtiQueryBDE.GetFieldIsNullByIndex(pIndex: Integer): Boolean;
+function TtiQueryBDE.GetFieldIsNullByIndex(AIndex: Integer): Boolean;
 begin
-  result := FQuery.Fields[ pIndex ].IsNull ;
+  result := FQuery.Fields[ AIndex ].IsNull;
 end;
 
 initialization
-  uSessionCount := 0 ;
+  uSessionCount := 0;
 
 end.
 

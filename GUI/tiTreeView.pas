@@ -26,7 +26,7 @@ uses
   , tiFocusPanel
   , tiCtrlButtonPanel
   , tiObject
-  ;
+ ;
 
 const
   cuiSplitterPos = 175;
@@ -38,13 +38,13 @@ type
 
   TtiTVNodeEvent = procedure(ptiTreeView: TtiTreeView;
     pNode: TTreeNode;
-    pData: TObject;
+    AData: TObject;
     pParentNode: TTreeNode;
     pParentData: TObject) of object;
 
   TtiTVNodeConfirmEvent = procedure(ptiTreeView: TtiTreeView;
     pNode: TTreeNode;
-    pData: TObject;
+    AData: TObject;
     pParentNode: TTreeNode;
     pParentData: TObject;
     var pbConfirm: boolean) of object;
@@ -65,23 +65,23 @@ type
     pDataParentTarget: TObject;
     var pbConfirm: boolean) of object;
 
-  TTVGetDataPageEvent = procedure(pData: TObject;
+  TTVGetDataPageEvent = procedure(AData: TObject;
     pNode: TTreeNode) of object;
   TtiTVGetFontEvent = procedure(pNode: TTreeNode;
-    pData: TObject;
+    AData: TObject;
     pFont: TFont;
     pCanvas: TCanvas) of object;
-  TTVUpdateNodeText = procedure(const psValue: string) of object;
-  TtiTVGetImageIndexEvent = procedure(pData: TObject;
+  TTVUpdateNodeText = procedure(const AValue: string) of object;
+  TtiTVGetImageIndexEvent = procedure(AData: TObject;
     var piImageIndex: integer) of object;
 
-  TtiTVOnFilterDataEvent = procedure(pData: TObject;
+  TtiTVOnFilterDataEvent = procedure(AData: TObject;
     var pbInclude: boolean) of object;
 
   TtiTVDataClassRef = class of TPersistent;
   TtiTVFormClassRef = class of TForm;
   TTVOnGetChildFormEvent = procedure(pChildForm: TForm;
-    pData: TObject;
+    AData: TObject;
     pNode: TTreeNode) of object;
 
   
@@ -108,8 +108,8 @@ type
     FOnCanAcceptDrop: TtiTVDragDropConfirmEvent;
     FOnDrop: TtiTVDragDropEvent;
     FbCanView: boolean;
-    procedure SetDataClassName(const Value: string);
-    function ClassNameToCollectionItemName(const pValue: string): string;
+    procedure SetDataClassName(const AValue: string);
+    function ClassNameToCollectionItemName(const AValue: string): string;
   protected
     function GetDisplayName: string; override;
     property OnGetDataPage: TTVGetDataPageEvent read FOnGetDataPage write FOnGetDataPage;
@@ -152,14 +152,14 @@ type
     FTreeView: TtiTreeView;
     FiItemNo: integer;
     function GetItem(Index: Integer): TtiTVDataMapping;
-    procedure SetItem(Index: Integer; const Value: TtiTVDataMapping);
+    procedure SetItem(Index: Integer; const AValue: TtiTVDataMapping);
   protected
     function GetOwner: TPersistent; override;
     procedure Update(Item: TCollectionItem); override;
   public
     constructor Create(pTreeView: TtiTreeView);
-    function Add: TtiTVDataMapping; overload ;
-    function Add( const pClass: TClass; const pDisplayPropName: string; pImageIndex: Integer): TtiTVDataMapping; overload;
+    function Add: TtiTVDataMapping; overload;
+    function Add(const AClass: TClass; const pDisplayPropName: string; pImageIndex: Integer): TtiTVDataMapping; overload;
     property Items[Index: Integer]: TtiTVDataMapping read GetItem write SetItem;
   end;
 
@@ -205,7 +205,7 @@ type
   TtiTreeView = class(TtiFocusPanel)
   private
     FTV: TTreeView;
-    FCtrlBtnPnl : TtiCtrlBtnPnlAbs ;
+    FCtrlBtnPnl : TtiCtrlBtnPnlAbs;
     FTVDataMappings: TtiTVDataMappings;
     FNodesLoaded: TList;
 
@@ -228,35 +228,35 @@ type
     FOnDblClick: TtiTVNodeEvent;
 
     procedure DoOnExpanding(Sender: TObject; Node: TTreeNode; var AllowExpansion: Boolean);
-    function HasNodeChildren(pValue: TObject): boolean;
+    function HasNodeChildren(AValue: TObject): boolean;
     procedure AddNodeChildren(pNode: TTreeNode;
-      pData: TtiObject);
+      AData: TtiObject);
     procedure GetObjectPropNames(pPersistent: TObject; pSL: TStringList);
     function CountObjectProps(pPersistent: TObject): integer;
     procedure DoOnChange(sender: TObject; node: TTreeNode);
-    function CanShowObjectProp(pValue: TObject): boolean;
+    function CanShowObjectProp(AValue: TObject): boolean;
     procedure DoCustomDrawItem(Sender: TCustomTreeView;
       Node: TTreeNode;
       State: TCustomDrawState;
       var DefaultDraw: Boolean);
-    procedure SetTVDataMappings(const Value: TtiTVDataMappings);
-    function FindMapping(pData: TtiObject): TtiTVDataMapping;
+    procedure SetTVDataMappings(const AValue: TtiTVDataMappings);
+    function FindMapping(AData: TtiObject): TtiTVDataMapping;
     function GetSelectedAddress: string;
-    procedure SetSelectedAddress(const Value: string);
+    procedure SetSelectedAddress(const AValue: string);
     procedure GetNodeInfo(var pNode: TTreeNode;
-      var pData: TtiObject;
+      var AData: TtiObject;
       var pParentNode: TTreeNode;
       var pParentData: TtiObject;
       var pMapping: TtiTVDataMapping);
 
     function GetImages: TCustomImageList;
-    procedure SetImages(const Value: TCustomImageList);
+    procedure SetImages(const AValue: TCustomImageList);
     function GetOnChanging: TTVChangingEvent;
-    procedure SetOnChanging(const Value: TTVChangingEvent);
+    procedure SetOnChanging(const AValue: TTVChangingEvent);
     function GetItems: TTreeNodes;
-    procedure SetItems(const Value: TTreeNodes);
+    procedure SetItems(const AValue: TTreeNodes);
     function GetSelected: TTreeNode;
-    procedure SetSelected(const Value: TTreeNode);
+    procedure SetSelected(const AValue: TTreeNode);
 
     procedure RefreshTreeNode(ptiTreeView: TtiTreeView; pTreeNode: TTreeNode);
 
@@ -266,58 +266,58 @@ type
     procedure DoStartDrag(Sender: TObject; var DragObject: TDragObject); reintroduce;
     procedure DoOnEnter(Sender: TObject);
     procedure DoOnExit(Sender: TObject);
-    //    procedure DoEndDrag(   Sender, Target: TObject; X, Y: Integer); Reintroduce ;
+    //    procedure DoEndDrag(  Sender, Target: TObject; X, Y: Integer); Reintroduce;
 
         // Drag & Drop Receiver side events
     procedure DoDragOver(Sender, Source: TObject; X, Y: Integer;
       State: TDragState; var Accept: Boolean);
     procedure DoDragDrop(Sender, Source: TObject; X, Y: Integer);
     function GetSelectedData: TObject;
-    procedure SetSelectedData(const Value: TObject);
+    procedure SetSelectedData(const AValue: TObject);
     function GetTreeSortType: TSortType;
-    procedure SetTreeSortType(const Value: TSortType);
+    procedure SetTreeSortType(const AValue: TSortType);
 
-    procedure SetApplyFilter(const Value: boolean);
-    procedure GetNodeImageIndex(pNode: TTreeNode; pData: TtiObject;
+    procedure SetApplyFilter(const AValue: boolean);
+    procedure GetNodeImageIndex(pNode: TTreeNode; AData: TtiObject;
       pDataMapping: TtiTVDataMapping);
     function GetOnKeyDown: TKeyEvent;
-    procedure SetOnKeyDown(const Value: TKeyEvent);
-    procedure SetEnableTree(const Value: boolean);
+    procedure SetOnKeyDown(const AValue: TKeyEvent);
+    procedure SetEnableTree(const AValue: boolean);
     function GetEnableTree: boolean;
     function  GetButtonStyle: TLVButtonStyle;
     function  GetVisibleButtons: TtiLVVisibleButtons;
-    procedure SetButtonStyle(const Value: TLVButtonStyle);
-    procedure SetVisibleButtons(const Value: TtiLVVisibleButtons);
+    procedure SetButtonStyle(const AValue: TLVButtonStyle);
+    procedure SetVisibleButtons(const AValue: TtiLVVisibleButtons);
 
   protected
     FData: TtiObject;
-    procedure DoSetData(Sender: TObject); virtual ;
-    procedure SetData(const Value: TtiObject); virtual;
-    procedure SetName(const Value: TComponentName); override;
+    procedure DoSetData(Sender: TObject); virtual;
+    procedure SetData(const AValue: TtiObject); virtual;
+    procedure SetName(const AValue: TComponentName); override;
     property  NodesLoaded: TList read FNodesLoaded;
-    procedure SetReadOnly(const Value: boolean); virtual;
-    procedure DoReSize(Sender: TObject); virtual ;
+    procedure SetReadOnly(const AValue: boolean); virtual;
+    procedure DoReSize(Sender: TObject); virtual;
     function  IsUpdating: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
-    procedure   SetFocus ; override ;
+    procedure   SetFocus; override;
 
     property TV: TTreeView read FTV;
     property Items: TTreeNodes read GetItems write SetItems;
     property Data: TtiObject read FData write SetData;
     property Selected: TTreeNode read GetSelected write SetSelected;
 
-    procedure UpdateNodeText(const psValue: string);
-    procedure RefreshCurrentNode ;
+    procedure UpdateNodeText(const AValue: string);
+    procedure RefreshCurrentNode;
     procedure RefreshCurrentNodesParent;
     procedure DoInsert(Sender: TObject);
     procedure DoDelete(Sender: TObject);
     procedure DoEdit(Sender: TObject);
     procedure DoDblClick(Sender: TObject);
-    procedure FullExpand( pLevel : integer = -1 ) ;
+    procedure FullExpand(pLevel : integer = -1);
     procedure FullCollapse;
-    function  FindNodeByData(pData: TObject): TTreeNode;
+    function  FindNodeByData(AData: TObject): TTreeNode;
     property  SelectedData: TObject read GetSelectedData write SetSelectedData;
     function  CanView: boolean;
     function  CanDelete: boolean;
@@ -337,8 +337,8 @@ type
     property ParentColor;
     property Visible;
 
-    property ButtonStyle : TLVButtonStyle read GetButtonStyle write SetButtonStyle default lvbsMicroButtons ;
-    property VisibleButtons : TtiLVVisibleButtons read GetVisibleButtons write SetVisibleButtons default [] ;
+    property ButtonStyle : TLVButtonStyle read GetButtonStyle write SetButtonStyle default lvbsMicroButtons;
+    property VisibleButtons : TtiLVVisibleButtons read GetVisibleButtons write SetVisibleButtons default [];
     property Images: TCustomImageList read GetImages write SetImages;
 
     property OnChanging: TTVChangingEvent read GetOnChanging write SetOnChanging;
@@ -347,7 +347,7 @@ type
     property OnDblClick: TtiTVNodeEvent read FOnDblClick Write FOnDblClick;
 
     // We can't publish OnChange as is is used internally
-    // property OnChange ;
+    // property OnChange;
     property OnGetImageIndex: TtiTVGetImageIndexEvent
       read FOnGetImageIndex write FOnGetImageIndex;
     property OnGetFont: TtiTVGetFontEvent
@@ -368,7 +368,7 @@ type
     property EnableTree : boolean read GetEnableTree write SetEnableTree default true;
   end;
 
-function IsClassOfType(pData: TObject; pClassName: string): boolean;
+function IsClassOfType(AData: TObject; AClassName: string): boolean;
 
 implementation
 uses
@@ -378,20 +378,20 @@ uses
   //            // doing some debugging and forgot to clean up my mess.
   ,tiImageMgr
   ,tiResources
-  ;
+ ;
 
 const
   cusMethodPrefix = 'tiTVMapping';
 
   // Take an object, and a string class name and retrun true if the object
   // is, or descends from the string class name.
-function IsClassOfType(pData: TObject; pClassName: string): boolean;
+function IsClassOfType(AData: TObject; AClassName: string): boolean;
 var
   lsClassName: string;
   lClass: TClass;
 begin
-  lsClassName := upperCase(pClassName);
-  lClass := pData.ClassType;
+  lsClassName := upperCase(AClassName);
+  lClass := AData.ClassType;
   result := false;
   while (not result) and
     (lClass <> nil) do
@@ -419,15 +419,15 @@ begin
   BevelInner := bvNone;
   BevelOuter := bvNone;
   BorderStyle := bsNone;
-  Height := 120 ;
-  Width  := 120 ;
+  Height := 120;
+  Width := 120;
   OnResize := DoResize;
 
   FTV := TTreeView.Create(self);
   FTV.Parent := self;
   FTV.Name := Name + '_TV';
-  FTV.Top := 1 ;
-  FTV.Left := 2 ;
+  FTV.Top := 1;
+  FTV.Left := 2;
   FTV.Height := Height - 2;
   FTV.Width := Width - 2;
 
@@ -447,10 +447,10 @@ begin
 
   FTV.OnMouseDown := DoMouseDown;
   FTV.OnStartDrag := DoStartDrag;
-  FTV.OnDragOver  := DoDragOver;
-  FTV.OnDragDrop  := DoDragDrop;
-  FTV.OnEnter     := DoOnEnter;
-  FTV.OnExit      := DoOnExit;
+  FTV.OnDragOver := DoDragOver;
+  FTV.OnDragDrop := DoDragDrop;
+  FTV.OnEnter    := DoOnEnter;
+  FTV.OnExit     := DoOnExit;
 
   FbApplyFilter := false;
 
@@ -468,7 +468,7 @@ begin
   FbFullExpand := false;
   FReadOnly := false;
   SetButtonStyle(lvbsNormalButtons);
-  FUpdateCount := 0 ;
+  FUpdateCount := 0;
 end;
 
 destructor TtiTreeView.Destroy;
@@ -538,7 +538,7 @@ end;
 
 // Given a data object, which is a TPersistent, scan the DataMappings
 // collection to find a mapping.
-function TtiTreeView.FindMapping(pData: TtiObject): TtiTVDataMapping;
+function TtiTreeView.FindMapping(AData: TtiObject): TtiTVDataMapping;
 var
   i: integer;
   lDataMapping: TtiTVDataMapping;
@@ -546,10 +546,10 @@ begin
   result := nil;
   for i := 0 to DataMappings.Count - 1 do
   begin
-    if IsClassOfType(pData, DataMappings.Items[i].DataClass) then
+    if IsClassOfType(AData, DataMappings.Items[i].DataClass) then
     begin
       lDataMapping := DataMappings.Items[i];
-      if IsPublishedProp(pData, lDataMapping.DisplayPropName) then
+      if IsPublishedProp(AData, lDataMapping.DisplayPropName) then
       begin
         result := lDataMapping;
         Break; //==>
@@ -559,14 +559,14 @@ begin
 end;
 
 procedure TtiTreeView.GetNodeImageIndex(pNode: TTreeNode;
-  pData: TtiObject;
+  AData: TtiObject;
   pDataMapping: TtiTVDataMapping);
 var
   liImageIndex: integer;
   lDataMapping: TtiTVDataMapping;
 begin
   if pDataMapping = nil then
-    lDataMapping := FindMapping(pData)
+    lDataMapping := FindMapping(AData)
   else
     lDataMapping := pDataMapping;
 
@@ -575,10 +575,10 @@ begin
 
   // If the OnGetImageIndex event is assinged, then execute it
   if Assigned(FOnGetImageIndex) {and
-  Assigned( Images ) }then
+  Assigned(Images) }then
   begin
     liImageIndex := lDataMapping.ImageIndex;
-    FOnGetImageIndex(pData, liImageIndex);
+    FOnGetImageIndex(AData, liImageIndex);
     pNode.ImageIndex := liImageIndex;
     pNode.SelectedIndex := liImageIndex;
     // No OnGetImageIndex event, then use the image index fro lDataMapping
@@ -591,12 +591,12 @@ begin
 
 end;
 
-procedure TtiTreeView.AddNodeChildren({ptiTreeView : TtiTreeView ;}
+procedure TtiTreeView.AddNodeChildren({ptiTreeView : TtiTreeView;}
   pNode: TTreeNode;
-  pData: TtiObject);
+  AData: TtiObject);
 
-  procedure AddChildNode({ptiTreeView  : TtiTreeView      ;}
-    pData: TtiObject;
+  procedure AddChildNode({ptiTreeView : TtiTreeView     ;}
+    AData: TtiObject;
     pDataMapping: TtiTVDataMapping;
     pParentNode: TTreeNode);
   var
@@ -610,59 +610,59 @@ procedure TtiTreeView.AddNodeChildren({ptiTreeView : TtiTreeView ;}
     // probably doing a refresh after the user has inserted a new node.
     for i := 0 to pParentNode.Count - 1 do
     {$IFNDEF FPC}
-      if pParentNode.Item[i].Data = pData then
+      if pParentNode.Item[i].Data = AData then
     {$ELSE}
       {$Note Probably fixed in Lazarus SVN (?)}
-      if TtiObject(pParentNode.Items[i].Data) = pData then
+      if TtiObject(pParentNode.Items[i].Data) = AData then
     {$ENDIF}
         Exit; //==>
 
     if FbApplyFilter and Assigned(FOnFilterData) then
     begin
       lbInclude := true;
-      FOnFilterData(pData, lbInclude);
+      FOnFilterData(AData, lbInclude);
       if not lbInclude then
         Exit; //==>
     end;
 
-    lsCaption := GetPropValue(pData, pDataMapping.DisplayPropName, True);
-    lNode := {ptiTreeView.} Items.AddChildObject(pParentNode, lsCaption, pData);
-    lNode.HasChildren := HasNodeChildren(pData);
-    GetNodeImageIndex(lNode, pData, pDataMapping);
+    lsCaption := GetPropValue(AData, pDataMapping.DisplayPropName, True);
+    lNode := {ptiTreeView.} Items.AddChildObject(pParentNode, lsCaption, AData);
+    lNode.HasChildren := HasNodeChildren(AData);
+    GetNodeImageIndex(lNode, AData, pDataMapping);
 
   end;
 
   procedure AddChildPersistent(pParentNode: TTreeNode;
-    pData: TtiObject);
+    AData: TtiObject);
   var
     lDataMapping: TtiTVDataMapping;
   begin
-    lDataMapping := FindMapping(pData);
+    lDataMapping := FindMapping(AData);
     if lDataMapping = nil then
       exit; //==>
-    AddChildNode(pData, lDataMapping, pParentNode);
+    AddChildNode(AData, lDataMapping, pParentNode);
   end;
 
   // The object is a TList of TPersistent(s), so add the each item
   // in the list as a child node.
   procedure AddChildList(pParentNode: TTreeNode;
-    pData: TList);
+    AData: TList);
   var
     lData: TtiObject;
     i: integer;
     lDataMapping: TtiTVDataMapping;
   begin
-    for i := 0 to pData.Count - 1 do
+    for i := 0 to AData.Count - 1 do
     begin
-      if (TObject(pData.Items[i]) is TtiObject) then
+      if (TObject(AData.Items[i]) is TtiObject) then
       begin
-        lData := TtiObject(pData.Items[i]);
+        lData := TtiObject(AData.Items[i]);
         lDataMapping := FindMapping(lData);
         if lDataMapping <> nil then
           AddChildNode(lData, lDataMapping, pParentNode);
       end;
     end;
-    pNode.HasChildren := pNode.HasChildren or (pData.Count > 0);
+    pNode.HasChildren := pNode.HasChildren or (AData.Count > 0);
   end;
 
 var
@@ -674,12 +674,12 @@ begin
   lslObjProps := TStringList.Create;
   try
     // Get a list of object type properties
-    GetObjectPropNames(pData, lslObjProps);
+    GetObjectPropNames(AData, lslObjProps);
     // Scan the list of object type properties
     for i := 0 to lslObjProps.Count - 1 do
     begin
       // Get a pointer to an object type property
-      lChild := (GetObjectProp(pData, lslObjProps.Strings[i]) as TObject);
+      lChild := (GetObjectProp(AData, lslObjProps.Strings[i]) as TObject);
       // If it's a TtiObject, then add it
       if (lChild is TtiObject) then
         AddChildPersistent(pNode, TtiObject(lChild))
@@ -694,42 +694,42 @@ begin
 
 end;
 
-function TtiTreeView.HasNodeChildren(pValue: TObject): boolean;
+function TtiTreeView.HasNodeChildren(AValue: TObject): boolean;
 var
   lMapping: TtiTVDataMapping;
 begin
   // The data value is a TtiObject
-  if (pValue is TtiObject) then
+  if (AValue is TtiObject) then
   begin
-    lMapping := FindMapping(TtiObject(pValue));
+    lMapping := FindMapping(TtiObject(AValue));
     if ((lMapping <> nil) and
       (lMapping.HasChildren)) then
       result :=
-        (CountObjectProps(pValue) > 0)
+        (CountObjectProps(AValue) > 0)
 
     else if ((lMapping <> nil) and
       (not lMapping.HasChildren)) then
       result := false
     else
       result :=
-        (CountObjectProps(pValue) > 0)
-        ;
+        (CountObjectProps(AValue) > 0)
+       ;
 
     // The data value is a TList
   end
-  else if (pValue is TList) then
+  else if (AValue is TList) then
   begin
     {
       begin
-        if TList( pValue ).Count > 0 then
+        if TList(AValue).Count > 0 then
         begin
-          lList := TList( pValue ) ;
+          lList := TList(AValue);
           for i := 0 to lList.Count - 1 do
           begin
-            result := FindMapping( TtiObject( lList.Items[i] )) <> nil ;
+            result := FindMapping(TtiObject(lList.Items[i])) <> nil;
             if result then
-              Break ; //==>
-          end ;
+              Break; //==>
+          end;
         end
         else
     }
@@ -742,7 +742,7 @@ begin
 
 end;
 
-procedure TtiTreeView.SetData(const Value: TtiObject);
+procedure TtiTreeView.SetData(const AValue: TtiObject);
 begin
 
   FtmrSetData.Enabled := false;
@@ -750,8 +750,8 @@ begin
   Items.Clear;
   FNodesLoaded.Clear;
 
-  FData := Value;
-  if Value = nil then
+  FData := AValue;
+  if AValue = nil then
   begin
     Items.Clear;
     exit; //==>
@@ -798,7 +798,7 @@ begin
       FOnSelectNode(Self, lNode, TObject(lNode.Data), nil, nil);
 
     // Is this necessary here /
-    // GetDataPage(pData: TObject; pNode: TTreeNode) ;
+    // GetDataPage(AData: TObject; pNode: TTreeNode);
 
   finally
     FbSettingData := false;
@@ -814,10 +814,10 @@ begin
 
 end;
 
-procedure TtiTreeView.UpdateNodeText(const psValue: string);
+procedure TtiTreeView.UpdateNodeText(const AValue: string);
 begin
   if Selected <> nil then
-    Selected.Text := psValue;
+    Selected.Text := AValue;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -829,12 +829,12 @@ end;
 constructor TTVPopupMenu.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Images  := gTIImageListMgr.ILNormal16;
+  Images := gTIImageListMgr.ILNormal16;
 
   FmiExpandAll := TMenuItem.Create(nil);
   FmiExpandAll.Caption := 'Expand &all';
   FmiExpandAll.OnClick := DoExpandAll;
-  //FmiExpand.Shortcut := TextToShortcut( 'Enter' );
+  //FmiExpand.Shortcut := TextToShortcut('Enter');
   Items.Add(FmiExpandAll);
 
   FmiExpand := TMenuItem.Create(nil);
@@ -904,12 +904,12 @@ end;
 procedure TTVPopupMenu.DoOnPopup(sender: TObject);
 begin
   FmiInsert.Visible := true;
-  FmiEdit.Visible   := true;
+  FmiEdit.Visible  := true;
   FmiDelete.Visible := true;
 
   FmiExpand.Enabled := FTV.Selected.HasChildren;
   FmiInsert.Enabled := FTV.CanInsert;
-  FmiEdit.Enabled   := FTV.CanEdit;
+  FmiEdit.Enabled  := FTV.CanEdit;
   FmiDelete.Enabled := FTV.CanDelete;
 
   if FTV.Selected.Expanded then
@@ -935,7 +935,7 @@ begin
 end;
 
 procedure TtiTreeView.GetNodeInfo(var pNode: TTreeNode;
-  var pData: TtiObject;
+  var AData: TtiObject;
   var pParentNode: TTreeNode;
   var pParentData: TtiObject;
   var pMapping: TtiTVDataMapping);
@@ -946,19 +946,19 @@ begin
   if Selected = nil then
     Exit; //==>
 
-  pData := nil;
+  AData := nil;
   pParentNode := nil;
   pParentData := nil;
 
   if pNode <> nil then
   begin
-    pData := TtiObject(pNode.Data);
+    AData := TtiObject(pNode.Data);
     pParentNode := pNode.Parent;
     if pParentNode <> nil then
       pParentData := TtiObject(pParentNode.Data);
   end;
 
-  pMapping := FindMapping(TtiObject(pData));
+  pMapping := FindMapping(TtiObject(AData));
 
 end;
 
@@ -1045,12 +1045,12 @@ begin
   if lbCanDelete then
   begin
 
-//    FTV.OnChanging := nil ;
+//    FTV.OnChanging := nil;
 //    try
       RefreshTreeNode(Self, lParentNode);
 //    finally
 //      FTV.OnChanging := DoOnChanging;
-//    end ;
+//    end;
 
     // Reposition the selected node as close as possible to the position
     // of the deleted node.
@@ -1148,11 +1148,11 @@ begin
   if lbCanInsert then
   begin
 
-    // OnInsert( ) may have added data to either lData or lParentData, we
+    // OnInsert() may have added data to either lData or lParentData, we
     // don't know. To make things more complicated, lData and lParentData are both
     // TObject(s), so it is difficult to find exactly where the data was added.
-    // ( lData/lParentData may be a TtiObject owning any number of TLists, or
-    // may be a TList - we don't know )
+    // (lData/lParentData may be a TtiObject owning any number of TLists, or
+    // may be a TList - we don't know)
     // Add any newly created data items as nodes to the tree
     if (lParentNode <> nil) and
       (lParentData <> nil) then
@@ -1176,7 +1176,7 @@ begin
         {$ELSE}
         Selected := lNode.Items[lNode.Count - 1];
         {$ENDIF}
-      //CurrentChildForm.SetFocus ;
+      //CurrentChildForm.SetFocus;
     end;
 
     // Check to see if we have added any new children to lParentNode
@@ -1189,7 +1189,7 @@ begin
         {$ELSE}
         Selected := lParentNode.Items[lParentNode.Count - 1];
         {$ENDIF}
-      //CurrentChildForm.SetFocus ;
+      //CurrentChildForm.SetFocus;
     end;
 
   end;
@@ -1285,7 +1285,7 @@ begin
   end;
 end;
 
-function TtiTreeView.CanShowObjectProp(pValue: TObject): boolean;
+function TtiTreeView.CanShowObjectProp(AValue: TObject): boolean;
 var
   lMapping: TtiTVDataMapping;
   i: integer;
@@ -1293,22 +1293,22 @@ begin
   result := false;
 
   // A TtiObject
-  if (pValue is TtiObject) then
+  if (AValue is TtiObject) then
   begin
-    lMapping := FindMapping(TtiObject(pValue));
+    lMapping := FindMapping(TtiObject(AValue));
     result := ((lMapping <> nil) and
-      (IsPublishedProp(TtiObject(pValue), lMapping.DisplayPropName)));
+      (IsPublishedProp(TtiObject(AValue), lMapping.DisplayPropName)));
     Exit; //==>
   end;
 
   // A TList
-  if (pValue is TList) then
+  if (AValue is TList) then
   begin
-    for i := 0 to TList(pValue).Count - 1 do
+    for i := 0 to TList(AValue).Count - 1 do
     begin
-      if TObject(TList(pValue).Items[i]) is TtiObject then
+      if TObject(TList(AValue).Items[i]) is TtiObject then
       begin
-        result := CanShowObjectProp(TObject(TList(pValue).Items[i]));
+        result := CanShowObjectProp(TObject(TList(AValue).Items[i]));
         if result then
           Exit; //==>
       end;
@@ -1368,8 +1368,8 @@ begin
     (Sender.Selected <> Node) then
   begin
     FTV.Canvas.Brush.Color := _GetCanvasColor(clWhite);
-    if Assigned( FOnGetFont ) then
-      FOnGetFont( Node, TObject(Node.Data), TV.Canvas.Font, TV.Canvas )
+    if Assigned(FOnGetFont) then
+      FOnGetFont(Node, TObject(Node.Data), TV.Canvas.Font, TV.Canvas)
     else
       FTV.Canvas.Font.Color := clBlack;
   end
@@ -1377,8 +1377,8 @@ begin
     (Sender.Selected = Node) then
   begin
     FTV.Canvas.Brush.Color := _GetCanvasColor(clBtnFace{clSilver});
-    if Assigned( FOnGetFont ) then
-      FOnGetFont( Node, TObject(Node.Data), TV.Canvas.Font, TV.Canvas )
+    if Assigned(FOnGetFont) then
+      FOnGetFont(Node, TObject(Node.Data), TV.Canvas.Font, TV.Canvas)
     else
       FTV.Canvas.Font.Color := clBlack;
   end
@@ -1386,8 +1386,8 @@ begin
     (Sender.Selected <> Node) then
   begin
     FTV.Canvas.Brush.Color := _GetCanvasColor(clWhite);
-    if Assigned( FOnGetFont ) then
-      FOnGetFont( Node, TObject(Node.Data), TV.Canvas.Font, TV.Canvas )
+    if Assigned(FOnGetFont) then
+      FOnGetFont(Node, TObject(Node.Data), TV.Canvas.Font, TV.Canvas)
     else
       FTV.Canvas.Font.Color := clBlack;
   end;
@@ -1442,7 +1442,7 @@ var
   lsUpdate: string;
 begin
 
-  { TODO : Assigned( FOnCanInsert ) is not returning the correct result }
+  { TODO : Assigned(FOnCanInsert) is not returning the correct result }
   if Assigned(FOnCanInsert) then
     lsCreate := '?'
   else if FbCanInsert then
@@ -1486,7 +1486,7 @@ begin
   inherited Create(TtiTVDataMapping);
   FTreeView := pTreeView;
   FiItemNo := 0;
-  //  Name      := ClassName + IntToStr( uiMappingCount ) ;
+  //  Name     := ClassName + IntToStr(uiMappingCount);
 end;
 
 
@@ -1494,7 +1494,7 @@ end;
 function TtiTVDataMappings.Add: TtiTVDataMapping;
 begin
   result := TtiTVDataMapping(inherited Add);
-  //  SetItemName( result ) ;
+  //  SetItemName(result);
 end;
 
 
@@ -1513,17 +1513,17 @@ end;
 
 
 
-procedure TtiTVDataMappings.SetItem(Index: Integer; const Value: TtiTVDataMapping);
+procedure TtiTVDataMappings.SetItem(Index: Integer; const AValue: TtiTVDataMapping);
 begin
-  inherited SetItem(Index, Value);
+  inherited SetItem(Index, AValue);
 end;
 
 
 {
 procedure TtiTVDataMappings.SetItemName(Item: TCollectionItem);
 begin
-  ( Item as TtiTVDataMapping ).Name := 'TVDataMapping' + IntToStr( FiItemNo ) ;
-  Inc( FiItemNo ) ;
+  (Item as TtiTVDataMapping).Name := 'TVDataMapping' + IntToStr(FiItemNo);
+  Inc(FiItemNo);
 end;
 }
 
@@ -1536,9 +1536,9 @@ end;
 
 
 
-procedure TtiTreeView.SetTVDataMappings(const Value: TtiTVDataMappings);
+procedure TtiTreeView.SetTVDataMappings(const AValue: TtiTVDataMappings);
 begin
-  FTVDataMappings.Assign(Value);
+  FTVDataMappings.Assign(AValue);
 end;
 
 
@@ -1561,7 +1561,7 @@ end;
 
 
 
-procedure TtiTreeView.SetSelectedAddress(const Value: string);
+procedure TtiTreeView.SetSelectedAddress(const AValue: string);
 var
   i: integer;
   liAddress: integer;
@@ -1573,11 +1573,11 @@ begin
   // setting of the data is finished.
   if FbSettingData then
   begin
-    FsSelectedAddress := Value;
+    FsSelectedAddress := AValue;
     Exit; //==>
   end;
 
-  lsAddress := Value;
+  lsAddress := AValue;
   lNode := nil;
   while lsAddress <> '' do
   begin
@@ -1637,9 +1637,9 @@ begin
 
   result := false;
   if (FData = nil) or FbSettingData or FReadOnly or IsUpdating or
-     ( not FTV.Focused ) or
-     ( not (tiLVBtnVisDelete in VisibleButtons))  or
-     ( ButtonStyle = lvbsNoButtons) then
+     (not FTV.Focused) or
+     (not (tiLVBtnVisDelete in VisibleButtons))  or
+     (ButtonStyle = lvbsNoButtons) then
     Exit; //==>
 
   lNode := nil;
@@ -1671,9 +1671,9 @@ begin
 
   result := false;
   if (FData = nil) or FbSettingData or FReadOnly or
-     IsUpdating or ( not FTV.Focused ) or
-     (not ( tiLVBtnVisNew in VisibleButtons))  or
-     ( ButtonStyle = lvbsNoButtons) then
+     IsUpdating or (not FTV.Focused) or
+     (not (tiLVBtnVisNew in VisibleButtons))  or
+     (ButtonStyle = lvbsNoButtons) then
     Exit; //==>
   lNode := nil;
   lData := nil;
@@ -1704,9 +1704,9 @@ begin
 
   result := false;
   if (FData = nil) or FbSettingData or FReadOnly or IsUpdating or
-     ( not FTV.Focused ) or
-     ( not ( tiLVBtnVisDelete in VisibleButtons))  or
-     ( ButtonStyle = lvbsNoButtons) then
+     (not FTV.Focused) or
+     (not (tiLVBtnVisDelete in VisibleButtons))  or
+     (ButtonStyle = lvbsNoButtons) then
     Exit; //==>
 
   lNode := nil;
@@ -1732,9 +1732,9 @@ begin
   result := TV.Images;
 end;
 
-procedure TtiTreeView.SetImages(const Value: TCustomImageList);
+procedure TtiTreeView.SetImages(const AValue: TCustomImageList);
 begin
-  TV.Images := Value;
+  TV.Images := AValue;
 end;
 
 function TtiTreeView.GetOnChanging: TTVChangingEvent;
@@ -1742,9 +1742,9 @@ begin
   result := TV.OnChanging;
 end;
 
-procedure TtiTreeView.SetOnChanging(const Value: TTVChangingEvent);
+procedure TtiTreeView.SetOnChanging(const AValue: TTVChangingEvent);
 begin
-  TV.OnChanging := Value;
+  TV.OnChanging := AValue;
 end;
 
 
@@ -1756,9 +1756,9 @@ end;
 
 
 
-procedure TtiTreeView.SetItems(const Value: TTreeNodes);
+procedure TtiTreeView.SetItems(const AValue: TTreeNodes);
 begin
-  TV.Items := Value;
+  TV.Items := AValue;
 end;
 
 
@@ -1770,14 +1770,14 @@ end;
 
 
 
-procedure TtiTreeView.SetSelected(const Value: TTreeNode);
+procedure TtiTreeView.SetSelected(const AValue: TTreeNode);
 begin
-  FTV.Selected := Value;
+  FTV.Selected := AValue;
 end;
 
 
 
-procedure TtiTreeView.FullExpand( pLevel : integer = -1 ) ;
+procedure TtiTreeView.FullExpand(pLevel : integer = -1);
 var
   lSelectedAddress: string;
 begin
@@ -1788,7 +1788,7 @@ begin
   if FbSettingData then
   begin
     FbFullExpand := true;
-    FFullExpandLevel := pLevel ;
+    FFullExpandLevel := pLevel;
     Exit; //==>
   end;
 
@@ -1809,33 +1809,33 @@ end;
 
 
 
-procedure TtiTreeView.SetName(const Value: TComponentName);
+procedure TtiTreeView.SetName(const AValue: TComponentName);
 begin
-  inherited SetName(Value);
+  inherited SetName(AValue);
   TV.Name := Name + '_TV';
 end;
 
-function TtiTVDataMapping.ClassNameToCollectionItemName(const pValue: string): string;
+function TtiTVDataMapping.ClassNameToCollectionItemName(const AValue: string): string;
 begin
-  result := cusMethodPrefix + Copy(pValue, 2, Length(pValue) - 1);
+  result := cusMethodPrefix + Copy(AValue, 2, Length(AValue) - 1);
 end;
 
 
 
-procedure TtiTVDataMapping.SetDataClassName(const Value: string);
+procedure TtiTVDataMapping.SetDataClassName(const AValue: string);
 begin
   if FName = ClassNameToCollectionItemName(FsDataClassName) then
-    FName := ClassNameToCollectionItemName(Value);
-  FsDataClassName := Value;
+    FName := ClassNameToCollectionItemName(AValue);
+  FsDataClassName := AValue;
 end;
 
-function TtiTreeView.FindNodeByData(pData: TObject): TTreeNode;
+function TtiTreeView.FindNodeByData(AData: TObject): TTreeNode;
 var
   i: integer;
 begin
   result := nil;
   for i := 0 to Items.Count - 1 do
-    if TObject(Items[i].Data) = pData then
+    if TObject(Items[i].Data) = AData then
     begin
       result := Items[i];
       Break; //==>
@@ -1846,14 +1846,14 @@ end;
 
 procedure TtiTreeView.DoDragDrop(Sender, Source: TObject; X, Y: Integer);
   procedure ExpandNodeByData(ptiTreeView: TtiTreeView;
-    pList: TList);
+    AList: TList);
   var
     i: integer;
     lNode: TTreeNode;
   begin
-    for i := 0 to pList.Count - 1 do
+    for i := 0 to AList.Count - 1 do
     begin
-      lNode := ptiTreeView.FindNodeByData(TObject(pList.Items[i]));
+      lNode := ptiTreeView.FindNodeByData(TObject(AList.Items[i]));
       if lNode <> nil then
         lNode.Expand(false);
     end;
@@ -1928,12 +1928,12 @@ begin
     lExpTarget.Free;
   end;
 
-  //tiShowMessage(['Parent node', FindNodeByData( lTargetData ).Text]);
+  //tiShowMessage(['Parent node', FindNodeByData(lTargetData).Text]);
 
   if FindNodeByData(lTargetData) <> nil then
     RefreshTreeNode(Self, FindNodeByData(lTargetData));
-  //    FindNodeByData( lParentData ).Expand( false ) ;
-  //  end ;
+  //    FindNodeByData(lParentData).Expand(false);
+  //  end;
 
   if lSelectedData <> nil then
     SelectedData := lSelectedData;
@@ -2065,11 +2065,11 @@ end;
 
 
 
-procedure TtiTreeView.SetSelectedData(const Value: TObject);
+procedure TtiTreeView.SetSelectedData(const AValue: TObject);
 var
   i: integer;
 begin
-  if Value = nil then
+  if AValue = nil then
   begin
     if FTV.Items.Count > 0 then
       FTV.Selected := FTV.Items[0];
@@ -2077,11 +2077,11 @@ begin
   end;
 
   // ToDo: Add code so the FullExpand is not required
-  // and if Node.Data can not be found to match Value, then scan for child nodes
+  // and if Node.Data can not be found to match AValue, then scan for child nodes
   // that have not been read yet.
   FullExpand;
   for i := 0 to FTV.Items.Count - 1 do
-    if TObject(FTV.Items[i].Data) = Value then
+    if TObject(FTV.Items[i].Data) = AValue then
     begin
       FTV.Selected := FTV.Items[i];
       Break; //==>
@@ -2094,14 +2094,14 @@ begin
   Result := TV.SortType;
 end;
 
-procedure TtiTreeView.SetTreeSortType(const Value: TSortType);
+procedure TtiTreeView.SetTreeSortType(const AValue: TSortType);
 begin
-  TV.SortType := Value;
+  TV.SortType := AValue;
 end;
 
-procedure TtiTreeView.SetApplyFilter(const Value: boolean);
+procedure TtiTreeView.SetApplyFilter(const AValue: boolean);
 begin
-  FbApplyFilter := Value;
+  FbApplyFilter := AValue;
   { TODO : TtiTreeView.SetApplyFilter should re-read tree nodes }
 end;
 
@@ -2110,14 +2110,14 @@ begin
   result := FTV.OnKeyDown;
 end;
 
-procedure TtiTreeView.SetOnKeyDown(const Value: TKeyEvent);
+procedure TtiTreeView.SetOnKeyDown(const AValue: TKeyEvent);
 begin
-  FTV.OnKeyDown := Value;
+  FTV.OnKeyDown := AValue;
 end;
 
-procedure TtiTreeView.SetReadOnly(const Value: boolean);
+procedure TtiTreeView.SetReadOnly(const AValue: boolean);
 begin
-  FReadOnly := Value;
+  FReadOnly := AValue;
   if FReadOnly then
     FTV.Color := clBtnFace
     // FTV.Color := clSilver
@@ -2146,10 +2146,10 @@ begin
   end;
 end;
 
-procedure TtiTreeView.SetEnableTree(const Value: boolean);
+procedure TtiTreeView.SetEnableTree(const AValue: boolean);
 begin
-  if FTV.Enabled <> Value then
-    FTV.Enabled:=Value;
+  if FTV.Enabled <> AValue then
+    FTV.Enabled:=AValue;
 end;
 
 function TtiTreeView.GetEnableTree: boolean;
@@ -2159,27 +2159,27 @@ end;
 
 procedure TtiTreeView.RefreshCurrentNode;
 var
-  lCurrentNode : TTreeNode ;
+  lCurrentNode : TTreeNode;
 begin
-  lCurrentNode := TV.Selected ;
+  lCurrentNode := TV.Selected;
   if lCurrentNode = nil then
-    Exit ; //==>
+    Exit; //==>
   RefreshTreeNode(Self,lCurrentNode);
 end;
 
 procedure TtiTreeView.SetFocus;
 begin
   if not Enabled then
-    Exit ; //==> 
-  inherited SetFocus ;
-  TV.SetFocus ;
+    Exit; //==> 
+  inherited SetFocus;
+  TV.SetFocus;
 end;
 
-function TtiTVDataMappings.Add(const pClass: TClass;
+function TtiTVDataMappings.Add(const AClass: TClass;
   const pDisplayPropName: string; pImageIndex: Integer): TtiTVDataMapping;
 begin
   Result := Add;
-  Result.DataClass := pClass.ClassName;
+  Result.DataClass := AClass.ClassName;
   Result.DisplayPropName := pDisplayPropName;
   Result.ImageIndex := pImageIndex;
 end;
@@ -2191,29 +2191,29 @@ end;
 
 function TtiTreeView.GetVisibleButtons: TtiLVVisibleButtons;
 begin
-  result := FCtrlBtnPnl.VisibleButtons ;
+  result := FCtrlBtnPnl.VisibleButtons;
 end;
 
-procedure TtiTreeView.SetButtonStyle(const Value: TLVButtonStyle);
+procedure TtiTreeView.SetButtonStyle(const AValue: TLVButtonStyle);
 begin
-  tiCtrlButtonPanel.CreateCtrlBtnPnl( FCtrlBtnPnl, Value, Self,
+  tiCtrlButtonPanel.CreateCtrlBtnPnl(FCtrlBtnPnl, AValue, Self,
                                       CanView, CanInsert, CanEdit, CanDelete);
-  FCtrlBtnPnl.OnNew       := DoInsert;
-  FCtrlBtnPnl.OnEdit      := DoEdit;
-  FCtrlBtnPnl.OnDelete    := DoDelete;
+  FCtrlBtnPnl.OnNew      := DoInsert;
+  FCtrlBtnPnl.OnEdit     := DoEdit;
+  FCtrlBtnPnl.OnDelete   := DoDelete;
   FCtrlBtnPnl.RefreshButtons;
   DoReSize(nil);
 end;
 
-procedure TtiTreeView.SetVisibleButtons(const Value: TtiLVVisibleButtons);
+procedure TtiTreeView.SetVisibleButtons(const AValue: TtiLVVisibleButtons);
 begin
-  FCtrlBtnPnl.VisibleButtons := Value ;
+  FCtrlBtnPnl.VisibleButtons := AValue;
   DoReSize(Nil); 
 end;
 
 procedure TtiTreeView.DoReSize(Sender: TObject);
 var
-  lTop : integer ;
+  lTop : integer;
 begin
 
   if FCtrlBtnPnl.VisibleButtons = [] then
@@ -2225,7 +2225,7 @@ begin
     1,
     lTop,
     Width - 2,
-    Height - lTop - 1 );
+    Height - lTop - 1);
     
 end;
 
@@ -2248,9 +2248,9 @@ begin
 
   result := false;
   if (FData = nil) or FbSettingData or IsUpdating or
-     ( not FTV.Focused ) or
-     ( not (tiLVBtnVisView in VisibleButtons)) or
-     ( ButtonStyle = lvbsNoButtons) then
+     (not FTV.Focused) or
+     (not (tiLVBtnVisView in VisibleButtons)) or
+     (ButtonStyle = lvbsNoButtons) then
     Exit; //==>
 
   lNode := nil;
@@ -2285,8 +2285,8 @@ procedure TtiTreeView.RefreshCurrentNodesParent;
 var
   lSelectedData: TtiObject;
 begin
-  if ( Selected = nil ) or ( Selected.Parent = nil ) then
-    Exit ; //==>
+  if (Selected = nil) or (Selected.Parent = nil) then
+    Exit; //==>
   BeginUpdate;
   try
     lSelectedData := TtiObject(Selected.Data);

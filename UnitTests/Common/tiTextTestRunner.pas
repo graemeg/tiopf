@@ -6,7 +6,7 @@ interface
 uses
   TestFramework
   ,TextTestRunner
-  ;
+ ;
 
 const
   cCommandLineParamLogTo     = 'logto';   // -logto <Directory to write logs to>
@@ -17,30 +17,30 @@ type
   TtiTextListenerWriteItems = (tlwtFile, tlwtConsole);
   TtiTextListenerWriteTo = set of TtiTextListenerWriteItems;
 
-  TtiTextTestListener = class( TTextTestListener )
+  TtiTextTestListener = class(TTextTestListener)
   private
     FDelphiVersion: string;
-    FPos : integer ;
-    FFileNameShort : string ;
-    FFileNameLong : string ;
+    FPos : integer;
+    FFileNameShort : string;
+    FFileNameLong : string;
     FFileNameINI: string;
   protected
-    procedure Write2File( const pFileName: string ; const pStr : string ) ;
-    procedure Write2Short( const pStr : string; pWriteTo: TtiTextListenerWriteTo ) ;
-    procedure WriteLn2Short( const pStr : string; pWriteTo: TtiTextListenerWriteTo  ) ;
-    procedure Write2Long( const pStr : string = '' ) ;
-    procedure Write2Table( const pCell1, pCell2, pCell3, pCell4, pCell5 : string ) ; overload ;
-    procedure Write2Table( const pCell1 : string ) ; overload ;
-    procedure IncPos ;
+    procedure Write2File(const AFileName: string; const AStr : string);
+    procedure Write2Short(const AStr : string; pWriteTo: TtiTextListenerWriteTo);
+    procedure WriteLn2Short(const AStr : string; pWriteTo: TtiTextListenerWriteTo );
+    procedure Write2Long(const AStr : string = '');
+    procedure Write2Table(const pCell1, pCell2, pCell3, pCell4, pCell5 : string); overload;
+    procedure Write2Table(const pCell1 : string); overload;
+    procedure IncPos;
     function  PrintHeader(r: TTestResult): string; override;
     function  PrintFailureItems(r :TTestResult): string; override;
     function  PrintErrorItems(r :TTestResult): string; override;
     procedure WriteSummaryToINIFile(testResult: TTestResult);
     function  FormatTestName(ATest: ITest): string;
   public
-    constructor Create ; virtual ;
-    procedure   TestingStarts; override ;
-    procedure   StartTest(test: ITest); override ;
+    constructor Create; virtual;
+    procedure   TestingStarts; override;
+    procedure   StartTest(test: ITest); override;
 
     procedure   AddSuccess(test: ITest); override;
     procedure   AddError(error: TTestFailure); override;
@@ -72,10 +72,10 @@ uses
   ,Classes
   ,SysUtils
   ,INIFiles
-  ;
+ ;
 
 const
-  cMaxTextWidth = 70 ;
+  cMaxTextWidth = 70;
 
 
 procedure Pause;
@@ -135,7 +135,7 @@ end;
 procedure TtiTextTestListener.AddError(error: TTestFailure);
 begin
   Write2Short('E', [tlwtFile, tlwtConsole]);
-  IncPos ;
+  IncPos;
   Write2Table(
     FormatTestName(error.FailedTest)
    ,'<font color="#FF0000">ERROR</font>'
@@ -148,7 +148,7 @@ end;
 procedure TtiTextTestListener.AddFailure(failure: TTestFailure);
 begin
   Write2Short('F', [tlwtFile, tlwtConsole]);
-  IncPos ;
+  IncPos;
   Write2Table(
      FormatTestName(failure.FailedTest)
     ,'<font color="#FF00FF">FAILS</font>'
@@ -160,52 +160,52 @@ end;
 
 constructor TtiTextTestListener.Create;
 var
-  lReportDir : string ;
+  lReportDir : string;
 begin
   inherited;
-  FDelphiVersion := cPackageSuffix ;
+  FDelphiVersion := cPackageSuffix;
   if FDelphiVersion = '' then
-    FDelphiVersion := '50' ;
+    FDelphiVersion := '50';
 
-  lReportDir := gCommandLineParams.GetParam(cCommandLineParamLogTo) ;
+  lReportDir := gCommandLineParams.GetParam(cCommandLineParamLogTo);
   if lReportDir = '' then
     lReportDir := ParamStr(0);
 
   if Pos('.', lReportDir) <> 0 then
-    lReportDir := ExtractFilePath(lReportDir) ;
-  lReportDir := tiAddTrailingSlash(lReportDir) ;
+    lReportDir := ExtractFilePath(lReportDir);
+  lReportDir := tiAddTrailingSlash(lReportDir);
   FFileNameShort := lReportDir + 'DUnitReportShort' + FDelphiVersion + '.htm';
-  FFileNameLong  := lReportDir + 'DUnitReportLong' + FDelphiVersion + '.htm';
+  FFileNameLong := lReportDir + 'DUnitReportLong' + FDelphiVersion + '.htm';
   if gCommandLineParams.IsParam(cCommandLineSummaryINIFile) then
   begin
     FFileNameINI := gCommandLineParams.GetParam(cCommandLineSummaryINIFile);
     if ExtractFilePath(FFileNameINI) = '' then
       FFileNameINI := tiAddTrailingSlash(tiGetEXEPath) + FFileNameINI;
   end else
-    FFileNameINI   := lReportDir + 'DUnitReportSummary.ini';
+    FFileNameINI  := lReportDir + 'DUnitReportSummary.ini';
 
   if FileExists(FFileNameShort) then           
   begin
-    DeleteFile(FFileNameShort);
+    tiDeleteFile(FFileNameShort);
     if FileExists(FFileNameShort) then
-      raise exception.Create('Unable to delete old log file <' + FFileNameShort + '>' ) ;
+      raise exception.Create('Unable to delete old log file <' + FFileNameShort + '>');
   end;
 
   if FileExists(FFileNameLong) then
   begin
-    DeleteFile(FFileNameLong);
+    tiDeleteFile(FFileNameLong);
     if FileExists(FFileNameLong) then
-      raise exception.Create('Unable to delete old log file <' + FFileNameLong + '>' ) ;
+      raise exception.Create('Unable to delete old log file <' + FFileNameLong + '>');
   end;
 
 end;
 
 procedure TtiTextTestListener.IncPos;
 begin
-  Inc( FPos ) ;
+  Inc(FPos);
   if FPos = cMaxTextWidth then
   begin
-    FPos := 1 ;
+    FPos := 1;
     WriteLn2Short('', [tlwtFile, tlwtConsole]);
   end;
 end;
@@ -221,10 +221,10 @@ begin
     result := result + format('%3d) %s  %s'#13#10'          "%s"',
                                [
                                i+1,
-                               tiPadR( failure.failedTest.name, 20 ),
-                               tiPadR( failure.thrownExceptionName, 20 ),
+                               tiPadR(failure.failedTest.name, 20),
+                               tiPadR(failure.thrownExceptionName, 20),
                                failure.thrownExceptionMessage
-                               ]) + CRLF + CRLF ;
+                               ]) + CRLF + CRLF;
   end;
 end;
 
@@ -239,10 +239,10 @@ begin
     result := result + format('%3d) %s  %s'#13#10'          "%s"',
                                [
                                i+1,
-                               tiPadR( failure.failedTest.name, 20 ),
-                               tiPadR( failure.thrownExceptionName, 20 ),
+                               tiPadR(failure.failedTest.name, 20),
+                               tiPadR(failure.thrownExceptionName, 20),
                                failure.thrownExceptionMessage
-                               ]) + CRLF + CRLF ;
+                               ]) + CRLF + CRLF;
   end;
 end;
 
@@ -251,13 +251,13 @@ begin
   result := '';
   if r.wasSuccessful then
   begin
-    result := result + CRLF + CrLf ;
+    result := result + CRLF + CrLf;
     result := result + format('OK: %d tests'+ CRLF, [r.runCount]);
   end
   else
   begin
-    result := result + CRLF + CRLF ;
-    result := result + 'Test Results:'+CRLF + CrLf ;
+    result := result + CRLF + CRLF;
+    result := result + 'Test Results:'+CRLF + CrLf;
     result := result + format(
       '  Run:      %8d'+CRLF+
       '  Failures: %8d'+CRLF+
@@ -270,7 +270,7 @@ procedure TtiTextTestListener.StartTest(test: ITest);
 begin
   write2Short('.', [tlwtFile, tlwtConsole]);
   // Nothing in XMLTestRunner
-  IncPos ;
+  IncPos;
 end;
 
 procedure TtiTextTestListener.TestingStarts;
@@ -279,61 +279,61 @@ procedure TtiTextTestListener.TestingStarts;
     i: Integer;
   begin
     writeln2Short('', [tlwtConsole]);
-    writeln2Short('<html>', [tlwtFile] );
-    writeln2Short('<pre>', [tlwtFile] );
-    write2Short('DUnit testing of tiOPF ', [tlwtFile, tlwtConsole] );
+    writeln2Short('<html>', [tlwtFile]);
+    writeln2Short('<pre>', [tlwtFile]);
+    write2Short('DUnit testing of tiOPF ', [tlwtFile, tlwtConsole]);
     writeln2Short('(Delphi version ' + pDelphiVersion + ')', [tlwtFile, tlwtConsole]);
-    writeln2Short('Testing started at ' + DateTimeToStr( Now ), [tlwtFile, tlwtConsole]) ;
+    writeln2Short('Testing started at ' + DateTimeToStr(Now), [tlwtFile, tlwtConsole]);
     writeln2Short('(E = Exception, F = Test failure)', [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
     writeln2Short('Persistence layers to be tested:', [tlwtFile, tlwtConsole]);
     for i:= 0 to gTIOPFManager.PersistenceLayers.Count - 1 do
       writeln2Short('  ' + gTIOPFManager.PersistenceLayers.Items[i].PerLayerName, [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
-  end ;
+  end;
   procedure _WriteLong(const pDelphiVersion: string);
   var
     i: Integer;
   begin
-    write2Long('<html>' );
-    write2Long('<h2>DUnit testing of tiOPF (Delphi ' + pDelphiVersion + ')</h2>' );
+    write2Long('<html>');
+    write2Long('<h2>DUnit testing of tiOPF (Delphi ' + pDelphiVersion + ')</h2>');
 
-    write2Long('<h3>Persistence layers to be tested</h3>' + CrLf );
-    write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + CrLf );
+    write2Long('<h3>Persistence layers to be tested</h3>' + CrLf);
+    write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + CrLf);
     for i:= 0 to gTIOPFManager.PersistenceLayers.Count - 1 do
     begin
       write2Long('<tr><td>' + gTIOPFManager.PersistenceLayers.Items[i].PerLayerName + '</td></tr>' + CrLf);
     end;
     Write2Long('</table>');
 
-    write2Long('<h3>Test results</h3>' + CrLf );
-    write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + CrLf );
-    write2Long('  <tr>' + CrLf );
-    write2Long('    <td>Test name</td>' + CrLf );
-    write2Long('    <td>Failure type</td>' + CrLf );
-    write2Long('    <td>Exception</td>' + CrLf );
-    write2Long('    <td>Message</td>' + CrLf );
-    write2Long('    <td>Run time</td>' + CrLf );
-    write2Long('  </tr>' + CrLf );
+    write2Long('<h3>Test results</h3>' + CrLf);
+    write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + CrLf);
+    write2Long('  <tr>' + CrLf);
+    write2Long('    <td>Test name</td>' + CrLf);
+    write2Long('    <td>Failure type</td>' + CrLf);
+    write2Long('    <td>Exception</td>' + CrLf);
+    write2Long('    <td>Message</td>' + CrLf);
+    write2Long('    <td>Run time</td>' + CrLf);
+    write2Long('  </tr>' + CrLf);
   end;
 begin
-  FPos := 1 ;
+  FPos := 1;
   _WriteShort(FDelphiVersion);
   _WriteLong(FDelphiVersion);
   startTime := now;
 end;
 
-procedure TtiTextTestListener.Write2Short(const pStr: string; pWriteTo: TtiTextListenerWriteTo );
+procedure TtiTextTestListener.Write2Short(const AStr: string; pWriteTo: TtiTextListenerWriteTo);
 begin
   if tlwtFile in pWriteTo then
-    Write2File(FFileNameShort, pStr);
+    Write2File(FFileNameShort, AStr);
   if tlwtConsole in pWriteTo then
-    System.Write(pStr);
+    System.Write(AStr);
 end;
 
-procedure TtiTextTestListener.WriteLn2Short(const pStr: string; pWriteTo: TtiTextListenerWriteTo );
+procedure TtiTextTestListener.WriteLn2Short(const AStr: string; pWriteTo: TtiTextListenerWriteTo);
 begin
-  Write2Short(pStr+ #13 + #10, pWriteTo);
+  Write2Short(AStr+ #13 + #10, pWriteTo);
 end;
 
 procedure TtiTextTestListener.TestingEnds(testResult: TTestResult);
@@ -357,39 +357,39 @@ begin
 
   Write2Long('<h2>Statistics</h2>');
 
-  Write2Long('<table border="1" cellpadding="4" >' + CrLf );
-  Write2Long('  <tr>' + CrLf );
-  Write2Long('    <td>Tests</td>' + CrLf );
-  Write2Long('    <td>'+intToStr(testResult.runCount)+'</td>' + CrLf );
-  Write2Long('  </tr>' + CrLf );
-  Write2Long('  <tr>' + CrLf );
-  Write2Long('    <td>Failures</td>' + CrLf );
-  Write2Long('    <td>'+intToStr(testResult.failureCount)+'</td>' + CrLf );
-  Write2Long('  </tr>' + CrLf );
-  Write2Long('  <tr>' + CrLf );
-  Write2Long('    <td>Errors</td>' + CrLf );
-  Write2Long('    <td>'+intToStr(testResult.errorCount)+'</td>' + CrLf );
-  Write2Long('  </tr>' + CrLf );
-  Write2Long('  <tr>' + CrLf );
-  Write2Long('    <td>Finished At</td>' + CrLf );
-  Write2Long('    <td>'+DateTimeToStr(now)+'</td>' + CrLf );
-  Write2Long('  </tr>' + CrLf );
-  Write2Long('  <tr>' + CrLf );
-  Write2Long('    <td>Runtime:</td>' + CrLf );
-  Write2Long('    <td>'+timeToStr(runTime)+'</td>' + CrLf );
-  Write2Long('  </tr>' + CrLf );
-  Write2Long('  </table>' + CrLf );
-  Write2Long('</html>' );
+  Write2Long('<table border="1" cellpadding="4" >' + CrLf);
+  Write2Long('  <tr>' + CrLf);
+  Write2Long('    <td>Tests</td>' + CrLf);
+  Write2Long('    <td>'+intToStr(testResult.runCount)+'</td>' + CrLf);
+  Write2Long('  </tr>' + CrLf);
+  Write2Long('  <tr>' + CrLf);
+  Write2Long('    <td>Failures</td>' + CrLf);
+  Write2Long('    <td>'+intToStr(testResult.failureCount)+'</td>' + CrLf);
+  Write2Long('  </tr>' + CrLf);
+  Write2Long('  <tr>' + CrLf);
+  Write2Long('    <td>Errors</td>' + CrLf);
+  Write2Long('    <td>'+intToStr(testResult.errorCount)+'</td>' + CrLf);
+  Write2Long('  </tr>' + CrLf);
+  Write2Long('  <tr>' + CrLf);
+  Write2Long('    <td>Finished At</td>' + CrLf);
+  Write2Long('    <td>'+DateTimeToStr(now)+'</td>' + CrLf);
+  Write2Long('  </tr>' + CrLf);
+  Write2Long('  <tr>' + CrLf);
+  Write2Long('    <td>Runtime:</td>' + CrLf);
+  Write2Long('    <td>'+timeToStr(runTime)+'</td>' + CrLf);
+  Write2Long('  </tr>' + CrLf);
+  Write2Long('  </table>' + CrLf);
+  Write2Long('</html>');
 
 end;
 
 procedure TtiTextTestListener.WriteSummaryToINIFile(testResult: TTestResult);
 var
-  lINIFile : TINIFile ;
-  LLong : string ;
+  lINIFile : TINIFile;
+  LLong : string;
   LShort: string;
-  LIdentLong : string ;
-  LIdentShort : string ;
+  LIdentLong : string;
+  LIdentShort : string;
 begin
   lINIFile := TINIFile.Create(FFileNameINI);
   try
@@ -401,33 +401,33 @@ begin
               IntToStr(testResult.RunCount);
 
     {$IFDEF DELPHI5}
-      LIdentLong  := 'report_long_d5' ;
-      LIdentShort := 'report_short_d5' ;
+      LIdentLong := 'report_long_d5';
+      LIdentShort := 'report_short_d5';
     {$ENDIF}
     {$IFDEF DELPHI6}
-      LIdentLong  := 'report_long_d6' ;
-      LIdentShort := 'report_short_d6' ;
+      LIdentLong := 'report_long_d6';
+      LIdentShort := 'report_short_d6';
     {$ENDIF}
     {$IFDEF DELPHI7}
-      LIdentLong  := 'report_long_d7' ;
-      LIdentShort := 'report_short_d7' ;
+      LIdentLong := 'report_long_d7';
+      LIdentShort := 'report_short_d7';
     {$ENDIF}
     {$IFDEF DELPHI9}
-      LIdentLong  := 'report_long_d2005' ;
-      LIdentShort := 'report_short_d2005' ;
+      LIdentLong := 'report_long_d2005';
+      LIdentShort := 'report_short_d2005';
     {$ENDIF}
     {$IFDEF DELPHI10}
-      LIdentLong  := 'report_long_d2006' ;
-      LIdentShort := 'report_short_d2006' ;
+      LIdentLong := 'report_long_d2006';
+      LIdentShort := 'report_short_d2006';
     {$ENDIF}
                                        
     if (LIdentLong = '') or (LIdentShort = '') then
-      EtiOPFDUnitException.Create('Unknown Delphi version') ;
-    lINIFile.WriteString('Report_Long',  lIdentLong, LLong ) ;
-    lINIFile.WriteString('Report_Short', lIdentShort, LShort ) ;
+      EtiOPFDUnitException.Create('Unknown Delphi version');
+    lINIFile.WriteString('Report_Long',  lIdentLong, LLong);
+    lINIFile.WriteString('Report_Short', lIdentShort, LShort);
   finally
     lINIFile.Free;
-  end ;
+  end;
 end;
 
 procedure TtiTextTestListener.AddSuccess(test: ITest);
@@ -463,36 +463,36 @@ begin
   Write2Table(suite.getName);
 end;
 
-procedure TtiTextTestListener.Write2File(const pFileName, pStr: string);
+procedure TtiTextTestListener.Write2File(const AFileName, AStr: string);
 var
-  lBuffer   : PChar ;
-  lLen     : integer ;
-  lFileStream : TFileStream ;
+  lBuffer  : PChar;
+  lLen    : integer;
+  lFileStream : TFileStream;
 begin
-  if FileExists( pFileName ) then
-    lFileStream := TFileStream.Create( pFileName,
-                                       fmOpenReadWrite or fmShareDenyNone )
+  if FileExists(AFileName) then
+    lFileStream := TFileStream.Create(AFileName,
+                                       fmOpenReadWrite or fmShareDenyNone)
   else
-    lFileStream := TFileStream.Create( pFileName,
-                                       fmCreate or fmShareDenyNone ) ;
+    lFileStream := TFileStream.Create(AFileName,
+                                       fmCreate or fmShareDenyNone);
   try
-    lBuffer := PChar( pStr ) ;
-    lLen := length( pStr ) ;
-    lFileStream.Seek( 0, soFromEnd ) ;
-    lFileStream.write( lBuffer^, lLen ) ;
+    lBuffer := PChar(AStr);
+    lLen := length(AStr);
+    lFileStream.Seek(0, soFromEnd);
+    lFileStream.write(lBuffer^, lLen);
   finally
-    lFileStream.Free ;
-  end ;
+    lFileStream.Free;
+  end;
 end;
 
-procedure TtiTextTestListener.Write2Long(const pStr: string);
+procedure TtiTextTestListener.Write2Long(const AStr: string);
 begin
-  Write2File(FFileNameLong, pStr + CrLf );
+  Write2File(FFileNameLong, AStr + CrLf);
 end;
 
-procedure TtiTextTestListener.Write2Table(const pCell1, pCell2, pCell3, pCell4, pCell5 : string );
+procedure TtiTextTestListener.Write2Table(const pCell1, pCell2, pCell3, pCell4, pCell5 : string);
 var
-  lCell1, lCell2, lCell3, lCell4, lCell5 : string ;
+  lCell1, lCell2, lCell3, lCell4, lCell5 : string;
 begin
   if Trim(pCell1) <> '' then lCell1 := pCell1 else lCell1 := '&nbsp;';
   if Trim(pCell2) <> '' then lCell2 := pCell2 else lCell2 := '&nbsp;';
@@ -500,20 +500,20 @@ begin
   if Trim(pCell4) <> '' then lCell4 := pCell4 else lCell4 := '&nbsp;';
   if Trim(pCell5) <> '' then lCell5 := pCell5 else lCell5 := '&nbsp;';
 
-  Write2File(FFileNameLong, '  <tr>' + CrLf );
-  Write2File(FFileNameLong, '    <td>' + lCell1 + '</td>' + CrLf );
-  Write2File(FFileNameLong, '    <td>' + lCell2 + '</td>' + CrLf );
-  Write2File(FFileNameLong, '    <td>' + lCell3 + '</td>' + CrLf );
-  Write2File(FFileNameLong, '    <td>' + lCell4 + '</td>' + CrLf );
-  Write2File(FFileNameLong, '    <td>' + lCell5 + '</td>' + CrLf );
-  Write2File(FFileNameLong, '  </tr>' + CrLf );
+  Write2File(FFileNameLong, '  <tr>' + CrLf);
+  Write2File(FFileNameLong, '    <td>' + lCell1 + '</td>' + CrLf);
+  Write2File(FFileNameLong, '    <td>' + lCell2 + '</td>' + CrLf);
+  Write2File(FFileNameLong, '    <td>' + lCell3 + '</td>' + CrLf);
+  Write2File(FFileNameLong, '    <td>' + lCell4 + '</td>' + CrLf);
+  Write2File(FFileNameLong, '    <td>' + lCell5 + '</td>' + CrLf);
+  Write2File(FFileNameLong, '  </tr>' + CrLf);
 end;
 
-procedure TtiTextTestListener.Write2Table( const pCell1 : string ) ;
+procedure TtiTextTestListener.Write2Table(const pCell1 : string);
 begin
-  Write2File(FFileNameLong, '  <tr>' + CrLf );
-  Write2File(FFileNameLong, '    <td  colspan="5">' + pCell1 + '</td>' + CrLf );
-  Write2File(FFileNameLong, '  </tr>' + CrLf );
+  Write2File(FFileNameLong, '  <tr>' + CrLf);
+  Write2File(FFileNameLong, '    <td  colspan="5">' + pCell1 + '</td>' + CrLf);
+  Write2File(FFileNameLong, '  </tr>' + CrLf);
 end;
 
 function TtiTextTestListener.FormatTestName(ATest: ITest): string;

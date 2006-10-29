@@ -9,42 +9,42 @@ uses
   ,tiOPFTestManager
   ,tiClassToDBMap_TST
   ,tiOID_tst
-  ;
+ ;
 
 type
 
-  TtiOPFTestSetupDataXMLLight = class( TtiOPFTestSetupData )
+  TtiOPFTestSetupDataXMLLight = class(TtiOPFTestSetupData)
   public
-    constructor Create ; override ;
-  end ;
-
-  TTestTIPersistenceLayersXMLLight = class( TTestTIPersistenceLayers )
-  protected
-    procedure Setup; override;
+    constructor Create; override;
   end;
 
-  TTestTIDatabaseXMLLight = class( TTestTIDatabase )
+  TTestTIPersistenceLayersXMLLight = class(TTestTIPersistenceLayers)
   protected
-    procedure Setup; override;
+    procedure SetUp; override;
+  end;
+
+  TTestTIDatabaseXMLLight = class(TTestTIDatabase)
+  protected
+    procedure SetUp; override;
   published
-    procedure DatabaseExists ; override ;
-    procedure CreateDatabase ; override ;
-    procedure ThreadedDBConnectionPool ; override ;
+    procedure DatabaseExists; override;
+    procedure CreateDatabase; override;
+    procedure ThreadedDBConnectionPool; override;
   end;
 
-  TTestTIQueryXMLLight = class( TTestTIQueryNonSQL )
+  TTestTIQueryXMLLight = class(TTestTIQueryNonSQL)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
   TTestTIClassToDBMapOperationXMLLight = class(TTestTIClassToDBMapOperation)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
   TTestTIOIDManagerXMLLight = class(TTestTIOIDManager)
   protected
-    procedure   Setup; override;
+    procedure   SetUp; override;
   end;
 
 
@@ -58,9 +58,9 @@ uses
   ,tiUtils
   ,tiLog
   ,tiDUnitDependencies
-  ;
+ ;
 
-procedure RegisterTests ;
+procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistXMLLight) then
   begin
@@ -68,9 +68,9 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIDatabaseXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIQueryXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDManagerXMLLight.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIClassToDBMapOperationXMLLight.Suite);
+//    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIClassToDBMapOperationXMLLight.Suite);
   end;
-end ;
+end;
 
 { TtiOPFTestSetupDataXMLLight }
 
@@ -87,43 +87,43 @@ begin
     {$ENDIF}
   {$ENDIF}
   FSelected:= FEnabled;
-  FPerLayerName := cTIPersistXMLLight ;
-  FDBName   := ExpandFileName(ReadFromReg( cTIPersistXMLLight, 'DBName', gTestDataRoot + '_XMLLight.XML' )) ;
-  FUsername := ReadFromReg( cTIPersistXMLLight, 'Username', 'null') ;
-  FPassword := ReadFromReg( cTIPersistXMLLight, 'Password', 'null') ;
-  FCanCreateDatabase := true ;
-  ForceTestDataDirectory ;
+  FPerLayerName := cTIPersistXMLLight;
+  FDBName  := ExpandFileName(ReadFromReg(cTIPersistXMLLight, 'DBName', gTestDataRoot + '_XMLLight.XML'));
+  FUsername := ReadFromReg(cTIPersistXMLLight, 'Username', 'null');
+  FPassword := ReadFromReg(cTIPersistXMLLight, 'Password', 'null');
+  FCanCreateDatabase := true;
+  ForceTestDataDirectory;
 end;
 
 { TTestTIDatabaseXMLLight }
 
 procedure TTestTIDatabaseXMLLight.CreateDatabase;
 var
-  lFileName : string ;
+  lFileName : string;
 begin
-  lFileName := PerFrameworkSetup.DBName ;
-  SysUtils.DeleteFile(lFileName);
+  lFileName := PerFrameworkSetup.DBName;
+  tiDeleteFile(lFileName);
   Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password );
+  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
   Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
 end;
 
 procedure TTestTIDatabaseXMLLight.DatabaseExists;
 var
-  lFileName : string ;
+  lFileName : string;
 begin
-  lFileName := PerFrameworkSetup.DBName ;
-  SysUtils.DeleteFile(lFileName);
+  lFileName := PerFrameworkSetup.DBName;
+  tiDeleteFile(lFileName);
   Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password ),
+  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
         'FDatabaseClass.DatabaseExists()=true when it should =false');
   tiStringToFile('test',lFileName);
   Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password ),
+  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
         'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 
-procedure TTestTIDatabaseXMLLight.Setup;
+procedure TTestTIDatabaseXMLLight.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
   inherited;
@@ -131,13 +131,13 @@ end;
 
 procedure TTestTIDatabaseXMLLight.ThreadedDBConnectionPool;
 begin
-  LogWarning( 'The XMLLight persistence layer can only manage one thread.' ) ;
-  DoThreadedDBConnectionPool( 1 ) ;
+  LogWarning('The XMLLight persistence layer can only manage one thread.');
+  DoThreadedDBConnectionPool(1);
 end;
 
 { TTestTIQueryXMLLight }
 
-procedure TTestTIQueryXMLLight.Setup;
+procedure TTestTIQueryXMLLight.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
   inherited;
@@ -145,7 +145,7 @@ end;
 
 { TTestTIPersistenceLayersXMLLight }
 
-procedure TTestTIPersistenceLayersXMLLight.Setup;
+procedure TTestTIPersistenceLayersXMLLight.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
   inherited;
@@ -153,7 +153,7 @@ end;
 
 { TTestTIClassToDBMapOperationXMLLight }
 
-procedure TTestTIClassToDBMapOperationXMLLight.Setup;
+procedure TTestTIClassToDBMapOperationXMLLight.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
   inherited;
@@ -161,7 +161,7 @@ end;
 
 { TTestTIOIDManagerXMLLight }
 
-procedure TTestTIOIDManagerXMLLight.Setup;
+procedure TTestTIOIDManagerXMLLight.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
   inherited;

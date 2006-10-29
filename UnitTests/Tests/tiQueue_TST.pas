@@ -26,8 +26,8 @@ type
   private
     FQueue : TtiObjQueue;
   protected
-    Function ObjectsAreEqual(LHS, RHS : TTestObject) : Boolean;
-    Procedure Setup; Override;
+    Function ObjectsAreEqual(LHS, RHS : TTestObject): Boolean;
+    Procedure SetUp; Override;
     Procedure TearDown; Override;
   published
     Procedure Grow;
@@ -46,7 +46,7 @@ implementation
 uses
   SysUtils
   ,tiDUnitDependencies
-  ;
+ ;
   
   
 procedure RegisterTests;
@@ -141,13 +141,13 @@ Begin
 End;
 
 
-Function TTesttiQueue.ObjectsAreEqual(LHS, RHS : TTestObject) : Boolean;
+Function TTesttiQueue.ObjectsAreEqual(LHS, RHS : TTestObject): Boolean;
 Begin
   Result := ((LHS.Number = RHS.Number) And (LHS.Description = RHS.Description));
 End;
 
 
-Procedure TTesttiQueue.Setup;
+Procedure TTesttiQueue.SetUp;
 Begin
   FQueue := TtiObjQueue.Create(2);
   Inherited;

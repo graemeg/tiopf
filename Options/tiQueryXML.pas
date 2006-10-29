@@ -16,113 +16,113 @@ uses
   ,Variants
   {$ENDIF}
   ,Windows
-  ;
+ ;
 
 type
 
 
 
-  TtiDBConnectionPoolDataXML = Class( TtiDBConnectionPoolDataAbs )
+  TtiDBConnectionPoolDataXML = Class(TtiDBConnectionPoolDataAbs)
   public
-    procedure InitDBConnectionPool ; override ;
-  end ;
+    procedure InitDBConnectionPool; override;
+  end;
 
-  TtiDatabaseXML = class( TtiDatabase )
+  TtiDatabaseXML = class(TtiDatabase)
   private
-    FXMLDomDoc : IXMLDOMDocument ;
-    FConnected : boolean ;
+    FXMLDomDoc : IXMLDOMDocument;
+    FConnected : boolean;
     FCurrentThreadID: DWord;
-    FInTransaction : boolean ;
+    FInTransaction : boolean;
     FTerminateOnConnectError: boolean;
     FXMLRCTrans: IXMLReservedCharsTranslator;
 
-    function DOMFindTable( const pName : string ) : IXMLDomElement ;
-    function GetXMLWhereClause(const pWhere: TtiQueryParams): string;
+    function DOMFindTable(const AName : string): IXMLDomElement;
+    function GetXMLWhereClause(const AWhere: TtiQueryParams): string;
     function GetXMLDomDoc: IXMLDOMDocument;
 
   protected
-    procedure SetConnected( pbValue : boolean ) ; override;
-    function  GetConnected : boolean ; override ;
+    procedure SetConnected(AValue : boolean); override;
+    function  GetConnected : boolean; override;
     property  XMLDomDoc: IXMLDOMDocument read GetXMLDomDoc;
 
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
 
-    class function DatabaseExists( const psDatabaseName, psUserName, psPassword : string ) : boolean ; override ;
-    class procedure CreateDatabase( const psDatabaseName, psUserName, psPassword : string ) ; override ;
-    procedure   StartTransaction ; override ;
-    function    InTransaction : boolean ; override ;
-    procedure   Commit ; override ;
-    procedure   RollBack ; override ;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    procedure   StartTransaction; override;
+    function    InTransaction : boolean; override;
+    procedure   Commit; override;
+    procedure   RollBack; override;
 
-    procedure   ReadMetaDataTables( pData : TtiDBMetaData ) ; override ;
-    procedure   ReadMetaDataFields( pData : TtiDBMetaDataTable ) ; override ;
-    procedure   DropTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
-    procedure   CreateTable( const pTableMetaData : TtiDBMetaDataTable ) ; override ;
-    property    TerminateOnConnectError : boolean read FTerminateOnConnectError write FTerminateOnConnectError ;
-    function    Test : boolean ; override ;
+    procedure   ReadMetaDataTables(AData : TtiDBMetaData); override;
+    procedure   ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
+    procedure   DropTable(const ATableMetaData : TtiDBMetaDataTable); override;
+    procedure   CreateTable(const ATableMetaData : TtiDBMetaDataTable); override;
+    property    TerminateOnConnectError : boolean read FTerminateOnConnectError write FTerminateOnConnectError;
+    function    Test : boolean; override;
 
-  end ;
+  end;
 
-  TtiQueryXML = class( TtiQueryNonSQL )
+  TtiQueryXML = class(TtiQueryNonSQL)
   private
-    FQueryString : TStringList ;
+    FQueryString : TStringList;
     FTableName: string;
-    FNodes : IXMLDOMNodeList ;
-    FCurrentRecordIndex : integer ;
-    function CurrentRow : IXMLDomElement ;
+    FNodes : IXMLDOMNodeList;
+    FCurrentRecordIndex : integer;
+    function CurrentRow : IXMLDomElement;
 
   protected
 
-    function    GetParamAsString( const psName: string): string; override ;
-    procedure   SetParamAsString( const psName, Value: string); override ;
+    function    GetParamAsString(const AName: string): string; override;
+    procedure   SetParamAsString(const AName, AValue: string); override;
 
-    function    GetFieldAsString(const psName: string): string   ; override ;
-    function    GetFieldAsFloat(const psName: string): extended      ; override ;
-    function    GetFieldAsBoolean(const psName: string): boolean    ; override ;
-    function    GetFieldAsInteger(const psName: string): Int64 ; override ;
-    function    GetFieldAsDateTime(const psName: string):TDateTime ; override ;
-    function    GetFieldIsNull(const psName: string): Boolean; override ;
+    function    GetFieldAsString(const AName: string): string  ; override;
+    function    GetFieldAsFloat(const AName: string): extended     ; override;
+    function    GetFieldAsBoolean(const AName: string): boolean   ; override;
+    function    GetFieldAsInteger(const AName: string): Int64; override;
+    function    GetFieldAsDateTime(const AName: string):TDateTime; override;
+    function    GetFieldIsNull(const AName: string): Boolean; override;
 
-    function    GetFieldAsStringByIndex(pIndex: Integer): string     ; override ;
-    function    GetFieldAsFloatByIndex(pIndex: Integer)   : extended ; override ;
-    function    GetFieldAsBooleanByIndex(pIndex: Integer) : boolean  ; override ;
-    function    GetFieldAsIntegerByIndex(pIndex: Integer) : Int64    ; override ;
-    function    GetFieldAsDateTimeByIndex(pIndex: Integer):TDateTime ; override ;
-    function    GetFieldIsNullByIndex(pIndex: Integer):Boolean       ; override ;
+    function    GetFieldAsStringByIndex(AIndex: Integer): string    ; override;
+    function    GetFieldAsFloatByIndex(AIndex: Integer)  : extended; override;
+    function    GetFieldAsBooleanByIndex(AIndex: Integer): boolean ; override;
+    function    GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ; override;
+    function    GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime; override;
+    function    GetFieldIsNullByIndex(AIndex: Integer):Boolean      ; override;
 
-    function    GetSQL: TStrings; override ;
-    procedure   SetSQL(const Value: TStrings); override ;
-    function    GetActive: boolean; override ;
-    procedure   SetActive(const Value: boolean); override ;
-    function    GetEOF: boolean; override ;
+    function    GetSQL: TStrings; override;
+    procedure   SetSQL(const AValue: TStrings); override;
+    function    GetActive: boolean; override;
+    procedure   SetActive(const AValue: boolean); override;
+    function    GetEOF: boolean; override;
 
   public
-    constructor Create ; override ;
-    destructor  Destroy ; override ;
-    procedure   Open    ; override ;
-    procedure   Close   ; override ;
-    procedure   Next    ; override ;
-    procedure   ExecSQL ; override ;
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Open   ; override;
+    procedure   Close  ; override;
+    procedure   Next   ; override;
+    procedure   ExecSQL; override;
 
-    procedure   AttachDatabase( pDatabase : TtiDatabase ) ; override ;
-    procedure   DetachDatabase ;  override ;
-    procedure   Reset ; override ;
+    procedure   AttachDatabase(ADatabase : TtiDatabase); override;
+    procedure   DetachDatabase;  override;
+    procedure   Reset; override;
 
-    function    FieldCount : integer ; override ;
-    function    FieldName( pIndex : integer ) : string ; override ;
-    function    FieldIndex( const psName : string ) : integer ; override ;
-    function    FieldKind( pIndex : integer ) : TtiQueryFieldKind ; override ;
-    function    FieldSize( pIndex : integer ) : integer ; override ;
-    function    HasNativeLogicalType : boolean ; override ;
+    function    FieldCount : integer; override;
+    function    FieldName(AIndex : integer): string; override;
+    function    FieldIndex(const AName : string): integer; override;
+    function    FieldKind(AIndex : integer): TtiQueryFieldKind; override;
+    function    FieldSize(AIndex : integer): integer; override;
+    function    HasNativeLogicalType : boolean; override;
 
-    procedure   SelectRow( const pTableName : string ; const pWhere : TtiQueryParams = nil ) ; override ;
-    procedure   InsertRow( const pTableName : string ; const pParams : TtiQueryParams ) ; override ;
-    procedure   DeleteRow( const pTableName : string ; const pWhere  : TtiQueryParams = nil ) ; override ;
-    procedure   UpdateRow( const pTableName : string ; const pParams : TtiQueryParams ; const pWhere  : TtiQueryParams ) ; override ;
+    procedure   SelectRow(const ATableName : string; const AWhere : TtiQueryParams = nil); override;
+    procedure   InsertRow(const ATableName : string; const AParams : TtiQueryParams); override;
+    procedure   DeleteRow(const ATableName : string; const AWhere : TtiQueryParams = nil); override;
+    procedure   UpdateRow(const ATableName : string; const AParams : TtiQueryParams; const AWhere : TtiQueryParams); override;
 
-  end ;
+  end;
 
 
 implementation
@@ -138,12 +138,12 @@ uses
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
-  ;
+ ;
 
 var
   // ToDo: Move uXMLTags to the TtiDatabaseXML so settings can be changed at
   //       runtime on a per-xml file basis.
-  uXMLTags : TtiXMLTags ;
+  uXMLTags : TtiXMLTags;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -153,71 +153,71 @@ var
 constructor TtiQueryXML.Create;
 begin
   inherited;
-  FQueryString := TStringList.Create ;
+  FQueryString := TStringList.Create;
 end;
 
 destructor TtiQueryXML.Destroy;
 begin
-  FQueryString.Free ;
+  FQueryString.Free;
   inherited;
 end;
 
 procedure TtiQueryXML.Close;
 begin
-  Active := false ;
+  Active := false;
 end;
 
 procedure TtiQueryXML.ExecSQL;
 begin
-  Assert( false, 'Not implemented in ' + ClassName ) ;
+  Assert(false, 'Not implemented in ' + ClassName);
 end;
 
-function TtiQueryXML.GetFieldAsBoolean(const psName: string): boolean;
+function TtiQueryXML.GetFieldAsBoolean(const AName: string): boolean;
 var
-  Ls : string ;
+  Ls : string;
 begin
   try
-    Ls := CurrentRow.GetAttribute( LowerCase( psName )) ;
+    Ls := CurrentRow.GetAttribute(LowerCase(AName));
     result :=
-       ( SameText( Ls, 'T' ) or
-         SameText( Ls, 'TRUE' ) or
-         SameText( Ls, '1' ) or
-         SameText( Ls, 'Y' ) or
-         SameText( Ls, 'YES' ));
+       (SameText(Ls, 'T') or
+         SameText(Ls, 'TRUE') or
+         SameText(Ls, '1') or
+         SameText(Ls, 'Y') or
+         SameText(Ls, 'YES'));
   except
     on e:exception do
       raise EtiOPFDataException.Create(
-        'Error reading field <' + psName + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field <' + AName + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
         'XML: <' + CurrentRow.XML + '> Message: ' + e.Message);
-  end ;
+  end;
 end;
 
-function TtiQueryXML.GetFieldAsDateTime(const psName: string): TDateTime;
+function TtiQueryXML.GetFieldAsDateTime(const AName: string): TDateTime;
 var
-  Ls : string ;
+  Ls : string;
 begin
   try
-    Ls := CurrentRow.GetAttribute( LowerCase( psName )) ;
-    result := tiXMLStringToDateTime( Ls ) ;
+    Ls := CurrentRow.GetAttribute(LowerCase(AName));
+    result := tiXMLStringToDateTime(Ls);
   except
     on e:exception do
       raise EtiOPFDataException.Create(
-        'Error reading field <' + psName + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field <' + AName + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
-        'XML: <' + CurrentRow.XML + '> Message: ' + e.message );
-  end ;
+        'XML: <' + CurrentRow.XML + '> Message: ' + e.message);
+  end;
 end;
 
-function TtiQueryXML.GetFieldAsFloat(const psName: string): extended;
+function TtiQueryXML.GetFieldAsFloat(const AName: string): extended;
 var
-  Ls : string ;
+  Ls : string;
 begin
 //   ToDo: Fix null management
   try
-    Ls := CurrentRow.GetAttribute( LowerCase( psName )) ;
+    Ls := CurrentRow.GetAttribute(LowerCase(AName));
     if Ls = '' then
       result := 0
     else
@@ -225,142 +225,142 @@ begin
   except
     on e:exception do
       raise EtiOPFDataException.Create(
-        'Error reading field <' + psName + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field <' + AName + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
         'XML: <' + CurrentRow.XML + '> Message: ' + e.Message);
-  end ;
+  end;
 end;
 
-function TtiQueryXML.GetFieldAsInteger(const psName: string): Int64;
+function TtiQueryXML.GetFieldAsInteger(const AName: string): Int64;
 var
-  ls : string ;
+  ls : string;
 begin
   try
-    ls := CurrentRow.GetAttribute( LowerCase( psName )) ;
-    result := StrToInt64( ls ) ;
+    ls := CurrentRow.GetAttribute(LowerCase(AName));
+    result := StrToInt64(ls);
   except
     on e:exception do
       raise EtiOPFDataException.Create(
-        'Error reading field <' + psName + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field <' + AName + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
-        'XML: <' + CurrentRow.XML + '> Message: ' + e.Message );
-  end ;
+        'XML: <' + CurrentRow.XML + '> Message: ' + e.Message);
+  end;
 end;
 
-function TtiQueryXML.GetFieldAsString(const psName: string): string;
+function TtiQueryXML.GetFieldAsString(const AName: string): string;
 var
   ls: string;
 begin
   try
-    ls := CurrentRow.GetAttribute( LowerCase( psName )) ;
-    result := (Database as TtiDatabaseXML).FXMLRCTrans.InsertReserved( rcMSXML, ls ) ;
+    ls := CurrentRow.GetAttribute(LowerCase(AName));
+    result := (Database as TtiDatabaseXML).FXMLRCTrans.InsertReserved(rcMSXML, ls);
   except
     on e:exception do
     begin
-      result := '' ; // To shut the compiler up
+      result := ''; // To shut the compiler up
       raise EtiOPFDataException.Create(
-        'Error reading field <' + psName + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field <' + AName + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
-        'XML: <' + CurrentRow.XML + '> Message: ' + e.Message );
-    end ;
-  end ;
+        'XML: <' + CurrentRow.XML + '> Message: ' + e.Message);
+    end;
+  end;
 end;
 
 function TtiQueryXML.GetActive: boolean;
 begin
-  result := FNodes <> nil ;
+  result := FNodes <> nil;
 end;
 
 function TtiQueryXML.GetEOF: boolean;
 begin
-  result := FCurrentRecordIndex = FNodes.Length ;
+  result := FCurrentRecordIndex = FNodes.Length;
 end;
 
 function TtiQueryXML.GetSQL: TStrings;
 begin
-  result := FQueryString ;
+  result := FQueryString;
 end;
 
 procedure TtiQueryXML.Next;
 begin
-  Inc( FCurrentRecordIndex ) ;
+  Inc(FCurrentRecordIndex);
 end;
 
 procedure TtiQueryXML.Open;
 begin
-  Active := true ;
+  Active := true;
 end;
 
-procedure TtiQueryXML.SetActive(const Value: boolean);
+procedure TtiQueryXML.SetActive(const AValue: boolean);
 begin
-  if Active = Value then
-    Exit ; //==>
+  if Active = AValue then
+    Exit; //==>
 
-  if Active and Not Value then
+  if Active and Not AValue then
   begin
-    FCurrentRecordIndex := 0 ;
-    FNodes := nil ;
-    Exit ;
-  end ;
-  Assert( false, 'Can not call ' + ClassName + '.SetActive(true)' ) ;
+    FCurrentRecordIndex := 0;
+    FNodes := nil;
+    Exit;
+  end;
+  Assert(false, 'Can not call ' + ClassName + '.SetActive(true)');
 end;
 
-procedure TtiQueryXML.SetSQL(const Value: TStrings);
+procedure TtiQueryXML.SetSQL(const AValue: TStrings);
 begin
-  FQueryString.Assign( Value ) ;
+  FQueryString.Assign(AValue);
 end;
 
-procedure TtiQueryXML.AttachDatabase(pDatabase: TtiDatabase);
+procedure TtiQueryXML.AttachDatabase(ADatabase: TtiDatabase);
 begin
-  inherited AttachDatabase(pDatabase);
+  inherited AttachDatabase(ADatabase);
 end;
 
 procedure TtiQueryXML.DetachDatabase;
 begin
-  inherited DetachDatabase ;
+  inherited DetachDatabase;
 end;
 
 function TtiQueryXML.FieldCount: integer;
 begin
-  result := CurrentRow.Attributes.Length ;
+  result := CurrentRow.Attributes.Length;
 end;
 
-function TtiQueryXML.FieldName(pIndex: integer): string;
+function TtiQueryXML.FieldName(AIndex: integer): string;
 begin
-  result := CurrentRow.Attributes[pIndex].NodeName ;
+  result := CurrentRow.Attributes[AIndex].NodeName;
 end;
 
 procedure TtiQueryXML.Reset;
 begin
-//  Active := false ;
-//  FQuery.SQL.Clear ;
-//  FQuery.Params.Clear ;
+//  Active := false;
+//  FQuery.SQL.Clear;
+//  FQuery.Params.Clear;
 end;
 
-function TtiQueryXML.FieldIndex(const psName: string): integer;
+function TtiQueryXML.FieldIndex(const AName: string): integer;
 var
-  lTable     : IXMLDomElement ;
-  lXMLFields : IXMLDomElement ;
-  lXMLField  : IXMLDomElement ;
-  i : integer ;
+  lTable    : IXMLDomElement;
+  lXMLFields : IXMLDomElement;
+  lXMLField : IXMLDomElement;
+  i : integer;
 begin
-  result := -1 ;
-  lTable := ( Database as TtiDatabaseXML ).DOMFindTable( FTableName ) ;
+  result := -1;
+  lTable := (Database as TtiDatabaseXML).DOMFindTable(FTableName);
   if lTable = nil then
-    Exit ; //==>
-  lXMLFields := lTable.SelectSingleNode( uXMLTags.Fields ) as IXMLDomElement ;
+    Exit; //==>
+  lXMLFields := lTable.SelectSingleNode(uXMLTags.Fields) as IXMLDomElement;
   for i := 0 to lXMLFields.childNodes.length - 1 do
   begin
-    lXMLField  := lXMLFields.childNodes[i] as IXMLDomElement ;
-    if SameText( psName, lXMLField.GetAttribute( uXMLTags.FieldName )) then
+    lXMLField := lXMLFields.childNodes[i] as IXMLDomElement;
+    if SameText(AName, lXMLField.GetAttribute(uXMLTags.FieldName)) then
     begin
-      result := i ;
-      Exit ; //==>
-    end ;
-  end ;
+      result := i;
+      Exit; //==>
+    end;
+  end;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -370,11 +370,11 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiDatabaseXML.Create;
 begin
-  inherited ;
+  inherited;
   FCurrentThreadID:= 0;
   XMLDomDoc;
-  FTerminateOnConnectError := true ;
-  FXMLRCTrans:= CreateXMLReservedCharsTranslator ;
+  FTerminateOnConnectError := true;
+  FXMLRCTrans:= CreateXMLReservedCharsTranslator;
 end;
 
 destructor TtiDatabaseXML.Destroy;
@@ -385,9 +385,9 @@ begin
   // c) Text unit tests on WinXP is OK.
   // Added exception handling to suppress AV until we find a fix
   // Suspect a dangling reference to XMLDOMDoc
-  try  FXMLDomDoc := nil ;
+  try  FXMLDomDoc := nil;
   except end;
-  tiWin32CoUnInitialize ;
+  tiWin32CoUnInitialize;
   inherited;
 end;
 
@@ -395,152 +395,152 @@ procedure TtiDatabaseXML.Commit;
 begin
   if not InTransaction then
     raise EtiOPFInternalException.Create('Attempt to commit but not in a transaction.');
-  FXMLDomDoc.Save( DatabaseName ) ;
-  FInTransaction := false ;
+  FXMLDomDoc.Save(DatabaseName);
+  FInTransaction := false;
 end;
 
 function TtiDatabaseXML.InTransaction: boolean;
 begin
-  result := FInTransaction ;
+  result := FInTransaction;
 end;
 
 procedure TtiDatabaseXML.RollBack;
 begin
-  Connected := true ;
-  FInTransaction := false ;
+  Connected := true;
+  FInTransaction := false;
 end;
 
 procedure TtiDatabaseXML.StartTransaction;
 begin
   XMLDomDoc;
-  FInTransaction := true ;
+  FInTransaction := true;
 end;
 
-procedure TtiDatabaseXML.ReadMetaDataFields(pData: TtiDBMetaDataTable);
+procedure TtiDatabaseXML.ReadMetaDataFields(AData: TtiDBMetaDataTable);
 var
-  lXMLTable  : IXMLDomElement ;
-  lXMLFields : IXMLDomElement ;
-  lXMLField  : IXMLDomElement ;
+  lXMLTable : IXMLDomElement;
+  lXMLFields : IXMLDomElement;
+  lXMLField : IXMLDomElement;
 
-  lTable : TtiDBMetaDataTable ;
-  lField : TtiDBMetaDataField ;
+  lTable : TtiDBMetaDataTable;
+  lField : TtiDBMetaDataField;
 
   i : integer;
 
 begin
 
-  lTable := TtiDBMetaDataTable( pData ) ;
-  lXMLTable := DOMFindTable( lTable.Name ) ;
+  lTable := TtiDBMetaDataTable(AData);
+  lXMLTable := DOMFindTable(lTable.Name);
   if lXMLTable = nil then
-    Exit ; //==>
+    Exit; //==>
 
-  lXMLFields := lXMLTable.SelectSingleNode( uXMLTags.Fields ) as IXMLDomElement ;
+  lXMLFields := lXMLTable.SelectSingleNode(uXMLTags.Fields) as IXMLDomElement;
   for i := 0 to lXMLFields.childNodes.length - 1 do
   begin
-    lXMLField  := lXMLFields.childNodes[i] as IXMLDomElement ;
+    lXMLField := lXMLFields.childNodes[i] as IXMLDomElement;
 
-    lField              := TtiDBMetaDataField.Create ;
-    lField.Name        := lXMLField.GetAttribute( uXMLTags.FieldName ) ;
-    lField.KindAsStr   := lXMLField.GetAttribute( uXMLTags.FieldKind ) ;
-    lField.Width       := lXMLField.GetAttribute( uXMLTags.FieldSize ) ;
-    lField.ObjectState := posClean ;
-    lTable.Add( lField ) ;
-  end ;
+    lField             := TtiDBMetaDataField.Create;
+    lField.Name       := lXMLField.GetAttribute(uXMLTags.FieldName);
+    lField.KindAsStr  := lXMLField.GetAttribute(uXMLTags.FieldKind);
+    lField.Width      := lXMLField.GetAttribute(uXMLTags.FieldSize);
+    lField.ObjectState := posClean;
+    lTable.Add(lField);
+  end;
 end;
 
-procedure TtiDatabaseXML.ReadMetaDataTables(pData: TtiDBMetaData);
+procedure TtiDatabaseXML.ReadMetaDataTables(AData: TtiDBMetaData);
 var
-  lTables : IXMLDOMNodeList ;
-  lMetaData : TtiDBMetaData ;
-  lTable : TtiDBMetaDataTable ;
-  i : integer ;
+  lTables : IXMLDOMNodeList;
+  lMetaData : TtiDBMetaData;
+  lTable : TtiDBMetaDataTable;
+  i : integer;
 begin
-  lTables := FXMLDomDoc.selectNodes( '//' + uXMLTags.Tables + '/' + uXMLTags.Table ) ;
-  lMetaData := ( pData as TtiDBMetaData ) ;
+  lTables := FXMLDomDoc.selectNodes('//' + uXMLTags.Tables + '/' + uXMLTags.Table);
+  lMetaData := (AData as TtiDBMetaData);
   for i := 0 to lTables.Length - 1 do
   begin
-    lTable := TtiDBMetaDataTable.Create ;
-    lTable.Name := ( lTables.item[i] as IXMLDomElement ).GetAttribute( uXMLTags.TableName ) ;
-    lTable.ObjectState := posPK ;
-    lMetaData.Add( lTable ) ;
-    lMetaData.ObjectState := posClean ;
-  end ;
+    lTable := TtiDBMetaDataTable.Create;
+    lTable.Name := (lTables.item[i] as IXMLDomElement).GetAttribute(uXMLTags.TableName);
+    lTable.ObjectState := posPK;
+    lMetaData.Add(lTable);
+    lMetaData.ObjectState := posClean;
+  end;
 
 end;
 
 // This code is cloned in TtiQueryIB - Looks like we need to abstract more
 // and introduce a TDataSet version of the TtiQuery
-function TtiQueryXML.FieldKind(pIndex: integer): TtiQueryFieldKind;
+function TtiQueryXML.FieldKind(AIndex: integer): TtiQueryFieldKind;
 var
-  lTable    : IXMLDomElement ;
-  lMetaData : IXMLDomElement ;
-  lKind : string ;
+  lTable   : IXMLDomElement;
+  lMetaData : IXMLDomElement;
+  lKind : string;
 begin
-  result := qfkString ; // To shut the compiler up
-  lTable := ( Database as TtiDatabaseXML ).DOMFindTable( FTableName ) ;
+  result := qfkString; // To shut the compiler up
+  lTable := (Database as TtiDatabaseXML).DOMFindTable(FTableName);
   if lTable = nil then
-    Exit ; //==>
-  lMetaData := lTable.SelectSingleNode( uXMLTags.Fields ) as IXMLDomElement ;
-  lKind := ( lMetaData.ChildNodes[pIndex] as IXMLDomElement ).GetAttribute( uXMLTags.FieldKind ) ;
-  result := StrToQueryFieldKind( lKind ) ;
+    Exit; //==>
+  lMetaData := lTable.SelectSingleNode(uXMLTags.Fields) as IXMLDomElement;
+  lKind := (lMetaData.ChildNodes[AIndex] as IXMLDomElement).GetAttribute(uXMLTags.FieldKind);
+  result := StrToQueryFieldKind(lKind);
 end;
 
-function TtiQueryXML.FieldSize(pIndex: integer): integer;
+function TtiQueryXML.FieldSize(AIndex: integer): integer;
 var
-  lTable    : IXMLDomElement ;
-  lMetaData : IXMLDomElement ;
-  lSize : string ;
+  lTable   : IXMLDomElement;
+  lMetaData : IXMLDomElement;
+  lSize : string;
 begin
-  if FieldKind(pIndex) in [ qfkInteger, qfkLogical, qfkFloat, qfkDateTime, qfkLongString ] then
+  if FieldKind(AIndex) in [ qfkInteger, qfkLogical, qfkFloat, qfkDateTime, qfkLongString ] then
     result := 0
   else
   begin
-    result := 0 ; // To shut the compiler up
-    lTable := ( Database as TtiDatabaseXML ).DOMFindTable( FTableName ) ;
+    result := 0; // To shut the compiler up
+    lTable := (Database as TtiDatabaseXML).DOMFindTable(FTableName);
     if lTable = nil then
-      Exit ; //==>
-    lMetaData := lTable.SelectSingleNode( uXMLTags.Fields ) as IXMLDomElement ;
-    lSize := ( lMetaData.ChildNodes[pIndex] as IXMLDomElement ).GetAttribute( uXMLTags.FieldSize ) ;
-    result := StrToInt( lSize ) ;
-  end ;
+      Exit; //==>
+    lMetaData := lTable.SelectSingleNode(uXMLTags.Fields) as IXMLDomElement;
+    lSize := (lMetaData.ChildNodes[AIndex] as IXMLDomElement).GetAttribute(uXMLTags.FieldSize);
+    result := StrToInt(lSize);
+  end;
 end;
 
 function TtiDatabaseXML.GetConnected: boolean;
 begin
   // ToDo: There must be a way of getting this info out of IXMLDOMDocument
-  result := FConnected ;
+  result := FConnected;
 end;
 
-procedure TtiDatabaseXML.SetConnected(pbValue: boolean);
+procedure TtiDatabaseXML.SetConnected(AValue: boolean);
 var
-  lError : IXMLDomParseError ;
-  lErrorMessage : string ;
+  lError : IXMLDomParseError;
+  lErrorMessage : string;
 begin
 
   // ToDo: Require a better way of doing this
-  if Connected and ( not pbValue ) then
+  if Connected and (not AValue) then
   begin
-    Log( 'Disconnecting from %s', [DatabaseName], lsConnectionPool ) ;
-    FConnected := false ;
-    FXMLDomDoc := nil ;
-    FXMLDomDoc := CoDomDocument.Create ;
-    Exit ;
-  end ;
+    Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);
+    FConnected := false;
+    FXMLDomDoc := nil;
+    FXMLDomDoc := CoDomDocument.Create;
+    Exit;
+  end;
 
   try
-    FXMLDomDoc.Load( DatabaseName ) ;
+    FXMLDomDoc.Load(DatabaseName);
 
     While FXMLDomDoc.readyState <> 4 do
     begin
-      Log( '%s Waiting for XML doc to load') ;
-      Sleep( 50 ) ;
-    end ;
+      Log('%s Waiting for XML doc to load');
+      Sleep(50);
+    end;
 
-    lError := FXMLDomDoc.ParseError ;
+    lError := FXMLDomDoc.ParseError;
     if lError.ErrorCode <> 0 then
     begin
       lErrorMessage :=
-        Format( 'XML load error: %s' + Cr +
+        Format('XML load error: %s' + Cr +
                 'Line: %s' + Cr +
                 'Position: %s' + Cr +
                 'Details %s' + Cr +
@@ -549,118 +549,118 @@ begin
                  VarToStr(lError.line),
                  VarToStr(lError.linePos),
                  VarToStr(lError.SrcText),
-                 DatabaseName ]) ;
-      EtiOPFDBExceptionCanNotConnect.Create( cTIPersistXML, DatabaseName, UserName, Password, lErrorMessage);
-    end ;
+                 DatabaseName ]);
+      EtiOPFDBExceptionCanNotConnect.Create(cTIPersistXML, DatabaseName, UserName, Password, lErrorMessage);
+    end;
   except
     on e:exception do
-      raise EtiOPFDBExceptionCanNotConnect.Create( cTIPersistXML, DatabaseName, UserName, Password, e.message);
-  end ;
+      raise EtiOPFDBExceptionCanNotConnect.Create(cTIPersistXML, DatabaseName, UserName, Password, e.message);
+  end;
 
-  FConnected := true ;
+  FConnected := true;
 
 end;
 
-function TtiQueryXML.GetFieldIsNull(const psName: string): Boolean;
+function TtiQueryXML.GetFieldIsNull(const AName: string): Boolean;
 //var
-//  i : integer ;
+//  i : integer;
 begin
-  Result := GetFieldAsString(psName) = '';
-//  result := true ;
+  Result := GetFieldAsString(AName) = '';
+//  result := true;
 //  for i := 0 to CurrentRow.Attributes.Length - 1 do
-//    if SameText( CurrentRow.Attributes[i].NodeName, psName ) then
+//    if SameText(CurrentRow.Attributes[i].NodeName, AName) then
 //    begin
-//      result := false ;
-//      Break ; //==>
-//    end ;
+//      result := false;
+//      Break; //==>
+//    end;
 end;
 
-procedure TtiDatabaseXML.CreateTable( const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseXML.CreateTable(const ATableMetaData: TtiDBMetaDataTable);
 var
-  lTables : IXMLDomElement ;
-  lTable  : IXMLDomElement ;
-  lFields : IXMLDomElement ;
-  lField  : IXMLDomElement ;
-  lRows   : IXMLDomElement ;
-  i : integer ;
+  lTables : IXMLDomElement;
+  lTable : IXMLDomElement;
+  lFields : IXMLDomElement;
+  lField : IXMLDomElement;
+  lRows  : IXMLDomElement;
+  i : integer;
 begin
 
-  lTable := DOMFindTable( pTableMetaData.Name ) ;
+  lTable := DOMFindTable(ATableMetaData.Name);
   if lTable <> nil then
-    raise EtiOPFInternalException.Create( 'Attempt to create duplicate table name <' +
-                    pTableMetaData.Name + '>') ;
+    raise EtiOPFInternalException.Create('Attempt to create duplicate table name <' +
+                    ATableMetaData.Name + '>');
 
 
-  StartTransaction ;
+  StartTransaction;
   try
-    lTable := FXMLDomDoc.CreateElement( uXMLTags.Table ) ;
+    lTable := FXMLDomDoc.CreateElement(uXMLTags.Table);
 
-    lTable.setAttribute( uXMLTags.TableName, LowerCase( pTableMetaData.Name )) ;
+    lTable.setAttribute(uXMLTags.TableName, LowerCase(ATableMetaData.Name));
 
-    lFields       := FXMLDomDoc.CreateElement( uXMLTags.Fields );
-    lTable.AppendChild( lFields ) ;
+    lFields      := FXMLDomDoc.CreateElement(uXMLTags.Fields);
+    lTable.AppendChild(lFields);
 
-    for i := 0 to pTableMetaData.Count - 1 do
+    for i := 0 to ATableMetaData.Count - 1 do
     begin
-      lField        := FXMLDomDoc.CreateElement( uXMLTags.Field ) ;
-      lField.SetAttribute( uXMLTags.FieldName, LowerCase( pTableMetaData.Items[i].Name )) ;
-      lField.SetAttribute( uXMLTags.FieldKind, LowerCase( pTableMetaData.Items[i].KindAsStr )) ;
-      lField.SetAttribute( uXMLTags.FieldSize, pTableMetaData.Items[i].Width ) ;
-      lFields.AppendChild( lField ) ;
-    end ;
+      lField       := FXMLDomDoc.CreateElement(uXMLTags.Field);
+      lField.SetAttribute(uXMLTags.FieldName, LowerCase(ATableMetaData.Items[i].Name));
+      lField.SetAttribute(uXMLTags.FieldKind, LowerCase(ATableMetaData.Items[i].KindAsStr));
+      lField.SetAttribute(uXMLTags.FieldSize, ATableMetaData.Items[i].Width);
+      lFields.AppendChild(lField);
+    end;
 
-    lRows         := FXMLDomDoc.CreateElement( uXMLTags.Rows );
-    lTable.AppendChild( lRows ) ;
+    lRows        := FXMLDomDoc.CreateElement(uXMLTags.Rows);
+    lTable.AppendChild(lRows);
 
-    lTables := FXMLDomDoc.SelectSingleNode( '//' + uXMLTags.Tables ) as IXMLDomElement ;
+    lTables := FXMLDomDoc.SelectSingleNode('//' + uXMLTags.Tables) as IXMLDomElement;
     if lTables = nil then
-      raise EtiOPFInternalException.Create( 'Cant find XML <' +  uXMLTags.Tables + '> element');
+      raise EtiOPFInternalException.Create('Cant find XML <' +  uXMLTags.Tables + '> element');
 
-    lTables.appendChild( lTable ) ;
-    Commit ;
+    lTables.appendChild(lTable);
+    Commit;
   except
     on e:exception do
     begin
-      RollBack ;
-      raise ;
-    end ;
-  end ;
+      RollBack;
+      raise;
+    end;
+  end;
 end;
 
-procedure TtiDatabaseXML.DropTable( const pTableMetaData: TtiDBMetaDataTable);
+procedure TtiDatabaseXML.DropTable(const ATableMetaData: TtiDBMetaDataTable);
 var
-  lTables : IXMLDomElement ;
-  lTable  : IXMLDomElement ;
+  lTables : IXMLDomElement;
+  lTable : IXMLDomElement;
 begin
-  lTable := DOMFindTable(pTableMetaData.Name) ;
+  lTable := DOMFindTable(ATableMetaData.Name);
   if lTable <> nil then
   begin
-    StartTransaction ;
+    StartTransaction;
     try
-      lTables := FXMLDomDoc.SelectSingleNode( '//' + uXMLTags.Tables ) as IXMLDomElement ;
+      lTables := FXMLDomDoc.SelectSingleNode('//' + uXMLTags.Tables) as IXMLDomElement;
       if lTables = nil then
-        raise EtiOPFInternalException( 'Unable to find XML Element <' + uXMLTags.Tables + '>') ;
-      lTables.RemoveChild( lTable ) ;
-      Commit ;
+        raise EtiOPFInternalException('Unable to find XML Element <' + uXMLTags.Tables + '>');
+      lTables.RemoveChild(lTable);
+      Commit;
     except
       on e:exception do
       begin
-        RollBack ;
-        raise ;
-      end ;
-    end ;
-  end ;
+        RollBack;
+        raise;
+      end;
+    end;
+  end;
 end;
 
-function TtiDatabaseXML.DOMFindTable(const pName: string): IXMLDomElement;
+function TtiDatabaseXML.DOMFindTable(const AName: string): IXMLDomElement;
 var
-  ls : string ;
+  ls : string;
 begin
   ls := '//' + uXMLTags.Tables +
         '/' + uXMLTags.Table + '[@' +
         uXMLTags.TableName + '="' +
-        LowerCase(pName) + '"]';
-  result := FXMLDomDoc.selectSingleNode( ls ) as IXMLDomElement ;
+        LowerCase(AName) + '"]';
+  result := FXMLDomDoc.selectSingleNode(ls) as IXMLDomElement;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -670,160 +670,160 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 procedure TtiDBConnectionPoolDataXML.InitDBConnectionPool;
 begin
-  DBConnectionPool.MinPoolSize := 0 ;
-  DBConnectionPool.MaxPoolSize := 1 ;
+  DBConnectionPool.MinPoolSize := 0;
+  DBConnectionPool.MaxPoolSize := 1;
 end;
 
-function TtiDatabaseXML.GetXMLWhereClause(const pWhere: TtiQueryParams) : string ;
+function TtiDatabaseXML.GetXMLWhereClause(const AWhere: TtiQueryParams): string;
 var
-  i : integer ;
+  i : integer;
 begin
-  result := '' ;
-  if pWhere = nil then
-    Exit ;
-  for i := 0 to pWhere.Count - 1 do
+  result := '';
+  if AWhere = nil then
+    Exit;
+  for i := 0 to AWhere.Count - 1 do
   begin
-    result := tiAddTrailingValue( result, '$and$' ) ;
+    result := tiAddTrailingValue(result, '$and$');
     result :=
       result +
-      LowerCase( pWhere.Items[i].Name ) + '=' +
-      '"' + FXMLRCTrans.RemoveReserved( rcMSXML, pWhere.Items[i].GetValueAsString)  + '"' ;
-  end ;
+      LowerCase(AWhere.Items[i].Name) + '=' +
+      '"' + FXMLRCTrans.RemoveReserved(rcMSXML, AWhere.Items[i].GetValueAsString)  + '"';
+  end;
 
   if result <> '' then
-    result := '[@' + result + ']' ;
+    result := '[@' + result + ']';
 
-end ;
+end;
 
 
-procedure TtiQueryXML.SelectRow(const pTableName: string;const pWhere: TtiQueryParams);
+procedure TtiQueryXML.SelectRow(const ATableName: string;const AWhere: TtiQueryParams);
 var
-  lTable : IXMLDomElement ;
-  lQuery : string ;
+  lTable : IXMLDomElement;
+  lQuery : string;
 begin
-  Assert( Database.TestValid(TtiDatabase), cTIInvalidObjectError );
-  FTableName := lowerCase( pTableName ) ;
+  Assert(Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  FTableName := lowerCase(ATableName);
 
-  lTable := ( Database as TtiDatabaseXML).DOMFindTable( FTableName ) ;
+  lTable := (Database as TtiDatabaseXML).DOMFindTable(FTableName);
   if lTable = nil then
     raise EtiOPFInternalException.Create(
-          'Can not find table <' + pTableName +
-          '> in <' + Database.DatabaseName + '>') ;
+          'Can not find table <' + ATableName +
+          '> in <' + Database.DatabaseName + '>');
   lQuery :=
           uXMLTags.Rows + '/' + uXMLTags.Row +
-          ( Database as TtiDatabaseXML ).GetXMLWhereClause( pWhere ) ;
+          (Database as TtiDatabaseXML).GetXMLWhereClause(AWhere);
 
-  FNodes := lTable.SelectNodes( lQuery ) ;
+  FNodes := lTable.SelectNodes(lQuery);
 
-  FCurrentRecordIndex := 0 ;
+  FCurrentRecordIndex := 0;
 end;
 
 function TtiQueryXML.CurrentRow: IXMLDomElement;
 begin
-  result := ( FNodes.Item[FCurrentRecordIndex] as IXMLDomElement ) ;
+  result := (FNodes.Item[FCurrentRecordIndex] as IXMLDomElement);
 end;
 
-procedure TtiQueryXML.DeleteRow(const pTableName: string; const pWhere: TtiQueryParams);
+procedure TtiQueryXML.DeleteRow(const ATableName: string; const AWhere: TtiQueryParams);
 var
-  lTable : IXMLDomElement ;
-  lRows  : IXMLDomNodeList ;
-  lWhere : string ;
-  i : integer ;
+  lTable : IXMLDomElement;
+  lRows : IXMLDomNodeList;
+  lWhere : string;
+  i : integer;
 begin
-  lTable := ( Database as TtiDatabaseXML ).DOMFindTable( pTableName ) ;
+  lTable := (Database as TtiDatabaseXML).DOMFindTable(ATableName);
   if lTable <> nil then
   begin
     lWhere :=
             uXMLTags.Rows + '/' + uXMLTags.Row +
-            ( Database as TtiDatabaseXML ).GetXMLWhereClause( pWhere ) ;
+            (Database as TtiDatabaseXML).GetXMLWhereClause(AWhere);
 
-    lRows := lTable.SelectNodes( lWhere ) ;
+    lRows := lTable.SelectNodes(lWhere);
     for i := 0 to lRows.Length - 1 do
-      lTable.SelectSingleNode( uXMLTags.Rows ).RemoveChild( lRows.item[i] ) ;
-  end ;
+      lTable.SelectSingleNode(uXMLTags.Rows).RemoveChild(lRows.item[i]);
+  end;
 end;
 
-procedure TtiQueryXML.InsertRow(const pTableName: string; const pParams: TtiQueryParams);
+procedure TtiQueryXML.InsertRow(const ATableName: string; const AParams: TtiQueryParams);
 var
-  lTable  : IXMLDomElement ;
-  lRow    : IXMLDomElement ;
-  lRows   : IXMLDomNode ;
-  lName   : string ;
-  lValue  : string ;
-  i : integer ;
-  lMetaDataTable : TtiDBMetaDataTable ;
+  lTable : IXMLDomElement;
+  lRow   : IXMLDomElement;
+  lRows  : IXMLDomNode;
+  lName  : string;
+  lValue : string;
+  i : integer;
+  lMetaDataTable : TtiDBMetaDataTable;
   lParam: TtiQueryParamAbs;
 begin
 
-  lTable := ( Database as TtiDatabaseXML ).DOMFindTable( pTableName ) ;
+  lTable := (Database as TtiDatabaseXML).DOMFindTable(ATableName);
   if lTable = nil then
     raise EtiOPFInternalException.Create(
-          'Can not find table <' + pTableName +
+          'Can not find table <' + ATableName +
           '> in <' + Database.DatabaseName + '>');
 
-  lRow := ( Database as TtiDatabaseXML ).XMLDomDoc.CreateElement( uXMLTags.Row ) ;
+  lRow := (Database as TtiDatabaseXML).XMLDomDoc.CreateElement(uXMLTags.Row);
 
-  lMetaDataTable := TtiDBMetaDataTable.Create ;
+  lMetaDataTable := TtiDBMetaDataTable.Create;
   try
-    lMetaDataTable.Name := pTableName ;
-    ( Database as TtiDatabaseXML ).ReadMetaDataFields(lMetaDataTable);
+    lMetaDataTable.Name := ATableName;
+    (Database as TtiDatabaseXML).ReadMetaDataFields(lMetaDataTable);
     for i := 0 to lMetaDataTable.Count - 1 do
     begin
-      lParam := pParams.FindParamByName(lMetaDataTable.Items[i].Name);
+      lParam := AParams.FindParamByName(lMetaDataTable.Items[i].Name);
       if lParam <> nil then
       begin
-        lName := LowerCase(lParam.Name) ;
-        lValue := (Database as TtiDatabaseXML).FXMLRCTrans.RemoveReserved( rcMSXML, lParam.GetValueAsString) ;
-        lRow.SetAttribute( lName, lValue ) ;
+        lName := LowerCase(lParam.Name);
+        lValue := (Database as TtiDatabaseXML).FXMLRCTrans.RemoveReserved(rcMSXML, lParam.GetValueAsString);
+        lRow.SetAttribute(lName, lValue);
       end else
         lRow.setAttribute(lMetaDataTable.Items[i].Name, '');
-    end ;
+    end;
   finally
     lMetaDataTable.Free;
   end;
 
-  lRows := lTable.SelectSingleNode( uXMLTags.Rows ) ;
+  lRows := lTable.SelectSingleNode(uXMLTags.Rows);
   if lRows = nil then
-    raise EtiOPFInternalException.Create( 'Can not find XML tag <' + uXMLTags.Rows + '>');
+    raise EtiOPFInternalException.Create('Can not find XML tag <' + uXMLTags.Rows + '>');
 
-  lRows.AppendChild( lRow ) ;
+  lRows.AppendChild(lRow);
 
 end;
 
-procedure TtiQueryXML.UpdateRow(const pTableName: string; const pParams, pWhere : TtiQueryParams);
+procedure TtiQueryXML.UpdateRow(const ATableName: string; const AParams, AWhere : TtiQueryParams);
 var
-  lTable : IXMLDomElement ;
-  lRows  : IXMLDomNodeList ;
-  lRow    : IXMLDomElement ;
-  lWhere : string ;
-  i, j : integer ;        
-  lValue : string ;
-  lName  : string ;
+  lTable : IXMLDomElement;
+  lRows : IXMLDomNodeList;
+  lRow   : IXMLDomElement;
+  lWhere : string;
+  i, j : integer;        
+  lValue : string;
+  lName : string;
 begin
-  lTable := ( Database as TtiDatabaseXML ).DOMFindTable( pTableName ) ;
+  lTable := (Database as TtiDatabaseXML).DOMFindTable(ATableName);
   if lTable <> nil then
   begin
     lWhere :=
             uXMLTags.Rows + '/' + uXMLTags.Row +
-            ( Database as TtiDatabaseXML ).GetXMLWhereClause( pWhere ) ;
-    lRows := lTable.SelectNodes( lWhere ) ;
+            (Database as TtiDatabaseXML).GetXMLWhereClause(AWhere);
+    lRows := lTable.SelectNodes(lWhere);
     for i := 0 to lRows.Length - 1 do
     begin
-      lRow := ( lRows.item[i] as IXMLDomElement ) ;
-      for j := 0 to pParams.Count - 1 do
+      lRow := (lRows.item[i] as IXMLDomElement);
+      for j := 0 to AParams.Count - 1 do
       begin
-        lName  := LowerCase(pParams.Items[j].Name) ;
-        lValue := (Database as TtiDatabaseXML).FXMLRCTrans.RemoveReserved( rcMSXML, pParams.Items[j].GetValueAsString);
-        lRow.SetAttribute( lName, lValue ) ;
-      end ;
-    end ;
-  end ;
+        lName := LowerCase(AParams.Items[j].Name);
+        lValue := (Database as TtiDatabaseXML).FXMLRCTrans.RemoveReserved(rcMSXML, AParams.Items[j].GetValueAsString);
+        lRow.SetAttribute(lName, lValue);
+      end;
+    end;
+  end;
 end;
 
-class procedure TtiDatabaseXML.CreateDatabase(const psDatabaseName,psUserName, psPassword: string);
+class procedure TtiDatabaseXML.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
 var
-  lXML : string ;
-  lPath : string ;
+  lXML : string;
+  lPath : string;
 begin
   lXML :=
       uXMLTags.DocHeader +
@@ -833,83 +833,83 @@ begin
     tiXMLTagEnd(uXMLTags.Tables) +
     tiXMLTagEnd(uXMLTags.DocData);
 
-  lPath := ExtractFilePath(psDatabaseName);
+  lPath := ExtractFilePath(ADatabaseName);
   if not DirectoryExists(lPath) then
     ForceDirectories(lPath);
-  tiStringToFile(lXML, psDatabaseName);
+  tiStringToFile(lXML, ADatabaseName);
 end;
 
-class function TtiDatabaseXML.DatabaseExists(const psDatabaseName,psUserName, psPassword: string): boolean;
+class function TtiDatabaseXML.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
 begin
-  result := FileExists(psDatabaseName);
+  result := FileExists(ADatabaseName);
 end;
 
 function TtiQueryXML.HasNativeLogicalType: boolean;
 begin
-  result := true ;
+  result := true;
 end;
 
-function TtiQueryXML.GetParamAsString(const psName: string): string;
+function TtiQueryXML.GetParamAsString(const AName: string): string;
 begin
-  Result := Params.GetValueAsString(psName);
+  Result := Params.GetValueAsString(AName);
 end;
 
-procedure TtiQueryXML.SetParamAsString(const psName, Value: string);
+procedure TtiQueryXML.SetParamAsString(const AName, AValue: string);
 begin
-  Params.SetValueAsString(psName, Value );
+  Params.SetValueAsString(AName, AValue);
 end;
 
 function TtiDatabaseXML.Test: boolean;
 begin
-  result := false ;
-  Assert( false, 'Under construction' ) ;
+  result := false;
+  Assert(false, 'Under construction');
 end;
 
-function TtiQueryXML.GetFieldAsBooleanByIndex(pIndex: Integer): boolean;
+function TtiQueryXML.GetFieldAsBooleanByIndex(AIndex: Integer): boolean;
 var
   ls: string;
 begin
   try
-    ls := CurrentRow.Attributes[pIndex].nodeValue;
+    ls := CurrentRow.Attributes[AIndex].nodeValue;
     result :=
-       ( SameText( ls, 'T' ) or
-         SameText( ls, 'TRUE' ) or
-         SameText( ls, '1' ) or
-         SameText( ls, 'Y' ) or
-         SameText( ls, 'YES' ));
+       (SameText(ls, 'T') or
+         SameText(ls, 'TRUE') or
+         SameText(ls, '1') or
+         SameText(ls, 'Y') or
+         SameText(ls, 'YES'));
   except
     on e:exception do
       raise EtiOPFInternalException.Create(
-        'Error reading field index <' + IntToStr(pIndex) + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field index <' + IntToStr(AIndex) + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
         'XML: <' + CurrentRow.XML + '> Message: ' + e.Message);
-  end ;
+  end;
 end;
 
-function TtiQueryXML.GetFieldAsDateTimeByIndex(pIndex: Integer): TDateTime;
+function TtiQueryXML.GetFieldAsDateTimeByIndex(AIndex: Integer): TDateTime;
 var
-  ls : string ;
+  ls : string;
 begin
   try
-    ls := CurrentRow.Attributes[pIndex].nodeValue;
-    result := tiXMLStringToDateTime( ls ) ;
+    ls := CurrentRow.Attributes[AIndex].nodeValue;
+    result := tiXMLStringToDateTime(ls);
   except
     on e:exception do
       raise EtiOPFDataException.Create(
-        'Error reading field index <' + IntToStr(pIndex) + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field index <' + IntToStr(AIndex) + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
         'XML: <' + CurrentRow.XML + '> Mesage: ' + e.Message);
-  end ;
+  end;
 end;
 
-function TtiQueryXML.GetFieldAsFloatByIndex(pIndex: Integer): extended;
+function TtiQueryXML.GetFieldAsFloatByIndex(AIndex: Integer): extended;
 var
-  ls : string ;
+  ls : string;
 begin
   try
-    ls := CurrentRow.Attributes[pIndex].nodeValue;
+    ls := CurrentRow.Attributes[AIndex].nodeValue;
     if ls = '' then
       result := 0
     else
@@ -917,62 +917,62 @@ begin
   except
     on e:exception do
       raise EtiOPFDataException.Create(
-        'Error reading field index <' + IntToStr(pIndex) + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field index <' + IntToStr(AIndex) + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
         'XML: <' + CurrentRow.XML + '> Message: ' + e.Message);
-  end ;
+  end;
 end;
 
-function TtiQueryXML.GetFieldAsIntegerByIndex(pIndex: Integer): Int64;
+function TtiQueryXML.GetFieldAsIntegerByIndex(AIndex: Integer): Int64;
 var
   ls: string;
 begin
   try
-    ls := CurrentRow.Attributes[pIndex].nodeValue;
-    result := StrToInt64( ls ) ;
+    ls := CurrentRow.Attributes[AIndex].nodeValue;
+    result := StrToInt64(ls);
   except
     on e:exception do
       raise EtiOPFDataException.Create(
-        'Error reading field index <' + IntToStr(pIndex) + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field index <' + IntToStr(AIndex) + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
         'XML: <' + CurrentRow.XML + '> Message: ' + e.Message);
-  end ;
+  end;
 end;
 
-function TtiQueryXML.GetFieldAsStringByIndex(pIndex: Integer): string;
+function TtiQueryXML.GetFieldAsStringByIndex(AIndex: Integer): string;
 var
   Ls: string;
 begin
   try
-    Ls := CurrentRow.Attributes[pIndex].nodeValue;
-    result := (Database as TtiDatabaseXML).FXMLRCTrans.InsertReserved(rcMSXML, Ls ) ;
+    Ls := CurrentRow.Attributes[AIndex].nodeValue;
+    result := (Database as TtiDatabaseXML).FXMLRCTrans.InsertReserved(rcMSXML, Ls);
   except
     on e:exception do
     begin
-      result := '' ; // To shut the compiler up
+      result := ''; // To shut the compiler up
       raise EtiOPFDataException.Create(
-        'Error reading field index <' + IntToStr(pIndex) + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field index <' + IntToStr(AIndex) + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
         'XML: <' + CurrentRow.XML + '> Message: ' + e.Message);
-    end ;
-  end ;
+    end;
+  end;
 end;
 
-function TtiQueryXML.GetFieldIsNullByIndex(pIndex: Integer): Boolean;
+function TtiQueryXML.GetFieldIsNullByIndex(AIndex: Integer): Boolean;
 begin
   try
-    result := GetFieldAsStringByIndex(pIndex) = '';
+    result := GetFieldAsStringByIndex(AIndex) = '';
   except 
     on e:exception do
       raise EtiOPFDataException.Create(
-        'Error reading field index <' + IntToStr(pIndex) + '> ' + Cr +
-        'From row <' + IntToStr( FCurrentRecordIndex ) + '> ' + Cr +
+        'Error reading field index <' + IntToStr(AIndex) + '> ' + Cr +
+        'From row <' + IntToStr(FCurrentRecordIndex) + '> ' + Cr +
         'In table <' + FTableName + '> ' + Cr +
         'XML: <' + CurrentRow.XML + '> Message: ' + e.Message);
-  end ;
+  end;
 end;
 
 function TtiDatabaseXML.GetXMLDomDoc: IXMLDOMDocument;
@@ -985,25 +985,25 @@ begin
     FXMLDomDoc:= nil;
     FCurrentThreadID:= LCurrentThreadID;
     tiWin32CoInitialize;
-    FXMLDomDoc := CoDomDocument.Create ;
-    FConnected := false ;
-    FInTransaction := false ;
+    FXMLDomDoc := CoDomDocument.Create;
+    FConnected := false;
+    FInTransaction := false;
   end;
   Result:= FXMLDomDoc;
 end;
 
 Initialization
-  uXMLTags := TtiXMLTags.Create ;
+  uXMLTags := TtiXMLTags.Create;
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
               cTIPersistXML,
               TtiDBConnectionPoolDataXML,
               TtiQueryXML,
-              TtiDatabaseXML ) ;
+              TtiDatabaseXML);
 
 finalization
   uXMLTags.Free;
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer( cTIPersistXML ) ;
+    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXML);
 
 end.
 
