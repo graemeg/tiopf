@@ -90,7 +90,7 @@ type
   //  procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
   published
-    property    AValue : String read GetValue write SetValue;
+    property    Value : String read GetValue write SetValue;
   public
     constructor Create(Owner : TComponent); override;
   end;

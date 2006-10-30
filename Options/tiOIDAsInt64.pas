@@ -23,7 +23,7 @@ type
   protected
   public
     constructor Create; virtual;
-    destructor  destroy; override;
+    destructor  Destroy; override;
     function    NextOID(const ADatabaseName : string = ''): TOID; virtual;
     procedure   UnloadNextOIDGenerator(const ADatabaseName : string);
     function    FindByDatabaseName(const ADatabaseName : string): TtiBaseObject;

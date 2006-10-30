@@ -74,7 +74,7 @@ type
     {$ENDIF}
   public
     constructor Create(AOwner : TComponent); override;
-    property    AValue : TtiObject read FValue write SetValue;
+    property    Value : TtiObject read FValue write SetValue;
     procedure   LinkToData(AData: TtiObject;const AFieldName, pFieldNameDisplay : string); reintroduce;
   published
     property    OnClick : TUserDefinedPickerClick read FOnClick write FOnClick;
@@ -335,7 +335,7 @@ begin
     Exit; //==>
   Assert(PropType(Data, FieldName) = tkClass, 'Property <' + FieldName + '> not an object');
   if IsPublishedProp(Data, FieldName) then
-    SetObjectProp(Data, FieldName, AValue);
+    SetObjectProp(Data, FieldName, Value);
 end;
 
 end.

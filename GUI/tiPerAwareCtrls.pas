@@ -219,7 +219,7 @@ type
     procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
   published
-    property AValue : String read GetValue write SetValue;
+    property Value : String read GetValue write SetValue;
     property MaxLength : integer read GetMaxLength write SetMaxLength;
     property CharCase : TEditCharCase read GetCharCase write SetCharCase;
     property PasswordChar : Char read GetPasswordChar write SetPasswordChar;
@@ -250,7 +250,7 @@ type
     {$ENDIF}
   published
     property ScrollBars : TScrollStyle read GetScrollBars write SetScrollBars;
-    property AValue : string read GetValue write SetValue;
+    property Value : string read GetValue write SetValue;
     property WordWrap : boolean read GetWordWrap write SetWordWrap;
     property MaxLength : integer read GetMaxLength write SetMaxLength;
     property OnKeyPress;
@@ -295,7 +295,7 @@ type
     procedure   DataToWinControl; override;
     procedure   WinControlToData; override;
   published
-    property AValue : String read GetValue write SetValue;
+    property Value : String read GetValue write SetValue;
     property Items : TStrings read GetItems write SetItems;
   end;
 
@@ -354,7 +354,7 @@ type
     procedure   WinControlToData; override;
   public
     constructor Create(AOwner: TComponent);override;
-    property    AValue : TtiObject read GetValue write SetValue;
+    property    Value : TtiObject read GetValue write SetValue;
     property    ValueAsString : string read GetValueAsString write SetValueAsString;
     property    List : TList read FList write SetList;
     procedure   Refresh; override;
@@ -399,7 +399,7 @@ type
     procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
   published
-    property AValue : TDateTime read GetValue write SetValue;
+    property Value : TDateTime read GetValue write SetValue;
     {$IFNDEF FPC}
     property MaxDate : TDateTime read GetMaxDate write SetMaxDate;
     property MinDate : TDateTime read GetMinDate write SetMinDate;
@@ -426,7 +426,7 @@ type
     procedure   DoOnClick(Sender: TObject);override;
     procedure   DoLabelClick(Sender: TObject);
   published
-    property    AValue : boolean read GetValue write SetValue;
+    property    Value : boolean read GetValue write SetValue;
   public
     constructor Create(AOwner : TComponent); override;
   end;
@@ -489,7 +489,7 @@ type
     property    TextAfter : string read FsTextAfter  write setTextAfter;
     property    TextUnknown : string read FsTextUnknown  write setTextUnknown;
     property    ValueAsString : string read GetValueAsString write SetValueAsString;
-    property    AValue    : double    read GetValue   write SetValue ;
+    property    Value    : double    read GetValue   write SetValue ;
     property    Precision : integer read FiPrecision write setPrecision;
     property    MinValue : double    read FrMinValue write setMinValue;
     property    MaxValue : double    read FrMaxValue write setMaxValue;
@@ -667,8 +667,8 @@ type
   published
     property    Proportional: Boolean read GetProportional write SetProportional;
     property    ScrollBars : TScrollStyle read FScrollBars write SetScrollBars;
-    // ToDo: Make AValue property a TStream
-    property    AValue : TPicture read GetValue write SetValue;
+    // ToDo: Make Value property a TStream
+    property    Value : TPicture read GetValue write SetValue;
     property    Stretch : boolean read GetStretch write SetStretch;
     property    InitialDir : String read FsInitialDir write FsInitialDir;
     property    OnEdit : TNotifyEvent read FOnEdit write SetOnEdit;
@@ -1731,7 +1731,7 @@ begin
   FrUnknownValue  := -1;
   FsBeforeApplyKey := '';
   Precision := 0;
-  AValue := 0;
+  Value := 0;
   TEdit(FWinControl).ParentFont := true;
 end;
 
@@ -1739,18 +1739,18 @@ end;
 procedure TtiPerAwareFloatEdit.setValueAsString(sValue : string);
 begin
   if sValue = '' then begin
-    AValue := 0;
+    Value := 0;
     exit;
   end;
 
   if not isValidFloat(sValue) then begin
-    AValue := 0;
+    Value := 0;
     exit;
   end;
 
   SetOnChangeActive(false);
   TEdit(FWinControl).text := sValue;
-  AValue := AValue;
+  Value := Value;
   SetOnChangeActive(true);
 
 end;
@@ -1850,7 +1850,7 @@ procedure TtiPerAwareFloatEdit.setMinValue(rValue : double);
 begin
   if (FrMaxValue <> 0) and (rValue >= FrMaxValue) then rValue := 0;
   FrMinValue := rValue;
-  AValue := AValue;
+  Value := Value;
 end;
 
 
@@ -1858,14 +1858,14 @@ procedure TtiPerAwareFloatEdit.setMaxValue(rValue : double);
 begin
   if (FrMinValue <> 0) and (rValue <= FrMinValue) then rValue := 0;
   FrMaxValue := rValue;
-  AValue := AValue;
+  Value := Value;
 end;
 
 
 procedure TtiPerAwareFloatEdit.SetUnknownValue(const rValue: double);
 begin
   FrUnknownValue := rValue;
-  AValue := rValue;
+  Value := rValue;
 end;
 
 
@@ -1904,7 +1904,7 @@ begin
   lSaveOnChange := FOnChange;
   FOnChange := nil;
   try
-    AValue := AValue;
+    Value := Value;
   except
     on e : ERangeError do begin
       messageDlg(e.message, mtError,
@@ -1915,8 +1915,8 @@ begin
       raise;
     end;
   end;
-  rValue := AValue;
-  if rValue <> AValue then AValue := rValue;
+  rValue := Value;
+  if rValue <> Value then Value := rValue;
   FOnChange := lSaveOnChange;
 
 end;
@@ -1959,7 +1959,7 @@ begin
       lFrac := lFrac + '0';
     FsEditMask := FsEditMask + DecimalSeparator + lFrac;
   end;
-  AValue := AValue;
+  Value := Value;
 
 end;
 
@@ -1986,7 +1986,7 @@ var
   lReal: Extended;
   lIntPos: integer;
 begin
-  lReal := AValue;
+  lReal := Value;
   if not WithinMinMaxLimits(lReal) then begin
     lIntPos := TEdit(FWinControl).selStart;
     TEdit(FWinControl).text := FsBeforeApplyKey;
@@ -2006,7 +2006,7 @@ begin
     FsTextAfter := sValue;
     FFloatEditStyle := fesUser;
   end;                                  //ipk 2001-03-01
-  AValue := AValue;
+  Value := Value;
 
 //  FsTextAfter := sValue;
 //  FFloatEditStyle := fesUser;
@@ -2021,7 +2021,7 @@ begin
     FsTextBefore := sValue;
     FFloatEditStyle := fesUser;
   end;                                  //ipk 2001-03-01
-  AValue := AValue;
+  Value := Value;
 //  FsTextBefore := sValue;
 //  FFloatEditStyle := fesUser;
 //  AValue := AValue;
@@ -2031,7 +2031,7 @@ end;
 procedure TtiPerAwareFloatEdit.setTextUnknown(const sValue: string);
 begin
   FsTextUnknown := sValue;
-  AValue := AValue;
+  Value := Value;
 end;
 
 
@@ -2078,7 +2078,7 @@ begin
   if not DataAndPropertyValid then
     Exit; //==>
   SetOnChangeActive(false);
-  AValue := GetPropValue(FData, FsFieldName, True);
+  Value := GetPropValue(FData, FsFieldName, True);
   SetOnChangeActive(true);
 end;
 
@@ -2105,21 +2105,21 @@ begin
     Exit; //==>
   if ReadOnly then
     Exit; //==>
-  SetPropValue(FData, FsFieldName, AValue);
+  SetPropValue(FData, FsFieldName, Value);
 end;
 
 
 function TtiPerAwareFloatEdit.GetIsKnown: boolean;
 begin
-  result := AValue <> UnknownValue;
+  result := Value <> UnknownValue;
 end;
 
 procedure TtiPerAwareFloatEdit.SetIsKnown(const bValue: boolean);
 begin
   if bValue then
-    AValue := 0  // assumes 0 is not = FrUnknownValue
+    Value := 0  // assumes 0 is not = FrUnknownValue
   else
-    AValue := FrUnknownValue;
+    Value := FrUnknownValue;
 end;
 
 
@@ -3031,7 +3031,7 @@ var
   ls  : string;
   lsText : string;
 begin
-  lsText := AValue;
+  lsText := Value;
   TComboBox(WinControl).Items.clear;
   lReg := GetRegINIFile;
   try
@@ -3041,7 +3041,7 @@ begin
   finally
     lReg.Free;
   end;
-  AValue := lsText;
+  Value := lsText;
 end;
 
 procedure TtiPerAwareComboBoxHistory.Save;
@@ -3051,7 +3051,7 @@ var
   lsText : string;
   i : integer;
 begin
-  lsText := AValue;
+  lsText := Value;
   if lsText <> '' then begin
     // Is the current item already in the history list ?
     for i := 0 to Items.Count - 1 do
@@ -3080,7 +3080,7 @@ begin
     lReg.Free;
   end;
 
-  AValue := lsText;
+  Value := lsText;
 
 end;
 
