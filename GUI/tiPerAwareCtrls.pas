@@ -827,104 +827,83 @@ end;
 
 procedure TtiPerAwareAbs.PositionLabel;
 begin
-  if FLabel=nil then Exit;
-  FLabel.Align := alNone;
 
-
+  // A little redundant, but here goes anyway...
   case LabelStyle of
-  lsNone   : begin
-                FLabel.Visible := false;
-              end;
-  lsTop    : begin
-                FLabel.Alignment := taLeftJustify;
+  lsNone    : begin
+                FLabel.Visible := false ;
+              end ;
+  lsTop     : begin
                 FLabel.AutoSize := true;
-                FLabel.Visible := true;
-                FLabel.Top    := 1;
-                FLabel.Left   := 1;
-              end;
-  lsLeft   : begin
-                FLabel.Alignment := taLeftJustify;
-                FLabel.Visible := true;
-                FLabel.AutoSize := false;
-                FLabel.Align  := alLeft;
-                FLabel.Width  := FiLabelWidth;
+                FLabel.Visible := true ;
+                FLabel.Top     := 1 ;
+                FLabel.Left    := 1 ;
+              end ;
+  lsLeft    : begin
+                FLabel.AutoSize := false ;
+                FLabel.Width   := FiLabelWidth ;
+                FLabel.Visible := true ;
+                FLabel.Left    := 1 ;
                 if FbCenterWhenLabelIsLeft then
-                  SetLayout(tlCenter)
+                  FLabel.Top     := (Height-2-FLabel.Height) div 2
                 else
-                  SetLayout(tlTop);
-              end;
+                  FLabel.Top     := 1 ;
+              end ;
   lsTopLeft : begin
-                FLabel.Alignment := taLeftJustify;
-                FLabel.AutoSize := true;
-                FLabel.Visible := true;
-                FLabel.Top    := 1;
-                FLabel.Left   := 1;
-               end;
-  lsRight   : begin
-                FLabel.Alignment := taRightJustify;
-                FLabel.AutoSize := false;
-                FLabel.Visible := true;
-                FLabel.Align := alRight;
-                FLabel.Width  := FiLabelWidth;
-                //FLabel.Left  := FiLabelWidth + 3;
+                FLabel.AutoSize := true ;
+                FLabel.Visible := true ;
+                FLabel.Top     := 1 ;
+                FLabel.Left    := 1 ;
+              end ;
+  lsRight    : begin
+                FLabel.AutoSize := true ;
+                FLabel.Visible := true ;
+                FLabel.Left   := LabelWidth + 3 ;
                 if FbCenterWhenLabelIsLeft then
-                  SetLayout(tlCenter)
+                  FLabel.Top     := (Height-2-FLabel.Height) div 2
                 else
-                  SetLayout(tlTop);
-               end;
+                  FLabel.Top     := 1 ;
+              end ;
   else
     raise EtiOPFInternalException.Create(cErrorInvalidLabelStyle);
-  end;
-
-
+  end ;
 end;
 
-procedure TtiPerAwareAbs.PositionWinControl;
-var
- iHeight,iWidth : Integer;
+procedure TtiPerAwareAbs.PositionWinControl ;
 begin
-  if FWinControl=nil then Exit;
-  if FLabel=nil then Exit;
-
-
 
   case LabelStyle of
-  lsNone   : begin
+  lsNone    : begin
                 //FWinControl.Align := alClient;
-                FWinControl.SetBounds(1,1, Self.Width-1, Self.Height-1);
-                Exit;
-              end;
-  lsTop    : begin
-                FWinControl.Top   := FLabel.Top + FLabel.Height + 1;
-                FWinControl.Left  := 1;
-                iHeight := Self.Height - FWinControl.Top - 1;
-                iWidth := Self.Width  - FWinControl.Left - 1 ;
-              end;
-  lsLeft   : begin
-                FWinControl.Top   := 1;
-                FWinControl.Left  := LabelWidth + 2;
-                iHeight := Self.Height - FWinControl.Top - 1;
-                iWidth := Self.Width  - FWinControl.Left - 1;
-              end;
+                FWinControl.SetBounds(1,1, Self.Width-2, Self.Height-2);
+              end ;
+  lsTop     : begin
+                FWinControl.Top    := FLabel.Top + FLabel.Height + 2 ;
+                FWinControl.Left   := 1 ;
+                FWinControl.Height := Height - FWinControl.Top - 4 ;
+                FWinControl.Width  := Width  - FWinControl.Left - 4  ;
+              end ;
+  lsLeft    : begin
+                FWinControl.Top    := 1 ;
+                FWinControl.Left   := LabelWidth + 3;
+                FWinControl.Height := Height - FWinControl.Top - 4;
+                FWinControl.Width  := Width  - FWinControl.Left - 4 ;
+              end ;
   lsTopLeft : begin
-                FWinControl.Top := FLabel.Top + FLabel.Height + 1;
-                FWinControl.Left  := 24;
-                iHeight := Self.Height - FWinControl.Top - 1;
-                iWidth := Self.Width  - FWinControl.Left - 1;
-              end;
-  lsRight  : begin
-                FWinControl.Top   := 1;
-                FWinControl.Left  := 1;
-                iHeight := Self.Height - FWinControl.Top - 1;
-                iWidth := Self.Width - LabelWidth -1;
-              end;
+                FWinControl.Top    := FLabel.Top + FLabel.Height + 3;
+                FWinControl.Left   := 24 ;
+                FWinControl.Height := Height - FWinControl.Top - 4 ;
+                FWinControl.Width  := Width  - FWinControl.Left - 4 ;
+              end ;
+  lsRight   : begin
+                FWinControl.Top    := 1 ;
+                FWinControl.Left   := 1 ;
+                FWinControl.Height := Height - FWinControl.Top - 4;
+                FWinControl.Width  := LabelWidth ;
+              end ;
   else
     raise EtiOPFInternalException.Create(cErrorInvalidLabelStyle);
-  end;
-
-                if (iHeight<=0) or (iWidth<=0) then Exit;
-                FWinControl.Height := iHeight;
-                FWinControl.Width := iWidth;
+  end ;
 
 end;
 
