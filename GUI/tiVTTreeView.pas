@@ -1101,7 +1101,7 @@ var
   LChildList: TtiObjectList;
   LPropList: TPropInfoArray;
   LPropClass: TClass;
-  LPropIndex, lDMIndex: Integer;
+  LPropIndex: Integer;
 
   LCandidateList: TtiObjectList;
   LCandidateIndex: Integer;
@@ -1113,17 +1113,17 @@ begin
     If it has published TtiObject properties, they are children
     If it has published TtiObjectList properties, those list items are children
 }
-  LNodeRec := PNodeDataRec(VT.GetNodeData(Node));
-  if not Assigned(LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren) then
+  LNodeRec := VT.GetNodeData(Node);
+  if not Assigned(LNodeRec.NodeChildren) then
   begin
-    LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren := TtiObjectList.Create;
-    LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren.OwnsObjects := False;
-    LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren.AutoSetItemOwner := False;
+    LNodeRec.NodeChildren := TtiObjectList.Create;
+    LNodeRec.NodeChildren.OwnsObjects := False;
+    LNodeRec.NodeChildren.AutoSetItemOwner := False;
   end;
-  LChildList := LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeChildren;
+  LChildList := LNodeRec.NodeChildren;
   LChildList.Clear;
 
-  LObj := LNodeRec{$IFDEF FPC}^{$ENDIF}.NodeData;
+  LObj := LNodeRec.NodeData;
 
   if LObj is TtiObjectList then
   begin
@@ -1137,38 +1137,27 @@ begin
   end;
 
   GetObjectPropInfos(LObj, LPropList);
-
-  for lDMIndex := 0 to Pred(DataMappings.Count) do
+  for LPropIndex := 0 to High(LPropList) do
   begin
-    for LPropIndex := 0 to High(LPropList) do
+    LPropClass := GetObjectPropClass(LPropList[LPropIndex]);
+    if LPropClass.InheritsFrom(TtiObjectList) then
     begin
-      {$IFNDEF FPC}
-      LPropClass := GetObjectPropClass(LPropList[LPropIndex]);
-      {$ELSE}
-      LPropClass := GetObjectPropClass(LObj,LPropList[LPropIndex]^.Name);
-      {$ENDIF}
-      if LPropClass.InheritsFrom(TtiObjectList) then
+      LCandidateList := TtiObjectList(GetObjectProp(LObj, LPropList[LPropIndex]));
+      for LCandidateIndex := 0 to Pred(LCandidateList.Count) do
       begin
-        LCandidateList := TtiObjectList(GetObjectProp(LObj, LPropList[LPropIndex]));
-        for LCandidateIndex := 0 to Pred(LCandidateList.Count) do
-        begin
-          LCandidate:= LCandidateList[LCandidateIndex];
-//        if Assigned(CalcMappingForObject(LCandidate)) and
-          if IsMappingForObject(DataMappings.Items[lDMIndex], LCandidate) and
-             TestObjectAgainstFilter(LCandidate) then
-            LChildList.Add(LCandidate);
-        end;
-      end
-      else if LPropClass.InheritsFrom(TtiObject) then
-      begin
-        LCandidate := TtiObject(GetObjectProp(LObj, LPropList[LPropIndex]));
-//      if Assigned(CalcMappingForObject(LCandidate)) and
-        if IsMappingForObject(DataMappings.Items[lDMIndex], LCandidate) and
+        LCandidate:= LCandidateList[LCandidateIndex];
+        if Assigned(CalcMappingForObject(LCandidate)) and
            TestObjectAgainstFilter(LCandidate) then
           LChildList.Add(LCandidate);
       end;
+    end
+    else if LPropClass.InheritsFrom(TtiObject) then
+    begin
+      LCandidate := TtiObject(GetObjectProp(LObj, LPropList[LPropIndex]));
+      if Assigned(CalcMappingForObject(LCandidate)) and
+         TestObjectAgainstFilter(LCandidate) then
+        LChildList.Add(LCandidate);
     end;
-
   end;
 
   Result := LChildList.Count;
