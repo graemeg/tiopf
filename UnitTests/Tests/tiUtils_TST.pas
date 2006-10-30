@@ -631,26 +631,29 @@ end;
 
 
 procedure TTestTIUtils.tiReadFileDateSize;
-  procedure _SetFileDate(AFileName : string; pDate : TDateTime);
+  procedure _SetFileDate(AFileName: string; pDate: TDateTime);
   var
-    lFileHandle : Integer;
-    lFileDate  : integer;
+    lFileHandle: Integer;
+    lFileDate: integer;
   begin
-    lFileDate  := DateTimeToFileDate(pDate);
+    lFileDate := DateTimeToFileDate(pDate);
+    {$IFNDEF FPC}
     lFileHandle := FileOpen(AFileName, fmOpenWrite or fmShareDenyNone);
     try
       FileSetDate(lFileHandle, lFileDate);
     finally
       FileClose(lFileHandle);
     end;
+    {$ELSE}
+    FileSetDate(AFileName, lFileDate);
+    {$ENDIF}
   end;
 
 var
-  lTargetDate : TDateTime;
-  lReadDate  : TDateTime;
-  lReadSize  : integer;
-  lFileName  : string;
-
+  lTargetDate: TDateTime;
+  lReadDate: TDateTime;
+  lReadSize: integer;
+  lFileName: string;
 begin
   ForceDirectories(TempDirectory);
   lFileName := TempFileName('DUnitTest.txt');

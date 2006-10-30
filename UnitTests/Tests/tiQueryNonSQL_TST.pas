@@ -167,6 +167,16 @@ end;
 
 
 procedure TTestTIQueryNonSQL.ParamsAsString;
+const
+  {$IFDEF FPC}
+  cAns1 = 'ITEM_STR_FIELD:= test';
+  cAns2 = 'ITEM_INT_FIELD:= 123';
+  cAns3 = 'ITEM_FLOAT_FIELD:= 3.3';
+  {$ELSE}
+  cAns1 = 'ITEM_STR_FIELD := test';
+  cAns2 = 'ITEM_INT_FIELD := 123';
+  cAns3 = 'ITEM_FLOAT_FIELD := 3.3';
+  {$ENDIF}
 var
   ls : string;
 begin
@@ -181,7 +191,7 @@ begin
   ls := Query.ParamsAsString;
   Check(SameText(
          ls,
-         'ITEM_STR_FIELD := test'),
+         cAns1),
          'ParamsAsStr failed with 1 param. Returned values was:' + CrLf +
          ls);
 
@@ -189,8 +199,8 @@ begin
   ls := Query.ParamsAsString;
   Check(SameText(
          ls,
-         'ITEM_STR_FIELD := test' + CrLf +
-         'ITEM_INT_FIELD := 123'),
+         cAns1 + CrLf +
+         cAns2),
          'ParamsAsStr failed with 2 params. Returned values was:' + CrLf +
          ls);
 
@@ -198,9 +208,9 @@ begin
   ls := Query.ParamsAsString;
   Check(SameText(
          ls,
-         'ITEM_STR_FIELD := test' + CrLf +
-         'ITEM_INT_FIELD := 123' + CrLf +
-         'ITEM_FLOAT_FIELD := 3.3'),
+         cAns1 + CrLf +
+         cAns2 + CrLf +
+         cAns3),
          'ParamsAsStr failed with 3 params. Returned values was:' + CrLf +
          ls);
 end;

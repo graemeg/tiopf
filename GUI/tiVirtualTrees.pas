@@ -68,11 +68,11 @@ interface
 
 uses
 {$IFDEF FPC}
-  LCLIntf, 
+  LCLIntf, lmessages,
 {$ELSE}
- Windows,Messages, //brandys added Windows unit .check this
+ Windows, Messages, ActiveX, //brandys added Windows unit .check this
 {$ENDIF}
- SysUtils, Classes, Graphics, Controls, Forms, ImgList, ActiveX, StdCtrls, Menus, Printers,
+ SysUtils, Classes, Graphics, Controls, Forms, ImgList, StdCtrls, Menus, Printers,
   CommCtrl  // image lists, common controls tree structures
   {$ifdef ThemeSupport}
     {$ifndef COMPILER_7_UP}

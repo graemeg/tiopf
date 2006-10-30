@@ -8,7 +8,7 @@ uses
   ,tiDataBuffer_BOM
   ,tiQueryTXTAbs
   ,tiXML
-  ,tiXMLTotiDataSet
+  ,tiXMLToTIDataSet
  ;
 
 const

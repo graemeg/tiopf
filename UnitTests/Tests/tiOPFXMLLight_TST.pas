@@ -8,7 +8,7 @@ uses
   ,tiQueryNonSQL_TST
   ,tiOPFTestManager
   ,tiClassToDBMap_TST
-  ,tiOID_tst
+  ,tiOID_TST
  ;
 
 type
@@ -53,7 +53,11 @@ procedure RegisterTests;
 implementation
 uses
   tiConstants
+  {$IFDEF FPC}
+  ,testregistry
+  {$ELSE}
   ,TestFramework
+  {$ENDIF}
   ,SysUtils
   ,tiUtils
   ,tiLog
@@ -64,11 +68,19 @@ procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistXMLLight) then
   begin
+    {$IFDEF FPC}
+    RegisterTest(TTestTIPersistenceLayersXMLLight);
+    RegisterTest(TTestTIDatabaseXMLLight);
+    RegisterTest(TTestTIQueryXMLLight);
+    RegisterTest(TTestTIOIDManagerXMLLight);
+    RegisterTest(TTestTIClassToDBMapOperationXMLLight);
+    {$ELSE}
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIPersistenceLayersXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIDatabaseXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIQueryXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDManagerXMLLight.Suite);
 //    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIClassToDBMapOperationXMLLight.Suite);
+    {$ENDIF}
   end;
 end;
 

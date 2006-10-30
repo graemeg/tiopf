@@ -1,4 +1,4 @@
-{%MainUnit DUnitCompatable.pp}
+
 
 //------------------------------------------------------------------------------
 // Used for compatability with DUnit test formats!
@@ -95,7 +95,7 @@ end;
 {$ENDIF}
 
 
-{$IFDEF VER2_0_4}
+{$IF Defined(VER2_0_4) or Defined(VER2_1_1)}
 procedure TtiTestCase.CheckNotEquals(expected, actual: integer; msg: string);
 begin
   if (expected = actual) then

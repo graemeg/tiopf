@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   ,tiTestFramework
   ,tiOPFTestManager
- ;
+  ;
 
 
 procedure RegisterTests;
@@ -78,7 +78,7 @@ uses
   {$ENDIF}
   ,tiOPFCSV_TST
   ,tiOPFTAB_TST
- ;
+  ;
 
 var
   uTIOPFTestManager: TtiOPFTestManager;

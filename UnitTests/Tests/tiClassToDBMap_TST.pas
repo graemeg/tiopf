@@ -14,7 +14,7 @@ uses
   ,tiTestFramework
   ,tiClassToDBMap_BOM
   ,tiObject
- ;
+  ;
 
 type
 

@@ -17,7 +17,7 @@ uses
   ,tiQuery
   ,Classes
   ,SysUtils
- ;
+  ;
 
 const
   cTableNameTestGroup               = 'Test_Group';
@@ -61,14 +61,12 @@ type
   public
     {$IFDEF FPC}
     constructor Create; override;
-    function  GetName: string; virtual;
-    property  Name: string read GetName;
+    function    GetName: string; virtual;
+    property    Name: string read GetName;
+      // DUnit interface was added after FPC 2.0.2
+      {$I DUnitCompatableIntf.inc}
     {$ELSE}
     constructor Create(AMethodName: string); override;
-    {$ENDIF}
-    // DUnit interface was added after FPC 2.0.2
-    {$IFDEF FPC}
-      {$I DUnitCompatableIntf.inc}
     {$ENDIF}
   end;
 
