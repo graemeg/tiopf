@@ -173,7 +173,7 @@ function TtiQueryADO.GetFieldAsBoolean(const AName: string): boolean;
 var
   lValue : variant;
 begin
-  lValue := FADOQuery.FieldByName(AName).AValue;
+  lValue := FADOQuery.FieldByName(AName).Value;
   result := lValue = -1;
 end;
 
@@ -211,7 +211,7 @@ function TtiQueryADO.GetParamAsBoolean(const AName: string): boolean;
 var
   lValue : variant;
 begin
-  lValue := FADOQuery.Parameters.ParamByName(AName).AValue;
+  lValue := FADOQuery.Parameters.ParamByName(AName).Value;
   result := lValue = -1;
 end;
 
@@ -220,23 +220,23 @@ var
   lValue : string;
 begin
   // ToDo: Should have some protection against different date time formats...
-  lValue := FADOQuery.Parameters.ParamByName(AName).AValue;
+  lValue := FADOQuery.Parameters.ParamByName(AName).Value;
   result := StrToDateTime(lValue);
 end;
 
 function TtiQueryADO.GetParamAsFloat(const AName: string): extended;
 begin
-  result := FADOQuery.Parameters.ParamByName(AName).AValue;
+  result := FADOQuery.Parameters.ParamByName(AName).Value;
 end;
 
 function TtiQueryADO.GetParamAsInteger(const AName: string): Int64;
 begin
-  result := Longint(FADOQuery.Parameters.ParamByName(AName).AValue);
+  result := Longint(FADOQuery.Parameters.ParamByName(AName).Value);
 end;
 
 function TtiQueryADO.GetParamAsString(const AName: string): string;
 begin
-  result := FADOQuery.Parameters.ParamByName(AName).AValue;
+  result := FADOQuery.Parameters.ParamByName(AName).Value;
 end;
 
 function TtiQueryADO.GetSQL: TStrings;
@@ -288,30 +288,30 @@ end;
 procedure TtiQueryADO.SetParamAsBoolean(const AName: string; const AValue: boolean);
 begin
   if AValue then
-    FADOQuery.Parameters.ParamByName(AName).AValue := True
+    FADOQuery.Parameters.ParamByName(AName).Value := True
   else
-    FADOQuery.Parameters.ParamByName(AName).AValue := False;
+    FADOQuery.Parameters.ParamByName(AName).Value := False;
 end;
 
 procedure TtiQueryADO.SetParamAsDateTime(const AName : string; const AValue: TDateTime);
 begin
-  FADOQuery.Parameters.ParamByName(AName).AValue := AValue;
+  FADOQuery.Parameters.ParamByName(AName).Value := AValue;
 end;
 
 procedure TtiQueryADO.SetParamAsFloat(const AName: string;
   const AValue: extended);
 begin
-  FADOQuery.Parameters.ParamByName(AName).AValue := AValue;
+  FADOQuery.Parameters.ParamByName(AName).Value := AValue;
 end;
 
 procedure TtiQueryADO.SetParamAsInteger(const AName: string; const AValue: Int64);
 begin
-  FADOQuery.Parameters.ParamByName(AName).AValue := Longint(AValue);
+  FADOQuery.Parameters.ParamByName(AName).Value := Longint(AValue);
 end;
 
 procedure TtiQueryADO.SetParamAsString(const AName, AValue: string);
 begin
-  FADOQuery.Parameters.ParamByName(AName).AValue := AValue;
+  FADOQuery.Parameters.ParamByName(AName).Value := AValue;
 end;
 
 procedure TtiQueryADO.SetSQL(const AValue: TStrings);
@@ -328,11 +328,11 @@ var
 begin
   Assert(AValue <> nil, 'Stream not assigned');
   lParameter := FADOQuery.Parameters.ParamByName(AName);
-  lLow    := VarArrayLowBound(lParameter.AValue, 1);
-  lHigh   := VarArrayHighBound(lParameter.AValue, 1);
+  lLow    := VarArrayLowBound(lParameter.Value, 1);
+  lHigh   := VarArrayHighBound(lParameter.Value, 1);
   lLen    := lHigh - lLow + 1;
   lBinData := VarArrayCreate([0, lLen], varByte);
-  lBinData := lParameter.AValue;
+  lBinData := lParameter.Value;
   lDataPtr := VarArrayLock(lBinData);
   try
     AValue.WriteBuffer(lDataPtr^, lLen);
@@ -516,13 +516,13 @@ end;
 
 function TtiQueryADO.GetParamIsNull(const AName: String): Boolean;
 begin
-  result := VarIsNull(FADOQuery.Parameters.ParamByName(AName).AValue);
+  result := VarIsNull(FADOQuery.Parameters.ParamByName(AName).Value);
 end;
 
 procedure TtiQueryADO.SetParamIsNull(const AName: String; const AValue: Boolean);
 begin
   if AValue then
-    FADOQuery.Parameters.ParamByName(AName).AValue := Null;
+    FADOQuery.Parameters.ParamByName(AName).Value := Null;
 end;
 
 function TtiDatabaseADOAbs.GetConnected: boolean;
@@ -646,7 +646,7 @@ function TtiQueryADO.GetFieldAsBooleanByIndex(AIndex: Integer): boolean;
 var
   lValue : variant;
 begin
-  lValue := FADOQuery.Fields[AIndex].AValue;
+  lValue := FADOQuery.Fields[AIndex].Value;
   result := lValue = -1;
 end;
 
