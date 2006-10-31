@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="tiol" invoke="auto">
+		<description>
+			TtiObjectList template;
+		</description>
+		<author>
+			Peter Hinrichsen
+		</author>
+		<code language="Delphi" context="methodbody" delimiter="|">
+		<![CDATA[
+TMytiObjectList = class(TtiObjectList)
+private
+protected
+  function    GetItems(i: integer): TMytiObject; reintroduce;
+  procedure   SetItems(i: integer; const AValue: TMytiObject); reintroduce;
+  function    GetOwner: TMyOwner; reintroduce;
+  procedure   SetOwner(const AValue: TMyOwner); reintroduce;
+public
+  property    Items[i:integer] : TMytiObject read GetItems write SetItems;
+  procedure   Add(AObject : TMytiObject); reintroduce;
+  property    Owner: TMyOwner read GetOwner write SetOwner;
+published
+end ;
+		]]>
+		</code>
+	</template>
+</codetemplate>
