@@ -9,19 +9,43 @@
 		<author>
 			Peter Hinrichsen
 		</author>
+		<point name="objectclass">
+			<hint>
+				Object's class
+			</hint>
+			<text>
+				TMyObject
+			</text>
+		</point>
+		<point name="objectowner">
+			<hint>
+				Object's owner
+			</hint>
+			<text>
+				TMyOwner
+			</text>
+		</point>
+		<point name="itemclass">
+			<hint>
+				Item's class
+			</hint>
+			<text>
+				TMyItem
+			</text>
+		</point>
 		<code language="Delphi" context="methodbody" delimiter="|">
 		<![CDATA[
-TMytiObjectList = class(TtiObjectList)
+|objectclass| = class(TtiObjectList)
 private
 protected
-  function    GetItems(i: integer): TMytiObject; reintroduce;
-  procedure   SetItems(i: integer; const AValue: TMytiObject); reintroduce;
-  function    GetOwner: TMyOwner; reintroduce;
-  procedure   SetOwner(const AValue: TMyOwner); reintroduce;
+  function    GetItems(i: integer): |itemclass|; reintroduce;
+  procedure   SetItems(i: integer; const AValue: |itemclass|); reintroduce;
+  function    GetOwner: |objectowner|; reintroduce;
+  procedure   SetOwner(const AValue: |objectowner|); reintroduce;
 public
-  property    Items[i:integer] : TMytiObject read GetItems write SetItems;
-  procedure   Add(AObject : TMytiObject); reintroduce;
-  property    Owner: TMyOwner read GetOwner write SetOwner;
+  property    Items[i:integer] : |itemclass| read GetItems write SetItems;
+  procedure   Add(AObject : |itemclass|); reintroduce;
+  property    Owner: |objectowner| read GetOwner write SetOwner;
 published
 end ;
 		]]>
