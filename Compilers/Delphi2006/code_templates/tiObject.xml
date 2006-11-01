@@ -3,6 +3,22 @@
 <codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
 				version="1.0.0">
 	<template name="tio" invoke="auto">
+		<point name="objectclass">
+			<hint>
+				Objects class
+			</hint>
+			<text>
+				TMyObject
+			</text>
+		</point>
+		<point name="objectsowner">
+			<hint>
+				Objects owner
+			</hint>
+			<text>
+				TMyList
+			</text>
+		</point>
 		<description>
 			TtiObject template;
 		</description>
@@ -11,13 +27,13 @@
 		</author>
 		<code language="Delphi" context="methodbody" delimiter="|">
 		<![CDATA[
-TMytiObject = class(TtiObject)
+|objectclass| = class(TtiObject)
 private
 protected
-  function    GetOwner: TMytiObjectList; reintroduce;
-  procedure   SetOwner(const AValue: TMytiObjectList); reintroduce;
+  function    GetOwner: |objectsowner|; reintroduce;
+  procedure   SetOwner(const AValue: |objectsowner|); reintroduce;
 public
-  property    Owner: TMytiObjectList read GetOwner write SetOwner;
+  property    Owner: |objectsowner| read GetOwner write SetOwner;
 published
 end ;
 		]]>
