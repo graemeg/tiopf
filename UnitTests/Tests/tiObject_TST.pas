@@ -172,7 +172,7 @@ type
     property    Owner      : TtstPerObjList             read GetOwner      write SetOwner;
     procedure   Populate;
     function    Clone : TtstPerObjAbs; reintroduce;
-    function    IsValid(const AErrors : TPerObjErrors): boolean; override;
+    function    IsValid(const AErrors : TtiObjectErrors): boolean; override;
     function    Equals(const AData : TtiObject): boolean; override;
   published
     property    StrProp  : string      read FStrProp   write FStrProp;
@@ -1112,14 +1112,14 @@ end;
 procedure TTestTIObject.IsValid;
 var
   lData : TtstPerObjAbs;
-  lErrors : TPerObjErrors;
+  lErrors : TtiObjectErrors;
 begin
   lData := TtstPerObjAbs.Create;
   try
     lData.StrProp := '';
     lData.IntProp := 0;
     lData.FloatProp := 0;
-    lErrors := TPerObjErrors.Create;
+    lErrors := TtiObjectErrors.Create;
     try
       Check(not lData.IsValid, 'Valid passed when it should have failed');
       lData.IsValid(lErrors);
@@ -2848,7 +2848,7 @@ begin
   result := TtstPerObjList(inherited GetOwner);
 end;
 
-function TtstPerObjAbs.IsValid(const AErrors: TPerObjErrors): boolean;
+function TtstPerObjAbs.IsValid(const AErrors: TtiObjectErrors): boolean;
 begin
   inherited IsValid(AErrors);
   if StrProp = '' then

@@ -54,8 +54,8 @@ type
 
   TtiObject = class;
   TtiObjectList = class;
-  TPerObjErrors = class;
-  TPerObjError  = class;
+  TtiObjectErrors = class;
+  TtiObjectError  = class;
 
   TPerObjFindMethod = procedure(AObject : TtiObject; var AFound : boolean) of object;
   TPerObjFindMethodExt = procedure(AObject : TtiObject; var AFound : boolean; AUserContext: Pointer) of object;
@@ -130,7 +130,7 @@ type
   public
     constructor Create(const AOwner: TtiObject); overload; virtual;
     constructor Create(const AOwner: TtiObject; const ANullValidation: TtiNullValidation); overload; virtual;
-    function    IsValidValue(const AErrors : TPerObjErrors = nil): Boolean; virtual;
+    function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; virtual;
     function    Equals(ACompareWith: TtiFieldAbs): Boolean; virtual; abstract;
     procedure   Assign(AAssignFrom: TtiFieldAbs); virtual; abstract;
 
@@ -156,7 +156,7 @@ type
     constructor Create(const AOwner: TtiObject;
                        const ANullValidation: TtiNullValidation = nvAllowNull;
                        const AMaxLength: Integer = 0); reintroduce; overload; virtual;
-    function    IsValidValue(const AErrors : TPerObjErrors = nil): Boolean; override;
+    function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; override;
     function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(AAssignFrom: TtiFieldAbs); override;
 
@@ -177,7 +177,7 @@ type
   public
     constructor Create(const AOwner: TtiObject;
                        const AReadMethod: TtiStringFieldMethodReadEvent); reintroduce; overload; virtual;
-    function    IsValidValue(const AErrors : TPerObjErrors = nil): Boolean; override;
+    function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; override;
     function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(AAssignFrom: TtiFieldAbs); override;
   end;
@@ -198,7 +198,7 @@ type
     constructor Create(const AOwner: TtiObject;
                        const ANullValidation: TtiNullValidation = nvAllowNull;
                        const AMaxDigits: Integer = 0); reintroduce; overload; virtual;
-    function    IsValidValue(const AErrors : TPerObjErrors = nil): Boolean; override;
+    function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; override;
     function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(AAssignFrom: TtiFieldAbs); override;
 
@@ -365,7 +365,7 @@ type
     {: Set every object in the hierarchy's ObjectState to AObjectState }
     procedure   SetAllObjectStates(const AObjectState: TPerObjectState); virtual;
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
-    function    IsValid(const AErrors: TPerObjErrors): boolean; overload; virtual;
+    function    IsValid(const AErrors: TtiObjectErrors): boolean; overload; virtual;
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
     function    IsValid(var AErrorMessage: string): boolean; overload; // Don't override this one
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
@@ -544,33 +544,33 @@ type
   TPerObjListClass = class of TtiObjectList;
   TtiObjectListClass = class of TtiObjectList;
 
-  TPerObjErrors = class(TtiObjectList)
+  TtiObjectErrors = class(TtiObjectList)
   private
   protected
-    function    GetItems(i: integer): TPerObjError; reintroduce;
-    procedure   SetItems(i: integer; const AValue: TPerObjError); reintroduce;
+    function    GetItems(i: integer): TtiObjectError; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiObjectError); reintroduce;
     function    GetAsString: string; virtual;
   public
-    property    Items[i:integer]: TPerObjError read GetItems write SetItems;
-    procedure   Add(AObject : TPerObjError  ; ADefDispOrdr : boolean = true); reintroduce;
+    property    Items[i:integer]: TtiObjectError read GetItems write SetItems;
+    procedure   Add(AObject : TtiObjectError  ; ADefDispOrdr : boolean = true); reintroduce;
     procedure   AddError(const AErrorProperty : string; const AErrorMessage : string; AErrorCode : integer); overload;
     procedure   AddError(const AErrorProperty : string; const AErrorMessage : string); overload;
     procedure   AddError(const AErrorMessage : string); overload;
-    function    FindByMessage(const AMessage : string): TPerObjError;
+    function    FindByMessage(const AMessage : string): TtiObjectError;
     property    AsString: string Read GetAsString;
   published
   end;
 
-  TPerObjError = class(TtiObject)
+  TtiObjectError = class(TtiObject)
   private
     FErrorMessage: string;
     FErrorProperty: string;
     FErrorCode: Word;
   protected
-    function    GetOwner: TPerObjErrors; reintroduce;
-    procedure   SetOwner(const AValue: TPerObjErrors); reintroduce;
+    function    GetOwner: TtiObjectErrors; reintroduce;
+    procedure   SetOwner(const AValue: TtiObjectErrors); reintroduce;
   public
-    property    Owner      : TPerObjErrors             read GetOwner      write SetOwner;
+    property    Owner      : TtiObjectErrors             read GetOwner      write SetOwner;
   published
     property    ErrorProperty : string read FErrorProperty write FErrorProperty;
     property    ErrorMessage : string read FErrorMessage  write FErrorMessage;
@@ -2498,40 +2498,40 @@ begin
   end;
 end;
 
-{ TPerObjErrors }
+{ TtiObjectErrors }
 
-procedure TPerObjErrors.Add(AObject: TPerObjError; ADefDispOrdr: boolean);
+procedure TtiObjectErrors.Add(AObject: TtiObjectError; ADefDispOrdr: boolean);
 begin
   inherited Add(AObject, ADefDispOrdr);
 end;
 
-procedure TPerObjErrors.AddError(
+procedure TtiObjectErrors.AddError(
   const AErrorProperty : string;
   const AErrorMessage: string;
   AErrorCode: integer);
 var
-  lError : TPerObjError;
+  lError : TtiObjectError;
 begin
-  lError := TPerObjError.Create;
+  lError := TtiObjectError.Create;
   lError.ErrorProperty := AErrorProperty;
   lError.ErrorMessage := AErrorMessage;
   lError.ErrorCode    := AErrorCode;
   Add(lError);
 end;
 
-procedure TPerObjErrors.AddError(const AErrorMessage: string);
+procedure TtiObjectErrors.AddError(const AErrorMessage: string);
 begin
   AddError('', AErrorMessage, -1);
 end;
 
-procedure TPerObjErrors.AddError(
+procedure TtiObjectErrors.AddError(
   const AErrorProperty : string;
   const AErrorMessage: string);
 begin
   AddError(AErrorProperty, AErrorMessage, -1);
 end;
 
-function TPerObjErrors.FindByMessage(const AMessage: string): TPerObjError;
+function TtiObjectErrors.FindByMessage(const AMessage: string): TtiObjectError;
 var
   i : integer;
 begin
@@ -2544,7 +2544,7 @@ begin
     end;
 end;
 
-function TPerObjErrors.GetAsString: string;
+function TtiObjectErrors.GetAsString: string;
 var
   i : Integer;
 begin
@@ -2557,41 +2557,41 @@ begin
   end;
 end;
 
-function TPerObjErrors.GetItems(i: integer): TPerObjError;
+function TtiObjectErrors.GetItems(i: integer): TtiObjectError;
 begin
-  result := TPerObjError(inherited GetItems(i));
+  result := TtiObjectError(inherited GetItems(i));
 end;
 
-procedure TPerObjErrors.SetItems(i: integer; const AValue: TPerObjError);
+procedure TtiObjectErrors.SetItems(i: integer; const AValue: TtiObjectError);
 begin
   inherited SetItems(i, AValue);
 end;
 
-{ TPerObjError }
+{ TtiObjectError }
 
-function TPerObjError.GetOwner: TPerObjErrors;
+function TtiObjectError.GetOwner: TtiObjectErrors;
 begin
-  result := TPerObjErrors(inherited GetOwner);
+  result := TtiObjectErrors(inherited GetOwner);
 end;
 
-procedure TPerObjError.SetOwner(const AValue: TPerObjErrors);
+procedure TtiObjectError.SetOwner(const AValue: TtiObjectErrors);
 begin
   inherited SetOwner(AValue);
 end;
 
-function TtiObject.IsValid(const AErrors: TPerObjErrors): boolean;
+function TtiObject.IsValid(const AErrors: TtiObjectErrors): boolean;
 begin
-  Assert(AErrors.TestValid(TPerObjErrors), cTIInvalidObjectError);
+  Assert(AErrors.TestValid(TtiObjectErrors), cTIInvalidObjectError);
   result := true;
   AErrors.Clear;
 end;
 
 function TtiObject.IsValid(var AErrorMessage: string): boolean;
 var
-  lErrors : TPerObjErrors;
+  lErrors : TtiObjectErrors;
   i : integer;
 begin
-  lErrors := TPerObjErrors.Create;
+  lErrors := TtiObjectErrors.Create;
   try
     result := IsValid(lErrors);
     for i := 0 to lErrors.Count - 1 do
@@ -2606,9 +2606,9 @@ end;
 
 function TtiObject.IsValid: boolean;
 var
-  lErrors : TPerObjErrors;
+  lErrors : TtiObjectErrors;
 begin
-  lErrors := TPerObjErrors.Create;
+  lErrors := TtiObjectErrors.Create;
   try
     result := IsValid(lErrors);
   finally
@@ -2903,7 +2903,7 @@ begin
   FIsNull := False;
 end;
 
-function TtiFieldAbs.IsValidValue(const AErrors: TPerObjErrors): Boolean;
+function TtiFieldAbs.IsValidValue(const AErrors: TtiObjectErrors): Boolean;
 begin
   Assert(Owner.TestValid(TtiObject), cTIInvalidObjectError);
   Result := (NullValidation = nvAllowNull) or (not IsNull);
@@ -2949,7 +2949,7 @@ begin
   SetValue;
 end;
 
-function TtiFieldString.IsValidValue(const AErrors : TPerObjErrors): Boolean;
+function TtiFieldString.IsValidValue(const AErrors : TtiObjectErrors): Boolean;
 begin
   Result := inherited IsValidValue(AErrors);
   if Result then begin
@@ -3018,7 +3018,7 @@ begin
   SetValue;
 end;
 
-function TtiFieldInteger.IsValidValue(const AErrors : TPerObjErrors): Boolean;
+function TtiFieldInteger.IsValidValue(const AErrors : TtiObjectErrors): Boolean;
 begin
   Result := inherited IsValidValue(AErrors);
   if Result then begin
@@ -3539,7 +3539,7 @@ begin
   Result:= LS;
 end;
 
-function TtiFieldStringMethod.IsValidValue(const AErrors: TPerObjErrors): Boolean;
+function TtiFieldStringMethod.IsValidValue(const AErrors: TtiObjectErrors): Boolean;
 begin
   result:= false;
   Assert(False, 'Not implemented');
@@ -3551,6 +3551,8 @@ begin
 end;
 
 end.
+
+
 
 
 
