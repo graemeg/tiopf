@@ -34,6 +34,8 @@ protected
   procedure   SetOwner(const AValue: |objectsowner|); reintroduce;
 public
   property    Owner: |objectsowner| read GetOwner write SetOwner;
+  function    Clone : |objectclass|; override; 
+  function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
 published
 end ;
 		]]>
