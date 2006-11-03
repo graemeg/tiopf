@@ -841,11 +841,19 @@ procedure TTestTIDatabase.DoThreadedDBConnectionPool(pThreadCount: integer);
     lAllFinished := false;
     while not lAllFinished do
     begin
+//      writeln('_WaitForThreads: 1');
       lAllFinished := true;
       for i := 0 to AList.Count - 1 do
+      begin
+//        writeln('_WaitForThreads: 2');
         lAllFinished := lAllFinished and TThrdDBConnectionPoolTest(AList.Items[i]).Done;
+      end;
       Sleep(100);
+//      writeln('_WaitForThreads: 3');
+      {$IFNDEF FPC}
       Application.ProcessMessages;
+      {$ENDIF}
+//      writeln('_WaitForThreads: 4');
     end;
   end;
 var
@@ -860,9 +868,14 @@ begin
   try
     lList := TObjectList.Create;
     try
+//      writeln(' ');
+//      writeln('_CreateThreads...');
       _CreateThreads(lList, pThreadCount, cuIterations);
+//      writeln('_StartThreads...');
       _StartThreads(lList);
+//      writeln('_WaitForThreads...');
       _WaitForThreads(lList);
+//      writeln('DONE!');
     finally
       lList.Free;
     end;

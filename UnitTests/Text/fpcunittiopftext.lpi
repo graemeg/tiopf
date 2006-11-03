@@ -10,26 +10,10 @@
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
-      <TargetFileExt Value=".exe"/>
+      <TargetFileExt Value=""/>
     </General>
     <VersionInfo>
-      <UseVersionInfo Value="False"/>
-      <AutoIncrementBuild Value="False"/>
-      <CurrentVersionNr Value="0"/>
-      <CurrentMajorRevNr Value="0"/>
-      <CurrentMinorRevNr Value="0"/>
-      <CurrentBuildNr Value="0"/>
-      <ProjectVersion Value="1.0.0.0"/>
-      <Language Value="0409"/>
-      <CharSet Value="04E4"/>
-      <Comments Value=""/>
-      <CompanyName Value=""/>
-      <FileDescription Value=""/>
-      <InternalName Value=""/>
-      <LegalCopyright Value=""/>
-      <LegalTrademarks Value=""/>
-      <OriginalFilename Value=""/>
-      <ProductName Value=""/>
+      <ProjectVersion Value=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -42,84 +26,36 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="tiOPFGUI"/>
+        <PackageName Value="LCL"/>
       </Item1>
       <Item2>
         <PackageName Value="tiOPF"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FPCUnitConsoleRunner"/>
       </Item3>
       <Item4>
-        <PackageName Value="FPCUnitTestRunner"/>
-      </Item4>
-      <Item5>
         <PackageName Value="FCL"/>
-      </Item5>
+      </Item4>
     </RequiredPackages>
-    <Units Count="12">
+    <Units Count="3">
       <Unit0>
         <Filename Value="fpcunittiopftext.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="fpcUnitTIOPFText"/>
+        <UnitName Value="fpcunittiopftext"/>
       </Unit0>
       <Unit1>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiBaseObject_TST.pas"/>
+        <Filename Value="TestCase1.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="tiBaseObject_tst"/>
+        <UnitName Value="TestCase1"/>
       </Unit1>
       <Unit2>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Common/tiDUnitDependencies.pas"/>
+        <Filename Value="../Common/tiDUnitDependencies.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiDUnitDependencies"/>
       </Unit2>
-      <Unit3>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiVisitor_TST.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiVisitor_TST"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiStreams_TST.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiStreams_TST"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiPool_tst.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiPool_tst"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiQueue_TST.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiQueue_TST"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiOID_TST.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiOID_TST"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiWin32_TST.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiWin32_TST"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiDataSet_TST.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiDataSet_TST"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiTextParser_TST.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiTextParser_TST"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiTextParserStructCSV_TST.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="tiTextParserStructCSV_TST"/>
-      </Unit11>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -135,7 +71,7 @@
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Other>
-      <CustomOptions Value="-FU_Dcu -dSTATIC_PERLAYER_LINKINGx -dUseCThreads -dLink_FBL -dLink_TAB -dLink_CSV
+      <CustomOptions Value="-FU_Dcu -dUseCThreads -dLink_FBL -dLink_TAB -dLink_CSV
 "/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
