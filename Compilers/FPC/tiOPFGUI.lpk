@@ -20,8 +20,11 @@
         <Generate Value="Faster"/>
       </CodeGeneration>
       <Other>
-        <CustomOptions Value="-dLINK_CSV -dLINK_TAB -dLINK_FBL -dUseCThreads
-"/>
+        <CustomOptions Value="-dLINK_CSV 
+-dLINK_TAB 
+-dLINK_FBL 
+-dLINK_SQLDB_IBx
+-dUseCThreads"/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
@@ -29,7 +32,7 @@
 "/>
     <License Value="Mozilla Public License 1.1
 "/>
-    <Version Major="2" Release="1"/>
+    <Version Major="2" Release="1" Build="1"/>
     <Files Count="31">
       <Item1>
         <Filename Value="../../GUI/tiGUIUtils.pas"/>
