@@ -21,7 +21,10 @@
       </CodeGeneration>
       <Other>
         <WriteFPCLogo Value="False"/>
-        <CustomOptions Value="-dLINK_CSV -dLINK_TAB -dLINK_FBL -dUseCThreads
+        <CustomOptions Value="-dLINK_CSV
+-dLINK_TAB
+-dLINK_FBL
+-dUseCThreads
 "/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>

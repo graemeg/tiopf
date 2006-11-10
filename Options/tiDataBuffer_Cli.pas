@@ -261,7 +261,6 @@ const
 {.Z-}
 
 function stCharExistsL(const S : AnsiString; C : AnsiChar): Boolean; register;
-{$IFDEF FPC}begin{$ENDIF}
   {-Count the number of a given character in a string. }
 asm
   push  ebx
@@ -318,7 +317,7 @@ asm
   mov   eax, ecx
   pop   ebx
 end;
-{$IFDEF FPC}end;{$ENDIF}
+
 
 function stExtractTokensL(const S : AnsiString;
                            const Delims : AnsiString;
