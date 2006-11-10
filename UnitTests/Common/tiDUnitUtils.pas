@@ -21,6 +21,13 @@ uses
   {$ENDIF}
   ;
 
+
+{ This lets us use a single include file for both the Interface and
+  Implementation sections. }
+{$define read_interface}
+{$undef read_implementation}
+
+
 type
 
   TtiPerformanceCounterResultType = DWord;
@@ -86,7 +93,8 @@ type
     procedure CheckEquals(AValue: String;   AField: TtiFieldInteger); overload;
     procedure CheckEquals(const AExpected: string; AActual: integer); overload;
     {$IFDEF FPC}
-      {$I DUnitCompatableIntf.inc}
+      // DUnit compatibility interface
+      {$I DUnitCompatableInterface.inc}
     {$ENDIF}
   end;
 
@@ -110,6 +118,13 @@ uses
   ,libc
   {$ENDIF LINUX}
  ;
+
+
+{ This lets us use a single include file for both the Interface and
+  Implementation sections. }
+{$undef read_interface}
+{$define read_implementation}
+
 
 function  tiCreateStringOfSize(pSize : LongInt): string;
 var
@@ -489,9 +504,6 @@ begin
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
 end;
 
-
-
-
 procedure TtiTestCase.CheckEquals(const AExpected: string; AActual: integer);
 begin
   CheckEquals(StrToInt(AExpected), AActual);
@@ -527,7 +539,8 @@ end;
 
 
 {$IFDEF FPC}
-  {$I DUnitCompatableImpl.inc}
+  // DUnit compatibility interface
+  {$I DUnitCompatableInterface.inc}
 {$ENDIF}
 
 

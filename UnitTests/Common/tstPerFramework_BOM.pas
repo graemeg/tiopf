@@ -5,9 +5,7 @@ unit tstPerFramework_BOM;
 interface
 uses
    tiObject
-//  ,tiVisitor
   ,Classes
-//  ,Contnrs
  ;
 
 
@@ -628,17 +626,11 @@ var
 begin
   lsl := TStringList.Create;
   try
-    {$IFNDEF FPC202}
     lsl.Add('Caption');
-    {$ENDIF}
     lsl.Add('StringProp');
     lsl.Add('IntProp');
     lsl.Add('DateTimeProp');
     lsl.Add('FloatProp');
-    {$IFDEF FPC202}
-      {$Note Remove this after FPC 2.0.3 has been released}
-    lsl.Add('Caption');   { Due to a bug in FPC 2.0.2 that has been reported. }
-    {$ENDIF}
     result := AsString(',', CrLf, lsl);
   finally
     lsl.Free;

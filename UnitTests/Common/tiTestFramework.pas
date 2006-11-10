@@ -19,6 +19,11 @@ uses
   ,SysUtils
   ;
 
+{ This lets us use a single include file for both the Interface and
+  Implementation sections. }
+{$define read_interface}
+{$undef read_implementation}
+
 const
   cTableNameTestGroup               = 'Test_Group';
 
@@ -63,8 +68,8 @@ type
     constructor Create; override;
     function    GetName: string; virtual;
     property    Name: string read GetName;
-      // DUnit interface was added after FPC 2.0.2
-      {$I DUnitCompatableIntf.inc}
+      // DUnit compatibility interface
+      {$I DUnitCompatableInterface.inc}
     {$ELSE}
     constructor Create(AMethodName: string); override;
     {$ENDIF}
@@ -170,6 +175,11 @@ uses
   ,Windows
   {$ENDIF}
  ;
+ 
+{ This lets us use a single include file for both the Interface and
+  Implementation sections. }
+{$undef read_interface}
+{$define read_implementation}
 
 var
   UTempPath : string;
@@ -325,8 +335,8 @@ end;
 
 
 {$IFDEF FPC}
-  // DUnit interface was added after FPC 2.0.2
-  {$I DUnitCompatableImpl.inc}
+  // DUnit compatibility interface
+  {$I DUnitCompatableInterface.inc}
 {$ENDIF}
 
 

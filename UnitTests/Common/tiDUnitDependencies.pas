@@ -60,6 +60,7 @@ uses
   ,tiXML_TST
   {$IFDEF FPC}
   ,tiOPFFBL_TST
+//  ,tiOPFSQLDB_IB_TST
   {$ELSE}
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
@@ -125,6 +126,7 @@ begin
 
   {$IFDEF FPC}
   tiOPFFBL_TST.RegisterTests;
+//  tiOPFSQLDB_IB_TST.RegisterTests;
   {$ELSE}
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
@@ -156,6 +158,7 @@ begin
     uTIOPFTestManager.Add(TtiOPFTestSetupDataTAB.Create);
     // SQL based persistence layers
     uTIOPFTestManager.Add(TtiOPFTestSetupDataFBL.Create);
+//    uTIOPFTestManager.Add(TtiOPFTestSetupDataSQLDB_IB.Create);
     {$ELSE}
     // Non-SQL Persistence layers
     uTIOPFTestManager.Add(TtiOPFTestSetupDataXML.Create);

@@ -1,24 +1,9 @@
 
-    { Dunit compatable interface for FPCunit and FPC < 2.0.4 }
-//    function  GetName: string; virtual;
-//    property  Name: string read GetName;
+{$IFDEF read_interface}
 
-    {$IFDEF VER2_0_2}
-    procedure Check(AValue: boolean; AMessage: string = '');
-    procedure CheckEquals(expected, actual: extended; msg: string = ''); overload;
-    procedure CheckEquals(expected, actual: string; msg: string = ''); overload;
-    procedure CheckEquals(expected, actual: extended; delta: extended; msg: string = ''); overload;
-    procedure CheckEquals(expected, actual: integer; msg: string = ''); overload;
-    procedure CheckEquals(expected, actual: boolean; msg: string = ''); overload;
-    procedure CheckEquals(expected, actual: TClass; msg: string = ''); overload;
-    procedure CheckNotEquals(expected, actual: string; msg: string = ''); overload;
-    procedure CheckNull(obj: IUnknown; msg: string = ''); overload;
-    procedure CheckNull(obj: TObject; msg: string = ''); overload;
-    procedure CheckNotNull(obj: TObject; msg: string = ''); overload;
-    procedure CheckIs(obj :TObject; AClass: TClass; msg: string = ''); overload;
-    procedure CheckSame(expected, actual: TObject; msg: string = ''); overload;
-    {$ENDIF}
-    {$IF Defined(VER2_0_4) or Defined(VER2_1_1)}
+    { Dunit compatable interface for FPCunit and Free Pascal }
+
+    {$IF Defined(VER2_0_4) or Defined(VER2_0_5) or Defined(VER2_1_1)}
     procedure CheckNotEquals(expected, actual: integer; msg: string = ''); overload; virtual;
     procedure CheckNotEquals(expected, actual: boolean; msg: string = ''); overload; virtual;
     procedure CheckNotEquals(expected: extended; actual: extended; delta: extended = 0; msg: string = ''); overload; virtual;
@@ -40,5 +25,39 @@
     procedure CheckInherits(expected, actual: TClass; msg: string = ''); overload; virtual;
     }
 
+{$ENDIF read_interface}
 
+
+{$IFDEF read_implementation}
+
+
+{$IF Defined(VER2_0_4) or Defined(VER2_0_5) or Defined(VER2_1_1)}
+procedure TtiTestCase.CheckNotEquals(expected, actual: integer; msg: string);
+begin
+  if (expected = actual) then
+    Fail(msg + ComparisonMsg(IntToStr(expected), IntToStr(actual)));
+end;
+
+procedure TtiTestCase.CheckNotEquals(expected, actual: boolean; msg: string);
+begin
+  if (expected = actual) then
+    Fail(msg + ComparisonMsg(BoolToStr(expected), BoolToStr(actual)));
+end;
+
+procedure TtiTestCase.CheckNotEquals(expected: extended; actual: extended;
+  delta: extended; msg: string);
+begin
+  if (abs(expected-actual) <= delta) then
+      FailNotEquals(FloatToStr(expected), FloatToStr(actual), msg, nil);
+end;
+
+procedure TtiTestCase.FailNotEquals(expected, actual: string; msg: string;
+  errorAddr: Pointer);
+begin
+  Fail(msg + ComparisonMsg(Expected, Actual));
+end;
+{$ENDIF}
+
+
+{$ENDIF read_implementation}
 
