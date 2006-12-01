@@ -1580,8 +1580,25 @@ end;
 
 
 procedure TTestTIObject.FieldBoolean_Assign;
+var
+  lF1: TtiFieldBoolean;
+  lF2: TtiFieldBoolean;
 begin
-
+  lF1:= TtiFieldBoolean.Create(nil);
+  try
+    lF2:= TtiFieldBoolean.Create(nil);
+    try
+      lF1.AsBoolean := False;
+      lF2.AsBoolean := True;
+      CheckNotEquals(LF1.AsBoolean, LF2.AsBoolean);
+      lF2.Assign(LF1);
+      CheckEquals(LF1.AsBoolean, LF2.AsBoolean);
+    finally
+      lF2.Free;
+    end;
+  finally
+    lF1.Free;
+  end;
 end;
 
 procedure TTestTIObject.FieldBoolean_Equals;
@@ -1610,8 +1627,25 @@ end;
 
 
 procedure TTestTIObject.FieldDateTime_Assign;
+var
+  lF1: TtiFieldDateTime;
+  lF2: TtiFieldDateTime;
 begin
-
+  lF1:= TtiFieldDateTime.Create(nil);
+  try
+    lF2:= TtiFieldDateTime.Create(nil);
+    try
+      lF1.AsDateTime := EncodeDate(2006, 01, 01);
+      lF2.AsDateTime := EncodeDate(2006, 01, 02);
+      CheckNotEquals(LF1.AsDateTime, LF2.AsDateTime);
+      lF2.Assign(LF1);
+      CheckEquals(LF1.AsDateTime, LF2.AsDateTime);
+    finally
+      lF2.Free;
+    end;
+  finally
+    lF1.Free;
+  end;
 end;
 
 procedure TTestTIObject.FieldDateTime_Equals;
@@ -1650,8 +1684,25 @@ end;
 
 
 procedure TTestTIObject.FieldFloat_Assign;
+var
+  lF1: TtiFieldFloat;
+  lF2: TtiFieldFloat;
 begin
-
+  lF1:= TtiFieldFloat.Create(nil);
+  try
+    lF2:= TtiFieldFloat.Create(nil);
+    try
+      lF1.AsFloat := 1.1;
+      lF2.AsFloat := 2.2;
+      CheckNotEquals(LF1.AsFloat, LF2.AsFloat);
+      lF2.Assign(LF1);
+      CheckEquals(LF1.AsFloat, LF2.AsFloat);
+    finally
+      lF2.Free;
+    end;
+  finally
+    lF1.Free;
+  end;
 end;
 
 procedure TTestTIObject.FieldFloat_Equals;
@@ -1727,8 +1778,25 @@ end;
 
 
 procedure TTestTIObject.FieldInt64_Assign;
+var
+  lF1: TtiFieldInteger;
+  lF2: TtiFieldInteger;
 begin
-
+  lF1:= TtiFieldInteger.Create(nil);
+  try
+    lF2:= TtiFieldInteger.Create(nil);
+    try
+      lF1.AsInteger := 1;
+      lF2.AsInteger := 2;
+      CheckNotEquals(LF1.AsInteger, LF2.AsInteger);
+      lF2.Assign(LF1);
+      CheckEquals(LF1.AsInteger, LF2.AsInteger);
+    finally
+      lF2.Free;
+    end;
+  finally
+    lF1.Free;
+  end;
 end;
 
 procedure TTestTIObject.FieldInt64_Equals;
@@ -1757,8 +1825,25 @@ end;
 
 
 procedure TTestTIObject.FieldString_Assign;
+var
+  lF1: TtiFieldString;
+  lF2: TtiFieldString;
 begin
-
+  lF1:= TtiFieldString.Create(nil);
+  try
+    lF2:= TtiFieldString.Create(nil);
+    try
+      lF1.AsString := 'string 1';
+      lF2.AsString := 'string 2';
+      CheckNotEquals(LF1.AsString, LF2.AsString);
+      lF2.Assign(LF1);
+      CheckEquals(LF1.AsString, LF2.AsString);
+    finally
+      lF2.Free;
+    end;
+  finally
+    lF1.Free;
+  end;
 end;
 
 procedure TTestTIObject.FieldString_Equals;
