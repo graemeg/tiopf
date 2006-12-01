@@ -4,6 +4,9 @@
 #define PATH_TO_WORKING_DEPLOY "%path_to_working_deploy%"
 #define OUTPUT_BASE_FILENAME "%output_base_filename%"
 
+#define PATH_TO_DOC "{app}\tiOPF2\Doc"
+#define FILE_NAME_INSTALLING "Installing tiOPF2.chm"
+
 ;#define PATH_TO_WORKING_TIOPF2 "C:\Temp\tiOPFBuild\tiOPF2"
 ;#define PATH_TO_WORKING_3RDPARTY "C:\Temp\tiOPFBuild\3rdParty"
 ;#define VERSION_NUMBER "2.0.0.0"
@@ -15,7 +18,7 @@ EnableISX=true
 
 [Setup]
 AppName=tiOPF
-DefaultDirName=C:\TechInsite
+DefaultDirName=C:\tiOPF
 OutputBaseFilename={#OUTPUT_BASE_FILENAME}
 OutputDir={#PATH_TO_WORKING_DEPLOY}
 AppVerName=tiOPF {#VERSION_NUMBER}
@@ -37,8 +40,8 @@ UninstallFilesDir={app}\Uninstall
 ;UninstallDisplayIcon={app}\OPDMSAppService_Setup.exe
 
 [types]
-Name: "tiOPF2Only"; Description: "tiOPF2 source only"
 Name: "tiOPF2And3rdParty"; Description: "tiOPF2 and third party code"
+Name: "tiOPF2Only"; Description: "tiOPF2 source only"
 Name: "Custom"; Description: "Custom"; flags: iscustom
 
 [Components]
@@ -55,6 +58,7 @@ Source: {#PATH_TO_WORKING_TIOPF2}\Core\*.*; DestDir: {app}\tiOPF2\Core; Flags: r
 Source: {#PATH_TO_WORKING_TIOPF2}\GUI\*.*; DestDir: {app}\tiOPF2\GUI; Flags: recursesubdirs; components: tiOPF2
 Source: {#PATH_TO_WORKING_TIOPF2}\Options\*.*; DestDir: {app}\tiOPF2\Options; Flags: recursesubdirs; components: tiOPF2
 Source: {#PATH_TO_WORKING_TIOPF2}\UnitTests\*.*; DestDir: {app}\tiOPF2\UnitTests; Flags: recursesubdirs; components: tiOPF2
+Source: "{#PATH_TO_WORKING_DEPLOY}\{#FILE_NAME_INSTALLING}" ; DestDir: {#PATH_TO_DOC}; components: tiOPF2
 
 Source: {#PATH_TO_WORKING_3RDPARTY}\DUnit\*.*; DestDir: {app}\tiOPF2\3rdParty\DUnit; Flags: recursesubdirs; components: TrdParty\DUnit
 Source: {#PATH_TO_WORKING_3RDPARTY}\FastMM\*.*; DestDir: {app}\tiOPF2\3rdParty\FastMM; Flags: recursesubdirs; components: TrdParty\FastMM
@@ -62,13 +66,16 @@ Source: {#PATH_TO_WORKING_3RDPARTY}\Indy\*.*; DestDir: {app}\tiOPF2\3rdParty\Ind
 Source: {#PATH_TO_WORKING_3RDPARTY}\JCL\*.*; DestDir: {app}\tiOPF2\3rdParty\JCL; Flags: recursesubdirs; components: TrdParty\JCL
 
 [Dirs]
-Name: {app}\tiOPF2\Compilers\Delphi6\_dcu
 Name: {app}\tiOPF2\Compilers\Delphi7\_dcu
-Name: {app}\tiOPF2\Compilers\Delphi2005\_dcu
 Name: {app}\tiOPF2\Compilers\Delphi2006\_dcu
 Name: {app}\tiOPF2\UnitTests\Text\_dcu
 Name: {app}\tiOPF2\UnitTests\GUI\_dcu
 Name: {app}\tiOPF2\_bin
 
 [Icons]
-Name: {app}\Uninstall tiOPF; Filename: {uninstallexe}
+Name: {app}\Uninstall tiOPF2; Filename: {uninstallexe}
+Name: {app}\tiOPF2\Doc\tiOPF2 Online Help; Filename: http://opensoft.homeip.net/tiopf/
+Name: {app}\tiOPF2\Doc\tiOPF2 Concepts; Filename: http://www.techinsite.com.au/tiOPF/Doc/Default.htm
+
+[Run]
+Filename: "{#PATH_TO_DOC}\{#FILE_NAME_INSTALLING}"; Description: "Read '{#FILE_NAME_INSTALLING}'"; Flags: postinstall shellexec skipifsilent
