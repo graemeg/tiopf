@@ -210,7 +210,7 @@ begin
         CheckEquals(IntToStr(lGroupVal), lData2.Items[i].OID.AsString, 'Failed on Group.OID');
         CheckEquals(IntToStr(lGroupVal), lData2.Items[i].StrField, 'Failed on Group.StrField');
         CheckEquals(lGroupVal, lData2.Items[i].IntField, 'Failed on Group.IntField');
-        Check(TestIntToFloat(lGroupVal) = lData2.Items[i].FloatField, 'Failed on Group.FloatField');
+        CheckNearEnough(TestIntToFloat(lGroupVal), lData2.Items[i].FloatField, 'Failed on Group.FloatField');
         CheckEquals(cItemCount, lData2.Items[i].Count, 'Failed on Group.Count');
         for j := 0 to cItemCount - 1 do
         begin
@@ -218,7 +218,7 @@ begin
           CheckEquals(IntToStr(lItemVal), lData2.Items[j].OID.AsString, 'Failed on Item.OID');
           CheckEquals(IntToStr(lItemVal), lData2.Items[j].StrField, 'Failed on Item.StrField');
           CheckEquals(lItemVal, lData2.Items[j].IntField, 'Failed on Item.IntField');
-          Check(TestIntToFloat(lItemVal) = lData2.Items[j].FloatField, 'Failed on Item.FloatField');
+          CheckNearEnough(TestIntToFloat(lItemVal), lData2.Items[j].FloatField, 'Failed on Item.FloatField');
         end;
       end;
     finally
@@ -256,7 +256,7 @@ begin
       if lError <> '' then
         raise exception.Create(lError);
 
-      Check(lData2.ObjectState = posClean, 'Failed on lData2.ObjectStatte = posClean');
+      CheckObjectState(posClean, lData2);
       CheckEquals(0, lData2.Count, 'Failed on lData2.Count = 0');
     finally
       lData2.Free;
@@ -285,7 +285,7 @@ begin
       CheckEquals(IntToStr(lGroupVal), lData.Items[i].OID.AsString, 'Failed on Group.OID');
       CheckEquals(IntToStr(lGroupVal), lData.Items[i].StrField, 'Failed on Group.StrField');
       CheckEquals(lGroupVal, lData.Items[i].IntField, 'Failed on Group.IntField');
-      Check(TestIntToFloat(lGroupVal) = lData.Items[i].FloatField, 'Failed on Group.FloatField');
+      CheckNearEnough(TestIntToFloat(lGroupVal), lData.Items[i].FloatField, 'Failed on Group.FloatField');
       CheckEquals(cItemCount, lData.Items[i].Count, 'Failed on Group.Count');
       for j := 0 to cItemCount - 1 do
       begin
@@ -293,7 +293,7 @@ begin
         CheckEquals(IntToStr(lItemVal), lData.Items[j].OID.AsString, 'Failed on Item.OID');
         CheckEquals(IntToStr(lItemVal), lData.Items[j].StrField, 'Failed on Item.StrField');
         CheckEquals(lItemVal, lData.Items[j].IntField, 'Failed on Item.IntField');
-        Check(TestIntToFloat(lItemVal) = lData.Items[j].FloatField, 'Failed on Item.FloatField');
+        CheckNearEnough(TestIntToFloat(lItemVal), lData.Items[j].FloatField, 'Failed on Item.FloatField');
       end;
     end;
   finally
@@ -434,16 +434,16 @@ begin
     lData1.NotesField := FLongString;
     lData1.Save(DatabaseName, PerLayerName);
 
-    Check(lData1.ObjectState = posClean, 'Failed on ObjectState = posClean');
+    CheckObjectState(posClean, lData1);
 
     lData2 := TtiOPFTestGroup.Create;
     try
       lData2.OID.AsString := '1';
       lData2.ReadThis(DatabaseName, PerLayerName);
-      Check(lData2.ObjectState = posPK, 'Failed on ObjectState = posPK');
+      CheckObjectState(posPK, lData2);
       CheckEquals(1, lData2.IntField);
       CheckEquals('1', lData2.StrField);
-      Check(tiSetPrecision(11.111, 3) = tiSetPrecision(lData2.FloatField, 3) ,'Failed on 11.111');
+      CheckNearEnough(11.111, lData2.FloatField ,'Failed on 11.111');
       Check(TestIntToDate(1111) = lData2.DateField, 'Failed on DateField');
       CheckEquals(TestIntToBool(1), lData2.BoolField, 'BoolField');
       CheckEquals(FLongString, lData2.NotesField, 'NotesField');
@@ -471,7 +471,7 @@ begin
     lData1.StrField  := '1';
     lData1.DateField := TestIntToDate(1111);
     lData1.Save(DatabaseName, PerLayerName);
-    Check(lData1.ObjectState = posClean, 'Failed on ObjectState = posClean');
+    CheckObjectState(posClean, lData1);
   finally
     lData1.Free;
   end;
@@ -531,7 +531,7 @@ begin
     CheckEquals('1', lData.OID.AsString);
     CheckEquals(1, lData.IntField);
     CheckEquals('1', lData.StrField);
-    CheckEquals(11.111, lData.FloatField, 0.0001, 'FloatField');
+    CheckNearEnough(11.111, lData.FloatField, 'FloatField');
     CheckEquals(TestIntToDate(1111), lData.DateField, 'DateField');
     CheckEquals(TestIntToBool(1), lData.BoolField, 'BoolField');
     CheckEquals(FLongString, lData.NotesField, 'NotesField');
@@ -577,7 +577,7 @@ begin
       Check(lData2.ObjectState = posPK, 'Failed on ObjectState = posPK');
       CheckEquals(2, lData2.IntField);
       CheckEquals('2', lData2.StrField);
-      Check(tiSetPrecision(22.222, 3) = tiSetPrecision(lData2.FloatField, 3) ,'Failed on 22.222');
+      CheckNearEnough(22.222, lData2.FloatField, 'Failed on 22.222');
       Check(TestIntToDate(1112) = lData2.DateField, 'Failed on DateField');
       CheckEquals(TestIntToBool(2), lData2.BoolField, 'BoolField');
       CheckEquals(lString, lData2.NotesField, 'NotesField');
@@ -637,7 +637,7 @@ begin
     lChild.ReadThis(DatabaseName, PerLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on object state');
     CheckEquals(1, lChild.IntField, 'Failed on 4');
-    Check(TestIntToFloat(1) = lChild.FloatField, 'Failed on 5');
+    CheckNearEnough(TestIntToFloat(1), lChild.FloatField, 'FloatField');
     CheckEquals('1', lChild.StrField, 'Failed on 6');
   finally
     lChild.Free;
@@ -705,8 +705,8 @@ begin
   try
     lParent.OID.AsString := '1';
     lParent.ReadThis(DatabaseName, PerLayerName);
-    Check(posClean = lParent.ObjectState, 'Failed on 0');
-    CheckEquals('1', lParent.StrField, 'Failed on 2');
+    CheckObjectState(posClean, lParent);
+    CheckEquals('1', lParent.StrField, 'Str');
   finally
     lParent.Free;
   end;
@@ -715,11 +715,11 @@ begin
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
-    Check(posClean = lChild.ObjectState, 'Failed on 3');
-    CheckEquals(1, lChild.IntField, 'Failed on 4');
-    Check(TestIntToFloat(1) = lChild.FloatField, 'Failed on 5');
+    CheckObjectState(posClean, lChild);
+    CheckEquals(1, lChild.IntField, 'Int');
+    CheckNearEnough(TestIntToFloat(1), lChild.FloatField, 'FloatField');
     // This should be read as part of the parent class
-    CheckEquals('1', lChild.StrField, 'Failed on 6');
+    CheckEquals('1', lChild.StrField, 'Str');
   finally
     lChild.Free;
   end;
@@ -762,7 +762,7 @@ begin
     lChild.ReadThis(DatabaseName, PerLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 5');
     CheckEquals(1, lChild.IntField, 'Failed on 6');
-    Check(TestIntToFloat(1) = lChild.FloatField, 'Failed on 7');
+    CheckNearEnough(TestIntToFloat(1), lChild.FloatField, 'FloatField');
     CheckEquals('2', lChild.StrField, 'Failed on 8');
     lChild.IntField := 3;
     lChild.FloatField := TestIntToFloat(3);
@@ -779,7 +779,7 @@ begin
     lChild.ReadThis(DatabaseName, PerLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 9');
     CheckEquals(3, lChild.IntField, 'Failed on 10');
-    Check(TestIntToFloat(3) = lChild.FloatField, 'Failed on 11');
+    CheckNearEnough(TestIntToFloat(3), lChild.FloatField, 'FloatField');
     CheckEquals('3', lChild.StrField, 'Failed on 12');
   finally
     lChild.Free;
@@ -1477,7 +1477,7 @@ begin
       CheckEquals(IntToStr(lGroupVal), lData.Items[i].OID.AsString, 'Failed on Group.OID');
       CheckEquals(IntToStr(lGroupVal), lData.Items[i].StrField, 'Failed on Group.StrField');
       CheckEquals(0, lData.Items[i].IntField, 'Failed on Group.IntField');
-      Check(      0 = lData.Items[i].FloatField, 'Failed on Group.FloatField');
+      Check(      0 = lData.Items[i].FloatField, 'FloatField');
       CheckEquals(0, lData.Items[i].Count, 'Failed on Group.Count');
     end;
   finally
@@ -1639,7 +1639,7 @@ begin
     lChild.ReadThis(DatabaseName, PerLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 3');
     CheckEquals(1, lChild.IntField, 'Failed on 4');
-    Check(TestIntToFloat(1) = lChild.FloatField, 'Failed on 5');
+    CheckNearEnough(TestIntToFloat(1), lChild.FloatField, 'FloatField');
     CheckEquals('1', lChild.StrField, 'Failed on 6');
   finally
     lChild.Free;
@@ -1673,7 +1673,7 @@ begin
     lChild.ReadThis(DatabaseName, PerLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 2');
     CheckEquals(2, lChild.IntField, 'Failed on 3');
-    Check(TestIntToFloat(2) = lChild.FloatField, 'Failed on 4');
+    CheckNearEnough(TestIntToFloat(2), lChild.FloatField, 'FloatField');
     CheckEquals('2', lChild.StrField, 'Failed on 5');
   finally
     lChild.Free;
@@ -1864,13 +1864,13 @@ begin
     CheckIs(lParentGroup.Items[0], TtiOPFTestChildGrouped_A);
     CheckEquals('1', lParentGroup.Items[0].StrField, 'StrField');
     CheckEquals(1, lParentGroup.Items[0].IntField, 'IntField');
-    Check(TestIntToFloat(1) = lParentGroup.Items[0].FloatField, 'FloatField');
+    CheckNearEnough(TestIntToFloat(1), lParentGroup.Items[0].FloatField, 'FloatField');
 
     Check(posClean = lParentGroup.Items[1].ObjectState, 'lParents.Items[1].ObjectState <> posClean');
     CheckIs(lParentGroup.Items[1], TtiOPFTestChildGrouped_B);
     CheckEquals('2', lParentGroup.Items[1].StrField, 'StrField');
     CheckEquals(2, lParentGroup.Items[1].IntField, 'IntField');
-    Check(TestIntToFloat(2) = lParentGroup.Items[1].FloatField, 'FloatField');
+    CheckNearEnough(TestIntToFloat(2), lParentGroup.Items[1].FloatField, 'FloatField');
 
   finally
     lParentGroup.Free;
@@ -1904,13 +1904,13 @@ begin
     CheckIs(lParentGroup.Items[0], TtiOPFTestChildGrouped_A);
     CheckEquals('5', lParentGroup.Items[0].StrField, 'StrField');
     CheckEquals(5, lParentGroup.Items[0].IntField, 'IntField');
-    Check(TestIntToFloat(5) = lParentGroup.Items[0].FloatField, 'FloatField');
+    CheckNearEnough(TestIntToFloat(5), lParentGroup.Items[0].FloatField, 'FloatField');
 
     Check(posClean = lParentGroup.Items[1].ObjectState, 'lParents.Items[0].ObjectState <> posClean');
     CheckIs(lParentGroup.Items[1], TtiOPFTestChildGrouped_B);
     CheckEquals('6', lParentGroup.Items[1].StrField, 'StrField');
     CheckEquals(6, lParentGroup.Items[1].IntField, 'IntField');
-    Check(TestIntToFloat(6) = lParentGroup.Items[1].FloatField, 'FloatField');
+    CheckNearEnough(TestIntToFloat(6), lParentGroup.Items[1].FloatField, 'FloatField');
 
   finally
     lParentGroup.Free;
@@ -2043,7 +2043,7 @@ begin
       lData.OID.AsString := '1';
       lData.Read(DatabaseName, PerLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
-      CheckEquals(AValue, lData.FloatField, 0.0001);
+      CheckNearEnough(lData.FloatField, AValue);
     finally
       lData.Free;
     end;

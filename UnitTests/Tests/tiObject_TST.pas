@@ -2121,142 +2121,142 @@ end;
 
 procedure TTestTIObjectList.FindByProps_DirectValue;
 var
-  xList : TtstPerObjList;
-  xItem : TtstPerObjAbs;
+  LList : TtstPerObjList;
+  LItem : TtstPerObjAbs;
 begin
-  xList:=CreateList;
+  LList:=CreateList;
   try
     // by boolean
-    CheckEquals(5,xList.Count,'Wrong list! - Wrong count!');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['BoolProp'],[true]));
-    CheckNotNull(xItem,'Find By Boolean value - NO result when expected');
-    CheckEquals('1',xItem.OID.AsString,'Find By Boolean value - wrong object!');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['BoolProp'],[false]));
-    CheckNull(xItem,'Find By Boolean value - result when not expected');
+    CheckEquals(5,LList.Count,'Wrong list! - Wrong count!');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['BoolProp'],[true]));
+    CheckNotNull(LItem,'Find By Boolean value - NO result when expected');
+    CheckEquals('1',LItem.OID.AsString,'Find By Boolean value - wrong object!');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['BoolProp'],[false]));
+    CheckNull(LItem,'Find By Boolean value - result when not expected');
     // by int
-    xItem:=TtstPerObjAbs(xList.FindByProps(['IntProp'],[-4942345]));
-    CheckNotNull(xItem,'Find By Integer value - NO result when expected -4942345');
-    CheckEquals('2',xItem.OID.AsString,'Find By Integer value - wrong object! -4942345');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['IntProp'],[7878787]));
-    CheckNull(xItem,'Find By Integer value - result when not expected 7878787');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['IntProp'],[-4942345]));
+    CheckNotNull(LItem,'Find By Integer value - NO result when expected -4942345');
+    CheckEquals('2',LItem.OID.AsString,'Find By Integer value - wrong object! -4942345');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['IntProp'],[7878787]));
+    CheckNull(LItem,'Find By Integer value - result when not expected 7878787');
     // by string
-    xItem:=TtstPerObjAbs(xList.FindByProps(['StrProp'],['TEST VALUE']));
-    CheckNotNull(xItem,'Find By String value (case sensitive) - NO result when expected <TEST VALUE>');
-    CheckEquals('3',xItem.OID.AsString,'Find By String value (case sensitive) - wrong object! <TEST VALUE>');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['StrProp'],['Test AValue'],false));
-    CheckNotNull(xItem,'Find By String value (not case sensitive) - NO result when expected <Test AValue>');
-    CheckEquals('3',xItem.OID.AsString,'Find By String value (not case sensitive) - wrong object! <Test AValue>');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['StrProp'],['Test AValue'],true));
-    CheckNull(xItem,'Find By String value (case sensitive) - result when not expected <Test AValue>');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['StrProp'],['_Test Value_'],false));
-    CheckNull(xItem,'Find By String value (not case sensitive) - result when not expected <_Test Value_>');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['StrProp'],['TEST VALUE']));
+    CheckNotNull(LItem,'Find By String value (case sensitive) - NO result when expected <TEST VALUE>');
+    CheckEquals('3',LItem.OID.AsString,'Find By String value (case sensitive) - wrong object! <TEST VALUE>');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['StrProp'],['Test Value'],false));
+    CheckNotNull(LItem,'Find By String value (not case sensitive) - NO result when expected <Test AValue>');
+    CheckEquals('3',LItem.OID.AsString,'Find By String value (not case sensitive) - wrong object! <Test AValue>');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['StrProp'],['Test Value'],true));
+    CheckNull(LItem,'Find By String value (case sensitive) - result when not expected <Test AValue>');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['StrProp'],['_Test Value_'],false));
+    CheckNull(LItem,'Find By String value (not case sensitive) - result when not expected <_Test Value_>');
     // float
-    xItem:=TtstPerObjAbs(xList.FindByProps(['FloatProp'],[235465.34321]));
-    CheckNotNull(xItem,'Find By Float value - NO result when expected 235465.34321');
-    CheckEquals('4',xItem.OID.AsString,'Find By Float value - wrong object! 235465.34321');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['FloatProp'],[235465.3432]));
-    CheckNull(xItem,'Find By Float value - result when not expected 235465.3432');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['FloatProp'],[235465.34321]));
+    CheckNotNull(LItem,'Find By Float value - NO result when expected 235465.34321');
+    CheckEquals('4',LItem.OID.AsString,'Find By Float value - wrong object! 235465.34321');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['FloatProp'],[235465.3432]));
+    CheckNull(LItem,'Find By Float value - result when not expected 235465.3432');
     // by Date
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[EncodeDate(2004,05,12)]));
-    CheckNotNull(xItem,'Find By Date value 2004-05-12 - NO result when expected');
-    CheckEquals('5',xItem.OID.AsString,'Find By Date value - wrong object!');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[0]));
-    CheckNotNull(xItem,'Find By Date value 0 - NO result when expected');
-    CheckEquals('4',xItem.OID.AsString,'Find By Date value - wrong object!');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[EncodeDate(2004,05,13)]));
-    CheckNull(xItem,'Find By Date value 2004-05-13 - result when not expected');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[EncodeDate(2004,05,12)]));
+    CheckNotNull(LItem,'Find By Date value 2004-05-12 - NO result when expected');
+    CheckEquals('5',LItem.OID.AsString,'Find By Date value - wrong object!');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[0]));
+    CheckNotNull(LItem,'Find By Date value 0 - NO result when expected');
+    CheckEquals('4',LItem.OID.AsString,'Find By Date value - wrong object!');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[EncodeDate(2004,05,13)]));
+    CheckNull(LItem,'Find By Date value 2004-05-13 - result when not expected');
     // by DateTime
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[EncodeDate(2000,02,03)+EncodeTime(4,5,6,7)]));
-    CheckNotNull(xItem,'Find By DateTime value 2000-02-03, 4:05:06.007 - NO result when expected');
-    CheckEquals('2',xItem.OID.AsString,'Find By Integer value 2000-02-03, 4:05:06.007 - wrong object!');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[EncodeDate(1999,02,06)+EncodeTime(20,0,0,1)]));
-    CheckNull(xItem,'Find By DateTime value 1999-02-06, 20:00:00.001 - result when not expected');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[EncodeDate(2000,02,03)+EncodeTime(4,5,6,7)]));
+    CheckNotNull(LItem,'Find By DateTime value 2000-02-03, 4:05:06.007 - NO result when expected');
+    CheckEquals('2',LItem.OID.AsString,'Find By Integer value 2000-02-03, 4:05:06.007 - wrong object!');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[EncodeDate(1999,02,06)+EncodeTime(20,0,0,1)]));
+    CheckNull(LItem,'Find By DateTime value 1999-02-06, 20:00:00.001 - result when not expected');
   finally
-    xList.Free;
+    LList.Free;
   end;
 end;
 
 procedure TTestTIObjectList.FindByProps_TypedValue;
 var
-  xList : TtstPerObjList;
-  xItem : TtstPerObjAbs;
-  xInt : integer;
-  xDate : TDateTime;
-  xStr : string;
-  xFloat : Extended;
-  xBool : boolean;
+  LList : TtstPerObjList;
+  LItem : TtstPerObjAbs;
+  LInt : integer;
+  LDate : TDateTime;
+  LStr : string;
+  LFloat : Extended;
+  LBool : boolean;
 begin
-  xList:=CreateList;
+  LList:=CreateList;
   try
     // by boolean
-    CheckEquals(5,xList.Count,'Wrong list! - Wrong count!');
-    xBool:=true;
-    xItem:=TtstPerObjAbs(xList.FindByProps(['BoolProp'],[xBool]));
-    CheckNotNull(xItem,'Find By Boolean value - NO result when expected');
-    CheckEquals('1',xItem.OID.AsString,'Find By Boolean value - wrong object!');
-    xBool:=false;
-    xItem:=TtstPerObjAbs(xList.FindByProps(['BoolProp'],[xBool]));
-    CheckNull(xItem,'Find By Boolean value - result when not expected');
+    CheckEquals(5,LList.Count,'Wrong list! - Wrong count!');
+    LBool:=true;
+    LItem:=TtstPerObjAbs(LList.FindByProps(['BoolProp'],[LBool]));
+    CheckNotNull(LItem,'Find By Boolean value - NO result when expected');
+    CheckEquals('1',LItem.OID.AsString,'Find By Boolean value - wrong object!');
+    LBool:=false;
+    LItem:=TtstPerObjAbs(LList.FindByProps(['BoolProp'],[LBool]));
+    CheckNull(LItem,'Find By Boolean value - result when not expected');
     // by int
-    xInt:=-4942345;
-    xItem:=TtstPerObjAbs(xList.FindByProps(['IntProp'],[xInt]));
-    CheckNotNull(xItem,'Find By Integer value - NO result when expected -4942345');
-    CheckEquals('2',xItem.OID.AsString,'Find By Integer value - wrong object! -4942345');
-    xInt:=7878787;
-    xItem:=TtstPerObjAbs(xList.FindByProps(['IntProp'],[xInt]));
-    CheckNull(xItem,'Find By Integer value - result when not expected 7878787');
+    LInt:=-4942345;
+    LItem:=TtstPerObjAbs(LList.FindByProps(['IntProp'],[LInt]));
+    CheckNotNull(LItem,'Find By Integer value - NO result when expected -4942345');
+    CheckEquals('2',LItem.OID.AsString,'Find By Integer value - wrong object! -4942345');
+    LInt:=7878787;
+    LItem:=TtstPerObjAbs(LList.FindByProps(['IntProp'],[LInt]));
+    CheckNull(LItem,'Find By Integer value - result when not expected 7878787');
     // by string
-    xStr:='TEST VALUE';
-    xItem:=TtstPerObjAbs(xList.FindByProps(['StrProp'],[xStr]));
-    CheckNotNull(xItem,'Find By String value (case sensitive) - NO result when expected <TEST VALUE>');
-    CheckEquals('3',xItem.OID.AsString,'Find By String value (case sensitive) - wrong object! <TEST VALUE>');
+    LStr:='TEST VALUE';
+    LItem:=TtstPerObjAbs(LList.FindByProps(['StrProp'],[LStr]));
+    CheckNotNull(LItem,'Find By String value (case sensitive) - NO result when expected <TEST VALUE>');
+    CheckEquals('3',LItem.OID.AsString,'Find By String value (case sensitive) - wrong object! <TEST VALUE>');
 
-    xStr:='Test AValue';
-    xItem:=TtstPerObjAbs(xList.FindByProps(['StrProp'],[xStr],false));
-    CheckNotNull(xItem,'Find By String value (not case sensitive) - NO result when expected <Test AValue>');
-    CheckEquals('3',xItem.OID.AsString,'Find By String value (not case sensitive) - wrong object! <Test AValue>');
-    xItem:=TtstPerObjAbs(xList.FindByProps(['StrProp'],[xStr],true));
-    CheckNull(xItem,'Find By String value (case sensitive) - result when not expected <Test AValue>');
+    LStr:='Test Value';
+    LItem:=TtstPerObjAbs(LList.FindByProps(['StrProp'],[LStr],false));
+    CheckNotNull(LItem,'Find By String value (not case sensitive) - NO result when expected <Test AValue>');
+    CheckEquals('3',LItem.OID.AsString,'Find By String value (not case sensitive) - wrong object! <Test AValue>');
+    LItem:=TtstPerObjAbs(LList.FindByProps(['StrProp'],[LStr],true));
+    CheckNull(LItem,'Find By String value (case sensitive) - result when not expected <Test AValue>');
 
-    xStr:='_Test Value_';
-    xItem:=TtstPerObjAbs(xList.FindByProps(['StrProp'],[xStr],false));
-    CheckNull(xItem,'Find By String value (not case sensitive) - result when not expected <_Test Value_>');
+    LStr:='_Test Value_';
+    LItem:=TtstPerObjAbs(LList.FindByProps(['StrProp'],[LStr],false));
+    CheckNull(LItem,'Find By String value (not case sensitive) - result when not expected <_Test Value_>');
 
     // float
-    xFloat:=235465.34321;
-    xItem:=TtstPerObjAbs(xList.FindByProps(['FloatProp'],[xFloat]));
-    CheckNotNull(xItem,'Find By Float value - NO result when expected 235465.34321');
-    CheckEquals('4',xItem.OID.AsString,'Find By Float value - wrong object! 235465.34321');
-    xFloat:=235465.3432;
-    xItem:=TtstPerObjAbs(xList.FindByProps(['FloatProp'],[xFloat]));
-    CheckNull(xItem,'Find By Float value - result when not expected 235465.3432');
+    LFloat:=235465.34321;
+    LItem:=TtstPerObjAbs(LList.FindByProps(['FloatProp'],[LFloat]));
+    CheckNotNull(LItem,'Find By Float value - NO result when expected 235465.34321');
+    CheckEquals('4',LItem.OID.AsString,'Find By Float value - wrong object! 235465.34321');
+    LFloat:=235465.3432;
+    LItem:=TtstPerObjAbs(LList.FindByProps(['FloatProp'],[LFloat]));
+    CheckNull(LItem,'Find By Float value - result when not expected 235465.3432');
 
     // by Date
-    xDate:=EncodeDate(2004,05,12);
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[xDate]));
-    CheckNotNull(xItem,'Find By Date value 2004-05-12 - NO result when expected');
-    CheckEquals('5',xItem.OID.AsString,'Find By Date value - wrong object!');
+    LDate:=EncodeDate(2004,05,12);
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[LDate]));
+    CheckNotNull(LItem,'Find By Date value 2004-05-12 - NO result when expected');
+    CheckEquals('5',LItem.OID.AsString,'Find By Date value - wrong object!');
 
-    xDate:=0;
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[xDate]));
-    CheckNotNull(xItem,'Find By Date value 0 - NO result when expected');
-    CheckEquals('4',xItem.OID.AsString,'Find By Date value - wrong object!');
+    LDate:=0;
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[LDate]));
+    CheckNotNull(LItem,'Find By Date value 0 - NO result when expected');
+    CheckEquals('4',LItem.OID.AsString,'Find By Date value - wrong object!');
 
-    xDate:=EncodeDate(2004,05,13);
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[xDate]));
-    CheckNull(xItem,'Find By Date value 2004-05-13 - result when not expected');
+    LDate:=EncodeDate(2004,05,13);
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[LDate]));
+    CheckNull(LItem,'Find By Date value 2004-05-13 - result when not expected');
 
     // by DateTime
-    xDate:=EncodeDate(2000,02,03)+EncodeTime(4,5,6,7);
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[xDate]));
-    CheckNotNull(xItem,'Find By DateTime value 2000-02-03, 4:05:06.007 - NO result when expected');
-    CheckEquals('2',xItem.OID.AsString,'Find By Integer value 2000-02-03, 4:05:06.007 - wrong object!');
+    LDate:=EncodeDate(2000,02,03)+EncodeTime(4,5,6,7);
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[LDate]));
+    CheckNotNull(LItem,'Find By DateTime value 2000-02-03, 4:05:06.007 - NO result when expected');
+    CheckEquals('2',LItem.OID.AsString,'Find By Integer value 2000-02-03, 4:05:06.007 - wrong object!');
 
-    xDate:=EncodeDate(1999,02,06)+EncodeTime(20,0,0,1);
-    xItem:=TtstPerObjAbs(xList.FindByProps(['DateProp'],[xDate]));
-    CheckNull(xItem,'Find By DateTime value 1999-02-06, 20:00:00.001 - result when not expected');
+    LDate:=EncodeDate(1999,02,06)+EncodeTime(20,0,0,1);
+    LItem:=TtstPerObjAbs(LList.FindByProps(['DateProp'],[LDate]));
+    CheckNull(LItem,'Find By DateTime value 1999-02-06, 20:00:00.001 - result when not expected');
   finally
-    xList.Free;
+    LList.Free;
   end;
 end;
 

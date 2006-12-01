@@ -62,7 +62,7 @@ type
     procedure   tstIntToStream(pInt:Integer; const AStream : TStream);
     function    AreStreamContentsSame(const pStream1, pStream2 : TStream; var AMessage : string): boolean;
     procedure   CheckStreamContentsSame(const pStream1, pStream2 : TStream);
-    procedure   CheckNearEnough(AExpected, AActual: Extended; const AMessage: string);
+    procedure   CheckNearEnough(AExpected, AActual: Extended; const AMessage: string = '');
   public
     {$IFDEF FPC}
     constructor Create; override;
@@ -1049,7 +1049,7 @@ begin
 end;
 
 
-procedure TtiTestCase.CheckNearEnough(AExpected, AActual: Extended; const AMessage: string);
+procedure TtiTestCase.CheckNearEnough(AExpected, AActual: Extended; const AMessage: string = '');
 begin
   CheckEquals(AExpected, AActual, 0.000001, AMessage);
 end;
