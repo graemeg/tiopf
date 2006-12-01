@@ -44,22 +44,23 @@ uses
 
 type
 
-  {$IFDEF CLASS_TRACKING}
-  {:Abstract base class for all tiOPF objects. Implements live object tracking (
-    a count of leaking objects will be shown in a dialog when the application
-    closes) and TestValid() to confirm the object points to valid data.
+  {$IFDEF OBJECT_TRACKING}
+  {:Abstract base class for all tiOPF objects. Implements live object tracking
+    TestValid() can be used to confirm the object points to valid data.
 
     @example Paste the code below to into a test application to see how live
     object tracking works.<br><br>NOTE: You will require a conditional define
     CLASS_TRACKING in your application.<br>
     <code>
-    (*$DEFINE CLASS_TRACKING*)
+    (*$DEFINE OBJECT_TRACKING*)
     TForm1.Button1Click(Sender: TObject);
+    var
+      LO: TtiBaseObject
     begin
-      TtiBaseObject.Create;
-      Close; // When the application closes, you will see a popup dialog saying:
-             // Leaking objects:
-             // 1 TtiBaseObject
+      LO:= TtiBaseObject.Create;
+      Assert(LO.TestValid);
+      LO.Free;
+      Assert(not LO.TestValid);
     end;
     </code>
     }
@@ -113,7 +114,7 @@ type
   end;
   {$ENDIF}
 
-  {$IFNDEF CLASS_TRACKING}
+  {$IFNDEF OBJECT_TRACKING}
   // nothing - just redefine TtiBaseObject as a TObject
   TtiBaseObject = class (TObject)
   private
@@ -139,7 +140,7 @@ procedure IdClassCountDlg(AClassName: String);
 {$ENDIF}
 
 {$IFNDEF EXCLUDE_FROM_DOC}
-{$IFDEF CLASS_TRACKING}
+{$IFDEF OBJECT_TRACKING}
 function  IdGetThreadObjectCount: Integer;
 function  IdGetTotalObjectCount: Integer;
 procedure IdSoapListObjectCounts(AList: TStringList); // put names in list, with count as object
@@ -241,7 +242,7 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF CLASS_TRACKING}
+{$IFDEF OBJECT_TRACKING}
 {==============================================================================
  Object/Class Tracking - List Library
  ==============================================================================}
@@ -713,7 +714,7 @@ function IdObjectRegister(AObject: TObject): Cardinal;
 const
   ASSERT_LOCATION = ASSERT_UNIT+'.IdObjectRegister';
 begin
-{$IFDEF CLASS_TRACKING}
+{$IFDEF OBJECT_TRACKING}
   _Assert(AObject <> NIL, ASSERT_LOCATION+': Object is Nil registering in Object Tracking System');
   Result := IdObjRegister(AObject);
 {$ELSE}
@@ -726,7 +727,7 @@ function IdObjectTestValid(AObject: TObject; AClassType: TClass = NIL): Boolean;
 const
   ASSERT_LOCATION = ASSERT_UNIT+'.IdObjectTestValid';
 begin
-{$IFDEF CLASS_TRACKING}
+{$IFDEF OBJECT_TRACKING}
   Result := IdObjTestValid(AObject);
 {$ELSE}
   result := AObject <> nil;
@@ -742,7 +743,7 @@ procedure IdObjectBreakPointOnFree(AObject: TObject);
 const
   ASSERT_LOCATION = ASSERT_UNIT+'.IdObjectBreakPointOnFree';
 begin
-{$IFDEF CLASS_TRACKING}
+{$IFDEF OBJECT_TRACKING}
   IdObjBreakPointOnFree(AObject);
 {$ENDIF}
 end;
@@ -752,7 +753,7 @@ procedure IdObjectDeregister(AObject: TObject);
 const
   ASSERT_LOCATION = ASSERT_UNIT+'.IdObjectDeregister';
 begin
-{$IFDEF CLASS_TRACKING}
+{$IFDEF OBJECT_TRACKING}
   IdObjDeregister(AObject);
 {$ENDIF}
 end;
@@ -761,7 +762,7 @@ end;
 procedure IdClassCountDlg(AClassName: String);
 const
   ASSERT_LOCATION = ASSERT_UNIT+'.IdClassCountDlg';
-{$IFDEF CLASS_TRACKING}
+{$IFDEF OBJECT_TRACKING}
 var
   i: Integer;
 begin
@@ -787,7 +788,7 @@ end;
 
 { TtiBaseObject }
 
-{$IFDEF CLASS_TRACKING}
+{$IFDEF OBJECT_TRACKING}
 constructor TtiBaseObject.Create;
 const
   ASSERT_LOCATION = ASSERT_UNIT+'.TtiBaseObject.Create';
@@ -855,12 +856,8 @@ function TtiBaseObject.TestValid(AClassType: TClass = NIL; AAllowNil : boolean =
 const
   ASSERT_LOCATION = ASSERT_UNIT+'.TtiBaseObject.TestValid';
 begin
-  {$IFDEF CLASS_TRACKING}
   {$IFDEF OBJECT_TRACKING}
   Result := IdObjTestValid(self, AAllowNil);
-  {$ELSE}
-  Result := AAllowNil or Assigned(self);
-  {$ENDIF}
   {$ELSE}
   Result := AAllowNil or Assigned(self);
   {$ENDIF}
@@ -881,12 +878,12 @@ end;
 
 
 initialization
-  {$IFDEF CLASS_TRACKING}
+  {$IFDEF OBJECT_TRACKING}
   InitObjectTracking;
   {$ENDIF}
 
 finalization
-  {$IFDEF CLASS_TRACKING}
+  {$IFDEF OBJECT_TRACKING}
   CloseObjectTracking;
   {$ENDIF}
   

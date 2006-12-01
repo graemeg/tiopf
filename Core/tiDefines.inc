@@ -72,23 +72,18 @@
   Defines Relating to Object Tracking
  =============================================================================}
 
-{.$DEFINE CLASS_TRACKING}
+{.$DEFINE OBJECT_TRACKING}
   { Allows basic leak tracking. A count of each type of class is
     kept and a supressed exception is raised if any descendent objects are
-    still alive when the application terminates. See tiBaseObject.pas for details.}
+    still alive when the application terminates. See tiBaseObject.pas for details.
 
-{.$DEFINE OBJECT_TRACKING}
-  { Complete Object Tracking. A full list of Objects is maintained in
-    a separate list. Objects are cross-compared with the list. Not only
-    does this provide leak tracking on a class per class basis, but it
-    allows for authoritative checking that the object still points to
-    an actual live instance that it is meant to. In addition, a watch can
-    be requested on an object so that an break point will be called when
-    the object is freed. See tiObjAbs.pas for details. }
-
-{$IFDEF OBJECT_TRACKING}
-  {$DEFINE CLASS_TRACKING}
-{$ENDIF}
+    A full list of Objects is maintained in a separate list.
+    Objects are cross-compared with the list. Not only does this provide leak
+    tracking on a class per class basis, but it allows for authoritative
+    checking that the object still points to an actual live instance that it is
+    meant to. In addition, a watch can be requested on an object so that an
+    break point will be called when the object is freed. See tiBaseObject.pas
+    for details. }
 
 // If Delphi 7, turn off UNSAFE_* Warnings (just until we have fixed them all)
 // We want the platform warnings as we are working towards Linux support.
