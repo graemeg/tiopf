@@ -2345,8 +2345,33 @@ begin
 end;
 
 procedure TTestTIObjectList.FreeDeleted;
+var
+  LList: TtiObjectList;
+  LItem1: TtiObject;
+  LItem2: TtiObject;
+  LItem3: TtiObject;
 begin
+  LList:= TtiObjectList.Create;
+  try
+    LItem1:= TtiObject.Create;
+    LItem1.ObjectState:= posClean;
+    LList.Add(LItem1);
 
+    LItem2:= TtiObject.Create;
+    LItem2.ObjectState:= posDeleted;
+    LList.Add(LItem2);
+
+    LItem3:= TtiObject.Create;
+    LItem3.ObjectState:= posDelete;
+    LList.Add(LItem3);
+
+    CheckEquals(3, LList.Count);
+    LList.FreeDeleted;
+    CheckEquals(2, LList.Count);
+
+  finally
+    LList.Free;
+  end;
 end;
 
 procedure TTestTIObjectList.IndexOf;

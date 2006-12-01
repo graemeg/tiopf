@@ -3496,7 +3496,8 @@ procedure TtiObjectList.FreeDeleted;
 var
   i: Integer;
 begin
-  // ToDo: What if OwnsObjects = False?
+  // ToDo: Should really be handled through a visitor that iterates,
+  //       bottom up, freeing all nested objects
   for i:= Pred(Count) downto 0 do
     if Items[i].ObjectState = posDeleted then
       Delete(i);
