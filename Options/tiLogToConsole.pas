@@ -110,6 +110,7 @@ begin
 end;
 
 initialization
+  Assert(IsConsole, 'Not a console app');
   gLog.RegisterLog(TtiLogToConsole.Create);
 
 end.
