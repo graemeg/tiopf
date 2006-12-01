@@ -10,10 +10,6 @@ unit tiBaseObject_TST;
 {$I tiDefines.inc}
 
 {$IFNDEF FPC}
-  {$IFNDEF CLASS_TRACKING}
-    Currently, you must have CLASS_TRACKING defined to run the tests
-  {$ENDIF}
-
   {$IFNDEF OBJECT_TRACKING}
     Currently, you must have OBJECT_TRACKING defined to run the tests
   {$ENDIF}
