@@ -168,51 +168,28 @@ end;
 
 procedure TTestTIQueryNonSQL.ParamsAsString;
 const
-  {$IFDEF FPC}
   cAns1 = 'ITEM_STR_FIELD:= test';
   cAns2 = 'ITEM_INT_FIELD:= 123';
   cAns3 = 'ITEM_FLOAT_FIELD:= 3.3';
-  {$ELSE}
-  cAns1 = 'ITEM_STR_FIELD := test';
-  cAns2 = 'ITEM_INT_FIELD := 123';
-  cAns3 = 'ITEM_FLOAT_FIELD := 3.3';
-  {$ENDIF}
 var
-  ls : string;
+  LActual : string;
 begin
-  ls := Query.ParamsAsString;
-  Check(SameText(
-         ls,
-         ''),
-         'ParamsAsStr failed with 0 params. Returned values was:' + CrLf +
-         ls);
+  LActual := Query.ParamsAsString;
+  CheckEquals('', LActual);
 
-  Query.ParamAsString[ 'Item_Str_Field' ]:= 'test';
-  ls := Query.ParamsAsString;
-  Check(SameText(
-         ls,
-         cAns1),
-         'ParamsAsStr failed with 1 param. Returned values was:' + CrLf +
-         ls);
+  Query.ParamAsString[ 'ITEM_STR_FIELD' ]:= 'test';
+  LActual := Query.ParamsAsString;
+  CheckEquals(cAns1, LActual);
 
-  Query.ParamAsInteger[ 'Item_Int_Field' ]:= 123;
-  ls := Query.ParamsAsString;
-  Check(SameText(
-         ls,
-         cAns1 + CrLf +
-         cAns2),
-         'ParamsAsStr failed with 2 params. Returned values was:' + CrLf +
-         ls);
+  Query.ParamAsInteger[ 'ITEM_INT_FIELD' ]:= 123;
+  LActual := Query.ParamsAsString;
+  CheckEquals(cAns1 + CrLf + cAns2, LActual);
 
-  Query.ParamAsFloat[   'Item_Float_Field' ]:= 3.3;
-  ls := Query.ParamsAsString;
-  Check(SameText(
-         ls,
-         cAns1 + CrLf +
+  Query.ParamAsFloat[   'ITEM_FLOAT_FIELD' ]:= 3.3;
+  LActual := Query.ParamsAsString;
+  CheckEquals( cAns1 + CrLf +
          cAns2 + CrLf +
-         cAns3),
-         'ParamsAsStr failed with 3 params. Returned values was:' + CrLf +
-         ls);
+         cAns3, LActual);
 end;
 
 
