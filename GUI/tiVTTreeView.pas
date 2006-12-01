@@ -44,6 +44,18 @@ type
 
   TtiVTTVOnFilterDataEvent = procedure(AData: TtiObject; var pInclude: boolean) of object;
 
+  TtiVTTVDeriveNodeText = procedure(
+    AtiVTTreeView: TtiVTTreeView;
+    ANode: PVirtualNode;
+    AData: TtiObject;
+    var ANodeText: WideString) of object;
+
+  TtiVTTVOnPaintText = procedure(
+    AtiVTTreeView: TtiVTTreeView;
+    ANode: PVirtualNode;
+    AData: TtiObject;
+    ACanvas : TCanvas) of object;
+
   // Does not have to be a collection. Perhaps better if it's not because one of the
   // main properties is a class reference
   TtiVTTVDataMapping = class(TCollectionItem)
@@ -55,6 +67,7 @@ type
     FImageIndex: integer;
     FDisplayPropName: string;
     FDataClass: TtiClass;
+    FOnDeriveNodeText: TtiVTTVDeriveNodeText;
     FOnCanEdit: TtiVTTVNodeConfirmEvent;
     FOnCanInsert: TtiVTTVNodeConfirmEvent;
     FOnCanDelete: TtiVTTVNodeConfirmEvent;
@@ -75,6 +88,8 @@ type
     property ImageIndex: integer          read FImageIndex write FImageIndex default -1;
 
     // Events
+    property OnDeriveNodeText: TtiVTTVDeriveNodeText read FOnDeriveNodeText write FOnDeriveNodeText;
+
     property OnInsert: TtiVTTVNodeEvent read FOnInsert write FOnInsert;
     property OnDelete: TtiVTTVNodeEvent read FOnDelete write FOnDelete;
     property OnEdit: TtiVTTVNodeEvent read FOnEdit write FOnEdit;
@@ -144,6 +159,7 @@ type
     FOwnsData: Boolean;
     FApplyFilter: Boolean;
     FOnFilter: TtiVTTVOnFilterDataEvent;
+    FOnPaintText: TtiVTTVOnPaintText;
     procedure DoOnChange(sender: TBaseVirtualTree; node: PVirtualNode);
     procedure SetTVDataMappings(const AValue: TtiVTTVDataMappings);
     function  GetSelectedAddress: string;
@@ -173,8 +189,13 @@ type
     function  TestObjectAgainstFilter(AValue: TtiObject): Boolean;
 
     procedure SelectObjectOrOwner(AValue: TtiObject);
-    function GetDefaultText: WideString;
+    function  GetDefaultText: WideString;
     procedure SetDefaultText(const AValue: WideString);
+    procedure SetOnPaintText(const AValue: TtiVTTVOnPaintText);
+    procedure DoOnPaintText(ASender: TBaseVirtualTree;
+      const ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex;
+      ATextType: TVSTTextType);
+
   protected
     procedure SetEnabled(AValue: Boolean); override;
 
@@ -242,6 +263,7 @@ type
     property OnFilter: TtiVTTVOnFilterDataEvent read FOnFilter write FOnFilter;
     property OnKeyDown: TKeyEvent read GetOnKeyDown write SetOnKeyDown;
     property OnSelectNode: TtiVTTVNodeEvent read FOnSelectNode write FOnSelectNode;
+    property OnPaintText: TtiVTTVOnPaintText read FOnPaintText Write SetOnPaintText;
 
   end;
 
@@ -932,6 +954,27 @@ begin
   FVT.OnKeyDown := AValue;
 end;
 
+procedure TtiVTTreeView.SetOnPaintText(const AValue: TtiVTTVOnPaintText);
+begin
+  FOnPaintText := AValue;
+  if Assigned(FOnPaintText) then
+    FVT.OnPaintText := DoOnPaintText
+  else
+    FVT.OnPaintText := nil;
+end;
+
+procedure TtiVTTreeView.DoOnPaintText(ASender: TBaseVirtualTree; const ATargetCanvas: TCanvas;
+  ANode: PVirtualNode; AColumn: TColumnIndex; ATextType: TVSTTextType);
+var
+  LData: TtiObject;
+begin
+  if Assigned(FOnPaintText) then
+  begin
+    LData := GetObjectForNode(ANode);
+    FOnPaintText(Self, ANode, LData, ATargetCanvas);
+  end;
+end;
+
 procedure TtiVTTreeView.SetReadOnly(const AValue: boolean);
 begin
   FReadOnly := AValue;
@@ -1174,14 +1217,26 @@ procedure TtiVTTreeView.DoOnGetText(
   Column: TColumnIndex;
   TextType: TVSTTextType;
   var CellText: WideString);
+var
+  LMapping: TtiVTTVDataMapping;
+  LData: TtiObject;
+  LCellText: WideString;
 begin
-  if not Assigned(GetMappingForNode(Node)) then
-    Exit;
+  LMapping:= GetMappingForNode(Node);
 
-  CellText := GetPropValue(
-                GetObjectForNode(Node),
-                GetMappingForNode(Node).DisplayPropName,
-                True);
+  if not Assigned(LMapping) then
+    Exit; //==>
+
+  LData:= GetObjectForNode(Node);
+
+  if not Assigned(LMapping.OnDeriveNodeText) then
+    CellText := LData.PropValue[LMapping.DisplayPropName]
+  else
+  begin
+    LMapping.OnDeriveNodeText(Self, Node, LData, LCellText);
+    CellText:= LCellText;
+  end;
+    
 end;
 
 procedure TtiVTTreeView.DoOnGetImageIndex(
