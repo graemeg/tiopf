@@ -1127,7 +1127,7 @@ var
   i : integer;
   lPropFilter : TTypeKinds;
 begin
-  lList := nil;
+  {$ifdef fpc} LList := nil; {$endif}
   Assert(AStringList <> nil, 'pSL not assigned.');
   lPropFilter := APropFilter;
 
