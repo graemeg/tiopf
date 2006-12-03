@@ -110,7 +110,9 @@ begin
 end;
 
 initialization
+  {$IFNDEF FPC}
   Assert(IsConsole, 'Not a console app');
+  {$ENDIF}
   gLog.RegisterLog(TtiLogToConsole.Create);
 
 end.

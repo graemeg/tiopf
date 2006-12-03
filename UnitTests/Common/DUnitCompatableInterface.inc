@@ -3,7 +3,7 @@
 
     { Dunit compatable interface for FPCunit and Free Pascal }
 
-    {$IF Defined(VER2_0_4) or Defined(VER2_0_5) or Defined(VER2_1_1)}
+    {$IF Defined(VER2_0_4) or Defined(VER2_0_5)} //  or Defined(VER2_1_1)
     procedure CheckNotEquals(expected, actual: integer; msg: string = ''); overload; virtual;
     procedure CheckNotEquals(expected, actual: boolean; msg: string = ''); overload; virtual;
     procedure CheckNotEquals(expected: extended; actual: extended; delta: extended = 0; msg: string = ''); overload; virtual;
@@ -31,7 +31,7 @@
 {$IFDEF read_implementation}
 
 
-{$IF Defined(VER2_0_4) or Defined(VER2_0_5) or Defined(VER2_1_1)}
+{$IF Defined(VER2_0_4) or Defined(VER2_0_5)} //  or Defined(VER2_1_1)
 procedure TtiTestCase.CheckNotEquals(expected, actual: integer; msg: string);
 begin
   if (expected = actual) then
