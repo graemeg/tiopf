@@ -669,7 +669,7 @@ begin
     begin
       FDBase.Host    := tiToken(DatabaseName, '|', 1);
       FDBase.DBFile  := tiToken(DatabaseName, '|', 1);
-      FDBase.Protocol := ptLocal;
+//      FDBase.Protocol := ptLocal;
     end
     else
     begin
@@ -997,7 +997,6 @@ end;
 
 
 initialization
-
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     cTIPersistFBL,
     TtiDBConnectionPoolDataAbs,

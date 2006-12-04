@@ -440,11 +440,11 @@ var
 begin
   Assert(AStream <> NIL, 'Stream not assigned');
   lParameter := FIBSQL.Params.ParamByName(UpperCase(AName));
-  lLow      := VarArrayLowBound(lParameter.AValue, 1);
-  lHigh     := VarArrayHighBound(lParameter.AValue, 1);
+  lLow      := VarArrayLowBound(lParameter.Value, 1);
+  lHigh     := VarArrayHighBound(lParameter.Value, 1);
   lLen      := lHigh - lLow + 1;
   lBinData  := VarArrayCreate([0, lLen], varByte);
-  lBinData  := lParameter.AValue;
+  lBinData  := lParameter.Value;
   lDataPtr  := VarArrayLock(lBinData);
   try
     AStream.WriteBuffer(lDataPtr^, lLen);
@@ -651,6 +651,8 @@ end;
  and introduce a TDataSet version of the TtiQuery
  -----------------------------------------------------------------------------}
 function TtiQuerySqldbIB.IBFieldKindToTIFieldKind(pDataType: TFieldType): TtiQueryFieldKind;
+var
+  s: string;
 begin
   case pDataType of
     ftString,
@@ -678,9 +680,13 @@ begin
     ftMemo,
     ftFmtMemo:        Result := qfkLongString;
   else
+    begin
+    s := GetEnumName(TypeInfo(TFieldType), Ord(pDataType));
     raise Exception.Create('Invalid FIBSQL.Fields[ AIndex ].DataType <' +
-      GetEnumName(TypeInfo(TFieldType), Ord(pDataType)) +
+       s +
+//      GetEnumName(TypeInfo(TFieldType), Ord(pDataType)) +
       '>');
+    end;
   end;
 end;
 
@@ -706,7 +712,7 @@ begin
   if AValue then
   begin
     Prepare;
-    FIBSQL.Params.ParamByName(UpperCase(AName)).AValue := Null;
+    FIBSQL.Params.ParamByName(UpperCase(AName)).Value := Null;
   end;
 end;
 

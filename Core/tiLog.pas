@@ -253,6 +253,7 @@ const
                    ,lsDebug
                    ,lsWarning
                    ,lsError
+//                   ,lsSQL
               ];
 
 

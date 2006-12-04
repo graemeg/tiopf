@@ -8,6 +8,7 @@ uses
   Messages
 {$ELSE}
   lmessages
+  ,lcltype
 {$ENDIF}
   ,Controls
   ,tiFocusPanel
@@ -29,10 +30,10 @@ type
 
   TtiPickerAbs = class(TCustomPanel)
   private
-    FHint : TTranslateString;
-    FEdit  : TEdit;
-    FSpeedButton : TtiSpeedButton;
-    FOnChange : TNotifyEvent;
+    FHint: TTranslateString;
+    FEdit: TEdit;
+    FSpeedButton: TtiSpeedButton;
+    FOnChange: TNotifyEvent;
     FbReadOnly: Boolean;
     function    GetActOnEditClick: boolean;
     procedure   SetActOnEditClick(const AValue: boolean);
