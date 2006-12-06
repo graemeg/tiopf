@@ -185,7 +185,13 @@ begin
     FFileNameINI  := lReportDir + 'DUnitReportSummary.ini';
   FFileNameINI:= ExpandFileName(FFileNameINI);
   
-  if FileExists(FFileNameShort) then           
+  if not DirectoryExists(lReportDir) then
+    tiForceDirectories(lReportDir);
+
+  if not DirectoryExists(ExtractFilePath(FFileNameINI)) then
+    tiForceDirectories(ExtractFilePath(FFileNameINI));
+
+  if FileExists(FFileNameShort) then
   begin
     tiDeleteFile(FFileNameShort);
     if FileExists(FFileNameShort) then
@@ -198,6 +204,13 @@ begin
     if FileExists(FFileNameLong) then
       raise exception.Create('Unable to delete old log file <' + FFileNameLong + '>');
   end;
+
+  System.WriteLn('-' + cCommandLineParamLogTo + ': ' + gCommandLineParams.GetParam(cCommandLineParamLogTo));
+  System.WriteLn('-' + cCommandLineSummaryINIFile + ':   ' + gCommandLineParams.GetParam(cCommandLineSummaryINIFile));
+
+  System.WriteLn('Short log file name:   ' + FFileNameShort);
+  System.WriteLn('Long log file name:    ' + FFileNameLong);
+  System.WriteLn('Summary INI file name: ' + FFileNameINI);
 
 end;
 
