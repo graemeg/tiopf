@@ -160,33 +160,34 @@ end;
 
 constructor TtiTextTestListener.Create;
 var
-  lReportDir : string;
+  LReportDir : string;
 begin
   inherited;
   FDelphiVersion := cPackageSuffix;
   if FDelphiVersion = '' then
     FDelphiVersion := '50';
 
-  lReportDir := gCommandLineParams.GetParam(cCommandLineParamLogTo);
-  if lReportDir = '' then
-    lReportDir := ParamStr(0);
+  LReportDir := gCommandLineParams.GetParam(cCommandLineParamLogTo);
+  if LReportDir = '' then
+    LReportDir := ParamStr(0);
+  LReportDir:= ExpandFileName(LReportDir);
 
-  if Pos('.', lReportDir) <> 0 then
-    lReportDir := ExtractFilePath(lReportDir);
-  lReportDir := tiAddTrailingSlash(lReportDir);
-  FFileNameShort := ExpandFileName(lReportDir + 'DUnitReportShort' + FDelphiVersion + '.htm');
-  FFileNameLong := ExpandFileName(lReportDir + 'DUnitReportLong' + FDelphiVersion + '.htm');
+  if Pos('.', LReportDir) <> 0 then
+    LReportDir := ExtractFilePath(LReportDir);
+  LReportDir := tiAddTrailingSlash(LReportDir);
+  FFileNameShort := LReportDir + 'DUnitReportShort' + FDelphiVersion + '.htm';
+  FFileNameLong := LReportDir + 'DUnitReportLong' + FDelphiVersion + '.htm';
   if gCommandLineParams.IsParam(cCommandLineSummaryINIFile) then
   begin
     FFileNameINI := gCommandLineParams.GetParam(cCommandLineSummaryINIFile);
     if ExtractFilePath(FFileNameINI) = '' then
       FFileNameINI := tiAddTrailingSlash(tiGetEXEPath) + FFileNameINI;
   end else
-    FFileNameINI  := lReportDir + 'DUnitReportSummary.ini';
+    FFileNameINI  := LReportDir + 'DUnitReportSummary.ini';
   FFileNameINI:= ExpandFileName(FFileNameINI);
   
-  if not DirectoryExists(lReportDir) then
-    tiForceDirectories(lReportDir);
+  if not DirectoryExists(LReportDir) then
+    tiForceDirectories(LReportDir);
 
   if not DirectoryExists(ExtractFilePath(FFileNameINI)) then
     tiForceDirectories(ExtractFilePath(FFileNameINI));
@@ -205,8 +206,8 @@ begin
       raise exception.Create('Unable to delete old log file <' + FFileNameLong + '>');
   end;
 
-  System.WriteLn('-' + cCommandLineParamLogTo + ': ' + gCommandLineParams.GetParam(cCommandLineParamLogTo));
-  System.WriteLn('-' + cCommandLineSummaryINIFile + ':   ' + gCommandLineParams.GetParam(cCommandLineSummaryINIFile));
+//  System.WriteLn('-' + cCommandLineParamLogTo + ': ' + gCommandLineParams.GetParam(cCommandLineParamLogTo));
+//  System.WriteLn('-' + cCommandLineSummaryINIFile + ':   ' + gCommandLineParams.GetParam(cCommandLineSummaryINIFile));
 
   System.WriteLn('Short log file name:   ' + FFileNameShort);
   System.WriteLn('Long log file name:    ' + FFileNameLong);
