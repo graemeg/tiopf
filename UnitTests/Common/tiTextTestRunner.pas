@@ -209,9 +209,9 @@ begin
 //  System.WriteLn('-' + cCommandLineParamLogTo + ': ' + gCommandLineParams.GetParam(cCommandLineParamLogTo));
 //  System.WriteLn('-' + cCommandLineSummaryINIFile + ':   ' + gCommandLineParams.GetParam(cCommandLineSummaryINIFile));
 
-  System.WriteLn('Short log file name:   ' + FFileNameShort);
-  System.WriteLn('Long log file name:    ' + FFileNameLong);
-  System.WriteLn('Summary INI file name: ' + FFileNameINI);
+//  System.WriteLn('Short log file name:   ' + FFileNameShort);
+//  System.WriteLn('Long log file name:    ' + FFileNameLong);
+//  System.WriteLn('Summary INI file name: ' + FFileNameINI);
 
 end;
 
