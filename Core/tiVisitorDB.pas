@@ -114,18 +114,23 @@ type
   end;
   
 
+  // ToDo: Rename to TtiVisitorSelect
   TVisOwnedQrySelect = class(TVisOwnedQrySelectAbs)
   protected
     procedure OpenQuery; override;
   end;
 
+  TtiVisitorSelect = class(TVisOwnedQrySelect);
 
+  // ToDo: Rename to TtiVisitorUpdate
   TVisOwnedQryUpdate = class(TtiPerObjVisitor)
   protected
     procedure   Init           ; virtual;
   public
     procedure   Execute(const AData : TtiVisited); override;
   end;
+
+  TtiVisitorUpdate = class(TVisOwnedQryUpdate);
   
 
 implementation
