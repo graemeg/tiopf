@@ -13,7 +13,9 @@ rem * http-proxy-host = enter-value-here
 rem * http-proxy-port = enter-value-here
 
 set path_to_svn="C:\Program Files\Subversion\bin\svn" 
-set svn_url_tiopf=https://svn.sourceforge.net/svnroot/tiopf/tiOPF2/trunk
+set svn_url_tiopf=https://svn.sourceforge.net/svnroot/tiopf/tiOPF2/Trunk
 set check_out_to=C:\temp\tiOPF2
 
 %path_to_svn% co %svn_url_tiopf% %check_out_to%
+
+rem pause
