@@ -174,8 +174,8 @@ begin
   if Pos('.', lReportDir) <> 0 then
     lReportDir := ExtractFilePath(lReportDir);
   lReportDir := tiAddTrailingSlash(lReportDir);
-  FFileNameShort := lReportDir + 'DUnitReportShort' + FDelphiVersion + '.htm';
-  FFileNameLong := lReportDir + 'DUnitReportLong' + FDelphiVersion + '.htm';
+  FFileNameShort := ExpandFileName(lReportDir + 'DUnitReportShort' + FDelphiVersion + '.htm');
+  FFileNameLong := ExpandFileName(lReportDir + 'DUnitReportLong' + FDelphiVersion + '.htm');
   if gCommandLineParams.IsParam(cCommandLineSummaryINIFile) then
   begin
     FFileNameINI := gCommandLineParams.GetParam(cCommandLineSummaryINIFile);
@@ -183,7 +183,8 @@ begin
       FFileNameINI := tiAddTrailingSlash(tiGetEXEPath) + FFileNameINI;
   end else
     FFileNameINI  := lReportDir + 'DUnitReportSummary.ini';
-
+  FFileNameINI:= ExpandFileName(FFileNameINI);
+  
   if FileExists(FFileNameShort) then           
   begin
     tiDeleteFile(FFileNameShort);
