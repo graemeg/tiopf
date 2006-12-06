@@ -42,6 +42,7 @@ uses
   ,tiVTListView
   ,tiVTTreeView
   ,tiTreeviewEditor
+  ,tiHyperlinkWithImage
  ;
 
 
@@ -81,6 +82,7 @@ begin
                          ,TtiPerAwareMultiSelect
                          ,TtiReadOnly
                          ,TtiHyperLink
+                         ,TtiHyperlinkWithImage
                          ,TtiSpeedButton
                          ,TtiRoundedPanel
                          ,TtiSplitter
