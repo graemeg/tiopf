@@ -416,7 +416,7 @@ end;
 
 destructor TtiDatabaseADOAbs.Destroy;
 begin
-  FADOConnection.Free;
+  FreeAndNil(FADOConnection);
   tiWin32CoUnInitialize;
   inherited;
 end;
