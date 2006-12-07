@@ -68,6 +68,7 @@ end;
 
 destructor TtiHTTPMSXML.Destroy;
 begin
+  FHTTP:= nil;
   tiWin32CoUnInitialize;
   inherited;
 end;
