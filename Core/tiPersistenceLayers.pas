@@ -50,6 +50,7 @@ type
     function    LoadPersistenceLayer(const APersistenceLayerName : string): TtiPersistenceLayer;
     procedure   UnLoadPersistenceLayer(const APersistenceLayerName : string);
     function    IsLoaded(const APersistenceLayerName : string): boolean;
+    function    IsDefault(const APersistenceLayerName : string): boolean;
 
     function    FindByPerLayerName(const ALayerName : string): TtiPersistenceLayer;
     function    FindByTIDatabaseClass(const ADatabaseClass : TtiDatabaseClass): TtiPersistenceLayer;
@@ -323,6 +324,11 @@ begin
   if gTIOPFManager.DefaultPerLayer = lData then
     gTIOPFManager.DefaultPerLayer := nil;
   Remove(lData);
+end;
+
+function TtiPersistenceLayers.IsDefault(const APersistenceLayerName: string): boolean;
+begin
+  result := SameText(DefaultPerLayerName, APersistenceLayerName);
 end;
 
 function TtiPersistenceLayers.IsLoaded(const APersistenceLayerName: string): boolean;
