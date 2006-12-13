@@ -33,7 +33,7 @@
 "/>
     <License Value="Mozilla Public License 1.1
 "/>
-    <Version Major="2" Release="1"/>
+    <Version Major="2" Release="2"/>
     <Files Count="44">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>

@@ -13,7 +13,9 @@ uses
     tiPerAwareCombosAbs, tiPerAwareCtrls, tiPerAwareDateRange, 
     tiPerAwareDirectoryCombos, tiPerAwareFileCombos, tiPerAwareMultiSelect, 
     tiReadOnly, tiResources, tiRoundedPanel, tiSpeedButton, tiSplitter, 
-    tiThreadProgress, tiTreeView, tiTreeViewChildForm, DtiDefaultActionValues; 
+    tiThreadProgress, tiTreeView, tiTreeViewChildForm, DtiDefaultActionValues, 
+    tiGenericEditMediators, tiGenericListMediators, tiTreeBuildVisitor, 
+    tiGenericTreeViewMediator; 
 
 implementation
 

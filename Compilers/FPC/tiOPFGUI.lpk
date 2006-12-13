@@ -33,8 +33,8 @@
 "/>
     <License Value="Mozilla Public License 1.1
 "/>
-    <Version Major="2" Release="1"/>
-    <Files Count="31">
+    <Version Major="2" Release="2"/>
+    <Files Count="35">
       <Item1>
         <Filename Value="../../GUI/tiGUIUtils.pas"/>
         <UnitName Value="tiGUIUtils"/>
@@ -159,6 +159,22 @@
         <Filename Value="../../GUI/DtiDefaultActionValues.pas"/>
         <UnitName Value="DtiDefaultActionValues"/>
       </Item31>
+      <Item32>
+        <Filename Value="../../GUI/tiGenericEditMediators.pas"/>
+        <UnitName Value="tiGenericEditMediators"/>
+      </Item32>
+      <Item33>
+        <Filename Value="../../GUI/tiGenericListMediators.pas"/>
+        <UnitName Value="tiGenericListMediators"/>
+      </Item33>
+      <Item34>
+        <Filename Value="../../GUI/tiTreeBuildVisitor.pas"/>
+        <UnitName Value="tiTreeBuildVisitor"/>
+      </Item34>
+      <Item35>
+        <Filename Value="../../GUI/tiGenericTreeViewMediator.pas"/>
+        <UnitName Value="tiGenericTreeViewMediator"/>
+      </Item35>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

@@ -65,6 +65,10 @@ contains
   tiTreeViewChildForm in '..\..\GUI\tiTreeViewChildForm.pas',
   tiVTListView in '..\..\GUI\tiVTListView.pas',
   tiVTTreeView in '..\..\GUI\tiVTTreeView.pas',
-  tiDialogs in '..\..\GUI\tidialogs.pas';
+  tiDialogs in '..\..\GUI\tidialogs.pas',
+  tiGenericEditMediators in '..\..\GUI\tiGenericEditMediators.pas',
+  tiGenericListMediators in '..\..\GUI\tiGenericListMediators.pas',  
+  tiTreeBuildVisitor in '..\..\GUI\tiTreeBuildVisitor.pas',
+  tiGenericTreeViewMediator in '..\..\GUI\tiGenericTreeViewMediator.pas';
 
 end.
