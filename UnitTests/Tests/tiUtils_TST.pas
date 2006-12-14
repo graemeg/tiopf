@@ -109,6 +109,7 @@ type
     procedure tiIntlDateStorAsDateTime;
     procedure tiIntToCommaStr;
     procedure tiIntToStrHide0;
+    procedure tiIsClassOfType;
     procedure tiIsEMailAddressValid;
     procedure tiIsFileNameValid;
     procedure tiIsFileReadOnly;
@@ -1503,6 +1504,14 @@ begin
   CheckEquals('',  tiUtils.tiIntToStrHide0(0), 'Failed on 0');
   CheckEquals('10', tiUtils.tiIntToStrHide0(10), 'Failed on 10');
   CheckEquals('-10', tiUtils.tiIntToStrHide0(-10), 'Failed on -10');
+end;
+
+procedure TTestTIUtils.tiIsClassOfType;
+begin
+  CheckEquals(True, tiUtils.tiIsClassOfType(self, 'TTestTIUtils'), 'Failed on 1');
+  CheckEquals(True, tiUtils.tiIsClassOfType(self, 'TtiTestCase'), 'Failed on 2');
+  CheckEquals(True, tiUtils.tiIsClassOfType(self, 'TTestCase'), 'Failed on 3');
+  CheckEquals(False, tiUtils.tiIsClassOfType(self, 'TStringList'), 'Failed on 4');
 end;
 
 

@@ -488,9 +488,12 @@ type
   procedure tiConsoleAppPause;
   
   {: Platform neutral function to return a GUID string. }
-  function  tiCreateGUIDString: string;
+  function tiCreateGUIDString: string;
   {: Platform neutral function to return the systems TickCount. }
-  function  tiGetTickCount: Cardinal;
+  function tiGetTickCount: Cardinal;
+  { Take an object, and a string class name and return true if the object
+    is or descends from the string class name. }
+  function tiIsClassOfType(pData: TObject; pClassName: string): boolean;
 
 type
 
@@ -3327,14 +3330,12 @@ begin
     Result := EncodeDate(lY, lM, lD) + EncodeTime(lH, lMi, lS, 0);
 end;
 
-
 procedure tiConsoleAppPause;
 begin
   WriteLn('');
   WriteLn('Press <Enter> to continue...');
   ReadLn;
 end;
-
 
 function tiCreateGUIDString: string;
 {$IFDEF FPC}
@@ -3350,7 +3351,6 @@ begin
 {$ENDIF}
 end;
 
-
 function tiGetTickCount: Cardinal;
 begin
 {$IFDEF MSWINDOWS}
@@ -3361,6 +3361,25 @@ begin
 {$ENDIF}
 end;
 
+function tiIsClassOfType(pData: TObject; pClassName: string): boolean;
+var
+  lsClassName: string;
+  lClass: TClass;
+begin
+  lsClassName := upperCase(pClassName);
+  lClass := pData.ClassType;
+  result := false;
+  while (not result) and
+    (lClass <> nil) do
+  begin
+    if UpperCase(lClass.ClassName) = lsClassName then
+    begin
+      result := true;
+      break; //==>
+    end;
+    lClass := lClass.ClassParent;
+  end;
+end;
 
 { TtiIntegerList }
 

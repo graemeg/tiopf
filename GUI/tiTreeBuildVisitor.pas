@@ -189,35 +189,12 @@ implementation
 uses
   SysUtils
   ,TypInfo
+  ,tiUtils
   ;
 
 
 const
   cMethodPrefix = 'tiTVMapping';
-
-
-{ Take an object, and a string class name and retrun true if the object
-  is, or descends from the string class name. }
-function IsClassOfType(pData: TObject; pClassName: string): boolean;
-var
-  lsClassName: string;
-  lClass: TClass;
-begin
-  lsClassName := upperCase(pClassName);
-  lClass := pData.ClassType;
-  result := false;
-  while (not result) and
-    (lClass <> nil) do
-  begin
-    if UpperCase(lClass.ClassName) = lsClassName then
-    begin
-      result := true;
-      break; //==>
-    end;
-    lClass := lClass.ClassParent;
-  end;
-end;
-
 
 
 { TVisTree }
@@ -346,7 +323,7 @@ begin
   result := nil;
   for i := 0 to DataMappings.Count - 1 do
   begin
-    if IsClassOfType(pData, DataMappings.Items[i].DataClass) then
+    if tiIsClassOfType(pData, DataMappings.Items[i].DataClass) then
     begin
       lDataMapping := DataMappings.Items[i];
       if IsPublishedProp(pData, lDataMapping.DisplayPropName) then
