@@ -24,7 +24,7 @@ type
     function  GetApplicationUpTimeAsString: string;
   public
     constructor create;
-    destructor  destroy; override;
+    destructor  Destroy; override;
     procedure   Execute;
     function    AsXML : string;
     function    AsHTML : string;

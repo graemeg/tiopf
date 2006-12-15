@@ -137,7 +137,7 @@ type
 
   public
     constructor create;
-    destructor  destroy; override;
+    destructor  Destroy; override;
     function    ExecuteRemoteXML(const pInput : string): string;
   protected
   end;
