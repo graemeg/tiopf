@@ -37,6 +37,8 @@ unit tiGenericTreeViewMediator;
   {$mode objfpc}{$H+}
 {$ENDIF}
 
+{$I tiDefines.inc}
+
 interface
 uses
   ComCtrls
@@ -198,7 +200,11 @@ var
   lItem: TMenuItem;
 begin
   FPopupMenu := TPopupMenu.Create(nil);
-  FPopupMenu.OnPopup := @OnMenuPopup;
+  {$IFDEF FPC}
+    FPopupMenu.OnPopup := @OnMenuPopup;
+  {$ELSE}
+    FPopupMenu.OnPopup := OnMenuPopup;
+  {$ENDIF}
 
   lItem := TMenuItem.Create(FPopupMenu);
   lItem.Caption     := cExpandAll;
@@ -252,7 +258,11 @@ end;
 
 procedure TTreeViewMediator.InitializeTreeview;
 begin
-  FTreeView.BeginUpdate;
+  {$IFDEF FPC}
+    FTreeView.BeginUpdate;
+  {$ELSE}
+    FTreeView.Items.BeginUpdate;
+  {$ENDIF}
   try
     FTreeView.Items.Clear;
     if Data = nil then
@@ -266,7 +276,11 @@ begin
       FTreeView.Items.GetFirstNode.Focused := True;
     end;
   finally
-    FTreeView.EndUpdate;
+    {$IFDEF FPC}
+      FTreeView.EndUpdate;
+    {$ELSE}
+      FTreeView.Items.EndUpdate;
+    {$ENDIF}
   end;
 end;
 

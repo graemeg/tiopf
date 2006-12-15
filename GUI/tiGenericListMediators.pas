@@ -37,6 +37,8 @@ unit tiGenericListMediators;
   {$mode objfpc}{$H+}
 {$ENDIF}
 
+{$I tiDefines.inc}
+
 interface
 uses
   tiObject
@@ -63,10 +65,10 @@ type
     FObjectList: TtiObjectList;
     FControl: TControl;
     FSelectedObject: TtiObject;
-    FPopupMenu: TPopupMenu;
+//    FPopupMenu: TPopupMenu;
     FShowDeleted: Boolean;
     procedure   SetSelectedObject(const Value: TtiObject);
-    procedure   BuildPopupMenu;
+//    procedure   BuildPopupMenu;
     procedure   SetShowDeleted(const Value: Boolean);
   protected
     FObserversInTransit: TList;
@@ -362,7 +364,7 @@ var
 begin
   ptr := View.OnChange;
   View.OnChange := nil;
-  View.BeginUpdate;
+  View.Items.BeginUpdate;
   try
     View.Items.Clear;
     for i := 0 to Pred(Model.Count) do
@@ -381,7 +383,11 @@ begin
       View.Selected := View.Items[0];
     end;
   finally
-    View.EndUpdate;
+    {$IFDEF FPC}
+      View.EndUpdate;
+    {$ELSE}
+      View.Items.EndUpdate;
+    {$ENDIF}
     View.OnChange := ptr;
     HandleSelectionChanged;
   end;
@@ -390,23 +396,23 @@ end;
 
 { TListMediator }
 
-procedure TListMediator.BuildPopupMenu;
-var
-  lItem: TMenuItem;
-begin
-  FPopupMenu.Create(View);
-  lItem := TMenuItem.Create(FPopupMenu);
-  lItem.Caption := 'Add';
-  lItem.OnClick := {$IFDEF FPC}@{$ENDIF}MenuItemAddClick;
-
-  lItem := TMenuItem.Create(FPopupMenu);
-  lItem.Caption := 'Edit';
-  lItem.OnClick := {$IFDEF FPC}@{$ENDIF}MenuItemEditClick;
-
-  lItem := TMenuItem.Create(FPopupMenu);
-  lItem.Caption := 'Delete';
-  lItem.OnClick := {$IFDEF FPC}@{$ENDIF}MenuItemDeleteClick;
-end;
+//procedure TListMediator.BuildPopupMenu;
+//var
+//  lItem: TMenuItem;
+//begin
+//  FPopupMenu.Create(View);
+//  lItem := TMenuItem.Create(FPopupMenu);
+//  lItem.Caption := 'Add';
+//  lItem.OnClick := {$IFDEF FPC}@{$ENDIF}MenuItemAddClick;
+//
+//  lItem := TMenuItem.Create(FPopupMenu);
+//  lItem.Caption := 'Edit';
+//  lItem.OnClick := {$IFDEF FPC}@{$ENDIF}MenuItemEditClick;
+//
+//  lItem := TMenuItem.Create(FPopupMenu);
+//  lItem.Caption := 'Delete';
+//  lItem.OnClick := {$IFDEF FPC}@{$ENDIF}MenuItemDeleteClick;
+//end;
 
 
 constructor TListMediator.Create;

@@ -469,7 +469,11 @@ end;
 procedure TMediatorSpinEditView.SetupGUIandObject;
 begin
   inherited;
-  TSpinEdit(EditControl).OnExit := @OnLostFocus;
+  {$IFDEF FPC}
+    TSpinEdit(EditControl).OnExit := @OnLostFocus;
+  {$ELSE}
+    TSpinEdit(EditControl).OnExit := OnLostFocus;
+  {$ENDIF}
 end;
 
 

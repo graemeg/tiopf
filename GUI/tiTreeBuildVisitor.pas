@@ -54,7 +54,7 @@ type
     property    Root: TTreeNode read FRoot;
     property    LastNode: TTreeNode read FLastNode;
   public
-    constructor Create(pTreeView: TTreeView); overload; virtual;
+    constructor Create(pTreeView: TTreeView); reintroduce;
     destructor  Destroy; override;
     property    Tree: TTreeView read FTree;
   end;
@@ -73,7 +73,7 @@ type
   protected
     function    AcceptVisitor : boolean ; override ;
   public
-    constructor Create(pTreeView: TTreeView); override ;
+    constructor Create(pTreeView: TTreeView); reintroduce;
     destructor  Destroy; override;
     procedure   Execute(const pVisited: TtiVisited); override;
     property    IncludeDeleted : boolean read FbIncludeDeleted write FbIncludeDeleted ;
