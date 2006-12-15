@@ -6,34 +6,24 @@ interface
 
 uses
    tiBaseObject
-  ,tiVisitor 
-  ,tiObject
+  ,tiConstants
   ,SysUtils
   ,Classes
+  ,Forms
+  ,Math
+  ,Contnrs
+  {$IFDEF DELPHI6ORABOVE}
+  ,Variants
+  {$ENDIF}
   {$IFDEF MSWINDOWS}
   ,Windows
   ,shellAPI
   ,Messages
   {$ENDIF MSWINDOWS}
-  ,Graphics
-  ,Controls
-  ,Forms
-  ,Dialogs
-  ,StdCtrls
-  ,Buttons
-  ,ExtCtrls
-  ,Math
-  ,TypInfo
   {$IFDEF FPC}
   ,LCLType
   {$ENDIF}
-  {$IFDEF DELPHI6ORABOVE}
-  ,Variants
-  {$ENDIF}
-  ,Contnrs
-  ,tiConstants
  ;
-
 
 {$IFDEF VER130}
 type
@@ -362,40 +352,6 @@ type
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
-  // * Mouse cursor routines
-  // *
-  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  function tiAutoWaitCursor: IUnknown;
-  function tiAutoCursor(ACursor: TCursor = crHourglass): IUnknown;
-
-  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  // *
-  // * Graphics routines
-  // *
-  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  {: This class prevents control flicker using a brute-force method.
-     The passed <i>AControlToMask</i> is hidden behind a topmost screen snapshot of the control.
-     The snapshot is removed when the instance is freed. }
-{$IFDEF MSWINDOWS}
-type
-  TtiBruteForceNoFlicker = class(TCustomControl)
-  private
-    FMaskControl: TControl;
-    FControlSnapshot: TBitmap;
-
-    procedure ScreenShot(ABitmap: TBitmap; ALeft, ATop, AWidth, AHeight: Integer; AWindow: HWND);
-    procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
-  protected
-    procedure Paint; override;
-    procedure CreateParams(var AParams: TCreateParams); override;
-  public
-    constructor Create(AControlToMask: TControl); reintroduce;
-    destructor Destroy; override;
-  end;
-{$ENDIF MSWINDOWS}
-
-  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  // *
   // * Other routines
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -453,30 +409,6 @@ type
   // Copy one stream to another
   procedure tiCopyStream(const AStreamFrom, AStreamTo : TStream);
 
-  {:Copy a TtiObjectList of TtiObject(s) data to a TStream using CSV format}
-  procedure tiListToStream(AStream: TStream;
-                           AList: TtiObjectList;
-                           AFieldDelim: string;
-                           ARowDelim: string;
-                           AColsSelected: TStringList); overload;
-
-  procedure tiListToStream(AStream : TStream;
-                           AList : TtiObjectList); overload;
-
-  // Copy a TList of TtiBaseObject's to a CSV file (Prompt the user for the file name)
-  procedure tiListToCSV(AList: TtiObjectList;
-                         const AFileName: string;
-                         AColsSelected: TStringList); overload;
-
-  procedure tiListToCSV(AList: TtiObjectList;
-                         const AFileName: string); overload;
-
-  // Copy a TList of TtiBaseObject's to the clipboard
-  procedure tiListToClipboard(AList: TtiObjectList;
-                              AColsSelected: TStringList); overload;
-
-  procedure tiListToClipboard(AList: TtiObjectList); overload;
-
   // Cloned from IdSoapTestingUtils.pas (IndySoap) by Grahame Grieve & Andrew Cumming
   function tiTestStreamsIdentical(AStream1, AStream2 : TStream; Var VMessage : string):boolean; overload;
   function tiTestStreamsIdentical(AStream1, AStream2 : TStream):boolean; overload;
@@ -520,20 +452,9 @@ type
     property    Count: Integer Read GetCount;
   end;
 
-//  // These functions where added in Delphi 6, and found their way into the framework
-//  // Added here for D5 support
-//  {$ifndef Delphi6OrAbove}
-//     function IsNan(const AValue: Extended): Boolean;
-//     function SameValue(const A, B: Extended; Epsilon: Extended): Boolean;
-//     function CompareValue(const A, B: Int64): Integer; overload;
-//     function StrToFloatDef(const S: string; const Default: Extended): Extended;
-//  {$endif}
-
 implementation
 uses
-   tiRegINI
-  ,tiExcept
-  ,ClipBrd
+   tiExcept
   {$IFDEF MSWINDOWS}
     {$IFDEF DELPHI5}
     ,FileCtrl
@@ -550,64 +471,6 @@ uses
   ,StrUtils   // used for DelSpace1
   {$ENDIF}
  ;
-
-//{$ifndef Delphi6OrAbove}
-//const
-//  FuzzFactor = 1000;
-//  ExtendedResolution = 1E-19 * FuzzFactor;
-//
-//function IsNan(const AValue: Extended): Boolean;
-//type
-//  TExtented = packed record
-//    Mantissa: Int64;
-//    Exponent: Word;
-//  end;
-//  PExtended = ^TExtented;
-//begin
-//  Result := ((PExtended(@AValue)^.Exponent and $7FFF)  = $7FFF) and
-//            ((PExtended(@AValue)^.Mantissa and $7FFFFFFFFFFFFFFF) <> 0);
-//end;
-//
-//function SameValue(const A, B: Extended; Epsilon: Extended): Boolean;
-//begin
-//  if Epsilon = 0 then
-//    Epsilon := Max(Min(Abs(A), Abs(B)) * ExtendedResolution, ExtendedResolution);
-//  if A > B then
-//    Result := (A - B) <= Epsilon
-//  else
-//    Result := (B - A) <= Epsilon;
-//end;
-//
-//function CompareValue(const A, B: Int64): Integer;
-//begin
-//  if A = B then
-//    Result := 0
-//  else if A < B then
-//    Result := -1
-//  else
-//    Result := 1;
-//end;
-//
-//function StrToFloatDef(const S: string; const Default: Extended): Extended;
-//begin
-//  if not TextToFloat(PChar(S), Result, fvExtended) then
-//    Result := Default;
-//end;
-//
-//{$endif}
-
-type
-  TAutoCursor = class(TInterfacedObject)
-  private
-  public
-    constructor Create(ANewCursor: TCursor);
-    destructor Destroy; override;
-  end;
-
-
-var
-  uCursorStack: TList;
-
 
 function tiGetTempFile(const AValue : string): string;
 {$IFNDEF FPC}
@@ -2439,162 +2302,6 @@ begin
 end;
 
 
-procedure tiListToStream(AStream : TStream;
-                         AList : TtiObjectList;
-                         AFieldDelim : string;
-                         ARowDelim: string;
-                         AColsSelected : TStringList);
-var
-  i, j      : integer;
-  lsValue   : string;
-  lFieldName : string;
-  AData     : TtiBaseObject;
-  lLine     : string;
-  lPropType: TTypeKind;
-begin
-  // Write column headings
-  for i := 0 to AColsSelected.Count - 1 do begin
-    tiAppendStringToStream(AColsSelected.Strings[i], AStream);
-    if i < AColsSelected.Count - 1 then
-      tiAppendStringToStream(AFieldDelim, AStream)
-    else
-      tiAppendStringToStream(ARowDelim, AStream);
-  end;
-
-  // Write the data
-  for i := 0 to AList.Count - 1 do
-  begin
-    AData := (TObject(AList.Items[i]) as TtiBaseObject);
-    lLine := '';
-    for j := 0 to AColsSelected.Count - 1 do
-    begin
-      if lLine <> '' then
-        lLine := lLine + AFieldDelim;
-      lFieldName := AColsSelected.Strings[j];
-      if GetPropInfo(AData,lFieldName)^.PropType^.Name = 'TDateTime' then
-        lsValue := tiDateTimeToStr(GetPropValue(AData,lFieldName))
-      else
-      begin
-        lPropType := TypInfo.PropType(AData, lFieldName);
-        case lPropType of
-          tkChar       : lsValue := IntToStr(GetOrdProp(AData, lFieldName));
-          tkWChar      : lsValue := IntToStr(GetOrdProp(AData, lFieldName));
-          tkString     : lsValue := GetStrProp(AData, lFieldName);
-          tkLString    : lsValue := GetStrProp(AData, lFieldName);
-          tkWString    : lsValue := GetWideStrProp(AData, lFieldName);
-          {$IFDEF FPC}
-          tkAString    : lsValue := GetStrProp(AData, lFieldName);
-          {$ENDIF}
-          tkInteger    : lsValue := IntToStr(GetInt64Prop(AData, lFieldName));
-          tkInt64      : lsValue := IntToStr(GetInt64Prop(AData, lFieldName));
-          tkFloat      : lsValue := FloatToStr(GetFloatProp(AData, lFieldName));
-          tkEnumeration : lsValue := IntToStr(GetOrdProp(AData, lFieldName));
-          {$IFDEF FPC}
-          tkBool       : lsValue := IntToStr(GetInt64Prop(AData, lFieldName));
-          {$ENDIF}
-        end;
-      end;
-      lLine := lLine + lsValue;
-    end;
-    if i <> 0 then
-      lLine := ARowDelim + lLine;
-    tiAppendStringToStream(lLine, AStream)
-  end;
-end;
-
-
-procedure tiListToStream(AStream : TStream; AList : TtiObjectList);
-var
-  lFields : TStringList;
-begin
-  Assert(AStream<>nil, 'AStream not assigned');
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AList.Count > 0, 'AList.Count = 0');
-  lFields := TStringList.Create;
-  try
-    tiGetPropertyNames(AList.Items[0], lFields);
-    tiListToStream(AStream, AList, ',', CrLf, lFields);
-  finally
-    lFields.Free;
-  end;
-end;
-
-
-procedure tiListToCSV(AList: TtiObjectList;
-                       const AFileName: string;
-                       AColsSelected: TStringList);
-var
-  lStream   : TFileStream;
-begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AFileName<>'', 'AFileName not assigned');
-  Assert(AColsSelected<>nil, 'AColsSelected not assigned');
-
-  lStream := TFileStream.Create(AFileName, fmCreate);
-  try
-    tiListToStream(lStream, AList, ',', CrLf, AColsSelected);
-  finally
-    lStream.Free;
-  end;
-end;
-
-
-procedure tiListToCSV(AList: TtiObjectList; const AFileName: string);
-var
-  lStream   : TFileStream;
-  lFields: TStringList;
-begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AFileName<>'', 'AFileName not assigned');
-  Assert(AList.Count > 0, 'AList.Count = 0');
-  lFields:= TStringList.Create;
-  try
-    lStream := TFileStream.Create(AFileName, fmCreate);
-    try
-      tiGetPropertyNames(AList.Items[0], lFields);
-      tiListToStream(lStream, AList, ',', CrLf, lFields);
-    finally
-      lStream.Free;
-    end;
-  finally
-    lFields.Free;
-  end;
-end;
-
-
-procedure tiListToClipboard(AList: TtiObjectList; AColsSelected: TStringList);
-var
-  lStream: TStringStream;
-begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AList.Count > 0, 'AList.Count = 0');
-  Assert(AColsSelected<>nil, 'AColsSelected not assigned');
-  lStream := TStringStream.Create('');
-  try
-    tiListToStream(lStream, AList, Tab, CrLf, AColsSelected);
-    ClipBoard.AsText := lStream.DataString;
-  finally
-    lStream.Free;
-  end;
-end;
-
-
-procedure tiListToClipboard(AList: TtiObjectList);
-var
-  lFields : TStringList;
-begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AList.Count > 0, 'AList.Count = 0');
-  lFields := TStringList.Create;
-  try
-    tiGetPropertyNames(AList.Items[0], lFields);
-    tiListToClipboard(AList, lFields);
-  finally
-    lFields.Free;
-  end;
-end;
-
-
 procedure tiStringToFile(const AText, AFileName : string);
 var
   lStream : TFileStream;
@@ -2974,133 +2681,6 @@ var
 begin
   Result := tiTestStreamsIdentical(AStream1, AStream2, ls);
 end;
-
-function CursorStack: TList;
-begin
-  if not Assigned(uCursorStack) then
-    uCursorStack := TList.Create;
-  Result := uCursorStack;
-end;
-
-
-{ TAutoCursor }
-
-constructor TAutoCursor.Create(ANewCursor: TCursor);
-begin
-  inherited Create;
-  // push
-  CursorStack.Add(@(Screen.Cursor));
-  Screen.Cursor := ANewCursor;
-end;
-
-destructor TAutoCursor.Destroy;
-begin
-  // pop
-  Screen.Cursor := TCursor(CursorStack.Last);
-  CursorStack.Delete(uCursorStack.Count-1);
-  inherited;
-end;
-
-function tiAutoWaitCursor: IUnknown;
-begin
-  if GetCurrentThreadId = MainThreadId then
-    Result := TAutoCursor.Create(crHourglass)
-  else
-    Result := nil;
-end;
-
-function tiAutoCursor(ACursor: TCursor = crHourglass): IUnknown;
-begin
-  if GetCurrentThreadId = MainThreadId then
-    Result := TAutoCursor.Create(ACursor);
-end;
-
-{ TtiBruteForceNoFlicker }
-{$IFDEF MSWINDOWS}
-constructor TtiBruteForceNoFlicker.Create(AControlToMask: TControl);
-var
-  ScreenPt: TPoint;
-begin
-  inherited Create(nil);
-  FMaskControl := AControlToMask;
-  BoundsRect := FMaskControl.BoundsRect;
-
-  ScreenPt := FMaskControl.ClientToScreen(Classes.Point(0,0));
-
-  FControlSnapshot := TBitmap.Create;
-
-  ScreenShot(FControlSnapshot, ScreenPt.X, ScreenPt.Y, Width, Height, HWND_DESKTOP);
-
-  Parent := FMaskControl.Parent;
-
-  Update;
-end;
-
-procedure TtiBruteForceNoFlicker.CreateParams(var AParams: TCreateParams);
-begin
-  inherited;
-  AParams.Style := WS_CHILD or WS_CLIPSIBLINGS;
-  AParams.ExStyle := WS_EX_TOPMOST;
-end;
-
-destructor TtiBruteForceNoFlicker.Destroy;
-begin
-  FreeAndNil(FControlSnapshot);
-  inherited;
-end;
-
-procedure TtiBruteForceNoFlicker.Paint;
-begin
-end;
-
-// From Jedi JCL JCLGraphics.pas
-procedure TtiBruteForceNoFlicker.ScreenShot(ABitmap: TBitmap; ALeft, ATop, AWidth, AHeight: Integer; AWindow: HWND);
-var
-  WinDC: HDC;
-  Pal: TMaxLogPalette;
-begin
-  ABitmap.Width := AWidth;
-  ABitmap.Height := AHeight;
-
-  // Get the HDC of the window...
-  WinDC := GetDC(AWindow);
-  try
-    if WinDC = 0 then
-      raise Exception.Create('No DeviceContext For Window');
-
-    // Palette-device?
-    if (GetDeviceCaps(WinDC, RASTERCAPS) and RC_PALETTE) = RC_PALETTE then
-    begin
-      FillChar(Pal, SizeOf(TMaxLogPalette), #0);  // fill the structure with zeros
-      Pal.palVersion := $300;                     // fill in the palette version
-
-      // grab the system palette entries...
-      Pal.palNumEntries := GetSystemPaletteEntries(WinDC, 0, 256, Pal.palPalEntry);
-      if Pal.PalNumEntries <> 0 then
-        {$IFDEF FPC}
-        ABitmap.Palette := CreatePalette(LPLOGPALETTE(@Pal)^);
-        {$else}
-        ABitmap.Palette := CreatePalette(PLogPalette(@Pal)^);
-        {$endif}
-    end;
-
-    // copy from the screen to our bitmap...
-    BitBlt(ABitmap.Canvas.Handle, 0, 0, AWidth, AHeight, WinDC, ALeft, ATop, SRCCOPY);
-  finally
-    ReleaseDC(AWindow, WinDC);        // finally, relase the DC of the window
-  end;
-end;
-
-procedure TtiBruteForceNoFlicker.WMEraseBkgnd(var Message: TWMEraseBkgnd);
-begin
-  BitBlt(
-    Message.DC,
-    0,0, Width,Height,
-    FControlSnapshot.Canvas.Handle,
-    0,0,
-    SRCCOPY);
-end;
-{$ENDIF MSWINDOWS}
 
 function tiStrPos(const AString, ASubString: PChar): PChar;
   {
@@ -3605,44 +3185,4 @@ begin
   Result:= tiDecimalRoundDbl(AValue, APrecision);
 end;
 
-
-initialization
-  // Set Windows internal date and time format strings
-//  ShortDateFormat := csWinDateFormat;
-//  ShortTimeFormat := csWinTimeFormat;
-finalization
-  FreeAndNil(uCursorStack);
 end.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

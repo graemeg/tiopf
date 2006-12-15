@@ -5,42 +5,68 @@ unit tiGUIUtils;
 interface
 uses
   tiObject
-  ,Graphics      // Canvas
+  ,Forms
+  ,Controls
+  ,StdCtrls
   ,tiDataBuffer_BOM
   ,tiRegINI
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ,Forms
+  ,Graphics      // Canvas
+  ,Messages
  ;
 
-const
+ const
   cgsSaveAndClose = 'Do you want to save your changes before exiting?';
 
-{: Don't use tiPerObjAbsAsString. Use TtiObject.AsDebugString}
-function  tiPerObjAbsAsString(const AVisited: TtiObject; AIncludeDeleted: boolean = false): string;
-procedure tiShowPerObjAbs(const AVisited: TtiObject; AIncludeDeleted: boolean = false);
-procedure tiShowPerObjAbsOwnership(const AData: TtiObject);
+  {: Don't use tiPerObjAbsAsString. Use TtiObject.AsDebugString}
+  function  tiPerObjAbsAsString(const AVisited: TtiObject; AIncludeDeleted: boolean = false): string;
+  procedure tiShowPerObjAbs(const AVisited: TtiObject; AIncludeDeleted: boolean = false);
+  procedure tiShowPerObjAbsOwnership(const AData: TtiObject);
 
-// Set canvas.font.color to crRed if AData.Dirty, crBlank if not
-procedure tiPerObjAbsFormatCanvas(const pCanvas : TCanvas; const AData : TtiObject);
-// If AData.Dirty, then prompt user to save
-function  tiPerObjAbsSaveAndClose(const AData     : TtiObject;
+  {: Set canvas.font.color to crRed if AData.Dirty, crBlank if not}
+  procedure tiPerObjAbsFormatCanvas(const pCanvas : TCanvas; const AData : TtiObject);
+
+  {: If AData.Dirty, then prompt user to save}
+  function  tiPerObjAbsSaveAndClose(const AData     : TtiObject;
                                    var   pbCanClose : boolean;
                                    const AMessage : string = cgsSaveAndClose): boolean;
-function  tiPerObjAbsConfirmAndDelete(const AData : TtiObject;
-                                       const AMessage : string = ''): boolean;
-                                       
-procedure ShowTIDataSet(const pDataSet: TtiDataBuffer); // For debugging
+
+  function  tiPerObjAbsConfirmAndDelete(const AData : TtiObject;
+                                         const AMessage : string = ''): boolean;
+
+  procedure ShowTIDataSet(const pDataSet: TtiDataBuffer); // For debugging
 
 
 {$IFDEF MSWINDOWS}
-{: Is the Ctrl key down?}
-function tiIsCtrlDown : Boolean;
-{: Is the Shift key down?}
-function tiIsShiftDown : Boolean;
-{: Is the Alt key down?}
-function tiIsAltDown : Boolean;
+type
+  {: This class prevents control flicker using a brute-force method.
+     The passed <i>AControlToMask</i> is hidden behind a topmost screen snapshot of the control.
+     The snapshot is removed when the instance is freed. }
+  TtiBruteForceNoFlicker = class(TCustomControl)
+  private
+    FMaskControl: TControl;
+    FControlSnapshot: TBitmap;
+
+    procedure ScreenShot(ABitmap: TBitmap; ALeft, ATop, AWidth, AHeight: Integer; AWindow: HWND);
+    procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); message WM_ERASEBKGND;
+  protected
+    procedure Paint; override;
+    procedure CreateParams(var AParams: TCreateParams); override;
+  public
+    constructor Create(AControlToMask: TControl); reintroduce;
+    destructor Destroy; override;
+  end;
+{$ENDIF MSWINDOWS}
+
+{$IFDEF MSWINDOWS}
+  {: Is the Ctrl key down?}
+  function tiIsCtrlDown : Boolean;
+  {: Is the Shift key down?}
+  function tiIsShiftDown : Boolean;
+  {: Is the Alt key down?}
+  function tiIsAltDown : Boolean;
 {$ENDIF MSWINDOWS}
 
   // Screen, monitor and desktop
@@ -58,11 +84,19 @@ function tiIsAltDown : Boolean;
   procedure ReadFormState(Ini: TtiINIFile; AForm: TForm; AHeight: integer = -1; AWidth: integer = -1); overload;
   procedure ReadFormState(Reg: TtiRegINIFile; AForm: TForm); overload;
 
+  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+  // *
+  // * Mouse cursor routines
+  // *
+  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+  function tiAutoWaitCursor: IUnknown;
+  function tiAutoCursor(ACursor: TCursor = crHourglass): IUnknown;
+
 implementation
 uses
-  tiUtils
+   tiUtils
   ,tiConstants
-  ,Controls // mrYes
+  ,tiDataBuffer_Cli   // used for ShowTIDataset and TIDataSetToString method
   {$IFDEF MSWINDOWS}
     {$IFNDEF FPC}
   ,MultiMon
@@ -72,12 +106,24 @@ uses
   {$IFDEF FPC}
   ,LCLType    // TKeyboardState under FPC is not in Windows unit
   {$ENDIF}
-  ,tiDataBuffer_Cli   // used for ShowTIDataset and TIDataSetToString method
+  ,Classes
+  ,SysUtils
   ;
 
 
-{ Global funcs and procs }
+type
 
+  TtiAutoCursor = class(TInterfacedObject)
+  private
+  public
+    constructor Create(ANewCursor: TCursor);
+    destructor Destroy; override;
+  end;
+
+var
+  uCursorStack: TList;
+
+{ Global funcs and procs }
 
 function tiPerObjAbsAsString(const AVisited: TtiObject; AIncludeDeleted: boolean = false): string;
 begin
@@ -331,6 +377,137 @@ begin
   end;
 {$ENDIF MSWINDOWS}
 end;
+
+{ TtiBruteForceNoFlicker }
+{$IFDEF MSWINDOWS}
+constructor TtiBruteForceNoFlicker.Create(AControlToMask: TControl);
+var
+  ScreenPt: TPoint;
+begin
+  inherited Create(nil);
+  FMaskControl := AControlToMask;
+  BoundsRect := FMaskControl.BoundsRect;
+
+  ScreenPt := FMaskControl.ClientToScreen(Classes.Point(0,0));
+
+  FControlSnapshot := TBitmap.Create;
+
+  ScreenShot(FControlSnapshot, ScreenPt.X, ScreenPt.Y, Width, Height, HWND_DESKTOP);
+
+  Parent := FMaskControl.Parent;
+
+  Update;
+end;
+
+procedure TtiBruteForceNoFlicker.CreateParams(var AParams: TCreateParams);
+begin
+  inherited;
+  AParams.Style := WS_CHILD or WS_CLIPSIBLINGS;
+  AParams.ExStyle := WS_EX_TOPMOST;
+end;
+
+destructor TtiBruteForceNoFlicker.Destroy;
+begin
+  FreeAndNil(FControlSnapshot);
+  inherited;
+end;
+
+procedure TtiBruteForceNoFlicker.Paint;
+begin
+end;
+
+// From Jedi JCL JCLGraphics.pas
+procedure TtiBruteForceNoFlicker.ScreenShot(ABitmap: TBitmap; ALeft, ATop, AWidth, AHeight: Integer; AWindow: HWND);
+var
+  WinDC: HDC;
+  Pal: TMaxLogPalette;
+begin
+  ABitmap.Width := AWidth;
+  ABitmap.Height := AHeight;
+
+  // Get the HDC of the window...
+  WinDC := GetDC(AWindow);
+  try
+    if WinDC = 0 then
+      raise Exception.Create('No DeviceContext For Window');
+
+    // Palette-device?
+    if (GetDeviceCaps(WinDC, RASTERCAPS) and RC_PALETTE) = RC_PALETTE then
+    begin
+      FillChar(Pal, SizeOf(TMaxLogPalette), #0);  // fill the structure with zeros
+      Pal.palVersion := $300;                     // fill in the palette version
+
+      // grab the system palette entries...
+      Pal.palNumEntries := GetSystemPaletteEntries(WinDC, 0, 256, Pal.palPalEntry);
+      if Pal.PalNumEntries <> 0 then
+        {$IFDEF FPC}
+        ABitmap.Palette := CreatePalette(LPLOGPALETTE(@Pal)^);
+        {$else}
+        ABitmap.Palette := CreatePalette(PLogPalette(@Pal)^);
+        {$endif}
+    end;
+
+    // copy from the screen to our bitmap...
+    BitBlt(ABitmap.Canvas.Handle, 0, 0, AWidth, AHeight, WinDC, ALeft, ATop, SRCCOPY);
+  finally
+    ReleaseDC(AWindow, WinDC);        // finally, relase the DC of the window
+  end;
+end;
+
+procedure TtiBruteForceNoFlicker.WMEraseBkgnd(var Message: TWMEraseBkgnd);
+begin
+  BitBlt(
+    Message.DC,
+    0,0, Width,Height,
+    FControlSnapshot.Canvas.Handle,
+    0,0,
+    SRCCOPY);
+end;
+{$ENDIF MSWINDOWS}
+
+{ TAutoCursor }
+
+function tiCursorStack: TList;
+begin
+  if not Assigned(uCursorStack) then
+    uCursorStack := TList.Create;
+  Result := uCursorStack;
+end;
+
+constructor TtiAutoCursor.Create(ANewCursor: TCursor);
+begin
+  inherited Create;
+  // push
+  tiCursorStack.Add(@(Screen.Cursor));
+  Screen.Cursor := ANewCursor;
+end;
+
+destructor TtiAutoCursor.Destroy;
+begin
+  // pop
+  Screen.Cursor := TCursor(tiCursorStack.Last);
+  tiCursorStack.Delete(uCursorStack.Count-1);
+  inherited;
+end;
+
+function tiAutoWaitCursor: IUnknown;
+begin
+  if GetCurrentThreadId = MainThreadId then
+    Result := TtiAutoCursor.Create(crHourglass)
+  else
+    Result := nil;
+end;
+
+function tiAutoCursor(ACursor: TCursor = crHourglass): IUnknown;
+begin
+  if GetCurrentThreadId = MainThreadId then
+    Result := TtiAutoCursor.Create(ACursor);
+end;
+
+initialization
+
+finalization
+  FreeAndNil(uCursorStack);
 
 end.
 

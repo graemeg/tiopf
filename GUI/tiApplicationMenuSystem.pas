@@ -16,7 +16,8 @@ uses
   // Help units
   ehshelprouter, ehsbase, ehswhatsthis,
   // tiOPF units
-  tiUtils, tiBaseObject, FtiFormMgrForm, tiRoundedPanel, tiAnimatedGIF
+  tiUtils, tiBaseObject, FtiFormMgrForm, tiRoundedPanel, tiAnimatedGIF,
+  tiGUIUtils
  ;
 
 const
