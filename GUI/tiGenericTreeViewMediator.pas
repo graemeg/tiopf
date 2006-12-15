@@ -33,10 +33,6 @@ ToDo:
 
 unit tiGenericTreeViewMediator;
 
-{$IFDEF FPC}
-  {$mode objfpc}{$H+}
-{$ENDIF}
-
 {$I tiDefines.inc}
 
 interface
@@ -65,11 +61,11 @@ type
     function    CanInsert(pData: TtiObject): Boolean;
     function    CanEdit(pData: TtiObject): Boolean;
   protected
-    procedure   CreatePopupMenu;
+    procedure   CreatePopupMenu; virtual;
     procedure   OnExpandAllClick(Sender: TObject);
     procedure   OnExpandCollapseClick(Sender: TObject);
     procedure   OnMenuPopUp(Sender: TObject);
-    procedure   BuildTreeView;
+    procedure   BuildTreeView; virtual;
     procedure   SetupDataMappings; virtual; abstract;
   public
     constructor Create;
@@ -200,22 +196,18 @@ var
   lItem: TMenuItem;
 begin
   FPopupMenu := TPopupMenu.Create(nil);
-  {$IFDEF FPC}
-    FPopupMenu.OnPopup := @OnMenuPopup;
-  {$ELSE}
-    FPopupMenu.OnPopup := OnMenuPopup;
-  {$ENDIF}
+  FPopupMenu.OnPopup := OnMenuPopup;
 
   lItem := TMenuItem.Create(FPopupMenu);
   lItem.Caption     := cExpandAll;
   lItem.Name        := 'miExpandAll';
-  lItem.OnClick     := {$IFDEF FPC}@{$ENDIF}OnExpandAllClick;
+  lItem.OnClick     := OnExpandAllClick;
   FPopupMenu.Items.Add(lItem);
 
   lItem := TMenuItem.Create(FPopupMenu);
   lItem.Caption     := cExpand;
   lItem.Name        := 'miExpandCollapse';
-  lItem.OnClick     := {$IFDEF FPC}@{$ENDIF}OnExpandCollapseClick;
+  lItem.OnClick     := OnExpandCollapseClick;
   lItem.ShortCut    := 13;   { Enter key }
   FPopupMenu.Items.Add(lItem);
 
@@ -227,21 +219,21 @@ begin
   lItem := TMenuItem.Create(FPopupMenu);
   lItem.Caption     := cInsert;
   lItem.Name        := 'miInsert';
-  lItem.OnClick     := {$IFDEF FPC}@{$ENDIF}miInsertClick;
+  lItem.OnClick     := miInsertClick;
   lItem.ShortCut    := 45;   { Ins key }
   FPopupMenu.Items.Add(lItem);
 
   lItem := TMenuItem.Create(FPopupMenu);
   lItem.Caption     := cEdit;
   lItem.Name        := 'miEdit';
-  lItem.OnClick     := {$IFDEF FPC}@{$ENDIF}miEditClick;
+  lItem.OnClick     := miEditClick;
   lItem.ShortCut    := 16397;   { Ctrl + Enter key }
   FPopupMenu.Items.Add(lItem);
 
   lItem := TMenuItem.Create(FPopupMenu);
   lItem.Caption     := cDelete;
   lItem.Name        := 'miDelete';
-  lItem.OnClick     := {$IFDEF FPC}@{$ENDIF}miDeleteClick;
+  lItem.OnClick     := miDeleteClick;
   lItem.ShortCut    := 46;   { Del key }
   FPopupMenu.Items.Add(lItem);
 end;

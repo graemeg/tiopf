@@ -33,10 +33,6 @@ ToDo:
 
 unit tiGenericListMediators;
 
-{$IFDEF FPC}
-  {$mode objfpc}{$H+}
-{$ENDIF}
-
 {$I tiDefines.inc}
 
 interface
@@ -65,14 +61,13 @@ type
     FObjectList: TtiObjectList;
     FControl: TControl;
     FSelectedObject: TtiObject;
-//    FPopupMenu: TPopupMenu;
     FShowDeleted: Boolean;
     procedure   SetSelectedObject(const Value: TtiObject);
-//    procedure   BuildPopupMenu;
     procedure   SetShowDeleted(const Value: Boolean);
   protected
     FObserversInTransit: TList;
     FUpdateMode: TUpdateMode;
+    FPopupMenu: TPopupMenu;
     function    GetModel: TtiObjectList; virtual;
     procedure   SetModel(const Value: TtiObjectList); virtual;
     function    GetView: TControl; virtual;
@@ -80,6 +75,7 @@ type
     procedure   RebuildList; virtual; abstract;
     { Used to setup things like the MaxLength of a edit box, etc. }
     procedure   SetupGUIandObject; virtual;
+    procedure   BuildPopupMenu; virtual;
   public
     constructor Create; override;
     constructor CreateCustom(pObjectList: TtiObjectList; pView: TControl); virtual;
@@ -364,7 +360,11 @@ var
 begin
   ptr := View.OnChange;
   View.OnChange := nil;
-  View.Items.BeginUpdate;
+  {$IFDEF FPC}
+    View.BeginUpdate;
+  {$ELSE}
+    View.Items.BeginUpdate;
+  {$ENDIF}
   try
     View.Items.Clear;
     for i := 0 to Pred(Model.Count) do
@@ -396,23 +396,23 @@ end;
 
 { TListMediator }
 
-//procedure TListMediator.BuildPopupMenu;
-//var
-//  lItem: TMenuItem;
-//begin
-//  FPopupMenu.Create(View);
-//  lItem := TMenuItem.Create(FPopupMenu);
-//  lItem.Caption := 'Add';
-//  lItem.OnClick := {$IFDEF FPC}@{$ENDIF}MenuItemAddClick;
-//
-//  lItem := TMenuItem.Create(FPopupMenu);
-//  lItem.Caption := 'Edit';
-//  lItem.OnClick := {$IFDEF FPC}@{$ENDIF}MenuItemEditClick;
-//
-//  lItem := TMenuItem.Create(FPopupMenu);
-//  lItem.Caption := 'Delete';
-//  lItem.OnClick := {$IFDEF FPC}@{$ENDIF}MenuItemDeleteClick;
-//end;
+procedure TListMediator.BuildPopupMenu;
+var
+  lItem: TMenuItem;
+begin
+  FPopupMenu := TPopupMenu.Create(View);
+  lItem := TMenuItem.Create(FPopupMenu);
+  lItem.Caption := 'Add';
+  lItem.OnClick := MenuItemAddClick;
+
+  lItem := TMenuItem.Create(FPopupMenu);
+  lItem.Caption := 'Edit';
+  lItem.OnClick := MenuItemEditClick;
+
+  lItem := TMenuItem.Create(FPopupMenu);
+  lItem.Caption := 'Delete';
+  lItem.OnClick := MenuItemDeleteClick;
+end;
 
 
 constructor TListMediator.Create;
@@ -430,7 +430,7 @@ begin
   Create;
   Model := pObjectList;
   FControl := pView;
-//  BuildPopupMenu;
+  BuildPopupMenu;
   Model.AttachObserver( Self );
   SetupGUIandObject;
   Update(nil);

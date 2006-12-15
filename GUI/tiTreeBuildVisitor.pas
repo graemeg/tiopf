@@ -23,9 +23,7 @@ ToDo:
 
 unit tiTreeBuildVisitor;
 
-{$IFDEF FPC}
-  {$mode objfpc}{$H+}
-{$ENDIF}
+{$I tiDefines.inc}
 
 interface
 
@@ -69,8 +67,8 @@ type
     FbIncludeDeleted: boolean;
     FTVDataMappings: TtiTVDataMappings;
     procedure   SetTVDataMappings(const Value: TtiTVDataMappings);
-    function    FindMapping(pData: TtiObject): TtiTVDataMapping;
   protected
+    function    FindMapping(pData: TtiObject): TtiTVDataMapping;
     function    AcceptVisitor : boolean ; override ;
   public
     constructor Create(pTreeView: TTreeView); reintroduce;

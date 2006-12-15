@@ -35,9 +35,7 @@ ToDo:
 
 unit tiGenericEditMediators;
 
-{$IFDEF FPC}
-  {$mode objfpc}{$H+}
-{$ENDIF}
+{$I tiDefines.inc}
 
 interface
 uses
@@ -469,11 +467,7 @@ end;
 procedure TMediatorSpinEditView.SetupGUIandObject;
 begin
   inherited;
-  {$IFDEF FPC}
-    TSpinEdit(EditControl).OnExit := @OnLostFocus;
-  {$ELSE}
-    TSpinEdit(EditControl).OnExit := OnLostFocus;
-  {$ENDIF}
+  TSpinEdit(EditControl).OnExit := OnLostFocus;
 end;
 
 
