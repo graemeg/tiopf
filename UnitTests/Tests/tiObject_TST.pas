@@ -135,6 +135,13 @@ type
     procedure   FindInHierarchy;
     procedure   CompareWithEvent;
     procedure   FreeDeleted;
+    procedure   tiListToClipboardDefault;
+    procedure   tiListToClipboardFields;
+    procedure   tiListToCSVDefault;
+    procedure   tiListToCSVFields;
+    procedure   tiListToStreamDefault;
+    procedure   tiListToStreamDelims;
+    procedure   tiListToStreamFields;
   end;
 
 
@@ -263,6 +270,7 @@ uses
   // Delphi
   ,SysUtils
   ,TypInfo
+  ,Clipbrd
  ;
 
 procedure RegisterTests;
@@ -2458,6 +2466,213 @@ begin
     LList.Free;
   end;
 end;
+
+procedure TTestTIObjectList.tiListToStreamDefault;
+var
+  lStream : TStringStream;
+  lList  : TTestListOfPersistents;
+begin
+  lStream := TStringStream.Create('');
+  try
+    lList := TTestListOfPersistents.Create;
+    try
+      tiObject.tiListToStream(lStream, lList);
+      CheckEquals(Length(lList.AsString), lStream.Size, 'Failing on 1');
+      CheckEquals(lList.AsString, lStream.DataString, 'Failing on 2');
+    finally
+      lList.Free;
+    end;
+  finally
+    lStream.Free;
+  end;
+end;
+
+procedure TTestTIObjectList.tiListToStreamDelims;
+var
+  lStream : TStringStream;
+  lList  : TTestListOfPersistents;
+  lFields : TStringList;
+begin
+  lStream := TStringStream.Create('');
+  try
+    lList  := TTestListOfPersistents.Create;
+    try
+      lFields := TStringList.Create;
+      try
+        lFields.Add('Caption');
+        lFields.Add('StringProp');
+        lFields.Add('IntProp');
+        lFields.Add('DateTimeProp');
+        lFields.Add('FloatProp');
+        tiObject.tiListToStream(lStream, lList, #9, '|', lFields);
+        CheckEquals(Length(lList.AsString(#9, '|', lFields)), lStream.Size);
+        CheckEquals(lList.AsString(#9, '|', lFields), lStream.DataString);
+      finally
+        lFields.Free;
+      end;
+    finally
+      lList.Free;
+    end;
+  finally
+    lStream.Free;
+  end;
+end;
+
+procedure TTestTIObjectList.tiListToStreamFields;
+var
+  lStream : TStringStream;
+  lList  : TTestListOfPersistents;
+  lFields : TStringList;
+begin
+  lStream := TStringStream.Create('');
+  try
+    lList  := TTestListOfPersistents.Create;
+    try
+      lFields := TStringList.Create;
+      try
+        lFields.Add('StringProp');
+        lFields.Add('IntProp');
+        lFields.Add('FloatProp');
+        tiObject.tiListToStream(lStream, lList, ',', #13#10, lFields);
+        CheckEquals(Length(lList.AsString(',', #13#10, lFields)), lStream.Size);
+        CheckEquals(lList.AsString(',', #13#10, lFields), lStream.DataString);
+      finally
+        lFields.Free;
+      end;
+    finally
+      lList.Free;
+    end;
+  finally
+    lStream.Free;
+  end;
+end;
+
+procedure TTestTIObjectList.tiListToCSVDefault;
+var
+  lList: TTestListOfPersistents;
+  lString1: string;
+  lString2: string;
+  lFileName: string;
+  lFields: TStringList;
+begin
+  ForceDirectories(TempDirectory);
+  lFileName := TempFileName('DUnitTest.txt');
+  lList := TTestListOfPersistents.Create;
+  try
+    tiObject.tiListToCSV(lList, lFileName);
+    lString1 := tiUtils.tiFileToString(lFileName);
+    tiDeleteFile(lFileName);
+    lFields := TStringList.Create;
+    try
+      lFields.Add('Caption');
+      lFields.Add('StringProp');
+      lFields.Add('IntProp');
+      lFields.Add('DateTimeProp');
+      lFields.Add('FloatProp');
+      lString2 := lList.AsString(',', #13#10, lFields);
+    finally
+      lFields.Free;
+    end;
+  finally
+    lList.Free;
+  end;
+
+  CheckEquals(Length(lString1), Length(lString2), 'Failed on 1');
+  CheckEquals(lString1, lString2, 'Failed on 2');
+end;
+
+procedure TTestTIObjectList.tiListToCSVFields;
+var
+  lList      : TTestListOfPersistents;
+  lString1: string;
+  lString2 : string;
+  lFileName : string;
+  lFields: TStringList;
+begin
+  ForceDirectories(TempDirectory);
+  lFileName := TempFileName('DUnitTest.txt');
+  lList  := TTestListOfPersistents.Create;
+  try
+    lFields:= TStringList.Create;
+    try
+      lFields.Add('StringProp');
+      lFields.Add('IntProp');
+      lFields.Add('FloatProp');
+      tiObject.tiListToCSV(lList, lFileName, lFields);
+      lString1 := tiUtils.tiFileToString(lFileName);
+      tiDeleteFile(lFileName);
+      lString2 := lList.AsString(',', #13#10, lFields);
+    finally
+      lFields.Free;
+    end;
+  finally
+    lList.Free;
+  end;
+
+  CheckEquals(Length(lString1), Length(lString2), 'Length');
+  CheckEquals(lString1, lString2, 'String');
+end;
+
+
+procedure TTestTIObjectList.tiListToClipboardDefault;
+var
+  lList: TTestListOfPersistents;
+  lString1: string;
+  lString2: string;
+  lFields: TStringList;
+begin
+  lList := TTestListOfPersistents.Create;
+  try
+    lFields := TStringList.Create;
+    try
+      lFields.Add('Caption');
+      lFields.Add('StringProp');
+      lFields.Add('IntProp');
+      lFields.Add('DateTimeProp');
+      lFields.Add('FloatProp');
+      tiObject.tiListToClipboard(lList);
+      lString1 := ClipBoard.AsText;
+      lString2 := lList.AsString(#9, #13#10, lFields);
+    finally
+      lFields.Free;
+    end;
+  finally
+    lList.Free;
+  end;
+
+  CheckEquals(Length(lString1), Length(lString2), 'Failed on 1');
+  CheckEquals(lString1, lString2, 'Failed on 2');
+end;
+
+
+procedure TTestTIObjectList.tiListToClipboardFields;
+var
+  lList      : TTestListOfPersistents;
+  lString1: string;
+  lString2 : string;
+  lFields: TStringList;
+begin
+  lList  := TTestListOfPersistents.Create;
+  try
+    lFields:= TStringList.Create;
+    try
+      lFields.Add('StringProp');
+      lFields.Add('IntProp');
+      lFields.Add('FloatProp');
+      tiObject.tiListToClipboard(lList, lFields);
+      lString1 := ClipBoard.AsText;
+      lString2 := lList.AsString(#9, #13#10, lFields);
+    finally
+      lFields.Free;
+    end;
+  finally
+    lList.Free;
+  end;
+
+  CheckEquals(Length(lString1), Length(lString2), 'Length');
+  CheckEquals(lString1, lString2, 'String');
+end;
+
 
 procedure TTestTIObjectList.IndexOf;
 var
