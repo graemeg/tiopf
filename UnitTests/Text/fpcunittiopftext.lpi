@@ -71,8 +71,12 @@
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Other>
-      <CustomOptions Value="-FU_Dcu -dUseCThreads -dLink_FBL -dLink_TAB -dLink_CSV
-"/>
+      <CustomOptions Value="-FU_Dcu
+-dUseCThreads
+-dLink_TAB
+-dLink_CSV
+-dLink_FBL
+-dLink_XMLLIGHT"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
