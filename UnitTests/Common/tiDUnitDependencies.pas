@@ -75,8 +75,8 @@ uses
   ,tiOPFIBO_TST
 
   ,tiOPFXML_TST
-  ,tiOPFXMLLight_TST
   {$ENDIF}
+  ,tiOPFXMLLight_TST
   ,tiOPFCSV_TST
   ,tiOPFTAB_TST
   ;
@@ -139,8 +139,8 @@ begin
   tiOPFDOA_TST.RegisterTests;
   tiOPFRemote_TST.RegisterTests;
   tiOPFXML_TST.RegisterTests;
-  tiOPFXMLLight_TST.RegisterTests;
   {$ENDIF FPC}
+  tiOPFXMLLight_TST.RegisterTests;
   tiOPFCSV_TST.RegisterTests;
   tiOPFTAB_TST.RegisterTests;
 end;
@@ -156,6 +156,7 @@ begin
     // Non-SQL Persistence layers
     uTIOPFTestManager.Add(TtiOPFTestSetupDataCSV.Create);
     uTIOPFTestManager.Add(TtiOPFTestSetupDataTAB.Create);
+    uTIOPFTestManager.Add(TtiOPFTestSetupDataXMLLight.Create);
     // SQL based persistence layers
     uTIOPFTestManager.Add(TtiOPFTestSetupDataFBL.Create);
 //    uTIOPFTestManager.Add(TtiOPFTestSetupDataSQLDB_IB.Create);

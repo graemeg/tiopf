@@ -24,6 +24,7 @@
         <CustomOptions Value="-dLINK_CSV
 -dLINK_TAB
 -dLINK_FBL
+-dLINK_XMLLIGHT
 -dUseCThreads
 "/>
         <CompilerPath Value="$(CompPath)"/>
@@ -33,8 +34,8 @@
 "/>
     <License Value="Mozilla Public License 1.1
 "/>
-    <Version Major="2" Release="2"/>
-    <Files Count="44">
+    <Version Major="2" Release="2" Build="1"/>
+    <Files Count="46">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -211,6 +212,14 @@
         <Filename Value="../../Core/tiLogToFile.pas"/>
         <UnitName Value="tiLogToFile"/>
       </Item44>
+      <Item45>
+        <Filename Value="../../Options/tiXMLToTIDataset.pas"/>
+        <UnitName Value="tiXMLToTIDataSet"/>
+      </Item45>
+      <Item46>
+        <Filename Value="../../Options/tiQueryXMLLight.pas"/>
+        <UnitName Value="tiQueryXMLLight"/>
+      </Item46>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

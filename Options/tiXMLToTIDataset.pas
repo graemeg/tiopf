@@ -1,4 +1,4 @@
-unit tiXMLToTIDataSet;
+unit tiXMLToTIDataset;
 
 {$I tiDefines.inc}
 
@@ -12,7 +12,7 @@ uses
   ,tiXML
   // Delphi
   ,Classes
-  ,Inifiles
+//  ,Inifiles
  ;
 
 const
@@ -206,7 +206,9 @@ uses
   ,tiCompressZLib
   // Delphi
   ,SysUtils
+  {$IFDEF MSWINDOWS}
   ,Windows // Debugging
+  {$ENDIF}
  ;
 
 procedure tiXMLStringToTIDataSets(const pXMLString : string; const pDataSets : TtiDataBuffers);

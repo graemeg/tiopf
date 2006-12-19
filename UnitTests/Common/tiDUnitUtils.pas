@@ -30,7 +30,7 @@ uses
 
 type
 
-  TtiPerformanceCounterResultType = DWord;
+  TtiPerformanceCounterResultType = Cardinal;
 
   // PH: Sorry Linux guys. Not sure what to do about this:
   TtiPerformanceCounter = class(TtiBaseObject)
@@ -43,7 +43,6 @@ type
     procedure Initialize;
     function  GetTickCount: TtiPerformanceCounterResultType;
     function  GetPerformanceValue: TtiPerformanceCounterResultType;
-
   public
     constructor Create;
     procedure   Start;
@@ -51,8 +50,7 @@ type
     property    TickCount: TtiPerformanceCounterResultType read GetTickCount;
   end;
 
-  EtiOPFDUnitException = class(EtiOPFException)
- ;
+  EtiOPFDUnitException = class(EtiOPFException);
 
   TtiTestCase = class(TTestCase)
   private
@@ -597,7 +595,7 @@ begin
   result:= tiGetTickCount;
 end;
 
-function TtiPerformanceCounter.GetTickCount: DWord;
+function TtiPerformanceCounter.GetTickCount: TtiPerformanceCounterResultType;
 begin
   Assert(not FRunning, 'Still running');
   result:= (FStop - FStart) * FPerformanceFactor;

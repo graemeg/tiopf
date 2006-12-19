@@ -233,15 +233,12 @@ uses
   ,Forms
   ,TypInfo
   ,tiLog
-  ,tiObject
-  ,tiGUIUtils
   ,tiUtils
   ,tiConstants
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
   ,tiDUnitUtils
-  ,tiDialogs // for debugging
   ,tiDUnitDependencies
   ,tiXML
   ,tiStreams
@@ -841,19 +838,19 @@ procedure TTestTIDatabase.DoThreadedDBConnectionPool(pThreadCount: integer);
     lAllFinished := false;
     while not lAllFinished do
     begin
-//      writeln('_WaitForThreads: 1');
+Log('_WaitForThreads: 1', lsDebug);
       lAllFinished := true;
       for i := 0 to AList.Count - 1 do
       begin
-//        writeln('_WaitForThreads: 2');
+Log('_WaitForThreads: 2', lsDebug);
         lAllFinished := lAllFinished and TThrdDBConnectionPoolTest(AList.Items[i]).Done;
       end;
       Sleep(100);
-//      writeln('_WaitForThreads: 3');
-      {$IFNDEF FPC}
+Log('_WaitForThreads: 3', lsDebug);
+      {.$IFNDEF FPC}
       Application.ProcessMessages;
-      {$ENDIF}
-//      writeln('_WaitForThreads: 4');
+      {.$ENDIF}
+Log('_WaitForThreads: 4', lsDebug);
     end;
   end;
 var
@@ -868,14 +865,13 @@ begin
   try
     lList := TObjectList.Create;
     try
-//      writeln(' ');
-//      writeln('_CreateThreads...');
+Log('_CreateThreads...', lsDebug);
       _CreateThreads(lList, pThreadCount, cuIterations);
-//      writeln('_StartThreads...');
+Log('_StartThreads...', lsDebug);
       _StartThreads(lList);
-//      writeln('_WaitForThreads...');
+Log('_WaitForThreads...', lsDebug);
       _WaitForThreads(lList);
-//      writeln('DONE!');
+Log('DONE!', lsDebug);
     finally
       lList.Free;
     end;

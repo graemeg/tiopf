@@ -14,7 +14,9 @@ uses
   ,Windows
   {$ENDIF}
   ,Graphics      // Canvas
+  {$IFDEF MSWINDOWS}
   ,Messages
+  {$ENDIF}
  ;
 
  const

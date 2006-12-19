@@ -36,7 +36,7 @@ type
 implementation
 uses
    tiOPFTestManager
-  ,tiUtils
+//  ,tiUtils
   ,tiDUnitDependencies
   ,tiOPFManager
  ;

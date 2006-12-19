@@ -165,7 +165,6 @@ implementation
 uses
   SysUtils
   ,tiOPFManager
-  ,tiGUIUtils
   ,tiConstants
   ,tiQuery
   ,tiUtils
@@ -323,8 +322,9 @@ begin
     lData2 := TtiOPFTestData.Create;
     try
       lData2.Read(DatabaseName, PerLayerName);
-      lDataStr1 := tiPerObjAbsAsString(lData1);
-      lDataStr2 := tiPerObjAbsAsString(lData2);
+
+      lDataStr1 := lData1.AsDebugString;
+      lDataStr2 := lData2.AsDebugString;
       if lDataStr1 <> lDataStr2 then
       begin
         lDataStr1 := 'Strings are not the same' + Cr(2) +

@@ -24,24 +24,20 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="5">
+    <RequiredPackages Count="4">
       <Item1>
         <PackageName Value="tiOPFGUI"/>
         <MinVersion Major="2" Valid="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="tiOPF"/>
-        <MinVersion Major="2" Valid="True"/>
+        <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FPCUnitTestRunner"/>
       </Item3>
       <Item4>
-        <PackageName Value="FPCUnitTestRunner"/>
-      </Item4>
-      <Item5>
         <PackageName Value="FCL"/>
-      </Item5>
+      </Item4>
     </RequiredPackages>
     <Units Count="21">
       <Unit0>
@@ -177,7 +173,14 @@
       </Options>
     </Linking>
     <Other>
-      <CustomOptions Value="-FU_Dcu -dSTATIC_PERLAYER_LINKING -dUseCThreads -dLINK_FBL -dLINK_TAB -dLINK_CSV"/>
+      <CustomOptions Value="-FU_Dcu
+-dSTATIC_PERLAYER_LINKING
+-dUseCThreads
+-dLINK_FBL
+-dLINK_TAB
+-dLINK_CSV
+-dLINK_XMLLIGHT
+"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

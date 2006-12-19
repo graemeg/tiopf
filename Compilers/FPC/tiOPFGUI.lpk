@@ -24,6 +24,7 @@
 -dLINK_TAB 
 -dLINK_FBL 
 -dLINK_SQLDB_IBx
+-dLINK_XMLLIGHT
 -dUseCThreads
 "/>
         <CompilerPath Value="$(CompPath)"/>

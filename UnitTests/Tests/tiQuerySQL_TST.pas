@@ -46,7 +46,6 @@ uses
   ,SysUtils
   ,tiLog
   ,tiObject
-  ,tiGUIUtils
   ,tiUtils
   ,Forms
   ,tiConstants

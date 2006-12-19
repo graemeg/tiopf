@@ -186,8 +186,10 @@ var
   ULongString: string;
 
 function TtiTestCase.TempDirectory: string;
+{$IFDEF MSWINDOWS}
 var
   pcTemp : array[0..MAX_PATH] of char;
+{$ENDIF}
 begin
   if Length(uTempPath) = 0 then
   begin
@@ -221,6 +223,7 @@ var
   lResult : boolean;
   lMessage : string;
 begin
+  lMessage := '';
   lResult := AreStreamContentsSame(pStream1, pStream2, lMessage);
   if not lResult then
     Fail(lMessage);
@@ -311,14 +314,20 @@ end;
 
 
 function TtiTestCase.tstIntToDateTime(pInt: Integer): TDateTime;
+var
+  d: double;
 begin
-  Result := pInt / 1000;
+  d := 1000;  // removes compiler warning
+  Result := pInt / d;
 end;
 
 
 function TtiTestCase.tstIntToFloat(pInt: Integer): Extended;
+var
+  e: extended;
 begin
-  Result := pInt / 1000;
+  e := 1000;  // removes compiler warning
+  Result := pInt / e;
 end;
 
 
@@ -398,14 +407,16 @@ end;
 procedure TtiOPFTestCase.InsertIntoTestGroup(const ADatabase: TtiDatabase; AValue : integer);
 var
   lParams : TtiQueryParams;
+  e: extended;
 begin
+  e := 1000;  // removes compiler warning
   Check(LongString <> '', 'FLongString not assigned');
   lParams := TtiQueryParams.Create;
   try
     lParams.SetValueAsString('OID', IntToStr(AValue));
     lParams.SetValueAsString('Group_Str_Field', tiPad0(IntToStr(AValue), 10));
     lParams.SetValueAsInteger('Group_Int_Field', AValue);
-    lParams.SetValueAsFloat('Group_Float_Field', StrToInt(tiReplicate(IntToStr(AValue), 4)) / 1000);
+    lParams.SetValueAsFloat('Group_Float_Field', StrToInt(tiReplicate(IntToStr(AValue), 4)) / e);
     lParams.SetValueAsDateTime('Group_Date_Field', EncodeDate(1900, 1, AValue)) ;
     lParams.SetValueAsBoolean('Group_Bool_Field', ((AValue mod 2) = 0)) ;
     lParams.SetValueAsString('Group_Notes_Field', LongString) ;
@@ -1038,6 +1049,7 @@ end;
 
 function TtiOPFTestSetupDecorator.PerLayerID: ShortString;
 begin
+  Result := '';
 //  Result:= gTIOPFTestManager.SelectedOPFTestSetupDataAsString;
 end;
 

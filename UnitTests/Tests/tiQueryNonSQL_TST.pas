@@ -44,20 +44,12 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ,Contnrs
   ,tiLog
-  ,tiObject
-  ,tiGUIUtils
   ,tiUtils
-  ,Forms
-  ,tiConstants
   ,TypInfo
   {$IFNDEF DELPHI6ORABOVE}
   ,FileCtrl
   {$ENDIF}
-  ,tiDUnitUtils
-  ,tiDialogs // for debugging
-  ,tiDUnitDependencies
   ,SysUtils
   ,Classes
   ,tiTestFramework
