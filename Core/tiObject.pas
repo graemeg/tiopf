@@ -3612,9 +3612,7 @@ end;
 procedure TtiObject.AttachObserver(AObserver: TtiObject);
 begin
   { To conserve memory, we only create FObserverList when needed }
-  if not Assigned(FObserverList) then
-      FObserverList := TList.Create;
-  if FObserverList.IndexOf(AObserver) = -1 then
+  if ObserverList.IndexOf(AObserver) = -1 then
     FObserverList.Add(AObserver);
 end;
 
@@ -3625,6 +3623,9 @@ end;
 
 procedure TtiObject.DetachObserver(AObserver: TtiObject);
 begin
+  if not Assigned(FObserverList) then
+    Exit; //==>
+
   FObserverList.Remove(AObserver);
   { To conserve memory, we free FObserverList when not used anymore }
   if FObserverList.Count = 0 then
@@ -3636,9 +3637,12 @@ end;
 
 procedure TtiObject.EndUpdate;
 begin
-  Dec(FUpdateCount);
-  if FUpdateCount = 0 then
-    NotifyObservers;
+  if FUpdateCount > 0 then
+  begin
+    Dec(FUpdateCount);
+    if FUpdateCount = 0 then
+      NotifyObservers;
+  end;
 end;
 
 procedure TtiObject.NotifyObservers;
@@ -3652,7 +3656,8 @@ begin
   for ObjectIndex := 0 to FObserverList.Count - 1 do
   begin
     Observer := TtiObject(FObserverList.Items[ObjectIndex]);
-    Observer.Update(self);
+    if Assigned(Observer) then
+      Observer.Update(self);
   end;
 end;
 
