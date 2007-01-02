@@ -62,12 +62,12 @@ type
     FControl: TControl;
     FSelectedObject: TtiObject;
     FShowDeleted: Boolean;
-    procedure   SetSelectedObject(const Value: TtiObject);
     procedure   SetShowDeleted(const Value: Boolean);
   protected
     FObserversInTransit: TList;
     FUpdateMode: TUpdateMode;
     FPopupMenu: TPopupMenu;
+    procedure   SetSelectedObject(const Value: TtiObject); virtual;
     function    GetModel: TtiObjectList; virtual;
     procedure   SetModel(const Value: TtiObjectList); virtual;
     function    GetView: TControl; virtual;
@@ -119,6 +119,7 @@ type
 
   TComboBoxMediator = class(TListMediator)
   protected
+    procedure   SetSelectedObject(const Value: TtiObject); override;
     function    GetView: TComboBox; reintroduce;
     procedure   RebuildList; override;
   public
@@ -246,6 +247,28 @@ end;
 
 
 { TComboBoxMediator }
+
+procedure TComboBoxMediator.SetSelectedObject(const Value: TtiObject);
+var
+  i: integer;
+begin
+  inherited SetSelectedObject(Value);
+  
+  if Value = nil then
+  begin
+    View.ItemIndex := -1;
+    exit; //==>
+  end;
+  
+  for i := 0 to Pred(Model.Count) do
+  begin
+    if Value = Model.Items[i] then
+    begin
+      View.ItemIndex := i;
+      exit; //==>
+    end;
+  end;
+end;
 
 function TComboBoxMediator.GetView: TComboBox;
 begin
@@ -504,7 +527,7 @@ procedure TListMediator.SetModel(const Value: TtiObjectList);
 begin
   FObjectList := Value;
   if FObjectList.Count > 0 then
-    SelectedObject := FObjectList.Items[0];
+    FSelectedObject := FObjectList.Items[0];
 end;
 
 
