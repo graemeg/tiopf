@@ -135,8 +135,6 @@ type
     procedure   FindInHierarchy;
     procedure   CompareWithEvent;
     procedure   FreeDeleted;
-    procedure   tiListToClipboardDefault;
-    procedure   tiListToClipboardFields;
     procedure   tiListToCSVDefault;
     procedure   tiListToCSVFields;
     procedure   tiListToStreamDefault;
@@ -2612,67 +2610,6 @@ begin
   CheckEquals(Length(lString1), Length(lString2), 'Length');
   CheckEquals(lString1, lString2, 'String');
 end;
-
-
-procedure TTestTIObjectList.tiListToClipboardDefault;
-var
-  lList: TTestListOfPersistents;
-  lString1: string;
-  lString2: string;
-  lFields: TStringList;
-begin
-  lList := TTestListOfPersistents.Create;
-  try
-    lFields := TStringList.Create;
-    try
-      lFields.Add('Caption');
-      lFields.Add('StringProp');
-      lFields.Add('IntProp');
-      lFields.Add('DateTimeProp');
-      lFields.Add('FloatProp');
-      tiObject.tiListToClipboard(lList);
-      lString1 := ClipBoard.AsText;
-      lString2 := lList.AsString(#9, #13#10, lFields);
-    finally
-      lFields.Free;
-    end;
-  finally
-    lList.Free;
-  end;
-
-  CheckEquals(Length(lString1), Length(lString2), 'Failed on 1');
-  CheckEquals(lString1, lString2, 'Failed on 2');
-end;
-
-
-procedure TTestTIObjectList.tiListToClipboardFields;
-var
-  lList      : TTestListOfPersistents;
-  lString1: string;
-  lString2 : string;
-  lFields: TStringList;
-begin
-  lList  := TTestListOfPersistents.Create;
-  try
-    lFields:= TStringList.Create;
-    try
-      lFields.Add('StringProp');
-      lFields.Add('IntProp');
-      lFields.Add('FloatProp');
-      tiObject.tiListToClipboard(lList, lFields);
-      lString1 := ClipBoard.AsText;
-      lString2 := lList.AsString(#9, #13#10, lFields);
-    finally
-      lFields.Free;
-    end;
-  finally
-    lList.Free;
-  end;
-
-  CheckEquals(Length(lString1), Length(lString2), 'Length');
-  CheckEquals(lString1, lString2, 'String');
-end;
-
 
 procedure TTestTIObjectList.IndexOf;
 var

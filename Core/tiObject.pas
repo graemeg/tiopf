@@ -780,13 +780,6 @@ procedure tiListToCSV(AList: TtiObjectList;
 procedure tiListToCSV(AList: TtiObjectList;
                        const AFileName: string); overload;
 
-// Copy a TList of TtiBaseObject's to the clipboard
-procedure tiListToClipboard(AList: TtiObjectList;
-                            AColsSelected: TStringList); overload;
-
-procedure tiListToClipboard(AList: TtiObjectList); overload;
-
-
 implementation
 uses
   // tiOPF
@@ -798,7 +791,6 @@ uses
   // Delphi
   ,SysUtils
   ,Math
-  ,ClipBrd
   {$IFNDEF VER130}
    ,Variants
   {$ENDIF}
@@ -868,21 +860,6 @@ begin
   end;
 end;
 
-procedure tiListToClipboard(AList: TtiObjectList);
-var
-  lFields : TStringList;
-begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AList.Count > 0, 'AList.Count = 0');
-  lFields := TStringList.Create;
-  try
-    tiGetPropertyNames(AList.Items[0], lFields);
-    tiListToClipboard(AList, lFields);
-  finally
-    lFields.Free;
-  end;
-end;
-
 procedure tiListToStream(AStream : TStream;
                          AList : TtiObjectList;
                          AFieldDelim : string;
@@ -943,22 +920,6 @@ begin
     if i <> 0 then
       lLine := ARowDelim + lLine;
     tiAppendStringToStream(lLine, AStream)
-  end;
-end;
-
-procedure tiListToClipboard(AList: TtiObjectList; AColsSelected: TStringList);
-var
-  lStream: TStringStream;
-begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AList.Count > 0, 'AList.Count = 0');
-  Assert(AColsSelected<>nil, 'AColsSelected not assigned');
-  lStream := TStringStream.Create('');
-  try
-    tiListToStream(lStream, AList, Tab, CrLf, AColsSelected);
-    ClipBoard.AsText := lStream.DataString;
-  finally
-    lStream.Free;
   end;
 end;
 

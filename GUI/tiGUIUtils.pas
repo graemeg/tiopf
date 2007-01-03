@@ -16,6 +16,7 @@ uses
   ,Graphics      // Canvas
   {$IFDEF MSWINDOWS}
   ,Messages
+  ,Classes
   {$ENDIF}
  ;
 
@@ -94,11 +95,21 @@ type
   function tiAutoWaitCursor: IUnknown;
   function tiAutoCursor(ACursor: TCursor = crHourglass): IUnknown;
 
+  {: Copy a TtiObjectList's data to the clipboard - specifying the published
+     properties to copy}
+  procedure tiListToClipboard(AList: TtiObjectList;
+                              AColsSelected: TStringList); overload;
+
+  {: Copy a TtiObjectList's data to the clipboard - All published properties}
+  procedure tiListToClipboard(AList: TtiObjectList); overload;
+
+
 implementation
 uses
    tiUtils
   ,tiConstants
   ,tiDataBuffer_Cli   // used for ShowTIDataset and TIDataSetToString method
+  ,tiVisitor
   {$IFDEF MSWINDOWS}
     {$IFNDEF FPC}
   ,MultiMon
@@ -108,8 +119,8 @@ uses
   {$IFDEF FPC}
   ,LCLType    // TKeyboardState under FPC is not in Windows unit
   {$ENDIF}
-  ,Classes
   ,SysUtils
+  ,ClipBrd
   ;
 
 
@@ -504,6 +515,37 @@ function tiAutoCursor(ACursor: TCursor = crHourglass): IUnknown;
 begin
   if GetCurrentThreadId = MainThreadId then
     Result := TtiAutoCursor.Create(ACursor);
+end;
+
+procedure tiListToClipboard(AList: TtiObjectList);
+var
+  lFields : TStringList;
+begin
+  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AList.Count > 0, 'AList.Count = 0');
+  lFields := TStringList.Create;
+  try
+    tiGetPropertyNames(AList.Items[0], lFields);
+    tiListToClipboard(AList, lFields);
+  finally
+    lFields.Free;
+  end;
+end;
+
+procedure tiListToClipboard(AList: TtiObjectList; AColsSelected: TStringList);
+var
+  lStream: TStringStream;
+begin
+  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AList.Count > 0, 'AList.Count = 0');
+  Assert(AColsSelected<>nil, 'AColsSelected not assigned');
+  lStream := TStringStream.Create('');
+  try
+    tiListToStream(lStream, AList, Tab, CrLf, AColsSelected);
+    ClipBoard.AsText := lStream.DataString;
+  finally
+    lStream.Free;
+  end;
 end;
 
 initialization

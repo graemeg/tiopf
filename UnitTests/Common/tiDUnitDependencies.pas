@@ -46,6 +46,7 @@ uses
   ,tiOID_TST
   {$IFDEF MSWINDOWS}
   ,tiWin32_TST
+  ,tiGUIUtils_TST
   {$ENDIF}
   ,tiDataSet_TST
   ,tiTextParser_TST
@@ -114,6 +115,7 @@ begin
   tiOID_TST.RegisterTests;
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
+  tiGUIUtils_TST.RegisterTests;
   {$ENDIF}
   tiDataSet_TST.RegisterTests;
   tiTextParser_TST.RegisterTests;
