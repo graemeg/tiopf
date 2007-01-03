@@ -35,7 +35,10 @@ requires
   vclx,
   vcljpg,
   tiOPFCore,
-  tiOPFOptions;
+  tiOPFOptions,
+  bdertl,
+  dbrtl,
+  xmlrtl;
 
 contains
   tiDialogs in '..\..\GUI\tiDialogs.pas',
@@ -70,8 +73,11 @@ contains
   tiVTTreeView in '..\..\GUI\tiVTTreeView.pas',
   tiGUIUtils in '..\..\GUI\tiGUIUtils.pas',
   tiGenericEditMediators in '..\..\GUI\tiGenericEditMediators.pas',
-  tiGenericListMediators in '..\..\GUI\tiGenericListMediators.pas',  
+  tiGenericListMediators in '..\..\GUI\tiGenericListMediators.pas',
   tiTreeBuildVisitor in '..\..\GUI\tiTreeBuildVisitor.pas',
-  tiGenericTreeViewMediator in '..\..\GUI\tiGenericTreeViewMediator.pas';
+  tiGenericTreeViewMediator in '..\..\GUI\tiGenericTreeViewMediator.pas',
+  tiSpin in '..\..\GUI\tiSpin.pas',
+  tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas',
+  tiHotImage in '..\..\GUI\tiHotImage.pas';
 
 end.

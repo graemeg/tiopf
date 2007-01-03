@@ -192,7 +192,7 @@ uses
   ,TypInfo
   ,Dialogs    { MessageDlg }
   ,StdCtrls   { TEdit, TComboBox }
-  ,Spin       { TSpinEdit }
+  ,tiSpin     { TSpinEdit - tiSpin.pas cloned from Borland's Spin.pas so remove package import warning}
   ,ComCtrls   { TTrackBar }
   ;
 
