@@ -12,12 +12,10 @@ uses
   ,tiRegINI
   {$IFDEF MSWINDOWS}
   ,Windows
+  ,Messages
   {$ENDIF}
   ,Graphics      // Canvas
-  {$IFDEF MSWINDOWS}
-  ,Messages
   ,Classes
-  {$ENDIF}
  ;
 
  const

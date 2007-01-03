@@ -192,7 +192,11 @@ uses
   ,TypInfo
   ,Dialogs    { MessageDlg }
   ,StdCtrls   { TEdit, TComboBox }
+  {$IFDEF FPC}
+  ,Spin       { TSpinEdit - standard component included in Lazarus LCL }
+  {$ELSE}
   ,tiSpin     { TSpinEdit - tiSpin.pas cloned from Borland's Spin.pas so remove package import warning}
+  {$ENDIF}
   ,ComCtrls   { TTrackBar }
   ;
 
