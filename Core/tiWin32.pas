@@ -15,6 +15,7 @@ uses
   function  tiWin32FindFirstFile(const APath: string; var  ASearchRec: TSearchRec): Integer;
   function  tiWin32CoCreateGUID : String;
   procedure tiWin32CoInitialize;
+  procedure tiWin32ForceCoInitialize;
   procedure tiWin32CoUnInitialize;
   function  tiWin32HasCoInitializeBeenCalled: Boolean;
   function  tiWin32GetTickCount: Cardinal;
@@ -45,10 +46,11 @@ type
     function    HasBeenCalled: Boolean;
     procedure   CoInitialize;
     procedure   CoUnInitialize;
+    procedure   ForceCoInitialize;
   end;
 
 var
-  uTICoInitializeManager : TtiCoInitializeManager;
+  UTICoInitializeManager : TtiCoInitializeManager;
 
 //{$ifdef DELPHI6ORABOVE}
 //  {$WARN SYMBOL_PLATFORM OFF}
@@ -65,7 +67,7 @@ begin
     was confirmed fixed.:-) I am leaving this IFDEF for now, until the next
     FPC version is released, in a few days. - Graeme [2006-07-17] }
   GetStartupInfo({$IFDEF FPC}@{$ENDIF}SI);
- 
+
   CreateProcess(
     nil, PChar(AEXE), nil, nil,
     False, 0, nil, nil, SI, PI);
@@ -110,25 +112,31 @@ end;
 
 procedure tiWin32CoInitialize;
 begin
-  if uTICoInitializeManager = nil then
-    uTICoInitializeManager := TtiCoInitializeManager.Create;
-  uTICoInitializeManager.CoInitialize;
+  if UTICoInitializeManager = nil then
+    UTICoInitializeManager := TtiCoInitializeManager.Create;
+  UTICoInitializeManager.CoInitialize;
 end;
 
+procedure tiWin32ForceCoInitialize;
+begin
+  if UTICoInitializeManager = nil then
+    UTICoInitializeManager := TtiCoInitializeManager.Create;
+  UTICoInitializeManager.ForceCoInitialize;
+end;
 
 procedure tiWin32CoUnInitialize;
 begin
-  if uTICoInitializeManager = nil then
-    uTICoInitializeManager := TtiCoInitializeManager.Create;
-  uTICoInitializeManager.CoUnInitialize;
+  if UTICoInitializeManager = nil then
+    UTICoInitializeManager := TtiCoInitializeManager.Create;
+  UTICoInitializeManager.CoUnInitialize;
 end;
 
 
 function  tiWin32HasCoInitializeBeenCalled: Boolean;
 begin
-  if uTICoInitializeManager = nil then
-    uTICoInitializeManager := TtiCoInitializeManager.Create;
-  Result:= uTICoInitializeManager.HasBeenCalled;
+  if UTICoInitializeManager = nil then
+    UTICoInitializeManager := TtiCoInitializeManager.Create;
+  Result:= UTICoInitializeManager.HasBeenCalled;
 end;
 
 
@@ -174,6 +182,21 @@ begin
       ActiveX.CoInitialize(nil);
       FList.Add(LCurrentThreadID);
     end;
+  finally
+    FCritSect.Leave
+  end;
+end;
+
+procedure TtiCoInitializeManager.ForceCoInitialize;
+var
+  LCurrentThreadID: DWord;
+begin
+  LCurrentThreadID:= GetCurrentThreadID;
+  FCritSect.Enter;
+  try
+    ActiveX.CoInitialize(nil);
+    if FList.IndexOf(LCurrentThreadID) = -1 then
+      FList.Add(LCurrentThreadID);
   finally
     FCritSect.Leave
   end;
@@ -226,6 +249,6 @@ end;
 initialization
 
 finalization
-  FreeAndNil(uTICoInitializeManager);
+  FreeAndNil(UTICoInitializeManager);
 
 end.

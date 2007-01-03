@@ -19,6 +19,7 @@ type
   published
     procedure CoInitialize_CoUnInitialize_MainThread;
     procedure CoInitialize_CoUnInitialize_MultiThread;
+    procedure CoInitialize_ForceCoUnInitialize;
   end;
 
 
@@ -82,6 +83,14 @@ begin
   end;
 end;
 
+
+procedure TTestTIWin32.CoInitialize_ForceCoUnInitialize;
+begin
+  tiWin32ForceCoInitialize;
+  Check(tiWin32HasCoInitializeBeenCalled);
+  tiWin32CoUnInitialize;
+  Check(not tiWin32HasCoInitializeBeenCalled);
+end;
 
 { TThreadCoInitializeTest }
 

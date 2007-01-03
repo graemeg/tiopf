@@ -4,7 +4,7 @@ unit tiHTTPMSXml;
 
 interface
 uses
-  Classes
+   Classes
   ,tiBaseObject
   ,tiHTTP
   ,Windows
@@ -21,7 +21,6 @@ type
   TtiHTTPMSXML = class(TtiHTTPAbs)
   private
     FHTTP : IXMLHttpRequest;
-    FThreadIDCreatedIn: DWord;
     FAutoFlushCache: boolean;
     FLastCallTime: DWord;
   protected
@@ -50,6 +49,7 @@ uses
   ,tiExcept
   ,SysUtils
   ,Math
+  ,ComObj
 
  ;
 
@@ -61,9 +61,21 @@ begin
   inherited;
   FAutoFlushCache:= True;
   FLastCallTime:= GetTickCount;
-  FThreadIDCreatedIn:=GetCurrentThreadID;
   tiWin32CoInitialize;
-  FHTTP := CoXMLHTTPRequest.Create;
+  try
+    FHTTP := CoXMLHTTPRequest.Create;
+  except
+    // 03/01/2007. PH. In rare cases, tiWin32CoInitialize will wrongly
+    // detect that CoInitialize has been called in this thread. Not
+    // sure why this is happening, but the code below is an attempt
+    // to work around this problem.
+    on e:EOleSysError do
+    begin
+      FHTTP:= nil;
+      tiWin32ForceCoInitialize;
+      FHTTP := CoXMLHTTPRequest.Create;
+    end;
+  end;
 end;
 
 destructor TtiHTTPMSXML.Destroy;
