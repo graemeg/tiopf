@@ -117,12 +117,12 @@ type
   {$ENDIF}
   private
     FProgInd : TProgInd;
-    FiPosition : integer;
-    FsText : string;
-    FiMin: integer;
-    FiMax: integer;
-    FbAutoProgress: boolean;
-    FsCaption: TCaption;
+    FPosition : integer;
+    FText : string;
+    FMin: integer;
+    FMax: integer;
+    FAutoProgress: boolean;
+    FCaption: TCaption;
     FCanCancel: boolean;
     FConfirmCancel : boolean;
     FOnCancel : TNotifyEvent;
@@ -140,12 +140,12 @@ type
     constructor Create(ACreateSuspended: Boolean); override;
     Destructor  Destroy; override;
     Property    ProgInd : TProgInd     read FProgInd       write FProgInd;
-    Property    Max    : integer      read FiMax          write SetMax;
-    Property    Min    : integer      read FiMin          write SetMin;
-    Property    Position : integer     read FiPosition     write SetPosition;
-    Property    Text    : string      read FsText         write SetText;
-    Property    Caption : TCaption    read FsCaption      write SetCaption;
-    Property    AutoProgress : Boolean read FbAutoProgress write SetAutoProgress;
+    Property    Max    : integer      read FMax          write SetMax;
+    Property    Min    : integer      read FMin          write SetMin;
+    Property    Position : integer     read FPosition     write SetPosition;
+    Property    Text    : string      read FText         write SetText;
+    Property    Caption : TCaption    read FCaption      write SetCaption;
+    Property    AutoProgress : Boolean read FAutoProgress write SetAutoProgress;
     Property    CanCancel : boolean    read FCanCancel     write SetCanCancel;
     property    ConfirmCancel : boolean    read FConfirmCancel   write FConfirmCancel;
     property    OnCancel     : TNotifyEvent read FOnCancel      write FOnCancel;
@@ -410,9 +410,10 @@ begin
   ClientHeight := 30          ;
   ClientWidth := cuiFormWidth;
   FCritSect   := TCriticalSection.Create;
-  gReg.ReadFormState(self);
+  gINI.ReadFormState(self);
   OnCloseQuery := DoCloseQuery;
   FTimer      := TTimer.Create(Self);
+  FTimer.Enabled := false;
   FTimer.OnTimer := UpdateAutoProgressThreads;
   FPanelBevelInner  := bvLowered   ;
   FPanelBevelOuter  := bvNone      ;
@@ -425,13 +426,7 @@ begin
     Constraints.MinWidth := cuiFormWidth;
     Constraints.MaxHeight := Height;
     Constraints.MaxWidth := cuiFormWidth;
-  end {else
-  begin
-    Constraints.MinHeight := 0;
-    Constraints.MinWidth := 0;
-    Constraints.MaxHeight := 0;
-    Constraints.MaxWidth := 0;
-  end};
+  end;
   uFormThreadProgress := nil;
 
 end;
@@ -444,7 +439,7 @@ begin
   for i := 0 to FProgInds.Count - 1 do
     TtiThreadProgress(FProgInds.Items[i]).Terminate;
   FTimer.Free;
-  gReg.WriteFormState(self);
+  gINI.WriteFormState(self);
   FProgInds.Free;
   FCritSect.Free;
   if uFormThreadProgress = Self then
@@ -482,8 +477,10 @@ function TFormThreadProgress.DetachThread(pThread: TtiThreadProgress): boolean;
 var
   i : integer;
   lProgInd : TProgInd;
+  LCount: integer;
 begin
   FTimer.Enabled := false;
+  LCount:= 0;
   try
     FCritSect.Enter;
     try
@@ -495,12 +492,13 @@ begin
         lProgInd.Free;
         FProgInds.Delete(i);
         ArrangePanels;
-        result := (FProgInds.Count = 0);
+        LCount:= FProgInds.Count;
+        result := (LCount = 0);
     finally
       FCritSect.Leave;
     end;
   finally
-    FTimer.Enabled := true;
+    FTimer.Enabled := LCount <> 0;
   end;
   if Assigned(FOnChangeThreadCount) then
     FOnChangeThreadCount(Self);
@@ -534,9 +532,9 @@ end;
 destructor TtiThreadProgress.Destroy;
 begin
   if AutoProgress then
-    gReg.WriteInteger('ThreadProgress',
+    gINI.WriteInteger('ThreadProgress',
                        ClassName,
-                       FiPosition + 1);   // Was: Trunc(FiPosition * 1.1));
+                       FPosition + 1);
   inherited;
 end;
 
@@ -555,11 +553,11 @@ end;
 
 procedure TtiThreadProgress.SetAutoProgress(const AValue: Boolean);
 begin
-  FbAutoProgress := AValue;
+  FAutoProgress := AValue;
   if AutoProgress then begin
-    FiPosition := 0;
-    FiMin     := 0;
-    Max := gReg.ReadInteger('ThreadProgress', ClassName, 10);
+    FPosition := 0;
+    FMin     := 0;
+    Max := gINI.ReadInteger('ThreadProgress', ClassName, 10);
     if Max = 0 then
       Max := 10;
   end;
@@ -568,46 +566,57 @@ end;
 
 procedure TtiThreadProgress.SetMax(const AValue: integer);
 begin
-  FiMax := AValue;
+  FMax := AValue;
   Synchronize(SynchronizeProgress);
 end;
 
 
 procedure TtiThreadProgress.SetMin(const AValue: integer);
 begin
-  FiMin := AValue;
+  FMin := AValue;
   Synchronize(SynchronizeProgress);
 end;
 
 
 procedure TtiThreadProgress.SetPosition(const AValue: integer);
 begin
-  FiPosition := AValue;
+  FPosition := AValue;
   Synchronize(SynchronizeProgress);
 end;
 
 
 procedure TtiThreadProgress.SetText(const AValue: string);
 begin
-  FsText := AValue;
+  FText := AValue;
   Synchronize(SynchronizeProgress);
 end;
 
 
 procedure TtiThreadProgress.SetCaption(const AValue: TCaption);
 begin
-  FsCaption := AValue;
+  FCaption := AValue;
   Synchronize(SynchronizeProgress);
 end;
 
 
 procedure TtiThreadProgress.SynchronizeProgress;
+const
+  CLimit = 65535; // Under some circumstances, the progress bar has a limit of 65535
+                  // See ComCtrls for more info
 begin
-  FProgInd.Max     := FiMax;
-  FProgInd.Min     := FiMin;
-  FProgInd.Position := FiPosition;
-  FProgInd.Text    := FsText;
-  FProgInd.Caption := FsCaption;
+  FProgInd.Min     := FMin;
+  if (FMax > CLimit) or (FPosition > CLimit) then
+  begin
+    FProgInd.Max     := FMax div 2;
+    FProgInd.Position := FPosition div 2;
+  end else
+  begin
+    FProgInd.Max     := FMax;
+    FProgInd.Position := FPosition;
+  end;
+
+  FProgInd.Text    := FText;
+  FProgInd.Caption := FCaption;
   FProgInd.CanCancel := FCancancel;
 end;
 
@@ -687,7 +696,6 @@ var
   i : integer;
   lProgInds : TProgInd;
 begin
-  {TODO 1 -oFramework: Change the critical section in TFormThreadProgress.UpdateAutoProgressThreads to a semaphore. }
   FCritSect.Enter;
   try
     for i := 0 to FProgInds.Count - 1 do begin
