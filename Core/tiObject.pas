@@ -108,7 +108,7 @@ type
                       );
 
   {: Abstract persistent field for use with TtiObject The usual way to add
-     data to TtiObjectis with published properties. These can be simple data
+     data to TtiObject is with published properties. These can be simple data
      types (String, Integer, Float, DateTime) or object data types that you
      define. Simple data types will not handle NULL values so if NULL management
      is required, you should use persistent fields. Using persistent fields
@@ -251,6 +251,12 @@ type
   TtiFieldDateTime = class(TtiFieldAbs)
   private
     FValue: TDateTime;
+    function    GetDays: Word;
+    function    GetHours: Word;
+    function    GetMinutes: Word;
+    function    GetMonths: Word;
+    function    GetSeconds: Word;
+    function    GetYears: Word;
     procedure   SetAsDateTime(const AValue: TDateTime);
   protected
     procedure   Clear; override;
@@ -260,6 +266,12 @@ type
     function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(AAssignFrom: TtiFieldAbs); override;
     property    AsDateTime: TDateTime read FValue Write SetAsDateTime;
+    property    Days: Word read GetDays;
+    property    Months: Word read GetMonths;
+    property    Years: Word read GetYears;
+    property    Hours: Word read GetHours;
+    property    Minutes: Word read GetMinutes;
+    property    Seconds: Word read GetSeconds;
   end;
 
   TtiFieldList = class(TObjectlist)
@@ -3357,6 +3369,69 @@ procedure TtiFieldDateTime.SetAsDateTime(const AValue: TDateTime);
 begin
   FValue := AValue;
   SetValue;
+end;
+
+function TtiFieldDateTime.GetDays: Word;
+var
+  Year, Month, Day: word;
+begin
+  if IsNull then
+    Result := 0
+  else
+  begin
+    DecodeDate(FValue, Year, Month, Day);
+    Result := Day;
+  end;
+end;
+
+function TtiFieldDateTime.GetHours: Word;
+var
+  Hour, Min, Sec, MSec: word;
+begin
+  DecodeTime(FValue, Hour, Min, Sec, MSec);
+  Result := Hour;
+end;
+
+function TtiFieldDateTime.GetMinutes: Word;
+var
+  Hour, Min, Sec, MSec: word;
+begin
+  DecodeTime(FValue, Hour, Min, Sec, MSec);
+  Result := Min;
+end;
+
+function TtiFieldDateTime.GetMonths: Word;
+var
+  Year, Month, Day: word;
+begin
+  if IsNull then
+    Result := 0
+  else
+  begin
+    DecodeDate(FValue, Year, Month, Day);
+    Result := Month;
+  end;
+end;
+
+function TtiFieldDateTime.GetSeconds: Word;
+var
+  Hour, Min, Sec, MSec: word;
+begin
+  DecodeTime(FValue, Hour, Min, Sec, MSec);
+  Result := Sec;
+end;
+
+function TtiFieldDateTime.GetYears: Word;
+var
+  Year, Month, Day: word;
+begin
+  if IsNull then
+    Result := 0
+  else
+  begin
+    DecodeDate(FValue, Year, Month, Day);
+    Result := Year;
+  end;
 end;
 
 function TtiFieldAbs.GetFieldName: string;

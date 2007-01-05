@@ -104,6 +104,7 @@ type
     OldPos: Integer;
     NewPos: Integer;
   protected
+    procedure   SetSelectedObject(const Value: TtiObject); override;
     function    GetView: TListBox; reintroduce;
     procedure   RebuildList; override;
     procedure   SaveBookmark;
@@ -150,42 +151,64 @@ uses
 
 { TListBoxMediator }
 
+procedure TListBoxMediator.SetSelectedObject(const Value: TtiObject);
+var
+  i: integer;
+begin
+  inherited SetSelectedObject(Value);
+  
+  if Value = nil then
+  begin
+    View.ItemIndex := -1;
+    exit; //==>
+  end;
+
+  for i := 0 to Pred(Model.Count) do
+  begin
+    if Value.OID.AsString = Model.Items[i].OID.AsString then
+    begin
+      View.ItemIndex := i;
+      exit; //==>
+    end;
+  end;
+end;
+
 function TListBoxMediator.GetView: TListBox;
 begin
   result := TListBox(inherited GetView);
 end;
-
 
 procedure TListBoxMediator.HandleSelectionChanged;
 var
   i: integer;
 begin
   if View.ItemIndex = -1 then
-    SelectedObject := nil
+    FSelectedObject := nil
   else
   begin
-    {if an item is already selected, assign the item's List of observers to a temporary container.
-    This is done so that the same observers can be assigned to the new item.}
-    if Assigned(SelectedObject) then //  and Assigned(SelectedObject.ObserverList)
-      FObserversInTransit.Assign( SelectedObject.ObserverList);
+    { If an item is already selected, assign the item's List of observers to a
+      temporary container. This is done so that the same observers can be
+      assigned to the new item. }
+    if Assigned(FSelectedObject) then
+      FObserversInTransit.Assign(FSelectedObject.ObserverList);
 
-    //Assign Newly selected item to SelectedObject Obj.
-    SelectedObject := TtiObject(View.Items.Objects[View.ItemIndex]);
+    // Assign Newly selected item to SelectedObject Obj.
+    FSelectedObject := TtiObject(View.Items.Objects[View.ItemIndex]);
 
-    {if an object was selected, copy the old item's observer List
-    to the new item's observer List.}
+    { If an object was selected, copy the old item's observer List
+      to the new item's observer List. }
     if FObserversInTransit.Count > 0 then
-      SelectedObject.ObserverList.Assign(FObserversInTransit);
+      FSelectedObject.ObserverList.Assign(FObserversInTransit);
 
-    {set the observers to the object}
-    for i := 0 to SelectedObject.ObserverList.Count - 1 do
+    { set the observers's Subject property to the selected object }
+    for i := 0 to FSelectedObject.ObserverList.Count - 1 do
     begin
-      TMediatorView(SelectedObject.ObserverList.Items[i]).Subject :=
-          SelectedObject;
+      TMediatorView(FSelectedObject.ObserverList.Items[i]).Subject :=
+          FSelectedObject;
     end;
 
-    //execute the NotifyObservers event to update the observers.
-    SelectedObject.NotifyObservers;
+    // execute the NotifyObservers event to update the observers.
+    FSelectedObject.NotifyObservers;
   end;
 end;
 
@@ -198,7 +221,9 @@ var
 begin
   selected := -1;
   if (Model.CountNotDeleted-1) >= View.ItemIndex then
+  begin
     selected := View.ItemIndex;
+  end;
 
   ptr := View.OnClick;
   View.OnClick := nil;
@@ -238,7 +263,6 @@ begin
   View.ItemIndex := NewPos;
   HandleSelectionChanged;
 end;
-
 
 procedure TListBoxMediator.SaveBookmark;
 begin
@@ -454,15 +478,18 @@ begin
   Model := pObjectList;
   FControl := pView;
   BuildPopupMenu;
-  Model.AttachObserver( Self );
+  Model.AttachObserver(self);
   SetupGUIandObject;
-  Update(nil);
+  
+  // I prefer to do this once in the form after all mediator are created.
+  Model.NotifyObservers;
 end;
 
 
 destructor TListMediator.Destroy;
 begin
   FObserversInTransit.Free;
+  Model.DetachObserver(self);
   inherited;
 end;
 
@@ -526,8 +553,8 @@ end;
 procedure TListMediator.SetModel(const Value: TtiObjectList);
 begin
   FObjectList := Value;
-  if FObjectList.Count > 0 then
-    FSelectedObject := FObjectList.Items[0];
+//  if FObjectList.Count > 0 then
+//    FSelectedObject := FObjectList.Items[0];
 end;
 
 

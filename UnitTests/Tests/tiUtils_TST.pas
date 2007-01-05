@@ -1694,7 +1694,7 @@ end;
 // re-worked to remove the TStringList as the working holder of the data.
 procedure TTestTIUtils.tiVariantArrayToString;
 var
-  lFrom : OleVariant;
+  lFrom : Variant;
   lTo  : string;
 const
   lCrLf = #13 + #10;
@@ -1841,6 +1841,7 @@ begin
 
   lVar:=lCurrency;
   _tiIsVariantOfType(lVar,varCurrency,'Failed with varCurrency');
+
 
 // These ones have not been tested
 // varCurrency	Currency floating-point value (type Currency).

@@ -71,6 +71,8 @@ type
     procedure FieldDateTime;
     procedure FieldDateTime_Equals;
     procedure FieldDateTime_Assign;
+    procedure FieldDateTime_YearsMonthsDays;
+    procedure FieldDateTime_HoursMinutesSeconds;
     procedure FieldBoolean;
     procedure FieldBoolean_Equals;
     procedure FieldBoolean_Assign;
@@ -1651,6 +1653,72 @@ begin
     end;
   finally
     lF1.Free;
+  end;
+end;
+
+procedure TTestTIObject.FieldDateTime_YearsMonthsDays;
+var
+  lPerObj: TtiObject;
+  lField:  TtiFieldDateTime;
+  lValue   : TDateTime;
+  lValueStr : string;
+begin
+  lValue   := EncodeDate(2004, 06, 03) + EncodeTime(13, 45, 20, 00);
+  lValueStr := tiDateTimeAsXMLString(lValue);
+
+  lPerObj := TtiObject.Create;
+  try
+    lField:= TtiFieldDateTime.Create(lPerObj);
+    try
+      lField.AsDateTime := lValue;
+      CheckEquals(2004, lField.Years, 'Failed on 1');
+      CheckEquals(6, lField.Months, 'Failed on 2');
+      CheckEquals(3, lField.Days, 'Failed on 3');
+      Check(not lField.IsNull, 'Failed on 4');
+
+      lField.IsNull := True;
+      CheckEquals(0, lField.Years, 'Failed on 5');
+      CheckEquals(0, lField.Months, 'Failed on 6');
+      CheckEquals(0, lField.Days, 'Failed on 7');
+      Check(lField.IsNull, 'Failed on 8');
+    finally
+      lField.Free;
+    end;
+  finally
+    lPerObj.Free;
+  end;
+end;
+
+procedure TTestTIObject.FieldDateTime_HoursMinutesSeconds;
+var
+  lPerObj: TtiObject;
+  lField:  TtiFieldDateTime;
+  lValue   : TDateTime;
+  lValueStr : string;
+begin
+  lValue   := EncodeDate(2004, 06, 03) + EncodeTime(13, 45, 20, 00);
+  lValueStr := tiDateTimeAsXMLString(lValue);
+
+  lPerObj := TtiObject.Create;
+  try
+    lField:= TtiFieldDateTime.Create(lPerObj);
+    try
+      lField.AsDateTime := lValue;
+      CheckEquals(13, lField.Hours, 'Failed on 1');
+      CheckEquals(45, lField.Minutes, 'Failed on 2');
+      CheckEquals(20, lField.Seconds, 'Failed on 3');
+      Check(not lField.IsNull, 'Failed on 4');
+
+      lField.IsNull := True;
+      CheckEquals(0, lField.Hours, 'Failed on 5');
+      CheckEquals(0, lField.Minutes, 'Failed on 6');
+      CheckEquals(0, lField.Seconds, 'Failed on 7');
+      Check(lField.IsNull, 'Failed on 8');
+    finally
+      lField.Free;
+    end;
+  finally
+    lPerObj.Free;
   end;
 end;
 

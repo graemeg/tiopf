@@ -379,9 +379,9 @@ type
   function tiIf(ACondition: Boolean; AResultTrue, AResultFalse: String): String; overload;
 
   // Convert a variant array of variants to a string
-  function  tiVariantArrayToString(AValue : oleVariant): string;
+  function  tiVariantArrayToString(AValue: Variant): string;
   // Is a variant of a given type
-  function  tiIsVariantOfType(AVariant : Variant; AVarType : TVarType): boolean;
+  function  tiIsVariantOfType(AVariant: Variant; AVarType: TVarType): boolean;
   // Return a string with ACount #10 characters
   function  Lf(const ACount : Byte = 1): string;
   // Return a string with ACount #13 characters
@@ -1255,25 +1255,36 @@ begin
 end;
 
 
-function  tiVariantArrayToString(AValue : oleVariant): string;
-  procedure appendVariantToStringList(pStringList : TStringList;
-                                       pVariant : oleVariant;
-                                       var pIndent : integer);
-  var i : integer;
-      iLow : integer;
-      iHigh : integer;
+function  tiVariantArrayToString(AValue: Variant): string;
+  //---------
+  procedure appendVariantToStringList(pStringList: TStringList;
+      pVariant: Variant; var pIndent: integer);
+  var
+    i: integer;
+    iLow: integer;
+    iHigh: integer;
   begin
-    if tiIsVariantOfType(pVariant, varArray) then begin
+    if VarIsArray(pVariant) then
+    begin
       iLow := varArrayLowBound(pVariant, 1);
       iHigh := varArrayHighBound(pVariant, 1);
-      for i := iLow to iHigh do begin
+      for i := iLow to iHigh do
+      begin
         inc(pIndent);
-        if i = iLow then pStringList.add(tiSpace(pIndent*3) + '[');
+
+        if i = iLow then
+          pStringList.add(tiSpace(pIndent*3) + '[');
+
         appendVariantToStringList(pStringList, pVariant[i], pIndent);
-        if i = iHigh then pStringList.add(tiSpace(pIndent*3) + ']');
+
+        if i = iHigh then
+          pStringList.add(tiSpace(pIndent*3) + ']');
+
         dec(pIndent);
       end;
-    end else begin
+    end
+    else
+    begin
       pStringList.add(tiSpace(pIndent*3 + 1) + varToStr(pVariant));
     end;
   end;
@@ -1293,24 +1304,24 @@ begin
 end;
 
 {
-varEmpty	The variant is Unassigned.
-varNull	The variant is Null.
-VarSmallint	16-bit signed integer (type Smallint).
-varInteger	32-bit signed integer (type Integer).
-varSingle	Single-precision floating-point value (type Single).
-varDouble	Double-precision floating-point value (type Double).
-varCurrency	Currency floating-point value (type Currency).
-varDate	Date and time value (type TDateTime).
-varOLEStr	Reference to a dynamically allocated UNICODE string.
-varDispatch	Reference to an Automation object (an IDispatch interface pointer).
-varError	Operating system error code.
-varBoolean	16-bit boolean (type WordBool).
-varUnknown	Reference to an unknown COM object (an IUnknown interface pointer).
-varByte	8-bit unsigned integer (type Byte).
-varString	Reference to a dynamically allocated Pascal string (type AnsiString).
-varTypeMask	Bit mask for extracting type code.
-varArray	Bit indicating variant array.
-varByRef	Bit indicating variant contains a reference (rather than a value).
+  varEmpty	The variant is Unassigned.
+  varNull	The variant is Null.
+  VarSmallint	16-bit signed integer (type Smallint).
+  varInteger	32-bit signed integer (type Integer).
+  varSingle	Single-precision floating-point value (type Single).
+  varDouble	Double-precision floating-point value (type Double).
+  varCurrency	Currency floating-point value (type Currency).
+  varDate	Date and time value (type TDateTime).
+  varOLEStr	Reference to a dynamically allocated UNICODE string.
+  varDispatch	Reference to an Automation object (an IDispatch interface pointer).
+  varError	Operating system error code.
+  varBoolean	16-bit boolean (type WordBool).
+  varUnknown	Reference to an unknown COM object (an IUnknown interface pointer).
+  varByte	8-bit unsigned integer (type Byte).
+  varString	Reference to a dynamically allocated Pascal string (type AnsiString).
+  varTypeMask	Bit mask for extracting type code.
+  varArray	Bit indicating variant array.
+  varByRef	Bit indicating variant contains a reference (rather than a value).
 }
 function tiIsVariantOfType(AVariant : Variant; AVarType : TVarType): boolean;
 var
