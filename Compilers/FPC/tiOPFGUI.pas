@@ -15,7 +15,7 @@ uses
     tiReadOnly, tiResources, tiRoundedPanel, tiSpeedButton, tiSplitter, 
     tiThreadProgress, tiTreeView, tiTreeViewChildForm, DtiDefaultActionValues, 
     tiGenericEditMediators, tiGenericListMediators, tiTreeBuildVisitor, 
-    tiGenericTreeViewMediator; 
+    tiGenericTreeViewMediator, tiCompositeMediators; 
 
 implementation
 

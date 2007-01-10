@@ -1306,7 +1306,7 @@ begin
   FList.Clear;
   // Should Clear set the ObjectState to posEmpty. Originally we thought yes,
   // then got burnt by side effects, so this was removed 26/09/2001
-  { 2005-08-25 graemeg: I thought I would take my chances as it makes sence
+  { 2005-08-25 graemeg: I thought I would take my chances as it makes sense
     to set the ObjectState }
   ObjectState := posEmpty;
 end;
@@ -1639,7 +1639,7 @@ end;
 //  AData.Dirty := true;
 //end;
 
-procedure TtiObjectList.Insert(AInsertBefore, AData: TtiObject);
+procedure TtiObjectList.Insert(AInsertBefore: TtiObject; AData: TtiObject);
 var
   i : integer;
 begin
@@ -3613,8 +3613,10 @@ begin
   result := nil;
 end;
 
-procedure TtiObjectList.CompareWith(AList: TtiObjectList; AInBothAndEquals,
-  AInBothAndNotEquals, AIn1Only, AIn2Only: TtiObjectListCompareEvent);
+procedure TtiObjectList.CompareWith(AList: TtiObjectList;
+  AInBothAndEquals: TtiObjectListCompareEvent;
+  AInBothAndNotEquals: TtiObjectListCompareEvent;
+  AIn1Only: TtiObjectListCompareEvent; AIn2Only: TtiObjectListCompareEvent);
 var
   i: Integer;
   L: TtiObject;
@@ -3642,7 +3644,6 @@ begin
     if L = nil then
       AIn2Only(nil, AList.Items[i]);
   end;
-
 end;
 
 procedure TtiObject.AttachObserver(AObserver: TtiObject);

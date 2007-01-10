@@ -69,6 +69,7 @@ contains
   tiGenericEditMediators in '..\..\GUI\tiGenericEditMediators.pas',
   tiGenericListMediators in '..\..\GUI\tiGenericListMediators.pas',  
   tiTreeBuildVisitor in '..\..\GUI\tiTreeBuildVisitor.pas',
-  tiGenericTreeViewMediator in '..\..\GUI\tiGenericTreeViewMediator.pas';
+  tiGenericTreeViewMediator in '..\..\GUI\tiGenericTreeViewMediator.pas',
+  tiCompositeMediators in '..\..\GUI\tiCompositeMediators.pas';
 
 end.

@@ -35,7 +35,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="2"/>
-    <Files Count="35">
+    <Files Count="36">
       <Item1>
         <Filename Value="../../GUI/tiGUIUtils.pas"/>
         <UnitName Value="tiGUIUtils"/>
@@ -176,6 +176,10 @@
         <Filename Value="../../GUI/tiGenericTreeViewMediator.pas"/>
         <UnitName Value="tiGenericTreeViewMediator"/>
       </Item35>
+      <Item36>
+        <Filename Value="../../GUI/tiCompositeMediators.pas"/>
+        <UnitName Value="tiCompositeMediators"/>
+      </Item36>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

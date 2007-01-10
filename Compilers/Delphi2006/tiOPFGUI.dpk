@@ -76,6 +76,7 @@ contains
   tiGenericListMediators in '..\..\GUI\tiGenericListMediators.pas',
   tiTreeBuildVisitor in '..\..\GUI\tiTreeBuildVisitor.pas',
   tiGenericTreeViewMediator in '..\..\GUI\tiGenericTreeViewMediator.pas',
+  tiCompositeMediators in '..\..\GUI\tiCompositeMediators.pas',
   tiSpin in '..\..\GUI\tiSpin.pas',
   tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas',
   tiHotImage in '..\..\GUI\tiHotImage.pas';
