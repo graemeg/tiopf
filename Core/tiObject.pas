@@ -489,7 +489,7 @@ type
     {: Add an object to the list.
        Don't override Add(AObject : TtiObject ; ADefDispOrdr : boolean = true),
        It's an old method for backward compatibility . Override Add(const AObject:TtiObject).}
-    procedure   Add(AObject : TtiObject ; ADefDispOrdr : Boolean); overload; virtual;
+    procedure   Add(const AObject: TtiObject; ADefDispOrdr: Boolean); overload; virtual;
     {: Add an object to the list.}
     procedure   Add(const AObject : TtiObject); overload; virtual;
     {: Empty list and delete all owned objects}
@@ -497,7 +497,7 @@ type
     {: Empty list, but do not delete owned objects }
     procedure   Empty; virtual;
     {: The index of the specified object in the list.}
-    function    IndexOf(AData : TObject): integer; overload; virtual;
+    function    IndexOf(const AObject: TtiObject): integer; overload; virtual;
     {: The index of the object in the list whose OID value matches. Faster search if sorted by OID. }
     function    IndexOf(AOIDToFind : TOID; ASortType: TtiPerObjListSortType = stNone): integer; overload; virtual;
     {: The last object in the list.}
@@ -511,12 +511,12 @@ type
     {: Removes the object at a specified position and (if OwnsObject is True) frees the object.}
     procedure   Delete(i : integer); virtual;
     {: Removes the specified item from the list and (if OwnsObject is True) frees the object.}
-    function    Remove(AData : TtiObject): integer; virtual;
+    function    Remove(const AObject: TtiObject): integer; virtual;
     {: Removes the specified object from the list without freeing the object.}
-    procedure   Extract(AData : TtiObject); virtual;
+    procedure   Extract(const AObject: TtiObject); virtual;
     {: Adds an object to the list at the position specified by Index.}
-    procedure   Insert(const AIndex : integer; AData : TtiObject); overload; virtual;
-    procedure   Insert(AInsertBefore : TtiObject; AData : TtiObject); overload; virtual;
+    procedure   Insert(const AIndex: integer; const AObject: TtiObject); overload; virtual;
+    procedure   Insert(const AInsertBefore: TtiObject; const AObject: TtiObject); overload; virtual;
     {: Sets all items in the list as ready for deletion}
     procedure   MarkListItemsForDeletion; virtual;
     {: Scan the list and remove, then free all objects with ObjectState = posDeleted}
@@ -667,15 +667,15 @@ type
     procedure   UnLock;
 
     procedure   Delete(i : integer); override;
-    procedure   Add(AObject : TtiObject ; ADefDispOrdr : boolean = true); override;
+    procedure   Add(const AObject: TtiObject; ADefDispOrdr: boolean = true); override;
     procedure   Clear; override; // Empty list and delete all owned objects
     procedure   Empty; override; // Empty list, but do not delete owned objects
-    function    IndexOf(AData : TObject): integer; override;
+    function    IndexOf(const AObject: TtiObject): integer; override;
     function    Last : TtiObject; override;
     function    First : TtiObject; override;
     function    FirstExcludeDeleted : TtiObject; override;
     function    LastExcludeDeleted : TtiObject; override;
-    function    Remove(AData : TtiObject): integer; override;
+    function    Remove(const AObject: TtiObject): integer; override;
     procedure   MarkListItemsForDeletion; override;
     procedure   MarkListItemsDirty; override;
     procedure   SortByOID; override;
@@ -1289,7 +1289,7 @@ begin
   inherited;
 end;
 
-procedure TtiObjectList.Add(AObject: TtiObject; ADefDispOrdr : boolean);
+procedure TtiObjectList.Add(const AObject: TtiObject; ADefDispOrdr: boolean);
 begin
   Add(AObject);
 end;
@@ -1457,9 +1457,9 @@ begin
   result := FList;
 end;
 
-function TtiObjectList.IndexOf(AData: TObject): integer;
+function TtiObjectList.IndexOf(const AObject: TtiObject): integer;
 begin
-  result := FList.IndexOf(AData);
+  result := FList.IndexOf(AObject);
 end;
 
 function TtiObjectList.Last: TtiObject;
@@ -1572,21 +1572,21 @@ end;
   list. To use an index position (rather than an object reference) to specify 
   the object to be removed, call Delete. To remove an object from the list 
   without freeing it, call Extract. }
-function TtiObjectList.Remove(AData: TtiObject):integer;
+function TtiObjectList.Remove(const AObject: TtiObject):integer;
 begin
   if AutoSetItemOwner then
-    AData.Owner := nil;
-  result := FList.Remove(AData);
+    AObject.Owner := nil;
+  result := FList.Remove(AObject);
 end;
 
 {: Call Extract to remove an object from the list without freeing the object
   itself. After an object is removed, all the objects that follow it are moved 
   up in index position and Count is decremented.}
-procedure TtiObjectList.Extract(AData: TtiObject);
+procedure TtiObjectList.Extract(const AObject: TtiObject);
 begin
   if AutoSetItemOwner then
-    AData.Owner := nil;
-  FList.Extract(AData);
+    AObject.Owner := nil;
+  FList.Extract(AObject);
 end;
 
 {: Call Insert to add an object at a specified position in the list, shifting 
@@ -1595,10 +1595,10 @@ end;
   value of Capacity. The Index parameter is zero-based, so the first position 
   in the list has an index of 0. To replace a nil reference with a new object 
   without growing the array, set the Items property directly. }
-procedure TtiObjectList.Insert(const AIndex: integer; AData: TtiObject);
+procedure TtiObjectList.Insert(const AIndex: integer; const AObject: TtiObject);
 begin
-  FList.Insert(AIndex, AData);
-  AData.Owner := self;
+  FList.Insert(AIndex, AObject);
+  AObject.Owner := self;
 //  AssignDispOrder(AData);
 end;
 
@@ -1639,16 +1639,16 @@ end;
 //  AData.Dirty := true;
 //end;
 
-procedure TtiObjectList.Insert(AInsertBefore: TtiObject; AData: TtiObject);
+procedure TtiObjectList.Insert(const AInsertBefore: TtiObject; const AObject: TtiObject);
 var
   i : integer;
 begin
   i := FList.IndexOf(AInsertBefore);
   if i >= 0 then
-    Insert(i, AData)
+    Insert(i, AObject)
   else
   begin
-    Add(AData);
+    Add(AObject);
   end;
 end;
 
@@ -2266,7 +2266,7 @@ end;
 
 { TPerObjThreadList }
 
-procedure TPerObjThreadList.Add(AObject: TtiObject; ADefDispOrdr: boolean);
+procedure TPerObjThreadList.Add(const AObject: TtiObject; ADefDispOrdr: boolean);
 begin
   Lock;
   try
@@ -2338,11 +2338,11 @@ begin
   end;
 end;
 
-function TPerObjThreadList.IndexOf(AData: TObject): integer;
+function TPerObjThreadList.IndexOf(const AObject: TtiObject): integer;
 begin
   Lock;
   try
-    result := inherited IndexOf(AData);
+    result := inherited IndexOf(AObject);
   finally
     Unlock;
   end;
@@ -2393,11 +2393,11 @@ begin
   end;
 end;
 
-function TPerObjThreadList.Remove(AData: TtiObject): integer;
+function TPerObjThreadList.Remove(const AObject: TtiObject): integer;
 begin
   Lock;
   try
-    result := inherited Remove(AData);
+    result := inherited Remove(AObject);
   finally
     Unlock;
   end;
