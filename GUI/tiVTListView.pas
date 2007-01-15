@@ -260,6 +260,8 @@ type
     FOnGetNodeHint: TtiVTOnNodeHint;
     FHeaderClickSorting: boolean;
 
+    procedure DrawSortGlyph(const ACanvas: TCanvas;
+      const ASortDirection: TSortDirection; const APosition: TPoint);
     function  GetHeader: TtiVTHeader;
     procedure SetData(const AValue: TtiObjectList);
     procedure SetHeader(const AValue: TtiVTHeader);
@@ -285,8 +287,12 @@ type
     procedure SetRowSelect(const AValue: boolean);
     procedure SetShowNodeHint(const AValue: boolean);
     procedure SetOnGetNodeHint(const AValue: TtiVTOnNodeHint);
+    procedure VTHeaderAdvancedHeaderDraw(Sender: TVTHeader;
+      var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
     procedure VTHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure VTHeaderDrawQueryElements(Sender: TVTHeader;
+      var PaintInfo: THeaderPaintInfo; var Elements: THeaderPaintElements);
     procedure SetHeaderClickSorting(const Value: boolean);
 
     //
@@ -566,6 +572,10 @@ type
   PMyRecord = ^TMyRecord;
 
 
+const
+  AsTSortDirection: array[TvtSortDirection] of TSortDirection
+   = (sdAscending, sdDescending);
+
 function tiVTDisplayMaskFromDataType(const AValue : TvtTypeKind): string;
 begin
   // ToDo: Should use OS constants
@@ -834,6 +844,9 @@ begin
     else
       lVTC.Width := VT.Canvas.TextWidth(lVTC.Text);
 
+    if HeaderClickSorting then
+      lVTC.Style := vsOwnerDraw;
+       
     Result := lVTC;
   except
     FreeAndNil(lVTC);
@@ -1083,13 +1096,15 @@ begin
   FVT.NodeDataSize := SizeOf(Pointer);
   FVT.Align := alClient;
   FVT.OnHeaderClick := VTHeaderClick;
+  FVT.OnHeaderDrawQueryElements := VTHeaderDrawQueryElements;
+  FVT.OnAdvancedHeaderDraw := VTHeaderAdvancedHeaderDraw;
   // Property defaults
   FAlternateRowCount := 2;
   FShowAlternateRowColor := True;
   FAlternateRowColor := cDefaultAlternateRowColor;
   FDisabledColor := clBtnFace;
   FHeaderClickSorting:= True;
-// PVS  VT.Header.Options := VT.Header.Options + [hoShowSortGlyphs];
+  VT.Header.Options := VT.Header.Options + [hoShowSortGlyphs, hoOwnerDraw];
 
   VT.OnDblClick := DoDblClick;
   VT.TreeOptions.PaintOptions := [toShowButtons, toShowDropmark, toShowRoot, {toShowTreeLines,} toShowVertGridLines, toThemeAware, toUseBlendedImages];
@@ -1256,6 +1271,10 @@ end;
 procedure TtiCustomVirtualTree.Loaded;
 begin
   inherited;
+
+  if HeaderClickSorting then
+    VT.Header.Options := Vt.Header.Options + [hoShowSortGlyphs, hoOwnerDraw];
+    
 end;
 
 //procedure TtiCustomVirtualTree.PositionCursor(AIndex: integer);
@@ -1383,15 +1402,22 @@ begin
 end;
 
 procedure TtiCustomVirtualTree.SetHeaderClickSorting(const Value: boolean);
+var
+  I: integer;
 begin
   FHeaderClickSorting := Value;
 
-(* PVS
-  if True then
-    VT.Header.Options := VT.Header.Options + [hoShowSortGlyphs]
+  if FHeaderClickSorting then
+  begin
+    VT.Header.Options := VT.Header.Options + [hoOwnerDraw, hoShowSortGlyphs];
+
+    for I := 0 to VT.Header.Columns.Count - 1 do
+      VT.Header.Columns[I].Style := vsOwnerDraw;
+
+  end
   else
-    VT.Header.Options := VT.Header.Options - [hoShowSortGlyphs];
-*)
+  begin
+  end;
 
 end;
 
@@ -1673,6 +1699,24 @@ begin
     OnGetImageIndex(Self, Node, GetObjectFromNode(Node), Kind, Column, Ghosted, ImageIndex);
 end;
 
+procedure TtiCustomVirtualTree.VTHeaderAdvancedHeaderDraw(Sender: TVTHeader;
+  var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
+var
+  LSortOrder: TtiVTSortOrder;
+
+begin
+
+  if hpeSortGlyph in Elements then
+  begin
+    if SortOrders.ItemByFieldName(
+      (PaintInfo.Column as TtiVTColumn).FieldName, LSortOrder) then
+      DrawSortGlyph(PaintInfo.TargetCanvas,
+        AsTSortDirection[LSortOrder.SortDirection], PaintInfo.SortGlyphPos);
+
+  end;
+
+end;
+
 procedure TtiCustomVirtualTree.VTHeaderClick(Sender: TVTHeader;
   Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
@@ -1680,10 +1724,7 @@ const
   // TvtSortDirection = (vtsdAscending, vtsdDescending);
   InvertSortDirection: array[TvtSortDirection] of TvtSortDirection
     = (vtsdDescending, vtsdAscending);
-  // TSortDirection = (sdAscending, sdDescending);
-  AsTSortDirection: array[TvtSortDirection] of TSortDirection
-   = (sdAscending, sdDescending);
-   
+
 var
   LColumn: TtiVTColumn;
   LSortOrder: TtiVTSortOrder;
@@ -1693,6 +1734,7 @@ begin
   if HeaderClickSorting then
   begin
     LColumn := Header.Columns[Column];
+    LColumn.Style := vsOwnerDraw;
     LExistingSortOrder := SortOrders.ItemByFieldName(LColumn.FieldName, LSortOrder);
 
     if LExistingSortOrder then
@@ -1715,14 +1757,26 @@ begin
     end;
 
     ApplySort;
-(* PVS
-    VT.Header.SortColumn := Column;
-    VT.Header.SortDirection := AsTSortDirection[LNewSortDirection];
-*)
 
     if Assigned(OnHeaderClick) then
       OnHeaderClick(self, Header.Columns[Column]);
 
+  end;
+
+end;
+
+procedure TtiCustomVirtualTree.VTHeaderDrawQueryElements(Sender: TVTHeader;
+  var PaintInfo: THeaderPaintInfo; var Elements: THeaderPaintElements);
+var
+  LSortOrder: TtiVTSortOrder;
+begin
+  // is this column sorted?
+  if (PaintInfo.Column <> nil) and SortOrders.ItemByFieldName(
+    (PaintInfo.Column as TtiVTColumn).FieldName, LSortOrder) then
+  begin
+    PaintInfo.ShowSortGlyph := true;
+    // we'll paint sort glyph
+    Include(Elements, hpeSortGlyph);
   end;
 
 end;
@@ -1806,6 +1860,21 @@ begin
 end;
 
 
+
+procedure TtiCustomVirtualTree.DrawSortGlyph(const ACanvas: TCanvas;
+  const ASortDirection: TSortDirection; const APosition: TPoint);
+var
+  LGlyphIndex: integer;
+
+const
+  SortGlyphs: array[TSortDirection, Boolean] of Integer = (// ascending/descending, normal/XP style
+    (3, 5) {ascending}, (2, 4) {descending}
+ );
+begin
+  LGlyphIndex := SortGlyphs[ASortDirection, tsUseThemes in VT.Header.Treeview.TreeStates];
+  GetUtilityImages.Draw(ACanvas, APosition.X, APosition.Y, LGlyphIndex);
+
+end;
 
 //______________________________________________________________________________________________________________________________
 

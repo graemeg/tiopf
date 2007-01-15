@@ -3174,10 +3174,12 @@ function RegisterVTClipboardFormat(Description: string; TreeClass: TVirtualTreeC
 procedure AlphaBlend(Source, Destination: HDC; R: TRect; Target: TPoint; Mode: TBlendMode; ConstantAlpha, Bias: Integer);
 procedure DrawTextW(DC: HDC; lpString: PWideChar; nCount: Integer; var lpRect: TRect; uFormat: Cardinal;
   AdjustRight: Boolean);
+function GetUtilityImages: TImageList;
 procedure PrtStretchDrawDIB(Canvas: TCanvas; DestRect: TRect; ABitmap: TBitmap);
 function ShortenString(DC: HDC; const S: WideString; Width: Integer; RTL: Boolean;
   EllipsisWidth: Integer = 0): WideString;
 function TreeFromNode(Node: PVirtualNode): TBaseVirtualTree;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -3917,7 +3919,7 @@ begin
   // Determine horizontal and vertical text alignment.
   OldTextAlign := GetTextAlign(DC);
   TextAlign := TA_LEFT or TA_TOP;
-  TextPosX := lpRect.Left;       
+  TextPosX := lpRect.Left;
   if uFormat and DT_RIGHT <> 0 then
   begin
     TextAlign := TextAlign or TA_RIGHT and not TA_LEFT;
@@ -4001,7 +4003,12 @@ begin
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
+function GetUtilityImages: TImageList;
+begin
+  Result := UtilityImages;
+end;
 
+//----------------------------------------------------------------------------------------------------------------------
 function ShortenString(DC: HDC; const S: WideString; Width: Integer; RTL: Boolean;
   EllipsisWidth: Integer = 0): WideString;
 
