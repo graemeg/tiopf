@@ -217,8 +217,10 @@ begin
   FView.Items.Clear;
   FView.ViewStyle         := vsReport;
   FView.ShowColumnHeaders := True;
+  {$IFDEF FPC}
   FView.AutoSize          := False;
   FView.ScrollBars        := ssAutoBoth;
+  {$ENDIF}
 end;
 
 procedure TCompositeListViewMediator.RebuildList;

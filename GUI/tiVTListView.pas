@@ -56,6 +56,7 @@ type
 
   TvtTypeKind = (vttkString, vttkInt, vttkFloat, vttkDate, vttkDateTime, vttkCurrency);
 
+  TtiVTClearSortEvent     = procedure(pVT : TtiCustomVirtualTree) of object;
   TtiVTOnFilterDataEvent  = procedure(AData  : TtiObject; var pInclude : boolean) of object;
 
 
@@ -108,6 +109,9 @@ type
                                     pNode: PVirtualNode;
                                     pColumn: TColumnIndex) of object;
 
+  TtiVTHeaderClickEvent = procedure(const pSender: TtiCustomVirtualTree;
+                                     const ptiListColumn : TtiVTColumn) of object;
+
   TvtSortDirection = (vtsdAscending, vtsdDescending);
 
   TtiVTSortOrder = class(TCollectionItem)
@@ -118,7 +122,7 @@ type
     function GetDisplayName : string; override;
   published
     property FieldName : string read FsFieldName write FsFieldName;
-    property SortDirection : TvtSortDirection read FSortDirection write FSortDirection;
+    property  SortDirection : TvtSortDirection read FSortDirection write FSortDirection;
   public
     constructor Create(Owner : TCollection); override;
     procedure   Assign(source : TPersistent); override;
@@ -139,6 +143,8 @@ type
     property    Items[Index: integer ]: TtiVTSortOrder read GetItem write SetItem; default;
     function    Add(AFieldName: string; ADirection: TvtSortDirection = vtsdAscending): TtiVTSortOrder; overload;
     function    Add : TtiVTSortOrder; overload;
+    function    ItemByFieldName(const AFieldName: string;
+      out ASortOrder: TtiVTSortOrder): boolean;
 
   published
     property GroupColumnCount: Integer read FGroupColumnCount write FGroupColumnCount;
@@ -240,6 +246,7 @@ type
     FOnCanView: TtiVTCanPerformAction;
     FOnCanDelete: TtiVTCanPerformAction;
     FOnFocusChanged: TtiVTFocusChangeEvent;
+    FOnHeaderClick: TtiVTHeaderClickEvent;
     FOnItemArrive: TtiVTItemEvent;
     FOnItemLeave: TtiVTItemEvent;
     FOnFilterData : TtiVTOnFilterDataEvent;
@@ -251,6 +258,7 @@ type
     FRowSelect: boolean;
     FShowNodeHint: boolean;
     FOnGetNodeHint: TtiVTOnNodeHint;
+    FHeaderClickSorting: boolean;
 
     function  GetHeader: TtiVTHeader;
     procedure SetData(const AValue: TtiObjectList);
@@ -260,7 +268,6 @@ type
     function  GetImages: TCustomImageList;
     procedure SetImages(const AValue: TCustomImageList);
     procedure SetSortOrders(const AValue: TtiVTSortOrders);
-    procedure SetSorted(const AValue: Boolean);
     function  GetOnKeyDown: TKeyEvent;
     function  GetOnKeyPress: TKeyPressEvent;
     procedure SetOnKeyDown(const AValue: TKeyEvent);
@@ -278,19 +285,22 @@ type
     procedure SetRowSelect(const AValue: boolean);
     procedure SetShowNodeHint(const AValue: boolean);
     procedure SetOnGetNodeHint(const AValue: TtiVTOnNodeHint);
+    procedure VTHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure SetHeaderClickSorting(const Value: boolean);
 
     //
     //FOnDblClick  : TtiLVItemEditEvent;
     //FbApplyFilter: boolean;
     //FbApplySort: boolean;
     //FSortOrders: TtiVTSortOrders;
-    //FbSortOnHeadingClick: boolean;
     //FOnGetFont: TtiLVOnGetFont;
     //FOnLVClick: TtiLVOnClick;
     //FReadOnly : boolean;
     //FOnTipInfo: TtiLVInfoTipEvent;
     //FInfoTipType: TtiLVInfoTypeType;
   protected
+    procedure   ApplyGrouping; virtual;
     procedure   DoEnter; override;
 
     property    OnFocusChanged : TtiVTFocusChangeEvent read FOnFocusChanged write FOnFocusChanged;
@@ -301,6 +311,8 @@ type
     property    OnFilterData   : TtiVTOnFilterDataEvent read  FOnFilterData write FOnFilterData;
     //property    OnGetFont      : TtiLVOnGetFont read  FOnGetFont write FOnGetFont;
     //property    OnGetImageIndex : TtiLVGetImageIndexEvent read FOnGetImageIndex write FOnGetImageIndex;
+    property    OnHeaderClick : TtiVTHeaderClickEvent read FOnHeaderClick write FOnHeaderClick;
+
     property    OnItemArrive    : TtiVTItemEvent read FOnItemArrive write FOnItemArrive;
     property    OnItemLeave     : TtiVTItemEvent read FOnItemLeave write FOnItemLeave;
     property    OnPaintText     : TtiVTOnPaintText read FOnPaintText Write SetOnPaintText;
@@ -340,6 +352,7 @@ type
     property AlternateRowColor: TColor read FAlternateRowColor write SetAlternateRowColor default cDefaultAlternateRowColor;
     property AlternateRowCount: Byte Read FAlternateRowCount Write FAlternateRowCount default cDefaultAlternateRowCount;
     property DisabledColor: TColor Read FDisabledColor Write FDisabledColor default clBtnFace;
+    property HeaderClickSorting: boolean read FHeaderClickSorting write SetHeaderClickSorting default True;
     property Images: TCustomImageList read GetImages write SetImages;
     property RowSelect: boolean read FRowSelect write SetRowSelect default True;
     property ShowAlternateRowColor: Boolean read FShowAlternateRowColor write SetShowAlternateRowColor default True;
@@ -356,13 +369,13 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
 
-    procedure   ApplyGrouping; virtual;
     procedure   ApplySort; virtual;
 
     function    CanView: Boolean; virtual;
     function    CanInsert: Boolean; virtual;
     function    CanEdit: Boolean; virtual;
     function    CanDelete: Boolean; virtual;
+    procedure   ClearSort; virtual;
 
     procedure   DeleteNode(Node: PVirtualNode); virtual;
 
@@ -400,7 +413,7 @@ type
     property    Data : TtiObjectList read FData write SetData;
     property    VT: TVirtualStringTree read FVT;
     property    Header: TtiVTHeader read GetHeader write SetHeader;
-    property    Sorted: Boolean read FSorted write SetSorted default False;
+    property    Sorted: Boolean read FSorted;
     function    SelectedNodeScreenOrigin: TPoint;
   published
   end;
@@ -417,15 +430,18 @@ type
     FpmiEdit  : TMenuItem;
     FpmiNew   : TMenuItem;
     FpmiDelete : TMenuItem;
+    FpmiClearSort: TMenuItem;
     FStdPopupItemCount: Integer;
 
     FOnItemDelete: TtiVTItemEditEvent;
     FOnItemEdit: TtiVTItemEditEvent;
     FOnItemInsert: TtiVTItemEditEvent;
     FOnItemView: TtiVTItemEditEvent;
+    FOnClearSort: TtiVTClearSortEvent;
 
     procedure SetButtonStyle(const AValue: TLVButtonStyle);
     procedure SetVisibleButtons(const AValue: TtiLVVisibleButtons);
+    procedure SetOnClearSort(const AValue: TtiVTClearSortEvent);
     procedure SetOnItemView(const AValue: TtiVTItemEditEvent);
     procedure SetOnItemDelete(const AValue: TtiVTItemEditEvent);
     procedure SetOnItemEdit(const AValue: TtiVTItemEditEvent);
@@ -441,6 +457,7 @@ type
     procedure SetEnabled(AValue: Boolean); override;
 
     procedure DoMenuPopup(Sender: TObject); virtual;
+    procedure DoClearSort(Sender: TObject); virtual;
     procedure DoDelete(Sender: TObject); virtual;
     procedure DoEdit(Sender: TObject); virtual;
     procedure DoNew(Sender: TObject); virtual;
@@ -456,6 +473,7 @@ type
     property ButtonStyle: TLVButtonStyle read FButtonStyle write SetButtonStyle default lvbsButtonsAndLabels;
     property VisibleButtons : TtiLVVisibleButtons read FVisibleButtons write SetVisibleButtons default [];
 
+    property OnClearSort: TtiVTClearSortEvent read FOnClearSort write SetOnClearSort;
     property OnItemDelete: TtiVTItemEditEvent read FOnItemDelete write SetOnItemDelete;
     property OnItemEdit: TtiVTItemEditEvent read FOnItemEdit write SetOnItemEdit;
     property OnItemInsert: TtiVTItemEditEvent read FOnItemInsert write SetOnItemInsert;
@@ -485,6 +503,7 @@ type
     property Color;
     property Constraints;
     property Header;
+    property HeaderClickSorting;
     property HelpContext;
     property HelpKeyword;
     property HelpType;
@@ -502,10 +521,12 @@ type
     property OnCanEdit;
     property OnCanInsert;
     property OnCanView;
+    property OnClearSort;
     property OnDblClick;
     property OnFilterData;
     property OnFocusChanged;
     property OnGetImageIndex;
+    property OnHeaderClick;
     property OnItemArrive;
     property OnItemDelete;
     property OnItemEdit;
@@ -532,6 +553,10 @@ uses
   ,Math
   ,tiConstants
   ,tiExcept
+  ,tiGUIUtils
+
+  ,tiDialogs // Debuggin
+
  ;
 
 type
@@ -570,7 +595,6 @@ end;
 
 function TtiVTSortOrders.Add: TtiVTSortOrder;
 begin
-  (Owner as TtiCustomVirtualTree).Sorted := False;
   Result := TtiVTSortOrder(inherited Add);
 end;
 
@@ -595,6 +619,23 @@ end;
 procedure TtiVTSortOrders.SetItem(Index: integer; const AValue: TtiVTSortOrder);
 begin
   inherited Items[Index]:= AValue;
+end;
+
+function TtiVTSortOrders.ItemByFieldName(const AFieldName: string;
+  out ASortOrder: TtiVTSortOrder): boolean;
+var
+  i: integer;
+begin
+  i := 0;
+
+  while (i < Count) and not AnsiSameText(Items[i].FieldName, AFieldName) do
+    Inc(i);
+
+  Result := i < Count;
+
+  if Result then
+    ASortOrder := Items[i];
+
 end;
 
 //______________________________________________________________________________________________________________________________
@@ -922,9 +963,21 @@ begin
   _SortOrders := SortOrders;
   FFilteredData.Sort(_SortProc);
   _SortOrders := nil;
+  FSorted := true;
+  ApplyGrouping;
+  SetRootNodeCount;
 {$IFDEF _PROFILE}
   ShowMessage(Format('Sort time %d ms for %d items', [GetTickCount-StartTick, FFilteredData.Count]));
 {$ENDIF}
+end;
+
+procedure TtiCustomVirtualTree.ClearSort;
+begin
+  SortOrders.Clear;
+  ReadData;
+  FSorted := false;
+  ApplyGrouping;
+  SetRootNodeCount;
 end;
 
 procedure TtiCustomVirtualTree.BeginUpdate;
@@ -1022,24 +1075,28 @@ begin
   FSortOrders := TtiVTSortOrders.Create(Self);
 
   FVT := TtiInternalVirtualTree.Create(Self);
+  FVT.Name:= tiGetUniqueComponentName(Name + 'VT');
 
   FVT.SetSubComponent(True);
 
   FVT.Parent := Self;
   FVT.NodeDataSize := SizeOf(Pointer);
   FVT.Align := alClient;
-
+  FVT.OnHeaderClick := VTHeaderClick;
   // Property defaults
   FAlternateRowCount := 2;
   FShowAlternateRowColor := True;
   FAlternateRowColor := cDefaultAlternateRowColor;
   FDisabledColor := clBtnFace;
+  FHeaderClickSorting:= True;
+// PVS  VT.Header.Options := VT.Header.Options + [hoShowSortGlyphs];
 
   VT.OnDblClick := DoDblClick;
   VT.TreeOptions.PaintOptions := [toShowButtons, toShowDropmark, toShowRoot, {toShowTreeLines,} toShowVertGridLines, toThemeAware, toUseBlendedImages];
   FRowSelect:= True;
   VT.TreeOptions.SelectionOptions := [toFullRowSelect];
   VT.Header.Style := hsXPStyle;
+
 end;
 
 procedure TtiCustomVirtualTree.DeleteNode(Node: PVirtualNode);
@@ -1325,6 +1382,19 @@ begin
   VT.Header := AValue;
 end;
 
+procedure TtiCustomVirtualTree.SetHeaderClickSorting(const Value: boolean);
+begin
+  FHeaderClickSorting := Value;
+
+(* PVS
+  if True then
+    VT.Header.Options := VT.Header.Options + [hoShowSortGlyphs]
+  else
+    VT.Header.Options := VT.Header.Options - [hoShowSortGlyphs];
+*)
+
+end;
+
 procedure TtiCustomVirtualTree.SetImages(const AValue: TCustomImageList);
 begin
   VT.Images := AValue;
@@ -1472,19 +1542,6 @@ begin
   end;
 end;
 
-procedure TtiCustomVirtualTree.SetSorted(const AValue: Boolean);
-begin
-  if FSorted <> AValue then
-  begin
-    FSorted := AValue;
-    if Sorted then
-      ApplySort;
-    ApplyGrouping;
-    SetRootNodeCount;
-  end;
-end;
-
-
 procedure TtiCustomVirtualTree.SetOnBeforeCellPaint(const AValue: TtiVTOnPaintText);
 begin
   FOnBeforeCellPaint := AValue;
@@ -1614,6 +1671,60 @@ procedure TtiCustomVirtualTree.VTGetImageIndex(Node: PVirtualNode;
 begin
   if Assigned(OnGetImageIndex) then
     OnGetImageIndex(Self, Node, GetObjectFromNode(Node), Kind, Column, Ghosted, ImageIndex);
+end;
+
+procedure TtiCustomVirtualTree.VTHeaderClick(Sender: TVTHeader;
+  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
+const
+  // TvtSortDirection = (vtsdAscending, vtsdDescending);
+  InvertSortDirection: array[TvtSortDirection] of TvtSortDirection
+    = (vtsdDescending, vtsdAscending);
+  // TSortDirection = (sdAscending, sdDescending);
+  AsTSortDirection: array[TvtSortDirection] of TSortDirection
+   = (sdAscending, sdDescending);
+   
+var
+  LColumn: TtiVTColumn;
+  LSortOrder: TtiVTSortOrder;
+  LNewSortDirection: TvtSortDirection;
+  LExistingSortOrder: boolean;
+begin
+  if HeaderClickSorting then
+  begin
+    LColumn := Header.Columns[Column];
+    LExistingSortOrder := SortOrders.ItemByFieldName(LColumn.FieldName, LSortOrder);
+
+    if LExistingSortOrder then
+      LNewSortDirection := InvertSortDirection[LSortOrder.SortDirection]
+    else
+      LNewSortDirection := vtsdAscending;
+
+    if not (ssCtrl in Shift) then
+    begin
+      SortOrders.Clear;
+      SortOrders.Add(LColumn.FieldName, LNewSortDirection);
+    end
+    else
+    begin
+
+      if not LExistingSortOrder then
+        LSortOrder := SortOrders.Add(LColumn.FieldName, LNewSortDirection);
+
+      LSortOrder.SortDirection := LNewSortDirection;
+    end;
+
+    ApplySort;
+(* PVS
+    VT.Header.SortColumn := Column;
+    VT.Header.SortDirection := AsTSortDirection[LNewSortDirection];
+*)
+
+    if Assigned(OnHeaderClick) then
+      OnHeaderClick(self, Header.Columns[Column]);
+
+  end;
+
 end;
 
 procedure TtiCustomVirtualTree.VTInitChildren(Node: PVirtualNode; var ChildCount: Cardinal);
@@ -1897,8 +2008,15 @@ begin
   FpmiDelete.OnClick := DoDelete;
   FpmiDelete.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Delete);
   FPopupMenu.Items.Add(FpmiDelete);
-  FStdPopupItemCount := FPopupMenu.Items.Count;
 
+  FpmiClearSort         := TMenuItem.Create(self);
+  FpmiClearSort.Caption := '&Clear Sort';
+  FpmiClearSort.OnClick := DoClearSort;
+  FpmiClearSort.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Sort);
+  FpmiClearSort.Visible := true;
+  FPopupMenu.Items.Add(FpmiClearSort);
+
+  FStdPopupItemCount := FPopupMenu.Items.Count;
   FButtonStyle := lvbsButtonsAndLabels;
 end;
 
@@ -1932,6 +2050,15 @@ procedure TtiCustomVirtualEditTree.DestroyWnd;
 begin
   FreeAndNil(FCtrlBtnPnl);
   inherited;
+end;
+
+procedure TtiCustomVirtualEditTree.DoClearSort(Sender: TObject);
+begin
+  ClearSort;
+
+  if Assigned(OnClearSort) then
+    FOnClearSort(self);
+
 end;
 
 procedure TtiCustomVirtualEditTree.DoDblClick(Sender: TObject);
@@ -2070,6 +2197,11 @@ begin
     FButtonStyle := AValue;
     CreateButtonPanel;
   end;
+end;
+
+procedure TtiCustomVirtualEditTree.SetOnClearSort(const AValue: TtiVTClearSortEvent);
+begin
+  FOnClearSort := AValue;
 end;
 
 procedure TtiCustomVirtualEditTree.SetOnItemDelete(const AValue: TtiVTItemEditEvent);

@@ -37,6 +37,8 @@ uses
   function  tiPerObjAbsConfirmAndDelete(const AData : TtiObject;
                                          const AMessage : string = ''): boolean;
 
+  function  tiGetUniqueComponentName(const ANameStub: string): string;
+
   procedure ShowTIDataSet(const pDataSet: TtiDataBuffer); // For debugging
 
 
@@ -225,6 +227,21 @@ begin
     AData.Deleted := true;
 end;
 
+function tiGetUniqueComponentName(const ANameStub: string): string;
+var
+  i: integer;
+begin
+  i := 0;
+  Result := ANameStub;
+
+  if not Classes.IsUniqueGlobalComponentName(Result) then
+    repeat
+      Inc(i);
+      SysUtils.FmtStr(Result, '%s%d', [ANameStub, i]);
+    until
+      Classes.IsUniqueGlobalComponentName(Result);
+
+end;
 
 procedure ShowTIDataSet(const pDataSet: TtiDataBuffer);
 var
