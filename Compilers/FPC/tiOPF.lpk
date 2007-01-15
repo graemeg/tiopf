@@ -25,6 +25,7 @@
 -dLINK_TAB
 -dLINK_FBL
 -dLINK_XMLLIGHT
+-dLINK_ZEOS_FB15x
 -dUseCThreads
 "/>
         <CompilerPath Value="$(CompPath)"/>

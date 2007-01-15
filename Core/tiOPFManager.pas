@@ -225,6 +225,8 @@ uses
   {$IFDEF LINK_REMOTE}       ,tiQueryRemote       {$ENDIF}
   {$IFDEF LINK_SQLDB_IB}     ,tiQuerySqldbIB      {$ENDIF}
   {$IFDEF LINK_FBL}          ,tiQueryFBL          {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB10}    ,tiQueryZeosFB10     {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB15}    ,tiQueryZeosFB15     {$ENDIF}
 
   ,Forms
  ;
@@ -875,15 +877,14 @@ initialization
   {$IFDEF LINK_XMLLIGHT}    gTIOPFManager.DefaultPerLayerName := cTIPersistXMLLight;    {$ENDIF}
   {$IFDEF LINK_DOA}         gTIOPFManager.DefaultPerLayerName := cTIPersistDOA;         {$ENDIF}
   {$IFDEF LINK_REMOTE}      gTIOPFManager.DefaultPerLayerName := cTIPersistRemote;      {$ENDIF}
-  {$IFDEF LINK_SQLDB_IB}
-          gTIOPFManager.DefaultPerLayerName := cTIPersistSqldbIB;
-          gTIOPFManager.PersistenceLayers.LoadingStyle := pllsStaticLinking;
-  {$ENDIF}
+  {$IFDEF LINK_SQLDB_IB}    gTIOPFManager.DefaultPerLayerName := cTIPersistSqldbIB;     {$ENDIF}
   {$IFDEF LINK_FBL}
           gTIOPFManager.DefaultPerLayerName := cTIPersistFBL;
-          gTIOPFManager.PersistenceLayers.LoadingStyle := pllsStaticLinking;
+//          gTIOPFManager.PersistenceLayers.LoadingStyle := pllsStaticLinking;
   {$ENDIF}
-  
+  {$IFDEF LINK_ZEOS_FB10}   gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB10;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB15}   gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB15;    {$ENDIF}
+
 finalization
   uShuttingDown := True;
   FreeAndNilTIPerMgr;

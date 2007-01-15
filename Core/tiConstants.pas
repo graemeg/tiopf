@@ -20,6 +20,8 @@ const
   cTIPersistRemote       = 'Remote';
   cTIPersistSqldbIB      = 'Sqldb_IB'; // Free Pascal equivalent to Delphi dbExpress
   cTIPersistFBL          = 'FBL';      // Free Pascal only
+  cTIPersistZeosFB10     = 'Zeos_FB10';
+  cTIPersistZeosFB15     = 'Zeos_FB15';
 
   cDBProxyServerTimeOut  = 1; // Minute
 

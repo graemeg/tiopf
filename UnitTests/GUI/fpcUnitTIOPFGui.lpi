@@ -174,12 +174,12 @@
     </Linking>
     <Other>
       <CustomOptions Value="-FU_Dcu
--dSTATIC_PERLAYER_LINKING
 -dUseCThreads
 -dLINK_FBL
 -dLINK_TAB
 -dLINK_CSV
 -dLINK_XMLLIGHT
+-dLINK_ZEOS_FB15x
 "/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>

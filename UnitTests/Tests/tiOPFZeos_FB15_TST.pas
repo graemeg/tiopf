@@ -1,4 +1,4 @@
-unit tiOPFFBL_TST;
+unit tiOPFZeos_FB15_TST;
 
 {$I tiDefines.inc}
 
@@ -13,19 +13,19 @@ uses
 
 
 type
-  TtiOPFTestSetupDataFBL = class(TtiOPFTestSetupData)
+  TtiOPFTestSetupDataZeos = class(TtiOPFTestSetupData)
   public
     constructor Create; override;
   end;
 
 
-  TTestTIPersistenceLayersFBL = class(TTestTIPersistenceLayers)
+  TTestTIPersistenceLayersZeos = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
   end;
 
 
-  TTestTIDatabaseFBL = class(TTestTIDatabase)
+  TTestTIDatabaseZeos = class(TTestTIDatabase)
   protected
     procedure SetUp; override;
     procedure CreateDatabase; override;
@@ -34,19 +34,19 @@ type
   end;
 
 
-  TTestTIQueryFBL = class(TTestTIQuerySQL)
+  TTestTIQueryZeos = class(TTestTIQuerySQL)
   protected
     procedure SetUp; override;
   end;
 
 
-  TTestTIClassToDBMapOperationFBL = class(TTestTIClassToDBMapOperation)
+  TTestTIClassToDBMapOperationZeos = class(TTestTIClassToDBMapOperation)
   protected
     procedure   SetUp; override;
   end;
 
 
-  TTestTIOIDManagerFBL = class(TTestTIOIDManager)
+  TTestTIOIDManagerZeos = class(TTestTIOIDManager)
   protected
     procedure   SetUp; override;
   end;
@@ -70,27 +70,27 @@ uses
   
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistFBL) then
+  if gTIOPFTestManager.ToRun(cTIPersistZeosFB15) then
   begin
     {$IFDEF FPC}
-    RegisterTest(TTestTIPersistenceLayersFBL);
-    RegisterTest(TTestTIDatabaseFBL);
-    RegisterTest(TTestTIQueryFBL);
-    RegisterTest(TTestTIOIDManagerFBL);
-    RegisterTest(TTestTIClassToDBMapOperationFBL);
+    RegisterTest(TTestTIPersistenceLayersZeos);
+    RegisterTest(TTestTIDatabaseZeos);
+    RegisterTest(TTestTIQueryZeos);
+    RegisterTest(TTestTIOIDManagerZeos);
+    RegisterTest(TTestTIClassToDBMapOperationZeos);
     {$ELSE}
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIPersistenceLayersFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIDatabaseFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIQueryFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIOIDManagerFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIClassToDBMapOperationFBL.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIPersistenceLayersFBL.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIDatabaseFBL.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIQueryFBL.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDManagerFBL.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIClassToDBMapOperationFBL.Suite);
     {$ENDIF}
   end;
 end;
 
-{ TtiOPFTestSetupDataFBL }
+{ TtiOPFTestSetupDataZeos }
 
-constructor TtiOPFTestSetupDataFBL.Create;
+constructor TtiOPFTestSetupDataZeos.Create;
 begin
   inherited;
   {$IFNDEF STATIC_PERLAYER_LINKING}
@@ -103,20 +103,20 @@ begin
     {$ENDIF}
   {$ENDIF}
   FSelected    := FEnabled;
-  FPerLayerName := cTIPersistFBL;
+  FPerLayerName := cTIPersistZeosFB15;
   // You can specify a hostname or a local database.
-//  FDBName      := 'localhost|' + ReadFromReg(cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd');
-  FDBName      := ReadFromReg(cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd');
+//  FDBName      := 'localhost|' + ReadFromReg(cTIPersistZeosFB15, 'DBName', gTestDataRoot + '.fbd');
+  FDBName      := ReadFromReg(cTIPersistZeosFB15, 'DBName', gTestDataRoot + '.fbd');
 //  writeln(FDBName);
-  FUsername    := ReadFromReg(cTIPersistFBL, 'Username', 'SYSDBA');
-  FPassword    := ReadFromReg(cTIPersistFBL, 'Password', 'masterkey');
+  FUsername    := ReadFromReg(cTIPersistZeosFB15, 'Username', 'SYSDBA');
+  FPassword    := ReadFromReg(cTIPersistZeosFB15, 'Password', 'masterkey');
   FCanCreateDatabase := False;
   ForceTestDataDirectory;
 end;
 
-{ TTestTIDatabaseFBL }
+{ TTestTIDatabaseZeos }
 
-procedure TTestTIDatabaseFBL.CreateDatabase;
+procedure TTestTIDatabaseZeos.CreateDatabase;
 var
   lDB : string;
   lDBExists : boolean;
@@ -147,7 +147,7 @@ begin
   tiDeleteFile(lDB);
 end;
 
-procedure TTestTIDatabaseFBL.DatabaseExists;
+procedure TTestTIDatabaseZeos.DatabaseExists;
 var
   lDB : string;
   lDBExists : boolean;
@@ -170,42 +170,42 @@ begin
   Check(not lDBExists, 'DBExists returned true when it should return false');
 end;
 
-procedure TTestTIDatabaseFBL.SetUp;
+procedure TTestTIDatabaseZeos.SetUp;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
   inherited;
 end;
 
-{ TTestTIPersistenceLayersFBL }
+{ TTestTIPersistenceLayersZeos }
 
-procedure TTestTIPersistenceLayersFBL.SetUp;
+procedure TTestTIPersistenceLayersZeos.SetUp;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
   inherited;
 end;
 
-{ TTestTIQueryFBL }
+{ TTestTIQueryZeos }
 
-procedure TTestTIQueryFBL.SetUp;
+procedure TTestTIQueryZeos.SetUp;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
   inherited;
 end;
 
 
-{ TTestTIClassToDBMapOperationFBL }
+{ TTestTIClassToDBMapOperationZeos }
 
-procedure TTestTIClassToDBMapOperationFBL.SetUp;
+procedure TTestTIClassToDBMapOperationZeos.SetUp;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
   inherited;
 end;
 
-{ TTestTIOIDManagerFBL }
+{ TTestTIOIDManagerZeos }
 
-procedure TTestTIOIDManagerFBL.SetUp;
+procedure TTestTIOIDManagerZeos.SetUp;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
   inherited;
 end;
 

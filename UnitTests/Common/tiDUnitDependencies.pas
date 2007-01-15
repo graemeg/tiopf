@@ -62,6 +62,7 @@ uses
   {$IFDEF FPC}
   ,tiOPFFBL_TST
 //  ,tiOPFSQLDB_IB_TST
+//  ,tiOPFZeos_FB15_TST
   {$ELSE}
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
@@ -74,6 +75,7 @@ uses
   ,tiOPFRemote_TST
   ,tiOPFDOA_TST
   ,tiOPFIBO_TST
+//  ,tiOPFZeos_FB15_TST
 
   ,tiOPFXML_TST
   {$ENDIF}
@@ -129,6 +131,7 @@ begin
   {$IFDEF FPC}
   tiOPFFBL_TST.RegisterTests;
 //  tiOPFSQLDB_IB_TST.RegisterTests;
+//  tiOPFZeos_FB15_TST.RegisterTests;
   {$ELSE}
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
@@ -141,6 +144,7 @@ begin
   tiOPFDOA_TST.RegisterTests;
   tiOPFRemote_TST.RegisterTests;
   tiOPFXML_TST.RegisterTests;
+//  tiOPFZeos_FB15_TST.RegisterTests;
   {$ENDIF FPC}
   tiOPFXMLLight_TST.RegisterTests;
   tiOPFCSV_TST.RegisterTests;
@@ -162,6 +166,7 @@ begin
     // SQL based persistence layers
     uTIOPFTestManager.Add(TtiOPFTestSetupDataFBL.Create);
 //    uTIOPFTestManager.Add(TtiOPFTestSetupDataSQLDB_IB.Create);
+//    uTIOPFTestManager.Add(TtiOPFTestSetupDataZeos.Create);
     {$ELSE}
     // Non-SQL Persistence layers
     uTIOPFTestManager.Add(TtiOPFTestSetupDataXML.Create);
@@ -180,6 +185,7 @@ begin
     //uTIOPFTestManager.Add(TtiOPFTestSetupDataADOSQLServer.Create);
     uTIOPFTestManager.Add(TtiOPFTestSetupDataDOA.Create);
     uTIOPFTestManager.Add(TtiOPFTestSetupDataIBO.Create);
+//    uTIOPFTestManager.Add(TtiOPFTestSetupDataZeos.Create);
     {$ENDIF FPC}
   end;
   result := uTIOPFTestManager;
