@@ -957,13 +957,13 @@ begin
     StartTransaction;
     try
       lQuery.AttachDatabase (Self);
+      { SQL Views are now also included }
       lQuery.SQLText :=
         'SELECT RDB$RELATION_NAME as Table_Name ' +
-        'FROM RDB$RELATIONS              ' +
-        'WHERE ((RDB$SYSTEM_FLAG = 0) OR ' +
-        '(RDB$SYSTEM_FLAG IS NULL)) AND  ' +
-        '(RDB$VIEW_SOURCE IS NULL)       ' +
-        'ORDER BY RDB$RELATION_NAME      ';
+        '  FROM RDB$RELATIONS ' +
+        'WHERE ((RDB$SYSTEM_FLAG = 0) OR (RDB$SYSTEM_FLAG IS NULL)) ' +
+//        '  AND (RDB$VIEW_SOURCE IS NULL) ' +
+        'ORDER BY RDB$RELATION_NAME ';
       lQuery.Open;
       while not lQuery.EOF do
         begin
