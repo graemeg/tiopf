@@ -489,9 +489,9 @@ type
     {: Add an object to the list.
        Don't override Add(AObject : TtiObject ; ADefDispOrdr : boolean = true),
        It's an old method for backward compatibility . Override Add(const AObject:TtiObject).}
-    procedure   Add(const AObject: TtiObject; ADefDispOrdr: Boolean); overload; virtual;
+    function    Add(const AObject: TtiObject; ADefDispOrdr: Boolean): integer; overload; virtual;
     {: Add an object to the list.}
-    procedure   Add(const AObject : TtiObject); overload; virtual;
+    function    Add(const AObject : TtiObject): integer; overload; virtual;
     {: Empty list and delete all owned objects}
     procedure   Clear; virtual;
     {: Empty list, but do not delete owned objects }
@@ -667,7 +667,7 @@ type
     procedure   UnLock;
 
     procedure   Delete(i : integer); override;
-    procedure   Add(const AObject: TtiObject; ADefDispOrdr: boolean = true); override;
+    function    Add(const AObject: TtiObject; ADefDispOrdr: boolean = true): integer; override;
     procedure   Clear; override; // Empty list and delete all owned objects
     procedure   Empty; override; // Empty list, but do not delete owned objects
     function    IndexOf(const AObject: TtiObject): integer; override;
@@ -1289,16 +1289,16 @@ begin
   inherited;
 end;
 
-procedure TtiObjectList.Add(const AObject: TtiObject; ADefDispOrdr: boolean);
+function TtiObjectList.Add(const AObject: TtiObject; ADefDispOrdr: boolean): integer;
 begin
-  Add(AObject);
+  result := Add(AObject);
 end;
 
-procedure TtiObjectList.Add(const AObject : TtiObject);
+function TtiObjectList.Add(const AObject : TtiObject): integer;
 begin
   if FbAutoSetItemOwner then
     AObject.Owner := FItemOwner;
-  FList.Add(AObject);
+  result := FList.Add(AObject);
 end;
 
 procedure TtiObjectList.Clear;
@@ -2266,11 +2266,11 @@ end;
 
 { TPerObjThreadList }
 
-procedure TPerObjThreadList.Add(const AObject: TtiObject; ADefDispOrdr: boolean);
+function TPerObjThreadList.Add(const AObject: TtiObject; ADefDispOrdr: boolean): integer;
 begin
   Lock;
   try
-    inherited Add(AObject, ADefDispOrdr);
+    result := inherited Add(AObject, ADefDispOrdr);
   finally
     Unlock;
   end;

@@ -152,7 +152,7 @@ type
     procedure   SetItems(i: integer; const AValue: TtstPerObjAbs); reintroduce;
   public
     property    Items[i:integer]: TtstPerObjAbs read GetItems write SetItems;
-    procedure   Add(AObject : TtstPerObjAbs ; ADefDispOrdr : boolean = true); reintroduce;
+    function    Add(AObject : TtstPerObjAbs ; ADefDispOrdr : boolean = true): integer; reintroduce;
     function    Clone : TtstPerObjList; reintroduce;
     constructor CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = ''); override;
   published
@@ -1969,14 +1969,17 @@ var
   lList : TtstPerObjList;
   lData : TtstPerObjAbs;
   i : integer;
+  idx: integer;
 begin
   lList := TtstPerObjList.Create;
   try
     for i := 0 to 9 do
     begin
       lData := TtstPerObjAbs.Create;
-      lList.Add(lData);
+      idx := lList.Add(lData);
       CheckEquals(i, lList.List.IndexOf(lData), 'Failed on ' + IntToStr(i));
+      CheckEquals(idx, i, 'Failed on ' + IntToStr(i));
+      CheckEquals(idx, lList.List.IndexOf(lData), 'Failed on ' + IntToStr(i));
     end;
   finally
     lList.Free;
@@ -3117,9 +3120,9 @@ end;
 
 { TtstPerObjList }
 
-procedure TtstPerObjList.Add(AObject: TtstPerObjAbs; ADefDispOrdr: boolean);
+function TtstPerObjList.Add(AObject: TtstPerObjAbs; ADefDispOrdr: boolean): integer;
 begin
-  inherited Add(AObject, ADefDispOrdr);
+  result := inherited Add(AObject, ADefDispOrdr);
 end;
 
 function TtstPerObjList.Clone: TtstPerObjList;
