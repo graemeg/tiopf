@@ -14,7 +14,9 @@ uses
   ,tiCommandLineParams
   ,tiLogToFile
   ,tiLogToGUI
+  {$IFDEF CONSOLE}
   ,tiLogToConsole
+  {$ENDIF}
  ;
 
 
@@ -27,7 +29,9 @@ initialization
   if gCommandLineParams.IsParam(csLogVisual) then
     gLog.RegisterLog(TtiLogToGUI.Create);
 
+  {$IFDEF CONSOLE}
   if gCommandLineParams.IsParam(csLogConsole) then
     gLog.RegisterLog(TtiLogToConsole.Create);
+  {$ENDIF}
 
 end.
