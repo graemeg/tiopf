@@ -274,6 +274,7 @@ type
     {$IFNDEF FPC}
     procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
+    procedure   DoOnExit(Sender: TObject); virtual;
 //    procedure   DoOnClick(Sender : TObject); override;
     function    ComboBox : TComboBox;
   published
@@ -352,6 +353,7 @@ type
   protected
     procedure   DataToWinControl; override;
     procedure   WinControlToData; override;
+    procedure   DoOnExit(Sender: TObject); override;
   public
     constructor Create(AOwner: TComponent);override;
     property    Value : TtiObject read GetValue write SetValue;
@@ -499,7 +501,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
   end;
-  
+
 
   TtiPerAwareImageEditOnLoadFromFile = procedure(Sender : TObject; var AFileName : string; var pDefaultAction : boolean) of object;
 
@@ -2737,7 +2739,7 @@ begin
   TComboBox(FWinControl).ItemIndex :=
     TComboBox(FWinControl).Items.IndexOf(AValue);
   WinControlToData;
-  SetOnChangeActive(false);
+  SetOnChangeActive(true);
 end;
 
 procedure TtiPerAwareComboBoxStatic.WinControlToData;
@@ -2858,6 +2860,8 @@ begin
     Exit; //==>
   if ReadOnly then
     Exit; //==>
+  if ComboBox.ItemIndex < 0 then
+    Exit; //==>
 
   lValue := tTiObject(FList.Items[ComboBox.ItemIndex]);
 
@@ -2880,6 +2884,26 @@ begin
   Refresh;
 end;
 
+procedure TtiPerAwareComboBoxDynamic.DoOnExit( Sender : TObject ) ;
+begin
+  if (CompareStr(ComboBox.Text, ComboBox.Items[ComboBox.ItemIndex]) <> 0)
+  and (TComboBox( WinControl ).ItemIndex >= 0) then // valid entry (and changed)
+  begin
+// clean up case after typing
+    SetOnChangeActive(false);
+    ComboBox.Text := ComboBox.Items[ComboBox.ItemIndex];
+    SetOnChangeActive(true);
+  end;
+
+  if TComboBox( WinControl ).ItemIndex < 0 then
+  begin
+    ComboBox.ItemIndex := 0;
+    ComboBox.Text := '';
+    WinControlToData ;
+  end;
+  inherited;
+end;
+
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
 //* TtiPerAwareComboBoxAbs
@@ -2892,6 +2916,7 @@ begin
   TComboBox(FWinControl).Style := csDropDownList;
   TComboBox(FWinControl).OnKeyPress := DoOnKeyPress;
   TComboBox(FWinControl).OnKeyDown := DoOnKeyDown;
+  TComboBox(FWinControl).OnExit := DoOnExit ;
   FbCenterWhenLabelIsLeft := true;
   inherited;
   TComboBox(FWinControl).ParentFont := true;
@@ -2931,9 +2956,15 @@ end;
 procedure TtiPerAwareComboBoxAbs.SetOnChangeActive(AValue: boolean);
 begin
   if AValue then
-    TComboBox(WinControl).OnClick := DoChange
+  begin
+    TComboBox(WinControl).OnClick := DoChange;
+    TComboBox(WinControl).OnExit  := DoOnExit;
+  end
   else
+  begin
     TComboBox(WinControl).OnClick := nil;
+    TComboBox(WinControl).OnExit  := nil;
+  end;
 end;
 
 procedure TtiPerAwareComboBoxAbs.SetReadOnly(const AValue: Boolean);
@@ -3129,8 +3160,7 @@ begin
   TComboBox(FWinControl).ItemIndex := lFoundIndex;
 
   WinControlToData;
-  SetOnChangeActive(false);
-
+  SetOnChangeActive(true);
 end;
 
 function TtiPerAwareComboBoxDynamic.GetValueAsString: string;
@@ -3183,6 +3213,11 @@ end;
 procedure TtiPerAwareComboBoxAbs.SetCharCase(const AValue: TEditCharCase);
 begin
   {$IFNDEF FPC}TComboBox(FWinControl).CharCase := AValue;{$ENDIF}
+end;
+
+procedure TtiPerAwareComboBoxAbs.DoOnExit(Sender: TObject);
+begin
+  // Handled by subclass
 end;
 
 procedure TtiPerAwareComboBoxAbs.DoOnKeyPress(Sender: TObject; var Key: Char);
