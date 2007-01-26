@@ -42,6 +42,7 @@ uses
   tiObject
   ,Controls
   ,Classes
+  ,StdCtrls   { TEdit, TComboBox }
   ;
 
 type
@@ -58,12 +59,15 @@ type
     FErrorMessage: string;
     procedure   TestIfValid;
   protected
+    UseInternalOnChange: boolean;
     function    GetSubject: TtiObject; virtual;
     { Used to setup things like the MaxLength of a edit box, etc. }
     procedure   SetupGUIandObject; virtual;
     { Used for doing validation checks and changing the color of edit controls
       in error }
     procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); virtual;
+    function    DataAndPropertyValid: Boolean;
+    procedure   DoOnChange(Sender: TObject); virtual;
   public
     constructor Create; override;
     constructor CreateCustom( pEditControl: TControl; pSubject: TtiObject; pFieldName: string; pGuiFieldName: string = '' );
@@ -101,12 +105,12 @@ type
   { Base class to handle TSpinEdit controls }
   TMediatorSpinEditView = class(TMediatorView)
   private
-    procedure OnLostFocus(Sender: TObject);
+    procedure   OnLostFocus(Sender: TObject);
   protected
-    procedure SetupGUIandObject; override;
+    procedure   SetupGUIandObject; override;
   public
     class function ComponentClass: TClass; override;
-    procedure GuiToObject; override;
+    procedure   GuiToObject; override;
   end;
 
 
@@ -119,11 +123,34 @@ type
 
   { Base class to handle TComboBox controls }
   TMediatorComboBoxView = class(TMediatorView)
+  private
+    function    GetEditControl: TComboBox;
+    procedure   SetEditControl(const AValue: TComboBox);
   public
+    property    EditControl: TComboBox read GetEditControl write SetEditControl;
     procedure   ObjectToGui; override;
     class function ComponentClass: TClass; override;
   end;
+  
 
+  { TComboBox observing a list and setting a Object property }
+  TMediatorDynamicComboBoxView = class(TMediatorComboBoxView)
+  private
+    FList: TtiObjectList;
+    FExternalOnChange: TNotifyEvent;
+    procedure   SetList(const AValue: TtiObjectList);
+    procedure   InternalListRefresh;
+  protected
+    procedure   SetOnChangeActive(AValue: Boolean); virtual;
+    procedure   SetupGUIandObject; override;
+  public
+    constructor CreateCustom(pList: TtiObjectList; pEditControl: TControl; pSubject: TtiObject; pFieldName: string); reintroduce;
+    destructor  Destroy; override;
+    procedure   GuiToObject; override;
+    procedure   ObjectToGui; override;
+    property    List: TtiObjectList read FList write SetList;
+  end;
+  
 
   { Base class to handle TMemo controls }
   TMediatorMemoView = class(TMediatorView)
@@ -190,8 +217,8 @@ implementation
 uses
   SysUtils
   ,TypInfo
+  ,tiExcept
   ,Dialogs    { MessageDlg }
-  ,StdCtrls   { TEdit, TComboBox }
   {$IFDEF FPC}
   ,Spin       { TSpinEdit - standard component included in Lazarus LCL }
   {$ELSE}
@@ -202,6 +229,10 @@ uses
 
 var
   uMediatorFactory: TMediatorFactory;
+  
+  
+const
+  cErrorListHasNotBeenAssigned   = 'List has not been assigned';
 
 
 function gMediatorFactory: TMediatorFactory;
@@ -218,6 +249,7 @@ constructor TMediatorView.Create;
 begin
   inherited;
   FSettingUp := True;
+  UseInternalOnChange := True;
 end;
 
 
@@ -256,6 +288,26 @@ end;
 procedure TMediatorView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
 begin
   { This will be implemented by a concrete class }
+end;
+
+function TMediatorView.DataAndPropertyValid: Boolean;
+begin
+  result := (FSubject <> nil) and (FFieldName <> '');
+  if not result then
+    Exit; //==>
+
+  result := (IsPublishedProp(FSubject, FFieldName));
+
+  if not result then
+    raise Exception.CreateFmt('<%s> is not a property of <%s>',
+                               [FFieldName, FSubject.ClassName ]);
+
+//  EditControl.ReadOnly := ReadOnly or IsPropReadOnly;
+end;
+
+procedure TMediatorView.DoOnChange(Sender: TObject);
+begin
+  GUIChanged;
 end;
 
 
@@ -490,11 +542,20 @@ begin
   Result := TComboBox;
 end;
 
+function TMediatorComboBoxView.GetEditControl: TComboBox;
+begin
+  result := TComboBox(FEditControl);
+end;
+
+procedure TMediatorComboBoxView.SetEditControl(const AValue: TComboBox);
+begin
+  FEditControl := AValue;
+end;
 
 procedure TMediatorComboBoxView.ObjectToGui;
 begin
-  TComboBox(EditControl).ItemIndex :=
-    TComboBox(EditControl).Items.IndexOf( Subject.PropValue[FieldName] );
+  EditControl.ItemIndex :=
+      EditControl.Items.IndexOf(Subject.PropValue[FieldName]);
 end;
 
 
@@ -530,11 +591,162 @@ end;
 
 constructor TMediatorViewMapping.CreateExt(pName: String; pMediatingClass: TMediatingViewClass);
 begin
-  self.Create;
+  Create;
   Name                := pName;
   MediatingViewClass  := pMediatingClass;
 end;
 
+
+{ TMediatorDynamicComboBoxView }
+
+procedure TMediatorDynamicComboBoxView.SetList(const AValue: TtiObjectList);
+begin
+  if FList = AValue then
+    Exit; //==>
+
+  FList := AValue;
+
+  InternalListRefresh;
+end;
+
+procedure TMediatorDynamicComboBoxView.InternalListRefresh;
+var
+  lItems: TStrings;
+  i: Integer;
+  v: variant;
+begin
+  lItems := EditControl.Items;
+  lItems.Clear;
+
+  if (FList = nil) or
+     (FList.Count < 1) or
+     (SameText(FFieldName, EmptyStr)) then
+    Exit; //==>
+
+  try
+    for i := 0 to FList.Count - 1 do
+    begin
+      lItems.Add(FList.Items[i].Caption);
+    end;
+  except
+    on E: Exception do
+      raise Exception.CreateFmt('Error adding list items to combobox ' +
+                                 'Message: %s, Item Property Name: %s',
+                                 [E.message, FFieldName]);
+  end;
+
+  ObjectToGui;
+end;
+
+procedure TMediatorDynamicComboBoxView.SetOnChangeActive(AValue: Boolean);
+begin
+  if AValue then
+  begin
+    if not UseInternalOnChange then
+      EditControl.OnChange := FExternalOnChange
+    else
+      EditControl.OnChange := DoOnChange;
+  end
+  else
+  begin
+    if not UseInternalOnChange then
+      FExternalOnChange := EditControl.OnChange;
+    EditControl.OnChange := nil;
+  end;
+end;
+
+procedure TMediatorDynamicComboBoxView.SetupGUIandObject;
+begin
+  inherited SetupGUIandObject;
+
+  if UseInternalOnChange then
+    EditControl.OnChange := DoOnChange; // default OnChange event handler
+
+  EditControl.ReadOnly  := True;
+  EditControl.Style     := csDropDownList;  // combos are meant for selection not typing
+  EditControl.Enabled   := (FList.Count > 0);
+end;
+
+constructor TMediatorDynamicComboBoxView.CreateCustom(pList: TtiObjectList;
+  pEditControl: TControl; pSubject: TtiObject; pFieldName: string);
+begin
+  Create;
+  FGuiFieldName   := 'Text';    // TComboBox defaults to Text property
+
+  FSubject        := pSubject;
+  FFieldName      := pFieldName;
+  FEditControl    := pEditControl;
+  
+  if Assigned(EditControl.OnChange) then
+    UseInternalOnChange := False;
+
+  { This will fire a refresh }
+  List := pList;
+
+  FSubject.AttachObserver(self);
+  SetupGUIandObject;
+
+  // I prefer to do this once in the form after all mediator are created.
+//  FSubject.NotifyObservers;
+  FSettingUp      := False;
+end;
+
+destructor TMediatorDynamicComboBoxView.Destroy;
+begin
+  FList := nil;
+  inherited Destroy;
+end;
+
+procedure TMediatorDynamicComboBoxView.GuiToObject;
+var
+  lValue: TtiObject;
+  lPropType: TTypeKind;
+begin
+  if not DataAndPropertyValid then
+    Exit; //==>
+  if EditControl.ItemIndex < 0 then
+    Exit; //==>
+
+  lValue := TtiObject(FList.Items[EditControl.ItemIndex]);
+
+  lPropType := typinfo.PropType(Subject, FieldName);
+  if lPropType = tkClass then
+    typinfo.SetObjectProp(Subject, FieldName, lValue)
+  else
+    raise EtiOPFProgrammerException.Create('Error property type not a Class');
+end;
+
+procedure TMediatorDynamicComboBoxView.ObjectToGui;
+var
+  i: Integer;
+  lValue: TtiObject;
+  lPropType: TTypeKind;
+begin
+  SetOnChangeActive(false);
+
+  //  Set the index only (We're assuming the item is present in the list)
+  EditControl.ItemIndex := -1;
+  if FSubject = nil then
+    Exit; //==>
+
+  if not Assigned(FList) then
+    raise EtiOPFProgrammerException.Create(cErrorListHasNotBeenAssigned);
+
+  lPropType := typinfo.PropType(Subject, FieldName);
+  if lPropType = tkClass then
+    lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
+  else
+    raise Exception.Create('Property is not a class type!');
+
+  for i := 0 to FList.Count - 1 do
+    if FList.Items[i] = lValue then
+    begin
+      EditControl.ItemIndex := i;
+      Break; //==>
+    end;
+
+  SetOnChangeActive(true);
+end;
 
 initialization
 finalization

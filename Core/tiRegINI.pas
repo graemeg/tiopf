@@ -57,7 +57,11 @@ type
   TUserINIFile = class(TtiINIFile);
 
 // These are both singletons
+{$IFDEF MSWINDOWS}
 function gReg : TtiRegINIFile;
+{$ELSE}
+function gReg : TtiINIFile;
+{$ENDIF}
 function gINI(const AFileName: string = ''): TtiINIFile;
 
 var
@@ -78,12 +82,19 @@ var
   uINI : TtiINIFile;
 
 
+{$IFDEF MSWINDOWS}
 function gReg : TtiRegINIFile;
 begin
   if uReg = nil then
     uReg := TtiRegINIFile.CreateExt;
     result := uReg;
 end;
+{$ELSE}
+function gReg: TtiINIFile;
+begin
+  result := gINI;
+end;
+{$ENDIF}
 
 
 function gINI(const AFileName: string = ''): TtiINIFile;

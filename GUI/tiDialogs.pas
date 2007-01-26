@@ -24,7 +24,6 @@ uses
   {$ENDIF}
   ,ExtCtrls
   ,Math
-//  ,IniFiles
   ,TypInfo
   {$IFNDEF VER130}
    ,Variants

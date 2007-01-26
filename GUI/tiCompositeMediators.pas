@@ -10,8 +10,9 @@ uses
   Classes
   ,SysUtils
   ,tiObject
-  ,ComCtrls
-  ,Contnrs
+  ,ComCtrls   { TListView }
+  ,Contnrs    { TObjectList }
+  ,Grids      { TStringGrid }
   ;
 
   

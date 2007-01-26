@@ -160,7 +160,7 @@ type
   private
     FSelfIterate: boolean;
   protected
-    function    GetCaption : string; virtual;
+    function    GetCaption: string; virtual;
   published
     property    Caption   : string  read GetCaption;
   public
