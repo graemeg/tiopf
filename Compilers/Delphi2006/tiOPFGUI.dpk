@@ -39,6 +39,7 @@ requires
   bdertl,
   dbrtl,
   xmlrtl;
+//  VirtualTreesD10;
 
 contains
   tiDialogs in '..\..\GUI\tiDialogs.pas',
@@ -79,6 +80,10 @@ contains
   tiCompositeMediators in '..\..\GUI\tiCompositeMediators.pas',
   tiSpin in '..\..\GUI\tiSpin.pas',
   tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas',
-  tiHotImage in '..\..\GUI\tiHotImage.pas';
+  tiHotImage in '..\..\GUI\tiHotImage.pas',
+  tiVTExportAbs in '..\..\GUI\tiVTExportAbs.pas',
+  tiVTExportCSV in '..\..\GUI\tiVTExportCSV.pas',
+  tiVTExportFactory in '..\..\GUI\tiVTExportFactory.pas',
+  tiVTExportHTML in '..\..\GUI\tiVTExportHTML.pas';
 
 end.

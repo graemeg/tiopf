@@ -362,7 +362,6 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure VTHeaderDrawQueryElements(Sender: TVTHeader;
       var PaintInfo: THeaderPaintInfo; var Elements: THeaderPaintElements);
-    procedure SetHeaderClickSorting(const Value: boolean);
     procedure SPFindText(const ASender: TtiVTSearchPanel;
       const AFindText: string; out ATextFound: boolean);
     procedure SPFindTextChange(const ASender: TtiVTSearchPanel;
@@ -428,6 +427,7 @@ type
     procedure ReadData;
     procedure DisconnectFromData;
     procedure ConnectToData;
+    procedure SetHeaderClickSorting(const Value: boolean); virtual;
     function  SetSelectedChildData(Parent: PVirtualNode;  Data: TtiObject): Boolean;
     procedure SetEnabled(AValue: Boolean); override;
 
@@ -532,6 +532,8 @@ type
     FOnItemInsert: TtiVTItemEditEvent;
     FOnItemView: TtiVTItemEditEvent;
     FOnClearSort: TtiVTClearSortEvent;
+    FExporting: boolean;
+    FSearching: boolean;
 
     procedure SetButtonStyle(const AValue: TLVButtonStyle);
     procedure SetVisibleButtons(const AValue: TtiLVVisibleButtons);
@@ -544,16 +546,20 @@ type
     procedure DoCollapseAll(Sender: TObject);
     procedure DoExpandAll(Sender: TObject);
     procedure DoRefreshButtons;
+    procedure SetExporting(const Value: boolean);
+    procedure SetSearching(const Value: boolean);
   protected
     procedure CreateButtonPanel;
     procedure CreateWnd; override;
     procedure DestroyWnd; override;
     procedure SetEnabled(AValue: Boolean); override;
+    procedure SetHeaderClickSorting(const Value: boolean); override;
 
     procedure DoMenuPopup(Sender: TObject); virtual;
     procedure DoClearSort(Sender: TObject); virtual;
     procedure DoDelete(Sender: TObject); virtual;
     procedure DoEdit(Sender: TObject); virtual;
+    procedure DoExportTree(Sender: TObject); virtual;
     procedure DoShowFind(Sender: TObject); virtual;
     procedure DoNew(Sender: TObject); virtual;
     procedure DoView(Sender: TObject); virtual;
@@ -566,6 +572,8 @@ type
     procedure VTDoFocusChanged(Node: PVirtualNode; Column: TColumnIndex); override;
 
     property ButtonStyle: TLVButtonStyle read FButtonStyle write SetButtonStyle default lvbsButtonsAndLabels;
+    property Exporting: boolean read FExporting write SetExporting default true;
+    property Searching: boolean read FSearching write SetSearching default true;
     property VisibleButtons : TtiLVVisibleButtons read FVisibleButtons write SetVisibleButtons default [];
 
     property OnClearSort: TtiVTClearSortEvent read FOnClearSort write SetOnClearSort;
@@ -597,6 +605,7 @@ type
     property ButtonStyle;
     property Color;
     property Constraints;
+    property Exporting;
     property Header;
     property HeaderClickSorting;
     property HelpContext;
@@ -604,6 +613,7 @@ type
     property HelpType;
     property Images;
     property RowSelect;
+    property Searching;
     property ShowAlternateRowColor;
     property ShowNodeHint;
     property Sorted;
@@ -650,6 +660,10 @@ uses
   ,tiGUIUtils
   ,tiDialogs // Debuggin
   ,Windows  // VK_XXX
+  , tiVTExportFactory
+  , tiVTExportAbs
+  , tiVTExportCSV
+  , tiVTExportHTML
   ;
 
 type
@@ -657,6 +671,15 @@ type
     Ref: TtiObject;
   end;
   PMyRecord = ^TMyRecord;
+
+  TtiVTExportMenuItem = class(TMenuItem)
+  private
+    FExportName: string;
+    procedure SetExportName(const AValue: string);
+  public
+    property ExportName: string read FExportName write SetExportName;
+  end;
+
 
 
 const
@@ -2415,6 +2438,10 @@ begin
 end;
 
 constructor TtiCustomVirtualEditTree.Create(AOwner: TComponent);
+var
+  LExportMenuItem: TtiVTExportMenuItem;
+  I: integer;
+
 begin
   inherited;
 
@@ -2463,6 +2490,18 @@ begin
   FpmiShowFind.Visible := true;
   FpmiShowFind.ShortCut := ShortCut(Word('F'), [ssCtrl]);
   FPopupMenu.Items.Add(FpmiShowFind);
+
+  for I := 0 to tiVTExportRegistry.ExportCount - 1 do
+  begin
+    LExportMenuItem := TtiVTExportMenuItem.Create(self);
+    LExportMenuItem.Caption := Format( 'Export to %s...',
+      [tiVTExportRegistry.GetExport(I).ExportClass.FormatName] );
+    LExportMenuItem.ExportName
+      := tiVTExportRegistry.GetExport(I).ExportClass.FormatName;
+    LExportMenuItem.OnClick := DoExportTree;
+    LExportMenuItem.Visible := true;
+    FPopupMenu.Items.Add(LExportMenuItem);
+  end;
 
   FStdPopupItemCount := FPopupMenu.Items.Count;
   FButtonStyle := lvbsButtonsAndLabels;
@@ -2633,6 +2672,23 @@ begin
   FVT.FullExpand(nil);
 end;
 
+procedure TtiCustomVirtualEditTree.DoExportTree(Sender: TObject);
+var
+  LExporter: TtiVTExportAbs;
+  LExportName: string;
+
+begin
+  LExportName := (Sender as TtiVtExportMenuItem).ExportName;
+  LExporter := tiVTExportRegistry.GetExport(LExportName).ExportClass.Create;
+  try
+    LExporter.SourceTree := self;
+    LExporter.Execute;
+  finally
+    LExporter.Free;
+  end;
+  
+end;
+
 procedure TtiCustomVirtualEditTree.DoShowFind(Sender: TObject);
 begin
   FSP.Showing := not FSP.Showing;
@@ -2697,6 +2753,13 @@ begin
       FCtrlBtnPnl.OnView := nil;
 end;
 
+procedure TtiCustomVirtualEditTree.SetSearching(const Value: boolean);
+begin
+  FSearching := Value;
+  FpmiShowFind.Visible := Value;
+  FpmiShowFind.Enabled := Value;
+end;
+
 procedure TtiCustomVirtualEditTree.SetVisibleButtons(const AValue: TtiLVVisibleButtons);
 begin
   FVisibleButtons := AValue;
@@ -2743,6 +2806,28 @@ begin
     if Assigned(FCtrlBtnPnl) then
       FCtrlBtnPnl.EnableButtons;
   end;
+end;
+
+procedure TtiCustomVirtualEditTree.SetExporting(const Value: boolean);
+var
+  I: integer;
+
+begin
+  FExporting := Value;
+
+  for I := 0 to FPopupMenu.Items.Count - 1 do
+      if FPopupMenu.Items[I] is TtiVTExportMenuItem then
+      begin
+        FPopupMenu.Items[I].Visible := FExporting;
+        FPopupMenu.Items[I].Enabled := FExporting;
+      end;
+end;
+
+procedure TtiCustomVirtualEditTree.SetHeaderClickSorting(const Value: boolean);
+begin
+  inherited SetHeaderClickSorting(Value);
+  // hide ClearSort popup menu item when sorting is disabled
+  FpmiClearSort.Visible := Value;
 end;
 
 { TtiVTSearchPanel }
@@ -2920,6 +3005,13 @@ begin
    else
      FWrapLabel.Caption := ' Search reached top, continued from bottom';
 
+end;
+
+{ TtiVTExportMenuItem }
+
+procedure TtiVTExportMenuItem.SetExportName(const AValue: string);
+begin
+  FExportName := AValue;
 end;
 
 end.
