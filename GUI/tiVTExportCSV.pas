@@ -3,8 +3,7 @@ unit tiVTExportCSV;
 interface
 
 uses
-  tiVTExportFactory
-  , tiVTExportAbs
+  tiVTExport
   ;
 
 type

@@ -3,13 +3,13 @@ unit tiVTExportHTML;
 interface
 
 uses
-  tiVTExportFactory
-  , tiVTExportAbs
+  tiVTExport
   ;
 
 type
   TtiVTExportHTML = class(TtiVTExportFile)
   private
+    function FormatFieldHeader(const AFieldHeader: string): string;
     function FormatField(const AField: string): string;
     function FormatRow(const ARow: string): string;
   protected
@@ -41,6 +41,11 @@ function TtiVTExportHTML.GetFileName: Boolean;
 begin
   FDefaultExt := 'HTM';
   Result := inherited GetFileName;
+end;
+
+function TtiVTExportHTML.FormatFieldHeader(const AFieldHeader: string): string;
+begin
+  FmtStr(Result,'<TH>%s</TH>', [AFieldHeader]);
 end;
 
 class function TtiVTExportHTML.FormatName: string;
@@ -137,7 +142,7 @@ begin
     LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
 
     if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
-      FOutputStr := FOutputStr + FormatField(LColumn.Text);
+      FOutputStr := FOutputStr + FormatFieldHeader(LColumn.Text);
 
   end;
 

@@ -39,7 +39,7 @@ uses
   ,LCLProc
   ,VirtualStringTree
 {$ENDIF}
- ;
+  ;
 
 
 const
@@ -282,6 +282,11 @@ type
   public
     constructor Create(AOwner: TComponent); override;
   end;
+
+
+  TtiVTExportFileNameEvent = procedure (const AExportFormatName: string;
+    var AExportFileName: string; out ASuccess: boolean)of object;
+
 
   TtiCustomVirtualTree = class(TtiFocusPanel)
     // Features not ported:
@@ -534,6 +539,7 @@ type
     FOnClearSort: TtiVTClearSortEvent;
     FExporting: boolean;
     FSearching: boolean;
+    FOnExportFileName: TtiVTExportFileNameEvent;
 
     procedure SetButtonStyle(const AValue: TLVButtonStyle);
     procedure SetVisibleButtons(const AValue: TtiLVVisibleButtons);
@@ -546,14 +552,15 @@ type
     procedure DoCollapseAll(Sender: TObject);
     procedure DoExpandAll(Sender: TObject);
     procedure DoRefreshButtons;
-    procedure SetExporting(const Value: boolean);
-    procedure SetSearching(const Value: boolean);
+    procedure SetExporting(const AValue: boolean);
+    procedure SetSearching(const AValue: boolean);
+    procedure SetOnExportFileName(const AValue: TtiVTExportFileNameEvent);
   protected
     procedure CreateButtonPanel;
     procedure CreateWnd; override;
     procedure DestroyWnd; override;
     procedure SetEnabled(AValue: Boolean); override;
-    procedure SetHeaderClickSorting(const Value: boolean); override;
+    procedure SetHeaderClickSorting(const AValue: boolean); override;
 
     procedure DoMenuPopup(Sender: TObject); virtual;
     procedure DoClearSort(Sender: TObject); virtual;
@@ -581,6 +588,7 @@ type
     property OnItemEdit: TtiVTItemEditEvent read FOnItemEdit write SetOnItemEdit;
     property OnItemInsert: TtiVTItemEditEvent read FOnItemInsert write SetOnItemInsert;
     property OnItemView: TtiVTItemEditEvent read FOnItemView write SetOnItemView;
+
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -588,6 +596,8 @@ type
     function CanEdit: Boolean; override;
     function CanInsert: Boolean; override;
     function CanView: Boolean; override;
+
+    property OnExportFileName: TtiVTExportFileNameEvent read FOnExportFileName write SetOnExportFileName;
 
     procedure Refresh(const pSelectedData: TtiObject = nil); override;
 
@@ -631,6 +641,7 @@ type
     property OnFilterData;
     property OnFocusChanged;
     property OnGetImageIndex;
+    property OnExportFileName;
     property OnHeaderClick;
     property OnItemArrive;
     property OnItemDelete;
@@ -660,8 +671,7 @@ uses
   ,tiGUIUtils
   ,tiDialogs // Debuggin
   ,Windows  // VK_XXX
-  , tiVTExportFactory
-  , tiVTExportAbs
+  , tiVTExport
   , tiVTExportCSV
   , tiVTExportHTML
   ;
@@ -2483,6 +2493,8 @@ begin
   FpmiClearSort.Visible := true;
   FPopupMenu.Items.Add(FpmiClearSort);
 
+  FSearching := true;
+
   FpmiShowFind         := TMenuItem.Create(self);
   FpmiShowFind.Caption := '&Find...';
   FpmiShowFind.OnClick := DoShowFind;
@@ -2491,13 +2503,15 @@ begin
   FpmiShowFind.ShortCut := ShortCut(Word('F'), [ssCtrl]);
   FPopupMenu.Items.Add(FpmiShowFind);
 
+  FExporting := true;
+
   for I := 0 to tiVTExportRegistry.ExportCount - 1 do
   begin
     LExportMenuItem := TtiVTExportMenuItem.Create(self);
     LExportMenuItem.Caption := Format( 'Export to %s...',
-      [tiVTExportRegistry.GetExport(I).ExportClass.FormatName] );
+      [tiVTExportRegistry.GetExport(I).FormatName] );
     LExportMenuItem.ExportName
-      := tiVTExportRegistry.GetExport(I).ExportClass.FormatName;
+      := tiVTExportRegistry.GetExport(I).FormatName;
     LExportMenuItem.OnClick := DoExportTree;
     LExportMenuItem.Visible := true;
     FPopupMenu.Items.Add(LExportMenuItem);
@@ -2674,19 +2688,18 @@ end;
 
 procedure TtiCustomVirtualEditTree.DoExportTree(Sender: TObject);
 var
-  LExporter: TtiVTExportAbs;
+  LExporter: TtiVTExport;
   LExportName: string;
 
 begin
   LExportName := (Sender as TtiVtExportMenuItem).ExportName;
-  LExporter := tiVTExportRegistry.GetExport(LExportName).ExportClass.Create;
+  LExporter := tiVTExportRegistry.GetExport(LExportName).Create;
   try
-    LExporter.SourceTree := self;
-    LExporter.Execute;
+    LExporter.Execute(Self);
   finally
     LExporter.Free;
   end;
-  
+
 end;
 
 procedure TtiCustomVirtualEditTree.DoShowFind(Sender: TObject);
@@ -2711,6 +2724,12 @@ end;
 procedure TtiCustomVirtualEditTree.SetOnClearSort(const AValue: TtiVTClearSortEvent);
 begin
   FOnClearSort := AValue;
+end;
+
+procedure TtiCustomVirtualEditTree.SetOnExportFileName(
+  const AValue: TtiVTExportFileNameEvent);
+begin
+  FOnExportFileName := AValue;
 end;
 
 procedure TtiCustomVirtualEditTree.SetOnItemDelete(const AValue: TtiVTItemEditEvent);
@@ -2753,11 +2772,11 @@ begin
       FCtrlBtnPnl.OnView := nil;
 end;
 
-procedure TtiCustomVirtualEditTree.SetSearching(const Value: boolean);
+procedure TtiCustomVirtualEditTree.SetSearching(const AValue: boolean);
 begin
-  FSearching := Value;
-  FpmiShowFind.Visible := Value;
-  FpmiShowFind.Enabled := Value;
+  FSearching := AValue;
+  FpmiShowFind.Visible := AValue;
+  FpmiShowFind.Enabled := AValue;
 end;
 
 procedure TtiCustomVirtualEditTree.SetVisibleButtons(const AValue: TtiLVVisibleButtons);
@@ -2808,12 +2827,12 @@ begin
   end;
 end;
 
-procedure TtiCustomVirtualEditTree.SetExporting(const Value: boolean);
+procedure TtiCustomVirtualEditTree.SetExporting(const AValue: boolean);
 var
   I: integer;
 
 begin
-  FExporting := Value;
+  FExporting := AValue;
 
   for I := 0 to FPopupMenu.Items.Count - 1 do
       if FPopupMenu.Items[I] is TtiVTExportMenuItem then
@@ -2823,11 +2842,11 @@ begin
       end;
 end;
 
-procedure TtiCustomVirtualEditTree.SetHeaderClickSorting(const Value: boolean);
+procedure TtiCustomVirtualEditTree.SetHeaderClickSorting(const AValue: boolean);
 begin
-  inherited SetHeaderClickSorting(Value);
+  inherited SetHeaderClickSorting(AValue);
   // hide ClearSort popup menu item when sorting is disabled
-  FpmiClearSort.Visible := Value;
+  FpmiClearSort.Visible := AValue;
 end;
 
 { TtiVTSearchPanel }
