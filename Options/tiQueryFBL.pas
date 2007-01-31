@@ -23,6 +23,8 @@ unit tiQueryFBL;
 
 {$I tiDefines.inc}
 
+{.$Define FBL_Params_Mod}
+
 interface
 uses
   tiQuery
@@ -312,9 +314,11 @@ end;
 
 function TtiQueryFBL.GetParamAsString(const AName: string): string;
 begin
-//  Assert(false, 'Under construction');
+  {$IFDEF FBL_Params_Mod}
   result := FQuery.ParamValueAsString(FQuery.ParamNames.IndexOf(AName));
-//  result := FQuery.Params.ByName(UpperCase(AName)).AsString;
+  {$ELSE}
+  result := '* not supported *';
+  {$ENDIF}
 end;
 
 
@@ -671,11 +675,11 @@ begin
     end;
 
     { DatabaseName = <host>|<database> }
-    if tiNumToken(DataBaseName, '|') = 1 then
+    if tiNumToken(DataBaseName, '|') = 0 then
     begin
       FDBase.Host    := tiToken(DatabaseName, '|', 1);
       FDBase.DBFile  := tiToken(DatabaseName, '|', 1);
-//      FDBase.Protocol := ptLocal;
+      FDBase.Protocol := ptLocal;
     end
     else
     begin
