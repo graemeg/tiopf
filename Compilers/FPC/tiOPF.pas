@@ -15,7 +15,8 @@ uses
     tiEncryptSimple, tiEncryptNone, tiEncryptDES, tiEncryptBlowfish, 
     tiOIDString, tiDataBuffer_Cli, tiDataBuffer_BOM, tiQueryTXTAbs, 
     tiTextParser, tiTextParserStructCSV, tiLogToConsole, tiXML, tiQueryCSV, 
-    tiQueryTAB, tiLogToFile, tiXMLToTIDataset, tiQueryXMLLight; 
+    tiQueryTAB, tiLogToFile, tiXMLToTIDataset, tiQueryXMLLight, tiCriteria, 
+    tiVisitorCriteria; 
 
 implementation
 

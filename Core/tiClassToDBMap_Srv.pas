@@ -148,7 +148,10 @@ uses
 // * TVisAutoAbs
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TVisAutoAbs.AddToParams(const AParams : TtiQueryParams; const pAttrColMaps : TtiAttrColMaps; const AData : TtiObject);
+procedure TVisAutoAbs.AddToParams(const AParams: TtiQueryParams;
+  const pAttrColMaps: TtiAttrColMaps; const AData : TtiObject);
+  
+  //-----------
   procedure _SetOIDParam(const AParams : TtiQueryParams; const AData : TtiObject; const AColName : string; const APropName : string);
   begin
     {$IFDEF OID_AS_INT64}
@@ -158,10 +161,12 @@ procedure TVisAutoAbs.AddToParams(const AParams : TtiQueryParams; const pAttrCol
         if Self is TVisAutoUpdateAbs then
         begin
           Assert(AData.Owner <> nil, 'Attempting to read a collection but the collections''s Visited.Owner is not assigned');
-          AParams.SetValueAsInteger(AColName, AData.Owner.OID)
-        end else
-          AParams.SetValueAsInteger(AColName, AData.OID)
-      end else
+          AParams.SetValueAsInteger(AColName, AData.Owner.OID);
+        end
+        else
+          AParams.SetValueAsInteger(AColName, AData.OID);
+      end
+      else
         AParams.SetValueAsInteger(AColName, AData.OID);
     {$ELSE}
       if Pos('OWNER', UpperCase(APropName)) <> 0 then
@@ -171,12 +176,15 @@ procedure TVisAutoAbs.AddToParams(const AParams : TtiQueryParams; const pAttrCol
         begin
           Assert(AData.Owner <> nil, 'Attempting to read a collection but the collections''s Visited.Owner is not assigned');
           AData.Owner.OID.AssignToTIQueryParam(AColName, AParams);
-        end else
+        end
+        else
           AData.OID.AssignToTIQueryParam(AColName, AParams);
-      end else
+      end
+      else
         AData.OID.AssignToTIQueryParam(AColName, AParams);
     {$ENDIF}
   end;
+  
 var
   lAttrColMap : TtiAttrColMap;
   i : integer;

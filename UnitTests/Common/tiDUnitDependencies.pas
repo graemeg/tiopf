@@ -53,12 +53,12 @@ uses
   ,tiTextParserStructCSV_TST
   ,tiSyncObjs_TST
   ,tiClassToDBMap_TST
-
   ,tiQuery_TST
   ,tiQuerySQL_TST
   ,tiQueryNonSQL_TST
-
   ,tiXML_TST
+  ,tiCriteria_TST
+
   {$IFDEF FPC}
   ,tiOPFFBL_TST
 //  ,tiOPFSQLDB_IB_TST
@@ -127,6 +127,7 @@ begin
   tiPersistenceLayers_tst.RegisterTests;
   tiClassToDBMap_TST.RegisterTests;
   tiXML_TST.RegisterTests;
+  tiCriteria_TST.RegisterTests;
 
   {$IFDEF FPC}
   tiOPFFBL_TST.RegisterTests;

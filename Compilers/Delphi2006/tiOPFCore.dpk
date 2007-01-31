@@ -59,6 +59,9 @@ contains
   tiUtils in '..\..\Core\tiUtils.pas',
   tiVisitor in '..\..\Core\tiVisitor.pas',
   tiVisitorDB in '..\..\Core\tiVisitorDB.pas',
-  tiVisitorDBAutoGen in '..\..\Core\tiVisitorDBAutoGen.pas';
+  tiVisitorDBAutoGen in '..\..\Core\tiVisitorDBAutoGen.pas',
+  tiCriteria in '..\..\Core\tiCriteria.pas',
+  tiVisitorCriteria in '..\..\Core\tiVisitorCriteria.pas';
+
 
 end.

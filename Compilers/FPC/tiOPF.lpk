@@ -36,7 +36,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="2" Build="1"/>
-    <Files Count="46">
+    <Files Count="48">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -221,6 +221,14 @@
         <Filename Value="../../Options/tiQueryXMLLight.pas"/>
         <UnitName Value="tiQueryXMLLight"/>
       </Item46>
+      <Item47>
+        <Filename Value="../../Core/tiCriteria.pas"/>
+        <UnitName Value="tiCriteria"/>
+      </Item47>
+      <Item48>
+        <Filename Value="../../Core/tiVisitorCriteria.pas"/>
+        <UnitName Value="tiVisitorCriteria"/>
+      </Item48>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>

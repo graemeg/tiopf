@@ -173,6 +173,7 @@ procedure TtiQueryFBL.ExecSQL;
 begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   Prepare;
+  Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
   FQuery.ExecSQL;
 end;
 
@@ -272,8 +273,11 @@ end;
 function TtiQueryFBL.GetParamAsBoolean(const AName: string): boolean;
 var
   lValue: string;
+  idx: integer;
 begin
-  Assert(false, 'Under construction');
+//  Assert(false, 'Under construction');
+//  idx := FQuery.ParamNames.IndexOf(AName);
+
 (*
   lValue := FQuery.Params.ByName(UpperCase(AName)).AsString;
 {$IFDEF BOOLEAN_CHAR_1}
@@ -287,28 +291,29 @@ end;
 
 function TtiQueryFBL.GetParamAsDateTime(const AName: string): TDateTime;
 begin
-  Assert(false, 'Under construction');
+//  Assert(false, 'Under construction');
 //  result := FQuery.Params.ByName(UpperCase(AName)).AsDateTime;
 end;
 
 
 function TtiQueryFBL.GetParamAsFloat(const AName: string): extended;
 begin
-  Assert(false, 'Under construction');
+//  Assert(false, 'Under construction');
 //  result := FQuery.Params.ByName(UpperCase(AName)).AsDouble;
 end;
 
 
 function TtiQueryFBL.GetParamAsInteger(const AName: string): Int64;
 begin
-  Assert(false, 'Under construction');
+//  Assert(false, 'Under construction');
 //  result := FQuery.Params.ByName(UpperCase(AName)).AsInt64;
 end;
 
 
 function TtiQueryFBL.GetParamAsString(const AName: string): string;
 begin
-  Assert(false, 'Under construction');
+//  Assert(false, 'Under construction');
+  result := FQuery.ParamValueAsString(FQuery.ParamNames.IndexOf(AName));
 //  result := FQuery.Params.ByName(UpperCase(AName)).AsString;
 end;
 
@@ -328,6 +333,7 @@ end;
 procedure TtiQueryFBL.Open;
 begin
   Log(ClassName + ': ' + tiNormalizeStr(self.SQLText), lsSQL);
+  Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
   Active := true;
 end;
 
@@ -634,7 +640,7 @@ end;
 
 function TtiQueryFBL.GetParamIsNull(const AName: string): Boolean;
 begin
-  Assert(False, 'Not implemented');
+//  Assert(False, 'Not implemented');
   Result := False;
 end;
 

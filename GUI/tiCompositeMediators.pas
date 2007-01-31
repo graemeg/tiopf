@@ -25,6 +25,7 @@ type
     FDisplayNames: string;
     FSelectedObject: TtiObject;
     FShowDeleted: Boolean;
+    function GetSelectedObject: TtiObject;
     procedure   SetSelectedObject(const AValue: TtiObject);
     procedure   SetShowDeleted(const AValue: Boolean);
     procedure   DoCreateItemMediator(AData: TtiObject);
@@ -35,6 +36,7 @@ type
     procedure   CreateSubMediators;
     procedure   SetupGUIandObject; virtual;
     procedure   RebuildList; virtual;
+    function    DataAndPropertyValid(const AData: TtiObject): Boolean;
   public
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; ADisplayNames: string; IsObserving: Boolean = True);
     procedure   BeforeDestruction; override;
@@ -44,7 +46,7 @@ type
     property    Model: TtiObjectList read FModel;
     property    DisplayNames: string read FDisplayNames;
     property    IsObserving: Boolean read FIsObserving;
-    property    SelectedObject: TtiObject read FSelectedObject write SetSelectedObject;
+    property    SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
     property    ShowDeleted: Boolean read FShowDeleted write SetShowDeleted;
   end;
 
@@ -55,6 +57,8 @@ implementation
 uses
   tiUtils
   ,StdCtrls
+  ,typinfo
+  ,tiExcept
   ;
   
 const
@@ -161,9 +165,25 @@ end;
 { TCompositeListViewMediator }
 
 procedure TCompositeListViewMediator.SetSelectedObject(const AValue: TtiObject);
+var
+  i: integer;
 begin
-  if FSelectedObject=AValue then exit;
-  FSelectedObject:=AValue;
+  for i := 0 to FView.Items.Count - 1 do
+  begin
+    if TtiObject(FView.Items[i].Data) = AValue then
+    begin
+      FView.Selected := FView.Items[i];
+      exit;
+    end;
+  end;
+end;
+
+function TCompositeListViewMediator.GetSelectedObject: TtiObject;
+begin
+  if FView.SelCount = 0 then
+    result := nil
+  else
+    result := TtiObject(FView.Selected.Data);
 end;
 
 procedure TCompositeListViewMediator.SetShowDeleted(const AValue: Boolean);
@@ -185,6 +205,8 @@ var
   li: TListItem;
   m: TListViewListItemMediator;
 begin
+  DataAndPropertyValid(AData);
+  
   { Create ListItem and Mediator }
   li  := FView.Items.Add;
   li.Data := AData;
@@ -228,6 +250,28 @@ procedure TCompositeListViewMediator.RebuildList;
 begin
   { Do nothing. Can be implement as you see fit. A simple example is given
     in the Demos/GenericMediatingViews/Composite_ListView_Mediator }
+  raise EtiOPFProgrammerException.Create('You are trying to call ' + Classname
+    + '.RebuildList, which must be overridden in the concrete class.');
+end;
+
+function TCompositeListViewMediator.DataAndPropertyValid(const AData: TtiObject): Boolean;
+var
+  c: integer;
+  lField: string;
+begin
+  result := (FModel <> nil) and (FDisplayNames <> '');
+  if not result then
+    Exit; //==>
+
+  for c := 1 to tiNumToken(FDisplayNames, cFieldDelimiter) do
+  begin
+    lField := tiToken(FDisplayNames, cFieldDelimiter, c);
+    { WRONG!!  We should test the items of the Model }
+    result := (IsPublishedProp(AData, tiFieldName(lField)));
+    if not result then
+      raise Exception.CreateFmt('<%s> is not a property of <%s>',
+                               [tiFieldName(lField), AData.ClassName ]);
+  end;
 end;
 
 constructor TCompositeListViewMediator.CreateCustom(AModel: TtiObjectList;
@@ -246,7 +290,9 @@ begin
   { TODO: This must be improved. If no ADisplayNames value maybe default to a
    single column listview using the Caption property }
   if (ADisplayNames <> '') and (tiNumToken(ADisplayNames, cFieldDelimiter) > 0) then
+  begin
     CreateSubMediators;
+  end;
     
   if IsObserving then
     FModel.AttachObserver(self);
