@@ -3,7 +3,7 @@ unit tiVTExportHTML;
 interface
 
 uses
-  tiVTExport
+  tiVTListView
   ;
 
 type
@@ -20,16 +20,16 @@ type
     procedure WriteFooter; override;
   public
     class function FormatName: string; override;
+    class function ImageName: string; override;
   end;
 
 implementation
 
 uses
   SysUtils
-  , tiVTListView      // TtiVTColumn
-  , tiObject
-  , tiVirtualTrees
-  , Clipbrd           // global Clipboard object
+  ,tiVirtualTrees
+  ,tiResources
+  ,tiObject
   ;
 
 resourcestring
@@ -41,6 +41,11 @@ function TtiVTExportHTML.GetFileName: Boolean;
 begin
   FDefaultExt := 'HTM';
   Result := inherited GetFileName;
+end;
+
+class function TtiVTExportHTML.ImageName: string;
+begin
+  Result := cResTI_ExportToHTML;
 end;
 
 function TtiVTExportHTML.FormatFieldHeader(const AFieldHeader: string): string;

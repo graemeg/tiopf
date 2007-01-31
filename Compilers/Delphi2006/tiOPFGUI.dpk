@@ -81,7 +81,6 @@ contains
   tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas',
   tiHotImage in '..\..\GUI\tiHotImage.pas',
   tiVTExportCSV in '..\..\GUI\tiVTExportCSV.pas',
-  tiVTExport in '..\..\GUI\tiVTExport.pas',
   tiVTExportHTML in '..\..\GUI\tiVTExportHTML.pas';
 
 end.

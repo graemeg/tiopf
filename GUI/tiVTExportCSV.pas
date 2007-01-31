@@ -3,7 +3,7 @@ unit tiVTExportCSV;
 interface
 
 uses
-  tiVTExport
+  tiVTListView
   ;
 
 type
@@ -14,6 +14,7 @@ type
     procedure WriteHeader; override;
   public
     class function FormatName: string; override;
+    class function ImageName: string; override;
   end;
 
   TTiVTExportClipboard = class(TtiVTExportCSV)
@@ -22,16 +23,17 @@ type
     procedure CloseOutput; override;
   public
     class function FormatName: string; override;
+    class function ImageName: string; override;
   end;
 
 implementation
 
 uses
   SysUtils
-  , tiVTListView      // TtiVTColumn
-  , tiObject
-  , tiVirtualTrees
-  , Clipbrd           // global Clipboard object
+  ,tiVirtualTrees
+  ,Clipbrd           // global Clipboard object
+  ,tiResources
+  ,tiObject
   ;
 
 resourcestring
@@ -46,8 +48,13 @@ const
 
 function TtiVTExportCSV.GetFileName: Boolean;
 begin
-  DefaultExt := 'CSV';
+  FDefaultExt := 'CSV';
   Result := inherited GetFileName;
+end;
+
+class function TtiVTExportCSV.ImageName: string;
+begin
+  Result := cResTI_ExportToCSV;
 end;
 
 class function TtiVTExportCSV.FormatName: string;
@@ -136,6 +143,11 @@ end;
 function TTiVTExportClipboard.GetFileName: Boolean;
 begin
   Result := true;
+end;
+
+class function TTiVTExportClipboard.ImageName: string;
+begin
+  Result := cResTI_CopyToClipboard;
 end;
 
 initialization
