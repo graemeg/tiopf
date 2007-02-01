@@ -288,6 +288,12 @@ type
 
   TtiVTExportFileNameEvent = procedure (const AVTExportFile: TtiVTExportFile;
     var AExportFileName: string; var AAskUser: boolean) of object;
+  TtiVTExportedToFileEvent = procedure (const AVTExportFile: TtiVTExportFile;
+    var AAskUserToView: boolean) of object;
+
+  TtiVTExport = class;
+
+  TtiVTExportedEvent = procedure (const AVTExport: TtiVTExport) of object;
 
   TtiCustomVirtualTree = class(TtiFocusPanel)
     // Features not ported:
@@ -542,6 +548,8 @@ type
     FExporting: boolean;
     FSearching: boolean;
     FOnExportFileName: TtiVTExportFileNameEvent;
+    FOnExported: TtiVTExportedEvent;
+    FOnExportedToFile: TtiVTExportedToFileEvent;
 
     procedure SetButtonStyle(const AValue: TLVButtonStyle);
     procedure SetVisibleButtons(const AValue: TtiLVVisibleButtons);
@@ -557,6 +565,8 @@ type
     procedure SetExporting(const AValue: boolean);
     procedure SetSearching(const AValue: boolean);
     procedure SetOnExportFileName(const AValue: TtiVTExportFileNameEvent);
+    procedure SetOnExported(const AValue: TtiVTExportedEvent);
+    procedure SetOnExportedToFile(const AValue: TtiVTExportedToFileEvent);
   protected
     procedure CreateButtonPanel;
     procedure CreateWnd; override;
@@ -600,6 +610,8 @@ type
     function CanView: Boolean; override;
 
     property OnExportFileName: TtiVTExportFileNameEvent read FOnExportFileName write SetOnExportFileName;
+    property OnExportedToFile: TtiVTExportedToFileEvent read FOnExportedToFile write SetOnExportedToFile;
+    property OnExported: TtiVTExportedEvent read FOnExported write SetOnExported;
 
     procedure Refresh(const pSelectedData: TtiObject = nil); override;
 
@@ -644,6 +656,8 @@ type
     property OnFocusChanged;
     property OnGetImageIndex;
     property OnExportFileName;
+    property OnExportedToFile;
+    property OnExported;
     property OnHeaderClick;
     property OnItemArrive;
     property OnItemDelete;
@@ -664,6 +678,8 @@ type
     FOutputStr: string;
     FSourceTree: TtiCustomVirtualEditTree;
     FStream: TtiPreSizedStream;
+    procedure WriteDetailEx(const AFieldSeparator, AFieldDelimiter: char);
+    procedure WriteHeaderEx(const AFieldSeparator, AFieldDelimiter: char);
     procedure WriteToOutput(const AText: string); virtual;
     function CreateOutput: boolean; virtual;
     procedure WriteHeader; virtual;
@@ -672,6 +688,7 @@ type
     procedure WriteFooter; virtual;
     procedure CloseOutput; virtual;
   public
+    constructor Create; override;
     destructor Destroy; override;
     class function FormatName: string; virtual; abstract;
     class function ImageName: string; virtual; abstract;
@@ -688,6 +705,16 @@ type
   public
     property FileName: string read FFileName;
     property DefaultExt: string read FDefaultExt;
+  end;
+
+  TTiVTExportClipboard = class(TtiVTExport)
+  protected
+    procedure CloseOutput; override;
+    procedure WriteDetail; override;
+    procedure WriteHeader; override;
+  public
+    class function FormatName: string; override;
+    class function ImageName: string; override;
   end;
 
   TtiVTExportClass = class of TtiVTExport;
@@ -743,8 +770,9 @@ uses
   ,tiGUIUtils
   ,tiDialogs // Debuggin
   ,Windows  // VK_XXX
-  , tiVTExportCSV
-  , tiVTExportHTML
+  ,tiVTExportCSV
+  ,tiVTExportHTML
+  ,Clipbrd           // global Clipboard object
   ;
 
 type
@@ -2815,6 +2843,18 @@ begin
   FOnClearSort := AValue;
 end;
 
+procedure TtiCustomVirtualEditTree.SetOnExported(
+  const AValue: TtiVTExportedEvent);
+begin
+  FOnExported := AValue;
+end;
+
+procedure TtiCustomVirtualEditTree.SetOnExportedToFile(
+  const AValue: TtiVTExportedToFileEvent);
+begin
+  FOnExportedToFile := AValue;
+end;
+
 procedure TtiCustomVirtualEditTree.SetOnExportFileName(
   const AValue: TtiVTExportFileNameEvent);
 begin
@@ -3140,12 +3180,20 @@ end;
 
 procedure TtiVTExport.CloseOutput;
 begin
-  FreeAndNil(FStream);
+
+    if Assigned(FSourceTree.OnExported) then
+      FSourceTree.OnExported(self);
+
+end;
+
+constructor TtiVTExport.Create;
+begin
+  inherited;
+  FStream := TtiPreSizedStream.Create(0, cStreamGrowBy);
 end;
 
 function TtiVTExport.CreateOutput: boolean;
 begin
-  FStream := TtiPreSizedStream.Create(0, cStreamGrowBy);
   Result := true;
 end;
 
@@ -3176,6 +3224,47 @@ begin
 
 end;
 
+procedure TtiVTExport.WriteDetailEx(
+  const AFieldSeparator, AFieldDelimiter: char);
+var
+  lNode: PVirtualNode;
+  I: integer;
+  LColumn: TtiVTColumn;
+  LLastColumnIndex: integer;
+  LObject: TtiObject;
+
+begin
+  lNode := FSourceTree.VT.GetFirst;
+
+  while (lNode <> nil) do
+  begin
+    SetLength(FOutputStr, 0);
+    LObject := FSourceTree.GetObjectFromNode(lNode);
+    LLastColumnIndex := FSourceTree.VT.Header.Columns.Count - 1;
+
+    for I := 0 to LLastColumnIndex do
+    begin
+      LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
+
+      if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
+        if LColumn.DataType = vttkString then
+          FmtStr(FOutputStr, '%s%s%s%s%s', [FOutputStr, AFieldSeparator,
+            AFieldDelimiter, FSourceTree.GetTextFromObject(LObject, I),
+              AFieldDelimiter])
+        else
+          FmtStr(FOutputStr, '%s%s%s', [FOutputStr, AFieldSeparator,
+            FSourceTree.GetTextFromObject(LObject, I)]);
+
+    end;
+
+    if LLastColumnIndex >= 0 then
+      Delete(FOutputStr, 1, Length(AFieldSeparator));
+
+    WriteToOutput(FOutputStr);
+    lNode := FSourceTree.VT.GetNext(lNode);
+  end;
+end;
+
 procedure TtiVTExport.WriteFooter;
 begin
 
@@ -3184,6 +3273,32 @@ end;
 procedure TtiVTExport.WriteHeader;
 begin
 
+end;
+
+procedure TtiVTExport.WriteHeaderEx(const AFieldSeparator, AFieldDelimiter: char);
+var
+  I: integer;
+  LColumn: TtiVTColumn;
+  LLastColumnIndex: integer;
+
+begin
+  SetLength(FOutputStr, 0);
+  LLastColumnIndex := FSourceTree.VT.Header.Columns.Count - 1;
+
+  for I := 0 to LLastColumnIndex do
+  begin
+    LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
+
+    if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
+        FmtStr(FOutputStr, '%s%s%s%s%s', [FOutputStr, AFieldSeparator,
+          AFieldDelimiter, LColumn.Text, AFieldDelimiter])
+
+  end;
+
+  if LLastColumnIndex >= 0 then
+    Delete(FOutputStr, 1, Length(AFieldSeparator));
+
+  WriteToOutput(FOutputStr);
 end;
 
 procedure TtiVTExport.WriteTitles;
@@ -3199,10 +3314,21 @@ end;
 { TtiVTExportFile }
 
 procedure TtiVTExportFile.CloseOutput;
+var
+  LAskToViewFile: boolean;
+
 begin
 
   try
     FStream.SaveToFile(FFileName);
+    LAskToViewFile := true;
+
+    if Assigned(FSourceTree.OnExportedToFile) then
+      FSourceTree.OnExportedToFile(self, LAskToViewFile);
+
+    if LAskToViewFile and tiAppConfirmation('Do you want to view "%s" ?', [FFileName]) then
+      tiEditFile(FFileName);
+
   except
     on E: Exception do
     begin
@@ -3211,6 +3337,7 @@ begin
     end;
   end;
 
+  inherited CloseOutput;
 end;
 
 function TtiVTExportFile.CreateOutput: boolean;
@@ -3385,10 +3512,48 @@ begin
   FIniFile.WriteString(LSection, LIdent, AFileName);
 end;
 
+{ TTiVTExportClipboard }
+
+resourcestring
+  ClipboardDesc = 'Clipboard';
+
+const
+  ClipboardFieldSeparator = #9;
+  ClipboardFieldDelimiter = '"';
+
+procedure TTiVTExportClipboard.CloseOutput;
+begin
+  Clipboard.AsText := FStream.AsString;
+  inherited CloseOutput;
+end;
+
+class function TTiVTExportClipboard.FormatName: string;
+begin
+  Result := ClipboardDesc;
+end;
+
+class function TTiVTExportClipboard.ImageName: string;
+begin
+  Result := cResTI_CopyToClipboard;
+end;
+
+procedure TTiVTExportClipboard.WriteDetail;
+begin
+  WriteDetailEx(ClipboardFieldSeparator, ClipboardFieldDelimiter);
+end;
+
+procedure TTiVTExportClipboard.WriteHeader;
+begin
+  WriteHeaderEx(ClipboardFieldSeparator, ClipboardFieldDelimiter);
+end;
+
 initialization
+
+  tiVTExportRegistry.RegisterExport(TTiVTExportClipboard);
+
 finalization
 
   utiVTExportRegistry.Free;
-  
+
 end.
 
