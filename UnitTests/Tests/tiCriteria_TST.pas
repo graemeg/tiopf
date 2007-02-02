@@ -32,6 +32,7 @@ type
     procedure TestPerLikeCriteria_SQL;
     procedure TestPerNullCriteria_SQL;
     procedure TestPerBetweenCriteria_SQL;
+    procedure TestPerSQLCriteria_SQL;
 
     // Testing XPath generation
     // The SQL tests will need to be clone for XPath at some point
@@ -396,7 +397,8 @@ begin
   finally
     lCriteria.Free;
   end;
-  
+
+  // Negative criteria
   lCriteria := TPerCriteria.Create('test');
   try
     lCriteria.AddNotLike('FIELD_1', 'A%');
@@ -432,6 +434,21 @@ begin
     lCriteria.AddBetween('FIELD_1', '1', '2');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
     CheckEquals('(FIELD_1 BETWEEN 1 AND 2)', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerSQLCriteria_SQL;
+var
+  lCriteria: TPerCriteria;
+  lSQL: string;
+begin
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddSQL('Upper(Field_1) LIKE ''A%''');
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(Upper(Field_1) LIKE ''A%'')', lSQL, 'Failed on 1');
   finally
     lCriteria.Free;
   end;

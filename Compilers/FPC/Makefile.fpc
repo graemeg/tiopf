@@ -1,16 +1,20 @@
-#   Makefile.fpc for tiOPF 2.0
+#   Makefile.fpc for tiOPF 2.0.2.1
 
 [package]
 name=tiopf
-version=2.0
+version=2.0.2.1
+
+[default]
+fpcdir=/opt/fpc/src
 
 [compiler]
 unittargetdir=lib/$(CPU_TARGET)-$(OS_TARGET)
-unitdir=../../Core/ ../../Options/ ../../GUI/ ../../../../fblib/lib/$(CPU_TARGET)-/ /opt/lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/ /opt/lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ /opt/lazarus/packager/units/$(CPU_TARGET)-$(OS_TARGET)/
-options=-dLINK_CSVx -dLINK_FBL -dUseCThreads -dLCL -dLCL$(LCL_PLATFORM) -S2 -gl
+unitdir=../../Core/ ../../Options/ /home/graemeg/programming/3rdParty/FBlib/lib/$(CPU_TARGET)-$(OS_TARGET)/ /opt/lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/ /opt/lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ /opt/lazarus/packager/units/$(CPU_TARGET)-$(OS_TARGET)/ ./
+includedir=../../Core/ ./
+options=-dLINK_CSV -dLINK_TAB -dLINK_FBL -dLINK_XMLLIGHT -dLINK_ZEOS_FB15x -dUseCThreads -dLCL -dLCL$(LCL_PLATFORM) -S2 -gl
 
 [target]
-units=tiOPF.pas
+units=tiOPF
 
 [clean]
 files=$(wildcard $(COMPILER_UNITTARGETDIR)/*$(OEXT)) \
@@ -24,7 +28,11 @@ ifndef LCL_PLATFORM
 ifeq ($(OS_TARGET),win32)
 LCL_PLATFORM=win32
 else
+ifeq ($(OS_TARGET),win64)
+LCL_PLATFORM=win32
+else
 LCL_PLATFORM=gtk
+endif
 endif
 endif
 export LCL_PLATFORM
@@ -35,4 +43,6 @@ export LCL_PLATFORM
 cleartarget:
         -$(DEL) $(COMPILER_UNITTARGETDIR)/tiopf$(PPUEXT)
 
-all: cleartarget $(COMPILER_UNITTARGETDIR) tiopf$(PPUEXT)
+all: tiOPF.pas
+#  cleartarget 
+#  tiOPF.pas

@@ -5,7 +5,8 @@ unit tiCriteria;
 interface
 
 uses
-  tiObject;
+  tiObject
+  ;
 
 type
   TCriteriaType = (crAND, crOR, crNONE);
@@ -97,6 +98,7 @@ type
     procedure   AddOrderByAscending(AFields: array of string); overload;
     procedure   AddOrderByDescending(AField: string); overload;
     procedure   AddOrderByDescending(AFields: array of string); overload;
+    procedure   AddSQL(ASQLStm: string);
     procedure   ClearAll;
     function    GetGroupByList: TPerColumns;
     function    GetOrderByList: TPerColumns;
@@ -315,9 +317,10 @@ end;
 constructor TPerCriteria.Create(pName: string);
 begin
   inherited Create;
-  FName         := pName;
-  FCriteriaType := crNONE;
-  
+  FName           := pName;
+  FCriteriaType   := crNONE;
+  FisEmbraced     := False;
+
   FCriterias := TPerCriteriaList.Create;
   FCriterias.Owner                := Self;
   FCriterias.OwnsObjects          := true;
@@ -334,7 +337,6 @@ begin
   FOrderByList := TPerColumns.Create;
   FOrderByList.Owner              := Self;
   FOrderByList.OwnsObjects        := true;
-  FisEmbraced                     := False;
 end;
 
 destructor TPerCriteria.Destroy;
@@ -603,6 +605,14 @@ var
 begin
   for i := Low(AFields) to High(AFields) do
     AddOrderByDescending(AFields[i]);
+end;
+
+procedure TPerCriteria.AddSQL(ASQLStm: string);
+var
+  lData: TPerSQLCriteria;
+begin
+  lData := TPerSQLCriteria.Create(ASQLStm);
+  FSelectionCriterias.Add(lData);
 end;
 
 procedure TPerCriteria.ClearAll;

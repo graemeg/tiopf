@@ -58,7 +58,7 @@ begin
 
     if TPerCriteria(pVisited).isEmbraced then
       result := '(' + result + ')' + CrLf
-      else
+    else
       result := result + CrLf;
 
     result := result + lVisitor.GroupByClausesAsText + CrLf;
@@ -195,12 +195,12 @@ begin
   FAppendBegin := ' AND (';
   FAppendEnd := ')';
 
-  for i := 1 to ACriterias.Count - 2 do
-    begin
-      Apply(ACriterias.Items[i]);
-    end;
+  for i := 1 to ACriterias.Count - 1 do
+  begin
+    Apply(ACriterias.Items[i]);
+  end;
 
-  Apply(ACriterias.Items[ACriterias.Count - 1]);
+//  Apply(ACriterias.Items[ACriterias.Count - 1]);
 end;
 
 
@@ -247,7 +247,7 @@ begin
   Write(')');
 
   if FWithComments then
-  Write(' // ' + TPerCriteria(pVisited).Name + '// ');
+  Write(' /* ' + TPerCriteria(pVisited).Name + '*/ ');
   FGroupByList.CopyReferences(TPerCriteria(pVisited).GetGroupByList);
   FOrderByList.CopyReferences(TPerCriteria(pVisited).GetOrderByList);
 end;
