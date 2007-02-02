@@ -16,7 +16,7 @@ uses
     tiOIDString, tiDataBuffer_Cli, tiDataBuffer_BOM, tiQueryTXTAbs, 
     tiTextParser, tiTextParserStructCSV, tiLogToConsole, tiXML, tiQueryCSV, 
     tiQueryTAB, tiLogToFile, tiCriteria, tiVisitorCriteria, tiXMLToTIDataset, 
-    tiQueryXMLLight; 
+    tiQueryXMLLight, tiRTTI; 
 
 implementation
 

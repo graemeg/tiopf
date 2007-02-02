@@ -39,7 +39,7 @@
         <PackageName Value="FCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="21">
+    <Units Count="22">
       <Unit0>
         <Filename Value="fpcUnitTIOPFGui.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -145,6 +145,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiUtils_TST"/>
       </Unit20>
+      <Unit21>
+        <Filename Value="../Tests/tiRTTI_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiRTTI_TST"/>
+      </Unit21>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

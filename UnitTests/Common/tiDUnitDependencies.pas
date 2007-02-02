@@ -58,6 +58,7 @@ uses
   ,tiQueryNonSQL_TST
   ,tiXML_TST
   ,tiCriteria_TST
+  ,tiRTTI_TST
 
   {$IFDEF FPC}
   ,tiOPFFBL_TST
@@ -128,6 +129,7 @@ begin
   tiClassToDBMap_TST.RegisterTests;
   tiXML_TST.RegisterTests;
   tiCriteria_TST.RegisterTests;
+  tiRTTI_TST.RegisterTests;
 
   {$IFDEF FPC}
   tiOPFFBL_TST.RegisterTests;

@@ -35,8 +35,8 @@
 "/>
     <License Value="Mozilla Public License 1.1
 "/>
-    <Version Major="2" Release="2" Build="1"/>
-    <Files Count="48">
+    <Version Major="2" Release="2" Build="2"/>
+    <Files Count="49">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -229,6 +229,10 @@
         <Filename Value="../../Options/tiQueryXMLLight.pas"/>
         <UnitName Value="tiQueryXMLLight"/>
       </Item48>
+      <Item49>
+        <Filename Value="../../Core/tiRTTI.pas"/>
+        <UnitName Value="tiRTTI"/>
+      </Item49>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
