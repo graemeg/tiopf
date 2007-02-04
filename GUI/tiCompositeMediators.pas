@@ -4,6 +4,8 @@ unit tiCompositeMediators;
   {$mode delphi}{$H+}
 {$ENDIF}
 
+{$I tiDefines.inc}
+
 interface
 
 uses
@@ -23,7 +25,6 @@ type
   private
     FIsObserving: Boolean;
     FDisplayNames: string;
-    FSelectedObject: TtiObject;
     FShowDeleted: Boolean;
     function GetSelectedObject: TtiObject;
     procedure   SetSelectedObject(const AValue: TtiObject);

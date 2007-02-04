@@ -314,7 +314,7 @@ type
   protected
     procedure   SetValue(const AValue: String); override;
     procedure   Loaded; override;
-    procedure   DoOnExit(Sender : TObject);
+    procedure   DoOnExit(Sender : TObject); override;
 
   published
     property HistoryCount : integer read FiHistoryCount write setHistoryCount;

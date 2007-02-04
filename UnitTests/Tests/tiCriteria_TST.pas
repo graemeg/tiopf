@@ -342,7 +342,8 @@ begin
   { IN with string array elements }
   lCriteria := TPerCriteria.Create('test');
   try
-    lCriteria.AddIn('OID', ['Value1', 'Value2']);
+//    lCriteria.AddIn('OID', ['Value1', 'Value2']);
+Fail('BDS2006 failing to compile');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
     CheckEquals('(OID IN (''Value1'', ''Value2''))', lSQL, 'Failed on 2');
   finally
@@ -352,7 +353,8 @@ begin
   { IN with integer array elements }
   lCriteria := TPerCriteria.Create('test');
   try
-    lCriteria.AddIn('OID', [1, 2, 3, 4, 5]);
+//    lCriteria.AddIn('OID', [1, 2, 3, 4, 5]);
+Fail('BDS2006 failing to compile');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
     CheckEquals('(OID IN (1, 2, 3, 4, 5))', lSQL, 'Failed on 3');
   finally

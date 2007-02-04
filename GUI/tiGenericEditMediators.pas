@@ -613,7 +613,6 @@ procedure TMediatorDynamicComboBoxView.InternalListRefresh;
 var
   lItems: TStrings;
   i: Integer;
-  v: variant;
 begin
   lItems := EditControl.Items;
   lItems.Clear;
@@ -661,8 +660,11 @@ begin
 
   if UseInternalOnChange then
     EditControl.OnChange := DoOnChange; // default OnChange event handler
-
-  EditControl.ReadOnly  := True;
+  {$ifdef fpc}
+    EditControl.ReadOnly  := True;
+  {$else}
+    Assert(false, 'Build failing under BDS2006. Above hack to get it compiling');
+  {$endif}
   EditControl.Style     := csDropDownList;  // combos are meant for selection not typing
   EditControl.Enabled   := (FList.Count > 0);
 end;
