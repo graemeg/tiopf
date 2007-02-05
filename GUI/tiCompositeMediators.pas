@@ -1,9 +1,5 @@
 unit tiCompositeMediators;
 
-{$IFDEF FPC}
-  {$mode delphi}{$H+}
-{$ENDIF}
-
 {$I tiDefines.inc}
 
 interface

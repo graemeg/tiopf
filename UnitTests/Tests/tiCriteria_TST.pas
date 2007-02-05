@@ -328,6 +328,8 @@ procedure TTestTICriteria.TestPerInCriteria_SQL;
 var
   lCriteria: TPerCriteria;
   lSQL: string;
+  myStrArray: array[0..1] of String;
+  myIntArray: array[0..4] of Integer;
 begin
   { IN with a SQL statement }
   lCriteria := TPerCriteria.Create('test');
@@ -342,8 +344,10 @@ begin
   { IN with string array elements }
   lCriteria := TPerCriteria.Create('test');
   try
-//    lCriteria.AddIn('OID', ['Value1', 'Value2']);
-Fail('BDS2006 failing to compile');
+    myStrArray[0] := 'Value1';
+    myStrArray[1] := 'Value2';
+//    lCriteria.AddIn('OID', ['Value1', 'Value2']);   { This also works in FPC, but not Delphi }
+    lCriteria.AddIn('OID', myStrArray);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
     CheckEquals('(OID IN (''Value1'', ''Value2''))', lSQL, 'Failed on 2');
   finally
@@ -353,8 +357,13 @@ Fail('BDS2006 failing to compile');
   { IN with integer array elements }
   lCriteria := TPerCriteria.Create('test');
   try
-//    lCriteria.AddIn('OID', [1, 2, 3, 4, 5]);
-Fail('BDS2006 failing to compile');
+    myIntArray[0] := 1;
+    myIntArray[1] := 2;
+    myIntArray[2] := 3;
+    myIntArray[3] := 4;
+    myIntArray[4] := 5;
+//    lCriteria.AddIn('OID', [1, 2, 3, 4, 5]);  { This also works in FPC, but not Delphi }
+    lCriteria.AddIn('OID', myIntArray);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
     CheckEquals('(OID IN (1, 2, 3, 4, 5))', lSQL, 'Failed on 3');
   finally

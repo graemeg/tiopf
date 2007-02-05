@@ -94,11 +94,11 @@ type
     procedure   SetItems(i: integer; const AValue: TtiOPFTestGroup); reintroduce;
   public
     property    Items[i:integer]: TtiOPFTestGroup read GetItems write SetItems;
-    procedure   Add(AObject : TtiOPFTestGroup; ADefaultDispOrder : boolean = true); reintroduce;
-    procedure   Read(const ADBConnectionName : string; APersistenceLayerName : string = ''); override;
-    procedure   ReadPK(const ADBConnectionName : string; APersistenceLayerName : string = ''); override;
+    procedure   Add(AObject: TtiOPFTestGroup); reintroduce;
+    procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    procedure   ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
   published
-    property    OIDAsInteger : integer read GetOIDAsInteger;
+    property    OIDAsInteger: integer read GetOIDAsInteger;
   end;
 
 
@@ -118,15 +118,15 @@ type
     procedure   SetItems(i: integer; const AValue: TtiOPFTestItem); reintroduce;
   public
     property    Items[i:integer]: TtiOPFTestItem read GetItems write SetItems;
-    procedure   Add(AObject : TtiOPFTestItem; ADefaultDispOrder : boolean = true); reintroduce;
+    procedure   Add(AObject: TtiOPFTestItem); reintroduce;
   published
-    property    OIDAsInteger : integer read GetOIDAsInteger;
-    property    StrField  : string  read FStrField   write FStrField;
-    property    IntField  : integer read FIntField   write FIntField;
-    property    FloatField : Extended read FFloatField write FFloatField;
-    property    DateField : TDateTime read FDateField write FDateField;
-    property    BoolField : Boolean read FBoolField write FBoolField;
-    property    NotesField : string  read FNotesField write FNotesField;
+    property    OIDAsInteger: integer read GetOIDAsInteger;
+    property    StrField: string read FStrField write FStrField;
+    property    IntField: integer read FIntField write FIntField;
+    property    FloatField: Extended read FFloatField write FFloatField;
+    property    DateField: TDateTime read FDateField write FDateField;
+    property    BoolField: Boolean read FBoolField write FBoolField;
+    property    NotesField: string read FNotesField write FNotesField;
   end;
 
 
@@ -143,15 +143,15 @@ type
     function    GetOwner: TtiOPFTestGroup; reintroduce;
     procedure   SetOwner(const AValue: TtiOPFTestGroup); reintroduce;
   public
-    property    Owner      : TtiOPFTestGroup read GetOwner      write SetOwner;
+    property    Owner: TtiOPFTestGroup read GetOwner write SetOwner;
   published
-    property OIDAsInteger : integer read GetOIDAsInteger;
-    property StrField  : string  read FStrField   write FStrField;
-    property IntField  : integer read FIntField   write FIntField;
-    property FloatField : Extended read FFloatField write FFloatField;
-    property DateField : TDateTime read FDateField write FDateField;
-    property BoolField : Boolean read FBoolField write FBoolField;
-    property NotesField : string  read FNotesField write FNotesField;
+    property    OIDAsInteger: integer read GetOIDAsInteger;
+    property    StrField: string read FStrField write FStrField;
+    property    IntField: integer read FIntField write FIntField;
+    property    FloatField: Extended read FFloatField write FFloatField;
+    property    DateField: TDateTime read FDateField write FDateField;
+    property    BoolField: Boolean read FBoolField write FBoolField;
+    property    NotesField: string read FNotesField write FNotesField;
   end;
 
 
@@ -166,10 +166,10 @@ type
     FDateField: TDateTime;
   public
   published
-    property StrField  : string  read FStrField   write FStrField;
-    property IntField  : integer read FIntField   write FIntField;
-    property FloatField : Extended read FFloatField write FFloatField;
-    property DateField : TDateTime read FDateField write FDateField;
+    property    StrField: string read FStrField write FStrField;
+    property    IntField: integer read FIntField write FIntField;
+    property    FloatField: Extended read FFloatField write FFloatField;
+    property    DateField: TDateTime read FDateField write FDateField;
   end;
 
 
@@ -397,9 +397,9 @@ end;
 
 { TTestClasses }
 
-procedure TtiOPFTestData.Add(AObject: TtiOPFTestGroup;ADefaultDispOrder: boolean);
+procedure TtiOPFTestData.Add(AObject: TtiOPFTestGroup);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 
@@ -468,9 +468,9 @@ end;
 
 { TtiOPFTestGroup }
 
-procedure TtiOPFTestGroup.Add(AObject: TtiOPFTestItem; ADefaultDispOrder: boolean);
+procedure TtiOPFTestGroup.Add(AObject: TtiOPFTestItem);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 
