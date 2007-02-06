@@ -4798,14 +4798,14 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">xpath_directories</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{FE41939F-0CE2-4466-9908-F26C3301F0C1}"><Property MultiValue="0" name="DefaultValue" type="string">Win32 Daily build</Property>
+      <Object Class="TFBVariable" XMLID="{FE41939F-0CE2-4466-9908-F26C3301F0C1}"><Property MultiValue="0" name="DefaultValue" type="string">Win32 Daily Build</Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_sender_name</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{F8CC367E-35F7-4250-A77C-8CC4A8778A5C}"><Property MultiValue="0" name="DefaultValue" type="string">DailyBuild@techinsite-nospam.com.au</Property>
+      <Object Class="TFBVariable" XMLID="{F8CC367E-35F7-4250-A77C-8CC4A8778A5C}"><Property MultiValue="0" name="DefaultValue" type="string">DontSpamMe@techinsite.com.au</Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
