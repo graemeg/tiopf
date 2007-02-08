@@ -35,6 +35,7 @@ type
   TtiClassDBMapRelationshipType = (pktDB, pktFK, pktReadable);
   TPKInfo = set of TtiClassDBMapRelationshipType;
 
+
   TtiClassDBMappingMgr = class(TtiObject)
   private
     FAttrColMaps : TtiAttrColMaps;
@@ -68,6 +69,7 @@ type
     property    Collections : TtiClassDBCollections read FCollections;
   end;
 
+
   TtiClassMaps = class(TtiObjectList)
   private
   protected
@@ -90,6 +92,7 @@ type
     procedure   FindAllParents(const AClass : TtiClass;
                                 const AList : TtiClassMaps);
   end;
+
 
   TtiClassMap = class(TtiObjectList)
   private
@@ -114,17 +117,20 @@ type
 //    function    FindCreate(const AAttrName : string): TtiAttrMap;
   end;
 
+
   TtiAttrMap = class(TtiObject)
   private
     FAttrName: string;
   protected
+    function    GetCaption: string; override;
     function    GetOwner: TtiClassMap; reintroduce;
     procedure   SetOwner(const AValue: TtiClassMap); reintroduce;
   public
-    property    Owner      : TtiClassMap read GetOwner      write SetOwner;
+    property    Owner: TtiClassMap read GetOwner write SetOwner;
   published
-    property    AttrName : string read FAttrName write FAttrName;
+    property    AttrName: string read FAttrName write FAttrName;
   end;
+
 
   TtiDBMaps = class(TtiObjectList)
   private
@@ -142,6 +148,7 @@ type
     function    FindCreate(const ADatabaseName : string): TtiDBMap;
   published
   end;
+
 
   TtiDBMap = class(TtiObjectList)
   private
@@ -162,6 +169,7 @@ type
     property    DatabaseName : string read FDatabaseName write FDatabaseName;
   end;
 
+
   TtiDBTableMap = class(TtiObjectList)
   private
     FTableName: string;
@@ -181,6 +189,7 @@ type
     property    TableName : string read FTableName write FTableName;
   end;
 
+
   TtiDBColMap = class(TtiObject)
   private
     FColName: string;
@@ -195,6 +204,7 @@ type
     property    ColName : string read FColName write FColName;
     property    PKInfo : TPKInfo read FPKInfo write FPKInfo;
   end;
+
 
   TtiAttrColMaps = class(TtiObjectList)
   private
@@ -218,6 +228,7 @@ type
   published
   end;
 
+
   TtiAttrColMap = class(TtiObject)
   private
     FAttrMap: TtiAttrMap;
@@ -231,6 +242,7 @@ type
     property    AttrMap : TtiAttrMap read FAttrMap write FAttrMap;
     property    DBColMap : TtiDBColMap read FDBColMap write FDBColMap;
   end;
+
 
   TtiClassDBCollections = class(TtiObjectList)
   protected
@@ -251,6 +263,7 @@ type
   published
   end;
 
+
   TtiClassDBCollection = class(TtiObject)
   private
     FPerObjAbsClass : TtiClass;
@@ -268,6 +281,7 @@ type
     property    PerObjAbsClass : TtiClass read FPerObjAbsClass write FPerObjAbsClass;
     property    OwnerAttrMaps  : TtiAttrColMaps read FOwnerAttrMaps;
   end;
+
 
 //  TtiForeignKeyMaps = class(TtiObjectList)
 //  private
@@ -942,6 +956,11 @@ end;
 procedure TtiAttrColMaps.SetOwner(const AValue: TtiClassDBMappingMgr);
 begin
   inherited SetOwner(AValue);
+end;
+
+function TtiAttrMap.GetCaption: string;
+begin
+  Result := AttrName;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

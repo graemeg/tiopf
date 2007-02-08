@@ -137,17 +137,13 @@ uses
   SysUtils
   ,tiOPFManager
   ,tiLog
-  ,tiUtils
   ,TypInfo
   ,tiOID
  ;
 
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TVisAutoAbs
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{ TVisAutoAbs }
+
 procedure TVisAutoAbs.AddToParams(const AParams: TtiQueryParams;
   const pAttrColMaps: TtiAttrColMaps; const AData : TtiObject);
   
@@ -186,20 +182,23 @@ procedure TVisAutoAbs.AddToParams(const AParams: TtiQueryParams;
   end;
   
 var
-  lAttrColMap : TtiAttrColMap;
-  i : integer;
-  lColName : string;
-  lPropName : string;
+  lAttrColMap: TtiAttrColMap;
+  i: integer;
+  lColName: string;
+  lPropName: string;
 begin
   Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
   AParams.Clear;
   for i := 0 to pAttrColMaps.Count - 1 do
   begin
-    lAttrColMap := pAttrColMaps.Items[i];
-    lColName := lAttrColMap.DBColMap.ColName;
-    lPropName := lAttrColMap.AttrMap.AttrName;
-    if  (Pos('OID', UpperCase(lPropName)) <> 0)
-    and (Pos('_OID', UpperCase(lPropName)) = 0) then
+    lAttrColMap   := pAttrColMaps.Items[i];
+    lColName      := lAttrColMap.DBColMap.ColName;
+    lPropName     := lAttrColMap.AttrMap.AttrName;
+
+    { A little more fine grained. OID and Owner.OID will pass - not just any
+      property with the letters OID in it. }
+    if (SameText('OID', lPropName) or SameText('Owner.OID', lPropName))
+        and (Pos('_OID', UpperCase(lPropName)) = 0) then
       _SetOIDParam(AParams, AData, lColName, lPropName)
     else
       AParams.SetValueFromProp(AData, lPropName, lColName);
@@ -230,10 +229,9 @@ begin
   inherited;
 end;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *// *
-// * TVisAutoCollectionRead
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TVisAutoCollectionRead }
+
 function TVisAutoCollectionRead.AcceptVisitor: boolean;
 begin
   result :=
@@ -269,14 +267,9 @@ begin
 end;
 
 procedure TVisAutoCollectionRead.ReadDataForParentClass(ACollection : TtiClassDBCollection);
-var
-  lTableName : string;
-  lParams : string;
 begin
   FClassDBCollection := ACollection;
   SetupParams;
-  lTableName := FWhereAttrColMaps.TableName;
-  lParams := ParamsToString(FWhere);
   Query.SelectRow(FAttrColMaps.TableName, FWhere);
   while not Query.EOF do
   begin
@@ -980,7 +973,4 @@ begin
 end;
 
 end.
-
-
-
 

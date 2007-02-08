@@ -313,11 +313,16 @@ end;
 
 
 function TtiQueryFBL.GetParamAsString(const AName: string): string;
+var
+  i: integer;
 begin
   {$IFDEF FBL_Params_Mod}
-  result := FQuery.ParamValueAsString(FQuery.ParamNames.IndexOf(AName));
+  i := FQuery.ParamNameToIndex(AName);
+  if i >= 0 then
+    result := FQuery.ParamValueAsString(i)
+  else
   {$ELSE}
-  result := '* not supported *';
+    result := '* not supported *';
   {$ENDIF}
 end;
 
