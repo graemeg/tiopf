@@ -22,7 +22,7 @@ type
     FIsObserving: Boolean;
     FDisplayNames: string;
     FShowDeleted: Boolean;
-    function GetSelectedObject: TtiObject;
+    function    GetSelectedObject: TtiObject;
     procedure   SetSelectedObject(const AValue: TtiObject);
     procedure   SetShowDeleted(const AValue: Boolean);
     procedure   DoCreateItemMediator(AData: TtiObject);
@@ -232,11 +232,12 @@ end;
 
 procedure TCompositeListViewMediator.SetupGUIandObject;
 begin
-  { Setup TListView }
+  { Setup TListView defaults }
   FView.Columns.Clear;
   FView.Items.Clear;
   FView.ViewStyle         := vsReport;
   FView.ShowColumnHeaders := True;
+  FView.RowSelect         := True;
   {$IFDEF FPC}
   FView.AutoSize          := False;
   FView.ScrollBars        := ssAutoBoth;
