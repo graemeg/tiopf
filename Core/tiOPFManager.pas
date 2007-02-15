@@ -770,12 +770,16 @@ begin
   lRegPerLayer := FPersistenceLayers.FindByPerLayerName(APackageID);
   if lRegPerLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
-  if lRegPerLayer.tiDatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword, AParams) then
-  begin
-    lRegPerLayer.DBConnectionPools.Connect(ADatabaseName, AUserName, APassword, AParams);
-    result := true;
-  end else
-    Result := false;
+
+  if lRegPerLayer.DBConnectionPools.IsConnected(ADatabaseName) then
+    result := true  // Assume OK if already connect (Warning: Could be a different user)
+  else 
+    if lRegPerLayer.tiDatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword, AParams) then
+    begin
+      lRegPerLayer.DBConnectionPools.Connect(ADatabaseName, AUserName, APassword, AParams);
+      result := true;
+    end else
+      Result := false;
 end;
 
 
