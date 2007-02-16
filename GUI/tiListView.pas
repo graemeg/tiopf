@@ -1097,7 +1097,7 @@ end;
 function TtiCustomListView.GetColWidth(pListColumn : TtiListColumn; pLVColumn : TListColumn):Integer;
 begin
   if pListColumn.Width = -1 then
-    result := Canvas.TextWidth(pLVColumn.Caption) + 12
+    result := FLV.Canvas.TextWidth(pLVColumn.Caption) + 12
   else
     result := pListColumn.Width;
 end;
@@ -1122,7 +1122,7 @@ begin
   for j := 1 to Columns.Count - 1 do begin
     if {not RunTimeGenCols and} FtiListColumns.Items[j-1].Width = -1 then
     begin
-      liTextWidth := Canvas.TextWidth(Columns[j].Caption);
+      liTextWidth := FLV.Canvas.TextWidth(Columns[j].Caption);
       laWidths[j]:= Max(laWidths[j], liTextWidth);
     end;
   end;
@@ -1132,7 +1132,7 @@ begin
     for j := 1 to Columns.Count - 1 do
       if FtiListColumns.Items[j-1].Width = -1 then
         laWidths[j]:=
-          Max(Canvas.TextWidth(GetCellText(i, j-1)), laWidths[j]);
+          Max(FLV.Canvas.TextWidth(GetCellText(i, j-1)), laWidths[j]);
 
   // Now set the column widths to match the calculated values.
   for j := 1 to Columns.Count - 1 do
