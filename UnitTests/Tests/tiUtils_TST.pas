@@ -63,6 +63,7 @@ type
     procedure tiAddTrailingSpace;
     procedure tiAddTrailingValue;
     procedure tiAppendStringToStream;
+    procedure tiApplicationName;
     procedure tiAusFinancialYearToString;
     procedure tiBooleanToStr;
     procedure tiCheckSum;
@@ -91,6 +92,7 @@ type
     procedure tiFloatToCurrencyHide0;
     procedure tiFloatToStr;
     procedure tiForceDirectories;
+    procedure tiGetAppConfigDir;
     procedure tiGetComputerName;
     procedure tiGetFileSize;
     procedure tiGetTempDir;
@@ -566,7 +568,6 @@ begin
     lsl.Free;
   end;
 end;
-
 
 procedure TTestTIUtils.tiAddTrailingSlash;
 begin
@@ -2257,6 +2258,15 @@ begin
   end;
 end;
 
+procedure TTestTIUtils.tiApplicationName;
+begin
+  CheckReadingFromNT(
+    tiUtils.tiApplicationName,
+    'ApplicationName',
+    'Application Name (no extentions)'
+  );
+end;
+
 
 procedure TTestTIUtils.tiInsertStringToStream;
 var
@@ -2338,6 +2348,21 @@ begin
   tiUtils.tiForceDirectories(lDirs);
   Check(DirectoryExists(lDirs));
   tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
+end;
+
+procedure TTestTIUtils.tiGetAppConfigDir;
+begin
+  CheckReadingFromNT(
+    tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppConfigDir),
+    'AppConfigDir_nonGlobal',
+    'non-Global Application Config directory (No trailing path delimiter)'
+  );
+
+  CheckReadingFromNT(
+    tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppConfigDir(True)),
+    'AppConfigDir_Global',
+    'Global Application Config directory (No trailing path delimiter)'
+  );
 end;
 
 

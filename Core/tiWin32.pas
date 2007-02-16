@@ -21,7 +21,7 @@ uses
   function  tiWin32GetTickCount: Cardinal;
   function  tiWin32GetUserName: string;
   function  tiWin32GetComputerName: string;
-
+  function  tiWin32GetAppConfigDir(Global: Boolean): string;
 
 
 implementation
@@ -34,7 +34,15 @@ uses
   ,SyncObjs
  ;
 
+
+const
+  CSIDL_LOCAL_APPDATA = $001C; { %USERPROFILE%\Local Settings\Application Data (non roaming)      }
+  CSIDL_FLAG_CREATE   = $8000; { (force creation of requested folder if it doesn't exist yet)     }
+//  S_OK                = HRESULT($00000000);
+
+
 type
+  PFNSHGetFolderPath = function(Ahwnd: HWND; Csidl: Integer; Token: THandle; Flags: DWord; Path: PChar): HRESULT; stdcall;
 
   TtiCoInitializeManager = class(TtiBaseObject)
   private
@@ -49,13 +57,64 @@ type
     procedure   ForceCoInitialize;
   end;
 
+
 var
-  UTICoInitializeManager : TtiCoInitializeManager;
+  UTICoInitializeManager: TtiCoInitializeManager;
+  SHGetFolderPath: PFNSHGetFolderPath = nil;
+  CFGDLLHandle: THandle = 0;
 
-//{$ifdef DELPHI6ORABOVE}
-//  {$WARN SYMBOL_PLATFORM OFF}
-//{$endif}
 
+
+procedure _InitDLL;
+var
+  P: Pointer;
+begin
+  CFGDLLHandle := LoadLibrary('shell32.dll');
+  if (CFGDLLHandle<>0) then
+  begin
+    P := GetProcAddress(CFGDLLHandle,'SHGetFolderPathA');
+    if (P = nil) then
+    begin
+      FreeLibrary(CFGDLLHandle);
+      CFGDllHandle := 0;
+    end
+    else
+      SHGetFolderPath := PFNSHGetFolderPath(P);
+  end;
+
+  if (P = nil) then
+  begin
+    CFGDLLHandle := LoadLibrary('shfolder.dll');
+    if (CFGDLLHandle <> 0) then
+    begin
+      P := GetProcAddress(CFGDLLHandle,'SHGetFolderPathA');
+      if (P=Nil) then
+      begin
+        FreeLibrary(CFGDLLHandle);
+        CFGDllHandle := 0;
+      end
+      else
+        ShGetFolderPath := PFNSHGetFolderPath(P);
+    end;
+  end;
+
+  if (@ShGetFolderPath = nil) then
+    raise Exception.Create('Could not determine SHGetFolderPath function');
+end;
+
+function _GetSpecialDir(ID: Integer): string;
+var
+  APath: Array[0..MAX_PATH] of char;
+begin
+  Result := '';
+  if (CFGDLLHandle = 0) then
+    _InitDLL;
+  if (SHGetFolderPath <> nil) then
+  begin
+    if SHGetFolderPath(0,ID or CSIDL_FLAG_CREATE,0,0,@APATH[0]) = S_OK then
+      Result := IncludeTrailingPathDelimiter(StrPas(@APath[0]));
+  end;
+end;
 
 procedure tiWin32RunEXEAndWait(AEXE : string);
 var
@@ -165,6 +224,18 @@ begin
   SizeBuffer := 256;
   getComputerName(computerNameBuffer, sizeBuffer);
   result := string(computerNameBuffer);
+end;
+
+function tiWin32GetAppConfigDir(Global: Boolean): string;
+begin
+  if Global then
+    Result := tiGetEXEPath // or use Windows dir? Remember this must work on Win9x as well.
+  else
+  begin
+    Result := _GetSpecialDir(CSIDL_LOCAL_APPDATA) + tiApplicationName;
+    if (Result = '') then
+      Result := tiGetEXEPath;
+  end;
 end;
 
 

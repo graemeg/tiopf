@@ -200,6 +200,11 @@ type
   function tiJoinPath(const AElements: array of string): string; overload;
   // Fixes the path separator for the *Unix platform. See implementation for more details.
   function tiFixPathDelim(const AText: string): string;
+  // Get the directory name where we can store application config files
+  // This just returns a name, it doesn't create the directory or checks if we have write access to it.
+  function tiGetAppConfigDir(Global: Boolean = False): string;
+  // Platform neutral function to return application name without GUI requirement
+  function tiApplicationName: string;
 
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1918,6 +1923,15 @@ begin
   {$ENDIF}
 end;
 
+function tiGetAppConfigDir(Global: Boolean): string;
+begin
+  {$IFDEF FPC}
+  result := GetAppConfigDir(Global);
+  {$ELSE}
+  result := tiWin32GetAppConfigDir(Global);
+  {$ENDIF}
+end;
+
 
 function tiFloatToStr(const AValue : Extended;
     const APrecision : integer = 3): string;
@@ -2970,6 +2984,16 @@ begin
     end;
     lClass := lClass.ClassParent;
   end;
+end;
+
+function tiApplicationName: string;
+begin
+  {$IFDEF FPC}
+  // FPC adds a few more features we don't want to loose, even under Windows
+  Result := ApplicationName;
+  {$ELSE}
+  Result := ChangeFileExt(ExtractFileName(Paramstr(0)),'');
+  {$ENDIF}
 end;
 
 { TtiIntegerList }
