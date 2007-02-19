@@ -67,34 +67,35 @@ var
 
 procedure _InitDLL;
 var
-  P: Pointer;
+  LProcAddress: Pointer;
 begin
+  LProcAddress:= nil;
   CFGDLLHandle := LoadLibrary('shell32.dll');
   if (CFGDLLHandle<>0) then
   begin
-    P := GetProcAddress(CFGDLLHandle,'SHGetFolderPathA');
-    if (P = nil) then
+    LProcAddress := GetProcAddress(CFGDLLHandle,'SHGetFolderPathA');
+    if (LProcAddress = nil) then
     begin
       FreeLibrary(CFGDLLHandle);
       CFGDllHandle := 0;
     end
     else
-      SHGetFolderPath := PFNSHGetFolderPath(P);
+      SHGetFolderPath := PFNSHGetFolderPath(LProcAddress);
   end;
 
-  if (P = nil) then
+  if (LProcAddress = nil) then
   begin
     CFGDLLHandle := LoadLibrary('shfolder.dll');
     if (CFGDLLHandle <> 0) then
     begin
-      P := GetProcAddress(CFGDLLHandle,'SHGetFolderPathA');
-      if (P=Nil) then
+      LProcAddress := GetProcAddress(CFGDLLHandle,'SHGetFolderPathA');
+      if (LProcAddress=Nil) then
       begin
         FreeLibrary(CFGDLLHandle);
         CFGDllHandle := 0;
       end
       else
-        ShGetFolderPath := PFNSHGetFolderPath(P);
+        ShGetFolderPath := PFNSHGetFolderPath(LProcAddress);
     end;
   end;
 
@@ -109,7 +110,7 @@ begin
   Result := '';
   if (CFGDLLHandle = 0) then
     _InitDLL;
-  if (SHGetFolderPath <> nil) then
+  if Assigned(SHGetFolderPath) then
   begin
     if SHGetFolderPath(0,ID or CSIDL_FLAG_CREATE,0,0,@APATH[0]) = S_OK then
       Result := IncludeTrailingPathDelimiter(StrPas(@APath[0]));
