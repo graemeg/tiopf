@@ -2358,11 +2358,15 @@ begin
     'non-Global Application Config directory (No trailing path delimiter)'
   );
 
+  {$IFDEF UNIX}
+  CheckEquals('/etc', tiUtils.tiGetAppConfigDir(True), 'Failed on 2');
+  {$ELSE}
   CheckReadingFromNT(
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppConfigDir(True)),
     'AppConfigDir_Global',
     'Global Application Config directory (No trailing path delimiter)'
   );
+  {$ENDIF}
 end;
 
 
