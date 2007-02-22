@@ -205,7 +205,8 @@ end;
 
 
 procedure TtiRegINIFile.WriteStrings(const ASection : string; AStrings : TStrings);
-var i : integer;
+var
+  i: integer;
 begin
   self.eraseSection(ASection);
   for i := 0 to AStrings.count - 1 do begin
@@ -216,8 +217,9 @@ end;
 
 
 procedure TtiRegINIFile.ReadStrings(const ASection : string; AStrings : TStrings);
-var i : integer;
-    sectionValues : TStringList;
+var
+  i: integer;
+  sectionValues: TStringList;
 begin
   sectionValues := TStringList.Create;
   AStrings.clear;
@@ -235,10 +237,10 @@ end;
 
 constructor TtiRegINIFile.CreateExt;
 begin
-  if DefaultRegistryCompany<>'' then
-  Create('Software\' + DefaultRegistryCompany + '\' + tiExtractFileNameOnly(application.exeName))
+  if DefaultRegistryCompany <> '' then
+    Create('Software\' + DefaultRegistryCompany + '\' + tiApplicationName)
   else
-  Create('Software\' + tiExtractFileNameOnly(application.exeName))
+    Create('Software\' + tiApplicationName);
 end;
 
 
@@ -257,14 +259,17 @@ begin
   lFileName := ExtractFileName(AFileName);
 
   if lDir = '' then
-    lDir := ExtractFilePath(ParamStr(0));
+    lDir := tiGetAppConfigDir;
   lDir := tiAddTrailingSlash(lDir);
+  { We used a non-Global config dir, so should be able to create the dir }
+  tiForceDirectories(lDir);
 
   if lFileName = '' then
   begin
-    lFileName := ExtractFileName(ParamStr(0));
-    lFileName := tiAddTrailingValue(tiRemoveExtension(lFileName), '.', false) + 'ini';
-  end else
+    lFileName := tiApplicationName;
+    lFileName := tiAddTrailingValue(lFileName, '.', false) + 'ini';
+  end
+  else
   begin
     if tiExtractExtension(lFileName) = '' then
       lFileName := tiAddTrailingValue(tiRemoveExtension(lFileName), '.', false) + 'ini';
@@ -272,7 +277,6 @@ begin
 
   lFileName := lDir + lFileName;
   Create(lFileName);
-
 end;
 
 function TtiINIFile.ReadBool(const ASection, AIdent: string;ADefault: Boolean): Boolean;
@@ -286,7 +290,7 @@ begin
   result := inherited ReadBool(ASection, AIdent, ADefault);
 end;
 
-function TtiINIFile.ReadDate(const ASection, AName: string;ADefault: TDateTime): TDateTime;
+function TtiINIFile.ReadDate(const ASection, AName: string; ADefault: TDateTime): TDateTime;
 begin
   if (not ValueExists(ASection, AName)) and
      (not FReadOnly) then
@@ -358,7 +362,7 @@ begin
   AForm.WindowState := TWindowState(ReadInteger(sRegKey, 'WindowState', ord(wsNormal)));
 end;
 
-function TtiINIFile.ReadInteger(const ASection, AIdent: string;ADefault: Integer): Longint;
+function TtiINIFile.ReadInteger(const ASection, AIdent: string; ADefault: Longint): Longint;
 begin
   if (not ValueExists(ASection, AIdent)) and
      (not FReadOnly) then
@@ -374,7 +378,7 @@ begin
     WriteString(ASection, AIdent, ADefault);
 end;
 
-function TtiINIFile.ReadTime(const ASection, AName: string;ADefault: TDateTime): TDateTime;
+function TtiINIFile.ReadTime(const ASection, AName: string; ADefault: TDateTime): TDateTime;
 begin
   if (not ValueExists(ASection, AName)) and
      (not FReadOnly) then
@@ -401,9 +405,9 @@ begin
 end;
 
 initialization
-uReg := nil;//to be sure
-uINI := nil;
-DefaultRegistryCompany := '';
+  uReg := nil;//to be sure
+  uINI := nil;
+  DefaultRegistryCompany := '';
 
 finalization
   if uReg<>nil then uReg.free;

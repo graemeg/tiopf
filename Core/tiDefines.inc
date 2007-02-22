@@ -146,6 +146,12 @@
   {$DEFINE ThirdPartyExceptionHandling}
 {$ENDIF}
 
+// Use a new application config directory to store custom application settings
+// and Form State information.  If *not* defined, INI files for storing Form
+// State will be created in the same directory as the application.
+// This is pretty much a requirement for Linux and Windows Vista
+{.$DEFINE UseAppConfigDir}
+
 // Use these defines, along with tiCompileTimeLinkPerLayers.pas to force static linking
 // at compile time of a persistence layer. These defines must be kept in
 // sync with tiCompileTimeLinkPerLayers.pas

@@ -1,6 +1,7 @@
-{$I tiDefines.inc}
 
 unit tiTreeView;
+
+{$I tiDefines.inc}
 
 interface
 uses

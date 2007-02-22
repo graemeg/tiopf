@@ -36,7 +36,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="2"/>
-    <Files Count="36">
+    <Files Count="40">
       <Item1>
         <Filename Value="../../GUI/tiGUIUtils.pas"/>
         <UnitName Value="tiGUIUtils"/>
@@ -181,7 +181,24 @@
         <Filename Value="../../GUI/tiCompositeMediators.pas"/>
         <UnitName Value="tiCompositeMediators"/>
       </Item36>
+      <Item37>
+        <Filename Value="../../Options/tiVisitorDBSQLMgr.pas"/>
+        <UnitName Value="tiVisitorDBSQLMgr"/>
+      </Item37>
+      <Item38>
+        <Filename Value="../../Options/tiSQLMgr_BOM.pas"/>
+        <UnitName Value="tiSQLMgr_BOM"/>
+      </Item38>
+      <Item39>
+        <Filename Value="../../Options/tiSQLMgr_Cli.pas"/>
+        <UnitName Value="tiSQLMgr_Cli"/>
+      </Item39>
+      <Item40>
+        <Filename Value="../../Options/tiSQLMgr_Svr.pas"/>
+        <UnitName Value="tiSQLMgr_Svr"/>
+      </Item40>
     </Files>
+    <LazDoc Paths="../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="3">
       <Item1>
         <PackageName Value="tiOPF"/>

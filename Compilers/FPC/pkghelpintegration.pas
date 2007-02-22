@@ -22,8 +22,8 @@ begin
              'file://$PkgDir(tiOPF)/html/core','tiOPF','../../Core;../../Options;../../GUI');
  RegisterFPDocHTMLHelpForPackage('tiOPF2Options','tiOPF2 Options Help',
              'file://$PkgDir(tiOPF)/html/options','tiOPFGUI','../../Core;../../Options;../../GUI');
-// RegisterFPDocHTMLHelpForPackage('tiOPF2GUI','tiOPF2 Help Database',
-//             'file://$PkgDir(tiOPF)/html','tiOPF','../../Core;../../Options;../../GUI');
+// RegisterFPDocHTMLHelpForPackage('tiOPF2Gui','tiOPF2 GUI Help',
+//             'file://$PkgDir(tiOPF)/html/gui','tiOPFGUI','../../Core;../../Options;../../GUI');
 
  // also tried
 {

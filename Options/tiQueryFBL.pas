@@ -1,5 +1,5 @@
 {
-  This persistence layer uses the FBLib 0.83 Firebird Library of components.
+  This persistence layer uses the FBLib 0.85 Firebird Library of components.
   See [http://fblib.altervista.org] for more details.
   
   FBLib runs under Delphi, Kylix and Free Pascal.  FBLib also has support for

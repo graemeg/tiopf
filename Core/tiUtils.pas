@@ -147,9 +147,9 @@ type
   function  tiSwapExt(                 const AFileName, AExt : string): string;
   // Extract a file's extension. Similar to Delphi's ExtractFileExt except the '.' is not extracted.
   function  tiExtractExtension(        AValue : string): string;
-  // Copy a file from pStrFileFrom to pStrFileTo
+  // Copy a file from AFileFrom to AFileTo
   procedure tiCopyFile(          const AFrom, ATo : string);
-  // Move a file from pStrFromFileName to pStrToFileName
+  // Move a file from AFromFileName to AToFileName
   procedure tiMoveFile(                AFrom, ATo: string);
   // Read a file's size in bytes
   function  tiGetFileSize(             AValue : string): longInt;
@@ -1925,11 +1925,15 @@ end;
 
 function tiGetAppConfigDir(Global: Boolean): string;
 begin
-  {$IFDEF FPC}
-  result := GetAppConfigDir(Global);
+  {$IFDEF UseAppConfigDir}
+    {$IFDEF FPC}
+    result := GetAppConfigDir(Global);
+    {$ELSE}
+    result := tiWin32GetAppConfigDir(Global);
+    {$ENDIF}
   {$ELSE}
-  result := tiWin32GetAppConfigDir(Global);
-  {$ENDIF}
+    result := tiGetEXEPath;
+  {$ENDIF UseAppConfigDir}
 end;
 
 

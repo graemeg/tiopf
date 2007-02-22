@@ -234,6 +234,7 @@
         <UnitName Value="tiRTTI"/>
       </Item49>
     </Files>
+    <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="3">
       <Item1>
         <PackageName Value="LCL"/>

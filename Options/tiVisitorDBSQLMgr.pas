@@ -1,11 +1,12 @@
-{$I tiDefines.inc}
 
 unit tiVisitorDBSQLMgr;
 
+{$I tiDefines.inc}
+
 interface
 uses
-   tiDBConnectionPool
-  ,tiVisitor
+//   tiDBConnectionPool
+  tiVisitor
   ,SysUtils
   ,tiQuery
   ,Classes
@@ -115,7 +116,9 @@ uses
   ,tiOID
   ,tiExcept
   ,Dialogs
+  {$IFDEF MSWINDOWS}
   ,Windows
+  {$ENDIF}
  ;
 
 var
@@ -127,17 +130,9 @@ begin
     uSQLMgrDatabaseMappings := TSQLMgrDatabaseMappings.Create;
   result := uSQLMgrDatabaseMappings;
 end;
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TVisSQLMgrAbs
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TVisSQLMgrSelect
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{ TVisSQLMgrSelect  }
+
 constructor TVisSQLMgrSelect.Create;
 begin
   inherited;
@@ -186,13 +181,13 @@ begin
     DoInit;
     DoGetQuery;
     DoSetupParams;
-    liStart := GetTickCount;
+    liStart := tiGetTickCount;
     _OpenQuery;
     try
-      liQueryTime := GetTickCount - liStart;
-      liStart := GetTickCount;
+      liQueryTime := tiGetTickCount - liStart;
+      liStart := tiGetTickCount;
       _ScanQuery;
-      LogQueryTiming(QueryName, liQueryTime, GetTickCount-liStart);
+      LogQueryTiming(QueryName, liQueryTime, tiGetTickCount-liStart);
     finally
       Query.Close;
     end;
@@ -219,9 +214,9 @@ procedure TVisSQLMgrUpdate.Execute(const  AData: TtiVisited);
   var
     liStart : DWord;
   begin
-    liStart := GetTickCount;
+    liStart := tiGetTickCount;
     Query.ExecSQL;
-    LogQueryTiming(QueryName, GetTickCount - liStart, 0);
+    LogQueryTiming(QueryName, tiGetTickCount - liStart, 0);
   end;
 begin
   try

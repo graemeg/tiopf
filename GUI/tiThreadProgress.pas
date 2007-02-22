@@ -48,9 +48,10 @@
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
 
-{$I tiDefines.inc}
 
 unit tiThreadProgress;
+
+{$I tiDefines.inc}
 
 interface
 uses
