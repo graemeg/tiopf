@@ -1367,7 +1367,7 @@ begin
   if FbDrawCrossHairsNow = AValue then
     Exit; //==>
 
-  FbDrawCrossHairsNow := value;
+  FbDrawCrossHairsNow := AValue;
 
   if FbDrawCrossHairsNow then begin
     OnMouseMove := DoChartMouseMove;
