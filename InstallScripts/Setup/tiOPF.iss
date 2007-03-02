@@ -4,9 +4,6 @@
 #define PATH_TO_WORKING_DEPLOY "%path_to_working_deploy%"
 #define OUTPUT_BASE_FILENAME "%output_base_filename%"
 
-#define PATH_TO_DOC "{app}\tiOPF2\Doc"
-#define FILE_NAME_INSTALLING "Installing tiOPF2.chm"
-
 ;#define PATH_TO_WORKING_TIOPF2 "C:\Temp\tiOPFBuild\tiOPF2"
 ;#define PATH_TO_WORKING_3RDPARTY "C:\Temp\tiOPFBuild\3rdParty"
 ;#define VERSION_NUMBER "2.0.0.0"
@@ -58,7 +55,6 @@ Source: {#PATH_TO_WORKING_TIOPF2}\Core\*.*; DestDir: {app}\tiOPF2\Core; Flags: r
 Source: {#PATH_TO_WORKING_TIOPF2}\GUI\*.*; DestDir: {app}\tiOPF2\GUI; Flags: recursesubdirs; components: tiOPF2
 Source: {#PATH_TO_WORKING_TIOPF2}\Options\*.*; DestDir: {app}\tiOPF2\Options; Flags: recursesubdirs; components: tiOPF2
 Source: {#PATH_TO_WORKING_TIOPF2}\UnitTests\*.*; DestDir: {app}\tiOPF2\UnitTests; Flags: recursesubdirs; components: tiOPF2
-Source: "{#PATH_TO_WORKING_DEPLOY}\{#FILE_NAME_INSTALLING}" ; DestDir: {#PATH_TO_DOC}; components: tiOPF2
 
 Source: {#PATH_TO_WORKING_3RDPARTY}\DUnit\*.*; DestDir: {app}\tiOPF2\3rdParty\DUnit; Flags: recursesubdirs; components: TrdParty\DUnit
 Source: {#PATH_TO_WORKING_3RDPARTY}\FastMM\*.*; DestDir: {app}\tiOPF2\3rdParty\FastMM; Flags: recursesubdirs; components: TrdParty\FastMM
@@ -74,8 +70,11 @@ Name: {app}\tiOPF2\_bin
 
 [Icons]
 Name: {app}\Uninstall tiOPF2; Filename: {uninstallexe}
+Name: {app}\tiOPF2\Doc\Installing the tiOPF; Filename: http://tiopf.sourceforge.net/Doc/Installing/
+Name: {app}\tiOPF2\Doc\tiOPF2 Quick Start; Filename: http://tiopf.sourceforge.net/Doc/QuickStart/
+Name: {app}\tiOPF2\Doc\tiOPF2 Concepts Manual; Filename: http://tiopf.sourceforge.net/Doc/Concepts/
 Name: {app}\tiOPF2\Doc\tiOPF2 Online Help; Filename: http://opensoft.homeip.net/tiopf/
-Name: {app}\tiOPF2\Doc\tiOPF2 Concepts; Filename: http://www.techinsite.com.au/tiOPF/Doc/Default.htm
 
 [Run]
-Filename: "{#PATH_TO_DOC}\{#FILE_NAME_INSTALLING}"; Description: "Read '{#FILE_NAME_INSTALLING}'"; Flags: postinstall shellexec skipifsilent
+Filename: "http://tiopf.sourceforge.net/Doc/Installing/"; Description: "Read Installing the tiOPF"; Flags: postinstall shellexec skipifsilent
+
