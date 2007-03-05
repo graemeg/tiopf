@@ -1,19 +1,4 @@
-
-(* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-The contents of this file are subject to the Mozilla Public
-License Version 1.1 (the "License"); you may not use this file
-except in compliance with the License. You may obtain a copy of
-the License at http://www.mozilla.org/MPL/
-
-Software distributed under the License is distributed on an "AS
-IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-implied. See the License for the specific language governing
-rights and limitations under the License.
-
-If you make any changes or enhancements, which you think will
-benefit other developers and will not break any existing code,
-please forward your changes (well commented) to graemeg@gmail.com
-and I will make them permanent.
+{
 
 Revision history:
 
@@ -31,7 +16,7 @@ ToDo:
   * Implement a View Manager class, so we can remove the View Lists
     created in each Form using mediating views.
 
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *)
+}
 
 unit tiGenericEditMediators;
 
@@ -42,7 +27,7 @@ uses
   tiObject
   ,Controls
   ,Classes
-  ,StdCtrls   { TEdit, TComboBox }
+  ,StdCtrls   { TEdit, TComboBox, TStaticText }
   ;
 
 type
@@ -97,6 +82,18 @@ type
 
   { Base class to handle TEdit controls }
   TMediatorEditView = class(TMediatorView)
+  public
+    class function ComponentClass: TClass; override;
+  end;
+
+
+  TMediatorCheckBoxView = class(TMediatorView)
+  public
+    class function ComponentClass: TClass; override;
+  end;
+
+
+  TMediatorStaticTextView = class(TMediatorView)
   public
     class function ComponentClass: TClass; override;
   end;
@@ -744,6 +741,20 @@ begin
     end;
 
   SetOnChangeActive(true);
+end;
+
+{ TMediatorCheckBoxView }
+
+class function TMediatorCheckBoxView.ComponentClass: TClass;
+begin
+  Result := TCheckBox;
+end;
+
+{ TMediatorStaticTextView }
+
+class function TMediatorStaticTextView.ComponentClass: TClass;
+begin
+  Result :=TStaticText;
 end;
 
 initialization

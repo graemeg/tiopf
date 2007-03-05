@@ -23,7 +23,7 @@ unit tiQueryFBL;
 
 {$I tiDefines.inc}
 
-{.$Define FBL_Params_Mod}
+{$Define FBL_Params_Mod}
 
 interface
 uses
@@ -694,9 +694,12 @@ begin
 
     FDBase.User      := UserName;
     FDBase.Password  := Password;
-    { Should we parse self.Params: TStringList for these and assign them? }
-//    FDBase.Role
-//    FDBase.CharacterSet
+
+    { Assign some well known extra parameters if they exist. }
+    if Params.Values['ROLE'] <> '' then
+      FDBase.Role := Params.Values['ROLE'];
+    if Params.Values['CHARSET'] <> '' then
+      FDBase.CharacterSet := Params.Values['CHARSET'];
 
     FDBase.Connect;
   except

@@ -185,7 +185,6 @@ var
   lCol : TListColumn;
   i : integer;
 begin
-
   Assert(pLV <> nil, 'ListView not assigned');
 
   {$IFDEF FPC}
@@ -211,7 +210,6 @@ begin
   {$ELSE}
     {$NOTE Double check that this may be done and that is works! }
   {$ENDIF}
-
 end;
 
 procedure tiDataSetToListItem(pDataSet: TtiDataBuffer; AItem: TListItem);
