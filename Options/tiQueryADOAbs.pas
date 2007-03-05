@@ -23,6 +23,7 @@ type
     FInTransaction: Boolean;
     function GetADOConnection: TADOConnection;
   protected
+    function GetConnectionString: string; virtual; abstract;
     property  Connection : TADOConnection read GetADOConnection;
     procedure SetConnected(AValue : boolean); override;
     function  GetConnected : boolean; override;
@@ -40,6 +41,7 @@ type
     function    InTransaction : boolean; override;
     procedure   Commit; override;
     procedure   RollBack; override;
+    property    ConnectionString : string read GetConnectionString;
 
   end;
 
@@ -683,16 +685,35 @@ end;
 function TtiDatabaseADOAbs.GetADOConnection: TADOConnection;
 var
   LCurrentThreadID: DWord;
+  LConnOpen, LHasConnStr :Boolean;
 begin
   LCurrentThreadID:= GetCurrentThreadID;
   if LCurrentThreadID <> FCurrentThreadID then
   begin
+    if Assigned(FADOConnection) then
+    begin
+      LHasConnStr := FADOConnection.ConnectionString <> '';
+      LConnOpen   := FADOConnection.Connected;
+    end
+    else
+    begin
+      LHasConnStr := False;
+      LConnOpen   := False;
+    end;
     FreeAndNil(FADOConnection);
     FCurrentThreadID:= LCurrentThreadID;
     tiWin32CoInitialize;
     FADOConnection := TADOConnection.Create(nil);
     FADOConnection.LoginPrompt := false;
     FInTransaction:= False;
+{ NB Assign newly generated ConnectionString.
+     Can't use pre-existing one because the 'password=xxx' param is not persisted by the ADODB getter.
+     (This would have been OK with MS Access or Windows authentication (user NULL))
+     Also, we can't just assign CS without this test since GetConnectionString will reference the database
+     which may not be available yet }
+    if LHasConnStr then
+      FADOConnection.ConnectionString := ConnectionString;
+    FADOConnection.Connected := LConnOpen;
   end;
   Result:= FADOConnection;
 end;

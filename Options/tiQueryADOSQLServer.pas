@@ -13,6 +13,7 @@ type
   TtiDatabaseADOSQLServer = class(TtiDatabaseADOAbs)
   private
   protected
+    function    GetConnectionString: string; override;
     procedure   SetupDBParams; override;
     function    FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; override;
   public
@@ -70,6 +71,41 @@ begin
   end;
 end;
 
+function TtiDatabaseADOSQLServer.GetConnectionString: string;
+var
+  UserNameString: string;
+  l_Server,
+  l_Database: string;
+  l_Delimiter: integer;
+begin
+  // DatabaseName should be SERVERNAME:DATABASE
+  l_Delimiter := Pos(':',DatabaseName);
+
+  if l_Delimiter > 0 then
+  begin
+    l_Server := Copy(DatabaseName,1,l_Delimiter - 1);
+    l_Database := Copy(DatabaseName,l_Delimiter + 1,Length(DatabaseName));
+  end
+  else
+    raise Exception.Create('Invalid DatabaseName.');
+
+  if UpperCase(UserName) <> 'NULL' then
+  begin
+    UserNameString :=
+      'User ID=' + UserName + ';' +
+      'Password=' + Password + ';';
+  end
+  else
+    UserNameString := 'Integrated Security=SSPI;';
+
+  Result :=
+    'Provider=SQLOLEDB.1;' +
+    'Persist Security Info=False;' +
+    'Initial Catalog=' + l_Database + ';' +
+    UserNameString +
+    'Data Source=' + l_Server;
+end;
+
 procedure TtiDatabaseADOSQLServer.ReadMetaDataFields(AData: TtiDBMetaDataTable);
 var
   lTable : TtiDBMetaDataTable;
@@ -121,41 +157,10 @@ begin
 end;
 
 procedure TtiDatabaseADOSQLServer.SetupDBParams;
-var
-  UserNameString: string;
-  l_Server,
-  l_Database: string;
-  l_Delimiter: integer;
 begin
-  // DatabaseName should be SERVERNAME:DATABASE
-  l_Delimiter := Pos(':',DatabaseName);
-
-  if l_Delimiter > 0 then
-  begin
-    l_Server := Copy(DatabaseName,1,l_Delimiter - 1);
-    l_Database := Copy(DatabaseName,l_Delimiter + 1,Length(DatabaseName));
-  end
-  else
-    raise Exception.Create('Invalid DatabaseName.');
-  Connection.LoginPrompt := false;
-  Connection.IsolationLevel := ilReadCommitted;
-
-  if UpperCase(UserName) <> 'NULL' then
-  begin
-    UserNameString :=
-      'User ID=' + UserName + ';' +
-      'Password=' + Password + ';';
-  end
-  else
-    UserNameString := 'Integrated Security=SSPI;';
-
-  Connection.ConnectionString :=
-    'Provider=SQLOLEDB.1;' +
-    'Persist Security Info=False;' +
-    'Initial Catalog=' + l_Database + ';' +
-    UserNameString +
-    'Data Source=' + l_Server;
-
+  Connection.LoginPrompt      := false;
+  Connection.IsolationLevel   := ilReadCommitted;
+  Connection.ConnectionString := ConnectionString;
 end;
 
 function TtiDatabaseADOSQLServer.Test: boolean;

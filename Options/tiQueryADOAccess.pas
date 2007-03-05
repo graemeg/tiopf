@@ -14,6 +14,7 @@ type
 
   TtiDatabaseADOAccess = class(TtiDatabaseADOAbs)
   protected
+    function    GetConnectionString: string; override;
     procedure   SetupDBParams; override;
     function    FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; override;
   public
@@ -53,27 +54,6 @@ const
   // Set this constant for the MSAccess file version created by CreateDatabase
   cAccessFileVersion     = cAccessFileVersion2000;
 
-function GetConnectionString(const ADatabaseName, AUserName, APassword : string): string;
-var
-  pwd_str: string;
-begin
-  if SameText(AUserName, GLOBAL_PASSWORD) then
-  begin
-    pwd_str:=Format('Jet OLEDB:Database Password=%s;', [APassword]);
-  end
-  else if (not SameText(AUserName, 'null')) and
-          (AUserName <> '') then
-  begin
-    pwd_str:=Format('Password=%s;User ID=%s;', [APassword, AUserName]);
-  end
-  else pwd_str:='';
-  result :=
-    Format(cADOProvider + ';' +
-            pwd_str +
-            'Data Source=%s;' +
-            'Persist Security Info=False',
-            [ADatabaseName]);
-end;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
@@ -132,6 +112,28 @@ begin
   else
     raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
+end;
+
+function TtiDatabaseADOAccess.GetConnectionString: string;
+var
+  pwd_str: string;
+begin
+  if SameText(UserName, GLOBAL_PASSWORD) then
+  begin
+    pwd_str:=Format('Jet OLEDB:Database Password=%s;', [Password]);
+  end
+  else if (not SameText(AUserName, 'null')) and
+          (AUserName <> '') then
+  begin
+    pwd_str:=Format('Password=%s;User ID=%s;', [Password, UserName]);
+  end
+  else pwd_str:='';
+  result :=
+    Format(cADOProvider + ';' +
+            pwd_str +
+            'Data Source=%s;' +
+            'Persist Security Info=False',
+            [DatabaseName]);
 end;
 
 procedure TtiDatabaseADOAccess.ReadMetaDataFields(AData: TtiDBMetaDataTable);
