@@ -15,7 +15,6 @@ type
   TtiDatabaseADOAccess = class(TtiDatabaseADOAbs)
   protected
     function    GetConnectionString: string; override;
-    procedure   SetupDBParams; override;
     function    FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; override;
   public
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
@@ -122,8 +121,8 @@ begin
   begin
     pwd_str:=Format('Jet OLEDB:Database Password=%s;', [Password]);
   end
-  else if (not SameText(AUserName, 'null')) and
-          (AUserName <> '') then
+  else if (not SameText(UserName, 'null')) and
+          (UserName <> '') then
   begin
     pwd_str:=Format('Password=%s;User ID=%s;', [Password, UserName]);
   end
@@ -211,13 +210,6 @@ end;
   username. It works, but I think should be support for custom params
   (like roles in IB). The TtiDatabase could have a TStringList for the
   custom params (accessed by CustomParams.Values[<param_name>]).}
-
-procedure TtiDatabaseADOAccess.SetupDBParams;
-begin
-  Connection.LoginPrompt:=false;
-  Connection.IsolationLevel := ilReadCommitted;
-  Connection.ConnectionString:= GetConnectionString(DatabaseName, UserName, Password);
-end;
 
 function TtiDatabaseADOAccess.Test: boolean;
 begin

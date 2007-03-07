@@ -14,7 +14,6 @@ type
   private
   protected
     function    GetConnectionString: string; override;
-    procedure   SetupDBParams; override;
     function    FieldMetaDataToSQLCreate(const AFieldMetaData : TtiDBMetaDataField): string; override;
   public
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
@@ -154,13 +153,6 @@ begin
   finally
     lsl.Free;
   end;
-end;
-
-procedure TtiDatabaseADOSQLServer.SetupDBParams;
-begin
-  Connection.LoginPrompt      := false;
-  Connection.IsolationLevel   := ilReadCommitted;
-  Connection.ConnectionString := ConnectionString;
 end;
 
 function TtiDatabaseADOSQLServer.Test: boolean;

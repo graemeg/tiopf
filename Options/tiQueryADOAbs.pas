@@ -27,7 +27,7 @@ type
     property  Connection : TADOConnection read GetADOConnection;
     procedure SetConnected(AValue : boolean); override;
     function  GetConnected : boolean; override;
-    procedure SetupDBParams; virtual; abstract;
+    procedure SetupDBParams; virtual; 
     function  FieldDataTypeToTIQueryFieldKind(pDataType: TFieldType): TtiQueryFieldKind;
 
   public
@@ -564,6 +564,13 @@ begin
       raise EtiOPFDBExceptionCanNotConnect.Create('Unknown', DatabaseName, UserName, Password, lsErrorMessage);
     end;
   end;
+end;
+
+procedure TtiDatabaseADOAbs.SetupDBParams;
+begin
+  Connection.LoginPrompt      := false;
+  Connection.IsolationLevel   := ilReadCommitted;
+  Connection.ConnectionString := ConnectionString;
 end;
 
 function TtiQueryADO.GetFieldIsNull(const AName: string): Boolean;
