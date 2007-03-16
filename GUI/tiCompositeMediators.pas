@@ -30,14 +30,20 @@ type
     FView: TListView;
     FModel: TtiObjectList;
     FMediatorList: TObjectList;
+    FObserversInTransit: TList;
+    FSelectedObject: TtiObject;
     procedure   CreateSubMediators;
     procedure   SetupGUIandObject; virtual;
     procedure   RebuildList; virtual;
     function    DataAndPropertyValid(const AData: TtiObject): Boolean;
   public
+    constructor Create; override;
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; ADisplayNames: string; IsObserving: Boolean = True);
     procedure   BeforeDestruction; override;
     procedure   Update(ASubject: TtiObject); override;
+    
+    { Called from the GUI to trigger events }
+    procedure   HandleSelectionChanged; virtual;
   published
     property    View: TListView read FView;
     property    Model: TtiObjectList read FModel;
@@ -88,6 +94,7 @@ uses
   ,StdCtrls
   ,typinfo
   ,tiExcept
+  ,tiGenericEditMediators
   ;
   
 const
@@ -265,7 +272,8 @@ begin
     if TtiObject(FView.Items[i].Data) = AValue then
     begin
       FView.Selected := FView.Items[i];
-      exit;
+      HandleSelectionChanged;
+      Exit; //==>
     end;
   end;
 end;
@@ -273,9 +281,10 @@ end;
 function TCompositeListViewMediator.GetSelectedObject: TtiObject;
 begin
   if FView.SelCount = 0 then
-    result := nil
+    FSelectedObject := nil
   else
-    result := TtiObject(FView.Selected.Data);
+    FSelectedObject := TtiObject(FView.Selected.Data);
+  result := FSelectedObject;
 end;
 
 procedure TCompositeListViewMediator.SetShowDeleted(const AValue: Boolean);
@@ -341,10 +350,17 @@ end;
 
 procedure TCompositeListViewMediator.RebuildList;
 begin
-  { Do nothing. Can be implement as you see fit. A simple example is given
-    in the Demos/GenericMediatingViews/Composite_ListView_Mediator }
-  raise EtiOPFProgrammerException.Create('You are trying to call ' + Classname
-    + '.RebuildList, which must be overridden in the concrete class.');
+  { This rebuilds the whole list. Not very efficient. You can always override
+    this in your mediators to create a more optimised rebuild. }
+  View.BeginUpdate;
+  try
+    FMediatorList.Clear;
+    View.Columns.Clear;
+    View.Items.Clear;
+    CreateSubMediators;
+  finally
+    View.EndUpdate;
+  end;
 end;
 
 function TCompositeListViewMediator.DataAndPropertyValid(const AData: TtiObject): Boolean;
@@ -367,10 +383,16 @@ begin
   end;
 end;
 
+constructor TCompositeListViewMediator.Create;
+begin
+  inherited Create;
+  FObserversInTransit := TList.Create;
+end;
+
 constructor TCompositeListViewMediator.CreateCustom(AModel: TtiObjectList;
   AView: TListView; ADisplayNames: string; IsObserving: Boolean);
 begin
-  inherited Create;
+  Create; // don't forget this
   
   FModel        := AModel;
   FView         := AView;
@@ -390,10 +412,13 @@ begin
     
   if IsObserving then
     FModel.AttachObserver(self);
+    
+  Model.NotifyObservers;
 end;
 
 procedure TCompositeListViewMediator.BeforeDestruction;
 begin
+  FObserversInTransit.Free;
   FMediatorList.Free;
   FModel.DetachObserver(self);
   FModel  := nil;
@@ -405,6 +430,47 @@ procedure TCompositeListViewMediator.Update(ASubject: TtiObject);
 begin
   Assert(FModel = ASubject);
   RebuildList;
+end;
+
+procedure TCompositeListViewMediator.HandleSelectionChanged;
+var
+  i: integer;
+begin
+  if View.SelCount = 0 then
+    FSelectedObject := nil
+  else
+  begin
+    FObserversInTransit.Clear;
+    { If an item is already selected, assign the item's List of observers to a
+      temporary container. This is done so that the same observers can be
+      assigned to the new item. }
+writeln('1');
+    if Assigned(FSelectedObject) then
+      FObserversInTransit.Assign(FSelectedObject.ObserverList);
+
+    // Assign Newly selected item to SelectedObject Obj.
+writeln('2');
+    FSelectedObject := TtiObject(View.Selected.Data);
+
+    { If an object was selected, copy the old item's observer List
+      to the new item's observer List. }
+writeln('3');
+    if FObserversInTransit.Count > 0 then
+      FSelectedObject.ObserverList.Assign(FObserversInTransit);
+
+    { Set the Observers Subject property to the selected object }
+writeln('4');
+    for i := 0 to FSelectedObject.ObserverList.Count - 1 do
+    begin
+      TMediatorView(FSelectedObject.ObserverList.Items[i]).Subject :=
+          FSelectedObject;
+    end;
+
+    // execute the NotifyObservers event to update the observers.
+writeln('5');
+    FSelectedObject.NotifyObservers;
+  end;
+writeln('6');
 end;
 
 { TCompositeStringGridMediator }
