@@ -412,8 +412,6 @@ begin
     
   if IsObserving then
     FModel.AttachObserver(self);
-    
-  Model.NotifyObservers;
 end;
 
 procedure TCompositeListViewMediator.BeforeDestruction;
@@ -432,6 +430,7 @@ begin
   RebuildList;
 end;
 
+{ TODO: This is not working 100% yet. Be warned! }
 procedure TCompositeListViewMediator.HandleSelectionChanged;
 var
   i: integer;
@@ -444,22 +443,18 @@ begin
     { If an item is already selected, assign the item's List of observers to a
       temporary container. This is done so that the same observers can be
       assigned to the new item. }
-writeln('1');
     if Assigned(FSelectedObject) then
       FObserversInTransit.Assign(FSelectedObject.ObserverList);
 
     // Assign Newly selected item to SelectedObject Obj.
-writeln('2');
     FSelectedObject := TtiObject(View.Selected.Data);
 
     { If an object was selected, copy the old item's observer List
       to the new item's observer List. }
-writeln('3');
     if FObserversInTransit.Count > 0 then
       FSelectedObject.ObserverList.Assign(FObserversInTransit);
 
     { Set the Observers Subject property to the selected object }
-writeln('4');
     for i := 0 to FSelectedObject.ObserverList.Count - 1 do
     begin
       TMediatorView(FSelectedObject.ObserverList.Items[i]).Subject :=
@@ -467,10 +462,8 @@ writeln('4');
     end;
 
     // execute the NotifyObservers event to update the observers.
-writeln('5');
     FSelectedObject.NotifyObservers;
   end;
-writeln('6');
 end;
 
 { TCompositeStringGridMediator }
