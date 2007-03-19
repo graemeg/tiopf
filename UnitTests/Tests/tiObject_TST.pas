@@ -34,6 +34,8 @@ type
     function  CreateTestDataList: TtstPerObjList;
   published
     procedure Owner;
+    procedure Parent_TtiObject;
+    procedure Parent_TtiObjectList;
     procedure Deleted;
     procedure Dirty;
     procedure Index;
@@ -1944,6 +1946,53 @@ begin
   end;
 end;
 
+
+procedure TTestTIObject.Parent_TtiObject;
+var
+  LObject1: TtiObject;
+  LObject2: TtiObject;
+begin
+  LObject1:= TtiObject.Create;
+  try
+    LObject2:= TtiObject.Create;
+    try
+      CheckNull(LObject2.Owner, 'Test #1');
+      CheckNull(LObject2.Parent, 'Test #2');
+      LObject2.Owner:= LObject1;
+      CheckSame(LObject1, LObject2.Owner, 'Test #3');
+      CheckSame(LObject1, LObject2.Parent, 'Test #4');
+    finally
+      LObject2.Free;
+    end;
+  finally
+    LObject1.Free;
+  end;
+end;
+
+procedure TTestTIObject.Parent_TtiObjectList;
+var
+  LObject1: TtiObject;
+  LObject2: TtiObject;
+  LList:    TtiObjectList;
+begin
+  LObject1:= TtiObject.Create;
+  try
+    LList:= TtiObjectList.Create;
+    try
+      LList.Owner:= LObject1;
+      LObject2:= TtiObject.Create;
+      CheckNull(LObject2.Owner, 'Test #1');
+      CheckNull(LObject2.Parent, 'Test #2');
+      LList.Add(LObject2);
+      CheckSame(LList, LObject2.Owner, 'Test #3');
+      CheckSame(LObject1, LObject2.Parent, 'Test #4');
+    finally
+      LList.Free;
+    end;
+  finally
+    LObject1.Free;
+  end;
+end;
 
 procedure TTestTIObject.PropCount;
 var

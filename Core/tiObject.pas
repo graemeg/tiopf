@@ -64,36 +64,6 @@ type
   TPerObjForEachMethodRegular = procedure(AObject : TtiObject);
   TtiObjectEvent = procedure(const AData: TtiObject) of object;
 
-{
-  // Template for creating TPerVisList and TtiObjectstubs...
-  TMyClasses = class;
-  TMyClass   = class;
-
-  TMyClasses = class(TtiObjectList)
-  private
-  protected
-    function    GetItems(i: integer): TMyClass; reintroduce;
-    procedure   SetItems(i: integer; const AValue: TMyClass); reintroduce;
-    function    GetOwner: TMyClasses; reintroduce;
-    procedure   SetOwner(const AValue: TMyClasses); reintroduce;
-  public
-    property    Items[i:integer]: TMyClass read GetItems write SetItems;
-    procedure   Add(AObject : TMyClass  ; ADefDispOrdr : boolean = true); reintroduce;
-    property    Owner : TMyClass read GetOwner      write SetOwner;
-  published
-  end;
-
-  TMyClass = class(TtiObject)
-  private
-  protected
-    function    GetOwner: TMyClasses; reintroduce;
-    procedure   SetOwner(const AValue: TMyClasses); reintroduce;
-  public
-    property    Owner      : TMyClasses             read GetOwner      write SetOwner;
-  published
-  end;
-}
-
   {: Does the field allow null values. This is one of the possibly many tests
     that the field will make when the TestValidValue function is called. }
   TtiNullValidation = (
@@ -305,6 +275,7 @@ type
     function    GetDirty : boolean; virtual;
     function    GetOwner: TtiObject; reintroduce; virtual;
     procedure   SetOwner(const AValue: TtiObject); virtual;
+    function    GetParent: TtiObject; virtual;
     procedure   AssignPublicProps(ASource: TtiObject);virtual;
     procedure   AssignPublishedProp(ASource: TtiObject; APropName: string);
     function    CountPropsByType(ASource: TtiObject; APropFilter: TTypeKinds): integer;
@@ -312,7 +283,6 @@ type
     // You must override this in the concrete if there are class properties
     procedure   AssignClassProps(ASource: TtiObject); virtual;
     function    GetIndex : integer;
-//    function    GetDispOrder: integer; virtual;
     procedure   DoFindAllNotUnique(AObject: TtiObject; var AFound: boolean; AData: TtiObject); virtual;
     function    GetPropValue(const APropName: string): Variant; virtual;
     procedure   SetPropValue(const APropName: string; const APropValue: Variant); virtual;
@@ -332,12 +302,15 @@ type
    {$ELSE}
       property    OID        : TOID                   read GetOID       ;
    {$ENDIF}
-//    {: The display order of this object}
-//    property    DispOrder  : integer                read GetDispOrder  write FiDispOrder;
     {: The current state of this object}
     property    ObjectState: TPerObjectState read FObjectState write SetObjectState;
-    {: The type of class that owns this object}
+    {: The type of class that owns this object. If I am owned by a TtiObjectList,
+       then my owner is the object responsible for my destruction.}
     property    Owner: TtiObject read GetOwner write SetOwner;
+    {: The parent of this object. By default, my parent is the same as my object,
+       except if I'm owned by a list when my parent will be the owner of the list.
+       Parent is used to help determine foreign key relationships.}
+    property    Parent: TtiObject read GetParent;
     {: Returns the value of the property specified in APropName.}
     property    PropValue[const APropName: string]: Variant read GetPropValue write SetPropValue;
     {: Is the specified property read and write?}
@@ -2896,6 +2869,15 @@ begin
     lVis.Free;
   end;
   result := AList.Count;
+end;
+
+function TtiObject.GetParent: TtiObject;
+begin
+  if (Owner is TtiObjectList) and
+     Assigned(Owner.Owner) then
+    result:= Owner.Owner
+  else
+    result:= Owner;
 end;
 
 function TtiObject.GetPropValue(const APropName: string): Variant;
