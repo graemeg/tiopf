@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="ni" invoke="auto">
+		<description>
+			Assert(False, 'Not Implemented');
+		</description>
+		<author>
+			Peter Hinrichsen
+		</author>
+		<code language="Delphi" context="methodbody" ><![CDATA[Assert(False, 'Not Implemented');]]>
+		</code>
+	</template>
+</codetemplate>
