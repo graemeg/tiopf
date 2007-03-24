@@ -28,12 +28,12 @@ uses
 
 procedure TFormTiDialogAbs.FormCreate(Sender: TObject);
 begin
-  gReg.ReadFormState(self);
+  gINI.ReadFormState(self);
 end;
 
 procedure TFormTiDialogAbs.FormDestroy(Sender: TObject);
 begin
-  gReg.WriteFormState(self);
+  gINI.WriteFormState(self);
 end;
 
 procedure TFormTiDialogAbs.FormClose(Sender: TObject;  var Action: TCloseAction);
