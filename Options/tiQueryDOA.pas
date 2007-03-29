@@ -1,6 +1,6 @@
-{$I tiDefines.inc}
-
 unit tiQueryDOA;
+
+{$I tiDefines.inc}
 
 interface
 uses

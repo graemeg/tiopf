@@ -292,7 +292,8 @@ end;
 
 procedure TThrdCustomQueryFind.DoOnTerminate(sender: TObject);
 begin
-  VisCustomQueryFind.List.SaveToFile('C:\Temp\TEST.TXT');
+  // TODO: Yikes! Where did this come from?
+//  VisCustomQueryFind.List.SaveToFile('C:\Temp\TEST.TXT');
   inherited;
 end;
 

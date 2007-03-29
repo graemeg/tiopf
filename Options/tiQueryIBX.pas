@@ -1,6 +1,6 @@
-{$I tiDefines.inc}
-
 unit tiQueryIBX;
+
+{$I tiDefines.inc}
 
 interface
 uses
