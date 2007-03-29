@@ -61,6 +61,7 @@ contains
   tiVisitorDB in '..\..\Core\tiVisitorDB.pas',
   tiVisitorDBAutoGen in '..\..\Core\tiVisitorDBAutoGen.pas',
   tiCriteria in '..\..\Core\tiCriteria.pas',
-  tiVisitorCriteria in '..\..\Core\tiVisitorCriteria.pas';
+  tiVisitorCriteria in '..\..\Core\tiVisitorCriteria.pas',
+  tiTokenLibrary in '..\..\Core\tiTokenLibrary.pas';
 
 end.

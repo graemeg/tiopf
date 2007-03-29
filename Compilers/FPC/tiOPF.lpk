@@ -36,7 +36,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="2" Build="2"/>
-    <Files Count="49">
+    <Files Count="50">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -233,6 +233,10 @@
         <Filename Value="../../Core/tiRTTI.pas"/>
         <UnitName Value="tiRTTI"/>
       </Item49>
+      <Item50>
+        <Filename Value="../../Core/tiTokenLibrary.pas"/>
+        <UnitName Value="tiTokenLibrary"/>
+      </Item50>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="3">

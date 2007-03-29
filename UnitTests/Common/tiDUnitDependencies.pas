@@ -59,6 +59,7 @@ uses
   ,tiXML_TST
   ,tiCriteria_TST
   ,tiRTTI_TST
+  ,tiTokenLibrary_TST
 
   {$IFDEF FPC}
   ,tiOPFFBL_TST
@@ -130,6 +131,7 @@ begin
   tiXML_TST.RegisterTests;
   tiCriteria_TST.RegisterTests;
   tiRTTI_TST.RegisterTests;
+  tiTokenLibrary_TST.RegisterTests;
 
   {$IFDEF FPC}
   tiOPFFBL_TST.RegisterTests;
