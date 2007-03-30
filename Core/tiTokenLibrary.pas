@@ -40,7 +40,7 @@
 
   Sample Usage:
 
-    FieldSpec := TTokens.Create(FieldSpecLine, ', ', '"', '"', '\', FALSE);
+    FieldSpec := TTokens.Create(FieldSpecLine, ', ', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
     try
       FieldType := UpperCase(FieldSpec.Token(2));
     finally
@@ -66,7 +66,7 @@ type
   public
     constructor Create(const OriginalString: string; const Separators: string;
         const LeftMark: char; const RightMark: char; const Escape: char;
-        const SeparatorBetweenTokens: TTokenSeparator); overload;
+        const SeparatorBetweenTokens: TTokenSeparator = tsMultipleSeparatorsBetweenTokens); overload;
     destructor  Destroy; override;
     function    Token(const index: integer): string;
     function    TokenCount: integer;

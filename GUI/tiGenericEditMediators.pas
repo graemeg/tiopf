@@ -28,6 +28,12 @@ uses
   ,Controls
   ,Classes
   ,StdCtrls   { TEdit, TComboBox, TStaticText }
+  {$IFDEF FPC}
+  ,Spin       { TSpinEdit - standard component included in Lazarus LCL }
+  {$ELSE}
+  ,tiSpin     { TSpinEdit - tiSpin.pas cloned from Borland's Spin.pas so remove package import warning}
+  {$ENDIF}
+  ,ComCtrls   { TTrackBar }
   ;
 
 type
@@ -82,19 +88,35 @@ type
 
   { Base class to handle TEdit controls }
   TMediatorEditView = class(TMediatorView)
+  private
+    function    GetEditControl: TEdit;
+    procedure   SetEditControl(const AValue: TEdit);
+  protected
+    procedure   SetupGUIandObject; override;
   public
+    property    EditControl: TEdit read GetEditControl write SetEditControl;
     class function ComponentClass: TClass; override;
   end;
 
 
   TMediatorCheckBoxView = class(TMediatorView)
+  private
+    function    GetEditControl: TCheckBox;
+    procedure   SetEditControl(const AValue: TCheckBox);
   public
+    property    EditControl: TCheckBox read GetEditControl write SetEditControl;
     class function ComponentClass: TClass; override;
   end;
 
 
   TMediatorStaticTextView = class(TMediatorView)
+  private
+    function    GetEditControl: TStaticText;
+    procedure   SetEditControl(const AValue: TStaticText);
+  protected
+    procedure   SetupGUIandObject; override;
   public
+    property    EditControl: TStaticText read GetEditControl write SetEditControl;
     class function ComponentClass: TClass; override;
   end;
 
@@ -102,18 +124,25 @@ type
   { Base class to handle TSpinEdit controls }
   TMediatorSpinEditView = class(TMediatorView)
   private
+    function    GetEditControl: TSpinEdit;
     procedure   OnLostFocus(Sender: TObject);
+    procedure   SetEditControl(const AValue: TSpinEdit);
   protected
     procedure   SetupGUIandObject; override;
   public
-    class function ComponentClass: TClass; override;
+    property    EditControl: TSpinEdit read GetEditControl write SetEditControl;
     procedure   GuiToObject; override;
+    class function ComponentClass: TClass; override;
   end;
 
 
   { Base class to handle TTrackBar controls }
   TMediatorTrackBarView = class(TMediatorView)
+  private
+    function    GetEditControl: TTrackBar;
+    procedure   SetEditControl(const AValue: TTrackBar);
   public
+    property    EditControl: TTrackBar read GetEditControl write SetEditControl;
     class function ComponentClass: TClass; override;
   end;
 
@@ -151,12 +180,16 @@ type
 
   { Base class to handle TMemo controls }
   TMediatorMemoView = class(TMediatorView)
+  private
+    function    GetEditControl: TMemo;
+    procedure   SetEditControl(const AValue: TMemo);
   protected
     procedure   SetupGUIandObject; override;
   public
-    class function ComponentClass: TClass; override;
+    property    EditControl: TMemo read GetEditControl write SetEditControl;
     procedure   ObjectToGui; override;
     procedure   GuiToObject; override;
+    class function ComponentClass: TClass; override;
   end;
 
 
@@ -216,12 +249,6 @@ uses
   ,TypInfo
   ,tiExcept
   ,Dialogs    { MessageDlg }
-  {$IFDEF FPC}
-  ,Spin       { TSpinEdit - standard component included in Lazarus LCL }
-  {$ELSE}
-  ,tiSpin     { TSpinEdit - tiSpin.pas cloned from Borland's Spin.pas so remove package import warning}
-  {$ENDIF}
-  ,ComCtrls   { TTrackBar }
   ;
 
 var
@@ -470,6 +497,21 @@ end;
 
 { TMediatorEditView }
 
+function TMediatorEditView.GetEditControl: TEdit;
+begin
+  Result := TEdit(FEditControl);
+end;
+
+procedure TMediatorEditView.SetEditControl(const AValue: TEdit);
+begin
+  FEditControl := AValue;
+end;
+
+procedure TMediatorEditView.SetupGUIandObject;
+begin
+  inherited SetupGUIandObject;
+end;
+
 class function TMediatorEditView.ComponentClass: TClass;
 begin
   Result := TEdit;
@@ -490,21 +532,15 @@ begin
     typed. }
   if (TSpinEdit(EditControl).Text = '') then
     Exit; //==>
-//  try
-//    if (TSpinEdit(EditControl).Text = '') and (TSpinEdit(EditControl).Value = 0) then
-//      Exit; //==>
-//  except
-//    on EConvertError do
-//      begin
-//        if (TSpinEdit(EditControl).Text = '') then
-//          Exit; //==>
-//      end;
-//  end;
 
   { continue as normal }
   inherited;
 end;
 
+function TMediatorSpinEditView.GetEditControl: TSpinEdit;
+begin
+  Result := TSpinEdit(FEditControl);
+end;
 
 procedure TMediatorSpinEditView.OnLostFocus(Sender: TObject);
 begin
@@ -516,15 +552,31 @@ begin
   end;
 end;
 
+procedure TMediatorSpinEditView.SetEditControl(const AValue: TSpinEdit);
+begin
+  FEditControl := AValue;
+end;
+
 
 procedure TMediatorSpinEditView.SetupGUIandObject;
 begin
   inherited;
+  TSpinEdit(EditControl).Text := '';
   TSpinEdit(EditControl).OnExit := OnLostFocus;
 end;
 
 
 { TMediatorSpinEditView}
+
+function TMediatorTrackBarView.GetEditControl: TTrackBar;
+begin
+  Result := TTrackBar(FEditControl);
+end;
+
+procedure TMediatorTrackBarView.SetEditControl(const AValue: TTrackBar);
+begin
+  FEditControl := AValue;
+end;
 
 class function TMediatorTrackBarView.ComponentClass: TClass;
 begin
@@ -575,10 +627,20 @@ begin
   TMemo(EditControl).Lines.Text := Subject.PropValue[ FieldName ];
 end;
 
+function TMediatorMemoView.GetEditControl: TMemo;
+begin
+  Result := TMemo(FEditControl);
+end;
+
+procedure TMediatorMemoView.SetEditControl(const AValue: TMemo);
+begin
+  FEditControl := AValue;
+end;
 
 procedure TMediatorMemoView.SetupGUIandObject;
 begin
   inherited;
+  TMemo(EditControl).Lines.Clear;
   TMemo(EditControl).ScrollBars := ssVertical;
   TMemo(EditControl).WordWrap   := True;
 end;
@@ -613,6 +675,7 @@ var
 begin
   lItems := EditControl.Items;
   lItems.Clear;
+  EditControl.Text := '';
 
   if (FList = nil) or
      (FList.Count < 1) or
@@ -671,7 +734,7 @@ begin
   FSubject        := pSubject;
   FFieldName      := pFieldName;
   FEditControl    := pEditControl;
-  
+
   if Assigned(EditControl.OnChange) then
     UseInternalOnChange := False;
 
@@ -745,6 +808,16 @@ end;
 
 { TMediatorCheckBoxView }
 
+function TMediatorCheckBoxView.GetEditControl: TCheckBox;
+begin
+  Result := TCheckBox(FEditControl);
+end;
+
+procedure TMediatorCheckBoxView.SetEditControl(const AValue: TCheckBox);
+begin
+  FEditControl := AValue;
+end;
+
 class function TMediatorCheckBoxView.ComponentClass: TClass;
 begin
   Result := TCheckBox;
@@ -752,9 +825,25 @@ end;
 
 { TMediatorStaticTextView }
 
+function TMediatorStaticTextView.GetEditControl: TStaticText;
+begin
+  Result := TStaticText(FEditControl);
+end;
+
+procedure TMediatorStaticTextView.SetEditControl(const AValue: TStaticText);
+begin
+  FEditControl := AValue;
+end;
+
+procedure TMediatorStaticTextView.SetupGUIandObject;
+begin
+  inherited SetupGUIandObject;
+  EditControl.Caption := '';
+end;
+
 class function TMediatorStaticTextView.ComponentClass: TClass;
 begin
-  Result :=TStaticText;
+  Result := TStaticText;
 end;
 
 initialization

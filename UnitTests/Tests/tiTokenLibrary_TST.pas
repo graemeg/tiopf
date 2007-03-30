@@ -55,7 +55,7 @@ procedure TTestTITokenLibrary.TestSimpleTokensMultipleSeparators;
 var
   t: TTokens;
 begin
-  t := TTokens.Create('', ',', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  t := TTokens.Create('', ',', '"', '"', '\');
   try
     CheckEquals('', t.Token(1), 'Failed on 1');
     CheckEquals(0, t.TokenCount, 'Failed on 2');
@@ -63,7 +63,7 @@ begin
     t.Free;
   end;
 
-  t := TTokens.Create('a,b,c', ',', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  t := TTokens.Create('a,b,c', ',', '"', '"', '\');
   try
     CheckEquals('a', t.Token(1), 'Failed on 3');
     CheckEquals('b', t.Token(2), 'Failed on 4');
@@ -74,7 +74,7 @@ begin
     t.Free;
   end;
 
-  t := TTokens.Create('aa,bb,cc', ',', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  t := TTokens.Create('aa,bb,cc', ',', '"', '"', '\');
   try
     CheckEquals('aa', t.Token(1), 'Failed on 8');
     CheckEquals('bb', t.Token(2), 'Failed on 9');
@@ -85,7 +85,7 @@ begin
     t.Free;
   end;
 
-  t := TTokens.Create('aa,,bb,cc', ',', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  t := TTokens.Create('aa,,bb,cc', ',', '"', '"', '\');
   try
     CheckEquals('aa', t.Token(1), 'Failed on 13');
     CheckEquals('bb', t.Token(2), 'Failed on 14');
@@ -118,7 +118,7 @@ const
 var
   FieldSpec: TTokens;
 begin
-  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\');
   try
     CheckEquals(4, FieldSpec.TokenCount, 'Failed on 1');
     CheckEquals('F', FieldSpec.Token(1), 'Failed on 2');
@@ -226,7 +226,7 @@ const
 var
   FieldSpec: TTokens;
 begin
-  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\');
   try
     CheckEquals(7, FieldSpec.TokenCount, 'Failed on 1');
     CheckEquals('V', FieldSpec.Token(1), 'Failed on 2');
@@ -243,7 +243,7 @@ const
 var
   FieldSpec: TTokens;
 begin
-  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\');
   try
     CheckEquals(2, FieldSpec.TokenCount, 'Failed on 1');
     CheckEquals('P', FieldSpec.Token(1), 'Failed on 2');
@@ -259,7 +259,7 @@ const
 var
   FieldSpec: TTokens;
 begin
-  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\');
   try
     CheckEquals(4, FieldSpec.TokenCount, 'Failed on 1');
     CheckEquals('F', FieldSpec.Token(1), 'Failed on 2');
@@ -277,7 +277,7 @@ const
 var
   FieldSpec: TTokens;
 begin
-  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', #$00, tsMultipleSeparatorsBetweenTokens);
+  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', #$00);
   try
     CheckEquals(4, FieldSpec.TokenCount, 'Failed on 1');
     CheckEquals('F', FieldSpec.Token(1), 'Failed on 2');
@@ -295,7 +295,7 @@ const
 var
   FieldSpec: TTokens;
 begin
-  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\');
   try
     CheckEquals(5, FieldSpec.TokenCount, 'Failed on 1');
     CheckEquals('D', FieldSpec.Token(1), 'Failed on 2');
@@ -314,7 +314,7 @@ const
 var
   FieldSpec: TTokens;
 begin
-  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\', tsMultipleSeparatorsBetweenTokens);
+  FieldSpec := TTokens.Create(cLine, ' ', '"', '"', '\');
   try
     CheckEquals(5, FieldSpec.TokenCount, 'Failed on 1');
     CheckEquals('S', FieldSpec.Token(1), 'Failed on 2');
