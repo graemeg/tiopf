@@ -46,7 +46,7 @@ public
   procedure   Add(AObject : |itemclass|); reintroduce;
   property    Parent: |objectparent| read GetParent;
 published
-end ;
+end;
 		]]>
 		</code>
 	</template>

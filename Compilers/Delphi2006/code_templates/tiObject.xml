@@ -35,7 +35,7 @@ public
   property    Parent: |objectparent| read GetParent;
   function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
 published
-end ;
+end;
 		]]>
 		</code>
 	</template>
