@@ -38,6 +38,8 @@ const
 
   cMessageWindowHint     = 'Click here to hide this message|';
 
+  CMenuSideBarWidth = 176;
+
 type
 
   // Encapsulates an animated GIF image displayed on a toolbar to indicate that
@@ -203,7 +205,8 @@ type
     procedure DoBeginUpdate(Sender: TObject);
     procedure DoEndUpdate(Sender: TObject);
     procedure DoLBLMessageClick(Sender: TObject);
-
+    function  GetMenuSideBarWidth: integer;
+    procedure SetMenuSideBarWidth(const AValue: integer);
    public
      constructor Create(     AMainForm : TForm;
                               AWorkListFormClass : TFormTIFormMgrFormClass;
@@ -230,6 +233,7 @@ type
      property    OnFindHelpFile: TOnFindHelpFileEvent read GetOnFindHelpFile Write SetOnFindHelpFile;
      property    NavigationControlsEnabled: Boolean read FNavigationControlsEnabled Write SetNavigationControlsEnabled;
      property    FormCaption: TCaption read GetFormCaption Write SetFormCaption;
+     property    MenuSideBarWidth: integer read GetMenuSideBarWidth write SetMenuSideBarWidth default CMenuSideBarWidth;
 
      function    AddAction(const AName : string;
                            const pCaption : string; const pHint : string;
@@ -289,8 +293,8 @@ uses
  ;
 
 const
-  cBorder = 4;
-  cApplicationBusyToolbarImageRightSpace = 4; // Space on right of toolbar image
+  CBorder = 4;
+  CApplicationBusyToolbarImageRightSpace = 4; // Space on right of toolbar image
 
 var
   uAMS: TtiApplicationMenuSystem;
@@ -445,7 +449,7 @@ begin
 
     // Size the space label to fill all room in toolbar other than image
     // and other toolbar controls.
-    FAnimatedGIFSpaceLabel.Width := (ToolbarWidth - ToolbarOuterSpaceWidth - ToolbarHandleWidth) - FAnimatedGIFSpaceLabel.Left - (FAnimatedGIF.Width + cApplicationBusyToolbarImageRightSpace);
+    FAnimatedGIFSpaceLabel.Width := (ToolbarWidth - ToolbarOuterSpaceWidth - ToolbarHandleWidth) - FAnimatedGIFSpaceLabel.Left - (FAnimatedGIF.Width + CApplicationBusyToolbarImageRightSpace);
 
     // Always force a toolbar refresh.
     FToolbar.Realign;
@@ -832,7 +836,7 @@ begin
   FdpMenuSidebar.MinClientHeight := 64;
   FdpMenuSidebar.MinClientWidth := 80;
   FdpMenuSidebar.Caption := 'Menu side bar';
-  FdpMenuSidebar.DockedWidth := 176;
+  FdpMenuSidebar.DockedWidth := CMenuSideBarWidth;
   FdpMenuSidebar.DockPos := 32;
   FdpMenuSidebar.FloatingWidth := 160;
   FdpMenuSidebar.FloatingHeight := 320;
@@ -951,6 +955,7 @@ begin
   gFormThreadProgress.HelpContext     := FDefHelpContext;
 
   Application.OnHint := HintToStatusBar;
+  Application.ShowHint:= True;
 
   FtbDockTop.OnResize := OnMainFormReSize;
   ltbMultiDockTop.OnResize := OnMainFormReSize;
@@ -1182,6 +1187,11 @@ begin
     result := _GetHelpContext(pHelpItem as TControl)
   else
     result := 0;
+end;
+
+function TtiApplicationMenuSystem.GetMenuSideBarWidth: integer;
+begin
+  result:= FdpMenuSidebar.DockedWidth;
 end;
 
 function TtiApplicationMenuSystem.AddAction(const AName, pCaption, pHint: string;
@@ -1465,6 +1475,11 @@ begin
     FpnlMessageText.Visible := True;
   end;
   gFormThreadProgress.Visible := not FpnlMessageText.Visible;
+end;
+
+procedure TtiApplicationMenuSystem.SetMenuSideBarWidth(const AValue: integer);
+begin
+  FdpMenuSidebar.DockedWidth:= AValue;
 end;
 
 procedure TtiApplicationMenuSystem.CreateContextMenuItems;

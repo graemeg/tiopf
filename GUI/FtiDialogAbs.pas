@@ -19,7 +19,7 @@ type
 
 implementation
 uses
-  tiUtils
+   tiUtils
   ,tiRegINI
  ;
 

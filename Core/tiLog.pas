@@ -204,6 +204,7 @@ procedure Log(const AMessage : string; ASeverity : TtiLogSeverity = lsNormal); o
 procedure Log(const AMessage : integer; ASeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const AMessage : Extended; ASeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const AMessage : boolean; ASeverity : TtiLogSeverity = lsNormal); overload;
+procedure Log(const AMessages : TStrings; ASeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const AArray : Array of Const; ASeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const AMessage : string; const AArray : Array of Const; ASeverity : TtiLogSeverity = lsNormal); overload;
 procedure LogWarning(const AMessage : string); overload;
@@ -326,6 +327,13 @@ begin
   Log(tiBoolToStr(AMessage), ASeverity);
 end;
 
+procedure Log(const AMessages : TStrings; ASeverity : TtiLogSeverity = lsNormal); overload;
+var
+  i: integer;
+begin
+  for i := 0 to AMessages.Count - 1 do
+    Log(AMessages.Strings[i]);    
+end;
 
 procedure LogError(const AMessage : string; ARaiseException : boolean = true);
 begin

@@ -125,7 +125,7 @@ type
     FView: TStringGrid;
     FModel: TtiObject;
     FRowIndex : Integer;
-    procedure   SetupFields;
+//    procedure   SetupFields;
   public
     constructor CreateCustom(AModel: TtiObject; AGrid: TStringGrid; ADisplayNames: string; pRowIndex: integer; IsObserving: Boolean = True);
     procedure   BeforeDestruction; override;
@@ -161,10 +161,10 @@ end;
 
 { TStringGridRowMediator }
 
-procedure TStringGridRowMediator.SetupFields;
-begin
-  {$Note Add the appropriate code here}
-end;
+//procedure TStringGridRowMediator.SetupFields;
+//begin
+//  {$ifdef fpc} {$Note Add the appropriate code here} {$endif}
+//end;
 
 constructor TStringGridRowMediator.CreateCustom(AModel: TtiObject; AGrid : TStringGrid; ADisplayNames: string; pRowIndex : integer; IsObserving: Boolean);
 begin
@@ -191,7 +191,6 @@ var
   i : Integer;
   lField : string;
   lFieldName : string;
-  lData : TtiObject;
 begin
   Assert(FModel = ASubject);
 
@@ -352,14 +351,22 @@ procedure TCompositeListViewMediator.RebuildList;
 begin
   { This rebuilds the whole list. Not very efficient. You can always override
     this in your mediators to create a more optimised rebuild. }
+  {$ifdef fpc}
   View.BeginUpdate;
+  {$else}
+  View.Items.BeginUpdate;
+  {$endif}
   try
     FMediatorList.Clear;
     View.Columns.Clear;
     View.Items.Clear;
     CreateSubMediators;
   finally
-    View.EndUpdate;
+  {$ifdef fpc}
+  View.EndUpdate;
+  {$else}
+  View.Items.EndUpdate;
+  {$endif}
   end;
 end;
 
@@ -479,7 +486,6 @@ end;
 procedure TCompositeStringGridMediator.SetSelectedObject(const AValue: TtiObject);
 var
   i : integer;
-  lGridSelect : TGridRect;
 begin
   for i := 1 to FView.RowCount - 1 do
   begin
@@ -538,12 +544,13 @@ var
   lField: string;
   lColumnTotalWidth: integer;
 begin
+  lColumnTotalWidth:= 0;
   for i := 1 to tiNumToken(FDisplayNames, cFieldDelimiter) do
   begin
     lField := tiToken(FDisplayNames, cFieldDelimiter, i);
     FView.Cells[i, 0]   := tiFieldName(lField);
     FView.ColWidths[i]  := tiFieldWidth(lField);
-    
+
     //resize the last column to fill the grid.
     if i = tiNumToken(FDisplayNames, cFieldDelimiter) then
       FView.ColWidths[i] := FView.width - lColumnTotalWidth + 10
@@ -563,8 +570,10 @@ end;
 procedure TCompositeStringGridMediator.SetupGUIandObject;
 begin
   //Setup default properties for the StringGrid
+  {$ifdef fpc}
   FView.Clear;
   FView.Columns.Clear;
+  {$endif}
   FView.Options       := FView.Options + [goRowSelect];
   FView.ColCount      := tiNumToken(FDisplayNames, cFieldDelimiter) + 1;
   FView.RowCount      := FModel.Count + 1;

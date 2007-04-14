@@ -134,20 +134,21 @@ const
 
   crMaxReal       = 9999999999;
 
-  cNullDate       = 0.0;
-  cNullDateTime   = 0.0;
-  cgNullDate      = 0.0;
-  cgNullDateTime  = 0.0;
-  cgMinDateTime   = 0.0;
-  cNullSQLDate    = 0;                 // 12/30/1899
-  cgdtMaxDateTime = 2958465.99998843;  // 31/12/9999 23:59:59
+  CNullDate       = 0.0;
+  CNullDateTime   = 0.0;
+  CMaxDateTime    = 2958465.99998843;  // 31/12/9999 23:59:59
+  CMaxDate        = 2958465;
+  CNullSQLDate    = 0;                 // 12/30/1899
+
+  cgNullDate      = CNullDateTime;
+  cgNullDateTime  = CNullDateTime;
+  cgMinDateTime   = CNullDateTime;
+  cgdtMaxDateTime = CMaxDateTime;  // 31/12/9999 23:59:59
   cgMaxDateTime   = cgdtMaxDateTime;
-  cMaxDateTime    = cgdtMaxDateTime;
-  cgdtMaxDate     = 2958465.0;
-  crMaxDate       = cgdtMaxDate;
-  cMaxDate        = cgdtMaxDate;
+  cgdtMaxDate     = CMaxDate;
+  crMaxDate       = CMaxDate;
   cgMinDate       = 0.0;
-  cgMaxDate       = 2958465.0;
+  cgMaxDate       = CMaxDate;
 
   { Summary of ISO 8601  http://www.cl.cam.ac.uk/~mgk25/iso-time.html }
   cIntlDateTimeStor = 'yyyymmdd"T"hhmmss';    // for storage
@@ -172,7 +173,7 @@ const
   cINIIdentDatabaseName = 'DatabaseName';
   cINIIdentUserName     = 'UserName';
   cINIIdentPassword     = 'Password';
-  cINIIdentPort         = 'Port'; 
+  cINIIdentPort         = 'Port';
 
   { Moved from tiUtils }
   csWinDateFormat     = 'dd/MM/yyyy';
@@ -193,6 +194,9 @@ const
   cErrorInvalidVariantType      = 'Invalid variant type';
   cErrorXMLStringToDate         = 'Error converting string to date. String <%s> Error: %s';
   cErrorCanNotDeleteFile        = 'Can not delete file <%s>. It may be locked by another application.';
+
+  CUnknownGUI = 'Unknown' ;
+  CUnknownDB = 'UNKNOWN';
 
   cBase           = 26;
   cZeroChar       = 'A';

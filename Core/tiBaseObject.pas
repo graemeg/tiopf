@@ -144,6 +144,7 @@ procedure IdClassCountDlg(AClassName: String);
 function  IdGetThreadObjectCount: Integer;
 function  IdGetTotalObjectCount: Integer;
 procedure IdSoapListObjectCounts(AList: TStringList); // put names in list, with count as object
+function  DescribeLiveObjects: String;
 {$ENDIF}
 
 var

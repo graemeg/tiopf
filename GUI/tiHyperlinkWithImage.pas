@@ -63,6 +63,7 @@ type
     property Hint: string read FHint write FHint;
     property OnHint: TtiHyperLinkWithImageHintEvent read FOnHint write FOnHint;
     property Margin: integer read FMargin write SetMargin;
+    property Font;
     property Height;
   end;
 

@@ -307,13 +307,13 @@ end;
 destructor TtiOPFManager.Destroy;
 begin
   Terminate;
+  FActiveThreadList.Free;
   FVisitorManager.Free;
   {$IFNDEF OID_AS_INT64}
     FOIDFactory.Free;
   {$ENDIF}
   FClassDBMappingMgr.Free;
   FPersistenceLayers.Free;
-  FActiveThreadList.Free;
   FApplicationData.Free;
   FCriticalSection.Free;
   inherited;

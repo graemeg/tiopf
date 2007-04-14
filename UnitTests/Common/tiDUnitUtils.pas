@@ -90,6 +90,26 @@ type
     procedure CheckEquals(AValue: TStream;   AField: TStream); overload;
     procedure CheckEquals(AValue: String;   AField: TtiFieldInteger); overload;
     procedure CheckEquals(const AExpected: string; AActual: integer); overload;
+    {: Check a TtiObject's Equals Method by calling AData1.Equals(AData2), then changing APropName to ANewValue and trying again.
+       APropName must be a string property.}
+    procedure CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject; const APropName, ANewValue: string); overload;
+    {: Check a TtiObject's Equals Method by calling AData1.Equals(AData2), then changing APropName to ANewValue and trying again.
+       APropName must be a real property.}
+    procedure CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject; const APropName: string; const ANewValue: Real); overload;
+    {: Check a TtiObject's IsValid Method by calling AData.IsValid, then changing APropName to ANewValue and trying again.
+       APropName must be a string property.}
+    procedure CheckTIObjectIsValidMethod(const AData: TtiObject; const APropName: string; const AInvalidValue: String; const AErrorProperty: string = ''); overload;
+    {: Check a TtiObject's IsValid Method by calling AData.IsValid, then changing APropName to ANewValue and trying again.
+       APropName must be a integer property.}
+    procedure CheckTIObjectIsValidMethod(const AData: TtiObject; const APropName: string; const AInvalidValue: Int64; const AErrorProperty: string = ''); overload;
+    {: Check a TtiObject's IsValid Method by calling AData.IsValid, then changing APropName to ANewValue and trying again.
+       APropName must be a real property.}
+    procedure CheckTIObjectIsValidMethod(const AData: TtiObject; const APropName: string; const AInvalidValue: Real; const AErrorProperty: string = ''); overload;
+    {: Check a delete visitor is working by creating an instance of TtiObjectClass (which must be a list), then calling it's read method.
+       There must be one object in the list. This object will be marked as deleted, then saved and the list will be re-read. The
+       list must be empty on the second read.}
+    procedure CheckDeletionFromDatabase(const AListClass: TtiObjectClass);
+
     {$IFDEF FPC}
       // DUnit compatibility interface
       {$I DUnitCompatableInterface.inc}
@@ -502,6 +522,30 @@ begin
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
 end;
 
+procedure TtiTestCase.CheckDeletionFromDatabase(const AListClass: TtiObjectClass);
+var
+  LList: TtiObjectList;
+begin
+  LList:= AListClass.Create as TtiObjectList;
+  try
+    LList.Read;
+    CheckEquals(1, LList.Count);
+    LList.Items[0].Deleted:= True;
+    LList.Items[0].Save;
+    CheckObjectState(posDeleted, LList.Items[0]);
+  finally
+    LList.Free;
+  end;
+
+  LList:= AListClass.Create as TtiObjectList;
+  try
+    LList.Read;
+    CheckEquals(0, LList.Count);
+  finally
+    LList.Free;
+  end;
+end;
+
 procedure TtiTestCase.CheckEquals(const AExpected: string; AActual: integer);
 begin
   CheckEquals(StrToInt(AExpected), AActual);
@@ -535,6 +579,126 @@ begin
   CheckNearEnough(AExpected.AsFloat, AActual.AsFloat);
 end;
 
+procedure TtiTestCase.CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject; const APropName: string; const ANewValue: string);
+var
+  LSaved: string;
+begin
+  Assert(AData1.TestValid, cTIInvalidObjectError);
+  Assert(AData2.TestValid, cTIInvalidObjectError);
+  CheckEquals(True, AData1.Equals(AData2));
+  LSaved:= AData1.PropValue[APropName];
+  AData1.PropValue[APropName]:= ANewValue;
+  CheckEquals(False, AData1.Equals(AData2));
+  AData1.PropValue[APropName]:= LSaved;
+  CheckEquals(True, AData1.Equals(AData2));
+end;
+
+procedure TtiTestCase.CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject; const APropName: string; const ANewValue: Real); 
+var
+  LSaved: Real;
+begin
+  Assert(AData1.TestValid, cTIInvalidObjectError);
+  Assert(AData2.TestValid, cTIInvalidObjectError);
+  CheckEquals(True, AData1.Equals(AData2));
+  LSaved:= AData1.PropValue[APropName];
+  AData1.PropValue[APropName]:= ANewValue;
+  CheckEquals(False, AData1.Equals(AData2));
+  AData1.PropValue[APropName]:= LSaved;
+  CheckEquals(True, AData1.Equals(AData2));
+end;
+
+procedure TtiTestCase.CheckTIObjectIsValidMethod(const AData: TtiObject;
+  const APropName, AInvalidValue: String; const AErrorProperty: string = '');
+var
+  LSaved: String;
+  LErrors: TtiObjectErrors;
+  LErrorProperty: string;
+begin
+  Assert(AData.TestValid, cTIInvalidObjectError);
+  if AErrorProperty = '' then
+    LErrorProperty:= APropName
+  else
+    LErrorProperty:= AErrorProperty;
+  LErrors:= TtiObjectErrors.Create;
+  try
+    CheckEquals(True, AData.IsValid);
+    LSaved:= AData.PropValue[APropName];
+    AData.PropValue[APropName]:= AInvalidValue;
+    LErrors.Clear;
+    CheckEquals(False, AData.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals(LErrorProperty, LErrors.Items[0].ErrorProperty);
+    CheckNotEquals('', LErrors.Items[0].ErrorMessage);
+    AData.PropValue[APropName]:= LSaved;
+    LErrors.Clear;
+    CheckEquals(True, AData.IsValid(LErrors));
+    CheckEquals(0, LErrors.Count);
+  finally
+    LErrors.Free;
+  end;
+end;
+
+procedure TtiTestCase.CheckTIObjectIsValidMethod(const AData: TtiObject;
+  const APropName: string; const AInvalidValue: Int64; const AErrorProperty: string = '');
+var
+  LSaved: Int64;
+  LErrors: TtiObjectErrors;
+  LErrorProperty: string;
+begin
+  Assert(AData.TestValid, cTIInvalidObjectError);
+  if AErrorProperty = '' then
+    LErrorProperty:= APropName
+  else
+    LErrorProperty:= AErrorProperty;
+  LErrors:= TtiObjectErrors.Create;
+  try
+    CheckEquals(True, AData.IsValid);
+    LSaved:= AData.PropValue[APropName];
+    AData.PropValue[APropName]:= AInvalidValue;
+    LErrors.Clear;
+    CheckEquals(False, AData.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals(LErrorProperty, LErrors.Items[0].ErrorProperty);
+    CheckNotEquals('', LErrors.Items[0].ErrorMessage);
+    AData.PropValue[APropName]:= LSaved;
+    LErrors.Clear;
+    CheckEquals(True, AData.IsValid(LErrors));
+    CheckEquals(0, LErrors.Count);
+  finally
+    LErrors.Free;
+  end;
+end;
+
+procedure TtiTestCase.CheckTIObjectIsValidMethod(const AData: TtiObject;
+  const APropName: string; const AInvalidValue: Real; const AErrorProperty: string = '');
+var
+  LSaved: real;
+  LErrors: TtiObjectErrors;
+  LErrorProperty: string;
+begin
+  Assert(AData.TestValid, cTIInvalidObjectError);
+  if AErrorProperty = '' then
+    LErrorProperty:= APropName
+  else
+    LErrorProperty:= AErrorProperty;
+  LErrors:= TtiObjectErrors.Create;
+  try
+    CheckEquals(True, AData.IsValid);
+    LSaved:= AData.PropValue[APropName];
+    AData.PropValue[APropName]:= AInvalidValue;
+    LErrors.Clear;
+    CheckEquals(False, AData.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals(LErrorProperty, LErrors.Items[0].ErrorProperty);
+    CheckNotEquals('', LErrors.Items[0].ErrorMessage);
+    AData.PropValue[APropName]:= LSaved;
+    LErrors.Clear;
+    CheckEquals(True, AData.IsValid(LErrors));
+    CheckEquals(0, LErrors.Count);
+  finally
+    LErrors.Free;
+  end;
+end;
 
 {$IFDEF FPC}
   // DUnit compatibility interface
@@ -600,5 +764,7 @@ begin
   Assert(not FRunning, 'Still running');
   result:= (FStop - FStart) * FPerformanceFactor;
 end;
+
+
 
 end.

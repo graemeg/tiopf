@@ -17,11 +17,15 @@ uses
 
 function tiMadExceptBugReport(AException: Exception): string;
 begin
-{$ifdef MadExcept}
+{$IFDEF madexcept3}
+  Result := MadExcept.CreateBugReport(etNormal, AException, nil, GetCurrentThreadID);
+{$ELSE}
+{$IFDEF madexcept}
   Result := MadExcept.CreateBugReport(False, AException, nil, GetCurrentThreadID, 0, 0, False, nil);
-{$else}
+{$ELSE}
   Result:= 'MadExcept not linked.'#13#13 + AException.message;
-{$endif}
+{$ENDIF}
+{$ENDIF}
 end;
 
 end.

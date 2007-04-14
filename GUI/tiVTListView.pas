@@ -60,7 +60,7 @@ type
   TtiCustomVirtualTree = class;
   TtiVTListView = class;
 
-  TvtTypeKind = (vttkString, vttkInt, vttkFloat, vttkDate, vttkDateTime, vttkCurrency);
+  TvtTypeKind = (vttkString, vttkInt, vttkFloat, vttkDate, vttkDateTime, vttkTime, vttkCurrency);
 
   TtiVTClearSortEvent     = procedure(pVT : TtiCustomVirtualTree) of object;
   TtiVTOnFilterDataEvent  = procedure(AData  : TtiObject; var pInclude : boolean) of object;
@@ -224,8 +224,9 @@ type
   TtiVTSearchPanel = class(TCustomPanel)
     FFindLabel: TLabel;
     FFindText: TEdit;
-    FFindNext: TSpeedButton;
-    FFindPrevious: TSpeedButton;
+    FClose: TtiSpeedButton;
+    FFindNext: TtiSpeedButton;
+    FFindPrevious: TtiSpeedButton;
     FWrapLabel: TLabel;
 
   private
@@ -242,10 +243,11 @@ type
     procedure SetOnShowing(const AValue: TtiVTSearchPanelShowing);
     procedure DoFindText(Sender: TObject);
     procedure DoFindNext(Sender: TObject);
+    procedure DoClose(Sender: TObject);
     procedure SetOnFindNext(const AValue: TNotifyEvent);
     procedure DoFindPrevious(Sender: TObject);
     procedure SetOnFindPrevious(const AValue: TNotifyEvent);
-    function GetSearchText: string;
+    function  GetSearchText: string;
     procedure DoFindKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ClearWrapMessage;
 
@@ -799,11 +801,12 @@ function tiVTDisplayMaskFromDataType(const AValue : TvtTypeKind): string;
 begin
   // ToDo: Should use OS constants
   case AValue of
-    vttkString  : result := '';
-    vttkInt     : result := '#,##0';
-    vttkFloat   : result := '#,##0.000';
-    vttkDate    : result := 'dd/mm/yyyy';
+    vttkString   : result := '';
+    vttkInt      : result := '#,##0';
+    vttkFloat    : result := '#,##0.000';
+    vttkDate     : result := 'dd/mm/yyyy';
     vttkDateTime : result := 'dd/mm/yyyy hh:nn:ss';
+    vttkTime     : result := 'hh:nn:ss';
     vttkCurrency : Result := '#,##0.00';
   else
     Assert(false, 'Invalid DataType');
@@ -931,7 +934,7 @@ begin
   FDataType := AValue;
 
   case AValue of
-    vttkString, vttkDate, vttkDateTime:
+    vttkString, vttkDate, vttkDateTime, vttkTime:
       Alignment := taLeftJustify;
 
     vttkInt, vttkFloat, vttkCurrency:
@@ -1518,6 +1521,9 @@ begin
         Result := FormatDateTime(Mask, GetPropValue(Obj, Field, True));
 
       vttkDateTime:
+        Result := FormatDateTime(Mask, GetPropValue(Obj, Field, True));
+
+      vttkTime:
         Result := FormatDateTime(Mask, GetPropValue(Obj, Field, True));
 
       vttkCurrency:
@@ -2991,52 +2997,79 @@ constructor TtiVTSearchPanel.Create(AOwner: TComponent);
 begin
   inherited;
   SetSubComponent(True);
-  Height := 20;
+  Height := 26;
   BevelOuter := bvNone;
   BevelInner := bvNone;
   Align := alBottom;
   Visible := false;
 
+  FClose:= TtiSpeedButton.Create(Self);
+  FClose.Parent := self;
+  FClose.Top:= 2;
+  FClose.Height := Height-4;
+  FClose.Width := FClose.Height;
+  FClose.Margin:= 2;
+  FClose.Left := 0;
+  FClose.Hint:= 'Close find bar';
+  FClose.ShowHint:= True;
+  gTIImageListMgr.LoadBMPToTISPeedButton16(cResTI_Cross, FClose);
+  FClose.OnClick := DoClose;
+
   FFindLabel := TLabel.Create(self);
   FFindLabel.Parent := self;
-  FFindLabel.Align := alLeft;
+  FFindLabel.Top:= 5;
+  FFindLabel.Left:= FClose.Left + FClose.Width + 4;
   FFindLabel.Layout := tlCenter;
-  FFindLabel.Caption := ' Find: ';
+  FFindLabel.Caption := 'Find: ';
 
   FFindText := TEdit.Create(self);
   FFindText.Parent := self;
-  FFindText.Height := Height;
+  FFindText.Top:= 2;
+  FFindText.Height := Height-4;
   FFindText.Width := 100;
   FFindText.Left := FFindLabel.Left + FFindLabel.Width;
   FFindText.OnChange := DoFindText;
   FFindText.OnKeyDown := DoFindKeyDown;
 
-  FFindNext := TSpeedButton.Create(self);
+  FFindNext := TtiSpeedButton.Create(self);
   FFindNext.Parent := self;
-  FFindNext.Flat := true;
-  FFindNext.Height := Height;
-  FFindNext.Width := 70;
+  FFindNext.Top:= 2;
+  FFindNext.Height := Height-4;
+  FFindNext.Width := 50;
+  FFindNext.Margin:= 2;
   FFindNext.Caption := 'Next';
-  FFindNext.Left := FFindText.Left + FFindText.Width + 3;
+  FFindNext.Hint:= 'Find the next occurrence of the phrase';
+  FFindNext.ShowHint:= True;
+  FFindNext.Left := FFindText.Left + FFindText.Width + 4;
+  gTIImageListMgr.LoadBMPToTISPeedButton16(cResTI_FindNext, FFindNext);
   FFindNext.OnClick := DoFindNext;
 
-  FFindPrevious := TSpeedButton.Create(self);
+  FFindPrevious := TtiSpeedButton.Create(self);
   FFindPrevious.Parent := self;
-  FFindPrevious.Flat := true;
-  FFindPrevious.Height := Height;
+  FFindPrevious.Top:= 2;
+  FFindPrevious.Height := Height-4;
   FFindPrevious.Width := 70;
+  FFindPrevious.Margin:= 2;
   FFindPrevious.Caption := 'Previous';
+  FFindPrevious.Hint:= 'Find the previous occurrence of the phrase';
+  FFindPrevious.ShowHint:= True;
   FFindPrevious.Left := FFindNext.Left + FFindNext.Width + 3;
+  gTIImageListMgr.LoadBMPToTISPeedButton16(cResTI_FindPrevious, FFindPrevious);
   FFindPrevious.OnClick := DoFindPrevious;
 
   FWrapLabel := TLabel.Create(self);
   FWrapLabel.Parent := self;
   FWrapLabel.Left := FFindPrevious.Left + FFindPrevious.Width + 3;
   FWrapLabel.AutoSize := false;
-  FWrapLabel.Top := 1; // align with button captions
+  FWrapLabel.Top := 3;
   FWrapLabel.Height := Height;
   FWrapLabel.Width := 250;
   FWrapLabel.Layout := tlCenter;
+end;
+
+procedure TtiVTSearchPanel.DoClose(Sender: TObject);
+begin
+  Showing:= False;
 end;
 
 procedure TtiVTSearchPanel.DoFindKeyDown(Sender: TObject; var Key: Word;

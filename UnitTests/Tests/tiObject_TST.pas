@@ -60,6 +60,7 @@ type
     procedure CloneCompound;
     procedure TopOfHierarchy;
     procedure IsValid;
+    procedure AsDebugString;
 
     procedure FieldString;
     procedure FieldString_Equals;
@@ -307,6 +308,11 @@ begin
   end;
 end;
 
+
+procedure TTestTIObject.AsDebugString;
+begin
+  Assert(False, 'Under construction');
+end;
 
 procedure TTestTIObject.AssignCompound;
 var
