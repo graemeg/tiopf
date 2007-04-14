@@ -80,14 +80,13 @@ type
     procedure SetSeverityAsString(const AValue: string);
     function  GetShortLogMessage: string;
     function  GetFormattedMessageTimeStamp: string;
-  published
+  public
     property DateTime  : string       read FDateTime  write FDateTime;
     property LogMessage : String       read FLogMessage write FLogMessage;
     property ShortLogMessage : string  read GetShortLogMessage;
     property Severity  : TtiLogSeverity read FSeverity   write FSeverity;
     property ThreadID  : string       read FThreadID  write FThreadID;
     property SeverityAsString : string read GetSeverityAsString write SetSeverityAsString;
-  public
     function AsString  : string;
     function AsStringStripCrLf : string;
     function AsLeftPaddedString: string;

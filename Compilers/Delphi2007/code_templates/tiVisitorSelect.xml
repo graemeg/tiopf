@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="vs" invoke="auto">
+		<point name="visitorname">
+			<hint>
+				Visitor's name
+			</hint>
+			<text>
+				XXX
+			</text>
+		</point>
+		<description>
+			Visitor's name;
+		</description>
+		<author>
+			Peter Hinrichsen
+		</author>
+		<code language="Delphi" context="methodbody" delimiter="|">
+		<![CDATA[
+  TVis|visitorname|_Read = class(TtiVisitorSelect)
+  protected
+    function  AcceptVisitor : boolean; override;
+    procedure Init          ; override;
+    procedure SetupParams   ; override;
+    procedure MapRowToObject; override;
+  end;
+		]]>
+		</code>
+	</template>
+</codetemplate>

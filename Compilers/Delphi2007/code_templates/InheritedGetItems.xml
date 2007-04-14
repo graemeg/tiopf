@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="igi" invoke="auto">
+		<point name="resulttype">
+			<hint>
+				Result type
+			</hint>
+			<text>
+				TtiObject
+			</text>
+		</point>
+		<description>
+			inherited GetItems(i) as TtiObject;
+		</description>
+		<author>
+			Peter Hinrichsen
+		</author>
+		<code language="Delphi" context="methodbody" delimiter="|"><![CDATA[result:= inherited GetItems(i) as |resulttype|;]]>
+		</code>
+	</template>
+</codetemplate>

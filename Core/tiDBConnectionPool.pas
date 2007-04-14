@@ -43,13 +43,6 @@ type
     FParams: string;
     function  GetAsString: string;
     procedure SetAsString(const AValue: string);
-  published
-    property ConnectionName : string read FsConnectionName write FsConnectionName;
-    property DatabaseName : string   read FsDatabaseName   write FsDatabaseName;
-    property UserName    : string   read FsUserName       write FsUserName    ;
-    property UserPassword : string   read FsUserPassword   write FsUserPassword;
-    property HostName    : string   read FsHostName       write FsHostName    ;
-    property Params      : string   read FParams          Write FParams;
   public
     constructor Create;
     constructor CreateExt(const psConnectionDetails : string);
@@ -59,6 +52,12 @@ type
     function    UserPasswordMask : string;
     function    Validate    : boolean;
     procedure   Assign(AData : TDBConnectParams); reintroduce;
+    property ConnectionName : string read FsConnectionName write FsConnectionName;
+    property DatabaseName : string   read FsDatabaseName   write FsDatabaseName;
+    property UserName    : string   read FsUserName       write FsUserName    ;
+    property UserPassword : string   read FsUserPassword   write FsUserPassword;
+    property HostName    : string   read FsHostName       write FsHostName    ;
+    property Params      : string   read FParams          Write FParams;
   end;
 
   // A List of TDBConnectParams

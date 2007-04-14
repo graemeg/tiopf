@@ -343,13 +343,6 @@ var
   AppNameBuf: array[0..MAX_PATH] of Char;
   ExeName: PChar;
 
-{$IFDEF DEBUG}
-  ReadCount: Integer;
-  StartExec,
-  EndExec,
-  PerfFreq: Int64;
-{$ENDIF}
-
 procedure OutputLine;
 begin
   LineBuf[LineBufPtr]:= #0;
@@ -412,11 +405,6 @@ begin
   FillChar(StartupInfo,SizeOf(StartupInfo), 0);
   FillChar(ReadBuf, SizeOf(ReadBuf), 0);
   FillChar(SecurityAttributes, SizeOf(SecurityAttributes), 0);
-{$IFDEF DEBUG}
-  ReadCount:= 0;
-  if QueryPerformanceFrequency(PerfFreq) then
-    QueryPerformanceCounter(StartExec);
-{$ENDIF}
   LineBufPtr:= 0;
   Newline:= true;
   with SecurityAttributes do
@@ -520,9 +508,6 @@ begin
       begin
         {There are much more efficient ways of doing this: we don't really
         need two buffers, but we do need to scan for CR & LF &&&}
-{$IFDEF Debug}
-        Inc(ReadCount);
-{$ENDIF}
         for  i:= 0 to BytesRead - 1 do
         begin
           if (ReadBuf[i] = LF) then
@@ -561,18 +546,6 @@ begin
       GetExitCodeProcess(ProcessInfo.hProcess, Result);
       OutputLine {flush the line buffer}
 
-{$IFDEF DEBUG};  {that's how much I dislike null statements!
-                   Is there a nobel prize for pedantry?}
-      if PerfFreq > 0 then
-      begin
-        QueryPerformanceCounter(EndExec);
-        AppOutput.Add(Format('Debug: (readcount = %d), ExecTime = %.3f ms',
-          [ReadCount, ((EndExec - StartExec)*1000.0)/PerfFreq]))
-      end else
-      begin
-        AppOutput.Add(Format('Debug: (readcount = %d)', [ReadCount]))
-      end
-{$ENDIF}
     finally
       CloseHandle(ProcessInfo.hProcess)
     end

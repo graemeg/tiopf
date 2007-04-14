@@ -152,8 +152,6 @@ type
 
   public
 
-  published
-
   end;
 
 
