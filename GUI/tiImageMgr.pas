@@ -1,5 +1,7 @@
 (*
 
+  === Delphi ===
+
   Add the resources to a .rc file like this:
     MyJPEG           JPEG    "..\MyJPEG.jpg"
     MyBMP            BITMAP  "..\ByBitMap.bmp"
@@ -17,6 +19,26 @@
 
   If the resources are in the main exe, then just use
     gTIImateListMgr
+
+
+  === Lazarus ===
+
+  To add resources into a unit you can use the 'lazres' tool included with
+  Lazarus.
+  
+  lazarus/tools/lazres myres.lrs *.xpm *.bmp *.jpg
+  
+  Will include all XPM, BMP and JPG files into a myres.lrs resource file.
+  To add this resource to your application you do the following in
+  the Initialization section.
+     {$I myres.lrs}
+
+    
+  NOTE to all Lazarus users:
+    The function name to load resources like images into a TImageList has
+    changed. Lazarus 0.9.22 and earlier used .AddFromLazarusResource().
+    Lazarus 0.9.23 and later uses the name .AddLazarusResource().
+    tiOPF code is always based on the latest Lazarus development version.
 
 *)
 
@@ -246,20 +268,20 @@ begin
         {$IFNDEF FPC}
         ILNormal16.AddMasked(lBMP, clDefault);
         {$ELSE}
-        ILNormal16.AddFromLazarusResource(lResName);
+        ILNormal16.AddLazarusResource(lResName);
         {$ENDIF}
       end
       else if (pState = tiISHot) then
         {$IFNDEF FPC}
         ILHot16.AddMasked(lBMP, clDefault)
         {$ELSE}
-        ILHot16.AddFromLazarusResource(lResName)
+        ILHot16.AddLazarusResource(lResName)
         {$ENDIF}
       else if (pState = tiISDisabled) then
         {$IFNDEF FPC}
         ILDisabled16.AddMasked(lBMP, clDefault)
         {$ELSE}
-        ILDisabled16.AddFromLazarusResource(lResName)
+        ILDisabled16.AddLazarusResource(lResName)
         {$ENDIF}
       else
         raise Exception.CreateFmt(cErrorInvalidImageState, [ClassName + '.LoadSingleImage']);
@@ -272,20 +294,20 @@ begin
         {$IFNDEF FPC}
         ILNormal24.AddMasked(lBMP, clDefault);
         {$ELSE}
-        ILNormal24.AddFromLazarusResource(lResName);
+        ILNormal24.AddLazarusResource(lResName);
         {$ENDIF}
       end
       else if (pState = tiISHot) then
         {$IFNDEF FPC}
         ILHot24.AddMasked(lBMP, clDefault)
         {$ELSE}
-        ILHot24.AddFromLazarusResource(lResName)
+        ILHot24.AddLazarusResource(lResName)
         {$ENDIF}
       else if (pState = tiISDisabled) then
         {$IFNDEF FPC}
         ILDisabled24.AddMasked(lBMP, clDefault)
         {$ELSE}
-        ILDisabled24.AddFromLazarusResource(lResName)
+        ILDisabled24.AddLazarusResource(lResName)
         {$ENDIF}
       else
         raise Exception.CreateFmt(cErrorInvalidImageState, [ClassName + '.LoadSingleImage']);
@@ -337,9 +359,9 @@ end;
 {$ENDIF}
 
 procedure TtiImageListMgr.LoadImagesFromResource(const pResName: string;
-  pSizes: TtiImageSizes{; pStates: TtiImageStates});
+  pSizes: TtiImageSizes);
 begin
-  LoadImagesFromResource(pResName, pResName, pSizes{, pStates});
+  LoadImagesFromResource(pResName, pResName, pSizes);
 end;
 
 function TtiImageListMgr.ImageIndex16(const pImageName: string): integer;

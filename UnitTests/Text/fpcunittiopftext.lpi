@@ -40,7 +40,7 @@
         <PackageName Value="FCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="14">
       <Unit0>
         <Filename Value="fpcunittiopftext.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -56,6 +56,61 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiDUnitDependencies"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiBaseObject_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiBaseObject_tst"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Common/tiDUnitDependencies.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiDUnitDependencies"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiVisitor_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiVisitor_TST"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiStreams_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiStreams_TST"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiPool_tst.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiPool_tst"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiQueue_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiQueue_TST"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiOID_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiOID_TST"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiWin32_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiWin32_TST"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiDataSet_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiDataSet_TST"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiTextParser_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiTextParser_TST"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="D:/Programming/3rdParty/tiOPF2/Source/UnitTests/Tests/tiTextParserStructCSV_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiTextParserStructCSV_TST"/>
+      </Unit13>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

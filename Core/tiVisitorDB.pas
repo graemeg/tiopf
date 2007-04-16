@@ -96,9 +96,9 @@ type
   public
     Constructor Create; override;
     destructor  Destroy; override;
-    procedure   Execute(const AVisited : TtiVisited); override;
-    function    VisitorControllerClass : TtiVisitorControllerClass; override;
-    property    Visited : TtiObject read GetVisited write SetVisited;
+    procedure   Execute(const AVisited: TtiVisited); override;
+    function    VisitorControllerClass: TtiVisitorControllerClass; override;
+    property    Visited: TtiObject read GetVisited write SetVisited;
   end;
   
 
@@ -106,11 +106,11 @@ type
   // it's for internal tiOPF use only.
   TVisOwnedQrySelectAbs = class(TtiPerObjVisitor)
   protected
-    procedure   Init           ; virtual;
+    procedure   Init; virtual;
     procedure   MapRowToObject ; virtual;
-    procedure   OpenQuery   ; virtual; abstract;
+    procedure   OpenQuery; virtual; abstract;
   public
-    procedure   Execute(const AData : TtiVisited); override;
+    procedure   Execute(const AData: TtiVisited); override;
   end;
   
 
@@ -125,9 +125,9 @@ type
   // ToDo: Rename to TtiVisitorUpdate
   TVisOwnedQryUpdate = class(TtiPerObjVisitor)
   protected
-    procedure   Init           ; virtual;
+    procedure   Init; virtual;
   public
-    procedure   Execute(const AData : TtiVisited); override;
+    procedure   Execute(const AData: TtiVisited); override;
   end;
 
   TtiVisitorUpdate = class(TVisOwnedQryUpdate);
@@ -149,16 +149,11 @@ uses
   {$IFDEF LINUX}
   ,Types
   {$ENDIF LINUX}
-  {$IFDEF FPC}
-  ,LCLIntf
-  {$ENDIF}
  ;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TtiPerObjVisitor
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+{ TtiPerObjVisitor }
+
 constructor TtiPerObjVisitor.Create;
 begin
   inherited;
@@ -355,7 +350,6 @@ var
   liStart : DWord;
   liQueryTime : DWord;
 begin
-
   if gTIOPFManager.Terminated then
     Exit; //==>
 
@@ -375,13 +369,13 @@ begin
   Init;
 
   SetupParams;
-  liStart := GetTickCount;
+  liStart := tiGetTickCount;
   OpenQuery;
   try
-    liQueryTime := GetTickCount - liStart;
-    liStart := GetTickCount;
+    liQueryTime := tiGetTickCount - liStart;
+    liStart := tiGetTickCount;
     _ScanQuery;
-    LogQueryTiming(ClassName, liQueryTime, GetTickCount - liStart);
+    LogQueryTiming(ClassName, liQueryTime, tiGetTickCount - liStart);
   finally
     Query.Close;
   end;
@@ -408,10 +402,10 @@ begin
   if not AcceptVisitor then
     exit; //==>
   Init;
-  lStart := GetTickCount;
+  lStart := tiGetTickCount;
   SetupParams;
   Query.ExecSQL;
-  LogQueryTiming(ClassName, GetTickCount - lStart, 0);
+  LogQueryTiming(ClassName, tiGetTickCount - lStart, 0);
 end;
 
 procedure TVisOwnedQryUpdate.Init;
