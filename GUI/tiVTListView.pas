@@ -50,6 +50,27 @@ const
   cDefaultAlternateRowCount = 2; // Show every second row in pale blue
   cSearchFailureColor = $7f7fff;  // pink
 
+Const
+  FilterConjs : Array[0..2] Of String = ('',
+    'And',
+    'Or');
+
+  FilterOps : Array[0..8] Of String = ('',
+    'Equals',
+    'Does Not Equal',
+    'Is Greater Than',
+    'Is Greater Than Or Equal To',
+    'Is Less Than',
+    'Is Less Than Or Equal To',
+    'Contains',
+    'Does Not Contain'
+    );
+
+  ctkString = [tkChar, tkString, tkWChar, tkLString, tkWString];
+  ctkInt = [tkInteger, tkInt64];
+  ctkFloat = [tkFloat];
+  ctkSimple = ctkString + ctkInt + ctkFloat;
+
 type
   TtiVTSortOrder = class;
   TtiVTSortOrders = class;
@@ -61,6 +82,39 @@ type
   TtiVTListView = class;
 
   TvtTypeKind = (vttkString, vttkInt, vttkFloat, vttkDate, vttkDateTime, vttkTime, vttkCurrency);
+
+  TFilterConj = (fcNone, fcAnd, fcOr);
+
+  TFilterOp = (foNone, foEqual, foNotEqual,
+    foGreater, foGreaterEqual,
+    foLess, foLessEqual,
+    foContains, foNotContains
+    );
+
+  TLVFilter = Class
+  Private
+    FJoin : TFilterConj;
+    FOperator : TFilterOp;
+    FFieldName : String;
+    FValue : String;
+    FListView : TtiVTListView;
+    Function GetSimplePropType(pPersistent : TtiObject; pPropName : String) : TvtTypeKind;
+    Function WildCardMatch(pInputStr, pWilds : String; pIgnoreCase : Boolean) : Boolean;
+    Function GetStringExpression : String;
+    Function StringPropPasses(pValue : TtiObject) : Boolean;
+    Function IntPropPasses(pValue : TtiObject) : Boolean;
+    Function FloatPropPasses(pValue : TtiObject) : Boolean;
+  Public
+    Constructor Create;
+    Function PassesFilter(pData : TtiObject) : Boolean;
+    Property ListView : TtiVTListView Read FListView;
+    Property Join : TFilterConj Read FJoin Write FJoin;
+    Property PropName : String Read FFieldName Write FFieldName;
+    Property Operator : TFilterOp Read FOperator Write FOperator;
+    Property Value : String Read FValue Write FValue;
+    Property StringExpression : String Read GetStringExpression;
+  End;
+
 
   TtiVTClearSortEvent     = procedure(pVT : TtiCustomVirtualTree) of object;
   TtiVTOnFilterDataEvent  = procedure(AData  : TtiObject; var pInclude : boolean) of object;
@@ -316,6 +370,9 @@ type
     FSortOrders: TtiVTSortOrders;
     FAlternateRowColor: TColor;
 
+    FFilters : TList;
+    FFiltered : boolean;
+
     FSorted: Boolean;
     FReadOnly: Boolean;
 
@@ -385,6 +442,7 @@ type
     procedure SPShowing(const ASender: TtiVTSearchPanel;
       const AIsShowing: Boolean);
 
+    function ItemPassesFilter(pObject : TtiObject) : Boolean;
 
     procedure VTSearchInsideNode(Sender: TBaseVirtualTree; Node: PVirtualNode;
       const SearchText: string; out Result: boolean);
@@ -482,6 +540,7 @@ type
     function    CanEdit: Boolean; virtual;
     function    CanDelete: Boolean; virtual;
     procedure   ClearSort; virtual;
+    procedure   ClearFilters; virtual;
 
     procedure   DeleteNode(Node: PVirtualNode); virtual;
 
@@ -537,6 +596,7 @@ type
     FpmiEdit  : TMenuItem;
     FpmiNew   : TMenuItem;
     FpmiDelete : TMenuItem;
+    FpmiFilter : TMenuItem;
     FpmiSortGroup: TMenuItem;
     FpmiClearSort: TMenuItem;
     FpmiShowFind: TMenuItem;
@@ -547,6 +607,7 @@ type
     FOnItemInsert: TtiVTItemEditEvent;
     FOnItemView: TtiVTItemEditEvent;
     FOnClearSort: TtiVTClearSortEvent;
+    FFiltering : Boolean;
     FExporting: boolean;
     FSearching: boolean;
     FOnExportFileName: TtiVTExportFileNameEvent;
@@ -566,6 +627,7 @@ type
     procedure DoRefreshButtons;
     procedure SetExporting(const AValue: boolean);
     procedure SetSearching(const AValue: boolean);
+    procedure SetFiltering(const AValue: boolean);
     procedure SetOnExportFileName(const AValue: TtiVTExportFileNameEvent);
     procedure SetOnExported(const AValue: TtiVTExportedEvent);
     procedure SetOnExportedToFile(const AValue: TtiVTExportedToFileEvent);
@@ -582,6 +644,7 @@ type
     procedure DoEdit(Sender: TObject); virtual;
     procedure DoExportTree(Sender: TObject); virtual;
     procedure DoShowFind(Sender: TObject); virtual;
+    procedure DoFilter(Sender : TObject); virtual;
     procedure DoNew(Sender: TObject); virtual;
     procedure DoView(Sender: TObject); virtual;
     procedure DoDblClick(Sender: TObject); override;
@@ -595,6 +658,7 @@ type
     property ButtonStyle: TLVButtonStyle read FButtonStyle write SetButtonStyle default lvbsButtonsAndLabels;
     property Exporting: boolean read FExporting write SetExporting default true;
     property Searching: boolean read FSearching write SetSearching default true;
+    property Filtering: boolean read FFiltering write SetFiltering default true;
     property VisibleButtons : TtiLVVisibleButtons read FVisibleButtons write SetVisibleButtons default [];
 
     property OnClearSort: TtiVTClearSortEvent read FOnClearSort write SetOnClearSort;
@@ -632,6 +696,7 @@ type
     property Color;
     property Constraints;
     property Exporting;
+    property Filtering;
     property Header;
     property HeaderClickSorting;
     property HelpContext;
@@ -775,6 +840,7 @@ uses
   ,tiVTExportCSV
   ,tiVTExportHTML
   ,Clipbrd           // global Clipboard object
+  ,tiVTFilter
   ;
 
 type
@@ -1333,6 +1399,8 @@ begin
   FVT.OnAdvancedHeaderDraw := VTHeaderAdvancedHeaderDraw;
   FVT.OnFocusChanged := VTFocusChanged;
 
+  FFilters := TList.Create;
+
   // Property defaults
   FAlternateRowCount := 2;
   FShowAlternateRowColor := True;
@@ -1378,6 +1446,7 @@ end;
 destructor TtiCustomVirtualTree.Destroy;
 begin
   // FVT.Free;
+  FFilters.Free;
   FreeAndNil(FGroupedData);
   FreeAndNil(FFilteredData);
   FreeAndNil(FSortOrders);
@@ -1586,13 +1655,14 @@ begin
 
   FFilteredData.Clear;
 
-  if Assigned(OnFilterData) then
+  if FFiltered Then
+  //if Assigned(OnFilterData) then
   begin
     DataIndex := 0;
     while DataIndex < FData.Count do
     begin
-      ShouldInclude := True;
-      OnFilterData(FData[DataIndex], ShouldInclude);
+      ShouldInclude := ItemPassesFilter(FData[DataIndex]);
+//      OnFilterData(FData[DataIndex], ShouldInclude);
       if ShouldInclude then
         FFilteredData.Add(FData[DataIndex]);
       Inc(DataIndex);
@@ -2470,6 +2540,46 @@ begin
   end;
 end;
 
+procedure TtiCustomVirtualTree.ClearFilters;
+begin
+  FFilters.Clear;  
+end;
+
+function TtiCustomVirtualTree.ItemPassesFilter(pObject: TtiObject): Boolean;
+Var
+  I : Integer;
+  lResult : Boolean;
+  lFilter : TLVFilter;
+  lPrevConj : TFilterConj;
+Begin
+  If FFiltered Then
+  Begin
+    If Assigned(FOnFilterData) Then
+    Begin
+      FOnFilterData(pObject, lResult);
+      Result := lResult;
+    End
+    Else
+      Result := True;
+    If Result Then // No point checking if it doesn't pass the first stage.
+    Begin
+      lPrevConj := fcAnd; // We need to AND it with any Filter event result.
+      For I := 0 To FFilters.Count - 1 Do
+      Begin
+        lFilter := TLVFilter(FFilters.Items[I]);
+        Case lPrevConj Of
+          fcOr : Result := Result Or lFilter.PassesFilter(pObject);
+          fcAnd : Result := Result And lFilter.PassesFilter(pObject);
+          fcNone : Break;
+        End; { Case }
+        lPrevConj := lFilter.Join;
+      End; { Loop }
+    End;
+  End
+  Else
+    Result := True;
+end;
+
 { TtiInternalVirtualTree }
 
 constructor TtiInternalVirtualTree.Create(AOwner: TComponent);
@@ -2612,6 +2722,16 @@ begin
   FpmiShowFind.Visible := true;
   FpmiShowFind.ShortCut := ShortCut(Word('F'), [ssCtrl]);
   FPopupMenu.Items.Add(FpmiShowFind);
+
+  FFiltering := true;
+
+  FpmiFilter := TMenuItem.Create(Self);
+  FpmiFilter.Caption := 'Fil&ter';
+  FpmiFilter.OnClick := DoFilter;
+  FpmiFilter.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Query);
+  FpmiFilter.Visible := true;
+  FpmiFilter.ShortCut := ShortCut(Word('T'), [ssCtrl]);
+  FPopupMenu.Items.Add(FpmiFilter);
 
   FExporting := true;
 
@@ -2985,6 +3105,26 @@ begin
   FpmiClearSort.Visible := AValue;
   FpmiSortGroup.Visible := FpmiClearSort.Visible or FpmiShowFind.Visible;
 end;
+
+procedure TtiCustomVirtualEditTree.SetFiltering(const AValue: boolean);
+begin
+  FFiltering := AValue;
+  FpmiFilter.Visible := AValue;
+  FpmiFilter.Enabled := AValue;
+end;
+
+procedure TtiCustomVirtualEditTree.DoFilter(Sender: TObject);
+Var
+  lObject : TtiObject;
+begin
+  lObject := FData.First;
+  If TfrmLVFilter.EditFilter(lObject, FFilters) Then
+  Begin
+    FFiltered := True;
+    Refresh;
+  End;
+end;
+
 
 { TtiVTSearchPanel }
 
@@ -3579,6 +3719,312 @@ procedure TTiVTExportClipboard.WriteHeader;
 begin
   WriteHeaderEx(ClipboardFieldSeparator, ClipboardFieldDelimiter);
 end;
+
+{ TLVFilter }
+
+Constructor TLVFilter.Create;
+Begin
+  Inherited;
+  Join := fcNone;
+  Operator := foNone;
+  Value := '';
+  PropName := '';
+End;
+
+Function TLVFilter.FloatPropPasses(pValue : TtiObject) : Boolean;
+Var
+  lsProp : String;
+  lrProp : Extended;
+  lrVal : Extended;
+  lRetCode : Integer;
+  lValidNum : Boolean;
+Begin
+  Try
+    lsProp := UpperCase(GetPropValue(pValue, FFieldName));
+  Except
+    On E : Exception Do
+      Raise Exception.CreateFmt('Error reading property <%s> %s. Called from FloatPropPasses', [FFieldName, E.Message]);
+  End;
+
+  lrProp := StrToFloat(lsProp);
+
+  Val(Value, lrVal, lRetCode);
+  lValidNum := (lRetCode = 0);
+  If Not lValidNum Then
+  Begin
+    Try
+      lrVal := StrToDateTime(Value);
+      lValidNum := True;
+    Except
+      lValidNum := False;
+    End;
+  End;
+  If lValidNum Then
+  Begin
+    Case Operator Of
+      foEqual : Result := (lrProp = lrVal);
+      foNotEqual : Result := (lrProp <> lrVal);
+      foGreater : Result := (lrProp > lrVal);
+      foGreaterEqual : Result := (lrProp >= lrVal);
+      foLess : Result := (lrProp < lrVal);
+      foLessEqual : Result := (lrProp <= lrVal);
+    Else
+      Raise Exception.Create('Invalid operator passed to FloatPropPasses.');
+    End;
+  End
+  Else
+    Result := False;
+End;
+
+Function TLVFilter.GetSimplePropType(pPersistent : TtiObject; pPropName : String) : TvtTypeKind;
+Var
+  lPropType : TTypeKind;
+Begin
+  Try
+    lPropType := PropType(pPersistent, pPropName);
+  Except
+    On E : Exception Do
+      Raise Exception.Create('Error in tiGetSimpleTypeKind ' + 'Message: ' + E.Message);
+  End;
+  Case lPropType Of
+    tkInteger,
+      tkInt64,
+      tkEnumeration : Result := vttkInt;
+    tkFloat : Result := vttkFloat;
+    tkString,
+      tkChar,
+      tkWChar,
+      tkLString,
+      tkWString : Result := vttkString;
+  Else
+    Raise Exception.Create('Invalid property type passed to ' +
+      'tiGetSimpleTypeKind');
+  End;
+End;
+
+Function TLVFilter.GetStringExpression : String;
+Begin
+  Result := Format('%s %s "%s" %s', [FFieldName, FilterOps[Ord(FOperator)], FValue, FilterConjs[Ord(FJoin)]]);
+End;
+
+Function TLVFilter.IntPropPasses(pValue : TtiObject) : Boolean;
+Var
+  lsProp : String;
+  liProp : Integer;
+  liVal : Integer;
+Begin
+  Try
+    lsProp := UpperCase(GetPropValue(pValue, FFieldName));
+  Except
+    On E : Exception Do
+      Raise Exception.CreateFmt('Error reading property <%s> %s. Called from IntPropPasses', [FFieldName, E.Message]);
+  End;
+  Try
+    liProp := StrToInt(lsProp);
+  Except
+    liProp := 0
+  End;
+  Try
+    liVal := StrToInt(Value);
+  Except
+    liVal := 0
+  End;
+  Case Operator Of
+    foEqual : Result := (liProp = liVal);
+    foNotEqual : Result := (liProp <> liVal);
+    foGreater : Result := (liProp > liVal);
+    foGreaterEqual : Result := (liProp >= liVal);
+    foLess : Result := (liProp < liVal);
+    foLessEqual : Result := (liProp <= liVal);
+  Else
+    Raise Exception.Create('Invalid operator passed to IntPropPasses');
+  End;
+End;
+
+Function TLVFilter.PassesFilter(pData : TtiObject) : Boolean;
+Var
+  lPropType : TvtTypeKind;
+Begin
+  lPropType := GetSimplePropType(pData, FFieldName);
+  Case lPropType Of
+    vttkInt : Result := IntPropPasses(pData);
+    vttkFloat : Result := FloatPropPasses(pData);
+    vttkString : Result := StringPropPasses(pData);
+  Else
+    Raise Exception.Create('Invalid property type passed to TVFilter.PassesFilter');
+  End;
+End;
+
+Function TLVFilter.StringPropPasses(pValue : TtiObject) : Boolean;
+Var
+  lsProp : String;
+  lsVal : String;
+Begin
+  Try
+    lsProp := UpperCase(GetPropValue(pValue, FFieldName));
+  Except
+    On E : Exception Do
+      Raise Exception.CreateFmt('Error reading property <%s> %s. Called from StringPropPasses', [FFieldName, E.Message]);
+  End;
+  lsVal := UpperCase(Value);
+  Case Operator Of
+    foEqual : Result := (lsProp = lsVal);
+    foNotEqual : Result := (lsProp <> lsVal);
+    foGreater : Result := (lsProp > lsVal);
+    foGreaterEqual : Result := (lsProp >= lsVal);
+    foLess : Result := (lsProp < lsVal);
+    foLessEqual : Result := (lsProp <= lsVal);
+    foContains : Result := WildcardMatch(lsProp, '*' + lsVal + '*', True);
+    foNotContains : Result := (Not WildcardMatch(lsProp, '*' + lsVal + '*', True));
+  Else
+    Raise Exception.Create('Invalid operator passed to TestStringFilter');
+  End;
+End;
+
+Function FindPart(Const pHelpWilds, pInputStr : String) : Integer;
+Var
+  I, J : Integer;
+  Diff : Integer;
+Begin
+  I := Pos('?', pHelpWilds);
+  If I = 0 Then
+  Begin
+    { if no '?' in pHelpWilds }
+    Result := Pos(pHelpWilds, pInputStr);
+    Exit;
+  End;
+  { '?' in pHelpWilds }
+  Diff := Length(pInputStr) - Length(pHelpWilds);
+  If Diff < 0 Then
+  Begin
+    Result := 0;
+    Exit;
+  End;
+  { now move pHelpWilds over pInputStr }
+  For I := 0 To Diff Do
+  Begin
+    For J := 1 To Length(pHelpWilds) Do
+    Begin
+      If (pInputStr[I + J] = pHelpWilds[J]) Or
+        (pHelpWilds[J] = '?') Then
+      Begin
+        If J = Length(pHelpWilds) Then
+        Begin
+          Result := I + 1;
+          Exit;
+        End;
+      End
+      Else
+        Break;
+    End;
+  End;
+  Result := 0;
+End;
+
+Function TLVFilter.WildCardMatch(pInputStr, pWilds : String; pIgnoreCase : Boolean) : Boolean;
+
+  Function SearchNext(Var pWilds : String) : Integer;
+ { looking for next *, returns position and string until position }
+  Begin
+    Result := Pos('*', pWilds);
+    If Result > 0 Then
+      pWilds := Copy(pWilds, 1, Result - 1);
+  End;
+
+Var
+  CWild, CInputWord : Integer; { counter for positions }
+  I, LenHelpWilds : Integer;
+  MaxInputWord, MaxWilds : Integer; { Length of pInputStr and pWilds }
+  HelpWilds : String;
+Begin
+  If pWilds = pInputStr Then
+  Begin
+    Result := True;
+    Exit;
+  End;
+  Repeat { delete '**', because '**' = '*' }
+    I := Pos('**', pWilds);
+    If I > 0 Then
+      pWilds := Copy(pWilds, 1, I - 1) + '*' + Copy(pWilds, I + 2, MaxInt);
+  Until I = 0;
+  If pWilds = '*' Then
+  Begin { for fast end, if pWilds only '*' }
+    Result := True;
+    Exit;
+  End;
+  MaxInputWord := Length(pInputStr);
+  MaxWilds := Length(pWilds);
+  If pIgnoreCase Then
+  Begin { upcase all letters }
+    pInputStr := AnsiUpperCase(pInputStr);
+    pWilds := AnsiUpperCase(pWilds);
+  End;
+  If (MaxWilds = 0) Or (MaxInputWord = 0) Then
+  Begin
+    Result := False;
+    Exit;
+  End;
+  CInputWord := 1;
+  CWild := 1;
+  Result := True;
+  Repeat
+    If pInputStr[CInputWord] = pWilds[CWild] Then
+    Begin { equal letters }
+      { goto next letter }
+      Inc(CWild);
+      Inc(CInputWord);
+      Continue;
+    End;
+    If pWilds[CWild] = '?' Then
+    Begin { equal to '?' }
+      { goto next letter }
+      Inc(CWild);
+      Inc(CInputWord);
+      Continue;
+    End;
+    If pWilds[CWild] = '*' Then
+    Begin { handling of '*' }
+      HelpWilds := Copy(pWilds, CWild + 1, MaxWilds);
+      I := SearchNext(HelpWilds);
+      LenHelpWilds := Length(HelpWilds);
+      If I = 0 Then
+      Begin
+        { no '*' in the rest, compare the ends }
+        If HelpWilds = '' Then
+          Exit; { '*' is the last letter }
+        { check the rest for equal Length and no '?' }
+        For I := 0 To LenHelpWilds - 1 Do
+        Begin
+          If (HelpWilds[LenHelpWilds - I] <> pInputStr[MaxInputWord - I]) And
+            (HelpWilds[LenHelpWilds - I] <> '?') Then
+          Begin
+            Result := False;
+            Exit;
+          End;
+        End; { Loop }
+        Exit;
+      End;
+      { handle all to the next '*' }
+      Inc(CWild, 1 + LenHelpWilds);
+      I := FindPart(HelpWilds, Copy(pInputStr, CInputWord, MaxInt));
+      If I = 0 Then
+      Begin
+        Result := False;
+        Exit;
+      End;
+      CInputWord := I + LenHelpWilds;
+      Continue;
+    End;
+    Result := False;
+    Exit;
+  Until (CInputWord > MaxInputWord) Or (CWild > MaxWilds);
+  { no completed evaluation }
+  If CInputWord <= MaxInputWord Then
+    Result := False;
+  If (CWild <= MaxWilds) And (pWilds[MaxWilds] <> '*') Then
+    Result := False;
+End;
+
 
 initialization
 
