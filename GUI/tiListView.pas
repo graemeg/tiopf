@@ -166,6 +166,7 @@ type
     function  Add : TtiListColumn;
     procedure DisplayLabelsToStringList(pSL : TStringList);
     function  FindByDisplayLabel(const AValue : string): TtiListColumn;
+    function FindByFieldName(const AValue : string) : TtiListColumn;
     procedure Clear; reintroduce;
   end;
 
@@ -3026,6 +3027,18 @@ begin
     lSelectedData := SelectedData;
     FOnDblClick(Self, lSelectedData, Selected);
   end;
+end;
+
+function TtiListColumns.FindByFieldName(const AValue: string): TtiListColumn;
+var
+  i : Integer;
+begin
+  result := nil;
+  for i := 0 to Count - 1 do
+    if Items[i].FieldName = AValue then begin
+      result := Items[i];
+      break; //==>
+    end;
 end;
 
 initialization

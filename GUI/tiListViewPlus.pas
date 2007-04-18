@@ -160,7 +160,7 @@ type
   public
     constructor Create;
     property Conj    : TFilterConj read FFilterConj write FFilterConj;
-    property FOperator : TFilterOp   read FFilterOp   write FFilterOp;
+    property Operator : TFilterOp   read FFilterOp   write FFilterOp;
     property Value   : string      read FsValue     write FsValue;
     property Field   : string      read FsField     write FsField;
     function DoesDataPassFilter(AValue : TtiObject): boolean;
@@ -290,7 +290,7 @@ type
     Constructor Create(AOwner : TComponent); override;
     Destructor  Destroy; override;
     Property    Conj : TFilterConj read GetConj write SetConj;
-    Property    FOperator : TFilterOp read GetOperator write SetOperator;
+    Property    Operator : TFilterOp read GetOperator write SetOperator;
     Property    Value : string read GetValue write SetValue;
     Property    ShowConj : boolean read FbShowConj write FbShowConj;
   end;
@@ -1363,7 +1363,7 @@ begin
     with (AData as TtiLVFilter) do
     begin
       lFilterEdit.Conj         := Conj   ;
-      lFilterEdit.FOperator     := FOperator;
+      lFilterEdit.Operator     := Operator;
       lFilterEdit.FieldPropName := Field  ;
       lFilterEdit.Value        := Value  ;
     end;
@@ -1389,7 +1389,7 @@ begin
     begin
       lFilter := TtiLVFilter.Create;
       lFilter.Conj    := lFilterEdit.Conj;
-      lFilter.FOperator := lFilterEdit.FOperator;
+      lFilter.Operator := lFilterEdit.Operator;
       lFilter.Field   := lFilterEdit.FieldPropName;
       lFilter.Value   := lFilterEdit.Value;
       AList.Add(lFilter);
@@ -1581,7 +1581,7 @@ constructor TtiLVFilter.Create;
 begin
   inherited;
   Conj    := fcNone;
-  FOperator := foNone;
+  Operator := foNone;
   Value   := '';
   Field   := '';
 end;
@@ -1603,7 +1603,7 @@ function TtiLVFilter.DoesDataPassFilter(AValue: TtiObject): boolean;
                                 ' Called in TestStringFilter');
     end;
     lsVal := upperCase(Value);
-    case FOperator of
+    case Operator of
     foEqual       : result := (lsProp =  lsVal);
     foNotEqual    : result := (lsProp <> lsVal);
     foGreater     : result := (lsProp >  lsVal);
@@ -1636,7 +1636,7 @@ function TtiLVFilter.DoesDataPassFilter(AValue: TtiObject): boolean;
     end;
     try liProp := StrToInt(lsProp) except liProp := 0 end;
     try liVal := StrToInt(Value) except liVal := 0 end;
-    case FOperator of
+    case Operator of
     foEqual       : result := (liProp =  liVal);
     foNotEqual    : result := (liProp <> liVal);
     foGreater     : result := (liProp >  liVal);
@@ -1685,7 +1685,7 @@ function TtiLVFilter.DoesDataPassFilter(AValue: TtiObject): boolean;
     End;
     If lValidNum Then
     Begin
-      case FOperator of
+      case Operator of
       foEqual       : result := (lrProp =  lrVal);
       foNotEqual    : result := (lrProp <> lrVal);
       foGreater     : result := (lrProp >  lrVal);
@@ -1863,7 +1863,7 @@ end;
 function TtiLVFilterEdit.GetValid: boolean;
 begin
   result := (not Visible) or
-            ((FOperator <> foNone) and
+            ((Operator <> foNone) and
              (FieldDisplay <> ''));
 end;
 
@@ -3376,7 +3376,7 @@ function TtiLVFilter.Clone: TtiLVFilter;
 begin
   result := TtiLVFilter.Create;
   result.Conj := Conj;
-  result.FOperator  := FOperator;
+  result.Operator  := Operator;
   result.Value     := Value;
   result.Field     := Field;
 end;

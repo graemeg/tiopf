@@ -102,6 +102,7 @@ type
   public
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
+    procedure Assign(Source : TPersistent); override;
   end;
 
 
@@ -117,6 +118,7 @@ type
     procedure Update(Item: TCollectionItem); override;
   public
     constructor Create(pTreeView: TtiVTTreeView);
+    procedure Assign(Source: TPersistent); override;
     function Add: TtiVTTVDataMapping; overload;
     function Add(const AClass: TtiClass; const pDisplayPropName: string; pImageIndex: Integer): TtiVTTVDataMapping; overload;
     property Items[Index: Integer]: TtiVTTVDataMapping read GetItem write SetItem;
@@ -639,6 +641,32 @@ end;
 // * TtiVTTVDataMapping
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+procedure TtiVTTVDataMapping.Assign(Source: TPersistent);
+begin
+  if Source is TtiVTTVDataMapping then
+  begin
+    with TtiVTTVDataMapping(Source) do
+    begin
+      Self.FCanDelete := FCanDelete;
+      Self.FCanEdit := FCanEdit;
+      Self.FCanInsert := FCanInsert;
+      Self.FCanView := FCanView;
+      Self.FImageIndex := FImageIndex;
+      Self.FDisplayPropName := FDisplayPropName;
+      Self.FDataClass := FDataClass;
+      Self.FOnDeriveNodeText := FOnDeriveNodeText;
+      Self.FOnCanEdit := FOnCanEdit;
+      Self.FOnCanInsert := FOnCanInsert;
+      Self.FOnCanDelete := FOnCanDelete;
+      Self.FOnInsert := FOnInsert;
+      Self.FOnEdit := FOnEdit;
+      Self.FOnDelete := FOnDelete;
+    end;
+  end
+  else
+    inherited;
+end;
 
 constructor TtiVTTVDataMapping.Create(ACollection: TCollection);
 begin
@@ -1396,6 +1424,10 @@ begin
   Result:= True;
   if ApplyFilter and Assigned(OnFilter) then
     OnFilter(AValue, Result);
+end;
+
+procedure TtiVTTVDataMappings.Assign(Source: TPersistent);
+begin
 end;
 
 end.
