@@ -35,6 +35,7 @@ uses
   ,tiFocusPanel
   ,tiResources
   ,tiObject
+  ,cTIPerAwareCtrls
  ;
 
 const
@@ -174,7 +175,7 @@ type
     property    FieldName : string      read FsFieldName   write SetFieldName;
 
     property    Error : boolean read FbError write SetError default False;
-    property    ErrorColor : TColor read FErrorColor write SetErrorColor default clYellow;
+    property    ErrorColor : TColor read FErrorColor write SetErrorColor default clError;
     property    GreyWhenReadOnly : boolean read FGreyWhenReadOnly write SetGreyWhenReadOnly default true;
 
     // TWinControl has these, so they can be implemented with a direct mapping
@@ -777,13 +778,11 @@ begin
   FLabel.FreeNotification(Self);
   FWinControl.FreeNotification(Self);
 
-
   FiLabelWidth := cuiDefaultLabelWidth;
 
-
-  FbError    := False;
-  FErrorColor := clYellow;
-  FGreyWhenReadOnly := true;
+  FbError           := False;
+  FErrorColor       := clError;
+  FGreyWhenReadOnly := True;
 end;
 
 destructor TtiPerAwareAbs.Destroy;

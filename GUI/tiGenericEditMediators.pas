@@ -93,6 +93,7 @@ type
     procedure   SetEditControl(const AValue: TEdit);
   protected
     procedure   SetupGUIandObject; override;
+    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
   public
     property    EditControl: TEdit read GetEditControl write SetEditControl;
     class function ComponentClass: TClass; override;
@@ -249,6 +250,8 @@ uses
   ,TypInfo
   ,tiExcept
   ,Dialogs    { MessageDlg }
+  ,Graphics
+  ,cTIPerAwareCtrls
   ;
 
 var
@@ -341,8 +344,8 @@ var
 begin
   Errors := TtiObjectErrors.Create;
   try
-    Subject.IsValid(Errors);
-    UpdateGuiValidStatus( Errors );
+    if not Subject.IsValid(Errors) then
+      UpdateGuiValidStatus(Errors);
   finally
     Errors.Free;
   end;
@@ -510,6 +513,25 @@ end;
 procedure TMediatorEditView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
+end;
+
+procedure TMediatorEditView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+var
+  oError: TtiObjectError;
+begin
+  inherited UpdateGuiValidStatus(pErrors);
+
+  oError := pErrors.FindByErrorProperty(FieldName);
+  if oError <> nil then
+  begin
+    EditControl.Color  := clError;
+    EditControl.Hint   := oError.ErrorMessage;
+  end
+  else
+  begin
+    EditControl.Color  := ColorToRGB(clWindow);
+    EditControl.Hint   := '';
+  end;
 end;
 
 class function TMediatorEditView.ComponentClass: TClass;

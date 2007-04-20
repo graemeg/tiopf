@@ -2,8 +2,13 @@ unit cTIPerAwareCtrls;
 
 interface
 
+uses
+  Graphics;
+
 const
-  clPaleBlue = $00FEF5E9;
+  // RGB color values
+  clPaleBlue    = TColor($FEF5E9);
+  clError       = clYellow;
 
 implementation
 

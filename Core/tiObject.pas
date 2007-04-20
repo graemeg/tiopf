@@ -554,11 +554,13 @@ type
     function    GetAsString: string; virtual;
   public
     property    Items[i:integer]: TtiObjectError read GetItems write SetItems;
-    procedure   Add(AObject : TtiObjectError  ; ADefDispOrdr : boolean = true); reintroduce;
-    procedure   AddError(const AErrorProperty : string; const AErrorMessage : string; AErrorCode : integer); overload;
-    procedure   AddError(const AErrorProperty : string; const AErrorMessage : string); overload;
-    procedure   AddError(const AErrorMessage : string); overload;
-    function    FindByMessage(const AMessage : string): TtiObjectError;
+    function    Add(const AObject: TtiObjectError): integer; reintroduce;
+    procedure   AddError(const AErrorProperty: string; const AErrorMessage: string; AErrorCode: Word); overload;
+    procedure   AddError(const AErrorProperty: string; const AErrorMessage: string); overload;
+    procedure   AddError(const AErrorMessage: string); overload;
+    function    FindByMessage(const AMessage: string): TtiObjectError;
+    function    FindByErrorCode(const AErrorCode: Word): TtiObjectError;
+    function    FindByErrorProperty(const AErrorProperty: string): TtiObjectError;
     property    AsString: string Read GetAsString;
   published
   end;
@@ -572,11 +574,11 @@ type
     function    GetOwner: TtiObjectErrors; reintroduce;
     procedure   SetOwner(const AValue: TtiObjectErrors); reintroduce;
   public
-    property    Owner      : TtiObjectErrors             read GetOwner      write SetOwner;
+    property    Owner: TtiObjectErrors read GetOwner write SetOwner;
   published
-    property    ErrorProperty : string read FErrorProperty write FErrorProperty;
-    property    ErrorMessage : string read FErrorMessage  write FErrorMessage;
-    property    ErrorCode    : Word   read FErrorCode     write FErrorCode;
+    property    ErrorProperty: string read FErrorProperty write FErrorProperty;
+    property    ErrorMessage: string read FErrorMessage write FErrorMessage;
+    property    ErrorCode: Word read FErrorCode write FErrorCode;
   end;
 
   TPerObjClassMapping = class(TtiBaseObject)
@@ -2669,8 +2671,8 @@ end;
 function TtiObjectList.IndexOf(AOIDToFind: TOID; ASortType: TtiPerObjListSortType = stNone): integer;
 begin
   case ASortType of
-  stOID : Result := IndexOfBinary(AOIDToFind);
-  stNone: Result := IndexOfFullScan(AOIDToFind);
+    stOID : Result := IndexOfBinary(AOIDToFind);
+    stNone: Result := IndexOfFullScan(AOIDToFind);
   else
     raise EtiOPFInternalException.Create(cErrorInvalidSortType);
   end;
@@ -2678,22 +2680,20 @@ end;
 
 { TtiObjectErrors }
 
-procedure TtiObjectErrors.Add(AObject: TtiObjectError; ADefDispOrdr: boolean);
+function TtiObjectErrors.Add(const AObject: TtiObjectError): Integer;
 begin
-  inherited Add(AObject, ADefDispOrdr);
+  Result := inherited Add(AObject);
 end;
 
-procedure TtiObjectErrors.AddError(
-  const AErrorProperty : string;
-  const AErrorMessage: string;
-  AErrorCode: integer);
+procedure TtiObjectErrors.AddError(const AErrorProperty: string;
+  const AErrorMessage: string; AErrorCode: Word);
 var
-  lError : TtiObjectError;
+  lError: TtiObjectError;
 begin
   lError := TtiObjectError.Create;
-  lError.ErrorProperty := AErrorProperty;
-  lError.ErrorMessage := AErrorMessage;
-  lError.ErrorCode    := AErrorCode;
+  lError.ErrorProperty  := AErrorProperty;
+  lError.ErrorMessage   := AErrorMessage;
+  lError.ErrorCode      := AErrorCode;
   Add(lError);
 end;
 
@@ -2720,6 +2720,36 @@ begin
       result := Items[i];
       Exit; //==>
     end;
+end;
+
+function TtiObjectErrors.FindByErrorCode(const AErrorCode: Word): TtiObjectError;
+var
+  i: Integer;
+begin
+  Result := nil;
+  for i := 0 to Count - 1 do
+  begin
+    if Items[i].ErrorCode = AErrorCode then
+    begin
+      Result := Items[i];
+      Exit; //==>
+    end;
+  end;
+end;
+
+function TtiObjectErrors.FindByErrorProperty(const AErrorProperty: string): TtiObjectError;
+var
+  i: Integer;
+begin
+  Result := nil;
+  for i := 0 to Count - 1 do
+  begin
+    if SameText(Items[i].ErrorProperty, AErrorProperty) then
+    begin
+      Result := Items[i];
+      Exit; //==>
+    end;
+  end;
 end;
 
 function TtiObjectErrors.GetAsString: string;
