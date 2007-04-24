@@ -104,6 +104,8 @@ type
   private
     function    GetEditControl: TCheckBox;
     procedure   SetEditControl(const AValue: TCheckBox);
+  protected
+    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
   public
     property    EditControl: TCheckBox read GetEditControl write SetEditControl;
     class function ComponentClass: TClass; override;
@@ -130,6 +132,7 @@ type
     procedure   SetEditControl(const AValue: TSpinEdit);
   protected
     procedure   SetupGUIandObject; override;
+    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
   public
     property    EditControl: TSpinEdit read GetEditControl write SetEditControl;
     procedure   GuiToObject; override;
@@ -153,6 +156,8 @@ type
   private
     function    GetEditControl: TComboBox;
     procedure   SetEditControl(const AValue: TComboBox);
+  protected
+    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
   public
     property    EditControl: TComboBox read GetEditControl write SetEditControl;
     procedure   ObjectToGui; override;
@@ -279,7 +284,6 @@ begin
   UseInternalOnChange := True;
 end;
 
-
 constructor TMediatorView.CreateCustom(pEditControl: TControl; pSubject: TtiObject; pFieldName: string; pGuiFieldName: string);
 begin
   Create;
@@ -301,7 +305,6 @@ begin
   inherited Destroy;
 end;
 
-
 procedure TMediatorView.GUIChanged;
 begin
   if not FSettingUp then
@@ -311,10 +314,12 @@ begin
   end;
 end;
 
-
 procedure TMediatorView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
 begin
-  { This will be implemented by a concrete class }
+  { These lines reset the EditControl in the case of no errors, but will be
+    further implemented by a concrete class }
+  EditControl.Color := ColorToRGB(clWindow);
+  EditControl.Hint := '';
 end;
 
 function TMediatorView.DataAndPropertyValid: Boolean;
@@ -337,20 +342,18 @@ begin
   GUIChanged;
 end;
 
-
 procedure TMediatorView.TestIfValid;
 var
   Errors: TtiObjectErrors;
 begin
   Errors := TtiObjectErrors.Create;
   try
-    if not Subject.IsValid(Errors) then
-      UpdateGuiValidStatus(Errors);
+    Subject.IsValid(Errors);
+    UpdateGuiValidStatus(Errors); // always execute this as it also resets EditControl
   finally
     Errors.Free;
   end;
 end;
-
 
 procedure TMediatorView.Update(pSubject: TtiObject);
 begin
@@ -359,25 +362,21 @@ begin
   TestIfValid;
 end;
 
-
 function TMediatorView.GetSubject: TtiObject;
 begin
   Result := FSubject;
 end;
-
 
 procedure TMediatorView.GuiToObject;
 begin
   Subject.PropValue[FieldName] := TypInfo.GetPropValue((FEditControl as ComponentClass), GuiFieldName);
 end;
 
-
 procedure TMediatorView.ObjectToGui;
 begin
   TypInfo.SetPropValue( (FEditControl as ComponentClass), GuiFieldName,
       Subject.PropValue[FieldName]);
 end;
-
 
 procedure TMediatorView.SetupGUIandObject;
 begin
@@ -391,7 +390,6 @@ constructor TMediatorFactory.Create;
 begin
   MappingList := TStringList.Create;
 end;
-
 
 function TMediatorFactory.CreateMediator(pComponent: TControl; pSubject: TtiObject;
     pFieldName: string; pGuiFieldName: string): TMediatorView;
@@ -414,7 +412,6 @@ begin
                       pGuiFieldName );
   pSubject.AttachObserver( result );
 end;
-
 
 function TMediatorFactory.CreateMediator(pEditLink: TMGMEditLink): TMediatorView;
 var
@@ -587,6 +584,25 @@ begin
   TSpinEdit(EditControl).OnExit := OnLostFocus;
 end;
 
+procedure TMediatorSpinEditView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+var
+  oError: TtiObjectError;
+begin
+  inherited UpdateGuiValidStatus(pErrors);
+
+  oError := pErrors.FindByErrorProperty(FieldName);
+  if oError <> nil then
+  begin
+    EditControl.Color  := clError;
+    EditControl.Hint   := oError.ErrorMessage;
+  end
+  else
+  begin
+    EditControl.Color  := ColorToRGB(clWindow);
+    EditControl.Hint   := '';
+  end;
+end;
+
 
 { TMediatorSpinEditView}
 
@@ -621,6 +637,25 @@ end;
 procedure TMediatorComboBoxView.SetEditControl(const AValue: TComboBox);
 begin
   FEditControl := AValue;
+end;
+
+procedure TMediatorComboBoxView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+var
+  oError: TtiObjectError;
+begin
+  inherited UpdateGuiValidStatus(pErrors);
+
+  oError := pErrors.FindByErrorProperty(FieldName);
+  if oError <> nil then
+  begin
+    EditControl.Color  := clError;
+    EditControl.Hint   := oError.ErrorMessage;
+  end
+  else
+  begin
+    EditControl.Color  := ColorToRGB(clWindow);
+    EditControl.Hint   := '';
+  end;
 end;
 
 procedure TMediatorComboBoxView.ObjectToGui;
@@ -838,6 +873,25 @@ end;
 procedure TMediatorCheckBoxView.SetEditControl(const AValue: TCheckBox);
 begin
   FEditControl := AValue;
+end;
+
+procedure TMediatorCheckBoxView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+var
+  oError: TtiObjectError;
+begin
+  inherited UpdateGuiValidStatus(pErrors);
+
+  oError := pErrors.FindByErrorProperty(FieldName);
+  if oError <> nil then
+  begin
+    EditControl.Color  := clError;
+    EditControl.Hint   := oError.ErrorMessage;
+  end
+  else
+  begin
+    EditControl.Color  := ColorToRGB(clWindow);
+    EditControl.Hint   := '';
+  end;
 end;
 
 class function TMediatorCheckBoxView.ComponentClass: TClass;
