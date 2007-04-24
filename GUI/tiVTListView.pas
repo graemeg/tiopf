@@ -542,6 +542,8 @@ type
     procedure   ClearSort; virtual;
     procedure   ClearFilters; virtual;
 
+    procedure   AddFilter(pFilter : TLVFilter);
+
     procedure   DeleteNode(Node: PVirtualNode); virtual;
 
     function    IsNodeDataItem(Node: PVirtualNode): Boolean;
@@ -2578,6 +2580,11 @@ Begin
   End
   Else
     Result := True;
+end;
+
+procedure TtiCustomVirtualTree.AddFilter(pFilter: TLVFilter);
+begin
+  FFilters.Add(pFilter);
 end;
 
 { TtiInternalVirtualTree }
