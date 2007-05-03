@@ -247,6 +247,7 @@ type
     property  Items[Index: TColumnIndex ]: TtiVTColumn read GetItem write SetItem; default;
     procedure DisplayLabelsToStringList(pSL : TStringList);
     function  FindByDisplayLabel(const AValue : string): TtiVTColumn;
+    function  FindByFieldName(const AValue : String) : TtiVTColumn;
   end;
 
   TtiVTHeader = class(TVTHeader)
@@ -450,6 +451,7 @@ type
       Column: TColumnIndex);
     function WrapToBottom: PVirtualNode;
     function WrapToTop: PVirtualNode;
+    function GetFilterAsString: String;
 
     //
     //FOnDblClick  : TtiLVItemEditEvent;
@@ -534,6 +536,7 @@ type
     destructor  Destroy; override;
 
     procedure   ApplySort(const AApplyGrouping: boolean = true); virtual;
+    procedure   ApplyFilter; virtual;
 
     function    CanView: Boolean; virtual;
     function    CanInsert: Boolean; virtual;
@@ -559,6 +562,7 @@ type
     //procedure   Last;
     //procedure   First;
     //property    ApplyFilter : boolean read FbApplyFilter write SetApplyFilter;
+    property    FilterAsString : String read GetFilterAsString;
 
     property    SelectedData : TtiObject read GetSelectedData write SetSelectedData;
     property    SelectedIndex : integer read GetSelectedIndex write SetSelectedIndex;
@@ -1066,6 +1070,19 @@ begin
   result := nil;
   for i := 0 to Count - 1 do
     if Items[i].Text = AValue then begin
+      result := Items[i];
+      break; //==>
+    end;
+end;
+
+function TtiVTColumns.FindByFieldName(const AValue: String): TtiVTColumn;
+var
+  i : Integer;
+begin
+  result := nil;
+  for i := 0 to Count - 1 do
+    if Items[i].FieldName = AValue then
+    begin
       result := Items[i];
       break; //==>
     end;
@@ -2544,7 +2561,8 @@ end;
 
 procedure TtiCustomVirtualTree.ClearFilters;
 begin
-  FFilters.Clear;  
+  FFilters.Clear;
+  FFiltered := False;  
 end;
 
 function TtiCustomVirtualTree.ItemPassesFilter(pObject: TtiObject): Boolean;
@@ -2585,6 +2603,19 @@ end;
 procedure TtiCustomVirtualTree.AddFilter(pFilter: TLVFilter);
 begin
   FFilters.Add(pFilter);
+end;
+
+function TtiCustomVirtualTree.GetFilterAsString: String;
+Var
+  I : Integer;
+begin
+  For I := 0 To FFilters.Count - 1 Do
+    Result := Result + ' ' + TLVFilter(FFilters.Items[I]).StringExpression;
+end;
+
+procedure TtiCustomVirtualTree.ApplyFilter;
+begin
+  FFiltered := True;
 end;
 
 { TtiInternalVirtualTree }
@@ -3115,6 +3146,7 @@ end;
 
 procedure TtiCustomVirtualEditTree.SetFiltering(const AValue: boolean);
 begin
+  FFiltered := AValue;
   FFiltering := AValue;
   FpmiFilter.Visible := AValue;
   FpmiFilter.Enabled := AValue;
