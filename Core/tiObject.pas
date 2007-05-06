@@ -2699,14 +2699,14 @@ end;
 
 procedure TtiObjectErrors.AddError(const AErrorMessage: string);
 begin
-  AddError('', AErrorMessage, -1);
+  AddError('', AErrorMessage, 0);
 end;
 
 procedure TtiObjectErrors.AddError(
   const AErrorProperty : string;
   const AErrorMessage: string);
 begin
-  AddError(AErrorProperty, AErrorMessage, -1);
+  AddError(AErrorProperty, AErrorMessage, 0);
 end;
 
 function TtiObjectErrors.FindByMessage(const AMessage: string): TtiObjectError;

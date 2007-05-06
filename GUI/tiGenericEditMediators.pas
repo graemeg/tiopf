@@ -318,7 +318,8 @@ procedure TMediatorView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
 begin
   { These lines reset the EditControl in the case of no errors, but will be
     further implemented by a concrete class }
-  EditControl.Color := ColorToRGB(clWindow);
+  Assert(False, 'This will not compile in Delphi EditControl.Colour does not exist.');
+  //EditControl.Color := ColorToRGB(clWindow);
   EditControl.Hint := '';
 end;
 
