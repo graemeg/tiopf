@@ -1,42 +1,14 @@
-{Tokens Library.
+{
+  Tokens Library.
 
- Copyright (C) 1996, Earl F. Glynn.  All Rights Reserved.
- Converted from C++ Tokens unit, December 1996
+  Copyright (C) 1996, Earl F. Glynn.  All Rights Reserved.
+  Converted from C++ Tokens unit, December 1996
+  Customized for the tiOPF2 by G.Geldenhuys, March 2007
 
- [Note:  The diagram below will appear with correct line-drawing characters
-         in DOS or on an HP LaserJet printer. In Delphi set the editor font
-         to Terminal, to see the correct diagram.
+  Note:
+    The diagram explaining the Finite State Machine used for this parser
+    can be found at:   Docs/diagrams/tiTokenLibrary_Diagram.png
 
-         If you can't see the diagram for some reason have a look at the
-         following image Docs/diagrams/tiTokenLibrary_Diagram.png          ]
-
-
-                Finite State Machine to Recognize Tokens
-
-                                START
-                                  ³           *
-               else               ³ separators           else
-               ÚÄÄÄ¿              ³   ÚÄÄÄ¿              ÚÄÄÄ¿
-               ³         Left       ³                 ³   
-           ÚÄÄÄÄÄÄÄÄÄÄÄ¿  Mark  ÚÄÄÄÄÄÄÄÄÄÄÄ¿ else   ÚÄÄÄÄÄÄÄÄÄÄÄ¿
-           ³  Accept   ³ÄÄÄÄÄÄÄ³           ³ÄÄÄÄÄÄÄ³  Accept   ³
-           ³ MultiWord ³        ³    Skip   ³        ³SingleWord ³
-           ³   Token   ³        ³ Separators³        ³   Token   ³
-           ³   State   ³ÄÄÄÄÄÄÄ³   State   ³ÄÄÄÄÄÄÄ³   State   ³
-           ÀÄÄÄÄÄÄÄÄÄÄÄÙ  Right ÀÄÄÄÄÄÄÄÄÄÄÄÙ separa-ÀÄÄÄÄÄÄÄÄÄÄÄÙ
-        escape³          Mark                 tors
-     character³     ³
-              ³     ³ any
-                   ³ character
-           ÚÄÄÄÄÄÄÄÄÄÄÄ¿
-           ³   Escape  ³
-           ³   State   ³
-           ÀÄÄÄÄÄÄÄÄÄÄÄÙ
-
-
-       *
-        Multiple separators can be treated as one (e.g., space or tab),
-        or treated as multiple null tokens (e.g, comma delimited data).
 
   Sample Usage:
 
