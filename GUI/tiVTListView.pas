@@ -24,7 +24,7 @@ uses
   ,tiSpeedButton
   ,tiCtrlButtonPanel
   ,tiUtils
-  ,cTIPerAwareCtrls
+  ,tiGUIConstants
   ,tiVisitor
   ,tiOID
   ,Variants

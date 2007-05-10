@@ -1,10 +1,10 @@
-{$I tiDefines.inc}
-
 {
   TODO: Stretch icon
 }
 
 unit tiPerAwareCtrls;
+
+{$I tiDefines.inc}
 
 interface
 uses
@@ -13,11 +13,11 @@ uses
   ,OleCtnrs
   ,Messages
   {$ELSE}
-  lmessages
-  ,lcltype
-  ,lclintf
-  ,interfacebase
-  ,editbtn
+  LMessages
+  ,LCLType
+  ,LCLIntf
+  ,InterfaceBase
+  ,EditBtn
   ,variants
   {$ENDIF}
   ,registry
@@ -28,14 +28,14 @@ uses
   ,Controls
   ,Forms
   ,StdCtrls
-  ,extCtrls
-  ,comctrls
+  ,ExtCtrls
+  ,ComCtrls
   ,Buttons
   ,Menus
   ,tiFocusPanel
   ,tiResources
   ,tiObject
-  ,cTIPerAwareCtrls
+  ,tiGUIConstants
  ;
 
 const
@@ -44,16 +44,6 @@ const
   cErrorListHasNotBeenAssigned   = 'List has not been assigned';
   cErrorPropTypeNotClassOrString = 'FieldName property not an object or string';
 
-  // Default values
-  cuiDefaultLabelWidth    = 80;
-  cDefaultHeightSingleRow = 24;
-  cDefaultHeightMultiRow  = 41;
-  {$IFDEF GUI_FIXED_FONT}
-  cDefaultFixedFontName   = 'Courier New';
-  {$ELSE}
-  cDefaultFixedFontName   = 'MS Sans Serif';
-  {$ENDIF}
-  cCaption = 'Caption';
 
 type
   TtiAction = class(TAction)
@@ -190,7 +180,6 @@ type
 
   public
     constructor Create(AOwner : TComponent); override;
-    destructor  Destroy; override;
     procedure   SetFocus; override;
     property    Data      : TtiObject read FData         write SetData;
     procedure   LinkToData(AData : TtiObject; const AFieldName : string); virtual;
@@ -711,7 +700,7 @@ uses
 {$IFNDEF FPC}
   ,ShellAPI
 {$ELSE}
-  ,lclproc
+  ,LCLProc
 {$ENDIF}
   ,tiImageMgr
   // ,tiUtils // For debugging
@@ -783,11 +772,6 @@ begin
   FbError           := False;
   FErrorColor       := clError;
   FGreyWhenReadOnly := True;
-end;
-
-destructor TtiPerAwareAbs.Destroy;
-begin
-  inherited;
 end;
 
 procedure TtiPerAwareAbs.Refresh;

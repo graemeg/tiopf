@@ -235,13 +235,11 @@ begin
 end;
 
 
-
-
 { TtiSleepThread }
 
 constructor TtiSleepThread.Create(ASuspended: boolean);
 begin
-  inherited;
+  inherited Create(ASuspended);
   FSleepResponse:= cDefaultSleepResponse;
 end;
 
@@ -264,7 +262,7 @@ begin
   // This became an issue with Delphi 6 apps hanging on shutdown.
   if Priority < tpNormal then
     Priority := tpNormal;
-  inherited;
+  inherited Destroy;
 end;
 
 

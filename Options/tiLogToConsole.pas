@@ -19,10 +19,7 @@ type
     procedure WriteToOutput; override; 
   public
     destructor  Destroy; override;
-    procedure   Log(const ADateTime : string;
-                     const AThreadID : string;
-                     const AMessage : string;
-                     ASeverity : TtiLogSeverity); override;
+    procedure   Log(const ADateTime, AThreadID, AMessage: string; ASeverity: TtiLogSeverity); override;
   end;
 
 
@@ -92,7 +89,7 @@ begin
   lLogEvent := TtiLogEvent.Create;
   try
     lLogEvent.LogMessage := AMessage;
-    lMessage   := lLogEvent.AsStringStripCrLf;
+    lMessage := lLogEvent.AsStringStripCrLf;
     lMessage := Copy(lMessage, cuiWidthSeverity+4, Length(lMessage));
     if Length(lMessage) > 79 then
     begin

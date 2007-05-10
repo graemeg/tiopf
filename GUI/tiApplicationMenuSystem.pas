@@ -286,7 +286,7 @@ uses
   ,tiThreadProgress
   ,tiResources
   ,tiConstants
-  ,cTIPerAwareCtrls
+  ,tiGUIConstants
 //  ,FAbout
   ,tiExcept
   ,tiDialogs

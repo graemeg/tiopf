@@ -256,7 +256,7 @@ uses
   ,tiExcept
   ,Dialogs    { MessageDlg }
   ,Graphics
-  ,cTIPerAwareCtrls
+  ,tiGUIConstants
   ;
 
 var

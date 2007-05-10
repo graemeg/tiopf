@@ -150,8 +150,9 @@ uses
   ,tiRegINI
   ,tiLog
   {$IFDEF FPC}
-  ,lcltype
+  ,LCLType
   {$ENDIF}
+  ,tiGUIConstants
  ;
   
 var
@@ -315,12 +316,7 @@ begin
     lMemo.wordWrap   := False;
     lMemo.scrollBars := ssBoth;
     lMemo.Lines.assign(AStrings);
-    {$IFDEF MSWINDOWS}
-    lMemo.Font.Name  := 'Courier New';
-    {$ENDIF MSWINDOWS}
-    {$IFDEF LINUX}
-    lMemo.Font.Name  := 'courier';
-    {$ENDIF LINUX}
+    lMemo.Font.Name  := cDefaultFixedFontName;
     gReg.ReadFormState(lForm);
     lForm.ShowModal;
     gReg.WriteFormState(lForm);
@@ -506,9 +502,7 @@ var
 begin
   lForm := TtiMessageDlg.Create(nil);
   try
-    //lForm.FMemo.Font.Name := 'Courier New';
-    //lForm.FMemo.Font.Size := 8;
-    lForm.FForm.Font.Name := 'Courier New';
+    lForm.FForm.Font.Name := cDefaultFixedFontName;
     lForm.FForm.Font.Size := 8;
     result := lForm.Execute(AMessage, paOptions, psCaption, pDialogType);
   finally
@@ -693,9 +687,7 @@ begin
   for i := Low(pOptions) to High (pOptions) do
   begin
     lBtn := TButton.Create(nil);
-    {$IFNDEF FPC}
     lBtn.ParentFont := False;
-    {$ENDIF}
     lBtn.Parent    := FForm;
     lBtn.Top       := lBtnTop;
     lBtn.Width     := lBtnWidth;
@@ -714,7 +706,6 @@ begin
 
   FForm.ShowModal;
   Result := FsResult;
-
 end;
 
 

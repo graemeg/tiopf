@@ -588,9 +588,8 @@ procedure TtiLogToCacheAbs.Log(const ADateTime : string;
                               const AMessage : string;
                               ASeverity : TtiLogSeverity);
 var
-  lLogEvent : TtiLogEvent;
+  lLogEvent: TtiLogEvent;
 begin
-
   if not AcceptEvent(ADateTime, AMessage, ASeverity) then
     Exit; //==>
 
@@ -726,7 +725,7 @@ end;
 procedure TtiThrdLog.Execute;
 begin
   while SleepAndCheckTerminated(200) do
-    WriteToOutput;
+    Synchronize(WriteToOutput);
 end;
 
 procedure TtiThrdLog.SetLogTo(const AValue: TtiLogToCacheAbs);
