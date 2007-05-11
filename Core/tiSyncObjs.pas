@@ -102,6 +102,8 @@ begin
   {$IFDEF LINUX}
     {$Warning This needs to be completed! }
 //  pthread_mutex_lock
+//   pthread_cond_wait and pthread_cond_signal seems to be a Linux replacement
+//   for the Windows WaitForSingleObject() call.
   {$ENDIF}
 end;
 
