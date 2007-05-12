@@ -1353,10 +1353,10 @@ end;
 // ToDo: TVisTIObjectAsDebugString.Execute is too long. Refactor & unit test
 procedure TVisTIObjectAsDebugString.Execute(const AVisited: TtiVisited);
 var
-  i : integer;
-  LProperties : TStringList;
-  LPropValue : string;
-  LPropName : string;
+  i: integer;
+  LProperties: TStringList;
+  LPropValue: string;
+  LPropName: string;
   LNewLineRequired: boolean;
 begin
   inherited Execute(AVisited);
@@ -1369,14 +1369,16 @@ begin
   if (adsClassName in ToShow) and
      (AVisited.ClassName <> (AVisited).Caption) then
   begin
-    Write(TtiObject(AVisited).ClassName);
+    Write(Indent + TtiObject(AVisited).ClassName);
     Write(', ');
     LNewLineRequired:= True;
-  end;
+  end
+  else
+    Write(Indent);
 
   if adsCaption in ToShow then
   begin
-    Write(Indent + AVisited.Caption);
+    Write(AVisited.Caption);
     Write(', ');
     LNewLineRequired:= True;
   end;
@@ -1436,13 +1438,13 @@ begin
             on e:exception do
               LPropValue := 'Error: ' + e.Message;
           end;
-          if LNewLineRequired then
-            WriteLn;
-          Write(Indent + '  ' +
+//          if LNewLineRequired then
+//            WriteLn;
+          WriteLn(Indent + '  ' +
                 LPropName +
                 ' = ' +
                 LPropValue);
-          LNewLineRequired:= True;
+          LNewLineRequired := True;
         end;
       end;
     finally
@@ -3838,48 +3840,4 @@ begin
 end;
 
 end.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

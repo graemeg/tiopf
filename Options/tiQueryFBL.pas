@@ -23,7 +23,7 @@ unit tiQueryFBL;
 
 {$I tiDefines.inc}
 
-{$Define FBL_Params_Mod}
+{.$Define FBL_Params_Mod}
 
 interface
 uses
