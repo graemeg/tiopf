@@ -162,22 +162,16 @@ type
   // Is a file's readonly attribute set?
   function  tiIsFileReadOnly(AValue: string): boolean;
   // Copy all the directories, starting at pStrStartDir to the stringList slTree
-  procedure tiDirectoryTreeToStringList(const AStartDir : string; const ADirList : TStringList; ARecurse : boolean);
+  procedure tiDirectoryTreeToStringList(const AStartDir: string; const ADirList: TStringList; ARecurse: boolean);
   // Copy all the files, from the directory pStrStartDir, matching the wildcard pStrWildCard
   // to the stringList slResult
-  procedure tiFilesToStringList(       const AStartDir,
-                                         AWildCard : string;
-                                         AResults : TStringList;
-                                         const ARecurse : boolean);
+  procedure tiFilesToStringList(const AStartDir, AWildCard: string; AResults: TStringList; const ARecurse: boolean);
   // Copy one directory tree to another
   procedure tiXCopy(const ASource, ATarget: string);
-
   {: Delete all the files that match AWildCard found in ADirectory}
   procedure tiDeleteFiles(const ADirectory, AWildCard: string);
-
   {: Delete a file, but without BDS2006 function inlining warning}
   function tiDeleteFile(const AFileName: string): boolean;
-
   // Does a directory have any subdirectories?
   function  tiHasSubDirectory(AStartDir : string): boolean;
   // Write the string in psText to a file named AFileName
@@ -1636,9 +1630,11 @@ begin
 end;
 
 
-procedure tiDirectoryTreeToStringList(const AStartDir : string; const ADirList : TStringList; ARecurse : boolean);
-  procedure _ReadDirectories(const psStartDir : string; slTree : TStringList; bRecurse : boolean);
-    procedure _AddIfDir(searchRec : TSearchRec; sStartDir : string; slTree : TStringList; bRecurse : boolean);
+procedure tiDirectoryTreeToStringList(const AStartDir: string;
+    const ADirList: TStringList; ARecurse: boolean);
+  // ------------
+  procedure _ReadDirectories(const psStartDir: string; slTree: TStringList; bRecurse: boolean);
+    procedure _AddIfDir(searchRec: TSearchRec; sStartDir: string; slTree: TStringList; bRecurse: boolean);
     begin
         if ((searchRec.attr and faDirectory) > 0) and
            (searchRec.name <> '.') and
@@ -1650,8 +1646,8 @@ procedure tiDirectoryTreeToStringList(const AStartDir : string; const ADirList :
         end;
     end;
   var
-    lsStartDir : string;
-    SearchRec : TSearchRec;
+    lsStartDir: string;
+    SearchRec: TSearchRec;
   begin
     lsStartDir := tiAddTrailingSlash(psStartDir);
     try
@@ -1670,28 +1666,25 @@ procedure tiDirectoryTreeToStringList(const AStartDir : string; const ADirList :
     end;
   end;
 var
-  lStartDir : string;
+  lStartDir: string;
 begin
-
   lStartDir := tiRemoveTrailingSlash(AStartDir);
   ADirList.Clear;
+  ADirList.Sorted := True;
 
   if not DirectoryExists(lStartDir) then
     exit;
 
   ADirList.Add(lStartDir);
   _ReadDirectories(lStartDir, ADirList, ARecurse);
-
 end;
 
 
 {$IFDEF DELPHI6ORAVOVE} {$WARN SYMBOL_PLATFORM OFF} {$ENDIF}
-procedure tiFilesToStringList(const AStartDir,
-                               AWildCard : string;
-                               AResults : TStringList;
-                               const ARecurse : boolean);
+procedure tiFilesToStringList(const AStartDir, AWildCard: string;
+    AResults: TStringList; const ARecurse: boolean);
   // Locally visible proc
-  procedure AddFile(searchRec : TSearchRec; sStartDir, pStrWildCard : string; slTree : TStringList; bRecurse : boolean);
+  procedure AddFile(searchRec: TSearchRec; sStartDir, pStrWildCard: string; slTree: TStringList; bRecurse: boolean);
   begin
     Assert(not ((searchRec.attr and faDirectory) > 0), 'A directory passed, but a file expected');
     Assert((searchRec.name <> '.'),                      'A directory passed, but a file expected');
@@ -1700,12 +1693,13 @@ procedure tiFilesToStringList(const AStartDir,
   end;
 
 var
-  SearchRec : TSearchRec;
-  lsStartDir : string;
-  lslDirTree : TStringList;
-  i : integer;
+  SearchRec: TSearchRec;
+  lsStartDir: string;
+  lslDirTree: TStringList;
+  i: integer;
 begin
   AResults.Clear;
+  AResults.Sorted := True;
   lsStartDir := tiAddTrailingSlash(AStartDir);
   lslDirTree := TStringList.Create;
   try

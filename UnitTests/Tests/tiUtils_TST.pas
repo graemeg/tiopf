@@ -1145,8 +1145,8 @@ begin
   lsl := TStringList.Create;
   try
     lsl.Text := 'test';
-    lsl.SaveToFile(lRoot + '\temp.txt');
-    Check(SysUtils.FileExists(lRoot + '\temp.txt'), 'File not found');
+    lsl.SaveToFile(tiUtils.tiFixPathDelim(lRoot + '\temp.txt'));
+    Check(SysUtils.FileExists(tiUtils.tiFixPathDelim(lRoot + '\temp.txt')), 'File not found');
   finally
     lsl.Free;
   end;
@@ -1203,15 +1203,14 @@ begin
 
     tiUtils.tiFilesToStringList(lRoot, AllFilesWildCard, lsl, true);
     CheckEquals(8, lsl.Count, 'Count');
-    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')));
-    CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file2.csv')));
-    CheckEquals(UpperCase(lsl.Strings[2]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')));
-    CheckEquals(UpperCase(lsl.Strings[3]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')));
-    CheckEquals(UpperCase(lsl.Strings[4]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file1.txt')));
-    CheckEquals(UpperCase(lsl.Strings[5]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file2.txt')));
-    CheckEquals(UpperCase(lsl.Strings[6]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file3.txt')));
-    CheckEquals(UpperCase(lsl.Strings[7]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file4.txt')));
-
+    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file1.txt')));
+    CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file2.txt')));
+    CheckEquals(UpperCase(lsl.Strings[2]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file3.txt')));
+    CheckEquals(UpperCase(lsl.Strings[3]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file4.txt')));
+    CheckEquals(UpperCase(lsl.Strings[4]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')));
+    CheckEquals(UpperCase(lsl.Strings[5]), UpperCase(tiFixPathDelim(lRoot + '\file2.csv')));
+    CheckEquals(UpperCase(lsl.Strings[6]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')));
+    CheckEquals(UpperCase(lsl.Strings[7]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')));
   finally
     lsl.Free;
   end;
