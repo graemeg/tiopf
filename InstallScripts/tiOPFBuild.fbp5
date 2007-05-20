@@ -259,7 +259,7 @@ String
             <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Prepare working copy of files]]>
               </Property>
-            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="Enabled" type="WordBool">False</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property name="IgnoreFailure" type="WordBool">False</Property>
             <Property name="IsAction" type="Boolean">True</Property>
