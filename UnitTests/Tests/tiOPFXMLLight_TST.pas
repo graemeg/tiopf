@@ -54,7 +54,7 @@ implementation
 uses
   tiConstants
   {$IFDEF FPC}
-  ,testregistry
+  ,tiFPCUnitUtils
   {$ELSE}
   ,TestFramework
   {$ENDIF}
@@ -69,11 +69,11 @@ begin
   if gTIOPFTestManager.ToRun(cTIPersistXMLLight) then
   begin
     {$IFDEF FPC}
-    RegisterTest(TTestTIPersistenceLayersXMLLight);
-    RegisterTest(TTestTIDatabaseXMLLight);
-    RegisterTest(TTestTIQueryXMLLight);
-    RegisterTest(TTestTIOIDManagerXMLLight);
-    RegisterTest(TTestTIClassToDBMapOperationXMLLight);
+    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIPersistenceLayersXMLLight);
+    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIDatabaseXMLLight);
+    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIQueryXMLLight);
+    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDManagerXMLLight);
+    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIClassToDBMapOperationXMLLight);
     {$ELSE}
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIPersistenceLayersXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIDatabaseXMLLight.Suite);

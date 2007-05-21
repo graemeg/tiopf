@@ -63,7 +63,7 @@ implementation
 uses
   tiConstants
   {$IFDEF FPC}
-  ,testregistry
+  ,tiFPCUnitUtils
   {$ELSE}
   ,TestFramework
   {$ENDIF}
@@ -81,11 +81,11 @@ begin
   if gTIOPFTestManager.ToRun(cTIPersistCSV) then
   begin
     {$IFDEF FPC}
-    RegisterTest(TTestTIPersistenceLayersCSV);
-    RegisterTest(TTestTIDatabaseCSV);
-    RegisterTest(TTestTIQueryCSV);
-    RegisterTest(TTestTIOIDManagerCSV);
-    RegisterTest(TTestTIClassToDBMapOperationCSV);
+    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIPersistenceLayersCSV);
+    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIDatabaseCSV);
+    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIQueryCSV);
+    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIOIDManagerCSV);
+    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIClassToDBMapOperationCSV);
     {$ELSE}
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIPersistenceLayersCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIDatabaseCSV.Suite);
