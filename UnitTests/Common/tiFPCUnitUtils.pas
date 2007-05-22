@@ -1,5 +1,5 @@
 {
-  Helper functions to fake the DUnit methods. This well prevent more
+  Helper functions to fake the DUnit methods. This will prevent more
   IFDEF statements.
   
   NOTE:
@@ -19,11 +19,12 @@ uses
 
 
 procedure RegisterTest(ASuitePath: String; ATestClass: TTestCaseClass); overload;
+procedure RegisterTest(ASuitePath: String; ATest: TTest); overload;
 
 implementation
 
 
-procedure RegisterTestInSuite(rootSuite: TTestSuite; APath: string; ATestClass: TTestCaseClass);
+procedure RegisterTestInSuite(rootSuite: TTestSuite; APath: string; ATest: TTest);
 var
   i: Integer;
   targetSuite: TTestSuite;
@@ -36,7 +37,7 @@ begin
   if APath = '' then
   begin
     // end recursion
-    rootSuite.AddTestSuiteFromClass(ATestClass);
+    rootSuite.AddTest(ATest);
   end
   else
   begin
@@ -78,13 +79,18 @@ begin
       rootSuite.AddTest(targetSuite);
     end;
 
-    RegisterTestInSuite(targetSuite, pathRemainder, ATestClass);
+    RegisterTestInSuite(targetSuite, pathRemainder, ATest);
   end;
 end;
 
 procedure RegisterTest(ASuitePath: String; ATestClass: TTestCaseClass);
 begin
-  RegisterTestInSuite(GetTestRegistry, ASuitePath, ATestClass);
+  RegisterTestInSuite(GetTestRegistry, ASuitePath, TTestSuite.Create(ATestClass));
+end;
+
+procedure RegisterTest(ASuitePath: String; ATest: TTest);
+begin
+  RegisterTestInSuite(GetTestRegistry, ASuitePath, ATest);
 end;
 
 

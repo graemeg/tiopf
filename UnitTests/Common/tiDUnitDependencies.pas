@@ -6,7 +6,6 @@ interface
 uses
   {$IFDEF FPC}
   testregistry
-  ,fpcunit
   ,tiFPCUnitUtils // Helper functions to fake DUnit methods
   {$ELSE}
   TestFramework
@@ -211,7 +210,7 @@ end;
 procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
 begin
   if gTIOPFTestManager.TestNonPersistentClasses then
-    RegisterTest(cSuiteNameNonPersistentTests, ATestCaseClass{$IFNDEF FPC}.Suite{$ENDIF});
+    RegisterTest(cSuiteNameNonPersistentTests, ATestCaseClass.Suite);
 end;
 
 

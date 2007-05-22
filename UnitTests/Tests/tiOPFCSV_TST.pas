@@ -80,19 +80,11 @@ procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistCSV) then
   begin
-    {$IFDEF FPC}
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIPersistenceLayersCSV);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIDatabaseCSV);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIQueryCSV);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIOIDManagerCSV);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIClassToDBMapOperationCSV);
-    {$ELSE}
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIPersistenceLayersCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIDatabaseCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIQueryCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIOIDManagerCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIClassToDBMapOperationCSV.Suite);
-    {$ENDIF}
   end;
 end;
 

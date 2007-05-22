@@ -68,19 +68,11 @@ procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistXMLLight) then
   begin
-    {$IFDEF FPC}
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIPersistenceLayersXMLLight);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIDatabaseXMLLight);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIQueryXMLLight);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDManagerXMLLight);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIClassToDBMapOperationXMLLight);
-    {$ELSE}
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIPersistenceLayersXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIDatabaseXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIQueryXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDManagerXMLLight.Suite);
 //    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIClassToDBMapOperationXMLLight.Suite);
-    {$ENDIF}
   end;
 end;
 

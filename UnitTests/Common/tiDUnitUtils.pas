@@ -258,18 +258,11 @@ procedure TtiTestCase.CheckObjectState(
   AObjectState: TPerObjectState;
   AData: TtiObject;
   const AMessage: string = '');
-var
-  LObjectState: string;
 begin
   Assert(AData.TestValid, cTIInvalidObjectError);
-  LObjectState := GetEnumName(TypeInfo(TPerObjectState), Ord(AObjectState));
   Check(AObjectState = AData.ObjectState,
         'ObjectState: Expected <' +
-         {$IFDEF FPC}
-            {$Note Find out why TypeInfo doesn't work in this case! It can't
-              be used directly??? }
-         {$ENDIF}
-        LObjectState +
+        GetEnumName(TypeInfo(TPerObjectState), Ord(AObjectState)) +
         '> but got <' +
         AData.ObjectStateAsString +
         '> on ' + AData.ClassName + '. ' + AMessage);
@@ -298,7 +291,7 @@ begin
   CheckNearEnough(pExpected, pActual, 0.0001, AMessage);
 end;
 
-procedure TtiTestCase.CheckNearEnough(pExpected, pActual, pFEPS: Double);
+procedure TtiTestCase.CheckNearEnough(pExpected, pActual: Double; pFEPS: Double);
 begin
   CheckNearEnough(pExpected, pActual, pFEPS, '');
 end;
@@ -353,7 +346,7 @@ begin
   CheckEquals(AValue, AField.AsBoolean);
 end;
 
-procedure TtiTestCase.CheckNearEnough(pExpected, pActual, pFEPS: Double; const AString: string);
+procedure TtiTestCase.CheckNearEnough(pExpected, pActual: Double; pFEPS: Double; const AString: string);
 begin
   if not tiIsNearEnough(pExpected, pActual, pFEPS) then
     FailNotEquals(FloatToStr(pExpected), FloatToStr(pActual), Format('(feps: %g) %s', [pFEPS, AString]), {$IFDEF FPC} nil {$ELSE} CallerAddr {$ENDIF});
@@ -551,7 +544,7 @@ begin
   CheckEquals(StrToInt(AExpected), AActual);
 end;
 
-procedure TtiTestCase.CheckEquals(AValue, AField: TStream);
+procedure TtiTestCase.CheckEquals(AValue: TStream; AField: TStream);
 var
   LMessage: string;
 begin
@@ -579,7 +572,7 @@ begin
   CheckNearEnough(AExpected.AsFloat, AActual.AsFloat);
 end;
 
-procedure TtiTestCase.CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject; const APropName: string; const ANewValue: string);
+procedure TtiTestCase.CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject; const APropName, ANewValue: string);
 var
   LSaved: string;
 begin
@@ -608,7 +601,8 @@ begin
 end;
 
 procedure TtiTestCase.CheckTIObjectIsValidMethod(const AData: TtiObject;
-  const APropName, AInvalidValue: String; const AErrorProperty: string = '');
+  const APropName: string; const AInvalidValue: String;
+  const AErrorProperty: string);
 var
   LSaved: String;
   LErrors: TtiObjectErrors;

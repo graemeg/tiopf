@@ -71,19 +71,11 @@ procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistTab) then
   begin
-    {$IFDEF FPC}
-    RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIPersistenceLayersTab);
-    RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIDatabaseTAB);
-    RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIQueryTAB);
-    RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIOIDManagerTab);
-    RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIClassToDBMapOperationTab);
-    {$ELSE}
     RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIPersistenceLayersTab.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIDatabaseTAB.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIQueryTAB.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIOIDManagerTab.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistTab), TTestTIClassToDBMapOperationTab.Suite);
-    {$ENDIF}
   end;
 end;
 

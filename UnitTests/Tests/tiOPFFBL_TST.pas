@@ -59,7 +59,7 @@ implementation
 uses
   tiConstants
   {$IFDEF FPC}
-  ,TestRegistry
+  ,tiFPCUnitUtils
   {$ELSE}
   ,TestFramework
   {$ENDIF}
@@ -72,19 +72,11 @@ procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistFBL) then
   begin
-    {$IFDEF FPC}
-    RegisterTest(TTestTIPersistenceLayersFBL);
-    RegisterTest(TTestTIDatabaseFBL);
-    RegisterTest(TTestTIQueryFBL);
-    RegisterTest(TTestTIOIDManagerFBL);
-    RegisterTest(TTestTIClassToDBMapOperationFBL);
-    {$ELSE}
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIPersistenceLayersFBL.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIDatabaseFBL.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIQueryFBL.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIOIDManagerFBL.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIClassToDBMapOperationFBL.Suite);
-    {$ENDIF}
   end;
 end;
 

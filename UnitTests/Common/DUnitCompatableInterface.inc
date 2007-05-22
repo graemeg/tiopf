@@ -10,6 +10,7 @@
     procedure FailNotEquals(expected, actual: string; msg: string = ''; errorAddr: Pointer = nil); virtual;
     {$ENDIF}
 
+    class function Suite: TTest;
     {
     *** TODO  ***
     procedure CheckEqualsBin(expected, actual: longword; msg: string = ''; digits: integer=32); virtual;
@@ -57,6 +58,11 @@ begin
   Fail(msg + ComparisonMsg(Expected, Actual));
 end;
 {$ENDIF}
+
+class function TtiTestCase.Suite: TTest;
+begin
+  result := TTestSuite.Create(self);
+end;
 
 
 {$ENDIF read_implementation}

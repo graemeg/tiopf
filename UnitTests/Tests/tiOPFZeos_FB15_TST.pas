@@ -59,7 +59,7 @@ implementation
 uses
   tiConstants
   {$IFDEF FPC}
-  ,TestRegistry
+  ,tiFPCUnitUtils
   {$ELSE}
   ,TestFramework
   {$ENDIF}
@@ -72,19 +72,11 @@ procedure RegisterTests;
 begin
   if gTIOPFTestManager.ToRun(cTIPersistZeosFB15) then
   begin
-    {$IFDEF FPC}
-    RegisterTest(TTestTIPersistenceLayersZeos);
-    RegisterTest(TTestTIDatabaseZeos);
-    RegisterTest(TTestTIQueryZeos);
-    RegisterTest(TTestTIOIDManagerZeos);
-    RegisterTest(TTestTIClassToDBMapOperationZeos);
-    {$ELSE}
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIPersistenceLayersFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIDatabaseFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIQueryFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDManagerFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIClassToDBMapOperationFBL.Suite);
-    {$ENDIF}
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIPersistenceLayersZeos.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIDatabaseZeos.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIQueryZeos.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDManagerZeos.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIClassToDBMapOperationZeos.Suite);
   end;
 end;
 
