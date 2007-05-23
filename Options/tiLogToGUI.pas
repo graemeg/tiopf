@@ -1,4 +1,9 @@
-// Log to a window above the application's main form, but only if the -lv parameter is passed on the command line
+{
+  Log to a window above the application's main form, but only if
+  the -lv parameter is passed on the command line
+  
+  This in normally controlled by the tiLogReg unit.
+}
 unit tiLogToGUI;
 
 {$I tiDefines.inc}
@@ -13,25 +18,22 @@ uses
   ,Graphics, Controls, Forms
   ,Dialogs, StdCtrls, Menus, ToolWin, ComCtrls
   ,tiLog
-//  {$IFNDEF VER130}
-//  ,Variants
-//  {$ENDIF}
  ;
 
 
 type
   TtiLogToGUI = class(TtiLogToCacheAbs)
   private
-    FForm            : TForm;
-    FMemoLog         : TMemo;
-    FToolBar         : TToolBar;
-    FPopupMenu       : TPopupMenu;
-    FLogMenuItem     : TMenuItem;
-    FViewLogMenuItem : TMenuItem;
-    FWordWrapMenuItem : TMenuItem;
+    FForm: TForm;
+    FMemoLog: TMemo;
+    FToolBar: TToolBar;
+    FPopupMenu: TPopupMenu;
+    FLogMenuItem: TMenuItem;
+    FViewLogMenuItem: TMenuItem;
+    FWordWrapMenuItem: TMenuItem;
     function    GetFormParent: TWinControl;
     procedure   SetFormParent(const AValue: TWinControl);
-    function    CreateForm : TForm;
+    function    CreateForm: TForm;
     procedure   FormClearMenuItemClick(Sender: TObject);
     procedure   FormWordWrapMenuItemClick(Sender: TObject);
     procedure   FormLogMenuItemClick(Sender: TObject);
@@ -47,10 +49,7 @@ type
     constructor Create; override;
     destructor  Destroy; override;
     property    FormParent: TWinControl read GetFormParent write SetFormParent;
-    procedure   Log(const ADateTime : string;
-                     const AThreadID : string;
-                     const AMessage : string;
-                     ASeverity : TtiLogSeverity); override;
+    procedure   Log(const ADateTime, AThreadID, AMessage: string; ASeverity: TtiLogSeverity); override;
   end;
 
 
@@ -59,8 +58,10 @@ uses
   tiUtils
   ,tiCommandLineParams
   {$IFDEF FPC}
-  ,lclproc,lresources
+  ,LCLProc
+  ,LResources
   {$ENDIF}
+  ,tiGUIConstants
  ;
 
 
@@ -102,14 +103,7 @@ begin
   FForm.Left                := 10;
   FForm.Height              := 150;
   FForm.Width               := Screen.Width - 20;
-  FForm.Caption             := ' Application event log - ' + Application.Title;
-  FForm.Font.Color          := clWindowText;
-  FForm.Font.Height         := -11;
-  {$IFNDEF FPC}
-  FForm.Font.Charset        := DEFAULT_CHARSET;
-  FForm.Font.Name           := 'MS Shell Dlg 2';
-  {$ENDIF}
-  FForm.Font.Style          := [];
+  FForm.Caption             := 'Application event log - ' + Application.Title;
   FForm.OnCloseQuery        := FormCloseQuery;
 
 
@@ -122,9 +116,7 @@ begin
   FMemoLog.Parent           := FForm;
   FMemoLog.Top              := 29;
   FMemoLog.Align            := alClient;
-  FMemoLog.Font.Height      := -11;
-  FMemoLog.Font.Name        := 'Courier New';
-  FMemoLog.Font.Style       := [];
+  FMemoLog.Font.Name        := cDefaultFixedFontName;
   FMemoLog.PopupMenu        := FPopupMenu;
   FMemoLog.ReadOnly         := True;
   FMemoLog.ScrollBars       := ssBoth;
@@ -203,99 +195,22 @@ begin
  Result := FForm;
 end;
 
-(*
-object LogViewForm: TLogViewForm
-  Left = 50
-  Top = 224
-  Caption = 'Application event log'
-  ClientHeight = 186
-  ClientWidth = 798
-  Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'MS Shell Dlg 2'
-  Font.Style = []
-  OldCreateOrder = False
-  OnCloseQuery = FormCloseQuery
-  OnCreate = FormCreate
-  PixelsPerInch = 96
-  TextHeight = 13
-  object MemoLog: TMemo
-    Left = 0
-    Top = 29
-    Width = 798
-    Height = 157
-    Align = alClient
-    Font.Charset = ANSI_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Courier New'
-    Font.Style = []
-    ParentFont = False
-    PopupMenu = pPopupMenu
-    ReadOnly = True
-    ScrollBars = ssBoth
-    TabOrder = 0
-    WordWrap = False
-  end
-  object ToolBar: TToolBar
-    Left = 0
-    Top = 0
-    Width = 798
-    Height = 29
-    AutoSize = True
-    Caption = 'ToolBar'
-    ShowCaptions = True
-    TabOrder = 1
-  end
-  object pPopupMenu: TPopupMenu
-    Left = 396
-    Top = 44
-    object Viewlogfile1: TMenuItem
-      Caption = '&View log file'
-      Visible = False
-      OnClick = Viewlogfile1Click
-    end
-    object N1: TMenuItem
-      Caption = '-'
-    end
-    object ClearMenuItem: TMenuItem
-      Caption = '&Clear'
-      ShortCut = 16460
-      OnClick = ClearMenuItemClick
-    end
-    object WordWrapMenuItem: TMenuItem
-      Caption = '&Word wrap'
-      ShortCut = 16471
-      OnClick = WordWrapMenuItemClick
-    end
-    object LogMenuItem: TMenuItem
-      Caption = '&Log'
-      OnClick = LogMenuItemClick
-    end
-  end
-*)
-
-
 function TtiLogToGUI.GetFormParent: TWinControl;
 begin
   result := FForm.Parent;
 end;
-
 
 procedure TtiLogToGUI.Log(const ADateTime, AThreadID, AMessage: string; ASeverity: TtiLogSeverity);
 begin
   if Terminated then
     Exit; //==>
   {$IFDEF FPC}
-  {$Note A workaround.It seems that Lazarus does not allow to show this form
-  before Application.Run call}
+  { Note: A workaround.It seems that Lazarus does not allow to show this form
+    before Application.Run call. }
   if not FForm.Visible then FForm.Show;
   {$ENDIF}
-  inherited log(ADateTime, AThreadID, AMessage, ASeverity);
+  inherited Log(ADateTime, AThreadID, AMessage, ASeverity);
 end;
-
 
 procedure TtiLogToGUI.SetFormParent(const AValue: TWinControl);
 begin

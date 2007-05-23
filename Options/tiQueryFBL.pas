@@ -23,7 +23,8 @@ unit tiQueryFBL;
 
 {$I tiDefines.inc}
 
-{.$Define FBL_Params_Mod}
+// The modified FBLib 0.85 is now available in the Source/3rdParty directory
+{$Define FBL_Params_Mod}
 
 interface
 uses

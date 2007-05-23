@@ -634,9 +634,8 @@ procedure TtiLogToCacheAbs.Log(const ADateTime : string;
                               const AMessage : string;
                               ASeverity : TtiLogSeverity);
 var
-  lLogEvent : TtiLogEvent;
+  lLogEvent: TtiLogEvent;
 begin
-
   if not AcceptEvent(ADateTime, AMessage, ASeverity) then
     Exit; //==>
 
