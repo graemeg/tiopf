@@ -160,18 +160,27 @@ type
     FListWorking: TtiLogEvents;
     FCritSect: TCriticalSection;
     FThrdLog: TtiThrdLog;
+    FSynchronized: Boolean;
+    procedure Init(const ASynchronized: Boolean); // Called by all constructors.
   protected
     property  ThrdLog: TtiThrdLog read FThrdLog;
     property  ListWorking: TtiLogEvents read FListWorking;
     procedure WriteToOutput; override;
   public
+    // NOTE: Descendants need to call one of the following inherited constructors
+    // depending on whether they need log output synchronized with the main thread.
+    // This is typically only when logging to a GUI.
+    // Log output not synchronized to the main thread
     constructor Create; override;
+    // Log output synchronized to the main thread
+    constructor CreateSynchronized; virtual;
     destructor  Destroy; override;
     procedure   Log(const ADateTime : string;
                     const AThreadID : string;
                     const AMessage : string;
                     ASeverity: TtiLogSeverity); override;
-    procedure Terminate; override;
+    procedure   Terminate; override;
+    property    Synchronized: Boolean read FSynchronized;
   end;
 
 
@@ -180,6 +189,7 @@ type
   private
     FLogToList : TList;
     FSevToLog: TtiSevToLog;
+    FCritSect: TCriticalSection;
     procedure SetSevToLog(const AValue: TtiSevToLog);
     function  IsRegistered(const ALogToClass : TtiLogToClass): boolean;
   public
@@ -480,6 +490,7 @@ end;
 constructor TtiLog.Create;
 begin
   inherited;
+  FCritSect := TCriticalSection.Create;
   FLogToList := TList.Create;
   FSevToLog := cSevToLog;
 end;
@@ -490,13 +501,20 @@ var
   i : integer;
   lLog : TtiLogToAbs;
 begin
-  for i := FLogToList.Count - 1 downto 0 do
-  begin
-    lLog := TtiLogToAbs(FLogToList.Items[i]);
-    FLogToList.Delete(i);
-    lLog.Free;
+  // Probably over the top to add thread safety here but better to be safe than sorry.
+  FCritSect.Enter;
+  try
+    for i := FLogToList.Count - 1 downto 0 do
+    begin
+      lLog := TtiLogToAbs(FLogToList.Items[i]);
+      FLogToList.Delete(i);
+      lLog.Free;
+    end;
+  finally
+    FCritSect.Leave;
   end;
   FLogToList.Free;
+  FCritSect.Free;
   inherited;
 end;
 
@@ -506,9 +524,17 @@ var
   i : integer;
 begin
   result := nil;
-  for i := 0 to FLogToList.Count - 1 do
-    if TObject(FLogToList.Items[i]) is ALogToClass then
-      result := TtiLogToAbs(FLogToList.Items[i]);
+  FCritSect.Enter;
+  try
+    for i := 0 to FLogToList.Count - 1 do
+      if TObject(FLogToList.Items[i]) is ALogToClass then
+      begin
+        result := TtiLogToAbs(FLogToList.Items[i]);
+        break; //==>
+      end;
+  finally
+    FCritSect.Leave;
+  end;
 end;
 
 
@@ -534,11 +560,16 @@ begin
   lsThreadID := IntToStr(GetCurrentThreadID);
   lsThreadID := _PadL(lsThreadID, cuiWidthThread);
 
-  for i := 0 to FLogToList.Count - 1 do
-    TtiLogToAbs(FLogToList.Items[i]).Log(lsNow,
-                                          lsThreadID,
-                                          lsMessage,
-                                          ASeverity);
+  FCritSect.Enter;
+  try
+    for i := 0 to FLogToList.Count - 1 do
+      TtiLogToAbs(FLogToList.Items[i]).Log(lsNow,
+                                           lsThreadID,
+                                           lsMessage,
+                                           ASeverity);
+  finally
+    FCritSect.Leave;
+  end;
 end;
 
 
@@ -561,10 +592,25 @@ end;
 constructor TtiLogToCacheAbs.Create;
 begin
   inherited Create;
+  Init({ASynchronized} False);
+end;
+
+
+constructor TtiLogToCacheAbs.CreateSynchronized;
+begin
+  inherited Create;
+  Init({ASynchronized} True);
+end;
+
+
+// Call from all constructors.
+procedure TtiLogToCacheAbs.Init(const ASynchronized: Boolean);
+begin
   FList        := TList.Create;
   FListWorking := TtiLogEvents.Create;
   FCritSect    := TCriticalSection.Create;
   FThrdLog     := TtiThrdLog.CreateExt(self); // Must call FThrdLog.Resume in the descandant classes
+  FSynchronized := ASynchronized;
 end;
 
 
@@ -588,8 +634,9 @@ procedure TtiLogToCacheAbs.Log(const ADateTime : string;
                               const AMessage : string;
                               ASeverity : TtiLogSeverity);
 var
-  lLogEvent: TtiLogEvent;
+  lLogEvent : TtiLogEvent;
 begin
+
   if not AcceptEvent(ADateTime, AMessage, ASeverity) then
     Exit; //==>
 
@@ -725,7 +772,10 @@ end;
 procedure TtiThrdLog.Execute;
 begin
   while SleepAndCheckTerminated(200) do
-    Synchronize(WriteToOutput);
+    if FLogTo.Synchronized then
+      Synchronize(WriteToOutput)
+    else
+      WriteToOutput;
 end;
 
 procedure TtiThrdLog.SetLogTo(const AValue: TtiLogToCacheAbs);
@@ -748,12 +798,22 @@ end;
 procedure TtiLog.RegisterLog(ALogTo : TtiLogToAbs);
 begin
   Assert(ALogTo.TestValid, cErrorTIPerObjAbsTestValid);
+  // It would be nice to be able to have multiple instances of the same LogTo
+  // class, such as two TtiLogToFile, one main one logging to some admin
+  // area for critical errors and another temporarily used for debugging such
+  // that you can add the second without disturbing the first.
+  // What to do with TtiLog.LogToFileName?
   if IsRegistered(TtiLogToClass(ALogTo.ClassType)) then
   begin
     ALogTo.Free;
     Exit; //==>
   end;
-  FLogToList.Add(ALogTo);
+  FCritSect.Enter;
+  try
+    FLogToList.Add(ALogTo);
+  finally
+    FCritSect.Leave;
+  end;
 end;
 
 
@@ -831,21 +891,15 @@ end;
 
 procedure TtiLog.SetSevToLog(const AValue: TtiSevToLog);
 var
-  lCritSect: TCriticalSection;
   i : integer;
 begin
-  lCritSect := TCriticalSection.Create;
+  FCritSect.Enter;
   try
-    lCritSect.Enter;
-    try
-      FSevToLog := AValue;
-      for i := 0 to FLogToList.Count - 1 do
-        TtiLogToAbs(FLogToList.Items[i]).SevToLog := AValue;
-    finally
-      lCritSect.Leave;
-    end;
+    FSevToLog := AValue;
+    for i := 0 to FLogToList.Count - 1 do
+      TtiLogToAbs(FLogToList.Items[i]).SevToLog := AValue;
   finally
-    lCritSect.Free;
+    FCritSect.Leave;
   end;
 end;
 

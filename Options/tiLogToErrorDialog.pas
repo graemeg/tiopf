@@ -131,7 +131,8 @@ end;
 
 constructor TLogToError.Create;
 begin
-  inherited;
+  // GUI output must be synchronized with the main thread.
+  inherited CreateSynchronized;
   FForm := TLogErrorForm.Create(nil);
   ThrdLog.Resume;
 end;

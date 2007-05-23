@@ -23,7 +23,7 @@ type
     procedure WriteToOutput; override;
   public
     // Require param to control max size of file
-    constructor Create; override;
+    constructor Create; reintroduce; virtual;
     constructor CreateWithFileName(const AFilePath: string; AFileName: string; AOverwriteOldFiles: Boolean);
     constructor CreateWithDateInFileName(const APath: string); overload;
     constructor CreateWithDateInFileName(AUpDirectoryTree: Byte); overload;
@@ -51,7 +51,7 @@ uses
 
 constructor TtiLogToFile.Create;
 begin
-  inherited;
+  inherited Create;
   FOverwriteOldFile := false;
   FDateInFileName    := false;
   FFileName          := GetDefaultFileName;
@@ -161,6 +161,10 @@ var
   lLine   : string;
   lFileStream : TFileStream;
   lFileName : TFileName;
+  LFileCreateCount: Integer;
+const
+  CFileCreateAttempts = 2;
+  CFileCreateAttemptInterval = 250; // ms
 begin
   inherited WriteToOutput;
   if ListWorking.Count = 0 then
@@ -171,20 +175,45 @@ begin
     lFileStream := TFileStream.Create(lFileName,
                                        fmOpenReadWrite or fmShareDenyNone)
   else
-    lFileStream := TFileStream.Create(lFileName,
-                                       fmCreate or fmShareDenyNone);
-
-  lFileStream.Seek(0, soFromEnd);
-  try
-    for i := 0 to ListWorking.Count - 1 do
+  begin
+    lFileStream := nil;
+    LFileCreateCount := 1;
+    while LFileCreateCount <= CFileCreateAttempts do
     begin
-      Assert(ListWorking.Items[i].TestValid(TtiLogEvent), cErrorTIPerObjAbsTestValid);
-      lLine := ListWorking.Items[i].AsLeftPaddedString + #13 + #10;
-      lFileStream.Write(PChar(lLine)^, Length(lLine));
+      try
+        lFileStream := TFileStream.Create(lFileName,
+                                         fmCreate or fmShareDenyNone);
+        Break; //==>
+      except
+        // Perhaps the log directory was deleted.
+        on E: EFCreateError do
+        begin
+          if LFileCreateCount < CFileCreateAttempts then
+            ForceLogDirectory
+          else
+            raise;
+        end;
+      end;
+      Inc(LFileCreateCount);
+      Sleep(CFileCreateAttemptInterval);
     end;
-  finally
-    lFileStream.Free;
   end;
+
+  if Assigned(lFileStream) then
+  begin
+    try
+      lFileStream.Seek(0, soFromEnd);
+      for i := 0 to ListWorking.Count - 1 do
+      begin
+        Assert(ListWorking.Items[i].TestValid(TtiLogEvent), cErrorTIPerObjAbsTestValid);
+        lLine := ListWorking.Items[i].AsLeftPaddedString + #13 + #10;
+        lFileStream.Write(PChar(lLine)^, Length(lLine));
+      end;
+    finally
+      lFileStream.Free;
+    end;
+  end;
+  
   ListWorking.Clear;
 end;
 
