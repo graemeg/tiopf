@@ -847,9 +847,9 @@ Log('_WaitForThreads: 2', lsDebug);
       end;
       Sleep(100);
 Log('_WaitForThreads: 3', lsDebug);
-      {.$IFNDEF FPC}
+      {$IFNDEF FPC}
       Application.ProcessMessages;
-      {.$ENDIF}
+      {$ENDIF}
 Log('_WaitForThreads: 4', lsDebug);
     end;
   end;
