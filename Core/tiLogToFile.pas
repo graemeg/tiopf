@@ -23,7 +23,7 @@ type
     procedure WriteToOutput; override;
   public
     // Require param to control max size of file
-    constructor Create; reintroduce; virtual;
+    constructor Create; override;
     constructor CreateWithFileName(const AFilePath: string; AFileName: string; AOverwriteOldFiles: Boolean);
     constructor CreateWithDateInFileName(const APath: string); overload;
     constructor CreateWithDateInFileName(AUpDirectoryTree: Byte); overload;
@@ -51,7 +51,7 @@ uses
 
 constructor TtiLogToFile.Create;
 begin
-  inherited Create;
+  inherited;
   FOverwriteOldFile := false;
   FDateInFileName    := false;
   FFileName          := GetDefaultFileName;
