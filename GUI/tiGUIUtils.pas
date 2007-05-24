@@ -14,6 +14,9 @@ uses
   ,Windows
   ,Messages
   {$ENDIF}
+  {$IFDEF FPC}
+  ,LCLType    // TKeyboardState under FPC is not in Windows unit
+  {$ENDIF}
   ,Graphics      // Canvas
   ,Classes
  ;
@@ -118,9 +121,6 @@ uses
     {$ENDIF}
   {$ENDIF MSWINDOWS}
   ,tiDialogs
-  {$IFDEF FPC}
-  ,LCLType    // TKeyboardState under FPC is not in Windows unit
-  {$ENDIF}
   ,SysUtils
   ,ClipBrd
   ;
