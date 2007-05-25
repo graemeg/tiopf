@@ -1421,8 +1421,6 @@ begin
                           LProperties,
                           ctkSimple + [tkVariant, tkEnumeration]);
 
-
-      LNewLineRequired:= False;
       for i := 0 to LProperties.Count - 1 do
       begin
         LPropName := LProperties.Strings[i];
@@ -1438,13 +1436,10 @@ begin
             on e:exception do
               LPropValue := 'Error: ' + e.Message;
           end;
-//          if LNewLineRequired then
-//            WriteLn;
           WriteLn(Indent + '  ' +
                 LPropName +
                 ' = ' +
                 LPropValue);
-          LNewLineRequired := True;
         end;
       end;
     finally

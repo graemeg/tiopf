@@ -146,7 +146,7 @@ object frmLVFilter: TfrmLVFilter
     Width = 145
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 7
   end
   object cmbOperator: TComboBox
@@ -155,7 +155,7 @@ object frmLVFilter: TfrmLVFilter
     Width = 145
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 8
   end
   object edValue: TEdit
@@ -171,7 +171,7 @@ object frmLVFilter: TfrmLVFilter
     Width = 65
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 10
   end
   object btnAdd: TButton

@@ -1,5 +1,7 @@
 Unit tiVTFilter;
 
+{$I tiDefines.inc}
+
 Interface
 
 Uses
