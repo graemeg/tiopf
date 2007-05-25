@@ -141,6 +141,8 @@ type
                                 var   AFileSize : integer);
   // Set a files date and time
   procedure tiSetFileDate(const AFileName : string; const ADateTime : TDateTime);
+  // Get the full path and filename of the exe or dll, Win32 and .NET
+  function tiGetModuleFileName: string;
   // What is the path of the current EXE?
   function  tiGetEXEPath : string;
   // Add the EXE path to a file name
@@ -156,7 +158,7 @@ type
   // Copy a file from AFileFrom to AFileTo
   procedure tiCopyFile(          const AFrom, ATo : string);
   // Move a file from AFromFileName to AToFileName
-  procedure tiMoveFile(                AFrom, ATo: string);
+  function  tiMoveFile(          const AFrom, ATo: string): Boolean;
   // Read a file's size in bytes
   function  tiGetFileSize(             AValue : string): longInt;
   // Remove the drive letter from a file name
@@ -171,7 +173,7 @@ type
   procedure tiDirectoryTreeToStringList(const AStartDir: string; const ADirList: TStringList; ARecurse: boolean);
   // Copy all the files, from the directory pStrStartDir, matching the wildcard pStrWildCard
   // to the stringList slResult
-  procedure tiFilesToStringList(const AStartDir, AWildCard: string; AResults: TStringList; const ARecurse: boolean);
+  procedure tiFilesToStringList(const AStartDir, AWildCard: string; const AResults : TStringList; const ARecurse : boolean);
   // Copy one directory tree to another
   procedure tiXCopy(const ASource, ATarget: string);
   {: Delete all the files that match AWildCard found in ADirectory}
@@ -268,6 +270,8 @@ type
   {: Converts a date to its financial year
      tiDateToAusFinancialYear(EncodeDate(2005/03/01)) will return 2005}
   function tiDateToAusFinancialYear(ADate: TDateTime): Word;
+  {: Round a date time to the previous hole minute}
+  function tiRoundDateToPreviousMinute(const ADateTime: TDateTime): TDateTime;
 
   function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;
   function tiXMLStringToDateTime(const AValue : string): TDateTime;
@@ -828,6 +832,18 @@ begin
     Result := lY + 1;
 end;
 
+function tiRoundDateToPreviousMinute(const ADateTime: TDateTime): TDateTime;
+var
+  LDate: TDateTime;
+  LH: Word;
+  LM: Word;
+  LS: Word;
+  LMS: Word;
+begin
+  LDate:= Trunc(ADateTime);
+  DecodeTime(ADateTime, LH, LM, LS, LMS);
+  Result:= LDate + EncodeTime(LH, LM, 0, 0);
+end;
 
 function tiMixedCase(AValue : string): string;
 var iToken : integer;
@@ -1031,9 +1047,9 @@ begin
 end;
 
 
-procedure tiMoveFile(AFrom, ATo: string);
+function tiMoveFile(const AFrom, ATo: string): boolean;
 begin
-  RenameFile(AFrom, ATo);   { Rename the file }
+  result:= RenameFile(AFrom, ATo); { Rename the file }
 end;
 
 
@@ -1621,6 +1637,33 @@ end;
 {$ENDIF LINUX}
 
 
+function tiGetModuleFileName: string;
+{$IFNDEF CLR}
+var
+  Path: array[0..MAX_PATH - 1] of Char;
+{$ENDIF}
+begin
+  {$IFDEF CLR}
+  Result := Assembly.GetExecutingAssembly.Location;
+  {$ELSE}
+  if IsLibrary then
+  begin
+    {$IFDEF MSWINDOWS}
+    if Windows.GetModuleFileName(HInstance, Path, SizeOf(Path)) = 0 then
+    {$ENDIF MSWINDOWS}
+    {$IFDEF UNIX}
+    if GetModuleFileName(HInstance, Path, SizeOf(Path)) = 0 then
+    {$ENDIF UNIX}
+      Result := ''
+    else
+      Result := Path;
+  end
+  else
+    Result := Application.ExeName;
+  {$ENDIF}
+end;
+
+
 function tiGetEXEPath : string;
 var
   path: array[0..MAX_PATH - 1] of char;
@@ -1643,9 +1686,7 @@ begin
 end;
 
 
-procedure tiDirectoryTreeToStringList(const AStartDir: string;
-    const ADirList: TStringList; ARecurse: boolean);
-  // ------------
+procedure tiDirectoryTreeToStringList(const AStartDir : string; const ADirList : TStringList; ARecurse : boolean);
   procedure _ReadDirectories(const psStartDir: string; slTree: TStringList; bRecurse: boolean);
     procedure _AddIfDir(searchRec: TSearchRec; sStartDir: string; slTree: TStringList; bRecurse: boolean);
     begin
@@ -1694,8 +1735,9 @@ end;
 
 
 {$IFDEF DELPHI6ORAVOVE} {$WARN SYMBOL_PLATFORM OFF} {$ENDIF}
-procedure tiFilesToStringList(const AStartDir, AWildCard: string;
-    AResults: TStringList; const ARecurse: boolean);
+procedure tiFilesToStringList(const AStartDir, AWildCard : string;
+                               const AResults : TStringList;
+                               const ARecurse : boolean);
   // Locally visible proc
   procedure AddFile(searchRec: TSearchRec; sStartDir, pStrWildCard: string; slTree: TStringList; bRecurse: boolean);
   begin
@@ -2216,12 +2258,10 @@ procedure tiInsertStringToStream(const AStr : string; const AStream : TStream; A
 var
   LRHLength: Longword;
   LRHPChar: PChar;
-  lSize: Longword;
 begin
   Assert(AStream <> nil, 'Stream unassigned.');
   Assert(APos <= AStream.Size, 'Pos > AStream.Size');
-  lSize := AStream.Size;
-  Assert(APos <= lSize, 'Pos > AStream.Size');
+  Assert(APos <= AStream.Size, 'Pos > AStream.Size');
 
   // Copy the RH portion to a string
   LRHLength:= AStream.Size - APos;
