@@ -85,15 +85,21 @@ type
   function  tiSubStr(const ASource, AStartDelim, AEndDelim : string; AIndex : integer = 1): string;
   // Trunc a string to AWidth length and add '...'
   function  tiAddEllipsis(const AString : string; AWidth : integer = 20): string;
+  {: Trim all leading and trailing instances of AString.
+     ToDo: Overload tiTrim with
+           tiTrim(const AString: string; const ATrim: string); overload;
+           tiTrim(const AString: string; const ATrim: array of string); overload;
+     }
+  function  tiTrim(const AString: string; ATrim: char): string;
   // Trim all characters after and including ATrim from AString
   function  tiTrimR(const AString, ATrim : string; ACaseSensitive : boolean = false): string;
   // Trim all characters before and including ATrim from AString
   function  tiTrimL(const AString, ATrim : string; ACaseSensitive : boolean = false): string;
-  // Remove Cr & LF characters
-  function  tiRemoveCrLf(const AString : string): string;
   // Remove all the trailing white space characters (#32, #10, #13)
   // from the end of a string
   function tiTrimTrailingWhiteSpace(const AString : string): string;
+  // Remove Cr & LF characters
+  function  tiRemoveCrLf(const AString : string): string;
   // Returns true if the email address is valid
   function tiIsEMailAddressValid(const AValue: string): boolean;
   // Returns true if the file name is valid. Will not test if the
@@ -2389,6 +2395,20 @@ begin
 
 end;
 
+
+function  tiTrim(const AString: string; ATrim: char): string;
+var
+  i, LLength: Integer;
+begin
+  LLength := Length(AString);
+  i := 1;
+  while (i <= LLength) and (AString[i] = ATrim) do Inc(i);
+  if i > LLength then Result := '' else
+  begin
+    while AString[LLength] = ATrim do Dec(LLength);
+    Result := Copy(AString, i, LLength - i + 1);
+  end;
+end;
 
 function  tiTrimR(const AString, ATrim : string; ACaseSensitive : boolean = false): string;
 var

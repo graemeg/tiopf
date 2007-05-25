@@ -159,6 +159,7 @@ type
     procedure tiTestStreamsIdentical;
     procedure tiTimeToStr;
     procedure tiToken;
+    procedure tiTrim;
     procedure tiTrimL;
     procedure tiTrimR;
     procedure tiTrimTrailingWhiteSpace;
@@ -499,6 +500,15 @@ begin
   CheckEquals('abc', tiUtils.tiTrimR('abcDeFGhI', 'dEf', false), 'Failed on 6');
 end;
 
+
+procedure TTestTIUtils.tiTrim;
+begin
+  CheckEquals('', tiUtils.tiTrim(',', ','));
+  CheckEquals('test', tiUtils.tiTrim(',test', ','));
+  CheckEquals('test', tiUtils.tiTrim('test,', ','));
+  CheckEquals('12test12', tiUtils.tiTrim('12test12', ','));
+  CheckEquals('**test**', tiUtils.tiTrim('**test**', ','));
+end;
 
 procedure TTestTIUtils.tiTrimL;
 begin
@@ -2443,6 +2453,7 @@ begin
 
   CheckEquals(True, tiUtils.tiIsNearEnough(3.141592654e20, 3.141593915e20));
   CheckEquals(True, tiUtils.tiIsNearEnough(3.141592654e-20, 3.141593915e-20));
+  
 end;
 
 
