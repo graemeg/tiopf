@@ -743,22 +743,6 @@ type
     property    Dirty : boolean read FbDirty write FbDirty;
   end;
 
-  {: Stream a TtiObject out as text for debugging.
-     A typical use may be tiShowMessage(FMyObject.AsDebugString)}
-  TVisTIObjectAsDebugString = class(TVisStringStream)
-  private
-    FToShow: TtiObjectAsDebugStringValuesToShow;
-  protected
-    function    AcceptVisitor: Boolean; override;
-  public
-    constructor Create; overload; override;
-    constructor Create(const AIncludeDeleted: Boolean; const ADataOnly: Boolean = False); reintroduce; overload;
-    constructor Create(const AValuesToShow: TtiObjectAsDebugStringValuesToShow); reintroduce; overload;
-    procedure   Execute(const AVisited: TtiVisited); override;
-    function    Indent: string;
-    property    ToShow:TtiObjectAsDebugStringValuesToShow read FToShow write FToShow;
-  end;
-
 const
   cgNullDBInteger            = -1 ;
   cgNullDBString             = '' ;
@@ -1090,30 +1074,6 @@ begin
           'object type properties. AssignClassProps() must be overridden in the concrete class.');
 end;
 
-{ Note: This functionality has not been tested fully. Bit of a hack really :(
-        Talk about thrashing the CPU with out need.:(:(:(!  }
-function TtiObject.Equals(const AData: TtiObject): boolean;
-var
-  lVisComp : TVisTIObjectAsDebugString;
-  lVisSelf : TVisTIObjectAsDebugString;
-begin
-  // ToDo: Better to do this as a field by field compare...
-  lVisComp := TVisTIObjectAsDebugString.Create(False, True);
-  try
-    lVisSelf := TVisTIObjectAsDebugString.Create(False, True);
-    try
-      Self.Iterate(lVisSelf);
-      AData.Iterate(lVisComp);
-      result := lVisSelf.Text = lVisComp.Text;
-    finally
-      lVisSelf.Free;
-    end;
-  finally
-    lVisComp.Free;
-  end;
-end;
-
-
 function TtiObject.GetDeleted: boolean;
 begin
   result := (ObjectState = posDelete) or
@@ -1321,134 +1281,6 @@ begin
   FList.Delete(i);
 end;
 
-
-{ TVisTIObjectAsDebugString }
-
-function TVisTIObjectAsDebugString.AcceptVisitor : boolean;
-begin
-  result := (Visited is TtiObject) and
-            ((adsDeleted in ToShow) or
-             ((not TtiObject(Visited).Deleted) and
-              (not TtiObject(Visited).Deleted))) and
-            ((Depth <= 1) or (adsData in ToShow));
-end;
-
-constructor TVisTIObjectAsDebugString.Create;
-begin
-  inherited;
-  FToShow:= CTIAsDebugStringDataAll;
-end;
-
-constructor TVisTIObjectAsDebugString.Create(
-  const AIncludeDeleted: Boolean;
-  const ADataOnly: Boolean);
-begin
-  Create;
-  if ADataOnly then
-    FToShow:= [adsData];
-  if not AIncludeDeleted then
-    FToShow:= FToShow - [adsDeleted];
-end;
-
-// ToDo: TVisTIObjectAsDebugString.Execute is too long. Refactor & unit test
-procedure TVisTIObjectAsDebugString.Execute(const AVisited: TtiVisited);
-var
-  i: integer;
-  LProperties: TStringList;
-  LPropValue: string;
-  LPropName: string;
-  LNewLineRequired: boolean;
-begin
-  inherited Execute(AVisited);
-
-  if not AcceptVisitor then
-    Exit; //==>
-
-  LNewLineRequired:= false;
-
-  if (adsClassName in ToShow) and
-     (AVisited.ClassName <> (AVisited).Caption) then
-  begin
-    Write(Indent + TtiObject(AVisited).ClassName);
-    Write(', ');
-    LNewLineRequired:= True;
-  end
-  else
-    Write(Indent);
-
-  if adsCaption in ToShow then
-  begin
-    Write(AVisited.Caption);
-    Write(', ');
-    LNewLineRequired:= True;
-  end;
-
-  if adsObjectState in ToShow then
-  begin
-    Write(TtiObject(AVisited).ObjectStateAsString);
-    Write(', ');
-    LNewLineRequired:= True;
-  end;
-
-  if adsOID in ToShow then
-  begin
-    {$IFDEF OID_AS_INT64}
-      Write(IntToStr(TtiObject(AVisited).OID));
-    {$ELSE}
-      if gTIOPFManager.DefaultOIDClassName <> '' then
-        Write('OID=' +TtiObject(AVisited).OID.AsString)
-      else
-        Write('OID=Null');
-    {$ENDIF}
-    LNewLineRequired:= True;
-  end;
-
-  if (TtiObject(AVisited).Dirty) and
-     (adsObjectState in ToShow) then
-  begin
-    Write(', **Dirty**');
-    LNewLineRequired:= True;
-  end;
-
-  if LNewLineRequired then
-    WriteLn('');
-
-  if adsData in ToShow then
-  begin
-    LProperties := TStringList.Create;
-    try
-      tiGetPropertyNames(TtiBaseObject(AVisited),
-                          LProperties,
-                          ctkSimple + [tkVariant, tkEnumeration]);
-
-      for i := 0 to LProperties.Count - 1 do
-      begin
-        LPropName := LProperties.Strings[i];
-        if not SameText(LPropName, 'Caption') then
-        begin
-          try
-            LPropValue := TtiObject(AVisited).PropValue[LPropName];
-            if TtiObject(AVisited).PropType(LPropName) = tiTKDateTime then
-              LPropValue := tiDateTimeAsIntlDateDisp(TtiObject(AVisited).PropValue[LPropName])
-            else
-              LPropValue := TtiObject(AVisited).PropValue[LPropName];
-          except
-            on e:exception do
-              LPropValue := 'Error: ' + e.Message;
-          end;
-          WriteLn(Indent + '  ' +
-                LPropName +
-                ' = ' +
-                LPropValue);
-        end;
-      end;
-    finally
-      LProperties.Free;
-    end;
-  end;
-end;
-
-
 procedure TtiObject.SetObjectState(const AValue: TPerObjectState);
 begin
   if FObjectState = AValue then exit;
@@ -1516,19 +1348,6 @@ function TtiObject.ObjectStateAsString: string;
 begin
   result := GetEnumName(TypeInfo(TPerObjectState),
                          Ord(ObjectState));
-end;
-
-function TVisTIObjectAsDebugString.Indent: string;
-begin
-  result := tiSpace((Depth - 1) * 2);
-end;
-
-
-constructor TVisTIObjectAsDebugString.Create(
-  const AValuesToShow: TtiObjectAsDebugStringValuesToShow);
-begin
-  Create;
-  ToShow:= AValuesToShow;
 end;
 
 { TPerStream }
@@ -3583,6 +3402,169 @@ begin
     Result := inherited Find(AOIDToFind);
 end;
 
+type
+
+  {: Stream a TtiObject out as text for debugging.
+     A typical use may be tiShowMessage(FMyObject.AsDebugString)}
+  TVisTIObjectAsDebugString = class(TVisStringStream)
+  private
+    FToShow: TtiObjectAsDebugStringValuesToShow;
+  protected
+    function    AcceptVisitor: Boolean; override;
+  public
+    constructor Create; overload; override;
+    constructor Create(const AIncludeDeleted: Boolean; const ADataOnly: Boolean = False); reintroduce; overload;
+    constructor Create(const AValuesToShow: TtiObjectAsDebugStringValuesToShow); reintroduce; overload;
+    procedure   Execute(const AVisited: TtiVisited); override;
+    function    Indent: string;
+    property    ToShow:TtiObjectAsDebugStringValuesToShow read FToShow write FToShow;
+  end;
+
+{ TVisTIObjectAsDebugString }
+
+function TVisTIObjectAsDebugString.AcceptVisitor : boolean;
+begin
+  result := (Visited is TtiObject) and
+            ((adsDeleted in ToShow) or
+             ((not TtiObject(Visited).Deleted) and
+              (not TtiObject(Visited).Deleted))) and
+            ((Depth <= 1) or (adsData in ToShow));
+end;
+
+constructor TVisTIObjectAsDebugString.Create;
+begin
+  inherited;
+  FToShow:= CTIAsDebugStringDataAll;
+end;
+
+constructor TVisTIObjectAsDebugString.Create(
+  const AIncludeDeleted: Boolean;
+  const ADataOnly: Boolean);
+begin
+  Create;
+  if ADataOnly then
+    FToShow:= [adsData, adsChildren];
+  if not AIncludeDeleted then
+    FToShow:= FToShow - [adsDeleted];
+end;
+
+// ToDo: TVisTIObjectAsDebugString.Execute is too long. Refactor & unit test
+procedure TVisTIObjectAsDebugString.Execute(const AVisited: TtiVisited);
+var
+  i: integer;
+  LProperties: TStringList;
+  LPropValue: string;
+  LPropName: string;
+  LNewLineRequired: boolean;
+begin
+  inherited Execute(AVisited);
+
+  if not AcceptVisitor then
+    Exit; //==>
+
+  LNewLineRequired:= false;
+
+  if (adsClassName in ToShow) and
+     (AVisited.ClassName <> (AVisited).Caption) then
+  begin
+    Write(Indent + TtiObject(AVisited).ClassName);
+    Write(', ');
+    LNewLineRequired:= True;
+  end
+  else
+    Write(Indent);
+
+  if adsCaption in ToShow then
+  begin
+    Write(AVisited.Caption);
+    Write(', ');
+    LNewLineRequired:= True;
+  end;
+
+  if adsObjectState in ToShow then
+  begin
+    Write(TtiObject(AVisited).ObjectStateAsString);
+    Write(', ');
+    LNewLineRequired:= True;
+  end;
+
+  if adsOID in ToShow then
+  begin
+    {$IFDEF OID_AS_INT64}
+      Write(IntToStr(TtiObject(AVisited).OID));
+    {$ELSE}
+      if gTIOPFManager.DefaultOIDClassName <> '' then
+        Write('OID=' +TtiObject(AVisited).OID.AsString)
+      else
+        Write('OID=Null');
+    {$ENDIF}
+    Write(', ');
+    LNewLineRequired:= True;
+  end;
+
+  if (TtiObject(AVisited).Dirty) and
+     (adsObjectState in ToShow) then
+  begin
+    Write('**Dirty**');
+    LNewLineRequired:= True;
+  end;
+
+  if LNewLineRequired then
+    WriteLn('');
+
+  if adsData in ToShow then
+  begin
+    LProperties := TStringList.Create;
+    try
+      tiGetPropertyNames(TtiBaseObject(AVisited),
+                          LProperties,
+                          ctkSimple + [tkVariant, tkEnumeration]);
+
+      for i := 0 to LProperties.Count - 1 do
+      begin
+        LPropName := LProperties.Strings[i];
+        if not SameText(LPropName, 'Caption') then
+        begin
+          try
+            LPropValue := TtiObject(AVisited).PropValue[LPropName];
+            if TtiObject(AVisited).PropType(LPropName) = tiTKDateTime then
+              LPropValue := tiDateTimeAsIntlDateDisp(TtiObject(AVisited).PropValue[LPropName])
+            else
+              LPropValue := TtiObject(AVisited).PropValue[LPropName];
+          except
+            on e:exception do
+              LPropValue := 'Error: ' + e.Message;
+          end;
+          WriteLn(Indent + '  ' +
+                LPropName +
+                ' = ' +
+                LPropValue);
+        end;
+      end;
+    finally
+      LProperties.Free;
+    end;
+  end;
+
+  if not( adsChildren in ToShow) then
+    ContinueVisiting:= False;
+
+end;
+
+
+function TVisTIObjectAsDebugString.Indent: string;
+begin
+  result := tiSpace((Depth - 1) * 2);
+end;
+
+
+constructor TVisTIObjectAsDebugString.Create(
+  const AValuesToShow: TtiObjectAsDebugStringValuesToShow);
+begin
+  Create;
+  ToShow:= AValuesToShow;
+end;                           
+
 function TtiObject.AsDebugString(
   const AValuesToShow: TtiObjectAsDebugStringValuesToShow
                          = CTIAsDebugStringDataAll): string;
@@ -3592,9 +3574,33 @@ begin
   lVisitor := TVisTIObjectAsDebugString.Create(AValuesToShow);
   try
     Self.Iterate(lVisitor);
-    result := lVisitor.Text;
+    result := Trim(lVisitor.Text);
+    result:= tiTrim(result, ',');
   finally
     lVisitor.Free;
+  end;
+end;
+
+{ Note: This functionality has not been tested fully. Bit of a hack really :(
+        Talk about thrashing the CPU with out need.:(:(:(!  }
+function TtiObject.Equals(const AData: TtiObject): boolean;
+var
+  lVisComp : TVisTIObjectAsDebugString;
+  lVisSelf : TVisTIObjectAsDebugString;
+begin
+  // ToDo: Better to do this as a field by field compare...
+  lVisComp := TVisTIObjectAsDebugString.Create(False, True);
+  try
+    lVisSelf := TVisTIObjectAsDebugString.Create(False, True);
+    try
+      Self.Iterate(lVisSelf);
+      AData.Iterate(lVisComp);
+      result := lVisSelf.Text = lVisComp.Text;
+    finally
+      lVisSelf.Free;
+    end;
+  finally
+    lVisComp.Free;
   end;
 end;
 

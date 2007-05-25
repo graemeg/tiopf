@@ -308,10 +308,119 @@ begin
   end;
 end;
 
+type
+
+  TtstAsDebugStringObject = class(TtiObject)
+  private
+    FProp2: string;
+  published
+    property Prop2: string read FProp2 write FProp2;
+  end;
+
+  TtstAsDebugStringObjectList = class(TtiObjectList)
+  private
+    FProp1: string;
+    FObjectProp: TtstAsDebugStringObject;
+  protected
+    function GetCaption: string; override;
+  published
+    property Prop1: string read FProp1 write FProp1;
+    property ObjectProp: TtstAsDebugStringObject read FObjectProp write FObjectProp;
+  end;
+
+function TtstAsDebugStringObjectList.GetCaption: string;
+begin
+  result:= 'Class name for ' + ClassName;
+end;
 
 procedure TTestTIObject.AsDebugString;
+var
+  LL: TtstAsDebugStringObjectList;
+  LO1: TtstAsDebugStringObject;
+  LO2: TtstAsDebugStringObject;
+  LO3: TtstAsDebugStringObject;
+
+const
+  CAll =
+    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + #13#10 +
+    '  Prop1 = test prop 1' + #13#10 +
+    '  TtstAsDebugStringObject, posEmpty, OID=2' + #13#10 +
+    '    Prop2 = test prop 2' + #13#10 +
+    '  TtstAsDebugStringObject, posDelete, OID=3, **Dirty**' + #13#10 +
+    '    Prop2 = test prop 3' + #13#10 +
+    '  TtstAsDebugStringObject, posEmpty, OID=3' + #13#10 +
+    '    Prop2 = test prop 3';
+
+  CDeleted =
+    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + #13#10 +
+    '  Prop1 = test prop 1' + #13#10 +
+    '  TtstAsDebugStringObject, posEmpty, OID=2' + #13#10 +
+    '    Prop2 = test prop 2' + #13#10 +
+    '  TtstAsDebugStringObject, posEmpty, OID=3' + #13#10 +
+    '    Prop2 = test prop 3';
+
+  CChildren =
+    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + #13#10 +
+    '  Prop1 = test prop 1';
+
+  CData =
+  '  Prop1 = test prop 1' + #13#10 +
+  '      Prop2 = test prop 2' + #13#10 +
+  '      Prop2 = test prop 3';
+
+  CClassName =
+    'TtstAsDebugStringObjectList';
+
+  CObjectState =
+    'posEmpty, **Dirty**';
+
+  COID =
+    'OID=1';
+
+  CCaption =
+    'Class name for TtstAsDebugStringObjectList';
+
 begin
-  Assert(False, 'Under construction');
+
+  LL:= nil;
+  LO1:= nil;
+  LO2:= nil;
+  LO3:= nil;
+  try
+    LL:= TtstAsDebugStringObjectList.Create;
+    LL.OID.AsString:= '1';
+    LL.Prop1:= 'test prop 1';
+
+    LO1:= TtstAsDebugStringObject.Create;
+    LO1.Prop2:= 'test prop 2';
+    LO1.OID.AsString:= '2';
+    LL.Add(LO1);
+
+    LO2:= TtstAsDebugStringObject.Create;
+    LO2.Prop2:= 'test prop 3';
+    LO2.OID.AsString:= '3';
+    LO2.Deleted:= true;
+    LL.Add(LO2);
+
+    LO3:= TtstAsDebugStringObject.Create;
+    LO3.Prop2:= 'test prop 3';
+    LO3.OID.AsString:= '3';
+    LL.ObjectProp:= LO3;
+
+//    CheckEquals(CAll, LL.AsDebugString);
+//    CheckEquals(CDeleted, LL.AsDebugString(CTIAsDebugStringDataAll-[adsDeleted]));
+//    CheckEquals(CChildren, LL.AsDebugString(CTIAsDebugStringDataAll-[adsChildren]));
+
+//    CheckEquals(CClassName, LL.AsDebugString([adsClassName]));
+    CheckEquals(CObjectState, LL.AsDebugString([adsObjectState]));
+//    CheckEquals(COID, LL.AsDebugString([adsOID]));
+//    CheckEquals(CCaption, LL.AsDebugString([adsCaption]));
+
+
+  finally
+    LL.Free;
+    LO3.Free;
+  end;
 end;
 
 procedure TTestTIObject.AssignCompound;
