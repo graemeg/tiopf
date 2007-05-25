@@ -365,8 +365,11 @@ type
      Ref: http://www.adtmag.com/joop/crarticle.asp?ID=396
      @param(FEPS Determines the significant digits. @br
                  FEPS value of 0.00001 means 5 significant digits. @br
-                 FEPS value of 0.01 means 2 significant digits.) }
+                 FEPS value of 0.01 means 2 significant digits.)
+     Note: This test is based on significant figures, not number of decimal places. }
   function tiIsNearEnough(N, D: Double;  FEPS: Double = 0.00001): Boolean;
+  {: Compare two TDateTimes. Returns True if they are within 0.5 sec}
+  function tiIsDateTimeNearEnough(AVal1, AVal2: TDateTime): Boolean;
   {: If ACondition is true, return AResultTrue, otherwise, return AResultFalse.
      @param ACondition Result of a boolean evaluation.
      @param AResultTrue AValue to return if ACondition is true.
@@ -1232,6 +1235,10 @@ begin
     Result := (((1-feps) < (N/D)) and ((N/D) < (1+feps)));
 end;
 
+function tiIsDateTimeNearEnough(AVal1, AVal2: TDateTime): Boolean;
+begin
+  result:= Abs(AVal1-AVal2) <= cdtOneSecond / 2;
+end;
 
 function tiIf(ACondition: Boolean; AResultTrue, AResultFalse: Extended): Extended;
 begin

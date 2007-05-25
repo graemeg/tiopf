@@ -116,6 +116,7 @@ type
     procedure tiIsFileNameValid;
     procedure tiIsFileReadOnly;
     procedure tiIsNearEnough;
+    procedure tiIsDateTimeNearEnough;
     procedure tiIsVariantOfType;
     procedure tiJoinPath;
     procedure tiMixedCase;
@@ -1517,6 +1518,20 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiIsDateTimeNearEnough;
+var
+  LNow: TDateTime;
+begin
+  LNow:= Now;
+
+  CheckEquals(True, tiUtils.tiIsDateTimeNearEnough(LNow, LNow));
+  CheckEquals(True, tiUtils.tiIsDateTimeNearEnough(LNow, LNow + cdtOneSecond / 2));
+  CheckEquals(True, tiUtils.tiIsDateTimeNearEnough(LNow + cdtOneSecond / 2, LNow));
+  CheckEquals(False, tiUtils.tiIsDateTimeNearEnough(LNow, LNow + cdtOneSecond));
+  CheckEquals(False, tiUtils.tiIsDateTimeNearEnough(LNow + + cdtOneSecond, LNow));
+
+end;
+
 procedure TTestTIUtils.tiIntToCommaStr;
 begin
   CheckEquals('0', tiUtils.tiIntToCommaStr(0), 'Failed on 0');
@@ -2453,7 +2468,7 @@ begin
 
   CheckEquals(True, tiUtils.tiIsNearEnough(3.141592654e20, 3.141593915e20));
   CheckEquals(True, tiUtils.tiIsNearEnough(3.141592654e-20, 3.141593915e-20));
-  
+
 end;
 
 
