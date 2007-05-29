@@ -111,6 +111,17 @@ type
   {: Normalize the string by replacing all repeated Spaces, Tabs and NewLines
     chars with a single space. It's so easy with Regular Expression!:(}
   function tiNormalizeStr(const AString: string): string;
+  {: Encode a URI, replacing characters with %HH as appropriate }
+  function tiURIEncode(const AString: string): string;
+  {: Add the given prefix and suffix to the given string, optionally only if
+    they are not already present }
+  function tiEnclose(const AString: string;
+                     const APrefix: string;
+                     const ASuffix: string = '';
+                     const AEncloseIfPresent: Boolean = false): string;
+  {: Enclose the given string in double quotes if they are not already present }
+  function tiQuote(const AString: string): string;
+
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -480,8 +491,8 @@ uses
   {$ENDIF UNIX}
   {$IFDEF FPC}
   ,Process
-  ,StrUtils   // used for DelSpace1
   {$ENDIF}
+  ,StrUtils   // used for DelSpace1 and tiEnclose
  ;
 
 function tiGetTempFile(const AValue : string): string;
@@ -2849,6 +2860,46 @@ begin
   Result := DelSpace1(s);
 end;
 
+function tiURIEncode(const AString: string): string;
+var
+  I: Integer;
+const
+  UnsafeChars = ['*', '#', '%', '<', '>', '+', ' '];
+begin
+  Result := '';
+  for I := 1 to Length(AString) do
+  begin
+    if (AString[I] in UnsafeChars) or (AString[I] < #32) or (AString[I] >= #$80) then
+      Result := Result + '%' + IntToHex(Ord(AString[I]), 2)
+    else
+      Result := Result + AString[I];
+  end;
+end;
+
+function tiEnclose(
+    const AString: string;
+    const APrefix: string;
+    const ASuffix: string;
+    const AEncloseIfPresent: Boolean): string;
+var
+  LSuffix: string;
+begin
+  Result := '';
+  if ASuffix = '' then
+    LSuffix := APrefix
+  else
+    LSuffix := ASuffix;
+  if AEncloseIfPresent or (LeftStr(AString, Length(APrefix)) = APrefix) then
+    Result := Result + APrefix;
+  Result := Result + AString;
+  if AEncloseIfPresent or (RightStr(AString, Length(LSuffix)) = LSuffix) then
+    Result := Result + LSuffix;
+end;
+
+function tiQuote(const AString: string): string;
+begin
+  Result := tiEnclose(AString, '"');
+end;
 
 function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;
   function _IntToStr(AValue, pSize : integer): string;
