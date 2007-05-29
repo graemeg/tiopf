@@ -7,16 +7,16 @@ unit tiOPFGUI;
 interface
 
 uses
-  tiGUIUtils, tiDialogs, tiLogToGUI, tiLogReg, tiButtons, tiCtrlButtonPanel, 
-    tiFocusPanel, tiHyperlink, tiImageMgr, tiListView, tiListViewCtrls, 
-    tiListViewDif, tiListViewPlus, tiMemoReadOnly, tiPerAwareCombosAbs, 
-    tiPerAwareCtrls, tiPerAwareDateRange, tiPerAwareDirectoryCombos, 
-    tiPerAwareFileCombos, tiPerAwareMultiSelect, tiReadOnly, tiResources, 
-    tiRoundedPanel, tiSpeedButton, tiSplitter, tiThreadProgress, tiTreeView, 
+  tiGUIUtils, tiDialogs, tiButtons, tiCtrlButtonPanel, tiFocusPanel, 
+    tiHyperlink, tiImageMgr, tiListView, tiListViewCtrls, tiListViewDif, 
+    tiListViewPlus, tiMemoReadOnly, tiPerAwareCombosAbs, tiPerAwareCtrls, 
+    tiPerAwareDateRange, tiPerAwareDirectoryCombos, tiPerAwareFileCombos, 
+    tiPerAwareMultiSelect, tiReadOnly, tiResources, tiRoundedPanel, 
+    tiSpeedButton, tiSplitter, tiThreadProgress, tiTreeView, 
     tiTreeViewChildForm, DtiDefaultActionValues, tiGenericEditMediators, 
     tiGenericListMediators, tiTreeBuildVisitor, tiGenericTreeViewMediator, 
     tiCompositeMediators, tiVisitorDBSQLMgr, tiSQLMgr_BOM, tiSQLMgr_Cli, 
-    tiSQLMgr_Svr, tiGUIConstants; 
+    tiSQLMgr_Svr, tiGUIConstants, tiLogToGUI, tiLogReg; 
 
 implementation
 

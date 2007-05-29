@@ -508,7 +508,7 @@ begin
   {$IFDEF FPC}
   Result := SysUtils.GetTempFileName('', '');    // prefix of TMP is default
   {$ELSE}
-  strPCopy(pcApp, copy(extractFileName(application.exeName), 1, 3));
+  strPCopy(pcApp, copy(extractFileName(ParamStr(0)), 1, 3));
   getTempPath(cMaxPathLen, pcPath);
   getTempFileName(pcPath, pcApp, 0, pcTemp);
   deleteFile(pcTemp); // This is using the Window deleteFile, not Delphi's
@@ -1661,16 +1661,16 @@ begin
   begin
     {$IFDEF MSWINDOWS}
     if Windows.GetModuleFileName(HInstance, Path, SizeOf(Path)) = 0 then
-    {$ENDIF MSWINDOWS}
-    {$IFDEF UNIX}
-    if GetModuleFileName(HInstance, Path, SizeOf(Path)) = 0 then
-    {$ENDIF UNIX}
       Result := ''
     else
       Result := Path;
+    {$ENDIF MSWINDOWS}
+    {$IFDEF UNIX}
+    Result := Paramstr(0);
+    {$ENDIF UNIX}
   end
   else
-    Result := Application.ExeName;
+    Result := Paramstr(0);
   {$ENDIF}
 end;
 
@@ -1684,7 +1684,7 @@ begin
     SetString(Result, path, GetModuleFileName(HInstance, path, SizeOf(path)))
   else
   {$ENDIF}
-    result := paramStr(0);
+    result := Paramstr(0);
   result := tiRemoveTrailingSlash(ExtractFilePath(Result));
 end;
 
