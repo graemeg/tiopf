@@ -1212,9 +1212,14 @@ end;
 
 
 function tiFloatToCurrency(const AValue: Extended): string;
+var
+  e: Extended;
 begin
   try
-    result := FormatFloat('$ #,##0.00', AValue);
+    // FPC's FormatFloat uses Bankers Rounding which differs from Delphi.
+    // Setting the precision resolves this issue.
+    e := tiSetPrecision(AValue, 2);
+    result := FormatFloat('$ #,##0.00', e);
   except
     result := '0.00';
   end;
