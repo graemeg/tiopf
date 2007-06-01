@@ -2762,6 +2762,7 @@ begin
   FPopupMenu.Items.Add(FpmiShowFind);
 
   FFiltering := true;
+  FFiltered  := true;
 
   FpmiFilter := TMenuItem.Create(Self);
   FpmiFilter.Caption := 'Fil&ter';
