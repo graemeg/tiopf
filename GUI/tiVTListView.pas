@@ -2898,6 +2898,10 @@ begin
   inherited;
   if Assigned(FCtrlBtnPnl) then
     FCtrlBtnPnl.RefreshButtons;
+    
+  { If it has at least a streamed item then show an ordered TtiVTListView }
+  if FSortOrders.Count > 0 then
+    FSorted := True;
 end;
 
 procedure TtiCustomVirtualEditTree.DoMenuPopup(Sender: TObject);
