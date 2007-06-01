@@ -1022,7 +1022,7 @@ begin
   {$ELSE}
     OID.Assign(ASource.OID);
   {$ENDIF}
-  ObjectState := ASource.ObjectState;
+  FObjectState := ASource.ObjectState;
   // 1. If we are cloning a list element to edit, then we will probably
   //    want it's Owner property set to the list. This will be done here.
   // 2. If we are editing a list, then we want each list element to be cloned
