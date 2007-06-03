@@ -1471,7 +1471,7 @@ p_file_path=%path_to_working_compilers%\Delphi2006
                 <Property name="IsBreakPoint" type="WordBool">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="NodeCollapsed" type="Boolean">True</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -1556,16 +1556,12 @@ String
                   <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                   <Property MultiValue="0" name="SectionName" type="string">Report_Short</Property>
                   <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                  <Property name="Variables" type="TStrings"><![CDATA[report_short_d2005
-report_short_d2006
-report_short_d5
-report_short_d6
+                  <Property name="Variables" type="TStrings"><![CDATA[report_short_d2006
+report_short_d2007
 report_short_d7
 ]]>
                     </Property>
                   <Property name="VariableTypes" type="TStrings"><![CDATA[String
-String
-String
 String
 String
 ]]>
@@ -1918,7 +1914,7 @@ p_persistence_layers=%report_persistence_layers_d2007%
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
