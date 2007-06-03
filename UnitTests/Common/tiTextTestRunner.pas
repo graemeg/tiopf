@@ -435,7 +435,7 @@ begin
       LIdentLong := 'report_long_d2006';
       LIdentShort := 'report_short_d2006';
     {$ENDIF}
-     $IFDEF DELPHI11}
+    {$IFDEF DELPHI11}
       LIdentLong := 'report_long_d2007';
       LIdentShort := 'report_short_d2007';
     {$ENDIF}
