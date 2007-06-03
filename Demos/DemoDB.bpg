@@ -1,0 +1,39 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = Demo_CreateDatabase.exe Demo_ConnectToDB_Code.exe Demo_CreateTable.exe Demo_InsertData_NoSQL.exe \
+  Demo_CollectionAutoMap.exe Demo_CollectionHardCoded.exe Demo_EditDataInGUI.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+Demo_CreateTable.exe: Demo_03_CreateTable\Demo_CreateTable.dpr
+  $(DCC)
+
+Demo_CollectionAutoMap.exe: Demo_05_Collection_AutoMap\Demo_CollectionAutoMap.dpr
+  $(DCC)
+
+Demo_CollectionHardCoded.exe: Demo_05_Collection_HardCoded\Demo_CollectionHardCoded.dpr
+  $(DCC)
+
+Demo_EditDataInGUI.exe: Demo_06_EditDataInGUI\Demo_EditDataInGUI.dpr
+  $(DCC)
+
+Demo_CreateDatabase.exe: Demo_01_CreateDatabase\Demo_CreateDatabase.dpr
+  $(DCC)
+
+Demo_ConnectToDB_Code.exe: Demo_02_ConnectToDB\Demo_ConnectToDB_Code.dpr
+  $(DCC)
+
+Demo_InsertData_NoSQL.exe: Demo_04_InsertData_NoSQL\Demo_InsertData_NoSQL.dpr
+  $(DCC)
+
+

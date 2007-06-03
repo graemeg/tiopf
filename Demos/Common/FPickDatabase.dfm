@@ -1,0 +1,168 @@
+object FormPickDatabase: TFormPickDatabase
+  Left = 371
+  Top = 234
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = ' Enter database connection details'
+  ClientHeight = 196
+  ClientWidth = 543
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignSize = (
+    543
+    196)
+  PixelsPerInch = 96
+  TextHeight = 13
+  object GroupBox1: TGroupBox
+    Left = 4
+    Top = 8
+    Width = 531
+    Height = 137
+    Anchors = [akLeft, akTop, akRight]
+    Caption = ' Database connection details '
+    TabOrder = 0
+    ExplicitWidth = 488
+    DesignSize = (
+      531
+      137)
+    object sbDefaultToPresetValues: TtiSpeedButton
+      Left = 370
+      Top = 20
+      Width = 146
+      Height = 22
+      Cursor = crHandPoint
+      Action = aDefaultToPreSetValues
+      Anchors = [akTop, akRight]
+      Flat = True
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clNavy
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+      ImageRes = tiRINone
+      ExplicitLeft = 327
+    end
+    object paePersistenceLayer: TtiPerAwareEdit
+      Left = 8
+      Top = 20
+      Width = 355
+      Height = 23
+      Anchors = [akLeft, akTop, akRight]
+      Constraints.MinHeight = 23
+      TabOrder = 0
+      Caption = 'P&ersistence layer name'
+      LabelWidth = 120
+      ReadOnly = False
+      MaxLength = 0
+      CharCase = ecNormal
+      PasswordChar = #0
+      ExplicitWidth = 313
+    end
+    object paeDatabaseName: TtiPerAwareEdit
+      Left = 8
+      Top = 48
+      Width = 355
+      Height = 23
+      Anchors = [akLeft, akTop, akRight]
+      Constraints.MinHeight = 23
+      TabOrder = 1
+      Caption = '&Database name'
+      LabelWidth = 120
+      ReadOnly = False
+      MaxLength = 0
+      CharCase = ecNormal
+      PasswordChar = #0
+      ExplicitWidth = 313
+    end
+    object paeUserName: TtiPerAwareEdit
+      Left = 8
+      Top = 76
+      Width = 355
+      Height = 23
+      Anchors = [akLeft, akTop, akRight]
+      Constraints.MinHeight = 23
+      TabOrder = 2
+      Caption = '&User name'
+      LabelWidth = 120
+      ReadOnly = False
+      MaxLength = 0
+      CharCase = ecNormal
+      PasswordChar = #0
+      ExplicitWidth = 313
+    end
+    object paePassword: TtiPerAwareEdit
+      Left = 8
+      Top = 104
+      Width = 355
+      Height = 23
+      Anchors = [akLeft, akTop, akRight]
+      Constraints.MinHeight = 23
+      TabOrder = 3
+      Caption = '&Password'
+      LabelWidth = 120
+      ReadOnly = False
+      MaxLength = 0
+      CharCase = ecNormal
+      PasswordChar = #0
+      ExplicitWidth = 313
+    end
+  end
+  object PM: TPopupMenu
+    object InterbaseIBX1: TMenuItem
+      Action = aDefaultToIBX
+    end
+    object XMLMSXMLDOM1: TMenuItem
+      Action = aDefaultToXMLLight
+    end
+    object XMLtiOPFXMLLight1: TMenuItem
+      Action = aDefaultToMSXML
+    end
+    object CSV1: TMenuItem
+      Action = aDefaultToCSV
+    end
+    object MSAccessviaADO1: TMenuItem
+      Action = aDefaultToADOAccess
+    end
+  end
+  object AL: TActionList
+    Left = 28
+    object aDefaultToIBX: TAction
+      Caption = 'Interbase && Firebird (IBX)'
+      Enabled = False
+      OnExecute = aDefaultToIBXExecute
+    end
+    object aDefaultToXMLLight: TAction
+      Caption = 'XML (tiOPF XML Light '#39'Database'#39')'
+      Enabled = False
+      OnExecute = aDefaultToXMLLightExecute
+    end
+    object aDefaultToMSXML: TAction
+      Caption = 'XML (MS XML DOM)'
+      Enabled = False
+      OnExecute = aDefaultToMSXMLExecute
+    end
+    object aDefaultToCSV: TAction
+      Caption = 'CSV (tiOPF CSV '#39'Database'#39')'
+      Enabled = False
+      OnExecute = aDefaultToCSVExecute
+    end
+    object aDefaultToADOAccess: TAction
+      Caption = 'MS Access (ADO)'
+      Enabled = False
+      OnExecute = aDefaultToADOAccessExecute
+    end
+    object aDefaultToPreSetValues: TAction
+      Caption = 'Default to preset values'
+      OnExecute = aDefaultToPreSetValuesExecute
+    end
+  end
+end
