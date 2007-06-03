@@ -77,6 +77,7 @@
 prompt_build_type
 prompt_build_with_d2005
 prompt_build_with_d2006
+prompt_build_with_d2007
 prompt_build_with_d5
 prompt_build_with_d6
 prompt_build_with_d7
@@ -86,6 +87,7 @@ prompt_send_notifications
 ]]>
                 </Property>
               <Property name="VariableTypes" type="TStrings"><![CDATA[String
+String
 String
 String
 String
@@ -707,150 +709,6 @@ Comments=
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-            <Object Class="TGroupAction" XMLID="{DCC9E8C2-B033-4FB9-83A5-5F6956640B0B}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delphi 5]]>
-                </Property>
-              <Property name="ActionTextColor" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="1" name="Description" type="string"><![CDATA[Delphi 5]]>
-                </Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Object Class="TRunActionListAction" XMLID="{A38695E3-C1DA-45D9-A016-F6EFB7A26F6F}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Build tiOPF &amp; run unit tests with Delphi 5]]>
-                  </Property>
-                <Property MultiValue="0" name="ActionListID" type="string">{A07F19D2-EA9F-47A0-9A96-57B08499D9B2}</Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property MultiValue="1" name="Description" type="string"><![CDATA[Build tiOPF &amp; run unit tests with Delphi 5]]>
-                  </Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="Parameters" type="TStrings"><![CDATA[p_compiler_version=2
-p_delphi_version=5
-]]>
-                  </Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                </Object>
-              <Object Class="TSetVariableAction" XMLID="{6EEBE4EC-C4F6-483B-89D6-54323008A025}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Set Variable report_persistence_layers_d5 to [ %link_per_layers% ]]]>
-                  </Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property name="ApplyToExisting" type="Boolean">False</Property>
-                <Property name="DoExpandExpression" type="Boolean">True</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
-                <Property MultiValue="0" name="NewValue" type="WideString">%link_per_layers%</Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property MultiValue="0" name="VariableName" type="WideString">report_persistence_layers_d5</Property>
-                </Object>
-              <Object Class="TBuildScript" XMLID="{CF2611D9-2006-4E28-B9DB-437E01461423}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
-                <Property MultiValue="0" name="Name" type="string">Condition</Property>
-                <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_build_with_d5 = "1"]]>
-                  </Property>
-                <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
-                </Object>
-              </Object>
-            <Object Class="TGroupAction" XMLID="{998B51AB-4BB0-4422-B2CD-CBA719223B24}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delphi 6]]>
-                </Property>
-              <Property name="ActionTextColor" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="1" name="Description" type="string"><![CDATA[Delphi 6]]>
-                </Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Object Class="TRunActionListAction" XMLID="{6A391D09-7797-496E-BEF5-62C834E51F5F}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Build tiOPF &amp; run unit tests with Delphi 6]]>
-                  </Property>
-                <Property MultiValue="0" name="ActionListID" type="string">{A07F19D2-EA9F-47A0-9A96-57B08499D9B2}</Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property MultiValue="1" name="Description" type="string"><![CDATA[Build tiOPF &amp; run unit tests with Delphi 6]]>
-                  </Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="Parameters" type="TStrings"><![CDATA[p_compiler_version=3
-p_delphi_version=6
-]]>
-                  </Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                </Object>
-              <Object Class="TSetVariableAction" XMLID="{B1C79CA6-18E6-4C51-AC88-331668625637}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Set Variable report_persistence_layers_d6 to [ %link_per_layers% ]]]>
-                  </Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property name="ApplyToExisting" type="Boolean">False</Property>
-                <Property name="DoExpandExpression" type="Boolean">True</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
-                <Property MultiValue="0" name="NewValue" type="WideString">%link_per_layers%</Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property MultiValue="0" name="VariableName" type="WideString">report_persistence_layers_d6</Property>
-                </Object>
-              <Object Class="TBuildScript" XMLID="{CC5E064B-2108-448E-A514-2D7CB52CB58F}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
-                <Property MultiValue="0" name="Name" type="string">Condition</Property>
-                <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_build_with_d6 = "1"]]>
-                  </Property>
-                <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
-                </Object>
-              </Object>
             <Object Class="TGroupAction" XMLID="{7097D06C-E9D9-420D-A8AE-F9A69C780C6B}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delphi 7]]>
                 </Property>
@@ -923,78 +781,6 @@ p_delphi_version=7
                 <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
                 </Object>
               </Object>
-            <Object Class="TGroupAction" XMLID="{3253B9E6-C272-4B65-BD92-B109BFE0C3CC}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delphi 2005]]>
-                </Property>
-              <Property name="ActionTextColor" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="1" name="Description" type="string"><![CDATA[Delphi 2005]]>
-                </Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Object Class="TRunActionListAction" XMLID="{B71A1FDA-DE8E-4449-A826-CD6A2AE5CB99}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Build tiOPF &amp; run unit tests with Delphi 2005]]>
-                  </Property>
-                <Property MultiValue="0" name="ActionListID" type="string">{A07F19D2-EA9F-47A0-9A96-57B08499D9B2}</Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property MultiValue="1" name="Description" type="string"><![CDATA[Build tiOPF &amp; run unit tests with Delphi 2005]]>
-                  </Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="Parameters" type="TStrings"><![CDATA[p_compiler_version=10
-p_delphi_version=2005
-]]>
-                  </Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                </Object>
-              <Object Class="TSetVariableAction" XMLID="{49192FC8-C6FB-4A9C-B3E8-DC3AF7FC9238}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Set Variable report_persistence_layers_d2005 to [ %link_per_layers% ]]]>
-                  </Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property name="ApplyToExisting" type="Boolean">False</Property>
-                <Property name="DoExpandExpression" type="Boolean">True</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
-                <Property MultiValue="0" name="NewValue" type="WideString">%link_per_layers%</Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property MultiValue="0" name="VariableName" type="WideString">report_persistence_layers_d2005</Property>
-                </Object>
-              <Object Class="TBuildScript" XMLID="{BF9528BC-F445-4A2B-B246-08F0FAB11FCE}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
-                <Property MultiValue="0" name="Name" type="string">Condition</Property>
-                <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_build_with_d2005 = "1"]]>
-                  </Property>
-                <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
-                </Object>
-              </Object>
             <Object Class="TGroupAction" XMLID="{E53E3C86-B963-4EED-B2DF-E5E3FE5DD92A}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delphi 2006]]>
                 </Property>
@@ -1009,7 +795,7 @@ p_delphi_version=2005
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="NodeCollapsed" type="Boolean">True</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -1081,7 +867,7 @@ p_delphi_version=2006
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="NodeCollapsed" type="Boolean">True</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -1110,7 +896,7 @@ p_delphi_version=2007
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                 </Object>
               <Object Class="TSetVariableAction" XMLID="{CF7EBA6D-6CB5-4DA9-8D22-DB7F14FB88CC}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Set Variable report_persistence_layers_d2006 to [ %link_per_layers% ]]]>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Set Variable report_persistence_layers_d2007 to [ %link_per_layers% ]]]>
                   </Property>
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
@@ -1130,11 +916,11 @@ p_delphi_version=2007
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property MultiValue="0" name="VariableName" type="WideString">report_persistence_layers_d2006</Property>
+                <Property MultiValue="0" name="VariableName" type="WideString">report_persistence_layers_d2007</Property>
                 </Object>
               <Object Class="TBuildScript" XMLID="{0E38D2A7-C12A-4A93-AEF0-BAE7291B8EC3}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
                 <Property MultiValue="0" name="Name" type="string">Condition</Property>
-                <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_build_with_d2006 = "1"]]>
+                <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_build_with_d2007 = "1"]]>
                   </Property>
                 <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
                 </Object>
@@ -2198,6 +1984,33 @@ p_persistence_layers=%report_persistence_layers_d2006%
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                 </Object>
+              <Object Class="TRunActionListAction" XMLID="{9585176A-32F3-4B36-8291-65B091D020E5}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Run Action List [ Replace HREF In Report Page - D2006]]]>
+                  </Property>
+                <Property MultiValue="0" name="ActionListID" type="string">{C69E3398-614D-4C14-B415-24AFF9163595}</Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property MultiValue="1" name="Description" type="string"><![CDATA[Run Action List [ Replace HREF In Report Page - D2006]]]>
+                  </Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="IsAction" type="Boolean">True</Property>
+                <Property name="IsBreakPoint" type="WordBool">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property name="Parameters" type="TStrings"><![CDATA[p_short_error_message=%report_short_d2007%
+p_delphi_version=2007
+p_compiler_version=110
+p_report_long=%report_long_d2007%
+p_persistence_layers=%report_persistence_layers_d2007%
+]]>
+                  </Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                </Object>
               </Object>
             <Object Class="TGroupAction" XMLID="{5650EE92-207A-4B3F-A7AF-10CA07788048}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Copy files to website]]>
@@ -3248,7 +3061,7 @@ String
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">11</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile DUnitTIOPFGUI]]>
@@ -3383,7 +3196,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">11</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile DUnitTIOPFText]]>
@@ -4962,36 +4775,12 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">path_to_website</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{4467A797-3928-4D22-8E06-B4A347EE6B03}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">0</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">prompt_build_with_d5</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
-      <Object Class="TFBVariable" XMLID="{1E9A9B88-E978-44C6-8FFF-E5E76390E456}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">0</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">prompt_build_with_d6</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
       <Object Class="TFBVariable" XMLID="{A6911F4F-E3C1-4C22-96F2-E3B5B9CDCE74}"><Property MultiValue="0" name="Comment" type="string"></Property>
         <Property MultiValue="0" name="DefaultValue" type="string">1</Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">prompt_build_with_d7</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
-      <Object Class="TFBVariable" XMLID="{4B8F28E0-A625-4C9A-BAB4-63C2B5C3C7D8}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">0</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">prompt_build_with_d2005</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{F66F747E-CBC0-4E59-8482-56B7C34FE801}"><Property MultiValue="0" name="Comment" type="string"></Property>
@@ -5170,36 +4959,12 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">_temp</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{9515B76A-F1BB-414F-8605-5AD196E89215}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">0/0</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_short_d5</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
-      <Object Class="TFBVariable" XMLID="{9715D53A-B636-4BE4-9C73-49ADE2D21AE9}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">0/0</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_short_d6</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
       <Object Class="TFBVariable" XMLID="{EAD1CE31-2919-4EA9-9306-0E6EC83E7C2C}"><Property MultiValue="0" name="Comment" type="string"></Property>
         <Property MultiValue="0" name="DefaultValue" type="string">0/0</Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_short_d7</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
-      <Object Class="TFBVariable" XMLID="{C39F60B2-8C62-45D6-984D-BEC7D403C900}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">0/0</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_short_d2005</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{0E1C7F25-4D59-4C39-B159-EB10D7E56F7D}"><Property MultiValue="0" name="Comment" type="string"></Property>
@@ -5210,24 +4975,6 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">report_short_d2006</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{0582DA3E-05EC-4ABF-A9C8-89988B08D883}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA[Build not attempted]]>
-          </Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_long_d5</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
-      <Object Class="TFBVariable" XMLID="{F2F0E3AE-46B7-44F8-9420-AF808F58E9FD}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA[Build not attempted]]>
-          </Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_long_d6</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
       <Object Class="TFBVariable" XMLID="{71C1E673-1A95-4DF7-932F-25CF41DF6F2E}"><Property MultiValue="0" name="Comment" type="string"></Property>
         <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA[Build not attempted]]>
           </Property>
@@ -5235,15 +4982,6 @@ Comments=
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_long_d7</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
-      <Object Class="TFBVariable" XMLID="{0D579694-A8AA-4354-BBF7-439D3A3242C0}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA[Build not attempted]]>
-          </Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_long_d2005</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{9D767AF3-D205-4AD4-8CFA-A27238DBC24E}"><Property MultiValue="0" name="Comment" type="string"></Property>
@@ -5336,36 +5074,12 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">_persistence_layer_macro</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{B6DD2B56-2A9F-4029-A1E5-14E0692743FD}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string"></Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_persistence_layers_d5</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
-      <Object Class="TFBVariable" XMLID="{C80D6BEC-2FA9-4E15-BE7B-794EB92BEE41}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string"></Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_persistence_layers_d6</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
       <Object Class="TFBVariable" XMLID="{422C2336-B080-439D-8A9B-174C601DFA94}"><Property MultiValue="0" name="Comment" type="string"></Property>
         <Property MultiValue="0" name="DefaultValue" type="string"></Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_persistence_layers_d7</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
-      <Object Class="TFBVariable" XMLID="{7A0C36D6-4E3C-4462-8F4A-5F2AEC730769}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string"></Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_persistence_layers_d2005</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{FE2B6651-85B1-4E79-884A-212E2E968543}"><Property MultiValue="0" name="Comment" type="string"></Property>
@@ -5458,10 +5172,7 @@ SVN revision:
   %version_build%
 
 Summary:
-  Delphi 5 - %report_long_d5%
-  Delphi 6 - %report_long_d6%
   Delphi 7 - %report_long_d7%
-  Delphi 2005 - %report_long_d2005%
   Delphi 2006 - %report_long_d2006%
   Delphi 2007 - %report_long_d2007%]]>
           </Property>
@@ -5502,6 +5213,14 @@ Summary:
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_short_d2007</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{A27160D0-0FC3-44A3-863B-DE5C15E90B59}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">0</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">prompt_build_with_d2007</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       </Object>
