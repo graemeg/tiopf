@@ -117,6 +117,7 @@ var
 begin
   Assert(pData.TestValid(TClient), cTIInvalidObjectError);
   LClient := pData as TClient ;
+  LClient.Read; //added by slapshot
   if TFormClientEdit.Execute(LClient) then
     lvClient.Refresh(LClient);
 end;

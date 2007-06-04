@@ -7,7 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, FtiPerEditDialog, tiReadOnly, StdCtrls, Buttons, tiMemoReadOnly,
-  ExtCtrls, tiFocusPanel, tiPerAwareCtrls, tiPtnVisPerObj
+  ExtCtrls, tiFocusPanel, tiPerAwareCtrls, tiObject
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
@@ -23,7 +23,7 @@ type
     procedure FormCreate(Sender: TObject);
   private
   protected
-    procedure SetData(const Value: TPerObjAbs); override ;
+    procedure SetData(const Value: TtiObject); override ;
     function  FormIsValid : boolean ; override ;
   public
   end;
@@ -42,7 +42,7 @@ begin
   result := Databuffer.IsValid(MemoErrors.Lines);
 end;
 
-procedure TFormClientEdit.SetData(const Value: TPerObjAbs);
+procedure TFormClientEdit.SetData(const Value: TtiObject);
 begin
   inherited;
   paeOID.Value := DataBuffer.OID.AsString ;

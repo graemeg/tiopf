@@ -2,7 +2,7 @@ unit Client_BOM;
 
 interface
 uses
-  tiPtnVisPerObj
+  tiObject
   ,Classes
   ;
 
@@ -29,7 +29,7 @@ type
 
   TClientName = String[200];
 
-  TClients = class( TPerObjList )
+  TClients = class( TtiObjectList )
   private
   protected
     function    GetItems(i: integer): TClient ; reintroduce ;
@@ -40,7 +40,7 @@ type
   published
   end ;
 
-  TClient = class( TPerObjAbs )
+  TClient = class( TtiObject )
   private
     FSex : TSex ;
     FClientName: TClientName;
@@ -53,7 +53,7 @@ type
     procedure   SetOwner(const Value: TClients ); reintroduce ;
   public
     property    Owner       : TClients             read GetOwner      write SetOwner ;
-    function    IsValid( const pErrors : TPerObjErrors ) : boolean ; override ;
+    function    IsValid( const pErrors : TtiObjectErrors ) : boolean ; override ;
     property    Sex : TSex read FSex write FSex ;
   published
     property    ClientName : TClientName read FClientName write FClientName ;
@@ -65,17 +65,17 @@ procedure RegisterMappings ;
 
 implementation
 uses
-  tiPersist
+  tiOPFManager
   ,tiClassToDBMap_BOM
   ,SysUtils
   ;
 
 procedure RegisterMappings ;
 begin
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID', 'OID', [pktDB] );
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name' );
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'SexAsDBString', 'Sex' ) ;
-  gTIPerMgr.ClassDBMappingMgr.RegisterCollection(TClients, TClient);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID', 'OID', [pktDB] );
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name' );
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'SexAsDBString', 'Sex' ) ;
+  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TClients, TClient);
 end ;
 
 procedure AssignSexs( const pStrings : TStrings ) ;
@@ -121,7 +121,7 @@ begin
   result := cSexGUI[FSex];
 end;
 
-function TClient.IsValid(const pErrors: TPerObjErrors): boolean;
+function TClient.IsValid(const pErrors: TtiObjectErrors): boolean;
 begin
   inherited IsValid( pErrors ) ;
 

@@ -6,28 +6,21 @@ inherited FormClientEdit: TFormClientEdit
   ClientWidth = 393
   OldCreateOrder = True
   Position = poScreenCenter
-  ExplicitWidth = 399
-  ExplicitHeight = 359
   PixelsPerInch = 96
   TextHeight = 13
   inherited btnOK: TBitBtn
     Left = 233
     Top = 297
     TabOrder = 3
-    ExplicitLeft = 233
-    ExplicitTop = 297
   end
   inherited btnCancel: TBitBtn
     Left = 313
     Top = 297
     TabOrder = 4
-    ExplicitLeft = 313
-    ExplicitTop = 297
   end
   inherited cbEnterAsTab: TCheckBox
     Top = 301
     TabOrder = 2
-    ExplicitTop = 301
   end
   object gbClient: TGroupBox
     Left = 8

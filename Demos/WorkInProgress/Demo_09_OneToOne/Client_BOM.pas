@@ -24,7 +24,20 @@ type
   TClients = class ;
   TAdrs    = class ;
 
-  TClients = class( TtiObjectList ) ;
+//  TClients = class( TtiObjectList ) ; previously it was so
+
+  TClients = class( TtiObjectList )
+  private
+  protected
+    function    GetItems(i: integer): TClient ; reintroduce ;
+    procedure   SetItems(i: integer; const Value: TClient); reintroduce ;
+  public
+    property    Items[i:integer] : TClient read GetItems write SetItems ;
+    procedure   Add( pObject : TClient   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Clear ; override ;
+    procedure   Read ; override ;
+  published
+  end ;
 
   TClient = class( TtiObject )
   private
@@ -36,7 +49,7 @@ type
     constructor Create ; override ;
     destructor  Destroy ; override ;
     constructor CreateNew( const pDatabaseName : string = '' ; const pPerLayerName : string = '' ) ; override ;
-    function    IsValid( const pErrors : TPerObjErrors ) : boolean ; override ;
+    function    IsValid( const pErrors : TtiObjectErrors ) : boolean ; override ;
   published
     property    ClientName : string read FClientName write FClientName ;
     property    Adrs       : TAdrs read FAdrs ;
@@ -52,7 +65,7 @@ type
   protected
     function    GetOID : TOID ; override ;
   public
-    function    IsValid( const pErrors : TPerObjErrors ) : boolean ; override ;
+    function    IsValid( const pErrors : TtiObjectErrors ) : boolean ; override ;
   published
     property    AdrsText         : string     read FAdrsText write FAdrsText ;
     property    Locality         : string     read FLocality write FLocality ;
@@ -70,6 +83,9 @@ uses
   tiOPFManager
   ,tiClassToDBMap_BOM
   ,tiConstants
+  ,Windows
+  ,tiLog
+  ,SysUtils
   ;
 
 
@@ -118,7 +134,7 @@ begin
 end;
 
 
-function TClient.IsValid(const pErrors: TPerObjErrors): boolean;
+function TClient.IsValid(const pErrors: TtiObjectErrors): boolean;
 begin
   inherited IsValid( pErrors ) ;
   if ClientName = '' then
@@ -147,7 +163,7 @@ begin
 end;
 
 
-function TAdrs.IsValid(const pErrors: TPerObjErrors): boolean;
+function TAdrs.IsValid(const pErrors: TtiObjectErrors): boolean;
 begin
   // Do not call inherited, because we do not want to clear pErrors
   if AdrsText = '' then
@@ -165,6 +181,39 @@ begin
   result := pErrors.Count = 0 ;
 end;
 
+
+{ TClients }
+
+procedure TClients.Add(pObject: TClient; pDefDispOrdr: boolean);
+begin
+  inherited Add( pObject, pDefDispOrdr ) ;
+end;
+
+procedure TClients.Clear;
+begin
+  inherited;
+  ObjectState := posEmpty ;
+end;
+
+function TClients.GetItems(i: integer): TClient;
+begin
+  result := TClient( inherited GetItems( i )) ;
+end;
+
+procedure TClients.Read;
+var
+  lNow : DWord ;
+begin
+  lNow := GetTickCount ;
+  inherited;
+  Log('Time to load ' + IntToStr( Count ) + ' Clients: ' +
+      IntToStr( GetTickCount - lNow )) ;
+end;
+
+procedure TClients.SetItems(i: integer; const Value: TClient);
+begin
+  inherited SetItems( i, Value ) ;
+end;
 
 end.
 

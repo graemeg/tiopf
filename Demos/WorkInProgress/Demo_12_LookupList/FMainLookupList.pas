@@ -6,8 +6,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiPerAwareCtrls, ActnList,
-  Client_BOM, tiListView, ComCtrls
+  Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiObject, ActnList,
+  Client_BOM, tiListView, ComCtrls, tiVirtualTrees, tiVTListView
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
@@ -21,7 +21,7 @@ type
     Button2: TButton;
     Button3: TButton;
     aRead: TAction;
-    LV: TtiListView;
+    LV: TtiVTListView;
     procedure FormCreate(Sender: TObject);
     procedure btnInsertRowClick(Sender: TObject);
     procedure aSaveExecute(Sender: TObject);
@@ -30,13 +30,13 @@ type
     procedure ActionList1Update(Action: TBasicAction;
       var Handled: Boolean);
     procedure aReadExecute(Sender: TObject);
-    procedure LVItemEdit(pLV: TtiCustomListView; pData: TPersistent;
-      pItem: TListItem);
-    procedure LVItemInsert(pLV: TtiCustomListView; pData: TPersistent;
-      pItem: TListItem);
-    procedure LVItemDelete(pLV: TtiCustomListView; pData: TPersistent;
-      pItem: TListItem);
-    procedure LVFilterData(pData: TPersistent; var pbInclude: Boolean);
+    procedure LVFilterData(pData: TtiObject; var pbInclude: Boolean);
+    procedure LVItemDelete(pVT: TtiCustomVirtualTree; AData: TtiObject;
+      AItem: PVirtualNode);
+    procedure LVItemInsert(pVT: TtiCustomVirtualTree; AData: TtiObject;
+      AItem: PVirtualNode);
+    procedure LVItemEdit(pVT: TtiCustomVirtualTree; AData: TtiObject;
+      AItem: PVirtualNode);
   private
     FClients : TClients ;
     procedure CreateTables;
@@ -51,14 +51,15 @@ var
 implementation
 uses
   tiQuery
-  ,tiPersist
+//  ,tiPersist
   ,tiDBConnectionPool
-  ,tiPtnVisPerObj_Cli
-  ,tiPerObjOIDAbs
-  ,tiPerObjOIDGUID
-  ,tiPtnVisPerObj
+//  ,tiPtnVisPerObj_Cli
+  ,tiOPFManager
+  ,tiOID
+  ,tiOIDGUID
   ,FClientEdit
   ,tiDialogs
+  ,tiGUIUtils
   ;
 
 {$R *.dfm}
@@ -81,7 +82,7 @@ begin
     lTableMetaData.Name := 'Client_Source' ;
     lTableMetaData.AddField( 'OID',          qfkString,  36 ) ; // Using GUID OIDs
     lTableMetaData.AddField( 'Display_Text',  qfkString, 20 ) ;
-    gTIPerMgr.CreateTable( lTableMetaData ) ;
+    gTIOPFManager.CreateTable( lTableMetaData ) ;
   finally
     lTableMetaData.Free;
   end ;
@@ -93,7 +94,7 @@ begin
     lTableMetaData.AddField( 'OID',           qfkString,  36 ) ; // Using GUID OIDs
     lTableMetaData.AddField( 'Client_Name',   qfkString, 200 ) ;
     lTableMetaData.AddField( 'Client_Source', qfkString,  36 ) ;
-    gTIPerMgr.CreateTable( lTableMetaData ) ;
+    gTIOPFManager.CreateTable( lTableMetaData ) ;
   finally
     lTableMetaData.Free;
   end ;
@@ -111,15 +112,19 @@ end;
 // Drop table
 procedure TFormMainLookupList.DropTables;
 begin
-  try gTIPerMgr.DropTable( 'Client' ) except end ;
-  try gTIPerMgr.DropTable( 'Client_Source' ) except end ;
+  try gTIOPFManager.DropTable( 'Client' ) except end ;
+  try gTIOPFManager.DropTable( 'Client_Source' ) except end ;
 end;
 
 procedure TFormMainLookupList.FormCreate(Sender: TObject);
 begin
-  Caption := 'Connected to ' + gTIPerMgr.DefaultDBConnectionName ;
-  LV.AddColumn('ClientName',     lvtkString, 'Client name', 200 );
-  LV.AddColumn('ClientSourceAsGUIString', lvtkString, 'Client source', 80 );
+  Caption := 'Connected to ' + gTIOPFManager.DefaultDBConnectionName ;
+  LV.AddColumn('ClientSourceAsGUIString', vttkString, 'Client source', 80 );
+  LV.AddColumn('ClientName',     vttkString, 'Client name', 200 );
+
+
+
+
 
   FClients := TClients.Create ;
 
@@ -169,44 +174,41 @@ begin
   LV.Data := nil;
   FClients.Clear ;
   FClients.Read ;
-  LV.Data := FClients.List ;
+  LV.Data := FClients;
 end;
 
-procedure TFormMainLookupList.LVItemEdit(pLV: TtiCustomListView; pData: TPersistent;pItem: TListItem);
-var
-  lData : TClient ;
+
+procedure TFormMainLookupList.LVFilterData(pData: TtiObject; var pbInclude: Boolean);
 begin
-  lData := pData as TClient ;
-  if TFormClientEdit.Execute(lData) then
-    lData.Save;
+  pbInclude := not pData.Deleted ;
 end;
 
-procedure TFormMainLookupList.LVItemInsert(pLV: TtiCustomListView; pData: TPersistent;pItem: TListItem);
-var
-  lClient : TClient ;
+procedure TFormMainLookupList.LVItemDelete(pVT: TtiCustomVirtualTree;
+  AData: TtiObject; AItem: PVirtualNode);
 begin
-  lClient := TClient.CreateNew ;
-  if TFormClientEdit.Execute(lClient) then
+  if tiPerObjAbsConfirmAndDelete(AData) then
+    lv.Refresh ;
+end;
+
+procedure TFormMainLookupList.LVItemInsert(pVT: TtiCustomVirtualTree;
+  AData: TtiObject; AItem: PVirtualNode);
+var
+  LClient : TClient ;
+begin
+  LClient := TClient.CreateNew ;
+  if TFormClientEdit.Execute(LClient) then
   begin
-    FClients.Add(lClient);
-    lClient.Save;
-  end 
+    FClients.Add(LClient);
+    LV.Refresh(LClient);
+  end
   else
-    lClient.Free ;
+    LClient.Free ;
 end;
 
-procedure TFormMainLookupList.LVItemDelete(pLV: TtiCustomListView; pData: TPersistent;pItem: TListItem);
-var
-  lData : TClient ;
+procedure TFormMainLookupList.LVItemEdit(pVT: TtiCustomVirtualTree;
+  AData: TtiObject; AItem: PVirtualNode);
 begin
-  lData := pData as TClient ;
-  if tiPerObjAbsConfirmAndDelete(lData) then
-    lData.Save ;
-end;
-
-procedure TFormMainLookupList.LVFilterData(pData: TPersistent; var pbInclude: Boolean);
-begin
-  pbInclude := not ( pData as TPerObjAbs ).Deleted ;
+  TFormClientEdit.Execute(AData);
 end;
 
 end.

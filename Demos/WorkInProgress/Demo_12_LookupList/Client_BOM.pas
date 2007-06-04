@@ -2,7 +2,7 @@ unit Client_BOM;
 
 interface
 uses
-  tiPtnVisPerObj
+  tiObject
   ,Classes
   ;
 
@@ -19,7 +19,7 @@ type
 
   TClientName = String[200];
 
-  TClients = class( TPerObjList )
+  TClients = class( TtiObjectList )
   private
   protected
     function    GetItems(i: integer): TClient ; reintroduce ;
@@ -30,7 +30,7 @@ type
   published
   end ;
 
-  TClient = class( TPerObjAbs )
+  TClient = class( TtiObject )
   private
     FClientName: TClientName;
     FClientSource: TClientSource;
@@ -44,7 +44,7 @@ type
   public
     constructor create ; override ;
     property    Owner       : TClients             read GetOwner      write SetOwner ;
-    function    IsValid( const pErrors : TPerObjErrors ) : boolean ; override ;
+    function    IsValid( const pErrors : TtiObjectErrors ) : boolean ; override ;
     property    ClientSource : TClientSource read FClientSource write FClientSource ;
   published
     property    ClientName : TClientName read FClientName write FClientName ;
@@ -52,7 +52,7 @@ type
     property    ClientSourceAsGUIString  : string read GetClientSouceAsGUIString  write SetClientSourceAsGUIString ;
   end ;
 
-  TClientSources = class( TPerObjList )
+  TClientSources = class( TtiObjectList )
   private
   protected
     function    GetItems(i: integer): TClientSource ; reintroduce ;
@@ -66,7 +66,7 @@ type
   published
   end ;
 
-  TClientSource = class( TPerObjAbs )
+  TClientSource = class( TtiObject )
   private
     FDisplayText: string;
   protected
@@ -83,7 +83,7 @@ function  gClientSources : TClientSources ;
 
 implementation
 uses
-  tiPersist
+  tiOPFManager
   ,tiClassToDBMap_BOM
   ,SysUtils
   ;
@@ -94,14 +94,14 @@ var
 
 procedure RegisterMappings ;
 begin
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClientSource, 'Client_Source', 'OID', 'OID', [pktDB] );
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClientSource, 'Client_Source', 'DisplayText', 'Display_Text' );
-  gTIPerMgr.ClassDBMappingMgr.RegisterCollection(TClientSources, TClientSource);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClientSource, 'Client_Source', 'OID', 'OID', [pktDB] );
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClientSource, 'Client_Source', 'DisplayText', 'Display_Text' );
+  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TClientSources, TClientSource);
 
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID', 'OID', [pktDB] );
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name' );
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientSourceOIDAsString', 'Client_Source' ) ;
-  gTIPerMgr.ClassDBMappingMgr.RegisterCollection(TClients, TClient);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID', 'OID', [pktDB] );
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name' );
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientSourceOIDAsString', 'Client_Source' ) ;
+  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TClients, TClient);
 end ;
 
 function  gClientSources : TClientSources ;
@@ -160,7 +160,7 @@ begin
   result := TClients( inherited GetOwner );
 end;
 
-function TClient.IsValid(const pErrors: TPerObjErrors): boolean;
+function TClient.IsValid(const pErrors: TtiObjectErrors): boolean;
 begin
   inherited IsValid( pErrors ) ;
 

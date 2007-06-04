@@ -27,7 +27,9 @@ var
 
 implementation
 uses
-  tiPtnVisPerObj_Cli
+   tiObject
+  ,tiGUIUtils
+  
   ;
   
 {$R *.DFM}

@@ -1,9 +1,9 @@
 object FormMainInheritance: TFormMainInheritance
   Left = 297
   Top = 107
+  Width = 548
+  Height = 377
   Caption = 'FormMainInheritance'
-  ClientHeight = 350
-  ClientWidth = 540
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -28,8 +28,6 @@ object FormMainInheritance: TFormMainInheritance
     Caption = 'Show Objects'
     TabOrder = 0
     OnClick = Button2Click
-    ExplicitLeft = 420
-    ExplicitTop = 240
   end
   object Button1: TButton
     Left = 429
@@ -39,8 +37,6 @@ object FormMainInheritance: TFormMainInheritance
     Action = aSave
     Anchors = [akRight, akBottom]
     TabOrder = 1
-    ExplicitLeft = 420
-    ExplicitTop = 272
   end
   object btnRead: TButton
     Left = 429
@@ -50,8 +46,6 @@ object FormMainInheritance: TFormMainInheritance
     Action = aRead
     Anchors = [akRight, akBottom]
     TabOrder = 2
-    ExplicitLeft = 420
-    ExplicitTop = 304
   end
   object lvClient: TtiVTListView
     Left = 8
@@ -66,16 +60,17 @@ object FormMainInheritance: TFormMainInheritance
     Header.Font.Name = 'Tahoma'
     Header.Font.Style = []
     Header.MainColumn = -1
-    Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
     ShowAlternateRowColor = False
+    ShowNodeHint = False
     SortOrders.GroupColumnCount = 0
     SortOrders = <>
     VisibleButtons = [tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete]
     VT.Left = 2
     VT.Top = 26
     VT.Width = 406
-    VT.Height = 299
+    VT.Height = 273
     VT.Align = alClient
     VT.Header.AutoSizeIndex = 0
     VT.Header.Font.Charset = DEFAULT_CHARSET
@@ -84,22 +79,17 @@ object FormMainInheritance: TFormMainInheritance
     VT.Header.Font.Name = 'Tahoma'
     VT.Header.Font.Style = []
     VT.Header.MainColumn = -1
-    VT.Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    VT.Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     VT.Header.Style = hsXPStyle
     VT.NodeDataSize = 4
     VT.TabOrder = 0
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
-    VT.ExplicitTop = 2
-    VT.ExplicitWidth = 181
-    VT.ExplicitHeight = 37
     VT.Columns = <>
     OnFilterData = lvClientFilterData
     OnItemDelete = lvClientItemDelete
     OnItemEdit = lvClientItemEdit
     OnItemInsert = lvClientItemInsert
-    ExplicitWidth = 401
-    ExplicitHeight = 321
   end
   object ActionList1: TActionList
     OnUpdate = ActionList1Update

@@ -2,8 +2,10 @@ unit Client_BOM;
 
 interface
 uses
-  tiPtnVisPerObj
-  ,tiPtnVis
+  tiObject
+  ,tiOID
+  ,tiOIDGUID
+  , tiVisitor
   ;
 
 type
@@ -14,9 +16,9 @@ type
   TClientName = String[200];
   TClientID   = String[9];
 
-  TClients = class( TPerObjList ) ;
+  TClients = class( TtiObjectList ) ;
 
-  TClient = class( TPerObjAbs )
+  TClient = class( TtiObject )
   private
     FClientID: TClientID;
     FClientName: TClientName;
@@ -25,29 +27,30 @@ type
     property    ClientID   : TClientID read FClientID write FClientID ;
   end ;
 
-  TClientVisitor = class( TVisitorAbs )
+  TClientVisitor = class( TtiVisitor )
   protected
     function    AcceptVisitor : boolean ; override ;
   public
-    procedure   Execute( const pVisited : TVisitedAbs ) ; override ;
+    procedure   Execute( const pVisited : TtiVisited ) ; override ;
   end ;
 
 procedure RegisterMappings ;
 
 implementation
 uses
-  tiPersist
+   tiOPFManager
   ,tiClassToDBMap_BOM
-  ,tiPtnVisPerObj_Cli
+  ,tiConstants
+  ,tiGUIUtils
   ;
 
 procedure RegisterMappings ;
 begin
   //                                          Class,   Table,    Property,     Column,       Special Info
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID',        'OID',        [pktDB] );
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name'         );
-  gTIPerMgr.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientID',   'Client_ID'           );
-  gTIPerMgr.ClassDBMappingMgr.RegisterCollection(TClients, TClient);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID',        'OID',        [pktDB] );
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name'         );
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientID',   'Client_ID'           );
+  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TClients, TClient);
 end ;
 
 { TClientVisitor }
@@ -60,12 +63,12 @@ begin
   // as well as it's owned TClient objects.
 end;
 
-procedure TClientVisitor.Execute(const pVisited: TVisitedAbs);
+procedure TClientVisitor.Execute(const pVisited: TtiVisited);
 begin
   inherited;
   if not AcceptVisitor then
     Exit ;
-  tiShowPerObjAbs(Visited as TPerObjAbs);
+  tiShowPerObjAbs(Visited as TtiObject);
 end;
 
 end.

@@ -7,7 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiPerAwareCtrls, ActnList,
-  Client_BOM, tiListView, ComCtrls
+  Client_BOM, tiListView, ComCtrls, tiVirtualTrees, tiVTListView, tiObject
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
@@ -21,7 +21,7 @@ type
     Button2: TButton;
     Button3: TButton;
     aRead: TAction;
-    LV: TtiListView;
+    LV: TtiVTListView;
     procedure FormCreate(Sender: TObject);
     procedure btnInsertRowClick(Sender: TObject);
     procedure aSaveExecute(Sender: TObject);
@@ -30,13 +30,13 @@ type
     procedure ActionList1Update(Action: TBasicAction;
       var Handled: Boolean);
     procedure aReadExecute(Sender: TObject);
-    procedure LVItemEdit(pLV: TtiCustomListView; pData: TPersistent;
-      pItem: TListItem);
-    procedure LVItemInsert(pLV: TtiCustomListView; pData: TPersistent;
-      pItem: TListItem);
-    procedure LVItemDelete(pLV: TtiCustomListView; pData: TPersistent;
-      pItem: TListItem);
-    procedure LVFilterData(pData: TPersistent; var pbInclude: Boolean);
+    procedure LVFilterData(AData: TtiObject; var pInclude: Boolean);
+    procedure LVItemDelete(pVT: TtiCustomVirtualTree; AData: TtiObject;
+      AItem: PVirtualNode);
+    procedure LVItemEdit(pVT: TtiCustomVirtualTree; AData: TtiObject;
+      AItem: PVirtualNode);
+    procedure LVItemInsert(pVT: TtiCustomVirtualTree; AData: TtiObject;
+      AItem: PVirtualNode);
   private
     FClients : TClients ;
     procedure CreateTables;
@@ -51,15 +51,18 @@ var
 implementation
 uses
   tiQuery
-  ,tiPersist
+//  ,tiPersist
   ,tiDBConnectionPool
-  ,tiPtnVisPerObj_Cli
-  ,tiPerObjOIDAbs
-  ,tiPerObjOIDGUID
-  ,tiPtnVisPerObj
+//  ,tiPtnVisPerObj_Cli
+  ,tiOID
+  ,tiOIDGUID
+  ,tiOPFManager
+//  ,tiPtnVisPerObj
   ,FClientEdit
+  ,tiGUIUtils
   ,tiDialogs
   ;
+
 
 {$R *.dfm}
 
@@ -74,7 +77,7 @@ begin
     lTableMetaData.AddField( 'OID',          qfkString,  36 ) ; // Using GUID OIDs
     lTableMetaData.AddField( 'Client_Name',  qfkString, 200 ) ;
     lTableMetaData.AddField( 'Sex',          qfkString,   7 ) ;
-    gTIPerMgr.CreateTable( lTableMetaData ) ;
+    gTIOPFManager.CreateTable( lTableMetaData ) ;
   finally
     lTableMetaData.Free;
   end ;
@@ -83,14 +86,14 @@ end;
 // Drop table
 procedure TFormMainOrdinalTypes.DropTables;
 begin
-  try gTIPerMgr.DropTable( 'Client' ) except end ;
+  try gtiOPFManager.DropTable( 'Client' ) except end ;
 end;
 
 procedure TFormMainOrdinalTypes.FormCreate(Sender: TObject);
 begin
-  Caption := 'Connected to ' + gTIPerMgr.DefaultDBConnectionName ;
-  LV.AddColumn('ClientName',     lvtkString, 'Client name', 200 );
-  LV.AddColumn('SexAsGUIString', lvtkString, 'Sex', 80 );
+  Caption := 'Connected to ' + gtiOPFManager.DefaultDBConnectionName ;
+  LV.AddColumn('ClientName',     vttkString, 'Client name', 200 );
+  LV.AddColumn('SexAsGUIString', vttkString, 'Sex', 80 );
 
   FClients := TClients.Create ;
 
@@ -129,7 +132,7 @@ end;
 procedure TFormMainOrdinalTypes.ActionList1Update(Action: TBasicAction;var Handled: Boolean);
 begin
   aSave.Enabled := FClients.Dirty ;
-  aRead.Enabled := aSave.Enabled;
+//  aRead.Enabled := aSave.Enabled;
 end;
 
 procedure TFormMainOrdinalTypes.aReadExecute(Sender: TObject);
@@ -137,44 +140,43 @@ begin
   LV.Data := nil;
   FClients.Clear ;
   FClients.Read ;
-  LV.Data := FClients.List ;
+  LV.Data := FClients;
 end;
 
-procedure TFormMainOrdinalTypes.LVItemEdit(pLV: TtiCustomListView; pData: TPersistent;pItem: TListItem);
-var
-  lData : TClient ;
+procedure TFormMainOrdinalTypes.LVFilterData(AData: TtiObject;
+  var pInclude: Boolean);
 begin
-  lData := pData as TClient ;
-  if TFormClientEdit.Execute(lData) then
-    lData.Save;
+  pInclude := not AData.Deleted ;
 end;
 
-procedure TFormMainOrdinalTypes.LVItemInsert(pLV: TtiCustomListView; pData: TPersistent;pItem: TListItem);
-var
-  lClient : TClient ;
+procedure TFormMainOrdinalTypes.LVItemDelete(pVT: TtiCustomVirtualTree;
+  AData: TtiObject; AItem: PVirtualNode);
 begin
-  lClient := TClient.CreateNew ;
-  if TFormClientEdit.Execute(lClient) then
+  if tiPerObjAbsConfirmAndDelete(AData) then
+    lv.Refresh ;
+end;
+
+procedure TFormMainOrdinalTypes.LVItemEdit(pVT: TtiCustomVirtualTree;
+  AData: TtiObject; AItem: PVirtualNode);
+begin
+  TFormClientEdit.Execute(AData);
+end;
+
+procedure TFormMainOrdinalTypes.LVItemInsert(pVT: TtiCustomVirtualTree;
+  AData: TtiObject; AItem: PVirtualNode);
+var
+  LClient : TClient ;
+begin
+  LClient := TClient.CreateNew ;
+  if TFormClientEdit.Execute(LClient) then
   begin
-    FClients.Add(lClient);
-    lClient.Save;
-  end 
+    FClients.Add(LClient);
+    lv.Refresh(LClient);
+  end
   else
-    lClient.Free ;
+    LClient.Free ;
 end;
 
-procedure TFormMainOrdinalTypes.LVItemDelete(pLV: TtiCustomListView; pData: TPersistent;pItem: TListItem);
-var
-  lData : TClient ;
-begin
-  lData := pData as TClient ;
-  if tiPerObjAbsConfirmAndDelete(lData) then
-    lData.Save ;
-end;
 
-procedure TFormMainOrdinalTypes.LVFilterData(pData: TPersistent; var pbInclude: Boolean);
-begin
-  pbInclude := not ( pData as TPerObjAbs ).Deleted ;
-end;
 
 end.

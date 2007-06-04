@@ -6,14 +6,14 @@ uses
   FPickDatabase in '..\Common\FPickDatabase.pas' {FormPickDatabase},
   FConnectToDatabase in '..\Common\FConnectToDatabase.pas' {FormConnectToDatabase},
   Client_BOM in 'Client_BOM.pas',
-  FtiPerEditDialog in '..\..\..\tiPerAwareCtrls\FtiPerEditDialog.pas' {FormTIPerEditDialog},
   FClientEdit in 'FClientEdit.pas' {FormClientEdit},
-  FMainLookupList in 'FMainLookupList.pas' {FormMainLookupList};
+  FMainLookupList in 'FMainLookupList.pas' {FormMainLookupList},
+  FtiPerEditDialog in '..\Common\FtiPerEditDialog.pas' {FormTIPerEditDialog};
 
 {$R *.RES}
 
 begin
-  SetupLogForClient;
+//  SetupLogForClient;
   if not TFormConnectToDatabase.Execute then
     Exit ; //==>
 

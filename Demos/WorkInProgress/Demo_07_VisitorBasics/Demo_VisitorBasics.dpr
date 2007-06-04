@@ -2,7 +2,7 @@ program Demo_VisitorBasics;
 
 uses
   Forms,
-  tiPerObjOIDGUID,
+  tiOIDGUID,
   FMainVisitorBasics in 'FMainVisitorBasics.pas' {FormMainVisitorBasics},
   Client_BOM in 'Client_BOM.pas';
 

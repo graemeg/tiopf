@@ -2,18 +2,19 @@ program Demo_OrdinalTypes;
 
 uses
   tiLog,
+  tiLogToGui,
   Forms,
   FMainOrdinalTypes in 'FMainOrdinalTypes.pas' {FormMainOrdinalTypes},
   FPickDatabase in '..\Common\FPickDatabase.pas' {FormPickDatabase},
   FConnectToDatabase in '..\Common\FConnectToDatabase.pas' {FormConnectToDatabase},
   Client_BOM in 'Client_BOM.pas',
-  FtiPerEditDialog in '..\..\..\tiPerAwareCtrls\FtiPerEditDialog.pas' {FormTIPerEditDialog},
-  FClientEdit in 'FClientEdit.pas' {FormClientEdit};
+  FClientEdit in 'FClientEdit.pas' {FormClientEdit},
+  FtiPerEditDialog in '..\Common\FtiPerEditDialog.pas' {FormTIPerEditDialog};
 
 {$R *.RES}
 
 begin
-  SetupLogForClient;
+//  SetupLogForClient;
   if not TFormConnectToDatabase.Execute then
     Exit ; //==>
 
