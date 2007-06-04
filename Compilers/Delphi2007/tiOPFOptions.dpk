@@ -22,20 +22,19 @@ package tiOPFOptions;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$LIBSUFFIX '100'}
+{$LIBSUFFIX '2007'}
 {$RUNONLY}
 {$IMPLICITBUILD OFF}
 
 requires
-  tiOPFCore,
   rtl,
   vcl,
+  vclx,
   dbrtl,
   bdertl,
-  vclx;
+  tiOPFCore;
 
 contains
-  tiXMLToTIDataset in '..\..\Options\tiXMLToTIDataset.pas',
   ADOX_TLB in '..\..\Options\ADOX_TLB.pas',
   MSXML_TLB in '..\..\Options\MSXML_TLB.pas',
   tiCompressNone in '..\..\Options\tiCompressNone.pas',
@@ -49,10 +48,7 @@ contains
   tiEncryptDES in '..\..\Options\tiEncryptDES.pas',
   tiEncryptNone in '..\..\Options\tiEncryptNone.pas',
   tiEncryptSimple in '..\..\Options\tiEncryptSimple.pas',
-  tiLogReg in '..\..\Options\tiLogReg.pas',
   tiLogToConsole in '..\..\Options\tiLogToConsole.pas',
-  tiLogToErrorDialog in '..\..\Options\tiLogToErrorDialog.pas',
-  tiLogToGUI in '..\..\Options\tiLogToGUI.pas',
   tiMadExcept in '..\..\Options\tiMadExcept.pas',
   tiOIDGUID in '..\..\Options\tiOIDGUID.pas',
   tiOIDHex in '..\..\Options\tiOIDHex.pas',
@@ -68,6 +64,7 @@ contains
   tiQueryXMLLight in '..\..\Options\tiQueryXMLLight.pas',
   tiTextParser in '..\..\Options\tiTextParser.pas',
   tiTextParserStructCSV in '..\..\Options\tiTextParserStructCSV.pas',
-  tiXML in '..\..\Options\tiXML.pas';
+  tiXML in '..\..\Options\tiXML.pas',
+  tiXMLToTIDataset in '..\..\Options\tiXMLToTIDataset.pas';
 
 end.

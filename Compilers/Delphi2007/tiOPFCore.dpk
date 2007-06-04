@@ -22,7 +22,7 @@ package tiOPFCore;
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$LIBSUFFIX '100'}
+{$LIBSUFFIX '2007'}
 {$RUNONLY}
 {$IMPLICITBUILD OFF}
 
@@ -63,6 +63,5 @@ contains
   tiCriteria in '..\..\Core\tiCriteria.pas',
   tiVisitorCriteria in '..\..\Core\tiVisitorCriteria.pas',
   tiTokenLibrary in '..\..\Core\tiTokenLibrary.pas';
-
 
 end.
