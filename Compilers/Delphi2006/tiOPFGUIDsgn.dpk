@@ -23,7 +23,7 @@ package tiOPFGUIDsgn;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'TechInsite Object Persistence Framework (tiOPF) GUI Controls'}
-{$LIBSUFFIX '100'}
+{$LIBSUFFIX '2006'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 {$DEFINE PACKAGE}

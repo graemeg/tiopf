@@ -123,7 +123,7 @@
 			<Directories Name="UnitOutputDir">.\_Dcu</Directories>
 			<Directories Name="PackageDLLOutputDir"></Directories>
 			<Directories Name="PackageDCPOutputDir"></Directories>
-			<Directories Name="SearchPath">..\..\Core;..\..\GUI</Directories>
+			<Directories Name="SearchPath">..\..\GUI</Directories>
 			<Directories Name="Packages"></Directories>
 			<Directories Name="Conditionals">PACKAGE</Directories>
 			<Directories Name="DebugSourceDirs"></Directories>

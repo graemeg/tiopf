@@ -22,7 +22,7 @@ package tiOPFGUI;
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$LIBSUFFIX '100'}
+{$LIBSUFFIX '2006'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 {$DEFINE PACKAGE}
@@ -72,7 +72,7 @@ contains
   tiThreadProgress in '..\..\GUI\tiThreadProgress.pas',
   tiTreeView in '..\..\GUI\tiTreeView.pas',
   tiTreeViewChildForm in '..\..\GUI\tiTreeViewChildForm.pas',
-  tiVTFilter in  '..\..\GUI\tiVTFilter.pas',
+  tiVTFilter in '..\..\GUI\tiVTFilter.pas',
   tiVTListView in '..\..\GUI\tiVTListView.pas',
   tiVTTreeView in '..\..\GUI\tiVTTreeView.pas',
   tiGUIUtils in '..\..\GUI\tiGUIUtils.pas',
