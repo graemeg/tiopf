@@ -478,8 +478,8 @@ type
     function    ParamName(AIndex : integer): string;
     property    AsString : string read GetAsString;
 
-    procedure   SetValueAsString(const AName : string; const AValue : string   );
-    function    GetValueAsString(const AName : string): string;
+    procedure   SetValueAsString(const AName: string; const AValue: string);
+    function    GetValueAsString(const AName: string): string;
     procedure   AssignFromFieldString(const AField: TtiFieldString; const AName: string);
 
     procedure   SetValueAsInteger(const AName: string; const AValue: Int64);
@@ -1301,7 +1301,7 @@ begin
   result := (lParam = nil) or (lParam.IsNull);
 end;
 
-procedure TtiQueryParams.SetValueAsString(const AName, AValue: string);
+procedure TtiQueryParams.SetValueAsString(const AName: string; const AValue: string);
 var
   lParam : TtiQueryParamAbs;
 begin
@@ -1340,7 +1340,7 @@ begin
     lParam.IsNull := AValue;
 end;
 
-procedure TtiQueryParams.SetValueAsInteger(const AName: string;const AValue: Int64);
+procedure TtiQueryParams.SetValueAsInteger(const AName: string; const AValue: Int64);
 var
   lParam : TtiQueryParamInteger;
 begin

@@ -3338,7 +3338,7 @@ end;
 
 function tiSetPrecision(const AValue : Extended; const APrecision : integer = 3): Extended;
 begin
-  Result:= tiDecimalRoundDbl(AValue, APrecision);
+  Result:= tiDecimalRoundExt(AValue, APrecision);
 end;
 
 end.
