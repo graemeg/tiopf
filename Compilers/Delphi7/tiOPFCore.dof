@@ -137,9 +137,11 @@ ProductVersion=1.0.0.0
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=2
+Count=3
 Item0=..\..\Core;..\..\Options
-Item1=..\..\Options
+Item1=..\..\Core
+Item2=..\..\Options
 [HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=_dcu
+Count=2
+Item0=.\_dcu
+Item1=_dcu
