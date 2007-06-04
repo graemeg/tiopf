@@ -383,8 +383,8 @@ const
 begin
 
   LL:= nil;
-  LO1:= nil;
-  LO2:= nil;
+//  LO1:= nil;
+//  LO2:= nil;
   LO3:= nil;
   try
     LL:= TtstAsDebugStringObjectList.Create;
