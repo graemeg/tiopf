@@ -9,7 +9,8 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = tiOPFCore70.bpl tiOPFGUI70.bpl tiOPFGUIDsgn70.bpl DUnitTIOPFGui.exe DUnitTIOPFText.exe
+PROJECTS = tiOPFCore70.bpl tiOPFOptions70.bpl tiOPFGUI70.bpl tiOPFGUIDsgn70.bpl \
+  DUnitTIOPFGui.exe DUnitTIOPFText.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -29,6 +30,9 @@ DUnitTIOPFGui.exe: ..\..\UnitTests\GUI\DUnitTIOPFGui.dpr
   $(DCC)
 
 DUnitTIOPFText.exe: ..\..\UnitTests\Text\DUnitTIOPFText.dpr
+  $(DCC)
+
+tiOPFOptions70.bpl: tiOPFOptions.dpk
   $(DCC)
 
 

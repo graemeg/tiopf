@@ -105,6 +105,10 @@ HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
 [Version Info]
 IncludeVerInfo=0
 AutoIncBuild=0
@@ -129,3 +133,13 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlSearchPath]
+Count=2
+Item0=..\..\Core;..\..\Options
+Item1=..\..\Options
+[HistoryLists\hlUnitOutputDirectory]
+Count=1
+Item0=_dcu
