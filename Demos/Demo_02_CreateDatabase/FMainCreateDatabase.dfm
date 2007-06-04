@@ -6,7 +6,7 @@ inherited FormMainCreateDatabase: TFormMainCreateDatabase
   PixelsPerInch = 96
   TextHeight = 13
   object btnDatabaseExists: TButton [0]
-    Left = 291
+    Left = 476
     Top = 153
     Width = 121
     Height = 25
@@ -14,10 +14,10 @@ inherited FormMainCreateDatabase: TFormMainCreateDatabase
     Caption = 'Database exists?'
     TabOrder = 0
     OnClick = btnDatabaseExistsClick
-    ExplicitLeft = 250
+    ExplicitLeft = 291
   end
   object btnCreateDatabase: TButton [1]
-    Left = 419
+    Left = 604
     Top = 153
     Width = 115
     Height = 25
@@ -25,7 +25,7 @@ inherited FormMainCreateDatabase: TFormMainCreateDatabase
     Caption = 'Create database'
     TabOrder = 1
     OnClick = btnCreateDatabaseClick
-    ExplicitLeft = 378
+    ExplicitLeft = 419
   end
   inherited GroupBox1: TGroupBox
     Left = 6

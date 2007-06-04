@@ -344,6 +344,8 @@ var
   ls : string;
 begin
   Assert(AFileName <> '', 'File name not assigned');
+  if not DirectoryExists(ExtractFilePath(AFileName)) then
+    tiForceDirectories(ExtractFilePath(AFileName));
   lStream := TFileStream.Create(AFileName, fmCreate or fmShareExclusive);
   try
     ls := AsString;

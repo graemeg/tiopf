@@ -59,11 +59,14 @@ const
 //* TtiDatabaseBDEParadox
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-class procedure TtiDatabaseADOAccess.CreateDatabase(const ADatabaseName,AUserName, APassword: string);
+class procedure TtiDatabaseADOAccess.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
 var
   lADOXCatalog : TADOXCatalog;
   lConnectionString : string;
 begin
+  if not DirectoryExists(ExtractFilePath(ADatabaseName)) then
+    tiForceDirectories(ExtractFilePath(ADatabaseName));
+
   // http://delphi.about.com/library/weekly/aa072401b.htm
   lConnectionString :=
     cADOProvider +

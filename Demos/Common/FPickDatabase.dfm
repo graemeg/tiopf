@@ -5,7 +5,7 @@ object FormPickDatabase: TFormPickDatabase
   BorderStyle = bsDialog
   Caption = ' Enter database connection details'
   ClientHeight = 196
-  ClientWidth = 543
+  ClientWidth = 728
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -17,23 +17,24 @@ object FormPickDatabase: TFormPickDatabase
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
-    543
+    728
     196)
   PixelsPerInch = 96
   TextHeight = 13
   object GroupBox1: TGroupBox
     Left = 4
     Top = 8
-    Width = 531
+    Width = 716
     Height = 137
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Database connection details '
     TabOrder = 0
+    ExplicitWidth = 531
     DesignSize = (
-      531
+      716
       137)
     object sbDefaultToPresetValues: TtiSpeedButton
-      Left = 370
+      Left = 555
       Top = 20
       Width = 146
       Height = 22
@@ -53,7 +54,7 @@ object FormPickDatabase: TFormPickDatabase
     object paePersistenceLayer: TtiPerAwareEdit
       Left = 8
       Top = 20
-      Width = 355
+      Width = 540
       Height = 23
       Anchors = [akLeft, akTop, akRight]
       Constraints.MinHeight = 23
@@ -71,12 +72,12 @@ object FormPickDatabase: TFormPickDatabase
       MaxLength = 0
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 313
+      ExplicitWidth = 355
     end
     object paeDatabaseName: TtiPerAwareEdit
       Left = 8
       Top = 48
-      Width = 355
+      Width = 540
       Height = 23
       Anchors = [akLeft, akTop, akRight]
       Constraints.MinHeight = 23
@@ -94,12 +95,12 @@ object FormPickDatabase: TFormPickDatabase
       MaxLength = 0
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 313
+      ExplicitWidth = 355
     end
     object paeUserName: TtiPerAwareEdit
       Left = 8
       Top = 76
-      Width = 355
+      Width = 540
       Height = 23
       Anchors = [akLeft, akTop, akRight]
       Constraints.MinHeight = 23
@@ -117,12 +118,12 @@ object FormPickDatabase: TFormPickDatabase
       MaxLength = 0
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 313
+      ExplicitWidth = 355
     end
     object paePassword: TtiPerAwareEdit
       Left = 8
       Top = 104
-      Width = 355
+      Width = 540
       Height = 23
       Anchors = [akLeft, akTop, akRight]
       Constraints.MinHeight = 23
@@ -140,7 +141,7 @@ object FormPickDatabase: TFormPickDatabase
       MaxLength = 0
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 313
+      ExplicitWidth = 355
     end
   end
   object PM: TPopupMenu

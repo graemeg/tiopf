@@ -111,7 +111,7 @@ begin
 //  cTIPersistRemote
 //  cTIPersistSqldbIB
 
-  FDataDirDepth := 3 ;
+  FDataDirDepth := 0 ;
   lLastPerLayer := gINI.ReadString(Name,'LastPerLayer', '') ;
   SetPerLayerData(lLastPerLayer);
 end ;
@@ -123,7 +123,7 @@ begin
   else if (aDefaultToIBX.Enabled) and (APerLayerName = cTIPersistIBX) then
   begin
     paePersistenceLayer.Value := cTIPersistIBX ;
-    paeDatabaseName.Value := GetDataDir + 'Demo.gdb' ;
+    paeDatabaseName.Value := GetDataDir + 'Demo.fdb' ;
     paeUserName.Value := 'SYSDBA' ;
     paePassword.Value := 'masterkey' ;
     gINI.WriteString(Name, cINIIdentLastPerLayer, cTIPersistIBX);
