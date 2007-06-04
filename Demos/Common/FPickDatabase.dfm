@@ -29,7 +29,6 @@ object FormPickDatabase: TFormPickDatabase
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Database connection details '
     TabOrder = 0
-    ExplicitWidth = 488
     DesignSize = (
       531
       137)
@@ -59,8 +58,15 @@ object FormPickDatabase: TFormPickDatabase
       Anchors = [akLeft, akTop, akRight]
       Constraints.MinHeight = 23
       TabOrder = 0
+      LabelLayout = tlTop
       Caption = 'P&ersistence layer name'
       LabelWidth = 120
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = False
       MaxLength = 0
       CharCase = ecNormal
@@ -75,8 +81,15 @@ object FormPickDatabase: TFormPickDatabase
       Anchors = [akLeft, akTop, akRight]
       Constraints.MinHeight = 23
       TabOrder = 1
+      LabelLayout = tlTop
       Caption = '&Database name'
       LabelWidth = 120
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = False
       MaxLength = 0
       CharCase = ecNormal
@@ -91,8 +104,15 @@ object FormPickDatabase: TFormPickDatabase
       Anchors = [akLeft, akTop, akRight]
       Constraints.MinHeight = 23
       TabOrder = 2
+      LabelLayout = tlTop
       Caption = '&User name'
       LabelWidth = 120
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = False
       MaxLength = 0
       CharCase = ecNormal
@@ -107,8 +127,15 @@ object FormPickDatabase: TFormPickDatabase
       Anchors = [akLeft, akTop, akRight]
       Constraints.MinHeight = 23
       TabOrder = 3
+      LabelLayout = tlTop
       Caption = '&Password'
       LabelWidth = 120
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = False
       MaxLength = 0
       CharCase = ecNormal
