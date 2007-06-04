@@ -8,15 +8,24 @@
     <Borland.Personality>Default.Personality</Borland.Personality>
     <Borland.ProjectType />
     <BorlandProject>
-  <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
   </ProjectExtensions>
+  <Target Name="Demo_LoadPersistenceLayerIfDef">
+    <MSBuild Projects="..\..\Demos\Demo_01_LoadPersistenceLayerIfDef\Demo_LoadPersistenceLayerIfDef.dproj" Targets="" />
+  </Target>
+  <Target Name="Demo_LoadPersistenceLayerIfDef:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_01_LoadPersistenceLayerIfDef\Demo_LoadPersistenceLayerIfDef.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="Demo_LoadPersistenceLayerIfDef:Make">
+    <MSBuild Projects="..\..\Demos\Demo_01_LoadPersistenceLayerIfDef\Demo_LoadPersistenceLayerIfDef.dproj" Targets="Make" />
+  </Target>
   <Target Name="Build">
-    <CallTarget Targets="" />
+    <CallTarget Targets="Demo_LoadPersistenceLayerIfDef" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="" />
+    <CallTarget Targets="Demo_LoadPersistenceLayerIfDef:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="" />
+    <CallTarget Targets="Demo_LoadPersistenceLayerIfDef:Make" />
   </Target>
 </Project>
