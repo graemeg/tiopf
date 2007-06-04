@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="/"/>
+    <Version Value="5"/>
+    <General>
+      <Flags>
+        <SaveOnlyProjectUnits Value="True"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <AutoCreateForms Value="False"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=""/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="tiOPFGUI"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="8">
+      <Unit0>
+        <Filename Value="Demo_AdrsBook_MGM.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Demo_AdrsBook_MGM"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="formmain.pas"/>
+        <ComponentName Value="MainFrm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="formmain.lrs"/>
+        <UnitName Value="formmain"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="model.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="model"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="contactmanager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="contactmanager"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="views.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="views"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="formcontactmaint.pas"/>
+        <ComponentName Value="ContactMaintFrm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="formcontactmaint.lrs"/>
+        <UnitName Value="formcontactmaint"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="formcitylist.pas"/>
+        <ComponentName Value="CityListFrm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="formcitylist.lrs"/>
+        <UnitName Value="formcitylist"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="formcitymaint.pas"/>
+        <ComponentName Value="CityMaintFrm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="formcitymaint.lrs"/>
+        <UnitName Value="formcitymaint"/>
+      </Unit7>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <CodeGeneration>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Other>
+      <CustomOptions Value="-FUunits
+-dUseCThreads
+"/>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+</CONFIG>
