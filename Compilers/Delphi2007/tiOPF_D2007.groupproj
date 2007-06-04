@@ -1,0 +1,76 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{1c9e5d12-f63f-420e-b3e5-ebe605a064ca}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup />
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+  <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="tiOPFCore">
+    <MSBuild Projects="tiOPFCore.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFCore:Clean">
+    <MSBuild Projects="tiOPFCore.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFCore:Make">
+    <MSBuild Projects="tiOPFCore.dproj" Targets="Make" />
+  </Target>
+  <Target Name="tiOPFOptions">
+    <MSBuild Projects="tiOPFOptions.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFOptions:Clean">
+    <MSBuild Projects="tiOPFOptions.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFOptions:Make">
+    <MSBuild Projects="tiOPFOptions.dproj" Targets="Make" />
+  </Target>
+  <Target Name="tiOPFGUI">
+    <MSBuild Projects="tiOPFGUI.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFGUI:Clean">
+    <MSBuild Projects="tiOPFGUI.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFGUI:Make">
+    <MSBuild Projects="tiOPFGUI.dproj" Targets="Make" />
+  </Target>
+  <Target Name="tiOPFGUIDsgn">
+    <MSBuild Projects="tiOPFGUIDsgn.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFGUIDsgn:Clean">
+    <MSBuild Projects="tiOPFGUIDsgn.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFGUIDsgn:Make">
+    <MSBuild Projects="tiOPFGUIDsgn.dproj" Targets="Make" />
+  </Target>
+  <Target Name="DUnitTIOPFGui">
+    <MSBuild Projects="..\..\UnitTests\GUI\DUnitTIOPFGui.dproj" Targets="" />
+  </Target>
+  <Target Name="DUnitTIOPFGui:Clean">
+    <MSBuild Projects="..\..\UnitTests\GUI\DUnitTIOPFGui.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DUnitTIOPFGui:Make">
+    <MSBuild Projects="..\..\UnitTests\GUI\DUnitTIOPFGui.dproj" Targets="Make" />
+  </Target>
+  <Target Name="DUnitTIOPFText">
+    <MSBuild Projects="..\..\UnitTests\Text\DUnitTIOPFText.dproj" Targets="" />
+  </Target>
+  <Target Name="DUnitTIOPFText:Clean">
+    <MSBuild Projects="..\..\UnitTests\Text\DUnitTIOPFText.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DUnitTIOPFText:Make">
+    <MSBuild Projects="..\..\UnitTests\Text\DUnitTIOPFText.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="tiOPFCore;tiOPFOptions;tiOPFGUI;tiOPFGUIDsgn;DUnitTIOPFGui;DUnitTIOPFText" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="tiOPFCore:Clean;tiOPFOptions:Clean;tiOPFGUI:Clean;tiOPFGUIDsgn:Clean;DUnitTIOPFGui:Clean;DUnitTIOPFText:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="tiOPFCore:Make;tiOPFOptions:Make;tiOPFGUI:Make;tiOPFGUIDsgn:Make;DUnitTIOPFGui:Make;DUnitTIOPFText:Make" />
+  </Target>
+</Project>
