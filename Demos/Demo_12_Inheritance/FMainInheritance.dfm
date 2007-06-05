@@ -1,9 +1,9 @@
 object FormMainInheritance: TFormMainInheritance
   Left = 297
   Top = 107
+  Width = 580
+  Height = 378
   Caption = 'FormMainInheritance'
-  ClientHeight = 344
-  ClientWidth = 572
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -42,7 +42,6 @@ object FormMainInheritance: TFormMainInheritance
     UnknownValue = -1.000000000000000000
     IsKnown = True
     Style = fesUser
-    ExplicitLeft = 421
   end
   object btnInsert: TButton
     Left = 458
@@ -53,7 +52,6 @@ object FormMainInheritance: TFormMainInheritance
     Caption = 'Insert clients'
     TabOrder = 1
     OnClick = btnInsertClick
-    ExplicitLeft = 421
   end
   object Button2: TButton
     Left = 463
@@ -64,7 +62,6 @@ object FormMainInheritance: TFormMainInheritance
     Caption = 'Show Objects'
     TabOrder = 2
     OnClick = Button2Click
-    ExplicitLeft = 421
   end
   object Button1: TButton
     Left = 461
@@ -74,7 +71,6 @@ object FormMainInheritance: TFormMainInheritance
     Action = aSave
     Anchors = [akRight, akBottom]
     TabOrder = 3
-    ExplicitLeft = 420
   end
   object btnRead: TButton
     Left = 461
@@ -84,7 +80,6 @@ object FormMainInheritance: TFormMainInheritance
     Action = aRead
     Anchors = [akRight, akBottom]
     TabOrder = 4
-    ExplicitLeft = 420
   end
   object lvClients: TtiVTListView
     Left = 8
@@ -99,7 +94,7 @@ object FormMainInheritance: TFormMainInheritance
     Header.Font.Name = 'Tahoma'
     Header.Font.Style = []
     Header.MainColumn = -1
-    Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
     ShowAlternateRowColor = False
     ShowNodeHint = False
@@ -109,7 +104,7 @@ object FormMainInheritance: TFormMainInheritance
     VT.Left = 2
     VT.Top = 26
     VT.Width = 433
-    VT.Height = 289
+    VT.Height = 263
     VT.Align = alClient
     VT.Header.AutoSizeIndex = 0
     VT.Header.Font.Charset = DEFAULT_CHARSET
@@ -118,15 +113,12 @@ object FormMainInheritance: TFormMainInheritance
     VT.Header.Font.Name = 'Tahoma'
     VT.Header.Font.Style = []
     VT.Header.MainColumn = -1
-    VT.Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    VT.Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     VT.Header.Style = hsXPStyle
     VT.NodeDataSize = 4
     VT.TabOrder = 0
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
-    VT.ExplicitTop = 2
-    VT.ExplicitWidth = 181
-    VT.ExplicitHeight = 37
     VT.Columns = <>
     OnFilterData = lvClientsFilterData
     OnItemDelete = lvClientsItemDelete

@@ -105,10 +105,6 @@ HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=C:\Program Files\Borland\Delphi7\Bin\
 [Version Info]
 IncludeVerInfo=1
 AutoIncBuild=0
@@ -133,6 +129,9 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
+[Excluded Packages]
+C:\Program Files\Borland\Delphi7\Projects\Bpl\EPCCodeJumpWizardSA70.bpl=EPC CodeJumper Wizard
+c:\program files\borland\delphi7\Bin\dclite70.bpl=Borland Integrated Translation Environment
 [HistoryLists\hlConditionals]
 Count=1
 Item0=PACKAGE
@@ -143,8 +142,8 @@ Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 Count=4
 Item0=..\..\Core;..\..\Options;..\..\GUI
 Item1=..\..\Core;..\..\Options
-Item2=..\..\Options
-Item3=..\..\Core
+Item2=..\..\Core
+Item3=..\..\Options
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=.\_dcu

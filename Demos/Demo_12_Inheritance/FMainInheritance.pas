@@ -5,11 +5,11 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ActnList, StdCtrls, tiPerAwareCtrls, ExtCtrls, tiFocusPanel,
-  ComCtrls
+  ComCtrls, tiVTListView
   {$IFDEF DELPHI6ORABOVE}
   Variants,
   {$ENDIF}
-  ,Client_BOM, tiVTListView, tiVirtualTrees, tiObject
+  ,Client_BOM, tiVirtualTrees, tiObject
  ;
 
 type

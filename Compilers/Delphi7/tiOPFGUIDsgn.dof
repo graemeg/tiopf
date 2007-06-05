@@ -105,10 +105,6 @@ HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=C:\Program Files\Borland\Delphi7\Bin\
 [Version Info]
 IncludeVerInfo=1
 AutoIncBuild=0
@@ -133,14 +129,18 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
+[HistoryLists\hlConditionals]
+Count=1
+Item0=PACKAGE
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=3
-Item0=..\..\Core;..\..\Options
-Item1=..\..\Core
-Item2=..\..\Options
+Count=4
+Item0=..\..\Core;..\..\Options;..\..\GUI
+Item1=..\..\Core;..\..\Options
+Item2=..\..\Core
+Item3=..\..\Options
 [HistoryLists\hlUnitOutputDirectory]
 Count=2
 Item0=.\_dcu
