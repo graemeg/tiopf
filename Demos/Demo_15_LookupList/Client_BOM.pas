@@ -26,7 +26,7 @@ type
     procedure   SetItems(i: integer; const Value: TClient); reintroduce ;
   public
     property    Items[i:integer] : TClient read GetItems write SetItems ;
-    procedure   Add( pObject : TClient   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add( pObject : TClient ) ; reintroduce ;
   published
   end ;
 
@@ -59,7 +59,7 @@ type
     procedure   SetItems(i: integer; const Value: TClientSource); reintroduce ;
   public
     property    Items[i:integer] : TClientSource read GetItems write SetItems ;
-    procedure   Add( pObject : TClientSource   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add( pObject : TClientSource) ; reintroduce ;
     function    Find( pOIDToFindAsString : string ) : TClientSource ;  reintroduce ;
     function    FindByDisplayText(const pValue : string ) : TClientSource ;
     function    Unknown : TClientSource ;
@@ -116,9 +116,9 @@ end ;
 
 { TClients }
 
-procedure TClients.Add(pObject: TClient; pDefDispOrdr: boolean);
+procedure TClients.Add(pObject: TClient);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add( pObject ) ;
 end;
 
 function TClients.GetItems(i: integer): TClient;
@@ -192,9 +192,9 @@ end;
 
 { TClientSources }
 
-procedure TClientSources.Add(pObject: TClientSource;pDefDispOrdr: boolean);
+procedure TClientSources.Add(pObject: TClientSource);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add( pObject ) ;
 end;
 
 function TClientSources.Find(pOIDToFindAsString: string): TClientSource;

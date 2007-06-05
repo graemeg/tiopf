@@ -25,7 +25,7 @@ type
     procedure   SetItems(i: integer; const Value: TClientAbs); reintroduce ;
   public
     property    Items[i:integer] : TClientAbs read GetItems write SetItems ;
-    procedure   Add( pObject : TClientAbs   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add( pObject : TClientAbs) ; reintroduce ;
     procedure   Clear ; override ;
     procedure   Read ; override ;
   published
@@ -83,9 +83,9 @@ uses
 
 { TClients }
 
-procedure TClients.Add(pObject: TClientAbs; pDefDispOrdr: boolean);
+procedure TClients.Add(pObject: TClientAbs);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add( pObject ) ;
 end;
 
 procedure TClients.Clear;
