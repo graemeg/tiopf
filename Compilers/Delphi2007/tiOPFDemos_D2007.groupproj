@@ -55,13 +55,22 @@
   <Target Name="Demo_ConnectToDatabase:Make">
     <MSBuild Projects="..\..\Demos\Demo_03_ConnectToDatabase\Demo_ConnectToDatabase.dproj" Targets="Make" />
   </Target>
+  <Target Name="Demo_CreateTable">
+    <MSBuild Projects="..\..\Demos\Demo_04_CreateTable\Demo_CreateTable.dproj" Targets="" />
+  </Target>
+  <Target Name="Demo_CreateTable:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_04_CreateTable\Demo_CreateTable.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="Demo_CreateTable:Make">
+    <MSBuild Projects="..\..\Demos\Demo_04_CreateTable\Demo_CreateTable.dproj" Targets="Make" />
+  </Target>
   <Target Name="Build">
-    <CallTarget Targets="Demo_ReadMe;Demo_LoadPersistenceLayerIfDef;Demo_LoadPersistenceLayerUses;Demo_CreateDatabase;Demo_ConnectToDatabase" />
+    <CallTarget Targets="Demo_ReadMe;Demo_LoadPersistenceLayerIfDef;Demo_LoadPersistenceLayerUses;Demo_CreateDatabase;Demo_ConnectToDatabase;Demo_CreateTable" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="Demo_ReadMe:Clean;Demo_LoadPersistenceLayerIfDef:Clean;Demo_LoadPersistenceLayerUses:Clean;Demo_CreateDatabase:Clean;Demo_ConnectToDatabase:Clean" />
+    <CallTarget Targets="Demo_ReadMe:Clean;Demo_LoadPersistenceLayerIfDef:Clean;Demo_LoadPersistenceLayerUses:Clean;Demo_CreateDatabase:Clean;Demo_ConnectToDatabase:Clean;Demo_CreateTable:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="Demo_ReadMe:Make;Demo_LoadPersistenceLayerIfDef:Make;Demo_LoadPersistenceLayerUses:Make;Demo_CreateDatabase:Make;Demo_ConnectToDatabase:Make" />
+    <CallTarget Targets="Demo_ReadMe:Make;Demo_LoadPersistenceLayerIfDef:Make;Demo_LoadPersistenceLayerUses:Make;Demo_CreateDatabase:Make;Demo_ConnectToDatabase:Make;Demo_CreateTable:Make" />
   </Target>
 </Project>

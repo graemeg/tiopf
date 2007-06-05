@@ -29,11 +29,11 @@
     <DCC_DcuOutput>..\_dcu</DCC_DcuOutput>
     <DCC_ObjOutput>..\_dcu</DCC_ObjOutput>
     <DCC_HppOutput>..\_dcu</DCC_HppOutput>
+    <DCC_Define>DEBUG</DCC_Define>
     <DCC_UnitSearchPath>..\Common</DCC_UnitSearchPath>
     <DCC_ResourcePath>..\Common</DCC_ResourcePath>
     <DCC_ObjPath>..\Common</DCC_ObjPath>
     <DCC_IncludePath>..\Common</DCC_IncludePath>
-    <DCC_Define>DEBUG</DCC_Define>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>

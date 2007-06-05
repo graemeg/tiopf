@@ -3,7 +3,7 @@ object FormMainCreateTable: TFormMainCreateTable
   Top = 210
   Caption = 'Create table demo'
   ClientHeight = 218
-  ClientWidth = 371
+  ClientWidth = 397
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -29,8 +29,8 @@ object FormMainCreateTable: TFormMainCreateTable
     ParentFont = False
   end
   object btnCreateTable: TButton
-    Left = 236
-    Top = 24
+    Left = 284
+    Top = 28
     Width = 101
     Height = 25
     Caption = 'Create table'
@@ -38,8 +38,8 @@ object FormMainCreateTable: TFormMainCreateTable
     OnClick = btnCreateTableClick
   end
   object btnDropTable: TButton
-    Left = 236
-    Top = 120
+    Left = 284
+    Top = 124
     Width = 101
     Height = 25
     Caption = 'Drop table'
@@ -47,8 +47,8 @@ object FormMainCreateTable: TFormMainCreateTable
     OnClick = btnDropTableClick
   end
   object btnShowMetaData: TButton
-    Left = 236
-    Top = 88
+    Left = 284
+    Top = 92
     Width = 101
     Height = 25
     Caption = 'Show metadata'
@@ -56,8 +56,8 @@ object FormMainCreateTable: TFormMainCreateTable
     OnClick = btnShowMetaDataClick
   end
   object btnTableExists: TButton
-    Left = 236
-    Top = 56
+    Left = 284
+    Top = 60
     Width = 101
     Height = 25
     Caption = 'Table exists?'
@@ -67,7 +67,7 @@ object FormMainCreateTable: TFormMainCreateTable
   object tiMemoReadOnly1: TtiMemoReadOnly
     Left = 8
     Top = 30
-    Width = 209
+    Width = 265
     Height = 177
     TabStop = False
     Lines.Strings = (
