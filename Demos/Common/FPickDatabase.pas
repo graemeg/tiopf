@@ -89,7 +89,7 @@ begin
     ExpandFileName(
       tiAddTrailingSlash(
         ExtractFilePath( ParamStr(0) )) +
-      tiReplicate( '..\', FDataDirDepth) + 'Data\' ) ;
+      tiReplicate( '..\', FDataDirDepth) + '_Data\' ) ;
 end;
 
 procedure TFormPickDatabase.FormCreate(Sender: TObject);
@@ -111,8 +111,8 @@ begin
 //  cTIPersistRemote
 //  cTIPersistSqldbIB
 
-  FDataDirDepth := 0 ;
-  lLastPerLayer := gINI.ReadString(Name,'LastPerLayer', '') ;
+  FDataDirDepth := 1 ;
+  lLastPerLayer := gINI.ReadString(Name, 'LastPerLayer', '') ;
   SetPerLayerData(lLastPerLayer);
 end ;
 

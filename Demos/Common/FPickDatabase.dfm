@@ -29,7 +29,6 @@ object FormPickDatabase: TFormPickDatabase
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Database connection details '
     TabOrder = 0
-    ExplicitWidth = 531
     DesignSize = (
       716
       137)
@@ -72,7 +71,6 @@ object FormPickDatabase: TFormPickDatabase
       MaxLength = 0
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 355
     end
     object paeDatabaseName: TtiPerAwareEdit
       Left = 8
@@ -95,7 +93,6 @@ object FormPickDatabase: TFormPickDatabase
       MaxLength = 0
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 355
     end
     object paeUserName: TtiPerAwareEdit
       Left = 8
@@ -118,7 +115,6 @@ object FormPickDatabase: TFormPickDatabase
       MaxLength = 0
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 355
     end
     object paePassword: TtiPerAwareEdit
       Left = 8
@@ -141,7 +137,6 @@ object FormPickDatabase: TFormPickDatabase
       MaxLength = 0
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 355
     end
   end
   object PM: TPopupMenu

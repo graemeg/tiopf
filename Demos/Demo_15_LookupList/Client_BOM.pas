@@ -42,7 +42,7 @@ type
     function    GetOwner: TClients; reintroduce ;
     procedure   SetOwner(const Value: TClients ); reintroduce ;
   public
-    constructor create ; override ;
+    constructor Create ; override ;
     property    Owner       : TClients             read GetOwner      write SetOwner ;
     function    IsValid( const pErrors : TtiObjectErrors ) : boolean ; override ;
     property    ClientSource : TClientSource read FClientSource write FClientSource ;
