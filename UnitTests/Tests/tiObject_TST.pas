@@ -341,23 +341,24 @@ var
   LO3: TtstAsDebugStringObject;
 
 const
+  // ToDo: Remove the trailing space after OID=X, 
   CAll =
     'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + #13#10 +
     '  Prop1 = test prop 1' + #13#10 +
-    '  TtstAsDebugStringObject, posEmpty, OID=2' + #13#10 +
+    '  TtstAsDebugStringObject, posEmpty, OID=2, ' + #13#10 +
     '    Prop2 = test prop 2' + #13#10 +
     '  TtstAsDebugStringObject, posDelete, OID=3, **Dirty**' + #13#10 +
     '    Prop2 = test prop 3' + #13#10 +
-    '  TtstAsDebugStringObject, posEmpty, OID=3' + #13#10 +
-    '    Prop2 = test prop 3';
+    '  TtstAsDebugStringObject, posEmpty, OID=4, ' + #13#10 +
+    '    Prop2 = test prop 4';
 
   CDeleted =
     'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + #13#10 +
     '  Prop1 = test prop 1' + #13#10 +
-    '  TtstAsDebugStringObject, posEmpty, OID=2' + #13#10 +
+    '  TtstAsDebugStringObject, posEmpty, OID=2, ' + #13#10 +
     '    Prop2 = test prop 2' + #13#10 +
-    '  TtstAsDebugStringObject, posEmpty, OID=3' + #13#10 +
-    '    Prop2 = test prop 3';
+    '  TtstAsDebugStringObject, posEmpty, OID=4, ' + #13#10 +
+    '    Prop2 = test prop 4';
 
   CChildren =
     'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + #13#10 +
@@ -403,19 +404,18 @@ begin
     LL.Add(LO2);
 
     LO3:= TtstAsDebugStringObject.Create;
-    LO3.Prop2:= 'test prop 3';
-    LO3.OID.AsString:= '3';
+    LO3.Prop2:= 'test prop 4';
+    LO3.OID.AsString:= '4';
     LL.ObjectProp:= LO3;
 
-//    CheckEquals(CAll, LL.AsDebugString);
-//    CheckEquals(CDeleted, LL.AsDebugString(CTIAsDebugStringDataAll-[adsDeleted]));
-//    CheckEquals(CChildren, LL.AsDebugString(CTIAsDebugStringDataAll-[adsChildren]));
 
-//    CheckEquals(CClassName, LL.AsDebugString([adsClassName]));
+    CheckEquals(CAll, LL.AsDebugString);
+    CheckEquals(CDeleted, LL.AsDebugString(CTIAsDebugStringDataAll-[adsDeleted]));
+    CheckEquals(CChildren, LL.AsDebugString(CTIAsDebugStringDataAll-[adsChildren]));
+    CheckEquals(CClassName, LL.AsDebugString([adsClassName]));
     CheckEquals(CObjectState, LL.AsDebugString([adsObjectState]));
-//    CheckEquals(COID, LL.AsDebugString([adsOID]));
-//    CheckEquals(CCaption, LL.AsDebugString([adsCaption]));
-
+    CheckEquals(COID, LL.AsDebugString([adsOID]));
+    CheckEquals(CCaption, LL.AsDebugString([adsCaption]));
 
   finally
     LL.Free;
