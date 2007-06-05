@@ -1,9 +1,9 @@
 object FormMainOrdinalTypes: TFormMainOrdinalTypes
   Left = 315
   Top = 180
-  Width = 498
-  Height = 213
   Caption = 'FormMainOrdinalTypes'
+  ClientHeight = 253
+  ClientWidth = 490
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,16 +11,17 @@ object FormMainOrdinalTypes: TFormMainOrdinalTypes
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
     490
-    186)
+    253)
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
     Left = 384
-    Top = 124
+    Top = 188
     Width = 101
     Height = 25
     Action = aSave
@@ -29,7 +30,7 @@ object FormMainOrdinalTypes: TFormMainOrdinalTypes
   end
   object Button2: TButton
     Left = 384
-    Top = 92
+    Top = 156
     Width = 101
     Height = 25
     Anchors = [akRight, akBottom]
@@ -39,7 +40,7 @@ object FormMainOrdinalTypes: TFormMainOrdinalTypes
   end
   object Button3: TButton
     Left = 384
-    Top = 156
+    Top = 220
     Width = 101
     Height = 25
     Action = aRead
@@ -47,13 +48,11 @@ object FormMainOrdinalTypes: TFormMainOrdinalTypes
     TabOrder = 2
   end
   object LV: TtiVTListView
-    Left = 4
+    Left = 5
     Top = 8
     Width = 373
-    Height = 173
-    ShowFocusRect = True
+    Height = 237
     Anchors = [akLeft, akTop, akRight, akBottom]
-    ButtonStyle = lvbsLargeButtons
     Header.AutoSizeIndex = 0
     Header.Font.Charset = DEFAULT_CHARSET
     Header.Font.Color = clWindowText
@@ -63,14 +62,15 @@ object FormMainOrdinalTypes: TFormMainOrdinalTypes
     Header.MainColumn = -1
     Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
+    Searching = False
     ShowNodeHint = False
     SortOrders.GroupColumnCount = 0
     SortOrders = <>
     VisibleButtons = [tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete]
     VT.Left = 2
-    VT.Top = 34
+    VT.Top = 26
     VT.Width = 369
-    VT.Height = 111
+    VT.Height = 183
     VT.Align = alClient
     VT.Header.AutoSizeIndex = 0
     VT.Header.Font.Charset = DEFAULT_CHARSET
@@ -85,6 +85,8 @@ object FormMainOrdinalTypes: TFormMainOrdinalTypes
     VT.TabOrder = 1
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
+    VT.ExplicitTop = 34
+    VT.ExplicitHeight = 111
     VT.Columns = <>
     OnFilterData = LVFilterData
     OnItemDelete = LVItemDelete

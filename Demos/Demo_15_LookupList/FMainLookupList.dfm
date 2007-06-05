@@ -1,9 +1,9 @@
 object FormMainLookupList: TFormMainLookupList
   Left = 408
   Top = 215
-  Width = 525
-  Height = 271
   Caption = 'FormMainLookupList'
+  ClientHeight = 277
+  ClientWidth = 517
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,12 +15,12 @@ object FormMainLookupList: TFormMainLookupList
   OnDestroy = FormDestroy
   DesignSize = (
     517
-    244)
+    277)
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
     Left = 411
-    Top = 182
+    Top = 209
     Width = 101
     Height = 25
     Action = aSave
@@ -29,7 +29,7 @@ object FormMainLookupList: TFormMainLookupList
   end
   object Button2: TButton
     Left = 411
-    Top = 150
+    Top = 177
     Width = 101
     Height = 25
     Anchors = [akRight, akBottom]
@@ -39,7 +39,7 @@ object FormMainLookupList: TFormMainLookupList
   end
   object Button3: TButton
     Left = 411
-    Top = 214
+    Top = 241
     Width = 101
     Height = 25
     Action = aRead
@@ -47,13 +47,11 @@ object FormMainLookupList: TFormMainLookupList
     TabOrder = 2
   end
   object LV: TtiVTListView
-    Left = 4
+    Left = 5
     Top = 8
     Width = 400
-    Height = 231
-    ShowFocusRect = True
+    Height = 258
     Anchors = [akLeft, akTop, akRight, akBottom]
-    ButtonStyle = lvbsLargeButtons
     Header.AutoSizeIndex = 0
     Header.Font.Charset = DEFAULT_CHARSET
     Header.Font.Color = clWindowText
@@ -63,14 +61,15 @@ object FormMainLookupList: TFormMainLookupList
     Header.MainColumn = -1
     Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
+    Searching = False
     ShowNodeHint = False
     SortOrders.GroupColumnCount = 0
     SortOrders = <>
     VisibleButtons = [tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete]
     VT.Left = 2
-    VT.Top = 34
+    VT.Top = 26
     VT.Width = 396
-    VT.Height = 169
+    VT.Height = 204
     VT.Align = alClient
     VT.Header.AutoSizeIndex = 0
     VT.Header.Font.Charset = DEFAULT_CHARSET
@@ -85,11 +84,14 @@ object FormMainLookupList: TFormMainLookupList
     VT.TabOrder = 1
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
+    VT.ExplicitTop = 34
+    VT.ExplicitHeight = 169
     VT.Columns = <>
     OnFilterData = LVFilterData
     OnItemDelete = LVItemDelete
     OnItemEdit = LVItemEdit
     OnItemInsert = LVItemInsert
+    ExplicitHeight = 253
   end
   object ActionList1: TActionList
     OnUpdate = ActionList1Update

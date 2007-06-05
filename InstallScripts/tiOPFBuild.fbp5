@@ -7243,7 +7243,7 @@ Comments=
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{59E5CB12-04DB-4F40-B526-EBA2A0BFA4B1}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">tiOPF-%version_number%</Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">tiOPF-Win32-%version_number%</Property>
         <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>

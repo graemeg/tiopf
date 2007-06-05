@@ -11,6 +11,7 @@ object Form2: TForm2
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
@@ -58,16 +59,17 @@ object Form2: TForm2
     Header.Font.Name = 'MS Sans Serif'
     Header.Font.Style = []
     Header.MainColumn = -1
-    Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
     ShowAlternateRowColor = False
+    ShowNodeHint = False
     SortOrders.GroupColumnCount = 0
     SortOrders = <>
     VisibleButtons = [tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete]
     VT.Left = 2
     VT.Top = 26
     VT.Width = 365
-    VT.Height = 153
+    VT.Height = 127
     VT.Align = alClient
     VT.Header.AutoSizeIndex = 0
     VT.Header.Font.Charset = DEFAULT_CHARSET
@@ -76,7 +78,7 @@ object Form2: TForm2
     VT.Header.Font.Name = 'MS Sans Serif'
     VT.Header.Font.Style = []
     VT.Header.MainColumn = -1
-    VT.Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    VT.Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     VT.Header.Style = hsXPStyle
     VT.NodeDataSize = 4
     VT.TabOrder = 0

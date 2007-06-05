@@ -24,8 +24,6 @@ type
   TClients = class ;
   TAdrs    = class ;
 
-//  TClients = class( TtiObjectList ) ; previously it was so
-
   TClients = class( TtiObjectList )
   private
   protected
