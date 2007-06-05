@@ -14,8 +14,8 @@ uses
   FPickDatabase in '..\Common\FPickDatabase.pas' {FormPickDatabase},
   FConnectToDatabase in '..\Common\FConnectToDatabase.pas' {FormConnectToDatabase},
   WhichPersistenceMechanism in '..\Common\WhichPersistenceMechanism.pas',
-  FtiPerEditDialog in '..\Common\FtiPerEditDialog.pas' {FormTIPerEditDialog},
-  FtiDialogAbs in '..\Common\FtiDialogAbs.pas' {FormTiDialogAbs};
+  FtiPerEditDialog in '..\..\GUI\FtiPerEditDialog.pas' {FormTIPerEditDialog},
+  FtiDialogAbs in '..\..\GUI\FtiDialogAbs.pas' {FormTiDialogAbs};
 
 {$R *.res}
 

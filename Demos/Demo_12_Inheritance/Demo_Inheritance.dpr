@@ -14,8 +14,8 @@ uses
   Client_AutoMap_Svr in 'Client_AutoMap_Svr.pas',
   Client_HardCodedVisitors_Svr in 'Client_HardCodedVisitors_Svr.pas',
   Client_DBIndependentVisitors_Svr in 'Client_DBIndependentVisitors_Svr.pas',
-  FtiPerEditDialog in '..\Common\FtiPerEditDialog.pas' {FormTIPerEditDialog},
-  FtiDialogAbs in '..\Common\FtiDialogAbs.pas' {FormTiDialogAbs};
+  FtiPerEditDialog in '..\..\GUI\FtiPerEditDialog.pas' {FormTIPerEditDialog},
+  FtiDialogAbs in '..\..\GUI\FtiDialogAbs.pas' {FormTiDialogAbs};
 
 {$R *.res}
 

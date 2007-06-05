@@ -36,7 +36,14 @@ inherited FormClientEdit: TFormClientEdit
       Height = 23
       Constraints.MinHeight = 23
       TabOrder = 0
+      LabelLayout = tlTop
       Caption = 'OID'
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = True
       MaxLength = 36
       CharCase = ecNormal
@@ -49,7 +56,14 @@ inherited FormClientEdit: TFormClientEdit
       Height = 23
       Constraints.MinHeight = 23
       TabOrder = 1
+      LabelLayout = tlTop
       Caption = 'Client name'
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = False
       MaxLength = 200
       CharCase = ecUpperCase
@@ -70,7 +84,14 @@ inherited FormClientEdit: TFormClientEdit
       Height = 41
       Constraints.MinHeight = 23
       TabOrder = 0
+      LabelLayout = tlTop
       Caption = 'Address'
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = False
       ScrollBars = ssNone
       WordWrap = True
@@ -84,7 +105,14 @@ inherited FormClientEdit: TFormClientEdit
       Height = 23
       Constraints.MinHeight = 23
       TabOrder = 1
+      LabelLayout = tlTop
       Caption = 'Locality'
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = False
       MaxLength = 46
       CharCase = ecUpperCase
@@ -97,7 +125,14 @@ inherited FormClientEdit: TFormClientEdit
       Height = 23
       Constraints.MinHeight = 23
       TabOrder = 2
+      LabelLayout = tlTop
       Caption = '&State'
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = False
       MaxLength = 3
       CharCase = ecUpperCase
@@ -110,7 +145,14 @@ inherited FormClientEdit: TFormClientEdit
       Height = 23
       Constraints.MinHeight = 23
       TabOrder = 3
+      LabelLayout = tlTop
       Caption = 'Post code'
+      LabelFont.Charset = DEFAULT_CHARSET
+      LabelFont.Color = clBlack
+      LabelFont.Height = -11
+      LabelFont.Name = 'MS Sans Serif'
+      LabelFont.Style = []
+      LabelParentFont = False
       ReadOnly = False
       MaxLength = 4
       CharCase = ecUpperCase
@@ -130,5 +172,6 @@ inherited FormClientEdit: TFormClientEdit
     Font.Height = -11
     Font.Name = 'MS Sans Serif'
     Font.Style = []
+    ParentFont = False
   end
 end

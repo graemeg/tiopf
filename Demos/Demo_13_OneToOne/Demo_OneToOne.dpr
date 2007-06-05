@@ -8,7 +8,8 @@ uses
   FClientEdit in 'FClientEdit.pas' {FormClientEdit},
   Client_BOM in 'Client_BOM.pas',
   FMainOneToOne in 'FMainOneToOne.pas' {FormMainInheritance},
-  FtiPerEditDialog in '..\Common\FtiPerEditDialog.pas' {FormTIPerEditDialog};
+  FtiPerEditDialog in '..\..\GUI\FtiPerEditDialog.pas' {FormTIPerEditDialog},
+  FtiDialogAbs in '..\..\GUI\FtiDialogAbs.pas' {FormTiDialogAbs};
 
 {$R *.res}
 
