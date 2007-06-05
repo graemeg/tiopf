@@ -58,11 +58,11 @@ var
 
 implementation
 uses
-  tiQuery
+   tiQuery
+  ,tiOIDGUID 
   ,tiOPFManager
   ,tiDBConnectionPool
   ,tiOID
-  ,tiOIDGUID
   ,tiDialogs
   ,tiConstants
   ;
@@ -184,7 +184,7 @@ end;
 
 procedure TFormCollection.Button2Click(Sender: TObject);
 begin
-  tiShowString(FClients.AsDebugString);
+  tiMessageDlg(FClients.AsDebugString, ['OK']);
 end;
 
 procedure TFormCollection.ActionList1Update(Action: TBasicAction;var Handled: Boolean);

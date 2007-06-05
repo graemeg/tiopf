@@ -30,6 +30,7 @@ type
   TVisClient_Delete = class( TVisDBAutoGenDelete )
   protected
     function  AcceptVisitor : boolean ; override ;
+    procedure SetupParams    ; override ;
   end ;
 
 procedure RegisterVisitors;
@@ -131,6 +132,12 @@ begin
   result := ( Visited is TClient ) and
             ( Visited.ObjectState = posDelete ) ;
   Log([ClassName, Visited.ClassName, Visited.ObjectStateAsString, Result ]);
+end;
+
+procedure TVisClient_Delete.SetupParams;
+begin
+  inherited;
+  TableName:= 'Client';
 end;
 
 end.
