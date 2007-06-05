@@ -28,8 +28,7 @@ var
 implementation
 uses
    tiObject
-  ,tiGUIUtils
-  
+  ,tiDialogs
   ;
   
 {$R *.DFM}
@@ -57,7 +56,7 @@ end;
 
 procedure TFormMainVisitorBasics.btnShowListClick(Sender: TObject);
 begin
-  tiShowPerObjAbs(FClients);
+  tiMessageDlg(FClients.AsDebugString, ['OK']);
 end;
 
 procedure TFormMainVisitorBasics.btnRunClientVisitorClick(Sender: TObject);

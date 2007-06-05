@@ -41,7 +41,7 @@ uses
    tiOPFManager
   ,tiClassToDBMap_BOM
   ,tiConstants
-  ,tiGUIUtils
+  ,tiDialogs
   ;
 
 procedure RegisterMappings ;
@@ -68,7 +68,7 @@ begin
   inherited;
   if not AcceptVisitor then
     Exit ;
-  tiShowPerObjAbs(Visited as TtiObject);
+  tiShowMessage((Visited as TtiObject).AsDebugString);
 end;
 
 end.

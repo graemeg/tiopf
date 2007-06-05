@@ -1,9 +1,9 @@
 object FormMainVisitorBasics: TFormMainVisitorBasics
   Left = 438
   Top = 183
-  Width = 182
-  Height = 150
   Caption = ' Visitor Basics'
+  ClientHeight = 116
+  ClientWidth = 174
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
