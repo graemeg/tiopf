@@ -40,7 +40,7 @@ uses
   Adrs_BOM, ComCtrls, tiListView, StdCtrls, tiPerAwareCtrls,
   tiSplitter, ExtCtrls, tiFocusPanel, FtiFormMgrForm, tiReadOnly, Buttons,
   tiVisitorDB
-  ;
+ ;
 
 type
   TFormEditPerson = class(TFormTIFormMgrForm)
@@ -71,17 +71,17 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    function  Person : TPerson ;
+    function  Person: TPerson;
   protected
-    function  FormIsValid : boolean ; override ;
-    procedure DoBeforeDisgard ; override ;
+    function  FormIsValid: boolean; override;
+    procedure DoBeforeDisgard; override;
   public
-    procedure SetData(const Value: TtiObject); override ;
+    procedure SetData(const Value: TtiObject); override;
 
   end;
 
 
-procedure EditNewPerson ;
+procedure EditNewPerson;
 
 implementation
 uses
@@ -90,18 +90,18 @@ uses
   ,FEdit_EAddrs
   ,tiDialogs
   ,tiFormMgr
-  ;
+ ;
 
 {$R *.DFM}
 
-procedure EditNewPerson ;
+procedure EditNewPerson;
 var
-  lData : TPerson ;
+  lData: TPerson;
 begin
-  lData := TPerson.CreateNew ;
+  lData:= TPerson.CreateNew;
   gAdrsBook.People.Add(lData);
-  gFormMgr.ShowForm(TFormEditPerson, lData, false) ;
-end ;
+  gFormMgr.ShowForm(TFormEditPerson, lData, false);
+end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -121,16 +121,16 @@ procedure TFormEditPerson.SetData(const Value: TtiObject);
 begin
   inherited SetData(Value);
   if Value = nil then 
-    exit ; //=>
+    exit; //=>
 
-  paeLastName.LinkToData(  DataBuffer, 'LastName' ) ;
-  paeFirstName.LinkToData( DataBuffer, 'FirstName' ) ;
-  paeInitials.LinkToData(  DataBuffer, 'Initials' ) ;
-  paeTitle.LinkToData(     DataBuffer, 'Title' ) ;
-  paeNotes.LinkToData(     DataBuffer, 'Notes' ) ;
+  paeLastName.LinkToData( DataBuffer, 'LastName');
+  paeFirstName.LinkToData(DataBuffer, 'FirstName');
+  paeInitials.LinkToData( DataBuffer, 'Initials');
+  paeTitle.LinkToData(    DataBuffer, 'Title');
+  paeNotes.LinkToData(    DataBuffer, 'Notes');
 
-  LVEAddress.Data   := (DataBuffer as TPerson).EAddressList.List ;
-  LVAddress.Data    := (DataBuffer as TPerson).AddressList.List ;
+  LVEAddress.Data  := (DataBuffer as TPerson).EAddressList.List;
+  LVAddress.Data   := (DataBuffer as TPerson).AddressList.List;
 
 end;
 
@@ -144,69 +144,69 @@ end;
 //------------------------------------------------------------------------------
 procedure TFormEditPerson.LVEAddressFilterData(pData: TPersistent; var pbInclude: Boolean);
 begin
-  pbInclude := not ( pData as TtiObject ).Deleted ;
-end ;
+  pbInclude:= not (pData as TtiObject).Deleted;
+end;
 
 procedure TFormEditPerson.lvEAddressItemEdit(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-  if TFormEdit_EAdrs.Execute( pData as TEAdrs) then
-    pLV.Refresh ;
+  if TFormEdit_EAdrs.Execute(pData as TEAdrs) then
+    pLV.Refresh;
 end;
 
 procedure TFormEditPerson.lvEAddressItemInsert(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TEAdrs ;
+  lData: TEAdrs;
 begin
-  lData := TEAdrs.CreateNew ;
-  if TFormEdit_EAdrs.Execute( lData ) then
+  lData:= TEAdrs.CreateNew;
+  if TFormEdit_EAdrs.Execute(lData) then
   begin
-    Person.EAddressList.Add( lData ) ;
-    LVEAddress.Refresh ;
+    Person.EAddressList.Add(lData);
+    LVEAddress.Refresh;
   end else
-    lData.Free ;
+    lData.Free;
 end;
 
 procedure TFormEditPerson.lvEAddressItemDelete(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TAdrsAbs ;
+  lData: TAdrsAbs;
 begin
-  lData := pData as TAdrsAbs ;
-  if tiAppConfirmation( 'Are you sure you want to delete <%s - %s> ?',
-                        [lData.AdrsType.Text, lData.Caption] ) then
+  lData:= pData as TAdrsAbs;
+  if tiAppConfirmation('Are you sure you want to delete <%s - %s> ?',
+                        [lData.AdrsType.Text, lData.Caption]) then
   begin
-    lData.Deleted := true ;
-    pLV.Refresh ;
-  end ;
+    lData.Deleted:= true;
+    pLV.Refresh;
+  end;
 end;
 
 procedure TFormEditPerson.lvAddressItemEdit(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-  if TFormEdit_Adrs.Execute( pData as TAdrs ) then
-    pLV.Refresh ;
+  if TFormEdit_Adrs.Execute(pData as TAdrs) then
+    pLV.Refresh;
 end;
 
 procedure TFormEditPerson.lvAddressItemInsert(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TAdrs ;
+  lData: TAdrs;
 begin
-  lData := TAdrs.CreateNew ;
-  if TFormEdit_Adrs.Execute( lData ) then
+  lData:= TAdrs.CreateNew;
+  if TFormEdit_Adrs.Execute(lData) then
   begin
-    Person.AddressList.Add( lData ) ;
-    LVAddress.Refresh ;
+    Person.AddressList.Add(lData);
+    LVAddress.Refresh;
   end else
-    lData.Free ;
+    lData.Free;
 end;
 
 procedure TFormEditPerson.FormCreate(Sender: TObject);
 begin
   inherited;
-  FormCaption := 'Edit a person''s contact details';
+  FormCaption:= 'Edit a person''s contact details';
 end;
 
 procedure TFormEditPerson.FormDestroy(Sender: TObject);
@@ -217,12 +217,12 @@ end;
 
 function TFormEditPerson.Person: TPerson;
 begin
-  result := DataBuffer as TPerson ;
+  result:= DataBuffer as TPerson;
 end;
 
 function TFormEditPerson.FormIsValid: boolean;
 begin
-  result := Person.IsValid;
+  result:= Person.IsValid;
 end;
 
 procedure TFormEditPerson.DoBeforeDisgard;

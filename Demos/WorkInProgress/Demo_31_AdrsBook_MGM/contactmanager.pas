@@ -58,8 +58,8 @@ const
 function gContactManager: TContactManager;
 begin
   if not Assigned(uContactManager) then
-    uContactManager := TContactManager.Create;
-  result := uContactManager;
+    uContactManager:= TContactManager.Create;
+  result:= uContactManager;
 end;
 
 { TContactManager }
@@ -78,55 +78,55 @@ procedure TContactManager.PopulateCities;
 var
   c: TCity;
 begin
-  c := TCity.CreateNew;
-  c.Name := 'Somerset West';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['za'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'Somerset West';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['za'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'Cape Town';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['za'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'Cape Town';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['za'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'Pretoria';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['za'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'Pretoria';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['za'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'Durban';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['za'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'Durban';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['za'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'London';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['gb'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'London';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['gb'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'Watford';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['gb'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'Watford';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['gb'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'Frankfurt';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['gr'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'Frankfurt';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['gr'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'New York';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['us'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'New York';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['us'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'San Fransisco';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['us'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'San Fransisco';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['us'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'Paris';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['fr'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'Paris';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['fr'], True));
   FCityList.Add(c);
-  c := TCity.CreateNew;
-  c.Name := 'Big City';
-  c.Country := TCountry(FCountryList.FindByProps(['ISO'], ['uk'], True));
+  c:= TCity.CreateNew;
+  c.Name:= 'Big City';
+  c.Country:= TCountry(FCountryList.FindByProps(['ISO'], ['uk'], True));
   FCityList.Add(c);
 end;
 
 function TContactManager.GenPhone: string;
 begin
-  result := '+27 ' + IntToStr(Random(9)) + IntToStr(Random(9)) + ' '
+  result:= '+27 ' + IntToStr(Random(9)) + IntToStr(Random(9)) + ' '
     + IntToStr(Random(9)) + IntToStr(Random(9)) + IntToStr(Random(9)) + '-'
     + IntToStr(Random(9)) + IntToStr(Random(9)) + IntToStr(Random(9)) + IntToStr(Random(9));
 end;
@@ -134,12 +134,12 @@ end;
 constructor TContactManager.Create;
 begin
   inherited Create;
-  FCountryList := TCountryList.Create;
-  FCountryList.Owner := self;
-  FCityList := TCityList.Create;
-  FCityList.Owner := self;
-  FContactList := TContactList.Create;
-  FContactList.Owner := self;
+  FCountryList:= TCountryList.Create;
+  FCountryList.Owner:= self;
+  FCityList:= TCityList.Create;
+  FCityList.Owner:= self;
+  FContactList:= TContactList.Create;
+  FContactList.Owner:= self;
 end;
 
 destructor TContactManager.Destroy;
@@ -152,30 +152,30 @@ end;
 
 procedure TContactManager.PopulateContacts;
 var
-  C : TContact;
-  I,J : Integer;
-  A : TAddress;
+  C: TContact;
+  I,J: Integer;
+  A: TAddress;
 begin
   Randomize;
   PopulateCountries;
   PopulateCities;
-  for I := 1 to 10 do
+  for I:= 1 to 10 do
   begin
-    C := TContact.CreateNew;
-    C.FirstName := FirstNames[I];
-    C.LastName  := LastNames[I];
-    C.Mobile    := GenPhone;
-    C.Email     := LowerCase(FirstNames[i])+ '@freepascal.org';
-    for J := 1 to 1+Random(2) do
+    C:= TContact.CreateNew;
+    C.FirstName:= FirstNames[I];
+    C.LastName := LastNames[I];
+    C.Mobile   := GenPhone;
+    C.Email    := LowerCase(FirstNames[i])+ '@freepascal.org';
+    for J:= 1 to 1+Random(2) do
     begin
-      A := TAddress.CreateNew;
-      A.Street  := StreetNames[1+Random(10)];
-      A.Nr      := Random(100)+1;
-      A.City    := FCityList[Random(10)];
-      A.Fax     := GenPhone;
-      A.Telephone1 := GenPhone;
+      A:= TAddress.CreateNew;
+      A.Street := StreetNames[1+Random(10)];
+      A.Nr     := Random(100)+1;
+      A.City   := FCityList[Random(10)];
+      A.Fax    := GenPhone;
+      A.Telephone1:= GenPhone;
       If Random(2)>0 then
-         A.Telephone2 := GenPhone;
+         A.Telephone2:= GenPhone;
       C.AddressList.Add(A);
     end;
     FContactList.Add(C);
@@ -184,7 +184,7 @@ end;
 
 
 initialization
-  uContactManager := nil;
+  uContactManager:= nil;
   
 finalization
   uContactManager.Free;

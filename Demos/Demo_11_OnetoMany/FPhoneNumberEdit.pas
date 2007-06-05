@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
 
 type
   TFormPhoneNumberEdit = class(TFormTIPerEditDialog)
@@ -21,8 +21,8 @@ type
     memoErrors: TtiMemoReadOnly;
   private
   protected
-    procedure SetData(const Value: TtiObject); override ;
-    function  FormIsValid : boolean ; override ;
+    procedure SetData(const Value: TtiObject); override;
+    function  FormIsValid: boolean; override;
   public
   end;
 
@@ -34,13 +34,13 @@ implementation
 
 function TFormPhoneNumberEdit.FormIsValid: boolean;
 begin
-  result := Databuffer.IsValid(MemoErrors.Lines);
+  result:= Databuffer.IsValid(MemoErrors.Lines);
 end;
 
 procedure TFormPhoneNumberEdit.SetData(const Value: TtiObject);
 begin
   inherited;
-  paeOID.Value := DataBuffer.OID.AsString ;
+  paeOID.Value:= DataBuffer.OID.AsString;
   paeNumberType.LinkToData(DataBuffer, 'NumberType');
   paeNumberText.LinkToData(DataBuffer,'NumberText');
 end;

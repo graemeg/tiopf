@@ -50,8 +50,8 @@ type
     paeAdrsType: TtiPerAwareComboBoxDynamic;
   private
   protected
-    procedure SetData(const Value: TtiObject); override ;
-    function  FormIsValid : boolean ; override ;
+    procedure SetData(const Value: TtiObject); override;
+    function  FormIsValid: boolean; override;
   public
     { Public declarations }
   end;
@@ -59,7 +59,7 @@ type
 implementation
 uses
   Adrs_BOM
-  ;
+ ;
 
 {$R *.DFM}
 
@@ -70,21 +70,21 @@ uses
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TFormEdit_Adrs.FormIsValid: boolean;
 begin
-  result :=
-   ( paeAdrsType.Value <> nil ) and
-   ( paeAdrsLines.Value <> '' ) ;
+  result:=
+   (paeAdrsType.Value <> nil) and
+   (paeAdrsLines.Value <> '');
 end;
 
 procedure TFormEdit_Adrs.SetData(const Value: TtiObject);
 begin
-  inherited SetData( Value ) ;
-  paeAdrsType.List := gAdrsBook.AdrsTypes.FindByListName( 'Adrs' ).List ;
-  paeAdrsType.LinkToData(  DataBuffer, 'AdrsType' ) ;
-  paeAdrsLines.LinkToData( DataBuffer, 'Lines'    ) ;
-  paePCode.LinkToData(     DataBuffer, 'Suburb'   ) ;
-  paePCode.LinkToData(     DataBuffer, 'PCode'    ) ;
-  paeState.LinkToData(     DataBuffer, 'State'    ) ;
-  paeCountry.LinkToData(   DataBuffer, 'Country'  ) ;
+  inherited SetData(Value);
+  paeAdrsType.List:= gAdrsBook.AdrsTypes.FindByListName('Adrs').List;
+  paeAdrsType.LinkToData( DataBuffer, 'AdrsType');
+  paeAdrsLines.LinkToData(DataBuffer, 'Lines'   );
+  paePCode.LinkToData(    DataBuffer, 'Suburb'  );
+  paePCode.LinkToData(    DataBuffer, 'PCode'   );
+  paeState.LinkToData(    DataBuffer, 'State'   );
+  paeCountry.LinkToData(  DataBuffer, 'Country' );
 end;
 
 end.

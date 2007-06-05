@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
   
 
 type
@@ -22,8 +22,8 @@ type
     memoErrors: TtiMemoReadOnly;
   private
   protected
-    procedure SetData(const Value: TtiObject); override ;
-    function  FormIsValid : boolean ; override ;
+    procedure SetData(const Value: TtiObject); override;
+    function  FormIsValid: boolean; override;
   public
   end;
 
@@ -35,13 +35,13 @@ implementation
 
 function TFormClientEdit.FormIsValid: boolean;
 begin
-  result := Databuffer.IsValid(MemoErrors.Lines);
+  result:= Databuffer.IsValid(MemoErrors.Lines);
 end;
 
 procedure TFormClientEdit.SetData(const Value: TtiObject);
 begin
   inherited;
-  paeOID.Value := DataBuffer.OID.AsString ;
+  paeOID.Value:= DataBuffer.OID.AsString;
   paeClientName.LinkToData(DataBuffer, 'ClientName');
   paeClientID.LinkToData(DataBuffer,'ClientID');
 end;

@@ -12,7 +12,7 @@ uses
   ,Variants
   {$ENDIF}
   ,tiVTListView, tiObject
-  ;
+ ;
 
 
 type
@@ -41,14 +41,14 @@ type
     procedure LVItemArrive(pVT: TtiCustomVirtualTree; pData: TtiObject;
       pItem: PVirtualNode);
   private
-    FClients : TClients ;
+    FClients: TClients;
     procedure CreateTable;
     procedure DropTable;
-    function  TableExists: boolean ;
-    procedure LVDeriveOID( const pVT : TtiCustomVirtualTree ;
-                           const pData : TtiObject ;
-                           const ptiListColumn : TtiVTColumn ;
-                           var   pResult : string );
+    function  TableExists: boolean;
+    procedure LVDeriveOID(const pVT: TtiCustomVirtualTree;
+                           const pData: TtiObject;
+                           const ptiListColumn: TtiVTColumn;
+                           var   pResult: string);
   public
     { Public declarations }
   end;
@@ -65,63 +65,63 @@ uses
   ,tiOID
   ,tiDialogs
   ,tiConstants
-  ;
+ ;
 
 {$R *.dfm}
 
 // Create table
 procedure TFormCollection.CreateTable;
 var
-  lTableMetaData : TtiDBMetaDataTable ;
+  lTableMetaData: TtiDBMetaDataTable;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Client' ;
-    lTableMetaData.AddField( 'OID',               qfkString,  36 ) ; // Using GUID OIDs
-    lTableMetaData.AddField( 'Client_Name',       qfkString, 200 ) ;
-    lTableMetaData.AddField( 'Client_ID',          qfkString,   9 ) ;
-    gTIOPFManager.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name:= 'Client';
+    lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddField('Client_Name',       qfkString, 200);
+    lTableMetaData.AddField('Client_ID',          qfkString,   9);
+    gTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 end;
 
 // Drop table
 procedure TFormCollection.DropTable;
 begin
-  gTIOPFManager.DropTable( 'Client' );
+  gTIOPFManager.DropTable('Client');
 end;
 
 // Does a table exist?
 function TFormCollection.TableExists;
 var
-  lDBMetaData : TtiDBMetaData ;
-  lPooledDB   : TPooledDB ;
-  lDatabase   : TtiDatabase ;
+  lDBMetaData: TtiDBMetaData;
+  lPooledDB  : TPooledDB;
+  lDatabase  : TtiDatabase;
 begin
-  lDBMetaData := TtiDBMetaData.Create ;
+  lDBMetaData:= TtiDBMetaData.Create;
   try
-    lPooledDB := gTIOPFManager.DefaultDBConnectionPool.Lock ;
+    lPooledDB:= gTIOPFManager.DefaultDBConnectionPool.Lock;
     try
-      lDatabase := lPooledDB.Database ;
+      lDatabase:= lPooledDB.Database;
       lDatabase.ReadMetaDataTables(lDBMetaData);
-      result := lDBMetaData.FindByTableName('Client') <> nil;
+      result:= lDBMetaData.FindByTableName('Client') <> nil;
     finally
       gTIOPFManager.DefaultDBConnectionPool.UnLock(lPooledDB);
-    end ;
+    end;
   finally
     lDBMetaData.Free;
-  end ;
+  end;
 end;
 
 procedure TFormCollection.FormCreate(Sender: TObject);
 begin
-  Caption := 'Connected to ' + gTIOPFManager.DefaultDBConnectionName ;
-  FClients := TClients.Create ;
+  Caption:= 'Connected to ' + gTIOPFManager.DefaultDBConnectionName;
+  FClients:= TClients.Create;
   // Drop and re-create to be sure we start with the correct structure
   if TableExists then
     DropTable;
-  CreateTable ;
+  CreateTable;
   LV.AddColumn(LVDeriveOID, 'OID', 270);
   LV.AddColumn('ClientName', vttkString, 'Client name', 200);
   LV.AddColumn('ClientID',   vttkString, 'Client ID', 80);
@@ -131,9 +131,9 @@ end;
 // Insert a row
 procedure TFormCollection.btnInsertRowClick(Sender: TObject);
 var
-  LClient : TClient ;
+  LClient: TClient;
 begin
-  LClient := TClient.CreateNew ;
+  LClient:= TClient.CreateNew;
   FClients.Add(LClient);
   LV.Refresh(LClient);
 end;
@@ -142,18 +142,18 @@ end;
 procedure TFormCollection.btnDeleteRowClick(Sender: TObject);
 begin
   if LV.SelectedData <> nil then
-    LV.SelectedData.Deleted := true ;
+    LV.SelectedData.Deleted:= true;
   LV.Refresh;
 end;
 
 procedure TFormCollection.aSaveExecute(Sender: TObject);
 begin
-  FClients.Save ;
+  FClients.Save;
 end;
 
 procedure TFormCollection.FormDestroy(Sender: TObject);
 begin
-  FClients.Free ;
+  FClients.Free;
 end;
 
 procedure TFormCollection.LVDeriveOID(const pVT: TtiCustomVirtualTree;
@@ -189,13 +189,13 @@ end;
 
 procedure TFormCollection.ActionList1Update(Action: TBasicAction;var Handled: Boolean);
 begin
-  aSave.Enabled := FClients.Dirty ;
+  aSave.Enabled:= FClients.Dirty;
 end;
 
 procedure TFormCollection.btnReadListClick(Sender: TObject);
 begin
-  FClients.Clear ;
-  FClients.Read ;
+  FClients.Clear;
+  FClients.Read;
   LV.Refresh;
 end;
 

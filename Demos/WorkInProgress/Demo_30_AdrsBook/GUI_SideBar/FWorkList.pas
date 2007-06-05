@@ -32,7 +32,7 @@ type
     procedure tiHyperLink2Click(Sender: TObject);
     procedure tiHyperLink1Click(Sender: TObject);
   private
-    FSearchResult : TObjectList;
+    FSearchResult: TObjectList;
   public
     { Public declarations }
   end;
@@ -51,17 +51,17 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
 
 {$R *.dfm}
 
 procedure TFormWorkList.FormCreate(Sender: TObject);
 begin
   inherited;
-  FSearchResult := TObjectList.Create(False);
+  FSearchResult:= TObjectList.Create(False);
   lvSearchResult.AddColumn('Caption',lvtkString,'Person or company name', 350);
-  ButtonsVisible := false ;
-  FormCaption := 'Worklist for ' + FormatDateTime( 'DDDD DD-MMM-YYYY', Date );
+  ButtonsVisible:= false;
+  FormCaption:= 'Worklist for ' + FormatDateTime('DDDD DD-MMM-YYYY', Date);
   FormResize(nil);
 end;
 
@@ -74,8 +74,8 @@ end;
 procedure TFormWorkList.FormResize(Sender: TObject);
 begin
   inherited;
-  pnlMain.Height  := ClientHeight - pnlMain.Top - 16 ;
-  pnlMain.Left := ( ClientWidth - pnlMain.Width ) div 2 ;
+  pnlMain.Height := ClientHeight - pnlMain.Top - 16;
+  pnlMain.Left:= (ClientWidth - pnlMain.Width) div 2;
 end;
 
 procedure TFormWorkList.FormShow(Sender: TObject);
@@ -87,40 +87,40 @@ end;
 procedure TFormWorkList.bbSearchClick(Sender: TObject);
 begin
   inherited;
-  lvSearchResult.Data := nil ;
-  gAdrsBook.FindAllLike( editSearch.Text, FSearchResult ) ;
-  lvSearchResult.Data := FSearchResult ;
-  lvSearchResult.Visible := FSearchResult.Count > 0 ;
+  lvSearchResult.Data:= nil;
+  gAdrsBook.FindAllLike(editSearch.Text, FSearchResult);
+  lvSearchResult.Data:= FSearchResult;
+  lvSearchResult.Visible:= FSearchResult.Count > 0;
 end;
 
 procedure TFormWorkList.lvSearchResultItemEdit(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
   inherited;
-  lvSearchResult.Data := nil;
-  lvSearchResult.Visible := false ;
+  lvSearchResult.Data:= nil;
+  lvSearchResult.Visible:= false;
   // But in .Read This check should not be required.
-  if (pData as TtiObject ).ObjectState <> posClean then
-    (pData as TtiObject ).Read ;
-  editSearch.Text := '' ;
+  if (pData as TtiObject).ObjectState <> posClean then
+    (pData as TtiObject).Read;
+  editSearch.Text:= '';
   if pData is TPerson then
     gFormMgr.ShowForm(TFormEditPerson, pData as TPerson, false)
   else if pData is TCompany then
-    gFormMgr.ShowForm(TFormEditCompany, pData as TCompany, false );
+    gFormMgr.ShowForm(TFormEditCompany, pData as TCompany, false);
 end;
 
 procedure TFormWorkList.lvSearchResultItemDelete(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-  if tiPerObjAbsConfirmAndDelete( pData as TtiObject ) then
-    ( pData as TtiObject ).Save ;
+  if tiPerObjAbsConfirmAndDelete(pData as TtiObject) then
+    (pData as TtiObject).Save;
 end;
 
 procedure TFormWorkList.lvSearchResultFilterData(pData: TPersistent;
   var pbInclude: Boolean);
 begin
   inherited;
-  pbInclude := not ( pData as TtiObject ).Deleted ;
+  pbInclude:= not (pData as TtiObject).Deleted;
 end;
 
 procedure TFormWorkList.tiHyperLink2Click(Sender: TObject);

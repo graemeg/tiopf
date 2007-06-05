@@ -45,7 +45,7 @@ uses
   Grids, StdCtrls, ComCtrls, tiListView,
   tiTreeView, ExtCtrls, ToolWin
   ,Adrs_BOM, ActnList, Menus, ImgList
-  ;
+ ;
 
 type
   TFormMainOld = class(TForm)
@@ -116,8 +116,8 @@ type
       pParentData: TObject);
     procedure aCloneCurrentObjectExecute(Sender: TObject);
   private
-    procedure Read ;
-    procedure Save ;
+    procedure Read;
+    procedure Save;
     procedure AddPerson(pPersonList: TPeople);
     procedure AddCompany(pCompanyList: TCompanies);
   public
@@ -138,7 +138,7 @@ uses
   ,tiOPFManager
   ,tiDialogs
   ,tiRegINI
-  ;
+ ;
 
 {$R *.DFM}
 
@@ -146,48 +146,48 @@ uses
 //------------------------------------------------------------------------------
 procedure TFormMainOld.FormCreate(Sender: TObject);
 begin
-  TV.Align := alClient ;
-  Caption := 'TI Persistence Framework - ' + gTIOPFManager.DefaultDBConnectionName ;
-  gReg.ReadFormState( Self ) ;
-  TV.RegisterChildForm( TPerson,  TFormEditPerson ) ;
-  TV.RegisterChildForm( TCompany, TFormEditCompany ) ;
-  Read ;
-  TV.SelectedAddress := gReg.ReadString( Name, 'SelectedAddress', '' ) ;
+  TV.Align:= alClient;
+  Caption:= 'TI Persistence Framework - ' + gTIOPFManager.DefaultDBConnectionName;
+  gReg.ReadFormState(Self);
+  TV.RegisterChildForm(TPerson,  TFormEditPerson);
+  TV.RegisterChildForm(TCompany, TFormEditCompany);
+  Read;
+  TV.SelectedAddress:= gReg.ReadString(Name, 'SelectedAddress', '');
 end;
 
 // Form's OnDestroy event
 //------------------------------------------------------------------------------
 procedure TFormMainOld.FormDestroy(Sender: TObject);
 begin
-  gReg.WriteFormState( Self ) ;
-  gReg.WriteString( Name, 'SelectedAddress', TV.SelectedAddress ) ;
+  gReg.WriteFormState(Self);
+  gReg.WriteString(Name, 'SelectedAddress', TV.SelectedAddress);
 end;
 
 // Create a TAddressBook object and read it's primary key data
 //------------------------------------------------------------------------------
-procedure TFormMainOld.Read ;
+procedure TFormMainOld.Read;
 begin
-  TV.Data := nil ;
-  gAdrsBook.Clear ;
-  gAdrsBook.Read ;
-  if ( gAdrsBook.AdrsTypes.Count <> 2 ) then
+  TV.Data:= nil;
+  gAdrsBook.Clear;
+  gAdrsBook.Read;
+  if (gAdrsBook.AdrsTypes.Count <> 2) then
     PopulateAdrsBook;
-  TV.Data := gAdrsBook ;
+  TV.Data:= gAdrsBook;
 end;
 
 // Form's CloseQuery event
 //------------------------------------------------------------------------------
 procedure TFormMainOld.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
-  if tiPerObjAbsSaveAndClose( gAdrsBook, CanClose ) then
-    Save ;
+  if tiPerObjAbsSaveAndClose(gAdrsBook, CanClose) then
+    Save;
 end;
 
 // TtiTreeViewPlus close action
 //------------------------------------------------------------------------------
 procedure TFormMainOld.TVClose(Sender: TObject);
 begin
-  Close ;
+  Close;
 end;
 
 // TtiTreeViewPlus save event
@@ -195,12 +195,12 @@ end;
 procedure TFormMainOld.TVSave(Sender: TObject);
 begin
   if not TV.IsCurrentChildFormValid then
-    exit ; //==>
+    exit; //==>
 
   if not gAdrsBook.Dirty then
-    exit ; //==>
+    exit; //==>
 
-  Save ;
+  Save;
 
 end;
 
@@ -208,14 +208,14 @@ end;
 //------------------------------------------------------------------------------
 procedure TFormMainOld.TVCancel(Sender: TObject);
 begin
-  Read ;
+  Read;
 end;
 
 // ActionList's New event
 //------------------------------------------------------------------------------
 procedure TFormMainOld.aNewExecute(Sender: TObject);
 begin
-  TV.DoInsert ;
+  TV.DoInsert;
 end;
 
 // ActionList's Delete event
@@ -229,16 +229,16 @@ end;
 //------------------------------------------------------------------------------
 procedure TFormMainOld.ActionList1Update(Action: TBasicAction; var Handled: Boolean);
 begin
-  aNew.Enabled    := TV.CanInsertSelected ;
-  aDelete.Enabled := TV.CanDeleteSelected ;
+  aNew.Enabled   := TV.CanInsertSelected;
+  aDelete.Enabled:= TV.CanDeleteSelected;
 
-  aSave.Enabled   := gAdrsBook.Dirty ;
-  aCancel.Enabled := aSave.Enabled ;
-  aClose.Enabled  := true ;
-  aShowObjects.Enabled := ( TV.SelectedData <> nil ) ;
-  aCloneCurrentObject.Enabled :=
+  aSave.Enabled  := gAdrsBook.Dirty;
+  aCancel.Enabled:= aSave.Enabled;
+  aClose.Enabled := true;
+  aShowObjects.Enabled:= (TV.SelectedData <> nil);
+  aCloneCurrentObject.Enabled:=
     aShowObjects.Enabled and
-    ( not ( TV.SelectedData is TAdrsBook )) ;
+    (not (TV.SelectedData is TAdrsBook));
 
 end;
 
@@ -251,128 +251,128 @@ procedure TFormMainOld.TVSelectNode(ptiTreeView: TtiTreeView;
 begin
 {
   if pData is TPerson then
-    gTIOPFManager.Read( TPerson( pData ))
+    gTIOPFManager.Read(TPerson(pData))
   else
   if pData is TCompany then
-    gTIOPFManager.Read( TCompany( pData )) ;
+    gTIOPFManager.Read(TCompany(pData));
 }
 end;
 
 procedure TFormMainOld.aShowObjectsExecute(Sender: TObject);
 begin
-  tiShowPerObjAbs( TtiObject( TV.SelectedData ), true ) ;
+  tiShowPerObjAbs(TtiObject(TV.SelectedData), true);
 end;
 
 procedure TFormMainOld.tiTVMappingPersonOnDelete(ptiTreeView: TtiTreeView;
   pNode: TTreeNode; pData: TObject; pParentNode: TTreeNode;
   pParentData: TObject);
 begin
-  if not (( pData is TPerson ) or
-          ( pData is TCompany )) then
-    Exit ; //==>
-  if tiAppConfirmation( 'Are you sure you want to delete <%s> ?',
-                        [TtiObject( pData ).Caption] ) then
-    TtiObject( pData ).Deleted := true ;
+  if not ((pData is TPerson) or
+          (pData is TCompany)) then
+    Exit; //==>
+  if tiAppConfirmation('Are you sure you want to delete <%s> ?',
+                        [TtiObject(pData).Caption]) then
+    TtiObject(pData).Deleted:= true;
 end;
 
-procedure TFormMainOld.tiTVMappingPersonOnInsert( ptiTreeView: TtiTreeView;
+procedure TFormMainOld.tiTVMappingPersonOnInsert(ptiTreeView: TtiTreeView;
                                                pNode: TTreeNode;
                                                pData: TObject;
                                                pParentNode: TTreeNode;
                                                pParentData: TObject);
 begin
-  if TObject( pParentNode.Data ) is TPeople then
-    AddPerson( TPeople( pParentNode.Data ))
+  if TObject(pParentNode.Data) is TPeople then
+    AddPerson(TPeople(pParentNode.Data))
   else
-    AddPerson( TCompany( pParentNode.Data ).People ) ;
-end ;
+    AddPerson(TCompany(pParentNode.Data).People);
+end;
 
-procedure TFormMainOld.AddPerson( pPersonList : TPeople ) ;
+procedure TFormMainOld.AddPerson(pPersonList: TPeople);
 var
-  lData       : TPerson ;
+  lData      : TPerson;
 begin
-  lData := TPerson.CreateNew;
-  lData.FirstName := 'Enter' ;
-  lData.LastName  := 'Enter' ;
-  pPersonList.Add( lData ) ;
+  lData:= TPerson.CreateNew;
+  lData.FirstName:= 'Enter';
+  lData.LastName := 'Enter';
+  pPersonList.Add(lData);
 end;
 
 procedure TFormMainOld.tiTVMappingPersonListOnInsert(ptiTreeView: TtiTreeView;
   pNode: TTreeNode; pData: TObject; pParentNode: TTreeNode;
   pParentData: TObject);
 begin
-  AddPerson( pData as TPeople ) ;
+  AddPerson(pData as TPeople);
 end;
 
 procedure TFormMainOld.TVFilterData(pData: TObject; var pbInclude: Boolean);
 begin
-  pbInclude := not TtiObject( pData ).Deleted ;
+  pbInclude:= not TtiObject(pData).Deleted;
 end;
 
 
 procedure TFormMainOld.aShowDatabaseConnectionDetailsExecute(Sender: TObject);
 var
-  ls : string ;
+  ls: string;
 begin
-  ls := gTIOPFManager.DefaultPerLayer.DBConnectionPools.DetailsAsString ;
-  tiShowMessage( ls ) ;
+  ls:= gTIOPFManager.DefaultPerLayer.DBConnectionPools.DetailsAsString;
+  tiShowMessage(ls);
 end;
 
-procedure TFormMainOld.AddCompany( pCompanyList : TCompanies ) ;
+procedure TFormMainOld.AddCompany(pCompanyList: TCompanies);
 var
-  lData       : TCompany ;
+  lData      : TCompany;
 begin
-  lData := TCompany.CreateNew;
-  lData.CompanyName := 'Enter' ;
-  pCompanyList.Add( lData ) ;
+  lData:= TCompany.CreateNew;
+  lData.CompanyName:= 'Enter';
+  pCompanyList.Add(lData);
 end;
 
 procedure TFormMainOld.tiTVMappingCompanyListOnInsert(
   ptiTreeView: TtiTreeView; pNode: TTreeNode; pData: TObject;
   pParentNode: TTreeNode; pParentData: TObject);
 begin
-  AddCompany( pData as TCompanies ) ;
+  AddCompany(pData as TCompanies);
 end;
 
 procedure TFormMainOld.tiTVMappingCompanyOnInsert(ptiTreeView: TtiTreeView;
   pNode: TTreeNode; pData: TObject; pParentNode: TTreeNode;
   pParentData: TObject);
 const
-  cEmployee = '&Employee' ;
-  cCompany  = '&Company' ;
-  cCancel   = 'C&ancel' ;
+  cEmployee = '&Employee';
+  cCompany  = '&Company';
+  cCancel   = 'C&ancel';
 var
-  ls : string ;
+  ls: string;
 begin
-  ls := tiMessageDlg( 'Do you want to add an employee of ' +
-                      ( pData as TCompany ).CompanyName + ' or a new company?',
+  ls:= tiMessageDlg('Do you want to add an employee of ' +
+                      (pData as TCompany).CompanyName + ' or a new company?',
                       [cEmployee, cCompany, cCancel],
                       mtConfirmation,
-                      'What do you want to add?' ) ;
+                      'What do you want to add?');
   if ls = cEmployee then
-    AddPerson( ( pData as TCompany ).People )
+    AddPerson((pData as TCompany).People)
   else if ls = cCompany then
-    AddCompany( ( pParentData as TCompanies )) ;
+    AddCompany((pParentData as TCompanies));
 
 end;
 
 procedure TFormMainOld.Save;
 begin
-  gAdrsBook.Save ;
+  gAdrsBook.Save;
 end;
 
 procedure TFormMainOld.aCloneCurrentObjectExecute(Sender: TObject);
 var
-  lPerson : TtiObject ;
-  ls : string ;
+  lPerson: TtiObject;
+  ls: string;
 begin
-  lPerson := TtiObject( TV.SelectedData ).Clone ;
-  ls :=
-        '* * * CLONE FROM * * *' + Cr( 2 ) +
-        tiPerObjAbsAsString( TtiObject( TV.SelectedData )) + Cr( 2 ) +
-        '* * * CLONE TO * * *' + Cr( 2 ) +
-        tiPerObjAbsAsString( lPerson );
-  tiShowString( ls ) ;
+  lPerson:= TtiObject(TV.SelectedData).Clone;
+  ls:=
+        '* * * CLONE FROM * * *' + Cr(2) +
+        tiPerObjAbsAsString(TtiObject(TV.SelectedData)) + Cr(2) +
+        '* * * CLONE TO * * *' + Cr(2) +
+        tiPerObjAbsAsString(lPerson);
+  tiShowString(ls);
   // There is some code in the TtiTreeView which makes it easy to use
   // drag-and-drop to clone objects and this can be seen in use in the
   // tiSQLManager application.

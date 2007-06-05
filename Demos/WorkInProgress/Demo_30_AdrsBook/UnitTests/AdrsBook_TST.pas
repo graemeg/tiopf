@@ -5,7 +5,7 @@ unit AdrsBook_TST;
 interface
 uses
   TestFramework
- ;
+;
 
 type
 
@@ -19,7 +19,7 @@ type
 implementation
 uses
   Adrs_BOM
-  ;
+ ;
   
 { TTestAdrsBook }
 

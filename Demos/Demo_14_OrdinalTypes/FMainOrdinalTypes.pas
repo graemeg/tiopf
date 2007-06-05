@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
 
 type
   TFormMainOrdinalTypes = class(TForm)
@@ -38,7 +38,7 @@ type
     procedure LVItemInsert(pVT: TtiCustomVirtualTree; AData: TtiObject;
       AItem: PVirtualNode);
   private
-    FClients : TClients ;
+    FClients: TClients;
     procedure CreateTables;
     procedure DropTables;
   public
@@ -61,7 +61,7 @@ uses
   ,FClientEdit
   ,tiGUIUtils
   ,tiDialogs
-  ;
+ ;
 
 
 {$R *.dfm}
@@ -69,39 +69,39 @@ uses
 // Create table
 procedure TFormMainOrdinalTypes.CreateTables;
 var
-  lTableMetaData : TtiDBMetaDataTable ;
+  lTableMetaData: TtiDBMetaDataTable;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Client' ;
-    lTableMetaData.AddField( 'OID',          qfkString,  36 ) ; // Using GUID OIDs
-    lTableMetaData.AddField( 'Client_Name',  qfkString, 200 ) ;
-    lTableMetaData.AddField( 'Sex',          qfkString,   7 ) ;
-    gTIOPFManager.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name:= 'Client';
+    lTableMetaData.AddField('OID',          qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddField('Client_Name',  qfkString, 200);
+    lTableMetaData.AddField('Sex',          qfkString,   7);
+    gTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 end;
 
 // Drop table
 procedure TFormMainOrdinalTypes.DropTables;
 begin
-  try gtiOPFManager.DropTable( 'Client' ) except end ;
+  try gtiOPFManager.DropTable('Client') except end;
 end;
 
 procedure TFormMainOrdinalTypes.FormCreate(Sender: TObject);
 begin
-  Caption := 'Connected to ' + gtiOPFManager.DefaultDBConnectionName ;
-  LV.AddColumn('ClientName',     vttkString, 'Client name', 200 );
-  LV.AddColumn('SexAsGUIString', vttkString, 'Sex', 80 );
+  Caption:= 'Connected to ' + gtiOPFManager.DefaultDBConnectionName;
+  LV.AddColumn('ClientName',     vttkString, 'Client name', 200);
+  LV.AddColumn('SexAsGUIString', vttkString, 'Sex', 80);
 
-  FClients := TClients.Create ;
+  FClients:= TClients.Create;
 
-  if tiAppConfirmation('Do you want to drop and re-create the tables?' ) then
+  if tiAppConfirmation('Do you want to drop and re-create the tables?') then
   begin
     DropTables;
-    CreateTables ;
-  end ;
+    CreateTables;
+  end;
   aReadExecute(nil);
   
 end;
@@ -116,12 +116,12 @@ end;
 // Delete a row
 procedure TFormMainOrdinalTypes.aSaveExecute(Sender: TObject);
 begin
-  FClients.Save ;
+  FClients.Save;
 end;
 
 procedure TFormMainOrdinalTypes.FormDestroy(Sender: TObject);
 begin
-  FClients.Free ;
+  FClients.Free;
 end;
 
 procedure TFormMainOrdinalTypes.Button2Click(Sender: TObject);
@@ -131,29 +131,29 @@ end;
 
 procedure TFormMainOrdinalTypes.ActionList1Update(Action: TBasicAction;var Handled: Boolean);
 begin
-  aSave.Enabled := FClients.Dirty ;
-//  aRead.Enabled := aSave.Enabled;
+  aSave.Enabled:= FClients.Dirty;
+//  aRead.Enabled:= aSave.Enabled;
 end;
 
 procedure TFormMainOrdinalTypes.aReadExecute(Sender: TObject);
 begin
-  LV.Data := nil;
-  FClients.Clear ;
-  FClients.Read ;
-  LV.Data := FClients;
+  LV.Data:= nil;
+  FClients.Clear;
+  FClients.Read;
+  LV.Data:= FClients;
 end;
 
 procedure TFormMainOrdinalTypes.LVFilterData(AData: TtiObject;
   var pInclude: Boolean);
 begin
-  pInclude := not AData.Deleted ;
+  pInclude:= not AData.Deleted;
 end;
 
 procedure TFormMainOrdinalTypes.LVItemDelete(pVT: TtiCustomVirtualTree;
   AData: TtiObject; AItem: PVirtualNode);
 begin
   if tiPerObjAbsConfirmAndDelete(AData) then
-    lv.Refresh ;
+    lv.Refresh;
 end;
 
 procedure TFormMainOrdinalTypes.LVItemEdit(pVT: TtiCustomVirtualTree;
@@ -165,16 +165,16 @@ end;
 procedure TFormMainOrdinalTypes.LVItemInsert(pVT: TtiCustomVirtualTree;
   AData: TtiObject; AItem: PVirtualNode);
 var
-  LClient : TClient ;
+  LClient: TClient;
 begin
-  LClient := TClient.CreateNew ;
+  LClient:= TClient.CreateNew;
   if TFormClientEdit.Execute(LClient) then
   begin
     FClients.Add(LClient);
     lv.Refresh(LClient);
   end
   else
-    LClient.Free ;
+    LClient.Free;
 end;
 
 

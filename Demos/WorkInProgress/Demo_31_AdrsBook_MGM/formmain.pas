@@ -55,7 +55,7 @@ uses
 procedure TMainFrm.FormCreate(Sender: TObject);
 begin
   gContactManager.PopulateContacts;
-  mContactList := TContacts_ListView_Mediator.CreateCustom(gContactManager.ContactList, LVContacts, 'FirstName;LastName(130);EMail(180);Mobile(130);Comments');
+  mContactList:= TContacts_ListView_Mediator.CreateCustom(gContactManager.ContactList, LVContacts, 'FirstName;LastName(130);EMail(180);Mobile(130);Comments');
 end;
 
 procedure TMainFrm.FormDestroy(Sender: TObject);
@@ -67,7 +67,7 @@ procedure TMainFrm.miEditEditClick(Sender: TObject);
 var
   c: TContact;
 begin
-  c := TContact(mContactList.SelectedObject);
+  c:= TContact(mContactList.SelectedObject);
   if not Assigned(c) then
     Exit; //==>
 

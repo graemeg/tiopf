@@ -89,7 +89,7 @@ uses
    tiOIDGUID
   ,Adrs_BOM
   ,Adrs_SrvAutoGenSQL  // For auto generated SQL
-  ;
+ ;
 
 implementation
 

@@ -208,7 +208,7 @@ implementation
 procedure TMarkObject.Mark;
 begin
   if (ObjectState <> posEmpty) then
-    Dirty := True;
+    Dirty:= True;
 end;
 
 { TMarkObjectList }
@@ -216,7 +216,7 @@ end;
 procedure TMarkObjectList.Mark;
 begin
   if (ObjectState <> posEmpty) then
-    Dirty := True;
+    Dirty:= True;
 end;
 
 { TCountry }
@@ -227,7 +227,7 @@ begin
     Exit; //==>
     
   BeginUpdate;
-  FISO := AValue;
+  FISO:= AValue;
   Mark;
   EndUpdate;
 end;
@@ -238,21 +238,21 @@ begin
     Exit; //==>
 
   BeginUpdate;
-  FName := AValue;
+  FName:= AValue;
   Mark;
   EndUpdate;
 end;
 
 function TCountry.GetCaption: string;
 begin
-  Result := Name;
+  Result:= Name;
 end;
 
 constructor TCountry.CreateNew(const AISO: string; const AName: string);
 begin
   inherited CreateNew;
-  FISO := AISO;
-  FName := AName;
+  FISO:= AISO;
+  FName:= AName;
 end;
 
 { TCity }
@@ -263,14 +263,14 @@ begin
     Exit; //==>
 
   BeginUpdate;
-  FCountry := AValue;
+  FCountry:= AValue;
   Mark;
   EndUpdate;
 end;
 
 function TCity.GetCountryAsString: string;
 begin
-  result := Country.Name + ' (' + Country.ISO + ')';
+  result:= Country.Name + ' (' + Country.ISO + ')';
 end;
 
 procedure TCity.SetName(const AValue: string);
@@ -279,7 +279,7 @@ begin
     Exit; //==>
 
   BeginUpdate;
-  FName := AValue;
+  FName:= AValue;
   Mark;
   EndUpdate;
 end;
@@ -290,14 +290,14 @@ begin
     Exit; //==>
 
   BeginUpdate;
-  FZip := AValue;
+  FZip:= AValue;
   Mark;
   EndUpdate;
 end;
 
 procedure TCity.AssignClassProps(ASource: TtiObject);
 begin
-  FCountry := TCity(ASource).Country; // reference only
+  FCountry:= TCity(ASource).Country; // reference only
 end;
 
 { TAddressType }
@@ -308,7 +308,7 @@ begin
     Exit; //==>
     
   BeginUpdate;
-  FName := AValue;
+  FName:= AValue;
   Mark;
   EndUpdate;
 end;
@@ -348,8 +348,8 @@ end;
 constructor TAddress.Create;
 begin
   inherited Create;
-  FAddressType := TAddressType.Create;
-  FAddressType.Owner := self;
+  FAddressType:= TAddressType.Create;
+  FAddressType.Owner:= self;
 end;
 
 destructor TAddress.Destroy;
@@ -361,7 +361,7 @@ end;
 procedure TAddress.AssignClassProps(ASource: TtiObject);
 begin
   FAddressType.Assign(ASource);
-  FCity := TAddress(ASource).City;  // reference only
+  FCity:= TAddress(ASource).City;  // reference only
 end;
 
 procedure TAddress.SetNr(const AValue: integer);
@@ -460,9 +460,9 @@ end;
 constructor TContact.Create;
 begin
   inherited Create;
-  FAddressList := TAddressList.Create;
-  FAddressList.Owner := self;
-  FAddressList.ItemOwner := self;
+  FAddressList:= TAddressList.Create;
+  FAddressList.Owner:= self;
+  FAddressList.ItemOwner:= self;
 end;
 
 destructor TContact.Destroy;
@@ -475,7 +475,7 @@ end;
 
 function TCountryList.GetItems(i: integer): TCountry;
 begin
-  Result := TCountry(inherited GetItems(i));
+  Result:= TCountry(inherited GetItems(i));
 end;
 
 procedure TCountryList.SetItems(i: integer; const AValue: TCountry);
@@ -485,14 +485,14 @@ end;
 
 function TCountryList.Add(const AObject: TCountry): integer;
 begin
-  Result := inherited Add(AObject);
+  Result:= inherited Add(AObject);
 end;
 
 { TCityList }
 
 function TCityList.GetItems(i: integer): TCity;
 begin
-  result := TCity(inherited GetItems(i));
+  result:= TCity(inherited GetItems(i));
 end;
 
 procedure TCityList.SetItems(i: integer; const AValue: TCity);
@@ -502,14 +502,14 @@ end;
 
 function TCityList.Add(const AObject: TCity): integer;
 begin
-  result := inherited Add(AObject);
+  result:= inherited Add(AObject);
 end;
 
 { TAddressList }
 
 function TAddressList.GetItems(i: integer): TAddress;
 begin
-  result := TAddress(inherited GetItems(i));
+  result:= TAddress(inherited GetItems(i));
 end;
 
 procedure TAddressList.SetItems(i: integer; const AValue: TAddress);
@@ -519,14 +519,14 @@ end;
 
 function TAddressList.Add(const AObject: TAddress): integer;
 begin
-  result := inherited Add(AObject);
+  result:= inherited Add(AObject);
 end;
 
 { TContactList }
 
 function TContactList.GetItems(i: integer): TContact;
 begin
-  result := TContact(inherited GetItems(i));
+  result:= TContact(inherited GetItems(i));
 end;
 
 procedure TContactList.SetItems(i: integer; const AValue: TContact);
@@ -536,14 +536,14 @@ end;
 
 function TContactList.Add(const AObject: TContact): integer;
 begin
-  result := inherited Add(AObject);
+  result:= inherited Add(AObject);
 end;
 
 { TContactAddressList }
 
 function TContactAddressList.GetOwner: TContact;
 begin
-  result := TContact(inherited GetOwner);
+  result:= TContact(inherited GetOwner);
 end;
 
 procedure TContactAddressList.SetOwner(const AValue: TContact);

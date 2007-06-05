@@ -18,13 +18,13 @@ begin
 
   Application.Initialize;
   if not TFormConnectToDatabase.Execute then
-    Exit ; //==>
+    Exit; //==>
 
   if not WhichPersistenceMechanism.Execute(
       Client_AutoMap_Svr.RegisterMappings,
       Client_HardCodedVisitors_Svr.RegisterVisitors,
       Client_DBIndependentVisitors_Svr.RegisterVisitors
-    ) then
+   ) then
     Exit; //==>
 
 
@@ -32,3 +32,5 @@ begin
   Application.Run;
 
 end.
+
+

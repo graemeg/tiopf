@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
   
 
 type
@@ -24,15 +24,15 @@ type
     procedure paeClientSourceChange(Sender: TObject);
   private
   protected
-    procedure SetData(const Value: TtiObject); override ;
-    function  FormIsValid : boolean ; override ;
+    procedure SetData(const Value: TtiObject); override;
+    function  FormIsValid: boolean; override;
   public
   end;
 
 implementation
 uses
   Client_BOM
-  ;
+ ;
 
 {$R *.dfm}
 
@@ -40,27 +40,27 @@ uses
 
 function TFormClientEdit.FormIsValid: boolean;
 begin
-  result := Databuffer.IsValid(MemoErrors.Lines);
+  result:= Databuffer.IsValid(MemoErrors.Lines);
 end;
 
 procedure TFormClientEdit.SetData(const Value: TtiObject);
 begin
   inherited;
-  paeOID.Value := DataBuffer.OID.AsString ;
+  paeOID.Value:= DataBuffer.OID.AsString;
   paeClientName.LinkToData(DataBuffer, 'ClientName');
-  paeClientSource.Value := TClient(DataBuffer).ClientSource ;
+  paeClientSource.Value:= TClient(DataBuffer).ClientSource;
 end;
 
 procedure TFormClientEdit.FormCreate(Sender: TObject);
 begin
   inherited;
-  paeClientSource.List := gClientSources.List ;
+  paeClientSource.List:= gClientSources.List;
 end;
 
 procedure TFormClientEdit.paeClientSourceChange(Sender: TObject);
 begin
   inherited;
-  TClient(DataBuffer).ClientSource := paeClientSource.Value as TClientSource ;
+  TClient(DataBuffer).ClientSource:= paeClientSource.Value as TClientSource;
 end;
 
 end.

@@ -52,7 +52,7 @@ procedure TCityListFrm.LVCitiesDblClick(Sender: TObject);
 var
   c: TCity;
 begin
-  c := mCityList.SelectedObject as TCity;
+  c:= mCityList.SelectedObject as TCity;
   if not Assigned(c) then
     Exit; //==>
     
@@ -74,14 +74,14 @@ end;
 
 procedure TCityListFrm.SetupMediators;
 begin
-  mCityList := TCityList_ListView_Mediator.CreateCustom(gContactManager.CityList, LVCities, 'Name(110);Zip(80);CountryAsString(150)');
+  mCityList:= TCityList_ListView_Mediator.CreateCustom(gContactManager.CityList, LVCities, 'Name(110);Zip(80);CountryAsString(150)');
 end;
 
 class procedure TCityListFrm.ShowCities;
 var
   frm: TCityListFrm;
 begin
-  frm := TCityListFrm.Create(nil);
+  frm:= TCityListFrm.Create(nil);
   try
     frm.ShowModal;
   finally;

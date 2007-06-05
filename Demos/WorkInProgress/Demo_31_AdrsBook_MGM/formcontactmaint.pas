@@ -110,12 +110,12 @@ procedure TContactMaintFrm.SetupMediators;
 begin
 //  writeln('>>> SetupMediators');
 
-  mFName := TContact_FirstName_TEdit_Mediator.CreateCustom(edFName, Data, 'FirstName', 'Text');
-  mLName := TContact_LastName_TEdit_Mediator.CreateCustom(edLName, Data, 'LastName', 'Text');
-  mEMail := TContact_EMail_TEdit_Mediator.CreateCustom(edEmail, Data, 'EMail', 'Text');
-  mMobile := TContact_Mobile_TEdit_Mediator.CreateCustom(edMobile, Data, 'Mobile', 'Text');
-  mComments := TContact_Comments_TMemo_Mediator.CreateCustom(meComments, Data, 'Comments', 'Lines');
-//  mCity := TContact_City_TCombobox_Mediator.CreateCustom(gContactManager.CityList, cbCity, Data, 'City');
+  mFName:= TContact_FirstName_TEdit_Mediator.CreateCustom(edFName, Data, 'FirstName', 'Text');
+  mLName:= TContact_LastName_TEdit_Mediator.CreateCustom(edLName, Data, 'LastName', 'Text');
+  mEMail:= TContact_EMail_TEdit_Mediator.CreateCustom(edEmail, Data, 'EMail', 'Text');
+  mMobile:= TContact_Mobile_TEdit_Mediator.CreateCustom(edMobile, Data, 'Mobile', 'Text');
+  mComments:= TContact_Comments_TMemo_Mediator.CreateCustom(meComments, Data, 'Comments', 'Lines');
+//  mCity:= TContact_City_TCombobox_Mediator.CreateCustom(gContactManager.CityList, cbCity, Data, 'City');
   
   Data.NotifyObservers;
 
@@ -126,10 +126,10 @@ class function TContactMaintFrm.EditContact(AData: TContact): Boolean;
 var
   frm: TContactMaintFrm;
 begin
-  frm := TContactMaintFrm.Create(nil);
+  frm:= TContactMaintFrm.Create(nil);
   try
     frm.SetData(AData);
-    result := frm.ShowModal = mrOK;
+    result:= frm.ShowModal = mrOK;
   finally
     frm.Free;
   end;

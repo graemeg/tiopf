@@ -3,13 +3,13 @@ unit WhichPersistenceMechanism;
 interface
 
 type
-  TRegisterPersistenceMethod = procedure ;
+  TRegisterPersistenceMethod = procedure;
 
 function Execute(
   ARegisterAutoMapMethod,
   ARegisterHardCodedMethod,
   ARegisterDBIndependentMethod: TRegisterPersistenceMethod
-  ): boolean;
+ ): boolean;
 
 implementation
 uses
@@ -18,13 +18,13 @@ uses
   ,tiOPFManager
   ,tiConstants
   ,SysUtils
-  ;
+ ;
 
 function Execute(
     ARegisterAutoMapMethod,
     ARegisterHardCodedMethod,
     ARegisterDBIndependentMethod: TRegisterPersistenceMethod
-  ): boolean;
+ ): boolean;
 var
   LSelected: string;
 const

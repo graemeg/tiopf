@@ -21,7 +21,7 @@ implementation
 uses
   tiUtils
   ,tiRegINI
- ;
+;
 
 
 {$R *.DFM}
@@ -38,7 +38,9 @@ end;
 
 procedure TFormTiDialogAbs.FormClose(Sender: TObject;  var Action: TCloseAction);
 begin
-  ActiveControl := nil;
+  ActiveControl:= nil;
 end;
 
 end.
+
+

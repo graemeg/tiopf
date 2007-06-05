@@ -13,7 +13,7 @@ type
 // Paste this into the concrete class
 //  protected
 //    procedure SetData(const AValue: TtiObject); override;
-//    function  FormIsValid : boolean; override;
+//    function  FormIsValid: boolean; override;
 
   TFormTIPerEditDialog = class(TFormTiDialogAbs)
     btnOK: TBitBtn;
@@ -27,45 +27,45 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormShow(Sender: TObject);
   private
-    FAL        : TActionList;
-    FaOK       : TAction;
-    FaCancel   : TAction;
-    FData      : TtiObject;
-    FDataBuffer : TtiObject;
+    FAL       : TActionList;
+    FaOK      : TAction;
+    FaCancel  : TAction;
+    FData     : TtiObject;
+    FDataBuffer: TtiObject;
 
   protected
 
     procedure aOKExecute(Sender: TObject);virtual;
 
-    property  Databuffer : TtiObject read FDataBuffer write FDataBuffer;
+    property  Databuffer: TtiObject read FDataBuffer write FDataBuffer;
 
     // Implement these in the concrete...
     procedure SetData(const AValue: TtiObject); virtual;
-    function  FormIsValid : boolean; virtual;
-    function  FormIsEdited : boolean; virtual;
+    function  FormIsValid: boolean; virtual;
+    function  FormIsEdited: boolean; virtual;
     procedure SetupButtons;
 
   public
-    property Data : TtiObject read FData write SetData;
-    class function Execute(const AData : TtiObject; pReadOnly : boolean = false): boolean; virtual;
+    property Data: TtiObject read FData write SetData;
+    class function Execute(const AData: TtiObject; pReadOnly: boolean = false): boolean; virtual;
   end;
 
 implementation
 uses
   tiUtils
   ,tiRegINI
- ;
+;
 
 {$R *.DFM}
 
-class function TFormTIPerEditDialog.Execute(const AData: TtiObject; pReadOnly : boolean = false): boolean;
+class function TFormTIPerEditDialog.Execute(const AData: TtiObject; pReadOnly: boolean = false): boolean;
 var
-  lForm : TFormTIPerEditDialog;
+  lForm: TFormTIPerEditDialog;
 begin
-  lForm := Create(nil);
+  lForm:= Create(nil);
   try
-    lForm.Data := AData;
-    result := lForm.ShowModal = mrOK;
+    lForm.Data:= AData;
+    result:= lForm.ShowModal = mrOK;
   finally
     lForm.Free;
   end;
@@ -75,22 +75,22 @@ procedure TFormTIPerEditDialog.FormCreate(Sender: TObject);
 begin
   inherited;
 
-  FAL := TActionList.Create(Self);
-  FAL.OnUpdate := ALUpdate;
+  FAL:= TActionList.Create(Self);
+  FAL.OnUpdate:= ALUpdate;
 
-  FaOK := TAction.Create(FAL);
-  FaOK.ActionList := FAL;
-  FaOK.Caption  := '&OK';
-  FaOK.OnExecute := aOKExecute;
-  btnOK.Action := FaOK;
+  FaOK:= TAction.Create(FAL);
+  FaOK.ActionList:= FAL;
+  FaOK.Caption := '&OK';
+  FaOK.OnExecute:= aOKExecute;
+  btnOK.Action:= FaOK;
 
-  FaCancel := TAction.Create(FAL);
-  FaCancel.ActionList := FAL;
-  FaCancel.Caption  := '&Cancel';
-  FaCancel.OnExecute := aCancelExecute;
-  btnCancel.Action := FaCancel;
+  FaCancel:= TAction.Create(FAL);
+  FaCancel.ActionList:= FAL;
+  FaCancel.Caption := '&Cancel';
+  FaCancel.OnExecute:= aCancelExecute;
+  btnCancel.Action:= FaCancel;
 
-  cbEnterAsTab.Checked := gReg.ReadBool(Name, 'EnterAsTab', False);
+  cbEnterAsTab.Checked:= gReg.ReadBool(Name, 'EnterAsTab', False);
 
 end;
 
@@ -106,34 +106,34 @@ begin
   Assert(FData <> nil, 'FData not assigned');
   Assert(FDataBuffer <> nil, 'FDataBuffer not assigned');
   FData.Assign(FDataBuffer);
-  FData.Dirty := true;
-  ModalResult := mrOK;
+  FData.Dirty:= true;
+  ModalResult:= mrOK;
 end;
 
 procedure TFormTIPerEditDialog.aCancelExecute(Sender: TObject);
 begin
-  ModalResult := mrCancel;
+  ModalResult:= mrCancel;
 end;
 
 procedure TFormTIPerEditDialog.SetData(const AValue: TtiObject);
 begin
-  FData := AValue;
+  FData:= AValue;
   FreeAndNil(FDataBuffer);
   if FData <> nil then
-    FDataBuffer := FData.Clone;
+    FDataBuffer:= FData.Clone;
   SetupButtons;
 end;
 
 procedure TFormTIPerEditDialog.alUpdate(Action: TBasicAction; var Handled: Boolean);
 begin
-  FaOK.Enabled := FormIsValid and FormIsEdited;
-  btnCancel.Default := (not cbEnterAsTab.Checked) and (not FaOK.Enabled);
-  Handled := true;
+  FaOK.Enabled:= FormIsValid and FormIsEdited;
+  btnCancel.Default:= (not cbEnterAsTab.Checked) and (not FaOK.Enabled);
+  Handled:= true;
 end;
 
 function TFormTIPerEditDialog.FormIsValid: boolean;
 begin
-  result := true;
+  result:= true;
 end;
 
 
@@ -149,14 +149,14 @@ begin
   if (FData = nil) or
      (FDataBuffer = nil) then
   begin
-    FaOK.Enabled := false;
-    btnCancel.Default := true;
+    FaOK.Enabled:= false;
+    btnCancel.Default:= true;
     Exit; //==>
   end;
 
-  btnCancel.Default := false;
-  btnOK.Default := not cbEnterAsTab.Checked;
-  KeyPreview := cbEnterAsTab.Checked;
+  btnCancel.Default:= false;
+  btnOK.Default:= not cbEnterAsTab.Checked;
+  KeyPreview:= cbEnterAsTab.Checked;
 
 end;
 
@@ -164,7 +164,7 @@ procedure TFormTIPerEditDialog.FormKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
   begin
-    Key := #0; // Eat the Beep
+    Key:= #0; // Eat the Beep
     SelectNext(ActiveControl AS TWinControl, True, True) // Forward
   end
   else
@@ -179,10 +179,12 @@ end;
 
 function TFormTIPerEditDialog.FormIsEdited: boolean;
 begin
-  result := not FData.Equals(FDataBuffer);
+  result:= not FData.Equals(FDataBuffer);
 end;
 
 end.
+
+
 
 
 

@@ -10,7 +10,7 @@ uses
   ,Variants
   {$ENDIF}
   ,tiObject
-  ;
+ ;
 
 type
   TFormClientCompanyEdit = class(TFormClientAbsEdit)
@@ -18,13 +18,13 @@ type
   private
     { Private declarations }
   public
-    procedure SetData(const Value: TtiObject); override ;
+    procedure SetData(const Value: TtiObject); override;
   end;
 
 implementation
 uses
   Client_BOM
-  ;
+ ;
   
 {$R *.dfm}
 

@@ -11,7 +11,8 @@ uses
 begin
   Application.Initialize;
   if not TFormConnectToDatabase.Execute then
-    Exit ; //==>
+    Exit; //==>
   Application.CreateForm(TFormMainCreateTable, FormMainCreateTable);
   Application.Run;
 end.
+

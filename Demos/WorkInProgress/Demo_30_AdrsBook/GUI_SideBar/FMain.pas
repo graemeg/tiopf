@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ExtCtrls, tiListView, tiListViewPlus, tiPerAwareCtrls, Buttons,
   Adrs_Cli, ActnList, Menus, Adrs_BOM, ComCtrls, ToolWin, tiButtons,
-  ImgList, Contnrs, tiSplitter, tiObject, tiFormMgr ;
+  ImgList, Contnrs, tiSplitter, tiObject, tiFormMgr;
 
 type
 
@@ -73,10 +73,10 @@ type
     procedure aHelpAboutExecute(Sender: TObject);
     procedure aHelpShowLogFileExecute(Sender: TObject);
   private
-    FSelectedClients : TObjectList ;
-    FFirstCall : boolean ;
-    procedure CloseActiveForm(var Message: TMessage); message TI_CLOSEACTIVEFORM ;
-    procedure HintToStatusBar(Sender : TObject ) ;
+    FSelectedClients: TObjectList;
+    FFirstCall: boolean;
+    procedure CloseActiveForm(var Message: TMessage); message TI_CLOSEACTIVEFORM;
+    procedure HintToStatusBar(Sender: TObject);
   public
     { Public declarations }
   end;
@@ -95,63 +95,63 @@ uses
   ,FWorkList
   ,FtiAdrsListChild_Person
   ,FtiAdrsListChild_Company
-  ;
+ ;
 
 {$R *.DFM}
 
 const
-  cBorder = 8 ;
+  cBorder = 8;
 
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  SP.Panel1.Color := clAppWorkSpace ;
-  SP.Panel1.Font.Color := clWhite ;
-  SP.Panel2.Color := clNavy ;
-  gFormMgr.ParentPnl := pnlCntr ;
+  SP.Panel1.Color:= clAppWorkSpace;
+  SP.Panel1.Font.Color:= clWhite;
+  SP.Panel2.Color:= clNavy;
+  gFormMgr.ParentPnl:= pnlCntr;
   tiSaveWindowHandle(Self);
-  Application.OnHint := HintToStatusBar ;
-  Caption := Caption + ' - ' + gTIOPFManager.DefaultDBConnectionName ;
-  SP.Align := alClient ;
-  FSelectedClients := TObjectList.Create(false) ;
-  gINI.ReadFormState( self ) ;
-  FFirstCall := true ;
+  Application.OnHint:= HintToStatusBar;
+  Caption:= Caption + ' - ' + gTIOPFManager.DefaultDBConnectionName;
+  SP.Align:= alClient;
+  FSelectedClients:= TObjectList.Create(false);
+  gINI.ReadFormState(self);
+  FFirstCall:= true;
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
   gFormMgr.CloseAllForms;
-  FSelectedClients.Free ;
-  gINI.WriteFormState( self ) ;
+  FSelectedClients.Free;
+  gINI.WriteFormState(self);
 end;
 
 procedure TFormMain.aExitExecute(Sender: TObject);
 begin
-  if tiAppConfirmation( 'Are you sure you want to close ' + Caption ) then
-    Close ;
+  if tiAppConfirmation('Are you sure you want to close ' + Caption) then
+    Close;
 end;
 
 procedure TFormMain.pmClientPopup(Sender: TObject);
 //var
-//  i : integer ;
-//  lMenuItem : TMenuItem ;
+//  i: integer;
+//  lMenuItem: TMenuItem;
 begin
 {
-  for i := pmClient.Items.Count - 1 downto 3 do
+  for i:= pmClient.Items.Count - 1 downto 3 do
     pmClient.Items.Delete(i);
-  lMenuItem := TMenuItem.Create( pmClient ) ;
-  lMenuItem.Caption := '-' ;
-  pmClient.Items.Add( lMenuItem ) ;
-  for i := FSelectedClients.Count - 1 downto 0 do
+  lMenuItem:= TMenuItem.Create(pmClient);
+  lMenuItem.Caption:= '-';
+  pmClient.Items.Add(lMenuItem);
+  for i:= FSelectedClients.Count - 1 downto 0 do
   begin
-    lMenuItem := TMenuItem.Create( pmClient ) ;
-    lMenuItem.Caption :=
-      IntToStr( FSelectedClients.Count - i ) +
+    lMenuItem:= TMenuItem.Create(pmClient);
+    lMenuItem.Caption:=
+      IntToStr(FSelectedClients.Count - i) +
       '. ' +
-      TtiObject( FSelectedClients.Items[i] ).Caption ;
-    lMenuItem.OnClick := DoSelectedClientEditClick ;
-    lMenuItem.Tag := i ;
-    pmClient.Items.Add( lMenuItem ) ;
-  end ;
+      TtiObject(FSelectedClients.Items[i]).Caption;
+    lMenuItem.OnClick:= DoSelectedClientEditClick;
+    lMenuItem.Tag:= i;
+    pmClient.Items.Add(lMenuItem);
+  end;
 }  
 end;
 
@@ -159,19 +159,19 @@ procedure TFormMain.FormShow(Sender: TObject);
 begin
   if FFirstCall then
   begin
-    FFirstCall := false ;
+    FFirstCall:= false;
     aDaysWorkListExecute(nil);
-  end ;
+  end;
 end;
 
-procedure TFormMain.HintToStatusBar( Sender : TObject ) ;
+procedure TFormMain.HintToStatusBar(Sender: TObject);
 begin
-  SB.Panels[0].Text := GetLongHint(Application.Hint);
+  SB.Panels[0].Text:= GetLongHint(Application.Hint);
 end;
 
 procedure TFormMain.aFormPreviousExecute(Sender: TObject);
 begin
-  gFormMgr.ShowPrevForm ;
+  gFormMgr.ShowPrevForm;
 end;
 
 procedure TFormMain.aFormNextExecute(Sender: TObject);
@@ -186,10 +186,10 @@ end;
 
 procedure TFormMain.ActionList1Update(Action: TBasicAction; var Handled: Boolean);
 begin
-  Handled := true ;
-  aFormPrevious.Enabled := gFormMgr.PrevForm <> nil ;
-  aFormNext.Enabled     := gFormMgr.NextForm <> nil ;
-  aFormClose.Enabled    := gFormMgr.ActiveForm <> nil ;
+  Handled:= true;
+  aFormPrevious.Enabled:= gFormMgr.PrevForm <> nil;
+  aFormNext.Enabled    := gFormMgr.NextForm <> nil;
+  aFormClose.Enabled   := gFormMgr.ActiveForm <> nil;
 
 end;
 
@@ -198,23 +198,23 @@ begin
   pnlCntr.SetBounds(
     cBorder, cBorder,
     SP.Panel2.ClientWidth - cBorder*2,
-    SP.Panel2.ClientHeight - cBorder*2 ) ;
+    SP.Panel2.ClientHeight - cBorder*2);
   imgWallpaper.SetBounds(
-    ( pnlCntr.ClientWidth - imgWallPaper.Width ) div 2,
-    ( pnlCntr.ClientHeight - imgWallPaper.Height ) div 2,
+    (pnlCntr.ClientWidth - imgWallPaper.Width) div 2,
+    (pnlCntr.ClientHeight - imgWallPaper.Height) div 2,
     imgWallPaper.Width,
     imgWallPaper.Height
- );
+);
 end;
 
 procedure TFormMain.CloseActiveForm(var Message: TMessage);
 begin
-  tmrCloseForm.Enabled := true ;
+  tmrCloseForm.Enabled:= true;
 end;
 
 procedure TFormMain.tmrCloseFormTimer(Sender: TObject);
 begin
-  tmrCloseForm.Enabled := false ;
+  tmrCloseForm.Enabled:= false;
   aFormCloseExecute(nil);
 end;
 
@@ -236,7 +236,7 @@ end;
 procedure TFormMain.aNewCompanyExecute(Sender: TObject);
 begin
   FtiAdrsListChild_Company.EditNewCompany;
-end ;
+end;
 
 procedure TFormMain.aHelpAboutExecute(Sender: TObject);
 begin
@@ -245,7 +245,7 @@ end;
 
 procedure TFormMain.aHelpShowLogFileExecute(Sender: TObject);
 begin
-  tiEditFile( gLog.LogFileName ) ;
+  tiEditFile(gLog.LogFileName);
 end;
 
 end.

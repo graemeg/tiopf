@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
 
 
 type
@@ -24,7 +24,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure btnSearchClick(Sender: TObject);
   private
-    FClients : TClients ;
+    FClients: TClients;
   public
     { Public declarations }
   end;
@@ -39,30 +39,30 @@ implementation
 procedure TFormCollectionHardCoded.FormCreate(Sender: TObject);
 begin
   LV.AddColumn('ClientID',   vttkString, 'Client ID', 80);
-  LV.AddColumn('ClientName', vttkString, 'Client name', 350 );
-  FClients := TClients.Create ;
+  LV.AddColumn('ClientName', vttkString, 'Client name', 350);
+  FClients:= TClients.Create;
 end;
 
 procedure TFormCollectionHardCoded.FormDestroy(Sender: TObject);
 begin
-  FClients.Free ;
+  FClients.Free;
 end;
 
 procedure TFormCollectionHardCoded.btnSearchClick(Sender: TObject);
 var
   LClientsLike: TClientsLike;
 begin
-  LV.Data := nil ;
+  LV.Data:= nil;
   LClientsLike:= TClientsLike.Create;
   try
-    LClientsLike.ClientNameLike := paeClientName.Value ;
+    LClientsLike.ClientNameLike:= paeClientName.Value;
     LClientsLike.Clients:= FClients;
-    LClientsLike.Read ;
+    LClientsLike.Read;
   finally
     LClientsLike.Free;
   end;
-  LV.Data := FClients ;
-  lblCount.Caption := 'Count: ' + IntToStr( FClients.Count );
+  LV.Data:= FClients;
+  lblCount.Caption:= 'Count: ' + IntToStr(FClients.Count);
 end;
 
 end.

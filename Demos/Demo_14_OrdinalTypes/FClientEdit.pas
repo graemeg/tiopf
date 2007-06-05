@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
   
 
 type
@@ -23,15 +23,15 @@ type
     procedure FormCreate(Sender: TObject);
   private
   protected
-    procedure SetData(const Value: TtiObject); override ;
-    function  FormIsValid : boolean ; override ;
+    procedure SetData(const Value: TtiObject); override;
+    function  FormIsValid: boolean; override;
   public
   end;
 
 implementation
 uses
   Client_BOM
-  ;
+ ;
   
 {$R *.dfm}
 
@@ -39,13 +39,13 @@ uses
 
 function TFormClientEdit.FormIsValid: boolean;
 begin
-  result := Databuffer.IsValid(MemoErrors.Lines);
+  result:= Databuffer.IsValid(MemoErrors.Lines);
 end;
 
 procedure TFormClientEdit.SetData(const Value: TtiObject);
 begin
   inherited;
-  paeOID.Value := DataBuffer.OID.AsString ;
+  paeOID.Value:= DataBuffer.OID.AsString;
   paeClientName.LinkToData(DataBuffer, 'ClientName');
   paeSex.LinkToData(DataBuffer,'SexAsGUIString');
 end;

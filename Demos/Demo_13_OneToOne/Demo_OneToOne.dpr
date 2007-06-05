@@ -16,7 +16,7 @@ begin
 
   Application.Initialize;
   if not TFormConnectToDatabase.Execute then
-    Exit ; //==>
+    Exit; //==>
 
   // Register the class-database mappings
   Client_BOM.RegisterMappings;
@@ -25,3 +25,4 @@ begin
   Application.Run;
 
 end.
+

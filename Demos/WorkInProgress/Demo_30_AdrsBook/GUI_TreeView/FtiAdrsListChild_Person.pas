@@ -8,7 +8,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Adrs_BOM, ComCtrls, tiListView, StdCtrls, tiPerAwareCtrls,
   tiSplitter, ExtCtrls, tiFocusPanel, tiObject
-  ;
+ ;
 
 type
   TFormEditPerson = class(TForm)
@@ -38,16 +38,16 @@ type
     procedure lvAddressItemInsert(pLV: TtiCustomListView;
       pData: TPersistent; pItem: TListItem);
   private
-    FData     : TPerson ;
-    FTreeNode : TTreeNode;
+    FData    : TPerson;
+    FTreeNode: TTreeNode;
     procedure SetData(const Value: TtiObject);
-    function  GetData : TtiObject;
+    function  GetData: TtiObject;
     function  GetValid: boolean;
   published
     // These published properties are required by the TtiTreeViewPlus
-    property Data : TtiObject read GetData write SetData ;
-    property TreeNode : TTreeNode read FTreeNode write FTreeNode ;
-    property Valid    : boolean   read GetValid ;
+    property Data: TtiObject read GetData write SetData;
+    property TreeNode: TTreeNode read FTreeNode write FTreeNode;
+    property Valid   : boolean   read GetValid;
   public
 
   end;
@@ -59,7 +59,7 @@ uses
   ,FEdit_Addrs
   ,FEdit_EAddrs
   ,tiDialogs
-  ;
+ ;
 
 {$R *.DFM}
 
@@ -73,14 +73,14 @@ uses
 procedure TFormEditPerson.FormShow(Sender: TObject);
 begin
   if FData.ObjectState = posCreate then
-    paeLastName.SetFocus ;
+    paeLastName.SetFocus;
 end;
 
 // Data's Get method
 //------------------------------------------------------------------------------
 function TFormEditPerson.GetData: TtiObject;
 begin
-  result := FData ;
+  result:= FData;
 end;
 
 // Data's Set method. Write data to the appropriate GUI controls.
@@ -88,20 +88,20 @@ end;
 procedure TFormEditPerson.SetData(const Value: TtiObject);
 begin
   if Value = nil then begin
-    FData := nil ;
-    exit ; //=>
-  end ;
+    FData:= nil;
+    exit; //=>
+  end;
 
-  FData := Value as TPerson ;
+  FData:= Value as TPerson;
 
-  paeLastName.LinkToData( FData, 'LastName' ) ;
-  paeFirstName.LinkToData( FData, 'FirstName' ) ;
-  paeInitials.LinkToData( FData, 'Initials' ) ;
-  paeTitle.LinkToData( FData, 'Title' ) ;
-  paeNotes.LinkToData( FData, 'Notes' ) ;
+  paeLastName.LinkToData(FData, 'LastName');
+  paeFirstName.LinkToData(FData, 'FirstName');
+  paeInitials.LinkToData(FData, 'Initials');
+  paeTitle.LinkToData(FData, 'Title');
+  paeNotes.LinkToData(FData, 'Notes');
 
-  LVEAddress.Data   := FData.EAddressList.List ;
-  LVAddress.Data    := FData.AddressList.List ;
+  LVEAddress.Data  := FData.EAddressList.List;
+  LVAddress.Data   := FData.AddressList.List;
 
 end;
 
@@ -112,28 +112,28 @@ end;
 //------------------------------------------------------------------------------
 function TFormEditPerson.GetValid: boolean;
 begin
-  result := true ;
+  result:= true;
   if FData = nil then
-    exit ; //==>
+    exit; //==>
 
   // Has there been a change made ?
-  //if ( FData.LastName    = eLastName.Text    ) and
-  if ( not paeLastName.Dirty    ) and
-     ( not paeFirstName.Dirty   ) and
-     ( not paeInitials.Dirty    ) and
-     ( not paeTitle.Dirty       ) and
-     ( not paeNotes.Dirty ) then
-    exit ;
+  //if (FData.LastName    = eLastName.Text   ) and
+  if (not paeLastName.Dirty   ) and
+     (not paeFirstName.Dirty  ) and
+     (not paeInitials.Dirty   ) and
+     (not paeTitle.Dirty      ) and
+     (not paeNotes.Dirty) then
+    exit;
 
   // Check for a valid lastName
-  if SameText( paeLastName.Value, EmptyStr ) then begin
-    MessageDlg( 'Please enter a last name',
+  if SameText(paeLastName.Value, EmptyStr) then begin
+    MessageDlg('Please enter a last name',
                 mtInformation,
-                [mbOK], 0 ) ;
-    paeLastName.SetFocus ;
-    result := false ;
-    exit ; //==>
-  end ;
+                [mbOK], 0);
+    paeLastName.SetFocus;
+    result:= false;
+    exit; //==>
+  end;
 
 end;
 
@@ -141,69 +141,69 @@ end;
 //------------------------------------------------------------------------------
 procedure TFormEditPerson.LVEAddressFilterData(pData: TPersistent; var pbInclude: Boolean);
 begin
-//  pbInclude := not ( pData as TtiObject ).Deleted ;
-end ;
+//  pbInclude:= not (pData as TtiObject).Deleted;
+end;
 
 procedure TFormEditPerson.paeLastNameChange(Sender: TObject);
 begin
-  FData.Dirty := true ;
-  TreeNode.Text := FData.Caption ;
+  FData.Dirty:= true;
+  TreeNode.Text:= FData.Caption;
 end;
 
 procedure TFormEditPerson.lvEAddressItemEdit(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-//  if TFormEdit_EAdrs.Execute( pData as TEAdrs) then
-//    pLV.Refresh ;
+//  if TFormEdit_EAdrs.Execute(pData as TEAdrs) then
+//    pLV.Refresh;
 end;
 
 procedure TFormEditPerson.lvEAddressItemInsert(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TEAdrs ;
+  lData: TEAdrs;
 begin
-  lData := TEAdrs.CreateNew ;
-  if TFormEdit_EAdrs.Execute( lData ) then
+  lData:= TEAdrs.CreateNew;
+  if TFormEdit_EAdrs.Execute(lData) then
   begin
-    FData.EAddressList.Add( lData ) ;
-    LVEAddress.Refresh ;
+    FData.EAddressList.Add(lData);
+    LVEAddress.Refresh;
   end else
-    lData.Free ;
+    lData.Free;
 end;
 
 procedure TFormEditPerson.lvEAddressItemDelete(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TAdrsAbs ;
+  lData: TAdrsAbs;
 begin
-//  lData := pData as TAdrsAbs ;
-//  if tiAppConfirmation( 'Are you sure you want to delete <%s - %s> ?',
-//                        [lData.AdrsType.Text, lData.Caption] ) then
+//  lData:= pData as TAdrsAbs;
+//  if tiAppConfirmation('Are you sure you want to delete <%s - %s> ?',
+//                        [lData.AdrsType.Text, lData.Caption]) then
 //  begin
-//    lData.Deleted := true ;
-//    pLV.Refresh ;
-//  end ;
+//    lData.Deleted:= true;
+//    pLV.Refresh;
+//  end;
 end;
 
 procedure TFormEditPerson.lvAddressItemEdit(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-//  if TFormEdit_Adrs.Execute( pData as TAdrs ) then
-//    pLV.Refresh ;
+//  if TFormEdit_Adrs.Execute(pData as TAdrs) then
+//    pLV.Refresh;
 end;
 
 procedure TFormEditPerson.lvAddressItemInsert(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TAdrs ;
+  lData: TAdrs;
 begin
-  lData := TAdrs.CreateNew ;
-  if TFormEdit_Adrs.Execute( lData ) then
+  lData:= TAdrs.CreateNew;
+  if TFormEdit_Adrs.Execute(lData) then
   begin
-    FData.AddressList.Add( lData ) ;
-    LVAddress.Refresh ;
+    FData.AddressList.Add(lData);
+    LVAddress.Refresh;
   end else
-    lData.Free ;
+    lData.Free;
 end;
 
 end.

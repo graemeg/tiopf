@@ -7,89 +7,89 @@ interface
 uses
   tiVisitorDB
   ,tiVisitorDBAutoGen
-  ;
+ ;
 
 type
 
   // Read visitors
-  TVisClientCompany_Read = class( TVisDBAutoGenRead )
+  TVisClientCompany_Read = class(TVisDBAutoGenRead)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-    procedure MapRowToObject ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+    procedure MapRowToObject; override;
+  end;
 
-  TVisClientPerson_Read = class( TVisDBAutoGenRead )
+  TVisClientPerson_Read = class(TVisDBAutoGenRead)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-    procedure MapRowToObject ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+    procedure MapRowToObject; override;
+  end;
 
-  TVisClientAbs_Read = class( TVisDBAutoGenRead )
+  TVisClientAbs_Read = class(TVisDBAutoGenRead)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-    procedure MapRowToObject ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+    procedure MapRowToObject; override;
+  end;
 
   // Update visitors
-  TVisClientAbs_Update = class( TVisDBAutoGenUpdate )
+  TVisClientAbs_Update = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
-  TVisClientCompany_Update = class( TVisDBAutoGenUpdate )
+  TVisClientCompany_Update = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
-  TVisClientPerson_Update = class( TVisDBAutoGenUpdate )
+  TVisClientPerson_Update = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
   // Delete visitors
-  TVisClientCompany_Delete = class( TVisDBAutoGenDelete )
+  TVisClientCompany_Delete = class(TVisDBAutoGenDelete)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams   ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams  ; override;
+  end;
 
-  TVisClientPerson_Delete = class( TVisDBAutoGenDelete )
+  TVisClientPerson_Delete = class(TVisDBAutoGenDelete)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams   ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams  ; override;
+  end;
 
-  TVisClientAbs_Delete = class( TVisDBAutoGenDelete )
+  TVisClientAbs_Delete = class(TVisDBAutoGenDelete)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
   // Create visitors
-  TVisClientAbs_Create = class( TVisDBAutoGenUpdate )
+  TVisClientAbs_Create = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
-  TVisClientCompany_Create = class( TVisDBAutoGenUpdate )
+  TVisClientCompany_Create = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
   // TClientPerson
-  TVisClientPerson_Create = class( TVisDBAutoGenUpdate )
+  TVisClientPerson_Create = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
 procedure RegisterVisitors;
 
@@ -100,7 +100,7 @@ uses
   ,tiQuery
   ,SysUtils
   ,Client_BOM
-  ;
+ ;
 
 procedure RegisterVisitors;
 begin
@@ -128,18 +128,18 @@ end;
 
 function TVisClientPerson_Read.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClients ) and
-            ( Visited.ObjectState = posEmpty ) ;
+  result:= (Visited is TClients) and
+            (Visited.ObjectState = posEmpty);
 end;
 
 procedure TVisClientPerson_Read.MapRowToObject;
 var
-  lClient : TClientPerson ;
+  lClient: TClientPerson;
 begin
-  lClient := TClientPerson.Create ;
+  lClient:= TClientPerson.Create;
   lClient.OID.AssignFromTIQuery('OID', Query);
-  lClient.GivenName := Query.FieldAsString['Given_Name'];
-  lClient.FamilyName := Query.FieldAsString['Family_Name'];
+  lClient.GivenName:= Query.FieldAsString['Given_Name'];
+  lClient.FamilyName:= Query.FieldAsString['Family_Name'];
   TClients(Visited).Add(lClient);
 end;
 
@@ -152,8 +152,8 @@ end;
 
 function TVisClientPerson_Create.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClientPerson ) and
-            ( Visited.ObjectState = posCreate ) ;
+  result:= (Visited is TClientPerson) and
+            (Visited.ObjectState = posCreate);
 end;
 
 procedure TVisClientPerson_Create.SetupParams;
@@ -172,17 +172,17 @@ end;
 
 function TVisClientPerson_Update.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClientPerson ) and
-            ( Visited.ObjectState = posUpdate ) ;
+  result:= (Visited is TClientPerson) and
+            (Visited.ObjectState = posUpdate);
 end;
 
 procedure TVisClientPerson_Update.SetupParams;
 var
-  lData : TClientPerson ;
+  lData: TClientPerson;
 begin
   TableName:= 'client_person';
   QueryType:= qtUpdate;
-  lData := Visited as TClientPerson ;
+  lData:= Visited as TClientPerson;
   QueryWhere.SetValueAsString('OID', LData.OID.AsString);
   QueryParams.SetValueAsString('Given_Name', LData.GivenName);
   QueryParams.SetValueAsString('Family_Name', LData.FamilyName);
@@ -192,8 +192,8 @@ end;
 
 function TVisClientPerson_Delete.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClientPerson ) and
-            ( Visited.ObjectState = posDelete ) ;
+  result:= (Visited is TClientPerson) and
+            (Visited.ObjectState = posDelete);
 end;
 
 procedure TVisClientPerson_Delete.SetupParams;
@@ -206,17 +206,17 @@ end;
 
 function TVisClientAbs_Create.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClientAbs ) and
-            ( Visited.ObjectState = posCreate ) ;
+  result:= (Visited is TClientAbs) and
+            (Visited.ObjectState = posCreate);
 end;
 
 procedure TVisClientAbs_Create.SetupParams;
 var
-  LData : TClientAbs ;
+  LData: TClientAbs;
 begin
   QueryType:= qtInsert;
   TableName:= 'client_abs';
-  LData := Visited as TClientAbs ;
+  LData:= Visited as TClientAbs;
   QueryParams.SetValueAsString('OID', LData.OID.AsString);
   QueryParams.SetValueAsString('Client_ID', LData.ClientID);
 end;
@@ -225,17 +225,17 @@ end;
 
 function TVisClientCompany_Read.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClients ) and
-            ( Visited.ObjectState = posEmpty ) ;
+  result:= (Visited is TClients) and
+            (Visited.ObjectState = posEmpty);
 end;
 
 procedure TVisClientCompany_Read.MapRowToObject;
 var
-  lClient : TClientCompany ;
+  lClient: TClientCompany;
 begin
-  lClient := TClientCompany.Create ;
+  lClient:= TClientCompany.Create;
   lClient.OID.AssignFromTIQuery('OID', Query);
-  lClient.CompanyName := Query.FieldAsString['Company_Name'];
+  lClient.CompanyName:= Query.FieldAsString['Company_Name'];
   TClients(Visited).Add(lClient);
 end;
 
@@ -248,17 +248,17 @@ end;
 
 function TVisClientAbs_Update.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClientAbs ) and
-            ( Visited.ObjectState = posUpdate ) ;
+  result:= (Visited is TClientAbs) and
+            (Visited.ObjectState = posUpdate);
 end;
 
 procedure TVisClientAbs_Update.SetupParams;
 var
-  lData : TClientAbs ;
+  lData: TClientAbs;
 begin
   TableName:= 'client_abs';
   QueryType:= qtUpdate;
-  lData := Visited as TClientAbs;
+  lData:= Visited as TClientAbs;
   QueryWhere.SetValueAsString('OID', LData.OID.AsString);
   QueryParams.SetValueAsString('Client_ID', LData.ClientID);
 end;
@@ -267,8 +267,8 @@ end;
 
 function TVisClientAbs_Delete.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClientAbs ) and
-            ( Visited.ObjectState = posDelete ) ;
+  result:= (Visited is TClientAbs) and
+            (Visited.ObjectState = posDelete);
 end;
 
 procedure TVisClientAbs_Delete.SetupParams;
@@ -281,8 +281,8 @@ end;
 
 function TVisClientCompany_Create.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClientCompany ) and
-            ( Visited.ObjectState = posCreate ) ;
+  result:= (Visited is TClientCompany) and
+            (Visited.ObjectState = posCreate);
 end;
 
 procedure TVisClientCompany_Create.SetupParams;
@@ -300,17 +300,17 @@ end;
 
 function TVisClientCompany_Update.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClientCompany ) and
-            ( Visited.ObjectState = posUpdate ) ;
+  result:= (Visited is TClientCompany) and
+            (Visited.ObjectState = posUpdate);
 end;
 
 procedure TVisClientCompany_Update.SetupParams;
 var
-  lData : TClientCompany ;
+  lData: TClientCompany;
 begin
   TableName:= 'client_company';
   QueryType:= qtUpdate;
-  lData := Visited as TClientCompany ;
+  lData:= Visited as TClientCompany;
   QueryWhere.SetValueAsString('OID', LData.OID.AsString);
   QueryParams.SetValueAsString('Company_Name', LData.CompanyName);
 end;
@@ -319,8 +319,8 @@ end;
 
 function TVisClientCompany_Delete.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClientCompany ) and
-            ( Visited.ObjectState = posDelete ) ;
+  result:= (Visited is TClientCompany) and
+            (Visited.ObjectState = posDelete);
 end;
 
 procedure TVisClientCompany_Delete.SetupParams;
@@ -333,20 +333,20 @@ end;
 
 function TVisClientAbs_Read.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClients ) and
-            ( Visited.ObjectState = posEmpty ) ;
+  result:= (Visited is TClients) and
+            (Visited.ObjectState = posEmpty);
 end;
 
 procedure TVisClientAbs_Read.MapRowToObject;
 var
-  lClient : TClientAbs ;
+  lClient: TClientAbs;
   LOID: string;
 begin
   LOID:= Query.FieldAsString['OID'];
   LClient:= (Visited as TClients).Find(LOID) as TClientAbs;
   if LClient = nil then
     raise Exception.CreateFmt('Can not find client OID="%s"', [LOID]);
-  lClient.ClientID := Query.FieldAsString['client_id'];
+  lClient.ClientID:= Query.FieldAsString['client_id'];
   LClient.ObjectState:= posClean;
 end;
 

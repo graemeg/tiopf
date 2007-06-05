@@ -8,7 +8,7 @@ uses
   ,Adrs_BOM
 //  ,Adrs_SrvAutoGenSQL  // For auto generated SQL
   ,tiOPFManager
- ;
+;
 
 procedure ConnectToDatabase;
 

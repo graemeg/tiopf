@@ -4,7 +4,7 @@ interface
 uses
    tiBaseObject
   ,Adrs_BOM
-  ;
+ ;
 
 type
 
@@ -22,7 +22,7 @@ function GAdrsManager: TAdrsManager;
 implementation
 uses
   SysUtils
-  ;
+ ;
   
 var
   uAdrsManager: TAdrsManager;

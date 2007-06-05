@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
   
 
 type
@@ -59,7 +59,7 @@ type
     procedure aShowObjectsExecute(Sender: TObject);
     procedure aInsertClientsExecute(Sender: TObject);
   private
-    FClients : TClients ;
+    FClients: TClients;
     procedure CreateTables;
     procedure DropTables;
   public
@@ -79,45 +79,45 @@ uses
   ,FPhoneNumberEdit
   ,tiDialogs
   ,tiGUIUtils
-  ;
+ ;
 
 {$R *.dfm}
 
 // Create table
 procedure TFormMainOneToMany.CreateTables;
 var
-  lTableMetaData : TtiDBMetaDataTable ;
+  lTableMetaData: TtiDBMetaDataTable;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Client' ;
-    lTableMetaData.AddField( 'OID',               qfkString,  36 ) ; // Using GUID OIDs
-    lTableMetaData.AddField( 'Client_Name',       qfkString, 200 ) ;
-    lTableMetaData.AddField( 'Client_ID',         qfkString,   9 ) ;
-    gTIOPFManager.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name:= 'Client';
+    lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddField('Client_Name',       qfkString, 200);
+    lTableMetaData.AddField('Client_ID',         qfkString,   9);
+    gTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Phone_Number' ;
-    lTableMetaData.AddField( 'OID',               qfkString, 36 ) ; // Using GUID OIDs
-    lTableMetaData.AddField( 'Client_OID',        qfkString, 36 ) ;
-    lTableMetaData.AddField( 'Number_Type',       qfkString, 20 ) ;
-    lTableMetaData.AddField( 'Number_Text',       qfkString, 19 ) ;
-    gTIOPFManager.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name:= 'Phone_Number';
+    lTableMetaData.AddField('OID',               qfkString, 36); // Using GUID OIDs
+    lTableMetaData.AddField('Client_OID',        qfkString, 36);
+    lTableMetaData.AddField('Number_Type',       qfkString, 20);
+    lTableMetaData.AddField('Number_Text',       qfkString, 19);
+    gTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 
 end;
 
 // Drop table
 procedure TFormMainOneToMany.DropTables;
 begin
-  try gTIOPFManager.DropTable( 'Client' ) except end ;
-  try gTIOPFManager.DropTable( 'Phone_Number' ) except end ;
+  try gTIOPFManager.DropTable('Client') except end;
+  try gTIOPFManager.DropTable('Phone_Number') except end;
 end;
 
 procedure TFormMainOneToMany.FormCreate(Sender: TObject);
@@ -127,20 +127,20 @@ begin
     '(Select "Yes" if this is the first time you have run the demo.)') then
   begin
     DropTables;
-    CreateTables ;
+    CreateTables;
   end;
   
-  Caption := 'Connected to ' + gTIOPFManager.DefaultDBConnectionName ;
+  Caption:= 'Connected to ' + gTIOPFManager.DefaultDBConnectionName;
   lvClients.AddColumn('ClientID',   vttkString, 'Client ID', 80);
-  lvClients.AddColumn('ClientName', vttkString, 'Client name', 200 );
+  lvClients.AddColumn('ClientName', vttkString, 'Client name', 200);
 
-  lvPhoneNumbers.AddColumn('NumberType', vttkString, 'Number type', 80 );
+  lvPhoneNumbers.AddColumn('NumberType', vttkString, 'Number type', 80);
   lvPhoneNumbers.AddColumn('NumberText', vttkString, 'Number', 200);
 
-  paeClientCount.Value      := 10 ;
-  paePhoneNumberCount.Value := 2 ;
+  paeClientCount.Value     := 10;
+  paePhoneNumberCount.Value:= 2;
 
-  FClients := TClients.Create ;
+  FClients:= TClients.Create;
 
   aReadExecute(nil);
 
@@ -148,7 +148,7 @@ end;
 
 procedure TFormMainOneToMany.aSaveExecute(Sender: TObject);
 begin
-  FClients.Save ;
+  FClients.Save;
 end;
 
 procedure TFormMainOneToMany.aShowObjectsExecute(Sender: TObject);
@@ -158,26 +158,26 @@ end;
 
 procedure TFormMainOneToMany.FormDestroy(Sender: TObject);
 begin
-  FClients.Free ;
+  FClients.Free;
 end;
 
 procedure TFormMainOneToMany.lvClientsFilterData(pData: TtiObject; var pInclude: Boolean);
 begin
   Assert(pData.TestValid, cTIInvalidObjectError);
-  pInclude := not pData.Deleted ;
+  pInclude:= not pData.Deleted;
 end;
 
 procedure TFormMainOneToMany.lvClientsItemArrive(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode);
 begin
-  lvPhoneNumbers.Data := ( pData as TClient ).PhoneNumbers ;
+  lvPhoneNumbers.Data:= (pData as TClient).PhoneNumbers;
 end;
 
 procedure TFormMainOneToMany.lvClientsItemDelete(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode);
 begin
   if tiPerObjAbsConfirmAndDelete(pData) then
-    lvClients.Refresh ;
+    lvClients.Refresh;
 end;
 
 procedure TFormMainOneToMany.lvClientsItemEdit(pVT: TtiCustomVirtualTree;
@@ -190,35 +190,35 @@ end;
 procedure TFormMainOneToMany.lvClientsItemInsert(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode);
 var
-  LClient : TClient ;
+  LClient: TClient;
 begin
-  LClient := TClient.CreateNew ;
+  LClient:= TClient.CreateNew;
   if TFormClientEdit.Execute(LClient) then
   begin
     FClients.Add(LClient);
     lvClients.Refresh(LClient);
   end
   else
-    LClient.Free ;
+    LClient.Free;
 end;
 
 procedure TFormMainOneToMany.lvClientsItemLeave(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode);
 begin
-  lvPhoneNumbers.Data := nil ;
+  lvPhoneNumbers.Data:= nil;
 end;
 
 procedure TFormMainOneToMany.lvPhoneNumbersCanInsert(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode; var pCanPerformAction: Boolean);
 begin
-  pCanPerformAction := lvClients.SelectedData <> nil ;
+  pCanPerformAction:= lvClients.SelectedData <> nil;
 end;
 
 procedure TFormMainOneToMany.lvPhoneNumbersItemDelete(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode);
 begin
   if tiPerObjAbsConfirmAndDelete(pData) then
-    lvPhoneNumbers.Refresh ;
+    lvPhoneNumbers.Refresh;
 end;
 
 procedure TFormMainOneToMany.lvPhoneNumbersItemEdit(pVT: TtiCustomVirtualTree;
@@ -231,55 +231,55 @@ end;
 procedure TFormMainOneToMany.lvPhoneNumbersItemInsert(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode);
 var
-  LPhoneNumber : TPhoneNumber ;
-  LClient : TClient ;
+  LPhoneNumber: TPhoneNumber;
+  LClient: TClient;
 begin
-  LClient := lvClients.SelectedData as TClient ;
-  LPhoneNumber := TPhoneNumber.CreateNew ;
+  LClient:= lvClients.SelectedData as TClient;
+  LPhoneNumber:= TPhoneNumber.CreateNew;
   if TFormPhoneNumberEdit.Execute(LPhoneNumber) then
   begin
     LClient.PhoneNumbers.Add(LPhoneNumber);
     lvPhoneNumbers.Refresh(LPhoneNumber);
   end
   else
-    LPhoneNumber.Free ;
+    LPhoneNumber.Free;
 end;
 
 procedure TFormMainOneToMany.ActionList1Update(Action: TBasicAction;var Handled: Boolean);
 begin
-  aSave.Enabled := FClients.Dirty ;
+  aSave.Enabled:= FClients.Dirty;
 end;
 
 procedure TFormMainOneToMany.aInsertClientsExecute(Sender: TObject);
 var
-  i, j : integer ;
-  lClient : TClient ;
-  lPhoneNumber : TPhoneNumber ;
+  i, j: integer;
+  lClient: TClient;
+  lPhoneNumber: TPhoneNumber;
 begin
-  for i := 1 to Trunc(paeClientCount.Value) do
+  for i:= 1 to Trunc(paeClientCount.Value) do
   begin
-    lClient := TClient.CreateNew ;
-    lClient.ClientName := IntToStr(i);
-    lClient.ClientID   := lClient.ClientName;
+    lClient:= TClient.CreateNew;
+    lClient.ClientName:= IntToStr(i);
+    lClient.ClientID  := lClient.ClientName;
     FClients.Add(lClient);
-    for j := 1 to Trunc(paePhoneNumberCount.Value) do
+    for j:= 1 to Trunc(paePhoneNumberCount.Value) do
     begin
-      lPhoneNumber := TPhoneNumber.CreateNew ;
-      lPhoneNumber.NumberType := lClient.ClientName + '.' + IntToStr(j);
-      lPhoneNumber.NumberText := lPhoneNumber.NumberType;
+      lPhoneNumber:= TPhoneNumber.CreateNew;
+      lPhoneNumber.NumberType:= lClient.ClientName + '.' + IntToStr(j);
+      lPhoneNumber.NumberText:= lPhoneNumber.NumberType;
       lClient.PhoneNumbers.Add(lPhoneNumber);
-    end ;
-  end ;
-  FClients.Save ;
-  lvClients.Refresh ;
+    end;
+  end;
+  FClients.Save;
+  lvClients.Refresh;
 end;
 
 procedure TFormMainOneToMany.aReadExecute(Sender: TObject);
 begin
-  lvClients.Data := nil;
-  FClients.Clear ;
-  FClients.Read ;
-  lvClients.Data := FClients ;
+  lvClients.Data:= nil;
+  FClients.Clear;
+  FClients.Read;
+  lvClients.Data:= FClients;
 end;
 
 end.

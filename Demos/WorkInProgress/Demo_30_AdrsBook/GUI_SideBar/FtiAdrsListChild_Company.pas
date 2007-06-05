@@ -39,7 +39,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, tiPerAwareCtrls, StdCtrls, ComCtrls, Adrs_BOM, tiListView,
   tiSplitter, tiFocusPanel,FtiFormMgrForm, tiReadOnly, Buttons,
-  tiVisitorDB ;
+  tiVisitorDB;
 
 type
   TFormEditCompany = class(TFormTIFormMgrForm)
@@ -70,11 +70,11 @@ type
     procedure FormCreate(Sender: TObject);
   private
   protected
-    function  FormIsValid : boolean ; override ;
-    procedure DoBeforeDisgard ; override ;
-    function  Company : TCompany ;
+    function  FormIsValid: boolean; override;
+    procedure DoBeforeDisgard; override;
+    function  Company: TCompany;
   public
-    procedure SetData(const Value: TtiObject); override ;
+    procedure SetData(const Value: TtiObject); override;
   end;
 
 procedure EditNewCompany;
@@ -86,15 +86,15 @@ uses
   ,FEdit_EAddrs
   ,tiUtils
   ,tiFormMgr
-  ;
+ ;
 
 {$R *.DFM}
 
 procedure EditNewCompany;
 var
-  lData : TCompany ;
+  lData: TCompany;
 begin
-  lData := TCompany.CreateNew ;
+  lData:= TCompany.CreateNew;
   gAdrsBook.Companies.Add(lData);
   gFormMgr.ShowForm(TFormEditCompany, lData, false);
 end;
@@ -106,85 +106,85 @@ procedure TFormEditCompany.SetData(const Value: TtiObject);
 begin
   inherited SetData(Value);
   if Value = nil then
-    exit ; //=>
+    exit; //=>
 
-  paeCompanyName.LinkToData( Company, 'CompanyName' ) ;
-  paeNotes.LinkToData( Company, 'Notes' ) ;
-  LVEAddress.Data   := Company.EAddressList.List ;
-  LVAddress.Data    := Company.AddressList.List ;
+  paeCompanyName.LinkToData(Company, 'CompanyName');
+  paeNotes.LinkToData(Company, 'Notes');
+  LVEAddress.Data  := Company.EAddressList.List;
+  LVAddress.Data   := Company.AddressList.List;
 end;
 
 procedure TFormEditCompany.FormShow(Sender: TObject);
 begin
-  paeCompanyName.SetFocus ;
+  paeCompanyName.SetFocus;
 end;
 
 procedure TFormEditCompany.lvEAddressFilterData(pData: TPersistent;
   var pbInclude: Boolean);
 begin
-  pbInclude := not ( pData as TtiObject ).Deleted ;
+  pbInclude:= not (pData as TtiObject).Deleted;
 end;
 
 procedure TFormEditCompany.lvEAddressItemDelete(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-  if tiPerObjAbsConfirmAndDelete( pData as TtiObject ) then
-    pLV.Refresh ;
+  if tiPerObjAbsConfirmAndDelete(pData as TtiObject) then
+    pLV.Refresh;
 end;
 
 procedure TFormEditCompany.lvAddressItemDelete(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-  if tiPerObjAbsConfirmAndDelete( pData as TtiObject ) then
-    pLV.Refresh ;
+  if tiPerObjAbsConfirmAndDelete(pData as TtiObject) then
+    pLV.Refresh;
 end;
 
 procedure TFormEditCompany.lvEAddressItemEdit(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-  if TFormEdit_EAdrs.Execute( pData as TEAdrs) then
-    pLV.Refresh ;
+  if TFormEdit_EAdrs.Execute(pData as TEAdrs) then
+    pLV.Refresh;
 end;
 
 procedure TFormEditCompany.lvAddressItemEdit(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-  if TFormEdit_Adrs.Execute( pData as TAdrs ) then
-    pLV.Refresh ;
+  if TFormEdit_Adrs.Execute(pData as TAdrs) then
+    pLV.Refresh;
 end;
 
 procedure TFormEditCompany.lvEAddressItemInsert(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TEAdrs ;
+  lData: TEAdrs;
 begin
-  lData := TEAdrs.CreateNew ;
-  if TFormEdit_EAdrs.Execute( lData ) then
+  lData:= TEAdrs.CreateNew;
+  if TFormEdit_EAdrs.Execute(lData) then
   begin
-    Company.EAddressList.Add( lData ) ;
-    LVEAddress.Refresh ;
+    Company.EAddressList.Add(lData);
+    LVEAddress.Refresh;
   end else
-    lData.Free ;
+    lData.Free;
 end;
 
 procedure TFormEditCompany.lvAddressItemInsert(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TAdrs ;
+  lData: TAdrs;
 begin
-  lData := TAdrs.CreateNew ;
-  if TFormEdit_Adrs.Execute( lData ) then
+  lData:= TAdrs.CreateNew;
+  if TFormEdit_Adrs.Execute(lData) then
   begin
-    Company.AddressList.Add( lData ) ;
-    LVAddress.Refresh ;
+    Company.AddressList.Add(lData);
+    LVAddress.Refresh;
   end else
-    lData.Free ;
+    lData.Free;
 end;
 
 procedure TFormEditCompany.FormCreate(Sender: TObject);
 begin
   inherited;
-  FormCaption := 'Edit a companies contact details';
+  FormCaption:= 'Edit a companies contact details';
 end;
 
 procedure TFormEditCompany.DoBeforeDisgard;
@@ -195,12 +195,12 @@ end;
 
 function TFormEditCompany.Company: TCompany;
 begin
-  result := DataBuffer as TCompany ;
+  result:= DataBuffer as TCompany;
 end;
 
 function TFormEditCompany.FormIsValid: boolean;
 begin
-  result := Company.IsValid ;
+  result:= Company.IsValid;
 end;
 
 end.

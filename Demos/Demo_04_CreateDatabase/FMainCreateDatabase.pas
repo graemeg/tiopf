@@ -26,7 +26,7 @@ implementation
 uses
   tiOPFManager
   ,tiPersistenceLayers
-  ;
+ ;
   
 {$R *.DFM}
 
@@ -36,11 +36,11 @@ var
 begin
   LPerLayer:= gTIOPFManager.PersistenceLayers.FindByPerLayerName(PersistenceLayerName);
   Assert(LPerLayer<>nil, '"' + PersistenceLayerName + '" not registered');
-  if LPerLayer.DatabaseExists( DatabaseName, UserName, Password )
+  if LPerLayer.DatabaseExists(DatabaseName, UserName, Password)
   then
-    ShowMessage( 'Database <' + DatabaseName + '> exists.' )
+    ShowMessage('Database <' + DatabaseName + '> exists.')
   else
-    ShowMessage( 'Database <' + DatabaseName + '> does not exist.' );
+    ShowMessage('Database <' + DatabaseName + '> does not exist.');
 end;
 
 procedure TFormMainCreateDatabase.btnCreateDatabaseClick(Sender: TObject);
@@ -50,7 +50,7 @@ begin
   LPerLayer:= gTIOPFManager.PersistenceLayers.FindByPerLayerName(PersistenceLayerName);
   Assert(LPerLayer<>nil, '"' + PersistenceLayerName + '" not registered');
   LPerLayer.CreateDatabase(DatabaseName, UserName, Password);
-  ShowMessage( 'Database "' + DatabaseName + '" has been created.' ) ;
+  ShowMessage('Database "' + DatabaseName + '" has been created.');
 end;
 
 end.

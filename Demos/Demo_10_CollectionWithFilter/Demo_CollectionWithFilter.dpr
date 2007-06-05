@@ -16,7 +16,7 @@ begin
 
   Application.Initialize;
   if not TFormConnectToDatabase.Execute(True) then
-    Exit ; //==>
+    Exit; //==>
 
   Client_HardCodedVisitors_Svr.RegisterVisitors;
 
@@ -26,3 +26,4 @@ begin
   Application.CreateForm(TFormCollectionHardCoded, FormCollectionHardCoded);
   Application.Run;
 end.
+

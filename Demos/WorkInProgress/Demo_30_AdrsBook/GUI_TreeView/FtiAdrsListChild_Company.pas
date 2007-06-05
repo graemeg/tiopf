@@ -38,7 +38,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, tiPerAwareCtrls, StdCtrls, ComCtrls, Adrs_BOM, tiListView,
-  tiSplitter, tiFocusPanel ;
+  tiSplitter, tiFocusPanel;
 
 type
   TFormEditCompany = class(TForm)
@@ -70,16 +70,16 @@ type
     procedure paeNotesChange(Sender: TObject);
   private
   private
-    FData     : TCompany ;
-    FTreeNode : TTreeNode;
+    FData    : TCompany;
+    FTreeNode: TTreeNode;
     procedure SetData(const Value: TPersistent);
-    function  GetData : TPersistent;
+    function  GetData: TPersistent;
     function  GetValid: boolean;
   published
     // These published properties are required by the TtiTreeViewPlus
-    property Data : TPersistent read GetData write SetData ;
-    property TreeNode : TTreeNode read FTreeNode write FTreeNode ;
-    property Valid    : boolean   read GetValid ;
+    property Data: TPersistent read GetData write SetData;
+    property TreeNode: TTreeNode read FTreeNode write FTreeNode;
+    property Valid   : boolean   read GetValid;
   public
   end;
 
@@ -89,7 +89,7 @@ uses
   ,FEdit_Addrs
   ,FEdit_EAddrs
   ,tiUtils
-  ;
+ ;
   
 {$R *.DFM}
 
@@ -97,104 +97,104 @@ uses
 
 function TFormEditCompany.GetData: TPersistent;
 begin
-//  result := FData ;
+//  result:= FData;
 end;
 
 function TFormEditCompany.GetValid: boolean;
 begin
-  result := true ;
+  result:= true;
 end;
 
 procedure TFormEditCompany.SetData(const Value: TPersistent);
 begin
   if Value = nil then begin
-    FData := nil ;
-    exit ; //=>
-  end ;
-  FData := TCompany( Value ) ;
-  paeCompanyName.LinkToData( FData, 'CompanyName' ) ;
-  paeNotes.LinkToData( FData, 'Notes' ) ;
-  LVEAddress.Data   := FData.EAddressList.List ;
-  LVAddress.Data    := FData.AddressList.List ;
+    FData:= nil;
+    exit; //=>
+  end;
+  FData:= TCompany(Value);
+  paeCompanyName.LinkToData(FData, 'CompanyName');
+  paeNotes.LinkToData(FData, 'Notes');
+  LVEAddress.Data  := FData.EAddressList.List;
+  LVAddress.Data   := FData.AddressList.List;
 end;
 
 procedure TFormEditCompany.paeCompanyNameChange(Sender: TObject);
 begin
-  FTreeNode.Text := FData.CompanyName ;
-  FData.Dirty := true ;
+  FTreeNode.Text:= FData.CompanyName;
+  FData.Dirty:= true;
 end;
 
 procedure TFormEditCompany.FormShow(Sender: TObject);
 begin
 //  if FData.ObjectState = posCreate then
-//    paeCompanyName.SetFocus ;
+//    paeCompanyName.SetFocus;
 end;
 
 procedure TFormEditCompany.lvEAddressFilterData(pData: TPersistent;
   var pbInclude: Boolean);
 begin
-//  pbInclude := not ( pData as TtiObject ).Deleted ;
+//  pbInclude:= not (pData as TtiObject).Deleted;
 end;
 
 procedure TFormEditCompany.lvEAddressItemDelete(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-//  if tiPerObjAbsConfirmAndDelete( pData as TtiObject ) then
-//    pLV.Refresh ;
+//  if tiPerObjAbsConfirmAndDelete(pData as TtiObject) then
+//    pLV.Refresh;
 end;
 
 procedure TFormEditCompany.lvAddressItemDelete(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-//  if tiPerObjAbsConfirmAndDelete( pData as TtiObject ) then
-//    pLV.Refresh ;
+//  if tiPerObjAbsConfirmAndDelete(pData as TtiObject) then
+//    pLV.Refresh;
 end;
 
 procedure TFormEditCompany.lvEAddressItemEdit(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-//  if TFormEdit_EAdrs.Execute( pData as TEAdrs) then
-//    pLV.Refresh ;
+//  if TFormEdit_EAdrs.Execute(pData as TEAdrs) then
+//    pLV.Refresh;
 end;
 
 procedure TFormEditCompany.lvAddressItemEdit(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 begin
-//  if TFormEdit_Adrs.Execute( pData as TAdrs ) then
-//    pLV.Refresh ;
+//  if TFormEdit_Adrs.Execute(pData as TAdrs) then
+//    pLV.Refresh;
 end;
 
 procedure TFormEditCompany.lvEAddressItemInsert(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TEAdrs ;
+  lData: TEAdrs;
 begin
-  lData := TEAdrs.CreateNew ;
-  if TFormEdit_EAdrs.Execute( lData ) then
+  lData:= TEAdrs.CreateNew;
+  if TFormEdit_EAdrs.Execute(lData) then
   begin
-    FData.EAddressList.Add( lData ) ;
-    LVEAddress.Refresh ;
+    FData.EAddressList.Add(lData);
+    LVEAddress.Refresh;
   end else
-    lData.Free ;
+    lData.Free;
 end;
 
 procedure TFormEditCompany.lvAddressItemInsert(pLV: TtiCustomListView;
   pData: TPersistent; pItem: TListItem);
 var
-  lData : TAdrs ;
+  lData: TAdrs;
 begin
-  lData := TAdrs.CreateNew ;
-  if TFormEdit_Adrs.Execute( lData ) then
+  lData:= TAdrs.CreateNew;
+  if TFormEdit_Adrs.Execute(lData) then
   begin
-    FData.AddressList.Add( lData ) ;
-    LVAddress.Refresh ;
+    FData.AddressList.Add(lData);
+    LVAddress.Refresh;
   end else
-    lData.Free ;
+    lData.Free;
 end;
 
 procedure TFormEditCompany.paeNotesChange(Sender: TObject);
 begin
-  FData.Dirty := true ;
+  FData.Dirty:= true;
 end;
 
 end.

@@ -12,7 +12,7 @@ uses
   ,Variants
   {$ENDIF}
   ,Client_BOM
-  ;
+ ;
 
 type
   TFormClientAbsEdit = class(TFormTIPerEditDialog)
@@ -22,45 +22,45 @@ type
     Bevel1: TBevel;
   private
   protected
-    procedure SetData(const Value: TtiObject); override ;
-    function  FormIsValid : boolean ; override ;
+    procedure SetData(const Value: TtiObject); override;
+    function  FormIsValid: boolean; override;
   public
   end;
 
-function EditClient( const pClient : TClientAbs ) : boolean ;
+function EditClient(const pClient: TClientAbs): boolean;
 
 implementation
 uses
    FClientCompanyEdit
   ,FClientPersonEdit
   ,tiUtils
-  ;
+ ;
 
 {$R *.dfm}
 
 // This would be better as a factory with the registration code in each
 // of the units that contain the concrete classes
-function EditClient( const pClient : TClientAbs ) : boolean ;
+function EditClient(const pClient: TClientAbs): boolean;
 begin
   if pClient is TClientCompany then
-    result := TFormClientCompanyEdit.Execute(pClient)
+    result:= TFormClientCompanyEdit.Execute(pClient)
   else if pClient is TClientPerson then
-    result := TFormClientPersonEdit.Execute(pClient)
+    result:= TFormClientPersonEdit.Execute(pClient)
   else
     raise Exception.CreateFmt('Invalid class type "%s"', [pClient.ClassName]);
-end ;
+end;
 
 { TFormClientEdit }
 
 function TFormClientAbsEdit.FormIsValid: boolean;
 begin
-  result := Databuffer.IsValid(MemoErrors.Lines);
+  result:= Databuffer.IsValid(MemoErrors.Lines);
 end;
 
 procedure TFormClientAbsEdit.SetData(const Value: TtiObject);
 begin
   inherited;
-  paeOID.Value := DataBuffer.OID.AsString ;
+  paeOID.Value:= DataBuffer.OID.AsString;
   paeClientID.LinkToData(DataBuffer,'ClientID');
 end;
 

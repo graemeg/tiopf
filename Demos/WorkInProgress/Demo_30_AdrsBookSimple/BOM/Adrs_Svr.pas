@@ -6,66 +6,66 @@ interface
 uses
    tiVisitorDB
   ,Adrs_BOM
- ;
+;
 
 type
 
   TVisPersonList_Read = class(TtiVisitorSelect)
   protected
-    function  AcceptVisitor : boolean; override;
-    procedure Init          ; override;
-    procedure SetupParams   ; override;
+    function  AcceptVisitor: boolean; override;
+    procedure Init         ; override;
+    procedure SetupParams  ; override;
     procedure MapRowToObject; override;
   end;
 
   TVisPerson_Create = class(TtiVisitorUpdate)
   protected
-    function  AcceptVisitor : boolean; override;
-    procedure Init          ; override;
-    procedure SetupParams   ; override;
+    function  AcceptVisitor: boolean; override;
+    procedure Init         ; override;
+    procedure SetupParams  ; override;
   end;
 
   TVisPerson_Update = class(TtiVisitorUpdate)
   protected
-    function  AcceptVisitor : boolean; override;
-    procedure Init          ; override;
-    procedure SetupParams   ; override;
+    function  AcceptVisitor: boolean; override;
+    procedure Init         ; override;
+    procedure SetupParams  ; override;
   end;
 
   TVisPerson_Delete = class(TtiVisitorUpdate)
   protected
-    function  AcceptVisitor : boolean; override;
-    procedure Init          ; override;
-    procedure SetupParams   ; override;
+    function  AcceptVisitor: boolean; override;
+    procedure Init         ; override;
+    procedure SetupParams  ; override;
   end;
 
   TVisEAdrsList_Read = class(TtiVisitorSelect)
   protected
-    function  AcceptVisitor : boolean; override;
-    procedure Init          ; override;
-    procedure SetupParams   ; override;
+    function  AcceptVisitor: boolean; override;
+    procedure Init         ; override;
+    procedure SetupParams  ; override;
     procedure MapRowToObject; override;
   end;
 
   TVisEAdrs_Create = class(TtiVisitorUpdate)
   protected
-    function  AcceptVisitor : boolean; override;
-    procedure Init          ; override;
-    procedure SetupParams   ; override;
+    function  AcceptVisitor: boolean; override;
+    procedure Init         ; override;
+    procedure SetupParams  ; override;
   end;
 
   TVisEAdrs_Update = class(TtiVisitorUpdate)
   protected
-    function  AcceptVisitor : boolean; override;
-    procedure Init          ; override;
-    procedure SetupParams   ; override;
+    function  AcceptVisitor: boolean; override;
+    procedure Init         ; override;
+    procedure SetupParams  ; override;
   end;
 
   TVisEAdrs_Delete = class(TtiVisitorUpdate)
   protected
-    function  AcceptVisitor : boolean; override;
-    procedure Init          ; override;
-    procedure SetupParams   ; override; 
+    function  AcceptVisitor: boolean; override;
+    procedure Init         ; override;
+    procedure SetupParams  ; override; 
   end;
   
 implementation
@@ -76,7 +76,7 @@ uses
   ,tiQuery
   ,Adrs_SQL
   ,Adrs_Constants
-  ;
+ ;
 
 { TVisAdrs_Read }
 
@@ -129,12 +129,12 @@ var
 begin
   Assert(Visited.TestValid(TPerson), cTIInvalidObjectError);
   LData:= (Visited as TPerson);
-  Query.ParamAsString['oid']        := LData.OID.AsString;
-  Query.ParamAsString['first_name'] := LData.FirstName;
-  Query.ParamAsString['last_name']  := LData.LastName;
-  Query.ParamAsString['title']      := LData.Title;
-  Query.ParamAsString['initials']   := LData.Initials;
-  Query.ParamAsString['notes']      := LData.Notes;
+  Query.ParamAsString['oid']       := LData.OID.AsString;
+  Query.ParamAsString['first_name']:= LData.FirstName;
+  Query.ParamAsString['last_name'] := LData.LastName;
+  Query.ParamAsString['title']     := LData.Title;
+  Query.ParamAsString['initials']  := LData.Initials;
+  Query.ParamAsString['notes']     := LData.Notes;
 end;
 
 { TVisAdrs_Update }
@@ -156,12 +156,12 @@ var
 begin
   Assert(Visited.TestValid(TPerson), cTIInvalidObjectError);
   LData:= (Visited as TPerson);
-  Query.ParamAsString['oid']        := LData.OID.AsString;
-  Query.ParamAsString['first_name'] := LData.FirstName;
-  Query.ParamAsString['last_name']  := LData.LastName;
-  Query.ParamAsString['title']      := LData.Title;
-  Query.ParamAsString['initials']   := LData.Initials;
-  Query.ParamAsString['notes']      := LData.Notes;
+  Query.ParamAsString['oid']       := LData.OID.AsString;
+  Query.ParamAsString['first_name']:= LData.FirstName;
+  Query.ParamAsString['last_name'] := LData.LastName;
+  Query.ParamAsString['title']     := LData.Title;
+  Query.ParamAsString['initials']  := LData.Initials;
+  Query.ParamAsString['notes']     := LData.Notes;
 end;
 
 { TVisAdrs_Delete }
@@ -214,7 +214,7 @@ var
 begin
   Assert(Visited.TestValid(TPerson), cTIInvalidObjectError);
   LData:= (Visited as TPerson);
-  Query.ParamAsString['oid_person']        := LData.OID.AsString;
+  Query.ParamAsString['oid_person']       := LData.OID.AsString;
 end;
 
 { TVisEAdrs_Create }
@@ -281,7 +281,7 @@ end;
 
 procedure TVisEAdrs_Delete.SetupParams;
 begin
-  Query.ParamAsString['oid'] := Visited.OID.AsString;
+  Query.ParamAsString['oid']:= Visited.OID.AsString;
 end;
 
 initialization

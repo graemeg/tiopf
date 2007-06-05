@@ -26,14 +26,14 @@ uses
 begin
 
   // Setup the log framework for visual logging.
-  tiLog.SetupLogForClient ;
+  tiLog.SetupLogForClient;
 
-  if not TFormConnectToDatabase.Execute( false, 1 ) then
-    Exit ; //==>
+  if not TFormConnectToDatabase.Execute(false, 1) then
+    Exit; //==>
 
   // Check for required tables and create them if missing
   AdrsMetaData_BOM.CheckDatabaseStructure;
-  gAdrsBook.Read ;
+  gAdrsBook.Read;
   
   Application.Initialize;
 

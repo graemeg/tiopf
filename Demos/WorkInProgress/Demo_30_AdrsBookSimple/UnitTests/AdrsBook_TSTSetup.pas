@@ -4,7 +4,7 @@ interface
 uses
   tiDUnitTestSetup
   ,Adrs_BOM
-  ;
+ ;
 
 type
 
@@ -27,7 +27,7 @@ uses
    tiQuery
   ,tiOPFManager
   ,tiConstants
-  ;
+ ;
 
 { TAdrsBookTestSetup }
 
@@ -129,11 +129,11 @@ end;
 procedure TAdrsBookTestSetup.Person_Set(const AOID: String; AData: TPerson);
 begin
   Assert(AData.TestValid, cTIInvalidObjectError);
-  AData.FirstName := AOID + '1';
-  AData.LastName  := AOID + '2';
-  AData.Title     := AOID + '3';
-  AData.Initials  := AOID + '4';
-  AData.Notes     := AOID + '5';
+  AData.FirstName:= AOID + '1';
+  AData.LastName := AOID + '2';
+  AData.Title    := AOID + '3';
+  AData.Initials := AOID + '4';
+  AData.Notes    := AOID + '5';
 end;
 
 end.

@@ -15,7 +15,7 @@ uses
 begin
 //  SetupLogForClient;
   if not TFormConnectToDatabase.Execute then
-    Exit ; //==>
+    Exit; //==>
 
   Client_BOM.RegisterMappings;
 
@@ -23,3 +23,4 @@ begin
   Application.CreateForm(TFormMainLookupList, FormMainLookupList);
   Application.Run;
 end.
+

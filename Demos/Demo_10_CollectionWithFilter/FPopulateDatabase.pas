@@ -18,7 +18,7 @@ type
   private
     { Private declarations }
   public
-    class function Execute: boolean ;
+    class function Execute: boolean;
     procedure CreateTable;
   end;
 
@@ -29,7 +29,7 @@ uses
   ,tiOPFManager
   ,tiQuery
   ,tiDBConnectionPool
-  ;
+ ;
 
 {$R *.DFM}
 
@@ -37,87 +37,87 @@ uses
 
 class function TFormPopulateDatabase.Execute: boolean;
 var
-  lForm : TFormPopulateDatabase ;
+  lForm: TFormPopulateDatabase;
 begin
-  lForm := TFormPopulateDatabase.Create(nil) ;
+  lForm:= TFormPopulateDatabase.Create(nil);
   try
     result:= lForm.ShowModal = mrOK;
   finally
     lForm.Free;
-  end ;
+  end;
 end;
 
 procedure TFormPopulateDatabase.tiButtonPanel1Btn1Click(Sender: TObject);
-  function _GetClientName : string;
+  function _GetClientName: string;
   var
-    lLen : integer ;
-    lChar : integer ;
+    lLen: integer;
+    lChar: integer;
   const
-    cLetters = 'ABCDEF GHIJKL MNOPQR STUVWX YZ' ;
+    cLetters = 'ABCDEF GHIJKL MNOPQR STUVWX YZ';
   begin
-    result := '' ;
-    lLen := Trunc( Random * 50 ) + 4 ;
+    result:= '';
+    lLen:= Trunc(Random * 50) + 4;
     repeat
-      lChar := Trunc( Random * 29 )+1;
-      Result := Result + cLetters[lChar] ;
-    until length( trim( result )) >= lLen ;
-    result := Trim(Result);
-  end ;
+      lChar:= Trunc(Random * 29)+1;
+      Result:= Result + cLetters[lChar];
+    until length(trim(result)) >= lLen;
+    result:= Trim(Result);
+  end;
 var
-  lClients : TClients ;
-  lClient  : TClient ;
-  i        : integer ;
+  lClients: TClients;
+  lClient : TClient;
+  i       : integer;
 begin
-  Screen.Cursor := crHourGlass ;
+  Screen.Cursor:= crHourGlass;
   try
     Randomize;
-    lClients := TClients.Create ;
+    lClients:= TClients.Create;
     try
-      for i := 1 to Trunc( paeCount.Value )do
+      for i:= 1 to Trunc(paeCount.Value)do
       begin
-        lClient := TClient.CreateNew;
-        lClient.ClientID := Copy(IntToStr(GetTickCount), 1, 9);
-        lCLient.ClientName := _GetClientName ;
+        lClient:= TClient.CreateNew;
+        lClient.ClientID:= Copy(IntToStr(GetTickCount), 1, 9);
+        lCLient.ClientName:= _GetClientName;
         lClients.Add(lClient);
-      end ;
-      lClients.Save ;
+      end;
+      lClients.Save;
     finally
       lClients.Free;
-    end ;
+    end;
   finally
-    Screen.Cursor := crDefault ;
-  end ;
-  ModalResult := mrOK ;
+    Screen.Cursor:= crDefault;
+  end;
+  ModalResult:= mrOK;
 end;
 
 procedure TFormPopulateDatabase.tiButtonPanel1Btn2Click(Sender: TObject);
 begin
-  ModalResult := mrCancel ;
+  ModalResult:= mrCancel;
 end;
 
 procedure TFormPopulateDatabase.FormCreate(Sender: TObject);
 begin
-  paeCount.Value := 5000 ;
+  paeCount.Value:= 5000;
   if gTIOPFManager.TableExists('Client') then
     gTIOPFManager.DropTable('Client');
-  CreateTable ;
+  CreateTable;
 end;
 
 // Create table
 procedure TFormPopulateDatabase.CreateTable;
 var
-  lTableMetaData : TtiDBMetaDataTable ;
+  lTableMetaData: TtiDBMetaDataTable;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Client' ;
-    lTableMetaData.AddField( 'OID',               qfkString,  36 ) ; // Using GUID OIDs
-    lTableMetaData.AddField( 'Client_Name',       qfkString, 200 ) ;
-    lTableMetaData.AddField( 'Client_ID',         qfkString,  9 ) ;
-    gTIOPFManager.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name:= 'Client';
+    lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddField('Client_Name',       qfkString, 200);
+    lTableMetaData.AddField('Client_ID',         qfkString,  9);
+    gTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 end;
 
 end.

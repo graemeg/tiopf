@@ -37,221 +37,221 @@ interface
 uses
   tiPtnVisSQL
   ,Adrs_BOM
-  ;
+ ;
 
 type
 
   // Read the lookup lists
   //----------------------------------------------------------------------------
-  TVisLookupListRead = class( TVisQrySelect )
+  TVisLookupListRead = class(TVisQrySelect)
   private
-    FLastLookupList : TLookupList ;
+    FLastLookupList: TLookupList;
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-    procedure   MapRowToObject          ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+    procedure   MapRowToObject         ; override;
+  end;
 
   // Read the primary keys of all the people in the database
   //----------------------------------------------------------------------------
-  TVisCompanyRead_PK = class( TVisQrySelect )
+  TVisCompanyRead_PK = class(TVisQrySelect)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-    procedure   MapRowToObject          ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+    procedure   MapRowToObject         ; override;
+  end;
 
   // Read the primary keys of all the people in the database
   //----------------------------------------------------------------------------
-  TVisPersonRead_PK = class( TVisQrySelect )
+  TVisPersonRead_PK = class(TVisQrySelect)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-    procedure   MapRowToObject          ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+    procedure   MapRowToObject         ; override;
+  end;
 
   // Read the primary keys of all the people in the database
   //----------------------------------------------------------------------------
-  TVisCompanyEmployeeRead_PK = class( TVisQrySelect )
+  TVisCompanyEmployeeRead_PK = class(TVisQrySelect)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-    procedure   MapRowToObject          ; override ;
-    procedure   Final                   ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+    procedure   MapRowToObject         ; override;
+    procedure   Final                  ; override;
+  end;
 
   // Read the details of one person
   //----------------------------------------------------------------------------
-  TVisPersonRead_Detail = class( TVisQrySelect )
+  TVisPersonRead_Detail = class(TVisQrySelect)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-    procedure   MapRowToObject          ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+    procedure   MapRowToObject         ; override;
+  end;
 
   // Read the details of one company
   //----------------------------------------------------------------------------
-  TVisCompanyRead_Detail = class( TVisQrySelect )
+  TVisCompanyRead_Detail = class(TVisQrySelect)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-    procedure   MapRowToObject          ; override ;
-    procedure   Final                   ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+    procedure   MapRowToObject         ; override;
+    procedure   Final                  ; override;
+  end;
 
   // Insert a new company
   //----------------------------------------------------------------------------
-  TVisCompanyCreate = class( TVisQryUpdate )
+  TVisCompanyCreate = class(TVisQryUpdate)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   // Update an existing company
   //----------------------------------------------------------------------------
-  TVisCompanyUpdate = class( TVisQryUpdate )
+  TVisCompanyUpdate = class(TVisQryUpdate)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   // Delete an existing company
   //----------------------------------------------------------------------------
-  TVisCompanyDelete = class( TVisQryDelete )
+  TVisCompanyDelete = class(TVisQryDelete)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+  end;
 
   // Insert a new person
   //----------------------------------------------------------------------------
-  TVisPersonCreate = class( TVisQryUpdate )
+  TVisPersonCreate = class(TVisQryUpdate)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   // Update a person
   //----------------------------------------------------------------------------
-  TVisPersonUpdate = class( TVisQryUpdate )
+  TVisPersonUpdate = class(TVisQryUpdate)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   // Delete a person
   //----------------------------------------------------------------------------
-  TVisPersonDelete = class( TVisQryUpdate )
+  TVisPersonDelete = class(TVisQryUpdate)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   // Read all the address(es) for a person
   //----------------------------------------------------------------------------
-  TVisAdrsRead = class( TVisQrySelect )
+  TVisAdrsRead = class(TVisQrySelect)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-    procedure   MapRowToObject          ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+    procedure   MapRowToObject         ; override;
+  end;
 
   // Read all the EAddress(es) for a person
   //----------------------------------------------------------------------------
-  TVisEAdrsRead = class( TVisQrySelect )
+  TVisEAdrsRead = class(TVisQrySelect)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-    procedure   MapRowToObject          ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+    procedure   MapRowToObject         ; override;
+  end;
 
   // Insert a new EAddress
   //----------------------------------------------------------------------------
-  TVisEAdrsCreate = class( TVisQryUpdate )
+  TVisEAdrsCreate = class(TVisQryUpdate)
   private
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   // Update an existing EAddress
   //----------------------------------------------------------------------------
-  TVisEAdrsUpdate = class( TVisQryUpdate )
+  TVisEAdrsUpdate = class(TVisQryUpdate)
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   // Delete an EAddress
   //----------------------------------------------------------------------------
-  TVisEAdrsDelete = class( TVisQryUpdate )
+  TVisEAdrsDelete = class(TVisQryUpdate)
   private
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   // Insert a new address
   //----------------------------------------------------------------------------
-  TVisAdrsCreate = class( TVisQryUpdate )
+  TVisAdrsCreate = class(TVisQryUpdate)
   private
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   //----------------------------------------------------------------------------
-  TVisAdrsUpdate = class( TVisQryUpdate )
+  TVisAdrsUpdate = class(TVisQryUpdate)
   private
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   //----------------------------------------------------------------------------
-  TVisAdrsDelete = class( TVisQryUpdate )
+  TVisAdrsDelete = class(TVisQryUpdate)
   private
   protected
-    function    AcceptVisitor : boolean ; override ;
-    procedure   Init                    ; override ;
-    procedure   SetupParams             ; override ;
-  end ;
+    function    AcceptVisitor: boolean; override;
+    procedure   Init                   ; override;
+    procedure   SetupParams            ; override;
+  end;
 
   //----------------------------------------------------------------------------
-  TVisPersonListObjectStateDeleted = class( TVisQryObjectStateDeleted )
+  TVisPersonListObjectStateDeleted = class(TVisQryObjectStateDeleted)
   protected
-    function  AcceptVisitor  : boolean ; override ;
-  end ;
+    function  AcceptVisitor : boolean; override;
+  end;
 
   //----------------------------------------------------------------------------
-  TVisAddressListObjectStateDeleted = class( TVisQryObjectStateDeleted )
+  TVisAddressListObjectStateDeleted = class(TVisQryObjectStateDeleted)
   protected
-    function  AcceptVisitor  : boolean ; override ;
-  end ;
+    function  AcceptVisitor : boolean; override;
+  end;
 
   //----------------------------------------------------------------------------
-  TVisEAddressListObjectStateDeleted = class( TVisQryObjectStateDeleted )
+  TVisEAddressListObjectStateDeleted = class(TVisQryObjectStateDeleted)
   protected
-    function  AcceptVisitor  : boolean ; override ;
-  end ;
+    function  AcceptVisitor : boolean; override;
+  end;
 
 implementation
 uses
@@ -264,7 +264,7 @@ uses
   ,tiOPFManager
   ,tiLog
   ,tiPerObjOIDAbs
-  ;
+ ;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -273,35 +273,35 @@ uses
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisLookupListRead.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TLookupLists ) and
-            ( Visited.ObjectState = posEmpty ) ;
+  result:= (Visited is TLookupLists) and
+            (Visited.ObjectState = posEmpty);
 end;
 
 procedure TVisLookupListRead.Init;
 begin
-  QueryName := cgQryLookupListRead ;
+  QueryName:= cgQryLookupListRead;
 end;
 
 procedure TVisLookupListRead.MapRowToObject;
 var
-  lData : TLookupListItem ;
+  lData: TLookupListItem;
 begin
-  if ( FLastLookupList = nil ) or
-     ( not FLastLookupList.OID.EqualsQueryField( 'OID_LIST_NAME', Query )) then
+  if (FLastLookupList = nil) or
+     (not FLastLookupList.OID.EqualsQueryField('OID_LIST_NAME', Query)) then
   begin
-    FLastLookupList             := TLookupList.Create ;
-//    FLastLookupList.OID.AsInteger         := Query.FieldAsInteger[  'OID_LIST_NAME'  ] ;
-    FLastLookupList.OID.AssignFromTIQuery( 'OID_List_Name', Query ) ;
-    FLastLookupList.ListName    := Query.FieldAsString[   'LIST_NAME'      ] ;
-    FLastLookupList.ObjectState := posClean ;
-    TPerVisList( Visited ).Add( FLastLookupList ) ;
-  end ;
+    FLastLookupList            := TLookupList.Create;
+//    FLastLookupList.OID.AsInteger        := Query.FieldAsInteger[  'OID_LIST_NAME'  ];
+    FLastLookupList.OID.AssignFromTIQuery('OID_List_Name', Query);
+    FLastLookupList.ListName   := Query.FieldAsString[   'LIST_NAME'      ];
+    FLastLookupList.ObjectState:= posClean;
+    TPerVisList(Visited).Add(FLastLookupList);
+  end;
 
-  lData             := TLookupListItem.Create ;
-  lData.OID.AssignFromTIQuery( 'Owner_OID', Query ) ;
-  lData.Text        := Query.FieldAsString[   'Item_TEXT'           ] ;
-  FLastLookupList.Add( lData ) ;
-  lData.ObjectState := posClean ;
+  lData            := TLookupListItem.Create;
+  lData.OID.AssignFromTIQuery('Owner_OID', Query);
+  lData.Text       := Query.FieldAsString[   'Item_TEXT'           ];
+  FLastLookupList.Add(lData);
+  lData.ObjectState:= posClean;
 end;
 
 procedure TVisLookupListRead.SetupParams;
@@ -318,24 +318,24 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisCompanyRead_PK.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TCompanies ) and
-            ( Visited.ObjectState = posEmpty ) ;
+  result:= (Visited is TCompanies) and
+            (Visited.ObjectState = posEmpty);
 end;
 
 procedure TVisCompanyRead_PK.Init;
 begin
-  QueryName := cgQryCompanyReadPK ;
+  QueryName:= cgQryCompanyReadPK;
 end;
 
 procedure TVisCompanyRead_PK.MapRowToObject;
 var
-  lData : TCompany ;
+  lData: TCompany;
 begin
-  lData             := TCompany.Create ;
-  lData.OID.AssignFromTIQuery( Query ) ;
-  lData.CompanyName := Query.FieldAsString[  'Company_Name' ] ;
-  lData.ObjectState := posPK ;
-  TtiObjectList( Visited ).Add( lData ) ;
+  lData            := TCompany.Create;
+  lData.OID.AssignFromTIQuery(Query);
+  lData.CompanyName:= Query.FieldAsString[  'Company_Name' ];
+  lData.ObjectState:= posPK;
+  TtiObjectList(Visited).Add(lData);
 end;
 
 procedure TVisCompanyRead_PK.SetupParams;
@@ -350,13 +350,13 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisPersonRead_PK.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TPeople ) and
-            ( Visited.Owner is TAdrsBook ) ;
+  result:= (Visited is TPeople) and
+            (Visited.Owner is TAdrsBook);
 end;
 
 procedure TVisPersonRead_PK.Init;
 begin
-  QueryName := cgQryPersonReadPK ;
+  QueryName:= cgQryPersonReadPK;
 end;
 
 procedure TVisPersonRead_PK.SetupParams;
@@ -366,15 +366,15 @@ end;
 
 procedure TVisPersonRead_PK.MapRowToObject;
 var
-  lData : TPerson ;
+  lData: TPerson;
 begin
-  lData             := TPerson.Create ;
-  lData.OID.AssignFromTIQuery( Query ) ;
-  lData.LastName    := Query.FieldAsString[  'Family_Name' ] ;
-  lData.FirstName   := Query.FieldAsString[  'First_Name' ] ;
-  lData.ObjectState := posPK ;
-  TtiObjectList( Visited ).Add( lData ) ;
-end ;
+  lData            := TPerson.Create;
+  lData.OID.AssignFromTIQuery(Query);
+  lData.LastName   := Query.FieldAsString[  'Family_Name' ];
+  lData.FirstName  := Query.FieldAsString[  'First_Name' ];
+  lData.ObjectState:= posPK;
+  TtiObjectList(Visited).Add(lData);
+end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -383,8 +383,8 @@ end ;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisCompanyEmployeeRead_PK.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TCompany ) and
-            ( Visited.ObjectState = posPK ) ;
+  result:= (Visited is TCompany) and
+            (Visited.ObjectState = posPK);
 end;
 
 procedure TVisCompanyEmployeeRead_PK.Final;
@@ -394,24 +394,24 @@ end;
 
 procedure TVisCompanyEmployeeRead_PK.Init;
 begin
-  QueryName := cgQryCompanyReadEmployeePK ;
+  QueryName:= cgQryCompanyReadEmployeePK;
 end;
 
 procedure TVisCompanyEmployeeRead_PK.MapRowToObject;
 var
-  lData : TPerson ;
+  lData: TPerson;
 begin
-  lData             := TPerson.Create ;
-  lData.OID.AssignFromTIQuery( Query ) ;
-  lData.LastName    := Query.FieldAsString[  'First_Name' ] ;
-  lData.FirstName   := Query.FieldAsString[  'Family_Name' ] ;
-  lData.ObjectState := posPK ;
-  TCompany( Visited ).People.Add( lData ) ;
+  lData            := TPerson.Create;
+  lData.OID.AssignFromTIQuery(Query);
+  lData.LastName   := Query.FieldAsString[  'First_Name' ];
+  lData.FirstName  := Query.FieldAsString[  'Family_Name' ];
+  lData.ObjectState:= posPK;
+  TCompany(Visited).People.Add(lData);
 end;
 
 procedure TVisCompanyEmployeeRead_PK.SetupParams;
 begin
-  Visited.OID.AssignToTIQuery( 'Owner_OID', Query ) ;
+  Visited.OID.AssignToTIQuery('Owner_OID', Query);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -421,45 +421,45 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisAdrsRead.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TAdrsList ) and
-            ( Visited.ObjectState = posEmpty ) ;
+  result:= (Visited is TAdrsList) and
+            (Visited.ObjectState = posEmpty);
 end;
 
 procedure TVisAdrsRead.Init;
 begin
-  QueryName := cgQryPersonAddressRead ;
+  QueryName:= cgQryPersonAddressRead;
 end;
 
 procedure TVisAdrsRead.MapRowToObject;
 var
-  lData : TAdrs ;
-  lOID : TOID ;
-  lAdrsType : TLookupListItem;
+  lData: TAdrs;
+  lOID: TOID;
+  lAdrsType: TLookupListItem;
 begin
-  lOID := gTIOPFManager.OIDFactory.CreateOID;
+  lOID:= gTIOPFManager.OIDFactory.CreateOID;
   try
-    lOID.AssignFromTIQuery( 'Adrs_Type', Query ) ;
-    lAdrsType :=
-      TAdrsBook( Visited.TopOfHierarchy ).AdrsTypes.Find( lOID ) ;
+    lOID.AssignFromTIQuery('Adrs_Type', Query);
+    lAdrsType:=
+      TAdrsBook(Visited.TopOfHierarchy).AdrsTypes.Find(lOID);
   finally
-    lOID.Free ;
-  end ;
+    lOID.Free;
+  end;
 
-  lData := TAdrs.Create ;
-  lData.OID.AssignFromTIQuery( Query ) ;
-  lData.AdrsType := lAdrsType ;
-  lData.Lines    := Query.FieldAsString[  'Lines'     ]  ;
-  lData.State    := Query.FieldAsString[  'State'     ]  ;
-  lData.PCode    := Query.FieldAsString[  'PCode'     ]  ;
-  lData.Country  := Query.FieldAsString[  'Country'   ]  ;
-  lData.ObjectState := posClean ;
-  TAdrsList( Visited ).Add( lData ) ;
+  lData:= TAdrs.Create;
+  lData.OID.AssignFromTIQuery(Query);
+  lData.AdrsType:= lAdrsType;
+  lData.Lines   := Query.FieldAsString[  'Lines'     ] ;
+  lData.State   := Query.FieldAsString[  'State'     ] ;
+  lData.PCode   := Query.FieldAsString[  'PCode'     ] ;
+  lData.Country := Query.FieldAsString[  'Country'   ] ;
+  lData.ObjectState:= posClean;
+  TAdrsList(Visited).Add(lData);
 end;
 
 procedure TVisAdrsRead.SetupParams;
 begin
-//  Query.ParamAsInteger[ 'owner_oid' ] := Visited.Owner.OID.AsInteger ;
-  Visited.Owner.OID.AssignToTIQuery( 'Owner_OID', Query ) ;
+//  Query.ParamAsInteger[ 'owner_oid' ]:= Visited.Owner.OID.AsInteger;
+  Visited.Owner.OID.AssignToTIQuery('Owner_OID', Query);
 
 end;
 
@@ -470,41 +470,41 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisEAdrsRead.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TEAdrsList ) and
-            ( Visited.ObjectState = posEmpty ) ;
+  result:= (Visited is TEAdrsList) and
+            (Visited.ObjectState = posEmpty);
 end;
 
 procedure TVisEAdrsRead.Init;
 begin
-  QueryName := cgQryPersonEAddressRead ;
+  QueryName:= cgQryPersonEAddressRead;
 end;
 
 procedure TVisEAdrsRead.MapRowToObject;
 var
-  lData : TEAdrs ;
-  lOID : TOID ;
-  lAdrsType : TLookupListItem ;
+  lData: TEAdrs;
+  lOID: TOID;
+  lAdrsType: TLookupListItem;
 begin
-  lOID := gTIOPFManager.OIDFactory.CreateOID;
+  lOID:= gTIOPFManager.OIDFactory.CreateOID;
   try
-    lOID.AssignFromTIQuery( 'EAdrs_Type', Query ) ;
-    lAdrsType := TAdrsBook( Visited.TopOfHierarchy ).AdrsTypes.Find( lOID )
+    lOID.AssignFromTIQuery('EAdrs_Type', Query);
+    lAdrsType:= TAdrsBook(Visited.TopOfHierarchy).AdrsTypes.Find(lOID)
   finally
-    lOID.Free ;
-  end ;
+    lOID.Free;
+  end;
 
-  lData := TEAdrs.Create ;
-  lData.OID.AssignFromTIQuery( Query ) ;
-  lData.AdrsType := lAdrsType ;
-  lData.Text      := Query.FieldAsString[  'EAdrs_Text'       ] ;
-  lData.ObjectState := posClean ;
-  TEAdrsList( Visited ).Add( lData ) ;
+  lData:= TEAdrs.Create;
+  lData.OID.AssignFromTIQuery(Query);
+  lData.AdrsType:= lAdrsType;
+  lData.Text     := Query.FieldAsString[  'EAdrs_Text'       ];
+  lData.ObjectState:= posClean;
+  TEAdrsList(Visited).Add(lData);
 end;
 
 procedure TVisEAdrsRead.SetupParams;
 begin
-//  Query.ParamAsInteger[ 'owner_oid' ] := Visited.Owner.OID.AsInteger ;
-  Visited.Owner.OID.AssignToTIQuery( 'Owner_OID', Query ) ;
+//  Query.ParamAsInteger[ 'owner_oid' ]:= Visited.Owner.OID.AsInteger;
+  Visited.Owner.OID.AssignToTIQuery('Owner_OID', Query);
 
 end;
 
@@ -515,33 +515,33 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisPersonRead_Detail.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TPerson ) and
-            ( TtiObject( Visited ).ObjectState = posPK ) ;
+  result:= (Visited is TPerson) and
+            (TtiObject(Visited).ObjectState = posPK);
 end;
 
 // -----------------------------------------------------------------------------
 procedure TVisPersonRead_Detail.Init;
 begin
-  QueryName := cgQryPersonReadDetail ;
+  QueryName:= cgQryPersonReadDetail;
 end;
 
 // -----------------------------------------------------------------------------
 procedure TVisPersonRead_Detail.MapRowToObject;
 var
-  lData : TPerson ;
+  lData: TPerson;
 begin
-  lData := TPerson( Visited ) ;
-  lData.Title    := Query.FieldAsString[ 'Title'    ] ;
-  lData.Initials := Query.FieldAsString[ 'Initials' ] ;
-  lData.Notes    := Query.FieldAsString[ 'Notes'    ] ;
+  lData:= TPerson(Visited);
+  lData.Title   := Query.FieldAsString[ 'Title'    ];
+  lData.Initials:= Query.FieldAsString[ 'Initials' ];
+  lData.Notes   := Query.FieldAsString[ 'Notes'    ];
 end;
 
 // -----------------------------------------------------------------------------
 procedure TVisPersonRead_Detail.SetupParams;
 begin
-//  Query.ParamAsInteger[ 'OID' ] := Visited.OID.AsInteger;
-  Visited.OID.AssignToTIQuery( Query ) ;
-end ;
+//  Query.ParamAsInteger[ 'OID' ]:= Visited.OID.AsInteger;
+  Visited.OID.AssignToTIQuery(Query);
+end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -550,27 +550,27 @@ end ;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisPersonUpdate.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TPerson ) and
-            ( Visited.ObjectState = posUpdate ) ;
+  result:= (Visited is TPerson) and
+            (Visited.ObjectState = posUpdate);
 end;
 
 procedure TVisPersonUpdate.Init;
 begin
-  QueryName := cgQryPersonUpdate ;
+  QueryName:= cgQryPersonUpdate;
 end;
 
 procedure TVisPersonUpdate.SetupParams;
 var
-  lData : TPerson ;
+  lData: TPerson;
 begin
-  lData := TPerson( Visited ) ;
-//  Query.ParamAsInteger[ 'OID' ]        := lData.OID.AsInteger;
-  lData.OID.AssignToTIQuery( Query ) ;
-  Query.ParamAsString[ 'First_Name' ]  := lData.FirstName ;
-  Query.ParamAsString[ 'Family_Name' ] := lData.LastName ;
-  Query.ParamAsString[ 'Title' ]       := lData.Title ;
-  Query.ParamAsString[ 'Initials' ]    := lData.Initials ;
-  Query.ParamAsString[ 'Notes' ]       := lData.Notes ;
+  lData:= TPerson(Visited);
+//  Query.ParamAsInteger[ 'OID' ]       := lData.OID.AsInteger;
+  lData.OID.AssignToTIQuery(Query);
+  Query.ParamAsString[ 'First_Name' ] := lData.FirstName;
+  Query.ParamAsString[ 'Family_Name' ]:= lData.LastName;
+  Query.ParamAsString[ 'Title' ]      := lData.Title;
+  Query.ParamAsString[ 'Initials' ]   := lData.Initials;
+  Query.ParamAsString[ 'Notes' ]      := lData.Notes;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -580,19 +580,19 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisPersonDelete.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TPerson ) and
-            ( Visited.ObjectState = posDelete ) ;
+  result:= (Visited is TPerson) and
+            (Visited.ObjectState = posDelete);
 end;
 
 procedure TVisPersonDelete.Init;
 begin
-  QueryName := cgQryPersonDelete ;
+  QueryName:= cgQryPersonDelete;
 end;
 
 procedure TVisPersonDelete.SetupParams;
 begin
-//  Query.ParamAsInteger[ 'OID' ] := Visited.OID.AsInteger;
-  Visited.OID.AssignToTIQuery( Query ) ;
+//  Query.ParamAsInteger[ 'OID' ]:= Visited.OID.AsInteger;
+  Visited.OID.AssignToTIQuery(Query);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -602,28 +602,28 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisPersonCreate.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TPerson ) and
-            ( TPerson( Visited ).ObjectState = posCreate ) ;
+  result:= (Visited is TPerson) and
+            (TPerson(Visited).ObjectState = posCreate);
 end;
 
 procedure TVisPersonCreate.Init;
 begin
-  QueryName := cgQryPersonCreate ;
+  QueryName:= cgQryPersonCreate;
 end;
 
 procedure TVisPersonCreate.SetupParams;
 var
-  lData : TPerson ;
+  lData: TPerson;
 begin
-  lData := TPerson( Visited ) ;
-//  Query.ParamAsInteger[ 'OID' ]         := lData.OID.AsInteger;
-  lData.OID.AssignToTIQuery( Query ) ;
-  Query.ParamAsString[  'First_Name' ]  := lData.FirstName ;
-  Query.ParamAsString[  'Family_Name' ] := lData.LastName ;
-  Query.ParamAsString[  'Title' ]       := lData.Title ;
-  Query.ParamAsString[  'Initials' ]    := lData.Initials ;
-  Query.ParamAsString[  'Notes' ]       := lData.Notes ;
-  lData.Owner.OID.AssignToTIQuery( 'Owner_OID', Query ) ;
+  lData:= TPerson(Visited);
+//  Query.ParamAsInteger[ 'OID' ]        := lData.OID.AsInteger;
+  lData.OID.AssignToTIQuery(Query);
+  Query.ParamAsString[  'First_Name' ] := lData.FirstName;
+  Query.ParamAsString[  'Family_Name' ]:= lData.LastName;
+  Query.ParamAsString[  'Title' ]      := lData.Title;
+  Query.ParamAsString[  'Initials' ]   := lData.Initials;
+  Query.ParamAsString[  'Notes' ]      := lData.Notes;
+  lData.Owner.OID.AssignToTIQuery('Owner_OID', Query);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -633,25 +633,25 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisEAdrsCreate.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TEAdrs ) and
-            ( Visited.ObjectState = posCreate ) ;
+  result:= (Visited is TEAdrs) and
+            (Visited.ObjectState = posCreate);
 end;
 
 procedure TVisEAdrsCreate.Init;
 begin
-  QueryName := cgQryPersonEAddressCreate ;
+  QueryName:= cgQryPersonEAddressCreate;
 end;
 
 procedure TVisEAdrsCreate.SetupParams;
 var
-  lData : TEAdrs ;
+  lData: TEAdrs;
 begin
-  lData := TEAdrs( Visited ) ;
-  lData.OID.AssignToTIQuery( Query ) ;
-  lData.Owner.OID.AssignToTIQuery( 'Owner_OID', Query ) ;
-//  Query.ParamAsInteger[  'EAdrs_Type' ] := lData.AdrsType.OID.AsInteger;
-  lData.AdrsType.OID.AssignToTIQuery( 'EAdrs_Type', Query ) ;
-  Query.ParamAsString[  'EAdrs_Text' ]        := lData.Text ;
+  lData:= TEAdrs(Visited);
+  lData.OID.AssignToTIQuery(Query);
+  lData.Owner.OID.AssignToTIQuery('Owner_OID', Query);
+//  Query.ParamAsInteger[  'EAdrs_Type' ]:= lData.AdrsType.OID.AsInteger;
+  lData.AdrsType.OID.AssignToTIQuery('EAdrs_Type', Query);
+  Query.ParamAsString[  'EAdrs_Text' ]       := lData.Text;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -661,21 +661,21 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisEAdrsDelete.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TEAdrs ) and
-            ( TEAdrs( Visited ).ObjectState = posDelete ) ;
+  result:= (Visited is TEAdrs) and
+            (TEAdrs(Visited).ObjectState = posDelete);
 end;
 
 //------------------------------------------------------------------------------
 procedure TVisEAdrsDelete.Init;
 begin
-  QueryName := cgQryPersonEAddressDelete ;
+  QueryName:= cgQryPersonEAddressDelete;
 end;
 
 //------------------------------------------------------------------------------
 procedure TVisEAdrsDelete.SetupParams;
 begin
-//  Query.ParamAsInteger[ 'OID' ] := Visited.OID.AsInteger;
-  Visited.OID.AssignToTIQuery( Query ) ;
+//  Query.ParamAsInteger[ 'OID' ]:= Visited.OID.AsInteger;
+  Visited.OID.AssignToTIQuery(Query);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -685,26 +685,26 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisEAdrsUpdate.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TEAdrs ) and
-            ( Visited.ObjectState = posUpdate ) ;
+  result:= (Visited is TEAdrs) and
+            (Visited.ObjectState = posUpdate);
 end;
 
 //------------------------------------------------------------------------------
 procedure TVisEAdrsUpdate.Init;
 begin
-  QueryName := cgQryPersonEAddressUpdate ;
+  QueryName:= cgQryPersonEAddressUpdate;
 end;
 
 //------------------------------------------------------------------------------
 procedure TVisEAdrsUpdate.SetupParams;
 var
-  lData : TEAdrs ;
+  lData: TEAdrs;
 begin
-  lData := TEAdrs( Visited ) ;
-  Visited.OID.AssignToTIQuery( Query ) ;
-//  Query.ParamAsInteger[ 'EAdrs_Type' ] :=
-  lData.AdrsType.OID.AssignToTIQuery( 'EAdrs_Type', Query ) ;
-  Query.ParamAsString[  'EAdrs_Text' ] := lData.Text ;
+  lData:= TEAdrs(Visited);
+  Visited.OID.AssignToTIQuery(Query);
+//  Query.ParamAsInteger[ 'EAdrs_Type' ]:=
+  lData.AdrsType.OID.AssignToTIQuery('EAdrs_Type', Query);
+  Query.ParamAsString[  'EAdrs_Text' ]:= lData.Text;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -714,32 +714,32 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisAdrsCreate.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TAdrs ) and
-            ( TEAdrs( Visited ).ObjectState = posCreate ) ;
+  result:= (Visited is TAdrs) and
+            (TEAdrs(Visited).ObjectState = posCreate);
 end;
 
 //------------------------------------------------------------------------------
 procedure TVisAdrsCreate.Init;
 begin
-  QueryName := cgQryPersonAddressCreate ;
-end ;
+  QueryName:= cgQryPersonAddressCreate;
+end;
 
 //------------------------------------------------------------------------------
 procedure TVisAdrsCreate.SetupParams;
 var
-  lData : TAdrs ;
+  lData: TAdrs;
 begin
-  lData := TAdrs( Visited ) ;
-  lData.OID.AssignToTIQuery( Query ) ;
-//  Query.ParamAsInteger[ 'oid'       ] := lData.OID.AsInteger;
-//  Query.ParamAsInteger[ 'owner_oid' ] := lData.Owner.OID.AsInteger;
-//  Query.ParamAsInteger[ 'adrs_type' ] := lData.AdrsType.OID.AsInteger;
-  lData.Owner.OID.AssignToTIQuery( 'Owner_OID', Query ) ;
-  lData.AdrsType.OID.AssignToTIQuery( 'Adrs_Type', Query ) ;
-  Query.ParamAsString[ 'lines'      ] := lData.Lines ;
-  Query.ParamAsString[ 'state'      ] := lData.State ;
-  Query.ParamAsString[ 'pcode'      ] := lData.PCode ;
-  Query.ParamAsString[ 'country'    ] := lData.Country ;
+  lData:= TAdrs(Visited);
+  lData.OID.AssignToTIQuery(Query);
+//  Query.ParamAsInteger[ 'oid'       ]:= lData.OID.AsInteger;
+//  Query.ParamAsInteger[ 'owner_oid' ]:= lData.Owner.OID.AsInteger;
+//  Query.ParamAsInteger[ 'adrs_type' ]:= lData.AdrsType.OID.AsInteger;
+  lData.Owner.OID.AssignToTIQuery('Owner_OID', Query);
+  lData.AdrsType.OID.AssignToTIQuery('Adrs_Type', Query);
+  Query.ParamAsString[ 'lines'      ]:= lData.Lines;
+  Query.ParamAsString[ 'state'      ]:= lData.State;
+  Query.ParamAsString[ 'pcode'      ]:= lData.PCode;
+  Query.ParamAsString[ 'country'    ]:= lData.Country;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -749,29 +749,29 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisAdrsUpdate.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TAdrs ) and
-            ( TEAdrs( Visited ).ObjectState = posUpdate ) ;
+  result:= (Visited is TAdrs) and
+            (TEAdrs(Visited).ObjectState = posUpdate);
 end;
 
 //------------------------------------------------------------------------------
 procedure TVisAdrsUpdate.Init;
 begin
-  QueryName := cgQryPersonAddressUpdate ;
+  QueryName:= cgQryPersonAddressUpdate;
 end;
 
 //------------------------------------------------------------------------------
 procedure TVisAdrsUpdate.SetupParams;
 var
-  lData : TAdrs ;
+  lData: TAdrs;
 begin
-  lData := TAdrs( Visited ) ;
-  lData.OID.AssignToTIQuery( Query ) ;
-//  Query.ParamAsInteger[ 'adrs_type' ] := lData.AdrsType.OID.AsInteger;
-  lData.AdrsType.OID.AssignToTIQuery( 'adrs_type', Query ) ;
-  Query.ParamAsString[  'lines'     ] := lData.Lines ;
-  Query.ParamAsString[  'state'     ] := lData.State ;
-  Query.ParamAsString[  'pcode'     ] := lData.PCode ;
-  Query.ParamAsString[  'country'   ] := lData.Country ;
+  lData:= TAdrs(Visited);
+  lData.OID.AssignToTIQuery(Query);
+//  Query.ParamAsInteger[ 'adrs_type' ]:= lData.AdrsType.OID.AsInteger;
+  lData.AdrsType.OID.AssignToTIQuery('adrs_type', Query);
+  Query.ParamAsString[  'lines'     ]:= lData.Lines;
+  Query.ParamAsString[  'state'     ]:= lData.State;
+  Query.ParamAsString[  'pcode'     ]:= lData.PCode;
+  Query.ParamAsString[  'country'   ]:= lData.Country;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -781,14 +781,14 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisAdrsDelete.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TAdrs ) and
-            ( TEAdrs( Visited ).ObjectState = posDelete ) ;
+  result:= (Visited is TAdrs) and
+            (TEAdrs(Visited).ObjectState = posDelete);
 end;
 
 //------------------------------------------------------------------------------
 procedure TVisAdrsDelete.Init;
 begin
-  QueryName := cgQryPersonAddressDelete ;
+  QueryName:= cgQryPersonAddressDelete;
 end;
 
 //------------------------------------------------------------------------------
@@ -804,8 +804,8 @@ end;
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisPersonListObjectStateDeleted.AcceptVisitor: boolean;
 begin
-  result := ( Inherited AcceptVisitor ) and
-            ( Visited is TPeople ) ;
+  result:= (Inherited AcceptVisitor) and
+            (Visited is TPeople);
 end;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -815,8 +815,8 @@ end;
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisAddressListObjectStateDeleted.AcceptVisitor: boolean;
 begin
-  result := ( Inherited AcceptVisitor ) and
-            ( Visited is TAdrsList ) ;
+  result:= (Inherited AcceptVisitor) and
+            (Visited is TAdrsList);
 end;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -826,16 +826,16 @@ end;
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TVisEAddressListObjectStateDeleted.AcceptVisitor: boolean;
 begin
-  result := ( Inherited AcceptVisitor ) and
-            ( Visited is TEAdrsList ) ;
+  result:= (Inherited AcceptVisitor) and
+            (Visited is TEAdrsList);
 end;
 
 { TVisCompanyRead_Detail }
 
 function TVisCompanyRead_Detail.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TCompany ) and
-            ( Visited.ObjectState = posPK ) ;
+  result:= (Visited is TCompany) and
+            (Visited.ObjectState = posPK);
 end;
 
 procedure TVisCompanyRead_Detail.Final;
@@ -845,15 +845,15 @@ end;
 
 procedure TVisCompanyRead_Detail.Init;
 begin
-  QueryName := cgQryCompanyReadDetail ;
+  QueryName:= cgQryCompanyReadDetail;
 end;
 
 procedure TVisCompanyRead_Detail.MapRowToObject;
 var
-  lData : TCompany ;
+  lData: TCompany;
 begin
-  lData := TCompany( Visited ) ;
-  lData.Notes    := Query.FieldAsString[ 'Notes'    ] ;
+  lData:= TCompany(Visited);
+  lData.Notes   := Query.FieldAsString[ 'Notes'    ];
 end;
 
 procedure TVisCompanyRead_Detail.SetupParams;
@@ -865,96 +865,96 @@ end;
 
 function TVisCompanyDelete.AcceptVisitor: boolean;
 begin
-  result := ( inherited AcceptVisitor ) and
-            ( Visited is TCompany ) ;
+  result:= (inherited AcceptVisitor) and
+            (Visited is TCompany);
 end;
 
 procedure TVisCompanyDelete.Init;
 begin
-  QueryName := cgQryCompanyDelete ;
+  QueryName:= cgQryCompanyDelete;
 end;
 
 { TVisCompanyCreate }
 
 function TVisCompanyCreate.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TCompany ) and
-            ( Visited.ObjectState = posCreate ) ;
+  result:= (Visited is TCompany) and
+            (Visited.ObjectState = posCreate);
 end;
 
 procedure TVisCompanyCreate.Init;
 begin
-  QueryName := cgQryCompanyCreate ;
+  QueryName:= cgQryCompanyCreate;
 end;
 
 procedure TVisCompanyCreate.SetupParams;
 var
-  lData : TCompany ;
+  lData: TCompany;
 begin
-  lData := TCompany( Visited ) ;
+  lData:= TCompany(Visited);
   Visited.OID.AssignToTIQuery(Query);
-  Query.ParamAsString[  'COMPANY_NAME' ] := lData.CompanyName ;
-  Query.ParamAsString[  'NOTES' ]        := lData.Notes ;
+  Query.ParamAsString[  'COMPANY_NAME' ]:= lData.CompanyName;
+  Query.ParamAsString[  'NOTES' ]       := lData.Notes;
 end;
 
 { TVisCompanyUpdate }
 
 function TVisCompanyUpdate.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TCompany ) and
-            ( Visited.ObjectState = posUpdate ) ;
+  result:= (Visited is TCompany) and
+            (Visited.ObjectState = posUpdate);
 end;
 
 procedure TVisCompanyUpdate.Init;
 begin
-  QueryName := cgQryCompanyUpdate ;
+  QueryName:= cgQryCompanyUpdate;
 end;
 
 procedure TVisCompanyUpdate.SetupParams;
 var
-  lData : TCompany ;
+  lData: TCompany;
 begin
-  lData := TCompany( Visited ) ;
+  lData:= TCompany(Visited);
   Visited.OID.AssignToTIQuery(Query);
-  Query.ParamAsString[  'COMPANY_NAME' ] := lData.CompanyName ;
-  Query.ParamAsString[  'NOTES' ]        := lData.Notes ;
+  Query.ParamAsString[  'COMPANY_NAME' ]:= lData.CompanyName;
+  Query.ParamAsString[  'NOTES' ]       := lData.Notes;
 end;
 
 initialization
 
   // Read PK visitors
-  gTIOPFManager.RegReadPKVisitor( TVisCompanyRead_PK ) ;
-  gTIOPFManager.RegReadPKVisitor( TVisPersonRead_PK ) ;
-  gTIOPFManager.RegReadPKVisitor( TVisCompanyEmployeeRead_PK ) ;
+  gTIOPFManager.RegReadPKVisitor(TVisCompanyRead_PK);
+  gTIOPFManager.RegReadPKVisitor(TVisPersonRead_PK);
+  gTIOPFManager.RegReadPKVisitor(TVisCompanyEmployeeRead_PK);
 
   // Read detail visitors
-  gTIOPFManager.RegReadVisitor( TVisLookupListRead ) ;
-  gTIOPFManager.RegReadVisitor( TVisCompanyRead_Detail ) ;
-  gTIOPFManager.RegReadVisitor( TVisPersonRead_Detail ) ;
-  gTIOPFManager.RegReadVisitor( TVisAdrsRead ) ;
-  gTIOPFManager.RegReadVisitor( TVisEAdrsRead ) ;
+  gTIOPFManager.RegReadVisitor(TVisLookupListRead);
+  gTIOPFManager.RegReadVisitor(TVisCompanyRead_Detail);
+  gTIOPFManager.RegReadVisitor(TVisPersonRead_Detail);
+  gTIOPFManager.RegReadVisitor(TVisAdrsRead);
+  gTIOPFManager.RegReadVisitor(TVisEAdrsRead);
 
   // Delete visitors
-  gTIOPFManager.RegSaveVisitor( TVisEAdrsDelete ) ;
-  gTIOPFManager.RegSaveVisitor( TVisAdrsDelete ) ;
-  gTIOPFManager.RegSaveVisitor( TVisPersonDelete ) ;
-  gTIOPFManager.RegSaveVisitor( TVisCompanyDelete ) ;
+  gTIOPFManager.RegSaveVisitor(TVisEAdrsDelete);
+  gTIOPFManager.RegSaveVisitor(TVisAdrsDelete);
+  gTIOPFManager.RegSaveVisitor(TVisPersonDelete);
+  gTIOPFManager.RegSaveVisitor(TVisCompanyDelete);
 
   // Update visitors
-  gTIOPFManager.RegSaveVisitor( TVisCompanyUpdate ) ;
-  gTIOPFManager.RegSaveVisitor( TVisPersonUpdate ) ;
-  gTIOPFManager.RegSaveVisitor( TVisEAdrsUpdate ) ;
-  gTIOPFManager.RegSaveVisitor( TVisAdrsUpdate ) ;
+  gTIOPFManager.RegSaveVisitor(TVisCompanyUpdate);
+  gTIOPFManager.RegSaveVisitor(TVisPersonUpdate);
+  gTIOPFManager.RegSaveVisitor(TVisEAdrsUpdate);
+  gTIOPFManager.RegSaveVisitor(TVisAdrsUpdate);
 
   // Create visitors
-  gTIOPFManager.RegSaveVisitor( TVisCompanyCreate ) ;
-  gTIOPFManager.RegSaveVisitor( TVisPersonCreate ) ;
-  gTIOPFManager.RegSaveVisitor( TVisEAdrsCreate ) ;
-  gTIOPFManager.RegSaveVisitor( TVisAdrsCreate ) ;
+  gTIOPFManager.RegSaveVisitor(TVisCompanyCreate);
+  gTIOPFManager.RegSaveVisitor(TVisPersonCreate);
+  gTIOPFManager.RegSaveVisitor(TVisEAdrsCreate);
+  gTIOPFManager.RegSaveVisitor(TVisAdrsCreate);
 
   // List clean up visitors
-  gTIOPFManager.RegSaveVisitor( TVisPersonListObjectStateDeleted   ) ;
-  gTIOPFManager.RegSaveVisitor( TVisAddressListObjectStateDeleted  ) ;
-  gTIOPFManager.RegSaveVisitor( TVisEAddressListObjectStateDeleted ) ;
+  gTIOPFManager.RegSaveVisitor(TVisPersonListObjectStateDeleted  );
+  gTIOPFManager.RegSaveVisitor(TVisAddressListObjectStateDeleted );
+  gTIOPFManager.RegSaveVisitor(TVisEAddressListObjectStateDeleted);
 
 end.

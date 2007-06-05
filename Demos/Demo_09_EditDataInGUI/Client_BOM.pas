@@ -3,101 +3,104 @@ unit Client_BOM;
 interface
 uses
   tiObject
-  ;
+ ;
 
 const
-  cErrorClientNameMissing = 'Please enter a client name' ;
-  cErrorClientIDMissing = 'Please enter a client ID' ;
+  cErrorClientNameMissing = 'Please enter a client name';
+  cErrorClientIDMissing = 'Please enter a client ID';
 
 type
 
-  TClient = class ;
-  TClients = class ;
+  TClient = class;
+  TClients = class;
 
-  TClients = class( TtiObjectList )
+  TClients = class(TtiObjectList)
   private
   protected
-    function    GetItems(i: integer): TClient ; reintroduce ;
-    procedure   SetItems(i: integer; const Value: TClient); reintroduce ;
+    function    GetItems(i: integer): TClient; reintroduce;
+    procedure   SetItems(i: integer; const Value: TClient); reintroduce;
   public
-    property    Items[i:integer] : TClient read GetItems write SetItems ;
-    procedure   Add( pObject : TClient ) ; reintroduce ;
+    property    Items[i:integer]: TClient read GetItems write SetItems;
+    procedure   Add(AObject: TClient); reintroduce;
   published
-  end ;
+  end;
 
-  TClient = class( TtiObject )
+  TClient = class(TtiObject)
   private
     FClientID: string;
     FClientName: string;
   protected
-    function    GetOwner: TClients; reintroduce ;
-    procedure   SetOwner(const Value: TClients ); reintroduce ;
+    function    GetOwner: TClients; reintroduce;
+    procedure   SetOwner(const Value: TClients); reintroduce;
   public
-    property    Owner       : TClients             read GetOwner      write SetOwner ;
-    function    IsValid( const pErrors : TtiObjectErrors ) : boolean ; override ;
+    property    Owner      : TClients             read GetOwner      write SetOwner;
+    function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
-    property    ClientName : string read FClientName write FClientName ;
-    property    ClientID   : string read FClientID write FClientID ;
-  end ;
+    property    ClientName: string read FClientName write FClientName;
+    property    ClientID  : string read FClientID write FClientID;
+  end;
 
-procedure RegisterMappings ;
+procedure RegisterMappings;
 
 implementation
 uses
   tiOPFManager
   ,tiClassToDBMap_BOM
-  ;
+ ;
 
-procedure RegisterMappings ;
+procedure RegisterMappings;
 begin
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID', 'OID', [pktDB] );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientID', 'Client_ID' ) ;
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID', 'OID', [pktDB]);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name');
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientID', 'Client_ID');
   gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TClients, TClient);
-end ;
+end;
 
 { TClients }
 
-procedure TClients.Add(pObject: TClient);
+procedure TClients.Add(AObject: TClient);
 begin
-  inherited Add( pObject ) ;
+  inherited Add(AObject);
 end;
 
 function TClients.GetItems(i: integer): TClient;
 begin
-  result := TClient( inherited GetItems( i )) ;
+  result:= TClient(inherited GetItems(i));
 end;
 
 procedure TClients.SetItems(i: integer; const Value: TClient);
 begin
-  inherited SetItems( i, Value ) ;
+  inherited SetItems(i, Value);
 end;
 
 { TClient }
 
 function TClient.GetOwner: TClients;
 begin
-  result := TClients( inherited GetOwner );
+  result:= TClients(inherited GetOwner);
 end;
 
-function TClient.IsValid(const pErrors: TtiObjectErrors): boolean;
+function TClient.IsValid(const AErrors: TtiObjectErrors): boolean;
 begin
-  inherited IsValid( pErrors ) ;
+  inherited IsValid(AErrors);
 
   if ClientName = '' then
-    pErrors.AddError( 'ClientName', cErrorClientNameMissing ) ;
+    AErrors.AddError('ClientName', cErrorClientNameMissing);
 
   if ClientID = '' then
-    pErrors.AddError( 'ClientID', cErrorClientIDMissing ) ;
+    AErrors.AddError('ClientID', cErrorClientIDMissing);
 
-  result := pErrors.Count = 0 ;
+  result:= AErrors.Count = 0;
 
 end;
 
 procedure TClient.SetOwner(const Value: TClients);
 begin
-  inherited SetOwner( Value ) ;
+  inherited SetOwner(Value);
 end;
 
 end.
+
+
+
 

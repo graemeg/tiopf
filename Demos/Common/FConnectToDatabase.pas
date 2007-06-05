@@ -19,14 +19,14 @@ type
     function DatabaseExists: boolean;
     { Private declarations }
   public
-    class function Execute( pSQLDatabaseOnly : boolean = false ; pDataDirDepth : integer = 3 ) : boolean ;
+    class function Execute(pSQLDatabaseOnly: boolean = false; pDataDirDepth: integer = 3): boolean;
   end;
 
 implementation
 uses
   tiOPFManager
   ,tiConstants
-  ;
+ ;
 
 {$R *.DFM}
 
@@ -37,11 +37,11 @@ begin
     if not DatabaseExists then
       CreateDatabase;
     ConnectToDatabase;
-    ModalResult := mrOK ;
+    ModalResult:= mrOK;
   except
     on e:exception do
-      ShowMessage( e.Message ) ;
-  end ;
+      ShowMessage(e.Message);
+  end;
 end;
 
 function TFormConnectToDatabase.DatabaseExists: boolean;
@@ -66,26 +66,26 @@ end;
 
 procedure TFormConnectToDatabase.btnCancelClick(Sender: TObject);
 begin
-  ModalResult := mrCancel ;
+  ModalResult:= mrCancel;
 end;
 
-class function TFormConnectToDatabase.Execute( pSQLDatabaseOnly : boolean = false ; pDataDirDepth : integer = 3 ) : boolean;
+class function TFormConnectToDatabase.Execute(pSQLDatabaseOnly: boolean = false; pDataDirDepth: integer = 3): boolean;
 var
-  lForm : TFormConnectToDatabase ;
+  lForm: TFormConnectToDatabase;
 begin
-  lForm := Create(nil) ;
+  lForm:= Create(nil);
   try
-    lForm.DataDirDepth := pDataDirDepth ;
+    lForm.DataDirDepth:= pDataDirDepth;
     if pSQLDatabaseOnly then
     begin
       lForm.aDefaultToXMLLight.Enabled:= False;
       lForm.aDefaultToMSXML.Enabled:= False;
       lForm.aDefaultToCSV.Enabled:= False;
-    end ;
-    result := lForm.ShowModal = mrOK ;
+    end;
+    result:= lForm.ShowModal = mrOK;
   finally
-    lForm.Free ;
-  end ;
+    lForm.Free;
+  end;
 end;
 
 end.

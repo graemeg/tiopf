@@ -36,7 +36,7 @@ uses
   ,tiDialogs
   ,FPerson
   ,Adrs_BOM
-  ;
+ ;
 
 {$R *.dfm}
 
@@ -69,7 +69,7 @@ procedure TFormPersonList.FormCreate(Sender: TObject);
 begin
   inherited;
   FormCaption:= cFormCaption;
-  ButtonsVisible := btnVisReadOnly;
+  ButtonsVisible:= btnVisReadOnly;
 
   LV.AddColumn('FirstName', vttkString, 'First Name', 80);
   LV.AddColumn('LastName',  vttkString, 'Last Name', 80);

@@ -31,7 +31,7 @@ var
 implementation
 uses
   FMain
-  ;
+ ;
 
 {$R *.dfm}
 
@@ -39,8 +39,8 @@ procedure TFormWorkList.FormCreate(Sender: TObject);
 begin
   inherited;
   FormCaption:= cFormCaption;
-  ButtonsVisible := btnVisNone;
-  UpdateButtons := False;
+  ButtonsVisible:= btnVisNone;
+  UpdateButtons:= False;
   tiHyperlinkWithImage1.Action:= FormMain.aViewAddressList;
 end;
 

@@ -21,38 +21,38 @@ const
 
   cQryPeople_Create =
     'insert into person '+
-    '  ( ' +
+    '  (' +
     '  oid '+
     ' ,first_name '+
     ' ,last_name '+
     ' ,title '+
     ' ,initials '+
     ' ,notes '+
-    '  ) ' +
+    ' ) ' +
     'values '+
-    '  ( ' +
-    '  :oid '+
+    '  (' +
+    ' :oid '+
     ' ,:first_name '+
     ' ,:last_name '+
     ' ,:title '+
     ' ,:initials '+
     ' ,:notes '+
-    '  ) ';
+    ' ) ';
 
   cQryPeople_Update =
     'update person set '+
-    '  first_name = :first_name '+
-    ' ,last_name  = :last_name '+
-    ' ,title      = :title '+
-    ' ,initials   = :initials '+
-    ' ,notes      = :notes '+
+    '  first_name =:first_name '+
+    ' ,last_name  =:last_name '+
+    ' ,title      =:title '+
+    ' ,initials   =:initials '+
+    ' ,notes      =:notes '+
     'where ' +
-    '  oid = :oid';
+    '  oid =:oid';
 
   cQryPeople_Delete =
     'delete from person '+
     'where ' +
-    '  oid = :oid';
+    '  oid =:oid';
 
   cQryEAdrs_Read =
     'select '+
@@ -62,22 +62,22 @@ const
     'from '+
     ' eadrs '+
     'where ' +
-    '  oid_person = :oid_person ' +
+    '  oid_person =:oid_person ' +
     'order by ' +
     '  eadrs_type ' +
     '  ,eadrs_text ';
 
   cQryEAdrs_Create =
    'insert into eadrs ' +
-   '( ' +
+   '(' +
    ' oid ' +
    '  ,oid_person ' +
    '  ,eadrs_type ' +
    '  ,eadrs_text ' +
    ') ' +
    'values ' +
-   '( ' +
-   '  :oid ' +
+   '(' +
+   ' :oid ' +
    '  ,:oid_person ' +
    '  ,:eadrs_type ' +
    '  ,:eadrs_text ' +
@@ -85,15 +85,15 @@ const
 
   cQryEAdrs_Update =
     'update eadrs set ' +
-    '   eadrs_type = :eadrs_type '+
-    '  ,eadrs_text = :eadrs_text '+
+    '   eadrs_type =:eadrs_type '+
+    '  ,eadrs_text =:eadrs_text '+
     'where ' +
-    '  oid = :oid';
+    '  oid =:oid';
 
   cQryEAdrs_Delete =
     'delete from eadrs '+
     'where ' +
-    '  oid = :oid';
+    '  oid =:oid';
 
 
 implementation

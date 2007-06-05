@@ -7,7 +7,7 @@ uses
    TestFramework
   ,Adrs_BOM
   ,AdrsBook_TSTSetup
-  ;
+ ;
 
 const
   cOIDPerson = '0001';
@@ -46,7 +46,7 @@ uses
   ,tiConstants
   ,tiOPFManager
   ,tiObject
-  ;
+ ;
   
 { TTestAdrsBook }
 

@@ -78,9 +78,9 @@ uses
 procedure TContacts_ListView_Mediator.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
-  View.ScrollBars := ssAutoBoth;
-  View.RowSelect := True;
-  View.ViewStyle := vsReport;
+  View.ScrollBars:= ssAutoBoth;
+  View.RowSelect:= True;
+  View.ViewStyle:= vsReport;
 end;
 
 { TContact_City_TCombobox_Mediator }
@@ -88,7 +88,7 @@ end;
 procedure TContact_City_TCombobox_Mediator.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
-  EditControl.Style := csDropDownList;
+  EditControl.Style:= csDropDownList;
 end;
 
 { TCityList_ListView_Mediator }
@@ -96,9 +96,9 @@ end;
 procedure TCityList_ListView_Mediator.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
-  View.ScrollBars := ssAutoBoth;
-  View.RowSelect := True;
-  View.ViewStyle := vsReport;
+  View.ScrollBars:= ssAutoBoth;
+  View.RowSelect:= True;
+  View.ViewStyle:= vsReport;
 end;
 
 { TCity_Country_TCombobox_Mediator }
@@ -106,7 +106,7 @@ end;
 procedure TCity_Country_TCombobox_Mediator.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
-  EditControl.Style := csDropDownList;
+  EditControl.Style:= csDropDownList;
 end;
 
 end.

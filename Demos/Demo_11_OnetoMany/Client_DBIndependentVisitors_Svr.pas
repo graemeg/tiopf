@@ -4,65 +4,65 @@ interface
 uses
    tiVisitorDBAutoGen
   ,Client_BOM
-  ;
+ ;
 
 type
 
-  TVisClient_Read = class( TVisDBAutoGenRead )
+  TVisClient_Read = class(TVisDBAutoGenRead)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure Init           ; override ;
-    procedure SetupParams    ; override ;
-    procedure MapRowToObject ; override ;
-    procedure Final          ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure Init          ; override;
+    procedure SetupParams   ; override;
+    procedure MapRowToObject; override;
+    procedure Final         ; override;
+  end;
 
-  TVisClient_Create = class( TVisDBAutoGenUpdate )
+  TVisClient_Create = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
-  TVisClient_Update = class( TVisDBAutoGenUpdate )
+  TVisClient_Update = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
-  TVisClient_Delete = class( TVisDBAutoGenDelete )
+  TVisClient_Delete = class(TVisDBAutoGenDelete)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
 
-  TVisPhoneNumber_Read = class( TVisDBAutoGenRead )
+  TVisPhoneNumber_Read = class(TVisDBAutoGenRead)
   private
     FClient: TClient;
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure Init           ; override ;
-    procedure SetupParams    ; override ;
-    procedure MapRowToObject ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure Init          ; override;
+    procedure SetupParams   ; override;
+    procedure MapRowToObject; override;
+  end;
 
-  TVisPhoneNumber_Create = class( TVisDBAutoGenUpdate )
+  TVisPhoneNumber_Create = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
-  TVisPhoneNumber_Update = class( TVisDBAutoGenUpdate )
+  TVisPhoneNumber_Update = class(TVisDBAutoGenUpdate)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
-  TVisPhoneNumber_Delete = class( TVisDBAutoGenDelete )
+  TVisPhoneNumber_Delete = class(TVisDBAutoGenDelete)
   protected
-    function  AcceptVisitor : boolean ; override ;
-    procedure SetupParams    ; override ;
-  end ;
+    function  AcceptVisitor: boolean; override;
+    procedure SetupParams   ; override;
+  end;
 
 procedure RegisterVisitors;
 
@@ -72,7 +72,7 @@ uses
   ,tiObject
   ,tiQuery
   ,SysUtils
-  ;
+ ;
 
 procedure RegisterVisitors;
 begin
@@ -95,8 +95,8 @@ end;
 
 function TVisClient_Read.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClients ) and
-            ( Visited.ObjectState = posEmpty ) ;
+  result:= (Visited is TClients) and
+            (Visited.ObjectState = posEmpty);
 end;
 
 procedure TVisClient_Read.Final;
@@ -111,13 +111,13 @@ end;
 
 procedure TVisClient_Read.MapRowToObject;
 var
-  LClient : TClient ;
+  LClient: TClient;
 begin
-  LClient := TClient.Create ;
+  LClient:= TClient.Create;
   LClient.OID.AssignFromTIQuery('OID',Query);
-  LClient.ClientName := Query.FieldAsString['Client_Name'];
-  LClient.ClientID := Query.FieldAsString['Client_ID'];
-  LClient.ObjectState := posClean ;
+  LClient.ClientName:= Query.FieldAsString['Client_Name'];
+  LClient.ClientID:= Query.FieldAsString['Client_ID'];
+  LClient.ObjectState:= posClean;
   TClients(Visited).Add(LClient);
 end;
 
@@ -130,15 +130,15 @@ end;
 
 function TVisClient_Create.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClient ) and
-            ( Visited.ObjectState = posCreate ) ;
+  result:= (Visited is TClient) and
+            (Visited.ObjectState = posCreate);
 end;
 
 procedure TVisClient_Create.SetupParams;
 var
-  LData : TClient ;
+  LData: TClient;
 begin
-  LData := Visited as TClient ;
+  LData:= Visited as TClient;
   TableName:= 'Client';
   QueryType:= qtInsert;
   QueryParams.SetValueAsString('OID', LData.OID.AsString);
@@ -150,15 +150,15 @@ end;
 
 function TVisClient_Update.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClient ) and
-            ( Visited.ObjectState = posUpdate ) ;
+  result:= (Visited is TClient) and
+            (Visited.ObjectState = posUpdate);
 end;
 
 procedure TVisClient_Update.SetupParams;
 var
-  LData : TClient ;
+  LData: TClient;
 begin
-  LData := Visited as TClient ;
+  LData:= Visited as TClient;
   TableName:= 'Client';
   QueryType:= qtUpdate;
   QueryWhere.SetValueAsString('OID', LData.OID.AsString);
@@ -170,8 +170,8 @@ end;
 
 function TVisClient_Delete.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClient ) and
-            ( Visited.ObjectState = posDelete ) ;
+  result:= (Visited is TClient) and
+            (Visited.ObjectState = posDelete);
 end;
 
 procedure TVisClient_Delete.SetupParams;
@@ -184,8 +184,8 @@ end;
 
 function TVisPhoneNumber_Read.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TClients ) and
-            ( Visited.ObjectState = posEmpty ) ;
+  result:= (Visited is TClients) and
+            (Visited.ObjectState = posEmpty);
 end;
 
 procedure TVisPhoneNumber_Read.Init;
@@ -224,15 +224,15 @@ end;
 
 function TVisPhoneNumber_Create.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TPhoneNumber ) and
-            ( Visited.ObjectState = posCreate ) ;
+  result:= (Visited is TPhoneNumber) and
+            (Visited.ObjectState = posCreate);
 end;
 
 procedure TVisPhoneNumber_Create.SetupParams;
 var
-  LData : TPhoneNumber;
+  LData: TPhoneNumber;
 begin
-  LData := Visited as TPhoneNumber ;
+  LData:= Visited as TPhoneNumber;
   TableName:= 'Phone_Number';
   QueryType:= qtInsert;
   QueryParams.SetValueAsString('OID', LData.OID.AsString);
@@ -245,15 +245,15 @@ end;
 
 function TVisPhoneNumber_Update.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TPhoneNumber ) and
-            ( Visited.ObjectState = posUpdate ) ;
+  result:= (Visited is TPhoneNumber) and
+            (Visited.ObjectState = posUpdate);
 end;
 
 procedure TVisPhoneNumber_Update.SetupParams;
 var
-  LData : TPhoneNumber;
+  LData: TPhoneNumber;
 begin
-  LData := Visited as TPhoneNumber ;
+  LData:= Visited as TPhoneNumber;
   TableName:= 'Phone_Number';
   QueryType:= qtUpdate;
   QueryWhere.SetValueAsString('OID', LData.OID.AsString);
@@ -265,8 +265,8 @@ end;
 
 function TVisPhoneNumber_Delete.AcceptVisitor: boolean;
 begin
-  result := ( Visited is TPhoneNumber ) and
-            ( inherited AcceptVisitor) ;
+  result:= (Visited is TPhoneNumber) and
+            (inherited AcceptVisitor);
 end;
 
 procedure TVisPhoneNumber_Delete.SetupParams;

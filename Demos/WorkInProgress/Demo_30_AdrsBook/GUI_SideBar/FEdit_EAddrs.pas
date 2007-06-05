@@ -46,8 +46,8 @@ type
     paeEAdrs: TtiPerAwareEdit;
   private
   protected
-    procedure SetData(const Value: TtiObject); override ;
-    function  FormIsValid : boolean ; override ;
+    procedure SetData(const Value: TtiObject); override;
+    function  FormIsValid: boolean; override;
   public
     { Public declarations }
   end;
@@ -55,7 +55,7 @@ type
 implementation
 uses
   Adrs_BOM
-  ;
+ ;
   
 {$R *.DFM}
 
@@ -67,17 +67,17 @@ uses
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 function TFormEdit_EAdrs.FormIsValid: boolean;
 begin
-  result :=
-    ( paeAdrsType.Value <> nil ) and
-    ( paeEAdrs.Value    <> '' ) ;
+  result:=
+    (paeAdrsType.Value <> nil) and
+    (paeEAdrs.Value    <> '');
 end;
 
 procedure TFormEdit_EAdrs.SetData(const Value: TtiObject);
 begin
-  inherited SetData( Value ) ;
-  paeAdrsType.List := gAdrsBook.AdrsTypes.FindByListName( 'EAdrs' ).List ;
-  paeAdrsType.LinkToData( DataBuffer, 'AdrsType' ) ;
-  paeEAdrs.LinkToData( DataBuffer, 'Text' ) ;
+  inherited SetData(Value);
+  paeAdrsType.List:= gAdrsBook.AdrsTypes.FindByListName('EAdrs').List;
+  paeAdrsType.LinkToData(DataBuffer, 'AdrsType');
+  paeEAdrs.LinkToData(DataBuffer, 'Text');
 end;
 
 end.

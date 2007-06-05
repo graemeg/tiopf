@@ -22,7 +22,7 @@ uses
 begin
   Application.Initialize;
   if not TFormConnectToDatabase.Execute then
-    Exit ; //==>
+    Exit; //==>
 
 
   if not WhichPersistenceMechanism.Execute(
@@ -35,3 +35,4 @@ begin
   Application.Run;
 
 end.
+

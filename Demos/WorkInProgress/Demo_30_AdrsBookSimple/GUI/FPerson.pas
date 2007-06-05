@@ -27,7 +27,7 @@ implementation
 uses
   tiApplicationMenuSystem
   ,Adrs_BOM
-  ;
+ ;
 
 {$R *.dfm}
 
@@ -36,7 +36,7 @@ uses
 procedure TFormPerson.FormCreate(Sender: TObject);
 begin
   inherited;
-  ButtonsVisible := btnVisReadWrite;
+  ButtonsVisible:= btnVisReadWrite;
   LV.AddColumn('AdrsType', vttkString, 'Address type', 80);
   LV.AddColumn('AdrsText', vttkString, 'Address type', 80);
 

@@ -16,10 +16,10 @@ uses
 
 begin
   if not TFormWhichPersistenceLayers.Execute then
-    Halt ;
-  SetupLogForClient ;
+    Halt;
+  SetupLogForClient;
   Application.Initialize;
-  AdrsMetaData_TST.RegisterTests ;
-  Adrs_TST.RegisterTests ;
+  AdrsMetaData_TST.RegisterTests;
+  Adrs_TST.RegisterTests;
   GUITestRunner.RunRegisteredTests;
 end.

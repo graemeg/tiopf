@@ -7,7 +7,7 @@ uses
    tiObject
   ,Classes
   ,tiOID
- ;
+;
 
 const
   cErrorPersonNameNotAssigned = 'Please enter the person''s name';
@@ -23,7 +23,7 @@ type
 
   TAdrsBook = class(TtiObject)
   private
-    FPeople    : TPersonList   ;
+    FPeople   : TPersonList  ;
   protected
   public
     constructor Create; override;
@@ -31,7 +31,7 @@ type
     procedure   Read; override;
     procedure   Save; override;
   published
-    property    People    : TPersonList read FPeople;
+    property    People   : TPersonList read FPeople;
   end;
 
   TPersonList = class(TtiObjectList)
@@ -42,11 +42,11 @@ type
     function    GetOwner: TAdrsBook; reintroduce;
     procedure   SetOwner(const AValue: TAdrsBook); reintroduce;
   public
-    property    Items[i:integer] : TPerson read GetItems write SetItems;
-    procedure   Add(AObject : TPerson); reintroduce;
+    property    Items[i:integer]: TPerson read GetItems write SetItems;
+    procedure   Add(AObject: TPerson); reintroduce;
     property    Owner: TAdrsBook read GetOwner write SetOwner;
   published
-  end ;
+  end;
 
   TPerson = class(TtiObject)
   private
@@ -66,7 +66,7 @@ type
     procedure   Read; override;
     procedure   Save; override;
     property    Owner: TPersonList read GetOwner write SetOwner;
-    function    Clone : TtiObject; override; // ToDo: Remove clone from template
+    function    Clone: TtiObject; override; // ToDo: Remove clone from template
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
     property    FirstName: string read FFirstName write FFirstName;
@@ -77,7 +77,7 @@ type
 
     property    EAdrsList: TEAdrsList read FEAdrsList;
 
-  end ;
+  end;
 
   TEAdrsList = class(TtiObjectList)
   private
@@ -88,11 +88,11 @@ type
     procedure   SetOwner(const AValue: TPerson); reintroduce;
     function    GetOID: TOID; override;
   public
-    property    Items[i:integer] : TEAdrs read GetItems write SetItems;
-    procedure   Add(AObject : TEAdrs); reintroduce;
+    property    Items[i:integer]: TEAdrs read GetItems write SetItems;
+    procedure   Add(AObject: TEAdrs); reintroduce;
     property    Owner: TPerson read GetOwner write SetOwner;
   published
-  end ;
+  end;
 
   TEAdrs = class(TtiObject)
   private
@@ -103,13 +103,13 @@ type
     procedure   SetOwner(const AValue: TEAdrsList); reintroduce;
   public
     property    Owner: TEAdrsList read GetOwner write SetOwner;
-    function    Clone : TtiObject; override;
+    function    Clone: TtiObject; override;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
     procedure   Save; override;
   published
     property    AdrsType: string read FAdrsType write FAdrsType;
     property    AdrsText: string read FAdrsText write FAdrsText;
-  end ;
+  end;
 
 implementation
 uses
@@ -117,7 +117,7 @@ uses
   ,tiConstants
   ,Adrs_Svr // To force linking
   ,Adrs_Constants
- ;
+;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -127,7 +127,7 @@ uses
 constructor TAdrsBook.Create;
 begin
   inherited;
-  FPeople := TPersonList.Create;
+  FPeople:= TPersonList.Create;
   FPeople.Owner:= Self;
 end;
 

@@ -45,7 +45,7 @@ const
     '  person      ' +
     'order by      ' +
     '  last_name   ' +
-    '  ,first_name ' ;
+    '  ,first_name ';
 
   // Given a person's OID, read their details
   cSQLPersonRead_Detail =
@@ -56,24 +56,24 @@ const
     'from          ' +
     '  person      ' +
     'where         ' +
-    '  oid = :oid  ' ;
+    '  oid =:oid  ';
 
   // Given a person's OID, update their details
   cSQLPersonUpdate =
     'update person ' +
     'set           ' +
-    ' last_name   = :last_name  ' +
-    ' ,first_name = :first_name ' +
-    ' ,title      = :title      ' +
-    ' ,initials   = :initials   ' +
-    ' ,notes      = :notes      ' +
+    ' last_name   =:last_name  ' +
+    ' ,first_name =:first_name ' +
+    ' ,title      =:title      ' +
+    ' ,initials   =:initials   ' +
+    ' ,notes      =:notes      ' +
     'where                      ' +
-    '  oid        = :oid        ' ;
+    '  oid        =:oid        ';
 
   // Insert a new person
   cSQLPersonCreate =
     'insert into person ' +
-    '(                  ' +
+    '(                 ' +
     ' OID               ' +
     ' ,last_name        ' +
     ' ,first_name       ' +
@@ -82,19 +82,19 @@ const
     ' ,notes            ' +
     ')                  ' +
     'values             ' +
-    '(                  ' +
-    ' :OID              ' +
+    '(                 ' +
+    ':OID              ' +
     ' ,:last_name       ' +
     ' ,:first_name      ' +
     ' ,:title           ' +
     ' ,:initials        ' +
     ' ,:notes           ' +
-    ')                  ' ;
+    ')                  ';
 
   // Delete a person
   cSQLPersonDelete =
     'delete from person ' +
-    'where OID = :OID   ' ;
+    'where OID =:OID   ';
 
 {
   cSQLPersonRead_notes =
@@ -105,7 +105,7 @@ const
     'from          ' +
     '  notes       ' +
     'where         ' +
-    '  owner_oid = :owner_oid  ' ;
+    '  owner_oid =:owner_oid  ';
 }
 
   cSQLPersonAddressRead =
@@ -120,7 +120,7 @@ const
     'from         ' +
     '  adrs       ' +
     'where        ' +
-    ' owner_oid = :owner_oid ' ;
+    ' owner_oid =:owner_oid ';
 
   cSQLPersonEAddressRead =
     'select                   ' +
@@ -131,40 +131,40 @@ const
     'from                     ' +
     ' eadrs                   ' +
     'where                    ' +
-    '  owner_oid = :owner_oid ' ;
+    '  owner_oid =:owner_oid ';
 
   cSQLPersonEAddressCreate =
     'insert into EAdrs ' +
-    '(                 ' +
+    '(                ' +
     '   OID            ' +
     '  ,Owner_OID      ' +
     '  ,EAdrs_Type     ' +
     '  ,Text           ' +
     ')                 ' +
     'Values            ' +
-    '(                 ' +
-    '   :OID           ' +
+    '(                ' +
+    '  :OID           ' +
     '  ,:Owner_OID     ' +
     '  ,:EAdrs_Type    ' +
     '  ,:Text          ' +
-    ')                 ' ;
+    ')                 ';
 
   cSQLPersonEAddressUpdate =
     'update EAdrs                ' +
     'set                         ' +
-    '   Owner_OID  = :Owner_OID  ' +
-    '  ,EAdrs_Type = :EAdrs_Type ' +
-    '  ,Text       = :Text       ' +
+    '   Owner_OID  =:Owner_OID  ' +
+    '  ,EAdrs_Type =:EAdrs_Type ' +
+    '  ,Text       =:Text       ' +
     'where                       ' +
-    '   OID        = :OID        ' ;
+    '   OID        =:OID        ';
 
   cSQLPersonEAddressDelete =
     'delete from EAdrs ' +
-    'where OID = :OID  ' ;
+    'where OID =:OID  ';
 
   cSQLPersonAddressCreate =
     'insert into adrs ' +
-    '(                ' +
+    '(               ' +
     '  oid            ' +
     ' ,owner_oid      ' +
     ' ,adrs_type      ' +
@@ -174,32 +174,32 @@ const
     ' ,country        ' +
     ')                ' +
     'Values           ' +
-    '(                ' +
-    '  :oid           ' +
+    '(               ' +
+    ' :oid           ' +
     ' ,:owner_oid     ' +
     ' ,:adrs_type     ' +
     ' ,:lines         ' +
     ' ,:state         ' +
     ' ,:pcode         ' +
     ' ,:country       ' +
-    ')                ' ;
+    ')                ';
 
   cSQLPersonAddressUpdate =
     'update adrs               ' +
     'set                       ' +
-    '  owner_oid  = :owner_oid ' +
-    ' ,adrs_type  = :adrs_type ' +
-    ' ,lines      = :lines     ' +
-    ' ,state      = :state     ' +
-    ' ,pcode      = :pcode     ' +
-    ' ,country    = :country   ' +
+    '  owner_oid  =:owner_oid ' +
+    ' ,adrs_type  =:adrs_type ' +
+    ' ,lines      =:lines     ' +
+    ' ,state      =:state     ' +
+    ' ,pcode      =:pcode     ' +
+    ' ,country    =:country   ' +
     'where                     ' +
-    '  oid        = :oid       ' ;
+    '  oid        =:oid       ';
 
   cSQLPersonAddressDelete =
     'delete from adrs          ' +
     'where                     ' +
-    '  oid        = :oid       ' ;
+    '  oid        =:oid       ';
 
 
 implementation

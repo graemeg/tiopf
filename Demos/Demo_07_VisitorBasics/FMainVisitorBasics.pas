@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Client_BOM, StdCtrls ;
+  Client_BOM, StdCtrls;
 
 type
   TFormMainVisitorBasics = class(TForm)
@@ -17,7 +17,7 @@ type
     procedure btnShowListClick(Sender: TObject);
     procedure btnRunClientVisitorClick(Sender: TObject);
   private
-    FClients : TClients ;
+    FClients: TClients;
   public
     { Public declarations }
   end;
@@ -29,29 +29,29 @@ implementation
 uses
    tiObject
   ,tiDialogs
-  ;
+ ;
   
 {$R *.DFM}
 
 procedure TFormMainVisitorBasics.FormCreate(Sender: TObject);
 begin
-  FClients := TClients.Create ;
+  FClients:= TClients.Create;
 end;
 
 procedure TFormMainVisitorBasics.FormDestroy(Sender: TObject);
 begin
-  FClients.Free ;
+  FClients.Free;
 end;
 
 procedure TFormMainVisitorBasics.btnAddClientClick(Sender: TObject);
 var
-  lClient : TClient ;
+  lClient: TClient;
 begin
-  lClient := TClient.Create ;
-  lClient.OID.AsString := IntToStr(GetTickCount); // Not how you do it in real life!
-  lClient.ClientName   := 'Test ' + DateTimeToStr(Now);
-  lClient.ClientID     := IntToStr(GetTickCount);
-  FClients.Add(lClient) ;
+  lClient:= TClient.Create;
+  lClient.OID.AsString:= IntToStr(GetTickCount); // Not how you do it in real life!
+  lClient.ClientName  := 'Test ' + DateTimeToStr(Now);
+  lClient.ClientID    := IntToStr(GetTickCount);
+  FClients.Add(lClient);
 end;
 
 procedure TFormMainVisitorBasics.btnShowListClick(Sender: TObject);
@@ -61,14 +61,14 @@ end;
 
 procedure TFormMainVisitorBasics.btnRunClientVisitorClick(Sender: TObject);
 var
-  lVis : TClientVisitor ;
+  lVis: TClientVisitor;
 begin
-  lVis := TClientVisitor.Create;
+  lVis:= TClientVisitor.Create;
   try
     FClients.Iterate(lVis);
   finally
     lVis.Free;
-  end ;
+  end;
 end;
 
 end.

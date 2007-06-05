@@ -45,9 +45,9 @@ uses
 
 procedure TCityMaintFrm.SetupMediators;
 begin
-  mName := TCity_Name_TEdit_Mediator.CreateCustom(edCityName, Data, 'Name', 'Text');
-  mZip := TCity_Zip_TEdit_Mediator.CreateCustom(edZip, Data, 'Zip', 'Text');
-  mCountry := TCity_Country_TCombobox_Mediator.CreateCustom(gContactManager.CountryList, cbCountry, Data, 'Country');
+  mName:= TCity_Name_TEdit_Mediator.CreateCustom(edCityName, Data, 'Name', 'Text');
+  mZip:= TCity_Zip_TEdit_Mediator.CreateCustom(edZip, Data, 'Zip', 'Text');
+  mCountry:= TCity_Country_TCombobox_Mediator.CreateCustom(gContactManager.CountryList, cbCountry, Data, 'Country');
 
   Data.NotifyObservers;
 end;
@@ -77,10 +77,10 @@ class function TCityMaintFrm.EditCity(AData: TCity): boolean;
 var
   frm: TCityMaintFrm;
 begin
-  frm := TCityMaintFrm.Create(nil);
+  frm:= TCityMaintFrm.Create(nil);
   try
-    frm.Data := AData;
-    result := frm.ShowModal = mrOK;
+    frm.Data:= AData;
+    result:= frm.ShowModal = mrOK;
   finally
     frm.Free;
   end;

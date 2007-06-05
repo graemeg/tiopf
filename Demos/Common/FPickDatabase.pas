@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
 
 const
   cINIIdentLastPerLayer = 'LastPerLayer';
@@ -54,13 +54,13 @@ type
     procedure SetPerLayerData(const APerLayerName: string);
     procedure SetDataDirDepth(const Value: integer);
   protected
-    function  GetDataDir: string; virtual ;
+    function  GetDataDir: string; virtual;
   public
-    property  PersistenceLayerName : string  read GetPersistenceLayerName ;
-    property  DatabaseName         : string  read GetDatabaseName ;
-    property  UserName             : string  read GetUserName ;
-    property  Password             : string  read GetPassword ;
-    property  DataDirDepth         : integer read FDataDirDepth write SetDataDirDepth ;
+    property  PersistenceLayerName: string  read GetPersistenceLayerName;
+    property  DatabaseName        : string  read GetDatabaseName;
+    property  UserName            : string  read GetUserName;
+    property  Password            : string  read GetPassword;
+    property  DataDirDepth        : integer read FDataDirDepth write SetDataDirDepth;
   end;
 
 
@@ -79,28 +79,28 @@ uses
   ,tiQueryCSV
   ,tiQueryADOAccess
 
-  ;
+ ;
   
 {$R *.dfm}
 
 function TFormPickDatabase.GetDataDir: string;
 begin
-  result :=
+  result:=
     ExpandFileName(
       tiAddTrailingSlash(
-        ExtractFilePath( ParamStr(0) )) +
-      tiReplicate( '..\', FDataDirDepth) + '_Data\' ) ;
+        ExtractFilePath(ParamStr(0))) +
+      tiReplicate('..\', FDataDirDepth) + '_Data\');
 end;
 
 procedure TFormPickDatabase.FormCreate(Sender: TObject);
 var
-  lLastPerLayer : string ;
+  lLastPerLayer: string;
 begin
-  aDefaultToIBX.Enabled       := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistIBX);
-  aDefaultToMSXML.Enabled     := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXML);
-  aDefaultToXMLLight.Enabled  := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXMLLight);
-  aDefaultToCSV.Enabled       := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistCSV);
-  aDefaultToADOAccess.Enabled := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistADOAccess);
+  aDefaultToIBX.Enabled      := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistIBX);
+  aDefaultToMSXML.Enabled    := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXML);
+  aDefaultToXMLLight.Enabled := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXMLLight);
+  aDefaultToCSV.Enabled      := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistCSV);
+  aDefaultToADOAccess.Enabled:= gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistADOAccess);
 
   // Not implemented (yet)
 //  cTIPersistBDEParadox
@@ -111,10 +111,10 @@ begin
 //  cTIPersistRemote
 //  cTIPersistSqldbIB
 
-  FDataDirDepth := 1 ;
-  lLastPerLayer := gINI.ReadString(Name, 'LastPerLayer', '') ;
+  FDataDirDepth:= 1;
+  lLastPerLayer:= gINI.ReadString(Name, 'LastPerLayer', '');
   SetPerLayerData(lLastPerLayer);
-end ;
+end;
 
 procedure TFormPickDatabase.SetPerLayerData(const APerLayerName: string);
 begin
@@ -122,42 +122,42 @@ begin
     // Do nothing
   else if (aDefaultToIBX.Enabled) and (APerLayerName = cTIPersistIBX) then
   begin
-    paePersistenceLayer.Value := cTIPersistIBX ;
-    paeDatabaseName.Value := GetDataDir + 'Demo.fdb' ;
-    paeUserName.Value := 'SYSDBA' ;
-    paePassword.Value := 'masterkey' ;
+    paePersistenceLayer.Value:= cTIPersistIBX;
+    paeDatabaseName.Value:= GetDataDir + 'Demo.fdb';
+    paeUserName.Value:= 'SYSDBA';
+    paePassword.Value:= 'masterkey';
     gINI.WriteString(Name, cINIIdentLastPerLayer, cTIPersistIBX);
   end
   else if (aDefaultToCSV.Enabled) and (APerLayerName = cTIPersistCSV) then
   begin
-    paePersistenceLayer.Value := cTIPersistCSV ;
-    paeDatabaseName.Value := GetDataDir + 'DemoCSV\' ;
-    paeUserName.Value := 'null' ;
-    paePassword.Value := 'null' ;
+    paePersistenceLayer.Value:= cTIPersistCSV;
+    paeDatabaseName.Value:= GetDataDir + 'DemoCSV\';
+    paeUserName.Value:= 'null';
+    paePassword.Value:= 'null';
     gINI.WriteString(Name, cINIIdentLastPerLayer, cTIPersistCSV);
   end
   else if (aDefaultToMSXML.Enabled) and (APerLayerName = cTIPersistXML) then
   begin
-    paePersistenceLayer.Value := cTIPersistXML ;
-    paeDatabaseName.Value := GetDataDir + 'Demo.xml' ;
-    paeUserName.Value := 'null' ;
-    paePassword.Value := 'null' ;
+    paePersistenceLayer.Value:= cTIPersistXML;
+    paeDatabaseName.Value:= GetDataDir + 'Demo.xml';
+    paeUserName.Value:= 'null';
+    paePassword.Value:= 'null';
     gINI.WriteString(Name, cINIIdentLastPerLayer, cTIPersistXML);
   end
   else if (aDefaultToXMLLight.Enabled) and (APerLayerName = cTIPersistXMLLight) then
   begin
-    paePersistenceLayer.Value := cTIPersistXMLLight ;
-    paeDatabaseName.Value := GetDataDir + 'Demo1.xml' ;
-    paeUserName.Value := 'null' ;
-    paePassword.Value := 'null' ;
+    paePersistenceLayer.Value:= cTIPersistXMLLight;
+    paeDatabaseName.Value:= GetDataDir + 'Demo1.xml';
+    paeUserName.Value:= 'null';
+    paePassword.Value:= 'null';
     gINI.WriteString(Name, cINIIdentLastPerLayer, cTIPersistXMLLight);
   end
   else if (aDefaultToADOAccess.Enabled) and (APerLayerName = cTIPersistADOAccess) then
   begin
-    paePersistenceLayer.Value := cTIPersistADOAccess ;
-    paeDatabaseName.Value := GetDataDir + 'Demo.mdb' ;
-    paeUserName.Value := 'null' ;
-    paePassword.Value := 'null' ;
+    paePersistenceLayer.Value:= cTIPersistADOAccess;
+    paeDatabaseName.Value:= GetDataDir + 'Demo.mdb';
+    paeUserName.Value:= 'null';
+    paePassword.Value:= 'null';
     gINI.WriteString(Name, cINIIdentLastPerLayer, cTIPersistADOAccess);
   end
   else
@@ -166,32 +166,32 @@ end;
 
 function TFormPickDatabase.GetDatabaseName: string;
 begin
-  result := paeDatabaseName.Value ;
+  result:= paeDatabaseName.Value;
 end;
 
 function TFormPickDatabase.GetPassword: string;
 begin
-  result := paePassword.Value ;
+  result:= paePassword.Value;
 end;
 
 function TFormPickDatabase.GetPersistenceLayerName: string;
 begin
-  result := paePersistenceLayer.Value ;
+  result:= paePersistenceLayer.Value;
 end;
 
 function TFormPickDatabase.GetUserName: string;
 begin
-  result := paeUserName.Value ;
+  result:= paeUserName.Value;
 end;
 
 procedure TFormPickDatabase.FormDestroy(Sender: TObject);
 begin
-  gINI.WriteString(Name, cINIIdentLastPerLayer, paePersistenceLayer.Value) ;
+  gINI.WriteString(Name, cINIIdentLastPerLayer, paePersistenceLayer.Value);
 end;
 
 procedure TFormPickDatabase.SetDataDirDepth(const Value: integer);
 begin
-  FDataDirDepth := Value;
+  FDataDirDepth:= Value;
   SetPerLayerData(paePersistenceLayer.Value);
 end;
 

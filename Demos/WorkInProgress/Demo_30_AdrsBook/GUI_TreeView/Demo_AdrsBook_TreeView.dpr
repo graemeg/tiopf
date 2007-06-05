@@ -22,8 +22,8 @@ uses
 
 begin
 
-  if not TFormConnectToDatabase.Execute( false,1 ) then
-    Exit ; //==>
+  if not TFormConnectToDatabase.Execute(false,1) then
+    Exit; //==>
 
   // Check for required tables and create them if missing
   AdrsMetaData_BOM.CheckDatabaseStructure;

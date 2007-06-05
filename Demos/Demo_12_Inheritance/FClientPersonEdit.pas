@@ -10,7 +10,7 @@ uses
   ,Variants
   {$ENDIF}
   ,tiObject
-  ;
+ ;
   
 
 type
@@ -20,13 +20,13 @@ type
   private
     { Private declarations }
   public
-    procedure SetData(const Value: TtiObject); override ;
+    procedure SetData(const Value: TtiObject); override;
   end;
 
 implementation
 uses
   Client_BOM
-  ;
+ ;
   
 {$R *.dfm}
 
@@ -35,8 +35,8 @@ uses
 procedure TFormClientPersonEdit.SetData(const Value: TtiObject);
 begin
   inherited;
-  paeGivenName.LinkToData( DataBuffer, 'GivenName' ) ;
-  paeFamilyName.LinkToData( DataBuffer, 'FamilyName' ) ;
+  paeGivenName.LinkToData(DataBuffer, 'GivenName');
+  paeFamilyName.LinkToData(DataBuffer, 'FamilyName');
 end;
 
 end.

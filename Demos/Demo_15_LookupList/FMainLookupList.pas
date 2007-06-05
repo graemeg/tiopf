@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
 
 type
   TFormMainLookupList = class(TForm)
@@ -38,7 +38,7 @@ type
     procedure LVItemEdit(pVT: TtiCustomVirtualTree; AData: TtiObject;
       AItem: PVirtualNode);
   private
-    FClients : TClients ;
+    FClients: TClients;
     procedure CreateTables;
     procedure DropTables;
   public
@@ -60,81 +60,81 @@ uses
   ,FClientEdit
   ,tiDialogs
   ,tiGUIUtils
-  ;
+ ;
 
 {$R *.dfm}
 
 // Create table
 procedure TFormMainLookupList.CreateTables;
-  procedure _AddClientSource(const pDisplayText : string ) ;
+  procedure _AddClientSource(const pDisplayText: string);
   var
-    lClientSource : TClientSource ;
+    lClientSource: TClientSource;
   begin
-    lClientSource := TClientSource.CreateNew ;
-    lClientSource.DisplayText := pDisplayText ;
+    lClientSource:= TClientSource.CreateNew;
+    lClientSource.DisplayText:= pDisplayText;
     gClientSources.Add(lClientSource);
-  end ;
+  end;
 var
-  lTableMetaData : TtiDBMetaDataTable ;
+  lTableMetaData: TtiDBMetaDataTable;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Client_Source' ;
-    lTableMetaData.AddField( 'OID',          qfkString,  36 ) ; // Using GUID OIDs
-    lTableMetaData.AddField( 'Display_Text',  qfkString, 20 ) ;
-    gTIOPFManager.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name:= 'Client_Source';
+    lTableMetaData.AddField('OID',          qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddField('Display_Text',  qfkString, 20);
+    gTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 
 
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Client' ;
-    lTableMetaData.AddField( 'OID',           qfkString,  36 ) ; // Using GUID OIDs
-    lTableMetaData.AddField( 'Client_Name',   qfkString, 200 ) ;
-    lTableMetaData.AddField( 'Client_Source', qfkString,  36 ) ;
-    gTIOPFManager.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name:= 'Client';
+    lTableMetaData.AddField('OID',           qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddField('Client_Name',   qfkString, 200);
+    lTableMetaData.AddField('Client_Source', qfkString,  36);
+    gTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 
-  _AddClientSource( 'Unknown' ) ;
-  _AddClientSource( 'Yellow pages' ) ;
-  _AddClientSource( 'Referal' ) ;
-  _AddClientSource( 'Radio' ) ;
-  _AddClientSource( 'TV' ) ;
-  _AddClientSource( 'News paper' ) ;
-  gClientSources.Save ;
+  _AddClientSource('Unknown');
+  _AddClientSource('Yellow pages');
+  _AddClientSource('Referal');
+  _AddClientSource('Radio');
+  _AddClientSource('TV');
+  _AddClientSource('News paper');
+  gClientSources.Save;
 
 end;
 
 // Drop table
 procedure TFormMainLookupList.DropTables;
 begin
-  try gTIOPFManager.DropTable( 'Client' ) except end ;
-  try gTIOPFManager.DropTable( 'Client_Source' ) except end ;
+  try gTIOPFManager.DropTable('Client') except end;
+  try gTIOPFManager.DropTable('Client_Source') except end;
 end;
 
 procedure TFormMainLookupList.FormCreate(Sender: TObject);
 begin
-  Caption := 'Connected to ' + gTIOPFManager.DefaultDBConnectionName ;
-  LV.AddColumn('ClientSourceAsGUIString', vttkString, 'Client source', 80 );
-  LV.AddColumn('ClientName',     vttkString, 'Client name', 200 );
+  Caption:= 'Connected to ' + gTIOPFManager.DefaultDBConnectionName;
+  LV.AddColumn('ClientSourceAsGUIString', vttkString, 'Client source', 80);
+  LV.AddColumn('ClientName',     vttkString, 'Client name', 200);
 
 
 
 
 
-  FClients := TClients.Create ;
+  FClients:= TClients.Create;
 
-  if tiAppConfirmation('Do you want to drop and re-create the tables?' ) then
+  if tiAppConfirmation('Do you want to drop and re-create the tables?') then
   begin
     DropTables;
-    CreateTables ;
-  end ;
+    CreateTables;
+  end;
 
-  gClientSources ; // This will force the pre-loading of ClientSources
+  gClientSources; // This will force the pre-loading of ClientSources
 
   aReadExecute(nil);
   
@@ -150,12 +150,12 @@ end;
 // Delete a row
 procedure TFormMainLookupList.aSaveExecute(Sender: TObject);
 begin
-  FClients.Save ;
+  FClients.Save;
 end;
 
 procedure TFormMainLookupList.FormDestroy(Sender: TObject);
 begin
-  FClients.Free ;
+  FClients.Free;
 end;
 
 procedure TFormMainLookupList.Button2Click(Sender: TObject);
@@ -165,44 +165,44 @@ end;
 
 procedure TFormMainLookupList.ActionList1Update(Action: TBasicAction;var Handled: Boolean);
 begin
-  aSave.Enabled := FClients.Dirty ;
-  aRead.Enabled := aSave.Enabled;
+  aSave.Enabled:= FClients.Dirty;
+  aRead.Enabled:= aSave.Enabled;
 end;
 
 procedure TFormMainLookupList.aReadExecute(Sender: TObject);
 begin
-  LV.Data := nil;
-  FClients.Clear ;
-  FClients.Read ;
-  LV.Data := FClients;
+  LV.Data:= nil;
+  FClients.Clear;
+  FClients.Read;
+  LV.Data:= FClients;
 end;
 
 
 procedure TFormMainLookupList.LVFilterData(pData: TtiObject; var pbInclude: Boolean);
 begin
-  pbInclude := not pData.Deleted ;
+  pbInclude:= not pData.Deleted;
 end;
 
 procedure TFormMainLookupList.LVItemDelete(pVT: TtiCustomVirtualTree;
   AData: TtiObject; AItem: PVirtualNode);
 begin
   if tiPerObjAbsConfirmAndDelete(AData) then
-    lv.Refresh ;
+    lv.Refresh;
 end;
 
 procedure TFormMainLookupList.LVItemInsert(pVT: TtiCustomVirtualTree;
   AData: TtiObject; AItem: PVirtualNode);
 var
-  LClient : TClient ;
+  LClient: TClient;
 begin
-  LClient := TClient.CreateNew ;
+  LClient:= TClient.CreateNew;
   if TFormClientEdit.Execute(LClient) then
   begin
     FClients.Add(LClient);
     LV.Refresh(LClient);
   end
   else
-    LClient.Free ;
+    LClient.Free;
 end;
 
 procedure TFormMainLookupList.LVItemEdit(pVT: TtiCustomVirtualTree;

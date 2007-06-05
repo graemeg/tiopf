@@ -19,7 +19,7 @@ type
     procedure tmrCloseFormTimer(Sender: TObject);
     procedure aViewAddressListExecute(Sender: TObject);
   private
-    procedure CMCloseActiveForm(var Message: TMessage); message TI_CLOSEACTIVEFORM ;
+    procedure CMCloseActiveForm(var Message: TMessage); message TI_CLOSEACTIVEFORM;
   public
     { Public declarations }
   end;
@@ -33,7 +33,7 @@ uses
   ,tiApplicationMenuSystem
   ,FWorkList
   ,FPersonList
-  ;
+ ;
 
 {$R *.DFM}
 
@@ -45,7 +45,7 @@ end;
 
 procedure TFormMain.CMCloseActiveForm(var Message: TMessage);
 begin
-  tmrCloseForm.Enabled := true ;
+  tmrCloseForm.Enabled:= true;
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -74,7 +74,7 @@ end;
 
 procedure TFormMain.tmrCloseFormTimer(Sender: TObject);
 begin
-  tmrCloseForm.Enabled := false ;
+  tmrCloseForm.Enabled:= false;
   gAMS.FormMgr.CloseForm(gAMS.FormMgr.ActiveForm);
 end;
 

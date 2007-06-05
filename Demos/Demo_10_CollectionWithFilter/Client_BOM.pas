@@ -4,15 +4,15 @@ interface
 uses
   tiObject
   ,tiOIDGUID
-  ;
+ ;
 
 type
 
-  TClient = class ;
-  TClients = class ;
+  TClient = class;
+  TClients = class;
   TClientsLike = class;
 
-  TClientsLike = class( TtiObject )
+  TClientsLike = class(TtiObject)
   private
     FClientNameLike: string;
     FClients: TClients;
@@ -22,18 +22,18 @@ type
     procedure Read; override;
   end;
 
-  TClients = class( TtiObjectList );
+  TClients = class(TtiObjectList);
 
-  TClient = class( TtiObject )
+  TClient = class(TtiObject)
   private
     FClientID: string;
     FClientName: string;
   public
-    constructor CreateNew( const pDatabaseName : string = '' ; const pPerLayerName : string = '' ); override;
+    constructor CreateNew(const pDatabaseName: string = ''; const pPerLayerName: string = ''); override;
   published
-    property    ClientName : string read FClientName write FClientName ;
-    property    ClientID   : string read FClientID write FClientID ;
-  end ;
+    property    ClientName: string read FClientName write FClientName;
+    property    ClientID  : string read FClientID write FClientID;
+  end;
 
 implementation
 uses
@@ -41,16 +41,16 @@ uses
   ,tiConstants
   ,SysUtils
   ,Windows
-  ;
+ ;
 
 { TClient }
 
-constructor TClient.CreateNew( const pDatabaseName : string = '' ; const pPerLayerName : string = '' );
+constructor TClient.CreateNew(const pDatabaseName: string = ''; const pPerLayerName: string = '');
 begin
   inherited;
   // Set some default values for the demo
-  ClientName := 'TEST ' + DateTimeToStr(Now) ;
-  ClientID := IntToStr(GetTickCount) ;
+  ClientName:= 'TEST ' + DateTimeToStr(Now);
+  ClientID:= IntToStr(GetTickCount);
 end;
 
 { TClientsLike }

@@ -7,31 +7,31 @@
   File generated: 12/06/2002 13:30:28
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
-unit cQueryNames ;
+unit cQueryNames;
 
 interface
 
 const
-  cgQryPersonReadPK                                       = 'PersonReadPK' ;                                      
-  cgQryPersonReadDetail                                   = 'PersonReadDetail' ;                                  
-  cgQryPersonUpdate                                       = 'PersonUpdate' ;                                      
-  cgQryPersonCreate                                       = 'PersonCreate' ;                                      
-  cgQryPersonDelete                                       = 'PersonDelete' ;                                      
-  cgQryPersonAddressRead                                  = 'PersonAddressRead' ;                                 
-  cgQryPersonEAddressRead                                 = 'PersonEAddressRead' ;                                
-  cgQryPersonEAddressCreate                               = 'PersonEAddressCreate' ;                              
-  cgQryPersonEAddressUpdate                               = 'PersonEAddressUpdate' ;                              
-  cgQryPersonEAddressDelete                               = 'PersonEAddressDelete' ;                              
-  cgQryPersonAddressCreate                                = 'PersonAddressCreate' ;                               
-  cgQryPersonAddressUpdate                                = 'PersonAddressUpdate' ;                               
-  cgQryPersonAddressDelete                                = 'PersonAddressDelete' ;                               
-  cgQryCompanyReadPK                                      = 'CompanyReadPK' ;                                     
-  cgQryCompanyReadDetail                                  = 'CompanyReadDetail' ;                                 
-  cgQryCompanyReadEmployeePK                              = 'CompanyReadEmployeePK' ;                             
-  cgQryCompanyCreate                                      = 'CompanyCreate' ;                                     
-  cgQryCompanyUpdate                                      = 'CompanyUpdate' ;                                     
-  cgQryCompanyDelete                                      = 'CompanyDelete' ;                                     
-  cgQryLookupListRead                                     = 'LookupListRead' ;                                    
+  cgQryPersonReadPK                                       = 'PersonReadPK';                                      
+  cgQryPersonReadDetail                                   = 'PersonReadDetail';                                  
+  cgQryPersonUpdate                                       = 'PersonUpdate';                                      
+  cgQryPersonCreate                                       = 'PersonCreate';                                      
+  cgQryPersonDelete                                       = 'PersonDelete';                                      
+  cgQryPersonAddressRead                                  = 'PersonAddressRead';                                 
+  cgQryPersonEAddressRead                                 = 'PersonEAddressRead';                                
+  cgQryPersonEAddressCreate                               = 'PersonEAddressCreate';                              
+  cgQryPersonEAddressUpdate                               = 'PersonEAddressUpdate';                              
+  cgQryPersonEAddressDelete                               = 'PersonEAddressDelete';                              
+  cgQryPersonAddressCreate                                = 'PersonAddressCreate';                               
+  cgQryPersonAddressUpdate                                = 'PersonAddressUpdate';                               
+  cgQryPersonAddressDelete                                = 'PersonAddressDelete';                               
+  cgQryCompanyReadPK                                      = 'CompanyReadPK';                                     
+  cgQryCompanyReadDetail                                  = 'CompanyReadDetail';                                 
+  cgQryCompanyReadEmployeePK                              = 'CompanyReadEmployeePK';                             
+  cgQryCompanyCreate                                      = 'CompanyCreate';                                     
+  cgQryCompanyUpdate                                      = 'CompanyUpdate';                                     
+  cgQryCompanyDelete                                      = 'CompanyDelete';                                     
+  cgQryLookupListRead                                     = 'LookupListRead';                                    
 
 implementation
 

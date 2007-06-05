@@ -11,7 +11,7 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-  ;
+ ;
 
 type
   TForm2 = class(TForm)
@@ -38,7 +38,7 @@ type
       pItem: PVirtualNode);
     procedure LVFilterData(pData: TtiObject; var pInclude: Boolean);
   private
-    FClients : TClients ;
+    FClients: TClients;
     procedure CreateTables;
     procedure DropTables;
   public
@@ -58,49 +58,49 @@ uses
   ,FClientEdit
   ,tiDialogs
   ,tiGUIUtils
-  ;
+ ;
 
 {$R *.dfm}
 
 // Create table
 procedure TForm2.CreateTables;
 var
-  lTableMetaData : TtiDBMetaDataTable ;
+  lTableMetaData: TtiDBMetaDataTable;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Client' ;
-    lTableMetaData.AddField( 'OID',               qfkString,  36 ) ; // Using GUID OIDs
-    lTableMetaData.AddField( 'Client_Name',       qfkString, 200 ) ;
-    lTableMetaData.AddField( 'Client_ID',         qfkString,   9 ) ;
-    gTIOPFManager.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name:= 'Client';
+    lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddField('Client_Name',       qfkString, 200);
+    lTableMetaData.AddField('Client_ID',         qfkString,   9);
+    gTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 end;
 
 // Drop table
 procedure TForm2.DropTables;
 begin
-  try gTIOPFManager.DropTable( 'Client' ) except end ;
+  try gTIOPFManager.DropTable('Client') except end;
 end;
 
 procedure TForm2.FormCreate(Sender: TObject);
 begin
-  Caption := 'Connected to ' + gTIOPFManager.DefaultDBConnectionName ;
+  Caption:= 'Connected to ' + gTIOPFManager.DefaultDBConnectionName;
   LV.AddColumn('ClientID',   vttkString, 'Client ID', 80);
-  LV.AddColumn('ClientName', vttkString, 'Client name', 200 );
+  LV.AddColumn('ClientName', vttkString, 'Client name', 200);
 
-  FClients := TClients.Create ;
+  FClients:= TClients.Create;
 
-  if tiAppConfirmation('Do you want to drop and re-create the tables?' ) then
+  if tiAppConfirmation('Do you want to drop and re-create the tables?') then
   begin
     DropTables;
-    CreateTables ;
+    CreateTables;
   end else
-    FClients.Read ;
+    FClients.Read;
 
-  LV.Data := FClients;
+  LV.Data:= FClients;
   
 end;
 
@@ -114,12 +114,12 @@ end;
 // Delete a row
 procedure TForm2.aSaveExecute(Sender: TObject);
 begin
-  FClients.Save ;
+  FClients.Save;
 end;
 
 procedure TForm2.FormDestroy(Sender: TObject);
 begin
-  FClients.Free ;
+  FClients.Free;
 end;
 
 procedure TForm2.Button2Click(Sender: TObject);
@@ -129,16 +129,16 @@ end;
 
 procedure TForm2.ActionList1Update(Action: TBasicAction;var Handled: Boolean);
 begin
-  aSave.Enabled := FClients.Dirty ;
-  aUndo.Enabled := aSave.Enabled;
+  aSave.Enabled:= FClients.Dirty;
+  aUndo.Enabled:= aSave.Enabled;
 end;
 
 procedure TForm2.aUndoExecute(Sender: TObject);
 begin
-  LV.Data := nil;
-  FClients.Clear ;
-  FClients.Read ;
-  LV.Data := FClients;
+  LV.Data:= nil;
+  FClients.Clear;
+  FClients.Read;
+  LV.Data:= FClients;
 end;
 
 procedure TForm2.LVItemEdit(pVT: TtiCustomVirtualTree; pData: TtiObject; pItem: PVirtualNode);
@@ -150,16 +150,16 @@ end;
 procedure TForm2.LVItemInsert(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode);
 var
-  lClient : TClient ;
+  lClient: TClient;
 begin
-  lClient := TClient.CreateNew ;
+  lClient:= TClient.CreateNew;
   if TFormClientEdit.Execute(lClient) then
   begin
     FClients.Add(lClient);
     pVT.Refresh(lClient);
   end
   else
-    lClient.Free ;
+    lClient.Free;
 end;
 
 procedure TForm2.LVItemDelete(pVT: TtiCustomVirtualTree;
@@ -171,7 +171,7 @@ end;
 
 procedure TForm2.LVFilterData(pData: TtiObject; var pInclude: Boolean);
 begin
-  pInclude := not pData.Deleted ;
+  pInclude:= not pData.Deleted;
 end;
 
 end.

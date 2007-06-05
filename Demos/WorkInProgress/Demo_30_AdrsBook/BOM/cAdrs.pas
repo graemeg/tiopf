@@ -34,9 +34,9 @@ unit cAdrs;
 
 interface
 const
-  cgsAdrs_Read_PK     = 'Adrs_read_PK'     ;
-  cgsAdrs_Read_Detail = 'Adrs_read_Detail' ;
-  cgsAdrs_Update      = 'Adrs_Update'      ;
+  cgsAdrs_Read_PK     = 'Adrs_read_PK'    ;
+  cgsAdrs_Read_Detail = 'Adrs_read_Detail';
+  cgsAdrs_Update      = 'Adrs_Update'     ;
 
 implementation
 

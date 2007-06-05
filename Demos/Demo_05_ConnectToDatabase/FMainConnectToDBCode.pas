@@ -31,7 +31,7 @@ uses
   ,tiDialogs
   ,tiPersistenceLayers
   ,DemoDBUtils
-  ;
+ ;
 
 {$R *.DFM}
 
@@ -42,8 +42,8 @@ begin
     UserName,
     Password,
     '', // Additional params as Name-Value pairs
-    PersistenceLayerName) ;
-  tiAppMessage( 'Database connection pool for "' + DatabaseName + '" loaded.' );
+    PersistenceLayerName);
+  tiAppMessage('Database connection pool for "' + DatabaseName + '" loaded.');
 end;
 
 procedure TFormMainConnectToDBCode.btnShowWhatsConnectedClick(Sender: TObject);
@@ -55,8 +55,8 @@ procedure TFormMainConnectToDBCode.btnDisconnectFromDatabaseClick(Sender: TObjec
 begin
   gTIOPFManager.DisconnectDatabase(
     DatabaseName,
-    PersistenceLayerName) ;
-  tiAppMessage( 'Disconnected from "' + DatabaseName + '"' );
+    PersistenceLayerName);
+  tiAppMessage('Disconnected from "' + DatabaseName + '"');
 end;
 
 end.

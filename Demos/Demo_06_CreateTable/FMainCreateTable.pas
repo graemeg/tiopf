@@ -11,7 +11,7 @@ uses
   ,Variants
   {$ENDIF}
   ,tiMemoReadOnly
-  ;
+ ;
 
 
 type
@@ -44,81 +44,81 @@ uses
   ,tiDBConnectionPool
   ,tiOIDGUID
   ,tiDialogs
-  ;
+ ;
 
 {$R *.dfm}
 
 // Create table
 procedure TFormMainCreateTable.btnCreateTableClick(Sender: TObject);
 var
-  lTableMetaData : TtiDBMetaDataTable ;
+  lTableMetaData: TtiDBMetaDataTable;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Client' ;
-    lTableMetaData.AddField( 'OID',               qfkString,  36 ) ; // Using GUID OIDs
-    lTableMetaData.AddField( 'Client_Name',       qfkString, 200 ) ;
-    lTableMetaData.AddField( 'ACN',               qfkString,   9 ) ;
-    gTIOPFManager.CreateTable( lTableMetaData ) ;
+    lTableMetaData.Name:= 'Client';
+    lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddField('Client_Name',       qfkString, 200);
+    lTableMetaData.AddField('ACN',               qfkString,   9);
+    gTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
-  end ;
+  end;
   ShowMessage('Table ''Client'' created');
 end;
 
 // Drop table
 procedure TFormMainCreateTable.btnDropTableClick(Sender: TObject);
 begin
-  gTIOPFManager.DropTable( 'Client' );
+  gTIOPFManager.DropTable('Client');
   ShowMessage('Table ''Client'' dropped');
 end;
 
 // Show table metadata
 procedure TFormMainCreateTable.btnShowMetaDataClick(Sender: TObject);
 var
-  lTableMetaData : TtiDBMetaDataTable ;
-  lPooledDB      : TPooledDB ;
-  lDatabase      : TtiDatabase ;
+  lTableMetaData: TtiDBMetaDataTable;
+  lPooledDB     : TPooledDB;
+  lDatabase     : TtiDatabase;
 begin
-  lTableMetaData := TtiDBMetaDataTable.Create ;
+  lTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name := 'Client' ;
-    lPooledDB := gTIOPFManager.DefaultDBConnectionPool.Lock ;
+    lTableMetaData.Name:= 'Client';
+    lPooledDB:= gTIOPFManager.DefaultDBConnectionPool.Lock;
     try
-      lDatabase := lPooledDB.Database ;
+      lDatabase:= lPooledDB.Database;
       lDatabase.ReadMetaDataFields(lTableMetaData);
       tiShowMessage(lTableMetaData.AsDebugString);
     finally
       gTIOPFManager.DefaultDBConnectionPool.UnLock(lPooledDB);
-    end ;
+    end;
   finally
     lTableMetaData.Free;
-  end ;
+  end;
 end;
 
 // Does a table exist?
 procedure TFormMainCreateTable.btnTableExistsClick(Sender: TObject);
 var
-  lDBMetaData : TtiDBMetaData ;
-  lPooledDB   : TPooledDB ;
-  lDatabase   : TtiDatabase ;
+  lDBMetaData: TtiDBMetaData;
+  lPooledDB  : TPooledDB;
+  lDatabase  : TtiDatabase;
 begin
-  lDBMetaData := TtiDBMetaData.Create ;
+  lDBMetaData:= TtiDBMetaData.Create;
   try
-    lPooledDB := gTIOPFManager.DefaultDBConnectionPool.Lock ;
+    lPooledDB:= gTIOPFManager.DefaultDBConnectionPool.Lock;
     try
-      lDatabase := lPooledDB.Database ;
+      lDatabase:= lPooledDB.Database;
       lDatabase.ReadMetaDataTables(lDBMetaData);
       if lDBMetaData.FindByTableName('Client') <> nil then
-        ShowMessage( 'Table <Client> exists' )
+        ShowMessage('Table <Client> exists')
       else
-        ShowMessage( 'Table <Client> does not exist' ) ;
+        ShowMessage('Table <Client> does not exist');
     finally
       gTIOPFManager.DefaultDBConnectionPool.UnLock(lPooledDB);
-    end ;
+    end;
   finally
     lDBMetaData.Free;
-  end ;
+  end;
 end;
 
 procedure TFormMainCreateTable.FormCreate(Sender: TObject);

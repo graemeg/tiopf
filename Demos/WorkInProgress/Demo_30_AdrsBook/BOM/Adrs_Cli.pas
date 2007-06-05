@@ -7,58 +7,58 @@ uses
    tiVisitor
   ,tiVisitorDB
   ,tiObject
-  ;
+ ;
 
 type
 
-  TVisAdrsBookSetAllToCreate = class( TtiVisitor )
+  TVisAdrsBookSetAllToCreate = class(TtiVisitor)
   protected
-    function AcceptVisitor : boolean ; override ;
+    function AcceptVisitor: boolean; override;
   public
-    procedure Execute( const pVisited : TtiVisited ) ; override ;
-  end ;
+    procedure Execute(const AVisited: TtiVisited); override;
+  end;
 
-procedure SetAllToCreate( const pData : TtiObject ) ;
+procedure SetAllToCreate(const pData: TtiObject);
 
 
 implementation
 uses
   Adrs_BOM
-  ;
+ ;
 
-procedure SetAllToCreate( const pData : TtiObject ) ;
+procedure SetAllToCreate(const pData: TtiObject);
 var
-  lVis : TVisAdrsBookSetAllToCreate ;
+  lVis: TVisAdrsBookSetAllToCreate;
 begin
-  lVis := TVisAdrsBookSetAllToCreate.Create ;
+  lVis:= TVisAdrsBookSetAllToCreate.Create;
   try
-    pData.Iterate( lVis ) ;
+    pData.Iterate(lVis);
   finally
-    lVis.Free ;
-  end ;
-end ;
+    lVis.Free;
+  end;
+end;
 
 
 { TVisAdrsBookSetAllToCreate }
 
 function TVisAdrsBookSetAllToCreate.AcceptVisitor: boolean;
 begin
-  result :=
-    (( Visited is TPerson ) or
-     ( Visited is TCompany ) or
-     ( Visited is TAdrsAbs )) and
-     ( TtiObject( Visited ).ObjectState in [ posCreate, posUpdate, posClean ]);
+  result:=
+    ((Visited is TPerson) or
+     (Visited is TCompany) or
+     (Visited is TAdrsAbs)) and
+     (TtiObject(Visited).ObjectState in [ posCreate, posUpdate, posClean ]);
 
 end;
 
-procedure TVisAdrsBookSetAllToCreate.Execute(const pVisited: TtiVisited);
+procedure TVisAdrsBookSetAllToCreate.Execute(const AVisited: TtiVisited);
 begin
-  Inherited Execute( pVisited ) ;
+  Inherited Execute(AVisited);
 
   if not AcceptVisitor then
-    exit ; //==>
+    exit; //==>
 
-  TtiObject( Visited ).ObjectState := posCreate ;
+  TtiObject(Visited).ObjectState:= posCreate;
 
 end;
 
