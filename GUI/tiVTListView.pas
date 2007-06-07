@@ -552,7 +552,7 @@ type
     function    IsNodeDataItem(Node: PVirtualNode): Boolean;
 
     function    GetObjectFromNode(pNode: PVirtualNode): TtiObject;
-    function    GetTextFromObject(Obj: TtiObject; ColumnIndex: TColumnIndex): string;
+    function    GetTextFromObject(AObj: TtiObject; ColumnIndex: TColumnIndex): string;
 
     procedure   Refresh(const pSelectedData: TtiObject = nil); reintroduce; virtual;
 
@@ -1583,48 +1583,52 @@ begin
   Result := GetObjectFromNode(VT.FocusedNode);
 end;
 
-function TtiCustomVirtualTree.GetTextFromObject(Obj: TtiObject; ColumnIndex: TColumnIndex): string;
+function TtiCustomVirtualTree.GetTextFromObject(AObj: TtiObject; ColumnIndex: TColumnIndex): string;
 var
-  Column: TtiVTColumn;
-  Field: string;
-  Mask: string;
+  LColumn: TtiVTColumn;
+  LField: string;
+  LMask: string;
+  LCurrency: Currency;
 begin
-  Assert(Assigned(Obj));
-  Column := Header.Columns[ColumnIndex];
-  Field := Column.FieldName;
-  if (not Column.Derived) and (Field <> '') then
+  Assert(Assigned(AObj));
+  LColumn := Header.Columns[ColumnIndex];
+  LField := LColumn.FieldName;
+  if (not LColumn.Derived) and (LField <> '') then
   begin
-    Mask := Column.DisplayMask;
-    case Column.DataType of
+    LMask := LColumn.DisplayMask;
+    case LColumn.DataType of
       vttkString:
-        Result := GetPropValue(Obj, Field, True);
+        Result := GetPropValue(AObj, LField, True);
 
       vttkInt:
-        Result := FormatFloat(Mask, GetPropValue(Obj, Field, True));
+        Result := FormatFloat(LMask, GetPropValue(AObj, LField, True));
 
       vttkFloat:
-        Result := FormatFloat(Mask, GetPropValue(Obj, Field, True));
+        Result := FormatFloat(LMask, GetPropValue(AObj, LField, True));
 
       vttkDate:
-        Result := FormatDateTime(Mask, GetPropValue(Obj, Field, True));
+        Result := FormatDateTime(LMask, GetPropValue(AObj, LField, True));
 
       vttkDateTime:
-        Result := FormatDateTime(Mask, GetPropValue(Obj, Field, True));
+        Result := FormatDateTime(LMask, GetPropValue(AObj, LField, True));
 
       vttkTime:
-        Result := FormatDateTime(Mask, GetPropValue(Obj, Field, True));
+        Result := FormatDateTime(LMask, GetPropValue(AObj, LField, True));
 
       vttkCurrency:
-        Result := Format('%m', [GetPropValue(Obj, Field, True)]);
+        begin
+          LCurrency:= GetPropValue(AObj, LField, True);
+          Result := Format('%m', [LCurrency]);
+        end
 
       else
         Assert(False);
     end;
   end
-  else if (Column.Derived) and (Assigned(Column.OnDeriveColumn)) then
-    Column.OnDeriveColumn(Self, Obj, Column, Result)
+  else if (LColumn.Derived) and (Assigned(LColumn.OnDeriveColumn)) then
+    LColumn.OnDeriveColumn(Self, AObj, LColumn, Result)
   else
-    Result := '<' + Column.FieldName + '> not correctly defined';
+    Result := '<' + LColumn.FieldName + '> not correctly defined';
 end;
 
 function TtiCustomVirtualTree.IsNodeDataItem(Node: PVirtualNode): Boolean;
