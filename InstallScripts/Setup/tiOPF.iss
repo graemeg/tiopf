@@ -1,14 +1,14 @@
-;#define PATH_TO_WORKING_TIOPF2 "%path_to_working_tiopf2%"
-;#define PATH_TO_WORKING_3RDPARTY "%path_to_working_3rdparty%"
-;#define VERSION_NUMBER "%version_number%"
-;#define PATH_TO_WORKING_DEPLOY "%path_to_working_deploy%"
-;#define OUTPUT_BASE_FILENAME "%output_base_filename%"
+#define PATH_TO_WORKING_TIOPF2 "%path_to_working_tiopf2%"
+#define PATH_TO_WORKING_3RDPARTY "%path_to_working_3rdparty%"
+#define VERSION_NUMBER "%version_number%"
+#define PATH_TO_WORKING_DEPLOY "%path_to_working_deploy%"
+#define OUTPUT_BASE_FILENAME "%output_base_filename%"
 
-#define PATH_TO_WORKING_TIOPF2 "C:\Sourceforge\TechInsite\tiOPF2\Trunk"
-#define PATH_TO_WORKING_3RDPARTY "C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty"
-#define VERSION_NUMBER "2.0.0.0"
-#define PATH_TO_WORKING_DEPLOY "C:\Sourceforge\TechInsite\tiOPF2\Trunk\_Deploy"
-#define OUTPUT_BASE_FILENAME "tiOPF-Setup-2.1.0.0"
+;#define PATH_TO_WORKING_TIOPF2 "C:\Sourceforge\TechInsite\tiOPF2\Trunk"
+;#define PATH_TO_WORKING_3RDPARTY "C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty"
+;#define VERSION_NUMBER "x.x.x.x"
+;#define PATH_TO_WORKING_DEPLOY "C:\Sourceforge\TechInsite\tiOPF2\Trunk\_Deploy"
+;#define OUTPUT_BASE_FILENAME "tiOPF-Setup-x.x.x.x"
 
 [_ISXTool]
 EnableISX=true
