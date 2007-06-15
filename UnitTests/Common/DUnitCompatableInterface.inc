@@ -9,6 +9,8 @@
     procedure CheckNotEquals(expected: extended; actual: extended; delta: extended = 0; msg: string = ''); overload; virtual;
     procedure FailNotEquals(expected, actual: string; msg: string = ''; errorAddr: Pointer = nil); virtual;
     {$ENDIF}
+    procedure CheckTrue(condition: Boolean; msg: string = ''); virtual;
+    procedure CheckFalse(condition: Boolean; msg: string = ''); virtual;
 
     class function Suite: TTest;
     {
@@ -58,6 +60,18 @@ begin
   Fail(msg + ComparisonMsg(Expected, Actual));
 end;
 {$ENDIF}
+
+procedure TtiTestCase.CheckTrue(condition: Boolean; msg: string);
+begin
+  if (not condition) then
+      FailNotEquals(BoolToStr(true, true), BoolToStr(false, true), msg, nil);
+end;
+
+procedure TtiTestCase.CheckFalse(condition: Boolean; msg: string);
+begin
+  if (condition) then
+      FailNotEquals(BoolToStr(false, true), BoolToStr(true, true), msg, nil);
+end;
 
 class function TtiTestCase.Suite: TTest;
 begin
