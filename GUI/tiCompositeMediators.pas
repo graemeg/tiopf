@@ -1,3 +1,8 @@
+{
+  Abstract mediating views for GUI list controls. This allows you to use
+  standard list components and make them object-aware.  See the demo
+  application for usage.
+}
 unit tiCompositeMediators;
 
 {$I tiDefines.inc}

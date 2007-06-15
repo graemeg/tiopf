@@ -2,7 +2,7 @@
 <CONFIG>
   <Package Version="2">
     <Name Value="tiOPFGUIDsgn"/>
-    <Author Value="Bogus³aw Brandys"/>
+    <Author Value="Graeme Geldenhuys"/>
     <CompilerOptions>
       <Version Value="5"/>
       <SearchPaths>
@@ -36,7 +36,7 @@
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="tiOPFGUI"/>
+        <PackageName Value="tiOPFGUILaz"/>
         <MinVersion Major="2" Valid="True"/>
       </Item1>
       <Item2>

@@ -61,7 +61,7 @@ type
     procedure   DoOnChange(Sender: TObject); virtual;
   public
     constructor Create; override;
-    constructor CreateCustom( pEditControl: TControl; pSubject: TtiObject; pFieldName: string; pGuiFieldName: string = '' );
+    constructor CreateCustom(pEditControl: TControl; pSubject: TtiObject; pFieldName: string; pGuiFieldName: string = '');
     destructor  Destroy; override;
     { Copies values from the edit control to the Subject }
     procedure   GuiToObject; virtual;
@@ -95,6 +95,7 @@ type
     procedure   SetupGUIandObject; override;
     procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
   public
+    constructor CreateCustom(pEditControl: TControl; pSubject: TtiObject; pFieldName: string; pGuiFieldName: string = 'Text'); reintroduce;
     property    EditControl: TEdit read GetEditControl write SetEditControl;
     class function ComponentClass: TClass; override;
   end;
@@ -528,6 +529,12 @@ begin
     EditControl.Color  := ColorToRGB(clWindow);
     EditControl.Hint   := '';
   end;
+end;
+
+constructor TMediatorEditView.CreateCustom(pEditControl: TControl;
+  pSubject: TtiObject; pFieldName: string; pGuiFieldName: string);
+begin
+  inherited;
 end;
 
 class function TMediatorEditView.ComponentClass: TClass;

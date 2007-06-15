@@ -10,6 +10,9 @@ uses
   ,Messages
   ,Controls
   ,ExtCtrls
+  {$IFDEF FPC}
+  ,LMessages
+  {$ENDIF}
  ;
 
 type

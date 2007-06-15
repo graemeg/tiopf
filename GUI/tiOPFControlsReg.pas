@@ -39,8 +39,10 @@ uses
   ,tiSplitterEditor
   ,tiTreeView
   ,tiTreeViewChildForm
+  {$IFNDEF FPC}
   ,tiVTListView
   ,tiVTTreeView
+  {$ENDIF}
   ,tiTreeviewEditor
   ,tiHyperlinkWithImage
  ;
@@ -51,7 +53,7 @@ procedure Register;
 implementation
 
 {$IFNDEF FPC}
-{$R tiOPFControls.dcr}
+  {$R tiOPFControls.dcr}
 {$ENDIF}
 
 procedure Register;
@@ -90,8 +92,10 @@ begin
                          ,TtiToolBar
                          ,TtiButtonPanel
                          ,TtiMicroButton
+                         {$IFNDEF FPC}
                          ,TtiVTListView
                          ,TtiVTTreeView
+                         {$ENDIF}
 
                       ]);
 
@@ -126,31 +130,31 @@ begin
   RegisterComponentEditor(TtiSplitterPanel, TtiSplitterPanelEditor);
 
   RegisterPropertyEditor(TypeInfo(TtiTVNodeEvent),            // TypeInfo of property
-                          TtiTVDataMapping,                      // ClassRef of component containing property
-                          '',                                    // Name of property
-                          TtiTVNodeEventPropertyEditor);       // ClassRef of property editor
+                          TtiTVDataMapping,                   // ClassRef of component containing property
+                          '',                                 // Name of property
+                          TtiTVNodeEventPropertyEditor);      // ClassRef of property editor
 
   RegisterPropertyEditor(TypeInfo(TtiTVNodeConfirmEvent),     // TypeInfo of property
-                          nil,                                   // ClassRef of component containing property
-                          '',                                    // Name of property
-                          TtiTVNodeEventPropertyEditor);       // ClassRef of property editor
+                          nil,                                // ClassRef of component containing property
+                          '',                                 // Name of property
+                          TtiTVNodeEventPropertyEditor);      // ClassRef of property editor
 
 
   RegisterPropertyEditor(TypeInfo(TtiTVDragDropEvent),        // TypeInfo of property
-                          nil,                                   // ClassRef of component containing property
-                          '',                                    // Name of property
-                          TtiTVNodeEventPropertyEditor);       // ClassRef of property editor
+                          nil,                                // ClassRef of component containing property
+                          '',                                 // Name of property
+                          TtiTVNodeEventPropertyEditor);      // ClassRef of property editor
 
   RegisterPropertyEditor(TypeInfo(TtiTVDragDropConfirmEvent), // TypeInfo of property
-                          nil,                                   // ClassRef of component containing property
-                          '',                                    // Name of property
-                          TtiTVNodeEventPropertyEditor);       // ClassRef of property editor
+                          nil,                                // ClassRef of component containing property
+                          '',                                 // Name of property
+                          TtiTVNodeEventPropertyEditor);      // ClassRef of property editor
 
 end;
 
 {$IFDEF FPC}
 initialization
-{$i tiOPFControls.lrs}
+  {$i tiOPFControls.lrs}
 {$ENDIF}
 
 end.

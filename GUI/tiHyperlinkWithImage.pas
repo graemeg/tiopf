@@ -12,6 +12,9 @@ uses
   ,ExtCtrls
   ,tiHyperLink
   ,tiHotImage
+  {$IFDEF FPC}
+  ,LMessages
+  {$ENDIF}
  ;
 
 type

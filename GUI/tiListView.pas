@@ -686,15 +686,18 @@ begin
   FLV.ParentFont := true;
   FLV.TabStop    := True;
   //FLV.Anchors    := [akLeft,akTop,akRight,akBottom];
+  {$IFDEF FPC}
+  FLV.ControlStyle := FLV.ControlStyle + [csNoDesignSelectable];
+  {$ENDIF}
 
   FLV.OnMouseDown := DoMouseDown;
   {$IFNDEF FPC}
-   FLV.OnStartDrag := DoStartDrag;
+  FLV.OnStartDrag := DoStartDrag;
+  FLV.OnDragOver  := DoDragOver;
+  FLV.OnDragDrop  := DoDragDrop;
   {$ELSE}
    {$WARNING TODO: Fix it when LCL will have better drag&drop support}
   {$ENDIF}
-  FLV.OnDragOver := DoDragOver ;
-  FLV.OnDragDrop := DoDragDrop ;
   FLV.OnDblClick := DoOnDblClick;
   FLV.SetBounds(
     1,
@@ -729,7 +732,6 @@ begin
   FSortOrders := TlvSortOrders.Create(self);
   FLV.OnColumnClick := DoColumnClick;
   FbSortOnHeadingClick := true;
-
   FLV.OnSelectItem := DoOnSelectItem;
 
   // It is somtimes possible that the ListView common control will cause
