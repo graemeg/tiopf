@@ -24,6 +24,8 @@ type
     procedure TestSetProperty_PropertyPath;
     procedure TestGetProperty_Simple;
     procedure TestGetProperty_PropertyPath;
+    procedure TestGetPropertyClass;
+    procedure TestPropertyInheritsFrom;
   end;
   
 
@@ -210,6 +212,35 @@ begin
     c1.Free;
   end;
 end;
+
+procedure TTesttiRTTI.TestGetPropertyClass;
+var
+  c1: TtiRTTITestClassB;
+  obj: TObject;
+begin
+  Check(TtiRTTITestClass = tiGetPropertyClass(TtiRTTITestClassB, 'TestItemB'), 'Failed on 1');
+  Check(nil = tiGetPropertyClass(TtiRTTITestClassB, 'NotAProperty'), 'Failed on 2');
+  Check(TtiOPFTestItem = tiGetPropertyClass(TtiRTTITestClassB, 'TestItemB.TestItem'), 'Failed on 3');
+  Check(nil = tiGetPropertyClass(TtiRTTITestClassB, 'TestItemB.NotAProperty'), 'Failed on 4');
+end;
+
+procedure TTesttiRTTI.TestPropertyInheritsFrom;
+begin
+  CheckTrue(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB', TtiRTTITestClass), 'Failed on 1');
+  CheckTrue(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB', TtiObject), 'Failed on 2');
+  CheckTrue(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB', TObject), 'Failed on 3');
+
+  CheckFalse(tiPropertyInheritsFrom(TtiRTTITestClassB, 'NotAProperty', TObject), 'Failed on 4');
+  CheckFalse(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB', TPersistent), 'Failed on 5');
+
+  CheckTrue(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB.TestItem', TtiOPFTestItem), 'Failed on 6');
+  CheckTrue(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB.TestItem', TtiObject), 'Failed on 7');
+  CheckTrue(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB.TestItem', TObject), 'Failed on 8');
+
+  CheckFalse(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB.TestItem', TtiRTTITestClass), 'Failed on 9');
+  CheckFalse(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB.NotAProperty', TObject), 'Failed on 10');
+end;
+
 
 { TtiRTTITestClass }
 

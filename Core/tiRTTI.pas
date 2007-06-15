@@ -18,8 +18,8 @@ function  tiGetProperty(AObject: TObject; PropPath: string): Variant;
 procedure tiSetProperty(AObject: TObject; PropPath: string; Value: Variant);
 function  tiGetPropInfo(AClass: TClass; PropPath: string; PInstance: Pointer): PPropInfo;
 procedure tiGetEnumNames(TypeInfo: PTypeInfo; Names: TStrings; PrefixLen: Integer = 0);
-function  tiPropertyInheritsFrom(AClass: TClass; PropPath: string; PInstance: Pointer; AParentClass: TClass): boolean;
-function  tiGetPropertyClass(AClass: TClass; PropPath: string; PInstance: Pointer): TClass;
+function  tiPropertyInheritsFrom(AClass: TClass; PropPath: string; AParentClass: TClass): boolean;
+function  tiGetPropertyClass(AClass: TClass; PropPath: string): TClass;
 
 
 implementation
@@ -155,16 +155,15 @@ begin
   end;
 end;
 
-function tiPropertyInheritsFrom(AClass: TClass; PropPath: string;
-    PInstance: Pointer; AParentClass: TClass): boolean;
+function tiPropertyInheritsFrom(AClass: TClass; PropPath: string; AParentClass: TClass): boolean;
 var
   PropertyClass: TClass;
 begin
-  PropertyClass := tiGetPropertyClass(AClass, PropPath, PInstance);
+  PropertyClass := tiGetPropertyClass(AClass, PropPath);
   result := Assigned(PropertyClass) and PropertyClass.InheritsFrom(AParentClass);
 end;
 
-function tiGetPropertyClass(AClass: TClass; PropPath: string; PInstance: Pointer): TClass;
+function tiGetPropertyClass(AClass: TClass; PropPath: string): TClass;
 var
   PropInfo: PPropInfo;
   TypeData: PTypeData;
@@ -172,7 +171,7 @@ var
 begin
   result := nil;
 
-  PropInfo := tiGetPropInfo(AClass, PropPath, PInstance);
+  PropInfo := tiGetPropInfo(AClass, PropPath, nil);
   if Assigned(PropInfo) then
   begin
     TypeInfo := tiGetTypeInfo(PropInfo);
