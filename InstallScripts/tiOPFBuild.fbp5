@@ -2118,7 +2118,7 @@ p_persistence_layers=%report_persistence_layers_d2007%
                 <Property name="Enabled" type="WordBool">True</Property>
                 <Property MultiValue="0" name="Encoding" type="string"></Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property MultiValue="0" name="Groups" type="string">tiopf.dailybuilds</Property>
+                <Property MultiValue="0" name="Groups" type="string">%report_news_group%</Property>
                 <Property name="HTMLMessage" type="Boolean">False</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
                 <Property name="IgnoreMissingAttachments" type="Boolean">False</Property>
@@ -2127,7 +2127,7 @@ p_persistence_layers=%report_persistence_layers_d2007%
                 <Property name="Login" type="Boolean">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="NewsServer" type="string">news.techinsite.com.au</Property>
+                <Property MultiValue="0" name="NewsServer" type="string">%report_news_host%</Property>
                 <Property name="NodeCollapsed" type="Boolean">False</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="Port" type="Cardinal">119</Property>
@@ -2224,7 +2224,7 @@ p_persistence_layers=%report_persistence_layers_d2007%
                 <Property MultiValue="0" name="Encoding" type="string"></Property>
                 <Property MultiValue="0" name="EncryptedPassword" type="string"></Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property MultiValue="0" name="Host" type="WideString">smtp.tpg.com.au</Property>
+                <Property MultiValue="0" name="Host" type="WideString">%report_email_smtp_server%</Property>
                 <Property name="HTMLMessage" type="Boolean">False</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
                 <Property name="IgnoreMissingAttachments" type="Boolean">False</Property>
@@ -2274,7 +2274,7 @@ p_persistence_layers=%report_persistence_layers_d2007%
                   <Property MultiValue="0" name="Name" type="WideString"></Property>
                   </Object>
                 <Object Class="TFBAddressList" XMLID="{8F2721A4-2835-442C-A12F-1CE84CA8AE9D}"><Property MultiValue="0" name="ListType" type="string">recipients</Property>
-                  <Object Class="TFBEmailAddress" XMLID="{2A54B415-431A-4E84-B444-BF7CEF4CBBE4}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
+                  <Object Class="TFBEmailAddress" XMLID="{498F81A0-F528-4379-B36D-7898F129730F}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
                     <Property MultiValue="0" name="AddressType" type="WideString"></Property>
                     <Property name="Enabled" type="Boolean">True</Property>
                     <Property MultiValue="0" name="Name" type="WideString"></Property>
@@ -7736,6 +7736,30 @@ Summary:
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">path_to_working_demos</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{A2564D0D-1149-440B-962D-AF330049D61A}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">news.tiopf.com</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">report_news_host</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{E2A4A1CD-40BC-41D1-9D5A-D2FE9D80D9FB}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">tiopf.dailybuilds</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">report_news_group</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{82D2EFCC-3E65-4B35-9BEF-E86224638E06}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">smtp.tpg.com.au</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">report_email_smtp_server</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       </Object>
