@@ -4,7 +4,6 @@ uses
   SysUtils
   ,Classes
   ,tiUtils
-  ,tiDialogs
   ,INIFiles
  ;
 
@@ -54,4 +53,7 @@ begin
     on e:exception do
       WriteLn(e.Message);
   end;
+  {$ifdef debug}
+  tiConsoleAppPause;
+  {$endif}
 end.

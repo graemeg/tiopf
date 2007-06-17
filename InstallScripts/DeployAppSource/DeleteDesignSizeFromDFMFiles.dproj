@@ -42,7 +42,7 @@
     <Borland.ProjectType>VCLApplication</Borland.ProjectType>
     <BorlandProject>
 <BorlandProject> <Delphi.Personality>   <Parameters>
-      <Parameters Name="RunParams">c:\Temp\Techinsite</Parameters>
+      <Parameters Name="RunParams">C:\SourceForge\TechInsite\tiOPF2\Trunk</Parameters>
       <Parameters Name="UseLauncher">False</Parameters>
       <Parameters Name="LoadAllSymbols">True</Parameters>
       <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
@@ -82,11 +82,10 @@
     </Source>
   </Delphi.Personality> </BorlandProject></BorlandProject>
   </ProjectExtensions>
-  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
   <ItemGroup>
     <DelphiCompile Include="DeleteDesignSizeFromDFMFiles.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
 </Project>

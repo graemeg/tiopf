@@ -38,7 +38,7 @@
     <Borland.ProjectType>VCLApplication</Borland.ProjectType>
     <BorlandProject>
 <BorlandProject xmlns=""> <Delphi.Personality>   <Parameters>
-      <Parameters Name="RunParams">c:\TechInsite</Parameters>
+      <Parameters Name="RunParams">C:\SourceForge\TechInsite\tiOPF2\Trunk</Parameters>
       <Parameters Name="UseLauncher">False</Parameters>
       <Parameters Name="LoadAllSymbols">True</Parameters>
       <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
