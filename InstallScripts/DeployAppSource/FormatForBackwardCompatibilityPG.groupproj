@@ -1,0 +1,54 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{4150f37f-63fa-44e9-8e68-e3d6e1d884a1}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="DeleteDesignSizeFromDFMFiles.dproj" />
+    <Projects Include="DeleteExplicitFromDFMFiles.dproj" />
+    <Projects Include="DeleteHistoryListsInDofFiles.dproj" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+  <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="DeleteDesignSizeFromDFMFiles">
+    <MSBuild Projects="DeleteDesignSizeFromDFMFiles.dproj" Targets="" />
+  </Target>
+  <Target Name="DeleteDesignSizeFromDFMFiles:Clean">
+    <MSBuild Projects="DeleteDesignSizeFromDFMFiles.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DeleteDesignSizeFromDFMFiles:Make">
+    <MSBuild Projects="DeleteDesignSizeFromDFMFiles.dproj" Targets="Make" />
+  </Target>
+  <Target Name="DeleteExplicitFromDFMFiles">
+    <MSBuild Projects="DeleteExplicitFromDFMFiles.dproj" Targets="" />
+  </Target>
+  <Target Name="DeleteExplicitFromDFMFiles:Clean">
+    <MSBuild Projects="DeleteExplicitFromDFMFiles.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DeleteExplicitFromDFMFiles:Make">
+    <MSBuild Projects="DeleteExplicitFromDFMFiles.dproj" Targets="Make" />
+  </Target>
+  <Target Name="DeleteHistoryListsInDofFiles">
+    <MSBuild Projects="DeleteHistoryListsInDofFiles.dproj" Targets="" />
+  </Target>
+  <Target Name="DeleteHistoryListsInDofFiles:Clean">
+    <MSBuild Projects="DeleteHistoryListsInDofFiles.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DeleteHistoryListsInDofFiles:Make">
+    <MSBuild Projects="DeleteHistoryListsInDofFiles.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="DeleteDesignSizeFromDFMFiles;DeleteExplicitFromDFMFiles;DeleteHistoryListsInDofFiles" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="DeleteDesignSizeFromDFMFiles:Clean;DeleteExplicitFromDFMFiles:Clean;DeleteHistoryListsInDofFiles:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="DeleteDesignSizeFromDFMFiles:Make;DeleteExplicitFromDFMFiles:Make;DeleteHistoryListsInDofFiles:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>
