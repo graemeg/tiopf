@@ -14,9 +14,6 @@ object FormMainOrdinalTypes: TFormMainOrdinalTypes
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    490
-    253)
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
@@ -85,8 +82,6 @@ object FormMainOrdinalTypes: TFormMainOrdinalTypes
     VT.TabOrder = 1
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
-    VT.ExplicitTop = 34
-    VT.ExplicitHeight = 111
     VT.Columns = <>
     OnFilterData = LVFilterData
     OnItemDelete = LVItemDelete

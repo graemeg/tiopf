@@ -25,9 +25,6 @@ inherited FormEditCompany: TFormEditCompany
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Name details '
     TabOrder = 0
-    DesignSize = (
-      509
-      57)
     object paeCompanyName: TtiPerAwareEdit
       Left = 16
       Top = 24
@@ -126,9 +123,6 @@ inherited FormEditCompany: TFormEditCompany
         VisibleButtons = [tiLVBtnVisNew, tiLVBtnVisEdit, tiLVBtnVisDelete]
         ButtonStyle = lvbsNormalButtons
         CanStartDrag = False
-        DesignSize = (
-          243
-          108)
       end
       object Label2: TLabel
         Left = 8
@@ -173,9 +167,6 @@ inherited FormEditCompany: TFormEditCompany
         VisibleButtons = [tiLVBtnVisNew, tiLVBtnVisEdit, tiLVBtnVisDelete]
         ButtonStyle = lvbsNormalButtons
         CanStartDrag = False
-        DesignSize = (
-          221
-          107)
       end
     end
     object paeNotes: TtiPerAwareMemo

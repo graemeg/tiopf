@@ -13,9 +13,6 @@ object FormMainLookupList: TFormMainLookupList
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    517
-    277)
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
@@ -84,14 +81,11 @@ object FormMainLookupList: TFormMainLookupList
     VT.TabOrder = 1
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
-    VT.ExplicitTop = 34
-    VT.ExplicitHeight = 169
     VT.Columns = <>
     OnFilterData = LVFilterData
     OnItemDelete = LVItemDelete
     OnItemEdit = LVItemEdit
     OnItemInsert = LVItemInsert
-    ExplicitHeight = 253
   end
   object ActionList1: TActionList
     OnUpdate = ActionList1Update

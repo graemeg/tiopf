@@ -174,9 +174,6 @@ inherited FormEditPerson: TFormEditPerson
         VisibleButtons = [tiLVBtnVisNew, tiLVBtnVisEdit, tiLVBtnVisDelete]
         ButtonStyle = lvbsNormalButtons
         CanStartDrag = False
-        DesignSize = (
-          248
-          111)
       end
       object Label2: TLabel
         Left = 8
@@ -221,9 +218,6 @@ inherited FormEditPerson: TFormEditPerson
         VisibleButtons = [tiLVBtnVisNew, tiLVBtnVisEdit, tiLVBtnVisDelete]
         ButtonStyle = lvbsNormalButtons
         CanStartDrag = False
-        DesignSize = (
-          219
-          112)
       end
     end
     object paeNotes: TtiPerAwareMemo

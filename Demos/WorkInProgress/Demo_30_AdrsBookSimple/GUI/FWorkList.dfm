@@ -5,8 +5,6 @@ inherited FormWorkList: TFormWorkList
   Color = clWhite
   Font.Color = clNavy
   Font.Height = -16
-  ExplicitWidth = 532
-  ExplicitHeight = 358
   PixelsPerInch = 96
   TextHeight = 20
   object imgTop: TImage [0]
@@ -15,9 +13,6 @@ inherited FormWorkList: TFormWorkList
     Width = 526
     Height = 50
     Align = alTop
-    ExplicitLeft = -8
-    ExplicitTop = 2
-    ExplicitWidth = 425
   end
   object imgBottom: TImage [1]
     Left = 0
@@ -25,8 +20,6 @@ inherited FormWorkList: TFormWorkList
     Width = 526
     Height = 49
     Align = alBottom
-    ExplicitTop = 283
-    ExplicitWidth = 425
   end
   object imgRight: TImage [2]
     Left = 413
@@ -34,7 +27,6 @@ inherited FormWorkList: TFormWorkList
     Width = 113
     Height = 227
     Align = alRight
-    ExplicitLeft = 312
   end
   inherited pnlCaption: TPanel
     Top = 50

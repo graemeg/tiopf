@@ -14,9 +14,6 @@ object FormCollectionHardCoded: TFormCollectionHardCoded
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    498
-    355)
   PixelsPerInch = 96
   TextHeight = 13
   object lblCount: TLabel
@@ -86,8 +83,6 @@ object FormCollectionHardCoded: TFormCollectionHardCoded
     VT.TabOrder = 0
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
-    VT.ExplicitWidth = 181
-    VT.ExplicitHeight = 37
     VT.Columns = <>
   end
 end

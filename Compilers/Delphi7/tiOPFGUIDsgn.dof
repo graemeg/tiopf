@@ -106,7 +106,7 @@ Launcher=
 UseLauncher=0
 DebugCWD=
 [Version Info]
-IncludeVerInfo=1
+IncludeVerInfo=0
 AutoIncBuild=0
 MajorVer=0
 MinorVer=0
@@ -128,20 +128,4 @@ LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
-ProductVersion=1.0.0.0
-[HistoryLists\hlConditionals]
-Count=1
-Item0=PACKAGE
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=4
-Item0=..\..\Core;..\..\Options;..\..\GUI
-Item1=..\..\Core;..\..\Options
-Item2=..\..\Core
-Item3=..\..\Options
-[HistoryLists\hlUnitOutputDirectory]
-Count=2
-Item0=.\_dcu
-Item1=_dcu
+ProductVersion=

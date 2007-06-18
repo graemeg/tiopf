@@ -15,9 +15,6 @@ object frmLVFilter: TfrmLVFilter
   Position = poScreenCenter
   OnCreate = FormCreate
   OnShow = FormShow
-  DesignSize = (
-    376
-    414)
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel1: TBevel

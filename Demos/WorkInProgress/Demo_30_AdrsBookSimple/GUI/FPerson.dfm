@@ -2,13 +2,10 @@ inherited FormPerson: TFormPerson
   Caption = 'FormPerson'
   ClientHeight = 325
   ClientWidth = 433
-  ExplicitWidth = 439
-  ExplicitHeight = 357
   PixelsPerInch = 96
   TextHeight = 13
   inherited pnlCaption: TPanel
     Width = 433
-    ExplicitWidth = 433
   end
   object paeFirstName: TtiPerAwareEdit
     Left = 8
@@ -146,9 +143,6 @@ inherited FormPerson: TFormPerson
     VT.TabOrder = 0
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
-    VT.ExplicitTop = 2
-    VT.ExplicitWidth = 181
-    VT.ExplicitHeight = 37
     VT.Columns = <>
   end
 end

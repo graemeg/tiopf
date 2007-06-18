@@ -53,8 +53,5 @@ object FormPopulateDatabase: TFormPopulateDatabase
     OnBtn2Click = tiButtonPanel1Btn2Click
     Btn1Enabled = True
     Btn2Enabled = True
-    DesignSize = (
-      404
-      31)
   end
 end

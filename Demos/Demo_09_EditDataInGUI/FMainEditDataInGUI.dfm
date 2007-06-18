@@ -14,9 +14,6 @@ object Form2: TForm2
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    490
-    199)
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton

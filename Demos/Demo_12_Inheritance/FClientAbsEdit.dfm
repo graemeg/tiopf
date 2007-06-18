@@ -4,7 +4,6 @@ inherited FormClientAbsEdit: TFormClientAbsEdit
   ClientWidth = 371
   OldCreateOrder = True
   Position = poScreenCenter
-  ExplicitWidth = 377
   PixelsPerInch = 96
   TextHeight = 13
   object Bevel1: TBevel [0]
@@ -18,20 +17,15 @@ inherited FormClientAbsEdit: TFormClientAbsEdit
     Left = 211
     Top = 178
     TabOrder = 3
-    ExplicitLeft = 211
-    ExplicitTop = 178
   end
   inherited btnCancel: TBitBtn
     Left = 291
     Top = 178
     TabOrder = 4
-    ExplicitLeft = 291
-    ExplicitTop = 178
   end
   inherited cbEnterAsTab: TCheckBox
     Top = 182
     TabOrder = 2
-    ExplicitTop = 182
   end
   object paeOID: TtiPerAwareEdit
     Left = 10

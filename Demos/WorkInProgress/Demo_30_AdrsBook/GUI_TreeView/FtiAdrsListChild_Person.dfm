@@ -12,9 +12,6 @@ object FormEditPerson: TFormEditPerson
   Font.Style = []
   OldCreateOrder = False
   OnShow = FormShow
-  DesignSize = (
-    433
-    378)
   PixelsPerInch = 96
   TextHeight = 13
   object GroupBox1: TGroupBox

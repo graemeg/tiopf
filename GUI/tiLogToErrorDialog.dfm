@@ -17,9 +17,6 @@ object LogErrorForm: TLogErrorForm
   OnClose = FormClose
   OnCreate = FormCreate
   OnResize = FormResize
-  DesignSize = (
-    805
-    512)
   PixelsPerInch = 96
   TextHeight = 13
   object Image: TImage

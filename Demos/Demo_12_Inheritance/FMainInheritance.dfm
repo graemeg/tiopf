@@ -14,9 +14,6 @@ object FormMainInheritance: TFormMainInheritance
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    572
-    344)
   PixelsPerInch = 96
   TextHeight = 13
   object paeClientCount: TtiPerAwareFloatEdit

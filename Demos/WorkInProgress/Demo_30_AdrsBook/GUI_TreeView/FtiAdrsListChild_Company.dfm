@@ -12,9 +12,6 @@ object FormEditCompany: TFormEditCompany
   Font.Style = []
   OldCreateOrder = False
   OnShow = FormShow
-  DesignSize = (
-    582
-    348)
   PixelsPerInch = 96
   TextHeight = 13
   object gbName: TGroupBox
@@ -25,9 +22,6 @@ object FormEditCompany: TFormEditCompany
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Name details '
     TabOrder = 0
-    DesignSize = (
-      571
-      57)
     object paeCompanyName: TtiPerAwareEdit
       Left = 16
       Top = 24

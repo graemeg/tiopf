@@ -11,15 +11,11 @@ inherited FormEdit_EAdrs: TFormEdit_EAdrs
     Left = 171
     Top = 64
     TabOrder = 3
-    ExplicitLeft = 171
-    ExplicitTop = 64
   end
   inherited btnCancel: TBitBtn
     Left = 251
     Top = 64
     TabOrder = 4
-    ExplicitLeft = 251
-    ExplicitTop = 64
   end
   object paeEAdrs: TtiPerAwareEdit [2]
     Left = 8
@@ -46,9 +42,6 @@ inherited FormEdit_EAdrs: TFormEdit_EAdrs
     Top = 70
     Width = 17
     TabOrder = 2
-    ExplicitLeft = 8
-    ExplicitTop = 70
-    ExplicitWidth = 17
   end
   object paeAdrsType: TtiPerAwareComboBoxDynamic
     Left = 8

@@ -11,15 +11,11 @@ inherited FormEdit_Adrs: TFormEdit_Adrs
     Left = 101
     Top = 176
     TabOrder = 7
-    ExplicitLeft = 101
-    ExplicitTop = 176
   end
   inherited btnCancel: TBitBtn
     Left = 181
     Top = 176
     TabOrder = 8
-    ExplicitLeft = 181
-    ExplicitTop = 176
   end
   object paeAdrsLines: TtiPerAwareMemo [2]
     Left = 12
@@ -108,8 +104,6 @@ inherited FormEdit_Adrs: TFormEdit_Adrs
     Left = 8
     Top = 178
     TabOrder = 4
-    ExplicitLeft = 8
-    ExplicitTop = 178
   end
   object paeSuburb: TtiPerAwareEdit
     Left = 12

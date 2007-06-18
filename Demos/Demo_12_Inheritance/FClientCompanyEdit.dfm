@@ -1,29 +1,24 @@
 inherited FormClientCompanyEdit: TFormClientCompanyEdit
   Caption = 'FormClientCompanyEdit'
   ClientHeight = 216
-  ExplicitHeight = 248
   PixelsPerInch = 96
   TextHeight = 13
   inherited btnOK: TBitBtn
     Top = 186
     TabOrder = 4
-    ExplicitTop = 186
   end
   inherited btnCancel: TBitBtn
     Top = 186
     TabOrder = 5
-    ExplicitTop = 186
   end
   inherited cbEnterAsTab: TCheckBox
     Top = 190
-    ExplicitTop = 190
   end
   inherited paeClientID: TtiPerAwareEdit
     CharCase = ecUpperCase
   end
   inherited memoErrors: TtiMemoReadOnly
     Top = 108
-    ExplicitTop = 108
   end
   object paeCompanyName: TtiPerAwareEdit
     Left = 10

@@ -16,9 +16,6 @@ object FormPickDatabase: TFormPickDatabase
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    728
-    196)
   PixelsPerInch = 96
   TextHeight = 13
   object GroupBox1: TGroupBox
@@ -29,9 +26,6 @@ object FormPickDatabase: TFormPickDatabase
     Anchors = [akLeft, akTop, akRight]
     Caption = ' Database connection details '
     TabOrder = 0
-    DesignSize = (
-      716
-      137)
     object sbDefaultToPresetValues: TtiSpeedButton
       Left = 555
       Top = 20
@@ -48,7 +42,6 @@ object FormPickDatabase: TFormPickDatabase
       Font.Style = [fsUnderline]
       ParentFont = False
       ImageRes = tiRINone
-      ExplicitLeft = 327
     end
     object paePersistenceLayer: TtiPerAwareEdit
       Left = 8
