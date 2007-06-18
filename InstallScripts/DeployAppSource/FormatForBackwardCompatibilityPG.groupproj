@@ -7,12 +7,13 @@
     <Projects Include="DeleteDesignSizeFromDFMFiles.dproj" />
     <Projects Include="DeleteExplicitFromDFMFiles.dproj" />
     <Projects Include="DeleteHistoryListsInDofFiles.dproj" />
+    <Projects Include="FormatForBackwardCompatibility.dproj" />
   </ItemGroup>
   <ProjectExtensions>
     <Borland.Personality>Default.Personality</Borland.Personality>
     <Borland.ProjectType />
     <BorlandProject>
-  <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
   </ProjectExtensions>
   <Target Name="DeleteDesignSizeFromDFMFiles">
     <MSBuild Projects="DeleteDesignSizeFromDFMFiles.dproj" Targets="" />
@@ -41,14 +42,23 @@
   <Target Name="DeleteHistoryListsInDofFiles:Make">
     <MSBuild Projects="DeleteHistoryListsInDofFiles.dproj" Targets="Make" />
   </Target>
+  <Target Name="FormatForBackwardCompatibility">
+    <MSBuild Projects="FormatForBackwardCompatibility.dproj" Targets="" />
+  </Target>
+  <Target Name="FormatForBackwardCompatibility:Clean">
+    <MSBuild Projects="FormatForBackwardCompatibility.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="FormatForBackwardCompatibility:Make">
+    <MSBuild Projects="FormatForBackwardCompatibility.dproj" Targets="Make" />
+  </Target>
   <Target Name="Build">
-    <CallTarget Targets="DeleteDesignSizeFromDFMFiles;DeleteExplicitFromDFMFiles;DeleteHistoryListsInDofFiles" />
+    <CallTarget Targets="DeleteDesignSizeFromDFMFiles;DeleteExplicitFromDFMFiles;DeleteHistoryListsInDofFiles;FormatForBackwardCompatibility" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="DeleteDesignSizeFromDFMFiles:Clean;DeleteExplicitFromDFMFiles:Clean;DeleteHistoryListsInDofFiles:Clean" />
+    <CallTarget Targets="DeleteDesignSizeFromDFMFiles:Clean;DeleteExplicitFromDFMFiles:Clean;DeleteHistoryListsInDofFiles:Clean;FormatForBackwardCompatibility:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="DeleteDesignSizeFromDFMFiles:Make;DeleteExplicitFromDFMFiles:Make;DeleteHistoryListsInDofFiles:Make" />
+    <CallTarget Targets="DeleteDesignSizeFromDFMFiles:Make;DeleteExplicitFromDFMFiles:Make;DeleteHistoryListsInDofFiles:Make;FormatForBackwardCompatibility:Make" />
   </Target>
   <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>
