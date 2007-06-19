@@ -125,24 +125,29 @@ end;
 
 procedure TtiPickFile.DoButtonClick(sender : TObject);
 var
-  lOD : TOpenDialog;
+  LOD : TOpenDialog;
+  LInitialDir: string;
 begin
-  lOD := TOpenDialog.Create(self);
+  LInitialDir:= ExtractFilePath(Self.Text);
+  if LInitialDir = '' then
+    LInitialDir:= FInitialDir;
+
+  LOD := TOpenDialog.Create(self);
   try
-    lOD.title := self.title;
-    lOD.Filter := self.filter;
-    lOD.defaultExt := self.defaultExt;
-    lOD.fileName := self.text;
-    lOD.FilterIndex := FiFilterIndex;
-    lOD.InitialDir := FInitialDir;
-    if lOD.execute then
+    LOD.title := self.title;
+    LOD.Filter := self.filter;
+    LOD.defaultExt := self.defaultExt;
+    LOD.fileName := self.text;
+    LOD.FilterIndex := FiFilterIndex;
+    LOD.InitialDir := LInitialDir;
+    if LOD.Execute then
     begin
-      self.text := lOD.fileName;
-      FiFilterIndex := lOD.FilterIndex;
+      self.text := LOD.fileName;
+      FiFilterIndex := LOD.FilterIndex;
       DoOnChange(Self);
     end;
   finally
-    lOD.free;
+    LOD.free;
   end;
   inherited;
 end;
