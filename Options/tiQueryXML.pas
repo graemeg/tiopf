@@ -834,7 +834,7 @@ begin
     tiXMLTagEnd(uXMLTags.DocData);
 
   lPath := ExtractFilePath(ADatabaseName);
-  if not DirectoryExists(lPath) then
+  if (lPath <> '') and not DirectoryExists(lPath) then
     ForceDirectories(lPath);
   tiStringToFile(lXML, ADatabaseName);
 end;

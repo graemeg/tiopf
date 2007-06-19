@@ -6,6 +6,7 @@ interface
 uses
    tiObject
   ,Classes
+  ,tiOid
  ;
 
 
@@ -17,6 +18,15 @@ type
     property StrField  : string  read FStrField   write FStrField;
   end;
 
+  TtiOPFTestOIdProp = class(TtiObject)
+  private
+    FOIDField: TOID;
+    procedure SetOIDField(const Value: TOID);
+  public
+    constructor Create; override;
+  published
+    property OIDField  : TOID  read FOIDField   write SetOIDField;
+  end;
 
   TtiOPFTestNotesProp = class(TtiObject)
   private
@@ -319,6 +329,10 @@ procedure RegisterMappings;
 begin
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStringProp,   cTIQueryTableName, 'OID',        'OID', [pktDB]);
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStringProp,   cTIQueryTableName, 'StrField',   cTIQueryColName);
+
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestOIdProp,   cTIQueryTableName, 'OID',        'OID', [pktDB]);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestOIdProp,   cTIQueryTableName, 'OIDField',   cTIQueryColName);
+
 
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestNotesProp,    cTIQueryTableName, 'OID',        'OID', [pktDB]);
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestNotesProp,    cTIQueryTableName, 'NotesField', cTIQueryColName);
@@ -663,6 +677,23 @@ begin
   result := IntToStr(IntProp);
 end;
 
+
+{ TtiOPFTestOIdProp }
+
+constructor TtiOPFTestOIdProp.Create;
+begin
+  inherited;
+  {$IFDEF OID_AS_INT64}
+    FOIDField := cNullOIDInteger;
+  {$ELSE}
+    FOIDField := gTIOPFManager.OIDFactory.CreateOID;
+  {$ENDIF}
+end;
+
+procedure TtiOPFTestOIdProp.SetOIDField(const Value: TOID);
+begin
+  FOIDField.Assign(Value);
+end;
 
 end.
 

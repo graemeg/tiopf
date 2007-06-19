@@ -139,6 +139,7 @@ uses
   ,tiLog
   ,TypInfo
   ,tiOID
+  ,tiRTTI
  ;
 
 
@@ -174,7 +175,10 @@ procedure TVisAutoAbs.AddToParams(const AParams: TtiQueryParams;
           AData.Owner.OID.AssignToTIQueryParam(AColName, AParams);
         end
         else
-          AData.OID.AssignToTIQueryParam(AColName, AParams);
+        begin
+          if not AData.OID.IsNull then
+            AData.OID.AssignToTIQueryParam(AColName, AParams);
+        end;
       end
       else
         AData.OID.AssignToTIQueryParam(AColName, AParams);
@@ -186,6 +190,7 @@ var
   i: integer;
   lColName: string;
   lPropName: string;
+  lOID: TOID;
 begin
   Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
   AParams.Clear;
@@ -200,6 +205,18 @@ begin
     if (SameText('OID', lPropName) or SameText('Owner.OID', lPropName))
         and (Pos('_OID', UpperCase(lPropName)) = 0) then
       _SetOIDParam(AParams, AData, lColName, lPropName)
+    else if tiPropertyInheritsFrom(AData.ClassType, lPropName, TOID) then
+    begin
+      lOID:= TOID(GetObjectProp(AData, lPropName));
+      if assigned(lOID) then
+      begin
+      {$IFDEF OID_AS_INT64}
+         AParams.SetValueAsInteger(lColName, lOID);
+       {$ELSE}
+         lOID.AssignToTIQueryParam(lColName, AParams);
+      {$ENDIF}
+      end;
+    end
     else
       AParams.SetValueFromProp(AData, lPropName, lColName);
   end;
@@ -752,6 +769,7 @@ procedure TVisAutoAbs.QueryResultToObject(const ATarget : TtiObject; const pAttr
     lInt      : Int64;
     lStream   : TStream;
     lString   : string;
+    lOID      : TOID;
   begin
     lColName := pAttrColMap.DBColMap.ColName;
     lPropName := pAttrColMap.AttrMap.AttrName;
@@ -765,6 +783,21 @@ procedure TVisAutoAbs.QueryResultToObject(const ATarget : TtiObject; const pAttr
          ATarget.OID.AssignFromTIQuery(lColName, Query);
       {$ENDIF}
       Exit; //==>
+    end;
+
+//    // handles published OIDs
+    if tiPropertyInheritsFrom(ATarget.ClassType, lPropName, TOID) then
+    begin
+      lOID:= TOID(GetObjectProp(ATarget, lPropName));
+      if assigned(lOID) then
+      begin
+      {$IFDEF OID_AS_INT64}
+         lOID := Query.FieldAsInteger[lColName];
+       {$ELSE}
+         lOID.AssignFromTIQuery(lColName, Query);
+      {$ENDIF}
+      end;
+      exit;
     end;
 
 //    if SameText(lPropName, 'DispOrder') then
@@ -880,7 +913,6 @@ begin
       FWhereAttrColMaps.Delete(i);
 
   AddToParams(FWhere, FWhereAttrColMaps, Visited);
-
 end;
 
 { TVisAutoCollectionPKRead }

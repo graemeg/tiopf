@@ -9,7 +9,7 @@ uses
   {$IFDEF FPC}
   ,testregistry
   {$ELSE}
-  ,TestFramework
+  ,TestFramework 
   {$ENDIF}
   ,tiTestFramework
   ,tiClassToDBMap_BOM
@@ -86,6 +86,7 @@ type
     procedure DoReadWriteFloat(AValue: extended);
     procedure DoReadWriteBoolean(AValue: boolean);
     procedure DoReadWriteDateTime(AValue: TDateTime);
+    procedure DoReadWriteOID(AValue: string);
   public
     constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
 
@@ -133,6 +134,7 @@ type
     procedure ReadWriteBooleanTrue;
     procedure ReadWriteBooleanFalse;
     procedure ReadWriteStream;
+    procedure ReadWriteOID;
 
     procedure SingleFlatObjReadThis;
     procedure SingleFlatObjCreate  ;
@@ -148,7 +150,7 @@ type
     procedure SingleInheritedObjDeleteAll;
     procedure CollectionOfInheritedObjRead;
     procedure CollectionOfInheritedObjWithFKRead;
-
+    procedure CollectionOfInheritedObjWithOutFKRead;
     procedure CollectionReadPK;
     procedure CollectionReadAll;
     procedure CollectionCreate;
@@ -1917,6 +1919,57 @@ begin
   end;
 end;
 
+procedure TTestTIClassToDBMapOperation.CollectionOfInheritedObjWithoutFKRead;
+var
+  lParentGroup : TtiOPFTestParentGroup;
+begin
+
+  InsertTIOPFTestDataInheritedGroup(1);
+  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 2, 1);
+  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 3, 1);
+
+  InsertTIOPFTestDataInheritedGroup(4);
+  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 5, 4);
+  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 6, 4);
+
+
+  lParentGroup := TtiOPFTestParentGroup.Create;
+  try
+//    lParentGroup.OID.AsString := '4';
+    CheckTrue(lParentGroup.OID.IsNull, 'lParentGroup.OID is not null');
+    lParentGroup.Read(DatabaseName, PerLayerName);
+
+    Check(posClean = lParentGroup.ObjectState, 'lParents.ObjectState <> posClean');
+    CheckEquals(4, lParentGroup.Count, 'lParents.Count');
+
+    Check(posClean = lParentGroup.Items[0].ObjectState, 'lParents.Items[1].ObjectState <> posClean');
+    CheckIs(lParentGroup.Items[0], TtiOPFTestChildGrouped_A);
+    CheckEquals('2', lParentGroup.Items[0].StrField, 'StrField');
+    CheckEquals(2, lParentGroup.Items[0].IntField, 'IntField');
+    CheckNearEnough(0.4, lParentGroup.Items[0].FloatField, 'FloatField');
+
+    Check(posClean = lParentGroup.Items[1].ObjectState, 'lParents.Items[0].ObjectState <> posClean');
+    CheckIs(lParentGroup.Items[1], TtiOPFTestChildGrouped_B);
+    CheckEquals('3', lParentGroup.Items[1].StrField, 'StrField');
+    CheckEquals(3, lParentGroup.Items[1].IntField, 'IntField');
+    CheckNearEnough(0.6, lParentGroup.Items[1].FloatField, 'FloatField');
+        
+    Check(posClean = lParentGroup.Items[2].ObjectState, 'lParents.Items[1].ObjectState <> posClean');
+    CheckIs(lParentGroup.Items[2], TtiOPFTestChildGrouped_A);
+    CheckEquals('5', lParentGroup.Items[2].StrField, 'StrField');
+    CheckEquals(5, lParentGroup.Items[2].IntField, 'IntField');
+    CheckNearEnough(TestIntToFloat(5), lParentGroup.Items[2].FloatField, 'FloatField');
+
+    Check(posClean = lParentGroup.Items[3].ObjectState, 'lParents.Items[0].ObjectState <> posClean');
+    CheckIs(lParentGroup.Items[3], TtiOPFTestChildGrouped_B);
+    CheckEquals('6', lParentGroup.Items[3].StrField, 'StrField');
+    CheckEquals(6, lParentGroup.Items[3].IntField, 'IntField');
+    CheckNearEnough(TestIntToFloat(6), lParentGroup.Items[3].FloatField, 'FloatField');
+
+  finally
+    lParentGroup.Free;
+  end;
+end;
 
 constructor TTestTIClassToDBMapOperation.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
 begin
@@ -2058,6 +2111,8 @@ begin
   //       BDEParadox layer can't handle Low(Integer), but can handle Low(Integer)+1.
   if SameText(cTIPersistBDEParadox, PerLayerName) then
     DoReadWriteInteger(Low(Integer)+1)
+  else if SameText(cTIPersistFBL, PerLayerName) then
+    DoReadWriteInteger(Low(Integer)+1)
   else
     DoReadWriteInteger(Low(Integer));
 end;
@@ -2093,6 +2148,39 @@ begin
   finally
     DropTestTable;
   end;
+end;
+
+procedure TTestTIClassToDBMapOperation.DoReadWriteOID(AValue: string);
+var
+  lData : TtiOPFTestOIdProp;
+begin
+  CreateTableString(DatabaseName, PerLayerName);
+
+  try
+    lData := TtiOPFTestOIdProp.Create;
+    try
+      lData.ObjectState := posCreate;
+      lData.OID.AsString := '1';
+      lData.OIDField.AsString  := AValue;
+      lData.Save(DatabaseName, PerLayerName);
+      Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
+    finally
+      lData.Free;
+    end;
+
+    lData := TtiOPFTestOIdProp.Create;
+    try
+      lData.OID.AsString := '1';
+      lData.Read(DatabaseName, PerLayerName);
+      Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
+      CheckEquals(AValue, lData.OIDField.AsString);
+    finally
+      lData.Free;
+    end;
+  finally
+    DropTestTable;
+  end;
+
 end;
 
 procedure TTestTIClassToDBMapOperation.ReadWriteStream;
@@ -2261,6 +2349,12 @@ begin
   DoReadWriteInteger(-10);
 end;
 
+procedure TTestTIClassToDBMapOperation.ReadWriteOID;
+begin
+  DoReadWriteOID('1');
+  DoReadWriteOID('753951');
+end;
+
 procedure TTestTIClassToDBMapOperation.ReadWriteInteger0;
 begin
   DoReadWriteInteger(0);
@@ -2273,7 +2367,12 @@ end;
 
 procedure TTestTIClassToDBMapOperation.ReadWriteIntegerHigh;
 begin
-  DoReadWriteInteger(High(Integer));
+  // ToDo: Create an abstract class to handle this difference between per-layers
+  //       FBLib layer can't handle High(Integer), but can handle High(Integer)-1.
+  if SameText(cTIPersistFBL, PerLayerName) then
+    DoReadWriteInteger(High(Integer)-1)
+  else
+    DoReadWriteInteger(High(Integer));
 end;
 
 {$IFDEF TESTINT64}

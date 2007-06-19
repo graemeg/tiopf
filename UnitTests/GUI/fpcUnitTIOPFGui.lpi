@@ -175,13 +175,6 @@
     <CodeGeneration>
       <Generate Value="Faster"/>
     </CodeGeneration>
-    <Linking>
-      <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
-      </Options>
-    </Linking>
     <Other>
       <CustomOptions Value="-FU_Dcu
 -dUseCThreads
