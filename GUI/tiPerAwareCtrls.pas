@@ -724,7 +724,7 @@ const
   cusImageDefaultExt  = '.bmp';
 
 var
-  uStyles : array[boolean] of TComboBoxStyle = (csDropDown, csSimple);
+  UBooleanToDropDownComboStyles : array[boolean] of TComboBoxStyle = (csDropDownList, csSimple);
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
@@ -2958,8 +2958,9 @@ begin
   {$IFNDEF FPC}
     SendMessage(Handle, EM_SETREADONLY, Ord(AValue), 0);
   {$ENDIF}
-    TComboBox(WinControl).Style := uStyles[ AValue ];
-  end else if AValue then
+    TComboBox(WinControl).Style := UBooleanToDropDownComboStyles[ AValue ];
+  end else
+  if AValue then
     TComboBox(WinControl).Enabled := False
   else
     TComboBox(WinControl).Enabled := Enabled;
