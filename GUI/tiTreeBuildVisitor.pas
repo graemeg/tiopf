@@ -121,6 +121,7 @@ type
   private
     FsDisplayPropName: string;
     FsDataClassName: string;
+    FiDepth: integer;
     FiImageIndex: integer;
     FName: TComponentName;
     FbHasChildren: boolean;
@@ -161,6 +162,7 @@ type
     property    DataClass: string read FsDataClassName write SetDataClassName;
     property    DisplayPropName: string read FsDisplayPropName write FsDisplayPropName;
     property    ImageIndex: integer read FiImageIndex write FiImageIndex default -1;
+    property    Depth: Integer read FiDepth write FiDepth;
     property    HasChildren: boolean read FbHasChildren write FbHasChildren default true;
     property    Name: TComponentName read FName write FName;
 
@@ -289,7 +291,10 @@ begin
   end
   else
   begin
-    lDepth := DataMappings.ItemNo(pVisited.ClassName);
+    if lDataMapping.Depth > -1 then
+      lDepth:= lDataMapping.Depth
+    else
+      lDepth := DataMappings.ItemNo(pVisited.ClassName);
     lIndent := LastNode.Level;
     if lIndent = lDepth then
       AddChild( LastNode.Parent, lsCaption, lDataMapping.ImageIndex )
@@ -354,6 +359,7 @@ begin
   DataClass         := Source.DataClass;
   DisplayPropName   := Source.DisplayPropName;
   ImageIndex        := Source.ImageIndex;
+  Depth             := Source.Depth;
 //  OnGetDataPage     := Source.OnGetDataPage;
   HasChildren       := Source.HasChildren;
 end;
@@ -374,6 +380,7 @@ begin
   FsDataClassName   := 'TtiObject';
   FName             := ClassNameToCollectionItemName(FsDataClassName);
   FiImageIndex      := -1;
+  FiDepth           := -1;
   FbHasChildren     := true;
   FbCanInsert       := false;
   FbCanEdit         := false;
