@@ -123,6 +123,7 @@ type
     FtbxApplication: TTBXToolbar;
     FtbxHelp: TTBXToolbar;
     FStatusPanelHint : TTBXStatusPanel;
+    FStatusPanelMessage : TTBXStatusPanel;
 
     FtbxFileMenu    : TTBXSubmenuItem;
 //    FtbxViewMenu    : TTBXSubmenuItem;
@@ -207,6 +208,8 @@ type
     procedure DoLBLMessageClick(Sender: TObject);
     function  GetMenuSideBarWidth: integer;
     procedure SetMenuSideBarWidth(const AValue: integer);
+    function GetStatusPannelMessage: string;
+    procedure SetStatusPannelMessage(const AValue: string);
    public
      constructor Create(     AMainForm : TForm;
                               AWorkListFormClass : TFormTIFormMgrFormClass;
@@ -249,6 +252,11 @@ type
                              pHelpContext : integer = 0): TAction;
      function    FindAction(const AName : string): TAction; // TODO: We can remove FindAction by exposing the private Action fields as properties
 
+     // ToDo: AddActionUpdateHandler should add the handler to a list, which
+     //       is scanned in the FAL.OnUpdate. Will also require a
+     //       RemoveActionUpdateHandler method
+     procedure   AddActionUpdateHandler(const AHandler: TActionEvent);
+
      function    AddMainMenuItem(const pCaption: string; AIndex : integer = -1): TTBXSubmenuItem;
      function    AddMenuItem(const pAction : TAction; const pTBXSubItem : TTBXSubMenuItem = nil): TTBXItem;
      function    AddMenuItemSeparator: TTBXSeparatorItem;
@@ -267,6 +275,7 @@ type
      property    ContextMenuSideBar: TdxWinXPBar read FdxWinXPBarContext;
      property    dxContainer : TdxContainer read FdxContainer;
      property    FormErrorMessage: string Write SetFormErrorMessage;
+     property    StatusPanelMessage: string read GetStatusPannelMessage write SetStatusPannelMessage;
 
      procedure   MouseToContextMenuSideBar;
 
@@ -786,7 +795,8 @@ begin
   ltbxStatusBar.HelpContext := FDefHelpContext;
   FStatusPanelHint := ltbxStatusBar.Panels.Add;
   FStatusPanelHint.Size  := 220;
-  ltbxStatusBar.Panels.Add.StretchPriority := 1;
+  FStatusPanelMessage:= ltbxStatusBar.Panels.Add;
+  FStatusPanelMessage.StretchPriority := 1;
   ltbxStatusBar.ParentShowHint := False;
   ltbxStatusBar.ShowHint := True;
   ltbxStatusBar.UseSystemFont := True;
@@ -1239,6 +1249,14 @@ begin
   result :=AddAction(AName, pCaption, pHint, lImageIndex, pEvent, pHelpContext);
 end;
 
+procedure TtiApplicationMenuSystem.AddActionUpdateHandler(
+  const AHandler: TActionEvent);
+begin
+  Assert(Assigned(AHandler), 'AHandler not assigned');
+  Assert(not Assigned(FAL.OnUpdate), 'FAL.OnUpdate Assigned');
+  FAL.OnUpdate:= AHandler;
+end;
+
 function TtiApplicationMenuSystem.FindAction(const AName: string): TAction;
 var
   i : integer;
@@ -1435,6 +1453,11 @@ begin
   result := TPanel(FpnlParent);
 end;
 
+function TtiApplicationMenuSystem.GetStatusPannelMessage: string;
+begin
+  result:= FStatusPanelMessage.Caption;
+end;
+
 function TtiApplicationMenuSystem.GetOnFindHelpFile: TOnFindHelpFileEvent;
 begin
   Result := FHelpRouter.OnFindHelpFile;
@@ -1445,6 +1468,11 @@ procedure TtiApplicationMenuSystem.SetOnFindHelpFile(
 begin
   if FHelpRouter <> nil then
     FHelpRouter.OnFindHelpFile := AValue;
+end;
+
+procedure TtiApplicationMenuSystem.SetStatusPannelMessage(const AValue: string);
+begin
+  FStatusPanelMessage.Caption:= AValue;
 end;
 
 procedure TtiApplicationMenuSystem.SetFormMessage(const AMessage: string; pMessageType: TtiUserFeedbackMessageType);

@@ -403,11 +403,15 @@ begin
 end;
 
 procedure TtiQueryIBX.AssignParamFromStream(const AName: string; const AStream: TStream);
+var
+  LPos: integer;
 begin
   Assert(AStream <> nil, 'Stream not assigned');
   AStream.Position := 0;
   Prepare;
+  LPos:= AStream.Position;
   FIBSQL.Params.ByName(UpperCase(AName)).LoadFromStream(AStream);
+  AStream.Position:= LPos;
 end;
 
 procedure TtiQueryIBX.AssignParamToStream(const AName: string; const AStream: TStream);
@@ -421,8 +425,8 @@ end;
 procedure TtiQueryIBX.AssignFieldAsStream(const AName: string; const AStream: TStream);
 begin
   Assert(AStream <> nil, 'Stream not assigned');
-  AStream.Position := 0;
   FIBSQL.FieldByName(UpperCase(AName)).SaveToStream(AStream);
+  AStream.Position:= 0 ;
 end;
 
 procedure TtiQueryIBX.AssignFieldAsStreamByIndex(AIndex : integer; const AValue : TStream);

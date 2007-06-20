@@ -84,7 +84,6 @@ type
     procedure ParseIeProxyBypassStr(const BypassStr: string);
   public
     procedure Execute;
-  published
     property  ProxyServerActive: Boolean read FProxyServerActive;
     property  ProxyServerName: string read FProxyServerName;
     property  ProxyServerPort: Integer read FProxyServerPort;

@@ -27,6 +27,7 @@ type
     procedure FileStream_ReadLn1000;
     procedure FileStream_ReadLn2000;
     procedure FileStream_LineDelims;
+    procedure FileStream_LineDelims2;
     procedure FileStream_EOF;
     procedure FileStream_Write;
     procedure FileStream_WriteLn;
@@ -218,15 +219,49 @@ begin
 end;
 
 
+procedure TTestTIStream.FileStream_LineDelims2;
+
+  procedure _Test(ALineDelim, AError: string);
+  var
+    ls : string;
+    lStream : TtiFileStream;
+  begin
+    tiStringToFile('test' + ALineDelim, TempFileName);
+    lStream := TtiFileStream.CreateReadOnly(TempFileName);
+    try
+      ls := lStream.ReadLn;
+      CheckEquals(ALineDelim, lStream.LineDelim, AError);
+      CheckEquals('test', ls, AError);
+    finally
+      lStream.Free;
+    end;
+  end;
+
+begin
+  _Test(CrLf, 'CrLf');
+  _Test(Cr, 'Cr');
+  _Test(Lf, 'Lf');
+end;
+
 procedure TTestTIStream.TestEOF(ACount: integer);
 var
   ls : string;
+  pls: PChar;
   lStream : TtiFileStream;
   i, lCount : integer;
+
+const
+  testString: string = 'test' + #13#10;
+
 begin
-  ls := '';
+  SetLength(ls, ACount * 6);
+  pls := Pointer(ls);
   for i := 1 to ACount do
-    ls := ls + 'test' + CrLf;
+  begin
+     CopyMemory(pls, Pointer(testString), 6);
+     Inc(pls, 6);
+  end;
+
   tiStringToFile(ls, TempFileName);
   lStream := TtiFileStream.Create(TempFileName, fmOpenRead or fmShareDenyNone);
   try

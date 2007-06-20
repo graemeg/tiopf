@@ -1281,6 +1281,7 @@ begin
   FList.Delete(i);
 end;
 
+
 procedure TtiObject.SetObjectState(const AValue: TPerObjectState);
 begin
   if FObjectState = AValue then exit;

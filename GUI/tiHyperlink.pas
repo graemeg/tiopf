@@ -35,6 +35,7 @@ type
     procedure   SetMouseOver(AValue: boolean);
   published
     property Action;
+    property Align; 
     property Anchors;
     property OnClick;
     property Caption;

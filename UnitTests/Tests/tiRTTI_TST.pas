@@ -214,9 +214,6 @@ begin
 end;
 
 procedure TTesttiRTTI.TestGetPropertyClass;
-var
-  c1: TtiRTTITestClassB;
-  obj: TObject;
 begin
   Check(TtiRTTITestClass = tiGetPropertyClass(TtiRTTITestClassB, 'TestItemB'), 'Failed on 1');
   Check(nil = tiGetPropertyClass(TtiRTTITestClassB, 'NotAProperty'), 'Failed on 2');

@@ -134,6 +134,7 @@ type
                           AFieldWidth : integer = 0);
     procedure   Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = ''); override;
     function    FindByFieldName(const AFieldName : TFieldName): TtiDBMetaDataField;
+    function    IndexOfFieldName(const AFieldName: TFieldName): Integer;
     function    MaxFieldNameWidth : word;
     function    Clone : TtiDBMetaDataTable; reintroduce;
   published
@@ -818,6 +819,19 @@ begin
     if SameText(Items[i].Name, AFieldName) then
     begin
       result := Items[i];
+      Exit; //==>
+    end;
+end;
+
+function TtiDBMetaDataTable.IndexOfFieldName(const AFieldName: TFieldName): Integer;
+var
+  i : integer;
+begin
+  result := -1;
+  for i := 0 to Count - 1 do
+    if SameText(Items[i].Name, AFieldName) then
+    begin
+      result := i;
       Exit; //==>
     end;
 end;

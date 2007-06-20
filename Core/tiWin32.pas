@@ -22,7 +22,7 @@ uses
   function  tiWin32GetUserName: string;
   function  tiWin32GetComputerName: string;
   function  tiWin32GetAppConfigDir(Global: Boolean): string;
-
+  function  tiWin32AuthenticateWithDomain(const AUserName, ADomain, APassword: string): Boolean;
 
 implementation
 uses
@@ -236,6 +236,20 @@ begin
     Result := _GetSpecialDir(CSIDL_LOCAL_APPDATA) + tiApplicationName;
     if (Result = '') then
       Result := tiGetEXEPath;
+  end;
+end;
+
+function tiWin32AuthenticateWithDomain(const AUserName, ADomain, APassword: string): Boolean;
+var
+  LUserHandle: THandle;
+begin
+  Result := False;
+  try
+    if LogonUser(PChar(AUserName), pChar(ADomain), PChar(APassword),
+        LOGON32_LOGON_NETWORK, LOGON32_PROVIDER_DEFAULT, LUserHandle) then
+      Result := True;
+  except
+    // Swallow failure
   end;
 end;
 

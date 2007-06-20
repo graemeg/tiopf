@@ -32,6 +32,15 @@ type
 //    procedure SetData(const AValue: TtiObject); override;
 //    function  FormIsValid : boolean; override;
 
+  // Custom ApplicationMenuSystem action
+  TtiAMSAction = class(TAction)
+  private
+    FShowInMenuSystem: boolean;
+  public
+    constructor Create(AOwner: TComponent); override;
+    property ShowInMenuSystem: boolean read FShowInMenuSystem write FShowInMenuSystem;
+  end;
+
 
   // ToDo: Remove pnlCaption - but this will require some effort as it may be referenced by child forms
   TFormTIFormMgrForm = class(TForm)
@@ -43,11 +52,11 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
     FAL        : TActionList;
-    FaClose     : TAction;
-    FaUndo      : TAction;
-    FaSaveClose : TAction;
-    FaCancelClose: TAction;
-    FaDummy     : TAction;
+    FaClose     : TtiAMSAction;
+    FaUndo      : TtiAMSAction;
+    FaSaveClose : TtiAMSAction;
+    FaCancelClose: TtiAMSAction;
+    FaDummy     : TtiAMSAction;
 
     FButtonsVisible: TtiButtonsVisible;
     FForceCanLeave: boolean;
@@ -83,10 +92,10 @@ type
                         const pOnExecute: TNotifyEvent;
                         const pHint: string = '';
                               pImageIndex: Integer = -1;
-                              pHelpContext: Integer = -1): TAction; overload;
+                              pHelpContext: Integer = -1): TtiAMSAction; overload;
     function  AddAction(const pCaption: string; const pHint: string;
                         const pOnExecute: TNotifyEvent;
-                        pShortCutKey: Word; pShortCutShiftState: TShiftState): TAction; overload;
+                        pShortCutKey: Word; pShortCutShiftState: TShiftState): TtiAMSAction; overload;
 
     procedure aUndoExecute(Sender: TObject);virtual;
     procedure aSaveCloseExecute(Sender: TObject);virtual;
@@ -483,9 +492,9 @@ function TFormTIFormMgrForm.AddAction(
   const pOnExecute:   TNotifyEvent;
   const pHint:        string = '';
         pImageIndex:  Integer = -1;
-        pHelpContext: Integer = -1): TAction;
+        pHelpContext: Integer = -1): TtiAMSAction;
 begin
-  Result := TAction.Create(FAL);
+  Result := TtiAMSAction.Create(FAL);
   Result.ActionList := FAL;
   Result.Caption  := pCaption;
   Result.OnExecute := pOnExecute;
@@ -495,7 +504,7 @@ begin
 end;
 
 function TFormTIFormMgrForm.AddAction(const pCaption, pHint: string;
-  const pOnExecute: TNotifyEvent; pShortCutKey: Word; pShortCutShiftState: TShiftState): TAction;
+  const pOnExecute: TNotifyEvent; pShortCutKey: Word; pShortCutShiftState: TShiftState): TtiAMSAction;
 begin
   Result := AddAction(pCaption, pOnExecute, pHint);
   Result.ShortCut := Shortcut(Word(pShortCutKey), pShortCutShiftState);
@@ -876,7 +885,8 @@ begin
   AList.Clear;
   for i := 0 to FAL.ActionCount - 1 do
     if (FAL.Actions[i] <> FaDummy) and
-       ((FAL.Actions[i] as TAction).Visible) then
+       ((FAL.Actions[i] as TtiAMSAction).Visible) and
+       ((FAL.Actions[i] as TtiAMSAction).ShowInMenuSystem) then
       AList.Add(FAL.Actions[i]);
 end;
 
@@ -929,6 +939,14 @@ end;
 procedure TFormTIFormMgrForm.SelectFirstControl;
 begin
   SelectFirst;
+end;
+
+{ TtiAMSAction }
+
+constructor TtiAMSAction.Create(AOwner: TComponent);
+begin
+  inherited;
+  FShowInMenuSystem:= True;
 end;
 
 end.

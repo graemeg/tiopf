@@ -34,6 +34,7 @@ uses
 
 const
   cErrorInvalid = '';
+  CErrorQueryReturnedMoreThanOneRow = 'Query returned "%d" rows when 1 was expected';
 
 type
 
@@ -190,7 +191,9 @@ var
   i: integer;
   lColName: string;
   lPropName: string;
+  {$IFNDEF OID_AS_INT64}
   lOID: TOID;
+  {$ENDIF}
 begin
   Assert(FVisitedClassType <> nil, 'FVisitedClassType = nil');
   AParams.Clear;
@@ -205,18 +208,14 @@ begin
     if (SameText('OID', lPropName) or SameText('Owner.OID', lPropName))
         and (Pos('_OID', UpperCase(lPropName)) = 0) then
       _SetOIDParam(AParams, AData, lColName, lPropName)
+    {$IFNDEF OID_AS_INT64}
     else if tiPropertyInheritsFrom(AData.ClassType, lPropName, TOID) then
     begin
       lOID:= TOID(GetObjectProp(AData, lPropName));
       if assigned(lOID) then
-      begin
-      {$IFDEF OID_AS_INT64}
-         AParams.SetValueAsInteger(lColName, lOID);
-       {$ELSE}
-         lOID.AssignToTIQueryParam(lColName, AParams);
-      {$ENDIF}
-      end;
+        lOID.AssignToTIQueryParam(lColName, AParams);
     end
+    {$ENDIF}
     else
       AParams.SetValueFromProp(AData, lPropName, lColName);
   end;
@@ -339,7 +338,8 @@ begin
       Inc(lCount);
     end;
     Query.Close;
-    Assert(lCount <= 1, 'Query returned rowcount > 1 it was ' + IntToStr(lCount));
+    if lCount > 1 then
+      raise EtiOPFDataException.CreateFmt(CErrorQueryReturnedMoreThanOneRow, [lCount]);
   end;
 end;
 
@@ -769,7 +769,9 @@ procedure TVisAutoAbs.QueryResultToObject(const ATarget : TtiObject; const pAttr
     lInt      : Int64;
     lStream   : TStream;
     lString   : string;
+    {$IFNDEF OID_AS_INT64}
     lOID      : TOID;
+    {$ENDIF}
   begin
     lColName := pAttrColMap.DBColMap.ColName;
     lPropName := pAttrColMap.AttrMap.AttrName;
@@ -786,19 +788,14 @@ procedure TVisAutoAbs.QueryResultToObject(const ATarget : TtiObject; const pAttr
     end;
 
 //    // handles published OIDs
+    {$IFNDEF OID_AS_INT64}
     if tiPropertyInheritsFrom(ATarget.ClassType, lPropName, TOID) then
     begin
       lOID:= TOID(GetObjectProp(ATarget, lPropName));
-      if assigned(lOID) then
-      begin
-      {$IFDEF OID_AS_INT64}
-         lOID := Query.FieldAsInteger[lColName];
-       {$ELSE}
+      if Assigned(lOID) then
          lOID.AssignFromTIQuery(lColName, Query);
-      {$ENDIF}
-      end;
-      exit;
     end;
+    {$ENDIF}
 
 //    if SameText(lPropName, 'DispOrder') then
 //    begin

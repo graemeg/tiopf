@@ -77,6 +77,7 @@ type
     procedure tiDateToPreviousWeekDayDate;
     procedure tiDateToStr;
     procedure tiDateWithinRange;
+    procedure tiRoundDateToPreviousMinute;
     procedure tiDeleteFiles;
     procedure tiDirectoryTreeToStringList;
     procedure tiEncodeDecodeWordBase26;
@@ -828,47 +829,39 @@ end;
 
 procedure TTestTIUtils.tiMoveFile;
 var
-  lslFrom : TStringList;
-  lslTo  : TStringList;
-  ls : string;
-  i : integer;
-  j : integer;
-  lFrom  : string;
-  lTo    : string;
+  LFileNameFrom: string;
+  LFileNameTo: string;
+  LFrom: string;
+  LTo: string;
 begin
   ForceDirectories(TempDirectory);
 
-  lFrom := TempFileName('DUnitTest_From.txt');
-  lTo  := TempFileName('DUnitTest_To.txt');
+  LFileNameFrom := TempFileName('DUnitTest_From.txt');
+  LFileNameTo  := TempFileName('DUnitTest_To.txt');
 
-  if FileExists(lFrom) then
-    tiDeleteFile(lFrom);
-  if FileExists(lTo) then
-    tiDeleteFile(lTo);
+  if FileExists(LFileNameFrom) then
+    tiDeleteFile(LFileNameFrom);
+  if FileExists(LFileNameTo) then
+    tiDeleteFile(LFileNameTo);
 
-  lslFrom := TStringList.Create;
-  try
-    lslTo  := TStringList.Create;
-    try
-      for i := 0 to 1000 do
-      begin
-        for j := 1 to 255 do
-          ls := ls + Chr(j);
-        ls := ls + #13;
-      end;
-      lslFrom.Text := ls;
-      lslFrom.SaveToFile(lFrom);
-      tiUtils.tiMoveFile(lFrom, lTo);
-      lslTo.LoadFromFile(lTo);
-      Check(FileExists(lTo), 'To file does not exist');
-      Check(not FileExists(lFrom), 'From file exists');
-      Check(lslFrom.Text = lslTo.Text);
-    finally
-      lslTo.Free;
-    end;
-  finally
-    lslFrom.Free;
-  end;
+  LFrom:= LongString;
+  tiUtils.tiStringToFile(LFrom, LFileNameFrom);
+
+  // This move should succede
+  Check(tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Move failed');
+  Check(FileExists(LFileNameTo), 'To file does not exist');
+  Check(not FileExists(LFileNameFrom), 'From file exists');
+  LTo:= tiUtils.tiFileToString(LFileNameTo);
+  CheckEquals(LFrom, LTo, 'File contents not equal');
+
+  tiUtils.tiStringToFile(LFrom, LFileNameFrom);
+  Check(not tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Move did not failed');
+
+  tiDeleteFile(LFileNameTo);
+  tiUtils.tiStringToFile(LFrom, LFileNameFrom);
+  LFileNameTo  := TempFileName('temp\DUnitTest_To.txt');
+  Check(not tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Move did not failed');
+
 end;
 
 
@@ -2480,6 +2473,11 @@ begin
   CheckEquals(2, tiUtils.tiRound(1.6));
 end;
 
+
+procedure TTestTIUtils.tiRoundDateToPreviousMinute;
+begin
+
+end;
 
 procedure TTestTIUtils.tiRemoveDirectory;
 var

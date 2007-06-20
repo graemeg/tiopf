@@ -39,21 +39,16 @@ type
   {: Adds ReadLn to a TFileStream}
   TtiFileStream = class(TFileStream)
   private
-    // ToDo: Using regular stream methods like Position will break
-    //       this as the internal position counter, and buffer will
-    //       not be updated.
     FLineDelim: string;
-    FPos : LongInt;
-    FBufStr : string;
     FLineDelimLen : Byte;
-    FEOF : boolean;
+    function GetLineDelim: string;
     procedure SetLineDelim(const AValue: string);
-    procedure AppendToBufStr;
+    procedure DiscoverLineDelim;
   public
     constructor Create(const AFileName: string; Mode: Word);
     constructor CreateReadWrite(const AFileName : string; pOverwrite : boolean = false);
     constructor CreateReadOnly( const AFileName : string);
-    property    LineDelim : string read FLineDelim write SetLineDelim;
+    property    LineDelim : string read GetLineDelim write SetLineDelim;
     procedure   Write(const AString : string); reintroduce;
     procedure   WriteLn(const AString : string = '');
     function    ReadLn : string;
@@ -590,52 +585,109 @@ end;
 constructor TtiFileStream.Create(const AFileName: string; Mode: Word);
 begin
   inherited Create(AFileName, Mode);
-  FLineDelim := CrLf;
-  FLineDelimLen := 2;
-  FPos := 0;
-  FBufStr := '';
-  FEOF := Size = 0;
+  LineDelim := '';
+end;
+
+
+procedure TtiFilestream.DiscoverLineDelim;
+const
+  cBufLen = 1024;
+
+var
+  crPos, LfPos : LongInt;
+  ls: string;
+  lReadCount: LongInt;
+  lOldPos: Int64;
+
+begin
+
+  if FLineDelimLen = 0 then
+  begin
+    lOldPos := Position;
+    Seek(0, soFromBeginning);
+    crPos := 0;
+    lfPos := 0;
+    // default
+    LineDelim := CrLf;
+
+    while (crPos = 0) and (lfPos = 0) and (not EOF) do
+    begin
+      SetLength(ls, cBufLen);
+      lReadCount := Read(ls[1], cBufLen);
+
+      if lReadCount < cBufLen then
+        SetLength(ls, lReadCount);
+
+      crPos := Pos(Cr, ls);
+      lfPos := Pos(Lf, ls);
+
+      if (crPos = 0) and (lfPos > 0) then
+        LineDelim := Lf
+      else if (crPos > 0) and (lfPos = 0) then
+      begin
+
+        if EOF then
+          LineDelim := Cr
+        else
+          // handle case of Cr at end of buffer - rewind to crPos
+          Seek(crPos - 1 - lReadCount, soFromCurrent);
+
+      end;
+
+    end;
+
+    // reset stream state
+    Seek(lOldPos, soFromBeginning);
+  end;
+
 end;
 
 function TtiFileStream.ReadLn: string;
-var
-  lPos : LongInt;
-begin
-  lPos := Pos(LineDelim, FBufStr);
-  if (lPos = 0) and
-     (FPos <> Size) then
-  begin
-    AppendToBufStr;
-    lPos   := Pos(LineDelim, FBufStr);
-  end;
-  if lPos > 0 then
-  begin
-    result := Copy(FBufStr, 1, lPos - 1);
-    FBufStr := Copy(FBufStr, lPos + FLineDelimLen, Length(FBufStr) - lPos - FLineDelimLen + 1);
-    FEOF   := (FBufStr = '') and (FPos = Size) ;
-  end else
-  begin
-    FEOF   := true;
-    result := FBufStr;
-    FBufStr := '';
-  end
-end;
-
-procedure TtiFileStream.AppendToBufStr;
-var
-  lBufLen : Word;
-  ls : string;
 const
   cBufLen = 1024;
+
+var
+  lPos : LongInt;
+  lReadCount: LongInt;
+  lTrim: LongInt;
+  lStart: Int64;
+  ls: string;
+
 begin
-  if FPos + cBufLen > Size then
-    lBufLen := Size - FPos
-  else
-    lBufLen := cBufLen;
-  SetLength(ls,  lBufLen);
-  Read(ls[1], lBufLen);
-  FBufStr := FBufStr + ls;
-  Inc(FPos, lBufLen);
+  lStart := Position;
+  lPos := 0;
+
+  while (lPos = 0) and (not EOF) do
+  begin
+    SetLength(ls, cBufLen);
+    lReadCount := Read(ls[1], cBufLen);
+
+    if lReadCount < cBufLen then
+      SetLength(ls, lReadCount);
+
+    lPos := Pos(LineDelim, ls);
+
+    if lPos <> 0 then
+    begin
+      lTrim := lReadCount - (lPos - 1);
+      SetLength(Result, Position - lTrim - lStart);
+      Seek(lStart, soFromBeginning);
+      Read(Result[1], Length(Result));
+      // skip over LineDelim
+      Seek(FLineDelimLen, soFromCurrent);
+    end
+    else if lReadCount = cBufLen then
+      // rewind far enough to handle partial LineDelim at end of current buffer
+      Seek( 1 - FLineDelimLen, soFromCurrent)
+    else
+    begin
+      SetLength(Result, Position - lStart);
+      Seek(lStart, soFromBeginning);
+      Read(Result[1], Length(Result));
+    end;
+
+  end;
+
 end;
 
 procedure TtiFileStream.Write(const AString: string);
@@ -645,7 +697,7 @@ end;
 
 procedure TtiFileStream.WriteLn(const AString: string = '');
 begin
-  Write(AString + FLineDelim);
+  Write(AString + LineDelim);
 end;
 
 procedure TtiFileStream.SetLineDelim(const AValue: string);
@@ -656,7 +708,16 @@ end;
 
 function TtiFileStream.EOF: boolean;
 begin
-  result := FEOF;
+  result := (Position = Size);
+end;
+
+function TtiFileStream.GetLineDelim: string;
+begin
+
+  if FLineDelimLen = 0 then
+    DiscoverLineDelim;
+
+  Result := FLineDelim;
 end;
 
 constructor TtiFileStream.CreateReadWrite(const AFileName: string; pOverwrite : boolean = false);
@@ -665,7 +726,7 @@ begin
     Create(AFileName, fmOpenReadWrite or fmShareDenyWrite)
   else
     Create(AFileName, fmCreate or fmShareDenyWrite)
-end;                        
+end;
 
 constructor TtiFileStream.CreateReadOnly(const AFileName: string);
 begin

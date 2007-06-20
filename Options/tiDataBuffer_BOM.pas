@@ -71,6 +71,7 @@ type
     function    AddInstance : TtiDataBufferRow;
     property    List : TList read GetRows;
     function    IndexOf(const AValue : TtiDataBufferRow): integer;
+    function    FindByFieldValue(const AFieldName, AFieldValue: string): TtiDataBufferRow;
     property    Name : string read FName write FName;
     procedure   Remove(const pRow : TtiDataBufferRow);
     property    Fields : TtiDBMetaDataTable read FFields write FFields;
@@ -322,6 +323,25 @@ end;
 function TtiDataBuffer.IndexOf(const AValue: TtiDataBufferRow): integer;
 begin
   result := FRows.IndexOf(AValue);
+end;
+
+function TtiDataBuffer.FindByFieldValue(const AFieldName, AFieldValue: string): TtiDataBufferRow;
+var
+  LFieldIndex: Integer;
+  I: Integer;
+begin
+  Result := nil;
+
+  LFieldIndex := Fields.IndexOfFieldName(AFieldName);
+  if LFieldIndex >= 0 then
+  begin
+    for I := 0 to Pred(Count) do
+      if Items[I].Items[LFieldIndex].ValueAsString = AFieldValue then
+      begin
+        Result := Items[I];
+        Break; //==>
+      end;
+  end;
 end;
 
 { TtiDataBuffers }

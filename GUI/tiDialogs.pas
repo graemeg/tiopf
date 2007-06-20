@@ -70,7 +70,11 @@ type
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // Show an error dialog box
+{$IFDEF MSWINDOWS}
+  procedure tiAppError(       const AMessage : string; const AOwnerWindowHandle: HWnd  = 0);
+{$ELSE}
   procedure tiAppError(       const AMessage : string);
+{$ENDIF}
   // Show an error dialog box
   procedure tiAppException(   const AMessage : string; const AException : exception); overload;
   // Show an error dialog box
@@ -158,17 +162,20 @@ uses
 var
   pWorkingForm : TForm;
 
+{$IFDEF MSWINDOWS}
+procedure tiAppError(const AMessage : string; const AOwnerWindowHandle: HWnd);
+begin
+  MessageBox(AOwnerWindowHandle,PChar(AMessage),'Error',mb_ok+mb_iconhand);
+end;
+{$ELSE}
 procedure tiAppError(const AMessage : string);
 begin
-{$IFDEF MSWINDOWS}
-MessageBox(0,PChar(AMessage),'Error',mb_ok+mb_iconhand);
-{$ELSE}
   messageDlg(AMessage,
               mtError,
               [mbOK],
               0);
-{$ENDIF}
 end;
+{$ENDIF}
 
 
 procedure tiAppException(const AMessage : string; const AException : exception);
