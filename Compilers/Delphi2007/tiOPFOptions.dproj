@@ -74,10 +74,10 @@
     <DCCReference Include="..\..\Options\tiTextParserStructCSV.pas" />
     <DCCReference Include="..\..\Options\tiXML.pas" />
     <DCCReference Include="..\..\Options\tiXMLToTIDataset.pas" />
-    <DCCReference Include="H:\bdertl.dcp" />
-    <DCCReference Include="H:\dbrtl.dcp" />
-    <DCCReference Include="H:\rtl.dcp" />
-    <DCCReference Include="H:\tiOPFCore.dcp" />
-    <DCCReference Include="H:\vcl.dcp" />
+    <DCCReference Include="bdertl.dcp" />
+    <DCCReference Include="dbrtl.dcp" />
+    <DCCReference Include="rtl.dcp" />
+    <DCCReference Include="tiOPFCore.dcp" />
+    <DCCReference Include="vcl.dcp" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{5a3dafa5-dd98-4823-8704-3cae1f033f6f}</ProjectGuid>
     <MainSource>tiOPFGUIDsgn.dpk</MainSource>
@@ -55,13 +56,13 @@
     <DCCReference Include="..\..\GUI\tiOPFControlsReg.pas" />
     <DCCReference Include="..\..\GUI\tiSplitterEditor.pas" />
     <DCCReference Include="..\..\GUI\tiTreeviewEditor.pas" />
-    <DCCReference Include="H:\designide.dcp" />
-    <DCCReference Include="H:\rtl.dcp" />
-    <DCCReference Include="H:\tiOPFCore.dcp" />
-    <DCCReference Include="H:\tiOPFGUI.dcp" />
-    <DCCReference Include="H:\vcl.dcp" />
-    <DCCReference Include="H:\vclactnband.dcp" />
-    <DCCReference Include="H:\vcljpg.dcp" />
-    <DCCReference Include="H:\vclx.dcp" />
+    <DCCReference Include="designide.dcp" />
+    <DCCReference Include="rtl.dcp" />
+    <DCCReference Include="tiOPFCore.dcp" />
+    <DCCReference Include="tiOPFGUI.dcp" />
+    <DCCReference Include="vcl.dcp" />
+    <DCCReference Include="vclactnband.dcp" />
+    <DCCReference Include="vcljpg.dcp" />
+    <DCCReference Include="vclx.dcp" />
   </ItemGroup>
 </Project>

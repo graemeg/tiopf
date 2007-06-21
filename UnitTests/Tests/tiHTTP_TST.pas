@@ -131,8 +131,8 @@ const
   cExpectedResponseText = 'HTTP/1.1 200 OK';
   cExpectedResponseErrorText = 'HTTP/1.1 500 Internal Server Error';
 
-  cIndyTimePerCall    = 35;
-  cMSXMLTimePerCall   = 45;
+  cIndyTimePerCall    = 50;
+  cMSXMLTimePerCall   = 50;
   cHTTPPortToTestWith = 81;
 
   ctiOPFBlockIDValue = '2' + ctiOPFHTTPBlockDelim +

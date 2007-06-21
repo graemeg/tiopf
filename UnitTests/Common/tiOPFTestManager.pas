@@ -149,9 +149,9 @@ procedure TtiOPFTestManager.Read;
 var
   i: Integer;
 begin
-  if not gDUnitINI.ValueExists(cINIPerLayersToTest, 'NonPersistent') then
-    gDUnitINI.WriteBool(cINIPerLayersToTest, 'NonPersistent', True);
-  FTestNonPersistentClasses := gDUnitINI.ReadBool(cINIPerLayersToTest, 'NonPersistent', True);
+  if not gDUnitINICommon.ValueExists(cINIPerLayersToTest, 'NonPersistent') then
+    gDUnitINICommon.WriteBool(cINIPerLayersToTest, 'NonPersistent', True);
+  FTestNonPersistentClasses := gDUnitINICommon.ReadBool(cINIPerLayersToTest, 'NonPersistent', True);
   for i:= 0 to Count - 1 do
     Items[i].Read;
 end;
@@ -161,7 +161,7 @@ procedure TtiOPFTestManager.Save;
 var
   i: Integer;
 begin
-  gDUnitINI.WriteBool(cINIPerLayersToTest, 'NonPersistent', FTestNonPersistentClasses);
+  gDUnitINICommon.WriteBool(cINIPerLayersToTest, 'NonPersistent', FTestNonPersistentClasses);
   for i:= 0 to Count - 1 do
     Items[i].Save;
 end;
@@ -247,9 +247,9 @@ end;
 
 procedure TtiOPFTestSetupData.Read;
 begin
-  if not gDUnitINI.ValueExists(cINIPerLayersToTest, PerLayerName) then
-    gDUnitINI.WriteBool(cINIPerLayersToTest, PerLayerName, Enabled);
-  FSelected := gDUnitINI.ReadBool(cINIPerLayersToTest, PerLayerName, Enabled);
+  if not gDUnitINICommon.ValueExists(cINIPerLayersToTest, PerLayerName) then
+    gDUnitINICommon.WriteBool(cINIPerLayersToTest, PerLayerName, Enabled);
+  FSelected := gDUnitINICommon.ReadBool(cINIPerLayersToTest, PerLayerName, Enabled);
 end;
 
 
@@ -260,21 +260,23 @@ end;
 
 
 function TtiOPFTestSetupData.ReadFromReg(const pPerLayer, pProp, pDefault: string): string;
+var
+  LDUnitLocalSettings: TDUntiLocalSettings;
 begin
-  result := {$ifdef fpc}gDUnitINI{$else}gDUnitReg{$endif}.ReadString('DB_' + pPerLayer, pProp, 'Unknown');
-  if result = 'Unknown' then
-  begin
-    result := pDefault;
-    {$ifdef fpc}gDUnitINI{$else}gDUnitReg{$endif}.WriteString('DB_' + pPerlayer, pProp, '');
-  end
-  else if result = '' then
+  LDUnitLocalSettings:= TDUntiLocalSettings.Create;
+  try
+    Result:= LDUnitLocalSettings.ReadString('DB_' + pPerLayer, pProp);
+  finally
+    LDUnitLocalSettings.Free;
+  end;
+  if result = '' then
     result := pDefault;
 end;
 
 
 procedure TtiOPFTestSetupData.Save;
 begin
-  gDUnitINI.WriteBool(cINIPerLayersToTest, PerLayerName, FSelected);
+  gDUnitINICommon.WriteBool(cINIPerLayersToTest, PerLayerName, FSelected);
 end;
 
 

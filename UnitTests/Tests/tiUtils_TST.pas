@@ -11,11 +11,12 @@ uses
   ,TestFrameWork
   {$ENDIF}
   ,tiTestFramework
+  ,tiDUnitINI
   ,math
  ;
 
 const
-  cINIMachineSettings = 'MachineSettings';
+  CLocalINISettingsMessage = ' Edit the file for Expected value C:\Documents and Settings\tipwh\Local Settings\Application Data\DUnitTIOPF\DUnitTIOPF.ini';
 
 type
 
@@ -23,8 +24,9 @@ type
 
   TTestTIUtils = class(TtiTestCase)
   private
+    FLocalINISettings: TDUntiLocalSettings;
     function  BuildLongString : string;
-    procedure CheckReadingFromNT(const AValue, pRegKey, pDescription : string);
+
   protected
     // These methods exist in tiUtils, but have not been DUnit tested because
     // I can not work our a reliable way of performing the tests (or I don't
@@ -42,6 +44,14 @@ type
     // procedure tiIsBitSet; // Have not used this for a long time, so implement DUnit test when required again
 
     procedure TearDown; override;
+  public
+    {$IFDEF FPC}
+    constructor Create; override;
+    {$ELSE}
+    constructor Create(AMethodName: string); override;
+    {$ENDIF}
+    destructor  Destroy; override;
+
   published
 //    procedure tiDateToStr;
 //    procedure tiDirectoryTreeToStringList;
@@ -189,7 +199,6 @@ uses
   ,tiDUnitDependencies
   ,tstPerFramework_BOM
   ,tiDUnitUtils
-  ,tiDUnitINI
   ,SysUtils
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
@@ -197,7 +206,6 @@ uses
   ,FileCtrl
   {$ENDIF}
   ,TypInfo
-//  ,Contnrs
   ,ClipBrd
   ,Forms
   ,DateUtils
@@ -613,21 +621,20 @@ end;
 
 procedure TTestTIUtils.tiGetTempDir   ;
 begin
-  CheckReadingFromNT(
+  CheckEquals(
+    FLocalINISettings.TempDir,
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetTempDir),
-    'TempDir',
-    'TEMP directory (No trailing path delimiter)'
-  );
+    'TEMP directory (No trailing path delimiter)' + CLocalINISettingsMessage);
 end;
 
 
 procedure TTestTIUtils.tiGetWindowsSysDir ;
 begin
   {$IFDEF MSWINDOWS}
-  CheckReadingFromNT(
+  CheckEquals(
+    FLocalINISettings.WindowsSysDir,
     tiUtils.tiGetWindowsSysDir,
-    'WindowsSysDir',
-    'Windows System Directory'
+    'Windows System Directory' + CLocalINISettingsMessage
   );
   {$ENDIF}
   {$IFDEF UNIX}
@@ -1690,20 +1697,20 @@ end;
 
 procedure TTestTIUtils.tiGetUserName ;
 begin
-  CheckReadingFromNT(
+  CheckEquals(
+    FLocalINISettings.UserName,
     tiUtils.tiGetUserName,
-    'UserName',
-    'User''s name'
+    'User''s name' + CLocalINISettingsMessage
   );
 end;
 
 
 procedure TTestTIUtils.tiGetComputerName ;
 begin
-  CheckReadingFromNT(
+  CheckEquals(
+    FLocalINISettings.ComputerName,
     tiUtils.tiGetComputerName,
-    'ComputerName',
-    'name'
+    'ComputerName' + CLocalINISettingsMessage
   );
 end;
 
@@ -1895,6 +1902,20 @@ begin
 end;
 
 
+{$IFDEF FPC}
+constructor TTestTIUtils.Create;
+begin
+  inherited;
+  FLocalINISettings:= TDUntiLocalSettings.Create;
+end;
+{$ELSE}
+constructor TTestTIUtils.Create(AMethodName: string);
+begin
+  inherited;
+  FLocalINISettings:= TDUntiLocalSettings.Create;
+end;
+{$ENDIF}
+
 procedure TTestTIUtils.CrLf;
 begin
   Check(tiUtils.CrLF = #13 + #10);
@@ -1903,6 +1924,12 @@ begin
   Check(tiUtils.CrLF(3) = #13 + #10 + #13 + #10 + #13 + #10);
   Check(tiUtils.CrLF(4) = #13 + #10 + #13 + #10 + #13 + #10 + #13 + #10);
   Check(tiUtils.CrLF(5) = #13 + #10 + #13 + #10 + #13 + #10 + #13 + #10 + #13 + #10);
+end;
+
+destructor TTestTIUtils.Destroy;
+begin
+  FLocalINISettings.Free;
+  inherited;
 end;
 
 function TTestTIUtils.BuildLongString: string;
@@ -1956,33 +1983,6 @@ begin
   Check(not tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> false');
   lObj.Free;
 end;
-
-
-procedure TTestTIUtils.CheckReadingFromNT(const AValue, pRegKey, pDescription : string);
-var
-  lEntered : string;
-begin
-  {$IFDEF FPC}
-  lEntered := gDUnitINI.ReadString(cINIMachineSettings, pRegKey, '');
-  {$ELSE}
-  lEntered := gDUnitReg.ReadString(cINIMachineSettings, pRegKey, '');
-  {$ENDIF}
-
-  if lEntered = '' then
-  begin
-    tiInputQuery(lEntered,
-                  'What is this computer''s ' + pDescription + '?');
-    lEntered := lEntered;
-    {$IFDEF FPC}
-    gDUnitINI.WriteString(cINIMachineSettings, pRegKey, lEntered);
-    {$ELSE}
-    gDUnitReg.WriteString(cINIMachineSettings, pRegKey, lEntered);
-    {$ENDIF}
-  end;
-  CheckEquals(UpperCase(lEntered),
-               UpperCase(AValue), 'Confirm this computer''s ' + pDescription + ' ' + lEntered);
-end;
-
 
 procedure TTestTIUtils.tiForceRemoveDir;
 var
@@ -2277,9 +2277,9 @@ end;
 
 procedure TTestTIUtils.tiApplicationName;
 begin
-  CheckReadingFromNT(
+  CheckEquals(
+    ChangeFileExt(ExtractFileName(ParamStr(0)), ''),
     tiUtils.tiApplicationName,
-    'ApplicationName',
     'Application Name (no extentions)'
   );
 end;
@@ -2369,20 +2369,20 @@ end;
 
 procedure TTestTIUtils.tiGetAppConfigDir;
 begin
-  CheckReadingFromNT(
-    tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppConfigDir),
-    'AppConfigDir_nonGlobal',
-    'non-Global Application Config directory (No trailing path delimiter)'
-  );
+  CheckEquals(
+    FLocalINISettings.AppConfigDir_nonGlobal,
+    tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppConfigDir(False)),
+    'non-Global Application Config directory (No trailing path delimiter)' +
+    CLocalINISettingsMessage);
 
   {$IFDEF UNIX}
   CheckEquals('/etc', tiUtils.tiGetAppConfigDir(True), 'Failed on 2');
   {$ELSE}
-  CheckReadingFromNT(
+  CheckEquals(
+    FLocalINISettings.AppConfigDir_Global,
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppConfigDir(True)),
-    'AppConfigDir_Global',
-    'Global Application Config directory (No trailing path delimiter)'
-  );
+    'Global Application Config directory (No trailing path delimiter)' +
+    CLocalINISettingsMessage);
   {$ENDIF}
 end;
 
