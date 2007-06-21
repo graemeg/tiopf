@@ -16,7 +16,12 @@ uses
  ;
 
 const
+  {$IFDEF MSWINDOWS}
   CLocalINISettingsMessage = ' Edit the file for Expected value C:\Documents and Settings\tipwh\Local Settings\Application Data\DUnitTIOPF\DUnitTIOPF.ini';
+  {$ENDIF}
+  {$IFDEF UNIX}
+  CLocalINISettingsMessage = ' Edit the file for Expected value /home/<user>/.config/DUnitTIOPF/DUnitTIOPF.ini';
+  {$ENDIF}
 
 type
 
@@ -854,21 +859,27 @@ begin
   LFrom:= LongString;
   tiUtils.tiStringToFile(LFrom, LFileNameFrom);
 
-  // This move should succede
-  Check(tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Move failed');
-  Check(FileExists(LFileNameTo), 'To file does not exist');
-  Check(not FileExists(LFileNameFrom), 'From file exists');
+  // This move should succeed
+  Check(tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Failed on 1');
+  Check(FileExists(LFileNameTo), 'Failed on 2');
+  Check(not FileExists(LFileNameFrom), 'Failed on 3');
   LTo:= tiUtils.tiFileToString(LFileNameTo);
-  CheckEquals(LFrom, LTo, 'File contents not equal');
+  CheckEquals(LFrom, LTo, 'Failed on 4');
 
   tiUtils.tiStringToFile(LFrom, LFileNameFrom);
-  Check(not tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Move did not failed');
+  {$IFDEF MSWINDOWS}
+  Check(not tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Failed on 5');
+  {$ENDIF}
+  {$IFDEF UNIX}
+  // Linux behavior is different to Windows if the To file exists.
+  // Under Linux RenameFile silently removes the other file.
+  Check(tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Failed on 5');
+  {$ENDIF}
 
   tiDeleteFile(LFileNameTo);
   tiUtils.tiStringToFile(LFrom, LFileNameFrom);
-  LFileNameTo  := TempFileName('temp\DUnitTest_To.txt');
-  Check(not tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Move did not failed');
-
+  LFileNameTo  := tiUtils.tiFixPathDelim(TempFileName('temp\DUnitTest_To.txt'));
+  Check(not tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Failed on 6');
 end;
 
 

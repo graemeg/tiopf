@@ -27,7 +27,7 @@ begin
   App := TMyTestRunner.Create(nil);
   App.Initialize;
   App.Title := 'FPCUnit Console test runner';
-  
+
   tiDUnitDependencies.RegisterTests;
   
   App.Run;

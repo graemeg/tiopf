@@ -1058,9 +1058,12 @@ begin
 end;
 
 
+{ Linux behavior is different to Windows if the ATo file exists.
+  Under Linux RenameFile silently removes the ATo file and then continues
+  with the rename. }
 function tiMoveFile(const AFrom, ATo: string): boolean;
 begin
-  result:= RenameFile(AFrom, ATo); { Rename the file }
+  result := RenameFile(AFrom, ATo);
 end;
 
 
@@ -2201,13 +2204,14 @@ begin
   result := tiReplicate(#13, ACount);
 end;
 
-
+{ Unix EOL character }
 function  Lf(const ACount : Byte = 1): string;
 begin
   result := tiReplicate(#10, ACount);
 end;
 
 
+{ Windows EOL character }
 function CrLf(const ACount : Byte = 1): string;
 begin
   result := tiReplicate(#13 + #10, ACount);

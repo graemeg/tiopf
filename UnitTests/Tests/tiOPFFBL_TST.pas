@@ -97,8 +97,8 @@ begin
   FSelected    := FEnabled;
   FPerLayerName := cTIPersistFBL;
   // You can specify a hostname or a local database.
-//  FDBName      := 'localhost|' + ReadFromReg(cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd');
-  FDBName      := ReadFromReg(cTIPersistFBL, 'DBName', gTestDataRoot + '.fbd');
+//  FDBName      := 'localhost|' + ReadFromReg(cTIPersistFBL, 'DBName', gTestDataRoot + '.fdb');
+  FDBName      := ReadFromReg(cTIPersistFBL, 'DBName', gTestDataRoot + '.fdb');
 //  writeln(FDBName);
   FUsername    := ReadFromReg(cTIPersistFBL, 'Username', 'SYSDBA');
   FPassword    := ReadFromReg(cTIPersistFBL, 'Password', 'masterkey');

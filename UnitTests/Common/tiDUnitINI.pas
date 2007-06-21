@@ -107,7 +107,7 @@ begin
   LFileName := tiGetAppConfigDir;
   LFileName:= Copy(LFileName, 1, tiPosR(PathDelim, LFileName)-1);
   LFileName:= LFileName + PathDelim + 'DUnitTIOPF\DUnitTIOPF.ini';
-  FINIFile := _CreateINIFile(LFileName);
+  FINIFile := _CreateINIFile(tiFixPathDelim(LFileName));
 end;
 
 destructor TDUntiLocalSettings.Destroy;
