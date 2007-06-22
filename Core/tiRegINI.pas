@@ -259,7 +259,7 @@ begin
   lFileName := ExtractFileName(AFileName);
 
   if lDir = '' then
-    lDir := tiGetAppConfigDir;
+    lDir := tiGetAppDataDirPrivate;
   lDir := tiAddTrailingSlash(lDir);
   { We used a non-Global config dir, so should be able to create the dir }
   tiForceDirectories(lDir);

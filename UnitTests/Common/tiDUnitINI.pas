@@ -15,10 +15,10 @@ type
   TDUntiLocalSettings = class(TtiBaseObject)
   private
     FINIFile: TINIFile;
-    function  GetAppConfigDir_nonGlobal: string;
-    procedure SetAppConfigDir_nonGlobal(const AValue: string);
-    function  GetAppConfigDir_Global: string;
-    procedure SetAppConfigDir_Global(const AValue: string);
+    function  GetAppDataDirPrivate: string;
+    procedure SetAppDataDirPrivate(const AValue: string);
+    function  GetAppDataDirPublic: string;
+    procedure SetAppDataDirPublic(const AValue: string);
 
     function  GetTempDir: string;
     procedure SetTempDir(const AValue: string);
@@ -34,12 +34,12 @@ type
 
     function  ReadString(const ASection: string; AIdent: string): string;
 
-    property AppConfigDir_nonGlobal: string read GetAppConfigDir_nonGlobal write SetAppConfigDir_nonGlobal;
-    property AppConfigDir_Global: string read GetAppConfigDir_Global write SetAppConfigDir_Global;
-    property TempDir: string read GetTempDir write SetTempDir;
-    property WindowsSysDir: string read GetWindowsSysDir write SetWindowsSysDir;
-    property UserName: string read GetUserName write SetUserName;
-    property ComputerName: string read GetComputerName write SetComputerName;
+    property AppDataDirPrivate: string read GetAppDataDirPrivate;
+    property AppDataDirPublic: string read GetAppDataDirPublic;
+    property TempDir: string read GetTempDir;
+    property WindowsSysDir: string read GetWindowsSysDir;
+    property UserName: string read GetUserName;
+    property ComputerName: string read GetComputerName;
 
     class    function  IsDataMissing: boolean;
     class    function  FileName: string;
@@ -59,8 +59,8 @@ uses
 
 const
   CINIMachineSettings = 'MachineSettings';
-  CAppConfigDir_nonGlobal = 'AppConfigDir_nonGlobal';
-  CAppConfigDir_Global = 'AppConfigDir_Global';
+  CAppDataDirPrivate = 'AppDataDirPrivate';
+  CAppDataDirPublic = 'AppDataDirPublic';
   CTempDir = 'TempDir';
   CWindowsSysDir = 'WindowsSysDir';
   CUserName = 'UserName';
@@ -115,8 +115,8 @@ var
 begin
   LO:= Create;
   try
-    LO.AppConfigDir_nonGlobal;
-    LO.AppConfigDir_Global;
+    LO.AppDataDirPrivate;
+    LO.AppDataDirPublic;
     LO.TempDir;
     LO.WindowsSysDir;
     LO.UserName;
@@ -134,19 +134,19 @@ end;
 
 class function TDUntiLocalSettings.FileName: string;
 begin
-  Result := tiGetAppConfigDir;
+  Result := tiGetAppDataDirPrivate;
   Result:= Copy(Result, 1, tiPosR(PathDelim, Result)-1);
   Result:= Result + PathDelim + 'DUnitTIOPF\DUnitTIOPF.ini';
 end;
 
-function TDUntiLocalSettings.GetAppConfigDir_Global: string;
+function TDUntiLocalSettings.GetAppDataDirPublic: string;
 begin
-  Result:= ReadString(CINIMachineSettings, CAppConfigDir_Global);
+  Result:= ReadString(CINIMachineSettings, CAppDataDirPublic);
 end;
 
-function TDUntiLocalSettings.GetAppConfigDir_nonGlobal: string;
+function TDUntiLocalSettings.GetAppDataDirPrivate: string;
 begin
-  Result:= ReadString(CINIMachineSettings, CAppConfigDir_nonGlobal);
+  Result:= ReadString(CINIMachineSettings, CAppDataDirPrivate);
 end;
 
 function TDUntiLocalSettings.GetComputerName: string;
@@ -161,8 +161,8 @@ begin
   LO:= Create;
   try
     result:=
-      (LO.AppConfigDir_nonGlobal = CDefaultStringValue) or
-      (LO.AppConfigDir_Global = CDefaultStringValue) or
+      (LO.AppDataDirPrivate = CDefaultStringValue) or
+      (LO.AppDataDirPublic = CDefaultStringValue) or
       (LO.TempDir = CDefaultStringValue) or
       (LO.WindowsSysDir = CDefaultStringValue) or
       (LO.UserName = CDefaultStringValue) or
@@ -195,14 +195,14 @@ begin
     FINIFile.WriteString(ASection, AIdent, CDefaultStringValue);
 end;
 
-procedure TDUntiLocalSettings.SetAppConfigDir_Global(const AValue: string);
+procedure TDUntiLocalSettings.SetAppDataDirPublic(const AValue: string);
 begin
-  FINIFile.WriteString(CINIMachineSettings, CAppConfigDir_Global, AValue);
+  FINIFile.WriteString(CINIMachineSettings, CAppDataDirPublic, AValue);
 end;
 
-procedure TDUntiLocalSettings.SetAppConfigDir_nonGlobal(const AValue: string);
+procedure TDUntiLocalSettings.SetAppDataDirPrivate(const AValue: string);
 begin
-  FINIFile.WriteString(CINIMachineSettings, CAppConfigDir_nonGlobal, AValue);
+  FINIFile.WriteString(CINIMachineSettings, CAppDataDirPrivate, AValue);
 end;
 
 procedure TDUntiLocalSettings.SetComputerName(const AValue: string);

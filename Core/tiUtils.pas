@@ -213,9 +213,14 @@ type
   function tiJoinPath(const AElements: array of string): string; overload;
   // Fixes the path separator for the *Unix platform. See implementation for more details.
   function tiFixPathDelim(const AText: string): string;
-  // Get the directory name where we can store application config files
-  // This just returns a name, it doesn't create the directory or checks if we have write access to it.
-  function tiGetAppConfigDir(Global: Boolean = False): string;
+  {: Get the directory name where we can store application config files.
+     This directory will be private to the currently logged on user.
+     This just returns a name, it doesn't create the directory or checks if we have write access to it.}
+  function tiGetAppDataDirPrivate: string;
+  {: Get the directory name where we can store application config files.
+     This directory will be shared between all users.
+     This just returns a name, it doesn't create the directory or checks if we have write access to it.}
+  function tiGetAppDataDirPublic: string;
   // Platform neutral function to return application name without GUI requirement
   function tiApplicationName: string;
 
@@ -2004,19 +2009,23 @@ begin
   {$ENDIF}
 end;
 
-function tiGetAppConfigDir(Global: Boolean): string;
+function tiGetAppDataDirPrivate: string;
 begin
-  {$IFDEF UseAppConfigDir}
-    {$IFDEF FPC}
-    result := GetAppConfigDir(Global);
-    {$ELSE}
-    result := tiWin32GetAppConfigDir(Global);
-    {$ENDIF}
+  {$IFDEF FPC}
+  result := GetAppConfigDir(False);
   {$ELSE}
-    result := tiGetEXEPath;
-  {$ENDIF UseAppConfigDir}
+  result := tiWin32GetAppConfigDir(False);
+  {$ENDIF}
 end;
 
+function tiGetAppDataDirPublic: string;
+begin
+  {$IFDEF FPC}
+  result := GetAppConfigDir(True);
+  {$ELSE}
+  result := tiWin32GetAppConfigDir(True);
+  {$ENDIF}
+end;
 
 function tiFloatToStr(const AValue : Extended;
     const APrecision : integer = 3): string;

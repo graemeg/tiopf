@@ -108,7 +108,8 @@ type
     procedure tiFloatToCurrencyHide0;
     procedure tiFloatToStr;
     procedure tiForceDirectories;
-    procedure tiGetAppConfigDir;
+    procedure tiGetAppDataDirPrivate;
+    procedure tiGetAppDataDirPublic;
     procedure tiGetComputerName;
     procedure tiGetFileSize;
     procedure tiGetTempDir;
@@ -2378,25 +2379,28 @@ begin
   tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
 end;
 
-procedure TTestTIUtils.tiGetAppConfigDir;
+procedure TTestTIUtils.tiGetAppDataDirPrivate;
 begin
   CheckEquals(
-    FLocalINISettings.AppConfigDir_nonGlobal,
-    tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppConfigDir(False)),
-    'non-Global Application Config directory (No trailing path delimiter)' +
+    FLocalINISettings.AppDataDirPrivate,
+    tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppDataDirPrivate),
+    'tiGetAppDataDirPrivate (No trailing path delimiter)' +
     CLocalINISettingsMessage);
+end;
 
+
+procedure TTestTIUtils.tiGetAppDataDirPublic;
+begin
   {$IFDEF UNIX}
   CheckEquals('/etc', tiUtils.tiGetAppConfigDir(True), 'Failed on 2');
   {$ELSE}
   CheckEquals(
-    FLocalINISettings.AppConfigDir_Global,
-    tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppConfigDir(True)),
-    'Global Application Config directory (No trailing path delimiter)' +
+    FLocalINISettings.AppDataDirPublic,
+    tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppDataDirPublic),
+    'tiGetAppDataDirPublic (No trailing path delimiter)' +
     CLocalINISettingsMessage);
   {$ENDIF}
 end;
-
 
 procedure TTestTIUtils.tiTestStreamsIdentical;
 var
