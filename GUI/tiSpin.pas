@@ -191,9 +191,12 @@ type
 
 implementation
 
-uses Themes;
+{$r spin}
 
-{$R SPIN}
+uses
+   tiResources
+  ,Themes
+  ;
 
 { TSpinButton }
 
@@ -362,7 +365,7 @@ begin
     FUpButton.Glyph := Value
   else
   begin
-    FUpButton.Glyph.Handle := LoadBitmap(HInstance, 'SpinUp');
+    FUpButton.Glyph.LoadFromResourceName(HInstance, 'SpinUp');
     FUpButton.NumGlyphs := 1;
     FUpButton.Invalidate;
   end;
@@ -389,7 +392,7 @@ begin
     FDownButton.Glyph := Value
   else
   begin
-    FDownButton.Glyph.Handle := LoadBitmap(HInstance, 'SpinDown');
+    FDownButton.Glyph.LoadFromResourceName(HInstance, 'SpinDown');
     FUpButton.NumGlyphs := 1;
     FDownButton.Invalidate;
   end;
