@@ -45,7 +45,7 @@
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -146,7 +146,7 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -188,7 +188,7 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -249,6 +249,27 @@ String
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               </Object>
+            <Object Class="TDeleteFilesAction" XMLID="{891F59E8-7E6B-4A50-9FA1-F92A617F4C18}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delete File(s) [ %path_to_working_dunit_inifile% ]]]>
+                </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="DeleteHidden" type="WordBool">False</Property>
+              <Property name="DeleteReadOnly" type="WordBool">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="FailIfNoFile" type="WordBool">False</Property>
+              <Property MultiValue="0" name="FileSpec" type="string">%path_to_working_dunit_inifile%</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IsAction" type="Boolean">True</Property>
+              <Property name="IsBreakPoint" type="WordBool">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              </Object>
             </Object>
           <Object Class="TGroupAction" XMLID="{5AB69CBE-3CC3-4F59-852E-742BE5496FF7}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
             <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Prepare working copy of files]]>
@@ -264,7 +285,7 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -622,7 +643,7 @@ p_delphi_version=2007
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -648,6 +669,12 @@ p_delphi_version=2007
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Object Class="TBuildScript" XMLID="{C010588D-8BE9-495B-8DEE-B7E9E180803E}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
+                <Property MultiValue="0" name="Name" type="string">Condition</Property>
+                <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_build_with_d7 = "1"]]>
+                  </Property>
+                <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
+                </Object>
               </Object>
             <Object Class="TRunActionListAction" XMLID="{9B4C0FEB-7699-4911-BB09-C37983F8A613}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Compile tiOPF Demos with Delphi 2006]]>
@@ -671,6 +698,12 @@ p_delphi_version=2007
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Object Class="TBuildScript" XMLID="{23BCE1A9-690D-4FC2-8FDE-E77967B2559B}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
+                <Property MultiValue="0" name="Name" type="string">Condition</Property>
+                <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_build_with_d2006 = "1"]]>
+                  </Property>
+                <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
+                </Object>
               </Object>
             <Object Class="TRunActionListAction" XMLID="{C564BAC4-17BD-4C67-8DD6-F1B4317BA358}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Compile tiOPF Demos with Delphi 2007]]>
@@ -694,6 +727,12 @@ p_delphi_version=2007
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Object Class="TBuildScript" XMLID="{3DEBCE34-4F3D-47E5-B723-ED80C42DE538}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
+                <Property MultiValue="0" name="Name" type="string">Condition</Property>
+                <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_build_with_d2007 = "1"]]>
+                  </Property>
+                <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
+                </Object>
               </Object>
             <Object Class="TBuildScript" XMLID="{841EA18D-36B1-4402-97F2-00AD4DBED917}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
               <Property MultiValue="0" name="Name" type="string">Condition</Property>
@@ -1205,9 +1244,9 @@ p_file_path=%path_to_working_compilers%\Delphi2007
                 <Property MultiValue="0" name="NewFileName" type="string"></Property>
                 <Property name="NodeCollapsed" type="Boolean">False</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ReplaceText" type="string">%report_fb_error_count%</Property>
+                <Property MultiValue="0" name="ReplaceText" type="string">%report_fb_error_message%</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property MultiValue="0" name="SearchText" type="string">%%FB_ERROR_COUNT%%</Property>
+                <Property MultiValue="0" name="SearchText" type="string">%%report_fb_error_message%%</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                 <Property name="WholeWordsOnly" type="Boolean">False</Property>
                 </Object>
@@ -1619,6 +1658,180 @@ String
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+            <Object Class="TGroupAction" XMLID="{53B03086-34C5-49A6-996C-4E98A9BF55DA}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Format fb error string]]>
+                </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property MultiValue="1" name="Description" type="string"><![CDATA[Format fb error string]]>
+                </Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IsAction" type="Boolean">True</Property>
+              <Property name="IsBreakPoint" type="WordBool">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Object Class="TFBIfThenAction" XMLID="{49657820-B891-4400-9D2B-C64C37806CC0}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[If [%fbignorederrors%] = [0]]]>
+                  </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="IsAction" type="Boolean">True</Property>
+                <Property name="IsBreakPoint" type="WordBool">False</Property>
+                <Property MultiValue="1" name="LHSStorageString" type="string"><![CDATA[%fbignorederrors%
+]]>
+                  </Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property MultiValue="1" name="OperatorsStorageString" type="string"><![CDATA[=
+]]>
+                  </Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property MultiValue="1" name="RHSStorageString" type="string"><![CDATA[0
+]]>
+                  </Property>
+                <Property name="ShortCircuitEvaluation" type="Boolean">True</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="TermJoiner" type="TFBIfTermJoiner">jwOr</Property>
+                <Object Class="TSetVariableAction" XMLID="{E97CDCC3-C503-4CC0-A051-07E83A428577}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                  <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Set Variable report_fb_error_message to [  ]]]>
+                    </Property>
+                  <Property name="ActionTextColor" type="Cardinal">0</Property>
+                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                  <Property name="ApplyToExisting" type="Boolean">False</Property>
+                  <Property name="DoExpandExpression" type="Boolean">True</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
+                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                  <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
+                  <Property name="IgnoreFailure" type="WordBool">False</Property>
+                  <Property name="IsAction" type="Boolean">True</Property>
+                  <Property name="IsBreakPoint" type="WordBool">False</Property>
+                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                  <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
+                  <Property MultiValue="0" name="NewValue" type="WideString"></Property>
+                  <Property name="NodeCollapsed" type="Boolean">False</Property>
+                  <Property name="PauseInterval" type="Cardinal">0</Property>
+                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                  <Property MultiValue="0" name="VariableName" type="WideString">report_fb_error_message</Property>
+                  </Object>
+                </Object>
+              <Object Class="TFBIfThenAction" XMLID="{98853DD3-9585-44C5-8D24-5FEC38AE0DE2}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[If [%fbignorederrors%] = [1]]]>
+                  </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="IsAction" type="Boolean">True</Property>
+                <Property name="IsBreakPoint" type="WordBool">False</Property>
+                <Property MultiValue="1" name="LHSStorageString" type="string"><![CDATA[%fbignorederrors%
+]]>
+                  </Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property MultiValue="1" name="OperatorsStorageString" type="string"><![CDATA[=
+]]>
+                  </Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property MultiValue="1" name="RHSStorageString" type="string"><![CDATA[1
+]]>
+                  </Property>
+                <Property name="ShortCircuitEvaluation" type="Boolean">True</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="TermJoiner" type="TFBIfTermJoiner">jwOr</Property>
+                <Object Class="TSetVariableAction" XMLID="{0EC87B3D-EAD0-4DAA-A63B-6B45FD474D6B}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                  <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Set Variable report_fb_error_message to [ 1 Build error,  ]]]>
+                    </Property>
+                  <Property name="ActionTextColor" type="Cardinal">0</Property>
+                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                  <Property name="ApplyToExisting" type="Boolean">False</Property>
+                  <Property name="DoExpandExpression" type="Boolean">True</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
+                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                  <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
+                  <Property name="IgnoreFailure" type="WordBool">False</Property>
+                  <Property name="IsAction" type="Boolean">True</Property>
+                  <Property name="IsBreakPoint" type="WordBool">False</Property>
+                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                  <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
+                  <Property MultiValue="1" name="NewValue" type="WideString"><![CDATA[1 Build error, ]]>
+                    </Property>
+                  <Property name="NodeCollapsed" type="Boolean">False</Property>
+                  <Property name="PauseInterval" type="Cardinal">0</Property>
+                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                  <Property MultiValue="0" name="VariableName" type="WideString">report_fb_error_message</Property>
+                  </Object>
+                </Object>
+              <Object Class="TFBIfThenAction" XMLID="{DB86D6C0-AD13-48DE-A57F-A25C3618E54D}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[If [%fbignorederrors%] &gt; [1]]]>
+                  </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="IsAction" type="Boolean">True</Property>
+                <Property name="IsBreakPoint" type="WordBool">False</Property>
+                <Property MultiValue="1" name="LHSStorageString" type="string"><![CDATA[%fbignorederrors%
+]]>
+                  </Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property MultiValue="1" name="OperatorsStorageString" type="string"><![CDATA[&gt;
+]]>
+                  </Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property MultiValue="1" name="RHSStorageString" type="string"><![CDATA[1
+]]>
+                  </Property>
+                <Property name="ShortCircuitEvaluation" type="Boolean">True</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="TermJoiner" type="TFBIfTermJoiner">jwOr</Property>
+                <Object Class="TSetVariableAction" XMLID="{D4997EB7-3D2A-4052-AC76-E1618A624A05}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                  <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Set Variable report_fb_error_message to [ %fbignorederrors% Build errors,  ]]]>
+                    </Property>
+                  <Property name="ActionTextColor" type="Cardinal">0</Property>
+                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                  <Property name="ApplyToExisting" type="Boolean">False</Property>
+                  <Property name="DoExpandExpression" type="Boolean">True</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
+                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                  <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
+                  <Property name="IgnoreFailure" type="WordBool">False</Property>
+                  <Property name="IsAction" type="Boolean">True</Property>
+                  <Property name="IsBreakPoint" type="WordBool">False</Property>
+                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                  <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
+                  <Property MultiValue="1" name="NewValue" type="WideString"><![CDATA[%fbignorederrors% Build errors, ]]>
+                    </Property>
+                  <Property name="NodeCollapsed" type="Boolean">False</Property>
+                  <Property name="PauseInterval" type="Cardinal">0</Property>
+                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                  <Property MultiValue="0" name="VariableName" type="WideString">report_fb_error_message</Property>
+                  </Object>
+                </Object>
+              </Object>
             <Object Class="TEmailAction" XMLID="{15641293-F8B0-42B5-A51D-C651065C4FB0}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Send Email]]>
                 </Property>
@@ -3474,7 +3687,7 @@ Comments=
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
               <Property name="MaxThreads" type="Integer">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -3519,7 +3732,7 @@ Comments=
                 <Property name="IsBreakPoint" type="WordBool">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="NodeCollapsed" type="Boolean">True</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -6382,14 +6595,6 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">build_date</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{D13F7B75-FED2-4FAC-90A5-E7E8B28AA48A}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">unknown</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">report_fb_error_count</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-        </Object>
       <Object Class="TFBVariable" XMLID="{F00414BE-4AA1-4FB0-B560-4C53DD45F396}"><Property MultiValue="0" name="Comment" type="string"></Property>
         <Property MultiValue="0" name="DefaultValue" type="string">\\techinsite-opf\techinsite-opf-website\%prompt_build_type%</Property>
         <Property name="IsMacro" type="Boolean">True</Property>
@@ -6617,7 +6822,7 @@ Comments=
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{455D163B-648D-46A5-ADF0-B10E5A791C47}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA[Win32 Build #%version_build%: D7: %report_short_d7%, D2006: %report_short_d2006%, D2007: %report_short_d2007%]]>
+        <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA[Win32 Build #%version_build%: %report_fb_error_message%D7: %report_short_d7%, D2006: %report_short_d2006%, D2007: %report_short_d2007%]]>
           </Property>
         <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
@@ -6779,6 +6984,7 @@ SVN revision:
   %version_build%
 
 Summary:
+  Build errors - %fbignorederrors%
   Delphi 7 - %report_long_d7%
   Delphi 2006 - %report_long_d2006%
   Delphi 2007 - %report_long_d2007%
@@ -6924,6 +7130,14 @@ Delphi 2007
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_unit_tests_d2007</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{AB8C9BAB-5273-4848-A783-F5BAB99A9CDA}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string"></Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">report_fb_error_message</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       </Object>
