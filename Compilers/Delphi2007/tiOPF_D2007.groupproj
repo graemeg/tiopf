@@ -3,7 +3,14 @@
     <ProjectGuid>{1c9e5d12-f63f-420e-b3e5-ebe605a064ca}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup />
-  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="..\..\UnitTests\GUI\DUnitTIOPFGui.dproj" />
+    <Projects Include="..\..\UnitTests\Text\DUnitTIOPFText.dproj" />
+    <Projects Include="tiOPFCore.dproj" />
+    <Projects Include="tiOPFGUI.dproj" />
+    <Projects Include="tiOPFGUIDsgn.dproj" />
+    <Projects Include="tiOPFOptions.dproj" />
+  </ItemGroup>
   <ProjectExtensions>
     <Borland.Personality>Default.Personality</Borland.Personality>
     <Borland.ProjectType />
@@ -73,4 +80,5 @@
   <Target Name="Make">
     <CallTarget Targets="tiOPFCore:Make;tiOPFOptions:Make;tiOPFGUI:Make;tiOPFGUIDsgn:Make;DUnitTIOPFGui:Make;DUnitTIOPFText:Make" />
   </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>

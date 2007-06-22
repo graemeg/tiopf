@@ -2450,7 +2450,7 @@ begin
   lD := EncodeDate(2005, 06, 04);
   Check(not tiUtils.tiDateWithinRange(lD, lDFrom, lDTo), '#4');
 
-  // Below lower limit
+  // Below lower limit   7
   lD := EncodeDate(2005, 06, 01) - 1;
   Check(not tiUtils.tiDateWithinRange(lD, lDFrom, lDTo), '#5');
 
@@ -2487,7 +2487,15 @@ end;
 
 procedure TTestTIUtils.tiRoundDateToPreviousMinute;
 begin
-
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToPreviousMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 30, 000)));
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToPreviousMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 00, 000)));
+  CheckEquals(EncodeDateTime(2007, 06, 02, 12, 30, 00, 000),
+             tiUtils.tiRoundDateToPreviousMinute(
+               EncodeDateTime(2007, 06, 02, 12, 30, 00, 001)));
 end;
 
 procedure TTestTIUtils.tiRemoveDirectory;

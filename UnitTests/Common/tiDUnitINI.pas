@@ -41,6 +41,9 @@ type
     property UserName: string read GetUserName write SetUserName;
     property ComputerName: string read GetComputerName write SetComputerName;
 
+    class    function  IsDataMissing: boolean;
+    class    function  FileName: string;
+    class    procedure CreateDefaultFile;
 
   end;
 
@@ -62,6 +65,7 @@ const
   CWindowsSysDir = 'WindowsSysDir';
   CUserName = 'UserName';
   CComputerName = 'ComputerName';
+  CDefaultStringValue = ''; // Must be empty string because it's checked in other locations. Tidy up.
 
 var
   UDUnitINICommon : TINIFile;
@@ -100,20 +104,39 @@ end;
 { TDUntiLocalSettings }
 
 constructor TDUntiLocalSettings.Create;
-var
-  LFileName : string;
 begin
   inherited Create;
-  LFileName := tiGetAppConfigDir;
-  LFileName:= Copy(LFileName, 1, tiPosR(PathDelim, LFileName)-1);
-  LFileName:= LFileName + PathDelim + 'DUnitTIOPF\DUnitTIOPF.ini';
-  FINIFile := _CreateINIFile(tiFixPathDelim(LFileName));
+  FINIFile := _CreateINIFile(FileName);
+end;
+
+class procedure TDUntiLocalSettings.CreateDefaultFile;
+var
+  LO: TDUntiLocalSettings;
+begin
+  LO:= Create;
+  try
+    LO.AppConfigDir_nonGlobal;
+    LO.AppConfigDir_Global;
+    LO.TempDir;
+    LO.WindowsSysDir;
+    LO.UserName;
+    LO.ComputerName;
+  finally
+    LO.Free;
+  end;
 end;
 
 destructor TDUntiLocalSettings.Destroy;
 begin
   FINIFile.Free;
   inherited;
+end;
+
+class function TDUntiLocalSettings.FileName: string;
+begin
+  Result := tiGetAppConfigDir;
+  Result:= Copy(Result, 1, tiPosR(PathDelim, Result)-1);
+  Result:= Result + PathDelim + 'DUnitTIOPF\DUnitTIOPF.ini';
 end;
 
 function TDUntiLocalSettings.GetAppConfigDir_Global: string;
@@ -129,6 +152,24 @@ end;
 function TDUntiLocalSettings.GetComputerName: string;
 begin
   Result:= ReadString(CINIMachineSettings, CComputerName);
+end;
+
+class function TDUntiLocalSettings.IsDataMissing: boolean;
+var
+  LO: TDUntiLocalSettings;
+begin
+  LO:= Create;
+  try
+    result:=
+      (LO.AppConfigDir_nonGlobal = CDefaultStringValue) or
+      (LO.AppConfigDir_Global = CDefaultStringValue) or
+      (LO.TempDir = CDefaultStringValue) or
+      (LO.WindowsSysDir = CDefaultStringValue) or
+      (LO.UserName = CDefaultStringValue) or
+      (LO.ComputerName = CDefaultStringValue);
+  finally
+    LO.Free;
+  end;
 end;
 
 function TDUntiLocalSettings.GetTempDir: string;
@@ -149,9 +190,9 @@ end;
 function TDUntiLocalSettings.ReadString(
   const ASection: string; AIdent: string): string;
 begin
-  Result:= FINIFile.ReadString(ASection, AIdent, '');
+  Result:= FINIFile.ReadString(ASection, AIdent, CDefaultStringValue);
   if Result = '' then
-    FINIFile.WriteString(ASection, AIdent, '');
+    FINIFile.WriteString(ASection, AIdent, CDefaultStringValue);
 end;
 
 procedure TDUntiLocalSettings.SetAppConfigDir_Global(const AValue: string);

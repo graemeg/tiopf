@@ -16,10 +16,13 @@ type
     cbTestNonPersistentClasses: TCheckBox;
     Bevel1: TBevel;
     pnlButtons: TPanel;
-    bbOK: TButton;
-    bbCancel: TButton;
+    btnEditLocalSettings: TButton;
+    btnOK: TButton;
+    btnCancel: TButton;
+    lblMessage: TLabel;
     procedure btnPnlBtn1Click(Sender: TObject);
     procedure btnPnlBtn2Click(Sender: TObject);
+    procedure btnEditLocalSettingsClick(Sender: TObject);
     procedure TmrTimer(Sender: TObject);
     procedure cbTestNonPersistentClassesClick(Sender: TObject);
     procedure DoCheckBoxClick(Sender: TObject);
@@ -36,9 +39,10 @@ type
 implementation
 uses
    tiOPFTestManager
-//  ,tiUtils
   ,tiDUnitDependencies
   ,tiOPFManager
+  ,tiDUnitINI
+  ,tiUtils
  ;
 
 
@@ -65,6 +69,7 @@ var
   lPerFrameworkSetup: TtiOPFTestSetupData;
 begin
   Tmr.Enabled := False;
+  TDUntiLocalSettings.CreateDefaultFile;
   gTIOPFTestManager.TestNonPersistentClasses := cbTestNonPersistentClasses.Checked;
   for i := gTIOPFTestManager.Count - 1 downto 0 do
   begin
@@ -77,6 +82,12 @@ begin
   gTIOPFTestManager.UnloadPersistenceLayersNotSelected;
 end;
 
+
+procedure TtiPromptWhichPersistenceLayersToTest.btnEditLocalSettingsClick(Sender: TObject);
+begin
+  Save;
+  tiEditFile(TDUntiLocalSettings.FileName);
+end;
 
 procedure TtiPromptWhichPersistenceLayersToTest.btnPnlBtn1Click(Sender: TObject);
 begin
@@ -114,12 +125,11 @@ procedure TtiPromptWhichPersistenceLayersToTest.BuildForm;
 begin
   Name       := 'WhichPersistenceLayersForm';
   Caption    := 'Which persistence layers?';
-//  Left       := 455;
-//  Top        := 261;
   Height     := 400;
   Width      := 400;
   BorderIcons := [biSystemMenu];
   Position   := poScreenCenter;
+  BorderStyle:= bsDialog;
 
   cbTestNonPersistentClasses := TCheckBox.Create(self);
   with cbTestNonPersistentClasses do
@@ -167,37 +177,25 @@ begin
   begin
     Parent   := Self;
     Left     := 0;
-    Top      := 222;
-    Width    := 321;
-    Height   := 45;
+    Top      := 210;
+    Width    := 330;
+    Height   := 60;
     Align    := alBottom;
-    {$IFNDEF FPC}
-    BevelOuter := bvNone;
-    {$ENDIF}
     TabOrder := 2;
   end;
 
-  bbOK := TButton.Create(self);
-  with bbOK do
-  begin
-    Parent   := pnlButtons;
-    Left     := 118;
-    Top      := 6;
-    Width    := 92;
-    Height   := 31;
-    Caption  := 'OK';
-    default  := True;
-    TabOrder := 0;
-    OnClick  := btnPnlBtn1Click;
-    Anchors  := [akRight, akBottom];
-  end;
+  lblMessage:= TLabel.Create(Self);
+  lblMessage.Parent:= pnlButtons;
+  lblMessage.Caption:= 'Some local constants are missing. Click <Edit local consts> to edit.';
+  lblMessage.Left     := 16;
+  lblMessage.Top      := 4;
 
-  bbCancel := TButton.Create(self);
-  with bbCancel do
+  btnCancel := TButton.Create(self);
+  with btnCancel do
   begin
     Parent   := pnlButtons;
     Left     := 222;
-    Top      := 6;
+    Top      := 24;
     Width    := 92;
     Height   := 31;
     Cancel   := True;
@@ -207,14 +205,42 @@ begin
     Anchors  := [akRight, akBottom];
   end;
 
+  btnOK := TButton.Create(self);
+  with btnOK do
+  begin
+    Parent   := pnlButtons;
+    Left     := 118;
+    Top      := 24;
+    Width    := 92;
+    Height   := 31;
+    Caption  := 'OK';
+    default  := True;
+    TabOrder := 0;
+    OnClick  := btnPnlBtn1Click;
+    Anchors  := [akRight, akBottom];
+  end;
+
+  btnEditLocalSettings := TButton.Create(self);
+  with btnEditLocalSettings do
+  begin
+    Parent   := pnlButtons;
+    Left     := 14;
+    Top      := 24;
+    Width    := 92;
+    Height   := 31;
+    Caption  := 'Edit local consts';
+    default  := True;
+    TabOrder := 0;
+    OnClick  := btnEditLocalSettingsClick;
+    Anchors  := [akRight, akBottom];
+  end;
+
   Tmr := TTimer.Create(self);
   with Tmr do
   begin
     Enabled  := False;
     Interval := 3000;
     OnTimer  := TmrTimer;
-    Left     := 16;
-    Top      := 32;
   end;
 end;
 
@@ -253,7 +279,6 @@ begin
   end
   else
   begin
-//  Width := 269;
   ClientHeight := pnlCheckBoxes.Height + pnlButtons.Height +
                   pnlCheckBoxes.Top + cBorder;
   end;
