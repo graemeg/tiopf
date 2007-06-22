@@ -11,10 +11,10 @@ program Demo_LoadPersistenceLayerIfDef;
 // Take a look at tiOPFManager about line 215 you will see how
 // this the defines are implemented.
 
-uses
-  DemoDBUtils;
-
 {$R *.res}
+
+uses
+  DemoDBUtils in '..\Common\DemoDBUtils.pas';
 
 begin
   ShowConnectedDatabases;

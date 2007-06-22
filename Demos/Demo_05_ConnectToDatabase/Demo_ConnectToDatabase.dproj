@@ -33,10 +33,6 @@
     <DCC_DcuOutput>..\_dcu</DCC_DcuOutput>
     <DCC_ObjOutput>..\_dcu</DCC_ObjOutput>
     <DCC_HppOutput>..\_dcu</DCC_HppOutput>
-    <DCC_UnitSearchPath>..\Common</DCC_UnitSearchPath>
-    <DCC_ResourcePath>..\Common</DCC_ResourcePath>
-    <DCC_ObjPath>..\Common</DCC_ObjPath>
-    <DCC_IncludePath>..\Common</DCC_IncludePath>
     <DCC_Define>DEBUG</DCC_Define>
     <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
     <DCC_UNIT_LIBRARY>False</DCC_UNIT_LIBRARY>
@@ -53,6 +49,7 @@
     <DelphiCompile Include="Demo_ConnectToDatabase.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\Common\DemoDBUtils.pas" />
     <DCCReference Include="..\Common\FPickDatabase.pas">
       <Form>FormPickDatabase</Form>
     </DCCReference>

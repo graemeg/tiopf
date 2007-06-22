@@ -6,7 +6,7 @@ program Demo_LoadPersistenceLayerUses;
 // the loaded persistence layers. (Note, the dialog will
 // say the database is not connected - wich is correct.)
 uses
-  DemoDBUtils,
+  DemoDBUtils in '..\Common\DemoDBUtils.pas',
   tiQueryIBX,
   tiQueryXML,
   tiQueryXMLLight,

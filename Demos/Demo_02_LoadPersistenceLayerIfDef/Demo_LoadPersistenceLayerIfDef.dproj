@@ -29,10 +29,6 @@
     <DCC_DcuOutput>..\_dcu</DCC_DcuOutput>
     <DCC_ObjOutput>..\_dcu</DCC_ObjOutput>
     <DCC_HppOutput>..\_dcu</DCC_HppOutput>
-    <DCC_UnitSearchPath>..\Common</DCC_UnitSearchPath>
-    <DCC_ResourcePath>..\Common</DCC_ResourcePath>
-    <DCC_ObjPath>..\Common</DCC_ObjPath>
-    <DCC_IncludePath>..\Common</DCC_IncludePath>
     <DCC_Define>LINK_XML;LINK_XMLLIGHT;LINK_IBX;LINK_ADOACCESS;LINK_CSV;DEBUG</DCC_Define>
   </PropertyGroup>
   <ProjectExtensions>
@@ -46,5 +42,6 @@
     <DelphiCompile Include="Demo_LoadPersistenceLayerIfDef.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\Common\DemoDBUtils.pas" />
   </ItemGroup>
 </Project>
