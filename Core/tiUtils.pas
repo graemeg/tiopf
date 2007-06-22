@@ -952,24 +952,27 @@ end;
 {$ENDIF MSWINDOWS}
 
 
+{$IFDEF MSWINDOWS}
 function tiEditFile(const AFileName : string): integer;
 begin
-  // screen.activeForm.handle,
-  {$IFDEF MSWINDOWS}
-  result := ShellExecute(Application.MainForm.Handle,
-                          nil,
-                          PChar(AFileName),
-                          nil,
-                          nil,
-                          SW_SHOWNORMAL);
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
+  result := ShellExecute(Application.ActiveFormHandle,
+                         nil,
+                         PChar(AFileName),
+                         nil,
+                         nil,
+                         SW_SHOWNORMAL);
+end;
+{$ENDIF MSWINDOWS}
+
+{$IFDEF LINUX}
+function tiEditFile(const AFileName : string): integer;
+begin
   { TODO: There is no standard editor included with all
     flavours of linux. Might implement tiEditFile as a form with
     a memo control and basic edit functions. ie: Something like NotePad for Windows }
   Result := 0;    // To get rid of the compiler warning, until I implement this.
-  {$ENDIF LINUX}
 end;
+{$ENDIF LINUX}
 
 
 function tiExtractFileNameOnly(AValue : string): string;
