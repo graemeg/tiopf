@@ -5,16 +5,19 @@
 <xsl:template match="/">
 
 <xsl:text>From: Linux Daily Build &#60;dailybuild&#64;spamfilter.co.za&#62;&#10;</xsl:text>
-<xsl:text>Subject: Linux Build Status - </xsl:text>
+<xsl:text>Subject: Linux Build Status (r####) - </xsl:text>
   <xsl:value-of select="/TestResults/DateTimeRan"/><xsl:text>&#10;</xsl:text>
 <xsl:text>Newsgroups: tiopf.dailybuilds&#10;</xsl:text>
 <xsl:text>Content-Type: text/plain; charset=ISO-8859-1&#10;</xsl:text>
 <xsl:text>Content-Transfer-Encoding: 8bit&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
-<xsl:text>               tiOPF2 - fpcUnit Results&#10;</xsl:text>
+<xsl:text>               tiOPF2 - FPCUnit Results&#10;</xsl:text>
 <xsl:text>               ------------------------&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
 
+SVN revision:
+   r####
+   
   <xsl:call-template name="build_time"/>
   <xsl:call-template name="elapsed_time"/>
   <xsl:call-template name="summary"/>
@@ -43,7 +46,7 @@
 
 <xsl:template name="summary">
 <xsl:text>Summary:&#10;</xsl:text>
-<xsl:text>   </xsl:text>FPC 2.1.1 - Tests run: <xsl:value-of select="/TestResults/NumberOfRunnedTests"/>, Failures: <xsl:value-of select="/TestResults/NumberOfFailures"/>, Errors: <xsl:value-of select="/TestResults/NumberOfErrors"/>
+<xsl:text>   </xsl:text>FPC 2.1.3 - Tests run: <xsl:value-of select="/TestResults/NumberOfRunTests"/>, Failures: <xsl:value-of select="/TestResults/NumberOfFailures"/>, Errors: <xsl:value-of select="/TestResults/NumberOfErrors"/>
 <xsl:text>&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
 <xsl:text>   Note:

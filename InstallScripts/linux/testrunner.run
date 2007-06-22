@@ -1,0 +1,15 @@
+/home/graemeg/bin/ppc386 -S2cgi -O1 -gl -vewnhi -l \
+  -Fu/home/graemeg/programming/lazarus/components/fpcunit/console/lib/i386-linux/ \
+  -Fu/home/graemeg/programming/lazarus/lcl/units/i386-linux/ \
+  -Fu/home/graemeg/programming/lazarus/lcl/units/i386-linux/gtk/ \
+  -Fu/home/graemeg/programming/lazarus/packager/units/i386-linux/ \
+  -Fu/home/graemeg/programming/fblib/lib/i386-linux/ \
+  -Fu/home/graemeg/programming/tiOPF2/Source/Compilers/FPC/lib/i386-linux/ \
+  -Fi/home/graemeg/programming/tiOPF2/Source/Core/ \
+  -Fu/home/graemeg/programming/tiOPF2/Source/UnitTests/Common/ \
+  -Fu/home/graemeg/programming/tiOPF2/Source/UnitTests/Tests/ \
+  -Fu. \
+  -o/home/graemeg/programming/tiOPF2/Source/UnitTests/Text/testrunner \
+  -FU_Dcu -dFBLib -dUseCThreads -dLCL -dLCLgtk \
+  -dLINK_FBL -dLINK_TAB -dLINK_CSV -dLINK_XMLLIGHT \
+  testrunner.pp
