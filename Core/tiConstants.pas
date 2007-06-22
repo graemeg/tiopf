@@ -65,6 +65,11 @@ const
   cCompilerName = 'Delphi 2006';
 {$ENDIF}
 
+{$IFDEF DELPHI11}
+  cPackageSuffix = '110';
+  cCompilerName = 'Delphi 2007';
+{$ENDIF}
+
 {$IFDEF FPC}
   cPackageSuffix = '';
   cCompilerName = 'FreePascal';

@@ -9,9 +9,11 @@ uses
  ;
 
 const
-  cCommandLineParamLogTo     = 'logto';   // -logto <Directory to write logs to>
-  cCommandLineSummaryINIFile = 'ini';     // -ini <File name to write summary info to>
-  cCommandLineParamsNoTests  = 'notests'; // -notests If this param is included, don't run any tests, just write the logs
+  CCommandLineParamLogTo     = 'logto';   // -logto <Directory to write logs to>
+  CCommandLineSummaryINIFile = 'ini';     // -ini <File name to write summary info to>
+  CCommandLineParamsNoTests  = 'notests'; // -notests If this param is included, don't run any tests, just write the logs
+  CFileNameShort             = 'DUnitReportShort%s.txt';
+  CFileNameLong              = 'DUnitReportLong%s.htm';
 
 type
   TtiTextListenerWriteItems = (tlwtFile, tlwtConsole);
@@ -167,7 +169,7 @@ begin
   if FDelphiVersion = '' then
     FDelphiVersion := '50';
 
-  LReportDir := gCommandLineParams.GetParam(cCommandLineParamLogTo);
+  LReportDir := gCommandLineParams.GetParam(CCommandLineParamLogTo);
   if LReportDir = '' then
     LReportDir := ParamStr(0);
   LReportDir:= ExpandFileName(LReportDir);
@@ -175,11 +177,11 @@ begin
   if Pos('.', LReportDir) <> 0 then
     LReportDir := ExtractFilePath(LReportDir);
   LReportDir := tiAddTrailingSlash(LReportDir);
-  FFileNameShort := LReportDir + 'DUnitReportShort' + FDelphiVersion + '.htm';
-  FFileNameLong := LReportDir + 'DUnitReportLong' + FDelphiVersion + '.htm';
-  if gCommandLineParams.IsParam(cCommandLineSummaryINIFile) then
+  FFileNameShort := LReportDir + Format(CFileNameShort, [FDelphiVersion]);
+  FFileNameLong := LReportDir + Format(CFileNameLong, [FDelphiVersion]);
+  if gCommandLineParams.IsParam(CCommandLineSummaryINIFile) then
   begin
-    FFileNameINI := gCommandLineParams.GetParam(cCommandLineSummaryINIFile);
+    FFileNameINI := gCommandLineParams.GetParam(CCommandLineSummaryINIFile);
     if ExtractFilePath(FFileNameINI) = '' then
       FFileNameINI := tiAddTrailingSlash(tiGetEXEPath) + FFileNameINI;
   end else
@@ -293,11 +295,9 @@ procedure TtiTextTestListener.TestingStarts;
   var
     i: Integer;
   begin
-    writeln2Short('', [tlwtConsole]);
-    writeln2Short('<html>', [tlwtFile]);
-    writeln2Short('<pre>', [tlwtFile]);
-    write2Short('DUnit testing of tiOPF ', [tlwtFile, tlwtConsole]);
-    writeln2Short('(Delphi version ' + pDelphiVersion + ')', [tlwtFile, tlwtConsole]);
+    writeln2Short('DUnit testing of tiOPF ', [tlwtFile, tlwtConsole]);
+    writeln2Short('Compiler name "' + cCompilerName + '"', [tlwtFile, tlwtConsole]);
+    writeln2Short('Compiler version "' + FDelphiVersion + '"', [tlwtFile, tlwtConsole]);
     writeln2Short('Testing started at ' + DateTimeToStr(Now), [tlwtFile, tlwtConsole]);
     writeln2Short('(E = Exception, F = Test failure)', [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
@@ -362,8 +362,8 @@ begin
   DecodeTime(runTime, h,  m, s, l);
   writeln2Short(Format('Time to run tests: %d:%2.2d:%2.2d.%d', [h, m, s, l]), [tlwtFile, tlwtConsole]);
   writeln2Short(Report(testResult), [tlwtFile, tlwtConsole]);
-  writeln2Short('</pre>', [tlwtFile]);
-  writeln2Short('</html>', [tlwtFile]);
+//  writeln2Short('</pre>', [tlwtFile]);
+//  writeln2Short('</html>', [tlwtFile]);
   WriteSummaryToINIFile(testResult);
 
 
