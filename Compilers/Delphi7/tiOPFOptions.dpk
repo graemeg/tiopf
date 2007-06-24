@@ -31,7 +31,6 @@ requires
   rtl,
   vclx,
   dbrtl,
-  indy,
   bdertl,
   adortl,
   ibxpress,
