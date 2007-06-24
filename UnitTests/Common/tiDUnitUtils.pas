@@ -58,37 +58,37 @@ type
   public
     destructor Destroy; override;
     function  PerformanceCounter: TtiPerformanceCounter;
-    procedure CheckObjectState(AObjectState : TPerObjectState; AData : TtiObject; const AMessage: string = '');
-    procedure CheckNearEnough(pExpected, pActual: Double); overload;
-    procedure CheckNearEnough(pExpected, pActual: Double; const AMessage: string); overload;
-    procedure CheckNearEnough(pExpected, pActual: Double; const AMessage: string; pArgs: array of const); overload;
-    procedure CheckNearEnough(pExpected, pActual: Double; pFEPS: Double); overload;
-    procedure CheckNearEnough(pExpected, pActual: Double; pFEPS: Double; const AString: string); overload;
-    procedure CheckNearEnough(AExpected: TDateTime; AField: TtiFieldDateTime); overload;
-    procedure CheckNearEnough(AExpected: Real; AField: TtiFieldFloat); overload;
-    procedure CheckNearEnough(AExpected, AActual: TtiFieldFloat); overload;
-    procedure TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldString); overload;
-    procedure TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldInteger); overload;
-    procedure TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldFloat); overload;
-    procedure TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldDateTime); overload;
-    procedure TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldBoolean); overload;
-    procedure TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldString); overload;
-    procedure TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldInteger); overload;
-    procedure TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldFloat); overload;
-    procedure TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldDateTime); overload;
-    procedure TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldBoolean); overload;
-    procedure CheckEquals(AExpected, AActual: TtiFieldString); overload;
-    procedure CheckEquals(AExpected, AActual: TtiFieldInteger); overload;
-    procedure CheckEquals(AExpected, AActual: TtiFieldFloat); overload;
-    procedure CheckEquals(AExpected, AActual: TtiFieldBoolean); overload;
-    procedure CheckEquals(AExpected, AActual: TtiFieldDateTime); overload;
-    procedure CheckEquals(AValue: string;    AField: TtiFieldString); overload;
-    procedure CheckEquals(AValue: Integer;   AField: TtiFieldInteger); overload;
-    procedure CheckEquals(AValue: Real;      AField: TtiFieldFloat); overload;
-    procedure CheckEquals(AValue: Boolean;   AField: TtiFieldBoolean); overload;
-    procedure CheckEquals(AValue: TDateTime; AField: TtiFieldDateTime); overload;
-    procedure CheckEquals(AValue: TStream;   AField: TStream); overload;
-    procedure CheckEquals(AValue: String;   AField: TtiFieldInteger); overload;
+    procedure CheckObjectState(const AObjectState : TPerObjectState; const AData : TtiObject; const AMessage: string = '');
+    procedure CheckNearEnough(const AExpected, AActual: Double); overload;
+    procedure CheckNearEnough(const AExpected, AActual: Double; const AMessage: string); overload;
+    procedure CheckNearEnough(const AExpected, AActual: Double; const AMessage: string; pArgs: array of const); overload;
+    procedure CheckNearEnough(const AExpected, AActual, AFEPS: Double); overload;
+    procedure CheckNearEnough(const AExpected, AActual, AFEPS: Double; const AString: string); overload;
+    procedure CheckNearEnough(const AExpected: TDateTime; const AField: TtiFieldDateTime); overload;
+    procedure CheckNearEnough(const AExpected: Real; const AField: TtiFieldFloat); overload;
+    procedure CheckNearEnough(const AExpected, AActual: TtiFieldFloat); overload;
+    procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldString); overload;
+    procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldInteger); overload;
+    procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldFloat); overload;
+    procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldDateTime); overload;
+    procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldBoolean); overload;
+    procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldString); overload;
+    procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldInteger); overload;
+    procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldFloat); overload;
+    procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldDateTime); overload;
+    procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldBoolean); overload;
+    procedure CheckEquals(const AExpected, AActual: TtiFieldString); overload;
+    procedure CheckEquals(const AExpected, AActual: TtiFieldInteger); overload;
+    procedure CheckEquals(const AExpected, AActual: TtiFieldFloat); overload;
+    procedure CheckEquals(const AExpected, AActual: TtiFieldBoolean); overload;
+    procedure CheckEquals(const AExpected, AActual: TtiFieldDateTime); overload;
+    procedure CheckEquals(const AValue: string;    const AField: TtiFieldString); overload;
+    procedure CheckEquals(const AValue: Integer;   const AField: TtiFieldInteger); overload;
+    procedure CheckEquals(const AValue: Real;      const AField: TtiFieldFloat); overload;
+    procedure CheckEquals(const AValue: Boolean;   const AField: TtiFieldBoolean); overload;
+    procedure CheckEquals(const AValue: TDateTime; const AField: TtiFieldDateTime); overload;
+    procedure CheckEquals(const AValue: TStream;   const AField: TStream); overload;
+    procedure CheckEquals(const AValue: String;   const AField: TtiFieldInteger); overload;
     procedure CheckEquals(const AExpected: string; AActual: integer); overload;
     {: Check a TtiObject's Equals Method by calling AData1.Equals(AData2), then changing APropName to ANewValue and trying again.
        APropName must be a string property.}
@@ -116,12 +116,12 @@ type
     {$ENDIF}
   end;
 
-function  tiCreateStringOfSize(pSize : LongInt): string;
-procedure tiCreateTextFileOfSize(AFileName : string; pSize : LongInt);
-procedure tiDUnitForceRemoveDir(const pDirectory : string);
-procedure tiFillTestingStream(AStream : TStream; ASize : integer);
-procedure tiFillTestingStreamASCII(AStream : TStream; ASize : integer);
-function  tiIncStr(const AValue: string; AInc: Integer=1; AMaxLength : integer = 999999): String;
+function  tiCreateStringOfSize(const ASize : LongInt): string;
+procedure tiCreateTextFileOfSize(const AFileName : string; const ASize : LongInt);
+procedure tiDUnitForceRemoveDir(const ADirectory : string);
+procedure tiFillTestingStream(const AStream : TStream; const ASize : integer);
+procedure tiFillTestingStreamASCII(const AStream : TStream; const ASize : integer);
+function  tiIncStr(const AValue: string; const AInc: Integer=1; const AMaxLength : integer = 999999): String;
 function  tiIncStr1(const AValue: string; var AInc: Integer): String;
 
 const
@@ -142,29 +142,29 @@ uses
 {$define read_implementation}
 
 
-function  tiCreateStringOfSize(pSize : LongInt): string;
+function  tiCreateStringOfSize(const ASize : LongInt): string;
 var
   ls : Char;
 begin
   result := '';
-  While Length(Result)< pSize do
+  While Length(Result)< ASize do
   begin
     ls := Chr(Random(126 - 32) + 32);
     result := result + ls;
-    if (Length(Result)< pSize) and
+    if (Length(Result)< ASize) and
        (Length(Result) mod 60 = 0) then
       Result := Result + cLineEnding;
   end;
 end;
 
-procedure tiCreateTextFileOfSize(AFileName : string; pSize : LongInt);
+procedure tiCreateTextFileOfSize(const AFileName : string; const ASize : LongInt);
 var
   lFileStream : TFileStream;
   lBuffer  : PChar;
   lLen     : integer;
   ls : string;
 begin
-  ls := tiCreateStringOfSize(pSize);
+  ls := tiCreateStringOfSize(ASize);
 
   if FileExists(AFileName) then
     tiDeleteFile(AFileName);
@@ -179,7 +179,7 @@ begin
   end;
 end;
 
-procedure tiDUnitForceRemoveDir(const pDirectory : string);
+procedure tiDUnitForceRemoveDir(const ADirectory : string);
 var
   LResult: DWord;
   LOutput: string;
@@ -192,7 +192,7 @@ begin
 
     LResult:=
       tiExecConsoleApp('cmd.exe',
-                       '/X /C "rd ' + pDirectory + ' /S /Q"',
+                       '/X /C "rd ' + ADirectory + ' /S /Q"',
                        LOutput,
                        nil,
                        False);
@@ -214,15 +214,15 @@ begin
   except
     on e:exception do
       raise exception.Create('Error in tiDUnitForceRemoveDir(''' +
-            pDirectory + '> Message: ' + e.message);
+            ADirectory + '> Message: ' + e.message);
   end;
-  if DirectoryExists(pDirectory) then
+  if DirectoryExists(ADirectory) then
       raise exception.CreateFmt('Error in tiDUnitForceRemoveDir. Failed to delete directory "%s"',
-            [pDirectory]);
+            [ADirectory]);
 
 end;
 
-procedure tiFillTestingStream(AStream : TStream; ASize : integer);
+procedure tiFillTestingStream(const AStream : TStream; const ASize : integer);
 var
   LCount : integer;
   LWord : word;
@@ -243,7 +243,7 @@ begin
   AStream.Position := 0;
 end;
 
-procedure tiFillTestingStreamASCII(AStream : TStream; ASize : integer);
+procedure tiFillTestingStreamASCII(const AStream : TStream; const ASize : integer);
 var
   LCount : integer;
   LChar : Char;
@@ -256,7 +256,7 @@ begin
   AStream.Position := 0;
 end;
 
-function tiIncStr(const AValue: string; AInc: integer=1; AMaxLength: integer = 999999): String;
+function tiIncStr(const AValue: string; const AInc: integer=1; const AMaxLength: integer = 999999): String;
 var
   LLen: integer;
 begin
@@ -273,8 +273,8 @@ begin
 end;
 
 procedure TtiTestCase.CheckObjectState(
-  AObjectState: TPerObjectState;
-  AData: TtiObject;
+  const AObjectState: TPerObjectState;
+  const AData: TtiObject;
   const AMessage: string = '');
 begin
   Assert(AData.TestValid, cTIInvalidObjectError);
@@ -299,83 +299,83 @@ begin
   result:= FPerformanceCounter;  
 end;
 
-procedure TtiTestCase.CheckNearEnough(pExpected, pActual: Double);
+procedure TtiTestCase.CheckNearEnough(const AExpected, AActual: Double);
 begin
-  CheckNearEnough(pExpected, pActual, 0.0001);
+  CheckNearEnough(AExpected, AActual, 0.0001);
 end;
 
-procedure TtiTestCase.CheckNearEnough(pExpected, pActual: Double; const AMessage: string);
+procedure TtiTestCase.CheckNearEnough(const AExpected, AActual: Double; const AMessage: string);
 begin
-  CheckNearEnough(pExpected, pActual, 0.0001, AMessage);
+  CheckNearEnough(AExpected, AActual, 0.0001, AMessage);
 end;
 
-procedure TtiTestCase.CheckNearEnough(pExpected, pActual: Double; pFEPS: Double);
+procedure TtiTestCase.CheckNearEnough(const AExpected, AActual, AFEPS: Double);
 begin
-  CheckNearEnough(pExpected, pActual, pFEPS, '');
+  CheckNearEnough(AExpected, AActual, AFEPS, '');
 end;
 
-procedure TtiTestCase.CheckEquals(AValue: Integer; AField: TtiFieldInteger);
+procedure TtiTestCase.CheckEquals(const AValue: Integer; const AField: TtiFieldInteger);
 begin
   CheckEquals(AValue, AField.AsInteger);
 end;
 
-procedure TtiTestCase.CheckEquals(AValue: string; AField: TtiFieldString);
+procedure TtiTestCase.CheckEquals(const AValue: string; const AField: TtiFieldString);
 begin
   CheckEquals(AValue, AField.AsString);
 end;
 
-procedure TtiTestCase.CheckEquals(AValue: Real; AField: TtiFieldFloat);
+procedure TtiTestCase.CheckEquals(const AValue: Real; const AField: TtiFieldFloat);
 begin
   CheckNearEnough(AValue, AField.AsFloat);
 end;
 
-procedure TtiTestCase.CheckEquals(AValue: TDateTime; AField: TtiFieldDateTime);
+procedure TtiTestCase.CheckEquals(const AValue: TDateTime; const AField: TtiFieldDateTime);
 begin
   CheckNearEnough(AValue, AField.AsDateTime);
 end;
 
-procedure TtiTestCase.CheckEquals(AExpected, AActual: TtiFieldFloat);
+procedure TtiTestCase.CheckEquals(const AExpected, AActual: TtiFieldFloat);
 begin
   CheckNearEnough(AExpected.AsFloat, AActual.AsFloat, 'Failed on %s', [AExpected.FieldName]);
 end;
 
-procedure TtiTestCase.CheckEquals(AExpected, AActual: TtiFieldInteger);
+procedure TtiTestCase.CheckEquals(const AExpected, AActual: TtiFieldInteger);
 begin
   CheckEquals(AExpected.AsInteger, AActual.AsInteger, Format('Failed on %s', [AExpected.FieldName]));
 end;
 
-procedure TtiTestCase.CheckEquals(AExpected, AActual: TtiFieldDateTime);
+procedure TtiTestCase.CheckEquals(const AExpected, AActual: TtiFieldDateTime);
 begin
   CheckNearEnough(AExpected.AsDateTime, AActual.AsDateTime, 'Failed on %s', [AExpected.FieldName]);
 end;
 
-procedure TtiTestCase.CheckEquals(AExpected, AActual: TtiFieldBoolean);
+procedure TtiTestCase.CheckEquals(const AExpected, AActual: TtiFieldBoolean);
 begin
   CheckEquals(AExpected.AsBoolean, AActual.AsBoolean, Format('Failed on %s', [AExpected.FieldName]));
 end;
 
-procedure TtiTestCase.CheckEquals(AExpected, AActual: TtiFieldString);
+procedure TtiTestCase.CheckEquals(const AExpected, AActual: TtiFieldString);
 begin
   CheckEquals(AExpected.AsString, AActual.AsString, Format('Failed on %s', [AExpected.FieldName]));
 end;
 
-procedure TtiTestCase.CheckEquals(AValue: Boolean; AField: TtiFieldBoolean);
+procedure TtiTestCase.CheckEquals(const AValue: Boolean; const AField: TtiFieldBoolean);
 begin
   CheckEquals(AValue, AField.AsBoolean);
 end;
 
-procedure TtiTestCase.CheckNearEnough(pExpected, pActual: Double; pFEPS: Double; const AString: string);
+procedure TtiTestCase.CheckNearEnough(const AExpected, AActual, AFEPS: Double; const AString: string);
 begin
-  if not tiIsNearEnough(pExpected, pActual, pFEPS) then
-    FailNotEquals(FloatToStr(pExpected), FloatToStr(pActual), Format('(feps: %g) %s', [pFEPS, AString]), {$IFDEF FPC} nil {$ELSE} CallerAddr {$ENDIF});
+  if not tiIsNearEnough(AExpected, AActual, AFEPS) then
+    FailNotEquals(FloatToStr(AExpected), FloatToStr(AActual), Format('(feps: %g) %s', [AFEPS, AString]), {$IFDEF FPC} nil {$ELSE} CallerAddr {$ENDIF});
 end;
 
-procedure TtiTestCase.CheckNearEnough(pExpected, pActual: Double; const AMessage: string; pArgs: array of const);
+procedure TtiTestCase.CheckNearEnough(const AExpected, AActual: Double; const AMessage: string; pArgs: array of const);
 begin
-  CheckNearEnough(pExpected, pActual, Format(AMessage, pArgs));
+  CheckNearEnough(AExpected, AActual, Format(AMessage, pArgs));
 end;
 
-procedure TtiTestCase.TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldString);
+procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldString);
 var
   lFieldName: string;
 begin
@@ -391,7 +391,7 @@ begin
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
 end;
 
-procedure TtiTestCase.TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldFloat);
+procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldFloat);
 var
   lFieldName: string;
 begin
@@ -407,7 +407,7 @@ begin
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
 end;
 
-procedure TtiTestCase.TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldInteger);
+procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldInteger);
 var
   lFieldName: string;
 begin
@@ -423,7 +423,7 @@ begin
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
 end;
 
-procedure TtiTestCase.TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldBoolean);
+procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldBoolean);
 begin
   Assert(AObj1.TestValid, cErrorTIPerObjAbsTestValid);
   Assert(AObj2.TestValid, cErrorTIPerObjAbsTestValid);
@@ -437,7 +437,7 @@ begin
   Check(AObj1.Equals(AObj2));
 end;
 
-procedure TtiTestCase.TestTIObjectEquals(AObj1, AObj2: TtiObject; AField1, AField2: TtiFieldDateTime);
+procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldDateTime);
 var
   lFieldName: string;
 begin
@@ -453,7 +453,7 @@ begin
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
 end;
 
-procedure TtiTestCase.TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldInteger);
+procedure TtiTestCase.TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldInteger);
 var
   LFieldName: string;
   LSaved: Integer;
@@ -469,7 +469,7 @@ begin
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
 end;
 
-procedure TtiTestCase.TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldString);
+procedure TtiTestCase.TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldString);
 var
   LFieldName: string;
   LSaved: string;
@@ -485,7 +485,7 @@ begin
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
 end;
 
-procedure TtiTestCase.TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldFloat);
+procedure TtiTestCase.TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldFloat);
 var
   LFieldName: string;
   LSaved: real;
@@ -501,7 +501,7 @@ begin
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
 end;
 
-procedure TtiTestCase.TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldBoolean);
+procedure TtiTestCase.TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldBoolean);
 var
   LFieldName: string;
   LSaved: Boolean;
@@ -517,7 +517,7 @@ begin
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
 end;
 
-procedure TtiTestCase.TestTIObjectIsValid(AObj: TtiObject; AField: TtiFieldDateTime);
+procedure TtiTestCase.TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldDateTime);
 var
   LFieldName: string;
   LSaved: TDateTime;
@@ -562,7 +562,7 @@ begin
   CheckEquals(StrToInt(AExpected), AActual);
 end;
 
-procedure TtiTestCase.CheckEquals(AValue: TStream; AField: TStream);
+procedure TtiTestCase.CheckEquals(const AValue: TStream; const AField: TStream);
 var
   LMessage: string;
 begin
@@ -570,22 +570,22 @@ begin
     Fail(LMessage);
 end;
 
-procedure TtiTestCase.CheckEquals(AValue: String; AField: TtiFieldInteger);
+procedure TtiTestCase.CheckEquals(const AValue: String; const AField: TtiFieldInteger);
 begin
   CheckEquals(AValue, AField.AsString);
 end;
 
-procedure TtiTestCase.CheckNearEnough(AExpected: TDateTime; AField: TtiFieldDateTime);
+procedure TtiTestCase.CheckNearEnough(const AExpected: TDateTime; const AField: TtiFieldDateTime);
 begin
   CheckNearEnough(AExpected, AField.AsDateTime, AField.FieldName);
 end;
 
-procedure TtiTestCase.CheckNearEnough(AExpected: Real; AField: TtiFieldFloat);
+procedure TtiTestCase.CheckNearEnough(const AExpected: Real; const AField: TtiFieldFloat);
 begin
   CheckNearEnough(AExpected, AField.AsFloat, AField.FieldName);
 end;
 
-procedure TtiTestCase.CheckNearEnough(AExpected, AActual: TtiFieldFloat);
+procedure TtiTestCase.CheckNearEnough(const AExpected, AActual: TtiFieldFloat);
 begin
   CheckNearEnough(AExpected.AsFloat, AActual.AsFloat);
 end;
