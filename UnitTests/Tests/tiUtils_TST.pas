@@ -103,10 +103,6 @@ type
     procedure tiFileToStream;
     procedure tiFileToString;
     procedure tiFixPathDelim_Test;
-    procedure tiFloatToCommaStr;
-    procedure tiFloatToCurrency;
-    procedure tiFloatToCurrencyHide0;
-    procedure tiFloatToStr;
     procedure tiForceDirectories;
     procedure tiGetAppDataDirPrivate;
     procedure tiGetAppDataDirPublic;
@@ -159,7 +155,14 @@ type
     procedure tiSafeDiv;
     procedure tiSetFileDate;
     procedure tiSetFileReadOnly;
+    procedure tiDecimalRoundSgl;
+    procedure tiDecimalRoundDbl;
+    procedure tiDecimalRoundExt;
     procedure tiSetPrecision;
+    procedure tiFloatToCommaStr;
+    procedure tiFloatToCurrency;
+    procedure tiFloatToCurrencyHide0;
+    procedure tiFloatToStr;
     procedure tiSpace;
     procedure tiStreamToFile;
     procedure tiStreamToString1;
@@ -2664,6 +2667,239 @@ begin
   CheckEquals(2006, tiUtils.tiDateToAusFinancialYear(EncodeDate(2005, 07, 01)));
 end;
 
+
+procedure TTestTIUtils.tiDecimalRoundDbl;
+begin
+  CheckEquals(1, tiUtils.tiDecimalRoundDbl(1,   0));
+  CheckEquals(1, tiUtils.tiDecimalRoundDbl(1.4, 0));
+  CheckEquals(2, tiUtils.tiDecimalRoundDbl(1.5, 0));
+  CheckEquals(2, tiUtils.tiDecimalRoundDbl(1.6, 0));
+
+  CheckEquals(12, tiUtils.tiDecimalRoundDbl(12,   0));
+  CheckEquals(12, tiUtils.tiDecimalRoundDbl(12.4, 0));
+  CheckEquals(13, tiUtils.tiDecimalRoundDbl(12.5, 0));
+  CheckEquals(13, tiUtils.tiDecimalRoundDbl(12.6, 0));
+
+  CheckEquals(123, tiUtils.tiDecimalRoundDbl(123,   0));
+  CheckEquals(123, tiUtils.tiDecimalRoundDbl(123.4, 0));
+  CheckEquals(124, tiUtils.tiDecimalRoundDbl(123.5, 0));
+  CheckEquals(124, tiUtils.tiDecimalRoundDbl(123.6, 0));
+
+  CheckEquals(1234, tiUtils.tiDecimalRoundDbl(1234,   0));
+  CheckEquals(1234, tiUtils.tiDecimalRoundDbl(1234.4, 0));
+  CheckEquals(1235, tiUtils.tiDecimalRoundDbl(1234.5, 0));
+  CheckEquals(1235, tiUtils.tiDecimalRoundDbl(1234.6, 0));
+
+  CheckEquals(12345, tiUtils.tiDecimalRoundDbl(12345,   0));
+  CheckEquals(12345, tiUtils.tiDecimalRoundDbl(12345.4, 0));
+  CheckEquals(12346, tiUtils.tiDecimalRoundDbl(12345.5, 0));
+  CheckEquals(12346, tiUtils.tiDecimalRoundDbl(12345.6, 0));
+
+//  CheckEquals(3.333333333333, tiUtils.tiDecimalRoundDbl(3.3333333333334, 13));
+//  CheckEquals(3.333333333334, tiUtils.tiDecimalRoundDbl(3.3333333333335, 13));
+//  CheckEquals(3.333333333334, tiUtils.tiDecimalRoundDbl(3.3333333333336, 13));
+
+//  CheckEquals(3.33333333333, tiUtils.tiDecimalRoundDbl(3.333333333334, 12));
+//  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333335, 12));
+//  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333336, 12));
+
+  CheckEquals(3.33333333333, tiUtils.tiDecimalRoundDbl(3.333333333334, 11));
+  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333335, 11));
+  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333336, 11));
+
+  CheckEquals(3.3333333333, tiUtils.tiDecimalRoundDbl(3.33333333334, 10));
+  CheckEquals(3.3333333334, tiUtils.tiDecimalRoundDbl(3.33333333335, 10));
+  CheckEquals(3.3333333334, tiUtils.tiDecimalRoundDbl(3.33333333336, 10));
+
+  CheckEquals(3.333333333, tiUtils.tiDecimalRoundDbl(3.3333333334, 9));
+  CheckEquals(3.333333334, tiUtils.tiDecimalRoundDbl(3.3333333335, 9));
+  CheckEquals(3.333333334, tiUtils.tiDecimalRoundDbl(3.3333333336, 9));
+
+  CheckEquals(3.33333333, tiUtils.tiDecimalRoundDbl(3.333333334,   8));
+  CheckEquals(3.33333334, tiUtils.tiDecimalRoundDbl(3.333333335,   8));
+  CheckEquals(3.33333334, tiUtils.tiDecimalRoundDbl(3.333333336,   8));
+
+  CheckEquals(3.3333333, tiUtils.tiDecimalRoundDbl(3.33333334,   7));
+  CheckEquals(3.3333334, tiUtils.tiDecimalRoundDbl(3.33333335,   7));
+  CheckEquals(3.3333334, tiUtils.tiDecimalRoundDbl(3.33333336,   7));
+
+  CheckEquals(3.333333, tiUtils.tiDecimalRoundDbl(3.3333334,   6));
+  CheckEquals(3.333334, tiUtils.tiDecimalRoundDbl(3.3333335,   6));
+  CheckEquals(3.333334, tiUtils.tiDecimalRoundDbl(3.3333336,   6));
+
+  CheckEquals(3.33333, tiUtils.tiDecimalRoundDbl(3.333334,   5));
+  CheckEquals(3.33334, tiUtils.tiDecimalRoundDbl(3.333335,   5));
+  CheckEquals(3.33334, tiUtils.tiDecimalRoundDbl(3.333336,   5));
+
+  CheckEquals(3.3333, tiUtils.tiDecimalRoundDbl(3.33334,   4));
+  CheckEquals(3.3334, tiUtils.tiDecimalRoundDbl(3.33335,   4));
+  CheckEquals(3.3334, tiUtils.tiDecimalRoundDbl(3.33336,   4));
+
+  CheckEquals(3.333, tiUtils.tiDecimalRoundDbl(3.3334,   3));
+  CheckEquals(3.334, tiUtils.tiDecimalRoundDbl(3.3335,   3));
+  CheckEquals(3.334, tiUtils.tiDecimalRoundDbl(3.3336,   3));
+
+  CheckEquals(3.33, tiUtils.tiDecimalRoundDbl(3.334,   2));
+  CheckEquals(3.34, tiUtils.tiDecimalRoundDbl(3.335,   2));
+  CheckEquals(3.34, tiUtils.tiDecimalRoundDbl(3.336,   2));
+
+  CheckEquals(3.3, tiUtils.tiDecimalRoundDbl(3.34,   1));
+  CheckEquals(3.4, tiUtils.tiDecimalRoundDbl(3.35,   1));
+  CheckEquals(3.4, tiUtils.tiDecimalRoundDbl(3.36,   1));
+
+  CheckEquals(3, tiUtils.tiDecimalRoundDbl(3.4,   0));
+  CheckEquals(4, tiUtils.tiDecimalRoundDbl(3.5,   0));
+  CheckEquals(4, tiUtils.tiDecimalRoundDbl(3.6,   0));
+end;
+
+procedure TTestTIUtils.tiDecimalRoundExt;
+begin
+  CheckEquals(1, tiUtils.tiDecimalRoundExt(1,   0));
+  CheckEquals(1, tiUtils.tiDecimalRoundExt(1.4, 0));
+  CheckEquals(2, tiUtils.tiDecimalRoundExt(1.5, 0));
+  CheckEquals(2, tiUtils.tiDecimalRoundExt(1.6, 0));
+
+  CheckEquals(12, tiUtils.tiDecimalRoundExt(12,   0));
+  CheckEquals(12, tiUtils.tiDecimalRoundExt(12.4, 0));
+  CheckEquals(13, tiUtils.tiDecimalRoundExt(12.5, 0));
+  CheckEquals(13, tiUtils.tiDecimalRoundExt(12.6, 0));
+
+  CheckEquals(123, tiUtils.tiDecimalRoundExt(123,   0));
+  CheckEquals(123, tiUtils.tiDecimalRoundExt(123.4, 0));
+  CheckEquals(124, tiUtils.tiDecimalRoundExt(123.5, 0));
+  CheckEquals(124, tiUtils.tiDecimalRoundExt(123.6, 0));
+
+  CheckEquals(1234, tiUtils.tiDecimalRoundExt(1234,   0));
+  CheckEquals(1234, tiUtils.tiDecimalRoundExt(1234.4, 0));
+  CheckEquals(1235, tiUtils.tiDecimalRoundExt(1234.5, 0));
+  CheckEquals(1235, tiUtils.tiDecimalRoundExt(1234.6, 0));
+
+  CheckEquals(12345, tiUtils.tiDecimalRoundExt(12345,   0));
+  CheckEquals(12345, tiUtils.tiDecimalRoundExt(12345.4, 0));
+  CheckEquals(12346, tiUtils.tiDecimalRoundExt(12345.5, 0));
+  CheckEquals(12346, tiUtils.tiDecimalRoundExt(12345.6, 0));
+
+  CheckEquals(3.3333333333333333, tiUtils.tiDecimalRoundExt(3.33333333333333334, 16));
+  CheckEquals(3.3333333333333334, tiUtils.tiDecimalRoundExt(3.33333333333333335, 16));
+  CheckEquals(3.3333333333333334, tiUtils.tiDecimalRoundExt(3.33333333333333336, 16));
+
+  CheckEquals(3.333333333333333, tiUtils.tiDecimalRoundExt(3.3333333333333334, 15));
+  CheckEquals(3.333333333333334, tiUtils.tiDecimalRoundExt(3.3333333333333335, 15));
+  CheckEquals(3.333333333333334, tiUtils.tiDecimalRoundExt(3.3333333333333336, 15));
+
+  CheckEquals(3.33333333333333, tiUtils.tiDecimalRoundExt(3.333333333333334, 14));
+  CheckEquals(3.33333333333334, tiUtils.tiDecimalRoundExt(3.333333333333335, 14));
+  CheckEquals(3.33333333333334, tiUtils.tiDecimalRoundExt(3.333333333333336, 14));
+
+  CheckEquals(3.3333333333333, tiUtils.tiDecimalRoundExt(3.33333333333334, 13));
+  CheckEquals(3.3333333333334, tiUtils.tiDecimalRoundExt(3.33333333333335, 13));
+  CheckEquals(3.3333333333334, tiUtils.tiDecimalRoundExt(3.33333333333336, 13));
+
+  CheckEquals(3.333333333333, tiUtils.tiDecimalRoundExt(3.3333333333334, 12));
+  CheckEquals(3.333333333334, tiUtils.tiDecimalRoundExt(3.3333333333335, 12));
+  CheckEquals(3.333333333334, tiUtils.tiDecimalRoundExt(3.3333333333336, 12));
+
+  CheckEquals(3.33333333333, tiUtils.tiDecimalRoundExt(3.333333333334, 11));
+  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundExt(3.333333333335, 11));
+  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundExt(3.333333333336, 11));
+
+  CheckEquals(3.3333333333, tiUtils.tiDecimalRoundExt(3.33333333334, 10));
+  CheckEquals(3.3333333334, tiUtils.tiDecimalRoundExt(3.33333333335, 10));
+  CheckEquals(3.3333333334, tiUtils.tiDecimalRoundExt(3.33333333336, 10));
+
+  CheckEquals(3.333333333, tiUtils.tiDecimalRoundExt(3.3333333334, 9));
+  CheckEquals(3.333333334, tiUtils.tiDecimalRoundExt(3.3333333335, 9));
+  CheckEquals(3.333333334, tiUtils.tiDecimalRoundExt(3.3333333336, 9));
+
+  CheckEquals(3.33333333, tiUtils.tiDecimalRoundExt(3.333333334,   8));
+  CheckEquals(3.33333334, tiUtils.tiDecimalRoundExt(3.333333335,   8));
+  CheckEquals(3.33333334, tiUtils.tiDecimalRoundExt(3.333333336,   8));
+
+  CheckEquals(3.3333333, tiUtils.tiDecimalRoundExt(3.33333334,   7));
+  CheckEquals(3.3333334, tiUtils.tiDecimalRoundExt(3.33333335,   7));
+  CheckEquals(3.3333334, tiUtils.tiDecimalRoundExt(3.33333336,   7));
+
+  CheckEquals(3.333333, tiUtils.tiDecimalRoundExt(3.3333334,   6));
+  CheckEquals(3.333334, tiUtils.tiDecimalRoundExt(3.3333335,   6));
+  CheckEquals(3.333334, tiUtils.tiDecimalRoundExt(3.3333336,   6));
+
+  CheckEquals(3.33333, tiUtils.tiDecimalRoundExt(3.333334,   5));
+  CheckEquals(3.33334, tiUtils.tiDecimalRoundExt(3.333335,   5));
+  CheckEquals(3.33334, tiUtils.tiDecimalRoundExt(3.333336,   5));
+
+  CheckEquals(3.3333, tiUtils.tiDecimalRoundDbl(3.33334,   4));
+  CheckEquals(3.3334, tiUtils.tiDecimalRoundDbl(3.33335,   4));
+  CheckEquals(3.3334, tiUtils.tiDecimalRoundDbl(3.33336,   4));
+
+  CheckEquals(3.333, tiUtils.tiDecimalRoundExt(3.3334,   3));
+  CheckEquals(3.334, tiUtils.tiDecimalRoundExt(3.3335,   3));
+  CheckEquals(3.334, tiUtils.tiDecimalRoundExt(3.3336,   3));
+
+  CheckEquals(3.33, tiUtils.tiDecimalRoundExt(3.334,   2));
+  CheckEquals(3.34, tiUtils.tiDecimalRoundExt(3.335,   2));
+  CheckEquals(3.34, tiUtils.tiDecimalRoundExt(3.336,   2));
+
+  CheckEquals(3.3, tiUtils.tiDecimalRoundExt(3.34,   1));
+  CheckEquals(3.4, tiUtils.tiDecimalRoundExt(3.35,   1));
+  CheckEquals(3.4, tiUtils.tiDecimalRoundExt(3.36,   1));
+
+  CheckEquals(3, tiUtils.tiDecimalRoundExt(3.4,   0));
+  CheckEquals(4, tiUtils.tiDecimalRoundExt(3.5,   0));
+  CheckEquals(4, tiUtils.tiDecimalRoundExt(3.6,   0));
+
+end;
+
+procedure TTestTIUtils.tiDecimalRoundSgl;
+begin
+  CheckEquals(1, tiUtils.tiDecimalRoundSgl(1,   0));
+  CheckEquals(1, tiUtils.tiDecimalRoundSgl(1.4, 0));
+  CheckEquals(2, tiUtils.tiDecimalRoundSgl(1.5, 0));
+  CheckEquals(2, tiUtils.tiDecimalRoundSgl(1.6, 0));
+
+  CheckEquals(12, tiUtils.tiDecimalRoundSgl(12,   0));
+  CheckEquals(12, tiUtils.tiDecimalRoundSgl(12.4, 0));
+  CheckEquals(13, tiUtils.tiDecimalRoundSgl(12.5, 0));
+  CheckEquals(13, tiUtils.tiDecimalRoundSgl(12.6, 0));
+
+  CheckEquals(123, tiUtils.tiDecimalRoundSgl(123,   0));
+  CheckEquals(123, tiUtils.tiDecimalRoundSgl(123.4, 0));
+  CheckEquals(124, tiUtils.tiDecimalRoundSgl(123.5, 0));
+  CheckEquals(124, tiUtils.tiDecimalRoundSgl(123.6, 0));
+
+  CheckEquals(1234, tiUtils.tiDecimalRoundSgl(1234,   0));
+  CheckEquals(1234, tiUtils.tiDecimalRoundSgl(1234.4, 0));
+  CheckEquals(1235, tiUtils.tiDecimalRoundSgl(1234.5, 0));
+  CheckEquals(1235, tiUtils.tiDecimalRoundSgl(1234.6, 0));
+
+  CheckEquals(12345, tiUtils.tiDecimalRoundSgl(12345,   0));
+  CheckEquals(12345, tiUtils.tiDecimalRoundSgl(12345.4, 0));
+  CheckEquals(12346, tiUtils.tiDecimalRoundSgl(12345.5, 0));
+  CheckEquals(12346, tiUtils.tiDecimalRoundSgl(12345.6, 0));
+
+  CheckEquals(3.33333, tiUtils.tiDecimalRoundSgl(3.333334,   5));
+  CheckEquals(3.33334, tiUtils.tiDecimalRoundSgl(3.333335,   5));
+  CheckEquals(3.33334, tiUtils.tiDecimalRoundSgl(3.333336,   5));
+
+  CheckEquals(3.3333, tiUtils.tiDecimalRoundSgl(3.33334,   4));
+  CheckEquals(3.3334, tiUtils.tiDecimalRoundSgl(3.33335,   4));
+  CheckEquals(3.3334, tiUtils.tiDecimalRoundSgl(3.33336,   4));
+
+  CheckEquals(3.333, tiUtils.tiDecimalRoundSgl(3.3334,   3));
+  CheckEquals(3.334, tiUtils.tiDecimalRoundSgl(3.3335,   3));
+  CheckEquals(3.334, tiUtils.tiDecimalRoundSgl(3.3336,   3));
+
+  CheckEquals(3.33, tiUtils.tiDecimalRoundSgl(3.334,   2));
+  CheckEquals(3.34, tiUtils.tiDecimalRoundSgl(3.335,   2));
+  CheckEquals(3.34, tiUtils.tiDecimalRoundSgl(3.336,   2));
+
+  CheckEquals(3.3, tiUtils.tiDecimalRoundSgl(3.34,   1));
+  CheckEquals(3.4, tiUtils.tiDecimalRoundSgl(3.35,   1));
+  CheckEquals(3.4, tiUtils.tiDecimalRoundSgl(3.36,   1));
+
+  CheckEquals(3, tiUtils.tiDecimalRoundSgl(3.4,   0));
+  CheckEquals(4, tiUtils.tiDecimalRoundSgl(3.5,   0));
+  CheckEquals(4, tiUtils.tiDecimalRoundSgl(3.6,   0));
+end;
 
 procedure TTestTIUtils.tiDeleteFiles;
 var

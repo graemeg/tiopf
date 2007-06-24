@@ -242,7 +242,7 @@ type
       drRndDown, {Round toward zero.                        (a.k.a. Trunc) }
       drRndUp);  {Round away from zero.}
 
-  // Set the precision of AValue to pPrecision decimal places
+  {: Set the precision of AValue to pPrecision decimal places}
   function  tiSetPrecision(const AValue : Extended; const APrecision : integer = 3): Extended;
   { The following functions have a two times "epsilon" error built in for the
     single, double, and extended argument respectively: }

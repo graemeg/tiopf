@@ -119,22 +119,20 @@ type
 function  tiCreateStringOfSize(pSize : LongInt): string;
 procedure tiCreateTextFileOfSize(AFileName : string; pSize : LongInt);
 procedure tiDUnitForceRemoveDir(const pDirectory : string);
-// Cloned from IdSoapTestingUtils.pas (IndySoap) by Grahame Grieve & Andrew Cumming
 procedure tiFillTestingStream(AStream : TStream; ASize : integer);
 procedure tiFillTestingStreamASCII(AStream : TStream; ASize : integer);
 function  tiIncStr(const AValue: string; AInc: Integer=1; AMaxLength : integer = 999999): String;
 function  tiIncStr1(const AValue: string; var AInc: Integer): String;
 
 const
-  cDUnitTestFloatPrecision = 0.000001;       
-  
+  cDUnitTestFloatPrecision = 0.000001;
+
 implementation
 uses
   SysUtils
   ,tiUtils
-  {$IFDEF LINUX}
-  ,libc
-  {$ENDIF LINUX}
+  {$IFDEF LINUX} ,libc {$ENDIF LINUX}
+  {$IFDEF MSWINDOWS},tiConsoleApp {$ENDIF MSWINDOWS}
  ;
 
 
@@ -182,18 +180,32 @@ begin
 end;
 
 procedure tiDUnitForceRemoveDir(const pDirectory : string);
+var
+  LResult: DWord;
+  LOutput: string;
+
 begin
   // The easiest way I could think of to delete a directory and all
   // it's child directories and files.
   try
     {$IFDEF MSWINDOWS}
-    tiUtils.tiShellExecute('cmd.exe',
-                            '/X /C "rd ' + pDirectory + ' /S /Q"');
-    Sleep(500);
-    // With no sleep, system will return before the shell call has finished.
-    // Tried using tiRunEXEAndWait, but kept getting error "System can not find
-    // the file specified."
-    // Sleep(100) makes the problem go away, so made it Sleep(500) to be sure.
+
+    LResult:=
+      tiExecConsoleApp('cmd.exe',
+                       '/X /C "rd ' + pDirectory + ' /S /Q"',
+                       LOutput,
+                       nil,
+                       False);
+    LOutput:= Trim(LOutput);
+    if not LResult in [0,1] then
+      raise Exception.CreateFmt(
+        'Error calling tiExecConsoleApp in tiDUnitForceRemoveDir. ' +
+        'Expected result ="0 or 1" but got "%d"', [LResult]);
+    if LOutput <> '' then
+      raise Exception.CreateFmt(
+        'Error calling tiExecConsoleApp in tiDUnitForceRemoveDir. ' +
+        'Expected Output ="" but got "%s"', [LOutput]);
+
     {$ENDIF MSWINDOWS}
     
     {$IFDEF LINUX}
@@ -201,9 +213,13 @@ begin
     {$ENDIF LINUX}
   except
     on e:exception do
-      raise exception.Create('Error in ForceRemoveDirectory(''' +
+      raise exception.Create('Error in tiDUnitForceRemoveDir(''' +
             pDirectory + '> Message: ' + e.message);
   end;
+  if DirectoryExists(pDirectory) then
+      raise exception.CreateFmt('Error in tiDUnitForceRemoveDir. Failed to delete directory "%s"',
+            [pDirectory]);
+
 end;
 
 procedure tiFillTestingStream(AStream : TStream; ASize : integer);
@@ -212,6 +228,8 @@ var
   LWord : word;
   LChar : Char;
 begin
+  // Cloned from IdSoapTestingUtils.pas (IndySoap) by
+  // Grahame Grieve & Andrew Cumming
   for LCount := 1 to (ASize div 2) do
     begin
     LWord := Random($7FFF);
