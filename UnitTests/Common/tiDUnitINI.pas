@@ -16,18 +16,11 @@ type
   private
     FINIFile: TINIFile;
     function  GetAppDataDirPrivate: string;
-    procedure SetAppDataDirPrivate(const AValue: string);
     function  GetAppDataDirPublic: string;
-    procedure SetAppDataDirPublic(const AValue: string);
-
     function  GetTempDir: string;
-    procedure SetTempDir(const AValue: string);
     function  GetWindowsSysDir: string;
-    procedure SetWindowsSysDir(const AValue: string);
     function  GetUserName: string;
-    procedure SetUserName(const AValue: string);
     function  GetComputerName: string;
-    procedure SetComputerName(const AValue: string);
   public
     constructor Create;
     destructor  Destroy; override;
@@ -193,36 +186,6 @@ begin
   Result:= FINIFile.ReadString(ASection, AIdent, CDefaultStringValue);
   if Result = '' then
     FINIFile.WriteString(ASection, AIdent, CDefaultStringValue);
-end;
-
-procedure TDUntiLocalSettings.SetAppDataDirPublic(const AValue: string);
-begin
-  FINIFile.WriteString(CINIMachineSettings, CAppDataDirPublic, AValue);
-end;
-
-procedure TDUntiLocalSettings.SetAppDataDirPrivate(const AValue: string);
-begin
-  FINIFile.WriteString(CINIMachineSettings, CAppDataDirPrivate, AValue);
-end;
-
-procedure TDUntiLocalSettings.SetComputerName(const AValue: string);
-begin
-  FINIFile.WriteString(CINIMachineSettings, CComputerName, AValue);
-end;
-
-procedure TDUntiLocalSettings.SetTempDir(const AValue: string);
-begin
-  FINIFile.WriteString(CINIMachineSettings, CTempDir, AValue);
-end;
-
-procedure TDUntiLocalSettings.SetUserName(const AValue: string);
-begin
-  FINIFile.WriteString(CINIMachineSettings, CUserName, AValue);
-end;
-
-procedure TDUntiLocalSettings.SetWindowsSysDir(const AValue: string);
-begin
-  FINIFile.WriteString(CINIMachineSettings, CWindowsSysDir, AValue);
 end;
 
 initialization
