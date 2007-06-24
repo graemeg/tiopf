@@ -15,15 +15,15 @@ EnableISX=true
 
 [Setup]
 AppName=tiOPF
-DefaultDirName={commonappdata}\tiOPF
+DefaultDirName={commondocs}\tiOPF
 OutputBaseFilename={#OUTPUT_BASE_FILENAME}
 OutputDir={#PATH_TO_WORKING_DEPLOY}
 AppVerName=tiOPF {#VERSION_NUMBER}
 LicenseFile={#PATH_TO_WORKING_TIOPF2}\InstallScripts\Setup\License.txt
 AppPublisher=TechInsite
-AppPublisherURL=http://www.techinsite.com.au
-AppSupportURL=http://www.techinsite.com.au
-AppUpdatesURL=http://www.techinsite.com.au
+AppPublisherURL=http://www.tiopf.com
+AppSupportURL=http://www.tiopf.com
+AppUpdatesURL=http://www.tiopf.com
 ;WizardSmallImageFile={#DEPLOYPATH}\..\Images\SetupWizardSmallImage.bmp
 ;WizardImageFile={#DEPLOYPATH}\..\Images\SetupWizardImage.bmp
 
