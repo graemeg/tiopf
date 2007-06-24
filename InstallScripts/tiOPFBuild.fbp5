@@ -1188,7 +1188,7 @@ p_file_path=%path_to_working_compilers%\Delphi2007
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="CreateIfNotExists" type="Boolean">False</Property>
+              <Property name="CreateIfNotExists" type="Boolean">True</Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property MultiValue="0" name="FileName" type="string">%path_to_release_notes%</Property>
