@@ -20,6 +20,7 @@ function  gTIOPFTestManager: TtiOPFTestManager;
 procedure RemoveUnSelectedPersistenceLayerSetups;
 procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
 function  PersistentSuiteName(APerLayerName: string): string;
+procedure RegisterExpectedTIOPFMemoryLeaks;
 
 
 implementation
@@ -61,11 +62,14 @@ uses
   ,tiCriteria_TST
   ,tiRTTI_TST
   ,tiTokenLibrary_TST
+  ,tiOPFXMLLight_TST
+  ,tiOPFCSV_TST
+  ,tiOPFTAB_TST
 
   {$IFDEF FPC}
   ,tiOPFFBL_TST
-//  ,tiOPFSQLDB_IB_TST
-//  ,tiOPFZeos_FB15_TST
+  //,tiOPFSQLDB_IB_TST
+  //,tiOPFZeos_FB15_TST
   {$ELSE}
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
@@ -78,13 +82,12 @@ uses
   ,tiOPFRemote_TST
   ,tiOPFDOA_TST
   ,tiOPFIBO_TST
-//  ,tiOPFZeos_FB15_TST
-
+  //,tiOPFZeos_FB15_TST
   ,tiOPFXML_TST
+  ,FastMM4
+  ,IdThreadSafe
+  ,IdGlobal
   {$ENDIF}
-  ,tiOPFXMLLight_TST
-  ,tiOPFCSV_TST
-  ,tiOPFTAB_TST
   ;
 
 var
@@ -97,6 +100,8 @@ const
 
 procedure RegisterTests;
 begin
+
+
   if not IsConsole then
     gLog.RegisterLog(TtiLogToGUI.Create);
   gLog.RegisterLog(TtiLogToFile.CreateWithFileName('', '', True));
@@ -219,6 +224,13 @@ begin
   Result := Format(cSuiteNamePersistentTests, [APerLayerName]);
 end;
 
+procedure RegisterExpectedTIOPFMemoryLeaks;
+begin
+  {$IFNDEF FPC}
+  FastMM4.RegisterExpectedMemoryLeak(TidThreadSafeInteger, 1);
+  FastMM4.RegisterExpectedMemoryLeak(TidCriticalSection, 2);
+  {$ENDIF FPC}
+end;
 
 initialization
 

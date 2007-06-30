@@ -15,6 +15,7 @@ uses
 {$R *.RES}
 
 begin
+  RegisterExpectedTIOPFMemoryLeaks;
   if not TtiPromptWhichPersistenceLayersToTest.Execute then
     Halt;
   Application.Initialize;
