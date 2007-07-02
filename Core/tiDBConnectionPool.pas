@@ -2,22 +2,16 @@ unit tiDBConnectionPool;
 
 {$I tiDefines.inc}
 
+// ToDo:
+//   Refactor so Lock & UnLock return and accept a TtiDatabase, not a TPooledDB
+
 interface
 uses
-   tiObject
-  ,tiBaseObject
+   tiBaseObject
+  ,tiObject
   ,tiQuery
   ,tiPool
-  ,tiCommandLineParams
-  ,Classes
   ,Contnrs
-  {$IFDEF MSWINDOWS}
-  ,Windows
-  {$ENDIF MSWINDOWS}
-  ,Forms
-  ,Controls
-  ,StdCtrls
-  ,Buttons
   ,SysUtils
  ;
 
@@ -63,26 +57,6 @@ type
   // A List of TDBConnectParams
   TDBConnectParamsList = class(TObjectList)
     function FindByConnectionName(const psConnectionName : string): TDBConnectParams;
-  end;
-
-  // Form to promt user for DatabaseName, UserName and UserPassword
-  TFormPromptForLogon = class(TForm)
-  private
-    FDBConnectParams: TDBConnectParams;
-    FlblDatabaseName : TLabel;
-    FlblUserName    : TLabel;
-    FlblUserPassword : TLabel;
-    FeDatabaseName  : TEdit;
-    FeUserName      : TEdit;
-    FeUserPassword  : TEdit;
-    FbbCancel       : TBitBtn;
-    FbbLogon        : TBitBtn;
-    procedure DoCancelClick(sender : TObject);
-    procedure DoLogonClick( sender : TObject);
-    procedure SetDBConnectParams(const AValue: TDBConnectParams);
-  public
-    constructor CreateNew(AOwner : TComponent; Dummy : integer = 0); override;
-    property    DBConnectParams : TDBConnectParams read FDBConnectParams write SetDBConnectParams;
   end;
 
   // A pooled database connection
@@ -164,14 +138,12 @@ type
 
 implementation
 uses
-  tiLog
+   tiLog
   ,tiUtils
-  ,tiEncrypt
   ,tiOPFManager
   ,tiPersistenceLayers
   ,tiConstants
   ,tiExcept
-  ,Math
  ;
 
 const
@@ -317,155 +289,6 @@ begin
   Assert(pDBConnection.TestValid(TPooledDB), cErrorTIPerObjAbsTestValid);
   Assert(not pDBConnection.Database.InTransaction, 'Database in transaction immediately before being unlocked in DBConnectionPool.');
   inherited UnLock(pDBConnection);
-end;
-
-constructor TFormPromptForLogon.CreateNew(AOwner: TComponent; Dummy : integer = 0);
-begin
-  inherited CreateNew(AOwner, Dummy);
-  FormStyle  := fsStayOnTop;
-  BorderStyle := bsDialog;
-  BorderIcons := [];
-  Position   := poScreenCenter;
-  Width      := 177;
-  Height     := 207;
-  Caption    := ' Database logon';
-
-  FeDatabaseName := TEdit.Create(self);
-  with FeDatabaseName do begin
-    parent  := self;
-    Left    := 20  ;
-    Top     := 28  ;
-    Width   := 137 ;
-    Height  := 21  ;
-    TabOrder := 0   ;
-  end;
-
-  FeUserName := TEdit.Create(self);
-  with FeUserName do begin
-    Parent  := self;
-    Left    := 20  ;
-    Top     := 68  ;
-    Width   := 137 ;
-    Height  := 21  ;
-    TabOrder := 1   ;
-  end;
-
-  FeUserPassword := TEdit.Create(self);
-  with FeUserPassword do begin
-    Parent := self;
-    Left  := 20;
-    Top   := 112;
-    Width := 137;
-    Height := 21;
-    PasswordChar := '*';
-    {$IFDEF LINUX}
-    EchoMode := emPassword;
-    {$ENDIF LINUX}
-    TabOrder := 2;
-  end;
-
-  FlblDatabaseName := TLabel.Create(self);
-  with FlblDatabaseName do begin
-    parent      := self;
-    Left        := 8 ;
-    Top         := 12;
-    Width       := 75;
-    Height      := 13;
-    Caption     := '&Database name';
-    FocusControl := FeDatabaseName;
-  end;
-
-  FlblUserName := TLabel.Create(self);
-  with FlblUserName do begin
-    parent      := self;
-    Left        :=  8;
-    Top         := 52;
-    Width       := 51;
-    Height      := 13;
-    Caption     := '&User name';
-    FocusControl := FeUserName;
-  end;
-
-  FlblUserPassword := TLabel.Create(self);
-  with FlblUserPassword do begin
-    parent      := self;
-    Left        := 8            ;
-    Top         := 96           ;
-    Width       := 46           ;
-    Height      := 13           ;
-    Caption     := '&Password'  ;
-    FocusControl := FeUserPassword;
-  end;
-
-  FbbLogon := TBitBtn.Create(self);
-  with FbbLogon do begin
-    Parent  := self;
-    Left    := 8;
-    Top     := 148;
-    Width   := 75;
-    Height  := 25;
-    Kind    := bkOK;
-    Caption := '&Logon';
-    Default := True;
-    ModalResult := mrNone;
-    TabOrder := 3;
-    OnClick := DoLogonClick;
-  end;
-
-  FbbCancel := TBitBtn.Create(self);
-  with FbbCancel do begin
-    Parent  := self;
-    Left    := 88;
-    Top     := 148;
-    Width   := 75;
-    Height  := 25;
-    Kind    := bkCancel;
-    Cancel  := True;
-    Caption := '&Cancel';
-    ModalResult := mrNone;
-    TabOrder := 4;
-    OnClick := DoCancelClick;
-  end;
-
-end;
-
-procedure TFormPromptForLogon.DoCancelClick(sender: TObject);
-begin
-  FDBConnectParams.Cancelled := true;
-  ModalResult := mrCancel;
-  Close;
-end;
-
-procedure TFormPromptForLogon.DoLogonClick(sender: TObject);
-begin
-  if FeDatabaseName.Text = '' then begin
-    FeDatabaseName.SetFocus;
-    raise exception.Create('Please enter a database name');
-  end;
-  FDBConnectParams.DatabaseName := FeDatabaseName.Text;
-
-  if FeUserName.Text = '' then begin
-    FeUserName.SetFocus;
-    raise exception.Create('Please enter a user name');
-  end;
-  FDBConnectParams.UserName    := FeUserName.Text    ;
-
-  if FeUserPassword.Text = '' then begin
-    FeUserPassword.SetFocus;
-    raise exception.Create('Please enter a password');
-  end;
-  FDBConnectParams.UserPassword := FeUserPassword.Text;
-
-  ModalResult := mrOK;
-  Close;
-end;
-
-procedure TFormPromptForLogon.SetDBConnectParams(const AValue: TDBConnectParams);
-begin
-  FDBConnectParams   := AValue;
-  FeDatabaseName.Text := FDBConnectParams.DatabaseName;
-  FeUserName.Text    := FDBConnectParams.UserName    ;
-  FeUserPassword.Text := FDBConnectParams.UserPassword;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
