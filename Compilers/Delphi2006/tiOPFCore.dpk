@@ -51,7 +51,6 @@ contains
   tiPool in '..\..\Core\tiPool.pas',
   tiQuery in '..\..\Core\tiQuery.pas',
   tiQueue in '..\..\Core\tiQueue.pas',
-  tiRegINI in '..\..\Core\tiRegINI.pas',
   tiPersistenceLayers in '..\..\Core\tiPersistenceLayers.pas',
   tiSingleInstanceApp in '..\..\Core\tiSingleInstanceApp.pas',
   tiStreams in '..\..\Core\tiStreams.pas',
@@ -63,6 +62,8 @@ contains
   tiVisitorDBAutoGen in '..\..\Core\tiVisitorDBAutoGen.pas',
   tiCriteria in '..\..\Core\tiCriteria.pas',
   tiVisitorCriteria in '..\..\Core\tiVisitorCriteria.pas',
-  tiTokenLibrary in '..\..\Core\tiTokenLibrary.pas';
+  tiTokenLibrary in '..\..\Core\tiTokenLibrary.pas',
+  tiRegistry in '..\..\Core\tiRegistry.pas',
+  tiINI in '..\..\Core\tiINI.pas';
 
 end.
