@@ -3,6 +3,7 @@ Version History:
   26-Apr 2002   Andrew Cumming                  Move includes to allow D6 compile
    7-Mar 2002   Grahame Grieve                  Total Rewrite of Tests
    4-Jun 2003   Peter Hinrichsen                Cloned from IndySoap to tiOPF
+   2-July 2007  Peter Hinrichsen                Refactored to remove dependency on Windows.pas & GUI code
 }
 
 unit tiBaseObject_TST;
@@ -11,118 +12,208 @@ unit tiBaseObject_TST;
 
 {$IFNDEF FPC}
   {$IFNDEF OBJECT_TRACKING}
-    Currently, you must have OBJECT_TRACKING defined to run the tests
+    You must have OBJECT_TRACKING defined to run the tests
   {$ENDIF}
 {$ENDIF}
 
 
 interface
+
 uses
   {$IFNDEF FPC}
   TestFramework,
   {$ENDIF}
   tiBaseObject
   ,tiTestFramework
+  ,Classes
  ;
 
 type
-  TtiObjAbsTestClass = class (TtiBaseObject)
-  end;
 
   TTestTIBaseObject = class (TtiTestCase)
   published
-    procedure TestDebug1;
-    procedure TestDebug2;
-    procedure TestDebug3;
-    procedure TestDebug4;
-    procedure TestDebug5;
-    procedure TestDebug6;
+    procedure TObjectFree;
+    procedure TtiBaseObjectFree;
+    procedure TObjectNillFree;
+    procedure TtiBaseObjectNillFree;
+    procedure ValidNill;
+    procedure ValidClass;
+    procedure ValidPass;
+    procedure ValidFail1;
+    procedure ValidFail2;
+    procedure tiGetTotalObjectCount;
+    procedure tiDescribeLiveObjects;
   end;
+
+  TtiBaseObjectTest = class(TtiBaseObject);
 
 procedure RegisterTests;
 
 
 implementation
 uses
-  tiDUnitDependencies
+   SysUtils
+  ,tiDUnitDependencies
  ;
-
-var
-  GTest : TtiObjAbsTestClass;
-
 
 procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIBaseObject);
 end;
 
-
-procedure TTestTIBaseObject.TestDebug1;
+procedure TTestTIBaseObject.ValidNill;
+var
+  LO : TtiBaseObject;
 begin
-  GTest := nil;
-  check(GTest = nil, 'GTest is not nil');
-  check(not GTest.TestValid, 'GTest is nil and valid');
+  LO := nil;
+  check(LO = nil);
+  check(not LO.TestValid);
+  check(LO.TestValid(TtiBaseObject, True));
 end;
 
-
-procedure TTestTIBaseObject.TestDebug2;
+procedure TTestTIBaseObject.ValidClass;
+var
+  LO : TtiBaseObject;
 begin
-  GTest := TtiObjAbsTestClass(Random(20000)+2000);
+  LO := TtiBaseObject.Create;
+  try
+    Check(LO.TestValid(TtiBaseObject));
+    Check(not LO.TestValid(TtiBaseObjectTest));
+  finally
+    LO.Free;
+  end;
+  LO := TtiBaseObjectTest.Create;
+  try
+    Check(LO.TestValid(TtiBaseObjectTest));
+  finally
+    LO.Free;
+  end;
+end;
+
+procedure TTestTIBaseObject.ValidFail1;
+var
+  LO : TtiBaseObject;
+begin
+  LO := TtiBaseObject(Random(20000)+2000);
   {$IFNDEF FPC}
-  check(not GTest.TestValid, 'GTest is random and valid');
+  check(not LO.TestValid);
   {$ELSE}
   check(True, 'fpcUnit has its own memory leak tests');
   {$ENDIF}
 end;
 
-
-procedure TTestTIBaseObject.TestDebug3;
+procedure TTestTIBaseObject.ValidPass;
+var
+  LO : TtiBaseObject;
 begin
-  GTest := TtiObjAbsTestClass.Create;
-  check(GTest.TestValid, 'GTest is created but not valid');
+  LO := TtiBaseObject.Create;
+  try
+    check(LO.TestValid);
+  finally
+    LO.Free;
+  end;
 end;
 
-
-procedure TTestTIBaseObject.TestDebug4;
+{$WARNINGS OFF}
+procedure TTestTIBaseObject.TObjectFree;
+var
+  LO: TObject;
 begin
-  GTest.free;
+  try
+    LO.Free;
+    Fail('Exception should have been raised');
+  except
+    on e: Exception do
+      CheckIs(E, EInvalidPointer);
+  end;
+end;
+{$WARNINGS ON}
+
+procedure TTestTIBaseObject.TObjectNillFree;
+var
+  LO: TObject;
+begin
+  LO:= nil;
+  LO.Free;
+end;
+
+{$WARNINGS OFF}
+procedure TTestTIBaseObject.TtiBaseObjectFree;
+var
+  LO: TtiBaseObject;
+begin
+  try
+    LO.Free;
+    Fail('Exception should have been raised');
+  except
+    on e: Exception do
+      CheckIs(E, EInvalidPointer);
+  end;
+end;
+{$WARNINGS ON}
+
+procedure TTestTIBaseObject.TtiBaseObjectNillFree;
+var
+  LO: TtiBaseObject;
+begin
+  LO:= nil;
+  LO.Free;
+end;
+
+procedure TTestTIBaseObject.ValidFail2;
+var
+  LO : TtiBaseObject;
+begin
+  LO:= TtiBaseObject.Create;
+  LO.free;
   {$IFNDEF FPC}
-  check(not GTest.TestValid, 'GTest is still valid after freeing');
+  check(not LO.TestValid);
   {$ELSE}
   check(True, 'fpcUnit has its own memory leak tests');
   {$ENDIF}
 end;
 
-
-procedure TTestTIBaseObject.TestDebug5;
+procedure TTestTIBaseObject.tiDescribeLiveObjects;
+var
+  LSL: TStringList;
+  LO: TtiBaseObjectTest;
 begin
-  {$IFNDEF FPC}
-  check(IdGetThreadObjectCount > 0, 'Thread Object Counting is not working');
-  {$ELSE}
-  check(True, 'fpcUnit has its own memory leak tests');
-  {$ENDIF}
+  LSL:= TStringList.Create;
+  try
+    LSL.Text:= tiBaseObject.tiDescribeLiveObjects;
+    CheckEquals('', LSL.Values[TtiBaseObjectTest.ClassName]);
+    LO:= TtiBaseObjectTest.Create;
+    try
+      LSL.Text:= tiBaseObject.tiDescribeLiveObjects;
+      CheckEquals('1', LSL.Values[TtiBaseObjectTest.ClassName]);
+    finally
+      LO.Free;
+    end;
+  finally
+    LSL.Free;
+  end;
 end;
 
 
-procedure TTestTIBaseObject.TestDebug6;
+procedure TTestTIBaseObject.tiGetTotalObjectCount;
 {$IFNDEF FPC}
 var
-  c,i: integer;
+  LO : TtiBaseObject;
+  LCount: integer;
 {$ENDIF}
 begin
   {$IFNDEF FPC}
-  c := IdGetThreadObjectCount;
-  for i := 0 to 100 do
-    begin
-    GTest := TtiObjAbsTestClass.Create;
-    GTest.free;
-    end;
-  Check(IdGetThreadObjectCount - c = 0, 'Thread Object Counting didn''t hold it''s value');
+  LCount := tiBaseObject.tiGetTotalObjectCount;
+  LO := TtiBaseObject.Create;
+  try
+    CheckEquals(LCount + 1, tiBaseObject.tiGetTotalObjectCount);
+  finally
+    LO.free;
+  end;
   {$ELSE}
   check(True, 'fpcUnit has its own memory leak tests');
   {$ENDIF}
 end;
-
 
 end.
 
