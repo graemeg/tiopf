@@ -2,17 +2,21 @@ unit tiVisitor;
 
 {$I tiDefines.inc}
 
+// ToDo:
+//    Move RTTI methods into tiRTTI.pas
+//    Group visitors by registered name
+//    Remove SQLMgrDataSource
+//    Audit for unit tests
+//    Add VisitBranch method
+
 interface
 uses
-  Classes
-  ,tiBaseObject
-  ,TypInfo
+   tiBaseObject
   ,tiStreams
-  {$IFDEF MSWINDOWS}
-  ,Windows
-  {$ENDIF MSWINDOWS}
-  ,Controls   // For Cusror - watch for GUI dependencies
-  ,SyncObjs   // This unit must always appear after the Windows unit!
+  ,Classes
+  ,TypInfo
+  ,SyncObjs
+  ,SysUtils
  ;
 
 const
@@ -74,7 +78,7 @@ type
   TtiVisited = class;
   {$M-}
   TtiVisitor = class;
-                       
+
   TtiVisitorCtrlr = class(TtiBaseObject)
   private
     FDBConnectionName: string;
@@ -248,10 +252,8 @@ type
   private
     FVisMappings : TStringList;
     FHourGlassCount : integer;
-    FCritSec: TCriticalSection;
-    FThreadIDList : TList;
+    FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
     FBreakOnException: boolean;
-    FSavedCursor : TCursor;
     procedure GetVisitors(      AVisitors : TList; const AGroupName : string);
     procedure GetVisitorControllers(const AVisitors        : TList;
                                      const AVisitorMgrs     : TList;
@@ -271,11 +273,6 @@ type
                                const AVisited : TtiVisited;
                                const ADBConnectionName : string;
                                const APersistenceLayerName     : string);
-    procedure Lock;
-    procedure UnLock;
-    procedure AddThreadID(   AThreadID : LongWord);
-    procedure RemoveThreadID(AThreadID : LongWord);
-    function  GetThreadCount : LongWord;
   public
     constructor Create; virtual;
     destructor  Destroy; override;
@@ -286,15 +283,14 @@ type
                          const AVisited         : TtiVisited;
                          const ADBConnectionName : string = '';
                          const APersistenceLayerName    : string = ''): string;
-    property    ThreadCount : LongWord read GetThreadCount;
     property    BreakOnException : boolean read FBreakOnException write FBreakOnException;
   end;
 
 
 // Global proc to write a apply a TVisStream (as a TFileStream) to a TtiVisited.
 procedure VisStreamToFile(AData       : TtiVisited;
-                           AFileName  : string;
-                           AVisClassRef : TtiVisitorClass);
+                          AFileName  : string;
+                          AVisClassRef : TtiVisitorClass);
 
 
 implementation
@@ -304,10 +300,8 @@ uses
   ,tiConstants
   ,tiPersistenceLayers
   ,tiExcept
-  ,SysUtils  // Exception
   ,Contnrs
   ,tiUtils
-  ,Forms     // ToDo: Application.MainForm - UI dependency :(
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
@@ -700,25 +694,10 @@ end;
 
 { TtiVisitorManager }
 
-procedure TtiVisitorManager.AddThreadID(AThreadID: LongWord);
-begin
-  if (AThreadID = MainThreadID) then
-    Exit; //==>
-  Lock;
-  try
-    if FThreadIDList.IndexOf(TObject(AThreadID)) = -1 then
-      FThreadIDList.Add(TObject(AThreadID));
-  finally
-    UnLock;
-  end;
-end;
-
-
 constructor TtiVisitorManager.Create;
 begin
   inherited;
-  FThreadIDList    := TList.Create;
-  FCritSec         := TCriticalSection.Create;
+  FSynchronizer         := TMultiReadExclusiveWriteSynchronizer.Create;
   FVisMappings     := TStringList.Create;
   FHourGlassCount  := 0;
   FBreakOnException := True;
@@ -732,8 +711,7 @@ begin
   for i := FVisMappings.Count-1 downto 0 do
     TObject(FVisMappings.Objects[i]).Free;
   FVisMappings.Free;
-  FreeAndNil(FCritSec);
-  FThreadIDList.Free;
+  FreeAndNil(FSynchronizer);
   inherited;
 end;
 
@@ -764,7 +742,6 @@ function TtiVisitorManager.Execute(const AGroupName      : string;
                             const ADBConnectionName : string = '';
                             const APersistenceLayerName    : string = ''): string;
 var
-  lbHourGlassRequired : boolean;
   lPerLayerName      : string;
   lDBConnectionName  : string;
 begin
@@ -772,74 +749,40 @@ begin
   if gTIOPFManager.Terminated then
     Exit; //==>
 
-  AddThreadID(GetCurrentThreadID);
+  Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
+
+  if APersistenceLayerName = '' then
+  begin
+    Assert(gTIOPFManager.DefaultPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
+    lPerLayerName := gTIOPFManager.DefaultPerLayer.PerLayerName
+  end else
+    lPerLayerName := APersistenceLayerName;
+
+  if ADBConnectionName = '' then
+    lDBConnectionName := gTIOPFManager.DefaultDBConnectionName
+  else
+    lDBConnectionName := ADBConnectionName;
+
+  Assert(lDBConnectionName <> '',
+          'Either the gTIOPFManager.DefaultDBConnectionName must be set, ' +
+          'or the DBConnectionName must be passed as a parameter to ' +
+          'gVisMgr.Execute()');
 
   try
-    Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
-
-    if APersistenceLayerName = '' then
+    Result := '';
+    ProcessVisitors(AGroupName, AVisited, lDBConnectionName, lPerLayerName);
+  except
+    // Log and display any error messages
+    on e:exception do
     begin
-      Assert(gTIOPFManager.DefaultPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
-      lPerLayerName := gTIOPFManager.DefaultPerLayer.PerLayerName
-    end else
-      lPerLayerName := APersistenceLayerName;
-
-    if ADBConnectionName = '' then
-      lDBConnectionName := gTIOPFManager.DefaultDBConnectionName
-    else
-      lDBConnectionName := ADBConnectionName;
-
-    Assert(lDBConnectionName <> '',
-            'Either the gTIOPFManager.DefaultDBConnectionName must be set, ' +
-            'or the DBConnectionName must be passed as a parameter to ' +
-            'gVisMgr.Execute()');
-
-    // If we are in the main thread, and Application.MainForm <> nil,
-    // then we require an hourglass
-    lbHourGlassRequired :=
-      (GetCurrentThreadID = MainThreadID) and
-      (Application.MainForm <> nil);
-
-    // If an hourglass is required, then turn it on and inc the counter
-    if lbHourGlassRequired then
-    begin
-      if (FHourGlassCount = 0) then
-      begin
-        FSavedCursor := Screen.Cursor;
-        Screen.Cursor := crHourGlass;
-      end;
-      Inc(FHourGlassCount);
+      Result := e.message;
+      LogError(e.message, false);
+      if BreakOnException then
+        raise;
     end;
-
-    try
-      Result := '';
-      try
-        ProcessVisitors(AGroupName, AVisited, lDBConnectionName, lPerLayerName);
-      finally
-        // If an hourglass was required, then dec the counter and turn it off
-        if lbHourGlassRequired then
-        begin
-          Dec(FHourGlassCount);
-          if (FHourGlassCount = 0) then
-            Screen.Cursor := FSavedCursor;
-        end;
-      end;
-
-    except
-      // Log and display any error messages
-      on e:exception do
-      begin
-        Result := e.message;
-        LogError(e.message, false);
-        if BreakOnException then
-          raise;
-      end;
-    end;
-
-    Log('Finished process visitors for <' + AGroupName + '>', lsVisitor);
-  finally
-    RemoveThreadID(GetCurrentThreadID);
   end;
+
+  Log('Finished process visitors for <' + AGroupName + '>', lsVisitor);
 end;
 
 
@@ -945,13 +888,6 @@ begin
       AVisitors.Add(TVisMapping(FVisMappings.Objects[i]).ClassRef.Create);
 end;
 
-
-procedure TtiVisitorManager.Lock;
-begin
-  FCritSec.Enter;
-end;
-
-
 procedure TtiVisitorManager.ProcessVisitorControllers(AVisitors, pVisitorControllers: TList;
   pProc: TProcessVisitorMgrs; psMethodName : string);
 var
@@ -994,35 +930,40 @@ procedure TtiVisitorManager.ProcessVisitors(const AGroupName       : string;
                                      const ADBConnectionName : string;
                                      const APersistenceLayerName    : string);
 var
-  lVisitors          : TObjectList;
-  lVisitorMgrs       : TObjectList;
+  LVisitors          : TObjectList;
+  LVisitorMgrs       : TObjectList;
 begin
-  lVisitors := TObjectList.Create;
+  LVisitors := TObjectList.Create;
   try
-    lVisitorMgrs := TObjectList.Create;
+    LVisitorMgrs := TObjectList.Create;
     try
-      GetVisitors(   lVisitors, AGroupName );
-      GetVisitorControllers(lVisitors, lVisitorMgrs, ADBConnectionName, APersistenceLayerName);
-      Log('Visitor count: ' +
-           IntToStr(lVisitors.Count) +
-           ' VisitorMgr count: ' +
-           IntToStr(lVisitorMgrs.Count), lsVisitor);
-      ProcessVisitorControllers(lVisitors, lVisitorMgrs, DoBeforeExecute, 'DoBeforeExecute');
+      FSynchronizer.BeginRead;
       try
-        ExecuteVisitors(lVisitors, AVisited);
-        ProcessVisitorControllers(lVisitors, lVisitorMgrs, DoAfterExecute, 'DoAfterExecute');
-      except
-        on e:exception do
-        begin
-          ProcessVisitorControllers(lVisitors, lVisitorMgrs, DoAfterExecuteError, 'DoAfterExecuteError ');
-          raise;
+        GetVisitors(   LVisitors, AGroupName );
+        GetVisitorControllers(LVisitors, LVisitorMgrs, ADBConnectionName, APersistenceLayerName);
+        Log('Visitor count: ' +
+             IntToStr(LVisitors.Count) +
+             ' VisitorMgr count: ' +
+             IntToStr(LVisitorMgrs.Count), lsVisitor);
+        ProcessVisitorControllers(LVisitors, LVisitorMgrs, DoBeforeExecute, 'DoBeforeExecute');
+        try
+          ExecuteVisitors(LVisitors, AVisited);
+          ProcessVisitorControllers(LVisitors, LVisitorMgrs, DoAfterExecute, 'DoAfterExecute');
+        except
+          on e:exception do
+          begin
+            ProcessVisitorControllers(LVisitors, LVisitorMgrs, DoAfterExecuteError, 'DoAfterExecuteError ');
+            raise;
+          end;
         end;
+      finally
+        FSynchronizer.EndRead;
       end;
     finally
-      lVisitorMgrs.Free;
+      LVisitorMgrs.Free;
     end;
   finally
-    lVisitors.Free;
+    LVisitors.Free;
   end;
 end;
 
@@ -1033,59 +974,23 @@ var
   lVisMapping : TVisMapping;
   lsGroupName : string;
 begin
-  lsGroupName := UpperCase(AGroupName);
-  lVisMapping := TVisMapping.CreateExt(lsGroupName, AClassRef);
-  FVisMappings.AddObject(lsGroupName, lVisMapping);
-end;
-
-
-procedure TtiVisitorManager.RemoveThreadID(AThreadID: LongWord);
-var
-  i : integer;
-begin
-  if (AThreadID = MainThreadID) then
-    Exit; //==>
-  if gTIOPFManager.Terminated then
-    Exit; //==>
-  Lock;
+  FSynchronizer.BeginWrite;
   try
-    if not gTIOPFManager.Terminated then
-    begin
-      i := -1;
-      try
-        i := FThreadIDList.IndexOf(TObject(AThreadID));
-      except end;
-      if i <> -1 then
-       FThreadIDList.Delete(i);
-    end;
+    lsGroupName := UpperCase(AGroupName);
+    lVisMapping := TVisMapping.CreateExt(lsGroupName, AClassRef);
+    FVisMappings.AddObject(lsGroupName, lVisMapping);
   finally
-    UnLock;
+    FSynchronizer.EndWrite;
   end;
 end;
-
-
-function TtiVisitorManager.GetThreadCount: LongWord;
-begin
-  Lock;
-  try
-    result := FThreadIDList.Count;
-  finally
-    UnLock;
-  end;
-end;
-
-
-procedure TtiVisitorManager.UnLock;
-begin
-  FCritSec.Leave;
-end;
-
 
 procedure TtiVisitorManager.UnRegisterVisitors(const AGroupName: string);
 var
   i : integer;
   lsGroupName : string;
 begin
+  FSynchronizer.BeginWrite;
+  try
   lsGroupName := upperCase(AGroupName);
   for i := FVisMappings.Count - 1 downto 0 do
     if FVisMappings.Strings[i] = lsGroupName then
@@ -1093,6 +998,9 @@ begin
       TVisMapping(FVisMappings.Objects[i]).Free;
       FVisMappings.Delete(i);
     end;
+  finally
+    FSynchronizer.EndWrite;
+  end;
 end;
 
 
