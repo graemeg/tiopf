@@ -4,15 +4,15 @@ unit tiQuery;
 
 interface
 uses
-  Classes
+   Classes
   ,Contnrs
   ,tiClassToDBMap_BOM
   ,tiObject
   ,tiBaseObject
-  ,SysUtils
   ,tiUtils
   ,tiExcept
   ,tiVisitor
+  ,SysUtils
  ;
 
 const
@@ -632,8 +632,6 @@ uses
   ,tiDBConnectionPool
   ,tiConstants
   ,tiStreams
-  ,Controls
-  ,Forms
   ,Math
   ,TypInfo
  ;
@@ -730,22 +728,15 @@ end;
 procedure TtiDBMetaData.Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = '');
 var
   lPooledDB : TPooledDB;
-  lCursor : TCursor;
 begin
   if ObjectState <> posEmpty then
     Exit; //==>
-  lCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  lPooledDB := TDBConnectionPool(Owner).Lock;
   try
-    lPooledDB := TDBConnectionPool(Owner).Lock;
-    try
-      Clear;
-      lPooledDB.Database.ReadMetaDataTables(Self);
-    finally
-      TDBConnectionPool(Owner).UnLock(lPooledDB);
-    end;
+    Clear;
+    lPooledDB.Database.ReadMetaDataTables(Self);
   finally
-    Screen.Cursor := lCursor;
+    TDBConnectionPool(Owner).UnLock(lPooledDB);
   end;
 end;
 
@@ -868,21 +859,14 @@ end;
 procedure TtiDBMetaDataTable.Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = '');
 var
   lPooledDB : TPooledDB;
-  lCursor : TCursor;
 begin
   if ObjectState <> posPK then
     Exit; //==>
-  lCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  lPooledDB := TDBConnectionPool(Owner.Owner).Lock;
   try
-    lPooledDB := TDBConnectionPool(Owner.Owner).Lock;
-    try
-    lPooledDB.Database.ReadMetaDataFields(Self);
-    finally
-      TDBConnectionPool(Owner.Owner).UnLock(lPooledDB);
-    end;
+  lPooledDB.Database.ReadMetaDataFields(Self);
   finally
-    Screen.Cursor := lCursor;
+    TDBConnectionPool(Owner.Owner).UnLock(lPooledDB);
   end;
 end;
 
