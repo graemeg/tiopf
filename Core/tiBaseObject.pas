@@ -131,27 +131,6 @@ uses
 const
   ASSERT_UNIT = 'IdSoapDebug';
 
-procedure LogMessage(const AMessage : string);
-var
-  lsl : TStringList;
-  lFileName : string;
-begin
-  // Write to the console if a console app
-  if IsConsole then
-    WriteLn(AMessage);
-
-  // Log to a file
-  lFileName :=
-    ChangeFileExt(ParamStr(0), '') + '_Leaks.txt';
-  lsl := TStringList.Create;
-  try
-    lsl.Text := AMessage;
-    lsl.SaveToFile(lFileName);
-  finally
-    lsl.Free;
-  end;
-end;
-
 {$IFNDEF DELPHI5ORABOVE}
 procedure FreeAndNil(var AObj);
 var
@@ -470,20 +449,8 @@ procedure CloseObjectTracking;
   end;
 const
   ASSERT_LOCATION = ASSERT_UNIT+'.CloseObjectTracking';
-var
-  ls: string;
 begin
   Assert(GIDObjectsCount <> NIL, ASSERT_LOCATION+': Attempt to finalize Object Tracking before it has been initialised');
-  if not _IsLibrary and (GTotalObjectCount > 0) then
-  begin
-    Assert(GIDObjectsCount.count > 0, ASSERT_LOCATION+': Total Indy Object count shows that objects exist, but Indy Object Class List is empty');
-    // Some Indy Objects are still live.....
-    // they can be described using DescribeLiveObjects
-    ls := tiDescribeLiveObjects;
-    {$IFDEF OBJECT_TRACKING}
-    LogMessage(ls);
-    {$ENDIF}
-  end;
   {$IFDEF OBJECT_TRACKING}
   FreeAndNil(gFullObjectList);
   FreeAndNil(gBreakPointList);
@@ -491,7 +458,6 @@ begin
   FreeAndNil(GIDObjectsCount);
   FreeAndNil(gObjectTrackingLock);
 end;
-
 
 function IdObjRegister(AObject: TObject): Cardinal;
 const
