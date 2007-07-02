@@ -70,6 +70,7 @@
     <DelphiCompile Include="tiOPFCore.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\..\Core\rtl.dcp" />
     <DCCReference Include="..\..\Core\tiBaseObject.pas" />
     <DCCReference Include="..\..\Core\tiClassToDBMap_BOM.pas" />
     <DCCReference Include="..\..\Core\tiClassToDBMap_Srv.pas" />
@@ -80,6 +81,7 @@
     <DCCReference Include="..\..\Core\tiDBConnectionPool.pas" />
     <DCCReference Include="..\..\Core\tiEncrypt.pas" />
     <DCCReference Include="..\..\Core\tiExcept.pas" />
+    <DCCReference Include="..\..\Core\tiINI.pas" />
     <DCCReference Include="..\..\Core\tiLog.pas" />
     <DCCReference Include="..\..\Core\tiLogToFile.pas" />
     <DCCReference Include="..\..\Core\tiObject.pas" />
@@ -89,7 +91,7 @@
     <DCCReference Include="..\..\Core\tiPool.pas" />
     <DCCReference Include="..\..\Core\tiQuery.pas" />
     <DCCReference Include="..\..\Core\tiQueue.pas" />
-    <DCCReference Include="..\..\Core\tiRegINI.pas" />
+    <DCCReference Include="..\..\Core\tiRegistry.pas" />
     <DCCReference Include="..\..\Core\tiSingleInstanceApp.pas" />
     <DCCReference Include="..\..\Core\tiStreams.pas" />
     <DCCReference Include="..\..\Core\tiSyncObjs.pas" />
@@ -101,8 +103,7 @@
     <DCCReference Include="..\..\Core\tiVisitorDB.pas" />
     <DCCReference Include="..\..\Core\tiVisitorDBAutoGen.pas" />
     <DCCReference Include="..\..\Core\tiWin32.pas" />
-    <DCCReference Include="rtl.dcp" />
-    <DCCReference Include="vcl.dcp" />
+    <DCCReference Include="..\..\Core\vcl.dcp" />
     <None Include="..\..\Core\tiDefines.inc" />
   </ItemGroup>
 </Project>

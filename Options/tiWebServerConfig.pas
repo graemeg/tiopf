@@ -2,8 +2,8 @@ unit tiWebServerConfig;
 
 interface
 uses
-  tiBaseObject
-  ,tiRegINI
+   tiBaseObject
+  ,tiINI
  ;
 
 type

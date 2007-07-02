@@ -37,7 +37,7 @@ implementation
 uses
    tiUtils
   ,SysUtils
-  ,tiRegINI
+  ,tiINI
  ;
 
 var
@@ -87,13 +87,13 @@ end;
 
 procedure tiSaveWindowHandle(pForm : TForm);
 begin
-  gReg.WriteInteger('FMain', 'WindowHandle', pForm.Handle);
+  gINI.WriteInteger('FMain', 'WindowHandle', pForm.Handle);
 end;
 
 
 function tiGetWindowHandle : THandle;
 begin
-  result := THandle(gReg.ReadInteger('FMain', 'WindowHandle', 0));
+  result := THandle(gINI.ReadInteger('FMain', 'WindowHandle', 0));
 end;
 
 

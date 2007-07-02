@@ -210,7 +210,7 @@ uses
   ,tiUtils
   ,tiLog
   ,tiConstants
-  ,tiRegINI
+  ,tiINI
   ,tiExcept
 
   {$IFDEF LINK_XML}          ,tiQueryXML          {$ENDIF}

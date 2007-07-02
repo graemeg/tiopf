@@ -250,7 +250,7 @@ uses
   ,Lmessages
   ,LCLIntf
   {$ENDIF}
-  ,tiRegINI
+  ,tiINI
   ,Dialogs
  ;
 

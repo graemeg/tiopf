@@ -9,7 +9,7 @@ uses
   ,Controls
   ,StdCtrls
   ,tiDataBuffer_BOM
-  ,tiRegINI
+  ,tiINI
   {$IFDEF MSWINDOWS}
   ,Windows
   ,Messages
@@ -88,9 +88,6 @@ type
   function tiFormOffScreen(AForm: TForm): Boolean;
   {$ENDIF}
 {$ENDIF MSWINDOWS}
-
-  procedure ReadFormState(Ini: TtiINIFile; AForm: TForm; AHeight: integer = -1; AWidth: integer = -1); overload;
-  procedure ReadFormState(Reg: TtiRegINIFile; AForm: TForm); overload;
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -373,42 +370,6 @@ begin
 end;
   {$ENDIF}
 {$ENDIF MSWINDOWS}
-
-procedure ReadFormState(Ini: TtiINIFile; AForm: TForm; AHeight: integer = -1; AWidth: integer = -1);
-begin
-  // Default behaviour: retrieve form position, size and window state.
-  Ini.ReadFormState(AForm, AHeight, AWidth);
-
-  // If the form is off screen (positioned outside all monitor screens) then
-  // center the form on screen.
-{$IFDEF MSWINDOWS}
-  if (AForm.FormStyle <> fsMDIChild) {$IFNDEF FPC} and tiFormOffScreen(AForm) {$ENDIF} then
-  begin
-    if Assigned(Application.MainForm) and (Application.MainForm <> AForm) then
-      AForm.Position := poMainFormCenter
-    else
-      AForm.Position:= poScreenCenter;
-  end;
-{$ENDIF MSWINDOWS}
-end;
-
-procedure ReadFormState(Reg: TtiRegINIFile; AForm: TForm);
-begin
-  // Default behaviour: retrieve form position, size and window state.
-  Reg.ReadFormState(AForm);
-
-  // If the form is off screen (positioned outside all monitor screens) then
-  // center the form on screen.
-{$IFDEF MSWINDOWS}
-  if (AForm.FormStyle <> fsMDIChild) {$IFNDEF FPC} and tiFormOffScreen(AForm) {$ENDIF} then
-  begin
-    if Assigned(Application.MainForm) and (Application.MainForm <> AForm) then
-      AForm.Position := poMainFormCenter
-    else
-      AForm.Position:= poScreenCenter;
-  end;
-{$ENDIF MSWINDOWS}
-end;
 
 { TtiBruteForceNoFlicker }
 {$IFDEF MSWINDOWS}

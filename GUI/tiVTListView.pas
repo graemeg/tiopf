@@ -32,7 +32,7 @@ uses
   ,StdCtrls     // TLabel
   ,ExtCtrls     // TCustomPanel
   ,Buttons      // TSpeedButton
-  ,tiRegINI
+  ,tiINI
   ,tiStreams
 {$IFNDEF FPC}
 //  ,tiVirtualTrees

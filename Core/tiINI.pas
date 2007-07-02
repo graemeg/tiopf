@@ -1,4 +1,4 @@
-unit tiRegINI;
+unit tiINI;
 
 {$I tiDefines.inc}
 
@@ -8,27 +8,10 @@ interface
 uses
    Classes
   ,IniFiles
-  ,registry
   ,Forms
  ;
 
 type
-
-  // Registry manipulation - Registry key with the same name as the application
-  TtiRegINIFile = class(TRegINIFile)
-  public
-    constructor CreateExt;
-    procedure   ReadFormState(AForm : TForm);
-    procedure   WriteFormState(AForm : TForm);
-    function    ReadDate(     const ASection : string; AIndent : string; ADefault : TDateTime): TDateTime;
-    procedure   WriteDate(    const ASection : string; AIndent : string; ADateTime : TDateTime);
-    procedure   ReadStrings(  const ASection : string; AStrings : TStrings);
-    procedure   WriteStrings( const ASection : string; AStrings : TStrings);
-  end;
-
-  // Don't use this class, use TtiRegINIFile
-  TUserRegistry = class(TtiRegINIFile);
-
 
   // INI file manipulation - INI file name the same as the application
   // or in the same directory with a file name you specify
@@ -53,19 +36,7 @@ type
 
   end;
 
-  // Don't use TUserINIFile use TtiINIFile
-  TUserINIFile = class(TtiINIFile);
-
-// These are both singletons
-{$IFDEF MSWINDOWS}
-function gReg : TtiRegINIFile;
-{$ELSE}
-function gReg : TtiINIFile;
-{$ENDIF}
 function gINI(const AFileName: string = ''): TtiINIFile;
-
-var
- DefaultRegistryCompany : String = '';//better hierarchy in registry key
 
 implementation
 uses
@@ -78,171 +49,15 @@ uses
  ;
 
 var
-  uReg : TtiRegINIFile;
   uINI : TtiINIFile;
-
-
-{$IFDEF MSWINDOWS}
-function gReg : TtiRegINIFile;
-begin
-  if uReg = nil then
-    uReg := TtiRegINIFile.CreateExt;
-    result := uReg;
-end;
-{$ELSE}
-function gReg: TtiINIFile;
-begin
-  result := gINI;
-end;
-{$ENDIF}
 
 
 function gINI(const AFileName: string = ''): TtiINIFile;
 begin
   if uINI = nil then
-    uINI := TUserINIFile.CreateExt(AFileName);
+    uINI := TtiINIFile.CreateExt(AFileName);
   result := uINI;
 end;
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TtiRegINIFile
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-procedure TtiRegINIFile.ReadFormState(AForm: TForm);
-var
-  sRegKey : string;
-  liTop : integer;
-  liLeft : integer;
-  lHeight : integer;
-  lWidth : integer;
-begin
-  sRegKey := AForm.name + 'State';
-  // Only set the form size if a bsSizable window
-  if AForm.borderStyle = bsSizeable then
-  begin
-    lHeight := readInteger(sRegKey, 'Height', -1);
-    lWidth := readInteger(sRegKey, 'Width',  -1);
-    if (lHeight = -1) or (lWidth = -1) then
-    begin
-      lHeight := Screen.Height div 10 * 9;
-      lWidth := Screen.Width  div 10 * 9;
-    end;
-    AForm.Height := lHeight;
-    AForm.Width := lWidth;
-  end;
-
-  // Do not read position if an MDIChild form
-  if AForm.FormStyle <> fsMDIChild then
-  begin
-    // Read form position, -1 if not stored in registry
-    liTop := readInteger(sRegKey, 'Top',    -1);
-    liLeft := readInteger(sRegKey, 'Left',   -1);
-    // The form pos was found in the registr
-    if (liTop <> -1) and (liLeft <> -1) then begin
-      AForm.Top   := readInteger(sRegKey, 'Top',    AForm.Top);
-      AForm.Left  := readInteger(sRegKey, 'Left',   AForm.Left);
-      AForm.Position := poDesigned;
-    // No form pos in the registry, so default to screen center
-    end else
-    begin
-      if Application.MainForm <> AForm then
-        AForm.Position := poMainFormCenter
-      else
-        AForm.Position:= poScreenCenter;
-    end;
-  end;
-  AForm.WindowState := TWindowState(ReadInteger(sRegKey, 'WindowState', ord(wsNormal)));
-end;
-
-
-
-procedure TtiRegINIFile.WriteFormState(AForm : TForm);
-var
-  sRegKey : string;
-begin;
-  sRegKey := AForm.name + 'State';
-  writeInteger(sRegKey, 'WindowState', ord(AForm.WindowState));
-  if AForm.WindowState = wsNormal then
-  begin
-    writeInteger(sRegKey, 'Top',    AForm.Top);
-    writeInteger(sRegKey, 'Left',   AForm.Left);
-    if AForm.borderStyle = bsSizeable then
-    begin
-      writeInteger(sRegKey, 'Height', AForm.Height);
-      writeInteger(sRegKey, 'Width',  AForm.Width);
-    end;
-  end;
-end;
-
-
-
-function TtiRegINIFile.ReadDate(const ASection : string; AIndent : string; ADefault : TDateTime): TDateTime;
-var sDate : string;
-begin
-  sDate := gReg.readString(ASection, AIndent, DateTimeToStr(ADefault));
-  try
-    result := StrToDateTime(sDate);
-  except
-    result := date;
-  end;
-end;
-
-
-
-procedure TtiRegINIFile.WriteDate(const ASection : string; AIndent : string; ADateTime : TDateTime);
-var sDate : string;
-begin
-  try
-    sDate := formatDateTime(csWinDateTimeFormat, ADateTime);
-  except
-    sDate := formatDateTime(csWinDateTimeFormat, date);
-  end;
-  gReg.writeString(ASection, AIndent, sDate);
-end;
-
-
-
-procedure TtiRegINIFile.WriteStrings(const ASection : string; AStrings : TStrings);
-var
-  i: integer;
-begin
-  self.eraseSection(ASection);
-  for i := 0 to AStrings.count - 1 do begin
-    self.writeString(ASection, 'line' + intToStr(i), AStrings.strings[i]);
-  end;
-end;
-
-
-
-procedure TtiRegINIFile.ReadStrings(const ASection : string; AStrings : TStrings);
-var
-  i: integer;
-  sectionValues: TStringList;
-begin
-  sectionValues := TStringList.Create;
-  AStrings.clear;
-  try
-    self.readSectionValues(ASection, sectionValues);
-    for i := 0 to sectionValues.count - 1 do begin
-      AStrings.add(self.readString(ASection, 'line' + intToStr(i), ''));
-    end;
-  finally
-    sectionValues.free;
-  end;
-end;
-
-
-
-constructor TtiRegINIFile.CreateExt;
-begin
-  if DefaultRegistryCompany <> '' then
-    Create('Software\' + DefaultRegistryCompany + '\' + tiApplicationName)
-  else
-    Create('Software\' + tiApplicationName);
-end;
-
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -405,13 +220,10 @@ begin
 end;
 
 initialization
-  uReg := nil;//to be sure
   uINI := nil;
-  DefaultRegistryCompany := '';
 
 finalization
-  if uReg<>nil then uReg.free;
-  if uINI<>nil then uINI.Free;
+  uINI.Free;
 
 end.
 

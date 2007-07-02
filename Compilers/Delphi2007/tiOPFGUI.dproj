@@ -52,6 +52,10 @@
     <DelphiCompile Include="tiOPFGUI.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\..\GUI\bdertl.dcp" />
+    <DCCReference Include="..\..\GUI\dbrtl.dcp" />
+    <DCCReference Include="..\..\GUI\designide.dcp" />
+    <DCCReference Include="..\..\GUI\rtl.dcp" />
     <DCCReference Include="..\..\GUI\tiButtons.pas" />
     <DCCReference Include="..\..\GUI\tiCompositeMediators.pas" />
     <DCCReference Include="..\..\GUI\tiCtrlButtonPanel.pas" />
@@ -61,6 +65,7 @@
     <DCCReference Include="..\..\GUI\tiGenericListMediators.pas" />
     <DCCReference Include="..\..\GUI\tiGenericTreeViewMediator.pas" />
     <DCCReference Include="..\..\GUI\tiGUIConstants.pas" />
+    <DCCReference Include="..\..\GUI\tiGUIINI.pas" />
     <DCCReference Include="..\..\GUI\tiGUIUtils.pas" />
     <DCCReference Include="..\..\GUI\tiHotImage.pas" />
     <DCCReference Include="..\..\GUI\tiHyperlink.pas" />
@@ -75,6 +80,8 @@
     <DCCReference Include="..\..\GUI\tiLogToErrorDialog.pas" />
     <DCCReference Include="..\..\GUI\tiLogToGUI.pas" />
     <DCCReference Include="..\..\GUI\tiMemoReadOnly.pas" />
+    <DCCReference Include="..\..\GUI\tiOPFCore.dcp" />
+    <DCCReference Include="..\..\GUI\tiOPFOptions.dcp" />
     <DCCReference Include="..\..\GUI\tiPerAwareCombosAbs.pas" />
     <DCCReference Include="..\..\GUI\tiPerAwareCtrls.pas" />
     <DCCReference Include="..\..\GUI\tiPerAwareDateRange.pas" />
@@ -97,16 +104,10 @@
     <DCCReference Include="..\..\GUI\tiVTFilter.pas" />
     <DCCReference Include="..\..\GUI\tiVTListView.pas" />
     <DCCReference Include="..\..\GUI\tiVTTreeView.pas" />
-    <DCCReference Include="bdertl.dcp" />
-    <DCCReference Include="dbrtl.dcp" />
-    <DCCReference Include="designide.dcp" />
-    <DCCReference Include="rtl.dcp" />
-    <DCCReference Include="tiOPFCore.dcp" />
-    <DCCReference Include="tiOPFOptions.dcp" />
-    <DCCReference Include="vcl.dcp" />
-    <DCCReference Include="vclactnband.dcp" />
-    <DCCReference Include="vcljpg.dcp" />
-    <DCCReference Include="vclx.dcp" />
-    <DCCReference Include="xmlrtl.dcp" />
+    <DCCReference Include="..\..\GUI\vcl.dcp" />
+    <DCCReference Include="..\..\GUI\vclactnband.dcp" />
+    <DCCReference Include="..\..\GUI\vcljpg.dcp" />
+    <DCCReference Include="..\..\GUI\vclx.dcp" />
+    <DCCReference Include="..\..\GUI\xmlrtl.dcp" />
   </ItemGroup>
 </Project>

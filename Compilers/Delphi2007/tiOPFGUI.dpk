@@ -85,6 +85,7 @@ contains
   tiLogReg in '..\..\GUI\tiLogReg.pas',
   tiLogToErrorDialog in '..\..\GUI\tiLogToErrorDialog.pas',
   tiGUIConstants in '..\..\GUI\tiGUIConstants.pas',
-  tiVTFilter in '..\..\GUI\tiVTFilter.pas';
+  tiVTFilter in '..\..\GUI\tiVTFilter.pas',
+  tiGUIINI in '..\..\GUI\tiGUIINI.pas';
 
 end.
