@@ -24,6 +24,7 @@ type
     procedure SetOIDField(const Value: TOID);
   public
     constructor Create; override;
+    destructor  Destroy; override;
   published
     property OIDField  : TOID  read FOIDField   write SetOIDField;
   end;
@@ -688,6 +689,14 @@ begin
   {$ELSE}
     FOIDField := gTIOPFManager.OIDFactory.CreateOID;
   {$ENDIF}
+end;
+
+destructor TtiOPFTestOIdProp.Destroy;
+begin
+  {$IFNDEF OID_AS_INT64}
+    FOIDField.Free;
+  {$ENDIF}
+  inherited;
 end;
 
 procedure TtiOPFTestOIdProp.SetOIDField(const Value: TOID);

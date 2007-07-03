@@ -1313,7 +1313,11 @@ begin
                                      fmCreate or fmShareDenyNone);
   try
     LStringStream:= TStringStream.Create(lsFrom);
-    LFileStream.CopyFrom(LStringStream, LStringStream.Size);
+    try
+      LFileStream.CopyFrom(LStringStream, LStringStream.Size);
+    finally
+      LStringStream.Free;
+    end;
   finally
     lFileStream.Free;
   end;

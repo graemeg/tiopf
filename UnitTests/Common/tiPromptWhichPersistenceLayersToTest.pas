@@ -43,6 +43,7 @@ uses
   ,tiOPFManager
   ,tiDUnitINI
   ,tiUtils
+  ,tiGUIUtils
  ;
 
 
