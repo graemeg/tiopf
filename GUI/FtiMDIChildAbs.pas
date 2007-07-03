@@ -20,8 +20,8 @@ type
 
 implementation
 uses
-  tiUtils
-  ,tiRegINI
+   tiUtils
+  ,tiGUIINI
  ;
 
 {$R *.DFM}

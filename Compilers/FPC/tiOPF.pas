@@ -9,7 +9,7 @@ interface
 uses
   tiBaseObject, tiClassToDBMap_BOM, tiClassToDBMap_Srv, tiCommandLineParams, 
     tiCompress, tiConstants, tiDBConnectionPool, tiEncrypt, tiExcept, tiLog, 
-    tiObject, tiOID, tiOPFManager, tiPool, tiQuery, tiQueue, tiRegINI, 
+    tiObject, tiOID, tiOPFManager, tiPool, tiQuery, tiQueue, tiINI, 
     tiStreams, tiSyncObjs, tiThread, tiUtils, tiVisitor, tiVisitorDB, 
     tiOIDGUID, tiQueryFBL, tiOIDInteger, tiCompressNone, tiCompressZLib, 
     tiEncryptSimple, tiEncryptNone, tiEncryptDES, tiEncryptBlowfish, 

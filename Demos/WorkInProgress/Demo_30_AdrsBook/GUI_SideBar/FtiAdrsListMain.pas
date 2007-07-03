@@ -137,7 +137,7 @@ uses
   ,tiUtils
   ,tiOPFManager
   ,tiDialogs
-  ,tiRegINI
+  ,tiGUIINI
  ;
 
 {$R *.DFM}

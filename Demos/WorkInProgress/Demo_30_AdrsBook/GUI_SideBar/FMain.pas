@@ -87,7 +87,7 @@ var
 implementation
 uses
    tiSingleInstanceApp
-  ,tiRegINI
+  ,tiGUIINI
   ,tiDialogs
   ,tiOPFManager
   ,tiLog

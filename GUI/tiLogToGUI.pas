@@ -55,7 +55,8 @@ type
 
 implementation
 uses
-  tiUtils
+   tiUtils
+  ,tiGUIUtils 
   ,tiCommandLineParams
   {$IFDEF FPC}
   ,LCLProc

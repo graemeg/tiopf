@@ -69,7 +69,7 @@ uses
    tiConstants
   ,tiUtils
   ,tiOPFManager
-  ,tiRegINI
+  ,tiINI
   ,tiExcept
 
   // Linking these units causes the persistence layers to be available

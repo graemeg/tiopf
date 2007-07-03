@@ -55,7 +55,7 @@ implementation
 uses
   tiUtils,
   tiGUISupport,
-  tiRegINI
+  tiGUIINI
  ;
 
 {$R *.DFM}

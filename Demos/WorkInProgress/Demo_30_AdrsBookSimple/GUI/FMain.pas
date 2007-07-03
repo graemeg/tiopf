@@ -29,7 +29,7 @@ var
 
 implementation
 uses
-  tiRegINI
+  tiGUIINI
   ,tiApplicationMenuSystem
   ,FWorkList
   ,FPersonList

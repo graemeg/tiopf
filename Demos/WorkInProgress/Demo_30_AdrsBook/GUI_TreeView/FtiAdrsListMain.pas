@@ -99,7 +99,7 @@ uses
   ,tiVisitorDB
   ,tiUtils
   ,tiDialogs
-  ,tiRegINI
+  ,tiGUIINI
   ,tiObject
  ;
 

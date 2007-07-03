@@ -20,7 +20,7 @@ type
 implementation
 uses
    tiUtils
-  ,tiRegINI
+  ,tiGUIINI
  ;
 
 
@@ -28,12 +28,12 @@ uses
 
 procedure TFormTiDialogAbs.FormCreate(Sender: TObject);
 begin
-  gINI.ReadFormState(self);
+  gGUIINI.ReadFormState(self);
 end;
 
 procedure TFormTiDialogAbs.FormDestroy(Sender: TObject);
 begin
-  gINI.WriteFormState(self);
+  gGUIINI.WriteFormState(self);
 end;
 
 procedure TFormTiDialogAbs.FormClose(Sender: TObject;  var Action: TCloseAction);

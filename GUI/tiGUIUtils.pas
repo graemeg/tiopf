@@ -118,6 +118,7 @@ uses
     {$IFNDEF FPC}
   ,MultiMon
     {$ENDIF}
+  ,ShellAPI
   {$ENDIF MSWINDOWS}
   ,tiDialogs
   ,SysUtils

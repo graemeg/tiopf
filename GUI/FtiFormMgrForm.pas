@@ -211,7 +211,7 @@ type
 implementation
 uses
   tiUtils
-  ,tiRegINI
+  ,tiGUIINI
   ,tiConstants
   ,Menus
   ,tiGUIUtils

@@ -52,8 +52,8 @@ type
 
 implementation
 uses
-  tiUtils
-  ,tiRegINI
+   tiUtils
+  ,tiGUIINI
  ;
 
 {$R *.DFM}
@@ -90,7 +90,7 @@ begin
   FaCancel.OnExecute := aCancelExecute;
   btnCancel.Action := FaCancel;
 
-  cbEnterAsTab.Checked := gReg.ReadBool(Name, 'EnterAsTab', False);
+  cbEnterAsTab.Checked := gGUIINI.ReadBool(Name, 'EnterAsTab', False);
 
 end;
 
@@ -98,7 +98,7 @@ procedure TFormTIPerEditDialog.FormDestroy(Sender: TObject);
 begin
   inherited;
   FDataBuffer.Free;
-  gReg.WriteBool(Name, 'EnterAsTab', cbEnterAsTab.Checked);
+  gGUIINI.WriteBool(Name, 'EnterAsTab', cbEnterAsTab.Checked);
 end;
 
 procedure TFormTIPerEditDialog.aOKExecute(Sender: TObject);
