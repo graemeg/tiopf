@@ -105,6 +105,8 @@ type
   {: Copy a TtiObjectList's data to the clipboard - All published properties}
   procedure tiListToClipboard(AList: TtiObjectList); overload;
 
+  {: Edit a file using editor or viewer associated with this file by the OS}
+  function  tiEditFile(const AFileName : string): integer;
 
 implementation
 uses
@@ -527,6 +529,38 @@ begin
     lStream.Free;
   end;
 end;
+
+{$IFDEF MSWINDOWS}
+function tiEditFile(const AFileName : string): integer;
+var
+  LHandle: THandle;
+begin
+  {$IFDEF DELPHI10ORABOVE}
+     LHandle:= Application.ActiveFormHandle;
+  {$ELSE}
+     if Assigned(Application.MainForm) then
+       LHandle:= Application.MainForm.Handle
+     else
+       LHandle:= 0;
+  {$ENDIF}
+  result := ShellExecute(LHandle,
+                         nil,
+                         PChar(AFileName),
+                         nil,
+                         nil,
+                         SW_SHOWNORMAL);
+end;
+{$ENDIF MSWINDOWS}
+
+{$IFDEF LINUX}
+function tiEditFile(const AFileName : string): integer;
+begin
+  { TODO: There is no standard editor included with all
+    flavours of linux. Might implement tiEditFile as a form with
+    a memo control and basic edit functions. ie: Something like NotePad for Windows }
+  Result := 0;    // To get rid of the compiler warning, until I implement this.
+end;
+{$ENDIF LINUX}
 
 initialization
 

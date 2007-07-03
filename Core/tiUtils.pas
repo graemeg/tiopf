@@ -9,7 +9,6 @@ uses
   ,tiConstants
   ,SysUtils
   ,Classes
-  ,Forms
   ,Math
   ,Contnrs
   {$IFDEF DELPHI6ORABOVE}
@@ -18,7 +17,6 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   ,shellAPI
-  ,Messages
   {$ENDIF MSWINDOWS}
   {$IFDEF FPC}
   ,LCLType
@@ -291,7 +289,7 @@ type
 
   function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;
   function tiXMLStringToDateTime(const AValue : string): TDateTime;
-  
+
   function tiDateTimeAsIntlDateStor(const ADateTime: TDateTime): string;
   function tiDateTimeAsIntlDateDisp(const ADateTime: TDateTime): string;
   function tiIntlDateStorAsDateTime(const AValue: string): TDateTime;
@@ -360,8 +358,6 @@ type
   // Run an EXE and wait for it to finish
   procedure tiRunEXEAndWait(AEXE : string);
 
-  // Edit a file using the standard editor for this file type
-  function  tiEditFile(const AFileName : string): integer;
   // Get the currently logged on user ID
   function  tiGetUserName : string;
   // Get the computer name
@@ -446,7 +442,7 @@ type
 
   {: Writes "Press <Enter> to continue and waits for CrLf in a console application.}
   procedure tiConsoleAppPause;
-  
+
   {: Platform neutral function to return a GUID string. }
   function tiCreateGUIDString: string;
   {: Platform neutral function to return the systems TickCount. }
@@ -955,39 +951,6 @@ begin
                               'Error: ' + sMessage);
 end;
 {$ENDIF MSWINDOWS}
-
-
-{$IFDEF MSWINDOWS}
-function tiEditFile(const AFileName : string): integer;
-var
-  LHandle: THandle;
-begin
-  {$IFDEF DELPHI10ORABOVE}
-     LHandle:= Application.ActiveFormHandle;
-  {$ELSE}
-     if Assigned(Application.MainForm) then
-       LHandle:= Application.MainForm.Handle
-     else
-       LHandle:= 0;
-  {$ENDIF}
-  result := ShellExecute(LHandle,
-                         nil,
-                         PChar(AFileName),
-                         nil,
-                         nil,
-                         SW_SHOWNORMAL);
-end;
-{$ENDIF MSWINDOWS}
-
-{$IFDEF LINUX}
-function tiEditFile(const AFileName : string): integer;
-begin
-  { TODO: There is no standard editor included with all
-    flavours of linux. Might implement tiEditFile as a form with
-    a memo control and basic edit functions. ie: Something like NotePad for Windows }
-  Result := 0;    // To get rid of the compiler warning, until I implement this.
-end;
-{$ENDIF LINUX}
 
 
 function tiExtractFileNameOnly(AValue : string): string;
