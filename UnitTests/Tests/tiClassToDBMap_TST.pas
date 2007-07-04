@@ -153,6 +153,7 @@ type
     procedure CollectionOfInheritedObjWithOutFKRead;
     procedure CollectionReadPK;
     procedure CollectionReadAll;
+    procedure CollectionReadAllItems;
     procedure CollectionCreate;
     procedure CollectionUpdate;
     procedure CollectionDelete;
@@ -181,6 +182,7 @@ uses
 const
   cGroupCount = 5;
   cItemCount  = 5;
+  cItemTotal  = cGroupCount * cItemCount;
 
 procedure RegisterTests;
 begin
@@ -273,7 +275,7 @@ var
   i : integer;
   j : integer;
   lGroupVal : integer;
-  lItemVal : integer;
+  lItemVal, lOID : integer;
 begin
   InsertTIOPFTestData;
   lData := TtiOPFTestData.Create;
@@ -291,15 +293,36 @@ begin
       for j := 0 to cItemCount - 1 do
       begin
         lItemVal := j + 1;
-        CheckEquals(IntToStr(lItemVal), lData.Items[j].OID.AsString, 'Failed on Item.OID');
-        CheckEquals(IntToStr(lItemVal), lData.Items[j].StrField, 'Failed on Item.StrField');
-        CheckEquals(lItemVal, lData.Items[j].IntField, 'Failed on Item.IntField');
-        CheckNearEnough(TestIntToFloat(lItemVal), lData.Items[j].FloatField, 'Failed on Item.FloatField');
+        lOID:= i * cItemCount + lItemVal;
+        CheckEquals(IntToStr(lOID), lData.Items[i].Items[j].OID.AsString, 'Failed on Item.OID');
+        CheckEquals(IntToStr(lItemVal), lData.Items[i].Items[j].StrField, 'Failed on Item.StrField');
+        CheckEquals(lItemVal, lData.Items[i].Items[j].IntField, 'Failed on Item.IntField');
+        CheckNearEnough(TestIntToFloat(lItemVal), lData.Items[i].Items[j].FloatField, 'Failed on Item.FloatField');
       end;
     end;
   finally
     lData.Free;
   end;
+end;
+
+procedure TTestTIClassToDBMapOperation.CollectionReadAllItems;
+var
+  lData : TtiOPFTestGroup;
+  i : integer;
+begin
+  InsertTIOPFTestData;
+  lData := TtiOPFTestGroup.Create;
+  try
+    lData.Read(DatabaseName, PerLayerName);
+    CheckEquals(cItemTotal, lData.Count, 'Failed on 1');
+    for i := 0 to cItemTotal - 1 do
+    begin
+      CheckEquals(IntToStr(i+1), lData.Items[i].OID.AsString, 'Failed on Item.OID');
+    end;
+  finally
+    lData.Free;
+  end;
+
 end;
 
 procedure TTestTIClassToDBMapOperation.CollectionUpdate;
@@ -2479,5 +2502,6 @@ end;
 {$ENDIF}
 
 end.
+
 
 

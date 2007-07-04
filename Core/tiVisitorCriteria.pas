@@ -29,7 +29,6 @@ type
     function    OrderByClausesAsText: string;
   end;
 
-
 // Helper functions
 function tiCriteriaAsSQL(pVisited: TtiObject; pWithComments: boolean = false): string;
 
@@ -61,9 +60,10 @@ begin
     else
       result := result + CrLf;
 
-    result := result + lVisitor.GroupByClausesAsText + CrLf;
+// the following are temerarily removed until they can be properly tested      
+//    result := result + lVisitor.GroupByClausesAsText + CrLf;
 
-    result := result + lVisitor.OrderByClausesAsText + CrLf;
+//    result := result + lVisitor.OrderByClausesAsText + CrLf;
 
   finally
     lVisitor.Free;
@@ -72,7 +72,7 @@ end;
 
 function ToSelectClause(ACriteria: TPerSelectionCriteriaAbs): string;
 begin
-  Result := ACriteria.Attribute + ACriteria.GetClause + ACriteria.Value;
+  Result := ACriteria.FieldName + ACriteria.GetClause + ACriteria.Value;
 end;
 
 function ToSelectClause(ACriteria: TPerSQLCriteria): string;
@@ -82,7 +82,7 @@ end;
 
 function ToSelectClause(ACriteria: TPerNullCriteria): string;
 begin
-  Result := ACriteria.Attribute + ACriteria.GetClause;
+  Result := ACriteria.FieldName + ACriteria.GetClause;
 end;
 
 function ToSelectClause(ACriteria: TPerExistsCriteria): string;
@@ -92,7 +92,7 @@ end;
 
 function ToSelectClause(ACriteria: TPerBetweenCriteria): string;
 begin
-  Result := ACriteria.Attribute + ACriteria.GetClause + ACriteria.Value +
+  Result := ACriteria.FieldName + ACriteria.GetClause + ACriteria.Value +
     ' AND ' + ACriteria.Value_2;
 end;
 
@@ -103,7 +103,7 @@ begin
   if Length(ACriteria.ValueArray) > 0 then
   begin
     { value as array elements }
-    Result := ACriteria.Attribute + ACriteria.GetClause + '(';
+    Result := ACriteria.FieldName + ACriteria.GetClause + '(';
     for i := Low(ACriteria.ValueArray) to (High(ACriteria.ValueArray) - 1) do
     begin
       Result := Result + ACriteria.ValueArray[i] + ', ';
@@ -114,7 +114,7 @@ begin
   else
   begin;
     { value as SQL statement }
-    Result := ACriteria.Attribute + ACriteria.GetClause + '(';
+    Result := ACriteria.FieldName + ACriteria.GetClause + '(';
     Result := Result + ACriteria.Value;
     Result := Result + ')';
   end;
@@ -122,7 +122,7 @@ end;
 
 function ToSelectClause(ACriteria: TPerFieldCriteriaAbs): string;
 begin
-  Result := ACriteria.Attribute + ACriteria.GetClause + ACriteria.Value;
+  Result := ACriteria.FieldName + ACriteria.GetClause + ACriteria.Value;
 end;
 
 function AsSQLClause(ACriterias: TPerSelectionCriteriaList): string;
@@ -236,6 +236,9 @@ begin
   if not AcceptVisitor then
     Exit; //==>
 
+  if not assigned(TPerCriteria(pVisited).SelectionCriterias) then
+    exit;
+
   case TPerCriteria(pVisited).CriteriaType of
     crAND: Write(' AND ' + CrLf + '(');
     crOR: Write(' OR ' + CrLf + '(');
@@ -284,4 +287,5 @@ begin
 end;
 
 end.
+
 

@@ -21,6 +21,7 @@ type
     procedure TestPerCriteria_IsEmbraced;
     procedure TestPerCriteria_ClearAll;
     procedure TestPerSelectionCriteriaList;
+    procedure TestHasCriteria;
 
     // Testing SQL generation
     procedure TestPerEqualToCriteria_SQL;
@@ -29,11 +30,12 @@ type
     procedure TestPerGreaterOrEqualThanCriteria_SQL;
     procedure TestPerInCriteria_SQL;
     procedure TestPerLessThanCriteria_SQL;
+    procedure TestPerLessOrEqualThanCriteria_SQL;
     procedure TestPerLikeCriteria_SQL;
     procedure TestPerNullCriteria_SQL;
     procedure TestPerBetweenCriteria_SQL;
     procedure TestPerSQLCriteria_SQL;
-
+    procedure TestFieldName;
     // Testing XPath generation
     // The SQL tests will need to be clone for XPath at some point
   end;
@@ -159,20 +161,25 @@ begin
     CheckEquals(0, lCriteria.Criterias.Count, 'Failed on 1');
     CheckEquals(0, lCriteria.GetGroupByList.Count, 'Failed on 2');
     CheckEquals(0, lCriteria.GetOrderByList.Count, 'Failed on 3');
-    
+    CheckEquals(0, lCriteria.SelectionCriterias.Count, 'Failed on 4');
+
+    lCriteria.AddEqualTo('Field1', '2a');
+    CheckEquals(1, lCriteria.SelectionCriterias.Count, 'Failed on 5');
+
     lCriteria.AddOrCriteria(TPerCriteria.Create('A'));
-    CheckEquals(1, lCriteria.Criterias.Count, 'Failed on 4');
+    CheckEquals(1, lCriteria.Criterias.Count, 'Failed on 6');
 
     lCriteria.AddGroupBy('FieldA');
-    CheckEquals(1, lCriteria.GetGroupByList.Count, 'Failed on 5');
+    CheckEquals(1, lCriteria.GetGroupByList.Count, 'Failed on 7');
 
     lCriteria.AddOrderBy('FieldB');
-    CheckEquals(1, lCriteria.GetOrderByList.Count, 'Failed on 6');
+    CheckEquals(1, lCriteria.GetOrderByList.Count, 'Failed on 8');
 
     lCriteria.ClearAll;
-    CheckEquals(0, lCriteria.Criterias.Count, 'Failed on 7');
-    CheckEquals(0, lCriteria.GetGroupByList.Count, 'Failed on 8');
-    CheckEquals(0, lCriteria.GetOrderByList.Count, 'Failed on 9');
+    CheckEquals(0, lCriteria.Criterias.Count, 'Failed on 9');
+    CheckEquals(0, lCriteria.GetGroupByList.Count, 'Failed on 10');
+    CheckEquals(0, lCriteria.GetOrderByList.Count, 'Failed on 11');
+    CheckEquals(0, lCriteria.SelectionCriterias.Count, 'Failed on 12');
   finally
     lCriteria.Free;
   end;
@@ -249,6 +256,19 @@ begin
   finally
     lCriteria.Free;
   end;
+
+  // field names
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddEqualTo('OID', '1');
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo = ''1'')', lSQL, 'Failed on 5');
+  finally
+    lCriteria.Free;
+  end;
+
 end;
 
 procedure TTestTICriteria.TestPerExistsCriteria_SQL;
@@ -298,6 +318,17 @@ begin
   finally
     lCriteria.Free;
   end;
+
+  // field names
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddGreaterThan('FIELD_1', '1');
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo > ''1'')', lSQL, 'Failed on 3');
+  finally
+    lCriteria.Free;
+  end;
 end;
 
 procedure TTestTICriteria.TestPerGreaterOrEqualThanCriteria_SQL;
@@ -319,6 +350,16 @@ begin
     lCriteria.AddGreaterOrEqualThan('FIELD_1', 1);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
     CheckEquals('(FIELD_1 >= 1)', lSQL, 'Failed on 2');
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddGreaterOrEqualThan('FIELD_1', '1');
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo >= ''1'')', lSQL, 'Failed on 3');
   finally
     lCriteria.Free;
   end;
@@ -369,6 +410,56 @@ begin
   finally
     lCriteria.Free;
   end;
+
+  lCriteria := TPerCriteria.Create('test');
+  try
+    myIntArray[0] := 1;
+    myIntArray[1] := 2;
+    myIntArray[2] := 3;
+    myIntArray[3] := 4;
+    myIntArray[4] := 5;
+//    lCriteria.AddIn('OID', [1, 2, 3, 4, 5]);  { This also works in FPC, but not Delphi }
+    lCriteria.AddIn('OID', myIntArray);
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo IN (1, 2, 3, 4, 5))', lSQL, 'Failed on 4');
+  finally
+    lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerLessOrEqualThanCriteria_SQL;
+var
+  lCriteria: TPerCriteria;
+  lSQL: string;
+begin
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddLessOrEqualThan('OID', '1');
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(OID <= ''1'')', lSQL, 'Failed on 1');
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddLessOrEqualThan('OID', 1);
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(OID <= 1)', lSQL, 'Failed on 2');
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddLessOrEqualThan('OID', 1);
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo <= 1)', lSQL, 'Failed on 3');
+  finally
+    lCriteria.Free;
+  end;
 end;
 
 procedure TTestTICriteria.TestPerLessThanCriteria_SQL;
@@ -384,12 +475,22 @@ begin
   finally
     lCriteria.Free;
   end;
-  
+
   lCriteria := TPerCriteria.Create('test');
   try
     lCriteria.AddLessThan('OID', 1);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
     CheckEquals('(OID < 1)', lSQL, 'Failed on 2');
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddLessThan('OID', 1);
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo < 1)', lSQL, 'Failed on 3');
   finally
     lCriteria.Free;
   end;
@@ -418,6 +519,16 @@ begin
   finally
     lCriteria.Free;
   end;
+
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddLike('FIELD_1', 'A%');
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo LIKE ''A%'')', lSQL, 'Failed on 3');
+  finally
+    lCriteria.Free;
+  end;
 end;
 
 procedure TTestTICriteria.TestPerNullCriteria_SQL;
@@ -433,6 +544,69 @@ begin
   finally
     lCriteria.Free;
   end;
+
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddNull('FIELD_1');
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo IS NULL)', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestFieldName;
+var
+  lSelectionCriteria: TPerSelectionCriteriaAbs;
+begin
+  // use TPerEqualToCriteria so we don't get a warning about using an abstract class
+  lSelectionCriteria := TPerEqualToCriteria.Create('Field1', '');
+  try
+    CheckEquals('Field1', lSelectionCriteria.Attribute);
+    CheckEquals('Field1', lSelectionCriteria.FieldName);
+
+    lSelectionCriteria.FieldName:= 'Field_1';
+    CheckEquals('Field1', lSelectionCriteria.Attribute);
+    CheckEquals('Field_1', lSelectionCriteria.FieldName);
+
+  finally
+    lSelectionCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestHasCriteria;
+var
+  lCriteria: TPerCriteria;
+  lCriteriaAnd: TPerCriteria;
+begin
+  lCriteria := TPerCriteria.Create('test');
+  lCriteriaAnd := TPerCriteria.Create('test and');
+  try
+    CheckFalse(lCriteria.HasCriteria, 'Failed at 1');
+    lCriteria.AddBetween('FIELD_1', '1', '2');
+    CheckTrue(lCriteria.HasCriteria, 'Failed at 2');
+    lCriteria.AddBetween('FIELD_1', '1', '2');
+    CheckTrue(lCriteria.HasCriteria, 'Failed at 3');
+
+    lCriteria.ClearAll;
+    CheckFalse(lCriteria.HasCriteria, 'Failed at 4');
+    lCriteria.AddOrderBy('FIELD_1');
+    CheckTrue(lCriteria.HasCriteria, 'Failed at 5');
+
+    lCriteria.ClearAll;
+    CheckFalse(lCriteria.HasCriteria, 'Failed at 6');
+    lCriteria.AddGroupBy('FIELD_1');
+    CheckTrue(lCriteria.HasCriteria, 'Failed at 7');
+
+    lCriteria.ClearAll;
+    CheckFalse(lCriteria.HasCriteria, 'Failed at 8');
+    lCriteria.AddAndCriteria(lCriteriaAnd);
+    CheckTrue(lCriteria.HasCriteria, 'Failed at 9');
+
+  finally
+    lCriteria.Free;
+  end;
 end;
 
 procedure TTestTICriteria.TestPerBetweenCriteria_SQL;
@@ -445,6 +619,16 @@ begin
     lCriteria.AddBetween('FIELD_1', '1', '2');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
     CheckEquals('(FIELD_1 BETWEEN 1 AND 2)', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TPerCriteria.Create('test');
+  try
+    lCriteria.AddBetween('FIELD_1', '1', '2');
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo BETWEEN 1 AND 2)', lSQL);
   finally
     lCriteria.Free;
   end;
@@ -466,6 +650,7 @@ begin
 end;
 
 end.
+
 
 
 

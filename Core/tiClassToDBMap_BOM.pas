@@ -322,6 +322,17 @@ type
 ////    property    DBColMap : TtiDBColMap read FDBColMap write FDBColMap;
 //  end;
 
+  TVisProAttributeToFieldName = class(TtiVisitor)
+  private
+    FAttrColMaps : TtiAttrColMaps;
+    FClassType : TtiClass;
+  protected
+    function    AcceptVisitor: Boolean; override;
+  public
+    constructor Create(AttrColMaps : TtiAttrColMaps; AClassType : TtiClass); reintroduce; virtual;
+    procedure   Execute(const pVisited: TtiVisited); override;
+  end;
+
 implementation
 uses
    tiLog
@@ -329,6 +340,7 @@ uses
   ,tiClassToDBMap_Srv
   ,tiOPFManager
   ,tiExcept
+  ,tiCriteria
   ,TypInfo
   ,SysUtils
  ;
@@ -1150,7 +1162,42 @@ begin
   FClassMaps.RegisterInheritance(AParentClass, AChildClass);
 end;
 
+{ TVisProAttributeToFieldName }
+
+function TVisProAttributeToFieldName.AcceptVisitor: Boolean;
+begin
+  result:= Visited is TPerSelectionCriteriaAbs;
+end;
+
+constructor TVisProAttributeToFieldName.Create(AttrColMaps: TtiAttrColMaps;
+  AClassType: TtiClass);
+begin
+  inherited Create;
+  FAttrColMaps:= AttrColMaps;
+  FClassType:= AClassType;
+end;
+
+procedure TVisProAttributeToFieldName.Execute(const pVisited: TtiVisited);
+var
+  lCriteria: TPerSelectionCriteriaAbs;
+  lMap: TtiAttrColMap;
+begin
+  inherited Execute(pVisited);
+
+  if not AcceptVisitor then
+    Exit; //==>
+
+  lCriteria:= (Visited as TPerSelectionCriteriaAbs);
+  Assert(Assigned(lCriteria), 'Invalid Visited in TVisProAttributeToFieldName.Execute');
+
+  lMap:= FAttrColMaps.FindByClassAttrMap(FClassType, lCriteria.Attribute);
+  if assigned(lMap) then
+    lCriteria.FieldName:= lMap.DBColMap.ColName;
+
+end;
+
 end.
+
 
 
 

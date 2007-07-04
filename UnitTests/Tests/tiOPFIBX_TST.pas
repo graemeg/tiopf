@@ -9,6 +9,7 @@ uses
   ,tiOPFTestManager
   ,tiClassToDBMap_TST
   ,tiOID_tst
+  ,tiAutomapCriteria_TST
  ;
 
 type
@@ -41,6 +42,11 @@ type
     procedure   SetUp; override;
   end;
 
+  TTestAutomappingCriteriaIBX = class(TTestAutomappingCriteria)
+  protected
+    procedure   SetUp; override;
+  end;
+
   TTestTIOIDManagerIBX = class(TTestTIOIDManager)
   protected
     procedure   SetUp; override;
@@ -66,6 +72,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIQueryIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIOIDManagerIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIClassToDBMapOperationIBX.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestAutomappingCriteriaIBX.Suite);
   end;
 end;
 
@@ -181,6 +188,14 @@ end;
 { TTestTIOIDManagerIBX }
 
 procedure TTestTIOIDManagerIBX.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
+  inherited;
+end;
+
+{ TTestAutomappingCriteriaIBX }
+
+procedure TTestAutomappingCriteriaIBX.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
   inherited;

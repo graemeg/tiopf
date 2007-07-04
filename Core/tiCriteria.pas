@@ -80,7 +80,8 @@ type
     procedure   AddIn(AAttribute, ASubQuery: string); overload;
     procedure   AddIn(AAttribute: string; AValueArray: array of string); overload;
     procedure   AddIn(AAttribute: string; AValueArray: array of integer); overload;
-    procedure   AddLessOrEqualThan(AAttribute, AValue: string);
+    procedure   AddLessOrEqualThan(AAttribute, AValue: string); overload;
+    procedure   AddLessOrEqualThan(AAttribute: string; AValue: integer); overload;
     procedure   AddLessThan(AAttribute, AValue: string); overload;
     procedure   AddLessThan(AAttribute: string; AValue: integer); overload;
     procedure   AddLike(AAttribute, AValue: string);
@@ -103,8 +104,10 @@ type
     function    GetGroupByList: TPerColumns;
     function    GetOrderByList: TPerColumns;
     function    isEmbraced: Boolean;
+    function    HasCriteria: boolean;
     property    CriteriaType: TCriteriaType read FCriteriaType write FCriteriaType;
     property    Owner: TPerCriteria read GetOwner write SetOwner;
+
   published
     property    Criterias: TPerCriteriaList read GetCriterias;
     property    Name: string read FName;
@@ -128,15 +131,16 @@ type
 
   TPerSelectionCriteriaAbs = class(TtiObject)
   private
-    FAlias: string;
+    FFieldName: string;
     FAttribute: string;
     FisNegative: Boolean;
     FValue: string;
+    function GetFieldName: string;
   protected
     function    GetOwner: TPerCriteria; reintroduce; virtual;
     procedure   SetOwner(const Value: TPerCriteria); reintroduce; virtual;
   public
-    constructor Create(AAttribute, AValue: string; ANegative: boolean = False; AAlias: string = ''); reintroduce; virtual;
+    constructor Create(AAttribute, AValue: string; ANegative: boolean = False; AFieldName: string = ''); reintroduce; virtual;
     destructor  Destroy; override;
     function    GetClause: string; virtual; abstract;
     function    isNegative: Boolean;
@@ -144,6 +148,7 @@ type
   published
     property    Attribute: string read FAttribute;
     property    Value: string read FValue;
+    property    FieldName: string read GetFieldName write FFieldName;
   end;
   
   
@@ -157,7 +162,7 @@ type
   public
     function    Add(const AObject: TPerSelectionCriteriaAbs): integer; reintroduce;
     function    AsSQL: string;
-    property    Items[Index: Integer]: TPerSelectionCriteriaAbs read GetItems write SetItems;
+    property    Items[Index: Integer]: TPerSelectionCriteriaAbs read GetItems write SetItems; default;
     property    Owner: TPerCriteria read GetOwner write SetOwner;
   end;
   
@@ -184,7 +189,7 @@ type
   
   TPerExistsCriteria = class(TPerValueCriteriaAbs)
   public
-    constructor Create(ASubQuery: string; ANegative: boolean = false; AAlias: string = ''); reintroduce; virtual;
+    constructor Create(ASubQuery: string; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
     function    GetClause: string; override;
   end;
   
@@ -211,8 +216,7 @@ type
   public
     function    GetClause: string; override;
   end;
-  
-  
+
   TPerLessThanFieldCriteria = class(TPerFieldCriteriaAbs)
   public
     function    GetClause: string; override;
@@ -227,7 +231,7 @@ type
   
   TPerNullCriteria = class(TPerValueCriteriaAbs)
   public
-    constructor Create(AAttribute: string; ANegative: boolean = false; AAlias: string = ''); reintroduce; virtual;
+    constructor Create(AAttribute: string; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
     function    GetClause: string; override;
   end;
   
@@ -236,7 +240,7 @@ type
   private
     FValue_2: string;
   public
-    constructor Create(AAttribute, AArg_1, AArg_2: string; ANegative: boolean = false; AAlias: string = ''); reintroduce; virtual;
+    constructor Create(AAttribute, AArg_1, AArg_2: string; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
     function    GetClause: string; override;
   published
     property    Value_2: string read FValue_2;
@@ -249,7 +253,11 @@ type
     function    GetClause: string; override;
   end;
 
-  
+//  IFiltered  = interface
+//    ['{2254A72F-11C8-410E-A285-560F74CBCCC9}']
+//    function HasCriteria: boolean;
+//    function GetCriteria: TPerCriteria; // property based criteria
+//  end;
 
 implementation
 
@@ -367,7 +375,7 @@ procedure TPerCriteria.AddEqualTo(AAttribute, AValue: string);
 var
   lData: TPerEqualToCriteria;
 begin
-  lData := TPerEqualToCriteria.Create(AAttribute, Format(cQuote, [AValue]));
+  lData := TPerEqualToCriteria.Create(AAttribute, QuotedStr(AValue));
   FSelectionCriterias.Add(lData);
 end;
 
@@ -391,7 +399,7 @@ procedure TPerCriteria.AddGreaterOrEqualThan(AAttribute, AValue: string);
 var
   lData: TPerLessThanCriteria;
 begin
-  lData := TPerLessThanCriteria.Create(AAttribute, Format(cQuote, [AValue]), true);
+  lData := TPerLessThanCriteria.Create(AAttribute, QuotedStr(AValue), true);
   FSelectionCriterias.Add(lData);
 end;
 
@@ -407,7 +415,7 @@ procedure TPerCriteria.AddGreaterThan(AAttribute, AValue: string);
 var
   lData: TPerGreaterThanCriteria;
 begin
-  lData := TPerGreaterThanCriteria.Create(AAttribute, Format(cQuote, [AValue]));
+  lData := TPerGreaterThanCriteria.Create(AAttribute, QuotedStr(AValue));
   FSelectionCriterias.Add(lData);
 end;
 
@@ -454,7 +462,7 @@ begin
   SetLength(lData.ValueArray, Length(AValueArray));
 
   for i := Low(AValueArray) to High(AValueArray) do
-    lData.ValueArray[i] := Format(cQuote, [AValueArray[i]]);
+    lData.ValueArray[i] := QuotedStr(AValueArray[i]);
 
   FSelectionCriterias.Add(lData);
 end;
@@ -474,14 +482,25 @@ begin
 end;
 
 procedure TPerCriteria.AddLessOrEqualThan(AAttribute, AValue: string);
+var
+  lData: TPerGreaterThanCriteria;
 begin
-end;
+  lData := TPerGreaterThanCriteria.Create(AAttribute, QuotedStr(AValue), true);
+  FSelectionCriterias.Add(lData);end;
 
 procedure TPerCriteria.AddLessThan(AAttribute, AValue: string);
 var
   lData: TPerLessThanCriteria;
 begin
-  lData := TPerLessThanCriteria.Create(AAttribute, Format(cQuote, [AValue]));
+  lData := TPerLessThanCriteria.Create(AAttribute, QuotedStr(AValue));
+  FSelectionCriterias.Add(lData);
+end;
+
+procedure TPerCriteria.AddLessOrEqualThan(AAttribute: string; AValue: integer);
+var
+  lData: TPerGreaterThanCriteria;
+begin
+  lData := TPerGreaterThanCriteria.Create(AAttribute, IntToStr(AValue), true);
   FSelectionCriterias.Add(lData);
 end;
 
@@ -497,7 +516,7 @@ procedure TPerCriteria.AddLike(AAttribute, AValue: string);
 var
   lData: TPerLikeCriteria;
 begin
-  lData := TPerLikeCriteria.Create(AAttribute, Format(cQuote, [AValue]));
+  lData := TPerLikeCriteria.Create(AAttribute, QuotedStr(AValue));
   FSelectionCriterias.Add(lData);
 end;
 
@@ -505,7 +524,7 @@ procedure TPerCriteria.AddNotEqualTo(AAttribute, AValue: string);
 var
   lData: TPerEqualToCriteria;
 begin
-  lData := TPerEqualToCriteria.Create(AAttribute, Format(cQuote, [AValue]), True);
+  lData := TPerEqualToCriteria.Create(AAttribute, QuotedStr(AValue), True);
   FSelectionCriterias.Add(lData);
 end;
 
@@ -533,7 +552,7 @@ procedure TPerCriteria.AddNotLike(AAttribute, AValue: string);
 var
   lData: TPerLikeCriteria;
 begin
-  lData := TPerLikeCriteria.Create(AAttribute, Format(cQuote, [AValue]), True);
+  lData := TPerLikeCriteria.Create(AAttribute, QuotedStr(AValue), True);
   FSelectionCriterias.Add(lData);
 end;
 
@@ -616,10 +635,16 @@ begin
 end;
 
 procedure TPerCriteria.ClearAll;
+  procedure ClearList(AList: TtiObjectList);
+  begin
+    if assigned(AList) then
+      AList.Clear;
+  end;
 begin
-  FCriterias.Clear;
-  FOrderByList.Clear;
-  FGroupByList.Clear;
+  ClearList(FCriterias);
+  ClearList(FSelectionCriterias);
+  ClearList(FOrderByList);
+  ClearList(FGroupByList);
 end;
 
 function TPerCriteria.GetCriterias: TPerCriteriaList;
@@ -645,6 +670,11 @@ end;
 function TPerCriteria.GetSelectionCriterias: TPerSelectionCriteriaList;
 begin
   Result := FSelectionCriterias;
+end;
+
+function TPerCriteria.HasCriteria: boolean;
+begin
+  result:= (FCriterias.Count > 0) or (FSelectionCriterias.Count > 0) or (FOrderByList.Count > 0) or (FGroupByList.Count > 0);
 end;
 
 function TPerCriteria.isEmbraced: Boolean;
@@ -690,19 +720,27 @@ end;
 
 { TPerSelectionCriteriaAbs }
 
-constructor TPerSelectionCriteriaAbs.Create(AAttribute, AValue: string; 
-    ANegative: boolean = False; AAlias: string = '');
+constructor TPerSelectionCriteriaAbs.Create(AAttribute, AValue: string;
+    ANegative: boolean = False; AFieldName: string = '');
 begin
   inherited Create;
   FAttribute  := AAttribute;
   FValue      := AValue;
   FisNegative := ANegative;
-  FAlias      := AAlias;
+  FFieldName      := AFieldName;
 end;
 
 destructor TPerSelectionCriteriaAbs.Destroy;
 begin
   inherited Destroy;
+end;
+
+function TPerSelectionCriteriaAbs.GetFieldName: string;
+begin
+  if FFieldName <> '' then
+    Result := FFieldName
+  else
+    Result:= FAttribute;
 end;
 
 function TPerSelectionCriteriaAbs.GetOwner: TPerCriteria;
@@ -788,9 +826,9 @@ end;
 { TPerExistsCriteria }
 
 constructor TPerExistsCriteria.Create(ASubQuery: string; ANegative: boolean;
-  AAlias: string);
+  AFieldName: string);
 begin
-  inherited Create('', ASubQuery, ANegative, AAlias);
+  inherited Create('', ASubQuery, ANegative, AFieldName);
 end;
 
 function TPerExistsCriteria.GetClause: string;
@@ -871,9 +909,9 @@ end;
 { TPerNullCriteria }
 
 constructor TPerNullCriteria.Create(AAttribute: string;
-    ANegative: boolean = False; AAlias: string = '');
+    ANegative: boolean = False; AFieldName: string = '');
 begin
-  inherited Create(AAttribute, '', ANegative, AAlias);
+  inherited Create(AAttribute, '', ANegative, AFieldName);
 end;
 
 function TPerNullCriteria.GetClause: string;
@@ -887,10 +925,10 @@ end;
 
 { TPerBetweenCriteria }
 
-constructor TPerBetweenCriteria.Create(AAttribute, AArg_1, AArg_2: string; 
-    ANegative: boolean = False; AAlias: string = '');
+constructor TPerBetweenCriteria.Create(AAttribute, AArg_1, AArg_2: string;
+    ANegative: boolean = False; AFieldName: string = '');
 begin
-  inherited Create(AAttribute, AArg_1, ANegative, AAlias);
+  inherited Create(AAttribute, AArg_1, ANegative, AFieldName);
   FValue_2 := AArg_2;
 end;
 
@@ -916,4 +954,5 @@ begin
 end;
 
 end.
+
 

@@ -29,6 +29,7 @@ uses
   ,tiQuery
   ,tiClassToDBMap_BOM
   ,tiExcept
+  ,tiCriteria
   ,Classes
  ;
 
@@ -42,6 +43,7 @@ type
   protected
     FWhereAttrColMaps : TtiAttrColMaps;
     FAttrColMaps : TtiAttrColMaps;
+    FCriteriaAttrColMaps : TtiAttrColMaps;
     FWhere : TtiQueryParams;
     FParams : TtiQueryParams;
     FVisitedClassType : TtiClass;
@@ -79,9 +81,10 @@ type
     FClassToCreate : TtiClass;
     FHasParent: Boolean;
     FClassesWithParent : TList;
+    FCriteria: TPerCriteria;
     procedure ReadDataForParentClass(ACollection: TtiClassDBCollection);
     procedure ReadDataForChildClasses(ACollection: TtiClassDBCollection);
-
+    procedure SetUpCriteria;
   protected
     FSetObjectState : boolean;
     procedure   GetWhereAttrColMaps; override;
@@ -141,6 +144,7 @@ uses
   ,TypInfo
   ,tiOID
   ,tiRTTI
+  ,tiVisitorCriteria
  ;
 
 
@@ -234,11 +238,15 @@ begin
   FAttrColMaps.AutoSetItemOwner := false;
   FParams := TtiQueryParams.Create;
 
+  FCriteriaAttrColMaps := TtiAttrColMaps.Create;
+  FCriteriaAttrColMaps.OwnsObjects := false;
+  FCriteriaAttrColMaps.AutoSetItemOwner := false;
 end;
 
 destructor TVisAutoAbs.Destroy;
 begin
   FWhereAttrColMaps.Free;
+  FCriteriaAttrColMaps.Free;
   FWhere.Free;
   FParams.Free;
   FAttrColMaps.Free;
@@ -286,7 +294,14 @@ procedure TVisAutoCollectionRead.ReadDataForParentClass(ACollection : TtiClassDB
 begin
   FClassDBCollection := ACollection;
   SetupParams;
-  Query.SelectRow(FAttrColMaps.TableName, FWhere);
+  SetUpCriteria;
+
+  // use 2 different SelectRow methods so that non-criteria-aware queries still work
+  if Assigned(FCriteria) and FCriteria.HasCriteria then
+    Query.SelectRow(FAttrColMaps.TableName, FWhere, FCriteria)
+  else
+    Query.SelectRow(FAttrColMaps.TableName, FWhere);
+
   while not Query.EOF do
   begin
     MapRowToObject(false);
@@ -327,7 +342,7 @@ begin
     _GetWhereAttrColMaps(TtiObjectList(Visited).Items[i]);
     lTableName := FWhereAttrColMaps.TableName;
     Assert(lTableName <> '', 'Unable to find table name. FWhereAttrColMaps.Count = '
-           + IntToStr(FWhereAttrColMaps.Count) + '. Suspect a missing [pktFK] value ' 
+           + IntToStr(FWhereAttrColMaps.Count) + '. Suspect a missing [pktFK] value '
            + 'in the child classes RegisterMapping calls.');
     Query.SelectRow(lTableName, FWhere);
     lCount := 0;
@@ -959,6 +974,34 @@ begin
   //  Do nothing, this method is used in the child class
 end;
 
+procedure TVisAutoCollectionRead.SetUpCriteria;
+var
+  lFiltered: TtiObjectList;
+  lVisProAttributeToFieldName: TVisProAttributeToFieldName;
+begin
+  FCriteria:= nil;
+
+  lFiltered:= visited as TtiObjectList;
+
+  if assigned(lFiltered) and lFiltered.HasCriteria then
+  begin
+    FCriteria:= TPerCriteria(lFiltered.Criteria);
+
+    // map property based critera to table based
+    gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+      TtiClass(FClassDBCollection.PerObjAbsClass), FCriteriaAttrColMaps);
+
+    lVisProAttributeToFieldName:= TVisProAttributeToFieldName.Create(FCriteriaAttrColMaps, TtiClass(FClassDBCollection.PerObjAbsClass));
+    try
+      FCriteria.Iterate(lVisProAttributeToFieldName);
+    finally
+      lVisProAttributeToFieldName.Free;
+    end;
+
+  end;
+
+end;
+
 //function TVisAutoCollectionPKRead.GetObjectState: TPerObjectState;
 //begin
 //  result := posPK;
@@ -1002,4 +1045,5 @@ begin
 end;
 
 end.
+
 

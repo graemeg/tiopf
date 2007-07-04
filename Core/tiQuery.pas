@@ -13,6 +13,7 @@ uses
   ,tiExcept
   ,tiVisitor
   ,SysUtils
+  ,tiCriteria
  ;
 
 const
@@ -351,7 +352,8 @@ type
     procedure Close; virtual; abstract;
     procedure ExecSQL; virtual; abstract;
 
-    procedure SelectRow(const ATableName : string; const AWhere : TtiQueryParams); virtual; abstract;
+    procedure SelectRow(const ATableName : string; const AWhere : TtiQueryParams; const ACriteria: TPerCriteria); overload; virtual; abstract;
+    procedure SelectRow(const ATableName : string; const AWhere : TtiQueryParams); overload; virtual; abstract;
     procedure InsertRow(const ATableName : string; const AParams : TtiQueryParams); virtual; abstract;
     procedure DeleteRow(const ATableName : string; const AWhere : TtiQueryParams); virtual; abstract;
     procedure UpdateRow(const ATableName : string; const AParams : TtiQueryParams; const AWhere : TtiQueryParams); virtual; abstract;
@@ -415,6 +417,7 @@ type
     function    WhereClause(const AWhere: TtiQueryParams): string;
     function    SQLAndParamsAsString : string;
   public
+    procedure   SelectRow(const ATableName : string; const AWhere : TtiQueryParams; const ACriteria: TPerCriteria ); override;
     procedure   SelectRow(const ATableName : string; const AWhere : TtiQueryParams); override;
     procedure   InsertRow(const ATableName : string; const AParams : TtiQueryParams); override;
     procedure   DeleteRow(const ATableName : string; const AWhere : TtiQueryParams); override;
@@ -632,6 +635,7 @@ uses
   ,tiDBConnectionPool
   ,tiConstants
   ,tiStreams
+  ,tiVisitorCriteria
   ,Math
   ,TypInfo
  ;
@@ -1091,13 +1095,21 @@ begin
 end;
 
 procedure TtiQuerySQL.SelectRow(const ATableName: string; const AWhere: TtiQueryParams);
+begin
+  SelectRow(ATableName, AWhere, nil);
+end;
+
+procedure TtiQuerySQL.SelectRow(const ATableName: string;
+  const AWhere: TtiQueryParams; const ACriteria: TPerCriteria);
 var
   lSQL : string;
   i : integer;
   lWhere : string;
+  lCriteriaWhere: string;
 begin
-
+  lCriteriaWhere:= '';
   lWhere := '';
+
   // This code is cloned from tiDatabaseSQL
   if (AWhere <> nil) then
     for i := 0 to AWhere.Count - 1 do
@@ -1108,13 +1120,23 @@ begin
                 AWhere.Items[i].Name;
     end;
 
+  if Assigned(ACriteria) and ACriteria.HasCriteria then
+  begin
+    lCriteriaWhere:= tiCriteriaAsSQL(ACriteria);
+    if lCriteriaWhere <> '' then
+    begin
+      lWhere := tiAddTrailingValue(lWhere, ' and ' + CrLf);
+      lWhere := lWhere + lCriteriaWhere;
+    end;
+  end;
+
   if lWhere <> '' then
     lSQL := 'select * from ' + ATableName + CrLf +
             'where' + CrLf +
             lWhere
   else
     lSQL := 'select * from ' + ATableName;
-
+  
   SQLText := lSQL;
   AssignParams(AWhere);
   Open;
@@ -2295,6 +2317,7 @@ begin
 end;
 
 end.
+
 
 
 

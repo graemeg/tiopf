@@ -8,6 +8,7 @@ uses
   ,tiQuerySQL_TST
   ,tiOPFTestManager
   ,tiClassToDBMap_TST
+  ,tiAutomapCriteria_TST
   ,tiOID_tst
  ;
 
@@ -45,6 +46,11 @@ type
     procedure   SetUp; override;
   end;
 
+  TTestAutomappingCriteriaBDEParadox = class(TTestAutomappingCriteria)
+  protected
+    procedure   SetUp; override;
+  end;
+
   TTestTIOIDManagerBDEParadox = class(TTestTIOIDManager)
   protected
     procedure   SetUp; override;
@@ -74,6 +80,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIQueryBDEParadox.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIOIDManagerBDEParadox.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIClassToDBMapOperationBDEParadox.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestAutomappingCriteriaBDEParadox.Suite);
   end;
 end;
 
@@ -180,6 +187,14 @@ end;
 { TTestTIQueryBDEParadox }
 
 procedure TTestTIQueryBDEParadox.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
+  inherited;
+end;
+
+{ TTestAutomappingCriteriaBDEParadox }
+
+procedure TTestAutomappingCriteriaBDEParadox.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
   inherited;

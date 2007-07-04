@@ -8,6 +8,7 @@ uses
   ,tiQuerySQL_TST
   ,tiOPFTestManager
   ,tiClassToDBMap_TST
+  ,tiAutomapCriteria_TST
   ,tiOID_tst
  ;
 
@@ -45,6 +46,11 @@ type
     procedure   SetUp; override;
   end;
 
+  TTestAutomappingCriteriaADOAccess = class(TTestAutomappingCriteria)
+  protected
+    procedure   SetUp; override;
+  end;
+
   TTestTIOIDManagerADOAccess = class(TTestTIOIDManager)
   protected
     procedure   SetUp; override;
@@ -71,6 +77,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIQueryADOAccess.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIOIDManagerADOAccess.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIClassToDBMapOperationADOAccess.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestAutomappingCriteriaADOAccess.Suite);
   end;
 end;
 
@@ -184,6 +191,14 @@ end;
 { TTestTIClassToDBMapOperationADOAccess }
 
 procedure TTestTIClassToDBMapOperationADOAccess.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOAccess);
+  inherited;
+end;
+
+{ TTestTIClassToDBMapOperationADOAccess }
+
+procedure TTestAutomappingCriteriaADOAccess.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOAccess);
   inherited;
