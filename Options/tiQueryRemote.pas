@@ -269,7 +269,7 @@ implementation
 uses
    tiOPFManager
   ,tiConstants
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiObject
   ,tiUtils
   ,tiLog

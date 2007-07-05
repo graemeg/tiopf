@@ -75,7 +75,7 @@ type
 implementation
 uses
   tiOPFManager
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,Windows
   ,tiLog
   ,SysUtils

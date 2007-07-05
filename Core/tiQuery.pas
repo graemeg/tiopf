@@ -6,7 +6,6 @@ interface
 uses
    Classes
   ,Contnrs
-  ,tiClassToDBMap_BOM
   ,tiObject
   ,tiBaseObject
   ,tiUtils

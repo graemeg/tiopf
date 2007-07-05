@@ -266,7 +266,7 @@ uses
   ,tiLog
   ,tiExcept
   ,tiConstants
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,SysUtils
   ,Math
   ;

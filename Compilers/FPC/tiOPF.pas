@@ -7,7 +7,7 @@ unit tiOPF;
 interface
 
 uses
-  tiBaseObject, tiClassToDBMap_BOM, tiClassToDBMap_Srv, tiCommandLineParams, 
+  tiBaseObject, tiAutoMap, tiClassToDBMap_Srv, tiCommandLineParams, 
     tiCompress, tiConstants, tiDBConnectionPool, tiEncrypt, tiExcept, tiLog, 
     tiObject, tiOID, tiOPFManager, tiPool, tiQuery, tiQueue, tiINI, 
     tiStreams, tiSyncObjs, tiThread, tiUtils, tiVisitor, tiVisitorDB, 

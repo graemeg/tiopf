@@ -11,7 +11,7 @@ uses
   , IBSQL
   , tiDBConnectionPool
   , IBHeader
-  , tiClassToDBMap_BOM
+  , tiAutoMap
   , tiObject
  ;
 

@@ -6,7 +6,7 @@ interface
 uses
    tiQuery
   ,tiDBConnectionPool
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiObject
   ,tiBaseObject
   ,tiExcept

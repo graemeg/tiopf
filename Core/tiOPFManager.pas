@@ -11,8 +11,7 @@ uses
   ,tiObject
   ,tiPersistenceLayers
   ,tiVisitor
-  ,tiClassToDBMap_BOM
-  ,tiClassToDBMap_Srv
+  ,tiAutoMap
   ,tiOID
   ,tiThread
   ,SyncObjs   // This unit must always appear after the Windows unit!
@@ -894,5 +893,6 @@ finalization
   FreeAndNilTIPerMgr;
 
 end.
+
 
 

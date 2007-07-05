@@ -317,7 +317,7 @@ procedure RegisterMappings;
 
 implementation
 uses
-  tiClassToDBMap_BOM
+  tiAutoMap
   ,tiOPFManager
   ,SysUtils
   ,tiUtils

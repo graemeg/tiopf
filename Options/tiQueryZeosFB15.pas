@@ -20,7 +20,7 @@ implementation
 uses
   tiOPFManager
   ,tiDBConnectionPool
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiObject
   ,tiConstants
   ,SysUtils

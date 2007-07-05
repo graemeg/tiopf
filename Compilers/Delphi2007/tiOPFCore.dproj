@@ -71,9 +71,8 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="..\..\Core\rtl.dcp" />
+    <DCCReference Include="..\..\Core\tiAutoMap.pas" />
     <DCCReference Include="..\..\Core\tiBaseObject.pas" />
-    <DCCReference Include="..\..\Core\tiClassToDBMap_BOM.pas" />
-    <DCCReference Include="..\..\Core\tiClassToDBMap_Srv.pas" />
     <DCCReference Include="..\..\Core\tiCommandLineParams.pas" />
     <DCCReference Include="..\..\Core\tiCompress.pas" />
     <DCCReference Include="..\..\Core\tiConstants.pas" />
@@ -90,9 +89,7 @@
     <DCCReference Include="..\..\Core\tiPersistenceLayers.pas" />
     <DCCReference Include="..\..\Core\tiPool.pas" />
     <DCCReference Include="..\..\Core\tiQuery.pas" />
-    <DCCReference Include="..\..\Core\tiQueue.pas" />
-    <DCCReference Include="..\..\Core\tiRegistry.pas" />
-    <DCCReference Include="..\..\Core\tiSingleInstanceApp.pas" />
+    <DCCReference Include="..\..\Core\tiRTTI.pas" />
     <DCCReference Include="..\..\Core\tiStreams.pas" />
     <DCCReference Include="..\..\Core\tiSyncObjs.pas" />
     <DCCReference Include="..\..\Core\tiThread.pas" />
@@ -104,6 +101,5 @@
     <DCCReference Include="..\..\Core\tiVisitorDBAutoGen.pas" />
     <DCCReference Include="..\..\Core\tiWin32.pas" />
     <DCCReference Include="..\..\Core\vcl.dcp" />
-    <None Include="..\..\Core\tiDefines.inc" />
   </ItemGroup>
 </Project>

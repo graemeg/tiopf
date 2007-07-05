@@ -8,7 +8,7 @@ uses
   ,Classes
   ,ZConnection
   ,ZDataset
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiObject
   ;
 

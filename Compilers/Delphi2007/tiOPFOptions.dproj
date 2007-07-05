@@ -44,7 +44,10 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="..\..\Options\ADOX_TLB.pas" />
+    <DCCReference Include="..\..\Options\bdertl.dcp" />
+    <DCCReference Include="..\..\Options\dbrtl.dcp" />
     <DCCReference Include="..\..\Options\MSXML_TLB.pas" />
+    <DCCReference Include="..\..\Options\rtl.dcp" />
     <DCCReference Include="..\..\Options\tiCompressNone.pas" />
     <DCCReference Include="..\..\Options\tiCompressZLib.pas" />
     <DCCReference Include="..\..\Options\tiConsoleApp.pas" />
@@ -63,6 +66,7 @@
     <DCCReference Include="..\..\Options\tiOIDInt64.pas" />
     <DCCReference Include="..\..\Options\tiOIDInteger.pas" />
     <DCCReference Include="..\..\Options\tiOIDString.pas" />
+    <DCCReference Include="..\..\Options\tiOPFCore.dcp" />
     <DCCReference Include="..\..\Options\tiQueryBDEAbs.pas" />
     <DCCReference Include="..\..\Options\tiQueryBDEParadox.pas" />
     <DCCReference Include="..\..\Options\tiQueryCSV.pas" />
@@ -70,14 +74,13 @@
     <DCCReference Include="..\..\Options\tiQueryTXTAbs.pas" />
     <DCCReference Include="..\..\Options\tiQueryXML.pas" />
     <DCCReference Include="..\..\Options\tiQueryXMLLight.pas" />
+    <DCCReference Include="..\..\Options\tiQueue.pas" />
+    <DCCReference Include="..\..\Options\tiRegistry.pas" />
+    <DCCReference Include="..\..\Options\tiSingleInstanceApp.pas" />
     <DCCReference Include="..\..\Options\tiTextParser.pas" />
     <DCCReference Include="..\..\Options\tiTextParserStructCSV.pas" />
     <DCCReference Include="..\..\Options\tiXML.pas" />
     <DCCReference Include="..\..\Options\tiXMLToTIDataset.pas" />
-    <DCCReference Include="bdertl.dcp" />
-    <DCCReference Include="dbrtl.dcp" />
-    <DCCReference Include="rtl.dcp" />
-    <DCCReference Include="tiOPFCore.dcp" />
-    <DCCReference Include="vcl.dcp" />
+    <DCCReference Include="..\..\Options\vcl.dcp" />
   </ItemGroup>
 </Project>

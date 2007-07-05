@@ -11,7 +11,7 @@ uses
   ,IB_Components
   ,tiDBConnectionPool
   ,IB_Header
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiObject
  ;
 

@@ -12,7 +12,7 @@ uses
   ,TestFramework 
   {$ENDIF}
   ,tiTestFramework
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiObject
   ;
 

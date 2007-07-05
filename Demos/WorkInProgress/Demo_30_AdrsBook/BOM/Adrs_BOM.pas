@@ -282,7 +282,7 @@ uses
   tiUtils
   ,TypInfo
   ,tiOPFManager
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,SysUtils
   ,tiVisitorDB
  ;

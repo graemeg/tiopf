@@ -6,7 +6,7 @@ interface
 uses
    tiQuery
   ,Classes
-//  ,tiClassToDBMap_BOM
+//  ,tiAutoMap
   ,tiObject
   ,tiDBConnectionPool
   {$IFDEF DELPHI5}

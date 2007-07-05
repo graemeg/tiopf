@@ -90,7 +90,7 @@ type
 implementation
 uses
    tiOPFManager
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiConstants
   ,Windows
   ,tiLog

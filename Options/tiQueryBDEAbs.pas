@@ -7,7 +7,7 @@ uses
    tiQuery
   ,Classes
   ,DBTables
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiObject
  ;
 

@@ -8,7 +8,7 @@ uses
    tiQuery
   ,tiXML
   ,Classes
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiObject
   ,tiDBConnectionPool
   ,MSXML_TLB

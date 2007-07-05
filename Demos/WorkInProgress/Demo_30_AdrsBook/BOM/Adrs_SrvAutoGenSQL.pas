@@ -40,7 +40,7 @@ procedure RegisterMappings;
 implementation
 uses
   Adrs_BOM
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiOPFManager
   ,AdrsMetaData_BOM
  ;

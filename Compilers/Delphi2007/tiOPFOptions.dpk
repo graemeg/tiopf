@@ -64,6 +64,9 @@ contains
   tiTextParser in '..\..\Options\tiTextParser.pas',
   tiTextParserStructCSV in '..\..\Options\tiTextParserStructCSV.pas',
   tiXML in '..\..\Options\tiXML.pas',
-  tiXMLToTIDataset in '..\..\Options\tiXMLToTIDataset.pas';
+  tiXMLToTIDataset in '..\..\Options\tiXMLToTIDataset.pas',
+  tiSingleInstanceApp in '..\..\Options\tiSingleInstanceApp.pas',
+  tiQueue in '..\..\Options\tiQueue.pas',
+  tiRegistry in '..\..\Options\tiRegistry.pas';
 
 end.

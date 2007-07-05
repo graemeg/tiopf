@@ -39,7 +39,7 @@ procedure RegisterMappings;
 implementation
 uses
    tiOPFManager
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,tiConstants
   ,tiDialogs
  ;

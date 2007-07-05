@@ -84,7 +84,7 @@ function  gClientSources: TClientSources;
 implementation
 uses
   tiOPFManager
-  ,tiClassToDBMap_BOM
+  ,tiAutoMap
   ,SysUtils
  ;
 
