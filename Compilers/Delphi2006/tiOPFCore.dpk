@@ -35,8 +35,6 @@ requires
 contains
   tiWin32 in '..\..\Core\tiWin32.pas',
   tiBaseObject in '..\..\Core\tiBaseObject.pas',
-  tiClassToDBMap_BOM in '..\..\Core\tiClassToDBMap_BOM.pas',
-  tiClassToDBMap_Srv in '..\..\Core\tiClassToDBMap_Srv.pas',
   tiCommandLineParams in '..\..\Core\tiCommandLineParams.pas',
   tiCompress in '..\..\Core\tiCompress.pas',
   tiConstants in '..\..\Core\tiConstants.pas',
@@ -50,9 +48,7 @@ contains
   tiOPFManager in '..\..\Core\tiOPFManager.pas',
   tiPool in '..\..\Core\tiPool.pas',
   tiQuery in '..\..\Core\tiQuery.pas',
-  tiQueue in '..\..\Core\tiQueue.pas',
   tiPersistenceLayers in '..\..\Core\tiPersistenceLayers.pas',
-  tiSingleInstanceApp in '..\..\Core\tiSingleInstanceApp.pas',
   tiStreams in '..\..\Core\tiStreams.pas',
   tiSyncObjs in '..\..\Core\tiSyncObjs.pas',
   tiThread in '..\..\Core\tiThread.pas',
@@ -63,7 +59,8 @@ contains
   tiCriteria in '..\..\Core\tiCriteria.pas',
   tiVisitorCriteria in '..\..\Core\tiVisitorCriteria.pas',
   tiTokenLibrary in '..\..\Core\tiTokenLibrary.pas',
-  tiRegistry in '..\..\Core\tiRegistry.pas',
-  tiINI in '..\..\Core\tiINI.pas';
+  tiINI in '..\..\Core\tiINI.pas',
+  tiAutoMap in '..\..\Core\tiAutoMap.pas',
+  tiRTTI in '..\..\Core\tiRTTI.pas';
 
 end.
