@@ -3453,6 +3453,7 @@ var
   LColumn: TtiVTColumn;
   LLastColumnIndex: integer;
   LObject: TtiObject;
+  LValueText: string;
 
 begin
   lNode := FSourceTree.VT.GetFirst;
@@ -3468,13 +3469,22 @@ begin
       LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
 
       if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
+      begin
         if LColumn.DataType = vttkString then
           FmtStr(FOutputStr, '%s%s%s%s%s', [FOutputStr, AFieldSeparator,
             AFieldDelimiter, FSourceTree.GetTextFromObject(LObject, I),
               AFieldDelimiter])
+        else if (LColumn.DataType in [vttkInt, vttkFloat]) then
+        begin
+          LValueText := FSourceTree.GetTextFromObject(LObject, I);
+          // strip out all instances of field separator within formatted numbers
+          LValueText := tiStrTran(LValueText, AFieldSeparator, '');
+          FmtStr(FOutputStr, '%s%s%s', [FOutputStr, AFieldSeparator, LValueText]);
+        end
         else
           FmtStr(FOutputStr, '%s%s%s', [FOutputStr, AFieldSeparator,
             FSourceTree.GetTextFromObject(LObject, I)]);
+      end;
 
     end;
 
