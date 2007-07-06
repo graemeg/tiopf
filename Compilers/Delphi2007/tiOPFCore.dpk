@@ -59,6 +59,7 @@ contains
   tiTokenLibrary in '..\..\Core\tiTokenLibrary.pas',
   tiINI in '..\..\Core\tiINI.pas',
   tiAutoMap in '..\..\Core\tiAutoMap.pas',
-  tiRTTI in '..\..\Core\tiRTTI.pas';
+  tiRTTI in '..\..\Core\tiRTTI.pas',
+  tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas';
 
 end.
