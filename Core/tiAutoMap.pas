@@ -447,6 +447,7 @@ uses
   ,tiOID
   ,tiRTTI
   ,tiVisitorCriteria
+  ,tiFilteredObjectList
   ,TypInfo
   ,SysUtils
  ;
@@ -1950,7 +1951,10 @@ procedure TVisAutoAbs.QueryResultToObject(const ATarget: TtiObject;
     begin
       lOID := TOID(GetObjectProp(ATarget, lPropName));
       if Assigned(lOID) then
+      begin
         lOID.AssignFromTIQuery(lColName, Query);
+        exit;
+      end;
     end;
     {$ENDIF}
 
@@ -2114,16 +2118,19 @@ end;
 
 procedure TVisAutoCollectionRead.SetUpCriteria;
 var
-  lFiltered: TtiObjectList;
+  lFiltered: TtiFilteredObjectList;
   lVisProAttributeToFieldName: TVisProAttributeToFieldName;
 begin
   FCriteria := NIL;
 
-  lFiltered := visited as TtiObjectList;
+  if not (visited is TtiFilteredObjectList) then
+    exit;
+
+  lFiltered := TtiFilteredObjectList(visited);
 
   if assigned(lFiltered) and lFiltered.HasCriteria then
   begin
-    FCriteria := TPerCriteria(lFiltered.Criteria);
+    FCriteria := lFiltered.Criteria;
 
     // map property based critera to table based
     gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(

@@ -7,6 +7,7 @@ uses
    tiObject
   ,Classes
   ,tiOid
+  ,tiFilteredObjectList
  ;
 
 
@@ -97,7 +98,7 @@ type
   TtiOPFTestItem  = class;
 
 
-  TtiOPFTestData = class(TtiObjectList)
+  TtiOPFTestData = class(TtiFilteredObjectList)  // used for Criteria tests
   private
     function GetOIDAsInteger: integer;
   protected
@@ -113,7 +114,7 @@ type
   end;
 
 
-  TtiOPFTestGroup = class(TtiObjectList)
+  TtiOPFTestGroup = class(TtiFilteredObjectList)  // used for Criteria tests
   private
     FIntField: integer;
     FFloatField: Extended;
@@ -705,4 +706,5 @@ begin
 end;
 
 end.
+
 

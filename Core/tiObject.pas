@@ -430,7 +430,6 @@ type
     FList : TObjectList;
     FItemOwner: TtiObject;
     FbAutoSetItemOwner: boolean;
-    FCriteria: TtiObject; // declared as tiObject to prevent circular references with tiCriteria.TPerCriteria
     function    GetList: TList;
 //    procedure   AssignDispOrder(AData: TtiObject);
     function    GetCountNotDeleted: integer;
@@ -440,9 +439,7 @@ type
                 const ASortProps : array of string; AAscendingOrder : Boolean = True): integer;
     procedure   QuickSortByProps(SortList: PPointerList; L, R: Integer;
                 const ASortProps : array of string; AAscendingOrder : Boolean = True);
-    procedure SetCriteria(const Value: TtiObject);
   protected
-    function GetCriteria: TtiObject;  
     function    GetCount: integer; virtual;
     function    GetItems(i: integer): TtiObject; virtual;
     procedure   SetItems(i: integer; const AValue: TtiObject); virtual;
@@ -539,11 +536,6 @@ type
 //                            AInBothAndNotEquals: TtiObjectList;
 //                            AIn1Only: TtiObjectList;
 //                            AIn2Only: TtiObjectList); overload;
-
-    {: Returns true if the ObjectList has selection critera }
-    function HasCriteria: boolean;
-    {: Property based selection critera used when reading the list.  This is declared as TtiObject to get around circular references but is of type TPerCriteria}
-    property Criteria: TtiObject read GetCriteria write SetCriteria;
 
   published
     // This must be published so it can be used by the tiPerAware controls.
@@ -785,7 +777,6 @@ uses
   ,tiOPFManager
   ,tiExcept
   ,tiUtils
-  ,tiCriteria
   // Delphi
   ,SysUtils
   ,Math
@@ -1248,7 +1239,6 @@ end;
 destructor TtiObjectList.Destroy;
 begin
   FList.Free;
-  FCriteria.Free;
   inherited;
 end;
 
@@ -1732,14 +1722,6 @@ begin
       Inc(result);
 end;
 
-function TtiObjectList.GetCriteria: TtiObject;
-begin
-  if not assigned(FCriteria) then
-    FCriteria:= TPerCriteria.Create(ClassName);
-
-  result:= FCriteria;
-end;
-
 { TPerStringStream }
 
 constructor TPerStringStream.Create;
@@ -1768,11 +1750,6 @@ end;
 procedure TPerStringStream.WriteLn(const AValue: string);
 begin
   FStream.WriteString(AValue + CrLf);
-end;
-
-procedure TtiObjectList.SetCriteria(const Value: TtiObject);
-begin
-
 end;
 
 procedure TtiObjectList.SetItemOwner(const AValue: TtiObject);
@@ -1816,11 +1793,6 @@ end;
 function TtiObjectList.GetOwnsObjects: boolean;
 begin
   result := FList.OwnsObjects;
-end;
-
-function TtiObjectList.HasCriteria: boolean;
-begin
-  result:= Assigned(FCriteria) and TPerCriteria(FCriteria).HasCriteria;
 end;
 
 procedure TtiObjectList.SetOwnsObjects(const AValue: boolean);
@@ -3871,5 +3843,6 @@ begin
 end;
 
 end.
+
 
 
