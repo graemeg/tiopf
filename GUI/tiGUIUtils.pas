@@ -114,6 +114,7 @@ uses
   ,tiConstants
   ,tiDataBuffer_Cli   // used for ShowTIDataset and TIDataSetToString method
   ,tiVisitor
+  ,tiRTTI
   {$IFDEF MSWINDOWS}
     {$IFNDEF FPC}
   ,MultiMon

@@ -242,6 +242,7 @@ uses
   ,tiDUnitDependencies
   ,tiXML
   ,tiStreams
+  ,tiRTTI
  ;
 
 

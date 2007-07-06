@@ -190,6 +190,7 @@ uses
   ,tiDUnitDependencies
   ,tiStreams
   ,tstPerFramework_BOM
+  ,tiRTTI
  ;
 
 
@@ -1038,81 +1039,81 @@ begin
   try
     lObj := TTestGetPropNames.Create;
     try
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF} ]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF} ]);
       CheckEquals(3, lsl.Count, 'Failed on StringProp');
       CheckEquals('Caption',            lsl.Strings[0], 'Caption');
       CheckEquals('StringProp',         lsl.Strings[1], 'StringProp');
       CheckEquals('ReadOnlyStringProp', lsl.Strings[2], 'ReadOnlyStringProp');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [ tkString]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkString]);
       CheckEquals(2, lsl.Count, 'Failed on ShortStringProp');
       CheckEquals('ShortStringProp', lsl.Strings[0], 'Failed on ShortStringProp');
       CheckEquals('ReadOnlyShortStringProp', lsl.Strings[1], 'Failed on ReadOnlyShortStringProp');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [ tkWString ]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkWString ]);
       CheckEquals(2, lsl.Count, 'Failed on WideStringProp');
       CheckEquals('WideStringProp', lsl.Strings[0], 'Failed on WideStringProp');
       CheckEquals('ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkChar]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkChar]);
       CheckEquals(2, lsl.Count, 'Failed on CharProp');
       CheckEquals('CharProp', lsl.Strings[0], 'Failed on CharProp');
       CheckEquals('ReadOnlyCharProp', lsl.Strings[1], 'Failed on ReadOnlyCharProp');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkWChar]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkWChar]);
       CheckEquals(2, lsl.Count, 'Failed on WideCharProp');
       CheckEquals('WideCharProp', lsl.Strings[0], 'Failed on WideCharProp');
       CheckEquals('ReadOnlyWideCharProp', lsl.Strings[1], 'Failed on ReadOnlyWideCharProp');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkString);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, ctkString);
       CheckEquals(11, lsl.Count, 'Failed testing ctkString');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkInteger]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkInteger]);
       CheckEquals(2, lsl.Count, 'Failed on IntProp');
       CheckEquals('IntProp', lsl.Strings[0], 'Failed on IntProp');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkInt64]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkInt64]);
       CheckEquals(2, lsl.Count, 'Failed on Int64Prop');
       CheckEquals('Int64Prop', lsl.Strings[0], 'Failed on Int64Prop');
 
       { Delphi doesn't have this type defined! }
       {$IFDEF FPC}
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkBool]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkBool]);
       CheckEquals(2, lsl.Count, 'Failed on tkBool');
       CheckEquals('BoolProp',          lsl.Strings[0], 'Failed on BoolProp');
       CheckEquals('ReadOnlyBoolProp',  lsl.Strings[1], 'Failed on ReadOnlyBoolProp');
       {$ENDIF}
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkInt);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, ctkInt);
       {$IFDEF FPC}
       CheckEquals(6, lsl.Count, 'Failed testing ctkInt');
       {$ELSE}
       CheckEquals(4, lsl.Count, 'Failed testing ctkInt');
       {$ENDIF}
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkFloat]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkFloat]);
       CheckEquals(4, lsl.Count, 'Failed on tkFloatProp');
       CheckEquals('DateTimeProp', lsl.Strings[0], 'Failed on tkFloatProp');
       CheckEquals('FloatProp',    lsl.Strings[1], 'Failed on tkFloatProp');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkFloat);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, ctkFloat);
       CheckEquals(4, lsl.Count, 'Failed testing ctkFloat');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkNumeric);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, ctkNumeric);
       CheckEquals(8, lsl.Count, 'Failed testing ctkNumeric');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, ctkSimple);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, ctkSimple);
       {$IFDEF FPC}
       CheckEquals(21, lsl.Count, 'Failed testing ctkSimple');
       {$ELSE}
       CheckEquals(19, lsl.Count, 'Failed testing ctkSimple');
       {$ENDIF}
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkClass]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkClass]);
       CheckEquals(2, lsl.Count, 'Failed on ObjectProp');
       CheckEquals('ObjectProp', lsl.Strings[0], 'Failed on ObjectProp');
 
-      tiVisitor.tiGetPropertyNames(lObj, lsl, [tkMethod]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkMethod]);
       CheckEquals(2, lsl.Count, 'Failed on MethodProp');
       CheckEquals('MethodProp', lsl.Strings[0], 'Failed on MethodProp');
     finally
@@ -1131,21 +1132,21 @@ begin
   lObj := TTestGetPropNames.Create;
   try
 
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'StringProp')      = tiTKString, 'Failed on StringProp');
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'ShortStringProp') = tiTKString, 'Failed on ShortStringProp');
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'WideStringProp')  = tiTKString, 'Failed on WideStringProp');
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'CharProp')        = tiTKString, 'Failed on CharProp');
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'WideCharProp')    = tiTKString, 'Failed on WideCharProp');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'StringProp')      = tiTKString, 'Failed on StringProp');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'ShortStringProp') = tiTKString, 'Failed on ShortStringProp');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'WideStringProp')  = tiTKString, 'Failed on WideStringProp');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'CharProp')        = tiTKString, 'Failed on CharProp');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'WideCharProp')    = tiTKString, 'Failed on WideCharProp');
 
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'IntProp')         = tiTKInteger, 'Failed on IntProp');
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'Int64Prop')       = tiTKInteger, 'Failed on Int64Prop');
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'BoolProp')        = tiTKBoolean, 'Failed on BoolProp');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'IntProp')         = tiTKInteger, 'Failed on IntProp');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'Int64Prop')       = tiTKInteger, 'Failed on Int64Prop');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'BoolProp')        = tiTKBoolean, 'Failed on BoolProp');
 
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'FloatProp')       = tiTKFloat, 'Failed on FloatProp');
-    Check(tiVisitor.tiGetSimplePropType(lObj, 'DateTimeProp')    = tiTKDateTime, 'Failed on DateTimeProp');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'FloatProp')       = tiTKFloat, 'Failed on FloatProp');
+    Check(tiRTTI.tiGetSimplePropType(lObj, 'DateTimeProp')    = tiTKDateTime, 'Failed on DateTimeProp');
 
     try
-      tiVisitor.tiGetSimplePropType(lObj, 'ObjectProp');
+      tiRTTI.tiGetSimplePropType(lObj, 'ObjectProp');
       Check(false, 'Failed on ObjectProp');
     except
       on e:exception do
@@ -1153,7 +1154,7 @@ begin
     end;
 
     try
-      tiVisitor.tiGetSimplePropType(lObj, 'MethodProp');
+      tiRTTI.tiGetSimplePropType(lObj, 'MethodProp');
       Check(false, 'Failed on MethodProp');
     except
       on e:exception do
@@ -1167,11 +1168,11 @@ end;
 
 procedure TTestTIVisitor.tiVarSimplePropType;
 begin
-  Check(tiVisitor.tiVarSimplePropType('string') = tiTKString,   'Failed on tiTKString'  );
-  Check(tiVisitor.tiVarSimplePropType(123     ) = tiTKInteger,  'Failed on tiTKInteger' );
-  Check(tiVisitor.tiVarSimplePropType(true    ) = tiTKBoolean,  'Failed on tiTKBoolean' );
-  Check(tiVisitor.tiVarSimplePropType(123.456 ) = tiTKFloat,    'Failed on tiTKFloat'   );
-  Check(tiVisitor.tiVarSimplePropType(Now     ) = tiTKDateTime, 'Failed on tiTKDateTime');
+  Check(tiRTTI.tiVarSimplePropType('string') = tiTKString,   'Failed on tiTKString'  );
+  Check(tiRTTI.tiVarSimplePropType(123     ) = tiTKInteger,  'Failed on tiTKInteger' );
+  Check(tiRTTI.tiVarSimplePropType(true    ) = tiTKBoolean,  'Failed on tiTKBoolean' );
+  Check(tiRTTI.tiVarSimplePropType(123.456 ) = tiTKFloat,    'Failed on tiTKFloat'   );
+  Check(tiRTTI.tiVarSimplePropType(Now     ) = tiTKDateTime, 'Failed on tiTKDateTime');
 end;
 
 
@@ -1181,17 +1182,17 @@ var
 begin
   lObj := TTestGetPropNames.Create;
   try
-    Check(not tiVisitor.tiIsNumericProp(lObj, 'StringProp'     ), 'Failed on StringProp');
-    Check(not tiVisitor.tiIsNumericProp(lObj, 'ShortStringProp'), 'Failed on ShortStringProp');
-    Check(not tiVisitor.tiIsNumericProp(lObj, 'WideStringProp' ), 'Failed on WideStringProp');
-    Check(not tiVisitor.tiIsNumericProp(lObj, 'CharProp'       ), 'Failed on CharProp');
-    Check(not tiVisitor.tiIsNumericProp(lObj, 'WideCharProp'   ), 'Failed on WideCharProp');
-    Check(    tiVisitor.tiIsNumericProp(lObj, 'IntProp'        ), 'Failed on IntProp');
-    Check(    tiVisitor.tiIsNumericProp(lObj, 'Int64Prop'      ), 'Failed on Int64Prop');
-    Check(    tiVisitor.tiIsNumericProp(lObj, 'DateTimeProp'   ), 'Failed on DateTimeProp');
-    Check(    tiVisitor.tiIsNumericProp(lObj, 'FloatProp'      ), 'Failed on FloatProp');
-    Check(not tiVisitor.tiIsNumericProp(lObj, 'ObjectProp'     ), 'Failed on ObjectProp');
-    Check(not tiVisitor.tiIsNumericProp(lObj, 'MethodProp'     ), 'Failed on MethodProp');
+    Check(not tiRTTI.tiIsNumericProp(lObj, 'StringProp'     ), 'Failed on StringProp');
+    Check(not tiRTTI.tiIsNumericProp(lObj, 'ShortStringProp'), 'Failed on ShortStringProp');
+    Check(not tiRTTI.tiIsNumericProp(lObj, 'WideStringProp' ), 'Failed on WideStringProp');
+    Check(not tiRTTI.tiIsNumericProp(lObj, 'CharProp'       ), 'Failed on CharProp');
+    Check(not tiRTTI.tiIsNumericProp(lObj, 'WideCharProp'   ), 'Failed on WideCharProp');
+    Check(    tiRTTI.tiIsNumericProp(lObj, 'IntProp'        ), 'Failed on IntProp');
+    Check(    tiRTTI.tiIsNumericProp(lObj, 'Int64Prop'      ), 'Failed on Int64Prop');
+    Check(    tiRTTI.tiIsNumericProp(lObj, 'DateTimeProp'   ), 'Failed on DateTimeProp');
+    Check(    tiRTTI.tiIsNumericProp(lObj, 'FloatProp'      ), 'Failed on FloatProp');
+    Check(not tiRTTI.tiIsNumericProp(lObj, 'ObjectProp'     ), 'Failed on ObjectProp');
+    Check(not tiRTTI.tiIsNumericProp(lObj, 'MethodProp'     ), 'Failed on MethodProp');
   finally
     lObj.Free;
   end;
@@ -1202,57 +1203,57 @@ procedure TTestTIVisitor.tiIsReadWriteProp;
 var
   lObj : TTestGetPropNames;
 begin
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyStringProp'),      'Failed on ReadOnlyStringProp'      );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyShortStringProp'), 'Failed on ReadOnlyShortStringProp' );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyWideStringProp'),  'Failed on ReadOnlyWideStringProp ' );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyCharProp'),        'Failed on ReadOnlyCharProp'        );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyWideCharProp'),    'Failed on ReadOnlyWideCharProp'    );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyIntProp'),         'Failed on ReadOnlyIntProp'         );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyInt64Prop'),       'Failed on ReadOnlyInt64Prop'       );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyDateTimeProp'),    'Failed on ReadOnlyDateTimeProp'    );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyFloatProp'),       'Failed on ReadOnlyFloatProp'       );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyObjectProp'),      'Failed on ReadOnlyObjectProp'      );
-  Check(not tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyMethodProp'),      'Failed on ReadOnlyMethodProp'      );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyStringProp'),      'Failed on ReadOnlyStringProp'      );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyShortStringProp'), 'Failed on ReadOnlyShortStringProp' );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyWideStringProp'),  'Failed on ReadOnlyWideStringProp ' );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyCharProp'),        'Failed on ReadOnlyCharProp'        );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyWideCharProp'),    'Failed on ReadOnlyWideCharProp'    );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyIntProp'),         'Failed on ReadOnlyIntProp'         );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyInt64Prop'),       'Failed on ReadOnlyInt64Prop'       );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyDateTimeProp'),    'Failed on ReadOnlyDateTimeProp'    );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyFloatProp'),       'Failed on ReadOnlyFloatProp'       );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyObjectProp'),      'Failed on ReadOnlyObjectProp'      );
+  Check(not tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ReadOnlyMethodProp'),      'Failed on ReadOnlyMethodProp'      );
 
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'StringProp'),  'Failed on OnlyStringProp'   );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ShortStringProp'), 'Failed on ShortStringProp'  );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'WideStringProp'),  'Failed on WideStringProp '  );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'CharProp'),        'Failed on CharProp'         );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'WideCharProp'),    'Failed on WideCharProp'     );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'IntProp'),         'Failed on IntProp'          );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'Int64Prop'),       'Failed on Int64Prop'        );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'DateTimeProp'),    'Failed on DateTimeProp'     );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'FloatProp'),       'Failed on FloatProp'        );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'ObjectProp'),      'Failed on ObjectProp'       );
-  Check(tiVisitor.tiIsReadWriteProp(TTestGetPropNames, 'MethodProp'),      'Failed on MethodProp'       );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'StringProp'),  'Failed on OnlyStringProp'   );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ShortStringProp'), 'Failed on ShortStringProp'  );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'WideStringProp'),  'Failed on WideStringProp '  );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'CharProp'),        'Failed on CharProp'         );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'WideCharProp'),    'Failed on WideCharProp'     );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'IntProp'),         'Failed on IntProp'          );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'Int64Prop'),       'Failed on Int64Prop'        );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'DateTimeProp'),    'Failed on DateTimeProp'     );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'FloatProp'),       'Failed on FloatProp'        );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ObjectProp'),      'Failed on ObjectProp'       );
+  Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'MethodProp'),      'Failed on MethodProp'       );
 
   lObj := TTestGetPropNames.Create;
   try
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyStringProp'),      'Failed on ReadOnlyStringProp'      );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyShortStringProp'), 'Failed on ReadOnlyShortStringProp' );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyWideStringProp'),  'Failed on ReadOnlyWideStringProp ' );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyCharProp'),        'Failed on ReadOnlyCharProp'        );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyWideCharProp'),    'Failed on ReadOnlyWideCharProp'    );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyIntProp'),         'Failed on ReadOnlyIntProp'         );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyInt64Prop'),       'Failed on ReadOnlyInt64Prop'       );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyBoolProp'),        'Failed on ReadOnlyBoolProp'        );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyDateTimeProp'),    'Failed on ReadOnlyDateTimeProp'    );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyFloatProp'),       'Failed on ReadOnlyFloatProp'       );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyObjectProp'),      'Failed on ReadOnlyObjectProp'      );
-    Check(not tiVisitor.tiIsReadWriteProp(lObj, 'ReadOnlyMethodProp'),      'Failed on ReadOnlyMethodProp'      );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyStringProp'),      'Failed on ReadOnlyStringProp'      );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyShortStringProp'), 'Failed on ReadOnlyShortStringProp' );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyWideStringProp'),  'Failed on ReadOnlyWideStringProp ' );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyCharProp'),        'Failed on ReadOnlyCharProp'        );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyWideCharProp'),    'Failed on ReadOnlyWideCharProp'    );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyIntProp'),         'Failed on ReadOnlyIntProp'         );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyInt64Prop'),       'Failed on ReadOnlyInt64Prop'       );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyBoolProp'),        'Failed on ReadOnlyBoolProp'        );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyDateTimeProp'),    'Failed on ReadOnlyDateTimeProp'    );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyFloatProp'),       'Failed on ReadOnlyFloatProp'       );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyObjectProp'),      'Failed on ReadOnlyObjectProp'      );
+    Check(not tiRTTI.tiIsReadWriteProp(lObj, 'ReadOnlyMethodProp'),      'Failed on ReadOnlyMethodProp'      );
 
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'StringProp'),  'Failed on OnlyStringProp'   );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'ShortStringProp'), 'Failed on ShortStringProp'  );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'WideStringProp'),  'Failed on WideStringProp '  );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'CharProp'),        'Failed on CharProp'         );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'WideCharProp'),    'Failed on WideCharProp'     );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'IntProp'),         'Failed on IntProp'          );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'Int64Prop'),       'Failed on Int64Prop'        );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'BoolProp'),        'Failed on BoolProp'         );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'DateTimeProp'),    'Failed on DateTimeProp'     );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'FloatProp'),       'Failed on FloatProp'        );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'ObjectProp'),      'Failed on ObjectProp'       );
-    Check(tiVisitor.tiIsReadWriteProp(lObj, 'MethodProp'),      'Failed on MethodProp'       );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'StringProp'),  'Failed on OnlyStringProp'   );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'ShortStringProp'), 'Failed on ShortStringProp'  );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'WideStringProp'),  'Failed on WideStringProp '  );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'CharProp'),        'Failed on CharProp'         );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'WideCharProp'),    'Failed on WideCharProp'     );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'IntProp'),         'Failed on IntProp'          );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'Int64Prop'),       'Failed on Int64Prop'        );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'BoolProp'),        'Failed on BoolProp'         );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'DateTimeProp'),    'Failed on DateTimeProp'     );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'FloatProp'),       'Failed on FloatProp'        );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'ObjectProp'),      'Failed on ObjectProp'       );
+    Check(tiRTTI.tiIsReadWriteProp(lObj, 'MethodProp'),      'Failed on MethodProp'       );
   finally
     lObj.Free;
   end;

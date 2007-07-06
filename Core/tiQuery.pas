@@ -13,6 +13,7 @@ uses
   ,tiVisitor
   ,SysUtils
   ,tiCriteria
+  ,tiRTTI
  ;
 
 const

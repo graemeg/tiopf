@@ -10,6 +10,7 @@ uses
    tiBaseObject
   ,tiVisitor
   ,tiOID
+  ,tiRTTI
   ,Classes
   ,TypInfo
   ,Contnrs

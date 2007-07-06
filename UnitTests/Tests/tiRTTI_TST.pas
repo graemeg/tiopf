@@ -15,17 +15,26 @@ uses
   ,tiObject
   ,tstPerFramework_BOM
   ;
-  
+
 type
 
   TTesttiRTTI = class(TtiTestCase)
   published
-    procedure TestSetProperty_Simple;
-    procedure TestSetProperty_PropertyPath;
-    procedure TestGetProperty_Simple;
-    procedure TestGetProperty_PropertyPath;
-    procedure TestGetPropertyClass;
-    procedure TestPropertyInheritsFrom;
+
+    procedure tiGetSimplePropType;
+    procedure tiVarSimplePropType;
+    procedure tiIsNumericProp;
+    procedure tiGetPropertyNamesObject;
+    procedure tiGetPropertyNamesClass;
+    procedure tiIsReadWritePropObject;
+    procedure tiIsReadWritePropClass;
+
+    procedure SetProperty_Simple;
+    procedure SetProperty_PropertyPath;
+    procedure GetProperty_Simple;
+    procedure GetProperty_PropertyPath;
+    procedure GetPropertyClass;
+    procedure PropertyInheritsFrom;
   end;
   
 
@@ -68,7 +77,7 @@ begin
   RegisterNonPersistentTest(TTesttiRTTI);
 end;
 
-procedure TTesttiRTTI.TestSetProperty_Simple;
+procedure TTesttiRTTI.SetProperty_Simple;
 var
   c: TtiOPFTestItem;
   lDate: TDateTime;
@@ -96,7 +105,42 @@ begin
   end;
 end;
 
-procedure TTesttiRTTI.TestSetProperty_PropertyPath;
+procedure TTesttiRTTI.tiGetPropertyNamesClass;
+begin
+
+end;
+
+procedure TTesttiRTTI.tiGetPropertyNamesObject;
+begin
+
+end;
+
+procedure TTesttiRTTI.tiGetSimplePropType;
+begin
+
+end;
+
+procedure TTesttiRTTI.tiIsNumericProp;
+begin
+
+end;
+
+procedure TTesttiRTTI.tiIsReadWritePropClass;
+begin
+
+end;
+
+procedure TTesttiRTTI.tiIsReadWritePropObject;
+begin
+
+end;
+
+procedure TTesttiRTTI.tiVarSimplePropType;
+begin
+
+end;
+
+procedure TTesttiRTTI.SetProperty_PropertyPath;
 var
   c: TtiRTTITestClass;
   c1: TtiRTTITestClassB;
@@ -145,7 +189,7 @@ begin
   end;
 end;
 
-procedure TTesttiRTTI.TestGetProperty_Simple;
+procedure TTesttiRTTI.GetProperty_Simple;
 var
   c: TtiOPFTestItem;
   lDate: TDateTime;
@@ -170,7 +214,7 @@ begin
   end;
 end;
 
-procedure TTesttiRTTI.TestGetProperty_PropertyPath;
+procedure TTesttiRTTI.GetProperty_PropertyPath;
 var
   c: TtiRTTITestClass;
   c1: TtiRTTITestClassB;
@@ -213,7 +257,7 @@ begin
   end;
 end;
 
-procedure TTesttiRTTI.TestGetPropertyClass;
+procedure TTesttiRTTI.GetPropertyClass;
 begin
   Check(TtiRTTITestClass = tiGetPropertyClass(TtiRTTITestClassB, 'TestItemB'), 'Failed on 1');
   Check(nil = tiGetPropertyClass(TtiRTTITestClassB, 'NotAProperty'), 'Failed on 2');
@@ -221,7 +265,7 @@ begin
   Check(nil = tiGetPropertyClass(TtiRTTITestClassB, 'TestItemB.NotAProperty'), 'Failed on 4');
 end;
 
-procedure TTesttiRTTI.TestPropertyInheritsFrom;
+procedure TTesttiRTTI.PropertyInheritsFrom;
 begin
   CheckTrue(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB', TtiRTTITestClass), 'Failed on 1');
   CheckTrue(tiPropertyInheritsFrom(TtiRTTITestClassB, 'TestItemB', TtiObject), 'Failed on 2');

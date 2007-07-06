@@ -847,6 +847,7 @@ uses
   ,tiVTExportHTML
   ,Clipbrd           // global Clipboard object
   ,tiVTFilter
+  ,tiRTTI
   ;
 
 type

@@ -269,6 +269,7 @@ uses
   ,tiVisitor
   ,tiConstants
   ,tiOID
+  ,tiRTTI
 
   // Delphi
   ,SysUtils
