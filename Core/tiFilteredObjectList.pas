@@ -3,9 +3,9 @@ unit tiFilteredObjectList;
 interface
 
 uses
-  tiObject
-  ,tiCriteria  , classes
-  ;
+  tiObject,
+  tiCriteria,
+  Classes;
 
 type
 
@@ -13,10 +13,10 @@ type
   private
     FCriteria: TPerCriteria;
   protected
-    function    GetCriteria: TPerCriteria;
+    function GetCriteria: TPerCriteria;
   public
     constructor Create; override;
-    destructor  Destroy; override;
+    destructor Destroy; override;
 
     {: Returns true if the ObjectList has selection critera }
     function HasCriteria: boolean;
@@ -32,26 +32,26 @@ implementation
 constructor TtiFilteredObjectList.Create;
 begin
   inherited;
-  FCriteria:= nil;
+  FCriteria := nil;
 end;
 
 destructor TtiFilteredObjectList.Destroy;
 begin
-  FCriteria.free;
+  FCriteria.Free;
   inherited;
 end;
 
 function TtiFilteredObjectList.GetCriteria: TPerCriteria;
 begin
   if not assigned(FCriteria) then
-    FCriteria:= TPerCriteria.Create(ClassName);
+    FCriteria := TPerCriteria.Create(ClassName);
 
-  result:= FCriteria;
+  Result := FCriteria;
 end;
 
 function TtiFilteredObjectList.HasCriteria: boolean;
 begin
-  result:= Assigned(FCriteria) and FCriteria.HasCriteria;
+  Result := Assigned(FCriteria) and FCriteria.HasCriteria;
 end;
 
 end.

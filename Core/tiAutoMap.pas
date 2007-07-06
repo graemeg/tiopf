@@ -5,15 +5,13 @@ unit tiAutoMap;
 interface
 
 uses
-  tiObject
-  ,tiVisitor
-  ,Classes
-  ,tiVisitorDB
-  ,tiQuery
-  ,tiExcept
-  ,tiCriteria
-
- ;
+  tiObject,
+  tiVisitor,
+  Classes,
+  tiVisitorDB,
+  tiQuery,
+  tiExcept,
+  tiCriteria;
 
 const
   CErrorInconsistentTableNames      = 'Inconsistent table names found in DBColMap';
@@ -59,14 +57,12 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure RegisterMapping(const ADatabaseName: string; const AClass: TtiClass;
-      const ATableName: string; const AAttrName: string; const AColName: string;
-      const APKInfo: TPKInfo = []); overload;
-    procedure RegisterMapping(const AClass: TtiClass; const ATableName: string;
-      const AAttrName: string; const AColName: string; const APKInfo: TPKInfo = []);
+    procedure RegisterMapping(const ADatabaseName: string; const AClass: TtiClass; const ATableName: string;
+      const AAttrName: string; const AColName: string; const APKInfo: TPKInfo = []); overload;
+    procedure RegisterMapping(const AClass: TtiClass; const ATableName: string; const AAttrName: string;
+      const AColName: string; const APKInfo: TPKInfo = []);
       overload;
-    procedure RegisterCollection(const ACollectionClass: TPerObjListClass;
-      const ACollectionOfClass: TtiClass); overload;
+    procedure RegisterCollection(const ACollectionClass: TPerObjListClass; const ACollectionOfClass: TtiClass); overload;
     procedure RegisterInheritance(const AParentClass: TtiClass; const AChildClass: TtiClass);
   published
     property ClassMaps: TtiClassMaps read FClassMaps {write FClassMaps};
@@ -256,8 +252,7 @@ type
     procedure Add(AObject: TtiClassDBCollection; ADefaultDispOrder: boolean = True);
       reintroduce;
     property Owner: TtiClassDBMappingMgr read GetOwner write SetOwner;
-    function AddClassCollectionMapping(const ACollectionClass: TPerObjListClass;
-      const AClass: TtiClass): TtiClassDBCollection;
+    function AddClassCollectionMapping(const ACollectionClass: TPerObjListClass; const AClass: TtiClass): TtiClassDBCollection;
       overload;
     function FindByCollectionOf(const AClass: TtiClass): TtiClassDBCollection;
     procedure FindByCollection(const AClass: TtiClass; const AList: TList);
@@ -350,8 +345,7 @@ type
     FWhere:  TtiQueryParams;
     FParams: TtiQueryParams;
     FVisitedClassType: TtiClass;
-    procedure AddToParams(const AParams: TtiQueryParams; const pAttrColMaps: TtiAttrColMaps;
-      const AData: TtiObject); virtual;
+    procedure AddToParams(const AParams: TtiQueryParams; const pAttrColMaps: TtiAttrColMaps; const AData: TtiObject); virtual;
     procedure QueryResultToObject(const ATarget: TtiObject; const pAttrColMaps: TtiAttrColMaps);
   protected
     procedure GetWhereAttrColMaps; virtual; abstract;
@@ -441,16 +435,15 @@ type
 implementation
 
 uses
-   tiLog
-  ,tiUtils
-  ,tiOPFManager
-  ,tiOID
-  ,tiRTTI
-  ,tiVisitorCriteria
-  ,tiFilteredObjectList
-  ,TypInfo
-  ,SysUtils
- ;
+  tiLog,
+  tiUtils,
+  tiOPFManager,
+  tiOID,
+  tiRTTI,
+  tiVisitorCriteria,
+  tiFilteredObjectList,
+  TypInfo,
+  SysUtils;
 
  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  // *
@@ -487,9 +480,8 @@ begin
 end;
 }
 
-procedure TtiClassDBMappingMgr.RegisterMapping(const ADatabaseName: string;
-  const AClass: TtiClass; const ATableName: string; const AAttrName: string;
-  const AColName: string; const APKInfo: TPKInfo = []);
+procedure TtiClassDBMappingMgr.RegisterMapping(const ADatabaseName: string; const AClass: TtiClass;
+  const ATableName: string; const AAttrName: string; const AColName: string; const APKInfo: TPKInfo = []);
 var
   lDBMap:      TtiDBMap;
   lDBTableMap: TtiDBTableMap;
@@ -507,9 +499,8 @@ begin
   FAttrColMaps.AddMapping(lAttrMap, lDBColMap);
 end;
 
-procedure TtiClassDBMappingMgr.RegisterMapping(const AClass: TtiClass;
-  const ATableName: string; const AAttrName: string; const AColName: string;
-  const APKInfo: TPKInfo = []);
+procedure TtiClassDBMappingMgr.RegisterMapping(const AClass: TtiClass; const ATableName: string;
+  const AAttrName: string; const AColName: string; const APKInfo: TPKInfo = []);
 begin
        // ToDo: This will load before a persistence layer is loaded, so the call to
        //       DefautlDBConnectionName is invalid.
@@ -654,8 +645,7 @@ begin
   Result := FindByPerObjAbsClass(AClass) <> NIL;
 end;
 
-procedure TtiClassMaps.RegisterInheritance(const AParentClass: TtiClass;
-  const AChildClass: TtiClass);
+procedure TtiClassMaps.RegisterInheritance(const AParentClass: TtiClass; const AChildClass: TtiClass);
 var
   lClassMapChild:  TtiClassMap;
   lClassMapParent: TtiClassMap;
@@ -1009,8 +999,7 @@ begin
   Add(lData);
 end;
 
-procedure TtiAttrColMaps.FindAllMappingsByMapToClass(const AClass: TtiClass;
-  const AList: TtiAttrColMaps);
+procedure TtiAttrColMaps.FindAllMappingsByMapToClass(const AClass: TtiClass; const AList: TtiAttrColMaps);
 var
   i: integer;
 begin
@@ -1021,8 +1010,7 @@ begin
       AList.Add(Items[i]);
 end;
 
-procedure TtiAttrColMaps.FindAllPKMappingsByMapToClass(const AClass: TtiClass;
-  const AList: TtiAttrColMaps);
+procedure TtiAttrColMaps.FindAllPKMappingsByMapToClass(const AClass: TtiClass; const AList: TtiAttrColMaps);
 var
   i: integer;
 begin
@@ -1034,8 +1022,7 @@ begin
       AList.Add(Items[i]);
 end;
 
-function TtiAttrColMaps.FindByClassAttrMap(const AClass: TtiClass;
-  const AAttrName: string): TtiAttrColMap;
+function TtiAttrColMaps.FindByClassAttrMap(const AClass: TtiClass; const AAttrName: string): TtiAttrColMap;
 var
   i: integer;
 begin
@@ -1125,8 +1112,7 @@ begin
   Add(Result);
 end;
 
-procedure TtiClassDBMappingMgr.RegisterCollection(const ACollectionClass: TPerObjListClass;
-  const ACollectionOfClass: TtiClass);
+procedure TtiClassDBMappingMgr.RegisterCollection(const ACollectionClass: TPerObjListClass; const ACollectionOfClass: TtiClass);
 begin
   FCollections.AddClassCollectionMapping(ACollectionClass,
     ACollectionOfClass);
@@ -1251,8 +1237,7 @@ begin
   end;
 end;
 
-procedure TtiClassDBMappingMgr.RegisterInheritance(const AParentClass: TtiClass;
-  const AChildClass: TtiClass);
+procedure TtiClassDBMappingMgr.RegisterInheritance(const AParentClass: TtiClass; const AChildClass: TtiClass);
 begin
   FClassMaps.RegisterInheritance(AParentClass, AChildClass);
 end;
@@ -1290,12 +1275,10 @@ begin
 
 end;
 
-procedure TVisAutoAbs.AddToParams(const AParams: TtiQueryParams;
-  const pAttrColMaps: TtiAttrColMaps; const AData: TtiObject);
+procedure TVisAutoAbs.AddToParams(const AParams: TtiQueryParams; const pAttrColMaps: TtiAttrColMaps; const AData: TtiObject);
 
 //-----------
-  procedure _SetOIDParam(const AParams: TtiQueryParams; const AData: TtiObject;
-  const AColName: string; const APropName: string);
+  procedure _SetOIDParam(const AParams: TtiQueryParams; const AData: TtiObject; const AColName: string; const APropName: string);
   begin
     {$IFDEF OID_AS_INT64}
     if Pos('OWNER', UpperCase(APropName)) <> 0 then
@@ -1915,8 +1898,7 @@ begin
   FSetObjectState := True;
 end;
 
-procedure TVisAutoAbs.QueryResultToObject(const ATarget: TtiObject;
-  const pAttrColMaps: TtiAttrColMaps);
+procedure TVisAutoAbs.QueryResultToObject(const ATarget: TtiObject; const pAttrColMaps: TtiAttrColMaps);
 
   procedure _SetPropValue(const ATarget: TtiObject; const pAttrColMap: TtiAttrColMap);
   var
