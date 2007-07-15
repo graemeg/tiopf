@@ -3,9 +3,14 @@ unit tiVisitor;
 {$I tiDefines.inc}
 
 // ToDo:
-//    Move RTTI methods into tiRTTI.pas
+//    Refactor ineration to allow TopDownSinglePass,
+//      BottomUpSinglePass, TopDownRecurse
+//    Remove
+//      SelfIterate
+//      FindAllByClassType
+//      CountByClass
+//    Audit for const params
 //    Group visitors by registered name
-//    Remove SQLMgrDataSource
 //    Audit for unit tests
 //    Add VisitBranch method
 
@@ -28,10 +33,30 @@ type
   {$M-}
   TtiVisitor = class;
 
+  // TVisitorClass reference
+  TtiVisitorClass = class of TtiVisitor;
+
+  // TtiVisited class reference
+  TtiVisitedClass = class of TtiVisited;
+
+  // TtiVisited
+  // The class that gets visited.
+  TtiVisited = class(TtiBaseObject)
+  protected
+    function    GetCaption: string; virtual;
+    procedure   BuildListToVisit(const AVisitor : TtiVisitor);
+  published
+    property    Caption   : string  read GetCaption;
+  public
+    constructor Create; virtual;
+    procedure   Iterate(AVisitor : TtiVisitor); virtual;
+    procedure   IterateBottomUp(AVisitor: TtiVisitor); virtual;
+    procedure   FindAllByClassType(AClass : TtiVisitedClass; AList : TList);
+  end;
+
   TtiVisitorCtrlr = class(TtiBaseObject)
   private
     FDBConnectionName: string;
-    FSQLMgrDataSource: string;
     FPerLayerName   : string;
   protected
     procedure SetPerLayerName(const AValue: string); virtual;
@@ -50,12 +75,11 @@ type
     // property on DBVisitorMgr(s), but that would be an ever worse hack.
     property  PerLayerName    : string read FPerLayerName     write SetPerLayerName;
     property  DBConnectionName : string read FDBConnectionName write FDBConnectionName;
-    // ToDo: Remove SQLMgrDataSource from TVisitorController
-    property  SQLMgrDataSource : string read FSQLMgrDataSource write FSQLMgrDataSource;
   end;
 
   TtiVisitorControllerClass = class of TtiVisitorCtrlr;
 
+  // Requre vidTopDownSinglePass, vidBottomUpSinglePass, vidTopDownRecurse
   TtiVisitorIterateDirection = (vidTopDown, vidBottomUp);
 
   // TtiVisitor: The class that does the visiting
@@ -99,30 +123,6 @@ type
     procedure   Execute(const AVisited : TtiVisited); override;
     property    Visitor : TtiVisitor read FVisitor write FVisitor;
     property    List : TList read FList;
-  end;
-
-  // TVisitorClass reference
-  TtiVisitorClass = class of TtiVisitor;
-
-  // TtiVisited class reference
-  TtiVisitedClass = class of TtiVisited;
-
-  // TtiVisited
-  // The class that gets visited.
-  TtiVisited = class(TtiBaseObject)
-  private
-    FSelfIterate: boolean;
-  protected
-    function    GetCaption: string; virtual;
-  published
-    property    Caption   : string  read GetCaption;
-  public
-    constructor Create; virtual;
-    procedure   Iterate(AVisitor : TtiVisitor); virtual;
-    procedure   IterateBottomUp(AVisitor: TtiVisitor); virtual;
-    property    SelfIterate : boolean read FSelfIterate write FSelfIterate;
-    procedure   FindAllByClassType(AClass : TtiVisitedClass; AList : TList);
-    function    CountByClass(AClass : TtiVisitedClass): integer;
   end;
 
   // A wrapper for the TtiPreSizedStream which allows text to be written to the stream
@@ -286,24 +286,28 @@ end;
 
 { TtiVisited }
 
-function TtiVisited.CountByClass(AClass: TtiVisitedClass): integer;
-var
-  lList : TList;
-begin
-  lList := TList.Create;
-  try
-    FindAllByClassType(AClass, lList);
-    result := lList.Count;
-  finally
-    lList.Free;
-  end;
-end;
+//function TtiVisited.CountByClass(AClass: TtiVisitedClass): integer;
+//var
+//  lList : TList;
+//begin
+//  lList := TList.Create;
+//  try
+//    FindAllByClassType(AClass, lList);
+//    result := lList.Count;
+//  finally
+//    lList.Free;
+//  end;
+//end;
 
+
+procedure TtiVisited.BuildListToVisit(const AVisitor: TtiVisitor);
+begin
+end;
 
 constructor TtiVisited.Create;
 begin
   inherited create;
-  FSelfIterate := true;
+  //FSelfIterate := true;
 end;
 
 
@@ -356,8 +360,7 @@ begin
 
     // If SelfIterate is true, then use RTTI to scan through all the
     // properties of type TtiVisited
-    if SelfIterate and
-       (not gTIOPFManager.Terminated) then
+    if not gTIOPFManager.Terminated then
     begin
       // Create a string list to hold the property names
       lClassPropNames := TStringList.Create;
@@ -817,8 +820,6 @@ begin
       lVisitor.VisitorController := lVisitor.VisitorControllerClass.Create;
       lVisitor.VisitorController.PerLayerName := APersistenceLayerName;
       lVisitor.VisitorController.DBConnectionName := ADBConnectionName;
-      // ToDo: Remove the need to set lVisitor.VisitorController.SQLMgrDataSource
-      lVisitor.VisitorController.SQLMgrDataSource := ADBConnectionName;
       AVisitorMgrs.Add(lVisitor.VisitorController);
     end;
   end;

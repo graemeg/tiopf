@@ -515,7 +515,7 @@ begin
       lTo.Assign(lFrom);
       CheckTSTPerObjAbs(lTo, 1);
       Check(posEmpty = lTo.ObjectState, 'Failed on ObjectState');
-      CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
+      //CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
       Check(nil = lTo.Owner, 'Failed on Owner');
     finally
       lTo.Free;
@@ -545,7 +545,7 @@ begin
       lTo.Assign(lFrom);
       CheckTSTPerObjList(lTo, 1);
       Check(posEmpty = lTo.ObjectState, 'Failed on ObjectState');
-      CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
+      //CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
       Check(nil = lTo.Owner, 'Failed on Owner');
       CheckEquals(1, lTo.Count, 'Failed on Count');
       CheckTSTPerObjAbs(lTo.Items[0], 2);
@@ -574,7 +574,7 @@ begin
         lTo.Assign(lFrom);
         CheckTSTPerObjList(lTo, 1);
         Check(posEmpty = lTo.ObjectState, 'Failed on ObjectState');
-        CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
+        //CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
         Check(nil = lTo.Owner, 'Failed on Owner');
         CheckEquals(1, lTo.Count, 'Failed on Count');
         CheckTSTPerObjAbs(lTo.Items[0], 2);
@@ -605,7 +605,7 @@ begin
       lTo.Assign(lFrom);
       CheckTSTPerObjAbs(lTo, 1);
       Check(posEmpty = lTo.ObjectState, 'Failed on ObjectState');
-      CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
+      //CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
       Check(nil = lTo.Owner, 'Failed on Owner');
     finally
       lTo.Free;
@@ -1173,7 +1173,7 @@ begin
     try
       CheckTSTPerObjList(lTo, 1);
       Check(posEmpty = lTo.ObjectState, 'Failed on ObjectState');
-      CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
+      //CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
       Check(nil = lTo.Owner, 'Failed on Owner');
       CheckEquals(1, lTo.Count, 'Failed on Count');
       CheckTSTPerObjAbs(lTo.Items[0], 2);
@@ -1197,7 +1197,7 @@ begin
     try
       CheckTSTPerObjList(lTo, 1);
       Check(posEmpty = lTo.ObjectState, 'Failed on ObjectState');
-      CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
+      //CheckEquals(true, lTo.SelfIterate,'Failed on SelfIterate');
       Check(nil = lTo.Owner, 'Failed on Owner');
       CheckEquals(1, lTo.Count, 'Failed on Count');
       CheckTSTPerObjAbs(lTo.Items[0], 2);

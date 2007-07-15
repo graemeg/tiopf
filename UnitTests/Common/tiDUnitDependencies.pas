@@ -114,10 +114,11 @@ begin
   // These are all the 'non persistence' tests
   tiBaseObject_tst.RegisterTests;
   tiUtils_TST.RegisterTests;
+  tiRTTI_TST.RegisterTests;
+  tiVisitor_TST.RegisterTests;
   tiObject_tst.RegisterTests;
   tiCompress_TST.RegisterTests;
   tiEncrypt_TST.RegisterTests;
-  tiVisitor_TST.RegisterTests;
   tiStreams_TST.RegisterTests;
   tiPool_TST.RegisterTests;
   tiQueue_Tst.RegisterTests;
@@ -135,7 +136,6 @@ begin
   tiClassToDBMap_TST.RegisterTests;
   tiXML_TST.RegisterTests;
   tiCriteria_TST.RegisterTests;
-  tiRTTI_TST.RegisterTests;
   tiTokenLibrary_TST.RegisterTests;
 
   {$IFDEF FPC}
