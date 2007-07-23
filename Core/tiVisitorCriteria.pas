@@ -50,6 +50,12 @@ function tiCriteriaAsSQL(pVisited: TtiObject; pWithComments: boolean = false): s
 var
   lVisitor: TVisPerObjToSQL;
 begin
+  Assert(pVisited is TPerCriteria, 'TPerCriteria required');
+
+  result:= '';
+  if not TPerCriteria(pVisited).HasCriteria then
+    exit;
+
   lVisitor := TVisPerObjToSQL.Create(pWithComments);
   try
     pVisited.Iterate(lVisitor);
@@ -287,5 +293,6 @@ begin
 end;
 
 end.
+
 
 

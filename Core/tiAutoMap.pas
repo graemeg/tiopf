@@ -341,7 +341,6 @@ type
   protected
     FWhereAttrColMaps: TtiAttrColMaps;
     FAttrColMaps: TtiAttrColMaps;
-    FCriteriaAttrColMaps: TtiAttrColMaps;
     FWhere:  TtiQueryParams;
     FParams: TtiQueryParams;
     FVisitedClassType: TtiClass;
@@ -1363,16 +1362,11 @@ begin
   FAttrColMaps.OwnsObjects := False;
   FAttrColMaps.AutoSetItemOwner := False;
   FParams      := TtiQueryParams.Create;
-
-  FCriteriaAttrColMaps := TtiAttrColMaps.Create;
-  FCriteriaAttrColMaps.OwnsObjects := False;
-  FCriteriaAttrColMaps.AutoSetItemOwner := False;
 end;
 
 destructor TVisAutoAbs.Destroy;
 begin
   FWhereAttrColMaps.Free;
-  FCriteriaAttrColMaps.Free;
   FWhere.Free;
   FParams.Free;
   FAttrColMaps.Free;
@@ -1420,7 +1414,7 @@ procedure TVisAutoCollectionRead.ReadDataForParentClass(ACollection: TtiClassDBC
 begin
   FClassDBCollection := ACollection;
   SetupParams;
-  SetUpCriteria;
+  SetUpCriteria; 
 
   // use 2 different SelectRow methods so that non-criteria-aware queries still work
   if Assigned(FCriteria) and FCriteria.HasCriteria then
@@ -2101,7 +2095,7 @@ end;
 procedure TVisAutoCollectionRead.SetUpCriteria;
 var
   lFiltered: TtiFilteredObjectList;
-  lVisProAttributeToFieldName: TVisProAttributeToFieldName;
+//  lVisProAttributeToFieldName: TVisProAttributeToFieldName;
 begin
   FCriteria := NIL;
 
@@ -2114,19 +2108,7 @@ begin
   begin
     FCriteria := lFiltered.Criteria;
 
-    // map property based critera to table based
-    gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
-      TtiClass(FClassDBCollection.PerObjAbsClass), FCriteriaAttrColMaps);
-
-    lVisProAttributeToFieldName :=
-      TVisProAttributeToFieldName.Create(FCriteriaAttrColMaps,
-      TtiClass(FClassDBCollection.PerObjAbsClass));
-    try
-      FCriteria.Iterate(lVisProAttributeToFieldName);
-    finally
-      lVisProAttributeToFieldName.Free;
-    end;
-
+    FCriteria.MapFieldNames(TtiClass(FClassDBCollection.PerObjAbsClass));
   end;
 
 end;

@@ -58,6 +58,7 @@ type
     FName: string;
     FOrderByList: TPerColumns;
     FSelectionCriterias: TPerSelectionCriteriaList;
+    FCriteriaAttrColMaps: TtiObjectList;
     function    GetCriterias: TPerCriteriaList;
     function    GetSelectionCriterias: TPerSelectionCriteriaList;
   protected
@@ -66,6 +67,7 @@ type
   public
     constructor Create(pName: string); reintroduce; virtual;
     destructor  Destroy; override;
+    procedure   MapFieldNames(AClass: TtiClass);
     procedure   AddAndCriteria(ACriteria: TPerCriteria);
     procedure   AddBetween(AAttribute, AValue_1, AValue_2: string);
     procedure   AddEqualTo(AAttribute, AValue: string); overload;
@@ -170,7 +172,7 @@ type
   TPerValueCriteriaAbs = class(TPerSelectionCriteriaAbs)
   end;
   
-  
+
   TPerFieldCriteriaAbs = class(TPerSelectionCriteriaAbs)
   end;
   
@@ -186,7 +188,7 @@ type
     function    GetClause: string; override;
   end;
   
-  
+
   TPerExistsCriteria = class(TPerValueCriteriaAbs)
   public
     constructor Create(ASubQuery: string; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
@@ -253,18 +255,14 @@ type
     function    GetClause: string; override;
   end;
 
-//  IFiltered  = interface
-//    ['{2254A72F-11C8-410E-A285-560F74CBCCC9}']
-//    function HasCriteria: boolean;
-//    function GetCriteria: TPerCriteria; // property based criteria
-//  end;
-
 implementation
 
 uses
   SysUtils
+  ,tiAutoMap
+  ,tiOPFManager
   ;
-  
+
   
 const
   cQuote = '''%s''';
@@ -345,6 +343,10 @@ begin
   FOrderByList := TPerColumns.Create;
   FOrderByList.Owner              := Self;
   FOrderByList.OwnsObjects        := true;
+
+  FCriteriaAttrColMaps            := TtiAttrColMaps.Create;
+  FCriteriaAttrColMaps.OwnsObjects := False;
+  FCriteriaAttrColMaps.AutoSetItemOwner := False;
 end;
 
 destructor TPerCriteria.Destroy;
@@ -353,6 +355,7 @@ begin
   FSelectionCriterias.Free;
   FOrderByList.Free;
   FGroupByList.Free;
+  FCriteriaAttrColMaps.Free;
   inherited Destroy;
 end;
 
@@ -682,6 +685,26 @@ begin
   Result := FisEmbraced;
 end;
 
+procedure TPerCriteria.MapFieldNames(AClass: TtiClass);
+var maps: TtiAttrColMaps;
+  lVisProAttributeToFieldName: TVisProAttributeToFieldName;
+begin
+  maps:= TtiAttrColMaps(FCriteriaAttrColMaps);
+
+  // map property based critera to table based
+  gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+    AClass, maps);
+
+  lVisProAttributeToFieldName :=
+    TVisProAttributeToFieldName.Create(maps,
+    AClass);
+  try
+    Iterate(lVisProAttributeToFieldName);
+  finally
+    lVisProAttributeToFieldName.Free;
+  end;
+end;
+
 procedure TPerCriteria.SetOwner(const Value: TPerCriteria);
 begin
   inherited Owner := Value;
@@ -954,5 +977,6 @@ begin
 end;
 
 end.
+
 
 

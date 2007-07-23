@@ -57,6 +57,8 @@ uses
   ,tiUtils
   ,tiConstants
   ,tiExcept
+  ,tiFilteredObjectList
+  ,tiCriteria
   // Delphi
   ,SysUtils
  ;
@@ -123,9 +125,21 @@ begin
 end;
 
 procedure TVisDBAutoGenRead.OpenQuery;
+var
+  lCriteria: TPerCriteria;
 begin
+  lCriteria := NIL;
+
+  if (visited is TtiFilteredObjectList) and TtiFilteredObjectList(visited).HasCriteria then
+    lCriteria := TtiFilteredObjectList(visited).Criteria;
+
   Assert(FTableName <> '', 'TableName not assigned');
-  Query.SelectRow(FTableName, FQueryParams);
+
+  // use old SelectRow if we don't have a lCriteris just in case!
+  if assigned(lCriteria) then
+    Query.SelectRow(FTableName, FQueryParams, lCriteria)
+  else
+    Query.SelectRow(FTableName, FQueryParams);
 end;
 
 { TVisDBAutoGenUpdate }
