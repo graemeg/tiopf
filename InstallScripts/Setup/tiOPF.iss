@@ -73,6 +73,7 @@ Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_07_VisitorBasics\*.*; DestDir: {app
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_08_Collection\*.*; DestDir: {app}\tiOPF2\Demos\Demo_08_Collection; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_09_EditDataInGUI\*.*; DestDir: {app}\tiOPF2\Demos\Demo_09_EditDataInGUI; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_10_CollectionWithFilter\*.*; DestDir: {app}\tiOPF2\Demos\Demo_10_CollectionWithFilter; Flags: recursesubdirs; components: tiOPF2Demos
+Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_10a_CollectionWithCriteria\*.*; DestDir: {app}\tiOPF2\Demos\Demo_10_CollectionWithCriteria; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_11_OnetoMany\*.*; DestDir: {app}\tiOPF2\Demos\Demo_11_OnetoMany; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_12_Inheritance\*.*; DestDir: {app}\tiOPF2\Demos\Demo_12_Inheritance; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_13_OneToOne\*.*; DestDir: {app}\tiOPF2\Demos\Demo_13_OneToOne; Flags: recursesubdirs; components: tiOPF2Demos
