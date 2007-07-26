@@ -50,6 +50,7 @@ uses
   ,tiWin32_TST
   ,tiGUIUtils_TST
   {$ENDIF}
+  ,tiDataBuffer_TST
   ,tiDataSet_TST
   ,tiTextParser_TST
   ,tiTextParserStructCSV_TST
@@ -127,6 +128,7 @@ begin
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
   {$ENDIF}
+  tiDataBuffer_TST.RegisterTests;
   tiDataSet_TST.RegisterTests;
   tiTextParser_TST.RegisterTests;
   tiTextParserStructCSV_TST.RegisterTests;

@@ -1,719 +1,563 @@
-unit tiDataSet_TST;
-
-{$I tiDefines.inc}
+unit TiDataset_TST;
 
 interface
+
 uses
-  {$IFDEF FPC}
-  testregistry
-  {$ELSE}
-  TestFramework
-  {$ENDIF}
-  ,tiTestFramework
-  ,tiDataBuffer_Cli
-  ,Classes
- ;
+  TestFramework,
+  tiDataset,
+  Db,
+  Variants,
+  SysUtils,
+  tiObject,
+  tiTestFramework;
 
 
 type
-  TTesTtiDataBuffer = class(TtiTestCase)
+  TTestTiDataset = class(TtiTestCase)
   private
-    FStringList: TStringList;
-    procedure   DoExtractToken(AIndex: integer; const AValue: string);
+    AList: TtiObjectList;
+    ADataset: TtiDataset;
+    procedure PopulateList;
+    procedure CalcFields(Dataset: TDataSet);
+    procedure FilterData(Dataset: TDataSet;var Accept: boolean);
+    procedure LinkListToDataset;
   protected
-    procedure   SetUp; override;
-    procedure   TearDown; override;
-  public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
-    destructor  Destroy; override;
+    procedure SetUp;override;
+    procedure TearDown;override;
   published
-    procedure   TIDataSetItems;
-    procedure   TIDataSetAddInstance;
-    procedure   TIDataSetRowItems;
-    procedure   TIDataSetRowAddInstance;
-    procedure   TIDataSetCellDataSetField;
-    procedure   TIDataSetCellValueAsString;
-    procedure   TIDataSetCellValueAsInteger;
-    procedure   TIDataSetCellValueAsBool;
-    procedure   TIDataSetCellValueAsReal;
-    procedure   TIDataSetCellValueAsDateTime;
-    procedure   TIDataSetCellValueAsStream;
+    procedure CheckOpen;
+    procedure CheckOpenFirstBug;
+    procedure CheckFirst;
+    procedure CheckIterate;
+    procedure CheckLast;
+    procedure FieldCount;
+    procedure FieldTypes;
+    procedure RecordCount;
+    procedure DataIntegrity;
+    procedure BookMark;
+    procedure RetrieveObject;
+    procedure MoveForwardBack;
 
-    procedure   ExtractToken;
-    procedure   CSVToTIDataSet_Props;
-    procedure   CSVToTIDataSet_SaveHeaderOnly;
-    procedure   CSVToTIDataSet_SaveNoHeader;
-    procedure   CSVToTIDataSet_SaveFieldNames;
-    procedure   CSVToTIDataSet_ReadHeaderOnly;
-    procedure   CSVToTIDataSet_ReadDataOnly;
-    procedure   CSVToTIDataSet_ReadHeaderAndData;
-    procedure   CSVToTIDataSet_Read1000Rows;
+    procedure EofBof;
+
+    procedure Insert;
+    procedure Edit;
+    procedure Cancel;
+    procedure Delete;
+
+    procedure CalculatedFields;
+    procedure FilterTheData;
+    //procedure ClearFields;
   end;
 
-
 procedure RegisterTests;
-
 
 implementation
+
 uses
-   tiDataBuffer_BOM
-  ,tiQuery
-  ,tiQueryTXTAbs
-  ,SysUtils
-  ,tiUtils
-  {$IFNDEF VER130}
-  ,Variants
-  {$ENDIF}
-  ,tiDUnitDependencies
-  {$IFDEF MSWINDOWS}
-  ,Windows
-  {$ENDIF}
-  ,tiDUnitUtils
- ;
-
-
-var
-  uTempFileName : string;
-
-
-function TempFileName: string;
-begin
-  if Length(uTempFileName) = 0 then
-  begin
-    uTempFileName := tiAddTrailingSlash(tiGetTempDir)  + 'temp.txt';
-    end;
-  result := uTempFileName;
-end;
-
+  tiOIDguid,
+  tiOPFManager,
+  tiQueryXML,
+  tiDUnitDependencies;
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTesTtiDataBuffer);
+  RegisterNonPersistentTest(TTestTiDataset);
 end;
 
-
-{ TTesTtiDataBuffer }
-
-constructor TTesTtiDataBuffer.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
-begin
-  inherited;
-  FStringList := TStringList.Create;
-end;
-
-
-procedure TTesTtiDataBuffer.CSVToTIDataSet_Props;
-var
-  lData : TCSVToTIDataSet;
-begin
-  lData := TCSVToTIDataSet.Create;
-  try
-    Check([tfmdFieldName] = lData.TextFileMetaData, 'TextFileMetaData');
-    CheckEquals(',', lData.FieldDelim, 'FieldDelim');
-    CheckEquals('"', lData.StringDelim, 'StringDelim');
-    CheckEquals(CrLf, lData.RowDelim, 'RowDelim');
-
-    lData.TextFileMetaData := [];
-    lData.FieldDelim := '|';
-    lData.StringDelim := '';
-    lData.RowDelim := Cr;
-
-    Check([] = lData.TextFileMetaData, 'TextFileMetaData');
-    CheckEquals('|', lData.FieldDelim, 'FieldDelim');
-    CheckEquals('', lData.StringDelim, 'StringDelim');
-    CheckEquals(Cr, lData.RowDelim, 'RowDelim');
-  finally
-    lData.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.CSVToTIDataSet_ReadHeaderAndData;
-var
-  lDataSet : TtiDataBuffer;
-  lWriter : TCSVToTIDataSet;
-begin
-  tiStringToFile('fieldA,fieldB'+CrLf+'a1,b1'+CrLf+'a2,b2'+CrLf, TempFileName);
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lWriter := TCSVToTIDataSet.Create;
-    try
-      lWriter.TextFileMetaData := [tfmdFieldName];
-      lWriter.Read(lDataSet, TempFileName);
-      CheckEquals(lDataSet.Fields.Count, 2, 'lDataSet.Fields.Count');
-      CheckEquals(lDataSet.Fields.Items[0].Name, 'fieldA', 'fieldA');
-      CheckEquals(lDataSet.Fields.Items[1].Name, 'fieldB', 'fieldB');
-      Check(lDataSet.Fields.Items[0].Kind = qfkString, 'fieldA.Kind');
-      Check(lDataSet.Fields.Items[1].Kind = qfkString, 'fieldB.Kind');
-      CheckEquals(2, lDataSet.Count, 'DataSet.Count');
-      CheckEquals(lDataSet.Items[0].Count, 2, 'DataSet.Items[0].Count');
-      CheckEquals(lDataSet.Items[0].Items[0].ValueAsString, 'a1');
-      CheckEquals(lDataSet.Items[0].Items[1].ValueAsString, 'b1');
-      CheckEquals(lDataSet.Items[1].Count, 2, 'DataSet.Items[0].Count');
-      CheckEquals(lDataSet.Items[1].Items[0].ValueAsString, 'a2');
-      CheckEquals(lDataSet.Items[1].Items[1].ValueAsString, 'b2');
-    finally
-      lWriter.Free;
-    end;
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.CSVToTIDataSet_ReadDataOnly;
-var
-  lDataSet : TtiDataBuffer;
-  lWriter : TCSVToTIDataSet;
-begin
-  tiStringToFile('a1,b1'+CrLf+'a2,b2'+CrLf, TempFileName);
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lWriter := TCSVToTIDataSet.Create;
-    try
-      lWriter.TextFileMetaData := [];
-      lWriter.Read(lDataSet, TempFileName);
-      CheckEquals(lDataSet.Fields.Count, 2, 'lDataSet.Fields.Count');
-      CheckEquals(lDataSet.Fields.Items[0].Name, 'Field1', 'Field1');
-      CheckEquals(lDataSet.Fields.Items[1].Name, 'Field2', 'Field2');
-      Check(lDataSet.Fields.Items[0].Kind = qfkString, 'Field1.Kind');
-      Check(lDataSet.Fields.Items[1].Kind = qfkString, 'Field2.Kind');
-      CheckEquals(2, lDataSet.Count, 'DataSet.Count');
-      CheckEquals(lDataSet.Items[0].Count, 2, 'DataSet.Items[0].Count');
-      CheckEquals(lDataSet.Items[0].Items[0].ValueAsString, 'a1');
-      CheckEquals(lDataSet.Items[0].Items[1].ValueAsString, 'b1');
-      CheckEquals(lDataSet.Items[1].Count, 2, 'DataSet.Items[0].Count');
-      CheckEquals(lDataSet.Items[1].Items[0].ValueAsString, 'a2');
-      CheckEquals(lDataSet.Items[1].Items[1].ValueAsString, 'b2');
-    finally
-      lWriter.Free;
-    end;
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.CSVToTIDataSet_ReadHeaderOnly;
-var
-  lDataSet : TtiDataBuffer;
-  lWriter : TCSVToTIDataSet;
-begin
-  tiStringToFile('fieldA,fieldB', TempFileName);
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lWriter := TCSVToTIDataSet.Create;
-    try
-      lWriter.TextFileMetaData := [tfmdFieldName];
-      lWriter.Read(lDataSet, TempFileName);
-      CheckEquals(lDataSet.Fields.Count, 2, 'lDataSet.Fields.Count');
-      CheckEquals(lDataSet.Fields.Items[0].Name, 'fieldA', 'fieldA');
-      CheckEquals(lDataSet.Fields.Items[1].Name, 'fieldB', 'fieldB');
-      Check(lDataSet.Fields.Items[0].Kind = qfkString, 'fieldA.Kind');
-      Check(lDataSet.Fields.Items[1].Kind = qfkString, 'fieldB.Kind');
-      CheckEquals(0, lDataSet.Count, 'DataSet.Count');
-    finally
-      lWriter.Free;
-    end;
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.CSVToTIDataSet_SaveFieldNames;
-var
-  lDataSet : TtiDataBuffer;
-  lRow    : TtiDataBufferRow;
-  lWriter : TCSVToTIDataSet;
-  ls      : string;
-begin
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lDataSet.Fields.AddInstance('field1', qfkString, 10);
-    lDataSet.Fields.AddInstance('field2', qfkString, 10);
-    lRow := lDataSet.AddInstance;
-    lRow.Items[0].ValueAsString := 'a1';
-    lRow.Items[1].ValueAsString := 'b1';
-    lRow := lDataSet.AddInstance;
-    lRow.Items[0].ValueAsString := 'a2';
-    lRow.Items[1].ValueAsString := 'b2';
-    lWriter := TCSVToTIDataSet.Create;
-    try
-      lWriter.TextFileMetaData := [tfmdFieldName];
-      lWriter.Save(lDataSet, TempFileName);
-    finally
-      lWriter.Free;
-    end;
-    ls := tiFileToString(TempFileName);
-    CheckEquals('"field1","field2"'+CrLf+'"a1","b1"'+CrLf+'"a2","b2"'+CrLf, ls);
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.CSVToTIDataSet_SaveHeaderOnly;
-var
-  lDataSet : TtiDataBuffer;
-  lWriter : TCSVToTIDataSet;
-  ls      : string;
-begin
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lDataSet.Fields.AddInstance('field1', qfkString, 10);
-    lDataSet.Fields.AddInstance('field2', qfkString, 10);
-    lWriter := TCSVToTIDataSet.Create;
-    try
-      lWriter.TextFileMetaData := [tfmdFieldName];
-      lWriter.Save(lDataSet, TempFileName);
-    finally
-      lWriter.Free;
-    end;
-    ls := tiFileToString(TempFileName);
-    CheckEquals('"field1","field2"'+CrLf, ls);
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.CSVToTIDataSet_SaveNoHeader;
-var
-  lDataSet : TtiDataBuffer;
-  lRow    : TtiDataBufferRow;
-  lWriter : TCSVToTIDataSet;
-  ls      : string;
-begin
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lDataSet.Fields.AddInstance('field1', qfkString, 10);
-    lDataSet.Fields.AddInstance('field2', qfkString, 10);
-    lRow := lDataSet.AddInstance;
-    lRow.Items[0].ValueAsString := 'a1';
-    lRow.Items[1].ValueAsString := 'b1';
-    lRow := lDataSet.AddInstance;
-    lRow.Items[0].ValueAsString := 'a2';
-    lRow.Items[1].ValueAsString := 'b2';
-    lWriter := TCSVToTIDataSet.Create;
-    try
-      lWriter.TextFileMetaData := [];
-      lWriter.Save(lDataSet, TempFileName);
-    finally
-      lWriter.Free;
-    end;
-    ls := tiFileToString(TempFileName);
-    CheckEquals('"a1","b1"'+CrLf+'"a2","b2"'+CrLf, ls);
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-destructor TTesTtiDataBuffer.Destroy;
-begin
-  FStringList.Free;
-  inherited;
-end;
-
-
-procedure TTesTtiDataBuffer.DoExtractToken(AIndex: integer; const AValue: string);
-begin
-  if FStringList.Count < AIndex then
-    FStringList.Add(AValue)
-  else
-    FStringList.Strings[AIndex]:= AValue;
-end;
-
-
-procedure TTesTtiDataBuffer.ExtractToken;
-begin
-  stExtractTokensL('test',
-                    ',', '"', true, DoExtractToken);
-  CheckEquals(1, FStringList.Count, '#1');
-  CheckEquals('test', FStringList.Strings[0], '#2');
-  FStringList.Clear;
-
-  stExtractTokensL('test1,test2',
-                    ',', '"', true, DoExtractToken);
-  CheckEquals(2, FStringList.Count, '#3');
-  CheckEquals('test1', FStringList.Strings[0], '#4');
-  CheckEquals('test2', FStringList.Strings[1], '#5');
-  FStringList.Clear;
-
-  stExtractTokensL(',test2',
-                    ',', '"', true, DoExtractToken);
-  CheckEquals(2, FStringList.Count, '#6');
-  CheckEquals('', FStringList.Strings[0], '#7');
-  CheckEquals('test2', FStringList.Strings[1], '#8');
-  FStringList.Clear;
-
-  stExtractTokensL('test1,',
-                    ',', '"', true, DoExtractToken);
-  CheckEquals(2, FStringList.Count, '#9');
-  CheckEquals('test1', FStringList.Strings[0], '#10');
-  CheckEquals('', FStringList.Strings[1], '#11');
-  FStringList.Clear;
-
-  stExtractTokensL(',,test1,,',
-                    ',', '"', false, DoExtractToken);
-  CheckEquals(1, FStringList.Count, '#12');
-  CheckEquals('test1', FStringList.Strings[0], '#13');
-  FStringList.Clear;
-
-  stExtractTokensL('"test1",test2',
-                    ',', '"', true, DoExtractToken);
-  CheckEquals(2, FStringList.Count, '#14');
-  CheckEquals('test1', FStringList.Strings[0], '#15');
-  CheckEquals('test2', FStringList.Strings[1], '#16');
-  FStringList.Clear;
-
-  stExtractTokensL('"test1,test2',
-                    ',', '"', true, DoExtractToken);
-  CheckEquals(1, FStringList.Count, '#17');
-  CheckEquals('test1,test2', FStringList.Strings[0], '#18');
-  FStringList.Clear;
-
-  stExtractTokensL('test1",test2',
-                    ',', '"', true, DoExtractToken);
-  CheckEquals(1, FStringList.Count, '#19');
-  CheckEquals('test1",test2', FStringList.Strings[0], '#20');
-  FStringList.Clear;
-
-  stExtractTokensL('"tes,t1","te,st2"',
-                    ',', '"', true, DoExtractToken);
-  CheckEquals(2, FStringList.Count, '#21');
-  CheckEquals('tes,t1', FStringList.Strings[0], '#22');
-  CheckEquals('te,st2', FStringList.Strings[1], '#23');
-  FStringList.Clear;
-end;
-
-
-procedure TTesTtiDataBuffer.SetUp;
-begin
-  inherited;
-  FStringList.Clear;
-end;
-
-
-procedure TTesTtiDataBuffer.TIDataSetAddInstance;
-var
-  lDataSet : TtiDataBuffer;
-  lRow : TtiDataBufferRow;
-begin
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lDataSet.Fields.AddInstance('field1', qfkString, 10);
-    lDataSet.Fields.AddInstance('field2', qfkString, 10);
-    lRow := lDataSet.AddInstance;
-    CheckEquals(2,lRow.Count, 'Row.Count');
-    CheckSame(lDataSet.Fields.Items[0], lRow.Items[0].DataSetField, '#1');
-    CheckSame(lDataSet.Fields.Items[1], lRow.Items[1].DataSetField, '#2');
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.TIDataSetCellDataSetField;
-var
-  lDataSet : TtiDataBuffer;
-  lRow : TtiDataBufferRow;
-  lCell : TtiDataBufferCell;
-  lField : TtiDBMetaDataField;
-begin
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lField := TtiDBMetaDataField.Create;
-    lDataSet.Fields.Add(lField);
-    lRow := TtiDataBufferRow.Create;
-    lDataSet.Add(lRow);
-    lCell := TtiDataBufferCell.Create;
-    lRow.Add(lCell);
-    CheckSame(lField, lCell.DataSetField, 'DataSetField');
-
-    lField := TtiDBMetaDataField.Create;
-    lDataSet.Fields.Add(lField);
-    lCell := TtiDataBufferCell.Create;
-    lRow.Add(lCell);
-    CheckSame(lField, lCell.DataSetField, 'DataSetField');
-    lDataSet.Fields.Remove(lField);
-    try
-      lCell.DataSetField;
-      Fail('Exception should have been raised');
-    except
-      on e:exception do
-      begin
-        CheckEquals(cErrorTIDataSetCellMetaData, e.message);
-      end;
-    end;
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.TIDataSetItems;
-var
-  lDataSet : TtiDataBuffer;
-  lRow : TtiDataBufferRow;
-begin
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lRow := TtiDataBufferRow.Create;
-    lDataSet.Add(lRow);
-    CheckEquals(1, lDataSet.Count, 'Count');
-    CheckSame(lRow, lDataSet.Items[0], 'Items[0]');
-    CheckSame(lRow, TObject(lDataSet.List.Items[0]), 'List.Items[0]');
-    CheckSame(lDataSet, lRow.Owner, 'lRow.Owner');
-    CheckEquals(0, lRow.Index, 'lRow.Index');
-    lRow := TtiDataBufferRow.Create;
-    lDataSet.Add(lRow);
-    CheckEquals(2, lDataSet.Count, 'Count');
-    CheckSame(lRow, lDataSet.Items[1], 'Items[1]');
-    CheckSame(lRow, TObject(lDataSet.List.Items[1]), 'List.Items[1]');
-    CheckSame(lDataSet, lRow.Owner, 'lRow.Owner');
-    CheckEquals(1, lRow.Index, 'lRow.Index');
-    lDataSet.Clear;
-    CheckEquals(0, lDataSet.Count, 'Count');
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.TIDataSetRowAddInstance;
-var
-  lDataSet : TtiDataBuffer;
-  lRow    : TtiDataBufferRow;
-  lCell1  : TtiDataBufferCell;
-  lCell2  : TtiDataBufferCell;
-begin
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lDataSet.Fields.AddInstance('field1', qfkString, 10);
-    lDataSet.Fields.AddInstance('field2', qfkString, 10);
-    lRow := TtiDataBufferRow.Create;
-    lDataSet.Add(lRow);
-    lCell1 := lRow.AddInstance;
-    lCell2 := lRow.AddInstance;
-    CheckEquals(2,lRow.Count, 'Row.Count');
-    CheckSame(lCell1, lRow.Items[0], '#1');
-    CheckSame(lDataSet.Fields.Items[0], lCell1.DataSetField, '#2');
-    CheckSame(lCell2, lRow.Items[1], '#3');
-    CheckSame(lDataSet.Fields.Items[1], lCell2.DataSetField, '#4');
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.TIDataSetRowItems;
-var
-  lDataSet    : TtiDataBuffer;
-  lDataSetRow : TtiDataBufferRow;
-  lDataSetCell : TtiDataBufferCell;
-begin
-  lDataSet    := TtiDataBuffer.Create;
-  try
-    lDataSetRow := TtiDataBufferRow.Create;
-    lDataSet.Add(lDataSetRow);
-    lDataSetCell := TtiDataBufferCell.Create;
-    lDataSetRow.Add(lDataSetCell);
-    CheckEquals(1, lDataSetRow.Count, 'Count');
-    CheckSame(lDataSetCell, lDataSetRow.Items[0], 'Items[0]');
-    CheckSame(lDataSetRow, lDataSetCell.Owner, 'lRow.Owner');
-    CheckEquals(0, lDataSetCell.Index, 'lRow.Index');
-    lDataSetCell := TtiDataBufferCell.Create;
-    lDataSetRow.Add(lDataSetCell);
-    CheckEquals(2, lDataSetRow.Count, 'Count');
-    CheckSame(lDataSetCell, lDataSetRow.Items[1], 'Items[1]');
-    CheckSame(lDataSetRow, lDataSetCell.Owner, 'lRow.Owner');
-    CheckEquals(1, lDataSetCell.Index, 'lRow.Index');
-  finally
-    lDataSet.Free;
-  end;
-end;
-
-
-procedure TTesTtiDataBuffer.CSVToTIDataSet_Read1000Rows;
-var
-  lDataSet : TtiDataBuffer;
-  lWriter : TCSVToTIDataSet;
-  lLine, ls : string;
-  i, j : integer;
 const
-  cCols = 99;
-  cRows = 100;
+  FirstValue = 1;
+  LastValue = 100;
+
+type
+  TtiDatasetItem = class(TtiObject)
+  private
+    FIntField: integer;
+    FFloatField: Double;
+    FStrField: string;
+    FDateField: TDateTime;
+    FBoolField: boolean;
+    FMemoField: string;
+  published
+    property IntField: integer read FIntField write FIntField;
+    property StrField: string read FStrField write FStrField;
+    property FloatField: Double read FFloatField write FFloatField;
+    property DateField: TDateTime read FDateField write FDateField;
+    property BoolField: boolean read FBoolField write FBoolField;
+    property MemoField: string read FMemoField write FMemoField;
+  end;
+
+  { TTestTiDataset }
+
+procedure TTestTiDataset.PopulateList;
+var i: integer;
+  d: TtiDatasetItem;
 begin
-  lLine := '';
-  for j := 1 to cCols do
-  begin
-    if lLine <> '' then lLine := lLine + ',';
-    lLine := lLine + 'field' + IntToStr(j);
-  end;
-  ls := lLine + CrLf;
-
-  for i := 0 to cRows do
-  begin
-    lLine := '';
-    for j := 1 to cCols do
-    begin
-      if lLine <> '' then lLine := lLine + ',';
-      lLine := lLine + 'value' + IntToStr(((i+1)*100)+(j));
-    end;
-    ls := ls + lLine + CrLf;
-  end;
-
-  tiStringToFile(ls, TempFileName);
-  lDataSet := TtiDataBuffer.Create;
-  try
-    lWriter := TCSVToTIDataSet.Create;
-    try
-      lWriter.TextFileMetaData := [tfmdFieldName];
-      lWriter.Read(lDataSet, TempFileName);
-      CheckEquals(cCols, lDataSet.Fields.Count, 'lDataSet.Fields.Count');
-      for j := 1 to cCols do
-        CheckEquals(lDataSet.Fields.Items[j-1].Name, 'field' + IntToStr(j), 'field'+IntToStr(j));
-      for i := 0 to cRows do
-        for j := 1 to cCols do
-          CheckEquals(lDataSet.Items[i].Items[j-1].ValueAsString, 'value' + IntToStr(((i+1)*100)+(j)));
-    finally
-      lWriter.Free;
-    end;
-  finally
-    lDataSet.Free;
+  for i := FirstValue to LastValue do begin
+    d := TtiDatasetItem.CreateNew;
+    d.IntField := i;
+    d.StrField := IntToStr(1);
+    d.BoolField := Odd(i);
+    d.DateField := Now;
+    d.FloatField := i - 0.1;
+    d.MemoField := stringofchar(chr(i), i);
+    AList.Add(d);
   end;
 end;
 
-
-procedure TTesTtiDataBuffer.TearDown;
+procedure TTestTiDataset.LinkListToDataset;
 begin
+  with ADataset do begin
+    ObjectList := AList;
+  end;
+end;
+
+procedure TTestTiDataset.Setup;
+begin
+  inherited;
+  gTIOPFManager.DefaultPerLayerName:= 'XML';
+//  gTIOPFManager.ConnectDatabase('dbdemos.xml', '', '');
+
+  AList := TtiObjectList.Create;
+  ADataset := TtiDataset.Create(nil);
+  ADataset.ObjectClass := TtiDatasetItem;
+  PopulateList; //Adds 100 Items 1..100
+  LinkListToDataset;
+  ADataset.Open;
+end;
+
+procedure TTestTiDataset.Teardown;
+begin
+  AList.Free;
+  ADataset.Close;
+  ADataset.Free;
   inherited;
 end;
 
-
-{
-procedure TTesTtiDataBuffer.CommaInField;
+procedure TTestTiDataset.CheckOpen;
+//Simply tests if the first record is selected after the dataset has been opened.
+//This wasn't the case; I repaired this on 22 Feb 2004
 begin
-
-end;
-
-procedure TTesTtiDataBuffer.CrInField;
-begin
-
-end;
-
-procedure TTesTtiDataBuffer.LFInField;
-begin
-
-end;
-}
-
-
-procedure TTesTtiDataBuffer.TIDataSetCellValueAsString;
-var
-  lCell : TtiDataBufferCell;
-begin
-  lCell := TtiDataBufferCell.Create;
-  try
-    lCell.ValueAsString:= 'test';
-    CheckEquals('test', lCell.ValueAsString);
-  finally
-    lCell.Free;
+  with ADataset do begin
+    Check(Active, 'Dataset Open method not valid');
+    Close;
+    Check(not Active, 'Dataset Close method not valid');
   end;
 end;
 
-
-procedure TTesTtiDataBuffer.TIDataSetCellValueAsBool;
-var
-  lCell : TtiDataBufferCell;
+procedure TTestTiDataset.CheckOpenFirstBug;
+//Simply tests if the first record is selected after the dataset has been opened.
+//This wasn't the case; I repaired this on 22 Feb 2004
 begin
-  lCell := TtiDataBufferCell.Create;
-  try
-    lCell.ValueAsBool := True;
-    CheckEquals(true, lCell.ValueAsBool);
-  finally
-    lCell.Free;
+  with ADataset do begin
+    Check(FieldByName('IntField').AsInteger = FirstValue, 'Open CheckOpenFirstBug retrieves incorrect object (1)');
+    Check((GetActiveItem as TtiDatasetItem).IntField = FirstValue, 'Open CheckOpenFirstBug.GetActiveItem retrieves incorrect object (1)');
+
+    Close;
+    Open;
+    Check(FieldByName('IntField').AsInteger = FirstValue, 'Open CheckOpenFirstBug retrieves incorrect object (2)');
+    Check((GetActiveItem as TtiDatasetItem).IntField = FirstValue, 'Open CheckOpenFirstBug.GetActiveItem retrieves incorrect object (2)');
   end;
 end;
 
-
-procedure TTesTtiDataBuffer.TIDataSetCellValueAsDateTime;
-var
-  lCell : TtiDataBufferCell;
-  lDate : TDateTime;
+procedure TTestTiDataset.CheckFirst;
 begin
-  lDate := EncodeDate(2004, 01, 01) + EncodeTime(10, 20, 30, 00);
-  lCell := TtiDataBufferCell.Create;
-  try
-    lCell.ValueAsDateTime := lDate;
-    CheckEquals(lDate, lCell.ValueAsDateTime);
-  finally
-    lCell.Free;
+  with ADataset do begin
+    First;
+    Check(FieldByName('IntField').AsInteger = FirstValue, 'CheckFirst retrieves incorrect object');
+    Check((GetActiveItem as TtiDatasetItem).IntField = FirstValue, 'CheckFirst.GetActiveItem retrieves incorrect object');
   end;
 end;
 
-
-procedure TTesTtiDataBuffer.TIDataSetCellValueAsInteger;
-var
-  lCell : TtiDataBufferCell;
+procedure TTestTiDataset.CheckIterate;
+var AValue: integer;
 begin
-  lCell := TtiDataBufferCell.Create;
-  try
-    lCell.ValueAsInteger:= 1234567890;
-    CheckEquals(1234567890, lCell.ValueAsInteger);
-  finally
-    lCell.Free;
+  with ADataset do begin
+    for AValue := FirstValue to LastValue do begin
+      Check(FieldByName('IntField').AsInteger = AValue, 'CheckIterate retrieves incorrect object ' + IntToStr(AValue));
+      Next;
+    end;
   end;
 end;
 
-
-procedure TTesTtiDataBuffer.TIDataSetCellValueAsReal;
-var
-  lCell : TtiDataBufferCell;
+procedure TTestTiDataset.CheckLast;
 begin
-  lCell := TtiDataBufferCell.Create;
-  try
-    lCell.ValueAsFloat := 1234.56789;
-    CheckEquals(1234.56789, lCell.ValueAsFloat, 5);
-  finally
-    lCell.Free;
+  with ADataset do begin
+    Last;
+    Check(FieldByName('IntField').AsInteger = LastValue, 'CheckLast retrieves incorrect object');
+    Check((GetActiveItem as TtiDatasetItem).IntField = LastValue, 'CheckLast.GetActiveItem retrieves incorrect object');
   end;
 end;
 
-
-procedure TTesTtiDataBuffer.TIDataSetCellValueAsStream;
-var
-  lCell : TtiDataBufferCell;
-  lStrFrom : string;
-  lStrTo   : string;
-  lStream : TStream;
+procedure TTestTiDataset.FieldCount;
+var AFieldCount: integer;
 begin
-  lStrFrom := tiCreateStringOfSize(1000);
-  lCell := TtiDataBufferCell.Create;
-  try
-    lStream := TMemoryStream.Create;
-    try
-      tiStringToStream(lStrFrom, lStream);
-      lCell.AssignFromStream(lStream);
-    finally
-      lStream.Free;
+  AFieldCount := ADataset.Fields.Count;
+  //Crap.. Its always one extra since TtiVisited publishes the property Caption
+  Check(AFieldCount = 7, 'Incorrect field count');
+end;
+
+procedure TTestTiDataset.RecordCount;
+var ARecordcount: integer;
+begin
+  ARecordCount := ADataset.RecordCount;
+  Check(ARecordCount = LastValue - FirstValue + 1, 'Incorrect RecordCount');
+  //ADataset.OnFilterRecord := FilterData;
+  //ADataset.Filtered := true;
+  //ARecordCount := ADataset.RecordCount
+  //Check(RecordCount = (LastValue-FirstValue+1) div 2, 'Amount of records in filtering is incorrect');
+end;
+
+procedure TTestTiDataset.BookMark;
+var SavePlace21: TBookmark;
+  ARecordId: integer;
+begin
+  with ADataset do begin
+    //we are sitting on record 1
+
+    MoveBy(20); //Navigate to 21 and Bookmark it
+    ARecordId := FieldByName('IntField').AsInteger;
+    Check(ARecordId = 21, 'Navigation Error - MoveBy(2) has not moved to correct record');
+    SavePlace21 := GetBookmark; //21
+
+    MoveBy( - 1); // record 20
+    ARecordId := FieldByName('IntField').AsInteger;
+    Check(ARecordId = 20, 'Navigation Error - should be at record 20');
+
+    First;
+    ARecordId := FieldByName('IntField').AsInteger;
+    Check(ARecordId = FirstValue, 'Navigation Error - First has not moved to first record');
+
+    Last;
+    ARecordId := FieldByName('IntField').AsInteger;
+    Check(ARecordId = LastValue, 'Navigation Error - Last has not moved to last record');
+
+    GotoBookmark(SavePlace21);
+    ARecordId := FieldByName('IntField').AsInteger;
+    Check(ARecordId = 21, 'Bookmarking Error - should be at record 21');
+    FreeBookmark(SavePlace21);
+  end;
+end;
+
+procedure TTestTiDataset.DataIntegrity;
+//Purpose??
+var i: integer;
+  rsum: integer;
+  checkres: integer;
+begin
+  checkres := 0;
+  ADataset.First;
+  for i := 0 to AList.Count - 1 do begin
+    checkres := checkres +(AList[i]as TtiDatasetItem).IntField;
+  end;
+
+  rsum := 0;
+  for i := 0 to ADataset.RecordCount - 1 do begin
+    rsum := rsum + ADataset.FieldValues['IntField'];
+    ADataset.Next;
+  end;
+  Check(rsum = checkres, 'Incorrect summing of all data');
+end;
+
+procedure TTestTiDataset.EofBof;
+begin
+  with ADataset do begin
+    Close;
+    AList.Clear;
+    Open;
+    Check(ADataset.RecordCount = 0, 'Error handling empty recordset - Recordcount');
+    Next;
+    Check(Eof, 'Error handling empty recordset - EOF');
+    Prior;
+    Check(Bof, 'Error handling empty recordset - BOF');
+    Check(Eof and Bof, 'Error handling empty recordset - EOF & BOF');
+  end;
+end;
+
+procedure TTestTiDataset.Insert;
+var Rc: integer;
+var ANewMemoField: string;
+  ANewStrField: string;
+  ANewIntField: integer;
+  ANewDateField: TDateTime;
+  ANewBoolField: boolean;
+  ANewFloatField: Double;
+begin
+  //The Dataset does not support InsertRecord & AppendRecord or ClearFields!!
+
+  with ADataset do begin
+    ANewStrField := 'Edited Value!';
+    ANewIntField := 12343;
+    ANewDateField := Now + 1;
+    ANewBoolField := true;
+    ANewFloatField := 99999.9995;
+    ANewMemoField := 'Edited Value!';
+
+    Rc := RecordCount;
+
+    First;
+    Append;
+    FieldByName('StrField').AsString := ANewStrField;
+    FieldByName('IntField').AsInteger := ANewIntField;
+    FieldByName('DateField').AsDateTime := ANewDateField;
+    FieldByName('BoolField').AsBoolean := ANewBoolField;
+    FieldByName('FloatField').AsFloat := ANewFloatField;
+    FieldByName('MemoField').AsString := ANewMemoField;
+    Post;
+
+    Check(FieldByName('StrField').AsString = ANewStrField, 'String Edit error');
+    Check(FieldByName('IntField').AsInteger = ANewIntField, 'Integer edit error');
+    Check(FieldByName('DateField').AsDateTime = ANewDateField, 'Date edit error');
+    Check(FieldByName('BoolField').AsBoolean = ANewBoolField, 'Boolean edit error');
+    Check(Abs(FieldByName('FloatField').AsFloat - ANewFloatField) < 0.0001, 'Float edit error');
+    Check(FieldByName('MemoField').Value = ANewMemoField, 'Memo edit error');
+    Check(RecordCount = Rc + 1, Format('Records have not been appended prev=%d<>current=%d',[Rc + 1, RecordCount]));
+  end;
+end;
+
+procedure TTestTiDataset.Edit;
+const GotoRecord = 10;
+var cNewMemoField, cNewStrField: string;
+  nNewIntField: integer;
+  dNewDateField: TDateTime;
+  lNewBoolField: boolean;
+  nNewFloatField: Double;
+begin
+  with ADataset do begin
+    cNewStrField := 'Edited Value';
+    nNewIntField := 12345;
+    dNewDateField := Now - 1;
+    lNewBoolField := true;
+    nNewFloatField := 99999.9999;
+    cNewMemoField := 'Edited Value';
+
+    First; // record 0
+    MoveBy(GotoRecord);
+    Edit;
+    FieldByName('StrField').Value := cNewStrField;
+    FieldByName('IntField').Value := nNewIntField;
+    FieldByName('DateField').Value := dNewDateField;
+    FieldByName('BoolField').Value := lNewBoolField;
+    FieldByName('FloatField').Value := nNewFloatField;
+    FieldByName('MemoField').Value := cNewMemoField;
+    Post;
+
+    First; // record 0
+    MoveBy(GotoRecord);
+    Check(FieldByName('StrField').AsString = cNewStrField, 'String Edit error');
+    Check(FieldByName('IntField').AsInteger = nNewIntField, 'Integer edit error');
+    Check(FieldByName('DateField').AsDateTime = dNewDateField, 'Date edit error');
+    Check(FieldByName('BoolField').AsBoolean = lNewBoolField, 'Boolean edit error');
+    Check(Abs(FieldByName('FloatField').AsFloat - nNewFloatField) < 0.0001, 'Float edit error');
+    Check(FieldByName('MemoField').Value = cNewMemoField, 'Memo edit error');
+  end;
+end;
+
+procedure TTestTiDataset.Cancel;
+const GotoRecord = 10;
+var cNewMemoField, cNewStrField: string;
+  nNewIntField: integer;
+  dNewDateField: TDateTime;
+  lNewBoolField: boolean;
+  nNewFloatField: Double;
+var cOldMemoField, cOldStrField: string;
+  nOldIntField: integer;
+  dOldDateField: TDateTime;
+  lOldBoolField: boolean;
+  nOldFloatField: Double;
+begin
+  with ADataset do begin
+    cNewStrField := 'Edited Value!';
+    nNewIntField := 12345;
+    dNewDateField := Now - 1;
+    lNewBoolField := true;
+    nNewFloatField := 99999.9999;
+    cNewMemoField := 'Edited Value!';
+
+    First; // record 0
+    MoveBy(GotoRecord);
+    //Save old information
+    cOldStrField := FieldByName('StrField').Value;
+    nOldIntField := FieldByName('IntField').Value;
+    dOldDateField := FieldByName('DateField').Value;
+    lOldBoolField := FieldByName('BoolField').Value;
+    nOldFloatField := FieldByName('FloatField').Value;
+    cOldMemoField := FieldByName('MemoField').Value;
+
+    Edit;
+    //Set new information
+    FieldByName('StrField').Value := cNewStrField;
+    FieldByName('IntField').Value := nNewIntField;
+    FieldByName('DateField').Value := dNewDateField;
+    FieldByName('BoolField').Value := lNewBoolField;
+    FieldByName('FloatField').Value := nNewFloatField;
+    FieldByName('MemoField').Value := cNewMemoField;
+    Cancel;
+
+    First; // record 0
+    MoveBy(GotoRecord); // record 20
+    //Compare actual with saveld information
+    Check(FieldByName('IntField').AsInteger = nOldIntField, 'Integer edit error');
+    Check(FieldByName('StrField').AsString = cOldStrField);
+    Check(FieldByName('DateField').AsDateTime = dOldDateField, 'Date edit error');
+    Check(FieldByName('BoolField').AsBoolean = lOldBoolField, 'Boolean edit error');
+    Check(FieldByName('FloatField').AsFloat = nOldFloatField, 'Float edit error');
+    Check(FieldByName('MemoField').Value = cOldMemoField, 'Memo edit error');
+  end;
+end;
+
+procedure TTestTiDataset.Delete;
+var Rc: integer;
+begin
+  with ADataset do begin
+    First;
+    Rc := RecordCount;
+    while not ADataset.IsEmpty do begin
+      Delete;
+      Check(RecordCount = Rc - 1, Format('Records have not been deleted; prev=%d<>current=%d',[Rc - 1, RecordCount]));
+      Dec(Rc);
     end;
 
-    lStream := TMemoryStream.Create;
-    try
-      lCell.AssignToStream(lStream);
-      lStrTo := tiStreamToString(lStream);
-    finally
-      lStream.Free;
-    end;
-
-    CheckEquals(lStrFrom, lStrTo);
-  finally
-    lCell.Free;
+    //Also check Eof && Bof after all have been deleted
+    Check(Eof, 'Error handling empty recordset - EOF');
+    Check(Bof, 'Error handling empty recordset - BOF');
+    Check(Eof and Bof, 'Error handling empty recordset - EOF & BOF');
   end;
 end;
 
+procedure TTestTiDataset.FieldTypes;
+begin
+  Check(ADataset.FieldByName('StrField').DataType = ftString, 'Field type error - should be String');
+  Check(ADataset.FieldByName('IntField').DataType = ftInteger, 'Field type error - should be Integer');
+  Check(ADataset.FieldByName('DateField').DataType = ftDateTime, 'Field type error - should be Date');
+  Check(ADataset.FieldByName('BoolField').DataType = ftBoolean, 'Field type error - should be Boolean');
+  Check(ADataset.FieldByName('FloatField').DataType = ftFloat, 'Field type error - should be Float');
+  Check(ADataset.FieldByName('MemoField').DataType = ftString, 'Field type error - should be String');
+end;
+
+procedure TTestTiDataset.FilterData(Dataset: TDataSet;var Accept: boolean);
+begin
+  Accept := Dataset.FieldByname('BoolField').AsBoolean;
+end;
+
+procedure TTestTiDataset.FilterTheData;
+var i, AFoundValues, ATrueVales: integer;
+begin
+
+  ATrueVales := 0;
+  for i:= 0 to AList.Count-1 do begin
+    if TtiDatasetItem(AList[i]).BoolField
+    then Inc(ATrueVales);
+  end;
+
+  AFoundValues := 0;
+  with ADataset do begin
+    OnFilterRecord := FilterData;
+    Filtered := true;
+    First;
+    while not Eof do begin
+      Check((GetActiveItem as TtiDatasetItem).BoolField, 'Only true booleans should show');
+      inc(AFoundValues);
+      Next;
+    end;
+
+    Check(AFoundValues = ATrueVales, 'Amount of records in filtering is incorrect');
+  end;
+end;
+
+procedure TTestTiDataset.CalcFields(Dataset: TDataSet);
+begin
+  Dataset.FieldByName('CalcField').AsInteger := Dataset.FieldByName('IntField').AsInteger;
+end;
+
+procedure TTestTiDataset.CalculatedFields;
+//Create persistent fields the hard way, and add a calculated field.
+var f: TIntegerField;
+begin
+  with ADataset do begin
+    Close;
+    exit; //Doesn't seem to work right now... ???? Why ????
+
+    f := TIntegerField.Create(ADataset);
+    f.FieldName := 'CalcField';
+    f.FieldKind := fkCalculated;
+    f.Name := 'CalcField';
+
+    f := TIntegerField.Create(ADataset);
+    f.FieldName := 'IntField';
+    f.FieldKind := fkData;
+    f.Name := 'IntField';
+
+    //FieldDefs.Update;
+
+    OnCalcFields := CalcFields;
+    Open;
+    First;
+    Moveby(3);
+    Check(FieldByName('IntField').AsInteger = 3, 'Manual field should be 3');
+    Check(FieldByName('CalcField').AsInteger = 3, 'Calculated field should be 3');
+  end;
+end;
+
+procedure TTestTiDataset.MoveForwardBack;
+var c: integer;
+begin
+  with ADataset do begin
+
+    First; //Record #1
+    MoveBy(23); //#24
+    for c := 0 to 9 do MoveBy( - 1); // 14
+    Check((GetActiveItem as TtiDatasetItem).IntField = 14, 'Error in navigation');
+
+    Last; //Record #100
+    MoveBy(-25); //#75
+    for c := 0 to 9 do MoveBy( - 1); // 65
+    Check((GetActiveItem as TtiDatasetItem).IntField = 65, 'Error in navigation');
+  end;
+end;
+
+procedure TTestTiDataset.RetrieveObject;
+begin
+  with ADataset do begin
+    //We are siting on record 1
+    MoveBy(3); // to record 4
+    Check((GetActiveItem as TtiDatasetItem).IntField = 4, 'GetActiveItem retrieves incorrect object');
+  end;
+end;
+
+{procedure TTestTiDataset.ClearFields;
+begin
+  //The Dataset does not support InsertRecord & AppendRecord or ClearFields!!
+  with ADataset do begin
+    First; //#1
+    MoveBy(20); // #21
+    Edit;
+    ADataset.ClearFields; //Ahum, tiDataset does not support this function.. crap...
+    Post;
+
+    First; //#1
+    MoveBy(20); // #21
+
+    //Check NULL values
+    Check(FieldByName('StrField').IsNull, 'String is not null');
+    Check(FieldByName('IntField').IsNull, 'Integer is not null');
+    Check(FieldByName('DateField').IsNull, 'Date is not null');
+    Check(FieldByName('BoolField').IsNull, 'Boolean is not null');
+    Check(FieldByName('FloatField').IsNull, 'Float is not null');
+    Check(FieldByName('MemoField').IsNull, 'Memo is not null');
+
+    //Check default values
+    Check(FieldByName('StrField').AsString = '', 'String ClearFields error');
+    Check(FieldByName('IntField').AsInteger = 0, 'Integer ClearFields error');
+    Check(FieldByName('DateField').AsDateTime = 0, 'Date ClearFields error');
+    Check(FieldByName('BoolField').AsBoolean = false, 'Boolean ClearFields error');
+    Check(Abs(FieldByName('FloatField').AsFloat) < 0.0001, 'Float ClearFields error');
+    Check(FieldByName('MemoField').AsString = '', 'Memo ClearFields error');
+  end;
+end;}
 
 end.
+
+
+
 

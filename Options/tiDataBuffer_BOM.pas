@@ -18,13 +18,13 @@ uses
  ;
 
 const
-  cErrorTIDataSetCellMetaData = cTIInternalError + 'tiDataSet metadata and data are out of sync';
+  cErrorTIDataSetCellMetaData = cTIInternalError + 'tiDataBuffer metadata and data are out of sync';
   cErrorDataConversion = 'Data conversion error. Can not convert <%s> to a %s';
   cErrorDataMetaDataMisMatch = 'Mismatch between data and metadata';
 
 type
 
-//  Write, then DUnit a CSV to tiDataSet reader
+//  Write, then DUnit a CSV to tiDataBuffer reader
 //  Derive the field widths and data types
 //  Add a ColNamesInFirstRow prop
 //  Write the tiQueryCSV class
