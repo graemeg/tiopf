@@ -60,6 +60,7 @@ contains
   tiINI in '..\..\Core\tiINI.pas',
   tiAutoMap in '..\..\Core\tiAutoMap.pas',
   tiRTTI in '..\..\Core\tiRTTI.pas',
-  tiLogToFile in '..\..\Core\tiLogToFile.pas';
+  tiLogToFile in '..\..\Core\tiLogToFile.pas',
+  tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas';
 
 end.

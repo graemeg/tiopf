@@ -1,17 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-  <PersonalityInfo>
-    <Option>
-      <Option Name="Personality">Default.Personality</Option>
-      <Option Name="ProjectType"></Option>
-      <Option Name="Version">1.0</Option>
-      <Option Name="GUID">{146B7900-340D-4229-A2A3-24CB193F9848}</Option>
-    </Option>
-  </PersonalityInfo>
-  <Default.Personality>
-    
-    
-    <Projects>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{146B7900-340D-4229-A2A3-24CB193F9848}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  <Projects>
       <Projects Name="Demo_ReadMe.exe">..\..\Demos\Demo_01_ReadMe\Demo_ReadMe.bdsproj</Projects>
       <Projects Name="Demo_LoadPersistenceLayerIfDef.exe">..\..\Demos\Demo_02_LoadPersistenceLayerIfDef\Demo_LoadPersistenceLayerIfDef.bdsproj</Projects>
       <Projects Name="Demo_LoadPersistenceLayerUses.exe">..\..\Demos\Demo_03_LoadPersistenceLayerUses\Demo_LoadPersistenceLayerUses.bdsproj</Projects>
@@ -22,12 +19,13 @@
       <Projects Name="Demo_Collection.exe">..\..\Demos\Demo_08_Collection\Demo_Collection.bdsproj</Projects>
       <Projects Name="Demo_EditDataInGUI.exe">..\..\Demos\Demo_09_EditDataInGUI\Demo_EditDataInGUI.bdsproj</Projects>
       <Projects Name="Demo_CollectionWithFilter.exe">..\..\Demos\Demo_10_CollectionWithFilter\Demo_CollectionWithFilter.bdsproj</Projects>
+      <Projects Name="Demo_CollectionWithCriteria.exe">..\..\Demos\Demo_10a_CollectionWithCriteria\Demo_CollectionWithCriteria.bdsproj</Projects>
       <Projects Name="Demo_OneToMany.exe">..\..\Demos\Demo_11_OnetoMany\Demo_OneToMany.bdsproj</Projects>
       <Projects Name="Demo_Inheritance.exe">..\..\Demos\Demo_12_Inheritance\Demo_Inheritance.bdsproj</Projects>
       <Projects Name="Demo_OneToOne.exe">..\..\Demos\Demo_13_OneToOne\Demo_OneToOne.bdsproj</Projects>
       <Projects Name="Demo_OrdinalTypes.exe">..\..\Demos\Demo_14_OrdinalTypes\Demo_OrdinalTypes.bdsproj</Projects>
       <Projects Name="Demo_LookupList.exe">..\..\Demos\Demo_15_LookupList\Demo_LookupList.bdsproj</Projects>
-      <Projects Name="Targets">Demo_ReadMe.exe Demo_LoadPersistenceLayerIfDef.exe Demo_LoadPersistenceLayerUses.exe Demo_CreateDatabase.exe Demo_ConnectToDatabase.exe Demo_CreateTable.exe Demo_VisitorBasics.exe Demo_Collection.exe Demo_EditDataInGUI.exe Demo_CollectionWithFilter.exe Demo_OneToMany.exe Demo_Inheritance.exe Demo_OneToOne.exe Demo_OrdinalTypes.exe Demo_LookupList.exe</Projects>
+      <Projects Name="Targets">Demo_ReadMe.exe Demo_LoadPersistenceLayerIfDef.exe Demo_LoadPersistenceLayerUses.exe Demo_CreateDatabase.exe Demo_ConnectToDatabase.exe Demo_CreateTable.exe Demo_VisitorBasics.exe Demo_Collection.exe Demo_EditDataInGUI.exe Demo_CollectionWithFilter.exe Demo_CollectionWithCriteria.exe Demo_OneToMany.exe Demo_Inheritance.exe Demo_OneToOne.exe Demo_OrdinalTypes.exe Demo_LookupList.exe</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

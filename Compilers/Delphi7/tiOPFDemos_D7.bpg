@@ -9,10 +9,12 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = Demo_ReadMe.exe Demo_LoadPersistenceLayerIfDef.exe Demo_LoadPersistenceLayerUses.exe Demo_CreateDatabase.exe \
-  Demo_ConnectToDatabase.exe Demo_CreateTable.exe Demo_VisitorBasics.exe Demo_Collection.exe Demo_EditDataInGUI.exe \
-  Demo_CollectionWithFilter.exe Demo_OneToMany.exe Demo_Inheritance.exe Demo_OneToOne.exe Demo_OrdinalTypes.exe \
-  Demo_LookupList.exe
+PROJECTS = Demo_ReadMe.exe Demo_LoadPersistenceLayerIfDef.exe \
+  Demo_LoadPersistenceLayerUses.exe Demo_CreateDatabase.exe \
+  Demo_ConnectToDatabase.exe Demo_CreateTable.exe Demo_VisitorBasics.exe \
+  Demo_Collection.exe Demo_CollectionWithCriteria.exe Demo_EditDataInGUI.exe \
+  Demo_CollectionWithFilter.exe Demo_OneToMany.exe Demo_Inheritance.exe \
+  Demo_OneToOne.exe Demo_OrdinalTypes.exe Demo_LookupList.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -60,6 +62,9 @@ Demo_OrdinalTypes.exe: ..\..\Demos\Demo_14_OrdinalTypes\Demo_OrdinalTypes.dpr
   $(DCC)
 
 Demo_LookupList.exe: ..\..\Demos\Demo_15_LookupList\Demo_LookupList.dpr
+  $(DCC)
+
+Demo_CollectionWithCriteria.exe: ..\..\Demos\Demo_10a_CollectionWithCriteria\Demo_CollectionWithCriteria.dpr
   $(DCC)
 
 

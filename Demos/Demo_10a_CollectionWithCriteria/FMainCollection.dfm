@@ -1,8 +1,8 @@
 object FormCollection: TFormCollection
   Left = 262
   Top = 204
-  ClientHeight = 394
-  ClientWidth = 593
+  Width = 601
+  Height = 428
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -28,7 +28,6 @@ object FormCollection: TFormCollection
       Top = 109
       Width = 22
       Height = 13
-      Margins.Bottom = 0
       Caption = 'Filter'
     end
     object paeOID: TtiPerAwareEdit
@@ -189,12 +188,9 @@ object FormCollection: TFormCollection
     VT.TabOrder = 0
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
-    VT.ExplicitHeight = 259
     VT.Columns = <>
     OnFilterData = LVFilterData
     OnItemArrive = LVItemArrive
-    ExplicitTop = 129
-    ExplicitHeight = 265
   end
   object ActionList1: TActionList
     OnUpdate = ActionList1Update
