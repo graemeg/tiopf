@@ -25,9 +25,12 @@ uses
  ;
 
 const
-  cErrorInVisitorExecute = 'Error in %s.Execute(%s) Message: %s';
+  CErrorInVisitorExecute = 'Error in %s.Execute(%s) Message: %s';
+  CErrorInvalidIterationStyle = 'Invalid TtiIterationStyle';
 
 type
+  TtiIterationStyle = (isTopDownSinglePass, isBottomUpSinglePass, isTopDownRecurse);
+
   {$M+}
   TtiVisited = class;
   {$M-}
@@ -45,12 +48,14 @@ type
   protected
     function    GetCaption: string; virtual;
     procedure   BuildListToVisit(const AVisitor : TtiVisitor);
+    procedure   DoIterate(AVisitor : TtiVisitor); virtual;
+    procedure   DoIterateBottomUp(AVisitor: TtiVisitor); virtual;
   published
     property    Caption   : string  read GetCaption;
   public
     constructor Create; virtual;
-    procedure   Iterate(AVisitor : TtiVisitor); virtual;
-    procedure   IterateBottomUp(AVisitor: TtiVisitor); virtual;
+    procedure   Iterate(const AVisitor : TtiVisitor;
+                  const AIterationStyle: TtiIterationStyle = isTopDownRecurse); virtual;
     procedure   FindAllByClassType(AClass : TtiVisitedClass; AList : TList);
   end;
 
@@ -79,9 +84,6 @@ type
 
   TtiVisitorControllerClass = class of TtiVisitorCtrlr;
 
-  // Requre vidTopDownSinglePass, vidBottomUpSinglePass, vidTopDownRecurse
-  TtiVisitorIterateDirection = (vidTopDown, vidBottomUp);
-
   // TtiVisitor: The class that does the visiting
   TtiVisitor = class(TtiBaseObject)
   private
@@ -89,7 +91,7 @@ type
     FContinueVisiting : boolean;
     FVisitorController : TtiVisitorCtrlr;
     FDepth: integer;
-    FIterateDirection: TtiVisitorIterateDirection;
+    FIterationStyle: TtiIterationStyle;
     FVisitedsOwner: TtiVisited;
   protected
     function    AcceptVisitor : boolean; overload; virtual;
@@ -105,9 +107,9 @@ type
     property    ContinueVisiting : boolean read FContinueVisiting write FContinueVisiting;
     property    VisitorController : TtiVisitorCtrlr read FVisitorController write FVisitorController;
     property    Depth : integer read FDepth write FDepth;
-    property    IterateDirection : TtiVisitorIterateDirection
-                  read  FIterateDirection
-                  write FIterateDirection;
+    property    IterationStyle : TtiIterationStyle
+                  read  FIterationStyle
+                  write FIterationStyle;
     property    VisitedsOwner : TtiVisited read FVisitedsOwner write FVisitedsOwner;
   end;
 
@@ -334,7 +336,7 @@ begin
 end;
 
 
-procedure TtiVisited.Iterate(AVisitor: TtiVisitor);
+procedure TtiVisited.DoIterate(AVisitor: TtiVisitor);
 var
   lClassPropNames : TStringList;
   i       : integer;
@@ -418,7 +420,7 @@ begin
   FContinueVisiting := true;
   FVisitorController := nil;
   FDepth            := 0;
-  FIterateDirection  := vidTopDown;
+  FIterationStyle  := isTopDownRecurse;
 end;
 
 
@@ -574,7 +576,20 @@ begin
 end;
 
 
-procedure TtiVisited.IterateBottomUp(AVisitor: TtiVisitor);
+procedure TtiVisited.Iterate(
+  const AVisitor : TtiVisitor;
+  const AIterationStyle: TtiIterationStyle = isTopDownRecurse);
+begin
+  case AIterationStyle of
+  isTopDownSinglePass:  DoIterate(AVisitor);
+  isBottomUpSinglePass: DoIterateBottomUp(AVisitor);
+  isTopDownRecurse:     DoIterate(AVisitor);
+  else
+    raise EtiOPFProgrammerException.Create(CErrorInvalidIterationStyle);
+  end;
+end;
+
+procedure TtiVisited.DoIterateBottomUp(AVisitor: TtiVisitor);
 var
   lVisitor : TtiVisGetAllToVisit;
   i : integer;
@@ -763,10 +778,10 @@ procedure TtiVisitorManager.ExecuteVisitors(AVisitors: TList; AVisited: TtiVisit
 
   procedure _RunIterate(AVisited : TtiVisited; AVisitor : TtiVisitor);
   begin
-    if AVisitor.IterateDirection = vidTopDown then
+    if AVisitor.IterationStyle = isTopDownRecurse then
       AVisited.Iterate(AVisitor)
     else
-      AVisited.IterateBottomUp(AVisitor);
+      AVisited.Iterate(AVisitor, isBottomUpSinglePass);
   end;
 var
   lVisitor : TtiVisitor;
