@@ -22,42 +22,68 @@ type
     function CreateListAndOwned : TTestVisitedList;
     function CreateList : TTestVisitedList;
     function CreateOwned : TTestVisitedOwned;
+
+    procedure Visitor_ContinueVisiting(const AIterationStyle: TtiIterationStyle);
+
+    procedure Visited_Iterate_Single(AIterationStyle: TtiIterationStyle);
+    procedure Visited_Iterate_List(AIterationStyle: TtiIterationStyle);
+    procedure Visited_Iterate_Owned(AIterationStyle: TtiIterationStyle);
+    procedure Visited_Iterate_ListAndOwned(AIterationStyle: TtiIterationStyle);
+    procedure Visited_AcceptVisitor(AIterationStyle: TtiIterationStyle);
+
   protected
     procedure SetUp; override;
   published
 
     // Test the visitor
     procedure Visitor_AcceptVisitor;
-    procedure Visitor_DoAcceptVisitor;
     procedure Visitor_Execute;
-    procedure Visitor_ContinueVisiting;
+
+    procedure Visitor_ContinueVisiting_BottomUpSinglePass;
+    procedure Visitor_ContinueVisiting_TopDownSinglePass;
+    procedure Visitor_ContinueVisiting_TopDownRecurse;
+
     procedure Visitor_VisitorController;
-    procedure Visitor_Depth;
+
+    procedure Visitor_Depth_TopDownRecurse;
+    procedure Visitor_Depth_TopDownSinglePass;
+    procedure Visitor_Depth_BottomUpSinglePass;
 
     // Test the visited
     procedure Visited_Caption;
 
-    procedure Visited_IterateSingle;
-    procedure Visited_IterateList;
-    procedure Visited_IterateOwned;
-    procedure Visited_IterateListAndOwned;
-    procedure Visited_IterateBottomUpSingle;
-    procedure Visited_IterateBottomUpList;
-    procedure Visited_IterateBottomUpOwned;
-    procedure Visited_IterateBottupUpListAndOwned;
+    procedure Visited_Iterate_Single_TopDownRecurse;
+    procedure Visited_Iterate_Single_TopDownSinglePass;
+    procedure Visited_Iterate_Single_BottomUpSinglePass;
 
-    procedure Visited_Recurse_BottomUpSinglePass;
-    procedure Visited_Recurse_TopDownSinglePass;
+    procedure Visited_Iterate_List_TopDownRecurse;
+    procedure Visited_Iterate_List_TopDownSinglePass;
+    procedure Visited_Iterate_List_BottomUpSinglePass;
+
+    procedure Visited_Iterate_Owned_TopDownRecurse;
+    procedure Visited_Iterate_Owned_TopDownSinglePass;
+    procedure Visited_Iterate_Owned_BottomUpSinglePass;
+
+    procedure Visited_Iterate_ListAndOwned_TopDownRecurse;
+    procedure Visited_Iterate_ListAndOwned_TopDownSinglePass;
+    procedure Visited_Iterate_ListAndOwned_BottomUpSinglePass;
+
     procedure Visited_Recurse_TopDownRecurse;
+    procedure Visited_Recurse_TopDownSinglePass;
+    procedure Visited_Recurse_BottomUpSinglePass;
 
+    procedure Visited_AcceptVisitor_TopDownRecurse;
+    procedure Visited_AcceptVisitor_TopDownSinglePass;
+    procedure Visited_AcceptVisitor_BottomUpSinglePass;
 
+    procedure Visited_VisitBranch(AIterationStyle: TtiIterationStyle);
+    procedure Visited_VisitBranch_TopDownRecurse;
+    procedure Visited_VisitBranch_TopDownSinglePass;
+    procedure Visited_VisitBranch_BottomUpSinglePass;
 
-//    procedure Visited_SelfIterate;
     procedure Visited_FindAllByClassType;
-//    procedure Visited_ClassCount;
 
     // Test some other special visitors
-//    procedure VisGetAllToVisit_Execute;
     procedure VisClassCount_Execute;
     procedure VisFindAllByClass_Execute;
 
@@ -67,19 +93,6 @@ type
     // Test the TFileStream visitor wrapper
     procedure VisStreamToFile;
   end;
-
-
-  TTestVisitor_AcceptVisitor = class(TtiVisitor)
-  public
-    function AcceptVisitor : boolean; override;
-  end;
-
-
-  TTestVisitor_DoAcceptVisitor = class(TtiVisitor)
-  public
-    function AcceptVisitor : boolean; override;
-  end;
-
 
   TTestVisitor_Execute = class(TtiVisitor)
   private
@@ -127,29 +140,19 @@ type
     destructor  Destroy; override;
   end;
 
-
-  TTestVisitorIterate = class(TtiVisitor)
+  TSensingVisitor = class(TtiVisitor)
   private
-    FIndexes: TStringList;
+    FData: TStringList;
   public
     constructor Create; override;
     destructor  Destroy; override;
-    procedure   Execute(const AVisited : TtiVisited); override;
-    property    Indexes : TStringList read FIndexes;
+    property    Data : TStringList read FData;
   end;
 
-
-  TTestVisitorContinueVisiting = class(TTestVisitorIterate)
+  TTestVisitorIterate = class(TSensingVisitor)
   public
     procedure   Execute(const AVisited : TtiVisited); override;
   end;
-
-
-  TTestVisitorDepth = class(TTestVisitorIterate)
-  public
-    procedure   Execute(const AVisited : TtiVisited); override;
-  end;
-
 
   TTestVisitorController = class(TtiVisitor)
   public
@@ -169,11 +172,6 @@ type
     procedure Write(const AValue : string); override;
     procedure WriteLn(const AValue : string = ''); override;
   end;
-
-
-const
-  cTestDoAcceptVisitorException = 'Test DoAcceptVisitor exception.';
-
 
 procedure RegisterTests;
 
@@ -298,6 +296,105 @@ end;
 //  end;
 //end;
 
+type
+
+  TTestTIVisitedAcceptVisitor = class(TtiVisited)
+  private
+    FVisit: boolean;
+    FID: string;
+    FChain: TtiVisited;
+  public
+    property Visit: boolean read FVisit write FVisit;
+    property ID: string read FID write FID;
+  published
+    property Chain: TtiVisited read FChain write FChain;
+  end;
+
+  TTestVisitorAcceptVisitor = class(TSensingVisitor)
+  protected
+    function AcceptVisitor: boolean; override;
+  public
+    procedure Execute(const AVisited: TtiVisited); override;
+  end;
+
+  function TTestVisitorAcceptVisitor.AcceptVisitor: boolean;
+  begin
+    result:= (Visited is TTestTIVisitedAcceptVisitor) and
+      (Visited as TTestTIVisitedAcceptVisitor).Visit;
+  end;
+
+procedure TTestTIVisitor.Visited_AcceptVisitor(
+  AIterationStyle: TtiIterationStyle);
+var
+  LItem1: TTestTIVisitedAcceptVisitor;
+  LItem2: TTestTIVisitedAcceptVisitor;
+  LItem3: TTestTIVisitedAcceptVisitor;
+  LItem4: TTestTIVisitedAcceptVisitor;
+  LVisitor: TTestVisitorAcceptVisitor;
+begin
+  LItem1:= nil;
+  LItem2:= nil;
+  LItem3:= nil;
+  LItem4:= nil;
+  LVisitor:= nil;
+  try
+    LItem1:= TTestTIVisitedAcceptVisitor.Create;
+
+    LItem1.ID:= '1';
+    LItem1.Visit:= False;
+
+    LItem2:= TTestTIVisitedAcceptVisitor.Create;
+    LItem2.ID:= '2';
+    LItem2.Visit:= true;
+    LItem1.Chain:= LItem2;
+
+    LItem3:= TTestTIVisitedAcceptVisitor.Create;
+    LItem3.ID:= '3';
+    LItem3.Visit:= true;
+    LItem2.Chain:= LItem3;
+
+    LItem4:= TTestTIVisitedAcceptVisitor.Create;
+    LItem4.ID:= '3';
+    LItem4.Visit:= false;
+    LItem3.Chain:= LItem4;
+
+    LVisitor:= TTestVisitorAcceptVisitor.Create;
+    LVisitor.IterationStyle:= AIterationStyle;
+    LItem1.Iterate(LVisitor);
+    CheckEquals(2, LVisitor.Data.Count);
+    if AIterationStyle = isBottomUpSinglePass then
+    begin
+      CheckEquals('3', LVisitor.Data.Strings[0]);
+      CheckEquals('2', LVisitor.Data.Strings[1]);
+    end else
+    begin
+      CheckEquals('2', LVisitor.Data.Strings[0]);
+      CheckEquals('3', LVisitor.Data.Strings[1]);
+    end;
+
+  finally
+    LItem1.Free;
+    LItem2.Free;
+    LItem3.Free;
+    LItem4.Free;
+    LVisitor.Free;
+  end;
+end;
+
+procedure TTestTIVisitor.Visited_AcceptVisitor_BottomUpSinglePass;
+begin
+  Visited_AcceptVisitor(isBottomUpSinglePass);
+end;
+
+procedure TTestTIVisitor.Visited_AcceptVisitor_TopDownRecurse;
+begin
+  Visited_AcceptVisitor(isTopDownRecurse);
+end;
+
+procedure TTestTIVisitor.Visited_AcceptVisitor_TopDownSinglePass;
+begin
+  Visited_AcceptVisitor(isTopDownSinglePass);
+end;
 
 procedure TTestTIVisitor.Visited_Caption;
 var
@@ -339,141 +436,265 @@ begin
 end;
 
 
-procedure TTestTIVisitor.Visited_IterateBottomUpSingle;
-begin
-  Visited_IterateSingle;
-end;
-
-{
-procedure TTestTIVisitor.Visited_SelfIterate;
+procedure TTestTIVisitor.Visited_Iterate_Single(
+  AIterationStyle: TtiIterationStyle);
 var
   lVisitor : TTestVisitorIterate;
-  lVisitedOwned : TTestVisitedOwned;
-  lVisitedList : TTestVisitedList;
+  lVisited : TTestVisitedAbs;
 begin
-  lVisitedList := TTestVisitedList.Create;
-  lVisitedList.Index := 1;
+  lVisited := TTestVisitedAbs.Create;
   try
-    lVisitedOwned := TTestVisitedOwned.Create;
-    lVisitedOwned.Index := 2;
-    lVisitedOwned.Owned1.Index := 3;
-    lVisitedOwned.Owned2.Index := 4;
-    lVisitedOwned.Owned3.Index := 5;
-    lVisitedList.List.Add(lVisitedOwned);
-
-    lVisitedOwned := TTestVisitedOwned.Create;
-    lVisitedOwned.Index := 6;
-    lVisitedOwned.Owned1.Index := 7;
-    lVisitedOwned.Owned2.Index := 8;
-    lVisitedOwned.Owned3.Index := 9;
-    lVisitedList.List.Add(lVisitedOwned);
-
-    lVisitedOwned := TTestVisitedOwned.Create;
-    lVisitedOwned.Index := 10;
-    lVisitedOwned.Owned1.Index := 11;
-    lVisitedOwned.Owned2.Index := 12;
-    lVisitedOwned.Owned3.Index := 13;
-    lVisitedList.List.Add(lVisitedOwned);
-
-    lVisitedList.SelfIterate := false;
+    lVisited.Index := 1;
     lVisitor := TTestVisitorIterate.Create;
     try
-      lVisitedList.Iterate(lVisitor);
-      CheckEquals(1, lVisitor.Indexes.Count);
-      CheckEquals('1', lVisitor.Indexes.Strings[0]);
+      LVisitor.IterationStyle:= AIterationStyle;
+      lVisited.Iterate(lVisitor);
+      CheckEquals(1, lVisitor.Data.Count);
+      CheckEquals('1', lVisitor.Data.Strings[0]);
     finally
       lVisitor.Free;
     end;
   finally
-    lVisitedList.Free;
+    lVisited.Free;
   end;
 end;
-}
+
+procedure TTestTIVisitor.Visited_Iterate_Single_BottomUpSinglePass;
+begin
+  Visited_Iterate_Single_TopDownRecurse;
+end;
+
+type
+
+  TTestVisitor_AcceptVisitor = class(TtiVisitor)
+  private
+    FResult: boolean;
+  public
+    function AcceptVisitor : boolean; override;
+    property Result: boolean read FResult write FResult;
+  end;
+
+  function TTestVisitor_AcceptVisitor.AcceptVisitor: boolean;
+  begin
+    result := FResult;
+  end;
 
 procedure TTestTIVisitor.Visitor_AcceptVisitor;
 var
-  lVis : TTestVisitor_AcceptVisitor;
+  LVisitor : TTestVisitor_AcceptVisitor;
+  LVisited: TtiVisited;
 begin
-  lVis := TTestVisitor_AcceptVisitor.Create;
+  LVisitor := nil;
+  LVisited:= nil;
   try
-    Check(lVis.AcceptVisitor);
+    LVisitor := TTestVisitor_AcceptVisitor.Create;
+    LVisited:= TtiVisited.Create;
+
+    LVisitor.Result:= true;
+    Check(LVisitor.AcceptVisitor);
+    Check(LVisitor.AcceptVisitor(LVisited));
+    CheckSame(LVisited, LVisitor.Visited);
+
+    LVisitor.SetVisited(nil);
+    CheckNull(LVisitor.Visited);
+
+    LVisitor.Result:= false;
+    Check(not LVisitor.AcceptVisitor);
+    Check(not LVisitor.AcceptVisitor(LVisited));
+    CheckSame(LVisited, LVisitor.Visited)
+
   finally
-    lVis.Free;
+    LVisitor.Free;
+    LVisited.Free;
   end;
 end;
 
+type
 
-procedure TTestTIVisitor.Visitor_ContinueVisiting;
+  TTestVisitorContinueVisiting = class(TTestVisitorIterate)
+  private
+    FCountVisited: integer;
+  public
+    constructor Create; override;
+    procedure   Execute(const AVisited : TtiVisited); override;
+  end;
+
+  constructor TTestVisitorContinueVisiting.Create;
+  begin
+    inherited;
+    FCountVisited:= 0 ;
+  end;
+
+procedure TTestVisitorContinueVisiting.Execute(const AVisited: TtiVisited);
+  begin
+    inherited Execute(AVisited);
+    Inc(FCountVisited);
+    ContinueVisiting := FCountVisited < 5;
+  end;
+
+procedure TTestTIVisitor.Visitor_ContinueVisiting(const AIterationStyle: TtiIterationStyle);
 var
-  lVisitor : TTestVisitorContinueVisiting;
-  lVisitedList : TTestVisitedList;
+  LVisitor : TTestVisitorContinueVisiting;
+  LVisitedList : TTestVisitedList;
 begin
-  lVisitedList := CreateListAndOwned;
+  LVisitedList := CreateListAndOwned;
   try
-    lVisitor := TTestVisitorContinueVisiting.Create;
+    LVisitor := TTestVisitorContinueVisiting.Create;
+    LVisitor.IterationStyle:= AIterationStyle;
     try
-      lVisitedList.Iterate(lVisitor);
-      CheckEquals(5, lVisitor.Indexes.Count);
+      LVisitedList.Iterate(LVisitor);
+      CheckEquals(5, LVisitor.Data.Count);
     finally
-      lVisitor.Free;
+      LVisitor.Free;
     end;
   finally
-    lVisitedList.Free;
+    LVisitedList.Free;
   end;
 end;
 
 
-procedure TTestTIVisitor.Visitor_Depth;
-var
-  lVisitor : TTestVisitorDepth;
-  lVisitedList : TTestVisitedList;
+procedure TTestTIVisitor.Visitor_ContinueVisiting_BottomUpSinglePass;
 begin
-  lVisitedList := CreateListAndOwned;
+  Visitor_ContinueVisiting(isBottomUpSinglePass);
+end;
+
+procedure TTestTIVisitor.Visitor_ContinueVisiting_TopDownRecurse;
+begin
+  Visitor_ContinueVisiting(isTopDownRecurse);
+end;
+
+procedure TTestTIVisitor.Visitor_ContinueVisiting_TopDownSinglePass;
+begin
+  Visitor_ContinueVisiting(isTopDownSinglePass);
+end;
+
+type
+
+  TTestVisitorDepth = class(TtiVisitor)
+  private
+    LResults: TStringList;
+  public
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    Results: TStringList read LResults;
+  end;
+
+  constructor TTestVisitorDepth.Create;
+  begin
+    inherited;
+    LResults:= TStringList.Create;
+  end;
+
+  destructor TTestVisitorDepth.Destroy;
+  begin
+    LResults.Free;
+    inherited;
+  end;
+
+  procedure TTestVisitorDepth.Execute(const AVisited: TtiVisited);
+  begin
+    inherited Execute(AVisited);
+    Assert(AVisited is TTestVisitedAbs, 'AVisited not a TTestVisitedAbs');
+    LResults.Add(IntToStr(Depth));
+  end;
+
+procedure TTestTIVisitor.Visitor_Depth_BottomUpSinglePass;
+var
+  LVisitor : TTestVisitorDepth;
+  LVisitedList : TTestVisitedList;
+begin
+  LVisitedList := CreateListAndOwned;
   try
-    lVisitor := TTestVisitorDepth.Create;
+    LVisitor := TTestVisitorDepth.Create;
+    LVisitor.IterationStyle:= isBottomUpSinglePass;
     try
-      lVisitedList.Iterate(lVisitor);
-      CheckEquals('1', lVisitor.Indexes.Values['1']);
-      CheckEquals('2', lVisitor.Indexes.Values['2']);
-      CheckEquals('3', lVisitor.Indexes.Values['3']);
-      CheckEquals('3', lVisitor.Indexes.Values['4']);
-      CheckEquals('3', lVisitor.Indexes.Values['5']);
-      CheckEquals('2', lVisitor.Indexes.Values['6']);
-      CheckEquals('3', lVisitor.Indexes.Values['7']);
-      CheckEquals('3', lVisitor.Indexes.Values['8']);
-      CheckEquals('3', lVisitor.Indexes.Values['9']);
-      CheckEquals('2', lVisitor.Indexes.Values['10']);
-      CheckEquals('3', lVisitor.Indexes.Values['11']);
-      CheckEquals('3', lVisitor.Indexes.Values['12']);
-      CheckEquals('3', lVisitor.Indexes.Values['13']);
+      LVisitedList.Iterate(LVisitor);
+      CheckEquals('1', LVisitor.Results.Strings[12]);
+      CheckEquals('2', LVisitor.Results.Strings[11]);
+      CheckEquals('3', LVisitor.Results.Strings[10]);
+      CheckEquals('3', LVisitor.Results.Strings[9]);
+      CheckEquals('3', LVisitor.Results.Strings[8]);
+      CheckEquals('2', LVisitor.Results.Strings[7]);
+      CheckEquals('3', LVisitor.Results.Strings[6]);
+      CheckEquals('3', LVisitor.Results.Strings[5]);
+      CheckEquals('3', LVisitor.Results.Strings[4]);
+      CheckEquals('2', LVisitor.Results.Strings[3]);
+      CheckEquals('3', LVisitor.Results.Strings[2]);
+      CheckEquals('3', LVisitor.Results.Strings[1]);
+      CheckEquals('3', LVisitor.Results.Strings[0]);
     finally
-      lVisitor.Free;
+      LVisitor.Free;
     end;
   finally
-    lVisitedList.Free;
+    LVisitedList.Free;
   end;
 end;
 
-
-procedure TTestTIVisitor.Visitor_DoAcceptVisitor;
+procedure TTestTIVisitor.Visitor_Depth_TopDownRecurse;
 var
-  lVis : TTestVisitor_DoAcceptVisitor;
+  LVisitor : TTestVisitorDepth;
+  LVisitedList : TTestVisitedList;
 begin
-  lVis := TTestVisitor_DoAcceptVisitor.Create;
+  LVisitedList := CreateListAndOwned;
   try
+    LVisitor := TTestVisitorDepth.Create;
+    LVisitor.IterationStyle:= isTopDownRecurse;
     try
-      lVis.AcceptVisitor;
-      Check(False, 'Exception not raised');
-    except
-      on e:exception do
-        Check(Pos(cTestDoAcceptVisitorException,
-                    e.Message) <> 0, 'Exception does not contain correct error message.');
+      LVisitedList.Iterate(LVisitor);
+      CheckEquals('1', LVisitor.Results.Strings[0]);
+      CheckEquals('2', LVisitor.Results.Strings[1]);
+      CheckEquals('3', LVisitor.Results.Strings[2]);
+      CheckEquals('3', LVisitor.Results.Strings[3]);
+      CheckEquals('3', LVisitor.Results.Strings[4]);
+      CheckEquals('2', LVisitor.Results.Strings[5]);
+      CheckEquals('3', LVisitor.Results.Strings[6]);
+      CheckEquals('3', LVisitor.Results.Strings[7]);
+      CheckEquals('3', LVisitor.Results.Strings[8]);
+      CheckEquals('2', LVisitor.Results.Strings[9]);
+      CheckEquals('3', LVisitor.Results.Strings[10]);
+      CheckEquals('3', LVisitor.Results.Strings[11]);
+      CheckEquals('3', LVisitor.Results.Strings[12]);
+    finally
+      LVisitor.Free;
     end;
   finally
-    lVis.Free;
+    LVisitedList.Free;
   end;
 end;
 
+
+procedure TTestTIVisitor.Visitor_Depth_TopDownSinglePass;
+var
+  LVisitor : TTestVisitorDepth;
+  LVisitedList : TTestVisitedList;
+begin
+  LVisitedList := CreateListAndOwned;
+  try
+    LVisitor := TTestVisitorDepth.Create;
+    LVisitor.IterationStyle:= isTopDownSinglePass;
+    try
+      LVisitedList.Iterate(LVisitor);
+      CheckEquals('1', LVisitor.Results.Strings[0]);
+      CheckEquals('2', LVisitor.Results.Strings[1]);
+      CheckEquals('3', LVisitor.Results.Strings[2]);
+      CheckEquals('3', LVisitor.Results.Strings[3]);
+      CheckEquals('3', LVisitor.Results.Strings[4]);
+      CheckEquals('2', LVisitor.Results.Strings[5]);
+      CheckEquals('3', LVisitor.Results.Strings[6]);
+      CheckEquals('3', LVisitor.Results.Strings[7]);
+      CheckEquals('3', LVisitor.Results.Strings[8]);
+      CheckEquals('2', LVisitor.Results.Strings[9]);
+      CheckEquals('3', LVisitor.Results.Strings[10]);
+      CheckEquals('3', LVisitor.Results.Strings[11]);
+      CheckEquals('3', LVisitor.Results.Strings[12]);
+    finally
+      LVisitor.Free;
+    end;
+  finally
+    LVisitedList.Free;
+  end;
+end;
 
 procedure TTestTIVisitor.Visitor_Execute;
 var
@@ -626,77 +847,38 @@ begin
 end;
 
 
-procedure TTestTIVisitor.Visited_IterateList;
-var
-  lVisitor : TTestVisitorIterate;
-  lVisited : TTestVisitedList;
+procedure TTestTIVisitor.Visited_Iterate_List_TopDownRecurse;
 begin
-  lVisited := CreateList;
-  try
-    lVisitor := TTestVisitorIterate.Create;
-    try
-      lVisited.Iterate(lVisitor);
-      CheckEquals(5, lVisitor.Indexes.Count);
-      CheckEquals('1', lVisitor.Indexes.Strings[0]);
-      CheckEquals('2', lVisitor.Indexes.Strings[1]);
-      CheckEquals('3', lVisitor.Indexes.Strings[2]);
-      CheckEquals('4', lVisitor.Indexes.Strings[3]);
-      CheckEquals('5', lVisitor.Indexes.Strings[4]);
-
-    finally
-      lVisitor.Free;
-    end;
-  finally
-    lVisited.Free;
-  end;
+  Visited_Iterate_List(isTopDownRecurse);
 end;
 
 
-procedure TTestTIVisitor.Visited_IterateOwned;
-var
-  lVisitor : TTestVisitorIterate;
-  lVisited : TTestVisitedOwned;
+procedure TTestTIVisitor.Visited_Iterate_List_TopDownSinglePass;
 begin
-  lVisited := CreateOwned;
-  try
-    lVisitor := TTestVisitorIterate.Create;
-    try
-      lVisited.Iterate(lVisitor);
-      CheckEquals(4, lVisitor.Indexes.Count);
-      CheckEquals('1', lVisitor.Indexes.Strings[0]);
-      CheckEquals('2', lVisitor.Indexes.Strings[1]);
-      CheckEquals('3', lVisitor.Indexes.Strings[2]);
-      CheckEquals('4', lVisitor.Indexes.Strings[3]);
-    finally
-      lVisitor.Free;
-    end;
-  finally
-    lVisited.Free;
-  end;
+  Visited_Iterate_List(isTopDownSinglePass);
+end;
+
+procedure TTestTIVisitor.Visited_Iterate_Owned_TopDownRecurse;
+begin
+  Visited_Iterate_Owned(isTopDownRecurse);
 end;
 
 
-procedure TTestTIVisitor.Visited_IterateSingle;
-var
-  lVisitor : TTestVisitorIterate;
-  lVisited : TTestVisitedAbs;
+procedure TTestTIVisitor.Visited_Iterate_Owned_TopDownSinglePass;
 begin
-  lVisited := TTestVisitedAbs.Create;
-  try
-    lVisited.Index := 1;
-    lVisitor := TTestVisitorIterate.Create;
-    try
-      lVisited.Iterate(lVisitor);
-      CheckEquals(1, lVisitor.Indexes.Count);
-      CheckEquals('1', lVisitor.Indexes.Strings[0]);
-    finally
-      lVisitor.Free;
-    end;
-  finally
-    lVisited.Free;
-  end;
+  Visited_Iterate_Owned(isTopDownSinglePass);
 end;
 
+procedure TTestTIVisitor.Visited_Iterate_Single_TopDownRecurse;
+begin
+  Visited_Iterate_Single(isTopDownRecurse);
+end;
+
+
+procedure TTestTIVisitor.Visited_Iterate_Single_TopDownSinglePass;
+begin
+  Visited_Iterate_Single(isTopDownSinglePass);
+end;
 
 type
 
@@ -775,6 +957,27 @@ begin
   end;
 end;
 
+procedure TTestTIVisitor.Visited_VisitBranch(
+  AIterationStyle: TtiIterationStyle);
+begin
+
+end;
+
+procedure TTestTIVisitor.Visited_VisitBranch_BottomUpSinglePass;
+begin
+
+end;
+
+procedure TTestTIVisitor.Visited_VisitBranch_TopDownRecurse;
+begin
+
+end;
+
+procedure TTestTIVisitor.Visited_VisitBranch_TopDownSinglePass;
+begin
+
+end;
+
 procedure TTestTIVisitor.Visited_Recurse_BottomUpSinglePass;
 var
   LData: TtiObjectList;
@@ -796,7 +999,7 @@ begin
   end;
 end;
 
-procedure TTestTIVisitor.Visited_IterateBottomUpList;
+procedure TTestTIVisitor.Visited_Iterate_List_BottomUpSinglePass;
 var
   lVisitor : TTestVisitorIterate;
   lVisited : TTestVisitedList;
@@ -807,12 +1010,12 @@ begin
     try
       LVisitor.IterationStyle:= isBottomUpSinglePass;
       lVisited.Iterate(lVisitor);
-      CheckEquals(5, lVisitor.Indexes.Count);
-      CheckEquals('5', lVisitor.Indexes.Strings[0]);
-      CheckEquals('4', lVisitor.Indexes.Strings[1]);
-      CheckEquals('3', lVisitor.Indexes.Strings[2]);
-      CheckEquals('2', lVisitor.Indexes.Strings[3]);
-      CheckEquals('1', lVisitor.Indexes.Strings[4]);
+      CheckEquals(5, lVisitor.Data.Count);
+      CheckEquals('5', lVisitor.Data.Strings[0]);
+      CheckEquals('4', lVisitor.Data.Strings[1]);
+      CheckEquals('3', lVisitor.Data.Strings[2]);
+      CheckEquals('2', lVisitor.Data.Strings[3]);
+      CheckEquals('1', lVisitor.Data.Strings[4]);
     finally
       lVisitor.Free;
     end;
@@ -822,7 +1025,32 @@ begin
 end;
 
 
-procedure TTestTIVisitor.Visited_IterateBottomUpOwned;
+procedure TTestTIVisitor.Visited_Iterate_Owned(
+  AIterationStyle: TtiIterationStyle);
+var
+  lVisitor : TTestVisitorIterate;
+  lVisited : TTestVisitedOwned;
+begin
+  lVisited := CreateOwned;
+  try
+    lVisitor := TTestVisitorIterate.Create;
+    try
+      LVisitor.IterationStyle:= AIterationStyle;
+      lVisited.Iterate(lVisitor);
+      CheckEquals(4, lVisitor.Data.Count);
+      CheckEquals('1', lVisitor.Data.Strings[0]);
+      CheckEquals('2', lVisitor.Data.Strings[1]);
+      CheckEquals('3', lVisitor.Data.Strings[2]);
+      CheckEquals('4', lVisitor.Data.Strings[3]);
+    finally
+      lVisitor.Free;
+    end;
+  finally
+    lVisited.Free;
+  end;
+end;
+
+procedure TTestTIVisitor.Visited_Iterate_Owned_BottomUpSinglePass;
 var
   lVisitor : TTestVisitorIterate;
   lVisited : TTestVisitedOwned;
@@ -833,11 +1061,11 @@ begin
     try
       LVisitor.IterationStyle:= isBottomUpSinglePass;
       lVisited.Iterate(lVisitor);
-      CheckEquals(4, lVisitor.Indexes.Count);
-      CheckEquals('4', lVisitor.Indexes.Strings[0]);
-      CheckEquals('3', lVisitor.Indexes.Strings[1]);
-      CheckEquals('2', lVisitor.Indexes.Strings[2]);
-      CheckEquals('1', lVisitor.Indexes.Strings[3]);
+      CheckEquals(4, lVisitor.Data.Count);
+      CheckEquals('4', lVisitor.Data.Strings[0]);
+      CheckEquals('3', lVisitor.Data.Strings[1]);
+      CheckEquals('2', lVisitor.Data.Strings[2]);
+      CheckEquals('1', lVisitor.Data.Strings[3]);
     finally
       lVisitor.Free;
     end;
@@ -847,7 +1075,46 @@ begin
 end;
 
 
-procedure TTestTIVisitor.Visited_IterateListAndOwned;
+procedure TTestTIVisitor.Visited_Iterate_ListAndOwned_TopDownRecurse;
+begin
+  Visited_Iterate_ListAndOwned(isTopDownRecurse);
+end;
+
+
+procedure TTestTIVisitor.Visited_Iterate_ListAndOwned_TopDownSinglePass;
+begin
+  Visited_Iterate_ListAndOwned(isTopDownSinglePass);
+end;
+
+procedure TTestTIVisitor.Visited_Iterate_List(
+  AIterationStyle: TtiIterationStyle);
+var
+  lVisitor : TTestVisitorIterate;
+  lVisited : TTestVisitedList;
+begin
+  lVisited := CreateList;
+  try
+    lVisitor := TTestVisitorIterate.Create;
+    try
+      LVisitor.IterationStyle:= AIterationStyle;
+      lVisited.Iterate(lVisitor);
+      CheckEquals(5, lVisitor.Data.Count);
+      CheckEquals('1', lVisitor.Data.Strings[0]);
+      CheckEquals('2', lVisitor.Data.Strings[1]);
+      CheckEquals('3', lVisitor.Data.Strings[2]);
+      CheckEquals('4', lVisitor.Data.Strings[3]);
+      CheckEquals('5', lVisitor.Data.Strings[4]);
+
+    finally
+      lVisitor.Free;
+    end;
+  finally
+    lVisited.Free;
+  end;
+end;
+
+procedure TTestTIVisitor.Visited_Iterate_ListAndOwned(
+  AIterationStyle: TtiIterationStyle);
 var
   lVisitor : TTestVisitorIterate;
   lVisitedList : TTestVisitedList;
@@ -857,10 +1124,11 @@ begin
   try
     lVisitor := TTestVisitorIterate.Create;
     try
+      LVisitor.IterationStyle:= AIterationStyle;
       lVisitedList.Iterate(lVisitor);
-      CheckEquals(13, lVisitor.Indexes.Count);
+      CheckEquals(13, lVisitor.Data.Count);
       for i := 1 to 13 do
-        CheckEquals(IntToStr(i), lVisitor.Indexes.Strings[i-1]);
+        CheckEquals(IntToStr(i), lVisitor.Data.Strings[i-1]);
     finally
       lVisitor.Free;
     end;
@@ -869,8 +1137,7 @@ begin
   end;
 end;
 
-
-procedure TTestTIVisitor.Visited_IterateBottupUpListAndOwned;
+procedure TTestTIVisitor.Visited_Iterate_ListAndOwned_BottomUpSinglePass;
 var
   lVisitor : TTestVisitorIterate;
   lVisitedList : TTestVisitedList;
@@ -882,9 +1149,9 @@ begin
     try
       LVisitor.IterationStyle:= isBottomUpSinglePass;
       lVisitedList.Iterate(lVisitor);
-      CheckEquals(13, lVisitor.Indexes.Count);
+      CheckEquals(13, lVisitor.Data.Count);
       for i := 1 to 13 do
-        CheckEquals(IntToStr(i), lVisitor.Indexes.Strings[13-i]);
+        CheckEquals(IntToStr(i), lVisitor.Data.Strings[13-i]);
     finally
       lVisitor.Free;
     end;
@@ -898,6 +1165,22 @@ function TTestTIVisitor.CreateListAndOwned: TTestVisitedList;
 var
   lVisitedOwned : TTestVisitedOwned;
 begin
+  {
+    Creates an object graph like this:
+      TTestVisitedList
+        TTestVisitedOwned
+          TTestVisited
+          TTestVisited
+          TTestVisited
+        TTestVisitedOwned
+          TTestVisited
+          TTestVisited
+          TTestVisited
+        TTestVisitedOwned
+          TTestVisited
+          TTestVisited
+          TTestVisited
+  }
   result := TTestVisitedList.Create;
   result.Index := 1;
   lVisitedOwned := TTestVisitedOwned.Create;
@@ -980,24 +1263,6 @@ begin
   gTIOPFManager.Terminated := false;
 end;
 
-
-{ TTestVisitor_DoAcceptVisitor }
-
-function TTestVisitor_DoAcceptVisitor.AcceptVisitor: boolean;
-begin
-  raise exception.Create(cTestDoAcceptVisitorException);
-  Result := True;   // To get rid of compiler warning
-end;
-
-
-{ TTestVisitor_AcceptVisitor }
-
-function TTestVisitor_AcceptVisitor.AcceptVisitor: boolean;
-begin
-  result := (inherited AcceptVisitor);
-end;
-
-
 { TTestVisitor_Execute }
 
 procedure TTestVisitor_Execute.Execute(const AVisited : TtiVisited);
@@ -1009,25 +1274,14 @@ end;
 
 { TTestVisitorIterate }
 
-constructor TTestVisitorIterate.Create;
-begin
-  inherited;
-  FIndexes := TStringList.Create;
-end;
-
-
-destructor TTestVisitorIterate.Destroy;
-begin
-  FIndexes.Free;
-  inherited;
-end;
-
-
 procedure TTestVisitorIterate.Execute(const AVisited: TtiVisited);
+var
+  LIndex: string;
 begin
   inherited Execute(AVisited);
   Assert(AVisited is TTestVisitedAbs, 'AVisited not a TTestVisitedAbs');
-  FIndexes.Add(IntToStr((AVisited as TTestVisitedAbs).Index));
+  LIndex:= IntToStr((AVisited as TTestVisitedAbs).Index);
+  Data.Add(LIndex);
 end;
 
 
@@ -1071,34 +1325,12 @@ begin
   inherited;
 end;
 
-
-{ TTestVisitorDepth }
-
-procedure TTestVisitorDepth.Execute(const AVisited: TtiVisited);
-begin
-  Visited := AVisited;
-  Assert(AVisited is TTestVisitedAbs, 'AVisited not a TTestVisitedAbs');
-  FIndexes.Values[ IntToStr((AVisited as TTestVisitedAbs).Index)]:=
-    IntToStr(Depth);
-end;
-
-
 { TTestVisitorController }
 
 function TTestVisitorController.VisitorControllerClass: TtiVisitorControllerClass;
 begin
   result := TtiVisitorCtrlr;
 end;
-
-
-{ TTestVisitorContinueVisiting }
-
-procedure TTestVisitorContinueVisiting.Execute(const AVisited: TtiVisited);
-begin
-  inherited Execute(AVisited);
-  ContinueVisiting := (AVisited as TTestVisitedAbs).Index < 5;
-end;
-
 
 { TTestVisitorGetAllToVisit }
 
@@ -1130,6 +1362,27 @@ end;
 procedure TTestVisStream.WriteLn(const AValue: string);
 begin
   // A protected method, so this surfaces it as public for testing
+  inherited;
+end;
+
+{ TTestVisitorAcceptVisitor }
+
+procedure TTestVisitorAcceptVisitor.Execute(const AVisited: TtiVisited);
+begin
+  Data.Add((AVisited as TTestTIVisitedAcceptVisitor).ID);
+end;
+
+{ TSensingVisitor }
+
+constructor TSensingVisitor.Create;
+begin
+  inherited;
+  FData:= TStringList.Create;
+end;
+
+destructor TSensingVisitor.Destroy;
+begin
+  FData.Free;
   inherited;
 end;
 
