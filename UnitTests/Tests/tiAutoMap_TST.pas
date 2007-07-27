@@ -1,4 +1,4 @@
-unit tiClassToDBMap_TST;
+unit tiAutoMap_TST;
 
 {$I tiDefines.inc}
 
@@ -26,7 +26,7 @@ type
   TCTDBMTestList3 = class(TtiObjectList);
 
 
-  TTestTIClassToDBMapFramework = class(TtiTestCase)
+  TTestTIAutoMapFramework = class(TtiTestCase)
   published
     procedure TestClassMaps_AddClassMap;
     procedure TestClassMaps_FindCreate;
@@ -64,7 +64,7 @@ type
 
   end;
 
-  TTestTIClassToDBMapOperation = class(TtiOPFTestCase)
+  TTestTIAutoMapOperation = class(TtiOPFTestCase)
   private
     FLongString : string;
     procedure InsertTIOPFTestData;
@@ -186,10 +186,10 @@ const
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIClassToDBMapFramework);
+  RegisterNonPersistentTest(TTestTIAutoMapFramework);
 end;
 
-procedure TTestTIClassToDBMapOperation.CollectionCreate;
+procedure TTestTIAutoMapOperation.CollectionCreate;
 var
   lData1   : TtiOPFTestData;
   lData2   : TtiOPFTestData;
@@ -233,7 +233,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.CollectionDelete;
+procedure TTestTIAutoMapOperation.CollectionDelete;
 var
   lData1 : TtiOPFTestData;
   lData2 : TtiOPFTestData;
@@ -269,7 +269,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.CollectionReadAll;
+procedure TTestTIAutoMapOperation.CollectionReadAll;
 var
   lData : TtiOPFTestData;
   i : integer;
@@ -305,7 +305,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.CollectionReadAllItems;
+procedure TTestTIAutoMapOperation.CollectionReadAllItems;
 var
   lData : TtiOPFTestGroup;
   i : integer;
@@ -325,7 +325,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.CollectionUpdate;
+procedure TTestTIAutoMapOperation.CollectionUpdate;
 var
   lData1   : TtiOPFTestData;
   lData2   : TtiOPFTestData;
@@ -369,7 +369,7 @@ begin
 
 end;
 
-function TTestTIClassToDBMapOperation.CreateTIOPFTestData: TtiOPFTestData;
+function TTestTIAutoMapOperation.CreateTIOPFTestData: TtiOPFTestData;
 var
   lGroup : TtiOPFTestGroup;
   lItem : TtiOPFTestItem ;
@@ -403,7 +403,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.UpdateTIOPFTestData(AData: TtiOPFTestData);
+procedure TTestTIAutoMapOperation.UpdateTIOPFTestData(AData: TtiOPFTestData);
 var
   lGroup : TtiOPFTestGroup;
   lItem : TtiOPFTestItem ;
@@ -429,19 +429,19 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.SetUp;
+procedure TTestTIAutoMapOperation.SetUp;
 begin
   inherited;
   DropTestTable;
   gTIOPFManager.DefaultOIDClassName := cOIDClassNameGUID;
 end;
 
-procedure TTestTIClassToDBMapOperation.TearDown;
+procedure TTestTIAutoMapOperation.TearDown;
 begin
   inherited;
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleFlatObjCreate;
+procedure TTestTIAutoMapOperation.SingleFlatObjCreate;
 var
   lData1 : TtiOPFTestGroup;
   lData2 : TtiOPFTestGroup;
@@ -481,7 +481,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleFlatObjDelete;
+procedure TTestTIAutoMapOperation.SingleFlatObjDelete;
 var
   lData1 : TtiOPFTestGroup;
   lData2 : TtiOPFTestData;
@@ -529,7 +529,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleFlatObjReadThis;
+procedure TTestTIAutoMapOperation.SingleFlatObjReadThis;
 var
   lQP : TtiQueryParams;
   lData : TtiOPFTestGroup;
@@ -565,7 +565,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleFlatObjUpdate;
+procedure TTestTIAutoMapOperation.SingleFlatObjUpdate;
 var
   lData1 : TtiOPFTestGroup;
   lData2 : TtiOPFTestGroup;
@@ -614,7 +614,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleInheritedObjCreateEachLevel;
+procedure TTestTIAutoMapOperation.SingleInheritedObjCreateEachLevel;
 var
   lParent : TtiOPFTestParent;
   lChild : TtiOPFTestChild_A;
@@ -670,7 +670,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleInheritedObjDeleteEachLevel;
+procedure TTestTIAutoMapOperation.SingleInheritedObjDeleteEachLevel;
 var
   lParent : TtiOPFTestParent;
   lChild : TtiOPFTestChild_A;
@@ -719,7 +719,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleInheritedObjRead;
+procedure TTestTIAutoMapOperation.SingleInheritedObjRead;
 var
   lParent : TtiOPFTestParent;
   lChild : TtiOPFTestChild_A;
@@ -750,7 +750,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleInheritedObjUpdateEachLevel;
+procedure TTestTIAutoMapOperation.SingleInheritedObjUpdateEachLevel;
 var
   lParent : TtiOPFTestParent;
   lChild : TtiOPFTestChild_A;
@@ -814,7 +814,7 @@ end;
 
 { TTestTIClassToDBMapFramework }
 
-procedure TTestTIClassToDBMapFramework.TestClassMap_AddAttrMap;
+procedure TTestTIAutoMapFramework.TestClassMap_AddAttrMap;
 var
   lClassMap : TtiClassMap;
   lAttr : TtiAttrMap;
@@ -844,7 +844,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassMaps_AddClassMap;
+procedure TTestTIAutoMapFramework.TestClassMaps_AddClassMap;
 var
   lClassMaps : TtiClassMaps;
   lClassMap : TtiClassMap;
@@ -861,7 +861,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassMaps_FindCreate;
+procedure TTestTIAutoMapFramework.TestClassMaps_FindCreate;
 var
   lClassMaps : TtiClassMaps;
   lClassMap : TtiClassMap;
@@ -885,7 +885,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassMaps_IsClassReg;
+procedure TTestTIAutoMapFramework.TestClassMaps_IsClassReg;
 var
   lClassMaps : TtiClassMaps;
   lClassMap : TtiClassMap;
@@ -901,7 +901,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestDBMap_AddTableMap;
+procedure TTestTIAutoMapFramework.TestDBMap_AddTableMap;
 var
   lDBMap     : TtiDBMap ;
   lDBTableMap : TtiDBTableMap;
@@ -918,7 +918,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestDBMap_FindCreate;
+procedure TTestTIAutoMapFramework.TestDBMap_FindCreate;
 var
   lDBMap     : TtiDBMap ;
   lDBTableMap : TtiDBTableMap;
@@ -935,7 +935,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestDBMaps_AddDBMap;
+procedure TTestTIAutoMapFramework.TestDBMaps_AddDBMap;
 var
   lDBMaps : TtiDBMaps;
   lDBMap : TtiDBMap ;
@@ -952,7 +952,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TtiDBMaps_FindCreate;
+procedure TTestTIAutoMapFramework.TtiDBMaps_FindCreate;
 var
   lDBMaps : TtiDBMaps;
   lDBMap : TtiDBMap ;
@@ -969,7 +969,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestDBTableMap_AddColMap;
+procedure TTestTIAutoMapFramework.TestDBTableMap_AddColMap;
 var
   lDBTableMap : TtiDBTableMap;
   lDBColMap  : TtiDBColMap;
@@ -995,7 +995,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestAttrColMaps_AddMapping;
+procedure TTestTIAutoMapFramework.TestAttrColMaps_AddMapping;
 var
   lAttrColMaps : TtiAttrColMaps;
   lAttrMap : TtiAttrMap;
@@ -1024,7 +1024,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestAttrColMaps_FindAllMappingsByMapToClass;
+procedure TTestTIAutoMapFramework.TestAttrColMaps_FindAllMappingsByMapToClass;
 var
   lAttrColMaps : TtiAttrColMaps;
 
@@ -1109,7 +1109,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapFramework.TestAttrColMaps_FindByClassAttrMap;
+procedure TTestTIAutoMapFramework.TestAttrColMaps_FindByClassAttrMap;
 var
   lAttrColMaps : TtiAttrColMaps;
 
@@ -1171,7 +1171,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassDBCollections_AddClassCollectionMappingSimple;
+procedure TTestTIAutoMapFramework.TestClassDBCollections_AddClassCollectionMappingSimple;
 var
   lClassDBCollections : TtiClassDBCollections;
   lClassDBCollection : TtiClassDBCollection;
@@ -1189,7 +1189,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassDBCollections_FindByCollection;
+procedure TTestTIAutoMapFramework.TestClassDBCollections_FindByCollection;
 var
   lCDBCs : TtiClassDBCollections;
   lList : TObjectList;
@@ -1226,7 +1226,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassDBCollections_FindByCollectionOf;
+procedure TTestTIAutoMapFramework.TestClassDBCollections_FindByCollectionOf;
 var
   lCDBCs : TtiClassDBCollections;
   lCDBC : TtiClassDBCollection;
@@ -1252,7 +1252,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassDBCollections_IsInCollection;
+procedure TTestTIAutoMapFramework.TestClassDBCollections_IsInCollection;
 var
   lCDBCs : TtiClassDBCollections;
 begin
@@ -1272,7 +1272,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassDBCollections_AddClassCollectionMappingFK;
+procedure TTestTIAutoMapFramework.TestClassDBCollections_AddClassCollectionMappingFK;
 var
   lCDBMM : TtiClassDBMappingMgr;
   lClassDBCollection : TtiClassDBCollection;
@@ -1293,13 +1293,13 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassDBMappingMgr_RegisterCollection;
+procedure TTestTIAutoMapFramework.TestClassDBMappingMgr_RegisterCollection;
 begin
   TestClassDBCollections_AddClassCollectionMappingSimple;
   TestClassDBCollections_AddClassCollectionMappingFK;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassDBMappingMgr_RegisterMapping;
+procedure TTestTIAutoMapFramework.TestClassDBMappingMgr_RegisterMapping;
 var
   lCDBMM : TtiClassDBMappingMgr;
 begin
@@ -1363,7 +1363,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestAttrColMaps_FindAllPKMappingsByMapToClass;
+procedure TTestTIAutoMapFramework.TestAttrColMaps_FindAllPKMappingsByMapToClass;
 var
   lAttrColMaps : TtiAttrColMaps;
 
@@ -1483,7 +1483,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.CollectionReadPK;
+procedure TTestTIAutoMapOperation.CollectionReadPK;
 var
   lData : TtiOPFTestData;
   i : integer;
@@ -1510,7 +1510,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassDBCollections_IsCollection;
+procedure TTestTIAutoMapFramework.TestClassDBCollections_IsCollection;
 var
   lCDBCs : TtiClassDBCollections;
 begin
@@ -1530,7 +1530,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.InsertTIOPFTestData;
+procedure TTestTIAutoMapOperation.InsertTIOPFTestData;
   procedure _InsertGroup(pI : integer);
   var
     lQueryParams : TtiQueryParams;
@@ -1586,12 +1586,12 @@ begin
   end;
 end;
 
-function TTestTIClassToDBMapOperation.TestIntToFloat(pInt: Integer): extended;
+function TTestTIAutoMapOperation.TestIntToFloat(pInt: Integer): extended;
 begin
   result := pInt*2 / 10;
 end;
 
-procedure TTestTIClassToDBMapOperation.InsertTIOPFTestDataInheritedGroup(AOID : integer);
+procedure TTestTIAutoMapOperation.InsertTIOPFTestDataInheritedGroup(AOID : integer);
 var
   lQueryParams : TtiQueryParams;
 begin
@@ -1604,7 +1604,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.InsertTIOPFTestDataInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);
+procedure TTestTIAutoMapOperation.InsertTIOPFTestDataInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);
   procedure _InsertTestParent(const ATableName : string; pI : integer; pOwnerOID : integer);
   var
     lQueryParams : TtiQueryParams;
@@ -1640,7 +1640,7 @@ begin
   _InsertTestChild(ATableName, pI);
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleInheritedObjCreateAll;
+procedure TTestTIAutoMapOperation.SingleInheritedObjCreateAll;
 var
   lChild : TtiOPFTestChild_A;
 begin
@@ -1672,7 +1672,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleInheritedObjUpdateAll;
+procedure TTestTIAutoMapOperation.SingleInheritedObjUpdateAll;
 var
   lChild : TtiOPFTestChild_A;
 begin
@@ -1706,7 +1706,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.SingleInheritedObjDeleteAll;
+procedure TTestTIAutoMapOperation.SingleInheritedObjDeleteAll;
 var
   lChild : TtiOPFTestChild_A;
 begin
@@ -1735,7 +1735,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapFramework.TestClassMaps_RegisterInheritance;
+procedure TTestTIAutoMapFramework.TestClassMaps_RegisterInheritance;
 var
   lClassMaps     : TtiClassMaps;
   lClassMapChild : TtiClassMap;
@@ -1786,13 +1786,13 @@ begin
 end;
 
 
-procedure TTestTIClassToDBMapFramework.TestClassDBMappingMgr_RegisterInheritance;
+procedure TTestTIAutoMapFramework.TestClassDBMappingMgr_RegisterInheritance;
 begin
   TestClassMaps_RegisterInheritance;
 end;
 
 
-procedure TTestTIClassToDBMapFramework.TestClassMaps_FindParent;
+procedure TTestTIAutoMapFramework.TestClassMaps_FindParent;
 var
   lClassMaps     : TtiClassMaps;
   lClassMap      : TtiClassMap;
@@ -1814,7 +1814,7 @@ begin
 end;
 
 
-procedure TTestTIClassToDBMapFramework.TestClassMaps_HasParent;
+procedure TTestTIAutoMapFramework.TestClassMaps_HasParent;
 var
   lClassMaps     : TtiClassMaps;
 begin
@@ -1833,7 +1833,7 @@ begin
 end;
 
 
-procedure TTestTIClassToDBMapFramework.TestClassMaps_FindAllParents;
+procedure TTestTIAutoMapFramework.TestClassMaps_FindAllParents;
 var
   lClassMaps : TtiClassMaps;
   lParents  : TtiClassMaps;
@@ -1865,13 +1865,13 @@ begin
 end;
 
 
-function TTestTIClassToDBMapOperation.TestIntToDate(pInt: Integer): TDateTime;
+function TTestTIAutoMapOperation.TestIntToDate(pInt: Integer): TDateTime;
 begin
   result := EncodeDate(2002, 1, 1) + pInt;
 end;
 
 
-procedure TTestTIClassToDBMapOperation.CollectionOfInheritedObjRead;
+procedure TTestTIAutoMapOperation.CollectionOfInheritedObjRead;
 var
   lParentGroup : TtiOPFTestParentGroup;
 begin
@@ -1903,7 +1903,7 @@ begin
 end;
 
 
-procedure TTestTIClassToDBMapOperation.CollectionOfInheritedObjWithFKRead;
+procedure TTestTIAutoMapOperation.CollectionOfInheritedObjWithFKRead;
 var
   lParentGroup : TtiOPFTestParentGroup;
 begin
@@ -1942,7 +1942,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.CollectionOfInheritedObjWithoutFKRead;
+procedure TTestTIAutoMapOperation.CollectionOfInheritedObjWithoutFKRead;
 var
   lParentGroup : TtiOPFTestParentGroup;
 begin
@@ -1994,7 +1994,7 @@ begin
   end;
 end;
 
-constructor TTestTIClassToDBMapOperation.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestTIAutoMapOperation.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   SetupTasks := [sutPerLayer, sutDBConnection, sutTables];
@@ -2002,30 +2002,30 @@ begin
 end;
 
 
-function TTestTIClassToDBMapOperation.TestIntToBool(pInt: Integer): Boolean;
+function TTestTIAutoMapOperation.TestIntToBool(pInt: Integer): Boolean;
 begin
   result := (pInt mod 2 = 0);
 end;
 
 
-procedure TTestTIClassToDBMapOperation.TestSetupAndTearDown;
+procedure TTestTIAutoMapOperation.TestSetupAndTearDown;
 begin
   Check(True);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteBooleanFalse;
+procedure TTestTIAutoMapOperation.ReadWriteBooleanFalse;
 begin
   DoReadWriteBoolean(false);
 end;
 
 
-procedure TTestTIClassToDBMapOperation.ReadWriteBooleanTrue;
+procedure TTestTIAutoMapOperation.ReadWriteBooleanTrue;
 begin
   DoReadWriteBoolean(true);
 end;
 
 
-procedure TTestTIClassToDBMapOperation.DoReadWriteBoolean(AValue : boolean);
+procedure TTestTIAutoMapOperation.DoReadWriteBoolean(AValue : boolean);
 var
   lData : TtiOPFTestBooleanProp;
 begin
@@ -2056,12 +2056,12 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteDateDate;
+procedure TTestTIAutoMapOperation.ReadWriteDateDate;
 begin
   DoReadWriteDateTime(Date);
 end;
 
-procedure TTestTIClassToDBMapOperation.DoReadWriteDateTime(AValue : TDateTime);
+procedure TTestTIAutoMapOperation.DoReadWriteDateTime(AValue : TDateTime);
 var
   lData : TtiOPFTestDateTimeProp;
 begin
@@ -2092,12 +2092,12 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteFloat;
+procedure TTestTIAutoMapOperation.ReadWriteFloat;
 begin
   DoReadWriteFloat(123.456);
 end;
 
-procedure TTestTIClassToDBMapOperation.DoReadWriteFloat(AValue : extended);
+procedure TTestTIAutoMapOperation.DoReadWriteFloat(AValue : extended);
 var
   lData : TtiOPFTestFloatProp;
 begin
@@ -2128,7 +2128,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteIntegerLow;
+procedure TTestTIAutoMapOperation.ReadWriteIntegerLow;
 begin
   // ToDo: Create an abstract class to handle this difference between per-layers
   //       BDEParadox layer can't handle Low(Integer), but can handle Low(Integer)+1.
@@ -2140,7 +2140,7 @@ begin
     DoReadWriteInteger(Low(Integer));
 end;
 
-procedure TTestTIClassToDBMapOperation.DoReadWriteInteger(AValue : integer);
+procedure TTestTIAutoMapOperation.DoReadWriteInteger(AValue : integer);
 var
   lData : TtiOPFTestIntegerProp;
 begin
@@ -2173,7 +2173,7 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.DoReadWriteOID(AValue: string);
+procedure TTestTIAutoMapOperation.DoReadWriteOID(AValue: string);
 var
   lData : TtiOPFTestOIdProp;
 begin
@@ -2206,7 +2206,7 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteStream;
+procedure TTestTIAutoMapOperation.ReadWriteStream;
 var
   lData : TtiOPFTestStreamProp;
   ls : string;
@@ -2239,12 +2239,12 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString1;
+procedure TTestTIAutoMapOperation.ReadWriteString1;
 begin
   DoReadWriteString(1);
 end;
 
-procedure TTestTIClassToDBMapOperation.DoReadWriteString(const pLen : integer);
+procedure TTestTIAutoMapOperation.DoReadWriteString(const pLen : integer);
 var
   lData : TtiOPFTestStringProp;
   ls : string;
@@ -2282,113 +2282,113 @@ begin
 
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString10;
+procedure TTestTIAutoMapOperation.ReadWriteString10;
 begin
   DoReadWriteString(10);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString100;
+procedure TTestTIAutoMapOperation.ReadWriteString100;
 begin
   DoReadWriteString(100);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString10000;
+procedure TTestTIAutoMapOperation.ReadWriteString10000;
 begin
   DoReadWriteString(10000);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString1023;
+procedure TTestTIAutoMapOperation.ReadWriteString1023;
 begin
   DoReadWriteString(1023);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString1024;
+procedure TTestTIAutoMapOperation.ReadWriteString1024;
 begin
   DoReadWriteString(1024);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString1025;
+procedure TTestTIAutoMapOperation.ReadWriteString1025;
 begin
   DoReadWriteString(1025);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString255;
+procedure TTestTIAutoMapOperation.ReadWriteString255;
 begin
   DoReadWriteString(255);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString256;
+procedure TTestTIAutoMapOperation.ReadWriteString256;
 begin
   DoReadWriteString(256);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString257;
+procedure TTestTIAutoMapOperation.ReadWriteString257;
 begin
   DoReadWriteString(257);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString5000;
+procedure TTestTIAutoMapOperation.ReadWriteString5000;
 begin
   DoReadWriteString(5000);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString511;
+procedure TTestTIAutoMapOperation.ReadWriteString511;
 begin
   DoReadWriteString(511);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString512;
+procedure TTestTIAutoMapOperation.ReadWriteString512;
 begin
   DoReadWriteString(512);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteString513;
+procedure TTestTIAutoMapOperation.ReadWriteString513;
 begin
   DoReadWriteString(513);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteDateNow;
+procedure TTestTIAutoMapOperation.ReadWriteDateNow;
 begin
   DoReadWriteDateTime(Now);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteDateMax;
+procedure TTestTIAutoMapOperation.ReadWriteDateMax;
 begin
   DoReadWriteDateTime(MaxDateTime);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteDateMin;
+procedure TTestTIAutoMapOperation.ReadWriteDateMin;
 begin
   DoReadWriteDateTime(MinDateTime);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteDate0;
+procedure TTestTIAutoMapOperation.ReadWriteDate0;
 begin
   DoReadWriteDateTime(0);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInteger_10;
+procedure TTestTIAutoMapOperation.ReadWriteInteger_10;
 begin
   DoReadWriteInteger(-10);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteOID;
+procedure TTestTIAutoMapOperation.ReadWriteOID;
 begin
   DoReadWriteOID('1');
   DoReadWriteOID('753951');
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInteger0;
+procedure TTestTIAutoMapOperation.ReadWriteInteger0;
 begin
   DoReadWriteInteger(0);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInteger10;
+procedure TTestTIAutoMapOperation.ReadWriteInteger10;
 begin
   DoReadWriteInteger(10);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteIntegerHigh;
+procedure TTestTIAutoMapOperation.ReadWriteIntegerHigh;
 begin
   // ToDo: Create an abstract class to handle this difference between per-layers
   //       FBLib layer can't handle High(Integer), but can handle High(Integer)-1.
@@ -2399,7 +2399,7 @@ begin
 end;
 
 {$IFDEF TESTINT64}
-procedure TTestTIClassToDBMapOperation.DoReadWriteInt64(AValue: Int64);
+procedure TTestTIAutoMapOperation.DoReadWriteInt64(AValue: Int64);
 var
   lData : TtiOPFTestInt64Prop;
 begin
@@ -2436,37 +2436,37 @@ begin
   end;
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt64_10;
+procedure TTestTIAutoMapOperation.ReadWriteInt64_10;
 begin
   DoReadWriteInt64(-10);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt640;
+procedure TTestTIAutoMapOperation.ReadWriteInt640;
 begin
   DoReadWriteInt64(0);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt6410;
+procedure TTestTIAutoMapOperation.ReadWriteInt6410;
 begin
   DoReadWriteInt64(10);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt64High;
+procedure TTestTIAutoMapOperation.ReadWriteInt64High;
 begin
   DoReadWriteInt64(High(Int64));
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt64Low;
+procedure TTestTIAutoMapOperation.ReadWriteInt64Low;
 begin
   DoReadWriteInt64(Low(Int64));
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt64High1;
+procedure TTestTIAutoMapOperation.ReadWriteInt64High1;
 begin
   DoReadWriteInt64(High(Integer) - 1);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt64Low1;
+procedure TTestTIAutoMapOperation.ReadWriteInt64Low1;
 var
   val : Int64;
 begin
@@ -2475,17 +2475,17 @@ begin
   DoReadWriteInt64(val);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt64High2;
+procedure TTestTIAutoMapOperation.ReadWriteInt64High2;
 begin
   DoReadWriteInt64(High(Integer));
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt64Low2;
+procedure TTestTIAutoMapOperation.ReadWriteInt64Low2;
 begin
   DoReadWriteInt64(Low(Integer));
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt64High3;
+procedure TTestTIAutoMapOperation.ReadWriteInt64High3;
 var
   val : Int64;
 begin
@@ -2494,7 +2494,7 @@ begin
   DoReadWriteInt64(val);
 end;
 
-procedure TTestTIClassToDBMapOperation.ReadWriteInt64Low3;
+procedure TTestTIAutoMapOperation.ReadWriteInt64Low3;
 begin
   DoReadWriteInt64(Low(Integer) + 1);
 end;
@@ -2502,6 +2502,7 @@ end;
 {$ENDIF}
 
 end.
+
 
 
 

@@ -7,7 +7,7 @@ uses
    tiQuery_TST
   ,tiQueryNonSQL_TST
   ,tiOPFTestManager
-  ,tiClassToDBMap_TST
+  ,tiAutoMap_TST
   ,tiOID_TST
  ;
 
@@ -37,7 +37,7 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIClassToDBMapOperationXMLLight = class(TTestTIClassToDBMapOperation)
+  TTestTIAutoMapOperationXMLLight = class(TTestTIAutoMapOperation)
   protected
     procedure   SetUp; override;
   end;
@@ -72,7 +72,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIDatabaseXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIQueryXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDManagerXMLLight.Suite);
-//    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIClassToDBMapOperationXMLLight.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIAutoMapOperationXMLLight.Suite);
   end;
 end;
 
@@ -155,9 +155,9 @@ begin
   inherited;
 end;
 
-{ TTestTIClassToDBMapOperationXMLLight }
+{ TTestTIAutoMapOperationXMLLight }
 
-procedure TTestTIClassToDBMapOperationXMLLight.SetUp;
+procedure TTestTIAutoMapOperationXMLLight.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
   inherited;
@@ -172,3 +172,4 @@ begin
 end;
 
 end.
+

@@ -10,7 +10,7 @@ uses
    tiQuery_TST
   ,tiQueryNonSQL_TST
   ,tiOPFTestManager
-  ,tiClassToDBMap_TST
+  ,tiAutoMap_TST
   ,tiOID_tst
  ;
 
@@ -44,7 +44,7 @@ type
   end;
   
 
-  TTestTIClassToDBMapOperationCSV = class(TTestTIClassToDBMapOperation)
+  TTestTIAutoMapOperationCSV = class(TTestTIAutoMapOperation)
   protected
     procedure   SetUp; override;
   end;
@@ -84,7 +84,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIDatabaseCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIQueryCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIOIDManagerCSV.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIClassToDBMapOperationCSV.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIAutoMapOperationCSV.Suite);
   end;
 end;
 
@@ -167,9 +167,9 @@ begin
   inherited;
 end;
 
-{ TTestTIClassToDBMapOperationCSV }
+{ TTestTIAutoMapOperationCSV }
 
-procedure TTestTIClassToDBMapOperationCSV.SetUp;
+procedure TTestTIAutoMapOperationCSV.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
   inherited;

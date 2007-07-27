@@ -1650,7 +1650,8 @@ begin
     gTIOPFManager.ClassDBMappingMgr.ClassMaps.FindAllParents(
       FVisitedClassType, lClassMaps);
     // For Create and Update
-    if IterateDirection = vidTopDown then
+    // ToDo: This should be a case
+    if IterationStyle = isTopDownRecurse then
       for i := 0 to lClassMaps.Count - 1 do
       begin
         FVisitedClassType := lClassMaps.Items[i].PerObjAbsClass;
@@ -1720,7 +1721,7 @@ end;
 constructor TVisAutoDelete.Create;
 begin
   inherited;
-  IterateDirection := vidBottomUp;
+  IterationStyle:= isBottomUpSinglePass;
 end;
 
 procedure TVisAutoDelete.DoExecuteQuery;

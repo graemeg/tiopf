@@ -7,7 +7,7 @@ uses
    tiQuery_TST
   ,tiQuerySQL_TST
   ,tiOPFTestManager
-  ,tiClassToDBMap_TST
+  ,tiAutoMap_TST
   ,tiOID_TST
  ;
 
@@ -40,7 +40,7 @@ type
   end;
 
 
-  TTestTIClassToDBMapOperationZeos = class(TTestTIClassToDBMapOperation)
+  TTestTIAutoMapOperationZeos = class(TTestTIAutoMapOperation)
   protected
     procedure   SetUp; override;
   end;
@@ -76,7 +76,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIDatabaseZeos.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIQueryZeos.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDManagerZeos.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIClassToDBMapOperationZeos.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIAutoMapOperationZeos.Suite);
   end;
 end;
 
@@ -185,9 +185,9 @@ begin
 end;
 
 
-{ TTestTIClassToDBMapOperationZeos }
+{ TTestTIAutoMapOperationZeos }
 
-procedure TTestTIClassToDBMapOperationZeos.SetUp;
+procedure TTestTIAutoMapOperationZeos.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
   inherited;

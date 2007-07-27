@@ -7,7 +7,7 @@ uses
    tiQuery_TST
   ,tiQuerySQL_TST
   ,tiOPFTestManager
-  ,tiClassToDBMap_TST
+  ,tiAutoMap_TST
   ,tiOID_tst
   ,tiAutomapCriteria_TST
  ;
@@ -37,7 +37,7 @@ type
     procedure SetUp; override;
   end;
 
-  TTestTIClassToDBMapOperationIBX = class(TTestTIClassToDBMapOperation)
+  TTestTIAutoMapOperationIBX = class(TTestTIAutoMapOperation)
   protected
     procedure   SetUp; override;
   end;
@@ -71,7 +71,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIDatabaseIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIQueryIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIOIDManagerIBX.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIClassToDBMapOperationIBX.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIAutoMapOperationIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestAutomappingCriteriaIBX.Suite);
   end;
 end;
@@ -177,9 +177,9 @@ begin
   inherited;
 end;
 
-{ TTestTIClassToDBMapOperationIBX }
+{ TTestTIAutoMapOperationIBX }
 
-procedure TTestTIClassToDBMapOperationIBX.SetUp;
+procedure TTestTIAutoMapOperationIBX.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
   inherited;

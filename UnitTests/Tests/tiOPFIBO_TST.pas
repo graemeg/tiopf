@@ -8,7 +8,7 @@ uses
   ,tiQuerySQL_TST
   ,tiOPFTestManager
   ,tiTestFramework
-  ,tiClassToDBMap_TST
+  ,tiAutoMap_TST
   ,tiOID_tst
  ;
 
@@ -37,7 +37,7 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIClassToDBMapOperationIBO = class(TTestTIClassToDBMapOperation)
+  TTestTIAutoMapOperationIBO = class(TTestTIAutoMapOperation)
   protected
     procedure   SetUp; override;
   end;
@@ -66,7 +66,7 @@ begin
     RegisterTest(cTIQueryTestName, TTestTIDatabaseIBO.Suite);
     RegisterTest(cTIQueryTestName, TTestTIQueryIBO.Suite);
     RegisterTest(cTIQueryTestName, TTestTIOIDManagerIBO.Suite);
-    RegisterTest(cTIQueryTestName, TTestTIClassToDBMapOperationIBO.Suite);
+    RegisterTest(cTIQueryTestName, TTestTIAutoMapOperationIBO.Suite);
   end;
 end;
 
@@ -171,7 +171,7 @@ begin
   inherited;
 end;
 
-procedure TTestTIClassToDBMapOperationIBO.SetUp;
+procedure TTestTIAutoMapOperationIBO.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBO);
   inherited;

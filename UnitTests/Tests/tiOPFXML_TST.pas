@@ -8,7 +8,7 @@ uses
   ,tiQueryNonSQL_TST
   ,tiOPFTestManager
   ,tiTestFramework
-  ,tiClassToDBMap_TST
+  ,tiAutoMap_TST
   ,tiOID_tst
  ;
 
@@ -40,7 +40,7 @@ type
     procedure FieldByNameVSFieldByIndex; override;
   end;
 
-  TTestTIClassToDBMapOperationXM = class(TTestTIClassToDBMapOperation)
+  TTestTIAutoMapOperationXM = class(TTestTIAutoMapOperation)
   protected
     procedure   SetUp; override;
   end;
@@ -69,7 +69,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIPersistenceLayersXML.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIDatabaseXML.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIQueryXML.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIClassToDBMapOperationXM.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIAutoMapOperationXM.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIOIDManagerXML.Suite);
   end;
 end;
@@ -152,9 +152,9 @@ begin
   inherited;
 end;
 
-{ TTestTIClassToDBMapOperationXM }
+{ TTestTIAutoMapOperationXM }
 
-procedure TTestTIClassToDBMapOperationXM.SetUp;
+procedure TTestTIAutoMapOperationXM.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
   inherited;
@@ -177,3 +177,5 @@ begin
 end;
 
 end.
+
+

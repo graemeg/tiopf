@@ -55,7 +55,7 @@ uses
   ,tiTextParser_TST
   ,tiTextParserStructCSV_TST
   ,tiSyncObjs_TST
-  ,tiClassToDBMap_TST
+  ,tiAutoMap_TST
   ,tiQuery_TST
   ,tiQuerySQL_TST
   ,tiQueryNonSQL_TST
@@ -135,7 +135,7 @@ begin
   tiQuery_TST.RegisterTests;
   tiSyncObjs_TST.RegisterTests;
   tiPersistenceLayers_tst.RegisterTests;
-  tiClassToDBMap_TST.RegisterTests;
+  tiAutoMap_TST.RegisterTests;
   tiXML_TST.RegisterTests;
   tiCriteria_TST.RegisterTests;
   tiTokenLibrary_TST.RegisterTests;
@@ -240,4 +240,5 @@ finalization
   uTIOPFTestManager.Free;
 
 end.
+
 
