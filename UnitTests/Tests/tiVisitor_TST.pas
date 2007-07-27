@@ -17,7 +17,6 @@ type
   TTestVisitedList = class;
   TTestVisitedOwned = class;
 
-
   TTestTIVisitor = class(TtiTestCase)
   private
     function CreateListAndOwned : TTestVisitedList;
@@ -47,12 +46,18 @@ type
     procedure Visited_IterateBottomUpOwned;
     procedure Visited_IterateBottupUpListAndOwned;
 
+    procedure Visited_Recurse_BottomUpSinglePass;
+    procedure Visited_Recurse_TopDownSinglePass;
+    procedure Visited_Recurse_TopDownRecurse;
+
+
+
 //    procedure Visited_SelfIterate;
     procedure Visited_FindAllByClassType;
 //    procedure Visited_ClassCount;
 
     // Test some other special visitors
-    procedure VisGetAllToVisit_Execute;
+//    procedure VisGetAllToVisit_Execute;
     procedure VisClassCount_Execute;
     procedure VisFindAllByClass_Execute;
 
@@ -185,6 +190,10 @@ uses
   ,tiStreams
   ,tstPerFramework_BOM
   ,tiRTTI
+  ,tiObject
+
+  ,tiDialogs
+  
  ;
 
 
@@ -263,31 +272,31 @@ begin
 end;
 
 
-procedure TTestTIVisitor.VisGetAllToVisit_Execute;
-var
-  lVisGetAllToVisit : TtiVisGetAllToVisit;
-  lVisitor : TTestVisitorGetAllToVisit;
-  lVisitedList : TTestVisitedList;
-begin
-  lVisitedList := CreateListAndOwned;
-  try
-    lVisitor := TTestVisitorGetAllToVisit.Create;
-    try
-      lVisGetAllToVisit := TtiVisGetAllToVisit.Create;
-      try
-        lVisGetAllToVisit.Visitor := lVisitor;
-        lVisitedList.Iterate(lVisGetAllToVisit);
-        CheckEquals(3, lVisGetAllToVisit.List.Count);
-      finally
-        lVisGetAllToVisit.Free;
-      end;
-    finally
-      lVisitor.Free;
-    end;
-  finally
-    lVisitedList.Free;
-  end;
-end;
+//procedure TTestTIVisitor.VisGetAllToVisit_Execute;
+//var
+//  lVisGetAllToVisit : TtiVisGetAllToVisit;
+//  lVisitor : TTestVisitorGetAllToVisit;
+//  lVisitedList : TTestVisitedList;
+//begin
+//  lVisitedList := CreateListAndOwned;
+//  try
+//    lVisitor := TTestVisitorGetAllToVisit.Create;
+//    try
+//      lVisGetAllToVisit := TtiVisGetAllToVisit.Create;
+//      try
+//        lVisGetAllToVisit.Visitor := lVisitor;
+//        lVisitedList.Iterate(lVisGetAllToVisit);
+//        CheckEquals(3, lVisGetAllToVisit.List.Count);
+//      finally
+//        lVisGetAllToVisit.Free;
+//      end;
+//    finally
+//      lVisitor.Free;
+//    end;
+//  finally
+//    lVisitedList.Free;
+//  end;
+//end;
 
 
 procedure TTestTIVisitor.Visited_Caption;
@@ -627,7 +636,7 @@ begin
     lVisitor := TTestVisitorIterate.Create;
     try
       lVisited.Iterate(lVisitor);
-      CheckEquals(lVisitor.Indexes.Count, 5);
+      CheckEquals(5, lVisitor.Indexes.Count);
       CheckEquals('1', lVisitor.Indexes.Strings[0]);
       CheckEquals('2', lVisitor.Indexes.Strings[1]);
       CheckEquals('3', lVisitor.Indexes.Strings[2]);
@@ -689,6 +698,104 @@ begin
 end;
 
 
+type
+
+  TTestVisitorTopDownRecurse = class(TtiVisitor)
+  private
+    FRecurseCount: Integer;
+  protected
+    function    AcceptVisitor : boolean; override;
+  public
+    constructor Create; override;
+    procedure   Execute(const AVisited : TtiVisited); override;
+  end;
+
+  function TTestVisitorTopDownRecurse.AcceptVisitor: boolean;
+  begin
+    result:= (Visited is TtiObjectList) and
+             (FRecurseCount <= 2);
+  end;
+
+  constructor TTestVisitorTopDownRecurse.Create;
+  begin
+    inherited;
+    FRecurseCount:= 0;
+  end;
+
+  procedure TTestVisitorTopDownRecurse.Execute(const AVisited: TtiVisited);
+  begin
+    inherited Execute(AVisited);
+    if not AcceptVisitor then
+      Exit; //==>
+    Inc(FRecurseCount);
+    (Visited as TtiObjectList).Add(TtiObjectList.Create);
+  end;
+
+procedure TTestTIVisitor.Visited_Recurse_TopDownRecurse;
+var
+  LData: TtiObjectList;
+  LVisitor: TTestVisitorTopDownRecurse;
+begin
+  LData:= TtiObjectList.Create;
+  try
+    LVisitor:= TTestVisitorTopDownRecurse.Create;
+    LVisitor.IterationStyle:= isTopDownRecurse;
+    try
+      LData.Iterate(LVisitor);
+      CheckEquals(1, LData.Count);
+      CheckEquals(1, (LData.Items[0] as TtiObjectList).Count);
+      CheckEquals(1, ((LData.Items[0] as TtiObjectList).Items[0] as TtiObjectList).Count);
+      CheckEquals(0, (((LData.Items[0] as TtiObjectList).Items[0] as TtiObjectList).Items[0] as TtiObjectList).Count);
+    finally
+      LVisitor.Free;
+    end;
+  finally
+    LData.Free;
+  end;
+end;
+
+procedure TTestTIVisitor.Visited_Recurse_TopDownSinglePass;
+var
+  LData: TtiObjectList;
+  LVisitor: TTestVisitorTopDownRecurse;
+begin
+  LData:= TtiObjectList.Create;
+  try
+    LVisitor:= TTestVisitorTopDownRecurse.Create;
+    LVisitor.IterationStyle:= isTopDownSinglePass;
+    try
+      LData.Iterate(LVisitor);
+      CheckEquals(1, LData.Count);
+      CheckEquals(0, (LData.Items[0] as TtiObjectList).Count);
+    finally
+      LVisitor.Free;
+    end;
+  finally
+    LData.Free;
+  end;
+end;
+
+procedure TTestTIVisitor.Visited_Recurse_BottomUpSinglePass;
+var
+  LData: TtiObjectList;
+  LVisitor: TTestVisitorTopDownRecurse;
+begin
+  LData:= TtiObjectList.Create;
+  try
+    LVisitor:= TTestVisitorTopDownRecurse.Create;
+    LVisitor.IterationStyle:= isBottomUpSinglePass;
+    try
+      LData.Iterate(LVisitor);
+      CheckEquals(1, LData.Count);
+      CheckEquals(0, (LData.Items[0] as TtiObjectList).Count);
+    finally
+      LVisitor.Free;
+    end;
+  finally
+    LData.Free;
+  end;
+end;
+
 procedure TTestTIVisitor.Visited_IterateBottomUpList;
 var
   lVisitor : TTestVisitorIterate;
@@ -700,7 +807,7 @@ begin
     try
       LVisitor.IterationStyle:= isBottomUpSinglePass;
       lVisited.Iterate(lVisitor);
-      CheckEquals(lVisitor.Indexes.Count, 5);
+      CheckEquals(5, lVisitor.Indexes.Count);
       CheckEquals('5', lVisitor.Indexes.Strings[0]);
       CheckEquals('4', lVisitor.Indexes.Strings[1]);
       CheckEquals('3', lVisitor.Indexes.Strings[2]);

@@ -47,7 +47,12 @@ type
   TtiVisited = class(TtiBaseObject)
   protected
     function    GetCaption: string; virtual;
-    procedure   GetAllToVisit(const AVisitor : TtiVisitor; const AList: TList);
+    procedure   GetAllToVisit(const ACandidates: TtiVisited;
+                              const AVisitor : TtiVisitor;
+                              const AList: TList); overload;
+    procedure   GetAllToVisit(const ACandidates: TList;
+                              const AVisitor: TtiVisitor;
+                              const AList: TList); overload;
     procedure   DoIterateTopDownRecurse(AVisitor : TtiVisitor); virtual;
     procedure   DoIterateTopDownSinglePass(AVisitor: TtiVisitor); virtual;
     procedure   DoIterateBottomUpSinglePass(AVisitor: TtiVisitor); virtual;
@@ -271,35 +276,29 @@ begin
   end;
 end;
 
-type
-
-  TtiVisGetAllToVisit = class(TtiVisitor)
-  private
-    FList : TList;
-    FVisitor : TtiVisitor;
-  protected
-    function AcceptVisitor : boolean; override;
-  public
-    procedure   Execute(const AVisited : TtiVisited); override;
-    property    Visitor : TtiVisitor read FVisitor write FVisitor;
-    property    List : TList read FList write FList;
-  end;
-
-procedure TtiVisited.GetAllToVisit(const AVisitor: TtiVisitor;
+procedure TtiVisited.GetAllToVisit(
+  const ACandidates: TtiVisited;
+  const AVisitor: TtiVisitor;
   const AList: TList);
 var
-  LVisitor : TtiVisGetAllToVisit;
-  i : integer;
+  LClassPropNames : TStringList;
+  LCandidate : TObject;
+  i       : integer;
 begin
-  Assert(AVisitor.TestValid, cTIInvalidObjectError);
-  Assert(Assigned(AList), cTIInvalidObjectError);
-  LVisitor := TtiVisGetAllToVisit.Create;
+  AList.Add(ACandidates);
+  LClassPropNames := TStringList.Create;
   try
-    LVisitor.Visitor := AVisitor;
-    LVisitor.List:= AList;
-    Self.Iterate(LVisitor);
+    tiGetPropertyNames(ACandidates, LClassPropNames, [tkClass]);
+    for i := 0 to LClassPropNames.Count - 1 do
+    begin
+      LCandidate := GetObjectProp(ACandidates, LClassPropNames.Strings[i]);
+      if (LCandidate is TtiVisited) then
+        GetAllToVisit((LCandidate as TtiVisited), AVisitor, AList)
+      else if (LCandidate is TList) then
+        GetAllToVisit((LCandidate as TList), AVisitor, AList)
+    end;
   finally
-    LVisitor.Free;
+    LClassPropNames.Free;
   end;
 end;
 
@@ -325,6 +324,18 @@ begin
   end;
 end;
 
+
+procedure TtiVisited.GetAllToVisit(
+  const ACandidates: TList;
+  const AVisitor: TtiVisitor;
+  const AList: TList);
+var
+  i: integer;
+begin
+  for i := 0 to ACandidates.Count - 1 do
+    if (TObject(ACandidates.Items[i]) is TtiVisited) then
+      GetAllToVisit(TtiVisited(ACandidates.Items[i]), AVisitor, AList);
+end;
 
 function TtiVisited.GetCaption: string;
 begin
@@ -416,7 +427,7 @@ begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
   LList:= TList.Create;
   try
-    GetAllToVisit(AVisitor, LList);
+    GetAllToVisit(Self, AVisitor, LList);
     for i := 0 to LList.Count - 1 do
       AVisitor.Execute(TtiVisited(LList.Items[i]));
   finally
@@ -592,7 +603,7 @@ procedure TtiVisited.Iterate(const AVisitor : TtiVisitor);
 begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
   case AVisitor.IterationStyle of
-  isTopDownSinglePass:  DoIterateTopDownRecurse(AVisitor);
+  isTopDownSinglePass:  DoIterateTopDownSinglePass(AVisitor);
   isBottomUpSinglePass: DoIterateBottomUpSinglePass(AVisitor);
   isTopDownRecurse:     DoIterateTopDownRecurse(AVisitor);
   else
@@ -608,43 +619,13 @@ begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
   LList:= TList.Create;
   try
-    GetAllToVisit(AVisitor, LList);
+    GetAllToVisit(Self, AVisitor, LList);
     for i := LList.Count - 1 downto 0 do
       AVisitor.Execute(TtiVisited(LList.Items[i]));
   finally
     LList.Free;
   end;
 end;
-
-
-{ TtiVisGetAllToVisit }
-
-function TtiVisGetAllToVisit.AcceptVisitor: boolean;
-begin
-  result := FVisitor.AcceptVisitor;
-end;
-
-
-constructor TtiVisGetAllToVisit.Create;
-begin
-  inherited;
-end;
-
-
-destructor TtiVisGetAllToVisit.Destroy;
-begin
-  inherited;
-end;
-
-
-procedure TtiVisGetAllToVisit.Execute(const AVisited: TtiVisited);
-begin
-  inherited Execute(AVisited);
-  FVisitor.Visited := AVisited;
-  if AcceptVisitor then
-    List.Add(AVisited);
-end;
-
 
 { TVisFindAllByClass }
 
