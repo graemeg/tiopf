@@ -51,14 +51,18 @@
   {$DEFINE DELPHI8ORABOVE}
   {$DEFINE DELPHI9ORABOVE}
   {$DEFINE DELPHI10ORABOVE}
+  {$DEFINE DELPHI2006ORABOVE}
 
   //Delphi 10 (2006)
   {$IFNDEF VER185}
     {$DEFINE DELPHI10}
+    {$DEFINE DELPHI2006}
   //Delphi 11 (2007)
   {$ELSE}
     {$DEFINE DELPHI11ORABOVE}
     {$DEFINE DELPHI11}
+    {$DEFINE DELPHI2007ORABOVE}
+    {$DEFINE DELPHI2007}
   {$ENDIF}
   {. $DEFINE DOTNET}
   {$DEFINE MSWINDOWS}
@@ -186,6 +190,13 @@
     {$WARN UNSAFE_TYPE OFF}
     {$WARN UNSAFE_CODE OFF}
     {$WARN UNSAFE_CAST OFF}
+    {$IFDEF DELPHI2007ORABOVE}
+      // Turn off warning: [DCC Warning] tiOPFCore.dpk(67):
+      //   W1029 Duplicate constructor 'TtiLogToFile.CreateWithDateInFileName'
+      //   with identical parameters will be inacessible from C++
+      // ToDo: This compiles in D2007. Check other compiler versions.
+      {$WARN DUPLICATE_CTOR_DTOR OFF}
+    {$ENDIF}
   {$ENDIF}
 {$ENDIF}
 

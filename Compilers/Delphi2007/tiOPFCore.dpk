@@ -1,5 +1,6 @@
 package tiOPFCore;
 
+{$I tiDefines.inc}
 {$R *.res}
 {$ALIGN 1}
 {$ASSERTIONS ON}

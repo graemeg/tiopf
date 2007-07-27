@@ -40,7 +40,6 @@ implementation
 uses
    tiObject
   ,tiUtils
-//  ,tiConstants
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
