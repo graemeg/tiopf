@@ -47,15 +47,15 @@ type
   TtiVisited = class(TtiBaseObject)
   protected
     function    GetCaption: string; virtual;
-    procedure   BuildListToVisit(const AVisitor : TtiVisitor);
-    procedure   DoIterate(AVisitor : TtiVisitor); virtual;
-    procedure   DoIterateBottomUp(AVisitor: TtiVisitor); virtual;
+    procedure   GetAllToVisit(const AVisitor : TtiVisitor; const AList: TList);
+    procedure   DoIterateTopDownRecurse(AVisitor : TtiVisitor); virtual;
+    procedure   DoIterateTopDownSinglePass(AVisitor: TtiVisitor); virtual;
+    procedure   DoIterateBottomUpSinglePass(AVisitor: TtiVisitor); virtual;
   published
     property    Caption   : string  read GetCaption;
   public
     constructor Create; virtual;
-    procedure   Iterate(const AVisitor : TtiVisitor;
-                  const AIterationStyle: TtiIterationStyle = isTopDownRecurse); virtual;
+    procedure   Iterate(const AVisitor : TtiVisitor); virtual;
     procedure   FindAllByClassType(AClass : TtiVisitedClass; AList : TList);
   end;
 
@@ -111,20 +111,6 @@ type
                   read  FIterationStyle
                   write FIterationStyle;
     property    VisitedsOwner : TtiVisited read FVisitedsOwner write FVisitedsOwner;
-  end;
-
-  TtiVisGetAllToVisit = class(TtiVisitor)
-  private
-    FList : TList;
-    FVisitor : TtiVisitor;
-  protected
-    function AcceptVisitor : boolean; override;
-  public
-    constructor Create; override;
-    destructor  Destroy; override;
-    procedure   Execute(const AVisited : TtiVisited); override;
-    property    Visitor : TtiVisitor read FVisitor write FVisitor;
-    property    List : TList read FList;
   end;
 
   // A wrapper for the TtiPreSizedStream which allows text to be written to the stream
@@ -285,31 +271,41 @@ begin
   end;
 end;
 
+type
 
-{ TtiVisited }
+  TtiVisGetAllToVisit = class(TtiVisitor)
+  private
+    FList : TList;
+    FVisitor : TtiVisitor;
+  protected
+    function AcceptVisitor : boolean; override;
+  public
+    procedure   Execute(const AVisited : TtiVisited); override;
+    property    Visitor : TtiVisitor read FVisitor write FVisitor;
+    property    List : TList read FList write FList;
+  end;
 
-//function TtiVisited.CountByClass(AClass: TtiVisitedClass): integer;
-//var
-//  lList : TList;
-//begin
-//  lList := TList.Create;
-//  try
-//    FindAllByClassType(AClass, lList);
-//    result := lList.Count;
-//  finally
-//    lList.Free;
-//  end;
-//end;
-
-
-procedure TtiVisited.BuildListToVisit(const AVisitor: TtiVisitor);
+procedure TtiVisited.GetAllToVisit(const AVisitor: TtiVisitor;
+  const AList: TList);
+var
+  LVisitor : TtiVisGetAllToVisit;
+  i : integer;
 begin
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(Assigned(AList), cTIInvalidObjectError);
+  LVisitor := TtiVisGetAllToVisit.Create;
+  try
+    LVisitor.Visitor := AVisitor;
+    LVisitor.List:= AList;
+    Self.Iterate(LVisitor);
+  finally
+    LVisitor.Free;
+  end;
 end;
 
 constructor TtiVisited.Create;
 begin
   inherited create;
-  //FSelfIterate := true;
 end;
 
 
@@ -336,7 +332,7 @@ begin
 end;
 
 
-procedure TtiVisited.DoIterate(AVisitor: TtiVisitor);
+procedure TtiVisited.DoIterateTopDownRecurse(AVisitor: TtiVisitor);
 var
   lClassPropNames : TStringList;
   i       : integer;
@@ -411,6 +407,22 @@ begin
   end;
 end;
 
+
+procedure TtiVisited.DoIterateTopDownSinglePass(AVisitor: TtiVisitor);
+var
+  LList: TList;
+  i : integer;
+begin
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  LList:= TList.Create;
+  try
+    GetAllToVisit(AVisitor, LList);
+    for i := 0 to LList.Count - 1 do
+      AVisitor.Execute(TtiVisited(LList.Items[i]));
+  finally
+    LList.Free;
+  end;
+end;
 
 { TtiVisitor }
 
@@ -576,32 +588,31 @@ begin
 end;
 
 
-procedure TtiVisited.Iterate(
-  const AVisitor : TtiVisitor;
-  const AIterationStyle: TtiIterationStyle = isTopDownRecurse);
+procedure TtiVisited.Iterate(const AVisitor : TtiVisitor);
 begin
-  case AIterationStyle of
-  isTopDownSinglePass:  DoIterate(AVisitor);
-  isBottomUpSinglePass: DoIterateBottomUp(AVisitor);
-  isTopDownRecurse:     DoIterate(AVisitor);
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  case AVisitor.IterationStyle of
+  isTopDownSinglePass:  DoIterateTopDownRecurse(AVisitor);
+  isBottomUpSinglePass: DoIterateBottomUpSinglePass(AVisitor);
+  isTopDownRecurse:     DoIterateTopDownRecurse(AVisitor);
   else
     raise EtiOPFProgrammerException.Create(CErrorInvalidIterationStyle);
   end;
 end;
 
-procedure TtiVisited.DoIterateBottomUp(AVisitor: TtiVisitor);
+procedure TtiVisited.DoIterateBottomUpSinglePass(AVisitor: TtiVisitor);
 var
-  lVisitor : TtiVisGetAllToVisit;
+  LList: TList;
   i : integer;
 begin
-  lVisitor := TtiVisGetAllToVisit.Create;
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  LList:= TList.Create;
   try
-    lVisitor.Visitor := AVisitor;
-    Self.Iterate(lVisitor);
-    for i := lVisitor.List.Count - 1 downto 0 do
-      AVisitor.Execute(TtiVisited(lVisitor.List.Items[i]));
+    GetAllToVisit(AVisitor, LList);
+    for i := LList.Count - 1 downto 0 do
+      AVisitor.Execute(TtiVisited(LList.Items[i]));
   finally
-    lVisitor.Free;
+    LList.Free;
   end;
 end;
 
@@ -617,13 +628,11 @@ end;
 constructor TtiVisGetAllToVisit.Create;
 begin
   inherited;
-  FList := TList.Create;
 end;
 
 
 destructor TtiVisGetAllToVisit.Destroy;
 begin
-  FList.Free;
   inherited;
 end;
 
@@ -775,16 +784,8 @@ procedure TtiVisitorManager.ExecuteVisitors(AVisitors: TList; AVisited: TtiVisit
     AVisitor.VisitorController.AfterExecuteOne(AVisitor);
   end;
 
-
-  procedure _RunIterate(AVisited : TtiVisited; AVisitor : TtiVisitor);
-  begin
-    if AVisitor.IterationStyle = isTopDownRecurse then
-      AVisited.Iterate(AVisitor)
-    else
-      AVisited.Iterate(AVisitor, isBottomUpSinglePass);
-  end;
 var
-  lVisitor : TtiVisitor;
+  LVisitor : TtiVisitor;
   i : integer;
 begin
   for i := 0 to AVisitors.Count - 1 do
@@ -792,15 +793,15 @@ begin
     // Don't go any further if terminated
     if gTIOPFManager.Terminated then
       Exit; //==>
-    lVisitor := TtiVisitor(AVisitors.Items[i]);
-    _RunBeforeExecuteOne(lVisitor);
+    LVisitor := TtiVisitor(AVisitors.Items[i]);
+    _RunBeforeExecuteOne(LVisitor);
     try
       if AVisited <> nil then
-        _RunIterate(AVisited, lVisitor)
+        AVisited.Iterate(LVisitor)
       else
-        lVisitor.Execute(nil);
+        LVisitor.Execute(nil);
     finally
-      _RunAfterExecuteOne(lVisitor);
+      _RunAfterExecuteOne(LVisitor);
     end;
   end;
 end;

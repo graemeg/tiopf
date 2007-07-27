@@ -698,7 +698,8 @@ begin
   try
     lVisitor := TTestVisitorIterate.Create;
     try
-      lVisited.Iterate(lVisitor, isBottomUpSinglePass);
+      LVisitor.IterationStyle:= isBottomUpSinglePass;
+      lVisited.Iterate(lVisitor);
       CheckEquals(lVisitor.Indexes.Count, 5);
       CheckEquals('5', lVisitor.Indexes.Strings[0]);
       CheckEquals('4', lVisitor.Indexes.Strings[1]);
@@ -723,7 +724,8 @@ begin
   try
     lVisitor := TTestVisitorIterate.Create;
     try
-      lVisited.Iterate(lVisitor, isBottomUpSinglePass);
+      LVisitor.IterationStyle:= isBottomUpSinglePass;
+      lVisited.Iterate(lVisitor);
       CheckEquals(4, lVisitor.Indexes.Count);
       CheckEquals('4', lVisitor.Indexes.Strings[0]);
       CheckEquals('3', lVisitor.Indexes.Strings[1]);
@@ -771,7 +773,8 @@ begin
   try
     lVisitor := TTestVisitorIterate.Create;
     try
-      lVisitedList.Iterate(lVisitor, isBottomUpSinglePass);
+      LVisitor.IterationStyle:= isBottomUpSinglePass;
+      lVisitedList.Iterate(lVisitor);
       CheckEquals(13, lVisitor.Indexes.Count);
       for i := 1 to 13 do
         CheckEquals(IntToStr(i), lVisitor.Indexes.Strings[13-i]);
