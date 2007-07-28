@@ -331,29 +331,31 @@ var
   i       : integer;
   LIterationDepth: TIterationDepth;
 begin
-  LIterationDepth:= AIterationDepth+1;
-  if AVisitor.AcceptVisitor(ACandidates) then
-    ATouchMethod(ACandidates, AVisitor, AList, LIterationDepth);
-  if AVisitor.ContinueVisiting and
-     AVisitor.VisitBranch(ADerivedParent, ACandidates) then
+  if AVisitor.VisitBranch(ADerivedParent, ACandidates) then
   begin
-    LClassPropNames := TStringList.Create;
-    try
-      tiGetPropertyNames(ACandidates, LClassPropNames, [tkClass]);
-      i:= 0;
-      while (i <= LClassPropNames.Count - 1) and
-        AVisitor.ContinueVisiting do
-      begin
-        LCandidate := GetObjectProp(ACandidates, LClassPropNames.Strings[i]);
-        if (LCandidate is TtiVisited) then
-          // ToDo: This needs to be replaced with a recursive call to Iterate
-          GetAllToVisit(ACandidates, (LCandidate as TtiVisited), AVisitor, AList, ATouchMethod, LIterationDepth)
-        else if (LCandidate is TList) then
-          GetAllToVisit(ACandidates, (LCandidate as TList), AVisitor, AList, ATouchMethod, LIterationDepth);
-        inc(i);
+    LIterationDepth:= AIterationDepth+1;
+    if AVisitor.AcceptVisitor(ACandidates) then
+      ATouchMethod(ACandidates, AVisitor, AList, LIterationDepth);
+    if AVisitor.ContinueVisiting then
+    begin
+      LClassPropNames := TStringList.Create;
+      try
+        tiGetPropertyNames(ACandidates, LClassPropNames, [tkClass]);
+        i:= 0;
+        while (i <= LClassPropNames.Count - 1) and
+          AVisitor.ContinueVisiting do
+        begin
+          LCandidate := GetObjectProp(ACandidates, LClassPropNames.Strings[i]);
+          if (LCandidate is TtiVisited) then
+            // ToDo: This needs to be replaced with a recursive call to Iterate
+            GetAllToVisit(ACandidates, (LCandidate as TtiVisited), AVisitor, AList, ATouchMethod, LIterationDepth)
+          else if (LCandidate is TList) then
+            GetAllToVisit(ACandidates, (LCandidate as TList), AVisitor, AList, ATouchMethod, LIterationDepth);
+          inc(i);
+        end;
+      finally
+        LClassPropNames.Free;
       end;
-    finally
-      LClassPropNames.Free;
     end;
   end;
 end;

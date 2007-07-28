@@ -30,6 +30,7 @@ type
     procedure Visited_Iterate_Owned(AIterationStyle: TtiIterationStyle);
     procedure Visited_Iterate_ListAndOwned(AIterationStyle: TtiIterationStyle);
     procedure Visited_AcceptVisitor(AIterationStyle: TtiIterationStyle);
+    procedure Visited_VisitBranch(AIterationStyle: TtiIterationStyle);
 
   protected
     procedure SetUp; override;
@@ -78,7 +79,6 @@ type
     procedure Visited_AcceptVisitor_TopDownSinglePass;
     procedure Visited_AcceptVisitor_BottomUpSinglePass;
 
-    procedure Visited_VisitBranch(AIterationStyle: TtiIterationStyle);
     procedure Visited_VisitBranch_TopDownRecurse;
     procedure Visited_VisitBranch_TopDownSinglePass;
     procedure Visited_VisitBranch_BottomUpSinglePass;
@@ -186,7 +186,6 @@ procedure RegisterTests;
 implementation
 uses
   SysUtils
-//  ,tiDialogs
   ,tiUtils
   ,tiOPFManager
   ,TypInfo
@@ -196,9 +195,6 @@ uses
   ,tstPerFramework_BOM
   ,tiRTTI
   ,tiObject
-
-  ,tiDialogs
-  
  ;
 
 
@@ -964,25 +960,121 @@ begin
   end;
 end;
 
+type
+
+  TTestVisitedVisitBranchChild2 = class(TtiVisited)
+  end;
+
+  TTestVisitedVisitBranchChild1 = class(TtiVisited)
+  private
+    FData: TTestVisitedVisitBranchChild2;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+  published
+    property Data: TTestVisitedVisitBranchChild2 read FData;
+  end;
+
+  TTestVisitedVisitBranch = class(TtiVisited)
+  private
+    FData: TTestVisitedVisitBranchChild1;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+  published
+    property Data: TTestVisitedVisitBranchChild1 read FData;
+  end;
+
+  TTestVisitorVisitBranch = class(TSensingVisitor)
+  private
+    FApplyTest: boolean;
+  protected
+    function VisitBranch(const ADerivedParent, AVisited: TtiVisited) : boolean; override;
+  public
+    property ApplyTest: boolean read FApplyTest write FApplyTest;
+  end;
+
+{ TTestVisitedOverrideVisitBranchChild1 }
+
+  constructor TTestVisitedVisitBranchChild1.Create;
+  begin
+    inherited;
+    FData:= TTestVisitedVisitBranchChild2.Create;
+  end;
+
+  destructor TTestVisitedVisitBranchChild1.Destroy;
+  begin
+    FData.Free;
+    inherited;
+  end;
+
+  constructor TTestVisitedVisitBranch.Create;
+  begin
+    inherited;
+    FData:= TTestVisitedVisitBranchChild1.Create;
+  end;
+
+  destructor TTestVisitedVisitBranch.Destroy;
+  begin
+    FData.Free;
+    inherited;
+  end;
+
+  function TTestVisitorVisitBranch.VisitBranch(const ADerivedParent, AVisited: TtiVisited) : boolean;
+  begin
+    result:= (not ApplyTest) or
+             (ApplyTest and not (AVisited is TTestVisitedVisitBranchChild1));
+  end;
+
 procedure TTestTIVisitor.Visited_VisitBranch(
   AIterationStyle: TtiIterationStyle);
+var
+  LVisited: TTestVisitedVisitBranch;
+  LVisitor: TTestVisitorVisitBranch;
 begin
+  LVisited:= nil;
+  LVisitor:= nil;
+  try
+    LVisited:= TTestVisitedVisitBranch.Create;
+    LVisitor:= TTestVisitorVisitBranch.Create;
+    LVisitor.ApplyTest:= False;
+    LVisited.Iterate(LVisitor);
+    CheckEquals(3, LVisitor.Data.Count);
+
+  finally
+    LVisited.Free;
+    LVisitor.Free;
+  end;
+
+  LVisited:= nil;
+  LVisitor:= nil;
+  try
+    LVisited:= TTestVisitedVisitBranch.Create;
+    LVisitor:= TTestVisitorVisitBranch.Create;
+    LVisitor.ApplyTest:= True;
+    LVisited.Iterate(LVisitor);
+    CheckEquals(1, LVisitor.Data.Count);
+
+  finally
+    LVisited.Free;
+    LVisitor.Free;
+  end;
 
 end;
 
 procedure TTestTIVisitor.Visited_VisitBranch_BottomUpSinglePass;
 begin
-
+  Visited_VisitBranch(isBottomUpSinglePass);
 end;
 
 procedure TTestTIVisitor.Visited_VisitBranch_TopDownRecurse;
 begin
-
+  Visited_VisitBranch(isTopDownRecurse);
 end;
 
 procedure TTestTIVisitor.Visited_VisitBranch_TopDownSinglePass;
 begin
-
+  Visited_VisitBranch(isTopDownSinglePass);
 end;
 
 procedure TTestTIVisitor.Visited_Recurse_BottomUpSinglePass;
@@ -1472,6 +1564,8 @@ begin
   inherited Execute(AVisited);
   Data.Add(AVisited.Caption);
 end;
+
+{ TTestVisitorVisitBranch }
 
 end.
 
