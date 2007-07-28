@@ -346,6 +346,7 @@ begin
       begin
         LCandidate := GetObjectProp(ACandidates, LClassPropNames.Strings[i]);
         if (LCandidate is TtiVisited) then
+          // ToDo: This needs to be replaced with a recursive call to Iterate
           GetAllToVisit(ACandidates, (LCandidate as TtiVisited), AVisitor, AList, ATouchMethod, LIterationDepth)
         else if (LCandidate is TList) then
           GetAllToVisit(ACandidates, (LCandidate as TList), AVisitor, AList, ATouchMethod, LIterationDepth);

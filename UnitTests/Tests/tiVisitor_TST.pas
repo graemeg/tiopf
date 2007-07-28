@@ -68,6 +68,8 @@ type
     procedure Visited_Iterate_ListAndOwned_TopDownSinglePass;
     procedure Visited_Iterate_ListAndOwned_BottomUpSinglePass;
 
+    procedure Visited_Iterate_Override;
+
     procedure Visited_Recurse_TopDownRecurse;
     procedure Visited_Recurse_TopDownSinglePass;
     procedure Visited_Recurse_BottomUpSinglePass;
@@ -140,7 +142,7 @@ type
     destructor  Destroy; override;
   end;
 
-  TSensingVisitor = class(TtiVisitor)
+  TSensingVisitorAbs = class abstract(TtiVisitor)
   private
     FData: TStringList;
   public
@@ -149,7 +151,12 @@ type
     property    Data : TStringList read FData;
   end;
 
-  TTestVisitorIterate = class(TSensingVisitor)
+  TSensingVisitor = class (TSensingVisitorAbs)
+  public
+    procedure   Execute(const AVisited : TtiVisited); override;
+  end;
+
+  TTestVisitorIterate = class(TSensingVisitorAbs)
   public
     procedure   Execute(const AVisited : TtiVisited); override;
   end;
@@ -310,7 +317,7 @@ type
     property Chain: TtiVisited read FChain write FChain;
   end;
 
-  TTestVisitorAcceptVisitor = class(TSensingVisitor)
+  TTestVisitorAcceptVisitor = class(TSensingVisitorAbs)
   protected
     function AcceptVisitor: boolean; override;
   public
@@ -1024,6 +1031,79 @@ begin
   end;
 end;
 
+type
+
+  TTestVisitedOverrideIterate = class(TtiVisited)
+  private
+    FData: TtiVisited;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+  published
+    property Data: TtiVisited read FData;
+  end;
+
+  TTestVisitedOverrideIterateChild = class(TtiVisited)
+  private
+    FData: TtiVisited;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure Iterate(const AVisitor: TtiVisitor); override;
+  published
+    property Data: TtiVisited read FData;
+  end;
+
+  constructor TTestVisitedOverrideIterate.Create;
+  begin
+    inherited;
+    FData:= TTestVisitedOverrideIterateChild.Create;
+  end;
+
+  destructor TTestVisitedOverrideIterate.destroy;
+  begin
+    FData.Free;
+    inherited;
+  end;
+
+  constructor TTestVisitedOverrideIterateChild.Create;
+  begin
+    inherited;
+    FData:= TtiVisited.Create;
+  end;
+
+  destructor TTestVisitedOverrideIterateChild.Destroy;
+  begin
+    FData.Free;
+    inherited;
+  end;
+
+  procedure TTestVisitedOverrideIterateChild.Iterate(const AVisitor: TtiVisitor);
+  begin
+    AVisitor.Execute(Self);
+  end;
+
+procedure TTestTIVisitor.Visited_Iterate_Override;
+var
+  LVisitor: TSensingVisitorAbs;
+  LVisited: TTestVisitedOverrideIterate;
+begin
+  LVisitor:= nil;
+  LVisited:= nil;
+  try
+     LVisitor:= TSensingVisitor.Create;
+     LVisited:= TTestVisitedOverrideIterate.Create;
+
+     LVisited.Iterate(LVisitor);
+     CheckEquals(2, LVisitor.Data.Count);
+     CheckEquals(TTestVisitedOverrideIterate.ClassName, LVisitor.Data.Strings[0]);
+     CheckEquals(TTestVisitedOverrideIterateChild.ClassName, LVisitor.Data.Strings[1]);
+
+  finally
+    LVisitor.Free;
+    LVisited.Free;
+  end;
+end;
 
 procedure TTestTIVisitor.Visited_Iterate_Owned(
   AIterationStyle: TtiIterationStyle);
@@ -1374,16 +1454,23 @@ end;
 
 { TSensingVisitor }
 
-constructor TSensingVisitor.Create;
+constructor TSensingVisitorAbs.Create;
 begin
   inherited;
   FData:= TStringList.Create;
 end;
 
-destructor TSensingVisitor.Destroy;
+destructor TSensingVisitorAbs.Destroy;
 begin
   FData.Free;
   inherited;
+end;
+
+
+procedure TSensingVisitor.Execute(const AVisited: TtiVisited);
+begin
+  inherited Execute(AVisited);
+  Data.Add(AVisited.Caption);
 end;
 
 end.
