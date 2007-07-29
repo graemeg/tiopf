@@ -147,7 +147,7 @@ type
     destructor  Destroy; override;
   end;
 
-  TSensingVisitorAbs = class abstract(TtiVisitor)
+  TSensingVisitorAbs = class (TtiVisitor)
   private
     FData: TStringList;
   public
