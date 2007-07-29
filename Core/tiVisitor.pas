@@ -7,7 +7,8 @@ unit tiVisitor;
 //      Have I done this correctly?
 //      Can calls to AcceptVisitor be removed from Execute?
 
-//    Implement VisitBranch
+//    Refactor so GetAllToVisit recurses into Iterate
+
 //    Implement Terminated
 
 //    Audit for const params
@@ -101,6 +102,7 @@ type
     constructor Create; virtual;
     procedure   Iterate(const AVisitor : TtiVisitor); virtual;
     procedure   FindAllByClassType(AClass : TtiVisitedClass; AList : TList);
+//    property    TIOPFManager: TtiOPFManager read GetTIOPFManager;
   end;
 
   TtiVisitorCtrlr = class(TtiBaseObject)
@@ -144,6 +146,7 @@ type
     function    GetVisited: TtiVisited; virtual;
     procedure   SetVisited(const AValue: TtiVisited);
     procedure   SetDepth(const ADepth: TIterationDepth);
+    function    GetTerminated: boolean; virtual;
   public
     constructor Create; virtual;
 
@@ -152,12 +155,14 @@ type
     property    Visited : TtiVisited read FVisited;
 
     property    ContinueVisiting : boolean read FContinueVisiting write FContinueVisiting;
+    property    Terminated: boolean read GetTerminated;
     property    VisitorController : TtiVisitorCtrlr read FVisitorController write FVisitorController;
     property    Depth : TIterationDepth read FDepth;
     property    IterationStyle : TtiIterationStyle
                   read  FIterationStyle
                   write FIterationStyle;
     property    VisitedsOwner : TtiVisited read FVisitedsOwner write FVisitedsOwner;
+
   end;
 
   // A wrapper for the TtiPreSizedStream which allows text to be written to the stream
@@ -578,6 +583,11 @@ begin
   inherited;
 end;
 
+
+function TtiVisitor.GetTerminated: boolean;
+begin
+  result:= gTIOPFManager.Terminated;
+end;
 
 function TtiVisitor.GetVisited: TtiVisited;
 begin

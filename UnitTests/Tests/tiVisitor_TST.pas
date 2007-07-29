@@ -31,6 +31,7 @@ type
     procedure Visited_Iterate_ListAndOwned(AIterationStyle: TtiIterationStyle);
     procedure Visited_AcceptVisitor(AIterationStyle: TtiIterationStyle);
     procedure Visited_VisitBranch(AIterationStyle: TtiIterationStyle);
+    procedure Visited_Terminated(AIterationStyle: TtiIterationStyle);
 
   protected
     procedure SetUp; override;
@@ -82,6 +83,10 @@ type
     procedure Visited_VisitBranch_TopDownRecurse;
     procedure Visited_VisitBranch_TopDownSinglePass;
     procedure Visited_VisitBranch_BottomUpSinglePass;
+
+    procedure Visited_Terminated_TopDownRecurse;
+    procedure Visited_Terminated_TopDownSinglePass;
+    procedure Visited_Terminated_BottomUpSinglePass;
 
     procedure Visited_FindAllByClassType;
 
@@ -958,6 +963,29 @@ begin
   finally
     LData.Free;
   end;
+end;
+
+procedure TTestTIVisitor.Visited_Terminated(AIterationStyle: TtiIterationStyle);
+begin
+  Fail('Under Construction');
+  // Test breaking from iteration over a list
+  // Test breaking from iteration over nested objcts
+  // Check ContinueVisiting tests both above
+end;
+
+procedure TTestTIVisitor.Visited_Terminated_BottomUpSinglePass;
+begin
+  Visited_Terminated(isBottomUpSinglePass);
+end;
+
+procedure TTestTIVisitor.Visited_Terminated_TopDownRecurse;
+begin
+  Visited_Terminated(isTopDownRecurse);
+end;
+
+procedure TTestTIVisitor.Visited_Terminated_TopDownSinglePass;
+begin
+  Visited_Terminated(isTopDownSinglePass);
 end;
 
 type
