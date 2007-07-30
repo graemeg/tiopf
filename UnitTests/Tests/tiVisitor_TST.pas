@@ -31,7 +31,7 @@ type
     procedure Visited_Iterate_ListAndOwned(AIterationStyle: TtiIterationStyle);
     procedure Visited_AcceptVisitor(AIterationStyle: TtiIterationStyle);
     procedure Visited_VisitBranch(AIterationStyle: TtiIterationStyle);
-    procedure Visited_Terminated(AIterationStyle: TtiIterationStyle);
+    procedure Visited_ContinueVisiting(AIterationStyle: TtiIterationStyle);
 
   protected
     procedure SetUp; override;
@@ -53,6 +53,8 @@ type
 
     // Test the visited
     procedure Visited_Caption;
+    procedure Visited_Terminated;
+    procedure Visited_ContinueVisitingFunction;
 
     procedure Visited_Iterate_Single_TopDownRecurse;
     procedure Visited_Iterate_Single_TopDownSinglePass;
@@ -84,9 +86,9 @@ type
     procedure Visited_VisitBranch_TopDownSinglePass;
     procedure Visited_VisitBranch_BottomUpSinglePass;
 
-    procedure Visited_Terminated_TopDownRecurse;
-    procedure Visited_Terminated_TopDownSinglePass;
-    procedure Visited_Terminated_BottomUpSinglePass;
+    procedure Visited_ContinueVisiting_TopDownRecurse;
+    procedure Visited_ContinueVisiting_TopDownSinglePass;
+    procedure Visited_ContinueVisiting_BottomUpSinglePass;
 
     procedure Visited_FindAllByClassType;
 
@@ -200,6 +202,9 @@ uses
   ,tstPerFramework_BOM
   ,tiRTTI
   ,tiObject
+
+  ,tiDialogs
+  
  ;
 
 
@@ -415,7 +420,6 @@ begin
     lVisited.Free;
   end;
 end;
-
 
 procedure TTestTIVisitor.Visited_FindAllByClassType;
 var
@@ -965,27 +969,138 @@ begin
   end;
 end;
 
-procedure TTestTIVisitor.Visited_Terminated(AIterationStyle: TtiIterationStyle);
+type
+
+  TtiVisitedTerminated = class(TtiVisited)
+  private
+    FContinueVisiting: boolean;
+  protected
+    function    ContinueVisiting(const AVisitor: TtiVisitor): boolean; override;
+  public
+    procedure SetContinueVisiting(const AValue: boolean);
+  end;
+
+  function TtiVisitedTerminated.ContinueVisiting(
+    const AVisitor: TtiVisitor): boolean;
+  begin
+    result:= FContinueVisiting;
+  end;
+
+  procedure TtiVisitedTerminated.SetContinueVisiting(
+    const AValue: boolean);
+  begin
+    FContinueVisiting:= AValue;
+  end;
+
+procedure TTestTIVisitor.Visited_ContinueVisiting(AIterationStyle: TtiIterationStyle);
+var
+  LVisited: TtiVisitedTerminated;
+  LVisitor: TSensingVisitor;
 begin
-  Fail('Under Construction');
-  // Test breaking from iteration over a list
-  // Test breaking from iteration over nested objcts
-  // Check ContinueVisiting tests both above
+  LVisited:= nil;
+  LVisitor:= nil;
+  try
+    LVisited:= TtiVisitedTerminated.Create;
+    LVisitor:= TSensingVisitor.Create;
+    LVisited.SetContinueVisiting(True);
+    LVisited.Iterate(LVisitor);
+//    tiShowStrings(LVisitor.Data);
+
+    LVisitor.Data.Clear;
+    LVisited.SetContinueVisiting(False);
+    LVisited.Iterate(LVisitor);
+//    tiShowStrings(LVisitor.Data);
+
+  finally
+    LVisited.Free;
+    LVisitor.Free;
+  end;
 end;
 
-procedure TTestTIVisitor.Visited_Terminated_BottomUpSinglePass;
+type
+  TtiTestVisitedContinueVisitingFunction = class(TtiVisited)
+  private
+    FTerminated: boolean;
+  protected
+    function GetTerminated: boolean; override;
+    procedure SetTerminated(const AValue: boolean);
+  end;
+
+  function TtiTestVisitedContinueVisitingFunction.GetTerminated: boolean;
+  begin
+    result:= FTerminated;
+  end;
+
+  procedure TtiTestVisitedContinueVisitingFunction.SetTerminated(
+    const AValue: boolean);
+  begin
+    FTerminated:= AValue;
+  end;
+
+procedure TTestTIVisitor.Visited_ContinueVisitingFunction;
+var
+  LVisited: TtiTestVisitedContinueVisitingFunction;
+  LVisitor: TtiVisitor;
 begin
-  Visited_Terminated(isBottomUpSinglePass);
+  LVisited:= nil;
+  LVisitor:= nil;
+  try
+    LVisited:= TtiTestVisitedContinueVisitingFunction.Create;
+    LVisitor:= TtiVisitor.Create;
+
+    LVisited.SetTerminated(False);
+    LVisitor.ContinueVisiting:= True;
+    CheckEquals(True, LVisited.ContinueVisiting(LVisitor));
+
+    LVisited.SetTerminated(True);
+    LVisitor.ContinueVisiting:= False;
+    CheckEquals(False, LVisited.ContinueVisiting(LVisitor));
+
+    LVisited.SetTerminated(False);
+    LVisitor.ContinueVisiting:= False;
+    CheckEquals(False, LVisited.ContinueVisiting(LVisitor));
+
+    LVisited.SetTerminated(True);
+    LVisitor.ContinueVisiting:= True;
+    CheckEquals(False, LVisited.ContinueVisiting(LVisitor));
+
+  finally
+    LVisited.Free;
+    LVisitor.Free;
+  end;
 end;
 
-procedure TTestTIVisitor.Visited_Terminated_TopDownRecurse;
+procedure TTestTIVisitor.Visited_Terminated;
+var
+  LVisited: TtiVisited;
 begin
-  Visited_Terminated(isTopDownRecurse);
+  LVisited:= TtiVisited.Create;
+  try
+    FreeAndNilTIPerMgr;
+    CheckEquals(False, gTIOPFManager.Terminated);
+    CheckEquals(False, LVisited.Terminated);
+    gTIOPFManager.Terminate;
+    CheckEquals(True, gTIOPFManager.Terminated);
+    CheckEquals(True, LVisited.Terminated);
+    FreeAndNilTIPerMgr;
+  finally
+    LVisited.Free;
+  end;
 end;
 
-procedure TTestTIVisitor.Visited_Terminated_TopDownSinglePass;
+procedure TTestTIVisitor.Visited_ContinueVisiting_BottomUpSinglePass;
 begin
-  Visited_Terminated(isTopDownSinglePass);
+  Visited_ContinueVisiting(isBottomUpSinglePass);
+end;
+
+procedure TTestTIVisitor.Visited_ContinueVisiting_TopDownRecurse;
+begin
+  Visited_ContinueVisiting(isTopDownRecurse);
+end;
+
+procedure TTestTIVisitor.Visited_ContinueVisiting_TopDownSinglePass;
+begin
+  Visited_ContinueVisiting(isTopDownSinglePass);
 end;
 
 type
@@ -1594,6 +1709,10 @@ begin
 end;
 
 { TTestVisitorVisitBranch }
+
+{ TtiVisitedContinueVisiting }
+
+{ TtiTestVisitedContinueVisitingFunction }
 
 end.
 

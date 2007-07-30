@@ -96,13 +96,15 @@ type
                                       const AList: TList;
                                       const AIterationDepth: TIterationDepth);
     procedure   ExecuteVisitor(const AVisitor: TtiVisitor; const AVisitedCandidate: TtiVisitedCandidate);
+    function    GetTerminated: boolean; virtual;
+    function    ContinueVisiting(const AVisitor: TtiVisitor): boolean; virtual;
   published
     property    Caption   : string  read GetCaption;
   public
     constructor Create; virtual;
     procedure   Iterate(const AVisitor : TtiVisitor); virtual;
     procedure   FindAllByClassType(AClass : TtiVisitedClass; AList : TList);
-//    property    TIOPFManager: TtiOPFManager read GetTIOPFManager;
+    property    Terminated: Boolean read GetTerminated;
   end;
 
   TtiVisitorCtrlr = class(TtiBaseObject)
@@ -146,7 +148,6 @@ type
     function    GetVisited: TtiVisited; virtual;
     procedure   SetVisited(const AValue: TtiVisited);
     procedure   SetDepth(const ADepth: TIterationDepth);
-    function    GetTerminated: boolean; virtual;
   public
     constructor Create; virtual;
 
@@ -155,7 +156,6 @@ type
     property    Visited : TtiVisited read FVisited;
 
     property    ContinueVisiting : boolean read FContinueVisiting write FContinueVisiting;
-    property    Terminated: boolean read GetTerminated;
     property    VisitorController : TtiVisitorCtrlr read FVisitorController write FVisitorController;
     property    Depth : TIterationDepth read FDepth;
     property    IterationStyle : TtiIterationStyle
@@ -336,33 +336,37 @@ var
   i       : integer;
   LIterationDepth: TIterationDepth;
 begin
-  if AVisitor.VisitBranch(ADerivedParent, ACandidates) then
+  if AVisitor.VisitBranch(ADerivedParent, ACandidates) and
+     ContinueVisiting(AVisitor)  then
   begin
     LIterationDepth:= AIterationDepth+1;
     if AVisitor.AcceptVisitor(ACandidates) then
       ATouchMethod(ACandidates, AVisitor, AList, LIterationDepth);
-    if AVisitor.ContinueVisiting then
-    begin
-      LClassPropNames := TStringList.Create;
-      try
-        tiGetPropertyNames(ACandidates, LClassPropNames, [tkClass]);
-        i:= 0;
-        while (i <= LClassPropNames.Count - 1) and
-          AVisitor.ContinueVisiting do
-        begin
-          LCandidate := GetObjectProp(ACandidates, LClassPropNames.Strings[i]);
-          if (LCandidate is TtiVisited) then
-            // ToDo: This needs to be replaced with a recursive call to Iterate
-            GetAllToVisit(ACandidates, (LCandidate as TtiVisited), AVisitor, AList, ATouchMethod, LIterationDepth)
-          else if (LCandidate is TList) then
-            GetAllToVisit(ACandidates, (LCandidate as TList), AVisitor, AList, ATouchMethod, LIterationDepth);
-          inc(i);
-        end;
-      finally
-        LClassPropNames.Free;
+    LClassPropNames := TStringList.Create;
+    try
+      tiGetPropertyNames(ACandidates, LClassPropNames, [tkClass]);
+      i:= 0;
+      while (i <= LClassPropNames.Count - 1) and
+        ContinueVisiting(AVisitor) do
+      begin
+        LCandidate := GetObjectProp(ACandidates, LClassPropNames.Strings[i]);
+        if (LCandidate is TtiVisited) then
+          // ToDo: This needs to be replaced with a recursive call to Iterate
+          GetAllToVisit(ACandidates, (LCandidate as TtiVisited), AVisitor, AList, ATouchMethod, LIterationDepth)
+        else if (LCandidate is TList) then
+          GetAllToVisit(ACandidates, (LCandidate as TList), AVisitor, AList, ATouchMethod, LIterationDepth);
+        inc(i);
       end;
+    finally
+      LClassPropNames.Free;
     end;
   end;
+end;
+
+function TtiVisited.ContinueVisiting(const AVisitor: TtiVisitor): boolean;
+begin
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  result:= AVisitor.ContinueVisiting and not Terminated;
 end;
 
 constructor TtiVisited.Create;
@@ -409,7 +413,8 @@ var
   i: integer;
 begin
   i:= 0;
-  while (i <= ACandidates.Count - 1) and AVisitor.ContinueVisiting do
+  while (i <= ACandidates.Count - 1) and
+    ContinueVisiting(AVisitor) do
   begin
     if (TObject(ACandidates.Items[i]) is TtiVisited) then
       GetAllToVisit(ADerivedParent, TtiVisited(ACandidates.Items[i]),
@@ -423,6 +428,11 @@ begin
   result := className;
 end;
 
+
+function TtiVisited.GetTerminated: boolean;
+begin
+  result:= gTIOPFManager.Terminated;
+end;
 
 procedure TtiVisited.IterateTopDownRecurse(AVisitor: TtiVisitor);
 begin
@@ -583,11 +593,6 @@ begin
   inherited;
 end;
 
-
-function TtiVisitor.GetTerminated: boolean;
-begin
-  result:= gTIOPFManager.Terminated;
-end;
 
 function TtiVisitor.GetVisited: TtiVisited;
 begin
