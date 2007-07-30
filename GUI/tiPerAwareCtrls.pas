@@ -2744,6 +2744,7 @@ procedure TtiPerAwareComboBoxDynamic.Refresh;
 var
   lItems: TStrings;
   I: Integer;
+  lStr, lMaxStr: string;
 begin
   lItems:= TComboBox(WinControl).Items;
   lItems.Clear;
@@ -2753,9 +2754,18 @@ begin
      (SameText(FsFieldNameDisplay, EmptyStr)) then
     Exit; //==>
   try
+    lMaxStr := '';
     for I := 0 to FList.Count - 1 do
-      lItems.AddObject(GetPropValue(TObject(FList.Items [ I ]), FsFieldNameDisplay, True),
-                        TObject(FList.Items[ I ]));
+    begin
+      lStr := GetPropValue(TObject(FList.Items [ I ]), FsFieldNameDisplay, True);
+      lItems.AddObject(lStr, TObject(FList.Items[ I ]));
+      if Length(lStr) > Length(lMaxStr) then
+        lMaxStr := lStr;
+    end;
+ {$IFNDEF FPC}
+    if Length(lMaxStr) > 0 then
+      SendMessage(WinControl.Handle, CB_SETDROPPEDWIDTH, Canvas.TextWidth(lMaxStr)+GetSystemMetrics(SM_CXVSCROLL) + 6, 0);
+ {$ENDIF}
   except
     on e:exception do
       raise Exception.CreateFmt('Error adding list items to combobox ' +
