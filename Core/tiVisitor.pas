@@ -346,8 +346,8 @@ begin
     try
       tiGetPropertyNames(ACandidates, LClassPropNames, [tkClass]);
       i:= 0;
-      while (i <= LClassPropNames.Count - 1) and
-        ContinueVisiting(AVisitor) do
+      while (i <= LClassPropNames.Count - 1){and
+        ContinueVisiting(AVisitor)} do
       begin
         LCandidate := GetObjectProp(ACandidates, LClassPropNames.Strings[i]);
         if (LCandidate is TtiVisited) then
@@ -413,8 +413,8 @@ var
   i: integer;
 begin
   i:= 0;
-  while (i <= ACandidates.Count - 1) and
-    ContinueVisiting(AVisitor) do
+  while (i <= ACandidates.Count - 1){ and
+    ContinueVisiting(AVisitor)} do
   begin
     if (TObject(ACandidates.Items[i]) is TtiVisited) then
       GetAllToVisit(ADerivedParent, TtiVisited(ACandidates.Items[i]),

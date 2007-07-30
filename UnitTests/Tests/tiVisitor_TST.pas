@@ -971,25 +971,63 @@ end;
 
 type
 
-  TtiVisitedTerminated = class(TtiVisited)
+  TtiVisitedTerminatedAbs = class(TtiVisited)
   private
-    FContinueVisiting: boolean;
+    FTouchCount: Byte;
+    FMaxTouchCount: Byte;
   protected
     function    ContinueVisiting(const AVisitor: TtiVisitor): boolean; override;
   public
-    procedure SetContinueVisiting(const AValue: boolean);
+    procedure SetMaxTouchCount(const AMaxTouchCount: Byte);
+    property  TouchCount: Byte read FTouchCount;
   end;
 
-  function TtiVisitedTerminated.ContinueVisiting(
+  TtiVisitedTerminatedData = class(TtiVisitedTerminatedAbs)
+  end;
+
+  TtiVisitedTerminatedItem = class(TtiVisitedTerminatedAbs)
+  end;
+
+  TtiVisitedTerminated = class(TtiVisitedTerminatedAbs)
+  private
+    FList: TList;
+    FData: TtiVisitedTerminatedData;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+  published
+    property Data: TtiVisitedTerminatedData read FData;
+    property List: TList read FList;
+  end;
+
+  function TtiVisitedTerminatedAbs.ContinueVisiting(
     const AVisitor: TtiVisitor): boolean;
   begin
-    result:= FContinueVisiting;
+    Inc(FTouchCount);
+    result:= FTouchCount <= FMaxTouchCount;
   end;
 
-  procedure TtiVisitedTerminated.SetContinueVisiting(
-    const AValue: boolean);
+  procedure TtiVisitedTerminatedAbs.SetMaxTouchCount(
+    const AMaxTouchCount: Byte);
   begin
-    FContinueVisiting:= AValue;
+    FTouchCount:= 0;
+    FMaxTouchCount:= AMaxTouchCount;
+  end;
+
+  constructor TtiVisitedTerminated.Create;
+  begin
+    inherited;
+    FList:= TList.Create;
+    FList.Add(TtiVisitedTerminatedItem.Create);
+    FData:= TtiVisitedTerminatedData.Create;
+  end;
+
+  destructor TtiVisitedTerminated.Destroy;
+  begin
+    FData.Free;
+    TObject(FList.Items[0]).Free;
+    FList.Free;
+    inherited;
   end;
 
 procedure TTestTIVisitor.Visited_ContinueVisiting(AIterationStyle: TtiIterationStyle);
@@ -997,19 +1035,69 @@ var
   LVisited: TtiVisitedTerminated;
   LVisitor: TSensingVisitor;
 begin
+  // ContinueVisiting will be checked once for each object that is in the
+  // iteration graph. ContinueVisiting could be checked inside loop, and
+  // used to break from the loops, which will make for a slightly more
+  // responsive system, however ContinueVisiting will return False on very
+  // few occasions, so it's better to call less frequently, and suffer the
+  // reduced response on those rare occasions that True is returned.
   LVisited:= nil;
   LVisitor:= nil;
   try
     LVisited:= TtiVisitedTerminated.Create;
     LVisitor:= TSensingVisitor.Create;
-    LVisited.SetContinueVisiting(True);
-    LVisited.Iterate(LVisitor);
-//    tiShowStrings(LVisitor.Data);
 
-    LVisitor.Data.Clear;
-    LVisited.SetContinueVisiting(False);
+    LVisited.SetMaxTouchCount(3);
+    LVisitor.IterationStyle:= AIterationStyle;
     LVisited.Iterate(LVisitor);
-//    tiShowStrings(LVisitor.Data);
+    CheckEquals(3, LVisited.TouchCount);
+    CheckEquals(3, LVisitor.Data.Count);
+    if AIterationStyle in [isTopDownRecurse, isTopDownSinglePass] then
+    begin
+      CheckEquals(TtiVisitedTerminated.ClassName, LVisitor.Data.Strings[0]);
+      CheckEquals(TtiVisitedTerminatedData.ClassName, LVisitor.Data.Strings[1]);
+      CheckEquals(TtiVisitedTerminatedItem.ClassName, LVisitor.Data.Strings[2]);
+    end else
+    begin
+      CheckEquals(TtiVisitedTerminatedItem.ClassName, LVisitor.Data.Strings[0]);
+      CheckEquals(TtiVisitedTerminatedData.ClassName, LVisitor.Data.Strings[1]);
+      CheckEquals(TtiVisitedTerminated.ClassName, LVisitor.Data.Strings[2]);
+    end;
+
+    LVisited.SetMaxTouchCount(2);
+    LVisitor.Data.Clear;
+    LVisitor.IterationStyle:= AIterationStyle;
+    LVisited.Iterate(LVisitor);
+    CheckEquals(3, LVisited.TouchCount);
+    CheckEquals(2, LVisitor.Data.Count);
+    if AIterationStyle in [isTopDownRecurse, isTopDownSinglePass] then
+    begin
+      CheckEquals(TtiVisitedTerminated.ClassName, LVisitor.Data.Strings[0]);
+      CheckEquals(TtiVisitedTerminatedData.ClassName, LVisitor.Data.Strings[1]);
+    end else
+    begin
+      CheckEquals(TtiVisitedTerminatedData.ClassName, LVisitor.Data.Strings[0]);
+      CheckEquals(TtiVisitedTerminated.ClassName, LVisitor.Data.Strings[1]);
+    end;
+
+    LVisited.SetMaxTouchCount(1);
+    LVisitor.Data.Clear;
+    LVisitor.IterationStyle:= AIterationStyle;
+    LVisited.Iterate(LVisitor);
+    CheckEquals(3, LVisited.TouchCount);
+    CheckEquals(1, LVisitor.Data.Count);
+    if AIterationStyle in [isTopDownRecurse, isTopDownSinglePass] then
+      CheckEquals(TtiVisitedTerminated.ClassName, LVisitor.Data.Strings[0])
+    else
+      CheckEquals(TtiVisitedTerminated.ClassName, LVisitor.Data.Strings[0]);
+
+//    Need to check Terminated in tiVisitor.pas, line 454
+    LVisited.SetMaxTouchCount(0);
+    LVisitor.Data.Clear;
+    LVisitor.IterationStyle:= AIterationStyle;
+    LVisited.Iterate(LVisitor);
+    CheckEquals(3, LVisited.TouchCount);
+    CheckEquals(0, LVisitor.Data.Count);
 
   finally
     LVisited.Free;
@@ -1713,6 +1801,8 @@ end;
 { TtiVisitedContinueVisiting }
 
 { TtiTestVisitedContinueVisitingFunction }
+
+{ TtiVisitedTerminated }
 
 end.
 
