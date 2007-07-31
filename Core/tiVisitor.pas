@@ -75,15 +75,15 @@ type
     procedure   Iterate(const AVisitor : TtiVisitor;
                         const ADerivedParent: TtiVisited;
                         const ACandidates: TtiVisited;
-                        const AList: TList;
+                        const ATouchedObjectList: TList;
                         const ATouchMethod: TtiVisitedTouchMethod;
                         const AIterationDepth: TIterationDepth); overload; virtual;
-    procedure   Iterate(const AVisitor: TtiVisitor;
+    procedure   IterateOverList(const AVisitor: TtiVisitor;
                         const ADerivedParent: TtiVisited;
                         const ACandidates: TList;
-                        const AList: TList;
+                        const ATouchecObjectList: TList;
                         const ATouchMethod: TtiVisitedTouchMethod;
-                        const AIterationDepth: TIterationDepth); overload;
+                        const AIterationDepth: TIterationDepth);
     procedure   IterateTopDownRecurse(AVisitor : TtiVisitor); virtual;
     procedure   IterateTopDownSinglePass(AVisitor: TtiVisitor); virtual;
     procedure   IterateBottomUpSinglePass(AVisitor: TtiVisitor); virtual;
@@ -328,7 +328,7 @@ procedure TtiVisited.Iterate(
   const AVisitor: TtiVisitor;
   const ADerivedParent: TtiVisited;
   const ACandidates: TtiVisited;
-  const AList: TList;
+  const ATouchedObjectList: TList;
   const ATouchMethod: TtiVisitedTouchMethod;
   const AIterationDepth: TIterationDepth);
 var
@@ -342,7 +342,7 @@ begin
   begin
     LIterationDepth:= AIterationDepth+1;
     if AVisitor.AcceptVisitor(ACandidates) then
-      ATouchMethod(ACandidates, AVisitor, AList, LIterationDepth);
+      ATouchMethod(ACandidates, AVisitor, ATouchedObjectList, LIterationDepth);
     LClassPropNames := TStringList.Create;
     try
       tiGetPropertyNames(ACandidates, LClassPropNames, [tkClass]);
@@ -351,9 +351,9 @@ begin
       begin
         LCandidate := GetObjectProp(ACandidates, LClassPropNames.Strings[i]);
         if (LCandidate is TtiVisited) then
-          (LCandidate as TtiVisited).Iterate(AVisitor, ACandidates, (LCandidate as TtiVisited), AList, ATouchMethod, LIterationDepth)
+          (LCandidate as TtiVisited).Iterate(AVisitor, ACandidates, (LCandidate as TtiVisited), ATouchedObjectList, ATouchMethod, LIterationDepth)
         else if (LCandidate is TList) then
-          Iterate(AVisitor, ACandidates, (LCandidate as TList), AList, ATouchMethod, LIterationDepth);
+          IterateOverList(AVisitor, ACandidates, (LCandidate as TList), ATouchedObjectList, ATouchMethod, LIterationDepth);
         inc(i);
       end;
     finally
@@ -411,11 +411,11 @@ begin
 end;
 
 
-procedure TtiVisited.Iterate(
+procedure TtiVisited.IterateOverList(
   const AVisitor: TtiVisitor;
   const ADerivedParent: TtiVisited;
   const ACandidates: TList;
-  const AList: TList;
+  const ATouchecObjectList: TList;
   const ATouchMethod: TtiVisitedTouchMethod;
   const AIterationDepth: TIterationDepth);
 var
@@ -426,7 +426,7 @@ begin
   begin
     if (TObject(ACandidates.Items[i]) is TtiVisited) then
       TtiVisited(ACandidates.Items[i]).Iterate(AVisitor, ADerivedParent, TtiVisited(ACandidates.Items[i]),
-        AList, ATouchMethod, AIterationDepth);
+        ATouchecObjectList, ATouchMethod, AIterationDepth);
     inc(i);
   end;
 end;
