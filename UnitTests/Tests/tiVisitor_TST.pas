@@ -971,15 +971,28 @@ end;
 
 type
 
+  TGetTouchCountEvent = function: Byte of object;
+  TIncTouchCountEvent = procedure of object;
+
   TtiVisitedTerminatedAbs = class(TtiVisited)
   private
     FTouchCount: Byte;
     FMaxTouchCount: Byte;
+    FOnGetMaxTouchCount: TGetTouchCountEvent;
+    FOnGetTouchCount: TGetTouchCountEvent;
+    FOnIncTouchCount: TIncTouchCountEvent;
+    function DoGetMaxTouchCount: byte;
+    function DoGetTouchCount: byte;
+    procedure DoIncTouchCount;
   protected
-    function    ContinueVisiting(const AVisitor: TtiVisitor): boolean; override;
+    function ContinueVisiting(const AVisitor: TtiVisitor): boolean; override;
+    function GetTouchCount: Byte; virtual;
   public
     procedure SetMaxTouchCount(const AMaxTouchCount: Byte);
-    property  TouchCount: Byte read FTouchCount;
+    property  TouchCount: Byte read GetTouchCount;
+    property  OnGetMaxTouchCount: TGetTouchCountEvent read FOnGetMaxTouchCount write FOnGetMaxTouchCount;
+    property  OnGetTouchCount: TGetTouchCountEvent read FOnGetTouchCount write FOnGetTouchCount;
+    property  OnIncTouchCount: TIncTouchCountEvent read FOnIncTouchCount write FOnIncTouchCount;
   end;
 
   TtiVisitedTerminatedData = class(TtiVisitedTerminatedAbs)
@@ -1003,8 +1016,31 @@ type
   function TtiVisitedTerminatedAbs.ContinueVisiting(
     const AVisitor: TtiVisitor): boolean;
   begin
+    Assert(Assigned(FOnIncTouchCount), 'FOnIncTouchCount not assigned');
+    Assert(Assigned(FOnGetMaxTouchCount), 'FOnGetMaxTouchCount not assigned');
+    FOnIncTouchCount;
+    result:= TouchCount <= FOnGetMaxTouchCount;
+  end;
+
+  function TtiVisitedTerminatedAbs.DoGetMaxTouchCount: byte;
+  begin
+    result:= FMaxTouchCount;
+  end;
+
+  function TtiVisitedTerminatedAbs.DoGetTouchCount: byte;
+  begin
+    result:= FTouchCount;
+  end;
+
+  procedure TtiVisitedTerminatedAbs.DoIncTouchCount;
+  begin
     Inc(FTouchCount);
-    result:= FTouchCount <= FMaxTouchCount;
+  end;
+
+  function TtiVisitedTerminatedAbs.GetTouchCount: Byte;
+  begin
+    Assert(Assigned(FOnGetTouchCount), 'FOnGetTouchCount not assigned');
+    result:= FOnGetTouchCount;
   end;
 
   procedure TtiVisitedTerminatedAbs.SetMaxTouchCount(
@@ -1017,9 +1053,18 @@ type
   constructor TtiVisitedTerminated.Create;
   begin
     inherited;
+    OnGetMaxTouchCount:= DoGetMaxTouchCount;
+    OnGetTouchCount:= DoGetTouchCount;
+    OnIncTouchCount:= DoIncTouchCount;
     FList:= TList.Create;
     FList.Add(TtiVisitedTerminatedItem.Create);
+    TtiVisitedTerminatedItem(FList.Items[0]).OnGetMaxTouchCount:= DoGetMaxTouchCount;
+    TtiVisitedTerminatedItem(FList.Items[0]).OnGetTouchCount:= DoGetTouchCount;
+    TtiVisitedTerminatedItem(FList.Items[0]).OnIncTouchCount:= DoIncTouchCount;
     FData:= TtiVisitedTerminatedData.Create;
+    FData.OnGetMaxTouchCount:= DoGetMaxTouchCount;
+    FData.OnGetTouchCount:= DoGetTouchCount;
+    FData.OnIncTouchCount:= DoIncTouchCount;
   end;
 
   destructor TtiVisitedTerminated.Destroy;
@@ -1408,7 +1453,12 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure Iterate(const AVisitor: TtiVisitor); override;
+    procedure Iterate(const AVisitor : TtiVisitor;
+                      const ADerivedParent: TtiVisited;
+                      const ACandidates: TtiVisited;
+                      const AList: TList;
+                      const ATouchMethod: TtiVisitedTouchMethod;
+                      const AIterationDepth: TIterationDepth); override;
   published
     property Data: TtiVisited read FData;
   end;
@@ -1437,7 +1487,13 @@ type
     inherited;
   end;
 
-  procedure TTestVisitedOverrideIterateChild.Iterate(const AVisitor: TtiVisitor);
+  procedure TTestVisitedOverrideIterateChild.Iterate(
+    const AVisitor : TtiVisitor;
+    const ADerivedParent: TtiVisited;
+    const ACandidates: TtiVisited;
+    const AList: TList;
+    const ATouchMethod: TtiVisitedTouchMethod;
+    const AIterationDepth: TIterationDepth);
   begin
     AVisitor.Execute(Self);
   end;
@@ -1452,12 +1508,10 @@ begin
   try
      LVisitor:= TSensingVisitor.Create;
      LVisited:= TTestVisitedOverrideIterate.Create;
-
      LVisited.Iterate(LVisitor);
      CheckEquals(2, LVisitor.Data.Count);
      CheckEquals(TTestVisitedOverrideIterate.ClassName, LVisitor.Data.Strings[0]);
      CheckEquals(TTestVisitedOverrideIterateChild.ClassName, LVisitor.Data.Strings[1]);
-
   finally
     LVisitor.Free;
     LVisited.Free;
