@@ -90,17 +90,15 @@ type
     procedure Visited_ContinueVisiting_TopDownSinglePass;
     procedure Visited_ContinueVisiting_BottomUpSinglePass;
 
+    // Test some other special visitors
     procedure Visited_FindAllByClassType;
 
-    // Test some other special visitors
+    procedure VisitorManager_RegisterVisitor;
+
     procedure VisClassCount_Execute;
     procedure VisFindAllByClass_Execute;
-
-    // Test the special stream writing visitor
-    procedure VisStream;
-
-    // Test the TFileStream visitor wrapper
-    procedure VisStreamToFile;
+    procedure VisStream_Execute;
+    procedure VisStreamToFile_Execute;
   end;
 
   TTestVisitor_Execute = class(TtiVisitor)
@@ -185,6 +183,11 @@ type
     procedure Execute(const AVisited : TtiVisited); override;
     procedure Write(const AValue : string); override;
     procedure WriteLn(const AValue : string = ''); override;
+  end;
+
+  TTestVisitorManager = class(TtiVisitorManager)
+  public
+    property VisitorMappings;
   end;
 
 procedure RegisterTests;
@@ -764,7 +767,7 @@ end;
 }
 
 
-procedure TTestTIVisitor.VisStream;
+procedure TTestTIVisitor.VisStream_Execute;
 var
   lVis : TTestVisStream;
   lStream : TtiPreSizedStream;
@@ -805,7 +808,7 @@ begin
 end;
 
 
-procedure TTestTIVisitor.VisStreamToFile;
+procedure TTestTIVisitor.VisStreamToFile_Execute;
   procedure _CheckFileEquals(const AFileName : TFileName;
                               const AValue : string);
   var
@@ -1884,13 +1887,25 @@ begin
   Data.Add(AVisited.Caption);
 end;
 
-{ TTestVisitorVisitBranch }
+type
+  TTestVisitorManagerRegisterVisitor = class(TtiVisitor)
+  end;
 
-{ TtiVisitedContinueVisiting }
-
-{ TtiTestVisitedContinueVisitingFunction }
-
-{ TtiVisitedTerminated }
+procedure TTestTIVisitor.VisitorManager_RegisterVisitor;
+var
+  LVM: TTestVisitorManager;
+begin
+  LVM:= TTestVisitorManager.Create;
+  try
+    CheckEquals(0, LVM.VisitorMappings.Count);
+    LVM.RegisterVisitor('test', TTestVisitorManagerRegisterVisitor);
+    CheckEquals(1, LVM.VisitorMappings.Count);
+    LVM.UnRegisterVisitors('test');
+    CheckEquals(0, LVM.VisitorMappings.Count);
+  finally
+    LVM.Free;
+  end;
+end;
 
 end.
 

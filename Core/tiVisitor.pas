@@ -157,13 +157,12 @@ type
 
   end;
 
-  TVisMapping = class(TObject)
+  TVisMapping = class(TtiBaseObject)
   private
     FGroupName : string;
     FClassRef  : TtiVisitorClass;
   public
-    constructor CreateExt(const AGroupName : string;
-                           const AClassRef : TtiVisitorClass);
+    constructor Create(const AGroupName : string; const AClassRef : TtiVisitorClass);
     property    GroupName : string read FGroupName write FGroupName;
     property    ClassRef : TtiVisitorClass read FClassRef write FClassRef;
   end;
@@ -176,7 +175,7 @@ type
   // The Visitor Manager
   TtiVisitorManager = class(TtiBaseObject)
   private
-    FVisMappings : TStringList;
+    FVisitorMappings : TStringList;
     FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
     FBreakOnException: boolean;
     procedure GetVisitors(      AVisitors : TList; const AGroupName : string);
@@ -198,6 +197,9 @@ type
                                const AVisited : TtiVisited;
                                const ADBConnectionName : string;
                                const APersistenceLayerName     : string);
+  protected
+    property    VisitorMappings: TStringList read FVisitorMappings;
+
   public
     constructor Create; virtual;
     destructor  Destroy; override;
@@ -726,7 +728,7 @@ constructor TtiVisitorManager.Create;
 begin
   inherited;
   FSynchronizer         := TMultiReadExclusiveWriteSynchronizer.Create;
-  FVisMappings     := TStringList.Create;
+  FVisitorMappings     := TStringList.Create;
   FBreakOnException := True;
 end;
 
@@ -735,9 +737,9 @@ destructor TtiVisitorManager.destroy;
 var
   i : integer;
 begin
-  for i := FVisMappings.Count-1 downto 0 do
-    TObject(FVisMappings.Objects[i]).Free;
-  FVisMappings.Free;
+  for i := FVisitorMappings.Count-1 downto 0 do
+    TObject(FVisitorMappings.Objects[i]).Free;
+  FVisitorMappings.Free;
   FreeAndNil(FSynchronizer);
   inherited;
 end;
@@ -900,9 +902,9 @@ var
 begin
   AVisitors.Clear;
   lsGroupName := upperCase(AGroupName);
-  for i := 0 to FVisMappings.Count - 1 do
-    if FVisMappings.Strings[i] = lsGroupName then
-      AVisitors.Add(TVisMapping(FVisMappings.Objects[i]).ClassRef.Create);
+  for i := 0 to FVisitorMappings.Count - 1 do
+    if FVisitorMappings.Strings[i] = lsGroupName then
+      AVisitors.Add(TVisMapping(FVisitorMappings.Objects[i]).ClassRef.Create);
 end;
 
 procedure TtiVisitorManager.ProcessVisitorControllers(AVisitors, pVisitorControllers: TList;
@@ -994,8 +996,8 @@ begin
   FSynchronizer.BeginWrite;
   try
     lsGroupName := UpperCase(AGroupName);
-    lVisMapping := TVisMapping.CreateExt(lsGroupName, AClassRef);
-    FVisMappings.AddObject(lsGroupName, lVisMapping);
+    lVisMapping := TVisMapping.Create(lsGroupName, AClassRef);
+    FVisitorMappings.AddObject(lsGroupName, lVisMapping);
   finally
     FSynchronizer.EndWrite;
   end;
@@ -1009,11 +1011,11 @@ begin
   FSynchronizer.BeginWrite;
   try
   lsGroupName := upperCase(AGroupName);
-  for i := FVisMappings.Count - 1 downto 0 do
-    if FVisMappings.Strings[i] = lsGroupName then
+  for i := FVisitorMappings.Count - 1 downto 0 do
+    if FVisitorMappings.Strings[i] = lsGroupName then
     begin
-      TVisMapping(FVisMappings.Objects[i]).Free;
-      FVisMappings.Delete(i);
+      TVisMapping(FVisitorMappings.Objects[i]).Free;
+      FVisitorMappings.Delete(i);
     end;
   finally
     FSynchronizer.EndWrite;
@@ -1023,10 +1025,10 @@ end;
 
 { TVisMapping }
 
-constructor TVisMapping.CreateExt(const AGroupName: string;
+constructor TVisMapping.Create(const AGroupName: string;
   const AClassRef: TtiVisitorClass);
 begin
-  Create;
+  inherited Create;
   FClassRef  := AClassRef;
   FGroupName := upperCase(AGroupName);
 end;
