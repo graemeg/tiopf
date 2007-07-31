@@ -98,6 +98,7 @@ type
     procedure   ExecuteVisitor(const AVisitor: TtiVisitor; const AVisitedCandidate: TtiVisitedCandidate);
     function    GetTerminated: boolean; virtual;
     function    ContinueVisiting(const AVisitor: TtiVisitor): boolean; virtual;
+    function    CheckContinueVisitingIfTopDownRecurse(const AVisitor: TtiVisitor): boolean; virtual;
   published
     property    Caption   : string  read GetCaption;
   public
@@ -337,7 +338,7 @@ var
   LIterationDepth: TIterationDepth;
 begin
   if AVisitor.VisitBranch(ADerivedParent, ACandidates) and
-     ContinueVisiting(AVisitor)  then
+     CheckContinueVisitingIfTopDownRecurse(AVisitor) then
   begin
     LIterationDepth:= AIterationDepth+1;
     if AVisitor.AcceptVisitor(ACandidates) then
@@ -346,8 +347,7 @@ begin
     try
       tiGetPropertyNames(ACandidates, LClassPropNames, [tkClass]);
       i:= 0;
-      while (i <= LClassPropNames.Count - 1){and
-        ContinueVisiting(AVisitor)} do
+      while (i <= LClassPropNames.Count - 1) do
       begin
         LCandidate := GetObjectProp(ACandidates, LClassPropNames.Strings[i]);
         if (LCandidate is TtiVisited) then
@@ -361,6 +361,16 @@ begin
       LClassPropNames.Free;
     end;
   end;
+end;
+
+function TtiVisited.CheckContinueVisitingIfTopDownRecurse(
+  const AVisitor: TtiVisitor): boolean;
+begin
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  if AVisitor.IterationStyle <> isTopDownRecurse then
+    result:= true
+  else
+    result:= ContinueVisiting(AVisitor);
 end;
 
 function TtiVisited.ContinueVisiting(const AVisitor: TtiVisitor): boolean;
@@ -413,8 +423,7 @@ var
   i: integer;
 begin
   i:= 0;
-  while (i <= ACandidates.Count - 1){ and
-    ContinueVisiting(AVisitor)} do
+  while (i <= ACandidates.Count - 1) do
   begin
     if (TObject(ACandidates.Items[i]) is TtiVisited) then
       GetAllToVisit(ADerivedParent, TtiVisited(ACandidates.Items[i]),
@@ -451,7 +460,8 @@ begin
   try
     GetAllToVisit(nil, Self, AVisitor, LList, TouchMethodAddToList, 0);
     i:= 0;
-    while (i <= LList.Count-1) and AVisitor.ContinueVisiting do
+    while (i <= LList.Count-1) and
+      ContinueVisiting(AVisitor) do
     begin
       ExecuteVisitor(AVisitor, TtiVisitedCandidate(LList.Items[i]));
       Inc(i);
@@ -690,7 +700,8 @@ begin
   try
     GetAllToVisit(nil, Self, AVisitor, LList, TouchMethodAddToList, 0);
     i:= LList.Count-1;
-    while (i >= 0) and AVisitor.ContinueVisiting do
+    while (i >= 0) and
+      ContinueVisiting(AVisitor) do
     begin
       ExecuteVisitor(AVisitor, TtiVisitedCandidate(LList.Items[i]));
       Dec(i);

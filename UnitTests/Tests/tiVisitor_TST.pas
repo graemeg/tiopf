@@ -1076,27 +1076,31 @@ begin
       CheckEquals(TtiVisitedTerminatedData.ClassName, LVisitor.Data.Strings[1]);
     end else
     begin
-      CheckEquals(TtiVisitedTerminatedData.ClassName, LVisitor.Data.Strings[0]);
-      CheckEquals(TtiVisitedTerminated.ClassName, LVisitor.Data.Strings[1]);
+      CheckEquals(TtiVisitedTerminatedItem.ClassName, LVisitor.Data.Strings[0]);
+      CheckEquals(TtiVisitedTerminatedData.ClassName, LVisitor.Data.Strings[1]);
     end;
 
     LVisited.SetMaxTouchCount(1);
     LVisitor.Data.Clear;
     LVisitor.IterationStyle:= AIterationStyle;
     LVisited.Iterate(LVisitor);
-    CheckEquals(3, LVisited.TouchCount);
+
+    if AIterationStyle = isTopDownRecurse then
+      CheckEquals(3, LVisited.TouchCount)
+    else
+      CheckEquals(2, LVisited.TouchCount);
     CheckEquals(1, LVisitor.Data.Count);
+
     if AIterationStyle in [isTopDownRecurse, isTopDownSinglePass] then
       CheckEquals(TtiVisitedTerminated.ClassName, LVisitor.Data.Strings[0])
     else
-      CheckEquals(TtiVisitedTerminated.ClassName, LVisitor.Data.Strings[0]);
+      CheckEquals(TtiVisitedTerminatedItem.ClassName, LVisitor.Data.Strings[0]);
 
-//    Need to check Terminated in tiVisitor.pas, line 454
     LVisited.SetMaxTouchCount(0);
     LVisitor.Data.Clear;
     LVisitor.IterationStyle:= AIterationStyle;
     LVisited.Iterate(LVisitor);
-    CheckEquals(3, LVisited.TouchCount);
+    CheckEquals(1, LVisited.TouchCount);
     CheckEquals(0, LVisitor.Data.Count);
 
   finally
