@@ -1142,19 +1142,51 @@ begin
 
     LVisited.SetTerminated(False);
     LVisitor.ContinueVisiting:= True;
+    LVisitor.IterationStyle:= isTopDownRecurse;
     CheckEquals(True, LVisited.ContinueVisiting(LVisitor));
+    CheckEquals(True, LVisited.CheckContinueVisitingIfTopDownRecurse(LVisitor));
 
     LVisited.SetTerminated(True);
     LVisitor.ContinueVisiting:= False;
+    LVisitor.IterationStyle:= isTopDownRecurse;
     CheckEquals(False, LVisited.ContinueVisiting(LVisitor));
+    CheckEquals(False, LVisited.CheckContinueVisitingIfTopDownRecurse(LVisitor));
 
     LVisited.SetTerminated(False);
     LVisitor.ContinueVisiting:= False;
+    LVisitor.IterationStyle:= isTopDownRecurse;
     CheckEquals(False, LVisited.ContinueVisiting(LVisitor));
+    CheckEquals(False, LVisited.CheckContinueVisitingIfTopDownRecurse(LVisitor));
 
     LVisited.SetTerminated(True);
     LVisitor.ContinueVisiting:= True;
+    LVisitor.IterationStyle:= isTopDownRecurse;
     CheckEquals(False, LVisited.ContinueVisiting(LVisitor));
+    CheckEquals(False, LVisited.CheckContinueVisitingIfTopDownRecurse(LVisitor));
+
+    LVisited.SetTerminated(False);
+    LVisitor.ContinueVisiting:= True;
+    LVisitor.IterationStyle:= isTopDownSinglePass;
+    CheckEquals(True, LVisited.ContinueVisiting(LVisitor));
+    CheckEquals(True, LVisited.CheckContinueVisitingIfTopDownRecurse(LVisitor));
+
+    LVisited.SetTerminated(True);
+    LVisitor.ContinueVisiting:= False;
+    LVisitor.IterationStyle:= isTopDownSinglePass;
+    CheckEquals(False, LVisited.ContinueVisiting(LVisitor));
+    CheckEquals(True, LVisited.CheckContinueVisitingIfTopDownRecurse(LVisitor));
+
+    LVisited.SetTerminated(False);
+    LVisitor.ContinueVisiting:= False;
+    LVisitor.IterationStyle:= isTopDownSinglePass;
+    CheckEquals(False, LVisited.ContinueVisiting(LVisitor));
+    CheckEquals(True, LVisited.CheckContinueVisitingIfTopDownRecurse(LVisitor));
+
+    LVisited.SetTerminated(True);
+    LVisitor.ContinueVisiting:= True;
+    LVisitor.IterationStyle:= isTopDownSinglePass;
+    CheckEquals(False, LVisited.ContinueVisiting(LVisitor));
+    CheckEquals(True, LVisited.CheckContinueVisitingIfTopDownRecurse(LVisitor));
 
   finally
     LVisited.Free;
