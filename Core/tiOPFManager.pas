@@ -100,11 +100,11 @@ type
     procedure   DisconnectDatabase; overload;
 
     // These register visitors
-    procedure   RegisterVisitor(const AGroupName : string; const AClassRef  : TVisClassRef);
-    procedure   RegReadPKVisitor(const AClassRef : TVisClassRef);
-    procedure   RegReadThisVisitor(const AClassRef : TVisClassRef);
-    procedure   RegReadVisitor(  const AClassRef : TVisClassRef);
-    procedure   RegSaveVisitor(  const AClassRef : TVisClassRef);
+    procedure   RegisterVisitor(const AGroupName : string; const AClassRef  : TtiVisitorClass);
+    procedure   RegReadPKVisitor(const AClassRef : TtiVisitorClass);
+    procedure   RegReadThisVisitor(const AClassRef : TtiVisitorClass);
+    procedure   RegReadVisitor(  const AClassRef : TtiVisitorClass);
+    procedure   RegSaveVisitor(  const AClassRef : TtiVisitorClass);
 
     // These call visitors
     function    ReadPK(  const AVisited         : TtiVisited;
@@ -352,21 +352,21 @@ begin
 end;
 
 
-procedure TtiOPFManager.RegReadPKVisitor(const AClassRef: TVisClassRef);
+procedure TtiOPFManager.RegReadPKVisitor(const AClassRef: TtiVisitorClass);
 begin
   Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
   FVisitorManager.RegisterVisitor(cuStandardTask_ReadPK, AClassRef);
 end;
 
 
-procedure TtiOPFManager.RegReadVisitor(const AClassRef: TVisClassRef);
+procedure TtiOPFManager.RegReadVisitor(const AClassRef: TtiVisitorClass);
 begin
   Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
   FVisitorManager.RegisterVisitor(cuStandardTask_Read, AClassRef);
 end;
 
 
-procedure TtiOPFManager.RegSaveVisitor(const AClassRef: TVisClassRef);
+procedure TtiOPFManager.RegSaveVisitor(const AClassRef: TtiVisitorClass);
 begin
   Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
   FVisitorManager.RegisterVisitor(cuStandardTask_Save, AClassRef);
@@ -646,7 +646,7 @@ begin
 end;
 
 
-procedure TtiOPFManager.RegReadThisVisitor(const AClassRef: TVisClassRef);
+procedure TtiOPFManager.RegReadThisVisitor(const AClassRef: TtiVisitorClass);
 begin
   Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
   FVisitorManager.RegisterVisitor(cuStandardTask_ReadThis, AClassRef);
@@ -795,7 +795,7 @@ begin
 end;
 
 
-procedure TtiOPFManager.RegisterVisitor(const AGroupName: string; const AClassRef: TVisClassRef);
+procedure TtiOPFManager.RegisterVisitor(const AGroupName: string; const AClassRef: TtiVisitorClass);
 begin
   Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
   FVisitorManager.RegisterVisitor(AGroupName, AClassRef);

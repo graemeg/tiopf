@@ -3,14 +3,6 @@ unit tiVisitor;
 {$I tiDefines.inc}
 
 // ToDo:
-//    Implement AcceptVisitor in Iterate method
-//      Have I done this correctly?
-//      Can calls to AcceptVisitor be removed from Execute?
-
-//    Refactor so GetAllToVisit recurses into Iterate
-
-//    Implement Terminated
-
 //    Audit for const params
 //    Group visitors by registered name
 //    Refactor VisitorController to remove DB smell
@@ -165,6 +157,61 @@ type
 
   end;
 
+  TVisMapping = class(TObject)
+  private
+    FGroupName : string;
+    FClassRef  : TtiVisitorClass;
+  public
+    constructor CreateExt(const AGroupName : string;
+                           const AClassRef : TtiVisitorClass);
+    property    GroupName : string read FGroupName write FGroupName;
+    property    ClassRef : TtiVisitorClass read FClassRef write FClassRef;
+  end;
+
+  // A procedural type to define the signature used for
+  // BeforeExecute, AfterExecute and AfterExecuteError
+  TProcessVisitorMgrs = procedure(AVisitorController : TtiVisitorCtrlr;
+                                   AVisitors  : TList) of object;
+
+  // The Visitor Manager
+  TtiVisitorManager = class(TtiBaseObject)
+  private
+    FVisMappings : TStringList;
+    FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
+    FBreakOnException: boolean;
+    procedure GetVisitors(      AVisitors : TList; const AGroupName : string);
+    procedure GetVisitorControllers(const AVisitors        : TList;
+                                     const AVisitorMgrs     : TList;
+                                     const ADBConnectionName : string;
+                                     const APersistenceLayerName    : string);
+    procedure ProcessVisitorControllers(
+        AVisitors, pVisitorControllers : TList;
+        pProc : TProcessVisitorMgrs;
+        psMethodName : string);
+    // These call ProcessVisitorMgrs to scan for visitors and visitorMgrs
+    // by passing the appropriate method of VisitorMgr to execute.
+    procedure DoBeforeExecute(    AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
+    procedure DoAfterExecute(     AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
+    procedure DoAfterExecuteError(AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
+    procedure ExecuteVisitors(  AVisitors   : TList; AVisited : TtiVisited);
+    procedure ProcessVisitors(const AGroupName : string;
+                               const AVisited : TtiVisited;
+                               const ADBConnectionName : string;
+                               const APersistenceLayerName     : string);
+  public
+    constructor Create; virtual;
+    destructor  Destroy; override;
+    procedure   RegisterVisitor(const AGroupName : string;
+                                 const AClassRef  : TtiVisitorClass);
+    procedure   UnRegisterVisitors(const AGroupName : string);
+    function    Execute(const AGroupName      : string;
+                         const AVisited         : TtiVisited;
+                         const ADBConnectionName : string = '';
+                         const APersistenceLayerName    : string = ''): string;
+    property    BreakOnException : boolean read FBreakOnException write FBreakOnException;
+  end;
+
+
   // A wrapper for the TtiPreSizedStream which allows text to be written to the stream
   // with each visit.
   TVisStream = class(TtiVisitor)
@@ -217,64 +264,6 @@ type
   end;
 
   TVisStreamClass = class of TVisStream;
-
-  TVisClassRef = class of TtiVisitor;
-
-  TVisMapping = class(TObject)
-  private
-    FGroupName : string;
-    FClassRef  : TVisClassRef;
-  public
-    constructor CreateExt(const AGroupName : string;
-                           const AClassRef : TVisClassRef);
-    property    GroupName : string read FGroupName write FGroupName;
-    property    ClassRef : TVisClassRef read FClassRef write FClassRef;
-  end;
-
-  // A procedural type to define the signature used for
-  // BeforeExecute, AfterExecute and AfterExecuteError
-  TProcessVisitorMgrs = procedure(AVisitorController : TtiVisitorCtrlr;
-                                   AVisitors  : TList) of object;
-
-  // The Visitor Manager
-  TtiVisitorManager = class(TtiBaseObject)
-  private
-    FVisMappings : TStringList;
-    FHourGlassCount : integer;
-    FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
-    FBreakOnException: boolean;
-    procedure GetVisitors(      AVisitors : TList; const AGroupName : string);
-    procedure GetVisitorControllers(const AVisitors        : TList;
-                                     const AVisitorMgrs     : TList;
-                                     const ADBConnectionName : string;
-                                     const APersistenceLayerName    : string);
-    procedure ProcessVisitorControllers(
-        AVisitors, pVisitorControllers : TList;
-        pProc : TProcessVisitorMgrs;
-        psMethodName : string);
-    // These call ProcessVisitorMgrs to scan for visitors and visitorMgrs
-    // by passing the appropriate method of VisitorMgr to execute.
-    procedure DoBeforeExecute(    AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
-    procedure DoAfterExecute(     AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
-    procedure DoAfterExecuteError(AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
-    procedure ExecuteVisitors(  AVisitors   : TList; AVisited : TtiVisited);
-    procedure ProcessVisitors(const AGroupName : string;
-                               const AVisited : TtiVisited;
-                               const ADBConnectionName : string;
-                               const APersistenceLayerName     : string);
-  public
-    constructor Create; virtual;
-    destructor  Destroy; override;
-    procedure   RegisterVisitor(const AGroupName : string;
-                                 const AClassRef  : TVisClassRef);
-    procedure   UnRegisterVisitors(const AGroupName : string);
-    function    Execute(const AGroupName      : string;
-                         const AVisited         : TtiVisited;
-                         const ADBConnectionName : string = '';
-                         const APersistenceLayerName    : string = ''): string;
-    property    BreakOnException : boolean read FBreakOnException write FBreakOnException;
-  end;
-
 
 // Global proc to write a apply a TVisStream (as a TFileStream) to a TtiVisited.
 procedure VisStreamToFile(AData       : TtiVisited;
@@ -738,7 +727,6 @@ begin
   inherited;
   FSynchronizer         := TMultiReadExclusiveWriteSynchronizer.Create;
   FVisMappings     := TStringList.Create;
-  FHourGlassCount  := 0;
   FBreakOnException := True;
 end;
 
@@ -998,7 +986,7 @@ end;
 
 
 procedure TtiVisitorManager.RegisterVisitor(const AGroupName : string;
-                                         const AClassRef : TVisClassRef);
+                                         const AClassRef : TtiVisitorClass);
 var
   lVisMapping : TVisMapping;
   lsGroupName : string;
@@ -1036,7 +1024,7 @@ end;
 { TVisMapping }
 
 constructor TVisMapping.CreateExt(const AGroupName: string;
-  const AClassRef: TVisClassRef);
+  const AClassRef: TtiVisitorClass);
 begin
   Create;
   FClassRef  := AClassRef;
