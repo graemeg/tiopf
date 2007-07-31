@@ -1455,7 +1455,6 @@ type
     destructor Destroy; override;
     procedure Iterate(const AVisitor : TtiVisitor;
                       const ADerivedParent: TtiVisited;
-                      const ACandidates: TtiVisited;
                       const AList: TList;
                       const ATouchMethod: TtiVisitedTouchMethod;
                       const AIterationDepth: TIterationDepth); override;
@@ -1490,7 +1489,6 @@ type
   procedure TTestVisitedOverrideIterateChild.Iterate(
     const AVisitor : TtiVisitor;
     const ADerivedParent: TtiVisited;
-    const ACandidates: TtiVisited;
     const AList: TList;
     const ATouchMethod: TtiVisitedTouchMethod;
     const AIterationDepth: TIterationDepth);
