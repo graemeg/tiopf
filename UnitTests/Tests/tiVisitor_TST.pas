@@ -94,6 +94,7 @@ type
     procedure Visited_FindAllByClassType;
 
     procedure VisitorManager_RegisterVisitor;
+    procedure VisitorManager_GetVisitor;
 
     procedure VisClassCount_Execute;
     procedure VisFindAllByClass_Execute;
@@ -188,6 +189,7 @@ type
   TTestVisitorManager = class(TtiVisitorManager)
   public
     property VisitorMappings;
+    procedure GetVisitors(const AVisitors : TList; const AGroupName : string); override;
   end;
 
 procedure RegisterTests;
@@ -1905,6 +1907,51 @@ begin
   finally
     LVM.Free;
   end;
+end;
+
+type
+  TTestVisitorManagerGetVisitors1 = class(TtiVisitor)
+  end;
+  TTestVisitorManagerGetVisitors2 = class(TtiVisitor)
+  end;
+  TTestVisitorManagerGetVisitors3 = class(TtiVisitor)
+  end;
+
+procedure TTestTIVisitor.VisitorManager_GetVisitor;
+var
+  LVM: TTestVisitorManager;
+  LList: TObjectList;
+begin
+  LVM:= TTestVisitorManager.Create;
+  try
+    LVM.RegisterVisitor('test', TTestVisitorManagerGetVisitors1);
+    LVM.RegisterVisitor('test1', TTestVisitorManagerGetVisitors2);
+    LVM.RegisterVisitor('test1', TTestVisitorManagerGetVisitors3);
+    LList:= TObjectList.Create(True);
+    try
+      LVM.GetVisitors(LList, 'test');
+      CheckEquals(1, LList.Count);
+      CheckIs(TObject(LList.Items[0]), TTestVisitorManagerGetVisitors1);
+
+      LList.Clear;
+      LVM.GetVisitors(LList, 'test1');
+      CheckEquals(2, LList.Count);
+      CheckIs(TObject(LList.Items[0]), TTestVisitorManagerGetVisitors2);
+      CheckIs(TObject(LList.Items[1]), TTestVisitorManagerGetVisitors3);
+
+    finally
+      LList.Free;
+    end;
+  finally
+    LVM.Free;
+  end;
+end;
+
+{ TTestVisitorManager }
+
+procedure TTestVisitorManager.GetVisitors(const AVisitors: TList; const AGroupName: string);
+begin
+  inherited GetVisitors(AVisitors, AGroupName);
 end;
 
 end.

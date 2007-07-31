@@ -178,7 +178,6 @@ type
     FVisitorMappings : TStringList;
     FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
     FBreakOnException: boolean;
-    procedure GetVisitors(      AVisitors : TList; const AGroupName : string);
     procedure GetVisitorControllers(const AVisitors        : TList;
                                      const AVisitorMgrs     : TList;
                                      const ADBConnectionName : string;
@@ -199,6 +198,7 @@ type
                                const APersistenceLayerName     : string);
   protected
     property    VisitorMappings: TStringList read FVisitorMappings;
+    procedure   GetVisitors(const AVisitors : TList; const AGroupName : string); virtual;
 
   public
     constructor Create; virtual;
@@ -895,7 +895,7 @@ begin
 end;
 
 
-procedure TtiVisitorManager.GetVisitors(AVisitors: TList;const AGroupName: string);
+procedure TtiVisitorManager.GetVisitors(const AVisitors: TList;const AGroupName: string);
 var
   i : integer;
   lsGroupName : string;
