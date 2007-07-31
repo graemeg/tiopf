@@ -1927,7 +1927,7 @@ begin
     LVM.RegisterVisitor('test', TTestVisitorManagerGetVisitors1);
     LVM.RegisterVisitor('test1', TTestVisitorManagerGetVisitors2);
     LVM.RegisterVisitor('test1', TTestVisitorManagerGetVisitors3);
-    LList:= TObjectList.Create(True);
+    LList:= TObjectList.Create;
     try
       LVM.GetVisitors(LList, 'test');
       CheckEquals(1, LList.Count);

@@ -2,6 +2,8 @@ program DUnitTIOPFGui;
 
 uses
   FastMM4,
+  madExcept,
+  madLinkDisAsm,
   tiBaseObject,
   tiLog,
   Forms,

@@ -17,6 +17,7 @@ uses
   ,TypInfo
   ,SyncObjs
   ,SysUtils
+  ,Contnrs
  ;
 
 const
@@ -157,25 +158,34 @@ type
 
   end;
 
-  TVisMapping = class(TtiBaseObject)
+  TVisitorMappingGroup = class(TtiBaseObject)
   private
-    FGroupName : string;
+    FMappings: TList;
+    FGroupName: string;
+  public
+    constructor Create(const AGroupName: string);
+    destructor Destroy; override;
+    property Mappings: TList read FMappings;
+    property GroupName: string read FGroupName;
+  end;
+
+  TVisitorMapping = class(TtiBaseObject)
+  private
     FClassRef  : TtiVisitorClass;
   public
-    constructor Create(const AGroupName : string; const AClassRef : TtiVisitorClass);
-    property    GroupName : string read FGroupName write FGroupName;
+    constructor Create(const AClassRef : TtiVisitorClass);
     property    ClassRef : TtiVisitorClass read FClassRef write FClassRef;
   end;
 
   // A procedural type to define the signature used for
   // BeforeExecute, AfterExecute and AfterExecuteError
-  TProcessVisitorMgrs = procedure(AVisitorController : TtiVisitorCtrlr;
+  TOnProcessVisitorController = procedure(AVisitorController : TtiVisitorCtrlr;
                                    AVisitors  : TList) of object;
 
   // The Visitor Manager
   TtiVisitorManager = class(TtiBaseObject)
   private
-    FVisitorMappings : TStringList;
+    FVisitorMappings : TObjectList;
     FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
     FBreakOnException: boolean;
     procedure GetVisitorControllers(const AVisitors        : TList;
@@ -184,7 +194,7 @@ type
                                      const APersistenceLayerName    : string);
     procedure ProcessVisitorControllers(
         AVisitors, pVisitorControllers : TList;
-        pProc : TProcessVisitorMgrs;
+        pProc : TOnProcessVisitorController;
         psMethodName : string);
     // These call ProcessVisitorMgrs to scan for visitors and visitorMgrs
     // by passing the appropriate method of VisitorMgr to execute.
@@ -196,9 +206,12 @@ type
                                const AVisited : TtiVisited;
                                const ADBConnectionName : string;
                                const APersistenceLayerName     : string);
+    function GetVisitorMappings: TList;
   protected
-    property    VisitorMappings: TStringList read FVisitorMappings;
+    property    VisitorMappings: TList read GetVisitorMappings;
     procedure   GetVisitors(const AVisitors : TList; const AGroupName : string); virtual;
+    procedure   AssignVisitorInstances(const AVisitors: TList; AVisitorGroup: TVisitorMappingGroup); virtual;
+    function    FindVisitorMappingGroup(const AGroupName: string): TVisitorMappingGroup; virtual;
 
   public
     constructor Create; virtual;
@@ -280,7 +293,6 @@ uses
   ,tiConstants
   ,tiPersistenceLayers
   ,tiExcept
-  ,Contnrs
   ,tiUtils
   ,tiRTTI
   {$IFDEF DELPHI5}
@@ -727,18 +739,14 @@ end;
 constructor TtiVisitorManager.Create;
 begin
   inherited;
-  FSynchronizer         := TMultiReadExclusiveWriteSynchronizer.Create;
-  FVisitorMappings     := TStringList.Create;
-  FBreakOnException := True;
+  FSynchronizer:= TMultiReadExclusiveWriteSynchronizer.Create;
+  FVisitorMappings:= TObjectList.Create;
+  FBreakOnException:= True;
 end;
 
 
 destructor TtiVisitorManager.destroy;
-var
-  i : integer;
 begin
-  for i := FVisitorMappings.Count-1 downto 0 do
-    TObject(FVisitorMappings.Objects[i]).Free;
   FVisitorMappings.Free;
   FreeAndNil(FSynchronizer);
   inherited;
@@ -859,6 +867,22 @@ begin
 end;
 
 
+function TtiVisitorManager.FindVisitorMappingGroup(
+  const AGroupName: string): TVisitorMappingGroup;
+var
+  i : integer;
+  LGroupName : string;
+begin
+  result:= nil;
+  LGroupName := upperCase(AGroupName);
+  for i := 0 to FVisitorMappings.Count - 1 do
+    if (FVisitorMappings.Items[i] as TVisitorMappingGroup).GroupName = LGroupName then
+    begin
+      Result:= FVisitorMappings.Items[i] as TVisitorMappingGroup;
+      Exit; //==>
+    end;
+end;
+
 // Search for the appropriate VisitorController for each visitor
 procedure TtiVisitorManager.GetVisitorControllers(const AVisitors   : TList;
                                            const AVisitorMgrs : TList;
@@ -895,20 +919,34 @@ begin
 end;
 
 
+function TtiVisitorManager.GetVisitorMappings: TList;
+begin
+  result:= FVisitorMappings;
+end;
+
 procedure TtiVisitorManager.GetVisitors(const AVisitors: TList;const AGroupName: string);
 var
-  i : integer;
-  lsGroupName : string;
+  LVisitorMappingGroup: TVisitorMappingGroup;
 begin
-  AVisitors.Clear;
-  lsGroupName := upperCase(AGroupName);
-  for i := 0 to FVisitorMappings.Count - 1 do
-    if FVisitorMappings.Strings[i] = lsGroupName then
-      AVisitors.Add(TVisMapping(FVisitorMappings.Objects[i]).ClassRef.Create);
+  Assert(Assigned(AVisitors), 'AVisitors not assigned');
+  Assert(AGroupName<>'', 'AGroupName not assigned');
+  LVisitorMappingGroup:= FindVisitorMappingGroup(AGroupName);
+  Assert(Assigned(LVisitorMappingGroup), 'Request for unknown VisitorMappingGroup "' + AGroupName + '"');
+  AssignVisitorInstances(AVisitors, LVisitorMappingGroup);
+end;
+
+procedure TtiVisitorManager.AssignVisitorInstances(const AVisitors: TList; AVisitorGroup: TVisitorMappingGroup);
+var
+  i: integer;
+begin
+  Assert(Assigned(AVisitors), 'AVisitors not assigned');
+  Assert(AVisitorGroup.TestValid, cTIInvalidObjectError);
+  for i := 0 to AVisitorGroup.Mappings.Count-1 do
+    AVisitors.Add(TVisitorMapping(AVisitorGroup.Mappings.Items[i]).ClassRef.Create);
 end;
 
 procedure TtiVisitorManager.ProcessVisitorControllers(AVisitors, pVisitorControllers: TList;
-  pProc: TProcessVisitorMgrs; psMethodName : string);
+  pProc: TOnProcessVisitorController; psMethodName : string);
 var
   i, j : integer;
   lVisitorController : TtiVisitorCtrlr;
@@ -950,28 +988,28 @@ procedure TtiVisitorManager.ProcessVisitors(const AGroupName       : string;
                                      const APersistenceLayerName    : string);
 var
   LVisitors          : TObjectList;
-  LVisitorMgrs       : TObjectList;
+  LVisitorControllers       : TObjectList;
 begin
   LVisitors := TObjectList.Create;
   try
-    LVisitorMgrs := TObjectList.Create;
+    LVisitorControllers := TObjectList.Create;
     try
       FSynchronizer.BeginRead;
       try
         GetVisitors(   LVisitors, AGroupName );
-        GetVisitorControllers(LVisitors, LVisitorMgrs, ADBConnectionName, APersistenceLayerName);
+        GetVisitorControllers(LVisitors, LVisitorControllers, ADBConnectionName, APersistenceLayerName);
         Log('Visitor count: ' +
              IntToStr(LVisitors.Count) +
              ' VisitorMgr count: ' +
-             IntToStr(LVisitorMgrs.Count), lsVisitor);
-        ProcessVisitorControllers(LVisitors, LVisitorMgrs, DoBeforeExecute, 'DoBeforeExecute');
+             IntToStr(LVisitorControllers.Count), lsVisitor);
+        ProcessVisitorControllers(LVisitors, LVisitorControllers, DoBeforeExecute, 'DoBeforeExecute');
         try
           ExecuteVisitors(LVisitors, AVisited);
-          ProcessVisitorControllers(LVisitors, LVisitorMgrs, DoAfterExecute, 'DoAfterExecute');
+          ProcessVisitorControllers(LVisitors, LVisitorControllers, DoAfterExecute, 'DoAfterExecute');
         except
           on e:exception do
           begin
-            ProcessVisitorControllers(LVisitors, LVisitorMgrs, DoAfterExecuteError, 'DoAfterExecuteError ');
+            ProcessVisitorControllers(LVisitors, LVisitorControllers, DoAfterExecuteError, 'DoAfterExecuteError ');
             raise;
           end;
         end;
@@ -979,7 +1017,7 @@ begin
         FSynchronizer.EndRead;
       end;
     finally
-      LVisitorMgrs.Free;
+      LVisitorControllers.Free;
     end;
   finally
     LVisitors.Free;
@@ -990,14 +1028,19 @@ end;
 procedure TtiVisitorManager.RegisterVisitor(const AGroupName : string;
                                          const AClassRef : TtiVisitorClass);
 var
-  lVisMapping : TVisMapping;
-  lsGroupName : string;
+  LVisitorMappingGroup: TVisitorMappingGroup;
+  LVisitorMapping : TVisitorMapping;
 begin
   FSynchronizer.BeginWrite;
   try
-    lsGroupName := UpperCase(AGroupName);
-    lVisMapping := TVisMapping.Create(lsGroupName, AClassRef);
-    FVisitorMappings.AddObject(lsGroupName, lVisMapping);
+    LVisitorMappingGroup:= FindVisitorMappingGroup(AGroupName);
+    if LVisitorMappingGroup = nil then
+    begin
+      LVisitorMappingGroup:= TVisitorMappingGroup.Create(AGroupName);
+      FVisitorMappings.Add(LVisitorMappingGroup);
+    end;
+    LVisitorMapping := TVisitorMapping.Create(AClassRef);
+    LVisitorMappingGroup.Mappings.Add(LVisitorMapping);
   finally
     FSynchronizer.EndWrite;
   end;
@@ -1005,18 +1048,15 @@ end;
 
 procedure TtiVisitorManager.UnRegisterVisitors(const AGroupName: string);
 var
-  i : integer;
-  lsGroupName : string;
+  LVisitorMappingGroup: TVisitorMappingGroup;
 begin
   FSynchronizer.BeginWrite;
   try
-  lsGroupName := upperCase(AGroupName);
-  for i := FVisitorMappings.Count - 1 downto 0 do
-    if FVisitorMappings.Strings[i] = lsGroupName then
-    begin
-      TVisMapping(FVisitorMappings.Objects[i]).Free;
-      FVisitorMappings.Delete(i);
-    end;
+    LVisitorMappingGroup:= FindVisitorMappingGroup(AGroupName);
+    Assert(Assigned(LVisitorMappingGroup),
+           'Request to UnRegister visitor group that''s not registered "' +
+           AGroupName + '"');
+    FVisitorMappings.Remove(LVisitorMappingGroup);
   finally
     FSynchronizer.EndWrite;
   end;
@@ -1025,14 +1065,27 @@ end;
 
 { TVisMapping }
 
-constructor TVisMapping.Create(const AGroupName: string;
-  const AClassRef: TtiVisitorClass);
+constructor TVisitorMapping.Create(const AClassRef: TtiVisitorClass);
 begin
   inherited Create;
   FClassRef  := AClassRef;
-  FGroupName := upperCase(AGroupName);
 end;
 
+
+{ TVisitorMappingGroup }
+
+constructor TVisitorMappingGroup.Create(const AGroupName: string);
+begin
+  inherited Create;
+  FGroupName:= UpperCase(AGroupName);
+  FMappings:= TObjectList.Create;
+end;
+
+destructor TVisitorMappingGroup.Destroy;
+begin
+  FMappings.Free;
+  inherited;
+end;
 
 end.
 
