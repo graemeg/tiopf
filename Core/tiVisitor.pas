@@ -149,10 +149,10 @@ type
     class function VisitorControllerClass : TtiVisitorControllerClass; virtual;
 
     procedure   Execute(const AVisited : TtiVisited); virtual;
-    property    Visited : TtiVisited read FVisited;
+    property    Visited : TtiVisited read FVisited; // ToDo: Can this be protected?
 
     property    ContinueVisiting : boolean read FContinueVisiting write FContinueVisiting;
-    property    VisitorController : TtiVisitorController read FVisitorController write FVisitorController;
+//    property    VisitorController : TtiVisitorController read FVisitorController write FVisitorController;
     property    Depth : TIterationDepth read FDepth;
     property    IterationStyle : TtiIterationStyle
                   read  FIterationStyle

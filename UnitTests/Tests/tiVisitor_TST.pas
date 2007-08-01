@@ -45,7 +45,7 @@ type
     procedure Visitor_ContinueVisiting_TopDownSinglePass;
     procedure Visitor_ContinueVisiting_TopDownRecurse;
 
-    procedure Visitor_VisitorController;
+    procedure Visitor_VisitorControllerClass;
 
     procedure Visitor_Depth_TopDownRecurse;
     procedure Visitor_Depth_TopDownSinglePass;
@@ -736,21 +736,13 @@ begin
 end;
 
 
-procedure TTestTIVisitor.Visitor_VisitorController;
+procedure TTestTIVisitor.Visitor_VisitorControllerClass;
 var
   lVis : TtiVisitor;
 begin
   lVis := TTestVisitorController.Create;
   try
     CheckEquals(lVis.VisitorControllerClass, TtiVisitorController);
-    CheckNull(lVis.VisitorController);
-    lVis.VisitorController := lVis.VisitorControllerClass.Create;
-    try
-      CheckNotNull(lVis.VisitorController);
-      CheckIs(lVis.VisitorController, TtiVisitorController);
-    finally
-      lVis.VisitorController.Free;
-    end;
   finally
     lVis.Free;
   end;
