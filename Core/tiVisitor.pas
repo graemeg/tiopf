@@ -178,8 +178,9 @@ type
 
   // A procedural type to define the signature used for
   // BeforeExecute, AfterExecute and AfterExecuteError
-  TOnProcessVisitorController = procedure(AVisitorController : TtiVisitorController;
-                                   AVisitors  : TList) of object;
+  TOnProcessVisitorController = procedure(
+    const AVisitorController : TtiVisitorController;
+    const AVisitors  : TList) of object;
 
   // The Visitor Manager
   TtiVisitorManager = class(TtiBaseObject)
@@ -187,20 +188,17 @@ type
     FVisitorMappings : TObjectList;
     FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
     FBreakOnException: boolean;
-    procedure GetVisitorControllers(const AVisitors        : TList;
-                                     const AVisitorMgrs     : TList;
-                                     const ADBConnectionName : string;
-                                     const APersistenceLayerName    : string);
     procedure ProcessVisitorControllers(
-        AVisitors, pVisitorControllers : TList;
-        pProc : TOnProcessVisitorController;
-        psMethodName : string);
-    // These call ProcessVisitorMgrs to scan for visitors and visitorMgrs
-    // by passing the appropriate method of VisitorMgr to execute.
-    procedure DoBeforeExecute(    AVisitorMgr : TtiVisitorController; AVisitors  : TList);
-    procedure DoAfterExecute(     AVisitorMgr : TtiVisitorController; AVisitors  : TList);
-    procedure DoAfterExecuteError(AVisitorMgr : TtiVisitorController; AVisitors  : TList);
-    procedure ExecuteVisitors(  AVisitors   : TList; AVisited : TtiVisited);
+      const AVisitors: TList;
+      const AVisitorController: TtiVisitorController;
+      const AProc : TOnProcessVisitorController);
+    procedure DoBeforeExecuteAll(const AVisitorController: TtiVisitorController; const AVisitors : TList);
+    procedure DoBeforeExecuteOne(const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
+    procedure DoAfterExecuteOne(const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
+    procedure DoAfterExecuteAll(const AVisitorController : TtiVisitorController; const AVisitors: TList);
+    procedure DoAfterExecuteError(const AVisitorController : TtiVisitorController; const AVisitors  : TList);
+    procedure ExecuteVisitors(const AVisitorController: TtiVisitorController;
+      const AVisitors: TList; const AVisited : TtiVisited);
     procedure ProcessVisitors(const AGroupName : string;
                                const AVisited : TtiVisited;
                                const ADBConnectionName : string;
@@ -755,26 +753,37 @@ begin
 end;
 
 
-procedure TtiVisitorManager.DoAfterExecute(AVisitorMgr: TtiVisitorController;
-    AVisitors: TList);
+procedure TtiVisitorManager.DoAfterExecuteAll(const AVisitorController: TtiVisitorController;
+  const AVisitors: TList);
 begin
-  AVisitorMgr.AfterExecuteAll(AVisitors);
+  AVisitorController.AfterExecuteAll(AVisitors);
 end;
 
 
-procedure TtiVisitorManager.DoAfterExecuteError(AVisitorMgr: TtiVisitorController;
-    AVisitors: TList);
+procedure TtiVisitorManager.DoAfterExecuteError(
+  const AVisitorController: TtiVisitorController;
+  const AVisitors: TList);
 begin
-  AVisitorMgr.AfterExecuteError(AVisitors);
+  AVisitorController.AfterExecuteError(AVisitors);
+end;
+
+procedure TtiVisitorManager.DoBeforeExecuteAll(
+  const AVisitorController: TtiVisitorController; const AVisitors : TList);
+begin
+  AVisitorController.BeforeExecuteAll(AVisitors);
 end;
 
 
-procedure TtiVisitorManager.DoBeforeExecute(AVisitorMgr: TtiVisitorController;
-    AVisitors: TList);
+procedure TtiVisitorManager.DoBeforeExecuteOne(
+  const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
 begin
-  AVisitorMgr.BeforeExecuteAll(AVisitors);
+  AVisitorController.BeforeExecuteOne(AVisitor);
 end;
 
+procedure TtiVisitorManager.DoAfterExecuteOne(const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
+begin
+  AVisitorController.AfterExecuteOne(AVisitor);
+end;
 
 function TtiVisitorManager.Execute(const AGroupName      : string;
                             const AVisited         : TtiVisited;
@@ -824,46 +833,24 @@ begin
   Log('Finished process visitors for <' + AGroupName + '>', lsVisitor);
 end;
 
-
-procedure TtiVisitorManager.ExecuteVisitors(AVisitors: TList; AVisited: TtiVisited);
-  procedure _RunBeforeExecuteOne(AVisitor : TtiVisitor);
-  var
-    lsVisitor : string;
-  begin
-    lsVisitor := AVisitor.ClassName;
-    AVisitor.VisitorController.BeforeExecuteOne(AVisitor);
-  end;
-
-
-  procedure _RunAfterExecuteOne(AVisitor : TtiVisitor);
-  var
-    lsVisitor : string;
-  begin
-    // Don't go any further if terminated
-    if gTIOPFManager.Terminated then
-      Exit; //==>
-    lsVisitor := AVisitor.ClassName;
-    AVisitor.VisitorController.AfterExecuteOne(AVisitor);
-  end;
-
+procedure TtiVisitorManager.ExecuteVisitors(
+  const AVisitorController: TtiVisitorController;
+  const AVisitors: TList; const AVisited : TtiVisited);
 var
   LVisitor : TtiVisitor;
   i : integer;
 begin
   for i := 0 to AVisitors.Count - 1 do
   begin
-    // Don't go any further if terminated
-    if gTIOPFManager.Terminated then
-      Exit; //==>
     LVisitor := TtiVisitor(AVisitors.Items[i]);
-    _RunBeforeExecuteOne(LVisitor);
+    DoBeforeExecuteOne(AVisitorController, LVisitor);
     try
       if AVisited <> nil then
         AVisited.Iterate(LVisitor)
       else
         LVisitor.Execute(nil);
     finally
-      _RunAfterExecuteOne(LVisitor);
+      DoAfterExecuteOne(AVisitorController, LVisitor);
     end;
   end;
 end;
@@ -885,42 +872,6 @@ begin
     end;
 end;
 
-// Search for the appropriate VisitorController for each visitor
-procedure TtiVisitorManager.GetVisitorControllers(const AVisitors   : TList;
-                                           const AVisitorMgrs : TList;
-                                           const ADBConnectionName : string;
-                                           const APersistenceLayerName : string);
-var
-  i, j : integer;
-  lVisitor : TtiVisitor;
-begin
-  Log('Getting visitor controllers', lsVisitor);
-  // Scan all the visitors
-  for i := 0 to AVisitors.Count - 1 do begin
-    // Get a local pointer to the visitor
-    lVisitor := TtiVisitor(AVisitors.Items[i]);
-
-    // Search the list of visitor controllers already created for a match
-    // with this visitor.
-    for j := 0 to AVisitorMgrs.Count - 1 do begin
-      if (lVisitor.VisitorControllerClass.ClassName = TObject(AVisitorMgrs.Items[j]).ClassName) then begin
-        lVisitor.VisitorController := TtiVisitorController(AVisitorMgrs.Items[j]);
-        break; //==>
-      end;
-    end;
-
-    // The visitor controller was not found, so add a new one.
-    if lVisitor.VisitorController = nil then begin
-      lVisitor.VisitorController := lVisitor.VisitorControllerClass.Create;
-      lVisitor.VisitorController.PerLayerName := APersistenceLayerName;
-      lVisitor.VisitorController.DBConnectionName := ADBConnectionName;
-      AVisitorMgrs.Add(lVisitor.VisitorController);
-    end;
-  end;
-  Log('Done getting visitor controllers', lsVisitor);
-end;
-
-
 function TtiVisitorManager.GetVisitorMappings: TList;
 begin
   result:= FVisitorMappings;
@@ -937,79 +888,54 @@ begin
   LVisitorMappingGroup.AssignVisitorInstances(AVisitors);
 end;
 
-procedure TtiVisitorManager.ProcessVisitorControllers(AVisitors, pVisitorControllers: TList;
-  pProc: TOnProcessVisitorController; psMethodName : string);
+procedure TtiVisitorManager.ProcessVisitorControllers(
+  const AVisitors: TList;
+  const AVisitorController: TtiVisitorController;
+  const AProc: TOnProcessVisitorController);
 var
-  i, j : integer;
-  lVisitorController : TtiVisitorController;
-  lVisitors  : TList;
+  i : integer;
 begin
-  Assert(psMethodName = psMethodName);  // Getting rid of compiler hints, param not used.
-
-  if gTIOPFManager.Terminated then
-    Exit; //==>
-
-  lVisitors := TList.Create;
-  try
-    // Scan all the visitor controllers in the list
-    for i := 0 to pVisitorControllers.Count - 1 do
-    begin
-
-      // Don't go any further if terminated
-      if gTIOPFManager.Terminated then
-        Exit; //==>
-
-      lVisitorController := TtiVisitorController(pVisitorControllers.Items[i]);
-      for j := 0 to AVisitors.Count-1 do
-        if (TtiVisitor(AVisitors.Items[j]).VisitorControllerClass =
-           lVisitorController.ClassType) and
-           (not gTIOPFManager.Terminated) then
-          lVisitors.Add(AVisitors.Items[j]);
-        pProc(lVisitorController, lVisitors);
-
-    end;
-  finally
-    lVisitors.Free;
-  end;
+  for i := 0 to AVisitors.Count-1 do
+    AProc(AVisitorController, AVisitors);
 end;
 
 
 procedure TtiVisitorManager.ProcessVisitors(const AGroupName       : string;
-                                     const AVisited         : TtiVisited;
-                                     const ADBConnectionName : string;
-                                     const APersistenceLayerName    : string);
+  const AVisited: TtiVisited;
+  const ADBConnectionName : string;
+  const APersistenceLayerName    : string);
 var
-  LVisitors          : TObjectList;
-  LVisitorControllers       : TObjectList;
+  LVisitorMappingGroup: TtiVisitorMappingGroup;
+  LVisitorController: TtiVisitorController;
+  LVisitors : TObjectList;
 begin
   LVisitors := TObjectList.Create;
   try
-    LVisitorControllers := TObjectList.Create;
+    FSynchronizer.BeginRead;
     try
-      FSynchronizer.BeginRead;
+      LVisitorMappingGroup:= FindVisitorMappingGroup(AGroupName);
+      LVisitorController:= LVisitorMappingGroup.VisitorControllerClass.Create;
+      LVisitorController.DBConnectionName:= ADBConnectionName;
+      LVisitorController.PerLayerName:= APersistenceLayerName;
+      LVisitorMappingGroup.AssignVisitorInstances(LVisitors);
       try
-        AssignVisitorInstances(   LVisitors, AGroupName );
-        GetVisitorControllers(LVisitors, LVisitorControllers, ADBConnectionName, APersistenceLayerName);
-        Log('Visitor count: ' +
-             IntToStr(LVisitors.Count) +
-             ' VisitorMgr count: ' +
-             IntToStr(LVisitorControllers.Count), lsVisitor);
-        ProcessVisitorControllers(LVisitors, LVisitorControllers, DoBeforeExecute, 'DoBeforeExecute');
+        AssignVisitorInstances(LVisitors, AGroupName );
+        ProcessVisitorControllers(LVisitors, LVisitorController, DoBeforeExecuteAll);
         try
-          ExecuteVisitors(LVisitors, AVisited);
-          ProcessVisitorControllers(LVisitors, LVisitorControllers, DoAfterExecute, 'DoAfterExecute');
+          ExecuteVisitors(LVisitorController, LVisitors, AVisited);
+          ProcessVisitorControllers(LVisitors, LVisitorController, DoAfterExecuteAll);
         except
           on e:exception do
           begin
-            ProcessVisitorControllers(LVisitors, LVisitorControllers, DoAfterExecuteError, 'DoAfterExecuteError ');
+            ProcessVisitorControllers(LVisitors, LVisitorController, DoAfterExecuteError);
             raise;
           end;
         end;
       finally
-        FSynchronizer.EndRead;
+        LVisitorController.Free;
       end;
     finally
-      LVisitorControllers.Free;
+      FSynchronizer.EndRead;
     end;
   finally
     LVisitors.Free;
