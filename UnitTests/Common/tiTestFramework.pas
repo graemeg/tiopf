@@ -63,6 +63,7 @@ type
     function    AreStreamContentsSame(const pStream1, pStream2 : TStream; var AMessage : string): boolean;
     procedure   CheckStreamContentsSame(const pStream1, pStream2 : TStream);
     procedure   CheckNearEnough(AExpected, AActual: Extended; const AMessage: string = '');
+    procedure   CheckFormattedMessage(const AFormat: string; const AArgs: array of const; const AActual: string; const AMessage: string = '');
   public
     {$IFDEF FPC}
     constructor Create; override;
@@ -1060,6 +1061,13 @@ begin
   result:= FtiOPFTestSetupData.PerLayerName;
 end;
 
+
+procedure TtiTestCase.CheckFormattedMessage(const AFormat: string;
+  const AArgs: array of const; const AActual: string;
+  const AMessage: string = '');
+begin
+  CheckEquals(Format(AFormat, AArgs), AActual, AMessage);
+end;
 
 procedure TtiTestCase.CheckNearEnough(AExpected, AActual: Extended; const AMessage: string = '');
 begin

@@ -53,7 +53,7 @@ uses
 type
 
   // A visitor manager for TVisDBAbs visitors
-  TtiPerObjVisitorCtrlr = class(TtiVisitorCtrlr)
+  TtiPerObjVisitorCtrlr = class(TtiVisitorController)
   private
     FPooledDB : TPooledDB;
     FtiQueryClass : TtiQueryClass;
@@ -97,7 +97,7 @@ type
     Constructor Create; override;
     destructor  Destroy; override;
     procedure   Execute(const AVisited: TtiVisited); override;
-    function    VisitorControllerClass: TtiVisitorControllerClass; override;
+    class function    VisitorControllerClass: TtiVisitorControllerClass; override;
     property    Visited: TtiObject read GetVisited write SetVisited;
   end;
   
@@ -238,7 +238,7 @@ begin
   inherited SetVisited(AValue);
 end;
 
-function TtiPerObjVisitor.VisitorControllerClass: TtiVisitorControllerClass;
+class function TtiPerObjVisitor.VisitorControllerClass: TtiVisitorControllerClass;
 begin
   result := TtiPerObjVisitorCtrlr;
 end;

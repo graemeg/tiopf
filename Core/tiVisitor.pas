@@ -23,6 +23,8 @@ uses
 const
   CErrorInVisitorExecute = 'Error in %s.Execute(%s) Message: %s';
   CErrorInvalidIterationStyle = 'Invalid TtiIterationStyle';
+  CErrorAttemptToRegisterDuplicateVisitor = 'Attempt to register duplicate visitor "%s"';
+  CErrorIncompatibleVisitorController = 'VisitorControllerClass not compatible. Required type "%s", Actual type "%s"';
 
 type
   TtiIterationStyle = (isTopDownRecurse, isTopDownSinglePass, isBottomUpSinglePass);
@@ -100,7 +102,7 @@ type
     property    Terminated: Boolean read GetTerminated;
   end;
 
-  TtiVisitorCtrlr = class(TtiBaseObject)
+  TtiVisitorController = class(TtiBaseObject)
   private
     FDBConnectionName: string;
     FPerLayerName   : string;
@@ -123,14 +125,14 @@ type
     property  DBConnectionName : string read FDBConnectionName write FDBConnectionName;
   end;
 
-  TtiVisitorControllerClass = class of TtiVisitorCtrlr;
+  TtiVisitorControllerClass = class of TtiVisitorController;
 
   // TtiVisitor: The class that does the visiting
   TtiVisitor = class(TtiBaseObject)
   private
     FVisited          : TtiVisited;
     FContinueVisiting : boolean;
-    FVisitorController : TtiVisitorCtrlr;
+    FVisitorController : TtiVisitorController;
     FDepth: TIterationDepth;
     FIterationStyle: TtiIterationStyle;
     FVisitedsOwner: TtiVisited;
@@ -143,13 +145,13 @@ type
     procedure   SetDepth(const ADepth: TIterationDepth);
   public
     constructor Create; virtual;
+    class function VisitorControllerClass : TtiVisitorControllerClass; virtual;
 
     procedure   Execute(const AVisited : TtiVisited); virtual;
-    function    VisitorControllerClass : TtiVisitorControllerClass; virtual;
     property    Visited : TtiVisited read FVisited;
 
     property    ContinueVisiting : boolean read FContinueVisiting write FContinueVisiting;
-    property    VisitorController : TtiVisitorCtrlr read FVisitorController write FVisitorController;
+    property    VisitorController : TtiVisitorController read FVisitorController write FVisitorController;
     property    Depth : TIterationDepth read FDepth;
     property    IterationStyle : TtiIterationStyle
                   read  FIterationStyle
@@ -158,28 +160,24 @@ type
 
   end;
 
-  TVisitorMappingGroup = class(TtiBaseObject)
+  TtiVisitorMappingGroup = class(TtiBaseObject)
   private
-    FMappings: TList;
+    FMappings: TClassList;
     FGroupName: string;
+    FVisitorControllerClass: TtiVisitorControllerClass;
   public
-    constructor Create(const AGroupName: string);
+    constructor Create(const AGroupName: string;
+      const AVisitorControllerClass: TtiVisitorControllerClass);
     destructor Destroy; override;
-    property Mappings: TList read FMappings;
+    procedure Add(const AVisitorClass: TtiVisitorClass);
+    procedure AssignVisitorInstances(const AVisitorList: TObjectList);
     property GroupName: string read FGroupName;
-  end;
-
-  TVisitorMapping = class(TtiBaseObject)
-  private
-    FClassRef  : TtiVisitorClass;
-  public
-    constructor Create(const AClassRef : TtiVisitorClass);
-    property    ClassRef : TtiVisitorClass read FClassRef write FClassRef;
+    property VisitorControllerClass: TtiVisitorControllerClass read FVisitorControllerClass;
   end;
 
   // A procedural type to define the signature used for
   // BeforeExecute, AfterExecute and AfterExecuteError
-  TOnProcessVisitorController = procedure(AVisitorController : TtiVisitorCtrlr;
+  TOnProcessVisitorController = procedure(AVisitorController : TtiVisitorController;
                                    AVisitors  : TList) of object;
 
   // The Visitor Manager
@@ -198,9 +196,9 @@ type
         psMethodName : string);
     // These call ProcessVisitorMgrs to scan for visitors and visitorMgrs
     // by passing the appropriate method of VisitorMgr to execute.
-    procedure DoBeforeExecute(    AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
-    procedure DoAfterExecute(     AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
-    procedure DoAfterExecuteError(AVisitorMgr : TtiVisitorCtrlr; AVisitors  : TList);
+    procedure DoBeforeExecute(    AVisitorMgr : TtiVisitorController; AVisitors  : TList);
+    procedure DoAfterExecute(     AVisitorMgr : TtiVisitorController; AVisitors  : TList);
+    procedure DoAfterExecuteError(AVisitorMgr : TtiVisitorController; AVisitors  : TList);
     procedure ExecuteVisitors(  AVisitors   : TList; AVisited : TtiVisited);
     procedure ProcessVisitors(const AGroupName : string;
                                const AVisited : TtiVisited;
@@ -209,15 +207,14 @@ type
     function GetVisitorMappings: TList;
   protected
     property    VisitorMappings: TList read GetVisitorMappings;
-    procedure   GetVisitors(const AVisitors : TList; const AGroupName : string); virtual;
-    procedure   AssignVisitorInstances(const AVisitors: TList; AVisitorGroup: TVisitorMappingGroup); virtual;
-    function    FindVisitorMappingGroup(const AGroupName: string): TVisitorMappingGroup; virtual;
+    procedure   GetVisitors(const AVisitors : TObjectList; const AGroupName : string); virtual;
+    function    FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup; virtual;
 
   public
     constructor Create; virtual;
     destructor  Destroy; override;
     procedure   RegisterVisitor(const AGroupName : string;
-                                 const AClassRef  : TtiVisitorClass);
+                                 const AVisitorClass  : TtiVisitorClass);
     procedure   UnRegisterVisitors(const AGroupName : string);
     function    Execute(const AGroupName      : string;
                          const AVisited         : TtiVisited;
@@ -478,7 +475,6 @@ var
 begin
   LVisitedCandidate:= TtiVisitedCandidate.Create;
   LVisitedCandidate.Visited:= ACandidates;
-//  LVisitedCandidate.ApparentOwner:= AApparentOwner;
   LVisitedCandidate.IterationDepth:= AIterationDepth;
   AList.Add(LVisitedCandidate);
 end;
@@ -554,50 +550,50 @@ begin
   result:= True;
 end;
 
-function TtiVisitor.VisitorControllerClass : TtiVisitorControllerClass;
+class function TtiVisitor.VisitorControllerClass : TtiVisitorControllerClass;
 begin
-  result := TtiVisitorCtrlr;
+  result := TtiVisitorController;
 end;
 
 
 { TtiVisitorCtrlr }
 
-procedure TtiVisitorCtrlr.AfterExecuteAll(AVisitors : TList);
+procedure TtiVisitorController.AfterExecuteAll(AVisitors : TList);
 begin
   Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-procedure TtiVisitorCtrlr.AfterExecuteError(AVisitors : TList);
+procedure TtiVisitorController.AfterExecuteError(AVisitors : TList);
 begin
   Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-procedure TtiVisitorCtrlr.AfterExecuteOne(AVisitor : TtiVisitor);
+procedure TtiVisitorController.AfterExecuteOne(AVisitor : TtiVisitor);
 begin
   Assert(AVisitor = AVisitor);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-procedure TtiVisitorCtrlr.BeforeExecuteAll(AVisitors : TList);
+procedure TtiVisitorController.BeforeExecuteAll(AVisitors : TList);
 begin
   Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-procedure TtiVisitorCtrlr.BeforeExecuteOne(AVisitor : TtiVisitor);
+procedure TtiVisitorController.BeforeExecuteOne(AVisitor : TtiVisitor);
 begin
   Assert(AVisitor = AVisitor);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-constructor TtiVisitorCtrlr.Create;
+constructor TtiVisitorController.Create;
 begin
   // So we can create an instance ot TVisitorMgr from a class reference var.
   inherited;
@@ -728,7 +724,7 @@ begin
 end;
 
 
-procedure TtiVisitorCtrlr.SetPerLayerName(const AValue: string);
+procedure TtiVisitorController.SetPerLayerName(const AValue: string);
 begin
   FPerLayerName := AValue;
 end;
@@ -753,21 +749,21 @@ begin
 end;
 
 
-procedure TtiVisitorManager.DoAfterExecute(AVisitorMgr: TtiVisitorCtrlr;
+procedure TtiVisitorManager.DoAfterExecute(AVisitorMgr: TtiVisitorController;
     AVisitors: TList);
 begin
   AVisitorMgr.AfterExecuteAll(AVisitors);
 end;
 
 
-procedure TtiVisitorManager.DoAfterExecuteError(AVisitorMgr: TtiVisitorCtrlr;
+procedure TtiVisitorManager.DoAfterExecuteError(AVisitorMgr: TtiVisitorController;
     AVisitors: TList);
 begin
   AVisitorMgr.AfterExecuteError(AVisitors);
 end;
 
 
-procedure TtiVisitorManager.DoBeforeExecute(AVisitorMgr: TtiVisitorCtrlr;
+procedure TtiVisitorManager.DoBeforeExecute(AVisitorMgr: TtiVisitorController;
     AVisitors: TList);
 begin
   AVisitorMgr.BeforeExecuteAll(AVisitors);
@@ -868,7 +864,7 @@ end;
 
 
 function TtiVisitorManager.FindVisitorMappingGroup(
-  const AGroupName: string): TVisitorMappingGroup;
+  const AGroupName: string): TtiVisitorMappingGroup;
 var
   i : integer;
   LGroupName : string;
@@ -876,9 +872,9 @@ begin
   result:= nil;
   LGroupName := upperCase(AGroupName);
   for i := 0 to FVisitorMappings.Count - 1 do
-    if (FVisitorMappings.Items[i] as TVisitorMappingGroup).GroupName = LGroupName then
+    if (FVisitorMappings.Items[i] as TtiVisitorMappingGroup).GroupName = LGroupName then
     begin
-      Result:= FVisitorMappings.Items[i] as TVisitorMappingGroup;
+      Result:= FVisitorMappings.Items[i] as TtiVisitorMappingGroup;
       Exit; //==>
     end;
 end;
@@ -902,7 +898,7 @@ begin
     // with this visitor.
     for j := 0 to AVisitorMgrs.Count - 1 do begin
       if (lVisitor.VisitorControllerClass.ClassName = TObject(AVisitorMgrs.Items[j]).ClassName) then begin
-        lVisitor.VisitorController := TtiVisitorCtrlr(AVisitorMgrs.Items[j]);
+        lVisitor.VisitorController := TtiVisitorController(AVisitorMgrs.Items[j]);
         break; //==>
       end;
     end;
@@ -924,32 +920,22 @@ begin
   result:= FVisitorMappings;
 end;
 
-procedure TtiVisitorManager.GetVisitors(const AVisitors: TList;const AGroupName: string);
+procedure TtiVisitorManager.GetVisitors(const AVisitors: TObjectList;const AGroupName: string);
 var
-  LVisitorMappingGroup: TVisitorMappingGroup;
+  LVisitorMappingGroup: TtiVisitorMappingGroup;
 begin
   Assert(Assigned(AVisitors), 'AVisitors not assigned');
   Assert(AGroupName<>'', 'AGroupName not assigned');
   LVisitorMappingGroup:= FindVisitorMappingGroup(AGroupName);
   Assert(Assigned(LVisitorMappingGroup), 'Request for unknown VisitorMappingGroup "' + AGroupName + '"');
-  AssignVisitorInstances(AVisitors, LVisitorMappingGroup);
-end;
-
-procedure TtiVisitorManager.AssignVisitorInstances(const AVisitors: TList; AVisitorGroup: TVisitorMappingGroup);
-var
-  i: integer;
-begin
-  Assert(Assigned(AVisitors), 'AVisitors not assigned');
-  Assert(AVisitorGroup.TestValid, cTIInvalidObjectError);
-  for i := 0 to AVisitorGroup.Mappings.Count-1 do
-    AVisitors.Add(TVisitorMapping(AVisitorGroup.Mappings.Items[i]).ClassRef.Create);
+  LVisitorMappingGroup.AssignVisitorInstances(AVisitors);
 end;
 
 procedure TtiVisitorManager.ProcessVisitorControllers(AVisitors, pVisitorControllers: TList;
   pProc: TOnProcessVisitorController; psMethodName : string);
 var
   i, j : integer;
-  lVisitorController : TtiVisitorCtrlr;
+  lVisitorController : TtiVisitorController;
   lVisitors  : TList;
 begin
   Assert(psMethodName = psMethodName);  // Getting rid of compiler hints, param not used.
@@ -967,7 +953,7 @@ begin
       if gTIOPFManager.Terminated then
         Exit; //==>
 
-      lVisitorController := TtiVisitorCtrlr(pVisitorControllers.Items[i]);
+      lVisitorController := TtiVisitorController(pVisitorControllers.Items[i]);
       for j := 0 to AVisitors.Count-1 do
         if (TtiVisitor(AVisitors.Items[j]).VisitorControllerClass =
            lVisitorController.ClassType) and
@@ -1026,21 +1012,20 @@ end;
 
 
 procedure TtiVisitorManager.RegisterVisitor(const AGroupName : string;
-                                         const AClassRef : TtiVisitorClass);
+                                         const AVisitorClass : TtiVisitorClass);
 var
-  LVisitorMappingGroup: TVisitorMappingGroup;
-  LVisitorMapping : TVisitorMapping;
+  LVisitorMappingGroup: TtiVisitorMappingGroup;
 begin
   FSynchronizer.BeginWrite;
   try
     LVisitorMappingGroup:= FindVisitorMappingGroup(AGroupName);
     if LVisitorMappingGroup = nil then
     begin
-      LVisitorMappingGroup:= TVisitorMappingGroup.Create(AGroupName);
+      LVisitorMappingGroup:= TtiVisitorMappingGroup.Create(AGroupName,
+        AVisitorClass.VisitorControllerClass);
       FVisitorMappings.Add(LVisitorMappingGroup);
     end;
-    LVisitorMapping := TVisitorMapping.Create(AClassRef);
-    LVisitorMappingGroup.Mappings.Add(LVisitorMapping);
+    LVisitorMappingGroup.Add(AVisitorClass);
   finally
     FSynchronizer.EndWrite;
   end;
@@ -1048,7 +1033,7 @@ end;
 
 procedure TtiVisitorManager.UnRegisterVisitors(const AGroupName: string);
 var
-  LVisitorMappingGroup: TVisitorMappingGroup;
+  LVisitorMappingGroup: TtiVisitorMappingGroup;
 begin
   FSynchronizer.BeginWrite;
   try
@@ -1062,26 +1047,41 @@ begin
   end;
 end;
 
-
-{ TVisMapping }
-
-constructor TVisitorMapping.Create(const AClassRef: TtiVisitorClass);
-begin
-  inherited Create;
-  FClassRef  := AClassRef;
-end;
-
-
 { TVisitorMappingGroup }
 
-constructor TVisitorMappingGroup.Create(const AGroupName: string);
+procedure TtiVisitorMappingGroup.Add(const AVisitorClass: TtiVisitorClass);
+var
+  i: integer;
+begin
+  Assert(Assigned(AVisitorClass), 'AVisitorClass not assigned');
+  if AVisitorClass.VisitorControllerClass <> VisitorControllerClass then
+    raise EtiOPFProgrammerException.CreateFmt(CErrorIncompatibleVisitorController,
+      [VisitorControllerClass.ClassName, AVisitorClass.VisitorControllerClass.ClassName]);
+  for i := 0 to FMappings.Count-1 do
+    if FMappings.Items[i] = AVisitorClass then
+      Raise EtiOPFProgrammerException.CreateFmt(CErrorAttemptToRegisterDuplicateVisitor, [AVisitorClass.ClassName]);
+  FMappings.Add(AVisitorClass);
+end;
+
+procedure TtiVisitorMappingGroup.AssignVisitorInstances(const AVisitorList: TObjectList);
+var
+  i: integer;
+begin
+  Assert(Assigned(AVisitorList), 'AVisitors not assigned');
+  for i := 0 to FMappings.Count-1 do
+    AVisitorList.Add(TtiVisitorClass(FMappings.Items[i]).Create);
+end;
+
+constructor TtiVisitorMappingGroup.Create(const AGroupName: string;
+  const AVisitorControllerClass: TtiVisitorControllerClass);
 begin
   inherited Create;
   FGroupName:= UpperCase(AGroupName);
-  FMappings:= TObjectList.Create;
+  FMappings:= TClassList.Create;
+  FVisitorControllerClass:= AVisitorControllerClass;
 end;
 
-destructor TVisitorMappingGroup.Destroy;
+destructor TtiVisitorMappingGroup.Destroy;
 begin
   FMappings.Free;
   inherited;

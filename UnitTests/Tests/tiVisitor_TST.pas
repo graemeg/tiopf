@@ -93,6 +93,8 @@ type
     // Test some other special visitors
     procedure Visited_FindAllByClassType;
 
+    procedure VisitorMappingGroup_Add;
+    procedure VisitorMappingGroup_AssignVisitorInstances;
     procedure VisitorManager_RegisterVisitor;
     procedure VisitorManager_GetVisitor;
 
@@ -169,7 +171,7 @@ type
 
   TTestVisitorController = class(TtiVisitor)
   public
-    function VisitorControllerClass : TtiVisitorControllerClass; override;
+    class function VisitorControllerClass : TtiVisitorControllerClass; override;
   end;
 
 
@@ -189,7 +191,7 @@ type
   TTestVisitorManager = class(TtiVisitorManager)
   public
     property VisitorMappings;
-    procedure GetVisitors(const AVisitors : TList; const AGroupName : string); override;
+    procedure GetVisitors(const AVisitorList : TObjectList; const AGroupName : string); override;
   end;
 
 procedure RegisterTests;
@@ -207,9 +209,7 @@ uses
   ,tstPerFramework_BOM
   ,tiRTTI
   ,tiObject
-
-  ,tiDialogs
-  
+  ,tiExcept
  ;
 
 
@@ -740,12 +740,12 @@ var
 begin
   lVis := TTestVisitorController.Create;
   try
-    CheckEquals(lVis.VisitorControllerClass, TtiVisitorCtrlr);
+    CheckEquals(lVis.VisitorControllerClass, TtiVisitorController);
     CheckNull(lVis.VisitorController);
     lVis.VisitorController := lVis.VisitorControllerClass.Create;
     try
       CheckNotNull(lVis.VisitorController);
-      CheckIs(lVis.VisitorController, TtiVisitorCtrlr);
+      CheckIs(lVis.VisitorController, TtiVisitorController);
     finally
       lVis.VisitorController.Free;
     end;
@@ -1245,21 +1245,22 @@ begin
 end;
 
 procedure TTestTIVisitor.Visited_Terminated;
-var
-  LVisited: TtiVisited;
+//var
+//  LVisited: TtiVisited;
 begin
-  LVisited:= TtiVisited.Create;
-  try
-    FreeAndNilTIPerMgr;
-    CheckEquals(False, gTIOPFManager.Terminated);
-    CheckEquals(False, LVisited.Terminated);
-    gTIOPFManager.Terminate;
-    CheckEquals(True, gTIOPFManager.Terminated);
-    CheckEquals(True, LVisited.Terminated);
-    FreeAndNilTIPerMgr;
-  finally
-    LVisited.Free;
-  end;
+//  LVisited:= TtiVisited.Create;
+//  try
+//    FreeAndNilTIPerMgr;
+//    CheckEquals(False, gTIOPFManager.Terminated);
+//    CheckEquals(False, LVisited.Terminated);
+//    gTIOPFManager.Terminate;
+//    CheckEquals(True, gTIOPFManager.Terminated);
+//    CheckEquals(True, LVisited.Terminated);
+//    FreeAndNilTIPerMgr;
+//  finally
+//    LVisited.Free;
+//  end;
+  Fail('Touching the tiOPFManager is breaking other tests');
 end;
 
 procedure TTestTIVisitor.Visited_ContinueVisiting_BottomUpSinglePass;
@@ -1823,9 +1824,9 @@ end;
 
 { TTestVisitorController }
 
-function TTestVisitorController.VisitorControllerClass: TtiVisitorControllerClass;
+class function TTestVisitorController.VisitorControllerClass: TtiVisitorControllerClass;
 begin
-  result := TtiVisitorCtrlr;
+  result := TtiVisitorController;
 end;
 
 { TTestVisitorGetAllToVisit }
@@ -1910,6 +1911,80 @@ begin
 end;
 
 type
+
+  TTestVisitorMappingGroupVisitorControllerClass1 = Class(TtiVisitorController)
+  end;
+
+  TTestVisitorMappingGroupVisitorControllerClass2 = Class(TtiVisitorController)
+  end;
+
+  TTestVisitorMappingGroupVisitor1 = class(TtiVisitor)
+  public
+    class function VisitorControllerClass: TtiVisitorControllerClass; override;
+  end;
+
+  TTestVisitorMappingGroupVisitor2 = class(TtiVisitor)
+  public
+    class function VisitorControllerClass: TtiVisitorControllerClass; override;
+  end;
+
+  class function TTestVisitorMappingGroupVisitor1.VisitorControllerClass: TtiVisitorControllerClass;
+  begin
+    result:= TTestVisitorMappingGroupVisitorControllerClass1;
+  end;
+
+  class function TTestVisitorMappingGroupVisitor2.VisitorControllerClass: TtiVisitorControllerClass;
+  begin
+    result:= TTestVisitorMappingGroupVisitorControllerClass2;
+  end;
+
+procedure TTestTIVisitor.VisitorMappingGroup_Add;
+var
+  LVMG: TtiVisitorMappingGroup;
+begin
+  LVMG:= TtiVisitorMappingGroup.Create('test', TTestVisitorMappingGroupVisitorControllerClass1);
+  try
+    CheckEquals('TEST', LVMG.GroupName);
+    Check(LVMG.VisitorControllerClass = TTestVisitorMappingGroupVisitorControllerClass1);
+    LVMG.Add(TTestVisitorMappingGroupVisitor1);
+    // Check registration of duplicate visitor
+    try
+      LVMG.Add(TTestVisitorMappingGroupVisitor1);
+      Fail('Exception not raised');
+    except
+      on e:Exception do
+      begin
+        CheckIs(e, EtiOPFProgrammerException);
+        CheckFormattedMessage(CErrorAttemptToRegisterDuplicateVisitor,
+          [TTestVisitorMappingGroupVisitor1.ClassName], e.message);
+      end;
+    end;
+
+    // Check registration of visitor with different VisitorController
+    try
+      LVMG.Add(TTestVisitorMappingGroupVisitor2);
+      Fail('Exception not raised');
+    except
+      on e:Exception do
+      begin
+        CheckIs(e, EtiOPFProgrammerException);
+        CheckFormattedMessage(CErrorIncompatibleVisitorController,
+          [TTestVisitorMappingGroupVisitorControllerClass1.ClassName,
+           TTestVisitorMappingGroupVisitorControllerClass2.ClassName], e.message);
+      end;
+    end;
+
+  finally
+    LVMG.Free;
+  end;
+end;
+
+procedure TTestTIVisitor.VisitorMappingGroup_AssignVisitorInstances;
+begin
+
+end;
+
+type
   TTestVisitorManagerGetVisitors1 = class(TtiVisitor)
   end;
   TTestVisitorManagerGetVisitors2 = class(TtiVisitor)
@@ -1949,10 +2024,12 @@ end;
 
 { TTestVisitorManager }
 
-procedure TTestVisitorManager.GetVisitors(const AVisitors: TList; const AGroupName: string);
+procedure TTestVisitorManager.GetVisitors(const AVisitorList: TObjectList; const AGroupName: string);
 begin
-  inherited GetVisitors(AVisitors, AGroupName);
+  inherited GetVisitors(AVisitorList, AGroupName);
 end;
+
+{ TTestVisitorMappingGroupVisitor1 }
 
 end.
 
