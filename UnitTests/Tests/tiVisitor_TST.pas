@@ -1244,23 +1244,47 @@ begin
   end;
 end;
 
+type
+  TTestTIVisitorTerminated = class(TtiVisited)
+  private
+    FTIOPFManager: TtiOPFManager;
+  public
+    function TIOPFManager: TObject; override;
+    procedure SetTIOPFManager(const ATIOPFManager: TtiOPFManager);
+  end;
+
+  function TTestTIVisitorTerminated.TIOPFManager: TObject;
+  begin
+    result:= FTIOPFManager;
+  end;
+
+  procedure TTestTIVisitorTerminated.SetTIOPFManager(
+    const ATIOPFManager: TtiOPFManager);
+  begin
+    FTIOPFManager:= ATIOPFManager;
+  end;
+
 procedure TTestTIVisitor.Visited_Terminated;
-//var
-//  LVisited: TtiVisited;
+var
+  LVisited: TTestTIVisitorTerminated;
+  LTIOPFManager: TtiOPFManager;
 begin
-//  LVisited:= TtiVisited.Create;
-//  try
-//    FreeAndNilTIPerMgr;
-//    CheckEquals(False, gTIOPFManager.Terminated);
-//    CheckEquals(False, LVisited.Terminated);
-//    gTIOPFManager.Terminate;
-//    CheckEquals(True, gTIOPFManager.Terminated);
-//    CheckEquals(True, LVisited.Terminated);
-//    FreeAndNilTIPerMgr;
-//  finally
-//    LVisited.Free;
-//  end;
-  Fail('Touching the tiOPFManager is breaking other tests');
+  LTIOPFManager:= nil;
+  LVisited:= nil;
+  try
+    LTIOPFManager:= TtiOPFManager.Create;
+    LVisited:= TTestTIVisitorTerminated.Create;
+    LVisited.SetTIOPFManager(LTIOPFManager);
+    CheckSame(LTIOPFManager, LVisited.TIOPFManager);
+    CheckEquals(False, LTIOPFManager.Terminated);
+    CheckEquals(False, LVisited.Terminated);
+    LTIOPFManager.Terminate;
+    CheckEquals(True, LTIOPFManager.Terminated);
+    CheckEquals(True, LVisited.Terminated);
+  finally
+    LTIOPFManager.Free;
+    LVisited.Free;
+  end;
 end;
 
 procedure TTestTIVisitor.Visited_ContinueVisiting_BottomUpSinglePass;
@@ -2030,6 +2054,8 @@ begin
 end;
 
 { TTestVisitorMappingGroupVisitor1 }
+
+{ TTestTIVisitorTerminated }
 
 end.
 

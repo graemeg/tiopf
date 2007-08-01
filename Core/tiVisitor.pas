@@ -93,6 +93,7 @@ type
     function    GetTerminated: boolean; virtual;
     function    ContinueVisiting(const AVisitor: TtiVisitor): boolean; virtual;
     function    CheckContinueVisitingIfTopDownRecurse(const AVisitor: TtiVisitor): boolean; virtual;
+    function    TIOPFManager: TObject; virtual;
   published
     property    Caption   : string  read GetCaption;
   public
@@ -437,7 +438,7 @@ end;
 
 function TtiVisited.GetTerminated: boolean;
 begin
-  result:= gTIOPFManager.Terminated;
+  result:= TtiOPFManager(TIOPFManager).Terminated;
 end;
 
 procedure TtiVisited.IterateTopDownRecurse(AVisitor: TtiVisitor);
@@ -466,6 +467,11 @@ begin
   finally
     LList.Free;
   end;
+end;
+
+function TtiVisited.TIOPFManager: TObject;
+begin
+  result:= gTIOPFManager;
 end;
 
 procedure TtiVisited.TouchMethodAddToList(const ACandidates: TtiVisited;
