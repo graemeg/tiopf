@@ -208,7 +208,7 @@ type
     function GetVisitorMappings: TList;
   protected
     property    VisitorMappings: TList read GetVisitorMappings;
-    procedure   GetVisitors(const AVisitors : TObjectList; const AGroupName : string); virtual;
+    procedure   AssignVisitorInstances(const AVisitors : TObjectList; const AGroupName : string); virtual;
     function    FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup; virtual;
 
   public
@@ -926,7 +926,7 @@ begin
   result:= FVisitorMappings;
 end;
 
-procedure TtiVisitorManager.GetVisitors(const AVisitors: TObjectList;const AGroupName: string);
+procedure TtiVisitorManager.AssignVisitorInstances(const AVisitors: TObjectList;const AGroupName: string);
 var
   LVisitorMappingGroup: TtiVisitorMappingGroup;
 begin
@@ -988,7 +988,7 @@ begin
     try
       FSynchronizer.BeginRead;
       try
-        GetVisitors(   LVisitors, AGroupName );
+        AssignVisitorInstances(   LVisitors, AGroupName );
         GetVisitorControllers(LVisitors, LVisitorControllers, ADBConnectionName, APersistenceLayerName);
         Log('Visitor count: ' +
              IntToStr(LVisitors.Count) +

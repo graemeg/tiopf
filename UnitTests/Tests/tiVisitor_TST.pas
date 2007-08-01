@@ -96,7 +96,8 @@ type
     procedure VisitorMappingGroup_Add;
     procedure VisitorMappingGroup_AssignVisitorInstances;
     procedure VisitorManager_RegisterVisitor;
-    procedure VisitorManager_GetVisitor;
+    procedure VisitorManager_AssignVisitorInstances;
+    procedure VisitorManager_FindVisitorMappingGroup;
 
     procedure VisClassCount_Execute;
     procedure VisFindAllByClass_Execute;
@@ -191,7 +192,8 @@ type
   TTestVisitorManager = class(TtiVisitorManager)
   public
     property VisitorMappings;
-    procedure GetVisitors(const AVisitorList : TObjectList; const AGroupName : string); override;
+    procedure AssignVisitorInstances(const AVisitorList : TObjectList; const AGroupName : string); override;
+    function FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup; override;
   end;
 
 procedure RegisterTests;
@@ -2003,9 +2005,35 @@ begin
   end;
 end;
 
-procedure TTestTIVisitor.VisitorMappingGroup_AssignVisitorInstances;
-begin
+type
+  TTestVisitorMappingGroupAssignVisitorInstances1 = class(TtiVisitor)
+  end;
+  TTestVisitorMappingGroupAssignVisitorInstances2 = class(TtiVisitor)
+  end;
 
+procedure TTestTIVisitor.VisitorMappingGroup_AssignVisitorInstances;
+var
+  LVMG: TtiVisitorMappingGroup;
+  LList: TObjectList;
+begin
+  LVMG:= TtiVisitorMappingGroup.Create('test', TtiVisitorController);
+  try
+    LVMG.Add(TTestVisitorMappingGroupAssignVisitorInstances1);
+    LVMG.Add(TTestVisitorMappingGroupAssignVisitorInstances2);
+    LList:= TObjectList.Create;
+    try
+      LVMG.AssignVisitorInstances(LList);
+      CheckEquals(2, LList.Count);
+      CheckIs(LList.Items[0], TTestVisitorMappingGroupAssignVisitorInstances1);
+      CheckIs(LList.Items[1], TTestVisitorMappingGroupAssignVisitorInstances2);
+      CheckNotNull(LList.Items[0]);
+      CheckNotNull(LList.Items[1]);
+    finally
+      LList.Free;
+    end;
+  finally
+    LVMG.Free;
+  end;
 end;
 
 type
@@ -2016,7 +2044,7 @@ type
   TTestVisitorManagerGetVisitors3 = class(TtiVisitor)
   end;
 
-procedure TTestTIVisitor.VisitorManager_GetVisitor;
+procedure TTestTIVisitor.VisitorManager_AssignVisitorInstances;
 var
   LVM: TTestVisitorManager;
   LList: TObjectList;
@@ -2028,12 +2056,12 @@ begin
     LVM.RegisterVisitor('test1', TTestVisitorManagerGetVisitors3);
     LList:= TObjectList.Create;
     try
-      LVM.GetVisitors(LList, 'test');
+      LVM.AssignVisitorInstances(LList, 'test');
       CheckEquals(1, LList.Count);
       CheckIs(TObject(LList.Items[0]), TTestVisitorManagerGetVisitors1);
 
       LList.Clear;
-      LVM.GetVisitors(LList, 'test1');
+      LVM.AssignVisitorInstances(LList, 'test1');
       CheckEquals(2, LList.Count);
       CheckIs(TObject(LList.Items[0]), TTestVisitorManagerGetVisitors2);
       CheckIs(TObject(LList.Items[1]), TTestVisitorManagerGetVisitors3);
@@ -2046,16 +2074,38 @@ begin
   end;
 end;
 
-{ TTestVisitorManager }
-
-procedure TTestVisitorManager.GetVisitors(const AVisitorList: TObjectList; const AGroupName: string);
+procedure TTestTIVisitor.VisitorManager_FindVisitorMappingGroup;
+var
+  LVM: TTestVisitorManager;
 begin
-  inherited GetVisitors(AVisitorList, AGroupName);
+  LVM:= TTestVisitorManager.Create;
+  try
+    LVM.RegisterVisitor('test', TtiVisitor);
+    LVM.RegisterVisitor('test1', TtiVisitor);
+    LVM.RegisterVisitor('test2', TtiVisitor);
+    CheckNotNull(LVM.FindVisitorMappingGroup('test'));
+    CheckEquals('TEST', LVM.FindVisitorMappingGroup('test').GroupName);
+    CheckNotNull(LVM.FindVisitorMappingGroup('test1'));
+    CheckEquals('TEST1', LVM.FindVisitorMappingGroup('test1').GroupName);
+    CheckNotNull(LVM.FindVisitorMappingGroup('test2'));
+    CheckEquals('TEST2', LVM.FindVisitorMappingGroup('test2').GroupName);
+  finally
+    LVM.Free;
+  end;
 end;
 
-{ TTestVisitorMappingGroupVisitor1 }
+{ TTestVisitorManager }
 
-{ TTestTIVisitorTerminated }
+procedure TTestVisitorManager.AssignVisitorInstances(const AVisitorList: TObjectList; const AGroupName: string);
+begin
+  inherited AssignVisitorInstances(AVisitorList, AGroupName);
+end;
+
+function TTestVisitorManager.FindVisitorMappingGroup(
+  const AGroupName: string): TtiVisitorMappingGroup;
+begin
+  result:= inherited FindVisitorMappingGroup(AGroupName);
+end;
 
 end.
 
