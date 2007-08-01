@@ -175,12 +175,10 @@ type
     class function VisitorControllerClass : TtiVisitorControllerClass; override;
   end;
 
-
   TTestVisitorGetAllToVisit = class(TtiVisitor)
   protected
     function AcceptVisitor : boolean; override;
   end;
-
 
   TTestVisStream = class(TVisStream)
   public

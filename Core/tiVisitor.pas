@@ -3,9 +3,11 @@ unit tiVisitor;
 {$I tiDefines.inc}
 
 // ToDo:
+
+//    Refactor VisitorController to remove DB smell
+
 //    Audit for const params
 //    Group visitors by registered name
-//    Refactor VisitorController to remove DB smell
 //    Audit & test BreakOnException code
 //    Audit for unit tests
 
@@ -111,19 +113,19 @@ type
     procedure SetPerLayerName(const AValue: string); virtual;
   public
     constructor Create; virtual;
-    procedure BeforeExecuteAll(AVisitors : TList)     ; virtual;
-    procedure BeforeExecuteOne(AVisitor : TtiVisitor); virtual;
-    // Visitors are executed here...
-    procedure AfterExecuteOne(AVisitor : TtiVisitor ); virtual;
-    procedure AfterExecuteAll(AVisitors : TList)      ; virtual;
-    // Executed if there was an error
-    procedure AfterExecuteError(AVisitors : TList)    ; virtual;
+    procedure BeforeExecuteVisitorGroup(const AVisitors : TList); virtual;
+    procedure BeforeExecuteVisitor(const AVisitor : TtiVisitor); virtual;
+    procedure AfterExecuteVisitor(const AVisitor : TtiVisitor ); virtual;
+    procedure AfterExecuteVisitorGroup(const AVisitors : TList); virtual;
+    procedure AfterExecuteVisitorGroupError(const AVisitors : TList); virtual;
+
     // The property DBConnectionName is really only required in DBVisitors, but
     // must be introduce here so it can be set at a generic level by the
     // VisitorMgr. The alternative is to use RTTI or TypeInfo and only set the
     // property on DBVisitorMgr(s), but that would be an ever worse hack.
     property  PerLayerName    : string read FPerLayerName     write SetPerLayerName;
     property  DBConnectionName : string read FDBConnectionName write FDBConnectionName;
+
   end;
 
   TtiVisitorControllerClass = class of TtiVisitorController;
@@ -133,7 +135,6 @@ type
   private
     FVisited          : TtiVisited;
     FContinueVisiting : boolean;
-    FVisitorController : TtiVisitorController;
     FDepth: TIterationDepth;
     FIterationStyle: TtiIterationStyle;
     FVisitedsOwner: TtiVisited;
@@ -152,7 +153,6 @@ type
     property    Visited : TtiVisited read FVisited; // ToDo: Can this be protected?
 
     property    ContinueVisiting : boolean read FContinueVisiting write FContinueVisiting;
-//    property    VisitorController : TtiVisitorController read FVisitorController write FVisitorController;
     property    Depth : TIterationDepth read FDepth;
     property    IterationStyle : TtiIterationStyle
                   read  FIterationStyle
@@ -188,17 +188,13 @@ type
     FVisitorMappings : TObjectList;
     FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
     FBreakOnException: boolean;
-    procedure ProcessVisitorControllers(
-      const AVisitors: TList;
-      const AVisitorController: TtiVisitorController;
-      const AProc : TOnProcessVisitorController);
-    procedure DoBeforeExecuteAll(const AVisitorController: TtiVisitorController; const AVisitors : TList);
-    procedure DoBeforeExecuteOne(const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
-    procedure DoAfterExecuteOne(const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
-    procedure DoAfterExecuteAll(const AVisitorController : TtiVisitorController; const AVisitors: TList);
-    procedure DoAfterExecuteError(const AVisitorController : TtiVisitorController; const AVisitors  : TList);
-    procedure ExecuteVisitors(const AVisitorController: TtiVisitorController;
-      const AVisitors: TList; const AVisited : TtiVisited);
+    procedure ExecuteVisitorControllerAgainstGroup(const AVisitors: TList;  const AVisitorController: TtiVisitorController; const AProc : TOnProcessVisitorController);
+    procedure DoBeforeExecuteVisitorGroup(const AVisitorController: TtiVisitorController; const AVisitors : TList);
+    procedure DoBeforeExecuteVisitor(const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
+    procedure DoAfterExecuteVisitor(const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
+    procedure DoAfterExecuteVisitorGroup(const AVisitorController : TtiVisitorController; const AVisitors: TList);
+    procedure DoAfterExecuteVisitorGroupError(const AVisitorController : TtiVisitorController; const AVisitors  : TList);
+    procedure ExecuteVisitors(const AVisitorController: TtiVisitorController; const AVisitors: TList; const AVisited : TtiVisited);
     procedure ProcessVisitors(const AGroupName : string;
                                const AVisited : TtiVisited;
                                const ADBConnectionName : string;
@@ -511,7 +507,6 @@ constructor TtiVisitor.Create;
 begin
   inherited create;
   FContinueVisiting := true;
-  FVisitorController := nil;
   FDepth            := 0;
   FIterationStyle  := isTopDownRecurse;
 end;
@@ -562,35 +557,35 @@ end;
 
 { TtiVisitorCtrlr }
 
-procedure TtiVisitorController.AfterExecuteAll(AVisitors : TList);
+procedure TtiVisitorController.AfterExecuteVisitorGroup(const AVisitors : TList);
 begin
   Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-procedure TtiVisitorController.AfterExecuteError(AVisitors : TList);
+procedure TtiVisitorController.AfterExecuteVisitorGroupError(const AVisitors : TList);
 begin
   Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-procedure TtiVisitorController.AfterExecuteOne(AVisitor : TtiVisitor);
+procedure TtiVisitorController.AfterExecuteVisitor(const AVisitor : TtiVisitor);
 begin
   Assert(AVisitor = AVisitor);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-procedure TtiVisitorController.BeforeExecuteAll(AVisitors : TList);
+procedure TtiVisitorController.BeforeExecuteVisitorGroup(const AVisitors : TList);
 begin
   Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-procedure TtiVisitorController.BeforeExecuteOne(AVisitor : TtiVisitor);
+procedure TtiVisitorController.BeforeExecuteVisitor(const AVisitor : TtiVisitor);
 begin
   Assert(AVisitor = AVisitor);  // Getting rid of compiler hints, param not used.
   // Do nothing
@@ -753,36 +748,36 @@ begin
 end;
 
 
-procedure TtiVisitorManager.DoAfterExecuteAll(const AVisitorController: TtiVisitorController;
+procedure TtiVisitorManager.DoAfterExecuteVisitorGroup(const AVisitorController: TtiVisitorController;
   const AVisitors: TList);
 begin
-  AVisitorController.AfterExecuteAll(AVisitors);
+  AVisitorController.AfterExecuteVisitorGroup(AVisitors);
 end;
 
 
-procedure TtiVisitorManager.DoAfterExecuteError(
+procedure TtiVisitorManager.DoAfterExecuteVisitorGroupError(
   const AVisitorController: TtiVisitorController;
   const AVisitors: TList);
 begin
-  AVisitorController.AfterExecuteError(AVisitors);
+  AVisitorController.AfterExecuteVisitorGroupError(AVisitors);
 end;
 
-procedure TtiVisitorManager.DoBeforeExecuteAll(
+procedure TtiVisitorManager.DoBeforeExecuteVisitorGroup(
   const AVisitorController: TtiVisitorController; const AVisitors : TList);
 begin
-  AVisitorController.BeforeExecuteAll(AVisitors);
+  AVisitorController.BeforeExecuteVisitorGroup(AVisitors);
 end;
 
 
-procedure TtiVisitorManager.DoBeforeExecuteOne(
+procedure TtiVisitorManager.DoBeforeExecuteVisitor(
   const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
 begin
-  AVisitorController.BeforeExecuteOne(AVisitor);
+  AVisitorController.BeforeExecuteVisitor(AVisitor);
 end;
 
-procedure TtiVisitorManager.DoAfterExecuteOne(const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
+procedure TtiVisitorManager.DoAfterExecuteVisitor(const AVisitorController: TtiVisitorController; const AVisitor: TtiVisitor);
 begin
-  AVisitorController.AfterExecuteOne(AVisitor);
+  AVisitorController.AfterExecuteVisitor(AVisitor);
 end;
 
 function TtiVisitorManager.Execute(const AGroupName      : string;
@@ -843,14 +838,14 @@ begin
   for i := 0 to AVisitors.Count - 1 do
   begin
     LVisitor := TtiVisitor(AVisitors.Items[i]);
-    DoBeforeExecuteOne(AVisitorController, LVisitor);
+    DoBeforeExecuteVisitor(AVisitorController, LVisitor);
     try
       if AVisited <> nil then
         AVisited.Iterate(LVisitor)
       else
         LVisitor.Execute(nil);
     finally
-      DoAfterExecuteOne(AVisitorController, LVisitor);
+      DoAfterExecuteVisitor(AVisitorController, LVisitor);
     end;
   end;
 end;
@@ -888,7 +883,7 @@ begin
   LVisitorMappingGroup.AssignVisitorInstances(AVisitors);
 end;
 
-procedure TtiVisitorManager.ProcessVisitorControllers(
+procedure TtiVisitorManager.ExecuteVisitorControllerAgainstGroup(
   const AVisitors: TList;
   const AVisitorController: TtiVisitorController;
   const AProc: TOnProcessVisitorController);
@@ -920,14 +915,14 @@ begin
       LVisitorMappingGroup.AssignVisitorInstances(LVisitors);
       try
         AssignVisitorInstances(LVisitors, AGroupName );
-        ProcessVisitorControllers(LVisitors, LVisitorController, DoBeforeExecuteAll);
+        ExecuteVisitorControllerAgainstGroup(LVisitors, LVisitorController, DoBeforeExecuteVisitorGroup);
         try
           ExecuteVisitors(LVisitorController, LVisitors, AVisited);
-          ProcessVisitorControllers(LVisitors, LVisitorController, DoAfterExecuteAll);
+          ExecuteVisitorControllerAgainstGroup(LVisitors, LVisitorController, DoAfterExecuteVisitorGroup);
         except
           on e:exception do
           begin
-            ProcessVisitorControllers(LVisitors, LVisitorController, DoAfterExecuteError);
+            ExecuteVisitorControllerAgainstGroup(LVisitors, LVisitorController, DoAfterExecuteVisitorGroupError);
             raise;
           end;
         end;
