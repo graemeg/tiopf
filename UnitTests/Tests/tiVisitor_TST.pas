@@ -45,7 +45,7 @@ type
     procedure Visitor_ContinueVisiting_TopDownSinglePass;
     procedure Visitor_ContinueVisiting_TopDownRecurse;
 
-    procedure Visitor_VisitorController;
+    procedure Visitor_VisitorControllerClass;
 
     procedure Visitor_Depth_TopDownRecurse;
     procedure Visitor_Depth_TopDownSinglePass;
@@ -96,7 +96,6 @@ type
     procedure VisitorMappingGroup_Add;
     procedure VisitorMappingGroup_AssignVisitorInstances;
     procedure VisitorManager_RegisterVisitor;
-    procedure VisitorManager_AssignVisitorInstances;
     procedure VisitorManager_FindVisitorMappingGroup;
 
     procedure VisClassCount_Execute;
@@ -175,12 +174,10 @@ type
     class function VisitorControllerClass : TtiVisitorControllerClass; override;
   end;
 
-
   TTestVisitorGetAllToVisit = class(TtiVisitor)
   protected
     function AcceptVisitor : boolean; override;
   end;
-
 
   TTestVisStream = class(TVisStream)
   public
@@ -192,7 +189,6 @@ type
   TTestVisitorManager = class(TtiVisitorManager)
   public
     property VisitorMappings;
-    procedure AssignVisitorInstances(const AVisitorList : TObjectList; const AGroupName : string); override;
     function FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup; override;
   end;
 
@@ -736,21 +732,13 @@ begin
 end;
 
 
-procedure TTestTIVisitor.Visitor_VisitorController;
+procedure TTestTIVisitor.Visitor_VisitorControllerClass;
 var
   lVis : TtiVisitor;
 begin
   lVis := TTestVisitorController.Create;
   try
     CheckEquals(lVis.VisitorControllerClass, TtiVisitorController);
-    CheckNull(lVis.VisitorController);
-    lVis.VisitorController := lVis.VisitorControllerClass.Create;
-    try
-      CheckNotNull(lVis.VisitorController);
-      CheckIs(lVis.VisitorController, TtiVisitorController);
-    finally
-      lVis.VisitorController.Free;
-    end;
   finally
     lVis.Free;
   end;
@@ -2036,44 +2024,6 @@ begin
   end;
 end;
 
-type
-  TTestVisitorManagerGetVisitors1 = class(TtiVisitor)
-  end;
-  TTestVisitorManagerGetVisitors2 = class(TtiVisitor)
-  end;
-  TTestVisitorManagerGetVisitors3 = class(TtiVisitor)
-  end;
-
-procedure TTestTIVisitor.VisitorManager_AssignVisitorInstances;
-var
-  LVM: TTestVisitorManager;
-  LList: TObjectList;
-begin
-  LVM:= TTestVisitorManager.Create;
-  try
-    LVM.RegisterVisitor('test', TTestVisitorManagerGetVisitors1);
-    LVM.RegisterVisitor('test1', TTestVisitorManagerGetVisitors2);
-    LVM.RegisterVisitor('test1', TTestVisitorManagerGetVisitors3);
-    LList:= TObjectList.Create;
-    try
-      LVM.AssignVisitorInstances(LList, 'test');
-      CheckEquals(1, LList.Count);
-      CheckIs(TObject(LList.Items[0]), TTestVisitorManagerGetVisitors1);
-
-      LList.Clear;
-      LVM.AssignVisitorInstances(LList, 'test1');
-      CheckEquals(2, LList.Count);
-      CheckIs(TObject(LList.Items[0]), TTestVisitorManagerGetVisitors2);
-      CheckIs(TObject(LList.Items[1]), TTestVisitorManagerGetVisitors3);
-
-    finally
-      LList.Free;
-    end;
-  finally
-    LVM.Free;
-  end;
-end;
-
 procedure TTestTIVisitor.VisitorManager_FindVisitorMappingGroup;
 var
   LVM: TTestVisitorManager;
@@ -2092,13 +2042,6 @@ begin
   finally
     LVM.Free;
   end;
-end;
-
-{ TTestVisitorManager }
-
-procedure TTestVisitorManager.AssignVisitorInstances(const AVisitorList: TObjectList; const AGroupName: string);
-begin
-  inherited AssignVisitorInstances(AVisitorList, AGroupName);
 end;
 
 function TTestVisitorManager.FindVisitorMappingGroup(
