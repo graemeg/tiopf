@@ -11,6 +11,7 @@ uses
   ,tiObject
   ,tiPersistenceLayers
   ,tiVisitor
+  ,tiVisitorDB
   ,tiAutoMap
   ,tiOID
   ,tiThread
@@ -31,7 +32,7 @@ type
   private
     FPersistenceLayers : TtiPersistenceLayers;
     FDefaultPackageName: string;
-    FVisitorManager: TtiVisitorManager;
+    FVisitorManager: TtiObjectVisitorManager;
     FClassDBMappingMgr: TtiClassDBMappingMgr;
     FTerminated: boolean;
     FCriticalSection: TCriticalSection;
@@ -175,8 +176,8 @@ type
     property    DefaultDBConnectionName : string            read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
 
     property    PersistenceLayers      : TtiPersistenceLayers read FPersistenceLayers;
-    property    VisMgr                 : TtiVisitorManager read FVisitorManager; // Don't use VisMgr. It will be removed
-    property    VisitorManager         : TtiVisitorManager read FVisitorManager;
+    property    VisMgr                 : TtiObjectVisitorManager read FVisitorManager; // Don't use VisMgr. It will be removed
+    property    VisitorManager         : TtiObjectVisitorManager read FVisitorManager;
 
     // ToDo: How to relate the ClassDBMappingMgr to a persistence layer -
     //       The code exists inside the ClassDBMappingMgr but is is stubbed out as it
@@ -287,7 +288,7 @@ begin
   inherited;
   FCriticalSection := TCriticalSection.Create;
   FPersistenceLayers := TtiPersistenceLayers.Create;
-  FVisitorManager := TtiVisitorManager.Create;
+  FVisitorManager := TtiObjectVisitorManager.Create;
 
   FDefaultPackageName := '';
   FTerminated := false;

@@ -3,13 +3,18 @@ unit tiVisitor;
 {$I tiDefines.inc}
 
 // ToDo:
-
-//    Refactor VisitorController to remove DB smell
-
+//    Unit test TtiObjectVisitorController
+//    TtiObjectVisitorController.AfterExecuteVisitorGroup must access list of visited objects
+//       will require some kind of mapping between objects and visitors
 //    Audit for const params
-//    Group visitors by registered name
-//    Audit & test BreakOnException code
 //    Audit for unit tests
+//    Format with JCF
+//    Audit for Used Units
+//    Audit for TestValid calls
+//    Refactor the DBConnectionPool so Lock returns a TtiDatabase
+//    Relocate code that checks persistence layer and database have been assigned into the config object
+//      Raise an exception if persistence layer can't be found, rather than assert
+//    Rename TtiPerObjVisitor to TtiObjectVisitor
 
 interface
 uses
@@ -100,32 +105,26 @@ type
     property    Caption   : string  read GetCaption;
   public
     constructor Create; virtual;
-    procedure   Iterate(const AVisitor : TtiVisitor); overload;
+    procedure   Iterate(const AVisitor : TtiVisitor); overload; virtual;
     procedure   FindAllByClassType(AClass : TtiVisitedClass; AList : TList);
     property    Terminated: Boolean read GetTerminated;
   end;
 
+  TtiVisitorControllerConfig = class(TtiBaseObject)
+  end;
+
   TtiVisitorController = class(TtiBaseObject)
   private
-    FDBConnectionName: string;
-    FPerLayerName   : string;
+    FConfig: TtiVisitorControllerConfig;
   protected
-    procedure SetPerLayerName(const AValue: string); virtual;
+    property  Config: TtiVisitorControllerConfig read FConfig;
   public
-    constructor Create; virtual;
+    constructor Create(const AConfig: TtiVisitorControllerConfig); virtual;
     procedure BeforeExecuteVisitorGroup(const AVisitors : TList); virtual;
     procedure BeforeExecuteVisitor(const AVisitor : TtiVisitor); virtual;
     procedure AfterExecuteVisitor(const AVisitor : TtiVisitor ); virtual;
     procedure AfterExecuteVisitorGroup(const AVisitors : TList); virtual;
     procedure AfterExecuteVisitorGroupError(const AVisitors : TList); virtual;
-
-    // The property DBConnectionName is really only required in DBVisitors, but
-    // must be introduce here so it can be set at a generic level by the
-    // VisitorMgr. The alternative is to use RTTI or TypeInfo and only set the
-    // property on DBVisitorMgr(s), but that would be an ever worse hack.
-    property  PerLayerName    : string read FPerLayerName     write SetPerLayerName;
-    property  DBConnectionName : string read FDBConnectionName write FDBConnectionName;
-
   end;
 
   TtiVisitorControllerClass = class of TtiVisitorController;
@@ -189,14 +188,13 @@ type
     FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
     FBreakOnException: boolean;
     procedure ExecuteVisitors(const AVisitorController: TtiVisitorController; const AVisitors: TList; const AVisited : TtiVisited);
-    procedure ProcessVisitors(const AGroupName : string;
-                               const AVisited : TtiVisited;
-                               const ADBConnectionName : string;
-                               const APersistenceLayerName     : string);
     function GetVisitorMappings: TList;
   protected
     property    VisitorMappings: TList read GetVisitorMappings;
     function    FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup; virtual;
+    procedure ProcessVisitors(const AGroupName : string;
+                const AVisited : TtiVisited;
+                const AVisitorControllerConfig: TtiVisitorControllerConfig); virtual;
 
   public
     constructor Create; virtual;
@@ -205,9 +203,7 @@ type
                                  const AVisitorClass  : TtiVisitorClass);
     procedure   UnRegisterVisitors(const AGroupName : string);
     function    Execute(const AGroupName      : string;
-                         const AVisited         : TtiVisited;
-                         const ADBConnectionName : string = '';
-                         const APersistenceLayerName    : string = ''): string;
+                         const AVisited         : TtiVisited): string; overload; virtual; 
     property    BreakOnException : boolean read FBreakOnException write FBreakOnException;
   end;
 
@@ -585,10 +581,10 @@ begin
 end;
 
 
-constructor TtiVisitorController.Create;
+constructor TtiVisitorController.Create(const AConfig: TtiVisitorControllerConfig);
 begin
-  // So we can create an instance ot TVisitorMgr from a class reference var.
-  inherited;
+  inherited Create;
+  FConfig:= AConfig;
 end;
 
 
@@ -715,13 +711,6 @@ begin
   FList.Add(AVisited);
 end;
 
-
-procedure TtiVisitorController.SetPerLayerName(const AValue: string);
-begin
-  FPerLayerName := AValue;
-end;
-
-
 { TtiVisitorManager }
 
 constructor TtiVisitorManager.Create;
@@ -741,51 +730,16 @@ begin
 end;
 
 function TtiVisitorManager.Execute(const AGroupName      : string;
-                            const AVisited         : TtiVisited;
-                            const ADBConnectionName : string = '';
-                            const APersistenceLayerName    : string = ''): string;
+                            const AVisited         : TtiVisited): string;
 var
-  lPerLayerName      : string;
-  lDBConnectionName  : string;
+  LVisitorControllerConfig: TtiVisitorControllerConfig;
 begin
-  // Don't go any further if terminated
-  if gTIOPFManager.Terminated then
-    Exit; //==>
-
-  Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
-
-  if APersistenceLayerName = '' then
-  begin
-    Assert(gTIOPFManager.DefaultPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
-    lPerLayerName := gTIOPFManager.DefaultPerLayer.PerLayerName
-  end else
-    lPerLayerName := APersistenceLayerName;
-
-  if ADBConnectionName = '' then
-    lDBConnectionName := gTIOPFManager.DefaultDBConnectionName
-  else
-    lDBConnectionName := ADBConnectionName;
-
-  Assert(lDBConnectionName <> '',
-          'Either the gTIOPFManager.DefaultDBConnectionName must be set, ' +
-          'or the DBConnectionName must be passed as a parameter to ' +
-          'gVisMgr.Execute()');
-
+  LVisitorControllerConfig:= TtiVisitorControllerConfig.Create;
   try
-    Result := '';
-    ProcessVisitors(AGroupName, AVisited, lDBConnectionName, lPerLayerName);
+    ProcessVisitors(AGroupName, AVisited, LVisitorControllerConfig);
   except
-    // Log and display any error messages
-    on e:exception do
-    begin
-      Result := e.message;
-      LogError(e.message, false);
-      if BreakOnException then
-        raise;
-    end;
+    LVisitorControllerConfig.Free;
   end;
-
-  Log('Finished process visitors for <' + AGroupName + '>', lsVisitor);
 end;
 
 procedure TtiVisitorManager.ExecuteVisitors(
@@ -818,7 +772,7 @@ var
   LGroupName : string;
 begin
   result:= nil;
-  LGroupName := upperCase(AGroupName);
+  LGroupName := UpperCase(AGroupName);
   for i := 0 to FVisitorMappings.Count - 1 do
     if (FVisitorMappings.Items[i] as TtiVisitorMappingGroup).GroupName = LGroupName then
     begin
@@ -834,21 +788,19 @@ end;
 
 procedure TtiVisitorManager.ProcessVisitors(const AGroupName       : string;
   const AVisited: TtiVisited;
-  const ADBConnectionName : string;
-  const APersistenceLayerName    : string);
+  const AVisitorControllerConfig: TtiVisitorControllerConfig);
 var
   LVisitorMappingGroup: TtiVisitorMappingGroup;
   LVisitorController: TtiVisitorController;
   LVisitors : TObjectList;
 begin
+  Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
   LVisitors := TObjectList.Create;
   try
     FSynchronizer.BeginRead;
     try
       LVisitorMappingGroup:= FindVisitorMappingGroup(AGroupName);
-      LVisitorController:= LVisitorMappingGroup.VisitorControllerClass.Create;
-      LVisitorController.DBConnectionName:= ADBConnectionName;
-      LVisitorController.PerLayerName:= APersistenceLayerName;
+      LVisitorController:= LVisitorMappingGroup.VisitorControllerClass.Create(AVisitorControllerConfig);
       LVisitorMappingGroup.AssignVisitorInstances(LVisitors);
       try
         LVisitorController.BeforeExecuteVisitorGroup(LVisitors);
@@ -871,6 +823,7 @@ begin
   finally
     LVisitors.Free;
   end;
+  Log('Finished process visitors for <' + AGroupName + '>', lsVisitor);
 end;
 
 
