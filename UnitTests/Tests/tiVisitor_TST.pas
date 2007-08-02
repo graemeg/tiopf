@@ -45,7 +45,7 @@ type
     procedure Visitor_ContinueVisiting_TopDownSinglePass;
     procedure Visitor_ContinueVisiting_TopDownRecurse;
 
-    procedure Visitor_VisitorControllerClass;
+    procedure Visitor_VisitorController;
 
     procedure Visitor_Depth_TopDownRecurse;
     procedure Visitor_Depth_TopDownSinglePass;
@@ -175,10 +175,12 @@ type
     class function VisitorControllerClass : TtiVisitorControllerClass; override;
   end;
 
+
   TTestVisitorGetAllToVisit = class(TtiVisitor)
   protected
     function AcceptVisitor : boolean; override;
   end;
+
 
   TTestVisStream = class(TVisStream)
   public
@@ -734,13 +736,21 @@ begin
 end;
 
 
-procedure TTestTIVisitor.Visitor_VisitorControllerClass;
+procedure TTestTIVisitor.Visitor_VisitorController;
 var
   lVis : TtiVisitor;
 begin
   lVis := TTestVisitorController.Create;
   try
     CheckEquals(lVis.VisitorControllerClass, TtiVisitorController);
+    CheckNull(lVis.VisitorController);
+    lVis.VisitorController := lVis.VisitorControllerClass.Create;
+    try
+      CheckNotNull(lVis.VisitorController);
+      CheckIs(lVis.VisitorController, TtiVisitorController);
+    finally
+      lVis.VisitorController.Free;
+    end;
   finally
     lVis.Free;
   end;

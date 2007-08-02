@@ -53,7 +53,7 @@ uses
 type
 
   // A visitor manager for TVisDBAbs visitors
-  TtiObjectVisitorController = class(TtiVisitorController)
+  TtiPerObjVisitorCtrlr = class(TtiVisitorController)
   private
     FPooledDB : TPooledDB;
     FtiQueryClass : TtiQueryClass;
@@ -61,12 +61,13 @@ type
     property  PooledDB : TPooledDB read FPooledDB write FPooledDB;
     procedure SetPerLayerName(const AValue: string); override;
   public
-    procedure BeforeExecuteVisitorGroup(const AVisitors : TList)     ; override;
-    procedure BeforeExecuteVisitor(const AVisitor : TtiVisitor); override;
-    procedure AfterExecuteVisitor(const AVisitor : TtiVisitor ); override;
-    procedure AfterExecuteVisitorGroup(const AVisitors : TList)      ; override;
-    procedure AfterExecuteVisitorGroupError(const AVisitors : TList)    ; override;
+    procedure BeforeExecuteAll(AVisitors : TList)     ; override;
+    procedure BeforeExecuteOne(AVisitor : TtiVisitor); override;
+    procedure AfterExecuteOne(AVisitor : TtiVisitor ); override;
+    procedure AfterExecuteAll(AVisitors : TList)      ; override;
+    procedure AfterExecuteError(AVisitors : TList)    ; override;
   end;
+
 
   { TODO : Add a reference to the TUserName object so the _Svr units do not have to ref the Security_Cli unit. }
 
@@ -239,10 +240,10 @@ end;
 
 class function TtiPerObjVisitor.VisitorControllerClass: TtiVisitorControllerClass;
 begin
-  result := TtiObjectVisitorController;
+  result := TtiPerObjVisitorCtrlr;
 end;
 
-procedure TtiObjectVisitorController.AfterExecuteVisitorGroup(const AVisitors : TList);
+procedure TtiPerObjVisitorCtrlr.AfterExecuteAll(AVisitors : TList);
 var
   i, j : integer;
   lVisitor : TtiPerObjVisitor;
@@ -273,7 +274,7 @@ begin
   end;
   if gTIOPFManager.Terminated then
     Exit; //==>
-  inherited AfterExecuteVisitorGroup(AVisitors);
+  inherited AfterExecuteAll(AVisitors);
 
   if gTIOPFManager.Terminated then
     Exit; //==>
@@ -284,7 +285,7 @@ begin
 
 end;
 
-procedure TtiObjectVisitorController.AfterExecuteVisitorGroupError(const AVisitors : TList);
+procedure TtiPerObjVisitorCtrlr.AfterExecuteError(AVisitors : TList);
 var
   lRegPerLayer : TtiPersistenceLayer;
 begin
@@ -296,12 +297,12 @@ begin
   lRegPerLayer.DBConnectionPools.UnLock(DBConnectionName, FPooledDB);
 end;
 
-procedure TtiObjectVisitorController.AfterExecuteVisitor(const AVisitor : TtiVisitor);
+procedure TtiPerObjVisitorCtrlr.AfterExecuteOne(AVisitor : TtiVisitor);
 begin
   TtiPerObjVisitor(AVisitor).Database := nil;
 end;
 
-procedure TtiObjectVisitorController.BeforeExecuteVisitorGroup(const AVisitors : TList);
+procedure TtiPerObjVisitorCtrlr.BeforeExecuteAll(AVisitors : TList);
 var
   lRegPerLayer : TtiPersistenceLayer;
 begin
@@ -311,7 +312,7 @@ begin
   FPooledDB.Database.StartTransaction;
 end;
 
-procedure TtiObjectVisitorController.BeforeExecuteVisitor(const AVisitor : TtiVisitor);
+procedure TtiPerObjVisitorCtrlr.BeforeExecuteOne(AVisitor : TtiVisitor);
 begin
   Assert(AVisitor is TtiPerObjVisitor, AVisitor.ClassName + ' not a TVisDBAbs');
   Assert(TtiPerObjVisitor(AVisitor).FQuery = nil, 'TtiPerObjVisitor(AVisitor).Query already assigned');
@@ -322,7 +323,7 @@ begin
     TtiPerObjVisitor(AVisitor).Database);
 end;
 
-procedure TtiObjectVisitorController.SetPerLayerName(const AValue: string);
+procedure TtiPerObjVisitorCtrlr.SetPerLayerName(const AValue: string);
 var
   lRegPerLayer : TtiPersistenceLayer;
 begin
