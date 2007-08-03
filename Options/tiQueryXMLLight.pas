@@ -9,6 +9,7 @@ uses
   ,tiQueryTXTAbs
   ,tiXML
   ,tiXMLToTIDataset
+  ,tiPersistenceLayers
  ;
 
 const
@@ -65,6 +66,10 @@ function tiMakeXMLLightParams(pReadOnly: Boolean; const pCompress: string;
                                pOptDBSize: TtiOptXMLDBSize;
                                pFieldNameSyle: TtiXMLFieldNameStyle): string;
 
+// ToDo: Refactor RegisterPersistenceLayer so it works as a class method
+//       on the DBConnection or DBConnectionPool, or create a TPersistenceLayerXXX
+//       class for the purpose
+procedure RegisterPersistenceLayer(const APersistenceLayers: TtiPersistenceLayers);
 
 implementation
 uses
@@ -72,11 +77,20 @@ uses
   ,tiOPFManager
   ,tiConstants
   ,tiLog
-//  ,tiDialogs
   ,tiExcept
   ,SysUtils
 
  ;
+
+procedure RegisterPersistenceLayer(const APersistenceLayers: TtiPersistenceLayers);
+begin
+  Assert(APersistenceLayers.TestValid, cTIInvalidObjectError);
+  APersistenceLayers.__RegisterPersistenceLayer(
+              cTIPersistXMLLight,
+              TtiDBConnectionPoolDataXMLLight,
+              TtiQueryXMLLight,
+              TtiDatabaseXMLLight);
+end;
 
 function tiMakeXMLLightParams(pReadOnly: Boolean; const pCompress: string;
                                pOptDBSize: TtiOptXMLDBSize;
@@ -311,16 +325,11 @@ begin
 end;
 
 Initialization
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-              cTIPersistXMLLight,
-              TtiDBConnectionPoolDataXMLLight,
-              TtiQueryXMLLight,
-              TtiDatabaseXMLLight);
+  RegisterPersistenceLayer(gTIOPFManager.PersistenceLayers);
 
 finalization
   if not tiOPFManager.ShuttingDown then
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXMLLight);
-
 
 end.
 

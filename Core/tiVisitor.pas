@@ -3,7 +3,6 @@ unit tiVisitor;
 {$I tiDefines.inc}
 
 // ToDo:
-//    Unit test TtiObjectVisitorController
 //    TtiObjectVisitorController.AfterExecuteVisitorGroup must access list of visited objects
 //       will require some kind of mapping between objects and visitors
 //    Audit for const params
@@ -11,9 +10,8 @@ unit tiVisitor;
 //    Format with JCF
 //    Audit for Used Units
 //    Audit for TestValid calls
+
 //    Refactor the DBConnectionPool so Lock returns a TtiDatabase
-//    Relocate code that checks persistence layer and database have been assigned into the config object
-//      Raise an exception if persistence layer can't be found, rather than assert
 //    Rename TtiPerObjVisitor to TtiObjectVisitor
 
 interface

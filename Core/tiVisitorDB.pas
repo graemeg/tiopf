@@ -51,6 +51,11 @@ uses
   ,Classes
  ;
 
+const
+  CErrorDefaultPersistenceLayerNotAssigned = 'Attempt to connect to the default persistence layer, but the default persistence layer has not been assigned.';
+  CErrorDefaultDatabaseNotAssigned = 'Attempt to connect to the default database but the default database has not been assigned.';
+  CErrorAttemptToUseUnRegisteredPersistenceLayer = 'Attempt to use unregistered persistence layer "%s"';
+  CErrorAttemptToUseUnConnectedDatabase = 'Attempt to use unconnected database "%s"';
 type
 
   // A visitor manager for TVisDBAbs visitors
@@ -74,9 +79,13 @@ type
   private
     FDatabaseName: string;
     FPersistenceLayerName: string;
+  protected
+    function TIOPFManager: TObject; virtual;
   public
-    property PersistenceLayerName: string read FPersistenceLayerName write FPersistenceLayerName;
-    property DatabaseName: string read FDatabaseName write FDatabaseName;
+    property PersistenceLayerName: string read FPersistenceLayerName;
+    property DatabaseName: string read FDatabaseName;
+    procedure SetDatabaseAndPersistenceLayerNames(
+      const APersistenceLayerName, ADBConnectionName: string);
   end;
 
   TtiObjectVisitorManager = class(TtiVisitorManager)
@@ -425,32 +434,51 @@ function TtiObjectVisitorManager.Execute(const AGroupName: string;
 var
   FVisitorControllerConfig: TtiObjectVisitorControllerConfig;
 begin
-
   FVisitorControllerConfig:= TtiObjectVisitorControllerConfig.Create;
   try
-
-    if APersistenceLayerName = '' then
-    begin
-      Assert(gTIOPFManager.DefaultPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
-      FVisitorControllerConfig.PersistenceLayerName:= gTIOPFManager.DefaultPerLayer.PerLayerName
-    end else
-      FVisitorControllerConfig.PersistenceLayerName:= APersistenceLayerName;
-
-    if ADBConnectionName = '' then
-      FVisitorControllerConfig.DatabaseName := gTIOPFManager.DefaultDBConnectionName
-    else
-      FVisitorControllerConfig.DatabaseName := ADBConnectionName;
-
-    Assert(FVisitorControllerConfig.DatabaseName <> '',
-            'Either the gTIOPFManager.DefaultDBConnectionName must be set, ' +
-            'or the DBConnectionName must be passed as a parameter to ' +
-            'VisitorManager.Execute()');
-
+    FVisitorControllerConfig.SetDatabaseAndPersistenceLayerNames(APersistenceLayerName, ADBConnectionName);
     ProcessVisitors(AGroupName, AVisited, FVisitorControllerConfig);
   finally
     FVisitorControllerConfig.Free;
   end;
+end;
 
+{ TtiObjectVisitorControllerConfig }
+
+procedure TtiObjectVisitorControllerConfig.SetDatabaseAndPersistenceLayerNames(
+  const APersistenceLayerName, ADBConnectionName: string);
+var
+  LTIOPFManager: TtiOPFManager;
+begin
+  LTIOPFManager:= TtiOPFManager(TIOPFManager);
+
+  if APersistenceLayerName = '' then
+  begin
+    if not Assigned(TtiOPFManager(TIOPFManager).DefaultPerLayer) then
+      raise EtiOPFDataException.Create(CErrorDefaultPersistenceLayerNotAssigned);
+    FPersistenceLayerName:= LTIOPFManager.DefaultPerLayer.PerLayerName;
+  end else
+    FPersistenceLayerName:= APersistenceLayerName;
+
+  if ADBConnectionName = '' then
+  begin
+    if not Assigned(TtiOPFManager(TIOPFManager).DefaultDBConnectionPool) then
+      raise EtiOPFDataException.Create(CErrorDefaultDatabaseNotAssigned);
+    FDatabaseName := LTIOPFManager.DefaultDBConnectionName;
+  end else
+    FDatabaseName := ADBConnectionName;
+
+  if not LTIOPFManager.PersistenceLayers.IsLoaded(FPersistenceLayerName) then
+    raise EtiOPFDataException.CreateFmt(CErrorAttemptToUseUnRegisteredPersistenceLayer, [FPersistenceLayerName])
+  else if not LTIOPFManager.PersistenceLayers.FindByPerLayerName(
+    FPersistenceLayerName).DBConnectionPools.IsConnected(FDatabaseName) then
+    raise EtiOPFDataException.CreateFmt(CErrorAttemptToUseUnConnectedDatabase, [FDatabaseName])
+
+end;
+
+function TtiObjectVisitorControllerConfig.TIOPFManager: TObject;
+begin
+  result:= GTIOPFManager;
 end;
 
 end.

@@ -42,6 +42,7 @@ uses
   ,tiCompress_TST
   ,tiEncrypt_TST
   ,tiVisitor_TST
+  ,tiVisitorDB_TST
   ,tiStreams_TST
   ,tiPool_tst
   ,tiQueue_TST
@@ -117,6 +118,7 @@ begin
   tiUtils_TST.RegisterTests;
   tiRTTI_TST.RegisterTests;
   tiVisitor_TST.RegisterTests;
+  tiVisitorDB_TST.RegisterTests;
   tiObject_tst.RegisterTests;
   tiCompress_TST.RegisterTests;
   tiEncrypt_TST.RegisterTests;

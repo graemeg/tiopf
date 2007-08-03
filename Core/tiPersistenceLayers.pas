@@ -60,6 +60,8 @@ type
 
     // Do not call these your self. They are called in the initialization section
     // of tiQueryXXX.pas that contains the concrete classes.
+    // ToDo: Refactor __RegisterPersistenceLayer so it takes only one parameter:
+    //       The persistence layer class, and the rest is derived from class funcs
     procedure   __RegisterPersistenceLayer(const ALayerName: string;
                                           ADBConnectionPoolDataClass : TtiDBConnectionPoolDataClass;
                                           AQueryClass : TtiQueryClass;
