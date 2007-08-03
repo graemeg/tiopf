@@ -737,7 +737,7 @@ begin
   LVisitorControllerConfig:= TtiVisitorControllerConfig.Create;
   try
     ProcessVisitors(AGroupName, AVisited, LVisitorControllerConfig);
-  except
+  finally
     LVisitorControllerConfig.Free;
   end;
 end;

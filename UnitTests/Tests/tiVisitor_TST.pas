@@ -97,6 +97,8 @@ type
     procedure VisitorMappingGroup_AssignVisitorInstances;
     procedure VisitorManager_RegisterVisitor;
     procedure VisitorManager_FindVisitorMappingGroup;
+    procedure VisitorManager_VisitorController;
+    procedure VisitorManager_VisitorControllerException;
 
     procedure VisClassCount_Execute;
     procedure VisFindAllByClass_Execute;
@@ -197,10 +199,8 @@ procedure RegisterTests;
 
 implementation
 uses
-  SysUtils
-  ,tiUtils
+   tiUtils
   ,tiOPFManager
-  ,TypInfo
   ,tiOPFTestManager
   ,tiDUnitDependencies
   ,tiStreams
@@ -208,6 +208,12 @@ uses
   ,tiRTTI
   ,tiObject
   ,tiExcept
+  ,tiVisitorDB
+  ,TypInfo
+  ,SysUtils
+
+  ,tiDialogs
+  
  ;
 
 
@@ -1924,6 +1930,133 @@ begin
   end;
 end;
 
+var
+  USensingList: TStringList;
+
+type
+
+  TSensingVisitorController = class(TtiVisitorController)
+  public
+    procedure BeforeExecuteVisitorGroup(const AVisitors : TList); override;
+    procedure BeforeExecuteVisitor(const AVisitor : TtiVisitor); override;
+    procedure AfterExecuteVisitor(const AVisitor : TtiVisitor ); override;
+    procedure AfterExecuteVisitorGroup(const AVisitors : TList); override;
+    procedure AfterExecuteVisitorGroupError(const AVisitors : TList); override;
+  end;
+
+  TTestVisitorManagerVCVisitor = class(TtiVisitor)
+  public
+    class function VisitorControllerClass : TtiVisitorControllerClass; override;
+  end;
+
+  TTestVisitorManagerVCVisitorException = class(TTestVisitorManagerVCVisitor)
+  public
+    procedure Execute(const AVisited: TtiVisited); override;
+  end;
+
+  procedure TSensingVisitorController.AfterExecuteVisitor(
+    const AVisitor: TtiVisitor);
+  begin
+    USensingList.Add('AfterExecuteVisitor');
+  end;
+
+  procedure TSensingVisitorController.AfterExecuteVisitorGroup(
+    const AVisitors: TList);
+  begin
+    USensingList.Add('AfterExecuteVisitorGroup');
+  end;
+
+  procedure TSensingVisitorController.AfterExecuteVisitorGroupError(
+    const AVisitors: TList);
+  begin
+    USensingList.Add('AfterExecuteVisitorGroupError');
+  end;
+
+  procedure TSensingVisitorController.BeforeExecuteVisitor(
+    const AVisitor: TtiVisitor);
+  begin
+    USensingList.Add('BeforeExecuteVisitor');
+  end;
+
+  procedure TSensingVisitorController.BeforeExecuteVisitorGroup(
+    const AVisitors: TList);
+  begin
+    USensingList.Add('BeforeExecuteVisitorGroup');
+  end;
+
+  class function TTestVisitorManagerVCVisitor.VisitorControllerClass: TtiVisitorControllerClass;
+  begin
+    result:= TSensingVisitorController;
+  end;
+
+  procedure TTestVisitorManagerVCVisitorException.Execute(const AVisited: TtiVisited);
+  begin
+    raise Exception.Create('Test VisitorController exception');
+  end;
+
+procedure TTestTIVisitor.VisitorManager_VisitorController;
+var
+  LVM: TtiObjectVisitorManager;
+  LO: TtiObject;
+begin
+  USensingList:= nil;
+  LVM:= nil;
+  LO:= nil;
+  try
+    USensingList:= TStringList.Create;
+    LVM:= TtiObjectVisitorManager.Create;
+    LO:= TtiObject.Create;
+
+    LVM.RegisterVisitor('test', TTestVisitorManagerVCVisitor);
+    LVM.Execute('test', LO);
+
+    CheckEquals(4, USensingList.Count);
+    CheckEquals('BeforeExecuteVisitorGroup', USensingList.Strings[0]);
+    CheckEquals('BeforeExecuteVisitor', USensingList.Strings[1]);
+    CheckEquals('AfterExecuteVisitor', USensingList.Strings[2]);
+    CheckEquals('AfterExecuteVisitorGroup', USensingList.Strings[3]);
+
+  finally
+    LO.Free;
+    LVM.Free;
+    USensingList.Free;
+  end;
+end;
+
+procedure TTestTIVisitor.VisitorManager_VisitorControllerException;
+var
+  LVM: TtiObjectVisitorManager;
+  LO: TtiObject;
+begin
+  USensingList:= nil;
+  LVM:= nil;
+  LO:= nil;
+  try
+    USensingList:= TStringList.Create;
+    LVM:= TtiObjectVisitorManager.Create;
+    LO:= TtiObject.Create;
+
+    LVM.RegisterVisitor('test', TTestVisitorManagerVCVisitorException);
+    try
+      LVM.Execute('test', LO);
+      Fail('Exception not raised');
+    except
+      on e:exception do
+      begin
+        CheckEquals(4, USensingList.Count);
+        CheckEquals('BeforeExecuteVisitorGroup', USensingList.Strings[0]);
+        CheckEquals('BeforeExecuteVisitor', USensingList.Strings[1]);
+        CheckEquals('AfterExecuteVisitor', USensingList.Strings[2]);
+        CheckEquals('AfterExecuteVisitorGroupError', USensingList.Strings[3]);
+      end;
+    end;
+  finally
+    LO.Free;
+    LVM.Free;
+    USensingList.Free;
+  end;
+end;
+
 type
 
   TTestVisitorMappingGroupVisitorControllerClass1 = Class(TtiVisitorController)
@@ -2049,6 +2182,8 @@ function TTestVisitorManager.FindVisitorMappingGroup(
 begin
   result:= inherited FindVisitorMappingGroup(AGroupName);
 end;
+
+{ TTestVisitorManagerVCVisitorException }
 
 end.
 
