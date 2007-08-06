@@ -18,6 +18,7 @@ unit tiVisitor;
 //    Refactor the DBConnectionPool so Lock returns a TtiDatabase
 //    Rename TtiPerObjVisitor to TtiObjectVisitor
 //    Add comments in PasDoc format
+//    Fix broken Delete unit test
 
 interface
 uses
