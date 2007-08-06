@@ -57,15 +57,18 @@ type
                                      const AList: TList;
                                      const AIterationDepth: TIterationDepth) of object;
 
-  TtiVisitedCandidate = class(TtiBaseObject)
+  TtiTouchedByVisitor = class(TtiBaseObject)
   private
+    FVisitor: TtiVisitor;
     FVisited: TtiVisited;
     FApparentOwner: TtiVisited;
     FIterationDepth: TIterationDepth;
   public
-    property ApparentOwner: TtiVisited read FApparentOwner write FApparentOwner;
-    property Visited: TtiVisited read FVisited write FVisited;
-    property IterationDepth: TIterationDepth read FIterationDepth write FIterationDepth;
+    constructor Create(const AVisitor: TtiVisitor; const AVisited: TtiVisited;
+      const AApparentOwner: TtiVisited; const AIterationDepth: TIterationDepth);
+    property ApparentOwner: TtiVisited read FApparentOwner;
+    property Visited: TtiVisited read FVisited;
+    property IterationDepth: TIterationDepth read FIterationDepth;
   end;
 
   // TtiVisited
@@ -95,7 +98,7 @@ type
                                       const AVisitor : TtiVisitor;
                                       const ATouchedObjectList: TList;
                                       const AIterationDepth: TIterationDepth);
-    procedure   ExecuteVisitor(const AVisitor: TtiVisitor; const AVisitedCandidate: TtiVisitedCandidate);
+    procedure   ExecuteVisitor(const AVisitor: TtiVisitor; const AVisitedCandidate: TtiTouchedByVisitor);
     function    GetTerminated: boolean; virtual;
     function    ContinueVisiting(const AVisitor: TtiVisitor): boolean; virtual;
     function    CheckContinueVisitingIfTopDownRecurse(const AVisitor: TtiVisitor): boolean; virtual;
@@ -366,7 +369,7 @@ end;
 
 
 procedure TtiVisited.ExecuteVisitor(const AVisitor: TtiVisitor;
-  const AVisitedCandidate: TtiVisitedCandidate);
+  const AVisitedCandidate: TtiTouchedByVisitor);
 begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
   Assert(AVisitedCandidate.TestValid, cTIInvalidObjectError);
@@ -443,7 +446,7 @@ begin
     while (i <= LTouchedObjectList.Count-1) and
       ContinueVisiting(AVisitor) do
     begin
-      ExecuteVisitor(AVisitor, TtiVisitedCandidate(LTouchedObjectList.Items[i]));
+      ExecuteVisitor(AVisitor, TtiTouchedByVisitor(LTouchedObjectList.Items[i]));
       Inc(i);
     end;
   finally
@@ -459,23 +462,19 @@ end;
 procedure TtiVisited.TouchMethodAddToList(const ACandidates: TtiVisited;
   const AVisitor: TtiVisitor; const ATouchedObjectList: TList; const AIterationDepth: TIterationDepth);
 var
-  LVisitedCandidate: TtiVisitedCandidate;
+  LVisitedCandidate: TtiTouchedByVisitor;
 begin
-  LVisitedCandidate:= TtiVisitedCandidate.Create;
-  LVisitedCandidate.Visited:= ACandidates;
-  LVisitedCandidate.IterationDepth:= AIterationDepth;
+  LVisitedCandidate:= TtiTouchedByVisitor.Create(AVisitor, ACandidates, nil, AIterationDepth);
   ATouchedObjectList.Add(LVisitedCandidate);
 end;
 
 procedure TtiVisited.TouchMethodExecuteVisitor(const ACandidates: TtiVisited;
   const AVisitor: TtiVisitor; const ATouchedObjectList: TList; const AIterationDepth: TIterationDepth);
 var
-  LVisitedCandidate: TtiVisitedCandidate;
+  LVisitedCandidate: TtiTouchedByVisitor;
 begin
-  LVisitedCandidate:= TtiVisitedCandidate.Create;
+  LVisitedCandidate:= TtiTouchedByVisitor.Create(AVisitor, ACandidates, nil, AIterationDepth);
   try
-    LVisitedCandidate.Visited:= ACandidates;
-    LVisitedCandidate.IterationDepth:= AIterationDepth;
     ExecuteVisitor(AVisitor, LVisitedCandidate);
   finally
     LVisitedCandidate.Free;
@@ -685,7 +684,7 @@ begin
     while (i >= 0) and
       ContinueVisiting(AVisitor) do
     begin
-      ExecuteVisitor(AVisitor, TtiVisitedCandidate(LTouchedObjectList.Items[i]));
+      ExecuteVisitor(AVisitor, TtiTouchedByVisitor(LTouchedObjectList.Items[i]));
       Dec(i);
     end;
   finally
@@ -899,6 +898,19 @@ destructor TtiVisitorMappingGroup.Destroy;
 begin
   FMappings.Free;
   inherited;
+end;
+
+{ TtiTouchedByVisitor }
+
+constructor TtiTouchedByVisitor.Create(const AVisitor: TtiVisitor;
+  const AVisited, AApparentOwner: TtiVisited;
+  const AIterationDepth: TIterationDepth);
+begin
+  inherited Create;
+  FVisitor:= FVisitor;
+  FVisited:= FVisited;
+  FApparentOwner:= AApparentOwner;
+  FIterationDepth:= AIterationDepth;
 end;
 
 end.

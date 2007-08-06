@@ -37,6 +37,8 @@ type
     procedure SetUp; override;
   published
 
+    procedure TouchedByVisitor_Create;
+
     // Test the visitor
     procedure Visitor_AcceptVisitor;
     procedure Visitor_Execute;
@@ -1778,6 +1780,34 @@ procedure TTestTIVisitor.SetUp;
 begin
   inherited;
   gTIOPFManager.Terminated := false;
+end;
+
+procedure TTestTIVisitor.TouchedByVisitor_Create;
+var
+  L: TtiTouchedByVisitor;
+  LVisitor: TtiVisitor;
+  LVisited: TtiVisited;
+  LApparentOwner: TtiVisited;
+begin
+  LVisitor:= nil;
+  LVisited:= nil;
+  LApparentOwner:= nil;
+  L:= nil;
+  try
+    LVisitor:= TtiVisitor.Create;
+    LVisited:= TtiVisited.Create;
+    LApparentOwner:= TtiVisited.Create;
+    L:= TtiTouchedByVisitor.Create(LVisitor, LVisited, LApparentOwner, 1);
+    CheckSame(Visitor, L.Visited);
+    CheckSame(LVisited, L.Visited);
+    CheckSame(LApparentOwner, L.ApparentOwner);
+    CheckEquals(1, L.IterationDepth);
+  finally
+    LVisitor.Free;
+    LVisited.Free;
+    LApparentOwner.Free;
+    L.Free;
+  end;
 end;
 
 { TTestVisitor_Execute }
