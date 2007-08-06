@@ -1479,7 +1479,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure Iterate(const AVisitor : TtiVisitor;
+    procedure IterateRecurse(const AVisitor : TtiVisitor;
                       const ADerivedParent: TtiVisited;
                       const AList: TList;
                       const ATouchMethod: TtiVisitedTouchMethod;
@@ -1512,7 +1512,7 @@ type
     inherited;
   end;
 
-  procedure TTestVisitedOverrideIterateChild.Iterate(
+  procedure TTestVisitedOverrideIterateChild.IterateRecurse(
     const AVisitor : TtiVisitor;
     const ADerivedParent: TtiVisited;
     const AList: TList;

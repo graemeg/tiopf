@@ -13,6 +13,7 @@ unit tiVisitor;
 
 //    Refactor the DBConnectionPool so Lock returns a TtiDatabase
 //    Rename TtiPerObjVisitor to TtiObjectVisitor
+//    Add comments in PasDoc format
 
 interface
 uses
@@ -72,27 +73,27 @@ type
   TtiVisited = class(TtiBaseObject)
   protected
     function    GetCaption: string; virtual;
-    procedure   Iterate(const AVisitor : TtiVisitor;
+    procedure   IterateTopDownRecurse(AVisitor : TtiVisitor); virtual;
+    procedure   IterateTopDownSinglePass(AVisitor: TtiVisitor); virtual;
+    procedure   IterateBottomUpSinglePass(AVisitor: TtiVisitor); virtual;
+    procedure   IterateRecurse(const AVisitor : TtiVisitor;
                         const ADerivedParent: TtiVisited;
                         const ATouchedObjectList: TList;
                         const ATouchMethod: TtiVisitedTouchMethod;
-                        const AIterationDepth: TIterationDepth); overload; virtual;
+                        const AIterationDepth: TIterationDepth); virtual;
     procedure   IterateOverList(const AVisitor: TtiVisitor;
                         const ACandidates: TList;
                         const ADerivedParent: TtiVisited;
                         const ATouchecdObjectList: TList;
                         const ATouchMethod: TtiVisitedTouchMethod;
                         const AIterationDepth: TIterationDepth);
-    procedure   IterateTopDownRecurse(AVisitor : TtiVisitor); virtual;
-    procedure   IterateTopDownSinglePass(AVisitor: TtiVisitor); virtual;
-    procedure   IterateBottomUpSinglePass(AVisitor: TtiVisitor); virtual;
     procedure   TouchMethodAddToList(const ACandidates: TtiVisited;
                                       const AVisitor : TtiVisitor;
-                                      const AList: TList;
+                                      const ATouchedObjectList: TList;
                                       const AIterationDepth: TIterationDepth);
     procedure   TouchMethodExecuteVisitor(const ACandidates: TtiVisited;
                                       const AVisitor : TtiVisitor;
-                                      const AList: TList;
+                                      const ATouchedObjectList: TList;
                                       const AIterationDepth: TIterationDepth);
     procedure   ExecuteVisitor(const AVisitor: TtiVisitor; const AVisitedCandidate: TtiVisitedCandidate);
     function    GetTerminated: boolean; virtual;
@@ -305,7 +306,7 @@ begin
   end;
 end;
 
-procedure TtiVisited.Iterate(
+procedure TtiVisited.IterateRecurse(
   const AVisitor: TtiVisitor;
   const ADerivedParent: TtiVisited;
   const ATouchedObjectList: TList;
@@ -331,7 +332,7 @@ begin
       begin
         LCandidate := GetObjectProp(Self, LClassPropNames.Strings[i]);
         if (LCandidate is TtiVisited) then
-          (LCandidate as TtiVisited).Iterate(AVisitor, (LCandidate as TtiVisited), ATouchedObjectList, ATouchMethod, LIterationDepth)
+          (LCandidate as TtiVisited).IterateRecurse(AVisitor, (LCandidate as TtiVisited), ATouchedObjectList, ATouchMethod, LIterationDepth)
         else if (LCandidate is TList) then
           IterateOverList(AVisitor, (LCandidate as TList), Self, ATouchedObjectList, ATouchMethod, LIterationDepth);
         inc(i);
@@ -405,7 +406,7 @@ begin
   while (i <= ACandidates.Count - 1) do
   begin
     if (TObject(ACandidates.Items[i]) is TtiVisited) then
-      TtiVisited(ACandidates.Items[i]).Iterate(AVisitor, ADerivedParent,
+      TtiVisited(ACandidates.Items[i]).IterateRecurse(AVisitor, ADerivedParent,
               ATouchecdObjectList, ATouchMethod, AIterationDepth);
     inc(i);
   end;
@@ -425,28 +426,28 @@ end;
 procedure TtiVisited.IterateTopDownRecurse(AVisitor: TtiVisitor);
 begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
-  Iterate(AVisitor, nil, nil, TouchMethodExecuteVisitor, 0);
+  IterateRecurse(AVisitor, nil, nil, TouchMethodExecuteVisitor, 0);
 end;
 
 
 procedure TtiVisited.IterateTopDownSinglePass(AVisitor: TtiVisitor);
 var
-  LList: TObjectList;
+  LTouchedObjectList: TObjectList;
   i : integer;
 begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
-  LList:= TObjectList.Create(True);
+  LTouchedObjectList:= TObjectList.Create(True);
   try
-    Iterate(AVisitor, nil, LList, TouchMethodAddToList, 0);
+    IterateRecurse(AVisitor, nil, LTouchedObjectList, TouchMethodAddToList, 0);
     i:= 0;
-    while (i <= LList.Count-1) and
+    while (i <= LTouchedObjectList.Count-1) and
       ContinueVisiting(AVisitor) do
     begin
-      ExecuteVisitor(AVisitor, TtiVisitedCandidate(LList.Items[i]));
+      ExecuteVisitor(AVisitor, TtiVisitedCandidate(LTouchedObjectList.Items[i]));
       Inc(i);
     end;
   finally
-    LList.Free;
+    LTouchedObjectList.Free;
   end;
 end;
 
@@ -456,25 +457,24 @@ begin
 end;
 
 procedure TtiVisited.TouchMethodAddToList(const ACandidates: TtiVisited;
-  const AVisitor: TtiVisitor; const AList: TList; const AIterationDepth: TIterationDepth);
+  const AVisitor: TtiVisitor; const ATouchedObjectList: TList; const AIterationDepth: TIterationDepth);
 var
   LVisitedCandidate: TtiVisitedCandidate;
 begin
   LVisitedCandidate:= TtiVisitedCandidate.Create;
   LVisitedCandidate.Visited:= ACandidates;
   LVisitedCandidate.IterationDepth:= AIterationDepth;
-  AList.Add(LVisitedCandidate);
+  ATouchedObjectList.Add(LVisitedCandidate);
 end;
 
 procedure TtiVisited.TouchMethodExecuteVisitor(const ACandidates: TtiVisited;
-  const AVisitor: TtiVisitor; const AList: TList; const AIterationDepth: TIterationDepth);
+  const AVisitor: TtiVisitor; const ATouchedObjectList: TList; const AIterationDepth: TIterationDepth);
 var
   LVisitedCandidate: TtiVisitedCandidate;
 begin
   LVisitedCandidate:= TtiVisitedCandidate.Create;
   try
     LVisitedCandidate.Visited:= ACandidates;
-  //  LVisitedCandidate.ApparentOwner:= AApparentOwner;
     LVisitedCandidate.IterationDepth:= AIterationDepth;
     ExecuteVisitor(AVisitor, LVisitedCandidate);
   finally
@@ -674,22 +674,22 @@ end;
 
 procedure TtiVisited.IterateBottomUpSinglePass(AVisitor: TtiVisitor);
 var
-  LList: TObjectList;
+  LTouchedObjectList: TObjectList;
   i : integer;
 begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
-  LList:= TObjectList.Create(True);
+  LTouchedObjectList:= TObjectList.Create(True);
   try
-    Iterate(AVisitor, nil, LList, TouchMethodAddToList, 0);
-    i:= LList.Count-1;
+    IterateRecurse(AVisitor, nil, LTouchedObjectList, TouchMethodAddToList, 0);
+    i:= LTouchedObjectList.Count-1;
     while (i >= 0) and
       ContinueVisiting(AVisitor) do
     begin
-      ExecuteVisitor(AVisitor, TtiVisitedCandidate(LList.Items[i]));
+      ExecuteVisitor(AVisitor, TtiVisitedCandidate(LTouchedObjectList.Items[i]));
       Dec(i);
     end;
   finally
-    LList.Free;
+    LTouchedObjectList.Free;
   end;
 end;
 
