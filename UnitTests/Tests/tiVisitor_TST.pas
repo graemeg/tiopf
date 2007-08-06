@@ -16,10 +16,11 @@ uses
 type
   TTestVisitedList = class;
   TTestVisitedOwned = class;
+  TTestVisitedListAndOwned = class;
 
   TTestTIVisitor = class(TtiTestCase)
   private
-    function CreateListAndOwned : TTestVisitedList;
+    function CreateListAndOwned : TTestVisitedListAndOwned;
     function CreateList : TTestVisitedList;
     function CreateOwned : TTestVisitedOwned;
 
@@ -32,12 +33,15 @@ type
     procedure Visited_AcceptVisitor(AIterationStyle: TtiIterationStyle);
     procedure Visited_VisitBranch(AIterationStyle: TtiIterationStyle);
     procedure Visited_ContinueVisiting(AIterationStyle: TtiIterationStyle);
+    procedure Visited_IterateAssignTouched(const AIterationStyle: TtiIterationStyle);
 
   protected
     procedure SetUp; override;
   published
 
     procedure TouchedByVisitor_Create;
+    procedure TouchedByVisitorList_Add;
+    procedure TouchedByVisitorList_AppendTopDown;
 
     // Test the visitor
     procedure Visitor_AcceptVisitor;
@@ -75,6 +79,10 @@ type
     procedure Visited_Iterate_ListAndOwned_BottomUpSinglePass;
 
     procedure Visited_Iterate_Override;
+
+    procedure Visited_IterateAssignTouched_TopDownRecurse;
+    procedure Visited_IterateAssignTouched_TopDownSinglePass;
+    procedure Visited_IterateAssignTouched_BottomUpSinglePass;
 
     procedure Visited_Recurse_TopDownRecurse;
     procedure Visited_Recurse_TopDownSinglePass;
@@ -154,6 +162,11 @@ type
     destructor  Destroy; override;
   end;
 
+  TTestVisitedListAndOwned = class(TTestVisitedList)
+  public
+    constructor Create; override;
+  end;
+
   TSensingVisitorAbs = class (TtiVisitor)
   private
     FData: TStringList;
@@ -229,7 +242,7 @@ end;
 
 procedure TTestTIVisitor.VisClassCount_Execute;
 var
-  lVisited : TTestVisitedList;
+  lVisited : TTestVisitedListAndOwned;
   lVis : TVisClassCount;
 begin
   lVisited := CreateListAndOwned;
@@ -237,7 +250,8 @@ begin
       lVis := TVisClassCount.Create;
       try
         lVisited.Iterate(lVis);
-        CheckEquals(1,  lVis.ClassCount[TTestVisitedList],  'Failed TTestVisitedList');
+        CheckEquals(0,  lVis.ClassCount[TTestVisitedList],  'Failed TTestVisitedList');
+        CheckEquals(1,  lVis.ClassCount[TTestVisitedListAndOwned],  'Failed TTestVisitedListAndOwned');
         CheckEquals(3,  lVis.ClassCount[TTestVisitedOwned], 'Failed TTestVisitedOwned');
         // Probably not what you would expect (13 is more logical) because
         // TTestVisitedList and TTestVisitedOwned are both TestVisited, but
@@ -256,7 +270,7 @@ end;
 
 procedure TTestTIVisitor.VisFindAllByClass_Execute;
 var
-  lVisited : TTestVisitedList;
+  lVisited : TTestVisitedListAndOwned;
   lVis : TVisFindAllByClass;
   lList : TList;
 begin
@@ -434,7 +448,7 @@ end;
 
 procedure TTestTIVisitor.Visited_FindAllByClassType;
 var
-  lVisitedList : TTestVisitedList;
+  lVisitedList : TTestVisitedListAndOwned;
   lList : TList;
 begin
   lVisitedList := CreateListAndOwned;
@@ -558,7 +572,7 @@ procedure TTestVisitorContinueVisiting.Execute(const AVisited: TtiVisited);
 procedure TTestTIVisitor.Visitor_ContinueVisiting(const AIterationStyle: TtiIterationStyle);
 var
   LVisitor : TTestVisitorContinueVisiting;
-  LVisitedList : TTestVisitedList;
+  LVisitedList : TTestVisitedListAndOwned;
 begin
   LVisitedList := CreateListAndOwned;
   try
@@ -625,7 +639,7 @@ type
 procedure TTestTIVisitor.Visitor_Depth_BottomUpSinglePass;
 var
   LVisitor : TTestVisitorDepth;
-  LVisitedList : TTestVisitedList;
+  LVisitedList : TTestVisitedListAndOwned;
 begin
   LVisitedList := CreateListAndOwned;
   try
@@ -657,7 +671,7 @@ end;
 procedure TTestTIVisitor.Visitor_Depth_TopDownRecurse;
 var
   LVisitor : TTestVisitorDepth;
-  LVisitedList : TTestVisitedList;
+  LVisitedList : TTestVisitedListAndOwned;
 begin
   LVisitedList := CreateListAndOwned;
   try
@@ -690,7 +704,7 @@ end;
 procedure TTestTIVisitor.Visitor_Depth_TopDownSinglePass;
 var
   LVisitor : TTestVisitorDepth;
-  LVisitedList : TTestVisitedList;
+  LVisitedList : TTestVisitedListAndOwned;
 begin
   LVisitedList := CreateListAndOwned;
   try
@@ -771,7 +785,7 @@ procedure TTestTIVisitor.VisStream_Execute;
 var
   lVis : TTestVisStream;
   lStream : TtiPreSizedStream;
-  lVisitedList : TTestVisitedList;
+  lVisitedList : TTestVisitedListAndOwned;
 const
   cATestLine = 'A test line';
 begin
@@ -832,7 +846,7 @@ procedure TTestTIVisitor.VisStreamToFile_Execute;
   end;
 
 var
-  LVisitedList : TTestVisitedList;
+  LVisitedList : TTestVisitedListAndOwned;
   LFileName : TFileName;
 begin
   LFileName := TempFileName;
@@ -1483,7 +1497,7 @@ type
     destructor Destroy; override;
     procedure IterateRecurse(const AVisitor : TtiVisitor;
                       const ADerivedParent: TtiVisited;
-                      const AList: TList;
+                      const ATouchedByVisitorList: TtiTouchedByVisitorList;
                       const ATouchMethod: TtiVisitedTouchMethod;
                       const AIterationDepth: TIterationDepth); override;
   published
@@ -1517,7 +1531,7 @@ type
   procedure TTestVisitedOverrideIterateChild.IterateRecurse(
     const AVisitor : TtiVisitor;
     const ADerivedParent: TtiVisited;
-    const AList: TList;
+    const ATouchedByVisitorList: TtiTouchedByVisitorList;
     const ATouchMethod: TtiVisitedTouchMethod;
     const AIterationDepth: TIterationDepth);
   begin
@@ -1605,6 +1619,85 @@ begin
   Visited_Iterate_ListAndOwned(isTopDownSinglePass);
 end;
 
+type
+  TTestVisitedIterateAssignTouched = class(TTestVisitedListAndOwned)
+  public
+    procedure   IterateAssignTouched(const AVisitor : TtiVisitor;
+      const ATouchedByVisitorList: TtiTouchedByVisitorList); override;
+  end;
+
+  procedure TTestVisitedIterateAssignTouched.IterateAssignTouched(
+    const AVisitor: TtiVisitor;
+    const ATouchedByVisitorList: TtiTouchedByVisitorList);
+  begin
+    inherited IterateAssignTouched(AVisitor, ATouchedByVisitorList);
+  end;
+
+procedure TTestTIVisitor.Visited_IterateAssignTouched(const AIterationStyle: TtiIterationStyle);
+var
+  LTouchedByVisitorList: TtiTouchedByVisitorList;
+  LVisitor : TTestVisitorIterate;
+  LVisitedList : TTestVisitedIterateAssignTouched;
+  i : integer;
+  LSequenceFactor: Integer;
+begin
+  // The expected order of objects will be reversed for BottomUpSinglePass
+  if AIterationStyle = isBottomUpSinglePass then
+    LSequenceFactor:= 12
+  else
+    LSequenceFactor:= 0;
+
+  LTouchedByVisitorList:= nil;
+  LVisitor:= nil;
+  LVisitedList:= nil;
+  try
+    LVisitedList := TTestVisitedIterateAssignTouched.Create;
+    LVisitor := TTestVisitorIterate.Create;
+    LTouchedByVisitorList:= TtiTouchedByVisitorList.Create(True);
+    LVisitor.IterationStyle:= AIterationStyle;
+
+    LVisitedList.IterateAssignTouched(LVisitor, LTouchedByVisitorList);
+
+    CheckEquals(13, LTouchedByVisitorList.Count);
+    for i := 0 to 12 do
+      CheckSame(LVisitor, LTouchedByVisitorList.Items[I].Visitor);
+
+    CheckSame(LVisitedList, LTouchedByVisitorList.Items[Abs(0-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[0]), LTouchedByVisitorList.Items[Abs(1-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[0]).Owned1, LTouchedByVisitorList.Items[Abs(2-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[0]).Owned2, LTouchedByVisitorList.Items[Abs(3-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[0]).Owned3, LTouchedByVisitorList.Items[Abs(4-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[1]), LTouchedByVisitorList.Items[Abs(5-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[1]).Owned1, LTouchedByVisitorList.Items[Abs(6-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[1]).Owned2, LTouchedByVisitorList.Items[Abs(7-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[1]).Owned3, LTouchedByVisitorList.Items[Abs(8-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[2]), LTouchedByVisitorList.Items[Abs(9-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[2]).Owned1, LTouchedByVisitorList.Items[Abs(10-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[2]).Owned2, LTouchedByVisitorList.Items[Abs(11-LSequenceFactor)].Visited);
+    CheckSame(TTestVisitedOwned(LVisitedList.List.Items[2]).Owned3, LTouchedByVisitorList.Items[Abs(12-LSequenceFactor)].Visited);
+
+  finally
+    LVisitedList.Free;
+    LVisitor.Free;
+    LTouchedByVisitorList.Free;
+  end;
+end;
+
+procedure TTestTIVisitor.Visited_IterateAssignTouched_BottomUpSinglePass;
+begin
+  Visited_IterateAssignTouched(isBottomUpSinglePass);
+end;
+
+procedure TTestTIVisitor.Visited_IterateAssignTouched_TopDownRecurse;
+begin
+  Visited_IterateAssignTouched(isTopDownRecurse);
+end;
+
+procedure TTestTIVisitor.Visited_IterateAssignTouched_TopDownSinglePass;
+begin
+  Visited_IterateAssignTouched(isTopDownSinglePass);
+end;
+
 procedure TTestTIVisitor.Visited_Iterate_List(
   AIterationStyle: TtiIterationStyle);
 var
@@ -1636,7 +1729,7 @@ procedure TTestTIVisitor.Visited_Iterate_ListAndOwned(
   AIterationStyle: TtiIterationStyle);
 var
   lVisitor : TTestVisitorIterate;
-  lVisitedList : TTestVisitedList;
+  lVisitedList : TTestVisitedListAndOwned;
   i : integer;
 begin
   lVisitedList := CreateListAndOwned;
@@ -1659,7 +1752,7 @@ end;
 procedure TTestTIVisitor.Visited_Iterate_ListAndOwned_BottomUpSinglePass;
 var
   lVisitor : TTestVisitorIterate;
-  lVisitedList : TTestVisitedList;
+  lVisitedList : TTestVisitedListAndOwned;
   i : integer;
 begin
   lVisitedList := CreateListAndOwned;
@@ -1680,48 +1773,9 @@ begin
 end;
 
 
-function TTestTIVisitor.CreateListAndOwned: TTestVisitedList;
-var
-  lVisitedOwned : TTestVisitedOwned;
+function TTestTIVisitor.CreateListAndOwned: TTestVisitedListAndOwned;
 begin
-  {
-    Creates an object graph like this:
-      TTestVisitedList
-        TTestVisitedOwned
-          TTestVisited
-          TTestVisited
-          TTestVisited
-        TTestVisitedOwned
-          TTestVisited
-          TTestVisited
-          TTestVisited
-        TTestVisitedOwned
-          TTestVisited
-          TTestVisited
-          TTestVisited
-  }
-  result := TTestVisitedList.Create;
-  result.Index := 1;
-  lVisitedOwned := TTestVisitedOwned.Create;
-  lVisitedOwned.Index := 2;
-  lVisitedOwned.Owned1.Index := 3;
-  lVisitedOwned.Owned2.Index := 4;
-  lVisitedOwned.Owned3.Index := 5;
-  result.List.Add(lVisitedOwned);
-
-  lVisitedOwned := TTestVisitedOwned.Create;
-  lVisitedOwned.Index := 6;
-  lVisitedOwned.Owned1.Index := 7;
-  lVisitedOwned.Owned2.Index := 8;
-  lVisitedOwned.Owned3.Index := 9;
-  result.List.Add(lVisitedOwned);
-
-  lVisitedOwned := TTestVisitedOwned.Create;
-  lVisitedOwned.Index := 10;
-  lVisitedOwned.Owned1.Index := 11;
-  lVisitedOwned.Owned2.Index := 12;
-  lVisitedOwned.Owned3.Index := 13;
-  result.List.Add(lVisitedOwned);
+  result := TTestVisitedListAndOwned.Create;
 end;
 
 
@@ -1782,30 +1836,35 @@ begin
   gTIOPFManager.Terminated := false;
 end;
 
+procedure TTestTIVisitor.TouchedByVisitorList_Add;
+begin
+
+end;
+
+procedure TTestTIVisitor.TouchedByVisitorList_AppendTopDown;
+begin
+
+end;
+
 procedure TTestTIVisitor.TouchedByVisitor_Create;
 var
   L: TtiTouchedByVisitor;
   LVisitor: TtiVisitor;
   LVisited: TtiVisited;
-  LApparentOwner: TtiVisited;
 begin
   LVisitor:= nil;
   LVisited:= nil;
-  LApparentOwner:= nil;
   L:= nil;
   try
     LVisitor:= TtiVisitor.Create;
     LVisited:= TtiVisited.Create;
-    LApparentOwner:= TtiVisited.Create;
-    L:= TtiTouchedByVisitor.Create(LVisitor, LVisited, LApparentOwner, 1);
-    CheckSame(Visitor, L.Visited);
+    L:= TtiTouchedByVisitor.Create(LVisitor, LVisited, 1);
+    CheckSame(LVisitor, L.Visitor);
     CheckSame(LVisited, L.Visited);
-    CheckSame(LApparentOwner, L.ApparentOwner);
     CheckEquals(1, L.IterationDepth);
   finally
     LVisitor.Free;
     LVisited.Free;
-    LApparentOwner.Free;
     L.Free;
   end;
 end;
@@ -2214,6 +2273,55 @@ begin
 end;
 
 { TTestVisitorManagerVCVisitorException }
+
+{ TTestVisitedListAndOwned }
+
+constructor TTestVisitedListAndOwned.Create;
+var
+  LVisitedOwned : TTestVisitedOwned;
+begin
+  {
+    Creates an object graph like this:
+      TTestVisitedList
+        TTestVisitedOwned
+          TTestVisited
+          TTestVisited
+          TTestVisited
+        TTestVisitedOwned
+          TTestVisited
+          TTestVisited
+          TTestVisited
+        TTestVisitedOwned
+          TTestVisited
+          TTestVisited
+          TTestVisited
+  }
+  inherited Create;
+  Index := 1;
+  LVisitedOwned := TTestVisitedOwned.Create;
+  LVisitedOwned.Index := 2;
+  LVisitedOwned.Owned1.Index := 3;
+  LVisitedOwned.Owned2.Index := 4;
+  LVisitedOwned.Owned3.Index := 5;
+  List.Add(LVisitedOwned);
+
+  LVisitedOwned := TTestVisitedOwned.Create;
+  LVisitedOwned.Index := 6;
+  LVisitedOwned.Owned1.Index := 7;
+  LVisitedOwned.Owned2.Index := 8;
+  LVisitedOwned.Owned3.Index := 9;
+  List.Add(LVisitedOwned);
+
+  LVisitedOwned := TTestVisitedOwned.Create;
+  LVisitedOwned.Index := 10;
+  LVisitedOwned.Owned1.Index := 11;
+  LVisitedOwned.Owned2.Index := 12;
+  LVisitedOwned.Owned3.Index := 13;
+  List.Add(LVisitedOwned);
+
+end;
+
+{ TTestVisitedIterateAssignTouched }
 
 end.
 
