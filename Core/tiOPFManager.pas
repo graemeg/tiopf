@@ -288,7 +288,7 @@ begin
   inherited;
   FCriticalSection := TCriticalSection.Create;
   FPersistenceLayers := TtiPersistenceLayers.Create;
-  FVisitorManager := TtiObjectVisitorManager.Create;
+  FVisitorManager := TtiObjectVisitorManager.Create(Self);
 
   FDefaultPackageName := '';
   FTerminated := false;

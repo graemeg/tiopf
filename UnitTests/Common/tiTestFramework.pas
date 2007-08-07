@@ -25,6 +25,8 @@ uses
 {$undef read_implementation}
 
 const
+  CErrorExceptionNotRaised = 'Exception not raised when it should have been';
+
   cTableNameTestGroup               = 'Test_Group';
 
   cTableNameTIOPFTestChild_A        = 'Test_Child_a';

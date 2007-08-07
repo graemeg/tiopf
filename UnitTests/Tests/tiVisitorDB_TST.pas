@@ -25,6 +25,8 @@ type
     procedure TIObjectVisitorController_AfterExecuteVisitorGroup;
     procedure TIObjectVisitorController_AfterExecuteVisitorGroupError;
     procedure TIVisitorManager_ExecutePassDatabaseName;
+    procedure TIVisitorManager_ExecutePassDatabaseNameException;
+    procedure TIVisitorManager_ExecuteUnregisteredVisitor;
     procedure TIVisitorManager_Execute;
   end;
 
@@ -42,6 +44,8 @@ uses
   ,tiUtils
   ,tiBaseObject
   ,SysUtils
+  ,Classes
+  ,tiDialogs
  ;
 
 procedure RegisterTests;
@@ -85,12 +89,12 @@ begin
   LVCC:= nil;
   try
     LM:= TtiOPFManager.Create;
-    LVCC:= TTestObjectVisitorControllerConfig.Create;
+    LVCC:= TTestObjectVisitorControllerConfig.Create(LM.VisitorManager);
     LVCC.SetTIOPFManager(LM);
 
     try
       LVCC.SetDatabaseAndPersistenceLayerNames('', '');
-      Fail('Exception not raised');
+      Fail(CErrorExceptionNotRaised);
     except
       on e: exception do
       begin
@@ -104,7 +108,7 @@ begin
 
     try
       LVCC.SetDatabaseAndPersistenceLayerNames(cTIPersistXMLLight, '');
-      Fail('Exception not raised');
+      Fail(CErrorExceptionNotRaised);
     except
       on e: exception do
       begin
@@ -115,7 +119,7 @@ begin
 
     try
       LVCC.SetDatabaseAndPersistenceLayerNames('', '');
-      Fail('Exception not raised');
+      Fail(CErrorExceptionNotRaised);
     except
       on e: exception do
       begin
@@ -126,7 +130,7 @@ begin
 
     try
       LVCC.SetDatabaseAndPersistenceLayerNames(cTIPersistXMLLight, 'test_db');
-      Fail('Exception not raised');
+      Fail(CErrorExceptionNotRaised);
     except
       on e: exception do
       begin
@@ -137,7 +141,7 @@ begin
 
     try
       LVCC.SetDatabaseAndPersistenceLayerNames('test_pl', LDatabaseName);
-      Fail('Exception not raised');
+      Fail(CErrorExceptionNotRaised);
     except
       on e: exception do
       begin
@@ -222,10 +226,10 @@ begin
   tiQueryXMLLight.RegisterPersistenceLayer(AOPDMSManager.PersistenceLayers);
   AOPDMSManager.DefaultPerLayer.CreateDatabase(ADatabaseName, '', '');
   AOPDMSManager.DefaultPerLayer.DBConnectionPools.Connect(ADatabaseName, '', '', '');
-  AConfig:= TTestTIObjectVisitorControllerConfig.Create;
+  AConfig:= TTestTIObjectVisitorControllerConfig.Create(AOPDMSManager.VisitorManager);
   AConfig.FTIOPFManager:= AOPDMSManager;
   AConfig.SetDatabaseAndPersistenceLayerNames(cTIPersistXMLLight, ADatabaseName);
-  AVisitorController:= TTestTIObjectVisitorController.Create(AConfig);
+  AVisitorController:= TTestTIObjectVisitorController.Create(AOPDMSManager.VisitorManager, AConfig);
   AVisitorController.FTIOPFManager:= AOPDMSManager;
 end;
 
@@ -399,12 +403,189 @@ begin
 
 end;
 
-procedure TTestTIVisitorDB.TIVisitorManager_ExecutePassDatabaseName;
-begin
+const
+  CErrorTestException = 'Test exception';
 
+type
+  TtiObjectSensingVisitor = class(TtiObjectVisitor)
+  protected
+    procedure   Init; override;
+    procedure   SetupParams; override;
+    procedure   Final(const AVisited: TtiObject); override;
+  public
+    procedure Execute(const AVisited: TtiVisited); override;
+  end;
+
+  TtiObjectSensingVisitorException = class(TtiObjectSensingVisitor)
+  protected
+    procedure   SetupParams; override;
+  end;
+
+  TtiObjectSensingVisited = class(TtiObject)
+  private
+    FData: TStringList;
+  protected
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    property Data: TStringList read FData;
+  end;
+
+  constructor TtiObjectSensingVisited.Create;
+  begin
+    inherited;
+    FData:= TStringList.Create;
+  end;
+
+  destructor TtiObjectSensingVisited.Destroy;
+  begin
+    FData.Free;
+    inherited;
+  end;
+
+  procedure TtiObjectSensingVisitorException.SetupParams;
+  begin
+    inherited;
+    raise Exception.Create(CErrorTestException);
+  end;
+
+procedure TtiObjectSensingVisitor.Execute(const AVisited: TtiVisited);
+var
+  LVisited: TtiObjectSensingVisited;
+begin
+  inherited Execute(AVisited);
+  LVisited:=(AVisited as TtiObjectSensingVisited);
+  LVisited.Data.Add(ClassName + '.Execute\' + AVisited.ClassName);
+  Init;
+  SetupParams;
+end;
+
+procedure TtiObjectSensingVisitor.Final(const AVisited: TtiObject);
+begin
+  (AVisited as TtiObjectSensingVisited).Data.Add(ClassName + '.Final\' + AVisited.ClassName);
+end;
+
+procedure TtiObjectSensingVisitor.Init;
+begin
+  (Visited as TtiObjectSensingVisited).Data.Add(ClassName + '.Init\' + Visited.ClassName);
+end;
+
+procedure TtiObjectSensingVisitor.SetupParams;
+begin
+  (Visited as TtiObjectSensingVisited).Data.Add(ClassName + '.SetupParams\' + Visited.ClassName);
+end;
+
+procedure TTestTIVisitorDB.TIVisitorManager_ExecutePassDatabaseName;
+var
+  LM: TtiOPFManager;
+  LVC: TTestTIObjectVisitorController;
+  LConfig: TTestTIObjectVisitorControllerConfig;
+  LDatabaseName: string;
+  LVisited: TtiObjectSensingVisited;
+begin
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
+  LM:= nil;
+  LConfig:= nil;
+  LVC:= nil;
+  LVisited:= nil;
+  try
+    CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
+    LM.VisitorManager.RegisterVisitor('test', TtiObjectSensingVisitor);
+    LVisited:= TtiObjectSensingVisited.Create;
+    LM.VisitorManager.Execute('test', LVisited, LDatabaseName, cTIPersistXMLLight);
+    CheckEquals(4, LVisited.Data.Count);
+    CheckEquals('TtiObjectSensingVisitor.Execute\TtiObjectSensingVisited', LVisited.Data.Strings[0]);
+    CheckEquals('TtiObjectSensingVisitor.Init\TtiObjectSensingVisited', LVisited.Data.Strings[1]);
+    CheckEquals('TtiObjectSensingVisitor.SetupParams\TtiObjectSensingVisited', LVisited.Data.Strings[2]);
+    CheckEquals('TtiObjectSensingVisitor.Final\TtiObjectSensingVisited', LVisited.Data.Strings[3]);
+  finally
+    LConfig.Free;
+    LVC.Free;
+    LM.Free;
+    LVisited.Free;
+    tiDeleteFile(LDatabaseName);
+  end;
+end;
+
+procedure TTestTIVisitorDB.TIVisitorManager_ExecutePassDatabaseNameException;
+var
+  LM: TtiOPFManager;
+  LVC: TTestTIObjectVisitorController;
+  LConfig: TTestTIObjectVisitorControllerConfig;
+  LDatabaseName: string;
+  LVisited: TtiObjectSensingVisited;
+begin
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
+  LM:= nil;
+  LConfig:= nil;
+  LVC:= nil;
+  LVisited:= nil;
+  try
+    CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
+    LM.VisitorManager.RegisterVisitor('test', TtiObjectSensingVisitorException);
+    LVisited:= TtiObjectSensingVisited.Create;
+    try
+      LM.VisitorManager.Execute('test', LVisited, LDatabaseName, cTIPersistXMLLight);
+      Fail(CErrorExceptionNotRaised);
+    except
+      on e: exception do
+        CheckEquals(CErrorTestException, e.message);
+    end;
+    CheckEquals(3, LVisited.Data.Count);
+    CheckEquals('TtiObjectSensingVisitorException.Execute\TtiObjectSensingVisited', LVisited.Data.Strings[0]);
+    CheckEquals('TtiObjectSensingVisitorException.Init\TtiObjectSensingVisited', LVisited.Data.Strings[1]);
+    CheckEquals('TtiObjectSensingVisitorException.SetupParams\TtiObjectSensingVisited', LVisited.Data.Strings[2]);
+  finally
+    LConfig.Free;
+    LVC.Free;
+    LM.Free;
+    LVisited.Free;
+    tiDeleteFile(LDatabaseName);
+  end;
+end;
+
+procedure TTestTIVisitorDB.TIVisitorManager_ExecuteUnregisteredVisitor;
+var
+  LM: TtiOPFManager;
+  LVC: TTestTIObjectVisitorController;
+  LConfig: TTestTIObjectVisitorControllerConfig;
+  LDatabaseName: string;
+  LVisited: TtiObject;
+begin
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
+  LM:= nil;
+  LConfig:= nil;
+  LVC:= nil;
+  LVisited:= nil;
+  try
+    CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
+    LVisited:= TtiObject.Create;
+    try
+      LM.VisitorManager.Execute('test', LVisited, LDatabaseName, cTIPersistXMLLight);
+      Fail(CErrorExceptionNotRaised);
+    except
+      on e:exception do
+      begin
+        CheckIs(E, EtiOPFProgrammerException);
+        CheckFormattedMessage(CErrorInvalidVisitorGroup, ['test'], E.Message);
+      end;
+    end;
+  finally
+    LConfig.Free;
+    LVC.Free;
+    LM.Free;
+    LVisited.Free;
+    tiDeleteFile(LDatabaseName);
+  end;
 end;
 
 { TTestTIObjectVisitor }
+
+{ TtiObjectSensingVisitor }
+
+{ TtiObjectSensingVisited }
+
+{ TtiObjectSensingVisitorException }
 
 end.
 

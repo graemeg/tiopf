@@ -3,18 +3,12 @@ unit tiVisitor;
 {$I tiDefines.inc}
 
 // ToDo:
-//    Write unit tests:
-//      TouchedByVisitorList_Add;
-//      TouchedByVisitorList_AppendTopDown;
-//      TouchedByVisitorList_AppendBottomUp
-//    Test TouchedByVisitorList with multiple visitors called from the VisitorManager
+//    UnitTest Execute method.
 //    Change signature of
 //      AcceptVisitor
 //      Init
 //      SetupParams
 //      MapRowToObject
-//      Final
-//    Implement and unit test Final
 //    Audit for const params
 //    Audit for unit tests
 //    Format with JCF
@@ -25,6 +19,9 @@ unit tiVisitor;
 //    Rename TtiPerObjVisitor to TtiObjectVisitor
 //    Add comments in PasDoc format
 //    Fix broken Delete unit test
+//    Test compile demos
+//    Remove deprecated instance of VisMgr on tiOPFManager
+//    Refactor tiTestFramework to remove duplication
 
 interface
 uses
@@ -41,6 +38,7 @@ const
   CErrorInVisitorExecute = 'Error in %s.Execute(%s) Message: %s';
   CErrorInvalidIterationStyle = 'Invalid TtiIterationStyle';
   CErrorAttemptToRegisterDuplicateVisitor = 'Attempt to register duplicate visitor "%s"';
+  CErrorInvalidVisitorGroup = 'Attempt to execute visitors for an unknown visitor group "%s"';
   CErrorIncompatibleVisitorController = 'VisitorControllerClass not compatible. Required type "%s", Actual type "%s"';
 
 type
@@ -52,6 +50,7 @@ type
   TtiVisitor = class;
   TtiTouchedByVisitor = class;
   TtiTouchedByVisitorList = class;
+  TtiVisitorManager = class;
 
   // TVisitorClass reference
   TtiVisitorClass = class of TtiVisitor;
@@ -145,16 +144,24 @@ type
   end;
 
   TtiVisitorControllerConfig = class(TtiBaseObject)
+  private
+    FVisitorManager: TtiVisitorManager;
+  protected
+    property VisitorManager: TtiVisitorManager read FVisitorManager;
+  public
+    constructor Create(const AVisitorManager: TtiVisitorManager);
   end;
 
   TtiVisitorController = class(TtiBaseObject)
   private
     FConfig: TtiVisitorControllerConfig;
     FTouchedByVisitorList: TtiTouchedByVisitorList;
+    FVisitorManager: TtiVisitorManager;
   protected
     property  Config: TtiVisitorControllerConfig read FConfig;
+    property  VisitorManager: TtiVisitorManager read FVisitorManager;
   public
-    constructor Create(const AConfig: TtiVisitorControllerConfig); virtual;
+    constructor Create(const AVisitorManager: TtiVisitorManager; const AConfig: TtiVisitorControllerConfig); virtual;
     destructor  Destroy; override;
     property    TouchedByVisitorList: TtiTouchedByVisitorList read FTouchedByVisitorList;
     procedure BeforeExecuteVisitorGroup; virtual;
@@ -221,6 +228,7 @@ type
   // The Visitor Manager
   TtiVisitorManager = class(TtiBaseObject)
   private
+    FTIOPFManager: TtiBaseObject;
     FVisitorMappings : TObjectList;
     FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
     FBreakOnException: boolean;
@@ -232,15 +240,16 @@ type
     procedure ProcessVisitors(const AGroupName : string;
                 const AVisited : TtiVisited;
                 const AVisitorControllerConfig: TtiVisitorControllerConfig); virtual;
-
+    function GetTIOPFManager: TtiBaseObject; virtual;
   public
-    constructor Create; virtual;
+    constructor Create(const ATIOPFManager: TtiBaseObject); virtual;
     destructor  Destroy; override;
+    property    TIOPFManager: TtiBaseObject read GetTIOPFManager;
     procedure   RegisterVisitor(const AGroupName : string;
                                  const AVisitorClass  : TtiVisitorClass);
     procedure   UnRegisterVisitors(const AGroupName : string);
     function    Execute(const AGroupName      : string;
-                         const AVisited         : TtiVisited): string; overload; virtual; 
+                         const AVisited         : TtiVisited): string; overload; virtual;
     property    BreakOnException : boolean read FBreakOnException write FBreakOnException;
   end;
 
@@ -619,9 +628,13 @@ begin
 end;
 
 
-constructor TtiVisitorController.Create(const AConfig: TtiVisitorControllerConfig);
+constructor TtiVisitorController.Create(const AVisitorManager: TtiVisitorManager;
+  const AConfig: TtiVisitorControllerConfig);
 begin
+  Assert(AVisitorManager.TestValid(TtiVisitorManager, True), cTIInvalidObjectError);
+  Assert(AConfig.TestValid, cTIInvalidObjectError);
   inherited Create;
+  FVisitorManager:= AVisitorManager;
   FConfig:= AConfig;
   FTouchedByVisitorList:= TtiTouchedByVisitorList.Create(True);
 end;
@@ -775,9 +788,11 @@ end;
 
 { TtiVisitorManager }
 
-constructor TtiVisitorManager.Create;
+constructor TtiVisitorManager.Create(const ATIOPFManager: TtiBaseObject);
 begin
-  inherited;
+  Assert(ATIOPFManager.TestValid(TtiOPFManager, True), cTIInvalidObjectError);
+  inherited Create;
+  FTIOPFManager:= ATIOPFManager;
   FSynchronizer:= TMultiReadExclusiveWriteSynchronizer.Create;
   FVisitorMappings:= TObjectList.Create;
   FBreakOnException:= True;
@@ -796,7 +811,7 @@ function TtiVisitorManager.Execute(const AGroupName      : string;
 var
   LVisitorControllerConfig: TtiVisitorControllerConfig;
 begin
-  LVisitorControllerConfig:= TtiVisitorControllerConfig.Create;
+  LVisitorControllerConfig:= TtiVisitorControllerConfig.Create(Self);
   try
     ProcessVisitors(AGroupName, AVisited, LVisitorControllerConfig);
   finally
@@ -843,6 +858,12 @@ begin
     end;
 end;
 
+function TtiVisitorManager.GetTIOPFManager: TtiBaseObject;
+begin
+  Assert(FTIOPFManager.TestValid, cTIInvalidObjectError);
+  result:= FTIOPFManager;
+end;
+
 function TtiVisitorManager.GetVisitorMappings: TList;
 begin
   result:= FVisitorMappings;
@@ -862,7 +883,9 @@ begin
     FSynchronizer.BeginRead;
     try
       LVisitorMappingGroup:= FindVisitorMappingGroup(AGroupName);
-      LVisitorController:= LVisitorMappingGroup.VisitorControllerClass.Create(AVisitorControllerConfig);
+      if LVisitorMappingGroup = nil then
+        raise EtiOPFProgrammerException.CreateFmt(CErrorInvalidVisitorGroup, [AGroupName]);
+      LVisitorController:= LVisitorMappingGroup.VisitorControllerClass.Create(Self, AVisitorControllerConfig);
       LVisitorMappingGroup.AssignVisitorInstances(LVisitors);
       try
         LVisitorController.BeforeExecuteVisitorGroup;
@@ -1028,6 +1051,16 @@ function TtiTouchedByVisitorList.GetItems(
   const AIndex: Integer): TtiTouchedByVisitor;
 begin
   result:= FList.Items[AIndex] as TtiTouchedByVisitor;
+end;
+
+{ TtiVisitorControllerConfig }
+
+constructor TtiVisitorControllerConfig.Create(
+  const AVisitorManager: TtiVisitorManager);
+begin
+  Assert(AVisitorManager.TestValid, cTIInvalidObjectError);
+  inherited Create;
+  FVisitorManager:= AVisitorManager;
 end;
 
 end.

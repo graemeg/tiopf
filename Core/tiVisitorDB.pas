@@ -116,6 +116,7 @@ type
     procedure   LogQueryTiming(const pQueryName : string;
                                 pQueryTime : integer;
                                 pScanTime : integer);
+    procedure   Init; virtual;
     procedure   SetupParams    ; virtual;
     procedure   Final(const AVisited: TtiObject); virtual;
     property    Database : TtiDatabase read FDatabase write FDatabase;
@@ -132,13 +133,12 @@ type
   // it's for internal tiOPF use only.
   TVisOwnedQrySelectAbs = class(TtiObjectVisitor)
   protected
-    procedure   Init; virtual;
     procedure   MapRowToObject ; virtual;
     procedure   OpenQuery; virtual; abstract;
   public
     procedure   Execute(const AData: TtiVisited); override;
   end;
-  
+
 
   // ToDo: Rename to TtiVisitorSelect
   TVisOwnedQrySelect = class(TVisOwnedQrySelectAbs)
@@ -150,8 +150,6 @@ type
 
   // ToDo: Rename to TtiVisitorUpdate
   TVisOwnedQryUpdate = class(TtiObjectVisitor)
-  protected
-    procedure   Init; virtual;
   public
     procedure   Execute(const AData: TtiVisited); override;
   end;
@@ -215,6 +213,11 @@ end;
 function TtiObjectVisitor.GetVisited: TtiObject;
 begin
   result := TtiObject(inherited GetVisited);
+end;
+
+procedure TtiObjectVisitor.Init;
+begin
+  // Do nothing
 end;
 
 procedure TtiObjectVisitor.LogQueryTiming(const pQueryName: string;
@@ -317,7 +320,8 @@ end;
 
 function TtiObjectVisitorController.TIOPFManager: TtiBaseObject;
 begin
-  result:= gTIOPFManager;
+  Assert(VisitorManager.TestValid, cTIInvalidObjectError);
+  result:= VisitorManager.TIOPFManager;
 end;
 
 procedure TtiObjectVisitorController.BeforeExecuteVisitor(const AVisitor : TtiVisitor);
@@ -380,11 +384,6 @@ begin
   end;
 end;
 
-procedure TVisOwnedQrySelectAbs.Init;
-begin
-  // Do nothing
-end;
-
 procedure TVisOwnedQrySelectAbs.MapRowToObject;
 begin
   raise exception.Create('MapRowToObject has not been ' +
@@ -407,11 +406,6 @@ begin
   LogQueryTiming(ClassName, tiGetTickCount - lStart, 0);
 end;
 
-procedure TVisOwnedQryUpdate.Init;
-begin
-  // Do nothing
-end;
-
 procedure TVisOwnedQrySelect.OpenQuery;
 begin
   if gTIOPFManager.Terminated then
@@ -427,7 +421,7 @@ function TtiObjectVisitorManager.Execute(const AGroupName: string;
 var
   FVisitorControllerConfig: TtiObjectVisitorControllerConfig;
 begin
-  FVisitorControllerConfig:= TtiObjectVisitorControllerConfig.Create;
+  FVisitorControllerConfig:= TtiObjectVisitorControllerConfig.Create(Self);
   try
     FVisitorControllerConfig.SetDatabaseAndPersistenceLayerNames(APersistenceLayerName, ADBConnectionName);
     ProcessVisitors(AGroupName, AVisited, FVisitorControllerConfig);
@@ -471,7 +465,8 @@ end;
 
 function TtiObjectVisitorControllerConfig.TIOPFManager: TtiBaseObject;
 begin
-  result:= GTIOPFManager;
+  Assert(VisitorManager.TestValid, cTIInvalidObjectError);
+  result:= VisitorManager.TIOPFManager;
 end;
 
 end.

@@ -2069,7 +2069,7 @@ procedure TTestTIVisitor.VisitorManager_RegisterVisitor;
 var
   LVM: TTestVisitorManager;
 begin
-  LVM:= TTestVisitorManager.Create;
+  LVM:= TTestVisitorManager.Create(nil);
   try
     CheckEquals(0, LVM.VisitorMappings.Count);
     LVM.RegisterVisitor('test', TTestVisitorManagerRegisterVisitor);
@@ -2153,7 +2153,7 @@ begin
   LO:= nil;
   try
     USensingList:= TStringList.Create;
-    LVM:= TtiObjectVisitorManager.Create;
+    LVM:= TtiObjectVisitorManager.Create(nil);
     LO:= TtiObject.Create;
 
     LVM.RegisterVisitor('test', TTestVisitorManagerVCVisitor);
@@ -2182,7 +2182,7 @@ begin
   LO:= nil;
   try
     USensingList:= TStringList.Create;
-    LVM:= TtiObjectVisitorManager.Create;
+    LVM:= TtiObjectVisitorManager.Create(nil);
     LO:= TtiObject.Create;
 
     LVM.RegisterVisitor('test', TTestVisitorManagerVCVisitorException);
@@ -2310,7 +2310,7 @@ procedure TTestTIVisitor.VisitorManager_FindVisitorMappingGroup;
 var
   LVM: TTestVisitorManager;
 begin
-  LVM:= TTestVisitorManager.Create;
+  LVM:= TTestVisitorManager.Create(nil);
   try
     LVM.RegisterVisitor('test', TtiVisitor);
     LVM.RegisterVisitor('test1', TtiVisitor);
