@@ -61,6 +61,7 @@ type
     procedure   ReadMetaDataTables(AData: TtiDBMetaData); override;
     procedure   ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
     function    Test: boolean; override;
+    function    TIQueryClass: TtiQueryClass; override;
   end;
 
 
@@ -957,6 +958,11 @@ begin
   Assert(False, 'Under construction');
 end;
 
+
+function TtiDatabaseFBL.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryFBL;
+end;
 
 initialization
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(

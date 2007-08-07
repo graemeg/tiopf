@@ -179,6 +179,7 @@ type
     property    HasResultSet : boolean read FHasResultSet;
     procedure   ClearRequest;
     function    Test : boolean; override;
+    function    TIQueryClass: TtiQueryClass; override;
 
   end;
 
@@ -798,6 +799,11 @@ function TtiDatabaseRemoteXML.Test: boolean;
 begin
   result := false;
   Assert(false, 'Under construction');  
+end;
+
+function TtiDatabaseRemoteXML.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryRemoteXML;
 end;
 
 procedure TtiDatabaseRemoteXML.TryHTTPPost(const AInput: string);

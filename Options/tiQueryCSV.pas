@@ -19,6 +19,7 @@ type
     procedure   ReadDataSet(const pDataSet : TtiDataBuffer); override;
   public
     constructor Create; override;
+    function    TIQueryClass: TtiQueryClass; override;
   end;
 
   TtiQueryCSV = class(TtiQueryTXTAbs)
@@ -69,6 +70,11 @@ begin
   finally
     lWriter.Free;
   end;
+end;
+
+function TtiDatabaseCSV.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryCSV;
 end;
 
 procedure TtiDatabaseCSV.ReadDataSet(const pDataSet: TtiDataBuffer);

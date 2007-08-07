@@ -47,6 +47,7 @@ type
     property        PersistToFile : boolean read FPersistToFile write FPersistToFile;
     property        AsString : string read GetAsString write SetAsString;
     function        Test : boolean; override;
+    function        TIQueryClass: TtiQueryClass; override;
     property        ReadOnly : Boolean read FReadOnly Write FReadOnly;
     property        OptXMLDBSize: TtiOptXMLDBSize read FOptXMLDBSize Write FOptXMLDBSize;
     property        XMLFieldNameStyle: TtiXMLFieldNameStyle read FXMLFieldNameStyle Write FXMLFieldNameStyle;
@@ -316,6 +317,11 @@ function TtiDatabaseXMLLight.Test: boolean;
 begin
   result := false;
   Assert(false, 'Under construction');
+end;
+
+function TtiDatabaseXMLLight.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryXMLLight;
 end;
 
 constructor TtiQueryXMLLight.Create;

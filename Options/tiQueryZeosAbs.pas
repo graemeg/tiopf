@@ -30,6 +30,7 @@ type
     procedure   Commit ; override ;
     procedure   RollBack ; override ;
     function    Test : boolean; override;
+    function    TIQueryClass: TtiQueryClass; override;
 
     property  Connection : TZConnection read FConnection write FConnection ;    
   end ;
@@ -550,6 +551,11 @@ function TtiDatabaseZeosAbs.Test: boolean;
 begin
   result := false;
   Assert( false, 'Under construction' ) ;
+end;
+
+function TtiDatabaseZeosAbs.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryZeos;
 end;
 
 function TtiQueryZeos.GetParamAsTextBLOB(const psName: string): string;

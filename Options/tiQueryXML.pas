@@ -62,6 +62,7 @@ type
     procedure   CreateTable(const ATableMetaData : TtiDBMetaDataTable); override;
     property    TerminateOnConnectError : boolean read FTerminateOnConnectError write FTerminateOnConnectError;
     function    Test : boolean; override;
+    function    TIQueryClass: TtiQueryClass; override;
 
   end;
 
@@ -863,6 +864,11 @@ function TtiDatabaseXML.Test: boolean;
 begin
   result := false;
   Assert(false, 'Under construction');
+end;
+
+function TtiDatabaseXML.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryXML;
 end;
 
 function TtiQueryXML.GetFieldAsBooleanByIndex(AIndex: Integer): boolean;

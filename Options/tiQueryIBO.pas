@@ -39,6 +39,7 @@ type
     procedure       RollBack; override;
     procedure       StartTransaction; override;
     function        Test : boolean; override;
+    function        TIQueryClass: TtiQueryClass; override;
   end;
 
   TtiQueryIBO = class (TtiQuerySQL)
@@ -1045,6 +1046,11 @@ function TtiDatabaseIBO.Test: boolean;
 begin
   result := false;
   Assert(false, 'Under construction');
+end;
+
+function TtiDatabaseIBO.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryIBO;
 end;
 
 initialization

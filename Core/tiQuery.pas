@@ -89,6 +89,9 @@ type
   TtiQueryParamAbs    = class;
   TTableName          = String[ 255 ];
   TFieldName          = String[ 255 ];
+  TtiQueryClass       = class of TtiQuery;
+  TtiDatabaseClass    = class of TtiDatabase;
+  TtiQueryParamClass  = class of TtiQueryParamAbs;
 
 
  TtiDBMetaData = class(TtiObjectList)
@@ -203,6 +206,7 @@ type
     procedure   Commit; virtual; abstract;
     procedure   RollBack; virtual; abstract;
     function    Test : boolean; virtual; abstract;
+    function    TIQueryClass: TtiQueryClass; virtual; abstract;
     function    CreateTIQuery : TtiQuery;
     procedure   ReadMetaDataTables(AData : TtiDBMetaData); virtual; abstract;
     procedure   ReadMetaDataFields(AData : TtiDBMetaDataTable); virtual; abstract;
@@ -458,11 +462,6 @@ type
     procedure   AssignFieldAsStreamByIndex(     AIndex : integer; const AValue : TStream); override;
 
   end;
-
-  TtiQueryClass      = class of TtiQuery;
-  TtiDatabaseClass   = class of TtiDatabase;
-  TtiQueryParamClass = class of TtiQueryParamAbs;
-
 
   TtiQueryParams = class(TtiObjectList)
   private
@@ -2267,7 +2266,8 @@ end;
 
 function TtiDatabase.CreateTIQuery: TtiQuery;
 begin
-  result := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  Assert(TIQueryClass <> nil, 'TIQueryClass not assigned');
+  result := TIQueryClass.Create;
 end;
 
 class function TtiDatabase.TestConnectTo(const ADatabaseName, AUserName,

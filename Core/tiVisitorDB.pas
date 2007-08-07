@@ -42,7 +42,8 @@ unit tiVisitorDB;
 
 interface
 uses
-   tiVisitor
+   tiBaseObject
+  ,tiVisitor
   ,tiObject
   ,tiPersistenceLayers
   ,tiDBConnectionPool
@@ -65,8 +66,10 @@ type
     FPooledDB: TPooledDB;
     FDatabase: TtiDatabase;
   protected
+    function  TIOPFManager: TtiBaseObject; virtual;
     function  PersistenceLayerName: string;
     function  DatabaseName: string;
+    property  Database: TtiDatabase read FDatabase;
   public
     procedure BeforeExecuteVisitorGroup; override;
     procedure BeforeExecuteVisitor(const AVisitor : TtiVisitor); override;
@@ -80,7 +83,7 @@ type
     FDatabaseName: string;
     FPersistenceLayerName: string;
   protected
-    function TIOPFManager: TObject; virtual;
+    function TIOPFManager: TtiBaseObject; virtual;
   public
     property PersistenceLayerName: string read FPersistenceLayerName;
     property DatabaseName: string read FDatabaseName;
@@ -275,6 +278,8 @@ begin
     end;
   finally
     FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
+    FDatabase:= nil;
+    FPooledDB:= nil;
   end;
 end;
 
@@ -282,6 +287,8 @@ procedure TtiObjectVisitorController.AfterExecuteVisitorGroupError;
 begin
   FDatabase.RollBack;
   FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
+  FDatabase:= nil;
+  FPooledDB:= nil;
 end;
 
 procedure TtiObjectVisitorController.AfterExecuteVisitor(const AVisitor : TtiVisitor);
@@ -291,7 +298,7 @@ end;
 
 procedure TtiObjectVisitorController.BeforeExecuteVisitorGroup;
 begin
-  FPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PersistenceLayerName);
+  FPersistenceLayer := (TIOPFManager as TtiOPFManager).PersistenceLayers.FindByPerLayerName(PersistenceLayerName);
   Assert(FPersistenceLayer <> nil, 'Unable to find RegPerLayer <' + PersistenceLayerName +'>');
   FPooledDB := FPersistenceLayer.DBConnectionPools.Lock(DatabaseName);
   FDatabase:= FPooledDB.Database;
@@ -306,6 +313,11 @@ end;
 function TtiObjectVisitorController.PersistenceLayerName: string;
 begin
   result:= (Config as TtiObjectVisitorControllerConfig).PersistenceLayerName;
+end;
+
+function TtiObjectVisitorController.TIOPFManager: TtiBaseObject;
+begin
+  result:= gTIOPFManager;
 end;
 
 procedure TtiObjectVisitorController.BeforeExecuteVisitor(const AVisitor : TtiVisitor);
@@ -457,7 +469,7 @@ begin
 
 end;
 
-function TtiObjectVisitorControllerConfig.TIOPFManager: TObject;
+function TtiObjectVisitorControllerConfig.TIOPFManager: TtiBaseObject;
 begin
   result:= GTIOPFManager;
 end;

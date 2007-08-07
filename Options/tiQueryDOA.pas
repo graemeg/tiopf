@@ -52,6 +52,7 @@ type
     procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
     procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
     function        Test : boolean; override;
+    function        TIQueryClass: TtiQueryClass; override;
   end;
 
   TtiDOABinParamItem = class(TtiBaseObject)
@@ -1118,6 +1119,11 @@ begin
   end;
   if not result then
     ErrorInLastCall := true;
+end;
+
+function TtiDatabaseDOA.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryDOA;
 end;
 
 function TtiQueryDOA.GetFieldAsStringByIndex(AIndex: Integer): string;

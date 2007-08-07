@@ -21,6 +21,7 @@ type
     procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
     procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
     function        Test : boolean; override;
+    function        TIQueryClass: TtiQueryClass; override;
   end;
 
   TtiQueryADOSQLServer = class(TtiQueryADO);
@@ -159,6 +160,11 @@ function TtiDatabaseADOSQLServer.Test: boolean;
 begin
   result := false;
   Assert(false, 'Under construction');
+end;
+
+function TtiDatabaseADOSQLServer.TIQueryClass: TtiQueryClass;
+begin
+  result: TtiQueryADOSQLServer;
 end;
 
 Initialization

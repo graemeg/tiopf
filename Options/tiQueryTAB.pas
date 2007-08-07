@@ -19,6 +19,7 @@ type
     procedure   ReadDataSet(const pDataSet : TtiDataBuffer); override;
   public
     constructor Create; override;
+    function    TIQueryClass: TtiQueryClass; override;
   end;
 
   TtiQueryTAB = class(TtiQueryTXTAbs)
@@ -71,6 +72,11 @@ begin
   finally
     lWriter.Free;
   end;
+end;
+
+function TtiDatabaseTAB.TIQueryClass: TtiQueryClass;
+begin
+  result:=TtiQueryTAB;
 end;
 
 procedure TtiDatabaseTAB.ReadDataSet(const pDataSet: TtiDataBuffer);

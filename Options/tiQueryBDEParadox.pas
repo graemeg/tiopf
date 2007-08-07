@@ -23,6 +23,7 @@ type
     procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
     procedure       RollBack; override; // Not supported in BDE
     function        Test : boolean; override;
+    function        TIQueryClass: TtiQueryClass; override;
   end;
 
   TtiQueryBDEParadox = class(TtiQueryBDE);
@@ -177,6 +178,11 @@ function TtiDatabaseBDEParadox.Test: boolean;
 begin
   result := false;
   Assert(false, 'Under construction');
+end;
+
+function TtiDatabaseBDEParadox.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryBDEParadox;
 end;
 
 Initialization

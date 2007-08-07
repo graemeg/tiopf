@@ -17,6 +17,7 @@ type
   protected
   published
     procedure TIObjectVisitorControllerConfig_SetDatabaseAndPersistenceLayerNames;
+
     procedure TIObjectVisitorController_BeforeExecuteVisitorGroup;
     procedure TIObjectVisitorController_BeforeExecuteVisitor;
     procedure TIObjectVisitorController_AfterExecuteVisitor;
@@ -37,6 +38,7 @@ uses
   ,tiQueryXMLLight
   ,tiConstants
   ,tiUtils
+  ,tiBaseObject
   ,SysUtils
  ;
 
@@ -52,19 +54,19 @@ type
 
   TTestObjectVisitorControllerConfig = class(TtiObjectVisitorControllerConfig)
   private
-    FTIOPFManager: TObject;
+    FTIOPFManager: TtiBaseObject;
   protected
-    function TIOPFManager: TObject; override;
-    procedure SetTIOPFManager(const ATIOPFManager: TObject);
+    function TIOPFManager: TtiBaseObject; override;
+    procedure SetTIOPFManager(const ATIOPFManager: TtiBaseObject);
   end;
 
   procedure TTestObjectVisitorControllerConfig.SetTIOPFManager(
-    const ATIOPFManager: TObject);
+    const ATIOPFManager: TtiBaseObject);
   begin
     FTIOPFManager:= ATIOPFManager;
   end;
 
-  function TTestObjectVisitorControllerConfig.TIOPFManager: TObject;
+  function TTestObjectVisitorControllerConfig.TIOPFManager: TtiBaseObject;
   begin
     result:= FTIOPFManager;
   end;
@@ -76,7 +78,7 @@ var
   LM: TtiOPFManager;
   LDatabaseName: string;
 begin
-  LDatabaseName:= TempFileName('VisitorControllerConfig.xml');
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
   LM:= nil;
   LVCC:= nil;
   try
@@ -154,18 +156,154 @@ begin
     CheckEquals(cTIPersistXMLLight, LVCC.PersistenceLayerName);
     CheckEquals(LDatabaseName, LVCC.DatabaseName);
 
-    if FileExists(LDatabaseName) then
-      tiDeleteFile(LDatabaseName);
 
   finally
     LVCC.Free;
     LM.Free;
+    tiDeleteFile(LDatabaseName);
+  end;
+end;
+
+type
+
+  TTestTIObjectVisitorController = class(TtiObjectVisitorController)
+  private
+    FTIOPFManager: TtiBaseObject;
+  protected
+    function TIOPFManager: TtiBaseObject; override;
+  end;
+
+  TTestTIObjectVisitorControllerConfig = class(TtiObjectVisitorControllerConfig)
+  private
+    FTIOPFManager: TtiBaseObject;
+  protected
+    function TIOPFManager: TtiBaseObject; override;
+  end;
+
+  TTestTIObjectVisitor = class(TtiObjectVisitor)
+  public
+    property    Database;
+    property    Query;
+  end;
+
+  function TTestTIObjectVisitorController.TIOPFManager: TtiBaseObject;
+  begin
+    result:= FTIOPFManager;
+  end;
+
+  function TTestTIObjectVisitorControllerConfig.TIOPFManager: TtiBaseObject;
+  begin
+    result:= FTIOPFManager;
+  end;
+
+procedure CreateTIObjectVisitorControllerTestInstance(
+  var AOPDMSManager: TtiOPFManager;
+  var AVisitorController: TTestTIObjectVisitorController;
+  var AConfig: TTestTIObjectVisitorControllerConfig;
+  const ADatabaseName: string);
+begin
+  AOPDMSManager:= TtiOPFManager.Create;
+  tiQueryXMLLight.RegisterPersistenceLayer(AOPDMSManager.PersistenceLayers);
+  AOPDMSManager.DefaultPerLayer.CreateDatabase(ADatabaseName, '', '');
+  AOPDMSManager.DefaultPerLayer.DBConnectionPools.Connect(ADatabaseName, '', '', '');
+  AConfig:= TTestTIObjectVisitorControllerConfig.Create;
+  AConfig.FTIOPFManager:= AOPDMSManager;
+  AConfig.SetDatabaseAndPersistenceLayerNames(cTIPersistXMLLight, ADatabaseName);
+  AVisitorController:= TTestTIObjectVisitorController.Create(AConfig);
+  AVisitorController.FTIOPFManager:= AOPDMSManager;
+end;
+
+procedure TTestTIVisitorDB.TIObjectVisitorController_BeforeExecuteVisitorGroup;
+var
+  LM: TtiOPFManager;
+  LVC: TTestTIObjectVisitorController;
+  LConfig: TTestTIObjectVisitorControllerConfig;
+  LDatabaseName: string;
+begin
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
+  LM:= nil;
+  LConfig:= nil;
+  LVC:= nil;
+  try
+    CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
+    LVC.BeforeExecuteVisitorGroup;
+    CheckEquals(cTIPersistXMLLight, LVC.PersistenceLayerName);
+    CheckEquals(LDatabaseName, LVC.DatabaseName);
+    CheckNotNull(LVC.Database);
+    Check(LVC.Database.InTransaction);
+    CheckEquals(1, LM.DefaultDBConnectionPool.Count);
+  finally
+    LConfig.Free;
+    LVC.Free;
+    LM.Free;
+    tiDeleteFile(LDatabaseName);
+  end;
+end;
+
+procedure TTestTIVisitorDB.TIObjectVisitorController_BeforeExecuteVisitor;
+var
+  LM: TtiOPFManager;
+  LVC: TTestTIObjectVisitorController;
+  LConfig: TTestTIObjectVisitorControllerConfig;
+  LDatabaseName: string;
+  LVisitor: TTestTIObjectVisitor;
+begin
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
+  LM:= nil;
+  LConfig:= nil;
+  LVC:= nil;
+  LVisitor:= nil;
+  try
+    CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
+    LVisitor:= TTestTIObjectVisitor.Create;
+
+    LVC.BeforeExecuteVisitorGroup;
+    LVC.BeforeExecuteVisitor(LVisitor);
+
+    CheckNotNull(LVisitor.Query);
+    CheckNotNull(LVisitor.Database);
+    CheckSame(LVC.Database, LVisitor.Database);
+
+  finally
+    LConfig.Free;
+    LVC.Free;
+    LM.Free;
+    LVisitor.Free;
+    tiDeleteFile(LDatabaseName);
   end;
 end;
 
 procedure TTestTIVisitorDB.TIObjectVisitorController_AfterExecuteVisitor;
+var
+  LM: TtiOPFManager;
+  LVC: TTestTIObjectVisitorController;
+  LConfig: TTestTIObjectVisitorControllerConfig;
+  LDatabaseName: string;
+  LVisitor: TTestTIObjectVisitor;
 begin
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
+  LM:= nil;
+  LConfig:= nil;
+  LVC:= nil;
+  LVisitor:= nil;
+  try
+    CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
+    LVisitor:= TTestTIObjectVisitor.Create;
 
+    LVC.BeforeExecuteVisitorGroup;
+    LVC.BeforeExecuteVisitor(LVisitor);
+    CheckNotNull(LVisitor.Database);
+    CheckSame(LVC.Database, LVisitor.Database);
+    LVC.AfterExecuteVisitor(LVisitor);
+    CheckNull(LVisitor.Database);
+
+  finally
+    LConfig.Free;
+    LVC.Free;
+    LM.Free;
+    LVisitor.Free;
+    tiDeleteFile(LDatabaseName);
+  end;
 end;
 
 procedure TTestTIVisitorDB.TIObjectVisitorController_AfterExecuteVisitorGroup;
@@ -174,16 +312,6 @@ begin
 end;
 
 procedure TTestTIVisitorDB.TIObjectVisitorController_AfterExecuteVisitorGroupError;
-begin
-
-end;
-
-procedure TTestTIVisitorDB.TIObjectVisitorController_BeforeExecuteVisitor;
-begin
-
-end;
-
-procedure TTestTIVisitorDB.TIObjectVisitorController_BeforeExecuteVisitorGroup;
 begin
 
 end;

@@ -56,6 +56,7 @@ type
     procedure   ReadMetaDataTables(AData: TtiDBMetaData); override;
     procedure   ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
     function    Test: boolean; override;
+    function    TIQueryClass: TtiQueryClass; override;
   end;
 
   // ---------------------------------------------------------------------------
@@ -990,6 +991,11 @@ function TtiDatabaseSqldIB.Test: boolean;
 begin
   Result := False;
   Assert(False, 'Under construction');
+end;
+
+function TtiDatabaseSqldIB.TIQueryClass: TtiQueryClass;
+begin
+  result:= TtiQuerySqldbIB;
 end;
 
 initialization
