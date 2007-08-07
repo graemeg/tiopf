@@ -17,6 +17,13 @@ type
   protected
   published
     procedure TIObjectVisitorControllerConfig_SetDatabaseAndPersistenceLayerNames;
+    procedure TIObjectVisitorController_BeforeExecuteVisitorGroup;
+    procedure TIObjectVisitorController_BeforeExecuteVisitor;
+    procedure TIObjectVisitorController_AfterExecuteVisitor;
+    procedure TIObjectVisitorController_AfterExecuteVisitorGroup;
+    procedure TIObjectVisitorController_AfterExecuteVisitorGroupError;
+    procedure TIVisitorManager_ExecutePassDatabaseName;
+    procedure TIVisitorManager_Execute;
   end;
 
 procedure RegisterTests;
@@ -156,7 +163,40 @@ begin
   end;
 end;
 
-{ TTestObjectVisitorControllerConfig }
+procedure TTestTIVisitorDB.TIObjectVisitorController_AfterExecuteVisitor;
+begin
+
+end;
+
+procedure TTestTIVisitorDB.TIObjectVisitorController_AfterExecuteVisitorGroup;
+begin
+
+end;
+
+procedure TTestTIVisitorDB.TIObjectVisitorController_AfterExecuteVisitorGroupError;
+begin
+
+end;
+
+procedure TTestTIVisitorDB.TIObjectVisitorController_BeforeExecuteVisitor;
+begin
+
+end;
+
+procedure TTestTIVisitorDB.TIObjectVisitorController_BeforeExecuteVisitorGroup;
+begin
+
+end;
+
+procedure TTestTIVisitorDB.TIVisitorManager_Execute;
+begin
+
+end;
+
+procedure TTestTIVisitorDB.TIVisitorManager_ExecutePassDatabaseName;
+begin
+
+end;
 
 end.
 

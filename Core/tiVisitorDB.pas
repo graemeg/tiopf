@@ -103,7 +103,6 @@ type
   // Adds a pooled database connection
   TtiObjectVisitor = class(TtiVisitor)
   private
-    FVisitedList : TList;
     FDatabase    : TtiDatabase;
     FQuery       : TtiQuery;
     function    GetQuery: TtiQuery;
@@ -116,20 +115,15 @@ type
                                 pScanTime : integer);
     procedure   SetupParams    ; virtual;
     procedure   Final(const AVisited: TtiObject); virtual;
-    property    VisitedList : TList read FVisitedList;
     property    Database : TtiDatabase read FDatabase write FDatabase;
     property    Query : TtiQuery read GetQuery write SetQuery;
   public
     Constructor Create; override;
     destructor  Destroy; override;
     procedure   Execute(const AVisited: TtiVisited); override;
-    class function    VisitorControllerClass: TtiVisitorControllerClass; override;
+    class function VisitorControllerClass: TtiVisitorControllerClass; override;
     property    Visited: TtiObject read GetVisited write SetVisited;
   end;
-
-//  TtiPerObjVisitor = class(TtiObjectVisitor)
-//  end;
-
 
   // Don't use TVisOwnedQrySelectAbs as the parent for any of your visitors,
   // it's for internal tiOPF use only.
@@ -185,13 +179,10 @@ uses
 constructor TtiObjectVisitor.Create;
 begin
   inherited;
-  FVisitedList    := TList.Create;
-  // Query is created and assigned by TtiPerObjVisitorCtrlr
 end;
 
 destructor TtiObjectVisitor.destroy;
 begin
-  FVisitedList.Free;
   FQuery.Free;
   inherited;
 end;
@@ -199,8 +190,6 @@ end;
 procedure TtiObjectVisitor.Execute(const AVisited: TtiVisited);
 begin
   inherited Execute(AVisited);
-  if AcceptVisitor then
-    VisitedList.Add(AVisited);
 end;
 
 procedure TtiObjectVisitor.Final(const AVisited: TtiObject);

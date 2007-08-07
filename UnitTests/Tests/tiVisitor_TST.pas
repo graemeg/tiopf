@@ -41,6 +41,7 @@ type
     procedure TouchedByVisitor_Create;
     procedure TouchedByVisitorList_Add;
     procedure TouchedByVisitorList_AppendTopDown;
+    procedure TouchedByVisitorList_AppendBottomUp;
 
     // Test the visitor
     procedure Visitor_AcceptVisitor;
@@ -1829,6 +1830,27 @@ begin
 end;
 
 procedure TTestTIVisitor.TouchedByVisitorList_Add;
+var
+  LList: TtiTouchedByVisitorList;
+  LItem1: TtiTouchedByVisitor;
+  LItem2: TtiTouchedByVisitor;
+begin
+  LList:= TtiTouchedByVisitorList.Create(True);
+  try
+    LItem1:= TtiTouchedByVisitor.Create(nil, nil, 0);
+    LList.Add(LItem1);
+    CheckEquals(1, LList.Count);
+    CheckSame(LItem1, LList.Items[0]);
+    LItem2:= TtiTouchedByVisitor.Create(nil, nil, 0);
+    LList.Add(LItem2);
+    CheckEquals(2, LList.Count);
+    CheckSame(LItem2, LList.Items[1]);
+  finally
+    LList.Free;
+  end;
+end;
+
+procedure TTestTIVisitor.TouchedByVisitorList_AppendBottomUp;
 begin
 
 end;

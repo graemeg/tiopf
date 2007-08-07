@@ -8,6 +8,12 @@ unit tiVisitor;
 //      TouchedByVisitorList_AppendTopDown;
 //      TouchedByVisitorList_AppendBottomUp
 //    Test TouchedByVisitorList with multiple visitors called from the VisitorManager
+//    Change signature of
+//      AcceptVisitor
+//      Init
+//      SetupParams
+//      MapRowToObject
+//      Final
 //    Implement and unit test Final
 //    Audit for const params
 //    Audit for unit tests
