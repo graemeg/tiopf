@@ -369,8 +369,29 @@ begin
 end;
 
 procedure TTestTIVisitorDB.TIObjectVisitorController_AfterExecuteVisitorGroupError;
+var
+  LM: TtiOPFManager;
+  LVC: TTestTIObjectVisitorController;
+  LConfig: TTestTIObjectVisitorControllerConfig;
+  LDatabaseName: string;
 begin
-
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
+  LM:= nil;
+  LConfig:= nil;
+  LVC:= nil;
+  try
+    CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
+    LVC.BeforeExecuteVisitorGroup;
+    CheckEquals(1, LM.DefaultDBConnectionPool.CountLocked);
+    LVC.AfterExecuteVisitorGroupError;
+    CheckNull(LVC.Database);
+    CheckEquals(0, LM.DefaultDBConnectionPool.CountLocked);
+  finally
+    LConfig.Free;
+    LVC.Free;
+    LM.Free;
+    tiDeleteFile(LDatabaseName);
+  end;
 end;
 
 procedure TTestTIVisitorDB.TIVisitorManager_Execute;
