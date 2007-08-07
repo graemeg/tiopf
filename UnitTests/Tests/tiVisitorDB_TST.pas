@@ -8,6 +8,7 @@ uses
   {$IFNDEF FPC}
   ,TestFrameWork
   {$ENDIF}
+  ,tiObject
  ;
 
 type
@@ -32,6 +33,7 @@ procedure RegisterTests;
 implementation
 uses
    tiDUnitDependencies
+  ,tiVisitor
   ,tiVisitorDB
   ,tiOPFManager
   ,tiExcept
@@ -180,10 +182,18 @@ type
     function TIOPFManager: TtiBaseObject; override;
   end;
 
+  TTestTIObjectVisited = class(TtiObject)
+  private
+    FTouched: Boolean;
+  public
+    property Touched: Boolean read FTouched write FTouched;
+  end;
+
   TTestTIObjectVisitor = class(TtiObjectVisitor)
   public
     property    Database;
     property    Query;
+    procedure   Final(const AVisited: TtiObject); override;
   end;
 
   function TTestTIObjectVisitorController.TIOPFManager: TtiBaseObject;
@@ -195,6 +205,12 @@ type
   begin
     result:= FTIOPFManager;
   end;
+
+  procedure TTestTIObjectVisitor.Final(const AVisited: TtiObject);
+  begin
+    (AVisited as TTestTIObjectVisited).Touched:= True;
+  end;
+
 
 procedure CreateTIObjectVisitorControllerTestInstance(
   var AOPDMSManager: TtiOPFManager;
@@ -231,7 +247,7 @@ begin
     CheckEquals(LDatabaseName, LVC.DatabaseName);
     CheckNotNull(LVC.Database);
     Check(LVC.Database.InTransaction);
-    CheckEquals(1, LM.DefaultDBConnectionPool.Count);
+    CheckEquals(1, LM.DefaultDBConnectionPool.CountLocked);
   finally
     LConfig.Free;
     LVC.Free;
@@ -307,8 +323,49 @@ begin
 end;
 
 procedure TTestTIVisitorDB.TIObjectVisitorController_AfterExecuteVisitorGroup;
+var
+  LM: TtiOPFManager;
+  LVC: TTestTIObjectVisitorController;
+  LConfig: TTestTIObjectVisitorControllerConfig;
+  LDatabaseName: string;
+  LVisitor: TTestTIObjectVisitor;
+  LVisited: TTestTIObjectVisited;
+  LTouchedByVisitorList: TtiTouchedByVisitorList;
+  LTouchedByVisitor: TtiTouchedByVisitor;
 begin
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
+  LM:= nil;
+  LConfig:= nil;
+  LVC:= nil;
+  LVisitor:= nil;
+  LVisited:= nil;
+  LTouchedByVisitorList:= nil;
+  try
+    CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
+    LVisitor:= TTestTIObjectVisitor.Create;
+    LVisited:= TTestTIObjectVisited.Create;
+    LTouchedByVisitorList:= TtiTouchedByVisitorList.Create(True);
+    LTouchedByVisitor:= TtiTouchedByVisitor.Create(LVisitor, LVisited, 0);
+    LTouchedByVisitorList.Add(LTouchedByVisitor);
 
+    LVC.BeforeExecuteVisitorGroup;
+    LVC.BeforeExecuteVisitor(LVisitor);
+    LVC.AfterExecuteVisitor(LVisitor);
+    CheckEquals(False, LVisited.Touched);
+    CheckEquals(1, LM.DefaultDBConnectionPool.CountLocked);
+    LVC.AfterExecuteVisitorGroup(LTouchedByVisitorList);
+    CheckEquals(True, LVisited.Touched);
+    CheckEquals(0, LM.DefaultDBConnectionPool.CountLocked);
+
+  finally
+    LTouchedByVisitorList.Free;
+    LConfig.Free;
+    LVC.Free;
+    LM.Free;
+    LVisitor.Free;
+    LVisited.Free;
+    tiDeleteFile(LDatabaseName);
+  end;
 end;
 
 procedure TTestTIVisitorDB.TIObjectVisitorController_AfterExecuteVisitorGroupError;
@@ -325,6 +382,8 @@ procedure TTestTIVisitorDB.TIVisitorManager_ExecutePassDatabaseName;
 begin
 
 end;
+
+{ TTestTIObjectVisitor }
 
 end.
 
