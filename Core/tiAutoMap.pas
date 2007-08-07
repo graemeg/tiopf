@@ -337,7 +337,7 @@ type
     procedure Execute(const pVisited: TtiVisited); override;
   end;
 
-  TVisAutoAbs = class(TtiPerObjVisitor)
+  TVisAutoAbs = class(TtiObjectVisitor)
   protected
     FWhereAttrColMaps: TtiAttrColMaps;
     FAttrColMaps: TtiAttrColMaps;
@@ -365,7 +365,7 @@ type
     function AcceptVisitor: boolean; override;
     procedure MapRowToObject;
     procedure DoExecute;
-    procedure Final; override;
+    procedure Final(const AVisited: TtiObject); override;
   public
     procedure Execute(const AData: TtiVisited); override;
   end;
@@ -1848,21 +1848,21 @@ begin
   // for posPK too.
 end;
 
-procedure TVisAutoReadThis.Final;
+procedure TVisAutoReadThis.Final(const AVisited: TtiObject);
 begin
   if FSetObjectState then
   begin
     // Just a double check, the same as AcceptVisitor
-    Assert((Visited.ObjectState = posEmpty) or
-      (Visited.ObjectState = posPK),
+    Assert((AVisited.ObjectState = posEmpty) or
+      (AVisited.ObjectState = posPK),
       'Object state on ' + Visited.ClassName +
       ' not posEmpty or posPK it''s ' +
-      Visited.ObjectStateAsString);
+      AVisited.ObjectStateAsString);
     if (gTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
       TtiClass(Visited.ClassType))) then
-      Visited.ObjectState := posPK
+      AVisited.ObjectState := posPK
     else
-      Visited.ObjectState := posClean;
+      AVisited.ObjectState := posClean;
   end;
 end;
 

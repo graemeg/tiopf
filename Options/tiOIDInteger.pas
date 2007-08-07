@@ -56,14 +56,14 @@ type
     procedure   AssignNextOID(const AAssignTo : TOID; const ADatabaseName : string; APersistenceLayerName : string); override;
   end;
 
-  TVisDBNextOIDAmblerRead = class(TtiPerObjVisitor)
+  TVisDBNextOIDAmblerRead = class(TtiObjectVisitor)
   protected
     function    AcceptVisitor : boolean; override;
   public
     procedure   Execute(const AData : TtiVisited); override;
   end;
 
-  TVisDBNextOIDAmblerUpdate = class(TtiPerObjVisitor)
+  TVisDBNextOIDAmblerUpdate = class(TtiObjectVisitor)
   protected
     function    AcceptVisitor : boolean; override;
   public

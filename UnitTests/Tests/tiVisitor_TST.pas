@@ -20,7 +20,6 @@ type
 
   TTestTIVisitor = class(TtiTestCase)
   private
-    function CreateListAndOwned : TTestVisitedListAndOwned;
     function CreateList : TTestVisitedList;
     function CreateOwned : TTestVisitedOwned;
 
@@ -245,7 +244,7 @@ var
   lVisited : TTestVisitedListAndOwned;
   lVis : TVisClassCount;
 begin
-  lVisited := CreateListAndOwned;
+  lVisited := TTestVisitedListAndOwned.Create;
   try
       lVis := TVisClassCount.Create;
       try
@@ -274,7 +273,7 @@ var
   lVis : TVisFindAllByClass;
   lList : TList;
 begin
-  lVisited := CreateListAndOwned;
+  lVisited := TTestVisitedListAndOwned.Create;
   try
     lList := TList.Create;
     try
@@ -451,7 +450,7 @@ var
   lVisitedList : TTestVisitedListAndOwned;
   lList : TList;
 begin
-  lVisitedList := CreateListAndOwned;
+  lVisitedList := TTestVisitedListAndOwned.Create;
   try
     lList := TList.Create;
     try
@@ -574,7 +573,7 @@ var
   LVisitor : TTestVisitorContinueVisiting;
   LVisitedList : TTestVisitedListAndOwned;
 begin
-  LVisitedList := CreateListAndOwned;
+  LVisitedList := TTestVisitedListAndOwned.Create;
   try
     LVisitor := TTestVisitorContinueVisiting.Create;
     LVisitor.IterationStyle:= AIterationStyle;
@@ -641,7 +640,7 @@ var
   LVisitor : TTestVisitorDepth;
   LVisitedList : TTestVisitedListAndOwned;
 begin
-  LVisitedList := CreateListAndOwned;
+  LVisitedList := TTestVisitedListAndOwned.Create;
   try
     LVisitor := TTestVisitorDepth.Create;
     LVisitor.IterationStyle:= isBottomUpSinglePass;
@@ -673,7 +672,7 @@ var
   LVisitor : TTestVisitorDepth;
   LVisitedList : TTestVisitedListAndOwned;
 begin
-  LVisitedList := CreateListAndOwned;
+  LVisitedList := TTestVisitedListAndOwned.Create;
   try
     LVisitor := TTestVisitorDepth.Create;
     LVisitor.IterationStyle:= isTopDownRecurse;
@@ -706,7 +705,7 @@ var
   LVisitor : TTestVisitorDepth;
   LVisitedList : TTestVisitedListAndOwned;
 begin
-  LVisitedList := CreateListAndOwned;
+  LVisitedList := TTestVisitedListAndOwned.Create;
   try
     LVisitor := TTestVisitorDepth.Create;
     LVisitor.IterationStyle:= isTopDownSinglePass;
@@ -806,7 +805,7 @@ begin
       CheckEquals(cATestLine + #13 + #10, lStream.AsString, 'Failed on WriteLn(cATestLine)');
 
       lStream.Clear;
-      lVisitedList := CreateListAndOwned;
+      lVisitedList := TTestVisitedListAndOwned.Create;
       try
         lVisitedList.Iterate(lVis);
         CheckEquals('1,2,3,4,5,6,7,8,9,10,11,12,13', lStream.AsString)
@@ -851,7 +850,7 @@ var
 begin
   LFileName := TempFileName;
   try
-    LVisitedList := CreateListAndOwned;
+    LVisitedList := TTestVisitedListAndOwned.Create;
     try
       tiVisitor.VisStreamToFile(LVisitedList,
                                 LFileName,
@@ -1732,7 +1731,7 @@ var
   lVisitedList : TTestVisitedListAndOwned;
   i : integer;
 begin
-  lVisitedList := CreateListAndOwned;
+  lVisitedList := TTestVisitedListAndOwned.Create;
   try
     lVisitor := TTestVisitorIterate.Create;
     try
@@ -1755,7 +1754,7 @@ var
   lVisitedList : TTestVisitedListAndOwned;
   i : integer;
 begin
-  lVisitedList := CreateListAndOwned;
+  lVisitedList := TTestVisitedListAndOwned.Create;
   try
     lVisitor := TTestVisitorIterate.Create;
     try
@@ -1771,13 +1770,6 @@ begin
     lVisitedList.Free;
   end;
 end;
-
-
-function TTestTIVisitor.CreateListAndOwned: TTestVisitedListAndOwned;
-begin
-  result := TTestVisitedListAndOwned.Create;
-end;
-
 
 function TTestTIVisitor.CreateList: TTestVisitedList;
 var
@@ -2026,11 +2018,11 @@ type
 
   TSensingVisitorController = class(TtiVisitorController)
   public
-    procedure BeforeExecuteVisitorGroup(const AVisitors : TList); override;
+    procedure BeforeExecuteVisitorGroup; override;
     procedure BeforeExecuteVisitor(const AVisitor : TtiVisitor); override;
     procedure AfterExecuteVisitor(const AVisitor : TtiVisitor ); override;
-    procedure AfterExecuteVisitorGroup(const AVisitors : TList); override;
-    procedure AfterExecuteVisitorGroupError(const AVisitors : TList); override;
+    procedure AfterExecuteVisitorGroup(const ATouchedByVisitorList : TtiTouchedByVisitorList); override;
+    procedure AfterExecuteVisitorGroupError; override;
   end;
 
   TTestVisitorManagerVCVisitor = class(TtiVisitor)
@@ -2050,13 +2042,12 @@ type
   end;
 
   procedure TSensingVisitorController.AfterExecuteVisitorGroup(
-    const AVisitors: TList);
+    const ATouchedByVisitorList: TtiTouchedByVisitorList);
   begin
     USensingList.Add('AfterExecuteVisitorGroup');
   end;
 
-  procedure TSensingVisitorController.AfterExecuteVisitorGroupError(
-    const AVisitors: TList);
+  procedure TSensingVisitorController.AfterExecuteVisitorGroupError;
   begin
     USensingList.Add('AfterExecuteVisitorGroupError');
   end;
@@ -2067,8 +2058,7 @@ type
     USensingList.Add('BeforeExecuteVisitor');
   end;
 
-  procedure TSensingVisitorController.BeforeExecuteVisitorGroup(
-    const AVisitors: TList);
+  procedure TSensingVisitorController.BeforeExecuteVisitorGroup;
   begin
     USensingList.Add('BeforeExecuteVisitorGroup');
   end;

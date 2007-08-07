@@ -74,14 +74,14 @@ type
     property    OIDPrefix : string read FOIDPrefix write FOIDPrefix;
   end;
 
-  TVisDBNextOIDAmblerRead = class(TtiPerObjVisitor)
+  TVisDBNextOIDAmblerRead = class(TtiObjectVisitor)
   protected
     function    AcceptVisitor : boolean; override;
   public
     procedure   Execute(const AData : TtiVisited); override;
   end;
 
-  TVisDBNextOIDAmblerUpdate = class(TtiPerObjVisitor)
+  TVisDBNextOIDAmblerUpdate = class(TtiObjectVisitor)
   protected
     function    AcceptVisitor : boolean; override;
   public

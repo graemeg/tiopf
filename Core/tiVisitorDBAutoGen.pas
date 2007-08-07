@@ -25,7 +25,7 @@ type
     destructor  Destroy; override;
   end;
 
-  TVisDBAutoGenUpdate = class(TtiPerObjVisitor)
+  TVisDBAutoGenUpdate = class(TtiObjectVisitor)
   private
     FQueryParams : TtiQueryParams;
     FQueryWhere : TtiQueryParams;

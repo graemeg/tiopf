@@ -144,15 +144,18 @@ type
   TtiVisitorController = class(TtiBaseObject)
   private
     FConfig: TtiVisitorControllerConfig;
+    FTouchedByVisitorList: TtiTouchedByVisitorList;
   protected
     property  Config: TtiVisitorControllerConfig read FConfig;
   public
     constructor Create(const AConfig: TtiVisitorControllerConfig); virtual;
-    procedure BeforeExecuteVisitorGroup(const AVisitors : TList); virtual;
+    destructor  Destroy; override;
+    property    TouchedByVisitorList: TtiTouchedByVisitorList read FTouchedByVisitorList;
+    procedure BeforeExecuteVisitorGroup; virtual;
     procedure BeforeExecuteVisitor(const AVisitor : TtiVisitor); virtual;
     procedure AfterExecuteVisitor(const AVisitor : TtiVisitor ); virtual;
-    procedure AfterExecuteVisitorGroup(const AVisitors : TList); virtual;
-    procedure AfterExecuteVisitorGroupError(const AVisitors : TList); virtual;
+    procedure AfterExecuteVisitorGroup(const ATouchedByVisitorList : TtiTouchedByVisitorList); virtual;
+    procedure AfterExecuteVisitorGroupError; virtual;
   end;
 
   TtiVisitorControllerClass = class of TtiVisitorController;
@@ -577,16 +580,15 @@ end;
 
 { TtiVisitorCtrlr }
 
-procedure TtiVisitorController.AfterExecuteVisitorGroup(const AVisitors : TList);
+procedure TtiVisitorController.AfterExecuteVisitorGroup(const ATouchedByVisitorList : TtiTouchedByVisitorList);
 begin
-  Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
+  Assert(ATouchedByVisitorList = ATouchedByVisitorList);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
 
-procedure TtiVisitorController.AfterExecuteVisitorGroupError(const AVisitors : TList);
+procedure TtiVisitorController.AfterExecuteVisitorGroupError;
 begin
-  Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
@@ -598,9 +600,8 @@ begin
 end;
 
 
-procedure TtiVisitorController.BeforeExecuteVisitorGroup(const AVisitors : TList);
+procedure TtiVisitorController.BeforeExecuteVisitorGroup;
 begin
-  Assert(AVisitors = AVisitors);  // Getting rid of compiler hints, param not used.
   // Do nothing
 end;
 
@@ -616,8 +617,15 @@ constructor TtiVisitorController.Create(const AConfig: TtiVisitorControllerConfi
 begin
   inherited Create;
   FConfig:= AConfig;
+  FTouchedByVisitorList:= TtiTouchedByVisitorList.Create(True);
 end;
 
+
+destructor TtiVisitorController.Destroy;
+begin
+  FTouchedByVisitorList.Free;
+  inherited;
+end;
 
 function TtiVisitor.GetVisited: TtiVisited;
 begin
@@ -803,7 +811,7 @@ begin
     AVisitorController.BeforeExecuteVisitor(LVisitor);
     try
       if AVisited <> nil then
-        AVisited.Iterate(LVisitor)
+        AVisited.IterateAssignTouched(LVisitor, AVisitorController.TouchedByVisitorList)
       else
         LVisitor.Execute(nil);
     finally
@@ -851,14 +859,14 @@ begin
       LVisitorController:= LVisitorMappingGroup.VisitorControllerClass.Create(AVisitorControllerConfig);
       LVisitorMappingGroup.AssignVisitorInstances(LVisitors);
       try
-        LVisitorController.BeforeExecuteVisitorGroup(LVisitors);
+        LVisitorController.BeforeExecuteVisitorGroup;
         try
           ExecuteVisitors(LVisitorController, LVisitors, AVisited);
-          LVisitorController.AfterExecuteVisitorGroup(LVisitors);
+          LVisitorController.AfterExecuteVisitorGroup(LVisitorController.TouchedByVisitorList);
         except
           on e:exception do
           begin
-            LVisitorController.AfterExecuteVisitorGroupError(LVisitors);
+            LVisitorController.AfterExecuteVisitorGroupError;
             raise;
           end;
         end;

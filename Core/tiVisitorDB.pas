@@ -68,11 +68,11 @@ type
     function  PersistenceLayerName: string;
     function  DatabaseName: string;
   public
-    procedure BeforeExecuteVisitorGroup(const AVisitors : TList); override;
+    procedure BeforeExecuteVisitorGroup; override;
     procedure BeforeExecuteVisitor(const AVisitor : TtiVisitor); override;
     procedure AfterExecuteVisitor(const AVisitor : TtiVisitor ); override;
-    procedure AfterExecuteVisitorGroup(const AVisitors : TList); override;
-    procedure AfterExecuteVisitorGroupError(const AVisitors : TList); override;
+    procedure AfterExecuteVisitorGroup(const ATouchedByVisitorList : TtiTouchedByVisitorList); override;
+    procedure AfterExecuteVisitorGroupError; override;
   end;
 
   TtiObjectVisitorControllerConfig = class(TtiVisitorControllerConfig)
@@ -101,7 +101,7 @@ type
   // Note: It is not necessary to manually lock and unlock DBConnections
   // from this level and below - TVisitorMgrDB does this for you.
   // Adds a pooled database connection
-  TtiPerObjVisitor = class(TtiVisitor)
+  TtiObjectVisitor = class(TtiVisitor)
   private
     FVisitedList : TList;
     FDatabase    : TtiDatabase;
@@ -115,7 +115,7 @@ type
                                 pQueryTime : integer;
                                 pScanTime : integer);
     procedure   SetupParams    ; virtual;
-    procedure   Final; virtual;
+    procedure   Final(const AVisited: TtiObject); virtual;
     property    VisitedList : TList read FVisitedList;
     property    Database : TtiDatabase read FDatabase write FDatabase;
     property    Query : TtiQuery read GetQuery write SetQuery;
@@ -126,11 +126,14 @@ type
     class function    VisitorControllerClass: TtiVisitorControllerClass; override;
     property    Visited: TtiObject read GetVisited write SetVisited;
   end;
-  
+
+//  TtiPerObjVisitor = class(TtiObjectVisitor)
+//  end;
+
 
   // Don't use TVisOwnedQrySelectAbs as the parent for any of your visitors,
   // it's for internal tiOPF use only.
-  TVisOwnedQrySelectAbs = class(TtiPerObjVisitor)
+  TVisOwnedQrySelectAbs = class(TtiObjectVisitor)
   protected
     procedure   Init; virtual;
     procedure   MapRowToObject ; virtual;
@@ -149,7 +152,7 @@ type
   TtiVisitorSelect = class(TVisOwnedQrySelect);
 
   // ToDo: Rename to TtiVisitorUpdate
-  TVisOwnedQryUpdate = class(TtiPerObjVisitor)
+  TVisOwnedQryUpdate = class(TtiObjectVisitor)
   protected
     procedure   Init; virtual;
   public
@@ -179,49 +182,50 @@ uses
 
 { TtiPerObjVisitor }
 
-constructor TtiPerObjVisitor.Create;
+constructor TtiObjectVisitor.Create;
 begin
   inherited;
   FVisitedList    := TList.Create;
   // Query is created and assigned by TtiPerObjVisitorCtrlr
 end;
 
-destructor TtiPerObjVisitor.destroy;
+destructor TtiObjectVisitor.destroy;
 begin
   FVisitedList.Free;
   FQuery.Free;
   inherited;
 end;
 
-procedure TtiPerObjVisitor.Execute(const AVisited: TtiVisited);
+procedure TtiObjectVisitor.Execute(const AVisited: TtiVisited);
 begin
   inherited Execute(AVisited);
   if AcceptVisitor then
     VisitedList.Add(AVisited);
 end;
 
-procedure TtiPerObjVisitor.Final;
+procedure TtiObjectVisitor.Final(const AVisited: TtiObject);
 begin
-  case TtiObject(Visited).ObjectState of
+  Assert(AVisited.TestValid, cTIInvalidObjectError);
+  case AVisited.ObjectState of
   posDeleted :; // Do nothing
-  posDelete : TtiObject(Visited).ObjectState := posDeleted;
+  posDelete : AVisited.ObjectState := posDeleted;
   else
-    TtiObject(Visited).ObjectState := posClean;
+    AVisited.ObjectState := posClean;
   end;
 end;
 
-function TtiPerObjVisitor.GetQuery: TtiQuery;
+function TtiObjectVisitor.GetQuery: TtiQuery;
 begin
   Assert(FQuery <> nil, 'FQuery not assigned');
   result := FQuery;
 end;
 
-function TtiPerObjVisitor.GetVisited: TtiObject;
+function TtiObjectVisitor.GetVisited: TtiObject;
 begin
   result := TtiObject(inherited GetVisited);
 end;
 
-procedure TtiPerObjVisitor.LogQueryTiming(const pQueryName: string;
+procedure TtiObjectVisitor.LogQueryTiming(const pQueryName: string;
                                     pQueryTime : integer;
                                     pScanTime: integer);
 var
@@ -247,60 +251,45 @@ begin
 
 end;
 
-procedure TtiPerObjVisitor.SetQuery(const AValue: TtiQuery);
+procedure TtiObjectVisitor.SetQuery(const AValue: TtiQuery);
 begin
   Assert(FQuery = nil, 'FQuery already assigned');
   FQuery := AValue;
 end;
 
-procedure TtiPerObjVisitor.SetupParams;
+procedure TtiObjectVisitor.SetupParams;
 begin
 // Do nothing
 end;
 
-procedure TtiPerObjVisitor.SetVisited(const AValue: TtiObject);
+procedure TtiObjectVisitor.SetVisited(const AValue: TtiObject);
 begin
   inherited SetVisited(AValue);
 end;
 
-class function TtiPerObjVisitor.VisitorControllerClass: TtiVisitorControllerClass;
+class function TtiObjectVisitor.VisitorControllerClass: TtiVisitorControllerClass;
 begin
   result := TtiObjectVisitorController;
 end;
 
-procedure TtiObjectVisitorController.AfterExecuteVisitorGroup(const AVisitors : TList);
+procedure TtiObjectVisitorController.AfterExecuteVisitorGroup(const ATouchedByVisitorList : TtiTouchedByVisitorList);
 var
-  i, j : integer;
-  lVisitor : TtiPerObjVisitor;
-  lVisited : TtiObject;
+  i : integer;
+  LTouchedByVisitor: TtiTouchedByVisitor;
 begin
-  FDatabase.Commit;
-
-  // ToDo: Refactor this so it touches the list of visited objects, which contains
-  //       pairs of Visitor-Object relationships
-  for i := 0 to AVisitors.Count - 1 do begin
-    // This should not be necessary, however there are times when a visitor
-    // group will contain several types of visitors. We should add some code so
-    // we do not get passed a list of visitors which contains incompatable types
-    if not (TObject(AVisitors.Items[i]) is TtiPerObjVisitor) then
-      Continue; //==>
-    lVisitor := (TObject(AVisitors.Items[i]) as TtiPerObjVisitor);
-    for j := 0 to lVisitor.VisitedList.Count - 1 do
+  try
+    FDatabase.Commit;
+    for i := 0 to ATouchedByVisitorList.Count - 1 do
     begin
-      lVisited := TtiObject(lVisitor.VisitedList.Items[j]);
-      lVisitor.Visited := lVisited;
-      lVisitor.Final;
-      lVisitor.Visited := nil;
+      LTouchedByVisitor:= ATouchedByVisitorList.Items[i];
+      (LTouchedByVisitor.Visitor as TtiObjectVisitor).Final(LTouchedByVisitor.Visited as TtiObject);
     end;
+  finally
+    FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
   end;
-
-  inherited AfterExecuteVisitorGroup(AVisitors);
-
-  FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
-
 end;
 
-procedure TtiObjectVisitorController.AfterExecuteVisitorGroupError(const AVisitors : TList);
+procedure TtiObjectVisitorController.AfterExecuteVisitorGroupError;
 begin
   FDatabase.RollBack;
   FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
@@ -308,10 +297,10 @@ end;
 
 procedure TtiObjectVisitorController.AfterExecuteVisitor(const AVisitor : TtiVisitor);
 begin
-  TtiPerObjVisitor(AVisitor).Database := nil;
+  (AVisitor as TtiObjectVisitor).Database := nil;
 end;
 
-procedure TtiObjectVisitorController.BeforeExecuteVisitorGroup(const AVisitors : TList);
+procedure TtiObjectVisitorController.BeforeExecuteVisitorGroup;
 begin
   FPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PersistenceLayerName);
   Assert(FPersistenceLayer <> nil, 'Unable to find RegPerLayer <' + PersistenceLayerName +'>');
@@ -331,12 +320,15 @@ begin
 end;
 
 procedure TtiObjectVisitorController.BeforeExecuteVisitor(const AVisitor : TtiVisitor);
+var
+  LVisitor: TtiObjectVisitor;
 begin
-  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(AVisitor.TestValid(TtiObjectVisitor), cTIInvalidObjectError);
   Assert(FDatabase.TestValid, cTIInvalidObjectError);
-  TtiPerObjVisitor(AVisitor).Database := FDatabase;
-  TtiPerObjVisitor(AVisitor).Query := FDatabase.CreateTIQuery;
-  TtiPerObjVisitor(AVisitor).Query.AttachDatabase(FDatabase);
+  LVisitor:= AVisitor as TtiObjectVisitor;
+  LVisitor.Database := FDatabase;
+  LVisitor.Query := FDatabase.CreateTIQuery;
+  LVisitor.Query.AttachDatabase(FDatabase);
 end;
 
 procedure TVisOwnedQrySelectAbs.Execute(const AData: TtiVisited);
