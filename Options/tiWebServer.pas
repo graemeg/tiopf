@@ -747,8 +747,8 @@ begin
   FCritSect.Enter;
   try
     L:= FindByTransID(ATransID);
-    if L = nil then raise
-      EtiOPFDataException.CreateFmt(cErrorInvalidCachedBlockStreamTransID, [ATransID]);
+    if L = nil then 
+      raise EtiOPFDataException.CreateFmt(cErrorInvalidCachedBlockStreamTransID, [ATransID]);
     ABlockAsString:= L.BlockAsString[ABlockIndex];
     L.LastAccessed:= Now;
     // ToDo: Will have to remove this when we start using multi threaded access to the block stream cache

@@ -97,6 +97,8 @@ type
                const AVisited: TtiVisited;
                const ADBConnectionName: string;
                const APersistenceLayerName: string = ''): string; overload;
+    function  Execute(const AGroupName      : string;
+               const AVisited         : TtiVisited): string; override;
   end;
 
 
@@ -310,11 +312,13 @@ end;
 
 function TtiObjectVisitorController.DatabaseName: string;
 begin
+  Assert(Config.TestValid(TtiObjectVisitorControllerConfig), cTIInvalidObjectError);
   result:= (Config as TtiObjectVisitorControllerConfig).DatabaseName;
 end;
 
 function TtiObjectVisitorController.PersistenceLayerName: string;
 begin
+  Assert(Config.TestValid(TtiObjectVisitorControllerConfig), cTIInvalidObjectError);
   result:= (Config as TtiObjectVisitorControllerConfig).PersistenceLayerName;
 end;
 
@@ -428,6 +432,20 @@ begin
   finally
     FVisitorControllerConfig.Free;
   end;
+end;
+
+function TtiObjectVisitorManager.Execute(const AGroupName: string;
+  const AVisited: TtiVisited): string;
+//var
+//  LVisitorControllerConfig: TtiObjectVisitorControllerConfig;
+begin
+  Execute(AGroupName, AVisited, '', '');
+//  LVisitorControllerConfig:= TtiObjectVisitorControllerConfig.Create(Self);
+//  try
+//    ProcessVisitors(AGroupName, AVisited, LVisitorControllerConfig);
+//  finally
+//    LVisitorControllerConfig.Free;
+//  end;
 end;
 
 { TtiObjectVisitorControllerConfig }

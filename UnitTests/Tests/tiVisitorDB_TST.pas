@@ -398,11 +398,6 @@ begin
   end;
 end;
 
-procedure TTestTIVisitorDB.TIVisitorManager_Execute;
-begin
-
-end;
-
 const
   CErrorTestException = 'Test exception';
 
@@ -579,13 +574,37 @@ begin
   end;
 end;
 
-{ TTestTIObjectVisitor }
-
-{ TtiObjectSensingVisitor }
-
-{ TtiObjectSensingVisited }
-
-{ TtiObjectSensingVisitorException }
+procedure TTestTIVisitorDB.TIVisitorManager_Execute;
+var
+  LM: TtiOPFManager;
+  LVC: TTestTIObjectVisitorController;
+  LConfig: TTestTIObjectVisitorControllerConfig;
+  LDatabaseName: string;
+  LVisited: TtiObjectSensingVisited;
+begin
+  LDatabaseName:= TempFileName('TestTIVisitorDB.xml');
+  LM:= nil;
+  LConfig:= nil;
+  LVC:= nil;
+  LVisited:= nil;
+  try
+    CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
+    LM.VisitorManager.RegisterVisitor('test', TtiObjectSensingVisitor);
+    LVisited:= TtiObjectSensingVisited.Create;
+    LM.VisitorManager.Execute('test', LVisited);
+    CheckEquals(4, LVisited.Data.Count);
+    CheckEquals('TtiObjectSensingVisitor.Execute\TtiObjectSensingVisited', LVisited.Data.Strings[0]);
+    CheckEquals('TtiObjectSensingVisitor.Init\TtiObjectSensingVisited', LVisited.Data.Strings[1]);
+    CheckEquals('TtiObjectSensingVisitor.SetupParams\TtiObjectSensingVisited', LVisited.Data.Strings[2]);
+    CheckEquals('TtiObjectSensingVisitor.Final\TtiObjectSensingVisited', LVisited.Data.Strings[3]);
+  finally
+    LConfig.Free;
+    LVC.Free;
+    LM.Free;
+    LVisited.Free;
+    tiDeleteFile(LDatabaseName);
+  end;
+end;
 
 end.
 

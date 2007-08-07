@@ -1752,7 +1752,7 @@ begin
     end;
   except
     on e:exception do
-      EtiOPFProgrammerException.CreateFmt(cErrorSettingPropValue, [APropName, AFieldMetaData.ClassName, e.Message]);
+      raise EtiOPFProgrammerException.CreateFmt(cErrorSettingPropValue, [APropName, AFieldMetaData.ClassName, e.Message]);
   end;
 end;
 

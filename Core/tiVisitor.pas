@@ -3,12 +3,12 @@ unit tiVisitor;
 {$I tiDefines.inc}
 
 // ToDo:
-//    UnitTest Execute method.
 //    Change signature of
 //      AcceptVisitor
 //      Init
 //      SetupParams
 //      MapRowToObject
+//    Remove reference to Visited in TtiObjectVisitor
 //    Audit for const params
 //    Audit for unit tests
 //    Format with JCF
@@ -960,7 +960,7 @@ begin
       [VisitorControllerClass.ClassName, AVisitorClass.VisitorControllerClass.ClassName]);
   for i := 0 to FMappings.Count-1 do
     if FMappings.Items[i] = AVisitorClass then
-      Raise EtiOPFProgrammerException.CreateFmt(CErrorAttemptToRegisterDuplicateVisitor, [AVisitorClass.ClassName]);
+      raise EtiOPFProgrammerException.CreateFmt(CErrorAttemptToRegisterDuplicateVisitor, [AVisitorClass.ClassName]);
   FMappings.Add(AVisitorClass);
 end;
 

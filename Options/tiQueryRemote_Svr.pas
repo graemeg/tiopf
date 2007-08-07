@@ -274,7 +274,7 @@ begin
   rctReadMetaDataTables : DoReadMetaDataTables;
   rctReadMetaDataFields : DoReadMetaDataFields;
   else
-    EtiOPFProgrammerException.Create('Invalid TtiRemoteCommandType');
+    raise EtiOPFProgrammerException.Create('Invalid TtiRemoteCommandType');
   end;
 end;
 
@@ -288,7 +288,7 @@ begin
     lQuery.AttachDatabase(FDBRequest);
     lQuery.SelectRow(uXMLTags.TableNameQuery);
     if lQuery.EOF then
-      EtiOPFProgrammerException.Create('Invalid data query request');
+      raise EtiOPFProgrammerException.Create('Invalid data query request');
     FQueryParams.SQL := FRemoteCommandText;
   finally
     lQuery.Free;
@@ -329,7 +329,7 @@ begin
     lQuery.AttachDatabase(FDBRequest);
     lQuery.SelectRow(uXMLTags.TableNameQuery);
     if lQuery.EOF then
-      EtiOPFProgrammerException.Create('Invalid data query request');
+      raise EtiOPFProgrammerException.Create('Invalid data query request');
     lCommandType       := lQuery.FieldAsString[uXMLTags.FieldNameCommandType];
     FRemoteCommandType := StrToRemoteCommandType(lCommandType);
     FTransactionID     := lQuery.FieldAsString[uXMLTags.FieldNameTransactionID];
@@ -429,7 +429,7 @@ begin
       lQuery.AttachDatabase(FDBRequest);
       lQuery.SelectRow(uXMLTags.TableNameMetaData);
       if lQuery.EOF then
-        EtiOPFProgrammerException.Create('Unable to find table metadata');
+        raise EtiOPFProgrammerException.Create('Unable to find table metadata');
       lMD.Name := lQuery.FieldAsString[uXMLTags.FieldNameMetaDataTableName];
       while not lQuery.EOF do
       begin

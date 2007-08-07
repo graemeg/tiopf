@@ -551,7 +551,7 @@ begin
                  VarToStr(lError.linePos),
                  VarToStr(lError.SrcText),
                  DatabaseName ]);
-      EtiOPFDBExceptionCanNotConnect.Create(cTIPersistXML, DatabaseName, UserName, Password, lErrorMessage);
+      raise EtiOPFDBExceptionCanNotConnect.Create(cTIPersistXML, DatabaseName, UserName, Password, lErrorMessage);
     end;
   except
     on e:exception do

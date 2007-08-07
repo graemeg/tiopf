@@ -16,8 +16,8 @@ uses
  ;
 
 const
-  cErrorAttemptToAddDuplicateDBConnectionPool = 'Attempt to add duplicate database connection pool <%s>';
-  cErrorUnableToFindDBConnectionPool = 'Unable to find database connection pool <%s>';
+  cErrorAttemptToAddDuplicateDBConnectionPool = 'Attempt to register a duplicate database connection: "%s"';
+  cErrorUnableToFindDBConnectionPool = 'Attempt to lock a database connection for a database that has not been registered: "%s"';
 
 type
 
@@ -414,7 +414,7 @@ begin
   lDBConnectionPool := Find(psDBConnectionName);
   // Some error checking
   if lDBConnectionPool = nil then
-    EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psDBConnectionName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psDBConnectionName]);
   // Success. So try and lock a connection.
   result := lDBConnectionPool.Lock;
 end;
@@ -427,7 +427,7 @@ begin
   lDBConnectionPool := Find(psDBConnectionName);
   Assert(lDBConnectionPool.TestValid(TDBConnectionPool, True), cErrorTIPerObjAbsTestValid);
   if lDBConnectionPool = nil then
-    EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psDBConnectionName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psDBConnectionName]);
   lDBConnectionPool.UnLock(pDBConnection);
 end;
 
@@ -488,7 +488,7 @@ var
 begin
   lDBConnectionPool := Find(psConnectionName);
   if lDBConnectionPool =  nil then
-    EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psConnectionName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psConnectionName]);
   FList.Extract(lDBConnectionPool);
   lDBConnectionPool.Free;
 end;
@@ -525,7 +525,7 @@ var
 begin
   lDBConnectionPool := Find(psDBConnectionName);
   if lDBConnectionPool = nil then
-    EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psDBConnectionName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psDBConnectionName]);
   lDBConnectionPool.UnLockByData(pDBConnection);
 end;
 
