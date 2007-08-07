@@ -718,13 +718,6 @@ type
     property    OIDToFind : TOID read FOIDToFind write FOIDToFind;
   end;
 
-  TVisPerObjDel = class(TtiVisitor)
-  protected
-    function    AcceptVisitor : boolean; override;
-  public
-    procedure   Execute(const AVisited : TtiVisited); override;
-  end;
-
   TVisSetAllObjectStates = class(TtiVisitor)
   private
     FObjectState: TPerObjectState;
@@ -1095,13 +1088,50 @@ begin
   end;
 end;
 
+type
+
+  TtiObjectVisitorSetObjectStateToDelete = class(TtiVisitor)
+  protected
+    function AcceptVisitor(const AVisited: TtiVisited): boolean; override;
+    function VisitBranch(const ADerivedParent, AVisited: TtiVisited) : boolean; override;
+  public
+    procedure Execute(const AVisited : TtiVisited); override;
+  end;
+
+  function TtiObjectVisitorSetObjectStateToDelete.AcceptVisitor(const AVisited: TtiVisited): boolean;
+  var
+    LVisited: TtiObject;
+  begin
+    Assert(AVisited.TestValid(TtiObject), cTIInvalidObjectError);
+    LVisited:= AVisited as TtiObject;
+    result := LVisited.ObjectState <> posDeleted;
+  end;
+
+  procedure TtiObjectVisitorSetObjectStateToDelete.Execute(const AVisited: TtiVisited);
+  begin
+    Inherited Execute(AVisited);
+    TtiObject(AVisited).ObjectState := posDelete;
+  end;
+
+  function TtiObjectVisitorSetObjectStateToDelete.VisitBranch(
+    const ADerivedParent, AVisited: TtiVisited): boolean;
+  var
+    LVisited: TtiObject;
+  begin
+    Assert(ADerivedParent.TestValid(TtiObject, True), cTIInvalidObjectError);
+    Assert(AVisited.TestValid(TtiObject), cTIInvalidObjectError);
+    LVisited:= AVisited as TtiObject;
+    result:= (ADerivedParent = nil) or
+      (ADerivedParent = LVisited.Owner)
+  end;
+
 procedure TtiObject.SetDeleted(const AValue: boolean);
 var
-  lVis : TVisPerObjDel;
+  lVis : TtiObjectVisitorSetObjectStateToDelete;
 begin
   if AValue and not Deleted then
   begin
-    lVis := TVisPerObjDel.Create;
+    lVis := TtiObjectVisitorSetObjectStateToDelete.Create;
     try
       self.Iterate(lVis);
     finally
@@ -1109,7 +1139,6 @@ begin
     end;
   end;
 end;
-
 
 procedure TtiObject.SetDirty(const AValue: boolean);
 begin
@@ -1144,50 +1173,7 @@ begin
 end;
 
 
-{ TVisPerObjDel } 
-
-function TVisPerObjDel.AcceptVisitor : boolean;
-begin
-  result := (Visited is TtiObject);
-  if not result then
-    Exit; //==>
-
-  result := (TtiObject(Visited).ObjectState <> posDeleted);
-  if not result then
-    Exit; //==>
-
-  if VisitedsOwner = nil then
-    Exit; //==>
-
-  if VisitedsOwner = Visited then
-    Exit; //==>
-
-  // Check to see that the object currently being visited  actually
-  // has an owner of the next object up the tree.
-  // If it does, then assume it is owned by the previous object,
-  // if it does not, then assume it is just a pointer to this object.
-  result := (VisitedsOwner = TtiObject(Visited).Owner);
-  if result then
-    Exit; //==>
-
-  if VisitedsOwner is TtiObjectList then
-    result := (TtiObjectList(VisitedsOwner).ItemOwner =
-                TtiObject(Visited).Owner);
-
-end;
-
-procedure TVisPerObjDel.Execute(const AVisited: TtiVisited);
-begin
-  Inherited Execute(AVisited);
-
-  if not AcceptVisitor then
-    exit; //==>
-
-  TtiObject(AVisited).ObjectState := posDelete;
-end;
-
-
-{ TVisPerObjIsDirty } 
+{ TVisPerObjIsDirty }
 
 function TVisPerObjIsDirty.AcceptVisitor : boolean;
 begin

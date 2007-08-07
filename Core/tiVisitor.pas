@@ -22,6 +22,7 @@ unit tiVisitor;
 //    Test compile demos
 //    Remove deprecated instance of VisMgr on tiOPFManager
 //    Refactor tiTestFramework to remove duplication
+//    Add unit test to confirm the instance of DerivedParent passed to VisitBranch is working correctly
 
 interface
 uses
@@ -183,7 +184,7 @@ type
     FVisitedsOwner: TtiVisited;
   protected
     function    AcceptVisitor : boolean; overload; virtual;
-    function    AcceptVisitor(AVisited: TtiVisited) : boolean; overload; virtual;
+    function    AcceptVisitor(const AVisited: TtiVisited) : boolean; overload; virtual;
     function    VisitBranch(const ADerivedParent, AVisited: TtiVisited) : boolean; virtual;
     function    GetVisited: TtiVisited; virtual;
     procedure   SetVisited(const AValue: TtiVisited);
@@ -379,7 +380,7 @@ begin
       begin
         LCandidate := GetObjectProp(Self, LClassPropNames.Strings[i]);
         if (LCandidate is TtiVisited) then
-          (LCandidate as TtiVisited).IterateRecurse(AVisitor, (LCandidate as TtiVisited), ATouchedByVisitorList, ATouchMethod, LIterationDepth)
+          (LCandidate as TtiVisited).IterateRecurse(AVisitor, Self, ATouchedByVisitorList, ATouchMethod, LIterationDepth)
         else if (LCandidate is TList) then
           IterateOverList(AVisitor, (LCandidate as TList), Self, ATouchedByVisitorList, ATouchMethod, LIterationDepth);
         inc(i);
@@ -535,7 +536,7 @@ end;
 
 { TtiVisitor }
 
-function TtiVisitor.AcceptVisitor(AVisited: TtiVisited): boolean;
+function TtiVisitor.AcceptVisitor(const AVisited: TtiVisited): boolean;
 begin
   SetVisited(AVisited);
   result:= AcceptVisitor;
