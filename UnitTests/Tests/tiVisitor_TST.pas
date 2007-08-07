@@ -1851,13 +1851,61 @@ begin
 end;
 
 procedure TTestTIVisitor.TouchedByVisitorList_AppendBottomUp;
+var
+  LList1: TtiTouchedByVisitorList;
+  LList2: TtiTouchedByVisitorList;
+  LItem1: TtiTouchedByVisitor;
+  LItem2: TtiTouchedByVisitor;
 begin
+  LList1:= nil;
+  LList2:= nil;
+  try
+    LList1:= TtiTouchedByVisitorList.Create(False);
+    LList2:= TtiTouchedByVisitorList.Create(True);
+    LItem1:= TtiTouchedByVisitor.Create(nil, nil, 0);
+    LList1.Add(LItem1);
+    LItem2:= TtiTouchedByVisitor.Create(nil, nil, 0);
+    LList1.Add(LItem2);
+    CheckSame(LItem1, LList1.Items[0]);
+    CheckSame(LItem2, LList1.Items[1]);
 
+    LList2.AppendBottomUp(LList1);
+    CheckSame(LItem2, LList2.Items[0]);
+    CheckSame(LItem1, LList2.Items[1]);
+
+  finally
+    LList1.Free;
+    LList2.Free;
+  end;
 end;
 
 procedure TTestTIVisitor.TouchedByVisitorList_AppendTopDown;
+var
+  LList1: TtiTouchedByVisitorList;
+  LList2: TtiTouchedByVisitorList;
+  LItem1: TtiTouchedByVisitor;
+  LItem2: TtiTouchedByVisitor;
 begin
+  LList1:= nil;
+  LList2:= nil;
+  try
+    LList1:= TtiTouchedByVisitorList.Create(False);
+    LList2:= TtiTouchedByVisitorList.Create(True);
+    LItem1:= TtiTouchedByVisitor.Create(nil, nil, 0);
+    LList1.Add(LItem1);
+    LItem2:= TtiTouchedByVisitor.Create(nil, nil, 0);
+    LList1.Add(LItem2);
+    CheckSame(LItem1, LList1.Items[0]);
+    CheckSame(LItem2, LList1.Items[1]);
 
+    LList2.AppendTopDown(LList1);
+    CheckSame(LItem1, LList2.Items[0]);
+    CheckSame(LItem2, LList2.Items[1]);
+
+  finally
+    LList1.Free;
+    LList2.Free;
+  end;
 end;
 
 procedure TTestTIVisitor.TouchedByVisitor_Create;
