@@ -68,7 +68,7 @@ uses
   ,tiUtils
   ,tiConstants
   ,tiCommandLineParams
-  ,tiDUnitUtils
+  ,tiTestFramework
   ,tiOPFManager
   // Delphi
   ,Classes
