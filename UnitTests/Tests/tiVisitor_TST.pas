@@ -2145,15 +2145,18 @@ type
 
 procedure TTestTIVisitor.VisitorManager_VisitorController;
 var
-  LVM: TtiObjectVisitorManager;
+  LM: TtiOPFManager;
+  LVM: TtiVisitorManager;
   LO: TtiObject;
 begin
+  LM:= nil;
   USensingList:= nil;
   LVM:= nil;
   LO:= nil;
   try
     USensingList:= TStringList.Create;
-    LVM:= TtiObjectVisitorManager.Create(nil);
+    LM:= TtiOPFManager.Create;
+    LVM:= TtiVisitorManager.Create(LM);
     LO:= TtiObject.Create;
 
     LVM.RegisterVisitor('test', TTestVisitorManagerVCVisitor);
@@ -2168,13 +2171,14 @@ begin
   finally
     LO.Free;
     LVM.Free;
+    LM.Free;
     USensingList.Free;
   end;
 end;
 
 procedure TTestTIVisitor.VisitorManager_VisitorControllerException;
 var
-  LVM: TtiObjectVisitorManager;
+  LVM: TtiVisitorManager;
   LO: TtiObject;
 begin
   USensingList:= nil;
@@ -2182,7 +2186,7 @@ begin
   LO:= nil;
   try
     USensingList:= TStringList.Create;
-    LVM:= TtiObjectVisitorManager.Create(nil);
+    LVM:= TtiVisitorManager.Create(nil);
     LO:= TtiObject.Create;
 
     LVM.RegisterVisitor('test', TTestVisitorManagerVCVisitorException);

@@ -436,16 +436,8 @@ end;
 
 function TtiObjectVisitorManager.Execute(const AGroupName: string;
   const AVisited: TtiVisited): string;
-//var
-//  LVisitorControllerConfig: TtiObjectVisitorControllerConfig;
 begin
   Execute(AGroupName, AVisited, '', '');
-//  LVisitorControllerConfig:= TtiObjectVisitorControllerConfig.Create(Self);
-//  try
-//    ProcessVisitors(AGroupName, AVisited, LVisitorControllerConfig);
-//  finally
-//    LVisitorControllerConfig.Free;
-//  end;
 end;
 
 { TtiObjectVisitorControllerConfig }
