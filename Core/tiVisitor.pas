@@ -1,3 +1,5 @@
+{** Unit containing the two classes TtiVisitor, TtiVisited and TtiVisitorManager,
+    which form the basis of the tiOPF's object persistence mechanism.}
 unit tiVisitor;
 
 {$I tiDefines.inc}
@@ -5,7 +7,6 @@ unit tiVisitor;
  // ToDo:
 
  //    Add comments in PasDoc format
- //    Test compile demos
 
  //    Change signature of
  //      AcceptVisitor
@@ -29,17 +30,22 @@ uses
   SysUtils,
   Contnrs;
 
-const
-  CErrorInVisitorExecute      = 'Error in %s.Execute(%s) Message: %s';
-  CErrorInvalidIterationStyle = 'Invalid TtiIterationStyle';
-  CErrorAttemptToRegisterDuplicateVisitor =
-    'Attempt to register duplicate visitor "%s"';
-  CErrorInvalidVisitorGroup   =
-    'Attempt to execute visitors for an unknown visitor group "%s"';
-  CErrorIncompatibleVisitorController =
-    'VisitorControllerClass not compatible. Required type "%s", Actual type "%s"';
-
 type
+  {** A TtiVisitor can iterate over a TtiVisited in three ways:
+
+      isTopDownRecurse - Touch all nodes in the graph of objects as they
+        appear. As new objects are written to the graph, iterate over these too.
+
+      isTopDownSinglePass - Read all objects in the graph into a list and
+        iterate over these. Objects that are read into the graph as part of
+        the iteration process are not touched as part of this iteration.
+        isTopDownSinglePass is useful when a large number of objects are being
+        read into a flat list. If isTopDownRecurse where used, each object
+        read into the list would be touched by the visitor and this can be
+        very time consuming.
+
+      isBottomUpSinglePass - Same as isTopDownSinglePass, except iteration is
+        from the bottom up. isBottomUpSinglePass is used for deleting objects.}
   TtiIterationStyle = (isTopDownRecurse, isTopDownSinglePass,
     isBottomUpSinglePass);
 
@@ -51,22 +57,27 @@ type
   TtiTouchedByVisitorList = class;
   TtiVisitorManager       = class;
 
-  // TVisitorClass reference
+  {** A class reference for holding TtiVisitor}
   TtiVisitorClass = class of TtiVisitor;
 
-  // TtiVisited class reference
+  {** A class reference for holding TtiVisited}
   TtiVisitedClass = class of TtiVisited;
 
-  {: Counter for the depth of iteration. There is no theoretical limit, however
-     a limit is set as High(Word) = 64435 as it's unlikely that the depth
-     will ever reach that limit. If it does, this type can be changed to Cardinal.}
+  {** @exclude
+    Counter for the depth of iteration. There is no theoretical limit, however
+    a limit is set as High(Word) = 64435 as it's unlikely that the depth
+    will ever reach that limit. If it does, this type can be changed to Cardinal.}
   TIterationDepth = word;
 
-  // Method that is called when each Visited is touched.
+  {** @exclude Method that is called when each Visited is touched.}
   TtiVisitedTouchMethod = procedure(const ACandidates: TtiVisited;
     const AVisitor: TtiVisitor; const AList: TtiTouchedByVisitorList;
     const AIterationDepth: TIterationDepth) of object;
 
+  {** @exclude A container for holding Visitor/Visited pairs.
+      TtiTouchedByVisitor is used by TtiObjectVisitor(s) when Final must
+      be executed against each TtiVisited that was touched by the iteration
+      cycle.}
   TtiTouchedByVisitor = class(TtiBaseObject)
   private
     FVisitor:        TtiVisitor;
@@ -80,6 +91,7 @@ type
     property IterationDepth: TIterationDepth read FIterationDepth;
   end;
 
+  {** @exclude A list of TtiTouchedByVisitor}
   TtiTouchedByVisitorList = class(TtiBaseObject)
   private
     FList: TObjectList;
@@ -95,49 +107,78 @@ type
     property Count: integer read GetCount;
   end;
 
-  // TtiVisited
-  // The class that gets visited.
+  {** TtiVisited implements the Iterate method, which will pass a TtiVisitor over
+      every node in the graph of objects. Object instances exposed as
+      published properties will be touched by the TtiVisitor. Objects contained
+      in a published TList will also be touched.}
   TtiVisited = class(TtiBaseObject)
   protected
+    {** @exclude}
     function GetCaption: string; virtual;
+    {** @exclude}
     procedure IterateTopDownRecurse(const AVisitor: TtiVisitor;
       const ATouchedByVisitorList: TtiTouchedByVisitorList);
+    {** @exclude}
     procedure IterateTopDownSinglePass(const AVisitor: TtiVisitor;
       const ATouchedByVisitorList: TtiTouchedByVisitorList);
+    {** @exclude}
     procedure IterateBottomUpSinglePass(const AVisitor: TtiVisitor;
       const ATouchedByVisitorList: TtiTouchedByVisitorList);
+    {** @exclude}
     procedure IterateAssignTouched(const AVisitor: TtiVisitor;
       const ATouchedByVisitorList: TtiTouchedByVisitorList);
       virtual;
+    {** @exclude}
     procedure IterateRecurse(const AVisitor: TtiVisitor; const ADerivedParent: TtiVisited;
       const ATouchedByVisitorList: TtiTouchedByVisitorList;
       const ATouchMethod: TtiVisitedTouchMethod; const AIterationDepth: TIterationDepth);
       virtual;
+    {** @exclude}
     procedure IterateOverList(const AVisitor: TtiVisitor; const ACandidates: TList;
       const ADerivedParent: TtiVisited; const ATouchedByVisitorList: TtiTouchedByVisitorList;
       const ATouchMethod: TtiVisitedTouchMethod; const AIterationDepth: TIterationDepth);
+    {** @exclude}
     procedure TouchMethodAddToList(const ACandidates: TtiVisited;
       const AVisitor: TtiVisitor; const ATouchedByVisitorList: TtiTouchedByVisitorList;
       const AIterationDepth: TIterationDepth);
+    {** @exclude}
     procedure TouchMethodExecuteVisitor(const ACandidates: TtiVisited;
       const AVisitor: TtiVisitor; const ATouchedByVisitorList: TtiTouchedByVisitorList;
       const AIterationDepth: TIterationDepth);
+    {** @exclude}
     procedure ExecuteVisitor(const AVisitor: TtiVisitor;
       const AVisitedCandidate: TtiTouchedByVisitor);
+    {** @exclude}
     function GetTerminated: boolean; virtual;
+    {** @exclude}
     function ContinueVisiting(const AVisitor: TtiVisitor): boolean; virtual;
+    {** @exclude}
     function CheckContinueVisitingIfTopDownRecurse(const AVisitor: TtiVisitor): boolean;
       virtual;
+    {** @exclude}
     function TIOPFManager: TObject; virtual;
   published
+    {** A short text description of the object. By default, the classname but
+        can be customised by overriding GetCaption.}
     property Caption: string read GetCaption;
   public
+    {** @exclude}
     constructor Create; virtual;
+    {** Iterate will cause an instance of TtiVisitor to be passed over all
+        objects that are accessable by RTTI as published.
+        @param AVisitor: An instance of the TtiVisitor to be passed over the
+        object graph.}
     procedure Iterate(const AVisitor: TtiVisitor); overload; virtual;
+    {** Find all the objects that are of a given class type.
+        @param AClass The class type to find
+        @param AList An empty TList that will be populated with the instances
+               found.}
     procedure FindAllByClassType(const AClass: TtiVisitedClass; const AList: TList);
+    {** @exclude}
     property Terminated: boolean read GetTerminated;
   end;
 
+  {** @exclude}
   TtiVisitorControllerConfig = class(TtiBaseObject)
   private
     FVisitorManager: TtiVisitorManager;
@@ -147,6 +188,7 @@ type
     constructor Create(const AVisitorManager: TtiVisitorManager);
   end;
 
+  {** @exclude}
   TtiVisitorController = class(TtiBaseObject)
   private
     FConfig:         TtiVisitorControllerConfig;
@@ -168,9 +210,10 @@ type
     procedure AfterExecuteVisitorGroupError; virtual;
   end;
 
+  {** @exclude}
   TtiVisitorControllerClass = class of TtiVisitorController;
 
-  // TtiVisitor: The class that does the visiting
+  {** TtiVisitor: The class that does the visiting}
   TtiVisitor = class(TtiBaseObject)
   private
     FVisited:        TtiVisited;
@@ -201,6 +244,7 @@ type
 
   end;
 
+  {** @exclude}
   TtiVisitorMappingGroup = class(TtiBaseObject)
   private
     FMappings:  TClassList;
@@ -216,12 +260,13 @@ type
     property VisitorControllerClass: TtiVisitorControllerClass read FVisitorControllerClass;
   end;
 
-  // A procedural type to define the signature used for
-  // BeforeExecute, AfterExecute and AfterExecuteError
+  {** @exclude
+      A procedural type to define the signature used for
+      BeforeExecute, AfterExecute and AfterExecuteError}
   TOnProcessVisitorController = procedure(const AVisitorController: TtiVisitorController;
     const AVisitors: TList) of object;
 
-  // The Visitor Manager
+  {** The Visitor Manager }
   TtiVisitorManager = class(TtiBaseObject)
   private
     FTIOPFManager:     TtiBaseObject;
@@ -248,8 +293,8 @@ type
   end;
 
 
-  // A wrapper for the TtiPreSizedStream which allows text to be written to the stream
-  // with each visit.
+  {** A wrapper for the TtiPreSizedStream which allows text to be written to
+      the stream with each visit.}
   TVisStream = class(TtiVisitor)
   private
     FStream: TtiPreSizedStream;
@@ -261,6 +306,8 @@ type
     property Stream: TtiPreSizedStream read FStream write SetStream;
   end;
 
+  {** A wrapper for the TtiPreSizedStream which allows text to be written to
+      the stream with each visit. The stream can be accessed as a string.}
   TVisStringStream = class(TVisStream)
   protected
     function GetText: string; virtual;
@@ -297,14 +344,24 @@ type
     property List: TList read FList write FList;
   end;
 
+  {** @exclude}
   TVisStreamClass = class of TVisStream;
 
-// Global proc to write a apply a TVisStream (as a TFileStream) to a TtiVisited.
+{** Global proc to write a apply a TVisStream (as a TFileStream) to a TtiVisited.}
 procedure VisStreamToFile(const AData: TtiVisited; const AFileName: string;
   const AVisClassRef: TtiVisitorClass);
 
-
 implementation
+
+const
+  CErrorInVisitorExecute      = 'Error in %s.Execute(%s) Message: %s';
+  CErrorInvalidIterationStyle = 'Invalid TtiIterationStyle';
+  CErrorAttemptToRegisterDuplicateVisitor =
+    'Attempt to register duplicate visitor "%s"';
+  CErrorInvalidVisitorGroup   =
+    'Attempt to execute visitors for an unknown visitor group "%s"';
+  CErrorIncompatibleVisitorController =
+    'VisitorControllerClass not compatible. Required type "%s", Actual type "%s"';
 
 uses
   tiLog,
