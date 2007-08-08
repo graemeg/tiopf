@@ -115,14 +115,17 @@ type
   protected
     function    GetVisited: TtiObject; reintroduce;
     procedure   SetVisited(const AValue: TtiObject); reintroduce; virtual;
-    procedure   LogQueryTiming(const pQueryName : string;
-                                pQueryTime : integer;
-                                pScanTime : integer);
+    procedure   LogQueryTiming(const AQueryName : string;
+                               const AQueryTime : integer;
+                               const AScanTime : integer);
+    property    Database : TtiDatabase read FDatabase write FDatabase;
+    property    Query : TtiQuery read GetQuery write SetQuery;
+
+    // Override in your code
     procedure   Init; virtual;
     procedure   SetupParams    ; virtual;
     procedure   Final(const AVisited: TtiObject); virtual;
-    property    Database : TtiDatabase read FDatabase write FDatabase;
-    property    Query : TtiQuery read GetQuery write SetQuery;
+
   public
     Constructor Create; override;
     destructor  Destroy; override;
@@ -141,7 +144,6 @@ type
     procedure   Execute(const AData: TtiVisited); override;
   end;
 
-
   // ToDo: Rename to TtiVisitorSelect
   TVisOwnedQrySelect = class(TVisOwnedQrySelectAbs)
   protected
@@ -157,7 +159,7 @@ type
   end;
 
   TtiVisitorUpdate = class(TVisOwnedQryUpdate);
-  
+
 
 implementation
 uses
@@ -222,9 +224,9 @@ begin
   // Do nothing
 end;
 
-procedure TtiObjectVisitor.LogQueryTiming(const pQueryName: string;
-                                    pQueryTime : integer;
-                                    pScanTime: integer);
+procedure TtiObjectVisitor.LogQueryTiming(const AQueryName: string;
+                                    const AQueryTime : integer;
+                                    const AScanTime: integer);
 var
   lClassName : string;
 begin
@@ -241,9 +243,9 @@ begin
     Exit; //==>
 
   Log({tiPadR(lClassName, cuiQueryTimingSpacing) +}
-       tiPadR(pQueryName, 20) + ' ' +
-       tiPadR(IntToStr(pQueryTime), 7) +
-       tiPadR(IntToStr(pScanTime), 7),
+       tiPadR(AQueryName, 20) + ' ' +
+       tiPadR(IntToStr(AQueryTime), 7) +
+       tiPadR(IntToStr(AScanTime), 7),
        lsQueryTiming)
 
 end;

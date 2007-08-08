@@ -4,10 +4,7 @@ unit tiVisitor;
 
 // ToDo:
 
-//    Audit for const params
-//    Audit for unit tests
 //    Format with JCF
-//    Audit for Used Units
 //    Audit for TestValid calls
 //    Rename TtiPerObjVisitor to TtiObjectVisitor
 //    Add comments in PasDoc format
@@ -20,6 +17,7 @@ unit tiVisitor;
 //      SetupParams
 //      MapRowToObject
 //    Remove reference to Visited in TtiObjectVisitor
+//    Update code templates
 
 //    Refactor tiTestFramework to remove duplication
 //    Refactor the DBConnectionPool so Lock returns a TtiDatabase
@@ -130,7 +128,8 @@ type
                                       const AVisitor : TtiVisitor;
                                       const ATouchedByVisitorList: TtiTouchedByVisitorList;
                                       const AIterationDepth: TIterationDepth);
-    procedure   ExecuteVisitor(const AVisitor: TtiVisitor; const AVisitedCandidate: TtiTouchedByVisitor);
+    procedure   ExecuteVisitor(const AVisitor: TtiVisitor;
+                               const AVisitedCandidate: TtiTouchedByVisitor);
     function    GetTerminated: boolean; virtual;
     function    ContinueVisiting(const AVisitor: TtiVisitor): boolean; virtual;
     function    CheckContinueVisitingIfTopDownRecurse(const AVisitor: TtiVisitor): boolean; virtual;
@@ -140,7 +139,7 @@ type
   public
     constructor Create; virtual;
     procedure   Iterate(const AVisitor : TtiVisitor); overload; virtual;
-    procedure   FindAllByClassType(AClass : TtiVisitedClass; AList : TList);
+    procedure   FindAllByClassType(const AClass : TtiVisitedClass; const AList : TList);
     property    Terminated: Boolean read GetTerminated;
   end;
 
@@ -162,7 +161,8 @@ type
     property  Config: TtiVisitorControllerConfig read FConfig;
     property  VisitorManager: TtiVisitorManager read FVisitorManager;
   public
-    constructor Create(const AVisitorManager: TtiVisitorManager; const AConfig: TtiVisitorControllerConfig); virtual;
+    constructor Create(const AVisitorManager: TtiVisitorManager;
+      const AConfig: TtiVisitorControllerConfig); virtual;
     destructor  Destroy; override;
     property    TouchedByVisitorList: TtiTouchedByVisitorList read FTouchedByVisitorList;
     procedure BeforeExecuteVisitorGroup; virtual;
@@ -233,11 +233,13 @@ type
     FVisitorMappings : TObjectList;
     FSynchronizer: TMultiReadExclusiveWriteSynchronizer;
     FBreakOnException: boolean;
-    procedure ExecuteVisitors(const AVisitorController: TtiVisitorController; const AVisitors: TList; const AVisited : TtiVisited);
+    procedure ExecuteVisitors(const AVisitorController: TtiVisitorController;
+      const AVisitors: TList; const AVisited : TtiVisited);
     function GetVisitorMappings: TList;
   protected
     property    VisitorMappings: TList read GetVisitorMappings;
-    function    FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup; virtual;
+    function    FindVisitorMappingGroup(
+      const AGroupName: string): TtiVisitorMappingGroup; virtual;
     procedure ProcessVisitors(const AGroupName : string;
                 const AVisited : TtiVisited;
                 const AVisitorControllerConfig: TtiVisitorControllerConfig); virtual;
@@ -282,13 +284,13 @@ type
   TVisClassCount = class(TtiVisitor)
   private
     FList: TStringList;
-    function GetClassCount(AClass : TClass): integer;
-    procedure SetClassCount(AClass : TClass; const AValue: integer);
+    function GetClassCount(const AClass : TClass): integer;
+    procedure SetClassCount(const AClass : TClass; const AValue: integer);
   public
     constructor Create; override;
     destructor  Destroy; override;
     procedure   Execute(const AVisited : TtiVisited); override;
-    property    ClassCount[ AClass : TClass]: integer
+    property    ClassCount[const AClass : TClass]: integer
                   read GetClassCount
                   write SetClassCount;
   end;
@@ -309,9 +311,9 @@ type
   TVisStreamClass = class of TVisStream;
 
 // Global proc to write a apply a TVisStream (as a TFileStream) to a TtiVisited.
-procedure VisStreamToFile(AData       : TtiVisited;
-                          AFileName  : string;
-                          AVisClassRef : TtiVisitorClass);
+procedure VisStreamToFile(const AData       : TtiVisited;
+                          const AFileName  : string;
+                          const AVisClassRef : TtiVisitorClass);
 
 
 implementation
@@ -329,9 +331,9 @@ uses
  ;
 
 
-procedure VisStreamToFile(AData : TtiVisited;
-                           AFileName : string;
-                           AVisClassRef : TtiVisitorClass);
+procedure VisStreamToFile(const AData : TtiVisited;
+                           const AFileName : string;
+                           const AVisClassRef : TtiVisitorClass);
 var
   lVisitor : TVisStream;
   lStream : TtiPreSizedStream;
@@ -423,7 +425,7 @@ begin
   AVisitor.Execute(AVisitedCandidate.Visited);
 end;
 
-procedure TtiVisited.FindAllByClassType(AClass: TtiVisitedClass; AList: TList);
+procedure TtiVisited.FindAllByClassType(const AClass: TtiVisitedClass; const AList: TList);
 var
   lVis : TVisFindAllByClass;
 begin
@@ -687,13 +689,13 @@ begin
 end;
 
 
-function TVisClassCount.GetClassCount(AClass : TClass): integer;
+function TVisClassCount.GetClassCount(const AClass : TClass): integer;
 begin
   Result := StrToIntDef(FList.Values[ AClass.ClassName ], 0);
 end;
 
 
-procedure TVisClassCount.SetClassCount(AClass : TClass; const AValue: integer);
+procedure TVisClassCount.SetClassCount(const AClass : TClass; const AValue: integer);
 begin
   FList.Values[ AClass.ClassName ]:= IntToStr(AValue);
 end;

@@ -22,16 +22,14 @@ type
   private
     function CreateList : TTestVisitedList;
     function CreateOwned : TTestVisitedOwned;
-
     procedure Visitor_ContinueVisiting(const AIterationStyle: TtiIterationStyle);
-
-    procedure Visited_Iterate_Single(AIterationStyle: TtiIterationStyle);
-    procedure Visited_Iterate_List(AIterationStyle: TtiIterationStyle);
-    procedure Visited_Iterate_Owned(AIterationStyle: TtiIterationStyle);
-    procedure Visited_Iterate_ListAndOwned(AIterationStyle: TtiIterationStyle);
-    procedure Visited_AcceptVisitor(AIterationStyle: TtiIterationStyle);
-    procedure Visited_VisitBranch(AIterationStyle: TtiIterationStyle);
-    procedure Visited_ContinueVisiting(AIterationStyle: TtiIterationStyle);
+    procedure Visited_Iterate_Single(const AIterationStyle: TtiIterationStyle);
+    procedure Visited_Iterate_List(const AIterationStyle: TtiIterationStyle);
+    procedure Visited_Iterate_Owned(const AIterationStyle: TtiIterationStyle);
+    procedure Visited_Iterate_ListAndOwned(const AIterationStyle: TtiIterationStyle);
+    procedure Visited_AcceptVisitor(const AIterationStyle: TtiIterationStyle);
+    procedure Visited_VisitBranch(const AIterationStyle: TtiIterationStyle);
+    procedure Visited_ContinueVisiting(const AIterationStyle: TtiIterationStyle);
     procedure Visited_IterateAssignTouched(const AIterationStyle: TtiIterationStyle);
 
   protected
@@ -124,7 +122,6 @@ type
     procedure Execute(const AVisited : TtiVisited); override;
   end;
 
-
   TTestVisitedAbs = class(TtiVisited)
   private
     FIndex: Word;
@@ -132,9 +129,7 @@ type
     property Index : Word read FIndex write FIndex;
   end;
 
-
   TTestVisited = class(TTestVisitedAbs);
-
 
   TTestVisitedList = class(TTestVisitedAbs)
   private
@@ -359,7 +354,7 @@ type
   end;
 
 procedure TTestTIVisitor.Visited_AcceptVisitor(
-  AIterationStyle: TtiIterationStyle);
+  const AIterationStyle: TtiIterationStyle);
 var
   LItem1: TTestTIVisitedAcceptVisitor;
   LItem2: TTestTIVisitedAcceptVisitor;
@@ -471,7 +466,7 @@ end;
 
 
 procedure TTestTIVisitor.Visited_Iterate_Single(
-  AIterationStyle: TtiIterationStyle);
+  const AIterationStyle: TtiIterationStyle);
 var
   lVisitor : TTestVisitorIterate;
   lVisited : TTestVisitedAbs;
@@ -1089,7 +1084,7 @@ type
     inherited;
   end;
 
-procedure TTestTIVisitor.Visited_ContinueVisiting(AIterationStyle: TtiIterationStyle);
+procedure TTestTIVisitor.Visited_ContinueVisiting(const AIterationStyle: TtiIterationStyle);
 var
   LVisited: TtiVisitedTerminated;
   LVisitor: TSensingVisitor;
@@ -1402,7 +1397,7 @@ type
   end;
 
 procedure TTestTIVisitor.Visited_VisitBranch(
-  AIterationStyle: TtiIterationStyle);
+  const AIterationStyle: TtiIterationStyle);
 var
   LVisited: TTestVisitedVisitBranch;
   LVisitor: TTestVisitorVisitBranch;
@@ -1584,7 +1579,7 @@ begin
 end;
 
 procedure TTestTIVisitor.Visited_Iterate_Owned(
-  AIterationStyle: TtiIterationStyle);
+  const AIterationStyle: TtiIterationStyle);
 var
   lVisitor : TTestVisitorIterate;
   lVisited : TTestVisitedOwned;
@@ -1724,7 +1719,7 @@ begin
 end;
 
 procedure TTestTIVisitor.Visited_Iterate_List(
-  AIterationStyle: TtiIterationStyle);
+  const AIterationStyle: TtiIterationStyle);
 var
   lVisitor : TTestVisitorIterate;
   lVisited : TTestVisitedList;
@@ -1751,7 +1746,7 @@ begin
 end;
 
 procedure TTestTIVisitor.Visited_Iterate_ListAndOwned(
-  AIterationStyle: TtiIterationStyle);
+  const AIterationStyle: TtiIterationStyle);
 var
   lVisitor : TTestVisitorIterate;
   lVisitedList : TTestVisitedListAndOwned;
