@@ -3,26 +3,26 @@ unit tiVisitor;
 {$I tiDefines.inc}
 
 // ToDo:
+
+//    Audit for const params
+//    Audit for unit tests
+//    Format with JCF
+//    Audit for Used Units
+//    Audit for TestValid calls
+//    Rename TtiPerObjVisitor to TtiObjectVisitor
+//    Add comments in PasDoc format
+//    Test compile demos
+//    Remove deprecated instance of VisMgr on tiOPFManager
+
 //    Change signature of
 //      AcceptVisitor
 //      Init
 //      SetupParams
 //      MapRowToObject
 //    Remove reference to Visited in TtiObjectVisitor
-//    Audit for const params
-//    Audit for unit tests
-//    Format with JCF
-//    Audit for Used Units
-//    Audit for TestValid calls
 
-//    Refactor the DBConnectionPool so Lock returns a TtiDatabase
-//    Rename TtiPerObjVisitor to TtiObjectVisitor
-//    Add comments in PasDoc format
-//    Fix broken Delete unit test
-//    Test compile demos
-//    Remove deprecated instance of VisMgr on tiOPFManager
 //    Refactor tiTestFramework to remove duplication
-//    Add unit test to confirm the instance of DerivedParent passed to VisitBranch is working correctly
+//    Refactor the DBConnectionPool so Lock returns a TtiDatabase
 
 interface
 uses

@@ -226,9 +226,6 @@ uses
   ,tiVisitorDB
   ,TypInfo
   ,SysUtils
-
-  ,tiDialogs
-  
  ;
 
 
@@ -1342,10 +1339,14 @@ type
   TTestVisitorVisitBranch = class(TSensingVisitor)
   private
     FApplyTest: boolean;
+    FVisitBranchCalls: TStringList;
   protected
     function VisitBranch(const ADerivedParent, AVisited: TtiVisited) : boolean; override;
   public
-    property ApplyTest: boolean read FApplyTest write FApplyTest;
+    constructor Create; override;
+    destructor  Destroy; override;
+    property    ApplyTest: boolean read FApplyTest write FApplyTest;
+    property    VisitBranchCalls : TStringList read FVisitBranchCalls;
   end;
 
 { TTestVisitedOverrideVisitBranchChild1 }
@@ -1374,8 +1375,28 @@ type
     inherited;
   end;
 
-  function TTestVisitorVisitBranch.VisitBranch(const ADerivedParent, AVisited: TtiVisited) : boolean;
+  constructor TTestVisitorVisitBranch.Create;
   begin
+    inherited;
+    FVisitBranchCalls:= TStringList.Create;
+  end;
+
+  destructor TTestVisitorVisitBranch.Destroy;
+  begin
+    FVisitBranchCalls.Free;
+    inherited;
+  end;
+
+  function TTestVisitorVisitBranch.VisitBranch(const ADerivedParent, AVisited: TtiVisited) : boolean;
+  var
+    LDerivedParent: string;
+  begin
+    if ADerivedParent = nil then
+      LDerivedParent:= 'nil'
+    else
+      LDerivedParent:= IntToStr(ADerivedParent.SerialNumber);
+    VisitBranchCalls.Add(LDerivedParent + ',' + IntToStr(AVisited.SerialNumber));
+
     result:= (not ApplyTest) or
              (ApplyTest and not (AVisited is TTestVisitedVisitBranchChild1));
   end;
@@ -1394,6 +1415,9 @@ begin
     LVisitor.ApplyTest:= False;
     LVisited.Iterate(LVisitor);
     CheckEquals(3, LVisitor.Data.Count);
+    CheckEquals('nil,'+ IntToStr(LVisited.SerialNumber), LVisitor.VisitBranchCalls.Strings[0]);
+    CheckEquals(IntToStr(LVisited.SerialNumber) + ',' + IntToStr(LVisited.Data.SerialNumber), LVisitor.VisitBranchCalls.Strings[1]);
+    CheckEquals(IntToStr(LVisited.Data.SerialNumber) + ',' + IntToStr(LVisited.Data.Data.SerialNumber), LVisitor.VisitBranchCalls.Strings[2]);
 
   finally
     LVisited.Free;
@@ -1408,7 +1432,8 @@ begin
     LVisitor.ApplyTest:= True;
     LVisited.Iterate(LVisitor);
     CheckEquals(1, LVisitor.Data.Count);
-
+    CheckEquals('nil,'+ IntToStr(LVisited.SerialNumber), LVisitor.VisitBranchCalls.Strings[0]);
+    CheckEquals(IntToStr(LVisited.SerialNumber) + ',' + IntToStr(LVisited.Data.SerialNumber), LVisitor.VisitBranchCalls.Strings[1]);
   finally
     LVisited.Free;
     LVisitor.Free;
