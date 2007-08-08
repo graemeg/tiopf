@@ -256,7 +256,7 @@ type
 implementation
 uses
   tiVisitorDB
-  ,tiPtnVisMgr
+  ,tiVisitor
   ,cAdrs
   ,cQueryNames
   ,tiUtils

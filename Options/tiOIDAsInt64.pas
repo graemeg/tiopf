@@ -67,14 +67,14 @@ type
     property DatabaseName : string read FDatabaseName write FDatabaseName;
   end;
 
-  TVisDBNextOIDAmblerRead = class(TtiPerObjVisitor)
+  TVisDBNextOIDAmblerRead = class(TtiObjectVisitor)
   protected
     function    AcceptVisitor : boolean; override;
   public
     procedure   Execute(const AData : TtiVisited); override;
   end;
 
-  TVisDBNextOIDAmblerUpdate = class(TtiPerObjVisitor)
+  TVisDBNextOIDAmblerUpdate = class(TtiObjectVisitor)
   protected
     function    AcceptVisitor : boolean; override;
   public
@@ -121,7 +121,7 @@ end;
 function TNextOIDGenerator.NextOID: TOID;
 begin
   if FDirty then
-    gTIOPFManager.VisMgr.Execute(cNextOIDReadHigh, Self);
+    gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, Self);
 
   Inc(FLow);
   if FLow >= FLowRange then
@@ -264,7 +264,7 @@ end;
 
 
 initialization
-  gTIOPFManager.VisMgr.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
-  gTIOPFManager.VisMgr.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
 
 

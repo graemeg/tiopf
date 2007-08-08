@@ -1860,18 +1860,27 @@ var
   LList:  TtiTouchedByVisitorList;
   LItem1: TtiTouchedByVisitor;
   LItem2: TtiTouchedByVisitor;
+  LVisitor: TtiVisitor;
+  LVisited: TtiVisited;
 begin
-  LList := TtiTouchedByVisitorList.Create(True);
+  LVisitor:= nil;
+  LVisited:= nil;
+  LList:= nil;
   try
-    LItem1 := TtiTouchedByVisitor.Create(nil, nil, 0);
+    LVisitor:= TtiVisitor.Create;
+    LVisited:= TtiVisited.Create;
+    LList := TtiTouchedByVisitorList.Create(True);
+    LItem1 := TtiTouchedByVisitor.Create(LVisitor, LVisited, 0);
     LList.Add(LItem1);
     CheckEquals(1, LList.Count);
     CheckSame(LItem1, LList.Items[0]);
-    LItem2 := TtiTouchedByVisitor.Create(nil, nil, 0);
+    LItem2 := TtiTouchedByVisitor.Create(LVisitor, LVisited, 0);
     LList.Add(LItem2);
     CheckEquals(2, LList.Count);
     CheckSame(LItem2, LList.Items[1]);
   finally
+    LVisitor.Free;
+    LVisited.Free;
     LList.Free;
   end;
 end;
@@ -1882,15 +1891,21 @@ var
   LList2: TtiTouchedByVisitorList;
   LItem1: TtiTouchedByVisitor;
   LItem2: TtiTouchedByVisitor;
+  LVisitor: TtiVisitor;
+  LVisited: TtiVisited;
 begin
+  LVisitor:= nil;
+  LVisited:= nil;
   LList1 := nil;
   LList2 := nil;
   try
+    LVisitor:= TtiVisitor.Create;
+    LVisited:= TtiVisited.Create;
     LList1 := TtiTouchedByVisitorList.Create(False);
     LList2 := TtiTouchedByVisitorList.Create(True);
-    LItem1 := TtiTouchedByVisitor.Create(nil, nil, 0);
+    LItem1 := TtiTouchedByVisitor.Create(LVisitor, LVisited, 0);
     LList1.Add(LItem1);
-    LItem2 := TtiTouchedByVisitor.Create(nil, nil, 0);
+    LItem2 := TtiTouchedByVisitor.Create(LVisitor, LVisited, 0);
     LList1.Add(LItem2);
     CheckSame(LItem1, LList1.Items[0]);
     CheckSame(LItem2, LList1.Items[1]);
@@ -1900,6 +1915,8 @@ begin
     CheckSame(LItem1, LList2.Items[1]);
 
   finally
+    LVisitor.Free;
+    LVisited.Free;
     LList1.Free;
     LList2.Free;
   end;
@@ -1911,15 +1928,21 @@ var
   LList2: TtiTouchedByVisitorList;
   LItem1: TtiTouchedByVisitor;
   LItem2: TtiTouchedByVisitor;
+  LVisitor: TtiVisitor;
+  LVisited: TtiVisited;
 begin
+  LVisitor:= nil;
+  LVisited:= nil;
   LList1 := nil;
   LList2 := nil;
   try
+    LVisitor:= TtiVisitor.Create;
+    LVisited:= TtiVisited.Create;
     LList1 := TtiTouchedByVisitorList.Create(False);
     LList2 := TtiTouchedByVisitorList.Create(True);
-    LItem1 := TtiTouchedByVisitor.Create(nil, nil, 0);
+    LItem1 := TtiTouchedByVisitor.Create(LVisitor, LVisited, 0);
     LList1.Add(LItem1);
-    LItem2 := TtiTouchedByVisitor.Create(nil, nil, 0);
+    LItem2 := TtiTouchedByVisitor.Create(LVisitor, LVisited, 0);
     LList1.Add(LItem2);
     CheckSame(LItem1, LList1.Items[0]);
     CheckSame(LItem2, LList1.Items[1]);
@@ -1929,6 +1952,8 @@ begin
     CheckSame(LItem2, LList2.Items[1]);
 
   finally
+    LVisitor.Free;
+    LVisited.Free;
     LList1.Free;
     LList2.Free;
   end;

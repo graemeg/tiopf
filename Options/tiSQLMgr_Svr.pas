@@ -880,9 +880,9 @@ initialization
 
 }
 
-  gTIOPFManager.VisMgr.RegisterVisitor(cVisSQLMgrReadByQueryName, TVisReadQueryByName);
-  gTIOPFManager.VisMgr.RegisterVisitor(cVisSQLMgrReadPK, TVisReadGroupPK);
-  gTIOPFManager.VisMgr.RegisterVisitor(cVisSQLMgrReadPK, TVisReadQueryPK);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cVisSQLMgrReadByQueryName, TVisReadQueryByName);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cVisSQLMgrReadPK, TVisReadGroupPK);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cVisSQLMgrReadPK, TVisReadQueryPK);
 
 
 

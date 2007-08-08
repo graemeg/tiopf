@@ -6,6 +6,7 @@ interface
 
 uses
    tiVisitorDB
+  ,tiObject
   ,Client_BOM
  ;
 
@@ -40,7 +41,7 @@ type
     function  AcceptVisitor: boolean; override;
     procedure Init         ; override;
     procedure SetupParams  ; override;
-    procedure Final        ; override;
+    procedure Final(const AVisited: TtiObject); override;
   end;
 
   TVisPhoneNumber_Create = class(TVisOwnedQryUpdate)
@@ -69,7 +70,6 @@ procedure RegisterVisitors;
 implementation
 uses
    tiOPFManager
-  ,tiObject
  ;
 
 procedure RegisterVisitors;
@@ -207,12 +207,12 @@ begin
             (Visited.ObjectState = posDelete);
 end;
 
-procedure TVisClient_Delete.Final;
+procedure TVisClient_Delete.Final(const AVisited: TtiObject);
 var
   lData: TClient;
 begin
   inherited;
-  lData:= Visited as TClient;
+  lData:= AVisited as TClient;
   lData.PhoneNumbers.ObjectState:= posClean;
 end;
 

@@ -130,7 +130,7 @@ implementation
 uses
    FtiAdrsListChild_Person
   ,FtiAdrsListChild_Company
-  ,tiPtnVisMgr
+  ,tiVisitor
   ,cAdrs
   ,tiVisitorDB
   ,tiVisitorDB_Cli

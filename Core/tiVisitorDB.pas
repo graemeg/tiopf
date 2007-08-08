@@ -180,8 +180,6 @@ uses
   {$ENDIF LINUX};
 
 
-{ TtiPerObjVisitor }
-
 constructor TtiObjectVisitor.Create;
 begin
   inherited;

@@ -48,7 +48,7 @@ type
   end;
 
   // Uses the SQLManager to get the SQL
-  TVisSQLMgrAbs = class(TtiPerObjVisitor)
+  TVisSQLMgrAbs = class(TtiObjectVisitor)
   private
     FsQueryName     : string;
     FbInitCalled    : boolean;

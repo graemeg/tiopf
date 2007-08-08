@@ -176,7 +176,6 @@ type
     property    DefaultDBConnectionName : string            read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
 
     property    PersistenceLayers      : TtiPersistenceLayers read FPersistenceLayers;
-    property    VisMgr                 : TtiObjectVisitorManager read FVisitorManager; // Don't use VisMgr. It will be removed
     property    VisitorManager         : TtiObjectVisitorManager read FVisitorManager;
 
     // ToDo: How to relate the ClassDBMappingMgr to a persistence layer -
@@ -191,7 +190,7 @@ type
   end;
 
 
-function  gTIOPFManager: TtiOPFManager;
+function  GTIOPFManager: TtiOPFManager;
 function  ShuttingDown: Boolean;
 procedure FreeAndNilTIPerMgr;
 
@@ -233,11 +232,11 @@ uses
 
 
 var
-  uTIOPFManager : TtiOPFManager;
-  uShuttingDown: Boolean;
+  UTIOPFManager : TtiOPFManager;
+  UShuttingDown: Boolean;
 
 
-function gTIOPFManager : TtiOPFManager;
+function GTIOPFManager : TtiOPFManager;
 begin
   if uTIOPFManager = nil then
   begin
@@ -448,7 +447,6 @@ begin
     // Register the visitors that work with the persistence mapping classes
     VisitorManager.RegisterVisitor(cuStandardTask_ReadPK,   TVisAutoCollectionPKRead);
     VisitorManager.RegisterVisitor(cuStandardTask_ReadThis, TVisAutoReadThis);
-//    VisMgr.RegisterVisitor(cuStandardTask_ReadThis, TVisAutoCollectionRead);
     VisitorManager.RegisterVisitor(cuStandardTask_Read,     TVisAutoReadThis);
     VisitorManager.RegisterVisitor(cuStandardTask_Read,     TVisAutoCollectionRead);
     VisitorManager.RegisterVisitor(cuStandardTask_Save,     TVisAutoDelete);
@@ -485,28 +483,7 @@ begin
     FCriticalSection.Leave;
   end;
   FActiveThreadList.Terminate;
-{
-  // This little gem is here to force the application to wait until all threads
-  // have finished running before blowing away the persistence layers below
-  // those threads (if they are performing database access). The problem is,
-  // if the reason the user wants to shut down the application is because a
-  // query has run a-muck, then the shut down will not go any futher than
-  // this.
-
-  // We require a descendant of TThread which knows how to run a query, and
-  // terminate it self if we want to throw the query away. TThreadProgress
-  // should use this same class as its starting point.
-
-  // We would not allow the visitor manager to run a threaded query where the
-  // thread is not of this type.
-  while FVisMgr.ThreadCount > 0 do
-  begin
-    Sleep(100);
-    Application.ProcessMessages;
-  end;
-}
 end;
-
 
 procedure TtiOPFManager.ExecSQL(const pSQL             : string;
                             const ADBConnectionName : string = '';

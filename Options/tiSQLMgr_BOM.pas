@@ -691,7 +691,7 @@ begin
   Assert(ObjectState = posEmpty, 'ObjectState <> posEmpty');
   Assert(pSQLMgrFileName<>'', 'pSQLMgrFileName not assigned');
   QueryName := pQueryName;
-  gTIOPFManager.VisMgr.Execute(cVisSQLMgrReadByQueryName, Self, pSQLMgrFileName, cTIPersistXMLLight);
+  gTIOPFManager.VisitorManager.Execute(cVisSQLMgrReadByQueryName, Self, pSQLMgrFileName, cTIPersistXMLLight);
 end;
 
 procedure TSQLMgrQuery.SetObjectState(const Value: TPerObjectState);
@@ -990,7 +990,7 @@ begin
   Assert(pDBConnectionName = '', ClassName + '.ReadPK() does not accept parameters.');
   Assert(pPerLayerName = '', ClassName + '.ReadPK() does not accept parameters.');
   Assert(FFileName <> '', ClassName + '.FileName not assigned');
-  gTIOPFManager.VisMgr.Execute(cVisSQLMgrReadPK, Self, FFileName, cTIPersistXMLLight);
+  gTIOPFManager.VisitorManager.Execute(cVisSQLMgrReadPK, Self, FFileName, cTIPersistXMLLight);
   SortByProps(['DispOrder']);
   for i := 0 to Count - 1 do
     Items[i].SortByProps(['DispOrder']);

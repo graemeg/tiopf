@@ -99,7 +99,8 @@ type
          Assert(FMyData.TestValid(TtiBaseObject, true), 'Invalid object'); // This assert will pass
          Assert(FMyData.TestValid(TtiBaseObject, false), 'Invalid object'); // This assert will fail
        </code>}
-    function TestValid(AClassType: TClass = NIL; AAllowNil: boolean = False): boolean;
+    function TestValid(AClassType: TClass = NIL; AAllowNil: boolean = False): boolean; overload;
+    function TestValid(AAllowNil: boolean): boolean; overload;
 
     {$IFDEF OBJECT_TRACKING}
       {: If AskForBreakPointOnFree is called, then when the object is freed, a debugger
@@ -680,8 +681,6 @@ end;
 
 
 function TtiBaseObject.TestValid(AClassType: TClass = NIL; AAllowNil: boolean = False): boolean;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.TestValid';
 begin
   {$IFDEF OBJECT_TRACKING}
   Result := IdObjTestValid(self, AAllowNil);
@@ -690,6 +689,11 @@ begin
   {$ENDIF}
   if Result and Assigned(self) and Assigned(AClassType) then
     Result := Self is AClassType;
+end;
+
+function TtiBaseObject.TestValid(AAllowNil: boolean): boolean;
+begin
+  result:= TestValid(TtiBaseObject, AAllowNil);
 end;
 
 initialization

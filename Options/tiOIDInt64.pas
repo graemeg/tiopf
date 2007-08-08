@@ -180,7 +180,7 @@ function TNextOIDGeneratorInt64.NextOID(const ADatabaseName : string; APersisten
 begin
   if FDirty then
   begin
-    gTIOPFManager.VisMgr.Execute(cNextOIDReadHigh, FNextOIDData, ADatabaseName, APersistenceLayerName);
+    gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData, ADatabaseName, APersistenceLayerName);
     FDirty := false;
   end;
 
@@ -285,7 +285,7 @@ initialization
   if gTIOPFManager.DefaultOIDClassName = '' then
     gTIOPFManager.DefaultOIDClassName := cOIDClassNameInt64;
 
-  gTIOPFManager.VisMgr.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
-  gTIOPFManager.VisMgr.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
 
 end.

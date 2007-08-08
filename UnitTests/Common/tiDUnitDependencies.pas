@@ -103,12 +103,9 @@ const
 procedure RegisterTests;
 begin
 
-
   if not IsConsole then
     gLog.RegisterLog(TtiLogToGUI.Create);
   gLog.RegisterLog(TtiLogToFile.CreateWithFileName('', '', True));
-
-  gTIOPFManager.VisitorManager.BreakOnException := True;
 
   // See ..\Bin\DUnitTIOPF.ini for details on configuration
   tstPerFramework_BOM.RegisterMappings; // Register the OO-DB Mappings to be tested

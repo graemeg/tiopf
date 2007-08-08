@@ -3,6 +3,7 @@ unit Client_DBIndependentVisitors_Svr;
 interface
 uses
    tiVisitorDBAutoGen
+  ,tiObject
   ,Client_BOM
  ;
 
@@ -14,7 +15,7 @@ type
     procedure Init          ; override;
     procedure SetupParams   ; override;
     procedure MapRowToObject; override;
-    procedure Final         ; override;
+    procedure Final(const AVisited: TtiObject); override;
   end;
 
   TVisClient_Create = class(TVisDBAutoGenUpdate)
@@ -69,7 +70,6 @@ procedure RegisterVisitors;
 implementation
 uses
    tiOPFManager
-  ,tiObject
   ,tiQuery
   ,SysUtils
  ;
@@ -99,7 +99,7 @@ begin
             (Visited.ObjectState = posEmpty);
 end;
 
-procedure TVisClient_Read.Final;
+procedure TVisClient_Read.Final(const AVisited: TtiObject);
 begin
   // Do nothing as TVisPhoneNumber_Read will set ObjectState to posClean
 end;

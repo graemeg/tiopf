@@ -4,11 +4,8 @@ unit tiVisitor;
 
  // ToDo:
 
- //    Audit for TestValid calls
- //    Rename TtiPerObjVisitor to TtiObjectVisitor
  //    Add comments in PasDoc format
  //    Test compile demos
- //    Remove deprecated instance of VisMgr on tiOPFManager
 
  //    Change signature of
  //      AcceptVisitor
@@ -230,7 +227,6 @@ type
     FTIOPFManager:     TtiBaseObject;
     FVisitorMappings:  TObjectList;
     FSynchronizer:     TMultiReadExclusiveWriteSynchronizer;
-    FBreakOnException: boolean;
     procedure ExecuteVisitors(const AVisitorController: TtiVisitorController;
       const AVisitors: TList; const AVisited: TtiVisited);
     function GetVisitorMappings: TList;
@@ -249,7 +245,6 @@ type
     procedure UnRegisterVisitors(const AGroupName: string);
     function Execute(const AGroupName: string; const AVisited: TtiVisited): string;
       overload; virtual;
-    property BreakOnException: boolean read FBreakOnException write FBreakOnException;
   end;
 
 
@@ -327,6 +322,9 @@ var
   lStream:  TtiPreSizedStream;
   lDir:     string;
 begin
+  Assert(AData.TestValid, cTIInvalidObjectError);
+  Assert(AFileName<>'', 'AFileName not assigned');
+  Assert(Assigned(AVisClassRef), 'AVisClassRef not assigned');
   lDir    := ExtractFilePath(AFileName);
   tiForceDirectories(AFileName);
   lStream := TtiPreSizedStream.Create(cStreamStartSize, cStreamGrowBy);
@@ -353,6 +351,9 @@ var
   i: integer;
   LIterationDepth: TIterationDepth;
 begin
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(ADerivedParent.TestValid(True), cTIInvalidObjectError);
+  Assert(ATouchedByVisitorList.TestValid, cTIInvalidObjectError);
   if AVisitor.VisitBranch(ADerivedParent, Self) and
     CheckContinueVisitingIfTopDownRecurse(AVisitor) then
   begin
@@ -415,6 +416,7 @@ procedure TtiVisited.FindAllByClassType(const AClass: TtiVisitedClass; const ALi
 var
   lVis: TVisFindAllByClass;
 begin
+  Assert(Assigned(AClass), 'AClass not assigned');
   Assert(AList <> nil, 'AList not assigned');
   AList.Clear;
   lVis := TVisFindAllByClass.Create;
@@ -434,6 +436,11 @@ procedure TtiVisited.IterateOverList(const AVisitor: TtiVisitor; const ACandidat
 var
   i: integer;
 begin
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(Assigned(ACandidates), 'ACandidates not assigned');
+  Assert(ADerivedParent.TestValid, cTIInvalidObjectError);
+  Assert(ATouchedByVisitorList.TestValid, cTIInvalidObjectError);
+  Assert(Assigned(ATouchMethod), 'ATouchMethod not assigned');
   i := 0;
   while (i <= ACandidates.Count - 1) do
   begin
@@ -461,6 +468,7 @@ var
   LTouchedObjectList: TtiTouchedByVisitorList;
 begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(ATouchedByVisitorList.TestValid, cTIInvalidObjectError);
   LTouchedObjectList := TtiTouchedByVisitorList.Create(False);
   try
     IterateRecurse(AVisitor, nil, LTouchedObjectList,
@@ -479,6 +487,7 @@ var
   i: integer;
 begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(ATouchedByVisitorList.TestValid, cTIInvalidObjectError);
   LTouchedObjectList := TtiTouchedByVisitorList.Create(False);
   try
     IterateRecurse(AVisitor, nil, LTouchedObjectList, TouchMethodAddToList, 0);
@@ -497,7 +506,8 @@ end;
 
 function TtiVisited.TIOPFManager: TObject;
 begin
-  Result := gTIOPFManager;
+  Assert(GTIOPFManager.TestValid, cTIInvalidObjectError);
+  Result := GTIOPFManager;
 end;
 
 procedure TtiVisited.TouchMethodAddToList(const ACandidates: TtiVisited;
@@ -506,6 +516,9 @@ procedure TtiVisited.TouchMethodAddToList(const ACandidates: TtiVisited;
 var
   LVisitedCandidate: TtiTouchedByVisitor;
 begin
+  Assert(ACandidates.TestValid, cTIInvalidObjectError);
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(ATouchedByVisitorList.TestValid, cTIInvalidObjectError);
   LVisitedCandidate := TtiTouchedByVisitor.Create(AVisitor,
     ACandidates, AIterationDepth);
   ATouchedByVisitorList.Add(LVisitedCandidate);
@@ -517,6 +530,9 @@ procedure TtiVisited.TouchMethodExecuteVisitor(const ACandidates: TtiVisited;
 var
   LVisitedCandidate: TtiTouchedByVisitor;
 begin
+  Assert(ACandidates.TestValid, cTIInvalidObjectError);
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(ATouchedByVisitorList.TestValid, cTIInvalidObjectError);
   LVisitedCandidate := TtiTouchedByVisitor.Create(AVisitor,
     ACandidates, AIterationDepth);
   ATouchedByVisitorList.Add(LVisitedCandidate);
@@ -527,6 +543,7 @@ end;
 
 function TtiVisitor.AcceptVisitor(const AVisited: TtiVisited): boolean;
 begin
+  Assert(AVisited.TestValid, cTIInvalidObjectError);
   SetVisited(AVisited);
   Result := AcceptVisitor;
 end;
@@ -567,12 +584,15 @@ end;
 
 procedure TtiVisitor.Execute(const AVisited: TtiVisited);
 begin
+  Assert(AVisited.TestValid, cTIInvalidObjectError);
   FVisited := AVisited;
 end;
 
 
 function TtiVisitor.VisitBranch(const ADerivedParent, AVisited: TtiVisited): boolean;
 begin
+  Assert(ADerivedParent.TestValid(True), cTIInvalidObjectError);
+  Assert(AVisited.TestValid, cTIInvalidObjectError);
   Result := True;
 end;
 
@@ -587,8 +607,8 @@ end;
 procedure TtiVisitorController.AfterExecuteVisitorGroup(
   const ATouchedByVisitorList: TtiTouchedByVisitorList);
 begin
-  Assert(ATouchedByVisitorList = ATouchedByVisitorList);
-  // Getting rid of compiler hints, param not used.
+  Assert(ATouchedByVisitorList.TestValid, cTIInvalidObjectError);
+  // Getting rid of compiler hints, param not used here.
   // Do nothing
 end;
 
@@ -601,8 +621,8 @@ end;
 
 procedure TtiVisitorController.AfterExecuteVisitor(const AVisitor: TtiVisitor);
 begin
-  Assert(AVisitor = AVisitor);
-  // Getting rid of compiler hints, param not used.
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  // Getting rid of compiler hints, param not used here.
   // Do nothing
 end;
 
@@ -615,8 +635,8 @@ end;
 
 procedure TtiVisitorController.BeforeExecuteVisitor(const AVisitor: TtiVisitor);
 begin
-  Assert(AVisitor = AVisitor);
-  // Getting rid of compiler hints, param not used.
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  // Getting rid of compiler hints, param not used here.
   // Do nothing
 end;
 
@@ -653,6 +673,7 @@ end;
 
 procedure TtiVisitor.SetVisited(const AValue: TtiVisited);
 begin
+  Assert(AValue.TestValid(TtiVisited, True), cTIInvalidObjectError);
   FVisited := AValue;
 end;
 
@@ -682,12 +703,14 @@ end;
 
 function TVisClassCount.GetClassCount(const AClass: TClass): integer;
 begin
+  Assert(Assigned(AClass), 'AClass not assigned');
   Result := StrToIntDef(FList.Values[AClass.ClassName], 0);
 end;
 
 
 procedure TVisClassCount.SetClassCount(const AClass: TClass; const AValue: integer);
 begin
+  Assert(Assigned(AClass), 'AClass not assigned');
   FList.Values[AClass.ClassName] := IntToStr(AValue);
 end;
 
@@ -750,6 +773,7 @@ var
   i: integer;
 begin
   Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(ATouchedByVisitorList.TestValid, cTIInvalidObjectError);
   LTouchedObjectList := TtiTouchedByVisitorList.Create(False);
   try
     IterateRecurse(AVisitor, nil, LTouchedObjectList, TouchMethodAddToList, 0);
@@ -776,6 +800,7 @@ end;
 
 procedure TVisFindAllByClass.Execute(const AVisited: TtiVisited);
 begin
+  Assert(AVisited.TestValid, cTIInvalidObjectError);
   inherited Execute(AVisited);
   if not AcceptVisitor then
     Exit; //==>
@@ -791,7 +816,6 @@ begin
   FTIOPFManager     := ATIOPFManager;
   FSynchronizer     := TMultiReadExclusiveWriteSynchronizer.Create;
   FVisitorMappings  := TObjectList.Create;
-  FBreakOnException := True;
 end;
 
 
@@ -806,6 +830,8 @@ function TtiVisitorManager.Execute(const AGroupName: string; const AVisited: Tti
 var
   LVisitorControllerConfig: TtiVisitorControllerConfig;
 begin
+  Assert(AGroupName<>'', 'AGroupName not assigned');
+  Assert(AVisited.TestValid, cTIInvalidObjectError);
   LVisitorControllerConfig := TtiVisitorControllerConfig.Create(Self);
   try
     ProcessVisitors(AGroupName, AVisited, LVisitorControllerConfig);
@@ -820,6 +846,9 @@ var
   LVisitor: TtiVisitor;
   i:        integer;
 begin
+  Assert(AVisitorController.TestValid, cTIInvalidObjectError);
+  Assert(Assigned(AVisitors), 'AVisitors not assigned');
+  Assert(AVisited.TestValid, cTIInvalidObjectError);
   for i := 0 to AVisitors.Count - 1 do
   begin
     LVisitor := TtiVisitor(AVisitors.Items[i]);
@@ -843,6 +872,7 @@ var
   i:          integer;
   LGroupName: string;
 begin
+  Assert(AGroupName<>'', 'AGroupName not assigned');
   Result     := nil;
   LGroupName := UpperCase(AGroupName);
   for i := 0 to FVisitorMappings.Count - 1 do
@@ -872,6 +902,9 @@ var
   LVisitorController: TtiVisitorController;
   LVisitors: TObjectList;
 begin
+  Assert(AGroupName<>'', 'AGroupName not assigned');
+  Assert(AVisited.TestValid, cTIInvalidObjectError);
+  Assert(AVisitorControllerConfig.TestValid, cTIInvalidObjectError);
   Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
   LVisitors := TObjectList.Create;
   try
@@ -916,6 +949,8 @@ procedure TtiVisitorManager.RegisterVisitor(const AGroupName: string;
 var
   LVisitorMappingGroup: TtiVisitorMappingGroup;
 begin
+  Assert(AGroupName<>'', 'AGroupName not assigned');
+  Assert(Assigned(AVisitorClass), 'AVisitorClass not assigned');
   FSynchronizer.BeginWrite;
   try
     LVisitorMappingGroup := FindVisitorMappingGroup(AGroupName);
@@ -935,6 +970,7 @@ procedure TtiVisitorManager.UnRegisterVisitors(const AGroupName: string);
 var
   LVisitorMappingGroup: TtiVisitorMappingGroup;
 begin
+  Assert(AGroupName<>'', 'AGroupName not assigned');
   FSynchronizer.BeginWrite;
   try
     LVisitorMappingGroup := FindVisitorMappingGroup(AGroupName);
@@ -978,6 +1014,7 @@ end;
 constructor TtiVisitorMappingGroup.Create(const AGroupName: string;
   const AVisitorControllerClass: TtiVisitorControllerClass);
 begin
+  Assert(AGroupName <> '', 'AGroupName not assigned');
   inherited Create;
   FGroupName := UpperCase(AGroupName);
   FMappings  := TClassList.Create;
@@ -995,6 +1032,8 @@ end;
 constructor TtiTouchedByVisitor.Create(const AVisitor: TtiVisitor;
   const AVisited: TtiVisited; const AIterationDepth: TIterationDepth);
 begin
+  Assert(AVisitor.TestValid, cTIInvalidObjectError);
+  Assert(AVisited.TestValid, cTIInvalidObjectError);
   inherited Create;
   FVisitor        := AVisitor;
   FVisited        := AVisited;
@@ -1005,6 +1044,7 @@ end;
 
 procedure TtiTouchedByVisitorList.Add(const AItem: TtiTouchedByVisitor);
 begin
+  Assert(AItem.TestValid, cTIInvalidObjectError);
   FList.Add(AItem);
 end;
 

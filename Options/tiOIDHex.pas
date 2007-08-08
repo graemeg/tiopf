@@ -280,7 +280,7 @@ function TNextOIDGeneratorHex.NextOID: String;
 begin
   if FDirty then
   begin
-    gTIOPFManager.VisMgr.Execute(cgsNextOIDHexReadHigh, FNextOIDHexData);
+    gTIOPFManager.VisitorManager.Execute(cgsNextOIDHexReadHigh, FNextOIDHexData);
     FDirty := false;
     FLastOIDValue:=FNextOIDHexData.NextHexOID + FLowRangeMask;
   end;
@@ -363,8 +363,8 @@ initialization
   if gTIOPFManager.DefaultOIDClassName = '' then
     gTIOPFManager.DefaultOIDClassName := cOIDClassNameHex;
 
-  gTIOPFManager.VisMgr.RegisterVisitor(cgsNextOIDHexReadHigh, TVisDBNextOIDHexAmblerRead);
-  gTIOPFManager.VisMgr.RegisterVisitor(cgsNextOIDHexReadHigh, TVisDBNextOIDHexAmblerUpdate);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cgsNextOIDHexReadHigh, TVisDBNextOIDHexAmblerRead);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cgsNextOIDHexReadHigh, TVisDBNextOIDHexAmblerUpdate);
 
 {$ELSE}
 interface
