@@ -41,46 +41,51 @@ unit tiVisitorDB;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiBaseObject
-  ,tiVisitor
-  ,tiObject
-  ,tiPersistenceLayers
-  ,tiDBConnectionPool
-  ,tiQuery
-  ,SysUtils
-  ,Classes
- ;
+  tiBaseObject,
+  tiVisitor,
+  tiObject,
+  tiPersistenceLayers,
+  tiDBConnectionPool,
+  tiQuery,
+  SysUtils,
+  Classes;
 
 const
-  CErrorDefaultPersistenceLayerNotAssigned = 'Attempt to connect to the default persistence layer, but the default persistence layer has not been assigned.';
-  CErrorDefaultDatabaseNotAssigned = 'Attempt to connect to the default database but the default database has not been assigned.';
-  CErrorAttemptToUseUnRegisteredPersistenceLayer = 'Attempt to use unregistered persistence layer "%s"';
-  CErrorAttemptToUseUnConnectedDatabase = 'Attempt to use unconnected database "%s"';
+  CErrorDefaultPersistenceLayerNotAssigned =
+    'Attempt to connect to the default persistence layer, but the default persistence layer has not been assigned.';
+  CErrorDefaultDatabaseNotAssigned         =
+    'Attempt to connect to the default database but the default database has not been assigned.';
+  CErrorAttemptToUseUnRegisteredPersistenceLayer =
+    'Attempt to use unregistered persistence layer "%s"';
+  CErrorAttemptToUseUnConnectedDatabase    = 'Attempt to use unconnected database "%s"';
+
 type
 
   // A visitor manager for TVisDBAbs visitors
   TtiObjectVisitorController = class(TtiVisitorController)
   private
     FPersistenceLayer: TtiPersistenceLayer;
-    FPooledDB: TPooledDB;
-    FDatabase: TtiDatabase;
+    FPooledDB:         TPooledDB;
+    FDatabase:         TtiDatabase;
   protected
-    function  TIOPFManager: TtiBaseObject; virtual;
-    function  PersistenceLayerName: string;
-    function  DatabaseName: string;
-    property  Database: TtiDatabase read FDatabase;
+    function TIOPFManager: TtiBaseObject; virtual;
+    function PersistenceLayerName: string;
+    function DatabaseName: string;
+    property Database: TtiDatabase read FDatabase;
   public
     procedure BeforeExecuteVisitorGroup; override;
-    procedure BeforeExecuteVisitor(const AVisitor : TtiVisitor); override;
-    procedure AfterExecuteVisitor(const AVisitor : TtiVisitor ); override;
-    procedure AfterExecuteVisitorGroup(const ATouchedByVisitorList : TtiTouchedByVisitorList); override;
+    procedure BeforeExecuteVisitor(const AVisitor: TtiVisitor); override;
+    procedure AfterExecuteVisitor(const AVisitor: TtiVisitor); override;
+    procedure AfterExecuteVisitorGroup(const ATouchedByVisitorList: TtiTouchedByVisitorList);
+      override;
     procedure AfterExecuteVisitorGroupError; override;
   end;
 
   TtiObjectVisitorControllerConfig = class(TtiVisitorControllerConfig)
   private
-    FDatabaseName: string;
+    FDatabaseName:         string;
     FPersistenceLayerName: string;
   protected
     function TIOPFManager: TtiBaseObject; virtual;
@@ -93,12 +98,9 @@ type
 
   TtiObjectVisitorManager = class(TtiVisitorManager)
   public
-    function Execute(const AGroupName: string;
-               const AVisited: TtiVisited;
-               const ADBConnectionName: string;
-               const APersistenceLayerName: string = ''): string; overload;
-    function  Execute(const AGroupName      : string;
-               const AVisited         : TtiVisited): string; override;
+    function Execute(const AGroupName: string; const AVisited: TtiVisited;
+      const ADBConnectionName: string; const APersistenceLayerName: string = ''): string; overload;
+    function Execute(const AGroupName: string; const AVisited: TtiVisited): string; override;
   end;
 
 
@@ -108,40 +110,39 @@ type
   // Adds a pooled database connection
   TtiObjectVisitor = class(TtiVisitor)
   private
-    FDatabase    : TtiDatabase;
-    FQuery       : TtiQuery;
-    function    GetQuery: TtiQuery;
-    procedure   SetQuery(const AValue: TtiQuery);
+    FDatabase: TtiDatabase;
+    FQuery:    TtiQuery;
+    function GetQuery: TtiQuery;
+    procedure SetQuery(const AValue: TtiQuery);
   protected
-    function    GetVisited: TtiObject; reintroduce;
-    procedure   SetVisited(const AValue: TtiObject); reintroduce; virtual;
-    procedure   LogQueryTiming(const AQueryName : string;
-                               const AQueryTime : integer;
-                               const AScanTime : integer);
-    property    Database : TtiDatabase read FDatabase write FDatabase;
-    property    Query : TtiQuery read GetQuery write SetQuery;
+    function GetVisited: TtiObject; reintroduce;
+    procedure SetVisited(const AValue: TtiObject); reintroduce; virtual;
+    procedure LogQueryTiming(const AQueryName: string; const AQueryTime: integer;
+      const AScanTime: integer);
+    property Database: TtiDatabase read FDatabase write FDatabase;
+    property Query: TtiQuery read GetQuery write SetQuery;
 
     // Override in your code
-    procedure   Init; virtual;
-    procedure   SetupParams    ; virtual;
-    procedure   Final(const AVisited: TtiObject); virtual;
+    procedure Init; virtual;
+    procedure SetupParams; virtual;
+    procedure Final(const AVisited: TtiObject); virtual;
 
   public
-    Constructor Create; override;
-    destructor  Destroy; override;
-    procedure   Execute(const AVisited: TtiVisited); override;
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure Execute(const AVisited: TtiVisited); override;
     class function VisitorControllerClass: TtiVisitorControllerClass; override;
-    property    Visited: TtiObject read GetVisited write SetVisited;
+    property Visited: TtiObject read GetVisited write SetVisited;
   end;
 
   // Don't use TVisOwnedQrySelectAbs as the parent for any of your visitors,
   // it's for internal tiOPF use only.
   TVisOwnedQrySelectAbs = class(TtiObjectVisitor)
   protected
-    procedure   MapRowToObject ; virtual;
-    procedure   OpenQuery; virtual; abstract;
+    procedure MapRowToObject; virtual;
+    procedure OpenQuery; virtual; abstract;
   public
-    procedure   Execute(const AData: TtiVisited); override;
+    procedure Execute(const AData: TtiVisited); override;
   end;
 
   // ToDo: Rename to TtiVisitorSelect
@@ -155,28 +156,28 @@ type
   // ToDo: Rename to TtiVisitorUpdate
   TVisOwnedQryUpdate = class(TtiObjectVisitor)
   public
-    procedure   Execute(const AData: TtiVisited); override;
+    procedure Execute(const AData: TtiVisited); override;
   end;
 
   TtiVisitorUpdate = class(TVisOwnedQryUpdate);
 
 
 implementation
+
 uses
-   tiUtils
-  ,tiLog
-  ,tiOPFManager
-  ,tiOID
-  ,tiConstants
-  ,tiExcept
-  ,Dialogs
+  tiUtils,
+  tiLog,
+  tiOPFManager,
+  tiOID,
+  tiConstants,
+  tiExcept,
+  Dialogs,
   {$IFDEF MSWINDOWS}
-  ,Windows
+  Windows
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
-  ,Types
-  {$ENDIF LINUX}
- ;
+  Types
+  {$ENDIF LINUX};
 
 
 { TtiPerObjVisitor }
@@ -186,7 +187,7 @@ begin
   inherited;
 end;
 
-destructor TtiObjectVisitor.destroy;
+destructor TtiObjectVisitor.Destroy;
 begin
   FQuery.Free;
   inherited;
@@ -201,22 +202,22 @@ procedure TtiObjectVisitor.Final(const AVisited: TtiObject);
 begin
   Assert(AVisited.TestValid, cTIInvalidObjectError);
   case AVisited.ObjectState of
-  posDeleted :; // Do nothing
-  posDelete : AVisited.ObjectState := posDeleted;
-  else
-    AVisited.ObjectState := posClean;
+    posDeleted: ; // Do nothing
+    posDelete: AVisited.ObjectState := posDeleted;
+    else
+      AVisited.ObjectState          := posClean;
   end;
 end;
 
 function TtiObjectVisitor.GetQuery: TtiQuery;
 begin
   Assert(FQuery <> nil, 'FQuery not assigned');
-  result := FQuery;
+  Result := FQuery;
 end;
 
 function TtiObjectVisitor.GetVisited: TtiObject;
 begin
-  result := TtiObject(inherited GetVisited);
+  Result := TtiObject(inherited GetVisited);
 end;
 
 procedure TtiObjectVisitor.Init;
@@ -225,10 +226,9 @@ begin
 end;
 
 procedure TtiObjectVisitor.LogQueryTiming(const AQueryName: string;
-                                    const AQueryTime : integer;
-                                    const AScanTime: integer);
+  const AQueryTime: integer; const AScanTime: integer);
 var
-  lClassName : string;
+  lClassName: string;
 begin
 
   lClassName := ClassName;
@@ -236,17 +236,17 @@ begin
   // We don't want to log access to the SQLManager queries, and this
   // is one possible way of blocking this.
   if SameText(lClassName, 'TVisReadGroupPK') or
-     SameText(lClassName, 'TVisReadQueryPK') or
-     SameText(lClassName, 'TVisReadQueryDetail') or
-     SameText(lClassName, 'TVisReadParams') or
-     SameText(lClassName, 'TVisReadQueryByName') then
+    SameText(lClassName, 'TVisReadQueryPK') or
+    SameText(lClassName, 'TVisReadQueryDetail') or
+    SameText(lClassName, 'TVisReadParams') or
+    SameText(lClassName, 'TVisReadQueryByName') then
     Exit; //==>
 
-  Log({tiPadR(lClassName, cuiQueryTimingSpacing) +}
-       tiPadR(AQueryName, 20) + ' ' +
-       tiPadR(IntToStr(AQueryTime), 7) +
-       tiPadR(IntToStr(AScanTime), 7),
-       lsQueryTiming)
+  Log(    {tiPadR(lClassName, cuiQueryTimingSpacing) +}
+    tiPadR(AQueryName, 20) + ' ' +
+    tiPadR(IntToStr(AQueryTime), 7) +
+    tiPadR(IntToStr(AScanTime), 7),
+    lsQueryTiming);
 
 end;
 
@@ -258,7 +258,7 @@ end;
 
 procedure TtiObjectVisitor.SetupParams;
 begin
-// Do nothing
+  // Do nothing
 end;
 
 procedure TtiObjectVisitor.SetVisited(const AValue: TtiObject);
@@ -268,25 +268,27 @@ end;
 
 class function TtiObjectVisitor.VisitorControllerClass: TtiVisitorControllerClass;
 begin
-  result := TtiObjectVisitorController;
+  Result := TtiObjectVisitorController;
 end;
 
-procedure TtiObjectVisitorController.AfterExecuteVisitorGroup(const ATouchedByVisitorList : TtiTouchedByVisitorList);
+procedure TtiObjectVisitorController.AfterExecuteVisitorGroup(
+  const ATouchedByVisitorList: TtiTouchedByVisitorList);
 var
-  i : integer;
+  i: integer;
   LTouchedByVisitor: TtiTouchedByVisitor;
 begin
   try
     FDatabase.Commit;
     for i := 0 to ATouchedByVisitorList.Count - 1 do
     begin
-      LTouchedByVisitor:= ATouchedByVisitorList.Items[i];
-      (LTouchedByVisitor.Visitor as TtiObjectVisitor).Final(LTouchedByVisitor.Visited as TtiObject);
+      LTouchedByVisitor := ATouchedByVisitorList.Items[i];
+      (LTouchedByVisitor.Visitor as TtiObjectVisitor).Final(LTouchedByVisitor.Visited as
+        TtiObject);
     end;
   finally
     FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
-    FDatabase:= nil;
-    FPooledDB:= nil;
+    FDatabase := nil;
+    FPooledDB := nil;
   end;
 end;
 
@@ -294,86 +296,88 @@ procedure TtiObjectVisitorController.AfterExecuteVisitorGroupError;
 begin
   FDatabase.RollBack;
   FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
-  FDatabase:= nil;
-  FPooledDB:= nil;
+  FDatabase := nil;
+  FPooledDB := nil;
 end;
 
-procedure TtiObjectVisitorController.AfterExecuteVisitor(const AVisitor : TtiVisitor);
+procedure TtiObjectVisitorController.AfterExecuteVisitor(const AVisitor: TtiVisitor);
 begin
   (AVisitor as TtiObjectVisitor).Database := nil;
 end;
 
 procedure TtiObjectVisitorController.BeforeExecuteVisitorGroup;
 begin
-  FPersistenceLayer := (TIOPFManager as TtiOPFManager).PersistenceLayers.FindByPerLayerName(PersistenceLayerName);
-  Assert(FPersistenceLayer <> nil, 'Unable to find RegPerLayer <' + PersistenceLayerName +'>');
-  FPooledDB := FPersistenceLayer.DBConnectionPools.Lock(DatabaseName);
-  FDatabase:= FPooledDB.Database;
+  FPersistenceLayer := (TIOPFManager as TtiOPFManager).PersistenceLayers.FindByPerLayerName(
+    PersistenceLayerName);
+  Assert(FPersistenceLayer <> nil, 'Unable to find RegPerLayer <' + PersistenceLayerName + '>');
+  FPooledDB         := FPersistenceLayer.DBConnectionPools.Lock(DatabaseName);
+  FDatabase         := FPooledDB.Database;
   FDatabase.StartTransaction;
 end;
 
 function TtiObjectVisitorController.DatabaseName: string;
 begin
   Assert(Config.TestValid(TtiObjectVisitorControllerConfig), cTIInvalidObjectError);
-  result:= (Config as TtiObjectVisitorControllerConfig).DatabaseName;
+  Result := (Config as TtiObjectVisitorControllerConfig).DatabaseName;
 end;
 
 function TtiObjectVisitorController.PersistenceLayerName: string;
 begin
   Assert(Config.TestValid(TtiObjectVisitorControllerConfig), cTIInvalidObjectError);
-  result:= (Config as TtiObjectVisitorControllerConfig).PersistenceLayerName;
+  Result := (Config as TtiObjectVisitorControllerConfig).PersistenceLayerName;
 end;
 
 function TtiObjectVisitorController.TIOPFManager: TtiBaseObject;
 begin
   Assert(VisitorManager.TestValid, cTIInvalidObjectError);
-  result:= VisitorManager.TIOPFManager;
+  Result := VisitorManager.TIOPFManager;
 end;
 
-procedure TtiObjectVisitorController.BeforeExecuteVisitor(const AVisitor : TtiVisitor);
+procedure TtiObjectVisitorController.BeforeExecuteVisitor(const AVisitor: TtiVisitor);
 var
   LVisitor: TtiObjectVisitor;
 begin
   Assert(AVisitor.TestValid(TtiObjectVisitor), cTIInvalidObjectError);
   Assert(FDatabase.TestValid, cTIInvalidObjectError);
-  LVisitor:= AVisitor as TtiObjectVisitor;
+  LVisitor          := AVisitor as TtiObjectVisitor;
   LVisitor.Database := FDatabase;
-  LVisitor.Query := FDatabase.CreateTIQuery;
+  LVisitor.Query    := FDatabase.CreateTIQuery;
   LVisitor.Query.AttachDatabase(FDatabase);
 end;
 
 procedure TVisOwnedQrySelectAbs.Execute(const AData: TtiVisited);
+
   procedure _ScanQuery;
   begin
     Query.ContinueScan := True;
     while (not Query.EOF) and
-          (Query.ContinueScan) and
-          (not gTIOPFManager.Terminated) do
+      (Query.ContinueScan) and
+      (not gTIOPFManager.Terminated) do
     begin
       MapRowToObject;
       Query.Next;
     end;
     Query.Close;
   end;
+
 var
-  liStart : DWord;
-  liQueryTime : DWord;
+  liStart:     DWord;
+  liQueryTime: DWord;
 begin
   if gTIOPFManager.Terminated then
     Exit; //==>
 
-  Inherited Execute(AData);
+  inherited Execute(AData);
 
   if not AcceptVisitor then
     Exit; //==>
 
   Assert(Database <> nil, 'DBConnection not set in ' + ClassName);
 
-  if AData <> nil then begin
-    Visited := TtiObject(AData);
-  end else begin
+  if AData <> nil then
+    Visited := TtiObject(AData)
+  else
     Visited := nil;
-  end;
 
   Init;
 
@@ -392,17 +396,17 @@ end;
 
 procedure TVisOwnedQrySelectAbs.MapRowToObject;
 begin
-  raise exception.Create('MapRowToObject has not been ' +
-                          'overridden in the concrete: ' + ClassName);
+  raise Exception.Create('MapRowToObject has not been ' +
+    'overridden in the concrete: ' + ClassName);
 end;
 
 procedure TVisOwnedQryUpdate.Execute(const AData: TtiVisited);
 var
-  lStart : DWord;
+  lStart: DWord;
 begin
   if gTIOPFManager.Terminated then
     Exit; //==>
-  Inherited Execute(AData);
+  inherited Execute(AData);
   if not AcceptVisitor then
     exit; //==>
   Init;
@@ -422,14 +426,14 @@ end;
 { TtiObjectVisitorManager }
 
 function TtiObjectVisitorManager.Execute(const AGroupName: string;
-  const AVisited: TtiVisited; const ADBConnectionName,
-  APersistenceLayerName: string): string;
+  const AVisited: TtiVisited; const ADBConnectionName, APersistenceLayerName: string): string;
 var
   FVisitorControllerConfig: TtiObjectVisitorControllerConfig;
 begin
-  FVisitorControllerConfig:= TtiObjectVisitorControllerConfig.Create(Self);
+  FVisitorControllerConfig := TtiObjectVisitorControllerConfig.Create(Self);
   try
-    FVisitorControllerConfig.SetDatabaseAndPersistenceLayerNames(APersistenceLayerName, ADBConnectionName);
+    FVisitorControllerConfig.SetDatabaseAndPersistenceLayerNames(APersistenceLayerName,
+      ADBConnectionName);
     ProcessVisitors(AGroupName, AVisited, FVisitorControllerConfig);
   finally
     FVisitorControllerConfig.Free;
@@ -449,38 +453,39 @@ procedure TtiObjectVisitorControllerConfig.SetDatabaseAndPersistenceLayerNames(
 var
   LTIOPFManager: TtiOPFManager;
 begin
-  LTIOPFManager:= TtiOPFManager(TIOPFManager);
+  LTIOPFManager := TtiOPFManager(TIOPFManager);
 
   if APersistenceLayerName = '' then
   begin
     if not Assigned(TtiOPFManager(TIOPFManager).DefaultPerLayer) then
       raise EtiOPFDataException.Create(CErrorDefaultPersistenceLayerNotAssigned);
-    FPersistenceLayerName:= LTIOPFManager.DefaultPerLayer.PerLayerName;
-  end else
-    FPersistenceLayerName:= APersistenceLayerName;
+    FPersistenceLayerName := LTIOPFManager.DefaultPerLayer.PerLayerName;
+  end
+  else
+    FPersistenceLayerName := APersistenceLayerName;
 
   if ADBConnectionName = '' then
   begin
     if not Assigned(TtiOPFManager(TIOPFManager).DefaultDBConnectionPool) then
       raise EtiOPFDataException.Create(CErrorDefaultDatabaseNotAssigned);
     FDatabaseName := LTIOPFManager.DefaultDBConnectionName;
-  end else
+  end
+  else
     FDatabaseName := ADBConnectionName;
 
   if not LTIOPFManager.PersistenceLayers.IsLoaded(FPersistenceLayerName) then
-    raise EtiOPFDataException.CreateFmt(CErrorAttemptToUseUnRegisteredPersistenceLayer, [FPersistenceLayerName])
+    raise EtiOPFDataException.CreateFmt(CErrorAttemptToUseUnRegisteredPersistenceLayer,
+      [FPersistenceLayerName])
   else if not LTIOPFManager.PersistenceLayers.FindByPerLayerName(
     FPersistenceLayerName).DBConnectionPools.IsConnected(FDatabaseName) then
-    raise EtiOPFDataException.CreateFmt(CErrorAttemptToUseUnConnectedDatabase, [FDatabaseName])
+    raise EtiOPFDataException.CreateFmt(CErrorAttemptToUseUnConnectedDatabase, [FDatabaseName]);
 
 end;
 
 function TtiObjectVisitorControllerConfig.TIOPFManager: TtiBaseObject;
 begin
   Assert(VisitorManager.TestValid, cTIInvalidObjectError);
-  result:= VisitorManager.TIOPFManager;
+  Result := VisitorManager.TIOPFManager;
 end;
 
 end.
-
-
