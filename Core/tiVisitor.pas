@@ -30,6 +30,16 @@ uses
   SysUtils,
   Contnrs;
 
+const
+  CErrorInVisitorExecute      = 'Error in %s.Execute(%s) Message: %s';
+  CErrorInvalidIterationStyle = 'Invalid TtiIterationStyle';
+  CErrorAttemptToRegisterDuplicateVisitor =
+    'Attempt to register duplicate visitor "%s"';
+  CErrorInvalidVisitorGroup   =
+    'Attempt to execute visitors for an unknown visitor group "%s"';
+  CErrorIncompatibleVisitorController =
+    'VisitorControllerClass not compatible. Required type "%s", Actual type "%s"';
+
 type
   {** A TtiVisitor can iterate over a TtiVisited in three ways:
 
@@ -352,16 +362,6 @@ procedure VisStreamToFile(const AData: TtiVisited; const AFileName: string;
   const AVisClassRef: TtiVisitorClass);
 
 implementation
-
-const
-  CErrorInVisitorExecute      = 'Error in %s.Execute(%s) Message: %s';
-  CErrorInvalidIterationStyle = 'Invalid TtiIterationStyle';
-  CErrorAttemptToRegisterDuplicateVisitor =
-    'Attempt to register duplicate visitor "%s"';
-  CErrorInvalidVisitorGroup   =
-    'Attempt to execute visitors for an unknown visitor group "%s"';
-  CErrorIncompatibleVisitorController =
-    'VisitorControllerClass not compatible. Required type "%s", Actual type "%s"';
 
 uses
   tiLog,
