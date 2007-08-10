@@ -1,6 +1,6 @@
 set pasdoc="C:\Program Files\Pasdoc\pasdoc.exe"
 set source_directory=..\..
-set target_directory=Doc
+set target_directory=..\..\Website\Help
 
 cd %source_directory%
 if not exist %target_directory% md %target_directory%

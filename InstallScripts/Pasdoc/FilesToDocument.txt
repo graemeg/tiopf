@@ -1,3 +1,1 @@
-Core\tiBaseObject.pas
 Core\tiVisitor.pas
-Core\tiVisitorDB.pas
