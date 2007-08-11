@@ -88,9 +88,22 @@ type
     function    tstIntToFloat(pInt:Integer): Extended;
     function    tstIntToDateTime(pInt:Integer): TDateTime;
     procedure   tstIntToStream(pInt:Integer; const AStream : TStream);
-    function    AreStreamContentsSame(const pStream1, pStream2 : TStream; var AMessage : string): boolean;
-    procedure   CheckStreamContentsSame(const pStream1, pStream2 : TStream);
-    procedure   CheckFormattedMessage(const AFormat: string; const AArgs: array of const; const AActual: string; const AMessage: string = '');
+  public
+    {$IFDEF FPC}
+    constructor Create; override;
+    function    GetName: string; virtual;
+    property    Name: string read GetName;
+      // DUnit compatibility interface
+      {$I DUnitCompatableInterface.inc}
+    {$ELSE}
+    constructor Create(AMethodName: string); override;
+    {$ENDIF}
+    destructor Destroy; override;
+    function  PerformanceCounter: TtiPerformanceCounter;
+
+    function  AreStreamContentsSame(const pStream1, pStream2 : TStream; var AMessage : string): boolean;
+    procedure CheckStreamContentsSame(const pStream1, pStream2 : TStream);
+    procedure CheckFormattedMessage(const AFormat: string; const AArgs: array of const; const AActual: string; const AMessage: string = '');
     procedure CheckObjectState(const AObjectState : TPerObjectState; const AData : TtiObject; const AMessage: string = '');
     procedure CheckNearEnough(AExpected, AActual: Extended; const AMessage: string = ''); overload;
     procedure CheckNearEnough(const AExpected, AActual: Double); overload;
@@ -144,18 +157,6 @@ type
        list must be empty on the second read.}
     procedure CheckDeletionFromDatabase(const AListClass: TtiObjectClass);
 
-  public
-    {$IFDEF FPC}
-    constructor Create; override;
-    function    GetName: string; virtual;
-    property    Name: string read GetName;
-      // DUnit compatibility interface
-      {$I DUnitCompatableInterface.inc}
-    {$ELSE}
-    constructor Create(AMethodName: string); override;
-    {$ENDIF}
-    destructor Destroy; override;
-    function  PerformanceCounter: TtiPerformanceCounter;
   end;
 
 
@@ -257,11 +258,9 @@ const
 implementation
 uses
    tiOPFManager
-  ,tiDUnitUtils
   ,tiUtils
   ,tiPersistenceLayers
   ,tiConstants
-  ,tiDUnitDependencies
   ,INIFiles
   ,TypInfo
   {$IFDEF MSWINDOWS}
@@ -269,7 +268,7 @@ uses
   ,tiConsoleApp
   {$ENDIF}
  ;
- 
+
 { This lets us use a single include file for both the Interface and
   Implementation sections. }
 {$undef read_interface}
@@ -1809,7 +1808,6 @@ begin
   result:= (FStop - FStart) * FPerformanceFactor;
 end;
 
-
-
 end.
+
 

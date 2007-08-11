@@ -175,9 +175,14 @@ type
     constructor Create; virtual;
     {** Iterate will cause an instance of TtiVisitor to be passed over all
         objects that are accessable by RTTI as published.
+        Note: Do not override Iterate to change the behaviour of your object.
+        Override IterateAssignTouched Instead. Iterate is not called by the
+        VisitorManager so you overriden method will not execute. Alternatively,
+        you can set the IterationStyle property on the Visitor to change
+        iteration behaviour.
         @param AVisitor: An instance of the TtiVisitor to be passed over the
         object graph.}
-    procedure Iterate(const AVisitor: TtiVisitor); overload; virtual;
+    procedure Iterate(const AVisitor: TtiVisitor); overload;
     {** Find all the objects that are of a given class type.
         @param AClass The class type to find
         @param AList An empty TList that will be populated with the instances

@@ -347,7 +347,7 @@ begin
   else
   begin
     // Only show the Save and Cancel buttons if the form is 'Modal'
-    if FIsModal then
+    if FIsModal and (ButtonsVisible <> btnVisReadOnly) then
       ButtonsVisible := btnVisReadWrite
     else
       ButtonsVisible := btnVisReadOnly;

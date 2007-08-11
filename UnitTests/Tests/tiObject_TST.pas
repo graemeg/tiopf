@@ -265,7 +265,6 @@ uses
   // tiOPF
    tiOPFManager
   ,tiOPFTestManager
-  ,tiDUnitUtils
   ,tiDUnitDependencies
   ,tiOIDGUID
   ,tiOIDInteger

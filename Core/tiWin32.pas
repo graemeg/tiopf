@@ -36,9 +36,10 @@ uses
 
 
 const
-  CSIDL_LOCAL_APPDATA = $001C; { %USERPROFILE%\Local Settings\Application Data (non roaming)}
-  CSIDL_COMMON_APPDATA = $0023 { %USERPROFILE%\All Users\Application Data };
-  CSIDL_FLAG_CREATE   = $8000; { (force creation of requested folder if it doesn't exist yet)}
+  CSIDL_LOCAL_APPDATA = $001C; { %USERPROFILE%\Local Settings\Application Data (non roaming)      }
+  CSIDL_FLAG_CREATE   = $8000; { (force creation of requested folder if it doesn't exist yet)     }
+//  S_OK                = HRESULT($00000000);
+
 
 type
   PFNSHGetFolderPath = function(Ahwnd: HWND; Csidl: Integer; Token: THandle; Flags: DWord; Path: PChar): HRESULT; stdcall;
@@ -229,13 +230,13 @@ end;
 function tiWin32GetAppConfigDir(Global: Boolean): string;
 begin
   if Global then
-    Result := _GetSpecialDir(CSIDL_COMMON_APPDATA) + tiApplicationName
+    Result := tiGetEXEPath // or use Windows dir? Remember this must work on Win9x as well.
   else
   begin
     Result := _GetSpecialDir(CSIDL_LOCAL_APPDATA) + tiApplicationName;
+    if (Result = '') then
+      Result := tiGetEXEPath;
   end;
-  if (Result = '') then
-    Result := tiGetEXEPath;
 end;
 
 function tiWin32AuthenticateWithDomain(const AUserName, ADomain, APassword: string): Boolean;

@@ -210,6 +210,7 @@ type
     procedure SetMenuSideBarWidth(const AValue: integer);
     function GetStatusPannelMessage: string;
     procedure SetStatusPannelMessage(const AValue: string);
+    procedure SetFormInfoMessage(const AMessage: string);
    public
      constructor Create(     AMainForm : TForm;
                               AWorkListFormClass : TFormTIFormMgrFormClass;
@@ -275,6 +276,7 @@ type
      property    ContextMenuSideBar: TdxWinXPBar read FdxWinXPBarContext;
      property    dxContainer : TdxContainer read FdxContainer;
      property    FormErrorMessage: string Write SetFormErrorMessage;
+     property    FormInfoMessage: string Write SetFormInfoMessage;
      property    StatusPanelMessage: string read GetStatusPannelMessage write SetStatusPannelMessage;
 
      procedure   MouseToContextMenuSideBar;
@@ -582,6 +584,7 @@ begin
   FtbImageList24.DisabledImages := FImageListDisabled24;
   FtbImageList24.HotImages     := FImageListHot24;
 
+  gTIImageListMgr.OwnsImageLists := false;
   gTIImageListMgr.ILNormal16  := FtbImageList16;
   gTIImageListMgr.ILHot16     := FImageListHot16;
   gTIImageListMgr.ILDisabled16 := FImageListDisabled16;
@@ -1643,6 +1646,11 @@ end;
 procedure TtiApplicationMenuSystem.SetFormErrorMessage(const AMessage: string);
 begin
   SetFormMessage(AMessage, tiufmtError);
+end;
+
+procedure TtiApplicationMenuSystem.SetFormInfoMessage(const AMessage: string);
+begin
+  SetFormMessage(AMessage, tiufmtInfo);
 end;
 
 procedure TtiApplicationMenuSystem.DoLBLMessageClick(Sender: TObject);

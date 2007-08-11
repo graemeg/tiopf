@@ -34,6 +34,7 @@ type
   TtiCtrlBtnPnlAbs = class(TCustomPanel)
   private
     FLVVisibleButtons: TtiLVVisibleButtons;
+    FLVAllowedButtons: TtiLVVisibleButtons;
     FOnCanView: TtiLogicalEvent;
     FOnCanInsert: TtiLogicalEvent;
     FOnCanEdit: TtiLogicalEvent;
@@ -42,6 +43,7 @@ type
   protected
     function    GetButtonStyle: TLVButtonStyle;virtual; abstract;
     procedure   SetVisibleButtons(const AValue: TtiLVVisibleButtons); virtual;
+    procedure   SetAllowedButtons(const AValue: TtiLVVisibleButtons); virtual;
     function    GetOnView: TNotifyEvent; virtual; abstract;
     function    GetOnDelete: TNotifyEvent; virtual; abstract;
     function    GetOnEdit: TNotifyEvent;virtual; abstract;
@@ -53,6 +55,7 @@ type
   public
     constructor Create(Owner : TComponent); override;
     property    VisibleButtons : TtiLVVisibleButtons read FLVVisibleButtons write SetVisibleButtons;
+    property    AllowedButtons : TtiLVVisibleButtons read FLVAllowedButtons write SetAllowedButtons;
     property    OnView    : TNotifyEvent    read GetOnView    Write SetOnView;
     property    OnNew     : TNotifyEvent    read GetOnNew     Write SetOnNew;
     property    OnEdit    : TNotifyEvent    read GetOnEdit    Write SetOnEdit;
@@ -216,6 +219,7 @@ begin
   ControlStyle := ControlStyle - [csSetCaption];
   ControlStyle := ControlStyle + [csNoDesignVisible];
   BevelOuter := bvNone;
+  FLVAllowedButtons := [tiLVBtnVisView, tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete]; // All allowed by default
 end;
 
 procedure TtiCtrlBtnPnlAbs.RefreshButtons;
@@ -233,6 +237,12 @@ procedure TtiCtrlBtnPnlAbs.SetVisibleButtons(const AValue: TtiLVVisibleButtons);
 begin
   FLVVisibleButtons := AValue;
   DrawButtons;
+end;
+
+procedure TtiCtrlBtnPnlAbs.SetAllowedButtons(const AValue: TtiLVVisibleButtons);
+begin
+  FLVAllowedButtons := AValue;
+  EnableButtons;
 end;
 
 { TtiCtrlBtnPnlButton }
@@ -342,21 +352,28 @@ begin
 
   LIsEnabled :=
     FBtnView.Visible and
+    (tiLVBtnVisView in AllowedButtons) and
     (OnCanView or LDesigning) and
     Parent.Enabled;
 
   if LIsEnabled <> FBtnView.Enabled then
     FBtnView.Enabled := LIsEnabled;
 
-  LIsEnabled := FBtnEdit.Visible and (OnCanEdit or LDesigning);
+  LIsEnabled := FBtnEdit.Visible and
+    (tiLVBtnVisEdit in AllowedButtons) and
+    (OnCanEdit or LDesigning);
   if LIsEnabled <> FBtnEdit.Enabled then
     FBtnEdit.Enabled := LIsEnabled;
 
-  LIsEnabled := FBtnNew.Visible and (OnCanInsert or LDesigning);
+  LIsEnabled := FBtnNew.Visible and
+    (tiLVBtnVisNew in AllowedButtons) and
+    (OnCanInsert or LDesigning);
   if LIsEnabled <> FBtnNew.Enabled then
     FBtnNew.Enabled := LIsEnabled;
 
-  LIsEnabled := FBtnDelete.Visible and (OnCanDelete or LDesigning);
+  LIsEnabled := FBtnDelete.Visible and
+    (tiLVBtnVisDelete in AllowedButtons) and
+    (OnCanDelete or LDesigning);
   if LIsEnabled <> FBtnDelete.Enabled then
     FBtnDelete.Enabled := LIsEnabled;
 end;

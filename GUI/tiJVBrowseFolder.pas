@@ -202,6 +202,7 @@ type
     procedure UpdateStatusText(AText: string);
     procedure WMShowWindow(var Msg: TMessage); message WM_SHOWWINDOW;
     procedure WMSize(var Msg: TWMSize); message WM_SIZE;
+    function GetClosestValidDirectory(const APath: string): string;
     function GetRootDirectoryPath: string;
     function IsRootDirectoryPathStored: Boolean;
     procedure SetRootDirectory(const AValue: TFromDirectory);
@@ -246,6 +247,7 @@ type
     property Handle: HWND read FDialogWindow;
 
     function Execute: Boolean; override;
+    function ShowDialog(var ADirectory: string): Boolean;
   published
     property Directory: string read FDirectory write FDirectory;
     property DisplayName: string read FDisplayName write FDisplayName stored False;
@@ -280,7 +282,7 @@ function BrowseComputer(var AComputerName: string; const DlgText: string;
 implementation
 
 uses
-  SysUtils, ActiveX, Controls, Forms, Consts, Graphics;
+  SysUtils, ActiveX, Controls, Forms, Consts, Graphics, tiUtils;
 
 type
   TSHGetFolderPathProc = function(hWnd: HWND; CSIDL: Integer; hToken: THandle;
@@ -1189,6 +1191,25 @@ begin
   end;
 end;
 
+function TtiJvBrowseForFolderDialog.GetClosestValidDirectory(
+  const APath: string): string;
+var
+  LPos : Integer;
+  LPath: string;
+begin
+  if not DirectoryExists(APath) then
+  begin
+    LPos := tiPosR('\', APath);
+    if LPos <> 0 then
+    begin
+      LPath := Copy(APath, 0, LPos-1);
+      Result := GetClosestValidDirectory(LPath);
+    end else
+      Result := GetRootDirectoryPath;
+  end else
+    Result := APath;
+end;
+
 function TtiJvBrowseForFolderDialog.GetEnumFlags(psf: IShellFolder;
   pidlFolder: PItemIDList; const phWnd: HWND;
   var pgrfFlags: DWORD): HResult;
@@ -1418,6 +1439,41 @@ begin
   except
     Result := E_UNEXPECTED;
   end;
+end;
+
+function TtiJvBrowseForFolderDialog.ShowDialog(var ADirectory: string): Boolean;
+begin
+  Result := false;
+
+{$IFNDEF FPC}
+
+  Options := [odOnlyDirectory, odFileSystemDirectoryOnly,
+              odEditBox, odNewDialogStyle, odUsageHint,
+              odValidate];
+  RootDirectory:= fdDesktopDirectory;
+  Position:= fpFormCenter;
+  Directory := GetClosestValidDirectory(ADirectory);
+  //DisplayName:= Caption;
+  //Title:= Caption;
+  //StatusText:= 'Status text';
+  if Execute then
+  begin
+    ADirectory := Directory;
+    Result := true;
+  end;
+
+{$ELSE}
+
+  Options := [ofEnableSizing,ofViewDetail];
+  Title:= Caption;
+  if Execute then
+  begin
+    ADirectory := GetClosestValidDirectory(FileName);
+    Result := true;
+    end;
+
+{$ENDIF}
+
 end;
 
 function MinimizeFileName(const FileName: string; Canvas: TCanvas; MaxLen: Integer): string;

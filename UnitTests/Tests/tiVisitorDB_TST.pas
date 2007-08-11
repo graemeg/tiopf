@@ -27,6 +27,7 @@ type
     procedure TIVisitorManager_ExecutePassDatabaseNameException;
     procedure TIVisitorManager_ExecuteUnregisteredVisitor;
     procedure TIVisitorManager_Execute;
+// ToDo: Require a for handling of exception in TtiObjectVisitorController.AfterExecuteVisitorGroup    
   end;
 
 procedure RegisterTests;

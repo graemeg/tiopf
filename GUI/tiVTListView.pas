@@ -32,11 +32,13 @@ uses
   ,StdCtrls     // TLabel
   ,ExtCtrls     // TCustomPanel
   ,Buttons      // TSpeedButton
-  ,tiINI
   ,tiStreams
+  ,tiMulticastEvent
 {$IFNDEF FPC}
 //  ,tiVirtualTrees
+  ,tiINI
 {$ELSE}
+  ,tiINI
   ,LCLIntf
   ,LCLProc
   ,VirtualStringTree
@@ -352,6 +354,33 @@ type
 
   TtiVTExportedEvent = procedure (const AVTExport: TtiVTExport) of object;
 
+  // Multicast event for filtering
+  TtiVTFilterDataEventArgs = class(TtiMulticastEventArgs)
+  private
+    FData: TtiObject;
+    FInclude: Boolean;
+  public
+    constructor Create(const AData: TtiObject);
+    property Data: TtiObject read FData;
+    property Include: Boolean read FInclude write FInclude;
+  end;
+
+  TtiVTOnFilterDataMulticastEventDispatcher = class(TtiMulticastEventDispatcherAbs)
+  protected
+    function GetEventArgsClass: TtiMulticastEventArgsClass; override;
+    procedure InvokeHandler(AMethod: TMethod; ASender: TObject; AArgs: TtiMulticastEventArgs); override;
+    function GetDefaultEventHandler: TtiVTOnFilterDataEvent;
+    procedure SetDefaultEventHandler(const AValue: TtiVTOnFilterDataEvent);
+  public
+    // Register and unregister methods to support the pre-existing event
+    // handler signature.
+    procedure RegisterEventHandler(
+        const AHandler: TtiVTOnFilterDataEvent;
+        const AIsDefaultHandler: Boolean = False);
+    procedure UnregisterEventHandler(const AHandler: TtiVTOnFilterDataEvent);
+    property DefaultEventHandler: TtiVTOnFilterDataEvent read GetDefaultEventHandler write SetDefaultEventHandler;
+  end;
+
   TtiCustomVirtualTree = class(TtiFocusPanel)
     // Features not ported:
     //   Runtime column generation - you must assign columns, or see nothing
@@ -366,6 +395,7 @@ type
     FGroupingApplied: Boolean;
     FLastNode: PVirtualNode;
     FLastSearchedNode, FLastMatchedNode: PVirtualNode;
+    FFilterEventDispatcher: TtiVTOnFilterDataMulticastEventDispatcher;
 
     FShowAlternateRowColor: Boolean;
     FSortOrders: TtiVTSortOrders;
@@ -473,7 +503,7 @@ type
     property    OnKeyPress     : TKeyPressEvent read GetOnKeyPress write SetOnKeyPress;
     //property    OnClick        : TtiLVOnClick read FOnLVClick write FOnLVClick;
     property    OnDblClick     : TtiVTItemEvent read FOnDblClick write FOnDblClick;
-    property    OnFilterData   : TtiVTOnFilterDataEvent read  FOnFilterData write FOnFilterData;
+    property    OnFilterData   : TtiVTOnFilterDataEvent read FOnFilterData write FOnFilterData;
     //property    OnGetFont      : TtiLVOnGetFont read  FOnGetFont write FOnGetFont;
     //property    OnGetImageIndex : TtiLVGetImageIndexEvent read FOnGetImageIndex write FOnGetImageIndex;
     property    OnHeaderClick : TtiVTHeaderClickEvent read FOnHeaderClick write FOnHeaderClick;
@@ -504,6 +534,8 @@ type
     procedure SetHeaderClickSorting(const Value: boolean); virtual;
     function  SetSelectedChildData(Parent: PVirtualNode;  Data: TtiObject): Boolean;
     procedure SetEnabled(AValue: Boolean); override;
+    function  GetFilteredItemCount: Integer;
+    function  GetFilteredItems(AIndex: Integer): TtiObject;
 
     procedure VTDoBeforeItemErase(Canvas: TCanvas; Node: PVirtualNode; ItemRect: TRect; var ItemColor: TColor; var EraseAction: TItemEraseAction); virtual;
     procedure VTDoGetText(Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var Text: WideString); virtual;
@@ -543,9 +575,12 @@ type
     function    CanEdit: Boolean; virtual;
     function    CanDelete: Boolean; virtual;
     procedure   ClearSort; virtual;
-    procedure   ClearFilters; virtual;
 
+    // Property value filtering
+    procedure   ClearFilters; virtual;
     procedure   AddFilter(pFilter : TLVFilter);
+    // Multicast event handler filtering
+    property    FilterEventDispatcher: TtiVTOnFilterDataMulticastEventDispatcher read FFilterEventDispatcher;
 
     procedure   DeleteNode(Node: PVirtualNode); virtual;
 
@@ -587,6 +622,8 @@ type
     property    Sorted: Boolean read FSorted;
     property    VT: TVirtualStringTree read FVT;
     function    SelectedNodeScreenOrigin: TPoint;
+    property    FilteredItemCount: Integer read GetFilteredItemCount;
+    property    FilteredItems[AIndex: Integer]: TtiObject read GetFilteredItems;
   published
   end;
 
@@ -597,6 +634,7 @@ type
     FCtrlBtnPnl : TtiCtrlBtnPnlAbs;
     FButtonStyle: TLVButtonStyle;
     FVisibleButtons: TtiLVVisibleButtons;
+    FAllowedButtons: TtiLVVisibleButtons;
     FPopupMenu: TPopupMenu;
     FpmiView  : TMenuItem;
     FpmiEdit  : TMenuItem;
@@ -637,6 +675,7 @@ type
     procedure SetOnExportFileName(const AValue: TtiVTExportFileNameEvent);
     procedure SetOnExported(const AValue: TtiVTExportedEvent);
     procedure SetOnExportedToFile(const AValue: TtiVTExportedToFileEvent);
+    function  GetButtonPanel: TtiCtrlBtnPnlAbs;
   protected
     procedure CreateButtonPanel;
     procedure CreateWnd; override;
@@ -666,6 +705,7 @@ type
     property Searching: boolean read FSearching write SetSearching default true;
     property Filtering: boolean read FFiltering write SetFiltering default true;
     property VisibleButtons : TtiLVVisibleButtons read FVisibleButtons write SetVisibleButtons default [];
+    property AllowedButtons : TtiLVVisibleButtons read FAllowedButtons;
 
     property OnClearSort: TtiVTClearSortEvent read FOnClearSort write SetOnClearSort;
     property OnItemDelete: TtiVTItemEditEvent read FOnItemDelete write SetOnItemDelete;
@@ -686,8 +726,9 @@ type
     property OnExported: TtiVTExportedEvent read FOnExported write SetOnExported;
 
     procedure Refresh(const pSelectedData: TtiObject = nil); override;
+    procedure SetAllowedButtons(const AAllowedButtons: TtiLVVisibleButtons);
 
-    property ButtonPanel: TtiCtrlBtnPnlAbs read FCtrlBtnPnl;
+    property ButtonPanel: TtiCtrlBtnPnlAbs read GetButtonPanel;
   end;
 
   TtiVTListView = class(TtiCustomVirtualEditTree)
@@ -1125,6 +1166,67 @@ begin
 end;
 
 
+{ TtiVTFilterDataEventArgs }
+
+constructor TtiVTFilterDataEventArgs.Create(const AData: TtiObject);
+begin
+  FData := AData;
+end;
+
+{ TtiVTOnFilterDataMulticastEventDispatcher }
+
+function TtiVTOnFilterDataMulticastEventDispatcher.GetEventArgsClass: TtiMulticastEventArgsClass;
+begin
+  Result := TtiVTFilterDataEventArgs;
+end;
+
+procedure TtiVTOnFilterDataMulticastEventDispatcher.InvokeHandler(
+  AMethod: TMethod; ASender: TObject; AArgs: TtiMulticastEventArgs);
+var
+  LInclude: Boolean;
+begin
+  // Call the event handler using the pre-existing event handler signature.
+  LInclude := (AArgs as TtiVTFilterDataEventArgs).Include;
+  TtiVTOnFilterDataEvent(AMethod)((AArgs as TtiVTFilterDataEventArgs).Data,
+    LInclude);
+  (AArgs as TtiVTFilterDataEventArgs).Include := LInclude;
+end;
+
+procedure TtiVTOnFilterDataMulticastEventDispatcher.RegisterEventHandler(
+  const AHandler: TtiVTOnFilterDataEvent;
+  const AIsDefaultHandler: Boolean);
+var
+  LHandler: TMethod;
+begin
+  if Assigned(AHandler) then
+    RegisterEventHandlerMethod(TMethod(AHandler), AIsDefaultHandler)
+  else
+  begin
+    // Allow for clearing of the default handler
+    LHandler.Data := nil;
+    LHandler.Code := nil;
+    RegisterEventHandlerMethod(TMethod(LHandler), AIsDefaultHandler);
+  end;
+end;
+
+procedure TtiVTOnFilterDataMulticastEventDispatcher.UnregisterEventHandler(
+  const AHandler: TtiVTOnFilterDataEvent);
+begin
+  if Assigned(AHandler) then
+    UnregisterEventHandlerMethod(TMethod(AHandler));
+end;
+
+function TtiVTOnFilterDataMulticastEventDispatcher.GetDefaultEventHandler: TtiVTOnFilterDataEvent;
+begin
+  Result := TtiVTOnFilterDataEvent(DefaultEventHandlerMethod);
+end;
+
+procedure TtiVTOnFilterDataMulticastEventDispatcher.SetDefaultEventHandler(
+  const AValue: TtiVTOnFilterDataEvent);
+begin
+  RegisterEventHandler(AValue, {AIsDefaultHandler} True);
+end;
+
 
 //______________________________________________________________________________________________________________________________
 { TtiCustomVirtualTree }
@@ -1400,6 +1502,7 @@ begin
   FFilteredData := TObjectList.Create(False);
   FGroupedData := TList.Create;
   FSortOrders := TtiVTSortOrders.Create(Self);
+  FFilterEventDispatcher := TtiVTOnFilterDataMulticastEventDispatcher.Create;
 
   FSP := TtiVTSearchPanel.Create(Self);
   FSP.Parent := Self;
@@ -1465,8 +1568,11 @@ end;
 
 destructor TtiCustomVirtualTree.Destroy;
 begin
+  // Unregister event handlers.
+  FFilterEventDispatcher.DefaultEventHandler := nil;
   // FVT.Free;
   FFilters.Free;
+  FreeAndNil(FFilterEventDispatcher);
   FreeAndNil(FGroupedData);
   FreeAndNil(FFilteredData);
   FreeAndNil(FSortOrders);
@@ -1680,13 +1786,11 @@ begin
   FFilteredData.Clear;
 
   if FFiltered Then
-  //if Assigned(OnFilterData) then
   begin
     DataIndex := 0;
     while DataIndex < FData.Count do
     begin
       ShouldInclude := ItemPassesFilter(FData[DataIndex]);
-//      OnFilterData(FData[DataIndex], ShouldInclude);
       if ShouldInclude then
         FFilteredData.Add(FData[DataIndex]);
       Inc(DataIndex);
@@ -2312,7 +2416,7 @@ var
 begin
   LColumn := Header.Columns[Column];
 
-  if HeaderClickSorting {and (not LColumn.Derived) }then
+  if HeaderClickSorting and (not LColumn.Derived) then
   begin
     ClearSearchState;
     LColumn.Style := vsOwnerDraw;
@@ -2564,6 +2668,16 @@ begin
   end;
 end;
 
+function TtiCustomVirtualTree.GetFilteredItemCount: Integer;
+begin
+  Result := FFilteredData.Count;
+end;
+
+function TtiCustomVirtualTree.GetFilteredItems(AIndex: Integer): TtiObject;
+begin
+  Result := FFilteredData.Items[AIndex] as TtiObject;
+end;
+
 procedure TtiCustomVirtualTree.ClearFilters;
 begin
   FFilters.Clear;
@@ -2573,19 +2687,30 @@ end;
 function TtiCustomVirtualTree.ItemPassesFilter(pObject: TtiObject): Boolean;
 Var
   I : Integer;
-  lResult : Boolean;
   lFilter : TLVFilter;
   lPrevConj : TFilterConj;
+  LFilterDataEventArgs: TtiVTFilterDataEventArgs;
 Begin
+  Result := True;
   If FFiltered Then
   Begin
-    If Assigned(FOnFilterData) Then
-    Begin
-      FOnFilterData(pObject, lResult);
-      Result := lResult;
-    End
-    Else
-      Result := True;
+    // Default filter event handler
+    if Assigned(FOnFilterData) then
+      FOnFilterData(pObject, Result);
+
+    // Multicast (additional) filter event handlers
+    if Result and (FilterEventDispatcher.EventHandlerCount > 0) then
+    begin
+      LFilterDataEventArgs := TtiVTFilterDataEventArgs.Create(pObject);
+      try
+        LFilterDataEventArgs.Include := Result;
+        FilterEventDispatcher.DispatchEvent(Self, LFilterDataEventArgs);
+        Result := Result and LFilterDataEventArgs.Include;
+      finally
+        FreeAndNil(LFilterDataEventArgs);
+      end;
+    end;
+
     If Result Then // No point checking if it doesn't pass the first stage.
     Begin
       lPrevConj := fcAnd; // We need to AND it with any Filter event result.
@@ -2600,9 +2725,7 @@ Begin
         lPrevConj := lFilter.Join;
       End; { Loop }
     End;
-  End
-  Else
-    Result := True;
+  End;
 end;
 
 procedure TtiCustomVirtualTree.AddFilter(pFilter: TLVFilter);
@@ -2687,22 +2810,30 @@ end;
 
 function TtiCustomVirtualEditTree.CanDelete: Boolean;
 begin
-  Result := (tiLVBtnVisDelete in VisibleButtons) and inherited CanDelete;
+  Result := (tiLVBtnVisDelete in VisibleButtons) and
+    (tiLVBtnVisDelete in AllowedButtons) and
+    inherited CanDelete;
 end;
 
 function TtiCustomVirtualEditTree.CanEdit: Boolean;
 begin
-  Result := (tiLVBtnVisEdit in VisibleButtons) and inherited CanEdit;
+  Result := (tiLVBtnVisEdit in VisibleButtons) and
+    (tiLVBtnVisEdit in AllowedButtons) and
+    inherited CanEdit;
 end;
 
 function TtiCustomVirtualEditTree.CanInsert: Boolean;
 begin
-  Result := (tiLVBtnVisNew in VisibleButtons) and inherited CanInsert;
+  Result := (tiLVBtnVisNew in VisibleButtons) and
+    (tiLVBtnVisNew in AllowedButtons) and
+    inherited CanInsert;
 end;
 
 function TtiCustomVirtualEditTree.CanView: Boolean;
 begin
-  Result := (tiLVBtnVisView in VisibleButtons) and inherited CanView;
+  Result := (tiLVBtnVisView in VisibleButtons) and
+    (tiLVBtnVisView in AllowedButtons) and
+    inherited CanView;
 end;
 
 constructor TtiCustomVirtualEditTree.Create(AOwner: TComponent);
@@ -2806,6 +2937,7 @@ begin
 
   FStdPopupItemCount := FPopupMenu.Items.Count;
   FButtonStyle := lvbsButtonsAndLabels;
+  FAllowedButtons := [tiLVBtnVisView, tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete]; // All allowed
 end;
 
 procedure TtiCustomVirtualEditTree.CreateButtonPanel;
@@ -2814,6 +2946,7 @@ begin
                                       CanView, CanInsert, CanEdit, CanDelete);
   FCtrlBtnPnl.Align := alTop;
   FCtrlBtnPnl.VisibleButtons := FVisibleButtons;
+  FCtrlBtnPnl.AllowedButtons := FAllowedButtons;
 
   if Assigned(FOnItemDelete) then
     FCtrlBtnPnl.OnDelete := DoDelete;
@@ -3092,15 +3225,30 @@ end;
 
 procedure TtiCustomVirtualEditTree.VTDoFocusChanged(Node: PVirtualNode; Column: TColumnIndex);
 begin
+  inherited;
   if Assigned(FCtrlBtnPnl) then
     FCtrlBtnPnl.EnableButtons;
-  inherited;
 end;
 
 procedure TtiCustomVirtualEditTree.Refresh(const pSelectedData: TtiObject);
 begin
   inherited;
   DoRefreshButtons;
+end;
+
+procedure TtiCustomVirtualEditTree.SetAllowedButtons(
+  const AAllowedButtons: TtiLVVisibleButtons);
+begin
+  FAllowedButtons := AAllowedButtons;
+  if Assigned(FCtrlBtnPnl) then
+    FCtrlBtnPnl.AllowedButtons := FAllowedButtons;
+end;
+
+function TtiCustomVirtualEditTree.GetButtonPanel: TtiCtrlBtnPnlAbs;
+begin
+  if not Assigned(FCtrlBtnPnl) then
+    CreateButtonPanel;
+  Result := FCtrlBtnPnl;
 end;
 
 procedure TtiCustomVirtualEditTree.DoEnter;

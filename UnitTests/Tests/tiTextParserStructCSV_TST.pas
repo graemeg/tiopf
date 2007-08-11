@@ -73,7 +73,6 @@ procedure RegisterTests;
 implementation
 uses
   SysUtils
-  ,tiDUnitUtils
   ,tiDUnitDependencies
  ;
 

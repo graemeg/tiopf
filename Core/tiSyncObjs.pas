@@ -11,6 +11,7 @@ uses
   {$ENDIF}
   ,tiObject
   ,SyncObjs
+  ,Classes  // TThreadList
  ;
 
 const
@@ -35,6 +36,7 @@ type
 function  tiWaitForMutex(const AMutexName: string): Boolean; overload;
 function  tiWaitForMutex(const AMutexName: string; ASecondsToWait: Word): Boolean; overload;
 procedure tiReleaseMutex(const AMutexName: string);
+procedure tiFreeThreadList(var AThreadList: TThreadList; const AOwnsContent: boolean);
 
 
 implementation
@@ -47,7 +49,7 @@ uses
  ;
 
 var
-  uMutexes : TObjectList;
+  uMutexes : TThreadList;
 
 type
 
@@ -110,17 +112,24 @@ end;
 
 procedure tiReleaseMutex(const AMutexName: string);
 var
-  lMutex : TtiMutex;
-  lMutexName : string;
+  LMutex : TtiMutex;
+  LMutexName : string;
   i : Integer;
+  LList: TList;
 begin
-  lMutexName := _MutexName(AMutexName);
-  for i := 0 to uMutexes.Count - 1 do
-    if lMutexName = (uMutexes.Items[i] as TtiMutex).MutexName then
+  LList := uMutexes.LockList;
+  try
+  LMutexName := _MutexName(AMutexName);
+  for i := LList.Count - 1 downto 0 do
+    if LMutexName = (TObject(LList.Items[i]) as TtiMutex).MutexName then
     begin
-      lMutex := uMutexes.Items[i] as TtiMutex;
-      uMutexes.Remove(lMutex);
+      LMutex := TObject(LList.Items[i]) as TtiMutex;
+      LMutex.Free;
+      LList.Delete(i);
     end;
+  finally
+    uMutexes.UnlockList;
+  end;
 end;
 
 
@@ -224,14 +233,39 @@ begin
   end;
 end;
 
+procedure tiFreeThreadList(var AThreadList: TThreadList; const AOwnsContent: boolean);
+var
+  LList: TList;
+
+begin
+
+  if Assigned(AThreadList) and AOwnsContent then
+  begin
+    LList := AThreadList.LockList;
+
+    try
+
+      while LList.Count > 0 do
+      begin
+        TObject(LList[0]).Free;
+        LList.Delete(0);
+      end;
+
+    finally
+      AThreadList.UnlockList;
+    end;
+
+  end;
+
+  FreeAndNil(AThreadList);
+end;
 
 initialization
-  uMutexes := TObjectList.Create(True);
-
+  uMutexes := TThreadList.Create;
 
 finalization
-  uMutexes.Free;
 
+  tiFreeThreadList(uMutexes, true);
 
 end.
 

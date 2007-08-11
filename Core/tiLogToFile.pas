@@ -19,6 +19,7 @@ type
     function  GetDefaultFileName : TFileName;
     function  GetFileName : TFileName;
     procedure ForceLogDirectory;
+    function GetLogFileStream(out AFileStream: TFileStream): boolean;
   protected
     procedure WriteToOutput; override;
   public
@@ -40,6 +41,7 @@ implementation
 uses
    tiObject
   ,tiUtils
+//  ,tiConstants
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
@@ -154,68 +156,80 @@ begin
   WriteToOutput;
 end;
 
+function TtiLogToFile.GetLogFileStream(out AFileStream: TFileStream): boolean;
+var
+  LFileCreateCount: Integer;
+  LFileName: string;
+  LFileOpenMode: word;
+
+const
+  CFileCreateAttempts = 20;
+  CFileCreateAttemptInterval = 250; // ms
+
+begin
+  Result := false;
+  LFileName := GetFileName;
+  Assert(LFileName<>'', 'FileName not assigned');
+
+  if not DirectoryExists(ExtractFilePath(LFileName)) then
+    ForceLogDirectory;
+
+  AFileStream := nil;
+  LFileCreateCount := 1;
+
+  while (not Result) and (LFileCreateCount <= CFileCreateAttempts) do
+  begin
+
+    try
+      LFileOpenMode := fmShareDenyWrite;
+
+      if FileExists(LFileName) then
+        LFileOpenMode := LFileOpenMode or fmOpenReadWrite
+      else
+        LFileOpenMode := LFileOpenMode or fmCreate;
+
+      AFileStream := TFileStream.Create(LFileName, LFileOpenMode);
+      Result := true;
+    except
+      on EFCreateError do
+        if GetLastError <> ERROR_SHARING_VIOLATION then
+          raise;
+    end;
+
+    Inc(LFileCreateCount);
+    Sleep(CFileCreateAttemptInterval);
+  end;
+
+end;
+
 procedure TtiLogToFile.WriteToOutput;
 var
   i        : integer;
-  lLine   : string;
-  lFileStream : TFileStream;
-  lFileName : TFileName;
-  LFileCreateCount: Integer;
-const
-  CFileCreateAttempts = 2;
-  CFileCreateAttemptInterval = 250; // ms
+  LLine   : string;
+  LFileStream : TFileStream;
+
 begin
   inherited WriteToOutput;
   if ListWorking.Count = 0 then
     Exit; //==>
-  lFileName := GetFileName;
-  Assert(lFileName<>'', 'FileName not assigned');
-  if FileExists(lFileName) then
-    lFileStream := TFileStream.Create(lFileName,
-                                       fmOpenReadWrite or fmShareDenyNone)
-  else
-  begin
-    lFileStream := nil;
-    LFileCreateCount := 1;
-    while LFileCreateCount <= CFileCreateAttempts do
-    begin
-      try
-        lFileStream := TFileStream.Create(lFileName,
-                                         fmCreate or fmShareDenyNone);
-        Break; //==>
-      except
-        // Perhaps the log directory was deleted.
-        on E: EFCreateError do
-        begin
-          if LFileCreateCount < CFileCreateAttempts then
-            ForceLogDirectory
-          else
-            raise;
-        end;
-      end;
-      Inc(LFileCreateCount);
-      Sleep(CFileCreateAttemptInterval);
-    end;
-  end;
 
-  if Assigned(lFileStream) then
+  if GetLogFileStream(LFileStream) then
   begin
     try
-      lFileStream.Seek(0, soFromEnd);
+      LFileStream.Seek(0, soFromEnd);
       for i := 0 to ListWorking.Count - 1 do
       begin
         Assert(ListWorking.Items[i].TestValid(TtiLogEvent), cErrorTIPerObjAbsTestValid);
-        lLine := ListWorking.Items[i].AsLeftPaddedString + #13 + #10;
-        lFileStream.Write(PChar(lLine)^, Length(lLine));
+        LLine := ListWorking.Items[i].AsLeftPaddedString + #13 + #10;
+        LFileStream.Write(PChar(LLine)^, Length(LLine));
       end;
     finally
-      lFileStream.Free;
+      LFileStream.Free;
     end;
   end;
-  
+
   ListWorking.Clear;
 end;
-
 
 procedure TtiLogToFile.ForceLogDirectory;
 var

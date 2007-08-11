@@ -41,6 +41,17 @@ type
     property    Color;
   end;
 
+  TtiDataFocusPanel = class(TtiFocusPanel)
+  private
+    FReadOnly: Boolean;
+    procedure   SetReadOnly(const Value: Boolean);
+  protected
+    procedure   ReadOnlyUpdate; virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+    property    ReadOnly: Boolean read FReadOnly write SetReadOnly;
+  end;
+
 implementation
 uses
   Forms
@@ -58,8 +69,6 @@ begin
   if (csDesigning in ComponentState) then
     ControlStyle  := ControlStyle - [csAcceptsControls];
 
-
-
   OnClick       := DoOnClick;
   ControlStyle  := ControlStyle - [csSetCaption];
   BevelInner    := bvNone;
@@ -67,7 +76,6 @@ begin
   BorderStyle   := bsNone;
   FShowFocusRect := cDefaultShowFocusRect;
 end;
-
 
 procedure TtiFocusPanel.DoDrawFocusRect(pDraw : boolean);
 var
@@ -101,23 +109,17 @@ begin
 {$ENDIF}
 end;
 
-
 procedure TtiFocusPanel.DoEnter;
 begin
   DoDrawFocusRect(true);
   inherited;
 end;
 
-
 procedure TtiFocusPanel.DoExit;
 begin
   DoDrawFocusRect(false);
   inherited;
 end;
-
-
-
-
 
 // Check to see if any owned controls have focus.
 // Not sure if this will be required.
@@ -141,7 +143,6 @@ begin
   end;
 end;
 
-
 {$IFNDEF FPC}
 procedure TtiFocusPanel.Paint;
 begin
@@ -150,11 +151,31 @@ begin
 end;
 {$ENDIF}
 
-
-
 procedure TtiFocusPanel.DoOnClick(Sender : TObject);
 begin
   SetFocus;
+end;
+
+{ TtiDataFocusPanel }
+
+constructor TtiDataFocusPanel.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  FReadOnly := False;
+end;
+
+procedure TtiDataFocusPanel.SetReadOnly(const Value: Boolean);
+begin
+  if Value <> FReadOnly then
+  begin
+    FReadOnly := Value;
+    ReadOnlyUpdate;
+  end;
+end;
+
+procedure TtiDataFocusPanel.ReadOnlyUpdate;
+begin
+  // Do nothing.
 end;
 
 end.

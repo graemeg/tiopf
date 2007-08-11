@@ -4,7 +4,7 @@ unit tiTextTestRunner;
 
 interface
 uses
-  TestFramework
+   TestFramework
   ,TextTestRunner
  ;
 
@@ -52,8 +52,6 @@ type
     procedure   StartSuite(suite: ITest); override;
     procedure   EndSuite(suite: ITest); override;
     procedure   EndTest(test: ITest); override;
-    //procedure   Status(test :ITest; const Msg :string);override;
-    //procedure   Warning(test :ITest; const Msg :string);override;
 
   end;
 
@@ -61,9 +59,9 @@ function  tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinu
 function  RunRegisteredTests(exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult; overload;
 procedure WriteEmptyLogs(AExitBehavior: TRunnerExitBehavior);
 
+
 implementation
 uses
-  // toOPF
   tiExcept
   ,tiUtils
   ,tiConstants
@@ -208,13 +206,6 @@ begin
       raise exception.Create('Unable to delete old log file <' + FFileNameLong + '>');
   end;
 
-//  System.WriteLn('-' + cCommandLineParamLogTo + ': ' + gCommandLineParams.GetParam(cCommandLineParamLogTo));
-//  System.WriteLn('-' + cCommandLineSummaryINIFile + ':   ' + gCommandLineParams.GetParam(cCommandLineSummaryINIFile));
-
-//  System.WriteLn('Short log file name:   ' + FFileNameShort);
-//  System.WriteLn('Long log file name:    ' + FFileNameLong);
-//  System.WriteLn('Summary INI file name: ' + FFileNameINI);
-
 end;
 
 procedure TtiTextTestListener.IncPos;
@@ -286,7 +277,6 @@ end;
 procedure TtiTextTestListener.StartTest(test: ITest);
 begin
   write2Short('.', [tlwtFile, tlwtConsole]);
-  // Nothing in XMLTestRunner
   IncPos;
 end;
 
@@ -362,8 +352,6 @@ begin
   DecodeTime(runTime, h,  m, s, l);
   writeln2Short(Format('Time to run tests: %d:%2.2d:%2.2d.%d', [h, m, s, l]), [tlwtFile, tlwtConsole]);
   writeln2Short(Report(testResult), [tlwtFile, tlwtConsole]);
-//  writeln2Short('</pre>', [tlwtFile]);
-//  writeln2Short('</html>', [tlwtFile]);
   WriteSummaryToINIFile(testResult);
 
 

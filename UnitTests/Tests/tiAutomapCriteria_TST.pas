@@ -59,7 +59,6 @@ uses
   ,tiUtils
   ,tiDialogs
   ,tiOIDGUID
-  ,tiDUnitUtils
   ,Contnrs
   ,tiLog
   ,tiDUnitDependencies

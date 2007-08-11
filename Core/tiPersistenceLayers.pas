@@ -8,7 +8,6 @@ uses
   ,Classes
   ,tiDBConnectionPool
   ,tiQuery
-//  ,tiVisitorDB
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF MSWINDOWS}

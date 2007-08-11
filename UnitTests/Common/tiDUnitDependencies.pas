@@ -31,7 +31,6 @@ uses
   ,tiLogToFile
   ,tiBaseObject_TST
   ,tiOPFManager
-  ,tiDUnitUtils
   ,tiDUnitINI
   ,tiConstants
 

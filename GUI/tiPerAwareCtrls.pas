@@ -43,7 +43,7 @@ const
   cErrorInvalidLabelStyle        = 'Invalid label style';
   cErrorListHasNotBeenAssigned   = 'List has not been assigned';
   cErrorPropTypeNotClassOrString = 'FieldName property not an object or string';
-
+  CErrorInvalidDateTimeKind      = 'Invalid TDateTimeKind';
 
 type
   TtiAction = class(TAction)
@@ -51,7 +51,7 @@ type
 
   // LabelStyle can have these values
   TLabelStyle = (lsNone, lsTop, lsLeft, lsTopLeft, lsRight);
-  
+
   {$IFNDEF FPC}
    TTranslateString = string;
   {$ENDIF}
@@ -1452,10 +1452,17 @@ end;
 
 function TtiPerAwareDateTimePicker.GetValue: TDateTime;
 begin
-  if Kind = dtkDate then
-    result := Trunc(TDateTimePicker(FWinControl).Date)
-  else
-    result := TDateTimePicker(FWinControl).Date;
+  case Kind of
+    dtkDate: result := Trunc(TDateTimePicker(FWinControl).Date);
+    dtkTime: result := Frac(TDateTimePicker(FWinControl).Time);
+    else
+      raise EtiOPFProgrammerException.Create(CErrorInvalidDateTimeKind);
+  end;
+
+//  if Kind = dtkDate then
+//    result := Trunc(TDateTimePicker(FWinControl).Date)
+//  else
+//    result := TDateTimePicker(FWinControl).Date;
 end;
 
 
@@ -1490,9 +1497,11 @@ end;
 procedure TtiPerAwareDateTimePicker.SetValue(const AValue: TDateTime);
 var
   lDate: TDateTime;
+  lTime: TDateTime;
 begin
   SetOnChangeActive(false);
   lDate := trunc(AValue);
+  lTime := frac(AValue);
 {$IFNDEF FPC}
   if (TDateTimePicker(FWinControl).MaxDate <> 0) and
      (lDate > TDateTimePicker(FWinControl).MaxDate) then
@@ -1501,7 +1510,17 @@ begin
            (TDateTimePicker(FWinControl).MinDate <> 0) then
     TDateTimePicker(FWinControl).MinDate := lDate;
 {$ENDIF}
-  TDateTimePicker(FWinControl).Date := lDate;
+  case Kind of
+    dtkDate: TDateTimePicker(FWinControl).Date := lDate;
+    dtkTime: TDateTimePicker(FWinControl).Time := lTime;
+    else
+      raise EtiOPFProgrammerException.Create(CErrorInvalidDateTimeKind);
+  end;
+
+//  if Kind = dtkDate then
+//    TDateTimePicker(FWinControl).Date := lDate
+//  else
+//    TDateTimePicker(FWinControl).Date := lDate;
   WinControlToData;
   SetOnChangeActive(true);
 end;

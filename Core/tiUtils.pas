@@ -221,6 +221,11 @@ type
   function tiGetAppDataDirPublic: string;
   // Platform neutral function to return application name without GUI requirement
   function tiApplicationName: string;
+  // If it is a local file then get the full path.
+  function tiExpandURI(const AURI: string): string;
+  // Check for file based URI.
+  function tiIsFileURI(const AURI: string): Boolean;
+
 
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -3104,6 +3109,25 @@ begin
   {$ELSE}
   Result := ChangeFileExt(ExtractFileName(Paramstr(0)),'');
   {$ENDIF}
+end;
+
+function tiExpandURI(const AURI: string): string;
+begin
+  // If it is a local file then get the full path.
+  if (Pos('://', AURI) = 0) and (LeftStr(AURI, 2) <> '\\') then
+    Result := ExpandFileName(AURI)
+  else
+    Result := AURI;
+end;
+
+// Check for file based URI:
+// It is a file if it does not have :// (e.g. C:\xxx or \\xxx) or is file://xxx
+function tiIsFileURI(const AURI: string): Boolean;
+var
+  LURI: string;
+begin
+  LURI := LowerCase(AURI);
+  Result := ((Pos('://', LURI) = 0) or (Pos('file://', LURI) = 1));
 end;
 
 { TtiIntegerList }

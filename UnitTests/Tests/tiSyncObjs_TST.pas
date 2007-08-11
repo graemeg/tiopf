@@ -42,7 +42,6 @@ procedure RegisterTests;
 implementation
 uses
   tiDUnitDependencies
-  ,tiDUnitUtils
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}

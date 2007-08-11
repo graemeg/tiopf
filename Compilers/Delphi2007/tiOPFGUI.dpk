@@ -54,6 +54,7 @@ contains
   tiListViewDif in '..\..\GUI\tiListViewDif.pas',
   tiListViewPlus in '..\..\GUI\tiListViewPlus.pas',
   tiMemoReadOnly in '..\..\GUI\tiMemoReadOnly.pas',
+  tiMulticastEvent in '..\..\GUI\tiMulticastEvent.pas',
   tiPerAwareCombosAbs in '..\..\GUI\tiPerAwareCombosAbs.pas',
   tiPerAwareCtrls in '..\..\GUI\tiPerAwareCtrls.pas',
   tiPerAwareDateRange in '..\..\GUI\tiPerAwareDateRange.pas',

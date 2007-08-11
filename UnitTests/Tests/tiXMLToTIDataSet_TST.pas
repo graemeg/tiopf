@@ -170,7 +170,6 @@ uses
   ,SysUtils
   ,tiUtils
   ,Windows
-  ,tiDUnitUtils
   ,Dialogs
 ;
 

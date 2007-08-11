@@ -274,24 +274,26 @@ procedure TtiObjectVisitorController.AfterExecuteVisitorGroup(
 var
   i: integer;
   LTouchedByVisitor: TtiTouchedByVisitor;
+  LVisitor: TtiObjectVisitor;
+  LVisited: TtiObject;
 begin
-  try
-    FDatabase.Commit;
-    for i := 0 to ATouchedByVisitorList.Count - 1 do
-    begin
-      LTouchedByVisitor := ATouchedByVisitorList.Items[i];
-      (LTouchedByVisitor.Visitor as TtiObjectVisitor).Final(LTouchedByVisitor.Visited as
-        TtiObject);
-    end;
-  finally
-    FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
-    FDatabase := nil;
-    FPooledDB := nil;
+  FDatabase.Commit;
+  for i := 0 to ATouchedByVisitorList.Count - 1 do
+  begin
+    LTouchedByVisitor := ATouchedByVisitorList.Items[i];
+    LVisitor:= LTouchedByVisitor.Visitor as TtiObjectVisitor;
+    LVisited:= LTouchedByVisitor.Visited as TtiObject;
+    LVisitor.Final(LVisited);
   end;
+  FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
+  FDatabase := nil;
+  FPooledDB := nil;
 end;
 
 procedure TtiObjectVisitorController.AfterExecuteVisitorGroupError;
 begin
+  Assert(FDatabase.TestValid, cTIInvalidObjectError);
+  Assert(FPersistenceLayer.TestValid, cTIInvalidObjectError);
   FDatabase.RollBack;
   FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
   FDatabase := nil;

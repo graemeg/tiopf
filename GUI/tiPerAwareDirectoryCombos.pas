@@ -16,7 +16,6 @@ type
     FbMustExist : boolean;
     FbCreateDir : boolean;
     procedure   PickDirectoryOnExit(sender : TObject);
-    function    GetClosestValidDirectory(const pPath: string): string;
   protected
     procedure   DoButtonClick(sender : TObject); override;
   published
@@ -70,25 +69,18 @@ begin
   OnDblClick := DoButtonClick;
 end;
 
-{$IFNDEF FPC}
 procedure TtiPickDirectory.DoButtonClick(sender : TObject);
 var
   lBFD : TtiJVBrowseForFolderDialog;
+  LDirectory: string;
 begin
+  LDirectory := Edit.Text;
+
   lBFD := TtiJVBrowseForFolderDialog.Create(nil);
   try
-    lBFD.Options := [odOnlyDirectory, odFileSystemDirectoryOnly,
-                     odEditBox, odNewDialogStyle, odUsageHint,
-                     odValidate];
-    lBFD.RootDirectory:= fdMyComputer;
-    lBFD.Position:= fpFormCenter;
-    lBFD.Directory := GetClosestValidDirectory(Edit.Text);
-    //lBFD.DisplayName:= Caption;
-    //lBFD.Title:= Caption;
-    //lBFD.StatusText:= 'Status text';
-    if lBFD.Execute then
+    if lBFD.ShowDialog(LDirectory) then
     begin
-      Self.text := lBFD.directory;
+      Edit.Text := LDirectory;
       DoOnChange(Self);
     end;
   finally
@@ -96,27 +88,6 @@ begin
   end;
   inherited DoButtonClick(Sender);
 end;
-{$ELSE}
-procedure TtiPickDirectory.DoButtonClick(sender : TObject);
-var
-  lBFD : TSelectDirectoryDialog;
-begin
-  lBFD := TSelectDirectoryDialog.Create(nil);
-  try
-    lBFD.Options := [ofEnableSizing,ofViewDetail];
-    lBFD.Title:= Caption;
-    if lBFD.Execute then
-    begin
-      Self.text := lBFD.FileName;
-      DoOnChange(Self);
-    end;
-  finally
-    lBFD.Free;
-  end;
-  inherited DoButtonClick(Sender);
-end;
-
-{$ENDIF}
 
 procedure TtiPickDirectory.PickDirectoryOnExit(sender : TObject);
 var sDirectory : string;
@@ -140,24 +111,6 @@ begin
                               sDirectory + '>');
     end;
   end;
-end;
-
-function TtiPickDirectory.GetClosestValidDirectory(const pPath: string): string;
-var
-  lPos : Integer;
-  lPath: string;
-begin
-  if not DirectoryExists(pPath) then
-  begin
-    lPos := tiPosR('\', pPath);
-    if lPos <> 0 then
-    begin
-      lPath := Copy(pPath, 0, lPos-1);
-      Result := GetClosestValidDirectory(lPath);
-    end else
-      Result := 'C:\';
-  end else
-    Result := pPath;
 end;
 
 end.

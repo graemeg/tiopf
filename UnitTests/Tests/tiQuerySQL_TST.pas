@@ -53,11 +53,10 @@ uses
   {$IFNDEF DELPHI6ORABOVE}
   ,FileCtrl
   {$ENDIF}
-  ,tiDUnitUtils
+  ,tiTestFramework
   ,tiDialogs // for debugging
   ,tiDUnitDependencies
   ,tiQuery
-  ,tiTestFramework
  ;
 
 

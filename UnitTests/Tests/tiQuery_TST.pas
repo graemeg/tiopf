@@ -238,7 +238,6 @@ uses
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
-  ,tiDUnitUtils
   ,tiDUnitDependencies
   ,tiXML
   ,tiStreams

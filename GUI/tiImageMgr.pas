@@ -99,6 +99,7 @@ type
     function   GetILDisabled24: TImageList;
     function   GetILHot24: TImageList;
     function   GetILNormal24: TImageList;
+    procedure  FreeImageLists;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -167,10 +168,24 @@ begin
   //LoadTIOPFImages;
 end;
 
+procedure TtiImageListMgr.FreeImageLists;
+begin
+  if FOwnsImageLists then
+  begin
+    FreeAndNil(FILNormal16);
+    FreeAndNil(FILHot16);
+    FreeAndNil(FILDisabled16);
+    FreeAndNil(FILNormal24);
+    FreeAndNil(FILHot24);
+    FreeAndNil(FILDisabled24);
+  end;
+end;
+
 destructor TtiImageListMgr.Destroy;
 begin
   FImageNames16.Free;
   FImageNames24.Free;
+  FreeImageLists;
   {$IFNDEF FPC}
   if FResFileInstance <> HInstance then
     FreeLibrary(FResFileInstance);
@@ -556,6 +571,7 @@ end;
 initialization
 
 finalization
-  if Assigned(uTIImageListMgr) then uTIImageListMgr.Free;
+  if Assigned(uTIImageListMgr) then
+    uTIImageListMgr.Free;
 
 end.

@@ -207,7 +207,6 @@ uses
   {$ENDIF}
   ,tiDUnitDependencies
   ,tstPerFramework_BOM
-  ,tiDUnitUtils
   ,SysUtils
   {$IFDEF DELPHI6ORABOVE}
   ,Variants

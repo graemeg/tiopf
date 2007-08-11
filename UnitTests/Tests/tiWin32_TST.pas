@@ -40,7 +40,6 @@ uses
    tiWin32
   ,tiDUnitDependencies
   ,tstPerFramework_BOM
-  ,tiDUnitUtils
   ,tiDUnitINI
   ,Contnrs
   ,Windows

@@ -68,7 +68,6 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ,tiDUnitUtils
  ;
 
 
