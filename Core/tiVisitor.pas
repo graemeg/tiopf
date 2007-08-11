@@ -117,10 +117,9 @@ type
     property Count: integer read GetCount;
   end;
 
-  {** TtiVisited implements the Iterate method, which will pass a TtiVisitor over
-      every node in the graph of objects. Object instances exposed as
-      published properties will be touched by the TtiVisitor. Objects contained
-      in a published TList will also be touched.}
+  {** @abstract TtiVisited implements the Iterate method, which will pass a tiVisitor over every node in the graph of objects.
+      Object instances exposed as published properties will be touched by the 
+      TtiVisitor. Objects contained in a published TList will also be touched.}
   TtiVisited = class(TtiBaseObject)
   protected
     {** @exclude}
@@ -223,7 +222,7 @@ type
   {** @exclude}
   TtiVisitorControllerClass = class of TtiVisitorController;
 
-  {** TtiVisitor: The class that does the visiting}
+  {** @abstract The class that does the visiting}
   TtiVisitor = class(TtiBaseObject)
   private
     FVisited:        TtiVisited;
@@ -276,7 +275,7 @@ type
   TOnProcessVisitorController = procedure(const AVisitorController: TtiVisitorController;
     const AVisitors: TList) of object;
 
-  {** The Visitor Manager }
+  {** @abstract Groups visitors together so they can be passed over a graph of objects together }
   TtiVisitorManager = class(TtiBaseObject)
   private
     FTIOPFManager:     TtiBaseObject;
@@ -303,7 +302,7 @@ type
   end;
 
 
-  {** A wrapper for the TtiPreSizedStream which allows text to be written to
+  {** @exclude A wrapper for the TtiPreSizedStream which allows text to be written to
       the stream with each visit.}
   TVisStream = class(TtiVisitor)
   private
@@ -316,7 +315,7 @@ type
     property Stream: TtiPreSizedStream read FStream write SetStream;
   end;
 
-  {** A wrapper for the TtiPreSizedStream which allows text to be written to
+  {** @exclude A wrapper for the TtiPreSizedStream which allows text to be written to
       the stream with each visit. The stream can be accessed as a string.}
   TVisStringStream = class(TVisStream)
   protected
@@ -327,8 +326,8 @@ type
     property Text: string read GetText;
   end;
 
-  // A visitor to count the number of instances of each class owned by the
-  // passed object
+  {** @exclude A visitor to count the number of instances of each class owned 
+      by the passed object}
   TVisClassCount = class(TtiVisitor)
   private
     FList: TStringList;
@@ -341,7 +340,7 @@ type
     property ClassCount[const AClass: TClass]: integer read GetClassCount write SetClassCount;
   end;
 
-  // A visitor to find all owned objects of a given class
+  {** @exclude A visitor to find all owned objects of a given class}
   TVisFindAllByClass = class(TtiVisitor)
   private
     FList: TList;
