@@ -17,10 +17,10 @@ uses
 
 const
   {$IFDEF MSWINDOWS}
-  CLocalINISettingsMessage = ' Edit the file for Expected value C:\Documents and Settings\tipwh\Local Settings\Application Data\DUnitTIOPF\DUnitTIOPF.ini';
+  CLocalINISettingsMessage = ' Edit the file for Expected value "C:\Documents and Settings\tipwh\Local Settings\Application Data\DUnitTIOPF\DUnitTIOPF.ini"';
   {$ENDIF}
   {$IFDEF UNIX}
-  CLocalINISettingsMessage = ' Edit the file for Expected value /home/<user>/.config/DUnitTIOPF/DUnitTIOPF.ini';
+  CLocalINISettingsMessage = ' Edit the file for Expected value "/home/<user>/.config/DUnitTIOPF/DUnitTIOPF.ini"';
   {$ENDIF}
 
 type
