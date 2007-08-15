@@ -525,7 +525,7 @@ begin
     if AValue = '' then
       result := tiRemoveExtension(result)
     else
-      result := copy(result, 1, pos('.', result)) + AValue;
+      result := copy(result, 1, tiPosR('.', result)) + AValue;
   end;
 end;
 
