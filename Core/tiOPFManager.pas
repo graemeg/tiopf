@@ -205,7 +205,6 @@ const
 implementation
 uses
    tiCommandLineParams
-//  ,INIFiles
   ,tiUtils
   ,tiLog
   ,tiConstants
@@ -227,7 +226,9 @@ uses
   {$IFDEF LINK_ZEOS_FB10}    ,tiQueryZeosFB10     {$ENDIF}
   {$IFDEF LINK_ZEOS_FB15}    ,tiQueryZeosFB15     {$ENDIF}
 
+  {$IFDEF MSWINDOWS}
   ,Forms
+  {$ENDIF}
  ;
 
 
@@ -468,7 +469,12 @@ begin
   while ActiveThreadList.Count >0 do
   begin
     Sleep(10);
+    {$IFDEF MSWINDOWS}
     Application.ProcessMessages;
+    {$ENDIF}
+    {$IFDEF LINUX}
+      {$NOTE: Not sure what affect this is going to have under Linux. Test this! }
+    {$ENDIF}
     if (ACheckFor>0) and ((tiGetTickCount - LStart) > ACheckFor) then Exit;
   end;
   Result := (ActiveThreadList.Count =0);

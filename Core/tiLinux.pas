@@ -20,7 +20,6 @@ implementation
 uses
   Libc
   ,Process
-  ,LCLIntf      // Delphi compatabilty unit for Linux
   ,unix
  ;
 
@@ -44,7 +43,7 @@ end;
 
 function tiLinuxGetTickCount: Cardinal;
 begin
-  Result := GetTickCount;
+  Result := Cardinal(Trunc(Now * 24 * 60 * 60 * 1000));
 end;
 
 

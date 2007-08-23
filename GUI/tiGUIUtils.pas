@@ -18,6 +18,7 @@ uses
   ,LCLType    // TKeyboardState under FPC is not in Windows unit
   {$ENDIF}
   ,Graphics      // Canvas
+  ,ComCtrls
   ,Classes
  ;
 
@@ -45,6 +46,9 @@ uses
   {$ENDIF}
 
   procedure ShowTIDataSet(const pDataSet: TtiDataBuffer); // For debugging
+  procedure tiDataSetToListView(pDataSet: TtiDataBuffer; pLV: TListView);
+  procedure tiDataSetToListItem(pDataSet: TtiDataBuffer; AItem: TListItem);
+
 
 
 {$IFDEF MSWINDOWS}
@@ -254,6 +258,61 @@ var
 begin
   ls := TIDataSetToString(pDataSet);
   tiShowString(ls);
+end;
+
+procedure tiDataSetToListView(pDataSet: TtiDataBuffer; pLV: TListView);
+var
+  lCol: TListColumn;
+  i: integer;
+begin
+  Assert(pLV <> nil, 'ListView not assigned');
+
+  {$IFDEF FPC}
+  pLV.Items.Clear;
+  {$ELSE}
+  pLV.Items.Count := 0;
+  {$ENDIF}
+  pLV.Columns.Clear;
+
+  if pDataSet = nil then
+    Exit; //==>
+
+  for i := 0 to pDataSet.Fields.Count-1 do
+  begin
+    lCol := pLV.Columns.Add;
+    lCol.Caption  := pDataSet.Fields.Items[i].Name;
+    lCol.Width    := Trunc(pLV.Canvas.TextWidth(pDataSet.Fields.Items[ i ].Name) * 1.2);
+  end;
+
+  {$IFNDEF FPC}
+  pLV.OwnerData   := True;
+  pLV.Items.Count := pDataSet.Count;
+  {$ELSE}
+    {$NOTE Double check that this may be done and that is works! }
+  {$ENDIF}
+end;
+
+procedure tiDataSetToListItem(pDataSet: TtiDataBuffer; AItem: TListItem);
+var
+  i: integer;
+  lsValue: string;
+begin
+  // Setup the listItem for column 0
+  lsValue := pDataSet.Items[AItem.Index].Items[0].ValueAsString;
+  AItem.Caption := lsValue;
+  AItem.ListView.Column[0].Width :=
+      Max(AItem.ListView.Column[0].Width,
+           Trunc(AItem.ListView.Canvas.TextWidth(lsValue)*1.1));
+
+  // Setup the listItem for columns 1..n
+  for i := 1 to pDataSet.Fields.Count-1 do
+  begin
+    lsValue := pDataSet.Items[AItem.Index].Items[i].ValueAsString;
+    AItem.SubItems.Add(lsValue);
+    AItem.ListView.Column[i].Width :=
+      Max(AItem.ListView.Column[i].Width,
+           Trunc(AItem.ListView.Canvas.TextWidth(lsValue)*1.1));
+  end;
 end;
 
 

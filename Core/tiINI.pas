@@ -8,7 +8,6 @@ interface
 uses
    Classes
   ,IniFiles
-  ,Forms
  ;
 
 type
@@ -30,10 +29,6 @@ type
     function    ReadDateTime(const ASection, AName: string; ADefault: TDateTime): TDateTime; override;
     function    ReadFloat(const ASection, AName: string; ADefault: Double): Double; override;
     function    ReadTime(const ASection, AName: string; ADefault: TDateTime): TDateTime; override;
-
-    procedure   ReadFormState(AForm: TForm; AHeight: integer = -1; AWidth: integer = -1);
-    procedure   WriteFormState(AForm : TForm);
-
   end;
 
 function gINI(const AFileName: string = ''): TtiINIFile;
@@ -42,9 +37,6 @@ implementation
 uses
    tiUtils
   ,SysUtils
-  {$IFDEF FPC}
-  ,Controls        // used for TFormBorderStyle
-  {$ENDIF}
   ,tiConstants
  ;
 
@@ -129,54 +121,6 @@ begin
   result := inherited ReadFloat(ASection, AName, ADefault);
 end;
 
-procedure TtiINIFile.ReadFormState(AForm: TForm; AHeight : integer = -1; AWidth : integer = -1);
-var
-  sRegKey : string;
-  liTop : integer;
-  liLeft : integer;
-  lHeight : integer;
-  lWidth : integer;
-begin
-  Assert(AForm <> nil, 'pForm not assigned');
-  sRegKey := AForm.name + 'State';
-  // Do not read position if an MDIChild form
-  if AForm.formStyle <> fsMDIChild then
-  begin
-    // Read form position, -1 if not stored in registry
-    liTop := readInteger(sRegKey, 'Top',    -1);
-    liLeft := readInteger(sRegKey, 'Left',   -1);
-    // The form pos was found in the registr
-    if (liTop <> -1) and (liLeft <> -1) then
-    begin
-      AForm.Top   := readInteger(sRegKey, 'Top',    AForm.Top);
-      AForm.Left  := readInteger(sRegKey, 'Left',   AForm.Left);
-      AForm.Position := poDesigned;
-    // No form pos in the registry, so default to screen center
-    end else
-    begin
-      if Assigned(Application.MainForm) and (Application.MainForm <> AForm) then
-        AForm.Position := poMainFormCenter
-      else
-        AForm.Position:= poScreenCenter;
-    end;
-  end;
-  // Only set the form size if a bsSizable window
-  if AForm.BorderStyle = bsSizeable then
-  begin
-    if AHeight = -1 then
-      lHeight := AForm.Height
-    else
-      lHeight := AHeight;
-    if AWidth = -1 then
-      lWidth := AForm.Width
-    else
-      lWidth := AWidth;
-    AForm.Height := readInteger(sRegKey, 'Height', lHeight);
-    AForm.Width := readInteger(sRegKey, 'Width',  lWidth);
-  end;
-  AForm.WindowState := TWindowState(ReadInteger(sRegKey, 'WindowState', ord(wsNormal)));
-end;
-
 function TtiINIFile.ReadInteger(const ASection, AIdent: string; ADefault: Longint): Longint;
 begin
   if (not ValueExists(ASection, AIdent)) and
@@ -201,23 +145,6 @@ begin
   result := inherited ReadTime(ASection, AName, ADefault);
 end;
 
-procedure TtiINIFile.WriteFormState(AForm: TForm);
-var
-  sRegKey: string;
-begin
-  sRegKey := AForm.name + 'State';
-  writeInteger(sRegKey, 'WindowState', ord(AForm.WindowState));
-  if AForm.WindowState = wsNormal then
-  begin
-    writeInteger(sRegKey, 'Top',    AForm.Top);
-    writeInteger(sRegKey, 'Left',   AForm.Left);
-    if AForm.BorderStyle = bsSizeable then
-    begin
-      writeInteger(sRegKey, 'Height', AForm.Height);
-      WriteInteger(sRegKey, 'Width',  AForm.Width);
-    end;
-  end;
-end;
 
 initialization
   uINI := nil;

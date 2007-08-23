@@ -19,7 +19,7 @@ uses
   ,shellAPI
   {$ENDIF MSWINDOWS}
   {$IFDEF FPC}
-  ,LCLType
+//  ,LCLType
   {$ENDIF}
  ;
 

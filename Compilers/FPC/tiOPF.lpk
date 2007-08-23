@@ -36,7 +36,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="2" Build="2"/>
-    <Files Count="46">
+    <Files Count="47">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -221,20 +221,21 @@
         <Filename Value="../../Core/tiTokenLibrary.pas"/>
         <UnitName Value="tiTokenLibrary"/>
       </Item46>
+      <Item47>
+        <Filename Value="../../Core/tiINI.pas"/>
+        <UnitName Value="tiINI"/>
+      </Item47>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="fblib"/>
-        <MinVersion Minor="8" Release="3" Valid="True"/>
-      </Item1>
-      <Item2>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="fblib"/>
+        <MinVersion Minor="8" Release="3" Valid="True"/>
       </Item2>
-      <Item3>
-        <PackageName Value="LCL"/>
-      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)/"/>

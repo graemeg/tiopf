@@ -36,7 +36,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="2"/>
-    <Files Count="40">
+    <Files Count="41">
       <Item1>
         <Filename Value="../../GUI/tiGUIUtils.pas"/>
         <UnitName Value="tiGUIUtils"/>
@@ -197,19 +197,23 @@
         <Filename Value="../../GUI/tiLogReg.pas"/>
         <UnitName Value="tiLogReg"/>
       </Item40>
+      <Item41>
+        <Filename Value="../../GUI/tiGUIINI.pas"/>
+        <UnitName Value="tiGUIINI"/>
+      </Item41>
     </Files>
     <LazDoc Paths="../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="tiOPF"/>
-        <MinVersion Major="2" Valid="True"/>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="FCL"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="tiOPF"/>
+        <MinVersion Major="2" Valid="True"/>
       </Item3>
     </RequiredPkgs>
     <UsageOptions>
