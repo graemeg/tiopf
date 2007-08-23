@@ -7,16 +7,16 @@ unit tiOPF;
 interface
 
 uses
-  tiBaseObject, tiAutoMap, tiClassToDBMap_Srv, tiCommandLineParams, 
-    tiCompress, tiConstants, tiDBConnectionPool, tiEncrypt, tiExcept, tiLog, 
-    tiObject, tiOID, tiOPFManager, tiPool, tiQuery, tiQueue, tiINI, 
-    tiStreams, tiSyncObjs, tiThread, tiUtils, tiVisitor, tiVisitorDB, 
-    tiOIDGUID, tiQueryFBL, tiOIDInteger, tiCompressNone, tiCompressZLib, 
-    tiEncryptSimple, tiEncryptNone, tiEncryptDES, tiEncryptBlowfish, 
-    tiOIDString, tiDataBuffer_Cli, tiDataBuffer_BOM, tiQueryTXTAbs, 
-    tiTextParser, tiTextParserStructCSV, tiLogToConsole, tiXML, tiQueryCSV, 
-    tiQueryTAB, tiLogToFile, tiCriteria, tiVisitorCriteria, tiXMLToTIDataset, 
-    tiQueryXMLLight, tiRTTI, tiTokenLibrary; 
+  tiBaseObject, tiCommandLineParams, tiCompress, tiConstants, 
+    tiDBConnectionPool, tiEncrypt, tiExcept, tiLog, tiObject, tiOID, 
+    tiOPFManager, tiPool, tiQuery, tiStreams, tiSyncObjs, tiThread, tiUtils, 
+    tiVisitor, tiVisitorDB, tiOIDGUID, tiQueryFBL, tiOIDInteger, 
+    tiCompressNone, tiCompressZLib, tiEncryptSimple, tiEncryptNone, 
+    tiEncryptDES, tiEncryptBlowfish, tiOIDString, tiDataBuffer_Cli, 
+    tiDataBuffer_BOM, tiQueryTXTAbs, tiTextParser, tiTextParserStructCSV, 
+    tiLogToConsole, tiXML, tiQueryCSV, tiQueryTAB, tiLogToFile, tiCriteria, 
+    tiVisitorCriteria, tiXMLToTIDataset, tiQueryXMLLight, tiRTTI, 
+    tiTokenLibrary; 
 
 implementation
 

@@ -145,15 +145,17 @@ type
 { Helper functions }
 
 { Extract the field name part from the AField string which is in the format
-  fieldname(width)   eg:  Caption(25)   will return: Caption }
-function tiFieldName(AField: string): string;
+  fieldname(width,"field caption")   eg:  Quantity(25,"Qty")   will return: Quantity
+  Width and Field Caption is optional }
+function tiFieldName(const AField: string): string;
 begin
   Result := tiToken(AField, cBrackets[1], 1);
 end;
 
 { Extract the width part from the AField string which is in the format
-  fieldname(width)   eg:  Caption(25)   with return: 25 }
-function tiFieldWidth(AField: string): integer;
+  fieldname(width,"field caption")   eg:  Quantity(25,"Qty")  will return: 25
+  Width and Field Caption is optional }
+function tiFieldWidth(const AField: string): integer;
 var
   s: string;
 begin
@@ -161,8 +163,29 @@ begin
   if trim(s) = '' then
     Result := 75  // default width
   else
-    Result := StrToInt(s);
+    Result := StrToInt(tiToken(s, ',', 1));
 end;
+
+{ Extract the field caption part from the AField string which is in the format
+  fieldname(width,"field caption")   eg:  Quantity(25,"Qty")   will return: Qty
+  Width and Field Caption is optional }
+function tiFieldCaption(const AField: string): string;
+var
+  s: string;
+  p: pchar;
+begin
+  s := tiSubStr(AField, cBrackets[1], cBrackets[2]);
+  if (trim(s) = '') or (Pos(',', s) = 0) then
+    // It's only got a width or is blank, so we default to field name
+    Result := tiFieldName(AField)
+  else
+  begin
+    s := tiToken(s, ',', 2);
+    p := PChar(s);
+    Result := AnsiExtractQuotedStr(p, '"');
+  end;
+end;
+
 
 { TStringGridRowMediator }
 
@@ -331,7 +354,7 @@ begin
     lc            := FView.Columns.Add;
     lc.AutoSize   := False;
     lField        := tiToken(FDisplayNames, cFieldDelimiter, c);
-    lc.Caption    := tiFieldName(lField);
+    lc.Caption    := tiFieldCaption(lField);
     lc.Width      := tiFieldWidth(lField);
   end;
 

@@ -41,7 +41,6 @@ implementation
 uses
    tiObject
   ,tiUtils
-//  ,tiConstants
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
@@ -121,7 +120,9 @@ end;
 
 function TtiLogToFile.GetDefaultFileName: TFileName;
 var
+  {$IFDEF MSWINDOWS}
   path: array[0..MAX_PATH - 1] of char;
+  {$ENDIF}
   lFileName : string;
   lFilePath : string;
 begin
@@ -192,7 +193,9 @@ begin
       Result := true;
     except
       on EFCreateError do
+        {$IFDEF MSWINDOWS}
         if GetLastError <> ERROR_SHARING_VIOLATION then
+        {$ENDIF}
           raise;
     end;
 
