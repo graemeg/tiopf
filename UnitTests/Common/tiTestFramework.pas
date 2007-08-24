@@ -345,7 +345,7 @@ begin
     {$ENDIF MSWINDOWS}
     
     {$IFDEF LINUX}
-    tiUtils.tiRunEXEAndWait('rm -f -R ' + pDirectory);
+    tiUtils.tiRunEXEAndWait('rm -f -R ' + ADirectory);
     {$ENDIF LINUX}
   except
     on e:exception do

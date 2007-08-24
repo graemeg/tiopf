@@ -364,7 +364,7 @@ begin
   try
     AValue.Position := 0;
     lStringStream.CopyFrom(AValue, AValue.Size);
-    tiShowString(lStringStream.DataString);
+    tiShowString(lStringStream.DataString, pHeading);
   finally
     lStringStream.Free;
   end;
