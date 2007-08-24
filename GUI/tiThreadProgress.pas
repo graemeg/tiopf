@@ -250,7 +250,7 @@ uses
   ,Lmessages
   ,LCLIntf
   {$ENDIF}
-  ,tiINI
+  ,tiGUIINI
   ,Dialogs
  ;
 
@@ -411,7 +411,7 @@ begin
   ClientHeight := 30          ;
   ClientWidth := cuiFormWidth;
   FCritSect   := TCriticalSection.Create;
-  gINI.ReadFormState(self);
+  gGUIINI.ReadFormState(self);
   OnCloseQuery := DoCloseQuery;
   FTimer      := TTimer.Create(Self);
   FTimer.Enabled := false;
@@ -440,7 +440,7 @@ begin
   for i := 0 to FProgInds.Count - 1 do
     TtiThreadProgress(FProgInds.Items[i]).Terminate;
   FTimer.Free;
-  gINI.WriteFormState(self);
+  gGUIINI.WriteFormState(self);
   FProgInds.Free;
   FCritSect.Free;
   if uFormThreadProgress = Self then
@@ -533,7 +533,7 @@ end;
 destructor TtiThreadProgress.Destroy;
 begin
   if AutoProgress then
-    gINI.WriteInteger('ThreadProgress',
+    gGUIINI.WriteInteger('ThreadProgress',
                        ClassName,
                        FPosition + 1);
   inherited;
@@ -558,7 +558,7 @@ begin
   if AutoProgress then begin
     FPosition := 0;
     FMin     := 0;
-    Max := gINI.ReadInteger('ThreadProgress', ClassName, 10);
+    Max := gGUIINI.ReadInteger('ThreadProgress', ClassName, 10);
     if Max = 0 then
       Max := 10;
   end;

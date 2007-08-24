@@ -128,6 +128,7 @@ uses
   ,tiDialogs
   ,SysUtils
   ,ClipBrd
+  ,Math
   ;
 
 

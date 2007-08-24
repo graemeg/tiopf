@@ -168,10 +168,10 @@ uses
   tiUtils,
   tiLog,
   tiOPFManager,
-  tiOID,
+//  tiOID,
   tiConstants,
   tiExcept,
-  Dialogs,
+//  Dialogs,
   {$IFDEF MSWINDOWS}
   Windows
   {$ENDIF MSWINDOWS}
@@ -443,7 +443,7 @@ end;
 function TtiObjectVisitorManager.Execute(const AGroupName: string;
   const AVisited: TtiVisited): string;
 begin
-  Execute(AGroupName, AVisited, '', '');
+  Result := Execute(AGroupName, AVisited, '', '');
 end;
 
 { TtiObjectVisitorControllerConfig }

@@ -151,7 +151,7 @@ uses
   ,Types
   {$ENDIF LINUX}
   ,tiUtils
-  ,tiINI
+  ,tiGUIINI
   ,tiLog
   {$IFDEF FPC}
   ,LCLType
@@ -324,9 +324,9 @@ begin
     lMemo.scrollBars := ssBoth;
     lMemo.Lines.assign(AStrings);
     lMemo.Font.Name  := cDefaultFixedFontName;
-    gINI.ReadFormState(lForm);
+    gGUIINI.ReadFormState(lForm);
     lForm.ShowModal;
-    gINI.WriteFormState(lForm);
+    gGUIINI.WriteFormState(lForm);
   finally
     lForm.free;
   end;
@@ -401,7 +401,7 @@ begin
     lForm.Position   := poScreenCenter;
     lForm.Name       := 'FormInputDialogCombo';
     lForm.BorderStyle := bsDialog;
-    gINI.ReadFormState(lForm);
+    gGUIINI.ReadFormState(lForm);
 
     lLabel.Parent    := lForm;
     lLabel.Caption   := pStrPrompt + ':';
@@ -439,7 +439,7 @@ begin
       result := -1;
     end;
 
-    gINI.WriteFormState(lForm);
+    gGUIINI.WriteFormState(lForm);
   finally
     lForm.free;
   end;

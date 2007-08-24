@@ -77,7 +77,7 @@ type
     function  AcceptVisitor : boolean; override;
     procedure Init             ; override;
     procedure SetupParams      ; override;
-    procedure Final            ; override;
+    procedure Final(const AVisited: TtiObject); override;
   end;
 
   TVisSQLMgrSelect = class(TVisSQLMgrAbs)
@@ -340,11 +340,11 @@ begin
             (TtiObject(Visited).ObjectState = posDelete);
 end;
 
-procedure TVisSQLMgrObjectStateDeleted.Final;
+procedure TVisSQLMgrObjectStateDeleted.Final(const AVisited: TtiObject);
 begin
   if gTIOPFManager.Terminated then
     Exit; //==>
-  TtiObject(Visited).ObjectState := posDeleted;
+  AVisited.ObjectState := posDeleted;
 end;
 
 procedure TVisSQLMgrObjectStateDeleted.Init;

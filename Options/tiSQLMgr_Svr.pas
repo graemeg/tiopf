@@ -59,7 +59,7 @@ type
     procedure  Init           ; override ;
     procedure  SetupParams    ; override ;
     procedure  MapRowToObject ; override ;
-    procedure  Final          ; override ;
+    procedure  Final(const AVisited: TtiObject); override ;
   end ;
 
 {
@@ -827,7 +827,7 @@ begin
             (( Visited as TtiObject ).ObjectState = posEmpty ) ;
 end;
 
-procedure TVisReadQueryByName.Final;
+procedure TVisReadQueryByName.Final(const AVisited: TtiObject);
 begin
   // Do nothing. ObjectState is set in MapRowToObject;
 end;

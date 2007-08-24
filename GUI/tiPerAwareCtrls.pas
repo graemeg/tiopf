@@ -1454,7 +1454,12 @@ function TtiPerAwareDateTimePicker.GetValue: TDateTime;
 begin
   case Kind of
     dtkDate: result := Trunc(TDateTimePicker(FWinControl).Date);
-    dtkTime: result := Frac(TDateTimePicker(FWinControl).Time);
+    dtkTime:
+      {$IFDEF FPC}
+      result := Frac(TDateTimePicker(FWinControl).Date);
+      {$ELSE}
+      result := Frac(TDateTimePicker(FWinControl).Time);
+      {$ENDIF}
     else
       raise EtiOPFProgrammerException.Create(CErrorInvalidDateTimeKind);
   end;
@@ -1512,7 +1517,12 @@ begin
 {$ENDIF}
   case Kind of
     dtkDate: TDateTimePicker(FWinControl).Date := lDate;
-    dtkTime: TDateTimePicker(FWinControl).Time := lTime;
+    dtkTime:
+        {$IFDEF FPC}
+        TDateTimePicker(FWinControl).Date := lTime;
+        {$ELSE}
+        TDateTimePicker(FWinControl).Time := lTime;
+        {$ENDIF}
     else
       raise EtiOPFProgrammerException.Create(CErrorInvalidDateTimeKind);
   end;
