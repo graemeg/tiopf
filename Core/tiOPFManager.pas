@@ -108,18 +108,18 @@ type
     procedure   RegSaveVisitor(  const AClassRef : TtiVisitorClass);
 
     // These call visitors
-    function    ReadPK(  const AVisited         : TtiVisited;
+    procedure   ReadPK(  const AVisited         : TtiVisited;
                           const ADBConnectionName : string = '';
-                          const APersistenceLayerName    : string = ''): string; reintroduce;
-    function    ReadThis(const AVisited : TtiVisited;
+                          const APersistenceLayerName    : string = ''); reintroduce;
+    procedure   ReadThis(const AVisited : TtiVisited;
                           const ADBConnectionName : string = '';
-                          const APersistenceLayerName    : string = ''): string; reintroduce;
-    function    Read(    const AVisited : TtiVisited;
+                          const APersistenceLayerName    : string = ''); reintroduce;
+    procedure   Read(    const AVisited : TtiVisited;
                           const ADBConnectionName : string = '';
-                          const APersistenceLayerName    : string = ''): string; reintroduce;
-    function    Save(    const AVisited : TtiVisited;
+                          const APersistenceLayerName    : string = ''); reintroduce;
+    procedure   Save(    const AVisited : TtiVisited;
                           const ADBConnectionName : string = '';
-                          const APersistenceLayerName    : string = ''): string; reintroduce;
+                          const APersistenceLayerName    : string = ''); reintroduce;
     procedure   ExecSQL( const pSQL : string;
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = '');
@@ -374,42 +374,39 @@ begin
 end;
 
 
-function TtiOPFManager.Read(const AVisited         : TtiVisited;
+procedure TtiOPFManager.Read(const AVisited         : TtiVisited;
                         const ADBConnectionName : string = '';
-                        const APersistenceLayerName    : string = ''): string;
+                        const APersistenceLayerName    : string = '');
 begin
   Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
-  result :=
-      FVisitorManager.Execute(cuStandardTask_Read,
-                       AVisited,
-                       ADBConnectionName,
-                       APersistenceLayerName);
+  FVisitorManager.Execute(cuStandardTask_Read,
+    AVisited,
+    ADBConnectionName,
+    APersistenceLayerName);
 end;
 
 
-function TtiOPFManager.ReadPK(const AVisited         : TtiVisited;
+procedure TtiOPFManager.ReadPK(const AVisited         : TtiVisited;
                           const ADBConnectionName : string = '';
-                          const APersistenceLayerName    : string = ''): string;
+                          const APersistenceLayerName    : string = '');
 begin
   Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
-  result :=
-      FVisitorManager.Execute(cuStandardTask_ReadPK,
-                       AVisited,
-                       ADBConnectionName,
-                       APersistenceLayerName);
+  FVisitorManager.Execute(cuStandardTask_ReadPK,
+    AVisited,
+    ADBConnectionName,
+    APersistenceLayerName);
 end;
 
 
-function TtiOPFManager.Save(const AVisited         : TtiVisited;
+procedure TtiOPFManager.Save(const AVisited         : TtiVisited;
                         const ADBConnectionName : string = '';
-                        const APersistenceLayerName    : string = ''): string;
+                        const APersistenceLayerName    : string = '');
 begin
   Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
-  result :=
-      FVisitorManager.Execute(cuStandardTask_Save,
-                       AVisited,
-                       ADBConnectionName,
-                       APersistenceLayerName);
+  FVisitorManager.Execute(cuStandardTask_Save,
+    AVisited,
+    ADBConnectionName,
+    APersistenceLayerName);
 end;
 
 
@@ -637,16 +634,15 @@ begin
 end;
 
 
-function TtiOPFManager.ReadThis(const AVisited         : TtiVisited;
+procedure TtiOPFManager.ReadThis(const AVisited         : TtiVisited;
                             const ADBConnectionName : string = '';
-                            const APersistenceLayerName    : string = ''): string;
+                            const APersistenceLayerName    : string = '');
 begin
   Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
-  result :=
-      FVisitorManager.Execute(cuStandardTask_ReadThis,
-                       AVisited,
-                       ADBConnectionName,
-                       APersistenceLayerName);
+  FVisitorManager.Execute(cuStandardTask_ReadThis,
+    AVisited,
+    ADBConnectionName,
+    APersistenceLayerName);
 end;
 
 
@@ -654,7 +650,6 @@ function TtiOPFManager.GetDefaultPerLayer: TtiPersistenceLayer;
 begin
   result := FPersistenceLayers.DefaultPerLayer;
 end;
-
 
 function TtiOPFManager.TableExists(const ATableName: string;
                                const ADBConnectionName: string = '';

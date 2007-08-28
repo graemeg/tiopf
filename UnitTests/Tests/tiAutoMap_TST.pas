@@ -236,28 +236,15 @@ procedure TTestTIAutoMapOperation.CollectionDelete;
 var
   lData1 : TtiOPFTestData;
   lData2 : TtiOPFTestData;
-  lError : string;
 begin
-
   lData1 := CreateTIOPFTestData;
   try
-    lError := gTIOPFManager.Save(lData1, DatabaseName, PerLayerName);
-    if lError <> '' then
-      raise exception.Create(lError);
-
+    gTIOPFManager.Save(lData1, DatabaseName, PerLayerName);
     lData1.Deleted := true;
-
-    lError := gTIOPFManager.Save(lData1, DatabaseName, PerLayerName );
-    if lError <> '' then
-      raise exception.Create(lError);
-
+    gTIOPFManager.Save(lData1, DatabaseName, PerLayerName );
     lData2 := TtiOPFTestData.Create;
     try
-
-      lError := gTIOPFManager.Read(lData2, DatabaseName, PerLayerName );
-      if lError <> '' then
-        raise exception.Create(lError);
-
+      gTIOPFManager.Read(lData2, DatabaseName, PerLayerName );
       CheckObjectState(posClean, lData2);
       CheckEquals(0, lData2.Count, 'Failed on lData2.Count = 0');
     finally

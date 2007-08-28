@@ -302,7 +302,7 @@ type
     property TIOPFManager: TtiBaseObject read GetTIOPFManager;
     procedure RegisterVisitor(const AGroupName: string; const AVisitorClass: TtiVisitorClass);
     procedure UnRegisterVisitors(const AGroupName: string);
-    function Execute(const AGroupName: string; const AVisited: TtiVisited): string;
+    procedure Execute(const AGroupName: string; const AVisited: TtiVisited);
       overload; virtual;
   end;
 
@@ -887,7 +887,7 @@ begin
   inherited;
 end;
 
-function TtiVisitorManager.Execute(const AGroupName: string; const AVisited: TtiVisited): string;
+procedure TtiVisitorManager.Execute(const AGroupName: string; const AVisited: TtiVisited);
 var
   LVisitorControllerConfig: TtiVisitorControllerConfig;
 begin
