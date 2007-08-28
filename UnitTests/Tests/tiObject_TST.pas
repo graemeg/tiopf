@@ -114,6 +114,7 @@ type
     destructor  Destroy; override;
   published
     procedure   Add;
+    procedure   AddItemOwner;
     procedure   Items;
     procedure   Count;
     procedure   CountNotDeleted;
@@ -134,6 +135,7 @@ type
     procedure   Extract;
     procedure   InsertByIndex;
     procedure   InsertByObject;
+    procedure   InsertItemOwner;
     procedure   MarkListItemsForDeletion;
     procedure   MarkListItemsDirty;
     procedure   PropToStrings;
@@ -2222,6 +2224,61 @@ begin
 end;
 
 
+procedure TTestTIObjectList.AddItemOwner;
+var
+  LList: TtiObjectList;
+  LItemOwner: TtiObject;
+  LItem: TtiObject;
+begin
+  LList:= nil;
+  LItemOwner:= nil;
+
+  // Default behaviour
+  try
+    LList:= TtiObjectList.Create;
+    LItemOwner:= TtiObject.Create;
+    LItem:= TtiObject.Create;
+    CheckNull(LItem.Owner);
+    Check(LList.AutoSetItemOwner);
+    CheckSame(LList, LList.ItemOwner);
+    LList.Add(LItem);
+    CheckSame(LList, LItem.Owner);
+  finally
+    LList.Free;
+    LItemOwner.Free;
+  end;
+
+  // TtiObjectList.ItemOwner set
+  try
+    LList:= TtiObjectList.Create;
+    LItemOwner:= TtiObject.Create;
+    LItem:= TtiObject.Create;
+    LList.ItemOwner:= LItemOwner;
+    CheckNull(LItem.Owner);
+    Check(LList.AutoSetItemOwner);
+    CheckSame(LItemOwner, LList.ItemOwner);
+    LList.Add(LItem);
+    CheckSame(LItemOwner, LItem.Owner);
+  finally
+    LList.Free;
+    LItemOwner.Free;
+  end;
+
+  // TtiObjectList.AutoSetItemOwner:= False
+  try
+    LList:= TtiObjectList.Create;
+    LItem:= TtiObject.Create;
+    LList.AutoSetItemOwner:= false;
+    CheckNull(LItem.Owner);
+    Check(not LList.AutoSetItemOwner);
+    CheckSame(LList, LList.ItemOwner);
+    LList.Add(LItem);
+    CheckNull(LItem.Owner);
+  finally
+    LList.Free;
+  end;
+end;
+
 procedure TTestTIObjectList.AutoSetItemOwner;
 var
   lList      : TtstTIObjectList;
@@ -2982,6 +3039,61 @@ begin
 
   finally
     lList.Free;
+  end;
+end;
+
+procedure TTestTIObjectList.InsertItemOwner;
+var
+  LList: TtiObjectList;
+  LItemOwner: TtiObject;
+  LItem: TtiObject;
+begin
+  LList:= nil;
+  LItemOwner:= nil;
+
+  // Default behaviour
+  try
+    LList:= TtiObjectList.Create;
+    LItemOwner:= TtiObject.Create;
+    LItem:= TtiObject.Create;
+    CheckNull(LItem.Owner);
+    Check(LList.AutoSetItemOwner);
+    CheckSame(LList, LList.ItemOwner);
+    LList.Insert(0, LItem);
+    CheckSame(LList, LItem.Owner);
+  finally
+    LList.Free;
+    LItemOwner.Free;
+  end;
+
+  // TtiObjectList.ItemOwner set
+  try
+    LList:= TtiObjectList.Create;
+    LItemOwner:= TtiObject.Create;
+    LItem:= TtiObject.Create;
+    LList.ItemOwner:= LItemOwner;
+    CheckNull(LItem.Owner);
+    Check(LList.AutoSetItemOwner);
+    CheckSame(LItemOwner, LList.ItemOwner);
+    LList.Insert(0, LItem);
+    CheckSame(LItemOwner, LItem.Owner);
+  finally
+    LList.Free;
+    LItemOwner.Free;
+  end;
+
+  // TtiObjectList.AutoSetItemOwner:= False
+  try
+    LList:= TtiObjectList.Create;
+    LItem:= TtiObject.Create;
+    LList.AutoSetItemOwner:= false;
+    CheckNull(LItem.Owner);
+    Check(not LList.AutoSetItemOwner);
+    CheckSame(LList, LList.ItemOwner);
+    LList.Insert(0, LItem);
+    CheckNull(LItem.Owner);
+  finally
+    LList.Free;
   end;
 end;
 

@@ -432,7 +432,6 @@ type
     FItemOwner: TtiObject;
     FbAutoSetItemOwner: boolean;
     function    GetList: TList;
-//    procedure   AssignDispOrder(AData: TtiObject);
     function    GetCountNotDeleted: integer;
     function    GetOwnsObjects: boolean;
     procedure   SetOwnsObjects(const AValue: boolean);
@@ -1425,55 +1424,18 @@ begin
   FList.Extract(AObject);
 end;
 
-{: Call Insert to add an object at a specified position in the list, shifting 
+{: Call Insert to add an object at a specified position in the list, shifting
   the item that previously occupied that position (and all subsequent items) up.
-  Insert increments Count and, if necessary, allocates memory by increasing the 
-  value of Capacity. The Index parameter is zero-based, so the first position 
-  in the list has an index of 0. To replace a nil reference with a new object 
+  Insert increments Count and, if necessary, allocates memory by increasing the
+  value of Capacity. The Index parameter is zero-based, so the first position
+  in the list has an index of 0. To replace a nil reference with a new object
   without growing the array, set the Items property directly. }
 procedure TtiObjectList.Insert(const AIndex: integer; const AObject: TtiObject);
 begin
   FList.Insert(AIndex, AObject);
-  AObject.Owner := self;
-//  AssignDispOrder(AData);
+  if FbAutoSetItemOwner then
+    AObject.Owner := FItemOwner;
 end;
-
-//{: @TODO AssignDispOrder logic requires work. }
-//procedure TtiObjectList.AssignDispOrder(AData: TtiObject);
-//var
-//  i : integer;
-//  lBefore : TtiObject;
-//  lAfter : TtiObject;
-//begin
-//  i := IndexOf(AData);
-//  if i > 0 then
-//    lBefore := Items[i-1]
-//  else
-//    lBefore := nil;
-//
-//  if i < Count-1 then
-//    lAfter := Items[i+1]
-//  else
-//    lAfter := nil;
-//
-//  if      (lBefore = nil) and (lAfter = nil) then
-//  begin
-//    AData.DispOrder := cuiDispOrderInc;
-//  end
-//  else if (lBefore <> nil) and (lAfter = nil) then
-//  begin
-//    AData.DispOrder := (lBefore.DispOrder div cuiDispOrderInc + 1) * cuiDispOrderInc;
-//  end
-//  else if (lBefore = nil) and (lAfter <> nil) then
-//  begin
-//    AData.DispOrder := (lAfter.DispOrder div cuiDispOrderInc - 1) * cuiDispOrderInc;
-//  end
-//  else if (lBefore <> nil) and (lAfter <> nil) then
-//  begin
-//    AData.DispOrder := (lBefore.DispOrder + lAfter.DispOrder) div 2;
-//  end;
-//  AData.Dirty := true;
-//end;
 
 procedure TtiObjectList.Insert(const AInsertBefore: TtiObject; const AObject: TtiObject);
 var
