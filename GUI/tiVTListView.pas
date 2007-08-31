@@ -1387,6 +1387,7 @@ begin
   _SortOrders := nil;
   FSorted := true;
 
+  FGroupingApplied := AApplyGrouping;
   if AApplyGrouping then
     ApplyGrouping
   else
@@ -1488,9 +1489,7 @@ begin
   ReadData;
 
   if Sorted then
-    ApplySort;
-
-  ApplyGrouping;
+    ApplySort(FGroupingApplied);
 
   SetRootNodeCount;
 end;
