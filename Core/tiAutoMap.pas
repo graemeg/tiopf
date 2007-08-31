@@ -517,23 +517,23 @@ begin
   inherited;
   FAttrColMaps           := TtiAttrColMaps.Create;
   FAttrColMaps.Owner     := self;
+  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FAttrColMaps.ItemOwner := self;
 
   FClassMaps           := TtiClassMaps.Create;
   FClassMaps.Owner     := self;
+  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FClassMaps.ItemOwner := self;
 
   FDBMaps           := TtiDBMaps.Create;
   FDBMaps.Owner     := self;
+  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FDBMaps.ItemOwner := self;
 
   FCollections           := TtiClassDBCollections.Create;
   FCollections.Owner     := self;
+  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FCollections.ItemOwner := self;
-
-  //  FForeignKeyMaps := TtiForeignKeyMaps.Create;
-  //  FForeignKeyMaps.Owner := self;
-  //  FForeignKeyMaps.ItemOwner := self;
 
 end;
 
