@@ -50,6 +50,8 @@ type
     FThreadCount: integer;
     procedure DoThreadCountChange(AThreadCount: Integer; const AThread: TThread);
     procedure SetOnThreadCountChange(const AValue: TThreadMethod);
+    function GetThreadCount: integer;
+    function GetActiveThreadNames: string;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -57,7 +59,8 @@ type
     procedure   Remove(const AThread : TtiThread);
     procedure   Terminate;
     property    OnThreadCountChange: TThreadMethod read FOnThreadCountChange write SetOnThreadCountChange;
-    property    Count: integer read FThreadCount;
+    property    Count: integer read GetThreadCount;
+    property    ActiveThreadNames: string read GetActiveThreadNames;
   end;
 
 {$IFDEF MSWINDOWS}
@@ -191,6 +194,34 @@ begin
     FThreadCount:= AThreadCount;
     if Assigned(FOnThreadCountChange) then
       TThread.Synchronize(AThread, FOnThreadCountChange);
+  end;
+end;
+
+function TtiActiveThreadList.GetActiveThreadNames: string;
+var
+  i: Integer;
+begin
+  FCritSect.Enter;
+  try
+    result:= '';
+    for i := 0 to FList.Count-1 do
+    begin
+      if result <> '' then
+        result:= result + CrLf;
+      result:= result + TtiThread(FList.Items[i]).ClassName;
+    end;
+  finally
+    FCritSect.Leave;
+  end;
+end;
+
+function TtiActiveThreadList.GetThreadCount: integer;
+begin
+  FCritSect.Enter;
+  try
+    result:= FThreadCount;
+  finally
+    FCritSect.Leave;
   end;
 end;
 
