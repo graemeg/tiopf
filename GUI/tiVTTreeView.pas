@@ -395,6 +395,8 @@ begin
   else
     VT.RootNodeCount := 0;
 
+  VT.ClearSelection;
+  
 { TODO : We have this: (toShowRoot in TreeOptions.PaintOptions)
          which is currently ignored.  I tried including it in above test
          but a RootNodeCount := 0 results in nothing showing.
