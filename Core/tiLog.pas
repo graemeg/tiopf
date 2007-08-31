@@ -590,16 +590,20 @@ end;
 
 
 constructor TtiLogToCacheAbs.Create;
+const
+  CSynchronized = false;
 begin
   inherited Create;
-  Init({ASynchronized} False);
+  Init(CSynchronized);
 end;
 
 
 constructor TtiLogToCacheAbs.CreateSynchronized;
+const
+  CSynchronized = true;
 begin
   inherited Create;
-  Init({ASynchronized} True);
+  Init(CSynchronized);
 end;
 
 
@@ -689,7 +693,7 @@ begin
     LMessagePrefix:= GetFormattedMessageTimeStamp;
     LMessagePrefixLen:= Length(LMessagePrefix) - 1;
     Result := LMessagePrefix;
-    LMessage := tiStrTran(LogMessage, Lf, #0);
+    LMessage := tiStrTran(LogMessage, Lf, ' ');
     for i:= 1 to tiNumToken(LMessage, Cr) do
     begin
       if i > 1 then
