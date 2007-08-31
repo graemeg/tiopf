@@ -163,6 +163,7 @@ type
     procedure Paint; override;
   end;
 
+  TtiChartButtonsPosition = (cbpLeft, cbpTop);
 
   // ToDo: Refactor into TtiChart & TtiChartTimeSeries
   TtiChart = class(TCustomPanel)
@@ -185,6 +186,7 @@ type
     FiOldCircY : integer;
     FCurrentData: TtiObject;
 
+    FChartButtonsPosition : TtiChartButtonsPosition;
     FbZoomed        : boolean    ;
     FsbZoomIn       : TtiSpeedButton;
     FsbZoomOut      : TtiSpeedButton;
@@ -326,6 +328,8 @@ type
     property    YDataValueUnderMouse : real read FrYDataValueUnderMouse write FrYDataValueUnderMouse;
     property    DataUnderMouse      : TObject read FDataUnderMouse   ;
 
+    property    ChartButtonsPosition : TtiChartButtonsPosition read FChartButtonsPosition write FChartButtonsPosition;
+
     function    AddDateTimeLineSeries(const psTitle   : string;
                                        pbPointerVisible : boolean = true): TLineSeries;
     procedure   AddDateTimeValues(const psSeriesName : string;
@@ -393,10 +397,11 @@ const
 constructor TtiTimeSeriesChart.Create(Owner: TComponent);
 const
   ciSBLeft   =  4;
+  ciSBTop    = 10;
   ciSBSize   = 20;
 var
   liSBTop : integer;
-
+  liSBLeft : integer;
 begin
   inherited Create(Owner);
 
@@ -411,13 +416,26 @@ begin
   FChartDataMappings := TtiChartDataMappings.Create(Self);
 
   FChart := TtiChartInternal.Create(self);
+
+  ChartButtonsPosition := cbpTop;
+  
   with FChart do begin
     Parent := self;
     //Align := alClient;
     Anchors    := [akLeft,akTop,akRight,akBottom];
-    Top := 0;
-    Left := ciSBLeft * 2 + ciSBSize;
-    Height := self.Height - ciBorder - ciSCBWidth;
+
+    case ChartButtonsPosition of
+      cbpLeft: begin
+                 Top := 0;
+                 Left := ciSBLeft * 2 + ciSBSize;
+               end;
+      cbpTop: begin
+                 Top := ciSBLeft * 2 + ciSBSize;
+                 Left := 0;
+               end;
+    end;
+
+    Height := self.Height - Top - ciBorder - ciSCBWidth;
     Width := self.Width - Left - ciBorder - ciSCBWidth;
 
     BevelInner := bvNone;
@@ -493,16 +511,24 @@ begin
     Visible := false;
   end;
 
-  liSBTop := 10;
+  liSBTop  := ciSBTop;
+  liSBLeft := ciSBLeft;
 
   FsbZoomIn     := TtiSpeedButton.Create(self);
   with FsbZoomIn do begin
     Parent := self;
-    Top   := liSBTop;
-    Left  := ciSBLeft;
+    Top := liSBTop;
+    Left := liSBLeft;
+    case ChartButtonsPosition of
+      cbpLeft: begin
+                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
+               end;
+      cbpTop: begin
+                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
+               end;
+    end;
     Height := ciSBSize;
     Width := ciSBSize;
-    liSBTop := liSBTop + ciSBLeft + ciSBSize;
     Flat   := true;
     ImageRes := tiRIZoomIn;
     Hint  := 'Zoom in';
@@ -513,11 +539,18 @@ begin
   FsbZoomOut    := TtiSpeedButton.Create(self);
   With FsbZoomOut do begin
     Parent := self;
-    Top   := liSBTop;
-    Left  := ciSBLeft;
+    Top := liSBTop;
+    Left := liSBLeft;
+    case ChartButtonsPosition of
+      cbpLeft: begin
+                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
+               end;
+      cbpTop: begin
+                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
+               end;
+    end;
     Height := ciSBSize;
     Width := ciSBSize;
-    liSBTop := liSBTop + ciSBLeft + ciSBSize;
     Flat   := true;
     Color  := Self.Color;
     ImageRes := tiRIZoomOut;
@@ -529,11 +562,18 @@ begin
   FsbDefaultZoom := TtiSpeedButton.Create(self);
   With FsbDefaultZoom do begin
     Parent := self;
-    Top   := liSBTop;
-    Left  := ciSBLeft;
+    Top := liSBTop;
+    Left := liSBLeft;
+    case ChartButtonsPosition of
+      cbpLeft: begin
+                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
+               end;
+      cbpTop: begin
+                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
+               end;
+    end;
     Height := ciSBSize;
     Width := ciSBSize;
-    liSBTop := liSBTop + ciSBLeft + ciSBSize;
     Flat   := true;
     Color  := Self.Color;
     ImageRes := tiRIMaximize;
@@ -545,11 +585,18 @@ begin
   FsbViewLegend := TtiSpeedButton.Create(self);
   With FsbViewLegend do begin
     Parent := self;
-    Top   := liSBTop;
-    Left  := ciSBLeft;
+    Top := liSBTop;
+    Left := liSBLeft;
+    case ChartButtonsPosition of
+      cbpLeft: begin
+                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
+               end;
+      cbpTop: begin
+                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
+               end;
+    end;
     Height := ciSBSize;
     Width := ciSBSize;
-    liSBTop := liSBTop + ciSBLeft + ciSBSize;
     Flat   := true;
     Color  := Self.Color;
     ImageRes := tiRIGraphLine;
@@ -579,8 +626,17 @@ begin
   FsbCopyToClipBrd := TtiSpeedButton.Create(self);
   With FsbCopyToClipBrd do begin
     Parent := self;
-    Top   := liSBTop;
-    Left  := ciSBLeft;
+    Top := liSBTop;
+    Left := liSBLeft;
+    //uncomment the following if you add more buttons
+//    case ChartButtonsPosition of
+//      cbpLeft: begin
+//                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
+//               end;
+//      cbpTop: begin
+//                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
+//               end;
+//    end;
     Height := ciSBSize;
     Width := ciSBSize;
     Flat   := true;
