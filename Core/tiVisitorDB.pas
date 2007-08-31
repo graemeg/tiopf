@@ -168,10 +168,8 @@ uses
   tiUtils,
   tiLog,
   tiOPFManager,
-//  tiOID,
   tiConstants,
   tiExcept,
-//  Dialogs,
   {$IFDEF MSWINDOWS}
   Windows
   {$ENDIF MSWINDOWS}
