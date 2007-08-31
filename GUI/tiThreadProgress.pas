@@ -70,6 +70,7 @@ uses
 type
 
   TProgInd = class;
+  TProgressVisibleChangeEvent = procedure(const AVisible: Boolean) of object;
 
   {$IFDEF NOTHREADS}
   // A dummy stub with the same interface as a TThread which can be used for
@@ -164,10 +165,12 @@ type
     FColumnCount: integer;
     FProgressBarColor: TColor;
     FOnChangeThreadCount: TNotifyEvent;
+    FOnVisibleChange: TProgressVisibleChangeEvent;
 
     function    FindByThread(pThread : TtiThreadProgress): integer;
     procedure   ArrangePanels;
     procedure   DoCloseQuery(sender : TObject; var CanClose : boolean);
+    procedure   DoResize(Sender: TObject);
     procedure   UpdateAutoProgressThreads(Sender : TObject);
     function    GetThreadCount: integer;
   protected
@@ -185,6 +188,7 @@ type
     property    ColumnCount        : integer      read FColumnCount      write FColumnCount;
     property    OnChangeThreadCount : TNotifyEvent read FOnChangeThreadCount   write FOnChangeThreadCount;
     property    ThreadCount        : integer      read GetThreadCount;
+    property    OnVisibleChange: TProgressVisibleChangeEvent read FOnVisibleChange write FOnVisibleChange;
 
   end;
 
@@ -286,7 +290,7 @@ begin
   Color       := (AOwner as TFormThreadProgress).Color;
   Height      := cuiProgIndHeight;
   Left        := 4;
-  Anchors     := [akLeft,akTop,akRight];
+  Anchors     := [akLeft,akTop];
   Width       := TForm(Owner).ClientWidth - 8;
 
   FLabel                 := TLabel.Create(self);
@@ -413,6 +417,7 @@ begin
   FCritSect   := TCriticalSection.Create;
   gGUIINI.ReadFormState(self);
   OnCloseQuery := DoCloseQuery;
+  OnResize := DoResize;
   FTimer      := TTimer.Create(Self);
   FTimer.Enabled := false;
   FTimer.OnTimer := UpdateAutoProgressThreads;
@@ -634,39 +639,88 @@ end;
 
 procedure TFormThreadProgress.ArrangePanels;
 var
-  lProgInd : TProgInd;
+  LProgInd : TProgInd;
   i       : integer;
-  lRow    : integer;
-  lCol    : integer;
-  lTop    : integer;
-  lLeft   : integer;
-  lWidth  : integer;
+  LRow    : integer;
+  LCol    : integer;
+  LTop    : integer;
+  LLeft   : integer;
+  LWidth  : integer;
+  LVisible: Boolean;
+  LRows   : Integer;
+  LColumns: Integer;
+  LRowsFirst: Boolean;
+const
+  CClientSpace = 0; // Space inside the edges of the form
+  CVerticalSpace = 0; // Vertical space between progress bar panels.
 begin
-  lRow := 1;
-  lCol := 1;
+  LRowsFirst := ColumnCount = 0;
+  if LRowsFirst then
+  begin
+    // Fit as many rows as possible first
+    LRows := (ClientHeight - CClientSpace) div (cuiProgIndHeight + CVerticalSpace);
+    if LRows = 0 then
+      LRows := 1;
+    // How many columns required for this number of rows
+    if FProgInds.Count > 0 then
+      LColumns := ((FProgInds.Count - 1) div LRows) + 1
+    else
+      LColumns := 0;
+  end
+  else
+  begin
+    // Fit minimum number of columns first.
+    if FProgInds.Count > ColumnCount then
+      LColumns := ColumnCount
+    else
+      LColumns := FProgInds.Count;
+    // How many rows required for this number of columns
+    if FProgInds.Count > 0 then
+      LRows := ((FProgInds.Count - 1) div LColumns) + 1
+    else
+      LRows := 0;
+  end;
+
+  if LColumns > 0 then
+    LWidth := (ClientWidth - (CClientSpace * 2)) div LColumns
+  else
+    LWidth := 0;
+
+  LRow := 0;
+  LCol := 0;
   for i := 0 to FProgInds.Count - 1 do
   begin
-    lProgInd := TProgInd(FProgInds.items[i]);
+    LProgInd := TProgInd(FProgInds.items[i]);
 
-    if lCol = 1 then
-      lLeft := 4
+    LLeft := (LWidth * LCol) + CClientSpace;
+    LTop := ((cuiProgIndHeight + CVerticalSpace) * LRow) + CClientSpace;
+
+    LProgInd.SetBounds(LLeft, LTop, LWidth, cuiProgIndHeight);
+
+    if LRowsFirst then
+    begin
+      if LRow < (LRows - 1) then
+        Inc(LRow)
+      else
+      begin
+        LRow := 0;
+        Inc(LCol);
+      end;
+    end
     else
-      lLeft := (ClientWidth div ColumnCount) {+ 8};
-
-    lWidth := (ClientWidth div ColumnCount) {- 8};
-    lTop := (lRow - 1) * (lProgInd.Height + 2) + 2;
-
-    lProgInd.SetBounds(lLeft, lTop, lWidth, cuiProgIndHeight);
-
-    if lCol < ColumnCount then
-      Inc(lCol)
-    else begin
-      lCol := 1;
-      Inc(lRow);
+    begin
+      if LCol < (LColumns - 1) then
+        Inc(LCol)
+      else
+      begin
+        LCol := 0;
+        Inc(LRow);
+      end;
     end;
   end;
 
-  ClientHeight := lRow * (cuiProgIndHeight + 4) + 4;
+  if not LRowsFirst then
+    ClientHeight := ((cuiProgIndHeight + CVerticalSpace) * LRows) + (CClientSpace * 2);
 
   if Parent = nil then
   begin
@@ -681,7 +735,11 @@ begin
     end
   end;
 
+  LVisible := Visible;
   Visible := (FProgInds.Count > 0);
+  if Visible <> LVisible then
+    if Assigned(FOnVisibleChange) then
+      FOnVisibleChange(Visible);
 end;
 
 
@@ -691,6 +749,11 @@ begin
   WindowState := wsMinimized;
 end;
 
+
+procedure TFormThreadProgress.DoResize(Sender: TObject);
+begin
+  ArrangePanels;
+end;
 
 procedure TFormThreadProgress.UpdateAutoProgressThreads(Sender: TObject);
 var
