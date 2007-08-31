@@ -462,6 +462,7 @@ begin
   inherited Create;
   FAddressList:= TAddressList.Create;
   FAddressList.Owner:= self;
+  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FAddressList.ItemOwner:= self;
 end;
 
