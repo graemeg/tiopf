@@ -10,16 +10,23 @@ uses
  ;
 
 type
+
+  ELogToFile = class (Exception);
+
   // Log to a file
   TtiLogToFile = class(TtiLogToCacheAbs)
   private
     FFileName : TFileName;
     FOverwriteOldFile: boolean;
     FDateInFileName: boolean;
+    FFileCreateAttemptInterval: integer;
+    FFileCreateAttempts: integer;
     function  GetDefaultFileName : TFileName;
     function  GetFileName : TFileName;
     procedure ForceLogDirectory;
     function GetLogFileStream(out AFileStream: TFileStream): boolean;
+    procedure SetFileCreateAttemptInterval(const Value: integer);
+    procedure SetFileCreateAttempts(const Value: integer);
   protected
     procedure WriteToOutput; override;
   public
@@ -30,10 +37,18 @@ type
     constructor CreateWithDateInFileName(AUpDirectoryTree: Byte); overload;
     constructor CreateWithDateInFileName; overload;
     destructor  Destroy; override;
+    procedure   Terminate; override;
+
+    procedure   Log(const ADateTime : string;
+                    const AThreadID : string;
+                    const AMessage : string;
+                    ASeverity: TtiLogSeverity); override;
+
     property    FileName : TFileName read GetFileName;
     property    OverwriteOldFile : boolean read FOverwriteOldFile;
     property    DateInFileName : boolean read FDateInFileName;
-    procedure   Terminate; override;
+    property    FileCreateAttempts: integer read FFileCreateAttempts write SetFileCreateAttempts;
+    property    FileCreateAttemptInterval: integer read FFileCreateAttemptInterval write SetFileCreateAttemptInterval; // ms
   end;
 
 
@@ -41,6 +56,7 @@ implementation
 uses
    tiObject
   ,tiUtils
+//  ,tiConstants
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
@@ -49,6 +65,10 @@ uses
   {$endif}
  ;
 
+const
+  CDefaultFileCreateAttempts = 20;
+  CDefaultFileCreateAttemptInterval = 250; //ms
+
 constructor TtiLogToFile.Create;
 begin
   inherited;
@@ -56,6 +76,8 @@ begin
   FDateInFileName    := false;
   FFileName          := GetDefaultFileName;
   ForceLogDirectory;
+  FFileCreateAttempts := CDefaultFileCreateAttempts;
+  FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
   ThrdLog.Resume;
 end;
 
@@ -80,6 +102,8 @@ begin
   ForceLogDirectory;
   if AOverwriteOldFiles and FileExists(FFileName) then
     SysUtils.DeleteFile(FFileName);
+  FFileCreateAttempts := CDefaultFileCreateAttempts;
+  FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
   ThrdLog.Resume;
 end;
 
@@ -107,6 +131,8 @@ begin
   FDateInFileName    := True;
   FFileName          := ExpandFileName(tiAddTrailingSlash(APath) + ExtractFileName(GetDefaultFileName));
   ForceLogDirectory;
+  FFileCreateAttempts := CDefaultFileCreateAttempts;
+  FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
   ThrdLog.Resume;
 end;
 
@@ -120,9 +146,7 @@ end;
 
 function TtiLogToFile.GetDefaultFileName: TFileName;
 var
-  {$IFDEF MSWINDOWS}
   path: array[0..MAX_PATH - 1] of char;
-  {$ENDIF}
   lFileName : string;
   lFilePath : string;
 begin
@@ -163,10 +187,6 @@ var
   LFileName: string;
   LFileOpenMode: word;
 
-const
-  CFileCreateAttempts = 20;
-  CFileCreateAttemptInterval = 250; // ms
-
 begin
   Result := false;
   LFileName := GetFileName;
@@ -178,7 +198,7 @@ begin
   AFileStream := nil;
   LFileCreateCount := 1;
 
-  while (not Result) and (LFileCreateCount <= CFileCreateAttempts) do
+  while (not Result) and (LFileCreateCount <= FFileCreateAttempts) do
   begin
 
     try
@@ -192,17 +212,33 @@ begin
       AFileStream := TFileStream.Create(LFileName, LFileOpenMode);
       Result := true;
     except
-      on EFCreateError do
-        {$IFDEF MSWINDOWS}
-        if GetLastError <> ERROR_SHARING_VIOLATION then
-        {$ENDIF}
+      on EFOpenError do ;
+      on EFCreateError do ;
+      else
           raise;
     end;
 
     Inc(LFileCreateCount);
-    Sleep(CFileCreateAttemptInterval);
+    Sleep(FFileCreateAttemptInterval);
   end;
 
+end;
+
+procedure TtiLogToFile.Log(const ADateTime, AThreadID, AMessage: string;
+  ASeverity: TtiLogSeverity);
+begin
+  // added for testing purposes to get ClassName
+  inherited Log(ADateTime, AThreadID, Format('(%s) %s', [ClassName, AMessage]), ASeverity);
+end;
+
+procedure TtiLogToFile.SetFileCreateAttemptInterval(const Value: integer);
+begin
+  FFileCreateAttemptInterval := Value;
+end;
+
+procedure TtiLogToFile.SetFileCreateAttempts(const Value: integer);
+begin
+  FFileCreateAttempts := Value;
 end;
 
 procedure TtiLogToFile.WriteToOutput;
@@ -229,7 +265,9 @@ begin
     finally
       LFileStream.Free;
     end;
-  end;
+  end
+  else
+    raise ELogToFile.CreateFmt('Logging timeout trying to access "%s"', [GetFileName]);
 
   ListWorking.Clear;
 end;
