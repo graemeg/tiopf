@@ -115,6 +115,7 @@ type
     procedure DoBeforeSave; virtual;
     procedure DoAfterSave; virtual;
     procedure DoAfterDiscard; virtual;
+    procedure DoAfterUndo; virtual;
     procedure SetupButtons; virtual;
     procedure SelectFirstControl; virtual;
 
@@ -225,8 +226,12 @@ uses
 procedure TFormTIFormMgrForm.FormCreate(Sender: TObject);
 begin
   inherited;
-//  FButtonsSetup := False;
+
   KeyPreview := true;
+
+  {$IFDEF DEBUG}
+  Assert(HelpContext = 0, ClassName + ' help context has been set in the IDE for form "' + ClassName +'"');
+  {$ENDIF}
 
   FAL := TActionList.Create(Self);
   FAL.OnUpdate := ALUpdate;
@@ -412,6 +417,7 @@ begin
   try
     lFocusControl := Screen.ActiveControl;
     SetData(Data);
+    DoAfterUndo;
     if (lFocusControl <> nil) and
        (lFocusControl.CanFocus) then
     begin
@@ -463,6 +469,11 @@ begin
 end;
 
 procedure TFormTIFormMgrForm.DoBeforeSave;
+begin
+  // Implement in concrete
+end;
+
+procedure TFormTIFormMgrForm.DoAfterUndo;
 begin
   // Implement in concrete
 end;
@@ -720,6 +731,11 @@ begin
       begin
         HideActiveForm;
         LForm := pFormClass.Create(nil);
+
+       {$IFDEF DEBUG}
+        Assert(LForm.HelpContext <> 0, LForm.ClassName + ' help context not set <' + LForm.Name +'>');
+       {$ENDIF}
+
         LForm.BorderColor   := BorderColor;
         LForm.OnFormMessage := FOnFormMessageEvent;
         LForm.OnEditsSave   := pOnEditsSave;
