@@ -554,10 +554,12 @@ begin
   inherited;
   FAddressList := TAdrsList.Create;
   FAddressList.Owner:= self;
+  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FAddressList.ItemOwner:= self;
 
   FEAddressList:= TEAdrsList.Create;
   FEAddressList.Owner:= self;
+  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FEAddressList.ItemOwner:= self;
 
 end;
@@ -761,6 +763,7 @@ begin
   inherited;
   FPersonList:= TPeople.Create;
   FPersonList.Owner:= Self;
+  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FPersonList.ItemOwner:= Self;
 end;
 
