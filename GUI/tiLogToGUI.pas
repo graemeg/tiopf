@@ -42,6 +42,7 @@ type
     procedure   FormLogLevelButtonClick(Sender: TObject);
     procedure   DoViewLogFile(Sender: TObject);
     procedure   DoOnPopup(Sender: TObject);
+    procedure WriteToMemo(const AMessage: string);
   protected
     procedure   WriteToOutput; override;
     procedure   SetSevToLog(const AValue: TtiSevToLog); override;
@@ -236,13 +237,29 @@ begin
   end;
 end;
 
+procedure TtiLogToGUI.WriteToMemo(const AMessage: string);
+var
+  i: integer;
+  LLine: string;
+  LCount: integer;
+begin
+  LCount:=tiNumToken(AMessage, CrLf);
+  if LCount = 1 then
+    FMemoLog.Lines.Add(tiTrimTrailingWhiteSpace(AMessage))
+  else
+    for i:= 1 to LCount do
+    begin
+      LLine:= tiTrimTrailingWhiteSpace(tiToken(AMessage, CrLf, i));
+      FMemoLog.Lines.Add(LLine);
+    end;
+end;
 
 procedure TtiLogToGUI.WriteToOutput;
 var
   i : integer;
-  lLogEvent : TtiLogEvent;
-  liStart  : integer;
-  liEnd    : integer;
+  LLogEvent : TtiLogEvent;
+  LPosStart  : integer;
+  LPosEnd    : integer;
 const
   ciMaxLineCount = 200;
 begin
@@ -254,8 +271,8 @@ begin
   if ListWorking.Count > ciMaxLineCount * 2 then
   begin
     FMemoLog.Lines.Clear;
-    liStart := ListWorking.Count - 1 - ciMaxLineCount;
-    liEnd  := ListWorking.Count - 1;
+    LPosStart := ListWorking.Count - 1 - ciMaxLineCount;
+    LPosEnd  := ListWorking.Count - 1;
   end else
   begin
     if FMemoLog.Lines.Count > ciMaxLineCount then
@@ -268,16 +285,15 @@ begin
       SendMessage(FMemoLog.handle, WM_VSCROLL, SB_Bottom, 0);
       {$ENDIF MSWINDOWS}
     end;
-    liStart := 0;
-    liEnd  := ListWorking.Count - 1;
+    LPosStart := 0;
+    LPosEnd  := ListWorking.Count - 1;
   end;
 
-  for i := liStart to liEnd do begin
+  for i := LPosStart to LPosEnd do begin
     if ThrdLog.Terminated then
       Break; //==>
-    lLogEvent := TtiLogEvent(ListWorking.Items[i]);
-    FMemoLog.Lines.Add(lLogEvent.AsStringStripCrLf);
-    //lLogEvent.Free;
+    LLogEvent := TtiLogEvent(ListWorking.Items[i]);
+    WriteToMemo(LLogEvent.AsLeftPaddedString);
   end;
 
   ListWorking.Clear;
