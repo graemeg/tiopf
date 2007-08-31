@@ -140,7 +140,8 @@ type
     FdxPageScroller: TTBXPageScroller;
     FdxContainer : TdxContainer;
     FdxWinXPBarContext  : TdxWinXPBar;
-    FPnlMessage: TtiRoundedPanel;
+    FPnlEmptyMessage: TtiRoundedPanel;
+    FPnlProgress: TtiRoundedPanel;
     FPnlMessageText: TtiRoundedPanel;
     FlblMessage: TLabel;
 
@@ -211,6 +212,8 @@ type
     function GetStatusPannelMessage: string;
     procedure SetStatusPannelMessage(const AValue: string);
     procedure SetFormInfoMessage(const AMessage: string);
+    procedure DoProgressVisibleChange(const AVisible: Boolean);
+    procedure ArrangeMessagePanels;
    public
      constructor Create(     AMainForm : TForm;
                               AWorkListFormClass : TFormTIFormMgrFormClass;
@@ -221,11 +224,12 @@ type
      destructor  Destroy; override;
      property    MainForm : TForm read FMainForm;
      property    MainMenuBar: TTBXToolbar read FMainMenuBar;
-     property    DPProgressBar : TTBXDockablePanel read FdpMessageBar;
+     property    DPMessageBar : TTBXDockablePanel read FdpMessageBar;
      property    DPMenuSideBar : TTBXDockablePanel read FdpMenuSidebar;
      property    TBXHelpMenu : TTBXSubmenuItem read FtbxHelpMenu;
      property    ParentPnl : TPanel read GetParentPnl;
      property    HelpAvailable: Boolean read FHelpAvailable Write FHelpAvailable;
+     property    HelpFileName: string read FHelpFileName;
      property    FormMgr: TtiFormMgr read FFormMgr;
      property    ApplicationBusyToolbarImage: TtiApplicationBusyToolbarImage read FApplicationBusyToolbarImage;
 
@@ -894,6 +898,8 @@ begin
   FdpMessageBar.Top := 0;
   FdpMessageBar.BorderSize := 1;
   FdpMessageBar.Caption := '';
+  FdpMessageBar.ShowCaption := False;
+  FdpMessageBar.ShowCaptionWhenDocked := False;
   FdpMessageBar.Color := clWhite;
   FdpMessageBar.DockedWidth := 123;
   FdpMessageBar.DockedHeight := cMessagePnlHeight;
@@ -908,28 +914,39 @@ begin
   FdpMessageBar.CloseButtonWhenDocked := false;
   FdpMessageBar.DockMode := dmCannotFloatOrChangeDocks;
 
-  FPnlMessage:= TtiRoundedPanel.Create(FMainForm);
-  FPnlMessage.Parent:= FdpMessageBar;
-  FPnlMessage.Align:= alClient;
-  FPnlMessage.Color := clWhite;
-  FPnlMessage.BorderColor:= clSkyBlue;
-  FPnlMessage.HelpContext := FDefHelpContext;
-  FPnlMessage.CornerRadius := 5;
+  FPnlProgress:= TtiRoundedPanel.Create(FMainForm);
+  FPnlProgress.Visible := False;
+  FPnlProgress.Parent:= FdpMessageBar;
+  FPnlProgress.Align:= alClient;
+  FPnlProgress.Color := clPaleBlue;
+  FPnlProgress.BorderColor:= clSkyBlue;
+  FPnlProgress.HelpContext := FDefHelpContext;
+  FPnlProgress.CornerRadius := 5;
+
+  FPnlEmptyMessage := TtiRoundedPanel.Create(FMainForm);
+  FPnlEmptyMessage.Visible := False;
+  FPnlEmptyMessage.Parent := FdpMessageBar;
+  FPnlEmptyMessage.Align := alClient;
+  FPnlEmptyMessage.Color := clWhite;
+  FPnlEmptyMessage.BorderColor := clSkyBlue;
+  FPnlEmptyMessage.HelpContext := FDefHelpContext;
+  FPnlEmptyMessage.CornerRadius := 5;
 
   FPnlMessageText:= TtiRoundedPanel.Create(FMainForm);
   FPnlMessageText.Visible := False;
-  FPnlMessageText.Parent:= FPnlMessage;
-  FPnlMessageText.Align:= alRight;
+  FPnlMessageText.Parent:= FdpMessageBar;
+  FPnlMessageText.Align:= alClient;
   FPnlMessageText.Color := clYellow;
-  FPnlMessageText.BorderColor:= clBlack;
+  FPnlMessageText.BorderColor:= clSkyBlue;
   FPnlMessageText.HelpContext := FDefHelpContext;
   FPnlMessageText.CornerRadius := 5;
 
-  FlblMessage:= TLabel.Create(FPnlMessage);
+  FlblMessage:= TLabel.Create(FPnlMessageText);
   FlblMessage.Parent := FPnlMessageText;
+  FlblMessage.AutoSize := False;
+  FlblMessage.WordWrap := True;
   FlblMessage.Align  := alClient;
   FlblMessage.Font.Style := [fsBold];
-  FlblMessage.WordWrap := True;
   FlblMessage.ParentColor := True;
 
   ltbDockRight:= TTBXDock.Create(FMainForm);
@@ -955,17 +972,19 @@ begin
 
   TBXSetTheme('OfficeXP');
 
-  dpProgressBar.Height                := cMessagePnlHeight; // 46 Will show 2 progress bars
+  DPMessageBar.Height                 := cMessagePnlHeight; // 46 Will show 2 progress bars
   gFormThreadProgress.BorderStyle     := bsNone;
-  gFormThreadProgress.Parent          := FPnlMessage;
+  gFormThreadProgress.Parent          := FPnlProgress;
+  gFormThreadProgress.Visible         := False;
   gFormThreadProgress.PanelBevelInner := bvNone;
   gFormThreadProgress.PanelBevelOuter := bvNone;
   gFormThreadProgress.Align           := alClient;
-  gFormThreadProgress.Color           := clWhite;
+  gFormThreadProgress.Color           := clPaleBlue;
   gFormThreadProgress.ProgressBarColor := clSilver; //clAppWorkSpace;
-  gFormThreadProgress.ColumnCount     := 2;
+  gFormThreadProgress.ColumnCount     := 0;
   gFormThreadProgress.Width           := FdpMessageBar.ClientWidth;
   gFormThreadProgress.HelpContext     := FDefHelpContext;
+  gFormThreadProgress.OnVisibleChange := DoProgressVisibleChange;
 
   Application.OnHint := HintToStatusBar;
   Application.ShowHint:= True;
@@ -978,7 +997,7 @@ begin
   FtbMultiDockBottom.OnResize := OnMainFormReSize;
   ltbDockRight.OnResize := OnMainFormReSize;
   ltbMultiDockRight.OnResize := OnMainFormReSize;
-  
+
 end;
 
 procedure TtiApplicationMenuSystem.CreateMenuSidebar;
@@ -1112,7 +1131,7 @@ begin
     FimgWallPaper.Width,
     FimgWallPaper.Height
  );
-  FPnlMessageText.Width := FpnlParent.Width + 4;
+  ArrangeMessagePanels;
 end;
 
 procedure TtiApplicationMenuSystem.SetWallpaperImageResName(const pResName: string);
@@ -1505,7 +1524,8 @@ begin
     FlblMessage.Caption := AMessage;
     FpnlMessageText.Visible := True;
   end;
-  gFormThreadProgress.Visible := not FpnlMessageText.Visible;
+
+  ArrangeMessagePanels;
 end;
 
 procedure TtiApplicationMenuSystem.SetMenuSideBarWidth(const AValue: integer);
@@ -1662,6 +1682,34 @@ procedure TtiApplicationMenuSystem.OnMainMenuBarResize(Sender: TObject);
 begin
   if Assigned(FApplicationBusyToolbarImage) then
     FApplicationBusyToolbarImage.Resize;
+end;
+
+// Thread progress and message text panels need to co-exist.
+// If only one visible then use all available space, else share equally.
+procedure TtiApplicationMenuSystem.ArrangeMessagePanels;
+begin
+  Assert(FPnlProgress.Parent <> nil, 'Progress panel parent not assigned');
+  if gFormThreadProgress.Visible and (not FPnlMessageText.Visible) then
+    FPnlProgress.Align := alClient
+  else if FPnlMessageText.Visible and (not gFormThreadProgress.Visible) then
+    FPnlMessageText.Align := alClient
+  else if gFormThreadProgress.Visible and FPnlMessageText.Visible then
+  begin
+    FPnlProgress.Align := alLeft;
+    FPnlProgress.Width := FPnlProgress.Parent.ClientWidth div 2;
+  end;
+
+  FPnlProgress.Visible := gFormThreadProgress.Visible;
+  FPnlEmptyMessage.Visible := (not gFormThreadProgress.Visible) and
+      (not FPnlMessageText.Visible);
+
+  if gFormThreadProgress.Visible and FPnlMessageText.Visible then
+    FPnlMessageText.Align := alClient;
+end;
+
+procedure TtiApplicationMenuSystem.DoProgressVisibleChange(const AVisible: Boolean);
+begin
+  ArrangeMessagePanels;
 end;
 
 initialization
