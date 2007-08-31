@@ -46,6 +46,7 @@ uses
   ,tiPool_tst
   ,tiQueue_TST
   ,tiOID_TST
+  ,tiLogToFile_TST
   {$IFDEF MSWINDOWS}
   ,tiWin32_TST
   ,tiGUIUtils_TST
@@ -137,6 +138,7 @@ begin
   tiXML_TST.RegisterTests;
   tiCriteria_TST.RegisterTests;
   tiTokenLibrary_TST.RegisterTests;
+  tiLogToFile_TST.RegisterTests;
 
   {$IFDEF FPC}
   tiOPFFBL_TST.RegisterTests;
