@@ -88,7 +88,6 @@ uses
   {$ENDIF}
   ,tiLog
   ,tiUtils
-  ,Forms
   ,tiQuery
   {$IFDEF DELPHI5}
   ,FileCtrl

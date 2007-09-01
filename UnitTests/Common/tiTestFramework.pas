@@ -1743,12 +1743,6 @@ begin
   end;
 end;
 
-{$IFDEF FPC}
-  // DUnit compatibility interface
-  {$I DUnitCompatableInterface.inc}
-{$ENDIF}
-
-
 { TtiPerformanceCounter }
 
 constructor TtiPerformanceCounter.Create;

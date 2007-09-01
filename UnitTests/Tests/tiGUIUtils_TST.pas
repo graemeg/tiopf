@@ -1,5 +1,7 @@
 unit tiGUIUtils_TST;
 
+{$I tiDefines.inc}
+
 interface
 uses
   tiTestFramework

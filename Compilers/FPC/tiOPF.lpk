@@ -36,7 +36,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="3"/>
-    <Files Count="47">
+    <Files Count="48">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -225,6 +225,10 @@
         <Filename Value="../../Core/tiINI.pas"/>
         <UnitName Value="tiINI"/>
       </Item47>
+      <Item48>
+        <Filename Value="../../Options/tiQueue.pas"/>
+        <UnitName Value="tiQueue"/>
+      </Item48>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="2">

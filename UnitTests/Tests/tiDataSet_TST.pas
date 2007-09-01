@@ -3,7 +3,11 @@ unit TiDataset_TST;
 interface
 
 uses
+  {$IFDEF FPC}
+  testregistry,
+  {$ELSE}
   TestFramework,
+  {$ENDIF}
   tiDataset,
   Db,
   Variants,

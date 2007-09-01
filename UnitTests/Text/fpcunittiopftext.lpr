@@ -29,6 +29,7 @@ begin
   App.Title := 'FPCUnit Console test runner';
 
   tiDUnitDependencies.RegisterTests;
+  tiDUnitDependencies.RemoveUnSelectedPersistenceLayerSetups;
   
   App.Run;
   App.Free;

@@ -9,6 +9,8 @@ unit tiLogToFile_TST;
 
 }
 
+ {$I tiDefines.inc}
+ 
 interface
 
 uses
@@ -32,12 +34,14 @@ implementation
 
 uses
    tiDUnitDependencies
+  {$IFDEF MSWINDOWS}
   ,Windows
+  {$ENDIF}
   ,tiConstants
   ;
 
 const
-  CTestLogFileName = '..\Data\';
+  CTestLogFileName = '..' + PathDelim + 'Data' + PathDelim;
 
 procedure RegisterTests;
 begin
@@ -47,7 +51,7 @@ end;
 
 procedure TestTtiLogToFile.SetUp;
 begin
-  FmtStr(FLogFileName, '%s\%s', [TempDirectory, 'TestTtiLogToFile.log']);
+  FmtStr(FLogFileName, '%s' + PathDelim + '%s', [TempDirectory, 'TestTtiLogToFile.log']);
 end;
 
 procedure TestTtiLogToFile.TearDown;

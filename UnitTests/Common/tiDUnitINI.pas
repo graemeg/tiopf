@@ -129,7 +129,7 @@ class function TDUntiLocalSettings.FileName: string;
 begin
   Result := tiGetAppDataDirPrivate;
   Result:= Copy(Result, 1, tiPosR(PathDelim, Result)-1);
-  Result:= Result + PathDelim + 'DUnitTIOPF\DUnitTIOPF.ini';
+  Result:= Result + PathDelim + 'DUnitTIOPF' + PathDelim + 'DUnitTIOPF.ini';
 end;
 
 function TDUntiLocalSettings.GetAppDataDirPublic: string;

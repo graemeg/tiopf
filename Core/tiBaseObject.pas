@@ -66,9 +66,7 @@ type
 
   TtiBaseObject = class(TObject)
   private
-  {$IFDEF OBJECT_TRACKING}
     FSerialNo: integer;
-  {$ENDIF OBJECT_TRACKING}
   public
     constructor Create;
     destructor Destroy; override;
@@ -110,8 +108,8 @@ type
          FREEMEM_CHECKING}
     procedure AskForBreakPointOnFree;
     class function GetLiveObjectCount: cardinal;
-    property SerialNumber: integer read FSerialNo;
     {$ENDIF}
+    property SerialNumber: integer read FSerialNo;
 
   end;
 

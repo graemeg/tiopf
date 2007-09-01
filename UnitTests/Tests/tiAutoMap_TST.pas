@@ -171,7 +171,7 @@ uses
   ,tiConstants
   ,tiQuery
   ,tiUtils
-  ,tiDialogs
+//  ,tiDialogs
   ,tiOIDGUID
   ,Contnrs
   ,tiLog
@@ -342,8 +342,8 @@ begin
                      'First string' + Cr(2) + lDataStr1;
         lDataStr2 := 'Strings are not the same' + Cr(2) +
                      'First string' + Cr(2) + lDataStr2;
-        tiShowString(lDataStr1);
-        tiShowString(lDataStr2);
+//        tiShowString(lDataStr1);
+//        tiShowString(lDataStr2);
       end;
       Check(lDataStr1 = lDataStr2, 'Read failed');
     finally

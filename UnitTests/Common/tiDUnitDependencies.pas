@@ -27,9 +27,11 @@ implementation
 uses
    SysUtils
   ,tiLog
-  ,tiLogToGUI
+//  ,tiLogToGUI
   ,tiLogToFile
+  {$IFDEF OBJECT_TRACKING}
   ,tiBaseObject_TST
+  {$ENDIF}
   ,tiOPFManager
   ,tiDUnitINI
   ,tiConstants
@@ -50,9 +52,9 @@ uses
   {$IFDEF MSWINDOWS}
   ,tiWin32_TST
   ,tiGUIUtils_TST
+  ,tiDataSet_TST
   {$ENDIF}
   ,tiDataBuffer_TST
-  ,tiDataSet_TST
   ,tiTextParser_TST
   ,tiTextParserStructCSV_TST
   ,tiSyncObjs_TST
@@ -103,15 +105,17 @@ const
 procedure RegisterTests;
 begin
 
-  if not IsConsole then
-    gLog.RegisterLog(TtiLogToGUI.Create);
+//  if not IsConsole then
+//    gLog.RegisterLog(TtiLogToGUI.Create);
   gLog.RegisterLog(TtiLogToFile.CreateWithFileName('', '', True));
 
   // See ..\Bin\DUnitTIOPF.ini for details on configuration
   tstPerFramework_BOM.RegisterMappings; // Register the OO-DB Mappings to be tested
 
   // These are all the 'non persistence' tests
+  {$IFDEF OBJECT_TRACKING}
   tiBaseObject_tst.RegisterTests;
+  {$ENDIF}
   tiUtils_TST.RegisterTests;
   tiRTTI_TST.RegisterTests;
   tiVisitor_TST.RegisterTests;
@@ -126,9 +130,9 @@ begin
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
+  tiDataSet_TST.RegisterTests;
   {$ENDIF}
   tiDataBuffer_TST.RegisterTests;
-  tiDataSet_TST.RegisterTests;
   tiTextParser_TST.RegisterTests;
   tiTextParserStructCSV_TST.RegisterTests;
   tiQuery_TST.RegisterTests;

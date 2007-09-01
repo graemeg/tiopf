@@ -230,7 +230,6 @@ uses
   ,Windows
   {$ENDIF}
   ,Contnrs
-  ,Forms
   ,TypInfo
   ,tiLog
   ,tiUtils

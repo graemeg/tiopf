@@ -200,7 +200,6 @@ uses
   tiUtils
   ,tiLog
   ,tiConstants
-  ,tiDialogs
   {$IFDEF MSWINDOWS}
   ,tiWin32
   ,Windows
@@ -214,8 +213,6 @@ uses
   ,FileCtrl
   {$ENDIF}
   ,TypInfo
-  ,ClipBrd
-  ,Forms
   ,DateUtils
  ;
 
@@ -2398,7 +2395,7 @@ end;
 procedure TTestTIUtils.tiGetAppDataDirPublic;
 begin
   {$IFDEF UNIX}
-  CheckEquals('/etc', tiUtils.tiGetAppConfigDir(True), 'Failed on 2');
+  CheckEquals('/etc', tiUtils.tiGetAppDataDirPublic, 'Failed on 2');
   {$ELSE}
   CheckEquals(
     FLocalINISettings.AppDataDirPublic,

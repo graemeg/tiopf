@@ -67,7 +67,6 @@ uses
   ,Windows
   {$ENDIF}
   ,SysUtils
-  ,Forms
  ;
 
 const

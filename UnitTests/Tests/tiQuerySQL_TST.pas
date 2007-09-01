@@ -47,14 +47,12 @@ uses
   ,tiLog
   ,tiObject
   ,tiUtils
-  ,Forms
   ,tiConstants
   ,TypInfo
   {$IFNDEF DELPHI6ORABOVE}
   ,FileCtrl
   {$ENDIF}
   ,tiTestFramework
-  ,tiDialogs // for debugging
   ,tiDUnitDependencies
   ,tiQuery
  ;
