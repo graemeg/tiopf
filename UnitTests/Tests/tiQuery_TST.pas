@@ -227,6 +227,7 @@ implementation
 uses
    tiOPFManager
   {$IFDEF MSWINDOWS}
+  ,Forms
   ,Windows
   {$ENDIF}
   ,Contnrs
@@ -837,19 +838,15 @@ procedure TTestTIDatabase.DoThreadedDBConnectionPool(pThreadCount: integer);
     lAllFinished := false;
     while not lAllFinished do
     begin
-Log('_WaitForThreads: 1', lsDebug);
       lAllFinished := true;
       for i := 0 to AList.Count - 1 do
       begin
-Log('_WaitForThreads: 2', lsDebug);
         lAllFinished := lAllFinished and TThrdDBConnectionPoolTest(AList.Items[i]).Done;
       end;
       Sleep(100);
-Log('_WaitForThreads: 3', lsDebug);
       {$IFNDEF FPC}
       Application.ProcessMessages;
       {$ENDIF}
-Log('_WaitForThreads: 4', lsDebug);
     end;
   end;
 var
@@ -864,13 +861,9 @@ begin
   try
     lList := TObjectList.Create;
     try
-Log('_CreateThreads...', lsDebug);
       _CreateThreads(lList, pThreadCount, cuIterations);
-Log('_StartThreads...', lsDebug);
       _StartThreads(lList);
-Log('_WaitForThreads...', lsDebug);
       _WaitForThreads(lList);
-Log('DONE!', lsDebug);
     finally
       lList.Free;
     end;
