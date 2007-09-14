@@ -11,6 +11,7 @@ type
   TtiWebServerConfig = class(TtiBaseObject)
   private
     FINI: TtiINIFile;
+    function GetPort: integer;
   protected
     function  GetRegistryValue(const AName, ADefault: string): string; virtual;
     function  GetINIFileName: string; virtual;
@@ -37,6 +38,8 @@ type
     property    PathToStaticPages: string Read GetPathToStaticPages;
     property    PathToCGIBin: string Read GetPathToCGIBin;
 
+    property    Port: integer read GetPort;
+
   end;
 
 implementation
@@ -56,18 +59,19 @@ const
   cINILog_PathToSharedFiles = 'PathToSharedFiles';
   cINILog_DefaultPathToSharedFiles = 'C:\TechInsite\Log';
   cINILog_CGIExtensionLogging = 'CGIExtensionLogging';
-  cINIService_PathToStaticPages = 'PathToStaticPages';
-  cINIService_PathToCGIBin = 'PathToCGIBin';
-
 
   cINIService = 'Web Server';
   cINIService_ShortName = 'ShortName';
   cINIService_DisplayName  = 'DiaplayName';
   cINIService_ShortNameDefault = 'tiDBWebServer';
   cINIService_DisplayNameDefault  = 'TechInsite Web Server';
-
+  cINIService_PathToStaticPages = 'PathToStaticPages';
+  cINIService_PathToCGIBin = 'PathToCGIBin';
   cINIService_DefaultPathToStaticPages = 'StaticPages';
   cINIService_DefaultPathToCGIBin = 'CGI-Bin';
+
+  cINIService_IdentPort = 'Port';
+  cINIService_DefaultPort = 80;
 
 { TtiWebServerConfig }
 
@@ -157,6 +161,11 @@ begin
     Result:= tiGetEXEPath + PathDelim + cINIService_DefaultPathToStaticPages;
     INI.WriteString(cINIService, cINIService_PathToStaticPages, Result);
   end;
+end;
+
+function TtiWebServerConfig.GetPort: integer;
+begin
+  Result:= INI.ReadInteger(cINIService, cINIService_IdentPort, cINIService_DefaultPort);
 end;
 
 end.

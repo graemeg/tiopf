@@ -73,8 +73,20 @@ begin
   Result := utiDBProxy;
 end;
 
+function GetAppServerPort: integer;
+var
+  LCfg: TtiDBProxyServerConfig;
+begin
+  LCfg:= TtiDBProxyServerConfig.Create;
+  try
+    result:= LCfg.Port;
+  finally
+    LCfg.Free;
+  end;
+end;
+
 initialization
-  utiDBProxy := TtiDBProxyServer.Create(80);
+  utiDBProxy := TtiDBProxyServer.Create(GetAppServerPort);
 
 finalization
   utiDBProxy.Free;
