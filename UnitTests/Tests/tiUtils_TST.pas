@@ -89,12 +89,14 @@ type
     procedure tiDateTimeAsIntlDateStor;
     procedure tiDateTimeToStr;
     procedure tiDateToAusFinancialYear;
+    procedure tiAusFinancialYearDayCount;
     procedure tiDateToPreviousWeekDayDate;
     procedure tiDateToStr;
     procedure tiDateWithinRange;
     procedure tiRoundDateToPreviousMinute;
     procedure tiDeleteFiles;
     procedure tiDirectoryTreeToStringList;
+    procedure tiEnclose;
     procedure tiEncodeDecodeWordBase26;
     procedure tiExtractDirToLevel;
     procedure tiExtractExtension;
@@ -141,6 +143,7 @@ type
     procedure tiPadL;
     procedure tiPadR;
     procedure tiPosR;
+    procedure tiQuote;
     procedure tiReadFileDateSize;
     procedure tiRemoveCrLf;
     procedure tiRemoveDirectory;
@@ -463,6 +466,16 @@ begin
   CheckEquals(7, tiUtils.tiPosR('abc', 'xxxxxxabc'), 'Failed on 7');
 end;
 
+
+procedure TTestTIUtils.tiQuote;
+begin
+  CheckEquals('""', tiUtils.tiQuote(''), '#1');
+  CheckEquals('"', tiUtils.tiQuote('"'), '#2');
+  CheckEquals('""', tiUtils.tiQuote('""'), '#3');
+  CheckEquals('"A"', tiUtils.tiQuote('A'), '#4');
+  CheckEquals('"A,B"', tiUtils.tiQuote('A,B'), '#5');
+  CheckEquals('"A,B"', tiUtils.tiQuote('"A,B"'), '#6');
+end;
 
 procedure TTestTIUtils.tiWildcardMatch;
 begin
@@ -2357,6 +2370,27 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiEnclose;
+begin
+  // General behaviour specifying expected defaults
+  CheckEquals('::', tiUtils.tiEnclose('', ':', '', False), '#1');
+  CheckEquals(':A:', tiUtils.tiEnclose('A', ':', '', False), '#2');
+  CheckEquals(':A B:', tiUtils.tiEnclose('A B', ':', '', False), '#3');
+  CheckEquals(':A B:', tiUtils.tiEnclose(':A B:', ':', '', False), '#4');
+  // Using defaults
+  CheckEquals('::', tiUtils.tiEnclose('', ':'), '#5');
+  CheckEquals(':A:', tiUtils.tiEnclose('A', ':'), '#6');
+  CheckEquals(':A B:', tiUtils.tiEnclose('A B', ':'), '#7');
+  CheckEquals(':A B:', tiUtils.tiEnclose(':A B:', ':'), '#8');
+  // Changing defaults
+  CheckEquals('[]', tiUtils.tiEnclose('', '[', ']'), '#9');
+  CheckEquals('[A B]', tiUtils.tiEnclose('A B', '[', ']'), '#10');
+  CheckEquals('[]', tiUtils.tiEnclose('', '[', ']', True), '#11');
+  CheckEquals('[A B]', tiUtils.tiEnclose('A B', '[', ']', True), '#12');
+  CheckEquals('::A B::', tiUtils.tiEnclose(':A B:', ':', '', True), '#13');
+  CheckEquals('[[A B]]', tiUtils.tiEnclose('[A B]', '[', ']', True), '#14');
+end;
+
 procedure TTestTIUtils.tiEncodeDecodeWordBase26;
 var
   i  : Integer;
@@ -2651,6 +2685,11 @@ begin
   CheckEquals(EncodeDate(2005, 06, 30), tiUtils.tiYearToEndAusFinancialYear(2005));
 end;
 
+
+procedure TTestTIUtils.tiAusFinancialYearDayCount;
+begin
+
+end;
 
 procedure TTestTIUtils.tiAusFinancialYearToString;
 begin
