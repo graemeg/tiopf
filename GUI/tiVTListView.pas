@@ -2315,7 +2315,8 @@ begin
     Exit; //==>
   end;
 
-  if VT.GetNodeLevel(Node) < 2 then
+  if (VT.GetNodeLevel(Node) < 2) and
+     (Not Assigned(FOnBeforeCellPaint)) then
   begin
     RootNode := VT.NodeParent[Node];
     if not Assigned(RootNode) then
@@ -2537,6 +2538,7 @@ begin
   begin
     LData := GetObjectFromNode(ANode);
     FOnBeforeCellPaint(Self, ATargetCanvas, LData, AColumn, ANode);
+    ATargetCanvas.FillRect(ACellRect);
   end;
 end;
 
