@@ -289,6 +289,10 @@ type
   {: Converts a date to its financial year
      tiDateToAusFinancialYear(EncodeDate(2005/03/01)) will return 2005}
   function tiDateToAusFinancialYear(ADate: TDateTime): Word;
+  {: Count the number of days in an Australian financial year
+     (allowing for leap years)}
+  function tiAusFinancialYearDayCount(const AYear: Word): Word;
+
   {: Round a date time to the previous hole minute}
   function tiRoundDateToPreviousMinute(const ADateTime: TDateTime): TDateTime;
 
@@ -847,6 +851,16 @@ begin
     Result := lY
   else
     Result := lY + 1;
+end;
+
+function tiAusFinancialYearDayCount(const AYear: Word): Word;
+var
+  LStart: TDateTime;
+  LEnd: TDateTime;
+begin
+  LStart:= EncodeDate(AYear-1, 07, 01);
+  LEnd:= EncodeDate(AYear, 07, 01);
+  result:= Trunc(LEnd-LStart);
 end;
 
 function tiRoundDateToPreviousMinute(const ADateTime: TDateTime): TDateTime;
@@ -2888,10 +2902,10 @@ begin
     LSuffix := APrefix
   else
     LSuffix := ASuffix;
-  if AEncloseIfPresent or (LeftStr(AString, Length(APrefix)) = APrefix) then
+  if AEncloseIfPresent or (LeftStr(AString, Length(APrefix)) <> APrefix) then
     Result := Result + APrefix;
   Result := Result + AString;
-  if AEncloseIfPresent or (RightStr(AString, Length(LSuffix)) = LSuffix) then
+  if AEncloseIfPresent or (RightStr(AString, Length(LSuffix)) <> LSuffix) then
     Result := Result + LSuffix;
 end;
 
