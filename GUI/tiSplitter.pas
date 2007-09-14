@@ -156,6 +156,7 @@ const
 implementation
 uses
   SysUtils
+  ,Math
  ;
 
 const
@@ -464,23 +465,34 @@ begin
 end;
 
 procedure TtiSplitterPanel.SetPosition(const AValue: integer);
+var
+  LValue: integer;
 begin
   case FSplitterOrientation of
-  spoVertical  : FPanel1.Width := AValue;
-  spoHorizontal : FPanel1.Height := AValue;
+  spoVertical  :  begin
+                   LValue:= Min(AValue, Trunc(ClientWidth * 0.9));
+                   FPanel1.Width := LValue;
+                  end;
+  spoHorizontal : begin
+                    LValue:= Min(AValue, Trunc(ClientHeight * 0.9));
+                    FPanel1.Height := LValue;
+                  end;
   end;
   FiSaveSplitterPosPercent := SplitterPosPercent;
 end;
 
 procedure TtiSplitterPanel.SetPositionPercent(const AValue: integer);
+var
+  LValue: integer;
 begin
-  if SplitterPosPercent = AValue then
+  LValue:= Min(AValue, 95);
+  if SplitterPosPercent = LValue then
     Exit; //==>
   case FSplitterOrientation of
-  spoVertical  : FPanel1.Width := (Self.ClientWidth  - FSplitter.Width) * AValue div 100;
-  spoHorizontal : FPanel1.Height := (Self.ClientHeight - FSplitter.Height) * AValue div 100;
+  spoVertical  : FPanel1.Width := (Self.ClientWidth  - FSplitter.Width) * LValue div 100;
+  spoHorizontal : FPanel1.Height := (Self.ClientHeight - FSplitter.Height) * LValue div 100;
   end;
-  if FiSaveSplitterPosPercent <> AValue then
+  if FiSaveSplitterPosPercent <> LValue then
     FiSaveSplitterPosPercent := SplitterPosPercent;
 end;
 
