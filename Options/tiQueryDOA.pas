@@ -26,7 +26,6 @@ type
   private
     FOracleSession: TOracleSession;
     FInTransaction : boolean;
-    property OracleSession : TOracleSession read FOracleSession write FOracleSession;
   protected
     procedure SetConnected(AValue : boolean); override;
     function  GetConnected : boolean; override;
@@ -34,6 +33,7 @@ type
   public
     constructor     Create; override;
     destructor      Destroy; override;
+    property        OracleSession : TOracleSession read FOracleSession;
     class procedure CreateDatabase(const ADatabaseName, AUserName,APassword: string); override;
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean; override;
     procedure       StartTransaction; override;

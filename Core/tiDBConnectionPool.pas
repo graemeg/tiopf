@@ -71,7 +71,7 @@ type
     function    Lock(      const ADatabaseAlias : string): TtiDatabase; reintroduce;
     procedure   UnLock(      const ADatabaseAlias : string; const ADatabase : TtiDatabase); reintroduce;
     procedure   Connect(     const ADatabaseAlias, ADatabaseName, AUserName, APassword : string; const AParams : string);
-    procedure   AddInstance( const ADatabaseAlias, ADatabaseName, AUserName, psUserPassword : string; const AParams : string);
+    procedure   AddInstance( const ADatabaseAlias, ADatabaseName, AUserName, APassword : string; const AParams : string);
     function    Find(        const ADatabaseAlias : string): TtiDBConnectionPool; reintroduce;
     procedure   Disconnect(  const ADatabaseAlias : string);
     procedure   DisconnectAll;
@@ -330,13 +330,14 @@ begin
 end;
 
 procedure TtiDBConnectionPools.AddInstance(const ADatabaseAlias, ADatabaseName,
-  AUserName, psUserPassword, AParams: string);
+  AUserName, APassword, AParams: string);
 var
   lDBConnectionPool : TtiDBConnectionPool;
   LDBConnectionParams: TtiDBConnectionParams;
 begin
   LDBConnectionParams.DatabaseName:= ADatabaseName;
   LDBConnectionParams.UserName:= AUserName;
+  LDBConnectionParams.Password:= APassword;
   LDBConnectionParams.Params:= AParams;
   FCritSect.Enter;
   try
@@ -401,7 +402,7 @@ var
   i : integer;
 begin
   for i := Count - 1 downto 0 do
-    Disconnect(Items[i].DBConnectParams.DatabaseName);
+    Disconnect(Items[i].DatabaseAlias);
 end;
 
 end.

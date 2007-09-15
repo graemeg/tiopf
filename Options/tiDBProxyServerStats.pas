@@ -225,7 +225,7 @@ begin
     FParams.SetValueAsString( cFieldSummaryPersistenceLayerName, gTIOPFManager.DefaultPerLayerName);
     FParams.SetValueAsString( cFieldSummaryDatabaseName, gTIOPFManager.DefaultDBConnectionName);
     FParams.SetValueAsString( cFieldSummaryUserName, gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.UserName);
-    FParams.SetValueAsString( cFieldSummaryPassword,  tiReplicate('*', Length(gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.UserPassword)));
+    FParams.SetValueAsString( cFieldSummaryPassword,  tiReplicate('*', Length(gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.Password)));
     FParams.SetValueAsInteger(cFieldSummaryTotalDBConnections, lTotalDBConnections);
     FParams.SetValueAsInteger(cFieldSummaryLockedDBConnections, lLockedDBConnections);
     FParams.SetValueAsInteger(cFieldSummaryAvailableDBConnections, lAvailableDBConnections);
