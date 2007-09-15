@@ -86,11 +86,11 @@ type
     FTiDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
     FPerLayerName: string;
     FModuleID: HModule;
-    FDBConnectionPools: TDBConnectionPools;
-    FDefaultDBConnectionPool : TDBConnectionPool;
+    FDBConnectionPools: TtiDBConnectionPools;
+    FDefaultDBConnectionPool : TtiDBConnectionPool;
     FNextOIDMgr: TNextOIDMgr;
     FDynamicallyLoaded: boolean;
-    function  GetDefaultDBConnectionPool: TDBConnectionPool;
+    function  GetDefaultDBConnectionPool: TtiDBConnectionPool;
     function  GetDefaultDBConnectionName: string;
     procedure SetDefaultDBConnectionName(const AValue: string);
   protected
@@ -111,8 +111,8 @@ type
 
     property  ModuleID                   : HModule read FModuleID write FModuleID;
     property  DefaultDBConnectionName    : string read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
-    property  DefaultDBConnectionPool    : TDBConnectionPool read GetDefaultDBConnectionPool;
-    property  DBConnectionPools          : TDBConnectionPools read FDBConnectionPools;
+    property  DefaultDBConnectionPool    : TtiDBConnectionPool read GetDefaultDBConnectionPool;
+    property  DBConnectionPools          : TtiDBConnectionPools read FDBConnectionPools;
     property  NextOIDMgr                 : TNextOIDMgr read FNextOIDMgr;
 
     function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean;
@@ -135,8 +135,7 @@ begin
   inherited;
   FTiDBConnectionPoolDataClass := TtiDBConnectionPoolDataAbs;
   ModuleID := 0;
-  FDBConnectionPools:= TDBConnectionPools.Create;
-  FDBConnectionPools.Owner := Self;
+  FDBConnectionPools:= TtiDBConnectionPools.Create(Self);
   FNextOIDMgr := TNextOIDMgr.Create;
   {$IFNDEF OID_AS_INT64}
   FNextOIDMgr.Owner := Self;
@@ -258,7 +257,7 @@ end;
 
 function TtiPersistenceLayer.GetDefaultDBConnectionName: string;
 var
-  lDBConnectionPool : TDBConnectionPool;
+  lDBConnectionPool : TtiDBConnectionPool;
 begin
   lDBConnectionPool := DefaultDBConnectionPool;
   if lDBConnectionPool = nil then
@@ -266,12 +265,12 @@ begin
     result := '';
     Exit; //==>
   end;
-  result := lDBConnectionPool.DBConnectParams.ConnectionName;
+  result := lDBConnectionPool.DatabaseAlias;
 end;
 
-function TtiPersistenceLayer.GetDefaultDBConnectionPool: TDBConnectionPool;
+function TtiPersistenceLayer.GetDefaultDBConnectionPool: TtiDBConnectionPool;
 begin
-  Assert(FDefaultDBConnectionPool.TestValid(TDBConnectionPool, true), cTIInvalidObjectError);
+  Assert(FDefaultDBConnectionPool.TestValid(TtiDBConnectionPool, true), cTIInvalidObjectError);
   if FDefaultDBConnectionPool <> nil then
   begin
     result := FDefaultDBConnectionPool;
@@ -285,7 +284,7 @@ begin
   end;
 
   result := DBConnectionPools.Items[0];
-  Assert(Result.TestValid(TDBConnectionPool), cTIInvalidObjectError);
+  Assert(Result.TestValid(TtiDBConnectionPool), cTIInvalidObjectError);
 end;
 
 function TtiPersistenceLayer.GetOwner: TtiPersistenceLayers;
@@ -296,7 +295,7 @@ end;
 procedure TtiPersistenceLayer.SetDefaultDBConnectionName(const AValue: string);
 begin
   FDefaultDBConnectionPool := FDBConnectionPools.Find(AValue);
-  Assert(FDefaultDBConnectionPool.TestValid(TDBConnectionPool, true), cTIInvalidObjectError);
+  Assert(FDefaultDBConnectionPool.TestValid(TtiDBConnectionPool, true), cTIInvalidObjectError);
 end;
 
 procedure TtiPersistenceLayer.SetOwner(const AValue: TtiPersistenceLayers);
@@ -453,7 +452,6 @@ function TtiPersistenceLayers.LockDatabase(const ADBConnectionName: string;APers
 var
   lRegPerLayer : TtiPersistenceLayer;
   lDBConnectionName : string;
-  lPooledDB : TPooledDB;
 begin
   if APersistenceLayerName <> '' then
     lRegPerLayer := FindByPerLayerName(APersistenceLayerName)
@@ -467,8 +465,8 @@ begin
   else
     lDBConnectionName := lRegPerLayer.DefaultDBConnectionName;
 
-  lPooledDB := lRegPerLayer.DBConnectionPools.Lock(lDBConnectionName);
-  result   := lPooledDB.Database;
+  Result := lRegPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+
 end;
 
 procedure TtiPersistenceLayers.UnLockDatabase(const ADatabase: TtiDatabase;
@@ -489,7 +487,7 @@ begin
   else
     lDBConnectionName := lRegPerLayer.DefaultDBConnectionName;
 
-  lRegPerLayer.DBConnectionPools.UnLockByData(lDBConnectionName, ADatabase);
+  lRegPerLayer.DBConnectionPools.UnLock(lDBConnectionName, ADatabase);
 end;
 
 function TtiPersistenceLayers.GetDefaultPerLayer: TtiPersistenceLayer;

@@ -79,7 +79,6 @@ type
     procedure tiAddTrailingValue;
     procedure tiAppendStringToStream;
     procedure tiApplicationName;
-    procedure tiAusFinancialYearToString;
     procedure tiBooleanToStr;
     procedure tiCheckSum;
     procedure tiCIStrTran;
@@ -89,6 +88,7 @@ type
     procedure tiDateTimeAsIntlDateStor;
     procedure tiDateTimeToStr;
     procedure tiDateToAusFinancialYear;
+    procedure tiAusFinancialYearToString;
     procedure tiAusFinancialYearDayCount;
     procedure tiDateToPreviousWeekDayDate;
     procedure tiDateToStr;
@@ -2688,6 +2688,20 @@ end;
 
 procedure TTestTIUtils.tiAusFinancialYearDayCount;
 begin
+  CheckEquals(366, tiUtils.tiAusFinancialYearDayCount(2000));
+  CheckEquals(365, tiUtils.tiAusFinancialYearDayCount(2001));
+  CheckEquals(365, tiUtils.tiAusFinancialYearDayCount(2002));
+  CheckEquals(365, tiUtils.tiAusFinancialYearDayCount(2003));
+
+  CheckEquals(366, tiUtils.tiAusFinancialYearDayCount(2004));
+  CheckEquals(365, tiUtils.tiAusFinancialYearDayCount(2005));
+  CheckEquals(365, tiUtils.tiAusFinancialYearDayCount(2006));
+  CheckEquals(365, tiUtils.tiAusFinancialYearDayCount(2007));
+
+  CheckEquals(366, tiUtils.tiAusFinancialYearDayCount(2008));
+  CheckEquals(365, tiUtils.tiAusFinancialYearDayCount(2009));
+  CheckEquals(365, tiUtils.tiAusFinancialYearDayCount(2010));
+  CheckEquals(365, tiUtils.tiAusFinancialYearDayCount(2011));
 
 end;
 

@@ -30,6 +30,7 @@ type
   private
     FDatabase: TIBDataBase;
     FIBTransaction: TIBTransaction;
+    FTraceLevel: integer;
   protected
     procedure SetConnected(AValue: boolean); override;
     function  GetConnected: boolean; override;
@@ -42,6 +43,7 @@ type
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
     property        IBDatabase: TIBDatabase read FDatabase write FDatabase;
+    property        TraceLevel  : integer read FTraceLevel    write FTraceLevel  ;
     procedure       StartTransaction; override;
     function        InTransaction: boolean; override;
     procedure       Commit; override;

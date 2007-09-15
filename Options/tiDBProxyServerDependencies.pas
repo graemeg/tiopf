@@ -51,7 +51,6 @@ begin
     LINI.Free;
   end;
 
-  gTIOPFManager.TerminateOnFailedDBConnection := false;
   gTIOPFManager.ConnectDatabase(lDatabaseName, lUserName, lPassword);
 
   gStatefulDBConnectionPool.TimeOut := lTimeOut;

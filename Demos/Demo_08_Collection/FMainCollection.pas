@@ -72,17 +72,17 @@ uses
 // Create table
 procedure TFormCollection.CreateTable;
 var
-  lTableMetaData: TtiDBMetaDataTable;
+  LTableMetaData: TtiDBMetaDataTable;
 begin
-  lTableMetaData:= TtiDBMetaDataTable.Create;
+  LTableMetaData:= TtiDBMetaDataTable.Create;
   try
-    lTableMetaData.Name:= 'Client';
-    lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
-    lTableMetaData.AddField('Client_Name',       qfkString, 200);
-    lTableMetaData.AddField('Client_ID',          qfkString,   9);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    LTableMetaData.Name:= 'Client';
+    LTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
+    LTableMetaData.AddField('Client_Name',       qfkString, 200);
+    LTableMetaData.AddField('Client_ID',          qfkString,   9);
+    gTIOPFManager.CreateTable(LTableMetaData);
   finally
-    lTableMetaData.Free;
+    LTableMetaData.Free;
   end;
 end;
 
@@ -95,22 +95,20 @@ end;
 // Does a table exist?
 function TFormCollection.TableExists;
 var
-  lDBMetaData: TtiDBMetaData;
-  lPooledDB  : TPooledDB;
-  lDatabase  : TtiDatabase;
+  LDBMetaData: TtiDBMetaData;
+  LDatabase  : TtiDatabase;
 begin
-  lDBMetaData:= TtiDBMetaData.Create;
+  LDBMetaData:= TtiDBMetaData.Create;
   try
-    lPooledDB:= gTIOPFManager.DefaultDBConnectionPool.Lock;
+    LDatabase:= gTIOPFManager.DefaultDBConnectionPool.Lock;
     try
-      lDatabase:= lPooledDB.Database;
-      lDatabase.ReadMetaDataTables(lDBMetaData);
-      result:= lDBMetaData.FindByTableName('Client') <> nil;
+      LDatabase.ReadMetaDataTables(LDBMetaData);
+      result:= LDBMetaData.FindByTableName('Client') <> nil;
     finally
-      gTIOPFManager.DefaultDBConnectionPool.UnLock(lPooledDB);
+      gTIOPFManager.DefaultDBConnectionPool.UnLock(LDatabase);
     end;
   finally
-    lDBMetaData.Free;
+    LDBMetaData.Free;
   end;
 end;
 

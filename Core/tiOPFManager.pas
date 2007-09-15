@@ -36,7 +36,6 @@ type
     FClassDBMappingMgr: TtiClassDBMappingMgr;
     FTerminated: boolean;
     FCriticalSection: TCriticalSection;
-    FTerminateOnFailedDBConnection: boolean;
     FActiveThreadList: TtiActiveThreadList;
     FApplicationData: TObjectList;
     FApplicationStartTime: TDateTime;
@@ -48,7 +47,7 @@ type
 
     function  GetDefaultDBConnectionName: string;
     procedure SetDefaultDBConnectionName(const AValue: string);
-    function  GetDefaultDBConnectionPool: TDBConnectionPool;
+    function  GetDefaultDBConnectionPool: TtiDBConnectionPool;
     function  GetDefaultPerLayerName: string;
     function  GetClassDBMappingMgr: TtiClassDBMappingMgr;
     function  GetDefaultPerLayer: TtiPersistenceLayer;
@@ -60,44 +59,58 @@ type
     destructor  Destroy; override;
 
     {: Load a persistence layer }
-    procedure   LoadPersistenceLayer(Const APackageID : string);
+    procedure   LoadPersistenceLayer(Const APersistenceLayerName : string);
     {: Unload a persistence layer and all its database connections.
        If no parameter is passed, the default persistence layer will be unloaded.}
-    procedure   UnLoadPersistenceLayer(const APackageID : string = '');
+    procedure   UnLoadPersistenceLayer(const APersistenceLayerName : string = '');
 
-    procedure   ConnectDatabase(          const ADatabaseName : string;
+    procedure   ConnectDatabase(           const ADatabaseAlias : string;
+                                           const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string;
                                            const AParams      : string;
-                                           const APackageID   : string); overload;
+                                           const APersistenceLayerName : string); overload;
 
-    procedure   ConnectDatabase(          const ADatabaseName : string;
+    procedure   ConnectDatabase(           const ADatabaseName : string;
+                                           const AUserName    : string;
+                                           const APassword    : string;
+                                           const AParams      : string;
+                                           const APersistenceLayerName : string); overload;
+
+    procedure   ConnectDatabase(           const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string;
                                            const AParams      : string); overload;
 
-    procedure   ConnectDatabase(          const ADatabaseName : string;
+    procedure   ConnectDatabase(           const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string); overload;
 
-    function   TestThenConnectDatabase(   const ADatabaseName : string;
+    function    TestThenConnectDatabase(   const ADatabaseAlias : string;
+                                           const ADatabaseName : string;
+                                           const AUserName    : string;
+                                           const APassword    : string;
+                                           const AParams      : string;
+                                           const APersistenceLayerName : string): boolean; overload;
+
+    function   TestThenConnectDatabase(    const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string;
                                            const AParams      : string;
                                            const APackageID   : string): boolean; overload;
 
-    function   TestThenConnectDatabase(   const ADatabaseName : string;
+    function   TestThenConnectDatabase(    const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string;
                                            const AParams      : string): boolean; overload;
 
-    function    TestThenConnectDatabase(  const ADatabaseName : string;
+    function    TestThenConnectDatabase(   const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string): boolean; overload;
 
-    procedure   DisconnectDatabase(       const ADatabaseName : string;
+    procedure   DisconnectDatabase(        const ADatabaseName : string;
                                            const APackageID   : string); overload;
-    procedure   DisconnectDatabase(       const ADatabaseName : string); overload;
+    procedure   DisconnectDatabase(        const ADatabaseName : string); overload;
     procedure   DisconnectDatabase; overload;
 
     // These register visitors
@@ -164,7 +177,6 @@ type
     procedure   Terminate;
     function    TerminateThreads(const Timeout : Integer=0): Boolean;
     property    Terminated : boolean read FTerminated write FTerminated;
-    property    TerminateOnFailedDBConnection : boolean read FTerminateOnFailedDBConnection write FTerminateOnFailedDBConnection;
     property    ActiveThreadList : TtiActiveThreadList read FActiveThreadList;
     property    ApplicationData : TList read GetApplicationData;
     property    ApplicationStartTime : TDateTime read FApplicationStartTime;
@@ -172,7 +184,7 @@ type
   published
     property    DefaultPerLayer        : TtiPersistenceLayer    read GetDefaultPerLayer write SetDefaultPerLayer;
     property    DefaultPerLayerName    : string            read GetDefaultPerLayerName write SetDefaultPerLayerName;
-    property    DefaultDBConnectionPool : TDBConnectionPool read GetDefaultDBConnectionPool;
+    property    DefaultDBConnectionPool : TtiDBConnectionPool read GetDefaultDBConnectionPool;
     property    DefaultDBConnectionName : string            read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
 
     property    PersistenceLayers      : TtiPersistenceLayers read FPersistenceLayers;
@@ -283,6 +295,28 @@ begin
 end;
 
 
+procedure TtiOPFManager.ConnectDatabase(const ADatabaseAlias, ADatabaseName,
+  AUserName, APassword, AParams, APersistenceLayerName: string);
+var
+  LPersistenceLayer  : TtiPersistenceLayer;
+begin
+
+  if APersistenceLayerName = '' then
+    LPersistenceLayer:= DefaultPerLayer
+  else
+    LPersistenceLayer := FPersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+
+  if LPersistenceLayer = nil then
+    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APersistenceLayerName]);
+
+  LPersistenceLayer.DBConnectionPools.Connect(
+    ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams);
+
+  if LPersistenceLayer.DefaultDBConnectionName = '' then
+     LPersistenceLayer.DefaultDBConnectionName := ADatabaseName;
+
+end;
+
 constructor TtiOPFManager.Create;
 begin
   inherited;
@@ -297,7 +331,6 @@ begin
   FOIDFactory := TOIDFactory.Create;
   {$ENDIF}
 
-  FTerminateOnFailedDBConnection := true;
   FActiveThreadList := TtiActiveThreadList.Create;
   FApplicationData := TObjectList.Create(true);
   FApplicationStartTime := Now;
@@ -320,16 +353,16 @@ begin
 end;
 
 
-procedure TtiOPFManager.LoadPersistenceLayer(const APackageID : string);
+procedure TtiOPFManager.LoadPersistenceLayer(const APersistenceLayerName : string);
 begin
   // ToDo: Terminated must be related to each loaded persistence layer. This
   //       would make it possible to terminate a single layer at the time.
   FTerminated := false;
-  PersistenceLayers.LoadPersistenceLayer(APackageID);
+  PersistenceLayers.LoadPersistenceLayer(APersistenceLayerName);
 end;
 
 
-function TtiOPFManager.GetDefaultDBConnectionPool: TDBConnectionPool;
+function TtiOPFManager.GetDefaultDBConnectionPool: TtiDBConnectionPool;
 var
   lRegPerLayer : TtiPersistenceLayer;
 begin
@@ -415,26 +448,10 @@ procedure TtiOPFManager.ConnectDatabase(
   const AUserName    : string;
   const APassword : string;
   const AParams      : string;
-  const APackageID   : string);
-var
-  lRegPerLayer  : TtiPersistenceLayer;
+  const APersistenceLayerName   : string);
 begin
-  Assert(APackageID <> '', 'APackageID not assigned');
-  Assert(ADatabaseName <> '', 'ADatabaseName not assigned');
-
-  lRegPerLayer := FPersistenceLayers.FindByPerLayerName(APackageID);
-
-  if lRegPerLayer = nil then
-    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
-
-  lRegPerLayer.DBConnectionPools.Connect(ADatabaseName, AUserName,
-                                          APassword, AParams);
-
-  if lRegPerLayer.DefaultDBConnectionName = '' then
-     lRegPerLayer.DefaultDBConnectionName := ADatabaseName;
-
+  ConnectDatabase(ADatabaseName, ADatabaseName, AUserName, APassword, AParams, APersistenceLayerName);
 end;
-
 
 function TtiOPFManager.GetClassDBMappingMgr: TtiClassDBMappingMgr;
 begin
@@ -492,20 +509,20 @@ procedure TtiOPFManager.ExecSQL(const pSQL             : string;
                             const ADBConnectionName : string = '';
                             const APersistenceLayerName    : string = '');
 var
-  lDBConnectionName : string;
-  lPooledDB : TPooledDB;
+  LDBConnectionName : string;
+  LDatabase: TtiDatabase;
 begin
 Assert(APersistenceLayerName = '', 'Not implemented whe pPreLayerName <> ''');
   Assert(DefaultPerLayer <> nil, 'DefaultPerLayer not assigned');
   if ADBConnectionName = '' then
-    lDBConnectionName := DefaultDBConnectionName
+    LDBConnectionName := DefaultDBConnectionName
   else
-    lDBConnectionName := ADBConnectionName;
-  lPooledDB := DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+    LDBConnectionName := ADBConnectionName;
+  LDatabase:= DefaultPerLayer.DBConnectionPools.Lock(LDBConnectionName);
   try
-    lPooledDB.Database.ExecSQL(pSQL);
+    LDatabase.ExecSQL(pSQL);
   finally
-    DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, lPooledDB);
+    DefaultPerLayer.DBConnectionPools.UnLock(LDBConnectionName, LDatabase);
   end;
 end;
 
@@ -673,9 +690,9 @@ begin
 end;
 
 
-procedure TtiOPFManager.UnLoadPersistenceLayer(const APackageID: string);
+procedure TtiOPFManager.UnLoadPersistenceLayer(const APersistenceLayerName: string);
 begin
-  PersistenceLayers.UnLoadPersistenceLayer(APackageID);
+  PersistenceLayers.UnLoadPersistenceLayer(APersistenceLayerName);
 end;
 
 
@@ -741,23 +758,10 @@ function TtiOPFManager.TestThenConnectDatabase(
   const APassword : string;
   const AParams      : string;
   const APackageID   : string): boolean;
-var
-  lRegPerLayer : TtiPersistenceLayer;
 begin
-  Assert(APackageID <> '', 'APackageID not assigned');
-  lRegPerLayer := FPersistenceLayers.FindByPerLayerName(APackageID);
-  if lRegPerLayer = nil then
-    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
-
-  if lRegPerLayer.DBConnectionPools.IsConnected(ADatabaseName) then
-    result := true  // Assume OK if already connect (Warning: Could be a different user)
-  else 
-    if lRegPerLayer.tiDatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword, AParams) then
-    begin
-      lRegPerLayer.DBConnectionPools.Connect(ADatabaseName, AUserName, APassword, AParams);
-      result := true;
-    end else
-      Result := false;
+  result:= TestThenConnectDatabase(
+    ADatabaseName, ADatabaseName, AUserName,
+    APassword, AParams, APackageID);
 end;
 
 
@@ -782,13 +786,8 @@ end;
 
 
 procedure TtiOPFManager.ConnectDatabase(const ADatabaseName, AUserName, APassword, AParams: string);
-var
-  lRegPerLayer: TtiPersistenceLayer;
 begin
-  lRegPerLayer := DefaultPerLayer;
-  if lRegPerLayer = nil then
-    raise EtiOPFInternalException.Create(cErrorUnableToFindDefaultPerLayer);
-  ConnectDatabase(ADatabaseName, AUserName, APassword, AParams, lRegPerLayer.PerLayerName);
+  ConnectDatabase(ADatabaseName, AUserName, APassword, AParams, '');
 end;
 
 
@@ -811,12 +810,8 @@ end;
 
 function TtiOPFManager.TestThenConnectDatabase(const ADatabaseName,
   AUserName, APassword, AParams: string): boolean;
-var
-  lPerLayer: TtiPersistenceLayer;
 begin
-  lPerLayer := DefaultPerLayer;
-  Assert(lPerLayer <> nil, cErrorUnableToFindDefaultPerLayer);
-  Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, AParams, lPerLayer.PerLayerName);
+  Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, AParams, '');
 end;
 
 
@@ -826,6 +821,32 @@ begin
   Result := TestThenConnectDatabase(ADatabaseName, AUserName, APassword, '');
 end;
 
+
+function TtiOPFManager.TestThenConnectDatabase(const ADatabaseAlias,
+  ADatabaseName, AUserName, APassword, AParams,
+  APersistenceLayerName: string): boolean;
+var
+  LPersistenceLayer  : TtiPersistenceLayer;
+begin
+
+  if APersistenceLayerName = '' then
+    LPersistenceLayer:= DefaultPerLayer
+  else
+    LPersistenceLayer := FPersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+
+  if LPersistenceLayer = nil then
+    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APersistenceLayerName]);
+
+  if LPersistenceLayer.DBConnectionPools.IsConnected(ADatabaseAlias) then
+    result := true  // Assume OK if already connect (Warning: Could be a different user)
+  else
+    if LPersistenceLayer.tiDatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword, AParams) then
+    begin
+      LPersistenceLayer.DBConnectionPools.Connect(ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams);
+      result := true;
+    end else
+      Result := false;
+end;
 
 procedure TtiOPFManager.DisconnectDatabase;
 var

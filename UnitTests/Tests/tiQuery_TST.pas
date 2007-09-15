@@ -100,12 +100,10 @@ type
   TTestTIQueryAbs = class(TtiOPFTestCase)
   private
     FRegPerLayer : TtiPersistenceLayer;
-    FPooledDB : TPooledDB;
     FDatabase : TtiDatabase;
     FQuery   : TtiQuery;
   protected
     // Some field vars used in the concrete
-    property  PooledDB : TPooledDB   read FPooledDB   write FPooledDB;
     property  Database : TtiDatabase read FDatabase   write FDatabase;
     property  Query   : TtiQuery    read FQuery      write FQuery;
 
@@ -678,7 +676,6 @@ procedure TTestTIDatabase.ReadMetaData;
 var
   lDBMetaData : TtiDBMetaData;
   lDBMetaDataTable : TtiDBMetaDataTable;
-  lPooledDB : TPooledDB;
   lDatabase : TtiDatabase;
   lRegPerLayer : TtiPersistenceLayer;
 begin
@@ -696,9 +693,8 @@ begin
     try
       lDBMetaData := TtiDBMetaData.Create;
       try
-        lPooledDB :=lRegPerLayer.DBConnectionPools.Lock(PerFrameworkSetup.DBName);
+        LDatabase :=lRegPerLayer.DBConnectionPools.Lock(PerFrameworkSetup.DBName);
         try
-          lDatabase := lPooledDB.Database;
           lDatabase.ReadMetaDataTables(lDBMetaData);
           lDBMetaDataTable := lDBMetaData.FindByTableName('test_item');
           Check(lDBMetaDataTable <> nil, 'Unable to find metadata for test_item');
@@ -730,7 +726,7 @@ begin
           CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Date_FIELD',  qfkDateTime);
           CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Notes_FIELD', qfkLongString);
         finally
-          lRegPerLayer.DBConnectionPools.UnLock(PerFrameworkSetup.DBName, lPooledDB);
+          lRegPerLayer.DBConnectionPools.UnLock(PerFrameworkSetup.DBName, LDatabase);
         end;
       finally
         lDBMetaData.Free;
@@ -749,8 +745,7 @@ begin
   inherited;
   FRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
   CheckNotNull(FRegPerLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
-  FPooledDB := FRegPerLayer.DBConnectionPools.Lock(PerFrameworkSetup.DBName);
-  FDatabase := FPooledDB.Database;
+  FDatabase := FRegPerLayer.DBConnectionPools.Lock(PerFrameworkSetup.DBName);
   Assert(not FDatabase.InTransaction, 'Database in transaction after <gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock> called');
   DropTestTable;
   DropTableTestGroup(FDatabase);
@@ -765,7 +760,7 @@ begin
   DropTestTable;
   DropTableTestGroup(FDatabase);
   CheckNotNull(FRegPerLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
-  FRegPerLayer.DBConnectionPools.UnLock(PerFrameworkSetup.DBName, FPooledDB);
+  FRegPerLayer.DBConnectionPools.UnLock(PerFrameworkSetup.DBName, FDatabase);
   FQuery.Free;
   inherited;
 end;
@@ -877,7 +872,7 @@ end;
 procedure TTestTIDatabase.NonThreadedDBConnectionPool;
 var
   i : integer;
-  lConnection : TPooledDB;
+  LDatabase : TtiDatabase;
   lDBConnectionName : string;
   lRegPerLayer : TtiPersistenceLayer;
 begin
@@ -893,9 +888,9 @@ begin
     begin
       lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
       CheckNotNull(lRegPerLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
-      lConnection := lRegPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+      LDatabase := lRegPerLayer.DBConnectionPools.Lock(lDBConnectionName);
       Sleep(100);
-      lRegPerLayer.DBConnectionPools.UnLock(lDBConnectionName, lConnection);
+      lRegPerLayer.DBConnectionPools.UnLock(lDBConnectionName, LDatabase);
       Sleep(100);
       //Log('Thread: %d, Cylce: %d', [GetCurrentThreadID, i]);
     end;
@@ -923,15 +918,15 @@ procedure TThrdDBConnectionPoolTest.Execute;
 var
   i : integer;
   lRegPerLayer : TtiPersistenceLayer;
-  lConnection : TPooledDB;
+  LDatabase : TtiDatabase;
 begin
   for i := 1 to FCycles do
   begin
     lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(FPerFrameworkSetup.PerLayerName);
     Assert(lRegPerLayer <> nil, 'Unable to find RegPerLayer <' + FPerFrameworkSetup.PerLayerName);
-    lConnection := lRegPerLayer.DBConnectionPools.Lock(FPerFrameworkSetup.DBName);
+    LDatabase := lRegPerLayer.DBConnectionPools.Lock(FPerFrameworkSetup.DBName);
     Sleep(100);
-    lRegPerLayer.DBConnectionPools.UnLock(FPerFrameworkSetup.DBName, lConnection);
+    lRegPerLayer.DBConnectionPools.UnLock(FPerFrameworkSetup.DBName, LDatabase);
     //Log('Thread: %d, Cylce: %d', [GetCurrentThreadID, i]);
   end;
   FDone := true;

@@ -13,18 +13,20 @@ uses
   {$ENDIF LINUX}
   ,tiObject
   ,tiBaseObject
-  ,tiThread                  
+  ,tiThread
  ;
 
 const
-  cErrorPoolUnlockByData_BadData    = 'Attempt to unlock item by passing object that is not owned by a PooledItem';
-  cErrorTimedOutWaitingForSemaphore = 'Timed out waiting for a PooledItem.';
-
+  CErrorPoolUnlockByData_BadData    = 'Attempt to unlock item by passing object that is not owned by a PooledItem';
+  CErrorTimedOutWaitingForSemaphore = 'Timed out waiting for a PooledItem.';
+  CErrorFailedToUnlockPooledItem = 'Attempting to unlock a PooledItem which can not be found in the pool.';
+  CErrorSemaphoreAvailableButNoItemsInPool = 'Semaphore was available but no items ' +
+                'available in the pool. MaxPoolSize: %d, Current pool size: %d';
 type
 
   TtiPool = class;
 
-  TPooledItem = class(TtiBaseObject)
+  TtiPooledItem = class(TtiBaseObject)
   private
     FbLocked: boolean;
     FiIndex: integer;
@@ -47,12 +49,12 @@ type
     function    SecToTimeOut : integer;
   end;
 
-  TPooledItemClass = class of TPooledItem;
+  TtiPooledItemClass = class of TtiPooledItem;
 
-  TAddPooledItemEvent = procedure(APooledItem : TPooledItem) of object;
+  TtiAddPooledItemEvent = procedure(APooledItem : TtiPooledItem) of object;
 
 
-  TThrdPoolMonitor = class(TtiSleepThread)
+  TtiThrdPoolMonitor = class(TtiSleepThread)
   private
     FPool : TtiPool;
   public
@@ -61,8 +63,8 @@ type
   end;
 
 
-  TtiPooledItemEvent = procedure(const APooledItem : TPooledItem) of object;
-  TtiPool = class(TtiObject)
+  TtiPooledItemEvent = procedure(const APooledItem : TtiPooledItem) of object;
+  TtiPool = class(TtiBaseObject)
   private
     FPool : TThreadList;
     {$IFDEF MSWINDOWS}
@@ -71,39 +73,45 @@ type
     {$IFDEF LINUX}
     FSemaphore : TSemaphore;
     {$ENDIF LINUX}
-    FiMinPoolSize: integer;
-    FiMaxPoolSize: integer;
+    FMinPoolSize: integer;
+    FMaxPoolSize: integer;
     FTimeOut: Extended;
-    FOnAddPooledItem: TAddPooledItemEvent;
-    FPooledItemClass: TPooledItemClass;
-    FThrdPoolMonitor : TThrdPoolMonitor;
+    FThrdPoolMonitor : TtiThrdPoolMonitor;
     FWaitTime: integer;
     procedure SetMaxPoolSize(const AValue: integer);
+
+    // ToDo: Move the semaphore operations to a class wrapper
     procedure CreatePoolSemaphore;
+    procedure DestroyPoolSemaphore;
+    function  LockPoolSemaphore: boolean;
+    procedure UnlockPoolSemaphore;
+
     function  GetCount: integer;
     function  GetCountLocked: integer;
-  public
-    constructor Create; override;
-    destructor  Destroy; override;
+    function  FindAvailableItemInPool(const AList: TList): TtiPooledItem;
+  protected
     procedure   Clear;
+    function    AddItem : TtiPooledItem;
+    procedure   SweepForTimeOuts; virtual;
+    procedure   ForEachPooledItem(const AMethod : TtiPooledItemEvent);
+    procedure   Remove(const APooledItem : TtiPooledItem);
+    function    PooledItemClass: TtiPooledItemClass; virtual; abstract;
+    procedure   AfterAddPooledItem(const APooledItem: TtiPooledItem); virtual; abstract;
+
+  public
+    constructor Create;
+    destructor  Destroy; override;
     property    TimeOut    : Extended read FTimeOut     write FTimeOut;
-    property    MinPoolSize : integer read FiMinPoolSize write FiMinPoolSize;
-    property    MaxPoolSize : integer read FiMaxPoolSize write SetMaxPoolSize;
+    property    MinPoolSize : integer read FMinPoolSize write FMinPoolSize;
+    property    MaxPoolSize : integer read FMaxPoolSize write SetMaxPoolSize;
     property    WaitTime   : integer read FWaitTime     write FWaitTime;
 
     property    Count   : integer read GetCount;
     property    CountLocked : integer read GetCountLocked;
 
-    property    OnAddPooledItem : TAddPooledItemEvent read FOnAddPooledItem write FOnAddPooledItem;
-    property    PooledItemClass : TPooledItemClass    read FPooledItemClass write FPooledItemClass;
+    function    Lock : TtiBaseObject; virtual;
+    procedure   UnLock(const APooledItemData : TtiBaseObject); virtual;
 
-    function    AddItem : TPooledItem;
-    function    Lock : TPooledItem;
-    procedure   UnLock(APooledItem : TPooledItem);
-    procedure   UnLockByData(const AData : TObject);
-    procedure   SweepForTimeOuts;
-    procedure   ForEachPooledItem(const AMethod : TtiPooledItemEvent);
-    procedure   Remove(const APooledItem : TPooledItem);
   end;
 
 
@@ -120,10 +128,10 @@ uses
  ;
 
 const
-  cuiMaxPoolSize =  9999; // Maximum number of items allowed in the pool
-  cuiMinPoolSize =     1; // Minimum number of items to remain in the pool
-  cuiTimeOut     =     1; // Time (minutes) before items are purged from the pool
-  cWaitTime      =    60; // Time to wait for a pool item (in seconds)
+  CMaxPoolSize =  9999; // Maximum number of items allowed in the pool
+  CMinPoolSize =     1; // Minimum number of items to remain in the pool
+  CTimeOut     =     1; // Time (minutes) before items are purged from the pool
+  CWaitTime    =    60; // Time to wait for a pool item (in seconds)
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -135,25 +143,31 @@ constructor TtiPool.Create;
 begin
   inherited create;
   FPool := TThreadList.Create;
-  FPooledItemClass := TPooledItem;
-  FiMinPoolSize := cuiMinPoolSize;
-  FiMaxPoolSize := cuiMaxPoolSize;
-  FWaitTime    := cWaitTime;
-  FTimeOut    := cuiTimeOut;
+  FMinPoolSize := CMinPoolSize;
+  FMaxPoolSize := CMaxPoolSize;
+  FWaitTime    := CWaitTime;
+  FTimeOut    := CTimeOut;
   CreatePoolSemaphore;
-  FThrdPoolMonitor := TThrdPoolMonitor.CreateExt(self);
+  FThrdPoolMonitor := TtiThrdPoolMonitor.CreateExt(self);
 end;
 
 
 destructor TtiPool.Destroy;
+begin
+  FThrdPoolMonitor.Free;
+  Clear;
+  FPool.Free;
+  DestroyPoolSemaphore;
+  inherited;
+end;
+
+
+procedure TtiPool.DestroyPoolSemaphore;
 {$IFDEF LINUX}
 var
   error: integer;
 {$ENDIF LINUX}
 begin
-  FThrdPoolMonitor.Free;
-  Clear;
-  FPool.Free;
   {$IFDEF MSWINDOWS}
   CloseHandle(FSemaphore);
   {$ENDIF MSWINDOWS}
@@ -162,22 +176,20 @@ begin
   if error <> 0 then
     raise Exception.Create('Failed to destroy the semaphore');
   {$ENDIF LINUX}
-  inherited;
 end;
-
 
 procedure TtiPool.Clear;
 var
   lList : TList;
   i : integer;
-  lPooledItem : TPooledItem;
+  lPooledItem : TtiPooledItem;
 begin
   lList := FPool.LockList;
   try
     for i := lList.Count - 1 downto 0 do
     begin
-      lPooledItem := TObject(lList.Items[i]) as TPooledItem;
-      Assert(lPooledItem.TestValid(TPooledItem), cTIInvalidObjectError);;
+      lPooledItem := TObject(lList.Items[i]) as TtiPooledItem;
+      Assert(lPooledItem.TestValid(TtiPooledItem), cTIInvalidObjectError);;
       lPooledItem.Free;
       lList.Delete(i);
     end;
@@ -187,9 +199,9 @@ begin
 end;
 
 
-function TtiPool.AddItem : TPooledItem;
+function TtiPool.AddItem : TtiPooledItem;
 var
-  lPooledItem : TPooledItem;
+  lPooledItem : TtiPooledItem;
   lList : TList;
   lsCount : string;
 begin
@@ -206,8 +218,8 @@ begin
       Log('Pooled item #' +
            IntToStr(lList.Count-1) +
            ' added.', lsConnectionPool);
-      if Assigned(OnAddPooledItem) then
-        OnAddPooledItem(lPooledItem);
+
+      AfterAddPooledItem(lPooledItem);
 
       lList.Add(lPooledItem);
       lPooledItem.Index := lList.Count - 1;
@@ -226,71 +238,63 @@ begin
   end;
 end;
 
-
-function TtiPool.Lock: TPooledItem;
+function TtiPool.FindAvailableItemInPool(const AList: TList): TtiPooledItem;
 var
-  lPool : TList;
-  i : integer;
-  lItem : TPooledItem;
+  i: integer;
+  LItem: TtiPooledItem;
 begin
-  result := nil;
+  // Scan the list of PooledItem to find one which is not locked.
+  for i := 0 to AList.Count - 1 do
+  begin
+    // There was a PooledItem which was not locked available, so lock it
+    // and exit.
+    LItem := (TObject(AList.Items[i]) as TtiPooledItem);
+    if (not LItem.Locked) and
+       (not LItem.MustRemoveItemFromPool(AList.Count)) then
+    begin
+      Result:= LItem;
+      Result.Locked := true;
+      Result.Index := I;
+      Log('PooledItem #' + intToStr(I) + ' Locked.', lsConnectionPool);
+      Exit; //==>
+    end;
+  end;
+  Result:= nil;
+end;
 
-  // Wait for a semaphore
-  {$IFDEF MSWINDOWS}
-  if WaitForSingleObject(FSemaphore, FWaitTime * 1000) = WAIT_TIMEOUT then 
-    raise EtiOPFInternalException.Create(cErrorTimedOutWaitingForSemaphore);
+function TtiPool.Lock: TtiBaseObject;
+var
+  LPool : TList;
+  LItem : TtiPooledItem;
+begin
 
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  Log('About to call sem_wait', lsConnectionPool);
-  { TODO: The timeout option is not available in POSIX semaphores. This can be
-    achieved by issuing a non-blocking sem_trywait() within a loop, which
-    counts the timeout value: int sem_trywait(sem_t * sem).
-    i := fpgeterrno; }
-  if sem_trywait(FSemaphore) <> 0 then
-    raise EtiOPFInternalException.Create(cErrorTimedOutWaitingForSemaphore);
-  Log('Successfully passed the sem_wait call', lsConnectionPool);
-  {$ENDIF LINUX}
+  if not LockPoolSemaphore then
+    raise EtiOPFInternalException.Create(CErrorTimedOutWaitingForSemaphore);
 
+  Result:= nil;
   // A semaphore was available, so get a PooledItem
-  lPool := FPool.LockList;
+  LPool := FPool.LockList;
 
   try
-    // Scan the list of PooledItem to find one which is not locked.
-    for i := 0 to lPool.Count - 1 do
-    begin
-      // There was a PooledItem which was not locked available, so lock it
-      // and exit.
-      lItem := (TObject(lPool.Items[i]) as TPooledItem);
-      if (not lItem.Locked) and
-         (not lItem.MustRemoveItemFromPool(lPool.Count)) then
-      begin
-        result := lItem;
-        result.Locked := true;
-        result.Index := I;
-        Log('PooledItem #' + intToStr(I) + ' Locked.', lsConnectionPool);
-        Break; //==>
-      end;
-    end;
+    LItem:= FindAvailableItemInPool(LPool);
 
     // There was a semaphore available, but no PooledItem, so there is room
     // in the pool to create another.
-    if (result = nil) and
-       (lPool.Count < FiMaxPoolSize) then begin
-      result := AddItem;
-      result.Locked := true;
+    if (LItem = nil) and
+       (LPool.Count < FMaxPoolSize) then
+    begin
+      LItem := AddItem;
+      LItem.Locked := true;
       Log('A new PooledItem has been added to the pool.', lsConnectionPool);
-      Log('PooledItem #' + intToStr(lPool.Count) + ' locked.', lsConnectionPool);
-      Exit; //==>
+      Log('PooledItem #' + intToStr(LPool.Count) + ' locked.', lsConnectionPool);
     end;
 
     // If we get here, the semahpore system and the pool area
     // out of sync, so raise an exception.
-    if Result = nil then
-      LogError('Semaphore was available but no items ' +
-                'available in the pool. MaxPoolSize: %d, Current pool size: %d' +
-                'Called in TtiPool.Lock',
-                [FiMaxPoolSize, lPool.Count]);
+    if LItem = nil then
+      raise EtiOPFProgrammerException.CreateFmt(
+        CErrorSemaphoreAvailableButNoItemsInPool, [FMaxPoolSize, LPool.Count]);
+    result:= LItem.Data;
 
   finally
     FPool.UnLockList;
@@ -298,50 +302,49 @@ begin
 end;
 
 
+function TtiPool.LockPoolSemaphore: boolean;
+begin
+  // Wait for a semaphore
+  {$IFDEF MSWINDOWS}
+  result:= WaitForSingleObject(FSemaphore, FWaitTime * 1000) <> WAIT_TIMEOUT;
+  {$ENDIF MSWINDOWS}
+  {$IFDEF LINUX}
+  { TODO: The timeout option is not available in POSIX semaphores. This can be
+    achieved by issuing a non-blocking sem_trywait() within a loop, which
+    counts the timeout value: int sem_trywait(sem_t * sem).
+    i := fpgeterrno; }
+  result:= sem_trywait(FSemaphore) = 0;
+  {$ENDIF LINUX}
+end;
+
 procedure TtiPool.SetMaxPoolSize(const AValue: integer);
 begin
-  FiMaxPoolSize := AValue;
+  FMaxPoolSize := AValue;
   CreatePoolSemaphore;
 end;
 
 
-procedure TtiPool.UnLock(APooledItem : TPooledItem);
+procedure TtiPool.UnLock(const APooledItemData : TtiBaseObject);
 var
   i : integer;
-  lList : TList;
-  {$IFDEF LINUX}
-  error: integer;
-  {$ENDIF LINUX}
+  LList : TList;
+  LItem: TtiPooledItem;
 begin
-  if APooledItem = nil then
-    LogError('Nil PooledItem passed to TtiPool.UnLock');
-
-  if not APooledItem.Locked then
-    LogError('Attempting to unlock a PooledItem which is not locked.');
-
-  lList := FPool.LockList;
+  Assert(APooledItemData.TestValid, cTIInvalidObjectError);
+  LList := FPool.LockList;
   try
-    i := lList.IndexOf(APooledItem);
-    if i = -1 then
-      LogError('Attempting to unlock a PooledItem which can ' +
-                'not be found in the pool. ' +
-                'Called in TtiPool.SetPoolSize');
-    APooledItem.Locked := false;
-    Log('PooledItem #' +
-         IntToStr(APooledItem.Index) +
-         ' Unlocked.', lsConnectionPool);
+    for i := 0 to LList.Count-1 do
+      if TtiPooledItem(LList.Items[i]).Data = APooledItemData then
+      begin
+        LItem:= TtiPooledItem(LList.Items[i]);
+        LItem.Locked:= False;
+        UnlockPoolSemaphore;
+        Exit; //==>
+      end;
+      Raise EtiOPFProgrammerException.Create(CErrorFailedToUnlockPooledItem);
   finally
     FPool.UnLockList;
   end;
-
-  {$IFDEF MSWINDOWS}
-  ReleaseSemaphore(FSemaphore, 1, nil);
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  error := sem_post(FSemaphore);
-  if error <> 0 then
-    raise Exception.Create('Failed to unlock the semaphore');
-  {$ENDIF LINUX}
 end;
 
 
@@ -360,7 +363,7 @@ end;
 
 { TPooledItem }
 
-constructor TPooledItem.Create(AOwner : TtiPool);
+constructor TtiPooledItem.Create(AOwner : TtiPool);
 begin
   inherited Create;
   Index := -1;
@@ -370,20 +373,20 @@ begin
 end;
 
 
-destructor TPooledItem.destroy;
+destructor TtiPooledItem.destroy;
 begin
   FData.Free;
   inherited;
 end;
 
 
-function TPooledItem.GetSecInUse: integer;
+function TtiPooledItem.GetSecInUse: integer;
 begin
   result := Trunc((Now - LastUsed) * 24 * 60 * 60);
 end;
 
 
-function TPooledItem.MustRemoveItemFromPool(AListCount: Integer): boolean;
+function TtiPooledItem.MustRemoveItemFromPool(AListCount: Integer): boolean;
 var
   lNotLocked:   Boolean;
   lTimeOut:     Boolean;
@@ -396,7 +399,7 @@ begin
 end;
 
 
-function TPooledItem.SecToTimeOut: integer;
+function TtiPooledItem.SecToTimeOut: integer;
 begin
   if Locked then
     result := cSecToTimeOutLocked
@@ -405,7 +408,7 @@ begin
 end;
 
 
-procedure TPooledItem.SetLocked(const AValue: boolean);
+procedure TtiPooledItem.SetLocked(const AValue: boolean);
 begin
   if FbLocked and not AValue then
     Lastused := now;
@@ -418,7 +421,7 @@ end;
 // * TThrdPoolMonitor
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TThrdPoolMonitor.CreateExt(APool: TtiPool);
+constructor TtiThrdPoolMonitor.CreateExt(APool: TtiPool);
 begin
   Create(true);
   FreeOnTerminate := false;
@@ -428,7 +431,7 @@ begin
 end;
 
 
-procedure TThrdPoolMonitor.Execute;
+procedure TtiThrdPoolMonitor.Execute;
 begin
   while SleepAndCheckTerminated(10000) do
     FPool.SweepForTimeOuts;
@@ -441,7 +444,7 @@ procedure TtiPool.SweepForTimeOuts;
 var
   lList : TList;
   i : integer;
-  lPooledItem : TPooledItem;
+  lPooledItem : TtiPooledItem;
   lCount : integer;
 begin
   lCount := Count;
@@ -451,7 +454,7 @@ begin
   lList := FPool.LockList;
   try
     for i := lList.Count - 1 downto 0 do begin
-      lPooledItem := TPooledItem(lList.Items[i]);
+      lPooledItem := TtiPooledItem(lList.Items[i]);
       if lPooledItem.MustRemoveItemFromPool(lList.Count) then
       begin
         Log('Pooled item (' + ClassName + ') #' +
@@ -469,37 +472,24 @@ begin
   end;
 end;
 
-
-procedure TtiPool.UnLockByData(const AData: TObject);
-var
-  i : integer;
-  lList : TList;
-  lPooledItem : TPooledItem;
+procedure TtiPool.UnlockPoolSemaphore;
 begin
-  lPooledItem := nil;
-  lList := FPool.LockList;
-  try
-    for i := 0 to lList.Count - 1 do
-      if TPooledItem(lList.Items[i]).Data = AData then
-      begin
-        lPooledItem := TPooledItem(lList.Items[i]);
-        Break; //==>
-      end;
-  finally
-    FPool.UnLockList;
-  end;
-  if lPooledItem = nil then
-    raise EtiOPFInternalException.Create(cErrorPoolUnlockByData_BadData);
-  UnLock(lPooledItem);
+  {$IFDEF MSWINDOWS}
+  ReleaseSemaphore(FSemaphore, 1, nil);
+  {$ENDIF MSWINDOWS}
+  {$IFDEF LINUX}
+  error := sem_post(FSemaphore);
+  if error <> 0 then
+    raise Exception.Create('Failed to unlock the semaphore');
+  {$ENDIF LINUX}
 end;
-
 
 procedure TtiPool.CreatePoolSemaphore;
 begin
   {$IFDEF MSWINDOWS}
   if FSemaphore <> 0 then
     CloseHandle(FSemaphore);
-  FSemaphore := CreateSemaphore(nil, FiMaxPoolSize, FiMaxPoolSize, nil);
+  FSemaphore := CreateSemaphore(nil, FMaxPoolSize, FMaxPoolSize, nil);
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
   sem_destroy(FSemaphore);
@@ -519,7 +509,7 @@ begin
   lList := FPool.LockList;
   try
     for i := 0 to lList.Count - 1 do
-      if TPooledItem(lList.Items[i]).Locked then
+      if TtiPooledItem(lList.Items[i]).Locked then
         Inc(Result);
   finally
     FPool.UnLockList;
@@ -530,13 +520,13 @@ procedure TtiPool.ForEachPooledItem(const AMethod: TtiPooledItemEvent);
 var
   lList : TList;
   i : integer;
-  lPooledItem : TPooledItem;
+  lPooledItem : TtiPooledItem;
 begin
   lList := FPool.LockList;
   try
     for i := 0 to lList.Count - 1 do
     begin
-      lPooledItem := TPooledItem(lList.Items[i]);
+      lPooledItem := TtiPooledItem(lList.Items[i]);
       AMethod(lPooledItem);
     end;
   finally
@@ -544,7 +534,7 @@ begin
   end;
 end;
 
-procedure TtiPool.Remove(const APooledItem: TPooledItem);
+procedure TtiPool.Remove(const APooledItem: TtiPooledItem);
 var
   lList : TList;
 begin

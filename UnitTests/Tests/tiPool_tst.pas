@@ -20,7 +20,6 @@ type
 
   TTestPoolItemData = class(TtiBaseObject);
 
-
   TThresPoolThread = class(TThread)
   private
     FItemCount: integer;
@@ -39,23 +38,25 @@ type
 
   TTestTiPool = class(TtiTestCase)
   private
-    procedure DoOnAddItem(APooledItem : TPooledItem);
     procedure CheckCountInPool(const APool: TtiPool; ACount, pCountLocked: integer; pTestID: string);
     procedure DoLock_Unlock(ACount: integer);
-    procedure DoLock_UnLockData(ACount: integer);
   published
     procedure CreateAndDestroy;
     procedure Lock_Unlock_1;
-    procedure Lock_UnLockData_1;
-    procedure Lock_UnLockData_BadData;
     procedure Lock_Unlock_10;
-    procedure Lock_UnLockData_10;
     procedure Lock_UnLock_Threaded;
     procedure MinPoolSize;
     procedure MaxPoolSize;
     procedure TimeOut;
   end;
 
+  TtiPoolForTesting = class(TtiPool)
+  protected
+    function    PooledItemClass: TtiPooledItemClass; override;
+    procedure   AfterAddPooledItem(const APooledItem: TtiPooledItem); override;
+  public
+    procedure SweepForTimeOuts; override;
+  end;
 
 procedure RegisterTests;
 
@@ -82,33 +83,26 @@ end;
 
 { TTestTiPool }
 
-procedure TTestTiPool.DoOnAddItem(APooledItem: TPooledItem);
-begin
-  APooledItem.Data := TTestPoolItemData.Create;
-end;
-
-
 procedure TTestTiPool.DoLock_Unlock(ACount : integer);
 var
-  lPool : TtiPool;
-  lItem : TPooledItem;
+  lPool : TtiPoolForTesting;
+  LPoolData : TtiBaseObject;
   lList : TObjectList;
   i    : integer;
 begin
-  lPool := TtiPool.Create;
+  lPool := TtiPoolForTesting.Create;
   try
     lList := TObjectList.Create(false);
     try
-      lPool.OnAddPooledItem := DoOnAddItem;
       for i := 1 to ACount do
       begin
-        lItem := lPool.Lock;
+        LPoolData := lPool.Lock;
         CheckCountInPool(lPool,i,i, IntToStr(i));
-        lList.Add(lItem);
+        lList.Add(LPoolData);
       end;
       for i := 0 to ACount - 1 do
       begin
-        lPool.UnLock(lList.Items[i] as TPooledItem);
+        lPool.UnLock(lList.Items[i] as TtiBaseObject);
         CheckCountInPool(lPool,ACount,ACount-i-1, IntToStr(ACount-i));
       end;
     finally
@@ -118,41 +112,6 @@ begin
     lPool.Free;
   end;
 end;
-
-
-procedure TTestTiPool.DoLock_UnLockData(ACount : integer);
-var
-  lPool : TtiPool;
-  lItem : TPooledItem;
-  lData : TTestPoolItemData;
-  lList : TObjectList;
-  i    : integer;
-begin
-  lPool := TtiPool.Create;
-  try
-    lList := TObjectList.Create(false);
-    try
-      lPool.OnAddPooledItem := DoOnAddItem;
-      for i := 1 to ACount do
-      begin
-        lItem := lPool.Lock;
-        lData := lItem.Data as TTestPoolItemData;
-        CheckCountInPool(lPool,i,i, IntToStr(i));
-        lList.Add(lData);
-      end;
-      for i := 0 to ACount - 1 do
-      begin
-        lPool.UnLockByData(lList.Items[i]);
-        CheckCountInPool(lPool,ACount,ACount-i-1, IntToStr(ACount-i));
-      end;
-    finally
-      lList.Free;
-    end;
-  finally
-    lPool.Free;
-  end;
-end;
-
 
 procedure TTestTiPool.Lock_Unlock_1;
 begin
@@ -160,40 +119,24 @@ begin
   DoLock_Unlock(1);
 end;
 
-
-procedure TTestTiPool.Lock_UnLockData_1;
-begin
-  DoLock_UnLockData(1);
-  DoLock_UnLockData(1);
-end;
-
-
 procedure TTestTiPool.Lock_Unlock_10;
 begin
   DoLock_Unlock(10);
   DoLock_Unlock(10);
 end;
 
-
-procedure TTestTiPool.Lock_UnLockData_10;
-begin
-  DoLock_UnLockData(10);
-  DoLock_UnLockData(10);
-end;
-
-
 procedure TTestTiPool.Lock_UnLock_Threaded;
 var
-  lPool : TtiPool;
+  lPool : TtiPoolForTesting;
   i : integer;
   lThrd : TThresPoolThread;
   lList : TObjectList;
 begin
   lList := TObjectList.Create(true);
   try
-    lPool := TtiPool.Create;
+    lPool := TtiPoolForTesting.Create;
     try
-      lPool.OnAddPooledItem := DoOnAddItem;
+//      lPool.OnAddPooledItem := DoOnAddItem;
       for i := 1 to cThreadCount do
       begin
         lThrd := TThresPoolThread.Create(true);
@@ -218,11 +161,11 @@ end;
 
 procedure TTestTiPool.MaxPoolSize;
 var
-  lPool : TtiPool;
+  lPool : TtiPoolForTesting;
 begin
-  lPool := TtiPool.Create;
+  lPool := TtiPoolForTesting.Create;
   try
-    lPool.OnAddPooledItem := DoOnAddItem;
+//    lPool.OnAddPooledItem := DoOnAddItem;
     lPool.WaitTime := 1;
     lPool.MaxPoolSize := 1;
     lPool.Lock;
@@ -242,16 +185,15 @@ begin
   end;
 end;
 
-
 procedure TTestTiPool.MinPoolSize;
 var
-  lPool : TtiPool;
-  lItem1 : TPooledItem;
-  lItem2 : TPooledItem;
+  lPool : TtiPoolForTesting;
+  lItem1 : TtiBaseObject;
+  lItem2 : TtiBaseObject;
 begin
-  lPool := TtiPool.Create;
+  lPool := TtiPoolForTesting.Create;
   try
-    lPool.OnAddPooledItem := DoOnAddItem;
+//    lPool.OnAddPooledItem := DoOnAddItem;
     lPool.TimeOut := 0;
     lPool.MinPoolSize := 1;
 
@@ -287,14 +229,14 @@ end;
 
 procedure TTestTiPool.TimeOut;
 var
-  lPool : TtiPool;
-  lItem2 : TPooledItem;
-  lItem3 : TPooledItem;
+  lPool : TtiPoolForTesting;
+  lItem2 : TtiBaseObject;
+  lItem3 : TtiBaseObject;
 begin
-  lPool := TtiPool.Create;
+  lPool := TtiPoolForTesting.Create;
   try
 
-    lPool.OnAddPooledItem := DoOnAddItem;
+//    lPool.OnAddPooledItem := DoOnAddItem;
     lPool.TimeOut := 1/60;
 
     lPool.Lock;
@@ -327,42 +269,11 @@ begin
 end;
 
 
-procedure TTestTiPool.Lock_UnLockData_BadData;
-var
-  lPool : TtiPool;
-  lData : TTestPoolItemData;
-begin
-  lPool := TtiPool.Create;
-  try
-    lPool.OnAddPooledItem := DoOnAddItem;
-    lPool.Lock;
-    CheckCountInPool(lPool,1,1, '1');
-    lData := TTestPoolItemData.Create;
-    try
-      try
-        lPool.UnLockByData(lData);
-        Fail('Exception not raised when it should have been');
-      except
-        on e:exception do
-        begin
-          CheckIs(e, Exception, 'Wrong class of exception');
-          Check(Pos(cErrorPoolUnlockByData_BadData, e.Message) <> 0, 'Wrong error message');
-        end;
-      end;
-    finally
-      lData.Free;
-    end;
-  finally
-    lPool.Free;
-  end;
-end;
-
-
 procedure TTestTiPool.CreateAndDestroy;
 var
-  lPool : TtiPool;
+  lPool : TtiPoolForTesting;
 begin
-  lPool := TtiPool.Create;
+  lPool := TtiPoolForTesting.Create;
   lPool.Free;
 end;
 
@@ -391,7 +302,7 @@ end;
 
 procedure TThresPoolThread.LockItems;
 var
-  lItem : TPooledItem;
+  lItem : TtiBaseObject;
   i    : integer;
 begin
   for i := 1 to FItemCount do
@@ -409,11 +320,28 @@ var
 begin
   for i := 0 to FItemCount - 1 do
   begin
-    Pool.UnLock(FItemList.Items[i] as TPooledItem);
+    Pool.UnLock(FItemList.Items[i] as TtiPooledItem);
     Sleep(100);
   end;
 end;
 
+
+{ TtiPoolForTesting }
+
+procedure TtiPoolForTesting.AfterAddPooledItem(const APooledItem: TtiPooledItem);
+begin
+  APooledItem.Data := TTestPoolItemData.Create;
+end;
+
+function TtiPoolForTesting.PooledItemClass: TtiPooledItemClass;
+begin
+  result:= TtiPooledItem;
+end;
+
+procedure TtiPoolForTesting.SweepForTimeouts;
+begin
+  inherited;
+end;
 
 end.
 

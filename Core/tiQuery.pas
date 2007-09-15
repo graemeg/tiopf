@@ -73,6 +73,13 @@ function tiTypeKindToQueryFieldKind(AValue : TtiTypeKind): TtiQueryFieldKind;
 
 type
 
+  TtiDBConnectionParams = record
+    DatabaseName: string;
+    UserName: string;
+    UserPassword: string;
+    Params: string
+  end;
+
   TtiQueryType = (
                    qtSelect,
                    qtInsert,
@@ -100,12 +107,12 @@ type
     function    GetItems(i: integer): TtiDBMetaDataTable; reintroduce;
     procedure   SetItems(i: integer; const AValue: TtiDBMetaDataTable); reintroduce;
     function    GetCaption : string; override;
-    function    GetOwner: TtiObject; reintroduce;
-    procedure   SetOwner(const AValue: TtiObject); reintroduce;
+//    function    GetOwner: TtiObject; reintroduce;
+//    procedure   SetOwner(const AValue: TtiObject); reintroduce;
   public
     property    Items[i:integer]: TtiDBMetaDataTable read GetItems write SetItems;
     procedure   Add(AObject : TtiDBMetaDataTable; ADefaultDispOrder : boolean = true); reintroduce;
-    property    Owner       : TtiObject   read GetOwner      write SetOwner;
+//    property    Owner       : TtiObject   read GetOwner      write SetOwner;
     procedure   Read(const ADBConnectionName: string = ''; APersistenceLayerName : string = ''); override;
     procedure   Clear; override;
     function    FindByTableName(const ATableName : TTableName): TtiDBMetaDataTable;
@@ -176,7 +183,6 @@ type
     FPassword    : string;
     FDatabaseName : string;
     FParams       : TStringList;
-    FTraceLevel  : integer;
     FErrorInLastCall: boolean;
   protected
     // Implement these in the concrete
@@ -193,7 +199,6 @@ type
     property    UserName    : string  read FUserName      write FUserName    ;
     property    Password    : string  read FPassword      write FPassword    ;
     property    Connected   : boolean read GetConnected    write SetConnected  ;
-    property    TraceLevel  : integer read FTraceLevel    write FTraceLevel  ;
     property    ErrorInLastCall : boolean read FErrorInLastCall write FErrorInLastCall;
 
     // Implement these in the concrete
@@ -715,7 +720,7 @@ end;
 function TtiDBMetaData.GetCaption: string;
 begin
   Assert(Owner <> nil, 'Owner is nill');
-  result := TDBConnectionPool(Owner).DBConnectParams.DatabaseName;
+  result := TtiDBConnectionPool(Owner).DatabaseAlias;
 end;
 
 function TtiDBMetaData.GetItems(i: integer): TtiDBMetaDataTable;
@@ -723,23 +728,23 @@ begin
   result := TtiDBMetaDataTable(inherited GetItems(i));
 end;
 
-function TtiDBMetaData.GetOwner: TtiObject;
-begin
-  result := TDBConnectionPool(inherited GetOwner);
-end;
+//function TtiDBMetaData.GetOwner: TtiObject;
+//begin
+//  result := TDBConnectionPool(inherited GetOwner);
+//end;
 
 procedure TtiDBMetaData.Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = '');
 var
-  lPooledDB : TPooledDB;
+  LDatabase : TtiDatabase;
 begin
   if ObjectState <> posEmpty then
     Exit; //==>
-  lPooledDB := TDBConnectionPool(Owner).Lock;
+  LDatabase := TtiDBConnectionPool(Owner).Lock;
   try
     Clear;
-    lPooledDB.Database.ReadMetaDataTables(Self);
+    LDatabase.ReadMetaDataTables(Self);
   finally
-    TDBConnectionPool(Owner).UnLock(lPooledDB);
+    TtiDBConnectionPool(Owner).UnLock(LDatabase);
   end;
 end;
 
@@ -749,10 +754,10 @@ begin
   inherited SetItems(i, AValue);
 end;
 
-procedure TtiDBMetaData.SetOwner(const AValue: TtiObject);
-begin
-  inherited SetOwner(AValue as TtiObject);
-end;
+//procedure TtiDBMetaData.SetOwner(const AValue: TtiObject);
+//begin
+//  inherited SetOwner(AValue as TtiObject);
+//end;
 
 { TtiDBMetaDataTable }
 
@@ -861,15 +866,15 @@ end;
 
 procedure TtiDBMetaDataTable.Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = '');
 var
-  lPooledDB : TPooledDB;
+  LDatabase : TtiDatabase;
 begin
   if ObjectState <> posPK then
     Exit; //==>
-  lPooledDB := TDBConnectionPool(Owner.Owner).Lock;
+  LDatabase := TtiDBConnectionPool(Owner.Owner).Lock;
   try
-  lPooledDB.Database.ReadMetaDataFields(Self);
+  LDatabase.ReadMetaDataFields(Self);
   finally
-    TDBConnectionPool(Owner.Owner).UnLock(lPooledDB);
+    TtiDBConnectionPool(Owner.Owner).UnLock(LDatabase);
   end;
 end;
 

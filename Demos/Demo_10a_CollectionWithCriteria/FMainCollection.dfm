@@ -1,8 +1,8 @@
 object FormCollection: TFormCollection
   Left = 262
   Top = 204
-  Width = 601
-  Height = 428
+  ClientHeight = 394
+  ClientWidth = 593
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

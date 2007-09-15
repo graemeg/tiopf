@@ -2,17 +2,16 @@ unit tiDBConnectionPool;
 
 {$I tiDefines.inc}
 
-// ToDo:
-//   Refactor so Lock & UnLock return and accept a TtiDatabase, not a TPooledDB
-
 interface
 uses
    tiBaseObject
   ,tiObject
   ,tiQuery
   ,tiPool
+  ,Classes
   ,Contnrs
   ,SysUtils
+  ,SyncObjs
  ;
 
 const
@@ -21,118 +20,69 @@ const
 
 type
 
-  TDBConnectParams    = class;
-  TDBConnectionPool   = class;
-
-  // A holder for database connection info: DatabaseName, UserName, Password.
-  TDBConnectParams = class(TtiBaseObject)
-  private
-    FsUserName      : string;
-    FsDatabaseName  : string;
-    FsUserPassword  : string;
-    FbCancelled     : boolean;
-    FsConnectionName : string;
-    FsHostName      : string;
-    FiTraceLevel    : integer;
-    FParams: string;
-    function  GetAsString: string;
-    procedure SetAsString(const AValue: string);
-  public
-    constructor Create;
-    constructor CreateExt(const psConnectionDetails : string);
-    property    Cancelled   : boolean read FbCancelled    write FbCancelled;
-    property    AsString    : string  read GetAsString    write SetAsString;
-    property    TraceLevel  : integer read FiTraceLevel   write FiTraceLevel;
-    function    UserPasswordMask : string;
-    function    Validate    : boolean;
-    procedure   Assign(AData : TDBConnectParams); reintroduce;
-    property ConnectionName : string read FsConnectionName write FsConnectionName;
-    property DatabaseName : string   read FsDatabaseName   write FsDatabaseName;
-    property UserName    : string   read FsUserName       write FsUserName    ;
-    property UserPassword : string   read FsUserPassword   write FsUserPassword;
-    property HostName    : string   read FsHostName       write FsHostName    ;
-    property Params      : string   read FParams          Write FParams;
-  end;
-
-  // A List of TDBConnectParams
-  TDBConnectParamsList = class(TObjectList)
-    function FindByConnectionName(const psConnectionName : string): TDBConnectParams;
-  end;
-
-  // A pooled database connection
-  TPooledDB = class(TPooledItem)
-  private
-    function GetDatabase: TtiDatabase;
-    procedure SetDatabase(const AValue: TtiDatabase);
-  public
-    constructor Create(AOwner : TtiPool); override;
-    destructor  Destroy; override;
-    property    Database : TtiDatabase read GetDatabase write SetDatabase;
-    procedure   Connect(pDBConnectParams : TDBConnectParams);
-    function    Owner : TDBConnectionPool; reintroduce;
-    function    MustRemoveItemFromPool(AListCount: Integer): boolean; override;
-  end;
-
-  TPooledDBEvent = procedure (pPooledDB : TPooledDB) of object;
+  TtiDBConnectionPools   = class;
+  TtiDBConnectionPool   = class;
 
   TtiDBConnectionPoolDataAbs = class(TtiBaseObject)
   private
-    FDBConnectionPool: TDBConnectionPool;
+    FDBConnectionPool: TtiDBConnectionPool;
   public
-    property  DBConnectionPool : TDBConnectionPool read FDBConnectionPool write FDBConnectionPool;
+    property  DBConnectionPool : TtiDBConnectionPool read FDBConnectionPool write FDBConnectionPool;
     procedure InitDBConnectionPool; virtual;
   end;
 
   TtiDBConnectionPoolDataClass = class of TtiDBConnectionPoolDataAbs;
 
   // The database connection pool
-  TDBConnectionPool = class(TtiPool)
+  TtiDBConnectionPool = class(TtiPool)
   private
-    FDBConnectParams : TDBConnectParams;
-    FbInitCalled : boolean;
-    FMetaData : TtiDBMetaData;
-    procedure DoOnAddPooledItem(APooledItem : TPooledItem);
-    procedure AddConnection;
+    FDBConnectionPools: TtiDBConnectionPools;
+    FDBConnectionParams : TtiDBConnectionParams;
+    FDatabaseAlias: string;
     procedure Init;
-    function  GetMetaData: TtiDBMetaData;
 
+  protected
+    function    PooledItemClass: TtiPooledItemClass; override;
+    procedure   AfterAddPooledItem(const APooledItem: TtiPooledItem); override;
+    property    DBConnectionPools: TtiDBConnectionPools read FDBConnectionPools;
   public
-    constructor Create; override;
+    constructor Create(const ADBConnectionPools: TtiDBConnectionPools;
+      const ADatabaseAlias: string; const ADBConnectionParams: TtiDBConnectionParams);
     destructor  Destroy; override;
-    property    DBConnectParams : TDBConnectParams read FDBConnectParams write FDBConnectParams;
-    function    Lock : TPooledDB; reintroduce;
-    procedure   UnLock(pDBConnection : TPooledDB); reintroduce;
-    // This will connect using the parameters passed. If connection is not successful,
-    // a dialog will show asking the user to enter details.
-    procedure   Connect(const ADatabaseName, AUserName, psUserPassword, AParams : string); overload;
-    property    MetaData : TtiDBMetaData read GetMetaData;
+    property    DBConnectParams : TtiDBConnectionParams read FDBConnectionParams;
+    property    DatabaseAlias: string read FDatabaseAlias;
+    function    Lock : TtiDatabase; reintroduce;
+    procedure   UnLock(const ADatabase: TtiDatabase); reintroduce;
     function    DetailsAsString : string;
 
   end;
 
   // Maintains a list of TDBConnectionPool(s) so a single app can connect to
   // multiple databases.
-  TDBConnectionPools = class(TtiObject)
+  TtiDBConnectionPools = class(TtiBaseObject)
   private
+    FPersistenceLayer: TtiBaseObject;
     FList : TObjectList;
-    function GetItems(i: integer): TDBConnectionPool;
+    FCritSect: TCriticalSection;
+    function GetItems(i: integer): TtiDBConnectionPool;
   public
-    Constructor Create; override;
+    Constructor Create(const APersistenceLayer: TtiBaseObject);
     Destructor  Destroy; override;
-    function    Lock(      const psDBConnectionName : string): TPooledDB;
-    // ToDo: Unlock should be able to work out which database pool from the
-    // PDBConnection parameter. No need for the psConnectionName param.
-    procedure   UnLock(      const psDBConnectionName : string; pDBConnection : TPooledDB);
-    procedure   UnLockByData(const psDBConnectionName : string; pDBConnection : TtiDatabase);
-    procedure   Connect(     const ADatabaseName, AUserName, psUserPassword : string; const AParams : string);
-    procedure   DisConnect(  const psConnectionName : string);
-    procedure   DisConnectAll;
-    function    Find(        const psDBConnectionName : string): TDBConnectionPool; reintroduce;
+    function    Lock(      const ADatabaseAlias : string): TtiDatabase; reintroduce;
+    procedure   UnLock(      const ADatabaseAlias : string; const ADatabase : TtiDatabase); reintroduce;
+    procedure   Connect(     const ADatabaseAlias, ADatabaseName, AUserName, psUserPassword : string; const AParams : string);
+    procedure   AddInstance( const ADatabaseAlias, ADatabaseName, AUserName, psUserPassword : string; const AParams : string);
+    function    Find(        const ADatabaseAlias : string): TtiDBConnectionPool; reintroduce;
+    procedure   Disconnect(  const ADatabaseAlias : string);
+    procedure   DisconnectAll;
+
     function    DetailsAsString : string;
     procedure   Clear;
-    function    IsConnected(const ADBConnectionName : string): boolean;
+    function    IsConnected(const ADatabaseAlias : string): boolean;
     function    Count : integer;
-    property    Items[i:integer]:TDBConnectionPool read GetItems;
+    property    Items[i:integer]:TtiDBConnectionPool read GetItems;
+
+    property    PersistenceLayer: TtiBaseObject read FPersistenceLayer;
   end;
 
 
@@ -155,177 +105,70 @@ const
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
-// * TPooledDB
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TPooledDB.Create(AOwner : TtiPool);
-begin
-  inherited create(AOwner);
-end;
-
-destructor TPooledDB.destroy;
-begin
-  inherited destroy;
-end;
-
-procedure TPooledDB.Connect(pDBConnectParams: TDBConnectParams);
-begin
-  Database.TraceLevel := pDBConnectParams.TraceLevel;
-  Database.Connect(pDBConnectParams.DatabaseName,
-                    pDBConnectParams.UserName,
-                    pDBConnectParams.UserPassword,
-                    pDBConnectParams.Params);
-end;
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
 // * TDBConnectParams
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TDBConnectParams.Create;
+procedure TtiDBConnectionPool.AfterAddPooledItem(const APooledItem: TtiPooledItem);
+var
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDatabase: TtiDatabase;
 begin
-  inherited;
-  FsUserPassword := ''   ;
-  FsUserName    := ''   ;
-  FsDatabaseName := ''   ;
-  FsUserPassword := ''   ;
-  FiTraceLevel  := 0    ;
-  FbCancelled   := false;
+  LPersistenceLayer := (DBConnectionPools.PersistenceLayer as TtiPersistenceLayer);
+  LDatabase:= LPersistenceLayer.tiDatabaseClass.Create;
+  APooledItem.Data:= LDatabase;
+  LDatabase.Connect(
+    DBConnectParams.DatabaseName,
+    DBConnectParams.UserName,
+    DBConnectParams.UserPassword,
+    DBConnectParams.Params);
 end;
 
-constructor TDBConnectParams.CreateExt(const psConnectionDetails : string);
+constructor TtiDBConnectionPool.Create(
+  const ADBConnectionPools: TtiDBConnectionPools;
+  const ADatabaseAlias: string;
+  const ADBConnectionParams: TtiDBConnectionParams);
 begin
-  Create;
-  AsString := psConnectionDetails;
-end;
-
-procedure TDBConnectParams.Assign(AData: TDBConnectParams);
-begin
-  ConnectionName := AData.ConnectionName;
-  HostName      := AData.HostName      ;
-  DatabaseName  := AData.DatabaseName  ;
-  UserName      := AData.UserName      ;
-  UserPassword  := AData.UserPassword  ;
-  TraceLevel    := AData.TraceLevel    ;
-  Cancelled     := AData.Cancelled     ;
-end;
-
-function TDBConnectParams.UserPasswordMask: string;
-begin
-  result := StringOfChar('*', length(UserPassword));
-end;
-
-function TDBConnectParams.Validate: boolean;
-begin
-  result := (DatabaseName <> '') and
-            (UserName <> '') and
-            (UserPassword <> ''){ and
-            (HostName <> '')};
-            // No host name here as we are just validating for user input at logon.
-end;
-
-procedure TDBConnectionPool.AddConnection;
-begin
+  inherited Create;
+  FDBConnectionPools:= ADBConnectionPools;
+  FDatabaseAlias:= ADatabaseAlias;
+  FDBConnectionParams:= ADBConnectionParams;
   Init;
-  AddItem;
 end;
 
-procedure TDBConnectionPool.Connect(const ADatabaseName,
-                                          AUserName,
-                                          psUserPassword,
-                                          AParams: string);
+destructor TtiDBConnectionPool.Destroy;
 begin
-  try
-    DBConnectParams.ConnectionName := ADatabaseName;
-    DBConnectParams.DatabaseName  := ADatabaseName;
-    DBConnectParams.UserName      := AUserName;
-    DBConnectParams.UserPassword  := psUserPassword;
-    DBConnectParams.Params        := AParams;
-    AddConnection
-  except
-    on e:exception do
-      if gTIOPFManager.TerminateOnFailedDBConnection then
-      begin
-        gTIOPFManager.Terminate;
-        raise;
-      end else
-        raise;
+  inherited;
+end;
+
+function TtiDBConnectionPool.Lock: TtiDatabase;
+begin
+  result := TtiDatabase(inherited Lock);
+end;
+
+type
+  TtiPooledDatabase = class(TtiPooledItem)
+  public
+    function MustRemoveItemFromPool(AListCount: Integer): boolean; override;
   end;
+
+  function TtiPooledDatabase.MustRemoveItemFromPool(AListCount: Integer): Boolean;
+  begin
+    Assert(Data.TestValid(TtiDatabase), cTIInvalidObjectError);
+    result :=
+      (Inherited MustRemoveItemFromPool(AListCount)) or
+      ((Data as TtiDatabase).ErrorInLastCall);
+  end;
+
+function TtiDBConnectionPool.PooledItemClass: TtiPooledItemClass;
+begin
+  result:= TtiPooledDatabase;
 end;
 
-constructor TDBConnectionPool.Create;
+procedure TtiDBConnectionPool.UnLock(const ADatabase: TtiDatabase);
 begin
-  inherited;
-  PooledItemClass := TPooledDB;
-  OnAddPooledItem := DoOnAddPooledItem;
-  FDBConnectParams := TDBConnectParams.Create;
-  FbInitCalled := false;
-end;
-
-destructor TDBConnectionPool.Destroy;
-begin
-  FDBConnectParams.Free;
-//  FDBConnectionPoolData.Free;
-  FMetaData.Free;
-  inherited;
-end;
-
-procedure TDBConnectionPool.DoOnAddPooledItem(APooledItem: TPooledItem);
-var
-  lRegPerLayer : TtiPersistenceLayer;
-begin
-  lRegPerLayer := (Owner.Owner as TtiPersistenceLayer);
-  TPooledDB(APooledItem).Database := lRegPerLayer.tiDatabaseClass.Create;
-  TPooledDB(APooledItem).Connect(DBConnectParams);
-end;
-
-function TDBConnectionPool.Lock: TPooledDB;
-begin
-  result := TPooledDB(inherited Lock);
-end;
-
-procedure TDBConnectionPool.UnLock(pDBConnection: TPooledDB);
-begin
-  Assert(pDBConnection.TestValid(TPooledDB), cErrorTIPerObjAbsTestValid);
-  Assert(not pDBConnection.Database.InTransaction, 'Database in transaction immediately before being unlocked in DBConnectionPool.');
-  inherited UnLock(pDBConnection);
-end;
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TDBConnectParamsList
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-function TDBConnectParamsList.FindByConnectionName(
-  const psConnectionName: string): TDBConnectParams;
-var
-  i : integer;
-begin
-  result := nil;
-  for i := 0 to Count - 1 do
-    if SameText(TDBConnectParams(Items[i]).ConnectionName,
-                psConnectionName) then begin
-      result := TDBConnectParams(Items[i]);
-      break; //==>
-    end;
-end;
-
-function TDBConnectParams.GetAsString: string;
-begin
-  result := ConnectionName + cusParamDelim +
-            HostName       + cusParamDelim +
-            DatabaseName   + cusParamDelim +
-            UserName       + cusParamDelim +
-            UserPassword  ;
-end;
-
-procedure TDBConnectParams.SetAsString(const AValue: string);
-begin
-  ConnectionName := tiToken(AValue, cusParamDelim, 1);
-  HostName      := tiToken(AValue, cusParamDelim, 2);
-  DatabaseName  := tiToken(AValue, cusParamDelim, 3);
-  UserName      := tiToken(AValue, cusParamDelim, 4);
-  UserPassword  := tiToken(AValue, cusParamDelim, 5);
+  Assert(ADatabase.TestValid, cTIInvalidObjectError);
+  Assert(not ADatabase.InTransaction, 'Database in transaction immediately before being unlocked in DBConnectionPool.');
+  inherited UnLock(ADatabase);
 end;
 
 procedure TtiDBConnectionPoolDataAbs.InitDBConnectionPool;
@@ -333,16 +176,12 @@ begin
   // Do nothing, implement in the concrete
 end;
 
-procedure TDBConnectionPool.Init;
+procedure TtiDBConnectionPool.Init;
 var
   lRegPerLayer : TtiPersistenceLayer;
   lDBConnectionPoolData : TtiDBConnectionPoolDataAbs;
 begin
-  if FbInitCalled then
-    Exit; //==>
-  FbInitCalled := true;
-
-  lRegPerLayer := (Owner.Owner as TtiPersistenceLayer);
+  lRegPerLayer := (DBConnectionPools.PersistenceLayer as TtiPersistenceLayer);
   lDBConnectionPoolData := lRegPerLayer.tiDBConnectionPoolDataClass.Create;
   try
     lDBConnectionPoolData.DBConnectionPool := self;
@@ -357,192 +196,211 @@ end;
 //* TDBConnectionPools
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TDBConnectionPools.Create;
+constructor TtiDBConnectionPools.Create(const APersistenceLayer: TtiBaseObject);
 begin
-  inherited;
+  inherited Create;
+  Assert(APersistenceLayer.TestValid(TtiPersistenceLayer, True), cTIInvalidObjectError);
+  FPersistenceLayer:= APersistenceLayer;
   FList := TObjectList.Create;
+  FCritSect:= TCriticalSection.Create;
 end;
 
-destructor TDBConnectionPools.Destroy;
+destructor TtiDBConnectionPools.Destroy;
 begin
   FList.Free;
+  FCritSect.Free;
   inherited;
 end;
 
-procedure TDBConnectionPools.Connect(const ADatabaseName,
+procedure TtiDBConnectionPools.Connect(const ADatabaseAlias, ADatabaseName,
   AUserName, psUserPassword, AParams: string);
 var
-  lDBConnectionPool : TDBConnectionPool;
+  lDBConnectionPool : TtiDBConnectionPool;
+  LDBConnectionParams: TtiDBConnectionParams;
+  LDatabase: TtiDatabase;
 begin
-  lDBConnectionPool := Find(ADatabaseName);
-  if lDBConnectionPool <> nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToAddDuplicateDBConnectionPool, [ADatabaseName + '/' + AUserName]);
-  Log('Creating database connection pool for %s/%s', [ADatabaseName, AUserName], lsConnectionPool);
-  lDBConnectionPool := TDBConnectionPool.Create;
+  LDBConnectionParams.DatabaseName:= ADatabaseName;
+  LDBConnectionParams.UserName:= AUserName;
+  LDBConnectionParams.Params:= AParams;
+
+  FCritSect.Enter;
   try
-    lDBConnectionPool.Owner := self;
-    lDBConnectionPool.Connect(ADatabaseName, AUserName, psUserPassword, AParams);
-    FList.Add(lDBConnectionPool);
-  except
-    on e:exception do
-    begin
-      lDBConnectionPool.Free;
-      Raise;
+    lDBConnectionPool := Find(ADatabaseAlias);
+    if lDBConnectionPool <> nil then
+      raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToAddDuplicateDBConnectionPool, [ADatabaseName + '/' + AUserName]);
+    Log('Creating database connection pool for %s/%s', [ADatabaseName, AUserName], lsConnectionPool);
+    lDBConnectionPool := TtiDBConnectionPool.Create(Self, ADatabaseAlias, LDBConnectionParams);
+    try
+      LDatabase:= LDBConnectionPool.Lock;
+      LDBConnectionPool.Unlock(LDatabase);
+      FList.Add(lDBConnectionPool);
+    except
+      on e:exception do
+      begin
+        lDBConnectionPool.Free;
+        Raise;
+      end;
     end;
+  finally
+    FCritSect.Leave;
   end;
 end;
 
-function TDBConnectionPools.Find(const psDBConnectionName: string): TDBConnectionPool;
+function TtiDBConnectionPools.Find(const ADatabaseAlias: string): TtiDBConnectionPool;
 var
   i : integer;
 begin
-  result := nil;
+  // ToDo: No thread protection here, because find may be called from inside a
+  //       block that is already protected
   for i := 0 to FList.Count - 1 do
-    if SameText(TDBConnectionPool(FList.Items[i]).DBConnectParams.ConnectionName,
-                 psDBConnectionName) then
+    if SameText(Items[i].DatabaseAlias, ADatabaseAlias) then
     begin
-      result := TDBConnectionPool(FList.Items[i]);
+      result := Items[i];
       Exit; //==>
     end;
+  result := nil;
 end;
 
-function TDBConnectionPools.Lock(const psDBConnectionName: string): TPooledDB;
+function TtiDBConnectionPools.Lock(const ADatabaseAlias: string): TtiDatabase;
 var
-  lDBConnectionPool : TDBConnectionPool;
+  LDBConnectionPool : TtiDBConnectionPool;
 begin
-  // Try to find a pool of DB connections
-  lDBConnectionPool := Find(psDBConnectionName);
-  // Some error checking
-  if lDBConnectionPool = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psDBConnectionName]);
-  // Success. So try and lock a connection.
-  result := lDBConnectionPool.Lock;
-end;
-
-procedure TDBConnectionPools.UnLock(const psDBConnectionName: string;
-                                      pDBConnection: TPooledDB);
-var
-  lDBConnectionPool : TDBConnectionPool;
-begin
-  lDBConnectionPool := Find(psDBConnectionName);
-  Assert(lDBConnectionPool.TestValid(TDBConnectionPool, True), cErrorTIPerObjAbsTestValid);
-  if lDBConnectionPool = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psDBConnectionName]);
-  lDBConnectionPool.UnLock(pDBConnection);
-end;
-
-function TPooledDB.Owner: TDBConnectionPool;
-begin
-  result := TDBConnectionPool(Inherited Owner);
-end;
-
-function TDBConnectionPool.GetMetaData: TtiDBMetaData;
-begin
-  if FMetaData = nil then
-  begin
-      FMetaData := TtiDBMetaData.Create;
-      FMetaData.Owner := Self;
-      FMetaData.Read;
+  result:= nil;
+  FCritSect.Enter;
+  try
+    LDBConnectionPool := Find(ADatabaseAlias);
+    if LDBConnectionPool = nil then
+      raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [ADatabaseAlias]);
+    result := LDBConnectionPool.Lock;
+  finally
+    FCritSect.Leave;
   end;
-  result := FMetaData;
 end;
 
-function TDBConnectionPools.DetailsAsString: string;
+procedure TtiDBConnectionPools.UnLock(const ADatabaseAlias: string;
+  const ADatabase : TtiDatabase);
+var
+  LDBConnectionPool : TtiDBConnectionPool;
+begin
+  FCritSect.Enter;
+  try
+    LDBConnectionPool := Find(ADatabaseAlias);
+    Assert(LDBConnectionPool.TestValid(TtiDBConnectionPool, True), cErrorTIPerObjAbsTestValid);
+    if LDBConnectionPool = nil then
+      raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [ADatabaseAlias]);
+    LDBConnectionPool.UnLock(ADatabase);
+  finally
+    FCritSect.Leave;
+  end;
+end;
+
+
+function TtiDBConnectionPools.DetailsAsString: string;
 var
   i : integer;
 begin
-  result := '';
-  // This is not thread safe!
-  for i := 0 to FList.Count - 1 do
-  begin
-    result := tiAddTrailingValue(result, CrLf(2), true);
-    result := result + TDBConnectionPool(FList.Items[i]).DetailsAsString;
+  FCritSect.Enter;
+  try
+    result := '';
+    // This is not thread safe!
+    for i := 0 to FList.Count - 1 do
+    begin
+      result := tiAddTrailingValue(result, CrLf(2), true);
+      result := result + TtiDBConnectionPool(FList.Items[i]).DetailsAsString;
+    end;
+  finally
+    FCritSect.Leave;
   end;
 end;
 
-function TDBConnectionPool.DetailsAsString: string;
+function TtiDBConnectionPool.DetailsAsString: string;
 var
-  lDBConnectionPools : TDBConnectionPools;
-  lRegPerLayer : TtiPersistenceLayer;
+  LPersistenceLayer : TtiPersistenceLayer;
 begin
-  Assert(Owner.TestValid(TDBConnectionPools), cTIInvalidObjectError);
-  lDBConnectionPools := Owner as TDBConnectionPools;
-  Assert(lDBConnectionPools.Owner.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
-  lRegPerLayer := lDBConnectionPools.Owner as TtiPersistenceLayer;
+  Assert(DBConnectionPools.TestValid(TtiDBConnectionPools), cTIInvalidObjectError);
+  Assert(DBConnectionPools.PersistenceLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
+  LPersistenceLayer := DBConnectionPools.PersistenceLayer as TtiPersistenceLayer;
   result :=
-    'Persistence layer:   ' + lRegPerLayer.PerLayerName + Cr +
+    'Persistence layer:   ' + LPersistenceLayer.PerLayerName + Cr +
     'Database name:       ' + DBConnectParams.DatabaseName + Cr +
     'User name:           ' + DBConnectParams.UserName     + Cr +
     'Password:            ' + tiReplicate('X', Length(DBConnectParams.UserPassword)) + Cr +
     'Number in pool:      ' + IntToStr(Count);
 end;
 
-procedure TDBConnectionPools.Clear;
+procedure TtiDBConnectionPools.AddInstance(const ADatabaseAlias, ADatabaseName,
+  AUserName, psUserPassword, AParams: string);
+var
+  lDBConnectionPool : TtiDBConnectionPool;
+  LDBConnectionParams: TtiDBConnectionParams;
 begin
+  LDBConnectionParams.DatabaseName:= ADatabaseName;
+  LDBConnectionParams.UserName:= AUserName;
+  LDBConnectionParams.Params:= AParams;
+  FCritSect.Enter;
+  try
+    lDBConnectionPool := Find(ADatabaseAlias);
+    if lDBConnectionPool <> nil then
+      raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToAddDuplicateDBConnectionPool, [ADatabaseName + '/' + AUserName]);
+    lDBConnectionPool := TtiDBConnectionPool.Create(Self, ADatabaseAlias, LDBConnectionParams);
+    FList.Add(lDBConnectionPool);
+  finally
+    FCritSect.Leave;
+  end;
+end;
+
+procedure TtiDBConnectionPools.Clear;
+begin
+  FCritSect.Enter;
+  try
   FList.Clear;
+  finally
+    FCritSect.Leave;
+  end;
 end;
 
-procedure TDBConnectionPools.DisConnect(const psConnectionName: string);
+procedure TtiDBConnectionPools.Disconnect(const ADatabaseAlias: string);
 var
-  lDBConnectionPool : TDBConnectionPool;
+  lDBConnectionPool : TtiDBConnectionPool;
 begin
-  lDBConnectionPool := Find(psConnectionName);
-  if lDBConnectionPool =  nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psConnectionName]);
-  FList.Extract(lDBConnectionPool);
-  lDBConnectionPool.Free;
+  FCritSect.Enter;
+  try
+    lDBConnectionPool := Find(ADatabaseAlias);
+    if lDBConnectionPool =  nil then
+      raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [ADatabaseAlias]);
+    FList.Extract(lDBConnectionPool);
+    lDBConnectionPool.Free;
+  finally
+    FCritSect.Leave;
+  end;
 end;
 
-function TDBConnectionPools.IsConnected(const ADBConnectionName: string): boolean;
+function TtiDBConnectionPools.IsConnected(const ADatabaseAlias: string): boolean;
 begin
-  result := (Find(ADBConnectionName) <> nil);
+  result := (Find(ADatabaseAlias) <> nil);
 end;
 
-function TDBConnectionPools.Count: integer;
+function TtiDBConnectionPools.Count: integer;
 begin
+  FCritSect.Enter;
+  try
   result := FList.Count;
+  finally
+    FCritSect.Leave;
+  end;
 end;
 
-function TDBConnectionPools.GetItems(i: integer): TDBConnectionPool;
+function TtiDBConnectionPools.GetItems(i: integer): TtiDBConnectionPool;
 begin
-  result := TDBConnectionPool(FList.Items[i])
+  result := TtiDBConnectionPool(FList.Items[i])
 end;
 
-function TPooledDB.GetDatabase: TtiDatabase;
-begin
-  Assert(Data.TestValid(TtiDatabase), cErrorTIPerObjAbsTestValid);
-  result := Data as TtiDatabase;
-end;
-
-procedure TPooledDB.SetDatabase(const AValue: TtiDatabase);
-begin
-  Data := AValue;
-end;
-
-procedure TDBConnectionPools.UnLockByData(const psDBConnectionName: string; pDBConnection: TtiDatabase);
-var
-  lDBConnectionPool : TDBConnectionPool;
-begin
-  lDBConnectionPool := Find(psDBConnectionName);
-  if lDBConnectionPool = nil then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [psDBConnectionName]);
-  lDBConnectionPool.UnLockByData(pDBConnection);
-end;
-
-procedure TDBConnectionPools.DisConnectAll;
+procedure TtiDBConnectionPools.DisconnectAll;
 var
   i : integer;
 begin
   for i := Count - 1 downto 0 do
-    DisConnect(Items[i].DBConnectParams.DatabaseName);
-end;
-
-function TPooledDB.MustRemoveItemFromPool(AListCount: Integer): Boolean;
-begin
-  Assert(Database.TestValid(TtiDatabase), cTIInvalidObjectError);
-  result :=
-    (Inherited MustRemoveItemFromPool(AListCount)) or
-    (Database.ErrorInLastCall);
+    Disconnect(Items[i].DBConnectParams.DatabaseName);
 end;
 
 end.

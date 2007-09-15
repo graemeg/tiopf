@@ -152,7 +152,7 @@ begin
 
     if not LM.DefaultPerLayer.DatabaseExists(LDatabaseName, '', '') then
       LM.DefaultPerLayer.CreateDatabase(LDatabaseName, '', '');
-    LM.DefaultPerLayer.DBConnectionPools.Connect(LDatabaseName, '', '', '');
+    LM.DefaultPerLayer.DBConnectionPools.Connect(LDatabaseName, LDatabaseName, '', '', '');
 
     LVCC.SetDatabaseAndPersistenceLayerNames(cTIPersistXMLLight, LDatabaseName);
     CheckEquals(cTIPersistXMLLight, LVCC.PersistenceLayerName);
@@ -223,7 +223,7 @@ begin
   AOPDMSManager := TtiOPFManager.Create;
   tiQueryXMLLight.RegisterPersistenceLayer(AOPDMSManager.PersistenceLayers);
   AOPDMSManager.DefaultPerLayer.CreateDatabase(ADatabaseName, '', '');
-  AOPDMSManager.DefaultPerLayer.DBConnectionPools.Connect(ADatabaseName, '', '', '');
+  AOPDMSManager.DefaultPerLayer.DBConnectionPools.Connect(ADatabaseName, ADatabaseName, '', '', '');
   AConfig := TTestTIObjectVisitorControllerConfig.Create(AOPDMSManager.VisitorManager);
   AConfig.FTIOPFManager := AOPDMSManager;
   AConfig.SetDatabaseAndPersistenceLayerNames(cTIPersistXMLLight, ADatabaseName);

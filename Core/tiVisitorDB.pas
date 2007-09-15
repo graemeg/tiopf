@@ -67,7 +67,6 @@ type
   TtiObjectVisitorController = class(TtiVisitorController)
   private
     FPersistenceLayer: TtiPersistenceLayer;
-    FPooledDB:         TPooledDB;
     FDatabase:         TtiDatabase;
   protected
     function TIOPFManager: TtiBaseObject; virtual;
@@ -283,9 +282,8 @@ begin
     LVisited:= LTouchedByVisitor.Visited as TtiObject;
     LVisitor.Final(LVisited);
   end;
-  FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
+  FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FDatabase);
   FDatabase := nil;
-  FPooledDB := nil;
 end;
 
 procedure TtiObjectVisitorController.AfterExecuteVisitorGroupError;
@@ -293,9 +291,8 @@ begin
   Assert(FDatabase.TestValid, cTIInvalidObjectError);
   Assert(FPersistenceLayer.TestValid, cTIInvalidObjectError);
   FDatabase.RollBack;
-  FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FPooledDB);
+  FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FDatabase);
   FDatabase := nil;
-  FPooledDB := nil;
 end;
 
 procedure TtiObjectVisitorController.AfterExecuteVisitor(const AVisitor: TtiVisitor);
@@ -308,8 +305,7 @@ begin
   FPersistenceLayer := (TIOPFManager as TtiOPFManager).PersistenceLayers.FindByPerLayerName(
     PersistenceLayerName);
   Assert(FPersistenceLayer <> nil, 'Unable to find RegPerLayer <' + PersistenceLayerName + '>');
-  FPooledDB         := FPersistenceLayer.DBConnectionPools.Lock(DatabaseName);
-  FDatabase         := FPooledDB.Database;
+  FDatabase         := FPersistenceLayer.DBConnectionPools.Lock(DatabaseName);
   FDatabase.StartTransaction;
 end;
 
