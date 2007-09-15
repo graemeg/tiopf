@@ -93,7 +93,6 @@ type
     procedure   Clear;
     function    AddItem : TtiPooledItem;
     procedure   SweepForTimeOuts; virtual;
-    procedure   ForEachPooledItem(const AMethod : TtiPooledItemEvent);
     procedure   Remove(const APooledItem : TtiPooledItem);
     function    PooledItemClass: TtiPooledItemClass; virtual; abstract;
     procedure   AfterAddPooledItem(const APooledItem: TtiPooledItem); virtual; abstract;
@@ -111,6 +110,7 @@ type
 
     function    Lock : TtiBaseObject; virtual;
     procedure   UnLock(const APooledItemData : TtiBaseObject); virtual;
+    procedure   ForEachPooledItem(const AMethod : TtiPooledItemEvent);
 
   end;
 

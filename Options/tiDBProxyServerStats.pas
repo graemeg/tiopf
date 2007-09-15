@@ -6,6 +6,7 @@ uses
   ,tiQueryXMLLight
   ,tiPool
   ,tiQueryRemote_Svr
+  ,tiQuery
  ;
 
 type
@@ -17,7 +18,7 @@ type
     procedure InsertSummary;
     procedure InsertDBConnectionPool;
     procedure InsertStatefulDBConPool;
-    procedure ForEachDBConnectionPoolItem(const APooledItem: TPooledItem);
+    procedure ForEachDBConnectionPoolItem(const APooledItem: TtiPooledItem);
     procedure ForEachStatefulDBConnectionItem(const AItem: TSavedDBConnectionHolder);
     procedure SetTestRefreshRate(const AValue: integer);
     function  GetStatsPageTitle : string;
@@ -35,7 +36,6 @@ implementation
 uses
    SysUtils
   ,tiDataBuffer_Cli
-  ,tiQuery
   ,tiOPFManager
   ,tiUtils
   ,tiDBConnectionPool
@@ -244,12 +244,12 @@ begin
 
 end;
 
-procedure TtiDBProxyServerStats.ForEachDBConnectionPoolItem(const APooledItem : TPooledItem);
+procedure TtiDBProxyServerStats.ForEachDBConnectionPoolItem(const APooledItem : TtiPooledItem);
 var
   FParams : TtiQueryParams;
   lListCount: Integer;
 begin
-  Assert(APooledItem.TestValid(TPooledItem), cTIInvalidObjectError);
+  Assert(APooledItem.TestValid(TtiPooledItem), cTIInvalidObjectError);
   lListCount:= APooledItem.Owner.Count;
   FParams := TtiQueryParams.Create;
   try
@@ -266,7 +266,7 @@ end;
 
 procedure TtiDBProxyServerStats.InsertDBConnectionPool;
 var
-  lPool : TDBConnectionPool;
+  lPool : TtiDBConnectionPool;
 begin
   lPool := gTIOPFManager.DefaultDBConnectionPool;
   lPool.ForEachPooledItem(ForEachDBConnectionPoolItem);

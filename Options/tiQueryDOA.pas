@@ -22,15 +22,6 @@ type
 
   EtiOPFDOAException = EtiOPFException;
 
-  TtiDBConnectionPoolDataDOA = Class(TtiDBConnectionPoolDataAbs)
-  private
-    procedure AddEntryToTNSNames(const psDBSid: string); overload;
-    procedure AddEntryToTNSNames(const AFileName, psDBSid, psHost : string); overload;
-    function  CheckTNSNamesForSid(const psDBSid: string): boolean;
-  public
-    procedure InitDBConnectionPool; override;
-  end;
-
   TtiDatabaseDOA = class(TtiDatabaseSQL)
   private
     FOracleSession: TOracleSession;
@@ -754,103 +745,6 @@ end;
 function TtiQueryDOA.GetFieldIsNull(const AName: string): Boolean;
 begin
   result := FQuery.FieldIsNull(FieldIndex(AName));
-end;
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//*
-//* TtiDBConnectionPoolDataDOA
-//*
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDBConnectionPoolDataDOA.InitDBConnectionPool;
-var
-  lsDBSid : string;
-begin
-  // Commented our because of bug running DSA system
-
-  lsDBSid := DBConnectionPool.DBConnectParams.DatabaseName;
-  if CheckTNSNamesForSid(lsDBSid) then
-    Exit; //==>
-
-
-  // If you get here, then the DBSid was not found in TNSNames, so it must be
-  // added
-  AddEntryToTNSNames(lsDBSid);
-
-  // Confirm we where able to add the database to TNSNames
-  if not CheckTNSNamesForSid(lsDBSid) then
-    raise EtiOPFDOAException.CreateFmt(
-      'TNSNames.ora does not contain an entry for %s',
-                    [lsDBSid]);
-end;
-
-function TtiDBConnectionPoolDataDOA.CheckTNSNamesForSid(const psDBSid : string): boolean;
-var
-  i : integer;
-begin
-  BuildOracleAliasList;
-  result := false;
-  for i := 0 to OracleAliasList.Count - 1 do
-    if SameText(psDBSid, OracleAliasList.Strings[i]) then
-    begin
-      result := true;
-      Break; //==>
-    end;
-end;
-
-procedure TtiDBConnectionPoolDataDOA.AddEntryToTNSNames(const psDBSid : string);
-var
-  lsl : TStringList;
-  lsStartDir : string;
-  i : integer;
-begin
-  lsStartDir := tiExtractDirToLevel(OCIDLL, 1);
-  lsl := TStringList.Create;
-  try
-    tiFilesToStringList(lsStartDir,
-                         'TNSNames.Ora',
-                         lsl,
-                         true);
-    for i := 0 to lsl.Count - 1 do
-      AddEntryToTNSNames(lsl.Strings[i],
-                          psDBSid,
-                          DBConnectionPool.DBConnectParams.HostName
-                        );
-
-  finally
-    lsl.Free;
-  end;
-
-end;
-
-procedure TtiDBConnectionPoolDataDOA.AddEntryToTNSNames(const AFileName, psDBSid, psHost : string);
-var
-  lStream : TFileStream;
-  ls : string;
-  lb : PChar;
-begin
-  ls :=
-    CrLf +
-    '%s.world ='                     + CrLf +
-    '  (DESCRIPTION ='               + CrLf +
-    '    (ADDRESS_LIST ='            + CrLf +
-    '        (ADDRESS ='             + CrLf +
-    '          (PROTOCOL = TCP)'     + CrLf +
-    '          (Host = %s)'          + CrLf +
-    '          (Port = 1521)'        + CrLf +
-    '       )'                      + CrLf +
-    '   )'                          + CrLf +
-    '    (CONNECT_DATA = (SID = %s)' + CrLf +
-    '   )'                          + CrLf +
-    ' )'                            + CrLf;
-  ls :=  Format(ls, [psDBSid, psHost, psDBSid ]);
-  lb := PChar(ls);
-  lStream := TFileStream.Create(AFileName, fmOpenReadWrite or fmShareDenyNone	) ;
-  try
-    lStream.Position := lStream.Size;
-    lStream.WriteBuffer(lb^, Length(ls));
-  finally
-    lStream.Free;
-  end;
 end;
 
 procedure TtiDatabaseDOA.ReadMetaDataTables(AData: TtiDBMetaData);

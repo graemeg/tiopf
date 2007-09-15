@@ -85,6 +85,7 @@ uses
   ,tiObject
   ,tiUtils
   ,tiLog
+  ,tiQuery
   ,tiExcept
   ,tiWebServerConstants
   ,tiConstants
@@ -153,10 +154,10 @@ procedure TtiDBPS_TestAlive1.Execute(
   var   AResponseCode: Integer;
   const AResponseInfo: TIdHTTPResponseInfo);
 var
-  lPooledDB : TPooledDB;
   lResult  : string;
   lDBConnectionName : string;
   LAppServerVersion: TtiAppServerVersion;
+  LDatabase: TtiDatabase;
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   LAppServerVersion:= TtiAppServerVersion.Create;
@@ -164,11 +165,11 @@ begin
     LAppServerVersion.LoadDefaultValues;
     lDBConnectionName := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;
     try
-      lPooledDB := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+      LDatabase := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
       try
-        LAppServerVersion.SetConnectionStatus(lPooledDB.Database.Test);
+        LAppServerVersion.SetConnectionStatus(LDatabase.Test);
       finally
-        gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, lPooledDB);
+        gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, LDatabase);
       end;
     except
       on e:exception do
@@ -251,7 +252,7 @@ procedure TtiDBPS_TestAlive.Execute(
   var   AResponseCode: Integer;
   const AResponseInfo: TIdHTTPResponseInfo);
 var
-  lPooledDB : TPooledDB;
+  LDatabase : TtiDatabase;
   lResult  : string;
   lDBConnectionName : string;
 const
@@ -271,14 +272,14 @@ begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   lDBConnectionName := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;
   try
-    lPooledDB := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+    LDatabase := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
     try
-      if lPooledDB.Database.Test then
+      if LDatabase.Test then
         lResult := cPassed
       else
         lResult := cFailed;
     finally
-      gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, lPooledDB);
+      gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, LDatabase);
     end;
   except
     on e:exception do

@@ -787,7 +787,7 @@ end;
 
 procedure TtiOPFManager.ConnectDatabase(const ADatabaseName, AUserName, APassword, AParams: string);
 begin
-  ConnectDatabase(ADatabaseName, AUserName, APassword, AParams, '');
+  ConnectDatabase(ADatabaseName, ADatabaseName, AUserName, APassword, AParams, '');
 end;
 
 

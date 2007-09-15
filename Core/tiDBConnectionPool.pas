@@ -70,7 +70,7 @@ type
     Destructor  Destroy; override;
     function    Lock(      const ADatabaseAlias : string): TtiDatabase; reintroduce;
     procedure   UnLock(      const ADatabaseAlias : string; const ADatabase : TtiDatabase); reintroduce;
-    procedure   Connect(     const ADatabaseAlias, ADatabaseName, AUserName, psUserPassword : string; const AParams : string);
+    procedure   Connect(     const ADatabaseAlias, ADatabaseName, AUserName, APassword : string; const AParams : string);
     procedure   AddInstance( const ADatabaseAlias, ADatabaseName, AUserName, psUserPassword : string; const AParams : string);
     function    Find(        const ADatabaseAlias : string): TtiDBConnectionPool; reintroduce;
     procedure   Disconnect(  const ADatabaseAlias : string);
@@ -119,7 +119,7 @@ begin
   LDatabase.Connect(
     DBConnectParams.DatabaseName,
     DBConnectParams.UserName,
-    DBConnectParams.UserPassword,
+    DBConnectParams.Password,
     DBConnectParams.Params);
 end;
 
@@ -213,7 +213,7 @@ begin
 end;
 
 procedure TtiDBConnectionPools.Connect(const ADatabaseAlias, ADatabaseName,
-  AUserName, psUserPassword, AParams: string);
+  AUserName, APassword, AParams: string);
 var
   lDBConnectionPool : TtiDBConnectionPool;
   LDBConnectionParams: TtiDBConnectionParams;
@@ -221,6 +221,7 @@ var
 begin
   LDBConnectionParams.DatabaseName:= ADatabaseName;
   LDBConnectionParams.UserName:= AUserName;
+  LDBConnectionParams.Password:= APassword;
   LDBConnectionParams.Params:= AParams;
 
   FCritSect.Enter;
@@ -324,7 +325,7 @@ begin
     'Persistence layer:   ' + LPersistenceLayer.PerLayerName + Cr +
     'Database name:       ' + DBConnectParams.DatabaseName + Cr +
     'User name:           ' + DBConnectParams.UserName     + Cr +
-    'Password:            ' + tiReplicate('X', Length(DBConnectParams.UserPassword)) + Cr +
+    'Password:            ' + tiReplicate('X', Length(DBConnectParams.Password)) + Cr +
     'Number in pool:      ' + IntToStr(Count);
 end;
 

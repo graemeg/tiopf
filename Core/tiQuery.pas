@@ -76,7 +76,7 @@ type
   TtiDBConnectionParams = record
     DatabaseName: string;
     UserName: string;
-    UserPassword: string;
+    Password: string;
     Params: string
   end;
 
