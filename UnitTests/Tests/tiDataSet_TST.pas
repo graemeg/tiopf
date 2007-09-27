@@ -3,21 +3,11 @@ unit TiDataset_TST;
 interface
 
 uses
-  {$IFDEF FPC}
-  testregistry,
-  {$ELSE}
-  TestFramework,
-  {$ENDIF}
-  tiDataset,
-  Db,
-  Variants,
-  SysUtils,
-  tiObject,
-  tiTestFramework;
+  TestFramework, tiDataset, Db, Variants, SysUtils, tiObject, tiTestFramework;
 
 
 type
-  TTestTiDataset = class(TtiTestCase)
+  TTestTiDataset = class(TtiTestcase)
   private
     AList: TtiObjectList;
     ADataset: TtiDataset;
@@ -59,10 +49,7 @@ procedure RegisterTests;
 implementation
 
 uses
-  tiOIDguid,
-  tiOPFManager,
-  tiQueryXML,
-  tiDUnitDependencies;
+  tiOIDguid, tiOPFManager, tiQueryXML, tiDUnitDependencies;
 
 procedure RegisterTests;
 begin

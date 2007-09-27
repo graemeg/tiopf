@@ -54,6 +54,7 @@
     <DCCReference Include="..\..\Options\tiCRC32.pas" />
     <DCCReference Include="..\..\Options\tiDataBuffer_BOM.pas" />
     <DCCReference Include="..\..\Options\tiDataBuffer_Cli.pas" />
+    <DCCReference Include="..\..\Options\tiDataset.pas" />
     <DCCReference Include="..\..\Options\tiEncryptBlockCipher.pas" />
     <DCCReference Include="..\..\Options\tiEncryptBlowfish.pas" />
     <DCCReference Include="..\..\Options\tiEncryptDES.pas" />

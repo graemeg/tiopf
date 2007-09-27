@@ -130,7 +130,6 @@ begin
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
-  tiDataSet_TST.RegisterTests;
   {$ENDIF}
   tiDataBuffer_TST.RegisterTests;
   tiTextParser_TST.RegisterTests;
@@ -143,6 +142,7 @@ begin
   tiCriteria_TST.RegisterTests;
   tiTokenLibrary_TST.RegisterTests;
   tiLogToFile_TST.RegisterTests;
+  tiDataSet_TST.RegisterTests;
 
   {$IFDEF FPC}
   tiOPFFBL_TST.RegisterTests;

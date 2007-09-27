@@ -67,6 +67,7 @@ contains
   tiXMLToTIDataset in '..\..\Options\tiXMLToTIDataset.pas',
   tiSingleInstanceApp in '..\..\Options\tiSingleInstanceApp.pas',
   tiQueue in '..\..\Options\tiQueue.pas',
-  tiRegistry in '..\..\Options\tiRegistry.pas';
+  tiRegistry in '..\..\Options\tiRegistry.pas',
+  tiDataset in '..\..\Options\tiDataset.pas';
 
 end.
