@@ -22,6 +22,8 @@ const
   cTIPersistFBL          = 'FBL';      // Free Pascal only
   cTIPersistZeosFB10     = 'Zeos_FB10';
   cTIPersistZeosFB15     = 'Zeos_FB15';
+  cTIPersistZeosMySQL41  = 'Zeos_MySQL41';
+  cTIPersistZeosMySQL50  = 'Zeos_MySQL50';
 
   cDBProxyServerTimeOut  = 1; // Minute
 

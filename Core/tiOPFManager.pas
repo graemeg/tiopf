@@ -237,6 +237,8 @@ uses
   {$IFDEF LINK_FBL}          ,tiQueryFBL          {$ENDIF}
   {$IFDEF LINK_ZEOS_FB10}    ,tiQueryZeosFB10     {$ENDIF}
   {$IFDEF LINK_ZEOS_FB15}    ,tiQueryZeosFB15     {$ENDIF}
+  {$IFDEF LINK_ZEOS_MYSQL41} ,tiQueryZeosMySQL41  {$ENDIF}
+  {$IFDEF LINK_ZEOS_MYSQL50} ,tiQueryZeosMySQL50  {$ENDIF}
 
   {$IFDEF MSWINDOWS}
   ,Forms
@@ -868,25 +870,21 @@ initialization
   // directive, but not if there are more.
   // Have added this code to solve the problem of forcing the correct default per layer
   // when the remote layer is pulled in from code, and a SQL layer is required as well.
-  // Note: When adding another persistence layer, compiler directives must also be added
-  //       to tiDefines.pas
-  {$IFDEF LINK_XML}         gTIOPFManager.DefaultPerLayerName := cTIPersistXML;         {$ENDIF}
-  {$IFDEF LINK_IBX}         gTIOPFManager.DefaultPerLayerName := cTIPersistIBX;         {$ENDIF}
-  {$IFDEF LINK_BDEPARADOX}  gTIOPFManager.DefaultPerLayerName := cTIPersistBDEParadox;  {$ENDIF}
-  {$IFDEF LINK_ADOACCESS}   gTIOPFManager.DefaultPerLayerName := cTIPersistADOAccess;   {$ENDIF}
-  {$IFDEF LINK_ADOSQLSERVER}gTIOPFManager.DefaultPerLayerName := cTIPersistADOSQLServer;{$ENDIF}
-  {$IFDEF LINK_CSV}         gTIOPFManager.DefaultPerLayerName := cTIPersistCSV;         {$ENDIF}
-  {$IFDEF LINK_TAB}         gTIOPFManager.DefaultPerLayerName := cTIPersistTAB;         {$ENDIF}
-  {$IFDEF LINK_XMLLIGHT}    gTIOPFManager.DefaultPerLayerName := cTIPersistXMLLight;    {$ENDIF}
-  {$IFDEF LINK_DOA}         gTIOPFManager.DefaultPerLayerName := cTIPersistDOA;         {$ENDIF}
-  {$IFDEF LINK_REMOTE}      gTIOPFManager.DefaultPerLayerName := cTIPersistRemote;      {$ENDIF}
-  {$IFDEF LINK_SQLDB_IB}    gTIOPFManager.DefaultPerLayerName := cTIPersistSqldbIB;     {$ENDIF}
-  {$IFDEF LINK_FBL}
-          gTIOPFManager.DefaultPerLayerName := cTIPersistFBL;
-//          gTIOPFManager.PersistenceLayers.LoadingStyle := pllsStaticLinking;
-  {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB10}   gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB10;    {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB15}   gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB15;    {$ENDIF}
+  {$IFDEF LINK_XML}           gTIOPFManager.DefaultPerLayerName := cTIPersistXML;         {$ENDIF}
+  {$IFDEF LINK_IBX}           gTIOPFManager.DefaultPerLayerName := cTIPersistIBX;         {$ENDIF}
+  {$IFDEF LINK_BDEPARADOX}    gTIOPFManager.DefaultPerLayerName := cTIPersistBDEParadox;  {$ENDIF}
+  {$IFDEF LINK_ADOACCESS}     gTIOPFManager.DefaultPerLayerName := cTIPersistADOAccess;   {$ENDIF}
+  {$IFDEF LINK_ADOSQLSERVER}  gTIOPFManager.DefaultPerLayerName := cTIPersistADOSQLServer;{$ENDIF}
+  {$IFDEF LINK_CSV}           gTIOPFManager.DefaultPerLayerName := cTIPersistCSV;         {$ENDIF}
+  {$IFDEF LINK_TAB}           gTIOPFManager.DefaultPerLayerName := cTIPersistTAB;         {$ENDIF}
+  {$IFDEF LINK_XMLLIGHT}      gTIOPFManager.DefaultPerLayerName := cTIPersistXMLLight;    {$ENDIF}
+  {$IFDEF LINK_DOA}           gTIOPFManager.DefaultPerLayerName := cTIPersistDOA;         {$ENDIF}
+  {$IFDEF LINK_REMOTE}        gTIOPFManager.DefaultPerLayerName := cTIPersistRemote;      {$ENDIF}
+  {$IFDEF LINK_SQLDB_IB}      gTIOPFManager.DefaultPerLayerName := cTIPersistSqldbIB;     {$ENDIF}
+  {$IFDEF LINK_FBL}           gTIOPFManager.DefaultPerLayerName := cTIPersistFBL;         {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB10}     gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB10;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB15}     gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB15;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_MySQLl50} gTIOPFManager.DefaultPerLayerName := cTIPersistZeosMySQL50; {$ENDIF}
 
 finalization
   uShuttingDown := True;
