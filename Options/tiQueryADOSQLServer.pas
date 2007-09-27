@@ -108,10 +108,10 @@ end;
 
 procedure TtiDatabaseADOSQLServer.ReadMetaDataFields(AData: TtiDBMetaDataTable);
 var
-  lTable : TtiDBMetaDataTable;
-  lField : TtiDBMetaDataField;
-  lDelphiTable : TADOTable;
-  i : integer;
+  lTable: TtiDBMetaDataTable;
+  lField: TtiDBMetaDataField;
+  lDelphiTable: TADOTable;
+  i: integer;
 begin
   lTable := (AData as TtiDBMetaDataTable);
   lDelphiTable := TADOTable.Create(nil);
@@ -134,10 +134,10 @@ end;
 
 procedure TtiDatabaseADOSQLServer.ReadMetaDataTables(AData: TtiDBMetaData);
 var
-  lMetaData : TtiDBMetaData;
-  lTable : TtiDBMetaDataTable;
-  lsl : TStringList;
-  i : integer;
+  lMetaData: TtiDBMetaData;
+  lTable: TtiDBMetaDataTable;
+  lsl: TStringList;
+  i: integer;
 begin
   lMetaData := (AData as TtiDBMetaData);
   lsl := TStringList.Create;
@@ -164,7 +164,7 @@ end;
 
 function TtiDatabaseADOSQLServer.TIQueryClass: TtiQueryClass;
 begin
-  result: TtiQueryADOSQLServer;
+  result := TtiQueryADOSQLServer;
 end;
 
 Initialization
