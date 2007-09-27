@@ -478,8 +478,7 @@ begin
   ReleaseSemaphore(FSemaphore, 1, nil);
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
-  error := sem_post(FSemaphore);
-  if error <> 0 then
+  if sem_post(FSemaphore) <> 0 then
     raise Exception.Create('Failed to unlock the semaphore');
   {$ENDIF LINUX}
 end;
@@ -493,8 +492,7 @@ begin
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
   sem_destroy(FSemaphore);
-
-  if sem_init(FSemaphore, 0, FiMaxPoolSize) <> 0 then
+  if sem_init(FSemaphore, 0, FMaxPoolSize) <> 0 then
     raise Exception.Create('Failed to create the semaphore');
   {$ENDIF LINUX}
 end;
