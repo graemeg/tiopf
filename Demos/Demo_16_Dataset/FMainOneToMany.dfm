@@ -1,9 +1,9 @@
 object FormMainOneToMany: TFormMainOneToMany
-  Left = 202
-  Top = 132
+  Left = 215
+  Top = 121
+  Width = 548
+  Height = 377
   Caption = 'FormMainOneToMany'
-  ClientHeight = 343
-  ClientWidth = 523
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,7 +14,7 @@ object FormMainOneToMany: TFormMainOneToMany
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   DesignSize = (
-    523
+    540
     343)
   PixelsPerInch = 96
   TextHeight = 13
@@ -23,7 +23,6 @@ object FormMainOneToMany: TFormMainOneToMany
     Top = 8
     Width = 31
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Clients'
   end
   object Label2: TLabel
@@ -31,7 +30,6 @@ object FormMainOneToMany: TFormMainOneToMany
     Top = 188
     Width = 74
     Height = 13
-    Margins.Bottom = 0
     Caption = 'Phone numbers'
   end
   object Button1: TButton

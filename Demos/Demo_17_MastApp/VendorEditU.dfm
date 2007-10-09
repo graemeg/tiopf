@@ -3,25 +3,18 @@ inherited frmVendor: TfrmVendor
   ClientHeight = 349
   ClientWidth = 399
   Position = poScreenCenter
-  ExplicitWidth = 405
-  ExplicitHeight = 375
   PixelsPerInch = 96
   TextHeight = 13
   inherited btnOK: TBitBtn
     Left = 239
     Top = 319
-    ExplicitLeft = 239
-    ExplicitTop = 319
   end
   inherited btnCancel: TBitBtn
     Left = 319
     Top = 319
-    ExplicitLeft = 319
-    ExplicitTop = 319
   end
   inherited cbEnterAsTab: TCheckBox
     Top = 323
-    ExplicitTop = 323
   end
   object Panel1: TPanel
     Left = 0

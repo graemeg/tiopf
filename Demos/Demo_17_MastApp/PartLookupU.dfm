@@ -56,12 +56,8 @@ object frmPartLookup: TfrmPartLookup
     VT.TabOrder = 0
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
-    VT.ExplicitWidth = 454
-    VT.ExplicitHeight = 216
     VT.Columns = <>
     OnFilterData = LVFilterData
-    ExplicitWidth = 458
-    ExplicitHeight = 270
   end
   object Panel1: TPanel
     Left = 0
@@ -70,8 +66,6 @@ object frmPartLookup: TfrmPartLookup
     Height = 40
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 270
-    ExplicitWidth = 458
     DesignSize = (
       334
       40)
@@ -103,7 +97,6 @@ object frmPartLookup: TfrmPartLookup
         333A333333333333333338330000333333333333333333333333333333333333
         0000}
       NumGlyphs = 2
-      ExplicitLeft = 292
     end
     object BitBtn2: TBitBtn
       Left = 249
@@ -133,7 +126,6 @@ object frmPartLookup: TfrmPartLookup
         3333333333333333333888330000333333333333333333333333333333333333
         0000}
       NumGlyphs = 2
-      ExplicitLeft = 373
     end
   end
 end

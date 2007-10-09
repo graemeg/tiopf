@@ -4,25 +4,18 @@ inherited frmOrder: TfrmOrder
   ClientWidth = 509
   Position = poScreenCenter
   OnClose = FormClose
-  ExplicitWidth = 515
-  ExplicitHeight = 510
   PixelsPerInch = 96
   TextHeight = 13
   inherited btnOK: TBitBtn
     Left = 349
     Top = 454
-    ExplicitLeft = 349
-    ExplicitTop = 454
   end
   inherited btnCancel: TBitBtn
     Left = 429
     Top = 454
-    ExplicitLeft = 429
-    ExplicitTop = 454
   end
   inherited cbEnterAsTab: TCheckBox
     Top = 458
-    ExplicitTop = 458
   end
   object Panel1: TPanel
     Left = 0

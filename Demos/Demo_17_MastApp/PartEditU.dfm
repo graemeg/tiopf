@@ -2,27 +2,19 @@ inherited frmPart: TfrmPart
   Caption = 'Part Details'
   ClientHeight = 236
   ClientWidth = 348
-  PopupMode = pmAuto
   Position = poScreenCenter
-  ExplicitWidth = 354
-  ExplicitHeight = 262
   PixelsPerInch = 96
   TextHeight = 13
   inherited btnOK: TBitBtn
     Left = 188
     Top = 206
-    ExplicitLeft = 239
-    ExplicitTop = 201
   end
   inherited btnCancel: TBitBtn
     Left = 268
     Top = 206
-    ExplicitLeft = 319
-    ExplicitTop = 201
   end
   inherited cbEnterAsTab: TCheckBox
     Top = 210
-    ExplicitTop = 205
   end
   object Panel1: TPanel
     Left = 0
@@ -34,8 +26,6 @@ inherited frmPart: TfrmPart
     BevelOuter = bvNone
     BorderWidth = 8
     TabOrder = 3
-    ExplicitWidth = 399
-    ExplicitHeight = 189
     object editDescription: TtiPerAwareEdit
       Left = 8
       Top = 54
@@ -56,7 +46,6 @@ inherited frmPart: TfrmPart
       MaxLength = 0
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 383
     end
     object memoErrors: TtiMemoReadOnly
       Left = 8
@@ -73,8 +62,6 @@ inherited frmPart: TfrmPart
       Font.Name = 'MS Sans Serif'
       Font.Style = []
       ParentFont = False
-      ExplicitTop = 132
-      ExplicitWidth = 383
     end
     object editCost: TtiPerAwareFloatEdit
       Left = 8
@@ -98,7 +85,6 @@ inherited frmPart: TfrmPart
       UnknownValue = -1.000000000000000000
       IsKnown = True
       Style = fesUser
-      ExplicitWidth = 383
     end
     object editListPrice: TtiPerAwareFloatEdit
       Left = 8
@@ -122,7 +108,6 @@ inherited frmPart: TfrmPart
       UnknownValue = -1.000000000000000000
       IsKnown = True
       Style = fesUser
-      ExplicitWidth = 383
     end
     object comboVendor: TtiPerAwareComboBoxDynamic
       Left = 8
@@ -146,7 +131,6 @@ inherited frmPart: TfrmPart
       DropDownCount = 8
       CharCase = ecNormal
       FieldNameDisplay = 'VendorName'
-      ExplicitWidth = 383
     end
     object editOID: TtiPerAwareEdit
       Left = 8
@@ -169,7 +153,6 @@ inherited frmPart: TfrmPart
       MaxLength = 36
       CharCase = ecNormal
       PasswordChar = #0
-      ExplicitWidth = 383
     end
   end
 end

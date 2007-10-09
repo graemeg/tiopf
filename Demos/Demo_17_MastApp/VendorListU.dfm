@@ -2,8 +2,6 @@ inherited frmVendorList: TfrmVendorList
   Caption = 'Vendors'
   ClientHeight = 490
   ClientWidth = 586
-  ExplicitWidth = 602
-  ExplicitHeight = 526
   PixelsPerInch = 96
   TextHeight = 13
   inherited LV: TtiVTListView
@@ -11,18 +9,12 @@ inherited frmVendorList: TfrmVendorList
     Height = 272
     VT.Width = 582
     VT.Height = 218
-    VT.ExplicitWidth = 582
-    VT.ExplicitHeight = 218
     OnItemArrive = LVItemArrive
     OnItemLeave = LVItemLeave
-    ExplicitWidth = 586
-    ExplicitHeight = 272
   end
   inherited Panel1: TPanel
     Top = 450
     Width = 586
-    ExplicitTop = 450
-    ExplicitWidth = 586
   end
   object lvParts: TtiVTListView [2]
     Left = 0

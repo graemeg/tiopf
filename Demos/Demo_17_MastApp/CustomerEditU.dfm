@@ -2,27 +2,19 @@ inherited frmCustomer: TfrmCustomer
   Caption = 'Customer Details'
   ClientHeight = 373
   ClientWidth = 399
-  PopupMode = pmAuto
   Position = poOwnerFormCenter
-  ExplicitWidth = 405
-  ExplicitHeight = 399
   PixelsPerInch = 96
   TextHeight = 13
   inherited btnOK: TBitBtn
     Left = 239
     Top = 343
-    ExplicitLeft = 239
-    ExplicitTop = 343
   end
   inherited btnCancel: TBitBtn
     Left = 319
     Top = 343
-    ExplicitLeft = 319
-    ExplicitTop = 343
   end
   inherited cbEnterAsTab: TCheckBox
     Top = 347
-    ExplicitTop = 347
   end
   object Panel1: TPanel
     Left = 0

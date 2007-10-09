@@ -1,22 +1,17 @@
 inherited frmCustomerList: TfrmCustomerList
   Caption = 'Customers'
   ClientHeight = 458
-  ExplicitWidth = 474
-  ExplicitHeight = 494
   PixelsPerInch = 96
   TextHeight = 13
   inherited LV: TtiVTListView
     Height = 233
     Align = alTop
     VT.Height = 179
-    VT.ExplicitHeight = 179
     OnItemArrive = LVItemArrive
     OnItemLeave = LVItemLeave
-    ExplicitHeight = 233
   end
   inherited Panel1: TPanel
     Top = 418
-    ExplicitTop = 418
   end
   object lvOrders: TtiVTListView [2]
     Left = 0
@@ -61,6 +56,5 @@ inherited frmCustomerList: TfrmCustomerList
     OnItemDelete = lvOrdersItemDelete
     OnItemEdit = lvOrdersItemEdit
     OnItemInsert = lvOrdersItemInsert
-    ExplicitTop = 234
   end
 end

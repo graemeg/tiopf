@@ -13,14 +13,13 @@ uses
   VendorEditU in 'VendorEditU.pas' {frmVendor},
   PartEditU in 'PartEditU.pas' {frmPart},
   PartLookupU in 'PartLookupU.pas' {frmPartLookup},
-  BaseListU in 'BaseListU.pas' {frmBaseList},
-  FtiPerEditDialog in '..\..\GUI\FtiPerEditDialog.pas' {FormTIPerEditDialog};
+  BaseListU in 'BaseListU.pas' {frmBaseList};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.MainFormOnTaskbar := True;
+//not D7  Application.MainFormOnTaskbar := True;
   Application.CreateForm(TmodShared, modShared);
   Application.CreateForm(TfrmMain, frmMain);
   Application.Run;

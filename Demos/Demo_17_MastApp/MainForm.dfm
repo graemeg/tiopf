@@ -1,9 +1,9 @@
 object frmMain: TfrmMain
-  Left = 0
-  Top = 0
+  Left = 493
+  Top = 221
+  Width = 341
+  Height = 236
   Caption = 'Marine Adventures Order Entry (tiOPF)'
-  ClientHeight = 190
-  ClientWidth = 333
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,7 +12,6 @@ object frmMain: TfrmMain
   Font.Style = []
   Menu = MainMenu
   OldCreateOrder = False
-  Position = poDesigned
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
