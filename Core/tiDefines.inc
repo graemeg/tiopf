@@ -78,6 +78,14 @@
   {$ASMMODE intel}
 {$ENDIF}
 
+{$IFDEF FPC}
+  {$DEFINE DUNIT2ORFPC}
+{$ENDIF}
+{$IFDEF DUNIT2}
+  {$DEFINE DUNIT2ORFPC}
+{$ENDIF}
+
+
 // Cloned from IndySoap
 
 {=============================================================================
@@ -264,4 +272,5 @@
 {$WARN LOCAL_PINVOKE ON}
 {$WARN MESSAGE_DIRECTIVE ON}
 *)
+
 

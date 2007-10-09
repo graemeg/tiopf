@@ -7,10 +7,8 @@ uses
   {$IFDEF FPC}
   testregistry
   ,tiFPCUnitUtils // Helper functions to fake DUnit methods
-  {$ELSE}
-  TestFramework
   {$ENDIF}
-  ,tiTestFramework
+  tiTestFramework
   ,tiOPFTestManager
   ;
 
@@ -91,6 +89,7 @@ uses
   ,FastMM4
   ,IdThreadSafe
   ,IdGlobal
+  ,TestFramework
   {$ENDIF}
   ;
 
@@ -244,5 +243,6 @@ finalization
   uTIOPFTestManager.Free;
 
 end.
+
 
 

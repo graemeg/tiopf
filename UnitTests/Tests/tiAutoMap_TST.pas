@@ -88,7 +88,7 @@ type
     procedure DoReadWriteDateTime(AValue: TDateTime);
     procedure DoReadWriteOID(AValue: string);
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
 
   published
     procedure TestSetupAndTearDown;
@@ -1980,7 +1980,7 @@ begin
   end;
 end;
 
-constructor TTestTIAutoMapOperation.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestTIAutoMapOperation.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   SetupTasks := [sutPerLayer, sutDBConnection, sutTables];
@@ -2488,6 +2488,7 @@ end;
 {$ENDIF}
 
 end.
+
 
 
 

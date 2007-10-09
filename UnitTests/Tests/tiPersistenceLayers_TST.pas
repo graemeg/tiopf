@@ -25,11 +25,7 @@ type
     procedure   SetUp; override;
     procedure   TearDown; override;
   public
-    {$IFDEF FPC}
-    constructor Create; override;
-    {$ELSE}
-    constructor Create(AMethodName: string); override;
-    {$ENDIF}
+    constructor Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   published
     {$IFDEF STATIC_PERLAYER_LINKING}
     procedure   ConfirmStaticLinking;
@@ -90,7 +86,7 @@ end;
 
 { TTestPersistenceLayers }
 
-constructor TTestPersistenceLayers.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestPersistenceLayers.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   SetupTasks := [];
@@ -367,4 +363,5 @@ end;
 
 
 end.
+
 

@@ -21,7 +21,7 @@ type
     FXMLRCTrans: IXMLReservedCharsTranslator;
     function    tiReplicate1(const AValue : string ; ACount : Word): string;
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   published
     procedure TestTIReplicate1;
     procedure XMLTag;
@@ -79,7 +79,7 @@ type
   protected
     procedure   SetUp; override;
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
     destructor  Destroy; override;
   published
     procedure   ParseForNode1;
@@ -298,7 +298,7 @@ begin
 
 end;
 
-constructor TTestTIXML.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestTIXML.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   FXMLRCTrans := CreateXMLReservedCharsTranslator;
@@ -367,7 +367,7 @@ end;
 
 { TTestTIXMLParser }
 
-constructor TTestTIXMLParser.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestTIXMLParser.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   FAttributes := TStringList.Create;

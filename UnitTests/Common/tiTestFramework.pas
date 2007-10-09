@@ -96,7 +96,7 @@ type
       // DUnit compatibility interface
       {$I DUnitCompatableInterface.inc}
     {$ELSE}
-    constructor Create(AMethodName: string); override;
+      constructor Create {$IFNDEF DUNIT2}(AMethodName: string){$ENDIF}; override;
     {$ENDIF}
     destructor Destroy; override;
     function  PerformanceCounter: TtiPerformanceCounter;
@@ -219,11 +219,7 @@ type
     procedure   WriteTimingResult(const pAction, APersistenceLayerName : string; AValue : Extended);
 
   public
-    {$IFDEF FPC}
-    constructor Create; override;
-    {$ELSE}
-    constructor Create(AMethodName: string); override;
-    {$ENDIF}
+    constructor Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
     property    PerFrameworkSetup : TtiOPFTestSetupData read FtiOPFTestSetupData write FtiOPFTestSetupData;
     property    PerLayerName     : string read GetPerLayerName;
     property    DatabaseName     : string read GetDatabaseName;
@@ -486,7 +482,7 @@ begin
 end;
 
 
-constructor TtiTestCase.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TtiTestCase.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
 end;
@@ -691,7 +687,7 @@ function TtiOPFTestSetupDecorator.GetName: string;
 begin
   result := 'SetUp [' + PerLayerID + '] connection for ' +
     {$IFNDEF FPC}
-    Test.Name
+    inherited GetName; //Was Test.Name
     {$ELSE}
     Test.TestName
     {$ENDIF}
@@ -699,7 +695,7 @@ begin
 end;
 
 
-constructor TtiOPFTestCase.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TtiOPFTestCase.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   // Must assign SetupTasks in the concrete's create method
@@ -1803,5 +1799,6 @@ begin
 end;
 
 end.
+
 
 

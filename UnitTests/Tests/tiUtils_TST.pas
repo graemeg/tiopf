@@ -50,11 +50,7 @@ type
 
     procedure TearDown; override;
   public
-    {$IFDEF FPC}
-    constructor Create; override;
-    {$ELSE}
-    constructor Create(AMethodName: string); override;
-    {$ENDIF}
+    constructor Create {$IFNDEF DUNIT2ORFPC} (AMethodName: string){$ENDIF}; override;
     destructor  Destroy; override;
 
   published
@@ -1930,7 +1926,7 @@ begin
 end;
 
 
-{$IFDEF FPC}
+{$IFDEF DUNIT2ORFPC}
 constructor TTestTIUtils.Create;
 begin
   inherited;
@@ -3151,5 +3147,6 @@ begin
 end;
 
 end.
+
 
 

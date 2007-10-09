@@ -106,11 +106,7 @@ type
     function  CreateList : TtstTIObjectList;
     procedure DoForEachMethod(AData: TtiObject);
   public
-    {$IFDEF FPC}
-    constructor Create; override;
-    {$ELSE}
-    constructor Create(AMethodName: string); override;
-    {$ENDIF}
+    constructor Create {$IFNDEF DUNIT2ORFPC} (AMethodName: string){$ENDIF}; override;
     destructor  Destroy; override;
   published
     procedure   Add;
@@ -3754,7 +3750,7 @@ begin
   end;
 end;
 
-constructor TTestTIObjectList.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestTIObjectList.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   FInBothAndEquals   := TtiObjectList.Create;
@@ -3825,6 +3821,7 @@ end;
 { TTestTIObjectDeleteOwned }
 
 end.
+
 
 
 

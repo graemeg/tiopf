@@ -9,7 +9,8 @@ uses
   GUITestRunner,
   tiLogToGUI,
   tiDUnitDependencies in '..\Common\tiDUnitDependencies.pas',
-  tiPromptWhichPersistenceLayersToTest in '..\Common\tiPromptWhichPersistenceLayersToTest.pas';
+  tiPromptWhichPersistenceLayersToTest in '..\Common\tiPromptWhichPersistenceLayersToTest.pas',
+  tiGUIUtils_TST in '..\Tests\tiGUIUtils_TST.pas';
 
 {$R *.RES}
 
@@ -21,4 +22,5 @@ begin
   tiDUnitDependencies.RegisterTests;
   GUITestRunner.RunRegisteredTests;
 end.
+
 

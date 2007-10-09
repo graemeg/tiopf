@@ -83,7 +83,7 @@ type
     procedure DoXMLToDataSetReaderPerformanceAbsolute(pXMLFieldNameStyle : TtiXMLFieldNameStyle);
 
   public
-    constructor Create(MethodName : string); override;
+    constructor Create {$IFNDEF DUNIT2}(MethodName : string){$ENDIF}; override;
     destructor  Destroy; override;
   published
 
@@ -1431,7 +1431,7 @@ begin
   end;
 end;
 
-constructor TTestTIXMLtoTIDataSet.Create(MethodName: string);
+constructor TTestTIXMLtoTIDataSet.Create {$IFNDEF DUNIT2}(MethodName: string){$ENDIF};
 begin
   inherited;
   FXMLTags := TtiXMLTags.Create;

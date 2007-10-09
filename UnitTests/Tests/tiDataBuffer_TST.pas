@@ -24,7 +24,7 @@ type
     procedure   SetUp; override;
     procedure   TearDown; override;
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
     destructor  Destroy; override;
   published
     procedure   TIDataSetItems;
@@ -93,7 +93,7 @@ end;
 
 { TTesTtiDataBuffer }
 
-constructor TTesTtiDataBuffer.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTesTtiDataBuffer.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   FStringList := TStringList.Create;
@@ -715,4 +715,5 @@ end;
 
 
 end.
+
 

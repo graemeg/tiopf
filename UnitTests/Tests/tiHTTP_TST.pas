@@ -66,7 +66,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   public
-    constructor Create(MethodName: string); override;
+    constructor Create {$IFNDEF DUNIT2}(MethodName: string){$ENDIF}; override;
     destructor  Destroy; override;
   published
 
@@ -153,9 +153,9 @@ end;
 
 { TTestTIHTTP }
 
-constructor TTestTIHTTP.Create(MethodName: string);
+constructor TTestTIHTTP.Create{$IFNDEF DUNIT2}(MethodName: string){$ENDIF};
 begin
-  inherited Create(MethodName);
+  inherited Create{$IFNDEF DUNIT2} (MethodName) {$ENDIF};
   FHTTPServer := TidHTTPServer.Create(nil);
   FHTTPServer.OnCommandGet := HTTPGet_Event;
   FHTTPServer.DefaultPort:= cHTTPPortToTestWith;

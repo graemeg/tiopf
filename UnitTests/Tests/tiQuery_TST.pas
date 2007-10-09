@@ -80,7 +80,7 @@ type
                                    pKind : TtiQueryFieldKind;
                                    pWidth : integer = 0);
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   published
     procedure LoadDatabaseLayer;
     procedure NonThreadedDBConnectionPool;
@@ -143,7 +143,7 @@ type
     procedure OpenCloseActive; virtual; abstract;
     procedure ExecSQL; virtual; abstract;
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   published
     procedure ConfirmSetupWorks; virtual;
     procedure ConfirmDBConnectionWorks; virtual;
@@ -932,7 +932,7 @@ begin
   FDone := true;
 end;
 
-constructor TTestTIQueryAbs.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestTIQueryAbs.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   SetupTasks := [sutPerLayer, sutDBConnection ];
@@ -1106,7 +1106,7 @@ begin
   end;
 end;
 
-constructor TTestTIDatabase.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestTIDatabase.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   SetupTasks := [sutPerLayer];

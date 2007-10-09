@@ -4,7 +4,11 @@ unit tiTextTestRunner;
 
 interface
 uses
+  {$IFDEF DUNIT2}
+   TestFrameworkProxyIfaces
+  {$ELSE}
    TestFramework
+  {$ENDIF}
   ,TextTestRunner
  ;
 
@@ -16,6 +20,10 @@ const
   CFileNameLong              = 'DUnitReportLong%s.htm';
 
 type
+  {$IFDEF DUNIT2}
+    ITest = ITestProxy;
+  {$ENDIF}
+
   TtiTextListenerWriteItems = (tlwtFile, tlwtConsole);
   TtiTextListenerWriteTo = set of TtiTextListenerWriteItems;
 
@@ -62,6 +70,10 @@ procedure WriteEmptyLogs(AExitBehavior: TRunnerExitBehavior);
 
 implementation
 uses
+  {$IFDEF DUNIT2}
+  TestFrameworkProxy,
+  XMLListener,
+  {$ENDIF}
   tiExcept
   ,tiUtils
   ,tiConstants
@@ -75,7 +87,7 @@ uses
  ;
 
 const
-  cMaxTextWidth = 70;
+  cMaxTextWidth = 70;   //Well that gives 69 dots per line
 
 
 procedure Pause;
@@ -86,26 +98,39 @@ end;
 
 function tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult;
 begin
-  Result := RunTest(suite, [TtiTextTestListener.Create]);
-  case exitBehavior of
-    rxbPause:
-      try
-        Pause;
-      except
-      end;
-    rxbHaltOnFailures:
-      with Result do
-      begin
-        if not WasSuccessful then
-          System.Halt(ErrorCount+FailureCount);
-      end
-    // else fall through
+  try
+    Result := RunTest(Suite, [TtiTextTestListener.Create
+                              {$IFDEF DUNIT2},
+                              TXMLListener.Create(ParamStr(0))
+                              {$ENDIF}
+                              ]);
+  finally
+   {$IFDEF DUNIT2}
+      Result.ReleaseListeners; // We need the XMLListener to close now
+    {$ENDIF}
+    case exitBehavior of
+      rxbPause:
+        try
+          Pause;
+        except
+        end;
+      rxbHaltOnFailures:
+        with Result do
+        begin
+          if not WasSuccessful then
+            System.Halt(ErrorCount+FailureCount);
+        end;
+    end;
   end;
 end;
 
 function RunRegisteredTests(exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult;
 begin
-   Result := tiRunTest(registeredTests, exitBehavior);
+ {$IFDEF DUNIT2}
+    Result := tiRunTest(RegisteredTests('tiOPF2 Unit Tests'), exitBehavior);
+  {$ELSE}
+    Result := tiRunTest(RegisteredTests, exitBehavior);
+  {$ENDIF}
 end;
 
 procedure WriteEmptyLogs(AExitBehavior: TRunnerExitBehavior);
@@ -114,17 +139,21 @@ var
   LTestResults: TTestResult;
 begin
   WriteLn('The command line parameter -notests was passed, so no tests where run.');
-  LTestResults:= TTestResult.Create;
+  {$IFDEF DUNIT2}
+    LTestResults:= GetTestResult;
+  {$ELSE}
+   LTestResults:= TTestResult.Create;
+  {$ENDIF}
   try
     LTestListner:= TtiTextTestListener.Create;
     try
       LTestListner.TestingStarts;
       LTestListner.TestingEnds(LTestResults);
     finally
-      LTestListner.Free;
+      LTestListner{$IFDEF DUNIT2} := nil {$ELSE}.Free {$ENDIF};
     end;
   finally
-    LTestResults.Free;
+    LTestResults{$IFDEF DUNIT2} := nil {$ELSE}.Free {$ENDIF};
   end;
   if AExitBehavior = rxbPause then
     Pause;
@@ -224,9 +253,13 @@ var
   failure: TTestFailure;
 begin
   result := '';
+  if r= nil then
+    Exit;
+
   for i := 0 to r.ErrorCount-1 do begin
     failure := r.Errors[i];
-    result := result + format('%3d) %s  %s'#13#10'          "%s"',
+    if Assigned(Failure) then
+      result := result + format('%3d) %s  %s'#13#10'          "%s"',
                                [
                                i+1,
                                tiPadR(failure.failedTest.name, 20),
@@ -242,8 +275,12 @@ var
   failure: TTestFailure;
 begin
   result := '';
+  if r= nil then
+    Exit;
+
   for i := 0 to r.FailureCount-1 do begin
     failure := r.Failures[i];
+    if Assigned(Failure) then
     result := result + format('%3d) %s  %s'#13#10'          "%s"',
                                [
                                i+1,
@@ -285,7 +322,19 @@ procedure TtiTextTestListener.TestingStarts;
   var
     i: Integer;
   begin
-    writeln2Short('DUnit testing of tiOPF ', [tlwtFile, tlwtConsole]);
+    writeln2Short('', [tlwtConsole]);
+    writeln2Short('<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">', [tlwtFile]);
+    writeln2Short('<html>', [tlwtFile]);
+    writeln2Short('<head>', [tlwtFile]);
+    writeln2Short('<meta content="text/html; charset=utf-8" http-equiv="content-type">', [tlwtFile]);
+    writeln2Short('<title>tiOPF2 Unit Tests</title>', [tlwtFile]);
+    writeln2Short('</head><body>', [tlwtFile]);
+    writeln2Short('<pre>', [tlwtFile]);
+    {$IFDEF DUNIT2}
+      writeln2Short('DUnit2 testing of tiOPF ', [tlwtFile, tlwtConsole] );
+    {$ELSE}
+      writeln2Short('DUnit testing of tiOPF ', [tlwtFile, tlwtConsole]);
+    {$ENDIF}
     writeln2Short('Compiler name "' + cCompilerName + '"', [tlwtFile, tlwtConsole]);
     writeln2Short('Compiler version "' + FDelphiVersion + '"', [tlwtFile, tlwtConsole]);
     writeln2Short('Testing started at ' + DateTimeToStr(Now), [tlwtFile, tlwtConsole]);
@@ -296,13 +345,22 @@ procedure TtiTextTestListener.TestingStarts;
       writeln2Short('  ' + gTIOPFManager.PersistenceLayers.Items[i].PerLayerName, [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
   end;
+
   procedure _WriteLong(const pDelphiVersion: string);
   var
     i: Integer;
   begin
+    write2Long('<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">');
     write2Long('<html>');
-    write2Long('<h2>DUnit testing of tiOPF (Delphi ' + pDelphiVersion + ')</h2>');
-
+    write2Long('<head>');
+    write2Long('<meta content="text/html; charset=utf-8" http-equiv="content-type">');
+    write2Long('<title>tiOPF2 Unit Tests</title>');
+    write2Long('</head> <body>');
+    {$IFDEF DUNIT2}
+      write2Long('<h2>DUnit2 testing of tiOPF (Delphi ' + pDelphiVersion + ')</h2>');
+    {$ELSE}
+      write2Long('<h2>DUnit testing of tiOPF (Delphi ' + pDelphiVersion + ')</h2>');
+    {$ENDIF}
     write2Long('<h3>Persistence layers to be tested</h3>' + CrLf);
     write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + CrLf);
     for i:= 0 to gTIOPFManager.PersistenceLayers.Count - 1 do
@@ -350,10 +408,11 @@ begin
   writeln2Short('', [tlwtFile, tlwtConsole]);
   writeln2Short('', [tlwtFile, tlwtConsole]);
   DecodeTime(runTime, h,  m, s, l);
-  writeln2Short(Format('Time to run tests: %d:%2.2d:%2.2d.%d', [h, m, s, l]), [tlwtFile, tlwtConsole]);
+  writeln2Short(Format('Time to run tests: %d:%2.2d:%2.2d.%3.3d', [h, m, s, l]), [tlwtFile, tlwtConsole]);
   writeln2Short(Report(testResult), [tlwtFile, tlwtConsole]);
+  writeln2Short('</pre>', [tlwtFile]);
+  writeln2Short('</body></html>', [tlwtFile]);
   WriteSummaryToINIFile(testResult);
-
 
   Write2Long('</table>');
   Write2Long('<p>');
@@ -379,10 +438,10 @@ begin
   Write2Long('  </tr>' + CrLf);
   Write2Long('  <tr>' + CrLf);
   Write2Long('    <td>Runtime:</td>' + CrLf);
-  Write2Long('    <td>'+timeToStr(runTime)+'</td>' + CrLf);
+  Write2Long(Format('%s%d:%2.2d:%2.2d.%3.3d%s', ['    <td>', h, m, s, l,'</td>' + CrLf]));
   Write2Long('  </tr>' + CrLf);
   Write2Long('  </table>' + CrLf);
-  Write2Long('</html>');
+  Write2Long('</body> </html>');
 
 end;
 

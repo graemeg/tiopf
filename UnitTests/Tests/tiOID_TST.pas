@@ -18,7 +18,7 @@ type
 
   TTestTIOIDManager = class(TtiOPFTestCase)
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   published
     procedure   OIDFactory_RegisterMapping;
     procedure   OIDFactory_CreateOID;
@@ -691,7 +691,7 @@ begin
 end;
 
 
-constructor TTestTIOIDManager.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestTIOIDManager.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   SetupTasks := [sutPerLayer, sutDBConnection{, sutTables} ];
@@ -874,4 +874,5 @@ end;
 
 
 end.
+
 

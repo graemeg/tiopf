@@ -3540,7 +3540,7 @@ Comments=
 -w-UNSAFE_CAST=0
 ]]>
                   </Property>
-                <Property MultiValue="0" name="Conditionals" type="WideString">%link_per_layers%;object_tracking</Property>
+                <Property MultiValue="0" name="Conditionals" type="WideString">%link_per_layers%;object_tracking;dunit2</Property>
                 <Property name="ConsoleApp" type="WordBool">False</Property>
                 <Property MultiValue="0" name="DCPOutputDir" type="WideString">%path_to_working_bin%</Property>
                 <Property name="DebugInfo" type="WordBool">True</Property>
@@ -3675,7 +3675,7 @@ Comments=
 -w-UNSAFE_CAST=0
 ]]>
                   </Property>
-                <Property MultiValue="0" name="Conditionals" type="WideString">%link_per_layers%;object_tracking</Property>
+                <Property MultiValue="0" name="Conditionals" type="WideString">%link_per_layers%;object_tracking;dunit2</Property>
                 <Property name="ConsoleApp" type="WordBool">False</Property>
                 <Property MultiValue="0" name="DCPOutputDir" type="WideString">%path_to_working_bin%</Property>
                 <Property name="DebugInfo" type="WordBool">True</Property>

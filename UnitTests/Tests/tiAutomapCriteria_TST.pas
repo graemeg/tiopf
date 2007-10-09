@@ -36,7 +36,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   public
-    constructor Create{$IFNDEF FPC}(AMethodName: string){$ENDIF}; override;
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
 
   published
     procedure TestSetupAndTearDown;
@@ -219,7 +219,7 @@ begin
 
 end;
 
-constructor TTestAutomappingCriteria.Create{$IFNDEF FPC}(AMethodName: string){$ENDIF};
+constructor TTestAutomappingCriteria.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
   inherited;
   SetupTasks := [sutPerLayer, sutDBConnection, sutTables];
@@ -370,5 +370,6 @@ begin
 end;
 
 end.
+
 
 
