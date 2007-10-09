@@ -426,6 +426,17 @@ type
 
   TtiObjectListCompareEvent = procedure(AItem1, AItem2: TtiObject) of object;
 
+  TtiEnumerator = class
+  private
+    FIndex: Integer;
+    FList: TtiObjectList;
+  public
+    constructor Create(AList: TtiObjectList);
+    function GetCurrent: TtiObject;
+    function MoveNext: Boolean;
+    property Current: TtiObject read GetCurrent;
+  end;
+
   TtiObjectList = class(TtiObject)
   private
     FList : TObjectList;
@@ -536,7 +547,8 @@ type
 //                            AInBothAndNotEquals: TtiObjectList;
 //                            AIn1Only: TtiObjectList;
 //                            AIn2Only: TtiObjectList); overload;
-
+    {: Allows the use of the for-in loop in Delphi 2005+}
+    function GetEnumerator: TtiEnumerator;
   published
     // This must be published so it can be used by the tiPerAware controls.
     property    List : TList read GetList;
@@ -1669,6 +1681,11 @@ begin
   for i := 0 to Count - 1 do
     if not Items[i].Deleted then
       Inc(result);
+end;
+
+function TtiObjectList.GetEnumerator: TtiEnumerator;
+begin
+  result:= TtiEnumerator.Create(self);
 end;
 
 { TPerStringStream }
@@ -3791,7 +3808,29 @@ begin
   Assert(False, 'Not implemented');
 end;
 
+{ TtiEnumerator }
+
+constructor TtiEnumerator.Create(AList: TtiObjectList);
+begin
+  inherited Create;
+  FIndex := -1;
+  FList := AList;
+end;
+
+function TtiEnumerator.GetCurrent: TtiObject;
+begin
+  Result := FList[FIndex];
+end;
+
+function TtiEnumerator.MoveNext: Boolean;
+begin
+  Result := FIndex < FList.Count - 1;
+  if Result then
+    Inc(FIndex);
+end;
+
 end.
+
 
 
 

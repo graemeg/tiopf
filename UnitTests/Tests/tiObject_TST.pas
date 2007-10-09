@@ -148,6 +148,7 @@ type
     procedure   tiListToStreamDefault;
     procedure   tiListToStreamDelims;
     procedure   tiListToStreamFields;
+    procedure   GetEnumerator;
   end;
 
 
@@ -2819,6 +2820,49 @@ begin
     LList.FreeDeleted;
     CheckEquals(2, LList.Count);
 
+  finally
+    LList.Free;
+  end;
+end;
+
+procedure TTestTIObjectList.GetEnumerator;
+var
+  LList: TtiObjectList;
+  LItem1: TtiObject;
+  LItem2: TtiObject;
+  LItem3: TtiObject;
+  LEnumerator: TtiEnumerator;
+  LItemCount: integer;
+begin
+  LList:= TtiObjectList.Create;
+  try
+    LItem1:= TtiObject.Create;
+    LItem1.OID.AsString:= '1';
+    LList.Add(LItem1);
+
+    LItem2:= TtiObject.Create;
+    LItem2.OID.AsString:= '2';
+    LList.Add(LItem2);
+
+    LItem3:= TtiObject.Create;
+    LItem3.OID.AsString:= '3';
+    LList.Add(LItem3);
+
+    LEnumerator:= LList.GetEnumerator;
+    try
+      CheckTrue(Assigned(LEnumerator));
+
+      LItemCount:= 0;
+      while LEnumerator.MoveNext do
+      begin
+        inc(LItemCount);
+        CheckEquals(IntToStr(LItemCount), LEnumerator.Current.OID.AsString);
+      end;
+
+      CheckEquals(3, LItemCount);
+    finally
+      LEnumerator.Free;
+    end;
   finally
     LList.Free;
   end;
