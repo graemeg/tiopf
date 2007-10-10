@@ -5,8 +5,8 @@ unit tiDUnitDependencies;
 interface
 uses
   {$IFDEF FPC}
-  testregistry
-  ,tiFPCUnitUtils // Helper functions to fake DUnit methods
+  testregistry,
+  tiFPCUnitUtils, // Helper functions to fake DUnit methods
   {$ENDIF}
   tiTestFramework
   ,tiOPFTestManager
