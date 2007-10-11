@@ -426,7 +426,7 @@ type
 
   TtiObjectListCompareEvent = procedure(AItem1, AItem2: TtiObject) of object;
 
-  TtiEnumerator = class
+  TtiEnumerator = class(TtiBaseObject)
   private
     FIndex: Integer;
     FList: TtiObjectList;
@@ -3830,7 +3830,3 @@ begin
 end;
 
 end.
-
-
-
-

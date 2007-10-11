@@ -149,6 +149,9 @@ type
     procedure   tiListToStreamDelims;
     procedure   tiListToStreamFields;
     procedure   GetEnumerator;
+{$IFDEF DELPHI9ORABOVE}
+    procedure   ForIn;
+{$ENDIF}
   end;
 
 
@@ -2795,6 +2798,41 @@ begin
   end;
 end;
 
+{$IFDEF DELPHI9ORABOVE}
+procedure TTestTIObjectList.ForIn;
+var
+  lList      : TtstTIObjectList;
+  lData1     : TtstTIObject;
+  lData2     : TtstTIObject;
+  lData3     : TtstTIObject;
+  lItem      : TtiObject;
+begin
+  lList := TtstTIObjectList.Create;
+  try
+    lData1 := TtstTIObject.Create;
+    lData2 := TtstTIObject.Create;
+    lData3 := TtstTIObject.Create;
+    lList.Add(lData1);
+    lList.Add(lData2);
+    lList.Add(lData3);
+
+    for lItem in lList do
+    begin
+      Assert(lItem is TtstTIObject, 'AData not a TtstPerObjAbs');
+      TtstTIObject(lItem).StrProp := 'tested';
+    end;
+
+    CheckEquals('tested', lList.Items[0].StrProp, 'Failed on 1');
+    CheckEquals('tested', lList.Items[1].StrProp, 'Failed on 2');
+    CheckEquals('tested', lList.Items[2].StrProp, 'Failed on 3');
+  finally
+    lList.Free;
+  end;
+
+end;
+{$ENDIF}
+
+
 procedure TTestTIObjectList.FreeDeleted;
 var
   LList: TtiObjectList;
@@ -3865,7 +3903,3 @@ end;
 { TTestTIObjectDeleteOwned }
 
 end.
-
-
-
-
