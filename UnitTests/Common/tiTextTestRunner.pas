@@ -144,17 +144,15 @@ begin
   {$ELSE}
    LTestResults:= TTestResult.Create;
   {$ENDIF}
+  LTestListner:= TtiTextTestListener.Create;
   try
-    LTestListner:= TtiTextTestListener.Create;
-    try
-      LTestListner.TestingStarts;
-      LTestListner.TestingEnds(LTestResults);
-    finally
-      LTestListner{$IFDEF DUNIT2} := nil {$ELSE}.Free {$ENDIF};
-    end;
+    LTestListner.TestingStarts;
+    LTestListner.TestingEnds(LTestResults);
   finally
-    LTestResults{$IFDEF DUNIT2} := nil {$ELSE}.Free {$ENDIF};
+    {$IFNDEF DUNIT2} LTestListner.Free; {$ENDIF}
+    LTestListner := nil;
   end;
+  Assert(Assigned(LTestListner), 'LTestListener should be nil');
   if AExitBehavior = rxbPause then
     Pause;
 end;

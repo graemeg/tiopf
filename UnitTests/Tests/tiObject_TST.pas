@@ -8,8 +8,6 @@ uses
   Classes  // needed for TStringList
   {$IFDEF FPC}
   ,testregistry
-  {$ELSE}
-  ,TestFramework
   {$ENDIF}
   ,tiTestFramework
   ,tiObject
@@ -112,7 +110,7 @@ type
     procedure   Add;
     procedure   AddItemOwner;
     procedure   Items;
-    procedure   Count;
+    procedure   Count;  {$IFDEF DUNIT2} reintroduce; overload; {$ENDIF}
     procedure   CountNotDeleted;
     procedure   OwnsObjects;
     procedure   ItemOwner;
