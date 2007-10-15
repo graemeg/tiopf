@@ -99,10 +99,10 @@ end;
 function tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult;
 begin
   try
-    Result := RunTest(Suite, [TtiTextTestListener.Create
-                              {$IFDEF DUNIT2},
-                              TXMLListener.Create(ParamStr(0))
+    Result := RunTest(Suite, [{$IFDEF DUNIT2}
+                              TXMLListener.Create(ParamStr(0)),
                               {$ENDIF}
+                              TtiTextTestListener.Create
                               ]);
   finally
    {$IFDEF DUNIT2}
