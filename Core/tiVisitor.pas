@@ -1,4 +1,4 @@
-{** Unit containing the two classes TtiVisitor, TtiVisited and TtiVisitorManager,
+{** Unit containing the three classes TtiVisitor, TtiVisited and TtiVisitorManager,
     which form the basis of the tiOPF's object persistence mechanism.}
 unit tiVisitor;
 

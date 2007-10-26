@@ -37,7 +37,17 @@ type
   //  TtiForeignKeyMaps          = class;
   //  TtiForeignKeyMap           = class;
 
-  TtiClassDBMapRelationshipType = (pktDB, pktFK, pktReadable);
+  { Enumerated types used in mapping relationships. }
+  TtiClassDBMapRelationshipType = (
+      { Primary Key as defined in the DB table structure }
+      pktDB,
+      { Foreign Key as defined in the DB table structure }
+      pktFK,
+      { For human readable primary key info. If you want to load just enough
+        information to populate a lookup list or some other list. A kind
+        of 'light weight' object. }
+      pktReadable
+      );
   TPKInfo = set of TtiClassDBMapRelationshipType;
 
 

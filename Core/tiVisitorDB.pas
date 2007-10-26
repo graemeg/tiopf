@@ -296,8 +296,15 @@ begin
 end;
 
 procedure TtiObjectVisitorController.AfterExecuteVisitor(const AVisitor: TtiVisitor);
+var
+  LVisitor: TtiObjectVisitor;
 begin
-  (AVisitor as TtiObjectVisitor).Database := nil;
+  Assert(AVisitor.TestValid(TtiObjectVisitor), cTIInvalidObjectError);
+  Assert(FDatabase.TestValid, cTIInvalidObjectError);
+  LVisitor          := AVisitor as TtiObjectVisitor;
+  LVisitor.Query.DetachDatabase;
+
+  LVisitor.Database := nil;
 end;
 
 procedure TtiObjectVisitorController.BeforeExecuteVisitorGroup;

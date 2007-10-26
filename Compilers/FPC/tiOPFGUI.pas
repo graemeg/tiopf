@@ -9,13 +9,12 @@ interface
 uses
   tiGUIUtils, tiDialogs, tiButtons, tiCtrlButtonPanel, tiFocusPanel, 
     tiHyperlink, tiImageMgr, tiListView, tiListViewCtrls, tiListViewDif, 
-    tiListViewPlus, tiMemoReadOnly, tiPerAwareCombosAbs, tiPerAwareCtrls, 
-    tiPerAwareDateRange, tiPerAwareFileCombos, tiPerAwareMultiSelect, 
-    tiReadOnly, tiResources, tiRoundedPanel, tiSpeedButton, tiSplitter, 
-    tiThreadProgress, tiTreeView, tiTreeViewChildForm, DtiDefaultActionValues, 
-    tiGenericEditMediators, tiGenericListMediators, tiTreeBuildVisitor, 
-    tiGenericTreeViewMediator, tiCompositeMediators, tiSQLMgr_BOM, 
-    tiSQLMgr_Cli, tiSQLMgr_Svr, tiGUIConstants, tiLogToGUI, tiLogReg, tiGUIINI; 
+    tiMemoReadOnly, tiPerAwareCombosAbs, tiPerAwareCtrls, tiPerAwareDateRange, 
+    tiPerAwareFileCombos, tiPerAwareMultiSelect, tiReadOnly, tiResources, 
+    tiRoundedPanel, tiSpeedButton, tiSplitter, tiThreadProgress, tiTreeView, 
+    tiTreeViewChildForm, DtiDefaultActionValues, tiGenericEditMediators, 
+    tiGenericListMediators, tiTreeBuildVisitor, tiGenericTreeViewMediator, 
+    tiCompositeMediators, tiGUIConstants, tiLogToGUI, tiLogReg, tiGUIINI; 
 
 implementation
 

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="2">
+  <Package Version="3">
     <Name Value="tiOPF"/>
     <Author Value="Graeme Geldenhuys"/>
     <CompilerOptions>
@@ -24,6 +24,7 @@
         <CustomOptions Value="-dLINK_CSV
 -dLINK_TAB
 -dLINK_FBL
+-dLINK_SQLDB_IBx
 -dLINK_XMLLIGHT
 -dLINK_ZEOS_FB15x
 -dUseCThreads
@@ -36,7 +37,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="3"/>
-    <Files Count="48">
+    <Files Count="49">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -229,6 +230,10 @@
         <Filename Value="../../Options/tiQueue.pas"/>
         <UnitName Value="tiQueue"/>
       </Item48>
+      <Item49>
+        <Filename Value="../../Core/tiAutoMap.pas"/>
+        <UnitName Value="tiAutoMap"/>
+      </Item49>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="2">
