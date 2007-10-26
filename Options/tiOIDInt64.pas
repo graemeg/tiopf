@@ -13,6 +13,7 @@ uses
   ,tiObject
   ,tiVisitorDB
   ,tiVisitor
+  ,SyncObjs
  ;
 
 type
@@ -52,6 +53,7 @@ type
     FLowRange: Int64;
     FDirty: boolean;
     FNextOIDData : TNextOIDData;
+    FCritSection: TCriticalSection;
     function NextOID(const ADatabaseName : string; APersistenceLayerName : string): Int64;
   public
     constructor Create; override;
@@ -168,29 +170,36 @@ begin
   FLowRange := cuLowRange;
   FDirty := true;
   FNextOIDData := TNextOIDData.Create;
+  FCritSection:= TCriticalSection.Create;
 end;
 
 destructor TNextOIDGeneratorInt64.destroy;
 begin
+  FCritSection.Free;
   FNextOIDData.Free;
   inherited;
 end;
 
 function TNextOIDGeneratorInt64.NextOID(const ADatabaseName : string; APersistenceLayerName : string): Int64;
 begin
-  if FDirty then
-  begin
-    gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData, ADatabaseName, APersistenceLayerName);
-    FDirty := false;
-  end;
+  FCritSection.Enter;
+  try
+    if FDirty then
+    begin
+      gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData, ADatabaseName, APersistenceLayerName);
+      FDirty := false;
+    end;
 
-  result := (FNextOIDData.NextOID * FLowRange) + FLow;
+    result := (FNextOIDData.NextOID * FLowRange) + FLow;
 
-  Inc(FLow);
-  if FLow = FLowRange then
-  begin
-    FDirty := true;
-    FLow := 0;
+    Inc(FLow);
+    if FLow = FLowRange then
+    begin
+      FDirty := true;
+      FLow := 0;
+    end;
+  finally
+    FCritSection.Leave;
   end;
 
 end;

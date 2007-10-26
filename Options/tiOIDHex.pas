@@ -26,6 +26,7 @@ uses
   ,tiObject
   ,tiVisitorDB
   ,tiVisitor
+  ,SyncObjs
  ;
 
 type
@@ -67,6 +68,7 @@ type
     FLastOIDValue : string;
     FDirty: boolean;
     FNextOIDHexData : TNextOIDHexData;
+    FCritSect: TCriticalSection;
     function NextOID : String;
   public
     constructor Create; override;
@@ -268,34 +270,41 @@ begin
   FLowRange:=StrToInt('$1'+FLowRangeMask);
   FDirty := true;
   FNextOIDHexData := TNextOIDHexData.Create;
+  FCritSect:= TCriticalSection.Create;
 end;
 
 destructor TNextOIDGeneratorHex.destroy;
 begin
   FNextOIDHexData.Free;
+  FCritSect.Free;
   inherited;
 end;
 
 function TNextOIDGeneratorHex.NextOID: String;
 begin
-  if FDirty then
-  begin
-    gTIOPFManager.VisitorManager.Execute(cgsNextOIDHexReadHigh, FNextOIDHexData);
-    FDirty := false;
-    FLastOIDValue:=FNextOIDHexData.NextHexOID + FLowRangeMask;
+  FCritSect.Enter;
+  try
+    if FDirty then
+    begin
+      gTIOPFManager.VisitorManager.Execute(cgsNextOIDHexReadHigh, FNextOIDHexData);
+      FDirty := false;
+      FLastOIDValue:=FNextOIDHexData.NextHexOID + FLowRangeMask;
+    end;
+
+    result := TOIDHex.IncHex(FLastOIDValue);
+
+
+    inc(FLow);
+    if FLow = FLowRange then
+    begin
+      FDirty := true;
+      FLow := 0;
+    end;
+
+    FLastOIDValue:=result;
+  finally
+    FCritSect.Leave;
   end;
-
-  result := TOIDHex.IncHex(FLastOIDValue);
-
-
-  inc(FLow);
-  if FLow = FLowRange then
-  begin
-    FDirty := true;
-    FLow := 0;
-  end;
-
-  FLastOIDValue:=result;
 end;
 
 { TVisDBNextOIDHexAmblerRead }

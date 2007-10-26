@@ -10,6 +10,7 @@ uses
   ,tiVisitorDB
   ,tiVisitor
   ,tiConstants
+  ,SyncObjs
  ;
 
 const
@@ -56,6 +57,7 @@ type
     FNextOIDData : TNextOIDData;
     FOIDLength: Byte;
     FOIDPrefix: string;
+    FCritSect: TCriticalSection;
     function  NextOID(const ADatabaseName : string; APersistenceLayerName : string): String;
     function  GetOIDChars: string;
     procedure SetOIDChars(const AValue: string);
@@ -196,30 +198,37 @@ begin
   OIDLength := 10;
   FDirty := true;
   FNextOIDData := TNextOIDData.Create;
+  FCritSect:= TCriticalSection.Create;
 end;
 
 destructor TNextOIDGeneratorString.Destroy;
 begin
   FNextOIDData.Free;
+  FCritSect.Free;
   inherited;
 end;
 
 function TNextOIDGeneratorString.NextOID(const ADatabaseName : string; APersistenceLayerName : string): String;
 begin
-  if FDirty then
-  begin
-    FLow := FOIDChars[0];
-    FNextOIDData.OIDGenerator := Self;
-    gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData, ADatabaseName, APersistenceLayerName);
-    FDirty := false;
-  end else
-  begin
-    FLow := IncOID(FLow);
-    if FLow = FOIDChars[High(FOIDChars)] then
-      FDirty := true;
-  end;
+  FCritSect.Enter;
+  try
+    if FDirty then
+    begin
+      FLow := FOIDChars[0];
+      FNextOIDData.OIDGenerator := Self;
+      gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData, ADatabaseName, APersistenceLayerName);
+      FDirty := false;
+    end else
+    begin
+      FLow := IncOID(FLow);
+      if FLow = FOIDChars[High(FOIDChars)] then
+        FDirty := true;
+    end;
 
-  result := FOIDPrefix + FNextOIDData.NextOID + FLow;
+    result := FOIDPrefix + FNextOIDData.NextOID + FLow;
+  finally
+    FCritSect.Leave;
+  end;
 end;
 
 procedure TOIDString.SetToNull;
