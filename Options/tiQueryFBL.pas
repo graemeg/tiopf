@@ -642,14 +642,16 @@ begin
     end;
 
     { DatabaseName = <host>|<database> }
-    if tiNumToken(DataBaseName, '|') = 0 then
+    if tiNumToken(DataBaseName, '|') = 1 then
     begin
+      Log('*** Local connection ***', lsConnectionPool);
       FDBase.Host    := tiToken(DatabaseName, '|', 1);
       FDBase.DBFile  := tiToken(DatabaseName, '|', 1);
       FDBase.Protocol := ptLocal;
     end
     else
     begin
+      Log('*** remote connection ***', lsConnectionPool);
       FDBase.Host    := tiToken(DatabaseName, '|', 1);
       FDBase.DBFile  := tiToken(DatabaseName, '|', 2);
     end;
