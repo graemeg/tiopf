@@ -245,22 +245,17 @@ end;
 
 procedure TTestTIStream.TestEOF(ACount: integer);
 var
-  ls : string;
-  pls: PChar;
-  lStream : TtiFileStream;
-  i, lCount : integer;
+  ls: string;
+  lStream: TtiFileStream;
+  i, lCount: integer;
 
 const
   testString: string = 'test' + #13#10;
 
 begin
-  SetLength(ls, ACount * 6);
-  pls := Pointer(ls);
+  SetLength(ls, 0);
   for i := 1 to ACount do
-  begin
-     CopyMemory(pls, Pointer(testString), 6);
-     Inc(pls, 6);
-  end;
+     ls := ls + testString;
 
   tiStringToFile(ls, TempFileName);
   lStream := TtiFileStream.Create(TempFileName, fmOpenRead or fmShareDenyNone);
