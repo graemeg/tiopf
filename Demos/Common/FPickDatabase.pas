@@ -37,6 +37,8 @@ type
     aDefaultToADOAccess: TAction;
     sbDefaultToPresetValues: TtiSpeedButton;
     aDefaultToPreSetValues: TAction;
+    aDefaultToFBL: TAction;
+    InterbaseFBL: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure aDefaultToIBXExecute(Sender: TObject);
@@ -45,6 +47,7 @@ type
     procedure aDefaultToCSVExecute(Sender: TObject);
     procedure aDefaultToADOAccessExecute(Sender: TObject);
     procedure aDefaultToPreSetValuesExecute(Sender: TObject);
+    procedure aDefaultToFBLExecute(Sender: TObject);
   private
     FDataDirDepth: integer;
     function  GetDatabaseName: string;
@@ -75,6 +78,7 @@ uses
   // Linking these units causes the persistence layers to be available
   ,tiQueryXML
   ,tiQueryIBX
+  ,tiQueryFBL
   ,tiQueryXMLLight
   ,tiQueryCSV
   ,tiQueryADOAccess
@@ -97,6 +101,7 @@ var
   lLastPerLayer: string;
 begin
   aDefaultToIBX.Enabled      := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistIBX);
+  aDefaultToFBL.Enabled      := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistFBL);  
   aDefaultToMSXML.Enabled    := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXML);
   aDefaultToXMLLight.Enabled := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXMLLight);
   aDefaultToCSV.Enabled      := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistCSV);
@@ -127,6 +132,14 @@ begin
     paeUserName.Value:= 'SYSDBA';
     paePassword.Value:= 'masterkey';
     gINI.WriteString(Name, cINIIdentLastPerLayer, cTIPersistIBX);
+  end
+  else if (aDefaultToFBL.Enabled) and (APerLayerName = cTIPersistFBL) then
+  begin
+    paePersistenceLayer.Value:= cTIPersistFBL;
+    paeDatabaseName.Value:= GetDataDir + 'Demo.fdb';
+    paeUserName.Value:= 'SYSDBA';
+    paePassword.Value:= 'masterkey';
+    gINI.WriteString(Name, cINIIdentLastPerLayer, cTIPersistFBL);
   end
   else if (aDefaultToCSV.Enabled) and (APerLayerName = cTIPersistCSV) then
   begin
@@ -225,4 +238,10 @@ begin
   SetPerLayerData(cTIPersistADOAccess);
 end;
 
+procedure TFormPickDatabase.aDefaultToFBLExecute(Sender: TObject);
+begin
+  SetPerLayerData(cTIPersistFBL);
+end;
+
 end.
+

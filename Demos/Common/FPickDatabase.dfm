@@ -136,6 +136,9 @@ object FormPickDatabase: TFormPickDatabase
     object InterbaseIBX1: TMenuItem
       Action = aDefaultToIBX
     end
+    object InterbaseFBL: TMenuItem
+      Action = aDefaultToFBL
+    end
     object XMLMSXMLDOM1: TMenuItem
       Action = aDefaultToXMLLight
     end
@@ -175,6 +178,11 @@ object FormPickDatabase: TFormPickDatabase
       Caption = 'MS Access (ADO)'
       Enabled = False
       OnExecute = aDefaultToADOAccessExecute
+    end
+    object aDefaultToFBL: TAction
+      Caption = 'Interbase && Firebird (FBLib)'
+      Enabled = False
+      OnExecute = aDefaultToFBLExecute
     end
     object aDefaultToPreSetValues: TAction
       Caption = 'Default to preset values'
