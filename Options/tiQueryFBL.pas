@@ -924,34 +924,30 @@ begin
 end;
 }
 
-class function TtiDatabaseFBL.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
-//var
-//  lDatabase : TtiDatabaseFBL;
+class function TtiDatabaseFBL.DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean;
+var
+  lDatabase: TtiDatabaseFBL;
 begin
   Result := False;
-//  Assert(False, 'DatabaseExists not implemented in ' + ClassName);
-{  lDatabase := TtiDatabaseFBL.Create;
+  //Assert(False, 'DatabaseExists not implemented in ' + ClassName);
+  lDatabase := TtiDatabaseFBL.Create;
   try
-    lDatabase.FDBase.DatabaseName := ADatabaseName;
-    lDatabase.FDBase.Params.Values['user_name']:= AUserName;
-    lDatabase.FDBase.Params.Values['password']:= APassword;
     try
-      lDatabase.FDBase.Connected := true;
-      result := true;
+      lDatabase.Connect(ADatabaseName, AUserName, APassword, '');
+      Result := True;
     except
-      on e:exception do
-        result := false;
+      on E: Exception do
+        Result := False;
     end;
-    lDatabase.FDBase.Connected := false;
+    lDatabase.Connected := False;
   finally
     lDatabase.Free;
   end;
-}
 end;
 
 function TtiQueryFBL.HasNativeLogicalType: boolean;
 begin
-  result := false;
+  Result := False;
 end;
 
 function TtiDatabaseFBL.Test: boolean;
