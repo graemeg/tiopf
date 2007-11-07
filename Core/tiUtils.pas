@@ -119,6 +119,11 @@ type
                      const AEncloseIfPresent: Boolean = false): string;
   {: Enclose the given string in double quotes if they are not already present }
   function tiQuote(const AString: string): string;
+  {: Insert a separator string into a string at each column position. }
+  function tiAddSeparators(const AString: string; const AColumnWidth: Integer; const ASeparator: string): string;
+  {: Wrap a string at a column position by inserting newline separators as
+     typically used in the OS. }
+  function tiWrap(const AString: string; const AColumnWidth: Integer): string;
 
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -295,6 +300,8 @@ type
 
   {: Round a date time to the previous hole minute}
   function tiRoundDateToPreviousMinute(const ADateTime: TDateTime): TDateTime;
+  {: Convert a date to the week number}
+  function tiWeekNumber(const ADate: TDateTime): Byte;
 
   function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;
   function tiXMLStringToDateTime(const AValue : string): TDateTime;
@@ -365,7 +372,7 @@ type
                            const AWinState : integer = SW_SHOWNORMAL): integer;
 {$ENDIF MSWINDOWS}
   // Run an EXE and wait for it to finish
-  procedure tiRunEXEAndWait(AEXE : string);
+  procedure tiRunEXEAndWait(const AEXE : string; const AParams: string = '');
 
   // Get the currently logged on user ID
   function  tiGetUserName : string;
@@ -874,6 +881,18 @@ begin
   LDate:= Trunc(ADateTime);
   DecodeTime(ADateTime, LH, LM, LS, LMS);
   Result:= LDate + EncodeTime(LH, LM, 0, 0);
+end;
+
+function tiWeekNumber(const ADate: TDateTime): Byte;
+var
+  LD, LM, LY: Word;
+  LDayCount: Word;
+  LFirstDayOfYear: TDateTime;
+begin
+  DecodeDate(ADate, LY, LM, LD);
+  LFirstDayOfYear:= EncodeDate(LY, 1, 1);
+  LDayCount:= Trunc(ADate) - Trunc(LFirstDayOfYear);
+  Result:= (LDayCount div 7 ) + 1;
 end;
 
 function tiMixedCase(AValue : string): string;
@@ -2053,13 +2072,19 @@ begin
 end;
 
 
-procedure tiRunEXEAndWait(AEXE : string);
+procedure tiRunEXEAndWait(const AEXE : string; const AParams: string = '');
+var
+  LCommand: string;
 begin
+  if AParams <> '' then
+    LCommand:= AEXE + ' ' + AParams
+  else
+    LCommand:= AEXE;
 {$IFDEF MSWINDOWS}
-  tiWin32RunEXEAndWait(AEXE);
+  tiWin32RunEXEAndWait(LCommand);
 {$ENDIF MSWINDOWS}
 {$IFDEF LINUX}
-  tiLinuxRunEXEAndWait(AEXE);
+  tiLinuxRunEXEAndWait(LCommand);
 {$ENDIF}
 end;
 
@@ -2912,6 +2937,31 @@ end;
 function tiQuote(const AString: string): string;
 begin
   Result := tiEnclose(AString, '"');
+end;
+
+function tiAddSeparators(const AString: string; const AColumnWidth: Integer; const ASeparator: string): string;
+var
+  I: Integer;
+begin
+  Assert(AColumnWidth > 0, 'AColumnWidth must be > 0');
+  Result := '';
+  I := 1;
+  while I < Length(AString) do
+  begin
+    Result := Result + MidStr(AString, I, AColumnWidth);
+    if I + AColumnWidth <= Length(AString) then
+      Result := Result + ASeparator;
+    Inc(I, AColumnWidth);
+  end;
+end;
+
+function tiWrap(const AString: string; const AColumnWidth: Integer): string;
+begin
+{$IFDEF MSWINDOWS}
+  Result := tiAddSeparators(AString, AColumnWidth, CrLf);
+{$ELSE}
+  Result := tiAddSeparators(AString, AColumnWidth, Lf);
+{$ENDIF}
 end;
 
 function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;
