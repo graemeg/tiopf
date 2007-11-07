@@ -10,6 +10,7 @@ uses
   ,tiHTTP
   ,tiXML
   ,tiConstants
+  ,tiWebServerClientConnectionDetails
  ;
 
 const
@@ -45,17 +46,13 @@ type
   TtiHTTPAutoDetectServer = class(TtiBaseObject)
   private
     FXMLTags: TtiXMLTags;
-    FProxyServerActive: Boolean;
-    FProxyServerPort: Integer;
-    FURL: string;
-    FProxyServerName: string;
-    FConnectWith: string;
     FURLList: TStringList;
     FOnLog: TtiHTTPAutoDetectLogEvent;
+    FConnectionDetails: TtiWebServerClientConnectionDetails;
     function    TestOne(const pURL: string): Boolean;
-    function    TestOneWithIndy(const pURL: string): Boolean;
-    function    TestOneWithIndyAndProxy(const pURL: string): Boolean;
-    function    TestOneWithMSXMLHTTP(const pURL: string): Boolean;
+    function    TestOneWithIndy(const AURL: string): Boolean;
+    function    TestOneWithIndyAndProxy(const AURL: string): Boolean;
+    function    TestOneWithMSXMLHTTP(const AURL: string): Boolean;
     procedure   DoLog(const AMessage: string; const pArgs: array of const); overload;
     procedure   DoLog(const AMessage: string); overload;
   public
@@ -68,11 +65,8 @@ type
     property    OnLog: TtiHTTPAutoDetectLogEvent read FOnLog Write FOnLog;
 
     // Outputs
-    property    URL : string read FURL;
-    property    ConnectWith: string read FConnectWith;
-    property    ProxyServerActive: Boolean read FProxyServerActive;
-    property    ProxyServerName: string read FProxyServerName;
-    property    ProxyServerPort: Integer read FProxyServerPort;
+    property    ConnectionDetails: TtiWebServerClientConnectionDetails read FConnectionDetails;
+
   end;
 
   TtiIEProxySettings = class(TtiBaseObject)
@@ -90,11 +84,7 @@ type
   end;
 
 function tiDetectProxySettings(var pProxyServer : string; var pProxyPort : Integer): boolean;
-function tiHTTPTestConnection(const pURL: string;
-                              const pConnectWith: string;
-                              pProxyServerActive: Boolean;
-                              const pProxyServerAddress: string;
-                              pProxyServerPort: Integer): Boolean;
+function tiHTTPTestConnection(const AConnectionDetails: TtiWebServerClientConnectionDetails): Boolean;
 
 
 implementation
@@ -125,24 +115,16 @@ begin
   end;
 end;
 
-function tiHTTPTestConnection(const pURL: string;
-                              const pConnectWith: string;
-                                    pProxyServerActive: Boolean;
-                              const pProxyServerAddress: string;
-                                    pProxyServerPort: Integer): Boolean;
+function tiHTTPTestConnection(
+  const AConnectionDetails: TtiWebServerClientConnectionDetails): Boolean;
 var
   LHTTP: TtiHTTPAbs;
   LS : string;
 begin
-  LHTTP:= gtiHTTPFactory.CreateInstance(pConnectWith);
+  LHTTP:= gtiHTTPFactory.CreateInstance(AConnectionDetails);
   try
-    if pProxyServerActive then
-    begin
-      LHTTP.ProxyServer:= pProxyServerAddress;
-      LHTTP.ProxyPort:= pProxyServerPort;
-    end;
     try
-      LHTTP.Post(pURL + '/' + cgTIDBProxyTestAlive1);
+      LHTTP.Post(AConnectionDetails.AppServerURL + '/' + cgTIDBProxyTestAlive1);
       LS := LHTTP.Output.DataString;
       result:= LS <> '';
     except
@@ -245,12 +227,14 @@ begin
   FXMLTags:= TtiXMLTags.Create;
   FXMLTags.OptXMLDBSize:= optDBSizeOn;
   FURLList:= TStringList.Create;
+  FConnectionDetails:= TtiWebServerClientConnectionDetails.Create;
 end;
 
 destructor TtiHTTPAutoDetectServer.Destroy;
 begin
   FXMLTags.Free;
   FURLList.Free;
+  FConnectionDetails.Free;
   inherited;
 end;
 
@@ -282,11 +266,11 @@ begin
   begin
     DoLog('');
     DoLog(cLogMessageConnectionSummary);
-    DoLog(cLogMessageCSURL, [URL]);
-    DoLog(cLogMessageCSConnectWith, [ConnectWith]);
-    DoLog(cLogMessageCSProxyActive, [tiBoolToStr(ProxyServerActive)]);
-    DoLog(cLogMessageCSProxyName,   [ProxyServerName]);
-    DoLog(cLogMessagecsProxyPort,   [ProxyServerPort]);
+    DoLog(cLogMessageCSURL, [ConnectionDetails.AppServerURL]);
+    DoLog(cLogMessageCSConnectWith, [ConnectionDetails.ConnectWith]);
+    DoLog(cLogMessageCSProxyActive, [tiBoolToStr(ConnectionDetails.ProxyServerActive)]);
+    DoLog(cLogMessageCSProxyName,   [ConnectionDetails.ProxyServerName]);
+    DoLog(cLogMessagecsProxyPort,   [ConnectionDetails.ProxyServerPort]);
   end else
     DoLog(cLogMessageFailedToDetectConnection);
 end;
@@ -307,61 +291,85 @@ begin
   Result := False;
 end;
 
-function TtiHTTPAutoDetectServer.TestOneWithIndy(const pURL: string): Boolean;
+function TtiHTTPAutoDetectServer.TestOneWithIndy(const AURL: string): Boolean;
+var
+  LConnectionDetails: TtiWebServerClientConnectionDetails;
 begin
   DoLog(cLogMessageCheckingWithIndy, []);
   DoLog(cLogMessageCheckingWithIndyDirect, []);
-  Result := tiHTTPTestConnection(pURL, cHTTPIndy, False, '', 0);
-  if Result then
-  begin
-    FURL              := pURL;
-    FConnectWith      := cHTTPIndy;
-    FProxyServerActive := False;
-    FProxyServerPort  := 0;
-    FProxyServerName  := '';
-    DoLog(cLogMessageConnectedWithIndyDirect);
-  end else
-    DoLog(cLogMessageFailedWithIndyDirect);
+  LConnectionDetails:= TtiWebServerClientConnectionDetails.Create;
+  try
+    LConnectionDetails.AppServerURL:= AURL;
+    LConnectionDetails.ConnectWith:= cHTTPIndy;
+    LConnectionDetails.ProxyServerActive:= False;
+    LConnectionDetails.ProxyServerPort  := 0;
+    LConnectionDetails.ProxyServerName  := '';
+    Result := tiHTTPTestConnection(LConnectionDetails);
+    if Result then
+    begin
+      ConnectionDetails.Assign(LConnectionDetails);
+      DoLog(cLogMessageConnectedWithIndyDirect);
+    end else
+      DoLog(cLogMessageFailedWithIndyDirect);
+  finally
+    LConnectionDetails.Free;
+  end;
 end;
 
-function TtiHTTPAutoDetectServer.TestOneWithIndyAndProxy(const pURL: string): Boolean;
+function TtiHTTPAutoDetectServer.TestOneWithIndyAndProxy(const AURL: string): Boolean;
 var
   lProxyAddress: string;
   lProxyPort: Integer;
+  LConnectionDetails: TtiWebServerClientConnectionDetails;
 begin
   Result:= False;
   DoLog(cLogMessageDetectingProxySettings, []);
   DoLog(cLogMessageCheckingWithIndyProxy, []);
-  if tiDetectProxySettings(lProxyAddress, lProxyPort) then
-    Result := tiHTTPTestConnection(pURL, cHTTPIndy, True,
-                                   lProxyAddress, lProxyPort);
+  LConnectionDetails:= TtiWebServerClientConnectionDetails.Create;
+  try
+    if tiDetectProxySettings(lProxyAddress, lProxyPort) then
+    begin
+      LConnectionDetails.AppServerURL:= AURL;
+      LConnectionDetails.ConnectWith:= cHTTPIndy;
+      LConnectionDetails.ProxyServerActive:= True;
+      LConnectionDetails.ProxyServerPort  := lProxyPort;
+      LConnectionDetails.ProxyServerName  := lProxyAddress;
+      Result := tiHTTPTestConnection(LConnectionDetails);
+    end;
 
-  if Result then
-  begin
-    FURL              := pURL;
-    FConnectWith      := cHTTPIndy;
-    FProxyServerActive := true;
-    FProxyServerPort  := lProxyPort;
-    FProxyServerName  := lProxyAddress;
-    DoLog(cLogMessageConnectedWithIndyProxy);
-  end else
-    DoLog(cLogMessageFailedWithIndyProxy);
+    if Result then
+    begin
+      ConnectionDetails.Assign(LConnectionDetails);
+      DoLog(cLogMessageConnectedWithIndyProxy);
+    end else
+      DoLog(cLogMessageFailedWithIndyProxy);
+  finally
+    LConnectionDetails.Free;
+  end;
 end;
 
-function TtiHTTPAutoDetectServer.TestOneWithMSXMLHTTP(const pURL: string): Boolean;
+function TtiHTTPAutoDetectServer.TestOneWithMSXMLHTTP(const AURL: string): Boolean;
+var
+  LConnectionDetails: TtiWebServerClientConnectionDetails;
 begin
   DoLog(cLogMessageCheckingWithMSXMLHTTP);
-  Result := tiHTTPTestConnection(pURL, cHTTPMSXML, False, '', 0);
-  if Result then
-  begin
-    FURL              := pURL;
-    FConnectWith      := cHTTPMSXML;
-    FProxyServerActive := False;
-    FProxyServerPort  := 0;
-    FProxyServerName  := '';
-    DoLog(cLogMessageConnectedWithMSXMLHTTP);
-  end else
-    DoLog(cLogMessageFailedWithMSXMLHTTP);
+  LConnectionDetails:= TtiWebServerClientConnectionDetails.Create;
+  try
+    LConnectionDetails.AppServerURL:= AURL;
+    LConnectionDetails.ConnectWith:= cHTTPMSXML;
+    LConnectionDetails.ProxyServerActive:= False;
+    LConnectionDetails.ProxyServerPort  := 0;
+    LConnectionDetails.ProxyServerName  := '';
+    Result := tiHTTPTestConnection(LConnectionDetails);
+    if Result then
+    begin
+      ConnectionDetails.Assign(LConnectionDetails);
+      DoLog(cLogMessageConnectedWithMSXMLHTTP);
+    end else
+      DoLog(cLogMessageFailedWithMSXMLHTTP);
+  finally
+    LConnectionDetails.Free;
+  end;
 end;
 
 end.

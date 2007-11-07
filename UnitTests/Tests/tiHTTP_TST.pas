@@ -105,7 +105,8 @@ type
     procedure tiHTTPMSXMLHTTPPostCustomHeaderOutput;
     procedure tiHTTPMSXMLHTTPPostBlockResponse;
 
-    procedure tiHTTPFactory;
+    procedure tiHTTPFactoryString;
+    procedure tiHTTPFactoryConnectionParams;
     procedure SetDefaultHTTPClass;
     procedure IsInstanceOfType;
 
@@ -369,7 +370,12 @@ begin
   end;
 end;
 
-procedure TTestTIHTTP.TIHTTPFactory;
+procedure TTestTIHTTP.tiHTTPFactoryConnectionParams;
+begin
+
+end;
+
+procedure TTestTIHTTP.tiHTTPFactoryString;
 var
   LHTTP: TtiHTTPAbs;
 begin

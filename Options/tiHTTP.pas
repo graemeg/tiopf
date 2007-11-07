@@ -13,6 +13,7 @@ uses
   ,IdTCPClient
   ,IdHTTP
   ,tiConstants
+  ,tiWebServerClientConnectionDetails
  ;
 
 const
@@ -116,9 +117,10 @@ type
   public
     constructor Create;
     destructor  Destroy; override;
-    procedure   RegisterMapping(const pMappingName: string; const pMappingClass: TtiHTTPClass);
-    function    CreateInstance(const pMappingName: string): TtiHTTPAbs;
-    function    IsInstanceOfType(const AFieldMetaData: TtiHTTPAbs; const pMappingName: string): Boolean;
+    procedure   RegisterMapping(const AMappingName: string; const AMappingClass: TtiHTTPClass);
+    function    CreateInstance(const AMappingName: string): TtiHTTPAbs; overload;
+    function    CreateInstance(const AConnectionDetails: TtiWebServerClientConnectionDetails): TtiHTTPAbs; overload;
+    function    IsInstanceOfType(const AFieldMetaData: TtiHTTPAbs; const AMappingName: string): Boolean;
   end;
 
 function  gTIHTTPFactory: TtiHTTPFactory;
@@ -232,14 +234,25 @@ begin
   FList:= TClassList.Create;
 end;
 
-function TtiHTTPFactory.CreateInstance(const pMappingName: string): TtiHTTPAbs;
+function TtiHTTPFactory.CreateInstance(const AMappingName: string): TtiHTTPAbs;
 var
   lIndex: Integer;
 begin
-  lIndex := FindMapping(pMappingName);
+  lIndex := FindMapping(AMappingName);
   if lIndex = -1 then
-    raise Exception.CreateFmt(cErrorUnRegisteredHTTPClassMapping, [pMappingName]);
+    raise Exception.CreateFmt(cErrorUnRegisteredHTTPClassMapping, [AMappingName]);
   Result := TtiHTTPClass(FList.Items[lIndex]).Create as TtiHTTPAbs;
+end;
+
+function TtiHTTPFactory.CreateInstance(const AConnectionDetails: TtiWebServerClientConnectionDetails): TtiHTTPAbs;
+begin
+  Assert(AConnectionDetails.TestValid, cTIInvalidObjectError);
+  result:= CreateInstance(AConnectionDetails.ConnectWith);
+  if AConnectionDetails.ProxyServerActive then
+  begin
+    result.ProxyServer := AConnectionDetails.ProxyServerName;
+    result.ProxyPort := AConnectionDetails.ProxyServerPort;
+  end;
 end;
 
 destructor TtiHTTPFactory.Destroy;
@@ -261,18 +274,18 @@ begin
     end;
 end;
 
-function TtiHTTPFactory.IsInstanceOfType(const AFieldMetaData: TtiHTTPAbs; const pMappingName: string): Boolean;
+function TtiHTTPFactory.IsInstanceOfType(const AFieldMetaData: TtiHTTPAbs; const AMappingName: string): Boolean;
 begin
   Assert(AFieldMetaData<> nil, 'AFieldMetaData not assigned');
-  Result := SameText(AFieldMetaData.MappingName, pMappingName);
+  Result := SameText(AFieldMetaData.MappingName, AMappingName);
 end;
 
-procedure TtiHTTPFactory.RegisterMapping(const pMappingName: string;const pMappingClass: TtiHTTPClass);
+procedure TtiHTTPFactory.RegisterMapping(const AMappingName: string;const AMappingClass: TtiHTTPClass);
 begin
-  if FindMapping(pMappingName) <> -1 then
-    raise Exception.CreateFmt(cErrorDuplicateHTTPClassMapping, [pMappingName]);
-  Assert(SameText(pMappingClass.MappingName, pMappingName), 'MappingName <> pMappingClass.MappingName');
-  FList.Add(pMappingClass);
+  if FindMapping(AMappingName) <> -1 then
+    raise Exception.CreateFmt(cErrorDuplicateHTTPClassMapping, [AMappingName]);
+  Assert(SameText(AMappingClass.MappingName, AMappingName), 'MappingName <> pMappingClass.MappingName');
+  FList.Add(AMappingClass);
 end;
 
 function TtiHTTPAbs.GetMappingName: string;
