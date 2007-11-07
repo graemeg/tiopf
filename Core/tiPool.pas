@@ -18,8 +18,8 @@ uses
 
 const
   CErrorPoolUnlockByData_BadData    = 'Attempt to unlock item by passing object that is not owned by a PooledItem';
-  CErrorTimedOutWaitingForSemaphore = 'Timed out waiting for a PooledItem.';
-  CErrorFailedToUnlockPooledItem = 'Attempting to unlock a PooledItem which can not be found in the pool.';
+  CErrorTimedOutWaitingForSemaphore = 'Timed out waiting for PooledData.';
+  CErrorFailedToUnlockPooledItem = 'Attempting to unlock PooledData which can not be found in the pool.';
   CErrorSemaphoreAvailableButNoItemsInPool = 'Semaphore was available but no items ' +
                 'available in the pool. MaxPoolSize: %d, Current pool size: %d';
 type
@@ -478,7 +478,8 @@ begin
   ReleaseSemaphore(FSemaphore, 1, nil);
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
-  if sem_post(FSemaphore) <> 0 then
+  error := sem_post(FSemaphore);
+  if error <> 0 then
     raise Exception.Create('Failed to unlock the semaphore');
   {$ENDIF LINUX}
 end;
