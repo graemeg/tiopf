@@ -70,4 +70,7 @@ contains
   tiRegistry in '..\..\Options\tiRegistry.pas',
   tiDataset in '..\..\Options\tiDataset.pas';
 
+{$I tiDefines.inc}
+
+
 end.

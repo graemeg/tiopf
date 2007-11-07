@@ -59,14 +59,14 @@
     <DCCReference Include="..\..\GUI\tiOPFControlsReg.pas" />
     <DCCReference Include="..\..\GUI\tiSplitterEditor.pas" />
     <DCCReference Include="..\..\GUI\tiTreeviewEditor.pas" />
-    <DCCReference Include="..\..\Options\designide.dcp" />
-    <DCCReference Include="..\..\Options\rtl.dcp" />
     <DCCReference Include="..\..\Options\tiDataSet_Reg.pas" />
-    <DCCReference Include="..\..\Options\tiOPFCore.dcp" />
-    <DCCReference Include="..\..\Options\tiOPFGUI.dcp" />
-    <DCCReference Include="..\..\Options\vcl.dcp" />
-    <DCCReference Include="..\..\Options\vclactnband.dcp" />
-    <DCCReference Include="..\..\Options\vcljpg.dcp" />
-    <DCCReference Include="..\..\Options\vclx.dcp" />
+    <DCCReference Include="H:\designide.dcp" />
+    <DCCReference Include="H:\rtl.dcp" />
+    <DCCReference Include="H:\tiOPFCore.dcp" />
+    <DCCReference Include="H:\tiOPFGUI.dcp" />
+    <DCCReference Include="H:\vcl.dcp" />
+    <DCCReference Include="H:\vclactnband.dcp" />
+    <DCCReference Include="H:\vcljpg.dcp" />
+    <DCCReference Include="H:\vclx.dcp" />
   </ItemGroup>
 </Project>

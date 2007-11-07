@@ -1,6 +1,5 @@
 package tiOPFCore;
 
-{$I tiDefines.inc}
 {$R *.res}
 {$ALIGN 1}
 {$ASSERTIONS ON}
@@ -32,7 +31,6 @@ requires
   rtl;
 
 contains
-  tiWin32 in '..\..\Core\tiWin32.pas',
   tiBaseObject in '..\..\Core\tiBaseObject.pas',
   tiCommandLineParams in '..\..\Core\tiCommandLineParams.pas',
   tiCompress in '..\..\Core\tiCompress.pas',
@@ -61,6 +59,9 @@ contains
   tiINI in '..\..\Core\tiINI.pas',
   tiAutoMap in '..\..\Core\tiAutoMap.pas',
   tiRTTI in '..\..\Core\tiRTTI.pas',
-  tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas';
+  tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas',
+  tiWin32 in '..\..\Core\tiWin32.pas';
+
+{$I tiDefines.inc}
 
 end.

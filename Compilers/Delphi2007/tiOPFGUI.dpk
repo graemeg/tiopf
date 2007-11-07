@@ -89,4 +89,6 @@ contains
   tiVTFilter in '..\..\GUI\tiVTFilter.pas',
   tiGUIINI in '..\..\GUI\tiGUIINI.pas';
 
+{$I tiDefines.inc}
+
 end.
