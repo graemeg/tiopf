@@ -9,6 +9,12 @@ uses
 
 type
 
+  TTestTIWebServerConnectionDetails = class(TtiTestCase)
+  published
+    procedure Equals;
+    procedure Assign;
+  end;
+
   TTestTIWebServer = class(TtiTestCase)
   protected
     procedure SetUp; override;
@@ -39,6 +45,12 @@ type
     procedure tiDBProxyServer_TestAlive;
 
     procedure tiWebServerVersion;
+
+  end;
+
+  TTestTICGIParams = class(TtiTestCase)
+  published
+    procedure Values;
   end;
 
 procedure RegisterTests;
@@ -66,7 +78,9 @@ uses
 
 procedure RegisterTests;
 begin
+  RegisterNonPersistentTest(TTestTIWebServerConnectionDetails);
   RegisterNonPersistentTest(TtestTIWebServer);
+  RegisterNonPersistentTest(TtestTICGIParams);
 end;
 
 const
@@ -457,6 +471,25 @@ begin
   finally
     L.Free;
   end;
+end;
+
+{ TTestTIWebServerConnectionDetails }
+
+procedure TTestTIWebServerConnectionDetails.Assign;
+begin
+
+end;
+
+procedure TTestTIWebServerConnectionDetails.Equals;
+begin
+
+end;
+
+{ TTestTICGIParams }
+
+procedure TTestTICGIParams.Values;
+begin
+
 end;
 
 end.
