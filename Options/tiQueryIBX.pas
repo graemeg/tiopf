@@ -115,7 +115,7 @@ type
     procedure   AssignParamFromStream(const AName: string; const AStream: TStream); override;
     procedure   AssignParamToStream(const AName: string; const AStream: TStream); override;
     procedure   AssignFieldAsStream(const AName: string; const AStream: TStream); override;
-    procedure   AssignFieldAsStreamByIndex(     AIndex : integer; const AValue : TStream); override;
+    procedure   AssignFieldAsStreamByIndex(     AIndex : integer; const AStream : TStream); override;
     procedure   AssignParams(const AParams: TtiQueryParams; const AWhere: TtiQueryParams = nil); override;
 
     procedure   AttachDatabase(ADatabase: TtiDatabase); override;
@@ -134,7 +134,6 @@ type
 implementation
 uses
    tiUtils
-//  ,tiDialogs
   ,tiLog
   ,TypInfo
   ,tiOPFManager
@@ -428,15 +427,17 @@ end;
 procedure TtiQueryIBX.AssignFieldAsStream(const AName: string; const AStream: TStream);
 begin
   Assert(AStream <> nil, 'Stream not assigned');
+  AStream.Size:= 0 ;
   FIBSQL.FieldByName(UpperCase(AName)).SaveToStream(AStream);
   AStream.Position:= 0 ;
 end;
 
-procedure TtiQueryIBX.AssignFieldAsStreamByIndex(AIndex : integer; const AValue : TStream);
+procedure TtiQueryIBX.AssignFieldAsStreamByIndex(AIndex : integer; const AStream : TStream);
 begin
-  Assert(AValue <> nil, 'Stream not assigned');
-  AValue.Position := 0;
-  FIBSQL.Fields[AIndex].SaveToStream(AValue);
+  Assert(AStream <> nil, 'Stream not assigned');
+  AStream.Size:= 0 ;
+  FIBSQL.Fields[AIndex].SaveToStream(AStream);
+  AStream.Position := 0;
 end;
 
 procedure TtiQueryIBX.AttachDatabase(ADatabase: TtiDatabase);
