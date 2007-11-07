@@ -384,6 +384,7 @@ type
     procedure   AssignFieldAsStream(      const AName : string ; const AValue : TStream); virtual; abstract;
     procedure   AssignFieldAsStreamByIndex(     AIndex : integer; const AValue : TStream); virtual; abstract;
 
+    // ToDo: Refactor with SetDatabase method replacing AttachDatabase & DetachDatabase
     property  Database : TtiDatabase read FDatabase write FDatabase;
     procedure AttachDatabase(ADatabase : TtiDatabase); virtual;
     procedure DetachDatabase;  virtual;
