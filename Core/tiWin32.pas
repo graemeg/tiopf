@@ -9,7 +9,7 @@ uses
   ,Windows
  ;
 
-  procedure tiWin32RunEXEAndWait(AEXE : string);
+  procedure tiWin32RunEXEAndWait(const AEXE : string);
   function  tiWin32FileGetAttr(const AFileName : string): integer;
   function  tiWin32FileSetAttr(const AFileName: string; pAttr: Integer): Integer;
   function  tiWin32FindFirstFile(const APath: string; var  ASearchRec: TSearchRec): Integer;
@@ -116,7 +116,7 @@ begin
   end;
 end;
 
-procedure tiWin32RunEXEAndWait(AEXE : string);
+procedure tiWin32RunEXEAndWait(const AEXE : string);
 var
   SI: TStartupInfo;
   PI: TProcessInformation;
@@ -126,7 +126,6 @@ begin
     was confirmed fixed.:-) I am leaving this IFDEF for now, until the next
     FPC version is released, in a few days. - Graeme [2006-07-17] }
   GetStartupInfo({$IFDEF FPC}@{$ENDIF}SI);
-
   CreateProcess(
     nil, PChar(AEXE), nil, nil,
     False, 0, nil, nil, SI, PI);
@@ -134,12 +133,10 @@ begin
   WaitForSingleObject(PI.hProcess, Infinite);
 end;
 
-
 function tiWin32FileGetAttr(const AFileName : string): integer;
 begin
   result := fileGetAttr(AFileName);
 end;
-
 
 function tiWin32FileSetAttr(const AFileName: string; pAttr: Integer): Integer;
 begin
