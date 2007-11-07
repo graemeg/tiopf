@@ -28,6 +28,9 @@ uses
 
 const
   CErrorExceptionNotRaised = 'Exception not raised when it should have been';
+  CErrorPublishedPropertyCount = 'Count of published properties did not return ' +
+    'the expected value. The number of published properties has been changed ' +
+    'without the unit tests being updated';
 
   cTableNameTestGroup               = 'Test_Group';
 
@@ -101,6 +104,7 @@ type
     destructor Destroy; override;
     function  PerformanceCounter: TtiPerformanceCounter;
 
+    procedure Check(const ACondition: Boolean; AMessage: string; const AArgs: array of const); reintroduce; overload;
     function  AreStreamContentsSame(const pStream1, pStream2 : TStream; var AMessage : string): boolean;
     procedure CheckStreamContentsSame(const pStream1, pStream2 : TStream);
     procedure CheckFormattedMessage(const AFormat: string; const AArgs: array of const; const AActual: string; const AMessage: string = '');
@@ -481,6 +485,10 @@ begin
    end;
 end;
 
+procedure TtiTestCase.Check(const ACondition: Boolean; AMessage: string; const AArgs: array of const);
+begin
+  Check(ACondition, Format(AMessage, AArgs));
+end;
 
 constructor TtiTestCase.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
 begin
@@ -1799,6 +1807,3 @@ begin
 end;
 
 end.
-
-
-
