@@ -67,6 +67,7 @@ type
     procedure TestCreateDir;     // Tests logic used in tiFileToStringList test
     procedure TestCreateFile;    // Tests logic used in tiFileToStringList test
     procedure tiAddEllipsis;
+    procedure tiAddSeparators;
     procedure tiAddTrailingAnd;
     procedure tiAddTrailingComma;
     procedure tiAddTrailingOr;
@@ -90,6 +91,7 @@ type
     procedure tiDateToStr;
     procedure tiDateWithinRange;
     procedure tiRoundDateToPreviousMinute;
+    procedure tiWeekNumber;
     procedure tiDeleteFiles;
     procedure tiDirectoryTreeToStringList;
     procedure tiEnclose;
@@ -185,6 +187,7 @@ type
     procedure tiTrimTrailingWhiteSpace;
     procedure tiVariantArrayToString;
     procedure tiWildcardMatch;
+    procedure tiWrap;
     procedure tiXCopy;
     procedure tiYear;
     procedure tiYearToEndAusFinancialYear;
@@ -473,6 +476,11 @@ begin
   CheckEquals('"A,B"', tiUtils.tiQuote('"A,B"'), '#6');
 end;
 
+procedure TTestTIUtils.tiWeekNumber;
+begin
+
+end;
+
 procedure TTestTIUtils.tiWildcardMatch;
 begin
   Check(tiUtils.tiWildCardMatch('c:\temp.txt', '*.txt'), 'Failed on 1');
@@ -490,6 +498,19 @@ begin
   Check(    tiUtils.tiWildCardMatch('abcdefg', 'abc??fg'), 'Failed on 10');
 end;
 
+
+procedure TTestTIUtils.tiWrap;
+begin
+{$IFDEF MSWINDOWS}
+  Check(tiUtils.tiWrap('1234567890', 10) = '1234567890', 'Failed on 1');
+  Check(tiUtils.tiWrap('1234567890',  5) = '12345'#13#10'67890', 'Failed on 2');
+  Check(tiUtils.tiWrap('1234567890',  2) = '12'#13#10'34'#13#10'56'#13#10'78'#13#10'90', 'Failed on 3');
+{$ELSE}
+  Check(tiUtils.tiWrap('1234567890', 10) = '1234567890', 'Failed on 1');
+  Check(tiUtils.tiWrap('1234567890',  5) = '12345'#10'67890', 'Failed on 2');
+  Check(tiUtils.tiWrap('1234567890',  2) = '12'#10'34'#10'56'#10'78'#10'90', 'Failed on 3');
+{$ENDIF}
+end;
 
 procedure TTestTIUtils.tiSubStr;
 begin
@@ -513,6 +534,13 @@ begin
   Check(tiUtils.tiAddEllipsis('XXXXXXXXXX',  5) = 'XX...',      'Failed on 5' );
 end;
 
+
+procedure TTestTIUtils.tiAddSeparators;
+begin
+  Check(tiUtils.tiAddSeparators('1234567890', 10, '-') = '1234567890', 'Failed on 1');
+  Check(tiUtils.tiAddSeparators('1234567890',  5, '-') = '12345-67890', 'Failed on 2');
+  Check(tiUtils.tiAddSeparators('1234567890',  2, '-') = '12-34-56-78-90', 'Failed on 3');
+end;
 
 procedure TTestTIUtils.tiTrimR;
 begin
@@ -3147,6 +3175,3 @@ begin
 end;
 
 end.
-
-
-
