@@ -117,6 +117,7 @@ begin
       rxbHaltOnFailures:
         with Result do
         begin
+          result:= nil;
           if not WasSuccessful then
             System.Halt(ErrorCount+FailureCount);
         end;
