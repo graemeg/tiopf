@@ -177,15 +177,15 @@
     <LazDoc Paths="../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="FCL"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="tiOPF"/>
+        <MinVersion Major="2" Release="3" Valid="True"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="tiOPF"/>
-        <MinVersion Major="2" Release="3" Valid="True"/>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item3>
     </RequiredPkgs>
     <UsageOptions>

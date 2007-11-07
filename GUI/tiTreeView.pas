@@ -8,13 +8,13 @@ uses
 {$IFNDEF FPC}
    Messages
   , Windows
+  , CommCtrl
 {$ELSE}
   lMessages
   ,LClIntf
   ,LCLProc
 {$ENDIF}
   , ComCtrls
-  , CommCtrl
   , Classes
   , Menus
   , Graphics
