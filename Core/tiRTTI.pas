@@ -28,10 +28,12 @@ const
   // All simple types (string, int, float)
   ctkSimple = ctkString + ctkInt + ctkFloat;
 
+  // All types that can be handled by tiOPF
+  ctkAll = ctkSimple + [tkClass, tkEnumeration];
+
   // These are the leftovers
-  // tkUnknown
-  // tkClass, tkMethod,
-  // tkEnumeration, tkSet, tkVariant, tkArray, tkRecord, tkInterface, tkDynArray
+  // tkUnknown, tkMethod,
+  // tkSet, tkVariant, tkArray, tkRecord, tkInterface, tkDynArray
 
   // These are all the possibilities
   // tkUnknown, tkInteger, tkChar, tkEnumeration, tkFloat,
