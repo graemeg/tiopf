@@ -33,9 +33,9 @@ UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=
 NamespacePrefix=
 SymbolDeprecated=1
 SymbolLibrary=1
-SymbolPlatform=1
-UnitLibrary=1
-UnitPlatform=1
+SymbolPlatform=0
+UnitLibrary=0
+UnitPlatform=0
 UnitDeprecated=1
 HResultCompat=1
 HidingMember=1
@@ -123,19 +123,6 @@ Private=0
 DLL=0
 Locale=3081
 CodePage=1252
-[HistoryLists\hlConditionals]
-Count=2
-Item0=OBJECT_TRACKING;FASTMM;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;DUNIT2
-Item1=OBJECT_TRACKING;FASTMM;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBXx;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;DUNIT2
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=1
-Item0=..\..\Core;..\..\Options;..\..\GUI;..\Common;..\Tests;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\DUnit
-[HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=_Dcu
-[HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=..\..\_bin
+[Version Info Keys]
+FileVersion=0.0.0.0
+ProductVersion=
