@@ -29,6 +29,12 @@ type
     procedure ZLib_StringCompression;
     procedure ZLib_StreamCompression;
 
+    procedure tiCompressString;
+    procedure tiDeCompressString;
+    procedure tiDeCompressStream;
+    procedure tiCompressStream;
+    procedure tiDecompressFileToString;
+
   end;
 
 procedure RegisterTests;
@@ -175,6 +181,31 @@ procedure TTestTICompress.None_StringCompression;
 begin
   Do_StringCompression(cgsCompressNone, '');
   Do_StringCompression(cgsCompressNone, GetTestString);
+end;
+
+procedure TTestTICompress.tiCompressStream;
+begin
+
+end;
+
+procedure TTestTICompress.tiCompressString;
+begin
+
+end;
+
+procedure TTestTICompress.tiDecompressFileToString;
+begin
+
+end;
+
+procedure TTestTICompress.tiDeCompressStream;
+begin
+
+end;
+
+procedure TTestTICompress.tiDeCompressString;
+begin
+
 end;
 
 procedure TTestTICompress.ZLib_FileCompression;
