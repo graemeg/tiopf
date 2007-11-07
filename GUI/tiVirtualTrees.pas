@@ -1404,7 +1404,7 @@ type
   TVTColors = class(TPersistent)
   private
     FOwner: TBaseVirtualTree;
-    FColors: array[0..14] of TColor;
+    FColors: array[0..15] of TColor;
     function GetColor(const Index: Integer): TColor;
     procedure SetColor(const Index: Integer; const AValue: TColor);
   public
@@ -1414,6 +1414,7 @@ type
   published
     property BorderColor: TColor index 7 read GetColor write SetColor default clBtnFace;
     property DisabledColor: TColor index 0 read GetColor write SetColor default clBtnShadow;
+    property UnfocusedColor: TColor index 15 read GetColor write SetColor default clBtnShadow;
     property DropMarkColor: TColor index 1 read GetColor write SetColor default clHighlight;
     property DropTargetColor: TColor index 2 read GetColor write SetColor default clHighLight;
     property DropTargetBorderColor: TColor index 11 read GetColor write SetColor default clHighLight;
@@ -11212,7 +11213,7 @@ begin
   FColors[4]:= clBtnFace;        // GridLineColor
   FColors[5]:= clBtnShadow;      // TreeLineColor
   FColors[6]:= clBtnFace;        // UnfocusedSelectionColor
-  FColors[7]:= clBtnFace;        // BorderColor   
+  FColors[7]:= clBtnFace;        // BorderColor
   FColors[8]:= clWindowText;     // HotColor
   FColors[9]:= clHighLight;      // FocusedSelectionBorderColor
   FColors[10]:= clBtnFace;       // UnfocusedSelectionBorderColor
@@ -11220,6 +11221,7 @@ begin
   FColors[12]:= clHighlight;     // SelectionRectangleBlendColor
   FColors[13]:= clHighlight;     // SelectionRectangleBorderColor
   FColors[14]:= clBtnShadow;     // HeaderHotColor
+  FColors[15]:= clMedGray;       // UnfocusedColor
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -29046,9 +29048,13 @@ begin
     begin
       InflateRect(R, -FTextMargin, 0);
       DoPaintText(Node, Canvas, Column, ttNormal);
-      // Disabled node color overrides all other variants.
+      // Disabled and unfocused node color overrides all other variants.
       if (vsDisabled in Node.States) or not Enabled then
-        Canvas.Font.Color := FColors.DisabledColor;
+        Canvas.Font.Color := FColors.DisabledColor
+      else if (vsSelected in Node.States) and (not Self.Focused) and
+              ((toFullRowSelect in FOptions.FSelectionOptions) or
+               (Column = FFocusedColumn)) then
+        Canvas.Font.Color := FColors.UnfocusedColor;
 
       // The edit control flag will ensure that no partial line is displayed, that is, only lines
       // which are (vertically) fully visible are drawn.
@@ -29071,9 +29077,13 @@ begin
         NodeWidth := Size.cx + 2 * FTextMargin;
       end;
 
-      // Disabled node color overrides all other variants.
+      // Disabled and unfocused node color overrides all other variants.
       if (vsDisabled in Node.States) or not Enabled then
-        Canvas.Font.Color := FColors.DisabledColor;
+        Canvas.Font.Color := FColors.DisabledColor
+      else if (vsSelected in Node.States) and (not Self.Focused) and
+              ((toFullRowSelect in FOptions.FSelectionOptions) or
+               (Column = FFocusedColumn)) then
+        Canvas.Font.Color := FColors.UnfocusedColor;
 
       DrawFormat := DT_NOPREFIX or DT_VCENTER or DT_SINGLELINE;
       if BidiMode <> bdLeftToRight then
@@ -29090,7 +29100,7 @@ begin
       else
         DrawFormat := DrawFormat or AlignmentToDrawFlag[Alignment];
     end;
-    
+
     if Canvas.TextFlags and ETO_OPAQUE = 0 then
       SetBkMode(Canvas.Handle, TRANSPARENT)
     else
@@ -29138,9 +29148,13 @@ begin
     Canvas.TextFlags := 0;
     DoPaintText(Node, Canvas, Column, ttStatic);
 
-    // Disabled node color overrides all other variants.
+    // Disabled and unfocused node color overrides all other variants.
     if (vsDisabled in Node.States) or not Enabled then
-      Canvas.Font.Color := FColors.DisabledColor;
+      Canvas.Font.Color := FColors.DisabledColor
+    else if (vsSelected in Node.States) and (not Self.Focused) and
+            ((toFullRowSelect in FOptions.FSelectionOptions) or
+             (Column = FFocusedColumn)) then
+      Canvas.Font.Color := FColors.UnfocusedColor;
 
     R := ContentRect;
     if Alignment = taRightJustify then

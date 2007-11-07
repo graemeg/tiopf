@@ -599,6 +599,8 @@ type
     //property    ApplyFilter : boolean read FbApplyFilter write SetApplyFilter;
     property    FilterAsString : String read GetFilterAsString;
 
+    function    Focused: boolean; override;
+
     property    SelectedData : TtiObject read GetSelectedData write SetSelectedData;
     property    SelectedIndex : integer read GetSelectedIndex write SetSelectedIndex;
 
@@ -624,6 +626,7 @@ type
     function    SelectedNodeScreenOrigin: TPoint;
     property    FilteredItemCount: Integer read GetFilteredItemCount;
     property    FilteredItems[AIndex: Integer]: TtiObject read GetFilteredItems;
+    function    IsInFilteredData(AObject: TObject): boolean;
   published
   end;
 
@@ -910,6 +913,7 @@ type
 const
   AsTSortDirection: array[TvtSortDirection] of TSortDirection
    = (sdAscending, sdDescending);
+  CMaxHintWidth = 140;
 
 function tiVTDisplayMaskFromDataType(const AValue : TvtTypeKind): string;
 begin
@@ -1333,6 +1337,10 @@ begin
   end;
 end;
 
+function TtiCustomVirtualTree.Focused: boolean;
+begin
+  result:= FVT.Focused;
+end;
 
 procedure TtiCustomVirtualTree.ApplyGrouping;
 var
@@ -1735,6 +1743,22 @@ begin
     LColumn.OnDeriveColumn(Self, AObj, LColumn, Result)
   else
     Result := '<' + LColumn.FieldName + '> not correctly defined';
+end;
+
+function TtiCustomVirtualTree.IsInFilteredData(AObject: TObject): boolean;
+var
+  Lindex: Integer;
+begin
+  result := false;
+
+  LIndex := 0;
+  while LIndex <= FFilteredData.Count - 1 do
+    if FFilteredData.Items[LIndex] = AObject then
+    begin
+      result := true;
+      break;
+    end else
+      Inc(LIndex);
 end;
 
 function TtiCustomVirtualTree.IsNodeDataItem(Node: PVirtualNode): Boolean;
@@ -2552,6 +2576,7 @@ begin
   begin
     LData := GetObjectFromNode(ANode);
     FOnGetNodeHint(Self, LData, ANode, Column, AHintText);
+    AHintText := tiWrap(AHintText, CMaxHintWidth);
   end;
 end;
 
