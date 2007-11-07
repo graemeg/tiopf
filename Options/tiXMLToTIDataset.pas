@@ -187,7 +187,12 @@ type
   end;
 
 // Some helper methods
-procedure tiXMLStringToTIDataSets(const pXMLString : string; const pDataSets : TtiDataBuffers);
+procedure tiXMLStringToTIDataSets(const AXMLString : string;
+  const ADataSets : TtiDataBuffers); overload;
+procedure tiXMLStringToTIDataSets(const AXMLString : string;
+  const ADataSets : TtiDataBuffers;
+  const AOptXMLDBSize: TtiOptXMLDBSize;
+  const AXMLFieldNameStyle: TtiXMLFieldNameStyle); overload;
 function  tiTIDataSetsToXMLString(const pDataSets : TtiDataBuffers): string;
 function  tiTIDataSetToXMLString( const pDataSet : TtiDataBuffer): string;
 
@@ -211,16 +216,30 @@ uses
   {$ENDIF}
  ;
 
-procedure tiXMLStringToTIDataSets(const pXMLString : string; const pDataSets : TtiDataBuffers);
-var
-  lXMLToTIDataSet : TtiXMLToDataSetReadWriter;
+procedure tiXMLStringToTIDataSets(
+  const AXMLString : string;
+  const ADataSets : TtiDataBuffers);
 begin
-  lXMLToTIDataSet := TtiXMLToDataSetReadWriter.Create;
+  tiXMLStringToTIDataSets(AXMLString, ADataSets,
+    optDBSizeOff, xfnsString);
+end;
+
+procedure tiXMLStringToTIDataSets(
+  const AXMLString : string;
+  const ADataSets : TtiDataBuffers;
+  const AOptXMLDBSize: TtiOptXMLDBSize;
+  const AXMLFieldNameStyle: TtiXMLFieldNameStyle);
+var
+  LXMLToTIDataSet : TtiXMLToDataSetReadWriter;
+begin
+  LXMLToTIDataSet := TtiXMLToDataSetReadWriter.Create;
   try
-    lXMLToTIDataSet.DataSets := pDataSets;
-    lXMLToTIDataSet.AsString := pXMLString;
+    LXMLToTIDataSet.DataSets := ADataSets;
+    LXMLToTIDataSet.OptXMLDBSize:= AOptXMLDBSize;
+    LXMLToTIDataSet.XMLFieldNameStyle:= AXMLFieldNameStyle;
+    LXMLToTIDataSet.AsString := AXMLString;
   finally
-    lXMLToTIDataSet.Free;
+    LXMLToTIDataSet.Free;
   end;
 end;
 
