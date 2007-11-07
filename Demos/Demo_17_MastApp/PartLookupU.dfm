@@ -66,9 +66,6 @@ object frmPartLookup: TfrmPartLookup
     Height = 40
     Align = alBottom
     TabOrder = 1
-    DesignSize = (
-      334
-      40)
     object BitBtn1: TBitBtn
       Left = 168
       Top = 7

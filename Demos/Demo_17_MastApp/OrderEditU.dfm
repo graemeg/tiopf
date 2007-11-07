@@ -27,9 +27,6 @@ inherited frmOrder: TfrmOrder
     BevelOuter = bvNone
     BorderWidth = 8
     TabOrder = 3
-    DesignSize = (
-      509
-      442)
     object Bevel1: TBevel
       Left = 4
       Top = 308

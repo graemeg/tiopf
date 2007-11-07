@@ -70,9 +70,6 @@ object frmBaseList: TfrmBaseList
     Height = 40
     Align = alBottom
     TabOrder = 1
-    DesignSize = (
-      458
-      40)
     object BitBtn1: TBitBtn
       Left = 292
       Top = 7
