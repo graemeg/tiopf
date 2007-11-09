@@ -714,22 +714,22 @@ end;
 
 procedure TtiOPFTestCase.CreateDBIfNotExists;
 var
-  lRegPerLayer  : TtiPersistenceLayer;
-  lDatabaseClass : TtiDatabaseClass;
+  LPersistenceLayer  : TtiPersistenceLayer;
+  LDatabaseClass : TtiDatabaseClass;
 begin
-  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
-  Assert(lRegPerLayer <> nil, 'Unable to find registered persistence layer <' + PerLayerName +'>');
-  lDatabaseClass := lRegPerLayer.tiDatabaseClass;
-  if not lDatabaseClass.DatabaseExists(
+  LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
+  Assert(LPersistenceLayer <> nil, 'Unable to find registered persistence layer <' + PerLayerName +'>');
+  LDatabaseClass := LPersistenceLayer.DatabaseClass;
+  if not LDatabaseClass.DatabaseExists(
     PerFrameworkSetup.DBName,
     PerFrameworkSetup.Username,
     PerFrameworkSetup.Password) then
   begin
-    lDatabaseClass.CreateDatabase(
+    LDatabaseClass.CreateDatabase(
       PerFrameworkSetup.DBName,
       PerFrameworkSetup.Username,
       PerFrameworkSetup.Password);
-    if not lDatabaseClass.DatabaseExists(
+    if not LDatabaseClass.DatabaseExists(
       PerFrameworkSetup.DBName,
       PerFrameworkSetup.Username,
       PerFrameworkSetup.Password) then

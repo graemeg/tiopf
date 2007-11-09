@@ -67,7 +67,7 @@ type
   TTestTIDatabase = class(TtiOPFTestCase)
   private
   protected
-    FRegPerLayer : TtiPersistenceLayer;
+    FPersistenceLayer : TtiPersistenceLayer;
     FDatabase : TtiDatabase;
     FDatabaseClass : TtiDatabaseClass;
     procedure SetUp; override;
@@ -99,7 +99,7 @@ type
   // Test query access
   TTestTIQueryAbs = class(TtiOPFTestCase)
   private
-    FRegPerLayer : TtiPersistenceLayer;
+    FPersistenceLayer : TtiPersistenceLayer;
     FDatabase : TtiDatabase;
     FQuery   : TtiQuery;
   protected
@@ -743,13 +743,13 @@ end;
 procedure TTestTIQueryAbs.SetUp;
 begin
   inherited;
-  FRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-  CheckNotNull(FRegPerLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
-  FDatabase := FRegPerLayer.DBConnectionPools.Lock(PerFrameworkSetup.DBName);
+  FPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
+  CheckNotNull(FPersistenceLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
+  FDatabase := FPersistenceLayer.DBConnectionPools.Lock(PerFrameworkSetup.DBName);
   Assert(not FDatabase.InTransaction, 'Database in transaction after <gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock> called');
   DropTestTable;
   DropTableTestGroup(FDatabase);
-  FQuery   := FRegPerLayer.tiQueryClass.Create;
+  FQuery   := FPersistenceLayer.QueryClass.Create;
 end;
 
 
@@ -759,8 +759,8 @@ begin
     FDatabase.RollBack;
   DropTestTable;
   DropTableTestGroup(FDatabase);
-  CheckNotNull(FRegPerLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
-  FRegPerLayer.DBConnectionPools.UnLock(PerFrameworkSetup.DBName, FDatabase);
+  CheckNotNull(FPersistenceLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
+  FPersistenceLayer.DBConnectionPools.UnLock(PerFrameworkSetup.DBName, FDatabase);
   FQuery.Free;
   inherited;
 end;
@@ -943,9 +943,9 @@ end;
 procedure TTestTIDatabase.SetUp;
 begin
   inherited;
-  FRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-  CheckNotNull(FRegPerLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
-  FDatabaseClass := FRegPerLayer.tiDatabaseClass;
+  FPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
+  CheckNotNull(FPersistenceLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
+  FDatabaseClass := FPersistenceLayer.DatabaseClass;
   FDatabase := FDatabaseClass.Create;
 end;
 
@@ -960,7 +960,7 @@ end;
 
 procedure TTestTIDatabase.LoadDatabaseLayer;
 var
-  lRegPerLayer : TtiPersistenceLayer;
+  LPersistenceLaye : TtiPersistenceLayer;
 begin
   gTIOPFManager.ConnectDatabase(
     PerFrameworkSetup.DBName,
@@ -969,15 +969,15 @@ begin
     '',
     PerFrameworkSetup.PerLayerName);
   try
-    lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-    CheckNotNull(lRegPerLayer, 'Unable to find RegPerLayer');
-    CheckEquals(   PerFrameworkSetup.PerLayerName, lRegPerLayer.PerLayerName, 'PerLayerName');
-    CheckNotNull(lRegPerLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-    CheckEquals(PerFrameworkSetup.DBName, lRegPerLayer.DefaultDBConnectionPool.DBConnectParams.DatabaseName, 'DatabaseName');
+    LPersistenceLaye := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
+    CheckNotNull(LPersistenceLaye, 'Unable to find RegPerLayer');
+    CheckEquals(   PerFrameworkSetup.PerLayerName, LPersistenceLaye.PersistenceLayerName, 'PerLayerName');
+    CheckNotNull(LPersistenceLaye.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+    CheckEquals(PerFrameworkSetup.DBName, LPersistenceLaye.DefaultDBConnectionPool.DBConnectParams.DatabaseName, 'DatabaseName');
   finally
     gTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PerLayerName);
   end;
-  CheckNull(lRegPerLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+  CheckNull(LPersistenceLaye.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
 end;
 
 procedure TTestTIDatabase.Transaction_Commit;
@@ -996,7 +996,7 @@ begin
   try
     InsertIntoTestGroup(FDatabase, 1);
     FDatabase.Commit;
-    lQuery := FRegPerLayer.tiQueryClass.Create;
+    lQuery := FPersistenceLayer.QueryClass.Create;
     try
       lQuery.AttachDatabase(FDatabase);
       FDatabase.StartTransaction;
@@ -1029,7 +1029,7 @@ begin
   try
     InsertIntoTestGroup(FDatabase, 1);
     FDatabase.RollBack;
-    lQuery := FRegPerLayer.tiQueryClass.Create;
+    lQuery := FPersistenceLayer.QueryClass.Create;
     try
       lQuery.AttachDatabase(FDatabase);
       FDatabase.StartTransaction;
@@ -1321,8 +1321,8 @@ end;
 
 procedure TTestTIQueryAbs.ConfirmSetupWorks;
 begin
-  CheckNotNull(FRegPerLayer, 'RegPerlayerNotAssigned');
-  CheckEquals(PerFrameworkSetup.PerLayerName, FRegPerLayer.PerLayerName, 'Wrong RegPerLayer');
+  CheckNotNull(FPersistenceLayer, 'RegPerlayerNotAssigned');
+  CheckEquals(PerFrameworkSetup.PerLayerName, FPersistenceLayer.PersistenceLayerName, 'Wrong RegPerLayer');
   Check(not FDatabase.InTransaction, 'Database InTransaction when it should not be');
 end;
 

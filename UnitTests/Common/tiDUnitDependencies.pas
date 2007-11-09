@@ -71,8 +71,8 @@ uses
   {$IFDEF FPC}
   ,tiOPFFBL_TST
   //,tiOPFSQLDB_IB_TST
-  //,tiOPFZeos_FB15_TST
   {$ELSE}
+  ,tiOPFZeos_FB15_TST
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
   ,tiWebServer_tst
@@ -146,8 +146,8 @@ begin
   {$IFDEF FPC}
   tiOPFFBL_TST.RegisterTests;
 //  tiOPFSQLDB_IB_TST.RegisterTests;
-//  tiOPFZeos_FB15_TST.RegisterTests;
   {$ELSE}
+  tiOPFZeos_FB15_TST.RegisterTests;
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
 //  tiWebServer_tst.RegisterTests;
@@ -200,9 +200,30 @@ begin
     //uTIOPFTestManager.Add(TtiOPFTestSetupDataADOSQLServer.Create);
     uTIOPFTestManager.Add(TtiOPFTestSetupDataDOA.Create);
     uTIOPFTestManager.Add(TtiOPFTestSetupDataIBO.Create);
-//    uTIOPFTestManager.Add(TtiOPFTestSetupDataZeos.Create);
+    uTIOPFTestManager.Add(TtiOPFTestSetupDataZeos.Create);
+
     {$ENDIF FPC}
   end;
+
+//  Here are the possibilities
+//  cTIPersistADOAccess    = 'ADOAccess';
+//  cTIPersistADOSQLServer = 'ADOSQLServer';
+//  cTIPersistBDEParadox   = 'BDEParadox';
+//  cTIPersistCSV          = 'CSV';
+//  cTIPersistDOA          = 'DOA';
+//  cTIPersistFBL          = 'FBL';          // Free Pascal only
+//  cTIPersistIBO          = 'IBO';
+//  cTIPersistIBX          = 'IBX';
+//  cTIPersistRemote       = 'Remote';
+//  cTIPersistSqldbIB      = 'Sqldb_IB';     // Free Pascal equivalent to Delphi dbExpress
+//  cTIPersistTAB          = 'TAB';
+//  cTIPersistXML          = 'XML';          // ToDo: Rename this MSXML
+//  cTIPersistXMLLight     = 'XMLLight';
+//  cTIPersistZeosFB10     = 'Zeos_FB10';
+//  cTIPersistZeosFB15     = 'Zeos_FB15';
+//  cTIPersistZeosMySQL41  = 'Zeos_MySQL41';
+//  cTIPersistZeosMySQL50  = 'Zeos_MySQL50';
+
   result := uTIOPFTestManager;
 end;
 

@@ -175,7 +175,7 @@ begin
   try
     InsertIntoTestGroup(FDatabase, 1);
     FDatabase.Commit;
-    lQuery := FRegPerLayer.tiQueryClass.Create;
+    lQuery := FPersistenceLayer.QueryClass.Create;
     try
       lQuery.AttachDatabase(FDatabase);
       FDatabase.StartTransaction;
