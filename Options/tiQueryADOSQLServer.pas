@@ -7,9 +7,22 @@ uses
   Classes,
   ADODb,
   tiQueryADOAbs,
-  tiQuery;
+  tiQuery,
+  tiPersistenceLayers,
+  tiDBConnectionPool
+  ;
 
 type
+
+  TtiPersistenceLayerADOSQLServer = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
+
+
   TtiDatabaseADOSQLServer = class(TtiDatabaseADOAbs)
   private
   protected
@@ -33,8 +46,7 @@ const
 implementation
 
 uses
-   tiDBConnectionPool
-  ,tiObject
+   tiObject
   ,tiUtils
   ,tiOPFManager
   ,tiConstants
@@ -167,12 +179,31 @@ begin
   result := TtiQueryADOSQLServer;
 end;
 
+{ TtiPersistenceLayerADOSQLServer }
+
+function TtiPersistenceLayerADOSQLServer.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseADOSQLServer;
+end;
+
+function TtiPersistenceLayerADOSQLServer.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerADOSQLServer.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistADOSQLServer;
+end;
+
+function TtiPersistenceLayerADOSQLServer.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryADOSQLServer;
+end;
+
 Initialization
-   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-               cTIPersistADOSQLServer,
-               TtiDBConnectionPoolDataAbs,
-               TtiQueryADOSQLServer,
-               TtiDatabaseADOSQLServer);
+  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+    TtiPersistenceLayerADOSQLServer);
 
 finalization
   if not tiOPFManager.ShuttingDown then

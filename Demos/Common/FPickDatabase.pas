@@ -78,7 +78,7 @@ uses
   // Linking these units causes the persistence layers to be available
   ,tiQueryXML
   ,tiQueryIBX
-  ,tiQueryFBL
+//  ,tiQueryFBL
   ,tiQueryXMLLight
   ,tiQueryCSV
   ,tiQueryADOAccess
@@ -101,7 +101,7 @@ var
   lLastPerLayer: string;
 begin
   aDefaultToIBX.Enabled      := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistIBX);
-  aDefaultToFBL.Enabled      := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistFBL);  
+  //aDefaultToFBL.Enabled      := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistFBL);
   aDefaultToMSXML.Enabled    := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXML);
   aDefaultToXMLLight.Enabled := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXMLLight);
   aDefaultToCSV.Enabled      := gTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistCSV);

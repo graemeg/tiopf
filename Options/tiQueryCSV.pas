@@ -7,11 +7,21 @@ uses
    tiQuery
   ,tiDataBuffer_BOM
   ,tiQueryTXTAbs
+  ,tiPersistenceLayers
+  ,tiDBConnectionPool
  ;
 
 type
 
   TtiDBConnectionPoolDataCSV = Class(TtiDBConnectionPoolDataTXTAbs);
+
+  TtiPersistenceLayerCSV = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
   TtiDatabaseCSV = class(TtiDatabaseTXTFlatFileAbs)
   protected
@@ -176,12 +186,31 @@ begin
   FReservedChars := rcCSV;
 end;
 
+{ TtiPersistenceLayerCSV }
+
+function TtiPersistenceLayerCSV.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseCSV;
+end;
+
+function TtiPersistenceLayerCSV.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataCSV;
+end;
+
+function TtiPersistenceLayerCSV.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistCSV;
+end;
+
+function TtiPersistenceLayerCSV.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryCSV;
+end;
+
 initialization
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-              cTIPersistCSV,
-              TtiDBConnectionPoolDataCSV,
-              TtiQueryCSV,
-              TtiDatabaseCSV);
+    TtiPersistenceLayerCSV);
 
 finalization
   if not tiOPFManager.ShuttingDown then

@@ -13,9 +13,18 @@ uses
   ,IB_Header
   ,tiAutoMap
   ,tiObject
+  ,tiPersistenceLayers
  ;
 
 type
+
+  TtiPersistenceLayerIBO = class(TtiPersistenceLayer)
+  protected
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetPersistenceLayerName: string; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
   TtiDatabaseIBO = class (TtiDatabaseSQL)
   private
@@ -1053,13 +1062,32 @@ begin
   result:= TtiQueryIBO;
 end;
 
+{ TtiPersistenceLayerIBO }
+
+function TtiPersistenceLayerIBO.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseIBO;
+end;
+
+function TtiPersistenceLayerIBO.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerIBO.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistIBO;
+end;
+
+function TtiPersistenceLayerIBO.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryIBO;
+end;
+
 initialization
 
-  gTIOPFManager.PersistenceLayers.RegisterPersistenceLayer (
-    cTIPersistIBO,
-    TtiDBConnectionPoolDataAbs,
-    TtiQueryIBO,
-    TtiDatabaseIBO);
+  gTIOPFManager.PersistenceLayers.RegisterPersistenceLayer(
+    TtiPersistenceLayerIBO);
 
 finalization
   if not tiOPFManager.ShuttingDown then

@@ -138,10 +138,10 @@ type
                           const APersistenceLayerName    : string = '');
 
     // These execute database independant commands
-    function    CreateDatabase(const ADatabaseName : string;
+    procedure   CreateDatabase(const ADatabaseName : string;
                                 const AUserName    : string;
                                 const pUserPassword : string;
-                                const APackageID   : string = ''): string;
+                                const APackageID   : string = '');
     procedure   DropTable(  const ATableName       : TTableName;
                              const ADBConnectionName : string = '';
                              const APersistenceLayerName    : string = ''); overload;
@@ -223,18 +223,19 @@ uses
   ,tiINI
   ,tiExcept
 
-  {$IFDEF LINK_XML}          ,tiQueryXML          {$ENDIF}
-  {$IFDEF LINK_IBX}          ,tiQueryIBX          {$ENDIF}
-  {$IFDEF LINK_BDEPARADOX}   ,tiQueryBDEParadox   {$ENDIF}
   {$IFDEF LINK_ADOACCESS}    ,tiQueryADOAccess    {$ENDIF}
   {$IFDEF LINK_ADOSQLSERVER} ,tiQueryADOSQLServer {$ENDIF}
+  {$IFDEF LINK_BDEPARADOX}   ,tiQueryBDEParadox   {$ENDIF}
   {$IFDEF LINK_CSV}          ,tiQueryCSV          {$ENDIF}
-  {$IFDEF LINK_TAB}          ,tiQueryTAB          {$ENDIF}
-  {$IFDEF LINK_XMLLIGHT}     ,tiQueryXMLLight     {$ENDIF}
   {$IFDEF LINK_DOA}          ,tiQueryDOA          {$ENDIF}
+  {$IFDEF LINK_FBL}          ,tiQueryFBL          {$ENDIF}
+  {$IFDEF LINK_IBO}          ,tiQueryIBO          {$ENDIF}
+  {$IFDEF LINK_IBX}          ,tiQueryIBX          {$ENDIF}
   {$IFDEF LINK_REMOTE}       ,tiQueryRemote       {$ENDIF}
   {$IFDEF LINK_SQLDB_IB}     ,tiQuerySqldbIB      {$ENDIF}
-  {$IFDEF LINK_FBL}          ,tiQueryFBL          {$ENDIF}
+  {$IFDEF LINK_TAB}          ,tiQueryTAB          {$ENDIF}
+  {$IFDEF LINK_XML}          ,tiQueryXML          {$ENDIF}
+  {$IFDEF LINK_XMLLIGHT}     ,tiQueryXMLLight     {$ENDIF}
   {$IFDEF LINK_ZEOS_FB10}    ,tiQueryZeosFB10     {$ENDIF}
   {$IFDEF LINK_ZEOS_FB15}    ,tiQueryZeosFB15     {$ENDIF}
   {$IFDEF LINK_ZEOS_MYSQL41} ,tiQueryZeosMySQL41  {$ENDIF}
@@ -378,13 +379,13 @@ end;
 
 function TtiOPFManager.GetDefaultPerLayerName: string;
 var
-  lRegPerLayer : TtiPersistenceLayer;
+  LPersistenceLayer : TtiPersistenceLayer;
 begin
-  lRegPerLayer := DefaultPerLayer;
-  if lRegPerLayer <> nil then
-    result := lRegPerLayer.PerLayerName
+  LPersistenceLayer := DefaultPerLayer;
+  if LPersistenceLayer <> nil then
+    result := LPersistenceLayer.PersistenceLayerName
   else
-    result := ''
+    result := '';
 end;
 
 
@@ -767,16 +768,15 @@ begin
 end;
 
 
-function TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
-  pUserPassword, APackageID: string): string;
+procedure TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
+  pUserPassword, APackageID: string);
 var
-  lRegPerLayer : TtiPersistenceLayer;
+  LPersistenceLayer : TtiPersistenceLayer;
 begin
-  Result := '';   { Graeme: What is this function supposed to return? }
-  lRegPerLayer := PersistenceLayers.FindByPerLayerName(APackageID);
-  if lRegPerLayer = nil then
+  LPersistenceLayer := PersistenceLayers.FindByPerLayerName(APackageID);
+  if LPersistenceLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
-  lRegPerLayer.tiDatabaseClass.CreateDatabase(ADatabaseName, AUserName, pUserPassword);
+  LPersistenceLayer.DatabaseClass.CreateDatabase(ADatabaseName, AUserName, pUserPassword);
 end;
 
 
@@ -801,12 +801,12 @@ end;
 
 procedure TtiOPFManager.DisconnectDatabase(const ADatabaseName: string);
 var
-  lRegPerLayer: TtiPersistenceLayer;
+  LPersistenceLayer: TtiPersistenceLayer;
 begin
-  lRegPerLayer := DefaultPerLayer;
-  if lRegPerLayer = nil then
+  LPersistenceLayer := DefaultPerLayer;
+  if LPersistenceLayer = nil then
     raise EtiOPFInternalException.Create(cErrorUnableToFindDefaultPerLayer);
-  DisconnectDatabase(ADatabaseName, lRegPerLayer.PerLayerName);
+  DisconnectDatabase(ADatabaseName, LPersistenceLayer.PersistenceLayerName);
 end;
 
 
@@ -842,7 +842,7 @@ begin
   if LPersistenceLayer.DBConnectionPools.IsConnected(ADatabaseAlias) then
     result := true  // Assume OK if already connect (Warning: Could be a different user)
   else
-    if LPersistenceLayer.tiDatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword, AParams) then
+    if LPersistenceLayer.DatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword, AParams) then
     begin
       LPersistenceLayer.DBConnectionPools.Connect(ADatabaseAlias, ADatabaseName, AUserName, APassword, AParams);
       result := true;
@@ -852,14 +852,14 @@ end;
 
 procedure TtiOPFManager.DisconnectDatabase;
 var
-  lRegPerLayer: TtiPersistenceLayer;
-  lDatabaseName: string;
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDatabaseName: string;
 begin
-  lRegPerLayer := DefaultPerLayer;
-  Assert(lRegPerLayer <> nil, cErrorUnableToFindDefaultPerLayer);
-  lDatabaseName := lRegPerLayer.DefaultDBConnectionName;
-  Assert(lDatabaseName <> '', cErrorUnableToFindDefaultDatabase);
-  DisconnectDatabase(lDatabaseName, lRegPerLayer.PerLayerName);
+  LPersistenceLayer := DefaultPerLayer;
+  Assert(LPersistenceLayer <> nil, cErrorUnableToFindDefaultPerLayer);
+  LDatabaseName := LPersistenceLayer.DefaultDBConnectionName;
+  Assert(LDatabaseName <> '', cErrorUnableToFindDefaultDatabase);
+  DisconnectDatabase(LDatabaseName, LPersistenceLayer.PersistenceLayerName);
 end;
 
 
@@ -870,18 +870,19 @@ initialization
   // directive, but not if there are more.
   // Have added this code to solve the problem of forcing the correct default per layer
   // when the remote layer is pulled in from code, and a SQL layer is required as well.
-  {$IFDEF LINK_XML}           gTIOPFManager.DefaultPerLayerName := cTIPersistXML;         {$ENDIF}
-  {$IFDEF LINK_IBX}           gTIOPFManager.DefaultPerLayerName := cTIPersistIBX;         {$ENDIF}
-  {$IFDEF LINK_BDEPARADOX}    gTIOPFManager.DefaultPerLayerName := cTIPersistBDEParadox;  {$ENDIF}
   {$IFDEF LINK_ADOACCESS}     gTIOPFManager.DefaultPerLayerName := cTIPersistADOAccess;   {$ENDIF}
   {$IFDEF LINK_ADOSQLSERVER}  gTIOPFManager.DefaultPerLayerName := cTIPersistADOSQLServer;{$ENDIF}
+  {$IFDEF LINK_BDEPARADOX}    gTIOPFManager.DefaultPerLayerName := cTIPersistBDEParadox;  {$ENDIF}
   {$IFDEF LINK_CSV}           gTIOPFManager.DefaultPerLayerName := cTIPersistCSV;         {$ENDIF}
-  {$IFDEF LINK_TAB}           gTIOPFManager.DefaultPerLayerName := cTIPersistTAB;         {$ENDIF}
-  {$IFDEF LINK_XMLLIGHT}      gTIOPFManager.DefaultPerLayerName := cTIPersistXMLLight;    {$ENDIF}
   {$IFDEF LINK_DOA}           gTIOPFManager.DefaultPerLayerName := cTIPersistDOA;         {$ENDIF}
+  {$IFDEF LINK_FBL}           gTIOPFManager.DefaultPerLayerName := cTIPersistFBL;         {$ENDIF}
+  {$IFDEF LINK_IBO}           gTIOPFManager.DefaultPerLayerName := cTIPersistIBO;         {$ENDIF}
+  {$IFDEF LINK_IBX}           gTIOPFManager.DefaultPerLayerName := cTIPersistIBX;         {$ENDIF}
   {$IFDEF LINK_REMOTE}        gTIOPFManager.DefaultPerLayerName := cTIPersistRemote;      {$ENDIF}
   {$IFDEF LINK_SQLDB_IB}      gTIOPFManager.DefaultPerLayerName := cTIPersistSqldbIB;     {$ENDIF}
-  {$IFDEF LINK_FBL}           gTIOPFManager.DefaultPerLayerName := cTIPersistFBL;         {$ENDIF}
+  {$IFDEF LINK_TAB}           gTIOPFManager.DefaultPerLayerName := cTIPersistTAB;         {$ENDIF}
+  {$IFDEF LINK_XML}           gTIOPFManager.DefaultPerLayerName := cTIPersistXML;         {$ENDIF}
+  {$IFDEF LINK_XMLLIGHT}      gTIOPFManager.DefaultPerLayerName := cTIPersistXMLLight;    {$ENDIF}
   {$IFDEF LINK_ZEOS_FB10}     gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB10;    {$ENDIF}
   {$IFDEF LINK_ZEOS_FB15}     gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB15;    {$ENDIF}
   {$IFDEF LINK_ZEOS_MySQLl50} gTIOPFManager.DefaultPerLayerName := cTIPersistZeosMySQL50; {$ENDIF}

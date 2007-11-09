@@ -13,12 +13,18 @@ uses
   ,Classes
   ,Contnrs
   ,Oracle
+  ,tiPersistenceLayers
  ;
 
-const
-  CtiQueryOptionDOAReadBuffer = 'ReadBuffer';
-
 type
+
+  TtiPersistenceLayerDOA = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
   EtiOPFDOAException = EtiOPFException;
 
@@ -142,9 +148,7 @@ uses
    tiLog
   ,tiUtils
   ,tiOPFManager
-//  ,tiDialogs
   ,tiConstants
-
   ,Forms
   ,Windows
   ,Controls
@@ -152,13 +156,13 @@ uses
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
-
   ,OracleCI
- ;
+  ;
 
 const
   cSavePoint = 'DOA_Save_Point';
-  
+  CtiQueryOptionDOAReadBuffer = 'ReadBuffer';
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TtiQueryDOA
@@ -1103,12 +1107,31 @@ begin
   AStream.Position := 0;
 end;
 
+{ TtiPersistenceLayerDOA }
+
+function TtiPersistenceLayerDOA.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseDOA;
+end;
+
+function TtiPersistenceLayerDOA.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerDOA.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistDOA;
+end;
+
+function TtiPersistenceLayerDOA.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryDOA;
+end;
+
 initialization
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-              cTIPersistDOA,
-              TtiDBConnectionPoolDataAbs,
-              TtiQueryDOA,
-              TtiDatabaseDOA);
+    TtiPersistenceLayerDOA);
 
 finalization
   if not tiOPFManager.ShuttingDown then

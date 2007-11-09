@@ -460,7 +460,7 @@ begin
   begin
     if not Assigned(TtiOPFManager(TIOPFManager).DefaultPerLayer) then
       raise EtiOPFDataException.Create(CErrorDefaultPersistenceLayerNotAssigned);
-    FPersistenceLayerName := LTIOPFManager.DefaultPerLayer.PerLayerName;
+    FPersistenceLayerName := LTIOPFManager.DefaultPerLayer.PersistenceLayerName;
   end
   else
     FPersistenceLayerName := APersistenceLayerName;

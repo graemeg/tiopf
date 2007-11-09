@@ -30,11 +30,19 @@ uses
   ,tiDBConnectionPool
   ,tiObject
   ,tiQuery
+  ,tiPersistenceLayers
  ;
 
 type
 
-  // ---------------------------------------------------------------------------
+  TtiPersistenceLayerSqldIB = class(TtiPersistenceLayer)
+  protected
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetPersistenceLayerName: string; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
+
   TtiDatabaseSqldIB = class(TtiDatabaseSQL)
   private
     FDatabase: TIBConnection;
@@ -998,13 +1006,32 @@ begin
   result:= TtiQuerySqldbIB;
 end;
 
+{ TtiPersistenceLayerSqldIB }
+
+function TtiPersistenceLayerSqldIB.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseSqldIB;
+end;
+
+function TtiPersistenceLayerSqldIB.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerSqldIB.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistSqldbIB;
+end;
+
+function TtiPersistenceLayerSqldIB.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQuerySqldbIB;
+end;
+
 initialization
 
   gTIOPFManager.RegPerLayers.__RegisterPersistenceLayer(
-        cTIPersistSqldbIB,
-        TtiDBConnectionPoolDataAbs,
-        TtiQuerySqldbIB,
-        TtiDatabaseSqldIB);
+    TtiPersistenceLayerSqldIB);
 
 finalization
   if not tiOPFManager.ShuttingDown then

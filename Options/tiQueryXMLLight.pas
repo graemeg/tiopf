@@ -10,6 +10,7 @@ uses
   ,tiXML
   ,tiXMLToTIDataset
   ,tiPersistenceLayers
+  ,tiDBConnectionPool
  ;
 
 const
@@ -18,6 +19,14 @@ const
   cErrorUnableToFindTable = 'Unable to find table <%s>';
 
 type
+
+  TtiPersistenceLayerXMLLight = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
   TtiDBConnectionPoolDataXMLLight = Class(TtiDBConnectionPoolDataTXTAbs);
 
@@ -87,10 +96,7 @@ procedure RegisterPersistenceLayer(const APersistenceLayers: TtiPersistenceLayer
 begin
   Assert(APersistenceLayers.TestValid, cTIInvalidObjectError);
   APersistenceLayers.__RegisterPersistenceLayer(
-              cTIPersistXMLLight,
-              TtiDBConnectionPoolDataXMLLight,
-              TtiQueryXMLLight,
-              TtiDatabaseXMLLight);
+    TtiPersistenceLayerXMLLight);
 end;
 
 function tiMakeXMLLightParams(pReadOnly: Boolean; const pCompress: string;
@@ -328,6 +334,28 @@ constructor TtiQueryXMLLight.Create;
 begin
   inherited;
   FReservedChars := rcXML;
+end;
+
+{ TtiPersistenceLayerXMLLight }
+
+function TtiPersistenceLayerXMLLight.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseXMLLight;
+end;
+
+function TtiPersistenceLayerXMLLight.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataXMLLight;
+end;
+
+function TtiPersistenceLayerXMLLight.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistXMLLight;
+end;
+
+function TtiPersistenceLayerXMLLight.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryXMLLight;
 end;
 
 Initialization

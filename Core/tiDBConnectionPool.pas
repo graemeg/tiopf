@@ -114,7 +114,7 @@ var
   LDatabase: TtiDatabase;
 begin
   LPersistenceLayer := (DBConnectionPools.PersistenceLayer as TtiPersistenceLayer);
-  LDatabase:= LPersistenceLayer.tiDatabaseClass.Create;
+  LDatabase:= LPersistenceLayer.DatabaseClass.Create;
   APooledItem.Data:= LDatabase;
   LDatabase.Connect(
     DBConnectParams.DatabaseName,
@@ -178,16 +178,16 @@ end;
 
 procedure TtiDBConnectionPool.Init;
 var
-  lRegPerLayer : TtiPersistenceLayer;
-  lDBConnectionPoolData : TtiDBConnectionPoolDataAbs;
+  LPersistenceLayer : TtiPersistenceLayer;
+  LDBConnectionPoolData : TtiDBConnectionPoolDataAbs;
 begin
-  lRegPerLayer := (DBConnectionPools.PersistenceLayer as TtiPersistenceLayer);
-  lDBConnectionPoolData := lRegPerLayer.tiDBConnectionPoolDataClass.Create;
+  LPersistenceLayer := (DBConnectionPools.PersistenceLayer as TtiPersistenceLayer);
+  LDBConnectionPoolData := LPersistenceLayer.DBConnectionPoolDataClass.Create;
   try
-    lDBConnectionPoolData.DBConnectionPool := self;
-    lDBConnectionPoolData.InitDBConnectionPool;
+    LDBConnectionPoolData.DBConnectionPool := self;
+    LDBConnectionPoolData.InitDBConnectionPool;
   finally
-    lDBConnectionPoolData.Free;
+    LDBConnectionPoolData.Free;
   end;
 end;
 
@@ -322,7 +322,7 @@ begin
   Assert(DBConnectionPools.PersistenceLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
   LPersistenceLayer := DBConnectionPools.PersistenceLayer as TtiPersistenceLayer;
   result :=
-    'Persistence layer:   ' + LPersistenceLayer.PerLayerName + Cr +
+    'Persistence layer:   ' + LPersistenceLayer.PersistenceLayerName + Cr +
     'Database name:       ' + DBConnectParams.DatabaseName + Cr +
     'User name:           ' + DBConnectParams.UserName     + Cr +
     'Password:            ' + tiReplicate('X', Length(DBConnectParams.Password)) + Cr +

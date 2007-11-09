@@ -7,19 +7,20 @@ const
   // Got problems setting this to 2.00 for the time being. Have a dependency in the XML files. Will fix.
   //cTIOPFVersion          = '2.000';
   cTIOPFVersion          = '1.405';
-  cTIPersistIBX          = 'IBX';
-  cTIPersistBDEParadox   = 'BDEParadox';
-  cTIPersistXML          = 'XML'; // ReName this MSXML
-  cTIPersistXMLLight     = 'XMLLight';
-  cTIPersistCSV          = 'CSV';
-  cTIPersistTAB          = 'TAB';
-  cTIPersistIBO          = 'IBO';
+  // There are quite a few of these now, so keep them sorted in alapha order
   cTIPersistADOAccess    = 'ADOAccess';
   cTIPersistADOSQLServer = 'ADOSQLServer';
+  cTIPersistBDEParadox   = 'BDEParadox';
+  cTIPersistCSV          = 'CSV';
   cTIPersistDOA          = 'DOA';
+  cTIPersistFBL          = 'FBL';          // Free Pascal only
+  cTIPersistIBO          = 'IBO';
+  cTIPersistIBX          = 'IBX';
   cTIPersistRemote       = 'Remote';
-  cTIPersistSqldbIB      = 'Sqldb_IB'; // Free Pascal equivalent to Delphi dbExpress
-  cTIPersistFBL          = 'FBL';      // Free Pascal only
+  cTIPersistSqldbIB      = 'Sqldb_IB';     // Free Pascal equivalent to Delphi dbExpress
+  cTIPersistTAB          = 'TAB';
+  cTIPersistXML          = 'XML';          // ToDo: Rename this MSXML
+  cTIPersistXMLLight     = 'XMLLight';
   cTIPersistZeosFB10     = 'Zeos_FB10';
   cTIPersistZeosFB15     = 'Zeos_FB15';
   cTIPersistZeosMySQL41  = 'Zeos_MySQL41';

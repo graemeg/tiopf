@@ -24,6 +24,7 @@ type
   TtiPerLayerLoadingStyle = (pllsStaticLinking, pllsDynamicLoading);
   TtiPersistenceLayers = class;
   TtiPersistenceLayer  = class;
+  TtiPersistenceLayerClass = class of TtiPersistenceLayer;
 
   TtiPersistenceLayers = class(TtiObjectList)
   private
@@ -59,12 +60,7 @@ type
 
     // Do not call these your self. They are called in the initialization section
     // of tiQueryXXX.pas that contains the concrete classes.
-    // ToDo: Refactor __RegisterPersistenceLayer so it takes only one parameter:
-    //       The persistence layer class, and the rest is derived from class funcs
-    procedure   __RegisterPersistenceLayer(const ALayerName: string;
-                                          ADBConnectionPoolDataClass : TtiDBConnectionPoolDataClass;
-                                          AQueryClass : TtiQueryClass;
-                                          ADatabaseClass : TtiDatabaseClass);
+    procedure   __RegisterPersistenceLayer(const APersistenceLayerClass: TtiPersistenceLayerClass);
     procedure   __UnRegisterPersistenceLayer(const ALayerName: string);
 
     function    CreateTIQuery(const ALayerName : string {= '' })           : TtiQuery; overload;
@@ -81,10 +77,6 @@ type
 
   TtiPersistenceLayer = class(TtiObject)
   private
-    FTiQueryClass: TtiQueryClass;
-    FTiDatabaseClass: TtiDatabaseClass;
-    FTiDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-    FPerLayerName: string;
     FModuleID: HModule;
     FDBConnectionPools: TtiDBConnectionPools;
     FDefaultDBConnectionPool : TtiDBConnectionPool;
@@ -96,19 +88,24 @@ type
   protected
     function    GetOwner: TtiPersistenceLayers; reintroduce;
     procedure   SetOwner(const AValue: TtiPersistenceLayers); reintroduce;
+
+    // These must be overridden in the concrete classes
+    function GetDatabaseClass: TtiDatabaseClass; virtual; abstract;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; virtual; abstract;
+    function GetPersistenceLayerName: string; virtual; abstract;
+    function GetQueryClass: TtiQueryClass; virtual; abstract;
+
   public
     constructor Create; override;
     destructor  Destroy; override;
     property    Owner      : TtiPersistenceLayers            read GetOwner      write SetOwner;
 
-    // Properties that are set when the persistence layer is loaded (set in
-    // initialization section of TtiQueryXXX.pas that contains the concrete)
-    property  tiDBConnectionPoolDataClass : TtiDBConnectionPoolDataClass read FTiDBConnectionPoolDataClass write FTiDBConnectionPoolDataClass;
-    property  tiQueryClass               : TtiQueryClass read FTiQueryClass        write FTiQueryClass;
-    property  tiDatabaseClass            : TtiDatabaseClass read FTiDatabaseClass  write FTiDatabaseClass;
-    property  PerLayerName               : string read FPerLayerName write FPerLayerName;
-    property  DynamicallyLoaded          : boolean read FDynamicallyLoaded write FDynamicallyLoaded;
+    property  DBConnectionPoolDataClass  : TtiDBConnectionPoolDataClass read GetDBConnectionPoolDataClass;
+    property  QueryClass                 : TtiQueryClass read GetQueryClass;
+    property  DatabaseClass              : TtiDatabaseClass read GetDatabaseClass;
+    property  PersistenceLayerName       : string read GetPersistenceLayerName;
 
+    property  DynamicallyLoaded          : boolean read FDynamicallyLoaded write FDynamicallyLoaded;
     property  ModuleID                   : HModule read FModuleID write FModuleID;
     property  DefaultDBConnectionName    : string read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
     property  DefaultDBConnectionPool    : TtiDBConnectionPool read GetDefaultDBConnectionPool;
@@ -133,7 +130,6 @@ uses
 constructor TtiPersistenceLayer.Create;
 begin
   inherited;
-  FTiDBConnectionPoolDataClass := TtiDBConnectionPoolDataAbs;
   ModuleID := 0;
   FDBConnectionPools:= TtiDBConnectionPools.Create(Self);
   FNextOIDMgr := TNextOIDMgr.Create;
@@ -161,7 +157,7 @@ begin
   end;
 
   for i := 0 to Count - 1 do
-    if SameText(Items[i].PerLayerName, ALayerName) then
+    if SameText(Items[i].PersistenceLayerName, ALayerName) then
     begin
       result := Items[i];
       Exit; //==>
@@ -179,20 +175,16 @@ begin
 end;
 
 procedure TtiPersistenceLayers.__RegisterPersistenceLayer(
-  const ALayerName: string;
-  ADBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-  AQueryClass: TtiQueryClass; ADatabaseClass: TtiDatabaseClass);
+  const APersistenceLayerClass: TtiPersistenceLayerClass);
 var
-  lData : TtiPersistenceLayer;
+  LData : TtiPersistenceLayer;
 begin
-  if IsLoaded(ALayerName) then
-    Exit; //==>
-  lData := TtiPersistenceLayer.Create;
-  lData.PerLayerName := ALayerName;
-  lData.tiDBConnectionPoolDataClass := ADBConnectionPoolDataClass;
-  lData.tiQueryClass         := AQueryClass  ;
-  lData.tiDatabaseClass      := ADatabaseClass;
-  Add(lData);
+  Assert(APersistenceLayerClass <> nil, 'APersistenceLayerClass not assigned');
+  LData := APersistenceLayerClass.Create;
+  if IsLoaded(LData.PersistenceLayerName) then
+    LData.Free
+  else
+    Add(LData);
 end;
 
 procedure TtiPersistenceLayers.SetItems(i: integer; const AValue: TtiPersistenceLayer);
@@ -207,45 +199,45 @@ end;
 
 function TtiPersistenceLayers.CreateTIDatabase(const ALayerName : string {= ''}): TtiDatabase;
 var
-  lData : TtiPersistenceLayer;
+  LPersistenceLayer : TtiPersistenceLayer;
 begin
-  lData := FindByPerLayerName(ALayerName);
-  if lData = nil then
+  LPersistenceLayer := FindByPerLayerName(ALayerName);
+  if LPersistenceLayer = nil then
     raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
-  result := lData.tiDatabaseClass.Create;
+  result := LPersistenceLayer.DatabaseClass.Create;
 end;
 
 function TtiPersistenceLayers.CreateTIQuery(const ALayerName : string {= ''}): TtiQuery;
 var
-  lData : TtiPersistenceLayer;
+  LPersistenceLayer : TtiPersistenceLayer;
 begin
-  lData := FindByPerLayerName(ALayerName);
-  if lData = nil then
+  LPersistenceLayer := FindByPerLayerName(ALayerName);
+  if LPersistenceLayer = nil then
     raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
-  result := lData.tiQueryClass.Create;
+  result := LPersistenceLayer.QueryClass.Create;
 end;
 
 function TtiPersistenceLayers.CreateTIDBConnectionPoolData(const ALayerName : string {= ''}): TtiDBConnectionPoolDataAbs;
 var
-  lData : TtiPersistenceLayer;
+  LPersistenceLayer : TtiPersistenceLayer;
 begin
-  lData := FindByPerLayerName(ALayerName);
-  if lData = nil then
+  LPersistenceLayer := FindByPerLayerName(ALayerName);
+  if LPersistenceLayer = nil then
     raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
-  result := lData.tiDBConnectionPoolDataClass.Create;
+  result := LPersistenceLayer.DBConnectionPoolDataClass.Create;
 end;
 
 procedure TtiPersistenceLayer.CreateDatabase(const ADatabaseName, AUserName,
   APassword: string);
 begin
-  Assert(FTiDatabaseClass<>nil, 'FTiDatabaseClass not assigned');
-  FTiDatabaseClass.CreateDatabase(ADatabaseName, AUserName, APassword);
+  Assert(DatabaseClass<>nil, 'DatabaseClass not assigned');
+  DatabaseClass.CreateDatabase(ADatabaseName, AUserName, APassword);
 end;
 
 function TtiPersistenceLayer.DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean;
 begin
-  Assert(FTiDatabaseClass<>nil, 'FTiDatabaseClass not assigned');
-  result := FTiDatabaseClass.DatabaseExists(ADatabaseName, AUserName, APassword);
+  Assert(DatabaseClass<>nil, 'DatabaseClass not assigned');
+  result := DatabaseClass.DatabaseExists(ADatabaseName, AUserName, APassword);
 end;
 
 destructor TtiPersistenceLayer.Destroy;
@@ -308,9 +300,7 @@ var
   i : integer;
 begin
   for i := Count - 1 downto 0 do
-//    if Items[i].ModuleID <> 0 then
-      UnLoadPersistenceLayer(Items[i].PerLayerName);
-//      UnLoadPackage(Items[i].ModuleID);
+    UnLoadPersistenceLayer(Items[i].PersistenceLayerName);
   inherited;
 end;
 
@@ -339,12 +329,12 @@ end;
 function TtiPersistenceLayers.CreateTIQuery(
   const ADatabaseClass: TtiDatabaseClass): TtiQuery;
 var
-  lData : TtiPersistenceLayer;
+  LPersistenceLayer : TtiPersistenceLayer;
 begin
-  lData := FindByTIDatabaseClass(ADatabaseClass);
-  if lData = nil then
+  LPersistenceLayer := FindByTIDatabaseClass(ADatabaseClass);
+  if LPersistenceLayer = nil then
     raise Exception.Create('Unable to find persistence layer for database class <' + ADatabaseClass.ClassName + '>');
-  result := lData.tiQueryClass.Create;
+  result := LPersistenceLayer.QueryClass.Create;
 end;
 
 function TtiPersistenceLayers.FindByTIDatabaseClass(
@@ -355,7 +345,7 @@ begin
   Assert(ADatabaseClass <> nil, 'ADatabaseClass <> nil');
   result := nil;
   for i := 0 to Count - 1 do
-    if Items[i].TIDatabaseClass = ADatabaseClass then
+    if Items[i].DatabaseClass = ADatabaseClass then
     begin
       result := Items[i];
       Exit; //==>
@@ -418,29 +408,29 @@ end;
 
 procedure TtiPersistenceLayers.UnLoadPersistenceLayer(const APersistenceLayerName: string);
 var
-  lPackageID    : string;
-  lRegPerLayer : TtiPersistenceLayer;
+  LPackageID    : string;
+  LPersistenceLayer : TtiPersistenceLayer;
 begin
   if APersistenceLayerName <> '' then
-    lPackageID := APersistenceLayerName
+    LPackageID := APersistenceLayerName
   else if Count = 1 then
-    lPackageID  := Items[0].PerLayerName
+    LPackageID  := Items[0].PersistenceLayerName
   else
     raise EtiOPFProgrammerException.Create(cErrorUnableToFindPerLayerToUnload);
 
   if not IsLoaded(APersistenceLayerName) then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToLoadPerLayerThatsNotLoaded, [lPackageID]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToLoadPerLayerThatsNotLoaded, [LPackageID]);
 
-  lRegPerLayer := FindByPerLayerName(APersistenceLayerName);
-  Assert(lRegPerLayer.TestValid, cTIInvalidObjectError);
+  LPersistenceLayer := FindByPerLayerName(APersistenceLayerName);
+  Assert(LPersistenceLayer.TestValid, cTIInvalidObjectError);
 
-  lRegPerLayer.DBConnectionPools.DisConnectAll;
-  Log('Unloading persistence layer <' + lRegPerLayer.PerLayerName + '>', lsConnectionPool);
+  LPersistenceLayer.DBConnectionPools.DisConnectAll;
+  Log('Unloading persistence layer <' + LPersistenceLayer.PersistenceLayerName + '>', lsConnectionPool);
 
-  if lRegPerLayer.ModuleID <> 0 then
-    UnLoadPackage(lRegPerLayer.ModuleID) // lRegPerLayer has now been destroyed
+  if LPersistenceLayer.ModuleID <> 0 then
+    UnLoadPackage(LPersistenceLayer.ModuleID) // lRegPerLayer has now been destroyed
   else
-    Remove(lRegPerLayer);
+    Remove(LPersistenceLayer);
 
   if Count > 0 then
     DefaultPerLayer:= Items[0]
@@ -516,7 +506,7 @@ end;
 function TtiPersistenceLayers.GetDefaultPerLayerName: string;
 begin
   if DefaultPerLayer <> nil then
-    result := DefaultPerLayer.PerLayerName
+    result := DefaultPerLayer.PersistenceLayerName
   else
     result := '';
 end;
@@ -529,8 +519,8 @@ end;
 function TtiPersistenceLayer.TestConnectToDatabase(const ADatabaseName,
   AUserName, APassword, AParams: string): boolean;
 begin
-  Assert(FTiDatabaseClass<>nil, 'FTiDatabaseClass not assigned');
-  result := FTiDatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword,
+  Assert(DatabaseClass<>nil, 'DatabaseClass not assigned');
+  result := DatabaseClass.TestConnectTo(ADatabaseName, AUserName, APassword,
                                            AParams);
 end;
 

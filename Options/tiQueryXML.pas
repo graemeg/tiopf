@@ -10,17 +10,24 @@ uses
   ,Classes
   ,tiAutoMap
   ,tiObject
-  ,tiDBConnectionPool
   ,MSXML_TLB
   {$IFNDEF VER130}
   ,Variants
   {$ENDIF}
   ,Windows
+  ,tiPersistenceLayers
+  ,tiDBConnectionPool
  ;
 
 type
 
-
+  TtiPersistenceLayerBDEParadox = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
   TtiDBConnectionPoolDataXML = Class(TtiDBConnectionPoolDataAbs)
   public
@@ -998,13 +1005,32 @@ begin
   Result:= FXMLDomDoc;
 end;
 
+{ TtiPersistenceLayerBDEParadox }
+
+function TtiPersistenceLayerBDEParadox.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseXML;
+end;
+
+function TtiPersistenceLayerBDEParadox.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataXML;
+end;
+
+function TtiPersistenceLayerBDEParadox.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistXML;
+end;
+
+function TtiPersistenceLayerBDEParadox.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryXML;
+end;
+
 Initialization
   uXMLTags := TtiXMLTags.Create;
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-              cTIPersistXML,
-              TtiDBConnectionPoolDataXML,
-              TtiQueryXML,
-              TtiDatabaseXML);
+    TtiPersistenceLayerBDEParadox);
 
 finalization
   uXMLTags.Free;

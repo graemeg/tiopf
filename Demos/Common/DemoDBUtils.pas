@@ -23,7 +23,7 @@ begin
     if LS <> '' then
       LS:= LS + Cr;
     if Trim(gTIOPFManager.PersistenceLayers.Items[i].DBConnectionPools.DetailsAsString) = '' then
-      LS:= LS + 'Persistence layer: "'+ gTIOPFManager.PersistenceLayers.Items[i].PerLayerName +
+      LS:= LS + 'Persistence layer: "'+ gTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName +
             '" loaded, but not connected to a database.' + Cr
     else
       LS:= LS + gTIOPFManager.PersistenceLayers.Items[i].DBConnectionPools.DetailsAsString + Cr

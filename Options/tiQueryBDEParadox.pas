@@ -8,9 +8,19 @@ uses
   ,dbTables
   ,tiQuery
   ,tiQueryBDEAbs
+  ,tiPersistenceLayers
+  ,tiDBConnectionPool
  ;
 
 type
+
+  TtiPersistenceLayerBDEParadox = class(TtiPersistenceLayer)
+  protected
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetPersistenceLayerName: string; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
   TtiDatabaseBDEParadox = class(TtiDatabaseBDEAbs)
   protected
@@ -31,8 +41,7 @@ type
 
 implementation
 uses
-   tiDBConnectionPool
-  ,tiObject
+   tiObject
   ,tiUtils
   ,tiOPFManager
   ,tiConstants
@@ -185,12 +194,32 @@ begin
   result:= TtiQueryBDEParadox;
 end;
 
+{ TtiPersistenceLayerBDEParadox }
+
+function TtiPersistenceLayerBDEParadox.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseBDEParadox;
+end;
+
+function TtiPersistenceLayerBDEParadox.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerBDEParadox.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistBDEParadox;
+end;
+
+function TtiPersistenceLayerBDEParadox.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryBDEParadox;
+end;
+
 Initialization
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-              cTIPersistBDEParadox,
-              TtiDBConnectionPoolDataAbs,
-              TtiQueryBDEParadox,
-              TtiDatabaseBDEParadox);
+    TtiPersistenceLayerBDEParadox);
+
 finalization
   if not tiOPFManager.ShuttingDown then
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistBDEParadox);

@@ -3,10 +3,22 @@ unit tiQueryZeosMySQL41;
 interface
 
 uses
-    tiQuery
-  , tiQueryZeosMySQL;
+   tiQuery
+  ,tiQueryZeosMySQL
+  ,tiPersistenceLayers
+  ,tiDBConnectionPool
+  ;
 
 type
+
+  TtiPersistenceLayerZeosMySQL41 = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
+
   TtiDatabaseZeosMySQL41 = class(TtiDatabaseZeosMySQL)
   public
     constructor Create; override;
@@ -32,13 +44,32 @@ begin
   Connection.Protocol := 'mysql-4.1';
 end;
 
+{ TtiPersistenceLayerZeosMySQL41 }
+
+function TtiPersistenceLayerZeosMySQL41.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseZeosMySQL41;
+end;
+
+function TtiPersistenceLayerZeosMySQL41.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerZeosMySQL41.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistZeosMySQL41;
+end;
+
+function TtiPersistenceLayerZeosMySQL41.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryZeos;
+end;
+
 initialization
 
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-    cTIPersistZeosMySQL41,
-    TtiDBConnectionPoolDataAbs,
-    TtiQueryZeos,
-    TtiDatabaseZeosMySQL41);
+    TtiPersistenceLayerZeosMySQL41);
 
 finalization
   if not tiOPFManager.ShuttingDown then

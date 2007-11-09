@@ -302,7 +302,7 @@ begin
   Assert(lNextOIDGenerator.TestValid(TNextOIDGenerator), cTIInvalidObjectError + ' No NextOIDGenerator found for ' + ADatabaseName);
   lRegPerLayer := Owner as TtiPersistenceLayer;
   Assert(lRegPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
-  lNextOIDGenerator.AssignNextOID(AAssignTo, ADatabaseName, lRegPerLayer.PerLayerName);
+  lNextOIDGenerator.AssignNextOID(AAssignTo, ADatabaseName, lRegPerLayer.PersistenceLayerName);
 end;
 
 procedure TNextOIDMgr.UnloadNextOIDGenerator(const ADatabaseName: string);

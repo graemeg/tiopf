@@ -10,7 +10,7 @@
   Interbase/Firebird persistence layers.  FBLib uses a separate property for
   the Server Host and Database File on the server.  As a result, I needed to
   split the ADatabaseName param passed into the ConnectDatabase procedure.
-  
+
   eg:
     gTIOPFManager.ConnectDatabase('192.168.0.20|E:\Databases\Test.fdb',
         'sysdba', 'masterkey', '');
@@ -36,10 +36,19 @@ uses
   ,ibase_h
   ,tiDBConnectionPool
   ,tiObject
+  ,tiPersistenceLayers
  ;
 
-
 type
+
+  TtiPersistenceLayerFBL = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
+
   TtiDatabaseFBL = class(TtiDatabaseSQL)
   private
     FDBase: TFBLDatabase;
@@ -260,7 +269,8 @@ function TtiQueryFBL.GetParamAsBoolean(const AName: string): boolean;
   //lValue: string;
   //idx: integer;
 begin
-//  Assert(false, 'Under construction');
+  Assert(false, 'Under construction');
+  Result:= False;
 //  idx := FQuery.ParamNames.IndexOf(AName);
 
 (*
@@ -275,19 +285,22 @@ end;
 
 function TtiQueryFBL.GetParamAsFloat(const AName: string): extended;
 begin
-//  Assert(false, 'Under construction');
+  Assert(false, 'Under construction');
+  Result:= 0;
 //  result := FQuery.Params.ByName(UpperCase(AName)).AsDouble;
 end;
 
 function TtiQueryFBL.GetParamAsInteger(const AName: string): Int64;
 begin
-//  Assert(false, 'Under construction');
+  Assert(false, 'Under construction');
+  Result:= 0;
 //  result := FQuery.Params.ByName(UpperCase(AName)).AsInt64;
 end;
 
 function TtiQueryFBL.GetParamAsDateTime(const AName: string): TDateTime;
 begin
-//  Assert(false, 'Under construction');
+  Assert(false, 'Under construction');
+  Result:= 0;
 //  result := FQuery.Params.ByName(UpperCase(AName)).AsDateTime;
 end;
 
@@ -484,6 +497,7 @@ function TtiQueryFBL.FieldIndex(const AName: string): integer;
 var
   i: integer;
 begin
+  Result:= -1;
   for i := 0 to FQuery.FieldCount - 1 do
   begin
     if SameText(AName, FQuery.FieldName(i)) then
@@ -928,8 +942,6 @@ class function TtiDatabaseFBL.DatabaseExists(const ADatabaseName, AUserName, APa
 var
   lDatabase: TtiDatabaseFBL;
 begin
-  Result := False;
-  //Assert(False, 'DatabaseExists not implemented in ' + ClassName);
   lDatabase := TtiDatabaseFBL.Create;
   try
     try
@@ -962,12 +974,31 @@ begin
   result:= TtiQueryFBL;
 end;
 
+{ TtiPersistenceLayerFBL }
+
+function TtiPersistenceLayerFBL.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseFBL;
+end;
+
+function TtiPersistenceLayerFBL.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerFBL.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistFBL;
+end;
+
+function TtiPersistenceLayerFBL.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryFBL;
+end;
+
 initialization
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-    cTIPersistFBL,
-    TtiDBConnectionPoolDataAbs,
-    TtiQueryFBL,
-    TtiDatabaseFBL);
+    TtiPersistenceLayerFBL);
 
 finalization
   if not tiOPFManager.ShuttingDown then

@@ -11,6 +11,8 @@ uses
   ,tiXMLToTIDataSet
   ,tiXML
   ,Windows
+  ,tiPersistenceLayers
+  ,tiDBConnectionPool
  ;
 
 const
@@ -105,6 +107,14 @@ const
 function StrToRemoteCommandType(const AValue : string): TtiRemoteCommandType;
 
 type
+
+  TtiPersistenceLayerRemoteXML = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
   TtiQueryTransParams = class;
 
@@ -275,8 +285,6 @@ uses
   ,tiUtils
   ,tiLog
   ,tiDialogs
-  ,tiDBConnectionPool
-  ,tiPersistenceLayers
   ,tiCompress
   ,tiCompressNone
   ,tiCompressZLib
@@ -1229,6 +1237,28 @@ begin
   result := FQueryResponseXML.FieldIsNullByIndex[AIndex];
 end;
 
+{ TtiPersistenceLayerRemoteXML }
+
+function TtiPersistenceLayerRemoteXML.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseRemoteXML;
+end;
+
+function TtiPersistenceLayerRemoteXML.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerRemoteXML.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistRemote;
+end;
+
+function TtiPersistenceLayerRemoteXML.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryRemoteXML;
+end;
+
 Initialization
 begin
   uXMLTags := TtiXMLTags.Create;
@@ -1237,10 +1267,7 @@ begin
   RegisterMappings;
 
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-              cTIPersistRemote,
-              TtiDBConnectionPoolDataAbs,
-              TtiQueryRemoteXML,
-              TtiDatabaseRemoteXML);
+    TtiPersistenceLayerRemoteXML);
 
   // Change the default package from XML to Remote
   if (gTIOPFManager.PersistenceLayers.FindByPerLayerName(cTIPersistXMLLight) <> nil) and

@@ -7,9 +7,19 @@ uses
    tiQuery
   ,tiDataBuffer_BOM
   ,tiQueryTXTAbs
+  ,tiPersistenceLayers
+  ,tiDBConnectionPool
  ;
 
 type
+
+  TtiPersistenceLayerTab = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
   TtiDBConnectionPoolDataTAB = Class(TtiDBConnectionPoolDataTXTAbs);
 
@@ -176,12 +186,31 @@ begin
   FReservedChars := rcTAB;
 end;
 
+{ TtiPersistenceLayerTab }
+
+function TtiPersistenceLayerTab.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseTAB;
+end;
+
+function TtiPersistenceLayerTab.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataTAB;
+end;
+
+function TtiPersistenceLayerTab.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistTAB;
+end;
+
+function TtiPersistenceLayerTab.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryTAB;
+end;
+
 Initialization
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-              cTIPersistTAB,
-              TtiDBConnectionPoolDataTAB,
-              TtiQueryTAB,
-              TtiDatabaseTAB);
+    TtiPersistenceLayerTab);
 
 finalization
   if not tiOPFManager.ShuttingDown then

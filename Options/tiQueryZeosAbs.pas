@@ -439,7 +439,6 @@ end;
 
 procedure TtiDatabaseZeosAbs.SetConnected(pbValue: boolean);
 var
-  i : integer ;
   lsErrorMessage : string ;
 begin
 
@@ -567,8 +566,5 @@ procedure TtiQueryZeos.SetParamAsTextBLOB(const psName, Value: string);
 begin
   FQuery.ParamByName(psName).AsMemo := Value;
 end;
-
-initialization
-
 
 end.

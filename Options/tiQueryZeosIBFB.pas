@@ -10,6 +10,7 @@ uses
   ;
 
 type
+
   TtiDatabaseZeosIBFB = Class(TtiDatabaseZeosAbs)
   protected
     function FieldMetaDataToSQLCreate(const pFieldMetaData: TtiDBMetaDataField): string; override;

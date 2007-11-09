@@ -4,16 +4,17 @@ unit tiQueryIBX;
 
 interface
 uses
-  tiQuery
-  , Classes
-  , IB
-  , IBDatabase
-  , IBSQL
-  , tiDBConnectionPool
-  , IBHeader
-  , tiAutoMap
-  , tiObject
- ;
+   tiQuery
+  ,Classes
+  ,IB
+  ,IBDatabase
+  ,IBSQL
+  ,IBHeader
+  ,tiAutoMap
+  ,tiObject
+  ,tiPersistenceLayers
+  ,tiDBConnectionPool
+  ;
 
 // Turn this on if you have upgraded you IBX from the version that comes
 // out of the box with Delphi. If you have not upgraded your IBX components,
@@ -25,6 +26,14 @@ uses
 {$ENDIF}
 
 type
+
+  TtiPersistenceLayerIBX = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
   TtiDatabaseIBX = class(TtiDatabaseSQL)
   private
@@ -1146,13 +1155,32 @@ begin
   result:= TtiQueryIBX;
 end;
 
+{ TtiPersistenceLayerIBX }
+
+function TtiPersistenceLayerIBX.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseIBX;
+end;
+
+function TtiPersistenceLayerIBX.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerIBX.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistIBX;
+end;
+
+function TtiPersistenceLayerIBX.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryIBX;
+end;
+
 initialization
 
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-    cTIPersistIBX,
-    TtiDBConnectionPoolDataAbs,
-    TtiQueryIBX,
-    TtiDatabaseIBX);
+    TtiPersistenceLayerIBX);
 
 finalization
   if not tiOPFManager.ShuttingDown then

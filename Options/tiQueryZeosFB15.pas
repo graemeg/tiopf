@@ -6,7 +6,19 @@ interface
 uses
    tiQuery
   ,tiQueryZeosIBFB
-  ;
+  ,tiPersistenceLayers
+  ,tiDBConnectionPool
+ ;
+
+type
+
+  TtiPersistenceLayerZeosFB15 = class(TtiPersistenceLayer)
+  protected
+    function GetPersistenceLayerName: string; override;
+    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
+    function GetQueryClass: TtiQueryClass; override;
+  end;
 
 type
   TtiDatabaseZeosFB15 = class(TtiDatabaseZeosIBFB)
@@ -37,13 +49,32 @@ begin
 end;
 
 
+{ TtiPersistenceLayerZeosFB15 }
+
+function TtiPersistenceLayerZeosFB15.GetDatabaseClass: TtiDatabaseClass;
+begin
+  result:= TtiDatabaseZeosFB15;
+end;
+
+function TtiPersistenceLayerZeosFB15.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
+begin
+  result:= TtiDBConnectionPoolDataAbs;
+end;
+
+function TtiPersistenceLayerZeosFB15.GetPersistenceLayerName: string;
+begin
+  result:= cTIPersistZeosFB15;
+end;
+
+function TtiPersistenceLayerZeosFB15.GetQueryClass: TtiQueryClass;
+begin
+  result:= TtiQueryZeos;
+end;
+
 initialization
 
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-    cTIPersistZeosFB15,
-    TtiDBConnectionPoolDataAbs,
-    TtiQueryZeos,
-    TtiDatabaseZeosFB15);
+    TtiPersistenceLayerZeosFB15);
 
 finalization
   if not tiOPFManager.ShuttingDown then
