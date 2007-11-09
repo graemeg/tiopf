@@ -709,7 +709,7 @@ var
   lTable : IXMLDomElement;
   lQuery : string;
 begin
-  Assert(Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  Assert(Database.TestValid(TtiDatabase), CTIErrorInvalidObject);
   FTableName := lowerCase(ATableName);
 
   lTable := (Database as TtiDatabaseXML).DOMFindTable(FTableName);

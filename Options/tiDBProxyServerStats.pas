@@ -249,7 +249,7 @@ var
   FParams : TtiQueryParams;
   lListCount: Integer;
 begin
-  Assert(APooledItem.TestValid(TtiPooledItem), cTIInvalidObjectError);
+  Assert(APooledItem.TestValid(TtiPooledItem), CTIErrorInvalidObject);
   lListCount:= APooledItem.Owner.Count;
   FParams := TtiQueryParams.Create;
   try

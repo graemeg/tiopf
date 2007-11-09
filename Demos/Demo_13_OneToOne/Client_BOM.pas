@@ -34,7 +34,7 @@ type
     procedure   Add(AObject: TClient); reintroduce;
     procedure   Clear; override;
     procedure   Read; override;
-  published
+    procedure   Save; override;
   end;
 
   TClient = class(TtiObject)
@@ -48,6 +48,8 @@ type
     destructor  Destroy; override;
     constructor CreateNew(const pDatabaseName: string = ''; const pPerLayerName: string = ''); override;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
+    procedure   Read; override;
+    procedure   Save; override;
   published
     property    ClientName: string read FClientName write FClientName;
     property    Adrs      : TAdrs read FAdrs;
@@ -144,6 +146,16 @@ begin
 end;
 
 
+procedure TClient.Read;
+begin
+  inherited;
+end;
+
+procedure TClient.Save;
+begin
+  inherited;
+end;
+
 { TAdrs }
 
 function TAdrs.GetAsOneLine: string;
@@ -156,7 +168,7 @@ end;
 
 function TAdrs.GetOID: TOID;
 begin
-  Assert(Owner.TestValid, cTIInvalidObjectError);
+  Assert(Owner.TestValid, CTIErrorInvalidObject);
   result:= Owner.OID;
 end;
 
@@ -206,6 +218,11 @@ begin
   inherited;
   Log('Time to load ' + IntToStr(Count) + ' Clients: ' +
       IntToStr(GetTickCount - lNow));
+end;
+
+procedure TClients.Save;
+begin
+  inherited;
 end;
 
 procedure TClients.SetItems(i: integer; const Value: TClient);

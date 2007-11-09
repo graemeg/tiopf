@@ -128,7 +128,7 @@ end;
 
 procedure TAdrsBookTestSetup.Person_Set(const AOID: String; AData: TPerson);
 begin
-  Assert(AData.TestValid, cTIInvalidObjectError);
+  Assert(AData.TestValid, CTIErrorInvalidObject);
   AData.FirstName:= AOID + '1';
   AData.LastName := AOID + '2';
   AData.Title    := AOID + '3';

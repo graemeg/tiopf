@@ -163,7 +163,7 @@ end;
 
 procedure TFormMainOneToMany.lvClientsFilterData(pData: TtiObject; var pInclude: Boolean);
 begin
-  Assert(pData.TestValid, cTIInvalidObjectError);
+  Assert(pData.TestValid, CTIErrorInvalidObject);
   pInclude:= not pData.Deleted;
 end;
 
@@ -183,7 +183,7 @@ end;
 procedure TFormMainOneToMany.lvClientsItemEdit(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode);
 begin
-  Assert(pData.TestValid, cTIInvalidObjectError);
+  Assert(pData.TestValid, CTIErrorInvalidObject);
   TFormClientEdit.Execute(pData);
 end;
 
@@ -224,7 +224,7 @@ end;
 procedure TFormMainOneToMany.lvPhoneNumbersItemEdit(pVT: TtiCustomVirtualTree;
   pData: TtiObject; pItem: PVirtualNode);
 begin
-  Assert(pData.TestValid, cTIInvalidObjectError);
+  Assert(pData.TestValid, CTIErrorInvalidObject);
   TFormPhoneNumberEdit.Execute(pData);
 end;
 

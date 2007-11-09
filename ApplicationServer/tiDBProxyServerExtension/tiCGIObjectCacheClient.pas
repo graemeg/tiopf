@@ -98,7 +98,7 @@ end;
 constructor TtiCGIObjectCacheClient.Create(const ACacheDirectoryRoot: string;
   const AConnectionDetails: TtiWebServerClientConnectionDetails);
 begin
-  Assert(AConnectionDetails.TestValid, cTIInvalidObjectError);
+  Assert(AConnectionDetails.TestValid, CTIErrorInvalidObject);
   inherited Create(ACacheDirectoryRoot);
   FParams:= TtiCGIParams.Create;
   FConnectionDetails:= TtiWebServerClientConnectionDetails.Create;
@@ -169,7 +169,7 @@ var
   lParams: string ;
   lFileName: string;
 begin
-  Assert( pData.TestValid(TtiObject), cTIInvalidObjectError );
+  Assert( pData.TestValid(TtiObject), CTIErrorInvalidObject );
   lStart := GetTickCount;
   lParams := tiMakeXMLLightParams( True, cgsCompressZLib, optDBSizeOn, xfnsInteger );
   lFileName := GetCachedFileDirAndName;

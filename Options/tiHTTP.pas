@@ -246,7 +246,7 @@ end;
 
 function TtiHTTPFactory.CreateInstance(const AConnectionDetails: TtiWebServerClientConnectionDetails): TtiHTTPAbs;
 begin
-  Assert(AConnectionDetails.TestValid, cTIInvalidObjectError);
+  Assert(AConnectionDetails.TestValid, CTIErrorInvalidObject);
   result:= CreateInstance(AConnectionDetails.ConnectWith);
   if AConnectionDetails.ProxyServerActive then
   begin

@@ -25,9 +25,10 @@ type
     function    GetItems(i: integer): TClient; reintroduce;
     procedure   SetItems(i: integer; const Value: TClient); reintroduce;
   public
+    procedure   Read; override;
+    procedure   Save; override;
     property    Items[i:integer]: TClient read GetItems write SetItems;
     procedure   Add(AObject: TClient); reintroduce;
-  published
   end;
 
   TClient = class(TtiObject)
@@ -58,6 +59,8 @@ type
     function    GetItems(i: integer): TClientSource; reintroduce;
     procedure   SetItems(i: integer; const Value: TClientSource); reintroduce;
   public
+    procedure   Read; override;
+    procedure   Save; override;
     property    Items[i:integer]: TClientSource read GetItems write SetItems;
     procedure   Add(AObject: TClientSource); reintroduce;
     function    Find(pOIDToFindAsString: string): TClientSource;  reintroduce;
@@ -124,6 +127,16 @@ end;
 function TClients.GetItems(i: integer): TClient;
 begin
   result:= TClient(inherited GetItems(i));
+end;
+
+procedure TClients.Read;
+begin
+  inherited;
+end;
+
+procedure TClients.Save;
+begin
+  inherited;
 end;
 
 procedure TClients.SetItems(i: integer; const Value: TClient);
@@ -221,6 +234,16 @@ end;
 function TClientSources.GetItems(i: integer): TClientSource;
 begin
   result:= TClientSource(inherited GetItems(i));
+end;
+
+procedure TClientSources.Read;
+begin
+  inherited;
+end;
+
+procedure TClientSources.Save;
+begin
+  inherited;
 end;
 
 procedure TClientSources.SetItems(i: integer; const Value: TClientSource);

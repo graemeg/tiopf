@@ -297,8 +297,8 @@ var
   lFormIsValid : Boolean;
 begin
   Handled := true;
-  Assert(FData.TestValid(TtiObject, true), cTIInvalidObjectError + ' <FData>');
-  Assert(FDataBuffer.TestValid(TtiObject, true), cTIInvalidObjectError + '<FDataBuffer>');
+  Assert(FData.TestValid(TtiObject, true), CTIErrorInvalidObject + ' <FData>');
+  Assert(FDataBuffer.TestValid(TtiObject, true), CTIErrorInvalidObject + '<FDataBuffer>');
   lFormIsDirty := FormIsDirty;
   lFormIsValid := FormIsValid;
   if FUpdateButtons then
@@ -324,7 +324,7 @@ function TFormTIFormMgrForm.FormIsValid: boolean;
 var
   ls: string;
 begin
-  Assert(DataBuffer.TestValid(TtiObject, true), cTIInvalidObjectError);
+  Assert(DataBuffer.TestValid(TtiObject, true), CTIErrorInvalidObject);
   if DataBuffer <> nil then
   begin
     Result := DataBuffer.IsValid(ls);
@@ -480,8 +480,8 @@ end;
 
 function TFormTIFormMgrForm.FormIsDirty: boolean;
 begin
-  Assert(Data.TestValid(TtiBaseObject, true), cTIInvalidObjectError);
-  Assert(DataBuffer.TestValid(TtiBaseObject, true), cTIInvalidObjectError);
+  Assert(Data.TestValid(TtiBaseObject, true), CTIErrorInvalidObject);
+  Assert(DataBuffer.TestValid(TtiBaseObject, true), CTIErrorInvalidObject);
   if (Data <> nil) and (DataBuffer <> nil) then
     Result := (not Data.Equals(DataBuffer))
   else

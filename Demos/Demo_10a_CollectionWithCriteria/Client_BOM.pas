@@ -14,7 +14,11 @@ type
   TClientName = String[200];
   TClientID   = String[9];
 
-  TClients = class(TtiFilteredObjectList);
+  TClients = class(TtiFilteredObjectList)
+  public
+    procedure Read; override;
+    procedure Save; override;
+  end;
 
   TClient = class(TtiObject)
   private
@@ -43,6 +47,18 @@ begin
   ClientID:= IntToStr(GetTickCount);
 
   ClientName:= Char(GetTickCount mod 26 + ord('A')) + DateTimeToStr(Now);
+end;
+
+{ TClients }
+
+procedure TClients.Read;
+begin
+  inherited;
+end;
+
+procedure TClients.Save;
+begin
+  inherited;
 end;
 
 end.

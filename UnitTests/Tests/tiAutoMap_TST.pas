@@ -67,14 +67,14 @@ type
   TTestTIAutoMapOperation = class(TtiOPFTestCase)
   private
     FLongString : string;
-    procedure InsertTIOPFTestData;
-    function  CreateTIOPFTestData : TtiOPFTestData;
-    procedure UpdateTIOPFTestData(AData : TtiOPFTestData);
+    procedure InserTtiObjectListForTesting;
+    function  CreateTIOPFTestData : TtiObjectListForTesting;
+    procedure UpdateTIOPFTestData(AData : TtiObjectListForTesting);
     function  TestIntToFloat(pInt : Integer): extended;
     function  TestIntToDate(pInt : Integer): TDateTime;
     function  TestIntToBool(pInt : Integer): Boolean;
-    procedure InsertTIOPFTestDataInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);
-    procedure InsertTIOPFTestDataInheritedGroup(AOID: integer);
+    procedure InserTtiObjectListForTestingInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);
+    procedure InserTtiObjectListForTestingInheritedGroup(AOID: integer);
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -171,7 +171,6 @@ uses
   ,tiConstants
   ,tiQuery
   ,tiUtils
-//  ,tiDialogs
   ,tiOIDGUID
   ,Contnrs
   ,tiLog
@@ -190,8 +189,8 @@ end;
 
 procedure TTestTIAutoMapOperation.CollectionCreate;
 var
-  lData1   : TtiOPFTestData;
-  lData2   : TtiOPFTestData;
+  lData1   : TtiObjectListForTesting;
+  lData2   : TtiObjectListForTesting;
   i, j : integer;
   lGroupVal : integer;
   lItemVal : integer;
@@ -201,7 +200,7 @@ begin
   try
     lData1.Save(DatabaseName, PerLayerName);
 
-    lData2 := TtiOPFTestData.Create;
+    lData2 := TtiObjectListForTesting.Create;
     try
       lData2.Read(DatabaseName, PerLayerName);
       lData2.SortByOID;
@@ -234,15 +233,15 @@ end;
 
 procedure TTestTIAutoMapOperation.CollectionDelete;
 var
-  lData1 : TtiOPFTestData;
-  lData2 : TtiOPFTestData;
+  lData1 : TtiObjectListForTesting;
+  lData2 : TtiObjectListForTesting;
 begin
   lData1 := CreateTIOPFTestData;
   try
     gTIOPFManager.Save(lData1, DatabaseName, PerLayerName);
     lData1.Deleted := true;
     gTIOPFManager.Save(lData1, DatabaseName, PerLayerName );
-    lData2 := TtiOPFTestData.Create;
+    lData2 := TtiObjectListForTesting.Create;
     try
       gTIOPFManager.Read(lData2, DatabaseName, PerLayerName );
       CheckObjectState(posClean, lData2);
@@ -257,14 +256,14 @@ end;
 
 procedure TTestTIAutoMapOperation.CollectionReadAll;
 var
-  lData : TtiOPFTestData;
+  lData : TtiObjectListForTesting;
   i : integer;
   j : integer;
   lGroupVal : integer;
   lItemVal, lOID : integer;
 begin
-  InsertTIOPFTestData;
-  lData := TtiOPFTestData.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListForTesting.Create;
   try
     lData.Read(DatabaseName, PerLayerName);
     CheckEquals(cGroupCount, lData.Count, 'Failed on 1');
@@ -293,11 +292,11 @@ end;
 
 procedure TTestTIAutoMapOperation.CollectionReadAllItems;
 var
-  lData : TtiOPFTestGroup;
+  lData : TtiObjectListNestedForTesting;
   i : integer;
 begin
-  InsertTIOPFTestData;
-  lData := TtiOPFTestGroup.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListNestedForTesting.Create;
   try
     lData.Read(DatabaseName, PerLayerName);
     CheckEquals(cItemTotal, lData.Count, 'Failed on 1');
@@ -313,8 +312,8 @@ end;
 
 procedure TTestTIAutoMapOperation.CollectionUpdate;
 var
-  lData1   : TtiOPFTestData;
-  lData2   : TtiOPFTestData;
+  lData1   : TtiObjectListForTesting;
+  lData2   : TtiObjectListForTesting;
   lDataStr1 : string;
   lDataStr2 : string;      
 begin
@@ -330,7 +329,7 @@ begin
 
     lData1.Save(DatabaseName, PerLayerName);
 
-    lData2 := TtiOPFTestData.Create;
+    lData2 := TtiObjectListForTesting.Create;
     try
       lData2.Read(DatabaseName, PerLayerName);
 
@@ -355,18 +354,18 @@ begin
 
 end;
 
-function TTestTIAutoMapOperation.CreateTIOPFTestData: TtiOPFTestData;
+function TTestTIAutoMapOperation.CreateTIOPFTestData: TtiObjectListForTesting;
 var
-  lGroup : TtiOPFTestGroup;
+  lGroup : TtiObjectListNestedForTesting;
   lItem : TtiOPFTestItem ;
   i, j  : integer;
   lItemOID : integer;
 begin
-  result := TtiOPFTestData.Create;
+  result := TtiObjectListForTesting.Create;
   lItemOID := 1;
   for i := 1 to cGroupCount do
   begin
-    lGroup := TtiOPFTestGroup.Create;
+    lGroup := TtiObjectListNestedForTesting.Create;
     lGroup.ObjectState := posCreate;
     lGroup.OID.AsString := IntToStr(i);
     lGroup.StrField := IntToStr(i);
@@ -389,9 +388,9 @@ begin
   end;
 end;
 
-procedure TTestTIAutoMapOperation.UpdateTIOPFTestData(AData: TtiOPFTestData);
+procedure TTestTIAutoMapOperation.UpdateTIOPFTestData(AData: TtiObjectListForTesting);
 var
-  lGroup : TtiOPFTestGroup;
+  lGroup : TtiObjectListNestedForTesting;
   lItem : TtiOPFTestItem ;
   i, j  : integer;
   lItemOID : integer;
@@ -429,11 +428,11 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleFlatObjCreate;
 var
-  lData1 : TtiOPFTestGroup;
-  lData2 : TtiOPFTestGroup;
+  lData1 : TtiObjectListNestedForTesting;
+  lData2 : TtiObjectListNestedForTesting;
 begin
 
-  lData1 := TtiOPFTestGroup.Create;
+  lData1 := TtiObjectListNestedForTesting.Create;
   try
     lData1.ObjectState := posCreate;
     lData1.OID.AsString := '1';
@@ -447,7 +446,7 @@ begin
 
     CheckObjectState(posClean, lData1);
 
-    lData2 := TtiOPFTestGroup.Create;
+    lData2 := TtiObjectListNestedForTesting.Create;
     try
       lData2.OID.AsString := '1';
       lData2.ReadThis(DatabaseName, PerLayerName);
@@ -469,11 +468,11 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleFlatObjDelete;
 var
-  lData1 : TtiOPFTestGroup;
-  lData2 : TtiOPFTestData;
+  lData1 : TtiObjectListNestedForTesting;
+  lData2 : TtiObjectListForTesting;
 begin
 
-  lData1 := TtiOPFTestGroup.Create;
+  lData1 := TtiObjectListNestedForTesting.Create;
   try
     lData1.ObjectState := posCreate;
     lData1.OID.AsString := '1';
@@ -487,15 +486,15 @@ begin
     lData1.Free;
   end;
 
-  lData2 := TtiOPFTestData.Create;
+  lData2 := TtiObjectListForTesting.Create;
   try
     lData2.Read(DatabaseName, PerLayerName);
-    CheckEquals(1, lData2.Count, 'Failed on TtiOPFTestData.Count');
+    CheckEquals(1, lData2.Count, 'Failed on TtiObjectListForTesting.Count');
   finally
     lData2.Free;
   end;
 
-  lData1 := TtiOPFTestGroup.Create;
+  lData1 := TtiObjectListNestedForTesting.Create;
   try
     lData1.ObjectState := posDelete;
     lData1.OID.AsString := '1';
@@ -505,10 +504,10 @@ begin
     lData1.Free;
   end;
 
-  lData2 := TtiOPFTestData.Create;
+  lData2 := TtiObjectListForTesting.Create;
   try
     lData2.Read(DatabaseName, PerLayerName);
-    CheckEquals(0, lData2.Count, 'Failed on TtiOPFTestData.Count');
+    CheckEquals(0, lData2.Count, 'Failed on TtiObjectListForTesting.Count');
   finally
     lData2.Free;
   end;
@@ -518,7 +517,7 @@ end;
 procedure TTestTIAutoMapOperation.SingleFlatObjReadThis;
 var
   lQP : TtiQueryParams;
-  lData : TtiOPFTestGroup;
+  lData : TtiObjectListNestedForTesting;
 begin
   lQP := TtiQueryParams.Create;
   try
@@ -534,7 +533,7 @@ begin
     lQP.Free;
   end;
 
-  lData := TtiOPFTestGroup.Create;
+  lData := TtiObjectListNestedForTesting.Create;
   try
     lData.OID.AsString := '1';
     lData.ReadThis(DatabaseName, PerLayerName);
@@ -553,12 +552,12 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleFlatObjUpdate;
 var
-  lData1 : TtiOPFTestGroup;
-  lData2 : TtiOPFTestGroup;
+  lData1 : TtiObjectListNestedForTesting;
+  lData2 : TtiObjectListNestedForTesting;
   lString : string;
 begin
 
-  lData1 := TtiOPFTestGroup.Create;
+  lData1 := TtiObjectListNestedForTesting.Create;
   try
     lData1.ObjectState := posCreate;
     lData1.OID.AsString := '1';
@@ -581,7 +580,7 @@ begin
     lData1.ObjectState := posUpdate;
     lData1.Save(DatabaseName, PerLayerName);
 
-    lData2 := TtiOPFTestGroup.Create;
+    lData2 := TtiObjectListNestedForTesting.Create;
     try                        
       lData2.OID.AsString := '1';
       lData2.ReadThis(DatabaseName, PerLayerName);
@@ -602,11 +601,11 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleInheritedObjCreateEachLevel;
 var
-  lParent : TtiOPFTestParent;
-  lChild : TtiOPFTestChild_A;
+  lParent : TtiObjectParentForTesting;
+  lChild : TtiObjectChildForTestingA;
 begin
 
-  lParent := TtiOPFTestParent.Create;
+  lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
     lParent.StrField := '1';
@@ -617,7 +616,7 @@ begin
     lParent.Free;
   end;
 
-  lParent := TtiOPFTestParent.Create;
+  lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
     lParent.ReadThis(DatabaseName, PerLayerName);
@@ -629,7 +628,7 @@ begin
 
   EmptyTestTables;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.StrField := '1';
@@ -642,7 +641,7 @@ begin
     lChild.Free;
   end;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -658,12 +657,12 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleInheritedObjDeleteEachLevel;
 var
-  lParent : TtiOPFTestParent;
-  lChild : TtiOPFTestChild_A;
+  lParent : TtiObjectParentForTesting;
+  lChild : TtiObjectChildForTestingA;
 begin
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
-  lParent := TtiOPFTestParent.Create;
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
+  lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
     lParent.ReadThis(DatabaseName, PerLayerName);
@@ -674,7 +673,7 @@ begin
     lParent.Free;
   end;
 
-  lParent := TtiOPFTestParent.Create;
+  lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
     lParent.ReadThis(DatabaseName, PerLayerName);
@@ -683,7 +682,7 @@ begin
     lParent.Free;
   end;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -694,7 +693,7 @@ begin
     lChild.Free;
   end;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -707,12 +706,12 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleInheritedObjRead;
 var
-  lParent : TtiOPFTestParent;
-  lChild : TtiOPFTestChild_A;
+  lParent : TtiObjectParentForTesting;
+  lChild : TtiObjectChildForTestingA;
 begin
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
-  lParent := TtiOPFTestParent.Create;
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
+  lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
     lParent.ReadThis(DatabaseName, PerLayerName);
@@ -722,7 +721,7 @@ begin
     lParent.Free;
   end;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -738,13 +737,13 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleInheritedObjUpdateEachLevel;
 var
-  lParent : TtiOPFTestParent;
-  lChild : TtiOPFTestChild_A;
+  lParent : TtiObjectParentForTesting;
+  lChild : TtiObjectChildForTestingA;
 begin
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
 
-  lParent := TtiOPFTestParent.Create;
+  lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
     lParent.ReadThis(DatabaseName, PerLayerName);
@@ -757,7 +756,7 @@ begin
     lParent.Free;
   end;
 
-  lParent := TtiOPFTestParent.Create;
+  lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
     lParent.ReadThis(DatabaseName, PerLayerName);
@@ -767,7 +766,7 @@ begin
     lParent.Free;
   end;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -784,7 +783,7 @@ begin
     lChild.Free;
   end;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -1292,7 +1291,7 @@ begin
 
   lCDBMM := TtiClassDBMappingMgr.Create;
   try
-    lCDBMM.RegisterMapping('db_1', TtiOPFTestGroup, 'table_1', 'StrField', 'col_1', [pktDB]);
+    lCDBMM.RegisterMapping('db_1', TtiObjectListNestedForTesting, 'table_1', 'StrField', 'col_1', [pktDB]);
     CheckEquals(1, lCDBMM.DBMaps.Count, 'Failed on DBMaps.Count');
     CheckEquals('db_1', lCDBMM.DBMaps.Items[0].DatabaseName, 'Failed on DatabaseName');
     CheckEquals(1, lCDBMM.DBMaps.Items[0].Count, 'Failed on lCDBMM.DBMaps.Items[0].Count = 1');
@@ -1302,7 +1301,7 @@ begin
     Check(lCDBMM.DBMaps.Items[0].Items[0].Items[0].PKInfo = [pktDB], 'Failed on lCDBMM.DBMaps.Items[0].Items[0].Items[0].PKInfo = PKINfo');
 
     CheckEquals(1, lCDBMM.ClassMaps.Count, 'Failed on DBMaps.ClassMaps');
-    Check(lCDBMM.ClassMaps.Items[0].PerObjAbsClass = TtiOPFTestGroup, 'Failed on TtiOPFTestGroup');
+    Check(lCDBMM.ClassMaps.Items[0].PerObjAbsClass = TtiObjectListNestedForTesting, 'Failed on TtiObjectListNestedForTesting');
     CheckEquals(1, lCDBMM.ClassMaps.Items[0].Count, 'Failed on lCDBMM.ClassMaps.Items[0].Count = 1');
     CheckEquals('StrField', lCDBMM.ClassMaps.Items[0].Items[0].AttrName, 'Failed on lCDBMM.ClassMaps.Items[0].Items[0] = prop_1');
 
@@ -1471,12 +1470,12 @@ end;
 
 procedure TTestTIAutoMapOperation.CollectionReadPK;
 var
-  lData : TtiOPFTestData;
+  lData : TtiObjectListForTesting;
   i : integer;
   lGroupVal : integer;
 begin
-  InsertTIOPFTestData;
-  lData := TtiOPFTestData.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListForTesting.Create;
   try
     lData.ReadPK(DatabaseName, PerLayerName);
     Check(posClean = lData.ObjectState, 'ObjectState');
@@ -1516,7 +1515,7 @@ begin
   end;
 end;
 
-procedure TTestTIAutoMapOperation.InsertTIOPFTestData;
+procedure TTestTIAutoMapOperation.InserTtiObjectListForTesting;
   procedure _InsertGroup(pI : integer);
   var
     lQueryParams : TtiQueryParams;
@@ -1577,7 +1576,7 @@ begin
   result := pInt*2 / 10;
 end;
 
-procedure TTestTIAutoMapOperation.InsertTIOPFTestDataInheritedGroup(AOID : integer);
+procedure TTestTIAutoMapOperation.InserTtiObjectListForTestingInheritedGroup(AOID : integer);
 var
   lQueryParams : TtiQueryParams;
 begin
@@ -1590,7 +1589,7 @@ begin
   end;
 end;
 
-procedure TTestTIAutoMapOperation.InsertTIOPFTestDataInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);
+procedure TTestTIAutoMapOperation.InserTtiObjectListForTestingInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);
   procedure _InsertTestParent(const ATableName : string; pI : integer; pOwnerOID : integer);
   var
     lQueryParams : TtiQueryParams;
@@ -1628,10 +1627,10 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleInheritedObjCreateAll;
 var
-  lChild : TtiOPFTestChild_A;
+  lChild : TtiObjectChildForTestingA;
 begin
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.StrField := '1';
@@ -1644,7 +1643,7 @@ begin
     lChild.Free;
   end;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -1660,11 +1659,11 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleInheritedObjUpdateAll;
 var
-  lChild : TtiOPFTestChild_A;
+  lChild : TtiObjectChildForTestingA;
 begin
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
-  lChild := TtiOPFTestChild_A.Create;
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -1678,7 +1677,7 @@ begin
     lChild.Free;
   end;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -1694,12 +1693,12 @@ end;
 
 procedure TTestTIAutoMapOperation.SingleInheritedObjDeleteAll;
 var
-  lChild : TtiOPFTestChild_A;
+  lChild : TtiObjectChildForTestingA;
 begin
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_A, 1, -1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParent, cTableNameTIOPFTestChild_B, 2, -1);
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -1710,7 +1709,7 @@ begin
     lChild.Free;
   end;
 
-  lChild := TtiOPFTestChild_A.Create;
+  lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
     lChild.ReadThis(DatabaseName, PerLayerName);
@@ -1859,11 +1858,11 @@ end;
 
 procedure TTestTIAutoMapOperation.CollectionOfInheritedObjRead;
 var
-  lParentGroup : TtiOPFTestParentGroup;
+  lParentGroup : TtiObjectParentForTestingGroup;
 begin
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 1, -1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 2, -1);
-  lParentGroup := TtiOPFTestParentGroup.Create;
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 1, -1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 2, -1);
+  lParentGroup := TtiObjectParentForTestingGroup.Create;
   try
     lParentGroup.OID.AsString := '-1';
     lParentGroup.Read(DatabaseName, PerLayerName);
@@ -1891,19 +1890,19 @@ end;
 
 procedure TTestTIAutoMapOperation.CollectionOfInheritedObjWithFKRead;
 var
-  lParentGroup : TtiOPFTestParentGroup;
+  lParentGroup : TtiObjectParentForTestingGroup;
 begin
 
-  InsertTIOPFTestDataInheritedGroup(1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 2, 1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 3, 1);
+  InserTtiObjectListForTestingInheritedGroup(1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 2, 1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 3, 1);
 
-  InsertTIOPFTestDataInheritedGroup(4);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 5, 4);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 6, 4);
+  InserTtiObjectListForTestingInheritedGroup(4);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 5, 4);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 6, 4);
 
 
-  lParentGroup := TtiOPFTestParentGroup.Create;
+  lParentGroup := TtiObjectParentForTestingGroup.Create;
   try
     lParentGroup.OID.AsString := '4';
     lParentGroup.Read(DatabaseName, PerLayerName);
@@ -1930,19 +1929,19 @@ end;
 
 procedure TTestTIAutoMapOperation.CollectionOfInheritedObjWithoutFKRead;
 var
-  lParentGroup : TtiOPFTestParentGroup;
+  lParentGroup : TtiObjectParentForTestingGroup;
 begin
 
-  InsertTIOPFTestDataInheritedGroup(1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 2, 1);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 3, 1);
+  InserTtiObjectListForTestingInheritedGroup(1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 2, 1);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 3, 1);
 
-  InsertTIOPFTestDataInheritedGroup(4);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 5, 4);
-  InsertTIOPFTestDataInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 6, 4);
+  InserTtiObjectListForTestingInheritedGroup(4);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_A, 5, 4);
+  InserTtiObjectListForTestingInherited(cTableNameTIOPFTestParentGrouped, cTableNameTIOPFTestChildGrouped_B, 6, 4);
 
 
-  lParentGroup := TtiOPFTestParentGroup.Create;
+  lParentGroup := TtiObjectParentForTestingGroup.Create;
   try
 //    lParentGroup.OID.AsString := '4';
     CheckTrue(lParentGroup.OID.IsNull, 'lParentGroup.OID is not null');
@@ -2150,7 +2149,7 @@ begin
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       CheckEquals(AValue, lData.IntField);
     finally
-      Assert(lData.TestValid(TtiOPFTestIntegerProp), cTIInvalidObjectError);
+      Assert(lData.TestValid(TtiOPFTestIntegerProp), CTIErrorInvalidObject);
       lData.Free;
     end;
 
@@ -2413,7 +2412,7 @@ begin
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       CheckEquals(AValue, lData.Int64Field);
     finally
-      Assert(lData.TestValid(TtiOPFTestInt64Prop), cTIInvalidObjectError);
+      Assert(lData.TestValid(TtiOPFTestInt64Prop), CTIErrorInvalidObject);
       lData.Free;
     end;
 
@@ -2488,3 +2487,7 @@ end;
 {$ENDIF}
 
 end.
+
+
+
+

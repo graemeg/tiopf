@@ -25,6 +25,7 @@ const
   cShipping : array[TShipping] of string = ('', 'UPS', 'US Mail', 'Fed Ex', 'DHL', 'Emery');
 
 type
+
   TCustomer = class ;
   TCustomers = class ;
 
@@ -43,7 +44,19 @@ type
   TOrder = class;
   TOrders = class;
 
-  TCustomers = class( TtiObjectList )
+  TMASTObjectList = class(TtiObjectList)
+  public
+    procedure Read; override;
+    procedure Save; override;
+  end;
+
+  TMASTFilteredObjectList = class(TtiFilteredObjectList)
+  public
+    procedure Read; override;
+    procedure Save; override;
+  end;
+
+  TCustomers = class( TMASTObjectList )
   private
   protected
     function    GetItems(i: integer): TCustomer ; reintroduce ;
@@ -112,7 +125,7 @@ type
 
 // vendors
 
-  TVendors = class( TtiObjectList )
+  TVendors = class( TMASTObjectList )
   private
   protected
     function    GetItems(i: integer): TVendor ; reintroduce ;
@@ -171,7 +184,7 @@ type
     property Parts: TParts read FParts;
   end ;
 
- TParts = class( TtiObjectList )
+ TParts = class( TMASTObjectList )
   private
   protected
     function    GetItems(i: integer): TPart ; reintroduce ;
@@ -221,7 +234,7 @@ type
     property    ListPrice: Currency read FListPrice write SetListPrice;
   end ;
 
-  TEmployees = class( TtiObjectList )
+  TEmployees = class( TMASTObjectList )
   private
   protected
     function    GetItems(i: integer): TEmployee ; reintroduce ;
@@ -253,7 +266,7 @@ type
     property  Salary: Currency read FSalary write FSalary;
   end ;
 
-  TOrderItems = class( TtiObjectList )
+  TOrderItems = class( TMASTObjectList )
   private
   protected
     function    GetItems(i: integer): TOrderItem ; reintroduce ;
@@ -306,7 +319,7 @@ type
   end ;
 
 
-  TOrders = class( TtiFilteredObjectList )
+  TOrders = class( TMASTFilteredObjectList )
   private
 //    FWhere: TtiQueryParams;
   protected
@@ -371,6 +384,7 @@ type
     constructor Create ; override ;
     destructor  Destroy ; override ;
     procedure   CalculateTotals;
+    procedure   Save; override;
   published
 //     property OID;
      property OrderNo: integer read GetOrderNo;   // resurfaces OID so we can get at it in the lists
@@ -1268,6 +1282,11 @@ begin
   result := pErrors.Count = 0 ;
 end;
 
+procedure TOrder.Save;
+begin
+  inherited;
+end;
+
 procedure TOrder.SetCustNo(const Value: TOID);
 begin
   CustNo.Assign(value);
@@ -1291,6 +1310,30 @@ end;
 procedure TOrder.SetTermsString(const Value: string);
 begin
   FTerms:= TTerms(StringToOrd(Value, cTerms));
+end;
+
+{ TMASTObjectList }
+
+procedure TMASTObjectList.Read;
+begin
+  inherited;
+end;
+
+procedure TMASTObjectList.Save;
+begin
+  inherited;
+end;
+
+{ TMASTFilteredObjectList }
+
+procedure TMASTFilteredObjectList.Read;
+begin
+  inherited;
+end;
+
+procedure TMASTFilteredObjectList.Save;
+begin
+  inherited;
 end;
 
 end.

@@ -47,19 +47,19 @@ end;
 
 procedure TFormPersonList.DoPersonEditSave(const AData: TtiObject);
 begin
-  Assert(AData.TestValid(TPerson), cTIInvalidObjectError);
+  Assert(AData.TestValid(TPerson), CTIErrorInvalidObject);
   AData.Save;
 end;
 
 procedure TFormPersonList.DoPersonInsertCancel(const AData: TtiObject);
 begin
-  Assert(AData.TestValid(TPerson), cTIInvalidObjectError);
+  Assert(AData.TestValid(TPerson), CTIErrorInvalidObject);
   AData.Free;
 end;
 
 procedure TFormPersonList.DoPersonInsertSave(const AData: TtiObject);
 begin
-  Assert(AData.TestValid(TPerson), cTIInvalidObjectError);
+  Assert(AData.TestValid(TPerson), CTIErrorInvalidObject);
   GAdrsManager.AdrsBook.People.Add(AData as TPerson);
   AData.Save;
   LV.Refresh(AData);

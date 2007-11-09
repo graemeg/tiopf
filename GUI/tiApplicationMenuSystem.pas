@@ -316,7 +316,7 @@ var
 
 function  gAMS: TtiApplicationMenuSystem;
 begin
-  Assert(uAMS.TestValid(TtiApplicationMenuSystem), cTIInvalidObjectError);
+  Assert(uAMS.TestValid(TtiApplicationMenuSystem), CTIErrorInvalidObject);
   Result := uAMS;
 end;
 

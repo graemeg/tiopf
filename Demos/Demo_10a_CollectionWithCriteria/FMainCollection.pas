@@ -164,13 +164,13 @@ procedure TFormCollection.LVDeriveOID(const pVT: TtiCustomVirtualTree;
   const pData: TtiObject; const ptiListColumn: TtiVTColumn;
   var pResult: string);
 begin
-  Assert(pData.IsValid, cTIInvalidObjectError);
+  Assert(pData.IsValid, CTIErrorInvalidObject);
   pResult:= pData.OID.AsString;
 end;
 
 procedure TFormCollection.LVFilterData(pData: TtiObject; var pInclude: Boolean);
 begin
-  Assert(pData.IsValid, cTIInvalidObjectError);
+  Assert(pData.IsValid, CTIErrorInvalidObject);
   pInclude:= not pData.Deleted;
 end;
 
@@ -179,7 +179,7 @@ procedure TFormCollection.LVItemArrive(pVT: TtiCustomVirtualTree;
 var
   LClient: TClient;
 begin
-  Assert(pData.TestValid, cTIInvalidObjectError);
+  Assert(pData.TestValid, CTIErrorInvalidObject);
   LClient:= pData as TClient;
   paeOID.Value:= LClient.OID.AsString;
   paeClientName.Value:= LClient.ClientName;

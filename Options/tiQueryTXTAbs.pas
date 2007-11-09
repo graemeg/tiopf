@@ -619,7 +619,7 @@ var
 begin
   inherited CreateTable(ATableMetaData);
   lDataSet := FDataSets.FindByName(ATableMetaData.Name);
-  Assert(lDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  Assert(lDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   SaveDataSet(lDataSet);
 end;
 
@@ -630,7 +630,7 @@ var
   lFileName : string;
 begin
   lDataSet := FDataSets.FindByName(ATableMetaData.Name);
-  Assert(lDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  Assert(lDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   lFileName := ExpandFileName(lDataSet.Name);
   inherited DropTable(ATableMetaData);
   Assert(FileExists(lFileName), 'File <' + lFileName + '> does not exist');
@@ -795,7 +795,7 @@ begin
   if FSelectedRows.Count > 0 then
   begin
     result := TtiDataBufferRow(FSelectedRows.Items[FCurrentRecordIndex]);
-    Assert(Result.TestValid, cTIInvalidObjectError);
+    Assert(Result.TestValid, CTIErrorInvalidObject);
   end
   else
     result := nil;
@@ -833,7 +833,7 @@ procedure TTXTToTIDataSetAbs.DoExtractData(AIndex: integer; const AValue: string
 var
   lCell : TtiDataBufferCell;
 begin
-  Assert(FDataSetRow.TestValid, cTIInvalidObjectError);
+  Assert(FDataSetRow.TestValid, CTIErrorInvalidObject);
   if FDataSetRow.Count < AIndex then
   begin
     lCell := FDataSetRow.AddInstance;
@@ -870,7 +870,7 @@ end;
 
 procedure TTXTToTIDataSetAbs.Read(pDataSet: TtiDataBuffer; AFileName: TFileName);
 begin
-  Assert(pDataSet.TestValid, cTIInvalidObjectError);
+  Assert(pDataSet.TestValid, CTIErrorInvalidObject);
   FDataSet := pDataSet;
   FStream := TtiFileStream.CreateReadOnly(AFileName);
   try
@@ -912,7 +912,7 @@ procedure TTXTToTIDataSetAbs.Save(pDataSet: TtiDataBuffer; AFileName: TFileName)
 var
   i : integer;             
 begin
-  Assert(pDataSet.TestValid, cTIInvalidObjectError);
+  Assert(pDataSet.TestValid, CTIErrorInvalidObject);
   FDataSet := pDataSet;
   FStream := TtiFileStream.CreateReadWrite(AFileName, true);
   try
@@ -944,10 +944,10 @@ var
   i : integer;
 begin
   Assert(FStream<>nil, 'FStream not assigned');
-  Assert(FDataSet.TestValid, cTIInvalidObjectError);
+  Assert(FDataSet.TestValid, CTIErrorInvalidObject);
   for i := 0 to FDataSet.Fields.Count - 1 do
   begin
-    Assert(FDataSet.Fields.Items[i].TestValid, cTIInvalidObjectError);
+    Assert(FDataSet.Fields.Items[i].TestValid, CTIErrorInvalidObject);
     if i >= 1 then
       FStream.Write(FieldDelim);
     FStream.Write(QuoteStr(FDataSet.Fields.Items[i].Name));

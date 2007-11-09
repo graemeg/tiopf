@@ -141,7 +141,7 @@ begin
   Assert(ADatabaseName = ADatabaseName);  // Getting rid of compiler hints, param not used.
   Assert(APersistenceLayerName = APersistenceLayerName);  // Getting rid of compiler hints, param not used.
 
-  Assert(AAssignTo.TestValid(TOID), cTIInvalidObjectError);
+  Assert(AAssignTo.TestValid(TOID), CTIErrorInvalidObject);
   lValue := tiCreateGUIDString;
 
 //           10        20        30

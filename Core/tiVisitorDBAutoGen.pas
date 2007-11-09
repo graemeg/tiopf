@@ -170,7 +170,7 @@ procedure TVisDBAutoGenDelete.SetupParams;
 var
   lData: TtiObject;
 begin
-  Assert(Visited.TestValid(TtiObject), cTIInvalidObjectError);
+  Assert(Visited.TestValid(TtiObject), CTIErrorInvalidObject);
   QueryType := qtDelete;
   LData := (Visited as TtiObject);
   {$IFDEF OID_AS_INT64}

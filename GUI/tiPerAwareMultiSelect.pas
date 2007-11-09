@@ -575,7 +575,7 @@ end;
 
 procedure TtiPerAwareMultiSelect.SetAvailable(AValue: TtiObjectList);
 begin
-  Assert(AValue.TestValid(TtiObjectList), cTIInvalidObjectError);
+  Assert(AValue.TestValid(TtiObjectList), CTIErrorInvalidObject);
   FAvailable := AValue;
   if FAvailable <> nil then
     FLVAvailable.Data := FAvailable.List
@@ -587,7 +587,7 @@ end;
 
 procedure TtiPerAwareMultiSelect.SetSelected(AValue: TtiObjectList);
 begin
-  Assert(AValue.TestValid(TtiObjectList), cTIInvalidObjectError);
+  Assert(AValue.TestValid(TtiObjectList), CTIErrorInvalidObject);
   if AValue <> nil then
   begin
     Assert(AValue.OwnsObjects = False, 'AValue.OwnsObjects <> false');

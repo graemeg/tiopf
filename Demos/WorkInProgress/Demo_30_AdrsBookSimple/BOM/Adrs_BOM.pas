@@ -185,7 +185,7 @@ end;
 
 procedure TPerson.AssignClassProps(ASource: TtiObject);
 begin
-  Assert(ASource.TestValid(TPerson), cTIInvalidObjectError);
+  Assert(ASource.TestValid(TPerson), CTIErrorInvalidObject);
   EAdrsList.Assign((ASource as TPerson).EAdrsList);
 end;
 
@@ -246,7 +246,7 @@ end;
 
 function TEAdrsList.GetOID: TOID;
 begin
-  Assert(Owner.TestValid, cTIInvalidObjectError);
+  Assert(Owner.TestValid, CTIErrorInvalidObject);
   result:= Owner.OID;  
 end;
 

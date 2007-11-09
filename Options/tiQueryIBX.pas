@@ -334,7 +334,7 @@ end;
 
 procedure TtiQueryIBX.SetActive(const AValue: boolean);
 begin
-  Assert(Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  Assert(Database.TestValid(TtiDatabase), CTIErrorInvalidObject);
   if AValue then
   begin
     FIBSQL.ExecQuery;

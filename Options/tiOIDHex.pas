@@ -258,7 +258,7 @@ end;
 
 procedure TNextOIDGeneratorHex.AssignNextOID(const AAssignTo: TOID; const ADatabaseName : string; APersistenceLayerName : string);
 begin
-  Assert(AAssignTo.TestValid(TOID), cTIInvalidObjectError);
+  Assert(AAssignTo.TestValid(TOID), CTIErrorInvalidObject);
   AAssignTo.AsString := NextOID;
 end;
 

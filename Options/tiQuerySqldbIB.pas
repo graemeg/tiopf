@@ -344,7 +344,7 @@ end;
 procedure TtiQuerySqldbIB.SetActive(const AValue: boolean);
 begin
   log('>>> TtiQuerySqldbIB.SetActive');
-  Assert(Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  Assert(Database.TestValid(TtiDatabase), CTIErrorInvalidObject);
   if AValue then
   begin
     Log('Exec Query');

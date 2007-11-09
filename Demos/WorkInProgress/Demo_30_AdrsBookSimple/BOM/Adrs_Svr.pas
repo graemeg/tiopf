@@ -127,7 +127,7 @@ procedure TVisPerson_Create.SetupParams;
 var
   LData: TPerson;
 begin
-  Assert(Visited.TestValid(TPerson), cTIInvalidObjectError);
+  Assert(Visited.TestValid(TPerson), CTIErrorInvalidObject);
   LData:= (Visited as TPerson);
   Query.ParamAsString['oid']       := LData.OID.AsString;
   Query.ParamAsString['first_name']:= LData.FirstName;
@@ -154,7 +154,7 @@ procedure TVisPerson_Update.SetupParams;
 var
   LData: TPerson;
 begin
-  Assert(Visited.TestValid(TPerson), cTIInvalidObjectError);
+  Assert(Visited.TestValid(TPerson), CTIErrorInvalidObject);
   LData:= (Visited as TPerson);
   Query.ParamAsString['oid']       := LData.OID.AsString;
   Query.ParamAsString['first_name']:= LData.FirstName;
@@ -199,7 +199,7 @@ procedure TVisEAdrsList_Read.MapRowToObject;
 var
   LData: TEAdrs;
 begin
-  Assert(Visited.TestValid(TPerson), cTIInvalidObjectError);
+  Assert(Visited.TestValid(TPerson), CTIErrorInvalidObject);
   LData:= TEAdrs.Create;
   (Visited as TPerson).EAdrsList.Add(LData);
   LData.OID.AsString:= Query.FieldAsString['oid'];
@@ -212,7 +212,7 @@ procedure TVisEAdrsList_Read.SetupParams;
 var
   LData: TPerson;
 begin
-  Assert(Visited.TestValid(TPerson), cTIInvalidObjectError);
+  Assert(Visited.TestValid(TPerson), CTIErrorInvalidObject);
   LData:= (Visited as TPerson);
   Query.ParamAsString['oid_person']       := LData.OID.AsString;
 end;
@@ -234,7 +234,7 @@ procedure TVisEAdrs_Create.SetupParams;
 var
   LData: TEAdrs;
 begin
-  Assert(Visited.TestValid(TEAdrs), cTIInvalidObjectError);
+  Assert(Visited.TestValid(TEAdrs), CTIErrorInvalidObject);
   LData:= Visited as TEAdrs;
   Query.ParamAsString['oid']:= LData.OID.AsString;
   Query.ParamAsString['oid_person']:= LData.Owner.OID.AsString;
@@ -259,7 +259,7 @@ procedure TVisEAdrs_Update.SetupParams;
 var
   LData: TEAdrs;
 begin
-  Assert(Visited.TestValid(TEAdrs), cTIInvalidObjectError);
+  Assert(Visited.TestValid(TEAdrs), CTIErrorInvalidObject);
   LData:= Visited as TEAdrs;
   Query.ParamAsString['oid']:= LData.OID.AsString;
   Query.ParamAsString['eadrs_type']:= LData.AdrsType;

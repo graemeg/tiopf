@@ -43,7 +43,7 @@ var
   LURL: string;
   LErrorCode: Byte;
 begin
-  Assert(AConnectionDetails.TestValid, cTIInvalidObjectError);
+  Assert(AConnectionDetails.TestValid, CTIErrorInvalidObject);
   Assert(ACGIExeName<>'', 'pCGIExeName not assigned');
 
   LURL:= AConnectionDetails.AppServerURL + '/' + ACGIExeName;

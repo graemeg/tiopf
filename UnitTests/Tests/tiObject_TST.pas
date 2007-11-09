@@ -1134,11 +1134,11 @@ end;
 
 procedure TTestTIObject.Owner;
 var
-  lGroup : TtiOPFTestGroup;
+  lGroup : TtiObjectListNestedForTesting;
   lItem : TtiOPFTestItem;
 begin
   // This is really a bit trivial, but here goes anyway...
-  lGroup := TtiOPFTestGroup.Create;
+  lGroup := TtiObjectListNestedForTesting.Create;
   try
     lItem := TtiOPFTestItem.Create;
     try
@@ -3588,7 +3588,7 @@ function TtstTIObject.Equals(const AData: TtiObject): boolean;
 var
   LData: TtstTIObject;
 begin
-  Assert(AData.TestValid(TtstTIObject), cErrorTIPerObjAbsTestValid);
+  Assert(AData.TestValid(TtstTIObject), CTIErrorInvalidObject);
   LData:= AData as TtstTIObject;
   result :=
     (Self.StrProp   = LData.StrProp)   and
@@ -3649,7 +3649,7 @@ function TtstPerObjOwnedObj.Equals(const AData: TtiObject): boolean;
 var
   LData: TtstPerObjOwnedObj;
 begin
-  Assert(AData.TestValid(TtstPerObjOwnedObj), cErrorTIPerObjAbsTestValid);
+  Assert(AData.TestValid(TtstPerObjOwnedObj), CTIErrorInvalidObject);
   LData:= AData as TtstPerObjOwnedObj;
   result :=
     (inherited Equals(LData))   and
@@ -3862,32 +3862,32 @@ end;
 
 procedure TTestTIObjectList.In1OnlyEvent(AItem1, AItem2: TtiObject);
 begin
-  Assert(AItem1.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AItem1.TestValid, CTIErrorInvalidObject);
   Assert(AItem2=nil, 'AItem2 assigned');
-  Assert(FIn1Only.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FIn1Only.TestValid, CTIErrorInvalidObject);
   FIn1Only.Add(AItem1);
 end;
 
 procedure TTestTIObjectList.In2OnlyEvent(AItem1, AItem2: TtiObject);
 begin
   Assert(AItem1=nil, 'AItem1 assigned');
-  Assert(AItem2.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AItem2.TestValid, CTIErrorInvalidObject);
   FIn2Only.Add(AItem2);
 end;
 
 procedure TTestTIObjectList.InBothAndEqualsEvent(AItem1, AItem2: TtiObject);
 begin
-  Assert(AItem1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AItem2.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(FInBothAndEquals.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AItem1.TestValid, CTIErrorInvalidObject);
+  Assert(AItem2.TestValid, CTIErrorInvalidObject);
+  Assert(FInBothAndEquals.TestValid, CTIErrorInvalidObject);
   FInBothAndEquals.Add(AItem1);
 end;
 
 procedure TTestTIObjectList.InBothAndNotEqualsEvent(AItem1, AItem2: TtiObject);
 begin
-  Assert(AItem1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AItem2.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(FInBothAndNotEquals.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AItem1.TestValid, CTIErrorInvalidObject);
+  Assert(AItem2.TestValid, CTIErrorInvalidObject);
+  Assert(FInBothAndNotEquals.TestValid, CTIErrorInvalidObject);
   FInBothAndNotEquals.Add(AItem1);
 end;
 

@@ -4,8 +4,7 @@ unit tiOPFManager;
 
 interface
 uses
-   SysUtils
-  ,Classes
+   tiBaseObject
   ,tiDBConnectionPool
   ,tiQuery
   ,tiObject
@@ -15,6 +14,8 @@ uses
   ,tiAutoMap
   ,tiOID
   ,tiThread
+  ,SysUtils
+  ,Classes
   ,SyncObjs   // This unit must always appear after the Windows unit!
   ,Contnrs
  ;
@@ -28,7 +29,9 @@ const
 
 
 type
-  TtiOPFManager = class(TtiObjectList)
+
+  // ToDo: TtiOPFManager should descend from TtiBaseObject, not TtiObject
+  TtiOPFManager = class(TtiObject)
   private
     FPersistenceLayers : TtiPersistenceLayers;
     FDefaultPackageName: string;
@@ -42,6 +45,7 @@ type
     {$IFNDEF OID_AS_INT64}
       FDefaultOIDClassName: string;
       FOIDFactory: TOIDFactory;
+    FOwner: TtiBaseObject;
       procedure SetDefaultOIDClassName(const AValue: string);
     {$ENDIF}
 
@@ -57,6 +61,8 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
+
+    property    Owner: TtiBaseObject read FOwner write FOwner;
 
     {: Load a persistence layer }
     procedure   LoadPersistenceLayer(Const APersistenceLayerName : string);
@@ -120,7 +126,7 @@ type
     procedure   RegReadVisitor(  const AClassRef : TtiVisitorClass);
     procedure   RegSaveVisitor(  const AClassRef : TtiVisitorClass);
 
-    // These call visitors
+    // ToDo: Remove these methods as they are implemented on TtiObject
     procedure   ReadPK(  const AVisited         : TtiVisited;
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = ''); reintroduce;
@@ -133,6 +139,7 @@ type
     procedure   Save(    const AVisited : TtiVisited;
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = ''); reintroduce;
+
     procedure   ExecSQL( const pSQL : string;
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = '');
@@ -181,7 +188,6 @@ type
     property    ApplicationData : TList read GetApplicationData;
     property    ApplicationStartTime : TDateTime read FApplicationStartTime;
 
-  published
     property    DefaultPerLayer        : TtiPersistenceLayer    read GetDefaultPerLayer write SetDefaultPerLayer;
     property    DefaultPerLayerName    : string            read GetDefaultPerLayerName write SetDefaultPerLayerName;
     property    DefaultDBConnectionPool : TtiDBConnectionPool read GetDefaultDBConnectionPool;
@@ -391,21 +397,21 @@ end;
 
 procedure TtiOPFManager.RegReadPKVisitor(const AClassRef: TtiVisitorClass);
 begin
-  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
   FVisitorManager.RegisterVisitor(cuStandardTask_ReadPK, AClassRef);
 end;
 
 
 procedure TtiOPFManager.RegReadVisitor(const AClassRef: TtiVisitorClass);
 begin
-  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
   FVisitorManager.RegisterVisitor(cuStandardTask_Read, AClassRef);
 end;
 
 
 procedure TtiOPFManager.RegSaveVisitor(const AClassRef: TtiVisitorClass);
 begin
-  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
   FVisitorManager.RegisterVisitor(cuStandardTask_Save, AClassRef);
 end;
 
@@ -414,7 +420,7 @@ procedure TtiOPFManager.Read(const AVisited         : TtiVisited;
                         const ADBConnectionName : string = '';
                         const APersistenceLayerName    : string = '');
 begin
-  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
   FVisitorManager.Execute(cuStandardTask_Read,
     AVisited,
     ADBConnectionName,
@@ -426,7 +432,7 @@ procedure TtiOPFManager.ReadPK(const AVisited         : TtiVisited;
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = '');
 begin
-  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
   FVisitorManager.Execute(cuStandardTask_ReadPK,
     AVisited,
     ADBConnectionName,
@@ -438,7 +444,7 @@ procedure TtiOPFManager.Save(const AVisited         : TtiVisited;
                         const ADBConnectionName : string = '';
                         const APersistenceLayerName    : string = '');
 begin
-  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
   FVisitorManager.Execute(cuStandardTask_Save,
     AVisited,
     ADBConnectionName,
@@ -649,7 +655,7 @@ end;
 
 procedure TtiOPFManager.RegReadThisVisitor(const AClassRef: TtiVisitorClass);
 begin
-  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
   FVisitorManager.RegisterVisitor(cuStandardTask_ReadThis, AClassRef);
 end;
 
@@ -658,7 +664,7 @@ procedure TtiOPFManager.ReadThis(const AVisited         : TtiVisited;
                             const ADBConnectionName : string = '';
                             const APersistenceLayerName    : string = '');
 begin
-  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
   FVisitorManager.Execute(cuStandardTask_ReadThis,
     AVisited,
     ADBConnectionName,
@@ -716,7 +722,7 @@ procedure TtiOPFManager.ReadMetaDataFields(
 var
   lDB : TtiDatabase;
 begin
-  Assert(pDBMetaDataTable.TestValid(TtiDBMetaDataTable), cTIInvalidObjectError);
+  Assert(pDBMetaDataTable.TestValid(TtiDBMetaDataTable), CTIErrorInvalidObject);
   lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
     lDB.ReadMetaDataFields(pDBMetaDataTable);
@@ -731,7 +737,7 @@ procedure TtiOPFManager.ReadMetaDataTables(pDBMetaData: TtiDBMetaData;
 var
   lDB : TtiDatabase;
 begin
-  Assert(pDBMetaData.TestValid(TtiDBMetaData), cTIInvalidObjectError);
+  Assert(pDBMetaData.TestValid(TtiDBMetaData), CTIErrorInvalidObject);
   lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
     lDB.ReadMetaDataTables(pDBMetaData);
@@ -782,7 +788,7 @@ end;
 
 procedure TtiOPFManager.RegisterVisitor(const AGroupName: string; const AClassRef: TtiVisitorClass);
 begin
-  Assert(FVisitorManager.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FVisitorManager.TestValid, CTIErrorInvalidObject);
   FVisitorManager.RegisterVisitor(AGroupName, AClassRef);
 end;
 
@@ -892,6 +898,8 @@ finalization
   FreeAndNilTIPerMgr;
 
 end.
+
+
 
 
 

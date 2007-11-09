@@ -155,7 +155,7 @@ end;
 
 procedure TFormMainOneToMany.lvClientsFilterData(pData: TtiObject; var pInclude: Boolean);
 begin
-  Assert(pData.TestValid, cTIInvalidObjectError);
+  Assert(pData.TestValid, CTIErrorInvalidObject);
   pInclude := not pData.Deleted ;
 end;
 

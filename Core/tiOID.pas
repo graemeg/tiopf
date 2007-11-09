@@ -296,12 +296,12 @@ var
   lNextOIDGenerator : TNextOIDGenerator;
   lRegPerLayer : TtiPersistenceLayer;
 begin
-  Assert(AAssignTo.TestValid(TOID), cTIInvalidObjectError);
+  Assert(AAssignTo.TestValid(TOID), CTIErrorInvalidObject);
   Assert(ADatabaseName <> '', 'Database name not assigned');
   lNextOIDGenerator := FindCreateByDatabaseName(ADatabaseName);
-  Assert(lNextOIDGenerator.TestValid(TNextOIDGenerator), cTIInvalidObjectError + ' No NextOIDGenerator found for ' + ADatabaseName);
+  Assert(lNextOIDGenerator.TestValid(TNextOIDGenerator), CTIErrorInvalidObject + ' No NextOIDGenerator found for ' + ADatabaseName);
   lRegPerLayer := Owner as TtiPersistenceLayer;
-  Assert(lRegPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
+  Assert(lRegPerLayer.TestValid(TtiPersistenceLayer), CTIErrorInvalidObject);
   lNextOIDGenerator.AssignNextOID(AAssignTo, ADatabaseName, lRegPerLayer.PersistenceLayerName);
 end;
 

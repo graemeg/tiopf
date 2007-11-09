@@ -309,8 +309,8 @@ function _CompareServerActions(AItem1, AItem2: Pointer): Integer;
 var
   LItem1, LItem2: TtiWebServerAction;
 begin
-  Assert(TtiBaseObject(AItem1).TestValid(TtiWebServerAction), cErrorTIPerObjAbsTestValid);
-  Assert(TtiBaseObject(AItem2).TestValid(TtiWebServerAction), cErrorTIPerObjAbsTestValid);
+  Assert(TtiBaseObject(AItem1).TestValid(TtiWebServerAction), CTIErrorInvalidObject);
+  Assert(TtiBaseObject(AItem2).TestValid(TtiWebServerAction), CTIErrorInvalidObject);
   LItem1:= TtiWebServerAction(AItem1);
   LItem2:= TtiWebServerAction(AItem2);
   result:= CompareValue(LItem1.SortOrder, LItem2.SortOrder);

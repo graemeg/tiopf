@@ -302,7 +302,7 @@ begin
                                    cErrorDGroupNotFound,
                                    Row, Col(AString),
                                    AString);
-                         Assert(FMetaDatas.LatestUsed.TestValid(TtiStructCSVMetaData), cTIInvalidObjectError);
+                         Assert(FMetaDatas.LatestUsed.TestValid(TtiStructCSVMetaData), CTIErrorInvalidObject);
                          try
                            FMetaDatas.LatestUsed.OnRowStartEvent(AString);
                          except
@@ -315,14 +315,14 @@ begin
                          end;
                        end;
   tpemsDCell  :       begin
-                         Assert(FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError);
+                         Assert(FMetaDatas.LatestUsed.TestValid, CTIErrorInvalidObject);
                          Inc(FCellIndex);
                          // Only trigger the setter if AString contains a value
                          if AString <> '' then
                          begin
                            try
                              lMetaDataItem := FMetaDatas.LatestUsed.IndexedItems[FCellIndex-1];
-                             Assert(lMetaDataItem.TestValid, cTIInvalidObjectError);
+                             Assert(lMetaDataItem.TestValid, CTIErrorInvalidObject);
                              lFieldSetter := lMetaDataItem.FieldSetter;
                              try
                                lFieldSetter(FMetaDatas.LatestUsed.DataGroupName,
@@ -358,7 +358,7 @@ end;
 
 procedure TTextParserStructCSV.DoOnNewLine;
 begin
-  Assert(FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError);
+  Assert(FMetaDatas.LatestUsed.TestValid, CTIErrorInvalidObject);
   FState := tpemsStartOfRow;
   if FCellIndex < FMetaDatas.LatestUsed.IndexedCount then
     RaiseStructCSVDataGroupException(
@@ -408,7 +408,7 @@ end;
 
 procedure TTextParserStructCSV.DoOnEndOfText;
 begin
-  Assert(FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError);
+  Assert(FMetaDatas.LatestUsed.TestValid, CTIErrorInvalidObject);
   // FState := tpemsStartOfRow;
   if {(FState = tpemsDCell) and}
      (FCellIndex < FMetaDatas.LatestUsed.IndexedCount) then
@@ -491,7 +491,7 @@ var
 begin
   if not FInDataRow then
     Exit; //==>
-  Assert(FMetaDatas.LatestUsed.TestValid, cTIInvalidObjectError);
+  Assert(FMetaDatas.LatestUsed.TestValid, CTIErrorInvalidObject);
   lMetaDataItem := FMetaDatas.LatestUsed;
   lMetaDataItem.OnRowEndEvent(FMetaDatas.LatestUsed.DataGroupName);
 end;
@@ -499,7 +499,7 @@ end;
 procedure TTextParserStructCSV.ParseStream(AStream: TStream);
 begin
   Assert(AStream<>nil, 'AStream not assigned');
-  Assert(FTextFileParser.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FTextFileParser.TestValid, CTIErrorInvalidObject);
   Clear;
   FTextFileParser.ParseStream(AStream);
 end;
@@ -614,7 +614,7 @@ begin
     Result := False;
     Exit; //==>
   end;
-  Assert(lo.TestValid(TtiStructCSVMetaDataItem), cTIInvalidObjectError);
+  Assert(lo.TestValid(TtiStructCSVMetaDataItem), CTIErrorInvalidObject);
   FIndexList.Add(lo);
   Result := True;
 end;

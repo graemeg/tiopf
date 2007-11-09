@@ -189,7 +189,7 @@ begin
     for i := lList.Count - 1 downto 0 do
     begin
       lPooledItem := TObject(lList.Items[i]) as TtiPooledItem;
-      Assert(lPooledItem.TestValid(TtiPooledItem), cTIInvalidObjectError);;
+      Assert(lPooledItem.TestValid(TtiPooledItem), CTIErrorInvalidObject);;
       lPooledItem.Free;
       lList.Delete(i);
     end;
@@ -330,7 +330,7 @@ var
   LList : TList;
   LItem: TtiPooledItem;
 begin
-  Assert(APooledItemData.TestValid, cTIInvalidObjectError);
+  Assert(APooledItemData.TestValid, CTIErrorInvalidObject);
   LList := FPool.LockList;
   try
     for i := 0 to LList.Count-1 do
@@ -548,6 +548,7 @@ begin
 end;
 
 end.
+
 
 
 

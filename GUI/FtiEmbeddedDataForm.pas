@@ -91,8 +91,8 @@ end;
 
 function TFormTIEmbeddedDataForm.FormIsDirty: Boolean;
 begin
-  Assert(FOriginalData.TestValid(TtiObject, True), cTIInvalidObjectError);
-  Assert(FEditedData.TestValid(TtiObject, True), cTIInvalidObjectError);
+  Assert(FOriginalData.TestValid(TtiObject, True), CTIErrorInvalidObject);
+  Assert(FEditedData.TestValid(TtiObject, True), CTIErrorInvalidObject);
   Result := Assigned(FEditedData) and
       ((not Assigned(FOriginalData)) or // New
        (not FEditedData.Equals(FOriginalData))); // Modified
@@ -105,7 +105,7 @@ function TFormTIEmbeddedDataForm.FormIsValid: Boolean;
 var
   LErrorMessage: string;
 begin
-  Assert(FEditedData.TestValid(TtiObject, True), cTIInvalidObjectError);
+  Assert(FEditedData.TestValid(TtiObject, True), CTIErrorInvalidObject);
   if Assigned(FEditedData) then
   begin
     Result := FEditedData.IsValid(LErrorMessage);

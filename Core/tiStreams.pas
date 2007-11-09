@@ -272,6 +272,7 @@ uses
    tiUtils
   ,tiExcept
   ,tiObject
+  ,tiConstants
   ,SysUtils
   ,Math
  ;
@@ -926,8 +927,8 @@ var
   LItem1: TtiBlockStreamItem;
   LItem2: TtiBlockStreamItem;
 begin
-  Assert(TtiBaseObject(AItem1).TestValid(TtiBlockStreamItem), cErrorTIPerObjAbsTestValid);
-  Assert(TtiBaseObject(AItem2).TestValid(TtiBlockStreamItem), cErrorTIPerObjAbsTestValid);
+  Assert(TtiBaseObject(AItem1).TestValid(TtiBlockStreamItem), CTIErrorInvalidObject);
+  Assert(TtiBaseObject(AItem2).TestValid(TtiBlockStreamItem), CTIErrorInvalidObject);
   LItem1:= TtiBlockStreamItem(AItem1);
   LItem2:= TtiBlockStreamItem(AItem2);
   Result:= CompareValue(LItem1.BlockIndex, LItem2.BlockIndex);

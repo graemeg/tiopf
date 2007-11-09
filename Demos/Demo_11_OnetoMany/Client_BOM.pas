@@ -29,7 +29,7 @@ type
     procedure   Add(AObject: TClient); reintroduce;
     procedure   Clear; override;
     procedure   Read; override;
-  published
+    procedure   Save; override;
   end;
 
   TClient = class(TtiObject)
@@ -125,6 +125,11 @@ begin
       IntToStr(GetTickCount - lNow));
 end;
 
+procedure TClients.Save;
+begin
+  inherited;
+end;
+
 procedure TClients.SetItems(i: integer; const Value: TClient);
 begin
   inherited SetItems(i, Value);
@@ -172,7 +177,7 @@ end;
 procedure TClient.SetObjectState(const AValue: TPerObjectState);
 begin
   inherited;
-  Assert(PhoneNumbers.TestValid, cTIInvalidObjectError);
+  Assert(PhoneNumbers.TestValid, CTIErrorInvalidObject);
   // ToDo. This call should not be requred. There should be a flat on TPhoneNumbers
   //       indicating it's not persisted.
   if (AValue = posDeleted) and (PhoneNumbers.ObjectState = posDelete) then

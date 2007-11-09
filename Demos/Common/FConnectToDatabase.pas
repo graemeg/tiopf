@@ -46,7 +46,7 @@ end;
 
 function TFormConnectToDatabase.DatabaseExists: boolean;
 begin
-  Assert(gTIOPFManager.DefaultPerLayer.TestValid, cTIInvalidObjectError);
+  Assert(gTIOPFManager.DefaultPerLayer.TestValid, CTIErrorInvalidObject);
   result:= gTIOPFManager.DefaultPerLayer.DatabaseExists(DatabaseName, UserName, Password);
 end;
 
@@ -60,7 +60,7 @@ end;
 
 procedure TFormConnectToDatabase.CreateDatabase;
 begin
-  Assert(gTIOPFManager.DefaultPerLayer.TestValid, cTIInvalidObjectError);
+  Assert(gTIOPFManager.DefaultPerLayer.TestValid, CTIErrorInvalidObject);
   gTIOPFManager.DefaultPerLayer.CreateDatabase(DatabaseName, UserName, Password);
 end;
 

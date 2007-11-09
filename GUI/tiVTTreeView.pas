@@ -1422,7 +1422,7 @@ end;
 
 function TtiVTTreeView.TestObjectAgainstFilter(AValue: TtiObject): Boolean;
 begin
-  Assert(AValue.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AValue.TestValid, CTIErrorInvalidObject);
   Result:= True;
   if ApplyFilter and Assigned(OnFilter) then
     OnFilter(AValue, Result);

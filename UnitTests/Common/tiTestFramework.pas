@@ -156,10 +156,10 @@ type
     {: Check a TtiObject's IsValid Method by calling AData.IsValid, then changing APropName to ANewValue and trying again.
        APropName must be a real property.}
     procedure CheckTIObjectIsValidMethod(const AData: TtiObject; const APropName: string; const AInvalidValue: Real; const AErrorProperty: string = ''); overload;
-    {: Check a delete visitor is working by creating an instance of TtiObjectClass (which must be a list), then calling it's read method.
-       There must be one object in the list. This object will be marked as deleted, then saved and the list will be re-read. The
-       list must be empty on the second read.}
-    procedure CheckDeletionFromDatabase(const AListClass: TtiObjectClass);
+//    {: Check a delete visitor is working by creating an instance of TtiObjectClass (which must be a list), then calling it's read method.
+//       There must be one object in the list. This object will be marked as deleted, then saved and the list will be re-read. The
+//       list must be empty on the second read.}
+//    procedure CheckDeletionFromDatabase(const AListClass: TtiObjectClass);
 
   end;
 
@@ -888,7 +888,7 @@ end;
 
 function TtiOPFTestCase.GetDatabaseName: string;
 begin
-  Assert(PerFrameworkSetup.TestValid, cTIInvalidObjectError);
+  Assert(PerFrameworkSetup.TestValid, CTIErrorInvalidObject);
   result := PerFrameworkSetup.DBName;
 end;
 
@@ -1233,7 +1233,7 @@ end;
 
 procedure TtiOPFTestCase.CheckObjectState(AObjectState: TPerObjectState; const AData: TtiObject);
 begin
-  Assert(AData.TestValid(TtiObject), cTIInvalidObjectError);
+  Assert(AData.TestValid(TtiObject), CTIErrorInvalidObject);
   Check(AData.ObjectState = AObjectState,
         'ObjectState. Expected ' +
         AData.ClassName + '.' + ObjectStateToString(AObjectState) +
@@ -1253,14 +1253,14 @@ end;
 
 function TtiOPFTestCase.GetPassword: string;
 begin
-  Assert(PerFrameworkSetup.TestValid, cTIInvalidObjectError);
+  Assert(PerFrameworkSetup.TestValid, CTIErrorInvalidObject);
   result := PerFrameworkSetup.Password;
 end;
 
 
 function TtiOPFTestCase.GetUserName: string;
 begin
-  Assert(PerFrameworkSetup.TestValid, cTIInvalidObjectError);
+  Assert(PerFrameworkSetup.TestValid, CTIErrorInvalidObject);
   result := PerFrameworkSetup.Username;
 end;
 
@@ -1283,7 +1283,7 @@ end;
 
 function TtiOPFTestCase.GetPerLayerName: string;
 begin
-  Assert(FtiOPFTestSetupData.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(FtiOPFTestSetupData.TestValid, CTIErrorInvalidObject);
   result:= FtiOPFTestSetupData.PerLayerName;
 end;
 
@@ -1312,7 +1312,7 @@ procedure TtiTestCase.CheckObjectState(
   const AData: TtiObject;
   const AMessage: string = '');
 begin
-  Assert(AData.TestValid, cTIInvalidObjectError);
+  Assert(AData.TestValid, CTIErrorInvalidObject);
   Check(AObjectState = AData.ObjectState,
         'ObjectState: Expected <' +
         GetEnumName(TypeInfo(TPerObjectState), Ord(AObjectState)) +
@@ -1414,10 +1414,10 @@ procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AF
 var
   lFieldName: string;
 begin
-  Assert(AObj1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AObj2.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField2.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj1.TestValid, CTIErrorInvalidObject);
+  Assert(AObj2.TestValid, CTIErrorInvalidObject);
+  Assert(AField1.TestValid, CTIErrorInvalidObject);
+  Assert(AField2.TestValid, CTIErrorInvalidObject);
   lFieldName := AField1.FieldName;
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
   AField1.AsString := AField2.AsString + '1';
@@ -1430,10 +1430,10 @@ procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AF
 var
   lFieldName: string;
 begin
-  Assert(AObj1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AObj2.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField2.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj1.TestValid, CTIErrorInvalidObject);
+  Assert(AObj2.TestValid, CTIErrorInvalidObject);
+  Assert(AField1.TestValid, CTIErrorInvalidObject);
+  Assert(AField2.TestValid, CTIErrorInvalidObject);
   lFieldName := AField1.FieldName;
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
   AField1.AsFloat := AField2.AsFloat + 1;
@@ -1446,10 +1446,10 @@ procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AF
 var
   lFieldName: string;
 begin
-  Assert(AObj1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AObj2.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField2.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj1.TestValid, CTIErrorInvalidObject);
+  Assert(AObj2.TestValid, CTIErrorInvalidObject);
+  Assert(AField1.TestValid, CTIErrorInvalidObject);
+  Assert(AField2.TestValid, CTIErrorInvalidObject);
   lFieldName := AField1.FieldName;
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
   AField1.AsInteger := AField2.AsInteger + 1;
@@ -1460,10 +1460,10 @@ end;
 
 procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldBoolean);
 begin
-  Assert(AObj1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AObj2.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField2.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj1.TestValid, CTIErrorInvalidObject);
+  Assert(AObj2.TestValid, CTIErrorInvalidObject);
+  Assert(AField1.TestValid, CTIErrorInvalidObject);
+  Assert(AField2.TestValid, CTIErrorInvalidObject);
 
   Check(AObj1.Equals(AObj2));
   AField1.AsBoolean := not AField2.AsBoolean;
@@ -1476,10 +1476,10 @@ procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AF
 var
   lFieldName: string;
 begin
-  Assert(AObj1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AObj2.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField1.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField2.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj1.TestValid, CTIErrorInvalidObject);
+  Assert(AObj2.TestValid, CTIErrorInvalidObject);
+  Assert(AField1.TestValid, CTIErrorInvalidObject);
+  Assert(AField2.TestValid, CTIErrorInvalidObject);
   lFieldName := AField1.FieldName;
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
   AField1.AsDateTime := AField2.AsDateTime + 1;
@@ -1493,8 +1493,8 @@ var
   LFieldName: string;
   LSaved: Integer;
 begin
-  Assert(AObj.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj.TestValid, CTIErrorInvalidObject);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   LFieldName := AField.FieldName;
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
   LSaved := AField.AsInteger;
@@ -1509,8 +1509,8 @@ var
   LFieldName: string;
   LSaved: string;
 begin
-  Assert(AObj.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj.TestValid, CTIErrorInvalidObject);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   LFieldName := AField.FieldName;
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
   LSaved := AField.AsString;
@@ -1525,8 +1525,8 @@ var
   LFieldName: string;
   LSaved: real;
 begin
-  Assert(AObj.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj.TestValid, CTIErrorInvalidObject);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   LFieldName := AField.FieldName;
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
   LSaved := AField.AsFloat;
@@ -1541,8 +1541,8 @@ var
   LFieldName: string;
   LSaved: Boolean;
 begin
-  Assert(AObj.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj.TestValid, CTIErrorInvalidObject);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   LFieldName := AField.FieldName;
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
   LSaved := AField.AsBoolean;
@@ -1557,8 +1557,8 @@ var
   LFieldName: string;
   LSaved: TDateTime;
 begin
-  Assert(AObj.TestValid, cErrorTIPerObjAbsTestValid);
-  Assert(AField.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AObj.TestValid, CTIErrorInvalidObject);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   LFieldName := AField.FieldName;
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
   LSaved := AField.AsDateTime;
@@ -1568,29 +1568,29 @@ begin
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
 end;
 
-procedure TtiTestCase.CheckDeletionFromDatabase(const AListClass: TtiObjectClass);
-var
-  LList: TtiObjectList;
-begin
-  LList:= AListClass.Create as TtiObjectList;
-  try
-    LList.Read;
-    CheckEquals(1, LList.Count);
-    LList.Items[0].Deleted:= True;
-    LList.Items[0].Save;
-    CheckObjectState(posDeleted, LList.Items[0]);
-  finally
-    LList.Free;
-  end;
-
-  LList:= AListClass.Create as TtiObjectList;
-  try
-    LList.Read;
-    CheckEquals(0, LList.Count);
-  finally
-    LList.Free;
-  end;
-end;
+//procedure TtiTestCase.CheckDeletionFromDatabase(const AListClass: TtiObjectClass);
+//var
+//  LList: TtiObjectList;
+//begin
+//  LList:= AListClass.Create as TtiObjectList;
+//  try
+//    LList.Read;
+//    CheckEquals(1, LList.Count);
+//    LList.Items[0].Deleted:= True;
+//    LList.Items[0].Save;
+//    CheckObjectState(posDeleted, LList.Items[0]);
+//  finally
+//    LList.Free;
+//  end;
+//
+//  LList:= AListClass.Create as TtiObjectList;
+//  try
+//    LList.Read;
+//    CheckEquals(0, LList.Count);
+//  finally
+//    LList.Free;
+//  end;
+//end;
 
 procedure TtiTestCase.CheckEquals(const AExpected: string; AActual: integer);
 begin
@@ -1629,8 +1629,8 @@ procedure TtiTestCase.CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject;
 var
   LSaved: string;
 begin
-  Assert(AData1.TestValid, cTIInvalidObjectError);
-  Assert(AData2.TestValid, cTIInvalidObjectError);
+  Assert(AData1.TestValid, CTIErrorInvalidObject);
+  Assert(AData2.TestValid, CTIErrorInvalidObject);
   CheckEquals(True, AData1.Equals(AData2));
   LSaved:= AData1.PropValue[APropName];
   AData1.PropValue[APropName]:= ANewValue;
@@ -1643,8 +1643,8 @@ procedure TtiTestCase.CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject;
 var
   LSaved: Real;
 begin
-  Assert(AData1.TestValid, cTIInvalidObjectError);
-  Assert(AData2.TestValid, cTIInvalidObjectError);
+  Assert(AData1.TestValid, CTIErrorInvalidObject);
+  Assert(AData2.TestValid, CTIErrorInvalidObject);
   CheckEquals(True, AData1.Equals(AData2));
   LSaved:= AData1.PropValue[APropName];
   AData1.PropValue[APropName]:= ANewValue;
@@ -1661,7 +1661,7 @@ var
   LErrors: TtiObjectErrors;
   LErrorProperty: string;
 begin
-  Assert(AData.TestValid, cTIInvalidObjectError);
+  Assert(AData.TestValid, CTIErrorInvalidObject);
   if AErrorProperty = '' then
     LErrorProperty:= APropName
   else
@@ -1692,7 +1692,7 @@ var
   LErrors: TtiObjectErrors;
   LErrorProperty: string;
 begin
-  Assert(AData.TestValid, cTIInvalidObjectError);
+  Assert(AData.TestValid, CTIErrorInvalidObject);
   if AErrorProperty = '' then
     LErrorProperty:= APropName
   else
@@ -1723,7 +1723,7 @@ var
   LErrors: TtiObjectErrors;
   LErrorProperty: string;
 begin
-  Assert(AData.TestValid, cTIInvalidObjectError);
+  Assert(AData.TestValid, CTIErrorInvalidObject);
   if AErrorProperty = '' then
     LErrorProperty:= APropName
   else

@@ -28,7 +28,7 @@ type
     procedure   Add(AObject: TClientAbs); reintroduce;
     procedure   Clear; override;
     procedure   Read; override;
-  published
+    procedure   Save; override;
   end;
 
   TClientAbs = class(TtiObject)
@@ -107,6 +107,11 @@ begin
   inherited;
   Log('Time to load ' + IntToStr(Count) + ' Clients: ' +
       IntToStr(GetTickCount - lNow));
+end;
+
+procedure TClients.Save;
+begin
+  inherited;
 end;
 
 procedure TClients.SetItems(i: integer; const Value: TClientAbs);

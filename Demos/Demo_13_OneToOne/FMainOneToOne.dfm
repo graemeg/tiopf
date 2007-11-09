@@ -1,9 +1,9 @@
 object FormMainInheritance: TFormMainInheritance
   Left = 297
   Top = 107
-  Width = 548
-  Height = 377
   Caption = 'FormMainInheritance'
+  ClientHeight = 343
+  ClientWidth = 540
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,6 +14,9 @@ object FormMainInheritance: TFormMainInheritance
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    540
+    343)
   PixelsPerInch = 96
   TextHeight = 13
   object Button2: TButton
@@ -69,6 +72,7 @@ object FormMainInheritance: TFormMainInheritance
     VT.Width = 406
     VT.Height = 273
     VT.Align = alClient
+    VT.Colors.UnfocusedColor = clMedGray
     VT.Header.AutoSizeIndex = 0
     VT.Header.Font.Charset = DEFAULT_CHARSET
     VT.Header.Font.Color = clWindowText

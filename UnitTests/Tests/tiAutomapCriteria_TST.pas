@@ -28,7 +28,7 @@ type
 
   TTestAutomappingCriteria = class(TtiOPFTestCase)
   private
-    procedure InsertTIOPFTestData;
+    procedure InserTtiObjectListForTesting;
     function  TestIntToFloat(pInt : Integer): extended;
     function  TestIntToDate(pInt : Integer): TDateTime;
     function  TestIntToBool(pInt : Integer): Boolean;        
@@ -75,14 +75,14 @@ const
 
 procedure TTestAutomappingCriteria.CollectionReadAllNoCriteria;
 var
-  lData : TtiOPFTestData;
+  lData : TtiObjectListForTesting;
   i : integer;
   j : integer;
   lGroupVal : integer;
   lItemVal, lOID : integer;
 begin
-  InsertTIOPFTestData;
-  lData := TtiOPFTestData.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListForTesting.Create;
 
   TPerCriteria(lData.Criteria).ClearAll;
 
@@ -115,13 +115,13 @@ end;
 
 procedure TTestAutomappingCriteria.CollectionReadStringCriteria;
 var
-  lData : TtiOPFTestData;
+  lData : TtiObjectListForTesting;
   j : integer;
   lGroupVal : integer;
   lItemVal, lItemOid : integer;
 begin
-  InsertTIOPFTestData;
-  lData := TtiOPFTestData.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListForTesting.Create;
 
   try
     TPerCriteria(lData.Criteria).ClearAll;
@@ -153,11 +153,11 @@ end;
 
 procedure TTestAutomappingCriteria.ItemsNoCriteria;
 var
-  lData : TtiOPFTestGroup;
+  lData : TtiObjectListNestedForTesting;
   i : integer;
 begin
-  InsertTIOPFTestData;
-  lData := TtiOPFTestGroup.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListNestedForTesting.Create;
 
   try
     TPerCriteria(lData.Criteria).ClearAll;
@@ -174,10 +174,10 @@ end;
 
 procedure TTestAutomappingCriteria.ItemsOID;
 var
-  lData : TtiOPFTestGroup;
+  lData : TtiObjectListNestedForTesting;
 begin
-  InsertTIOPFTestData;
-  lData := TtiOPFTestGroup.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListNestedForTesting.Create;
   ;
 
   try
@@ -194,11 +194,11 @@ end;
 
 procedure TTestAutomappingCriteria.ItemsOwnerOID;
 var
-  lData : TtiOPFTestGroup;
+  lData : TtiObjectListNestedForTesting;
   i : integer;
 begin
-  InsertTIOPFTestData;
-  lData := TtiOPFTestGroup.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListNestedForTesting.Create;
   ;
 
   try
@@ -226,7 +226,7 @@ begin
 end;
 
 
-procedure TTestAutomappingCriteria.InsertTIOPFTestData;
+procedure TTestAutomappingCriteria.InserTtiObjectListForTesting;
   procedure _InsertGroup(pI : integer);
   var
     lQueryParams : TtiQueryParams;
@@ -284,7 +284,7 @@ end;
 
 procedure TTestAutomappingCriteria.ItemsIntegerInArray;
 var
-  lData : TtiOPFTestGroup;
+  lData : TtiObjectListNestedForTesting;
   i : integer;
   myIntArray: array[0..1] of Integer;
 const
@@ -293,8 +293,8 @@ begin
   myIntArray[0]:= 2;
   myIntArray[1]:= 4;
 
-  InsertTIOPFTestData;
-  lData := TtiOPFTestGroup.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListNestedForTesting.Create;
 
   try
     TPerCriteria(lData.Criteria).AddIn('IntField', myIntArray);
@@ -316,11 +316,11 @@ end;
 
 procedure TTestAutomappingCriteria.ItemsStringLike;
 var
-  lData : TtiOPFTestGroup;
+  lData : TtiObjectListNestedForTesting;
   i : integer;
 begin
-  InsertTIOPFTestData;
-  lData := TtiOPFTestGroup.Create;
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListNestedForTesting.Create;
 
   try
     TPerCriteria(lData.Criteria).AddLike('NotesField', '%<3>%');

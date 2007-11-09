@@ -153,7 +153,7 @@ type
 
   function TtiPooledDatabase.MustRemoveItemFromPool(AListCount: Integer): Boolean;
   begin
-    Assert(Data.TestValid(TtiDatabase), cTIInvalidObjectError);
+    Assert(Data.TestValid(TtiDatabase), CTIErrorInvalidObject);
     result :=
       (Inherited MustRemoveItemFromPool(AListCount)) or
       ((Data as TtiDatabase).ErrorInLastCall);
@@ -166,7 +166,7 @@ end;
 
 procedure TtiDBConnectionPool.UnLock(const ADatabase: TtiDatabase);
 begin
-  Assert(ADatabase.TestValid, cTIInvalidObjectError);
+  Assert(ADatabase.TestValid, CTIErrorInvalidObject);
   Assert(not ADatabase.InTransaction, 'Database in transaction immediately before being unlocked in DBConnectionPool.');
   inherited UnLock(ADatabase);
 end;
@@ -199,7 +199,7 @@ end;
 constructor TtiDBConnectionPools.Create(const APersistenceLayer: TtiBaseObject);
 begin
   inherited Create;
-  Assert(APersistenceLayer.TestValid(TtiPersistenceLayer, True), cTIInvalidObjectError);
+  Assert(APersistenceLayer.TestValid(TtiPersistenceLayer, True), CTIErrorInvalidObject);
   FPersistenceLayer:= APersistenceLayer;
   FList := TObjectList.Create;
   FCritSect:= TCriticalSection.Create;
@@ -286,7 +286,7 @@ begin
   FCritSect.Enter;
   try
     LDBConnectionPool := Find(ADatabaseAlias);
-    Assert(LDBConnectionPool.TestValid(TtiDBConnectionPool, True), cErrorTIPerObjAbsTestValid);
+    Assert(LDBConnectionPool.TestValid(TtiDBConnectionPool, True), CTIErrorInvalidObject);
     if LDBConnectionPool = nil then
       raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [ADatabaseAlias]);
     LDBConnectionPool.UnLock(ADatabase);
@@ -318,8 +318,8 @@ function TtiDBConnectionPool.DetailsAsString: string;
 var
   LPersistenceLayer : TtiPersistenceLayer;
 begin
-  Assert(DBConnectionPools.TestValid(TtiDBConnectionPools), cTIInvalidObjectError);
-  Assert(DBConnectionPools.PersistenceLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
+  Assert(DBConnectionPools.TestValid(TtiDBConnectionPools), CTIErrorInvalidObject);
+  Assert(DBConnectionPools.PersistenceLayer.TestValid(TtiPersistenceLayer), CTIErrorInvalidObject);
   LPersistenceLayer := DBConnectionPools.PersistenceLayer as TtiPersistenceLayer;
   result :=
     'Persistence layer:   ' + LPersistenceLayer.PersistenceLayerName + Cr +

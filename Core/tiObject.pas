@@ -25,7 +25,6 @@ const
   cErrorFieldNotAssigned = 'Field <%s> is null. OID=%d';
   cErrorFieldTooLong = 'Field <%s> field too long. Allowed length %d, current length %d';
   cErrorUnableToDetermineFieldName = 'Unable to determine field name on <%s>';
-  cErrorTIPerObjAbsTestValid = 'tiOPF Internal Error: TtiBaseObject.TestValid failed';
   cErrorSettingProperty      = 'Error setting property %s.%s Message %s';
   cErrorGettingProperty      = 'Error getting property %s.%s Message %s';
   cErrorInvalidObjectState   = 'Invalid ObjectState';
@@ -303,6 +302,39 @@ type
     function    GetPropValue(const APropName: string): Variant; virtual;
     procedure   SetPropValue(const APropName: string; const APropValue: Variant); virtual;
 
+    {: Read in the primary Key values only from the database for this object.
+       You must overide ReadPK and implement a call to the visitor manager (if you
+       are using hard coded visitors, or call inheried (if you are using automap.}
+    procedure   ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
+    {: Read in the primary Key values only from the database for this object.
+       You must overide ReadPK and implement a call to the visitor manager (if you
+       are using hard coded visitors, or call inheried (if you are using automap.}
+    procedure   ReadPK; overload; virtual;
+    {: Read this object, but no owned objects from the database
+       You must overide ReadPK and implement a call to the visitor manager (if you
+       are using hard coded visitors, or call inheried (if you are using automap.}
+    procedure   ReadThis(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
+    {: Read this object, but no owned objects from the database
+       You must overide ReadThis and implement a call to the visitor manager (if you
+       are using hard coded visitors, or call inheried (if you are using automap.}
+    procedure   ReadThis; overload;  virtual;
+    {: Read this object, along with any owned objects from the database
+       You must overide ReadThis and implement a call to the visitor manager (if you
+       are using hard coded visitors, or call inheried (if you are using automap.}
+    procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
+    {: Read this object, along with any owned objects from the database
+       You must overide Read and implement a call to the visitor manager (if you
+       are using hard coded visitors, or call inheried (if you are using automap.}
+    procedure   Read; overload;  virtual;
+    {: Updates the database with the current property values for this object.
+       You must overide Save and implement a call to the visitor manager (if you
+       are using hard coded visitors, or call inheried (if you are using automap.}
+    procedure   Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
+    {: Updates the database with the current property values for this object.
+       You must overide Save and implement a call to the visitor manager (if you
+       are using hard coded visitors, or call inheried (if you are using automap.}
+    procedure   Save; overload; virtual;
+
   public
     {: Creates a new instance of the class}
     constructor Create ; override;
@@ -375,21 +407,6 @@ type
     function    IsValid(const AStrings: TStrings; AAppend: boolean): boolean; overload; // Don't override this one
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
     function    IsValid: boolean; overload; // Don't override this one
-    {: Read in the primary Key values only from the database for this object.}
-    procedure   ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
-    {: Read in the primary Key values only from the database for this object.}
-    procedure   ReadPK; overload; virtual;
-    {: Read this object, but no owned objects from the database }
-    procedure   ReadThis(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
-    {: Read this object, but no owned objects from the database }
-    procedure   ReadThis; overload;  virtual;
-    {: Read this object, along with any owned objects from the database }
-    procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
-    {: Read this object, along with any owned objects from the database }
-    procedure   Read; overload;  virtual;
-    {: Updates the database with the current property values for this object.}
-    procedure   Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
-    procedure   Save; overload; virtual;
 
     procedure   AssignFieldList(var AFieldList: TtiFieldList);
     {: ForceAsCreate will get a new OID, and set ObjectState := posCreate}
@@ -801,7 +818,7 @@ var
   lFields : TStringList;
 begin
   Assert(AStream<>nil, 'AStream not assigned');
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AList.TestValid, CTIErrorInvalidObject);
   Assert(AList.Count > 0, 'AList.Count = 0');
   lFields := TStringList.Create;
   try
@@ -819,7 +836,7 @@ procedure tiListToCSV(AList: TtiObjectList;
 var
   lStream   : TFileStream;
 begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AList.TestValid, CTIErrorInvalidObject);
   Assert(AFileName<>'', 'AFileName not assigned');
   Assert(AColsSelected<>nil, 'AColsSelected not assigned');
 
@@ -837,7 +854,7 @@ var
   lStream   : TFileStream;
   lFields: TStringList;
 begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AList.TestValid, CTIErrorInvalidObject);
   Assert(AFileName<>'', 'AFileName not assigned');
   Assert(AList.Count > 0, 'AList.Count = 0');
   lFields:= TStringList.Create;
@@ -1021,8 +1038,8 @@ end;
 
 procedure TtiObject.AssignPublicProps(ASource : TtiObject);
 begin
-  Assert(ASource.TestValid(TtiObject), cTIInvalidObjectError);
-  Assert(ASource.Owner.TestValid(TtiObject, true), cTIInvalidObjectError);
+  Assert(ASource.TestValid(TtiObject), CTIErrorInvalidObject);
+  Assert(ASource.Owner.TestValid(TtiObject, true), CTIErrorInvalidObject);
   {$IFDEF OID_AS_INT64}
     OID := ASource.OID;
   {$ELSE}
@@ -1113,7 +1130,7 @@ type
   var
     LVisited: TtiObject;
   begin
-    Assert(AVisited.TestValid(TtiObject), cTIInvalidObjectError);
+    Assert(AVisited.TestValid(TtiObject), CTIErrorInvalidObject);
     LVisited:= AVisited as TtiObject;
     result := LVisited.ObjectState <> posDeleted;
   end;
@@ -1129,8 +1146,8 @@ type
   var
     LVisited: TtiObject;
   begin
-    Assert(ADerivedParent.TestValid(TtiObject, True), cTIInvalidObjectError);
-    Assert(AVisited.TestValid(TtiObject), cTIInvalidObjectError);
+    Assert(ADerivedParent.TestValid(TtiObject, True), CTIErrorInvalidObject);
+    Assert(AVisited.TestValid(TtiObject), CTIErrorInvalidObject);
     LVisited:= AVisited as TtiObject;
     result:= (ADerivedParent = nil) or
       (ADerivedParent = LVisited.Owner)
@@ -2573,7 +2590,7 @@ end;
 
 function TtiObject.IsValid(const AErrors: TtiObjectErrors): boolean;
 begin
-  Assert(AErrors.TestValid(TtiObjectErrors), cTIInvalidObjectError);
+  Assert(AErrors.TestValid(TtiObjectErrors), CTIErrorInvalidObject);
   result := true;
   AErrors.Clear;
 end;
@@ -2906,7 +2923,7 @@ end;
 
 function TtiFieldAbs.IsValidValue(const AErrors: TtiObjectErrors): Boolean;
 begin
-  Assert(Owner.TestValid(TtiObject), cTIInvalidObjectError);
+  Assert(Owner.TestValid(TtiObject), CTIErrorInvalidObject);
   Result := (NullValidation = nvAllowNull) or (not IsNull);
   if Assigned(AErrors) and (not Result) then
     AErrors.AddError(FieldName,
@@ -2926,7 +2943,7 @@ end;
 
 procedure TtiFieldString.Assign(AAssignFrom: TtiFieldAbs);
 begin
-  Assert(AAssignFrom.TestValid(TtiFieldString), cErrorTIPerObjAbsTestValid);
+  Assert(AAssignFrom.TestValid(TtiFieldString), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
     IsNull:= true
   else
@@ -2964,7 +2981,7 @@ end;
 
 function TtiFieldString.Equals(ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert(ACompareWith.TestValid(TtiFieldString), cErrorTIPerObjAbsTestValid);
+  Assert(ACompareWith.TestValid(TtiFieldString), CTIErrorInvalidObject);
   Result :=
     (IsNull = ACompareWith.IsNull) and
     (AsString = ACompareWith.AsString);
@@ -2983,7 +3000,7 @@ end;
 
 procedure TtiFieldInteger.Assign(AAssignFrom: TtiFieldAbs);
 begin
-  Assert(AAssignFrom.TestValid(TtiFieldInteger), cErrorTIPerObjAbsTestValid);
+  Assert(AAssignFrom.TestValid(TtiFieldInteger), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
     IsNull:= true
   else
@@ -3037,7 +3054,7 @@ end;
 
 function TtiFieldInteger.Equals(ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert(ACompareWith.TestValid(TtiFieldAbs), cErrorTIPerObjAbsTestValid);
+  Assert(ACompareWith.TestValid(TtiFieldAbs), CTIErrorInvalidObject);
   Result :=
     (IsNull = ACompareWith.IsNull) and
     (AsInteger = (ACompareWith as TtiFieldInteger).AsInteger);
@@ -3047,7 +3064,7 @@ end;
 
 procedure TtiFieldFloat.Assign(AAssignFrom: TtiFieldAbs);
 begin
-  Assert(AAssignFrom.TestValid(TtiFieldFloat), cErrorTIPerObjAbsTestValid);
+  Assert(AAssignFrom.TestValid(TtiFieldFloat), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
     IsNull:= true
   else
@@ -3084,7 +3101,7 @@ var
   lF1: extended;
   lF2: extended;
 begin
-  Assert(ACompareWith.TestValid(TtiFieldFloat), cErrorTIPerObjAbsTestValid);
+  Assert(ACompareWith.TestValid(TtiFieldFloat), CTIErrorInvalidObject);
   lF1 := AsFloat;
   lF2 := (ACompareWith as TtiFieldFloat).AsFloat;
   Result :=
@@ -3125,7 +3142,7 @@ end;
 
 procedure TtiFieldBoolean.Assign(AAssignFrom: TtiFieldAbs);
 begin
-  Assert(AAssignFrom.TestValid(TtiFieldBoolean), cErrorTIPerObjAbsTestValid);
+  Assert(AAssignFrom.TestValid(TtiFieldBoolean), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
     IsNull:= true
   else
@@ -3183,7 +3200,7 @@ end;
 
 function TtiFieldBoolean.Equals(ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert(ACompareWith.TestValid(TtiFieldBoolean), cErrorTIPerObjAbsTestValid);
+  Assert(ACompareWith.TestValid(TtiFieldBoolean), CTIErrorInvalidObject);
   Result :=
     (IsNull = ACompareWith.IsNull) and
     (AsBoolean = (ACompareWith as TtiFieldBoolean).AsBoolean);
@@ -3193,7 +3210,7 @@ end;
 
 procedure TtiFieldDateTime.Assign(AAssignFrom: TtiFieldAbs);
 begin
-  Assert(AAssignFrom.TestValid(TtiFieldDateTime), cErrorTIPerObjAbsTestValid);
+  Assert(AAssignFrom.TestValid(TtiFieldDateTime), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
     IsNull:= true
   else
@@ -3293,7 +3310,7 @@ var
 begin
   if FFieldName = '' then
   begin
-    Assert(Owner.TestValid(TtiObject), cTIInvalidObjectError);
+    Assert(Owner.TestValid(TtiObject), CTIErrorInvalidObject);
     lsl:= TStringList.Create;
     try
       tiGetPropertyNames(Owner,lsl, [tkClass]);
@@ -3314,7 +3331,7 @@ end;
 
 function TtiFieldDateTime.Equals(ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert(ACompareWith.TestValid(TtiFieldDateTime), cErrorTIPerObjAbsTestValid);
+  Assert(ACompareWith.TestValid(TtiFieldDateTime), CTIErrorInvalidObject);
   Result :=
     (IsNull = ACompareWith.IsNull) and
     (SameValue(AsDateTime, (ACompareWith as TtiFieldDateTime).AsDateTime, cdtOneSecond/2));
@@ -3660,7 +3677,7 @@ var
   i: Integer;
   L: TtiObject;
 begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AList.TestValid, CTIErrorInvalidObject);
   Assert(Assigned(AInBothAndEquals),    'AInBothAndEquals not assigned');
   Assert(Assigned(AInBothAndNotEquals), 'AInBothAndNotEqualsnot assigned');
   Assert(Assigned(AIn1Only),            'AIn1Onlynot assigned');
@@ -3783,7 +3800,7 @@ end;
 
 function TtiFieldStringMethod.Equals(ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert(ACompareWith.TestValid(TtiFieldString), cErrorTIPerObjAbsTestValid);
+  Assert(ACompareWith.TestValid(TtiFieldString), CTIErrorInvalidObject);
   Result :=(AsString = ACompareWith.AsString);
 end;
 
@@ -3830,3 +3847,5 @@ begin
 end;
 
 end.
+
+

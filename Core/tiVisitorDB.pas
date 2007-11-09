@@ -195,7 +195,7 @@ end;
 
 procedure TtiObjectVisitor.Final(const AVisited: TtiObject);
 begin
-  Assert(AVisited.TestValid, cTIInvalidObjectError);
+  Assert(AVisited.TestValid, CTIErrorInvalidObject);
   case AVisited.ObjectState of
     posDeleted: ; // Do nothing
     posDelete: AVisited.ObjectState := posDeleted;
@@ -288,8 +288,8 @@ end;
 
 procedure TtiObjectVisitorController.AfterExecuteVisitorGroupError;
 begin
-  Assert(FDatabase.TestValid, cTIInvalidObjectError);
-  Assert(FPersistenceLayer.TestValid, cTIInvalidObjectError);
+  Assert(FDatabase.TestValid, CTIErrorInvalidObject);
+  Assert(FPersistenceLayer.TestValid, CTIErrorInvalidObject);
   FDatabase.RollBack;
   FPersistenceLayer.DBConnectionPools.UnLock(DatabaseName, FDatabase);
   FDatabase := nil;
@@ -299,8 +299,8 @@ procedure TtiObjectVisitorController.AfterExecuteVisitor(const AVisitor: TtiVisi
 var
   LVisitor: TtiObjectVisitor;
 begin
-  Assert(AVisitor.TestValid(TtiObjectVisitor), cTIInvalidObjectError);
-  Assert(FDatabase.TestValid, cTIInvalidObjectError);
+  Assert(AVisitor.TestValid(TtiObjectVisitor), CTIErrorInvalidObject);
+  Assert(FDatabase.TestValid, CTIErrorInvalidObject);
   // ToDo: Refactor with SetDatabase method replacing AttachDatabase & DetachDatabase
   LVisitor          := AVisitor as TtiObjectVisitor;
   LVisitor.Query.DetachDatabase;
@@ -318,19 +318,19 @@ end;
 
 function TtiObjectVisitorController.DatabaseName: string;
 begin
-  Assert(Config.TestValid(TtiObjectVisitorControllerConfig), cTIInvalidObjectError);
+  Assert(Config.TestValid(TtiObjectVisitorControllerConfig), CTIErrorInvalidObject);
   Result := (Config as TtiObjectVisitorControllerConfig).DatabaseName;
 end;
 
 function TtiObjectVisitorController.PersistenceLayerName: string;
 begin
-  Assert(Config.TestValid(TtiObjectVisitorControllerConfig), cTIInvalidObjectError);
+  Assert(Config.TestValid(TtiObjectVisitorControllerConfig), CTIErrorInvalidObject);
   Result := (Config as TtiObjectVisitorControllerConfig).PersistenceLayerName;
 end;
 
 function TtiObjectVisitorController.TIOPFManager: TtiBaseObject;
 begin
-  Assert(VisitorManager.TestValid, cTIInvalidObjectError);
+  Assert(VisitorManager.TestValid, CTIErrorInvalidObject);
   Result := VisitorManager.TIOPFManager;
 end;
 
@@ -338,8 +338,8 @@ procedure TtiObjectVisitorController.BeforeExecuteVisitor(const AVisitor: TtiVis
 var
   LVisitor: TtiObjectVisitor;
 begin
-  Assert(AVisitor.TestValid(TtiObjectVisitor), cTIInvalidObjectError);
-  Assert(FDatabase.TestValid, cTIInvalidObjectError);
+  Assert(AVisitor.TestValid(TtiObjectVisitor), CTIErrorInvalidObject);
+  Assert(FDatabase.TestValid, CTIErrorInvalidObject);
   LVisitor          := AVisitor as TtiObjectVisitor;
   LVisitor.Database := FDatabase;
   LVisitor.Query    := FDatabase.CreateTIQuery;
@@ -485,7 +485,7 @@ end;
 
 function TtiObjectVisitorControllerConfig.TIOPFManager: TtiBaseObject;
 begin
-  Assert(VisitorManager.TestValid, cTIInvalidObjectError);
+  Assert(VisitorManager.TestValid, CTIErrorInvalidObject);
   Result := VisitorManager.TIOPFManager;
 end;
 

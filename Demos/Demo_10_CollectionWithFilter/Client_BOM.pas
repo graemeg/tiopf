@@ -22,7 +22,10 @@ type
     procedure Read; override;
   end;
 
-  TClients = class(TtiObjectList);
+  TClients = class(TtiObjectList)
+  public
+    procedure Save; override;
+  end;
 
   TClient = class(TtiObject)
   private
@@ -57,9 +60,16 @@ end;
 
 procedure TClientsLike.Read;
 begin
-  Assert(FClients.TestValid, cTIInvalidObjectError);
+  Assert(FClients.TestValid, CTIErrorInvalidObject);
   Assert(ClientNameLike<>'', 'ClientNameLike not assigned');
   FClients.Clear;
+  inherited;
+end;
+
+{ TClients }
+
+procedure TClients.Save;
+begin
   inherited;
 end;
 

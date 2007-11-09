@@ -1339,7 +1339,7 @@ var
   lParam : TtiQueryParamAbs;
 begin
   lParam := FindParamByName(AName);
-  Assert(lParam.TestValid(TtiQueryParamAbs), cTIInvalidObjectError);
+  Assert(lParam.TestValid(TtiQueryParamAbs), CTIErrorInvalidObject);
   result := lParam.GetValueAsString;
 end;
 
@@ -1715,7 +1715,7 @@ var
   lTypeKind : TtiTypeKind;
   lPropType : TTypeKind;
 begin
-  Assert(AFieldMetaData.TestValid(TtiObject), cTIInvalidObjectError);
+  Assert(AFieldMetaData.TestValid(TtiObject), CTIErrorInvalidObject);
   Assert(APropName <> '', 'APropName not assigned');
   Assert(pParamName <> '', 'pParamName not assigned');
   Assert(IsPublishedProp(AFieldMetaData, APropName), APropName + ' is not a published property on ' + AFieldMetaData.ClassName);
@@ -1767,7 +1767,7 @@ var
   lParam : TtiQueryParamAbs;
 begin
   lParam := FindParamByName(AName);
-  Assert(lParam.TestValid(TtiQueryParamBoolean), cTIInvalidObjectError);
+  Assert(lParam.TestValid(TtiQueryParamBoolean), CTIErrorInvalidObject);
   result := TtiQueryParamBoolean(lParam).GetValueAsBoolean;
 end;
 
@@ -1776,7 +1776,7 @@ var
   lParam : TtiQueryParamAbs;
 begin
   lParam := FindParamByName(AName);
-  Assert(lParam.TestValid(TtiQueryParamDateTime), cTIInvalidObjectError);
+  Assert(lParam.TestValid(TtiQueryParamDateTime), CTIErrorInvalidObject);
   result := TtiQueryParamDateTime(lParam).GetValueAsDateTime;
 end;
 
@@ -1785,7 +1785,7 @@ var
   lParam : TtiQueryParamAbs;
 begin
   lParam := FindParamByName(AName);
-  Assert(lParam.TestValid(TtiQueryParamFloat), cTIInvalidObjectError);
+  Assert(lParam.TestValid(TtiQueryParamFloat), CTIErrorInvalidObject);
   result := TtiQueryParamFloat(lParam).GetValueAsFloat;
 end;
 
@@ -1794,7 +1794,7 @@ var
   lParam : TtiQueryParamAbs;
 begin
   lParam := FindParamByName(AName);
-  Assert(lParam.TestValid(TtiQueryParamInteger), cTIInvalidObjectError);
+  Assert(lParam.TestValid(TtiQueryParamInteger), CTIErrorInvalidObject);
   result := TtiQueryParamInteger(lParam).GetValueAsInteger;
 end;
 
@@ -1803,7 +1803,7 @@ var
   lParam : TtiQueryParamAbs;
 begin
   lParam := FindParamByName(AName);
-  Assert(lParam.TestValid(TtiQueryParamStream), cTIInvalidObjectError);
+  Assert(lParam.TestValid(TtiQueryParamStream), CTIErrorInvalidObject);
   result := TtiQueryParamStream(lParam).GetValueAsStream;
 end;
 
@@ -1817,31 +1817,31 @@ end;
 
 procedure TtiQueryParams.AssignFromFieldString(const AField: TtiFieldString; const AName: string);
 begin
-  Assert(AField.TestValid, cTIInvalidObjectError);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   SetValueAsString(AName, AField.AsString);
 end;
 
 procedure TtiQueryParams.AssignFromFieldBoolean(const AField: TtiFieldBoolean; const AName: string);
 begin
-  Assert(AField.TestValid, cTIInvalidObjectError);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   SetValueAsBoolean(AName, AField.AsBoolean);
 end;
 
 procedure TtiQueryParams.AssignFromFieldDateTime(const AField: TtiFieldDateTime; const AName: string);
 begin
-  Assert(AField.TestValid, cTIInvalidObjectError);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   SetValueAsDateTime(AName, AField.AsDateTime);
 end;
 
 procedure TtiQueryParams.AssignFromFieldFloat(const AField: TtiFieldFloat;const AName: string);
 begin
-  Assert(AField.TestValid, cTIInvalidObjectError);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   SetValueAsFloat(AName, AField.AsFloat);
 end;
 
 procedure TtiQueryParams.AssignFromFieldInteger(const AField: TtiFieldInteger; const AName: string);
 begin
-  Assert(AField.TestValid, cTIInvalidObjectError);
+  Assert(AField.TestValid, CTIErrorInvalidObject);
   SetValueAsInteger(AName, AField.AsInteger);
 end;
 
@@ -1882,7 +1882,7 @@ end;
 
 procedure TtiQueryParamString.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   AQuery.ParamAsString[Name]:= GetValueAsString;
 end;
 
@@ -1906,7 +1906,7 @@ end;
 
 procedure TtiQueryParamInteger.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   AQuery.ParamAsInteger[Name]:= GetValueAsInteger;
 end;
 
@@ -1959,7 +1959,7 @@ end;
 
 procedure TtiQueryParamFloat.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   AQuery.ParamAsFloat[Name]:= GetValueAsFloat;
 end;
 
@@ -1997,7 +1997,7 @@ end;
 
 procedure TtiQueryParamDateTime.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   AQuery.ParamAsDateTime[Name]:= GetValueAsDateTime;
 end;
 
@@ -2035,7 +2035,7 @@ end;
 
 procedure TtiQueryParamBoolean.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   AQuery.ParamAsBoolean[Name]:= GetValueAsBoolean;
 end;
 
@@ -2075,7 +2075,7 @@ end;
 
 procedure TtiQueryParamStream.AssignToTIQuery(const AQuery: TtiQuery);
 begin
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   AQuery.AssignParamFromStream(Name, FStream);
 end;
 
@@ -2323,6 +2323,7 @@ begin
 end;
 
 end.
+
 
 
 

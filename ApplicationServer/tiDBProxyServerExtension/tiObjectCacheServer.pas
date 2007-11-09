@@ -120,7 +120,7 @@ class function TtiOjectCacheServer.Execute(const AParams: TtiCGIParams; const AC
 var
   L: TtiOjectCacheServer;
 begin
-  Assert(AParams.TestValid(TtiCGIParams, True), cTIInvalidObjectError);
+  Assert(AParams.TestValid(TtiCGIParams, True), CTIErrorInvalidObject);
   L:= Create(AParams, ACacheDirectoryRoot);
   try
     result:= L.DoExecute;

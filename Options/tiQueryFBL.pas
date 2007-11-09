@@ -353,7 +353,7 @@ end;
 
 procedure TtiQueryFBL.SetActive(const AValue: boolean);
 begin
-  Assert(Database.TestValid(TtiDatabase), cTIInvalidObjectError);
+  Assert(Database.TestValid(TtiDatabase), CTIErrorInvalidObject);
   if AValue then
   begin
     FQuery.ExecSQL;

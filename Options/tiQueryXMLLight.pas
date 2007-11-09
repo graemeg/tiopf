@@ -94,7 +94,7 @@ uses
 
 procedure RegisterPersistenceLayer(const APersistenceLayers: TtiPersistenceLayers);
 begin
-  Assert(APersistenceLayers.TestValid, cTIInvalidObjectError);
+  Assert(APersistenceLayers.TestValid, CTIErrorInvalidObject);
   APersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerXMLLight);
 end;

@@ -1291,8 +1291,8 @@ var
   lval1: Variant;
   lval2: Variant;
 begin
-  Assert(pData1.TestValid(TtiObject), cTIInvalidObjectError);
-  Assert(pData2.TestValid(TtiObject), cTIInvalidObjectError);
+  Assert(pData1.TestValid(TtiObject), CTIErrorInvalidObject);
+  Assert(pData2.TestValid(TtiObject), CTIErrorInvalidObject);
 
   if pData1.PropType(pOrder.FieldName) = tiTKString then
     lVal1 := UpperCase(pData1.PropValue[pOrder.FieldName])
@@ -2047,7 +2047,7 @@ end;
 
 //procedure TtiCustomVirtualTree.SetSelectedData(const AValue: TtiObject);
 //begin
-//  Assert(AValue.TestValid(TtiObject), cTIInvalidObjectError);
+//  Assert(AValue.TestValid(TtiObject), CTIErrorInvalidObject);
 //  FVT.IterateSubtree(nil, SetSelectedDataIterateProc, AValue);
 //end;
 

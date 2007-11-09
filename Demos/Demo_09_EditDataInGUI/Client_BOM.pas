@@ -20,6 +20,8 @@ type
     function    GetItems(i: integer): TClient; reintroduce;
     procedure   SetItems(i: integer; const Value: TClient); reintroduce;
   public
+    procedure   Read; override;
+    procedure   Save; override;
     property    Items[i:integer]: TClient read GetItems write SetItems;
     procedure   Add(AObject: TClient); reintroduce;
   published
@@ -66,6 +68,16 @@ end;
 function TClients.GetItems(i: integer): TClient;
 begin
   result:= TClient(inherited GetItems(i));
+end;
+
+procedure TClients.Read;
+begin
+  inherited;
+end;
+
+procedure TClients.Save;
+begin
+  inherited;
 end;
 
 procedure TClients.SetItems(i: integer; const Value: TClient);

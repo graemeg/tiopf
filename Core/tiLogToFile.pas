@@ -56,7 +56,7 @@ implementation
 uses
    tiObject
   ,tiUtils
-//  ,tiConstants
+  ,tiConstants
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
@@ -258,7 +258,7 @@ begin
       LFileStream.Seek(0, soFromEnd);
       for i := 0 to ListWorking.Count - 1 do
       begin
-        Assert(ListWorking.Items[i].TestValid(TtiLogEvent), cErrorTIPerObjAbsTestValid);
+        Assert(ListWorking.Items[i].TestValid(TtiLogEvent), CTIErrorInvalidObject);
         LLine := ListWorking.Items[i].AsLeftPaddedString + #13 + #10;
         LFileStream.Write(PChar(LLine)^, Length(LLine));
       end;

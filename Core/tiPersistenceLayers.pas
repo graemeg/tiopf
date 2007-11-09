@@ -262,7 +262,7 @@ end;
 
 function TtiPersistenceLayer.GetDefaultDBConnectionPool: TtiDBConnectionPool;
 begin
-  Assert(FDefaultDBConnectionPool.TestValid(TtiDBConnectionPool, true), cTIInvalidObjectError);
+  Assert(FDefaultDBConnectionPool.TestValid(TtiDBConnectionPool, true), CTIErrorInvalidObject);
   if FDefaultDBConnectionPool <> nil then
   begin
     result := FDefaultDBConnectionPool;
@@ -276,7 +276,7 @@ begin
   end;
 
   result := DBConnectionPools.Items[0];
-  Assert(Result.TestValid(TtiDBConnectionPool), cTIInvalidObjectError);
+  Assert(Result.TestValid(TtiDBConnectionPool), CTIErrorInvalidObject);
 end;
 
 function TtiPersistenceLayer.GetOwner: TtiPersistenceLayers;
@@ -287,7 +287,7 @@ end;
 procedure TtiPersistenceLayer.SetDefaultDBConnectionName(const AValue: string);
 begin
   FDefaultDBConnectionPool := FDBConnectionPools.Find(AValue);
-  Assert(FDefaultDBConnectionPool.TestValid(TtiDBConnectionPool, true), cTIInvalidObjectError);
+  Assert(FDefaultDBConnectionPool.TestValid(TtiDBConnectionPool, true), CTIErrorInvalidObject);
 end;
 
 procedure TtiPersistenceLayer.SetOwner(const AValue: TtiPersistenceLayers);
@@ -422,7 +422,7 @@ begin
     raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToLoadPerLayerThatsNotLoaded, [LPackageID]);
 
   LPersistenceLayer := FindByPerLayerName(APersistenceLayerName);
-  Assert(LPersistenceLayer.TestValid, cTIInvalidObjectError);
+  Assert(LPersistenceLayer.TestValid, CTIErrorInvalidObject);
 
   LPersistenceLayer.DBConnectionPools.DisConnectAll;
   Log('Unloading persistence layer <' + LPersistenceLayer.PersistenceLayerName + '>', lsConnectionPool);
@@ -448,7 +448,7 @@ begin
   else
     lRegPerLayer := DefaultPerLayer;
 
-  Assert(lRegPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
+  Assert(lRegPerLayer.TestValid(TtiPersistenceLayer), CTIErrorInvalidObject);
 
   if ADBConnectionName <> '' then
     lDBConnectionName := ADBConnectionName
@@ -470,7 +470,7 @@ begin
   else
     lRegPerLayer := DefaultPerLayer;
 
-  Assert(lRegPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
+  Assert(lRegPerLayer.TestValid(TtiPersistenceLayer), CTIErrorInvalidObject);
 
   if ADBConnectionName <> '' then
     lDBConnectionName := ADBConnectionName
@@ -482,7 +482,7 @@ end;
 
 function TtiPersistenceLayers.GetDefaultPerLayer: TtiPersistenceLayer;
 begin
-  Assert(FDefaultPerLayer.TestValid(TtiPersistenceLayer, true), cTIInvalidObjectError);
+  Assert(FDefaultPerLayer.TestValid(TtiPersistenceLayer, true), CTIErrorInvalidObject);
   if FDefaultPerLayer <> nil then
   begin
     result := FDefaultPerLayer;
@@ -494,7 +494,7 @@ begin
     Exit; //==>
   end;
   FDefaultPerLayer := Items[0];
-  Assert(FDefaultPerLayer.TestValid(TtiPersistenceLayer), cTIInvalidObjectError);
+  Assert(FDefaultPerLayer.TestValid(TtiPersistenceLayer), CTIErrorInvalidObject);
   result := FDefaultPerLayer;
 end;
 

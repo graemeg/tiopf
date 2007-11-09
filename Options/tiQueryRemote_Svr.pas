@@ -284,7 +284,7 @@ procedure TtiQueryRemoteExec.DBRequestToQuery;
 var
   lQuery : TtiQueryXMLLight;
 begin
-  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError);
+  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), CTIErrorInvalidObject);
   lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(FDBRequest);
@@ -301,8 +301,8 @@ procedure TtiQueryRemoteExec.DBRequestToQueryParams;
 var
   lQuery : TtiQueryXMLLight;
 begin
-  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError);
-  Assert(FQueryParams.TestValid(TtiQueryTransParams), cTIInvalidObjectError);
+  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), CTIErrorInvalidObject);
+  Assert(FQueryParams.TestValid(TtiQueryTransParams), CTIErrorInvalidObject);
   lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(FDBRequest);
@@ -325,7 +325,7 @@ var
   lQuery : TtiQueryXMLLight;
   lCommandType : string;
 begin
-  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError);
+  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), CTIErrorInvalidObject);
   lQuery := TtiQueryXMLLight.Create;
   try
     lQuery.AttachDatabase(FDBRequest);
@@ -345,14 +345,14 @@ end;
 
 procedure TtiQueryRemoteExec.DoCommit;
 begin
-  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError);
+  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
   gStatefulDBConnectionPool.Commit(FTransactionID);
   FTransactionID := cNullTransactionID;
 end;
 
 procedure TtiQueryRemoteExec.DoRollBack;
 begin
-  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError);
+  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
   gStatefulDBConnectionPool.RollBack(FTransactionID);
   FTransactionID := cNullTransactionID;
 end;
@@ -365,16 +365,16 @@ var
   lStart : DWord;
   lSQL : string;
 begin
-  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError);
+  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
   Assert(FTransactionID <> '', 'TransactionID not assigned');
   lQuery := gTIOPFManager.DefaultPerLayer.tiQueryClass.Create;
   try
     lSavedDBConnectionHolder := gStatefulDBConnectionPool.FindSavedDBConnectionHolder(FTransactionID);
     lSavedDBConnectionHolder.InUse := true;
     try
-      Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
-      Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), cTIInvalidObjectError);
-      Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), cTIInvalidObjectError);
+      Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
+      Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
+      Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
       lDatabase := lSavedDBConnectionHolder.DBConnection;
       lQuery.AttachDatabase(lDatabase);
       FQueryParams.AssignToQuery(lQuery);
@@ -398,7 +398,7 @@ end;
 
 procedure TtiQueryRemoteExec.DoStartTransaction;
 begin
-  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), cTIInvalidObjectError);
+  Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
   FTransactionID :=
     gStatefulDBConnectionPool.StartTransaction(
       gTIOPFManager.DefaultDBConnectionName,
@@ -407,7 +407,7 @@ end;
 
 procedure TtiQueryRemoteExec.InsertResponseMessageData;
 begin
-  Assert(FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), cTIInvalidObjectError);
+  Assert(FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), CTIErrorInvalidObject);
   FXMLWriterMessage.AddTable(uXMLTags.TableNameResultMessage);
   FXMLWriterMessage.AddField(uXMLTags.FieldNameResultError, qfkString, 9999);
   FXMLWriterMessage.AddField(uXMLTags.FieldNameTransactionID, qfkString, 9999);
@@ -423,7 +423,7 @@ var
   lQuery : TtiQueryXMLLight;
   lMD : TtiDBMetaDataTable;
 begin
-  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), cTIInvalidObjectError);
+  Assert(FDBRequest.TestValid(TtiDatabaseXMLLight), CTIErrorInvalidObject);
   lMD := TtiDBMetaDataTable.Create;
   try
     lQuery := TtiQueryXMLLight.Create;
@@ -468,7 +468,7 @@ var
   lMD      : TtiDBMetaDataTable;
   i        : integer;
 begin
-  Assert(FXMLWriterData.TestValid(TtiDataBufferToXMLWriter), cTIInvalidObjectError);
+  Assert(FXMLWriterData.TestValid(TtiDataBufferToXMLWriter), CTIErrorInvalidObject);
   CreateResponseMetaDataTable;
 
   LDatabase := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
@@ -499,7 +499,7 @@ var
   lMD      : TtiDBMetaData;
   i        : integer;
 begin
-  Assert(FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), cTIInvalidObjectError);
+  Assert(FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), CTIErrorInvalidObject);
   CreateResponseMetaDataTable;
   LDatabase := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
   try
@@ -562,7 +562,7 @@ begin
     result.TransactionID   := NextTransID;
     result.DBConnection := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(ADBConnectionName);
     result.Owner := Self;
-    Assert(result.DBConnection.TestValid(TtiDatabase), cTIInvalidObjectError);
+    Assert(result.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
     FSavedDBConnections.Add(result);
     result.LastUsed      := now;
   finally
@@ -580,7 +580,7 @@ begin
   for i := 0 to FSavedDBConnections.Count - 1 do
   begin
     lSavedDBConnectionHolder := TSavedDBConnectionHolder(FSavedDBConnections.Items[i]);
-    Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
+    Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
     if (lSavedDBConnectionHolder.TransactionID = pTransactionID) then
     begin
       lSavedDBConnectionHolder.LastUsed := now;
@@ -600,13 +600,13 @@ end;
 
 procedure TtiStatefulDBConnectionPool.DoCommit(pDBConnection: TtiDatabase);
 begin
-  Assert(pDBConnection.TestValid(TtiDatabase), cTIInvalidObjectError);
+  Assert(pDBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
   pDBConnection.Commit;
 end;
 
 procedure TtiStatefulDBConnectionPool.DoRollBack(pDBConnection: TtiDatabase);
 begin
-  Assert(pDBConnection.TestValid(TtiDatabase), cTIInvalidObjectError);
+  Assert(pDBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
   pDBConnection.RollBack;
 end;
 
@@ -619,8 +619,8 @@ begin
   FCritSect.Enter;
   try
     lSavedDBConnection := FindSavedDBConnectionHolder(pTransactionID);
-    Assert(lSavedDBConnection.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
-    Assert(lSavedDBConnection.DBConnection.TestValid(TtiDatabase), cTIInvalidObjectError);
+    Assert(lSavedDBConnection.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
+    Assert(lSavedDBConnection.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
     AMethod(lSavedDBConnection.DBConnection);
     gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lSavedDBConnection.DBConnectionName,
                                  lSavedDBConnection.DBConnection);
@@ -641,8 +641,8 @@ var
   lSavedDBConnectionHolder : TSavedDBConnectionHolder;
 begin
   lSavedDBConnectionHolder := Lock(ADBConnectionName);
-  Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
-  Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), cTIInvalidObjectError);
+  Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
+  Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
   lSavedDBConnectionHolder.ComputerName := pComputerName;
   lSavedDBConnectionHolder.UserName := AUserName;
   result := lSavedDBConnectionHolder.TransactionID;
@@ -666,8 +666,8 @@ begin
   lSavedDBConnectionHolder := FindSavedDBConnectionHolder(pTransactionID);
   if lSavedDBConnectionHolder <> nil then
   begin
-    Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
-    Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), cTIInvalidObjectError);
+    Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
+    Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
     result := lSavedDBConnectionHolder.DBConnection;
   end else
     result := nil;
@@ -714,8 +714,8 @@ begin
     for i :=  Count - 1 downto 0 do
     begin
       lSavedDBConnectionHolder := FSavedDBConnections.Items[i] as TSavedDBConnectionHolder;
-      Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), cTIInvalidObjectError);
-      Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), cTIInvalidObjectError);
+      Assert(lSavedDBConnectionHolder.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
+      Assert(lSavedDBConnectionHolder.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
       if (not lSavedDBConnectionHolder.InUse) and
          (lSavedDBConnectionHolder.SecToTimeOut <= 0) then
       begin

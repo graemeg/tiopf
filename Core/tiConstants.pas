@@ -33,9 +33,11 @@ const
   // they will be separated by this character.
   cDatabaseNameDelim        = ';';
 
-  cTIInternalError = 'tiOPF Internal Error: ';
-  // Don't use this one, it's to allow old code to compile
-  cTIInvalidObjectError = cTIInternalError + ' TtiBaseObject.TestValid failed';
+  CTIErrorInternal = 'tiOPF Internal Error: ';
+  CTIErrorInvalidObject = CTIErrorInternal + ' TtiBaseObject.TestValid failed';
+  // Don't use these ones, they are to allow old code to compile
+  //CTIErrorInvalidObject = CTIErrorInvalidObject;
+  //CTIErrorInvalidObject = CTIErrorInvalidObject;
 
   // Constants for the remote persistence layer
   cLocalHost = 'http://localhost:80';
@@ -227,3 +229,5 @@ const
 implementation
 
 end.
+
+

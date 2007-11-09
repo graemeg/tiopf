@@ -5,23 +5,27 @@ unit tstPerFramework_BOM;
 interface
 
 uses
-  tiObject
-  ,
-  Classes
-  ,
-  tiOid
-  ,
+  tiObject,
+  Classes,
+  tiOid,
   tiFilteredObjectList;
 
 type
-  TtiOPFTestStringProp = class(TtiObject)
+
+  TtiObjectByPropertyForTestingAbs = class(TtiObject)
+  public
+    procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    procedure   Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+  end;
+
+  TtiOPFTestStringProp = class(TtiObjectByPropertyForTestingAbs)
   private
     FStrField: string;
   published
     property StrField: string read FStrField write FStrField;
   end;
 
-  TtiOPFTestOIdProp = class(TtiObject)
+  TtiOPFTestOIdProp = class(TtiObjectByPropertyForTestingAbs)
   private
     FOIDField: TOID;
     procedure SetOIDField(const Value: TOID);
@@ -32,7 +36,7 @@ type
     property OIDField: TOID read FOIDField write SetOIDField;
   end;
 
-  TtiOPFTestNotesProp = class(TtiObject)
+  TtiOPFTestNotesProp = class(TtiObjectByPropertyForTestingAbs)
   private
     FNotesField: string;
   published
@@ -40,16 +44,15 @@ type
   end;
 
 
-  TtiOPFTestIntegerProp = class(TtiObject)
+  TtiOPFTestIntegerProp = class(TtiObjectByPropertyForTestingAbs)
   private
     FIntField: integer;
   published
     property IntField: integer read FIntField write FIntField;
   end;
 
-
 {$IFDEF TESTINT64}
-  TtiOPFTestInt64Prop = class(TtiObject)
+  TtiOPFTestInt64Prop = class(TtiObjectByPropertyForTestingAbs)
   private
     FInt64Field: int64;
     function GetInt64Field: int64;
@@ -57,11 +60,9 @@ type
   published
     property Int64Field: int64 read GetInt64Field write SetInt64Field;
   end;
-
 {$ENDIF}
 
-
-  TtiOPFTestFloatProp = class(TtiObject)
+  TtiOPFTestFloatProp = class(TtiObjectByPropertyForTestingAbs)
   private
     FFloatField: extended;
   published
@@ -69,7 +70,7 @@ type
   end;
 
 
-  TtiOPFTestDateTimeProp = class(TtiObject)
+  TtiOPFTestDateTimeProp = class(TtiObjectByPropertyForTestingAbs)
   private
     FDateField: TDateTime;
   published
@@ -77,7 +78,7 @@ type
   end;
 
 
-  TtiOPFTestBooleanProp = class(TtiObject)
+  TtiOPFTestBooleanProp = class(TtiObjectByPropertyForTestingAbs)
   private
     FBoolField: boolean;
   published
@@ -85,7 +86,7 @@ type
   end;
 
 
-  TtiOPFTestStreamProp = class(TtiObject)
+  TtiOPFTestStreamProp = class(TtiObjectByPropertyForTestingAbs)
   private
     FStream: TStream;
   public
@@ -95,29 +96,27 @@ type
     property StreamField: TStream read FStream write FStream;
   end;
 
-
-  TtiOPFTestData  = class;
-  TtiOPFTestGroup = class;
+  TtiObjectListForTesting  = class;
+  TtiObjectListNestedForTesting = class;
   TtiOPFTestItem  = class;
 
-
-  TtiOPFTestData = class(TtiFilteredObjectList)  // used for Criteria tests
+  TtiObjectListForTesting = class(TtiFilteredObjectList)  // used for Criteria tests
   private
     function GetOIDAsInteger: integer;
   protected
-    function GetItems(i: integer): TtiOPFTestGroup; reintroduce;
-    procedure SetItems(i: integer; const AValue: TtiOPFTestGroup); reintroduce;
+    function GetItems(i: integer): TtiObjectListNestedForTesting; reintroduce;
+    procedure SetItems(i: integer; const AValue: TtiObjectListNestedForTesting); reintroduce;
   public
-    property Items[i: integer]: TtiOPFTestGroup read GetItems write SetItems;
-    procedure Add(AObject: TtiOPFTestGroup); reintroduce;
+    property Items[i: integer]: TtiObjectListNestedForTesting read GetItems write SetItems;
+    procedure Add(AObject: TtiObjectListNestedForTesting); reintroduce;
     procedure Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
     procedure ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    procedure Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
   published
     property OIDAsInteger: integer read GetOIDAsInteger;
   end;
 
-
-  TtiOPFTestGroup = class(TtiFilteredObjectList)  // used for Criteria tests
+  TtiObjectListNestedForTesting = class(TtiFilteredObjectList)  // used for Criteria tests
   private
     FIntField:   integer;
     FFloatField: extended;
@@ -127,13 +126,16 @@ type
     FNotesField: string;
     function GetOIDAsInteger: integer;
   protected
-    function GetOwner: TtiOPFTestData; reintroduce;
-    procedure SetOwner(const AValue: TtiOPFTestData); reintroduce;
+    function GetOwner: TtiObjectListForTesting; reintroduce;
+    procedure SetOwner(const AValue: TtiObjectListForTesting); reintroduce;
     function GetItems(i: integer): TtiOPFTestItem; reintroduce;
     procedure SetItems(i: integer; const AValue: TtiOPFTestItem); reintroduce;
   public
     property Items[i: integer]: TtiOPFTestItem read GetItems write SetItems;
     procedure Add(AObject: TtiOPFTestItem); reintroduce;
+    procedure Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    procedure ReadThis(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    procedure Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
   published
     property OIDAsInteger: integer read GetOIDAsInteger;
     property StrField: string read FStrField write FStrField;
@@ -155,10 +157,10 @@ type
     FNotesField: string;
     function GetOIDAsInteger: integer;
   protected
-    function GetOwner: TtiOPFTestGroup; reintroduce;
-    procedure SetOwner(const AValue: TtiOPFTestGroup); reintroduce;
+    function GetOwner: TtiObjectListNestedForTesting; reintroduce;
+    procedure SetOwner(const AValue: TtiObjectListNestedForTesting); reintroduce;
   public
-    property Owner: TtiOPFTestGroup read GetOwner write SetOwner;
+    property Owner: TtiObjectListNestedForTesting read GetOwner write SetOwner;
   published
     property OIDAsInteger: integer read GetOIDAsInteger;
     property StrField: string read FStrField write FStrField;
@@ -170,16 +172,18 @@ type
   end;
 
 
-  TtiOPFTestParent = class;
+  TtiObjectParentForTesting = class;
 
-
-  TtiOPFTestParentAbs = class(TtiObject)
+  TtiObjectParentForTestingAbs = class(TtiObject)
   private
     FStrField:   string;
     FIntField:   integer;
     FFloatField: extended;
     FDateField:  TDateTime;
   public
+    procedure   ReadThis(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    //procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
+    procedure   Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
   published
     property StrField: string read FStrField write FStrField;
     property IntField: integer read FIntField write FIntField;
@@ -188,36 +192,25 @@ type
   end;
 
 
-  TtiOPFTestParent = class(TtiOPFTestParentAbs);
-  TtiOPFTestChild_A = class(TtiOPFTestParent);
-  TtiOPFTestChild_B = class(TtiOPFTestParent);
+  TtiObjectParentForTesting = class(TtiObjectParentForTestingAbs);
+  TtiObjectChildForTestingA = class(TtiObjectParentForTesting);
+  TtiObjectChildForTestingB = class(TtiObjectParentForTesting);
 
-{
-  TtiOPFTestParentList = class(TtiObjectList)
+  TtiObjectParentForTestingGrouped = class(TtiObjectParentForTestingAbs);
+  TtiOPFTestChildGrouped_A = class(TtiObjectParentForTestingGrouped);
+  TtiOPFTestChildGrouped_B = class(TtiObjectParentForTestingGrouped);
+
+  TtiObjectParentForTestingGroup = class(TtiObjectList)
   private
   protected
-    function    GetItems(i: integer): TtiOPFTestParent; reintroduce;
-    procedure   SetItems(i: integer; const AValue: TtiOPFTestParent); reintroduce;
+    function GetItems(i: integer): TtiObjectParentForTestingGrouped; reintroduce;
+    procedure SetItems(i: integer; const AValue: TtiObjectParentForTestingGrouped); reintroduce;
   public
-    property    Items[i:integer]: TtiOPFTestParent read GetItems write SetItems;
-    procedure   Add(AObject : TtiOPFTestParent  ; ADefDispOrdr : boolean = true); reintroduce;
-  published
-  end;
-}
-
-  TtiOPFTestParentGrouped = class(TtiOPFTestParentAbs);
-  TtiOPFTestChildGrouped_A = class(TtiOPFTestParentGrouped);
-  TtiOPFTestChildGrouped_B = class(TtiOPFTestParentGrouped);
-
-
-  TtiOPFTestParentGroup = class(TtiObjectList)
-  private
-  protected
-    function GetItems(i: integer): TtiOPFTestParentGrouped; reintroduce;
-    procedure SetItems(i: integer; const AValue: TtiOPFTestParentGrouped); reintroduce;
-  public
-    property Items[i: integer]: TtiOPFTestParentGrouped read GetItems write SetItems;
-    procedure Add(AObject: TtiOPFTestParentGrouped; ADefDispOrdr: boolean = True); reintroduce;
+    //procedure   ReadThis(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    procedure   Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    property Items[i: integer]: TtiObjectParentForTestingGrouped read GetItems write SetItems;
+    procedure Add(AObject: TtiObjectParentForTestingGrouped; ADefDispOrdr: boolean = True); reintroduce;
   published
   end;
 
@@ -365,14 +358,14 @@ begin
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStreamProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStreamProp, cTIQueryTableName, 'StreamField', cTIQueryColName);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestGroup, 'Test_Group', 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestGroup, 'Test_Group', 'StrField', 'Group_Str_Field', [pktReadable]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestGroup, 'Test_Group', 'IntField', 'Group_Int_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestGroup, 'Test_Group', 'FloatField', 'Group_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestGroup, 'Test_Group', 'DateField', 'Group_Date_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestGroup, 'Test_Group', 'BoolField', 'Group_Bool_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestGroup, 'Test_Group', 'NotesField', 'Group_Notes_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiOPFTestData, TtiOPFTestGroup);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'OID', 'OID', [pktDB]);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'StrField', 'Group_Str_Field', [pktReadable]);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'IntField', 'Group_Int_Field');
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'FloatField', 'Group_Float_Field');
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'DateField', 'Group_Date_Field');
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'BoolField', 'Group_Bool_Field');
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'NotesField', 'Group_Notes_Field');
+  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectListForTesting, TtiObjectListNestedForTesting);
 
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'OID', 'OID', [pktDB]);
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'Owner.OID', 'OID_Group', [pktFK]);
@@ -382,32 +375,32 @@ begin
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'DateField', 'Item_Date_Field');
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'BoolField', 'Item_Bool_Field');
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'NotesField', 'Item_Notes_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiOPFTestGroup, TtiOPFTestItem);
+  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectListNestedForTesting, TtiOPFTestItem);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestParent, 'Test_Parent', 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestParent, 'Test_Parent', 'StrField', 'Parent_Str_Field');
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTesting, 'Test_Parent', 'OID', 'OID', [pktDB]);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTesting, 'Test_Parent', 'StrField', 'Parent_Str_Field');
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChild_A, cTableNameTIOPFTestChild_A, 'OID', 'OID', [pktDB, pktFK]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChild_A, cTableNameTIOPFTestChild_A, 'IntField', 'Child_Int_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChild_A, cTableNameTIOPFTestChild_A,
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingA, cTableNameTIOPFTestChild_A, 'OID', 'OID', [pktDB, pktFK]);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingA, cTableNameTIOPFTestChild_A, 'IntField', 'Child_Int_Field');
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingA, cTableNameTIOPFTestChild_A,
     'FloatField', 'Child_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiOPFTestParent, TtiOPFTestChild_A);
+  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTesting, TtiObjectChildForTestingA);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChild_B, cTableNameTIOPFTestChild_B, 'OID', 'OID', [pktDB, pktFK]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChild_B, cTableNameTIOPFTestChild_B, 'IntField', 'Child_Int_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChild_B, cTableNameTIOPFTestChild_B,
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingB, cTableNameTIOPFTestChild_B, 'OID', 'OID', [pktDB, pktFK]);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingB, cTableNameTIOPFTestChild_B, 'IntField', 'Child_Int_Field');
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingB, cTableNameTIOPFTestChild_B,
     'FloatField', 'Child_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiOPFTestParent, TtiOPFTestChild_B);
+  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTesting, TtiObjectChildForTestingB);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestParentGroup, cTableNameTIOPFTestParentGroup, 'OID', 'OID', [pktDB]);
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGroup, cTableNameTIOPFTestParentGroup, 'OID', 'OID', [pktDB]);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestParentGrouped, cTableNameTIOPFTestParentGrouped,
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGrouped, cTableNameTIOPFTestParentGrouped,
     'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestParentGrouped, cTableNameTIOPFTestParentGrouped,
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGrouped, cTableNameTIOPFTestParentGrouped,
     'Owner.OID', 'Owner_OID', [pktFK]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestParentGrouped, cTableNameTIOPFTestParentGrouped,
+  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGrouped, cTableNameTIOPFTestParentGrouped,
     'StrField', 'Parent_Str_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiOPFTestParentGroup, TtiOPFTestParentGrouped);
+  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiObjectParentForTestingGrouped);
 
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_A, cTableNameTIOPFTestChildGrouped_A,
     'OID', 'OID', [pktDB, pktFK]);
@@ -415,8 +408,8 @@ begin
     'IntField', 'Child_Int_Field');
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_A, cTableNameTIOPFTestChildGrouped_A,
     'FloatField', 'Child_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiOPFTestParentGrouped, TtiOPFTestChildGrouped_A);
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiOPFTestParentGroup, TtiOPFTestChildGrouped_A);
+  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTestingGrouped, TtiOPFTestChildGrouped_A);
+  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiOPFTestChildGrouped_A);
 
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_B, cTableNameTIOPFTestChildGrouped_B,
     'OID', 'OID', [pktDB, pktFK]);
@@ -424,26 +417,26 @@ begin
     'IntField', 'Child_Int_Field');
   gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_B, cTableNameTIOPFTestChildGrouped_B,
     'FloatField', 'Child_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiOPFTestParentGrouped, TtiOPFTestChildGrouped_B);
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiOPFTestParentGroup, TtiOPFTestChildGrouped_B);
+  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTestingGrouped, TtiOPFTestChildGrouped_B);
+  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiOPFTestChildGrouped_B);
 end;
 
 
 { TTestClasses }
 
-procedure TtiOPFTestData.Add(AObject: TtiOPFTestGroup);
+procedure TtiObjectListForTesting.Add(AObject: TtiObjectListNestedForTesting);
 begin
   inherited Add(AObject);
 end;
 
 
-function TtiOPFTestData.GetItems(i: integer): TtiOPFTestGroup;
+function TtiObjectListForTesting.GetItems(i: integer): TtiObjectListNestedForTesting;
 begin
-  Result := TtiOPFTestGroup(inherited GetItems(i));
+  Result := TtiObjectListNestedForTesting(inherited GetItems(i));
 end;
 
 
-function TtiOPFTestData.GetOIDAsInteger: integer;
+function TtiObjectListForTesting.GetOIDAsInteger: integer;
 begin
   if OID.AsString <> '' then
     Result := StrToInt(OID.AsString)
@@ -452,7 +445,7 @@ begin
 end;
 
 
-procedure TtiOPFTestData.Read(const ADBConnectionName: string; APersistenceLayerName: string = '');
+procedure TtiObjectListForTesting.Read(const ADBConnectionName: string; APersistenceLayerName: string = '');
 var
   i: integer;
 begin
@@ -464,7 +457,7 @@ begin
 end;
 
 
-procedure TtiOPFTestData.ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = '');
+procedure TtiObjectListForTesting.ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = '');
 var
   i: integer;
 begin
@@ -476,7 +469,13 @@ begin
 end;
 
 
-procedure TtiOPFTestData.SetItems(i: integer; const AValue: TtiOPFTestGroup);
+procedure TtiObjectListForTesting.Save(const ADBConnectionName: string;
+  APersistenceLayerName: string);
+begin
+  inherited;
+end;
+
+procedure TtiObjectListForTesting.SetItems(i: integer; const AValue: TtiObjectListNestedForTesting);
 begin
   inherited SetItems(i, AValue);
 end;
@@ -490,90 +489,120 @@ begin
 end;
 
 
-function TtiOPFTestItem.GetOwner: TtiOPFTestGroup;
+function TtiOPFTestItem.GetOwner: TtiObjectListNestedForTesting;
 begin
-  Result := TtiOPFTestGroup(inherited GetOwner);
+  Result := TtiObjectListNestedForTesting(inherited GetOwner);
 end;
 
 
-procedure TtiOPFTestItem.SetOwner(const AValue: TtiOPFTestGroup);
+procedure TtiOPFTestItem.SetOwner(const AValue: TtiObjectListNestedForTesting);
 begin
   inherited SetOwner(AValue);
 end;
 
 
-{ TtiOPFTestGroup }
+{ TtiObjectListNestedForTesting }
 
-procedure TtiOPFTestGroup.Add(AObject: TtiOPFTestItem);
+procedure TtiObjectListNestedForTesting.Add(AObject: TtiOPFTestItem);
 begin
   inherited Add(AObject);
 end;
 
 
-function TtiOPFTestGroup.GetItems(i: integer): TtiOPFTestItem;
+function TtiObjectListNestedForTesting.GetItems(i: integer): TtiOPFTestItem;
 begin
   Result := TtiOPFTestItem(inherited GetItems(i));
 end;
 
 
-function TtiOPFTestGroup.GetOwner: TtiOPFTestData;
+function TtiObjectListNestedForTesting.GetOwner: TtiObjectListForTesting;
 begin
-  Result := TtiOPFTestData(inherited GetOwner);
+  Result := TtiObjectListForTesting(inherited GetOwner);
 end;
 
 
-function TtiOPFTestGroup.GetOIDAsInteger: integer;
+procedure TtiObjectListNestedForTesting.Read(const ADBConnectionName: string;
+  APersistenceLayerName: string);
+begin
+  inherited;
+end;
+
+procedure TtiObjectListNestedForTesting.ReadThis(
+  const ADBConnectionName: string; APersistenceLayerName: string);
+begin
+  inherited;
+end;
+
+function TtiObjectListNestedForTesting.GetOIDAsInteger: integer;
 begin
   Result := StrToInt(OID.AsString);
 end;
 
 
-procedure TtiOPFTestGroup.SetItems(i: integer; const AValue: TtiOPFTestItem);
+procedure TtiObjectListNestedForTesting.Save(const ADBConnectionName: string;
+  APersistenceLayerName: string);
+begin
+  inherited;
+end;
+
+procedure TtiObjectListNestedForTesting.SetItems(i: integer; const AValue: TtiOPFTestItem);
 begin
   inherited SetItems(i, AValue);
 end;
 
 
-procedure TtiOPFTestGroup.SetOwner(const AValue: TtiOPFTestData);
+procedure TtiObjectListNestedForTesting.SetOwner(const AValue: TtiObjectListForTesting);
 begin
   inherited SetOwner(AValue);
 end;
 
 
-{ TtiOPFTestParentGroup }
+{ TtiObjectParentForTestingGroup }
 
-procedure TtiOPFTestParentGroup.Add(AObject: TtiOPFTestParentGrouped; ADefDispOrdr: boolean);
+procedure TtiObjectParentForTestingGroup.Add(AObject: TtiObjectParentForTestingGrouped; ADefDispOrdr: boolean);
 begin
   inherited Add(AObject, ADefDispOrdr);
 end;
 
 
-function TtiOPFTestParentGroup.GetItems(i: integer): TtiOPFTestParentGrouped;
+function TtiObjectParentForTestingGroup.GetItems(i: integer): TtiObjectParentForTestingGrouped;
 begin
-  Result := TtiOPFTestParentGrouped(inherited GetItems(i));
+  Result := TtiObjectParentForTestingGrouped(inherited GetItems(i));
 end;
 
 
-procedure TtiOPFTestParentGroup.SetItems(i: integer; const AValue: TtiOPFTestParentGrouped);
+procedure TtiObjectParentForTestingGroup.Read(const ADBConnectionName: string;
+  APersistenceLayerName: string);
+begin
+  inherited;
+end;
+
+procedure TtiObjectParentForTestingGroup.Save(const ADBConnectionName: string;
+  APersistenceLayerName: string);
+begin
+  inherited;
+end;
+
+procedure TtiObjectParentForTestingGroup.SetItems(i: integer; const AValue: TtiObjectParentForTestingGrouped);
 begin
   inherited SetItems(i, AValue);
 end;
 
 
-{ TtiOPFTestParentList }
+{ TtiObjectParentForTestingList }
 
 {
-procedure TtiOPFTestParentList.Add(AObject: TtiOPFTestParent; ADefDispOrdr: boolean);
+procedure TtiObjectParentForTestingList.Add(AObject: TtiObjectParentForTesting; ADefDispOrdr: boolean);
 begin
   inherited Add(AObject, ADefDispOrdr);
 end;
 
-function TtiOPFTestParentList.GetItems(i: integer): TtiOPFTestParent;
+function TtiObjectParentForTestingList.GetItems(i: integer): TtiObjectParentForTesting;
 begin
-  result := TtiOPFTestParent(inherited GetItems(i));
+  result := TtiObjectParentForTesting(inherited GetItems(i));
 end;
 
-procedure TtiOPFTestParentList.SetItems(i: integer; const AValue: TtiOPFTestParent);
+procedure TtiObjectParentForTestingList.SetItems(i: integer; const AValue: TtiObjectParentForTesting);
 begin
   inherited SetItems(i, AValue);
 end;
@@ -726,4 +755,36 @@ begin
   FOIDField.Assign(Value);
 end;
 
+{ TtiObjectParentForTestingAbs }
+
+procedure TtiObjectParentForTestingAbs.ReadThis(const ADBConnectionName: string;
+  APersistenceLayerName: string);
+begin
+  inherited;
+end;
+
+procedure TtiObjectParentForTestingAbs.Save(const ADBConnectionName: string;
+  APersistenceLayerName: string);
+begin
+  inherited;
+end;
+
+  { TtiObjectByPropertyForTestingAbs }
+
+  procedure TtiObjectByPropertyForTestingAbs.Read(const ADBConnectionName: string;
+    APersistenceLayerName: string);
+  begin
+    inherited;
+  end;
+
+  procedure TtiObjectByPropertyForTestingAbs.Save(const ADBConnectionName: string;
+    APersistenceLayerName: string);
+  begin
+    inherited;
+  end;
+
 end.
+
+
+
+

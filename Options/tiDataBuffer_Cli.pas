@@ -130,8 +130,8 @@ function  tiQueryToTIDataSet(const AQuery: TtiQuery; const pDataSet: TtiDataBuff
     end;
   end;
 begin
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
-  Assert(pDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
+  Assert(pDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   _AssignMetaData(AQuery, pDataSet);
   while not AQuery.EOF do
   begin

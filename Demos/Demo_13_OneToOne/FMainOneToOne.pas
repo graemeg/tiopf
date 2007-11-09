@@ -89,14 +89,14 @@ procedure TFormMainInheritance.lvClientListDeriveAdrs(
   const pVT: TtiCustomVirtualTree; const pData: TtiObject;
   const ptiListColumn: TtiVTColumn; var pResult: string);
 begin
-  Assert(pData.TestValid(TClient), cTIInvalidObjectError);
+  Assert(pData.TestValid(TClient), CTIErrorInvalidObject);
   pResult:= (pData as TClient).Adrs.AsOneLine;
 end;
 
 procedure TFormMainInheritance.lvClientFilterData(pData: TtiObject;
   var pInclude: Boolean);
 begin
-  Assert(pData.TestValid, cTIInvalidObjectError);
+  Assert(pData.TestValid, CTIErrorInvalidObject);
   pInclude:= not pData.Deleted;
 end;
 
@@ -115,7 +115,7 @@ procedure TFormMainInheritance.lvClientItemEdit(pVT: TtiCustomVirtualTree;
 var
   LClient: TClient;
 begin
-  Assert(pData.TestValid(TClient), cTIInvalidObjectError);
+  Assert(pData.TestValid(TClient), CTIErrorInvalidObject);
   LClient:= pData as TClient;
   LClient.Read; //added by slapshot
   if TFormClientEdit.Execute(LClient) then
@@ -148,7 +148,7 @@ begin
   lvClient.Data:= nil;
   FClients.Clear;
   FClients.Read;
-  FClients[0].Read;
+  FClients.Items[0].Read;
   lvClient.Data:= FClients;
 end;
 

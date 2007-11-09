@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs,
   ExtCtrls, ActnList, tiFocusPanel, tiVTListView, tiObject, tiVirtualTrees,
-  StdCtrls, Buttons;
+  StdCtrls, Buttons, MastApp_BOM;
 
 type
   TfrmBaseList = class(TForm)
@@ -35,8 +35,8 @@ type
   private
 
   protected
-    FEditingData: TtiObjectList;
-    FOriginalData: TtiObjectList;
+    FEditingData: TMASTObjectList;
+    FOriginalData: TMASTObjectList;
 
     procedure SetColumns; virtual;
     function CreateNewItem: TtiObject; virtual;
@@ -45,7 +45,7 @@ type
     procedure SaveChanges;
   public
     { Public declarations }
-    class procedure Execute(ADataList: TtiObjectList);
+    class procedure Execute(ADataList: TMASTObjectList);
   end;
 
 implementation
@@ -86,7 +86,7 @@ begin
   result:= false;
 end;
 
-class procedure TfrmBaseList.Execute(ADataList: TtiObjectList);
+class procedure TfrmBaseList.Execute(ADataList: TMASTObjectList);
 var form: TfrmBaseList;
 begin
   form:= self.create(Application);
@@ -111,7 +111,7 @@ end;
 
 procedure TfrmBaseList.FormCreate(Sender: TObject);
 begin
-  FEditingData:= TtiObjectList.Create;
+  FEditingData:= TMASTObjectList.Create;
 end;
 
 procedure TfrmBaseList.FormDestroy(Sender: TObject);

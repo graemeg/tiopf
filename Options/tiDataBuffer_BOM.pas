@@ -18,7 +18,7 @@ uses
  ;
 
 const
-  cErrorTIDataSetCellMetaData = cTIInternalError + 'tiDataBuffer metadata and data are out of sync';
+  cErrorTIDataSetCellMetaData = CTIErrorInternal + 'tiDataBuffer metadata and data are out of sync';
   cErrorDataConversion = 'Data conversion error. Can not convert <%s> to a %s';
   cErrorDataMetaDataMisMatch = 'Mismatch between data and metadata';
 
@@ -195,7 +195,7 @@ end;
 
 procedure TtiDataBufferRow.Add(const AValue: TtiDataBufferCell);
 begin
-  Assert(Owner.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  Assert(Owner.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   if (Owner.Fields.Count > 0) and
      (Count = Owner.Fields.Count) then
     raise EtiOPFProgrammerException.Create(cErrorDataMetaDataMisMatch);
@@ -242,7 +242,7 @@ end;
 
 function TtiDataBufferRow.GetIndex: integer;
 begin
-  Assert(Owner.TestValid, cTIInvalidObjectError);
+  Assert(Owner.TestValid, CTIErrorInvalidObject);
   result := Owner.IndexOf(Self);
 end;
 
@@ -291,8 +291,8 @@ end;
 
 function TtiDataBufferCell.GetDataSetField: TtiDBMetaDataField;
 begin
-  Assert(Owner.TestValid,       cTIInvalidObjectError);
-  Assert(Owner.Owner.TestValid, cTIInvalidObjectError);
+  Assert(Owner.TestValid,       CTIErrorInvalidObject);
+  Assert(Owner.Owner.TestValid, CTIErrorInvalidObject);
   if Owner.Count <> Owner.Owner.Fields.Count then
     raise exception.Create(cErrorTIDataSetCellMetaData);
   result := Owner.Owner.Fields.Items[Index];
@@ -306,7 +306,7 @@ end;
 
 function  TtiDataBufferCell.GetIndex : integer;
 begin
-  Assert(Owner.TestValid, cTIInvalidObjectError);
+  Assert(Owner.TestValid, CTIErrorInvalidObject);
   result := Owner.IndexOf(Self);
 end;
 

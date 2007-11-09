@@ -800,7 +800,7 @@ end;
 
 procedure TtiLog.RegisterLog(ALogTo : TtiLogToAbs);
 begin
-  Assert(ALogTo.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(ALogTo.TestValid, CTIErrorInvalidObject);
   // It would be nice to be able to have multiple instances of the same LogTo
   // class, such as two TtiLogToFile, one main one logging to some admin
   // area for critical errors and another temporarily used for debugging such

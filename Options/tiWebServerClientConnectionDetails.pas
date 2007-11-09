@@ -38,7 +38,7 @@ uses
 procedure TtiWebServerClientConnectionDetails.Assign(
   const ASource: TtiWebServerClientConnectionDetails);
 begin
-  Assert(ASource.TestValid, cTIInvalidObjectError);
+  Assert(ASource.TestValid, CTIErrorInvalidObject);
   AppServerURL:=      ASource.AppServerURL;
   ConnectWith:=       ASource.ConnectWith;
   ProxyServerActive:= ASource.ProxyServerActive;

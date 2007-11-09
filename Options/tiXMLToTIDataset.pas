@@ -325,7 +325,7 @@ function TtiXMLToDataSetReadWriter.GetAsString: string;
 var
   lXMLWriter : TtiDataBufferToXMLWriter;
 begin
-  Assert(DataSets.TestValid(TtiDataBuffers, true), cTIInvalidObjectError);
+  Assert(DataSets.TestValid(TtiDataBuffers, true), CTIErrorInvalidObject);
   lXMLWriter := TtiDataBufferToXMLWriter.Create;
   try
     lXMLWriter.XMLFieldNameStyle := FXMLFieldNameStyle;
@@ -344,7 +344,7 @@ procedure TtiXMLToDataSetReadWriter.SetAsString(const AValue: string);
 var
   lXMLToDataSetReader: TXMLToDataSetReader;
 begin
-  Assert(FDataSets.TestValid(TtiDataBuffers), cTIInvalidObjectError);
+  Assert(FDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject);
   Clear;
   lXMLToDataSetReader:= TXMLToDataSetReader.Create;
   try
@@ -384,7 +384,7 @@ end;
 
 procedure TXMLToDataSetReader.Execute(const pXML: string; const pDataSets: TtiDataBuffers);
 begin
-  Assert(pDataSets.TestValid(TtiDataBuffers), cTIInvalidObjectError);
+  Assert(pDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject);
   XML := pXML;
   DataSets := pDataSets;
   while FState <> xdbsEnd do
@@ -601,7 +601,7 @@ var
   lFieldKind : TtiQueryFieldKind;
   lFieldWidth : integer;
 begin
-  Assert(FDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  Assert(FDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   lFieldKind := StrToQueryFieldKind(AFieldKind);
   lFieldWidth := StrToInt(pFieldSize);
   FDataSet.Fields.AddInstance(AFieldName, lFieldKind, lFieldWidth);
@@ -609,13 +609,13 @@ end;
 
 procedure TXMLToDataSetReader.DoAddRow;
 begin
-  Assert(FDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  Assert(FDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   FDataSetRow := FDataSet.AddInstance;
 end;
 
 procedure TXMLToDataSetReader.DoAddTable(const ATableName: string);
 begin
-  Assert(FDataSets.TestValid(TtiDataBuffers), cTIInvalidObjectError);
+  Assert(FDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject);
   FDataSet := FDataSets.AddInstance(ATableName);
 end;
 
@@ -624,7 +624,7 @@ var
   lCell: TtiDataBufferCell;
   lIndex: Integer;
 begin
-  Assert(FDataSetRow.TestValid(TtiDataBufferRow), cTIInvalidObjectError);
+  Assert(FDataSetRow.TestValid(TtiDataBufferRow), CTIErrorInvalidObject);
   case FXMLFieldNameStyle of
     xfnsString : lCell := FDataSetRow.FindByFieldName(AFieldName);
     xfnsInteger: begin
@@ -808,7 +808,7 @@ end;
 function TtiDataBufferToXMLWriter.AssignFromTIQuery(const ATableName : string; const AQuery: TtiQuery): Integer;
 begin
   Assert(ATableName <> '', 'ATableName not assigned');
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   InsertQueryMetaData(ATableName, AQuery);
   Result := InsertQueryData(AQuery);
 end;
@@ -821,7 +821,7 @@ var
   lFieldSize : integer;
 begin
   Assert(ATableName <> '', 'ATableName not assigned');
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   AddTable(LowerCase(ATableName));
   for i := 0 to AQuery.FieldCount - 1 do
   begin
@@ -857,7 +857,7 @@ var
   lStream : TMemoryStream;
   lNames : TStringList;
 begin
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   Result := 0;
   lNames := TStringList.Create;
   try
@@ -906,7 +906,7 @@ procedure TtiDataBufferToXMLWriter.AssignFromTIDataSets(const pDataSets: TtiData
 var
   i : integer;
 begin
-  Assert(pDataSets.TestValid(TtiDataBuffers), cTIInvalidObjectError);
+  Assert(pDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject);
   for i := 0 to pDataSets.Count - 1 do
     AssignFromTIDataSet(pDataSets.Items[i]);
 end;
@@ -935,7 +935,7 @@ var
   lNames : TStringList;
   lStream : TMemoryStream;
 begin
-  Assert(pDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  Assert(pDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   lNames := TStringList.Create;
   try
     _DataSetNamesToStringList(pDataSet, lNames);
@@ -979,7 +979,7 @@ var
   lFieldKind : TtiQueryFieldKind;
   lFieldSize : integer;
 begin
-  Assert(pDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  Assert(pDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   AddTable(LowerCase(pDataSet.Name));
   for i := 0 to pDataSet.Fields.Count - 1 do
   begin
@@ -1041,13 +1041,13 @@ end;
 procedure TtiDataBufferToXMLWriter.AssignMetaDataFromTIQuery(const ATableName: string; const AQuery: TtiQuery);
 begin
   Assert(ATableName <> '', 'ATableName not assigned');
-  Assert(AQuery.TestValid(TtiQuery), cTIInvalidObjectError);
+  Assert(AQuery.TestValid(TtiQuery), CTIErrorInvalidObject);
   InsertQueryMetaData(ATableName, AQuery);
 end;
 
 procedure TtiDataBufferToXMLWriter.AssignFromTIDataSet(const pDataSet: TtiDataBuffer);
 begin
-  Assert(pDataSet.TestValid(TtiDataBuffer), cTIInvalidObjectError);
+  Assert(pDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject);
   InsertDataSetMetaData(pDataSet);
   InsertDataSetData(pDataSet);
 end;

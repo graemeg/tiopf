@@ -148,7 +148,7 @@ var
 
 function tiPerObjAbsAsString(const AVisited: TtiObject; AIncludeDeleted: boolean = false): string;
 begin
-  Assert(AVisited.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AVisited.TestValid, CTIErrorInvalidObject);
   Result := AVisited.AsDebugString;
 end;
 
@@ -175,7 +175,7 @@ procedure tiShowPerObjAbsOwnership(const AData: TtiObject);
 var
   ls: string;
 begin
-  Assert(AData.TestValid(TtiObject), cTIInvalidObjectError);
+  Assert(AData.TestValid(TtiObject), CTIErrorInvalidObject);
   ls := _GetOwnership(AData, AData.ClassName);
   tiShowString(ls);
 end;
@@ -586,7 +586,7 @@ procedure tiListToClipboard(AList: TtiObjectList);
 var
   lFields : TStringList;
 begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AList.TestValid, CTIErrorInvalidObject);
   Assert(AList.Count > 0, 'AList.Count = 0');
   lFields := TStringList.Create;
   try
@@ -601,7 +601,7 @@ procedure tiListToClipboard(AList: TtiObjectList; AColsSelected: TStringList);
 var
   lStream: TStringStream;
 begin
-  Assert(AList.TestValid, cErrorTIPerObjAbsTestValid);
+  Assert(AList.TestValid, CTIErrorInvalidObject);
   Assert(AList.Count > 0, 'AList.Count = 0');
   Assert(AColsSelected<>nil, 'AColsSelected not assigned');
   lStream := TStringStream.Create('');
