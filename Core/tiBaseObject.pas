@@ -64,12 +64,23 @@ type
     </code>
     }
 
-  TtiBaseObject = class(TObject)
+  TtiBaseObject = class(TObject, IInterface)
   private
     FSerialNo: integer;
+    FRefCounting: Boolean;
+    FRefCount: Integer;
+  protected
+    { IInterface }
+    function    QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function    _AddRef: Integer; stdcall;
+    function    _Release: Integer; stdcall;
   public
     constructor Create;
-    destructor Destroy; override;
+    constructor CreateWithRefCounting;
+    destructor  Destroy; override;
+    procedure   AfterConstruction; override;
+    procedure   BeforeDestruction; override;
+    class function NewInstance: TObject; override;
     {: Checks that the object is valid and in the list of current
        objects. If not, checks that self <> nil (which is not always very
        useful but still worth checking.)<br><br>
@@ -110,7 +121,6 @@ type
     class function GetLiveObjectCount: cardinal;
     {$ENDIF}
     property SerialNumber: integer read FSerialNo;
-
   end;
 
   TtiBaseObjectClass = class of TtiBaseObject;
@@ -124,8 +134,11 @@ implementation
 
 uses
   SysUtils
-  ,
-  SyncObjs;
+  {$IFDEF MSWINDOWS}
+  ,Windows    // needed for InterlockedDecrement()
+  {$ENDIF}
+  ,SyncObjs   // This unit must always appear after the Windows unit!
+  ;
 
 const
   ASSERT_UNIT = 'IdSoapDebug';
@@ -565,7 +578,6 @@ end;
 
 {$ENDIF}
 
-
 function IdObjectRegister(AObject: TObject): cardinal;
 const
   ASSERT_LOCATION = ASSERT_UNIT + '.IdObjectRegister';
@@ -578,7 +590,6 @@ begin
   Result := 0;
 {$ENDIF}
 end;
-
 
 function IdObjectTestValid(AObject: TObject; AClassType: TClass = NIL): boolean;
 const
@@ -593,7 +604,6 @@ begin
     Result := AObject is AClassType;
 end;
 
-
 procedure IdObjectBreakPointOnFree(AObject: TObject);
 const
   ASSERT_LOCATION = ASSERT_UNIT + '.IdObjectBreakPointOnFree';
@@ -602,7 +612,6 @@ begin
   IdObjBreakPointOnFree(AObject);
 {$ENDIF}
 end;
-
 
 procedure IdObjectDeregister(AObject: TObject);
 const
@@ -616,24 +625,6 @@ end;
 { TtiBaseObject }
 
 {$IFDEF OBJECT_TRACKING}
-constructor TtiBaseObject.Create;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.Create';
-begin
-  inherited;
-  FSerialNo := IdObjRegister(self);
-end;
-
-
-destructor TtiBaseObject.Destroy;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.Destroy';
-begin
-  IdObjDeregister(self);
-  inherited;
-end;
-
-
 class function TtiBaseObject.GetLiveObjectCount: cardinal;
 const
   ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.GetLiveObjectCount';
@@ -653,7 +644,6 @@ begin
   end;
 end;
 
-
 procedure TtiBaseObject.AskForBreakPointOnFree;
 const
   ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.AskForBreakPointOnFree';
@@ -661,22 +651,79 @@ begin
   IdObjBreakPointOnFree(self);
 end;
 
-{$ELSE}
-
-
-constructor TtiBaseObject.Create;
-begin
-  inherited;
-end;
-
-
-destructor TtiBaseObject.Destroy;
-begin
-  inherited;
-end;
-
 {$ENDIF}
 
+function TtiBaseObject.QueryInterface(const IID: TGUID; out Obj): HResult;
+begin
+  if GetInterface(IID, Obj) then
+    Result := 0
+  else
+    Result := E_NOINTERFACE;
+end;
+
+function TtiBaseObject._AddRef: Integer;
+begin
+  Result := InterlockedIncrement(FRefCount);
+end;
+
+function TtiBaseObject._Release: Integer;
+begin
+  Result := InterlockedDecrement(FRefCount);
+  if FRefCounting then
+    if Result = 0 then
+      Destroy;
+end;
+
+constructor TtiBaseObject.Create;
+{$IFDEF OBJECT_TRACKING}
+const
+  ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.Create';
+{$ENDIF}
+begin
+  inherited;
+  {$IFDEF OBJECT_TRACKING}FSerialNo := IdObjRegister(self);{$ENDIF}
+end;
+
+{ Set an implicit refcount so that refcounting during construction won't
+  destroy the object. }
+constructor TtiBaseObject.CreateWithRefCounting;
+begin
+  Create;
+  FRefCounting := True;
+end;
+
+destructor TtiBaseObject.Destroy;
+{$IFDEF OBJECT_TRACKING}
+const
+  ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.Destroy';
+{$ENDIF}
+begin
+  {$IFDEF OBJECT_TRACKING}IdObjDeregister(self);{$ENDIF}
+  inherited;
+end;
+
+procedure TtiBaseObject.AfterConstruction;
+begin
+  inherited AfterConstruction;
+
+  // Release the constructor's implicit refcount
+  if FRefCounting then
+    InterlockedDecrement(FRefCount);
+end;
+
+procedure TtiBaseObject.BeforeDestruction;
+begin
+  if FRefCounting then
+    if FRefCount <> 0 then
+      System.Error(reInvalidPtr);
+  inherited BeforeDestruction;
+end;
+
+class function TtiBaseObject.NewInstance: TObject;
+begin
+  Result := inherited NewInstance;
+  TtiBaseObject(Result).FRefCount := 1;
+end;
 
 function TtiBaseObject.TestValid(AClassType: TClass = NIL; AAllowNil: boolean = False): boolean;
 begin
