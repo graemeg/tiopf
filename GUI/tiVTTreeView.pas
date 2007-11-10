@@ -271,10 +271,11 @@ type
 
 implementation
 uses
-  SysUtils
-  , TypInfo
+   tiConstants
   ,tiImageMgr
   ,tiResources
+  ,SysUtils
+  ,TypInfo
  ;
 
 type

@@ -367,7 +367,7 @@ var
 begin
   Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
   Assert(FTransactionID <> '', 'TransactionID not assigned');
-  lQuery := gTIOPFManager.DefaultPerLayer.tiQueryClass.Create;
+  lQuery := gTIOPFManager.DefaultPerLayer.QueryClass.Create;
   try
     lSavedDBConnectionHolder := gStatefulDBConnectionPool.FindSavedDBConnectionHolder(FTransactionID);
     lSavedDBConnectionHolder.InUse := true;

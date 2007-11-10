@@ -341,7 +341,7 @@ procedure TtiTextTestListener.TestingStarts;
     writeln2Short('', [tlwtFile, tlwtConsole]);
     writeln2Short('Persistence layers to be tested:', [tlwtFile, tlwtConsole]);
     for i:= 0 to gTIOPFManager.PersistenceLayers.Count - 1 do
-      writeln2Short('  ' + gTIOPFManager.PersistenceLayers.Items[i].PerLayerName, [tlwtFile, tlwtConsole]);
+      writeln2Short('  ' + gTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName, [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
   end;
 
@@ -364,7 +364,7 @@ procedure TtiTextTestListener.TestingStarts;
     write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + CrLf);
     for i:= 0 to gTIOPFManager.PersistenceLayers.Count - 1 do
     begin
-      write2Long('<tr><td>' + gTIOPFManager.PersistenceLayers.Items[i].PerLayerName + '</td></tr>' + CrLf);
+      write2Long('<tr><td>' + gTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName + '</td></tr>' + CrLf);
     end;
     Write2Long('</table>');
 

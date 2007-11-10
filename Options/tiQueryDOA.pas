@@ -16,6 +16,9 @@ uses
   ,tiPersistenceLayers
  ;
 
+const
+  CtiQueryOptionDOAReadBuffer = 'ReadBuffer';
+
 type
 
   TtiPersistenceLayerDOA = class(TtiPersistenceLayer)
@@ -161,7 +164,6 @@ uses
 
 const
   cSavePoint = 'DOA_Save_Point';
-  CtiQueryOptionDOAReadBuffer = 'ReadBuffer';
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *

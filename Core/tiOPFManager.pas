@@ -45,7 +45,6 @@ type
     {$IFNDEF OID_AS_INT64}
       FDefaultOIDClassName: string;
       FOIDFactory: TOIDFactory;
-    FOwner: TtiBaseObject;
       procedure SetDefaultOIDClassName(const AValue: string);
     {$ENDIF}
 
@@ -61,8 +60,6 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-
-    property    Owner: TtiBaseObject read FOwner write FOwner;
 
     {: Load a persistence layer }
     procedure   LoadPersistenceLayer(Const APersistenceLayerName : string);
