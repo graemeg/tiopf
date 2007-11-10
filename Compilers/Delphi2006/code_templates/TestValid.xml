@@ -17,7 +17,7 @@
 		<author>
 			Peter Hinrichsen
 		</author>
-		<code language="Delphi" context="methodbody" delimiter="|"><![CDATA[Assert(|instance|.TestValid, cTIInvalidObjectError);]]>
+		<code language="Delphi" context="methodbody" delimiter="|"><![CDATA[Assert(|instance|.TestValid, CTIErrorInvalidObject);]]>
 		</code>
 	</template>
 </codetemplate>
