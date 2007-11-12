@@ -14,7 +14,7 @@ uses
 
 
 procedure RegisterTests;
-function  gTIOPFTestManager: TtiOPFTestManager;
+function  GTIOPFTestManager: TtiOPFTestManager;
 procedure RemoveUnSelectedPersistenceLayerSetups;
 procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
 function  PersistentSuiteName(APerLayerName: string): string;
@@ -23,18 +23,22 @@ procedure RegisterExpectedTIOPFMemoryLeaks;
 
 implementation
 uses
-   SysUtils
-  ,tiLog
-//  ,tiLogToGUI
+   FastMM4
+  ,IdThreadSafe
+  ,IdGlobal
+  ,SysUtils
+  ,TestFramework
+
+  ,tiLog // Confirm which of these must be referenced here
   ,tiLogToFile
-  {$IFDEF OBJECT_TRACKING}
-  ,tiBaseObject_TST
-  {$ENDIF}
   ,tiOPFManager
   ,tiDUnitINI
   ,tiConstants
-
   ,tstPerFramework_BOM
+
+  {$IFDEF OBJECT_TRACKING}
+  ,tiBaseObject_TST
+  {$ENDIF}
   ,tiPersistenceLayers_TST
   ,tiUtils_TST
   ,tiObject_TST
@@ -64,37 +68,33 @@ uses
   ,tiCriteria_TST
   ,tiRTTI_TST
   ,tiTokenLibrary_TST
-  ,tiOPFXMLLight_TST
-  ,tiOPFCSV_TST
-  ,tiOPFTAB_TST
-
-  {$IFDEF FPC}
-  ,tiOPFFBL_TST
-  //,tiOPFSQLDB_IB_TST
-  {$ELSE}
-  ,tiOPFZeos_FB15_TST
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
   ,tiWebServer_tst
 
-  ,tiOPFIBX_TST
-  ,tiOPFBDEParadox_TST
+  // Persistent test fixtures (in alpha order)
   ,tiOPFADOAccess_TST
+  ,tiOPFBDEParadox_TST
   ,tiOPFADOSQLServer_TST
-  ,tiOPFRemote_TST
+  ,tiOPFCSV_TST
   ,tiOPFDOA_TST
+  ,tiOPFFBL_TST
   ,tiOPFIBO_TST
-  //,tiOPFZeos_FB15_TST
+  ,tiOPFIBX_TST
+  ,tiOPFRemote_TST
+  //,tiOPFSQLDB_IB_TST  // no such test
+  ,tiOPFTAB_TST
   ,tiOPFXML_TST
-  ,FastMM4
-  ,IdThreadSafe
-  ,IdGlobal
-  ,TestFramework
-  {$ENDIF}
+  ,tiOPFXMLLight_TST
+  //,tiOPFZeos_FB10_TST  // No tests
+  ,tiOPFZeos_FB15_TST
+  //,tiOPFZeos_MySQL41_TST // No tests
+  //,tiOPFZeos_MySQL50_TST // No tests
+
   ;
 
 var
-  uTIOPFTestManager: TtiOPFTestManager;
+  UTIOPFTestManager: TtiOPFTestManager;
 
 const
   cSuiteNameNonPersistentTests  = 'Non persistent tests';
@@ -142,89 +142,38 @@ begin
   tiCriteria_TST.RegisterTests;
   tiTokenLibrary_TST.RegisterTests;
   tiLogToFile_TST.RegisterTests;
-
-  {$IFDEF FPC}
-  tiOPFFBL_TST.RegisterTests;
-//  tiOPFSQLDB_IB_TST.RegisterTests;
-  {$ELSE}
-  tiOPFZeos_FB15_TST.RegisterTests;
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
-//  tiWebServer_tst.RegisterTests;
+  tiWebServer_tst.RegisterTests;
 
-  tiOPFIBX_TST.RegisterTests;
-  tiOPFBDEParadox_TST.RegisterTests;
+  // Persistent test fixtures (in alpha order)
   tiOPFADOAccess_TST.RegisterTests;
+  tiOPFBDEParadox_TST.RegisterTests;
   tiOPFADOSQLServer_TST.RegisterTests;
-  tiOPFDOA_TST.RegisterTests;
-  tiOPFRemote_TST.RegisterTests;
-  tiOPFXML_TST.RegisterTests;
-//  tiOPFZeos_FB15_TST.RegisterTests;
-  {$ENDIF FPC}
-  tiOPFXMLLight_TST.RegisterTests;
   tiOPFCSV_TST.RegisterTests;
+  tiOPFDOA_TST.RegisterTests;
+  tiOPFFBL_TST.RegisterTests;
+  tiOPFIBO_TST.RegisterTests;
+  tiOPFIBX_TST.RegisterTests;
+  tiOPFRemote_TST.RegisterTests;
+  //tiOPFSQLDB_IB_TST.RegisterTests; // No tests
   tiOPFTAB_TST.RegisterTests;
+  tiOPFXML_TST.RegisterTests;
+  tiOPFXMLLight_TST.RegisterTests;
+  //tiOPFZeos_FB10_TST.RegisterTests; // No tests
+  tiOPFZeos_FB15_TST.RegisterTests;
+  //tiOPFZeos_MySQL41_TST.RegisterTests; // No tests
+  //tiOPFZeos_MySQL50_TST.RegisterTests; // No tests
+
+
 end;
 
 
-function gTIOPFTestManager: TtiOPFTestManager;
+function GTIOPFTestManager: TtiOPFTestManager;
 begin
-  if uTIOPFTestManager = nil then
-  begin
-    uTIOPFTestManager := TtiOPFTestManager.Create;
-
-    {$IFDEF FPC}
-    // Non-SQL Persistence layers
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataCSV.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataTAB.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataXMLLight.Create);
-    // SQL based persistence layers
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataFBL.Create);
-//    uTIOPFTestManager.Add(TtiOPFTestSetupDataSQLDB_IB.Create);
-//    uTIOPFTestManager.Add(TtiOPFTestSetupDataZeos.Create);
-    {$ELSE}
-    // Non-SQL Persistence layers
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataXML.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataCSV.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataTAB.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataXMLLight.Create);
-
-    // These are core persistence frameworks that are tested regularly
-    // as part of the build process
-    // SQL based persistence layers
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataBDEParadox.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataIBX.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataRemote.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataADOAccess.Create);
-
-    //uTIOPFTestManager.Add(TtiOPFTestSetupDataADOSQLServer.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataDOA.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataIBO.Create);
-    uTIOPFTestManager.Add(TtiOPFTestSetupDataZeos.Create);
-
-    {$ENDIF FPC}
-  end;
-
-//  Here are the possibilities
-//  cTIPersistADOAccess    = 'ADOAccess';
-//  cTIPersistADOSQLServer = 'ADOSQLServer';
-//  cTIPersistBDEParadox   = 'BDEParadox';
-//  cTIPersistCSV          = 'CSV';
-//  cTIPersistDOA          = 'DOA';
-//  cTIPersistFBL          = 'FBL';          // Free Pascal only
-//  cTIPersistIBO          = 'IBO';
-//  cTIPersistIBX          = 'IBX';
-//  cTIPersistRemote       = 'Remote';
-//  cTIPersistSqldbIB      = 'Sqldb_IB';     // Free Pascal equivalent to Delphi dbExpress
-//  cTIPersistTAB          = 'TAB';
-//  cTIPersistXML          = 'XML';          // ToDo: Rename this MSXML
-//  cTIPersistXMLLight     = 'XMLLight';
-//  cTIPersistZeosFB10     = 'Zeos_FB10';
-//  cTIPersistZeosFB15     = 'Zeos_FB15';
-//  cTIPersistZeosMySQL41  = 'Zeos_MySQL41';
-//  cTIPersistZeosMySQL50  = 'Zeos_MySQL50';
-
-  result := uTIOPFTestManager;
+  if UTIOPFTestManager = nil then
+    UTIOPFTestManager := TtiOPFTestManager.Create;
+  result := UTIOPFTestManager;
 end;
 
 
@@ -232,15 +181,15 @@ procedure RemoveUnSelectedPersistenceLayerSetups;
 var
   i : integer;
 begin
-  for i := gTIOPFTestManager.Count - 1 downto 0 do
-    if (not gTIOPFTestManager.Items[i].Selected) then
-      gTIOPFTestManager.Delete(i);
+  for i := GTIOPFTestManager.Count - 1 downto 0 do
+    if (not GTIOPFTestManager.Items[i].Selected) then
+      GTIOPFTestManager.Delete(i);
 end;
 
 
 procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
 begin
-  if gTIOPFTestManager.TestNonPersistentClasses then
+  if GTIOPFTestManager.TestNonPersistentClasses then
     RegisterTest(cSuiteNameNonPersistentTests, ATestCaseClass.Suite);
 end;
 
@@ -261,7 +210,7 @@ end;
 initialization
 
 finalization
-  uTIOPFTestManager.Free;
+  UTIOPFTestManager.Free;
 
 end.
 

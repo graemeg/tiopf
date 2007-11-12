@@ -13,11 +13,6 @@ uses
 
 type
 
-  TtiOPFTestSetupDataTAB = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
   TTestTIPersistenceLayersTab = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -81,26 +76,6 @@ end;
 
 { TtiOPFTestSetupDataTAB }
 
-constructor TtiOPFTestSetupDataTAB.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_TAB }
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistTAB;
-  FDBName  := ExpandFileName(ReadFromReg(cTIPersistTAB, 'DBName', gTestDataRoot + 'TAB'));
-  FUserName := ReadFromReg(cTIPersistTAB, 'UserName', 'null');
-  FPassword := ReadFromReg(cTIPersistTAB, 'Password', 'null');
-  FCanCreateDatabase := true;
-  ForceTestDataDirectory;
-end;
 
 { TTestTIDatabaseTAB }
 

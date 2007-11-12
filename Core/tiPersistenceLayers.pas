@@ -4,20 +4,23 @@ unit tiPersistenceLayers;
 
 interface
 uses
-  SysUtils
-  ,Classes
+   tiBaseObject
+  ,tiObject
+  ,tiOID
   ,tiDBConnectionPool
   ,tiQuery
+  ,SysUtils
+  ,Classes
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF MSWINDOWS}
-  ,tiObject
-  ,tiOID
 ;
 
 const
   cErrorUnableToFindPerLayerToUnload = 'Unable to determine which persistence layer to unload.';
   cErrorAttemtpToLoadPerLayerThatsNotLoaded = 'Attempt to unload persistence layer <%s> that''s not currently loaded.';
+  CDefaultDatabaseName = 'Demo';
+  CDefaultDatabaseDirectory = '..' + PathDelim + '_Data' + PathDelim;
 
 type
 
@@ -25,6 +28,7 @@ type
   TtiPersistenceLayers = class;
   TtiPersistenceLayer  = class;
   TtiPersistenceLayerClass = class of TtiPersistenceLayer;
+  TtiPersistenceLayerDefaults = class;
 
   TtiPersistenceLayers = class(TtiObjectList)
   private
@@ -115,8 +119,26 @@ type
     function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean;
     procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string);
     function  TestConnectToDatabase(const ADatabaseName, AUserName, APassword, AParams : string): boolean;
+    // Must be overridden in the concreate class
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); virtual; abstract;
   end;
 
+  TtiPersistenceLayerDefaults = class(TtiBaseObject)
+  private
+    FCanCreateDatabae: Boolean;
+    FDatabaseName: string;
+    FPassword: string;
+    FCanSupportMultiUser: Boolean;
+    FUserName: string;
+    FPersistenceLayerName: string;
+  public
+    property PersistenceLayerName: string read FPersistenceLayerName write FPersistenceLayerName;
+    property DatabaseName: string read FDatabaseName write FDatabaseName;
+    property UserName: string read FUserName write FUserName;
+    property Password: string read FPassword write FPassword;
+    property CanCreateDatabase: Boolean read FCanCreateDatabae write FCanCreateDatabae;
+    property CanSupportMultiUser: Boolean read FCanSupportMultiUser write FCanSupportMultiUser;
+  end;
 
 implementation
 uses

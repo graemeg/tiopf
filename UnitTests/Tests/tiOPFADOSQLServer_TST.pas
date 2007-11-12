@@ -13,11 +13,6 @@ uses
 
 type
 
-  TtiOPFTestSetupDataADOSQLServer = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
   TTestTIPersistenceLayersADOSQLServer = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -68,28 +63,6 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIOIDManagerADOSQLServer.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIAutoMapOperationADOSQLServer.Suite);
   end;
-end;
-
-{ TtiOPFTestSetupDataADOSQLServer }
-
-constructor TtiOPFTestSetupDataADOSQLServer.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_ADOSQLSERVER}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistADOSQLServer;
-  FDBName  := ReadFromReg(cTIPersistADOSQLServer, 'DBName', 'EnterValueHere');
-  FUserName := ReadFromReg(cTIPersistADOSQLServer, 'UserName', 'null');
-  FPassword := ReadFromReg(cTIPersistADOSQLServer, 'Password', 'null');
-  FCanCreateDatabase := false;
 end;
 
 procedure TTestTIDatabaseADOSQLServer.CreateDatabase;

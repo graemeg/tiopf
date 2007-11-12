@@ -21,14 +21,6 @@ const
 
 type
 
-  TtiOPFTestSetupDataRemote = class(TtiOPFTestSetupData)
-  private
-    FHadToLoadServer : boolean;
-  public
-    constructor Create   ; override;
-    destructor  Destroy  ; override;
-  end;
-
   TTestTIPersistenceLayersRemote = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -89,30 +81,6 @@ begin
   end;
 end;
 
-{ TtiOPFTestSetupDataRemote }
-
-constructor TtiOPFTestSetupDataRemote.Create;
-begin
-  inherited;
-  FHadToLoadServer := false;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_REMOTE}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistRemote;
-  FDBName  := ReadFromReg(cTIPersistRemote, 'DBName',    cLocalHost);
-  FUsername := ReadFromReg(cTIPersistRemote, 'Username', 'null'   );
-  FPassword := ReadFromReg(cTIPersistRemote, 'Password', 'null');
-  FCanCreateDatabase := false;
-  ForceTestDataDirectory;
-end;
-
 { TTestTIDatabaseRemote }
 
 procedure TTestTIDatabaseRemote.CreateDatabase;
@@ -141,16 +109,6 @@ begin
       Check(Pos('DatabaseExists not implemented in ' + FDatabaseClass.ClassName, e.Message)<>0);
     end;
   end;
-end;
-
-destructor TtiOPFTestSetupDataRemote.Destroy;
-var
-  lHandle : THandle;
-begin
-  lHandle := FindWindow(nil, pchar(cRemoteServerMainFormCaption));
-  if FHadToLoadServer and (lHandle <> 0) then
-    PostMessage(lHandle, WM_Quit, 0, 0);
-  inherited;
 end;
 
 procedure TTestTIDatabaseRemote.SetUp;

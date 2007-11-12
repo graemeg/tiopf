@@ -19,6 +19,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
   TtiDBConnectionPoolDataTAB = Class(TtiDBConnectionPoolDataTXTAbs);
@@ -187,6 +189,18 @@ begin
 end;
 
 { TtiPersistenceLayerTab }
+
+procedure TtiPersistenceLayerTab.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistTab;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + 'Tab';
+  APersistenceLayerDefaults.Username:= 'null';
+  APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanCreateDatabase:= True;
+  APersistenceLayerDefaults.CanSupportMultiUser:= False;
+end;
 
 function TtiPersistenceLayerTab.GetDatabaseClass: TtiDatabaseClass;
 begin

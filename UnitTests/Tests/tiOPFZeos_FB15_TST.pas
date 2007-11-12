@@ -13,11 +13,6 @@ uses
 
 
 type
-  TtiOPFTestSetupDataZeos = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
 
   TTestTIPersistenceLayersZeos = class(TTestTIPersistenceLayers)
   protected
@@ -78,32 +73,6 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDManagerZeos.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIAutoMapOperationZeos.Suite);
   end;
-end;
-
-{ TtiOPFTestSetupDataZeos }
-
-constructor TtiOPFTestSetupDataZeos.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_FBL}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected    := FEnabled;
-  FPerLayerName := cTIPersistZeosFB15;
-  // You can specify a hostname or a local database.
-//  FDBName      := 'localhost|' + ReadFromReg(cTIPersistZeosFB15, 'DBName', gTestDataRoot + '.fbd');
-  FDBName      := ReadFromReg(cTIPersistZeosFB15, 'DBName', gTestDataRoot + '.fbd');
-//  writeln(FDBName);
-  FUsername    := ReadFromReg(cTIPersistZeosFB15, 'Username', 'SYSDBA');
-  FPassword    := ReadFromReg(cTIPersistZeosFB15, 'Password', 'masterkey');
-  FCanCreateDatabase := False;
-  ForceTestDataDirectory;
 end;
 
 { TTestTIDatabaseZeos }

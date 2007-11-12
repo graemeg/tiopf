@@ -17,6 +17,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
   TtiDatabaseZeosMySQL41 = class(TtiDatabaseZeosMySQL)
@@ -28,7 +30,6 @@ implementation
 
 uses
   tiOPFManager
-  ,tiDBConnectionPool
   ,tiAutoMap
   ,tiObject
   ,tiConstants
@@ -45,6 +46,19 @@ begin
 end;
 
 { TtiPersistenceLayerZeosMySQL41 }
+
+procedure TtiPersistenceLayerZeosMySQL41.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(False, 'Under construction');
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistXX;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.XXX';
+  APersistenceLayerDefaults.Username:= 'XXX';
+  APersistenceLayerDefaults.Password:= 'XXX';
+  APersistenceLayerDefaults.CanCreateDatabase:= True;
+  APersistenceLayerDefaults.CanSupportMultiUser:= True;
+end;
 
 function TtiPersistenceLayerZeosMySQL41.GetDatabaseClass: TtiDatabaseClass;
 begin

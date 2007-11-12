@@ -47,6 +47,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
   TtiDatabaseFBL = class(TtiDatabaseSQL)
@@ -975,6 +977,18 @@ begin
 end;
 
 { TtiPersistenceLayerFBL }
+
+procedure TtiPersistenceLayerFBL.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistFBL ;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
+  APersistenceLayerDefaults.Username:= 'SYSDBA';
+  APersistenceLayerDefaults.Password:= 'masterkey';
+  APersistenceLayerDefaults.CanCreateDatabase:= False;
+  APersistenceLayerDefaults.CanSupportMultiUser:= True;
+end;
 
 function TtiPersistenceLayerFBL.GetDatabaseClass: TtiDatabaseClass;
 begin

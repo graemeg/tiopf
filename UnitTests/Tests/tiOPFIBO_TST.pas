@@ -14,11 +14,6 @@ uses
 
 type
 
-  TtiOPFTestSetupDataIBO = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
   TTestTIPersistenceLayersIBO = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -68,28 +63,6 @@ begin
     RegisterTest(cTIQueryTestName, TTestTIOIDManagerIBO.Suite);
     RegisterTest(cTIQueryTestName, TTestTIAutoMapOperationIBO.Suite);
   end;
-end;
-
-{ TtiOPFTestSetupDataIBO }
-
-constructor TtiOPFTestSetupDataIBO.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_IBO}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistIBO;
-  FDBName  := ReadFromReg(cTIPersistIBO, 'DBName', gTestDataRoot + '.ib');
-  FUserName := ReadFromReg(cTIPersistIBO, 'UserName', 'SYSDBA');
-  FPassword := ReadFromReg(cTIPersistIBO, 'Password', 'masterkey');
-  FCanCreateDatabase := false;
 end;
 
 { TTestTIDatabaseIBO }

@@ -13,11 +13,6 @@ uses
 
 type
 
-  TtiOPFTestSetupDataXMLLight = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
   TTestTIPersistenceLayersXMLLight = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -77,27 +72,6 @@ begin
 end;
 
 { TtiOPFTestSetupDataXMLLight }
-
-constructor TtiOPFTestSetupDataXMLLight.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_XMLLIGHT}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistXMLLight;
-  FDBName  := ExpandFileName(ReadFromReg(cTIPersistXMLLight, 'DBName', gTestDataRoot + '_XMLLight.XML'));
-  FUsername := ReadFromReg(cTIPersistXMLLight, 'Username', 'null');
-  FPassword := ReadFromReg(cTIPersistXMLLight, 'Password', 'null');
-  FCanCreateDatabase := true;
-  ForceTestDataDirectory;
-end;
 
 { TTestTIDatabaseXMLLight }
 

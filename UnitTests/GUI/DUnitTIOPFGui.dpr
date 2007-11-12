@@ -9,8 +9,7 @@ uses
   GUITestRunner,
   tiLogToGUI,
   tiDUnitDependencies in '..\Common\tiDUnitDependencies.pas',
-  tiPromptWhichPersistenceLayersToTest in '..\Common\tiPromptWhichPersistenceLayersToTest.pas',
-  tiGUIUtils_TST in '..\Tests\tiGUIUtils_TST.pas';
+  tiPromptWhichPersistenceLayersToTest in '..\Common\tiPromptWhichPersistenceLayersToTest.pas';
 
 {$R *.RES}
 

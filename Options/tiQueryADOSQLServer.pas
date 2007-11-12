@@ -20,8 +20,9 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
-
 
   TtiDatabaseADOSQLServer = class(TtiDatabaseADOAbs)
   private
@@ -180,6 +181,17 @@ begin
 end;
 
 { TtiPersistenceLayerADOSQLServer }
+
+procedure TtiPersistenceLayerADOSQLServer.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistADOSQLServer;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.XXX';
+  APersistenceLayerDefaults.Username:= 'XXX';
+  APersistenceLayerDefaults.Password:= 'XXX';
+  APersistenceLayerDefaults.CanCreateDatabase:= True;
+  APersistenceLayerDefaults.CanSupportMultiUser:= True;end;
 
 function TtiPersistenceLayerADOSQLServer.GetDatabaseClass: TtiDatabaseClass;
 begin

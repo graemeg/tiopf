@@ -13,17 +13,11 @@ uses
 
 
 type
-  TtiOPFTestSetupDataFBL = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
 
   TTestTIPersistenceLayersFBL = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
   end;
-
 
   TTestTIDatabaseFBL = class(TTestTIDatabase)
   protected
@@ -78,32 +72,6 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIOIDManagerFBL.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIAutoMapOperationFBL.Suite);
   end;
-end;
-
-{ TtiOPFTestSetupDataFBL }
-
-constructor TtiOPFTestSetupDataFBL.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_FBL}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected    := FEnabled;
-  FPerLayerName := cTIPersistFBL;
-  // You can specify a hostname or a local database.
-//  FDBName      := 'localhost|' + ReadFromReg(cTIPersistFBL, 'DBName', gTestDataRoot + '.fdb');
-  FDBName      := ReadFromReg(cTIPersistFBL, 'DBName', gTestDataRoot + '.fdb');
-//  writeln(FDBName);
-  FUsername    := ReadFromReg(cTIPersistFBL, 'Username', 'SYSDBA');
-  FPassword    := ReadFromReg(cTIPersistFBL, 'Password', 'masterkey');
-  FCanCreateDatabase := False;
-  ForceTestDataDirectory;
 end;
 
 { TTestTIDatabaseFBL }

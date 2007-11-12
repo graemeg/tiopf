@@ -6,6 +6,7 @@ interface
 uses
    Classes  // needed for TStringList
   ,tiObject
+  ,tiPersistenceLayers
   {$IFDEF FPC}
   ,TestRegistry
   {$ELSE}
@@ -24,32 +25,31 @@ type
 
   TtiOPFTestSetupData = class(TtiObject)
   private
-    function   GetToRun: boolean;
+    FPersistenceLayerDefaults: TtiPersistenceLayerDefaults;
+    function GetCanCreateDatabase: boolean;
+    function GetDatabaseName: string;
+    function GetPassword: string;
+    function GetPersistenceLayerName: string;
+    function GetUserName: string;
   protected
     FSelected: Boolean;
-    FPerLayerName : string;
-    FDBName      : string;
-    FUsername    : string;
-    FPassword    : string;
-    FEnabled: boolean;
-    FCanCreateDatabase: boolean;
     // Gives you the chance to override default database, username
     // and password values for the unit tests.
     function  ReadFromReg(const pPerLayer, pProp, pDefault : string): string;
   public
-    constructor Create; override;
+    constructor Create(const APersistenceLayer: TtiPersistenceLayer); reintroduce;
     destructor  Destroy; override;
     procedure   Read; override;
     procedure   Save; override;
-    property    PerLayerName : string read FPerLayerName;
-    property    DBName       : string read FDBName    ;
-    property    Username     : string read FUsername  ;
-    property    Password     : string read FPassword  ;
-    property    CanCreateDatabase : boolean read FCanCreateDatabase;
+
+    property    PerLayerName : string read GetPersistenceLayerName;
+    property    DBName       : string read GetDatabaseName;
+    property    Username     : string read GetUserName;
+    property    Password     : string read GetPassword;
+    property    CanCreateDatabase : boolean read GetCanCreateDatabase;
     procedure   ForceTestDataDirectory;
     property    Selected     : boolean read FSelected write FSelected;
-    property    Enabled      : boolean read FEnabled;
-    property    ToRun        : boolean read GetToRun;
+
   end;
 
 
@@ -74,10 +74,6 @@ type
     procedure   Save; override;
   end;
 
-var
-  gTestDataRoot: string;
-
-
 implementation
 uses
   tiCommandLineParams
@@ -93,7 +89,11 @@ uses
   ,FileCtrl
   {$ENDIF}
   ,tiDUnitINI
+  ,tiConstants
  ;
+
+const
+  CDefaultTestDataDirectory = '..\_Data';
 
 { TtiOPFTestManager }
 
@@ -104,10 +104,18 @@ end;
 
 
 constructor TtiOPFTestManager.Create;
+var
+  L: TtiOPFTestSetupData;
+  i: integer;
 begin
   inherited;
   FTestNonPersistentClasses:= True;
   FTestAll := FindCmdLineSwitch('All', ['-', '/'], true);
+  for i := 0 to GTIOPFManager.PersistenceLayers.Count - 1 do
+  begin
+    L:= TtiOPFTestSetupData.Create(GTIOPFManager.PersistenceLayers.Items[i]);
+    Add(L);
+  end;
 end;
 
 
@@ -174,7 +182,7 @@ begin
   if not result then
     Exit; //==>
   lSetup := FindByPerLayerName(pClassID);
-  result := lSetup.Enabled and (lSetup.Selected or FTestAll);
+  result := (lSetup.Selected or FTestAll);
 end;
 
 
@@ -198,23 +206,19 @@ begin
 end;
 
 { TtiOPFTestSetupData }
-
-constructor TtiOPFTestSetupData.Create;
+constructor TtiOPFTestSetupData.Create(const APersistenceLayer: TtiPersistenceLayer);
 const
   cUnknown = 'Unknown';
 begin
-  inherited;
-  FPerLayerName    := cUnknown;
-  FDBName          := cUnknown;
-  FUsername        := cUnknown;
-  FPassword        := cUnknown;
-  FEnabled         := false;
-  FCanCreateDatabase:= false;
+  inherited Create;
+  FPersistenceLayerDefaults:= TtiPersistenceLayerDefaults.Create;
+  APersistenceLayer.AssignPersistenceLayerDefaults(FPersistenceLayerDefaults);
 end;
 
 
 destructor TtiOPFTestSetupData.destroy;
 begin
+  FPersistenceLayerDefaults.Free;
   inherited;
 end;
 
@@ -223,7 +227,6 @@ procedure TtiOPFTestSetupData.ForceTestDataDirectory;
 var
   lDir : string;
 begin
-//  Exit;   // ?????
   if not CanCreateDatabase then
     Exit; //==>
   lDir := ExtractFilePath(DBName);
@@ -239,17 +242,51 @@ end;
 
 procedure TtiOPFTestSetupData.Read;
 begin
-  if not gDUnitINICommon.ValueExists(cINIPerLayersToTest, PerLayerName) then
-    gDUnitINICommon.WriteBool(cINIPerLayersToTest, PerLayerName, Enabled);
-  FSelected := gDUnitINICommon.ReadBool(cINIPerLayersToTest, PerLayerName, Enabled);
+  FSelected := gDUnitINICommon.ReadBool(cINIPerLayersToTest, PerLayerName, True);
 end;
 
 
-function TtiOPFTestSetupData.GetToRun: boolean;
+function TtiOPFTestSetupData.GetCanCreateDatabase: boolean;
 begin
-  result := Selected and Enabled;
+  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  result:= FPersistenceLayerDefaults.CanCreateDatabase;
 end;
 
+function TtiOPFTestSetupData.GetDatabaseName: string;
+var
+  LDefault: string;
+begin
+  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  LDefault:= ExpandFileName(tiAddTrailingSlash(CDefaultTestDataDirectory) + FPersistenceLayerDefaults.DatabaseName);
+  Result:= ReadFromReg(
+    FPersistenceLayerDefaults.PersistenceLayerName,
+    'DBName',
+    LDefault);
+end;
+
+function TtiOPFTestSetupData.GetPassword: string;
+begin
+  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  Result:= ReadFromReg(
+    FPersistenceLayerDefaults.PersistenceLayerName,
+    'Password',
+    FPersistenceLayerDefaults.Password);
+end;
+
+function TtiOPFTestSetupData.GetPersistenceLayerName: string;
+begin
+  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  Result:= FPersistenceLayerDefaults.PersistenceLayerName;
+end;
+
+function TtiOPFTestSetupData.GetUserName: string;
+begin
+  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  Result:= ReadFromReg(
+    FPersistenceLayerDefaults.PersistenceLayerName,
+    'UserName',
+    FPersistenceLayerDefaults.UserName);
+end;
 
 function TtiOPFTestSetupData.ReadFromReg(const pPerLayer, pProp, pDefault: string): string;
 var
@@ -270,13 +307,5 @@ procedure TtiOPFTestSetupData.Save;
 begin
   gDUnitINICommon.WriteBool(cINIPerLayersToTest, PerLayerName, FSelected);
 end;
-
-
-initialization
-  {$IFDEF UNIX}
-  gTestDataRoot := '../_Data/Demo';
-  {$ELSE}
-  gTestDataRoot := '..\_Data\Demo';
-  {$ENDIF}
 
 end.

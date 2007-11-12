@@ -27,6 +27,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
   TtiDBConnectionPoolDataXML = Class(TtiDBConnectionPoolDataAbs)
@@ -1006,6 +1008,18 @@ begin
 end;
 
 { TtiPersistenceLayerBDEParadox }
+
+procedure TtiPersistenceLayerBDEParadox.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistXML;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.xml';
+  APersistenceLayerDefaults.Username:= 'null';
+  APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanCreateDatabase:= True;
+  APersistenceLayerDefaults.CanSupportMultiUser:= False;
+end;
 
 function TtiPersistenceLayerBDEParadox.GetDatabaseClass: TtiDatabaseClass;
 begin

@@ -14,11 +14,6 @@ uses
 
 type
 
-  TtiOPFTestSetupDataXML = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
   TTestTIPersistenceLayersXML = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -72,29 +67,6 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIAutoMapOperationXM.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIOIDManagerXML.Suite);
   end;
-end;
-
-{ TtiOPFTestSetupDataXML }
-
-constructor TtiOPFTestSetupDataXML.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_XML}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistXML;
-  FDBName  := ExpandFileName(ReadFromReg(cTIPersistXML, 'DBName', gTestDataRoot + '_MSXML.xml'));
-  FUsername := ReadFromReg(cTIPersistXML, 'Username', 'null');
-  FPassword := ReadFromReg(cTIPersistXML, 'Password', 'null');
-  FCanCreateDatabase := true;
-  ForceTestDataDirectory;
 end;
 
 { TTestTIDatabaseXML }

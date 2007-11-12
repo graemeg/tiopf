@@ -14,11 +14,6 @@ uses
 
 type
 
-  TtiOPFTestSetupDataIBX = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
   TTestTIPersistenceLayersIBX = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -74,30 +69,6 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIAutoMapOperationIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestAutomappingCriteriaIBX.Suite);
   end;
-end;
-
-{ TtiOPFTestSetupDataIBX }
-
-constructor TtiOPFTestSetupDataIBX.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_IBX}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistIBX;
-  // This will fail if there is an IP address or machine name in the databasename
-  FDBName  := ExpandFileName(ReadFromReg(cTIPersistIBX, 'DBName', gTestDataRoot + '.fbd'));
-  FUsername := ReadFromReg(cTIPersistIBX, 'Username', 'SYSDBA');
-  FPassword := ReadFromReg(cTIPersistIBX, 'Password', 'masterkey');
-  FCanCreateDatabase := true;
-  ForceTestDataDirectory;
 end;
 
 { TTestTIDatabaseIBX }

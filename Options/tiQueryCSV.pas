@@ -21,6 +21,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
   TtiDatabaseCSV = class(TtiDatabaseTXTFlatFileAbs)
@@ -187,6 +189,18 @@ begin
 end;
 
 { TtiPersistenceLayerCSV }
+
+procedure TtiPersistenceLayerCSV.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistCSV;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + 'CSV';
+  APersistenceLayerDefaults.Username:= 'null';
+  APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanCreateDatabase:= True;
+  APersistenceLayerDefaults.CanSupportMultiUser:= False;
+end;
 
 function TtiPersistenceLayerCSV.GetDatabaseClass: TtiDatabaseClass;
 begin

@@ -16,17 +16,10 @@ uses
 
 type
 
-  TtiOPFTestSetupDataCSV = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-  
-
   TTestTIPersistenceLayersCSV = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
   end;
-  
 
   TTestTIDatabaseCSV = class(TTestTIDatabase)
   protected
@@ -89,27 +82,6 @@ begin
 end;
 
 { TtiOPFTestSetupDataCSV }
-
-constructor TtiOPFTestSetupDataCSV.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_CSV}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistCSV;
-  FDBName  := ExpandFileName(ReadFromReg(cTIPersistCSV, 'DBName', gTestDataRoot + 'CSV'));
-  FUserName := ReadFromReg(cTIPersistCSV, 'UserName', 'null');
-  FPassword := ReadFromReg(cTIPersistCSV, 'Password', 'null');
-  FCanCreateDatabase := true;
-  ForceTestDataDirectory;
-end;
 
 procedure TTestTIDatabaseCSV.CreateDatabase;
 var

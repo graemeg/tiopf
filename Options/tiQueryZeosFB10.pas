@@ -18,6 +18,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
   TtiDatabaseZeosFB10 = class(TtiDatabaseZeosIBFB)
@@ -48,6 +50,18 @@ end;
 
 
 { TtiPersistenceLayerZeosFB10 }
+
+procedure TtiPersistenceLayerZeosFB10.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistZeosFB10;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
+  APersistenceLayerDefaults.Username:= 'SYSDBA';
+  APersistenceLayerDefaults.Password:= 'masterkey';
+  APersistenceLayerDefaults.CanCreateDatabase:= False;
+  APersistenceLayerDefaults.CanSupportMultiUser:= True;
+end;
 
 function TtiPersistenceLayerZeosFB10.GetDatabaseClass: TtiDatabaseClass;
 begin

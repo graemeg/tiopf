@@ -26,6 +26,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
   TtiDBConnectionPoolDataXMLLight = Class(TtiDBConnectionPoolDataTXTAbs);
@@ -337,6 +339,18 @@ begin
 end;
 
 { TtiPersistenceLayerXMLLight }
+
+procedure TtiPersistenceLayerXMLLight.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistXMLLight;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName + '.XMLLight';
+  APersistenceLayerDefaults.UserName:= 'null';
+  APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanCreateDatabase:= True;
+  APersistenceLayerDefaults.CanSupportMultiUser:= False;
+end;
 
 function TtiPersistenceLayerXMLLight.GetDatabaseClass: TtiDatabaseClass;
 begin

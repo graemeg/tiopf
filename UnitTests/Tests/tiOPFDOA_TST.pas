@@ -13,11 +13,6 @@ uses
 
 type
 
-  TtiOPFTestSetupDataDOA = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
   TTestTIPersistenceLayersDOA = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -71,26 +66,6 @@ begin
 end;
 
 { TtiOPFTestSetupDataDOA }
-
-constructor TtiOPFTestSetupDataDOA.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_DOA}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistDOA;
-  FDBName  := ReadFromReg(cTIPersistDOA, 'DBName',   'orcl');
-  FUserName := ReadFromReg(cTIPersistDOA, 'UserName', 'scott');
-  FPassword := ReadFromReg(cTIPersistDOA, 'Password', 'tiger');
-  FCanCreateDatabase := false;
-end;
 
 procedure TTestTIDatabaseDOA.CreateDatabase;
 begin

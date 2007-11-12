@@ -14,11 +14,6 @@ uses
 
 type
 
-  TtiOPFTestSetupDataBDEParadox = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
   TTestTIPersistenceLayersBDEParadox = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -85,27 +80,6 @@ begin
 end;
 
 { TtiOPFTestSetupDataBDEParadox }
-
-constructor TtiOPFTestSetupDataBDEParadox.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_BDEPARADOX}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistBDEParadox;
-  FDBName  := ExpandFileName(ReadFromReg(cTIPersistBDEParadox, 'DBName', gTestDataRoot + 'Paradox'));
-  FUserName := ReadFromReg(cTIPersistBDEParadox, 'UserName', 'null');
-  FPassword := ReadFromReg(cTIPersistBDEParadox, 'Password', 'null');
-  FCanCreateDatabase := true;
-  ForceTestDataDirectory;
-end;
 
 procedure TTestTIDatabaseBDEParadox.CreateDatabase;
 var

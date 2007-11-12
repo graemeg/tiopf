@@ -18,6 +18,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
 type
@@ -31,7 +33,6 @@ implementation
 
 uses
   tiOPFManager
-  ,tiDBConnectionPool
   ,tiAutoMap
   ,tiObject
   ,tiConstants
@@ -50,6 +51,18 @@ end;
 
 
 { TtiPersistenceLayerZeosFB15 }
+
+procedure TtiPersistenceLayerZeosFB15.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistZeosFB15;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
+  APersistenceLayerDefaults.Username:= 'SYSDBA';
+  APersistenceLayerDefaults.Password:= 'masterkey';
+  APersistenceLayerDefaults.CanCreateDatabase:= False;
+  APersistenceLayerDefaults.CanSupportMultiUser:= True;
+end;
 
 function TtiPersistenceLayerZeosFB15.GetDatabaseClass: TtiDatabaseClass;
 begin

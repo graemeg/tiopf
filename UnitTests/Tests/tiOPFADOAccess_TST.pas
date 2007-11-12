@@ -14,11 +14,6 @@ uses
 
 type
 
-  TtiOPFTestSetupDataADOAccess = class(TtiOPFTestSetupData)
-  public
-    constructor Create; override;
-  end;
-
   TTestTIPersistenceLayersADOAccess = class(TTestTIPersistenceLayers)
   protected
     procedure SetUp; override;
@@ -82,27 +77,6 @@ begin
 end;
 
 { TtiOPFTestSetupDataADOAccess }
-
-constructor TtiOPFTestSetupDataADOAccess.Create;
-begin
-  inherited;
-  {$IFNDEF STATIC_PERLAYER_LINKING}
-    FEnabled := True;
-  {$ELSE}
-    {$IFDEF LINK_ADOACCESS}
-      FEnabled := True;
-    {$ELSE}
-      FEnabled := False;
-    {$ENDIF}
-  {$ENDIF}
-  FSelected:= FEnabled;
-  FPerLayerName := cTIPersistADOAccess;
-  FDBName  := ReadFromReg(cTIPersistADOAccess, 'DBUserName', gTestDataRoot + '.mdb');
-  FUserName := ReadFromReg(cTIPersistADOAccess, 'UserName', 'null');
-  FPassword := ReadFromReg(cTIPersistADOAccess, 'Password', 'null');
-  FCanCreateDatabase := true;
-  ForceTestDataDirectory;
-end;
 
 { TTestTIDatabaseADOAccess }
 

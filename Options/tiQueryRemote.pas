@@ -114,6 +114,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
   TtiQueryTransParams = class;
@@ -1238,6 +1240,18 @@ begin
 end;
 
 { TtiPersistenceLayerRemoteXML }
+
+procedure TtiPersistenceLayerRemoteXML.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistXX;
+  APersistenceLayerDefaults.DatabaseName:= cLocalHost;
+  APersistenceLayerDefaults.Username:= 'null';
+  APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanCreateDatabase:= False;
+  APersistenceLayerDefaults.CanSupportMultiUser:= True;
+end;
 
 function TtiPersistenceLayerRemoteXML.GetDatabaseClass: TtiDatabaseClass;
 begin

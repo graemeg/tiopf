@@ -27,6 +27,8 @@ type
     function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
   EtiOPFDOAException = EtiOPFException;
@@ -1110,6 +1112,18 @@ begin
 end;
 
 { TtiPersistenceLayerDOA }
+
+procedure TtiPersistenceLayerDOA.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistDOA;
+  APersistenceLayerDefaults.DatabaseName:= 'ocrl';
+  APersistenceLayerDefaults.Username:= 'scott';
+  APersistenceLayerDefaults.Password:= 'tiger';
+  APersistenceLayerDefaults.CanCreateDatabase:= False;
+  APersistenceLayerDefaults.CanSupportMultiUser:= True;
+end;
 
 function TtiPersistenceLayerDOA.GetDatabaseClass: TtiDatabaseClass;
 begin
