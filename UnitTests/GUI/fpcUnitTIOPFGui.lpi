@@ -26,17 +26,17 @@
     </RunParams>
     <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="FCL"/>
-      </Item1>
-      <Item2>
-        <PackageName Value="FPCUnitTestRunner"/>
-      </Item2>
-      <Item3>
-        <PackageName Value="LCL"/>
-      </Item3>
-      <Item4>
         <PackageName Value="tiOPFGUI"/>
         <MinVersion Major="2" Valid="True"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FPCUnitTestRunner"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="FCL"/>
       </Item4>
     </RequiredPackages>
     <Units Count="23">

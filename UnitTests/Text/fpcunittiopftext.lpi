@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="/"/>
-    <Version Value="5"/>
+    <Version Value="6"/>
     <General>
       <Flags>
         <SaveOnlyProjectUnits Value="True"/>
@@ -26,19 +26,16 @@
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="4">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="tiOPF"/>
+        <PackageName Value="FCL"/>
       </Item1>
       <Item2>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FPCUnitConsoleRunner"/>
       </Item2>
       <Item3>
-        <PackageName Value="FPCUnitConsoleRunner"/>
+        <PackageName Value="tiOPF"/>
       </Item3>
-      <Item4>
-        <PackageName Value="FCL"/>
-      </Item4>
     </RequiredPackages>
     <Units Count="14">
       <Unit0>
@@ -131,7 +128,8 @@
 -dLink_TAB
 -dLink_CSV
 -dLink_FBL
--dLink_XMLLIGHT"/>
+-dLink_XMLLIGHT
+"/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>

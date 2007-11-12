@@ -23,11 +23,13 @@ procedure RegisterExpectedTIOPFMemoryLeaks;
 
 implementation
 uses
+{$IFNDEF FPC}
    FastMM4
   ,IdThreadSafe
   ,IdGlobal
-  ,SysUtils
-  ,TestFramework
+  ,TestFramework,
+{$ENDIF}
+  SysUtils
 
   ,tiLog // Confirm which of these must be referenced here
   ,tiLogToFile
@@ -68,26 +70,29 @@ uses
   ,tiCriteria_TST
   ,tiRTTI_TST
   ,tiTokenLibrary_TST
+  {$IFNDEF FPC}
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
   ,tiWebServer_tst
+  {$ENDIF}
 
   // Persistent test fixtures (in alpha order)
-  ,tiOPFADOAccess_TST
-  ,tiOPFBDEParadox_TST
-  ,tiOPFADOSQLServer_TST
+
+  {$IFNDEF FPC},tiOPFADOAccess_TST{$ENDIF}
+  {$IFNDEF FPC},tiOPFBDEParadox_TST{$ENDIF}
+  {$IFNDEF FPC},tiOPFADOSQLServer_TST{$ENDIF}
   ,tiOPFCSV_TST
-  ,tiOPFDOA_TST
+  {$IFNDEF FPC},tiOPFDOA_TST{$ENDIF}
   ,tiOPFFBL_TST
-  ,tiOPFIBO_TST
-  ,tiOPFIBX_TST
-  ,tiOPFRemote_TST
+  {$IFNDEF FPC},tiOPFIBO_TST{$ENDIF}
+  {$IFNDEF FPC},tiOPFIBX_TST{$ENDIF}
+  {$IFNDEF FPC},tiOPFRemote_TST{$ENDIF}
   //,tiOPFSQLDB_IB_TST  // no such test
   ,tiOPFTAB_TST
-  ,tiOPFXML_TST
+  {$IFNDEF FPC},tiOPFXML_TST{$ENDIF}
   ,tiOPFXMLLight_TST
   //,tiOPFZeos_FB10_TST  // No tests
-  ,tiOPFZeos_FB15_TST
+  {$IFNDEF FPC},tiOPFZeos_FB15_TST{$ENDIF}
   //,tiOPFZeos_MySQL41_TST // No tests
   //,tiOPFZeos_MySQL50_TST // No tests
 
@@ -142,29 +147,30 @@ begin
   tiCriteria_TST.RegisterTests;
   tiTokenLibrary_TST.RegisterTests;
   tiLogToFile_TST.RegisterTests;
+  {$IFNDEF FPC}
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
   tiWebServer_tst.RegisterTests;
+  {$ENDIF}
 
   // Persistent test fixtures (in alpha order)
-  tiOPFADOAccess_TST.RegisterTests;
-  tiOPFBDEParadox_TST.RegisterTests;
-  tiOPFADOSQLServer_TST.RegisterTests;
+  {$IFNDEF FPC}tiOPFADOAccess_TST.RegisterTests;{$ENDIF}
+  {$IFNDEF FPC}tiOPFBDEParadox_TST.RegisterTests;{$ENDIF}
+  {$IFNDEF FPC}tiOPFADOSQLServer_TST.RegisterTests;{$ENDIF}
   tiOPFCSV_TST.RegisterTests;
-  tiOPFDOA_TST.RegisterTests;
+  {$IFNDEF FPC}tiOPFDOA_TST.RegisterTests;{$ENDIF}
   tiOPFFBL_TST.RegisterTests;
-  tiOPFIBO_TST.RegisterTests;
-  tiOPFIBX_TST.RegisterTests;
-  tiOPFRemote_TST.RegisterTests;
+  {$IFNDEF FPC}tiOPFIBO_TST.RegisterTests;{$ENDIF}
+  {$IFNDEF FPC}tiOPFIBX_TST.RegisterTests;{$ENDIF}
+  {$IFNDEF FPC}tiOPFRemote_TST.RegisterTests;{$ENDIF}
   //tiOPFSQLDB_IB_TST.RegisterTests; // No tests
   tiOPFTAB_TST.RegisterTests;
-  tiOPFXML_TST.RegisterTests;
+  {$IFNDEF FPC}tiOPFXML_TST.RegisterTests;{$ENDIF}
   tiOPFXMLLight_TST.RegisterTests;
   //tiOPFZeos_FB10_TST.RegisterTests; // No tests
-  tiOPFZeos_FB15_TST.RegisterTests;
+  {$IFNDEF FPC}tiOPFZeos_FB15_TST.RegisterTests;{$ENDIF}
   //tiOPFZeos_MySQL41_TST.RegisterTests; // No tests
   //tiOPFZeos_MySQL50_TST.RegisterTests; // No tests
-
 
 end;
 
