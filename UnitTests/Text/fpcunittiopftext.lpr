@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Classes
   ,ConsoleTestRunner
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ;
 
 type
@@ -28,8 +28,10 @@ begin
   App.Initialize;
   App.Title := 'FPCUnit Console test runner';
 
-  tiDUnitDependencies.RegisterTests;
-  tiDUnitDependencies.RemoveUnSelectedPersistenceLayerSetups;
+  GTIOPFTestManager.Read;
+  tiTestDependencies.RegisterTests;
+  
+//  tiTestDependencies.RemoveUnSelectedPersistenceLayerSetups;
   
   App.Run;
   App.Free;

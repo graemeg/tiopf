@@ -76,22 +76,21 @@ uses
   {$ENDIF}
 
   // Persistent test fixtures (in alpha order)
-
-  {$IFNDEF FPC},tiOPFADOAccess_TST{$ENDIF}
-  {$IFNDEF FPC},tiOPFBDEParadox_TST{$ENDIF}
-  {$IFNDEF FPC},tiOPFADOSQLServer_TST{$ENDIF}
+  ,tiOPFADOAccess_TST
+  ,tiOPFBDEParadox_TST
+  ,tiOPFADOSQLServer_TST
   ,tiOPFCSV_TST
-  {$IFNDEF FPC},tiOPFDOA_TST{$ENDIF}
+  ,tiOPFDOA_TST
   ,tiOPFFBL_TST
-  {$IFNDEF FPC},tiOPFIBO_TST{$ENDIF}
-  {$IFNDEF FPC},tiOPFIBX_TST{$ENDIF}
-  {$IFNDEF FPC},tiOPFRemote_TST{$ENDIF}
+  ,tiOPFIBO_TST
+  ,tiOPFIBX_TST
+  ,tiOPFRemote_TST
   //,tiOPFSQLDB_IB_TST  // no such test
   ,tiOPFTAB_TST
-  {$IFNDEF FPC},tiOPFXML_TST{$ENDIF}
+  ,tiOPFXML_TST
   ,tiOPFXMLLight_TST
   //,tiOPFZeos_FB10_TST  // No tests
-  {$IFNDEF FPC},tiOPFZeos_FB15_TST{$ENDIF}
+  ,tiOPFZeos_FB15_TST
   //,tiOPFZeos_MySQL41_TST // No tests
   //,tiOPFZeos_MySQL50_TST // No tests
 
@@ -152,21 +151,21 @@ begin
   {$ENDIF}
 
   // Persistent test fixtures (in alpha order)
-  {$IFNDEF FPC}tiOPFADOAccess_TST.RegisterTests;{$ENDIF}
-  {$IFNDEF FPC}tiOPFBDEParadox_TST.RegisterTests;{$ENDIF}
-  {$IFNDEF FPC}tiOPFADOSQLServer_TST.RegisterTests;{$ENDIF}
+  tiOPFADOAccess_TST.RegisterTests;
+  tiOPFBDEParadox_TST.RegisterTests;
+  tiOPFADOSQLServer_TST.RegisterTests;
   tiOPFCSV_TST.RegisterTests;
-  {$IFNDEF FPC}tiOPFDOA_TST.RegisterTests;{$ENDIF}
+  tiOPFDOA_TST.RegisterTests;
   tiOPFFBL_TST.RegisterTests;
-  {$IFNDEF FPC}tiOPFIBO_TST.RegisterTests;{$ENDIF}
-  {$IFNDEF FPC}tiOPFIBX_TST.RegisterTests;{$ENDIF}
-  {$IFNDEF FPC}tiOPFRemote_TST.RegisterTests;{$ENDIF}
+  tiOPFIBO_TST.RegisterTests;
+  tiOPFIBX_TST.RegisterTests;
+  tiOPFRemote_TST.RegisterTests;
   //tiOPFSQLDB_IB_TST.RegisterTests; // No tests
   tiOPFTAB_TST.RegisterTests;
-  {$IFNDEF FPC}tiOPFXML_TST.RegisterTests;{$ENDIF}
+  tiOPFXML_TST.RegisterTests;
   tiOPFXMLLight_TST.RegisterTests;
   //tiOPFZeos_FB10_TST.RegisterTests; // No tests
-  {$IFNDEF FPC}tiOPFZeos_FB15_TST.RegisterTests;{$ENDIF}
+  tiOPFZeos_FB15_TST.RegisterTests;
   //tiOPFZeos_MySQL41_TST.RegisterTests; // No tests
   //tiOPFZeos_MySQL50_TST.RegisterTests; // No tests
 

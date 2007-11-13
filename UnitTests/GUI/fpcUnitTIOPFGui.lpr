@@ -11,7 +11,7 @@ uses
   ,GuiTestRunner
   ,tiDUnitINI
   ,tiPromptWhichPersistenceLayersToTest
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ;
   
 
@@ -22,7 +22,7 @@ begin
   if not TtiPromptWhichPersistenceLayersToTest.Execute then
     Halt;
 
-  tiDUnitDependencies.RegisterTests;
+  tiTestDependencies.RegisterTests;
   Application.CreateForm(TGuiTestRunner, TestRunner);
   Application.Run;
 end.

@@ -55,14 +55,18 @@ procedure RegisterTests;
 implementation
 uses
   tiConstants
+  {$IFDEF FPC}
+  ,tiFPCUnitUtils
+  {$ELSE}
   ,TestFramework
+  {$ENDIF}
   ,SysUtils
   ,tiUtils
   ,tiTestDependencies
   ,tiQuery
-  ,Windows
-  ,Messages
-  ,tiDialogs
+//  ,Windows             { GG: Are these needed? }
+//  ,Messages
+//  ,tiDialogs
   ,tiTestFramework
  ;
 

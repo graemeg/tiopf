@@ -57,7 +57,6 @@ uses
   ,tiConstants
   ,tiQuery
   ,tiUtils
-  ,tiDialogs
   ,tiOIDGUID
   ,Contnrs
   ,tiLog
