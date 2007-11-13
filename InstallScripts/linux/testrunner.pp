@@ -206,8 +206,11 @@ begin
   App := TTestRunner.Create(nil);
   App.Initialize;
   App.Title := 'FPCUnit Console Test Case runner.';
+  
+  GTIOPFTestManager.Read;
   tiTestDependencies.RegisterTests;
-  tiTestDependencies.RemoveUnSelectedPersistenceLayerSetups;
+//  tiTestDependencies.RemoveUnSelectedPersistenceLayerSetups;
+
   App.Run;
   App.Free;
 end.
