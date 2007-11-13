@@ -26,6 +26,7 @@ type
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
     procedure Transaction_RollBack; override;
+    procedure ThreadedDBConnectionPool; override;
   end;
 
   TTestTIQueryBDEParadox = class(TTestTIQuerySQL)
@@ -123,6 +124,11 @@ procedure TTestTIDatabaseBDEParadox.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
   inherited;
+end;
+
+procedure TTestTIDatabaseBDEParadox.ThreadedDBConnectionPool;
+begin
+  Fail('Test causing lockup on build box');
 end;
 
 procedure TTestTIDatabaseBDEParadox.Transaction_RollBack;
