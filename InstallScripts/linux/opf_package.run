@@ -1,28 +1,11 @@
-/home/graemeg/bin/ppc386 -S2cai -O1 -g -gl -vewnhi \
-  -Fu/home/graemeg/programming/lazarus/lcl/units/i386-linux/ \
-  -Fu/home/graemeg/programming/lazarus/lcl/units/i386-linux/gtk/ \
-  -Fu/home/graemeg/programming/lazarus/packager/units/i386-linux/ \
-  -Fu/home/graemeg/programming/fblib/lib/i386-linux/ \
+/home/graemeg/bin/ppc386 -S2cai -O1 -g -gl -ve \
+  -Fu/home/graemeg/programming/tiOPF2/FBLib/lib/ \
   -Fi/home/graemeg/programming/tiOPF2/Source/Core/ \
   -Fu/home/graemeg/programming/tiOPF2/Source/Core/ \
   -Fu/home/graemeg/programming/tiOPF2/Source/Options/ \
   -Fu/home/graemeg/programming/tiOPF2/Source/GUI/ \
   -Fu. -FElib/i386-linux/ \
   -dLINK_CSV -dLINK_FBL -dLINK_TAB -dLINK_XMLLIGHT -dUseCThreads \
-  -dLCL -dLCLgtk \
   tiOPF.pas
 
-/home/graemeg/bin/ppc386 -S2cai -O1 -g -gl -vewnhi \
-  -Fu/home/graemeg/programming/lazarus/lcl/units/i386-linux/ \
-  -Fu/home/graemeg/programming/lazarus/lcl/units/i386-linux/gtk/ \
-  -Fu/home/graemeg/programming/lazarus/packager/units/i386-linux/ \
-  -Fu/home/graemeg/programming/fblib/lib/i386-linux/ \
-  -Fi/home/graemeg/programming/tiOPF2/Source/Core/ \
-  -Fu/home/graemeg/programming/tiOPF2/Source/Core/ \
-  -Fu/home/graemeg/programming/tiOPF2/Source/Options/ \
-  -Fu/home/graemeg/programming/tiOPF2/Source/GUI/ \
-  -Fu. -FElib/i386-linux/ \
-  -dLINK_CSV -dLINK_FBL -dLINK_TAB -dLINK_XMLLIGHT -dUseCThreads \
-  -dLCL -dLCLgtk \
-  tiOPFGUI.pas
 

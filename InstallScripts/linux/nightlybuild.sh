@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ -f /home/graemeg/programming/tiOPF2/Source/halt.tests ]; then
+  echo "Remove the file 'halt.tests' if you want the tests to continue."
+  exit 0
+fi  
+
 # clean out old files and recompile
 cd /home/graemeg/programming/tiOPF2/Source/
 ./cleanup.sh
@@ -14,12 +19,18 @@ cd UnitTests/Text
 #/bin/rm -f *.o *.ppu *.rst *.s *.a *.so *.ppl
 #cd ..
 #./fpcUnitTIOPFText.run
+/bin/rm -f *.exe
 ./testrunner.run
 
 # run the tests
 #./fpcUnitTIOPFText.exe -a > results.xml
 #./fpcUnitTIOPFText.exe -a --file=results.xml
-./testrunner -a
+./testrunner.exe -a
+
+# Do we have test results?
+if ! [ -f ./results.xml ]; then
+  exit 0
+fi
 
 # generate the result in text and html format
 cp results.xml /var/www/html/tiopf/fpcunit/results.xml
