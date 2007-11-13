@@ -901,7 +901,8 @@ end;
 
 procedure TTestTIDatabase.ThreadedDBConnectionPool;
 begin
-  DoThreadedDBConnectionPool(cuThreadCount);
+  Fail('Hacked out ThreadedDBConnectionPoolTest as it''s causing the build to hang');
+//  DoThreadedDBConnectionPool(cuThreadCount);
 end;
 
 constructor TThrdDBConnectionPoolTest.CreateExt(const pPerFrameworkSetup : TtiOPFTestSetupData;
