@@ -303,7 +303,7 @@ begin
   Assert(FDatabase.TestValid, CTIErrorInvalidObject);
   // ToDo: Refactor with SetDatabase method replacing AttachDatabase & DetachDatabase
   LVisitor          := AVisitor as TtiObjectVisitor;
-//  LVisitor.Query.DetachDatabase;
+  LVisitor.Query.DetachDatabase;
   LVisitor.Database := nil;
 end;
 
