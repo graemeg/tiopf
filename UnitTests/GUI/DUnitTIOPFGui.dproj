@@ -59,7 +59,7 @@
     <DelphiCompile Include="DUnitTIOPFGui.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\Common\tiDUnitDependencies.pas" />
     <DCCReference Include="..\Common\tiPromptWhichPersistenceLayersToTest.pas" />
+    <DCCReference Include="..\Common\tiTestDependencies.pas" />
   </ItemGroup>
 </Project>

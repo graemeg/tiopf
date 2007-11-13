@@ -48,7 +48,7 @@ uses
   ,Classes
   ,SysUtils
   ,tiLog
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ,tiConstants
  ;
 

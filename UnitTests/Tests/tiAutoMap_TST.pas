@@ -5,7 +5,7 @@ unit tiAutoMap_TST;
 interface
 uses
   Classes  // needed for TStringList
-  ,tstPerFramework_BOM
+  ,tiBOMsForTesting
   {$IFDEF FPC}
   ,testregistry
   {$ELSE}
@@ -174,7 +174,7 @@ uses
   ,tiOIDGUID
   ,Contnrs
   ,tiLog
-  ,tiDUnitDependencies
+  ,tiTestDependencies
  ;
 
 const

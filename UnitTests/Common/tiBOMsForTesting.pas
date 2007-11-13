@@ -1,4 +1,4 @@
-unit tstPerFramework_BOM;
+unit tiBOMsForTesting;
 
 {$I tiDefines.inc}
 

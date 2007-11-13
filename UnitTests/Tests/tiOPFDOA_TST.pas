@@ -50,7 +50,7 @@ uses
   ,SysUtils
   ,tiUtils
   ,tiLog
-  ,tiDUnitDependencies
+  ,tiTestDependencies
  ;
 
 procedure RegisterTests;

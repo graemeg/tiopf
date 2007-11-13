@@ -5,7 +5,7 @@ uses
   SysUtils,
   TestFrameWork,
   TextTestRunner,
-  tiDUnitDependencies in '..\Common\tiDUnitDependencies.pas',
+  tiTestDependencies in '..\Common\tiTestDependencies.pas',
   tiTextTestRunner in '..\Common\tiTextTestRunner.pas';
 
 var
@@ -26,10 +26,11 @@ begin
 
   if not FindCmdLineSwitch(cCommandLineParamsNoTests, ['-', '/'], true) then
   begin
-    tiDUnitDependencies.RegisterTests;
-    tiDUnitDependencies.RemoveUnSelectedPersistenceLayerSetups;
+    tiTestDependencies.RegisterTests;
+    tiTestDependencies.RemoveUnSelectedPersistenceLayerSetups;
     tiTextTestRunner.RunRegisteredTests(LExitBehavior);
   end else
     WriteEmptyLogs(LExitBehavior);
 
 end.
+

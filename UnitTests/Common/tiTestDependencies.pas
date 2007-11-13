@@ -1,4 +1,4 @@
-unit tiDUnitDependencies;
+unit tiTestDependencies;
 
 {$I tiDefines.inc}
 
@@ -36,12 +36,11 @@ uses
   ,tiOPFManager
   ,tiDUnitINI
   ,tiConstants
-  ,tstPerFramework_BOM
+  ,tiBOMsForTesting
 
   {$IFDEF OBJECT_TRACKING}
   ,tiBaseObject_TST
   {$ENDIF}
-  ,tiPersistenceLayers_TST
   ,tiUtils_TST
   ,tiObject_TST
   ,tiCompress_TST
@@ -114,7 +113,7 @@ begin
   gLog.RegisterLog(TtiLogToFile.CreateWithFileName('', '', True));
 
   // See ..\Bin\DUnitTIOPF.ini for details on configuration
-  tstPerFramework_BOM.RegisterMappings; // Register the OO-DB Mappings to be tested
+  tiBOMsForTesting.RegisterMappings; // Register the OO-DB Mappings to be tested
 
   // These are all the 'non persistence' tests
   {$IFDEF OBJECT_TRACKING}
@@ -141,7 +140,6 @@ begin
   tiTextParserStructCSV_TST.RegisterTests;
   tiQuery_TST.RegisterTests;
   tiSyncObjs_TST.RegisterTests;
-  tiPersistenceLayers_tst.RegisterTests;
   tiAutoMap_TST.RegisterTests;
   tiXML_TST.RegisterTests;
   tiCriteria_TST.RegisterTests;
@@ -219,6 +217,7 @@ finalization
   UTIOPFTestManager.Free;
 
 end.
+
 
 
 

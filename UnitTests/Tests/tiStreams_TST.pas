@@ -49,7 +49,7 @@ implementation
 uses
    tiStreams
   ,tiUtils
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ,tiExcept
   ,Classes
   ,SysUtils

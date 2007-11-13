@@ -59,7 +59,7 @@ uses
   {$ENDIF}
   ,SysUtils
   ,tiUtils
-  ,tiDUnitDependencies
+  ,tiTestDependencies
  ;
   
 procedure RegisterTests;

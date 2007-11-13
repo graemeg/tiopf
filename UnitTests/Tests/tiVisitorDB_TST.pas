@@ -35,7 +35,7 @@ procedure RegisterTests;
 implementation
 
 uses
-  tiDUnitDependencies,
+  tiTestDependencies,
   tiVisitor,
   tiVisitorDB,
   tiOPFManager,

@@ -236,7 +236,7 @@ uses
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ,tiXML
   ,tiStreams
   ,tiRTTI

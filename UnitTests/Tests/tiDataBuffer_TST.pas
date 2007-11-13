@@ -64,7 +64,7 @@ uses
   {$IFNDEF VER130}
   ,Variants
   {$ENDIF}
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}

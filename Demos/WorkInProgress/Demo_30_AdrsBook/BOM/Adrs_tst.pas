@@ -100,7 +100,7 @@ uses
   ,SysUtils
   ,tiQuery
   ,tiVisitorDB_Cli
-  ,tiDUnitDependencies
+  ,tiTestDependencies
  ;
 
 const

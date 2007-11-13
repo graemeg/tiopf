@@ -59,7 +59,7 @@ uses
   ,TestFramework
   ,SysUtils
   ,tiUtils
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}

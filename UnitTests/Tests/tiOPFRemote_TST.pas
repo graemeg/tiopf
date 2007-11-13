@@ -58,7 +58,7 @@ uses
   ,TestFramework
   ,SysUtils
   ,tiUtils
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ,tiQuery
   ,Windows
   ,Messages

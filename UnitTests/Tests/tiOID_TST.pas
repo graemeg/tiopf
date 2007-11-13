@@ -119,7 +119,7 @@ uses
   ,tiLog
   ,tiOPFTestManager
   ,Math
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   {$IFDEF MSWINDOWS}
   ,tiWin32
   {$ENDIF}

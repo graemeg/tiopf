@@ -206,8 +206,8 @@ uses
   ,tiWin32
   ,Windows
   {$ENDIF}
-  ,tiDUnitDependencies
-  ,tstPerFramework_BOM
+  ,tiTestDependencies
+  ,tiBOMsForTesting
   ,SysUtils
   {$IFDEF DELPHI6ORABOVE}
   ,Variants

@@ -97,7 +97,7 @@ function GetTickCount1: int64;
 
 implementation
 uses
-   tiDUnitDependencies
+   tiTestDependencies
   ,SysUtils
   ,tiUtils
   {$IFDEF MSWINDOWS}

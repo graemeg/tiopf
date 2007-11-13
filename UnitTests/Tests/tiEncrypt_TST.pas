@@ -45,7 +45,7 @@ procedure RegisterTests;
 implementation
 uses
   Classes
-  ,tiDUnitDependencies
+  ,tiTestDependencies
  ;
 
 const

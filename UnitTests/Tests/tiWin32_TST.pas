@@ -38,8 +38,8 @@ procedure RegisterTests;
 implementation
 uses
    tiWin32
-  ,tiDUnitDependencies
-  ,tstPerFramework_BOM
+  ,tiTestDependencies
+  ,tiBOMsForTesting
   ,tiDUnitINI
   ,Contnrs
   ,Windows

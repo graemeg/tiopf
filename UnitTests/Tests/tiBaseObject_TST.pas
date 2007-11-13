@@ -53,7 +53,7 @@ procedure RegisterTests;
 implementation
 uses
    SysUtils
-  ,tiDUnitDependencies
+  ,tiTestDependencies
  ;
 
 procedure RegisterTests;

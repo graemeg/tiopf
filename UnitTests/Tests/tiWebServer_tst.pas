@@ -59,7 +59,7 @@ implementation
 uses
    tiUtils
 
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ,tiWebServer
 
 // Add an IfDef so these are only linked if the Remote persistence layer is tested

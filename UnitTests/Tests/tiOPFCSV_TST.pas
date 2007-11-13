@@ -63,7 +63,7 @@ uses
   ,SysUtils
   ,tiUtils
   ,tiLog
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}

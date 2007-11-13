@@ -58,7 +58,7 @@
     <DelphiCompile Include="DUnitTIOPFText.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\Common\tiDUnitDependencies.pas" />
+    <DCCReference Include="..\Common\tiTestDependencies.pas" />
     <DCCReference Include="..\Common\tiTextTestRunner.pas" />
   </ItemGroup>
 </Project>

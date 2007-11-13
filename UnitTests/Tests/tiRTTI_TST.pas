@@ -13,7 +13,7 @@ uses
   {$ENDIF}
   ,tiTestFramework
   ,tiObject
-  ,tstPerFramework_BOM
+  ,tiBOMsForTesting
   ;
 
 type
@@ -66,7 +66,7 @@ procedure RegisterTests;
 implementation
 
 uses
-  tiDUnitDependencies
+  tiTestDependencies
   ,tiRTTI
   ,tiBaseObject
   ,SysUtils

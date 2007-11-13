@@ -47,7 +47,7 @@ uses
   tiCriteria
   ,tiVisitorCriteria
   ,SysUtils
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ;
 
 procedure RegisterTests;

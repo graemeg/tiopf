@@ -76,7 +76,7 @@ procedure RegisterTests;
 
 implementation
 uses
-  tiDUnitDependencies
+  tiTestDependencies
   ,SysUtils
  ;
 

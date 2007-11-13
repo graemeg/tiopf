@@ -37,7 +37,7 @@ uses
   ,ctiOPFManager
   ,TestFramework
   ,tiOPFManager
-  ,tiDUnitDependencies
+  ,tiTestDependencies
  ;
 
 procedure RegisterTests;

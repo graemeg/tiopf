@@ -38,7 +38,7 @@ procedure RegisterTests;
 implementation
 
 uses
-  tiDUnitDependencies
+  tiTestDependencies
   ,tiTokenLibrary
   ;
 

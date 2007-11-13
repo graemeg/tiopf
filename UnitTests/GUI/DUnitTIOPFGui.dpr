@@ -8,7 +8,7 @@ uses
   TestFramework,
   GUITestRunner,
   tiLogToGUI,
-  tiDUnitDependencies in '..\Common\tiDUnitDependencies.pas',
+  tiTestDependencies in '..\Common\tiTestDependencies.pas',
   tiPromptWhichPersistenceLayersToTest in '..\Common\tiPromptWhichPersistenceLayersToTest.pas';
 
 {$R *.RES}
@@ -18,8 +18,9 @@ begin
   if not TtiPromptWhichPersistenceLayersToTest.Execute then
     Halt;
   Application.Initialize;
-  tiDUnitDependencies.RegisterTests;
+  tiTestDependencies.RegisterTests;
   GUITestRunner.RunRegisteredTests;
 end.
+
 
 

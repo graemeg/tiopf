@@ -39,7 +39,7 @@ type
 implementation
 uses
    tiOPFTestManager
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ,tiOPFManager
   ,tiDUnitINI
   ,tiUtils

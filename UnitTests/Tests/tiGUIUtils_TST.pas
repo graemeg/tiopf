@@ -19,8 +19,8 @@ procedure RegisterTests;
 
 implementation
 uses
-  tiDUnitDependencies
-  ,tstPerFramework_BOM
+  tiTestDependencies
+  ,tiBOMsForTesting
   ,tiGUIUtils
   ,Classes
   ,ClipBrd

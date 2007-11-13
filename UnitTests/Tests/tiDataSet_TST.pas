@@ -49,7 +49,7 @@ procedure RegisterTests;
 implementation
 
 uses
-  tiOIDguid, tiOPFManager, tiDUnitDependencies;
+  tiOIDguid, tiOPFManager, tiTestDependencies;
 
 procedure RegisterTests;
 begin

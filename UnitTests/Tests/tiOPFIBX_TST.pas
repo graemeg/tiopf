@@ -55,7 +55,7 @@ uses
   ,TestFramework
   ,SysUtils
   ,tiUtils
-  ,tiDUnitDependencies
+  ,tiTestDependencies
  ;
   
 procedure RegisterTests;

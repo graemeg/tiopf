@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   ,tiTestFramework
   ,tiObject
-  ,tstPerFramework_BOM
+  ,tiBOMsForTesting
  ;
 
 
@@ -265,7 +265,7 @@ uses
   // tiOPF
    tiOPFManager
   ,tiOPFTestManager
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ,tiOIDGUID
   ,tiOIDInteger
   ,tiXML
@@ -3901,3 +3901,4 @@ end;
 { TTestTIObjectDeleteOwned }
 
 end.
+

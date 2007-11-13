@@ -53,7 +53,7 @@ uses
   ,FileCtrl
   {$ENDIF}
   ,tiTestFramework
-  ,tiDUnitDependencies
+  ,tiTestDependencies
   ,tiQuery
  ;
 

@@ -63,7 +63,7 @@ procedure RegisterTests;
 
 implementation
 uses
-  tiDUnitDependencies
+  tiTestDependencies
   {$IFNDEF FPC}
   ,Windows
   {$ENDIF}
