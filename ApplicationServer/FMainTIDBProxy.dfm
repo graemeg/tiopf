@@ -14,9 +14,6 @@ object FormMainTIDBProxyServer: TFormMainTIDBProxyServer
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    398
-    222)
   PixelsPerInch = 96
   TextHeight = 13
   object MemoLog: TMemo

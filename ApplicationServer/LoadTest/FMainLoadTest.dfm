@@ -13,9 +13,6 @@ object Form2: TForm2
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    265
-    122)
   PixelsPerInch = 96
   TextHeight = 13
   object paeThreadCount: TtiPerAwareFloatEdit
