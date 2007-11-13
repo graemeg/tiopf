@@ -27,7 +27,7 @@
     <DCC_DcuOutput>..\_dcu</DCC_DcuOutput>
     <DCC_ObjOutput>..\_dcu</DCC_ObjOutput>
     <DCC_HppOutput>..\_dcu</DCC_HppOutput>
-    <DCC_Define>DEBUG</DCC_Define>
+    <DCC_Define>DEBUG;LINK_XMLLIGHT;LINK_CSV;LINK_TAB;LINK_IBX;LINK_ADOACCESS</DCC_Define>
     <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
     <DCC_UNIT_LIBRARY>False</DCC_UNIT_LIBRARY>
     <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>

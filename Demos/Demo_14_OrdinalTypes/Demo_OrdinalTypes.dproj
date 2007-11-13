@@ -22,7 +22,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Version>7.0</Version>
     <DCC_WriteableConstants>True</DCC_WriteableConstants>
-    <DCC_Define>DEBUG</DCC_Define>
+    <DCC_Define>DEBUG;LINK_XMLLIGHT;LINK_CSV;LINK_TAB;LINK_IBX;LINK_ADOACCESS</DCC_Define>
     <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
     <DCC_UNIT_LIBRARY>False</DCC_UNIT_LIBRARY>
     <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
@@ -42,6 +42,12 @@
     <DelphiCompile Include="Demo_OrdinalTypes.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\..\GUI\FtiDialogAbs.pas">
+      <Form>FormTiDialogAbs</Form>
+    </DCCReference>
+    <DCCReference Include="..\..\GUI\FtiPerEditDialog.pas">
+      <Form>FormTIPerEditDialog</Form>
+    </DCCReference>
     <DCCReference Include="..\Common\FConnectToDatabase.pas">
       <Form>FormConnectToDatabase</Form>
     </DCCReference>

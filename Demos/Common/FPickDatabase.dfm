@@ -38,8 +38,8 @@ object FormPickDatabase: TFormPickDatabase
       Width = 146
       Height = 22
       Cursor = crHandPoint
-      Action = aDefaultToPreSetValues
       Anchors = [akTop, akRight]
+      Caption = 'Default to preset values'
       Flat = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clNavy
@@ -47,6 +47,7 @@ object FormPickDatabase: TFormPickDatabase
       Font.Name = 'Tahoma'
       Font.Style = [fsUnderline]
       ParentFont = False
+      OnClick = sbDefaultToPresetValuesClick
       ImageRes = tiRINone
     end
     object paePersistenceLayer: TtiPerAwareEdit
@@ -139,60 +140,11 @@ object FormPickDatabase: TFormPickDatabase
     end
   end
   object PM: TPopupMenu
-    object InterbaseIBX1: TMenuItem
-      Action = aDefaultToIBX
-    end
-    object InterbaseFBL: TMenuItem
-      Action = aDefaultToFBL
-    end
-    object XMLMSXMLDOM1: TMenuItem
-      Action = aDefaultToXMLLight
-    end
-    object XMLtiOPFXMLLight1: TMenuItem
-      Action = aDefaultToMSXML
-    end
-    object CSV1: TMenuItem
-      Action = aDefaultToCSV
-    end
-    object MSAccessviaADO1: TMenuItem
-      Action = aDefaultToADOAccess
-    end
   end
   object AL: TActionList
     Left = 28
-    object aDefaultToIBX: TAction
-      Caption = 'Interbase && Firebird (IBX)'
-      Enabled = False
-      OnExecute = aDefaultToIBXExecute
-    end
-    object aDefaultToXMLLight: TAction
-      Caption = 'XML (tiOPF XML Light '#39'Database'#39')'
-      Enabled = False
-      OnExecute = aDefaultToXMLLightExecute
-    end
-    object aDefaultToMSXML: TAction
-      Caption = 'XML (MS XML DOM)'
-      Enabled = False
-      OnExecute = aDefaultToMSXMLExecute
-    end
-    object aDefaultToCSV: TAction
-      Caption = 'CSV (tiOPF CSV '#39'Database'#39')'
-      Enabled = False
-      OnExecute = aDefaultToCSVExecute
-    end
-    object aDefaultToADOAccess: TAction
-      Caption = 'MS Access (ADO)'
-      Enabled = False
-      OnExecute = aDefaultToADOAccessExecute
-    end
-    object aDefaultToFBL: TAction
-      Caption = 'Interbase && Firebird (FBLib)'
-      Enabled = False
-      OnExecute = aDefaultToFBLExecute
-    end
-    object aDefaultToPreSetValues: TAction
-      Caption = 'Default to preset values'
-      OnExecute = aDefaultToPreSetValuesExecute
+    object Action1: TAction
+      Caption = 'Action1'
     end
   end
 end

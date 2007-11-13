@@ -19,7 +19,7 @@ type
     function DatabaseExists: boolean;
     { Private declarations }
   public
-    class function Execute(pSQLDatabaseOnly: boolean = false; pDataDirDepth: integer = 3): boolean;
+    class function Execute(const ASQLDatabaseOnly: boolean = false; const ADataDirDepth: integer = 3): boolean;
   end;
 
 implementation
@@ -69,22 +69,21 @@ begin
   ModalResult:= mrCancel;
 end;
 
-class function TFormConnectToDatabase.Execute(pSQLDatabaseOnly: boolean = false; pDataDirDepth: integer = 3): boolean;
+class function TFormConnectToDatabase.Execute(
+  const ASQLDatabaseOnly: boolean = false;
+  const ADataDirDepth: integer = 3): boolean;
 var
-  lForm: TFormConnectToDatabase;
+  LForm: TFormConnectToDatabase;
+  i: integer;
 begin
-  lForm:= Create(nil);
+  LForm:= Create(nil);
   try
-    lForm.DataDirDepth:= pDataDirDepth;
-    if pSQLDatabaseOnly then
-    begin
-      lForm.aDefaultToXMLLight.Enabled:= False;
-      lForm.aDefaultToMSXML.Enabled:= False;
-      lForm.aDefaultToCSV.Enabled:= False;
-    end;
-    result:= lForm.ShowModal = mrOK;
+    LForm.DataDirDepth:= ADataDirDepth;
+    for i := 0 to LForm.SingleUserPersistenceLayers.Count - 1 do
+      (LForm.SingleUserPersistenceLayers.Items[i] as TAction).Enabled:= not ASQLDatabaseOnly;
+    result:= LForm.ShowModal = mrOK;
   finally
-    lForm.Free;
+    LForm.Free;
   end;
 end;
 
