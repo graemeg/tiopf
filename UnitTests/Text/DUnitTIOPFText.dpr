@@ -23,11 +23,10 @@ begin
   else
     LExitBehavior := rxbContinue;
 
-
   if not FindCmdLineSwitch(cCommandLineParamsNoTests, ['-', '/'], true) then
   begin
+    GTIOPFTestManager.Read;
     tiTestDependencies.RegisterTests;
-    tiTestDependencies.RemoveUnSelectedPersistenceLayerSetups;
     tiTextTestRunner.RunRegisteredTests(LExitBehavior);
   end else
     WriteEmptyLogs(LExitBehavior);
