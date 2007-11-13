@@ -2,7 +2,6 @@ inherited FormConnectToDatabase: TFormConnectToDatabase
   Caption = ' Connect to a database'
   ClientHeight = 186
   OldCreateOrder = True
-  ExplicitHeight = 218
   PixelsPerInch = 96
   TextHeight = 13
   object btnConnect: TButton [0]
