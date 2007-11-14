@@ -9,7 +9,7 @@ uses
 
 type
 
-  TTestTIWebServerConnectionDetails = class(TtiTestCase)
+  TTestTIWebServerClientConnectionDetails = class(TtiTestCase)
   published
     procedure Equals;
     procedure Assign;
@@ -68,6 +68,7 @@ uses
 //  ,tiDBProxyServerStats
 //  ,tiDBProxyServerDependencies
 
+  ,tiWebServerClientConnectionDetails
   ,tiWebServerConstants
   ,tiWebServerVersion
   ,tiHTTPIndy
@@ -80,7 +81,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIWebServerConnectionDetails);
+  RegisterNonPersistentTest(TTestTIWebServerClientConnectionDetails);
   RegisterNonPersistentTest(TTestTIWebServer);
   RegisterNonPersistentTest(TtestTICGIParams);
 end;
@@ -531,14 +532,70 @@ end;
 
 { TTestTIWebServerConnectionDetails }
 
-procedure TTestTIWebServerConnectionDetails.Assign;
+procedure TTestTIWebServerClientConnectionDetails.Assign;
 begin
 
 end;
 
-procedure TTestTIWebServerConnectionDetails.Equals;
-begin
+procedure TTestTIWebServerClientConnectionDetails.Equals;
+var
+  LA: TtiWebServerClientConnectionDetails;
+  LB: TtiWebServerClientConnectionDetails;
+const
+  CAppServerURL= '1';
+  CConnectWith= '2';
+  CProxyServerActive= True;
+  CProxyServerName= '3';
+  CProxyServerPort= 4;
 
+begin
+  LA:= nil;
+  LB:= nil;
+  try
+    LA:= TtiWebServerClientConnectionDetails.Create;
+    LB:= TtiWebServerClientConnectionDetails.Create;
+
+    LA.AppServerURL:= CAppServerURL;
+    LA.ConnectWith:= CConnectWith;
+    LA.ProxyServerActive:= CProxyServerActive;
+    LA.ProxyServerName:= CProxyServerName;
+    LA.ProxyServerPort:= CProxyServerPort;
+
+    LB.AppServerURL:= CAppServerURL;
+    LB.ConnectWith:= CConnectWith;
+    LB.ProxyServerActive:= CProxyServerActive;
+    LB.ProxyServerName:= CProxyServerName;
+    LB.ProxyServerPort:= CProxyServerPort;
+
+    Check(LA.Equals(LB));
+    LB.AppServerURL:= 'test';
+    Check(not LA.Equals(LB));
+    LB.AppServerURL:= CAppServerURL;
+
+    Check(LA.Equals(LB));
+    LB.ConnectWith:= 'test';
+    Check(not LA.Equals(LB));
+    LB.ConnectWith:= CConnectWith;
+
+    Check(LA.Equals(LB));
+    LB.ProxyServerActive:= not LB.ProxyServerActive;
+    Check(not LA.Equals(LB));
+    LB.ProxyServerActive:= CProxyServerActive;
+
+    Check(LA.Equals(LB));
+    LB.ProxyServerName:= 'test';
+    Check(not LA.Equals(LB));
+    LB.ProxyServerName:= CProxyServerName;
+
+    Check(LA.Equals(LB));
+    LB.ProxyServerPort:= LB.ProxyServerPort+1;
+    Check(not LA.Equals(LB));
+    LB.ProxyServerPort:= CProxyServerPort;
+
+  finally
+    LA.Free;
+    LB.Free;
+  end;
 end;
 
 { TTestTICGIParams }
