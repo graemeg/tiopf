@@ -106,7 +106,7 @@ type
     procedure tiHTTPMSXMLHTTPPostBlockResponse;
 
     procedure tiHTTPFactoryString;
-    procedure tiHTTPFactoryConnectionParams;
+    procedure tiHTTPFactoryConnectionDetails;
     procedure SetDefaultHTTPClass;
     procedure IsInstanceOfType;
 
@@ -124,7 +124,8 @@ uses
   ,tiHTTPMSXML
   ,tiConstants
   ,tiLog
-;
+  ,tiWebServerClientConnectionDetails
+  ;
 
 const
   cTestDocName = 'testdoc';
@@ -370,9 +371,30 @@ begin
   end;
 end;
 
-procedure TTestTIHTTP.tiHTTPFactoryConnectionParams;
+procedure TTestTIHTTP.tiHTTPFactoryConnectionDetails;
+var
+  LHTTP: TtiHTTPAbs;
+  LParams: TtiWebServerClientConnectionDetails;
 begin
-
+  LParams:= TtiWebServerClientConnectionDetails.Create;
+  try
+    LParams.ConnectWith:= cHTTPMSXML;
+    LHTTP := gTIHTTPFactory.CreateInstance(LParams);
+    try
+      CheckIs(LHTTP, TtiHTTPMSXML);
+    finally
+      LHTTP.Free;
+    end;
+    LParams.ConnectWith:= cHTTPIndy;
+    LHTTP := gTIHTTPFactory.CreateInstance(LParams);
+    try
+      CheckIs(LHTTP, TtiHTTPIndy);
+    finally
+      LHTTP.Free;
+    end;
+  finally
+    LParams.Free;
+  end;
 end;
 
 procedure TTestTIHTTP.tiHTTPFactoryString;

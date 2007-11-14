@@ -1601,6 +1601,7 @@ procedure TtiTestCase.CheckEquals(const AValue: TStream; const AField: TStream);
 var
   LMessage: string;
 begin
+  OnCheckCalled;
   if not tiTestStreamsIdentical(AValue, AField, LMessage) then
     Fail(LMessage);
 end;
