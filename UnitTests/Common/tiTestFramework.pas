@@ -446,6 +446,7 @@ var
   lResult : boolean;
   lMessage : string;
 begin
+  Check(True); // To Force OnCheckCalled to be called
   lMessage := '';
   lResult := AreStreamContentsSame(pStream1, pStream2, lMessage);
   if not lResult then

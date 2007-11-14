@@ -847,6 +847,7 @@ procedure TTestTIDatabase.DoThreadedDBConnectionPool(pThreadCount: integer);
 var
   lList : TObjectList;
 begin
+  Check(True); // To Force OnCheckCalled to be called
   gTIOPFManager.ConnectDatabase(
                      PerFrameworkSetup.DBName,
                      PerFrameworkSetup.UserName,
@@ -1068,6 +1069,7 @@ var
   lStart          : DWord;
   i               : integer;
 begin
+  Check(True); // To Force OnCheckCalled to be called
   lCreateTableTime := 0;
   lDropTableTime  := 0;
   lMetaDataTime   := 0;
@@ -1885,6 +1887,7 @@ var
   lStart     : DWord;
   i : integer;
 begin
+  Check(True); // To Force OnCheckCalled to be called
   lInsertTime := 0;
   lUpdateTime := 0;
   lDeleteTime := 0;
