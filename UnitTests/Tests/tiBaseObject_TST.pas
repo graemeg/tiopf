@@ -120,6 +120,7 @@ var
   LO: TObject;
 begin
   try
+    Check(True); // To Force OnCheckCalled to be called
     LO.Free;
     Fail('Exception should have been raised');
   except
@@ -133,6 +134,7 @@ procedure TTestTIBaseObject.TObjectNillFree;
 var
   LO: TObject;
 begin
+  Check(True); // To Force OnCheckCalled to be called
   LO:= nil;
   LO.Free;
 end;
@@ -156,6 +158,7 @@ procedure TTestTIBaseObject.TtiBaseObjectNillFree;
 var
   LO: TtiBaseObject;
 begin
+  Check(True); // To Force OnCheckCalled to be called
   LO:= nil;
   LO.Free;
 end;

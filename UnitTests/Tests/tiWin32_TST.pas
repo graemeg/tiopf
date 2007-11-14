@@ -71,6 +71,7 @@ const
   cIterations= 10;
   cThreadCount= 100;
 begin
+  Check(True); // To Force OnCheck to be called
   LList:= TObjectList.Create(True);
   try
     for i:= 1 to cThreadCount do

@@ -132,6 +132,7 @@ var
   lThrd : TThresPoolThread;
   lList : TObjectList;
 begin
+  Check(True); // To Force OnCheckCalled to be called
   lList := TObjectList.Create(true);
   try
     lPool := TtiPoolForTesting.Create(0, cThreadCount * cThreadItemCount);
@@ -263,6 +264,7 @@ procedure TTestTiPool.CreateAndDestroy;
 var
   lPool : TtiPoolForTesting;
 begin
+  Check(True); // To Force OnCheckCalled to be called
   lPool := TtiPoolForTesting.Create(0, 1);
   lPool.Free;
 end;

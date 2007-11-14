@@ -34,16 +34,6 @@ type
     procedure tiWebServer_GetLogFile;
     procedure tiWebServer_RunCGIExtension;
     procedure tiWebServer_PageInBlocks;
-
-// Add an IfDef so these are only tested if the remote persistence layer is tested
-    procedure tiDBProxyServer_Create;
-    procedure tiDBProxyServer_ServerVersion;
-    procedure tiDBProxyServer_ExecuteRemoteXML;
-    procedure tiDBProxyServer_TestAlive1;
-    procedure tiDBProxyServer_TestHTML;
-    procedure tiDBProxyServer_TestXML;
-    procedure tiDBProxyServer_TestAlive;
-
     procedure tiWebServerVersion;
 
   end;
@@ -63,11 +53,6 @@ uses
   ,tiTestDependencies
   ,tiWebServerConfig
   ,tiWebServer
-
-// Add an IfDef so these are only linked if the Remote persistence layer is tested
-//  ,tiDBProxyServer
-//  ,tiDBProxyServerStats
-//  ,tiDBProxyServerDependencies
 
   ,tiWebServerClientConnectionDetails
   ,tiWebServerConstants
@@ -92,18 +77,6 @@ const
   cPort= 81;
 
 { TTestTIWebServer }
-
-procedure TTestTIWebServer.tiDBProxyServer_Create;
-//var
-//  LO: TtiDBProxyServer;
-begin
-//  LO:= TtiDBProxyServer.Create(cPort);
-//  try
-//
-//  finally
-//    LO.Free;
-//  end;
-end;
 
 procedure TTestTIWebServer.SetUp;
 begin
@@ -151,31 +124,6 @@ begin
     LO.Free;
     LConfig.Free;
   end;
-end;
-
-procedure TTestTIWebServer.tiDBProxyServer_ExecuteRemoteXML;
-begin
-
-end;
-
-procedure TTestTIWebServer.tiDBProxyServer_TestAlive;
-begin
-
-end;
-
-procedure TTestTIWebServer.tiDBProxyServer_TestAlive1;
-begin
-
-end;
-
-procedure TTestTIWebServer.tiDBProxyServer_TestHTML;
-begin
-
-end;
-
-procedure TTestTIWebServer.tiDBProxyServer_TestXML;
-begin
-
 end;
 
 procedure TTestTIWebServer.tiWebServerVersion;
@@ -381,11 +329,6 @@ begin
 end;
 
 procedure TTestTIWebServer.tiWebServer_RunCGIExtension;
-begin
-
-end;
-
-procedure TTestTIWebServer.tiDBProxyServer_ServerVersion;
 begin
 
 end;

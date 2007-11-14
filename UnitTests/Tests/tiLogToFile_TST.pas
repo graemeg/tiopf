@@ -89,6 +89,8 @@ const
   COverwriteOldFolders = true;
 
 begin
+  Check(True); // To Force OnCheckCalled to be called
+
   SetLength(LLoggers, Length(CLoggers));
   FmtStr(LThreadID, '%.4d', [GetCurrentThreadID]);
 

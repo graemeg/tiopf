@@ -5,12 +5,11 @@ interface
 uses
   TestFramework, tiDataset, Db, Variants, SysUtils, tiObject, tiTestFramework;
 
-
 type
   TTestTiDataset = class(TtiTestcase)
   private
-    AList: TtiObjectList;
-    ADataset: TtiDataset;
+    FList: TtiObjectList;
+    FDataset: TtiDataset;
     procedure PopulateList;
     procedure CalcFields(Dataset: TDataSet);
     procedure FilterData(Dataset: TDataSet;var Accept: boolean);
@@ -92,14 +91,14 @@ begin
     d.DateField := Now;
     d.FloatField := i - 0.1;
     d.MemoField := stringofchar(chr(i), i);
-    AList.Add(d);
+    FList.Add(d);
   end;
 end;
 
 procedure TTestTiDataset.LinkListToDataset;
 begin
-  with ADataset do begin
-    ObjectList := AList;
+  with FDataset do begin
+    ObjectList := FList;
   end;
 end;
 
@@ -109,19 +108,19 @@ begin
   gTIOPFManager.DefaultPerLayerName:= 'XML';
 //  gTIOPFManager.ConnectDatabase('dbdemos.xml', '', '');
 
-  AList := TtiObjectList.Create;
-  ADataset := TtiDataset.Create(nil);
-  ADataset.ObjectClass := TtiDatasetItem;
+  FList := TtiObjectList.Create;
+  FDataset := TtiDataset.Create(nil);
+  FDataset.ObjectClass := TtiDatasetItem;
   PopulateList; //Adds 100 Items 1..100
   LinkListToDataset;
-  ADataset.Open;
+  FDataset.Open;
 end;
 
 procedure TTestTiDataset.Teardown;
 begin
-  AList.Free;
-  ADataset.Close;
-  ADataset.Free;
+  FList.Free;
+  FDataset.Close;
+  FDataset.Free;
   inherited;
 end;
 
@@ -129,7 +128,7 @@ procedure TTestTiDataset.CheckOpen;
 //Simply tests if the first record is selected after the dataset has been opened.
 //This wasn't the case; I repaired this on 22 Feb 2004
 begin
-  with ADataset do begin
+  with FDataset do begin
     Check(Active, 'Dataset Open method not valid');
     Close;
     Check(not Active, 'Dataset Close method not valid');
@@ -140,7 +139,7 @@ procedure TTestTiDataset.CheckOpenFirstBug;
 //Simply tests if the first record is selected after the dataset has been opened.
 //This wasn't the case; I repaired this on 22 Feb 2004
 begin
-  with ADataset do begin
+  with FDataset do begin
     Check(FieldByName('IntField').AsInteger = FirstValue, 'Open CheckOpenFirstBug retrieves incorrect object (1)');
     Check((GetActiveItem as TtiDatasetItem).IntField = FirstValue, 'Open CheckOpenFirstBug.GetActiveItem retrieves incorrect object (1)');
 
@@ -153,7 +152,7 @@ end;
 
 procedure TTestTiDataset.CheckFirst;
 begin
-  with ADataset do begin
+  with FDataset do begin
     First;
     Check(FieldByName('IntField').AsInteger = FirstValue, 'CheckFirst retrieves incorrect object');
     Check((GetActiveItem as TtiDatasetItem).IntField = FirstValue, 'CheckFirst.GetActiveItem retrieves incorrect object');
@@ -163,7 +162,7 @@ end;
 procedure TTestTiDataset.CheckIterate;
 var AValue: integer;
 begin
-  with ADataset do begin
+  with FDataset do begin
     for AValue := FirstValue to LastValue do begin
       Check(FieldByName('IntField').AsInteger = AValue, 'CheckIterate retrieves incorrect object ' + IntToStr(AValue));
       Next;
@@ -173,7 +172,7 @@ end;
 
 procedure TTestTiDataset.CheckLast;
 begin
-  with ADataset do begin
+  with FDataset do begin
     Last;
     Check(FieldByName('IntField').AsInteger = LastValue, 'CheckLast retrieves incorrect object');
     Check((GetActiveItem as TtiDatasetItem).IntField = LastValue, 'CheckLast.GetActiveItem retrieves incorrect object');
@@ -183,7 +182,7 @@ end;
 procedure TTestTiDataset.FieldCount;
 var AFieldCount: integer;
 begin
-  AFieldCount := ADataset.Fields.Count;
+  AFieldCount := FDataset.Fields.Count;
   //Crap.. Its always one extra since TtiVisited publishes the property Caption
   Check(AFieldCount = 7, 'Incorrect field count');
 end;
@@ -191,7 +190,7 @@ end;
 procedure TTestTiDataset.RecordCount;
 var ARecordcount: integer;
 begin
-  ARecordCount := ADataset.RecordCount;
+  ARecordCount := FDataset.RecordCount;
   Check(ARecordCount = LastValue - FirstValue + 1, 'Incorrect RecordCount');
   //ADataset.OnFilterRecord := FilterData;
   //ADataset.Filtered := true;
@@ -203,7 +202,7 @@ procedure TTestTiDataset.BookMark;
 var SavePlace21: TBookmark;
   ARecordId: integer;
 begin
-  with ADataset do begin
+  with FDataset do begin
     //we are sitting on record 1
 
     MoveBy(20); //Navigate to 21 and Bookmark it
@@ -237,26 +236,26 @@ var i: integer;
   checkres: integer;
 begin
   checkres := 0;
-  ADataset.First;
-  for i := 0 to AList.Count - 1 do begin
-    checkres := checkres +(AList[i]as TtiDatasetItem).IntField;
+  FDataset.First;
+  for i := 0 to FList.Count - 1 do begin
+    checkres := checkres +(FList[i]as TtiDatasetItem).IntField;
   end;
 
   rsum := 0;
-  for i := 0 to ADataset.RecordCount - 1 do begin
-    rsum := rsum + ADataset.FieldValues['IntField'];
-    ADataset.Next;
+  for i := 0 to FDataset.RecordCount - 1 do begin
+    rsum := rsum + FDataset.FieldValues['IntField'];
+    FDataset.Next;
   end;
   Check(rsum = checkres, 'Incorrect summing of all data');
 end;
 
 procedure TTestTiDataset.EofBof;
 begin
-  with ADataset do begin
+  with FDataset do begin
     Close;
-    AList.Clear;
+    FList.Clear;
     Open;
-    Check(ADataset.RecordCount = 0, 'Error handling empty recordset - Recordcount');
+    Check(FDataset.RecordCount = 0, 'Error handling empty recordset - Recordcount');
     Next;
     Check(Eof, 'Error handling empty recordset - EOF');
     Prior;
@@ -276,7 +275,7 @@ var ANewMemoField: string;
 begin
   //The Dataset does not support InsertRecord & AppendRecord or ClearFields!!
 
-  with ADataset do begin
+  with FDataset do begin
     ANewStrField := 'Edited Value!';
     ANewIntField := 12343;
     ANewDateField := Now + 1;
@@ -314,7 +313,7 @@ var cNewMemoField, cNewStrField: string;
   lNewBoolField: boolean;
   nNewFloatField: Double;
 begin
-  with ADataset do begin
+  with FDataset do begin
     cNewStrField := 'Edited Value';
     nNewIntField := 12345;
     dNewDateField := Now - 1;
@@ -357,7 +356,7 @@ var cOldMemoField, cOldStrField: string;
   lOldBoolField: boolean;
   nOldFloatField: Double;
 begin
-  with ADataset do begin
+  with FDataset do begin
     cNewStrField := 'Edited Value!';
     nNewIntField := 12345;
     dNewDateField := Now - 1;
@@ -400,10 +399,10 @@ end;
 procedure TTestTiDataset.Delete;
 var Rc: integer;
 begin
-  with ADataset do begin
+  with FDataset do begin
     First;
     Rc := RecordCount;
-    while not ADataset.IsEmpty do begin
+    while not FDataset.IsEmpty do begin
       Delete;
       Check(RecordCount = Rc - 1, Format('Records have not been deleted; prev=%d<>current=%d',[Rc - 1, RecordCount]));
       Dec(Rc);
@@ -418,12 +417,12 @@ end;
 
 procedure TTestTiDataset.FieldTypes;
 begin
-  Check(ADataset.FieldByName('StrField').DataType = ftString, 'Field type error - should be String');
-  Check(ADataset.FieldByName('IntField').DataType = ftInteger, 'Field type error - should be Integer');
-  Check(ADataset.FieldByName('DateField').DataType = ftDateTime, 'Field type error - should be Date');
-  Check(ADataset.FieldByName('BoolField').DataType = ftBoolean, 'Field type error - should be Boolean');
-  Check(ADataset.FieldByName('FloatField').DataType = ftFloat, 'Field type error - should be Float');
-  Check(ADataset.FieldByName('MemoField').DataType = ftString, 'Field type error - should be String');
+  Check(FDataset.FieldByName('StrField').DataType = ftString, 'Field type error - should be String');
+  Check(FDataset.FieldByName('IntField').DataType = ftInteger, 'Field type error - should be Integer');
+  Check(FDataset.FieldByName('DateField').DataType = ftDateTime, 'Field type error - should be Date');
+  Check(FDataset.FieldByName('BoolField').DataType = ftBoolean, 'Field type error - should be Boolean');
+  Check(FDataset.FieldByName('FloatField').DataType = ftFloat, 'Field type error - should be Float');
+  Check(FDataset.FieldByName('MemoField').DataType = ftString, 'Field type error - should be String');
 end;
 
 procedure TTestTiDataset.FilterData(Dataset: TDataSet;var Accept: boolean);
@@ -436,13 +435,13 @@ var i, AFoundValues, ATrueVales: integer;
 begin
 
   ATrueVales := 0;
-  for i:= 0 to AList.Count-1 do begin
-    if TtiDatasetItem(AList[i]).BoolField
+  for i:= 0 to FList.Count-1 do begin
+    if TtiDatasetItem(FList[i]).BoolField
     then Inc(ATrueVales);
   end;
 
   AFoundValues := 0;
-  with ADataset do begin
+  with FDataset do begin
     OnFilterRecord := FilterData;
     Filtered := true;
     First;
@@ -463,37 +462,35 @@ end;
 
 procedure TTestTiDataset.CalculatedFields;
 //Create persistent fields the hard way, and add a calculated field.
-var f: TIntegerField;
+var
+  LF: TIntegerField;
 begin
-  with ADataset do begin
+  with FDataset do begin
     Close;
-    exit; //Doesn't seem to work right now... ???? Why ????
 
-    f := TIntegerField.Create(ADataset);
-    f.FieldName := 'CalcField';
-    f.FieldKind := fkCalculated;
-    f.Name := 'CalcField';
+    LF := TIntegerField.Create(FDataset);
+    LF.FieldName := 'CalcField';
+    LF.FieldKind := fkCalculated;
+    LF.Name := 'CalcField';
 
-    f := TIntegerField.Create(ADataset);
-    f.FieldName := 'IntField';
-    f.FieldKind := fkData;
-    f.Name := 'IntField';
-
-    //FieldDefs.Update;
+    LF := TIntegerField.Create(FDataset);
+    LF.FieldName := 'IntField';
+    LF.FieldKind := fkData;
+    LF.Name := 'IntField';
 
     OnCalcFields := CalcFields;
     Open;
     First;
-    Moveby(3);
-    Check(FieldByName('IntField').AsInteger = 3, 'Manual field should be 3');
-    Check(FieldByName('CalcField').AsInteger = 3, 'Calculated field should be 3');
+    Moveby(2);
+    CheckEquals(3, FieldByName('IntField').AsInteger, 'Manual field');
+    CheckEquals(3, FieldByName('CalcField').AsInteger, 'Calculated field');
   end;
 end;
 
 procedure TTestTiDataset.MoveForwardBack;
 var c: integer;
 begin
-  with ADataset do begin
+  with FDataset do begin
 
     First; //Record #1
     MoveBy(23); //#24
@@ -509,7 +506,7 @@ end;
 
 procedure TTestTiDataset.RetrieveObject;
 begin
-  with ADataset do begin
+  with FDataset do begin
     //We are siting on record 1
     MoveBy(3); // to record 4
     Check((GetActiveItem as TtiDatasetItem).IntField = 4, 'GetActiveItem retrieves incorrect object');

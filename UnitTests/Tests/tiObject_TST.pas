@@ -2524,6 +2524,7 @@ var
   lList : TtstTIObjectList;
   lData : TtstTIObject;
 begin
+  Check(True); // To Force OnCheckCalled to be called
   lList := TtstTIObjectList.Create;
   try
     lData := TtstTIObject.Create;
