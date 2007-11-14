@@ -16,6 +16,7 @@ uses
 procedure RegisterTests;
 function  GTIOPFTestManager: TtiOPFTestManager;
 procedure RemoveUnSelectedPersistenceLayerSetups;
+procedure RemoveXMLLightIfNotRegistered;
 procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
 function  PersistentSuiteName(APerLayerName: string): string;
 procedure RegisterExpectedTIOPFMemoryLeaks;
@@ -189,6 +190,25 @@ begin
       GTIOPFTestManager.Delete(i);
 end;
 
+procedure RemoveXMLLightIfNotRegistered;
+{$ifndef Link_XMLLight}
+var
+  LPLTest: TtiOPFTestSetupData;
+  LIndex: integer;
+{$endif}
+begin
+  {$ifndef Link_XMLLight}
+  if GTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXMLLight) then
+  begin
+    LPLTest:= GTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
+    if LPLTest<>nil then
+    begin
+      LIndex:= LPLTest.Index;
+      GTIOPFTestManager.Delete(LIndex);
+    end;
+  end;
+  {$endif}
+end;
 
 procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
 begin

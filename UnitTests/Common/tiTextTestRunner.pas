@@ -80,6 +80,7 @@ uses
   ,tiCommandLineParams
   ,tiTestFramework
   ,tiOPFManager
+  ,tiTestDependencies
   // Delphi
   ,Classes
   ,SysUtils
@@ -340,8 +341,8 @@ procedure TtiTextTestListener.TestingStarts;
     writeln2Short('(E = Exception, F = Test failure)', [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
     writeln2Short('Persistence layers to be tested:', [tlwtFile, tlwtConsole]);
-    for i:= 0 to gTIOPFManager.PersistenceLayers.Count - 1 do
-      writeln2Short('  ' + gTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName, [tlwtFile, tlwtConsole]);
+    for i:= 0 to GTIOPFTestManager.Count - 1 do
+      writeln2Short('  ' + GTIOPFTestManager.Items[i].PerLayerName, [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
   end;
 
