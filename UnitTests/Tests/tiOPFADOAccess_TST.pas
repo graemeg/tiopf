@@ -19,16 +19,12 @@ type
     procedure SetUp; override;
   end;
 
-  // ThreadedDBConnectionPool will hang for the second call, but only after
-  // a call to CreateDatabase. Have seen this on Win2K but not on XP
-  // Investigate...
   TTestTIDatabaseADOAccess = class(TTestTIDatabase)
   protected
     procedure   SetUp; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
-    procedure ThreadedDBConnectionPool; override;
   end;
 
   TTestTIQueryADOAccess = class(TTestTIQuerySQL)
@@ -143,11 +139,6 @@ procedure TTestTIDatabaseADOAccess.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOAccess);
   inherited;
-end;
-
-procedure TTestTIDatabaseADOAccess.ThreadedDBConnectionPool;
-begin
-  DoThreadedDBConnectionPool(1);
 end;
 
 { TTestTIQueryADOAccess }

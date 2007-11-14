@@ -84,7 +84,7 @@ type
   published
     procedure LoadDatabaseLayer;
     procedure NonThreadedDBConnectionPool;
-    procedure ThreadedDBConnectionPool; virtual;
+    procedure ThreadedDBConnectionPool; 
 
     procedure Connect;
     procedure Transaction_InTransaction;

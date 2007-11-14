@@ -27,7 +27,6 @@ type
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
-    procedure ThreadedDBConnectionPool; override;
   end;
   
 
@@ -113,12 +112,6 @@ procedure TTestTIDatabaseCSV.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
   inherited;
-end;
-
-procedure TTestTIDatabaseCSV.ThreadedDBConnectionPool;
-begin
-  LogWarning('The CSV persistence layer can only manage one thread.');
-  DoThreadedDBConnectionPool(1);
 end;
 
 { TtiOPFTestSetupDecoratorCSV }

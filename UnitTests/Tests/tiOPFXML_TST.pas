@@ -25,7 +25,6 @@ type
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
-    procedure ThreadedDBConnectionPool; override;
   end;
 
   TTestTIQueryXML = class(TTestTIQueryNonSQL)
@@ -105,12 +104,6 @@ procedure TTestTIDatabaseXML.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
   inherited;
-end;
-
-procedure TTestTIDatabaseXML.ThreadedDBConnectionPool;
-begin
-  LogWarning('The XML persistence layer can only manage one thread.');
-  DoThreadedDBConnectionPool(1);
 end;
 
 { TtiOPFTestSetupDecoratorXML }

@@ -24,7 +24,6 @@ type
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
-    procedure ThreadedDBConnectionPool; override;
   end;
 
   TTestTIQueryTAB = class(TTestTIQueryNonSQL)
@@ -109,12 +108,6 @@ procedure TTestTIDatabaseTAB.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistTAB);
   inherited;
-end;
-
-procedure TTestTIDatabaseTAB.ThreadedDBConnectionPool;
-begin
-  LogWarning('The TAB persistence layer can only manage one thread.');
-  DoThreadedDBConnectionPool(1);
 end;
 
 { TtiOPFTestSetupDecoratorTAB }

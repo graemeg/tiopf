@@ -24,7 +24,6 @@ type
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
-    procedure ThreadedDBConnectionPool; override;
   end;
 
   TTestTIQueryXMLLight = class(TTestTIQueryNonSQL)
@@ -105,12 +104,6 @@ procedure TTestTIDatabaseXMLLight.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
   inherited;
-end;
-
-procedure TTestTIDatabaseXMLLight.ThreadedDBConnectionPool;
-begin
-  LogWarning('The XMLLight persistence layer can only manage one thread.');
-  DoThreadedDBConnectionPool(1);
 end;
 
 { TTestTIQueryXMLLight }
