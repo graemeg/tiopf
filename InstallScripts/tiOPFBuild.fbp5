@@ -1197,7 +1197,7 @@ p_file_path=%path_to_working_compilers%\Delphi2007
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -1212,7 +1212,7 @@ p_file_path=%path_to_working_compilers%\Delphi2007
                 <Property name="IsBreakPoint" type="WordBool">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="NodeCollapsed" type="Boolean">True</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -3887,11 +3887,13 @@ Comments=
                   <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                   <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                   <Object Class="TWriteIniFileAction" XMLID="{42F60D4F-E150-408D-8DF3-8972ED298A7A}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                    <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write Ini File]]>
+                    <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write Ini File (Report Long)]]>
                       </Property>
                     <Property name="ActionTextColor" type="Cardinal">0</Property>
                     <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                     <Property name="AllowCreate" type="WordBool">True</Property>
+                    <Property MultiValue="1" name="Description" type="string"><![CDATA[Write Ini File (Report Long)]]>
+                      </Property>
                     <Property name="Enabled" type="WordBool">True</Property>
                     <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                     <Property name="IgnoreFailure" type="WordBool">False</Property>
@@ -3908,6 +3910,32 @@ Comments=
                     <Property MultiValue="0" name="Section" type="WideString">Report_Long</Property>
                     <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                     <Property MultiValue="0" name="ValueName" type="WideString">report_long_d#(p_delphi_version)</Property>
+                    <Property name="ValueType" type="TIniValueType">vtString</Property>
+                    </Object>
+                  <Object Class="TWriteIniFileAction" XMLID="{28409E39-80F3-4860-84D5-3770D3CEC25D}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                    <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write Ini File (Report Short)]]>
+                      </Property>
+                    <Property name="ActionTextColor" type="Cardinal">0</Property>
+                    <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                    <Property name="AllowCreate" type="WordBool">True</Property>
+                    <Property MultiValue="1" name="Description" type="string"><![CDATA[Write Ini File (Report Short)]]>
+                      </Property>
+                    <Property name="Enabled" type="WordBool">True</Property>
+                    <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                    <Property name="IgnoreFailure" type="WordBool">False</Property>
+                    <Property MultiValue="0" name="IniFile" type="WideString">%path_to_working_dunit_inifile%</Property>
+                    <Property name="IsAction" type="Boolean">True</Property>
+                    <Property name="IsBreakPoint" type="WordBool">False</Property>
+                    <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                    <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                    <Property MultiValue="1" name="NewValue" type="WideString"><![CDATA[Timed Out]]>
+                      </Property>
+                    <Property name="NodeCollapsed" type="Boolean">False</Property>
+                    <Property name="PauseInterval" type="Cardinal">0</Property>
+                    <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                    <Property MultiValue="0" name="Section" type="WideString">Report_Long</Property>
+                    <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                    <Property MultiValue="0" name="ValueName" type="WideString">report_short_d#(p_delphi_version)</Property>
                     <Property name="ValueType" type="TIniValueType">vtString</Property>
                     </Object>
                   <Object Class="TWMIKillAction" XMLID="{4E2C4A3F-D312-4ADA-8270-BCA07833BA83}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
