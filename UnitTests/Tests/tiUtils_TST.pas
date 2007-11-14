@@ -478,7 +478,17 @@ end;
 
 procedure TTestTIUtils.tiWeekNumber;
 begin
-
+  CheckEquals(1,  tiUtils.tiWeekNumber(EncodeDate(2007, 01, 01)));
+  CheckEquals(1,  tiUtils.tiWeekNumber(EncodeDate(2007, 01, 02)));
+  CheckEquals(1,  tiUtils.tiWeekNumber(EncodeDate(2007, 01, 03)));
+  CheckEquals(1,  tiUtils.tiWeekNumber(EncodeDate(2007, 01, 04)));
+  CheckEquals(1,  tiUtils.tiWeekNumber(EncodeDate(2007, 01, 05)));
+  CheckEquals(1,  tiUtils.tiWeekNumber(EncodeDate(2007, 01, 06)));
+  CheckEquals(1,  tiUtils.tiWeekNumber(EncodeDate(2007, 01, 07)));
+  CheckEquals(2,  tiUtils.tiWeekNumber(EncodeDate(2007, 01, 08)));
+  CheckEquals(52, tiUtils.tiWeekNumber(EncodeDate(2007, 12, 30)));
+  CheckEquals(53, tiUtils.tiWeekNumber(EncodeDate(2007, 12, 31)));
+  CheckEquals(1,  tiUtils.tiWeekNumber(EncodeDate(2008, 1, 1)));
 end;
 
 procedure TTestTIUtils.tiWildcardMatch;
