@@ -60,6 +60,7 @@ uses
    tiUtils
 
   ,tiTestDependencies
+  ,tiWebServerConfig
   ,tiWebServer
 
 // Add an IfDef so these are only linked if the Remote persistence layer is tested
@@ -112,21 +113,37 @@ begin
 
 end;
 
+type
+  TtiWebServerForTesting = class(TtiWebServer)
+  public
+    property BlockStreamCache;
+  end;
+
 procedure TtestTIWebServer.tiWebServer_Create;
 var
-  LO: TtiWebServer;
+  LConfig: TtiWebServerConfig;
+  LO: TtiWebServerForTesting;
+  LExpectedStaticPageDir: string;
+  LExpectedCGIBinDir: string;
 begin
-  LO:= TtiWebServer.Create(cPort);
+  LConfig:= nil;
+  LO:= nil;
   try
+    LConfig:= TtiWebServerConfig.Create;
+    LO:= TtiWebServerForTesting.Create(cPort);
+    LO.BlockStreamCache.SleepSec:= 0;
+
+    LExpectedStaticPageDir:= tiAddTrailingSlash(LConfig.PathToStaticPages);
+    LExpectedCGIBinDir:= tiAddTrailingSlash(LConfig.PathToCGIBin);
+
     LO.Start;
-    CheckEquals(tiGetEXEPath + PathDelim + cStaticPageDir + PathDelim,
-                LO.StaticPageLocation);
+    CheckEquals(LExpectedStaticPageDir, LO.StaticPageLocation);
     Check(DirectoryExists(LO.StaticPageLocation));
-    CheckEquals(tiGetEXEPath + PathDelim + cCGIBinDir + PathDelim,
-                LO.CGIBinLocation);
+    CheckEquals(LExpectedCGIBinDir, LO.CGIBinLocation);
     LO.Stop;
   finally
     LO.Free;
+    LConfig.Free;
   end;
 end;
 

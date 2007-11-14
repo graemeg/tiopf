@@ -147,6 +147,7 @@ type
     property    TimeOutSec: Longword Read FTimeOutSec Write FTimeOutSec;
     property    SweepEverySec: Longword Read FSweepEverySec Write FSweepEverySec;
     property    SleepSec: Longword Read FSleepSec Write FSleepSec;
+    procedure   Start;
   end;
 
   TtiWebServer = class(TtiBaseObject)
@@ -157,6 +158,7 @@ type
     FCGIBinLocation: string;
     FBlockStreamCache: TtiBlockStreamCache;
   protected
+    property  BlockStreamCache: TtiBlockStreamCache read FBlockStreamCache;
     property  ServerActions: TObjectList Read FServerActions;
 
     procedure DoIDHTTPServerCommandGet(AContext:TIdContext;
@@ -380,12 +382,17 @@ begin
   Log('HTTP server started');
   Log('Static web pages location <' + StaticPageLocation + '>');
   Log('CGI-Bin location <' + FCGIBinLocation + '>');
+
+  BlockStreamCache.Start;
+
 end;
 
 procedure TtiWebServer.Stop;
 begin
   FIdHTTPServer.Active := False;
+  //ToDo: Implement BlockStreamCache.Stop;
 end;
+
 function _CompareWebServerActions(AItem1, AItem2: Pointer): Integer;
 var
   LItem1: TtiWebServerAction;
@@ -747,7 +754,7 @@ begin
   FCritSect.Enter;
   try
     L:= FindByTransID(ATransID);
-    if L = nil then 
+    if L = nil then
       raise EtiOPFDataException.CreateFmt(cErrorInvalidCachedBlockStreamTransID, [ATransID]);
     ABlockAsString:= L.BlockAsString[ABlockIndex];
     L.LastAccessed:= Now;
@@ -757,6 +764,11 @@ begin
   finally
     FCritSect.Leave;
   end;
+end;
+
+procedure TtiBlockStreamCache.Start;
+begin
+  FSweeper.Resume;
 end;
 
 procedure TtiBlockStreamCache.SweepForTimeOuts;
@@ -788,7 +800,6 @@ begin
   FBlockStreamCache:= ABlockStreamCache;
   FreeOnTerminate:= False;
   Priority:= tpLower;
-  Resume;
 end;
 
 procedure TtiThreadBlockStreamCacheSweepForTimeouts.Execute;
@@ -799,9 +810,9 @@ begin
   begin
     LStart:= Now;
     while (not Terminated) and
-          ((Now - LStart) <= (cdtOneSecond * FBlockStreamCache.SweepEverySec)) do
+          ((Now - LStart) < (cdtOneSecond * FBlockStreamCache.SweepEverySec)) do
       Sleep(FBlockStreamCache.SleepSec*1000); // Higher value uses less resouce, but will take longer to shut down.
-    FBlockStreamCache.SweepForTimeOuts;
+      FBlockStreamCache.SweepForTimeOuts;
   end;
 end;
 
