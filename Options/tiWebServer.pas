@@ -133,6 +133,7 @@ type
     FSweeper: TtiThreadBlockStreamCacheSweepForTimeouts;
     FSweepEverySec: Longword;
     FSleepSec: Longword;
+    FStarted: Boolean;
     function    FindByTransID(ATransID: Longword): TtiCachedBlockStream;
     function    GetCount: Longword;
   protected
@@ -725,13 +726,17 @@ begin
   FSweepEverySec:= cDefaultBlockStreamCacheSweepEvery;
   FSleepSec:= cDefaultSleepSec;
   FSweeper:= TtiThreadBlockStreamCacheSweepForTimeouts.Create(Self);
+  FStarted:= False;
 end;
 
 destructor TtiBlockStreamCache.Destroy;
 begin
-  FSweeper.Terminate;
-  FSweeper.WaitFor;
-  FSweeper.Free; 
+  if FStarted then
+  begin
+    FSweeper.Terminate;
+    FSweeper.WaitFor;
+  end;
+  FSweeper.Free;
   FList.Free;
   FCritSect.Free;
   inherited;
@@ -781,6 +786,7 @@ end;
 
 procedure TtiBlockStreamCache.Start;
 begin
+  FStarted:= True;
   FSweeper.Resume;
 end;
 

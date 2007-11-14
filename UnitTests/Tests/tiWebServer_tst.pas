@@ -72,10 +72,11 @@ uses
   ,tiWebServerVersion
   ,tiHTTPIndy
   ,tiLog
+  ,tiHTTP
 
   ,SysUtils
-
-  , tiHTTP;
+  ,Classes
+  ;
 
 procedure RegisterTests;
 begin
@@ -320,17 +321,38 @@ begin
 end;
 
 procedure TTestTIWebServer.tiWebServer_GetLogFile;
+  function _WaitForLogFile(const AFileName: string): boolean;
+  var
+    LStream: TFileStream;
+  begin
+    if not FileExists(AFileName) then
+      result:= True
+    else
+      try
+        LStream:= TFileStream.Create(AFileName, fmShareExclusive or fmOpenRead);
+        LStream.Free;
+        result:= true;
+      except
+        on e: exception do
+          result:= false;
+      end;
+  end;
 var
-  LO: TtiWebServer;
+  LO: TtiWebServerForTesting;
   LResult: string;
   LPage: string;
   LFileName: string;
+  LTryCount: integer;
 begin
   LFileName:= gLog.LogToFileName;
   LPage:= 'test log file';
-  LO:= TtiWebServer.Create(cPort);
+  LO:= TtiWebServerForTesting.Create(cPort);
   try
+    LO.BlockStreamCache.SleepSec:= 0;
     LO.Start;
+    LTryCount:= 0 ;
+    while not _WaitForLogFile(LFileName) and (LTryCount <= 10) do
+      Sleep(100);
     tiDeleteFile(LFileName);
     tiStringToFile(LPage, LFileName);
     LResult:= TestHTTPRequest(cgTIDBProxyGetLog);
@@ -493,6 +515,7 @@ begin
   try
     L.SleepSec:= 1;
     L.SweepEverySec:= 1;
+    L.Start;
     L.AddBlockStream('abcDEFgh', 3, LBlockText, LBlockCount, LTransID);
     L.AddBlockStream('jklMNOpq', 3, LBlockText, LBlockCount, LTransID);
     Sleep(2000);
