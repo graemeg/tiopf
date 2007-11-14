@@ -3863,7 +3863,7 @@ Comments=
                     <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                     <Property name="SearchChildWindows" type="Boolean">True</Property>
                     <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                    <Property name="Timeout" type="Cardinal">1200</Property>
+                    <Property name="Timeout" type="Cardinal">900</Property>
                     <Property name="UseMainWindow" type="Boolean">False</Property>
                     <Property name="UseProcessID" type="Boolean">True</Property>
                     <Property name="WaitFor" type="TWaitForProcessType">wfDoesNotExist</Property>
