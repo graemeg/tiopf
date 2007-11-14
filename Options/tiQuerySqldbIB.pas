@@ -38,7 +38,6 @@ type
   TtiPersistenceLayerSqldIB = class(TtiPersistenceLayer)
   protected
     function GetDatabaseClass: TtiDatabaseClass; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetPersistenceLayerName: string; override;
     function GetQueryClass: TtiQueryClass; override;
   public
@@ -1025,11 +1024,6 @@ end;
 function TtiPersistenceLayerSqldIB.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseSqldIB;
-end;
-
-function TtiPersistenceLayerSqldIB.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataAbs;
 end;
 
 function TtiPersistenceLayerSqldIB.GetPersistenceLayerName: string;

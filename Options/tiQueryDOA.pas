@@ -24,7 +24,6 @@ type
   TtiPersistenceLayerDOA = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
@@ -1128,11 +1127,6 @@ end;
 function TtiPersistenceLayerDOA.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseDOA;
-end;
-
-function TtiPersistenceLayerDOA.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataAbs;
 end;
 
 function TtiPersistenceLayerDOA.GetPersistenceLayerName: string;

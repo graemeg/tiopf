@@ -23,14 +23,11 @@ type
   TtiPersistenceLayerXMLLight = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
     procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
-
-  TtiDBConnectionPoolDataXMLLight = Class(TtiDBConnectionPoolDataTXTAbs);
 
   TtiDatabaseXMLLight = class(TtiDatabaseTXTAbs)
   private
@@ -355,11 +352,6 @@ end;
 function TtiPersistenceLayerXMLLight.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseXMLLight;
-end;
-
-function TtiPersistenceLayerXMLLight.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataXMLLight;
 end;
 
 function TtiPersistenceLayerXMLLight.GetPersistenceLayerName: string;

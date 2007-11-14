@@ -17,7 +17,6 @@ type
   TtiPersistenceLayerADOSQLServer = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
@@ -196,11 +195,6 @@ begin
 function TtiPersistenceLayerADOSQLServer.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseADOSQLServer;
-end;
-
-function TtiPersistenceLayerADOSQLServer.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataAbs;
 end;
 
 function TtiPersistenceLayerADOSQLServer.GetPersistenceLayerName: string;

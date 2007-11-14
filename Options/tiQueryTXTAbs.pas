@@ -32,11 +32,6 @@ type
 
   TtiDatabaseTXTAbs = class;
 
-  TtiDBConnectionPoolDataTXTAbs = Class(TtiDBConnectionPoolDataAbs)
-  public
-    procedure InitDBConnectionPool; override;
-  end;
-
   TtiDatabaseTXTAbs = class(TtiDatabase)
   private
     FDataSets : TtiDataBuffers;
@@ -644,18 +639,10 @@ end;
 // * TtiDBConnectionPoolDataTXTAbs
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDBConnectionPoolDataTXTAbs.InitDBConnectionPool;
-begin
-  DBConnectionPool.MinPoolSize := 0;
-  DBConnectionPool.MaxPoolSize := 1;
-end;
-
-
 function TtiDatabaseTXTFlatFileAbs.GetDataSetCount: integer;
 begin
   result := FDataSets.Count;
 end;
-
 
 function TtiDatabaseTXTFlatFileAbs.ExpandFileName(const ATableName: string): string;
 var

@@ -14,7 +14,6 @@ type
   TtiPersistenceLayerZeosMySQL50 = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
@@ -64,11 +63,6 @@ end;
 function TtiPersistenceLayerZeosMySQL50.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseZeosMySQL50;
-end;
-
-function TtiPersistenceLayerZeosMySQL50.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataAbs;
 end;
 
 function TtiPersistenceLayerZeosMySQL50.GetPersistenceLayerName: string;

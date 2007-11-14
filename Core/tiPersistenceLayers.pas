@@ -70,7 +70,6 @@ type
     function    CreateTIQuery(const ALayerName : string {= '' })           : TtiQuery; overload;
     function    CreateTIQuery(const ADatabaseClass : TtiDatabaseClass): TtiQuery; overload;
     function    CreateTIDatabase(const ALayerName : string {= '' })    : TtiDatabase;
-    function    CreateTIDBConnectionPoolData(const ALayerName : string {= ''}): TtiDBConnectionPoolDataAbs;
     function    LockDatabase(const ADBConnectionName : string; APersistenceLayerName : string): TtiDatabase;
     procedure   UnLockDatabase(const ADatabase : TtiDatabase;const ADBConnectionName : string; APersistenceLayerName : string);
 
@@ -95,7 +94,6 @@ type
 
     // These must be overridden in the concrete classes
     function GetDatabaseClass: TtiDatabaseClass; virtual; abstract;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; virtual; abstract;
     function GetPersistenceLayerName: string; virtual; abstract;
     function GetQueryClass: TtiQueryClass; virtual; abstract;
 
@@ -104,7 +102,6 @@ type
     destructor  Destroy; override;
     property    Owner      : TtiPersistenceLayers            read GetOwner      write SetOwner;
 
-    property  DBConnectionPoolDataClass  : TtiDBConnectionPoolDataClass read GetDBConnectionPoolDataClass;
     property  QueryClass                 : TtiQueryClass read GetQueryClass;
     property  DatabaseClass              : TtiDatabaseClass read GetDatabaseClass;
     property  PersistenceLayerName       : string read GetPersistenceLayerName;
@@ -132,6 +129,7 @@ type
     FUserName: string;
     FPersistenceLayerName: string;
   public
+    constructor Create;
     property PersistenceLayerName: string read FPersistenceLayerName write FPersistenceLayerName;
     property DatabaseName: string read FDatabaseName write FDatabaseName;
     property UserName: string read FUserName write FUserName;
@@ -237,16 +235,6 @@ begin
   if LPersistenceLayer = nil then
     raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
   result := LPersistenceLayer.QueryClass.Create;
-end;
-
-function TtiPersistenceLayers.CreateTIDBConnectionPoolData(const ALayerName : string {= ''}): TtiDBConnectionPoolDataAbs;
-var
-  LPersistenceLayer : TtiPersistenceLayer;
-begin
-  LPersistenceLayer := FindByPerLayerName(ALayerName);
-  if LPersistenceLayer = nil then
-    raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
-  result := LPersistenceLayer.DBConnectionPoolDataClass.Create;
 end;
 
 procedure TtiPersistenceLayer.CreateDatabase(const ADatabaseName, AUserName,
@@ -555,6 +543,13 @@ end;
 {$IFDEF FPC}
 {$I tiPersistenceLayersImpl.inc}
 {$ENDIF}
+
+{ TtiPersistenceLayerDefaults }
+
+constructor TtiPersistenceLayerDefaults.Create;
+begin
+  inherited;
+end;
 
 end.
 

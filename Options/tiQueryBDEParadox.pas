@@ -17,7 +17,6 @@ type
   TtiPersistenceLayerBDEParadox = class(TtiPersistenceLayer)
   protected
     function GetDatabaseClass: TtiDatabaseClass; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetPersistenceLayerName: string; override;
     function GetQueryClass: TtiQueryClass; override;
   public
@@ -213,11 +212,6 @@ end;
 function TtiPersistenceLayerBDEParadox.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseBDEParadox;
-end;
-
-function TtiPersistenceLayerBDEParadox.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataAbs;
 end;
 
 function TtiPersistenceLayerBDEParadox.GetPersistenceLayerName: string;

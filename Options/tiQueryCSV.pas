@@ -13,12 +13,9 @@ uses
 
 type
 
-  TtiDBConnectionPoolDataCSV = Class(TtiDBConnectionPoolDataTXTAbs);
-
   TtiPersistenceLayerCSV = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
@@ -205,11 +202,6 @@ end;
 function TtiPersistenceLayerCSV.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseCSV;
-end;
-
-function TtiPersistenceLayerCSV.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataCSV;
 end;
 
 function TtiPersistenceLayerCSV.GetPersistenceLayerName: string;

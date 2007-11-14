@@ -24,16 +24,10 @@ type
   TtiPersistenceLayerBDEParadox = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
     procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
-  end;
-
-  TtiDBConnectionPoolDataXML = Class(TtiDBConnectionPoolDataAbs)
-  public
-    procedure InitDBConnectionPool; override;
   end;
 
   TtiDatabaseXML = class(TtiDatabase)
@@ -678,12 +672,6 @@ end;
 // * TtiDBConnectionPoolDataXML
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDBConnectionPoolDataXML.InitDBConnectionPool;
-begin
-  DBConnectionPool.MinPoolSize := 0;
-  DBConnectionPool.MaxPoolSize := 1;
-end;
-
 function TtiDatabaseXML.GetXMLWhereClause(const AWhere: TtiQueryParams): string;
 var
   i : integer;
@@ -1024,11 +1012,6 @@ end;
 function TtiPersistenceLayerBDEParadox.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseXML;
-end;
-
-function TtiPersistenceLayerBDEParadox.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataXML;
 end;
 
 function TtiPersistenceLayerBDEParadox.GetPersistenceLayerName: string;

@@ -30,7 +30,6 @@ type
   TtiPersistenceLayerIBX = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
@@ -1174,11 +1173,6 @@ end;
 function TtiPersistenceLayerIBX.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseIBX;
-end;
-
-function TtiPersistenceLayerIBX.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataAbs;
 end;
 
 function TtiPersistenceLayerIBX.GetPersistenceLayerName: string;

@@ -28,10 +28,7 @@ type
     FDBConnectionPool: TtiDBConnectionPool;
   public
     property  DBConnectionPool : TtiDBConnectionPool read FDBConnectionPool write FDBConnectionPool;
-    procedure InitDBConnectionPool; virtual;
   end;
-
-  TtiDBConnectionPoolDataClass = class of TtiDBConnectionPoolDataAbs;
 
   // The database connection pool
   TtiDBConnectionPool = class(TtiPool)
@@ -39,7 +36,6 @@ type
     FDBConnectionPools: TtiDBConnectionPools;
     FDBConnectionParams : TtiDBConnectionParams;
     FDatabaseAlias: string;
-    procedure Init;
 
   protected
     function    PooledItemClass: TtiPooledItemClass; override;
@@ -64,6 +60,8 @@ type
     FPersistenceLayer: TtiBaseObject;
     FList : TObjectList;
     FCritSect: TCriticalSection;
+    FMinPoolSize: Word;
+    FMaxPoolSize: Word;
     function GetItems(i: integer): TtiDBConnectionPool;
   public
     Constructor Create(const APersistenceLayer: TtiBaseObject);
@@ -83,6 +81,8 @@ type
     property    Items[i:integer]:TtiDBConnectionPool read GetItems;
 
     property    PersistenceLayer: TtiBaseObject read FPersistenceLayer;
+    property    MinPoolSize: Word read FMinPoolSize;
+    property    MaxPoolSize: Word read FMaxPoolSize;
   end;
 
 
@@ -102,6 +102,9 @@ const
 
   cusConnectionNames = 'ConnectionNames';
   cusFileName        = 'DBParams.DCD';
+  CDefaultMinPoolSize = 1;
+  CDefaultMaxPoolSizeMultiUser = 9999;
+  CDefaultMaxPoolSizeSingleUser = 1;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -128,11 +131,11 @@ constructor TtiDBConnectionPool.Create(
   const ADatabaseAlias: string;
   const ADBConnectionParams: TtiDBConnectionParams);
 begin
-  inherited Create;
+  Assert(ADBConnectionPools.TestValid, CTIErrorInvalidObject);
+  inherited Create(ADBConnectionPools.MinPoolSize, ADBConnectionPools.MaxPoolSize);
   FDBConnectionPools:= ADBConnectionPools;
   FDatabaseAlias:= ADatabaseAlias;
   FDBConnectionParams:= ADBConnectionParams;
-  Init;
 end;
 
 destructor TtiDBConnectionPool.Destroy;
@@ -171,38 +174,31 @@ begin
   inherited UnLock(ADatabase);
 end;
 
-procedure TtiDBConnectionPoolDataAbs.InitDBConnectionPool;
-begin
-  // Do nothing, implement in the concrete
-end;
-
-procedure TtiDBConnectionPool.Init;
-var
-  LPersistenceLayer : TtiPersistenceLayer;
-  LDBConnectionPoolData : TtiDBConnectionPoolDataAbs;
-begin
-  LPersistenceLayer := (DBConnectionPools.PersistenceLayer as TtiPersistenceLayer);
-  LDBConnectionPoolData := LPersistenceLayer.DBConnectionPoolDataClass.Create;
-  try
-    LDBConnectionPoolData.DBConnectionPool := self;
-    LDBConnectionPoolData.InitDBConnectionPool;
-  finally
-    LDBConnectionPoolData.Free;
-  end;
-end;
-
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
 //* TDBConnectionPools
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiDBConnectionPools.Create(const APersistenceLayer: TtiBaseObject);
+var
+  LDefaults: TtiPersistenceLayerDefaults;
 begin
   inherited Create;
   Assert(APersistenceLayer.TestValid(TtiPersistenceLayer, True), CTIErrorInvalidObject);
   FPersistenceLayer:= APersistenceLayer;
   FList := TObjectList.Create;
   FCritSect:= TCriticalSection.Create;
+  LDefaults:= TtiPersistenceLayerDefaults.Create;
+  try
+    (APersistenceLayer as TtiPersistenceLayer).AssignPersistenceLayerDefaults(LDefaults);
+    FMinPoolSize:= CDefaultMinPoolSize;
+    if LDefaults.CanSupportMultiUser then
+      FMaxPoolSize:= CDefaultMaxPoolSizeMultiUser
+    else
+      FMaxPoolSize:= CDefaultMaxPoolSizeSingleUser;
+  finally
+    LDefaults.Free;
+  end;
 end;
 
 destructor TtiDBConnectionPools.Destroy;

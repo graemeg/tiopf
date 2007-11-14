@@ -16,14 +16,11 @@ type
   TtiPersistenceLayerTab = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
     procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
-
-  TtiDBConnectionPoolDataTAB = Class(TtiDBConnectionPoolDataTXTAbs);
 
   TtiDatabaseTAB = class(TtiDatabaseTXTFlatFileAbs)
   protected
@@ -205,11 +202,6 @@ end;
 function TtiPersistenceLayerTab.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseTAB;
-end;
-
-function TtiPersistenceLayerTab.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataTAB;
 end;
 
 function TtiPersistenceLayerTab.GetPersistenceLayerName: string;

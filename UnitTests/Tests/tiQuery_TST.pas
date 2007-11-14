@@ -900,9 +900,21 @@ begin
 end;
 
 procedure TTestTIDatabase.ThreadedDBConnectionPool;
+var
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDefaults: TtiPersistenceLayerDefaults;
 begin
-  Fail('Hacked out ThreadedDBConnectionPoolTest as it''s causing the build to hang');
-//  DoThreadedDBConnectionPool(cuThreadCount);
+  LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
+  LDefaults:= TtiPersistenceLayerDefaults.Create;
+  try
+    LPersistenceLayer.AssignPersistenceLayerDefaults(LDefaults);
+    if LDefaults.CanSupportMultiUser then
+      DoThreadedDBConnectionPool(cuThreadCount)
+    else
+      DoThreadedDBConnectionPool(1)
+  finally
+    LDefaults.Free;
+  end;
 end;
 
 constructor TThrdDBConnectionPoolTest.CreateExt(const pPerFrameworkSetup : TtiOPFTestSetupData;

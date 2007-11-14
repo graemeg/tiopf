@@ -73,12 +73,11 @@ type
     {$IFDEF LINUX}
     FSemaphore : TSemaphore;
     {$ENDIF LINUX}
-    FMinPoolSize: integer;
-    FMaxPoolSize: integer;
+    FMinPoolSize: Word;
+    FMaxPoolSize: Word;
+    FWaitTime: Word;
     FTimeOut: Extended;
     FThrdPoolMonitor : TtiThrdPoolMonitor;
-    FWaitTime: integer;
-    procedure SetMaxPoolSize(const AValue: integer);
 
     // ToDo: Move the semaphore operations to a class wrapper
     procedure CreatePoolSemaphore;
@@ -96,14 +95,24 @@ type
     procedure   Remove(const APooledItem : TtiPooledItem);
     function    PooledItemClass: TtiPooledItemClass; virtual; abstract;
     procedure   AfterAddPooledItem(const APooledItem: TtiPooledItem); virtual; abstract;
+    function    GetMaxPoolSize: Word;
+    function    GetMinPoolSize: Word;
+    function    GetTimeOut: Extended;
+    function    GetWaitTime: Word;
+    procedure   SetTimeOut(const AValue: Extended); virtual;
+    procedure   SetWaitTime(const AValue: Word); virtual;
 
   public
-    constructor Create;
+    constructor Create(const AMinPoolSize, AMaxPoolSize: Word); overload;
     destructor  Destroy; override;
-    property    TimeOut    : Extended read FTimeOut     write FTimeOut;
-    property    MinPoolSize : integer read FMinPoolSize write FMinPoolSize;
-    property    MaxPoolSize : integer read FMaxPoolSize write SetMaxPoolSize;
-    property    WaitTime   : integer read FWaitTime     write FWaitTime;
+    {: TimeOut is the time a pooled item will remain in the pool (in minutes) before it is destroyed by the SweepForTimeOutes thread}
+    property    TimeOut    : Extended read GetTimeOut;
+    {: MinPoolSize is the minimum number of items that will be found in the pool}
+    property    MinPoolSize : Word read GetMinPoolSize;
+    {: MaxPoolSize is the maximum number of items that will be found in the pool}
+    property    MaxPoolSize : Word read GetMaxPoolSize;
+    {: WaitTime is the time (in seconds) that the pool will wait for a successful lock before raising an exception}
+    property    WaitTime   : Word read GetWaitTime;
 
     property    Count   : integer read GetCount;
     property    CountLocked : integer read GetCountLocked;
@@ -139,18 +148,17 @@ const
 // *  TtiPool
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TtiPool.Create;
+constructor TtiPool.Create(const AMinPoolSize, AMaxPoolSize: Word);
 begin
   inherited create;
   FPool := TThreadList.Create;
-  FMinPoolSize := CMinPoolSize;
-  FMaxPoolSize := CMaxPoolSize;
+  FMinPoolSize := AMinPoolSize;
+  FMaxPoolSize := AMaxPoolSize;
   FWaitTime    := CWaitTime;
   FTimeOut    := CTimeOut;
   CreatePoolSemaphore;
   FThrdPoolMonitor := TtiThrdPoolMonitor.CreateExt(self);
 end;
-
 
 destructor TtiPool.Destroy;
 begin
@@ -317,13 +325,6 @@ begin
   {$ENDIF LINUX}
 end;
 
-procedure TtiPool.SetMaxPoolSize(const AValue: integer);
-begin
-  FMaxPoolSize := AValue;
-  CreatePoolSemaphore;
-end;
-
-
 procedure TtiPool.UnLock(const APooledItemData : TtiBaseObject);
 var
   i : integer;
@@ -440,6 +441,16 @@ end;
 
 // Scan the pool for items which have timed out and should be removed from
 // the pool
+procedure TtiPool.SetTimeOut(const AValue: Extended);
+begin
+  FTimeOut:= AValue;
+end;
+
+procedure TtiPool.SetWaitTime(const AValue: Word);
+begin
+  FWaitTime:= AValue;
+end;
+
 procedure TtiPool.SweepForTimeOuts;
 var
   lList : TList;
@@ -512,6 +523,26 @@ begin
   finally
     FPool.UnLockList;
   end;
+end;
+
+function TtiPool.GetMaxPoolSize: Word;
+begin
+  result:= FMaxPoolSize
+end;
+
+function TtiPool.GetMinPoolSize: Word;
+begin
+  result:= FMinPoolSize;
+end;
+
+function TtiPool.GetTimeOut: Extended;
+begin
+  result:=FTimeOut;
+end;
+
+function TtiPool.GetWaitTime: Word;
+begin
+  result:=FWaitTime;
 end;
 
 procedure TtiPool.ForEachPooledItem(const AMethod: TtiPooledItemEvent);

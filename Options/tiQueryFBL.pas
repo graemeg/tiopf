@@ -44,7 +44,6 @@ type
   TtiPersistenceLayerFBL = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
@@ -993,11 +992,6 @@ end;
 function TtiPersistenceLayerFBL.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseFBL;
-end;
-
-function TtiPersistenceLayerFBL.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataAbs;
 end;
 
 function TtiPersistenceLayerFBL.GetPersistenceLayerName: string;

@@ -111,7 +111,6 @@ type
   TtiPersistenceLayerRemoteXML = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
-    function GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
@@ -1256,11 +1255,6 @@ end;
 function TtiPersistenceLayerRemoteXML.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseRemoteXML;
-end;
-
-function TtiPersistenceLayerRemoteXML.GetDBConnectionPoolDataClass: TtiDBConnectionPoolDataClass;
-begin
-  result:= TtiDBConnectionPoolDataAbs;
 end;
 
 function TtiPersistenceLayerRemoteXML.GetPersistenceLayerName: string;

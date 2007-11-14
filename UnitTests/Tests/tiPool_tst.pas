@@ -56,6 +56,8 @@ type
     procedure   AfterAddPooledItem(const APooledItem: TtiPooledItem); override;
   public
     procedure SweepForTimeOuts; override;
+    procedure SetTimeOut(const AValue: Extended); override;
+    procedure SetWaitTime(const AValue: Word); override;
   end;
 
 procedure RegisterTests;
@@ -71,8 +73,8 @@ uses
  ;
 
 const
-  cThreadCount      = 10;
-  cThreadItemCount  = 10;
+  cThreadCount      = 5;
+  cThreadItemCount  = 5;
 
 
 procedure RegisterTests;
@@ -90,7 +92,7 @@ var
   lList : TObjectList;
   i    : integer;
 begin
-  lPool := TtiPoolForTesting.Create;
+  lPool := TtiPoolForTesting.Create(0, ACount);
   try
     lList := TObjectList.Create(false);
     try
@@ -116,12 +118,10 @@ end;
 procedure TTestTiPool.Lock_Unlock_1;
 begin
   DoLock_Unlock(1);
-  DoLock_Unlock(1);
 end;
 
 procedure TTestTiPool.Lock_Unlock_10;
 begin
-  DoLock_Unlock(10);
   DoLock_Unlock(10);
 end;
 
@@ -134,9 +134,8 @@ var
 begin
   lList := TObjectList.Create(true);
   try
-    lPool := TtiPoolForTesting.Create;
+    lPool := TtiPoolForTesting.Create(0, cThreadCount * cThreadItemCount);
     try
-//      lPool.OnAddPooledItem := DoOnAddItem;
       for i := 1 to cThreadCount do
       begin
         lThrd := TThresPoolThread.Create(true);
@@ -144,12 +143,10 @@ begin
         lThrd.Pool := lPool;
         lList.Add(lThrd);
         lThrd.Resume;
-        Sleep(50);
+        Sleep(20);
       end;
-
       for i := 0 to lList.Count - 1 do
         TThread(lList.Items[i]).WaitFor;
-        
     finally
       lPool.Free;
     end;
@@ -163,21 +160,18 @@ procedure TTestTiPool.MaxPoolSize;
 var
   lPool : TtiPoolForTesting;
 begin
-  lPool := TtiPoolForTesting.Create;
+  lPool := TtiPoolForTesting.Create(0, 1);
   try
-//    lPool.OnAddPooledItem := DoOnAddItem;
-    lPool.WaitTime := 1;
-    lPool.MaxPoolSize := 1;
+    lPool.SetWaitTime(1);
     lPool.Lock;
     try
       lPool.Lock;
-      Fail('Exception not raised when it should have been');
+      Fail(CErrorExceptionNotRaised);
     except
       on e:exception do
       begin
         CheckIs(e, Exception, 'Wrong class of exception');
-        Check(Pos('Timed out waiting for a PooledItem', e.message) <> 0,
-               'Wrong error message');
+        CheckEquals(CErrorTimedOutWaitingForSemaphore, e.message);
       end;
     end;
   finally
@@ -191,12 +185,9 @@ var
   lItem1 : TtiBaseObject;
   lItem2 : TtiBaseObject;
 begin
-  lPool := TtiPoolForTesting.Create;
+  lPool := TtiPoolForTesting.Create(0, 2);
   try
-//    lPool.OnAddPooledItem := DoOnAddItem;
-    lPool.TimeOut := 0;
-    lPool.MinPoolSize := 1;
-
+    lPool.SetTimeOut(0);
     lItem1 := lPool.Lock;
     lItem2 := lPool.Lock;
     Check(lItem1 <> lItem2, 'Items should not be same');
@@ -233,11 +224,10 @@ var
   lItem2 : TtiBaseObject;
   lItem3 : TtiBaseObject;
 begin
-  lPool := TtiPoolForTesting.Create;
+  lPool := TtiPoolForTesting.Create(0, 3);
   try
 
-//    lPool.OnAddPooledItem := DoOnAddItem;
-    lPool.TimeOut := 1/60;
+    lPool.SetTimeOut(1/60);
 
     lPool.Lock;
     lPool.SweepForTimeOuts;
@@ -273,7 +263,7 @@ procedure TTestTiPool.CreateAndDestroy;
 var
   lPool : TtiPoolForTesting;
 begin
-  lPool := TtiPoolForTesting.Create;
+  lPool := TtiPoolForTesting.Create(0, 1);
   lPool.Free;
 end;
 
@@ -309,7 +299,7 @@ begin
   begin
     lItem := Pool.Lock;
     FItemList.Add(lItem);
-    Sleep(100);
+    Sleep(20);
   end;
 end;
 
@@ -321,7 +311,7 @@ begin
   for i := 0 to FItemCount - 1 do
   begin
     Pool.UnLock(FItemList.Items[i] as TtiPooledItem);
-    Sleep(100);
+    Sleep(20);
   end;
 end;
 
@@ -336,6 +326,16 @@ end;
 function TtiPoolForTesting.PooledItemClass: TtiPooledItemClass;
 begin
   result:= TtiPooledItem;
+end;
+
+procedure TtiPoolForTesting.SetTimeOut(const AValue: Extended);
+begin
+  inherited;
+end;
+
+procedure TtiPoolForTesting.SetWaitTime(const AValue: Word);
+begin
+  inherited;
 end;
 
 procedure TtiPoolForTesting.SweepForTimeouts;
