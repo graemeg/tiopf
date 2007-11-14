@@ -80,16 +80,16 @@ uses
 procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIWebServerConnectionDetails);
-  RegisterNonPersistentTest(TtestTIWebServer);
+  RegisterNonPersistentTest(TTestTIWebServer);
   RegisterNonPersistentTest(TtestTICGIParams);
 end;
 
 const
   cPort= 81;
 
-{ TtestTIWebServer }
+{ TTestTIWebServer }
 
-procedure TtestTIWebServer.tiDBProxyServer_Create;
+procedure TTestTIWebServer.tiDBProxyServer_Create;
 //var
 //  LO: TtiDBProxyServer;
 begin
@@ -101,13 +101,13 @@ begin
 //  end;
 end;
 
-procedure TtestTIWebServer.SetUp;
+procedure TTestTIWebServer.SetUp;
 begin
   inherited;
 
 end;
 
-procedure TtestTIWebServer.TearDown;
+procedure TTestTIWebServer.TearDown;
 begin
   inherited;
 
@@ -116,10 +116,12 @@ end;
 type
   TtiWebServerForTesting = class(TtiWebServer)
   public
-    property BlockStreamCache;
+    procedure SetStaticPageLocation(const AValue: string); override;
+    procedure SetCGIBinLocation(const AValue: string); override;
+    property  BlockStreamCache;
   end;
 
-procedure TtestTIWebServer.tiWebServer_Create;
+procedure TTestTIWebServer.tiWebServer_Create;
 var
   LConfig: TtiWebServerConfig;
   LO: TtiWebServerForTesting;
@@ -147,27 +149,27 @@ begin
   end;
 end;
 
-procedure TtestTIWebServer.tiDBProxyServer_ExecuteRemoteXML;
+procedure TTestTIWebServer.tiDBProxyServer_ExecuteRemoteXML;
 begin
 
 end;
 
-procedure TtestTIWebServer.tiDBProxyServer_TestAlive;
+procedure TTestTIWebServer.tiDBProxyServer_TestAlive;
 begin
 
 end;
 
-procedure TtestTIWebServer.tiDBProxyServer_TestAlive1;
+procedure TTestTIWebServer.tiDBProxyServer_TestAlive1;
 begin
 
 end;
 
-procedure TtestTIWebServer.tiDBProxyServer_TestHTML;
+procedure TTestTIWebServer.tiDBProxyServer_TestHTML;
 begin
 
 end;
 
-procedure TtestTIWebServer.tiDBProxyServer_TestXML;
+procedure TTestTIWebServer.tiDBProxyServer_TestXML;
 begin
 
 end;
@@ -220,20 +222,28 @@ begin
   end;
 
 end;
-procedure TtestTIWebServer.tiWebServer_CanFindPage;
+procedure TTestTIWebServer.tiWebServer_CanFindPage;
 var
-  LO: TtiWebServer;
+  LO: TtiWebServerForTesting;
   LResult: string;
   LFileName: string;
   LPage: string;
+  LDir: string;
 begin
-  LFileName:= tiGetEXEPath + PathDelim + cStaticPageDir + PathDelim + 'testpage.htm';
   LPage:= '<html>test page</html>';
+  LFileName:= TempFileName('testpage.htm');
+  LDir:= ExtractFilePath(LFileName);
+  tiForceDirectories(LDir);
   tiStringToFile(LPage, LFileName);
 
-  LO:= TtiWebServer.Create(cPort);
+  LO:= TtiWebServerForTesting.Create(cPort);
   try
+    // ToDo: This is too fragile. SleepSec must be set before the web server is
+    //       started but StaticPageLocation must be set after web server is started
+    LO.BlockStreamCache.SleepSec:= 0;
     LO.Start;
+    LO.SetStaticPageLocation(LDir);
+
     LResult:= TestHTTPRequest('testpage.htm');
     CheckEquals(LPage, LResult);
 
@@ -252,7 +262,7 @@ begin
   end;
 end;
 
-procedure TtestTIWebServer.tiWebServer_CanNotFindPage;
+procedure TTestTIWebServer.tiWebServer_CanNotFindPage;
 var
   LO: TtiWebServer;
   LResult: string;
@@ -294,7 +304,7 @@ begin
   end;
 end;
 
-procedure TtestTIWebServer.tiWebServer_Default;
+procedure TTestTIWebServer.tiWebServer_Default;
 var
   LO: TtiWebServer;
   LResult: string;
@@ -309,7 +319,7 @@ begin
   end;
 end;
 
-procedure TtestTIWebServer.tiWebServer_GetLogFile;
+procedure TTestTIWebServer.tiWebServer_GetLogFile;
 var
   LO: TtiWebServer;
   LResult: string;
@@ -330,7 +340,7 @@ begin
   end;
 end;
 
-procedure TtestTIWebServer.tiWebServer_Ignore;
+procedure TTestTIWebServer.tiWebServer_Ignore;
 var
   LO: TtiWebServer;
   LResult: string;
@@ -345,17 +355,17 @@ begin
   end;
 end;
 
-procedure TtestTIWebServer.tiWebServer_RunCGIExtension;
+procedure TTestTIWebServer.tiWebServer_RunCGIExtension;
 begin
 
 end;
 
-procedure TtestTIWebServer.tiDBProxyServer_ServerVersion;
+procedure TTestTIWebServer.tiDBProxyServer_ServerVersion;
 begin
 
 end;
 
-function TtestTIWebServer.TestHTTPRequest(const ADocument: string; AFormatException: boolean = True): string;
+function TTestTIWebServer.TestHTTPRequest(const ADocument: string; AFormatException: boolean = True): string;
 var
   LHTTP: TtiHTTPIndy;
 begin
@@ -369,21 +379,27 @@ begin
   end;
 end;
 
-procedure TtestTIWebServer.tiWebServer_PageInBlocks;
+procedure TTestTIWebServer.tiWebServer_PageInBlocks;
 var
-  LO: TtiWebServer;
+  LO: TtiWebServerForTesting;
   LResult: string;
   LFileName: string;
   LPage: string;
   LBlockCount, LBlockIndex, LBlockSize, LTransID: Longword;
+  LDir: string;
 begin
-  LFileName:= tiGetEXEPath + PathDelim + cStaticPageDir + PathDelim + 'testpage.htm';
+  LFileName:= TempFileName('testpage.htm');
+  LDir:= ExtractFilePath(LFileName);
+  tiForceDirectories(LDir);
   LPage:= 'abcDEFghiJKLmn';
   tiStringToFile(LPage, LFileName);
 
-  LO:= TtiWebServer.Create(cPort);
+  LO:= TtiWebServerForTesting.Create(cPort);
   try
+    LO.BlockStreamCache.SleepSec:= 0;
     LO.Start;
+    LO.SetStaticPageLocation(LDir);
+
     LBlockCount:= 0;
     LBlockIndex:= 0;
     LBlockSize:=  3;
@@ -400,7 +416,7 @@ begin
   end;
 end;
 
-function TtestTIWebServer.TestHTTPRequestInBlocks(const ADocument: string;
+function TTestTIWebServer.TestHTTPRequestInBlocks(const ADocument: string;
   var ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword): string;
 var
   LHTTP: TtiHTTPIndy;
@@ -507,6 +523,18 @@ end;
 procedure TTestTICGIParams.Values;
 begin
 
+end;
+
+{ TtiWebServerForTesting }
+
+procedure TtiWebServerForTesting.SetCGIBinLocation(const AValue: string);
+begin
+  inherited;
+end;
+
+procedure TtiWebServerForTesting.SetStaticPageLocation(const AValue: string);
+begin
+  inherited;
 end;
 
 end.

@@ -158,6 +158,9 @@ type
     FCGIBinLocation: string;
     FBlockStreamCache: TtiBlockStreamCache;
   protected
+    procedure SetStaticPageLocation(const AValue: string); virtual;
+    procedure SetCGIBinLocation(const AValue: string); virtual;
+
     property  BlockStreamCache: TtiBlockStreamCache read FBlockStreamCache;
     property  ServerActions: TObjectList Read FServerActions;
 
@@ -403,6 +406,16 @@ begin
   LItem1:= TtiWebServerAction(AItem1);
   LItem2:= TtiWebServerAction(AItem2);
   Result:= CompareValue(LItem1.SortOrder, LItem2.SortOrder);
+end;
+
+procedure TtiWebServer.SetCGIBinLocation(const AValue: string);
+begin
+  FCGIBinLocation:= AValue;
+end;
+
+procedure TtiWebServer.SetStaticPageLocation(const AValue: string);
+begin
+  FStaticPageLocation:= AValue;
 end;
 
 procedure TtiWebServer.Sort;
