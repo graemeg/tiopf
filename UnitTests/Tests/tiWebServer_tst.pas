@@ -533,8 +533,41 @@ end;
 { TTestTIWebServerConnectionDetails }
 
 procedure TTestTIWebServerClientConnectionDetails.Assign;
-begin
+var
+  LA: TtiWebServerClientConnectionDetails;
+  LB: TtiWebServerClientConnectionDetails;
+const
+  CAppServerURL= '1';
+  CConnectWith= '2';
+  CProxyServerActive= True;
+  CProxyServerName= '3';
+  CProxyServerPort= 4;
 
+begin
+  LA:= nil;
+  LB:= nil;
+  try
+    LA:= TtiWebServerClientConnectionDetails.Create;
+    LB:= TtiWebServerClientConnectionDetails.Create;
+
+    LA.AppServerURL:= CAppServerURL;
+    LA.ConnectWith:= CConnectWith;
+    LA.ProxyServerActive:= CProxyServerActive;
+    LA.ProxyServerName:= CProxyServerName;
+    LA.ProxyServerPort:= CProxyServerPort;
+
+    LB.Assign(LA);
+
+    CheckEquals(CAppServerURL, LA.AppServerURL);
+    CheckEquals(CConnectWith, LA.ConnectWith);
+    CheckEquals(CProxyServerActive, LA.ProxyServerActive);
+    CheckEquals(CProxyServerName, LA.ProxyServerName);
+    CheckEquals(CProxyServerPort, LA.ProxyServerPort);
+
+  finally
+    LA.Free;
+    LB.Free;
+  end;
 end;
 
 procedure TTestTIWebServerClientConnectionDetails.Equals;
