@@ -6663,7 +6663,7 @@ Comments=
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{CEAF6BD8-9FAF-410F-8F17-1ED6C9047070}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\Core;%path_to_working_tiOPF2%\Options;%path_to_working_tiOPF2%\GUI;%path_to_working_3rdparty%\FastMM;%path_to_working_3rdparty%\DUnit;%path_to_working_3rdparty%\JCL\Common;%path_to_working_3rdparty%\JCL\Windows;%path_to_working_3rdparty%\Indy\Core;%path_to_working_3rdparty%\Indy\Protocols;%path_to_working_3rdparty%\Indy\System;%path_to_working_3rdparty%\DOA</Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\Core;%path_to_working_tiOPF2%\Options;%path_to_working_tiOPF2%\GUI;%path_to_working_tiOPF2%\ApplicationServer\tiDBProxyServerExtension;%path_to_working_tiOPF2%\ApplicationServer;%path_to_working_3rdparty%\FastMM;%path_to_working_3rdparty%\DUnit;%path_to_working_3rdparty%\JCL\Common;%path_to_working_3rdparty%\JCL\Windows;%path_to_working_3rdparty%\Indy\Core;%path_to_working_3rdparty%\Indy\Protocols;%path_to_working_3rdparty%\Indy\System;%path_to_working_3rdparty%\DOA</Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
