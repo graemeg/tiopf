@@ -51,6 +51,7 @@ type
   TTestTICGIParams = class(TtiTestCase)
   published
     procedure Values;
+    procedure Assign;
   end;
 
 procedure RegisterTests;
@@ -74,6 +75,7 @@ uses
   ,tiHTTPIndy
   ,tiLog
   ,tiHTTP
+  ,tiCGIParams
 
   ,SysUtils
   ,Classes
@@ -633,8 +635,76 @@ end;
 
 { TTestTICGIParams }
 
-procedure TTestTICGIParams.Values;
+const
+  CParam1 = 'param1';
+  CParam2 = 'param2';
+  CValue1 = 'value1';
+  CValue2 = 'value2';
+
+procedure TTestTICGIParams.Assign;
+var
+  LA: TtiCGIParams;
+  LB: TtiCGIParams;
 begin
+  LA:= nil;
+  LB:= nil;
+  try
+    LA:= TtiCGIParams.Create;
+    LB:= TtiCGIParams.Create;
+    LA.Values[CParam1]:= CValue1;
+    LA.Values[CParam2]:= CValue2;
+    LB.Assign(LA);
+    CheckEquals(2, LB.Count);
+    CheckEquals(CValue1, LB.Values[CParam1]);
+    CheckEquals(CValue2, LB.Values[CParam2]);
+  finally
+    LA.Free;
+    LB.Free;
+  end;
+end;
+
+procedure TTestTICGIParams.Values;
+var
+  L: TtiCGIParams;
+  LAsString: string;
+  LCompressEncode: string;
+begin
+
+  L:= TtiCGIParams.Create;
+  try
+    L.Values[CParam1]:= CValue1;
+    CheckEquals(1, L.Count);
+    L.Values[CParam2]:= CValue2;
+    CheckEquals(2, L.Count);
+    CheckEquals(CValue1, L.Values[CParam1]);
+    CheckEquals(CValue2, L.Values[CParam2]);
+
+    LAsString:= L.AsString;
+    LCompressEncode:= L.AsCompressedEncodedString;
+
+  finally
+    L.Free;
+  end;
+
+  L:= TtiCGIParams.Create;
+  try
+    L.AsString:= LAsString;
+    CheckEquals(2, L.Count);
+    CheckEquals(CValue1, L.Values[CParam1]);
+    CheckEquals(CValue2, L.Values[CParam2]);
+  finally
+    L.Free;
+  end;
+
+  L:= TtiCGIParams.Create;
+  try
+    L.AsCompressedEncodedString:= LCompressEncode;
+    CheckEquals(2, L.Count);
+    CheckEquals(CValue1, L.Values[CParam1]);
+    CheckEquals(CValue2, L.Values[CParam2]);
+  finally
+    L.Free;
+  end;
 
 end;
 
