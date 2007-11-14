@@ -29,11 +29,9 @@ type
     procedure ZLib_StringCompression;
     procedure ZLib_StreamCompression;
 
-    procedure tiCompressString;
-    procedure tiDeCompressString;
-    procedure tiDeCompressStream;
-    procedure tiCompressStream;
-    procedure tiDecompressFileToString;
+    procedure tiCompressAndDecompressString;
+    procedure tiCompressAndDecompressStream;
+    procedure tiCompressAndDecompressStringToFile;
 
   end;
 
@@ -183,29 +181,53 @@ begin
   Do_StringCompression(cgsCompressNone, GetTestString);
 end;
 
-procedure TTestTICompress.tiCompressStream;
+procedure TTestTICompress.tiCompressAndDecompressStream;
+var
+  LBefore: TMemoryStream;
+  LDuring: TMemoryStream;
+  LAfter: TMemoryStream;
 begin
-
+  LBefore:= nil;
+  LDuring:= nil;
+  LAfter:= nil;
+  try
+    LBefore:= TMemoryStream.Create;
+    LDuring:= TMemoryStream.Create;
+    LAfter:= TMemoryStream.Create;
+    tiStringToStream(GetTestString, LBefore);
+    tiCompress.tiCompressStream(LBefore, LDuring);
+    tiDeCompressStream(LDuring, LAfter);
+    CheckEquals(LBefore, LAfter);
+  finally
+    LBefore.Free;
+    LDuring.Free;
+    LAfter.Free;
+  end;
 end;
 
-procedure TTestTICompress.tiCompressString;
+procedure TTestTICompress.tiCompressAndDecompressStringToFile;
+var
+  LBefore: string;
+  LAfter: string;
+  LFileName: string;
 begin
-
+  LFileName:= TempFileName('tiCompressAndDecompressString.zlib');
+  LBefore:= GetTestString;
+  tiCompress.tiCompressStringToFile(LBefore, LFileName);
+  LAfter:= tiCompress.tiDecompressFileToString(LFileName);
+  CheckEquals(LBefore, LAfter);
 end;
 
-procedure TTestTICompress.tiDecompressFileToString;
+procedure TTestTICompress.tiCompressAndDecompressString;
+var
+  LBefore: string;
+  LDuring: string;
+  LAfter: string;
 begin
-
-end;
-
-procedure TTestTICompress.tiDeCompressStream;
-begin
-
-end;
-
-procedure TTestTICompress.tiDeCompressString;
-begin
-
+  LBefore:= GetTestString;
+  LDuring:= tiCompress.tiCompressString(LBefore);
+  LAfter:= tiCompress.tiDeCompressString(LDuring);
+  CheckEquals(LBefore, LAfter);
 end;
 
 procedure TTestTICompress.ZLib_FileCompression;

@@ -66,8 +66,9 @@ type
 function  gCompressFactory : TtiCompressFactory;
 function  tiCompressString(const AString: string; const pCompress: string = cgsCompressZLib): string;
 function  tiDeCompressString(const AString: string; const pCompress: string = cgsCompressZLib): string;
-procedure tiDeCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
 procedure tiCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
+procedure tiDeCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
+procedure tiCompressStringToFile(const AString: string; const AFileName: string; const ACompress: string = cgsCompressZLib);
 function  tiDecompressFileToString(const AFileName: string; const ACompress: string = cgsCompressZLib): string;
 
 var
@@ -140,6 +141,26 @@ begin
     lCompress.DecompressStream(AStreamFrom, AStreamTo);
   finally
     lCompress.Free;
+  end;
+end;
+
+procedure tiCompressStringToFile(const AString: string; const AFileName: string; const ACompress: string = cgsCompressZLib);
+var
+  LStreamFrom: TMemoryStream;
+  LStreamTo: TMemoryStream;
+begin
+  Assert(AFileName<>'', 'AFileName not assigned');
+  LStreamFrom:= nil;
+  LStreamTo:= nil;
+  try
+    LStreamFrom:= TMemoryStream.Create;
+    LStreamTo:= TMemoryStream.Create;
+    tiStringToStream(AString, LStreamFrom);
+    tiCompressStream(LStreamFrom, LStreamTo, ACompress);
+    LStreamTo.SaveToFile(AFileName);
+  finally
+    LStreamFrom.Free;
+    LStreamTo.Free;
   end;
 end;
 
