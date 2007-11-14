@@ -2922,7 +2922,7 @@ String
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">4</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile tiOPFCore]]>
@@ -3057,7 +3057,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">4</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile tiOPFOptions]]>
@@ -3192,7 +3192,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">4</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile tiOPFGUI]]>
@@ -3327,7 +3327,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">4</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile tiOPFGUIDsgn]]>
@@ -3462,7 +3462,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">4</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile DUnitTIOPFGUI]]>
@@ -3597,7 +3597,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">4</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile DUnitTIOPFText]]>
@@ -3736,52 +3736,6 @@ Comments=
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-            <Object Class="TRunProgramAction" XMLID="{6E7D5E8B-C474-46A2-9621-1667667A3BB8}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Execute Program [ %path_to_working_bin%\DUnitTIOPFText.exe ]]]>
-                </Property>
-              <Property name="ActionTextColor" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="CaptureOutput" type="Boolean">True</Property>
-              <Property name="Enabled" type="WordBool">False</Property>
-              <Property name="EnableLiveCapture" type="Boolean">True</Property>
-              <Property name="EnableReturnCodeCheck" type="Boolean">True</Property>
-              <Property name="EnableTimeout" type="Boolean">False</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="ExtraCmdLineParamsAtEnd" type="string"></Property>
-              <Property MultiValue="0" name="ExtraCmdLineParamsAtStart" type="string"></Property>
-              <Property name="HideWindow" type="Boolean">False</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property MultiValue="0" name="ImpersonateToken" type="string"></Property>
-              <Property name="ImpersonateUser" type="Boolean">False</Property>
-              <Property MultiValue="0" name="ImpersonateUserName" type="string"></Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property name="LogOutput" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property MultiValue="1" name="Params" type="WideString"><![CDATA[-LogTo %path_to_working_deploy% -ini %path_to_working_dunit_inifile%]]>
-                </Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="ProcessorAffinity" type="Cardinal">0</Property>
-              <Property name="ProcessPriority" type="TFBExecuteThreadPriority">tpNormal</Property>
-              <Property MultiValue="0" name="ProgramName" type="WideString">%path_to_working_bin%\DUnitTIOPFText.exe</Property>
-              <Property name="RedirectStdErr" type="Boolean">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="ReturnCodeComparator" type="TFBRunReturnCodeComparator">rcLessThanEqualTo</Property>
-              <Property name="ReturnCodeToCheck" type="Integer">0</Property>
-              <Property MultiValue="0" name="StartInDir" type="WideString">%path_to_working_bin%</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property name="TerminateOnTimeout" type="Boolean">True</Property>
-              <Property name="TimeoutLength" type="Cardinal">0</Property>
-              <Property name="WaitForCompletion" type="Boolean">True</Property>
-              <Object Class="TBuildScript" XMLID="{C11EED36-C0A0-43C4-8237-CD0302954844}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
-                <Property MultiValue="0" name="Name" type="string">Condition</Property>
-                <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_run_unit_tests = "1"]]>
-                  </Property>
-                <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
-                </Object>
-              </Object>
             <Object Class="TWriteIniFileAction" XMLID="{FAABF421-FA19-47AB-962A-58BAE50A0251}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write Ini File]]>
                 </Property>
@@ -3932,6 +3886,30 @@ Comments=
                   <Property name="PauseInterval" type="Cardinal">0</Property>
                   <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                   <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                  <Object Class="TWriteIniFileAction" XMLID="{42F60D4F-E150-408D-8DF3-8972ED298A7A}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                    <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write Ini File]]>
+                      </Property>
+                    <Property name="ActionTextColor" type="Cardinal">0</Property>
+                    <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                    <Property name="AllowCreate" type="WordBool">True</Property>
+                    <Property name="Enabled" type="WordBool">True</Property>
+                    <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                    <Property name="IgnoreFailure" type="WordBool">False</Property>
+                    <Property MultiValue="0" name="IniFile" type="WideString">%path_to_working_dunit_inifile%</Property>
+                    <Property name="IsAction" type="Boolean">True</Property>
+                    <Property name="IsBreakPoint" type="WordBool">False</Property>
+                    <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                    <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                    <Property MultiValue="1" name="NewValue" type="WideString"><![CDATA[Unit tests timed out]]>
+                      </Property>
+                    <Property name="NodeCollapsed" type="Boolean">False</Property>
+                    <Property name="PauseInterval" type="Cardinal">0</Property>
+                    <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                    <Property MultiValue="0" name="Section" type="WideString">Report_Long</Property>
+                    <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                    <Property MultiValue="0" name="ValueName" type="WideString">report_long_d#(p_delphi_version)</Property>
+                    <Property name="ValueType" type="TIniValueType">vtString</Property>
+                    </Object>
                   <Object Class="TWMIKillAction" XMLID="{4E2C4A3F-D312-4ADA-8270-BCA07833BA83}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
                     <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[WMI Kill Process]]>
                       </Property>
@@ -3956,30 +3934,6 @@ Comments=
                     <Property MultiValue="0" name="Token" type="string"></Property>
                     <Property name="UseProcessID" type="Boolean">True</Property>
                     <Property MultiValue="0" name="Username" type="string"></Property>
-                    </Object>
-                  <Object Class="TWriteIniFileAction" XMLID="{42F60D4F-E150-408D-8DF3-8972ED298A7A}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                    <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write Ini File]]>
-                      </Property>
-                    <Property name="ActionTextColor" type="Cardinal">0</Property>
-                    <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                    <Property name="AllowCreate" type="WordBool">True</Property>
-                    <Property name="Enabled" type="WordBool">True</Property>
-                    <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                    <Property name="IgnoreFailure" type="WordBool">False</Property>
-                    <Property MultiValue="0" name="IniFile" type="WideString">%path_to_working_dunit_inifile%</Property>
-                    <Property name="IsAction" type="Boolean">True</Property>
-                    <Property name="IsBreakPoint" type="WordBool">False</Property>
-                    <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                    <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                    <Property MultiValue="1" name="NewValue" type="WideString"><![CDATA[Unit tests timed out]]>
-                      </Property>
-                    <Property name="NodeCollapsed" type="Boolean">False</Property>
-                    <Property name="PauseInterval" type="Cardinal">0</Property>
-                    <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                    <Property MultiValue="0" name="Section" type="WideString">Report_Long</Property>
-                    <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                    <Property MultiValue="0" name="ValueName" type="WideString">report_long_d#(p_delphi_version)</Property>
-                    <Property name="ValueType" type="TIniValueType">vtString</Property>
                     </Object>
                   </Object>
                 <Object Class="TFBEndBlockAction" XMLID="{9D346470-4084-4D65-8417-235F5EBAE563}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
@@ -4287,7 +4241,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_01_ReadMe]]>
@@ -4422,7 +4376,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_02_LoadPersistenceLayerIfDef]]>
@@ -4557,7 +4511,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_03_LoadPersistenceLayerUses]]>
@@ -4692,7 +4646,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_04_CreateDatabase]]>
@@ -4827,7 +4781,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_05_ConnectToDatabase]]>
@@ -4962,7 +4916,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_06_CreateTable]]>
@@ -5097,7 +5051,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_07_VisitorBasics]]>
@@ -5232,7 +5186,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_08_Collection]]>
@@ -5367,7 +5321,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_09_EditDataInGUI]]>
@@ -5502,7 +5456,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_10_CollectionWithFilter]]>
@@ -5637,7 +5591,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_10a_CollectionWithCriteria]]>
@@ -5772,7 +5726,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_11_OnetoMany]]>
@@ -5907,7 +5861,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_12_Inheritance]]>
@@ -6042,7 +5996,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_13_OneToOne]]>
@@ -6177,7 +6131,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_14_OrdinalTypes]]>
@@ -6312,7 +6266,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_15_LookupList]]>
