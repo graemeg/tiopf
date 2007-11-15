@@ -49,7 +49,6 @@ const
   cTIQueryTableName             = 'TIQueryTable';
   cTIQueryTableNameInt64        = 'TIQueryTableInt64';
   cTIQueryColName               = 'TIQueryField';
-  cTimingRepeatCount            = 400;
 
 type
 
@@ -960,18 +959,15 @@ end;
 
 procedure TtiOPFTestCase.CreateTableBoolean(const ADatabaseName, APersistenceLayerName : string);
 var
-  lTable : TtiDBMetaDataTable;
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDatabase: TtiDatabase;
 begin
-  // If the structure of the table created is changed, also change the
-  // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkLogical);
-    gTIOPFManager.CreateTable(lTable, ADatabaseName, APersistenceLayerName);
+    CreateTableBoolean(LDatabase);
   finally
-    lTable.Free;
+    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
   end;
 end;
 
@@ -996,18 +992,15 @@ end;
 
 procedure TtiOPFTestCase.CreateTableDateTime(const ADatabaseName, APersistenceLayerName : string);
 var
-  lTable : TtiDBMetaDataTable;
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDatabase: TtiDatabase;
 begin
-  // If the structure of the table created is changed, also change the
-  // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkDateTime);
-    gTIOPFManager.CreateTable(lTable, ADatabaseName, APersistenceLayerName);
+    CreateTableDateTime(LDatabase);
   finally
-    lTable.Free;
+    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
   end;
 end;
 
@@ -1032,18 +1025,15 @@ end;
 
 procedure TtiOPFTestCase.CreateTableFloat(const ADatabaseName, APersistenceLayerName : string);
 var
-  lTable : TtiDBMetaDataTable;
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDatabase: TtiDatabase;
 begin
-  // If the structure of the table created is changed, also change the
-  // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkFloat);
-    gTIOPFManager.CreateTable(lTable, ADatabaseName, APersistenceLayerName);
+    CreateTableFloat(LDatabase);
   finally
-    lTable.Free;
+    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
   end;
 end;
 
@@ -1104,18 +1094,15 @@ end;
 
 procedure TtiOPFTestCase.CreateTableLongString(const ADatabaseName, APersistenceLayerName : string);
 var
-  lTable : TtiDBMetaDataTable;
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDatabase: TtiDatabase;
 begin
-  // If the structure of the table created is changed, also change the
-  // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkLongString);
-    gTIOPFManager.CreateTable(lTable, ADatabaseName, APersistenceLayerName);
+    CreateTableLongString(LDatabase);
   finally
-    lTable.Free;
+    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
   end;
 end;
 
@@ -1140,18 +1127,15 @@ end;
 
 procedure TtiOPFTestCase.CreateTableStream(const ADatabaseName, APersistenceLayerName : string);
 var
-  lTable : TtiDBMetaDataTable;
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDatabase: TtiDatabase;
 begin
-  // If the structure of the table created is changed, also change the
-  // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkBinary);
-    gTIOPFManager.CreateTable(lTable, ADatabaseName, APersistenceLayerName);
+    CreateTableStream(LDatabase);
   finally
-    lTable.Free;
+    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
   end;
 end;
 
@@ -1176,18 +1160,15 @@ end;
 
 procedure TtiOPFTestCase.CreateTableString(const ADatabaseName, APersistenceLayerName : string);
 var
-  lTable : TtiDBMetaDataTable;
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDatabase: TtiDatabase;
 begin
-  // If the structure of the table created is changed, also change the
-  // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkString, 255);
-    gTIOPFManager.CreateTable(lTable, ADatabaseName, APersistenceLayerName);
+    CreateTableString(LDatabase);
   finally
-    lTable.Free;
+    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
   end;
 end;
 

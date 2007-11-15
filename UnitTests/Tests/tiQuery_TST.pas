@@ -84,7 +84,7 @@ type
   published
     procedure LoadDatabaseLayer;
     procedure NonThreadedDBConnectionPool;
-    procedure ThreadedDBConnectionPool; 
+    procedure ThreadedDBConnectionPool;
 
     procedure Connect;
     procedure Transaction_InTransaction;
@@ -210,7 +210,6 @@ type
 
 procedure RegisterTests;
 
-
 const
   cTIQueryTestName  = 'Dynamically loaded persistence layer';
   // Number of threads and iterations for DBPool testing
@@ -219,7 +218,11 @@ const
   cuThreadCount     = 5;
   cuIterations      = 5;
   cRepeatCount      = 5;
-
+  // Seconds. Run the timing test for this number of seconds and count the
+  // number of iterations. Higher value gives more accurate values.
+  // Lower value gives faster tests.
+  // Results are written to DataAccessTimingResults.txt
+  CTimingTestPeriod = 2;
 
 implementation
 uses
@@ -1066,8 +1069,9 @@ var
   lCreateTableTime : DWord;
   lDropTableTime  : DWord;
   lMetaDataTime   : DWord;
-  lStart          : DWord;
-  i               : integer;
+  LBulkTestStart:   DWord;
+  LSingleTestStart: DWord;
+  LCount               : integer;
 begin
   Check(True); // To Force OnCheckCalled to be called
   lCreateTableTime := 0;
@@ -1087,28 +1091,33 @@ begin
       try
         lTable2.Name := cTableNameCreateTable;
         lTable1.AddField('test', qfkString, 10);
-        for i := 1 to cTimingRepeatCount do
+        LCount:= 0;
+        LBulkTestStart:= tiGetTickCount;
+        while (tiGetTickCount - LBulkTestStart) < (CTimingTestPeriod*1000) do
         begin
+          Inc(LCount);
           // Create Table
-          lStart := tiGetTickCount;
+          LSingleTestStart := tiGetTickCount;
           FDatabase.CreateTable(lTable1);
-          Inc(lCreateTableTime, tiGetTickCount - lStart);
+          Inc(lCreateTableTime, tiGetTickCount - LSingleTestStart);
 
           // Meta Data
           lTable2.Clear;
-          lStart := tiGetTickCount;
+          LSingleTestStart := tiGetTickCount;
           FDatabase.ReadMetaDataFields(lTable2);
-          Inc(lMetaDataTime, tiGetTickCount - lStart);
+          Inc(lMetaDataTime, tiGetTickCount - LSingleTestStart);
 
           // Drop Table
-          lStart := tiGetTickCount;
+          LSingleTestStart := tiGetTickCount;
           FDatabase.DropTable(cTableNameCreateTable);
-          Inc(lDropTableTime, tiGetTickCount - lStart);
+          Inc(lDropTableTime, tiGetTickCount - LSingleTestStart);
 
         end;
-        WriteTimingResult('CreateTable',    PerFrameworkSetup.PerLayerName, lCreateTableTime / cTimingRepeatCount);
-        WriteTimingResult('DropTableTable', PerFrameworkSetup.PerLayerName, lDropTableTime / cTimingRepeatCount);
-        WriteTimingResult('ReadMetaData',   PerFrameworkSetup.PerLayerName, lMetaDataTime / cTimingRepeatCount);
+        WriteTimingResult('TableTestIterationCount',     PerFrameworkSetup.PerLayerName, LCount);
+        WriteTimingResult('TotalTestTime',  PerFrameworkSetup.PerLayerName, CTimingTestPeriod);
+        WriteTimingResult('CreateTable',    PerFrameworkSetup.PerLayerName, tiSafeDiv(lCreateTableTime, LCount));
+        WriteTimingResult('DropTableTable', PerFrameworkSetup.PerLayerName, tiSafeDiv(lDropTableTime, LCount));
+        WriteTimingResult('ReadMetaData',   PerFrameworkSetup.PerLayerName, tiSafeDiv(lMetaDataTime, LCount));
       finally
         lTable2.Free;
       end;
@@ -1884,8 +1893,9 @@ var
   lInsertTime : DWord;
   lUpdateTime : DWord;
   lDeleteTime : DWord;
-  lStart     : DWord;
-  i : integer;
+  LSingleTestStart     : DWord;
+  LCount : integer;
+  LBulkTestStart: DWord;
 begin
   Check(True); // To Force OnCheckCalled to be called
   lInsertTime := 0;
@@ -1900,27 +1910,31 @@ begin
       try
         lParams.SetValueAsString(cTIQueryColName, 'test');
 
-        for i := 1 to cTimingRepeatCount do
+        LCount:= 0;
+        LBulkTestStart:= tiGetTickCount;
+        while (tiGetTickCount - LBulkTestStart) < (CTimingTestPeriod*1000) do
         begin
-          lStart := tiGetTickCount;
+          Inc(LCount);
+
+          LSingleTestStart := tiGetTickCount;
           FDatabase.StartTransaction;
           FQuery.InsertRow(cTIQueryTableName, lParams);
           FDatabase.Commit;
-          Inc(lInsertTime, tiGetTickCount - lStart);
+          Inc(lInsertTime, tiGetTickCount - LSingleTestStart);
           FQuery.Close;
 
-          lStart := tiGetTickCount;
+          LSingleTestStart := tiGetTickCount;
           FDatabase.StartTransaction;
           FQuery.UpdateRow(cTIQueryTableName, lParams, lParams);
           FDatabase.Commit;
-          Inc(lUpdateTime, tiGetTickCount - lStart);
+          Inc(lUpdateTime, tiGetTickCount - LSingleTestStart);
           FQuery.Close;
 
-          lStart := tiGetTickCount;
+          LSingleTestStart := tiGetTickCount;
           FDatabase.StartTransaction;
           FQuery.DeleteRow(cTIQueryTableName, lParams);
           FDatabase.Commit;
-          Inc(lDeleteTime, tiGetTickCount - lStart);
+          Inc(lDeleteTime, tiGetTickCount - LSingleTestStart);
           FQuery.Close;
         end;
 
@@ -1933,9 +1947,11 @@ begin
   finally
     DropTestTable;
   end;
-  WriteTimingResult('InsertRow', PerFrameworkSetup.PerLayerName, lInsertTime / cTimingRepeatCount);
-  WriteTimingResult('UpdateRow', PerFrameworkSetup.PerLayerName, lUpdateTime / cTimingRepeatCount);
-  WriteTimingResult('DeleteRow', PerFrameworkSetup.PerLayerName, lDeleteTime / cTimingRepeatCount);
+  WriteTimingResult('RowTestIterationCount',  PerFrameworkSetup.PerLayerName, LCount);
+  WriteTimingResult('TotalTestTime', PerFrameworkSetup.PerLayerName, CTimingTestPeriod);
+  WriteTimingResult('InsertRow',     PerFrameworkSetup.PerLayerName, tiSafeDiv(lInsertTime, LCount));
+  WriteTimingResult('UpdateRow',     PerFrameworkSetup.PerLayerName, tiSafeDiv(lUpdateTime, LCount));
+  WriteTimingResult('DeleteRow',     PerFrameworkSetup.PerLayerName, tiSafeDiv(lDeleteTime, LCount));
 end;
 
 {$IFDEF TESTINT64}

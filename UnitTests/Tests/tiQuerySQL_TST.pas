@@ -162,7 +162,7 @@ end;
 {$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsBoolean;
 begin
-  CreateTableInteger(DatabaseName, PerLayerName);
+  CreateTableInteger(Database);
   try
     DoAttachAndConnect;
     try
@@ -188,7 +188,7 @@ var
   lDate : TDateTime;
 begin
   lDate := Now;
-  CreateTableDateTime(DatabaseName, PerLayerName);
+  CreateTableDateTime(Database);
   try
     DoAttachAndConnect;
     try
@@ -211,7 +211,7 @@ procedure TTestTIQuerySQL.ParamAsFloat;
 const
   cValue = 12345.6789;
 begin
-  CreateTableFloat(DatabaseName, PerLayerName);
+  CreateTableFloat(Database);
   try
     DoAttachAndConnect;
     try
@@ -232,7 +232,7 @@ end;
 {$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsInteger;
 begin
-  CreateTableInteger(DatabaseName, PerLayerName);
+  CreateTableInteger(Database);
   try
     DoAttachAndConnect;
     try
@@ -269,7 +269,7 @@ end;
 {$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamAsString;
 begin
-  CreateTableString(DatabaseName, PerLayerName);
+  CreateTableString(Database);
   try
     DoAttachAndConnect;
     try
@@ -290,7 +290,7 @@ end;
 {$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamCount;
 begin
-  CreateTableTestGroup;
+  CreateTableTestGroup(Database);
   DoAttachAndConnect;
   try
     Query.SQLText :=
@@ -333,7 +333,7 @@ end;
 {$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamIsNull;
 begin
-  CreateTableTestGroup;
+  CreateTableTestGroup(Database);
   DoAttachAndConnect;
   try
     Query.SQLText := 'Update Test_Group set Group_STR_FIELD = :Group_Str_Field';
@@ -351,7 +351,7 @@ end;
 {$IFNDEF FPC}
 procedure TTestTIQuerySQL.ParamName;
 begin
-  CreateTableTestGroup;
+  CreateTableTestGroup(Database);
   DoAttachAndConnect;
   try
     Query.SQLText :=
@@ -381,7 +381,7 @@ procedure TTestTIQuerySQL.ParamsAsString;
 var
   lResult : string;
 begin
-  CreateTableTestGroup;
+  CreateTableTestGroup(Database);
   DoAttachAndConnect;
   try
     Query.SQLText :=
@@ -450,7 +450,7 @@ var
   lStreamFrom : TStringStream;
   lStreamTo  : TMemoryStream;
 begin
-  CreateTableStream(DatabaseName, PerLayerName);
+  CreateTableStream(Database);
   try
     lStreamFrom := TStringStream.Create(LongString);
     try

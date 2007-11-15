@@ -18,7 +18,7 @@ uses
 
 const
   CErrorPoolUnlockByData_BadData    = 'Attempt to unlock item by passing object that is not owned by a PooledItem';
-  CErrorTimedOutWaitingForSemaphore = 'Timed out waiting for PooledData.';
+  CErrorTimedOutWaitingForSemaphore = 'Timed out waiting for %s.lock MinPoolSize="%d", MaxPoolSize="%d", LockedItemCount="%d"';
   CErrorFailedToUnlockPooledItem = 'Attempting to unlock PooledData which can not be found in the pool.';
   CErrorSemaphoreAvailableButNoItemsInPool = 'Semaphore was available but no items ' +
                 'available in the pool. MaxPoolSize: %d, Current pool size: %d';
@@ -277,7 +277,8 @@ var
 begin
 
   if not LockPoolSemaphore then
-    raise EtiOPFInternalException.Create(CErrorTimedOutWaitingForSemaphore);
+    raise EtiOPFInternalException.CreateFmt(CErrorTimedOutWaitingForSemaphore,
+      [ClassName, MinPoolSize, MaxPoolSize, CountLocked]);
 
   Result:= nil;
   // A semaphore was available, so get a PooledItem
