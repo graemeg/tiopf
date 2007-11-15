@@ -194,20 +194,6 @@ type
     procedure InsertDeleteUpdate_Timing;
   end;
   
-
-  TThrdDBConnectionPoolTest = class(TtiThread)
-  private
-    FCycles: integer;
-    FPerFrameworkSetup: TtiOPFTestSetupData;
-    FDone: boolean;
-  public
-    constructor CreateExt(const pPerFrameworkSetup: TtiOPFTestSetupData;
-                           pCycles: integer);
-    procedure   Execute; override;
-    property    Done: boolean read FDone write FDone;
-  end;
-
-
 procedure RegisterTests;
 
 const
@@ -233,6 +219,7 @@ uses
   {$ENDIF}
   ,Contnrs
   ,TypInfo
+  ,SyncObjs
   ,tiLog
   ,tiUtils
   ,tiConstants
@@ -808,6 +795,87 @@ begin
   Check(tiTypeKindToQueryFieldKind(tiTKBoolean) = qfkLogical , 'Failed on tiTKBoolean ');
 end;
 
+type
+
+  TThrdDBConnectionPoolTest = class(TtiThread)
+  private
+    FCycles: integer;
+    FPerFrameworkSetup: TtiOPFTestSetupData;
+    FDone: Boolean;
+    FCritSect: TCriticalSection;
+    FPersistenceLayerName: string;
+    FDatabaseName: string;
+    function GetDone: Boolean;
+    procedure SetDone(const Value: Boolean);
+  public
+    constructor CreateExt(const pPerFrameworkSetup: TtiOPFTestSetupData;
+                           pCycles: integer);
+    destructor  Destroy; override;
+    procedure   Execute; override;
+    property    Done: Boolean read GetDone write SetDone;
+  end;
+
+  constructor TThrdDBConnectionPoolTest.CreateExt(const pPerFrameworkSetup : TtiOPFTestSetupData;
+                                                   pCycles : integer);
+  begin
+    Create(true);
+    FCritSect:= TCriticalSection.Create;
+    FreeOnTerminate := false;
+    FCycles := pCycles;
+    FPerFrameworkSetup := pPerFrameworkSetup;
+    FPersistenceLayerName:= pPerFrameworkSetup.PerLayerName;
+    FDatabaseName:= pPerFrameworkSetup.DBName;
+    Done := False;
+  end;
+
+  destructor TThrdDBConnectionPoolTest.Destroy;
+begin
+  FCritSect.Free;
+  inherited;
+end;
+
+  procedure TThrdDBConnectionPoolTest.Execute;
+  var
+    i : integer;
+    lRegPerLayer : TtiPersistenceLayer;
+    LDatabase : TtiDatabase;
+  begin
+    try
+      for i := 1 to FCycles do
+      begin
+        lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(FPersistenceLayerName);
+        Assert(lRegPerLayer <> nil, 'Unable to find RegPerLayer <' + FPersistenceLayerName);
+        LDatabase := lRegPerLayer.DBConnectionPools.Lock(FDatabaseName);
+        Sleep(100);
+        lRegPerLayer.DBConnectionPools.UnLock(FDatabaseName, LDatabase);
+      end;
+    except
+      on e:exception do
+        LogError(e);
+    end;
+    Done := True;
+  end;
+
+function TThrdDBConnectionPoolTest.GetDone: Boolean;
+begin
+  FCritSect.Enter;
+  try
+    result:= FDone;
+  finally
+    FCritSect.Leave;
+  end;
+end;
+
+procedure TThrdDBConnectionPoolTest.SetDone(const Value: Boolean);
+begin
+  FCritSect.Enter;
+  try
+    FDone:= Value;
+  finally
+    FCritSect.Leave;
+  end;
+end;
+
 procedure TTestTIDatabase.DoThreadedDBConnectionPool(pThreadCount: integer);
   procedure _CreateThreads(AList : TList;
                             pThreadCount, pIterations : integer);
@@ -842,9 +910,6 @@ procedure TTestTIDatabase.DoThreadedDBConnectionPool(pThreadCount: integer);
         lAllFinished := lAllFinished and TThrdDBConnectionPoolTest(AList.Items[i]).Done;
       end;
       Sleep(100);
-      {$IFNDEF FPC}
-      Application.ProcessMessages;
-      {$ENDIF}
     end;
   end;
 var
@@ -919,34 +984,6 @@ begin
   finally
     LDefaults.Free;
   end;
-end;
-
-constructor TThrdDBConnectionPoolTest.CreateExt(const pPerFrameworkSetup : TtiOPFTestSetupData;
-                                                 pCycles : integer);
-begin
-  Create(true);
-  FreeOnTerminate := false;
-  FCycles := pCycles;
-  FPerFrameworkSetup := pPerFrameworkSetup;
-  FDone := false;
-end;
-
-procedure TThrdDBConnectionPoolTest.Execute;
-var
-  i : integer;
-  lRegPerLayer : TtiPersistenceLayer;
-  LDatabase : TtiDatabase;
-begin
-  for i := 1 to FCycles do
-  begin
-    lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(FPerFrameworkSetup.PerLayerName);
-    Assert(lRegPerLayer <> nil, 'Unable to find RegPerLayer <' + FPerFrameworkSetup.PerLayerName);
-    LDatabase := lRegPerLayer.DBConnectionPools.Lock(FPerFrameworkSetup.DBName);
-    Sleep(100);
-    lRegPerLayer.DBConnectionPools.UnLock(FPerFrameworkSetup.DBName, LDatabase);
-    //Log('Thread: %d, Cylce: %d', [GetCurrentThreadID, i]);
-  end;
-  FDone := true;
 end;
 
 constructor TTestTIQueryAbs.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
