@@ -172,7 +172,8 @@ begin
       on e:exception do
       begin
         CheckIs(e, Exception, 'Wrong class of exception');
-        CheckEquals(CErrorTimedOutWaitingForSemaphore, e.message);
+        CheckFormattedMessage(CErrorTimedOutWaitingForSemaphore,
+          [TtiPoolForTesting.ClassName, 0, 1, 1], e.message);
       end;
     end;
   finally
