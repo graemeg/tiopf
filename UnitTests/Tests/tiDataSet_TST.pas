@@ -97,9 +97,10 @@ end;
 
 procedure TTestTiDataset.LinkListToDataset;
 begin
-  with FDataset do begin
-    ObjectList := FList;
-  end;
+//  with FDataset do begin
+//    ObjectList := FList;
+//  end;
+  FDataset.LinkObject(FList, TtiDatasetItem);
 end;
 
 procedure TTestTiDataset.Setup;
@@ -469,17 +470,20 @@ begin
     Close;
 
     LF := TIntegerField.Create(FDataset);
-    LF.FieldName := 'CalcField';
-    LF.FieldKind := fkCalculated;
-    LF.Name := 'CalcField';
-
-    LF := TIntegerField.Create(FDataset);
     LF.FieldName := 'IntField';
     LF.FieldKind := fkData;
     LF.Name := 'IntField';
+    LF.Dataset:= FDataset;
+
+    LF := TIntegerField.Create(FDataset);
+    LF.FieldName := 'CalcField';
+    LF.FieldKind := fkCalculated;
+    LF.Name := 'CalcField';
+    LF.Dataset:= FDataset;
 
     OnCalcFields := CalcFields;
     Open;
+
     First;
     Moveby(2);
     CheckEquals(3, FieldByName('IntField').AsInteger, 'Manual field');
@@ -545,6 +549,7 @@ begin
 end;}
 
 end.
+
 
 
 
