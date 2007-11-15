@@ -12,11 +12,11 @@ uses
   ,tiCriteria
   ,tiUtils        { GetPropNames }
   ,TypInfo
-  , SysUtils
+  ,SysUtils
   ;
 
 type
-  TVisPerObjToSQL = class(TVisStringStream)
+  TVisObjectToSQL = class(TVisStringStream)
   private
     FGroupByList: TPerColumns;
     FOrderByList: TPerColumns;
@@ -31,7 +31,7 @@ type
     procedure   Execute(const pVisited: TtiVisited); override;
     function    GroupByClausesAsText: string;
     function    OrderByClausesAsText: string;
-    function    AsSQLClause(ACriterias: TPerSelectionCriteriaList): string;
+    function    AsSQLClause(ACriterias: TtiSelectionCriteriaList): string;
     property    Params: TtiQueryParams read FParams write FParams;
   end;
 
@@ -39,14 +39,13 @@ type
 function tiCriteriaAsSQL(pVisited: TtiObject; pWithComments: boolean = false): string; overload;
 function tiCriteriaAsSQL(pVisited: TtiObject; AParams: TtiQueryParams; pWithComments: boolean = false): string; overload;
 
-function ToSelectClause(ACriteria: TPerSelectionCriteriaAbs; AParams: TtiQueryParams; var AParamNo: integer ): string; overload;
-function ToSelectClause(ACriteria: TPerSQLCriteria): string; overload;
-function ToSelectClause(ACriteria: TPerNullCriteria): string; overload;
-function ToSelectClause(ACriteria: TPerExistsCriteria): string; overload;
-function ToSelectClause(ACriteria: TPerBetweenCriteria; AParams: TtiQueryParams; var AParamNo: integer): string; overload;
-function ToSelectClause(ACriteria: TPerInCriteria; AParams: TtiQueryParams; var AParamNo: integer): string; overload;
-function ToSelectClause(ACriteria: TPerFieldCriteriaAbs): string; overload;
-
+function ToSelectClause(ACriteria: TtiSelectionCriteriaAbs; AParams: TtiQueryParams; var AParamNo: integer ): string; overload;
+function ToSelectClause(ACriteria: TtiSQLCriteria): string; overload;
+function ToSelectClause(ACriteria: TtiNullCriteria): string; overload;
+function ToSelectClause(ACriteria: TtiExistsCriteria): string; overload;
+function ToSelectClause(ACriteria: TtiBetweenCriteria; AParams: TtiQueryParams; var AParamNo: integer): string; overload;
+function ToSelectClause(ACriteria: TtiInCriteria; AParams: TtiQueryParams; var AParamNo: integer): string; overload;
+function ToSelectClause(ACriteria: TtiFieldCriteriaAbs): string; overload;
 
 
 
@@ -54,7 +53,7 @@ implementation
 
 uses
   variants
-  , tiRTTI
+  ,tiRTTI
   ;
 
 const
@@ -85,22 +84,22 @@ end;
 
 function tiCriteriaAsSQL(pVisited: TtiObject; AParams: TtiQueryParams; pWithComments: boolean = false): string;
 var
-  lVisitor: TVisPerObjToSQL;
+  lVisitor: TVisObjectToSQL;
 begin
-  Assert(pVisited is TPerCriteria, 'TPerCriteria required');
+  Assert(pVisited is TtiCriteria, 'TtiCriteria required');
 
   result:= '';
-  if not TPerCriteria(pVisited).HasCriteria then
+  if not TtiCriteria(pVisited).HasCriteria then
     exit;
 
-  lVisitor := TVisPerObjToSQL.Create(pWithComments);
+  lVisitor := TVisObjectToSQL.Create(pWithComments);
   try
     lVisitor.Params:= AParams;
 
     pVisited.Iterate(lVisitor);
     result := lVisitor.Text;
 
-    if TPerCriteria(pVisited).isEmbraced and (result <> '') then
+    if TtiCriteria(pVisited).isEmbraced and (result <> '') then
       result := '(' + result + ')' + CrLf
     else
       result := result + CrLf;
@@ -113,7 +112,6 @@ begin
   finally
     lVisitor.Free;
   end;
-
 end;
 
 function tiCriteriaAsSQL(pVisited: TtiObject; pWithComments: boolean = false): string;
@@ -121,7 +119,7 @@ begin
   result:= tiCriteriaAsSQL(pVisited, nil, pWithComments);
 end;
 
-function ToSelectClause(ACriteria: TPerSelectionCriteriaAbs; AParams: TtiQueryParams; var AParamNo: integer): string;
+function ToSelectClause(ACriteria: TtiSelectionCriteriaAbs; AParams: TtiQueryParams; var AParamNo: integer): string;
 begin
   if assigned(AParams) then
   begin
@@ -133,22 +131,22 @@ begin
     Result := ACriteria.FieldName + ACriteria.GetClause + GetSqlValue(ACriteria.Value);
 end;
 
-function ToSelectClause(ACriteria: TPerSQLCriteria): string;
+function ToSelectClause(ACriteria: TtiSQLCriteria): string;
 begin
   Result := ACriteria.GetClause;
 end;
 
-function ToSelectClause(ACriteria: TPerNullCriteria): string;
+function ToSelectClause(ACriteria: TtiNullCriteria): string;
 begin
   Result := ACriteria.FieldName + ACriteria.GetClause;
 end;
 
-function ToSelectClause(ACriteria: TPerExistsCriteria): string;
+function ToSelectClause(ACriteria: TtiExistsCriteria): string;
 begin
   Result := ACriteria.GetClause + '(' + ACriteria.Value + ')';
 end;
 
-function ToSelectClause(ACriteria: TPerBetweenCriteria; AParams: TtiQueryParams; var AParamNo: integer): string;
+function ToSelectClause(ACriteria: TtiBetweenCriteria; AParams: TtiQueryParams; var AParamNo: integer): string;
 begin
   if assigned(AParams) then
   begin
@@ -164,7 +162,7 @@ begin
     ' AND ' + GetSqlValue(ACriteria.Value_2);
 end;
 
-function ToSelectClause(ACriteria: TPerInCriteria; AParams: TtiQueryParams; var AParamNo: integer): string;
+function ToSelectClause(ACriteria: TtiInCriteria; AParams: TtiQueryParams; var AParamNo: integer): string;
 var
   i: Integer;
   sep: string;
@@ -206,12 +204,12 @@ begin
   end;
 end;
 
-function ToSelectClause(ACriteria: TPerFieldCriteriaAbs): string;
+function ToSelectClause(ACriteria: TtiFieldCriteriaAbs): string;
 begin
   Result := ACriteria.FieldName + ACriteria.GetClause + GetSqlValue(ACriteria.Value);
 end;
 
-//function AsSQLClause(ACriterias: TPerSelectionCriteriaList): string;
+//function AsSQLClause(ACriterias: TtiSelectionCriteriaList): string;
 //var
 //  i: integer;
 //  FAppendBegin: string;
@@ -224,41 +222,41 @@ end;
 //  end;
 //
 //  //-----------------
-//  procedure Apply(FSelCriteria: TPerSelectionCriteriaAbs);
+//  procedure Apply(FSelCriteria: TtiSelectionCriteriaAbs);
 //  begin
-//    if FSelCriteria is TPerBetweenCriteria then
+//    if FSelCriteria is TtiBetweenCriteria then
 //      begin
-//        Include(ToSelectClause(TPerBetweenCriteria(FSelCriteria)));
+//        Include(ToSelectClause(TtiBetweenCriteria(FSelCriteria)));
 //        Exit;
 //      end;
 //
-//    if FSelCriteria is TPerNullCriteria then
+//    if FSelCriteria is TtiNullCriteria then
 //      begin
-//        Include(ToSelectClause(TPerNullCriteria(FSelCriteria)));
+//        Include(ToSelectClause(TtiNullCriteria(FSelCriteria)));
 //        Exit;
 //      end;
 //
-//    if FSelCriteria is TPerInCriteria then
+//    if FSelCriteria is TtiInCriteria then
 //      begin
-//        Include(ToSelectClause(TPerInCriteria(FSelCriteria)));
+//        Include(ToSelectClause(TtiInCriteria(FSelCriteria)));
 //        Exit;
 //      end;
 //
-//    if FSelCriteria is TPerExistsCriteria then
+//    if FSelCriteria is TtiExistsCriteria then
 //      begin
-//        Include(ToSelectClause(TPerExistsCriteria(FSelCriteria)));
+//        Include(ToSelectClause(TtiExistsCriteria(FSelCriteria)));
 //        Exit;
 //      end;
 //
-//    if FSelCriteria is TPerSQLCriteria then
+//    if FSelCriteria is TtiSQLCriteria then
 //      begin
-//        Include(ToSelectClause(TPerSQLCriteria(FSelCriteria)));
+//        Include(ToSelectClause(TtiSQLCriteria(FSelCriteria)));
 //        Exit;
 //      end;
 //
-//    if FSelCriteria is TPerFieldCriteriaAbs then
+//    if FSelCriteria is TtiFieldCriteriaAbs then
 //      begin
-//        Include(ToSelectClause(TPerFieldCriteriaAbs(FSelCriteria)));
+//        Include(ToSelectClause(TtiFieldCriteriaAbs(FSelCriteria)));
 //        Exit;
 //      end;
 //
@@ -290,10 +288,10 @@ end;
 //end;
 
 
-{ TVisPerObjToSQL }
+{ TVisObjectToSQL }
 
-function TVisPerObjToSQL.AsSQLClause(
-  ACriterias: TPerSelectionCriteriaList): string;
+function TVisObjectToSQL.AsSQLClause(
+  ACriterias: TtiSelectionCriteriaList): string;
 var
   i: integer;
   FAppendBegin: string;
@@ -306,41 +304,41 @@ var
   end;
 
   //-----------------
-  procedure Apply(FSelCriteria: TPerSelectionCriteriaAbs);
+  procedure Apply(FSelCriteria: TtiSelectionCriteriaAbs);
   begin
-    if FSelCriteria is TPerBetweenCriteria then
+    if FSelCriteria is TtiBetweenCriteria then
       begin
-        Include(ToSelectClause(TPerBetweenCriteria(FSelCriteria), FParams, FCurrentParamNo));
+        Include(ToSelectClause(TtiBetweenCriteria(FSelCriteria), FParams, FCurrentParamNo));
         Exit;
       end;
 
-    if FSelCriteria is TPerNullCriteria then
+    if FSelCriteria is TtiNullCriteria then
       begin
-        Include(ToSelectClause(TPerNullCriteria(FSelCriteria)));
+        Include(ToSelectClause(TtiNullCriteria(FSelCriteria)));
         Exit;
       end;
 
-    if FSelCriteria is TPerInCriteria then
+    if FSelCriteria is TtiInCriteria then
       begin
-        Include(ToSelectClause(TPerInCriteria(FSelCriteria), FParams, FCurrentParamNo));
+        Include(ToSelectClause(TtiInCriteria(FSelCriteria), FParams, FCurrentParamNo));
         Exit;
       end;
 
-    if FSelCriteria is TPerExistsCriteria then
+    if FSelCriteria is TtiExistsCriteria then
       begin
-        Include(ToSelectClause(TPerExistsCriteria(FSelCriteria)));
+        Include(ToSelectClause(TtiExistsCriteria(FSelCriteria)));
         Exit;
       end;
 
-    if FSelCriteria is TPerSQLCriteria then
+    if FSelCriteria is TtiSQLCriteria then
       begin
-        Include(ToSelectClause(TPerSQLCriteria(FSelCriteria)));
+        Include(ToSelectClause(TtiSQLCriteria(FSelCriteria)));
         Exit;
       end;
 
-    if FSelCriteria is TPerFieldCriteriaAbs then
+    if FSelCriteria is TtiFieldCriteriaAbs then
       begin
-        Include(ToSelectClause(TPerFieldCriteriaAbs(FSelCriteria)));
+        Include(ToSelectClause(TtiFieldCriteriaAbs(FSelCriteria)));
         Exit;
       end;
 
@@ -371,7 +369,7 @@ begin
 //  Apply(ACriterias.Items[ACriterias.Count - 1]);
 end;
 
-constructor TVisPerObjToSQL.Create(pWithComments: boolean = False);
+constructor TVisObjectToSQL.Create(pWithComments: boolean = False);
 begin
   inherited Create;
   FWithComments             := pWithComments;
@@ -383,27 +381,27 @@ begin
   FCurrentParamNo           := 1;
 end;
 
-destructor TVisPerObjToSQL.Destroy;
+destructor TVisObjectToSQL.Destroy;
 begin
   FOrderByList.Free;
   FGroupByList.Free;
   inherited Destroy;
 end;
 
-function TVisPerObjToSQL.AcceptVisitor: Boolean;
+function TVisObjectToSQL.AcceptVisitor: Boolean;
 begin
-  result := (Visited is TPerCriteria) and
+  result := (Visited is TtiCriteria) and
     (not TtiObject(Visited).Deleted);
 end;
 
-procedure TVisPerObjToSQL.Execute(const pVisited: TtiVisited);
+procedure TVisObjectToSQL.Execute(const pVisited: TtiVisited);
 begin
   inherited Execute(pVisited);
 
   if not AcceptVisitor then
     Exit; //==>
 
-  if not assigned(TPerCriteria(pVisited).SelectionCriterias) or (TPerCriteria(pVisited).SelectionCriterias.Count = 0) then
+  if not assigned(TtiCriteria(pVisited).SelectionCriterias) or (TtiCriteria(pVisited).SelectionCriterias.Count = 0) then
     exit;
 
   if Stream.Size = 0 then
@@ -412,24 +410,24 @@ begin
   end
   else
   begin
-    case TPerCriteria(pVisited).CriteriaType of
+    case TtiCriteria(pVisited).CriteriaType of
       crAND: Write(' AND ' + CrLf + '(');
       crOR: Write(' OR ' + CrLf + '(');
       crNONE: Write('(');
     end;
   end;
 
-  Write(AsSQLClause(TPerCriteria(pVisited).SelectionCriterias));
+  Write(AsSQLClause(TtiCriteria(pVisited).SelectionCriterias));
 
   Write(')');
 
   if FWithComments then
-  Write(' /* ' + TPerCriteria(pVisited).Name + '*/ ');
-  FGroupByList.CopyReferences(TPerCriteria(pVisited).GetGroupByList);
-  FOrderByList.CopyReferences(TPerCriteria(pVisited).GetOrderByList);
+  Write(' /* ' + TtiCriteria(pVisited).Name + '*/ ');
+  FGroupByList.CopyReferences(TtiCriteria(pVisited).GetGroupByList);
+  FOrderByList.CopyReferences(TtiCriteria(pVisited).GetOrderByList);
 end;
 
-function TVisPerObjToSQL.OrderByClausesAsText: string;
+function TVisObjectToSQL.OrderByClausesAsText: string;
 var
   i: integer;
 begin
@@ -445,7 +443,7 @@ begin
 
 end;
 
-function TVisPerObjToSQL.GroupByClausesAsText: string;
+function TVisObjectToSQL.GroupByClausesAsText: string;
 var
   i: integer;
 begin

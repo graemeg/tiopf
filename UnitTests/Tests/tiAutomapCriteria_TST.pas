@@ -83,7 +83,7 @@ begin
   InserTtiObjectListForTesting;
   lData := TtiObjectListForTesting.Create;
 
-  TPerCriteria(lData.Criteria).ClearAll;
+  TtiCriteria(lData.Criteria).ClearAll;
 
   try
     lData.Read(DatabaseName, PerLayerName);
@@ -123,8 +123,8 @@ begin
   lData := TtiObjectListForTesting.Create;
 
   try
-    TPerCriteria(lData.Criteria).ClearAll;
-    TPerCriteria(lData.Criteria).AddEqualTo('StrField', '2');
+    TtiCriteria(lData.Criteria).ClearAll;
+    TtiCriteria(lData.Criteria).AddEqualTo('StrField', '2');
 
     lData.Read(DatabaseName, PerLayerName);
     CheckEquals(1, lData.Count, 'Failed on 1');
@@ -159,7 +159,7 @@ begin
   lData := TtiObjectListNestedForTesting.Create;
 
   try
-    TPerCriteria(lData.Criteria).ClearAll;
+    TtiCriteria(lData.Criteria).ClearAll;
     lData.Read(DatabaseName, PerLayerName);
     CheckEquals(cItemTotal, lData.Count, 'Failed on 1');
     for i := 0 to cItemTotal - 1 do
@@ -180,7 +180,7 @@ begin
   ;
 
   try
-    TPerCriteria(lData.Criteria).AddEqualTo('OID', '23');
+    TtiCriteria(lData.Criteria).AddEqualTo('OID', '23');
     lData.Read(DatabaseName, PerLayerName);
     CheckEquals(1, lData.Count, 'Failed on 1');
 
@@ -201,7 +201,7 @@ begin
   ;
 
   try
-    TPerCriteria(lData.Criteria).AddEqualTo('Owner.OID', '4');
+    TtiCriteria(lData.Criteria).AddEqualTo('Owner.OID', '4');
     lData.Read(DatabaseName, PerLayerName);
     CheckEquals(cItemCount, lData.Count, 'Failed on 1');
 
@@ -296,7 +296,7 @@ begin
   lData := TtiObjectListNestedForTesting.Create;
 
   try
-    TPerCriteria(lData.Criteria).AddIn('IntField', myIntArray);
+    TtiCriteria(lData.Criteria).AddIn('IntField', myIntArray);
     lData.Read(DatabaseName, PerLayerName);
     CheckEquals(cResultCount, lData.Count, 'Failed on 1');
     for i := 0 to cResultCount - 1 do
@@ -322,7 +322,7 @@ begin
   lData := TtiObjectListNestedForTesting.Create;
 
   try
-    TPerCriteria(lData.Criteria).AddLike('NotesField', '%<3>%');
+    TtiCriteria(lData.Criteria).AddLike('NotesField', '%<3>%');
     lData.Read(DatabaseName, PerLayerName);
     CheckEquals(cGroupCount, lData.Count, 'Failed on 1');
     for i := 0 to cGroupCount - 1 do

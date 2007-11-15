@@ -386,7 +386,7 @@ type
     FClassToCreate:     TtiClass;
     FHasParent:         boolean;
     FClassesWithParent: TList;
-    FCriteria:          TPerCriteria;
+    FCriteria:          TtiCriteria;
     procedure ReadDataForParentClass(ACollection: TtiClassDBCollection);
     procedure ReadDataForChildClasses(ACollection: TtiClassDBCollection);
     procedure SetUpCriteria;
@@ -1255,7 +1255,7 @@ end;
 
 function TVisProAttributeToFieldName.AcceptVisitor: boolean;
 begin
-  Result := Visited is TPerSelectionCriteriaAbs;
+  Result := Visited is TtiSelectionCriteriaAbs;
 end;
 
 constructor TVisProAttributeToFieldName.Create(AttrColMaps: TtiAttrColMaps; AClassType: TtiClass);
@@ -1267,7 +1267,7 @@ end;
 
 procedure TVisProAttributeToFieldName.Execute(const pVisited: TtiVisited);
 var
-  lCriteria: TPerSelectionCriteriaAbs;
+  lCriteria: TtiSelectionCriteriaAbs;
   lMap:      TtiAttrColMap;
 begin
   inherited Execute(pVisited);
@@ -1275,7 +1275,7 @@ begin
   if not AcceptVisitor then
     Exit; //==>
 
-  lCriteria := (Visited as TPerSelectionCriteriaAbs);
+  lCriteria := (Visited as TtiSelectionCriteriaAbs);
   Assert(Assigned(lCriteria), 'Invalid Visited in TVisProAttributeToFieldName.Execute');
 
   lMap := FAttrColMaps.FindByClassAttrMap(FClassType, lCriteria.Attribute);

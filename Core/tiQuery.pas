@@ -360,7 +360,7 @@ type
     procedure Close; virtual; abstract;
     procedure ExecSQL; virtual; abstract;
 
-    procedure SelectRow(const ATableName : string; const AWhere : TtiQueryParams; const ACriteria: TPerCriteria); overload; virtual; abstract;
+    procedure SelectRow(const ATableName : string; const AWhere : TtiQueryParams; const ACriteria: TtiCriteria); overload; virtual; abstract;
     procedure SelectRow(const ATableName : string; const AWhere : TtiQueryParams); overload; virtual; abstract;
     procedure InsertRow(const ATableName : string; const AParams : TtiQueryParams); virtual; abstract;
     procedure DeleteRow(const ATableName : string; const AWhere : TtiQueryParams); virtual; abstract;
@@ -426,7 +426,7 @@ type
     function    WhereClause(const AWhere: TtiQueryParams): string;
     function    SQLAndParamsAsString : string;
   public
-    procedure   SelectRow(const ATableName : string; const AWhere : TtiQueryParams; const ACriteria: TPerCriteria ); override;
+    procedure   SelectRow(const ATableName : string; const AWhere : TtiQueryParams; const ACriteria: TtiCriteria ); override;
     procedure   SelectRow(const ATableName : string; const AWhere : TtiQueryParams); override;
     procedure   InsertRow(const ATableName : string; const AParams : TtiQueryParams); override;
     procedure   DeleteRow(const ATableName : string; const AWhere : TtiQueryParams); override;
@@ -1105,7 +1105,7 @@ begin
 end;
 
 procedure TtiQuerySQL.SelectRow(const ATableName: string;
-  const AWhere: TtiQueryParams; const ACriteria: TPerCriteria);
+  const AWhere: TtiQueryParams; const ACriteria: TtiCriteria);
 var
   lSQL : string;
   i : integer;

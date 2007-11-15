@@ -12,11 +12,11 @@ type
   TCriteriaType = (crAND, crOR, crNONE);
 
   // forward declarations
-  TPerSelectionCriteriaAbs    = class;
-  TPerCriteriaList            = class;
-  TPerSelectionCriteriaList   = class;
   TPerColumns                 = class;
-  TPerCriteria                = class;
+  TtiCriteria                 = class;
+  TtiCriteriaList             = class;
+  TtiSelectionCriteriaAbs     = class;
+  TtiSelectionCriteriaList    = class;
 
 
   TPerColumn = class(TtiObject)
@@ -39,36 +39,36 @@ type
     function    GetItems(i: Integer): TPerColumn; reintroduce;
     procedure   SetItems(i: Integer; Value: TPerColumn); reintroduce;
   protected
-    function    GetOwner: TPerCriteria; reintroduce; virtual;
-    procedure   SetOwner(const Value: TPerCriteria); reintroduce; virtual;
+    function    GetOwner: TtiCriteria; reintroduce; virtual;
+    procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
   public
     function    Add(const AObject: TPerColumn): integer; reintroduce;
     procedure   CopyReferences(pSource: TPerColumns);
     property    Items[Index: Integer]: TPerColumn read GetItems write SetItems;
-    property    Owner: TPerCriteria read GetOwner write SetOwner;
+    property    Owner: TtiCriteria read GetOwner write SetOwner;
   end;
   
   
-  TPerCriteria = class(TtiObject)
+  TtiCriteria = class(TtiObject)
   private
-    FCriterias: TPerCriteriaList;
+    FCriterias: TtiCriteriaList;
     FCriteriaType: TCriteriaType;
     FGroupByList: TPerColumns;
     FIsEmbraced: Boolean;
     FName: string;
     FOrderByList: TPerColumns;
-    FSelectionCriterias: TPerSelectionCriteriaList;
+    FSelectionCriterias: TtiSelectionCriteriaList;
     FCriteriaAttrColMaps: TtiObjectList;
-    function    GetCriterias: TPerCriteriaList;
-    function    GetSelectionCriterias: TPerSelectionCriteriaList;
+    function    GetCriterias: TtiCriteriaList;
+    function    GetSelectionCriterias: TtiSelectionCriteriaList;
   protected
-    function    GetOwner: TPerCriteria; reintroduce; virtual;
-    procedure   SetOwner(const Value: TPerCriteria); reintroduce; virtual;
+    function    GetOwner: TtiCriteria; reintroduce; virtual;
+    procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
   public
     constructor Create(pName: string); reintroduce; virtual;
     destructor  Destroy; override;
     procedure   MapFieldNames(AClass: TtiClass);
-    procedure   AddAndCriteria(ACriteria: TPerCriteria);
+    procedure   AddAndCriteria(ACriteria: TtiCriteria);
     procedure   AddBetween(AAttribute: string; AValue_1, AValue_2: variant);
     procedure   AddEqualTo(AAttribute: string; AValue: variant); overload;
     procedure   AddExists(ASubQuery: string);
@@ -83,11 +83,14 @@ type
     procedure   AddLike(AAttribute, AValue: string);
     procedure   AddNotEqualTo(AAttribute: string; AValue: variant); overload;
     procedure   AddNotExists(ASubQuery: string);
+
+    // AddNotIn() still needs to be implemented
     procedure   AddNotIn(AAttribute, ASubQuery: string);
+
     procedure   AddNotLike(AAttribute, AValue: string);
     procedure   AddNotNull(AAttribute: string);
     procedure   AddNull(AAttribute: string);
-    procedure   AddOrCriteria(ACriteria: TPerCriteria);
+    procedure   AddOrCriteria(ACriteria: TtiCriteria);
     procedure   AddOrderBy(AField: string; ASorterAscending: boolean = False); overload;
     procedure   AddOrderBy(AFields: array of string); overload;
     procedure   AddOrderByAscending(AField: string); overload;
@@ -96,53 +99,55 @@ type
     procedure   AddOrderByDescending(AFields: array of string); overload;
     procedure   AddSQL(ASQLStm: string);
 
+    // Can we remove this?
     procedure   AddDummy(ADate: TDateTime); overload;
     procedure   AddDummy(AFloat: double); overload;
     procedure   AddDummy(Areal: real); overload;
+
     procedure   ClearAll;
     function    GetGroupByList: TPerColumns;
     function    GetOrderByList: TPerColumns;
     function    isEmbraced: Boolean;
     function    HasCriteria: boolean;
     property    CriteriaType: TCriteriaType read FCriteriaType write FCriteriaType;
-    property    Owner: TPerCriteria read GetOwner write SetOwner;
+    property    Owner: TtiCriteria read GetOwner write SetOwner;
   published
-    property    Criterias: TPerCriteriaList read GetCriterias;
+    property    Criterias: TtiCriteriaList read GetCriterias;
     property    Name: string read FName;
-    property    SelectionCriterias: TPerSelectionCriteriaList read GetSelectionCriterias;
+    property    SelectionCriterias: TtiSelectionCriteriaList read GetSelectionCriterias;
   end;
   
   
-  TPerCriteriaList = class(TtiObjectList)
+  TtiCriteriaList = class(TtiObjectList)
   private
-    function    GetItems(i: Integer): TPerCriteria; reintroduce;
-    procedure   SetItems(i: Integer; Value: TPerCriteria); reintroduce;
+    function    GetItems(i: Integer): TtiCriteria; reintroduce;
+    procedure   SetItems(i: Integer; Value: TtiCriteria); reintroduce;
   protected
-    function    GetOwner: TPerCriteria; reintroduce; virtual;
-    procedure   SetOwner(const Value: TPerCriteria); reintroduce; virtual;
+    function    GetOwner: TtiCriteria; reintroduce; virtual;
+    procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
   public
-    function    Add(const AObject: TPerCriteria): integer; reintroduce;
-    property    Items[Index: Integer]: TPerCriteria read GetItems write SetItems;
-    property    Owner: TPerCriteria read GetOwner write SetOwner;
+    function    Add(const AObject: TtiCriteria): integer; reintroduce;
+    property    Items[Index: Integer]: TtiCriteria read GetItems write SetItems;
+    property    Owner: TtiCriteria read GetOwner write SetOwner;
   end;
   
 
-  TPerSelectionCriteriaAbs = class(TtiObject)
+  TtiSelectionCriteriaAbs = class(TtiObject)
   private
     FFieldName: string;
     FAttribute: string;
     FisNegative: Boolean;
     FValue:      variant;
-    function GetFieldName: string;
+    function    GetFieldName: string;
   protected
-    function    GetOwner: TPerCriteria; reintroduce; virtual;
-    procedure   SetOwner(const Value: TPerCriteria); reintroduce; virtual;
+    function    GetOwner: TtiCriteria; reintroduce; virtual;
+    procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
   public
     constructor Create(AAttribute: string; AValue: variant; ANegative: boolean = False; AFieldName: string = ''); reintroduce; virtual;
     destructor  Destroy; override;
     function    GetClause: string; virtual; abstract;
     function    isNegative: Boolean;
-    property    Owner: TPerCriteria read GetOwner write SetOwner;
+    property    Owner: TtiCriteria read GetOwner write SetOwner;
   published
     property    Attribute: string read FAttribute;
     property    Value: variant read FValue;
@@ -150,91 +155,93 @@ type
   end;
   
   
-  TPerSelectionCriteriaList = class(TtiObjectList)
+  TtiSelectionCriteriaList = class(TtiObjectList)
   private
-    function    GetItems(i: Integer): TPerSelectionCriteriaAbs; reintroduce;
-    procedure   SetItems(i: Integer; Value: TPerSelectionCriteriaAbs); reintroduce;
+    function    GetItems(i: Integer): TtiSelectionCriteriaAbs; reintroduce;
+    procedure   SetItems(i: Integer; Value: TtiSelectionCriteriaAbs); reintroduce;
   protected
-    function    GetOwner: TPerCriteria; reintroduce; virtual;
-    procedure   SetOwner(const Value: TPerCriteria); reintroduce; virtual;
+    function    GetOwner: TtiCriteria; reintroduce; virtual;
+    procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
   public
-    function    Add(const AObject: TPerSelectionCriteriaAbs): integer; reintroduce;
+    function    Add(const AObject: TtiSelectionCriteriaAbs): integer; reintroduce;
     function    AsSQL: string;
-    property    Items[Index: Integer]: TPerSelectionCriteriaAbs read GetItems write SetItems; default;
-    property    Owner: TPerCriteria read GetOwner write SetOwner;
+    property    Items[Index: Integer]: TtiSelectionCriteriaAbs read GetItems write SetItems; default;
+    property    Owner: TtiCriteria read GetOwner write SetOwner;
   end;
   
   
-  TPerValueCriteriaAbs = class(TPerSelectionCriteriaAbs)
+  TtiValueCriteriaAbs = class(TtiSelectionCriteriaAbs)
   end;
   
 
-  TPerFieldCriteriaAbs = class(TPerSelectionCriteriaAbs)
+  TtiFieldCriteriaAbs = class(TtiSelectionCriteriaAbs)
   end;
   
   
-  TPerEqualToCriteria = class(TPerValueCriteriaAbs)
+  TtiEqualToCriteria = class(TtiValueCriteriaAbs)
   public
     function    GetClause: string; override;
   end;
   
   
-  TPerEqualToFieldCriteria = class(TPerFieldCriteriaAbs)
+  TtiEqualToFieldCriteria = class(TtiFieldCriteriaAbs)
   public
     function    GetClause: string; override;
   end;
   
 
-  TPerExistsCriteria = class(TPerValueCriteriaAbs)
+  TtiExistsCriteria = class(TtiValueCriteriaAbs)
   public
     constructor Create(ASubQuery: string; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
     function    GetClause: string; override;
   end;
   
   
-  TPerGreaterThanCriteria = class(TPerValueCriteriaAbs)
+  TtiGreaterThanCriteria = class(TtiValueCriteriaAbs)
   public
     function    GetClause: string; override;
   end;
   
   
-  TPerGreaterThanFieldCriteria = class(TPerFieldCriteriaAbs)
+  TtiGreaterThanFieldCriteria = class(TtiFieldCriteriaAbs)
   public
     function    GetClause: string; override;
   end;
   
   
-  TPerInCriteria = class(TPerValueCriteriaAbs)
+  TtiInCriteria = class(TtiValueCriteriaAbs)
   public
     ValueArray: array of variant;
     function    GetClause: string; override;
   end;
   
-  TPerLessThanCriteria = class(TPerValueCriteriaAbs)
+  
+  TtiLessThanCriteria = class(TtiValueCriteriaAbs)
   public
     function    GetClause: string; override;
   end;
 
-  TPerLessThanFieldCriteria = class(TPerFieldCriteriaAbs)
+
+  TtiLessThanFieldCriteria = class(TtiFieldCriteriaAbs)
   public
     function    GetClause: string; override;
   end;
   
   
-  TPerLikeCriteria = class(TPerValueCriteriaAbs)
+  TtiLikeCriteria = class(TtiValueCriteriaAbs)
   public
     function    GetClause: string; override;
   end;
   
   
-  TPerNullCriteria = class(TPerValueCriteriaAbs)
+  TtiNullCriteria = class(TtiValueCriteriaAbs)
   public
     constructor Create(AAttribute: string; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
     function    GetClause: string; override;
   end;
   
   
-  TPerBetweenCriteria = class(TPerValueCriteriaAbs)
+  TtiBetweenCriteria = class(TtiValueCriteriaAbs)
   private
     FValue_2: variant;
   public
@@ -245,11 +252,12 @@ type
   end;
   
   
-  TPerSQLCriteria = class(TPerSelectionCriteriaAbs)
+  TtiSQLCriteria = class(TtiSelectionCriteriaAbs)
   public
     constructor Create(ASQLStm: string); reintroduce; virtual;
     function    GetClause: string; override;
   end;
+
 
 implementation
 
@@ -298,9 +306,9 @@ begin
   Result := TPerColumn(inherited Items[i]);
 end;
 
-function TPerColumns.GetOwner: TPerCriteria;
+function TPerColumns.GetOwner: TtiCriteria;
 begin
-  Result := TPerCriteria(inherited Owner);
+  Result := TtiCriteria(inherited Owner);
 end;
 
 procedure TPerColumns.SetItems(i: Integer; Value: TPerColumn);
@@ -308,27 +316,27 @@ begin
   inherited Items[i] := Value;
 end;
 
-procedure TPerColumns.SetOwner(const Value: TPerCriteria);
+procedure TPerColumns.SetOwner(const Value: TtiCriteria);
 begin
   inherited Owner := Value;
 end;
 
 
-{ TPerCriteria }
+{ TtiCriteria }
 
-constructor TPerCriteria.Create(pName: string);
+constructor TtiCriteria.Create(pName: string);
 begin
   inherited Create;
   FName           := pName;
   FCriteriaType   := crNONE;
   FisEmbraced     := False;
 
-  FCriterias := TPerCriteriaList.Create;
+  FCriterias := TtiCriteriaList.Create;
   FCriterias.Owner                := Self;
   FCriterias.OwnsObjects          := true;
   FCriterias.AutoSetItemOwner     := False;
   
-  FSelectionCriterias := TPerSelectionCriteriaList.Create;
+  FSelectionCriterias := TtiSelectionCriteriaList.Create;
   FSelectionCriterias.Owner       := Self;
   FSelectionCriterias.OwnsObjects := True;
   
@@ -345,7 +353,7 @@ begin
   FCriteriaAttrColMaps.AutoSetItemOwner := False;
 end;
 
-destructor TPerCriteria.Destroy;
+destructor TtiCriteria.Destroy;
 begin
   FCriterias.Free;
   FSelectionCriterias.Free;
@@ -355,93 +363,69 @@ begin
   inherited Destroy;
 end;
 
-procedure TPerCriteria.AddAndCriteria(ACriteria: TPerCriteria);
+procedure TtiCriteria.AddAndCriteria(ACriteria: TtiCriteria);
 begin
   FisEmbraced := True;
   ACriteria.CriteriaType := crAND;
   FCriterias.Add(ACriteria);
 end;
 
-procedure TPerCriteria.AddBetween(AAttribute: string; AValue_1, AValue_2: variant);
+procedure TtiCriteria.AddBetween(AAttribute: string; AValue_1, AValue_2: variant);
 var
-  lCriteria: TPerBetweenCriteria;
+  lCriteria: TtiBetweenCriteria;
 begin
-  lCriteria := TPerBetweenCriteria.Create(AAttribute, AValue_1, AValue_2);
+  lCriteria := TtiBetweenCriteria.Create(AAttribute, AValue_1, AValue_2);
   FSelectionCriterias.Add(lCriteria);
 end;
 
-procedure TPerCriteria.AddDummy(ADate: TDateTime);
+procedure TtiCriteria.AddDummy(ADate: TDateTime);
 begin
 
 end;
 
-procedure TPerCriteria.AddDummy(AFloat: double);
+procedure TtiCriteria.AddDummy(AFloat: double);
 begin
 
 end;
 
-procedure TPerCriteria.AddDummy(Areal: real);
+procedure TtiCriteria.AddDummy(Areal: real);
 begin
 
 end;
 
-//procedure TPerCriteria.AddEqualTo(AAttribute, AValue: string);
-//var
-//  lData: TPerEqualToCriteria;
-//begin
-//  lData := TPerEqualToCriteria.Create(AAttribute, QuotedStr(AValue));
-//  FSelectionCriterias.Add(lData);
-//end;
-
-procedure TPerCriteria.AddEqualTo(AAttribute: string; AValue: variant);
+procedure TtiCriteria.AddEqualTo(AAttribute: string; AValue: variant);
 var
-  lData: TPerEqualToCriteria;
+  lData: TtiEqualToCriteria;
 begin
-  lData := TPerEqualToCriteria.Create(AAttribute, AValue);
+  lData := TtiEqualToCriteria.Create(AAttribute, AValue);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddExists(ASubQuery: string);
+procedure TtiCriteria.AddExists(ASubQuery: string);
 var
-  lData: TPerExistsCriteria;
+  lData: TtiExistsCriteria;
 begin
-  lData := TPerExistsCriteria.Create(ASubQuery);
+  lData := TtiExistsCriteria.Create(ASubQuery);
   FSelectionCriterias.Add(lData);
 end;
 
-//procedure TPerCriteria.AddGreaterOrEqualThan(AAttribute, AValue: string);
-//var
-//  lData: TPerLessThanCriteria;
-//begin
-//  lData := TPerLessThanCriteria.Create(AAttribute, QuotedStr(AValue), true);
-//  FSelectionCriterias.Add(lData);
-//end;
-
-procedure TPerCriteria.AddGreaterOrEqualThan(AAttribute: string; AValue: variant);
+procedure TtiCriteria.AddGreaterOrEqualThan(AAttribute: string; AValue: variant);
 var
-  lData: TPerLessThanCriteria;
+  lData: TtiLessThanCriteria;
 begin
-  lData := TPerLessThanCriteria.Create(AAttribute, (AValue), true);
+  lData := TtiLessThanCriteria.Create(AAttribute, (AValue), true);
   FSelectionCriterias.Add(lData);
 end;
 
-//procedure TPerCriteria.AddGreaterThan(AAttribute, AValue: string);
-//var
-//  lData: TPerGreaterThanCriteria;
-//begin
-//  lData := TPerGreaterThanCriteria.Create(AAttribute, QuotedStr(AValue));
-//  FSelectionCriterias.Add(lData);
-//end;
-
-procedure TPerCriteria.AddGreaterThan(AAttribute: string; AValue: variant);
+procedure TtiCriteria.AddGreaterThan(AAttribute: string; AValue: variant);
 var
-  lData: TPerGreaterThanCriteria;
+  lData: TtiGreaterThanCriteria;
 begin
-  lData := TPerGreaterThanCriteria.Create(AAttribute, AValue);
+  lData := TtiGreaterThanCriteria.Create(AAttribute, AValue);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddGroupBy(AField: string);
+procedure TtiCriteria.AddGroupBy(AField: string);
 var
   lData: TPerColumn;
 begin
@@ -451,7 +435,7 @@ begin
   FGroupByList.Add(lData);
 end;
 
-procedure TPerCriteria.AddGroupBy(AFields: array of string);
+procedure TtiCriteria.AddGroupBy(AFields: array of string);
 var
   i: Integer;
 begin
@@ -459,20 +443,20 @@ begin
     AddGroupBy(AFields[i]);
 end;
 
-procedure TPerCriteria.AddIn(AAttribute, ASubQuery: string);
+procedure TtiCriteria.AddIn(AAttribute, ASubQuery: string);
 var
-  lData: TPerInCriteria;
+  lData: TtiInCriteria;
 begin
-  lData := TPerInCriteria.Create(AAttribute, ASubQuery);
+  lData := TtiInCriteria.Create(AAttribute, ASubQuery);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddIn(AAttribute: string; AValueArray: array of variant);
+procedure TtiCriteria.AddIn(AAttribute: string; AValueArray: array of variant);
 var
-  lData: TPerInCriteria;
+  lData: TtiInCriteria;
   i: integer;
 begin
-  lData := TPerInCriteria.Create(AAttribute, '');
+  lData := TtiInCriteria.Create(AAttribute, '');
   SetLength(lData.ValueArray, Length(AValueArray));
 
   for i := Low(AValueArray) to High(AValueArray) do
@@ -481,84 +465,83 @@ begin
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddLessOrEqualThan(AAttribute: string; AValue: variant);
+procedure TtiCriteria.AddLessOrEqualThan(AAttribute: string; AValue: variant);
 var
-  lData: TPerGreaterThanCriteria;
+  lData: TtiGreaterThanCriteria;
 begin
-  lData := TPerGreaterThanCriteria.Create(AAttribute, AValue, true);
+  lData := TtiGreaterThanCriteria.Create(AAttribute, AValue, true);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddLessThan(AAttribute: string; AValue: variant);
+procedure TtiCriteria.AddLessThan(AAttribute: string; AValue: variant);
 var
-  lData: TPerLessThanCriteria;
+  lData: TtiLessThanCriteria;
 begin
-  lData := TPerLessThanCriteria.Create(AAttribute, AValue);
+  lData := TtiLessThanCriteria.Create(AAttribute, AValue);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddLike(AAttribute, AValue: string);
+procedure TtiCriteria.AddLike(AAttribute, AValue: string);
 var
-  lData: TPerLikeCriteria;
+  lData: TtiLikeCriteria;
 begin
-  lData := TPerLikeCriteria.Create(AAttribute, AValue);
+  lData := TtiLikeCriteria.Create(AAttribute, AValue);
   FSelectionCriterias.Add(lData);
 end;
 
-
-procedure TPerCriteria.AddNotEqualTo(AAttribute: string; AValue: variant);
+procedure TtiCriteria.AddNotEqualTo(AAttribute: string; AValue: variant);
 var
-  lData: TPerEqualToCriteria;
+  lData: TtiEqualToCriteria;
 begin
-  lData := TPerEqualToCriteria.Create(AAttribute, AValue, True);
+  lData := TtiEqualToCriteria.Create(AAttribute, AValue, True);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddNotExists(ASubQuery: string);
+procedure TtiCriteria.AddNotExists(ASubQuery: string);
 var
-  lData: TPerExistsCriteria;
+  lData: TtiExistsCriteria;
 begin
-  lData := TPerExistsCriteria.Create(ASubQuery, True);
+  lData := TtiExistsCriteria.Create(ASubQuery, True);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddNotIn(AAttribute, ASubQuery: string);
+procedure TtiCriteria.AddNotIn(AAttribute, ASubQuery: string);
 begin
+  // todo: This still needs to be implemented
 end;
 
-procedure TPerCriteria.AddNotLike(AAttribute, AValue: string);
+procedure TtiCriteria.AddNotLike(AAttribute, AValue: string);
 var
-  lData: TPerLikeCriteria;
+  lData: TtiLikeCriteria;
 begin
-  lData := TPerLikeCriteria.Create(AAttribute, AValue, True);
+  lData := TtiLikeCriteria.Create(AAttribute, AValue, True);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddNotNull(AAttribute: string);
+procedure TtiCriteria.AddNotNull(AAttribute: string);
 var
-  lData: TPerNullCriteria;
+  lData: TtiNullCriteria;
 begin
-  lData := TPerNullCriteria.Create(AAttribute, True);
+  lData := TtiNullCriteria.Create(AAttribute, True);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddNull(AAttribute: string);
+procedure TtiCriteria.AddNull(AAttribute: string);
 var
-  lData: TPerNullCriteria;
+  lData: TtiNullCriteria;
 begin
-  lData := TPerNullCriteria.Create(AAttribute);
+  lData := TtiNullCriteria.Create(AAttribute);
   FSelectionCriterias.Add(lData);
 end;
 
-
-procedure TPerCriteria.AddOrCriteria(ACriteria: TPerCriteria);
+procedure TtiCriteria.AddOrCriteria(ACriteria: TtiCriteria);
 begin
   FisEmbraced := True;
   ACriteria.CriteriaType := crOR;
   FCriterias.Add(ACriteria);
 end;
 
-procedure TPerCriteria.AddOrderBy(AField: string; ASorterAscending: boolean = False);
+procedure TtiCriteria.AddOrderBy(AField: string; ASorterAscending: boolean = False);
 var
   lData: TPerColumn;
 begin
@@ -569,7 +552,7 @@ begin
   FOrderByList.Add(lData);
 end;
 
-procedure TPerCriteria.AddOrderBy(AFields: array of string);
+procedure TtiCriteria.AddOrderBy(AFields: array of string);
 var
   i: Integer;
 begin
@@ -577,13 +560,13 @@ begin
     AddOrderBy(AFields[i], false);
 end;
 
-procedure TPerCriteria.AddOrderByAscending(AField: string);
+procedure TtiCriteria.AddOrderByAscending(AField: string);
 begin
   Assert(AField <> '', 'AField is blank!');
   AddOrderBy(AField, true);
 end;
 
-procedure TPerCriteria.AddOrderByAscending(AFields: array of string);
+procedure TtiCriteria.AddOrderByAscending(AFields: array of string);
 var
   i: Integer;
 begin
@@ -591,13 +574,13 @@ begin
     AddOrderByAscending(AFields[i]);
 end;
 
-procedure TPerCriteria.AddOrderByDescending(AField: string);
+procedure TtiCriteria.AddOrderByDescending(AField: string);
 begin
   Assert(AField <> '', 'AField is blank!');
   AddOrderBy(AField, false);
 end;
 
-procedure TPerCriteria.AddOrderByDescending(AFields: array of string);
+procedure TtiCriteria.AddOrderByDescending(AFields: array of string);
 var
   i: Integer;
 begin
@@ -605,15 +588,15 @@ begin
     AddOrderByDescending(AFields[i]);
 end;
 
-procedure TPerCriteria.AddSQL(ASQLStm: string);
+procedure TtiCriteria.AddSQL(ASQLStm: string);
 var
-  lData: TPerSQLCriteria;
+  lData: TtiSQLCriteria;
 begin
-  lData := TPerSQLCriteria.Create(ASQLStm);
+  lData := TtiSQLCriteria.Create(ASQLStm);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.ClearAll;
+procedure TtiCriteria.ClearAll;
   procedure ClearList(AList: TtiObjectList);
   begin
     if assigned(AList) then
@@ -626,42 +609,42 @@ begin
   ClearList(FGroupByList);
 end;
 
-function TPerCriteria.GetCriterias: TPerCriteriaList;
+function TtiCriteria.GetCriterias: TtiCriteriaList;
 begin
   Result := FCriterias;
 end;
 
-function TPerCriteria.GetGroupByList: TPerColumns;
+function TtiCriteria.GetGroupByList: TPerColumns;
 begin
   Result := FGroupByList;
 end;
 
-function TPerCriteria.GetOrderByList: TPerColumns;
+function TtiCriteria.GetOrderByList: TPerColumns;
 begin
   Result := FOrderByList;
 end;
 
-function TPerCriteria.GetOwner: TPerCriteria;
+function TtiCriteria.GetOwner: TtiCriteria;
 begin
-  Result := TPerCriteria(inherited Owner);
+  Result := TtiCriteria(inherited Owner);
 end;
 
-function TPerCriteria.GetSelectionCriterias: TPerSelectionCriteriaList;
+function TtiCriteria.GetSelectionCriterias: TtiSelectionCriteriaList;
 begin
   Result := FSelectionCriterias;
 end;
 
-function TPerCriteria.HasCriteria: boolean;
+function TtiCriteria.HasCriteria: boolean;
 begin
   result:= (FCriterias.Count > 0) or (FSelectionCriterias.Count > 0) or (FOrderByList.Count > 0) or (FGroupByList.Count > 0);
 end;
 
-function TPerCriteria.isEmbraced: Boolean;
+function TtiCriteria.isEmbraced: Boolean;
 begin
   Result := FisEmbraced;
 end;
 
-procedure TPerCriteria.MapFieldNames(AClass: TtiClass);
+procedure TtiCriteria.MapFieldNames(AClass: TtiClass);
 var maps: TtiAttrColMaps;
   lVisProAttributeToFieldName: TVisProAttributeToFieldName;
 begin
@@ -681,60 +664,60 @@ begin
   end;
 end;
 
-procedure TPerCriteria.SetOwner(const Value: TPerCriteria);
+procedure TtiCriteria.SetOwner(const Value: TtiCriteria);
 begin
   inherited Owner := Value;
 end;
 
 
-{ TPerCriteriaList }
+{ TtiCriteriaList }
 
-function TPerCriteriaList.Add(const AObject: TPerCriteria): integer;
+function TtiCriteriaList.Add(const AObject: TtiCriteria): integer;
 begin
   result := inherited Add(AObject);
-  if (Count > 0) and Assigned(Owner) and (Owner is TPerCriteria) then
+  if (Count > 0) and Assigned(Owner) and (Owner is TtiCriteria) then
     Owner.FIsEmbraced := true;
 end;
 
-function TPerCriteriaList.GetItems(i: Integer): TPerCriteria;
+function TtiCriteriaList.GetItems(i: Integer): TtiCriteria;
 begin
-  Result := TPerCriteria(inherited Items[i]);
+  Result := TtiCriteria(inherited Items[i]);
 end;
 
-function TPerCriteriaList.GetOwner: TPerCriteria;
+function TtiCriteriaList.GetOwner: TtiCriteria;
 begin
-  Result := TPerCriteria(inherited Owner);
+  Result := TtiCriteria(inherited Owner);
 end;
 
-procedure TPerCriteriaList.SetItems(i: Integer; Value: TPerCriteria);
+procedure TtiCriteriaList.SetItems(i: Integer; Value: TtiCriteria);
 begin
   inherited Items[i] := Value;
 end;
 
-procedure TPerCriteriaList.SetOwner(const Value: TPerCriteria);
+procedure TtiCriteriaList.SetOwner(const Value: TtiCriteria);
 begin
   inherited Owner := Value;
 end;
 
 
-{ TPerSelectionCriteriaAbs }
+{ TtiSelectionCriteriaAbs }
 
-constructor TPerSelectionCriteriaAbs.Create(AAttribute: string; AValue: variant;
+constructor TtiSelectionCriteriaAbs.Create(AAttribute: string; AValue: variant;
     ANegative: boolean = False; AFieldName: string = '');
 begin
   inherited Create;
-  FAttribute  := AAttribute;
-  FValue      := AValue;
-  FisNegative := ANegative;
-  FFieldName      := AFieldName;
+  FAttribute    := AAttribute;
+  FValue        := AValue;
+  FisNegative   := ANegative;
+  FFieldName    := AFieldName;
 end;
 
-destructor TPerSelectionCriteriaAbs.Destroy;
+destructor TtiSelectionCriteriaAbs.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TPerSelectionCriteriaAbs.GetFieldName: string;
+function TtiSelectionCriteriaAbs.GetFieldName: string;
 begin
   if FFieldName <> '' then
     Result := FFieldName
@@ -742,67 +725,67 @@ begin
     Result:= FAttribute;
 end;
 
-function TPerSelectionCriteriaAbs.GetOwner: TPerCriteria;
+function TtiSelectionCriteriaAbs.GetOwner: TtiCriteria;
 begin
-  Result := TPerCriteria(inherited Owner);
+  Result := TtiCriteria(inherited Owner);
 end;
 
-function TPerSelectionCriteriaAbs.isNegative: Boolean;
+function TtiSelectionCriteriaAbs.isNegative: Boolean;
 begin
   Result := FisNegative;
 end;
 
-procedure TPerSelectionCriteriaAbs.SetOwner(const Value: TPerCriteria);
+procedure TtiSelectionCriteriaAbs.SetOwner(const Value: TtiCriteria);
 begin
   inherited Owner := Value;
 end;
 
 
-{ TPerSelectionCriteriaList }
+{ TtiSelectionCriteriaList }
 
-function TPerSelectionCriteriaList.Add(const AObject: TPerSelectionCriteriaAbs): integer;
+function TtiSelectionCriteriaList.Add(const AObject: TtiSelectionCriteriaAbs): integer;
 begin
   result := inherited Add(AObject);
 end;
 
-function TPerSelectionCriteriaList.AsSQL: string;
+function TtiSelectionCriteriaList.AsSQL: string;
 var
   i: Integer;
 begin
   Result := ' (';
   for i := 0 to Count - 1 do
   begin
-    Result := Result + TPerSelectionCriteriaAbs(Items[i]).GetClause +
+    Result := Result + TtiSelectionCriteriaAbs(Items[i]).GetClause +
       ' AND ';
   end;
   Result := Result + ') ';
 end;
 
-function TPerSelectionCriteriaList.GetItems(i: Integer): TPerSelectionCriteriaAbs;
+function TtiSelectionCriteriaList.GetItems(i: Integer): TtiSelectionCriteriaAbs;
 begin
-  Result := TPerSelectionCriteriaAbs(inherited Items[i]);
+  Result := TtiSelectionCriteriaAbs(inherited Items[i]);
 end;
 
-function TPerSelectionCriteriaList.GetOwner: TPerCriteria;
+function TtiSelectionCriteriaList.GetOwner: TtiCriteria;
 begin
-  Result := TPerCriteria(inherited Owner);
+  Result := TtiCriteria(inherited Owner);
 end;
 
-procedure TPerSelectionCriteriaList.SetItems(i: Integer; Value:
-        TPerSelectionCriteriaAbs);
+procedure TtiSelectionCriteriaList.SetItems(i: Integer; Value:
+        TtiSelectionCriteriaAbs);
 begin
   inherited Items[i] := Value;
 end;
 
-procedure TPerSelectionCriteriaList.SetOwner(const Value: TPerCriteria);
+procedure TtiSelectionCriteriaList.SetOwner(const Value: TtiCriteria);
 begin
   inherited Owner := Value;
 end;
 
 
-{ TPerEqualToCriteria }
+{ TtiEqualToCriteria }
 
-function TPerEqualToCriteria.GetClause: string;
+function TtiEqualToCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' <> '
@@ -811,9 +794,9 @@ begin
 end;
 
 
-{ TPerEqualToFieldCriteria }
+{ TtiEqualToFieldCriteria }
 
-function TPerEqualToFieldCriteria.GetClause: string;
+function TtiEqualToFieldCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' <> '
@@ -822,15 +805,15 @@ begin
 end;
 
 
-{ TPerExistsCriteria }
+{ TtiExistsCriteria }
 
-constructor TPerExistsCriteria.Create(ASubQuery: string; ANegative: boolean;
+constructor TtiExistsCriteria.Create(ASubQuery: string; ANegative: boolean;
   AFieldName: string);
 begin
   inherited Create('', ASubQuery, ANegative, AFieldName);
 end;
 
-function TPerExistsCriteria.GetClause: string;
+function TtiExistsCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' NOT EXISTS '
@@ -839,9 +822,9 @@ begin
 end;
 
 
-{ TPerGreaterThanCriteria }
+{ TtiGreaterThanCriteria }
 
-function TPerGreaterThanCriteria.GetClause: string;
+function TtiGreaterThanCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' <= '
@@ -850,9 +833,9 @@ begin
 end;
 
 
-{ TPerGreaterThanFieldCriteria }
+{ TtiGreaterThanFieldCriteria }
 
-function TPerGreaterThanFieldCriteria.GetClause: string;
+function TtiGreaterThanFieldCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' <= '
@@ -861,9 +844,9 @@ begin
 end;
 
 
-{ TPerInCriteria }
+{ TtiInCriteria }
 
-function TPerInCriteria.GetClause: string;
+function TtiInCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' NOT IN '
@@ -872,9 +855,9 @@ begin
 end;
 
 
-{ TPerLessThanCriteria }
+{ TtiLessThanCriteria }
 
-function TPerLessThanCriteria.GetClause: string;
+function TtiLessThanCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' >= '
@@ -883,9 +866,9 @@ begin
 end;
 
 
-{ TPerLessThanFieldCriteria }
+{ TtiLessThanFieldCriteria }
 
-function TPerLessThanFieldCriteria.GetClause: string;
+function TtiLessThanFieldCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' >= '
@@ -894,9 +877,9 @@ begin
 end;
 
 
-{ TPerLikeCriteria }
+{ TtiLikeCriteria }
 
-function TPerLikeCriteria.GetClause: string;
+function TtiLikeCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' NOT LIKE '
@@ -905,15 +888,15 @@ begin
 end;
 
 
-{ TPerNullCriteria }
+{ TtiNullCriteria }
 
-constructor TPerNullCriteria.Create(AAttribute: string;
+constructor TtiNullCriteria.Create(AAttribute: string;
     ANegative: boolean = False; AFieldName: string = '');
 begin
   inherited Create(AAttribute, '', ANegative, AFieldName);
 end;
 
-function TPerNullCriteria.GetClause: string;
+function TtiNullCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' IS NOT NULL'
@@ -922,16 +905,16 @@ begin
 end;
 
 
-{ TPerBetweenCriteria }
+{ TtiBetweenCriteria }
 
-constructor TPerBetweenCriteria.Create(AAttribute: string; AArg_1, AArg_2: variant;
+constructor TtiBetweenCriteria.Create(AAttribute: string; AArg_1, AArg_2: variant;
     ANegative: boolean = False; AFieldName: string = '');
 begin
   inherited Create(AAttribute, AArg_1, ANegative, AFieldName);
   FValue_2 := AArg_2;
 end;
 
-function TPerBetweenCriteria.GetClause: string;
+function TtiBetweenCriteria.GetClause: string;
 begin
   if isNegative then
     Result := ' NOT BETWEEN '
@@ -940,14 +923,14 @@ begin
 end;
 
 
-{ TPerSQLCriteria }
+{ TtiSQLCriteria }
 
-constructor TPerSQLCriteria.Create(ASQLStm: string);
+constructor TtiSQLCriteria.Create(ASQLStm: string);
 begin
   inherited Create(ASQLStm, '', false, '');
 end;
 
-function TPerSQLCriteria.GetClause: string;
+function TtiSQLCriteria.GetClause: string;
 begin
   Result := inherited Attribute;
 end;

@@ -11,17 +11,17 @@ type
 
   TtiFilteredObjectList = class(TtiObjectList)
   private
-    FCriteria: TPerCriteria;
+    FCriteria: TtiCriteria;
   protected
-    function GetCriteria: TPerCriteria;
+    function GetCriteria: TtiCriteria;
   public
     constructor Create; override;
     destructor Destroy; override;
 
     {: Returns true if the ObjectList has selection critera }
     function HasCriteria: boolean;
-    {: Property based selection critera used when reading the list.  This is declared as TtiObject to get around circular references but is of type TPerCriteria}
-    property Criteria: TPerCriteria read GetCriteria;
+    {: Property based selection critera used when reading the list.  This is declared as TtiObject to get around circular references but is of type TtiCriteria}
+    property Criteria: TtiCriteria read GetCriteria;
 
   end;
 
@@ -41,10 +41,10 @@ begin
   inherited;
 end;
 
-function TtiFilteredObjectList.GetCriteria: TPerCriteria;
+function TtiFilteredObjectList.GetCriteria: TtiCriteria;
 begin
   if not assigned(FCriteria) then
-    FCriteria := TPerCriteria.Create(ClassName);
+    FCriteria := TtiCriteria.Create(ClassName);
 
   Result := FCriteria;
 end;

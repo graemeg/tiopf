@@ -112,19 +112,19 @@ end;
 
 procedure TTestTICriteria.TestPerCriteriaList;
 var
-  lList: TPerCriteriaList;
-  lItem: TPerCriteria;
+  lList: TtiCriteriaList;
+  lItem: TtiCriteria;
 begin
-  lList := TPerCriteriaList.Create;
+  lList := TtiCriteriaList.Create;
   try
-    lItem := TPerCriteria.Create('Criteria1');
+    lItem := TtiCriteria.Create('Criteria1');
     lList.Add(lItem);
     CheckEquals(1, lList.Count, 'Failed on 1');
     CheckSame(lItem, lList.Items[0], 'Failed on 2');
     CheckSame(lList, lItem.Owner, 'Failed on 3');
     CheckEquals('Criteria1', lItem.Name, 'Failed on 4');
 
-    lItem := TPerCriteria.Create('Criteria2');
+    lItem := TtiCriteria.Create('Criteria2');
     lList.Add(lItem);
     CheckEquals(2, lList.Count, 'Failed on 5');
     CheckSame(lItem, lList.Items[1], 'Failed on 6');
@@ -140,25 +140,25 @@ end;
 
 procedure TTestTICriteria.TestPerCriteria_IsEmbraced;
 var
-  lList: TPerCriteriaList;
-  lItem1: TPerCriteria;
-  lItem2: TPerCriteria;
-  lItem3: TPerCriteria;
+  lList: TtiCriteriaList;
+  lItem1: TtiCriteria;
+  lItem2: TtiCriteria;
+  lItem3: TtiCriteria;
 begin
-  lList := TPerCriteriaList.Create;
+  lList := TtiCriteriaList.Create;
   try
-    lItem1 := TPerCriteria.Create('Criteria1');
+    lItem1 := TtiCriteria.Create('Criteria1');
     CheckEquals(False, lItem1.isEmbraced, 'Failed on 1');
     lList.Add(lItem1);
     CheckEquals(False, lItem1.isEmbraced, 'Failed on 2');
 
-    lItem2 := TPerCriteria.Create('Criteria2');
+    lItem2 := TtiCriteria.Create('Criteria2');
     CheckEquals(False, lItem2.isEmbraced, 'Failed on 3');
     lItem1.AddAndCriteria(lItem2);
     CheckEquals(True, lItem1.isEmbraced, 'Failed on 4');
     CheckEquals(False, lItem2.isEmbraced, 'Failed on 5');
 
-    lItem3 := TPerCriteria.Create('Criteria3');
+    lItem3 := TtiCriteria.Create('Criteria3');
     CheckEquals(False, lItem3.isEmbraced, 'Failed on 6');
     lItem2.AddOrCriteria(lItem3);
     CheckEquals(True, lItem2.isEmbraced, 'Failed on 7');
@@ -173,9 +173,9 @@ end;
 
 procedure TTestTICriteria.TestPerCriteria_ClearAll;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
 begin
-  lCriteria := TPerCriteria.Create('Criteria1');
+  lCriteria := TtiCriteria.Create('Criteria1');
   try
     CheckEquals(0, lCriteria.Criterias.Count, 'Failed on 1');
     CheckEquals(0, lCriteria.GetGroupByList.Count, 'Failed on 2');
@@ -185,7 +185,7 @@ begin
     lCriteria.AddEqualTo('Field1', '2a');
     CheckEquals(1, lCriteria.SelectionCriterias.Count, 'Failed on 5');
 
-    lCriteria.AddOrCriteria(TPerCriteria.Create('A'));
+    lCriteria.AddOrCriteria(TtiCriteria.Create('A'));
     CheckEquals(1, lCriteria.Criterias.Count, 'Failed on 6');
 
     lCriteria.AddGroupBy('FieldA');
@@ -206,12 +206,12 @@ end;
 
 procedure TTestTICriteria.TestPerSelectionCriteriaList;
 var
-  lList: TPerSelectionCriteriaList;
-  lItem: TPerEqualToCriteria;
+  lList: TtiSelectionCriteriaList;
+  lItem: TtiEqualToCriteria;
 begin
-  lList := TPerSelectionCriteriaList.Create;
+  lList := TtiSelectionCriteriaList.Create;
   try
-    lItem := TPerEqualToCriteria.Create('A', 'B');
+    lItem := TtiEqualToCriteria.Create('A', 'B');
     lList.Add(lItem);
     CheckEquals(1, lList.Count, 'Failed on 1');
     CheckSame(lItem, lList.Items[0], 'Failed on 2');
@@ -219,7 +219,7 @@ begin
     CheckEquals('A', lItem.Attribute, 'Failed on 4');
     CheckEquals('B', lItem.Value, 'Failed on 5');
 
-    lItem := TPerEqualToCriteria.Create('C', 'D');
+    lItem := TtiEqualToCriteria.Create('C', 'D');
     lList.Add(lItem);
     CheckEquals(2, lList.Count, 'Failed on 6');
     CheckSame(lItem, lList.Items[1], 'Failed on 7');
@@ -236,10 +236,10 @@ end;
 
 procedure TTestTICriteria.TestPerEqualToCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddEqualTo('OID', '1');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -248,7 +248,7 @@ begin
     lCriteria.Free;
   end;
   
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddEqualTo('OID', 1);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -258,7 +258,7 @@ begin
   end;
   
   // Negative criteria
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddNotEqualTo('OID', '1');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -267,7 +267,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddNotEqualTo('OID', 1);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -277,7 +277,7 @@ begin
   end;
 
   // field names
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddEqualTo('OID', '1');
     lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -292,13 +292,13 @@ end;
 
 procedure TTestTICriteria.TestPerEqualToCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddEqualTo('OID', '1');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -312,7 +312,7 @@ begin
     end;
     lParams.Clear;
     
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       CheckEquals(0, lParams.Count, 'Failed on 10');
       lCriteria.AddEqualTo('OID', 1);
@@ -328,7 +328,7 @@ begin
     lParams.Clear;
 
     // Negative criteria
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       CheckEquals(0, lParams.Count, 'Failed on 20');
       lCriteria.AddNotEqualTo('OID', '1');
@@ -343,7 +343,7 @@ begin
     end;
     lParams.Clear;
 
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       CheckEquals(0, lParams.Count, 'Failed on 30');
       lCriteria.AddNotEqualTo('OID', 1);
@@ -359,7 +359,7 @@ begin
     lParams.Clear;
 
     // field names
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       CheckEquals(0, lParams.Count, 'Failed on 40');
       lCriteria.AddEqualTo('OID', '1');
@@ -382,10 +382,10 @@ end;
 
 procedure TTestTICriteria.TestPerExistsCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddExists('Select * from Order where Client_ID = 1');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -395,7 +395,7 @@ begin
   end;
   
   // Negative criteria
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddNotExists('Select * from Order where Client_ID = 1');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -407,13 +407,13 @@ end;
 
 procedure TTestTICriteria.TestPerExistsCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddExists('Select * from Order where Client_ID = 1');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -424,7 +424,7 @@ begin
     end;
 
     // Negative criteria
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddNotExists('Select * from Order where Client_ID = 1');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -440,10 +440,10 @@ end;
 
 procedure TTestTICriteria.TestPerGreaterThanCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddGreaterThan('FIELD_1', '1');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -452,7 +452,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddGreaterThan('FIELD_1', 1);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -462,7 +462,7 @@ begin
   end;
 
   // field names
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddGreaterThan('FIELD_1', '1');
     lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -475,13 +475,13 @@ end;
 
 procedure TTestTICriteria.TestPerGreaterThanCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddGreaterThan('FIELD_1', '1');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -495,7 +495,7 @@ begin
     end;
 
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddGreaterThan('FIELD_1', 1);
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -510,7 +510,7 @@ begin
 
     // field names
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddGreaterThan('FIELD_1', '1');
       lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -530,10 +530,10 @@ end;
 
 procedure TTestTICriteria.TestPerGreaterOrEqualThanCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddGreaterOrEqualThan('FIELD_1', '1');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -542,7 +542,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddGreaterOrEqualThan('FIELD_1', 1);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -551,7 +551,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddGreaterOrEqualThan('FIELD_1', '1');
     lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -564,13 +564,13 @@ end;
 
 procedure TTestTICriteria.TestPerGreaterOrEqualThanCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddGreaterOrEqualThan('FIELD_1', '1');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -584,7 +584,7 @@ begin
     end;
 
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddGreaterOrEqualThan('FIELD_1', 1);
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -599,7 +599,7 @@ begin
 
     // field names
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddGreaterOrEqualThan('FIELD_1', '1');
       lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -619,13 +619,13 @@ end;
 
 procedure TTestTICriteria.TestPerInCriteria_SQL;
 var
-    lCriteria: TPerCriteria;
+    lCriteria: TtiCriteria;
   lSQL: string;
   myStrArray: array[0..1] of variant;
   myIntArray: array[0..4] of variant;
 begin
   { IN with a SQL statement }
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddIn('OID', 'SELECT OID FROM SUB_TABLE');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -635,7 +635,7 @@ begin
   end;
 
   { IN with string array elements }
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     myStrArray[0] := 'Value1';
     myStrArray[1] := 'Value2';
@@ -648,7 +648,7 @@ begin
   end;
 
   { IN with integer array elements }
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     myIntArray[0] := 1;
     myIntArray[1] := 2;
@@ -663,7 +663,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     myIntArray[0] := 1;
     myIntArray[1] := 2;
@@ -682,7 +682,7 @@ end;
 
 procedure TTestTICriteria.TestPerInCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   myStrArray: array[0..1] of variant;
   myIntArray: array[0..4] of variant;
@@ -691,7 +691,7 @@ begin
   lParams:= TtiQueryParams.Create;
   try
     { IN with a SQL statement }
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddIn('OID', 'SELECT OID FROM SUB_TABLE');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -703,7 +703,7 @@ begin
 
     { IN with string array elements }
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       myStrArray[0] := 'Value1';
       myStrArray[1] := 'Value2';
@@ -724,7 +724,7 @@ begin
 
     { IN with integer array elements }
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddIn('OID', [1, 2, 3, 4, 5]);
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -750,7 +750,7 @@ begin
     end;
 
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       myIntArray[0] := 1;
       myIntArray[1] := 2;
@@ -789,10 +789,10 @@ end;
 
 procedure TTestTICriteria.TestPerLessOrEqualThanCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddLessOrEqualThan('OID', '1');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -801,7 +801,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddLessOrEqualThan('OID', 1);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -810,7 +810,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddLessOrEqualThan('OID', 1);
     lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -823,13 +823,13 @@ end;
 
 procedure TTestTICriteria.TestPerLessOrEqualThanCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddLessOrEqualThan('OID', '1');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -843,7 +843,7 @@ begin
     end;
 
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddLessOrEqualThan('OID', 1);
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -856,7 +856,7 @@ begin
       lCriteria.Free;
     end;
 
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddLessOrEqualThan('OID', 1);
       lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -876,10 +876,10 @@ end;
 
 procedure TTestTICriteria.TestPerLessThanCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddLessThan('OID', '1');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -888,7 +888,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddLessThan('OID', 1);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -897,7 +897,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddLessThan('OID', 1);
     lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -910,13 +910,13 @@ end;
 
 procedure TTestTICriteria.TestPerLessThanCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddLessThan('OID', '1');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -930,7 +930,7 @@ begin
     end;
 
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddLessThan('OID', 1);
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -943,7 +943,7 @@ begin
       lCriteria.Free;
     end;
 
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddLessThan('OID', 1);
       lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -963,10 +963,10 @@ end;
 
 procedure TTestTICriteria.TestPerLikeCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddLike('FIELD_1', 'A%');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -976,7 +976,7 @@ begin
   end;
 
   // Negative criteria
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddNotLike('FIELD_1', 'A%');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -985,7 +985,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddLike('FIELD_1', 'A%');
     lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -998,13 +998,13 @@ end;
 
 procedure TTestTICriteria.TestPerLikeCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddLike('FIELD_1', 'A%');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -1019,7 +1019,7 @@ begin
 
     // Negative criteria
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddNotLike('FIELD_1', 'A%');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -1033,7 +1033,7 @@ begin
     end;
 
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddLike('FIELD_1', 'A%');
       lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -1053,10 +1053,10 @@ end;
 
 procedure TTestTICriteria.TestPerNullCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddNull('FIELD_1');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -1065,7 +1065,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddNull('FIELD_1');
     lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -1078,13 +1078,13 @@ end;
 
 procedure TTestTICriteria.TestPerNullCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddNull('FIELD_1');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -1093,7 +1093,7 @@ begin
       lCriteria.Free;
     end;
 
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddNull('FIELD_1');
       lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -1109,10 +1109,10 @@ end;
 
 procedure TTestTICriteria.TestFieldName;
 var
-  lSelectionCriteria: TPerSelectionCriteriaAbs;
+  lSelectionCriteria: TtiSelectionCriteriaAbs;
 begin
-  // use TPerEqualToCriteria so we don't get a warning about using an abstract class
-  lSelectionCriteria := TPerEqualToCriteria.Create('Field1', '');
+  // use TtiEqualToCriteria so we don't get a warning about using an abstract class
+  lSelectionCriteria := TtiEqualToCriteria.Create('Field1', '');
   try
     CheckEquals('Field1', lSelectionCriteria.Attribute);
     CheckEquals('Field1', lSelectionCriteria.FieldName);
@@ -1128,11 +1128,11 @@ end;
 
 procedure TTestTICriteria.TestHasCriteria;
 var
-  lCriteria: TPerCriteria;
-  lCriteriaAnd: TPerCriteria;
+  lCriteria: TtiCriteria;
+  lCriteriaAnd: TtiCriteria;
 begin
-  lCriteria := TPerCriteria.Create('test');
-  lCriteriaAnd := TPerCriteria.Create('test and');
+  lCriteria := TtiCriteria.Create('test');
+  lCriteriaAnd := TtiCriteria.Create('test and');
   try
     CheckFalse(lCriteria.HasCriteria, 'Failed at 1');
     lCriteria.AddBetween('FIELD_1', '1', '2');
@@ -1162,10 +1162,10 @@ end;
 
 procedure TTestTICriteria.TestPerBetweenCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddBetween('FIELD_1', 1, 2);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -1174,7 +1174,7 @@ begin
     lCriteria.Free;
   end;
 
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddBetween('FIELD_1', '1', '2');
     lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -1187,13 +1187,13 @@ end;
 
 procedure TTestTICriteria.TestPerBetweenCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddBetween('FIELD_1', 1, 2);
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
@@ -1210,7 +1210,7 @@ begin
     end;
 
     lParams.Clear;
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddBetween('FIELD_1', '1', '2');
       lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
@@ -1233,10 +1233,10 @@ end;
 
 procedure TTestTICriteria.TestPerSQLCriteria_SQL;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lSQL: string;
 begin
-  lCriteria := TPerCriteria.Create('test');
+  lCriteria := TtiCriteria.Create('test');
   try
     lCriteria.AddSQL('Upper(Field_1) LIKE ''A%''');
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
@@ -1248,12 +1248,12 @@ end;
 
 procedure TTestTICriteria.TestPerSQLCriteria_SQL_IgnoreEmptyCritera;
 var
-  lCriteriaBase, lCriteriaOr: TPerCriteria;
+  lCriteriaBase, lCriteriaOr: TtiCriteria;
   lSQL: string;
 begin
-  lCriteriaBase := TPerCriteria.Create('test');
+  lCriteriaBase := TtiCriteria.Create('test');
   try
-    lCriteriaOr := TPerCriteria.Create('test');
+    lCriteriaOr := TtiCriteria.Create('test');
 
     lCriteriaOr.AddEqualTo('OID', '2');
     lCriteriaBase.AddOrCriteria(lCriteriaOr);
@@ -1269,15 +1269,15 @@ end;
 
 procedure TTestTICriteria.TestPerSQLCriteria_SQL_IgnoreEmptyCritera_WithParams;
 var
-  lCriteriaBase, lCriteriaOr: TPerCriteria;
+  lCriteriaBase, lCriteriaOr: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteriaBase := TPerCriteria.Create('test');
+    lCriteriaBase := TtiCriteria.Create('test');
     try
-      lCriteriaOr := TPerCriteria.Create('test');
+      lCriteriaOr := TtiCriteria.Create('test');
 
       lCriteriaOr.AddEqualTo('OID', '2');
       lCriteriaBase.AddOrCriteria(lCriteriaOr);
@@ -1300,13 +1300,13 @@ end;
 
 procedure TTestTICriteria.TestPerSQLCriteria_SQL_Or;
 var
-  lCriteriaBase, lCriteriaOr: TPerCriteria;
+  lCriteriaBase, lCriteriaOr: TtiCriteria;
   lSQL: string;
 begin
-  lCriteriaBase := TPerCriteria.Create('test');
+  lCriteriaBase := TtiCriteria.Create('test');
   try
     lCriteriaBase.AddEqualTo('OID', '1') ;
-    lCriteriaOr := TPerCriteria.Create('test');
+    lCriteriaOr := TtiCriteria.Create('test');
     lCriteriaOr.AddEqualTo('OID', '2');
     lCriteriaBase.AddOrCriteria(lCriteriaOr);
 
@@ -1322,13 +1322,13 @@ end;
 
 procedure TTestTICriteria.TestPerSQLCriteria_SQL_WithParams;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
   lParams: TtiQueryParams;
   lSQL: string;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lCriteria := TPerCriteria.Create('test');
+    lCriteria := TtiCriteria.Create('test');
     try
       lCriteria.AddSQL('Upper(Field_1) LIKE ''A%''');
       lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));

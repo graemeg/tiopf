@@ -126,7 +126,7 @@ end;
 
 procedure TVisDBAutoGenRead.OpenQuery;
 var
-  lCriteria: TPerCriteria;
+  lCriteria: TtiCriteria;
 begin
   lCriteria := NIL;
 
