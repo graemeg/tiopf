@@ -128,7 +128,7 @@ type
     procedure ReadWriteFloat;
     procedure ReadWriteDateDate;
     procedure ReadWriteDateNow;
-    procedure ReadWriteDateMin;
+    procedure ReadWriteDateMin; virtual;
     procedure ReadWriteDate0;
     procedure ReadWriteDateMax;
     procedure ReadWriteBooleanTrue;
@@ -2487,6 +2487,7 @@ end;
 {$ENDIF}
 
 end.
+
 
 
 

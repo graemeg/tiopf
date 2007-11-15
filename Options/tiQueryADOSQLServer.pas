@@ -62,9 +62,22 @@ begin
 end;
 
 class function TtiDatabaseADOSQLServer.DatabaseExists(const ADatabaseName, AUserName, APassword: string):boolean;
+var
+  lDatabase: TtiDatabaseADOSQLServer;
 begin
-  result := false;
-  Assert(false, 'DatabaseExists not implemented in ' + ClassName);
+  lDatabase := TtiDatabaseADOSQLServer.Create;
+  try
+    try
+      lDatabase.Connect(ADatabaseName, AUserName, APassword, '');
+      Result := True;
+    except
+      on E: Exception do
+        Result := False;
+    end;
+    lDatabase.Connected := False;
+  finally
+    lDatabase.Free;
+  end;
 end;
 
 function TtiDatabaseADOSQLServer.FieldMetaDataToSQLCreate(
@@ -216,4 +229,5 @@ finalization
    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistADOSQLServer);
 
 end.
+
 
