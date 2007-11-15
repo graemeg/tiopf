@@ -28,13 +28,13 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="FCL"/>
+        <PackageName Value="tiOPF"/>
       </Item1>
       <Item2>
         <PackageName Value="FPCUnitConsoleRunner"/>
       </Item2>
       <Item3>
-        <PackageName Value="tiOPF"/>
+        <PackageName Value="FCL"/>
       </Item3>
     </RequiredPackages>
     <Units Count="2">

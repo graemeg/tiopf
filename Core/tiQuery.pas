@@ -21,7 +21,6 @@ const
   cErrorInvalidQueryFieldKindStr = 'Invalid TtiQueryFieldKind <%s>';
   cErrorInvalidTtiQueryFieldKind = 'Invalid TtiQueryFieldKind';
   cErrorSettingPropValue         = 'Error setting property value for <%s> on <%s> Message <%s>';
-
 type
   // these constant strings map to the PARAM_TYPE column in the SQL Manager param
   // table. Please do not modify them.
@@ -512,6 +511,7 @@ type
     procedure   AssignValueToStream(const AName : string; const AStream : TStream);
 
     procedure   SetValueFromProp(const AFieldMetaData : TtiObject; const APropName : string; const pParamName : string);
+    procedure   SetValueAsVariant(const AName : string; const AValue : variant);
   end;
 
 
@@ -1111,40 +1111,47 @@ var
   i : integer;
   lWhere : string;
   lCriteriaWhere: string;
+  lCriteriaParams: TtiQueryParams;
 begin
   lCriteriaWhere:= '';
   lWhere := '';
+  lCriteriaParams:= nil;
 
-  // This code is cloned from tiDatabaseSQL
-  if (AWhere <> nil) then
-    for i := 0 to AWhere.Count - 1 do
+  try
+    // This code is cloned from tiDatabaseSQL
+    if (AWhere <> nil) then
+      for i := 0 to AWhere.Count - 1 do
+      begin
+        lWhere := tiAddTrailingValue(lWhere, ' and ' + CrLf);
+        lWhere := lWhere +
+                  AWhere.Items[i].Name + ' =:' +
+                  AWhere.Items[i].Name;
+      end;
+
+    if Assigned(ACriteria) and ACriteria.HasCriteria then
     begin
-      lWhere := tiAddTrailingValue(lWhere, ' and ' + CrLf);
-      lWhere := lWhere +
-                AWhere.Items[i].Name + ' =:' +
-                AWhere.Items[i].Name;
+      lCriteriaParams:= TtiQueryParams.Create;
+      lCriteriaWhere:= tiCriteriaAsSQL(ACriteria, lCriteriaParams);
+      if lCriteriaWhere <> '' then
+      begin
+        lWhere := tiAddTrailingValue(lWhere, ' and ' + CrLf);
+        lWhere := lWhere + lCriteriaWhere;
+      end;
     end;
 
-  if Assigned(ACriteria) and ACriteria.HasCriteria then
-  begin
-    lCriteriaWhere:= tiCriteriaAsSQL(ACriteria);
-    if lCriteriaWhere <> '' then
-    begin
-      lWhere := tiAddTrailingValue(lWhere, ' and ' + CrLf);
-      lWhere := lWhere + lCriteriaWhere;
-    end;
+    if lWhere <> '' then
+      lSQL := 'select * from ' + ATableName + CrLf +
+              'where' + CrLf +
+              lWhere
+    else
+      lSQL := 'select * from ' + ATableName;
+
+    SQLText := lSQL;
+    AssignParams(AWhere, lCriteriaParams);
+    Open;
+  finally
+    lCriteriaParams.Free;
   end;
-
-  if lWhere <> '' then
-    lSQL := 'select * from ' + ATableName + CrLf +
-            'where' + CrLf +
-            lWhere
-  else
-    lSQL := 'select * from ' + ATableName;
-  
-  SQLText := lSQL;
-  AssignParams(AWhere);
-  Open;
 end;
 
 function TtiQuery.GetOptions: TStringList;
@@ -1332,6 +1339,21 @@ var
 begin
   lParam := FindCreateParamByName(AName, TtiQueryParamString);
   lParam.SetValueAsString(AValue);
+end;
+
+procedure TtiQueryParams.SetValueAsVariant(const AName: string;
+  const AValue: variant);
+begin
+  case tiVarSimplePropType(AValue) of
+    tiTKInteger:  SetValueAsInteger(AName, AValue);
+    tiTKFloat:    SetValueAsFloat(AName, AValue);
+    tiTKString:   SetValueAsString(AName, AValue);
+    tiTKDateTime: SetValueAsDateTime(AName, AValue);
+    tiTKBoolean:  SetValueAsBoolean(AName, AValue);
+  else
+    // handle other (unknown) types
+    SetValueAsString(AName, AValue);
+  end;
 end;
 
 function TtiQueryParams.GetValueAsString(const AName: string): string;

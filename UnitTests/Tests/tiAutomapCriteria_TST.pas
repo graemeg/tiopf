@@ -285,7 +285,7 @@ procedure TTestAutomappingCriteria.ItemsIntegerInArray;
 var
   lData : TtiObjectListNestedForTesting;
   i : integer;
-  myIntArray: array[0..1] of Integer;
+  myIntArray: array[0..1] of variant;
 const
   cResultCount = cGroupCount * 2;
 begin

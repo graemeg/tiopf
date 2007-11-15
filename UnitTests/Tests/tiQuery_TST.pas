@@ -41,10 +41,15 @@ type
   published
     procedure TestCheckStreamContentsSame;
     procedure AsString;
+    procedure AsVariant_String;
     procedure AsInteger;
+    procedure AsVariant_Integer;
     procedure AsFloat;
+    procedure AsVariant_Float;
     procedure AsDateTime;
+    procedure AsVariant_DateTime;
     procedure AsBoolean;
+    procedure AsVariant_Boolean;
     procedure AsStream;
     procedure ParamByName;
     procedure ParamIsNull;
@@ -1739,6 +1744,137 @@ begin
   lParams := TtiQueryParams.Create;
   try
     lParams.SetValueAsString('param1', 'test');
+    CheckEquals(1, lParams.Count, 'Count');
+    lParam := lParams.Items[0];
+    CheckNotNull(lParams, 'NotNull failed');
+    CheckIs(lParam, TtiQueryParamString, 'Wrong class');
+    CheckEquals('test', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+  finally
+    lParams.Free;
+  end;
+end;
+
+procedure TTestTIQueryParams.AsVariant_Boolean;
+var
+  lParams : TtiQueryParams;
+  lParam : TtiQueryParamAbs;
+begin
+  lParams := TtiQueryParams.Create;
+  try
+    lParams.SetValueAsVariant('param1', True);
+    CheckEquals(1, lParams.Count, 'Count');
+    lParam := lParams.Items[0];
+    CheckNotNull(lParams, 'NotNull failed');
+    CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
+    CheckEquals(True, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+    CheckEquals('T', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+
+    lParams.SetValueAsVariant('param1', 'False');
+    CheckEquals(1, lParams.Count, 'Count');
+    lParam := lParams.Items[0];
+    CheckNotNull(lParams, 'NotNull failed');
+    CheckIs(lParam, TtiQueryParamBoolean, 'Wrong class');
+    CheckEquals(False, lParams.GetValueAsBoolean('param1'), 'GetValueAsBoolean failed');
+    CheckEquals('F', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+
+  finally
+    lParams.Free;
+  end;
+end;
+
+procedure TTestTIQueryParams.AsVariant_DateTime;
+var
+  lParams : TtiQueryParams;
+  lParam : TtiQueryParamAbs;
+  lDate : TDateTime;
+begin
+  lDate := EncodeDate(2004, 01, 01);
+  lParams := TtiQueryParams.Create;
+  try
+    lParams.SetValueAsVariant('param1', lDate);
+    CheckEquals(1, lParams.Count, 'Count');
+    lParam := lParams.Items[0];
+    CheckNotNull(lParams, 'NotNull failed');
+    CheckIs(lParam, TtiQueryParamDateTime, 'Wrong class');
+    CheckEquals(lDate, lParams.GetValueAsDateTime('param1'), 0.0001, 'GetValueAsDateTime failed');
+
+    lDate := EncodeDate(2004, 02, 02);
+    lParams.SetValueAsVariant('param1', tiDateTimeAsXMLString(lDate));
+    CheckEquals(1, lParams.Count, 'Count');
+    lParam := lParams.Items[0];
+    CheckNotNull(lParams, 'NotNull failed');
+    CheckIs(lParam, TtiQueryParamDateTime, 'Wrong class');
+    CheckEquals(lDate, lParams.GetValueAsDateTime('param1'), 0.0001, 'GetValueAsDateTime failed');
+    CheckEquals(tiDateTimeAsXMLString(lDate), lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+  finally
+    lParams.Free;
+  end;
+end;
+
+procedure TTestTIQueryParams.AsVariant_Float;
+var
+  lParams : TtiQueryParams;
+  lParam : TtiQueryParamAbs;
+begin
+  lParams := TtiQueryParams.Create;
+  try
+    lParams.SetValueAsVariant('param1', 123.456);
+    CheckEquals(1, lParams.Count, 'Count');
+    lParam := lParams.Items[0];
+    CheckNotNull(lParams, 'NotNull failed');
+    CheckIs(lParam, TtiQueryParamFloat, 'Wrong class');
+    CheckEquals(123.456, lParams.GetValueAsFloat('param1'), 0.0001, 'GetValueAsFloat failed');
+    CheckEquals('123.456', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+
+    lParams.SetValueAsVariant('param1', '456.789');
+    CheckEquals(1, lParams.Count, 'Count');
+    lParam := lParams.Items[0];
+    CheckNotNull(lParams, 'NotNull failed');
+    CheckIs(lParam, TtiQueryParamFloat, 'Wrong class');
+    CheckEquals(456.789, lParams.GetValueAsFloat('param1'), 0.0001,  'GetValueAsFloat failed');
+    CheckEquals('456.789', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+
+  finally
+    lParams.Free;
+  end;
+end;
+
+procedure TTestTIQueryParams.AsVariant_Integer;
+var
+  lParams : TtiQueryParams;
+  lParam : TtiQueryParamAbs;
+begin
+  lParams := TtiQueryParams.Create;
+  try
+    lParams.SetValueAsVariant('param1', 123);
+    CheckEquals(1, lParams.Count, 'Count');
+    lParam := lParams.Items[0];
+    CheckNotNull(lParams, 'NotNull failed');
+    CheckIs(lParam, TtiQueryParamInteger, 'Wrong class');
+    CheckEquals(123, lParams.GetValueAsInteger('param1'), 'GetValueAsInteger failed');
+    CheckEquals('123', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+
+    lParams.SetValueAsVariant('param1', '456');
+    CheckEquals(1, lParams.Count, 'Count');
+    lParam := lParams.Items[0];
+    CheckNotNull(lParams, 'NotNull failed');
+    CheckIs(lParam, TtiQueryParamInteger, 'Wrong class');
+    CheckEquals(456, lParams.GetValueAsInteger('param1'), 'GetValueAsInteger failed');
+    CheckEquals('456', lParams.GetValueAsString('param1'), 'GetValueAsString failed');
+
+  finally
+    lParams.Free;
+  end;
+end;
+
+procedure TTestTIQueryParams.AsVariant_String;
+var
+  lParams : TtiQueryParams;
+  lParam : TtiQueryParamAbs;
+begin
+  lParams := TtiQueryParams.Create;
+  try
+    lParams.SetValueAsVariant('param1', 'test');
     CheckEquals(1, lParams.Count, 'Count');
     lParam := lParams.Items[0];
     CheckNotNull(lParams, 'NotNull failed');

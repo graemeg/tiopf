@@ -69,26 +69,19 @@ type
     destructor  Destroy; override;
     procedure   MapFieldNames(AClass: TtiClass);
     procedure   AddAndCriteria(ACriteria: TPerCriteria);
-    procedure   AddBetween(AAttribute, AValue_1, AValue_2: string);
-    procedure   AddEqualTo(AAttribute, AValue: string); overload;
-    procedure   AddEqualTo(AAttribute: string; AValue: integer); overload;
+    procedure   AddBetween(AAttribute: string; AValue_1, AValue_2: variant);
+    procedure   AddEqualTo(AAttribute: string; AValue: variant); overload;
     procedure   AddExists(ASubQuery: string);
-    procedure   AddGreaterOrEqualThan(AAttribute, AValue: string); overload;
-    procedure   AddGreaterOrEqualThan(AAttribute: string; AValue: integer); overload;
-    procedure   AddGreaterThan(AAttribute, AValue: string); overload;
-    procedure   AddGreaterThan(AAttribute: string; AValue: integer); overload;
+    procedure   AddGreaterOrEqualThan(AAttribute: string; AValue: variant); overload;
+    procedure   AddGreaterThan(AAttribute: string; AValue: variant); overload;
     procedure   AddGroupBy(AField: string); overload;
     procedure   AddGroupBy(AFields: array of string); overload;
     procedure   AddIn(AAttribute, ASubQuery: string); overload;
-    procedure   AddIn(AAttribute: string; AValueArray: array of string); overload;
-    procedure   AddIn(AAttribute: string; AValueArray: array of integer); overload;
-    procedure   AddLessOrEqualThan(AAttribute, AValue: string); overload;
-    procedure   AddLessOrEqualThan(AAttribute: string; AValue: integer); overload;
-    procedure   AddLessThan(AAttribute, AValue: string); overload;
-    procedure   AddLessThan(AAttribute: string; AValue: integer); overload;
+    procedure   AddIn(AAttribute: string; AValueArray: array of variant); overload;
+    procedure   AddLessOrEqualThan(AAttribute: string; AValue: variant); overload;
+    procedure   AddLessThan(AAttribute: string; AValue: variant); overload;
     procedure   AddLike(AAttribute, AValue: string);
-    procedure   AddNotEqualTo(AAttribute, AValue: string); overload;
-    procedure   AddNotEqualTo(AAttribute: string; AValue: integer); overload;
+    procedure   AddNotEqualTo(AAttribute: string; AValue: variant); overload;
     procedure   AddNotExists(ASubQuery: string);
     procedure   AddNotIn(AAttribute, ASubQuery: string);
     procedure   AddNotLike(AAttribute, AValue: string);
@@ -102,6 +95,10 @@ type
     procedure   AddOrderByDescending(AField: string); overload;
     procedure   AddOrderByDescending(AFields: array of string); overload;
     procedure   AddSQL(ASQLStm: string);
+
+    procedure   AddDummy(ADate: TDateTime); overload;
+    procedure   AddDummy(AFloat: double); overload;
+    procedure   AddDummy(Areal: real); overload;
     procedure   ClearAll;
     function    GetGroupByList: TPerColumns;
     function    GetOrderByList: TPerColumns;
@@ -109,7 +106,6 @@ type
     function    HasCriteria: boolean;
     property    CriteriaType: TCriteriaType read FCriteriaType write FCriteriaType;
     property    Owner: TPerCriteria read GetOwner write SetOwner;
-
   published
     property    Criterias: TPerCriteriaList read GetCriterias;
     property    Name: string read FName;
@@ -136,20 +132,20 @@ type
     FFieldName: string;
     FAttribute: string;
     FisNegative: Boolean;
-    FValue: string;
+    FValue:      variant;
     function GetFieldName: string;
   protected
     function    GetOwner: TPerCriteria; reintroduce; virtual;
     procedure   SetOwner(const Value: TPerCriteria); reintroduce; virtual;
   public
-    constructor Create(AAttribute, AValue: string; ANegative: boolean = False; AFieldName: string = ''); reintroduce; virtual;
+    constructor Create(AAttribute: string; AValue: variant; ANegative: boolean = False; AFieldName: string = ''); reintroduce; virtual;
     destructor  Destroy; override;
     function    GetClause: string; virtual; abstract;
     function    isNegative: Boolean;
     property    Owner: TPerCriteria read GetOwner write SetOwner;
   published
     property    Attribute: string read FAttribute;
-    property    Value: string read FValue;
+    property    Value: variant read FValue;
     property    FieldName: string read GetFieldName write FFieldName;
   end;
   
@@ -210,7 +206,7 @@ type
   
   TPerInCriteria = class(TPerValueCriteriaAbs)
   public
-    ValueArray: array of string;
+    ValueArray: array of variant;
     function    GetClause: string; override;
   end;
   
@@ -240,12 +236,12 @@ type
   
   TPerBetweenCriteria = class(TPerValueCriteriaAbs)
   private
-    FValue_2: string;
+    FValue_2: variant;
   public
-    constructor Create(AAttribute, AArg_1, AArg_2: string; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
+    constructor Create(AAttribute: string; AArg_1, AArg_2: variant; ANegative: boolean = false; AFieldName: string = ''); reintroduce; virtual;
     function    GetClause: string; override;
   published
-    property    Value_2: string read FValue_2;
+    property    Value_2: variant read FValue_2;
   end;
   
   
@@ -366,7 +362,7 @@ begin
   FCriterias.Add(ACriteria);
 end;
 
-procedure TPerCriteria.AddBetween(AAttribute, AValue_1, AValue_2: string);
+procedure TPerCriteria.AddBetween(AAttribute: string; AValue_1, AValue_2: variant);
 var
   lCriteria: TPerBetweenCriteria;
 begin
@@ -374,19 +370,34 @@ begin
   FSelectionCriterias.Add(lCriteria);
 end;
 
-procedure TPerCriteria.AddEqualTo(AAttribute, AValue: string);
-var
-  lData: TPerEqualToCriteria;
+procedure TPerCriteria.AddDummy(ADate: TDateTime);
 begin
-  lData := TPerEqualToCriteria.Create(AAttribute, QuotedStr(AValue));
-  FSelectionCriterias.Add(lData);
+
 end;
 
-procedure TPerCriteria.AddEqualTo(AAttribute: string; AValue: integer);
+procedure TPerCriteria.AddDummy(AFloat: double);
+begin
+
+end;
+
+procedure TPerCriteria.AddDummy(Areal: real);
+begin
+
+end;
+
+//procedure TPerCriteria.AddEqualTo(AAttribute, AValue: string);
+//var
+//  lData: TPerEqualToCriteria;
+//begin
+//  lData := TPerEqualToCriteria.Create(AAttribute, QuotedStr(AValue));
+//  FSelectionCriterias.Add(lData);
+//end;
+
+procedure TPerCriteria.AddEqualTo(AAttribute: string; AValue: variant);
 var
   lData: TPerEqualToCriteria;
 begin
-  lData := TPerEqualToCriteria.Create(AAttribute, IntToStr(AValue));
+  lData := TPerEqualToCriteria.Create(AAttribute, AValue);
   FSelectionCriterias.Add(lData);
 end;
 
@@ -398,35 +409,35 @@ begin
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddGreaterOrEqualThan(AAttribute, AValue: string);
+//procedure TPerCriteria.AddGreaterOrEqualThan(AAttribute, AValue: string);
+//var
+//  lData: TPerLessThanCriteria;
+//begin
+//  lData := TPerLessThanCriteria.Create(AAttribute, QuotedStr(AValue), true);
+//  FSelectionCriterias.Add(lData);
+//end;
+
+procedure TPerCriteria.AddGreaterOrEqualThan(AAttribute: string; AValue: variant);
 var
   lData: TPerLessThanCriteria;
 begin
-  lData := TPerLessThanCriteria.Create(AAttribute, QuotedStr(AValue), true);
+  lData := TPerLessThanCriteria.Create(AAttribute, (AValue), true);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddGreaterOrEqualThan(AAttribute: string; AValue: integer);
-var
-  lData: TPerLessThanCriteria;
-begin
-  lData := TPerLessThanCriteria.Create(AAttribute, IntToStr(AValue), true);
-  FSelectionCriterias.Add(lData);
-end;
+//procedure TPerCriteria.AddGreaterThan(AAttribute, AValue: string);
+//var
+//  lData: TPerGreaterThanCriteria;
+//begin
+//  lData := TPerGreaterThanCriteria.Create(AAttribute, QuotedStr(AValue));
+//  FSelectionCriterias.Add(lData);
+//end;
 
-procedure TPerCriteria.AddGreaterThan(AAttribute, AValue: string);
-var
-  lData: TPerGreaterThanCriteria;
-begin
-  lData := TPerGreaterThanCriteria.Create(AAttribute, QuotedStr(AValue));
-  FSelectionCriterias.Add(lData);
-end;
-
-procedure TPerCriteria.AddGreaterThan(AAttribute: string; AValue: integer);
+procedure TPerCriteria.AddGreaterThan(AAttribute: string; AValue: variant);
 var
   lData: TPerGreaterThanCriteria;
 begin
-  lData := TPerGreaterThanCriteria.Create(AAttribute, IntToStr(AValue));
+  lData := TPerGreaterThanCriteria.Create(AAttribute, AValue);
   FSelectionCriterias.Add(lData);
 end;
 
@@ -456,7 +467,7 @@ begin
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddIn(AAttribute: string; AValueArray: array of string);
+procedure TPerCriteria.AddIn(AAttribute: string; AValueArray: array of variant);
 var
   lData: TPerInCriteria;
   i: integer;
@@ -465,53 +476,24 @@ begin
   SetLength(lData.ValueArray, Length(AValueArray));
 
   for i := Low(AValueArray) to High(AValueArray) do
-    lData.ValueArray[i] := QuotedStr(AValueArray[i]);
+    lData.ValueArray[i] := (AValueArray[i]);
 
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddIn(AAttribute: string; AValueArray: array of integer);
-var
-  lData: TPerInCriteria;
-  i: integer;
-begin
-  lData := TPerInCriteria.Create(AAttribute, '');
-  SetLength(lData.ValueArray, Length(AValueArray));
-
-  for i := Low(AValueArray) to High(AValueArray) do
-    lData.ValueArray[i] := IntToStr(AValueArray[i]);
-
-  FSelectionCriterias.Add(lData);
-end;
-
-procedure TPerCriteria.AddLessOrEqualThan(AAttribute, AValue: string);
+procedure TPerCriteria.AddLessOrEqualThan(AAttribute: string; AValue: variant);
 var
   lData: TPerGreaterThanCriteria;
 begin
-  lData := TPerGreaterThanCriteria.Create(AAttribute, QuotedStr(AValue), true);
-  FSelectionCriterias.Add(lData);end;
-
-procedure TPerCriteria.AddLessThan(AAttribute, AValue: string);
-var
-  lData: TPerLessThanCriteria;
-begin
-  lData := TPerLessThanCriteria.Create(AAttribute, QuotedStr(AValue));
+  lData := TPerGreaterThanCriteria.Create(AAttribute, AValue, true);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddLessOrEqualThan(AAttribute: string; AValue: integer);
-var
-  lData: TPerGreaterThanCriteria;
-begin
-  lData := TPerGreaterThanCriteria.Create(AAttribute, IntToStr(AValue), true);
-  FSelectionCriterias.Add(lData);
-end;
-
-procedure TPerCriteria.AddLessThan(AAttribute: string; AValue: integer);
+procedure TPerCriteria.AddLessThan(AAttribute: string; AValue: variant);
 var
   lData: TPerLessThanCriteria;
 begin
-  lData := TPerLessThanCriteria.Create(AAttribute, IntToStr(AValue));
+  lData := TPerLessThanCriteria.Create(AAttribute, AValue);
   FSelectionCriterias.Add(lData);
 end;
 
@@ -519,23 +501,16 @@ procedure TPerCriteria.AddLike(AAttribute, AValue: string);
 var
   lData: TPerLikeCriteria;
 begin
-  lData := TPerLikeCriteria.Create(AAttribute, QuotedStr(AValue));
+  lData := TPerLikeCriteria.Create(AAttribute, AValue);
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TPerCriteria.AddNotEqualTo(AAttribute, AValue: string);
-var
-  lData: TPerEqualToCriteria;
-begin
-  lData := TPerEqualToCriteria.Create(AAttribute, QuotedStr(AValue), True);
-  FSelectionCriterias.Add(lData);
-end;
 
-procedure TPerCriteria.AddNotEqualTo(AAttribute: string; AValue: integer);
+procedure TPerCriteria.AddNotEqualTo(AAttribute: string; AValue: variant);
 var
   lData: TPerEqualToCriteria;
 begin
-  lData := TPerEqualToCriteria.Create(AAttribute, IntToStr(AValue), True);
+  lData := TPerEqualToCriteria.Create(AAttribute, AValue, True);
   FSelectionCriterias.Add(lData);
 end;
 
@@ -555,7 +530,7 @@ procedure TPerCriteria.AddNotLike(AAttribute, AValue: string);
 var
   lData: TPerLikeCriteria;
 begin
-  lData := TPerLikeCriteria.Create(AAttribute, QuotedStr(AValue), True);
+  lData := TPerLikeCriteria.Create(AAttribute, AValue, True);
   FSelectionCriterias.Add(lData);
 end;
 
@@ -574,6 +549,7 @@ begin
   lData := TPerNullCriteria.Create(AAttribute);
   FSelectionCriterias.Add(lData);
 end;
+
 
 procedure TPerCriteria.AddOrCriteria(ACriteria: TPerCriteria);
 begin
@@ -743,7 +719,7 @@ end;
 
 { TPerSelectionCriteriaAbs }
 
-constructor TPerSelectionCriteriaAbs.Create(AAttribute, AValue: string;
+constructor TPerSelectionCriteriaAbs.Create(AAttribute: string; AValue: variant;
     ANegative: boolean = False; AFieldName: string = '');
 begin
   inherited Create;
@@ -948,7 +924,7 @@ end;
 
 { TPerBetweenCriteria }
 
-constructor TPerBetweenCriteria.Create(AAttribute, AArg_1, AArg_2: string;
+constructor TPerBetweenCriteria.Create(AAttribute: string; AArg_1, AArg_2: variant;
     ANegative: boolean = False; AFieldName: string = '');
 begin
   inherited Create(AAttribute, AArg_1, ANegative, AFieldName);

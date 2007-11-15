@@ -35,7 +35,25 @@ type
     procedure TestPerNullCriteria_SQL;
     procedure TestPerBetweenCriteria_SQL;
     procedure TestPerSQLCriteria_SQL;
+    procedure TestPerSQLCriteria_SQL_IgnoreEmptyCritera;
+    procedure TestPerSQLCriteria_SQL_Or;
     procedure TestFieldName;
+
+    // Testing SQL generation with params
+    procedure TestPerEqualToCriteria_SQL_WithParams;
+    procedure TestPerExistsCriteria_SQL_WithParams;
+    procedure TestPerGreaterThanCriteria_SQL_WithParams;
+    procedure TestPerGreaterOrEqualThanCriteria_SQL_WithParams;
+    procedure TestPerInCriteria_SQL_WithParams;
+    procedure TestPerLessThanCriteria_SQL_WithParams;
+    procedure TestPerLessOrEqualThanCriteria_SQL_WithParams;
+    procedure TestPerLikeCriteria_SQL_WithParams;
+    procedure TestPerNullCriteria_SQL_WithParams;
+    procedure TestPerBetweenCriteria_SQL_WithParams;
+    procedure TestPerSQLCriteria_SQL_WithParams;
+    procedure TestPerSQLCriteria_SQL_IgnoreEmptyCritera_WithParams;
+
+
     // Testing XPath generation
     // The SQL tests will need to be clone for XPath at some point
   end;
@@ -48,6 +66,7 @@ uses
   ,tiVisitorCriteria
   ,SysUtils
   ,tiTestDependencies
+  ,tiQuery
   ;
 
 procedure RegisterTests;
@@ -271,6 +290,96 @@ begin
 
 end;
 
+procedure TTestTICriteria.TestPerEqualToCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddEqualTo('OID', '1');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID = :Criteria_1)', lSQL, 'Failed on 1');
+      CheckEquals(1, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 3');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 4');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 5');
+    finally
+      lCriteria.Free;
+    end;
+    lParams.Clear;
+    
+    lCriteria := TPerCriteria.Create('test');
+    try
+      CheckEquals(0, lParams.Count, 'Failed on 10');
+      lCriteria.AddEqualTo('OID', 1);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID = :Criteria_1)', lSQL, 'Failed on 11');
+      CheckEquals(1, lParams.Count, 'Failed on 12');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 13');
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger, 'Failed on 14');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 15');
+    finally
+      lCriteria.Free;
+    end;
+    lParams.Clear;
+
+    // Negative criteria
+    lCriteria := TPerCriteria.Create('test');
+    try
+      CheckEquals(0, lParams.Count, 'Failed on 20');
+      lCriteria.AddNotEqualTo('OID', '1');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID <> :Criteria_1)', lSQL, 'Failed on 21');
+      CheckEquals(1, lParams.Count, 'Failed on 22');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 23');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 24');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 25');
+    finally
+      lCriteria.Free;
+    end;
+    lParams.Clear;
+
+    lCriteria := TPerCriteria.Create('test');
+    try
+      CheckEquals(0, lParams.Count, 'Failed on 30');
+      lCriteria.AddNotEqualTo('OID', 1);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID <> :Criteria_1)', lSQL, 'Failed on 31');
+      CheckEquals(1, lParams.Count, 'Failed on 32');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 33');
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger, 'Failed on 34');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 35');
+    finally
+      lCriteria.Free;
+    end;
+    lParams.Clear;
+
+    // field names
+    lCriteria := TPerCriteria.Create('test');
+    try
+      CheckEquals(0, lParams.Count, 'Failed on 40');
+      lCriteria.AddEqualTo('OID', '1');
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(CustNo = :Criteria_1)', lSQL, 'Failed on 41');
+      CheckEquals(1, lParams.Count, 'Failed on 42');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 43');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 44');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 45');
+    finally
+      lCriteria.Free;
+    end;
+    lParams.Clear;
+  finally
+    lParams.Free;
+  end;
+end;
+
 procedure TTestTICriteria.TestPerExistsCriteria_SQL;
 var
   lCriteria: TPerCriteria;
@@ -296,6 +405,39 @@ begin
   end;
 end;
 
+procedure TTestTICriteria.TestPerExistsCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddExists('Select * from Order where Client_ID = 1');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('( EXISTS (Select * from Order where Client_ID = 1))', lSQL, 'Failed on 1');
+      CheckEquals(0, lParams.Count);
+    finally
+      lCriteria.Free;
+    end;
+
+    // Negative criteria
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddNotExists('Select * from Order where Client_ID = 1');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('( NOT EXISTS (Select * from Order where Client_ID = 1))', lSQL, 'Failed on 2');
+      CheckEquals(0, lParams.Count);      
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
+  end;
+end;
+
 procedure TTestTICriteria.TestPerGreaterThanCriteria_SQL;
 var
   lCriteria: TPerCriteria;
@@ -309,7 +451,7 @@ begin
   finally
     lCriteria.Free;
   end;
-  
+
   lCriteria := TPerCriteria.Create('test');
   try
     lCriteria.AddGreaterThan('FIELD_1', 1);
@@ -328,6 +470,61 @@ begin
     CheckEquals('(CustNo > ''1'')', lSQL, 'Failed on 3');
   finally
     lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerGreaterThanCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddGreaterThan('FIELD_1', '1');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(FIELD_1 > :Criteria_1)', lSQL, 'Failed on 1');
+      CheckEquals(1, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 3');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 4');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 5');
+    finally
+      lCriteria.Free;
+    end;
+
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddGreaterThan('FIELD_1', 1);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(FIELD_1 > :Criteria_1)', lSQL, 'Failed on 6');
+      CheckEquals(1, lParams.Count, 'Failed on 7');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 8');
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger, 'Failed on 9');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 10');
+    finally
+      lCriteria.Free;
+    end;
+
+    // field names
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddGreaterThan('FIELD_1', '1');
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(CustNo > :Criteria_1)', lSQL, 'Failed on 11');
+      CheckEquals(1, lParams.Count, 'Failed on 12');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 13');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 14');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 15');
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
   end;
 end;
 
@@ -365,12 +562,67 @@ begin
   end;
 end;
 
-procedure TTestTICriteria.TestPerInCriteria_SQL;
+procedure TTestTICriteria.TestPerGreaterOrEqualThanCriteria_SQL_WithParams;
 var
   lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
   lSQL: string;
-  myStrArray: array[0..1] of String;
-  myIntArray: array[0..4] of Integer;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddGreaterOrEqualThan('FIELD_1', '1');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(FIELD_1 >= :Criteria_1)', lSQL, 'Failed on 1');
+      CheckEquals(1, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 3');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 4');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 5');
+    finally
+      lCriteria.Free;
+    end;
+
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddGreaterOrEqualThan('FIELD_1', 1);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(FIELD_1 >= :Criteria_1)', lSQL, 'Failed on 6');
+      CheckEquals(1, lParams.Count, 'Failed on 7');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 8');
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger, 'Failed on 9');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 10');
+    finally
+      lCriteria.Free;
+    end;
+
+    // field names
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddGreaterOrEqualThan('FIELD_1', '1');
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(CustNo >= :Criteria_1)', lSQL, 'Failed on 11');
+      CheckEquals(1, lParams.Count, 'Failed on 12');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 13');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 14');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 15');
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerInCriteria_SQL;
+var
+    lCriteria: TPerCriteria;
+  lSQL: string;
+  myStrArray: array[0..1] of variant;
+  myIntArray: array[0..4] of variant;
 begin
   { IN with a SQL statement }
   lCriteria := TPerCriteria.Create('test');
@@ -428,6 +680,113 @@ begin
   end;
 end;
 
+procedure TTestTICriteria.TestPerInCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  myStrArray: array[0..1] of variant;
+  myIntArray: array[0..4] of variant;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    { IN with a SQL statement }
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddIn('OID', 'SELECT OID FROM SUB_TABLE');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID IN (SELECT OID FROM SUB_TABLE))', lSQL, 'Failed on 1');
+      CheckEquals(0, lParams.Count);
+    finally
+      lCriteria.Free;
+    end;
+
+    { IN with string array elements }
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      myStrArray[0] := 'Value1';
+      myStrArray[1] := 'Value2';
+  //    lCriteria.AddIn('OID', ['Value1', 'Value2']);   { This also works in FPC, but not Delphi }
+      lCriteria.AddIn('OID', myStrArray);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID IN (:Criteria_1, :Criteria_2))', lSQL);
+      CheckEquals(2, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name);
+      CheckTrue(lParams.Items[0] is TtiQueryParamString);
+      CheckEquals('Value1', lParams.Items[0].ValueAsString);
+      CheckEquals('Criteria_2', lParams.Items[1].Name);
+      CheckTrue(lParams.Items[1] is TtiQueryParamString);
+      CheckEquals('Value2', lParams.Items[1].ValueAsString);
+    finally
+      lCriteria.Free;
+    end;
+
+    { IN with integer array elements }
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddIn('OID', [1, 2, 3, 4, 5]);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID IN (:Criteria_1, :Criteria_2, :Criteria_3, :Criteria_4, :Criteria_5))', lSQL, 'Failed on 3');
+      CheckEquals(5, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name);
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger);
+      CheckEquals('1', lParams.Items[0].ValueAsString);
+      CheckEquals('Criteria_2', lParams.Items[1].Name);
+      CheckTrue(lParams.Items[1] is TtiQueryParamInteger);
+      CheckEquals('2', lParams.Items[1].ValueAsString);
+      CheckEquals('Criteria_3', lParams.Items[2].Name);
+      CheckTrue(lParams.Items[3] is TtiQueryParamInteger);
+      CheckEquals('3', lParams.Items[2].ValueAsString);
+      CheckEquals('Criteria_4', lParams.Items[3].Name);
+      CheckTrue(lParams.Items[4] is TtiQueryParamInteger);
+      CheckEquals('4', lParams.Items[3].ValueAsString);
+      CheckEquals('Criteria_5', lParams.Items[4].Name);
+      CheckTrue(lParams.Items[4] is TtiQueryParamInteger);
+      CheckEquals('5', lParams.Items[4].ValueAsString);
+    finally
+      lCriteria.Free;
+    end;
+
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      myIntArray[0] := 1;
+      myIntArray[1] := 2;
+      myIntArray[2] := 3;
+      myIntArray[3] := 4;
+      myIntArray[4] := 5;
+  //    lCriteria.AddIn('OID', [1, 2, 3, 4, 5]);  { This also works in FPC, but not Delphi }
+      lCriteria.AddIn('OID', myIntArray);
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(CustNo IN (:Criteria_1, :Criteria_2, :Criteria_3, :Criteria_4, :Criteria_5))', lSQL, 'Failed on 3');
+      CheckEquals(5, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name);
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger);
+      CheckEquals('1', lParams.Items[0].ValueAsString);
+      CheckEquals('Criteria_2', lParams.Items[1].Name);
+      CheckTrue(lParams.Items[1] is TtiQueryParamInteger);
+      CheckEquals('2', lParams.Items[1].ValueAsString);
+      CheckEquals('Criteria_3', lParams.Items[2].Name);
+      CheckTrue(lParams.Items[3] is TtiQueryParamInteger);
+      CheckEquals('3', lParams.Items[2].ValueAsString);
+      CheckEquals('Criteria_4', lParams.Items[3].Name);
+      CheckTrue(lParams.Items[4] is TtiQueryParamInteger);
+      CheckEquals('4', lParams.Items[3].ValueAsString);
+      CheckEquals('Criteria_5', lParams.Items[4].Name);
+      CheckTrue(lParams.Items[4] is TtiQueryParamInteger);
+      CheckEquals('5', lParams.Items[4].ValueAsString);
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
+  end;
+
+end;
+
 procedure TTestTICriteria.TestPerLessOrEqualThanCriteria_SQL;
 var
   lCriteria: TPerCriteria;
@@ -462,6 +821,59 @@ begin
   end;
 end;
 
+procedure TTestTICriteria.TestPerLessOrEqualThanCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddLessOrEqualThan('OID', '1');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID <= :Criteria_1)', lSQL, 'Failed on 1');
+      CheckEquals(1, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 3');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 4');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 5');
+    finally
+      lCriteria.Free;
+    end;
+
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddLessOrEqualThan('OID', 1);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID <= :Criteria_1)', lSQL, 'Failed on 6');
+      CheckEquals(1, lParams.Count, 'Failed on 7');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 8');
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger, 'Failed on 9');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 10');
+    finally
+      lCriteria.Free;
+    end;
+
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddLessOrEqualThan('OID', 1);
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(CustNo <= :Criteria_1)', lSQL, 'Failed on 11');
+      CheckEquals(1, lParams.Count, 'Failed on 12');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 13');
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger, 'Failed on 14');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 15');
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
+  end;
+end;
+
 procedure TTestTICriteria.TestPerLessThanCriteria_SQL;
 var
   lCriteria: TPerCriteria;
@@ -493,6 +905,59 @@ begin
     CheckEquals('(CustNo < 1)', lSQL, 'Failed on 3');
   finally
     lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerLessThanCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddLessThan('OID', '1');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID < :Criteria_1)', lSQL, 'Failed on 1');
+      CheckEquals(1, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 3');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 4');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 5');
+    finally
+      lCriteria.Free;
+    end;
+
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddLessThan('OID', 1);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID < :Criteria_1)', lSQL, 'Failed on 6');
+      CheckEquals(1, lParams.Count, 'Failed on 7');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 8');
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger, 'Failed on 9');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 10');
+    finally
+      lCriteria.Free;
+    end;
+
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddLessThan('OID', 1);
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(CustNo < :Criteria_1)', lSQL, 'Failed on 11');
+      CheckEquals(1, lParams.Count, 'Failed on 12');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 13');
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger, 'Failed on 14');
+      CheckEquals('1', lParams.Items[0].ValueAsString, 'Failed on 15');
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
   end;
 end;
 
@@ -531,6 +996,61 @@ begin
   end;
 end;
 
+procedure TTestTICriteria.TestPerLikeCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddLike('FIELD_1', 'A%');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(FIELD_1 LIKE :Criteria_1)', lSQL, 'Failed on 1');
+      CheckEquals(1, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 3');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 4');
+      CheckEquals('A%', lParams.Items[0].ValueAsString, 'Failed on 5');
+    finally
+      lCriteria.Free;
+    end;
+
+    // Negative criteria
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddNotLike('FIELD_1', 'A%');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(FIELD_1 NOT LIKE :Criteria_1)', lSQL, 'Failed on 6');
+      CheckEquals(1, lParams.Count, 'Failed on 7');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 8');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 9');
+      CheckEquals('A%', lParams.Items[0].ValueAsString, 'Failed on 10');
+    finally
+      lCriteria.Free;
+    end;
+
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddLike('FIELD_1', 'A%');
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(CustNo LIKE :Criteria_1)', lSQL, 'Failed on 11');
+      CheckEquals(1, lParams.Count, 'Failed on 12');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 13');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 14');
+      CheckEquals('A%', lParams.Items[0].ValueAsString, 'Failed on 15');
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
+  end;
+end;
+
 procedure TTestTICriteria.TestPerNullCriteria_SQL;
 var
   lCriteria: TPerCriteria;
@@ -553,6 +1073,37 @@ begin
     CheckEquals('(CustNo IS NULL)', lSQL);
   finally
     lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerNullCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddNull('FIELD_1');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+      CheckEquals('(FIELD_1 IS NULL)', lSQL);
+    finally
+      lCriteria.Free;
+    end;
+
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddNull('FIELD_1');
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+      CheckEquals('(CustNo IS NULL)', lSQL);
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.Free;
   end;
 end;
 
@@ -616,7 +1167,7 @@ var
 begin
   lCriteria := TPerCriteria.Create('test');
   try
-    lCriteria.AddBetween('FIELD_1', '1', '2');
+    lCriteria.AddBetween('FIELD_1', 1, 2);
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
     CheckEquals('(FIELD_1 BETWEEN 1 AND 2)', lSQL);
   finally
@@ -628,9 +1179,55 @@ begin
     lCriteria.AddBetween('FIELD_1', '1', '2');
     lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
     lSQL := Trim(tiCriteriaAsSQL(lCriteria));
-    CheckEquals('(CustNo BETWEEN 1 AND 2)', lSQL);
+    CheckEquals('(CustNo BETWEEN ''1'' AND ''2'')', lSQL);
   finally
     lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerBetweenCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddBetween('FIELD_1', 1, 2);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(FIELD_1 BETWEEN :Criteria_1 AND :Criteria_2)', lSQL);
+      CheckEquals(2, lParams.Count);
+      CheckEquals('Criteria_1', lParams.Items[0].Name);
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger);
+      CheckEquals('1', lParams.Items[0].ValueAsString);
+      CheckEquals('Criteria_2', lParams.Items[1].Name);
+      CheckTrue(lParams.Items[1] is TtiQueryParamInteger);
+      CheckEquals('2', lParams.Items[1].ValueAsString);
+    finally
+      lCriteria.Free;
+    end;
+
+    lParams.Clear;
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddBetween('FIELD_1', '1', '2');
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(CustNo BETWEEN :Criteria_1 AND :Criteria_2)', lSQL);
+      CheckEquals(2, lParams.Count);
+      CheckEquals('Criteria_1', lParams.Items[0].Name);
+      CheckTrue(lParams.Items[0] is TtiQueryParamString);
+      CheckEquals('1', lParams.Items[0].ValueAsString);
+      CheckEquals('Criteria_2', lParams.Items[1].Name);
+      CheckTrue(lParams.Items[1] is TtiQueryParamString);
+      CheckEquals('2', lParams.Items[1].ValueAsString);
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
   end;
 end;
 
@@ -647,6 +1244,103 @@ begin
   finally
     lCriteria.Free;
   end;
+end;
+
+procedure TTestTICriteria.TestPerSQLCriteria_SQL_IgnoreEmptyCritera;
+var
+  lCriteriaBase, lCriteriaOr: TPerCriteria;
+  lSQL: string;
+begin
+  lCriteriaBase := TPerCriteria.Create('test');
+  try
+    lCriteriaOr := TPerCriteria.Create('test');
+
+    lCriteriaOr.AddEqualTo('OID', '2');
+    lCriteriaBase.AddOrCriteria(lCriteriaOr);
+
+    lSQL := Trim(tiCriteriaAsSQL(lCriteriaBase));
+    CheckEquals('((OID = ''2''))', lSQL, 'Failed on 1');
+
+    lCriteriaBase.Criterias.Clear;
+  finally
+    lCriteriaBase.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerSQLCriteria_SQL_IgnoreEmptyCritera_WithParams;
+var
+  lCriteriaBase, lCriteriaOr: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteriaBase := TPerCriteria.Create('test');
+    try
+      lCriteriaOr := TPerCriteria.Create('test');
+
+      lCriteriaOr.AddEqualTo('OID', '2');
+      lCriteriaBase.AddOrCriteria(lCriteriaOr);
+
+      lSQL := Trim(tiCriteriaAsSQL(lCriteriaBase, lParams));
+      CheckEquals('((OID = :Criteria_1))', lSQL, 'Failed on 1');
+      CheckEquals(1, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name, 'Failed on 3');
+      CheckTrue(lParams.Items[0] is TtiQueryParamString, 'Failed on 4');
+      CheckEquals('2', lParams.Items[0].ValueAsString, 'Failed on 5');
+
+      lCriteriaBase.Criterias.Clear;
+    finally
+      lCriteriaBase.Free;
+    end;
+  finally
+    lParams.free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerSQLCriteria_SQL_Or;
+var
+  lCriteriaBase, lCriteriaOr: TPerCriteria;
+  lSQL: string;
+begin
+  lCriteriaBase := TPerCriteria.Create('test');
+  try
+    lCriteriaBase.AddEqualTo('OID', '1') ;
+    lCriteriaOr := TPerCriteria.Create('test');
+    lCriteriaOr.AddEqualTo('OID', '2');
+    lCriteriaBase.AddOrCriteria(lCriteriaOr);
+
+    lSQL := Trim(tiCriteriaAsSQL(lCriteriaBase));
+    CheckEquals('((OID = ''1'') OR '#$D#$A'(OID = ''2''))', lSQL, 'Failed on 1');
+
+    lCriteriaBase.Criterias.Clear;
+  finally
+    lCriteriaBase.Free;
+  end;
+
+end;
+
+procedure TTestTICriteria.TestPerSQLCriteria_SQL_WithParams;
+var
+  lCriteria: TPerCriteria;
+  lParams: TtiQueryParams;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    lCriteria := TPerCriteria.Create('test');
+    try
+      lCriteria.AddSQL('Upper(Field_1) LIKE ''A%''');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(Upper(Field_1) LIKE ''A%'')', lSQL, 'Failed on 1');
+      CheckEquals(0, lParams.Count);
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
+  end;
+
 end;
 
 end.
