@@ -85,13 +85,11 @@
   {$DEFINE DUNIT2ORFPC}
 {$ENDIF}
 
+{: Enable the conditional define REFERENCE_COUNTING to enable reference counting
+   on TtiBaseObject}
+{.$DEFINE REFERENCE_COUNTING}
 
 // Cloned from IndySoap
-
-{=============================================================================
-  Defines Relating to Object Tracking
- =============================================================================}
-
 {.$DEFINE OBJECT_TRACKING}
   { Allows basic leak tracking. A count of each type of class is
     kept and a supressed exception is raised if any descendent objects are
