@@ -1,24 +1,3 @@
-
-{
-IndySOAP: This unit tracks objects to prevent object leaks
-Version History:
-  21-Mar 2003   Grahame Grieve                  Finish adding TIdSoapHashTable support
-  18-Mar 2003   Grahame Grieve                  Add Hash function for Java bigots;-)
-  25-Feb 2003   Grahame Grieve                  Fix typo
-  17-Sep 2002   Grahame Grieve                  Fix Compile problems
-  13-Aug 2002   Grahame Grieve                  Suppress Leak reporting
-  09-Jul 2002   Grahame Grieve                  Put ObjectCount in interface
-  26-Apr 2002   Andrew Cumming                  Move includes to allow D6 compile
-  11-Apr 2002   Grahame Grieve                  Use ASSERT_LOCATION, ResourceStrings were appropriate
-   7-Mar 2002   Grahame Grieve                  Review assertions
-   3-Mar 2002   Grahame Grieve                  Move IdComponent & IdGlobal out
-   7-Feb 2002   Grahame Grieve                  Fix problems when CLASS_TRACKING not defined
-   3-Feb 2002   Andrew Cumming                  Added D4 support
-  25-Jan 2002   Grahame Grieve/Andrew Cumming   First release of IndySOAP
-   4-Jun 2003   Peter Hinrichsen                Cloned from IndySoap to tiOPF
-   2-July 2007  Peter Hinrichsen                Refactored to remove dependency on Windows.pas & GUI code
-}
-
 {: Unit containing base class used by all tiOPF classes - implements live
    object tracking to help detect memory leaks Cloned from IndySoap's
    abstract base class.}
@@ -46,15 +25,15 @@ type
 
   {:Abstract base class for all tiOPF objects. Implements live object tracking
     TestValid() can be used to confirm the object points to valid data.
+    TtiBaseObject(s) can be created with or without reference counting.
 
     @example Paste the code below to into a test application to see how live
     object tracking works.<br><br>NOTE: You will require a conditional define
-    CLASS_TRACKING in your application.<br>
+    object_tracking in your application.<br>
     <code>
-    (*$DEFINE OBJECT_TRACKING*)
-    TForm1.Button1Click(Sender: TObject);
+    procedure TestObjectTracking;
     var
-      LO: TtiBaseObject
+      LO: TtiBaseObject;
     begin
       LO:= TtiBaseObject.Create;
       Assert(LO.TestValid);
@@ -62,29 +41,36 @@ type
       Assert(not LO.TestValid);
     end;
     </code>
+
     }
 
   TtiBaseObject = class(TObject, IInterface)
   private
+    {$IFDEF OBJECT_TRACKING}
     FSerialNo: integer;
+    {$ENDIF}
+    {$IFDEF REFERENCE_COUNTING}
     FRefCounting: Boolean;
     FRefCount: Integer;
+    {$ENDIF}
   protected
-    { IInterface }
     function    QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function    _AddRef: Integer; stdcall;
     function    _Release: Integer; stdcall;
   public
     constructor Create;
-    constructor CreateWithRefCounting;
     destructor  Destroy; override;
+    {$IFDEF REFERENCE_COUNTING}
+    constructor CreateWithRefCounting;
     procedure   AfterConstruction; override;
     procedure   BeforeDestruction; override;
     class function NewInstance: TObject; override;
+    {$ENDIF}
+
     {: Checks that the object is valid and in the list of current
        objects. If not, checks that self <> nil (which is not always very
        useful but still worth checking.)<br><br>
-       Available if OBJECT_TRACKING is defined.<br><br>
+       Available if object_tracking is defined.<br><br>
        NOTE: Use TestValid in your code where ever an object is passed as a
              parameter. IT WILL SAVE YOU HOURS OF TRACKING BUGS WHERE THERE IS
              A POINTER TO AN OBJECT THAT HAS BEEN DESTROYED.
@@ -119,8 +105,8 @@ type
          FREEMEM_CHECKING}
     procedure AskForBreakPointOnFree;
     class function GetLiveObjectCount: cardinal;
-    {$ENDIF}
     property SerialNumber: integer read FSerialNo;
+    {$ENDIF}
   end;
 
   TtiBaseObjectClass = class of TtiBaseObject;
@@ -128,7 +114,7 @@ type
 {$IFDEF OBJECT_TRACKING}
 function tiGetTotalObjectCount: integer;
 function tiDescribeLiveObjects: string;
-{$ENDIF OBJECT_TRACKING}
+{$ENDIF}
 
 implementation
 
@@ -152,9 +138,7 @@ begin
   Pointer(AObj) := NIL;
   Temp.Free;
 end;
-
 {$ENDIF}
-
 
 //break point into the debugger if there is one;
 procedure IdBreakpoint;
@@ -220,8 +204,6 @@ type
 { TIdDebugObjectSubList }
 
 constructor TIdDebugObjectSubList.Create;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectSubList.Create';
 begin
   inherited Create;
   FCount     := 0;
@@ -231,25 +213,21 @@ end;
 
 
 destructor TIdDebugObjectSubList.Destroy;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectSubList.Destroy';
 begin
-  Assert(self <> NIL, ASSERT_LOCATION + ': Self is nil');
+  Assert(self <> NIL, 'Self is nil');
   FreeMem(FItems);
   inherited Destroy;
 end;
 
 
 procedure TIdDebugObjectSubList.AddItem(AObj: integer);
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectSubList.AddItem';
 var
   i: cardinal;
 begin
-  Assert(self <> NIL, ASSERT_LOCATION + ': Self is nil');
+  Assert(self <> NIL, 'Self is nil');
   // no check on AObj
   if FindItem(AObj, i) then
-    Assert(False, ASSERT_LOCATION + ': Attempt to re-register an object')
+    Assert(False, 'Attempt to re-register an object')
   else
   begin
     if FCount = FAllocated then
@@ -263,12 +241,10 @@ end;
 
 
 function TIdDebugObjectSubList.FindItem(AObj: integer; var VIndex: cardinal): boolean;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectSubList.FindItem';
 var
   L, H, I, C: integer;
 begin
-  Assert(self <> NIL, ASSERT_LOCATION + ': Self is nil');
+  Assert(self <> NIL, 'Self is nil');
   // no check on AObj
   Result := False;
   L      := 0;
@@ -294,23 +270,19 @@ end;
 
 
 procedure TIdDebugObjectSubList.Grow;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectSubList.Grow';
 begin
-  Assert(self <> NIL, ASSERT_LOCATION + ': Self is nil');
+  Assert(self <> NIL, 'Self is nil');
   Inc(FAllocated, GROW_SIZE);
   ReallocMem(FItems, FAllocated * SizeOf(cardinal));
-  Assert(FItems <> NIL, ASSERT_LOCATION + ': Grow failed to reallocate it''s memory');
+  Assert(FItems <> NIL, 'Grow failed to reallocate it''s memory');
 end;
 
 
 procedure TIdDebugObjectSubList.DeleteItem(AObj: integer);
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectSubList.DeleteItem';
 var
   i: cardinal;
 begin
-  Assert(self <> NIL, ASSERT_LOCATION + ': Self is nil');
+  Assert(self <> NIL, 'Self is nil');
   // no check on AObj
   if FindItem(AObj, i) then
   begin
@@ -319,7 +291,7 @@ begin
       System.Move(FItems^[I + 1], FItems^[I], (FCount - I) * SizeOf(cardinal));
   end
   else
-    Assert(False, ASSERT_LOCATION + ': Attempt to de-register an object that doesn''t exist ("' +
+    Assert(False, 'Attempt to de-register an object that doesn''t exist ("' +
       TObject(AObj).ClassName + '")');
 end;
 
@@ -327,14 +299,12 @@ end;
 { TIdDebugObjectList }
 
 constructor TIdDebugObjectList.Create;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectList.Create';
 var
   i: longint;
 begin
   inherited Create;
   GetMem(FHashTable, HASH_SIZE * sizeof(pointer));
-  Assert(assigned(FHashTable), ASSERT_LOCATION + ': Failed to assign memory for Hash Table');
+  Assert(assigned(FHashTable), 'Failed to assign memory for Hash Table');
   for i := 0 to HASH_SIZE - 1 do
   begin
     FHashtable^[i]      := TIdDebugObjectSubList.Create;
@@ -344,12 +314,10 @@ end;
 
 
 destructor TIdDebugObjectList.Destroy;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectList.Destroy';
 var
   i: longint;
 begin
-  Assert(self <> NIL, ASSERT_LOCATION + ': Self is nil');
+  Assert(self <> NIL, 'Self is nil');
   for i := 0 to HASH_SIZE - 1 do
     FreeAndNil(FHashtable^[i]);
   FreeMem(FHashTable, HASH_SIZE * sizeof(pointer));
@@ -359,22 +327,18 @@ end;
 
 { shr 3 cause objects are generally 4 or 8 aligned. }
 function TIdDebugObjectList.GetExists(AObj: TObject): boolean;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectList.GetExists';
 var
   LDummy: cardinal;
 begin
-  Assert(self <> NIL, ASSERT_LOCATION + ': Self is nil');
+  Assert(self <> NIL, 'Self is nil');
   // no check on AObj
   Result := FHashTable^[(cardinal(AObj) shr 3) and HASH_MASK].FindItem(integer(AObj), LDummy);
 end;
 
 
 procedure TIdDebugObjectList.SetExists(AObj: TObject; AValue: boolean);
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TIdDebugObjectList.SetExists';
 begin
-  Assert(self <> NIL, ASSERT_LOCATION + ': Self is nil');
+  Assert(self <> NIL, 'Self is nil');
   // no check on AObj or AValue
   if AValue then
     FHashTable^[(cardinal(AObj) shr 3) and HASH_MASK].AddItem(integer(AObj))
@@ -398,8 +362,6 @@ var
   {$ENDIF}
 
 function tiGetTotalObjectCount: integer;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.IdGetTotalObjectCount';
 begin
   GObjectTrackingLock.Enter;
   try
@@ -411,11 +373,8 @@ end;
 
 
 procedure InitObjectTracking;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.InitObjectTracking';
 begin
-  Assert(GIDObjectsCount = NIL, ASSERT_LOCATION +
-    ': Attempt to reinitialize Object Tracking after it has already been initialised');
+  Assert(GIDObjectsCount = NIL, 'Attempt to reinitialize Object Tracking after it has already been initialised');
   gObjectTrackingLock := TCriticalSection.Create;
 
   GIDObjectsCount        := TStringList.Create;
@@ -428,8 +387,6 @@ begin
 end;
 
 function tiDescribeLiveObjects: string;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.DescribeLiveObjects';
 var
   i: integer;
 begin
@@ -449,18 +406,15 @@ procedure CloseObjectTracking;
 
   function _IsLibrary: boolean;
   begin
-    {$IFDEF FPC}
+    {$ifdef FPC}
     Result := IsLibrary;
     {$ELSE}
     Result := ModuleIsLib;
     {$ENDIF}
   end;
 
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.CloseObjectTracking';
 begin
-  Assert(GIDObjectsCount <> NIL, ASSERT_LOCATION +
-    ': Attempt to finalize Object Tracking before it has been initialised');
+  Assert(GIDObjectsCount <> NIL, 'Attempt to finalize Object Tracking before it has been initialised');
   {$IFDEF OBJECT_TRACKING}
   FreeAndNil(gFullObjectList);
   FreeAndNil(gBreakPointList);
@@ -470,13 +424,10 @@ begin
 end;
 
 function IdObjRegister(AObject: TObject): cardinal;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.IdObjRegister';
 var
   i: integer;
 begin
-  Assert(GIDObjectsCount <> NIL, ASSERT_LOCATION +
-    ': Attempt to use Object tracking before it is initialised');
+  Assert(GIDObjectsCount <> NIL, 'Attempt to use Object tracking before it is initialised');
   gObjectTrackingLock.Enter;
   try
     Inc(GTotalObjectCount);
@@ -486,7 +437,7 @@ begin
     {$IFDEF OBJECT_TRACKING}
     Inc(gLastObjectID);
     Result := gLastObjectID;
-    Assert(cardinal(Result) <> 0, ASSERT_LOCATION + ': Error getting Unique number for Object');
+    Assert(cardinal(Result) <> 0, 'Error getting Unique number for Object');
     gFullObjectList.Exists[AObject] := True;
     {$ELSE}
     Result := 0;
@@ -498,11 +449,8 @@ end;
 
 
 function IdObjTestValid(AObject: TObject; AAllowNil: boolean = False): boolean;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.IdObjTestValid';
 begin
-  Assert(GIDObjectsCount <> NIL, ASSERT_LOCATION +
-    ': Attempt to use Object tracking before it is initialised');
+  Assert(GIDObjectsCount <> NIL, 'Attempt to use Object tracking before it is initialised');
 {$IFDEF OBJECT_TRACKING}
   gObjectTrackingLock.Enter;
   try
@@ -520,13 +468,10 @@ end;
 
 
 procedure IdObjDeregister(AObject: TObject);
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.IdObjDeregister';
 var
   i: integer;
 begin
-  Assert(GIDObjectsCount <> NIL, ASSERT_LOCATION +
-    ': Attempt to use Object tracking before it is initialised');
+  Assert(GIDObjectsCount <> NIL, 'Attempt to use Object tracking before it is initialised');
   gObjectTrackingLock.Enter;
   try
     if GTotalObjectCount = 0 then
@@ -560,12 +505,9 @@ end;
 
 
 procedure IdObjBreakPointOnFree(AObject: TObject);
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.IdObjBreakPointOnFree';
 begin
-  Assert(GIDObjectsCount <> NIL, ASSERT_LOCATION +
-    ': Attempt to use Object tracking before it is initialised');
-  Assert(IdObjTestValid(AObject), ASSERT_LOCATION + ': Attempt to watch an invalid object');
+  Assert(GIDObjectsCount <> NIL, 'Attempt to use Object tracking before it is initialised');
+  Assert(IdObjTestValid(AObject), 'Attempt to watch an invalid object');
   {$IFDEF OBJECT_TRACKING}
   gObjectTrackingLock.Enter;
   try
@@ -579,12 +521,9 @@ end;
 {$ENDIF}
 
 function IdObjectRegister(AObject: TObject): cardinal;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.IdObjectRegister';
 begin
 {$IFDEF OBJECT_TRACKING}
-  Assert(AObject <> NIL, ASSERT_LOCATION +
-    ': Object is Nil registering in Object Tracking System');
+  Assert(AObject <> NIL, 'Object is Nil registering in Object Tracking System');
   Result := IdObjRegister(AObject);
 {$ELSE}
   Result := 0;
@@ -592,8 +531,6 @@ begin
 end;
 
 function IdObjectTestValid(AObject: TObject; AClassType: TClass = NIL): boolean;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.IdObjectTestValid';
 begin
 {$IFDEF OBJECT_TRACKING}
   Result := IdObjTestValid(AObject);
@@ -605,8 +542,6 @@ begin
 end;
 
 procedure IdObjectBreakPointOnFree(AObject: TObject);
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.IdObjectBreakPointOnFree';
 begin
 {$IFDEF OBJECT_TRACKING}
   IdObjBreakPointOnFree(AObject);
@@ -614,8 +549,6 @@ begin
 end;
 
 procedure IdObjectDeregister(AObject: TObject);
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.IdObjectDeregister';
 begin
 {$IFDEF OBJECT_TRACKING}
   IdObjDeregister(AObject);
@@ -626,13 +559,10 @@ end;
 
 {$IFDEF OBJECT_TRACKING}
 class function TtiBaseObject.GetLiveObjectCount: cardinal;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.GetLiveObjectCount';
 var
   i: integer;
 begin
-  Assert(GIDObjectsCount <> NIL, ASSERT_LOCATION +
-    ': Attempt to use Object tracking before it is initialised');
+  Assert(GIDObjectsCount <> NIL, 'Attempt to use Object tracking before it is initialised');
   gObjectTrackingLock.Enter;
   try
     if not GIDObjectsCount.find(ClassName, i) then
@@ -645,8 +575,6 @@ begin
 end;
 
 procedure TtiBaseObject.AskForBreakPointOnFree;
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.AskForBreakPointOnFree';
 begin
   IdObjBreakPointOnFree(self);
 end;
@@ -663,22 +591,26 @@ end;
 
 function TtiBaseObject._AddRef: Integer;
 begin
-  Result := InterlockedIncrement(FRefCount);
+  {$IFDEF REFERENCE_COUNTING}
+  Result:= InterlockedIncrement(FRefCount);
+  {$else}
+  Result:= 0;
+  {$ENDIF}
 end;
 
 function TtiBaseObject._Release: Integer;
 begin
+  {$IFDEF REFERENCE_COUNTING}
   Result := InterlockedDecrement(FRefCount);
   if FRefCounting then
     if Result = 0 then
       Destroy;
+  {$else}
+  Result:= 0;
+  {$ENDIF}
 end;
 
 constructor TtiBaseObject.Create;
-{$IFDEF OBJECT_TRACKING}
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.Create';
-{$ENDIF}
 begin
   inherited;
   {$IFDEF OBJECT_TRACKING}FSerialNo := IdObjRegister(self);{$ENDIF}
@@ -686,31 +618,31 @@ end;
 
 { Set an implicit refcount so that refcounting during construction won't
   destroy the object. }
+{$IFDEF REFERENCE_COUNTING}
 constructor TtiBaseObject.CreateWithRefCounting;
 begin
   Create;
   FRefCounting := True;
 end;
+{$ENDIF}
 
 destructor TtiBaseObject.Destroy;
-{$IFDEF OBJECT_TRACKING}
-const
-  ASSERT_LOCATION = ASSERT_UNIT + '.TtiBaseObject.Destroy';
-{$ENDIF}
 begin
   {$IFDEF OBJECT_TRACKING}IdObjDeregister(self);{$ENDIF}
   inherited;
 end;
 
+{$IFDEF REFERENCE_COUNTING}
 procedure TtiBaseObject.AfterConstruction;
 begin
   inherited AfterConstruction;
-
   // Release the constructor's implicit refcount
   if FRefCounting then
     InterlockedDecrement(FRefCount);
 end;
+{$ENDIF}
 
+{$IFDEF REFERENCE_COUNTING}
 procedure TtiBaseObject.BeforeDestruction;
 begin
   if FRefCounting then
@@ -724,6 +656,7 @@ begin
   Result := inherited NewInstance;
   TtiBaseObject(Result).FRefCount := 1;
 end;
+{$ENDIF}
 
 function TtiBaseObject.TestValid(AClassType: TClass = NIL; AAllowNil: boolean = False): boolean;
 begin
@@ -752,3 +685,9 @@ finalization
   {$ENDIF}
 
 end.
+
+
+
+
+
+
