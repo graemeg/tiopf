@@ -1389,8 +1389,8 @@ begin
   if ADerivedParent = nil then
     LDerivedParent := 'nil'
   else
-    LDerivedParent := IntToStr(ADerivedParent.SerialNumber);
-  VisitBranchCalls.Add(LDerivedParent + ',' + IntToStr(AVisited.SerialNumber));
+    LDerivedParent := IntToStr(Integer(ADerivedParent));
+  VisitBranchCalls.Add(LDerivedParent + ',' + IntToStr(Integer(AVisited)));
 
   Result := (not ApplyTest) or
     (ApplyTest and not (AVisited is TTestVisitedVisitBranchChild1));
@@ -1409,11 +1409,11 @@ begin
     LVisitor.ApplyTest := False;
     LVisited.Iterate(LVisitor);
     CheckEquals(3, LVisitor.Data.Count);
-    CheckEquals('nil,' + IntToStr(LVisited.SerialNumber), LVisitor.VisitBranchCalls.Strings[0]);
-    CheckEquals(IntToStr(LVisited.SerialNumber) + ',' + IntToStr(LVisited.Data.SerialNumber),
+    CheckEquals('nil,' + IntToStr(Integer(LVisited)), LVisitor.VisitBranchCalls.Strings[0]);
+    CheckEquals(IntToStr(Integer(LVisited)) + ',' + IntToStr(Integer(LVisited.Data)),
       LVisitor.VisitBranchCalls.Strings[1]);
-    CheckEquals(IntToStr(LVisited.Data.SerialNumber) + ',' +
-      IntToStr(LVisited.Data.Data.SerialNumber), LVisitor.VisitBranchCalls.Strings[2]);
+    CheckEquals(IntToStr(Integer(LVisited.Data)) + ',' +
+      IntToStr(Integer(LVisited.Data.Data)), LVisitor.VisitBranchCalls.Strings[2]);
 
   finally
     LVisited.Free;
@@ -1428,8 +1428,8 @@ begin
     LVisitor.ApplyTest := True;
     LVisited.Iterate(LVisitor);
     CheckEquals(1, LVisitor.Data.Count);
-    CheckEquals('nil,' + IntToStr(LVisited.SerialNumber), LVisitor.VisitBranchCalls.Strings[0]);
-    CheckEquals(IntToStr(LVisited.SerialNumber) + ',' + IntToStr(LVisited.Data.SerialNumber),
+    CheckEquals('nil,' + IntToStr(Integer(LVisited)), LVisitor.VisitBranchCalls.Strings[0]);
+    CheckEquals(IntToStr(Integer(LVisited)) + ',' + IntToStr(Integer(LVisited.Data)),
       LVisitor.VisitBranchCalls.Strings[1]);
   finally
     LVisited.Free;
