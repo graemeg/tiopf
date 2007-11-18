@@ -85,7 +85,8 @@ type
     procedure   AddNotExists(ASubQuery: string);
 
     // AddNotIn() still needs to be implemented
-    procedure   AddNotIn(AAttribute, ASubQuery: string);
+    procedure   AddNotIn(AAttribute, ASubQuery: string); overload;
+    procedure   AddNotIn(AAttribute: string; AValueArray: array of variant); overload;
 
     procedure   AddNotLike(AAttribute, AValue: string);
     procedure   AddNotNull(AAttribute: string);
@@ -98,11 +99,6 @@ type
     procedure   AddOrderByDescending(AField: string); overload;
     procedure   AddOrderByDescending(AFields: array of string); overload;
     procedure   AddSQL(ASQLStm: string);
-
-    // Can we remove this?
-    procedure   AddDummy(ADate: TDateTime); overload;
-    procedure   AddDummy(AFloat: double); overload;
-    procedure   AddDummy(Areal: real); overload;
 
     procedure   ClearAll;
     function    GetGroupByList: TPerColumns;
@@ -378,21 +374,6 @@ begin
   FSelectionCriterias.Add(lCriteria);
 end;
 
-procedure TtiCriteria.AddDummy(ADate: TDateTime);
-begin
-
-end;
-
-procedure TtiCriteria.AddDummy(AFloat: double);
-begin
-
-end;
-
-procedure TtiCriteria.AddDummy(Areal: real);
-begin
-
-end;
-
 procedure TtiCriteria.AddEqualTo(AAttribute: string; AValue: variant);
 var
   lData: TtiEqualToCriteria;
@@ -505,9 +486,27 @@ begin
   FSelectionCriterias.Add(lData);
 end;
 
-procedure TtiCriteria.AddNotIn(AAttribute, ASubQuery: string);
+procedure TtiCriteria.AddNotIn(AAttribute: string;
+  AValueArray: array of variant);
+var
+  lData: TtiInCriteria;
+  i: integer;
 begin
-  // todo: This still needs to be implemented
+  lData := TtiInCriteria.Create(AAttribute, '', true);
+  SetLength(lData.ValueArray, Length(AValueArray));
+
+  for i := Low(AValueArray) to High(AValueArray) do
+    lData.ValueArray[i] := (AValueArray[i]);
+
+  FSelectionCriterias.Add(lData);
+end;
+
+procedure TtiCriteria.AddNotIn(AAttribute, ASubQuery: string);
+var
+  lData: TtiInCriteria;
+begin
+  lData := TtiInCriteria.Create(AAttribute, ASubQuery, true);
+  FSelectionCriterias.Add(lData);
 end;
 
 procedure TtiCriteria.AddNotLike(AAttribute, AValue: string);
@@ -936,6 +935,7 @@ begin
 end;
 
 end.
+
 
 
 

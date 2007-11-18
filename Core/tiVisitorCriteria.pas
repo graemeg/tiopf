@@ -167,14 +167,6 @@ var
   i: Integer;
   sep: string;
 begin
-//  if assigned(AParams) then
-//  begin
-//    Result := ACriteria.FieldName + ACriteria.GetClause + GetParamName(AParamNo, true);
-//    AddParam(AParams, AParamNo,ACriteria.Value);
-//    inc(AParamNo);
-//  end
-//  else
-//    Result := ACriteria.FieldName + ACriteria.GetClause + GetSqlValue(ACriteria.Value);
   sep:= '';
   if Length(ACriteria.ValueArray) > 0 then
   begin
@@ -192,7 +184,6 @@ begin
       Result := Result + sep + GetSqlValue(ACriteria.ValueArray[i]);
       sep:= ', ';
     end;
-//    Result := Result + GetSqlValue(ACriteria.ValueArray[High(ACriteria.ValueArray)]);
     Result := Result + ')';
   end
   else
@@ -459,6 +450,7 @@ begin
 end;
 
 end.
+
 
 
 

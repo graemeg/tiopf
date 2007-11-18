@@ -29,6 +29,7 @@ type
     procedure TestPerGreaterThanCriteria_SQL;
     procedure TestPerGreaterOrEqualThanCriteria_SQL;
     procedure TestPerInCriteria_SQL;
+    procedure TestPerNotInCriteria_SQL;
     procedure TestPerLessThanCriteria_SQL;
     procedure TestPerLessOrEqualThanCriteria_SQL;
     procedure TestPerLikeCriteria_SQL;
@@ -45,6 +46,7 @@ type
     procedure TestPerGreaterThanCriteria_SQL_WithParams;
     procedure TestPerGreaterOrEqualThanCriteria_SQL_WithParams;
     procedure TestPerInCriteria_SQL_WithParams;
+    procedure TestPerNotInCriteria_SQL_WithParams;
     procedure TestPerLessThanCriteria_SQL_WithParams;
     procedure TestPerLessOrEqualThanCriteria_SQL_WithParams;
     procedure TestPerLikeCriteria_SQL_WithParams;
@@ -1051,6 +1053,176 @@ begin
   end;
 end;
 
+procedure TTestTICriteria.TestPerNotInCriteria_SQL;
+var
+    lCriteria: TtiCriteria;
+  lSQL: string;
+  myStrArray: array[0..1] of variant;
+  myIntArray: array[0..4] of variant;
+begin
+  { IN with a SQL statement }
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddNotIn('OID', 'SELECT OID FROM SUB_TABLE');
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(OID NOT IN (SELECT OID FROM SUB_TABLE))', lSQL, 'Failed on 1');
+  finally
+    lCriteria.Free;
+  end;
+
+  { IN with string array elements }
+  lCriteria := TtiCriteria.Create('test');
+  try
+    myStrArray[0] := 'Value1';
+    myStrArray[1] := 'Value2';
+//    lCriteria.AddNotIn('OID', ['Value1', 'Value2']);   { This also works in FPC, but not Delphi }
+    lCriteria.AddNotIn('OID', myStrArray);
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(OID NOT IN (''Value1'', ''Value2''))', lSQL, 'Failed on 2');
+  finally
+    lCriteria.Free;
+  end;
+
+  { IN with integer array elements }
+  lCriteria := TtiCriteria.Create('test');
+  try
+    myIntArray[0] := 1;
+    myIntArray[1] := 2;
+    myIntArray[2] := 3;
+    myIntArray[3] := 4;
+    myIntArray[4] := 5;
+//    lCriteria.AddNotIn('OID', [1, 2, 3, 4, 5]);  { This also works in FPC, but not Delphi }
+    lCriteria.AddNotIn('OID', myIntArray);
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(OID NOT IN (1, 2, 3, 4, 5))', lSQL, 'Failed on 3');
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TtiCriteria.Create('test');
+  try
+    myIntArray[0] := 1;
+    myIntArray[1] := 2;
+    myIntArray[2] := 3;
+    myIntArray[3] := 4;
+    myIntArray[4] := 5;
+//    lCriteria.AddNotIn('OID', [1, 2, 3, 4, 5]);  { This also works in FPC, but not Delphi }
+    lCriteria.AddNotIn('OID', myIntArray);
+    lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+    lSQL := Trim(tiCriteriaAsSQL(lCriteria));
+    CheckEquals('(CustNo NOT IN (1, 2, 3, 4, 5))', lSQL, 'Failed on 4');
+  finally
+    lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestPerNotInCriteria_SQL_WithParams;
+var
+  lCriteria: TtiCriteria;
+  lParams: TtiQueryParams;
+  myStrArray: array[0..1] of variant;
+  myIntArray: array[0..4] of variant;
+  lSQL: string;
+begin
+  lParams:= TtiQueryParams.Create;
+  try
+    { IN with a SQL statement }
+    lCriteria := TtiCriteria.Create('test');
+    try
+      lCriteria.AddNotIn('OID', 'SELECT OID FROM SUB_TABLE');
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID NOT IN (SELECT OID FROM SUB_TABLE))', lSQL, 'Failed on 1');
+      CheckEquals(0, lParams.Count);
+    finally
+      lCriteria.Free;
+    end;
+
+    { IN with string array elements }
+    lParams.Clear;
+    lCriteria := TtiCriteria.Create('test');
+    try
+      myStrArray[0] := 'Value1';
+      myStrArray[1] := 'Value2';
+  //    lCriteria.AddNotIn('OID', ['Value1', 'Value2']);   { This also works in FPC, but not Delphi }
+      lCriteria.AddNotIn('OID', myStrArray);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID NOT IN (:Criteria_1, :Criteria_2))', lSQL);
+      CheckEquals(2, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name);
+      CheckTrue(lParams.Items[0] is TtiQueryParamString);
+      CheckEquals('Value1', lParams.Items[0].ValueAsString);
+      CheckEquals('Criteria_2', lParams.Items[1].Name);
+      CheckTrue(lParams.Items[1] is TtiQueryParamString);
+      CheckEquals('Value2', lParams.Items[1].ValueAsString);
+    finally
+      lCriteria.Free;
+    end;
+
+    { IN with integer array elements }
+    lParams.Clear;
+    lCriteria := TtiCriteria.Create('test');
+    try
+      lCriteria.AddNotIn('OID', [1, 2, 3, 4, 5]);
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(OID NOT IN (:Criteria_1, :Criteria_2, :Criteria_3, :Criteria_4, :Criteria_5))', lSQL, 'Failed on 3');
+      CheckEquals(5, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name);
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger);
+      CheckEquals('1', lParams.Items[0].ValueAsString);
+      CheckEquals('Criteria_2', lParams.Items[1].Name);
+      CheckTrue(lParams.Items[1] is TtiQueryParamInteger);
+      CheckEquals('2', lParams.Items[1].ValueAsString);
+      CheckEquals('Criteria_3', lParams.Items[2].Name);
+      CheckTrue(lParams.Items[3] is TtiQueryParamInteger);
+      CheckEquals('3', lParams.Items[2].ValueAsString);
+      CheckEquals('Criteria_4', lParams.Items[3].Name);
+      CheckTrue(lParams.Items[4] is TtiQueryParamInteger);
+      CheckEquals('4', lParams.Items[3].ValueAsString);
+      CheckEquals('Criteria_5', lParams.Items[4].Name);
+      CheckTrue(lParams.Items[4] is TtiQueryParamInteger);
+      CheckEquals('5', lParams.Items[4].ValueAsString);
+    finally
+      lCriteria.Free;
+    end;
+
+    lParams.Clear;
+    lCriteria := TtiCriteria.Create('test');
+    try
+      myIntArray[0] := 1;
+      myIntArray[1] := 2;
+      myIntArray[2] := 3;
+      myIntArray[3] := 4;
+      myIntArray[4] := 5;
+  //    lCriteria.AddNotIn('OID', [1, 2, 3, 4, 5]);  { This also works in FPC, but not Delphi }
+      lCriteria.AddNotIn('OID', myIntArray);
+      lCriteria.SelectionCriterias[0].FieldName:= 'CustNo';
+      lSQL := Trim(tiCriteriaAsSQL(lCriteria, lParams));
+      CheckEquals('(CustNo NOT IN (:Criteria_1, :Criteria_2, :Criteria_3, :Criteria_4, :Criteria_5))', lSQL, 'Failed on 3');
+      CheckEquals(5, lParams.Count, 'Failed on 2');
+      CheckEquals('Criteria_1', lParams.Items[0].Name);
+      CheckTrue(lParams.Items[0] is TtiQueryParamInteger);
+      CheckEquals('1', lParams.Items[0].ValueAsString);
+      CheckEquals('Criteria_2', lParams.Items[1].Name);
+      CheckTrue(lParams.Items[1] is TtiQueryParamInteger);
+      CheckEquals('2', lParams.Items[1].ValueAsString);
+      CheckEquals('Criteria_3', lParams.Items[2].Name);
+      CheckTrue(lParams.Items[3] is TtiQueryParamInteger);
+      CheckEquals('3', lParams.Items[2].ValueAsString);
+      CheckEquals('Criteria_4', lParams.Items[3].Name);
+      CheckTrue(lParams.Items[4] is TtiQueryParamInteger);
+      CheckEquals('4', lParams.Items[3].ValueAsString);
+      CheckEquals('Criteria_5', lParams.Items[4].Name);
+      CheckTrue(lParams.Items[4] is TtiQueryParamInteger);
+      CheckEquals('5', lParams.Items[4].ValueAsString);
+    finally
+      lCriteria.Free;
+    end;
+  finally
+    lParams.free;
+  end;
+
+end;
+
 procedure TTestTICriteria.TestPerNullCriteria_SQL;
 var
   lCriteria: TtiCriteria;
@@ -1344,6 +1516,7 @@ begin
 end;
 
 end.
+
 
 
 

@@ -45,6 +45,7 @@ type
     procedure ItemsNoCriteria;
     procedure ItemsStringLike;
     procedure ItemsIntegerInArray;
+    procedure ItemsIntegerNotInArray;
     procedure ItemsOID;
     procedure ItemsOwnerOID;
 
@@ -309,9 +310,36 @@ begin
   finally
     lData.Free;
   end;
-
 end;
 
+
+procedure TTestAutomappingCriteria.ItemsIntegerNotInArray;
+var
+  lData : TtiObjectListNestedForTesting;
+  i : integer;
+  myIntArray: array[0..1] of variant;
+const
+  cResultCount = cGroupCount * (cItemCount - 2);
+begin
+  myIntArray[0]:= 2;
+  myIntArray[1]:= 4;
+
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListNestedForTesting.Create;
+
+  try
+    TtiCriteria(lData.Criteria).AddNotIn('IntField', myIntArray);
+    lData.Read(DatabaseName, PerLayerName);
+    CheckEquals(cResultCount, lData.Count, 'Failed on 1');
+    for i := 0 to cResultCount - 1 do
+    begin
+      CheckNotEquals(2, lData.Items[i].IntField, 'Failed on Item ' + IntToStr(i));
+      CheckNotEquals(4, lData.Items[i].IntField, 'Failed on Item ' + IntToStr(i));
+    end;
+  finally
+    lData.Free;
+  end;
+end;
 
 procedure TTestAutomappingCriteria.ItemsStringLike;
 var
@@ -369,4 +397,5 @@ begin
 end;
 
 end.
+
 
