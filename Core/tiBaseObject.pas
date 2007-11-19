@@ -41,6 +41,10 @@ type
   TtiBaseObjectClass = class of TtiBaseObject;
 
 implementation
+{$IFNDEF FPC}
+uses
+  Windows;
+{$ENDIF}
 
 function TtiBaseObject.QueryInterface(const IID: TGUID; out Obj): HResult;
 begin
