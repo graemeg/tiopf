@@ -329,8 +329,24 @@ begin
 end;
 
 procedure TTestTIWebServer.tiWebServer_RunCGIExtension;
+var
+  LO: TtiWebServerForTesting;
+  LResult: string;
+  LFileName: string;
+  LBat: string;
 begin
-
+  LBat:= 'echo %1';
+  LO:= TtiWebServerForTesting.Create(cPort);
+  try
+    LFileName:= TempFileName('test.bat');
+    LO.SetCGIBinLocation(ExtractFilePath(LFileName));
+    tiStringToFile(LBat, LFileName);
+    LO.Start;
+    LResult:= TestHTTPRequest('test.bat?teststring');
+    CheckEquals('teststring', LResult);
+  finally
+    LO.Free;
+  end;
 end;
 
 function TTestTIWebServer.TestHTTPRequest(const ADocument: string; AFormatException: boolean = True): string;
