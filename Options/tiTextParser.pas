@@ -29,7 +29,7 @@ type
 //  as a new cell.
 //
 //  Row indexes are zero-based. Column indexes are one-based
-//  Cursor does not advance when CR or LF characters enountered.
+//  Cursor does not advance when CR or LF characters encountered.
 //  Cursor does not advance when end of text encountered.
 //  BeforeParseEvent occurs at row, col (0,0)
 //  StartOfLineEvent occurs at col 0.
@@ -41,13 +41,12 @@ type
 //  NewLineEvent occurs before EndOfLineEvent.
 //  EndOfLineEvent occurs before EndOfTextEvent.
 //
-//  Empty lines (eg a line-ending as the first character in a stream of text,
-//  or the second and subsequent line-ending in as sequence of line-endings)
+//  Empty lines (eg. a line-ending as the first character in a stream of text,
+//  or the second and subsequent line-ending in a sequence of line-endings)
 //  are interpreted as a line containing one empty cell.
 
   TtiTextParser = class(TtiBaseObject)
   private
-
     FStream: TMemoryStream;
     FBuffer: string;
     FOnBeforeParse: TtiTextParserBeforeParseEvent;
@@ -62,17 +61,13 @@ type
     FEOL: boolean;
     FLineStarted: boolean;
     FCellStarted: boolean;
-
     procedure Execute;
-
   public
-
     constructor Create;
     destructor  Destroy; override;
     procedure   ParseFile(const AFileName: string);
     procedure   ParseString(const AString: string);
     procedure   ParseStream(AStream: TStream);
-
     property    OnBeforeParse: TtiTextParserBeforeParseEvent read FOnBeforeParse write FOnBeforeParse;
     property    OnStartOfLine: TtiTextParserStartOfLineEvent read FOnStartOfLine write FOnStartOfLine;
     property    OnCellEnd:     TtiTextParserCellEndEvent     read FOnCellEnd     write FOnCellEnd;
@@ -111,7 +106,6 @@ procedure TtiTextParser.Execute;
 
   procedure _DoCellEnd(var AIndex: Integer);
   begin
-
     if FCellStarted then
     begin
       FToken := Copy(FBuffer,1,AIndex);
@@ -119,7 +113,6 @@ procedure TtiTextParser.Execute;
       FCellStarted := false;
       FOnCellEnd(FToken);
     end;
-
   end;
 
   procedure _DoLineEnd(var AIndex: Integer);
@@ -140,27 +133,23 @@ procedure TtiTextParser.Execute;
     begin
       Inc(FRow);
       FCol := 0;
-
       if Assigned(FOnStartOfLine) then
         FOnStartOfLine;
-
     end
-
   end;
 
 var
-  i : Integer;
+  i: Integer;
   lChar: Char;
   lBufferIndex: Integer;
-
 begin
   Assert(Assigned(FOnNewLine), 'OnLineEnd not assigned');
   Assert(Assigned(FOnEndOfLine), 'OnEndOfLine not assigned');
   Assert(Assigned(FOnCellEnd), 'OnCellEnd not assigned');
   Assert(Assigned(FOnEndOfText),  'OnEndOfText not assigned');
   lBufferIndex := 0;
-  FRow:= 0;
-  FCol:= 0;
+  FRow := 0;
+  FCol := 0;
   FEOL := false;
 
   if Assigned(FOnBeforeParse) then

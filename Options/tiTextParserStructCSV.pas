@@ -97,21 +97,20 @@ type
     procedure   SetItems(i: integer; const AValue: TtiStructCSVMetaData); reintroduce;
   public
     property    Items[i:integer]: TtiStructCSVMetaData read GetItems write SetItems;
-    procedure   Add(AObject : TtiStructCSVMetaData  ; ADefDispOrdr : boolean = true); reintroduce;
-
+    procedure   Add(AObject: TtiStructCSVMetaData; ADefDispOrdr: boolean = true); reintroduce;
     function    FindByDataGroupName(const pDataGroupName: string): TtiStructCSVMetaData;
     function    FindCreateByDataGroupName(const pDataGroupName: string;
                                           const pRowStartEvent: TtiTextParserRowEvent;
-                                          const pRowEndEvent:   TtiTextParserRowEvent): TtiStructCSVMetaData;
-
+                                          const pRowEndEvent: TtiTextParserRowEvent): TtiStructCSVMetaData;
     property    LatestUsed: TtiStructCSVMetaData read FLatestUsed;
-    function    AddInstance(const AGroupName    : string;
-                            const AFieldName    : string;
-                            const pRowStartEvent : TtiTextParserRowEvent;
-                            const pSetter       : TtiTextParserSetterEvent;
-                            const pRowEndEvent  : TtiTextParserRowEvent):TtiStructCSVMetaDataItem;
+    function    AddInstance(const AGroupName: string;
+                            const AFieldName: string;
+                            const pRowStartEvent: TtiTextParserRowEvent;
+                            const pSetter: TtiTextParserSetterEvent;
+                            const pRowEndEvent: TtiTextParserRowEvent):TtiStructCSVMetaDataItem;
     procedure   ClearIndexedItems;
   end;
+
 
   TtiStructCSVMetaData = class(TtiObjectList)
   private
@@ -128,19 +127,20 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-    property    Items[i:integer]: TtiStructCSVMetaDataItem read GetItems write SetItems;
-    procedure   Add(AObject : TtiStructCSVMetaDataItem  ; ADefDispOrdr : boolean = true); reintroduce;
-    property    DataGroupName: string read FDataGroupName Write SetDataGroupName;
-    property    OnRowStartEvent: TtiTextParserRowEvent read FOnRowStartEvent Write FOnRowStartEvent;
-    property    OnRowEndEvent:   TtiTextParserRowEvent read FOnRowEndEvent Write FOnRowEndEvent;
     function    AddInstance(const AFieldName: string; const pSetter: TtiTextParserSetterEvent):TtiStructCSVMetaDataItem;
-    function    FindByFieldName(const AFieldName: string):TtiStructCSVMetaDataItem;
     function    AddToIndex(const AFieldName: string):Boolean;
-    property    IndexedItems[i:Integer]:TtiStructCSVMetaDataItem read GetIndexedItems;
-    property    IndexedCount: Integer read GetIndexedCount;
+    function    FindByFieldName(const AFieldName: string):TtiStructCSVMetaDataItem;
     function    FindInIndex(const AFieldName: string):TtiStructCSVMetaDataItem;
+    procedure   Add(AObject: TtiStructCSVMetaDataItem; ADefDispOrdr: boolean = true); reintroduce;
     procedure   ClearIndexedItems;
+    property    DataGroupName: string read FDataGroupName Write SetDataGroupName;
+    property    IndexedCount: Integer read GetIndexedCount;
+    property    IndexedItems[i:Integer]:TtiStructCSVMetaDataItem read GetIndexedItems;
+    property    Items[i:integer]: TtiStructCSVMetaDataItem read GetItems write SetItems;
+    property    OnRowEndEvent: TtiTextParserRowEvent read FOnRowEndEvent Write FOnRowEndEvent;
+    property    OnRowStartEvent: TtiTextParserRowEvent read FOnRowStartEvent Write FOnRowStartEvent;
   end;
+
 
   TtiStructCSVMetaDataItem = class(TtiObject)
   private
@@ -152,9 +152,7 @@ type
   end;
 
 
-  TtpemsState = (tpemsStartOfRow,
-                  tpemsStartOfIRow, tpemsICell,
-                  tpemsStartOfDRow, tpemsDCell);
+  TtpemsState = (tpemsStartOfRow, tpemsStartOfIRow, tpemsICell, tpemsStartOfDRow, tpemsDCell);
 
 
   TTextParserStructCSV = class(TtiBaseObject)
@@ -223,14 +221,14 @@ const
 constructor TTextParserStructCSV.Create;
 begin
   inherited Create;
-  FTextFileParser:= TtiTextParser.Create;
-  FTextFileParser.OnNewLine  := DoOnNewLine;
-  FTextFileParser.OnEndOfLine := DoOnEndOfLine;
-  FTextFileParser.OnCellEnd  := DoOnCellEnd;
-  FTextFileParser.OnEndOfText := DoOnEndOfText;
-  FMetaDatas:= TtiStructCSVMetaDatas.Create;
-  FExceptions:= TStringList.Create;
-  FInDataRow:= False;
+  FTextFileParser := TtiTextParser.Create;
+  FTextFileParser.OnNewLine     := DoOnNewLine;
+  FTextFileParser.OnEndOfLine   := DoOnEndOfLine;
+  FTextFileParser.OnCellEnd     := DoOnCellEnd;
+  FTextFileParser.OnEndOfText   := DoOnEndOfText;
+  FMetaDatas    := TtiStructCSVMetaDatas.Create;
+  FExceptions   := TStringList.Create;
+  FInDataRow    := False;
 end;
 
 
@@ -352,7 +350,6 @@ begin
   else
     raise Exception.Create(cErrorInvalidTextParserState);
   end;
-
 end;
 
 procedure TTextParserStructCSV.DoOnNewLine;
