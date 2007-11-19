@@ -24,14 +24,9 @@ type
     procedure ValidNill;
     procedure ValidClass;
     procedure ValidPass;
-    procedure ValidFail1;
-    procedure ValidFail2;
   end;
 
-  TtiBaseObjectTest = class(TtiBaseObject);
-
 procedure RegisterTests;
-
 
 implementation
 uses
@@ -43,6 +38,9 @@ procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIBaseObject);
 end;
+
+type
+  TtiBaseObjectForTesting = class(TtiBaseObject);
 
 procedure TTestTIBaseObject.ValidNill;
 var
@@ -61,28 +59,16 @@ begin
   LO := TtiBaseObject.Create;
   try
     Check(LO.TestValid(TtiBaseObject));
-    Check(not LO.TestValid(TtiBaseObjectTest));
+    Check(not LO.TestValid(TtiBaseObjectForTesting));
   finally
     LO.Free;
   end;
-  LO := TtiBaseObjectTest.Create;
+  LO := TtiBaseObjectForTesting.Create;
   try
-    Check(LO.TestValid(TtiBaseObjectTest));
+    Check(LO.TestValid(TtiBaseObjectForTesting));
   finally
     LO.Free;
   end;
-end;
-
-procedure TTestTIBaseObject.ValidFail1;
-var
-  LO : TtiBaseObject;
-begin
-  LO := TtiBaseObject(Random(20000)+2000);
-  {$IFNDEF FPC}
-  check(not LO.TestValid);
-  {$ELSE}
-  check(True, 'fpcUnit has its own memory leak tests');
-  {$ENDIF}
 end;
 
 procedure TTestTIBaseObject.ValidPass;
@@ -144,19 +130,6 @@ begin
   Check(True); // To Force OnCheckCalled to be called
   LO:= nil;
   LO.Free;
-end;
-
-procedure TTestTIBaseObject.ValidFail2;
-var
-  LO : TtiBaseObject;
-begin
-  LO:= TtiBaseObject.Create;
-  LO.free;
-  {$IFNDEF FPC}
-  check(not LO.TestValid);
-  {$ELSE}
-  check(True, 'fpcUnit has its own memory leak tests');
-  {$ENDIF}
 end;
 
 end.
