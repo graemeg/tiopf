@@ -10,7 +10,7 @@ uses
   ,tiBaseObject
   ,tiUtils
   ,tiExcept
-  ,tiVisitor
+//  ,tiVisitor
   ,SysUtils
   ,tiCriteria
   ,tiRTTI

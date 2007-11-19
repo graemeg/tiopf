@@ -47,7 +47,7 @@ uses
   tiVisitor,
   tiObject,
   tiPersistenceLayers,
-  tiDBConnectionPool,
+//  tiDBConnectionPool,
   tiQuery,
   SysUtils,
   Classes;

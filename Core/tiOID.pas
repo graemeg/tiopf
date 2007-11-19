@@ -12,7 +12,7 @@ uses
   Classes
   ,tiBaseObject
   ,Contnrs
-  ,tiVisitor
+//  ,tiVisitor
  ;
 
 const
@@ -128,8 +128,8 @@ uses
   ,SysUtils
   ,tiUtils
   ,tiOPFManager
-  ,tiObject
-  ,tiVisitorDB
+//  ,tiObject
+//  ,tiVisitorDB
   ,tiConstants
   ,tiPersistenceLayers
   ,tiLog

@@ -86,8 +86,7 @@ type
 
 implementation
 uses
-  tiConstants
-  ,tiUtils
+  tiUtils
  ;
 
 const

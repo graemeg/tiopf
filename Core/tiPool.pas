@@ -11,7 +11,6 @@ uses
   {$IFDEF LINUX}
   ,pthreads
   {$ENDIF LINUX}
-  ,tiObject
   ,tiBaseObject
   ,tiThread
  ;
@@ -126,14 +125,10 @@ type
 
 implementation
 uses
-   tiUtils
-  ,tiLog
+  tiLog
   ,tiConstants
   ,tiExcept
   ,SysUtils
-  {$IFDEF UNIX}
-  ,baseunix
-  {$ENDIF UNIX}
  ;
 
 const

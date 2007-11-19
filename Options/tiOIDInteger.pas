@@ -77,12 +77,11 @@ const
   cOIDClassNameInteger = 'OIDClassNameInteger';
 
 implementation
+
 uses
   tiQuery
-  ,tiUtils
   ,tiOPFManager
   ,tiConstants
-//  ,tiExcept
   ,SysUtils
  ;
 

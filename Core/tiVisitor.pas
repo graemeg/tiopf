@@ -26,7 +26,7 @@ uses
   tiStreams,
   Classes,
   TypInfo,
-  SyncObjs,
+//  SyncObjs,
   SysUtils,
   Contnrs;
 
@@ -371,7 +371,7 @@ uses
   tiLog,
   tiOPFManager,
   tiConstants,
-  tiPersistenceLayers,
+//  tiPersistenceLayers,
   tiExcept,
   tiUtils,
   tiRTTI;

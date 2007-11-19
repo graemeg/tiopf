@@ -271,7 +271,6 @@ implementation
 uses
    tiUtils
   ,tiExcept
-  ,tiObject
   ,tiConstants
   ,SysUtils
   ,Math
@@ -911,18 +910,6 @@ end;
 
 
 function _CompareBlockStreamItems(AItem1, AItem2: Pointer): Integer;
-{$IFDEF FPC}
-  { Next FPC version will have this, so then it can be removed. }
-  function CompareValue(A, B: Cardinal): Integer;
-  begin
-    if A = B then
-      Result := 0
-    else if A < B then
-      Result := -1
-    else
-      Result := 1;
-  end;
-{$ENDIF}
 var
   LItem1: TtiBlockStreamItem;
   LItem2: TtiBlockStreamItem;

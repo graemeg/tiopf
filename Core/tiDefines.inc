@@ -87,7 +87,7 @@
 
 {: Enable the conditional define REFERENCE_COUNTING to enable reference counting
    on TtiBaseObject}
-{.$DEFINE REFERENCE_COUNTING}
+{$DEFINE REFERENCE_COUNTING}
 
 // If Delphi 7, turn off UNSAFE_* Warnings (just until we have fixed them all)
 // We want the platform warnings as we are working towards Linux support.

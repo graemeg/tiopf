@@ -54,7 +54,7 @@ uses
   // tiOPF
    tiOPFManager
   ,tiObject
-  ,tiUtils
+//  ,tiUtils
   ,tiConstants
   ,tiExcept
   ,tiFilteredObjectList

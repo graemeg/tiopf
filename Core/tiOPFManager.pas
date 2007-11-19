@@ -4,8 +4,8 @@ unit tiOPFManager;
 
 interface
 uses
-   tiBaseObject
-  ,tiDBConnectionPool
+//   tiBaseObject
+  tiDBConnectionPool
   ,tiQuery
   ,tiObject
   ,tiPersistenceLayers

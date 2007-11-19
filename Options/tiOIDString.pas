@@ -110,7 +110,6 @@ const
 implementation
 uses
   tiQuery
-  ,tiUtils
   ,tiOPFManager
   ,tiLog
   ,tiExcept

@@ -449,7 +449,7 @@ uses
   tiOPFManager,
   tiOID,
   tiRTTI,
-  tiVisitorCriteria,
+//  tiVisitorCriteria,
   tiFilteredObjectList,
   TypInfo,
   SysUtils;
