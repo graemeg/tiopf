@@ -97,12 +97,6 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  {$ifdef object_tracking}
-    Log('object_tracking is ON');
-  {$else}
-    btnTestValid.Enabled:= False;
-    Log('object_tracking is OFF');
-  {$endif}
   {$ifdef reference_counting}
     Log('reference_counting is ON');
   {$else}

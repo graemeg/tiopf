@@ -40,7 +40,7 @@
     <DCC_ResourcePath>..\..\Core;..\..\Options;..\..\GUI;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;..\Common;..\Tests;..\..\3rdParty\DUnit;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\FBLib</DCC_ResourcePath>
     <DCC_ObjPath>..\..\Core;..\..\Options;..\..\GUI;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;..\Common;..\Tests;..\..\3rdParty\DUnit;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\FBLib</DCC_ObjPath>
     <DCC_IncludePath>..\..\Core;..\..\Options;..\..\GUI;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;..\Common;..\Tests;..\..\3rdParty\DUnit;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\FBLib</DCC_IncludePath>
-    <DCC_Define>OBJECT_TRACKING;FASTMM;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;DEBUG;DUNIT2</DCC_Define>
+    <DCC_Define>FASTMM;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;DEBUG;DUNIT2</DCC_Define>
     <DCC_SYMBOL_DEPRECATED>False</DCC_SYMBOL_DEPRECATED>
     <DCC_SYMBOL_LIBRARY>False</DCC_SYMBOL_LIBRARY>
     <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>

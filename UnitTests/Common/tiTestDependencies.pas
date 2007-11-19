@@ -39,9 +39,7 @@ uses
   ,tiConstants
   ,tiBOMsForTesting
 
-  {$IFDEF OBJECT_TRACKING}
   ,tiBaseObject_TST
-  {$ENDIF}
   ,tiUtils_TST
   ,tiObject_TST
   ,tiCompress_TST
@@ -117,9 +115,7 @@ begin
   tiBOMsForTesting.RegisterMappings; // Register the OO-DB Mappings to be tested
 
   // These are all the 'non persistence' tests
-  {$IFDEF OBJECT_TRACKING}
   tiBaseObject_tst.RegisterTests;
-  {$ENDIF}
   tiUtils_TST.RegisterTests;
   tiRTTI_TST.RegisterTests;
   tiVisitor_TST.RegisterTests;

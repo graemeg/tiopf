@@ -1,21 +1,6 @@
-{
-Version History:
-  26-Apr 2002   Andrew Cumming                  Move includes to allow D6 compile
-   7-Mar 2002   Grahame Grieve                  Total Rewrite of Tests
-   4-Jun 2003   Peter Hinrichsen                Cloned from IndySoap to tiOPF
-   2-July 2007  Peter Hinrichsen                Refactored to remove dependency on Windows.pas & GUI code
-}
-
 unit tiBaseObject_TST;
 
 {$I tiDefines.inc}
-
-{$IFNDEF FPC}
-  {$IFNDEF OBJECT_TRACKING}
-    You must have OBJECT_TRACKING defined to run the tests
-  {$ENDIF}
-{$ENDIF}
-
 
 interface
 
@@ -41,8 +26,6 @@ type
     procedure ValidPass;
     procedure ValidFail1;
     procedure ValidFail2;
-    procedure tiGetTotalObjectCount;
-    procedure tiDescribeLiveObjects;
   end;
 
   TtiBaseObjectTest = class(TtiBaseObject);
@@ -171,48 +154,6 @@ begin
   LO.free;
   {$IFNDEF FPC}
   check(not LO.TestValid);
-  {$ELSE}
-  check(True, 'fpcUnit has its own memory leak tests');
-  {$ENDIF}
-end;
-
-procedure TTestTIBaseObject.tiDescribeLiveObjects;
-var
-  LSL: TStringList;
-  LO: TtiBaseObjectTest;
-begin
-  LSL:= TStringList.Create;
-  try
-    LSL.Text:= tiBaseObject.tiDescribeLiveObjects;
-    CheckEquals('', LSL.Values[TtiBaseObjectTest.ClassName]);
-    LO:= TtiBaseObjectTest.Create;
-    try
-      LSL.Text:= tiBaseObject.tiDescribeLiveObjects;
-      CheckEquals('1', LSL.Values[TtiBaseObjectTest.ClassName]);
-    finally
-      LO.Free;
-    end;
-  finally
-    LSL.Free;
-  end;
-end;
-
-
-procedure TTestTIBaseObject.tiGetTotalObjectCount;
-{$IFNDEF FPC}
-var
-  LO : TtiBaseObject;
-  LCount: integer;
-{$ENDIF}
-begin
-  {$IFNDEF FPC}
-  LCount := tiBaseObject.tiGetTotalObjectCount;
-  LO := TtiBaseObject.Create;
-  try
-    CheckEquals(LCount + 1, tiBaseObject.tiGetTotalObjectCount);
-  finally
-    LO.free;
-  end;
   {$ELSE}
   check(True, 'fpcUnit has its own memory leak tests');
   {$ENDIF}

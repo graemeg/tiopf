@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
+    <Projects Include="..\..\Demos\Demo_TtiBaseObject\tiBaseObjectPerformanceTesting.dproj" />
     <Projects Include="..\..\UnitTests\GUI\DUnitTIOPFGui.dproj" />
     <Projects Include="..\..\UnitTests\Text\DUnitTIOPFText.dproj" />
     <Projects Include="tiOPFCore.dproj" />
@@ -71,14 +72,23 @@
   <Target Name="DUnitTIOPFText:Make">
     <MSBuild Projects="..\..\UnitTests\Text\DUnitTIOPFText.dproj" Targets="Make" />
   </Target>
+  <Target Name="tiBaseObjectPerformanceTesting">
+    <MSBuild Projects="..\..\Demos\Demo_TtiBaseObject\tiBaseObjectPerformanceTesting.dproj" Targets="" />
+  </Target>
+  <Target Name="tiBaseObjectPerformanceTesting:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_TtiBaseObject\tiBaseObjectPerformanceTesting.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiBaseObjectPerformanceTesting:Make">
+    <MSBuild Projects="..\..\Demos\Demo_TtiBaseObject\tiBaseObjectPerformanceTesting.dproj" Targets="Make" />
+  </Target>
   <Target Name="Build">
-    <CallTarget Targets="tiOPFCore;tiOPFOptions;tiOPFGUI;tiOPFGUIDsgn;DUnitTIOPFGui;DUnitTIOPFText" />
+    <CallTarget Targets="tiOPFCore;tiOPFOptions;tiOPFGUI;tiOPFGUIDsgn;DUnitTIOPFGui;DUnitTIOPFText;tiBaseObjectPerformanceTesting" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="tiOPFCore:Clean;tiOPFOptions:Clean;tiOPFGUI:Clean;tiOPFGUIDsgn:Clean;DUnitTIOPFGui:Clean;DUnitTIOPFText:Clean" />
+    <CallTarget Targets="tiOPFCore:Clean;tiOPFOptions:Clean;tiOPFGUI:Clean;tiOPFGUIDsgn:Clean;DUnitTIOPFGui:Clean;DUnitTIOPFText:Clean;tiBaseObjectPerformanceTesting:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="tiOPFCore:Make;tiOPFOptions:Make;tiOPFGUI:Make;tiOPFGUIDsgn:Make;DUnitTIOPFGui:Make;DUnitTIOPFText:Make" />
+    <CallTarget Targets="tiOPFCore:Make;tiOPFOptions:Make;tiOPFGUI:Make;tiOPFGUIDsgn:Make;DUnitTIOPFGui:Make;DUnitTIOPFText:Make;tiBaseObjectPerformanceTesting:Make" />
   </Target>
   <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>
