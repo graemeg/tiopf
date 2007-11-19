@@ -323,13 +323,6 @@ procedure TtiTextTestListener.TestingStarts;
     i: Integer;
   begin
     writeln2Short('', [tlwtConsole]);
-    writeln2Short('<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">', [tlwtFile]);
-    writeln2Short('<html>', [tlwtFile]);
-    writeln2Short('<head>', [tlwtFile]);
-    writeln2Short('<meta content="text/html; charset=utf-8" http-equiv="content-type">', [tlwtFile]);
-    writeln2Short('<title>tiOPF2 Unit Tests</title>', [tlwtFile]);
-    writeln2Short('</head><body>', [tlwtFile]);
-    writeln2Short('<pre>', [tlwtFile]);
     {$IFDEF DUNIT2}
       writeln2Short('DUnit2 testing of tiOPF ', [tlwtFile, tlwtConsole] );
     {$ELSE}
@@ -410,8 +403,6 @@ begin
   DecodeTime(runTime, h,  m, s, l);
   writeln2Short(Format('Time to run tests: %d:%2.2d:%2.2d.%3.3d', [h, m, s, l]), [tlwtFile, tlwtConsole]);
   writeln2Short(Report(testResult), [tlwtFile, tlwtConsole]);
-  writeln2Short('</pre>', [tlwtFile]);
-  writeln2Short('</body></html>', [tlwtFile]);
   WriteSummaryToINIFile(testResult);
 
   Write2Long('</table>');
