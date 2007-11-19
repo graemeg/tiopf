@@ -16,26 +16,24 @@ type
   TtiBaseObject = class(TObject, IInterface)
   private
     {$IFDEF REFERENCE_COUNTING}
-    FRefCounting: Boolean;
-    FRefCount: Integer;
+    FRefCounting: boolean;
+    FRefCount:    integer;
     {$ENDIF}
   protected
-    function    QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
-    function    _AddRef: Integer; stdcall;
-    function    _Release: Integer; stdcall;
+    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function _AddRef: integer; stdcall;
+    function _Release: integer; stdcall;
   public
-    constructor Create;
-    destructor  Destroy; override;
     {$IFDEF REFERENCE_COUNTING}
     constructor CreateWithRefCounting;
-    procedure   AfterConstruction; override;
-    procedure   BeforeDestruction; override;
+    procedure AfterConstruction; override;
+    procedure BeforeDestruction; override;
     class function NewInstance: TObject; override;
     {$ENDIF}
 
     {: Checks that self <> nil (which is not always very
        useful but still worth checking.)}
-    function TestValid(AClassType: TClass = NIL; AAllowNil: boolean = False): boolean; overload;
+    function TestValid(AClassType: TClass = nil; AAllowNil: boolean = False): boolean; overload;
     function TestValid(AAllowNil: boolean): boolean; overload;
 
   end;
@@ -43,41 +41,6 @@ type
   TtiBaseObjectClass = class of TtiBaseObject;
 
 implementation
-
-uses
-  SysUtils
-  {$IFDEF MSWINDOWS}
-  ,Windows    // needed for InterlockedDecrement()
-  {$ENDIF}
-  ,SyncObjs   // This unit must always appear after the Windows unit!
-  ;
-
-const
-  ASSERT_UNIT = 'IdSoapDebug';
-
-{$IFNDEF DELPHI5ORABOVE}
-procedure FreeAndNil(var AObj);
-var
-  Temp: TObject;
-begin
-  Temp          := TObject(AObj);
-  Pointer(AObj) := NIL;
-  Temp.Free;
-end;
-{$ENDIF}
-
-//break point into the debugger if there is one;
-procedure IdBreakpoint;
-begin
-  try
-    asm
-      int $03
-    end;
-  except
-    // on some poorly configured Windows systems int $03 can cause unhandled
-    // exceptions with improperly installed Dr Watsons etc....
-  end;
-end;
 
 function TtiBaseObject.QueryInterface(const IID: TGUID; out Obj): HResult;
 begin
@@ -87,16 +50,16 @@ begin
     Result := E_NOINTERFACE;
 end;
 
-function TtiBaseObject._AddRef: Integer;
+function TtiBaseObject._AddRef: integer;
 begin
   {$IFDEF REFERENCE_COUNTING}
-  Result:= InterlockedIncrement(FRefCount);
+  Result := InterlockedIncrement(FRefCount);
   {$else}
-  Result:= 0;
+  Result := 0;
   {$ENDIF}
 end;
 
-function TtiBaseObject._Release: Integer;
+function TtiBaseObject._Release: integer;
 begin
   {$IFDEF REFERENCE_COUNTING}
   Result := InterlockedDecrement(FRefCount);
@@ -104,13 +67,8 @@ begin
     if Result = 0 then
       Destroy;
   {$else}
-  Result:= 0;
+  Result := 0;
   {$ENDIF}
-end;
-
-constructor TtiBaseObject.Create;
-begin
-  inherited;
 end;
 
 { Set an implicit refcount so that refcounting during construction won't
@@ -123,11 +81,6 @@ begin
 end;
 {$ENDIF}
 
-destructor TtiBaseObject.Destroy;
-begin
-  inherited;
-end;
-
 {$IFDEF REFERENCE_COUNTING}
 procedure TtiBaseObject.AfterConstruction;
 begin
@@ -136,6 +89,7 @@ begin
   if FRefCounting then
     InterlockedDecrement(FRefCount);
 end;
+
 {$ENDIF}
 
 {$IFDEF REFERENCE_COUNTING}
@@ -152,9 +106,10 @@ begin
   Result := inherited NewInstance;
   TtiBaseObject(Result).FRefCount := 1;
 end;
+
 {$ENDIF}
 
-function TtiBaseObject.TestValid(AClassType: TClass = NIL; AAllowNil: boolean = False): boolean;
+function TtiBaseObject.TestValid(AClassType: TClass = nil; AAllowNil: boolean = False): boolean;
 begin
   Result := AAllowNil or Assigned(self);
   if Result and Assigned(self) and Assigned(AClassType) then
@@ -163,13 +118,7 @@ end;
 
 function TtiBaseObject.TestValid(AAllowNil: boolean): boolean;
 begin
-  result:= TestValid(TtiBaseObject, AAllowNil);
+  Result := TestValid(TtiBaseObject, AAllowNil);
 end;
 
 end.
-
-
-
-
-
-
