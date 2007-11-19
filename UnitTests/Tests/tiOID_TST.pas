@@ -17,6 +17,9 @@ uses
 type
 
   TTestTIOIDManager = class(TtiOPFTestCase)
+  private
+    FOIDs: TStrings;
+    procedure DoOnNextOID_Integer(Sender: TObject);
   public
     constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   published
@@ -30,6 +33,7 @@ type
 
     procedure   NextOIDStringSetNextOIDChars;
     procedure   NextOIDInteger;
+    procedure   NextOIDInteger_MultiUserAccess; virtual;
     procedure   NextOIDString;
     procedure   NextOIDGUID;
 
@@ -125,6 +129,8 @@ uses
   {$ENDIF}
   ,tiPersistenceLayers
   ,tiUtils
+  ,tiGeneratorThread
+  ,tiConstants
  ;
   
 
@@ -509,6 +515,43 @@ begin
   end;
 end;
 
+procedure TTestTIOIDManager.DoOnNextOID_Integer(Sender: TObject);
+var lOidStr: string;
+begin
+  lOidStr:= IntToStr( tiOIDInteger.TNextOIDData(sender).NextOID);
+  if FOIDs.IndexOf(lOidStr) >= 0 then
+    raise Exception.CreateFmt('Duplicate OID: %s', [lOidStr])
+  else
+    FOIDs.Add(lOidStr);
+end;
+
+procedure TTestTIOIDManager.NextOIDInteger_MultiUserAccess;
+var
+  lRegPerLayer : TtiPersistenceLayer;
+  query: TtiQuery;
+begin
+  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
+  query:= lRegPerLayer.QueryClass.Create;
+  try
+    if query is TtiQuerySQL then
+    begin
+      CreateNextOIDIntTable;
+
+      try
+        FOIDs:= TStringList.Create;
+        try
+          TestOIDGenerator(tiOIDInteger.TNextOIDData, cNextOIDReadHigh, DatabaseName, lRegPerLayer.PersistenceLayerName, DoOnNextOID_Integer);
+        finally
+          FreeAndNil( FOIDs );
+        end;
+      finally
+        DropNextOIDTable;
+      end;
+    end;
+  finally
+    query.Free;
+  end;
+end;
 
 procedure TTestTIOIDManager.OIDFactory_CreateNextOIDGenerator;
 var
@@ -647,7 +690,6 @@ begin
     DropNextOIDTable;
   end;
 end;
-
 
 procedure TTestTIOIDManager.NextOIDGUID;
 var
@@ -874,5 +916,6 @@ end;
 
 
 end.
+
 
 

@@ -80,12 +80,12 @@ end;
 
 procedure TTestTICriteria.TestPerColumns;
 var
-  lColumns: TPerColumns;
-  lCol: TPerColumn;
+  lColumns: TtiColumns;
+  lCol: TtiColumn;
 begin
-  lColumns := TPerColumns.Create;
+  lColumns := TtiColumns.Create;
   try
-    lCol := TPerColumn.Create;
+    lCol := TtiColumn.Create;
     lCol.Name       := 'Field1';
     lCol.Ascending  := True;
     lColumns.Add(lCol);
@@ -95,7 +95,7 @@ begin
     CheckEquals(True, lCol.Ascending, 'Failed on 4');
     CheckEquals('Field1', lCol.Name, 'Failed on 5');
 
-    lCol := TPerColumn.Create;
+    lCol := TtiColumn.Create;
     lCol.Name       := 'Field2';
     lCol.Ascending  := False;
     lColumns.Add(lCol);
@@ -1516,6 +1516,7 @@ begin
 end;
 
 end.
+
 
 
 

@@ -18,8 +18,8 @@ uses
 type
   TVisObjectToSQL = class(TVisStringStream)
   private
-    FGroupByList: TPerColumns;
-    FOrderByList: TPerColumns;
+    FGroupByList: TtiColumns;
+    FOrderByList: TtiColumns;
     FWithComments: Boolean;
     FParams: TtiQueryParams;
     FCurrentParamNo: integer;
@@ -364,9 +364,9 @@ constructor TVisObjectToSQL.Create(pWithComments: boolean = False);
 begin
   inherited Create;
   FWithComments             := pWithComments;
-  FGroupByList              := TPerColumns.Create;
+  FGroupByList              := TtiColumns.Create;
   FGroupByList.OwnsObjects  := False;
-  FOrderByList              := TPerColumns.Create;
+  FOrderByList              := TtiColumns.Create;
   FOrderByList.OwnsObjects  := False;
   FParams                   := nil;
   FCurrentParamNo           := 1;
@@ -450,6 +450,7 @@ begin
 end;
 
 end.
+
 
 
 

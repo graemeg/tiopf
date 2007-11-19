@@ -72,7 +72,12 @@ type
     procedure   Execute(const AData : TtiVisited); override;
   end;
 
-
+  TVisDBNextOIDSql = class(TtiObjectVisitor)
+  protected
+    function    AcceptVisitor : boolean; override;
+  public
+    procedure   Execute(const AData : TtiVisited); override;
+  end;
 const
   cOIDClassNameInteger = 'OIDClassNameInteger';
 
@@ -150,6 +155,7 @@ end;
 
 const
   cuLowRange = 100;
+  cMaxRetries = 10;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -235,7 +241,7 @@ end;
 
 function TVisDBNextOIDAmblerRead.AcceptVisitor: boolean;
 begin
-  result := (Visited is TNextOIDData);
+  result := (Visited is TNextOIDData) and not (Query is TtiQuerySQL);
 end;
 
 procedure TVisDBNextOIDAmblerRead.Execute(const AData: TtiVisited);
@@ -261,7 +267,7 @@ end;
 
 function TVisDBNextOIDAmblerUpdate.AcceptVisitor: boolean;
 begin
-  result := (Visited is TNextOIDData);
+  result := (Visited is TNextOIDData) and not (Query is TtiQuerySQL);
 end;
 
 procedure TVisDBNextOIDAmblerUpdate.Execute(const AData: TtiVisited);
@@ -285,6 +291,44 @@ begin
   end;
 end;
 
+{ TVisDBNextOIDSql }
+
+function TVisDBNextOIDSql.AcceptVisitor: boolean;
+begin
+  result := (Visited is TNextOIDData) and (Query is TtiQuerySQL);
+end;
+
+procedure TVisDBNextOIDSql.Execute(const AData: TtiVisited);
+var i: integer;
+begin
+  if gTIOPFManager.Terminated then
+    Exit;
+
+  Inherited Execute(AData);
+
+  if not AcceptVisitor then
+    Exit;
+
+  Query.SQL.Text:= 'update Next_OID set OID = OID + 1';
+  for i := 0 to cMaxRetries do
+  begin
+    try
+      Query.ExecSQL;
+      break;
+    except
+      // database may be locked, wait and try again later
+      Sleep(50);
+    end;
+  end;
+
+  Query.SelectRow('Next_OID', nil);
+  try
+    TNextOIDData(Visited).NextOID:= Query.FieldAsInteger[ 'OID' ] - 1;
+  finally
+    Query.Close;
+  end;
+end;
+
 initialization
 
   gTIOPFManager.OIDFactory.RegisterMapping(cOIDClassNameInteger, TOIDInteger, TNextOIDGeneratorInteger) ;
@@ -293,6 +337,7 @@ initialization
 
   gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
   gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
+  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDSql);
 {$ELSE}
 interface
 implementation

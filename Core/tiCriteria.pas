@@ -12,39 +12,39 @@ type
   TCriteriaType = (crAND, crOR, crNONE);
 
   // forward declarations
-  TPerColumns                 = class;
+  TtiColumns                 = class;
   TtiCriteria                 = class;
   TtiCriteriaList             = class;
   TtiSelectionCriteriaAbs     = class;
   TtiSelectionCriteriaList    = class;
 
 
-  TPerColumn = class(TtiObject)
+  TtiColumn = class(TtiObject)
   private
     FAscending: Boolean;
     FName: string;
   protected
-    function    GetOwner: TPerColumns; reintroduce; virtual;
-    procedure   SetOwner(const Value: TPerColumns); reintroduce; virtual;
+    function    GetOwner: TtiColumns; reintroduce; virtual;
+    procedure   SetOwner(const Value: TtiColumns); reintroduce; virtual;
   public
-    property    Owner: TPerColumns read GetOwner write SetOwner;
+    property    Owner: TtiColumns read GetOwner write SetOwner;
   published
     property    Ascending: Boolean read FAscending write FAscending;
     property    Name: string read FName write FName;
   end;
   
   
-  TPerColumns = class(TtiObjectList)
+  TtiColumns = class(TtiObjectList)
   private
-    function    GetItems(i: Integer): TPerColumn; reintroduce;
-    procedure   SetItems(i: Integer; Value: TPerColumn); reintroduce;
+    function    GetItems(i: Integer): TtiColumn; reintroduce;
+    procedure   SetItems(i: Integer; Value: TtiColumn); reintroduce;
   protected
     function    GetOwner: TtiCriteria; reintroduce; virtual;
     procedure   SetOwner(const Value: TtiCriteria); reintroduce; virtual;
   public
-    function    Add(const AObject: TPerColumn): integer; reintroduce;
-    procedure   CopyReferences(pSource: TPerColumns);
-    property    Items[Index: Integer]: TPerColumn read GetItems write SetItems;
+    function    Add(const AObject: TtiColumn): integer; reintroduce;
+    procedure   CopyReferences(pSource: TtiColumns);
+    property    Items[Index: Integer]: TtiColumn read GetItems write SetItems;
     property    Owner: TtiCriteria read GetOwner write SetOwner;
   end;
   
@@ -53,10 +53,10 @@ type
   private
     FCriterias: TtiCriteriaList;
     FCriteriaType: TCriteriaType;
-    FGroupByList: TPerColumns;
+    FGroupByList: TtiColumns;
     FIsEmbraced: Boolean;
     FName: string;
-    FOrderByList: TPerColumns;
+    FOrderByList: TtiColumns;
     FSelectionCriterias: TtiSelectionCriteriaList;
     FCriteriaAttrColMaps: TtiObjectList;
     function    GetCriterias: TtiCriteriaList;
@@ -101,8 +101,8 @@ type
     procedure   AddSQL(ASQLStm: string);
 
     procedure   ClearAll;
-    function    GetGroupByList: TPerColumns;
-    function    GetOrderByList: TPerColumns;
+    function    GetGroupByList: TtiColumns;
+    function    GetOrderByList: TtiColumns;
     function    isEmbraced: Boolean;
     function    HasCriteria: boolean;
     property    CriteriaType: TCriteriaType read FCriteriaType write FCriteriaType;
@@ -270,12 +270,12 @@ const
 
 { TPerColumn }
 
-function TPerColumn.GetOwner: TPerColumns;
+function TtiColumn.GetOwner: TtiColumns;
 begin
-  Result := TPerColumns(inherited Owner);
+  Result := TtiColumns(inherited Owner);
 end;
 
-procedure TPerColumn.SetOwner(const Value: TPerColumns);
+procedure TtiColumn.SetOwner(const Value: TtiColumns);
 begin
   inherited Owner := Value;
 end;
@@ -283,12 +283,12 @@ end;
 
 { TPerColumns }
 
-function TPerColumns.Add(const AObject: TPerColumn): integer;
+function TtiColumns.Add(const AObject: TtiColumn): integer;
 begin
   result := inherited Add(AObject);
 end;
 
-procedure TPerColumns.CopyReferences(pSource: TPerColumns);
+procedure TtiColumns.CopyReferences(pSource: TtiColumns);
 var
   i: Integer;
 begin
@@ -297,22 +297,22 @@ begin
     Add(pSource.Items[i]);
 end;
 
-function TPerColumns.GetItems(i: Integer): TPerColumn;
+function TtiColumns.GetItems(i: Integer): TtiColumn;
 begin
-  Result := TPerColumn(inherited Items[i]);
+  Result := TtiColumn(inherited Items[i]);
 end;
 
-function TPerColumns.GetOwner: TtiCriteria;
+function TtiColumns.GetOwner: TtiCriteria;
 begin
   Result := TtiCriteria(inherited Owner);
 end;
 
-procedure TPerColumns.SetItems(i: Integer; Value: TPerColumn);
+procedure TtiColumns.SetItems(i: Integer; Value: TtiColumn);
 begin
   inherited Items[i] := Value;
 end;
 
-procedure TPerColumns.SetOwner(const Value: TtiCriteria);
+procedure TtiColumns.SetOwner(const Value: TtiCriteria);
 begin
   inherited Owner := Value;
 end;
@@ -336,11 +336,11 @@ begin
   FSelectionCriterias.Owner       := Self;
   FSelectionCriterias.OwnsObjects := True;
   
-  FGroupByList := TPerColumns.Create;
+  FGroupByList := TtiColumns.Create;
   FGroupByList.Owner              := Self;
   FGroupByList.OwnsObjects        := True;
   
-  FOrderByList := TPerColumns.Create;
+  FOrderByList := TtiColumns.Create;
   FOrderByList.Owner              := Self;
   FOrderByList.OwnsObjects        := true;
 
@@ -408,10 +408,10 @@ end;
 
 procedure TtiCriteria.AddGroupBy(AField: string);
 var
-  lData: TPerColumn;
+  lData: TtiColumn;
 begin
   Assert(AField <> '', 'AField is blank!');
-  lData := TPerColumn.Create;
+  lData := TtiColumn.Create;
   lData.Name := AField;
   FGroupByList.Add(lData);
 end;
@@ -542,10 +542,10 @@ end;
 
 procedure TtiCriteria.AddOrderBy(AField: string; ASorterAscending: boolean = False);
 var
-  lData: TPerColumn;
+  lData: TtiColumn;
 begin
   Assert(AField <> '', 'AField is blank!');
-  lData := TPerColumn.Create;
+  lData := TtiColumn.Create;
   lData.Ascending := ASorterAscending;
   lData.Name := AField;
   FOrderByList.Add(lData);
@@ -613,12 +613,12 @@ begin
   Result := FCriterias;
 end;
 
-function TtiCriteria.GetGroupByList: TPerColumns;
+function TtiCriteria.GetGroupByList: TtiColumns;
 begin
   Result := FGroupByList;
 end;
 
-function TtiCriteria.GetOrderByList: TPerColumns;
+function TtiCriteria.GetOrderByList: TtiColumns;
 begin
   Result := FOrderByList;
 end;
@@ -935,6 +935,7 @@ begin
 end;
 
 end.
+
 
 
 

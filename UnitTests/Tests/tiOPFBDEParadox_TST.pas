@@ -49,6 +49,8 @@ type
   TTestTIOIDManagerBDEParadox = class(TTestTIOIDManager)
   protected
     procedure   SetUp; override;
+  published
+    procedure   NextOIDInteger_MultiUserAccess;    override;
   end;
 
 procedure RegisterTests;
@@ -155,6 +157,12 @@ begin
 end;
 
 { TTestTIOIDManagerBDEParadox }
+
+procedure TTestTIOIDManagerBDEParadox.NextOIDInteger_MultiUserAccess;
+begin
+  Check(True);
+  LogWarning(ClassName + '.NextOIDInteger_MultiUserAccess not tested');
+end;
 
 procedure TTestTIOIDManagerBDEParadox.SetUp;
 begin
