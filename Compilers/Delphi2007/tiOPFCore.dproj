@@ -56,7 +56,6 @@
     <DelphiCompile Include="tiOPFCore.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\..\Core\rtl.dcp" />
     <DCCReference Include="..\..\Core\tiAutoMap.pas" />
     <DCCReference Include="..\..\Core\tiBaseObject.pas" />
     <DCCReference Include="..\..\Core\tiCommandLineParams.pas" />
@@ -87,6 +86,7 @@
     <DCCReference Include="..\..\Core\tiVisitorDB.pas" />
     <DCCReference Include="..\..\Core\tiVisitorDBAutoGen.pas" />
     <DCCReference Include="..\..\Core\tiWin32.pas" />
-    <DCCReference Include="..\..\Core\vcl.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\rtl.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\vcl.dcp" />
   </ItemGroup>
 </Project>
