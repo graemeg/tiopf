@@ -1,9 +1,16 @@
 unit tiGeneratorThread;
 
+{$I tiDefines.inc}
+
 interface
 
 uses
-  TestFramework, SysUtils, tiOID, tiQuery, Classes, tiOPFManager,
+  {$ifdef fpc}
+  testregistry,
+  {$else}
+  TestFramework,
+  {$endif}
+  SysUtils, tiOID, tiQuery, Classes, tiOPFManager,
   SyncObjs, tiVisitor;
 
 type
