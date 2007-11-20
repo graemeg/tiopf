@@ -1244,7 +1244,7 @@ procedure TtiPersistenceLayerRemoteXML.AssignPersistenceLayerDefaults(
   const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
 begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
-  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistXX;
+  APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistRemote;
   APersistenceLayerDefaults.DatabaseName:= cLocalHost;
   APersistenceLayerDefaults.Username:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
