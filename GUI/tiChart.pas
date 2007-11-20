@@ -84,18 +84,6 @@ type
         SetItem;
   end;
 
-  // This thread is responsible for keeping an eye the cross hairs and clearing
-  // them if the mouse is moved off the draw region of the graph.
-  TThrdGraphMonitor = class(TThread)
-  private
-    FtiChart: TtiTimeSeriesChart;
-    procedure DoClearCrossHairs;
-  public
-    constructor CreateExt(const pChart : TtiTimeSeriesChart);
-    destructor Destroy; override;
-    procedure Execute; override;
-  end;
-
   TAssignGraphDataEvent = procedure (AData : TObject; pChart :
       TtiTimeSeriesChart) of object;
   TDataGapEvent = procedure (ADataBeforeGap: TObject; ADataAfterGap: TObject;
@@ -193,6 +181,7 @@ type
     constructor CreateNew(Owner : TComponent; AParenttiChart: TtiTimeSeriesChart;
         ALegendPosition: TtiChartLegendPosition; Dummy : integer = 0); reintroduce; overload;
     destructor Destroy; override;
+    procedure SelectUserPanel;
     property ChartLegendForm: TtiChartLegendForm read FChartLegendForm;
     property UserPanel: TtiChartUserPanel read FUserPanel;
   end;
@@ -372,7 +361,6 @@ type
 
     FScrollStyle: TScrollStyle;
     FTestData: TtiChartTestData;
-    FthrdMonitor: TThrdGraphMonitor;
     FShowDataPointHintTmr: TTimer;
     FSeriesList: TObjectList;
     procedure AdjustScrollBarPositions;
@@ -509,6 +497,7 @@ type
     property Zoomed: Boolean read GetZoomed;
     function IsSeriesVisible(const ASeriesTitle: string): boolean;
     function PointsVisible: Integer;
+    procedure SelectUserPanel;
 
     property VisiblesSeriesMinX: real read GetVisiblesSeriesMinX;
     property VisiblesSeriesMaxX: real read GetVisiblesSeriesMaxX;
@@ -611,56 +600,6 @@ end;
 destructor TtiClearPanel.Destroy;
 begin
   inherited;
-end;
-
-{ TThrdGraphMonitor }
-
-{
-****************************** TThrdGraphMonitor *******************************
-}
-constructor TThrdGraphMonitor.CreateExt(const pChart : TtiTimeSeriesChart);
-begin
-  Assert(pChart <> nil, 'pChart not assigned');
-  Create(true);
-  self.Priority := tpLower;
-  FreeOnTerminate := false;
-  FtiChart := pChart;
-end;
-
-destructor TThrdGraphMonitor.Destroy;
-begin
-  inherited;
-end;
-
-procedure TThrdGraphMonitor.DoClearCrossHairs;
-var
-  lbIsFormFocused: Boolean;
-  lbMouseInCrossHairRegion: Boolean;
-  lbDrawCrossHairs: Boolean;
-begin
-  lbDrawCrossHairs        := FtiChart.DrawCrossHairs;
-  if not lbDrawCrossHairs then
-  begin
-    FtiChart.DrawCrossHairsNow := false;
-    Exit; //==>
-  end;
-
-  lbIsFormFocused         := FtiChart.IsFormFocused;
-  lbMouseInCrossHairRegion := FtiChart.MouseInCrossHairRegion;
-
-  FtiChart.DrawCrossHairsNow :=
-    lbMouseInCrossHairRegion and
-    lbIsFormFocused and
-    lbDrawCrossHairs;
-end;
-
-procedure TThrdGraphMonitor.Execute;
-begin
-  while not Terminated do begin
-    Sleep(50);
-    Synchronize(DoClearCrossHairs);
-   // FtiChart.FChart.Repaint;
-  end;
 end;
 
 { TtiChartDataMapping }
@@ -1106,6 +1045,12 @@ begin
   FPageControl.Free;
   //FDockTabSet.Free;
   inherited;
+end;
+
+procedure TtiChartLegendPanel.SelectUserPanel;
+begin
+  if Assigned(FUserPanelForm) then
+    FPageControl.ActivePage := FUserPanelTabSheet;
 end;
 
 procedure TtiChartLegendPanel.SetUserPanelCaption(const ACaption: string);
@@ -1997,7 +1942,6 @@ begin
 //    Align := alClient;
 //  end;
 
-  FthrdMonitor := TThrdGraphMonitor.CreateExt(Self);
   FChartLegendForm := FChartWithLegendPanel.ChartLegendPanel.ChartLegendForm;
 
   FDataPointHintForm := TtiDataPointHintForm.CreateNew(self);
@@ -2039,8 +1983,6 @@ end;
 
 destructor TtiTimeSeriesChart.Destroy;
 begin
-  FthrdMonitor.Terminate;
-  FthrdMonitor.Free;
   FTestData.Free;
   FButtonsPanel.Free;
   FChartWithLegendPanel.Free;
@@ -3058,6 +3000,11 @@ begin
   RangeChange;
 end;
 
+procedure TtiTimeSeriesChart.SelectUserPanel;
+begin
+  FChartWithLegendPanel.ChartLegendPanel.SelectUserPanel;
+end;
+
 function TtiTimeSeriesChart.SeriesByName(const psSeriesName : string):
     TChartSeries;
 var
@@ -3142,22 +3089,12 @@ end;
 
 procedure TtiTimeSeriesChart.SetData(const AValue: TtiObjectList);
 begin
-  if not FThrdMonitor.Suspended then
-    FthrdMonitor.Suspend;
-
   if not Assigned(AValue) then
     ClearSeries;
 
   FData := AValue;
   DoDrawChart(True {ANewSeries}, True {AZoomOut});
 
-  if not Assigned(AValue) then
-    Exit; //==>
-    
-{$IFDEF DeactivateCrossHairs }
-//    if (not (csDesigning in ComponentState)) then
-//      FthrdMonitor.Resume;
-{$ENDIF}
 end;
 
 procedure TtiTimeSeriesChart.DoDrawChart(const ANewSeries: Boolean;
@@ -3209,15 +3146,7 @@ end;
 
 procedure TtiTimeSeriesChart.RedrawChart;
 begin
-  if not FThrdMonitor.Suspended then
-    FthrdMonitor.Suspend;
-
   DoDrawChart(False {ANewSeries}, not Zoomed);
-
-{$IFDEF DeactivateCrossHairs }
-//    if (not (csDesigning in ComponentState)) then
-//      FthrdMonitor.Resume;
-{$ENDIF}
 end;
 
 procedure TtiTimeSeriesChart.SetDataPointHintText(const Value: string);
