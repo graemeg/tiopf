@@ -58,26 +58,32 @@ type
     procedure   AssignNextOID(const AAssignTo : TOID; const ADatabaseName : string; APersistenceLayerName : string); override;
   end;
 
-  TVisDBNextOIDAmblerRead = class(TtiObjectVisitor)
+  TVisDBNextOIDAmbler = class(TtiObjectVisitor)
+  protected
+    function CanSupportMultiUser: Boolean;
+  end;
+
+  TVisDBNextOIDAmblerRead = class(TVisDBNextOIDAmbler)
   protected
     function    AcceptVisitor : boolean; override;
   public
     procedure   Execute(const AData : TtiVisited); override;
   end;
 
-  TVisDBNextOIDAmblerUpdate = class(TtiObjectVisitor)
+  TVisDBNextOIDAmblerUpdate = class(TVisDBNextOIDAmbler)
   protected
     function    AcceptVisitor : boolean; override;
   public
     procedure   Execute(const AData : TtiVisited); override;
   end;
 
-  TVisDBNextOIDSql = class(TtiObjectVisitor)
+  TVisDBNextOIDSql = class(TVisDBNextOIDAmbler)
   protected
     function    AcceptVisitor : boolean; override;
   public
     procedure   Execute(const AData : TtiVisited); override;
   end;
+
 const
   cOIDClassNameInteger = 'OIDClassNameInteger';
 
@@ -87,6 +93,7 @@ uses
   tiQuery
   ,tiOPFManager
   ,tiConstants
+  ,tiPersistenceLayers
   ,SysUtils
  ;
 
@@ -241,7 +248,7 @@ end;
 
 function TVisDBNextOIDAmblerRead.AcceptVisitor: boolean;
 begin
-  result := (Visited is TNextOIDData) and not (Query is TtiQuerySQL);
+  result := (Visited is TNextOIDData) and not CanSupportMultiUser;
 end;
 
 procedure TVisDBNextOIDAmblerRead.Execute(const AData: TtiVisited);
@@ -267,7 +274,7 @@ end;
 
 function TVisDBNextOIDAmblerUpdate.AcceptVisitor: boolean;
 begin
-  result := (Visited is TNextOIDData) and not (Query is TtiQuerySQL);
+  result := (Visited is TNextOIDData) and not CanSupportMultiUser;
 end;
 
 procedure TVisDBNextOIDAmblerUpdate.Execute(const AData: TtiVisited);
@@ -295,7 +302,7 @@ end;
 
 function TVisDBNextOIDSql.AcceptVisitor: boolean;
 begin
-  result := (Visited is TNextOIDData) and (Query is TtiQuerySQL);
+  result := (Visited is TNextOIDData) and CanSupportMultiUser;
 end;
 
 procedure TVisDBNextOIDSql.Execute(const AData: TtiVisited);
@@ -328,6 +335,24 @@ begin
     Query.Close;
   end;
 end;
+
+{ TVisDBNextOIDAmbler }
+
+function TVisDBNextOIDAmbler.CanSupportMultiUser: Boolean;
+var
+  LDefaults: TtiPersistenceLayerDefaults;
+begin
+  Assert(Persistencelayer<>nil, 'FPersistenceLayer not assigned');
+  LDefaults:= TtiPersistenceLayerDefaults.Create;
+  try
+    PersistenceLayer.AssignPersistenceLayerDefaults(LDefaults);
+    Result:= LDefaults.CanSupportMultiUser;
+  finally
+    LDefaults.Free;
+  end;
+end;
+
+{ TNextOIDData }
 
 initialization
 

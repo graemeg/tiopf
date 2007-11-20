@@ -279,9 +279,13 @@ begin
     LVC.BeforeExecuteVisitorGroup;
     LVC.BeforeExecuteVisitor(LVisitor);
 
-    CheckNotNull(LVisitor.Query);
+    CheckNotNull(LVisitor.PersistenceLayer);
+    CheckEquals(LVC.PersistenceLayerName, LVisitor.PersistenceLayer.PersistenceLayerName);
+
     CheckNotNull(LVisitor.Database);
     CheckSame(LVC.Database, LVisitor.Database);
+
+    CheckNotNull(LVisitor.Query);
 
   finally
     LConfig.Free;
@@ -311,9 +315,13 @@ begin
 
     LVC.BeforeExecuteVisitorGroup;
     LVC.BeforeExecuteVisitor(LVisitor);
+    CheckNotNull(LVisitor.PersistenceLayer);
+    CheckEquals(LVC.PersistenceLayerName, LVisitor.PersistenceLayer.PersistenceLayerName);
     CheckNotNull(LVisitor.Database);
     CheckSame(LVC.Database, LVisitor.Database);
+
     LVC.AfterExecuteVisitor(LVisitor);
+    CheckNull(LVisitor.PersistenceLayer);
     CheckNull(LVisitor.Database);
 
   finally

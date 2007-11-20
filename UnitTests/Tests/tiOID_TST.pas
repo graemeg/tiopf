@@ -527,29 +527,32 @@ end;
 
 procedure TTestTIOIDManager.NextOIDInteger_MultiUserAccess;
 var
-  lRegPerLayer : TtiPersistenceLayer;
-  query: TtiQuery;
+  LPersistenceLayer: TtiPersistenceLayer;
+  LDefaults: TtiPersistenceLayerDefaults;
 begin
-  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
-  query:= lRegPerLayer.QueryClass.Create;
+  LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
+  LDefaults:= TtiPersistenceLayerDefaults.Create;
   try
-    if query is TtiQuerySQL then
+    LPersistenceLayer.AssignPersistenceLayerDefaults(LDefaults);
+    if LDefaults.CanSupportMultiUser then
     begin
       CreateNextOIDIntTable;
-
       try
         FOIDs:= TStringList.Create;
         try
-          TestOIDGenerator(tiOIDInteger.TNextOIDData, cNextOIDReadHigh, DatabaseName, lRegPerLayer.PersistenceLayerName, DoOnNextOID_Integer);
+          TestOIDGenerator(tiOIDInteger.TNextOIDData, cNextOIDReadHigh,
+            DatabaseName, LPersistenceLayer.PersistenceLayerName,
+            DoOnNextOID_Integer);
         finally
           FreeAndNil( FOIDs );
         end;
       finally
         DropNextOIDTable;
       end;
-    end;
+    end else
+      LogWarning(LPersistenceLayer.PersistenceLayerName + ' does not support multi user access');
   finally
-    query.Free;
+    LDefaults.Free;
   end;
 end;
 

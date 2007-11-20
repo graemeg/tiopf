@@ -111,6 +111,7 @@ type
   private
     FDatabase: TtiDatabase;
     FQuery:    TtiQuery;
+    FPersistenceLayer: TtiPersistenceLayer;
     function GetQuery: TtiQuery;
     procedure SetQuery(const AValue: TtiQuery);
   protected
@@ -118,6 +119,7 @@ type
     procedure SetVisited(const AValue: TtiObject); reintroduce; virtual;
     procedure LogQueryTiming(const AQueryName: string; const AQueryTime: integer;
       const AScanTime: integer);
+    property PersistenceLayer: TtiPersistenceLayer read FPersistenceLayer write FPersistenceLayer;
     property Database: TtiDatabase read FDatabase write FDatabase;
     property Query: TtiQuery read GetQuery write SetQuery;
 
@@ -305,6 +307,7 @@ begin
   LVisitor          := AVisitor as TtiObjectVisitor;
   LVisitor.Query.DetachDatabase;
   LVisitor.Database := nil;
+  LVisitor.PersistenceLayer:= nil;
 end;
 
 procedure TtiObjectVisitorController.BeforeExecuteVisitorGroup;
@@ -341,6 +344,7 @@ begin
   Assert(AVisitor.TestValid(TtiObjectVisitor), CTIErrorInvalidObject);
   Assert(FDatabase.TestValid, CTIErrorInvalidObject);
   LVisitor          := AVisitor as TtiObjectVisitor;
+  LVisitor.PersistenceLayer:= FPersistenceLayer;
   LVisitor.Database := FDatabase;
   LVisitor.Query    := FDatabase.CreateTIQuery;
   LVisitor.Query.AttachDatabase(FDatabase);

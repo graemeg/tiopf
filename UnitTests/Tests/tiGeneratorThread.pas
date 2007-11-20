@@ -7,18 +7,19 @@ uses
   SyncObjs, tiVisitor;
 
 type
+
   TGeneratorThread = class(TThread)
   private
+    FNextOID: TtiVisited;
+    FVistorName: string;
+    FOnNextOID: TNotifyEvent;
+    FDatabase: string;
+    FPerLayer: string;
   protected
     procedure DoOnNextOID(Sender: TObject);
     procedure DoOnTerminate;
     procedure Execute; override;
   public
-    NextOID: TtiVisited;
-    VistorName: string;
-    OnNextOID: TNotifyEvent;
-    Database: string;
-    PerLayer: string;
     destructor Destroy; override;
   end;
 
@@ -54,11 +55,11 @@ begin
     begin
       thread:= TGeneratorThread.Create(true);
       Threads[f]:= thread;
-      thread.VistorName:= AVistorName;
-      thread.Database:= ADatabase;
-      thread.PerLayer:= APerLayer;
-      thread.NextOID:= ANextOIDClass.Create;
-      thread.OnNextOID:= AOnNextOID;
+      thread.FVistorName:= AVistorName;
+      thread.FDatabase:= ADatabase;
+      thread.FPerLayer:= APerLayer;
+      thread.FNextOID:= ANextOIDClass.Create;
+      thread.FOnNextOID:= AOnNextOID;
       thread.Resume;
     end;
 
@@ -95,6 +96,7 @@ end;
 
 destructor TGeneratorThread.Destroy;
 begin
+  FNextOID.Free;
   inherited;
 end;
 
@@ -102,7 +104,7 @@ procedure TGeneratorThread.DoOnNextOID(Sender: TObject);
 begin
   FCritSect.Enter;
   try
-    OnNextOID(Sender);
+    FOnNextOID(Sender);
   finally
     FCritSect.Leave;
   end;
@@ -131,8 +133,8 @@ begin
         if TerminateThreads then
           exit;
         
-        gTIOPFManager.VisitorManager.Execute(VistorName, NextOID, Database, PerLayer);
-        DoOnNextOID(NextOID);
+        gTIOPFManager.VisitorManager.Execute(FVistorName, FNextOID, FDatabase, FPerLayer);
+        DoOnNextOID(FNextOID);
       end;
     except
       on e: Exception do
