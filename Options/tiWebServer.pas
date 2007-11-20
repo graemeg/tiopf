@@ -411,12 +411,18 @@ end;
 
 procedure TtiWebServer.SetCGIBinLocation(const AValue: string);
 begin
-  FCGIBinLocation:= AValue;
+  if AValue <> '' then
+    FCGIBinLocation:= tiAddtrailingSlash(AValue)
+  else
+    FCGIBinLocation:= AValue;
 end;
 
 procedure TtiWebServer.SetStaticPageLocation(const AValue: string);
 begin
-  FStaticPageLocation:= AValue;
+  if AValue <> '' then
+    FStaticPageLocation:= tiAddtrailingSlash(AValue)
+  else
+    FStaticPageLocation:= AValue;
 end;
 
 procedure TtiWebServer.Sort;
@@ -621,9 +627,13 @@ end;
 { TtiWebServerAction_RunCGIExtension }
 
 function TtiWebServerAction_RunCGIExtension.CanExecute(const ADocument: string): boolean;
+var
+  LCGI: string;
 begin
+  LCGI:= CGIBinLocation + ADocument;
+  // ToDo: RunCGIExtension to execute application types other than exe
   result := (ADocument <> '') and
-            (FileExists(CGIBinLocation + ADocument) and
+            (FileExists(LCGI) and
             (SameText(ExtractFileExt(ADocument), '.exe')));
 end;
 

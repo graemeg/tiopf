@@ -19,7 +19,9 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-    function  TestHTTPRequest(const ADocument: string; AFormatException: boolean = True): string;
+    function  TestHTTPRequest(const ADocument: string;
+      const AFormatException: boolean = True;
+      const AParams: string = ''): string;
     function  TestHTTPRequestInBlocks(const ADocument: string;
                                       var   ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword): string;
   published
@@ -332,30 +334,29 @@ procedure TTestTIWebServer.tiWebServer_RunCGIExtension;
 var
   LO: TtiWebServerForTesting;
   LResult: string;
-  LFileName: string;
-  LBat: string;
 begin
-  LBat:= 'echo %1';
   LO:= TtiWebServerForTesting.Create(cPort);
   try
-    LFileName:= TempFileName('test.bat');
-    LO.SetCGIBinLocation(ExtractFilePath(LFileName));
-    tiStringToFile(LBat, LFileName);
     LO.Start;
-    LResult:= TestHTTPRequest('test.bat?teststring');
-    CheckEquals('teststring', LResult);
+    LO.SetCGIBinLocation(tiAddTrailingSlash(tiGetEXEPath) + 'CGI-Bin');
+    LResult:= TestHTTPRequest('tiWebServerCGIForTesting.exe', True, 'teststring');
+    // ToDo: Tidy up the white space padding before and after the result string
+    CheckEquals(#13#10'teststring', LResult);
   finally
     LO.Free;
   end;
 end;
 
-function TTestTIWebServer.TestHTTPRequest(const ADocument: string; AFormatException: boolean = True): string;
+function TTestTIWebServer.TestHTTPRequest(const ADocument: string;
+  const AFormatException: boolean = True;
+  const AParams: string = ''): string;
 var
   LHTTP: TtiHTTPIndy;
 begin
   LHTTP:= TtiHTTPIndy.Create;
   try
     LHTTP.FormatExceptions:= AFormatException;
+    LHTTP.Input.WriteString(AParams);
     LHTTP.Post('http://localhost:' + IntToStr(cPort) + '/' + ADocument);
     Result:= LHTTP.Output.DataString;
   finally
