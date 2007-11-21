@@ -17,10 +17,6 @@ type
 
   TTestTIBaseObject = class (TtiTestCase)
   published
-    procedure TObjectFree;
-    procedure TtiBaseObjectFree;
-    procedure TObjectNillFree;
-    procedure TtiBaseObjectNillFree;
     procedure ValidNill;
     procedure ValidClass;
     procedure ValidPass;
@@ -83,54 +79,6 @@ begin
   end;
 end;
 
-{$WARNINGS OFF}
-procedure TTestTIBaseObject.TObjectFree;
-var
-  LO: TObject;
-begin
-  try
-    Check(True); // To Force OnCheckCalled to be called
-    LO.Free;
-    Fail('Exception should have been raised');
-  except
-    on e: Exception do
-      CheckIs(E, EInvalidPointer);
-  end;
-end;
-{$WARNINGS ON}
-
-procedure TTestTIBaseObject.TObjectNillFree;
-var
-  LO: TObject;
-begin
-  Check(True); // To Force OnCheckCalled to be called
-  LO:= nil;
-  LO.Free;
-end;
-
-{$WARNINGS OFF}
-procedure TTestTIBaseObject.TtiBaseObjectFree;
-var
-  LO: TtiBaseObject;
-begin
-  try
-    LO.Free;
-    Fail('Exception should have been raised');
-  except
-    on e: Exception do
-      CheckIs(E, EInvalidPointer);
-  end;
-end;
-{$WARNINGS ON}
-
-procedure TTestTIBaseObject.TtiBaseObjectNillFree;
-var
-  LO: TtiBaseObject;
-begin
-  Check(True); // To Force OnCheckCalled to be called
-  LO:= nil;
-  LO.Free;
-end;
 
 end.
 

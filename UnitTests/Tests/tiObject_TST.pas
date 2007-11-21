@@ -96,16 +96,16 @@ type
     FIn1Only: TtiObjectList;
     FIn2Only: TtiObjectList;
 
-    procedure InBothAndEqualsEvent(  AItem1, AItem2: TtiObject);
+    procedure InBothAndEqualsEvent(AItem1, AItem2: TtiObject);
     procedure InBothAndNotEqualsEvent(AItem1, AItem2: TtiObject);
-    procedure In1OnlyEvent(          AItem1, AItem2: TtiObject);
-    procedure In2OnlyEvent(          AItem1, AItem2: TtiObject);
+    procedure In1OnlyEvent(AItem1, AItem2: TtiObject);
+    procedure In2OnlyEvent(AItem1, AItem2: TtiObject);
 
-    function  CreateList : TtstTIObjectList;
+    function  CreateList: TtstTIObjectList;
     procedure DoForEachMethod(AData: TtiObject);
   public
-    constructor Create {$IFNDEF DUNIT2ORFPC} (AMethodName: string){$ENDIF}; override;
-    destructor  Destroy; override;
+    procedure   SetUp; override;
+    procedure   TearDown; override;
   published
     procedure   Add;
     procedure   AddItemOwner;
@@ -183,20 +183,20 @@ type
     procedure   SetOwner(const AValue: TtstTIObjectList); reintroduce;
   public
     constructor Create; override;
-    constructor CreateNew(const AOwner : TtiObject; const ADatabaseName : string = ''; const APersistenceLayerName : string = ''); override;
-    property    Owner      : TtstTIObjectList             read GetOwner      write SetOwner;
+    constructor CreateNew(const AOwner: TtiObject; const ADatabaseName: string = ''; const APersistenceLayerName : string = ''); override;
+    property    Owner: TtstTIObjectList read GetOwner write SetOwner;
     procedure   Populate;
-    function    Clone : TtstTIObject; reintroduce;
-    function    IsValid(const AErrors : TtiObjectErrors): boolean; override;
-    function    Equals(const AData : TtiObject): boolean; override;
+    function    Clone: TtstTIObject; reintroduce;
+    function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
+    function    Equals(const AData: TtiObject): boolean; override;
   published
-    property    StrProp  : string      read FStrProp   write FStrProp;
-    property    IntProp  : integer     read FIntProp   write FIntProp;
-    property    FloatProp : extended    read FFloatProp write FFloatProp;
-    property    DateProp : TDateTime   read FDateProp  write FDateProp;
-    property    BoolProp : boolean     read FBoolProp  write FBoolProp;
-    property    OrdProp  : TtstOrdProp read FOrdProp   write FOrdProp;
-    property    StrPropReadOnly : string read FStrProp;
+    property    StrProp: string read FStrProp write FStrProp;
+    property    IntProp: integer read FIntProp write FIntProp;
+    property    FloatProp: extended read FFloatProp write FFloatProp;
+    property    DateProp: TDateTime read FDateProp write FDateProp;
+    property    BoolProp: boolean read FBoolProp write FBoolProp;
+    property    OrdProp: TtstOrdProp read FOrdProp write FOrdProp;
+    property    StrPropReadOnly: string read FStrProp;
   end;
 
 
@@ -2574,10 +2574,10 @@ end;
 
 procedure TTestTIObjectList.FindByProps_DirectValue;
 var
-  LList : TtstTIObjectList;
-  LItem : TtstTIObject;
+  LList: TtstTIObjectList;
+  LItem: TtstTIObject;
 begin
-  LList:=CreateList;
+  LList := CreateList;
   try
     // by boolean
     CheckEquals(5,LList.Count,'Wrong list! - Wrong count!');
@@ -3831,9 +3831,9 @@ begin
   end;
 end;
 
-constructor TTestTIObjectList.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
+procedure TTestTIObjectList.SetUp;
 begin
-  inherited;
+  inherited SetUp;
   FInBothAndEquals   := TtiObjectList.Create;
   FInBothAndEquals.OwnsObjects:= False;
   FInBothAndEquals.AutoSetItemOwner:= False;
@@ -3849,16 +3849,15 @@ begin
   FIn2Only           := TtiObjectList.Create;
   FIn2Only.OwnsObjects:= False;
   FIn2Only.AutoSetItemOwner:= False;
-  
 end;
 
-destructor TTestTIObjectList.Destroy;
+procedure TTestTIObjectList.TearDown;
 begin
+  inherited TearDown;
   FInBothAndEquals.Free;
   FInBothAndNotEquals.Free;
   FIn1Only.Free;
   FIn2Only.Free;
-  inherited;
 end;
 
 procedure TTestTIObjectList.In1OnlyEvent(AItem1, AItem2: TtiObject);

@@ -1792,50 +1792,58 @@ begin
   result := TtiObjectList(Owner).IndexOf(self);
 end;
 
-function TtiObjectList.FindByProps(const AProps : array of string;
-                                  const AVals : array of variant;
-                                  ACaseSensitive : boolean = true): TtiObject;
+function TtiObjectList.FindByProps(const AProps: array of string;
+                                  const AVals: array of variant;
+                                  ACaseSensitive: boolean = true): TtiObject;
 var
   j: Integer;
-  i : integer;
-  lFound : boolean;
+  i: integer;
+  lFound: boolean;
 
   function PropertyMatch(Idx: Integer; PropName: string; PropValue: variant): boolean;
   var
-    lSearch, lItem : variant;
-    lVarType : TVarType;
+    lSearch, lItem: variant;
+    lVarType: TVarType;
     tiFieldAbs: TtiFieldAbs;
+    lPropInfo: PPropInfo;
   begin
     lSearch := PropValue;
+    
     // If the property is a TtiFieldAbs then compare the value with the field
     // objects AsString, else compare the value with the property itself
-    if GetPropInfo(Items[Idx], PropName, [tkClass]) <> nil then begin
+    lPropInfo := GetPropInfo(Items[Idx], PropName, [tkClass]);
+    if Assigned(lPropInfo) then
+    begin
       tiFieldAbs := GetObjectProp(Items[Idx], PropName, TtiFieldAbs) as TtiFieldAbs;
       if Assigned(tiFieldAbs) then
         lItem := tiFieldAbs.AsString
       else
         lItem := TypInfo.GetPropValue(Items[Idx], PropName);
-    end else
+    end
+    else
       lItem := TypInfo.GetPropValue(Items[Idx], PropName);
-    lVarType := VarType(lItem);
 
-    // This part should be wrote in a better way (more efficient...)
-    // But I'm not sure it is really important here
-    // Just to be sure that I'm comparing the SAME kind of values
-    if (VarType(PropValue)=varBoolean) then
-      lItem:=VarAsType(lItem,varBoolean)
+    // Just to be sure that I'm comparing the SAME kind of values,
+    // plus Boolean types need some extra help under FPC
+    if VarIsType(PropValue, varBoolean) then
+      lItem := Boolean(GetOrdProp(Items[Idx], PropName))
     else
     begin
-      lSearch := VarAsType(lSearch,lVarType);
-      lItem := VarAsType(lItem, lVarType);
+      lVarType  := VarType(lItem);
+      lSearch   := VarAsType(lSearch, lVarType);
+      lItem     := VarAsType(lItem, lVarType);
     end;
 
     // PWH Changed for D5 compat
-    if (tiIsVariantOfType(lSearch,varOleStr) or
-        tiIsVariantOfType(lSearch,varString)) and not ACaseSensitive then
-      result := SameText(lSearch,lItem)
+    if (tiIsVariantOfType(lSearch, varOleStr) or
+        tiIsVariantOfType(lSearch, varString)) and not ACaseSensitive then
+    begin
+      result := SameText(lSearch, lItem);
+    end
     else
+    begin
       result := (lSearch = lItem);
+    end;
   end;
 
 begin
@@ -1847,9 +1855,9 @@ begin
   for i := 0 to Count - 1 do
   begin
     // Iterate over each property and value to see if it matches
-    for j := 0 to High(AProps) do    // Iterate
+    for j := Low(AProps) to High(AProps) do    // Iterate
     begin
-      lFound := PropertyMatch(i,AProps[j],AVals[j]);
+      lFound := PropertyMatch(i, AProps[j], AVals[j]);
 
       if not lFound then
         break;

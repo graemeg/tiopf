@@ -178,6 +178,7 @@
     <Other>
       <CustomOptions Value="-FU_Dcu
 -dUseCThreads
+-dREFERENCE_COUNTING
 -dLINK_FBL
 -dLINK_TAB
 -dLINK_CSV
