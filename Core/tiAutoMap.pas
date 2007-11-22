@@ -449,8 +449,6 @@ uses
   tiOPFManager,
   tiOID,
   tiRTTI,
-//  tiVisitorCriteria,
-  tiFilteredObjectList,
   TypInfo,
   SysUtils;
 
@@ -2105,19 +2103,15 @@ end;
 
 procedure TVisAutoCollectionRead.SetUpCriteria;
 var
-  lFiltered: TtiFilteredObjectList;
-//  lVisProAttributeToFieldName: TVisProAttributeToFieldName;
+  lFiltered: ItiFiltered;
 begin
   FCriteria := NIL;
 
-  if not (visited is TtiFilteredObjectList) then
-    exit;
-
-  lFiltered := TtiFilteredObjectList(visited);
+  Supports(visited, ItiFiltered, lFiltered);
 
   if assigned(lFiltered) and lFiltered.HasCriteria then
   begin
-    FCriteria := lFiltered.Criteria;
+    FCriteria := lFiltered.GetCriteria;
 
     FCriteria.MapFieldNames(TtiClass(FClassDBCollection.PerObjAbsClass));
   end;

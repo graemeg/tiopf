@@ -9,7 +9,7 @@ uses
 
 type
 
-  TtiFilteredObjectList = class(TtiObjectList)
+  TtiFilteredObjectList = class(TtiObjectList, ItiFiltered)
   private
     FCriteria: TtiCriteria;
   protected
@@ -22,7 +22,21 @@ type
     function HasCriteria: boolean;
     {: Property based selection critera used when reading the list.  This is declared as TtiObject to get around circular references but is of type TtiCriteria}
     property Criteria: TtiCriteria read GetCriteria;
+  end;
 
+  TtiFilteredObjThreadList = class(TPerObjThreadList, ItiFiltered)
+  private
+    FCriteria: TtiCriteria;
+  protected
+    function GetCriteria: TtiCriteria;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    {: Returns true if the ObjectList has selection critera }
+    function HasCriteria: boolean;
+    {: Property based selection critera used when reading the list.  This is declared as TtiObject to get around circular references but is of type TtiCriteria}
+    property Criteria: TtiCriteria read GetCriteria;
   end;
 
 implementation
@@ -54,4 +68,30 @@ begin
   Result := Assigned(FCriteria) and FCriteria.HasCriteria;
 end;
 
+{ TtiFilteredObjThreadList }
+
+constructor TtiFilteredObjThreadList.Create;
+begin
+  inherited;
+  FCriteria := TtiCriteria.Create(ClassName);
+end;
+
+destructor TtiFilteredObjThreadList.Destroy;
+begin
+  FCriteria.Free;
+  inherited;
+end;
+
+function TtiFilteredObjThreadList.GetCriteria: TtiCriteria;
+begin
+  Result := FCriteria;
+end;
+
+function TtiFilteredObjThreadList.HasCriteria: boolean;
+begin
+  Result := FCriteria.HasCriteria;
+end;
+
 end.
+
+

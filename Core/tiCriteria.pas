@@ -19,6 +19,12 @@ type
   TtiSelectionCriteriaList    = class;
 
 
+  ItiFiltered = interface
+    ['{3B973E92-E6F2-4241-8A78-8068FC52133F}']
+    function HasCriteria: boolean;
+    function GetCriteria: TtiCriteria;
+  end;
+
   TtiColumn = class(TtiObject)
   private
     FAscending: Boolean;
@@ -935,6 +941,7 @@ begin
 end;
 
 end.
+
 
 
 

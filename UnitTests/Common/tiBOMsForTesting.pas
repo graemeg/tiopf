@@ -116,7 +116,7 @@ type
     property OIDAsInteger: integer read GetOIDAsInteger;
   end;
 
-  TtiObjectListNestedForTesting = class(TtiFilteredObjectList)  // used for Criteria tests
+  TtiObjectListNestedForTesting = class(TtiFilteredObjThreadList)  // used for Criteria tests
   private
     FIntField:   integer;
     FFloatField: extended;
@@ -784,6 +784,7 @@ end;
   end;
 
 end.
+
 
 
 
