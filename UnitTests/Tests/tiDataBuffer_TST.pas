@@ -10,7 +10,6 @@ uses
   TestFramework
   {$ENDIF}
   ,tiTestFramework
-  ,tiDataBuffer_Cli
   ,Classes
  ;
 
@@ -57,6 +56,7 @@ procedure RegisterTests;
 implementation
 uses
    tiDataBuffer_BOM
+  ,tiDataBuffer_Cli
   ,tiQuery
   ,tiQueryTXTAbs
   ,SysUtils

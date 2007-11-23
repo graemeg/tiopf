@@ -9,7 +9,6 @@ uses
   ,tiQueryADOAbs
   ,tiQuery
   ,tiPersistenceLayers
-  ,tiDBConnectionPool
  ;
 
 type
@@ -45,9 +44,7 @@ uses
   ,tiUtils
   ,tiOPFManager
   ,tiConstants
-  ,tiWin32
   ,tiExcept
-  ,tiDialogs
   ,SysUtils
   ,DB
   ,ADOX_TLB
@@ -274,5 +271,6 @@ finalization
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistADOAccess);
 
 end.
+
 
 

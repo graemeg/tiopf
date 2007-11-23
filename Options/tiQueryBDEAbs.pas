@@ -105,10 +105,8 @@ type
 
 implementation
 uses
-   tiDBConnectionPool
-  ,tiLog
+  tiLog
   ,tiUtils
-  ,tiOPFManager
   ,tiExcept
   ,SysUtils
   ,DB
@@ -609,5 +607,6 @@ initialization
   uSessionCount := 0;
 
 end.
+
 
 

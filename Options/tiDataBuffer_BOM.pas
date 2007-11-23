@@ -136,7 +136,6 @@ type
 implementation
 uses
    tiUtils
-  ,tiXML
   ,tiStreams
   ,tiExcept
   ,SysUtils
@@ -487,4 +486,5 @@ begin
 end;
 
 end.
+
 

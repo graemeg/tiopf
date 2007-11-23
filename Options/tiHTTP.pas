@@ -12,7 +12,6 @@ uses
   ,IdTCPConnection
   ,IdTCPClient
   ,IdHTTP
-  ,tiConstants
   ,tiWebServerClientConnectionDetails
  ;
 
@@ -139,7 +138,7 @@ var
 implementation
 uses
   Windows
-  ,tiLog
+  ,tiConstants
   ,SysUtils
   ,tiUtils
   ,tiXML
@@ -422,4 +421,5 @@ finalization
   FreeAndNil(uTIHTTPFactory);
 
 end.
+
 

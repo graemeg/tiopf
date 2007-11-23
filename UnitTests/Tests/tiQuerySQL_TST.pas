@@ -37,23 +37,18 @@ type
 
 implementation
 uses
-   tiOPFManager
-  ,Classes
+  Classes
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
   ,Contnrs
   ,SysUtils
-  ,tiLog
-  ,tiObject
   ,tiUtils
-  ,tiConstants
   ,TypInfo
   {$IFNDEF DELPHI6ORABOVE}
   ,FileCtrl
   {$ENDIF}
   ,tiTestFramework
-  ,tiTestDependencies
   ,tiQuery
  ;
 
@@ -479,4 +474,5 @@ end;
 {$ENDIF}
 
 end.
+
 

@@ -40,11 +40,10 @@ type
 
 implementation
 uses
-   tiOPFManager
+  tiLog
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ,tiLog
   ,tiUtils
   ,TypInfo
   {$IFNDEF DELPHI6ORABOVE}

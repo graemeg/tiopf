@@ -39,8 +39,6 @@ implementation
 uses
    tiWin32
   ,tiTestDependencies
-  ,tiBOMsForTesting
-  ,tiDUnitINI
   ,Contnrs
   ,Windows
  ;
@@ -119,4 +117,5 @@ end;
 
 
 end.
+
 

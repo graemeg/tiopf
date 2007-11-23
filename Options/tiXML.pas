@@ -260,9 +260,7 @@ var
 implementation
 uses
    tiUtils
-  ,tiLog
   ,tiCompress
-  ,tiCompressZLib
   ,tiExcept
   ,tiStreams
   ,SysUtils
@@ -1095,4 +1093,5 @@ initialization
 
 
 end.
+
 

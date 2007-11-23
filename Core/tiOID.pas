@@ -124,15 +124,11 @@ type
 
 implementation
 uses
-  tiQuery
-  ,SysUtils
+  SysUtils
   ,tiUtils
   ,tiOPFManager
-//  ,tiObject
-//  ,tiVisitorDB
   ,tiConstants
   ,tiPersistenceLayers
-  ,tiLog
  ;
 
 function OIDToString(const AOID : TOID): string;
@@ -353,6 +349,7 @@ end;
 {$ENDIF}
 
 end.
+
 
 
 

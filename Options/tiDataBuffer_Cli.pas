@@ -4,14 +4,10 @@ unit tiDataBuffer_Cli;
 
 interface
 uses
-  tiObject
-  ,tiDataBuffer_BOM
+  tiDataBuffer_BOM
   ,Contnrs
   ,Classes
-  ,tiVisitor
   ,SysUtils
-  ,tiBaseObject
-  ,tiStreams
   ,tiQuery
  ;
 
@@ -70,8 +66,9 @@ function stExtractTokensL(const S : AnsiString;
 
 implementation
 uses
-  tiOPFManager
-  ,Math
+  Math
+  ,tiBaseObject
+  ,tiObject
   ,tiUtils
   {$IFDEF MSWINDOWS}
   ,Windows

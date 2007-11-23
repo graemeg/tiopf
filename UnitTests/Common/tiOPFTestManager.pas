@@ -76,15 +76,12 @@ type
 
 implementation
 uses
-  tiCommandLineParams
-  ,SysUtils
+  SysUtils
   ,tiOPFManager
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ,tiLog
   ,tiUtils
-  ,tiQuery
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}

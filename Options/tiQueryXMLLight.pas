@@ -5,12 +5,10 @@ unit tiQueryXMLLight;
 interface
 uses
    tiQuery
-  ,tiDataBuffer_BOM
   ,tiQueryTXTAbs
   ,tiXML
   ,tiXMLToTIDataset
   ,tiPersistenceLayers
-  ,tiDBConnectionPool
  ;
 
 const
@@ -84,6 +82,7 @@ implementation
 uses
    tiUtils
   ,tiOPFManager
+  ,tiDataBuffer_BOM
   ,tiConstants
   ,tiLog
   ,tiExcept
@@ -372,6 +371,7 @@ finalization
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXMLLight);
 
 end.
+
 
 
 

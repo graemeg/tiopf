@@ -9,7 +9,6 @@ uses
   ,Controls
   ,StdCtrls
   ,tiDataBuffer_BOM
-  ,tiINI
   {$IFDEF MSWINDOWS}
   ,Windows
   ,Messages
@@ -651,5 +650,6 @@ finalization
   FreeAndNil(uCursorStack);
 
 end.
+
 
 

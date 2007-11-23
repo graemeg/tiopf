@@ -5,14 +5,12 @@ unit tiAutomapCriteria_TST;
 interface
 uses
   Classes  // needed for TStringList
-  ,tiBOMsForTesting
   {$IFDEF FPC}
   ,testregistry
   {$ELSE}
   ,TestFramework 
   {$ENDIF}
   ,tiTestFramework
-  ,tiAutoMap
   ,tiObject
   ;
 
@@ -55,13 +53,10 @@ implementation
 uses
   SysUtils
   ,tiOPFManager
-  ,tiConstants
+  ,tiBOMsForTesting
   ,tiQuery
-  ,tiUtils
   ,tiOIDGUID
   ,Contnrs
-  ,tiLog
-  ,tiTestDependencies
   ,tiCriteria
  ;
 
@@ -397,5 +392,6 @@ begin
 end;
 
 end.
+
 
 

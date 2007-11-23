@@ -10,7 +10,6 @@ uses
   ,tiObject
   ,tiQuery
   ,tiCriteria
-  ,tiUtils        { GetPropNames }
   ,TypInfo
   ,SysUtils
   ;
@@ -53,6 +52,7 @@ implementation
 
 uses
   variants
+  ,tiUtils        { GetPropNames }
   ,tiRTTI
   ;
 
@@ -450,6 +450,7 @@ begin
 end;
 
 end.
+
 
 
 

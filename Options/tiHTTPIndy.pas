@@ -5,7 +5,6 @@ unit tiHTTPIndy;
 interface
 uses
   Classes
-  ,tiBaseObject
   ,tiHTTP
   ,IdBaseComponent
   ,IdComponent
@@ -39,8 +38,7 @@ type
 
 implementation
 uses
-   tiUtils
-  ,tiConstants
+  tiConstants
   ,SysUtils
   ,tiExcept
  ;

@@ -116,7 +116,6 @@ uses
    tiOPFManager
   ,tiObject 
   ,SysUtils
-  ,tiQuery
   ,tiOIDGUID    // Pull in the integer OID framework
   ,tiOIDInteger // Pull in the integer OID framework
   ,tiOIDString  // Pull in the string OID framework
@@ -124,9 +123,6 @@ uses
   ,tiOPFTestManager
   ,Math
   ,tiTestDependencies
-  {$IFDEF MSWINDOWS}
-  ,tiWin32
-  {$ENDIF}
   ,tiPersistenceLayers
   ,tiUtils
   ,tiGeneratorThread
@@ -919,6 +915,7 @@ end;
 
 
 end.
+
 
 
 

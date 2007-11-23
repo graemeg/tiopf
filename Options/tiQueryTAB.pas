@@ -8,7 +8,6 @@ uses
   ,tiDataBuffer_BOM
   ,tiQueryTXTAbs
   ,tiPersistenceLayers
-  ,tiDBConnectionPool
  ;
 
 type
@@ -44,8 +43,7 @@ type
 
 implementation
 uses
-   tiUtils
-  ,tiOPFManager
+  tiOPFManager
   ,tiConstants
   ,tiXML
   ,tiExcept
@@ -224,6 +222,7 @@ finalization
 
 
 end.
+
 
 
 

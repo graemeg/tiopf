@@ -25,7 +25,6 @@ uses
   {$IFDEF FPC}
   ,Controls        // used for TFormBorderStyle
   {$ENDIF}
-  ,tiConstants
   ,tiGUIUtils
  ;
 
@@ -126,6 +125,7 @@ finalization
   UGUIINI.Free;
 
 end.
+
 
 
 

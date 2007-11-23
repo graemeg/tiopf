@@ -6,8 +6,6 @@ interface
 uses
    tiQuery
   ,Classes
-  ,tiObject
-  ,tiDBConnectionPool
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
@@ -194,9 +192,9 @@ type
 implementation
 uses
    tiLog
+  ,tiObject
   ,tiUtils
   ,TypInfo
-  ,tiOPFManager
   ,tiConstants
   ,tiExcept
   {$IFDEF MSWINDOWS}
@@ -1141,6 +1139,7 @@ end;
 
 
 end.
+
 
 
 

@@ -200,14 +200,12 @@ procedure RegisterTests;
 implementation
 uses
   tiUtils
-  ,tiLog
   ,tiConstants
   {$IFDEF MSWINDOWS}
   ,tiWin32
   ,Windows
   {$ENDIF}
   ,tiTestDependencies
-  ,tiBOMsForTesting
   ,SysUtils
   {$IFDEF DELPHI6ORABOVE}
   ,Variants

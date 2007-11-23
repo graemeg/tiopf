@@ -123,7 +123,6 @@ uses
   ,tiHTTPIndy
   ,tiHTTPMSXML
   ,tiConstants
-  ,tiLog
   ,tiWebServerClientConnectionDetails
   ;
 

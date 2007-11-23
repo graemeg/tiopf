@@ -8,8 +8,7 @@ uses
   {$IFNDEF FPC}
   TestFramework,
   {$ENDIF}
-  tiBaseObject
-  ,tiTestFramework
+  tiTestFramework
   ,Classes
  ;
 
@@ -27,6 +26,7 @@ procedure RegisterTests;
 implementation
 uses
    SysUtils
+  ,tiBaseObject
   ,tiTestDependencies
  ;
 
@@ -81,4 +81,5 @@ end;
 
 
 end.
+
 

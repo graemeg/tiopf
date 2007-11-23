@@ -54,8 +54,7 @@ type
 
 implementation
 uses
-   tiObject
-  ,tiUtils
+  tiUtils
   ,tiConstants
   {$IFDEF MSWINDOWS}
   ,Windows

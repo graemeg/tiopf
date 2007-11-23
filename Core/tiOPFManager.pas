@@ -219,26 +219,23 @@ const
 
 implementation
 uses
-   tiCommandLineParams
-  ,tiUtils
-  ,tiLog
+  tiUtils
   ,tiConstants
-  ,tiINI
   ,tiExcept
 
-  {$IFDEF LINK_ADOACCESS}    ,tiQueryADOAccess    {$ENDIF}
+//  {$IFDEF LINK_ADOACCESS}    ,tiQueryADOAccess    {$ENDIF}
   {$IFDEF LINK_ADOSQLSERVER} ,tiQueryADOSQLServer {$ENDIF}
-  {$IFDEF LINK_BDEPARADOX}   ,tiQueryBDEParadox   {$ENDIF}
-  {$IFDEF LINK_CSV}          ,tiQueryCSV          {$ENDIF}
+//  {$IFDEF LINK_BDEPARADOX}   ,tiQueryBDEParadox   {$ENDIF}
+//  {$IFDEF LINK_CSV}          ,tiQueryCSV          {$ENDIF}
   {$IFDEF LINK_DOA}          ,tiQueryDOA          {$ENDIF}
   {$IFDEF LINK_FBL}          ,tiQueryFBL          {$ENDIF}
   {$IFDEF LINK_IBO}          ,tiQueryIBO          {$ENDIF}
   {$IFDEF LINK_IBX}          ,tiQueryIBX          {$ENDIF}
   {$IFDEF LINK_REMOTE}       ,tiQueryRemote       {$ENDIF}
   {$IFDEF LINK_SQLDB_IB}     ,tiQuerySqldbIB      {$ENDIF}
-  {$IFDEF LINK_TAB}          ,tiQueryTAB          {$ENDIF}
-  {$IFDEF LINK_XML}          ,tiQueryXML          {$ENDIF}
-  {$IFDEF LINK_XMLLIGHT}     ,tiQueryXMLLight     {$ENDIF}
+//  {$IFDEF LINK_TAB}          ,tiQueryTAB          {$ENDIF}
+//  {$IFDEF LINK_XML}          ,tiQueryXML          {$ENDIF}
+//  {$IFDEF LINK_XMLLIGHT}     ,tiQueryXMLLight     {$ENDIF}
   {$IFDEF LINK_ZEOS_FB10}    ,tiQueryZeosFB10     {$ENDIF}
   {$IFDEF LINK_ZEOS_FB15}    ,tiQueryZeosFB15     {$ENDIF}
   {$IFDEF LINK_ZEOS_MYSQL41} ,tiQueryZeosMySQL41  {$ENDIF}
@@ -895,6 +892,7 @@ finalization
   FreeAndNilTIPerMgr;
 
 end.
+
 
 
 

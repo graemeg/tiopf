@@ -6,8 +6,7 @@ interface
 uses
   SysUtils,
   Classes,
-  Windows,
-  tiLog;
+  Windows;
 
 // 06/02/2006 PH renamed unit and public methods with 'ti' prefix for compatibility with tiOPF source
 

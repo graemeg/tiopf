@@ -12,7 +12,6 @@ uses
   ,TestFramework 
   {$ENDIF}
   ,tiTestFramework
-  ,tiAutoMap
   ,tiObject
   ;
 
@@ -169,11 +168,11 @@ uses
   SysUtils
   ,tiOPFManager
   ,tiConstants
+  ,tiAutoMap
   ,tiQuery
   ,tiUtils
   ,tiOIDGUID
   ,Contnrs
-  ,tiLog
   ,tiTestDependencies
  ;
 
@@ -2487,6 +2486,7 @@ end;
 {$ENDIF}
 
 end.
+
 
 
 

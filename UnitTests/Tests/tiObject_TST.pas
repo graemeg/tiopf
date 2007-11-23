@@ -11,7 +11,6 @@ uses
   {$ENDIF}
   ,tiTestFramework
   ,tiObject
-  ,tiBOMsForTesting
  ;
 
 
@@ -262,13 +261,8 @@ const
 
 implementation
 uses
-  // tiOPF
-   tiOPFManager
-  ,tiOPFTestManager
+  tiBOMsForTesting
   ,tiTestDependencies
-  ,tiOIDGUID
-  ,tiOIDInteger
-  ,tiXML
   ,tiUtils
   ,tiVisitor
   ,tiConstants
@@ -3901,4 +3895,5 @@ end;
 { TTestTIObjectDeleteOwned }
 
 end.
+
 

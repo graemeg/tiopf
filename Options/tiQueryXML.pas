@@ -8,15 +8,12 @@ uses
    tiQuery
   ,tiXML
   ,Classes
-  ,tiAutoMap
-  ,tiObject
   ,MSXML_TLB
   {$IFNDEF VER130}
   ,Variants
   {$ENDIF}
   ,Windows
   ,tiPersistenceLayers
-  ,tiDBConnectionPool
  ;
 
 type
@@ -132,6 +129,7 @@ type
 implementation
 uses
    tiLog
+  ,tiObject
   ,tiUtils
   ,TypInfo
   ,tiOPFManager
@@ -1035,6 +1033,7 @@ finalization
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXML);
 
 end.
+
 
 
 

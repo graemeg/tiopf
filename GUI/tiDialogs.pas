@@ -28,7 +28,6 @@ uses
   {$IFNDEF VER130}
    ,Variants
   {$ENDIF}
-  ,tiConstants
  ;
 
 
@@ -150,6 +149,7 @@ uses
   {$IFDEF LINUX}
   ,Types
   {$ENDIF LINUX}
+  ,tiConstants
   ,tiUtils
   ,tiGUIINI
   ,tiLog
@@ -871,4 +871,5 @@ begin
 end;
 
 end.
+
 

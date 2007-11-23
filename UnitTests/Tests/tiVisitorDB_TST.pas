@@ -5,11 +5,11 @@ unit tiVisitorDB_TST;
 interface
 
 uses
-  tiTestFramework,
   {$IFNDEF FPC}
   TestFrameWork,
   {$ENDIF}
-  tiObject;
+  tiTestFramework
+  ;
 
 type
 
@@ -35,17 +35,19 @@ procedure RegisterTests;
 implementation
 
 uses
-  tiTestDependencies,
-  tiVisitor,
-  tiVisitorDB,
-  tiOPFManager,
-  tiExcept,
-  tiQueryXMLLight,
-  tiConstants,
-  tiUtils,
-  tiBaseObject,
-  SysUtils,
-  Classes;
+  tiTestDependencies
+  ,tiObject
+  ,tiVisitor
+  ,tiVisitorDB
+  ,tiOPFManager
+  ,tiExcept
+  ,tiQueryXMLLight
+  ,tiConstants
+  ,tiUtils
+  ,tiBaseObject
+  ,SysUtils
+  ,Classes
+  ;
 
 procedure RegisterTests;
 begin

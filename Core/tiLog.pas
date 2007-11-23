@@ -234,7 +234,6 @@ implementation
 uses
    tiConstants
   ,tiUtils
-  ,tiObject
   ,tiLogToFile
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
@@ -915,4 +914,5 @@ finalization
   uLog.Free;
 
 end.
+
 

@@ -10,8 +10,11 @@ uses
   {$else}
   TestFramework,
   {$endif}
-  SysUtils, tiOID, tiQuery, Classes, tiOPFManager,
-  SyncObjs, tiVisitor;
+  SysUtils
+  ,Classes
+  ,SyncObjs
+  ,tiVisitor
+  ;
 
 type
 
@@ -35,7 +38,8 @@ procedure TestOIDGenerator(ANextOIDClass: TtiVisitedClass; const AVistorName, AD
 
 implementation
 
-uses tiConstants, tiOIDInteger;
+uses
+  tiOPFManager;
 
 const
   NUM_THREADS = 3; // 3 is the minimum for testing, 10 will give a more indepth test
@@ -156,4 +160,5 @@ begin
 end;
 
 end.
+
 

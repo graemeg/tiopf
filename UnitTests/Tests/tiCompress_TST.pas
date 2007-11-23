@@ -40,12 +40,9 @@ procedure RegisterTests;
 implementation
 uses
   tiCompress
-  ,tiCompressNone
-  ,tiCompressZLib
   ,tiUtils
   ,Classes
   ,SysUtils
-  ,tiLog
   ,tiTestDependencies
   ,tiConstants
  ;
@@ -249,4 +246,5 @@ begin
 end;
 
 end.
+
 

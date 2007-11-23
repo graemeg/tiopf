@@ -9,7 +9,6 @@ uses
   ,tiQuery
   ,tiQueryBDEAbs
   ,tiPersistenceLayers
-  ,tiDBConnectionPool
  ;
 
 type
@@ -233,5 +232,6 @@ finalization
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistBDEParadox);
 
 end.
+
 
 

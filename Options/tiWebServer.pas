@@ -193,8 +193,7 @@ type
 
 implementation
 uses
-   tiObject
-  ,tiConstants
+  tiConstants
   ,tiExcept
   ,tiWebServerConstants
   ,tiUtils
@@ -846,5 +845,6 @@ begin
 end;
 
 end.
+
 
 

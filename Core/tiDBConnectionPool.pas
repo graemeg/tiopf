@@ -5,7 +5,7 @@ unit tiDBConnectionPool;
 interface
 uses
    tiBaseObject
-  ,tiObject
+//  ,tiObject
   ,tiQuery
   ,tiPool
   ,Classes
@@ -90,7 +90,6 @@ implementation
 uses
    tiLog
   ,tiUtils
-  ,tiOPFManager
   ,tiPersistenceLayers
   ,tiConstants
   ,tiExcept
@@ -402,6 +401,7 @@ begin
 end;
 
 end.
+
 
 
 

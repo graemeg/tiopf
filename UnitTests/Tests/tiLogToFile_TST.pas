@@ -14,7 +14,10 @@ unit tiLogToFile_TST;
 interface
 
 uses
-  tiTestFramework, tiLogToFile, SysUtils, Classes, tiLog;
+  tiTestFramework
+  ,SysUtils
+  ,Classes
+  ;
 type
   // Test methods for class TtiLogToFile
 
@@ -38,6 +41,8 @@ uses
   ,Windows
   {$ENDIF}
   ,tiConstants
+  ,tiLog
+  ,tiLogToFile
   ;
 
 const
@@ -125,4 +130,5 @@ begin
 end;
 
 end.
+
 

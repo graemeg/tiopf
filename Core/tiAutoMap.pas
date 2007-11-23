@@ -5,13 +5,13 @@ unit tiAutoMap;
 interface
 
 uses
-  tiObject,
-  tiVisitor,
-  Classes,
-  tiVisitorDB,
-  tiQuery,
-  tiExcept,
-  tiCriteria;
+  tiObject
+  ,tiVisitor
+  ,Classes
+  ,tiVisitorDB
+  ,tiQuery
+  ,tiCriteria
+  ;
 
 const
   CErrorInconsistentTableNames      = 'Inconsistent table names found in DBColMap';
@@ -444,13 +444,15 @@ type
 implementation
 
 uses
-  tiLog,
-  tiUtils,
-  tiOPFManager,
-  tiOID,
-  tiRTTI,
-  TypInfo,
-  SysUtils;
+   tiUtils
+  ,tiOPFManager
+  ,tiExcept
+  ,tiOID
+  ,tiRTTI
+  ,tiFilteredObjectList
+  ,TypInfo
+  ,SysUtils
+  ;
 
  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  // *

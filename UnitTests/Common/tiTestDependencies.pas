@@ -34,9 +34,6 @@ uses
 
   ,tiLog // Confirm which of these must be referenced here
   ,tiLogToFile
-  ,tiOPFManager
-  ,tiDUnitINI
-  ,tiConstants
   ,tiBOMsForTesting
 
   ,tiBaseObject_TST
@@ -62,8 +59,6 @@ uses
   ,tiSyncObjs_TST
   ,tiAutoMap_TST
   ,tiQuery_TST
-  ,tiQuerySQL_TST
-  ,tiQueryNonSQL_TST
   ,tiXML_TST
   ,tiCriteria_TST
   ,tiRTTI_TST
@@ -72,7 +67,6 @@ uses
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
   ,tiWebServer_tst
-  ,tiApplicationServer_tst
   {$ENDIF}
 
   // Persistent test fixtures (in alpha order)
@@ -234,6 +228,7 @@ finalization
   UTIOPFTestManager.Free;
 
 end.
+
 
 
 

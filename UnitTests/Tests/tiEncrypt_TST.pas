@@ -10,11 +10,6 @@ uses
   TestFramework
   {$ENDIF}
   ,tiTestFramework
-  ,tiEncrypt
-  ,tiEncryptSimple
-  ,tiEncryptNone
-  ,tiEncryptDES
-  ,tiEncryptBlowfish
  ;
 
 type
@@ -46,6 +41,11 @@ implementation
 uses
   Classes
   ,tiTestDependencies
+  ,tiEncrypt
+  ,tiEncryptSimple
+  ,tiEncryptNone
+  ,tiEncryptDES
+  ,tiEncryptBlowfish
  ;
 
 const
@@ -223,4 +223,5 @@ begin
 end;
 
 end.
+
 

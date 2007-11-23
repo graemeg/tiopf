@@ -9,7 +9,6 @@ uses
   ,tiObject
   ,tiVisitorDB
   ,tiVisitor
-  ,tiConstants
   ,SyncObjs
  ;
 
@@ -110,8 +109,8 @@ const
 implementation
 uses
   tiQuery
+  ,tiConstants
   ,tiOPFManager
-  ,tiLog
   ,tiExcept
   ,SysUtils
  ;

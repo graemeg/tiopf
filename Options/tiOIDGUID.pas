@@ -51,7 +51,6 @@ implementation
 uses
   tiQuery
   ,tiOPFManager
-  ,tiLog
   ,tiConstants
   ,tiUtils
  ;

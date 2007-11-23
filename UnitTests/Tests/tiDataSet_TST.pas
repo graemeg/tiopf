@@ -48,7 +48,8 @@ procedure RegisterTests;
 implementation
 
 uses
-  tiOIDguid, tiOPFManager, tiTestDependencies;
+  tiOPFManager
+  ,tiTestDependencies;
 
 procedure RegisterTests;
 begin
@@ -549,6 +550,7 @@ begin
 end;}
 
 end.
+
 
 
 

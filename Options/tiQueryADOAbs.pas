@@ -118,12 +118,10 @@ type
 
 implementation
 uses
-   tiDBConnectionPool
-  ,tiLog
+  tiLog
   ,tiUtils
   ,TypInfo
   ,tiWin32
-  ,tiDialogs
   ,tiExcept
   ,SysUtils
   {$IFNDEF VER130}
@@ -726,6 +724,7 @@ begin
 end;
 
 end.
+
 
 
 

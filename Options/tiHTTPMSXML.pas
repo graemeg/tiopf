@@ -5,7 +5,6 @@ unit tiHTTPMSXml;
 interface
 uses
    Classes
-  ,tiBaseObject
   ,tiHTTP
   ,Windows
   ,MSXML_TLB
@@ -43,8 +42,7 @@ type
 
 implementation
 uses
-   tiUtils
-  ,tiConstants
+  tiConstants
   ,tiWin32
   ,tiExcept
   ,SysUtils

@@ -212,14 +212,10 @@ implementation
 uses
   tiUtils,
   tiOPFManager,
-  tiOPFTestManager,
   tiTestDependencies,
   tiStreams,
-  tiBOMsForTesting,
-  tiRTTI,
   tiObject,
   tiExcept,
-  tiVisitorDB,
   TypInfo,
   SysUtils;
 

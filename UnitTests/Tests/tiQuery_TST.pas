@@ -13,11 +13,7 @@ uses
   ,tiQuery
   ,SysUtils
   ,Classes
-  ,tiDBConnectionPool
-  ,tiOPFTestManager
   ,tiPersistenceLayers
-  ,tiVisitor
-  ,tiThread
  ;
 
 
@@ -231,8 +227,10 @@ uses
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
+  ,tiDBConnectionPool
+  ,tiOPFTestManager
   ,tiTestDependencies
-  ,tiXML
+  ,tiThread
   ,tiStreams
   ,tiRTTI
  ;

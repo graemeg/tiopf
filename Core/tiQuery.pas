@@ -8,9 +8,6 @@ uses
   ,Contnrs
   ,tiObject
   ,tiBaseObject
-  ,tiUtils
-  ,tiExcept
-//  ,tiVisitor
   ,SysUtils
   ,tiCriteria
   ,tiRTTI
@@ -635,6 +632,8 @@ procedure QueryFieldKindsToStrings(AStrings : TStrings);
 implementation
 uses
   tiCommandLineParams
+  ,tiUtils
+  ,tiExcept
   ,tiLog
   ,tiOPFManager
   ,tiDBConnectionPool
@@ -2345,6 +2344,7 @@ begin
 end;
 
 end.
+
 
 
 

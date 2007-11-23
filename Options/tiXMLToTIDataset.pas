@@ -4,7 +4,6 @@ unit tiXMLToTIDataset;
 
 interface
 uses
-  // tiOPF
    tiBaseObject
   ,tiDataBuffer_BOM
   ,tiQuery
@@ -12,7 +11,6 @@ uses
   ,tiXML
   // Delphi
   ,Classes
-//  ,Inifiles
  ;
 
 const
@@ -202,13 +200,10 @@ const
 
 implementation
 uses
-  // tiOPF
    tiUtils
   ,tiConstants
-  ,tiLog
   ,tiExcept
   ,tiCompress
-  ,tiCompressZLib
   // Delphi
   ,SysUtils
   {$IFDEF MSWINDOWS}
@@ -1053,6 +1048,7 @@ begin
 end;
 
 end.
+
 
 
 

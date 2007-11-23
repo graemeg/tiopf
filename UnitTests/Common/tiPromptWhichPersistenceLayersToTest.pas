@@ -40,9 +40,7 @@ implementation
 uses
    tiOPFTestManager
   ,tiTestDependencies
-  ,tiOPFManager
   ,tiDUnitINI
-  ,tiUtils
   ,tiGUIUtils
  ;
 

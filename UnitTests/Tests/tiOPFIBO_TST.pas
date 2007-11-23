@@ -6,8 +6,6 @@ interface
 uses
    tiQuery_TST
   ,tiQuerySQL_TST
-  ,tiOPFTestManager
-  ,tiTestFramework
   ,tiAutoMap_TST
   ,tiOID_tst
  ;
@@ -52,6 +50,8 @@ uses
   {$ELSE}
   ,TestFramework
   {$ENDIF}
+  ,tiOPFTestManager
+  ,tiTestFramework
   ,SysUtils
   ,tiUtils
   ,tiTestDependencies
