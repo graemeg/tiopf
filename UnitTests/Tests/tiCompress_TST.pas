@@ -43,6 +43,8 @@ uses
   ,tiUtils
   ,Classes
   ,SysUtils
+  ,tiCompressNone
+  ,tiCompressZLib
   ,tiTestDependencies
   ,tiConstants
  ;

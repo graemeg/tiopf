@@ -123,7 +123,7 @@
 			<Directories Name="UnitOutputDir">_Dcu</Directories>
 			<Directories Name="PackageDLLOutputDir"></Directories>
 			<Directories Name="PackageDCPOutputDir"></Directories>
-			<Directories Name="SearchPath">..\..\Core;..\..\Options;..\..\GUI;..\Common;..\Tests;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\DUnit</Directories>
+			<Directories Name="SearchPath">..\Tests;..\Common;..\..\Core;..\..\Options;..\..\GUI;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\DUnit</Directories>
 			<Directories Name="Packages">vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;CLXIB;ibxpress;VCLIB;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;Rave50CLX;Rave50VCL;dclOfficeXP;madBasic_;madDisAsm_;tiOPFCore</Directories>
 			<Directories Name="Conditionals">OBJECT_TRACKING;FASTMM;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBXx;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;DUNIT2</Directories>
 			<Directories Name="DebugSourceDirs"></Directories>
@@ -174,9 +174,6 @@
 			<VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys>
 			<VersionInfoKeys Name="ProductName"></VersionInfoKeys>
 			<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
-		</VersionInfoKeys>  
-    <Excluded_Packages>
-      <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcltee100.bpl">TeeChart Components</Excluded_Packages>
-    </Excluded_Packages>
-  </Delphi.Personality>
+		</VersionInfoKeys>
+		<Excluded_Packages><Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcltee100.bpl">TeeChart Components</Excluded_Packages></Excluded_Packages></Delphi.Personality>
 </BorlandProject>
