@@ -64,7 +64,7 @@ const
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
-//* TtiDatabaseBDEParadox
+//* TtiDatabaseDBISAM4
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 class procedure TtiDatabaseADOAccess.CreateDatabase(const ADatabaseName, AUserName, APassword: string);

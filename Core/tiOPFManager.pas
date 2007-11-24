@@ -240,7 +240,7 @@ uses
   {$IFDEF LINK_ZEOS_FB15}    ,tiQueryZeosFB15     {$ENDIF}
   {$IFDEF LINK_ZEOS_MYSQL41} ,tiQueryZeosMySQL41  {$ENDIF}
   {$IFDEF LINK_ZEOS_MYSQL50} ,tiQueryZeosMySQL50  {$ENDIF}
-
+  {$IFDEF LINK_DBISAM4}      ,tiQueryDBISAM4      {$ENDIF}
   {$IFDEF MSWINDOWS}
   ,Forms
   {$ENDIF}
@@ -886,6 +886,8 @@ initialization
   {$IFDEF LINK_ZEOS_FB10}     gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB10;    {$ENDIF}
   {$IFDEF LINK_ZEOS_FB15}     gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB15;    {$ENDIF}
   {$IFDEF LINK_ZEOS_MySQLl50} gTIOPFManager.DefaultPerLayerName := cTIPersistZeosMySQL50; {$ENDIF}
+  {$IFDEF LINK_DBISAM4}       gTIOPFManager.DefaultPerLayerName := cTIPersistDBISAM4;     {$ENDIF}
+
 
 finalization
   uShuttingDown := True;

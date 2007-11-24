@@ -25,6 +25,7 @@ const
   cTIPersistZeosFB15     = 'Zeos_FB15';
   cTIPersistZeosMySQL41  = 'Zeos_MySQL41';
   cTIPersistZeosMySQL50  = 'Zeos_MySQL50';
+  cTIPersistDBISAM4      = 'DBISAM4';
 
   cDBProxyServerTimeOut  = 1; // Minute
 
