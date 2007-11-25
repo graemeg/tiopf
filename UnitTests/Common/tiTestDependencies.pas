@@ -85,7 +85,7 @@ uses
   ,tiOPFXMLLight_TST
   //,tiOPFZeos_FB10_TST  // No tests
   ,tiOPFZeos_FB15_TST
-  ,tiOPFDBISASM4_TST   
+  //,tiOPFDBISASM4_TST   
   //,tiOPFZeos_MySQL41_TST // No tests
   //,tiOPFZeos_MySQL50_TST // No tests
 
@@ -162,7 +162,7 @@ begin
   tiOPFZeos_FB15_TST.RegisterTests;
   //tiOPFZeos_MySQL41_TST.RegisterTests; // No tests
   //tiOPFZeos_MySQL50_TST.RegisterTests; // No tests
-  tiOPFDBISASM4_TST.RegisterTests;
+  //tiOPFDBISASM4_TST.RegisterTests;
 end;
 
 
