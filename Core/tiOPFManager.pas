@@ -241,14 +241,14 @@ uses
   {$IFDEF LINK_ZEOS_MYSQL41} ,tiQueryZeosMySQL41  {$ENDIF}
   {$IFDEF LINK_ZEOS_MYSQL50} ,tiQueryZeosMySQL50  {$ENDIF}
   {$IFDEF LINK_DBISAM4}      ,tiQueryDBISAM4      {$ENDIF}
-  {$IFDEF MSWINDOWS}
+  {$IFNDEF FPC}
   ,Forms
   {$ENDIF}
  ;
 
 
 var
-  UTIOPFManager : TtiOPFManager;
+  UTIOPFManager: TtiOPFManager;
   UShuttingDown: Boolean;
 
 
@@ -301,7 +301,7 @@ end;
 procedure TtiOPFManager.ConnectDatabase(const ADatabaseAlias, ADatabaseName,
   AUserName, APassword, AParams, APersistenceLayerName: string);
 var
-  LPersistenceLayer  : TtiPersistenceLayer;
+  LPersistenceLayer: TtiPersistenceLayer;
 begin
 
   if APersistenceLayerName = '' then
@@ -317,7 +317,6 @@ begin
 
   if LPersistenceLayer.DefaultDBConnectionName = '' then
      LPersistenceLayer.DefaultDBConnectionName := ADatabaseName;
-
 end;
 
 constructor TtiOPFManager.Create;
@@ -486,11 +485,8 @@ begin
   while ActiveThreadList.Count >0 do
   begin
     Sleep(10);
-    {$IFDEF MSWINDOWS}
+    {$IFNDEF FPC}
     Application.ProcessMessages;
-    {$ENDIF}
-    {$IFDEF LINUX}
-      {$NOTE: Not sure what affect this is going to have under Linux. Test this! }
     {$ENDIF}
     if (ACheckFor>0) and ((tiGetTickCount - LStart) > ACheckFor) then Exit;
   end;

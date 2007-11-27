@@ -21,6 +21,7 @@ uses
   {$IFDEF MSWINDOWS}
   ,shellAPI
   ,registry
+  ,windows  // needed for HWnd under FPC
   {$ENDIF}
   ,ExtCtrls
   ,Math
@@ -144,7 +145,6 @@ uses
   {$IFDEF DELPHI5}
     ,FileCtrl
   {$ENDIF}
-  ,Windows
   {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
   ,Types

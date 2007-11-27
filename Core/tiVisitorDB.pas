@@ -305,7 +305,11 @@ begin
   Assert(FDatabase.TestValid, CTIErrorInvalidObject);
   // ToDo: Refactor with SetDatabase method replacing AttachDatabase & DetachDatabase
   LVisitor          := AVisitor as TtiObjectVisitor;
+  {$IFNDEF FPC}
+  // Todo: This causes a "Transaction is not active" error using FBLib. Not sure
+  //   if this error occurs with Delphi + FBLib as well.
   LVisitor.Query.DetachDatabase;
+  {$ENDIF}
   LVisitor.Database := nil;
   LVisitor.PersistenceLayer:= nil;
 end;

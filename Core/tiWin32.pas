@@ -40,6 +40,12 @@ const
   CSIDL_COMMON_APPDATA = $0023 { %USERPROFILE%\All Users\Application Data };
   CSIDL_FLAG_CREATE   = $8000; { (force creation of requested folder if it doesn't exist yet)}
 
+  {$IFDEF FPC}
+  // Graeme [2007-11-27]: This constant is missing from FPC 2.2.0. I created
+  //   a bug report so we should be able to remove it after the next FPC release.
+  LOGON32_LOGON_NETWORK = 3;
+  {$ENDIF}
+
 type
   PFNSHGetFolderPath = function(Ahwnd: HWND; Csidl: Integer; Token: THandle; Flags: DWord; Path: PChar): HRESULT; stdcall;
 
@@ -116,16 +122,12 @@ begin
   end;
 end;
 
-procedure tiWin32RunEXEAndWait(const AEXE : string);
+procedure tiWin32RunEXEAndWait(const AEXE: string);
 var
   SI: TStartupInfo;
   PI: TProcessInformation;
 begin
-  { Don't remove the IFDEF even though we use FPC in Delphi Mode. GetStartupInfo
-    is defined differently to Delphi.  34 minutes after reporting this bug, it
-    was confirmed fixed.:-) I am leaving this IFDEF for now, until the next
-    FPC version is released, in a few days. - Graeme [2006-07-17] }
-  GetStartupInfo({$IFDEF FPC}@{$ENDIF}SI);
+  GetStartupInfo(SI);
   CreateProcess(
     nil, PChar(AEXE), nil, nil,
     False, 0, nil, nil, SI, PI);

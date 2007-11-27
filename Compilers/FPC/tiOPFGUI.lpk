@@ -1,14 +1,16 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="3">
+  <Package Version="2">
+    <PathDelim Value="\"/>
     <Name Value="tiOPFGUI"/>
     <Author Value="Graeme Geldenhuys"/>
     <CompilerOptions>
       <Version Value="5"/>
+      <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="../../Core/"/>
-        <OtherUnitFiles Value="../../Core/;../../Options/;../../GUI/"/>
-        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+        <IncludeFiles Value="..\..\Core\"/>
+        <OtherUnitFiles Value="..\..\Core\;..\..\Options\;..\..\GUI\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
         <SyntaxOptions>
@@ -35,146 +37,146 @@
 "/>
     <License Value="Mozilla Public License 1.1
 "/>
-    <Version Major="2" Release="3"/>
+    <Version Major="2" Release="4"/>
     <Files Count="34">
       <Item1>
-        <Filename Value="../../GUI/tiGUIUtils.pas"/>
+        <Filename Value="..\..\GUI\tiGUIUtils.pas"/>
         <UnitName Value="tiGUIUtils"/>
       </Item1>
       <Item2>
-        <Filename Value="../../GUI/tiDialogs.pas"/>
+        <Filename Value="..\..\GUI\tiDialogs.pas"/>
         <UnitName Value="tiDialogs"/>
       </Item2>
       <Item3>
-        <Filename Value="../../GUI/tiButtons.pas"/>
+        <Filename Value="..\..\GUI\tiButtons.pas"/>
         <UnitName Value="tiButtons"/>
       </Item3>
       <Item4>
-        <Filename Value="../../GUI/tiCtrlButtonPanel.pas"/>
+        <Filename Value="..\..\GUI\tiCtrlButtonPanel.pas"/>
         <UnitName Value="tiCtrlButtonPanel"/>
       </Item4>
       <Item5>
-        <Filename Value="../../GUI/tiFocusPanel.pas"/>
+        <Filename Value="..\..\GUI\tiFocusPanel.pas"/>
         <UnitName Value="tiFocusPanel"/>
       </Item5>
       <Item6>
-        <Filename Value="../../GUI/tiHyperlink.pas"/>
+        <Filename Value="..\..\GUI\tiHyperlink.pas"/>
         <UnitName Value="tiHyperlink"/>
       </Item6>
       <Item7>
-        <Filename Value="../../GUI/tiImageMgr.pas"/>
+        <Filename Value="..\..\GUI\tiImageMgr.pas"/>
         <UnitName Value="tiImageMgr"/>
       </Item7>
       <Item8>
-        <Filename Value="../../GUI/tiListView.pas"/>
+        <Filename Value="..\..\GUI\tiListView.pas"/>
         <UnitName Value="tiListView"/>
       </Item8>
       <Item9>
-        <Filename Value="../../GUI/tiListViewCtrls.pas"/>
+        <Filename Value="..\..\GUI\tiListViewCtrls.pas"/>
         <UnitName Value="tiListViewCtrls"/>
       </Item9>
       <Item10>
-        <Filename Value="../../GUI/tiMemoReadOnly.pas"/>
+        <Filename Value="..\..\GUI\tiMemoReadOnly.pas"/>
         <UnitName Value="tiMemoReadOnly"/>
       </Item10>
       <Item11>
-        <Filename Value="../../GUI/tiPerAwareCombosAbs.pas"/>
+        <Filename Value="..\..\GUI\tiPerAwareCombosAbs.pas"/>
         <UnitName Value="tiPerAwareCombosAbs"/>
       </Item11>
       <Item12>
-        <Filename Value="../../GUI/tiPerAwareCtrls.pas"/>
+        <Filename Value="..\..\GUI\tiPerAwareCtrls.pas"/>
         <UnitName Value="tiPerAwareCtrls"/>
       </Item12>
       <Item13>
-        <Filename Value="../../GUI/tiPerAwareDateRange.pas"/>
+        <Filename Value="..\..\GUI\tiPerAwareDateRange.pas"/>
         <UnitName Value="tiPerAwareDateRange"/>
       </Item13>
       <Item14>
-        <Filename Value="../../GUI/tiPerAwareFileCombos.pas"/>
+        <Filename Value="..\..\GUI\tiPerAwareFileCombos.pas"/>
         <UnitName Value="tiPerAwareFileCombos"/>
       </Item14>
       <Item15>
-        <Filename Value="../../GUI/tiPerAwareMultiSelect.pas"/>
+        <Filename Value="..\..\GUI\tiPerAwareMultiSelect.pas"/>
         <UnitName Value="tiPerAwareMultiSelect"/>
       </Item15>
       <Item16>
-        <Filename Value="../../GUI/tiReadOnly.pas"/>
+        <Filename Value="..\..\GUI\tiReadOnly.pas"/>
         <UnitName Value="tiReadOnly"/>
       </Item16>
       <Item17>
-        <Filename Value="../../GUI/tiResources.pas"/>
+        <Filename Value="..\..\GUI\tiResources.pas"/>
         <UnitName Value="tiResources"/>
       </Item17>
       <Item18>
-        <Filename Value="../../GUI/tiRoundedPanel.pas"/>
+        <Filename Value="..\..\GUI\tiRoundedPanel.pas"/>
         <UnitName Value="tiRoundedPanel"/>
       </Item18>
       <Item19>
-        <Filename Value="../../GUI/tiSpeedButton.pas"/>
+        <Filename Value="..\..\GUI\tiSpeedButton.pas"/>
         <UnitName Value="tiSpeedButton"/>
       </Item19>
       <Item20>
-        <Filename Value="../../GUI/tiSplitter.pas"/>
+        <Filename Value="..\..\GUI\tiSplitter.pas"/>
         <UnitName Value="tiSplitter"/>
       </Item20>
       <Item21>
-        <Filename Value="../../GUI/tiThreadProgress.pas"/>
+        <Filename Value="..\..\GUI\tiThreadProgress.pas"/>
         <UnitName Value="tiThreadProgress"/>
       </Item21>
       <Item22>
-        <Filename Value="../../GUI/tiTreeView.pas"/>
+        <Filename Value="..\..\GUI\tiTreeView.pas"/>
         <UnitName Value="tiTreeView"/>
       </Item22>
       <Item23>
-        <Filename Value="../../GUI/tiTreeViewChildForm.pas"/>
+        <Filename Value="..\..\GUI\tiTreeViewChildForm.pas"/>
         <UnitName Value="tiTreeViewChildForm"/>
       </Item23>
       <Item24>
-        <Filename Value="../../GUI/DtiDefaultActionValues.lfm"/>
+        <Filename Value="..\..\GUI\DtiDefaultActionValues.lfm"/>
         <Type Value="LFM"/>
       </Item24>
       <Item25>
-        <Filename Value="../../GUI/DtiDefaultActionValues.pas"/>
+        <Filename Value="..\..\GUI\DtiDefaultActionValues.pas"/>
         <UnitName Value="DtiDefaultActionValues"/>
       </Item25>
       <Item26>
-        <Filename Value="../../GUI/tiGenericEditMediators.pas"/>
+        <Filename Value="..\..\GUI\tiGenericEditMediators.pas"/>
         <UnitName Value="tiGenericEditMediators"/>
       </Item26>
       <Item27>
-        <Filename Value="../../GUI/tiGenericListMediators.pas"/>
+        <Filename Value="..\..\GUI\tiGenericListMediators.pas"/>
         <UnitName Value="tiGenericListMediators"/>
       </Item27>
       <Item28>
-        <Filename Value="../../GUI/tiTreeBuildVisitor.pas"/>
+        <Filename Value="..\..\GUI\tiTreeBuildVisitor.pas"/>
         <UnitName Value="tiTreeBuildVisitor"/>
       </Item28>
       <Item29>
-        <Filename Value="../../GUI/tiGenericTreeViewMediator.pas"/>
+        <Filename Value="..\..\GUI\tiGenericTreeViewMediator.pas"/>
         <UnitName Value="tiGenericTreeViewMediator"/>
       </Item29>
       <Item30>
-        <Filename Value="../../GUI/tiCompositeMediators.pas"/>
+        <Filename Value="..\..\GUI\tiCompositeMediators.pas"/>
         <UnitName Value="tiCompositeMediators"/>
       </Item30>
       <Item31>
-        <Filename Value="../../GUI/tiGUIConstants.pas"/>
+        <Filename Value="..\..\GUI\tiGUIConstants.pas"/>
         <UnitName Value="tiGUIConstants"/>
       </Item31>
       <Item32>
-        <Filename Value="../../GUI/tiLogToGUI.pas"/>
+        <Filename Value="..\..\GUI\tiLogToGUI.pas"/>
         <UnitName Value="tiLogToGUI"/>
       </Item32>
       <Item33>
-        <Filename Value="../../GUI/tiLogReg.pas"/>
+        <Filename Value="..\..\GUI\tiLogReg.pas"/>
         <UnitName Value="tiLogReg"/>
       </Item33>
       <Item34>
-        <Filename Value="../../GUI/tiGUIINI.pas"/>
+        <Filename Value="..\..\GUI\tiGUIINI.pas"/>
         <UnitName Value="tiGUIINI"/>
       </Item34>
     </Files>
-    <LazDoc Paths="../../../Docs/xml/gui/"/>
+    <LazDoc Paths="..\..\..\Docs\xml\gui\"/>
     <RequiredPkgs Count="3">
       <Item1>
         <PackageName Value="tiOPF"/>
@@ -189,10 +191,11 @@
       </Item3>
     </RequiredPkgs>
     <UsageOptions>
-      <UnitPath Value="$(PkgOutDir)/"/>
+      <UnitPath Value="$(PkgOutDir)\"/>
     </UsageOptions>
     <PublishOptions>
       <Version Value="2"/>
+      <DestinationDirectory Value="$(TestDir)\publishedpackage\"/>
       <IgnoreBinaries Value="False"/>
     </PublishOptions>
   </Package>
