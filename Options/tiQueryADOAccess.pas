@@ -64,7 +64,7 @@ const
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 //*
-//* TtiDatabaseDBISAM4
+//* TtiDatabaseADOAccess
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 class procedure TtiDatabaseADOAccess.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
@@ -271,6 +271,7 @@ finalization
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistADOAccess);
 
 end.
+
 
 
 

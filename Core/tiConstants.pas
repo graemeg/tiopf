@@ -26,6 +26,7 @@ const
   cTIPersistZeosMySQL41  = 'Zeos_MySQL41';
   cTIPersistZeosMySQL50  = 'Zeos_MySQL50';
   cTIPersistDBISAM4      = 'DBISAM4';
+  cTIPersistAsqlite3      = 'Asqlite3';
 
   cDBProxyServerTimeOut  = 1; // Minute
 
@@ -230,5 +231,6 @@ const
 implementation
 
 end.
+
 
 
