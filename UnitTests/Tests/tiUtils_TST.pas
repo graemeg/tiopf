@@ -1148,6 +1148,7 @@ begin
     Check(SameText(lsl.Strings[1], tiFixPathDelim(lTempPath + '\Dir1')), 'Failed on 1a');
     Check(SameText(lsl.Strings[2], tiFixPathDelim(lTempPath + '\Dir2')), 'Failed on 2a');
 
+    lsl.Sorted := False;
     tiUtils.tiDirectoryTreeToStringList(lTempPath, lsl, true);
     Check(SameText(lsl.Strings[0],  lTempPath), 'Failed on 3');
     Check(SameText(lsl.Strings[1],  tiFixPathDelim(lTempPath + '\Dir1')), 'Failed on 4');

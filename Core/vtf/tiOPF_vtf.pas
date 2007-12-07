@@ -7,7 +7,8 @@ unit tiOPF_vtf;
 interface
 
 uses
-  fpchelper, tiObserverIntf, tiSubjectIntf, tiTypes, tiValueTypeIntf; 
+  fpchelper, tiObserverIntf, tiSubjectIntf, tiTypes, tiValueTypeIntf, 
+    tiValueType; 
 
 implementation
 

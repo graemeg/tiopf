@@ -1169,13 +1169,16 @@ end;
 
 function TtiPerAwareAbs.IsPropReadOnly: boolean;
 var
-  lPropInfo : PPropInfo;
+  lPropInfo: PPropInfo;
 begin
   lPropInfo := GetPropInfo(FData, FsFieldName);
+  if lPropInfo^.PropType^.Kind = tkClass then
+    result := not(GetObjectProp(FData, FsFieldName) is TtiFieldAbs)
+  else
   {$IFNDEF FPC}
-  result   := (lPropInfo.SetProc = nil);
+    result := (lPropInfo.SetProc = nil);
   {$ELSE}
-  result   := (lPropInfo^.SetProc = nil);
+    result := (lPropInfo^.SetProc = nil);
   {$ENDIF}
 end;
 

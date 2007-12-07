@@ -6,7 +6,7 @@
     <CompilerOptions>
       <Version Value="5"/>
       <SearchPaths>
-        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <CodeGeneration>
         <Generate Value="Faster"/>
@@ -18,7 +18,7 @@
     <Description Value="A Value Type Framework for use with tiOPF."/>
     <License Value="MPL"/>
     <Version Minor="1"/>
-    <Files Count="6">
+    <Files Count="7">
       <Item1>
         <Filename Value="vtfDefines.inc"/>
         <Type Value="Include"/>
@@ -43,6 +43,10 @@
         <Filename Value="tiValueTypeIntf.pas"/>
         <UnitName Value="tiValueTypeIntf"/>
       </Item6>
+      <Item7>
+        <Filename Value="tiValueType.pas"/>
+        <UnitName Value="tiValueType"/>
+      </Item7>
     </Files>
     <RequiredPkgs Count="1">
       <Item1>
