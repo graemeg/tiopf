@@ -1759,9 +1759,11 @@ procedure tiDirectoryTreeToStringList(const AStartDir : string; const ADirList :
   end;
 var
   lStartDir: string;
+  oldSorted: boolean;
 begin
   lStartDir := tiRemoveTrailingSlash(AStartDir);
   ADirList.Clear;
+  oldSorted := ADirList.Sorted; // store original value
   ADirList.Sorted := True;
 
   if not DirectoryExists(lStartDir) then
@@ -1769,6 +1771,7 @@ begin
 
   ADirList.Add(lStartDir);
   _ReadDirectories(lStartDir, ADirList, ARecurse);
+  ADirList.Sorted := oldSorted; // restore original value
 end;
 
 
