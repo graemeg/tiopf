@@ -1297,12 +1297,12 @@ function TTiCustomDataset.BookmarkValid(Bookmark: TBookmark): boolean;
 //Bookmark is valid if the object is found in the list (and not filtered)
 var SaveState: TDataSetState;
 begin
-  Result := Active and(GetBookmarkIndex(Bookmark) >= 0);
+  Result := Active and (GetBookmarkIndex(Bookmark) >= 0);
   if Result then begin
     //Object is still in memory
     FObjectIndex := GetBookmarkIndex(Bookmark);
     //Is it still valid with filters?
-    if Assigned(OnFilterRecord) then begin
+    if Filtered And Assigned(OnFilterRecord) then begin
       SaveState := SetTempState(dsFilter);
       try
         Result := GetRecord(FFilterBuffer, gmCurrent, true) = grOK;
