@@ -1876,22 +1876,56 @@ end;
 
 procedure TTiDataset.SetFiltered(Value: boolean);
 begin
-  if Active then begin
-    if Filtered <> Value
-    then inherited;
+  if Active then
+  begin
+    if Filtered <> Value then
+      inherited;
+    If Value Then
+      GetRecordCount; // Prevents AV when filtering.
     First;
     CursorPosChanged;
   end
-  else inherited;
+  else
+    inherited;
 end;
 
 function TTiDataset.GetRecordCount: integer;
-var oList: TtiObjectList;
+var
+  oList: TtiObjectList;
+  lPassesFilter : Boolean;
+  Buffer : PChar;
+  OldObject : Integer;
+  lTempResult : Integer;
 begin
   oList := ObjectList;
-  if Assigned(oList)
-  then Result := oList.CountNotDeleted
-  else Result := - 1;
+  If Assigned(oList) Then
+  Begin
+    If Filtered And Assigned(OnFilterRecord) Then
+    Begin
+      Buffer := TempBuffer;
+      OldObject := FObjectIndex;
+      FFilterBuffer := Buffer;
+      SetTempState(dsFilter);
+      lTempResult := 0;
+      Try
+        InternalFirst;
+        While (GetRecord(FFilterBuffer, gmNext, True) = grOk) Do
+        Begin
+          OnFilterRecord(Self, lPassesFilter);
+          If lPassesFilter Then
+            Inc(lTempResult);
+        End;
+      Finally
+        SetTempState(dsBrowse);
+      End;
+      Result := lTempResult;
+      FObjectIndex := OldObject;
+    End
+    Else
+      Result := oList.CountNotDeleted
+  End
+  Else
+    Result := -1;
 end;
 
 procedure TTiDataset.DelRecord(oObject: TtiObject);
