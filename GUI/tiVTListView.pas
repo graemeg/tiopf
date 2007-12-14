@@ -579,6 +579,8 @@ type
     // Property value filtering
     procedure   ClearFilters; virtual;
     procedure   AddFilter(pFilter : TLVFilter);
+    procedure   InsertFilter(pPos : Integer; pFilter : TLVFilter);
+    procedure   DeleteFilter(pPos : Integer);
     // Multicast event handler filtering
     property    FilterEventDispatcher: TtiVTOnFilterDataMulticastEventDispatcher read FFilterEventDispatcher;
 
@@ -2440,7 +2442,7 @@ var
 begin
   LColumn := Header.Columns[Column];
 
-  if HeaderClickSorting and (not LColumn.Derived) then
+  if HeaderClickSorting {and (not LColumn.Derived)} then
   begin
     ClearSearchState;
     LColumn.Style := vsOwnerDraw;
@@ -2770,6 +2772,17 @@ end;
 procedure TtiCustomVirtualTree.ApplyFilter;
 begin
   FFiltered := True;
+end;
+
+procedure TtiCustomVirtualTree.InsertFilter(pPos: Integer; pFilter: TLVFilter);
+begin
+  FFilters.Insert(pPos, pFilter);
+end;
+
+procedure TtiCustomVirtualTree.DeleteFilter(pPos: Integer);
+begin
+  If (pPos <= FFilters.Count -1) Then
+    FFilters.Delete(pPos);
 end;
 
 { TtiInternalVirtualTree }
