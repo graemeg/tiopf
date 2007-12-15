@@ -263,6 +263,7 @@ uses
   ,tiUtils
   ,tiPersistenceLayers
   ,tiConstants
+  ,StrUtils 
   ,TypInfo
   {$IFDEF MSWINDOWS}
   ,Windows
