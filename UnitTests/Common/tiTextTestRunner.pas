@@ -47,20 +47,20 @@ type
     function  PrintErrorItems(r :TTestResult): string; override;
     procedure WriteSummaryToINIFile(testResult: TTestResult);
     function  FormatTestName(ATest: ITest): string;
+    function  ShouldRunTest(const ATest :ITest):boolean; override;
+    procedure TestingStarts; override;
+    procedure StartTest(test: ITest); override;
+
+    procedure AddSuccess(test: ITest); override;
+    procedure AddError(error: TTestFailure); override;
+    procedure AddFailure(failure: TTestFailure); override;
+
+    procedure TestingEnds(testResult: TTestResult);override;
+    procedure StartSuite(suite: ITest); override;
+    procedure EndSuite(suite: ITest); override;
+    procedure EndTest(test: ITest); override;
   public
     constructor Create; virtual;
-    procedure   TestingStarts; override;
-    procedure   StartTest(test: ITest); override;
-
-    procedure   AddSuccess(test: ITest); override;
-    procedure   AddError(error: TTestFailure); override;
-    procedure   AddFailure(failure: TTestFailure); override;
-
-    procedure   TestingEnds(testResult: TTestResult);override;
-    procedure   StartSuite(suite: ITest); override;
-    procedure   EndSuite(suite: ITest); override;
-    procedure   EndTest(test: ITest); override;
-
   end;
 
 function  tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult; overload;
@@ -100,6 +100,7 @@ end;
 function tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult;
 begin
   try
+    Suite.LoadConfiguration(ExtractFilePath(ParamStr(0)) + 'Dunit.ini', False, True);
     Result := RunTest(Suite, [{$IFDEF DUNIT2}
                               TXMLListener.Create(ParamStr(0)),
                               {$ENDIF}
@@ -128,11 +129,7 @@ end;
 
 function RunRegisteredTests(exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult;
 begin
- {$IFDEF DUNIT2}
-    Result := tiRunTest(RegisteredTests('tiOPF2 Unit Tests'), exitBehavior);
-  {$ELSE}
-    Result := tiRunTest(RegisteredTests, exitBehavior);
-  {$ENDIF}
+  Result := tiRunTest(RegisteredTests, exitBehavior);
 end;
 
 procedure WriteEmptyLogs(AExitBehavior: TRunnerExitBehavior);
@@ -214,10 +211,9 @@ begin
   end else
     FFileNameINI  := LReportDir + 'DUnitReportSummary.ini';
   FFileNameINI:= ExpandFileName(FFileNameINI);
-  
+
   if not DirectoryExists(LReportDir) then
     tiForceDirectories(LReportDir);
-
   if not DirectoryExists(ExtractFilePath(FFileNameINI)) then
     tiForceDirectories(ExtractFilePath(FFileNameINI));
 
@@ -331,7 +327,7 @@ procedure TtiTextTestListener.TestingStarts;
     writeln2Short('Compiler name "' + cCompilerName + '"', [tlwtFile, tlwtConsole]);
     writeln2Short('Compiler version "' + FDelphiVersion + '"', [tlwtFile, tlwtConsole]);
     writeln2Short('Testing started at ' + DateTimeToStr(Now), [tlwtFile, tlwtConsole]);
-    writeln2Short('(E = Exception, F = Test failure)', [tlwtFile, tlwtConsole]);
+    writeln2Short('(E = Exception, F = Test failure  x = Test Excluded)', [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
     writeln2Short('Persistence layers to be tested:', [tlwtFile, tlwtConsole]);
     for i:= 0 to GTIOPFTestManager.Count - 1 do
@@ -512,6 +508,16 @@ begin
   inherited;
   // Nothing in XMLTestRunner
 
+end;
+
+function TtiTextTestListener.ShouldRunTest(const ATest: ITest): boolean;
+begin
+  Result := inherited ShouldRunTest(ATest);
+  if not Result then
+  begin
+    write2Short('x', [tlwtFile]);
+    IncPos;
+  end;
 end;
 
 procedure TtiTextTestListener.StartSuite(suite: ITest);

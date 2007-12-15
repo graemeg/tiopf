@@ -17,6 +17,7 @@ uses
   ,TestFramework
   ,TestExtensions
   {$ENDIF}
+  ,inifiles
   ,Classes
   ,SysUtils
   ;
@@ -90,6 +91,8 @@ type
     function    tstIntToFloat(pInt:Integer): Extended;
     function    tstIntToDateTime(pInt:Integer): TDateTime;
     procedure   tstIntToStream(pInt:Integer; const AStream : TStream);
+    procedure   LoadConfiguration(const iniFile :TCustomIniFile;
+                                  const Section :string); override;
   public
     {$IFDEF FPC}
     constructor Create; override;
@@ -260,7 +263,6 @@ uses
   ,tiUtils
   ,tiPersistenceLayers
   ,tiConstants
-  ,INIFiles
   ,TypInfo
   {$IFDEF MSWINDOWS}
   ,Windows
@@ -1289,6 +1291,16 @@ begin
     ULongString:= tiCreateStringOfSize(3000);
   result:= ULongString;
 end;
+
+procedure TtiTestCase.LoadConfiguration(const iniFile: TCustomIniFile;
+                                        const Section: string);
+var
+  LSubstSection: string;
+begin
+  LSubstSection := AnsiReplaceStr(Section, 'Text.exe', 'GUI.exe');
+  inherited LoadConfiguration(inifile, LSubstSection);;
+end;
+
 procedure TtiTestCase.CheckObjectState(
   const AObjectState: TPerObjectState;
   const AData: TtiObject;
