@@ -64,7 +64,7 @@ type
 
 
 var
-  UTICoInitializeManager: TtiCoInitializeManager;
+  UTICoInitializeManager: TtiCoInitializeManager = nil;
   SHGetFolderPath: PFNSHGetFolderPath = nil;
   CFGDLLHandle: THandle = 0;
 
@@ -76,31 +76,25 @@ var
 begin
   LProcAddress:= nil;
   CFGDLLHandle := LoadLibrary('shell32.dll');
-  if (CFGDLLHandle<>0) then
-  begin
+  if (CFGDLLHandle <> 0) then
+  try
     LProcAddress := GetProcAddress(CFGDLLHandle,'SHGetFolderPathA');
-    if (LProcAddress = nil) then
-    begin
-      FreeLibrary(CFGDLLHandle);
-      CFGDllHandle := 0;
-    end
-    else
+    if (LProcAddress <> nil) then
       SHGetFolderPath := PFNSHGetFolderPath(LProcAddress);
+  finally
+    FreeLibrary(CFGDLLHandle);
   end;
 
   if (LProcAddress = nil) then
   begin
     CFGDLLHandle := LoadLibrary('shfolder.dll');
     if (CFGDLLHandle <> 0) then
-    begin
+    try
       LProcAddress := GetProcAddress(CFGDLLHandle,'SHGetFolderPathA');
-      if (LProcAddress=Nil) then
-      begin
-        FreeLibrary(CFGDLLHandle);
-        CFGDllHandle := 0;
-      end
-      else
+      if (LProcAddress <> nil) then
         ShGetFolderPath := PFNSHGetFolderPath(LProcAddress);
+    finally
+      FreeLibrary(CFGDLLHandle);
     end;
   end;
 
@@ -331,7 +325,8 @@ begin
 end;
 
 initialization
-
+  UTICoInitializeManager := TtiCoInitializeManager.Create;
+  
 finalization
   FreeAndNil(UTICoInitializeManager);
 
