@@ -22,7 +22,7 @@ uses
 // IBX can be upgraded from:
 //   http://codecentral.borland.com/codecentral/ccweb.exe/author?authorid=102
 {$IFDEF DELPHI6ORABOVE}
-  {$DEFINE IBXx08ORABOVE}
+  {.$DEFINE IBXx08ORABOVE}
 {$ENDIF}
 
 type
@@ -183,7 +183,9 @@ end;
 
 procedure TtiQueryIBX.ExecSQL;
 begin
+  Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   Prepare;
+  Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
   FIBSQL.ExecQuery;
 end;
 
@@ -317,6 +319,8 @@ end;
 
 procedure TtiQueryIBX.Open;
 begin
+  Log(ClassName + ': ' + tiNormalizeStr(self.SQLText), lsSQL);
+  Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
   Active := true;
 end;
 
@@ -531,6 +535,7 @@ procedure TtiDatabaseIBX.Commit;
 begin
   if not InTransaction then
     raise EtiOPFInternalException.Create('Attempt to commit but not in a transaction.');
+  Log(ClassName + ': [Commit Trans]', lsSQL);
   FIBTransaction.Commit;
 end;
 
@@ -543,6 +548,7 @@ end;
 
 procedure TtiDatabaseIBX.RollBack;
 begin
+  Log(ClassName + ': [RollBack Trans]', lsSQL);
   FIBTransaction.RollBack;
 end;
 
@@ -551,6 +557,7 @@ procedure TtiDatabaseIBX.StartTransaction;
 begin
   if InTransaction then
     raise EtiOPFInternalException.Create('Attempt to start a transaction but transaction already exists.');
+  Log(ClassName + ': [Start Trans]', lsSQL);
   FIBTransaction.StartTransaction;
 end;
 
