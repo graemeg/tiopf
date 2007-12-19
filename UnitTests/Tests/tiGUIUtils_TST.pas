@@ -10,6 +10,8 @@ uses
 type
 
   TTestTIGUIUtils = class(TtiTestCase)
+  protected
+    procedure TearDown; override;
   published
     procedure   tiListToClipboardDefault;
     procedure   tiListToClipboardFields;
@@ -29,6 +31,12 @@ uses
 procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIGUIUtils);
+end;
+
+procedure TTestTIGUIUtils.TearDown;
+begin
+  inherited;
+  ClipBoard.Free;
 end;
 
 procedure TTestTIGUIUtils.tiListToClipboardDefault;
