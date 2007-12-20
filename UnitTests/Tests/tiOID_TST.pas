@@ -88,13 +88,18 @@ type
 
 
   TTestTIOIDGUID = class(TTestTIOID)
+  private
+    FGuidAsString: string;
   protected
     procedure SetUp; override;
+    procedure TearDown; override;
   published
     procedure AsString; override;
     procedure AsVariant; override;
     procedure Null; override;
     procedure Assign; override;
+  public
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   end;
 
 
@@ -120,6 +125,7 @@ uses
   ,tiOIDInteger // Pull in the integer OID framework
   ,tiOIDString  // Pull in the string OID framework
   ,tiLog
+  ,tiWin32
   ,tiOPFTestManager
   ,Math
   ,tiTestDependencies
@@ -322,7 +328,7 @@ begin
   try
     lOID2 := FOIDClass.Create;
     try
-      lOID1.AsVariant := tiCreateGUIDString;
+      lOID1.AsVariant := FGuidAsString;
       lOID2.Assign(lOID1);
       CheckEquals(lOID1.AsString, lOID2.AsString);
     finally
@@ -337,13 +343,11 @@ end;
 procedure TTestTIOIDGUID.AsString;
 var
   lOID: TOID;
-  lValue: string;
 begin
-  lValue := tiCreateGUIDString;
   lOID   := FOIDClass.Create;
   try
-    lOID.AsString := lValue;
-    CheckEquals(lValue, lOID.AsString, 'Failed on 1');
+    lOID.AsString := FGuidAsString;
+    CheckEquals(FGuidAsString, lOID.AsString, 'Failed on 1');
   finally
     lOID.Free;
   end;
@@ -353,21 +357,28 @@ end;
 procedure TTestTIOIDGUID.AsVariant;
 var
   lOID: TOID;
-  lValue: string;
   lStr: string;
 begin
-  lValue := tiCreateGUIDString;
   lOID   := FOIDClass.Create;
   try
-    lOID.AsVariant := lValue;
-    CheckEquals(lValue, lOID.AsString, 'Failed on 1');
+    lOID.AsVariant := FGuidAsString;
+    CheckEquals(FGuidAsString, lOID.AsString, 'Failed on 1');
     lStr := lOID.AsVariant;
-    CheckEquals(lValue, lStr,'Failed on 2');
+    CheckEquals(FGuidAsString, lStr,'Failed on 2');
   finally
     lOID.Free;
   end;
 end;
 
+
+constructor TTestTIOIDGUID.Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string) {$ENDIF};
+begin
+  inherited;
+  // There is a one off 32 byte leak the first time this pair execute
+  // and I cannot pinpoint it's cause.
+  tiWin32CoInitialize;
+  tiWin32CoUnInitialize;
+end;
 
 procedure TTestTIOIDGUID.Null;
 var
@@ -376,7 +387,7 @@ begin
   lOID := FOIDClass.Create;
   try
     Check(lOID.IsNull, 'Failed on 1');
-    lOID.AsVariant := tiCreateGUIDString;
+    lOID.AsVariant := FGuidAsString;
     Check(not lOID.IsNull, 'Failed on 2');
     lOID.SetToNull;
     Check(lOID.IsNull, 'Failed on 3');
@@ -390,8 +401,15 @@ procedure TTestTIOIDGUID.SetUp;
 begin
   inherited;
   FOIDClass := TOIDGUID;
+  FGuidAsString := tiCreateGUIDString;
 end;
 
+procedure TTestTIOIDGUID.TearDown;
+begin
+  inherited;
+  FGuidAsString := '';
+  tiWin32CoUnInitialize;
+end;
 
 { TTestTIOIDString }
 
@@ -512,13 +530,13 @@ begin
 end;
 
 procedure TTestTIOIDManager.DoOnNextOID_Integer(Sender: TObject);
-var lOidStr: string;
+var LOidStr: string;
 begin
-  lOidStr:= IntToStr( tiOIDInteger.TNextOIDData(sender).NextOID);
-  if FOIDs.IndexOf(lOidStr) >= 0 then
-    raise Exception.CreateFmt('Duplicate OID: %s', [lOidStr])
+  LOidStr:= IntToStr( tiOIDInteger.TNextOIDData(sender).NextOID);
+  if FOIDs.IndexOf(LOidStr) >= 0 then
+    raise Exception.CreateFmt('Duplicate OID: %s', [LOidStr])
   else
-    FOIDs.Add(lOidStr);
+    FOIDs.Add(LOidStr);
 end;
 
 procedure TTestTIOIDManager.NextOIDInteger_MultiUserAccess;
@@ -635,7 +653,6 @@ begin
     lFactory.Free;
   end;
 end;
-
 
 procedure TTestTIOIDManager.NextOIDMgrInteger;
 var
@@ -871,7 +888,6 @@ begin
   end;
 end;
 
-
 procedure TTestTIOIDManager.tiObject_CreateNew_OIDInteger;
 var
   lItem : TtiObject;
@@ -915,7 +931,3 @@ end;
 
 
 end.
-
-
-
-
