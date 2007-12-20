@@ -78,9 +78,7 @@ type
     procedure   OnAttribute(const AName, AValue : string);
   protected
     procedure   SetUp; override;
-  public
-    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
-    destructor  Destroy; override;
+    procedure   TearDown; override;
   published
     procedure   ParseForNode1;
     procedure   ParseForNode2;
@@ -367,18 +365,6 @@ end;
 
 { TTestTIXMLParser }
 
-constructor TTestTIXMLParser.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
-begin
-  inherited;
-  FAttributes := TStringList.Create;
-end;
-
-destructor TTestTIXMLParser.Destroy;
-begin
-  FAttributes.Free;
-  inherited;
-end;
-
 procedure TTestTIXMLParser.OnAttribute(const AName, AValue: string);
 begin
   FAttributes.Values[AName]:= AValue;
@@ -478,7 +464,12 @@ procedure TTestTIXMLParser.SetUp;
 begin
   inherited;
   FNode := '';
-  FAttributes.Clear;
+  FAttributes := TStringList.Create;
+end;
+
+procedure TTestTIXMLParser.TearDown;
+begin
+  FreeAndNil(FAttributes);
 end;
 
 function TTestTIXML.tiReplicate1(const AValue : string ; ACount : Word): string ;
