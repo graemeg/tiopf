@@ -63,11 +63,10 @@ type
     function  GetRandom: string;
 
   protected
+    procedure SetUpOnce; override;
     procedure SetUp; override;
     procedure TearDown; override;
-  public
-    constructor Create {$IFNDEF DUNIT2}(MethodName: string){$ENDIF}; override;
-    destructor  Destroy; override;
+    procedure TearDownOnce; override;
   published
 
     procedure StringStreamCopyFrom;
@@ -124,6 +123,7 @@ uses
   ,tiHTTPMSXML
   ,tiConstants
   ,tiWebServerClientConnectionDetails
+  ,TestFramework
   ;
 
 const
@@ -154,25 +154,6 @@ end;
 
 { TTestTIHTTP }
 
-constructor TTestTIHTTP.Create{$IFNDEF DUNIT2}(MethodName: string){$ENDIF};
-begin
-  inherited Create{$IFNDEF DUNIT2} (MethodName) {$ENDIF};
-  FHTTPServer := TidHTTPServer.Create(nil);
-  FHTTPServer.OnCommandGet := HTTPGet_Event;
-  FHTTPServer.DefaultPort:= cHTTPPortToTestWith;
-  FRequest := TMemoryStream.Create;
-  FResponse := TMemoryStream.Create;
-  FDocName := cTestDocName;
-end;
-
-destructor TTestTIHTTP.Destroy;
-begin
-  FHTTPServer.Free;
-  FRequest.Free;
-  FResponse.Free;
-  inherited;
-end;
-
 function TTestTIHTTP.GetRandom: string;
 begin
   result:= tiCreateGUIDString;
@@ -191,6 +172,19 @@ begin
   Result := '<xml> docname="' + pDocName + '" params="' + AParams + '"</xml>';
 end;
 
+procedure TTestTIHTTP.SetUpOnce;
+begin
+  FHTTPServer := TidHTTPServer.Create(nil);
+  FHTTPServer.OnCommandGet := HTTPGet_Event;
+  FHTTPServer.DefaultPort:= cHTTPPortToTestWith;
+  FRequest := TMemoryStream.Create;
+  FResponse := TMemoryStream.Create;
+  FDocName := cTestDocName;
+
+  FHTTPServer.Active:= True;
+  SetUp;
+end;
+
 procedure TTestTIHTTP.SetUp;
 begin
   FHTTPServer.OnCommandGet:= nil;
@@ -203,8 +197,15 @@ end;
 
 procedure TTestTIHTTP.TearDown;
 begin
-  FHTTPServer.Active := False;
+  SetUp;
+end;
+
+procedure TTestTIHTTP.TeardownOnce;
+begin
   FHTTPServer.OnCommandGet:= nil;
+  FHTTPServer.Free;
+  FRequest.Free;
+  FResponse.Free;
 end;
 
 procedure TTestTIHTTP.TIHTTPIndyPostPerformance;
@@ -223,6 +224,7 @@ var
   lExpected : string;
   lActual  : string;
 begin
+  AllowedMemoryLeakSize := 24; // Allow fixed size read from file.
   Assert(AClass<>nil, 'AClass not assigned');
   FHTTPServer.OnCommandGet:= HTTPGet_Event;
   FHTTPServer.Active:= True;
@@ -733,6 +735,7 @@ var
   LHeader: string;
   LRandom: string;
 begin
+  SetAllowedLeakArray([32,96]);
   Assert(AClass<>nil, 'AClass not assigned');
   LRandom:= GetRandom;
   FHTTPServer.OnCommandGet := HTTPGet_CustomHeaderInputEvent;
