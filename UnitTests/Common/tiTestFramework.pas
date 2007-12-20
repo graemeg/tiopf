@@ -79,11 +79,11 @@ type
   TtiTestCase = class(TTestCase)
   private
     FPerformanceCounter: TtiPerformanceCounter;
+    FTempDirectory: string;
     function GetLongString: string;
   protected
     procedure   SetUp; override;
     procedure   TearDown; override;
-    function    TempDirectory: string;
     function    TempFileName(const AFilename: string = ''): string;
     property    LongString : string    read GetLongString;
     function    tstIntToStr(pInt:Integer):string;
@@ -104,6 +104,7 @@ type
       constructor Create {$IFNDEF DUNIT2}(AMethodName: string){$ENDIF}; override;
     {$ENDIF}
     destructor Destroy; override;
+    class function TempDirectory: string;
     function  PerformanceCounter: TtiPerformanceCounter;
 
     procedure Check(const ACondition: Boolean; AMessage: string; const AArgs: array of const); reintroduce; overload;
@@ -277,8 +278,8 @@ uses
 {$define read_implementation}
 
 var
-  UTempPath : string;
-  ULongString: string;
+  UTempPath : string = '';
+  ULongString: string = '';
 
 function  tiCreateStringOfSize(const ASize : LongInt): string;
 var
@@ -410,7 +411,7 @@ begin
   Inc(AInc);
 end;
 
-function TtiTestCase.TempDirectory: string;
+class function TtiTestCase.TempDirectory: string;
 {$IFDEF MSWINDOWS}
 var
   pcTemp : array[0..MAX_PATH] of char;
@@ -451,8 +452,7 @@ begin
   Check(True); // To Force OnCheckCalled to be called
   lMessage := '';
   lResult := AreStreamContentsSame(pStream1, pStream2, lMessage);
-  if not lResult then
-    Fail(lMessage);
+  Check(lResult,  lMessage);
 end;
 
 
@@ -512,8 +512,9 @@ procedure TtiTestCase.SetUp;
 begin
   inherited;
   // ToDo: Must look into this - sometimes TempDirectory contains a file that's locked
-  if not DirectoryExists(TempDirectory) then
-    try tiForceDirectories(TempDirectory) except end;
+  FTempDirectory := TempDirectory;
+  if not DirectoryExists(FTempDirectory) then
+    try tiForceDirectories(FTempDirectory) except end;
 end;
 
 procedure TtiTestCase.TearDown;
@@ -522,8 +523,9 @@ procedure TtiTestCase.TearDown;
 begin
   inherited;
   // ToDo: Must look into this - sometimes TempDirectory contains a file that's locked
-  if DirectoryExists(TempDirectory) then
-    try tiForceRemoveDir(TempDirectory) except end;
+  if DirectoryExists(FTempDirectory) then
+    try tiForceRemoveDir(FTempDirectory) except end;
+  uTempPath := '';
 // To check for files left in the temp directory
 //  LSL:= TStringList.Create;
 //  try
@@ -535,6 +537,7 @@ begin
 //  finally
 //    LSL.Free;
 //  end;
+  FTempDirectory := '';
 end;
 
 function TtiTestCase.tstIntToBool(pInt: Integer): boolean;
@@ -1801,5 +1804,11 @@ begin
   Assert(not FRunning, 'Still running');
   result:= (FStop - FStart) * FPerformanceFactor;
 end;
+
+initialization
+  ULongString:= tiCreateStringOfSize(3000);
+
+finalization
+  ULongString := '';
 
 end.
