@@ -207,6 +207,7 @@ type
 
 // The log object is a singleton
 function  gLog : TtiLog;
+procedure ReleaseLog; //Allow testing to fully close then re-open Log; Peterm
 
 // Some global proces to make logging easier
 procedure Log(const AMessage : string; ASeverity : TtiLogSeverity = lsNormal); overload;
@@ -279,6 +280,16 @@ begin
   result := uLog;
 end;
 
+procedure ReleaseLog;
+begin
+  if uLog <> nil then
+  try
+    ubFinalization := True;
+    FreeAndNil(uLog);
+  finally
+    ubFinalization := False;
+  end;
+end;
 
 function _IsParam(const AParam: string): boolean;
   //------------
@@ -911,7 +922,7 @@ initialization
 
 finalization
   ubFinalization := true;
-  uLog.Free;
+  FreeAndNil(uLog);
 
 end.
 

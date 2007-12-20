@@ -10,14 +10,20 @@ uses
   {$ENDIF}
   tiTestFramework
   ,tiOPFTestManager
+  ,TestExtensions
+  ,TestFrameworkIfaces
   ;
 
+type
+  TtiTestDecoratorClass = class of TTestSetup;
 
 procedure RegisterTests;
 function  GTIOPFTestManager: TtiOPFTestManager;
 procedure RemoveUnSelectedPersistenceLayerSetups;
 procedure RemoveXMLLightIfNotRegistered;
-procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
+procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass); overload;
+procedure RegisterNonPersistentTest(const ATestDecorator: TtiTestDecoratorClass;
+                                    const ATestCaseClass: TtiTestCaseClass); overload;
 function  PersistentSuiteName(APerLayerName: string): string;
 procedure RegisterExpectedTIOPFMemoryLeaks;
 
@@ -209,6 +215,13 @@ procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
 begin
   if GTIOPFTestManager.TestNonPersistentClasses then
     RegisterTest(cSuiteNameNonPersistentTests, ATestCaseClass.Suite);
+end;
+
+procedure RegisterNonPersistentTest(const ATestDecorator: TtiTestDecoratorClass;
+                                    const ATestCaseClass: TtiTestCaseClass);
+begin
+  if GTIOPFTestManager.TestNonPersistentClasses then
+    RegisterTest(cSuiteNameNonPersistentTests, AtestDecorator.Suite(ATestCaseClass.Suite));
 end;
 
 
