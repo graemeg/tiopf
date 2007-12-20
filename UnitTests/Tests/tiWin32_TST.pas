@@ -20,6 +20,8 @@ type
     procedure CoInitialize_CoUnInitialize_MainThread;
     procedure CoInitialize_CoUnInitialize_MultiThread;
     procedure CoInitialize_ForceCoUnInitialize;
+  public
+    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   end;
 
 
@@ -30,7 +32,7 @@ type
     constructor Create(AIterations: Integer);
     procedure Execute; override;
   end;
-  
+
 
 procedure RegisterTests;
 
@@ -51,6 +53,15 @@ end;
 
 
 { TTestTIWin32 }
+
+constructor TTestTIWin32.Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string) {$ENDIF};
+begin
+  inherited;
+  // There is a one off 32 byte leak the first time this pair execute
+  // and I cannot pinpoint it's cause.
+  tiWin32CoInitialize;
+  tiWin32CoUnInitialize;
+end;
 
 procedure TTestTIWin32.CoInitialize_CoUnInitialize_MainThread;
 begin
