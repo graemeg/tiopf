@@ -61,6 +61,7 @@ uses
   ,tiWebServerVersion
   ,tiHTTPIndy
   ,tiLog
+  ,tiLogToFile
   ,tiHTTP
   ,tiCGIParams
 
@@ -83,13 +84,13 @@ const
 procedure TTestTIWebServer.SetUp;
 begin
   inherited;
-
+  ReleaseLog;
 end;
 
 procedure TTestTIWebServer.TearDown;
 begin
   inherited;
-
+  ReleaseLog;
 end;
 
 type
@@ -297,6 +298,7 @@ var
   LFileName: string;
   LTryCount: integer;
 begin
+  gLog.RegisterLog(TtiLogToFile.CreateWithFileName('', '', True));
   LFileName:= gLog.LogToFileName;
   LPage:= 'test log file';
   LO:= TtiWebServerForTesting.Create(cPort);
