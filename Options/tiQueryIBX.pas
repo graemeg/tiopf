@@ -22,7 +22,7 @@ uses
 // IBX can be upgraded from:
 //   http://codecentral.borland.com/codecentral/ccweb.exe/author?authorid=102
 {$IFDEF DELPHI6ORABOVE}
-  {.$DEFINE IBXx08ORABOVE}
+  {$DEFINE IBXx08ORABOVE}
 {$ENDIF}
 
 type
