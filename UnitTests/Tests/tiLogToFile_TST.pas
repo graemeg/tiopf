@@ -6,7 +6,13 @@ interface
 
 uses
   tiTestFramework
+  {$IFDEF FPC}
+  ,testregistry
+  ,testdecorator
+  {$ELSE}
   ,TestExtensions
+  ,TestFramework
+  {$ENDIF}
   ,SysUtils
   ,Classes
   ;
@@ -19,8 +25,8 @@ type
 
   tiLogToFileTestSetup = class(TTestSetup)
   protected
-    procedure {$IFDEF FPC}OneTime{$ENDIF}SetUp; override;
-    procedure {$IFDEF FPC}OneTime{$ENDIF}TearDown; override;
+    procedure {$IFDEF FPC}OneTimeSetUp{$ELSE}SetUp{$ENDIF}; override;
+    procedure {$IFDEF FPC}OneTimeTearDown{$ELSE}TearDown{$ENDIF}; override;
   end;
 
   // Test methods for class TtiLogToFile
@@ -46,8 +52,7 @@ uses
   {$ENDIF}
   ,tiConstants
   ,tiLog
-  ,tiLogToFile
-  , TestFramework;
+  ,tiLogToFile;
 
 const
   CTestLogFileName = '..' + PathDelim + 'Data' + PathDelim;
@@ -62,13 +67,13 @@ end;
 
 { tiLogToFileTestSetup }
 
-procedure tiLogToFileTestSetup.{$IFDEF FPC}OneTime{$ENDIF}SetUp;
+procedure tiLogToFileTestSetup.{$IFDEF FPC}OneTimeSetUp{$ELSE}SetUp{$ENDIF};
 begin
   ReleaseLog;
   uTempDirectory := TtiTestCase.TempDirectory;
 end;
 
-procedure tiLogToFileTestSetup.{$IFDEF FPC}OneTime{$ENDIF}TearDown;
+procedure tiLogToFileTestSetup.{$IFDEF FPC}OneTimeTearDown{$ELSE}TearDown{$ENDIF};
 begin
   uTempDirectory := '';
   ReleaseLog;
@@ -115,7 +120,9 @@ const
   COverwriteOldFolders = true;
 
 begin
+  {$IFNDEF FPC}
   FailsOnNoChecksExecuted := False;  // Prevent NoCheck failure but mark where this is applied.
+  {$ENDIF}
   SetLength(LLoggers, Length(CLoggers));
   FmtStr(LThreadID, '%.4d', [GetCurrentThreadID]);
 

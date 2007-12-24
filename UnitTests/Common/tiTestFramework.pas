@@ -92,7 +92,7 @@ type
     function    tstIntToDateTime(pInt:Integer): TDateTime;
     procedure   tstIntToStream(pInt:Integer; const AStream : TStream);
     procedure   LoadConfiguration(const iniFile :TCustomIniFile;
-                                  const Section :string); override;
+                                  const Section :string); {$IFNDEF FPC}override;{$ENDIF}
   public
     {$IFDEF FPC}
     constructor Create; override;
@@ -1302,7 +1302,9 @@ var
   LSubstSection: string;
 begin
   LSubstSection := AnsiReplaceStr(Section, 'Text.exe', 'GUI.exe');
+  {$IFNDEF FPC}
   inherited LoadConfiguration(inifile, LSubstSection);;
+  {$ENDIF}
 end;
 
 procedure TtiTestCase.CheckObjectState(

@@ -125,7 +125,9 @@ uses
   ,tiOIDInteger // Pull in the integer OID framework
   ,tiOIDString  // Pull in the string OID framework
   ,tiLog
+  {$IFDEF MSWINDOWS}
   ,tiWin32
+  {$ENDIF}
   ,tiOPFTestManager
   ,Math
   ,tiTestDependencies
@@ -376,8 +378,10 @@ begin
   inherited;
   // There is a one off 32 byte leak the first time this pair execute
   // and I cannot pinpoint it's cause.
+  {$IFDEF MSWINDOWS}
   tiWin32CoInitialize;
   tiWin32CoUnInitialize;
+  {$ENDIF}
 end;
 
 procedure TTestTIOIDGUID.Null;
@@ -408,7 +412,9 @@ procedure TTestTIOIDGUID.TearDown;
 begin
   inherited;
   FGuidAsString := '';
+  {$IFDEF MSWINDOWS}
   tiWin32CoUnInitialize;
+  {$ENDIF}
 end;
 
 { TTestTIOIDString }

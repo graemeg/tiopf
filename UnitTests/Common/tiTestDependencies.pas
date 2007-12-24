@@ -5,13 +5,16 @@ unit tiTestDependencies;
 interface
 uses
   {$IFDEF FPC}
+  fpcunit,
   testregistry,
+  testdecorator,
   tiFPCUnitUtils, // Helper functions to fake DUnit methods
+  {$ELSE}
+  ,TestExtensions
+  ,TestFrameworkIfaces
   {$ENDIF}
   tiTestFramework
   ,tiOPFTestManager
-  ,TestExtensions
-  ,TestFrameworkIfaces
   ;
 
 type
@@ -221,7 +224,12 @@ procedure RegisterNonPersistentTest(const ATestDecorator: TtiTestDecoratorClass;
                                     const ATestCaseClass: TtiTestCaseClass);
 begin
   if GTIOPFTestManager.TestNonPersistentClasses then
+    {$IFNDEF FPC}
     RegisterTest(cSuiteNameNonPersistentTests, AtestDecorator.Suite(ATestCaseClass.Suite));
+    {$ELSE}
+    RegisterTest(cSuiteNameNonPersistentTests,
+      ATestDecorator.Create(TTestSuite.Create(ATestCaseClass)));
+    {$ENDIF}
 end;
 
 
