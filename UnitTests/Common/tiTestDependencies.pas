@@ -10,11 +10,11 @@ uses
   testdecorator,
   tiFPCUnitUtils, // Helper functions to fake DUnit methods
   {$ELSE}
-  ,TestExtensions
-  ,TestFrameworkIfaces
+  TestExtensions,
+  TestFrameworkIfaces,
   {$ENDIF}
-  tiTestFramework
-  ,tiOPFTestManager
+  tiTestFramework,
+  tiOPFTestManager
   ;
 
 type
