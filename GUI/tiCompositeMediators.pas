@@ -576,7 +576,7 @@ begin
   for i := 1 to tiNumToken(FDisplayNames, cFieldDelimiter) do
   begin
     lField := tiToken(FDisplayNames, cFieldDelimiter, i);
-    FView.Cells[i, 0]   := tiFieldName(lField);
+    FView.Cells[i, 0]   := tiFieldCaption(lField);
     FView.ColWidths[i]  := tiFieldWidth(lField);
 
     //resize the last column to fill the grid.
