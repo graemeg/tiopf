@@ -4,12 +4,10 @@ unit tiXML_TST;
 
 interface
 uses
+  Classes
   {$IFDEF FPC}
-  testregistry
-  {$ELSE}
-  TestFrameWork
+  ,testregistry
   {$ENDIF}
-  ,Classes
   ,tiXML
   ,tiTestFramework
  ;

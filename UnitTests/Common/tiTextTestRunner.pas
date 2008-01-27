@@ -74,8 +74,7 @@ uses
   TestFrameworkProxy,
   XMLListener,
   {$ENDIF}
-  tiExcept
-  ,tiUtils
+  tiUtils
   ,tiConstants
   ,tiCommandLineParams
   ,tiTestFramework

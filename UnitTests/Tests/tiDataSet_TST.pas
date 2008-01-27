@@ -3,9 +3,26 @@ unit TiDataset_TST;
 interface
 
 uses
-  TestFramework, tiDataset, Db, Variants, SysUtils, tiObject, tiTestFramework;
+   tiTestFramework
+  ,tiDataset
+  ,Db
+  ,Variants
+  ,SysUtils
+  ,tiObject
+  ;
 
 type
+  TTestTiDataSetElements = class(TtiTestCase)
+  private
+    FList: TtiObjectList;
+    FDataset: TtiDataset;
+  protected
+    procedure SetUp; override;
+    procedure TearDown; override;
+  published
+    procedure CreateDestroyTestItem;
+  end;
+
   TTestTiDataset = class(TtiTestcase)
   private
     FList: TtiObjectList;
@@ -18,6 +35,7 @@ type
     procedure SetUp;override;
     procedure TearDown;override;
   published
+    procedure ConnectClose;
     procedure CheckOpen;
     procedure CheckOpenFirstBug;
     procedure CheckFirst;
@@ -48,11 +66,12 @@ procedure RegisterTests;
 implementation
 
 uses
-  tiOPFManager
-  ,tiTestDependencies;
+  tiTestDependencies
+  ,TestFramework;
 
 procedure RegisterTests;
 begin
+  RegisterNonPersistentTest(TTestTiDataSetElements);
   RegisterNonPersistentTest(TTestTiDataset);
 end;
 
@@ -104,12 +123,38 @@ begin
   FDataset.LinkObject(FList, TtiDatasetItem);
 end;
 
+{ TTestTiDataSetElements }
+var
+  uTtiDatasetItem: TtiDatasetItem;
+
+procedure TTestTiDataSetElements.SetUp;
+begin
+  inherited;
+  uTtiDatasetItem := nil;
+  FList := TtiObjectList.Create;
+  FDataset := TtiDataset.Create(nil);
+  FDataset.ObjectClass := TtiDatasetItem;
+end;
+
+procedure TTestTiDataSetElements.TearDown;
+begin
+  uTtiDatasetItem.Free;
+  FDataset.Close;
+  FDataset.Free;
+  inherited;
+end;
+
+procedure TTestTiDataSetElements.CreateDestroyTestItem;
+begin
+  FailsOnNoChecksExecuted := False;
+  uTtiDatasetItem := TtiDatasetItem.CreateNew;
+end;
+
 procedure TTestTiDataset.Setup;
 begin
   inherited;
-  gTIOPFManager.DefaultPerLayerName:= 'XML';
+//  gTIOPFManager.DefaultPerLayerName:= 'XML';
 //  gTIOPFManager.ConnectDatabase('dbdemos.xml', '', '');
-
   FList := TtiObjectList.Create;
   FDataset := TtiDataset.Create(nil);
   FDataset.ObjectClass := TtiDatasetItem;
@@ -124,6 +169,12 @@ begin
   FDataset.Close;
   FDataset.Free;
   inherited;
+end;
+
+procedure TTestTiDataset.ConnectClose;
+begin
+  FDataSet.Close;
+  Check(not FDataset.Active, 'Dataset Close method not valid');
 end;
 
 procedure TTestTiDataset.CheckOpen;

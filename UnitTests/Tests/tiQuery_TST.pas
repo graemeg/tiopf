@@ -5,11 +5,9 @@ unit tiQuery_TST;
 interface
 uses
   {$IFDEF FPC}
-  testregistry
-  {$ELSE}
-  TestFramework
+  testregistry,
   {$ENDIF}
-  ,tiTestFramework
+  tiTestFramework
   ,tiQuery
   ,SysUtils
   ,Classes

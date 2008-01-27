@@ -8,8 +8,6 @@ uses
   ,tiBOMsForTesting
   {$IFDEF FPC}
   ,testregistry
-  {$ELSE}
-  ,TestFramework 
   {$ENDIF}
   ,tiTestFramework
   ,tiObject

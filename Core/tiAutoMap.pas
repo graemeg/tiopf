@@ -449,7 +449,7 @@ uses
   ,tiExcept
   ,tiOID
   ,tiRTTI
-  ,tiFilteredObjectList
+//##  ,tiFilteredObjectList
   ,TypInfo
   ,SysUtils
   ;

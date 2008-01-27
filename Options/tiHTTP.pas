@@ -141,7 +141,7 @@ uses
   ,tiConstants
   ,SysUtils
   ,tiUtils
-  ,tiXML
+//##  ,tiXML
  ;
 
 var

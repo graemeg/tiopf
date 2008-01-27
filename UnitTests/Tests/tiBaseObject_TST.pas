@@ -6,7 +6,6 @@ interface
 
 uses
   {$IFNDEF FPC}
-  TestFramework,
   {$ENDIF}
   tiTestFramework
   ,Classes

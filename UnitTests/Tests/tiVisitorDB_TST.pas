@@ -5,9 +5,6 @@ unit tiVisitorDB_TST;
 interface
 
 uses
-  {$IFNDEF FPC}
-  TestFrameWork,
-  {$ENDIF}
   tiTestFramework
   ;
 

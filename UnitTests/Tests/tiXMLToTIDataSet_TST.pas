@@ -4,8 +4,7 @@ unit tiXMLToTIDataSet_TST;
 
 interface
 uses
-  TestFrameWork
-  ,tiTestFramework
+  tiTestFramework
   ,tiQuery
   ,Classes
   ,tiXMLToTIDataSet

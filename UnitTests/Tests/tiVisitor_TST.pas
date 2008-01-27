@@ -5,13 +5,11 @@ unit tiVisitor_TST;
 interface
 
 uses
-  Classes,
-  {$IFNDEF FPC}
-  TestFrameWork,
-  {$ENDIF}
-  tiTestFramework,
-  tiVisitor,
-  Contnrs;
+  Classes
+  ,tiTestFramework
+  ,tiVisitor
+  ,Contnrs
+  ;
 
 type
   TTestVisitedList         = class;

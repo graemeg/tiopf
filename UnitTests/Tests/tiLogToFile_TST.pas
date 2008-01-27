@@ -11,7 +11,6 @@ uses
   ,testdecorator
   {$ELSE}
   ,TestExtensions
-  ,TestFramework
   {$ENDIF}
   ,SysUtils
   ,Classes

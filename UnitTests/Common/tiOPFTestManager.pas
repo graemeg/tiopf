@@ -10,7 +10,6 @@ uses
   {$IFDEF FPC}
   ,TestRegistry
   {$ELSE}
-  ,TestFramework
   {$ENDIF}
  ;
 

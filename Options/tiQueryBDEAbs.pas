@@ -7,8 +7,8 @@ uses
    tiQuery
   ,Classes
   ,DBTables
-  ,tiAutoMap
-  ,tiObject
+//##  ,tiAutoMap
+//##  ,tiObject
  ;
 
 type

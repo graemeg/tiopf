@@ -67,8 +67,8 @@ uses
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
-  ,tiLog
-  ,tiQuery
+//  ,tiLog
+//  ,tiQuery
   ,tiTestFramework
   ;
 

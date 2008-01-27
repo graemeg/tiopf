@@ -20,8 +20,7 @@ function GGUIINI(const AFileName: string = ''): TtiGUIINIFile;
 
 implementation
 uses
-   tiUtils
-  ,SysUtils
+  SysUtils
   {$IFDEF FPC}
   ,Controls        // used for TFormBorderStyle
   {$ENDIF}

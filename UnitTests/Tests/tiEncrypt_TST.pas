@@ -5,11 +5,9 @@ unit tiEncrypt_TST;
 interface
 uses
   {$IFDEF FPC}
-  testregistry
-  {$ELSE}
-  TestFramework
+  testregistry,
   {$ENDIF}
-  ,tiTestFramework
+  tiTestFramework
  ;
 
 type

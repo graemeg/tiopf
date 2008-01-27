@@ -7,8 +7,6 @@ uses
   Classes  // needed for TStringList
   {$IFDEF FPC}
   ,testregistry
-  {$ELSE}
-  ,TestFramework 
   {$ENDIF}
   ,tiTestFramework
   ,tiObject

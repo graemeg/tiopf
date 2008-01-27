@@ -10,10 +10,10 @@ uses
   ,IBDatabase
   ,IBSQL
   ,IBHeader
-  ,tiAutoMap
-  ,tiObject
+//##  ,tiAutoMap
+//##  ,tiObject
   ,tiPersistenceLayers
-  ,tiDBConnectionPool
+//##  ,tiDBConnectionPool
   ;
 
 // Turn this on if you have upgraded you IBX from the version that comes
@@ -147,6 +147,7 @@ uses
   ,tiLog
   ,TypInfo
   ,tiOPFManager
+  ,tiObject
   ,tiConstants
   ,tiExcept
   ,SysUtils

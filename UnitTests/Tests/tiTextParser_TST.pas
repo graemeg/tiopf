@@ -5,11 +5,9 @@ unit tiTextParser_TST;
 interface
 uses
   {$IFDEF FPC}
-  testregistry
-  {$ELSE}
-  TestFramework
+  testregistry,
   {$ENDIF}
-  ,tiTextParser
+  tiTextParser
   ,tiTestFramework
   ,Classes
  ;

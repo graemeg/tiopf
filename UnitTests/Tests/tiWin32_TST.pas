@@ -5,11 +5,9 @@ unit tiWin32_TST;
 interface
 uses
   {$IFDEF FPC}
-  testregistry
-  {$ELSE}
-  TestFramework
+  testregistry,
   {$ENDIF}
-  ,tiTestFramework
+  tiTestFramework
   ,Classes
  ;
 

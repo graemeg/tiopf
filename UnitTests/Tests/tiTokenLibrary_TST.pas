@@ -8,8 +8,6 @@ uses
   Classes
   {$IFDEF FPC}
   ,testregistry
-  {$ELSE}
-  ,TestFrameWork
   {$ENDIF}
   ,tiTestFramework
   ;

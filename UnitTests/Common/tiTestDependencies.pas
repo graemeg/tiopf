@@ -9,10 +9,8 @@ uses
   testregistry,
   testdecorator,
   tiFPCUnitUtils, // Helper functions to fake DUnit methods
-  {$ELSE}
-  TestExtensions,
-  TestFrameworkIfaces,
   {$ENDIF}
+  TestExtensions,
   tiTestFramework,
   tiOPFTestManager
   ;
@@ -60,6 +58,7 @@ uses
   {$IFDEF MSWINDOWS}
   ,tiWin32_TST
   ,tiGUIUtils_TST
+  ,TiOPFManager_TST
   ,tiDataSet_TST
   {$ENDIF}
   ,tiDataBuffer_TST
@@ -95,7 +94,7 @@ uses
   //,tiOPFZeos_FB10_TST  // No tests
   ,tiOPFZeos_FB15_TST
   ,tiOPFDBISASM4_TST
-  ,tiOPFAsqlite3_TST   
+  ,tiOPFAsqlite3_TST
   //,tiOPFZeos_MySQL41_TST // No tests
   //,tiOPFZeos_MySQL50_TST // No tests
 
@@ -135,6 +134,7 @@ begin
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
+  TiOPFManager_TST.RegisterTests;
   tiDataSet_TST.RegisterTests;
   {$ENDIF}
   tiDataBuffer_TST.RegisterTests;

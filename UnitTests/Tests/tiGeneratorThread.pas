@@ -7,8 +7,6 @@ interface
 uses
   {$ifdef fpc}
   testregistry,
-  {$else}
-  TestFramework,
   {$endif}
   SysUtils
   ,Classes
