@@ -99,17 +99,31 @@ end;
 
 function tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult;
 begin
+  Result := nil;
   try
-    Suite.LoadConfiguration(ExtractFilePath(ParamStr(0)) + 'Dunit.ini', False, True);
-    Result := RunTest(Suite, [{$IFDEF DUNIT2}
-                              TXMLListener.Create(ParamStr(0)),
-                              {$ENDIF}
-                              TtiTextTestListener.Create
-                              ]);
+    if Suite = nil then
+      Writeln('No tests registered')
+    else
+    begin
+      Suite.LoadConfiguration(ExtractFilePath(ParamStr(0)) + 'Dunit.ini', False, True);
+      try
+        Result := RunTest(Suite, [{$IFDEF DUNIT2}
+                                  TXMLListener.Create(ParamStr(0)),
+                                  {$ENDIF}
+                                  TtiTextTestListener.Create
+                                  ]);
+      finally
+        {$IFDEF DUNIT2}
+          Result.ReleaseListeners; // We need the XMLListener to close now
+        {$ENDIF}
+      end;
+    end;
   finally
-   {$IFDEF DUNIT2}
-      Result.ReleaseListeners; // We need the XMLListener to close now
+    {$IFDEF DUNIT2}
+      if Assigned(Suite) then
+        Suite.ReleaseTests;
     {$ENDIF}
+
     case exitBehavior of
       rxbPause:
         try
@@ -122,8 +136,8 @@ begin
           result:= nil;
           if not WasSuccessful then
             System.Halt(ErrorCount+FailureCount);
-        end;
-    end;
+       end;
+     end;
   end;
 end;
 
