@@ -8,7 +8,8 @@ uses
   tiVisitor,
   Classes;
 
-procedure TestOIDGenerator(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string; AOnNextOID: TNotifyEvent);
+procedure TestOIDGenerator(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string;
+  AOnNextOID: TNotifyEvent; const ANumThreads: Byte);
 
 
 implementation
@@ -39,40 +40,41 @@ type
   end;
 
 const
-  NUM_THREADS = 3; // 3 is the minimum for testing, 10 will give a more indepth test
   NUM_CALLS = 5;   // 5 is the minimum for testing, 100 will give a more indepth test
 
 var
-  Threads : array[1.. NUM_THREADS] of TGeneratorThread;
+  UThreads : array of TGeneratorThread;
   UThreadError: string;
   UOIDs: TStrings;
   UCritSect: TCriticalSection;
   UTerminateThreads: boolean;
   UThreadCount: integer;
 
-procedure RunTest(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string; AOnNextOID: TNotifyEvent);
+procedure RunTest(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string;
+  AOnNextOID: TNotifyEvent; const ANumThreads: Byte);
 var
-  f: integer;
-  thread: TGeneratorThread;
+  i: integer;
+  LThread: TGeneratorThread;
 begin
   UThreadError:= '';
   UTerminateThreads:= false;
   try
-    UThreadCount:= NUM_THREADS;
-    for f := 1 to NUM_THREADS do
+    SetLength(UThreads, ANumThreads);
+    UThreadCount:= ANumThreads;
+    for i := 0 to ANumThreads-1 do
     begin
-      thread:= TGeneratorThread.Create(true);
-      Threads[f]:= thread;
-      thread.FVistorName:= AVistorName;
-      thread.FDatabase:= ADatabase;
-      thread.FPerLayer:= APerLayer;
-      thread.FNextOID:= ANextOIDClass.Create;
-      thread.FOnNextOID:= AOnNextOID;
-      thread.Resume;
+      LThread:= TGeneratorThread.Create(true);
+      UThreads[i]:= LThread;
+      LThread.FVistorName:= AVistorName;
+      LThread.FDatabase:= ADatabase;
+      LThread.FPerLayer:= APerLayer;
+      LThread.FNextOID:= ANextOIDClass.Create;
+      LThread.FOnNextOID:= AOnNextOID;
+      LThread.Resume;
     end;
 
   finally
-    for f := 1 to 600 do
+    for i := 1 to 600 do
     begin
       if (UThreadCount = 0) then
         break;
@@ -85,13 +87,14 @@ begin
     raise Exception.Create(UThreadError);
 end;
 
-procedure TestOIDGenerator(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string; AOnNextOID: TNotifyEvent);
+procedure TestOIDGenerator(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string;
+  AOnNextOID: TNotifyEvent; const ANumThreads: Byte);
 begin
   UCritSect:= TCriticalSection.create;
   try
     UOIDs:= TStringList.Create;
     try
-      RunTest(ANextOIDClass, AVistorName, ADatabase, APerLayer, AOnNextOID);
+      RunTest(ANextOIDClass, AVistorName, ADatabase, APerLayer, AOnNextOID, ANumThreads);
     finally
       FreeAndNil( UOIDs );
     end;

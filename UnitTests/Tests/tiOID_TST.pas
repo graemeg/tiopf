@@ -549,6 +549,9 @@ var
   LDefaults: TtiPersistenceLayerDefaults;
   LSuccess: boolean;
   LMessage: string;
+  LNumThreads: Byte;
+const
+  NUM_THREADS = 3; // 3 is the minimum for testing, 10 will give a more indepth test
 begin
   LSuccess := True;
   LMessage := '';
@@ -557,33 +560,29 @@ begin
   try
     LPersistenceLayer.AssignPersistenceLayerDefaults(LDefaults);
     if LDefaults.CanSupportMultiUser then
-    begin
-      CreateNextOIDIntTable;
+      LNumThreads:= NUM_THREADS
+    else
+      LNumThreads:= 1;
+    CreateNextOIDIntTable;
+    try
+      FOIDs:= TStringList.Create;
       try
-        FOIDs:= TStringList.Create;
         try
-          try
-            TestOIDGenerator(tiOIDInteger.TNextOIDData, cNextOIDReadHigh,
-              DatabaseName, LPersistenceLayer.PersistenceLayerName,
-              DoOnNextOID_Integer);
-          except
-            on E:Exception do
-            begin
-              LMessage := E.Message;
-              LSuccess := False;
-            end;
+          TestOIDGenerator(tiOIDInteger.TNextOIDData, cNextOIDReadHigh,
+            DatabaseName, LPersistenceLayer.PersistenceLayerName,
+            DoOnNextOID_Integer, LNumThreads);
+        except
+          on E:Exception do
+          begin
+            LMessage := E.Message;
+            LSuccess := False;
           end;
-        finally
-          FreeAndNil( FOIDs );
         end;
       finally
-        DropNextOIDTable;
+        FreeAndNil( FOIDs );
       end;
-    end else
-    begin
-      LSuccess := False;
-      LMessage := LPersistenceLayer.PersistenceLayerName + ' does not support multi user access';
-      LogWarning(LMessage);
+    finally
+      DropNextOIDTable;
     end;
   finally
     LDefaults.Free;
