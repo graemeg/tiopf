@@ -31,6 +31,7 @@ type
     function  CreateTestDataList: TtstTIObjectList;
   published
     procedure Owner;
+    procedure Parent_InheritsFromVsIs;
     procedure Parent_TtiObject;
     procedure Parent_TtiObjectList;
     procedure Deleted_TtiObject;
@@ -2126,15 +2127,39 @@ begin
   end;
 end;
 
+type
+  TtiObjectForTestingParent = class(TtiObject)
+  end;
+
+  TtiObjectListForTestingParent = class(TtiObjectList)
+  end;
+
+procedure TTestTIObject.Parent_InheritsFromVsIs;
+var
+  LList: TtiObjectListForTestingParent;
+begin
+  LList:= TtiObjectListForTestingParent.Create;
+  try
+    Check(LList is TtiObject);
+    Check(LList is TtiObjectList);
+    Check(LList is TtiObjectListForTestingParent);
+
+    Check(LList.InheritsFrom(TtiObject));
+    Check(LList.InheritsFrom(TtiObjectList));
+    Check(LList.InheritsFrom(TtiObjectListForTestingParent));
+  finally
+    LList.Free;
+  end;
+end;
 
 procedure TTestTIObject.Parent_TtiObject;
 var
-  LObject1: TtiObject;
-  LObject2: TtiObject;
+  LObject1: TtiObjectForTestingParent;
+  LObject2: TtiObjectForTestingParent;
 begin
-  LObject1:= TtiObject.Create;
+  LObject1:= TtiObjectForTestingParent.Create;
   try
-    LObject2:= TtiObject.Create;
+    LObject2:= TtiObjectForTestingParent.Create;
     try
       CheckNull(LObject2.Owner, 'Test #1');
       CheckNull(LObject2.Parent, 'Test #2');
@@ -2151,16 +2176,16 @@ end;
 
 procedure TTestTIObject.Parent_TtiObjectList;
 var
-  LObject1: TtiObject;
-  LObject2: TtiObject;
-  LList:    TtiObjectList;
+  LObject1: TtiObjectForTestingParent;
+  LObject2: TtiObjectForTestingParent;
+  LList:    TtiObjectListForTestingParent;
 begin
-  LObject1:= TtiObject.Create;
+  LObject1:= TtiObjectForTestingParent.Create;
   try
-    LList:= TtiObjectList.Create;
+    LList:= TtiObjectListForTestingParent.Create;
     try
       LList.Owner:= LObject1;
-      LObject2:= TtiObject.Create;
+      LObject2:= TtiObjectForTestingParent.Create;
       CheckNull(LObject2.Owner, 'Test #1');
       CheckNull(LObject2.Parent, 'Test #2');
       LList.Add(LObject2);
