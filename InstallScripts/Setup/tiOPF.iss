@@ -62,6 +62,7 @@ Source: {#PATH_TO_WORKING_3RDPARTY}\FastMM\*.*; DestDir: {app}\tiOPF2\3rdParty\F
 Source: {#PATH_TO_WORKING_3RDPARTY}\Indy\*.*; DestDir: {app}\tiOPF2\3rdParty\Indy; Flags: recursesubdirs; components: TrdParty\Indy
 Source: {#PATH_TO_WORKING_3RDPARTY}\JCL\*.*; DestDir: {app}\tiOPF2\3rdParty\JCL; Flags: recursesubdirs; components: TrdParty\JCL
 
+Source: {#PATH_TO_WORKING_TIOPF2}\Demos\_bin\*.*; DestDir: {app}\tiOPF2\Demos\_bin; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Common\*.*; DestDir: {app}\tiOPF2\Demos\Common; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_01_ReadMe\*.*; DestDir: {app}\tiOPF2\Demos\Demo_01_ReadMe; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_02_LoadPersistenceLayerIfDef\*.*; DestDir: {app}\tiOPF2\Demos\Demo_02_LoadPersistenceLayerIfDef; Flags: recursesubdirs; components: tiOPF2Demos
@@ -79,6 +80,8 @@ Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_12_Inheritance\*.*; DestDir: {app}\
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_13_OneToOne\*.*; DestDir: {app}\tiOPF2\Demos\Demo_13_OneToOne; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_14_OrdinalTypes\*.*; DestDir: {app}\tiOPF2\Demos\Demo_14_OrdinalTypes; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_15_LookupList\*.*; DestDir: {app}\tiOPF2\Demos\Demo_15_LookupList; Flags: recursesubdirs; components: tiOPF2Demos
+Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_16_Dataset\*.*; DestDir: {app}\tiOPF2\Demos\Demo_16_Dataset; Flags: recursesubdirs; components: tiOPF2Demos
+Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_17_MastApp\*.*; DestDir: {app}\tiOPF2\Demos\Demo_17_MastApp; Flags: recursesubdirs; components: tiOPF2Demos
 
 [Dirs]
 Name: {app}\tiOPF2\Compilers\Delphi7\_dcu
