@@ -510,8 +510,39 @@ begin
   FDatabase.LoginPrompt := false;
   FDatabase.SQLDialect := 3; // IK added.
   FIBTransaction := TIBTransaction.Create(nil);
+  FIBTransaction.Params.Add('read_committed');
+  FIBTransaction.Params.Add('rec_version');
+  FIBTransaction.Params.Add('nowait');
+
   FDatabase.DefaultTransaction := FIBTransaction;
   FIBTransaction.DefaultDatabase := FDatabase;
+
+{
+// These are the possible parameters to TIBTransaction
+Snapshot
+  concurrency
+  nowait
+
+Read Committed
+  read_committed
+  rec_version
+  nowait
+
+Read-Only Table Stability
+  read
+  consistency
+
+Read-Write Table Stability
+  write
+  consistency
+
+Precommitted
+  read_committed
+  rec_version
+  nowait
+  read
+}
+
 end;
 
 

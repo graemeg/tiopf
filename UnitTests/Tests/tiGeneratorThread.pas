@@ -5,14 +5,21 @@ unit tiGeneratorThread;
 interface
 
 uses
+  tiVisitor,
+  Classes;
+
+procedure TestOIDGenerator(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string; AOnNextOID: TNotifyEvent);
+
+
+implementation
+
+uses
+  tiOPFManager,
   {$ifdef fpc}
   testregistry,
   {$endif}
-  SysUtils
-  ,Classes
-  ,SyncObjs
-  ,tiVisitor
-  ;
+  SysUtils,
+  SyncObjs;
 
 type
 
@@ -31,35 +38,27 @@ type
     destructor Destroy; override;
   end;
 
-procedure TestOIDGenerator(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string; AOnNextOID: TNotifyEvent);
-
-
-implementation
-
-uses
-  tiOPFManager;
-
 const
   NUM_THREADS = 3; // 3 is the minimum for testing, 10 will give a more indepth test
   NUM_CALLS = 5;   // 5 is the minimum for testing, 100 will give a more indepth test
 
 var
   Threads : array[1.. NUM_THREADS] of TGeneratorThread;
-    FThreadError: string;
-    FOIDs: TStrings;
-    FCritSect: TCriticalSection;
-    TerminateThreads: boolean;
-    ThreadCount: integer;
+  UThreadError: string;
+  UOIDs: TStrings;
+  UCritSect: TCriticalSection;
+  UTerminateThreads: boolean;
+  UThreadCount: integer;
 
 procedure RunTest(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string; AOnNextOID: TNotifyEvent);
 var
   f: integer;
   thread: TGeneratorThread;
 begin
-  FThreadError:= '';
-  TerminateThreads:= false;
+  UThreadError:= '';
+  UTerminateThreads:= false;
   try
-    ThreadCount:= NUM_THREADS;
+    UThreadCount:= NUM_THREADS;
     for f := 1 to NUM_THREADS do
     begin
       thread:= TGeneratorThread.Create(true);
@@ -75,29 +74,29 @@ begin
   finally
     for f := 1 to 600 do
     begin
-      if (ThreadCount = 0) then
+      if (UThreadCount = 0) then
         break;
       Sleep(100);
     end;
   end;
   Sleep(100);
 
-  if FThreadError <> '' then
-    raise Exception.Create(FThreadError);
+  if UThreadError <> '' then
+    raise Exception.Create(UThreadError);
 end;
 
 procedure TestOIDGenerator(ANextOIDClass: TtiVisitedClass; const AVistorName, ADatabase, APerLayer: string; AOnNextOID: TNotifyEvent);
 begin
-  FCritSect:= TCriticalSection.create;
+  UCritSect:= TCriticalSection.create;
   try
-    FOIDs:= TStringList.Create;
+    UOIDs:= TStringList.Create;
     try
       RunTest(ANextOIDClass, AVistorName, ADatabase, APerLayer, AOnNextOID);
     finally
-      FreeAndNil( FOIDs );
+      FreeAndNil( UOIDs );
     end;
   finally
-    FreeAndNil( FCritSect );
+    FreeAndNil( UCritSect );
   end;
 end;
 
@@ -111,21 +110,21 @@ end;
 
 procedure TGeneratorThread.DoOnNextOID(Sender: TObject);
 begin
-  FCritSect.Enter;
+  UCritSect.Enter;
   try
     FOnNextOID(Sender);
   finally
-    FCritSect.Leave;
+    UCritSect.Leave;
   end;
 end;
 
 procedure TGeneratorThread.DoOnTerminate;
 begin
-  FCritSect.Enter;
+  UCritSect.Enter;
   try
-    dec(ThreadCount);
+    dec(UThreadCount);
   finally
-    FCritSect.Leave;
+    UCritSect.Leave;
   end;
 
 end;
@@ -139,7 +138,7 @@ begin
     try
       for f := 1 to NUM_CALLS do
       begin
-        if TerminateThreads then
+        if UTerminateThreads then
           exit;
         
         gTIOPFManager.VisitorManager.Execute(FVistorName, FNextOID, FDatabase, FPerLayer);
@@ -148,8 +147,8 @@ begin
     except
       on e: Exception do
       begin
-        FThreadError:= e.Message;
-        TerminateThreads:= true;
+        UThreadError:= e.Message;
+        UTerminateThreads:= true;
       end;
     end;
   finally
