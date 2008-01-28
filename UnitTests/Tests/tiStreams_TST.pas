@@ -32,6 +32,7 @@ type
     procedure PreSizedStream_Write;
     procedure PreSizedStream_WriteLn;
     procedure PreSizedStream_Clear;
+    procedure PreSizedStream_AsString;
 
     procedure BlockStream_GetBlockAsString;
     procedure BlockStream_SetBlockAsString_InSequence;
@@ -267,6 +268,30 @@ begin
     CheckEquals(ACount, lCount);
   finally
     lStream.Free;
+  end;
+end;
+
+procedure TTestTIStream.PreSizedStream_AsString;
+var
+  LStream: TtiPreSizedStream;
+begin
+  LStream:= TtiPreSizedStream.Create(cStreamStartSize, cStreamGrowBy);
+  try
+    CheckEquals(0, LStream.Position);
+    LStream.Write('ABC');
+    CheckEquals(4, LStream.Size, 'ABC');
+    CheckEquals(4, LStream.Position);
+    CheckEquals('ABC', LStream.AsString);
+    CheckEquals(4, LStream.Position);
+
+    LStream.Write('123');
+    CheckEquals(7, LStream.Size, 'ABC');
+    CheckEquals(7, LStream.Position);
+    CheckEquals('ABC123', LStream.AsString);
+    CheckEquals(7, LStream.Position);
+
+  finally
+    LStream.Free;
   end;
 end;
 
