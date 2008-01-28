@@ -25,6 +25,7 @@ type
     FStreamSize : Int64;
     FGrowBy    : Int64;
     FDataSize  : Int64;
+    function GetPosition: Int64;
   public
     constructor Create(AInitialSize, AGrowBy : Int64);
     destructor  Destroy; override;
@@ -34,6 +35,7 @@ type
     function    AsString: string;
     procedure   SaveToFile(const AFileName: string);
     property    Size: Int64 read FDataSize;
+    property    Position: Int64 read GetPosition;
   end;
 
   {: Adds ReadLn to a TFileStream}
@@ -399,6 +401,8 @@ var
  OutputBuffer      : array[0.. ((BUFFER_SIZE + 2) div 3) * 4 - 1] of Byte;
  BytesRead         : Cardinal;
 begin
+ InputStream.Position:= 0;
+ OutputStream.Size:= 0;
  BytesRead := InputStream.Read (InputBuffer, SizeOf (InputBuffer));
  while BytesRead = SizeOf (InputBuffer) do
   begin
@@ -420,6 +424,8 @@ var
   OutputBuffer      : array[0.. (BUFFER_SIZE + 3) div 4 * 3 - 1] of Byte;
   BytesRead         : Cardinal;
 begin
+  InputStream.Position:= 0;
+  OutputStream.Size:= 0;
   ByteBuffer := 0;
   ByteBufferSpace := 4;
   BytesRead := InputStream.Read (InputBuffer, SizeOf (InputBuffer));
@@ -734,11 +740,14 @@ begin
 end;
 
 function TtiPreSizedStream.AsString: string;
+var
+  LPosition: Cardinal;
 begin
+  LPosition:= FStream.Position;
   FStream.Position := 0;
   SetLength(Result,  FDataSize);
   FStream.Read(Result[1], FDataSize);
-  FStream.Seek(0, soFromEnd);
+  FStream.Position:= LPosition;
 end;
 
 procedure TtiPreSizedStream.Clear;
@@ -763,6 +772,11 @@ destructor TtiPreSizedStream.Destroy;
 begin
   FStream.Free;
   inherited;
+end;
+
+function TtiPreSizedStream.GetPosition: Int64;
+begin
+  result:= FStream.Position;
 end;
 
 procedure TtiPreSizedStream.SaveToFile(const AFileName: string);
