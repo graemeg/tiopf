@@ -547,7 +547,11 @@ procedure TTestTIOIDManager.NextOIDInteger_MultiUserAccess;
 var
   LPersistenceLayer: TtiPersistenceLayer;
   LDefaults: TtiPersistenceLayerDefaults;
+  LSuccess: boolean;
+  LMessage: string;
 begin
+  LSuccess := True;
+  LMessage := '';
   LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
   LDefaults:= TtiPersistenceLayerDefaults.Create;
   try
@@ -558,9 +562,17 @@ begin
       try
         FOIDs:= TStringList.Create;
         try
-          TestOIDGenerator(tiOIDInteger.TNextOIDData, cNextOIDReadHigh,
-            DatabaseName, LPersistenceLayer.PersistenceLayerName,
-            DoOnNextOID_Integer);
+          try
+            TestOIDGenerator(tiOIDInteger.TNextOIDData, cNextOIDReadHigh,
+              DatabaseName, LPersistenceLayer.PersistenceLayerName,
+              DoOnNextOID_Integer);
+          except
+            on E:Exception do
+            begin
+              LMessage := E.Message;
+              LSuccess := False;
+            end;
+          end;
         finally
           FreeAndNil( FOIDs );
         end;
@@ -568,10 +580,15 @@ begin
         DropNextOIDTable;
       end;
     end else
-      LogWarning(LPersistenceLayer.PersistenceLayerName + ' does not support multi user access');
+    begin
+      LSuccess := False;
+      LMessage := LPersistenceLayer.PersistenceLayerName + ' does not support multi user access';
+      LogWarning(LMessage);
+    end;
   finally
     LDefaults.Free;
   end;
+  Check(LSuccess, LMessage);
 end;
 
 procedure TTestTIOIDManager.OIDFactory_CreateNextOIDGenerator;
