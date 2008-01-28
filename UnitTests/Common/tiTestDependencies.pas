@@ -15,8 +15,6 @@ uses
   tiOPFTestManager
   ;
 
-Force build failure to test response
-
 type
   TtiTestDecoratorClass = class of TTestSetup;
 
