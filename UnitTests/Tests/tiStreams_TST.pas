@@ -279,16 +279,16 @@ begin
   try
     CheckEquals(0, LStream.Position);
     LStream.Write('ABC');
-    CheckEquals(4, LStream.Size, 'ABC');
-    CheckEquals(4, LStream.Position);
+    CheckEquals(3, LStream.Size, 'ABC');
+    CheckEquals(3, LStream.Position);
     CheckEquals('ABC', LStream.AsString);
-    CheckEquals(4, LStream.Position);
+    CheckEquals(3, LStream.Position);
 
     LStream.Write('123');
-    CheckEquals(7, LStream.Size, 'ABC');
-    CheckEquals(7, LStream.Position);
+    CheckEquals(6, LStream.Size, 'ABC');
+    CheckEquals(6, LStream.Position);
     CheckEquals('ABC123', LStream.AsString);
-    CheckEquals(7, LStream.Position);
+    CheckEquals(6, LStream.Position);
 
   finally
     LStream.Free;
