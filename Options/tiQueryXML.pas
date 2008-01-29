@@ -16,9 +16,13 @@ uses
   ,tiPersistenceLayers
  ;
 
+const
+  CErrorMSXMLAttemptToSwitchThreadsWhileInTransaction =
+    'Attempt to switch threads while in a transaction';
+
 type
 
-  TtiPersistenceLayerBDEParadox = class(TtiPersistenceLayer)
+  TtiPersistenceLayerMSXML = class(TtiPersistenceLayer)
   protected
     function GetPersistenceLayerName: string; override;
     function GetDatabaseClass: TtiDatabaseClass; override;
@@ -534,7 +538,7 @@ begin
 
     While FXMLDomDoc.readyState <> 4 do
     begin
-      Log('%s Waiting for XML doc to load');
+      Log('Waiting for XML doc to load');
       Sleep(50);
     end;
 
@@ -694,22 +698,22 @@ end;
 
 procedure TtiQueryXML.SelectRow(const ATableName: string;const AWhere: TtiQueryParams);
 var
-  lTable : IXMLDomElement;
-  lQuery : string;
+  LTable : IXMLDomElement;
+  LQuery : string;
 begin
   Assert(Database.TestValid(TtiDatabase), CTIErrorInvalidObject);
   FTableName := lowerCase(ATableName);
 
-  lTable := (Database as TtiDatabaseXML).DOMFindTable(FTableName);
-  if lTable = nil then
+  LTable := (Database as TtiDatabaseXML).DOMFindTable(FTableName);
+  if LTable = nil then
     raise EtiOPFInternalException.Create(
           'Can not find table <' + ATableName +
           '> in <' + Database.DatabaseName + '>');
-  lQuery :=
+  LQuery :=
           uXMLTags.Rows + '/' + uXMLTags.Row +
           (Database as TtiDatabaseXML).GetXMLWhereClause(AWhere);
 
-  FNodes := lTable.SelectNodes(lQuery);
+  FNodes := LTable.SelectNodes(LQuery);
 
   FCurrentRecordIndex := 0;
 end;
@@ -979,23 +983,31 @@ end;
 function TtiDatabaseXML.GetXMLDomDoc: IXMLDOMDocument;
 var
   LCurrentThreadID: DWord;
+  LNewThread: Boolean;
 begin
   LCurrentThreadID:= GetCurrentThreadID;
-  if LCurrentThreadID <> FCurrentThreadID then
+  LNewThread:= LCurrentThreadID <> FCurrentThreadID;
+  if LNewThread and FInTransaction then
+    raise EtiOPFInternalException.Create(CErrorMSXMLAttemptToSwitchThreadsWhileInTransaction);
+  if LNewThread then
   begin
     FXMLDomDoc:= nil;
     FCurrentThreadID:= LCurrentThreadID;
     tiWin32CoInitialize;
     FXMLDomDoc := CoDomDocument.Create;
-    FConnected := false;
+    if FConnected then
+    begin
+      FConnected := false;
+      SetConnected(True);
+    end;
     FInTransaction := false;
   end;
   Result:= FXMLDomDoc;
 end;
 
-{ TtiPersistenceLayerBDEParadox }
+{ TtiPersistenceLayerMSXML }
 
-procedure TtiPersistenceLayerBDEParadox.AssignPersistenceLayerDefaults(
+procedure TtiPersistenceLayerMSXML.AssignPersistenceLayerDefaults(
   const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
 begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
@@ -1007,17 +1019,17 @@ begin
   APersistenceLayerDefaults.CanSupportMultiUser:= False;
 end;
 
-function TtiPersistenceLayerBDEParadox.GetDatabaseClass: TtiDatabaseClass;
+function TtiPersistenceLayerMSXML.GetDatabaseClass: TtiDatabaseClass;
 begin
   result:= TtiDatabaseXML;
 end;
 
-function TtiPersistenceLayerBDEParadox.GetPersistenceLayerName: string;
+function TtiPersistenceLayerMSXML.GetPersistenceLayerName: string;
 begin
   result:= cTIPersistXML;
 end;
 
-function TtiPersistenceLayerBDEParadox.GetQueryClass: TtiQueryClass;
+function TtiPersistenceLayerMSXML.GetQueryClass: TtiQueryClass;
 begin
   result:= TtiQueryXML;
 end;
@@ -1025,7 +1037,7 @@ end;
 Initialization
   uXMLTags := TtiXMLTags.Create;
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
-    TtiPersistenceLayerBDEParadox);
+    TtiPersistenceLayerMSXML);
 
 finalization
   uXMLTags.Free;
