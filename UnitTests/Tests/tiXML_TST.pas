@@ -467,7 +467,9 @@ end;
 
 procedure TTestTIXMLParser.TearDown;
 begin
+  FNode := '';
   FreeAndNil(FAttributes);
+  inherited;
 end;
 
 function TTestTIXML.tiReplicate1(const AValue : string ; ACount : Word): string ;
