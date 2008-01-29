@@ -37,7 +37,7 @@ type
     FMediatorList: TObjectList;
     FObserversInTransit: TList;
     FSelectedObject: TtiObject;
-    procedure   CreateSubMediators;
+    procedure   CreateSubMediators; virtual;
     procedure   SetupGUIandObject; virtual;
     procedure   RebuildList; virtual;
     function    DataAndPropertyValid(const AData: TtiObject): Boolean;
@@ -59,6 +59,7 @@ type
   end;
 
 
+  { Composite mediator for TStringGrid }
   TCompositeStringGridMediator = class(TtiObject)
   private
     FDisplayNames: string;
@@ -73,7 +74,7 @@ type
     FView: TStringGrid;
     FModel: TtiObjectList;
     FMediatorList: TObjectList;
-    procedure   CreateSubMediators;
+    procedure   CreateSubMediators; virtual;
     procedure   SetupGUIandObject; virtual;
     procedure   RebuildStringGrid; virtual;
     function    DataAndPropertyValid(const AData: TtiObject): Boolean;
@@ -91,22 +92,8 @@ type
   end;
 
 
-
-implementation
-
-uses
-  tiUtils
-  ,StdCtrls
-  ,typinfo
-  ,tiExcept
-  ,tiGenericEditMediators
-  ;
-  
-const
-  cFieldDelimiter = ';';
-  cBrackets = '()';
-  
-type
+  { Used internally for sub-mediators in ListView mediator. Moved to interface
+    section so it can be overridden. }
   TListViewListItemMediator = class(TtiObject)
   private
     FModel: TtiObject;
@@ -124,6 +111,8 @@ type
   end;
 
 
+  { Used internally for sub-mediators in StringGrid mediator. Moved to interface
+    section so it can be overridden. }
   TStringGridRowMediator = class(TtiObject)
   private
     FDisplayNames: string;
@@ -140,8 +129,22 @@ type
     property    View: TStringGrid Read FView;
     property    DisplayNames: string read FDisplayNames;
   end;
-  
 
+
+implementation
+
+uses
+  tiUtils
+  ,StdCtrls
+  ,typinfo
+  ,tiExcept
+  ,tiGenericEditMediators
+  ;
+  
+const
+  cFieldDelimiter = ';';
+  cBrackets = '()';
+  
 { Helper functions }
 
 { Extract the field name part from the AField string which is in the format
