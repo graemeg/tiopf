@@ -1145,6 +1145,11 @@ begin
     else
       lSQL := 'select * from ' + ATableName;
 
+    if Assigned(ACriteria) and ACriteria.HasOrderBy then
+    begin
+      lSQL:= lSQL + CrLf + tiCriteriaOrderByAsSQL(ACriteria);
+    end;
+
     SQLText := lSQL;
     AssignParams(AWhere, lCriteriaParams);
     Open;

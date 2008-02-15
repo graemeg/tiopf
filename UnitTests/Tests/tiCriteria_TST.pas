@@ -20,6 +20,7 @@ type
     procedure TestPerCriteria_ClearAll;
     procedure TestPerSelectionCriteriaList;
     procedure TestHasCriteria;
+    procedure TestHasOrderBy;
 
     // Testing SQL generation
     procedure TestPerEqualToCriteria_SQL;
@@ -37,6 +38,13 @@ type
     procedure TestPerSQLCriteria_SQL_IgnoreEmptyCritera;
     procedure TestPerSQLCriteria_SQL_Or;
     procedure TestFieldName;
+
+    // Testing order by sql generation
+    procedure TestOrderByAscending;
+    procedure TestOrderByDescending;
+    procedure TestOrderByArrayAscending;
+    procedure TestOrderByArrayDescending;
+    procedure TestOrderByMixed;
 
     // Testing SQL generation with params
     procedure TestPerEqualToCriteria_SQL_WithParams;
@@ -1310,21 +1318,197 @@ begin
     lCriteria.AddBetween('FIELD_1', '1', '2');
     CheckTrue(lCriteria.HasCriteria, 'Failed at 3');
 
+    // order by is no longer in HasCriteria, but in HasOrderBy
     lCriteria.ClearAll;
     CheckFalse(lCriteria.HasCriteria, 'Failed at 4');
     lCriteria.AddOrderBy('FIELD_1');
-    CheckTrue(lCriteria.HasCriteria, 'Failed at 5');
+    CheckFalse(lCriteria.HasCriteria, 'Failed at 5');
 
+    // group by is no longer in HasCriteria as it doesn't work yet
     lCriteria.ClearAll;
     CheckFalse(lCriteria.HasCriteria, 'Failed at 6');
     lCriteria.AddGroupBy('FIELD_1');
-    CheckTrue(lCriteria.HasCriteria, 'Failed at 7');
+    CheckFalse(lCriteria.HasCriteria, 'Failed at 7');
 
     lCriteria.ClearAll;
     CheckFalse(lCriteria.HasCriteria, 'Failed at 8');
     lCriteria.AddAndCriteria(lCriteriaAnd);
     CheckTrue(lCriteria.HasCriteria, 'Failed at 9');
+  finally
+    lCriteria.Free;
+  end;
+end;
 
+procedure TTestTICriteria.TestHasOrderBy;
+var
+  lCriteria: TtiCriteria;
+begin
+  lCriteria := TtiCriteria.Create('test');
+  try
+    CheckFalse(lCriteria.HasOrderBy, 'Failed at 1');
+    lCriteria.AddOrderBy('FIELD_1');
+    CheckTrue(lCriteria.HasOrderBy, 'Failed at 2');
+
+    lCriteria.ClearAll;
+    CheckFalse(lCriteria.HasOrderBy, 'Failed at 3');
+    lCriteria.AddOrderBy('FIELD_1', true);
+    CheckTrue(lCriteria.HasOrderBy, 'Failed at 4');
+
+    lCriteria.ClearAll;
+    CheckFalse(lCriteria.HasOrderBy, 'Failed at 5');
+    lCriteria.AddOrderBy('FIELD_1', false);
+    CheckTrue(lCriteria.HasOrderBy, 'Failed at 6');
+
+    lCriteria.ClearAll;
+    CheckFalse(lCriteria.HasOrderBy, 'Failed at 7');
+    lCriteria.AddOrderByAscending('FIELD_1');
+    CheckTrue(lCriteria.HasOrderBy, 'Failed at 8');
+
+    lCriteria.ClearAll;
+    CheckFalse(lCriteria.HasOrderBy, 'Failed at 9');
+    lCriteria.AddOrderByDescending('FIELD_1');
+    CheckTrue(lCriteria.HasOrderBy, 'Failed at 10');
+
+    lCriteria.ClearAll;
+    CheckFalse(lCriteria.HasOrderBy, 'Failed at 11');
+    lCriteria.AddOrderBy(['FIELD_1', 'FIELD_2']);
+    CheckTrue(lCriteria.HasOrderBy, 'Failed at 12');
+  finally
+    lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestOrderByArrayAscending;
+var
+  lCriteria: TtiCriteria;
+  lSQL: string;
+begin
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderBy(['FIELD_1', 'FIELD_2']);
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1, FIELD_2', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderBy(['FIELD_1', 'FIELD_2']);
+    lCriteria.AddOrderBy(['FIELD_3', 'FIELD_4']);
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1, FIELD_2, FIELD_3, FIELD_4', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestOrderByArrayDescending;
+var
+  lCriteria: TtiCriteria;
+  lSQL: string;
+begin
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderByDescending(['FIELD_1', 'FIELD_2']);
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1 DESC, FIELD_2 DESC', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderByDescending(['FIELD_1', 'FIELD_2']);
+    lCriteria.AddOrderByDescending(['FIELD_3', 'FIELD_4']);
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1 DESC, FIELD_2 DESC, FIELD_3 DESC, FIELD_4 DESC', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestOrderByAscending;
+var
+  lCriteria: TtiCriteria;
+  lSQL: string;
+begin
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderBy('FIELD_1');
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderByAscending('FIELD_1');
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderBy('FIELD_1');
+    lCriteria.AddOrderBy('FIELD_2');
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1, FIELD_2', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestOrderByDescending;
+var
+  lCriteria: TtiCriteria;
+  lSQL: string;
+begin
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderBy('FIELD_1', false);
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1 DESC', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderByDescending('FIELD_1');
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1 DESC', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderBy('FIELD_1', false);
+    lCriteria.AddOrderBy('FIELD_2', false);
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1 DESC, FIELD_2 DESC', lSQL);
+  finally
+    lCriteria.Free;
+  end;
+end;
+
+procedure TTestTICriteria.TestOrderByMixed;
+var
+  lCriteria: TtiCriteria;
+  lSQL: string;
+begin
+  lCriteria := TtiCriteria.Create('test');
+  try
+    lCriteria.AddOrderBy('FIELD_1');
+    lCriteria.AddOrderBy('FIELD_2', false);
+    lCriteria.AddOrderBy('FIELD_3');
+    lCriteria.AddOrderBy('FIELD_4', false);
+    lSQL := Trim(tiCriteriaOrderByAsSQL(lCriteria));
+    CheckEquals('ORDER BY FIELD_1, FIELD_2 DESC, FIELD_3, FIELD_4 DESC', lSQL);
   finally
     lCriteria.Free;
   end;

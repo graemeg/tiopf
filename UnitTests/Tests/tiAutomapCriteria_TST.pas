@@ -27,7 +27,7 @@ type
     procedure InserTtiObjectListForTesting;
     function  TestIntToFloat(pInt : Integer): extended;
     function  TestIntToDate(pInt : Integer): TDateTime;
-    function  TestIntToBool(pInt : Integer): Boolean;        
+    function  TestIntToBool(pInt : Integer): Boolean;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -44,6 +44,9 @@ type
     procedure ItemsIntegerNotInArray;
     procedure ItemsOID;
     procedure ItemsOwnerOID;
+
+    procedure CollectionOrderedNoCriteria;
+    procedure CollectionOrderedWithCriteria;
 
   end;
 
@@ -65,6 +68,71 @@ const
 
 
 { TTestAutomappingCriteria }
+
+procedure TTestAutomappingCriteria.CollectionOrderedNoCriteria;
+var
+  lData : TtiObjectListForTesting;
+  i : integer;
+  lGroupVal : integer;
+begin
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListForTesting.Create;
+
+  TtiCriteria(lData.Criteria).ClearAll;
+  TtiCriteria(lData.Criteria).AddOrderBy('StrField', false);
+
+  try
+    lData.Read(DatabaseName, PerLayerName);
+    CheckEquals(cGroupCount, lData.Count, 'Failed on 1');
+    for i := 0 to cGroupCount - 1 do
+    begin
+      lGroupVal := cGroupCount - i;  // reversed order
+      CheckEquals(IntToStr(lGroupVal), lData.Items[i].OID.AsString, 'Failed on Group.OID');
+      CheckEquals(IntToStr(lGroupVal), lData.Items[i].StrField, 'Failed on Group.StrField');
+      CheckEquals(lGroupVal, lData.Items[i].IntField, 'Failed on Group.IntField');
+      CheckNearEnough(TestIntToFloat(lGroupVal), lData.Items[i].FloatField, 'Failed on Group.FloatField');
+      CheckEquals(cItemCount, lData.Items[i].Count, 'Failed on Group.Count');
+
+    end;
+  finally
+    lData.Free;
+  end;
+end;
+
+
+procedure TTestAutomappingCriteria.CollectionOrderedWithCriteria;
+var
+  lData : TtiObjectListForTesting;
+  i : integer;
+  lGroupVal : integer;
+const cExpectedRecords = 3;
+begin
+  InserTtiObjectListForTesting;
+  lData := TtiObjectListForTesting.Create;
+
+  TtiCriteria(lData.Criteria).ClearAll;
+  TtiCriteria(lData.Criteria).AddOrderBy('StrField', false);
+  TtiCriteria(lData.Criteria).AddIn('IntField', [3,4,5]);
+
+  try
+    lData.Read(DatabaseName, PerLayerName);
+    CheckEquals(cExpectedRecords, lData.Count, 'Failed on 1 ');
+
+
+    for i := 0 to cExpectedRecords - 1 do
+    begin
+      lGroupVal := cGroupCount - i;  // reversed order
+      CheckEquals(IntToStr(lGroupVal), lData.Items[i].OID.AsString, 'Failed on Group.OID');
+      CheckEquals(IntToStr(lGroupVal), lData.Items[i].StrField, 'Failed on Group.StrField');
+      CheckEquals(lGroupVal, lData.Items[i].IntField, 'Failed on Group.IntField');
+      CheckNearEnough(TestIntToFloat(lGroupVal), lData.Items[i].FloatField, 'Failed on Group.FloatField');
+      CheckEquals(cItemCount, lData.Items[i].Count, 'Failed on Group.Count');
+
+    end;
+  finally
+    lData.Free;
+  end;
+end;
 
 procedure TTestAutomappingCriteria.CollectionReadAllNoCriteria;
 var
@@ -103,7 +171,6 @@ begin
   finally
     lData.Free;
   end;
-
 end;
 
 procedure TTestAutomappingCriteria.CollectionReadStringCriteria;

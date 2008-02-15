@@ -1427,7 +1427,7 @@ begin
   SetUpCriteria; 
 
   // use 2 different SelectRow methods so that non-criteria-aware queries still work
-  if Assigned(FCriteria) and FCriteria.HasCriteria then
+  if Assigned(FCriteria) then
     Query.SelectRow(FAttrColMaps.TableName, FWhere, FCriteria)
   else
     Query.SelectRow(FAttrColMaps.TableName, FWhere);
@@ -2111,7 +2111,7 @@ begin
 
   Supports(visited, ItiFiltered, lFiltered);
 
-  if assigned(lFiltered) and lFiltered.HasCriteria then
+  if assigned(lFiltered) and (lFiltered.HasCriteria or lFiltered.HasOrderBy) then
   begin
     FCriteria := lFiltered.GetCriteria;
 

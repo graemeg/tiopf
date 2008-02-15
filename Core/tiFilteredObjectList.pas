@@ -20,6 +20,7 @@ type
 
     {: Returns true if the ObjectList has selection critera }
     function HasCriteria: boolean;
+    function HasOrderBy: boolean;
     {: Property based selection critera used when reading the list.  This is declared as TtiObject to get around circular references but is of type TtiCriteria}
     property Criteria: TtiCriteria read GetCriteria;
   end;
@@ -35,6 +36,7 @@ type
 
     {: Returns true if the ObjectList has selection critera }
     function HasCriteria: boolean;
+    function HasOrderBy: boolean;
     {: Property based selection critera used when reading the list.  This is declared as TtiObject to get around circular references but is of type TtiCriteria}
     property Criteria: TtiCriteria read GetCriteria;
   end;
@@ -68,6 +70,11 @@ begin
   Result := Assigned(FCriteria) and FCriteria.HasCriteria;
 end;
 
+function TtiFilteredObjectList.HasOrderBy: boolean;
+begin
+  Result := Assigned(FCriteria) and FCriteria.HasOrderBy;
+end;
+
 { TtiFilteredObjThreadList }
 
 constructor TtiFilteredObjThreadList.Create;
@@ -90,6 +97,11 @@ end;
 function TtiFilteredObjThreadList.HasCriteria: boolean;
 begin
   Result := FCriteria.HasCriteria;
+end;
+
+function TtiFilteredObjThreadList.HasOrderBy: boolean;
+begin
+  Result := FCriteria.HasOrderBy;
 end;
 
 end.

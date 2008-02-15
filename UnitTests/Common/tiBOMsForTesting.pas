@@ -450,10 +450,13 @@ var
   i: integer;
 begin
   inherited;
-  SortByProps(['OIDAsInteger']);
-  ;
-  for i := 0 to Count - 1 do
-    Items[i].SortByProps(['OIDAsInteger']);
+  if not Criteria.HasOrderBy then
+  begin
+    SortByProps(['OIDAsInteger']);
+    ;
+    for i := 0 to Count - 1 do
+      Items[i].SortByProps(['OIDAsInteger']);
+  end;
 end;
 
 

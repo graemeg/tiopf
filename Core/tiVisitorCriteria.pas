@@ -18,7 +18,6 @@ type
   TVisObjectToSQL = class(TVisStringStream)
   private
     FGroupByList: TtiColumns;
-    FOrderByList: TtiColumns;
     FWithComments: Boolean;
     FParams: TtiQueryParams;
     FCurrentParamNo: integer;
@@ -29,7 +28,6 @@ type
     destructor  Destroy; override;
     procedure   Execute(const pVisited: TtiVisited); override;
     function    GroupByClausesAsText: string;
-    function    OrderByClausesAsText: string;
     function    AsSQLClause(ACriterias: TtiSelectionCriteriaList): string;
     property    Params: TtiQueryParams read FParams write FParams;
   end;
@@ -37,6 +35,8 @@ type
 // Helper functions
 function tiCriteriaAsSQL(pVisited: TtiObject; pWithComments: boolean = false): string; overload;
 function tiCriteriaAsSQL(pVisited: TtiObject; AParams: TtiQueryParams; pWithComments: boolean = false): string; overload;
+
+function tiCriteriaOrderByAsSQL(pVisited: TtiObject): string;
 
 function ToSelectClause(ACriteria: TtiSelectionCriteriaAbs; AParams: TtiQueryParams; var AParamNo: integer ): string; overload;
 function ToSelectClause(ACriteria: TtiSQLCriteria): string; overload;
@@ -118,6 +118,35 @@ function tiCriteriaAsSQL(pVisited: TtiObject; pWithComments: boolean = false): s
 begin
   result:= tiCriteriaAsSQL(pVisited, nil, pWithComments);
 end;
+
+function tiCriteriaOrderByAsSQL(pVisited: TtiObject): string;
+var
+  lOrderByList: TtiColumns;
+   i: integer;
+  function OrderText(AColumnId: integer): string;
+  begin
+    if lOrderByList.Items[AColumnId].Ascending then
+      result:= lOrderByList.Items[AColumnId].FieldName
+    else
+      result:= lOrderByList.Items[AColumnId].FieldName + ' DESC';
+  end;
+begin
+  Assert(pVisited is TtiCriteria, 'TtiCriteria required');
+
+  result:= '';
+  if not TtiCriteria(pVisited).HasOrderBy then
+    exit;
+
+  lOrderByList:= TtiCriteria(pVisited).GetOrderByList;
+
+  result := ' ORDER BY ' + OrderText(0);
+
+  for i := 1 to (lOrderByList.Count - 1) do
+    result := result + ', ' + OrderText(i);
+
+  result:= result + CrLf;
+end;
+
 
 function ToSelectClause(ACriteria: TtiSelectionCriteriaAbs; AParams: TtiQueryParams; var AParamNo: integer): string;
 begin
@@ -366,15 +395,12 @@ begin
   FWithComments             := pWithComments;
   FGroupByList              := TtiColumns.Create;
   FGroupByList.OwnsObjects  := False;
-  FOrderByList              := TtiColumns.Create;
-  FOrderByList.OwnsObjects  := False;
   FParams                   := nil;
   FCurrentParamNo           := 1;
 end;
 
 destructor TVisObjectToSQL.Destroy;
 begin
-  FOrderByList.Free;
   FGroupByList.Free;
   inherited Destroy;
 end;
@@ -415,23 +441,6 @@ begin
   if FWithComments then
   Write(' /* ' + TtiCriteria(pVisited).Name + '*/ ');
   FGroupByList.CopyReferences(TtiCriteria(pVisited).GetGroupByList);
-  FOrderByList.CopyReferences(TtiCriteria(pVisited).GetOrderByList);
-end;
-
-function TVisObjectToSQL.OrderByClausesAsText: string;
-var
-  i: integer;
-begin
-  result := '';
-
-  if FOrderByList.Count = 0 then
-    Exit; //==>
-
-  result := ' ORDER BY ' + FOrderByList.Items[0].Name;
-
-  for i := 1 to (FOrderByList.Count - 1) do
-    result := result + ', ' + FOrderByList.Items[i].Name;
-
 end;
 
 function TVisObjectToSQL.GroupByClausesAsText: string;

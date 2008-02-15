@@ -22,6 +22,7 @@ type
   ItiFiltered = interface
     ['{3B973E92-E6F2-4241-8A78-8068FC52133F}']
     function HasCriteria: boolean;
+    function HasOrderBy: boolean;
     function GetCriteria: TtiCriteria;
   end;
 
@@ -29,6 +30,8 @@ type
   private
     FAscending: Boolean;
     FName: string;
+    FFieldName: string;
+    function GetFieldName: string;
   protected
     function    GetOwner: TtiColumns; reintroduce; virtual;
     procedure   SetOwner(const Value: TtiColumns); reintroduce; virtual;
@@ -37,6 +40,7 @@ type
   published
     property    Ascending: Boolean read FAscending write FAscending;
     property    Name: string read FName write FName;
+    property    FieldName: string read GetFieldName write FFieldName;
   end;
   
   
@@ -98,7 +102,7 @@ type
     procedure   AddNotNull(AAttribute: string);
     procedure   AddNull(AAttribute: string);
     procedure   AddOrCriteria(ACriteria: TtiCriteria);
-    procedure   AddOrderBy(AField: string; ASorterAscending: boolean = False); overload;
+    procedure   AddOrderBy(AField: string; ASorterAscending: boolean = True); overload;
     procedure   AddOrderBy(AFields: array of string); overload;
     procedure   AddOrderByAscending(AField: string); overload;
     procedure   AddOrderByAscending(AFields: array of string); overload;
@@ -111,6 +115,7 @@ type
     function    GetOrderByList: TtiColumns;
     function    isEmbraced: Boolean;
     function    HasCriteria: boolean;
+    function    HasOrderBy: boolean;
     property    CriteriaType: TCriteriaType read FCriteriaType write FCriteriaType;
     property    Owner: TtiCriteria read GetOwner write SetOwner;
   published
@@ -275,6 +280,14 @@ const
 
 
 { TPerColumn }
+
+function TtiColumn.GetFieldName: string;
+begin
+  if FFieldName = '' then
+    result := FName
+  else
+    Result := FFieldName;
+end;
 
 function TtiColumn.GetOwner: TtiColumns;
 begin
@@ -546,7 +559,7 @@ begin
   FCriterias.Add(ACriteria);
 end;
 
-procedure TtiCriteria.AddOrderBy(AField: string; ASorterAscending: boolean = False);
+procedure TtiCriteria.AddOrderBy(AField: string; ASorterAscending: boolean = True);
 var
   lData: TtiColumn;
 begin
@@ -562,7 +575,7 @@ var
   i: Integer;
 begin
   for i := Low(AFields) to High(AFields) do
-    AddOrderBy(AFields[i], false);
+    AddOrderBy(AFields[i], true);
 end;
 
 procedure TtiCriteria.AddOrderByAscending(AField: string);
@@ -641,7 +654,12 @@ end;
 
 function TtiCriteria.HasCriteria: boolean;
 begin
-  result:= (FCriterias.Count > 0) or (FSelectionCriterias.Count > 0) or (FOrderByList.Count > 0) or (FGroupByList.Count > 0);
+  result:= (FCriterias.Count > 0) or (FSelectionCriterias.Count > 0); // or (FGroupByList.Count > 0);
+end;
+
+function TtiCriteria.HasOrderBy: boolean;
+begin
+  result:= (FOrderByList.Count > 0);
 end;
 
 function TtiCriteria.isEmbraced: Boolean;
@@ -650,8 +668,11 @@ begin
 end;
 
 procedure TtiCriteria.MapFieldNames(AClass: TtiClass);
-var maps: TtiAttrColMaps;
+var i: integer;
+  maps: TtiAttrColMaps;
   lVisProAttributeToFieldName: TVisProAttributeToFieldName;
+
+  lMap:      TtiAttrColMap;
 begin
   maps:= TtiAttrColMaps(FCriteriaAttrColMaps);
 
@@ -664,6 +685,14 @@ begin
     AClass);
   try
     Iterate(lVisProAttributeToFieldName);
+
+    for i := 0 to FOrderByList.count - 1 do
+    begin
+      lMap := maps.FindByClassAttrMap(AClass, FOrderByList.Items[i].Name);
+      if assigned(lMap) then
+        FOrderByList.Items[i].FieldName := lMap.DBColMap.ColName;
+    end;
+
   finally
     lVisProAttributeToFieldName.Free;
   end;
