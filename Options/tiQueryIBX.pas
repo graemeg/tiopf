@@ -720,7 +720,8 @@ end;
 
 procedure TtiDatabaseIBX.SetConnected(AValue: boolean);
 var
-  lMessage : string;
+  lMessage: string;
+  i: integer;
 begin
 
   try
@@ -732,8 +733,11 @@ begin
     end;
 
     FDatabase.DatabaseName := DatabaseName;
-    FDatabase.Params.Values['user_name']:= UserName;
-    FDatabase.Params.Values['password']:= Password;
+    FDatabase.Params.Values['user_name'] := UserName;
+    FDatabase.Params.Values['password'] := Password;
+
+    for i := 0 to Params.Count - 1 do
+      FDatabase.Params.Add(Params[i]);
 
 { Defined in IB unit:
   TTraceFlag = (tfQPrepare, tfQExecute, tfQFetch, tfError, tfStmt, tfConnect, tfTransact, tfBlob, tfService, tfMisc);
