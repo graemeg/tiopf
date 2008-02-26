@@ -2442,7 +2442,7 @@ var
 begin
   LColumn := Header.Columns[Column];
 
-  if HeaderClickSorting {and (not LColumn.Derived)} then
+  if HeaderClickSorting and (Button = mbLeft) then
   begin
     ClearSearchState;
     LColumn.Style := vsOwnerDraw;
