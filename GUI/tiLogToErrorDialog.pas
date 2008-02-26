@@ -58,6 +58,7 @@ type
 implementation
 uses
   tiUtils
+  ,tiResources
   {$IFDEF FPC}
   ,LResources
   {$ENDIF}
@@ -89,7 +90,7 @@ begin
   {$IFNDEF FPC}
   Image.Picture.Icon.Handle := LoadIcon(0, IDI_ERROR);
   {$ENDIF}
-  CopyButton.Glyph.LoadFromResourceName(HInstance, 'tiLogCopyToClip');
+  CopyButton.Glyph.LoadFromResourceName(HInstance, cResTI_CopyToClipboard16N);
 end;
 
 procedure TLogErrorForm.FormClose(Sender: TObject; var Action: TCloseAction);
