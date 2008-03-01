@@ -81,6 +81,7 @@ uses
   ,tiOPFADOAccess_TST
   ,tiOPFBDEParadox_TST
   ,tiOPFADOSQLServer_TST
+  ,tiOPFCrSdac_TST
   ,tiOPFCSV_TST
   ,tiOPFDOA_TST
   ,tiOPFFBL_TST
@@ -158,6 +159,7 @@ begin
   tiOPFADOAccess_TST.RegisterTests;
   tiOPFBDEParadox_TST.RegisterTests;
   tiOPFADOSQLServer_TST.RegisterTests;
+  tiOPFCrSdac_TST.RegisterTests;
   tiOPFCSV_TST.RegisterTests;
   tiOPFDOA_TST.RegisterTests;
   tiOPFFBL_TST.RegisterTests;

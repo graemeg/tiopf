@@ -226,6 +226,7 @@ uses
   {$IFDEF LINK_ADOACCESS}    ,tiQueryADOAccess    {$ENDIF}
   {$IFDEF LINK_ADOSQLSERVER} ,tiQueryADOSQLServer {$ENDIF}
   {$IFDEF LINK_BDEPARADOX}   ,tiQueryBDEParadox   {$ENDIF}
+  {$IFDEF LINK_CRSDAC}       ,tiQueryCrSdac       {$ENDIF}
   {$IFDEF LINK_CSV}          ,tiQueryCSV          {$ENDIF}
   {$IFDEF LINK_DOA}          ,tiQueryDOA          {$ENDIF}
   {$IFDEF LINK_FBL}          ,tiQueryFBL          {$ENDIF}

@@ -1496,6 +1496,8 @@ begin
       DoReAttach;
       FQuery.SelectRow(cTIQueryTableName, nil);
       lValue := FQuery.FieldAsString[ cTIQueryColName ];
+
+      CheckEquals(Length(lTarget), Length(lValue), 'FieldAsString: ' + IntToStr(pStrLen));
       CheckEquals(lTarget, lValue, 'FieldAsString: ' + IntToStr(pStrLen));
 
       lValue := FQuery.FieldAsStringByIndex[ cFieldAs_Index ];

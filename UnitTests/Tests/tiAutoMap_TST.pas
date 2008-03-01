@@ -2254,6 +2254,7 @@ begin
       lData.OID.AsString := '1';
       lData.Read(DatabaseName, PerLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
+      CheckEquals(Length(ls), Length(lData.StrField));
       CheckEquals(ls, lData.StrField);
     finally
       lData.Free;

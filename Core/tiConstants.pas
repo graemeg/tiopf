@@ -11,6 +11,7 @@ const
   cTIPersistADOAccess    = 'ADOAccess';
   cTIPersistADOSQLServer = 'ADOSQLServer';
   cTIPersistBDEParadox   = 'BDEParadox';
+  cTIPersistCrSdac       = 'CrSdac';
   cTIPersistCSV          = 'CSV';
   cTIPersistDOA          = 'DOA';
   cTIPersistFBL          = 'FBL';          // Free Pascal only
