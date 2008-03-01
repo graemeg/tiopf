@@ -375,10 +375,17 @@ begin
   else
     FQuery.ParamByNameAsString(UpperCase(AName), 'F');
 {$ELSE}
-  if AValue then
-    FQuery.ParamByNameAsString(UpperCase(AName), 'TRUE')
-  else
-    FQuery.ParamByNameAsString(UpperCase(AName), 'FALSE');
+  {$IFDEF BOOLEAN_NUM_1}
+    if AValue then
+      FQuery.ParamByNameAsInt64(UpperCase(AName), 1)
+    else
+      FQuery.ParamByNameAsInt64(UpperCase(AName), 0);
+  {$ELSE}
+    if AValue then
+      FQuery.ParamByNameAsString(UpperCase(AName), 'TRUE')
+    else
+      FQuery.ParamByNameAsString(UpperCase(AName), 'FALSE');
+  {$ENDIF}
 {$ENDIF BOOLEAN_CHAR_1}
 end;
 
