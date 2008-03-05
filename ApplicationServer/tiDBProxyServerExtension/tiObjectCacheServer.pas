@@ -20,9 +20,10 @@ type
     function    ReturnDataFromCache: string;
   protected
     property    Params: TtiCGIParams read FParams;
+    // ToDo: Rename GetDataAsXML -> GetDataAsString
     function    GetDataAsXML: string ; virtual ; abstract ;
     procedure   Init; override ;
-    procedure   RefreshCacheFromDB; override;
+    procedure   RefreshCacheFromDB(const ACacheFileDate: TDateTime); override;
     function    DoExecute: string;
 
     // You MAY override these
@@ -101,15 +102,10 @@ begin
   if tiWaitForMutex(CachedFileName, word(INFINITE)) then
   try
     Init ;
-    gTIOPFManager.DefaultDBConnectionPool.MinPoolSize := 1 ;
     lCachedFileDate := GetCachedFileDate;
     lDatabaseFileDate := GetDBFileDate ;
-    if ( lCachedFileDate <> lDatabaseFileDate ) or
-       ( not FileExists( GetCachedFileDirAndName )) then
-    begin
-      RefreshCacheFromDB;
-      SetCachedFileDate(lDatabaseFileDate);
-    end ;
+    if MustUpdateCacheFile(lCachedFileDate, lDatabaseFileDate) then
+      RefreshCacheFromDB(lDatabaseFileDate);
     result:= ReturnDataFromCache;
   finally
     tiReleaseMutex(CachedFileName);
@@ -138,17 +134,18 @@ begin
   result:= tiFileToString(lFileName);
 end;
 
-procedure TtiOjectCacheServer.RefreshCacheFromDB;
+procedure TtiOjectCacheServer.RefreshCacheFromDB(const ACacheFileDate: TDateTime);
 var
-  lResult: string ;
-  lResultEncode: string;
-  lFileName: string;
+  LResult: string ;
+  LResultEncode: string;
+  LFileName: string;
 begin
   Assert(gTIOPFManager.DefaultDBConnectionName <> '', 'No database connection');
-  lFileName := GetCachedFileDirAndName;
-  lResult := GetDataAsXML;
-  lResultEncode := tiCompressEncode(lResult);
-  tiStringToFile(lResultEncode,lFileName);
+  LFileName := GetCachedFileDirAndName;
+  LResult := GetDataAsXML;
+  LResultEncode := tiCompressEncode(LResult);
+  tiStringToFile(LResultEncode,LFileName);
+  SetCachedFileDate(ACacheFileDate);
 end;
 
 procedure TtiOjectCacheServer.Init;

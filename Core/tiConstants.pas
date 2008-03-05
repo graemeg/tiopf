@@ -35,6 +35,7 @@ const
   // When multiple database names are provided to gTIOPFManager.DetectAndConnect()
   // they will be separated by this character.
   cDatabaseNameDelim        = ';';
+  CPasswordMasked = 'Password masked from view';
 
   CTIErrorInternal = 'tiOPF Internal Error: ';
   CTIErrorInvalidObject = CTIErrorInternal + ' TtiBaseObject.TestValid failed';
@@ -228,10 +229,20 @@ const
   {$ifdef LINUX}PathDelim = '/';{$endif}
 {$endif}
 
+  {: The maximum length a command passed to an console EXE can be. This length
+     includes the exe path & name, and any parameters.}
+  CMaximumCommandLineLength = 32768 - 5;
+  {The 5 is a magic value to allow for pace between exe name and params,
+   a null terminator and something else I don't quite understand.}
+  {: When the command line parameter to be passed to a CGI extension excedes
+     CMaximumCommandLineLength, then it's passed via a file. This flag is
+     used to indicate a file name has been passed.}
+  CCGIExtensionLargeParamFlag = 'CGIExtParamViaFile';
+
+  // Structured CSV line prefixes
+  CStructCSVPrefixI = 'I';
+  CStructCSVPrefixD = 'D';
 
 implementation
 
 end.
-
-
-

@@ -72,6 +72,8 @@ type
   TtiObjectErrors = class;
   TtiObjectError  = class;
 
+  TObjForEachMethod        = procedure(AObject: TObject) of object;
+  TObjForEachMethodRegular = procedure(AObject: TObject);
   TPerObjFindMethod = procedure(AObject : TtiObject; var AFound : boolean) of object;
   TPerObjFindMethodExt = procedure(AObject : TtiObject; var AFound : boolean; AUserContext: Pointer) of object;
   TPerObjFindMethodData = procedure(AObject : TtiObject; var AFound : boolean; AData : TtiObject) of object;
@@ -3854,6 +3856,3 @@ begin
 end;
 
 end.
-
-
-

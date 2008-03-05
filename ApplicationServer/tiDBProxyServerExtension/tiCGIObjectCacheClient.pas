@@ -21,30 +21,31 @@ type
     property    Params: TtiCGIParams read FParams;
     property    ConnectionDetails: TtiWebServerClientConnectionDetails read FConnectionDetails;
 
-    procedure   RefreshCacheFromDB; override ;
+    procedure   RefreshCacheFromDB(const ACacheFileDate: TDateTime); override ;
     procedure   Init; override ;
 
     function    CGIEXEName: string; virtual ; abstract ;
-    procedure   CacheToBOM(const pData: TtiObject);virtual; abstract;
+    procedure   CacheToBOM(const AData: TtiObject);virtual; abstract;
 
-    procedure   ResponseToFile(const pResponse: string); virtual;
+    procedure   ResponseToFile(const AResponse: string); virtual;
+    procedure   DoExecute(const AData: TtiObject); virtual ;
 
   public
     constructor Create(const ACacheDirectoryRoot: string;
                        const AConnectionDetails: TtiWebServerClientConnectionDetails); reintroduce; virtual;
     destructor  Destroy; override;
-    procedure   Execute(const pData: TtiObject); virtual ;
+    class procedure Execute(const AData: TtiObject;
+      const ACacheDirectoryRoot: string;
+      const AConnectionDetails: TtiWebServerClientConnectionDetails);
+
   end ;
 
   TtiCGIObjectCacheClientVisitor = class( TtiCGIObjectCacheClient )
   protected
-    procedure   CacheToBOM(const pData: TtiObject); override;
+    procedure   CacheToBOM(const AData: TtiObject); override;
     function    VisitorGroupName: string; virtual ; abstract ;
     procedure   RegisterVisitors; virtual;
-  public
-    procedure   Execute(const pData: TtiObject); override;
-//    {:For unit testing}
-//    class procedure   StringToBOM(const AStr: string; const AData: TtiObject);
+    procedure   DoExecute(const AData: TtiObject); override;
   end ;
 
 implementation
@@ -70,19 +71,20 @@ uses
 
 { TtiCGIObjectCacheClientVisitor }
 
-procedure TtiCGIObjectCacheClient.RefreshCacheFromDB;
+procedure TtiCGIObjectCacheClient.RefreshCacheFromDB(const ACacheFileDate: TDateTime);
 var
-  lCGIRequest: TtiCGIExtensionRequest;
-  lResponse:   string ;
+  LCGIRequest: TtiCGIExtensionRequest;
+  LResponse:   string ;
 begin
-  lCGIRequest:= TtiCGIExtensionRequest.CreateInstance;
+  LCGIRequest:= TtiCGIExtensionRequest.CreateInstance;
   try
-    lResponse := lCGIRequest.Execute( CGIEXEName,
+    LResponse := LCGIRequest.Execute( CGIEXEName,
                                       Params.AsCompressedEncodedString,
                                       ConnectionDetails) ;
-    ResponseToFile(lResponse);
+    ResponseToFile(LResponse);
+    SetCachedFileDate(ACacheFileDate);
   finally
-    lCGIRequest.Free;
+    LCGIRequest.Free;
   end ;
 end;
 
@@ -105,7 +107,7 @@ begin
   FConnectionDetails.Assign(AConnectionDetails);
 end;
 
-procedure TtiCGIObjectCacheClient.ResponseToFile(const pResponse: string);
+procedure TtiCGIObjectCacheClient.ResponseToFile(const AResponse: string);
 var
   lStreamFrom: TMemoryStream;
   lStreamTo: TMemoryStream;
@@ -114,7 +116,7 @@ begin
   try
     lStreamTo:= TMemoryStream.Create;
     try
-      tiStringToStream( pResponse, lStreamFrom);
+      tiStringToStream( AResponse, lStreamFrom);
       MimeDecodeStream(lStreamFrom, lStreamTo);
       lStreamTo.SaveToFile(GetCachedFileDirAndName);
     finally
@@ -125,7 +127,7 @@ begin
   end;
 end;
 
-procedure TtiCGIObjectCacheClientVisitor.Execute(const pData: TtiObject);
+procedure TtiCGIObjectCacheClientVisitor.DoExecute(const AData: TtiObject);
 begin
   RegisterVisitors;
   inherited;
@@ -163,23 +165,23 @@ end;
 //  end;
 //end;
 
-procedure TtiCGIObjectCacheClientVisitor.CacheToBOM(const pData: TtiObject);
+procedure TtiCGIObjectCacheClientVisitor.CacheToBOM(const AData: TtiObject);
 var
   lStart: DWord ;
   lParams: string ;
   lFileName: string;
 begin
-  Assert( pData.TestValid(TtiObject), CTIErrorInvalidObject );
+  Assert( AData.TestValid(TtiObject), CTIErrorInvalidObject );
   lStart := GetTickCount;
   lParams := tiMakeXMLLightParams( True, cgsCompressZLib, optDBSizeOn, xfnsInteger );
   lFileName := GetCachedFileDirAndName;
   gTIOPFManager.ConnectDatabase( lFileName, 'null', 'null', lParams, cTIPersistXMLLight);
   try
-    gTIOPFManager.VisitorManager.Execute( VisitorGroupName, pData, lFileName, cTIPersistXMLLight ) ;
+    gTIOPFManager.VisitorManager.Execute( VisitorGroupName, AData, lFileName, cTIPersistXMLLight ) ;
   finally
     gTIOPFManager.DisconnectDatabase(lFileName, cTIPersistXMLLight);
   end;
-  Log('  :) Finished loading ' + pData.ClassName +
+  Log('  :) Finished loading ' + AData.ClassName +
       '. (' + IntToStr(GetTickCount - lStart) + 'ms)', lsQueryTiming);
 
 end;
@@ -191,30 +193,42 @@ begin
   inherited;
 end;
 
-procedure TtiCGIObjectCacheClient.Execute(const pData: TtiObject);
+procedure TtiCGIObjectCacheClient.DoExecute(const AData: TtiObject);
 var
-  lCachedFileDate : TDateTime ;
-  lDatabaseFileDate : TDateTime ;
+  LCachedFileDate : TDateTime ;
+  LDatabaseFileDate : TDateTime ;
 begin
   if tiWaitForMutex(CachedFileName, word(INFINITE)) then
   try
     Init;
-    lCachedFileDate := GetCachedFileDate;
-    lDatabaseFileDate := GetDBFileDate ;
+    LCachedFileDate := GetCachedFileDate;
+    LDatabaseFileDate := GetDBFileDate ;
     Log([ClassName, 'Execute']);
     Log(['  FileName', GetCachedFileDirAndName]);
-    Log(['  Database date', tiDateTimeToStr(lDatabaseFileDate)]);
-    Log(['  Cache date', tiDateTimeToStr(lCachedFileDate)]);
-    if ( lCachedFileDate <> lDatabaseFileDate ) or
-       ( not FileExists( GetCachedFileDirAndName )) then
+    Log(['  Database date', tiDateTimeToStr(LDatabaseFileDate)]);
+    Log(['  Cache date', tiDateTimeToStr(LCachedFileDate)]);
+    if MustUpdateCacheFile(LCachedFileDate, LDatabaseFileDate) then
     begin
       Log('  File WILL be refreshed');
-      RefreshCacheFromDB;
-      SetCachedFileDate(lDatabaseFileDate);
+      RefreshCacheFromDB(LDatabaseFileDate);
     end;
-    CacheToBOM(pData);
+    CacheToBOM(AData);
   finally
     tiReleaseMutex(CachedFileName);
+  end;
+end;
+
+class procedure TtiCGIObjectCacheClient.Execute(const AData: TtiObject;
+  const ACacheDirectoryRoot: string;
+  const AConnectionDetails: TtiWebServerClientConnectionDetails);
+var
+  L: TtiCGIObjectCacheClient;
+begin
+  L:= Create(ACacheDirectoryRoot, AConnectionDetails);
+  try
+    L.DoExecute(AData);
+  finally
+    L.Free;
   end;
 end;
 

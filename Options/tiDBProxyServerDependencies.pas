@@ -8,7 +8,6 @@ uses
  ;
 
 procedure ConnectToDatabase;
-function  GetDBConnectionMessage:string;
 function  gTIDBProxy: TtiDBProxyServer;
 
 implementation
@@ -24,6 +23,7 @@ uses
   ,tiDBProxyServerStats
   ,tiDBProxyServerConfig
   ,tiOIDGUID
+  ,tiExcept
   {$IFDEF madExcept}
   ,madExcept
   ,madLinkDisAsm
@@ -36,35 +36,29 @@ var
 procedure ConnectToDatabase;
 var
   LINI: TtiDBProxyServerConfig;
-  lDatabaseName : string;
-  lUsername    : string;
-  lPassword    : string;
-  lTimeOut     : integer;
+  LDatabaseName: string;
+  LUserName: string;
+  LPassword: string;
+  LRetryCount: Word;
+  LRetryInterval: Word;
+  LTransactionTimeout: Integer;
 begin
   LINI:= TtiDBProxyServerConfig.Create;
   try
-    lDatabaseName       := LINI.DatabaseName;
-    lUserName           := LINI.UserName;
-    lPassword           := LINI.Password;
-    lTimeOut            := LINI.TransactionTimeout;
+    LDatabaseName:= LINI.DatabaseName;
+    LUserName:= LINI.UserName;
+    LPassword:= LINI.Password;
+    LRetryCount:= LINI.RetryCount;
+    LRetryInterval:= LINI.RetryInterval;
+    LTransactionTimeout:= LINI.TransactionTimeout;
   finally
     LINI.Free;
   end;
 
-  gTIOPFManager.ConnectDatabase(lDatabaseName, lUserName, lPassword);
-
-  gStatefulDBConnectionPool.TimeOut := lTimeOut;
-
-  Log(GetDBConnectionMessage);
-
-end;
-
-function GetDBConnectionMessage: string;
-begin
-  result :=
-    gTIOPFManager.DefaultDBConnectionPool.DetailsAsString + Cr(2) +
-    'Transaction timeout:     ' + FloatToStr(gStatefulDBConnectionPool.TimeOut) + ' min';
-  Result := Result + Cr(2) + 'Static pages read from: ' + uTIDBProxy.StaticPageLocation;
+  gStatefulDBConnectionPool.TimeOut := LTransactionTimeout;
+  GTIOPFManager.ConnectDatabaseWithRetry(
+    LDatabaseName, LUserName, LPassword, LRetryCount, LRetryInterval);
+  Log('Transaction timeout: ' + FloatToStr(gStatefulDBConnectionPool.TimeOut) + ' min');
 end;
 
 function  gTIDBProxy : TtiDBProxyServer;

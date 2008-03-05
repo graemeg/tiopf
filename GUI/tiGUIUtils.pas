@@ -466,8 +466,8 @@ begin
   //   004ae671 OPDMS_SYS.exe Controls                     TWinControl.SetParent
   //   0054aa2c OPDMS_SYS.exe tiGUIUtils               396 TtiBruteForceNoFlicker.Create
   //   006a5251 OPDMS_SYS.exe tiApplicationMenuSystem 1650 TtiApplicationMenuSystem.DoBeginUpdate
-  //   00642553 OPDMS_SYS.exe FtiFormMgrForm           918 TtiFormMgr.DoBeginUpdate
-  //   00641bf6 OPDMS_SYS.exe FtiFormMgrForm           721 TtiFormMgr.ShowForm
+  //   00642553 OPDMS_SYS.exe FtiFormMgrDataForm           918 TtiFormMgr.DoBeginUpdate
+  //   00641bf6 OPDMS_SYS.exe FtiFormMgrDataForm           721 TtiFormMgr.ShowForm
   //   00853a2b OPDMS_SYS.exe FTrendAnalysisConfig     349 TthrdFormTrendAnalysisConfig.DoOnTerminate
   //   00453417 OPDMS_SYS.exe Classes                      TThread.CallOnTerminate
 
@@ -650,6 +650,3 @@ finalization
   FreeAndNil(uCursorStack);
 
 end.
-
-
-

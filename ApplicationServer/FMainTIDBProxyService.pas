@@ -58,7 +58,7 @@ begin
   try
     LConfig.RegisterLog;
     Self.Name:= LConfig.WebServiceShortName;
-    Self.DisplayName:= LConfig.WebServiceDiaplayName;
+    Self.DisplayName:= LConfig.WebServiceDisplayName;
   finally
     LConfig.Free;
   end;
@@ -73,12 +73,21 @@ end;
 
 procedure TtiDBProxyServer.ServiceStart(Sender: TService; var Started: Boolean);
 begin
-  Log(Format('%s (%s) service starting...', [Name, DisplayName]));
-  Started := False;
-  ConnectToDatabase;
-  gTIDBProxy.Start;
-  Started := True ;
-  Log(Format('%s (%s) service started.', [Name, DisplayName]));
+  try
+    Log(Format('%s (%s) service starting...', [Name, DisplayName]));
+    Started := False;
+    ConnectToDatabase;
+    gTIDBProxy.Start;
+    Started := True ;
+    Log(Format('%s (%s) service started.', [Name, DisplayName]));
+  except
+    on e: exception do
+    begin
+      Log(e.message, lsError);
+      Log(Format('%s (%s) service failed to start.', [Name, DisplayName]), lsError);
+      raise;
+    end;
+  end;
 end;
 
 procedure TtiDBProxyServer.ServiceStop(Sender: TService; var Stopped: Boolean);

@@ -96,9 +96,6 @@ begin
   Result := Assigned(FEditedData) and
       ((not Assigned(FOriginalData)) or // New
        (not FEditedData.Equals(FOriginalData))); // Modified
-//      (Assigned(FEditedData) and (not Assigned(FOriginalData))) or // New
-//      (Assigned(FEditedData) and Assigned(FOriginalData) and
-//       (not FOriginalData.Equals(FEditedData))); // Modified
 end;
 
 function TFormTIEmbeddedDataForm.FormIsValid: Boolean;

@@ -44,10 +44,7 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="..\..\Options\ADOX_TLB.pas" />
-    <DCCReference Include="..\..\Options\bdertl.dcp" />
-    <DCCReference Include="..\..\Options\dbrtl.dcp" />
     <DCCReference Include="..\..\Options\MSXML_TLB.pas" />
-    <DCCReference Include="..\..\Options\rtl.dcp" />
     <DCCReference Include="..\..\Options\tiCompressNone.pas" />
     <DCCReference Include="..\..\Options\tiCompressZLib.pas" />
     <DCCReference Include="..\..\Options\tiConsoleApp.pas" />
@@ -67,7 +64,6 @@
     <DCCReference Include="..\..\Options\tiOIDInt64.pas" />
     <DCCReference Include="..\..\Options\tiOIDInteger.pas" />
     <DCCReference Include="..\..\Options\tiOIDString.pas" />
-    <DCCReference Include="..\..\Options\tiOPFCore.dcp" />
     <DCCReference Include="..\..\Options\tiQueryBDEAbs.pas" />
     <DCCReference Include="..\..\Options\tiQueryBDEParadox.pas" />
     <DCCReference Include="..\..\Options\tiQueryCSV.pas" />
@@ -78,10 +74,27 @@
     <DCCReference Include="..\..\Options\tiQueue.pas" />
     <DCCReference Include="..\..\Options\tiRegistry.pas" />
     <DCCReference Include="..\..\Options\tiSingleInstanceApp.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVParser.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVR.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVRe.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVRea.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVRead.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVReade.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVReader.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVW.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVWr.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVWri.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVWrit.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVWrite.pas" />
+    <DCCReference Include="..\..\Options\tiStructuredCSVWriter.pas" />
     <DCCReference Include="..\..\Options\tiTextParser.pas" />
     <DCCReference Include="..\..\Options\tiTextParserStructCSV.pas" />
     <DCCReference Include="..\..\Options\tiXML.pas" />
     <DCCReference Include="..\..\Options\tiXMLToTIDataset.pas" />
-    <DCCReference Include="..\..\Options\vcl.dcp" />
+    <DCCReference Include="bdertl.dcp" />
+    <DCCReference Include="dbrtl.dcp" />
+    <DCCReference Include="rtl.dcp" />
+    <DCCReference Include="tiOPFCore.dcp" />
+    <DCCReference Include="vcl.dcp" />
   </ItemGroup>
 </Project>

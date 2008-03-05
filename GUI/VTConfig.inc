@@ -10,7 +10,10 @@
 
 {.$define UseFlatScrollbars}
 {.$define ReverseFullExpandHotKey} // Used to define Ctrl+'+' instead of Ctrl+Shift+'+' for full expand (and similar for collapsing).
-{.$define ThemeSupport}
+
+// Enable this switch for Windows XP theme support. If you compile with Delphi 6 or lower you must download and install
+// the Soft Gems Theme Manager package.
+{$define ThemeSupport}
 
 // Virtual Treeview can use a tiny but very effective local memory manager for node allocation.
 // The local memory manager was implemented by David Clark from Caelo Software Inc.

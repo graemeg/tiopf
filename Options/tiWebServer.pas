@@ -7,6 +7,7 @@ uses
    tiBaseObject
   ,tiStreams
   ,tiThread
+  ,SysUtils
   ,SyncObjs
   ,IdHTTPServer
   ,IdCustomHTTPServer
@@ -22,6 +23,8 @@ const
   cDefaultSleepSec= 10;
 
 type
+
+  TtiWebServerExceptionEvent = function(const E: Exception): String of object;
 
   TtiWebServer = class;
 
@@ -93,8 +96,20 @@ type
                       const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
+  TtiWebServerAction_ForceException = class(TtiWebServerAction)
+  public
+    function  CanExecute(const ADocument: string): boolean; override;
+    procedure Execute(const ADocument: string; const ARequestParams: string;
+                      const AResponse: TStream; var AContentType: string;
+                      var AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
+  end;
+
   // ToDo: Not a true CGI interface, but a hack. Change this to support true CGI
   TtiWebServerAction_RunCGIExtension = class(TtiWebServerAction)
+  private
+    function ExecuteCGIApp(const ACGIApp, ARequestParams: string;
+      out AResponse: string): Cardinal;
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
@@ -158,6 +173,7 @@ type
     FStaticPageLocation: string;
     FCGIBinLocation: string;
     FBlockStreamCache: TtiBlockStreamCache;
+    FOnServerException: TtiWebServerExceptionEvent;
   protected
     procedure SetStaticPageLocation(const AValue: string); virtual;
     procedure SetCGIBinLocation(const AValue: string); virtual;
@@ -184,6 +200,7 @@ type
 
     property    StaticPageLocation : string read FStaticPageLocation;
     property    CGIBinLocation    : string read FCGIBinLocation;
+    property    OnServerException: TtiWebServerExceptionEvent read FOnServerException write FOnServerException;
 
     procedure   Start;
     procedure   Stop;
@@ -202,7 +219,6 @@ uses
   ,tiHTTP
   ,tiWebServerConfig
   ,Math
-  ,SysUtils
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
@@ -220,6 +236,7 @@ begin
   FServerActions.Add(TtiWebServerAction_CanFindPage.Create(  Self,  3));
   FServerActions.Add(TtiWebServerAction_GetLogFile.Create(   Self,  4));
   FServerActions.Add(TtiWebServerAction_RunCGIExtension.Create(Self, 5));
+  FServerActions.Add(TtiWebServerAction_ForceException.Create(Self, 6));
   FServerActions.Add(TtiWebServerAction_CanNotFindPage.Create(Self, High(Byte)));
 
   FIdHTTPServer := TIdHTTPServer.Create(Nil);
@@ -337,6 +354,7 @@ procedure TtiWebServer.ProcessHTTPGet(
 var
   i : integer;
   LServerAction : TtiWebServerAction;
+  LErrorMessage: string;
 begin
   Assert(AResponse<>nil, 'AResponse not assigned');
   try
@@ -353,8 +371,16 @@ begin
   except
     on e:exception do
     begin
-      LogError(e.message);
-      tiStringToStream(Format(cErrorOnServer,[e.Message]), AResponse);
+      if Assigned(FOnServerException) then
+        LErrorMessage:= FOnServerException(E)
+      else begin
+        LErrorMessage:= e.message;
+        LogError(LErrorMessage);
+      end;
+      // ToDo: Must inject error info into the response here, that can be
+      //       decoded by the app server and returned as something other than a
+      //       StreamDecompress error
+      tiStringToStream(Format(cErrorOnServer,[LErrorMessage]), AResponse);
     end;
   end;
 end;
@@ -643,28 +669,36 @@ procedure TtiWebServerAction_RunCGIExtension.Execute(
   var   AResponseCode: Integer;
   const AResponseInfo: TIdHTTPResponseInfo);
 var
-  lCGI : string;
-  ls : string;
-  lExitCode : Integer;
+  LCGIApp : string;
+  LResponse : string;
+  LExitCode : Integer;
+  LConfig: TtiWebServerConfig;
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   try
-    lCGI := CGIBinLocation + ADocument;
-    ls := '';
-    Log('About to call ' + lCGI + ' ' + ARequestParams);
-    lExitCode := tiExecConsoleApp(lCGI, ARequestParams, ls, nil, false);
-    if lExitCode = 0 then
-      tiStringToStream(ls, AResponse)
+    LCGIApp := CGIBinLocation + ADocument;
+    LResponse := '';
+    Log('About to call ' + LCGIApp + ' ' + ARequestParams);
+
+    LExitCode := ExecuteCGIApp(LCGIApp, ARequestParams, LResponse);
+    if LExitCode = 0 then
+      tiStringToStream(LResponse, AResponse)
     else
     begin
-      ls := Format(cErrorHTTPCGIExtension, [ADocument, lExitCode, ls]);
-      LogError(ls, false);
-      tiMailBugReport(ls);
+      LResponse := Format(cErrorHTTPCGIExtension, [ADocument, LExitCode, LResponse]);
+      LogError(LResponse, false);
+      LConfig:= TtiWebServerConfig.Create;
+      try
+        if LConfig.SendBugReportEmailOnCGIFailure then
+          tiMailBugReport(LResponse);
+      finally
+        LConfig.Free;
+      end;
       // This will cause a browser to fail which is a problem with OPDMSMonitor.exe
       // Req an exit code in the returned XML
       //pResponseInfo.ResponseNo := cHTTPResponseCodeInternalError;
-      tiStringToStream(ls, AResponse);
-      AResponseInfo.CustomHeaders.Values[ctiOPFHTTPErrorCode]:= IntToStr(lExitCode);
+      tiStringToStream(LResponse, AResponse);
+      AResponseInfo.CustomHeaders.Values[ctiOPFHTTPErrorCode]:= IntToStr(LExitCode);
     end;
   except
     on e:exception do
@@ -672,6 +706,26 @@ begin
       LogError(e.message, false);
       AResponseCode := cHTTPResponseCodeInternalError;
       tiStringToStream(Format(cErrorInServerExtension, [ADocument, e.message]), AResponse);
+    end;
+  end;
+end;
+
+function TtiWebServerAction_RunCGIExtension.ExecuteCGIApp(const ACGIApp,
+  ARequestParams: string; out AResponse: string): Cardinal;
+var
+  LTempFileName: string;
+begin
+  if Length(ACGIApp) + Length(ARequestParams) <= CMaximumCommandLineLength then
+    Result:= tiExecConsoleApp(ACGIApp, ARequestParams, AResponse, nil, false)
+  else begin
+    LTempFileName:= tiGetTempFile('tmp');
+    tiStringToFile(ARequestParams, LTempFileName);
+    try
+      Result:= tiExecConsoleApp(ACGIApp,
+        CCGIExtensionLargeParamFlag + '=' + LTempFileName,
+        AResponse, nil, false);
+    finally
+      tiDeleteFile(LTempFileName);
     end;
   end;
 end;
@@ -844,7 +898,24 @@ begin
   end;
 end;
 
+{ TtiWebServerAction_ForceException }
+
+function TtiWebServerAction_ForceException.CanExecute(
+  const ADocument: string): boolean;
+begin
+  result := SameText(ADocument, CTIDBProxyForceException);
+end;
+
+type
+  ETIWebServerTestException = class(Exception)
+  end;
+
+procedure TtiWebServerAction_ForceException.Execute(const ADocument,
+  ARequestParams: string; const AResponse: TStream; var AContentType: string;
+  var AResponseCode: Integer; const AResponseInfo: TIdHTTPResponseInfo);
+begin
+  Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
+  Raise ETIWebServerTestException.Create('A test exception has been raised on the server at your request');
+end;
+
 end.
-
-
-

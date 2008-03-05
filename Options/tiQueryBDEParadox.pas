@@ -232,6 +232,3 @@ finalization
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistBDEParadox);
 
 end.
-
-
-

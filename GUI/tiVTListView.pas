@@ -29,7 +29,7 @@ uses
   ,tiOID
   ,Variants
   ,tiVirtualTrees
-  ,StdCtrls     // TLabel
+  ,StdCtrls     // TLabel, TCustomEdit
   ,ExtCtrls     // TCustomPanel
   ,Buttons      // TSpeedButton
   ,tiStreams
@@ -43,6 +43,7 @@ uses
   ,LCLProc
   ,VirtualStringTree
 {$ENDIF}
+  ,tiVTAbstract
   ;
 
 
@@ -51,6 +52,7 @@ const
   cDefaultAlternateRowColor = clPaleBlue; // Pale blue
   cDefaultAlternateRowCount = 2; // Show every second row in pale blue
   cSearchFailureColor = $7f7fff;  // pink
+  cInvalidValueColor = TColor($00c0ff); // Orange
 
 Const
   FilterConjs : Array[0..2] Of String = ('',
@@ -174,6 +176,10 @@ type
   TtiVTHeaderClickEvent = procedure(const pSender: TtiCustomVirtualTree;
                                      const ptiListColumn : TtiVTColumn) of object;
 
+  TtiVTOnIsValidColumnValue = procedure(AData: TtiObject; AColumn: TtiVTColumn;
+                                        var AValue: WideString;
+                                        var AIsValid: Boolean) of object;
+
   TvtSortDirection = (vtsdAscending, vtsdDescending);
 
   TtiVTSortOrder = class(TCollectionItem)
@@ -218,8 +224,10 @@ type
     FsFieldName: string;
     FsDisplayMask: string;
     FDataType: TvtTypeKind;
+    FAllowInlineEdit: boolean;
     FDerived: boolean;
     FOnDeriveColumn: TtiDeriveListColumnValue;
+    FOnIsValidValue: TtiVTOnIsValidColumnValue;
     procedure   SetFieldName(const AValue: string);
     procedure   SetDataType(const AValue: TvtTypeKind);
     procedure   SetDerived(const AValue: boolean);
@@ -229,10 +237,13 @@ type
     constructor Create(Collection : TCollection); override;
     destructor  Destroy; override;
     function    Clone : TtiVTColumn;
+    function    IsValidValue(AData: TtiObject; var AValue: WideString): Boolean;
   published
     property    FieldName   : string read FsFieldName    write SetFieldName;
     property    DisplayMask : string read FsDisplayMask  write FsDisplayMask;
     property    DataType    : TvtTypeKind read FDataType write SetDataType;
+    property    AllowInlineEdit : boolean read FAllowInlineEdit write FAllowInlineEdit ;
+    property    OnIsValidValue: TtiVTOnIsValidColumnValue read FOnIsValidValue write FOnIsValidValue;
     property    Derived     : boolean read FDerived      write SetDerived;
     property    OnDeriveColumn : TtiDeriveListColumnValue read FOnDeriveColumn write SetOnDeriveColumn;
   end;
@@ -332,8 +343,8 @@ type
       var EraseAction: TItemEraseAction); override;
     procedure DoGetText(Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var Text: WideString); override;
     procedure DoFocusChange(Node: PVirtualNode; Column: TColumnIndex); override;
-    procedure DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
-       var Ghosted: Boolean; var Index: Integer); override;
+    function DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
+      var Ghosted: Boolean; var Index: Integer): TCustomImageList; override;
     procedure DoInitChildren(Node: PVirtualNode; var ChildCount: Cardinal); override;
     procedure DoInitNode(Parent, Node: PVirtualNode; var InitStates: TVirtualNodeInitStates); override;
 
@@ -381,12 +392,26 @@ type
     property DefaultEventHandler: TtiVTOnFilterDataEvent read GetDefaultEventHandler write SetDefaultEventHandler;
   end;
 
-  TtiCustomVirtualTree = class(TtiFocusPanel)
-    // Features not ported:
-    //   Runtime column generation - you must assign columns, or see nothing
-    //   Drag and drop
+  TtiStringEditLink = class(TStringEditLink)
   private
-    FVT: TVirtualStringTree;
+    FtiTree: TtiCustomVirtualTree;
+  public
+    constructor Create(AtiTree: TtiCustomVirtualTree);
+    property tiTree: TtiCustomVirtualTree read FtiTree;
+  end;
+
+  TtiVTEdit = class(TVTEdit)
+  protected
+    procedure DoOnChange(Sender: TObject);
+    function IsValidValue: Boolean; override;
+    function GetLink: TtiStringEditLink;
+    property Link: TtiStringEditLink read GetLink;
+  public
+    constructor Create(Link: TStringEditLink);
+  end;
+
+  TtiCustomVirtualTree = class(TtiVTAbstract)
+  private
     FSP: TtiVTSearchPanel;
 
     FData: TtiObjectList;
@@ -420,6 +445,7 @@ type
     FOnPaintText : TtiVTOnPaintText;
     FOnBeforeCellPaint: TtiVTOnPaintText;
     FOnDblClick: TtiVTItemEvent;
+    FOnEdited: TtiVTItemEvent;
     FAlternateRowCount: Byte;
     FDisabledColor: TColor;
     FRowSelect: boolean;
@@ -482,6 +508,14 @@ type
     function WrapToBottom: PVirtualNode;
     function WrapToTop: PVirtualNode;
     function GetFilterAsString: String;
+    procedure VTCreateEditor(Sender: TBaseVirtualTree; Node: PVirtualNode;
+        Column: TColumnIndex; out EditLink: IVTEditLink);
+    procedure VTEditing(Sender: TBaseVirtualTree; Node: PVirtualNode;
+        Column: TColumnIndex; var Allowed: Boolean);
+    procedure VTEdited(Sender: TBaseVirtualTree; Node: PVirtualNode;
+        Column: TColumnIndex);
+    procedure VTNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+        Column: TColumnIndex; NewText: WideString);
 
     //
     //FOnDblClick  : TtiLVItemEditEvent;
@@ -510,9 +544,11 @@ type
 
     property    OnItemArrive    : TtiVTItemEvent read FOnItemArrive write FOnItemArrive;
     property    OnItemLeave     : TtiVTItemEvent read FOnItemLeave write FOnItemLeave;
+    // ToDo: Replace with OnPaintText in TtiVTAbstract
     property    OnPaintText     : TtiVTOnPaintText read FOnPaintText Write SetOnPaintText;
     property    OnBeforeCellPaint: TtiVTOnPaintText read FOnBeforeCellPaint Write SetOnBeforeCellPaint;
     property    OnGetNodeHint   : TtiVTOnNodeHint read FOnGetNodeHint write SetOnGetNodeHint;
+    property    OnEdited        : TtiVTItemEvent read FOnEdited write FOnEdited;
     //property    OnInfoTip      : TtiLVInfoTipEvent read FOnTipInfo   write SetOnInfoTip;
     //
     //
@@ -532,10 +568,11 @@ type
     procedure DisconnectFromData;
     procedure ConnectToData;
     procedure SetHeaderClickSorting(const Value: boolean); virtual;
-    function  SetSelectedChildData(Parent: PVirtualNode;  Data: TtiObject): Boolean;
     procedure SetEnabled(AValue: Boolean); override;
     function  GetFilteredItemCount: Integer;
     function  GetFilteredItems(AIndex: Integer): TtiObject;
+    function  GetChildNodeFromObject(const AParentNode: PVirtualNode; const AData: TtiObject): PVirtualNode;
+    function  CanEditRow: Boolean;
 
     procedure VTDoBeforeItemErase(Canvas: TCanvas; Node: PVirtualNode; ItemRect: TRect; var ItemColor: TColor; var EraseAction: TItemEraseAction); virtual;
     procedure VTDoGetText(Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var Text: WideString); virtual;
@@ -588,8 +625,10 @@ type
 
     function    IsNodeDataItem(Node: PVirtualNode): Boolean;
 
-    function    GetObjectFromNode(pNode: PVirtualNode): TtiObject;
-    function    GetTextFromObject(AObj: TtiObject; ColumnIndex: TColumnIndex): string;
+    function    GetObjectFromNode(pNode: PVirtualNode): TtiObject; override;
+    function    GetNodeFromObject(const AData: TtiObject): PVirtualNode;
+    function    GetTextFromObject(AObj: TtiObject; AColumnIndex: TColumnIndex): string;
+    procedure   SetTextInObject(AObj: TtiObject; AColumnIndex: TColumnIndex; AText: string);
 
     procedure   Refresh(const pSelectedData: TtiObject = nil); reintroduce; virtual;
 
@@ -612,7 +651,9 @@ type
     function    AddColumn(const AFieldName : string;
                            const pDataType : TvtTypeKind;
                            const pDisplayLabel : string = '';
-                           pColWidth : Integer = -1): TtiVTColumn; overload;
+                           pColWidth : Integer = -1;
+                           const pAllowInlineEdit : boolean = False;
+                           const pOnIsValidValue: TtiVTOnIsValidColumnValue = nil): TtiVTColumn; overload;
     function    AddColumn(const pDeriveColumnMethod : TtiDeriveListColumnValue;
                            const pDisplayLabel : string = '';
                            pColWidth : Integer = -1): TtiVTColumn; overload;
@@ -624,11 +665,12 @@ type
     property    Header: TtiVTHeader read GetHeader write SetHeader;
     property    SP: TtiVTSearchPanel read FSP;
     property    Sorted: Boolean read FSorted;
-    property    VT: TVirtualStringTree read FVT;
     function    SelectedNodeScreenOrigin: TPoint;
     property    FilteredItemCount: Integer read GetFilteredItemCount;
     property    FilteredItems[AIndex: Integer]: TtiObject read GetFilteredItems;
     function    IsInFilteredData(AObject: TObject): boolean;
+    procedure   RefreshObject(AObject: TtiObject);
+    function    CanInlineEditFocusedCell: boolean;
   published
   end;
 
@@ -640,6 +682,7 @@ type
     FButtonStyle: TLVButtonStyle;
     FVisibleButtons: TtiLVVisibleButtons;
     FAllowedButtons: TtiLVVisibleButtons;
+    FEditInlineOnly: boolean;
     FPopupMenu: TPopupMenu;
     FpmiView  : TMenuItem;
     FpmiEdit  : TMenuItem;
@@ -711,6 +754,7 @@ type
     property Filtering: boolean read FFiltering write SetFiltering default true;
     property VisibleButtons : TtiLVVisibleButtons read FVisibleButtons write SetVisibleButtons default [];
     property AllowedButtons : TtiLVVisibleButtons read FAllowedButtons;
+    property EditInlineOnly: boolean read FEditInlineOnly write FEditInlineOnly;
 
     property OnClearSort: TtiVTClearSortEvent read FOnClearSort write SetOnClearSort;
     property OnItemDelete: TtiVTItemEditEvent read FOnItemDelete write SetOnItemDelete;
@@ -755,6 +799,7 @@ type
     property HelpKeyword;
     property HelpType;
     property Images;
+    property EditInlineOnly;
     property RowSelect;
     property Searching;
     property ShowAlternateRowColor;
@@ -771,6 +816,7 @@ type
     property OnCanView;
     property OnClearSort;
     property OnDblClick;
+    property OnEdited;
     property OnFilterData;
     property OnFocusChanged;
     property OnGetImageIndex;
@@ -889,6 +935,7 @@ uses
   ,tiGUIUtils
   ,tiDialogs // Debuggin
   ,Windows  // VK_XXX
+  ,Forms // TBorderStyle
   ,tiVTExportCSV
   ,tiVTExportHTML
   ,Clipbrd           // global Clipboard object
@@ -915,7 +962,6 @@ type
 const
   AsTSortDirection: array[TvtSortDirection] of TSortDirection
    = (sdAscending, sdDescending);
-  CMaxHintWidth = 140;
 
 function tiVTDisplayMaskFromDataType(const AValue : TvtTypeKind): string;
 begin
@@ -1045,6 +1091,40 @@ end;
 destructor TtiVTColumn.Destroy;
 begin
   inherited;
+end;
+
+function TtiVTColumn.IsValidValue(AData: TtiObject; var AValue: WideString): Boolean;
+var
+  LIsValid: Boolean;
+  LDummyInt: Integer;
+  LDummyFloat: Extended;
+  LDummyDateTime: TDateTime;
+begin
+  LIsValid := True;
+  if Derived then
+    LIsValid := False
+  else
+  begin
+    case DataType of
+      vttkString:
+        LIsValid := True;
+      vttkInt:
+        LIsValid := TryStrToInt(AValue, LDummyInt);
+      vttkFloat,
+      vttkCurrency:
+        LIsValid := TryStrToFloat(AValue, LDummyFloat);
+      vttkDate,
+      vttkDateTime:
+        LIsValid := TryStrToDate(AValue, LDummyDateTime);
+      else
+        Assert(False);
+    end;
+  end;
+
+  if LIsValid and Assigned(FOnIsValidValue) then
+    FOnIsValidValue(AData, Self, AValue, LIsValid);
+
+  Result := LIsValid;
 end;
 
 procedure TtiVTColumn.SetDataType(const AValue: TvtTypeKind);
@@ -1233,13 +1313,65 @@ begin
   RegisterEventHandler(AValue, {AIsDefaultHandler} True);
 end;
 
+//______________________________________________________________________________________________________________________________
+{ TtiVTEdit }
+
+constructor TtiVTEdit.Create(Link: TStringEditLink);
+begin
+  inherited Create(Link);
+  Self.Visible := False;
+  Self.BorderStyle := bsSingle;
+  Self.AutoSize := False;
+  Self.OnChange := DoOnChange;
+end;
+
+function TtiVTEdit.GetLink: TtiStringEditLink;
+begin
+  Result := (inherited Link) as TtiStringEditLink;
+end;
+
+procedure TtiVTEdit.DoOnChange(Sender: TObject);
+begin
+  if IsValidValue then
+    Self.Color := clWindow
+  else
+    Self.Color := cInvalidValueColor;
+end;
+
+function TtiVTEdit.IsValidValue: Boolean;
+var
+  LColumn: TtiVTColumn;
+  LData: TtiObject;
+  LText: WideString;
+begin
+  Result := True;
+  if Assigned(Link) and Assigned(Link.tiTree) then
+  begin
+    LColumn := Link.tiTree.Header.Columns[Link.Column] as TtiVTColumn;
+    Assert(Assigned(LColumn), 'Column assigned');
+    LData := Link.tiTree.GetObjectFromNode(Link.Node);
+
+    LText := Self.Text;
+    Result := LColumn.IsValidValue(LData, LText);
+    // We ignore any change in value as part of the validation.
+  end;
+end;
+
+//______________________________________________________________________________________________________________________________
+{ TtiStringEditLink }
+
+constructor TtiStringEditLink.Create(AtiTree: TtiCustomVirtualTree);
+begin
+  FtiTree := AtiTree;
+end;
 
 //______________________________________________________________________________________________________________________________
 { TtiCustomVirtualTree }
 
 function TtiCustomVirtualTree.AddColumn(const AFieldName: string;
   const pDataType: TvtTypeKind; const pDisplayLabel: string;
-  pColWidth: Integer): TtiVTColumn;
+  pColWidth: Integer; const pAllowInlineEdit: boolean;
+  const pOnIsValidValue: TtiVTOnIsValidColumnValue): TtiVTColumn;
 var
   lVTC: TtiVTColumn;
 begin
@@ -1249,6 +1381,8 @@ begin
     lVTC.Derived := AFieldName = '';
     lVTC.FieldName := AFieldName;
     lVTC.DataType := pDataType;
+    lVTC.AllowInlineEdit := pAllowInlineEdit;
+    lVTC.OnIsValidValue := pOnIsValidValue;
     if pDisplayLabel = '' then
       lVTC.Text := AFieldName
     else
@@ -1262,7 +1396,7 @@ begin
 
     if HeaderClickSorting then
       lVTC.Style := vsOwnerDraw;
-       
+
     Result := lVTC;
   except
     FreeAndNil(lVTC);
@@ -1341,7 +1475,7 @@ end;
 
 function TtiCustomVirtualTree.Focused: boolean;
 begin
-  result:= FVT.Focused;
+  result:= VT.Focused;
 end;
 
 procedure TtiCustomVirtualTree.ApplyGrouping;
@@ -1447,6 +1581,14 @@ begin
     Result := 0;
 end;
 
+function TtiCustomVirtualTree.CanEditRow: Boolean;
+begin
+  Result := Enabled and VT.Focused and not FReadOnly and (VT.SelectedCount = 1) and (SelectedData <> nil);
+
+  if Result and Assigned(FOnCanEdit) then
+    FOnCanEdit(Self, GetObjectFromNode(VT.FocusedNode), VT.FocusedNode, Result);
+end;
+
 function TtiCustomVirtualTree.CanDelete: Boolean;
 begin
   // Was incorrectly returning false
@@ -1458,12 +1600,7 @@ end;
 
 function TtiCustomVirtualTree.CanEdit: Boolean;
 begin
-  // Was incorrectly returning false
-  //Result := Enabled and VT.Focused and not FReadOnly and (VT.SelectedCount = 1) and IsNodeDataItem(VT.FocusedNode);
-  Result := Enabled and VT.Focused and not FReadOnly and (VT.SelectedCount = 1) and (SelectedData <> nil);
-
-  if Result and Assigned(FOnCanEdit) then
-    FOnCanEdit(Self, GetObjectFromNode(VT.FocusedNode), VT.FocusedNode, Result);
+  Result := CanEditRow;
 end;
 
 function TtiCustomVirtualTree.CanInsert: Boolean;
@@ -1520,16 +1657,16 @@ begin
   FSP.OnFindNext := SPFindNext;
   FSP.OnFindPrevious := SPFindPrevious;
 
-  FVT := TtiInternalVirtualTree.Create(Self);
-  FVT.Name:= tiGetUniqueComponentName(Name + 'VT');
-  FVT.SetSubComponent(True);
-  FVT.Parent := Self;
-  FVT.NodeDataSize := SizeOf(Pointer);
-  FVT.Align := alClient;
-  FVT.OnHeaderClick := VTHeaderClick;
-  FVT.OnHeaderDrawQueryElements := VTHeaderDrawQueryElements;
-  FVT.OnAdvancedHeaderDraw := VTHeaderAdvancedHeaderDraw;
-  FVT.OnFocusChanged := VTFocusChanged;
+  SetVT(TtiInternalVirtualTree.Create(Self));
+  VT.Name:= tiGetUniqueComponentName(Name + 'VT');
+  VT.SetSubComponent(True);
+  VT.Parent := Self;
+  VT.NodeDataSize := SizeOf(Pointer);
+  VT.Align := alClient;
+  VT.OnHeaderClick := VTHeaderClick;
+  VT.OnHeaderDrawQueryElements := VTHeaderDrawQueryElements;
+  VT.OnAdvancedHeaderDraw := VTHeaderAdvancedHeaderDraw;
+  VT.OnFocusChanged := VTFocusChanged;
 
   FFilters := TList.Create;
 
@@ -1544,8 +1681,15 @@ begin
   VT.OnDblClick := DoDblClick;
   VT.TreeOptions.PaintOptions := [toShowButtons, toShowDropmark, toShowRoot, {toShowTreeLines,} toShowVertGridLines, toThemeAware, toUseBlendedImages];
   FRowSelect:= True;
-  VT.TreeOptions.SelectionOptions := [toFullRowSelect];
+  VT.TreeOptions.SelectionOptions := [toFullRowSelect, toExtendedFocus];
   VT.Header.Style := hsXPStyle;
+
+  // Editing
+  VT.OnCreateEditor := VTCreateEditor;
+  VT.TreeOptions.MiscOptions := VT.TreeOptions.MiscOptions + [toEditable];
+  VT.OnEditing := VTEditing;
+  VT.OnEdited := VTEdited;
+  VT.OnNewText := VTNewText;
 end;
 
 procedure TtiCustomVirtualTree.DeleteNode(Node: PVirtualNode);
@@ -1603,7 +1747,7 @@ end;
 
 function TtiCustomVirtualTree.GetHeader: TtiVTHeader;
 begin
-  Result := FVT.Header as TtiVTHeader;
+  Result := VT.Header as TtiVTHeader;
 end;
 
 function TtiCustomVirtualTree.GetImages: TCustomImageList;
@@ -1676,7 +1820,7 @@ Begin
   begin
     // And this was used by PH as part of SelectedData.
     // This might be the problem with SelectedData?
-    lData := PMyRecord(FVT.GetNodeData(pNode));
+    lData := PMyRecord(VT.GetNodeData(pNode));
     if Assigned(lData) then
       Result := lData.Ref
     else
@@ -1699,7 +1843,8 @@ begin
   Result := GetObjectFromNode(VT.FocusedNode);
 end;
 
-function TtiCustomVirtualTree.GetTextFromObject(AObj: TtiObject; ColumnIndex: TColumnIndex): string;
+function TtiCustomVirtualTree.GetTextFromObject(AObj: TtiObject; 
+  AColumnIndex: TColumnIndex): string;
 var
   LColumn: TtiVTColumn;
   LField: string;
@@ -1707,7 +1852,7 @@ var
   LCurrency: Currency;
 begin
   Assert(Assigned(AObj));
-  LColumn := Header.Columns[ColumnIndex];
+  LColumn := Header.Columns[AColumnIndex];
   LField := LColumn.FieldName;
   if (not LColumn.Derived) and (LField <> '') then
   begin
@@ -1745,6 +1890,41 @@ begin
     LColumn.OnDeriveColumn(Self, AObj, LColumn, Result)
   else
     Result := '<' + LColumn.FieldName + '> not correctly defined';
+end;
+
+procedure TtiCustomVirtualTree.SetTextInObject(AObj: TtiObject; 
+  AColumnIndex: TColumnIndex; AText: string);
+var
+  Column: TtiVTColumn;
+  Field: string;
+begin
+  Assert(Assigned(AObj));
+  Column := Header.Columns[AColumnIndex];
+  Field := Column.FieldName;
+  Assert(not Column.Derived);
+  Assert(Field <> '');
+  case Column.DataType of
+    vttkString:
+      SetPropValue(AObj, Field, AText);
+
+    vttkInt:
+      SetPropValue(AObj, Field, StrToInt(AText));
+
+    vttkFloat:
+      SetPropValue(AObj, Field, StrToFloat(AText));
+
+    vttkDate:
+      SetPropValue(AObj, Field, StrToDate(AText));
+
+    vttkDateTime:
+      SetPropValue(AObj, Field, StrToDateTime(AText));
+
+    vttkCurrency:
+      SetPropValue(AObj, Field, StrToFloat(AText));
+
+    else
+      Assert(False);
+  end;
 end;
 
 function TtiCustomVirtualTree.IsInFilteredData(AObject: TObject): boolean;
@@ -1881,7 +2061,7 @@ begin
       {Refresh(False); { This has been included in an attempt to force a repaint.  If readonly was *reset* (off)
                           and no items needed display, the readonly color would remain.  Also tried FLV.Invalidate
                           in SetColor to no avail.  Alas, the problem alludes me... ipk 2003-10-14}
-      FVT.Invalidate;
+      VT.Invalidate;
     end;
     Exit; //==>
   end;
@@ -1989,69 +2169,91 @@ begin
   FRowSelect := AValue;
   if FRowSelect then
   begin
-    FVT.TreeOptions.SelectionOptions:= FVT.TreeOptions.SelectionOptions + [toFullRowSelect] - [toExtendedFocus];
-    FVT.TreeOptions.MiscOptions:= FVT.TreeOptions.MiscOptions - [toGridExtensions];
+    VT.TreeOptions.SelectionOptions:= VT.TreeOptions.SelectionOptions + [toFullRowSelect] - [toExtendedFocus];
+    VT.TreeOptions.MiscOptions:= VT.TreeOptions.MiscOptions - [toGridExtensions];
   end else
   begin
-    FVT.TreeOptions.SelectionOptions:= FVT.TreeOptions.SelectionOptions - [toFullRowSelect] + [toExtendedFocus];
-    FVT.TreeOptions.MiscOptions:= FVT.TreeOptions.MiscOptions + [toGridExtensions];
+    VT.TreeOptions.SelectionOptions:= VT.TreeOptions.SelectionOptions - [toFullRowSelect] + [toExtendedFocus];
+    VT.TreeOptions.MiscOptions:= VT.TreeOptions.MiscOptions + [toGridExtensions];
   end;
 end;
 
 procedure TtiCustomVirtualTree.SetSelectedData(const AValue: TtiObject);
 var
-  lNode: PVirtualNode;
-  lData: TtiObject;
+  LNode: PVirtualNode;
 begin
-  if AValue = nil then
+  LNode := GetNodeFromObject(AValue);
+  if Assigned(LNode) then
+    FocusNode(lNode);
+end;
+
+function TtiCustomVirtualTree.GetNodeFromObject(const AData: TtiObject): PVirtualNode;
+var
+  LNode: PVirtualNode;
+  LData: TtiObject;
+begin
+  Result := nil;
+
+  if AData = nil then
     Exit; //==>
+
   // This is the nastiest, slowest algorithm. It causes all child nodes to be initialised. But it works.
-  lNode := VT.GetFirst;
-  while Assigned(lNode) do
+  LNode := VT.GetFirst;
+  while Assigned(LNode) and not Assigned(Result) do
   begin
-    lData := GetObjectFromNode(lNode);
-    if vsHasChildren in lNode.States then
-    begin
-      if SetSelectedChildData(lNode, AValue) then
-        Break; //-->
-    end
-    else if lData = AValue then
-    begin
-      FocusNode(lNode);
-      Break; //-->
-    end;
-    lNode := VT.GetNextSibling(lNode);
+    LData := GetObjectFromNode(LNode);
+
+    if vsHasChildren in LNode.States then
+      Result := GetChildNodeFromObject(LNode, AData)
+    else if LData = AData then
+      Result := LNode;
+
+    if not Assigned(Result) then
+      LNode := VT.GetNextSibling(LNode);
   end;
 end;
 
+function TtiCustomVirtualTree.GetChildNodeFromObject(
+  const AParentNode: PVirtualNode; const AData: TtiObject): PVirtualNode;
+var
+  LNode: PVirtualNode;
+begin
+  Assert(Assigned(AParentNode));
+  Result := nil;
 
-//procedure TtiCustomVirtualTree.SetSelectedDataIterateProc(
-//  pSender: TBaseVirtualTree;
-//  pNode: PVirtualNode;
-//  AData: Pointer;
-//  var pAbort: Boolean);
-//var
-//  lData1: TtiObject;
-//  lData2: TtiObject;
-//begin
-//  lData1 := ObjectFromNode(pNode);
-//  lData2 := TtiObject(AData);
-//  if lData1 = lData2 then
-//  begin
-//    if FGroupingApplied and
-//       (pNode.Parent <> nil) then
-//        FVT.FullExpand(pNode.Parent);
-//    FVT.Selected[pNode]:= True;
-//    FVT.FocusedNode := pNode;
-//    pAbort := True;
-//  end;
-//end;
+  if (vsHasChildren in AParentNode.States) and (AParentNode.ChildCount = 0) then
+    TtiInternalVirtualTree(VT).InitChildren(AParentNode);
 
-//procedure TtiCustomVirtualTree.SetSelectedData(const AValue: TtiObject);
-//begin
-//  Assert(AValue.TestValid(TtiObject), CTIErrorInvalidObject);
-//  FVT.IterateSubtree(nil, SetSelectedDataIterateProc, AValue);
-//end;
+  LNode := VT.GetFirstChild(AParentNode);
+  while Assigned(LNode) and not Assigned(Result) do
+  begin
+    if GetObjectFromNode(LNode) = AData then
+      Result := LNode
+    else
+      LNode := VT.GetNextSibling(LNode);
+  end;
+end;
+
+procedure TtiCustomVirtualTree.RefreshObject(AObject: TtiObject);
+var
+  LNode: PVirtualNode;
+begin
+  LNode := GetNodeFromObject(AObject);
+  if Assigned(LNode) then
+    VT.InvalidateNode(LNode);
+end;
+
+function TtiCustomVirtualTree.CanInlineEditFocusedCell: boolean;
+var
+  LColumn: TtiVTColumn;
+begin
+  if VT.FocusedColumn >= 0 then
+  begin
+    LColumn := Header.Columns[VT.FocusedColumn] as TtiVTColumn;
+    Result := Assigned(LColumn) and LColumn.AllowInlineEdit and CanEditRow;
+  end else
+    Result := False;
+end;
 
 procedure TtiCustomVirtualTree.SetShowAlternateRowColor(const AValue: Boolean);
 begin
@@ -2069,14 +2271,14 @@ begin
   FShowNodeHint := AValue;
   if FShowNodeHint then
   begin
-    FVT.OnGetHint:= DoOnGetHint;
-    FVT.HintMode:= hmHint;
-    FVT.ShowHint:= true;
+    VT.OnGetHint:= DoOnGetHint;
+    VT.HintMode:= hmHint;
+    VT.ShowHint:= true;
   end else
   begin
-    FVT.OnGetHint:= nil;
-    FVT.HintMode:= hmDefault;
-    FVT.ShowHint:= false;
+    VT.OnGetHint:= nil;
+    VT.HintMode:= hmDefault;
+    VT.ShowHint:= false;
   end;
 end;
 
@@ -2084,9 +2286,9 @@ procedure TtiCustomVirtualTree.SetOnBeforeCellPaint(const AValue: TtiVTOnPaintTe
 begin
   FOnBeforeCellPaint := AValue;
   if Assigned(FOnBeforeCellPaint) then
-    FVT.OnBeforeCellPaint := DoOnBeforeCellPaint
+    VT.OnBeforeCellPaint := DoOnBeforeCellPaint
   else
-    FVT.OnBeforeCellPaint := nil;
+    VT.OnBeforeCellPaint := nil;
 end;
 
 procedure TtiCustomVirtualTree.SetOnPaintText(
@@ -2094,9 +2296,9 @@ procedure TtiCustomVirtualTree.SetOnPaintText(
 begin
   FOnPaintText := AValue;
   if Assigned(FOnPaintText) then
-    FVT.OnPaintText := DoOnPaintText
+    VT.OnPaintText := DoOnPaintText
   else
-    FVT.OnPaintText := nil;
+    VT.OnPaintText := nil;
 end;
 
 procedure TtiCustomVirtualTree.FocusNode(ANode: PVirtualNode);
@@ -2105,29 +2307,6 @@ begin
   VT.Selected[ANode]:= True;
   VT.ScrollIntoView(ANode, True, False);
   VT.FocusedNode := ANode;
-end;
-
-function TtiCustomVirtualTree.SetSelectedChildData(Parent: PVirtualNode; Data: TtiObject): Boolean;
-var
-  lNode: PVirtualNode;
-begin
-  Assert(Assigned(Parent));
-  Result := False;
-
-  if (vsHasChildren in Parent.States) and (Parent.ChildCount = 0) then
-    TtiInternalVirtualTree(VT).InitChildren(Parent);
-
-  lNode := VT.GetFirstChild(Parent);
-  while Assigned(lNode) and not Result do
-  begin
-    if GetObjectFromNode(lNode) = Data then
-    begin
-      FocusNode(lNode);
-      Result := True;
-    end
-    else
-      lNode := VT.GetNextSibling(lNode);
-  end;
 end;
 
 procedure TtiCustomVirtualTree.SetSortOrders(const AValue: TtiVTSortOrders);
@@ -2442,7 +2621,7 @@ var
 begin
   LColumn := Header.Columns[Column];
 
-  if HeaderClickSorting and (Button = mbLeft) then
+  if HeaderClickSorting and (not LColumn.Derived) and (Button = mbLeft)then
   begin
     ClearSearchState;
     LColumn.Style := vsOwnerDraw;
@@ -2551,7 +2730,7 @@ end;
 procedure TtiCustomVirtualTree.DoEnter;
 begin
   inherited;
-  FVT.SetFocus;
+  VT.SetFocus;
 end;
 
 procedure TtiCustomVirtualTree.DoOnBeforeCellPaint(ASender: TBaseVirtualTree;
@@ -2578,7 +2757,6 @@ begin
   begin
     LData := GetObjectFromNode(ANode);
     FOnGetNodeHint(Self, LData, ANode, Column, AHintText);
-    AHintText := tiWrap(AHintText, CMaxHintWidth);
   end;
 end;
 
@@ -2662,7 +2840,7 @@ var
 begin
   if Assigned(FOnDblClick) then
   begin
-    lNode := FVT.FocusedNode;
+    lNode := VT.FocusedNode;
     FOnDblClick(Self, GetObjectFromNode(lNode), lNode);
   end;
 end;
@@ -2687,12 +2865,12 @@ begin
   if Enabled <> AValue then
   begin
     inherited;
-    FVT.Enabled := AValue;
+    VT.Enabled := AValue;
     // ToDo: Make these properties on TtiCustomVirtualTree;
     if AValue then
-      FVT.Color := clWindow
+      VT.Color := clWindow
     else
-      FVT.Color := FDisabledColor;
+      VT.Color := FDisabledColor;
   end;
 end;
 
@@ -2785,6 +2963,66 @@ begin
     FFilters.Delete(pPos);
 end;
 
+
+procedure TtiCustomVirtualTree.VTCreateEditor(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; out EditLink: IVTEditLink);
+var
+  LEditLink: TtiStringEditLink;
+begin
+  LEditLink := TtiStringEditLink.Create(Self);
+  EditLink := LEditLink;
+  LEditLink.Edit := TtiVTEdit.Create(LEditLink);
+end;
+
+procedure TtiCustomVirtualTree.VTEditing(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+  Allowed := Header.Columns[Column].AllowInlineEdit and CanEditRow;
+end;
+
+procedure TtiCustomVirtualTree.VTEdited(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex);
+var
+  LObj: TtiObject;
+  LColumn: TtiVTColumn;
+begin
+  LObj := GetObjectFromNode(Node);
+  LColumn := Header.Columns[Column];
+  if Assigned(LObj) and LColumn.AllowInlineEdit then
+    LObj.Dirty := True;
+  if Assigned(FOnEdited) then
+    FOnEdited(Self, LObj, Node);
+end;
+
+procedure TtiCustomVirtualTree.VTNewText(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; Column: TColumnIndex; NewText: WideString);
+var
+  LObj: TtiObject;
+  LColumn: TtiVTColumn;
+begin
+  LObj := GetObjectFromNode(Node);
+
+  // Check if value is valid.
+  LColumn := Header.Columns[Column];
+  if not LColumn.IsValidValue(LObj, NewText) then
+  begin
+    SysUtils.Beep;
+    Exit; //==>
+  end;
+
+  if VT.GetNodeLevel(Node) = 0 then
+  begin
+    if (Column < SortOrders.GroupColumnCount) or (CalcRootNodeChildCount(Node) <= 1) then
+      SetTextInObject(LObj, Column, NewText);
+  end
+  else
+  begin
+    // must be level 1
+    if (Column >= SortOrders.GroupColumnCount) then
+      SetTextInObject(LObj, Column, NewText);
+  end;
+end;
+
 { TtiInternalVirtualTree }
 
 constructor TtiInternalVirtualTree.Create(AOwner: TComponent);
@@ -2809,11 +3047,12 @@ begin
   inherited;
 end;
 
-procedure TtiInternalVirtualTree.DoGetImageIndex(Node: PVirtualNode;
+function TtiInternalVirtualTree.DoGetImageIndex(Node: PVirtualNode;
   Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean;
-  var Index: Integer);
+  var Index: Integer): TCustomImageList;
 begin
   FtiOwner.VTGetImageIndex(Node, Kind, Column, Ghosted, Index);
+  Result := nil;
 end;
 
 procedure TtiInternalVirtualTree.DoGetText(Node: PVirtualNode;
@@ -2855,9 +3094,24 @@ begin
 end;
 
 function TtiCustomVirtualEditTree.CanEdit: Boolean;
+var
+  LColumn: TtiVTColumn;
+  LCanEditColumn: boolean;
 begin
+  if FEditInlineOnly then
+  begin
+    if VT.FocusedColumn >= 0 then
+    begin
+      LColumn := Header.Columns[VT.FocusedColumn] as TtiVTColumn;
+      LCanEditColumn := Assigned(LColumn) and LColumn.AllowInlineEdit;
+    end else
+      LCanEditColumn := False;
+  end else
+    LCanEditColumn := True;
+
   Result := (tiLVBtnVisEdit in VisibleButtons) and
     (tiLVBtnVisEdit in AllowedButtons) and
+    LCanEditColumn and
     inherited CanEdit;
 end;
 
@@ -2977,6 +3231,7 @@ begin
   FStdPopupItemCount := FPopupMenu.Items.Count;
   FButtonStyle := lvbsButtonsAndLabels;
   FAllowedButtons := [tiLVBtnVisView, tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete]; // All allowed
+  FEditInlineOnly := False;
 end;
 
 procedure TtiCustomVirtualEditTree.CreateButtonPanel;
@@ -2989,7 +3244,7 @@ begin
 
   if Assigned(FOnItemDelete) then
     FCtrlBtnPnl.OnDelete := DoDelete;
-  if Assigned(FOnItemEdit) then
+  if FEditInlineOnly or Assigned(FOnItemEdit) then
     FCtrlBtnPnl.OnEdit := DoEdit;
   if Assigned(FOnItemInsert) then
     FCtrlBtnPnl.OnNew := DoNew;
@@ -3046,9 +3301,14 @@ end;
 
 procedure TtiCustomVirtualEditTree.DoEdit(Sender: TObject);
 begin
-  if Assigned(FOnItemEdit) then
+  if FEditInlineOnly then
   begin
-    FVT.SetFocus;
+    VT.SetFocus;
+    if (VT.FocusedNode <> nil) and (VT.FocusedColumn >= 0) then
+      VT.EditNode(VT.FocusedNode, VT.FocusedColumn);
+  end else if Assigned(FOnItemEdit) then
+  begin
+    VT.SetFocus;
     FOnItemEdit(Self, GetObjectFromNode(VT.FocusedNode), VT.FocusedNode);
   end;
 end;
@@ -3057,7 +3317,7 @@ procedure TtiCustomVirtualEditTree.DoNew(Sender: TObject);
 begin
   if Assigned(FOnItemInsert) then
   begin
-    FVT.SetFocus;
+    VT.SetFocus;
     FOnItemInsert(Self, GetObjectFromNode(VT.FocusedNode), VT.FocusedNode);
   end;
 end;
@@ -3066,7 +3326,7 @@ procedure TtiCustomVirtualEditTree.DoView(Sender: TObject);
 begin
   if Assigned(VT.FocusedNode) and Assigned(FOnItemView) then
   begin
-    FVT.SetFocus;
+    VT.SetFocus;
     FOnItemView(Self, GetObjectFromNode(VT.FocusedNode), VT.FocusedNode);
   end;
 end;
@@ -3146,7 +3406,7 @@ end;
 
 procedure TtiCustomVirtualEditTree.DoExpandAll(Sender: TObject);
 begin
-  FVT.FullExpand(nil);
+  VT.FullExpand(nil);
 end;
 
 procedure TtiCustomVirtualEditTree.DoExportTree(Sender: TObject);
@@ -3172,7 +3432,7 @@ end;
 
 procedure TtiCustomVirtualEditTree.DoCollapseAll(Sender: TObject);
 begin
-  FVT.FullCollapse(nil);
+  VT.FullCollapse(nil);
 end;
 
 procedure TtiCustomVirtualEditTree.SetButtonStyle(const AValue: TLVButtonStyle);

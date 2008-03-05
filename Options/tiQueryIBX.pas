@@ -10,10 +10,7 @@ uses
   ,IBDatabase
   ,IBSQL
   ,IBHeader
-//##  ,tiAutoMap
-//##  ,tiObject
   ,tiPersistenceLayers
-//##  ,tiDBConnectionPool
   ;
 
 // Turn this on if you have upgraded you IBX from the version that comes

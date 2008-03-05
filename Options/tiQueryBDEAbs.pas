@@ -7,8 +7,6 @@ uses
    tiQuery
   ,Classes
   ,DBTables
-//##  ,tiAutoMap
-//##  ,tiObject
  ;
 
 type
@@ -607,6 +605,3 @@ initialization
   uSessionCount := 0;
 
 end.
-
-
-

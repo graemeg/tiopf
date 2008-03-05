@@ -30,6 +30,7 @@ type
     procedure tiCompressAndDecompressString;
     procedure tiCompressAndDecompressStream;
     procedure tiCompressAndDecompressStringToFile;
+    procedure tiDecompressFileToStream;
 
   end;
 
@@ -176,6 +177,26 @@ procedure TTestTICompress.None_StringCompression;
 begin
   Do_StringCompression(cgsCompressNone, '');
   Do_StringCompression(cgsCompressNone, GetTestString);
+end;
+
+procedure TTestTICompress.tiDecompressFileToStream;
+var
+  LBefore: string;
+  LAfter: string;
+  LStreamAfter: TMemoryStream;
+  LFileName: string;
+begin
+  LFileName:= TempFileName('tiCompressAndDecompressString.zlib');
+  LBefore:= GetTestString;
+  LStreamAfter:= TMemoryStream.Create;
+  try
+    tiCompressStringToFile(LBefore, LFileName);
+    tiCompress.tiDecompressFileToStream(LFileName, LStreamAfter);
+    LAfter:= tiCompress.tiDecompressFileToString(LFileName);
+    CheckEquals(LBefore, LAfter);
+  finally
+    LStreamAfter.Free;
+  end;
 end;
 
 procedure TTestTICompress.tiCompressAndDecompressStream;

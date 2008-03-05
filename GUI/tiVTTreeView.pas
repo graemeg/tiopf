@@ -26,6 +26,7 @@ uses
   ,tiFocusPanel
   ,tiCtrlButtonPanel
   ,tiObject
+  ,tiVTAbstract
  ;
 
 type
@@ -145,9 +146,8 @@ type
     property VT: TtiVTTreeView read FVT write FVT;
   end;
 
-  TtiVTTreeView = class(TtiFocusPanel)
+  TtiVTTreeView = class(TtiVTAbstract)
   private
-    FVT: TVirtualStringTree; // or what ever...
     FData: TtiObject;
     FCtrlBtnPnl : TtiCtrlBtnPnlAbs;
     FVTDefaultDataMapping: TtiVTTVDataMapping;
@@ -161,7 +161,6 @@ type
     FOwnsData: Boolean;
     FApplyFilter: Boolean;
     FOnFilter: TtiVTTVOnFilterDataEvent;
-    FOnPaintText: TtiVTTVOnPaintText;
     procedure DoOnChange(sender: TBaseVirtualTree; node: PVirtualNode);
     procedure SetTVDataMappings(const AValue: TtiVTTVDataMappings);
     function  GetSelectedAddress: string;
@@ -193,10 +192,6 @@ type
     procedure SelectObjectOrOwner(AValue: TtiObject);
     function  GetDefaultText: WideString;
     procedure SetDefaultText(const AValue: WideString);
-    procedure SetOnPaintText(const AValue: TtiVTTVOnPaintText);
-    procedure DoOnPaintText(ASender: TBaseVirtualTree;
-      const ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex;
-      ATextType: TVSTTextType);
 
   protected
     procedure SetEnabled(AValue: Boolean); override;
@@ -226,7 +221,7 @@ type
     procedure   FullExpand(pLevel: Integer = -1);
     procedure   FullCollapse;
 
-    function    GetObjectForNode(Node: PVirtualNode): TtiObject;
+    function    GetObjectFromNode(Node: PVirtualNode): TtiObject; override;
     function    GetListForNode(Node: PVirtualNode): TtiObjectList;
     procedure   SetObjectForNode(pNode: PVirtualNode;  AObject: TtiObject);
     function    GetMappingForNode(Node: PVirtualNode): TtiVTTVDataMapping;
@@ -237,8 +232,6 @@ type
     function    CanView: boolean;
 
     procedure   RefreshCurrentNode;
-
-    property    VT: TVirtualStringTree read FVT;
 
     property    Data: TtiObject read FData write SetData;
     property    SelectedData: TtiObject read GetSelectedData write SetSelectedData;
@@ -265,7 +258,9 @@ type
     property OnFilter: TtiVTTVOnFilterDataEvent read FOnFilter write FOnFilter;
     property OnKeyDown: TKeyEvent read GetOnKeyDown write SetOnKeyDown;
     property OnSelectNode: TtiVTTVNodeEvent read FOnSelectNode write FOnSelectNode;
-    property OnPaintText: TtiVTTVOnPaintText read FOnPaintText Write SetOnPaintText;
+
+    property OnGetNodeHint;
+    property OnPaintText;
 
   end;
 
@@ -274,6 +269,8 @@ uses
    tiConstants
   ,tiImageMgr
   ,tiResources
+  ,tiUtils
+  ,tiGUIConstants
   ,SysUtils
   ,TypInfo
  ;
@@ -331,40 +328,40 @@ begin
   Width := 120;
   OnResize := DoResize;
 
-  FVT := TVirtualStringTree.Create(self);
-  FVT.Parent := Self;
-  FVT.Name := Name + '_TV';
-  FVT.Top := 1;
-  FVT.Left := 2;
-  FVT.Height := Height - 2;
-  FVT.Width := Width - 2;
-  FVT.Anchors := [akLeft, akTop, akRight, akBottom];
+  SetVT(TVirtualStringTree.Create(self));
+  VT.Parent := Self;
+  VT.Name := Name + '_TV';
+  VT.Top := 1;
+  VT.Left := 2;
+  VT.Height := Height - 2;
+  VT.Width := Width - 2;
+  VT.Anchors := [akLeft, akTop, akRight, akBottom];
 
-  FVT.NodeDataSize := SizeOf(TNodeDataRec);
+  VT.NodeDataSize := SizeOf(TNodeDataRec);
   FVTDataMappings := TtiVTTVDataMappings.Create(self);
-  FVT.OnChange := DoOnChange;
-  FVT.OnDblClick := DoDblClick;
+  VT.OnChange := DoOnChange;
+  VT.OnDblClick := DoDblClick;
 
   FPopupMenu := TTVPopupMenu.Create(nil);
   FPopupMenu.VT := self;
-  FVT.PopupMenu := FPopupMenu;
+  VT.PopupMenu := FPopupMenu;
 
   {$IFDEF WINDOWS}
-  FVT.DragMode := dmManual;
+  VT.DragMode := dmManual;
   {$ENDIF}
 
 
-  FVT.OnEnter    := DoOnEnter;
-  FVT.OnExit     := DoOnExit;
+  VT.OnEnter    := DoOnEnter;
+  VT.OnExit     := DoOnExit;
 
-  FVT.OnInitNode := DoOnInitNode;
-  FVT.OnInitChildren := DoOnInitChildren;
-  FVT.OnFreeNode := DoOnFreeNode;
+  VT.OnInitNode := DoOnInitNode;
+  VT.OnInitChildren := DoOnInitChildren;
+  VT.OnFreeNode := DoOnFreeNode;
 
-  FVT.OnGetText := DoOnGetText;
-  FVT.OnGetImageIndex := DoOnGetImageIndex;
+  VT.OnGetText := DoOnGetText;
+  VT.OnGetImageIndex := DoOnGetImageIndex;
 
-  FVT.TreeOptions.AnimationOptions := FVT.TreeOptions.AnimationOptions + [toAnimatedToggle];
+  VT.TreeOptions.AnimationOptions := VT.TreeOptions.AnimationOptions + [toAnimatedToggle];
 
   FVTDefaultDataMapping := TtiVTTVDataMapping.Create(nil);
   FVTDefaultDataMapping.DisplayPropName := 'Caption';
@@ -528,8 +525,8 @@ begin
   if not CanDelete then
     Exit; //==>
 
-  lNode := FVT.GetFirstSelected;
-  lData := GetObjectForNode(lNode);
+  lNode := VT.GetFirstSelected;
+  lData := GetObjectFromNode(lNode);
   lMapping := GetMappingForNode(lNode);
 
   if not Assigned(lMapping) then
@@ -568,12 +565,12 @@ begin
     lbCanInsert := lMapping.CanInsert;
 
     if Assigned(lMapping.OnCanInsert) then
-      lMapping.OnCanInsert(self, lNode, GetObjectForNode(lNode), lbCanInsert);
+      lMapping.OnCanInsert(self, lNode, GetObjectFromNode(lNode), lbCanInsert);
 
     if not lbCanInsert then
       Exit; //==>
 
-    lMapping.OnInsert(self, lNode, GetObjectForNode(lNode));
+    lMapping.OnInsert(self, lNode, GetObjectFromNode(lNode));
   end
   else
   begin
@@ -619,22 +616,22 @@ begin
     lbCanEdit := lMapping.CanEdit;
 
     if Assigned(lMapping.OnCanEdit) then
-      lMapping.OnCanEdit(Self, lNode, GetObjectForNode(lNode), lbCanEdit);
+      lMapping.OnCanEdit(Self, lNode, GetObjectFromNode(lNode), lbCanEdit);
 
     if not lbCanEdit then
       Exit; //==>
 
-    lMapping.OnEdit(Self, lNode, GetObjectForNode(lNode));
+    lMapping.OnEdit(Self, lNode, GetObjectFromNode(lNode));
   end;
 
-  FVT.RepaintNode(lNode);
+  VT.RepaintNode(lNode);
 end;
 
 procedure TtiVTTreeView.DoOnChange(sender: TBaseVirtualTree; node: PVirtualNode);
 begin
   if Assigned(Node) and Assigned(FOnSelectNode) then
   begin
-    FOnSelectNode(Self, Node, GetObjectForNode(Node));
+    FOnSelectNode(Self, Node, GetObjectFromNode(Node));
     FCtrlBtnPnl.EnableButtons;
   end;
 end;
@@ -733,12 +730,12 @@ var
   lNode: PVirtualNode;
 begin
   result := '';
-  lNode := FVT.GetFirstSelected;
+  lNode := VT.GetFirstSelected;
   if not Assigned(lNode) then
     Exit; //==>
 
   Result := IntToStr(lNode{$IFDEF FPC}^{$ENDIF}.Index);
-  while Assigned(lNode{$IFDEF FPC}^{$ENDIF}.Parent) and (lNode <> FVT.RootNode) do // FVT.RootNode is the invisible root node
+  while Assigned(lNode{$IFDEF FPC}^{$ENDIF}.Parent) and (lNode <> VT.RootNode) do // VT.RootNode is the invisible root node
   begin
     lNode := lNode{$IFDEF FPC}^{$ENDIF}.Parent;
     result := IntToStr(lNode{$IFDEF FPC}^{$ENDIF}.Index) + '.' + result;
@@ -782,19 +779,19 @@ begin
     // Get a pointer to the node at address index liAddress
     if lNode = nil then
     begin
-      lNode := FVT.GetFirst;
+      lNode := VT.GetFirst;
       while Assigned(lNode) and (liAddress > 0) do
       begin
-        lNode := FVT.GetNextSibling(lNode);
+        lNode := VT.GetNextSibling(lNode);
         Dec(liAddress);
       end;
     end
     else
     begin
-      lNode := FVT.GetFirstChild(lNode);
+      lNode := VT.GetFirstChild(lNode);
       while Assigned(lNode) and (liAddress > 0) do
       begin
-        lNode := FVT.GetNextSibling(lNode);
+        lNode := VT.GetNextSibling(lNode);
         Dec(liAddress)
       end;
     end;
@@ -804,11 +801,11 @@ begin
     begin
       // Expand the node if we still have to drill down further
       if lsAddress <> '' then
-        FVT.Expanded[lNode]:= True;
+        VT.Expanded[lNode]:= True;
 
-      FVT.Selected[lNode]:= True;
-      FVT.FocusedNode := lNode;
-      FVT.ScrollIntoView(lNode, True);
+      VT.Selected[lNode]:= True;
+      VT.FocusedNode := lNode;
+      VT.ScrollIntoView(lNode, True);
     end
     else
       Break; //==>
@@ -822,13 +819,13 @@ var
 begin
   Result := false;
   if (FData = nil) or FbSettingData or FReadOnly or IsUpdating or
-     (not FVT.Focused) or
+     (not VT.Focused) or
      (not (tiLVBtnVisDelete in VisibleButtons))  or
      (ButtonStyle = lvbsNoButtons)
   then
     Exit; //==>
 
-  lNode := FVT.GetFirstSelected;
+  lNode := VT.GetFirstSelected;
   lMapping := GetMappingForNode(lNode);
 
   if not Assigned(lMapping) then
@@ -836,7 +833,7 @@ begin
 
   Result := lMapping.CanDelete;
   if Assigned(lMapping.OnCanDelete) then
-    lMapping.OnCanDelete(Self, lNode, GetObjectForNode(lNode), Result);
+    lMapping.OnCanDelete(Self, lNode, GetObjectFromNode(lNode), Result);
 end;
 
 function TtiVTTreeView.CanInsert: boolean;
@@ -846,12 +843,12 @@ var
 begin
   result := false;
   if (FData = nil) or FbSettingData or FReadOnly or
-     IsUpdating or (not FVT.Focused) or
+     IsUpdating or (not VT.Focused) or
      (not (tiLVBtnVisNew in VisibleButtons))  or
      (ButtonStyle = lvbsNoButtons) then
     Exit; //==>
 
-  lNode := FVT.GetFirstSelected;
+  lNode := VT.GetFirstSelected;
   lMapping := GetMappingForNode(lNode);
 
   if not Assigned(lMapping) then
@@ -859,7 +856,7 @@ begin
 
   Result := lMapping.CanInsert;
   if Assigned(lMapping.OnCanInsert) then
-    lMapping.OnCanInsert(Self, lNode, GetObjectForNode(lNode), Result);
+    lMapping.OnCanInsert(Self, lNode, GetObjectFromNode(lNode), Result);
 end;
 
 function TtiVTTreeView.CanEdit: boolean;
@@ -869,13 +866,13 @@ var
 begin
   Result := False;
   if (FData = nil) or FbSettingData or FReadOnly or IsUpdating or
-     (not FVT.Focused) or
+     (not VT.Focused) or
      (not (tiLVBtnVisDelete in VisibleButtons))  or
      (ButtonStyle = lvbsNoButtons)
   then
     Exit; //==>
 
-  lNode := FVT.GetFirstSelected;
+  lNode := VT.GetFirstSelected;
   lMapping := GetMappingForNode(lNode);
 
   if lMapping = nil then
@@ -883,7 +880,7 @@ begin
 
   Result := lMapping.CanEdit;
   if Assigned(lMapping.OnCanEdit) then
-    lMapping.OnCanEdit(Self, lNode, GetObjectForNode(lNode), Result);
+    lMapping.OnCanEdit(Self, lNode, GetObjectFromNode(lNode), Result);
 end;
 
 function TtiVTTreeView.GetImages: TCustomImageList;
@@ -903,26 +900,26 @@ var
   lNodeLevel: Integer;
 begin
   if pLevel < 0 then
-    FVT.FullExpand                 
+    VT.FullExpand                 
   else
   begin
     lSelectedAddress := SelectedAddress;
 
-    FVT.BeginUpdate;
+    VT.BeginUpdate;
     try
-      lNode := FVT.GetFirst;
+      lNode := VT.GetFirst;
       while Assigned(lNode) do
       begin
-        lNodeLevel := Integer(FVT.GetNodeLevel(lNode));
+        lNodeLevel := Integer(VT.GetNodeLevel(lNode));
         if lNodeLevel < pLevel then
-          FVT.Expanded[lNode]:= True;
+          VT.Expanded[lNode]:= True;
         // A good optimization would be to skip all children once we reach pLevel
-        lNode := FVT.GetNext(lNode);
+        lNode := VT.GetNext(lNode);
       end;
 
       SelectedAddress := lSelectedAddress;
     finally
-      FVT.EndUpdate;
+      VT.EndUpdate;
     end;
   end;
 end;
@@ -930,16 +927,16 @@ end;
 
 procedure TtiVTTreeView.FullCollapse;
 begin
-  FVT.FullCollapse;
+  VT.FullCollapse;
 end;
 
 function TtiVTTreeView.GetSelectedData: TtiObject;
 begin
   result := nil;
-  if FVT.SelectedCount = 0 then
+  if VT.SelectedCount = 0 then
     Exit; //==>
 
-  Result := GetObjectForNode(FVT.GetFirstSelected);
+  Result := GetObjectFromNode(VT.GetFirstSelected);
 end;
 
 {Currently does a brain-dead linear search. I'm thinking we should use a hash map to do these reverse lookups.
@@ -953,66 +950,45 @@ var
 begin
   if AValue = nil then
   begin
-    if FVT.RootNodeCount > 0 then
+    if VT.RootNodeCount > 0 then
     begin
-      FVT.Selected[FVT.GetFirst]:= True;
-      FVT.FocusedNode := FVT.GetFirst;
+      VT.Selected[VT.GetFirst]:= True;
+      VT.FocusedNode := VT.GetFirst;
     end;
     Exit; //==>
   end;
 
-  lNode := FVT.GetFirst;
+  lNode := VT.GetFirst;
   while Assigned(lNode) do
   begin
-    if GetObjectForNode(lNode) = AValue then
+    if GetObjectFromNode(lNode) = AValue then
     begin
-      FVT.Selected[lNode]:= True;
-      FVT.FocusedNode := lNode;
-      FVT.ScrollIntoView(lNode, True);
+      VT.Selected[lNode]:= True;
+      VT.FocusedNode := lNode;
+      VT.ScrollIntoView(lNode, True);
       Break; //-->
     end;
-    lNode := FVT.GetNext(lNode);
+    lNode := VT.GetNext(lNode);
   end;
 end;
 
 function TtiVTTreeView.GetOnKeyDown: TKeyEvent;
 begin
-  result := FVT.OnKeyDown;
+  result := VT.OnKeyDown;
 end;
 
 procedure TtiVTTreeView.SetOnKeyDown(const AValue: TKeyEvent);
 begin
-  FVT.OnKeyDown := AValue;
-end;
-
-procedure TtiVTTreeView.SetOnPaintText(const AValue: TtiVTTVOnPaintText);
-begin
-  FOnPaintText := AValue;
-  if Assigned(FOnPaintText) then
-    FVT.OnPaintText := DoOnPaintText
-  else
-    FVT.OnPaintText := nil;
-end;
-
-procedure TtiVTTreeView.DoOnPaintText(ASender: TBaseVirtualTree; const ATargetCanvas: TCanvas;
-  ANode: PVirtualNode; AColumn: TColumnIndex; ATextType: TVSTTextType);
-var
-  LData: TtiObject;
-begin
-  if Assigned(FOnPaintText) then
-  begin
-    LData := GetObjectForNode(ANode);
-    FOnPaintText(Self, ANode, LData, ATargetCanvas);
-  end;
+  VT.OnKeyDown := AValue;
 end;
 
 procedure TtiVTTreeView.SetReadOnly(const AValue: boolean);
 begin
   FReadOnly := AValue;
   if FReadOnly then
-    FVT.Color := clBtnFace
+    VT.Color := clBtnFace
   else
-    FVT.Color := clWhite;
+    VT.Color := clWhite;
 end;
 
 procedure TtiVTTreeView.BeginUpdate;
@@ -1025,7 +1001,7 @@ end;
 
 procedure TtiVTTreeView.RefreshCurrentNode;
 begin
-  FVT.RepaintNode(FVT.GetFirstSelected);
+  VT.RepaintNode(VT.GetFirstSelected);
 end;
 
 procedure TtiVTTreeView.SetFocus;
@@ -1088,19 +1064,19 @@ begin
   else
     lTop := FCtrlBtnPnl.Height + 2;
 
-  FVT.SetBounds(
+  VT.SetBounds(
     1,
     lTop,
     Width - 2,
     Height - lTop - 1);
 
-  FVT.Anchors := [akLeft, akTop, akRight, akBottom];
+  VT.Anchors := [akLeft, akTop, akRight, akBottom];
 end;
 
 procedure TtiVTTreeView.DoDblClick(Sender: TObject);
 begin
   if Assigned(FOnDblClick) then
-    FOnDblClick(Self, VT.GetFirstSelected, GetObjectForNode(VT.GetFirstSelected))
+    FOnDblClick(Self, VT.GetFirstSelected, GetObjectFromNode(VT.GetFirstSelected))
   else if CanEdit then
     DoEdit(nil);
 end;
@@ -1112,7 +1088,7 @@ var
 begin
   Result := false;
   if (FData = nil) or FbSettingData or IsUpdating or
-     (not FVT.Focused) or
+     (not VT.Focused) or
      (not (tiLVBtnVisView in VisibleButtons)) or
      (ButtonStyle = lvbsNoButtons)
   then
@@ -1126,7 +1102,7 @@ begin
 
   Result := lMapping.CanView;
   if Assigned(lMapping.OnCanView) then
-    lMapping.OnCanView(Self, lNode, GetObjectForNode(lNode), Result);
+    lMapping.OnCanView(Self, lNode, GetObjectFromNode(lNode), Result);
 end;
 
 
@@ -1144,7 +1120,7 @@ procedure TtiVTTreeView.DoOnInitNode(Sender: TBaseVirtualTree; ParentNode, Node:
 var
   AData: TtiObject;
 begin
-  if (FVT.GetNodeLevel(Node)) = 0 then
+  if (VT.GetNodeLevel(Node)) = 0 then
   begin
     AData := FData;
     Include(InitialStates, ivsExpanded);
@@ -1258,7 +1234,7 @@ begin
   if not Assigned(LMapping) then
     Exit; //==>
 
-  LData:= GetObjectForNode(Node);
+  LData:= GetObjectFromNode(Node);
 
   if not Assigned(LMapping.OnDeriveNodeText) then
     CellText := LData.PropValue[LMapping.DisplayPropName]
@@ -1289,47 +1265,13 @@ end;
 
 function TtiVTTreeView.GetTreeOptions: TStringTreeOptions;
 begin
-  Result := FVT.TreeOptions;
+  Result := VT.TreeOptions;
 end;
 
 procedure TtiVTTreeView.SetTreeOptions(const AValue: TStringTreeOptions);
 begin
-  FVT.TreeOptions.Assign(AValue);
+  VT.TreeOptions.Assign(AValue);
 end;
-
-//procedure TtiVTTreeView.Filter(pParentNode: PVirtualNode; pEvent: TtiVTTVOnFilterDataEvent);
-//var
-//  lNode: PVirtualNode;
-//  lInclude: Boolean;
-//  lParentNodeLevel: Int64;
-//  lObjForNode: TtiObject;
-//begin
-//  if not Assigned(pEvent) then
-//    pEvent := ShowAllFilter;
-//
-//  if pParentNode = FVT.RootNode then
-//    lParentNodeLevel := -1
-//  else
-//    lParentNodeLevel := VT.GetNodeLevel(pParentNode);
-//
-//  lNode := FVT.GetFirstChild(pParentNode);
-//  while Assigned(lNode) and (VT.GetNodeLevel(lNode) > lParentNodeLevel) do
-//  begin
-//    lInclude := True;
-//
-//    lInclude := True;
-//
-//    LObjForNode:= GetObjectForNode(lNode);
-//    if LObjForNode <> nil then
-//    begin
-//      pEvent(LObjForNode, lInclude);
-//      FVT.IsVisible[lNode]:= lInclude;
-//    end else
-//      FVT.IsVisible[lNode]:= False;
-//
-//    lNode := FVT.GetNextNoInit(lNode);
-//  end;
-//end;
 
 function TtiVTTreeView.GetMappingForNode(Node: PVirtualNode): TtiVTTVDataMapping;
 var
@@ -1341,26 +1283,26 @@ begin
     Exit; //==>
   end;
 
-  NodeRec := PNodeDataRec(FVT.GetNodeData(Node));
+  NodeRec := PNodeDataRec(VT.GetNodeData(Node));
   if not Assigned(NodeRec{$IFDEF FPC}^{$ENDIF}.NodeMapping) then
     NodeRec{$IFDEF FPC}^{$ENDIF}.NodeMapping := CalcMappingForObject(NodeRec{$IFDEF FPC}^{$ENDIF}.NodeData);
 
   Result := NodeRec{$IFDEF FPC}^{$ENDIF}.NodeMapping;
 end;
 
-function TtiVTTreeView.GetObjectForNode(Node: PVirtualNode): TtiObject;
+function TtiVTTreeView.GetObjectFromNode(Node: PVirtualNode): TtiObject;
 begin
-  Result := PNodeDataRec(FVT.GetNodeData(Node)){$IFDEF FPC}^{$ENDIF}.NodeData;
+  Result := PNodeDataRec(VT.GetNodeData(Node)){$IFDEF FPC}^{$ENDIF}.NodeData;
 end;
 
 procedure TtiVTTreeView.SetObjectForNode(pNode: PVirtualNode; AObject: TtiObject);
 begin
-  PNodeDataRec(FVT.GetNodeData(pNode)){$IFDEF FPC}^{$ENDIF}.NodeData := AObject;
+  PNodeDataRec(VT.GetNodeData(pNode)){$IFDEF FPC}^{$ENDIF}.NodeData := AObject;
 end;
 
 function TtiVTTreeView.GetListForNode(Node: PVirtualNode): TtiObjectList;
 begin
-  Result := PNodeDataRec(FVT.GetNOdeData(NOde)){$IFDEF FPC}^{$ENDIF}.NodeChildren;
+  Result := PNodeDataRec(VT.GetNOdeData(NOde)){$IFDEF FPC}^{$ENDIF}.NodeChildren;
 end;
 
 procedure TtiVTTreeView.SelectObjectOrOwner(AValue: TtiObject);

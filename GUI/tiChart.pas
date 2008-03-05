@@ -3020,8 +3020,19 @@ begin
 end;
 
 function TtiTimeSeriesChart.SeriesTitleToName(const psTitle: string): string;
+var
+  I: Integer;
 begin
-  result := 'cs' + StringReplace(psTitle, ' ', '', [rfReplaceAll, rfIgnoreCase]);
+  Result := '';
+
+  // Must only contain alphanumeric characters.
+  for I := 1 to Length(psTitle) do
+    if psTitle[I] in ['a'..'z','A'..'Z','0'..'9'] then
+      Result := Result + psTitle[I];
+
+  // Must start with non-digit.
+  Result := 'cs' + Result;
+//  result := 'cs' + StringReplace(psTitle, ' ', '', [rfReplaceAll, rfIgnoreCase]);
 end;
 
 procedure TtiTimeSeriesChart.SetChartColor(const AValue: TColor);

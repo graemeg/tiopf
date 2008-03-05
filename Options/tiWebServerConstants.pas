@@ -23,6 +23,7 @@ const
   cErrorHTTPCGIExtension         = 'Error in %s.'#13#10#13#10'Error code #%d.'#13#10#13#10'Response text: %s'#13#10;
 
   cgTIDBProxyGetLog          = 'log';
+  CTIDBProxyForceException   = 'ForceException';
 
   cHTTPContentTypeTextHTML = 'text/html';
   

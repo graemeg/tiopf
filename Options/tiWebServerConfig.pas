@@ -12,12 +12,13 @@ type
   private
     FINI: TtiINIFile;
     function GetPort: integer;
+    function GetSendBugReportEmailOnCGIFailure: boolean;
   protected
     function  GetRegistryValue(const AName, ADefault: string): string; virtual;
     function  GetINIFileName: string; virtual;
     property  INI: TtiINIFile Read FINI;
 
-    function  GetWebServiceDiaplayName: string; virtual;
+    function  GetWebServiceDisplayName: string; virtual;
     function  GetWebServiceShortName: string; virtual;
     function  GetLogPathToSharedFiles: string; virtual;
     function  GetPathToCGIBin: string; virtual;
@@ -33,18 +34,21 @@ type
     property    CGIExtensionLogging: boolean read GetCIGExtensionLogging;
 
     property    WebServiceShortName: string Read GetWebServiceShortName;
-    property    WebServiceDiaplayName: string Read GetWebServiceDiaplayName;
+    property    WebServiceDisplayName: string Read GetWebServiceDisplayName;
 
     property    PathToStaticPages: string Read GetPathToStaticPages;
     property    PathToCGIBin: string Read GetPathToCGIBin;
 
     property    Port: integer read GetPort;
 
+    property    SendBugReportEmailOnCGIFailure: boolean read GetSendBugReportEmailOnCGIFailure;
+
   end;
 
 implementation
 uses
-  tiLog
+   tiWebServerConstants
+  ,tiLog
   ,tiLogToFile
   ,tiUtils
   ,SysUtils
@@ -68,6 +72,8 @@ const
   cINIService_PathToCGIBin = 'PathToCGIBin';
   cINIService_DefaultPathToStaticPages = 'StaticPages';
   cINIService_DefaultPathToCGIBin = 'CGI-Bin';
+  cINIService_SendBugReportEmailOnCGIFailure = 'SendBugReportEmailOnCGIFailure';
+  cINIService_SendBugReportEmailOnCGIFailureDefault = true;
 
   cINIService_IdentPort = 'Port';
   cINIService_DefaultPort = 80;
@@ -114,7 +120,6 @@ begin
   end;
 end;
 
-
 function TtiWebServerConfig.GetLogPathToSharedFiles: string;
 begin
   Result:= INI.ReadString(cINILog, cINILog_PathToSharedFiles, cINILog_DefaultPathToSharedFiles);
@@ -127,7 +132,7 @@ begin
   Result:= INI.ReadBool(cINILog, cINILog_CGIExtensionLogging, False);
 end;
 
-function TtiWebServerConfig.GetWebServiceDiaplayName;
+function TtiWebServerConfig.GetWebServiceDisplayName;
 begin
   Result:= FINI.ReadString(cINIService, cINIService_DisplayName, cINIService_DisplayNameDefault);
 end;
@@ -167,6 +172,11 @@ begin
   Result:= INI.ReadInteger(cINIService, cINIService_IdentPort, cINIService_DefaultPort);
 end;
 
-end.
+function TtiWebServerConfig.GetSendBugReportEmailOnCGIFailure: boolean;
+begin
+  Result:= INI.ReadBool(cINIService, cINIService_SendBugReportEmailOnCGIFailure,
+      cINIService_SendBugReportEmailOnCGIFailureDefault);
+end;
 
+end.
 

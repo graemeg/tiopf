@@ -8,7 +8,7 @@ uses
   testregistry,
   {$ENDIF}
   tiTestFramework
-  ,tiTextParserStructCSV
+  ,tiStructuredCSVReader
   ,Classes
  ;
 

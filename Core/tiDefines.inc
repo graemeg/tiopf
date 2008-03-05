@@ -141,11 +141,6 @@
 // If ThridPartyExceptionHandling is on, then an exception will usually cause
 // a scrolling exception window to display, but will not cause the application
 // to stop running.
-// A couple of signature changes were made between madExcept v2 and v3.
-// Refer routine tiExcept.tiMailBugReport
-{$IFDEF MadExcept3}
-  {$DEFINE MadExcept}
-{$ENDIF}
 {$IFDEF MadExcept}
   {$DEFINE ThirdPartyExceptionHandling}
 {$ENDIF}

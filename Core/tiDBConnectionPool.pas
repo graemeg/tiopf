@@ -5,7 +5,6 @@ unit tiDBConnectionPool;
 interface
 uses
    tiBaseObject
-//  ,tiObject
   ,tiQuery
   ,tiPool
   ,Classes
@@ -320,7 +319,7 @@ begin
     'Persistence layer:   ' + LPersistenceLayer.PersistenceLayerName + Cr +
     'Database name:       ' + DBConnectParams.DatabaseName + Cr +
     'User name:           ' + DBConnectParams.UserName     + Cr +
-    'Password:            ' + tiReplicate('X', Length(DBConnectParams.Password)) + Cr +
+    'Password:            ' + CPasswordMasked + Cr +
     'Number in pool:      ' + IntToStr(Count);
 end;
 
@@ -401,7 +400,3 @@ begin
 end;
 
 end.
-
-
-
-

@@ -19,12 +19,9 @@ type
   TtiTestDecoratorClass = class of TTestSetup;
 
 procedure RegisterTests;
-function  GTIOPFTestManager: TtiOPFTestManager;
 procedure RemoveUnSelectedPersistenceLayerSetups;
 procedure RemoveXMLLightIfNotRegistered;
 procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass); overload;
-procedure RegisterNonPersistentTest(const ATestDecorator: TtiTestDecoratorClass;
-                                    const ATestCaseClass: TtiTestCaseClass); overload;
 function  PersistentSuiteName(APerLayerName: string): string;
 procedure RegisterExpectedTIOPFMemoryLeaks;
 
@@ -101,9 +98,6 @@ uses
 
   ;
 
-var
-  UTIOPFTestManager: TtiOPFTestManager;
-
 const
   cSuiteNameNonPersistentTests  = 'Non persistent tests';
   cSuiteNamePersistentTests     = 'Persistent tests for [%s]';
@@ -178,15 +172,6 @@ begin
   tiOPFAsqlite3_TST.RegisterTests;
 end;
 
-
-function GTIOPFTestManager: TtiOPFTestManager;
-begin
-  if UTIOPFTestManager = nil then
-    UTIOPFTestManager := TtiOPFTestManager.Create;
-  result := UTIOPFTestManager;
-end;
-
-
 procedure RemoveUnSelectedPersistenceLayerSetups;
 var
   i : integer;
@@ -222,19 +207,6 @@ begin
     RegisterTest(cSuiteNameNonPersistentTests, ATestCaseClass.Suite);
 end;
 
-procedure RegisterNonPersistentTest(const ATestDecorator: TtiTestDecoratorClass;
-                                    const ATestCaseClass: TtiTestCaseClass);
-begin
-  if GTIOPFTestManager.TestNonPersistentClasses then
-    {$IFNDEF FPC}
-    RegisterTest(cSuiteNameNonPersistentTests, AtestDecorator.Suite(ATestCaseClass.Suite));
-    {$ELSE}
-    RegisterTest(cSuiteNameNonPersistentTests,
-      ATestDecorator.Create(TTestSuite.Create(ATestCaseClass)));
-    {$ENDIF}
-end;
-
-
 function PersistentSuiteName(APerLayerName: string): string;
 begin
   Result := Format(cSuiteNamePersistentTests, [APerLayerName]);
@@ -247,11 +219,6 @@ begin
   FastMM4.RegisterExpectedMemoryLeak(TidCriticalSection, 2);
   {$ENDIF FPC}
 end;
-
-initialization
-
-finalization
-  UTIOPFTestManager.Free;
 
 end.
 

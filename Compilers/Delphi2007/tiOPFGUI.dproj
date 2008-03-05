@@ -57,17 +57,10 @@
     <DelphiCompile Include="tiOPFGUI.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\..\Core\bdertl.dcp" />
-    <DCCReference Include="..\..\Core\dbrtl.dcp" />
-    <DCCReference Include="..\..\Core\designide.dcp" />
-    <DCCReference Include="..\..\Core\rtl.dcp" />
-    <DCCReference Include="..\..\Core\tiOPFCore.dcp" />
-    <DCCReference Include="..\..\Core\tiOPFOptions.dcp" />
-    <DCCReference Include="..\..\Core\vcl.dcp" />
-    <DCCReference Include="..\..\Core\vclactnband.dcp" />
-    <DCCReference Include="..\..\Core\vcljpg.dcp" />
-    <DCCReference Include="..\..\Core\vclx.dcp" />
-    <DCCReference Include="..\..\Core\xmlrtl.dcp" />
+    <DCCReference Include="..\..\GUI\bdertl.dcp" />
+    <DCCReference Include="..\..\GUI\dbrtl.dcp" />
+    <DCCReference Include="..\..\GUI\designide.dcp" />
+    <DCCReference Include="..\..\GUI\rtl.dcp" />
     <DCCReference Include="..\..\GUI\tiButtons.pas" />
     <DCCReference Include="..\..\GUI\tiCompositeMediators.pas" />
     <DCCReference Include="..\..\GUI\tiCtrlButtonPanel.pas" />
@@ -116,6 +109,8 @@
     <DCCReference Include="..\..\GUI\tiMulticastEve.pas" />
     <DCCReference Include="..\..\GUI\tiMulticastEven.pas" />
     <DCCReference Include="..\..\GUI\tiMulticastEvent.pas" />
+    <DCCReference Include="..\..\GUI\tiOPFCore.dcp" />
+    <DCCReference Include="..\..\GUI\tiOPFOptions.dcp" />
     <DCCReference Include="..\..\GUI\tiPerAwareCombosAbs.pas" />
     <DCCReference Include="..\..\GUI\tiPerAwareCtrls.pas" />
     <DCCReference Include="..\..\GUI\tiPerAwareDateRange.pas" />
@@ -133,10 +128,16 @@
     <DCCReference Include="..\..\GUI\tiTreeView.pas" />
     <DCCReference Include="..\..\GUI\tiTreeViewChildForm.pas" />
     <DCCReference Include="..\..\GUI\tiVirtualTrees.pas" />
+    <DCCReference Include="..\..\GUI\tiVTAbstract.pas" />
     <DCCReference Include="..\..\GUI\tiVTExportCSV.pas" />
     <DCCReference Include="..\..\GUI\tiVTExportHTML.pas" />
     <DCCReference Include="..\..\GUI\tiVTFilter.pas" />
     <DCCReference Include="..\..\GUI\tiVTListView.pas" />
     <DCCReference Include="..\..\GUI\tiVTTreeView.pas" />
+    <DCCReference Include="..\..\GUI\vcl.dcp" />
+    <DCCReference Include="..\..\GUI\vclactnband.dcp" />
+    <DCCReference Include="..\..\GUI\vcljpg.dcp" />
+    <DCCReference Include="..\..\GUI\vclx.dcp" />
+    <DCCReference Include="..\..\GUI\xmlrtl.dcp" />
   </ItemGroup>
 </Project>

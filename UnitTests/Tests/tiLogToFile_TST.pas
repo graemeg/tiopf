@@ -1,6 +1,6 @@
 unit tiLogToFile_TST;
 
- {$I tiDefines.inc}
+{$I tiDefines.inc}
 
 interface
 
@@ -19,23 +19,7 @@ uses
 
 type
 
-  // test decorator class which provides SetUp and TearDown
-  // to straddle execution of TestTtiLogToFile methods
-
-  tiLogToFileTestSetup = class(TTestSetup)
-  protected
-    procedure {$IFDEF FPC}OneTimeSetUp{$ELSE}SetUp{$ENDIF}; override;
-    procedure {$IFDEF FPC}OneTimeTearDown{$ELSE}TearDown{$ENDIF}; override;
-  end;
-
-  // Test methods for class TtiLogToFile
-
   TestTtiLogToFile = class(TtiTestCase)
-  private
-    FLogFileName: string;
-  protected
-    procedure SetUp; override;
-    procedure TearDown; override;
   published
     procedure TestLogFileContention;
   end;
@@ -53,39 +37,9 @@ uses
   ,tiLog
   ,tiLogToFile;
 
-const
-  CTestLogFileName = '..' + PathDelim + 'Data' + PathDelim;
-
-var
-  uTempDirectory: string;
-
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(tiLogToFileTestSetup, TestTtiLogToFile);
-end;
-
-{ tiLogToFileTestSetup }
-
-procedure tiLogToFileTestSetup.{$IFDEF FPC}OneTimeSetUp{$ELSE}SetUp{$ENDIF};
-begin
-  ReleaseLog;
-  uTempDirectory := TtiTestCase.TempDirectory;
-end;
-
-procedure tiLogToFileTestSetup.{$IFDEF FPC}OneTimeTearDown{$ELSE}TearDown{$ENDIF};
-begin
-  uTempDirectory := '';
-  ReleaseLog;
-end;
-
-procedure TestTtiLogToFile.SetUp;
-begin
-  FmtStr(FLogFileName, '%s' + PathDelim + '%s', [uTempDirectory, 'TestTtiLogToFile.log']);
-end;
-
-procedure TestTtiLogToFile.TearDown;
-begin
-  FLogFileName := '';
+  RegisterNonPersistentTest(TestTtiLogToFile);
 end;
 
 type
@@ -113,6 +67,7 @@ var
   LThreadID: string;
   LMessage : string;
   LTimestamp: string;
+  LLogFileName: string;
 
 const
   CIterations = 100000;
@@ -128,7 +83,7 @@ begin
   for i := Low(LLoggers) to High(LLoggers) do
   begin
     LLoggers[i] := CLoggers[i].CreateWithFileName(
-      ExtractFilePath(FLogFileName), ExtractFileName(FLogFileName),
+      ExtractFilePath(LLogFileName), ExtractFileName(LLogFileName),
       COverwriteOldFolders);
   end;
 

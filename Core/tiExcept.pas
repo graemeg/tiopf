@@ -10,6 +10,8 @@ uses
 const
   cTIOPFExcMsgCanNotConnectToDatabase = 'Can not connect to database';
   cTIOPFExcMsgCanNotFindDatabase      = 'Can not find database';
+  CTIOPFExcMsgCanNotConnectToDatabaseAfterRetry = 'Can not connect to database after %d attempts at %d sec intervals';
+
   cTIOPFExcMsgInvalidUserNamePassword = 'Invalid username and password combination';
   cTIOPFExcMsgCanNotCreateDatabase    = 'Can not create database';
   cTIOPFExcMsgDatabaseAlreadyExists   = 'Database already exists';
@@ -78,15 +80,15 @@ type
 
   EtiOPFDBExceptionWrongServerVersion = class(EtiOPFDBException);
 
-  procedure tiMailBugReport(E: Exception); overload;
+  procedure tiMailBugReport(const AException: Exception); overload;
   procedure tiMailBugReport(const AText: string); overload;
 
 implementation
 uses
   tiUtils
+  ,tiConstants
   {$IFDEF madexcept}
-  ,MadExcept
-  ,Windows
+  ,tiMadExcept
   {$ENDIF}
  ;
 
@@ -117,10 +119,10 @@ begin
   Message :=
     'Database name:       ' + ADatabaseName + Cr +
     'User name:           ' + AUserName     + Cr +
-    'Password:            ' + tiReplicate('X', Length(APassword)) + Cr +
+    'Password:            ' + CPasswordMasked + Cr +
     'Persistence layer:   ' + APersistenceLayerName;
   if AMessage <> '' then
-    Message := Message + Cr(2) +
+    Message := Message + Cr +
       'Message:' + Cr+ AMessage;
 end;
 
@@ -130,7 +132,7 @@ constructor EtiOPFDBExceptionCanNotConnect.Create(const APersistenceLayerName, A
 begin
   inherited Create(APersistenceLayerName, ADatabaseName, AUserName, APassword, AMessage);
   Message :=
-    cTIOPFExcMsgCanNotConnectToDatabase + Cr(2) +
+    cTIOPFExcMsgCanNotConnectToDatabase + Cr +
     Message;
 end;
 
@@ -154,33 +156,19 @@ begin
     Message;
 end;
 
-procedure tiMailBugReport(E: Exception);
-{$IFDEF madexcept}
-  var
-    ls: string;
-{$ENDIF}
+procedure tiMailBugReport(const AException: Exception);
 begin
-  Assert(E = E);  // Getting rid of compiler hints, param not used.
-  {$IFDEF madexcept3}
-  ls := MadExcept.CreateBugReport(etNormal, e, nil, GetCurrentThreadID);
-  tiMailBugReport(ls);
-  {$ELSE}
+  Assert(AException = AException);  // Getting rid of compiler hints, param not used.
   {$IFDEF madexcept}
-  ls := MadExcept.CreateBugReport(False, e, nil, GetCurrentThreadID, 0, 0, False, nil);
-  tiMailBugReport(ls);
-  {$ENDIF}
+  tiMadExceptMailBugReport(AException);
   {$ENDIF}
 end;
 
 procedure tiMailBugReport(const AText: string);
 begin
   Assert(AText = AText);  // Getting rid of compiler hints, param not used.
-  {$IFDEF madexcept3}
-  MadExcept.AutoSendBugReport(AText, nil);
-  {$ELSE}
   {$IFDEF madexcept}
-  MadExcept.AutoMailBugReport(AText, '');
-  {$ENDIF}
+  tiMadExceptMailBugReport(AText);
   {$ENDIF}
 end;
 

@@ -331,7 +331,6 @@ begin
 end;
 
 initialization
-  UTICoInitializeManager := TtiCoInitializeManager.Create;
 
 finalization
   FreeAndNil(UTICoInitializeManager);

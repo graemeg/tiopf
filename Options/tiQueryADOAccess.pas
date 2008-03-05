@@ -271,7 +271,3 @@ finalization
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistADOAccess);
 
 end.
-
-
-
-

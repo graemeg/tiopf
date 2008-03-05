@@ -37,6 +37,7 @@ implementation
 uses
    tiUtils
   ,SysUtils
+  ,tiConstants
  ;
 
 var
@@ -93,7 +94,9 @@ begin
   if (not lValueExists) and
      (not FReadOnly) then
     WriteBool(ASection, AIdent, ADefault);
-  result := inherited ReadBool(ASection, AIdent, ADefault);
+  // 0 = false, else any other number = true, else if match to TrueBoolStrs
+  // then true else if match to FalseBoolStrs then false, else default.
+  result := StrToBoolDef(inherited ReadString(ASection, AIdent, ''), ADefault);
 end;
 
 function TtiINIFile.ReadDate(const ASection, AName: string; ADefault: TDateTime): TDateTime;
@@ -152,12 +155,3 @@ finalization
   uINI.Free;
 
 end.
-
-
-
-
-
-
-
-
-

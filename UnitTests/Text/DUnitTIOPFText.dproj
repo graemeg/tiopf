@@ -58,6 +58,23 @@
     <DelphiCompile Include="DUnitTIOPFText.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\Common\t.pas" />
+    <DCCReference Include="..\Common\ti.pas" />
+    <DCCReference Include="..\Common\tiO.pas" />
+    <DCCReference Include="..\Common\tiOP.pas" />
+    <DCCReference Include="..\Common\tiOPF.pas" />
+    <DCCReference Include="..\Common\tiOPFT.pas" />
+    <DCCReference Include="..\Common\tiOPFTe.pas" />
+    <DCCReference Include="..\Common\tiOPFTes.pas" />
+    <DCCReference Include="..\Common\tiOPFTest.pas" />
+    <DCCReference Include="..\Common\tiOPFTestM.pas" />
+    <DCCReference Include="..\Common\tiOPFTestMa.pas" />
+    <DCCReference Include="..\Common\tiOPFTestMan.pas" />
+    <DCCReference Include="..\Common\tiOPFTestMana.pas" />
+    <DCCReference Include="..\Common\tiOPFTestManag.pas" />
+    <DCCReference Include="..\Common\tiOPFTestManage.pas">
+      <ModuleName>tiOPFTestManager</ModuleName>
+    </DCCReference>
     <DCCReference Include="..\Common\tiTestDependencies.pas" />
     <DCCReference Include="..\Common\tiTextTestRunner.pas" />
   </ItemGroup>

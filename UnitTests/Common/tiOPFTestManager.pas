@@ -73,6 +73,8 @@ type
     procedure   Save; override;
   end;
 
+function  GTIOPFTestManager: TtiOPFTestManager;
+
 implementation
 uses
   SysUtils
@@ -90,6 +92,16 @@ uses
 
 const
   CDefaultTestDataDirectory = '..\_Data';
+
+var
+  UTIOPFTestManager: TtiOPFTestManager;
+
+function GTIOPFTestManager: TtiOPFTestManager;
+begin
+  if UTIOPFTestManager = nil then
+    UTIOPFTestManager := TtiOPFTestManager.Create;
+  result := UTIOPFTestManager;
+end;
 
 { TtiOPFTestManager }
 
@@ -303,5 +315,10 @@ procedure TtiOPFTestSetupData.Save;
 begin
   gDUnitINICommon.WriteBool(cINIPerLayersToTest, PerLayerName, FSelected);
 end;
+
+initialization
+
+finalization
+  UTIOPFTestManager.Free;
 
 end.

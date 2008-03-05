@@ -12,7 +12,6 @@ uses
   Classes
   ,tiBaseObject
   ,Contnrs
-//  ,tiVisitor
  ;
 
 const
@@ -349,11 +348,3 @@ end;
 {$ENDIF}
 
 end.
-
-
-
-
-
-
-
-

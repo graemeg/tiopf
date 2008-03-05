@@ -696,14 +696,16 @@ var
   LMessage: string;
   i: Integer;
 begin
+  // ToDo: This will need a going over for possible combinations of CrLf, Cr, LF, etc
   if Pos(Cr, LogMessage) = 0 then
     Result := GetFormattedMessageTimeStamp + LogMessage
   else
   begin
     LMessagePrefix:= GetFormattedMessageTimeStamp;
-    LMessagePrefixLen:= Length(LMessagePrefix) - 1;
+    LMessagePrefixLen:= Length(LMessagePrefix);
     Result := LMessagePrefix;
-    LMessage := tiStrTran(LogMessage, Lf, ' ');
+    LMessage := tiStrTran(LogMessage, CrLf, Cr);
+    LMessage := tiStrTran(LMessage, Lf, Cr);
     for i:= 1 to tiNumToken(LMessage, Cr) do
     begin
       if i > 1 then
@@ -925,5 +927,3 @@ finalization
   FreeAndNil(uLog);
 
 end.
-
-

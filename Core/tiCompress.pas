@@ -65,11 +65,13 @@ type
 // The CompressFactory is a singleton
 function  gCompressFactory : TtiCompressFactory;
 function  tiCompressString(const AString: string; const pCompress: string = cgsCompressZLib): string;
-function  tiDeCompressString(const AString: string; const pCompress: string = cgsCompressZLib): string;
 procedure tiCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
-procedure tiDeCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
 procedure tiCompressStringToFile(const AString: string; const AFileName: string; const ACompress: string = cgsCompressZLib);
+
+function  tiDeCompressString(const AString: string; const pCompress: string = cgsCompressZLib): string;
+procedure tiDeCompressStream(AStreamFrom, AStreamTo: TStream; const pCompress: string = cgsCompressZLib);
 function  tiDecompressFileToString(const AFileName: string; const ACompress: string = cgsCompressZLib): string;
+procedure tiDecompressFileToStream(const AFileName: string; const AStream: TStream; const ACompress: string = cgsCompressZLib);
 
 var
   gTiCompressClass : TtiCompressClass;
@@ -164,22 +166,31 @@ begin
   end;
 end;
 
-function  tiDecompressFileToString(const AFileName: string; const ACompress: string = cgsCompressZLib): string;
+procedure tiDecompressFileToStream(const AFileName: string; const AStream: TStream; const ACompress: string = cgsCompressZLib);
 var
   LStreamFrom: TMemoryStream;
+begin
+  Assert(AFileName<>'', 'AFileName not assigned');
+  Assert(AStream<>nil, 'AStream not assigned');
+  LStreamFrom:= TMemoryStream.Create;
+  try
+    LStreamFrom.LoadFromFile(AFileName);
+    tiDecompressStream(LStreamFrom, AStream, ACompress);
+  finally
+    LStreamFrom.Free;
+  end;
+end;
+
+function  tiDecompressFileToString(const AFileName: string; const ACompress: string = cgsCompressZLib): string;
+var
   LStreamTo: TMemoryStream;
 begin
   Assert(AFileName<>'', 'AFileName not assigned');
-  LStreamFrom:= nil;
-  LStreamTo:= nil;
+  LStreamTo:= TMemoryStream.Create;
   try
-    LStreamFrom:= TMemoryStream.Create;
-    LStreamTo:= TMemoryStream.Create;
-    LStreamFrom.LoadFromFile(AFileName);
-    tiDecompressStream(LStreamFrom, LStreamTo, ACompress);
+    tiDecompressFileToStream(AFileName, LStreamTo, ACompress);
     result:= tiStreamToString(LStreamTo);
   finally
-    LStreamFrom.Free;
     LStreamTo.Free;
   end;
 end;

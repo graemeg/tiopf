@@ -5,6 +5,7 @@ uses
   SysUtils,
   TestFrameWork,
   TextTestRunner,
+  tiOPFTestManager in '..\Common\tiOPFTestManager.pas',
   tiTestDependencies in '..\Common\tiTestDependencies.pas',
   tiTextTestRunner in '..\Common\tiTextTestRunner.pas';
 

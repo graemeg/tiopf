@@ -25,8 +25,10 @@ type
     FCacheDirectoryRoot: String;
   protected
     property    CacheDirectoryRoot: string read FCacheDirectoryRoot;
+    // ToDo: Rename to CacheIndexINIFile
     property    CacheIndex   : TtiINIFile read FCacheIndex;
-    function    GetCachedFileDirAndName: string;
+    function    GetCachedFileDirAndName: string; virtual;
+    function    MustUpdateCacheFile(const ADatabaseDate, AFileDate: TDateTime): Boolean;
 
     procedure   Init; virtual;
     function    GetDBFileDate: TDateTime ; virtual ;
@@ -39,7 +41,7 @@ type
     function    CacheDirectory: string ; virtual ;
 
     // You MUST override these
-    procedure   RefreshCacheFromDB; virtual ; abstract ;
+    procedure   RefreshCacheFromDB(const ACacheFileDate: TDateTime); virtual ; abstract ;
     function    CachedFileName: string ; virtual ;
     function    GetDBFileDataSQL: string ; virtual ;
 
@@ -115,6 +117,14 @@ begin
   ADatabase := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock ;
   result := ADatabase.CreateTIQuery;
   result.AttachDatabase(ADatabase);
+end;
+
+function TtiOjectCacheAbs.MustUpdateCacheFile(const ADatabaseDate,
+  AFileDate: TDateTime): Boolean;
+begin
+  result:=
+    (ADatabaseDate <> AFileDate) or
+    (not FileExists(GetCachedFileDirAndName));
 end;
 
 function TtiOjectCacheAbs.GetDBFileDataSQL: string;

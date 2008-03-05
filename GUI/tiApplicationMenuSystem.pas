@@ -94,7 +94,7 @@ type
     FFormMgr: TtiFormMgr;
     FAL : TActionList;
     FMainForm: TForm;
-    FWorkListFormClass: TFormTIFormMgrFormClass;
+    FWorkListFormClass: TtiFormMgrFormClass;
     FHelpFileName: string;
     FDefHelpContext: integer;
 
@@ -203,7 +203,7 @@ type
     procedure SetNavigationControlsEnabled(const AValue: Boolean);
     function  GetFormCaption: TCaption;
     procedure SetFormCaption(const AValue: TCaption);
-    procedure DoOnShowForm(const pForm: TFormTIFormMgrForm);
+    procedure DoOnShowForm(const pForm: TtiFormMgrForm);
     procedure DoBeginUpdate(Sender: TObject);
     procedure DoEndUpdate(Sender: TObject);
     procedure DoLBLMessageClick(Sender: TObject);
@@ -216,7 +216,7 @@ type
     procedure ArrangeMessagePanels;
    public
      constructor Create(     AMainForm : TForm;
-                              AWorkListFormClass : TFormTIFormMgrFormClass;
+                              AWorkListFormClass : TtiFormMgrFormClass;
                         const AHelpFileName: string;
                               ADefHelpContext : Integer;
                               AAboutFormClass: TFormClass
@@ -289,7 +289,7 @@ type
 
 function  gAMS: TtiApplicationMenuSystem;
 procedure CreateAMS(AMainForm : TForm;
-                    AWorkListFormClass : TFormTIFormMgrFormClass;
+                    AWorkListFormClass : TtiFormMgrFormClass;
                     const AHelpFileName: string;
                     ADefHelpContext : Integer;
                     AFormAboutClass: TFormClass
@@ -321,7 +321,7 @@ begin
 end;
 
 procedure CreateAMS(AMainForm : TForm;
-                    AWorkListFormClass : TFormTIFormMgrFormClass;
+                    AWorkListFormClass : TtiFormMgrFormClass;
                     const AHelpFileName: string;
                     ADefHelpContext : Integer;
                     AFormAboutClass: TFormClass
@@ -553,7 +553,7 @@ begin
 end;
 
 constructor TtiApplicationMenuSystem.Create(     AMainForm: TForm;
-                                                  AWorkListFormClass : TFormTIFormMgrFormClass;
+                                                  AWorkListFormClass : TtiFormMgrFormClass;
                                             const AHelpFileName : string;
                                                   ADefHelpContext : Integer;
                                                   AAboutFormClass: TFormClass
@@ -618,7 +618,7 @@ begin
 
 end;
 
-procedure TtiApplicationMenuSystem.DoOnShowForm(const pForm : TFormTIFormMgrForm);
+procedure TtiApplicationMenuSystem.DoOnShowForm(const pForm : TtiFormMgrForm);
 var
   lList: TList;
 begin
@@ -1119,7 +1119,6 @@ begin
   FimgWallPaper.HelpContext := FDefHelpContext;
 
   FormMgr.ParentPnl   := ParentPnl;
-  FormMgr.BorderColor := FpnlBorder.Color;
   FormMgr.OnFormMessage := SetFormMessage;
 end;
 

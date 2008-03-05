@@ -1,4 +1,4 @@
-unit tiTextParserStructCSV;
+unit tiStructuredCSVReader;
 
 {$I tiDefines.inc}
 
@@ -210,12 +210,6 @@ uses
   tiConstants
  ;
 
-
-const
-  cIPrefix = 'I';
-  cDPrefix = 'D';
-
-
 { TTextParserStructCSV }
 
 constructor TTextParserStructCSV.Create;
@@ -249,9 +243,9 @@ var
 begin
   case FState of
   tpemsStartOfRow :    begin
-                         if AString = cDPrefix then
+                         if AString = CStructCSVPrefixD then
                            FState := tpemsStartOfDRow
-                         else if AString = cIPrefix then
+                         else if AString = CStructCSVPrefixI then
                            FState := tpemsStartOfIRow
                          else
                            RaiseStructCSVException(

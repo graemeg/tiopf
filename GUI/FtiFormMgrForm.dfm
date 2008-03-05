@@ -1,9 +1,9 @@
-object FormTIFormMgrForm: TFormTIFormMgrForm
+object tiFormMgrForm: TtiFormMgrForm
   Left = 342
   Top = 241
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
-  Caption = 'FormTIFormMgrForm'
+  Caption = 'tiFormMgrForm'
   ClientHeight = 239
   ClientWidth = 334
   Color = clBtnFace
@@ -18,27 +18,11 @@ object FormTIFormMgrForm: TFormTIFormMgrForm
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object pnlCaption: TPanel
+  object lblDummyAction: TLabel
     Left = 0
     Top = 0
-    Width = 334
+    Width = 0
     Height = 0
-    Align = alTop
-    BevelOuter = bvNone
-    Color = clNavy
-    TabOrder = 0
-    object lblCaption: TLabel
-      Left = 8
-      Top = 8
-      Width = 72
-      Height = 18
-      Caption = 'lblCaption'
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWindow
-      Font.Height = -15
-      Font.Name = 'Arial'
-      Font.Style = [fsBold]
-      ParentFont = False
-    end
+    AutoSize = False
   end
 end

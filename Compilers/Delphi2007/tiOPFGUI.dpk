@@ -87,7 +87,8 @@ contains
   tiLogToErrorDialog in '..\..\GUI\tiLogToErrorDialog.pas',
   tiGUIConstants in '..\..\GUI\tiGUIConstants.pas',
   tiVTFilter in '..\..\GUI\tiVTFilter.pas',
-  tiGUIINI in '..\..\GUI\tiGUIINI.pas';
+  tiGUIINI in '..\..\GUI\tiGUIINI.pas',
+  tiVTAbstract in '..\..\GUI\tiVTAbstract.pas';
 
 {$I tiDefines.inc}
 

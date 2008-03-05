@@ -79,7 +79,7 @@ uses
   ,tiCommandLineParams
   ,tiTestFramework
   ,tiOPFManager
-  ,tiTestDependencies
+  ,tiOPFTestManager
   // Delphi
   ,Classes
   ,SysUtils

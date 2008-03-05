@@ -141,7 +141,6 @@ uses
   ,tiConstants
   ,SysUtils
   ,tiUtils
-//##  ,tiXML
  ;
 
 var
@@ -421,5 +420,3 @@ finalization
   FreeAndNil(uTIHTTPFactory);
 
 end.
-
-

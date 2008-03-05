@@ -24,6 +24,7 @@ type
       const AParams: string = ''): string;
     function  TestHTTPRequestInBlocks(const ADocument: string;
                                       var   ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword): string;
+    procedure TestRunCGIExtension(const AParam: string);
   published
     procedure tiBlockStreamCache_AddRead;
     procedure tiBlockStreamCache_SweepForTimeOuts;
@@ -34,7 +35,9 @@ type
     procedure tiWebServer_CanNotFindPage;
     procedure tiWebServer_CanFindPage;
     procedure tiWebServer_GetLogFile;
-    procedure tiWebServer_RunCGIExtension;
+    procedure tiWebServer_TestWebServerCGIForTestingEXE;
+    procedure tiWebServer_RunCGIExtensionSmallParameter;
+    procedure tiWebServer_RunCGIExtensionLargeParameter;
     procedure tiWebServer_PageInBlocks;
     procedure tiWebServerVersion;
 
@@ -61,9 +64,11 @@ uses
   ,tiWebServerVersion
   ,tiHTTPIndy
   ,tiLog
-  ,tiLogToFile
   ,tiHTTP
   ,tiCGIParams
+  ,tiStreams
+  ,tiConsoleApp
+  ,tiConstants
 
   ,SysUtils
   ,Classes
@@ -84,13 +89,13 @@ const
 procedure TTestTIWebServer.SetUp;
 begin
   inherited;
-  ReleaseLog;
+
 end;
 
 procedure TTestTIWebServer.TearDown;
 begin
   inherited;
-  ReleaseLog;
+
 end;
 
 type
@@ -298,7 +303,6 @@ var
   LFileName: string;
   LTryCount: integer;
 begin
-  gLog.RegisterLog(TtiLogToFile.CreateWithFileName('', '', True));
   LFileName:= gLog.LogToFileName;
   LPage:= 'test log file';
   LO:= TtiWebServerForTesting.Create(cPort);
@@ -332,20 +336,89 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServer_RunCGIExtension;
+procedure TTestTIWebServer.tiWebServer_RunCGIExtensionLargeParameter;
 var
-  LO: TtiWebServerForTesting;
-  LResult: string;
+  LWebServer: TtiWebServerForTesting;
+  LHTTP: TtiHTTPIndy;
+  LEncoded: string;
+  LExpected: string;
+  LActual: string;
+  LSize: Cardinal;
 begin
-  LO:= TtiWebServerForTesting.Create(cPort);
+  LSize:= CMaximumCommandLineLength + 1;
+  LExpected:= tiCreateStringOfSize(LSize);
+  // The actual size of the string passed will be larger than
+  // CMaximumCommandLineLength because MIME encoding inflates the string
+  LEncoded:= MimeEncodeString(LExpected);
+  LWebServer:= nil;
+  LHTTP:= nil;
   try
-    LO.Start;
-    LO.SetCGIBinLocation(tiAddTrailingSlash(tiGetEXEPath) + 'CGI-Bin');
-    LResult:= TestHTTPRequest('tiWebServerCGIForTesting.exe', True, 'teststring');
-    // ToDo: Tidy up the white space padding before and after the result string
-    CheckEquals(#13#10'teststring', LResult);
+    LWebServer:= TtiWebServerForTesting.Create(cPort);
+    LHTTP:= TtiHTTPIndy.Create;
+    LWebServer.Start;
+    LWebServer.SetCGIBinLocation(tiAddTrailingSlash(tiGetEXEPath) + 'CGI-Bin');
+    LHTTP.FormatExceptions:= False;
+    LHTTP.Input.WriteString(LEncoded);
+    LHTTP.Post('http://localhost:' + IntToStr(cPort) + '/tiWebServerCGIForTesting.exe');
+    LEncoded:= LHTTP.Output.DataString;
+    LActual:= MimeDecodeString(LEncoded);
+    CheckEquals(Trim(LExpected), Trim(LActual));
   finally
-    LO.Free;
+    LHTTP.Free;
+    LWebServer.Free;
+  end;
+end;
+
+procedure TTestTIWebServer.tiWebServer_RunCGIExtensionSmallParameter;
+begin
+  TestRunCGIExtension('teststring');
+end;
+
+procedure TTestTIWebServer.tiWebServer_TestWebServerCGIForTestingEXE;
+var
+  LExpected: string;
+  LActual: string;
+  LPath: string;
+  LEncode: string;
+  LMaxCommandLineLength: Cardinal;
+begin
+  // tiExecConsoleApp will inject CrLf every 255 characters, so comparing strings
+  // of less than this length will be OK, but longer strings will be mangled
+  // so must be encoded first.
+  LPath:= tiAddTrailingSlash(tiGetEXEPath) + 'CGI-Bin\tiWebServerCGIForTesting.exe';
+   // Testing against a different EXE location
+  //LPath:= 'C:\Temp\tiWebServerCGIForTesting.exe';
+
+  // Test a short string
+  LActual:= '';
+  LExpected:= 'abcd';
+  tiExecConsoleApp(LPath, LExpected, LActual, nil, False);
+  CheckEquals(Trim(LExpected), Trim(LActual));
+  // Must do something about this leading CrLf that's being added
+  CheckEquals(#13#10+LExpected, LActual);
+
+  // Test a long string
+  LActual:= '';
+  LExpected:= tiCreateStringOfSize(20*1024);
+  tiExecConsoleApp(LPath, MimeEncodeString(LExpected), LActual, nil, False);
+  CheckEquals(Trim(LExpected), Trim(MimeDecodeString(LActual)));
+
+  // Test a string string on the limit
+  LMaxCommandLineLength:=
+    CMaximumCommandLineLength - Length(LPath);
+  LActual:= '';
+  LEncode:= tiReplicate('X', LMaxCommandLineLength);
+  tiExecConsoleApp(LPath, LEncode, LActual, nil, False);
+
+  // Test a string string 1 byte above the limit
+  try
+    LActual:= '';
+    LEncode:= tiReplicate('X', LMaxCommandLineLength + 1);
+    tiExecConsoleApp(LPath, LEncode, LActual, nil, False);
+    Fail('Exception not raised');
+  except
+    on e:exception do
+      Check(Pos('Maximum command line length', e.message) <> 0);
   end;
 end;
 
@@ -418,6 +491,23 @@ begin
     tiHTTP.tiParseTIOPFHTTPBlockHeader(LHeader, ABlockIndex, ABlockCount, ABlockSize, ATransID);
   finally
     LHTTP.Free;
+  end;
+end;
+
+procedure TTestTIWebServer.TestRunCGIExtension(const AParam: string);
+var
+  LO: TtiWebServerForTesting;
+  LResult: string;
+begin
+  LO:= TtiWebServerForTesting.Create(cPort);
+  try
+    LO.Start;
+    LO.SetCGIBinLocation(tiAddTrailingSlash(tiGetEXEPath) + 'CGI-Bin');
+    LResult:= TestHTTPRequest('tiWebServerCGIForTesting.exe', True, AParam);
+    // ToDo: Tidy up the white space padding before and after the result string
+    CheckEquals(Trim(AParam), Trim(LResult));
+  finally
+    LO.Free;
   end;
 end;
 

@@ -102,6 +102,7 @@ type
     procedure tiFileToString;
     procedure tiFixPathDelim_Test;
     procedure tiForceDirectories;
+    procedure tiForceDirectories1;
     procedure tiGetAppDataDirPrivate;
     procedure tiGetAppDataDirPublic;
     procedure tiGetComputerName;
@@ -199,6 +200,7 @@ implementation
 uses
   tiUtils
   ,tiConstants
+  ,tiExcept
   {$IFDEF MSWINDOWS}
   ,tiWin32
   ,Windows
@@ -2439,12 +2441,93 @@ end;
 
 procedure TTestTIUtils.tiForceDirectories;
 var
-  lDirs: string;
+  LDir: string;
 begin
-  lDirs := tiFixPathDelim(TempDirectory + '\level1\level2\level3\level4');
-  tiUtils.tiForceDirectories(lDirs);
-  Check(DirectoryExists(lDirs));
-  tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
+  LDir := tiFixPathDelim(TempDirectory + '\level1\level2\level3\level4');
+  tiUtils.tiForceDirectories(LDir);
+  try
+    Check(DirectoryExists(LDir));
+  finally
+    tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
+  end;
+
+  LDir := tiFixPathDelim(TempDirectory + '\level1\level2\MyFile.txt');
+  tiUtils.tiForceDirectories(LDir);
+  try
+  Check(DirectoryExists(ExtractFilePath(LDir)));
+  finally
+    tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
+  end;
+
+  LDir := tiFixPathDelim(TempDirectory + '\level1\level2\level3.level4');
+  tiUtils.tiForceDirectories(LDir);
+  try
+    Check(DirectoryExists(TempDirectory + '\level1\level2'));
+    Check(not DirectoryExists(TempDirectory + '\level1\level2\level3'));
+  finally
+    tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
+  end;
+
+  LDir:= TempDirectory + '\test';
+  tiUtils.tiStringToFile('test', LDir);
+  tiUtils.tiSetFileReadOnly(LDir, True);
+  try
+    try
+      tiUtils.tiForceDirectories(LDir);
+      Fail('Exception not raised');
+    except
+      on e: exception do
+        CheckIs(E, EtiOPFFileSystemException);
+    end;
+  finally
+    tiUtils.tiSetFileReadOnly(LDir, False);
+    tiDUnitForceRemoveDir(LDir);
+  end;
+end;
+
+procedure TTestTIUtils.tiForceDirectories1;
+var
+  LDir: string;
+begin
+  LDir := tiFixPathDelim(TempDirectory + '\level1\level2\level3\level4');
+  tiUtils.tiForceDirectories(LDir);
+  try
+    Check(DirectoryExists(LDir));
+  finally
+    tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
+  end;
+
+  LDir := tiFixPathDelim(TempDirectory + '\level1\level2\MyFile.txt');
+  tiUtils.tiForceDirectories1(LDir);
+  try
+    Check(DirectoryExists(LDir));
+    tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
+  finally
+  end;
+
+  LDir := tiFixPathDelim(TempDirectory + '\level1\level2\level3.level4');
+  tiUtils.tiForceDirectories1(LDir);
+  try
+    Check(DirectoryExists(LDir));
+  finally
+    tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
+  end;
+
+  LDir:= TempDirectory + '\test.txt';
+  tiUtils.tiStringToFile('test', LDir);
+  try
+    tiUtils.tiSetFileReadOnly(LDir, True);
+    try
+      tiUtils.tiForceDirectories1(LDir);
+      Fail('Exception not raised');
+    except
+      on e: exception do
+        CheckIs(E, EtiOPFFileSystemException);
+    end;
+  finally
+    tiUtils.tiSetFileReadOnly(LDir, False);
+    tiDUnitForceRemoveDir(LDir);
+  end;
 end;
 
 procedure TTestTIUtils.tiGetAppDataDirPrivate;

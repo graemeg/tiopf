@@ -4,8 +4,7 @@ unit tiOPFManager;
 
 interface
 uses
-//   tiBaseObject
-  tiDBConnectionPool
+   tiDBConnectionPool
   ,tiQuery
   ,tiObject
   ,tiPersistenceLayers
@@ -89,6 +88,7 @@ type
                                            const AUserName    : string;
                                            const APassword    : string); overload;
 
+    // ToDo: Require an Out param that returns an exception message if there was onep
     function    TestThenConnectDatabase(   const ADatabaseAlias : string;
                                            const ADatabaseName : string;
                                            const AUserName    : string;
@@ -110,6 +110,12 @@ type
     function    TestThenConnectDatabase(   const ADatabaseName : string;
                                            const AUserName    : string;
                                            const APassword    : string): boolean; overload;
+
+    procedure   ConnectDatabaseWithRetry(  const ADatabaseName:  string;
+                                           const AUserName:      string;
+                                           const APassword:      string;
+                                           const ARetryCount:    Word;
+                                           const ARetryInterval: Word);
 
     procedure   DisconnectDatabase(        const ADatabaseName : string;
                                            const APackageID   : string); overload;
@@ -219,9 +225,10 @@ const
 
 implementation
 uses
-  tiUtils
+   tiUtils
   ,tiConstants
   ,tiExcept
+  ,tiLog
 
   {$IFDEF LINK_ADOACCESS}    ,tiQueryADOAccess    {$ENDIF}
   {$IFDEF LINK_ADOSQLSERVER} ,tiQueryADOSQLServer {$ENDIF}
@@ -797,6 +804,48 @@ begin
 end;
 
 
+procedure TtiOPFManager.ConnectDatabaseWithRetry(const ADatabaseName, AUserName,
+  APassword: string; const ARetryCount, ARetryInterval: Word);
+
+  procedure LogDatabaseConnectionAttempt(const ADatabaseName: string;
+    const AUserName: string; const ARetryCount: Integer);
+  begin
+    Log('Attempt %d to connect to database %s as %s',
+      [ARetryCount, ADatabaseName, AUserName], lsUserInfo);
+  end;
+
+var
+  LRetryCount: Word;
+begin
+  // ToDo: Must add more detail describing why a connection could not be established.
+  //       For example, incorrect username/password does not warrent a retry
+  //       Database unavailable does.
+  LRetryCount:= 1;
+  LogDatabaseConnectionAttempt(ADatabaseName, AUserName, LRetryCount);
+  while (LRetryCount <= ARetryCount) and
+    (not gTIOPFManager.TestThenConnectDatabase(
+      ADatabaseName, AUsername, APassword, '')) do
+  begin
+    Sleep(ARetryInterval * 1000);
+    Inc(LRetryCount);
+    if LRetryCount <= ARetryCount then
+      LogDatabaseConnectionAttempt(ADatabaseName, AUserName, LRetryCount);
+  end;
+
+  if LRetryCount > ARetryCount then
+    raise EtiOPFDBExceptionCanNotConnect.Create(
+      GTIOPFManager.DefaultPerLayerName,
+      ADatabaseName,
+      AUserName,
+      CPasswordMasked,
+      Format(CTIOPFExcMsgCanNotConnectToDatabaseAfterRetry,
+             [ARetryCount, ARetryInterval]));
+
+  Log('Connecting to database successful' + CrLf +
+      gTIOPFManager.DefaultDBConnectionPool.DetailsAsString, lsUserInfo);
+
+end;
+
 procedure TtiOPFManager.DisconnectDatabase(const ADatabaseName: string);
 var
   LPersistenceLayer: TtiPersistenceLayer;
@@ -886,15 +935,8 @@ initialization
   {$IFDEF LINK_ZEOS_MySQLl50} gTIOPFManager.DefaultPerLayerName := cTIPersistZeosMySQL50; {$ENDIF}
   {$IFDEF LINK_DBISAM4}       gTIOPFManager.DefaultPerLayerName := cTIPersistDBISAM4;     {$ENDIF}
 
-
 finalization
   uShuttingDown := True;
   FreeAndNilTIPerMgr;
 
 end.
-
-
-
-
-
-

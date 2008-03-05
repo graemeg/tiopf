@@ -86,7 +86,7 @@
     <DCCReference Include="..\..\Core\tiVisitorDB.pas" />
     <DCCReference Include="..\..\Core\tiVisitorDBAutoGen.pas" />
     <DCCReference Include="..\..\Core\tiWin32.pas" />
-    <DCCReference Include="C:\Documents and Settings\tipwh\rtl.dcp" />
-    <DCCReference Include="C:\Documents and Settings\tipwh\vcl.dcp" />
+    <DCCReference Include="rtl.dcp" />
+    <DCCReference Include="vcl.dcp" />
   </ItemGroup>
 </Project>

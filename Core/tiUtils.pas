@@ -131,8 +131,8 @@ type
   // * Directory, file and file name manipulation
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  // Get a tempory file name with the extension pStrExt
-  function  tiGetTempFile(       const AValue : string): string;
+  // Get a tempory file name with the extension AFileNameExtension
+  function  tiGetTempFile(const AFileNameExtension : string): string;
   // Add a trailing slash ('\' or '/' based on platform) if there is not already one
   function  tiAddTrailingSlash(  const AValue : string): string;
   // Remove a trailing slash ('\' or '/' based on platform) if there is one
@@ -206,8 +206,14 @@ type
   //    tiExtractDirToLevel('c:\temp\dir', 1) gives 'c:\temp'
   //    tiExtractDirToLevel('c:\temp\dir', 2) gives 'c:\temp\dir'
   function tiExtractDirToLevel(const AFileName : TFileName; ALevel : byte): TFileName;
-  // Same as Delphi's ForceDirectory, but will raise an exception if create fails
+  {: Same as Delphi's ForceDirectory, but will raise an exception if create fails
+     If there is a period in AValue, then AValue is assumed to be a file name and
+     ExtractFilePath() will be called and the result of this call will be used as
+     the directory to create. This will cause unexpected results if there is a
+     period in the directory name.}
   procedure tiForceDirectories(const AValue : TFileName);
+  {: Same as Delphi's ForceDirectory, but will raise an exception if create fails.}
+  procedure tiForceDirectories1(const AValue : TFileName);
   // Remove a directory, and all it's owned directories and files
   function tiForceRemoveDir(const AValue : TFileName): boolean;
   // Join two path elements. Elements can have trailing delimiters or not. Result will not have trailing delimiter.
@@ -310,6 +316,9 @@ type
   function tiDateTimeAsIntlDateDisp(const ADateTime: TDateTime): string;
   function tiIntlDateStorAsDateTime(const AValue: string): TDateTime;
   function tiIntlDateDispAsDateTime(const AValue: string): TDateTime;
+  function tiGMTOffset: TDateTime;
+  function tiLocalTimeToGMT(const ALocalTime: TDateTime): TDateTime;
+  function tiGMTToLocalTime(const AGMTTime: TDateTime): TDateTime;
 
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -442,9 +451,9 @@ type
   function  tiStreamToString(const AStream : TStream): string; overload;
   {: Read part of the contents of a stream as a string}
   function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): string; overload;
-  // Write a string into a stream
+  // Read a file into a stream
   procedure tiFileToStream(const AFileName : string; const AStream : TStream);
-  // Read the contents of a stream as a string
+  // Save the contents of a stream to a file
   function  tiStreamToFile(const AFileName : string; const AStream : TStream): string;
   // Copy one stream to another
   procedure tiCopyStream(const AStreamFrom, AStreamTo : TStream);
@@ -512,7 +521,7 @@ uses
   ,StrUtils   // used for DelSpace1 and tiEnclose
  ;
 
-function tiGetTempFile(const AValue : string): string;
+function tiGetTempFile(const AFileNameExtension : string): string;
 {$IFNDEF FPC}
 const
   cMaxPathLen = 255;
@@ -533,10 +542,10 @@ begin
   {$ENDIF}
   if pos('.', result) <> 0 then
   begin
-    if AValue = '' then
+    if AFileNameExtension = '' then
       result := tiRemoveExtension(result)
     else
-      result := copy(result, 1, tiPosR('.', result)) + AValue;
+      result := copy(result, 1, tiPosR('.', result)) + AFileNameExtension;
   end;
 end;
 
@@ -1858,7 +1867,7 @@ begin
     begin
       lSource := lFiles.Strings[i];
       lTarget := tiAddTrailingSlash(ATarget) + tiRemoveDirectory(lSource, ASource);
-      tiForceDirectories(ExtractFileDir(lTarget));
+      tiForceDirectories1(ExtractFileDir(lTarget));
       try
         tiCopyFile(lSource, lTarget);
       except
@@ -1931,7 +1940,6 @@ begin
   {$ENDIF}
 end;
 
-
 procedure tiForceDirectories(const AValue : TFileName);
 var
   lDirName: string;
@@ -1944,6 +1952,11 @@ begin
     raise EtiOPFFileSystemException.CreateFmt(cErrorUnableToCreateDirectory, [lDirName]);
 end;
 
+procedure tiForceDirectories1(const AValue : TFileName);
+begin
+  if not ForceDirectories(AValue) then
+    raise EtiOPFFileSystemException.CreateFmt(cErrorUnableToCreateDirectory, [AValue]);
+end;
 
 // ToDo: Must add code to handle hidden files.
 function tiForceRemoveDir(const AValue : TFileName): boolean;
@@ -3099,7 +3112,7 @@ begin
     Result := 0;
     Exit; //==>
   end;
-  
+
     //          1         2
     // 12345678901234567890123
     // yyyy-mm-dd hh:mm:ss
@@ -3109,12 +3122,36 @@ begin
   lH := StrToInt(Copy(AValue, 12, 2));
   lMi := StrToInt(Copy(AValue, 15, 2));
   lS := StrToInt(Copy(AValue, 18, 2));
-  
+
   { Cannot EncodeDate if any part equals 0. EncodeTime is okay. }
   if (lY = 0) or (lM = 0) or (lD = 0) then
     Result := EncodeTime(lH, lMi, lS, 0)
   else
     Result := EncodeDate(lY, lM, lD) + EncodeTime(lH, lMi, lS, 0);
+end;
+
+function tiGMTOffset: TDateTime;
+var
+  TZI: TTimeZoneInformation;
+begin
+  Result := 0; // Removes 'return value might be undefined' warning.
+  case GetTimeZoneInformation(TZI) of
+    TIME_ZONE_ID_STANDARD: Result := (TZI.Bias + TZI.StandardBias) * cdtOneMinute;
+    TIME_ZONE_ID_DAYLIGHT: Result := (TZI.Bias + TZI.DaylightBias) * cdtOneMinute;
+    TIME_ZONE_ID_UNKNOWN: Result := TZI.Bias * cdtOneMinute;
+  else
+    RaiseLastWin32Error;
+  end;
+end;
+
+function tiLocalTimeToGMT(const ALocalTime: TDateTime): TDateTime;
+begin
+  Result := ALocalTime + tiGMTOffset;
+end;
+
+function tiGMTToLocalTime(const AGMTTime: TDateTime): TDateTime;
+begin
+  Result := AGMTTime - tiGMTOffset;
 end;
 
 procedure tiConsoleAppPause;

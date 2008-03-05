@@ -133,6 +133,9 @@ I also check that the file is not a DLL, although these are generally
 linked as GUI anyway.
 }
 
+const
+  CErrorMaximumCommandLineLength = 'Maximum command line length of %d bytes exceded. Actual length %d';
+
 function tiExecConsoleApp(const ApplicationName,
                         Parameters: String;
                         var AppOutput: string;       {will receive output of child process}
@@ -237,7 +240,8 @@ const
 
 
 implementation
-
+uses
+  tiConstants;
 
 procedure tiGetConsoleExecutableInfo(const Filename: String; var BinaryType, Subsystem: DWORD);
 var
@@ -366,6 +370,16 @@ begin
 end;
 
 begin
+  // ToDo: It may be unwise to check for the maximum command line lenght here
+  //       as it may well change with evelving operating systems, however we
+  //       require the constant in tiWebServer as is is sometimes necessary
+  //       to pass a very large parameter. In such a case, a file name is
+  //       passed instead.
+  if Length(ApplicationName) + Length(Parameters) > CMaximumCommandLineLength then
+    raise Exception.CreateFmt(CErrorMaximumCommandLineLength,
+      [CMaximumCommandLineLength,
+       Length(ApplicationName) + Length(Parameters)]);
+
   {Find out about app}
   Ext:= UpperCase(ExtractFileExt(ApplicationName));
   if not ptiGetConsoleExecutableInfo then

@@ -144,6 +144,15 @@ type
     procedure CheckEquals(const AValue: TStream;   const AField: TStream); overload;
     procedure CheckEquals(const AValue: String;   const AField: TtiFieldInteger); overload;
     procedure CheckEquals(const AExpected: string; AActual: integer); overload;
+
+    procedure CheckEquals(const AField: TtiFieldString;   const AValue: string); overload;
+    procedure CheckEquals(const AField: TtiFieldInteger;  const AValue: Integer); overload;
+    procedure CheckEquals(const AField: TtiFieldFloat;    const AValue: Real); overload;
+    procedure CheckEquals(const AField: TtiFieldBoolean;  const AValue: Boolean); overload;
+    procedure CheckEquals(const AField: TtiFieldDateTime; const AValue: TDateTime); overload;
+
+    procedure CheckLessThan(const AMustBeLessThan, AValue: Int64); overload;
+
     {: Check a TtiObject's Equals Method by calling AData1.Equals(AData2), then changing APropName to ANewValue and trying again.
        APropName must be a string property.}
     procedure CheckTIObjectEqualsMethod(const AData1, AData2: TtiObject; const APropName, ANewValue: string); overload;
@@ -163,6 +172,8 @@ type
 //       There must be one object in the list. This object will be marked as deleted, then saved and the list will be re-read. The
 //       list must be empty on the second read.}
 //    procedure CheckDeletionFromDatabase(const AListClass: TtiObjectClass);
+    procedure CheckINIFileEntry(const AExpected: TDateTime; const AINIFileName, AINISection, AINIIdent: string);
+
 
   end;
 
@@ -264,6 +275,7 @@ uses
   ,tiUtils
   ,tiPersistenceLayers
   ,tiConstants
+  ,tiINI
   ,StrUtils 
   ,TypInfo
   {$IFDEF MSWINDOWS}
@@ -1283,6 +1295,29 @@ begin
   CheckEquals(Format(AFormat, AArgs), AActual, AMessage);
 end;
 
+procedure TtiTestCase.CheckINIFileEntry(const AExpected: TDateTime;
+  const AINIFileName, AINISection, AINIIdent: string);
+var
+  LINI: TtiINIFile;
+  LActual: TDateTime;
+begin
+  LINI:= TtiINIFile.Create(AINIFileName);
+  try
+    LActual:= LINI.ReadDateTime(AINISection, AINIIdent, 0);
+    CheckNearEnough(AExpected, LActual);
+  finally
+    LINI.Free;
+  end;
+end;
+
+procedure TtiTestCase.CheckLessThan(const AMustBeLessThan, AValue: Int64);
+const
+  CCheckLessThanMessage =
+    'Must be less than "%d" but was "%d"';
+begin
+  Check(AValue<AMustBeLessThan, CCheckLessThanMessage, [AMustBeLessThan, AValue]);
+end;
+
 procedure TtiTestCase.CheckNearEnough(AExpected, AActual: Extended; const AMessage: string = '');
 begin
   CheckEquals(AExpected, AActual, 0.000001, AMessage);
@@ -1807,10 +1842,34 @@ begin
   result:= (FStop - FStart) * FPerformanceFactor;
 end;
 
-initialization
-  ULongString:= tiCreateStringOfSize(3000);
+procedure TtiTestCase.CheckEquals(const AField: TtiFieldDateTime;
+  const AValue: TDateTime);
+begin
+  CheckNearEnough(AField.AsDateTime, AValue);
+end;
 
-finalization
-  ULongString := '';
+procedure TtiTestCase.CheckEquals(const AField: TtiFieldInteger;
+  const AValue: Integer);
+begin
+  CheckEquals(AField.AsInteger, AValue);
+end;
+
+procedure TtiTestCase.CheckEquals(const AField: TtiFieldFloat;
+  const AValue: Real);
+begin
+  CheckEquals(AField.AsFloat, AValue);
+end;
+
+procedure TtiTestCase.CheckEquals(const AField: TtiFieldBoolean;
+  const AValue: Boolean);
+begin
+  CheckEquals(AField.AsBoolean, AValue);
+end;
+
+procedure TtiTestCase.CheckEquals(const AField: TtiFieldString;
+  const AValue: string);
+begin
+  CheckEquals(AField.AsString, AValue);
+end;
 
 end.

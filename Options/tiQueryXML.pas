@@ -1045,7 +1045,3 @@ finalization
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXML);
 
 end.
-
-
-
-

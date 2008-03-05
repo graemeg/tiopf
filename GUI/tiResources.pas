@@ -31,6 +31,8 @@ const
   cResTI_CloseWindow             = 'ti_CloseWindow';
   cResTI_Copy1Left               = 'ti_Copy1Left';
   cResTI_Copy1Right              = 'ti_Copy1Right';
+  cResTI_CopyAllBelowLeft        = 'ti_CopyAllBelowLeft';
+  cResTI_CopyAllBelowRight       = 'ti_CopyAllBelowRight';
   cResTI_CopyAllLeft             = 'ti_CopyAllLeft';
   cResTI_CopyAllRight            = 'ti_CopyAllRight';
   cResTI_CopyToClipboard         = 'ti_CopyToClipboard';

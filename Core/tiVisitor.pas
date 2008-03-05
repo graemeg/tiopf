@@ -289,6 +289,9 @@ type
     procedure ExecuteVisitors(const AVisitorController: TtiVisitorController;
       const AVisitors: TList; const AVisited: TtiVisited);
     function GetVisitorMappings: TList;
+    procedure AssignVisitorInstances(
+      const AVisitorMappingGroup: TtiVisitorMappingGroup;
+      const AVisitors: TObjectList);
   protected
     property VisitorMappings: TList read GetVisitorMappings;
     function FindVisitorMappingGroup(const AGroupName: string): TtiVisitorMappingGroup;
@@ -956,6 +959,18 @@ begin
   Result := FVisitorMappings;
 end;
 
+procedure TtiVisitorManager.AssignVisitorInstances(
+  const AVisitorMappingGroup: TtiVisitorMappingGroup;
+  const AVisitors: TObjectList);
+begin
+  FSynchronizer.BeginRead;
+  try
+    AVisitorMappingGroup.AssignVisitorInstances(AVisitors);
+  finally
+    FSynchronizer.EndRead;
+  end;
+end;
+
 procedure TtiVisitorManager.ProcessVisitors(const AGroupName: string;
   const AVisited: TtiVisited; const AVisitorControllerConfig: TtiVisitorControllerConfig);
 var
@@ -969,34 +984,29 @@ begin
   Log('About to process visitors for <' + AGroupName + '>', lsVisitor);
   LVisitors := TObjectList.Create;
   try
-    FSynchronizer.BeginRead;
+    LVisitorMappingGroup := FindVisitorMappingGroup(AGroupName);
+    if LVisitorMappingGroup = nil then
+      raise EtiOPFProgrammerException.CreateFmt(CErrorInvalidVisitorGroup,
+        [AGroupName]);
+    LVisitorController :=
+      LVisitorMappingGroup.VisitorControllerClass.Create(Self,
+      AVisitorControllerConfig);
+    AssignVisitorInstances(LVisitorMappingGroup, LVisitors);
     try
-      LVisitorMappingGroup := FindVisitorMappingGroup(AGroupName);
-      if LVisitorMappingGroup = nil then
-        raise EtiOPFProgrammerException.CreateFmt(CErrorInvalidVisitorGroup,
-          [AGroupName]);
-      LVisitorController :=
-        LVisitorMappingGroup.VisitorControllerClass.Create(Self,
-        AVisitorControllerConfig);
-      LVisitorMappingGroup.AssignVisitorInstances(LVisitors);
+      LVisitorController.BeforeExecuteVisitorGroup;
       try
-        LVisitorController.BeforeExecuteVisitorGroup;
-        try
-          ExecuteVisitors(LVisitorController, LVisitors, AVisited);
-          LVisitorController.AfterExecuteVisitorGroup(
-            LVisitorController.TouchedByVisitorList);
-        except
-          on e: Exception do
-          begin
-            LVisitorController.AfterExecuteVisitorGroupError;
-            raise;
-          end;
+        ExecuteVisitors(LVisitorController, LVisitors, AVisited);
+        LVisitorController.AfterExecuteVisitorGroup(
+          LVisitorController.TouchedByVisitorList);
+      except
+        on e: Exception do
+        begin
+          LVisitorController.AfterExecuteVisitorGroupError;
+          raise;
         end;
-      finally
-        LVisitorController.Free;
       end;
     finally
-      FSynchronizer.EndRead;
+      LVisitorController.Free;
     end;
   finally
     LVisitors.Free;
