@@ -169,30 +169,30 @@ end;
 
 procedure tiWin32CoInitialize;
 begin
-  if UTICoInitializeManager = nil then
-    UTICoInitializeManager := TtiCoInitializeManager.Create;
+//  if UTICoInitializeManager = nil then
+//    UTICoInitializeManager := TtiCoInitializeManager.Create;
   UTICoInitializeManager.CoInitialize;
 end;
 
 procedure tiWin32ForceCoInitialize;
 begin
-  if UTICoInitializeManager = nil then
-    UTICoInitializeManager := TtiCoInitializeManager.Create;
+//  if UTICoInitializeManager = nil then
+//    UTICoInitializeManager := TtiCoInitializeManager.Create;
   UTICoInitializeManager.ForceCoInitialize;
 end;
 
 procedure tiWin32CoUnInitialize;
 begin
-  if UTICoInitializeManager = nil then
-    UTICoInitializeManager := TtiCoInitializeManager.Create;
+//  if UTICoInitializeManager = nil then
+//    UTICoInitializeManager := TtiCoInitializeManager.Create;
   UTICoInitializeManager.CoUnInitialize;
 end;
 
 
 function  tiWin32HasCoInitializeBeenCalled: Boolean;
 begin
-  if UTICoInitializeManager = nil then
-    UTICoInitializeManager := TtiCoInitializeManager.Create;
+//  if UTICoInitializeManager = nil then
+//    UTICoInitializeManager := TtiCoInitializeManager.Create;
   Result:= UTICoInitializeManager.HasBeenCalled;
 end;
 
@@ -330,6 +330,7 @@ begin
 end;
 
 initialization
+  UTICoInitializeManager := TtiCoInitializeManager.Create;
 
 finalization
   FreeAndNil(UTICoInitializeManager);

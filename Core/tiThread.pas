@@ -145,9 +145,8 @@ begin
   gTIOPFManager.ActiveThreadList.Add(Self);
 end;
 
-
 destructor TtiThread.Destroy;
-begin                         
+begin
   {$IFDEF MSWINDOWS}
   tiWin32CoUnInitialize; // You never know, perhpas COM was used in this thread.
   {$ENDIF}
@@ -168,7 +167,6 @@ end;
 
 procedure TtiSleepThread.SetThreadName(const AName: string);
 begin
-  //Assert(GetCurrentThreadId = Self.ThreadID); //<-- always fail
   FName := AName; // Need to store the name in the heap
   SetIdeDebuggerThreadName(Self.ThreadID, PChar(FName));
 end;
