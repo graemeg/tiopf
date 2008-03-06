@@ -3241,8 +3241,8 @@ var
   L: TtiIntegerListItem;
 begin
   L:= TtiIntegerListItem.Create;
-  L.AValue:= AValue;
   FList.Add(L);
+  L.AValue:= AValue;
 end;
 
 
