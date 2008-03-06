@@ -261,6 +261,7 @@ implementation
 uses
    tiUtils
   ,tiCompress
+  ,tiCompressZLib // Required to force linking
   ,tiExcept
   ,tiStreams
   ,SysUtils

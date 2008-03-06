@@ -2033,8 +2033,6 @@ begin
   LSeries := SeriesByName(SeriesTitleToName(psSeriesName));
   Assert(LSeries <> nil, 'Can not find series <' + psSeriesName + '>');
   LSeries.AddNullXY((pXBeforeGap + pXAfterGap) / 2.0, (FrLeftAxisMin + FrLeftAxisMax) / 2.0, '');
-
-//  LSeries.AddNullXY((pXBeforeGap + pXAfterGap) / 2.0, 0, '');
 end;
 
 function TtiTimeSeriesChart.AddDateTimeLineSeries(const psTitle: string): TLineSeries;
@@ -2068,19 +2066,18 @@ end;
 
 function TtiTimeSeriesChart.AddLineSeries(const psTitle: string): TLineSeries;
 var
-  lSeries: TLineSeries;
+  LSeries: TLineSeries;
 begin
-  lSeries := TLineSeries.Create(nil);
-  lSeries.Name := SeriesTitleToName(psTitle);
-  lSeries.Title := psTitle;
-  lSeries.Pointer.Style := psCross;
-  lSeries.Pointer.InflateMargins := false;
-  lSeries.XValues.DateTime := true;
-
-  lSeries.SeriesColor := GetNextSeriesColor;
-
-  AddSeries(lSeries);
-  result := lSeries;
+  LSeries := TLineSeries.Create(nil);
+  LSeries.Name := SeriesTitleToName(psTitle);
+  LSeries.Title := psTitle;
+  LSeries.Pointer.Style := psCross;
+  LSeries.Pointer.InflateMargins := false;
+  LSeries.XValues.DateTime := true;
+  LSeries.SeriesColor := GetNextSeriesColor;
+  LSeries.Pointer.Pen.Color:= LSeries.SeriesColor;
+  AddSeries(LSeries);
+  result := LSeries;
 end;
 
 procedure TtiTimeSeriesChart.ClearSeriesValues;
@@ -2297,7 +2294,15 @@ begin
   for i := 0 to FChart.SeriesCount - 1 do begin
     lSeries := FChart.Series[i];
     if lSeries.Active then
-      liDataIndex := lSeries. GetCursorValueIndex;
+      liDataIndex := lSeries.GetCursorValueIndex;
+// ToDo: Series.GetCursorValueIndex is returning a value offset by
+//       1 for each NullXY value that has been added.
+//       Action: TtiTimeSeriesChart.AddDateTimeValues and
+//               TtiTimeSeriesChart.AddDateTimeGap build up a data structure
+//               of the actual index values (Returned by calls to Series.AddXY
+//               and Series.AddNullXY, and the actual index value (calculated by
+//               keeping track of how many NullXY values have been added)
+
     if liDataIndex <> -1 then
       Break; //==>
   end;
@@ -3240,8 +3245,8 @@ var
 begin
   for i := 0 to FChart.SeriesCount - 1 do
     if (FChart.Series[i] is TLineSeries) then
-      TLineSeries(FChart.Series[i]).Pointer.Visible := AValue and
-          TLineSeries(FChart.Series[i]).Active;
+      TLineSeries(FChart.Series[i]).Pointer.Visible :=
+        AValue and TLineSeries(FChart.Series[i]).Active;
 end;
 
 function TtiTimeSeriesChart.IsSeriesVisible(const ASeriesTitle: string): boolean;
