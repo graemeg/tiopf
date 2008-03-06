@@ -85,7 +85,7 @@ type
     procedure   SetUp; override;
     procedure   TearDown; override;
     function    TempFileName(const AFilename: string = ''): string;
-    property    LongString : string    read GetLongString;
+    property    LongString : string read GetLongString;
     function    tstIntToStr(pInt:Integer):string;
     function    tstIntToBool(pInt:Integer): boolean;
     function    tstIntToFloat(pInt:Integer): Extended;
@@ -1326,8 +1326,6 @@ end;
 
 function TtiTestCase.GetLongString: string;
 begin
-  if ULongString = '' then
-    ULongString:= tiCreateStringOfSize(3000);
   result:= ULongString;
 end;
 
@@ -1871,5 +1869,9 @@ procedure TtiTestCase.CheckEquals(const AField: TtiFieldString;
 begin
   CheckEquals(AField.AsString, AValue);
 end;
+
+initialization
+  // Slow to create every test, so recycle one instance
+  ULongString:= tiCreateStringOfSize(3000);
 
 end.
