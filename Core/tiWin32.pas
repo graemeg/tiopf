@@ -62,7 +62,6 @@ type
     procedure   ForceCoInitialize;
   end;
 
-
 var
   UTICoInitializeManager: TtiCoInitializeManager = nil;
   SHGetFolderPath: PFNSHGetFolderPath = nil;
@@ -258,9 +257,9 @@ procedure TtiCoInitializeManager.CoInitialize;
 var
   LCurrentThreadID: DWord;
 begin
-  LCurrentThreadID:= GetCurrentThreadID;
   FCritSect.Enter;
   try
+    LCurrentThreadID:= GetCurrentThreadID;
     if FList.IndexOf(LCurrentThreadID) = -1 then
     begin
       ActiveX.CoInitialize(nil);
@@ -275,9 +274,9 @@ procedure TtiCoInitializeManager.ForceCoInitialize;
 var
   LCurrentThreadID: DWord;
 begin
-  LCurrentThreadID:= GetCurrentThreadID;
   FCritSect.Enter;
   try
+    LCurrentThreadID:= GetCurrentThreadID;
     ActiveX.CoInitialize(nil);
     if FList.IndexOf(LCurrentThreadID) = -1 then
       FList.Add(LCurrentThreadID);
@@ -290,9 +289,9 @@ procedure TtiCoInitializeManager.CoUnInitialize;
 var
   LCurrentThreadID: DWord;
 begin
-  LCurrentThreadID:= GetCurrentThreadID;
   FCritSect.Enter;
   try
+    LCurrentThreadID:= GetCurrentThreadID;
     if FList.IndexOf(LCurrentThreadID) <> -1 then
     begin
       ActiveX.CoUnInitialize;
