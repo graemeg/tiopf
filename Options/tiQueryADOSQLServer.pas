@@ -39,10 +39,6 @@ type
 
   TtiQueryADOSQLServer = class(TtiQueryADO);
 
-const
-  cTIPersistADOSQLServer = 'ADOSQLServer';
-
-
 implementation
 
 uses
