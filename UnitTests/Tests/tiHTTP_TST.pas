@@ -155,8 +155,12 @@ end;
 { TTestTIHTTP }
 
 function TTestTIHTTP.GetRandom: string;
+var
+  i: integer;
 begin
-  result:= tiCreateGUIDString;
+  result:= '';
+  for i := 0 to 9 do
+    result:= result + IntToStr(GetTickCount);
 end;
 
 procedure TTestTIHTTP.HTTPGet_Event(AContext:TIdContext;
@@ -174,38 +178,32 @@ end;
 
 procedure TTestTIHTTP.SetUpOnce;
 begin
-  FHTTPServer := TidHTTPServer.Create(nil);
-  FHTTPServer.OnCommandGet := HTTPGet_Event;
-  FHTTPServer.DefaultPort:= cHTTPPortToTestWith;
-  FRequest := TMemoryStream.Create;
-  FResponse := TMemoryStream.Create;
-  FDocName := cTestDocName;
-
-  FHTTPServer.Active:= True;
-  SetUp;
 end;
 
 procedure TTestTIHTTP.SetUp;
 begin
+  FHTTPServer := TidHTTPServer.Create(nil);
   FHTTPServer.OnCommandGet:= nil;
-  FHTTPServer.Active:= false;
-  FRequest.Size:= 0;
-  FResponse.Size:= 0;
+  FHTTPServer.DefaultPort:= cHTTPPortToTestWith;
+  FRequest := TMemoryStream.Create;
+  FResponse := TMemoryStream.Create;
   FDocName:= '';
   FParams := '';
+  FExpectedResult:= '';
 end;
 
 procedure TTestTIHTTP.TearDown;
 begin
-  SetUp;
+  FHTTPServer.Free;
+  FRequest.Free;
+  FResponse.Free;
+  FDocName:= '';
+  FParams := '';
+  FExpectedResult:= '';
 end;
 
 procedure TTestTIHTTP.TeardownOnce;
 begin
-  FHTTPServer.OnCommandGet:= nil;
-  FHTTPServer.Free;
-  FRequest.Free;
-  FResponse.Free;
 end;
 
 procedure TTestTIHTTP.TIHTTPIndyPostPerformance;
@@ -474,6 +472,7 @@ var
   lStart : DWord;
   lMSPer10Calls: Extended;
 begin
+Check(True);
   FHTTPServer.OnCommandGet:= HTTPGet_Event;
   FHTTPServer.Active:= True;
   try
@@ -735,7 +734,6 @@ var
   LHeader: string;
   LRandom: string;
 begin
-  SetAllowedLeakArray([32,96]);
   Assert(AClass<>nil, 'AClass not assigned');
   LRandom:= GetRandom;
   FHTTPServer.OnCommandGet := HTTPGet_CustomHeaderInputEvent;
@@ -748,6 +746,7 @@ begin
       LHTTP.RequestTIOPFBlockHeader:= LHeader;
       LHTTP.Get(MakeTestURL(cTestDocName+LRandom));
       CheckEquals(LHeader, LHTTP.Output.DataString);
+      LHTTP.RequestTIOPFBlockHeader:= '';
     finally
       LHTTP.Free;
     end;
