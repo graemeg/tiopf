@@ -12,6 +12,8 @@ type
   TTestTIThread = class(TtiTestCase)
   private
   published
+    procedure TListDeleteLeak;
+    procedure TListDeleteNoLeak;
     procedure tiActiveThreadList;
     procedure TThreadFreeOnTerminate; // No leak
     procedure TThreadDoTerminateFreeOnTerminateDoTerminate; // Leak
@@ -27,7 +29,9 @@ uses
   tiOPFManager,
   tiTestDependencies,
   Windows,
-  Classes;
+  Classes,
+  SysUtils,
+  Contnrs;
 
 const
   CSleep = 100;
@@ -58,6 +62,11 @@ var
   LList: TtiActiveThreadList;
   LThread: TtiThreadForTesting;
 begin
+  if not URunOnce then
+  begin
+    SetAllowedLeakArray([24]);
+    URunOnce:= True;
+  end;
   LList:= nil;
   LThread:= nil;
   try
@@ -163,6 +172,42 @@ type
     Sleep(CSleep);
   end;
 
+var
+  UList: TList = nil;
+  UObjectList: TObjectList = nil;
+
+procedure TTestTIThread.TListDeleteLeak;
+var
+  LItem: TObject;
+begin
+  SetAllowedLeakArray([24]);
+  LItem:= nil;
+  try
+    LItem:= TObject.Create;
+    UList.Add(LItem);
+    UList.Delete(0);
+  finally
+    LItem.Free;
+  end;
+  Check(True);
+end;
+
+procedure TTestTIThread.TListDeleteNoLeak;
+var
+  LItem: TObject;
+begin
+  LItem:= nil;
+  try
+    LItem:= TObject.Create;
+    UList.Add(LItem);
+    UList.Delete(0);
+    UList.Capacity:= UList.Count;
+  finally
+    LItem.Free;
+  end;
+  Check(True);
+end;
+
 procedure TTestTIThread.TThreadDoTerminateFreeOnTerminateDoTerminate;
 var
   LThread: TThreadOnTerminateForTesting;
@@ -179,5 +224,13 @@ begin
   LThread:= nil; // This won't do the trick
   Check(True);
 end;
+
+initialization
+  UList:= TList.Create;
+  UObjectList:= TObjectList.Create(False);
+
+finalization
+  FreeAndNil(UList);
+  FreeAndNil(UObjectList);
 
 end.
