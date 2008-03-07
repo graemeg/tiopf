@@ -30,6 +30,7 @@ type
     procedure tiBlockStreamCache_SweepForTimeOuts;
 
     procedure tiWebServer_Create;
+    procedure tiWebServer_CreateStartAndStop;
     procedure tiWebServer_Ignore;
     procedure tiWebServer_Default;
     procedure tiWebServer_CanNotFindPage;
@@ -108,6 +109,19 @@ type
 
 procedure TTestTIWebServer.tiWebServer_Create;
 var
+  LO: TtiWebServerForTesting;
+begin
+  LO:= TtiWebServerForTesting.Create(cPort);
+  try
+    Check(True);
+    Sleep(1000);
+  finally
+    LO.Free;
+  end;
+end;
+
+procedure TTestTIWebServer.tiWebServer_CreateStartAndStop;
+var
   LConfig: TtiWebServerConfig;
   LO: TtiWebServerForTesting;
   LExpectedStaticPageDir: string;
@@ -119,10 +133,8 @@ begin
     LConfig:= TtiWebServerConfig.Create;
     LO:= TtiWebServerForTesting.Create(cPort);
     LO.BlockStreamCache.SleepSec:= 0;
-
     LExpectedStaticPageDir:= tiAddTrailingSlash(LConfig.PathToStaticPages);
     LExpectedCGIBinDir:= tiAddTrailingSlash(LConfig.PathToCGIBin);
-
     LO.Start;
     CheckEquals(LExpectedStaticPageDir, LO.StaticPageLocation);
     Check(DirectoryExists(LO.StaticPageLocation));
@@ -302,22 +314,29 @@ var
   LPage: string;
   LFileName: string;
   LTryCount: integer;
+  LSavedSevToLog: TtiSevToLog;
 begin
-  LFileName:= gLog.LogToFileName;
-  LPage:= 'test log file';
-  LO:= TtiWebServerForTesting.Create(cPort);
+  LSavedSevToLog:= GLog.SevToLog;
   try
-    LO.BlockStreamCache.SleepSec:= 0;
-    LO.Start;
-    LTryCount:= 0 ;
-    while not _WaitForLogFile(LFileName) and (LTryCount <= 10) do
-      Sleep(100);
-    tiDeleteFile(LFileName);
-    tiStringToFile(LPage, LFileName);
-    LResult:= TestHTTPRequest(cgTIDBProxyGetLog);
-    CheckEquals('<HTML><PRE>'+LPage+'</PRE></HTML>', LResult);
+    GLog.SevToLog:= [];
+    LFileName:= gLog.LogToFileName;
+    LPage:= 'test log file';
+    LO:= TtiWebServerForTesting.Create(cPort);
+    try
+      LO.BlockStreamCache.SleepSec:= 0;
+      LO.Start;
+      LTryCount:= 0 ;
+      while not _WaitForLogFile(LFileName) and (LTryCount <= 10) do
+        Sleep(100);
+      tiDeleteFile(LFileName);
+      tiStringToFile(LPage, LFileName);
+      LResult:= TestHTTPRequest(cgTIDBProxyGetLog);
+      CheckEquals('<HTML><PRE>'+LPage+'</PRE></HTML>', LResult);
+    finally
+      LO.Free;
+    end;
   finally
-    LO.Free;
+    GLog.SevToLog:= LSavedSevToLog;
   end;
 end;
 
@@ -447,7 +466,11 @@ var
   LPage: string;
   LBlockCount, LBlockIndex, LBlockSize, LTransID: Longword;
   LDir: string;
+  LHTTP: TtiHTTPIndy;
+  LHeader: string;
+  LSaveBlockSize: LongWord;
 begin
+
   LFileName:= TempFileName('testpage.htm');
   LDir:= ExtractFilePath(LFileName);
   tiForceDirectories(LDir);
@@ -465,7 +488,21 @@ begin
     LBlockSize:=  3;
     LTransID:=    0;
 
-    LResult:= TestHTTPRequestInBlocks('testpage.htm', LBlockIndex, LBlockCount, LBlockSize, LTransID);
+    LSaveBlockSize:= tiHTTP.GTIOPFHTTPDefaultBlockSize;
+    try
+      LHTTP:= TtiHTTPIndy.Create;
+      try
+        tiHTTP.GTIOPFHTTPDefaultBlockSize:= LBlockSize;
+        LHTTP.Post('http://localhost:' + IntToStr(cPort) + '/' + 'testpage.htm');
+        LHeader:= LHTTP.ResponseTIOPFBlockHeader;
+        tiHTTP.tiParseTIOPFHTTPBlockHeader(LHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID);
+      finally
+        LHTTP.Free;
+      end;
+    finally
+      tiHTTP.GTIOPFHTTPDefaultBlockSize:= LSaveBlockSize;
+    end;
+
     CheckEquals(5, LBlockCount, 'BlockCount #1');
     CheckEquals(4, LBlockIndex, 'BlockIndex #1');
     CheckEquals(3, LBlockSize,  'BlockSize #1');
@@ -474,6 +511,7 @@ begin
   finally
     LO.Free;
   end;
+
 end;
 
 function TTestTIWebServer.TestHTTPRequestInBlocks(const ADocument: string;
@@ -481,16 +519,22 @@ function TTestTIWebServer.TestHTTPRequestInBlocks(const ADocument: string;
 var
   LHTTP: TtiHTTPIndy;
   LHeader: string;
+  LSaveBlockSize: LongWord;
 begin
-  LHTTP:= TtiHTTPIndy.Create;
+  LSaveBlockSize:= tiHTTP.GTIOPFHTTPDefaultBlockSize;
   try
-    tiHTTP.gTIOPFHTTPDefaultBlockSize:= ABlockSize;
-    LHTTP.Post('http://localhost:' + IntToStr(cPort) + '/' + ADocument);
-    Result:= LHTTP.Output.DataString;
-    LHeader:= LHTTP.ResponseTIOPFBlockHeader;
-    tiHTTP.tiParseTIOPFHTTPBlockHeader(LHeader, ABlockIndex, ABlockCount, ABlockSize, ATransID);
+    LHTTP:= TtiHTTPIndy.Create;
+    try
+      tiHTTP.GTIOPFHTTPDefaultBlockSize:= ABlockSize;
+      LHTTP.Post('http://localhost:' + IntToStr(cPort) + '/' + ADocument);
+      Result:= LHTTP.Output.DataString;
+      LHeader:= LHTTP.ResponseTIOPFBlockHeader;
+      tiHTTP.tiParseTIOPFHTTPBlockHeader(LHeader, ABlockIndex, ABlockCount, ABlockSize, ATransID);
+    finally
+      LHTTP.Free;
+    end;
   finally
-    LHTTP.Free;
+    tiHTTP.GTIOPFHTTPDefaultBlockSize:= LSaveBlockSize;
   end;
 end;
 
@@ -524,36 +568,35 @@ var
   LBlockCount: Longword;
   LTransID: Longword;
 begin
-check(true);
   L:= TtiBlockStreamCacheForTesting.Create;
   try
-//    L.AddBlockStream('abcDEFgh', 3, LBlockText, LBlockCount, LTransID);
-//    CheckEquals(1, L.Count);
-//    CheckEquals('abc', LBlockText);
-//    CheckEquals(3, LBlockCount);
-//    CheckEquals(1, LTransID);
-//
-//    L.AddBlockStream('jklMNOpq', 3, LBlockText, LBlockCount, LTransID);
-//    CheckEquals(2, L.Count);
-//    CheckEquals('jkl', LBlockText);
-//    CheckEquals(3, LBlockCount);
-//    CheckEquals(2, LTransID);
-//
-//    L.ReadBlock(2, 0, LBlockText);
-//    CheckEquals('jkl', LBlockText);
-//    L.ReadBlock(2, 1, LBlockText);
-//    CheckEquals('MNO', LBlockText);
-//    L.ReadBlock(2, 2, LBlockText);
-//    CheckEquals('pq', LBlockText);
-//    CheckEquals(1, L.Count);
-//
-//    L.ReadBlock(1, 0, LBlockText);
-//    CheckEquals('abc', LBlockText);
-//    L.ReadBlock(1, 1, LBlockText);
-//    CheckEquals('DEF', LBlockText);
-//    L.ReadBlock(1, 2, LBlockText);
-//    CheckEquals('gh', LBlockText);
-//    CheckEquals(0, L.Count);
+    L.AddBlockStream('abcDEFgh', 3, LBlockText, LBlockCount, LTransID);
+    CheckEquals(1, L.Count);
+    CheckEquals('abc', LBlockText);
+    CheckEquals(3, LBlockCount);
+    CheckEquals(1, LTransID);
+
+    L.AddBlockStream('jklMNOpq', 3, LBlockText, LBlockCount, LTransID);
+    CheckEquals(2, L.Count);
+    CheckEquals('jkl', LBlockText);
+    CheckEquals(3, LBlockCount);
+    CheckEquals(2, LTransID);
+
+    L.ReadBlock(2, 0, LBlockText);
+    CheckEquals('jkl', LBlockText);
+    L.ReadBlock(2, 1, LBlockText);
+    CheckEquals('MNO', LBlockText);
+    L.ReadBlock(2, 2, LBlockText);
+    CheckEquals('pq', LBlockText);
+    CheckEquals(1, L.Count);
+
+    L.ReadBlock(1, 0, LBlockText);
+    CheckEquals('abc', LBlockText);
+    L.ReadBlock(1, 1, LBlockText);
+    CheckEquals('DEF', LBlockText);
+    L.ReadBlock(1, 2, LBlockText);
+    CheckEquals('gh', LBlockText);
+    CheckEquals(0, L.Count);
 
   finally
     L.Free;
@@ -574,12 +617,11 @@ begin
     L.Start;
     L.AddBlockStream('abcDEFgh', 3, LBlockText, LBlockCount, LTransID);
     L.AddBlockStream('jklMNOpq', 3, LBlockText, LBlockCount, LTransID);
-    Sleep(2000);
+    Sleep(2500);
     CheckEquals(2, L.Count);
     L.TimeOutSec:= 1;
-    Sleep(2000);
+    Sleep(2500);
     CheckEquals(0, L.Count);
-    
   finally
     L.Free;
   end;

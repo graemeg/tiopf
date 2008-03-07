@@ -187,7 +187,7 @@ begin
     lToolButton.Caption    := cTILogSeverityStrings[ lLogSev ];
     lToolButton.Tag        := Ord(lLogSev);
     lToolButton.Style      := tbsCheck;
-    lToolButton.Down       := lLogSev in gLog.SevToLog;
+    lToolButton.Down       := lLogSev in GLog.SevToLog;
     lToolButton.OnClick    := FormLogLevelButtonClick;
   end;
   
@@ -322,7 +322,7 @@ var
   i: integer;
 begin
   for i := 0 to FLogMenuItem.Count - 1 do
-    FLogMenuItem.Items[i].Checked := TtiLogSeverity(FLogMenuItem.Items[i].Tag) in gLog.SevToLog;
+    FLogMenuItem.Items[i].Checked := TtiLogSeverity(FLogMenuItem.Items[i].Tag) in GLog.SevToLog;
 end;
 
 
@@ -348,9 +348,9 @@ begin
   FToolBar.Buttons[TMenuItem(Sender).Tag].Down := lLogChecked;
 
   if lLogChecked then  // NB Should these refer to local SevToLog rather than the global gLog?
-    gLog.SevToLog := gLog.SevToLog + [lLogSev]
+    GLog.SevToLog := GLog.SevToLog + [lLogSev]
   else
-    gLog.SevToLog := gLog.SevToLog - [lLogSev];
+    GLog.SevToLog := GLog.SevToLog - [lLogSev];
 end;
 
 
@@ -366,31 +366,31 @@ begin
 
   lLogChecked := TToolButton(Sender).Down;
   if lLogChecked then  // NB These refer to just SevToLog, (and keep changes local) rather than the global gLog?
-    gLog.SevToLog := gLog.SevToLog + [lLogSev]
+    GLog.SevToLog := GLog.SevToLog + [lLogSev]
   else
-    gLog.SevToLog := gLog.SevToLog - [lLogSev];
+    GLog.SevToLog := GLog.SevToLog - [lLogSev];
 end;
 
 
 procedure TtiLogToGUI.DoViewLogFile(Sender: TObject);
 begin
-  if (gLog.LogToFileName <> '') and
-     (FileExists(gLog.LogToFileName)) then
-    tiEditFile(gLog.LogToFileName);
+  if (GLog.LogToFileName <> '') and
+     (FileExists(GLog.LogToFileName)) then
+    tiEditFile(GLog.LogToFileName);
 end;
 
 
 procedure TtiLogToGUI.DoOnPopup(Sender: TObject);
 begin
   FViewLogMenuItem.Visible:=
-    (gLog.LogToFileName <> '') and
-    (FileExists(gLog.LogToFileName));
+    (GLog.LogToFileName <> '') and
+    (FileExists(GLog.LogToFileName));
 end;
 
 
 initialization
   if gCommandLineParams.IsParam(csLogVisual) then
-    gLog.RegisterLog(TtiLogToGUI);
+    GLog.RegisterLog(TtiLogToGUI);
 
 end.
 

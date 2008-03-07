@@ -110,6 +110,7 @@ begin
 //  if not IsConsole then
 //    gLog.RegisterLog(TtiLogToGUI.Create);
   gLog.RegisterLog(TtiLogToFile.CreateWithFileName('', '', True));
+  (GLog.FindByLogClass(TtiLogToFile) as TtiLogToFile).EnableCaching:= False;
 
   // See ..\Bin\DUnitTIOPF.ini for details on configuration
   tiBOMsForTesting.RegisterMappings; // Register the OO-DB Mappings to be tested

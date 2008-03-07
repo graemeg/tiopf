@@ -20,7 +20,7 @@ const
   cErrorInvalidCachedBlockStreamTransID = 'Invalid cached block TransID "%d"';
   cDefaultBlockStreamCacheTimeout= 120;
   cDefaultBlockStreamCacheSweepEvery= 120;
-  cDefaultSleepSec= 10;
+  cDefaultSleepSec= 1;
 
 type
 

@@ -23,12 +23,12 @@ initialization
 
   if gCommandLineParams.IsParam(csLog)
   or gCommandLineParams.IsParam(csLogVisual) then
-    gLog.RegisterLog(TtiLogToFile.Create);
+    GLog.RegisterLog(TtiLogToFile.Create);
 
   if gCommandLineParams.IsParam(csLogVisual) then
-    gLog.RegisterLog(TtiLogToGUI.Create);
+    GLog.RegisterLog(TtiLogToGUI.Create);
 
   if gCommandLineParams.IsParam(csLogConsole) then
-    gLog.RegisterLog(TtiLogToConsole.Create);
+    GLog.RegisterLog(TtiLogToConsole.Create);
 
 end.

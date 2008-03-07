@@ -38,7 +38,7 @@ const
 
 var
   URunOnce: Boolean = False;
-    
+
 procedure RegisterTests;
 begin
   RegisterNonPersistentTest(TTestTIThread);
@@ -103,13 +103,7 @@ procedure TTestTIThread.tiThreadFreeOnTerminate;
 var
   LThread: TtiThreadForTesting;
 begin
-  // See not about leak being reported in TThreadDoTerminateFreeOnTerminate
-  if not URunOnce then
-  begin
-    SetAllowedLeakArray([152]);
-    URunOnce:= True;
-  end else
-    SetAllowedLeakArray([128]);
+  SetAllowedLeakArray([152]);
   LThread:= TtiThreadForTesting.Create(True);
   LThread.FreeOnTerminate:= True;
   LThread.Resume;
@@ -200,6 +194,18 @@ begin
   try
     LItem:= TObject.Create;
     UList.Add(LItem);
+    UList.Delete(0);
+    UList.Capacity:= UList.Count;
+    UList.Add(LItem);
+    UList.Delete(0);
+    UList.Capacity:= UList.Count;
+    UList.Add(LItem);
+    UList.Add(LItem);
+    UList.Add(LItem);
+    UList.Add(LItem);
+    UList.Delete(0);
+    UList.Delete(0);
+    UList.Delete(0);
     UList.Delete(0);
     UList.Capacity:= UList.Count;
   finally

@@ -211,9 +211,9 @@ end;
 
 initialization
   lLog := TtiLogToFile.CreateWithDateInFileName;
-  gLog.RegisterLog(LLog);
+  GLog.RegisterLog(LLog);
   Log('Application <' + ParamStr(0) + '> started');
-  gLog.RegisterLog(TLogToError);
+  GLog.RegisterLog(TLogToError);
   
 {$IFDEF FPC}
 {$I tiLogToErrorDialog.lrs}

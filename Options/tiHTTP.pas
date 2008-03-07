@@ -132,8 +132,8 @@ const
   cLocalHost = 'http://localhost';
 
 var
-  gTIHTTPClass : TtiHTTPClass;
-  gTIOPFHTTPDefaultBlockSize: Longword;
+  GTIHTTPClass : TtiHTTPClass;
+  GTIOPFHTTPDefaultBlockSize: Longword;
 
 implementation
 uses
@@ -371,7 +371,7 @@ begin
   //       This will involve storing a TtiBlockedStream and managing the variable order the blocks
   //       may be returned.
   if FDeriveRequestTIOPFBlockHeader then
-    RequestTIOPFBlockHeader:= tiMakeTIOPFHTTPBlockHeader(0, 0, gTIOPFHTTPDefaultBlockSize, 0);
+    RequestTIOPFBlockHeader:= tiMakeTIOPFHTTPBlockHeader(0, 0, GTIOPFHTTPDefaultBlockSize, 0);
   AGetOrPostMethod(AURL, Input, Output);
   DoProgressEvent(0, 0, 0);
   tiParseTIOPFHTTPBlockHeader(ResponseTIOPFBlockHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID);
@@ -383,8 +383,8 @@ begin
       try
         for i:= 1 to LBlockCount-1 do // It's zero indexed, but the first call has already been made
         begin
-          DoProgressEvent(i, LBlockCount, gTIOPFHTTPDefaultBlockSize);
-          RequestTIOPFBlockHeader:= tiMakeTIOPFHTTPBlockHeader(i, LBlockCount, gTIOPFHTTPDefaultBlockSize, LTransID);
+          DoProgressEvent(i, LBlockCount, GTIOPFHTTPDefaultBlockSize);
+          RequestTIOPFBlockHeader:= tiMakeTIOPFHTTPBlockHeader(i, LBlockCount, GTIOPFHTTPDefaultBlockSize, LTransID);
           AGetOrPostMethod(AURL, LInput, LOutput);
           Output.CopyFrom(LOutput, 0);
           if IsTerminated then
@@ -414,7 +414,7 @@ begin
 end;
 
 initialization
-  gTIOPFHTTPDefaultBlockSize:= 0;
+  GTIOPFHTTPDefaultBlockSize:= 0;
 
 finalization
   FreeAndNil(uTIHTTPFactory);

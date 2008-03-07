@@ -38,12 +38,6 @@ type
     constructor CreateWithDateInFileName; overload;
     destructor  Destroy; override;
     procedure   Terminate; override;
-
-    procedure   Log(const ADateTime : string;
-                    const AThreadID : string;
-                    const AMessage : string;
-                    ASeverity: TtiLogSeverity); override;
-
     property    FileName : TFileName read GetFileName;
     property    OverwriteOldFile : boolean read FOverwriteOldFile;
     property    DateInFileName : boolean read FDateInFileName;
@@ -221,13 +215,6 @@ begin
     Sleep(FFileCreateAttemptInterval);
   end;
 
-end;
-
-procedure TtiLogToFile.Log(const ADateTime, AThreadID, AMessage: string;
-  ASeverity: TtiLogSeverity);
-begin
-  // added for testing purposes to get ClassName
-  inherited Log(ADateTime, AThreadID, Format('(%s) %s', [ClassName, AMessage]), ASeverity);
 end;
 
 procedure TtiLogToFile.SetFileCreateAttemptInterval(const Value: integer);

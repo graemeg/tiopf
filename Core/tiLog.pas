@@ -161,7 +161,9 @@ type
     FCritSect: TCriticalSection;
     FThrdLog: TtiThrdLog;
     FSynchronized: Boolean;
-    procedure Init(const ASynchronized: Boolean); // Called by all constructors.
+    FEnableCaching: boolean;
+    procedure Init(const ASynchronized: Boolean);  // Called by all constructors.
+    procedure SetEnableCaching(const AValue: boolean);
   protected
     property  ThrdLog: TtiThrdLog read FThrdLog;
     property  ListWorking: TtiLogEvents read FListWorking;
@@ -181,6 +183,7 @@ type
                     ASeverity: TtiLogSeverity); override;
     procedure   Terminate; override;
     property    Synchronized: Boolean read FSynchronized;
+    property    EnableCaching: boolean read FEnableCaching write SetEnableCaching;
   end;
 
 
@@ -206,7 +209,7 @@ type
 
 
 // The log object is a singleton
-function  gLog : TtiLog;
+function  GLog : TtiLog;
 procedure ReleaseLog; //Allow testing to fully close then re-open Log; Peterm
 
 // Some global proces to make logging easier
@@ -245,8 +248,8 @@ uses
 
 
 var
-  uLog : TtiLog;
-  ubFinalization : boolean;
+  ULog : TtiLog;
+  UFinalization : boolean;
 
 
 const
@@ -268,26 +271,26 @@ const
 
 
 // The log is a singleton
-function gLog : TtiLog;
+function GLog : TtiLog;
 begin
-  if ubFinalization then
+  if UFinalization then
   begin
     result := nil;
     Exit; //==>
   end;
-  if uLog = nil then
-    uLog := TtiLog.Create;
-  result := uLog;
+  if ULog = nil then
+    ULog := TtiLog.Create;
+  result := ULog;
 end;
 
 procedure ReleaseLog;
 begin
-  if uLog <> nil then
+  if ULog <> nil then
   try
-    ubFinalization := True;
-    FreeAndNil(uLog);
+    UFinalization := True;
+    FreeAndNil(ULog);
   finally
-    ubFinalization := False;
+    UFinalization := False;
   end;
 end;
 
@@ -323,9 +326,9 @@ end;
 
 procedure Log(const AMessage : string; ASeverity : TtiLogSeverity = lsNormal);
 begin
-  if ubFinalization then
+  if UFinalization then
     Exit; //==>
-  gLog.Log(AMessage, ASeverity);
+  GLog.Log(AMessage, ASeverity);
 end;
 
 
@@ -356,9 +359,9 @@ end;
 
 procedure LogError(const AMessage : string; ARaiseException : boolean = true);
 begin
-  if ubFinalization then
+  if UFinalization then
     Exit; //==>
-  gLog.Log(AMessage, lsError);
+  GLog.Log(AMessage, lsError);
   {$IFDEF ThirdPartyExceptionHandling}
     if ARaiseException then
       raise exception.Create(AMessage);
@@ -368,9 +371,9 @@ end;
 
 procedure LogError(const AException : Exception; ARaiseException : boolean = true);
 begin
-  if ubFinalization then
+  if UFinalization then
     Exit; //==>
-  gLog.Log(AException.Message, lsError);
+  GLog.Log(AException.Message, lsError);
   {$IFDEF ThirdPartyExceptionHandling}
     if ARaiseException then
       raise Exception(AException.ClassType).Create(AException.Message);
@@ -382,7 +385,7 @@ procedure LogError(const AMessage : string; const AArray : Array of Const);
 var
   ls : string;
 begin
-  if ubFinalization then
+  if UFinalization then
     Exit; //==>
   try
     ls := Format(AMessage, AArray);
@@ -390,15 +393,15 @@ begin
     on e:exception do
       ls := 'Unable to evaluate log message <' + AMessage + '> reason: ' + e.Message;
   end;
-  gLog.Log(ls, lsError);
+  GLog.Log(ls, lsError);
 end;
 
 
 procedure LogWarning(const AMessage : string);
 begin
-  if ubFinalization then
+  if UFinalization then
     Exit; //==>
-  gLog.Log(AMessage, lsWarning);
+  GLog.Log(AMessage, lsWarning);
 end;
 
 
@@ -561,7 +564,7 @@ var
   lsMessage : string;
   lsThreadID : string;
 begin
-  if ubFinalization then
+  if UFinalization then
     Exit; //==>
 
   lsNow := _PadR(FormatDateTime(cIntlDateTimeDisp, Now), Length(cIntlDateTimeDisp));
@@ -604,6 +607,7 @@ const
   CSynchronized = false;
 begin
   inherited Create;
+  FEnableCaching:= true;
   Init(CSynchronized);
 end;
 
@@ -652,7 +656,6 @@ var
 begin
   if not AcceptEvent(ADateTime, AMessage, ASeverity) then
     Exit; //==>
-
   FCritSect.Enter;
   try
     lLogEvent := TtiLogEvent.Create;
@@ -664,8 +667,17 @@ begin
   finally
     FCritSect.Leave;
   end;
+  if Not FEnableCaching then
+    WriteToOutput;
 end;
 
+
+procedure TtiLogToCacheAbs.SetEnableCaching(const AValue: boolean);
+begin
+  Assert(not AValue, 'Once turned off, caching can not be turned back on');
+  Terminate;
+  FEnableCaching := AValue;
+end;
 
 procedure TtiLogToCacheAbs.Terminate;
 begin
@@ -920,10 +932,10 @@ end;
 
 
 initialization
-  ubFinalization := false;
+  UFinalization := false;
 
 finalization
-  ubFinalization := true;
-  FreeAndNil(uLog);
+  UFinalization := true;
+  FreeAndNil(ULog);
 
 end.

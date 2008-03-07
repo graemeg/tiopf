@@ -206,6 +206,7 @@ begin
   FCritSect.Enter;
   try
     FList.Add(AThread);
+    FList.Capacity:= FList.Count; // To suppress a memory leak being reported by DUnit2
     DoThreadCountChange(FList.Count, AThread);
   finally
     FCritSect.Leave;
@@ -297,6 +298,7 @@ begin
     if LIndex <> -1 then
     begin
       FList.Delete(LIndex);
+      FList.Capacity:= FList.Count; // To suppress a memory leak being reported by DUnit2
       DoThreadCountChange(FList.Count, AThread);
     end;
   finally

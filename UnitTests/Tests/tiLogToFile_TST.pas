@@ -22,6 +22,7 @@ type
   TestTtiLogToFile = class(TtiTestCase)
   published
     procedure TestLogFileContention;
+    procedure Log;
   end;
 
 procedure RegisterTests;
@@ -59,6 +60,16 @@ const
     TtiLogToFile_3,
     TtiLogToFile_4
   );
+
+procedure TestTtiLogToFile.Log;
+begin
+  CheckEquals(False,
+    (GLog.FindByLogClass(TtiLogToFile) as TtiLogToFile).EnableCaching,
+      'EnableCaching must be off for unit testing');
+  GLog.Log('test');
+  Check(True);
+  // ToDo: Should check output in file
+end;
 
 procedure TestTtiLogToFile.TestLogFileContention;
 var
