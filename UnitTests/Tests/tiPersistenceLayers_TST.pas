@@ -17,9 +17,6 @@ type
   TTestPersistenceLayers = class(TtiOPFTestCase)
   private
     procedure LoadAllPersistenceLayers;
-    {$IFNDEF STATIC_PERLAYER_LINKING}
-    procedure UnloadAllPersistenceLayers;
-    {$ENDIF}
     procedure CheckLoadedPerLayerCount;
   protected
     procedure   SetUp; override;
@@ -27,12 +24,7 @@ type
   public
     constructor Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   published
-    {$IFDEF STATIC_PERLAYER_LINKING}
     procedure   ConfirmStaticLinking;
-    {$ELSE}
-    procedure   Load_Unload_PersistenceLayer;
-    {$ENDIF}
-//    procedure   DefaultPerLayer;
     procedure   DefaultPerLayerName;
     procedure   FindByLayerName;
     procedure   FindByTIDatabaseClass;
@@ -41,22 +33,6 @@ type
     procedure   CreateTIQuery_DatabaseClass;
     procedure   CreateTIDatabase;
     procedure   CreateTIDBConnectionPoolData;
-
-//    Will have to check each of these.
-//    property  tiDBConnectionPoolDataClass
-//    property  tiQueryClass
-//    property  tiDatabaseClass
-//    property  LayerName
-
-
-{
-    property  ModuleID : HModule read FModuleID write FModuleID;
-    property  DefaultDBConnectionName : string read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
-    property  DefaultDBConnectionPool : TDBConnectionPool read GetDefaultDBConnectionPool;
-    property  DBConnectionPools : TDBConnectionPools read FDBConnectionPools;
-    function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean;
-    procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string);
-}
 
   end;
 
@@ -238,36 +214,10 @@ begin
   end;
 end;
 
-
-{$IFDEF STATIC_PERLAYER_LINKING}
   procedure TTestPersistenceLayers.ConfirmStaticLinking;
   begin
     CheckLoadedPerLayerCount;
   end;
-{$ELSE}
-  procedure TTestPersistenceLayers.Load_Unload_PersistenceLayer;
-  var
-    i : integer;
-    LPersistenceLayer : TtiPersistenceLayer ;
-    lPerFrameworkSetup : TtiOPFTestSetupData;
-  begin
-    if gTIOPFManager.PersistenceLayers.Count <> 0 then
-      UnloadAllPersistenceLayers;
-    LoadAllPersistenceLayers;
-    CheckLoadedPerLayerCount;
-
-    for i := 0 to gTIOPFTestManager.Count - 1 do
-    begin
-      lPerFrameworkSetup := gTIOPFTestManager.Items[i];
-      Check(gTIOPFManager.PersistenceLayers.IsLoaded(lPerFrameworkSetup.PerLayerName), 'Persistence layer <' +
-             lPerFrameworkSetup.PerLayerName + '> not loaded');
-      LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(lPerFrameworkSetup.PerLayerName);
-      CheckNotNull(LPersistenceLayer, 'Can not find RegPerLayer <' + lPerFrameworkSetup.PerLayerName + '>');
-      CheckEquals(LPersistenceLayer.PerLayerName, lPerFrameworkSetup.PerLayerName, 'LPersistenceLayer.LayerName <> lPerFrameworkSetup.PerLayer');
-    end;
-  end;
-{$ENDIF}
-
 
 procedure TTestPersistenceLayers.CheckLoadedPerLayerCount;
 var
@@ -292,49 +242,16 @@ end;
 
 
 procedure TTestPersistenceLayers.LoadAllPersistenceLayers;
-{$IFDEF STATIC_PERLAYER_LINKING}
 begin
   ConfirmStaticLinking;
-{$ELSE}
-var
-  i: integer;
-  LPerLayerName: string;
-begin
-  for i := 0 to gTIOPFTestManager.Count - 1 do
-  begin
-      LPerLayerName := gTIOPFTestManager.Items[i].PerLayerName;
-      if not gTIOPFManager.PersistenceLayers.IsLoaded(LPerLayerName) then
-        gTIOPFManager.PersistenceLayers.LoadPersistenceLayer(LPerLayerName);
-  end;
-{$ENDIF}
 end;
 
 
 procedure TTestPersistenceLayers.TearDown;
 begin
-{$IFDEF STATIC_PERLAYER_LINKING}
   ConfirmStaticLinking;
-{$ELSE}
-  UnLoadAllPersistenceLayers;
-{$ENDIF}
   inherited;
 end;
-
-
-{$IFNDEF STATIC_PERLAYER_LINKING}
-procedure TTestPersistenceLayers.UnloadAllPersistenceLayers;
-var
-  i : integer;
-  LPerLayerName : string;
-begin
-  for i := gTIOPFManager.PersistenceLayers.Count - 1 downto 0 do
-  begin
-    LPerLayerName := gTIOPFManager.PersistenceLayers.Items[i].PerLayerName;
-    gTIOPFManager.PersistenceLayers.UnLoadPersistenceLayer(LPerLayerName);
-  end;
-end;
-{$ENDIF}
-
 
 procedure TTestPersistenceLayers.DefaultPerLayerName;
 var

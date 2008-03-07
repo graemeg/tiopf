@@ -1,9 +1,6 @@
 unit tiOPFCSV_TST;
 
 {$I tiDefines.inc}
-{$IFDEF FPC}
-   {$Define STATIC_PERLAYER_LINKING}
-{$ENDIF}
 
 interface
 uses

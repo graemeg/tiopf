@@ -227,7 +227,7 @@ begin
   LThread.FreeOnTerminate:= True;
   LThread.Resume;
   Sleep(CSleep*2);
-  LThread:= nil; // This won't do the trick
+  // LThread:= nil; // This won't do the trick
   Check(True);
 end;
 

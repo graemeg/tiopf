@@ -461,7 +461,6 @@ end;
 procedure TTestTIWebServer.tiWebServer_PageInBlocks;
 var
   LO: TtiWebServerForTesting;
-  LResult: string;
   LFileName: string;
   LPage: string;
   LBlockCount, LBlockIndex, LBlockSize, LTransID: Longword;

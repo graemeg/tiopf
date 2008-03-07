@@ -787,13 +787,7 @@ begin
   if sutPerLayer in SetupTasks then
   begin
     if not gTIOPFManager.PersistenceLayers.IsLoaded(PerFrameworkSetup.PerLayerName) then
-    begin
-      {$IFDEF STATIC_PERLAYER_LINKING}
         raise EtiOPFException.CreateFmt('Persistence layer not loaded <%s>', [PerFrameworkSetup.PerLayerName]);
-      {$ELSE}
-        gTIOPFManager.LoadPersistenceLayer(PerFrameworkSetup.PerLayerName)
-      {$ENDIF}
-    end;
     if PerFrameworkSetup.CanCreateDatabase then
       CreateDBIfNotExists;
   end;
@@ -894,12 +888,6 @@ begin
     DeleteTestTables;
   if sutDBConnection in SetupTasks then
     gTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PerLayerName);
-  if (sutPerLayer in SetupTasks) then
-  begin
-    {$IFNDEF STATIC_PERLAYER_LINKING}
-      gTIOPFManager.UnloadPersistenceLayer(PerFrameworkSetup.PerLayerName);
-    {$ENDIF}
-  end;
   inherited;
 end;
 

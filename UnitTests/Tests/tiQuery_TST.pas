@@ -49,15 +49,10 @@ type
     procedure ParamIsNull;
   end;
 
-
   TTestTIPersistenceLayers = class(TtiOPFTestCase)
   protected
     procedure   CreateDBIfNotExists; override;
-    procedure   TearDown; override;
   published
-   {$IFNDEF STATIC_PERLAYER_LINKING}
-    procedure   LoadPersistenceLayer;
-    {$ENDIF}
     procedure   ConnectDatabase;
   end;
 
@@ -2216,19 +2211,9 @@ end;
 procedure TTestTIPersistenceLayers.CreateDBIfNotExists;
 begin
   Assert(PerFrameworkSetup <> nil, 'PerFrameworkSetup not assigned');
- {$IFNDEF STATIC_PERLAYER_LINKING}
-  gTIOPFManager.LoadPersistenceLayer(PerFrameworkSetup.PerLayerName);
-  try
-    inherited;
-  finally
-    gTIOPFManager.UnloadPersistenceLayer;
-  end;
-  {$ELSE}
-    inherited;
-  {$ENDIF}
+  inherited;
 end;
 
-{$IFDEF STATIC_PERLAYER_LINKING}
 procedure TTestTIPersistenceLayers.ConnectDatabase;
 var
   i : integer;
@@ -2260,86 +2245,6 @@ begin
     CheckNull(lRegPerLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
     CheckEquals( '', lRegPerLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');
   end;
-end;
-
-{$ELSE}
-
-procedure TTestTIPersistenceLayers.ConnectDatabase;
-var
-  i : integer;
-begin
-  Assert(PerFrameworkSetup <> nil, 'PerFrameworkSetup not assigned');
-  if PerFrameworkSetup.CanCreateDatabase then
-    CreateDBIfNotExists;
-  for i := 1 to cRepeatCount do
-  begin
-    gTIOPFManager.LoadPersistenceLayer(PerFrameworkSetup.PerLayerName);
-    try
-      CheckNull(   gTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-      CheckEquals( '', gTIOPFManager.DefaultDBConnectionName, 'DefaultDBConnectionName');
-      gTIOPFManager.ConnectDatabase(
-        PerFrameworkSetup.DBName,
-        PerFrameworkSetup.Username,
-        PerFrameworkSetup.Password,
-        '',
-        PerFrameworkSetup.PerLayerName);
-      try
-        CheckNotNull(gTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-        CheckEquals(PerFrameworkSetup.DBName, gTIOPFManager.DefaultDBConnectionName, 'DefaultDBConnectionName');
-      finally
-        gTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PerLayerName);
-      end;
-      CheckNull(  gTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-      CheckEquals('', gTIOPFManager.DefaultDBConnectionName, 'DefaultDBConnectionName');
-    finally
-      gTIOPFManager.UnloadPersistenceLayer(PerFrameworkSetup.PerLayerName);
-    end;
-    CheckNull(  gTIOPFManager.DefaultPerLayer, 'DefaultPerLayer');
-    CheckEquals('', gTIOPFManager.DefaultPerLayerName, 'DefaultPerLayerName');
-    CheckNull(  gTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-    CheckEquals('', gTIOPFManager.DefaultDBConnectionName, 'DefaultDBConnectionName');
-  end;
-end;
-{$ENDIF}
-
-{$IFNDEF STATIC_PERLAYER_LINKING}
-procedure TTestTIPersistenceLayers.LoadPersistenceLayer;
-var
-  i : integer;
-begin
-  Assert(PerFrameworkSetup <> nil, 'PerFrameworkSetup not assigned');
-  for i := 1 to cRepeatCount do
-  begin
-    gTIOPFManager.LoadPersistenceLayer(PerFrameworkSetup.PerLayerName);
-    try
-      CheckNotNull(gTIOPFManager.DefaultPerLayer, 'DefaultPerLayer');
-      CheckEquals( PerFrameworkSetup.PerLayerName, gTIOPFManager.DefaultPerLayerName, 'DefaultPerLayerName');
-      CheckNull(   gTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-      CheckEquals( '', gTIOPFManager.DefaultDBConnectionName, 'DefaultDBConnectionName');
-    finally
-      gTIOPFManager.UnLoadPersistenceLayer(PerFrameworkSetup.PerLayerName);
-    end;
-    CheckNull(  gTIOPFManager.DefaultPerLayer, 'DefaultPerLayer');
-    CheckEquals('', gTIOPFManager.DefaultPerLayerName, 'DefaultPerLayerName');
-    CheckNull(  gTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-    CheckEquals('', gTIOPFManager.DefaultDBConnectionName, 'DefaultDBConnectionName');
-  end;
-end;
-{$ENDIF}
-
-procedure TTestTIPersistenceLayers.TearDown;
-{$IFNDEF STATIC_PERLAYER_LINKING}
-var
-  i : integer;
-begin
-  for i := gTIOPFTestManager.Count - 1 downto 0 do
-  begin
-    if gTIOPFManager.PersistenceLayers.IsLoaded(gTIOPFTestManager.Items[i].PerLayerName) then
-      gTIOPFManager.PersistenceLayers.UnLoadPersistenceLayer(gTIOPFTestManager.Items[i].PerLayerName);
-  end;
-{$ELSE}
-begin
-{$ENDIF}
 end;
 
 end.
