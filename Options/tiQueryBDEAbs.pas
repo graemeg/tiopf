@@ -1,6 +1,6 @@
-{$I tiDefines.inc}
-
 unit tiQueryBDEAbs;
+
+{$I tiDefines.inc}
 
 interface
 uses
@@ -31,7 +31,6 @@ type
     procedure   RollBack; override;
 
   end;
-
 
   TtiQueryBDE = class(TtiQuerySQL)
   private
@@ -110,9 +109,6 @@ uses
   ,DB
   ,TypInfo
  ;
-
-var
-  uSessionCount : integer;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
@@ -358,14 +354,12 @@ begin
   FDatabase.SessionName := FSession.Name;
   // Must come up with a better way of doing this.
   FDatabase.DatabaseName := 'DB_' + FSession.SessionName;
-  Inc(uSessionCount);
 end;
 
 destructor TtiDatabaseBDEAbs.Destroy;
 begin
   FDatabase.Free;
   FSession.Free;
-  Dec(uSessionCount);
   inherited;
 end;
 
@@ -600,8 +594,5 @@ function TtiQueryBDE.GetFieldIsNullByIndex(AIndex: Integer): Boolean;
 begin
   result := FQuery.Fields[ AIndex ].IsNull;
 end;
-
-initialization
-  uSessionCount := 0;
 
 end.

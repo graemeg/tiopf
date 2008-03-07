@@ -19,12 +19,17 @@ type
   end;
 
   TTestTIDatabaseBDEParadox = class(TTestTIDatabase)
+  private
   protected
     procedure   SetUp; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
-    procedure Transaction_RollBack; override;
+    procedure Transaction_RollBack;
+
+    procedure tiOPFManager_ConnectDatabase; override;
+    procedure CreateTableDropTable; override;
+
   end;
 
   TTestTIQueryBDEParadox = class(TTestTIQuerySQL)
@@ -90,31 +95,40 @@ procedure TTestTIDatabaseBDEParadox.CreateDatabase;
 var
   lDir : string;
 begin
+  SetAllowedLeakArray([40]);
   lDir := tiGetTempFile('');
   try
-  tiForceRemoveDir(lDir);
-  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  FDatabaseClass.CreateDatabase(lDir, 'null', 'null');
-  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
+    tiForceRemoveDir(lDir);
+    Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
+    FDatabaseClass.CreateDatabase(lDir, 'null', 'null');
+    Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
   finally
     tiForceRemoveDir(lDir);
   end;
 end;
 
+procedure TTestTIDatabaseBDEParadox.CreateTableDropTable;
+begin
+  SetAllowedLeakArray([504]);
+  inherited;
+end;
+
 procedure TTestTIDatabaseBDEParadox.DatabaseExists;
 var
   lDir : string;
+  LResult: boolean;
 begin
+  SetAllowedLeakArray([40]);
   lDir := tiSwapExt(TempFileName, '');
   try
-  tiForceRemoveDir(lDir);
-  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
-        'FDatabaseClass.DatabaseExists()=true when it should =false');
-  ForceDirectories(lDir);
-  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
-        'FDatabaseClass.DatabaseExists()=false when it should =true');
+    tiForceRemoveDir(lDir);
+    Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
+    Check(not FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
+          'FDatabaseClass.DatabaseExists()=true when it should =false');
+    ForceDirectories(lDir);
+    Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
+    Check(FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
+          'FDatabaseClass.DatabaseExists()=false when it should =true');
   finally
     tiForceRemoveDir(lDir);
   end;
@@ -123,6 +137,12 @@ end;
 procedure TTestTIDatabaseBDEParadox.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
+  inherited;
+end;
+
+procedure TTestTIDatabaseBDEParadox.tiOPFManager_ConnectDatabase;
+begin
+  SetAllowedLeakArray([136]);
   inherited;
 end;
 

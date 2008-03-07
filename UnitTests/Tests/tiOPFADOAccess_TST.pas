@@ -115,6 +115,7 @@ var
   lDB : string;
   lDBExists : boolean;
 begin
+  SetAllowedLeakArray([24]);
   lDB := PerFrameworkSetup.DBName;
   Check(FileExists(lDB), 'Database file not found so test can not be performed');
   lDBExists :=

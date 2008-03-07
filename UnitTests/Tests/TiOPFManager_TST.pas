@@ -7,12 +7,7 @@ uses
   ;
 
 type
-  TTesttiOPFManager = class(TtiTestCase)
-  private
-    FtiOPFManager: TtiOPFManager;
-  protected
-    procedure SetUp; override;
-    procedure TearDown; override;
+  TTesttiOPFManager = class(TtiOPFTestCase)
   published
     procedure CreateDestroy;
   end;
@@ -21,9 +16,9 @@ procedure RegisterTests;
 
 implementation
 uses
-  SysUtils
-  ,tiTestDependencies
-  ;
+  SysUtils,
+  tiTestDependencies;
+
   { TTesttiOPFManager }
 
 procedure RegisterTests;
@@ -32,22 +27,18 @@ begin
 end;
 
 procedure TTesttiOPFManager.CreateDestroy;
+var
+  L: TtiOPFManager;
 begin
-  FtiOPFManager := TtiOPFManager.Create;
-  Check(FtiOPFManager.Caption = FtiOPFManager.ClassName,
-    'FtiOPFManager.Caption should be ' + FtiOPFManager.ClassName + ' but was ' + FtiOPFManager.Caption);
-  Check(FtiOPFManager.DefaultPerLayerName = '',
-    'FtiOPFManager.DefaultPerLayerName should empty but was ' + FtiOPFManager.DefaultPerLayerName);
-end;
-
-procedure TTesttiOPFManager.SetUp;
-begin
-  FtiOPFManager := nil;
-end;
-
-procedure TTesttiOPFManager.TearDown;
-begin
-  FtiOPFManager.Free;
+  L:= TtiOPFManager.Create;
+  try
+    Check(L.Caption = L.ClassName,
+      'FtiOPFManager.Caption should be ' + L.ClassName + ' but was ' + L.Caption);
+    Check(L.DefaultPerLayerName = '',
+      'FtiOPFManager.DefaultPerLayerName should empty but was ' + L.DefaultPerLayerName);
+  finally
+    L.Free;
+  end;
 end;
 
 end.

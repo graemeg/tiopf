@@ -9,10 +9,8 @@ uses
   ,tiPersistenceLayers
   {$IFDEF FPC}
   ,TestRegistry
-  {$ELSE}
   {$ENDIF}
  ;
-
 
 const
   cINIPerLayersToTest = 'PerLayersToTest';
@@ -25,6 +23,7 @@ type
   TtiOPFTestSetupData = class(TtiObject)
   private
     FPersistenceLayerDefaults: TtiPersistenceLayerDefaults;
+    FPersistenceLayerClass: TtiPersistenceLayerClass;
     function GetCanCreateDatabase: boolean;
     function GetDatabaseName: string;
     function GetPassword: string;
@@ -41,6 +40,7 @@ type
     procedure   Read; override;
     procedure   Save; override;
 
+    property    PersistenceLayerClass: TtiPersistenceLayerClass read FPersistenceLayerClass;
     property    PerLayerName : string read GetPersistenceLayerName;
     property    DBName       : string read GetDatabaseName;
     property    Username     : string read GetUserName;
@@ -83,9 +83,6 @@ uses
   ,Windows
   {$ENDIF}
   ,tiUtils
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
   ,tiDUnitINI
   ,tiConstants
  ;
@@ -219,10 +216,10 @@ const
   cUnknown = 'Unknown';
 begin
   inherited Create;
+  FPersistenceLayerClass:= TtiPersistenceLayerClass(APersistenceLayer.ClassType);
   FPersistenceLayerDefaults:= TtiPersistenceLayerDefaults.Create;
   APersistenceLayer.AssignPersistenceLayerDefaults(FPersistenceLayerDefaults);
 end;
-
 
 destructor TtiOPFTestSetupData.destroy;
 begin

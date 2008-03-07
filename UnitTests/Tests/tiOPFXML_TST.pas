@@ -88,6 +88,7 @@ procedure TTestTIDatabaseXML.DatabaseExists;
 var
   lFileName : string;
 begin
+  SetAllowedLeakArray([24]);
   lFileName := PerFrameworkSetup.DBName;
   tiDeleteFile(lFileName);
   Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');

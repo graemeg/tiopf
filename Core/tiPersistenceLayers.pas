@@ -108,6 +108,7 @@ type
 
     property  DynamicallyLoaded          : boolean read FDynamicallyLoaded write FDynamicallyLoaded;
     property  ModuleID                   : HModule read FModuleID write FModuleID;
+    // ToDo: DefaultDBConnectionName will actuallly return the connection Alias. Rename property
     property  DefaultDBConnectionName    : string read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
     property  DefaultDBConnectionPool    : TtiDBConnectionPool read GetDefaultDBConnectionPool;
     property  DBConnectionPools          : TtiDBConnectionPools read FDBConnectionPools;

@@ -24,7 +24,6 @@ type
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
   end;
-  
 
   TTestTIQueryCSV = class(TTestTIQueryNonSQL)
   protected
@@ -109,8 +108,6 @@ begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
   inherited;
 end;
-
-{ TtiOPFTestSetupDecoratorCSV }
 
 { TTestTIPersistenceLayersCSV }
 

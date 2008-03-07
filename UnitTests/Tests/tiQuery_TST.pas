@@ -8,10 +8,12 @@ uses
   testregistry,
   {$ENDIF}
   tiTestFramework
+  ,tiDBConnectionPool
   ,tiQuery
   ,SysUtils
   ,Classes
   ,tiPersistenceLayers
+  ,tiOPFManager
  ;
 
 
@@ -50,43 +52,44 @@ type
   end;
 
   TTestTIPersistenceLayers = class(TtiOPFTestCase)
-  protected
-    procedure   CreateDBIfNotExists; override;
   published
     procedure   ConnectDatabase;
+    // ToDo: There are many tests on TtiPersistenceLayerList that must be tested here
   end;
-
 
   // Test TtiDatabase connectivity
   TTestTIDatabase = class(TtiOPFTestCase)
   private
+
   protected
+    FTIOPFManager: TtiOPFManager;
     FPersistenceLayer : TtiPersistenceLayer;
     FDatabase : TtiDatabase;
     FDatabaseClass : TtiDatabaseClass;
+    FPersistenceLayerDefaults: TtiPersistenceLayerDefaults;
+
     procedure SetUp; override;
     procedure TearDown; override;
     procedure DatabaseExists; virtual; abstract;
     procedure CreateDatabase; virtual; abstract;
-    procedure DoThreadedDBConnectionPool(pThreadCount : integer);
+    procedure DoThreadedDBConnectionPool(const ADBConnectionPool: TtiDBConnectionPool; const AThreadCount : integer);
     procedure CheckFieldMetaData(const pDBMetaDataTable : TtiDBMetaDataTable;
                                    const AFieldName : string;
                                    pKind : TtiQueryFieldKind;
                                    pWidth : integer = 0);
-  public
-    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   published
-    procedure LoadDatabaseLayer;
-    procedure NonThreadedDBConnectionPool;
-    procedure ThreadedDBConnectionPool;
 
-    procedure Connect;
-    procedure Transaction_InTransaction;
-    procedure Transaction_Commit;
+    procedure tiOPFManager_ConnectDatabase; virtual;
+    procedure Database_Connect; virtual;
+    procedure NonThreadedDBConnectionPool; virtual;
+    procedure ThreadedDBConnectionPool; virtual;
+
+    procedure Transaction_InTransaction; virtual;
+    procedure Transaction_Commit; virtual;
     procedure Transaction_RollBack; virtual;
-    procedure CreateTableDropTable;
-    procedure CreateTableDropTable_Timing;
-    procedure ReadMetaData;
+    procedure CreateTableDropTable; virtual;
+    procedure CreateTableDropTable_Timing; virtual;
+    procedure ReadMetaData; virtual;
   end;
 
 
@@ -206,9 +209,8 @@ const
 
 implementation
 uses
-   tiOPFManager
   {$IFDEF MSWINDOWS}
-  ,Forms
+   Forms
   ,Windows
   {$ENDIF}
   ,Contnrs
@@ -220,7 +222,6 @@ uses
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
-  ,tiDBConnectionPool
   ,tiOPFTestManager
   ,tiTestDependencies
   ,tiThread
@@ -236,7 +237,27 @@ begin
 end;
 
 
-procedure TTestTIDatabase.Connect;
+procedure TTestTIDatabase.tiOPFManager_ConnectDatabase;
+begin
+  FTIOPFManager.ConnectDatabase(
+    PerFrameworkSetup.DBName,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password,
+    '',
+    PerFrameworkSetup.PerLayerName);
+  try
+    CheckEquals(PerFrameworkSetup.PerLayerName, FPersistenceLayer.PersistenceLayerName, 'PerLayerName');
+    CheckNotNull(FPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+    CheckEquals(PerFrameworkSetup.DBName, FPersistenceLayer.DefaultDBConnectionPool.DBConnectParams.DatabaseName, 'DatabaseName');
+  finally
+    FTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PerLayerName);
+  end;
+  CheckNull(FPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+end;
+
+
+
+procedure TTestTIDatabase.Database_Connect;
 begin
   FDatabase.Connect(PerFrameworkSetup.DBName,
                      PerFrameworkSetup.UserName,
@@ -663,65 +684,58 @@ var
   lDBMetaData : TtiDBMetaData;
   lDBMetaDataTable : TtiDBMetaDataTable;
   lDatabase : TtiDatabase;
-  lRegPerLayer : TtiPersistenceLayer;
 begin
-  gTIOPFManager.ConnectDatabase(
+  FTIOPFManager.ConnectDatabase(
                      PerFrameworkSetup.DBName,
                      PerFrameworkSetup.UserName,
                      PerFrameworkSetup.Password,
                      '',
                      PerFrameworkSetup.PerLayerName);
 
-  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-  CheckNotNull(lRegPerLayer, 'Unable to find RegPerLayer');
+  SetupTestTables(FTIOPFManager);
+  try
+    lDBMetaData := TtiDBMetaData.Create;
     try
-    SetupTestTables;
-    try
-      lDBMetaData := TtiDBMetaData.Create;
+      LDatabase := FPersistenceLayer.DBConnectionPools.Lock(PerFrameworkSetup.DBName);
       try
-        LDatabase :=lRegPerLayer.DBConnectionPools.Lock(PerFrameworkSetup.DBName);
-        try
-          lDatabase.ReadMetaDataTables(lDBMetaData);
-          lDBMetaDataTable := lDBMetaData.FindByTableName('test_item');
-          Check(lDBMetaDataTable <> nil, 'Unable to find metadata for test_item');
-          Check(SameText(lDBMetaDataTable.Name, 'Test_Item'), 'Wrong table found when searching for <test_item>');
-          lDatabase.ReadMetaDataFields(lDBMetaDataTable);
+        lDatabase.ReadMetaDataTables(lDBMetaData);
+        lDBMetaDataTable := lDBMetaData.FindByTableName('test_item');
+        Check(lDBMetaDataTable <> nil, 'Unable to find metadata for test_item');
+        Check(SameText(lDBMetaDataTable.Name, 'Test_Item'), 'Wrong table found when searching for <test_item>');
+        lDatabase.ReadMetaDataFields(lDBMetaDataTable);
 
-          // So, we will just search for the field.
-          // Currently, there is no field information like type or size returned.
-          // This should be added.
-          CheckFieldMetaData(lDBMetaDataTable, 'OID',              qfkInteger);
-          CheckFieldMetaData(lDBMetaDataTable, 'OID_GROUP',        qfkInteger);
-          CheckFieldMetaData(lDBMetaDataTable, 'ITEM_INT_FIELD',   qfkInteger);
-          CheckFieldMetaData(lDBMetaDataTable, 'ITEM_FLOAT_FIELD', qfkFloat);
-          CheckFieldMetaData(lDBMetaDataTable, 'ITEM_STR_FIELD',   qfkString, 10);
-          CheckFieldMetaData(lDBMetaDataTable, 'ITEM_Bool_FIELD',  qfkLogical);
-          CheckFieldMetaData(lDBMetaDataTable, 'ITEM_Date_FIELD',  qfkDateTime);
-          CheckFieldMetaData(lDBMetaDataTable, 'ITEM_Notes_FIELD', qfkLongString);
+        // So, we will just search for the field.
+        // Currently, there is no field information like type or size returned.
+        // This should be added.
+        CheckFieldMetaData(lDBMetaDataTable, 'OID',              qfkInteger);
+        CheckFieldMetaData(lDBMetaDataTable, 'OID_GROUP',        qfkInteger);
+        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_INT_FIELD',   qfkInteger);
+        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_FLOAT_FIELD', qfkFloat);
+        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_STR_FIELD',   qfkString, 10);
+        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_Bool_FIELD',  qfkLogical);
+        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_Date_FIELD',  qfkDateTime);
+        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_Notes_FIELD', qfkLongString);
 
-          lDBMetaDataTable := lDBMetaData.FindByTableName('test_group');
-          Check(lDBMetaDataTable <> nil, 'Unable to find metadata for test_group');
-          Check(SameText(lDBMetaDataTable.Name, 'Test_Group'), 'Wrong table found when searching for <test_group>');
-          lDatabase.ReadMetaDataFields(lDBMetaDataTable);
+        lDBMetaDataTable := lDBMetaData.FindByTableName('test_group');
+        Check(lDBMetaDataTable <> nil, 'Unable to find metadata for test_group');
+        Check(SameText(lDBMetaDataTable.Name, 'Test_Group'), 'Wrong table found when searching for <test_group>');
+        lDatabase.ReadMetaDataFields(lDBMetaDataTable);
 
-          CheckFieldMetaData(lDBMetaDataTable, 'OID',               qfkInteger);
-          CheckFieldMetaData(lDBMetaDataTable, 'GROUP_INT_FIELD',   qfkInteger);
-          CheckFieldMetaData(lDBMetaDataTable, 'GROUP_FLOAT_FIELD', qfkFloat  );
-          CheckFieldMetaData(lDBMetaDataTable, 'GROUP_STR_FIELD',   qfkString, 10);
-          CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Bool_FIELD',  qfkLogical);
-          CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Date_FIELD',  qfkDateTime);
-          CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Notes_FIELD', qfkLongString);
-        finally
-          lRegPerLayer.DBConnectionPools.UnLock(PerFrameworkSetup.DBName, LDatabase);
-        end;
+        CheckFieldMetaData(lDBMetaDataTable, 'OID',               qfkInteger);
+        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_INT_FIELD',   qfkInteger);
+        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_FLOAT_FIELD', qfkFloat  );
+        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_STR_FIELD',   qfkString, 10);
+        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Bool_FIELD',  qfkLogical);
+        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Date_FIELD',  qfkDateTime);
+        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Notes_FIELD', qfkLongString);
       finally
-        lDBMetaData.Free;
+        FPersistenceLayer.DBConnectionPools.UnLock(PerFrameworkSetup.DBName, LDatabase);
       end;
     finally
-      DeleteTestTables;
+      lDBMetaData.Free;
     end;
   finally
-    gTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PerLayerName);
+    DeleteTestTables(FTIOPFManager);
   end;
 end;
 
@@ -796,31 +810,28 @@ type
   TThrdDBConnectionPoolTest = class(TtiThread)
   private
     FCycles: integer;
-    FPerFrameworkSetup: TtiOPFTestSetupData;
     FDone: Boolean;
     FCritSect: TCriticalSection;
-    FPersistenceLayerName: string;
-    FDatabaseName: string;
+    FDBConnectionPool: TtiDBConnectionPool;
     function GetDone: Boolean;
     procedure SetDone(const Value: Boolean);
   public
-    constructor CreateExt(const pPerFrameworkSetup: TtiOPFTestSetupData;
-                           pCycles: integer);
+    constructor CreateExt(const ADBConnectionPool: TtiDBConnectionPool;
+                          const ACycles: integer);
     destructor  Destroy; override;
     procedure   Execute; override;
     property    Done: Boolean read GetDone write SetDone;
   end;
 
-  constructor TThrdDBConnectionPoolTest.CreateExt(const pPerFrameworkSetup : TtiOPFTestSetupData;
-                                                   pCycles : integer);
+  constructor TThrdDBConnectionPoolTest.CreateExt(
+    const ADBConnectionPool: TtiDBConnectionPool;
+    const ACycles : integer);
   begin
     Create(true);
     FCritSect:= TCriticalSection.Create;
     FreeOnTerminate := false;
-    FCycles := pCycles;
-    FPerFrameworkSetup := pPerFrameworkSetup;
-    FPersistenceLayerName:= pPerFrameworkSetup.PerLayerName;
-    FDatabaseName:= pPerFrameworkSetup.DBName;
+    FCycles := ACycles;
+    FDBConnectionPool:= ADBConnectionPool;
     Done := False;
   end;
 
@@ -836,18 +847,11 @@ end;
     lRegPerLayer : TtiPersistenceLayer;
     LDatabase : TtiDatabase;
   begin
-    try
-      for i := 1 to FCycles do
-      begin
-        lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(FPersistenceLayerName);
-        Assert(lRegPerLayer <> nil, 'Unable to find RegPerLayer <' + FPersistenceLayerName);
-        LDatabase := lRegPerLayer.DBConnectionPools.Lock(FDatabaseName);
-        Sleep(100);
-        lRegPerLayer.DBConnectionPools.UnLock(FDatabaseName, LDatabase);
-      end;
-    except
-      on e:exception do
-        LogError(e);
+    for i := 1 to FCycles do
+    begin
+      LDatabase := FDBConnectionPool.Lock;
+      Sleep(100);
+      FDBConnectionPool.UnLock(LDatabase);
     end;
     Done := True;
   end;
@@ -872,16 +876,18 @@ begin
   end;
 end;
 
-procedure TTestTIDatabase.DoThreadedDBConnectionPool(pThreadCount: integer);
-  procedure _CreateThreads(AList : TList;
-                            pThreadCount, pIterations : integer);
+procedure TTestTIDatabase.DoThreadedDBConnectionPool(
+  const ADBConnectionPool: TtiDBConnectionPool; const AThreadCount : integer);
+  procedure _CreateThreads(
+    const ADBConnectionPool: TtiDBConnectionPool;
+    const AList : TList; const AThreadCount, AIterations : integer);
   var
     i : integer;
   begin
-    for i := 1 to pThreadCount do
+    for i := 1 to AThreadCount do
       AList.Add(TThrdDBConnectionPoolTest.CreateExt(
-                   PerFrameworkSetup,
-                   pIterations));
+                   ADBConnectionPool,
+                   AIterations));
   end;
 
   procedure _StartThreads(AList : TList);
@@ -909,28 +915,16 @@ procedure TTestTIDatabase.DoThreadedDBConnectionPool(pThreadCount: integer);
     end;
   end;
 var
-  lList : TObjectList;
+  LList : TObjectList;
 begin
   Check(True); // To Force OnCheckCalled to be called
-  gTIOPFManager.ConnectDatabase(
-                     PerFrameworkSetup.DBName,
-                     PerFrameworkSetup.UserName,
-                     PerFrameworkSetup.Password,
-                     '',
-                     PerFrameworkSetup.PerLayerName);
+  LList := TObjectList.Create;
   try
-    lList := TObjectList.Create;
-    try
-      _CreateThreads(lList, pThreadCount, cuIterations);
-      _StartThreads(lList);
-      _WaitForThreads(lList);
-    finally
-      lList.Free;
-    end;
+    _CreateThreads(ADBConnectionPool, LList, AThreadCount, cuIterations);
+    _StartThreads(LList);
+    _WaitForThreads(LList);
   finally
-    gTIOPFManager.DisconnectDatabase(
-      PerFrameworkSetup.DBName,
-      PerFrameworkSetup.PerLayerName);
+    LList.Free;
   end;
 end;
 
@@ -939,46 +933,47 @@ var
   i : integer;
   LDatabase : TtiDatabase;
   lDBConnectionName : string;
-  lRegPerLayer : TtiPersistenceLayer;
+const
+  CAlias = 'TestAliasName';
 begin
-  gTIOPFManager.ConnectDatabase(
+  FPersistenceLayer.DBConnectionPools.Connect(
+    CAlias,
     PerFrameworkSetup.DBName,
     PerFrameworkSetup.Username,
     PerFrameworkSetup.Password,
-    '',
-    PerFrameworkSetup.PerLayerName);
+    '');
   try
     lDBConnectionName := PerFrameworkSetup.DBName;
     for i := 1 to 10 do
     begin
-      lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-      CheckNotNull(lRegPerLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
-      LDatabase := lRegPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+      LDatabase := FPersistenceLayer.DBConnectionPools.Lock(CAlias);
+      CheckNotNull(LDatabase);
       Sleep(100);
-      lRegPerLayer.DBConnectionPools.UnLock(lDBConnectionName, LDatabase);
+      FPersistenceLayer.DBConnectionPools.UnLock(CAlias, LDatabase);
       Sleep(100);
-      //Log('Thread: %d, Cylce: %d', [GetCurrentThreadID, i]);
     end;
   finally
-    gTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PerLayerName);
+    FPersistenceLayer.DBConnectionPools.Disconnect(CAlias);
   end;
 end;
 
 procedure TTestTIDatabase.ThreadedDBConnectionPool;
-var
-  LPersistenceLayer: TtiPersistenceLayer;
-  LDefaults: TtiPersistenceLayerDefaults;
+const
+  CAlias = 'TestAliasName';
 begin
-  LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-  LDefaults:= TtiPersistenceLayerDefaults.Create;
+  FPersistenceLayer.DBConnectionPools.Connect(
+    CAlias,
+    PerFrameworkSetup.DBName,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password,
+    '');
   try
-    LPersistenceLayer.AssignPersistenceLayerDefaults(LDefaults);
-    if LDefaults.CanSupportMultiUser then
-      DoThreadedDBConnectionPool(cuThreadCount)
+    if FPersistenceLayerDefaults.CanSupportMultiUser then
+      DoThreadedDBConnectionPool(FPersistenceLayer.DefaultDBConnectionPool, cuThreadCount)
     else
-      DoThreadedDBConnectionPool(1)
+      DoThreadedDBConnectionPool(FPersistenceLayer.DefaultDBConnectionPool, 1)
   finally
-    LDefaults.Free;
+    FPersistenceLayer.DBConnectionPools.Disconnect(CAlias);
   end;
 end;
 
@@ -993,8 +988,11 @@ end;
 procedure TTestTIDatabase.SetUp;
 begin
   inherited;
-  FPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-  CheckNotNull(FPersistenceLayer, 'Unable to find RegPerLayer <' + PerFrameworkSetup.PerLayerName);
+  FTIOPFManager:= TtiOPFManager.Create;
+  FTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(PerFrameworkSetup.PersistenceLayerClass);
+  FPersistenceLayer:= FTIOPFManager.DefaultPerLayer;
+  FPersistenceLayerDefaults:= TtiPersistenceLayerDefaults.Create;
+  FPersistenceLayer.AssignPersistenceLayerDefaults(FPersistenceLayerDefaults);
   FDatabaseClass := FPersistenceLayer.DatabaseClass;
   FDatabase := FDatabaseClass.Create;
 end;
@@ -1005,29 +1003,9 @@ begin
     FDatabase.Connected := false;
   FreeAndNil(FDatabase);
   FDatabaseClass := nil;
+  FreeAndNil(FTIOPFManager);
+  FreeAndNil(FPersistenceLayerDefaults);
   inherited;
-end;
-
-procedure TTestTIDatabase.LoadDatabaseLayer;
-var
-  LPersistenceLaye : TtiPersistenceLayer;
-begin
-  gTIOPFManager.ConnectDatabase(
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password,
-    '',
-    PerFrameworkSetup.PerLayerName);
-  try
-    LPersistenceLaye := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-    CheckNotNull(LPersistenceLaye, 'Unable to find RegPerLayer');
-    CheckEquals(   PerFrameworkSetup.PerLayerName, LPersistenceLaye.PersistenceLayerName, 'PerLayerName');
-    CheckNotNull(LPersistenceLaye.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-    CheckEquals(PerFrameworkSetup.DBName, LPersistenceLaye.DefaultDBConnectionPool.DBConnectParams.DatabaseName, 'DatabaseName');
-  finally
-    gTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PerLayerName);
-  end;
-  CheckNull(LPersistenceLaye.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
 end;
 
 procedure TTestTIDatabase.Transaction_Commit;
@@ -1161,12 +1139,6 @@ begin
   finally
     FDatabase.Connected := false;
   end;
-end;
-
-constructor TTestTIDatabase.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
-begin
-  inherited;
-  SetupTasks := [sutPerLayer];
 end;
 
 { TTestTIMetaData }
@@ -2208,42 +2180,34 @@ begin
   DoFieldAsStringLong(4001);
 end;
 
-procedure TTestTIPersistenceLayers.CreateDBIfNotExists;
-begin
-  Assert(PerFrameworkSetup <> nil, 'PerFrameworkSetup not assigned');
-  inherited;
-end;
-
 procedure TTestTIPersistenceLayers.ConnectDatabase;
 var
   i : integer;
-  lRegPerLayer: TtiPersistenceLayer;
+  LPersistenceLayer: TtiPersistenceLayer;
+const
+  CDatabaseAlias = 'TestDatabaseAlias';  
 begin
-  Assert(PerFrameworkSetup <> nil, 'PerFrameworkSetup not assigned');
-  if PerFrameworkSetup.CanCreateDatabase then
-    CreateDBIfNotExists;
-  for i := 1 to cRepeatCount do
-  begin
-    lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-    CheckNotNull(lRegPerLayer);
-    CheckNull(lRegPerLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-    CheckEquals( '', lRegPerLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');
-    gTIOPFManager.ConnectDatabase(
+  CreateDBIfNotExists;
+  LPersistenceLayer:= PerFrameworkSetup.PersistenceLayerClass.Create;
+  try
+    LPersistenceLayer.DBConnectionPools.Connect(
+      CDatabaseAlias,
       PerFrameworkSetup.DBName,
       PerFrameworkSetup.Username,
       PerFrameworkSetup.Password,
-      '',
-      PerFrameworkSetup.PerLayerName);
+      '');
     try
-      CheckNotNull(lRegPerLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-      CheckEquals(PerFrameworkSetup.DBName, lRegPerLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');
-      CheckEquals(1, lRegPerLayer.DBConnectionPools.Count, 'lRegPerLayer.DBConnectionPools.Count');
-      CheckEquals(1, lRegPerLayer.DefaultDBConnectionPool.Count, 'lRegPerLayer.DefaultDBConnectionPool.Count');
+      CheckNotNull(LPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+      CheckEquals(CDatabaseAlias, LPersistenceLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');
+      CheckEquals(1, LPersistenceLayer.DBConnectionPools.Count, 'lRegPerLayer.DBConnectionPools.Count');
+      CheckEquals(1, LPersistenceLayer.DefaultDBConnectionPool.Count, 'lRegPerLayer.DefaultDBConnectionPool.Count');
     finally
-      gTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PerLayerName);
+      LPersistenceLayer.DBConnectionPools.Disconnect(CDatabaseAlias);
     end;
-    CheckNull(lRegPerLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-    CheckEquals( '', lRegPerLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');
+    CheckNull(LPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+    CheckEquals( '', LPersistenceLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');
+  finally
+    LPersistenceLayer.Free;
   end;
 end;
 
