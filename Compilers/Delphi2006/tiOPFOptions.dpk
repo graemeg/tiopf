@@ -64,11 +64,12 @@ contains
   tiQueryXML in '..\..\Options\tiQueryXML.pas',
   tiQueryXMLLight in '..\..\Options\tiQueryXMLLight.pas',
   tiTextParser in '..\..\Options\tiTextParser.pas',
-  tiTextParserStructCSV in '..\..\Options\tiTextParserStructCSV.pas',
   tiXML in '..\..\Options\tiXML.pas',
   tiSingleInstanceApp in '..\..\Options\tiSingleInstanceApp.pas',
   tiQueue in '..\..\Options\tiQueue.pas',
   tiRegistry in '..\..\Options\tiRegistry.pas',
-  tiDataset in '..\..\Options\tiDataset.pas';
+  tiDataset in '..\..\Options\tiDataset.pas',
+  tiStructuredCSVReader in '..\..\Options\tiStructuredCSVReader.pas',
+  tiStructuredCSVWriter in '..\..\Options\tiStructuredCSVWriter.pas';
 
 end.

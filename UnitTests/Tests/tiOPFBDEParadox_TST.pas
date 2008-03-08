@@ -116,7 +116,6 @@ end;
 procedure TTestTIDatabaseBDEParadox.DatabaseExists;
 var
   lDir : string;
-  LResult: boolean;
 begin
   SetAllowedLeakArray([40]);
   lDir := tiSwapExt(TempFileName, '');

@@ -844,7 +844,6 @@ end;
   procedure TThrdDBConnectionPoolTest.Execute;
   var
     i : integer;
-    lRegPerLayer : TtiPersistenceLayer;
     LDatabase : TtiDatabase;
   begin
     for i := 1 to FCycles do
@@ -2182,7 +2181,6 @@ end;
 
 procedure TTestTIPersistenceLayers.ConnectDatabase;
 var
-  i : integer;
   LPersistenceLayer: TtiPersistenceLayer;
 const
   CDatabaseAlias = 'TestDatabaseAlias';  
