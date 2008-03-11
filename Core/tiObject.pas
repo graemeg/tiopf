@@ -1921,7 +1921,7 @@ begin
   {$IFDEF OID_AS_INT64}
     OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
-    OID.GetNextValue;
+    OIDGenerator.AssignNextOID(OID);
   {$ENDIF}
 end;
 
@@ -1932,7 +1932,7 @@ begin
   {$IFDEF OID_AS_INT64}
     OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
-    OID.GetNextValue;
+    OIDGenerator.AssignNextOID(OID);
   {$ENDIF}
 end;
 
@@ -3389,7 +3389,7 @@ begin
   {$IFDEF OID_AS_INT64}
     OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
-    OID.GetNextValue;
+    OIDGenerator.AssignNextOID(OID);
   {$ENDIF}
   ObjectState := posCreate;
 end;

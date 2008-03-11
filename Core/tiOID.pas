@@ -50,8 +50,6 @@ type
     function    Clone : TtiOID;
     function    NullOIDAsString : string; virtual; abstract;
 
-    // This one gets tested for each DB, and each OID type
-    procedure   GetNextValue; virtual;
   end;
 
   TtiOIDClass = class of TtiOID;
@@ -127,11 +125,6 @@ end;
 function TtiOID.Equals(const ACompareWith: TtiOID): boolean;
 begin
   result := Compare(ACompareWith) = 0;
-end;
-
-procedure TtiOID.GetNextValue;
-begin
-  GTIOPFManager.DefaultOIDGenerator.AssignNextOID(Self);
 end;
 
 { TtiOIDGenerator }

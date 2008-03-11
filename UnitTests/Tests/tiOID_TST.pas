@@ -26,7 +26,6 @@ type
     procedure   TtiNextOIDGeneratorAssignNextOIDSingleUser;
     procedure   TtiNextOIDGeneratorAssignNextOIDMultiUser;
 
-    procedure   TtiOIDGetNextValue;
     procedure   TtiOIDAssignToTIQueryParam;
     procedure   TtiOIDAssignToTIQuery;
     procedure   TtiOIDAssignToTIQueryFieldName;
@@ -702,25 +701,6 @@ begin
     end;
   finally
     LNextOIDGenerator.Free;
-  end;
-end;
-
-procedure TTestTIOIDPersistent.TtiOIDGetNextValue;
-var
-  LOID: TtiOID;
-begin
-  GTIOPFManager.DefaultOIDGenerator:= FOIDGeneratorClass.Create;
-  try
-    LOID:= FOIDGeneratorClass.OIDClass.Create;
-    try
-      CheckEquals(LOID.NullOIDAsString, LOID.AsString);
-      LOID.GetNextValue;
-      CheckNotEquals(LOID.NullOIDAsString, LOID.AsString);
-    finally
-      LOID.Free;
-    end;
-  finally
-    GTIOPFManager.DefaultOIDGenerator:= GTIOPFTestManager.DefaultOIDGeneratorClass.Create;
   end;
 end;
 

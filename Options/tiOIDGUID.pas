@@ -31,7 +31,6 @@ type
     function  Compare(const ACompareWith : TtiOID): integer; override;
     procedure SetToNull; override;
     function  NullOIDAsString : string; override;
-    procedure GetNextValue; override;
   end;
 
 
@@ -168,18 +167,6 @@ begin
   result := '';
 end;
 
-
-procedure TOIDGUID.GetNextValue;
-var
-  lNextOIDGenerator : TtiOIDGeneratorGUID;
-begin
-  lNextOIDGenerator := TtiOIDGeneratorGUID.Create;
-  try
-    lNextOIDGenerator.AssignNextOID(Self);
-  finally
-    lNextOIDGenerator.Free;
-  end;
-end;
 
 
 procedure TOIDGUID.AssignToTIQueryParam(const AFieldName: string;const AParams: TtiBaseObject);
