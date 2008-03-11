@@ -75,6 +75,7 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
+    class function OIDClass: TtiOIDClass; override;
     procedure   AssignNextOID(
       const AAssignTo : TtiOID;
       const ADBConnectionName: string = '';
@@ -265,7 +266,7 @@ procedure TtiOIDGeneratorHex.AssignNextOID(
       const APersistenceLayerName: string = '');
 begin
   Assert(AAssignTo.TestValid(TtiOID), CTIErrorInvalidObject);
-  AAssignTo.AsString := NextOID(ADatabaseName, APersistenceLayerName);
+  AAssignTo.AsString := NextOID(ADBConnectionName, APersistenceLayerName);
 end;
 
 constructor TtiOIDGeneratorHex.Create;
@@ -295,7 +296,7 @@ begin
     if FDirty then
     begin
       gTIOPFManager.VisitorManager.Execute(CNextOIDHexReadHigh,
-        FNextOIDHexData, ADBConectionName, APersistenceLayerName);
+        FNextOIDHexData, ADatabaseAliasName, APersistenceLayerName);
       FDirty := false;
       FLastOIDValue:=FNextOIDHexData.NextHexOID + FLowRangeMask;
     end;
@@ -314,6 +315,11 @@ begin
   finally
     FCritSect.Leave;
   end;
+end;
+
+class function TtiOIDGeneratorHex.OIDClass: TtiOIDClass;
+begin
+  result:= TOIDHex;
 end;
 
 { TVisDBNextOIDHexAmblerRead }
@@ -376,7 +382,7 @@ end;
 
 initialization
 
-  GTIOPFManager.DefaultOIDClass:= TOIDHex;
+  GTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorHex.Create;
   gTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerRead);
   gTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerUpdate);
 

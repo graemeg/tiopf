@@ -30,7 +30,6 @@ type
     function  GetAsVariant: Variant;override;
     procedure SetAsVariant(const AValue: Variant);override;
   public
-    class function NextOIDGeneratorClass: TtiOIDGeneratorClass; override;
     function  IsNull : boolean; override;
     procedure AssignToTIQueryParam(const AFieldName : string; const AParams : TtiBaseObject); override;
     procedure AssignToTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
@@ -63,6 +62,7 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
+    class function OIDClass: TtiOIDClass; override;
     procedure   AssignNextOID(
       const AAssignTo : TtiOID;
       const ADBConnectionName: string = '';
@@ -166,7 +166,7 @@ procedure TtiOIDGeneratorInt64.AssignNextOID(
       const APersistenceLayerName: string = '');
 begin
   Assert(AAssignTo.TestValid(TtiOID), CTIErrorInvalidObject);
-  AAssignTo.AsString := IntToStr(NextOID(ADatabaseName, APersistenceLayerName));
+  AAssignTo.AsString := IntToStr(NextOID(ADBConnectionName, APersistenceLayerName));
 end;
 
 constructor TtiOIDGeneratorInt64.Create;
@@ -195,7 +195,7 @@ begin
     if FDirty then
     begin
       gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData,
-        ADatabaseAliasName, APersistenceLayerName);
+        ADBConnectionName, APersistenceLayerName);
       FDirty := false;
     end;
 
@@ -213,6 +213,11 @@ begin
 
 end;
 
+class function TtiOIDGeneratorInt64.OIDClass: TtiOIDClass;
+begin
+  result:= TOIDInt64;
+end;
+
 procedure TOIDInt64.SetToNull;
 begin
   FAsInt64 := cNullOIDInteger;
@@ -226,11 +231,6 @@ end;
 procedure TOIDInt64.SetAsVariant(const AValue: Variant);
 begin
   FAsInt64 := AValue;
-end;
-
-class function TOIDInt64.NextOIDGeneratorClass: TtiOIDGeneratorClass;
-begin
-  Result:= TtiOIDGeneratorInt64;
 end;
 
 function TOIDInt64.NullOIDAsString: string;
@@ -303,7 +303,7 @@ begin
 end;
 
 initialization
-  gTIOPFManager.DefaultOIDClass:= TOIDInt64;
+  gTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorInt64.Create;
   gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
   gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
 

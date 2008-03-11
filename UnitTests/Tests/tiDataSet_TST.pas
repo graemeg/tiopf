@@ -113,9 +113,6 @@ begin
 end;
 
 { TTestTiDataSetElements }
-var
-  uTtiDatasetItem: TtiDatasetItem;
-
 procedure TTestTiDataset.Setup;
 begin
   inherited;
