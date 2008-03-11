@@ -29,11 +29,16 @@ type
     procedure TstFindMethodWithParam(AObject : TtiObject; var AFound : boolean; AUserContext: Pointer);
     procedure TstFindAll(AObject : TtiObject; var AFound : boolean);
     function  CreateTestDataList: TtstTIObjectList;
+  protected
   published
     procedure Owner;
     procedure Parent_InheritsFromVsIs;
     procedure Parent_TtiObject;
     procedure Parent_TtiObjectList;
+
+    procedure OIDGenerator;
+    procedure GetOID;
+
     procedure Deleted_TtiObject;
     procedure Deleted_TtiObjectList_AutoSetItemOwnerTrue;
     procedure Deleted_TtiObjectList_AutoSetItemOwnerFalse;
@@ -264,11 +269,14 @@ implementation
 uses
   tiBOMsForTesting
   ,tiTestDependencies
+  ,tiOPFManager
   ,tiUtils
   ,tiVisitor
   ,tiConstants
   ,tiOID
+  ,tiOIDGUID
   ,tiRTTI
+  ,tiExcept
 
   // Delphi
   ,SysUtils
@@ -1126,6 +1134,43 @@ begin
   end;
 end;
 
+type
+
+  TtiObjectForTestingOID = class(TtiObject)
+  public
+    function OIDGenerator: TtiOIDGenerator; override;
+    function GetOID: TtiOID; override;
+  end;
+
+  function TtiObjectForTestingOID.GetOID: TtiOID;
+  begin
+    result:= inherited GetOID;
+  end;
+
+  function TtiObjectForTestingOID.OIDGenerator: TtiOIDGenerator;
+  begin
+    result:= inherited OIDGenerator;
+  end;
+
+procedure TTestTIObject.OIDGenerator;
+var
+  LObject: TtiObjectForTestingOID;
+  LOIDGeneratorClass: TtiOIDGeneratorClass;
+begin
+  LOIDGeneratorClass:= TtiOIDGeneratorClass(GTIOPFManager.DefaultOIDGenerator.ClassType);
+  try
+    GTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorGUID.Create;
+    LObject:= TtiObjectForTestingOID.Create;
+    try
+      CheckIs(LObject.OIDGenerator, TtiOIDGeneratorGUID);
+      CheckSame(GTIOPFManager.DefaultOIDGenerator, LObject.OIDGenerator);
+    finally
+      LObject.Free;
+    end;
+  finally
+    GTIOPFManager.DefaultOIDGenerator:= LOIDGeneratorClass.Create;
+  end;
+end;
 
 procedure TTestTIObject.Owner;
 var
@@ -1405,6 +1450,45 @@ begin
   end;
 end;
 
+
+procedure TTestTIObject.GetOID;
+var
+  LObject: TtiObjectForTestingOID;
+  LOIDGeneratorClass: TtiOIDGeneratorClass;
+begin
+  LOIDGeneratorClass:= TtiOIDGeneratorClass(GTIOPFManager.DefaultOIDGenerator.ClassType);
+  try
+    GTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorGUID.Create;
+    try
+      LObject:= TtiObjectForTestingOID.Create;
+      try
+        Check(LObject.GetOID.ClassType = GTIOPFManager.DefaultOIDGenerator.OIDClass);
+      finally
+        LObject.Free;
+      end;
+    finally
+      GTIOPFManager.DefaultOIDGenerator:= nil;
+    end;
+
+    LObject:= TtiObjectForTestingOID.Create;
+    try
+      try
+        LObject.GetOID;
+        Fail('Exception not raised');
+      except
+        on e:exception do
+        begin
+          CheckIs(e, EtiOPFProgrammerException);
+          CheckEquals(CErrorDefaultOIDGeneratorNotAssigned, e.message);
+        end;
+      end;
+    finally
+      LObject.Free;
+    end;
+  finally
+    GTIOPFManager.DefaultOIDGenerator:= LOIDGeneratorClass.Create;
+  end;
+end;
 
 procedure TTestTIObject.GetPropValue;
 var
@@ -3505,7 +3589,7 @@ procedure TTestTIObjectList.Find;
 var
   lData : TtstTIObjectList;
   lTarget: TtstTIObject;
-  lOID: TOID;
+  lOID: TtiOID;
   i : integer;
 begin
   lData := CreateTestData;
@@ -3541,7 +3625,7 @@ procedure TTestTIObjectList.FindInHierarchy;
 var
   lData : TtstTIObjectList;
   lTarget: TtstTIObject;
-  lOID: TOID;
+  lOID: TtiOID;
   i : integer;
 begin
   lData := CreateTestData;
@@ -3919,6 +4003,11 @@ end;
 
 { TTestTIObjectDeleteOwned }
 
+{ TtiObjectForTestingOID }
+
 end.
+
+
+
 
 

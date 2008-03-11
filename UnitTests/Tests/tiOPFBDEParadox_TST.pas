@@ -25,7 +25,7 @@ type
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
-    procedure Transaction_RollBack;
+    procedure Transaction_RollBack; override;
 
     procedure tiOPFManager_ConnectDatabase; override;
     procedure CreateTableDropTable; override;
@@ -50,10 +50,14 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerBDEParadox = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDBDEParadox = class(TTestTIOIDPersistentGUID)
   protected
     procedure   SetUp; override;
-  published
+  end;
+
+  TTestTIOIDPersistentIntegerBDEParadox = class(TTestTIOIDPersistentInteger)
+  protected
+    procedure   SetUp; override;
   end;
 
 procedure RegisterTests;
@@ -83,7 +87,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIPersistenceLayersBDEParadox.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIDatabaseBDEParadox.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIQueryBDEParadox.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIOIDManagerBDEParadox.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIOIDPersistentGUIDBDEParadox.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIOIDPersistentIntegerBDEParadox.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIAutoMapOperationBDEParadox.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestAutomappingCriteriaBDEParadox.Suite);
   end;
@@ -174,14 +179,6 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerBDEParadox }
-
-procedure TTestTIOIDManagerBDEParadox.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
-  inherited;
-end;
-
 { TTestTIQueryBDEParadox }
 
 procedure TTestTIQueryBDEParadox.SetUp;
@@ -193,6 +190,22 @@ end;
 { TTestAutomappingCriteriaBDEParadox }
 
 procedure TTestAutomappingCriteriaBDEParadox.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentIntegerBDEParadox }
+
+procedure TTestTIOIDPersistentIntegerBDEParadox.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDBDEParadox }
+
+procedure TTestTIOIDPersistentGUIDBDEParadox.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
   inherited;

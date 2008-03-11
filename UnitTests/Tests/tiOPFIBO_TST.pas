@@ -35,7 +35,12 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerIBO = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDIBO = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerIBO = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -64,7 +69,8 @@ begin
     RegisterTest(cTIQueryTestName, TTestTIPersistenceLayersIBO.Suite);
     RegisterTest(cTIQueryTestName, TTestTIDatabaseIBO.Suite);
     RegisterTest(cTIQueryTestName, TTestTIQueryIBO.Suite);
-    RegisterTest(cTIQueryTestName, TTestTIOIDManagerIBO.Suite);
+    RegisterTest(cTIQueryTestName, TTestTIOIDPersistentGUIDIBO.Suite);
+    RegisterTest(cTIQueryTestName, TTestTIOIDPersistentIntegerIBO.Suite);
     RegisterTest(cTIQueryTestName, TTestTIAutoMapOperationIBO.Suite);
   end;
 end;
@@ -154,9 +160,17 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerXMLLight }
+{ TTestTIOIDPersistentIntegerIBO }
 
-procedure TTestTIOIDManagerIBO.SetUp;
+procedure TTestTIOIDPersistentIntegerIBO.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBO);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDIBO }
+
+procedure TTestTIOIDPersistentGUIDIBO.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBO);
   inherited;

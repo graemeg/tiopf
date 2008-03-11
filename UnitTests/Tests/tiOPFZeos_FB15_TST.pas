@@ -40,7 +40,12 @@ type
   end;
 
 
-  TTestTIOIDManagerZeos = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDZeos = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerZeos = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -70,7 +75,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIPersistenceLayersZeos.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIDatabaseZeos.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIQueryZeos.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDManagerZeos.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDPersistentGUIDZeos.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDPersistentIntegerZeos.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIAutoMapOperationZeos.Suite);
   end;
 end;
@@ -164,7 +170,15 @@ end;
 
 { TTestTIOIDManagerZeos }
 
-procedure TTestTIOIDManagerZeos.SetUp;
+procedure TTestTIOIDPersistentIntegerZeos.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDZeos }
+
+procedure TTestTIOIDPersistentGUIDZeos.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
   inherited;

@@ -5,18 +5,17 @@
 interface
 
 uses
-  Classes
-  ,tiBaseObject
-  ,Contnrs
-  ,tiVisitor
- ;
+  Classes,
+  tiBaseObject,
+  Contnrs,
+  tiVisitor;
 
 const
   cDefaultOIDFieldName       = 'OID';
 
 type
 
-  TOID = Int64;
+  TtiOID = Int64;
   TNextOIDMgr = class(TtiBaseObject)
   private
     FList : TObjectList;
@@ -24,46 +23,45 @@ type
   public
     constructor Create; virtual;
     destructor  Destroy; override;
-    function    NextOID(const ADatabaseName : string = ''): TOID; virtual;
+    function    NextOID(const ADatabaseName : string = ''): TtiOID; virtual;
     procedure   UnloadNextOIDGenerator(const ADatabaseName : string);
     function    FindByDatabaseName(const ADatabaseName : string): TtiBaseObject;
   end;
 
-  function OIDToString(AOID : TOID): string;
-  function OIDEquals(AOID1, AOID2 : TOID): boolean;
-  function OIDCompare(AOID1, AOID2 : TOID): Integer;
+  function OIDToString(AOID : TtiOID): string;
+  function OIDEquals(AOID1, AOID2 : TtiOID): boolean;
+  function OIDCompare(AOID1, AOID2 : TtiOID): Integer;
 
 implementation
 
 uses
-  tiQuery
-  ,SysUtils
-  ,tiUtils
-  ,tiOPFManager
-  ,tiDialogs
-  ,tiObject
-  ,tiVisitorDB
-  ,tiConstants
-  ,tiPersistenceLayers
- ;
+  tiQuery,
+  SysUtils,
+  tiUtils,
+  tiOPFManager,
+  tiDialogs,
+  tiObject,
+  tiVisitorDB,
+  tiConstants,
+  tiPersistenceLayers;
 
 type
 
-  TNextOIDGenerator = class(TtiObject)
+  TtiOIDGenerator = class(TtiObject)
   private
-    FHigh : TOID;
-    FLow : TOID;
-    FLowRange: TOID;
+    FHigh : TtiOID;
+    FLow : TtiOID;
+    FLowRange: TtiOID;
     FDirty: boolean;
     FDatabaseName: string;
-    procedure SetHigh(const AValue: TOID);
+    procedure SetHigh(const AValue: TtiOID);
   public
     constructor Create; override;
-    function NextOID : TOID;
+    function NextOID : TtiOID;
   published
-    property High    : TOID read FHigh  write SetHigh;
-    property Low     : TOID read FLow;
-    property LowRange : TOID read FLowRange write FLowRange;
+    property High    : TtiOID read FHigh  write SetHigh;
+    property Low     : TtiOID read FLow;
+    property LowRange : TtiOID read FLowRange write FLowRange;
     property DatabaseName : string read FDatabaseName write FDatabaseName;
   end;
 
@@ -84,17 +82,17 @@ type
 const
   cuLowRange = 100;
 
-function OIDToString(AOID : TOID): string;
+function OIDToString(AOID : TtiOID): string;
 begin
   result := IntToStr(AOID);
 end;
 
-function OIDEquals(AOID1, AOID2 : TOID): boolean;
+function OIDEquals(AOID1, AOID2 : TtiOID): boolean;
 begin
   result := AOID1 = AOID2;
 end;
 
-function OIDCompare(AOID1, AOID2 : TOID): Integer;
+function OIDCompare(AOID1, AOID2 : TtiOID): Integer;
 begin
   if AOID1 < AOID2 then
     result := -1
@@ -106,10 +104,10 @@ end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
-// * TNextOIDGenerator
+// * TtiOIDGenerator
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-constructor TNextOIDGenerator.Create;
+constructor TtiOIDGenerator.Create;
 begin
   inherited;
   FLow := 0;
@@ -118,7 +116,7 @@ begin
   FDirty := true;
 end;
 
-function TNextOIDGenerator.NextOID: TOID;
+function TtiOIDGenerator.NextOID: TtiOID;
 begin
   if FDirty then
     gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, Self);
@@ -131,7 +129,7 @@ begin
 
 end;
 
-procedure TNextOIDGenerator.SetHigh(const AValue : TOID);
+procedure TtiOIDGenerator.SetHigh(const AValue : TtiOID);
 begin
   FHigh := AValue;
   FLow := 0;
@@ -162,16 +160,16 @@ begin
   result := nil;
   for i := 0 to FList.Count - 1 do
     if SameText(ADatabaseName,
-                 TNextOIDGenerator(FList.Items[i]).DatabaseName) then
+                 TtiOIDGenerator(FList.Items[i]).DatabaseName) then
     begin
-      result := TNextOIDGenerator(FList.Items[i]);
+      result := TtiOIDGenerator(FList.Items[i]);
       Exit; //==>
     end;
 
   if result = nil then
   begin
-    result := TNextOIDGenerator.Create;
-    TNextOIDGenerator(result).DatabaseName := ADatabaseName;
+    result := TtiOIDGenerator.Create;
+    TtiOIDGenerator(result).DatabaseName := ADatabaseName;
     FList.Add(result);
   end;
 
@@ -185,16 +183,16 @@ begin
   result.ObjectState := posCreate;
 end;
 }
-function TNextOIDMgr.NextOID(const ADatabaseName : string = ''): TOID;
+function TNextOIDMgr.NextOID(const ADatabaseName : string = ''): TtiOID;
 var
-  lNextOIDGenerator : TNextOIDGenerator;
+  lNextOIDGenerator : TtiOIDGenerator;
   lDatabaseName : string;
 begin
   if ADatabaseName = '' then
     lDatabaseName := gTIOPFManager.DefaultDBConnectionName
   else
     lDatabaseName := ADatabaseName;
-  lNextOIDGenerator := (FindByDatabaseName(lDatabaseName) as TNextOIDGenerator);
+  lNextOIDGenerator := (FindByDatabaseName(lDatabaseName) as TtiOIDGenerator);
   Assert(lNextOIDGenerator <> nil,
          'No NextOIDGenerator found for ' + lDatabaseName);
   result := lNextOIDGenerator.NextOID;
@@ -202,9 +200,9 @@ end;
 
 procedure TNextOIDMgr.UnloadNextOIDGenerator(const ADatabaseName: string);
 var
-  lNextOIDGenerator : TNextOIDGenerator;
+  lNextOIDGenerator : TtiOIDGenerator;
 begin
-  lNextOIDGenerator := (FindByDatabaseName(ADatabaseName) as TNextOIDGenerator);
+  lNextOIDGenerator := (FindByDatabaseName(ADatabaseName) as TtiOIDGenerator);
   Assert(lNextOIDGenerator <> nil,
          'No NextOIDGenerator found for ' + ADatabaseName);
   FList.Remove(lNextOIDGenerator);
@@ -212,7 +210,7 @@ end;
 
 function TVisDBNextOIDAmblerRead.AcceptVisitor: boolean;
 begin
-  result := (TtiVisited(Visited)is TNextOIDGenerator);
+  result := (TtiVisited(Visited)is TtiOIDGenerator);
 end;
 
 procedure TVisDBNextOIDAmblerRead.Execute(const AData: TtiVisited);
@@ -228,7 +226,7 @@ begin
 
   Query.SelectRow('Next_OID', nil);
   try
-    TNextOIDGenerator(Visited).High := Query.FieldAsInteger[ 'OID' ];
+    TtiOIDGenerator(Visited).High := Query.FieldAsInteger[ 'OID' ];
   finally
     Query.Close;
   end;
@@ -238,7 +236,7 @@ end;
 
 function TVisDBNextOIDAmblerUpdate.AcceptVisitor: boolean;
 begin
-  result := (TtiVisited(Visited) is TNextOIDGenerator);
+  result := (TtiVisited(Visited) is TtiOIDGenerator);
 end;
 
 procedure TVisDBNextOIDAmblerUpdate.Execute(const AData: TtiVisited);
@@ -255,7 +253,7 @@ begin
 
   lParams := TtiQueryParams.Create;
   try
-    lParams.SetValueAsInteger('OID', TNextOIDGenerator(Visited).High + 1);
+    lParams.SetValueAsInteger('OID', TtiOIDGenerator(Visited).High + 1);
     Query.UpdateRow('Next_OID', lParams, nil);
   finally
     lParams.Free;

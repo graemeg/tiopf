@@ -43,7 +43,12 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerCrSdac = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDCrSdac = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerCrSdac = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -70,7 +75,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistCrSdac), TTestTIPersistenceLayersCrSdac.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCrSdac), TTestTIDatabaseCrSdac.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCrSdac), TTestTIQueryCrSdac.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistCrSdac), TTestTIOIDManagerCrSdac.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistCrSdac), TTestTIOIDPersistentGUIDCrSdac.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistCrSdac), TTestTIOIDPersistentIntegerCrSdac.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCrSdac), TTestTIAutoMapOperationCrSdac.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCrSdac), TTestAutomappingCriteriaCrSdac.Suite);
 
@@ -148,17 +154,25 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerCrSdac }
+{ TTestAutomappingCriteriaCrSdac }
 
-procedure TTestTIOIDManagerCrSdac.SetUp;
+procedure TTestAutomappingCriteriaCrSdac.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCrSdac);
   inherited;
 end;
 
-{ TTestAutomappingCriteriaCrSdac }
+{ TTestTIOIDPersistentIntegerCrSdac }
 
-procedure TTestAutomappingCriteriaCrSdac.SetUp;
+procedure TTestTIOIDPersistentIntegerCrSdac.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCrSdac);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDCrSdac }
+
+procedure TTestTIOIDPersistentGUIDCrSdac.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCrSdac);
   inherited;

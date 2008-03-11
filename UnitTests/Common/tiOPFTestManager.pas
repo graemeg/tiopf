@@ -7,6 +7,7 @@ uses
    Classes  // needed for TStringList
   ,tiObject
   ,tiPersistenceLayers
+  ,tiOID
   {$IFDEF FPC}
   ,TestRegistry
   {$ENDIF}
@@ -71,6 +72,8 @@ type
     procedure   UnloadPersistenceLayersNotSelected;
     procedure   Read; override;
     procedure   Save; override;
+
+    function    DefaultOIDGeneratorClass: TtiOIDGeneratorClass;
   end;
 
 function  GTIOPFTestManager: TtiOPFTestManager;
@@ -85,6 +88,7 @@ uses
   ,tiUtils
   ,tiDUnitINI
   ,tiConstants
+  ,tiOIDGUID
  ;
 
 const
@@ -123,6 +127,11 @@ begin
   end;
 end;
 
+
+function TtiOPFTestManager.DefaultOIDGeneratorClass: TtiOIDGeneratorClass;
+begin
+  result:= TtiOIDGeneratorGUID;
+end;
 
 function TtiOPFTestManager.FindByPerLayerName(const APerLayerName: string): TtiOPFTestSetupData;
 var
@@ -319,3 +328,4 @@ finalization
   UTIOPFTestManager.Free;
 
 end.
+

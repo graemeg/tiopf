@@ -1075,6 +1075,7 @@ begin
   APersistenceLayerDefaults.Password:= 'masterkey';
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
+  APersistenceLayerDefaults.CanSupportSQL:= True;
 end;
 
 function TtiPersistenceLayerIBO.GetDatabaseClass: TtiDatabaseClass;

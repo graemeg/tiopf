@@ -758,6 +758,7 @@ begin
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= false;
+  APersistenceLayerDefaults.CanSupportSQL:= True;
 end;
 
 function TtiPersistenceLayerASqlite3.GetDatabaseClass: TtiDatabaseClass;

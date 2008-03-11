@@ -63,7 +63,7 @@ type
     FPostCode: string;
     function    GetAsOneLine: string;
   protected
-    function    GetOID: TOID; override;
+    function    GetOID: TtiOID; override;
   public
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
@@ -122,7 +122,7 @@ end;
 constructor TClient.CreateNew(const pDatabaseName: string = ''; const pPerLayerName: string = '');
 begin
   inherited;
-  FAdrs.OID.GetNextValue(pDatabaseName, pPerLayerName);
+  FAdrs.OIDGenerator.AssignNextOID(FAdrs.OID, pDatabaseName, pPerLayerName);
   FAdrs.ObjectState:= posCreate;
 end;
 
@@ -166,7 +166,7 @@ begin
 end;
 
 
-function TAdrs.GetOID: TOID;
+function TAdrs.GetOID: TtiOID;
 begin
   Assert(Owner.TestValid, CTIErrorInvalidObject);
   result:= Owner.OID;

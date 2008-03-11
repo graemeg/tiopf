@@ -1331,7 +1331,7 @@ var
   lColName:    string;
   lPropName:   string;
   {$IFNDEF OID_AS_INT64}
-  lOID:        TOID;
+  lOID:        TtiOID;
   {$ENDIF}
 begin
   Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
@@ -1348,9 +1348,9 @@ begin
       (Pos('_OID', UpperCase(lPropName)) = 0) then
       _SetOIDParam(AParams, AData, lColName, lPropName)
     {$IFNDEF OID_AS_INT64}
-    else if tiPropertyInheritsFrom(AData.ClassType, lPropName, TOID) then
+    else if tiPropertyInheritsFrom(AData.ClassType, lPropName, TtiOID) then
     begin
-      lOID := TOID(GetObjectProp(AData, lPropName));
+      lOID := TtiOID(GetObjectProp(AData, lPropName));
       if assigned(lOID) then
         lOID.AssignToTIQueryParam(lColName, AParams);
     end
@@ -1551,7 +1551,7 @@ procedure TVisAutoCollectionRead.MapRowToObject(ACheckForDuplicates: boolean);
   function _DuplicateObject(var AIndex: integer): boolean;
   var
     lData:      TtiObject;
-    lOID:       TOID;
+    lOID:       TtiOID;
     lPKColName: string;
     i:          integer;
   begin
@@ -1574,7 +1574,7 @@ procedure TVisAutoCollectionRead.MapRowToObject(ACheckForDuplicates: boolean);
     else
       AIndex := -1;
     {$ELSE}
-    lOID := gTIOPFManager.OIDFactory.CreateOID;
+    lOID := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
     try
       lOID.AssignFromTIQuery(lPKColName, Query);
       lData  := TtiObjectList(Visited).Find(lOID);
@@ -1915,7 +1915,7 @@ procedure TVisAutoAbs.QueryResultToObject(const ATarget: TtiObject; const pAttrC
     lStream:    TStream;
     lString:    string;
     {$IFNDEF OID_AS_INT64}
-    lOID:       TOID;
+    lOID:       TtiOID;
     {$ENDIF}
   begin
     lColName  := pAttrColMap.DBColMap.ColName;
@@ -1934,9 +1934,9 @@ procedure TVisAutoAbs.QueryResultToObject(const ATarget: TtiObject; const pAttrC
 
     //    // handles published OIDs
     {$IFNDEF OID_AS_INT64}
-    if tiPropertyInheritsFrom(ATarget.ClassType, lPropName, TOID) then
+    if tiPropertyInheritsFrom(ATarget.ClassType, lPropName, TtiOID) then
     begin
-      lOID := TOID(GetObjectProp(ATarget, lPropName));
+      lOID := TtiOID(GetObjectProp(ATarget, lPropName));
       if Assigned(lOID) then
       begin
         lOID.AssignFromTIQuery(lColName, Query);

@@ -245,6 +245,7 @@ begin
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= False;
+  APersistenceLayerDefaults.CanSupportSQL:= True;
 end;
 
 function TtiPersistenceLayerADOAccess.GetDatabaseClass: TtiDatabaseClass;

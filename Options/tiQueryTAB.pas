@@ -195,6 +195,7 @@ begin
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= False;
+  APersistenceLayerDefaults.CanSupportSQL:= False;
 end;
 
 function TtiPersistenceLayerTab.GetDatabaseClass: TtiDatabaseClass;

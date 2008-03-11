@@ -25,7 +25,7 @@ type
     procedure EditCustomers;
     procedure EditVendors;
     procedure EditParts;
-    procedure CreateNewOrder(ACustNo: TOID = nil);
+    procedure CreateNewOrder(ACustNo: TtiOID = nil);
   end;
 
 var
@@ -42,7 +42,7 @@ uses
 , CustomerEditU, CustomerListU, BaseListU, VendorListU, PartsListU,
   OrderEditU;
 
-procedure TmodShared.CreateNewOrder(ACustNo: TOID = nil);
+procedure TmodShared.CreateNewOrder(ACustNo: TtiOID = nil);
 var newOrder: TOrder;
 begin
   newOrder := TOrder.CreateNew;

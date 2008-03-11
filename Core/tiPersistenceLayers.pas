@@ -83,7 +83,6 @@ type
     FModuleID: HModule;
     FDBConnectionPools: TtiDBConnectionPools;
     FDefaultDBConnectionPool : TtiDBConnectionPool;
-    FNextOIDMgr: TNextOIDMgr;
     FDynamicallyLoaded: boolean;
     function  GetDefaultDBConnectionPool: TtiDBConnectionPool;
     function  GetDefaultDBConnectionName: string;
@@ -112,7 +111,6 @@ type
     property  DefaultDBConnectionName    : string read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
     property  DefaultDBConnectionPool    : TtiDBConnectionPool read GetDefaultDBConnectionPool;
     property  DBConnectionPools          : TtiDBConnectionPools read FDBConnectionPools;
-    property  NextOIDMgr                 : TNextOIDMgr read FNextOIDMgr;
 
     function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean;
     procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string);
@@ -129,14 +127,15 @@ type
     FCanSupportMultiUser: Boolean;
     FUserName: string;
     FPersistenceLayerName: string;
+    FCanSupportSQL: Boolean;
   public
-    constructor Create;
     property PersistenceLayerName: string read FPersistenceLayerName write FPersistenceLayerName;
     property DatabaseName: string read FDatabaseName write FDatabaseName;
     property UserName: string read FUserName write FUserName;
     property Password: string read FPassword write FPassword;
     property CanCreateDatabase: Boolean read FCanCreateDatabae write FCanCreateDatabae;
     property CanSupportMultiUser: Boolean read FCanSupportMultiUser write FCanSupportMultiUser;
+    property CanSupportSQL: Boolean read FCanSupportSQL write FCanSupportSQL;
   end;
 
 implementation
@@ -153,10 +152,6 @@ begin
   inherited;
   ModuleID := 0;
   FDBConnectionPools:= TtiDBConnectionPools.Create(Self);
-  FNextOIDMgr := TNextOIDMgr.Create;
-  {$IFNDEF OID_AS_INT64}
-  FNextOIDMgr.Owner := Self;
-  {$ENDIF}
   FDynamicallyLoaded := false;
 end;
 
@@ -254,7 +249,6 @@ end;
 destructor TtiPersistenceLayer.Destroy;
 begin
   FDBConnectionPools.Free;
-  FNextOIDMgr.Free;
   inherited;
 end;
 
@@ -545,14 +539,8 @@ end;
 {$I tiPersistenceLayersImpl.inc}
 {$ENDIF}
 
-{ TtiPersistenceLayerDefaults }
-
-constructor TtiPersistenceLayerDefaults.Create;
-begin
-  inherited;
-end;
-
 end.
+
 
 
 

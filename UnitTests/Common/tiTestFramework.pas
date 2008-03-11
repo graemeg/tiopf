@@ -10,6 +10,7 @@ uses
   ,tiQuery
   ,tiExcept
   ,tiOPFManager
+  ,tiPersistenceLayers
   {$IFDEF FPC}
   ,fpcunit
   ,testregistry
@@ -184,7 +185,6 @@ type
   TtiDUnitSetupTask   = (sutPerLayer, sutDBConnection, sutTables);
   TtiDUnitSetupTasks  = set of TtiDUnitSetupTask;
 
-
   // Abstract test case for testing persistence related classes
   TtiOPFTestCase = class(TtiTestCase)
   private
@@ -195,6 +195,7 @@ type
     function    GetUserName: string;
     function    GetPassword: string;
     function    GetPerLayerName: string;
+    function    GetPersistenceLayer: TtiPersistenceLayer;
   protected
     procedure   SetUp; override;
     procedure   TearDown; override;
@@ -248,19 +249,17 @@ type
     property    DatabaseName     : string read GetDatabaseName;
     property    UserName         : string read GetUserName;
     property    Password         : string read GetPassword;
+    property    PersistenceLayer: TtiPersistenceLayer read GetPersistenceLayer;
     property    SetupTasks       : TtiDUnitSetupTasks read FSetupTasks write SetSetupTasks;
     function    GetName: string; override;
   end;
 
-
-  TtiOPFTestSetupDecorator = class(TTestSetup)
+  TtiOPFTestCaseWithDatabaseConnection = class(TtiOPFTestCase)
   protected
-    function  PerLayerID: ShortString;
+    function PersistenceLayerSupportsMultiUser: boolean;
+    function PersistenceLayerSupportsSQL: boolean;
   public
-    function  GetName: string; {$IFNDEF FPC}override{$ELSE}virtual{$ENDIF};
-    {$IFDEF FPC}
-    property  Name: string read GetName;
-    {$ENDIF}
+    constructor Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   end;
 
 function  tiCreateStringOfSize(const ASize : LongInt): string;
@@ -277,7 +276,6 @@ const
 implementation
 uses
    tiUtils
-  ,tiPersistenceLayers
   ,tiConstants
   ,tiINI
   ,StrUtils 
@@ -712,17 +710,6 @@ end;
 
 
 { TtiOPFTestSetupData }
-
-function TtiOPFTestSetupDecorator.GetName: string;
-begin
-  result := 'SetUp [' + PerLayerID + '] connection for ' +
-    {$IFNDEF FPC}
-    inherited GetName; //Was Test.Name
-    {$ELSE}
-    Test.TestName
-    {$ENDIF}
-   ;
-end;
 
 
 constructor TtiOPFTestCase.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
@@ -1309,7 +1296,11 @@ end;
 
 procedure TtiOPFTestCase.DropTestTable;
 begin
-  try gTIOPFManager.DropTable(cTIQueryTableName, DatabaseName, PerLayerName) except end;
+  try
+    gTIOPFManager.DropTable(cTIQueryTableName, DatabaseName, PerLayerName)
+  except
+    // Swallow
+  end;
 end;
 
 
@@ -1372,19 +1363,17 @@ begin
 end;
 
 
-function TtiOPFTestSetupDecorator.PerLayerID: ShortString;
-begin
-  Result := '';
-//  Result:= gTIOPFTestManager.SelectedOPFTestSetupDataAsString;
-end;
-
-
 function TtiOPFTestCase.GetPerLayerName: string;
 begin
   Assert(FtiOPFTestSetupData.TestValid, CTIErrorInvalidObject);
   result:= FtiOPFTestSetupData.PerLayerName;
 end;
 
+
+function TtiOPFTestCase.GetPersistenceLayer: TtiPersistenceLayer;
+begin
+  result:= GTIOPFManager.PersistenceLayers.FindByPerLayerName(GetPerLayerName);
+end;
 
 procedure TtiTestCase.CheckFormattedMessage(const AFormat: string;
   const AArgs: array of const; const AActual: string;
@@ -1966,6 +1955,40 @@ procedure TtiTestCase.CheckEquals(const AField: TtiFieldString;
   const AValue: string);
 begin
   CheckEquals(AField.AsString, AValue);
+end;
+
+{ TtiOPFTestCaseWithDatabaseConnection }
+
+constructor TtiOPFTestCaseWithDatabaseConnection.Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; 
+begin
+  SetupTasks := [sutPerLayer, sutDBConnection];
+  inherited;
+end;
+
+function TtiOPFTestCaseWithDatabaseConnection.PersistenceLayerSupportsMultiUser: boolean;
+var
+  LDefaults: TtiPersistenceLayerDefaults;
+begin
+  LDefaults:= TtiPersistenceLayerDefaults.Create;
+  try
+    PersistenceLayer.AssignPersistenceLayerDefaults(LDefaults);
+    Result:= LDefaults.CanSupportMultiUser;
+  finally
+    LDefaults.Free;
+  end;
+end;
+
+function TtiOPFTestCaseWithDatabaseConnection.PersistenceLayerSupportsSQL: boolean;
+var
+  LDefaults: TtiPersistenceLayerDefaults;
+begin
+  LDefaults:= TtiPersistenceLayerDefaults.Create;
+  try
+    PersistenceLayer.AssignPersistenceLayerDefaults(LDefaults);
+    Result:= LDefaults.CanSupportSQL;
+  finally
+    LDefaults.Free;
+  end;
 end;
 
 initialization

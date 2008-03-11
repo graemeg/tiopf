@@ -42,7 +42,7 @@ type
     destructor  Destroy; override;
   end;
 
-  TtiThreads = class(TObjectList)
+  TtiThreadList = class(TObjectList)
   protected
     function    GetItem(Index: integer): TtiThread; reintroduce;
     procedure   SetItem(Index: integer; const Value: TtiThread); reintroduce;
@@ -52,11 +52,13 @@ type
     {: Performs the method AMethod on every thread in the list.}
     procedure   ForEach(AMethod: TObjForEachMethodRegular); overload;
     property    Items[Index:integer]: TtiThread read GetItem write SetItem;
+    procedure   WaitForAll;
+    procedure   ResumeAll;
   end;
 
   TtiActiveThreadList = class(TtiBaseObject)
   private
-    FList: TtiThreads;
+    FList: TtiThreadList;
     FCritSect : TCriticalSection;
     FOnThreadCountChange: TThreadMethod;
     FThreadCount: integer;
@@ -171,9 +173,9 @@ begin
   SetIdeDebuggerThreadName(Self.ThreadID, PChar(FName));
 end;
 
-{ TtiThreads }
+{ TtiThreadList }
 
-procedure TtiThreads.ForEach(AMethod: TObjForEachMethod);
+procedure TtiThreadList.ForEach(AMethod: TObjForEachMethod);
 var
   i: integer;
 begin
@@ -181,7 +183,7 @@ begin
     AMethod(Items[i]);
 end;
 
-procedure TtiThreads.ForEach(AMethod: TObjForEachMethodRegular);
+procedure TtiThreadList.ForEach(AMethod: TObjForEachMethodRegular);
 var
   i: integer;
 begin
@@ -189,14 +191,30 @@ begin
     AMethod(Items[i]);
 end;
 
-function TtiThreads.GetItem(Index: integer): TtiThread;
+function TtiThreadList.GetItem(Index: integer): TtiThread;
 begin
   result := TtiThread(inherited GetItem(Index));
 end;
 
-procedure TtiThreads.SetItem(Index: integer; const Value: TtiThread);
+procedure TtiThreadList.ResumeAll;
+var
+  i: integer;
+begin
+  for i := 0 to Count - 1 do
+    Items[i].Resume;
+end;
+
+procedure TtiThreadList.SetItem(Index: integer; const Value: TtiThread);
 begin
   inherited SetItem(Index, Value);
+end;
+
+procedure TtiThreadList.WaitForAll;
+var
+  i: integer;
+begin
+  for i := 0 to Count - 1 do
+    Items[i].WaitFor;
 end;
 
 { TtiActiveThreadList }
@@ -217,7 +235,7 @@ end;
 constructor TtiActiveThreadList.Create;
 begin
   inherited;
-  FList := TtiThreads.Create;
+  FList := TtiThreadList.Create;
   FList.OwnsObjects := False;
   FCritSect := TCriticalSection.Create;
   FThreadCount:= 0;
@@ -361,3 +379,4 @@ begin
 end;
 
 end.
+

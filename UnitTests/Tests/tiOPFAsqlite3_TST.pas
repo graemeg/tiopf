@@ -44,10 +44,14 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerAsqlite3 = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDAsqlite3 = class(TTestTIOIDPersistentGUID)
   protected
     procedure   SetUp; override;
-  published
+  end;
+
+  TTestTIOIDPersistentIntegerAsqlite3 = class(TTestTIOIDPersistentInteger)
+  protected
+    procedure   SetUp; override;
   end;
 
 procedure RegisterTests;
@@ -78,7 +82,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIPersistenceLayersAsqlite3.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIDatabaseAsqlite3.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIQueryAsqlite3.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIOIDManagerAsqlite3.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIOIDPersistentGUIDAsqlite3.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIOIDPersistentIntegerAsqlite3.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIAutoMapOperationAsqlite3.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestAutomappingCriteriaAsqlite3.Suite);
   end;
@@ -166,7 +171,7 @@ end;
 
 { TTestTIOIDManagerAsqlite3 }
 
-procedure TTestTIOIDManagerAsqlite3.SetUp;
+procedure TTestTIOIDPersistentIntegerAsqlite3.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
   inherited;
@@ -183,6 +188,14 @@ end;
 { TTestAutomappingCriteriaAsqlite3 }
 
 procedure TTestAutomappingCriteriaAsqlite3.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDAsqlite3 }
+
+procedure TTestTIOIDPersistentGUIDAsqlite3.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
   inherited;

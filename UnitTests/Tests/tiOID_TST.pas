@@ -4,144 +4,134 @@ unit tiOID_TST;
 
 interface
 uses
-  Classes  // needed for TStringList
+  Classes,
   {$IFDEF FPC}
-  ,testregistry
+  testregistry,
   {$ENDIF}
-  ,tiTestFramework
-  ,tiOID
- ;
+  tiTestFramework,
+  tiOID;
 
 type
 
-  TTestTIOIDManager = class(TtiOPFTestCase)
-  private
-    FOIDs: TStrings;
-    procedure DoOnNextOID_Integer(Sender: TObject);
-  public
-    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
-  published
-    procedure   OIDFactory_RegisterMapping;
-    procedure   OIDFactory_CreateOID;
-    procedure   OIDFactory_CreateNextOIDGenerator;
-
-    procedure   NextOIDMgrInteger;
-    procedure   NextOIDMgrString;
-    procedure   NextOIDMgrGUID;
-
-    procedure   NextOIDStringSetNextOIDChars;
-    procedure   NextOIDInteger;
-    procedure   NextOIDInteger_MultiUserAccess; virtual;
-    procedure   NextOIDString;
-    procedure   NextOIDGUID;
-
-    procedure   tiObject_CreateNew;            
-    procedure   tiObject_CreateNew_OIDGUID  ; // GUID OID
-    procedure   tiObject_CreateNew_OIDInteger; // GUID Integer
-  end;
-
-
-  TTestTIOID = class(TtiTestCase)
-  private
-    FOIDClass : TOIDClass;
-  published
-    procedure AsString ; virtual; abstract;
-    procedure AsVariant; virtual; abstract;
-    procedure Null     ; virtual; abstract;
-    procedure Assign   ; virtual; abstract;
-    procedure Compare  ;
-    procedure Equals;
-    procedure Clone;
-
-// Database dependant methods that do not have tests (yet)
-//    procedure AssignToTIQuery;
-//    procedure AssignToTIQuery;
-//    procedure AssignFromTIQuery;
-//    procedure AssignFromTIQuery;
-//    procedure EqualsQueryField;
-//    procedure GetNextValue;
-  end;
-
-
-  TTestTIOIDInteger = class(TTestTIOID)
+  // Persistence TtiOID tests
+  TTestTIOIDPersistent = class(TtiOPFTestCaseWithDatabaseConnection)
   protected
-    procedure SetUp; override;
-  published
-    procedure AsString; override;
-    procedure AsVariant; override;
-    procedure Null; override;
-    procedure Assign; override;
-  end;
-  
-
-  TTestTIOIDString = class(TTestTIOID)
-  protected
-    procedure SetUp; override;
-  published
-    procedure AsString; override;
-    procedure AsVariant; override;
-    procedure Null; override;
-    procedure Assign; override;
-  end;
-
-
-  TTestTIOIDGUID = class(TTestTIOID)
-  private
-    FGuidAsString: string;
-  protected
+    FOIDGeneratorClass: TtiOIDGeneratorClass;
+    FOIDList: TStringList;
+    procedure TestThenAddOIDAsString(const AOID: string);
     procedure SetUp; override;
     procedure TearDown; override;
   published
+
+    procedure   TtiNextOIDGeneratorAssignNextOIDSingleUser;
+    procedure   TtiNextOIDGeneratorAssignNextOIDMultiUser;
+
+    procedure   TtiOIDGetNextValue;
+    procedure   TtiOIDAssignToTIQueryParam;
+    procedure   TtiOIDAssignToTIQuery;
+    procedure   TtiOIDAssignToTIQueryFieldName;
+    procedure   TtiOIDAssignFromTIQuery;
+    procedure   TtiOIDAssignFromTIQueryFieldName;
+    procedure   TtiOIDEqualsQueryField;
+
+    procedure   TtiObjectCreateNew;
+
+  end;
+
+  TTestTIOIDPersistentGUID = class(TTestTIOIDPersistent)
+  protected
+    procedure SetUp; override;
+    procedure TearDown; override;
+  end;
+
+  TTestTIOIDPersistentInteger = class(TTestTIOIDPersistent)
+  protected
+    procedure SetUp; override;
+    procedure TearDown; override;
+  end;
+
+  TTestTIOIDNonPersistent = class(TtiTestCase)
+  private
+    FOIDClass : TtiOIDClass;
+  published
+    procedure NextOIDGeneratorClass; virtual; abstract;
+    procedure AsString; virtual; abstract;
+    procedure AsVariant; virtual; abstract;
+    procedure IsNullAndSetToNull; virtual; abstract;
+    procedure Assign; virtual; abstract;
+    procedure NullOIDAsString; virtual; abstract;
+    procedure Compare;
+    procedure Equals;
+    procedure Clone;
+
+  end;
+
+  TTestTIOIDInteger = class(TTestTIOIDNonPersistent)
+  protected
+    procedure SetUp; override;
+  published
+    procedure NextOIDGeneratorClass; override;
     procedure AsString; override;
     procedure AsVariant; override;
-    procedure Null; override;
+    procedure IsNullAndSetToNull; override;
     procedure Assign; override;
-  public
-    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
+    procedure NullOIDAsString; override;
+  end;
+
+  TTestTIOIDString = class(TTestTIOIDNonPersistent)
+  protected
+    procedure SetUp; override;
+  published
+    procedure NextOIDGeneratorClass; override;
+    procedure AsString; override;
+    procedure AsVariant; override;
+    procedure IsNullAndSetToNull; override;
+    procedure Assign; override;
+    procedure NullOIDAsString; override;
   end;
 
 
-  // A support class for testing TOIDFactory
-  TOIDFactory_TST = class(TOIDFactory)
+  TTestTIOIDGUID = class(TTestTIOIDNonPersistent)
   private
-    function GetItems(AIndex: Integer): TOIDClassMapping;
-  public
-    function CountMappings : integer;
-    property Items[AIndex:Integer]: TOIDClassMapping read GetItems;
+    FGuidAsString: string;
+  protected
+    procedure SetUpOnce; override;
+    procedure SetUp; override;
+    procedure TearDown; override;
+  published
+    procedure NextOIDGeneratorClass; override;
+    procedure AsString; override;
+    procedure AsVariant; override;
+    procedure IsNullAndSetToNull; override;
+    procedure Assign; override;
+    procedure NullOIDAsString; override;
   end;
-
 
 procedure RegisterTests;
 
-
 implementation
 uses
-   tiOPFManager
-  ,tiObject 
-  ,SysUtils
-  ,tiOIDGUID    // Pull in the integer OID framework
-  ,tiOIDInteger // Pull in the integer OID framework
-  ,tiOIDString  // Pull in the string OID framework
-  ,tiLog
+  tiOPFManager,
+  tiObject,
+  SysUtils,
+  tiOIDGUID,    // Pull in the integer OID framework
+  tiOIDInteger, // Pull in the integer OID framework
+  tiOIDString,  // Pull in the string OID framework
+  tiQuery,
+  tiThread,
   {$IFDEF MSWINDOWS}
-  ,tiWin32
+  tiWin32,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,Math
-  ,tiTestDependencies
-  ,tiPersistenceLayers
-  ,tiUtils
-  ,tiGeneratorThread
-  ,tiConstants
- ;
-  
+  tiOPFTestManager,
+  tiTestDependencies,
+  tiUtils,
+  tiConstants;
 
 const
   // Number of times to repeat NextOID test
   // Set a high number for thorough testing (eg, 100000)
   // Set a low number for quick testing (eg, 100)
-  cRepeatCount = 100;
-
+  CRepeatCount = 100;
 
 procedure RegisterTests;
 begin
@@ -153,10 +143,10 @@ end;
 
 { TTestTIOID }
 
-procedure TTestTIOID.Clone;
+procedure TTestTIOIDNonPersistent.Clone;
 var
-  lOID1 : TOID;
-  lOID2 : TOID;
+  lOID1 : TtiOID;
+  lOID2 : TtiOID;
 begin
   lOID1 := FOIDClass.Create;
   try
@@ -174,10 +164,10 @@ begin
 end;
 
 
-procedure TTestTIOID.Compare;
+procedure TTestTIOIDNonPersistent.Compare;
 var
-  lOID1 : TOID;
-  lOID2 : TOID;
+  lOID1 : TtiOID;
+  lOID2 : TtiOID;
   lCompare : integer;
 begin
   lOID1 := FOIDClass.Create;
@@ -207,10 +197,10 @@ begin
 end;
 
 
-procedure TTestTIOID.Equals;
+procedure TTestTIOIDNonPersistent.Equals;
 var
-  lOID1 : TOID;
-  lOID2 : TOID;
+  lOID1 : TtiOID;
+  lOID2 : TtiOID;
   lEquals : boolean;
 begin
   lOID1 := FOIDClass.Create;
@@ -240,8 +230,8 @@ end;
 
 procedure TTestTIOIDInteger.Assign;
 var
-  lOID1 : TOID;
-  lOID2 : TOID;
+  lOID1 : TtiOID;
+  lOID2 : TtiOID;
 begin
   lOID1 := FOIDClass.Create;
   try
@@ -261,7 +251,7 @@ end;
 
 procedure TTestTIOIDInteger.AsString;
 var
-  lOID : TOID;
+  lOID : TtiOID;
 begin
   lOID := FOIDClass.Create;
   try
@@ -275,7 +265,7 @@ end;
 
 procedure TTestTIOIDInteger.AsVariant;
 var
-  lOID : TOID;
+  lOID : TtiOID;
   lInt : integer;
   lStr : string;
 begin
@@ -293,9 +283,21 @@ begin
 end;
 
 
-procedure TTestTIOIDInteger.Null;
+procedure TTestTIOIDInteger.NextOIDGeneratorClass;
 var
-  lOID : TOID;
+  LOIDGenerator: TtiOIDGenerator;
+begin
+  LOIDGenerator:= TtiOIDGeneratorInteger.Create;
+  try
+    Check(LOIDGenerator.OIDClass = TOIDInteger);
+  finally
+    LOIDGenerator.Free;
+  end;
+end;
+
+procedure TTestTIOIDInteger.IsNullAndSetToNull;
+var
+  lOID : TtiOID;
 begin
   lOID := FOIDClass.Create;
   try
@@ -310,6 +312,18 @@ begin
 end;
 
 
+procedure TTestTIOIDInteger.NullOIDAsString;
+var
+  LOID: TtiOID;
+begin
+  LOID:= TOIDInteger.Create;
+  try
+    CheckEquals('0', LOID.NullOIDAsString);
+  finally
+    LOID.Free;
+  end;
+end;
+
 procedure TTestTIOIDInteger.SetUp;
 begin
   inherited;
@@ -321,8 +335,8 @@ end;
 
 procedure TTestTIOIDGUID.Assign;
 var
-  lOID1: TOID;
-  lOID2: TOID;
+  lOID1: TtiOID;
+  lOID2: TtiOID;
 begin
   lOID1 := FOIDClass.Create;
   try
@@ -342,7 +356,7 @@ end;
 
 procedure TTestTIOIDGUID.AsString;
 var
-  lOID: TOID;
+  lOID: TtiOID;
 begin
   lOID   := FOIDClass.Create;
   try
@@ -356,7 +370,7 @@ end;
 
 procedure TTestTIOIDGUID.AsVariant;
 var
-  lOID: TOID;
+  lOID: TtiOID;
   lStr: string;
 begin
   lOID   := FOIDClass.Create;
@@ -371,20 +385,21 @@ begin
 end;
 
 
-constructor TTestTIOIDGUID.Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string) {$ENDIF};
+procedure TTestTIOIDGUID.NextOIDGeneratorClass;
+var
+  LOIDGenerator: TtiOIDGenerator;
 begin
-  inherited;
-  // There is a one off 32 byte leak the first time this pair execute
-  // and I cannot pinpoint it's cause.
-  {$IFDEF MSWINDOWS}
-  tiWin32CoInitialize;
-  tiWin32CoUnInitialize;
-  {$ENDIF}
+  LOIDGenerator:= TtiOIDGeneratorGUID.Create;
+  try
+    Check(LOIDGenerator.OIDClass = TOIDGUID);
+  finally
+    LOIDGenerator.Free;
+  end;
 end;
 
-procedure TTestTIOIDGUID.Null;
+procedure TTestTIOIDGUID.IsNullAndSetToNull;
 var
-  lOID: TOID;
+  lOID: TtiOID;
 begin
   lOID := FOIDClass.Create;
   try
@@ -399,11 +414,32 @@ begin
 end;
 
 
+procedure TTestTIOIDGUID.NullOIDAsString;
+var
+  LOID: TtiOID;
+begin
+  LOID:= TOIDGUID.Create;
+  try
+    CheckEquals('', LOID.NullOIDAsString);
+  finally
+    LOID.Free;
+  end;
+end;
+
 procedure TTestTIOIDGUID.SetUp;
 begin
   inherited;
   FOIDClass := TOIDGUID;
   FGuidAsString := tiCreateGUIDString;
+end;
+
+procedure TTestTIOIDGUID.SetupOnce;
+begin
+  inherited;
+  {$IFDEF MSWINDOWS}
+  tiWin32CoInitialize; // An attempt to suppress a leak identified by DUnit2
+  tiWin32CoUnInitialize;
+  {$ENDIF}
 end;
 
 procedure TTestTIOIDGUID.TearDown;
@@ -419,8 +455,8 @@ end;
 
 procedure TTestTIOIDString.Assign;
 var
-  lOID1 : TOID;
-  lOID2 : TOID;
+  lOID1 : TtiOID;
+  lOID2 : TtiOID;
 begin
   lOID1 := FOIDClass.Create;
   try
@@ -440,7 +476,7 @@ end;
 
 procedure TTestTIOIDString.AsString;
 var
-  lOID : TOID;
+  lOID : TtiOID;
 begin
   lOID := FOIDClass.Create;
   try
@@ -454,7 +490,7 @@ end;
 
 procedure TTestTIOIDString.AsVariant;
 var
-  lOID : TOID;
+  lOID : TtiOID;
   lStr : string;
 begin
   lOID := FOIDClass.Create;
@@ -469,9 +505,21 @@ begin
 end;
 
 
-procedure TTestTIOIDString.Null;
+procedure TTestTIOIDString.NextOIDGeneratorClass;
 var
-  lOID : TOID;
+  LOIDGenerator: TtiOIDGenerator;
+begin
+  LOIDGenerator:= TtiOIDGeneratorString.Create;
+  try
+    Check(LOIDGenerator.OIDClass = TOIDString);
+  finally
+    LOIDGenerator.Free;
+  end;
+end;
+
+procedure TTestTIOIDString.IsNullAndSetToNull;
+var
+  lOID : TtiOID;
 begin
   lOID := FOIDClass.Create;
   try
@@ -486,468 +534,477 @@ begin
 end;
 
 
+procedure TTestTIOIDString.NullOIDAsString;
+var
+  LOID: TtiOID;
+begin
+  LOID:= TOIDString.Create;
+  try
+    CheckEquals('', LOID.NullOIDAsString);
+  finally
+    LOID.Free;
+  end;
+end;
+
 procedure TTestTIOIDString.SetUp;
 begin
   inherited;
   FOIDClass := TOIDString;
 end;
 
-
-procedure TTestTIOIDManager.NextOIDInteger;
-var
-  i : integer;
-  lOIDStart : TOID;
-  lOIDCurrent : TOID;
-  lRegPerLayer : TtiPersistenceLayer;
-begin
-  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
-  CheckNotNull(lRegPerLayer, 'RegPerLayer not found <' + PerLayerName);
-  gTIOPFManager.DefaultOIDClassName := cOIDClassNameInteger;
-
-  lRegPerLayer.NextOIDMgr.Clear;
-  lOIDStart  := gTIOPFManager.OIDFactory.CreateOID;
-  lOIDCurrent := gTIOPFManager.OIDFactory.CreateOID;
-  CheckIs(lOIDStart, TOIDInteger);
-  try
-    CheckIs(lOIDCurrent, TOIDInteger);
-    CreateNextOIDIntTable;
-    try
-      lRegPerLayer.NextOIDMgr.AssignNextOID(lOIDStart, DatabaseName);
-      lOIDCurrent.Assign(lOIDStart);
-      CheckEquals('100000000', lOIDStart.AsString, 'lOIDStart.AsString');
-      CheckEquals('100000000', lOIDCurrent.AsString, 'lOIDCurrent.AsString');
-      for i := 0 to cRepeatCount do
-      begin
-        CheckEquals(
-          StrToInt(lOIDStart.AsString) + i,
-          StrToInt(lOIDCurrent.AsString),
-          'Failed on iteration ' + IntToStr(i));
-        lRegPerLayer.NextOIDMgr.AssignNextOID(lOIDCurrent, DatabaseName);
-      end;
-    finally
-      DropNextOIDTable;
-    end;
-  finally
-    lOIDStart.Free;
-    lOIDCurrent.Free;
-  end;
-end;
-
-procedure TTestTIOIDManager.DoOnNextOID_Integer(Sender: TObject);
-var LOidStr: string;
-begin
-  LOidStr:= IntToStr( tiOIDInteger.TNextOIDData(sender).NextOID);
-  if FOIDs.IndexOf(LOidStr) >= 0 then
-    raise Exception.CreateFmt('Duplicate OID: %s', [LOidStr])
-  else
-    FOIDs.Add(LOidStr);
-end;
-
-procedure TTestTIOIDManager.NextOIDInteger_MultiUserAccess;
-var
-  LPersistenceLayer: TtiPersistenceLayer;
-  LDefaults: TtiPersistenceLayerDefaults;
-  LSuccess: boolean;
-  LMessage: string;
-  LNumThreads: Byte;
-const
-  NUM_THREADS = 3; // 3 is the minimum for testing, 10 will give a more indepth test
-begin
-  LSuccess := True;
-  LMessage := '';
-  LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerFrameworkSetup.PerLayerName);
-  LDefaults:= TtiPersistenceLayerDefaults.Create;
-  try
-    LPersistenceLayer.AssignPersistenceLayerDefaults(LDefaults);
-    if LDefaults.CanSupportMultiUser then
-      LNumThreads:= NUM_THREADS
-    else
-      LNumThreads:= 1;
-    CreateNextOIDIntTable;
-    try
-      FOIDs:= TStringList.Create;
-      try
-        try
-          TestOIDGenerator(tiOIDInteger.TNextOIDData, cNextOIDReadHigh,
-            DatabaseName, LPersistenceLayer.PersistenceLayerName,
-            DoOnNextOID_Integer, LNumThreads);
-        except
-          on E:Exception do
-          begin
-            LMessage := E.Message;
-            LSuccess := False;
-          end;
-        end;
-      finally
-        FreeAndNil( FOIDs );
-      end;
-    finally
-      DropNextOIDTable;
-    end;
-  finally
-    LDefaults.Free;
-  end;
-  Check(LSuccess, LMessage);
-end;
-
-procedure TTestTIOIDManager.OIDFactory_CreateNextOIDGenerator;
-var
-  lFactory : TOIDFactory;
-  lNextOIDGenerator : TNextOIDGenerator;
-begin
-  lFactory := TOIDFactory.Create;
-  try
-    lFactory.RegisterMapping(cOIDClassNameInteger, TOIDInteger, TNextOIDGeneratorInteger) ;
-    lFactory.RegisterMapping(cOIDClassNameGUID, TOIDGUID, TNextOIDGeneratorGUID) ;
-
-    lNextOIDGenerator := lFactory.CreateNextOIDGenerator(cOIDClassNameInteger);
-    try
-      CheckIs(lNextOIDGenerator, TNextOIDGeneratorInteger);
-    finally
-      lNextOIDGenerator.Free;
-    end;
-
-    lNextOIDGenerator := lFactory.CreateNextOIDGenerator(cOIDClassNameGUID);
-    try
-      CheckIs(lNextOIDGenerator, TNextOIDGeneratorGUID);
-    finally
-      lNextOIDGenerator.Free;
-    end;
-
-  finally
-    lFactory.Free;
-  end;
-end;
-
-
-procedure TTestTIOIDManager.OIDFactory_CreateOID;
-var
-  lFactory : TOIDFactory;
-  lOID : TOID;
-begin
-  lFactory := TOIDFactory.Create;
-  try
-    lFactory.RegisterMapping(cOIDClassNameInteger, TOIDInteger, TNextOIDGeneratorInteger) ;
-    lFactory.RegisterMapping(cOIDClassNameGUID, TOIDGUID, TNextOIDGeneratorGUID) ;
-
-    lOID := lFactory.CreateOID(cOIDClassNameInteger);
-    try
-      CheckIs(lOID, TOIDInteger);
-    finally
-      lOID.Free;
-    end;
-
-    lOID := lFactory.CreateOID(cOIDClassNameGUID);
-    try
-      CheckIs(lOID, TOIDGUID);
-    finally
-      lOID.Free;
-    end;
-
-  finally
-    lFactory.Free;
-  end;
-end;
-
-
-procedure TTestTIOIDManager.OIDFactory_RegisterMapping;
-var
-  lFactory : TOIDFactory_TST;
-  lOIDClassMapping : TOIDClassMapping;
-begin
-  lFactory := TOIDFactory_TST.Create;
-  try
-    lFactory.RegisterMapping(cOIDClassNameInteger, TOIDInteger, TNextOIDGeneratorInteger) ;
-    CheckEquals(1, lFactory.CountMappings);
-    lFactory.RegisterMapping(cOIDClassNameGUID, TOIDGUID, TNextOIDGeneratorGUID) ;
-    CheckEquals(2, lFactory.CountMappings);
-    lOIDClassMapping := lFactory.Items[0];
-    CheckEquals(TOIDInteger, lOIDClassMapping.OIDClass);
-    CheckEquals(TNextOIDGeneratorInteger, lOIDClassMapping.NextOIDGeneratorClass);
-
-    lOIDClassMapping := lFactory.Items[1];
-    CheckEquals(TOIDGUID, lOIDClassMapping.OIDClass);
-    CheckEquals(TNextOIDGeneratorGUID, lOIDClassMapping.NextOIDGeneratorClass);
-
-  finally
-    lFactory.Free;
-  end;
-end;
-
-procedure TTestTIOIDManager.NextOIDMgrInteger;
-var
-  lOID : TOID;
-  lRegPerLayer : TtiPersistenceLayer;
-begin
-  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
-  CheckNotNull(lRegPerLayer, 'RegPerLayer not found <' + PerLayerName);
-
-  CreateNextOIDIntTable;
-  try
-    // This required tidying up. At the time of writing, only
-    // one OID class type is possible for an application instance
-    gTIOPFManager.DefaultOIDClassName := cOIDClassNameInteger;
-    lRegPerLayer.NextOIDMgr.Clear;
-    lOID := TOIDInteger.Create;
-    try
-      Check(lOID.IsNull, 'not lOID.IsNull');
-      lRegPerLayer.NextOIDMgr.AssignNextOID(lOID, DatabaseName);
-      Check(not lOID.IsNull, 'lOID.IsNull');
-    finally
-      lOID.Free;
-    end;
-  finally
-    DropNextOIDTable;
-  end;
-end;
-
-
-procedure TTestTIOIDManager.NextOIDMgrString;
-var
-  lOID : TOID;
-  lRegPerLayer : TtiPersistenceLayer;
-begin
-  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
-  CheckNotNull(lRegPerLayer, 'RegPerLayer not found <' + PerLayerName);
-
-  CreateNextOIDStrTable;
-  try
-    gTIOPFManager.DefaultOIDClassName := cOIDClassNameString;
-    lRegPerLayer.NextOIDMgr.Clear;
-    lOID := TOIDString.Create;
-    try
-      Check(lOID.IsNull, 'not lOID.IsNull');
-      lRegPerLayer.NextOIDMgr.AssignNextOID(lOID, DatabaseName);
-      Check(not lOID.IsNull, 'lOID.IsNull');
-    finally
-      lOID.Free;
-    end;
-  finally
-    DropNextOIDTable;
-  end;
-end;
-
-procedure TTestTIOIDManager.NextOIDGUID;
-var
-  i : integer;
-  lOID : TOID;
-  lsl : TStringList;
-  lRegPerLayer : TtiPersistenceLayer;
-begin
-  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
-  CheckNotNull(lRegPerLayer, 'RegPerLayer not found <' + PerLayerName);
-
-  // This line should not be necessary and can be removed once we sort out
-  // the relationship between:
-  // Persistence layer->OIDClass->Database
-  gTIOPFManager.DefaultOIDClassName := cOIDClassNameGUID;
-  lRegPerLayer.NextOIDMgr.Clear;
-  lOID  := gTIOPFManager.OIDFactory.CreateOID;
-  try
-    CheckIs(lOID, TOIDGUID, 'OID not a TOIDGUID');
-    try
-      lsl := TStringList.Create;
-      try
-        for i := 1 to cRepeatCount do
-        begin
-          lRegPerLayer.NextOIDMgr.AssignNextOID(lOID, DatabaseName);
-          CheckEquals(-1, lsl.IndexOf(lOID.AsString), 'Non unique GUID');
-          CheckEquals(36, Length(lOID.AsString), 'GUID length incorrect');
-          lsl.Add(lOID.AsString);
-          Check(not lOID.IsNull, 'lOID.IsNull');
-          //Log(lOID.AsString);
-        end;
-      finally
-        lsl.Free;
-      end;
-    finally
-      lOID.Free;
-    end;
-  finally
-    lRegPerLayer.NextOIDMgr.UnloadNextOIDGenerator(PerFrameworkSetup.DBName);
-  end;
-end;
-
-
-constructor TTestTIOIDManager.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
+procedure TTestTIOIDPersistent.Setup;
 begin
   inherited;
-  SetupTasks := [sutPerLayer, sutDBConnection{, sutTables} ];
+  FOIDList:= TStringList.Create;
+  GTIOPFManager.DefaultPerLayerName:= PerFrameworkSetup.PerLayerName;
+  GTIOPFManager.DefaultDBConnectionName:= PerFrameworkSetup.DBName;
 end;
 
-
-procedure TTestTIOIDManager.NextOIDString;
-var
-  i : integer;
-  lOID : TOID;
-  lsl : TStringList;
-  lNextOIDGenerator : TNextOIDGeneratorString;
-  lRegPerLayer : TtiPersistenceLayer;
-const
-  cOIDLength   = 10;
+procedure TTestTIOIDPersistent.TearDown;
 begin
-  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
-  CheckNotNull(lRegPerLayer, 'RegPerLayer not found <' + PerLayerName);
+  FOIDList.Free;
+  inherited;
+end;
 
-  // This line should not be necessary and can be removed once we sort out
-  // the relationship between:
-  // Persistence layer->OIDClass->Database
-  gTIOPFManager.DefaultOIDClassName := cOIDClassNameString;
-  lRegPerLayer.NextOIDMgr.Clear;
-  lNextOIDGenerator := (lRegPerLayer.NextOIDMgr.FindCreateByDatabaseName(PerFrameworkSetup.DBName) as TNextOIDGeneratorString);
-  try
-    lNextOIDGenerator.OIDChars := '0123456789';
-    lNextOIDGenerator.OIDLength  := cOIDLength;
-    lNextOIDGenerator.OIDPrefix  := '1';
-    lOID  := gTIOPFManager.OIDFactory.CreateOID;
+procedure TTestTIOIDPersistent.TestThenAddOIDAsString(const AOID: string);
+begin
+  if FOIDList.IndexOf(AOID) <> -1 then
+    raise Exception.CreateFmt('Duplicate OID "%s"', [AOID])
+  else
+    FOIDList.Add(AOID);
+end;
+
+type
+  TtiOIDGeneratorThread = class(TtiThread)
+  private
+    FOIDGeneratorClass: TtiOIDGeneratorClass;
+    FOIDList: TStringList;
+    FRepeateCount: integer;
+    FIndex: integer;
+    FDBConnectionName: string;
+    FPersistenceLayerName: string;
+  public
+    constructor Create(const AOIDGeneratorClass: TtiOIDGeneratorClass; const AIndex: integer;
+      const ARepeatCount: Integer; const ADatabaseAliasName: string;
+      const APersistenceLayerName: string);
+    destructor Destroy; override;
+    procedure Execute; override;
+    property OIDList: TStringList read FOIDList;
+    property Index: integer read FIndex;
+  end;
+
+  constructor TtiOIDGeneratorThread.Create(const AOIDGeneratorClass: TtiOIDGeneratorClass;
+    const AIndex: integer; const ARepeatCount: Integer;
+    const ADatabaseAliasName: string;
+    const APersistenceLayerName: string);
+  begin
+    inherited Create(True);
+    FOIDGeneratorClass:= AOIDGeneratorClass;
+    FIndex:= AIndex;
+    FOIDList:= TStringList.Create;
+    FreeOnTerminate:= False;
+    FRepeateCount:= ARepeatCount;
+    FDBConnectionName:= ADatabaseAliasName;
+    FPersistenceLayerName:= APersistenceLayerName;
+  end;
+
+  destructor TtiOIDGeneratorThread.Destroy;
+  begin
+    FOIDList.Free;
+    inherited;
+  end;
+
+  procedure TtiOIDGeneratorThread.Execute;
+  var
+    LNextOIDGenerator: TtiOIDGenerator;
+    LOID: TtiOID;
+    i: Integer;
+  begin
+    Assert(Assigned(FOIDGeneratorClass), 'FOIDGeneratorClass not assigned');
+    LNextOIDGenerator:= FOIDGeneratorClass.Create;
     try
-      CheckIs(lOID, TOIDString, 'OID not a TOIDString');
-      CreateNextOIDStrTable;
-
-      lsl := TStringList.Create;
-      try
-        for i := 0 to cRepeatCount do
-        begin
-          lRegPerLayer.NextOIDMgr.AssignNextOID(lOID, DatabaseName);
-          CheckEquals(-1, lsl.IndexOf(lOID.AsString), 'Non unique OID');
-          CheckEquals(10, Length(lOID.AsString), 'OIDAsString length incorrect <' + lOID.AsString + '>');
-          lsl.Add(lOID.AsString);
-          Check(not lOID.IsNull, 'lOID.IsNull');
-          //Log(lOID.AsString);
-          CheckEquals(Power(10, cOIDLength-1)+ i, StrToInt(lOID.AsString), 'Failed on ' + IntToStr(i));
-        end;
-      finally
-        lsl.Free;
-      end;
-    finally
-      lOID.Free;
-    end;
-  finally
-    lRegPerLayer.NextOIDMgr.UnloadNextOIDGenerator(PerFrameworkSetup.DBName);
-  end;
-end;
-
-
-procedure TTestTIOIDManager.NextOIDStringSetNextOIDChars;
-var
-  lNextOIDGenerator : TNextOIDGeneratorString;
-begin
-  lNextOIDGenerator := TNextOIDGeneratorString.Create;
-  try
-    lNextOIDGenerator.OIDChars := 'abcd';
-    CheckEquals('abcd', lNextOIDGenerator.OIDChars);
-  finally
-    lNextOIDGenerator.Free;
-  end;
-end;
-
-
-procedure TTestTIOIDManager.NextOIDMgrGUID;
-var
-  lOID : TOID;
-  lRegPerLayer : TtiPersistenceLayer;
-begin
-  lRegPerLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(PerLayerName);
-  CheckNotNull(lRegPerLayer, 'RegPerLayer not found <' + PerLayerName);
-
-  gTIOPFManager.DefaultOIDClassName := cOIDClassNameGUID;
-  lOID := TOIDGUID.Create;
-  try
-    Check(lOID.IsNull, 'not lOID.IsNull');
-    lRegPerLayer.NextOIDMgr.AssignNextOID(lOID, DatabaseName);
-    Check(not lOID.IsNull, 'lOID.IsNull');
-  finally
-    lOID.Free;
-  end;
-end;
-
-
-{ TOIDFactory_TST }
-
-function TOIDFactory_TST.CountMappings: integer;
-begin
-  result := FList.Count;
-end;
-
-
-function TOIDFactory_TST.GetItems(AIndex: Integer): TOIDClassMapping;
-begin
-  result := TOIDClassMapping(FList.Items[AIndex]);
-end;
-
-
-procedure TTestTIOIDManager.tiObject_CreateNew;
-var
-  lData : TtiObjectList;
-  lItem : TtiObject;
-begin
-  lData := TtiObjectList.CreateNew;
-  try
-    Check(lData.ObjectState = posCreate, 'Failed on ObjectState = posCreate');
-    lItem := TtiObject.CreateNew(lData);
-    lData.Add(lItem);
-    Check(lItem.ObjectState = posCreate, 'Failed on ObjectState = posCreate');
-    Check(lItem.Owner = lData, 'Failed on lItem.Owner = lData');
-  finally
-    lData.Free;
-  end;
-end;
-
-
-procedure TTestTIOIDManager.tiObject_CreateNew_OIDGUID;
-var
-  lItem : TtiObject;
-begin
-  gTIOPFManager.DefaultOIDClassName := cOIDClassNameGUID;
-  lItem := TtiObject.CreateNew;
-  try
-    CheckIs(lItem.OID, TOIDGUID, 'OID not a TOIDGUID');
-    CheckEquals(36, Length(lItem.OID.AsString), 'OID does not look like a GUID');
-  finally
-    lItem.Free;
-  end;
-end;
-
-procedure TTestTIOIDManager.tiObject_CreateNew_OIDInteger;
-var
-  lItem : TtiObject;
-  lSavedPerLayerName : string;
-  lSavedDatabaseName : string;
-begin
-  CreateNextOIDIntTable;
-  try
-    gTIOPFManager.DefaultOIDClassName := cOIDClassNameInteger;
-    lItem := TtiObject.CreateNew(DatabaseName, PerLayerName);
-    try
-      CheckIs(lItem.OID, TOIDInteger, 'OID not a TOIDInteger');
-      CheckNotEquals('', lItem.OID.AsString, 'OID not assigned');
-    finally
-      lItem.Free;
-    end;
-
-    lSavedPerLayerName := gTIOPFManager.DefaultPerLayerName;
-    lSavedDatabaseName := gTIOPFManager.DefaultDBConnectionName;
-    gTIOPFManager.DefaultPerLayerName := PerLayerName;
-    try
-      gTIOPFManager.DefaultDBConnectionName := DatabaseName;
-      try
-        lItem := TtiObject.CreateNew;
+      for i := 1 to FRepeateCount do
+      begin
+        LOID:= FOIDGeneratorClass.OIDClass.Create;
         try
-          CheckIs(lItem.OID, TOIDInteger, 'OID not a TOIDInteger');
-          CheckNotEquals('', lItem.OID.AsString, 'OID not assigned');
+          LNextOIDGenerator.AssignNextOID(LOID, FDBConnectionName, FPersistenceLayerName);
+          FOIDList.Add(LOID.AsString);
         finally
-          lItem.Free;
+          LOID.Free;
         end;
-      finally
-        gTIOPFManager.DefaultPerLayerName := lSavedPerLayerName;
       end;
     finally
-      gTIOPFManager.DefaultDBConnectionName := lSavedDatabaseName;
+      LNextOIDGenerator.Free;
+    end;
+  end;
+
+
+procedure TTestTIOIDPersistent.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+  procedure _CheckForDuplicates(const ATestCase: TtiTestCase;
+    const AThread: TtiOIDGeneratorThread);
+  var
+    i: integer;
+    LOID: string;
+  begin
+    for i := 0 to AThread.OIDList.Count - 1 do
+    begin
+      LOID:= AThread.OIDList.Strings[i];
+      if FOIDList.IndexOf(LOID) <> -1 then
+        Check(False, 'Duplicate OID "%s". Thread "%d", Index "%d"',
+          [LOID, AThread.Index, i])
+      else
+        FOIDList.Add(LOID);
+    end;
+  end;
+
+var
+  LNumThreads: Byte;
+  LList: TtiThreadList;
+  i: integer;
+const
+  CNumThreads = 10; // 3 is the minimum for testing, 10 will give a more indepth test
+begin
+  LNumThreads:= tiIf(PersistenceLayerSupportsMultiUser, CNumThreads, 1);
+  LList:= TtiThreadList.Create(True);
+  try
+    for i := 0 to LNumThreads-1 do
+      LList.Add(TtiOIDGeneratorThread.Create(FOIDGeneratorClass, i, CRepeatCount, DatabaseName, PerLayerName));
+    LList.ResumeAll;
+    LList.WaitForAll;
+    for i := 0 to LList.Count - 1 do
+      _CheckForDuplicates(Self, LList.Items[i] as TtiOIDGeneratorThread);
+  finally
+    LList.Free;
+  end;
+  Check(True); // To suppress DUnit2 warnings
+end;
+
+procedure TTestTIOIDPersistent.TtiNextOIDGeneratorAssignNextOIDSingleUser;
+var
+  LNextOIDGenerator: TtiOIDGenerator;
+  LOID: TtiOID;
+  i: Integer;
+begin
+  Assert(Assigned(FOIDGeneratorClass), 'FOIDGeneratorClass not assigned');
+  LNextOIDGenerator:= FOIDGeneratorClass.Create;
+  try
+    for i := 10 to CRepeatCount do
+    begin
+      LOID:= FOIDGeneratorClass.OIDClass.Create;
+      try
+        CheckEquals(LOID.NullOIDAsString, LOID.AsString);
+        LNextOIDGenerator.AssignNextOID(LOID, DatabaseName, PerLayerName);
+        CheckNotEquals(LOID.NullOIDAsString, LOID.AsString);
+        TestThenAddOIDAsString(LOID.AsString);
+      finally
+        LOID.Free;
+      end;
     end;
   finally
-    DropNextOIDTable;
+    LNextOIDGenerator.Free;
   end;
 end;
 
+procedure TTestTIOIDPersistent.TtiOIDGetNextValue;
+var
+  LOID: TtiOID;
+begin
+  GTIOPFManager.DefaultOIDGenerator:= FOIDGeneratorClass.Create;
+  try
+    LOID:= FOIDGeneratorClass.OIDClass.Create;
+    try
+      CheckEquals(LOID.NullOIDAsString, LOID.AsString);
+      LOID.GetNextValue;
+      CheckNotEquals(LOID.NullOIDAsString, LOID.AsString);
+    finally
+      LOID.Free;
+    end;
+  finally
+    GTIOPFManager.DefaultOIDGenerator:= GTIOPFTestManager.DefaultOIDGeneratorClass.Create;
+  end;
+end;
+
+procedure TTestTIOIDPersistent.TtiOIDAssignToTIQueryParam;
+var
+  LOID: TtiOID;
+  LQueryParams: TtiQueryParams;
+begin
+  LOID:= nil;
+  LQueryParams:= nil;
+  try
+    LOID:= FOIDGeneratorClass.OIDClass.Create;
+    LQueryParams:= TtiQueryParams.Create;
+    CheckEquals(LOID.NullOIDAsString, LOID.AsString);
+    LOID.AssignToTIQueryParam('oid', LQueryParams);
+    CheckEquals(1, LQueryParams.Count);
+    CheckNotNull(LQueryParams.FindParamByName('oid'));
+    CheckEquals(LOID.NullOIDAsString, LQueryParams.Items[0].ValueAsString);
+  finally
+    LOID.Free;
+    LQueryParams.Free;
+  end;
+end;
+
+procedure TTestTIOIDPersistent.TtiOIDAssignToTIQuery;
+var
+  LOID: TtiOID;
+  LQuery: TtiQuery;
+  LDatabase: TtiDatabase;
+  LActual: string;
+const
+  CExpected = '123';
+begin
+  // Only run this test against SQL databases
+  if not PersistenceLayerSupportsSQL then
+  begin
+    Check(True);
+    Exit; //==>
+  end;
+
+  LOID:= FOIDGeneratorClass.OIDClass.Create;
+  try
+    CheckEquals(LOID.NullOIDAsString, LOID.AsString);
+    LDatabase:= PersistenceLayer.DBConnectionPools.Lock(DatabaseName);
+    try
+      LDatabase.StartTransaction;
+      try
+        LQuery:= LDatabase.CreateTIQuery;
+        try
+          LQuery.AttachDatabase(LDatabase);
+          LQuery.SQLText:= 'update next_oid set oid = :oid';
+          LOID.AsString:= CExpected;
+          LOID.AssignToTIQuery(LQuery);
+          LQuery.ExecSQL;
+          LQuery.SQLText:= 'select oid from next_oid';
+          LQuery.Active:= True;
+          LActual:= IntToStr(LQuery.FieldAsInteger['oid']);
+          CheckEquals(CExpected, LActual);
+        finally
+          LQuery.Free;
+        end;
+      finally
+        LDatabase.Rollback;
+      end;
+    finally
+      PersistenceLayer.DBConnectionPools.UnLock(DatabaseName, LDatabase);
+    end;
+  finally
+    LOID.Free;
+  end;
+end;
+
+procedure TTestTIOIDPersistent.TtiOIDAssignFromTIQuery;
+var
+  LOID: TtiOID;
+  LQuery: TtiQuery;
+  LDatabase: TtiDatabase;
+begin
+  LOID:= FOIDGeneratorClass.OIDClass.Create;
+  try
+    CheckEquals(LOID.NullOIDAsString, LOID.AsString);
+    LDatabase:= PersistenceLayer.DBConnectionPools.Lock(DatabaseName);
+    try
+      LDatabase.StartTransaction;
+      try
+        LQuery:= LDatabase.CreateTIQuery;
+        try
+          LQuery.AttachDatabase(LDatabase);
+          LQuery.SelectRow('next_oid', nil);
+          LOID.AssignFromTIQuery(LQuery);
+          Check(not LQuery.EOF);
+          CheckNotEquals(LOID.NullOIDAsString, LOID.AsString);
+          CheckEquals(LQuery.FieldAsString['oid'], LOID.AsString);
+        finally
+          LQuery.Free;
+        end;
+      finally
+        LDatabase.Rollback;
+      end;
+    finally
+      PersistenceLayer.DBConnectionPools.UnLock(DatabaseName, LDatabase);
+    end;
+  finally
+    LOID.Free;
+  end;
+end;
+
+procedure TTestTIOIDPersistent.TtiOIDAssignToTIQueryFieldName;
+var
+  LOID: TtiOID;
+  LQuery: TtiQuery;
+  LDatabase: TtiDatabase;
+  LActual: string;
+const
+  CExpected = '123';
+begin
+  // Only run this test against SQL databases
+  if not PersistenceLayerSupportsSQL then
+  begin
+    Check(True);
+    Exit; //==>
+  end;
+
+  LOID:= FOIDGeneratorClass.OIDClass.Create;
+  try
+    CheckEquals(LOID.NullOIDAsString, LOID.AsString);
+    LDatabase:= PersistenceLayer.DBConnectionPools.Lock(DatabaseName);
+    try
+      LDatabase.StartTransaction;
+      try
+        LQuery:= LDatabase.CreateTIQuery;
+        try
+          LQuery.AttachDatabase(LDatabase);
+          LQuery.SQLText:= 'update next_oid set oid = :newoid';
+          LOID.AsString:= CExpected;
+          LOID.AssignToTIQuery('newoid', LQuery);
+          LQuery.ExecSQL;
+          LQuery.SQLText:= 'select oid from next_oid';
+          LQuery.Active:= True;
+          LActual:= IntToStr(LQuery.FieldAsInteger['oid']);
+          CheckEquals(CExpected, LActual);
+        finally
+          LQuery.Free;
+        end;
+      finally
+        LDatabase.Rollback;
+      end;
+    finally
+      PersistenceLayer.DBConnectionPools.UnLock(DatabaseName, LDatabase);
+    end;
+  finally
+    LOID.Free;
+  end;
+end;
+
+procedure TTestTIOIDPersistent.TtiOIDAssignFromTIQueryFieldName;
+var
+  LOID: TtiOID;
+  LQuery: TtiQuery;
+  LDatabase: TtiDatabase;
+begin
+  LOID:= FOIDGeneratorClass.OIDClass.Create;
+  try
+    CheckEquals(LOID.NullOIDAsString, LOID.AsString);
+    LDatabase:= PersistenceLayer.DBConnectionPools.Lock(DatabaseName);
+    try
+      LDatabase.StartTransaction;
+      try
+        LQuery:= LDatabase.CreateTIQuery;
+        try
+          LQuery.AttachDatabase(LDatabase);
+          LQuery.SelectRow('next_oid', nil);
+          LOID.AssignFromTIQuery('oid', LQuery);
+          Check(not LQuery.EOF);
+          CheckNotEquals(LOID.NullOIDAsString, LOID.AsString);
+          CheckEquals(LQuery.FieldAsString['oid'], LOID.AsString);
+        finally
+          LQuery.Free;
+        end;
+      finally
+        LDatabase.Rollback;
+      end;
+    finally
+      PersistenceLayer.DBConnectionPools.UnLock(DatabaseName, LDatabase);
+    end;
+  finally
+    LOID.Free;
+  end;
+end;
+
+procedure TTestTIOIDPersistent.TtiOIDEqualsQueryField;
+var
+  LOID: TtiOID;
+  LQuery: TtiQuery;
+  LDatabase: TtiDatabase;
+begin
+  LOID:= FOIDGeneratorClass.OIDClass.Create;
+  try
+    LDatabase:= PersistenceLayer.DBConnectionPools.Lock(DatabaseName);
+    try
+      LDatabase.StartTransaction;
+      try
+        LQuery:= LDatabase.CreateTIQuery;
+        try
+          LQuery.AttachDatabase(LDatabase);
+          LQuery.SelectRow('next_oid', nil);
+          LOID.AssignFromTIQuery(LQuery);
+          Check(LOID.EqualsQueryField('OID', LQuery));
+          LOID.AsString:= '-1';
+          Check(not LOID.EqualsQueryField('OID', LQuery));
+        finally
+          LQuery.Free;
+        end;
+      finally
+        LDatabase.RollBack;
+      end;
+    finally
+      PersistenceLayer.DBConnectionPools.UnLock(DatabaseName, LDatabase);
+    end;
+  finally
+    LOID.Free;
+  end;
+end;
+
+procedure TTestTIOIDPersistent.TtiObjectCreateNew;
+var
+  LObject: TtiObject;
+begin
+  GTIOPFManager.DefaultOIDGenerator:= FOIDGeneratorClass.Create;
+  try
+
+    LObject:= TtiObject.Create;
+    try
+      CheckEquals(LObject.OID.NullOIDAsString, LObject.OID.AsString);
+    finally
+      LObject.Free;
+    end;
+
+    LObject:= TtiObject.CreateNew;
+    try
+      CheckNotEquals(LObject.OID.NullOIDAsString, LObject.OID.AsString);
+    finally
+      LObject.Free;
+    end;
+
+  finally
+    GTIOPFManager.DefaultOIDGenerator:= GTIOPFTestManager.DefaultOIDGeneratorClass.Create;
+  end;
+end;
+
+{ TTestTIOIDPersistentInteger }
+
+procedure TTestTIOIDPersistentInteger.Setup;
+begin
+  inherited;
+  FOIDGeneratorClass:= TtiOIDGeneratorInteger;
+  CreateNextOIDIntTable;
+end;
+
+procedure TTestTIOIDPersistentInteger.TearDown;
+begin
+  DropNextOIDTable;
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUID }
+
+procedure TTestTIOIDPersistentGUID.Setup;
+begin
+  inherited;
+  FOIDGeneratorClass:= TtiOIDGeneratorGUID;
+  AllowedMemoryLeakSize:= 56; // CoInitialize
+  CreateNextOIDStrTable;
+end;
+
+procedure TTestTIOIDPersistentGUID.TearDown;
+begin
+  DropNextOIDTable;
+  inherited;
+end;
 
 end.
+
+
+
+
+

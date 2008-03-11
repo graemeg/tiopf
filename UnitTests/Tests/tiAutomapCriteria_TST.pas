@@ -426,15 +426,12 @@ procedure TTestAutomappingCriteria.SetUp;
 begin
   inherited;
   DropTestTable;
-  gTIOPFManager.DefaultOIDClassName := cOIDClassNameGUID;
 end;
 
 procedure TTestAutomappingCriteria.TearDown;
 begin
   inherited;
-
 end;
-
 
 function TTestAutomappingCriteria.TestIntToBool(pInt: Integer): Boolean;
 begin
@@ -457,6 +454,7 @@ begin
 end;
 
 end.
+
 
 
 

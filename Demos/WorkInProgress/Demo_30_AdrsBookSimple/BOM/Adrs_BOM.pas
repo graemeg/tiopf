@@ -86,7 +86,7 @@ type
     procedure   SetItems(i: integer; const AValue: TEAdrs); reintroduce;
     function    GetOwner: TPerson; reintroduce;
     procedure   SetOwner(const AValue: TPerson); reintroduce;
-    function    GetOID: TOID; override;
+    function    GetOID: TtiOID; override;
   public
     property    Items[i:integer]: TEAdrs read GetItems write SetItems;
     procedure   Add(AObject: TEAdrs); reintroduce;
@@ -244,7 +244,7 @@ begin
   result:= inherited GetItems(i) as TEAdrs;
 end;
 
-function TEAdrsList.GetOID: TOID;
+function TEAdrsList.GetOID: TtiOID;
 begin
   Assert(Owner.TestValid, CTIErrorInvalidObject);
   result:= Owner.OID;  

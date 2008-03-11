@@ -39,7 +39,12 @@ type
   end;
 
 
-  TTestTIOIDManagerFBL = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDFBL = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerFBL = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -69,7 +74,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIPersistenceLayersFBL.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIDatabaseFBL.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIQueryFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIOIDManagerFBL.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIOIDPersistentIntegerFBL.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIAutoMapOperationFBL.Suite);
   end;
 end;
@@ -160,9 +165,17 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerFBL }
+{ TTestTIOIDPersistentIntegerFBL }
 
-procedure TTestTIOIDManagerFBL.SetUp;
+procedure TTestTIOIDPersistentIntegerFBL.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDFBL }
+
+procedure TTestTIOIDPersistentGUIDFBL.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
   inherited;

@@ -202,14 +202,14 @@ type
     FListPrice: Currency;
     FDescription: string;
     FOnOrder: double;
-    FVendorNo: TOID;
+    FVendorNo: TtiOID;
     procedure SetCost(const Value: Currency);
     procedure SetDescription(const Value: string);
     procedure SetListPrice(const Value: Currency);
     procedure SetOnHand(const Value: double);
     procedure SetOnOrder(const Value: double);
-    procedure SetVendorNo(const Value: TOID);
-    function GetVendorNo: TOID;
+    procedure SetVendorNo(const Value: TtiOID);
+    function GetVendorNo: TtiOID;
     function GetPartNo: integer;
 
   protected
@@ -226,7 +226,7 @@ type
   published
 //    property    OID;
     property    PartNo: integer read GetPartNo;   // resurfaces OID so we can get at it in the lists
-    property    VendorNo: TOID read GetVendorNo write SetVendorNo;
+    property    VendorNo: TtiOID read GetVendorNo write SetVendorNo;
     property    Description: string read FDescription write SetDescription;
     property    OnHand: double read FOnHand write SetOnHand;  // database is double for no apparant reason.  Int would make more sense
     property    OnOrder: double read FOnOrder write SetOnOrder;
@@ -271,7 +271,7 @@ type
   protected
     function    GetItems(i: integer): TOrderItem ; reintroduce ;
     procedure   SetItems(i: integer; const Value: TOrderItem); reintroduce ;
-    function    GetOID: TOID; override;
+    function    GetOID: TtiOID; override;
   public
     property    Items[i:integer] : TOrderItem read GetItems write SetItems ;  default;
     procedure   Add( pObject : TOrderItem   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
@@ -282,10 +282,10 @@ type
   private
     FQuantity: integer;
     FDiscount: double;
-    function GetOrderNo: TOID;
-    procedure SetOrderNo(const Value: TOID);
-//    function GetPartNo: TOID;
-//    procedure SetPartNo(const Value: TOID);
+    function GetOrderNo: TtiOID;
+    procedure SetOrderNo(const Value: TtiOID);
+//    function GetPartNo: TtiOID;
+//    procedure SetPartNo(const Value: TtiOID);
     function GetDescription: string;
     function GetPart: TPart;
     procedure SetPartNo(const Value: double);
@@ -294,8 +294,8 @@ type
 //    procedure SetPartNumberAsString(const Value: string);
 //    function GetPartNumberAsString: string;
    protected
-     FOrderNo: TOID;
-//     FPartNo: TOID;
+     FOrderNo: TtiOID;
+//     FPartNo: TtiOID;
      FPartNo: double;
      FPart: Tpart;
     function    GetCaption: string; override;
@@ -310,7 +310,7 @@ type
     property TotalPrice: Currency read GetTotalPrice;
   published
 //    property    OID;
-    property OrderNo: TOID read GetOrderNo write SetOrderNo;
+    property OrderNo: TtiOID read GetOrderNo write SetOrderNo;
     // need the following to provide db access to PartNo
 
     property PartNo: double read FPartNo write SetPartNo; // read GetPartNo write SetPartNo;
@@ -335,14 +335,14 @@ type
 
     // no longer required, as we are now using filtered object lists
 //    property    Where: TtiQueryParams read FWhere;
-//    property    FilterCustNo: TOID read GetFilterCustNo write SetFilterCustNo;  xx
+//    property    FilterCustNo: TtiOID read GetFilterCustNo write SetFilterCustNo;  xx
   published
   end ;
 
   TOrder = class( TtiObject )
   private
-    FCustNo: TOID;
-    FEmpNo: TOID;
+    FCustNo: TtiOID;
+    FEmpNo: TtiOID;
     FTerms: TTerms;
     FAmountPaid: Currency;
     FTaxRate: Double;
@@ -362,10 +362,10 @@ type
     FShipToZip: string;
     FShipToState: string;
     FOrderItems: TOrderItems;
-    function GetCustNo: TOID;
-    function GetEmpNo: TOID;
-    procedure SetCustNo(const Value: TOID);
-    procedure SetEmpNo(const Value: TOID);
+    function GetCustNo: TtiOID;
+    function GetEmpNo: TtiOID;
+    procedure SetCustNo(const Value: TtiOID);
+    procedure SetEmpNo(const Value: TtiOID);
     function GetAmountDue: Currency;
     function GetOrderNo: integer;
     function GetTaxDue: Currency;
@@ -388,10 +388,10 @@ type
   published
 //     property OID;
      property OrderNo: integer read GetOrderNo;   // resurfaces OID so we can get at it in the lists
-     property CustNo: TOID read GetCustNo write SetCustNo;
+     property CustNo: TtiOID read GetCustNo write SetCustNo;
      property SaleDate: TDateTime read FSaleDate write FSaleDate;
      property ShipDate: TDateTime read FShipDate write FShipDate;
-     property EmpNo: TOID read GetEmpNo write SetEmpNo;
+     property EmpNo: TtiOID read GetEmpNo write SetEmpNo;
      property ShipToContact: string read FShipToContact write FShipToContact;
 
      property ShipToAddress1: string read FShipToAddress1 write FShipToAddress1;
@@ -861,11 +861,11 @@ begin
   result:= OID.AsVariant;
 end;
 
-function TPart.GetVendorNo: TOID;
+function TPart.GetVendorNo: TtiOID;
 begin
   {$IFNDEF OID_AS_INT64}
     if FVendorNo = nil then
-      FVendorNo := gTIOPFManager.OIDFactory.CreateOID;
+      FVendorNo := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
   {$ENDIF}
   result:= FVendorNo;
 end;
@@ -928,12 +928,12 @@ begin
   
 end;
 
-procedure TPart.SetVendorNo(const Value: TOID);
+procedure TPart.SetVendorNo(const Value: TtiOID);
 begin
   FVendorNo.Assign(Value);
 end;
 
-{procedure TPart.SetVendorNo(const Value: TOID);
+{procedure TPart.SetVendorNo(const Value: TtiOID);
 begin
   FVendorNo := Value;
 end;
@@ -1010,7 +1010,7 @@ begin
   result := TOrderItem( inherited GetItems( i )) ;
 end;
 
-function TOrderItems.GetOID: TOID;
+function TOrderItems.GetOID: TtiOID;
 begin
   result:= Owner.OID;
 end;
@@ -1054,11 +1054,11 @@ begin
   result:= Part.ListPrice;
 end;
 
-function TOrderItem.GetOrderNo: TOID;
+function TOrderItem.GetOrderNo: TtiOID;
 begin
   {$IFNDEF OID_AS_INT64}
     if FOrderNo = nil then
-      FOrderNo := gTIOPFManager.OIDFactory.CreateOID;
+      FOrderNo := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
   {$ENDIF}
   result:= FOrderNo;
 end;
@@ -1084,7 +1084,7 @@ begin
   Result:= ListPrice * Quantity * (1-Discount / 100);
 end;
 
-//function TOrderItem.GetPartNo: TOID;
+//function TOrderItem.GetPartNo: TtiOID;
 //begin
 //  {$IFNDEF OID_AS_INT64}
 //    if FPartNo = nil then
@@ -1119,7 +1119,7 @@ begin
 
 end;
 
-procedure TOrderItem.SetOrderNo(const Value: TOID);
+procedure TOrderItem.SetOrderNo(const Value: TtiOID);
 begin
   OrderNo.Assign(value);
 end;
@@ -1134,7 +1134,7 @@ begin
   end;
 end;
 
-//procedure TOrderItem.SetPartNo(const Value: TOID);
+//procedure TOrderItem.SetPartNo(const Value: TtiOID);
 //begin
 //  FPartNo.Assign(value);
 //end;
@@ -1227,20 +1227,20 @@ begin
   result:= OID.AsString;
 end;
 
-function TOrder.GetCustNo: TOID;
+function TOrder.GetCustNo: TtiOID;
 begin
   {$IFNDEF OID_AS_INT64}
     if FCustNo = nil then
-      FCustNo := gTIOPFManager.OIDFactory.CreateOID;
+      FCustNo := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
   {$ENDIF}
   result:= FCustNo;
 end;
 
-function TOrder.GetEmpNo: TOID;
+function TOrder.GetEmpNo: TtiOID;
 begin
   {$IFNDEF OID_AS_INT64}
     if FEmpNo = nil then
-      FEmpNo := gTIOPFManager.OIDFactory.CreateOID;
+      FEmpNo := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
   {$ENDIF}
   result:= FEmpNo;
 end;
@@ -1287,12 +1287,12 @@ begin
   inherited;
 end;
 
-procedure TOrder.SetCustNo(const Value: TOID);
+procedure TOrder.SetCustNo(const Value: TtiOID);
 begin
   CustNo.Assign(value);
 end;
 
-procedure TOrder.SetEmpNo(const Value: TOID);
+procedure TOrder.SetEmpNo(const Value: TtiOID);
 begin
   EmpNo.Assign(value);
 end;

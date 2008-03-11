@@ -199,7 +199,9 @@ begin
   APersistenceLayerDefaults.Username:= 'XXX';
   APersistenceLayerDefaults.Password:= 'XXX';
   APersistenceLayerDefaults.CanCreateDatabase:= True;
-  APersistenceLayerDefaults.CanSupportMultiUser:= True;end;
+  APersistenceLayerDefaults.CanSupportMultiUser:= True;
+  APersistenceLayerDefaults.CanSupportSQL:= True;
+end;
 
 function TtiPersistenceLayerADOSQLServer.GetDatabaseClass: TtiDatabaseClass;
 begin

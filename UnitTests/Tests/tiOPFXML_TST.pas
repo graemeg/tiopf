@@ -37,7 +37,12 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerXML = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDXML = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerXML = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -67,7 +72,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIDatabaseXML.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIQueryXML.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIAutoMapOperationXM.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIOIDManagerXML.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIOIDPersistentGUIDXML.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIOIDPersistentIntegerXML.Suite);
   end;
 end;
 
@@ -129,17 +135,25 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerXML }
+{ TTestTIPersistenceLayersXML }
 
-procedure TTestTIOIDManagerXML.SetUp;
+procedure TTestTIPersistenceLayersXML.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
   inherited;
 end;
 
-{ TTestTIPersistenceLayersXML }
+{ TTestTIOIDPersistentIntegerXML }
 
-procedure TTestTIPersistenceLayersXML.SetUp;
+procedure TTestTIOIDPersistentIntegerXML.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDXML }
+
+procedure TTestTIOIDPersistentGUIDXML.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
   inherited;

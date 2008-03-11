@@ -415,7 +415,6 @@ procedure TTestTIAutoMapOperation.SetUp;
 begin
   inherited;
   DropTestTable;
-  gTIOPFManager.DefaultOIDClassName := cOIDClassNameGUID;
 end;
 
 procedure TTestTIAutoMapOperation.TearDown;
@@ -2485,6 +2484,7 @@ end;
 {$ENDIF}
 
 end.
+
 
 
 

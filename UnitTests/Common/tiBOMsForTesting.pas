@@ -27,13 +27,13 @@ type
 
   TtiOPFTestOIdProp = class(TtiObjectByPropertyForTestingAbs)
   private
-    FOIDField: TOID;
-    procedure SetOIDField(const Value: TOID);
+    FOIDField: TtiOID;
+    procedure SetOIDField(const Value: TtiOID);
   public
     constructor Create; override;
     destructor Destroy; override;
   published
-    property OIDField: TOID read FOIDField write SetOIDField;
+    property OIDField: TtiOID read FOIDField write SetOIDField;
   end;
 
   TtiOPFTestNotesProp = class(TtiObjectByPropertyForTestingAbs)
@@ -741,7 +741,7 @@ begin
   {$IFDEF OID_AS_INT64}
   FOIDField := cNullOIDInteger;
   {$ELSE}
-  FOIDField := gTIOPFManager.OIDFactory.CreateOID;
+  FOIDField := GTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
   {$ENDIF}
 end;
 
@@ -753,7 +753,7 @@ begin
   inherited;
 end;
 
-procedure TtiOPFTestOIdProp.SetOIDField(const Value: TOID);
+procedure TtiOPFTestOIdProp.SetOIDField(const Value: TtiOID);
 begin
   FOIDField.Assign(Value);
 end;
@@ -787,6 +787,8 @@ end;
   end;
 
 end.
+
+
 
 
 

@@ -31,6 +31,7 @@ const
   cErrorNoFindMethodAssigned = 'No find method assigned';
   cErrorAttemptToSetNonPublishedProperty = 'Attempt to set non-published property %s.%s to %s';
   cErrorInvalidSortType = 'Invalid TtiPerObjListSortType';
+  CErrorDefaultOIDGeneratorNotAssigned = 'Default OIDGenerator not assigned. You must register an instance of TOIDGenerator with the global GTIOPFManager.';
 
 type
   {: The possible states of a TtiObjector descendant in memory.
@@ -273,7 +274,7 @@ type
 
   TtiObject = class(TtiVisited)
   private
-    FOID : TOID;
+    FOID : TtiOID;
     FObjectState : TPerObjectState;
     FObserverList: TList;
     FUpdateCount: Integer;
@@ -287,8 +288,11 @@ type
     procedure   SetDeleted(const AValue: boolean); virtual;
     procedure   SetDirty(const AValue: boolean); virtual;
     procedure   SetObjectState(const AValue: TPerObjectState); virtual;
-    function    GetOID: TOID; virtual;
-    procedure   SetOID(const AValue: TOID); virtual;
+    function    OIDGenerator: TtiOIDGenerator; virtual;
+    {$IFDEF OID_AS_INT64}
+    procedure   SetOID(const AValue: TtiOID); virtual;
+    {$ENDIF}
+    function    GetOID: TtiOID; virtual;
     function    GetDirty : boolean; virtual;
     function    GetOwner: TtiObject; reintroduce; virtual;
     procedure   SetOwner(const AValue: TtiObject); virtual;
@@ -348,9 +352,9 @@ type
     function    Equals(const AData : TtiObject): boolean; virtual;
     {: The OID of this object }
    {$IFDEF OID_AS_INT64}
-      property    OID        : TOID                   read GetOID write SetOID;
+      property    OID        : TtiOID                   read GetOID write SetOID;
    {$ELSE}
-      property    OID        : TOID                   read GetOID       ;
+      property    OID        : TtiOID                   read GetOID       ;
    {$ENDIF}
     {: The current state of this object}
     property    ObjectState: TPerObjectState read FObjectState write SetObjectState;
@@ -377,8 +381,8 @@ type
     function    ObjectStateAsString : string;
     {: Find an object in the hierarchy by OID with the OID passed as a string}
     function    Find(AOIDToFindAsString : string): TtiObject;  overload; virtual;
-    {: Find an object in the hierarchy by OID with the OID passed as a TOID object}
-    function    Find(AOIDToFind : TOID): TtiObject;  overload; virtual;
+    {: Find an object in the hierarchy by OID with the OID passed as a TtiOID object}
+    function    Find(AOIDToFind : TtiOID): TtiObject;  overload; virtual;
     {: Find an object in the hierarchy using the find method passed}
     function    Find(AtiObjectFindMethod : TPerObjFindMethod): TtiObject; overload;
     {: Find an object in the hierarchy using the extended find method passed}
@@ -476,8 +480,8 @@ type
     procedure   SetItemOwner(const AValue: TtiObject); virtual;
     procedure   AssignPublicProps(ASource : TtiObject); override;
     procedure   AssignClassProps(ASource: TtiObject); override;
-    function    IndexOfBinary(AOIDToFind : TOID): integer; virtual;
-    function    IndexOfFullScan(AOIDToFind : TOID): integer; virtual;
+    function    IndexOfBinary(AOIDToFind : TtiOID): integer; virtual;
+    function    IndexOfFullScan(AOIDToFind : TtiOID): integer; virtual;
   public
     constructor Create; override;
     destructor  Destroy; override;
@@ -497,11 +501,11 @@ type
     {: Finds the object in the list whose OID value matches.}
     function    Find(AOIDToFindAsString : string): TtiObject;  override;
     {: Finds the object in the list whose OID value matches.}
-    function    Find(AOIDToFind : TOID): TtiObject; override;
+    function    Find(AOIDToFind : TtiOID): TtiObject; override;
     {: Finds the object in the list whose OID value matches. Faster search if sorted by OID. }
-    function    Find(AOIDToFind : TOID; ASortType: TtiPerObjListSortType): TtiObject; overload;
+    function    Find(AOIDToFind : TtiOID; ASortType: TtiPerObjListSortType): TtiObject; overload;
     {: Finds the object in the list whose OID value matches. Will search the list, and if not found, will search all owned objects }
-    function    FindInHierarchy(AOIDToFind : TOID): TtiObject; overload;
+    function    FindInHierarchy(AOIDToFind : TtiOID): TtiObject; overload;
     {: Performs the method AMethod on every object in the list.}
     procedure   ForEach(AMethod : TPerObjForEachMethod       ; AIncludeDeleted : boolean = false); overload; virtual;
     {: Performs the method AMethod on every object in the list.}
@@ -519,7 +523,7 @@ type
     {: The index of the specified object in the list.}
     function    IndexOf(const AObject: TtiObject): integer; overload; virtual;
     {: The index of the object in the list whose OID value matches. Faster search if sorted by OID. }
-    function    IndexOf(AOIDToFind : TOID; ASortType: TtiPerObjListSortType = stNone): integer; overload; virtual;
+    function    IndexOf(AOIDToFind : TtiOID; ASortType: TtiPerObjListSortType = stNone): integer; overload; virtual;
     {: The last object in the list.}
     function    Last : TtiObject; virtual;
     {: The first object in the list.}
@@ -737,7 +741,7 @@ type
 
   TVisPerObjFindByOID = class(TtiVisitor)
   private
-    FOIDToFind: TOID;
+    FOIDToFind: TtiOID;
     FFound: TtiObject;
   protected
     function    AcceptVisitor : boolean; override;
@@ -745,7 +749,7 @@ type
     constructor Create; override;
     procedure   Execute(const AVisited : TtiVisited); override;
     property    Found : TtiObject read FFound;
-    property    OIDToFind : TOID read FOIDToFind write FOIDToFind;
+    property    OIDToFind : TtiOID read FOIDToFind write FOIDToFind;
   end;
 
   TVisSetAllObjectStates = class(TtiVisitor)
@@ -1368,6 +1372,13 @@ begin
                          Ord(ObjectState));
 end;
 
+function TtiObject.OIDGenerator: TtiOIDGenerator;
+begin
+  if not Assigned(gTIOPFManager.DefaultOIDGenerator) then
+    raise EtiOPFProgrammerException.Create(CErrorDefaultOIDGeneratorNotAssigned);
+  result:= gTIOPFManager.DefaultOIDGenerator;
+end;
+
 { TPerStream }
  
 constructor TPerStream.Create;
@@ -1551,7 +1562,7 @@ begin
   result := AList.Count;
 end;
 
-function TtiObject.Find(AOIDToFind : TOID): TtiObject;
+function TtiObject.Find(AOIDToFind : TtiOID): TtiObject;
 var
   lVis : TVisPerObjFindByOID;
 begin
@@ -1890,12 +1901,12 @@ begin
 end;
 
 
-function TtiObject.GetOID: TOID;
+function TtiObject.GetOID: TtiOID;
 begin
   // Create OID on demand
   {$IFNDEF OID_AS_INT64}
     if FOID = nil then
-      FOID := gTIOPFManager.OIDFactory.CreateOID;
+      FOID := OIDGenerator.OIDClass.Create;
   {$ENDIF}
   result := FOID;
 end;
@@ -1910,7 +1921,7 @@ begin
   {$IFDEF OID_AS_INT64}
     OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
-    OID.GetNextValue(ADatabaseName, APersistenceLayerName);
+    OID.GetNextValue;
   {$ENDIF}
 end;
 
@@ -1921,7 +1932,7 @@ begin
   {$IFDEF OID_AS_INT64}
     OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
-    OID.GetNextValue(ADatabaseName, APersistenceLayerName);
+    OID.GetNextValue;
   {$ENDIF}
 end;
 
@@ -2454,7 +2465,7 @@ begin
 //  AutoSetItemOwner := TtiObjectList(ASource).AutoSetItemOwner;
 end;
 
-function TtiObjectList.Find(AOIDToFind: TOID): TtiObject;
+function TtiObjectList.Find(AOIDToFind: TtiOID): TtiObject;
 var
   i : integer;
 begin
@@ -2467,7 +2478,7 @@ begin
   result := nil;
 end;
 
-function TtiObjectList.Find(AOIDToFind: TOID; ASortType: TtiPerObjListSortType): TtiObject;
+function TtiObjectList.Find(AOIDToFind: TtiOID; ASortType: TtiPerObjListSortType): TtiObject;
 var
   FindIndex: Integer;
 begin
@@ -2478,7 +2489,7 @@ begin
     Result := nil;
 end;
 
-function TtiObjectList.IndexOf(AOIDToFind: TOID; ASortType: TtiPerObjListSortType = stNone): integer;
+function TtiObjectList.IndexOf(AOIDToFind: TtiOID; ASortType: TtiPerObjListSortType = stNone): integer;
 begin
   case ASortType of
     stOID : Result := IndexOfBinary(AOIDToFind);
@@ -2672,13 +2683,13 @@ end;
 function TtiObject.Find(AOIDToFindAsString: string): TtiObject;
 {$IFNDEF OID_AS_INT64}
   var
-    lOID : TOID;
+    lOID : TtiOID;
 {$ENDIF}
 begin
   {$IFDEF OID_AS_INT64}
     result := Find(StrToInt(AOIDToFindAsString));
   {$ELSE}
-    lOID := gTIOPFManager.OIDFactory.CreateOID;
+    lOID := OIDGenerator.OIDClass.Create;
     try
       lOID.AsString := AOIDToFindAsString;
      result := Find(lOID);
@@ -2692,7 +2703,7 @@ function TtiObjectList.Find(AOIDToFindAsString: string): TtiObject;
 var
   i : integer;
 {$IFNDEF OID_AS_INT64}
-  lOIDToFind : TOID;
+  lOIDToFind : TtiOID;
 {$ENDIF}
 begin
   {$IFDEF OID_AS_INT64}
@@ -2704,7 +2715,7 @@ begin
       end;
     result := nil;
   {$ELSE}
-    lOIDToFind := gTIOPFManager.OIDFactory.CreateOID;
+    lOIDToFind := OIDGenerator.OIDClass.Create;
     try
       lOIDToFind.AsString := AOIDToFindAsString;
       for i := 0 to Count - 1 do
@@ -3378,7 +3389,7 @@ begin
   {$IFDEF OID_AS_INT64}
     OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
-    OID.GetNextValue(ADatabaseName, APersistenceLayerName);
+    OID.GetNextValue;
   {$ENDIF}
   ObjectState := posCreate;
 end;
@@ -3389,7 +3400,7 @@ begin
   Result := tiGetSimplePropType(Self, APropName);
 end;
 
-function TtiObjectList.FindInHierarchy(AOIDToFind: TOID): TtiObject;
+function TtiObjectList.FindInHierarchy(AOIDToFind: TtiOID): TtiObject;
 begin
   Result := Find(AOIDToFind);
   if Result = nil then
@@ -3487,7 +3498,7 @@ begin
     {$IFDEF OID_AS_INT64}
       Write(IntToStr(TtiObject(AVisited).OID));
     {$ELSE}
-      if gTIOPFManager.DefaultOIDClassName <> '' then
+      if (gTIOPFManager.DefaultOIDGenerator.OIDClass <> nil) then
         Write('OID=' +TtiObject(AVisited).OID.AsString)
       else
         Write('OID=Null');
@@ -3598,10 +3609,12 @@ begin
   end;
 end;
 
-procedure TtiObject.SetOID(const AValue: TOID);
+{$IFDEF OID_AS_INT64}
+procedure TtiObject.SetOID(const AValue: TtiOID);
 begin
   FOID := AValue;
 end;
+{$ENDIF}
 
 function TtiObject.PropCount(APropFilter: TTypeKinds = ctkSimple): integer;
 var
@@ -3629,7 +3642,7 @@ begin
     FIsNull := false;
 end;
 
-function TtiObjectList.IndexOfBinary(AOIDToFind: TOID): integer;
+function TtiObjectList.IndexOfBinary(AOIDToFind: TtiOID): integer;
 var
   LLow: Integer;
   LHigh: Integer;
@@ -3654,7 +3667,7 @@ begin
   Result := -1;
 end;
 
-function TtiObjectList.IndexOfFullScan(AOIDToFind: TOID): integer;
+function TtiObjectList.IndexOfFullScan(AOIDToFind: TtiOID): integer;
 var
   i : integer;
 begin
@@ -3856,3 +3869,5 @@ begin
 end;
 
 end.
+
+

@@ -3,6 +3,7 @@ unit tiConstants;
 {$I tiDefines.inc}
 
 interface
+
 const
   // Got problems setting this to 2.00 for the time being. Have a dependency in the XML files. Will fix.
   //cTIOPFVersion          = '2.000';

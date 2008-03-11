@@ -44,7 +44,12 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerRemote = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDRemote = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerRemote = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -76,7 +81,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIPersistenceLayersRemote.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIDatabaseRemote.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIQueryRemote.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIOIDManagerRemote.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIOIDPersistentGUIDRemote.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIOIDPersistentIntegerRemote.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIAutoMapOperationRemote.Suite);
   end;
 end;
@@ -182,9 +188,17 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerRemote }
+{ TTestTIOIDPersistentIntegerRemote }
 
-procedure TTestTIOIDManagerRemote.SetUp;
+procedure TTestTIOIDPersistentIntegerRemote.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistRemote);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDRemote }
+
+procedure TTestTIOIDPersistentGUIDRemote.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistRemote);
   inherited;

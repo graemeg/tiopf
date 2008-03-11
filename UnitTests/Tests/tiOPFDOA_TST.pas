@@ -35,7 +35,12 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerDOA = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDDOA = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerDOA = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -62,7 +67,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIPersistenceLayersDOA.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIDatabaseDOA.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIQueryDOA.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIOIDManagerDOA.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIOIDPersistentGUIDDOA.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIOIDPersistentIntegerDOA.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIAutoMapOperationDOA.Suite);
   end;
 end;
@@ -127,9 +133,17 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerDOA }
+{ TTestTIOIDPersistentIntegerDOA }
 
-procedure TTestTIOIDManagerDOA.SetUp;
+procedure TTestTIOIDPersistentIntegerDOA.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDOA);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDDOA }
+
+procedure TTestTIOIDPersistentGUIDDOA.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDOA);
   inherited;

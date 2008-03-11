@@ -1,18 +1,19 @@
 unit tiOIDGUID;
-                 
+
 {$I tiDefines.inc}
 
-{$IFNDEF OID_AS_INT64}
+{$IFDEF OID_AS_INT64}
+  tiOIDGUID.pas should not be linked when OID_AS_INT64 is used
+{$ENDIF}
+
 interface
 uses
-  tiOID
-  ,tiBaseObject
- ;
-
+  tiOID,
+  tiBaseObject;
 
 type
 
-  TOIDGUID = class(TOID)
+  TOIDGUID = class(TtiOID)
   private
     FAsString : string;
   protected
@@ -26,35 +27,29 @@ type
     procedure AssignToTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
     procedure AssignFromTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
     function  EqualsQueryField(const AFieldName : string; const AQuery : TtiBaseObject): boolean; override;
-    procedure Assign(const ASource : TOID); override;
-    function  Compare(const ACompareWith : TOID): integer; override;
+    procedure Assign(const ASource : TtiOID); override;
+    function  Compare(const ACompareWith : TtiOID): integer; override;
     procedure SetToNull; override;
     function  NullOIDAsString : string; override;
-    procedure GetNextValue(const ADatabaseName : string; const APersistenceLayerName : string); override;
+    procedure GetNextValue; override;
   end;
 
 
-  TNextOIDGeneratorGUID = class(TNextOIDGenerator)
-  private
+  TtiOIDGeneratorGUID = class(TtiOIDGenerator)
   public
-    constructor Create; override;
-    destructor  Destroy; override;
-    procedure   AssignNextOID(const AAssignTo : TOID; const ADatabaseName : string; APersistenceLayerName : string); override;
+    class function OIDClass: TtiOIDClass; override;
+    procedure   AssignNextOID(
+      const AAssignTo : TtiOID;
+      const ADatabaseAliasName: string = '';
+      const APersistenceLayerName: string = ''); override;
   end;
-
-
-const
-  cOIDClassNameGUID = 'OIDClassNameGUID';
-
 
 implementation
 uses
-  tiQuery
-  ,tiOPFManager
-  ,tiConstants
-  ,tiUtils
- ;
-
+  tiQuery,
+  tiOPFManager,
+  tiConstants,
+  tiUtils;
 
 { TOIDGUID }
 
@@ -106,13 +101,13 @@ begin
 end;
 
 
-procedure TOIDGUID.Assign(const ASource: TOID);
+procedure TOIDGUID.Assign(const ASource: TtiOID);
 begin
   FAsString := ASource.AsString;
 end;
 
 
-function TOIDGUID.Compare(const ACompareWith: TOID): integer;
+function TOIDGUID.Compare(const ACompareWith: TtiOID): integer;
 begin
   if AsString < ACompareWith.AsString then
     result := -1
@@ -129,18 +124,18 @@ begin
 end;
 
 
-{ TNextOIDGeneratorGUID }
+{ TtiOIDGeneratorGUID }
 
-procedure TNextOIDGeneratorGUID.AssignNextOID(const AAssignTo: TOID; const ADatabaseName: string; APersistenceLayerName: string);
+procedure TtiOIDGeneratorGUID.AssignNextOID(
+      const AAssignTo : TtiOID;
+      const ADatabaseAliasName: string = '';
+      const APersistenceLayerName: string = '');
 var
   lValue : string;
 const
   cGUIDLength = 38;
 begin
-  Assert(ADatabaseName = ADatabaseName);  // Getting rid of compiler hints, param not used.
-  Assert(APersistenceLayerName = APersistenceLayerName);  // Getting rid of compiler hints, param not used.
-
-  Assert(AAssignTo.TestValid(TOID), CTIErrorInvalidObject);
+  Assert(AAssignTo.TestValid(TtiOID), CTIErrorInvalidObject);
   lValue := tiCreateGUIDString;
 
 //           10        20        30
@@ -155,19 +150,6 @@ begin
   AAssignTo.AsString := lValue;
 end;
 
-
-constructor TNextOIDGeneratorGUID.Create;
-begin
-  inherited;
-end;
-
-
-destructor TNextOIDGeneratorGUID.destroy;
-begin
-  inherited;
-end;
-
-
 function TOIDGUID.GetAsVariant: Variant;
 begin
   result := FAsString;
@@ -180,19 +162,20 @@ begin
 end;
 
 
+
 function TOIDGUID.NullOIDAsString: string;
 begin
   result := '';
 end;
 
 
-procedure TOIDGUID.GetNextValue(const ADatabaseName, APersistenceLayerName: string);
+procedure TOIDGUID.GetNextValue;
 var
-  lNextOIDGenerator : TNextOIDGeneratorGUID;
+  lNextOIDGenerator : TtiOIDGeneratorGUID;
 begin
-  lNextOIDGenerator := TNextOIDGeneratorGUID.Create;
+  lNextOIDGenerator := TtiOIDGeneratorGUID.Create;
   try
-    lNextOIDGenerator.AssignNextOID(Self, ADatabaseName, APersistenceLayerName);
+    lNextOIDGenerator.AssignNextOID(Self);
   finally
     lNextOIDGenerator.Free;
   end;
@@ -209,15 +192,13 @@ begin
 end;
 
 
+class function TtiOIDGeneratorGUID.OIDClass: TtiOIDClass;
+begin
+  result:= TOIDGUID;
+end;
+
 initialization
-
-  gTIOPFManager.OIDFactory.RegisterMapping(cOIDClassNameGUID, TOIDGUID, TNextOIDGeneratorGUID) ;
-  if gTIOPFManager.DefaultOIDClassName = '' then
-    gTIOPFManager.DefaultOIDClassName := cOIDClassNameGUID;
-
-{$ELSE}
-interface
-implementation
-{$ENDIF}
+  GTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorGUID.Create;
 
 end.
+

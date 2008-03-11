@@ -12,16 +12,6 @@ uses
   ;
 
 type
-  TTestTiDataSetElements = class(TtiTestCase)
-  private
-    FList: TtiObjectList;
-    FDataset: TtiDataset;
-  protected
-    procedure SetUp; override;
-    procedure TearDown; override;
-  published
-    procedure CreateDestroyTestItem;
-  end;
 
   TTestTiDataset = class(TtiTestcase)
   private
@@ -71,7 +61,6 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTiDataSetElements);
   RegisterNonPersistentTest(TTestTiDataset);
 end;
 
@@ -126,29 +115,6 @@ end;
 { TTestTiDataSetElements }
 var
   uTtiDatasetItem: TtiDatasetItem;
-
-procedure TTestTiDataSetElements.SetUp;
-begin
-  inherited;
-  uTtiDatasetItem := nil;
-  FList := TtiObjectList.Create;
-  FDataset := TtiDataset.Create(nil);
-  FDataset.ObjectClass := TtiDatasetItem;
-end;
-
-procedure TTestTiDataSetElements.TearDown;
-begin
-  uTtiDatasetItem.Free;
-  FDataset.Close;
-  FDataset.Free;
-  inherited;
-end;
-
-procedure TTestTiDataSetElements.CreateDestroyTestItem;
-begin
-  FailsOnNoChecksExecuted := False;
-  uTtiDatasetItem := TtiDatasetItem.CreateNew;
-end;
 
 procedure TTestTiDataset.Setup;
 begin

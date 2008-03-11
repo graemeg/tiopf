@@ -2,21 +2,22 @@ unit tiOIDInteger;
 
 {$I tiDefines.inc}  
 
-{$IFNDEF OID_AS_INT64}
+{$IFDEF OID_AS_INT64}
+  tiOIDGUID.pas should not be linked when OID_AS_INT64 is used
+{$ENDIF}
 
 interface
 uses
-  tiOID
-  ,tiBaseObject
-  ,tiObject
-  ,tiVisitorDB
-  ,tiVisitor
-  ,SyncObjs
- ;
+  tiOID,
+  tiBaseObject,
+  tiObject,
+  tiVisitorDB,
+  tiVisitor,
+  SyncObjs;
 
 type
 
-  TOIDInteger = class(TOID)
+  TOIDInteger = class(TtiOID)
   private
     FAsInteger : integer;
   protected
@@ -30,8 +31,8 @@ type
     procedure AssignToTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
     procedure AssignFromTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
     function  EqualsQueryField(const AFieldName : string; const AQuery : TtiBaseObject): boolean; override;
-    procedure Assign(const ASource : TOID); override;
-    function  Compare(const ACompareWith : TOID): integer; override;
+    procedure Assign(const ASource : TtiOID); override;
+    function  Compare(const ACompareWith : TtiOID): integer; override;
     procedure SetToNull; override;
     function  NullOIDAsString: String; override;
     property  AsInteger : Integer read FAsInteger write FAsInteger;
@@ -44,18 +45,24 @@ type
     property NextOID : integer read FNextOID write FNextOID;
   end;
 
-  TNextOIDGeneratorInteger = class(TNextOIDGenerator)
+  TtiOIDGeneratorInteger = class(TtiOIDGenerator)
   private
     FLow : Integer;
     FLowRange: Integer;
     FDirty: boolean;
     FNextOIDData : TNextOIDData;
     FCritSect: TCriticalSection;
-    function NextOID(const ADatabaseName : string; APersistenceLayerName : string): Integer;
+    function NextOID(
+      const ADatabaseAliasName: string;
+      const APersistenceLayerName: string): Integer;
   public
     constructor Create; override;
     destructor  Destroy; override;
-    procedure   AssignNextOID(const AAssignTo : TOID; const ADatabaseName : string; APersistenceLayerName : string); override;
+    class function OIDClass: TtiOIDClass; override;
+    procedure   AssignNextOID(
+      const AAssignTo : TtiOID;
+      const ADBConnectionName: string = '';
+      const APersistenceLayerName: string = ''); override;
   end;
 
   TVisDBNextOIDAmbler = class(TtiObjectVisitor)
@@ -84,18 +91,14 @@ type
     procedure   Execute(const AData : TtiVisited); override;
   end;
 
-const
-  cOIDClassNameInteger = 'OIDClassNameInteger';
-
 implementation
 
 uses
-  tiQuery
-  ,tiOPFManager
-  ,tiConstants
-  ,tiPersistenceLayers
-  ,SysUtils
- ;
+  tiQuery,
+  tiOPFManager,
+  tiConstants,
+  tiPersistenceLayers,
+  SysUtils;
 
 { TOIDInteger }
 
@@ -144,12 +147,12 @@ begin
   result := (FAsInteger = lQuery.FieldAsInteger[ AFieldName ]);
 end;
 
-procedure TOIDInteger.Assign(const ASource: TOID);
+procedure TOIDInteger.Assign(const ASource: TtiOID);
 begin
   AsString := ASource.AsString;
 end;
 
-function TOIDInteger.Compare(const ACompareWith: TOID): integer;
+function TOIDInteger.Compare(const ACompareWith: TtiOID): integer;
 begin
   Assert(ACompareWith is TOIDInteger, 'ACompareWith not a ACompareWith');
   if AsInteger < TOIDInteger(ACompareWith).AsInteger then
@@ -166,16 +169,19 @@ const
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
-// * TNextOIDGeneratorInteger
+// * TtiOIDGeneratorInteger
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TNextOIDGeneratorInteger.AssignNextOID(const AAssignTo: TOID; const ADatabaseName : string; APersistenceLayerName : string);
+procedure TtiOIDGeneratorInteger.AssignNextOID(
+      const AAssignTo : TtiOID;
+      const ADBConnectionName: string = '';
+      const APersistenceLayerName: string = '');
 begin
-  Assert(AAssignTo.TestValid(TOID), CTIErrorInvalidObject);
-  AAssignTo.AsString := IntToStr(NextOID(ADatabaseName, APersistenceLayerName));
+  Assert(AAssignTo.TestValid(TtiOID), CTIErrorInvalidObject);
+  AAssignTo.AsString := IntToStr(NextOID(ADBConnectionName, APersistenceLayerName));
 end;
 
-constructor TNextOIDGeneratorInteger.Create;
+constructor TtiOIDGeneratorInteger.Create;
 begin
   inherited;
   FLow := 0;
@@ -185,20 +191,23 @@ begin
   FCritSect:= TCriticalSection.Create;
 end;
 
-destructor TNextOIDGeneratorInteger.Destroy;
+destructor TtiOIDGeneratorInteger.Destroy;
 begin
   FCritSect.Free;
   FNextOIDData.Free;
   inherited;
 end;
 
-function TNextOIDGeneratorInteger.NextOID(const ADatabaseName : string; APersistenceLayerName : string): Integer;
+function TtiOIDGeneratorInteger.NextOID(
+  const ADatabaseAliasName: string;
+  const APersistenceLayerName: string): Integer;
 begin
   FCritSect.Enter;
   try
     if FDirty then
     begin
-      gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData, ADatabaseName, APersistenceLayerName);
+      gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData,
+        ADatabaseAliasName, APersistenceLayerName);
       FDirty := false;
     end;
 
@@ -213,6 +222,11 @@ begin
   finally
     FCritSect.Leave;
   end;
+end;
+
+class function TtiOIDGeneratorInteger.OIDClass: TtiOIDClass;
+begin
+  result:= TOIDInteger;
 end;
 
 procedure TOIDInteger.SetToNull;
@@ -356,15 +370,10 @@ end;
 
 initialization
 
-  gTIOPFManager.OIDFactory.RegisterMapping(cOIDClassNameInteger, TOIDInteger, TNextOIDGeneratorInteger) ;
-  if gTIOPFManager.DefaultOIDClassName = '' then
-    gTIOPFManager.DefaultOIDClassName := cOIDClassNameInteger;
+  GTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorInteger.Create;
 
   gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
   gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
   gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDSql);
-{$ELSE}
-interface
-implementation
-{$ENDIF}
+
 end.

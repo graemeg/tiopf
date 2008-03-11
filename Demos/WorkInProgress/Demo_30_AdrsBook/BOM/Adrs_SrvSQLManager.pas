@@ -433,7 +433,7 @@ end;
 procedure TVisAdrsRead.MapRowToObject;
 var
   lData: TAdrs;
-  lOID: TOID;
+  lOID: TtiOID;
   lAdrsType: TLookupListItem;
 begin
   lOID:= gTIOPFManager.OIDFactory.CreateOID;
@@ -482,7 +482,7 @@ end;
 procedure TVisEAdrsRead.MapRowToObject;
 var
   lData: TEAdrs;
-  lOID: TOID;
+  lOID: TtiOID;
   lAdrsType: TLookupListItem;
 begin
   lOID:= gTIOPFManager.OIDFactory.CreateOID;

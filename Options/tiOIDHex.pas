@@ -5,32 +5,33 @@
             is equal to 128 bit unsigned INTEGER.
             By default 'cache' is 256 OIDs
             There are three usefull 'static' functions:
-            TOID.CheckValue - checks if given parameter is proper HEX value
-            TOID.IncHex - inc. HEX given by parameter by one
-            TOID.ZeroHex - gives ZERO AValue Hex with the proper no. of chars
+            TtiOID.CheckValue - checks if given parameter is proper HEX value
+            TtiOID.IncHex - inc. HEX given by parameter by one
+            TtiOID.ZeroHex - gives ZERO AValue Hex with the proper no. of chars
 
- History:   0.9Beta first version    
+ History:   0.9Beta first version
 -----------------------------------------------------------------------------}
 
 unit tiOIDHex;
 
 {$I tiDefines.inc}
 
-{$IFNDEF OID_AS_INT64}
+{$IFDEF OID_AS_INT64}
+  tiOIDGUID.pas should not be linked when OID_AS_INT64 is used
+{$ENDIF}
 
 interface
 
 uses
-  tiOID
-  ,tiBaseObject
-  ,tiObject
-  ,tiVisitorDB
-  ,tiVisitor
-  ,SyncObjs
- ;
+  tiOID,
+  tiBaseObject,
+  tiObject,
+  tiVisitorDB,
+  tiVisitor,
+  SyncObjs;
 
 type
-  TOIDHex = class(TOID)
+  TOIDHex = class(TtiOID)
   private
     FAsString : string;
   protected
@@ -44,8 +45,8 @@ type
     procedure AssignToTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
     procedure AssignFromTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
     function  EqualsQueryField(const AFieldName : string; const AQuery : TtiBaseObject): boolean; override;
-    procedure Assign(const ASource : TOID); override;
-    function  Compare(const ACompareWith : TOID): integer; override;
+    procedure Assign(const ASource : TtiOID); override;
+    function  Compare(const ACompareWith : TtiOID): integer; override;
     procedure SetToNull; override;
     function  NullOIDAsString : string; override;
     class function CheckValue(AValue : ShortString): boolean;
@@ -60,20 +61,24 @@ type
     property NextHexOID : ShortString read FNextHexOID write FNextHexOID;
   end;
 
-  TNextOIDGeneratorHex = class(TNextOIDGenerator)
+  TtiOIDGeneratorHex = class(TtiOIDGenerator)
   private
-//    FHigh : Integer;
     FLow, FLowRange : integer;
     FLowRangeMask: string;
     FLastOIDValue : string;
     FDirty: boolean;
     FNextOIDHexData : TNextOIDHexData;
     FCritSect: TCriticalSection;
-    function NextOID : String;
+    function NextOID(
+  const ADatabaseAliasName: string;
+  const APersistenceLayerName: string) : String;
   public
     constructor Create; override;
     destructor  Destroy; override;
-    procedure   AssignNextOID(const AAssignTo : TOID; const ADatabaseName : string; APersistenceLayerName : string); override;
+    procedure   AssignNextOID(
+      const AAssignTo : TtiOID;
+      const ADBConnectionName: string = '';
+      const APersistenceLayerName: string = ''); override;
   end;
 
   TVisDBNextOIDHexAmblerRead = class(TtiObjectVisitor)
@@ -92,26 +97,24 @@ type
 
 
 const
-  cOIDClassNameHex = 'OIDClassNameHex';
-  cgsNextOIDHexReadHigh = 'NextOIDHexReadHigh';
-  cOIDHexSize = 32;
-  cOIDHexChacheSize = 2;
+  CNextOIDHexReadHigh = 'NextOIDHexReadHigh';
+  COIDHexSize = 32;
+  COIDHexChacheSize = 2;
 
 implementation
 
 uses
-  tiQuery
-  ,SysUtils
-  ,tiUtils
-  ,tiOPFManager
-  ,tiConstants
- ;
+  tiQuery,
+  SysUtils,
+  tiUtils,
+  tiOPFManager,
+  tiConstants;
 
 const
   cOIDHexNumber : array [0..15] of char = ('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
 { TOIDHex }
 
-procedure TOIDHex.Assign(const ASource: TOID);
+procedure TOIDHex.Assign(const ASource: TtiOID);
 begin
   AsString := ASource.AsString;
 end;
@@ -166,7 +169,7 @@ begin
   end;
 end;
 
-function TOIDHex.Compare(const ACompareWith: TOID): integer;
+function TOIDHex.Compare(const ACompareWith: TtiOID): integer;
 begin
   if AsString < ACompareWith.AsString then
     result := -1
@@ -251,42 +254,48 @@ end;
 
 class function TOIDHex.ZeroHex: ShortString;
 begin
-  result:=StringOfChar('0',cOIDHexSize);
+  result:=StringOfChar('0',COIDHexSize);
 end;
 
-{ TNextOIDGeneratorHex }
+{ TtiOIDGeneratorHex }
 
-procedure TNextOIDGeneratorHex.AssignNextOID(const AAssignTo: TOID; const ADatabaseName : string; APersistenceLayerName : string);
+procedure TtiOIDGeneratorHex.AssignNextOID(
+      const AAssignTo : TtiOID;
+      const ADBConnectionName: string = '';
+      const APersistenceLayerName: string = '');
 begin
-  Assert(AAssignTo.TestValid(TOID), CTIErrorInvalidObject);
-  AAssignTo.AsString := NextOID;
+  Assert(AAssignTo.TestValid(TtiOID), CTIErrorInvalidObject);
+  AAssignTo.AsString := NextOID(ADatabaseName, APersistenceLayerName);
 end;
 
-constructor TNextOIDGeneratorHex.Create;
+constructor TtiOIDGeneratorHex.Create;
 begin
   inherited;
   FLow := 0;
-  FLowRangeMask := StringOfChar('0',cOIDHexChacheSize);;
+  FLowRangeMask := StringOfChar('0',COIDHexChacheSize);;
   FLowRange:=StrToInt('$1'+FLowRangeMask);
   FDirty := true;
   FNextOIDHexData := TNextOIDHexData.Create;
   FCritSect:= TCriticalSection.Create;
 end;
 
-destructor TNextOIDGeneratorHex.destroy;
+destructor TtiOIDGeneratorHex.destroy;
 begin
   FNextOIDHexData.Free;
   FCritSect.Free;
   inherited;
 end;
 
-function TNextOIDGeneratorHex.NextOID: String;
+function TtiOIDGeneratorHex.NextOID(
+  const ADatabaseAliasName: string;
+  const APersistenceLayerName: string): String;
 begin
   FCritSect.Enter;
   try
     if FDirty then
     begin
-      gTIOPFManager.VisitorManager.Execute(cgsNextOIDHexReadHigh, FNextOIDHexData);
+      gTIOPFManager.VisitorManager.Execute(CNextOIDHexReadHigh,
+        FNextOIDHexData, ADBConectionName, APersistenceLayerName);
       FDirty := false;
       FLastOIDValue:=FNextOIDHexData.NextHexOID + FLowRangeMask;
     end;
@@ -328,7 +337,7 @@ begin
   try
     TNextOIDHexData(Visited).NextHexOID := Query.FieldAsString[ 'OID' ];
     if TNextOIDHexData(Visited).NextHexOID='' then
-      TNextOIDHexData(Visited).NextHexOID:=StringOfChar('0',cOIDHexSize-cOIDHexChacheSize);;
+      TNextOIDHexData(Visited).NextHexOID:=StringOfChar('0',COIDHexSize-COIDHexChacheSize);;
   finally
     Query.Close;
   end;
@@ -367,17 +376,11 @@ end;
 
 initialization
 
-  gTIOPFManager.OIDFactory.RegisterMapping(cOIDClassNameHex, TOIDHex, TNextOIDGeneratorHex) ;
-
-  if gTIOPFManager.DefaultOIDClassName = '' then
-    gTIOPFManager.DefaultOIDClassName := cOIDClassNameHex;
-
-  gTIOPFManager.VisitorManager.RegisterVisitor(cgsNextOIDHexReadHigh, TVisDBNextOIDHexAmblerRead);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cgsNextOIDHexReadHigh, TVisDBNextOIDHexAmblerUpdate);
-
-{$ELSE}
-interface
-implementation
-{$ENDIF}
+  GTIOPFManager.DefaultOIDClass:= TOIDHex;
+  gTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerRead);
+  gTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerUpdate);
 
 end.
+
+
+

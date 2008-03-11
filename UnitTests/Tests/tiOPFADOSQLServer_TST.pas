@@ -43,7 +43,12 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerADOSQLServer = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDADOSQLServer = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerADOSQLServer = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -70,10 +75,10 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIPersistenceLayersADOSQLServer.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIDatabaseADOSQLServer.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIQueryADOSQLServer.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIOIDManagerADOSQLServer.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIOIDPersistentGUIDADOSQLServer.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIOIDPersistentIntegerADOSQLServer.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestTIAutoMapOperationADOSQLServer.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOSQLServer), TTestAutomappingCriteriaADOSQLServer.Suite);
-
   end;
 end;
 
@@ -148,17 +153,25 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerADOSQLServer }
+{ TTestAutomappingCriteriaADOSQLServer }
 
-procedure TTestTIOIDManagerADOSQLServer.SetUp;
+procedure TTestAutomappingCriteriaADOSQLServer.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOSQLServer);
   inherited;
 end;
 
-{ TTestAutomappingCriteriaADOSQLServer }
+{ TTestTIOIDPersistentIntegerADOSQLServer }
 
-procedure TTestAutomappingCriteriaADOSQLServer.SetUp;
+procedure TTestTIOIDPersistentIntegerADOSQLServer.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOSQLServer);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDADOSQLServer }
+
+procedure TTestTIOIDPersistentGUIDADOSQLServer.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOSQLServer);
   inherited;

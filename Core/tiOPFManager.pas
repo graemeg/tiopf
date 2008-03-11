@@ -42,9 +42,7 @@ type
     FApplicationData: TObjectList;
     FApplicationStartTime: TDateTime;
     {$IFNDEF OID_AS_INT64}
-      FDefaultOIDClassName: string;
-      FOIDFactory: TOIDFactory;
-      procedure SetDefaultOIDClassName(const AValue: string);
+      FDefaultOIDGenerator: TtiOIDGenerator;
     {$ENDIF}
 
     function  GetDefaultDBConnectionName: string;
@@ -56,6 +54,7 @@ type
     procedure SetDefaultPerLayer(const AValue: TtiPersistenceLayer);
     procedure SetDefaultPerLayerName(const AValue: string);
     function  GetApplicationData: TList;
+    procedure SetDefaultOIDGenerator(const AValue: TtiOIDGenerator);
   public
     constructor Create; override;
     destructor  Destroy; override;
@@ -205,8 +204,7 @@ type
     property    ClassDBMappingMgr     : TtiClassDBMappingMgr read GetClassDBMappingMgr;
 
     {$IFNDEF OID_AS_INT64}
-    property    DefaultOIDClassName    : string read FDefaultOIDClassName write SetDefaultOIDClassName;
-    property    OIDFactory            : TOIDFactory read FOIDFactory;
+    property    DefaultOIDGenerator: TtiOIDGenerator read FDefaultOIDGenerator write SetDefaultOIDGenerator;
     {$ENDIF}
   end;
 
@@ -307,6 +305,13 @@ begin
 end;
 
 
+procedure TtiOPFManager.SetDefaultOIDGenerator(const AValue: TtiOIDGenerator);
+begin
+  FreeAndNil(FDefaultOIDGenerator);
+  if Assigned(AValue) then
+    FDefaultOIDGenerator := AValue
+end;
+
 procedure TtiOPFManager.ConnectDatabase(const ADatabaseAlias, ADatabaseName,
   AUserName, APassword, AParams, APersistenceLayerName: string);
 var
@@ -339,7 +344,7 @@ begin
   FTerminated := false;
 
   {$IFNDEF OID_AS_INT64}
-  FOIDFactory := TOIDFactory.Create;
+  FDefaultOIDGenerator:= nil;
   {$ENDIF}
 
   FActiveThreadList := TtiActiveThreadList.Create;
@@ -354,7 +359,7 @@ begin
   FActiveThreadList.Free;
   FVisitorManager.Free;
   {$IFNDEF OID_AS_INT64}
-    FOIDFactory.Free;
+    FDefaultOIDGenerator.Free;
   {$ENDIF}
   FClassDBMappingMgr.Free;
   FPersistenceLayers.Free;
@@ -547,9 +552,6 @@ begin
   lRegPerLayer := FPersistenceLayers.FindByPerLayerName(APackageID);
   if lRegPerLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
-
-  if lRegPerLayer.NextOIDMgr.FindByDatabaseName(ADatabaseName) <> nil then
-    lRegPerLayer.NextOIDMgr.UnloadNextOIDGenerator(ADatabaseName);
 
   if (SameText(lRegPerLayer.DefaultDBConnectionName, ADatabaseName)) then
     lRegPerLayer.DefaultDBConnectionName := '';
@@ -745,15 +747,6 @@ begin
   end;
 end;
 
-
-{$IFNDEF OID_AS_INT64}
-  procedure TtiOPFManager.SetDefaultOIDClassName(const AValue: string);
-  begin
-    FDefaultOIDClassName := AValue;
-  end;
-{$ENDIF}
-
-
 function TtiOPFManager.GetApplicationData: TList;
 begin
   result := FApplicationData;
@@ -940,3 +933,4 @@ finalization
   FreeAndNilTIPerMgr;
 
 end.
+

@@ -29,19 +29,22 @@ type
   protected
     procedure   SetUp; override;
   end;
-  
+
 
   TTestTIAutoMapOperationCSV = class(TTestTIAutoMapOperation)
   protected
     procedure   SetUp; override;
   end;
-  
 
-  TTestTIOIDManagerCSV = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDCSV = class(TTestTIOIDPersistentGUID)
   protected
     procedure   SetUp; override;
   end;
-  
+
+  TTestTIOIDPersistentIntegerCSV = class(TTestTIOIDPersistentInteger)
+  protected
+    procedure   SetUp; override;
+  end;
 
 procedure RegisterTests;
 
@@ -70,7 +73,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIPersistenceLayersCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIDatabaseCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIQueryCSV.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIOIDManagerCSV.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIOIDPersistentGUIDCSV.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIOIDPersistentIntegerCSV.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIAutoMapOperationCSV.Suite);
   end;
 end;
@@ -133,9 +137,17 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerCSV }
+{ TTestTIOIDPersistentIntegerCSV }
 
-procedure TTestTIOIDManagerCSV.SetUp;
+procedure TTestTIOIDPersistentIntegerCSV.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDCSV }
+
+procedure TTestTIOIDPersistentGUIDCSV.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
   inherited;

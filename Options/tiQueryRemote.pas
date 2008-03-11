@@ -1250,6 +1250,7 @@ begin
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanCreateDatabase:= False;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
+  APersistenceLayerDefaults.CanSupportSQL:= True;
 end;
 
 function TtiPersistenceLayerRemoteXML.GetDatabaseClass: TtiDatabaseClass;

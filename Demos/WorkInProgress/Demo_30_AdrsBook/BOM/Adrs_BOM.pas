@@ -112,7 +112,7 @@ type
     function    GetCaption: string; override;
     function    GetItems(i: integer): TPerson; reintroduce;
     procedure   SetItems(i: integer; const Value: TPerson); reintroduce;
-    function    GetOID: TOID; override;
+    function    GetOID: TtiOID; override;
   public
     constructor Create; override;
     property    Items[i:integer]: TPerson read GetItems write SetItems;
@@ -199,7 +199,7 @@ type
   protected
     function    GetItems(i: integer): TAdrs; reintroduce;
     procedure   SetItems(i: integer; const Value: TAdrs); reintroduce;
-    function    GetOID: TOID; override;
+    function    GetOID: TtiOID; override;
   public
     property    Items[i:integer]: TAdrs read GetItems write SetItems;
     procedure   Add(AObject: TAdrs  ; pbDefaultDispOrder: boolean = true); reintroduce;
@@ -211,7 +211,7 @@ type
   protected
     function    GetItems(i: integer): TEAdrs; reintroduce;
     procedure   SetItems(i: integer; const Value: TEAdrs); reintroduce;
-    function    GetOID: TOID; override;
+    function    GetOID: TtiOID; override;
   public
     property    Items[i:integer]: TEAdrs read GetItems write SetItems;
     procedure   Add(AObject: TEAdrs ; pbDefaultDispOrder: boolean = true); reintroduce;
@@ -674,7 +674,7 @@ begin
   result:= TAdrs(inherited GetItems(i));
 end;
 
-function TAdrsList.GetOID: TOID;
+function TAdrsList.GetOID: TtiOID;
 begin
   if Owner <> nil then
     result:= Owner.OID
@@ -705,7 +705,7 @@ begin
   result:= TEAdrs(inherited GetItems(i));
 end;
 
-function TEAdrsList.GetOID: TOID;
+function TEAdrsList.GetOID: TtiOID;
 begin
   if Owner <> nil then
     result:= Owner.OID
@@ -832,7 +832,7 @@ begin
 end;
 
 // This is a hack to get the auto mapping working
-function TPeople.GetOID: TOID;
+function TPeople.GetOID: TtiOID;
 begin
   if Owner <> nil then
     result:= Owner.OID

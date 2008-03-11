@@ -58,6 +58,7 @@ begin
   APersistenceLayerDefaults.Password:= 'XXX';
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
+  APersistenceLayerDefaults.CanSupportSQL:= True;
 end;
 
 function TtiPersistenceLayerZeosMySQL50.GetDatabaseClass: TtiDatabaseClass;

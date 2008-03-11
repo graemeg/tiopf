@@ -4,22 +4,21 @@ unit tiOIDString;
 
 interface
 uses
-  tiOID
-  ,tiBaseObject
-  ,tiObject
-  ,tiVisitorDB
-  ,tiVisitor
-  ,SyncObjs
- ;
+  tiOID,
+  tiBaseObject,
+  tiObject,
+  tiVisitorDB,
+  tiVisitor,
+  SyncObjs;
 
 const
   cErrorInvalidStartID = 'Invalid start ID <%s>';
 
 type
 
-  TNextOIDGeneratorString = class;
+  TtiOIDGeneratorString = class;
 
-  TOIDString = class(TOID)
+  TOIDString = class(TtiOID)
   private
     FAsString : String;
   protected
@@ -33,8 +32,8 @@ type
     procedure AssignToTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
     procedure AssignFromTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
     function  EqualsQueryField(const AFieldName : string; const AQuery : TtiBaseObject): boolean; override;
-    procedure Assign(const ASource : TOID); override;
-    function  Compare(const ACompareWith : TOID): Integer; override;
+    procedure Assign(const ASource : TtiOID); override;
+    function  Compare(const ACompareWith : TtiOID): Integer; override;
     procedure SetToNull; override;
     function  NullOIDAsString: String; override;
   end;
@@ -42,13 +41,14 @@ type
   TNextOIDData = class(TtiObject)
   private
     FNextOID: String;
-    FOIDGenerator: TNextOIDGeneratorString;
+    FThisOIDGenerator: TtiOIDGeneratorString;
   public
     property NextOID : String read FNextOID write FNextOID;
-    property OIDGenerator : TNextOIDGeneratorString read FOIDGenerator write FOIDGenerator;
+    // There is a function called OIDGenerator on TtiObject
+    property ThisOIDGenerator : TtiOIDGeneratorString read FThisOIDGenerator write FThisOIDGenerator;
   end;
 
-  TNextOIDGeneratorString = class(TNextOIDGenerator)
+  TtiOIDGeneratorString = class(TtiOIDGenerator)
   private
     FOIDChars : array of char;
     FLow : String;
@@ -57,7 +57,9 @@ type
     FOIDLength: Byte;
     FOIDPrefix: string;
     FCritSect: TCriticalSection;
-    function  NextOID(const ADatabaseName : string; APersistenceLayerName : string): String;
+    function  NextOID(
+  const ADatabaseAliasName: string;
+  const APersistenceLayerName: string): String;
     function  GetOIDChars: string;
     procedure SetOIDChars(const AValue: string);
     function  PadToLength(const AValue : string): string;
@@ -65,7 +67,11 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-    procedure   AssignNextOID(const AAssignTo : TOID; const ADatabaseName : string; APersistenceLayerName : string); override;
+    class function OIDClass: TtiOIDClass; override;
+    procedure   AssignNextOID(
+      const AAssignTo : TtiOID;
+      const ADBConnectionName: string = '';
+      const APersistenceLayerName: string = ''); override;
     function    IncOID(const pCurrentOID: String): String;
     property    HighOIDLength : Byte read GetHighOIDLength;
 
@@ -90,9 +96,8 @@ type
   end;
 
 const
-  cOIDClassNameString = 'OIDClassNameString';
-  cNextOIDTableName   = 'Next_OID';
-  cNextOIDFieldName   = 'OID';
+  CNextOIDTableName   = 'Next_OID';
+  CNextOIDFieldName   = 'OID';
   // '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
   // 88 Characters, so if the OID string is 4 characters long, there are
   // Power(88, 4) available OIDs = 59969536
@@ -100,7 +105,7 @@ const
   // Integer gives                   2147483647
   // Int64 gives                     4610000000000000000
 
-  cOIDChars           = '!#$%&()*+,-./0123456789:;<=>?@'+
+  COIDChars           = '!#$%&()*+,-./0123456789:;<=>?@'+
                         'ABCDEFGHIJKLMNOPQRSTUVWXYZ'+
                         '[\]^_' +
                         'abcdefghijklmnopqrstuvwxyz';
@@ -108,12 +113,11 @@ const
 
 implementation
 uses
-  tiQuery
-  ,tiConstants
-  ,tiOPFManager
-  ,tiExcept
-  ,SysUtils
- ;
+  tiQuery,
+  tiConstants,
+  tiOPFManager,
+  tiExcept,
+  SysUtils;
 
 { TOIDString }
 
@@ -159,12 +163,12 @@ begin
   result := (FAsString = lQuery.FieldAsString[ AFieldName ]);
 end;
 
-procedure TOIDString.Assign(const ASource: TOID);
+procedure TOIDString.Assign(const ASource: TtiOID);
 begin
   AsString := ASource.AsString;
 end;
 
-function TOIDString.Compare(const ACompareWith: TOID): Integer;
+function TOIDString.Compare(const ACompareWith: TtiOID): Integer;
 begin
   Assert(ACompareWith is TOIDString, 'ACompareWith not a ACompareWith');
   if AsString < TOIDString(ACompareWith).AsString then
@@ -180,16 +184,19 @@ const
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
-// * TNextOIDGeneratorString
+// * TtiOIDGeneratorString
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TNextOIDGeneratorString.AssignNextOID(const AAssignTo: TOID; const ADatabaseName : string; APersistenceLayerName : string);
+procedure TtiOIDGeneratorString.AssignNextOID(
+      const AAssignTo : TtiOID;
+      const ADBConnectionName: string = '';
+      const APersistenceLayerName: string = '');
 begin
-  Assert(AAssignTo.TestValid(TOID), CTIErrorInvalidObject);
-  AAssignTo.AsString := NextOID(ADatabaseName, APersistenceLayerName);
+  Assert(AAssignTo.TestValid(TtiOID), CTIErrorInvalidObject);
+  AAssignTo.AsString := NextOID(ADBConnectionName, APersistenceLayerName);
 end;
 
-constructor TNextOIDGeneratorString.Create;
+constructor TtiOIDGeneratorString.Create;
 begin
   inherited;
   SetOIDChars(cOIDChars);
@@ -199,22 +206,25 @@ begin
   FCritSect:= TCriticalSection.Create;
 end;
 
-destructor TNextOIDGeneratorString.Destroy;
+destructor TtiOIDGeneratorString.Destroy;
 begin
   FNextOIDData.Free;
   FCritSect.Free;
   inherited;
 end;
 
-function TNextOIDGeneratorString.NextOID(const ADatabaseName : string; APersistenceLayerName : string): String;
+function TtiOIDGeneratorString.NextOID(
+  const ADatabaseAliasName: string;
+  const APersistenceLayerName: string): String;
 begin
   FCritSect.Enter;
   try
     if FDirty then
     begin
       FLow := FOIDChars[0];
-      FNextOIDData.OIDGenerator := Self;
-      gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData, ADatabaseName, APersistenceLayerName);
+      FNextOIDData.ThisOIDGenerator := Self;
+      gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData,
+        ADatabaseAliasName, APersistenceLayerName);
       FDirty := false;
     end else
     begin
@@ -222,11 +232,15 @@ begin
       if FLow = FOIDChars[High(FOIDChars)] then
         FDirty := true;
     end;
-
     result := FOIDPrefix + FNextOIDData.NextOID + FLow;
   finally
     FCritSect.Leave;
   end;
+end;
+
+class function TtiOIDGeneratorString.OIDClass: TtiOIDClass;
+begin
+  result:= TOIDString;
 end;
 
 procedure TOIDString.SetToNull;
@@ -287,7 +301,7 @@ begin
   end;
   lNextOIDData := (Visited as TNextOIDData);
   TNextOIDData(Visited).NextOID :=
-    lNextOIDData.OIDGenerator.PadToLength(lNextOID);
+    lNextOIDData.ThisOIDGenerator.PadToLength(lNextOID);
 
 end;
 
@@ -298,7 +312,7 @@ begin
   result := (Visited is TNextOIDData);
 end;
 
-function TNextOIDGeneratorString.IncOID(const pCurrentOID: String): String;
+function TtiOIDGeneratorString.IncOID(const pCurrentOID: String): String;
   function _GeTNextIDGenerator(const pCurrentOID: String): String;
   var
     i : integer;
@@ -363,7 +377,7 @@ begin
   lNextOIDData := (Visited as TNextOIDData);
   lParams := TtiQueryParams.Create;
   try
-    lNextOID := lNextOIDData.OIDGenerator.IncOID(lNextOIDData.NextOID);
+    lNextOID := lNextOIDData.ThisOIDGenerator.IncOID(lNextOIDData.NextOID);
     lParams.SetValueAsString(cNextOIDFieldName, lNextOID) ;
     Query.UpdateRow(cNextOIDTableName, lParams, nil);
   finally
@@ -371,7 +385,7 @@ begin
   end;
 end;
 
-function TNextOIDGeneratorString.GetOIDChars: string;
+function TtiOIDGeneratorString.GetOIDChars: string;
 var
   i : integer;
 begin
@@ -380,7 +394,7 @@ begin
     result := result + FOIDChars[i];
 end;
 
-procedure TNextOIDGeneratorString.SetOIDChars(const AValue: string);
+procedure TtiOIDGeneratorString.SetOIDChars(const AValue: string);
 var
   i : integer;
 begin
@@ -389,7 +403,7 @@ begin
     FOIDChars[i-1]:= AValue[i];
 end;
 
-function TNextOIDGeneratorString.PadToLength(const AValue: string): string;
+function TtiOIDGeneratorString.PadToLength(const AValue: string): string;
 begin
   Result := AValue;
   if length(AValue) < HighOIDLength then begin
@@ -401,18 +415,18 @@ begin
     result := copy(AValue, length(AValue)-HighOIDLength+1, HighOIDLength);
 end;
 
-function TNextOIDGeneratorString.GetHighOIDLength: Byte;
+function TtiOIDGeneratorString.GetHighOIDLength: Byte;
 begin
   result := OIDLength - 1 - Length(FOIDPrefix);
 end;
 
 initialization
 
-  gTIOPFManager.OIDFactory.RegisterMapping(cOIDClassNameString, TOIDString, TNextOIDGeneratorString) ;
-  if gTIOPFManager.DefaultOIDClassName = '' then
-    gTIOPFManager.DefaultOIDClassName := cOIDClassNameString;
-
+  gTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorString.Create;
   gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
   gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
 
 end.
+
+
+

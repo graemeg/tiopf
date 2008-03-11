@@ -65,7 +65,7 @@ type
     procedure   SetItems(i: integer; const Value: TPhoneNumber); reintroduce ;
     function    GetOwner: TClient; reintroduce ;
     procedure   SetOwner(const Value: TClient); reintroduce ;
-    function    GetOID : TOID ; override ;
+    function    GetOID : TtiOID ; override ;
   public
     property    Items[i:integer] : TPhoneNumber read GetItems write SetItems ;
     procedure   Add( pObject : TPhoneNumber   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
@@ -202,7 +202,7 @@ begin
   result := TPhoneNumber( inherited GetItems( i )) ;
 end;
 
-function TPhoneNumbers.GetOID: TOID;
+function TPhoneNumbers.GetOID: TtiOID;
 begin
   result := Owner.OID ;
 end;

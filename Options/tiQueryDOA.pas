@@ -1122,6 +1122,7 @@ begin
   APersistenceLayerDefaults.Password:= 'tiger';
   APersistenceLayerDefaults.CanCreateDatabase:= False;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
+  APersistenceLayerDefaults.CanSupportSQL:= True;
 end;
 
 function TtiPersistenceLayerDOA.GetDatabaseClass: TtiDatabaseClass;

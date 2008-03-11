@@ -41,7 +41,12 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerIBX = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDIBX = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerIBX = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -69,7 +74,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIPersistenceLayersIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIDatabaseIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIQueryIBX.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIOIDManagerIBX.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIOIDPersistentGUIDIBX.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIOIDPersistentIntegerIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIAutoMapOperationIBX.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestAutomappingCriteriaIBX.Suite);
   end;
@@ -161,17 +167,25 @@ begin
   inherited;
 end;
 
-{ TTestTIOIDManagerIBX }
+{ TTestAutomappingCriteriaIBX }
 
-procedure TTestTIOIDManagerIBX.SetUp;
+procedure TTestAutomappingCriteriaIBX.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
   inherited;
 end;
 
-{ TTestAutomappingCriteriaIBX }
+{ TTestTIOIDPersistentIntegerIBX }
 
-procedure TTestAutomappingCriteriaIBX.SetUp;
+procedure TTestTIOIDPersistentIntegerIBX.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDIBX }
+
+procedure TTestTIOIDPersistentGUIDIBX.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
   inherited;

@@ -35,7 +35,12 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerXMLLight = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDXMLLight = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerXMLLight = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -64,7 +69,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIPersistenceLayersXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIDatabaseXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIQueryXMLLight.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDManagerXMLLight.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDPersistentGUIDXMLLight.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDPersistentIntegerXMLLight.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIAutoMapOperationXMLLight.Suite);
   end;
 end;
@@ -131,7 +137,15 @@ end;
 
 { TTestTIOIDManagerXMLLight }
 
-procedure TTestTIOIDManagerXMLLight.SetUp;
+procedure TTestTIOIDPersistentIntegerXMLLight.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDXMLLight }
+
+procedure TTestTIOIDPersistentGUIDXMLLight.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
   inherited;

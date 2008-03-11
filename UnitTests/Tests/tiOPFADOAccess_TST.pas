@@ -41,7 +41,12 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerADOAccess = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDADOAccess = class(TTestTIOIDPersistentGUID)
+  protected
+    procedure   SetUp; override;
+  end;
+
+  TTestTIOIDPersistentIntegerADOAccess = class(TTestTIOIDPersistentInteger)
   protected
     procedure   SetUp; override;
   end;
@@ -69,7 +74,8 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIPersistenceLayersADOAccess.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIDatabaseADOAccess.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIQueryADOAccess.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIOIDManagerADOAccess.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIOIDPersistentGUIDADOAccess.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIOIDPersistentIntegerADOAccess.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestTIAutoMapOperationADOAccess.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistADOAccess), TTestAutomappingCriteriaADOAccess.Suite);
   end;
@@ -175,7 +181,15 @@ end;
 
 { TTestTIOIDManagerADOAccess }
 
-procedure TTestTIOIDManagerADOAccess.SetUp;
+procedure TTestTIOIDPersistentIntegerADOAccess.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOAccess);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDADOAccess }
+
+procedure TTestTIOIDPersistentGUIDADOAccess.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistADOAccess);
   inherited;

@@ -44,10 +44,14 @@ type
     procedure   SetUp; override;
   end;
 
-  TTestTIOIDManagerDBISAM4 = class(TTestTIOIDManager)
+  TTestTIOIDPersistentGUIDDBISAM4 = class(TTestTIOIDPersistentGUID)
   protected
     procedure   SetUp; override;
-  published
+  end;
+
+  TTestTIOIDPersistentIntegerDBISAM4 = class(TTestTIOIDPersistentInteger)
+  protected
+    procedure   SetUp; override;
   end;
 
 procedure RegisterTests;
@@ -79,7 +83,7 @@ begin
     RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIPersistenceLayersDBISAM4.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIDatabaseDBISAM4.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIQueryDBISAM4.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIOIDManagerDBISAM4.Suite);
+    RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIOIDPersistentIntegerDBISAM4.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIAutoMapOperationDBISAM4.Suite);
     RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestAutomappingCriteriaDBISAM4.Suite);
   end;
@@ -147,7 +151,7 @@ end;
 
 { TTestTIOIDManagerDBISAM4 }
 
-procedure TTestTIOIDManagerDBISAM4.SetUp;
+procedure TTestTIOIDPersistentIntegerDBISAM4.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
   inherited;
@@ -164,6 +168,14 @@ end;
 { TTestAutomappingCriteriaDBISAM4 }
 
 procedure TTestAutomappingCriteriaDBISAM4.SetUp;
+begin
+  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDDBISAM4 }
+
+procedure TTestTIOIDPersistentGUIDDBISAM4.SetUp;
 begin
   PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
   inherited;
