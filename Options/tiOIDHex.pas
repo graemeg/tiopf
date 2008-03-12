@@ -14,11 +14,14 @@
 
 unit tiOIDHex;
 
-{$I tiDefines.inc}
+{
+  Usage:
+  Assign the TIOPFManager's Default OID Generator property like this:
 
-{$IFDEF OID_AS_INT64}
-  tiOIDGUID.pas should not be linked when OID_AS_INT64 is used
-{$ENDIF}
+  GTIOPFManager.DefaultOIDGenerator := TtiOIDGeneratorHex.Create;
+}
+
+{$I tiDefines.inc}
 
 interface
 
@@ -33,74 +36,70 @@ uses
 type
   TOIDHex = class(TtiOID)
   private
-    FAsString : string;
+    FAsString: string;
   protected
-    function  GetAsString: ShortString; override;
+    function GetAsString: ShortString; override;
     procedure SetAsString(const AValue: ShortString); override;
-    function  GetAsVariant: Variant;override;
-    procedure SetAsVariant(const AValue: Variant);override;
+    function GetAsVariant: variant; override;
+    procedure SetAsVariant(const AValue: variant); override;
   public
-    function  IsNull : boolean; override;
-    procedure AssignToTIQueryParam(const AFieldName : string; const AParams : TtiBaseObject); override;
-    procedure AssignToTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
-    procedure AssignFromTIQuery(const AFieldName : string; const AQuery : TtiBaseObject); override;
-    function  EqualsQueryField(const AFieldName : string; const AQuery : TtiBaseObject): boolean; override;
-    procedure Assign(const ASource : TtiOID); override;
-    function  Compare(const ACompareWith : TtiOID): integer; override;
+    function IsNull: boolean; override;
+    procedure AssignToTIQueryParam(const AFieldName: string; const AParams: TtiBaseObject); override;
+    procedure AssignToTIQuery(const AFieldName: string; const AQuery: TtiBaseObject); override;
+    procedure AssignFromTIQuery(const AFieldName: string; const AQuery: TtiBaseObject); override;
+    function EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean; override;
+    procedure Assign(const ASource: TtiOID); override;
+    function Compare(const ACompareWith: TtiOID): integer; override;
     procedure SetToNull; override;
-    function  NullOIDAsString : string; override;
-    class function CheckValue(AValue : ShortString): boolean;
-    class function IncHex(pHex : ShortString; pInc : integer = 1): ShortString;
-    class function ZeroHex : ShortString;
+    function NullOIDAsString: string; override;
+    class function CheckValue(AValue: ShortString): boolean;
+    class function IncHex(pHex: ShortString; pInc: integer = 1): ShortString;
+    class function ZeroHex: ShortString;
   end;
 
   TNextOIDHexData = class(TtiObject)
   private
     FNextHexOID: ShortString;
   public
-    property NextHexOID : ShortString read FNextHexOID write FNextHexOID;
+    property NextHexOID: ShortString read FNextHexOID write FNextHexOID;
   end;
 
   TtiOIDGeneratorHex = class(TtiOIDGenerator)
   private
-    FLow, FLowRange : integer;
-    FLowRangeMask: string;
-    FLastOIDValue : string;
-    FDirty: boolean;
-    FNextOIDHexData : TNextOIDHexData;
-    FCritSect: TCriticalSection;
-    function NextOID(
-  const ADatabaseAliasName: string;
-  const APersistenceLayerName: string) : String;
+    FLow, FLowRange: integer;
+    FLowRangeMask:   string;
+    FLastOIDValue:   string;
+    FDirty:          boolean;
+    FNextOIDHexData: TNextOIDHexData;
+    FCritSect:       TCriticalSection;
+    function NextOID(const ADatabaseAliasName: string; const APersistenceLayerName: string): string;
   public
     constructor Create; override;
-    destructor  Destroy; override;
+    destructor Destroy; override;
     class function OIDClass: TtiOIDClass; override;
-    procedure   AssignNextOID(
-      const AAssignTo : TtiOID;
-      const ADBConnectionName: string = '';
+    procedure AssignNextOID(const AAssignTo: TtiOID; const ADBConnectionName: string = '';
       const APersistenceLayerName: string = ''); override;
   end;
 
   TVisDBNextOIDHexAmblerRead = class(TtiObjectVisitor)
   protected
-    function    AcceptVisitor : boolean; override;
+    function AcceptVisitor: boolean; override;
   public
-    procedure   Execute(const AData : TtiVisited); override;
+    procedure Execute(const AData: TtiVisited); override;
   end;
 
   TVisDBNextOIDHexAmblerUpdate = class(TtiObjectVisitor)
   protected
-    function    AcceptVisitor : boolean; override;
+    function AcceptVisitor: boolean; override;
   public
-    procedure   Execute(const AData : TtiVisited); override;
+    procedure Execute(const AData: TtiVisited); override;
   end;
 
 
 const
   CNextOIDHexReadHigh = 'NextOIDHexReadHigh';
-  COIDHexSize = 32;
-  COIDHexChacheSize = 2;
+  COIDHexSize         = 32;
+  COIDHexChacheSize   = 2;
 
 implementation
 
@@ -112,7 +111,9 @@ uses
   tiConstants;
 
 const
-  cOIDHexNumber : array [0..15] of char = ('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
+  cOIDHexNumber: array [0..15] of char =
+    ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
+
 { TOIDHex }
 
 procedure TOIDHex.Assign(const ASource: TtiOID);
@@ -122,26 +123,25 @@ end;
 
 procedure TOIDHex.AssignFromTIQuery(const AFieldName: string; const AQuery: TtiBaseObject);
 var
-  lQuery : TtiQuery;
+  lQuery: TtiQuery;
+begin
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery    := TtiQuery(AQuery);
+  FAsString := lQuery.FieldAsString[AFieldName];
+end;
+
+procedure TOIDHex.AssignToTIQuery(const AFieldName: string; const AQuery: TtiBaseObject);
+var
+  lQuery: TtiQuery;
 begin
   Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
   lQuery := TtiQuery(AQuery);
-  FAsString := lQuery.FieldAsString[ AFieldName ];
+  lQuery.ParamAsString[AFieldName] := FAsString;
 end;
 
-procedure TOIDHex.AssignToTIQuery(const AFieldName: string;
-  const AQuery: TtiBaseObject);
+procedure TOIDHex.AssignToTIQueryParam(const AFieldName: string; const AParams: TtiBaseObject);
 var
-  lQuery : TtiQuery;
-begin
-  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
-  lQuery := TtiQuery(AQuery);
-  lQuery.ParamAsString[ AFieldName ]:= FAsString;
-end;
-
-procedure TOIDHex.AssignToTIQueryParam(const AFieldName: string;const AParams: TtiBaseObject);
-var
-  lParams : TtiQueryParams;
+  lParams: TtiQueryParams;
 begin
   Assert(AParams is TtiQueryParams, 'AQuery not a TtiQuery');
   lParams := TtiQueryParams(AParams);
@@ -150,22 +150,22 @@ end;
 
 class function TOIDHex.CheckValue(AValue: ShortString): boolean;
 var
-//  lI64 : int64;
-  lHex1, lHex2 : string;
+  //  lI64 : int64;
+  lHex1, lHex2: string;
 begin
   // Length 32 chars
-  result:=false;
-  if length(AValue)<>32 then
+  Result := False;
+  if length(AValue) <> 32 then
     exit;
   // Divide: 2 parts 16 chars is 8 bytes is 64 bits...
-  lHex1:='$'+Copy(AValue,1,16);
-  lHex2:='$'+Copy(AValue,17,16);
+  lHex1 := '$' + Copy(AValue, 1, 16);
+  lHex2 := '$' + Copy(AValue, 17, 16);
   try
     StrToInt64(lHex1);
-    StrToInt64(lHex2);   
+    StrToInt64(lHex2);
     //lI64:=StrToInt64(lHex1);
     //lI64:=StrToInt64(lHex2);
-    result:=true;
+    Result := True;
   except
   end;
 end;
@@ -173,97 +173,95 @@ end;
 function TOIDHex.Compare(const ACompareWith: TtiOID): integer;
 begin
   if AsString < ACompareWith.AsString then
-    result := -1
+    Result := -1
   else if AsString > ACompareWith.AsString then
-    result := 1
+    Result := 1
   else
-    result := 0;
+    Result := 0;
 end;
 
-function TOIDHex.EqualsQueryField(const AFieldName: string;
-  const AQuery: TtiBaseObject): boolean;
+function TOIDHex.EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean;
 var
-  lQuery : TtiQuery;
+  lQuery: TtiQuery;
 begin
   Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
   lQuery := TtiQuery(AQuery);
-  result := (FAsString = lQuery.FieldAsString[ AFieldName ]);
+  Result := (FAsString = lQuery.FieldAsString[AFieldName]);
 end;
 
 function TOIDHex.GetAsString: ShortString;
 begin
-  result:=FAsString;
+  Result := FAsString;
 end;
 
-function TOIDHex.GetAsVariant: Variant;
+function TOIDHex.GetAsVariant: variant;
 begin
-  result := FAsString;
+  Result := FAsString;
 end;
 
-class function TOIDHex.IncHex(pHex: ShortString;
-  pInc: integer): ShortString;
-  procedure _IncHex(APos : integer);
+class function TOIDHex.IncHex(pHex: ShortString; pInc: integer): ShortString;
+
+  procedure _IncHex(APos: integer);
   var
-    lChar : char;
-    lValue : integer;
+    lChar:  char;
+    lValue: integer;
   begin
-    if APos>length(result) then
+    if APos > length(Result) then
       raise Exception.Create('Inc Hex (1) exception');
-    if APos<1 then
+    if APos < 1 then
       raise Exception.Create('Inc Hex (2) exception');
-    lChar:=result[APos];
-    lValue:=StrToInt('$'+lChar);
-    inc(lValue);
-    if lValue>15 then
-      _IncHex(APos-1);
-    lValue:=lValue mod 16;
-    lChar:=cOIDHexNumber[lValue];
-    result[APos]:=lChar;
+    lChar  := Result[APos];
+    lValue := StrToInt('$' + lChar);
+    Inc(lValue);
+    if lValue > 15 then
+      _IncHex(APos - 1);
+    lValue       := lValue mod 16;
+    lChar        := cOIDHexNumber[lValue];
+    Result[APos] := lChar;
   end;
+
 begin
-  if pInc<>1 then
+  if pInc <> 1 then
     raise Exception.Create('IncHex only with 1');
-  result:=pHex;
-  _IncHex(length(result));
+  Result := pHex;
+  _IncHex(length(Result));
 end;
 
 function TOIDHex.IsNull: boolean;
 begin
-  result:=(FAsString=NullOIDAsString);
+  Result := (FAsString = NullOIDAsString);
 end;
 
 function TOIDHex.NullOIDAsString: string;
 begin
-  result := '';
+  Result := '';
 end;
 
 procedure TOIDHex.SetAsString(const AValue: ShortString);
 begin
   if CheckValue(AValue) then
-    FAsString:=AValue;
+    FAsString := AValue;
 end;
 
-procedure TOIDHex.SetAsVariant(const AValue: Variant);
+procedure TOIDHex.SetAsVariant(const AValue: variant);
 begin
   FAsString := AValue;
 end;
 
 procedure TOIDHex.SetToNull;
 begin
-  FAsString:= NullOIDAsString;
+  FAsString := NullOIDAsString;
 end;
 
 class function TOIDHex.ZeroHex: ShortString;
 begin
-  result:=StringOfChar('0',COIDHexSize);
+  Result := StringOfChar('0', COIDHexSize);
 end;
 
 { TtiOIDGeneratorHex }
 
-procedure TtiOIDGeneratorHex.AssignNextOID(
-      const AAssignTo : TtiOID;
-      const ADBConnectionName: string = '';
-      const APersistenceLayerName: string = '');
+procedure TtiOIDGeneratorHex.AssignNextOID(const AAssignTo: TtiOID; const ADBConnectionName: string = '';
+  const APersistenceLayerName: string = '');
 begin
   Assert(AAssignTo.TestValid(TtiOID), CTIErrorInvalidObject);
   AAssignTo.AsString := NextOID(ADBConnectionName, APersistenceLayerName);
@@ -272,24 +270,23 @@ end;
 constructor TtiOIDGeneratorHex.Create;
 begin
   inherited;
-  FLow := 0;
-  FLowRangeMask := StringOfChar('0',COIDHexChacheSize);;
-  FLowRange:=StrToInt('$1'+FLowRangeMask);
-  FDirty := true;
+  FLow          := 0;
+  FLowRangeMask := StringOfChar('0', COIDHexChacheSize);
+  ;
+  FLowRange     := StrToInt('$1' + FLowRangeMask);
+  FDirty        := True;
   FNextOIDHexData := TNextOIDHexData.Create;
-  FCritSect:= TCriticalSection.Create;
+  FCritSect     := TCriticalSection.Create;
 end;
 
-destructor TtiOIDGeneratorHex.destroy;
+destructor TtiOIDGeneratorHex.Destroy;
 begin
   FNextOIDHexData.Free;
   FCritSect.Free;
   inherited;
 end;
 
-function TtiOIDGeneratorHex.NextOID(
-  const ADatabaseAliasName: string;
-  const APersistenceLayerName: string): String;
+function TtiOIDGeneratorHex.NextOID(const ADatabaseAliasName: string; const APersistenceLayerName: string): string;
 begin
   FCritSect.Enter;
   try
@@ -297,21 +294,21 @@ begin
     begin
       gTIOPFManager.VisitorManager.Execute(CNextOIDHexReadHigh,
         FNextOIDHexData, ADatabaseAliasName, APersistenceLayerName);
-      FDirty := false;
-      FLastOIDValue:=FNextOIDHexData.NextHexOID + FLowRangeMask;
+      FDirty        := False;
+      FLastOIDValue := FNextOIDHexData.NextHexOID + FLowRangeMask;
     end;
 
-    result := TOIDHex.IncHex(FLastOIDValue);
+    Result := TOIDHex.IncHex(FLastOIDValue);
 
 
-    inc(FLow);
+    Inc(FLow);
     if FLow = FLowRange then
     begin
-      FDirty := true;
-      FLow := 0;
+      FDirty := True;
+      FLow   := 0;
     end;
 
-    FLastOIDValue:=result;
+    FLastOIDValue := Result;
   finally
     FCritSect.Leave;
   end;
@@ -319,14 +316,14 @@ end;
 
 class function TtiOIDGeneratorHex.OIDClass: TtiOIDClass;
 begin
-  result:= TOIDHex;
+  Result := TOIDHex;
 end;
 
 { TVisDBNextOIDHexAmblerRead }
 
 function TVisDBNextOIDHexAmblerRead.AcceptVisitor: boolean;
 begin
-  result := (Visited is TNextOIDHexData);
+  Result := (Visited is TNextOIDHexData);
 end;
 
 procedure TVisDBNextOIDHexAmblerRead.Execute(const AData: TtiVisited);
@@ -334,16 +331,17 @@ begin
   if gTIOPFManager.Terminated then
     Exit; //==>
 
-  Inherited Execute(AData);
+  inherited Execute(AData);
 
   if not AcceptVisitor then
     Exit; //==>
 
   Query.SelectRow('Next_OIDHEX', nil);
   try
-    TNextOIDHexData(Visited).NextHexOID := Query.FieldAsString[ 'OID' ];
-    if TNextOIDHexData(Visited).NextHexOID='' then
-      TNextOIDHexData(Visited).NextHexOID:=StringOfChar('0',COIDHexSize-COIDHexChacheSize);;
+    TNextOIDHexData(Visited).NextHexOID := Query.FieldAsString['OID'];
+    if TNextOIDHexData(Visited).NextHexOID = '' then
+      TNextOIDHexData(Visited).NextHexOID := StringOfChar('0', COIDHexSize - COIDHexChacheSize);
+    ;
   finally
     Query.Close;
   end;
@@ -353,27 +351,27 @@ end;
 
 function TVisDBNextOIDHexAmblerUpdate.AcceptVisitor: boolean;
 begin
-  result := (Visited is TNextOIDHexData);
+  Result := (Visited is TNextOIDHexData);
 end;
 
 procedure TVisDBNextOIDHexAmblerUpdate.Execute(const AData: TtiVisited);
 var
-  lParams : TtiQueryParams;
-  lHex : ShortString;
+  lParams: TtiQueryParams;
+  lHex:    ShortString;
 begin
   if gTIOPFManager.Terminated then
     Exit; //==>
 
-  Inherited Execute(AData);
+  inherited Execute(AData);
 
   if not AcceptVisitor then
     Exit; //==>
 
   lParams := TtiQueryParams.Create;
   try
-    lHex:=TNextOIDHexData(Visited).NextHexOID;
-    lHex:=TOIDHex.IncHex(lHex);
-    lParams.SetValueAsString('OID', String(lHex));
+    lHex := TNextOIDHexData(Visited).NextHexOID;
+    lHex := TOIDHex.IncHex(lHex);
+    lParams.SetValueAsString('OID', string(lHex));
     Query.UpdateRow('Next_OIDHEX', lParams, nil);
   finally
     lParams.Free;
@@ -382,11 +380,7 @@ end;
 
 initialization
 
-  GTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorHex.Create;
   gTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerRead);
   gTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerUpdate);
 
 end.
-
-
-
