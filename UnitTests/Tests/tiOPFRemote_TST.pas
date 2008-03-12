@@ -3,17 +3,17 @@ unit tiOPFRemote_TST;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiQuery_TST
-  ,tiQuerySQL_TST
-  ,tiAutoMap_TST
-  ,tiOID_tst
- ;
+  tiQuery_TST,
+  tiQuerySQL_TST,
+  tiAutoMap_TST,
+  tiOID_TST;
 
 const
   cErrorCanNotLoadtiDBProxyServer = 'Can not load tiDBProxyServer'#13'' +
-                                    'File location: %s'#13'' +
-                                    'Error message: %s';
+    'File location: %s'#13'' +
+    'Error message: %s';
 
   // ToDo: cErrorFileNotFound should be a generic exception
   cErrorFileNotFound = 'File not found';
@@ -21,13 +21,13 @@ const
 type
 
   TTestTIPersistenceLayersRemote = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseRemote = class(TTestTIDatabase)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
@@ -35,56 +35,53 @@ type
   end;
 
   TTestTIQueryRemote = class(TTestTIQuerySQL)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIAutoMapOperationRemote = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentGUIDRemote = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerRemote = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 procedure RegisterTests;
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiTestDependencies
-  ,tiQuery
-  ,tiTestFramework
- ;
+  tiOPFTestManager,
+  SysUtils,
+  tiTestDependencies,
+  tiQuery,
+  tiTestFramework;
 
 const
   cRemoteServerMainFormName = 'TFormMainTIDBProxyServer';
 
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistRemote) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIPersistenceLayersRemote.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIDatabaseRemote.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIQueryRemote.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIOIDPersistentGUIDRemote.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIOIDPersistentIntegerRemote.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistRemote), TTestTIAutoMapOperationRemote.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersRemote);
+  tiRegisterPersistenceTest(TTestTIDatabaseRemote);
+  tiRegisterPersistenceTest(TTestTIQueryRemote);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDRemote);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerRemote);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationRemote);
 end;
 
 { TTestTIDatabaseRemote }
@@ -95,10 +92,10 @@ begin
     FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
     Fail('Exception not raised when it should have been');
   except
-    on e:exception do
+    on e: Exception do
     begin
       CheckIs(e, EAssertionFailed);
-      Check(Pos('CreateDatabase not implemented in ' + FDatabaseClass.ClassName, e.Message)<>0);
+      Check(Pos('CreateDatabase not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
     end;
   end;
 end;
@@ -109,99 +106,97 @@ begin
     FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
     Fail('Exception not raised when it should have been');
   except
-    on e:exception do
+    on e: Exception do
     begin
       CheckIs(e, EAssertionFailed);
-      Check(Pos('DatabaseExists not implemented in ' + FDatabaseClass.ClassName, e.Message)<>0);
+      Check(Pos('DatabaseExists not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
     end;
   end;
 end;
 
-procedure TTestTIDatabaseRemote.SetUp;
+class function TTestTIDatabaseRemote.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistRemote);
-  inherited;
+  Result := cTIPersistRemote;
 end;
 
 procedure TTestTIDatabaseRemote.Transaction_TimeOut;
 var
-  lQuery : TtiQuery;
+  lQuery: TtiQuery;
 begin
-  FDatabase.Connect(PerFrameworkSetup.DBName,
-                     PerFrameworkSetup.UserName,
-                     PerFrameworkSetup.Password,
-                     '');
-  try FDatabase.DropTable(cTableNameTestGroup) except end;
-
-  CreateTableTestGroup(FDatabase);
-
-  FDatabase.StartTransaction;
-  try
-    InsertIntoTestGroup(FDatabase, 1);
-    FDatabase.Commit;
-    lQuery := FPersistenceLayer.QueryClass.Create;
-    try
-      lQuery.AttachDatabase(FDatabase);
-      FDatabase.StartTransaction;
-      lQuery.SelectRow(cTableNameTestGroup, nil);
-      Check(not lQuery.EOF, 'Transaction not committed');
-      lQuery.Next;
-      Check(lQuery.EOF, 'Wrong number of records');
-      Sleep(Trunc(cDBProxyServerTimeOut * 60000 * 1.5));
-      try
-        FDatabase.Commit;
-        Fail('tiDBProxyServer did not time out as expected');
-      except
-        on e:exception do
-          Check(Pos('TIMED OUT', UpperCase(e.message)) <> 0,
-                 'tiDBProxyServer did not raise the right exception. Exception message: ' + e.message);
-      end;
-    finally
-      lQuery.Free;
-    end;
-  finally
-    FDatabase.DropTable(cTableNameTestGroup);
-  end;
+//  FDatabase.Connect(PerFrameworkSetup.DBName,
+//    PerFrameworkSetup.UserName,
+//    PerFrameworkSetup.Password,
+//    '');
+//  try
+//    FDatabase.DropTable(cTableNameTestGroup)
+//  except
+//  end;
+//
+//  CreateTableTestGroup(FDatabase);
+//
+//  FDatabase.StartTransaction;
+//  try
+//    InsertIntoTestGroup(FDatabase, 1);
+//    FDatabase.Commit;
+//    lQuery := FPersistenceLayer.QueryClass.Create;
+//    try
+//      lQuery.AttachDatabase(FDatabase);
+//      FDatabase.StartTransaction;
+//      lQuery.SelectRow(cTableNameTestGroup, nil);
+//      Check(not lQuery.EOF, 'Transaction not committed');
+//      lQuery.Next;
+//      Check(lQuery.EOF, 'Wrong number of records');
+//      Sleep(Trunc(cDBProxyServerTimeOut * 60000 * 1.5));
+//      try
+//        FDatabase.Commit;
+//        Fail('tiDBProxyServer did not time out as expected');
+//      except
+//        on e: Exception do
+//          Check(Pos('TIMED OUT', UpperCase(e.message)) <> 0,
+//            'tiDBProxyServer did not raise the right exception. Exception message: ' + e.message);
+//      end;
+//    finally
+//      lQuery.Free;
+//    end;
+//  finally
+//    FDatabase.DropTable(cTableNameTestGroup);
+//  end;
+Assert(False, 'Under construction');
 end;
 
 { TTestTIPersistenceLayersRemote }
 
-procedure TTestTIPersistenceLayersRemote.SetUp;
+class function TTestTIPersistenceLayersRemote.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistRemote);
-  inherited;
+  Result := cTIPersistRemote;
 end;
 
 { TTestTIQueryRemote }
 
-procedure TTestTIQueryRemote.SetUp;
+class function TTestTIQueryRemote.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistRemote);
-  inherited;
+  Result := cTIPersistRemote;
 end;
 
 { TTestTIAutoMapOperationRemote }
 
-procedure TTestTIAutoMapOperationRemote.SetUp;
+class function TTestTIAutoMapOperationRemote.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistRemote);
-  inherited;
-end;
-
-{ TTestTIOIDPersistentIntegerRemote }
-
-procedure TTestTIOIDPersistentIntegerRemote.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistRemote);
-  inherited;
+  Result := cTIPersistRemote;
 end;
 
 { TTestTIOIDPersistentGUIDRemote }
 
-procedure TTestTIOIDPersistentGUIDRemote.SetUp;
+class function TTestTIOIDPersistentGUIDRemote.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistRemote);
-  inherited;
+  Result := cTIPersistRemote;
+end;
+
+{ TTestTIOIDPersistentIntegerRemote }
+
+class function TTestTIOIDPersistentIntegerRemote.PersistenceLayerName: string;
+begin
+  Result := cTIPersistRemote;
 end;
 
 end.

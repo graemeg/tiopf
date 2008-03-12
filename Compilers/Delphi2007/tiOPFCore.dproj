@@ -56,6 +56,7 @@
     <DelphiCompile Include="tiOPFCore.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\..\Core\rtl.dcp" />
     <DCCReference Include="..\..\Core\tiAutoMap.pas" />
     <DCCReference Include="..\..\Core\tiBaseObject.pas" />
     <DCCReference Include="..\..\Core\tiCommandLineParams.pas" />
@@ -71,6 +72,7 @@
     <DCCReference Include="..\..\Core\tiLogToFile.pas" />
     <DCCReference Include="..\..\Core\tiObject.pas" />
     <DCCReference Include="..\..\Core\tiOID.pas" />
+    <DCCReference Include="..\..\Core\tiOIDGUID.pas" />
     <DCCReference Include="..\..\Core\tiOPFManager.pas" />
     <DCCReference Include="..\..\Core\tiPersistenceLayers.pas" />
     <DCCReference Include="..\..\Core\tiPool.pas" />
@@ -86,7 +88,6 @@
     <DCCReference Include="..\..\Core\tiVisitorDB.pas" />
     <DCCReference Include="..\..\Core\tiVisitorDBAutoGen.pas" />
     <DCCReference Include="..\..\Core\tiWin32.pas" />
-    <DCCReference Include="rtl.dcp" />
-    <DCCReference Include="vcl.dcp" />
+    <DCCReference Include="..\..\Core\vcl.dcp" />
   </ItemGroup>
 </Project>

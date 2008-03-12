@@ -5,7 +5,7 @@ unit tiPromptWhichPersistenceLayersToTest;
 interface
 uses
   Classes, SysUtils, Forms, StdCtrls, Controls, Graphics, Dialogs,
-  ExtCtrls, Buttons;
+  ExtCtrls, Buttons, Menus;
 
 type
 
@@ -20,12 +20,15 @@ type
     btnOK: TButton;
     btnCancel: TButton;
     lblMessage: TLabel;
+    FPopupMenu: TPopupMenu;
     procedure btnPnlBtn1Click(Sender: TObject);
     procedure btnPnlBtn2Click(Sender: TObject);
     procedure btnEditLocalSettingsClick(Sender: TObject);
     procedure TmrTimer(Sender: TObject);
     procedure cbTestNonPersistentClassesClick(Sender: TObject);
     procedure DoCheckBoxClick(Sender: TObject);
+    procedure DoSelectAll(Sender: TObject);
+    procedure DoSelectNone(Sender: TObject);
     procedure Save;
     procedure BuildForm;
     procedure CreatePersistenceLayerSelectionCheckBoxes;
@@ -64,7 +67,7 @@ procedure TtiPromptWhichPersistenceLayersToTest.Save;
 var
   i: integer;
   lCheckBox: TCheckBox;
-  lPerLayerName: string;
+  lPersistenceLayerName: string;
   lPerFrameworkSetup: TtiOPFTestSetupData;
 begin
   Tmr.Enabled := False;
@@ -72,9 +75,9 @@ begin
   GTIOPFTestManager.TestNonPersistentClasses := cbTestNonPersistentClasses.Checked;
   for i := GTIOPFTestManager.Count - 1 downto 0 do
   begin
-    lPerLayerName := GTIOPFTestManager.Items[i].PerLayerName;
-    lCheckBox := TCheckBox(FindComponent('cb' + lPerLayerName));
-    lPerFrameworkSetup := GTIOPFTestManager.FindByPerLayerName(lPerLayerName);
+    lPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
+    lCheckBox := TCheckBox(FindComponent('cb' + lPersistenceLayerName));
+    lPerFrameworkSetup := GTIOPFTestManager.FindByPersistenceLayerName(lPersistenceLayerName);
     lPerFrameworkSetup.Selected := lCheckBox.Checked;
   end;
   GTIOPFTestManager.Save;
@@ -114,6 +117,21 @@ begin
 end;
 
 
+procedure TtiPromptWhichPersistenceLayersToTest.DoSelectAll(Sender: TObject);
+//var
+//  i: integer;
+begin
+  Assert(False, 'Under construction');
+//  for i := 0 to ControlCount - 1 do
+//    if Controls[i] is TCheckBox then
+//      (Controls[i] as TCheckBox).Checked:= True;
+end;
+
+procedure TtiPromptWhichPersistenceLayersToTest.DoSelectNone(Sender: TObject);
+begin
+  Assert(False, 'Under construction');
+end;
+
 procedure TtiPromptWhichPersistenceLayersToTest.cbTestNonPersistentClassesClick(Sender: TObject);
 begin
   DoCheckBoxClick(nil);
@@ -121,6 +139,8 @@ end;
 
 
 procedure TtiPromptWhichPersistenceLayersToTest.BuildForm;
+var
+  LMenuItem: TMenuItem;
 begin
   Name       := 'WhichPersistenceLayersForm';
   Caption    := 'Which persistence layers?';
@@ -129,6 +149,16 @@ begin
   BorderIcons := [biSystemMenu];
   Position   := poScreenCenter;
   BorderStyle:= bsDialog;
+
+  FPopupMenu:= TPopupMenu.Create(Self);
+  LMenuItem:= FPopupMenu.CreateMenuItem;
+  LMenuItem.Caption:= 'Select all';
+  LMenuItem.OnClick:= DoSelectAll;
+  LMenuItem:= FPopupMenu.CreateMenuItem;
+  LMenuItem.Caption:= 'Select none';
+  LMenuItem.OnClick:= DoSelectNone;
+
+  PopupMenu:= FPopupMenu;
 
   cbTestNonPersistentClasses := TCheckBox.Create(self);
   with cbTestNonPersistentClasses do
@@ -141,6 +171,7 @@ begin
     Caption  := 'Test non-persistent classes?';
     TabOrder := 1;
     OnClick  := cbTestNonPersistentClassesClick;
+    PopupMenu:= FPopupMenu;
   end;
 
   Bevel1 := TBevel.Create(self);
@@ -169,6 +200,7 @@ begin
     AutoSize := True;
     BevelOuter := bvNone;
     TabOrder := 0;
+    PopupMenu:= FPopupMenu;
   end;
 
   pnlButtons := TPanel.Create(self);
@@ -247,7 +279,7 @@ procedure TtiPromptWhichPersistenceLayersToTest.CreatePersistenceLayerSelectionC
 var
   i: integer;
   lCheckBox: TCheckBox;
-  lPerLayerName: string;
+  lPersistenceLayerName: string;
   lPerFrameworkSetup: TtiOPFTestSetupData;
 const
   cBorder = 8;
@@ -256,17 +288,18 @@ begin
   lCheckBox := nil;
   for i := 0 to GTIOPFTestManager.Count - 1 do
   begin
-    lPerLayerName      := GTIOPFTestManager.Items[i].PerLayerName;
-    lPerFrameworkSetup := GTIOPFTestManager.FindByPerLayerName(lPerLayerName);
+    lPersistenceLayerName      := GTIOPFTestManager.Items[i].PersistenceLayerName;
+    lPerFrameworkSetup := GTIOPFTestManager.FindByPersistenceLayerName(lPersistenceLayerName);
     lCheckBox := TCheckBox.Create(self);
     lCheckBox.Parent := pnlCheckBoxes;
     lCheckBox.Top    := i * (cBorder + lCheckBox.Height) + cBorder;
     lCheckBox.Left   := cBorder;
-    lCheckBox.Caption := lPerLayerName;
-    lCheckBox.Name   := 'cb' + lPerLayerName;
+    lCheckBox.Caption := lPersistenceLayerName;
+    lCheckBox.Name   := 'cb' + lPersistenceLayerName;
     lCheckBox.Tag    := i;
     lCheckBox.Checked := lPerFrameworkSetup.Selected;
     lCheckBox.OnClick := DoCheckBoxClick;
+    lCheckBox.PopupMenu:= FPopupMenu;
   end;
   if lCheckBox <> nil then
   begin

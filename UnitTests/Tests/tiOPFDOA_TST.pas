@@ -3,74 +3,71 @@ unit tiOPFDOA_TST;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiQuery_TST
-  ,tiQuerySQL_TST
-  ,tiAutoMap_TST
-  ,tiOID_tst
- ;
+  tiQuery_TST,
+  tiQuerySQL_TST,
+  tiAutoMap_TST,
+  tiOID_TST;
 
 type
 
   TTestTIPersistenceLayersDOA = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseDOA = class(TTestTIDatabase)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
   end;
 
   TTestTIQueryDOA = class(TTestTIQuerySQL)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIAutoMapOperationDOA = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentGUIDDOA = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerDOA = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 procedure RegisterTests;
 
 implementation
+
 uses
-   tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiTestDependencies
- ;
+  tiOPFTestManager,
+  SysUtils,
+  tiTestDependencies;
 
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistDOA) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIPersistenceLayersDOA.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIDatabaseDOA.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIQueryDOA.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIOIDPersistentGUIDDOA.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIOIDPersistentIntegerDOA.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDOA), TTestTIAutoMapOperationDOA.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersDOA);
+  tiRegisterPersistenceTest(TTestTIDatabaseDOA);
+  tiRegisterPersistenceTest(TTestTIQueryDOA);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDDOA);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerDOA);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationDOA);
 end;
 
 { TtiOPFTestSetupDataDOA }
@@ -81,10 +78,10 @@ begin
     FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
     Fail('Exception not raised when it should have been');
   except
-    on e:exception do
+    on e: Exception do
     begin
       CheckIs(e, EAssertionFailed);
-      Check(Pos('CreateDatabase not implemented in ' + FDatabaseClass.ClassName, e.Message)<>0);
+      Check(Pos('CreateDatabase not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
     end;
   end;
 end;
@@ -95,58 +92,52 @@ begin
     FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
     Fail('Exception not raised when it should have been');
   except
-    on e:exception do
+    on e: Exception do
     begin
       CheckIs(e, EAssertionFailed);
-      Check(Pos('DatabaseExists not implemented in ' + FDatabaseClass.ClassName, e.Message)<>0);
+      Check(Pos('DatabaseExists not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
     end;
   end;
 end;
 
-{ TTestTIPersistenceLayersDOA }
-
-procedure TTestTIPersistenceLayersDOA.SetUp;
+class function TTestTIDatabaseDOA.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDOA);
-  inherited;
+  Result := cTIPersistDOA;
 end;
 
-procedure TTestTIDatabaseDOA.SetUp;
+{ TTestTIPersistenceLayersDOA }
+
+class function TTestTIPersistenceLayersDOA.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDOA);
-  inherited;
+  Result := cTIPersistDOA;
 end;
 
 { TTestTIQueryDOA }
 
-procedure TTestTIQueryDOA.SetUp;
+class function TTestTIQueryDOA.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDOA);
-  inherited;
+  Result := cTIPersistDOA;
 end;
 
 { TTestTIAutoMapOperationDOA }
 
-procedure TTestTIAutoMapOperationDOA.SetUp;
+class function TTestTIAutoMapOperationDOA.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDOA);
-  inherited;
-end;
-
-{ TTestTIOIDPersistentIntegerDOA }
-
-procedure TTestTIOIDPersistentIntegerDOA.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDOA);
-  inherited;
+  Result := cTIPersistDOA;
 end;
 
 { TTestTIOIDPersistentGUIDDOA }
 
-procedure TTestTIOIDPersistentGUIDDOA.SetUp;
+class function TTestTIOIDPersistentGUIDDOA.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDOA);
-  inherited;
+  Result := cTIPersistDOA;
+end;
+
+{ TTestTIOIDPersistentIntegerDOA }
+
+class function TTestTIOIDPersistentIntegerDOA.PersistenceLayerName: string;
+begin
+  Result := cTIPersistDOA;
 end;
 
 end.

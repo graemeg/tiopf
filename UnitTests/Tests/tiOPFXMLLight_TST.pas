@@ -3,85 +3,85 @@ unit tiOPFXMLLight_TST;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiQuery_TST
-  ,tiQueryNonSQL_TST
-  ,tiAutoMap_TST
-  ,tiOID_TST
- ;
+  tiQuery_TST
+  ,
+  tiQueryNonSQL_TST
+  ,
+  tiAutoMap_TST
+  ,
+  tiOID_TST;
 
 type
 
   TTestTIPersistenceLayersXMLLight = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseXMLLight = class(TTestTIDatabase)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
   end;
 
   TTestTIQueryXMLLight = class(TTestTIQueryNonSQL)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIAutoMapOperationXMLLight = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentGUIDXMLLight = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerXMLLight = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 
 procedure RegisterTests;
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiUtils
-  ,tiTestDependencies
- ;
+  tiOPFTestManager,
+  SysUtils,
+  tiUtils,
+  tiTestDependencies;
 
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistXMLLight) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIPersistenceLayersXMLLight.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIDatabaseXMLLight.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIQueryXMLLight.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDPersistentGUIDXMLLight.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIOIDPersistentIntegerXMLLight.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXMLLight), TTestTIAutoMapOperationXMLLight.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersXMLLight);
+  tiRegisterPersistenceTest(TTestTIDatabaseXMLLight);
+  tiRegisterPersistenceTest(TTestTIQueryXMLLight);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDXMLLight);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerXMLLight);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationXMLLight);
 end;
 
-{ TtiOPFTestSetupDataXMLLight }
+ { TtiOPFTestSetupDataXMLLight }
 
-{ TTestTIDatabaseXMLLight }
+ { TTestTIDatabaseXMLLight }
 
 procedure TTestTIDatabaseXMLLight.CreateDatabase;
 var
-  lFileName : string;
+  lFileName: string;
 begin
   lFileName := PerFrameworkSetup.DBName;
   tiDeleteFile(lFileName);
@@ -92,65 +92,59 @@ end;
 
 procedure TTestTIDatabaseXMLLight.DatabaseExists;
 var
-  lFileName : string;
+  lFileName: string;
 begin
   lFileName := PerFrameworkSetup.DBName;
   tiDeleteFile(lFileName);
   Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
-        'FDatabaseClass.DatabaseExists()=true when it should =false');
-  tiStringToFile('test',lFileName);
+  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=true when it should =false');
+  tiStringToFile('test', lFileName);
   Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
-        'FDatabaseClass.DatabaseExists()=false when it should =true');
+  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 
-procedure TTestTIDatabaseXMLLight.SetUp;
+class function TTestTIDatabaseXMLLight.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
-  inherited;
+  Result := cTIPersistXMLLight;
 end;
 
 { TTestTIQueryXMLLight }
 
-procedure TTestTIQueryXMLLight.SetUp;
+class function TTestTIQueryXMLLight.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
-  inherited;
+  Result := cTIPersistXMLLight;
 end;
 
 { TTestTIPersistenceLayersXMLLight }
 
-procedure TTestTIPersistenceLayersXMLLight.SetUp;
+class function TTestTIPersistenceLayersXMLLight.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
-  inherited;
+  Result := cTIPersistXMLLight;
 end;
 
 { TTestTIAutoMapOperationXMLLight }
 
-procedure TTestTIAutoMapOperationXMLLight.SetUp;
+class function TTestTIAutoMapOperationXMLLight.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
-  inherited;
+  Result := cTIPersistXMLLight;
 end;
 
 { TTestTIOIDManagerXMLLight }
 
-procedure TTestTIOIDPersistentIntegerXMLLight.SetUp;
+class function TTestTIOIDPersistentIntegerXMLLight.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
-  inherited;
+  Result := cTIPersistXMLLight;
 end;
 
 { TTestTIOIDPersistentGUIDXMLLight }
 
-procedure TTestTIOIDPersistentGUIDXMLLight.SetUp;
+class function TTestTIOIDPersistentGUIDXMLLight.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
-  inherited;
+  Result := cTIPersistXMLLight;
 end;
 
 end.
-
-

@@ -31,7 +31,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIBaseObject);
+  tiRegisterNonPersistentTest(TTestTIBaseObject);
 end;
 
 type

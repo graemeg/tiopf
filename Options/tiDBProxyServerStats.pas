@@ -222,7 +222,7 @@ begin
     FParams.SetValueAsDateTime(cFieldSummaryTimeOnServer, Now);
     FParams.SetValueAsDateTime(cFieldSummaryApplicationStartTime, gTIOPFManager.ApplicationStartTime);
     FParams.SetValueAsString( cFieldSummaryApplicationUpTime, GetApplicationUpTimeAsString);
-    FParams.SetValueAsString( cFieldSummaryPersistenceLayerName, gTIOPFManager.DefaultPerLayerName);
+    FParams.SetValueAsString( cFieldSummaryPersistenceLayerName, gTIOPFManager.DefaultPersistenceLayerName);
     FParams.SetValueAsString( cFieldSummaryDatabaseName, gTIOPFManager.DefaultDBConnectionName);
     FParams.SetValueAsString( cFieldSummaryUserName, gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.UserName);
     FParams.SetValueAsString( cFieldSummaryPassword,  tiReplicate('*', Length(gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.Password)));

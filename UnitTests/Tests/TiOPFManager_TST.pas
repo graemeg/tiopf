@@ -7,7 +7,7 @@ uses
   ;
 
 type
-  TTesttiOPFManager = class(TtiOPFTestCase)
+  TTesttiOPFManager = class(TtiTestCase)
   published
     procedure CreateDestroy;
   end;
@@ -23,7 +23,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTesttiOPFManager);
+  tiRegisterNonPersistentTest(TTesttiOPFManager);
 end;
 
 procedure TTesttiOPFManager.CreateDestroy;
@@ -34,8 +34,8 @@ begin
   try
     Check(L.Caption = L.ClassName,
       'FtiOPFManager.Caption should be ' + L.ClassName + ' but was ' + L.Caption);
-    Check(L.DefaultPerLayerName = '',
-      'FtiOPFManager.DefaultPerLayerName should empty but was ' + L.DefaultPerLayerName);
+    Check(L.DefaultPersistenceLayerName = '',
+      'FtiOPFManager.DefaultPersistenceLayerName should empty but was ' + L.DefaultPersistenceLayerName);
   finally
     L.Free;
   end;

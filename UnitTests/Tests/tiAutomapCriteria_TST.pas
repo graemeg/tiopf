@@ -22,7 +22,7 @@ type
   TCTDBMTestList3 = class(TtiObjectList);
 
 
-  TTestAutomappingCriteria = class(TtiOPFTestCase)
+  TTestAutomappingCriteria = class(TtiTestCaseWithDatabaseConnection)
   private
     procedure InserTtiObjectListForTesting;
     function  TestIntToFloat(pInt : Integer): extended;
@@ -31,8 +31,6 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-  public
-    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
 
   published
     procedure TestSetupAndTearDown;
@@ -82,7 +80,7 @@ begin
   TtiCriteria(lData.Criteria).AddOrderBy('StrField', false);
 
   try
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cGroupCount, lData.Count, 'Failed on 1');
     for i := 0 to cGroupCount - 1 do
     begin
@@ -115,7 +113,7 @@ begin
   TtiCriteria(lData.Criteria).AddIn('IntField', [3,4,5]);
 
   try
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cExpectedRecords, lData.Count, 'Failed on 1 ');
 
 
@@ -148,7 +146,7 @@ begin
   TtiCriteria(lData.Criteria).ClearAll;
 
   try
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cGroupCount, lData.Count, 'Failed on 1');
     for i := 0 to cGroupCount - 1 do
     begin
@@ -187,7 +185,7 @@ begin
     TtiCriteria(lData.Criteria).ClearAll;
     TtiCriteria(lData.Criteria).AddEqualTo('StrField', '2');
 
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(1, lData.Count, 'Failed on 1');
 
     lGroupVal :=2;
@@ -221,7 +219,7 @@ begin
 
   try
     TtiCriteria(lData.Criteria).ClearAll;
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cItemTotal, lData.Count, 'Failed on 1');
     for i := 0 to cItemTotal - 1 do
     begin
@@ -242,7 +240,7 @@ begin
 
   try
     TtiCriteria(lData.Criteria).AddEqualTo('OID', '23');
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(1, lData.Count, 'Failed on 1');
 
     CheckEquals('23', lData.Items[0].OID.AsString, 'Failed on Item.OID');
@@ -263,7 +261,7 @@ begin
 
   try
     TtiCriteria(lData.Criteria).AddEqualTo('Owner.OID', '4');
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cItemCount, lData.Count, 'Failed on 1');
 
     for i := 0 to cItemCount - 1 do
@@ -279,13 +277,6 @@ begin
 
 end;
 
-constructor TTestAutomappingCriteria.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
-begin
-  inherited;
-  SetupTasks := [sutPerLayer, sutDBConnection, sutTables];
-end;
-
-
 procedure TTestAutomappingCriteria.InserTtiObjectListForTesting;
   procedure _InsertGroup(pI : integer);
   var
@@ -300,7 +291,7 @@ procedure TTestAutomappingCriteria.InserTtiObjectListForTesting;
       lQueryParams.SetValueAsDateTime('Group_Date_Field',   TestIntToDate(pI));
       lQueryParams.SetValueAsBoolean('Group_Bool_Field',   TestIntToBool(pI));
       lQueryParams.SetValueAsString('Group_Notes_Field',   IntToStr(pI) + '<<<' + IntToStr(pI * 2));
-      gTIOPFManager.InsertRow('Test_Group', lQueryParams, DatabaseName, PerLayerName );
+      gTIOPFManager.InsertRow('Test_Group', lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -320,7 +311,7 @@ procedure TTestAutomappingCriteria.InserTtiObjectListForTesting;
       lQueryParams.SetValueAsDateTime('Item_Date_Field', TestIntToDate(pJ));
       lQueryParams.SetValueAsBoolean('Item_Bool_Field',  TestIntToBool(pJ));
       lQueryParams.SetValueAsString('Item_Notes_Field', IntToStr(pI) + '<<<' + IntToStr(pJ) + '>>>>' + IntToStr(pI * 2));
-      gTIOPFManager.InsertRow('Test_Item', lQueryParams, DatabaseName, PerLayerName );
+      gTIOPFManager.InsertRow('Test_Item', lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -358,7 +349,7 @@ begin
 
   try
     TtiCriteria(lData.Criteria).AddIn('IntField', myIntArray);
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cResultCount, lData.Count, 'Failed on 1');
     for i := 0 to cResultCount - 1 do
     begin
@@ -389,7 +380,7 @@ begin
 
   try
     TtiCriteria(lData.Criteria).AddNotIn('IntField', myIntArray);
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cResultCount, lData.Count, 'Failed on 1');
     for i := 0 to cResultCount - 1 do
     begin
@@ -411,7 +402,7 @@ begin
 
   try
     TtiCriteria(lData.Criteria).AddLike('NotesField', '%<3>%');
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cGroupCount, lData.Count, 'Failed on 1');
     for i := 0 to cGroupCount - 1 do
     begin
@@ -425,11 +416,12 @@ end;
 procedure TTestAutomappingCriteria.SetUp;
 begin
   inherited;
-  DropTestTable;
+  SetupTestTables;
 end;
 
 procedure TTestAutomappingCriteria.TearDown;
 begin
+  DeleteTestTables;
   inherited;
 end;
 
@@ -454,6 +446,8 @@ begin
 end;
 
 end.
+
+
 
 
 

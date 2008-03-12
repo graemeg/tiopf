@@ -1279,9 +1279,9 @@ begin
     TtiPersistenceLayerRemoteXML);
 
   // Change the default package from XML to Remote
-  if (gTIOPFManager.PersistenceLayers.FindByPerLayerName(cTIPersistXMLLight) <> nil) and
-     (gTIOPFManager.PersistenceLayers.DefaultPerLayerName = cTIPersistXMLLight) then
-    gTIOPFManager.PersistenceLayers.DefaultPerLayerName := cTIPersistRemote;
+  if (gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(cTIPersistXMLLight) <> nil) and
+     (gTIOPFManager.PersistenceLayers.DefaultPersistenceLayerName = cTIPersistXMLLight) then
+    gTIOPFManager.PersistenceLayers.DefaultPersistenceLayerName := cTIPersistRemote;
 
 end;
 

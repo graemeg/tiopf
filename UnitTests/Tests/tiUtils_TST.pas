@@ -218,7 +218,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIUtils);
+  tiRegisterNonPersistentTest(TTestTIUtils);
 end;
 
 

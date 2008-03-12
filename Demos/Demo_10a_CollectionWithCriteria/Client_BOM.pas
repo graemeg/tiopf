@@ -25,7 +25,7 @@ type
     FClientID: TClientID;
     FClientName: TClientName;
   public
-    constructor CreateNew(const pDatabaseName: string = ''; const pPerLayerName: string = ''); override;
+    constructor CreateNew(const pDatabaseName: string = ''; const pPersistenceLayerName: string = ''); override;
   published
     property    ClientName: TClientName read FClientName write FClientName;
     property    ClientID  : TClientID read FClientID write FClientID;
@@ -40,7 +40,7 @@ uses
 
 { TClient }
 
-constructor TClient.CreateNew(const pDatabaseName: string = ''; const pPerLayerName: string = '');
+constructor TClient.CreateNew(const pDatabaseName: string = ''; const pPersistenceLayerName: string = '');
 begin
   inherited;
   // Set some default values for the demo

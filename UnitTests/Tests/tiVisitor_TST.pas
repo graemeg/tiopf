@@ -219,7 +219,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIVisitor);
+  tiRegisterNonPersistentTest(TTestTIVisitor);
 end;
 
 

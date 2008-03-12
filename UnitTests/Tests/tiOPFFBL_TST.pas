@@ -3,50 +3,50 @@ unit tiOPFFBL_TST;
 {$I tiDefines.inc}
 
 interface
-uses
-   tiQuery_TST
-  ,tiQuerySQL_TST
-  ,tiAutoMap_TST
-  ,tiOID_TST
- ;
 
+uses
+  tiQuery_TST,
+  tiQuerySQL_TST,
+  tiAutoMap_TST,
+  tiOID_TST;
 
 type
 
   TTestTIPersistenceLayersFBL = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseFBL = class(TTestTIDatabase)
   protected
-    procedure SetUp; override;
     procedure CreateDatabase; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
   end;
 
 
   TTestTIQueryFBL = class(TTestTIQuerySQL)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 
   TTestTIAutoMapOperationFBL = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 
   TTestTIOIDPersistentGUIDFBL = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerFBL = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 
@@ -54,37 +54,34 @@ procedure RegisterTests;
 
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiUtils
-  ,tiTestDependencies
- ;
-  
+  tiOPFTestManager,
+  SysUtils,
+  tiUtils,
+  tiTestDependencies;
+
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistFBL) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIPersistenceLayersFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIDatabaseFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIQueryFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIOIDPersistentIntegerFBL.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistFBL), TTestTIAutoMapOperationFBL.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersFBL);
+  tiRegisterPersistenceTest(TTestTIDatabaseFBL);
+  tiRegisterPersistenceTest(TTestTIQueryFBL);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerFBL);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationFBL);
 end;
 
 { TTestTIDatabaseFBL }
 
 procedure TTestTIDatabaseFBL.CreateDatabase;
 var
-  lDB : string;
-  lDBExists : boolean;
+  lDB:       string;
+  lDBExists: boolean;
 begin
   lDB := ExpandFileName(PerFrameworkSetup.DBName);
   lDB := tiSwapExt(lDB, 'tmp');
@@ -104,9 +101,9 @@ begin
 
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      lDB,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    lDB,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
 
   Check(lDBExists, 'Database does not exist when it should do');
   tiDeleteFile(lDB);
@@ -114,71 +111,64 @@ end;
 
 procedure TTestTIDatabaseFBL.DatabaseExists;
 var
-  lDB : string;
-  lDBExists : boolean;
+  lDB:       string;
+  lDBExists: boolean;
 begin
-  lDB := PerFrameworkSetup.DBName;
+  lDB       := PerFrameworkSetup.DBName;
   Check(FileExists(lDB), 'Database file not found so test can not be performed');
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      PerFrameworkSetup.DBName,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    PerFrameworkSetup.DBName,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
   Check(lDBExists, 'DBExists returned false when it should return true');
   Check(not FileExists(lDB + 'Tmp'), 'Database file found so test can not be performed');
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      PerFrameworkSetup.DBName + 'Tmp',
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    PerFrameworkSetup.DBName + 'Tmp',
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
   Check(not lDBExists, 'DBExists returned true when it should return false');
 end;
 
-procedure TTestTIDatabaseFBL.SetUp;
+class function TTestTIDatabaseFBL.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
-  inherited;
+  Result := cTIPersistFBL;
 end;
 
 { TTestTIPersistenceLayersFBL }
 
-procedure TTestTIPersistenceLayersFBL.SetUp;
+class function TTestTIPersistenceLayersFBL.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
-  inherited;
+  Result := cTIPersistFBL;
 end;
 
 { TTestTIQueryFBL }
 
-procedure TTestTIQueryFBL.SetUp;
+class function TTestTIQueryFBL.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
-  inherited;
+  Result := cTIPersistFBL;
 end;
-
 
 { TTestTIAutoMapOperationFBL }
 
-procedure TTestTIAutoMapOperationFBL.SetUp;
+class function TTestTIAutoMapOperationFBL.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
-  inherited;
-end;
-
-{ TTestTIOIDPersistentIntegerFBL }
-
-procedure TTestTIOIDPersistentIntegerFBL.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
-  inherited;
+  Result := cTIPersistFBL;
 end;
 
 { TTestTIOIDPersistentGUIDFBL }
 
-procedure TTestTIOIDPersistentGUIDFBL.SetUp;
+class function TTestTIOIDPersistentGUIDFBL.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistFBL);
-  inherited;
+  Result := cTIPersistFBL;
+end;
+
+{ TTestTIOIDPersistentIntegerFBL }
+
+class function TTestTIOIDPersistentIntegerFBL.PersistenceLayerName: string;
+begin
+  Result := cTIPersistFBL;
 end;
 
 end.

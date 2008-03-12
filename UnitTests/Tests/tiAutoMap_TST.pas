@@ -61,9 +61,8 @@ type
 
   end;
 
-  TTestTIAutoMapOperation = class(TtiOPFTestCase)
+  TTestTIAutoMapOperation = class(TtiTestCaseWithDatabaseConnection)
   private
-    FLongString : string;
     procedure InserTtiObjectListForTesting;
     function  CreateTIOPFTestData : TtiObjectListForTesting;
     procedure UpdateTIOPFTestData(AData : TtiObjectListForTesting);
@@ -84,8 +83,6 @@ type
     procedure DoReadWriteBoolean(AValue: boolean);
     procedure DoReadWriteDateTime(AValue: TDateTime);
     procedure DoReadWriteOID(AValue: string);
-  public
-    constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
 
   published
     procedure TestSetupAndTearDown;
@@ -181,7 +178,7 @@ const
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIAutoMapFramework);
+  tiRegisterNonPersistentTest(TTestTIAutoMapFramework);
 end;
 
 procedure TTestTIAutoMapOperation.CollectionCreate;
@@ -195,11 +192,11 @@ begin
 
   lData1 := CreateTIOPFTestData;
   try
-    lData1.Save(DatabaseName, PerLayerName);
+    lData1.Save(DatabaseName, PersistenceLayerName);
 
     lData2 := TtiObjectListForTesting.Create;
     try
-      lData2.Read(DatabaseName, PerLayerName);
+      lData2.Read(DatabaseName, PersistenceLayerName);
       lData2.SortByOID;
       CheckEquals(cGroupCount, lData2.Count, 'Failed on 1');
       for i := 0 to cGroupCount - 1 do
@@ -235,12 +232,12 @@ var
 begin
   lData1 := CreateTIOPFTestData;
   try
-    gTIOPFManager.Save(lData1, DatabaseName, PerLayerName);
+    gTIOPFManager.Save(lData1, DatabaseName, PersistenceLayerName);
     lData1.Deleted := true;
-    gTIOPFManager.Save(lData1, DatabaseName, PerLayerName );
+    gTIOPFManager.Save(lData1, DatabaseName, PersistenceLayerName );
     lData2 := TtiObjectListForTesting.Create;
     try
-      gTIOPFManager.Read(lData2, DatabaseName, PerLayerName );
+      gTIOPFManager.Read(lData2, DatabaseName, PersistenceLayerName );
       CheckObjectState(posClean, lData2);
       CheckEquals(0, lData2.Count, 'Failed on lData2.Count = 0');
     finally
@@ -262,7 +259,7 @@ begin
   InserTtiObjectListForTesting;
   lData := TtiObjectListForTesting.Create;
   try
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cGroupCount, lData.Count, 'Failed on 1');
     for i := 0 to cGroupCount - 1 do
     begin
@@ -295,7 +292,7 @@ begin
   InserTtiObjectListForTesting;
   lData := TtiObjectListNestedForTesting.Create;
   try
-    lData.Read(DatabaseName, PerLayerName);
+    lData.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(cItemTotal, lData.Count, 'Failed on 1');
     for i := 0 to cItemTotal - 1 do
     begin
@@ -317,18 +314,18 @@ begin
 
   lData1 := CreateTIOPFTestData;
   try
-    lData1.Save(DatabaseName, PerLayerName);
+    lData1.Save(DatabaseName, PersistenceLayerName);
 
     // ToDo: Should not have to do this.
     lData1.ObjectState := posClean;
 
     UpdateTIOPFTestData(lData1);
 
-    lData1.Save(DatabaseName, PerLayerName);
+    lData1.Save(DatabaseName, PersistenceLayerName);
 
     lData2 := TtiObjectListForTesting.Create;
     try
-      lData2.Read(DatabaseName, PerLayerName);
+      lData2.Read(DatabaseName, PersistenceLayerName);
 
       lDataStr1 := lData1.AsDebugString;
       lDataStr2 := lData2.AsDebugString;
@@ -414,11 +411,12 @@ end;
 procedure TTestTIAutoMapOperation.SetUp;
 begin
   inherited;
-  DropTestTable;
+  SetupTestTables;
 end;
 
 procedure TTestTIAutoMapOperation.TearDown;
 begin
+  DeleteTestTables;
   inherited;
 end;
 
@@ -437,22 +435,22 @@ begin
     lData1.StrField  := '1';
     lData1.DateField  := TestIntToDate(1111);
     lData1.BoolField := TestIntToBool(1);
-    lData1.NotesField := FLongString;
-    lData1.Save(DatabaseName, PerLayerName);
+    lData1.NotesField := LongString;
+    lData1.Save(DatabaseName, PersistenceLayerName);
 
     CheckObjectState(posClean, lData1);
 
     lData2 := TtiObjectListNestedForTesting.Create;
     try
       lData2.OID.AsString := '1';
-      lData2.ReadThis(DatabaseName, PerLayerName);
+      lData2.ReadThis(DatabaseName, PersistenceLayerName);
       CheckObjectState(posPK, lData2);
       CheckEquals(1, lData2.IntField);
       CheckEquals('1', lData2.StrField);
       CheckNearEnough(11.111, lData2.FloatField ,'Failed on 11.111');
       Check(TestIntToDate(1111) = lData2.DateField, 'Failed on DateField');
       CheckEquals(TestIntToBool(1), lData2.BoolField, 'BoolField');
-      CheckEquals(FLongString, lData2.NotesField, 'NotesField');
+      CheckEquals(LongString, lData2.NotesField, 'NotesField');
     finally
       lData2.Free;
     end;
@@ -476,7 +474,7 @@ begin
     lData1.FloatField := 11.111;
     lData1.StrField  := '1';
     lData1.DateField := TestIntToDate(1111);
-    lData1.Save(DatabaseName, PerLayerName);
+    lData1.Save(DatabaseName, PersistenceLayerName);
     CheckObjectState(posClean, lData1);
   finally
     lData1.Free;
@@ -484,7 +482,7 @@ begin
 
   lData2 := TtiObjectListForTesting.Create;
   try
-    lData2.Read(DatabaseName, PerLayerName);
+    lData2.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(1, lData2.Count, 'Failed on TtiObjectListForTesting.Count');
   finally
     lData2.Free;
@@ -494,7 +492,7 @@ begin
   try
     lData1.ObjectState := posDelete;
     lData1.OID.AsString := '1';
-    lData1.Save(DatabaseName, PerLayerName);
+    lData1.Save(DatabaseName, PersistenceLayerName);
     Check(lData1.ObjectState = posDeleted, 'Failed on ObjectState = posDeleted');
   finally
     lData1.Free;
@@ -502,7 +500,7 @@ begin
 
   lData2 := TtiObjectListForTesting.Create;
   try
-    lData2.Read(DatabaseName, PerLayerName);
+    lData2.Read(DatabaseName, PersistenceLayerName);
     CheckEquals(0, lData2.Count, 'Failed on TtiObjectListForTesting.Count');
   finally
     lData2.Free;
@@ -523,8 +521,8 @@ begin
     lQP.SetValueAsFloat('Group_Float_Field',  11.111);
     lQP.SetValueAsDateTime('Group_Date_Field',   TestIntToDate(1111));
     lQP.SetValueAsBoolean('Group_Bool_Field',   TestIntToBool(1));
-    lQP.SetValueAsString('Group_Notes_Field',  FLongString);
-    gTIOPFManager.InsertRow('Test_Group', lQP, DatabaseName, PerLayerName);
+    lQP.SetValueAsString('Group_Notes_Field',  LongString);
+    gTIOPFManager.InsertRow('Test_Group', lQP, DatabaseName, PersistenceLayerName);
   finally
     lQP.Free;
   end;
@@ -532,7 +530,7 @@ begin
   lData := TtiObjectListNestedForTesting.Create;
   try
     lData.OID.AsString := '1';
-    lData.ReadThis(DatabaseName, PerLayerName);
+    lData.ReadThis(DatabaseName, PersistenceLayerName);
     Check(lData.ObjectState = posPK, 'Failed on ObjectState = posPK');
     CheckEquals('1', lData.OID.AsString);
     CheckEquals(1, lData.IntField);
@@ -540,7 +538,7 @@ begin
     CheckNearEnough(11.111, lData.FloatField, 'FloatField');
     CheckEquals(TestIntToDate(1111), lData.DateField, 'DateField');
     CheckEquals(TestIntToBool(1), lData.BoolField, 'BoolField');
-    CheckEquals(FLongString, lData.NotesField, 'NotesField');
+    CheckEquals(LongString, lData.NotesField, 'NotesField');
   finally
     lData.Free;
   end;
@@ -562,8 +560,8 @@ begin
     lData1.StrField  := '1';
     lData1.DateField := TestIntToDate(1111);
     lData1.BoolField := TestIntToBool(1);
-    lData1.NotesField := FLongString;
-    lData1.Save(DatabaseName, PerLayerName);
+    lData1.NotesField := LongString;
+    lData1.Save(DatabaseName, PersistenceLayerName);
 
     lString := tiCreateStringOfSize(4000);
     Check(lData1.ObjectState = posClean, 'Failed on ObjectState = posClean');
@@ -574,12 +572,12 @@ begin
     lData1.BoolField := TestIntToBool(2);
     lData1.NotesField := lString;
     lData1.ObjectState := posUpdate;
-    lData1.Save(DatabaseName, PerLayerName);
+    lData1.Save(DatabaseName, PersistenceLayerName);
 
     lData2 := TtiObjectListNestedForTesting.Create;
     try                        
       lData2.OID.AsString := '1';
-      lData2.ReadThis(DatabaseName, PerLayerName);
+      lData2.ReadThis(DatabaseName, PersistenceLayerName);
       Check(lData2.ObjectState = posPK, 'Failed on ObjectState = posPK');
       CheckEquals(2, lData2.IntField);
       CheckEquals('2', lData2.StrField);
@@ -606,7 +604,7 @@ begin
     lParent.OID.AsString := '1';
     lParent.StrField := '1';
     lParent.ObjectState := posCreate;
-    lParent.Save(DatabaseName, PerLayerName);
+    lParent.Save(DatabaseName, PersistenceLayerName);
     Check(lParent.ObjectState = posClean, 'Failed on 1');
   finally
     lParent.Free;
@@ -615,7 +613,7 @@ begin
   lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
-    lParent.ReadThis(DatabaseName, PerLayerName);
+    lParent.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lParent.ObjectState, 'Failed on 2');
     CheckEquals('1', lParent.StrField, 'Failed on 3');
   finally
@@ -631,7 +629,7 @@ begin
     lChild.IntField := 1;
     lChild.FloatField := TestIntToFloat(1) ;
     lChild.ObjectState := posCreate;
-    lChild.Save(DatabaseName, PerLayerName);
+    lChild.Save(DatabaseName, PersistenceLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on object state');
   finally
     lChild.Free;
@@ -640,7 +638,7 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on object state');
     CheckEquals(1, lChild.IntField, 'Failed on 4');
     CheckNearEnough(TestIntToFloat(1), lChild.FloatField, 'FloatField');
@@ -661,10 +659,10 @@ begin
   lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
-    lParent.ReadThis(DatabaseName, PerLayerName);
+    lParent.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lParent.ObjectState, 'Failed on 1');
     lParent.ObjectState := posDelete;
-    lParent.Save(DatabaseName, PerLayerName);
+    lParent.Save(DatabaseName, PersistenceLayerName);
   finally
     lParent.Free;
   end;
@@ -672,7 +670,7 @@ begin
   lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
-    lParent.ReadThis(DatabaseName, PerLayerName);
+    lParent.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posEmpty = lParent.ObjectState, 'Failed on 2');
   finally
     lParent.Free;
@@ -681,10 +679,10 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 3');
     lChild.ObjectState := posDelete;
-    lChild.Save(DatabaseName, PerLayerName);
+    lChild.Save(DatabaseName, PersistenceLayerName);
   finally
     lChild.Free;
   end;
@@ -692,7 +690,7 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posEmpty = lChild.ObjectState, 'Failed on 4');
   finally
     lChild.Free;
@@ -710,7 +708,7 @@ begin
   lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
-    lParent.ReadThis(DatabaseName, PerLayerName);
+    lParent.ReadThis(DatabaseName, PersistenceLayerName);
     CheckObjectState(posClean, lParent);
     CheckEquals('1', lParent.StrField, 'Str');
   finally
@@ -720,7 +718,7 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     CheckObjectState(posClean, lChild);
     CheckEquals(1, lChild.IntField, 'Int');
     CheckNearEnough(TestIntToFloat(1), lChild.FloatField, 'FloatField');
@@ -742,12 +740,12 @@ begin
   lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
-    lParent.ReadThis(DatabaseName, PerLayerName);
+    lParent.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lParent.ObjectState, 'Failed on 0');
     CheckEquals('1', lParent.StrField, 'Failed on 2');
     lParent.StrField := '2';
     lParent.ObjectState := posUpdate;
-    lParent.Save(DatabaseName, PerLayerName);
+    lParent.Save(DatabaseName, PersistenceLayerName);
   finally
     lParent.Free;
   end;
@@ -755,7 +753,7 @@ begin
   lParent := TtiObjectParentForTesting.Create;
   try
     lParent.OID.AsString := '1';
-    lParent.ReadThis(DatabaseName, PerLayerName);
+    lParent.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lParent.ObjectState, 'Failed on 3');
     CheckEquals('2', lParent.StrField, 'Failed on 4');
   finally
@@ -765,7 +763,7 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 5');
     CheckEquals(1, lChild.IntField, 'Failed on 6');
     CheckNearEnough(TestIntToFloat(1), lChild.FloatField, 'FloatField');
@@ -774,7 +772,7 @@ begin
     lChild.FloatField := TestIntToFloat(3);
     lChild.StrField := '3';
     lChild.ObjectState := posUpdate;
-    lChild.Save(DatabaseName, PerLayerName);
+    lChild.Save(DatabaseName, PersistenceLayerName);
   finally
     lChild.Free;
   end;
@@ -782,7 +780,7 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 9');
     CheckEquals(3, lChild.IntField, 'Failed on 10');
     CheckNearEnough(TestIntToFloat(3), lChild.FloatField, 'FloatField');
@@ -1473,7 +1471,7 @@ begin
   InserTtiObjectListForTesting;
   lData := TtiObjectListForTesting.Create;
   try
-    lData.ReadPK(DatabaseName, PerLayerName);
+    lData.ReadPK(DatabaseName, PersistenceLayerName);
     Check(posClean = lData.ObjectState, 'ObjectState');
     CheckEquals(cGroupCount, lData.Count, 'Count');
     for i := 0 to cGroupCount - 1 do
@@ -1524,8 +1522,8 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTesting;
       lQueryParams.SetValueAsFloat('Group_Float_Field',  TestIntToFloat(pI));
       lQueryParams.SetValueAsDateTime('Group_Date_Field',   TestIntToDate(pI));
       lQueryParams.SetValueAsBoolean('Group_Bool_Field',   TestIntToBool(pI));
-      lQueryParams.SetValueAsString('Group_Notes_Field',  FLongString);
-      gTIOPFManager.InsertRow('Test_Group', lQueryParams, DatabaseName, PerLayerName );
+      lQueryParams.SetValueAsString('Group_Notes_Field',  LongString);
+      gTIOPFManager.InsertRow('Test_Group', lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -1544,8 +1542,8 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTesting;
       lQueryParams.SetValueAsFloat('Item_Float_Field', TestIntToFloat(pJ));
       lQueryParams.SetValueAsDateTime('Item_Date_Field', TestIntToDate(pJ));
       lQueryParams.SetValueAsBoolean('Item_Bool_Field',  TestIntToBool(pJ));
-      lQueryParams.SetValueAsString('Item_Notes_Field', FLongString);
-      gTIOPFManager.InsertRow('Test_Item', lQueryParams, DatabaseName, PerLayerName );
+      lQueryParams.SetValueAsString('Item_Notes_Field', LongString);
+      gTIOPFManager.InsertRow('Test_Item', lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -1579,7 +1577,7 @@ begin
   lQueryParams := TtiQueryParams.Create;
   try
     lQueryParams.SetValueAsString('OID', IntToStr(AOID));
-    gTIOPFManager.InsertRow(cTableNameTIOPFTestParentGroup, lQueryParams, DatabaseName, PerLayerName );
+    gTIOPFManager.InsertRow(cTableNameTIOPFTestParentGroup, lQueryParams, DatabaseName, PersistenceLayerName );
   finally
     lQueryParams.Free;
   end;
@@ -1595,7 +1593,7 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTestingInherited(const pP
       lQueryParams.SetValueAsString('OID',              IntToStr(pI));
       lQueryParams.SetValueAsString('Owner_OID',        IntToStr(pOwnerOID));
       lQueryParams.SetValueAsString('Parent_Str_Field', IntToStr(pI));
-      gTIOPFManager.InsertRow(ATableName, lQueryParams, DatabaseName, PerLayerName );
+      gTIOPFManager.InsertRow(ATableName, lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -1610,7 +1608,7 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTestingInherited(const pP
       lQueryParams.SetValueAsString('OID', IntToStr(pI));
       lQueryParams.SetValueAsInteger('Child_Int_Field', pI);
       lQueryParams.SetValueAsFloat('Child_Float_Field', TestIntToFloat(pI));
-      gTIOPFManager.InsertRow(ATableName, lQueryParams, DatabaseName, PerLayerName );
+      gTIOPFManager.InsertRow(ATableName, lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -1633,7 +1631,7 @@ begin
     lChild.IntField := 1;
     lChild.FloatField := TestIntToFloat(1) ;
     lChild.ObjectState := posCreate;
-    lChild.Save(DatabaseName, PerLayerName);
+    lChild.Save(DatabaseName, PersistenceLayerName);
     Check(lChild.ObjectState = posClean, 'Failed on 4');
   finally
     lChild.Free;
@@ -1642,7 +1640,7 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 3');
     CheckEquals(1, lChild.IntField, 'Failed on 4');
     CheckNearEnough(TestIntToFloat(1), lChild.FloatField, 'FloatField');
@@ -1662,13 +1660,13 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 1');
     lChild.IntField := 2;
     lChild.FloatField := TestIntToFloat(2);
     lChild.StrField := '2';
     lChild.ObjectState := posUpdate;
-    lChild.Save(DatabaseName, PerLayerName);
+    lChild.Save(DatabaseName, PersistenceLayerName);
   finally
     lChild.Free;
   end;
@@ -1676,7 +1674,7 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 2');
     CheckEquals(2, lChild.IntField, 'Failed on 3');
     CheckNearEnough(TestIntToFloat(2), lChild.FloatField, 'FloatField');
@@ -1697,10 +1695,10 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posClean = lChild.ObjectState, 'Failed on 1');
     lChild.ObjectState := posDelete;
-    lChild.Save(DatabaseName, PerLayerName);
+    lChild.Save(DatabaseName, PersistenceLayerName);
   finally
     lChild.Free;
   end;
@@ -1708,7 +1706,7 @@ begin
   lChild := TtiObjectChildForTestingA.Create;
   try
     lChild.OID.AsString := '1';
-    lChild.ReadThis(DatabaseName, PerLayerName);
+    lChild.ReadThis(DatabaseName, PersistenceLayerName);
     Check(posEmpty = lChild.ObjectState, 'Failed on 2');
   finally
     lChild.Free;
@@ -1861,7 +1859,7 @@ begin
   lParentGroup := TtiObjectParentForTestingGroup.Create;
   try
     lParentGroup.OID.AsString := '-1';
-    lParentGroup.Read(DatabaseName, PerLayerName);
+    lParentGroup.Read(DatabaseName, PersistenceLayerName);
 
     Check(posClean = lParentGroup.ObjectState, 'lParents.ObjectState <> posClean');
     CheckEquals(2, lParentGroup.Count, 'lParents.Count');
@@ -1901,7 +1899,7 @@ begin
   lParentGroup := TtiObjectParentForTestingGroup.Create;
   try
     lParentGroup.OID.AsString := '4';
-    lParentGroup.Read(DatabaseName, PerLayerName);
+    lParentGroup.Read(DatabaseName, PersistenceLayerName);
 
     Check(posClean = lParentGroup.ObjectState, 'lParents.ObjectState <> posClean');
     CheckEquals(2, lParentGroup.Count, 'lParents.Count');
@@ -1941,7 +1939,7 @@ begin
   try
 //    lParentGroup.OID.AsString := '4';
     CheckTrue(lParentGroup.OID.IsNull, 'lParentGroup.OID is not null');
-    lParentGroup.Read(DatabaseName, PerLayerName);
+    lParentGroup.Read(DatabaseName, PersistenceLayerName);
 
     Check(posClean = lParentGroup.ObjectState, 'lParents.ObjectState <> posClean');
     CheckEquals(4, lParentGroup.Count, 'lParents.Count');
@@ -1975,14 +1973,6 @@ begin
   end;
 end;
 
-constructor TTestTIAutoMapOperation.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
-begin
-  inherited;
-  SetupTasks := [sutPerLayer, sutDBConnection, sutTables];
-  FLongString := tiCreateStringOfSIze(3000);
-end;
-
-
 function TTestTIAutoMapOperation.TestIntToBool(pInt: Integer): Boolean;
 begin
   result := (pInt mod 2 = 0);
@@ -2010,14 +2000,14 @@ procedure TTestTIAutoMapOperation.DoReadWriteBoolean(AValue : boolean);
 var
   lData : TtiOPFTestBooleanProp;
 begin
-  CreateTableBoolean(DatabaseName, PerLayerName);
+  CreateTableBoolean(DatabaseName, PersistenceLayerName);
   try
     lData := TtiOPFTestBooleanProp.Create;
     try
       lData.ObjectState := posCreate;
       lData.OID.AsString := '1';
       lData.BoolField   := AValue;
-      lData.Save(DatabaseName, PerLayerName);
+      lData.Save(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
     finally
       lData.Free;
@@ -2026,7 +2016,7 @@ begin
     lData := TtiOPFTestBooleanProp.Create;
     try
       lData.OID.AsString := '1';
-      lData.Read(DatabaseName, PerLayerName);
+      lData.Read(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       CheckEquals(AValue, lData.BoolField);
     finally
@@ -2046,14 +2036,14 @@ procedure TTestTIAutoMapOperation.DoReadWriteDateTime(AValue : TDateTime);
 var
   lData : TtiOPFTestDateTimeProp;
 begin
-  CreateTableDateTime(DatabaseName, PerLayerName);
+  CreateTableDateTime(DatabaseName, PersistenceLayerName);
   try
     lData := TtiOPFTestDateTimeProp.Create;
     try
       lData.ObjectState := posCreate;
       lData.OID.AsString := '1';
       lData.DateField  := AValue;
-      lData.Save(DatabaseName, PerLayerName);
+      lData.Save(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
     finally
       lData.Free;
@@ -2062,7 +2052,7 @@ begin
     lData := TtiOPFTestDateTimeProp.Create;
     try
       lData.OID.AsString := '1';
-      lData.Read(DatabaseName, PerLayerName);
+      lData.Read(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       CheckEquals(AValue, lData.DateField, 0.0001);
     finally
@@ -2082,14 +2072,14 @@ procedure TTestTIAutoMapOperation.DoReadWriteFloat(AValue : extended);
 var
   lData : TtiOPFTestFloatProp;
 begin
-  CreateTableFloat(DatabaseName, PerLayerName);
+  CreateTableFloat(DatabaseName, PersistenceLayerName);
   try
     lData := TtiOPFTestFloatProp.Create;
     try
       lData.ObjectState := posCreate;
       lData.OID.AsString := '1';
       lData.FloatField  := AValue;
-      lData.Save(DatabaseName, PerLayerName);
+      lData.Save(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
     finally
       lData.Free;
@@ -2098,7 +2088,7 @@ begin
     lData := TtiOPFTestFloatProp.Create;
     try
       lData.OID.AsString := '1';
-      lData.Read(DatabaseName, PerLayerName);
+      lData.Read(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       CheckNearEnough(lData.FloatField, AValue);
     finally
@@ -2113,9 +2103,9 @@ procedure TTestTIAutoMapOperation.ReadWriteIntegerLow;
 begin
   // ToDo: Create an abstract class to handle this difference between per-layers
   //       BDEParadox layer can't handle Low(Integer), but can handle Low(Integer)+1.
-  if SameText(cTIPersistBDEParadox, PerLayerName) then
+  if SameText(cTIPersistBDEParadox, PersistenceLayerName) then
     DoReadWriteInteger(Low(Integer)+1)
-  else if SameText(cTIPersistFBL, PerLayerName) then
+  else if SameText(cTIPersistFBL, PersistenceLayerName) then
     DoReadWriteInteger(Low(Integer)+1)
   else
     DoReadWriteInteger(Low(Integer));
@@ -2125,14 +2115,14 @@ procedure TTestTIAutoMapOperation.DoReadWriteInteger(AValue : integer);
 var
   lData : TtiOPFTestIntegerProp;
 begin
-  CreateTableInteger(DatabaseName, PerLayerName);
+  CreateTableInteger(DatabaseName, PersistenceLayerName);
   try
     lData := TtiOPFTestIntegerProp.Create;
     try
       lData.ObjectState := posCreate;
       lData.OID.AsString := '1';
       lData.IntField  := AValue;
-      lData.Save(DatabaseName, PerLayerName);
+      lData.Save(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
     finally
       lData.Free;
@@ -2141,7 +2131,7 @@ begin
     lData := TtiOPFTestIntegerProp.Create;
     try
       lData.OID.AsString := '1';
-      lData.Read(DatabaseName, PerLayerName);
+      lData.Read(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       CheckEquals(AValue, lData.IntField);
     finally
@@ -2158,7 +2148,7 @@ procedure TTestTIAutoMapOperation.DoReadWriteOID(AValue: string);
 var
   lData : TtiOPFTestOIdProp;
 begin
-  CreateTableString(DatabaseName, PerLayerName);
+  CreateTableString(DatabaseName, PersistenceLayerName);
 
   try
     lData := TtiOPFTestOIdProp.Create;
@@ -2166,7 +2156,7 @@ begin
       lData.ObjectState := posCreate;
       lData.OID.AsString := '1';
       lData.OIDField.AsString  := AValue;
-      lData.Save(DatabaseName, PerLayerName);
+      lData.Save(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
     finally
       lData.Free;
@@ -2175,7 +2165,7 @@ begin
     lData := TtiOPFTestOIdProp.Create;
     try
       lData.OID.AsString := '1';
-      lData.Read(DatabaseName, PerLayerName);
+      lData.Read(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       CheckEquals(AValue, lData.OIDField.AsString);
     finally
@@ -2192,14 +2182,14 @@ var
   lData : TtiOPFTestStreamProp;
   ls : string;
 begin
-  CreateTableStream(DatabaseName, PerLayerName);
+  CreateTableStream(DatabaseName, PersistenceLayerName);
   try
     lData := TtiOPFTestStreamProp.Create;
     try
       lData.ObjectState := posCreate;
       lData.OID.AsString := '1';
       tiStringToStream(LongString, lData.StreamField);
-      lData.Save(DatabaseName, PerLayerName);
+      lData.Save(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
     finally
       lData.Free;
@@ -2208,7 +2198,7 @@ begin
     lData := TtiOPFTestStreamProp.Create;
     try
       lData.OID.AsString := '1';
-      lData.Read(DatabaseName, PerLayerName);
+      lData.Read(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       ls := tiStreamToString(lData.StreamField);
       CheckEquals(LongString, ls);
@@ -2231,9 +2221,9 @@ var
   ls : string;
 begin
   if pLen <= 255 then
-    CreateTableString(DatabaseName, PerLayerName)
+    CreateTableString(DatabaseName, PersistenceLayerName)
   else
-    CreateTableLongString(DatabaseName, PerLayerName);
+    CreateTableLongString(DatabaseName, PersistenceLayerName);
 
   try
     ls := tiCreateStringOfSize(pLen);
@@ -2242,7 +2232,7 @@ begin
       lData.ObjectState := posCreate;
       lData.OID.AsString := '1';
       lData.StrField  := ls;
-      lData.Save(DatabaseName, PerLayerName);
+      lData.Save(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
     finally
       lData.Free;
@@ -2251,7 +2241,7 @@ begin
     lData := TtiOPFTestStringProp.Create;
     try
       lData.OID.AsString := '1';
-      lData.Read(DatabaseName, PerLayerName);
+      lData.Read(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       CheckEquals(Length(ls), Length(lData.StrField));
       CheckEquals(ls, lData.StrField);
@@ -2374,7 +2364,7 @@ procedure TTestTIAutoMapOperation.ReadWriteIntegerHigh;
 begin
   // ToDo: Create an abstract class to handle this difference between per-layers
   //       FBLib layer can't handle High(Integer), but can handle High(Integer)-1.
-  if SameText(cTIPersistFBL, PerLayerName) then
+  if SameText(cTIPersistFBL, PersistenceLayerName) then
     DoReadWriteInteger(High(Integer)-1)
   else
     DoReadWriteInteger(High(Integer));
@@ -2386,7 +2376,7 @@ var
   lData : TtiOPFTestInt64Prop;
 begin
 // Assume table exists
-//  CreateTableInt64(DatabaseName, PerLayerName);
+//  CreateTableInt64(DatabaseName, PersistenceLayerName);
 
   try
     // clear table (seeing that we are not creating it above)
@@ -2396,7 +2386,7 @@ begin
       lData.ObjectState := posCreate;
       lData.OID.AsString := '1';
       lData.Int64Field  := AValue;
-      lData.Save(DatabaseName, PerLayerName);
+      lData.Save(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
     finally
       lData.Free;
@@ -2405,7 +2395,7 @@ begin
     lData := TtiOPFTestInt64Prop.Create;
     try
       lData.OID.AsString := '1';
-      lData.Read(DatabaseName, PerLayerName);
+      lData.Read(DatabaseName, PersistenceLayerName);
       Check(lData.ObjectState = posClean, 'Failed on ObjectState = posClean');
       CheckEquals(AValue, lData.Int64Field);
     finally
@@ -2484,6 +2474,8 @@ end;
 {$ENDIF}
 
 end.
+
+
 
 
 

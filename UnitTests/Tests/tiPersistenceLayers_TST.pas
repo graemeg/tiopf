@@ -5,7 +5,7 @@ unit tiPersistenceLayers_TST;
 interface
 uses
   Classes
-  ,tiTestFramework              
+  ,tiTestFramework
   ,tiBOMsForTesting
   ,tiPersistenceLayers
   ,tiOPFTestManager
@@ -14,25 +14,22 @@ uses
 
 type
 
-  TTestPersistenceLayers = class(TtiOPFTestCase)
+  TTestPersistenceLayers = class(TtiTestCaseWithPersistenceLayer)
   private
     procedure LoadAllPersistenceLayers;
     procedure CheckLoadedPerLayerCount;
   protected
     procedure   SetUp; override;
     procedure   TearDown; override;
-  public
-    constructor Create {$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   published
     procedure   ConfirmStaticLinking;
-    procedure   DefaultPerLayerName;
+    procedure   DefaultPersistenceLayerName;
     procedure   FindByLayerName;
     procedure   FindByTIDatabaseClass;
     procedure   IsLoaded;
     procedure   CreateTIQuery_LayerName;
     procedure   CreateTIQuery_DatabaseClass;
     procedure   CreateTIDatabase;
-    procedure   CreateTIDBConnectionPoolData;
 
   end;
 
@@ -56,18 +53,11 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestPersistenceLayers);
+  tiRegisterNonPersistentTest(TTestPersistenceLayers);
 end;
 
 
 { TTestPersistenceLayers }
-
-constructor TTestPersistenceLayers.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
-begin
-  inherited;
-  SetupTasks := [];
-end;
-
 
 procedure TTestPersistenceLayers.CreateTIDatabase;
 var
@@ -79,37 +69,14 @@ begin
   CheckLoadedPerLayerCount;
   for i := 0 to gTIOPFTestManager.Count - 1 do
   begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PerLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(LPersistenceLayerName);
+    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
     LDatabase := gTIOPFManager.PersistenceLayers.CreateTIDatabase(LPersistenceLayerName);
     try
       CheckNotNull(LDatabase, 'Failed creating TtiDatabase for <' + LPersistenceLayerName + '>');
       CheckIs(LDatabase, LPersistenceLayer.DatabaseClass, 'Database wrong class');
     finally
       LDatabase.Free;
-    end;
-  end;
-end;
-
-
-procedure TTestPersistenceLayers.CreateTIDBConnectionPoolData;
-var
-  i            : integer;
-  LPersistenceLayerName : string;
-  LPersistenceLayer : TtiPersistenceLayer ;
-  LDBConnectionPoolData : TtiDBConnectionPoolDataAbs;
-begin
-  CheckLoadedPerLayerCount;
-  for i := 0 to gTIOPFTestManager.Count - 1 do
-  begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PerLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(LPersistenceLayerName);
-    LDBConnectionPoolData := gTIOPFManager.PersistenceLayers.CreateTIDBConnectionPoolData(LPersistenceLayerName);
-    try
-      CheckNotNull(LDBConnectionPoolData, 'Failed creating TtiDBConnectionPoolData for <' + LPersistenceLayerName + '>');
-      CheckIs(LDBConnectionPoolData, LPersistenceLayer.DBConnectionPoolDataClass, 'DBConnectionPoolData wrong class');
-    finally
-      LDBConnectionPoolData.Free;
     end;
   end;
 end;
@@ -125,8 +92,8 @@ begin
   CheckLoadedPerLayerCount;
   for i := 0 to gTIOPFTestManager.Count - 1 do
   begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PerLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(LPersistenceLayerName);
+    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
     LQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayer.DatabaseClass);
     try
       CheckNotNull(LQuery, 'Failed creating TtiQuery for <' + LPersistenceLayerName + '>');
@@ -141,18 +108,18 @@ end;
 procedure TTestPersistenceLayers.CreateTIQuery_LayerName;
 var
   i : integer;
-  LPerLayerName   : string;
+  LPersistenceLayerName   : string;
   LPersistenceLayer : TtiPersistenceLayer ;
   lQuery : TtiQuery;
 begin
   CheckLoadedPerLayerCount;
   for i := 0 to gTIOPFTestManager.Count - 1 do
   begin
-    LPerLayerName := gTIOPFTestManager.Items[i].PerLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(LPerLayerName);
-    lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(LPerLayerName);
+    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayerName);
     try
-      CheckNotNull(lQuery, 'Failed creating TtiQuery for <' + LPerLayerName + '>');
+      CheckNotNull(lQuery, 'Failed creating TtiQuery for <' + LPersistenceLayerName + '>');
       CheckIs(lQuery, LPersistenceLayer.QueryClass, 'Query wrong class');
     finally
       lQuery.Free;
@@ -164,16 +131,16 @@ end;
 procedure TTestPersistenceLayers.FindByLayerName;
 var
   i : integer;
-  LPerLayerName   : string;
+  LPersistenceLayerName   : string;
   LPersistenceLayer : TtiPersistenceLayer ;
 begin
   CheckLoadedPerLayerCount;
   for i := 0 to gTIOPFTestManager.Count - 1 do
   begin
-    LPerLayerName := gTIOPFTestManager.Items[i].PerLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(LPerLayerName);
-    CheckNotNull(LPersistenceLayer, 'Can not find PerLayerName <' + LPerLayerName +'>');
-    CheckEquals(LPersistenceLayer.PersistenceLayerName, LPerLayerName, 'LPersistenceLayer.LayerName <> ' + LPerLayerName);
+    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    CheckNotNull(LPersistenceLayer, 'Can not find PersistenceLayerName <' + LPersistenceLayerName +'>');
+    CheckEquals(LPersistenceLayer.PersistenceLayerName, LPersistenceLayerName, 'LPersistenceLayer.LayerName <> ' + LPersistenceLayerName);
   end;
 end;
 
@@ -181,7 +148,7 @@ end;
 procedure TTestPersistenceLayers.FindByTIDatabaseClass;
 var
   i : integer;
-  LPerLayerName   : string;
+  LPersistenceLayerName   : string;
   LPersistenceLayer : TtiPersistenceLayer ;
   LPersistenceLayer1 : TtiPersistenceLayer ;
   LClass : TtiDatabaseClass;
@@ -189,13 +156,13 @@ begin
   CheckLoadedPerLayerCount;
   for i := 0 to gTIOPFTestManager.Count - 1 do
   begin
-    LPerLayerName := gTIOPFTestManager.Items[i].PerLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(LPerLayerName);
-    CheckNotNull(LPersistenceLayer, 'Can not find PerLayerName <' + LPerLayerName +'>');
-    CheckEquals(LPersistenceLayer.PersistenceLayerName, LPerLayerName, 'LPersistenceLayer.LayerName <> ' + LPerLayerName);
+    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    CheckNotNull(LPersistenceLayer, 'Can not find PersistenceLayerName <' + LPersistenceLayerName +'>');
+    CheckEquals(LPersistenceLayer.PersistenceLayerName, LPersistenceLayerName, 'LPersistenceLayer.LayerName <> ' + LPersistenceLayerName);
     LClass := LPersistenceLayer.DatabaseClass;
     LPersistenceLayer1 := gTIOPFManager.PersistenceLayers.FindByTIDatabaseClass(LClass);
-    CheckNotNull(LPersistenceLayer1, 'Can not find PerLayerName by class <' + LClass.ClassName + '>');
+    CheckNotNull(LPersistenceLayer1, 'Can not find PersistenceLayerName by class <' + LClass.ClassName + '>');
     CheckSame(LPersistenceLayer, LPersistenceLayer1);
   end;
 end;
@@ -204,13 +171,13 @@ end;
 procedure TTestPersistenceLayers.IsLoaded;
 var
   i : integer;
-  LPerLayerName   : string;
+  LPersistenceLayerName   : string;
 begin
   CheckLoadedPerLayerCount;
   for i := 0 to gTIOPFTestManager.Count - 1 do
   begin
-    LPerLayerName := gTIOPFTestManager.Items[i].PerLayerName;
-    Check(gTIOPFManager.PersistenceLayers.IsLoaded(LPerLayerName), 'Failed for <' + LPerLayerName + '>');
+    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
+    Check(gTIOPFManager.PersistenceLayers.IsLoaded(LPersistenceLayerName), 'Failed for <' + LPersistenceLayerName + '>');
   end;
 end;
 
@@ -253,32 +220,33 @@ begin
   inherited;
 end;
 
-procedure TTestPersistenceLayers.DefaultPerLayerName;
+procedure TTestPersistenceLayers.DefaultPersistenceLayerName;
 var
-  LDefaultPerLayerName: string;
+  LDefaultPersistenceLayerName: string;
   i: integer;
-  LPerLayerName: string;
+  LPersistenceLayerName: string;
   LPersistenceLayer: TtiPersistenceLayer;
 begin
-  LDefaultPerLayerName:= gTIOPFManager.DefaultPerLayerName;
+  LDefaultPersistenceLayerName:= gTIOPFManager.DefaultPersistenceLayerName;
   try
   for i := 0 to gTIOPFTestManager.Count - 1 do
   begin
-    LPerLayerName := gTIOPFTestManager.Items[i].PerLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPerLayerName(LPerLayerName);
-    gTIOPFManager.DefaultPerLayerName:= LPerLayerName;
+    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    gTIOPFManager.DefaultPersistenceLayerName:= LPersistenceLayerName;
     CheckNotNull(gTIOPFManager.DefaultPerLayer);
     CheckSame(LPersistenceLayer, gTIOPFManager.DefaultPerLayer);
-    CheckEquals(LPerLayerName, gTIOPFManager.DefaultPerLayerName);
-    CheckEquals(LPerLayerName, gTIOPFManager.DefaultPerLayer.PersistenceLayerName);
+    CheckEquals(LPersistenceLayerName, gTIOPFManager.DefaultPersistenceLayerName);
+    CheckEquals(LPersistenceLayerName, gTIOPFManager.DefaultPerLayer.PersistenceLayerName);
   end;
   finally
-    gTIOPFManager.DefaultPerLayerName:= LDefaultPerLayerName;
+    gTIOPFManager.DefaultPersistenceLayerName:= LDefaultPersistenceLayerName;
   end;
-  CheckEquals(LDefaultPerLayerName, gTIOPFManager.DefaultPerLayerName);
+  CheckEquals(LDefaultPersistenceLayerName, gTIOPFManager.DefaultPersistenceLayerName);
 end;
 
 
 end.
+
 
 

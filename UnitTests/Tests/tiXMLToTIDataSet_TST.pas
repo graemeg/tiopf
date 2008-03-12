@@ -189,7 +189,7 @@ const
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIXMLtoTIDataSet);
+  tiRegisterNonPersistentTest(TTestTIXMLtoTIDataSet);
 end;
 
 

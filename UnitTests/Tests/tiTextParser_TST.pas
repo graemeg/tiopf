@@ -87,7 +87,7 @@ const
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TtiTestParserTests);
+  tiRegisterNonPersistentTest(TtiTestParserTests);
 end;
 
 

@@ -79,7 +79,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTICriteria);
+  tiRegisterNonPersistentTest(TTestTICriteria);
 end;
 
 { TTestTICriteria }

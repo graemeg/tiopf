@@ -3,87 +3,82 @@ unit tiOPFCSV_TST;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiQuery_TST
-  ,tiQueryNonSQL_TST
-  ,tiAutoMap_TST
-  ,tiOID_tst
- ;
+  tiQuery_TST,
+  tiQueryNonSQL_TST,
+  tiAutoMap_TST,
+  tiOID_TST;
 
 type
 
   TTestTIPersistenceLayersCSV = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseCSV = class(TTestTIDatabase)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
   end;
 
   TTestTIQueryCSV = class(TTestTIQueryNonSQL)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 
   TTestTIAutoMapOperationCSV = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentGUIDCSV = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerCSV = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 procedure RegisterTests;
 
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiUtils
-  ,tiTestDependencies
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
- ;
+  tiOPFTestManager,
+  SysUtils,
+  tiUtils,
+  tiTestDependencies,
+  FileCtrl;
 
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistCSV) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIPersistenceLayersCSV.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIDatabaseCSV.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIQueryCSV.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIOIDPersistentGUIDCSV.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIOIDPersistentIntegerCSV.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistCSV), TTestTIAutoMapOperationCSV.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersCSV);
+  tiRegisterPersistenceTest(TTestTIDatabaseCSV);
+  tiRegisterPersistenceTest(TTestTIQueryCSV);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDCSV);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerCSV);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationCSV);
 end;
 
 { TtiOPFTestSetupDataCSV }
 
 procedure TTestTIDatabaseCSV.CreateDatabase;
 var
-  lDir : string;
+  lDir: string;
 begin
   lDir := PerFrameworkSetup.DBName;
   tiForceRemoveDir(lDir);
@@ -94,65 +89,59 @@ end;
 
 procedure TTestTIDatabaseCSV.DatabaseExists;
 var
-  lDir : string;
+  lDir: string;
 begin
   lDir := PerFrameworkSetup.DBName;
   tiForceRemoveDir(lDir);
   Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
-        'FDatabaseClass.DatabaseExists()=true when it should =false');
+  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=true when it should =false');
   ForceDirectories(lDir);
   Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
-        'FDatabaseClass.DatabaseExists()=false when it should =true');
+  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 
-procedure TTestTIDatabaseCSV.SetUp;
+class function TTestTIDatabaseCSV.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
-  inherited;
+  Result := cTIPersistCSV;
 end;
 
 { TTestTIPersistenceLayersCSV }
 
-procedure TTestTIPersistenceLayersCSV.SetUp;
+class function TTestTIPersistenceLayersCSV.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
-  inherited;
+  Result := cTIPersistCSV;
 end;
 
 { TTestTIQueryCSV }
 
-procedure TTestTIQueryCSV.SetUp;
+class function TTestTIQueryCSV.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
-  inherited;
+  Result := cTIPersistCSV;
 end;
 
 { TTestTIAutoMapOperationCSV }
 
-procedure TTestTIAutoMapOperationCSV.SetUp;
+class function TTestTIAutoMapOperationCSV.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
-  inherited;
-end;
-
-{ TTestTIOIDPersistentIntegerCSV }
-
-procedure TTestTIOIDPersistentIntegerCSV.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
-  inherited;
+  Result := cTIPersistCSV;
 end;
 
 { TTestTIOIDPersistentGUIDCSV }
 
-procedure TTestTIOIDPersistentGUIDCSV.SetUp;
+class function TTestTIOIDPersistentGUIDCSV.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistCSV);
-  inherited;
+  Result := cTIPersistCSV;
+end;
+
+{ TTestTIOIDPersistentIntegerCSV }
+
+class function TTestTIOIDPersistentIntegerCSV.PersistenceLayerName: string;
+begin
+  Result := cTIPersistCSV;
 end;
 
 end.
-
-

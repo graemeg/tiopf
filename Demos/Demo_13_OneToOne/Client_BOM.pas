@@ -46,7 +46,7 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-    constructor CreateNew(const pDatabaseName: string = ''; const pPerLayerName: string = ''); override;
+    constructor CreateNew(const pDatabaseName: string = ''; const pPersistenceLayerName: string = ''); override;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
     procedure   Read; override;
     procedure   Save; override;
@@ -119,10 +119,10 @@ begin
 end;
 
 
-constructor TClient.CreateNew(const pDatabaseName: string = ''; const pPerLayerName: string = '');
+constructor TClient.CreateNew(const pDatabaseName: string = ''; const pPersistenceLayerName: string = '');
 begin
   inherited;
-  FAdrs.OIDGenerator.AssignNextOID(FAdrs.OID, pDatabaseName, pPerLayerName);
+  FAdrs.OIDGenerator.AssignNextOID(FAdrs.OID, pDatabaseName, pPersistenceLayerName);
   FAdrs.ObjectState:= posCreate;
 end;
 

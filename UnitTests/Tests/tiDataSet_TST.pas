@@ -61,7 +61,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTiDataset);
+  tiRegisterNonPersistentTest(TTestTiDataset);
 end;
 
 const
@@ -116,7 +116,7 @@ end;
 procedure TTestTiDataset.Setup;
 begin
   inherited;
-//  gTIOPFManager.DefaultPerLayerName:= 'XML';
+//  gTIOPFManager.DefaultPersistenceLayerName:= 'XML';
 //  gTIOPFManager.ConnectDatabase('dbdemos.xml', '', '');
   FList := TtiObjectList.Create;
   FDataset := TtiDataset.Create(nil);

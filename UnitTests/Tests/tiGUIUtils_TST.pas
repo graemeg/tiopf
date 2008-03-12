@@ -30,7 +30,7 @@ uses
   
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIGUIUtils);
+  tiRegisterNonPersistentTest(TTestTIGUIUtils);
 end;
 
 procedure TTestTIGUIUtils.TearDown;

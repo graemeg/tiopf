@@ -100,7 +100,7 @@ type
     constructor Create; override;
     destructor  Destroy; override;
     procedure   Clear;
-    procedure   Read(const pDBConnectionName: string; pPerLayerName: string = ''); override;
+    procedure   Read(const pDBConnectionName: string; pPersistenceLayerName: string = ''); override;
     procedure   FindAllLike(const pLike: string; const pList: TList);
   end;
 
@@ -891,11 +891,11 @@ begin
 //    FAdrsType:= nil;
 end;
 
-procedure TAdrsBook.Read(const pDBConnectionName: string; pPerLayerName: string = '');
+procedure TAdrsBook.Read(const pDBConnectionName: string; pPersistenceLayerName: string = '');
 begin
-  gTIOPFManager.Read(  AdrsTypes, pDBConnectionName, pPerLayerName);
-  gTIOPFManager.ReadPK(Self, pDBConnectionName, pPerLayerName);
-  gTIOPFManager.Read(  Self, pDBConnectionName, pPerLayerName);
+  gTIOPFManager.Read(  AdrsTypes, pDBConnectionName, pPersistenceLayerName);
+  gTIOPFManager.ReadPK(Self, pDBConnectionName, pPersistenceLayerName);
+  gTIOPFManager.Read(  Self, pDBConnectionName, pPersistenceLayerName);
 end;
 
 procedure TAdrsBook.SetDeleted(const Value: boolean);

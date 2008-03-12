@@ -43,7 +43,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTITokenLibrary);
+  tiRegisterNonPersistentTest(TTestTITokenLibrary);
 end;
 
 

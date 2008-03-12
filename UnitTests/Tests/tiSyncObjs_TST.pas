@@ -48,7 +48,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTISyncObjs);
+  tiRegisterNonPersistentTest(TTestTISyncObjs);
 end;
 
 

@@ -74,7 +74,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTesttiRTTI);
+  tiRegisterNonPersistentTest(TTesttiRTTI);
 end;
 
 procedure TTesttiRTTI.SetProperty_Simple;

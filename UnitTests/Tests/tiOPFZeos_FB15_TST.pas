@@ -3,51 +3,51 @@ unit tiOPFZeos_FB15_TST;
 {$I tiDefines.inc}
 
 interface
-uses
-   tiQuery_TST
-  ,tiQuerySQL_TST
-  ,tiAutoMap_TST
-  ,tiOID_TST
- ;
 
+uses
+  tiQuery_TST,
+  tiQuerySQL_TST,
+  tiAutoMap_TST,
+  tiOID_TST;
 
 type
 
   TTestTIPersistenceLayersZeos = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 
   TTestTIDatabaseZeos = class(TTestTIDatabase)
   protected
-    procedure SetUp; override;
     procedure CreateDatabase; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
   end;
 
 
   TTestTIQueryZeos = class(TTestTIQuerySQL)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 
   TTestTIAutoMapOperationZeos = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 
   TTestTIOIDPersistentGUIDZeos = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerZeos = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 
@@ -55,38 +55,35 @@ procedure RegisterTests;
 
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiUtils
-  ,tiTestDependencies
- ;
-  
+  tiOPFTestManager,
+  SysUtils,
+  tiUtils,
+  tiTestDependencies;
+
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistZeosFB15) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIPersistenceLayersZeos.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIDatabaseZeos.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIQueryZeos.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDPersistentGUIDZeos.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIOIDPersistentIntegerZeos.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistZeosFB15), TTestTIAutoMapOperationZeos.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersZeos);
+  tiRegisterPersistenceTest(TTestTIDatabaseZeos);
+  tiRegisterPersistenceTest(TTestTIQueryZeos);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDZeos);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerZeos);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationZeos);
 end;
 
 { TTestTIDatabaseZeos }
 
 procedure TTestTIDatabaseZeos.CreateDatabase;
 var
-  lDB : string;
-  lDBExists : boolean;
+  lDB:       string;
+  lDBExists: boolean;
 begin
   lDB := ExpandFileName(PerFrameworkSetup.DBName);
   lDB := tiSwapExt(lDB, 'tmp');
@@ -106,9 +103,9 @@ begin
 
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      lDB,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    lDB,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
 
   Check(lDBExists, 'Database does not exist when it should do');
   tiDeleteFile(lDB);
@@ -116,72 +113,65 @@ end;
 
 procedure TTestTIDatabaseZeos.DatabaseExists;
 var
-  lDB : string;
-  lDBExists : boolean;
+  lDB:       string;
+  lDBExists: boolean;
 begin
   Exit;
-  lDB := PerFrameworkSetup.DBName;
+  lDB       := PerFrameworkSetup.DBName;
   Check(FileExists(lDB), 'Database file not found so test can not be performed');
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      PerFrameworkSetup.DBName,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    PerFrameworkSetup.DBName,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
   Check(lDBExists, 'DBExists returned false when it should return true');
   Check(not FileExists(lDB + 'Tmp'), 'Database file found so test can not be performed');
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      PerFrameworkSetup.DBName + 'Tmp',
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    PerFrameworkSetup.DBName + 'Tmp',
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
   Check(not lDBExists, 'DBExists returned true when it should return false');
 end;
 
-procedure TTestTIDatabaseZeos.SetUp;
+class function TTestTIDatabaseZeos.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
-  inherited;
+  Result := cTIPersistZeosFB15;
 end;
 
 { TTestTIPersistenceLayersZeos }
 
-procedure TTestTIPersistenceLayersZeos.SetUp;
+class function TTestTIPersistenceLayersZeos.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
-  inherited;
+  Result := cTIPersistZeosFB15;
 end;
 
 { TTestTIQueryZeos }
 
-procedure TTestTIQueryZeos.SetUp;
+class function TTestTIQueryZeos.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
-  inherited;
+  Result := cTIPersistZeosFB15;
 end;
-
 
 { TTestTIAutoMapOperationZeos }
 
-procedure TTestTIAutoMapOperationZeos.SetUp;
+class function TTestTIAutoMapOperationZeos.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
-  inherited;
-end;
-
-{ TTestTIOIDManagerZeos }
-
-procedure TTestTIOIDPersistentIntegerZeos.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
-  inherited;
+  Result := cTIPersistZeosFB15;
 end;
 
 { TTestTIOIDPersistentGUIDZeos }
 
-procedure TTestTIOIDPersistentGUIDZeos.SetUp;
+class function TTestTIOIDPersistentGUIDZeos.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistZeosFB15);
-  inherited;
+  Result := cTIPersistZeosFB15;
+end;
+
+{ TTestTIOIDPersistentIntegerZeos }
+
+class function TTestTIOIDPersistentIntegerZeos.PersistenceLayerName: string;
+begin
+  Result := cTIPersistZeosFB15;
 end;
 
 end.

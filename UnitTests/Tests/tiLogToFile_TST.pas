@@ -40,7 +40,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TestTtiLogToFile);
+  tiRegisterNonPersistentTest(TestTtiLogToFile);
 end;
 
 type

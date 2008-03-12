@@ -150,7 +150,7 @@ const
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIHTTP);
+  tiRegisterNonPersistentTest(TTestTIHTTP);
 end;
 
 { TTestTIHTTP }

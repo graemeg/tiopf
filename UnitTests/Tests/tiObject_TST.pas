@@ -285,8 +285,8 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIObject);
-  RegisterNonPersistentTest(TTestTIObjectList);
+  tiRegisterNonPersistentTest(TTestTIObject);
+  tiRegisterNonPersistentTest(TTestTIObjectList);
 end;
 
 

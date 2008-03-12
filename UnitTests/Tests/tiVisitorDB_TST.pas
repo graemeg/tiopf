@@ -48,7 +48,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIVisitorDB);
+  tiRegisterNonPersistentTest(TTestTIVisitorDB);
 end;
 
 
@@ -102,7 +102,7 @@ begin
     end;
 
     tiQueryXMLLight.RegisterPersistenceLayer(LM.PersistenceLayers);
-    CheckEquals(cTIPersistXMLLight, LM.DefaultPerLayerName);
+    CheckEquals(cTIPersistXMLLight, LM.DefaultPersistenceLayerName);
 
     try
       LVCC.SetDatabaseAndPersistenceLayerNames(cTIPersistXMLLight, '');

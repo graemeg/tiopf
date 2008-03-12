@@ -3,104 +3,99 @@ unit tiOPFDBISASM4_TST;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiQuery_TST
-  ,tiQuerySQL_TST
-  ,tiAutoMap_TST
-  ,tiAutomapCriteria_TST
-  ,tiOID_tst
- ;
+  tiQuery_TST,
+  tiQuerySQL_TST,
+  tiAutoMap_TST,
+  tiAutomapCriteria_TST,
+  tiOID_TST;
 
 type
 
   TTestTIPersistenceLayersDBISAM4 = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseDBISAM4 = class(TTestTIDatabase)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
   end;
 
   TTestTIQueryDBISAM4 = class(TTestTIQuerySQL)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     // Testing of stream support under construction
     // procedure ParamAsStream; override;
   end;
 
   TTestTIAutoMapOperationDBISAM4 = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestAutomappingCriteriaDBISAM4 = class(TTestAutomappingCriteria)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentGUIDDBISAM4 = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerDBISAM4 = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 procedure RegisterTests;
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiUtils
-  ,tiTestDependencies
+  tiOPFTestManager,
+  SysUtils,
+  tiUtils,
+  tiTestDependencies,
   {$IFDEF DELPHI5}
-  ,FileCtrl
+  FileCtrl,
   {$ENDIF}
-//  ,tiLog
-//  ,tiQuery
-  ,tiTestFramework
-  ;
+  tiTestFramework;
 
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistDBISAM4) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIPersistenceLayersDBISAM4.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIDatabaseDBISAM4.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIQueryDBISAM4.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIOIDPersistentIntegerDBISAM4.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestTIAutoMapOperationDBISAM4.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistDBISAM4), TTestAutomappingCriteriaDBISAM4.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersDBISAM4);
+  tiRegisterPersistenceTest(TTestTIDatabaseDBISAM4);
+  tiRegisterPersistenceTest(TTestTIQueryDBISAM4);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerDBISAM4);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationDBISAM4);
+  tiRegisterPersistenceTest(TTestAutomappingCriteriaDBISAM4);
 end;
 
 { TtiOPFTestSetupDataDBISAM4 }
 
 procedure TTestTIDatabaseDBISAM4.CreateDatabase;
 var
-  lDir : string;
+  lDir: string;
 begin
   lDir := tiGetTempFile('');
   try
-  tiForceRemoveDir(lDir);
-  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  FDatabaseClass.CreateDatabase(lDir, 'null', 'null');
-  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
+    tiForceRemoveDir(lDir);
+    Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
+    FDatabaseClass.CreateDatabase(lDir, 'null', 'null');
+    Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
   finally
     tiForceRemoveDir(lDir);
   end;
@@ -108,77 +103,68 @@ end;
 
 procedure TTestTIDatabaseDBISAM4.DatabaseExists;
 var
-  lDir : string;
+  lDir: string;
 begin
   lDir := tiSwapExt(TempFileName, '');
   try
-  tiForceRemoveDir(lDir);
-  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
-        'FDatabaseClass.DatabaseExists()=true when it should =false');
-  ForceDirectories(lDir);
-  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
-        'FDatabaseClass.DatabaseExists()=false when it should =true');
+    tiForceRemoveDir(lDir);
+    Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
+    Check(not FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
+      'FDatabaseClass.DatabaseExists()=true when it should =false');
+    ForceDirectories(lDir);
+    Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
+    Check(FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
+      'FDatabaseClass.DatabaseExists()=false when it should =true');
   finally
     tiForceRemoveDir(lDir);
   end;
 end;
 
-procedure TTestTIDatabaseDBISAM4.SetUp;
+class function TTestTIDatabaseDBISAM4.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
-  inherited;
+  Result := cTIPersistDBISAM4;
 end;
-
-{ TtiOPFTestSetupDecoratorDBISAM4 }
 
 { TTestTIPersistenceLayersDBISAM4 }
 
-procedure TTestTIPersistenceLayersDBISAM4.SetUp;
+class function TTestTIPersistenceLayersDBISAM4.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
-  inherited;
-end;
-
-{ TTestTIAutoMapOperationDBISAM4 }
-
-procedure TTestTIAutoMapOperationDBISAM4.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
-  inherited;
-end;
-
-{ TTestTIOIDManagerDBISAM4 }
-
-procedure TTestTIOIDPersistentIntegerDBISAM4.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
-  inherited;
+  Result := cTIPersistDBISAM4;
 end;
 
 { TTestTIQueryDBISAM4 }
 
-procedure TTestTIQueryDBISAM4.SetUp;
+class function TTestTIQueryDBISAM4.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
-  inherited;
+  Result := cTIPersistDBISAM4;
+end;
+
+{ TTestTIAutoMapOperationDBISAM4 }
+
+class function TTestTIAutoMapOperationDBISAM4.PersistenceLayerName: string;
+begin
+  Result := cTIPersistDBISAM4;
 end;
 
 { TTestAutomappingCriteriaDBISAM4 }
 
-procedure TTestAutomappingCriteriaDBISAM4.SetUp;
+class function TTestAutomappingCriteriaDBISAM4.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
-  inherited;
+  Result := cTIPersistDBISAM4;
 end;
 
 { TTestTIOIDPersistentGUIDDBISAM4 }
 
-procedure TTestTIOIDPersistentGUIDDBISAM4.SetUp;
+class function TTestTIOIDPersistentGUIDDBISAM4.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistDBISAM4);
-  inherited;
+  Result := cTIPersistDBISAM4;
+end;
+
+{ TTestTIOIDPersistentIntegerDBISAM4 }
+
+class function TTestTIOIDPersistentIntegerDBISAM4.PersistenceLayerName: string;
+begin
+  Result := cTIPersistDBISAM4;
 end;
 
 end.

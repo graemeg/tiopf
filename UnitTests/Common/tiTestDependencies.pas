@@ -18,12 +18,12 @@ uses
 type
   TtiTestDecoratorClass = class of TTestSetup;
 
-procedure RegisterTests;
-procedure RemoveUnSelectedPersistenceLayerSetups;
-procedure RemoveXMLLightIfNotRegistered;
-procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass); overload;
-function  PersistentSuiteName(APerLayerName: string): string;
-procedure RegisterExpectedTIOPFMemoryLeaks;
+procedure tiRegisterTests;
+procedure tiRemoveUnSelectedPersistenceLayerSetups;
+procedure tiRemoveXMLLightIfNotRegistered;
+procedure tiRegisterPersistenceTest(const ATestCaseClass: TtiTestCaseWithPersistenceLayerClass);
+procedure tiRegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass); overload;
+procedure tiRegisterExpectedTIOPFMemoryLeaks;
 
 
 implementation
@@ -42,14 +42,15 @@ uses
 
   ,tiBaseObject_TST
   ,tiUtils_TST
+  ,tiPersistenceLayers_TST
   ,tiObject_TST
   ,tiCompress_TST
   ,tiEncrypt_TST
   ,tiVisitor_TST
   ,tiVisitorDB_TST
   ,tiStreams_TST
-  ,tiThread_tst
-  ,tiPool_tst
+  ,tiThread_TST
+  ,tiPool_TST
   ,tiQueue_TST
   ,tiOID_TST
   ,tiLogToFile_TST
@@ -72,7 +73,7 @@ uses
   {$IFNDEF FPC}
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
-  ,tiWebServer_tst
+  ,tiWebServer_TST
   {$ENDIF}
 
   // Persistent test fixtures (in alpha order)
@@ -104,7 +105,7 @@ const
   cSuiteNamePersistentTests     = 'Persistent tests for [%s]';
 
 
-procedure RegisterTests;
+procedure tiRegisterTests;
 begin
 
 //  if not IsConsole then
@@ -116,16 +117,17 @@ begin
   tiBOMsForTesting.RegisterMappings; // Register the OO-DB Mappings to be tested
 
   // These are all the 'non persistence' tests
-  tiBaseObject_tst.RegisterTests;
+  tiBaseObject_TST.RegisterTests;
   tiUtils_TST.RegisterTests;
   tiRTTI_TST.RegisterTests;
+  tiPersistenceLayers_TST.RegisterTests;
   tiVisitor_TST.RegisterTests;
   tiVisitorDB_TST.RegisterTests;
-  tiObject_tst.RegisterTests;
+  tiObject_TST.RegisterTests;
   tiCompress_TST.RegisterTests;
   tiEncrypt_TST.RegisterTests;
   tiStreams_TST.RegisterTests;
-  tiThread_tst.RegisterTests;
+  tiThread_TST.RegisterTests;
   tiPool_TST.RegisterTests;
   tiQueue_Tst.RegisterTests;
   tiOID_TST.RegisterTests;
@@ -148,8 +150,8 @@ begin
   {$IFNDEF FPC}
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
-  tiWebServer_tst.RegisterTests;
-  {$IFDEF LINK_REMOTE} tiApplicationServer_tst.RegisterTests; {$ENDIF} // Work in progress
+  tiWebServer_TST.RegisterTests;
+  {$IFDEF LINK_REMOTE} tiApplicationServer_TST.RegisterTests; {$ENDIF} // Work in progress
   {$ENDIF}
 
   // Persistent test fixtures (in alpha order)
@@ -175,7 +177,7 @@ begin
   tiOPFAsqlite3_TST.RegisterTests;
 end;
 
-procedure RemoveUnSelectedPersistenceLayerSetups;
+procedure tiRemoveUnSelectedPersistenceLayerSetups;
 var
   i : integer;
 begin
@@ -184,7 +186,7 @@ begin
       GTIOPFTestManager.Delete(i);
 end;
 
-procedure RemoveXMLLightIfNotRegistered;
+procedure tiRemoveXMLLightIfNotRegistered;
 {$ifndef Link_XMLLight}
 var
   LPLTest: TtiOPFTestSetupData;
@@ -194,7 +196,7 @@ begin
   {$ifndef Link_XMLLight}
   if GTIOPFManager.PersistenceLayers.IsLoaded(cTIPersistXMLLight) then
   begin
-    LPLTest:= GTIOPFTestManager.FindByPerLayerName(cTIPersistXMLLight);
+    LPLTest:= GTIOPFTestManager.FindByPersistenceLayerName(cTIPersistXMLLight);
     if LPLTest<>nil then
     begin
       LIndex:= LPLTest.Index;
@@ -204,18 +206,26 @@ begin
   {$endif}
 end;
 
-procedure RegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
+procedure tiRegisterNonPersistentTest(ATestCaseClass: TtiTestCaseClass);
 begin
   if GTIOPFTestManager.TestNonPersistentClasses then
     RegisterTest(cSuiteNameNonPersistentTests, ATestCaseClass.Suite);
 end;
 
-function PersistentSuiteName(APerLayerName: string): string;
+procedure tiRegisterPersistenceTest(const ATestCaseClass: TtiTestCaseWithPersistenceLayerClass);
+var
+  LTestSuiteName: string;
+  LPersistenceLayerName: string;
 begin
-  Result := Format(cSuiteNamePersistentTests, [APerLayerName]);
+  LPersistenceLayerName:= ATestCaseClass.PersistenceLayerName;
+  if gTIOPFTestManager.ToRun(LPersistenceLayerName) then
+  begin
+    LTestSuiteName:= Format(cSuiteNamePersistentTests, [LPersistenceLayerName]);
+    RegisterTest(LTestSuiteName, ATestCaseClass.Suite);
+  end;
 end;
 
-procedure RegisterExpectedTIOPFMemoryLeaks;
+procedure tiRegisterExpectedTIOPFMemoryLeaks;
 begin
   {$IFNDEF FPC}
   FastMM4.RegisterExpectedMemoryLeak(TidThreadSafeInteger, 1);
@@ -224,6 +234,7 @@ begin
 end;
 
 end.
+
 
 
 

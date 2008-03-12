@@ -53,7 +53,7 @@ const
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIEncrypt);
+  tiRegisterNonPersistentTest(TTestTIEncrypt);
 end;
 
 

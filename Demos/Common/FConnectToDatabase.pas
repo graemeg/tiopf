@@ -33,7 +33,7 @@ uses
 procedure TFormConnectToDatabase.Button1Click(Sender: TObject);
 begin
   try
-    gTIOPFManager.DefaultPerLayerName:= PersistenceLayerName;
+    gTIOPFManager.DefaultPersistenceLayerName:= PersistenceLayerName;
     if not DatabaseExists then
       CreateDatabase;
     ConnectToDatabase;

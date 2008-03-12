@@ -3,90 +3,87 @@ unit tiOPFIBX_TST;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiQuery_TST
-  ,tiQuerySQL_TST
-  ,tiAutoMap_TST
-  ,tiOID_tst
-  ,tiAutomapCriteria_TST
- ;
+  tiQuery_TST,
+  tiQuerySQL_TST,
+  tiAutoMap_TST,
+  tiOID_TST,
+  tiAutomapCriteria_TST;
 
 type
 
   TTestTIPersistenceLayersIBX = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseIBX = class(TTestTIDatabase)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
   end;
 
   TTestTIQueryIBX = class(TTestTIQuerySQL)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIAutoMapOperationIBX = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestAutomappingCriteriaIBX = class(TTestAutomappingCriteria)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentGUIDIBX = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerIBX = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 procedure RegisterTests;
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiUtils
-  ,tiTestDependencies
- ;
-  
+  tiOPFTestManager,
+  SysUtils,
+  tiUtils,
+  tiTestDependencies;
+
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistIBX) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIPersistenceLayersIBX.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIDatabaseIBX.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIQueryIBX.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIOIDPersistentGUIDIBX.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIOIDPersistentIntegerIBX.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestTIAutoMapOperationIBX.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistIBX), TTestAutomappingCriteriaIBX.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersIBX);
+  tiRegisterPersistenceTest(TTestTIDatabaseIBX);
+  tiRegisterPersistenceTest(TTestTIQueryIBX);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDIBX);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerIBX);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationIBX);
+  tiRegisterPersistenceTest(TTestAutomappingCriteriaIBX);
 end;
 
 { TTestTIDatabaseIBX }
 
 procedure TTestTIDatabaseIBX.CreateDatabase;
 var
-  lDB : string;
-  lDBExists : boolean;
+  lDB:       string;
+  lDBExists: boolean;
 begin
   lDB := ExpandFileName(PerFrameworkSetup.DBName);
   lDB := tiSwapExt(lDB, 'tmp');
@@ -106,9 +103,9 @@ begin
 
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      lDB,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    lDB,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
 
   Check(lDBExists, 'Database does not exist when it should do');
   tiDeleteFile(lDB);
@@ -116,79 +113,72 @@ end;
 
 procedure TTestTIDatabaseIBX.DatabaseExists;
 var
-  lDB : string;
-  lDBExists : boolean;
+  lDB:       string;
+  lDBExists: boolean;
 begin
   SetAllowedLeakArray([504]);
-  lDB := PerFrameworkSetup.DBName;
+  lDB       := PerFrameworkSetup.DBName;
   Check(FileExists(lDB), 'Database file not found so test can not be performed');
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      PerFrameworkSetup.DBName,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    PerFrameworkSetup.DBName,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
   Check(lDBExists, 'DBExists returned false when it should return true');
   Check(not FileExists(lDB + 'Tmp'), 'Database file found so test can not be performed');
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      PerFrameworkSetup.DBName + 'Tmp',
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    PerFrameworkSetup.DBName + 'Tmp',
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
   Check(not lDBExists, 'DBExists returned true when it should return false');
 end;
 
-procedure TTestTIDatabaseIBX.SetUp;
+class function TTestTIDatabaseIBX.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
-  inherited;
+  Result := cTIPersistIBX;
 end;
 
 { TTestTIPersistenceLayersIBX }
 
-procedure TTestTIPersistenceLayersIBX.SetUp;
+class function TTestTIPersistenceLayersIBX.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
-  inherited;
+  Result := cTIPersistIBX;
 end;
 
 { TTestTIQueryIBX }
 
-procedure TTestTIQueryIBX.SetUp;
+class function TTestTIQueryIBX.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
-  inherited;
+  Result := cTIPersistIBX;
 end;
 
 { TTestTIAutoMapOperationIBX }
 
-procedure TTestTIAutoMapOperationIBX.SetUp;
+class function TTestTIAutoMapOperationIBX.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
-  inherited;
+  Result := cTIPersistIBX;
 end;
 
 { TTestAutomappingCriteriaIBX }
 
-procedure TTestAutomappingCriteriaIBX.SetUp;
+class function TTestAutomappingCriteriaIBX.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
-  inherited;
-end;
-
-{ TTestTIOIDPersistentIntegerIBX }
-
-procedure TTestTIOIDPersistentIntegerIBX.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
-  inherited;
+  Result := cTIPersistIBX;
 end;
 
 { TTestTIOIDPersistentGUIDIBX }
 
-procedure TTestTIOIDPersistentGUIDIBX.SetUp;
+class function TTestTIOIDPersistentGUIDIBX.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistIBX);
-  inherited;
+  Result := cTIPersistIBX;
+end;
+
+{ TTestTIOIDPersistentIntegerIBX }
+
+class function TTestTIOIDPersistentIntegerIBX.PersistenceLayerName: string;
+begin
+  Result := cTIPersistIBX;
 end;
 
 end.

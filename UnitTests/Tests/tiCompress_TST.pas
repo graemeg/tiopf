@@ -50,7 +50,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTICompress);
+  tiRegisterNonPersistentTest(TTestTICompress);
 end;
 
 { TTestTICompress }

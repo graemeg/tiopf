@@ -77,7 +77,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTextParserStructCSV);
+  tiRegisterNonPersistentTest(TTestTextParserStructCSV);
 end;
 
 

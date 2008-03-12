@@ -1,4 +1,4 @@
-unit tiWebServer_tst;
+unit tiWebServer_TST;
 
 {$I tiDefines.inc}
 
@@ -77,9 +77,9 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIWebServerClientConnectionDetails);
-  RegisterNonPersistentTest(TTestTIWebServer);
-  RegisterNonPersistentTest(TtestTICGIParams);
+  tiRegisterNonPersistentTest(TTestTIWebServerClientConnectionDetails);
+  tiRegisterNonPersistentTest(TTestTIWebServer);
+  tiRegisterNonPersistentTest(TtestTICGIParams);
 end;
 
 const

@@ -3,98 +3,90 @@ unit tiOPFAsqlite3_TST;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiQuery_TST
-  ,tiQuerySQL_TST
-  ,tiAutoMap_TST
-  ,tiAutomapCriteria_TST
-  ,tiOID_tst
- ;
+  tiQuery_TST,
+  tiQuerySQL_TST,
+  tiAutoMap_TST,
+  tiAutomapCriteria_TST,
+  tiOID_TST;
 
 type
 
   TTestTIPersistenceLayersAsqlite3 = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseAsqlite3 = class(TTestTIDatabase)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
   end;
 
   TTestTIQueryAsqlite3 = class(TTestTIQuerySQL)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     // Testing of stream support under construction
     // procedure ParamAsStream; override;
   end;
 
   TTestTIAutoMapOperationAsqlite3 = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestAutomappingCriteriaAsqlite3 = class(TTestAutomappingCriteria)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentGUIDAsqlite3 = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerAsqlite3 = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 procedure RegisterTests;
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiUtils
-  ,tiTestDependencies
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
-//  ,tiLog
-//  ,tiQuery
-  , tiTestFramework;
+  tiOPFTestManager,
+  SysUtils,
+  tiUtils,
+  tiTestDependencies,
+  FileCtrl,
+  tiTestFramework;
 
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistAsqlite3) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIPersistenceLayersAsqlite3.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIDatabaseAsqlite3.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIQueryAsqlite3.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIOIDPersistentGUIDAsqlite3.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIOIDPersistentIntegerAsqlite3.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestTIAutoMapOperationAsqlite3.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistAsqlite3), TTestAutomappingCriteriaAsqlite3.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersAsqlite3);
+  tiRegisterPersistenceTest(TTestTIDatabaseAsqlite3);
+  tiRegisterPersistenceTest(TTestTIQueryAsqlite3);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDAsqlite3);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerAsqlite3);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationAsqlite3);
+  tiRegisterPersistenceTest(TTestAutomappingCriteriaAsqlite3);
 end;
-
-{ TtiOPFTestSetupDataAsqlite3 }
 
 procedure TTestTIDatabaseAsqlite3.CreateDatabase;
 var
-  lDB : string;
-  lDBExists : boolean;
+  lDB:       string;
+  lDBExists: boolean;
 begin
   lDB := ExpandFileName(PerFrameworkSetup.DBName);
   lDB := tiSwapExt(lDB, 'tmp');
@@ -114,9 +106,9 @@ begin
 
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      lDB,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    lDB,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
 
   Check(lDBExists, 'Database does not exist when it should do');
   tiDeleteFile(lDB);
@@ -124,81 +116,72 @@ end;
 
 procedure TTestTIDatabaseAsqlite3.DatabaseExists;
 var
-  lDB : string;
-  lDBExists : boolean;
+  lDB:       string;
+  lDBExists: boolean;
 begin
-  lDB := PerFrameworkSetup.DBName;
+  lDB       := PerFrameworkSetup.DBName;
   Check(FileExists(lDB), 'Database file not found so test can not be performed');
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      PerFrameworkSetup.DBName,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    PerFrameworkSetup.DBName,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
   Check(lDBExists, 'DBExists returned false when it should return true');
   Check(not FileExists(lDB + 'Tmp'), 'Database file found so test can not be performed');
   lDBExists :=
     FDatabaseClass.DatabaseExists(
-      PerFrameworkSetup.DBName + 'Tmp',
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password);
+    PerFrameworkSetup.DBName + 'Tmp',
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
   Check(not lDBExists, 'DBExists returned true when it should return false');
 
 end;
 
-procedure TTestTIDatabaseAsqlite3.SetUp;
+class function TTestTIDatabaseAsqlite3.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
-  inherited;
+  Result := cTIPersistAsqlite3;
 end;
-
-{ TtiOPFTestSetupDecoratorAsqlite3 }
 
 { TTestTIPersistenceLayersAsqlite3 }
 
-procedure TTestTIPersistenceLayersAsqlite3.SetUp;
+class function TTestTIPersistenceLayersAsqlite3.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
-  inherited;
-end;
-
-{ TTestTIAutoMapOperationAsqlite3 }
-
-procedure TTestTIAutoMapOperationAsqlite3.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
-  inherited;
-end;
-
-{ TTestTIOIDManagerAsqlite3 }
-
-procedure TTestTIOIDPersistentIntegerAsqlite3.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
-  inherited;
+  Result := cTIPersistAsqlite3;
 end;
 
 { TTestTIQueryAsqlite3 }
 
-procedure TTestTIQueryAsqlite3.SetUp;
+class function TTestTIQueryAsqlite3.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
-  inherited;
+  Result := cTIPersistAsqlite3;
+end;
+
+{ TTestTIAutoMapOperationAsqlite3 }
+
+class function TTestTIAutoMapOperationAsqlite3.PersistenceLayerName: string;
+begin
+  Result := cTIPersistAsqlite3;
 end;
 
 { TTestAutomappingCriteriaAsqlite3 }
 
-procedure TTestAutomappingCriteriaAsqlite3.SetUp;
+class function TTestAutomappingCriteriaAsqlite3.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
-  inherited;
+  Result := cTIPersistAsqlite3;
 end;
 
 { TTestTIOIDPersistentGUIDAsqlite3 }
 
-procedure TTestTIOIDPersistentGUIDAsqlite3.SetUp;
+class function TTestTIOIDPersistentGUIDAsqlite3.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistAsqlite3);
-  inherited;
+  Result := cTIPersistAsqlite3;
+end;
+
+{ TTestTIOIDPersistentIntegerAsqlite3 }
+
+class function TTestTIOIDPersistentIntegerAsqlite3.PersistenceLayerName: string;
+begin
+  Result := cTIPersistAsqlite3;
 end;
 
 end.

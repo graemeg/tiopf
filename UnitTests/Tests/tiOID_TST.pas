@@ -15,7 +15,7 @@ uses
 type
 
   // Persistence TtiOID tests
-  TTestTIOIDPersistent = class(TtiOPFTestCaseWithDatabaseConnection)
+  TTestTIOIDPersistent = class(TtiTestCaseWithDatabaseConnection)
   protected
     FOIDGeneratorClass: TtiOIDGeneratorClass;
     FOIDList:           TStringList;
@@ -136,9 +136,9 @@ const
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIOIDInteger);
-  RegisterNonPersistentTest(TTestTIOIDString);
-  RegisterNonPersistentTest(TTestTIOIDGUID);
+  tiRegisterNonPersistentTest(TTestTIOIDInteger);
+  tiRegisterNonPersistentTest(TTestTIOIDString);
+  tiRegisterNonPersistentTest(TTestTIOIDGUID);
 end;
 
 
@@ -557,7 +557,7 @@ procedure TTestTIOIDPersistent.Setup;
 begin
   inherited;
   FOIDList := TStringList.Create;
-  GTIOPFManager.DefaultPerLayerName := PerFrameworkSetup.PerLayerName;
+  GTIOPFManager.DefaultPersistenceLayerName := PerFrameworkSetup.PersistenceLayerName;
   GTIOPFManager.DefaultDBConnectionName := PerFrameworkSetup.DBName;
 end;
 
@@ -667,7 +667,7 @@ begin
   LList       := TtiThreadList.Create(True);
   try
     for i := 0 to LNumThreads - 1 do
-      LList.Add(TtiOIDGeneratorThread.Create(FOIDGeneratorClass, i, CRepeatCount, DatabaseName, PerLayerName));
+      LList.Add(TtiOIDGeneratorThread.Create(FOIDGeneratorClass, i, CRepeatCount, DatabaseName, PersistenceLayerName));
     LList.ResumeAll;
     LList.WaitForAll;
     for i := 0 to LList.Count - 1 do
@@ -692,7 +692,7 @@ begin
       LOID := FOIDGeneratorClass.OIDClass.Create;
       try
         CheckEquals(LOID.NullOIDAsString, LOID.AsString);
-        LNextOIDGenerator.AssignNextOID(LOID, DatabaseName, PerLayerName);
+        LNextOIDGenerator.AssignNextOID(LOID, DatabaseName, PersistenceLayerName);
         CheckNotEquals(LOID.NullOIDAsString, LOID.AsString);
         TestThenAddOIDAsString(LOID.AsString);
       finally

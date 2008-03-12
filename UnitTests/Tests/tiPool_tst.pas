@@ -1,4 +1,4 @@
-unit tiPool_tst;
+unit tiPool_TST;
 
 {$I tiDefines.inc}
 
@@ -77,7 +77,7 @@ const
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTiPool);
+  tiRegisterNonPersistentTest(TTestTiPool);
 end;
 
 

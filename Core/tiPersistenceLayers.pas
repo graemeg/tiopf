@@ -37,8 +37,8 @@ type
     function    PackageIDToPackageName(const APackageID: string): TFileName;
     function    GetDefaultPerLayer: TtiPersistenceLayer;
     procedure   SetDefaultPerLayer(const AValue: TtiPersistenceLayer);
-    function    GetDefaultPerLayerName: string;
-    procedure   SetDefaultPerLayerName(const AValue: string);
+    function    GetDefaultPersistenceLayerName: string;
+    procedure   SetDefaultPersistenceLayerName(const AValue: string);
   protected
     function    GetItems(i: integer): TtiPersistenceLayer; reintroduce;
     procedure   SetItems(i: integer; const AValue: TtiPersistenceLayer); reintroduce;
@@ -56,10 +56,10 @@ type
     function    IsLoaded(const APersistenceLayerName : string): boolean;
     function    IsDefault(const APersistenceLayerName : string): boolean;
 
-    function    FindByPerLayerName(const ALayerName : string): TtiPersistenceLayer;
+    function    FindByPersistenceLayerName(const ALayerName : string): TtiPersistenceLayer;
     function    FindByTIDatabaseClass(const ADatabaseClass : TtiDatabaseClass): TtiPersistenceLayer;
     property    DefaultPerLayer    : TtiPersistenceLayer read GetDefaultPerLayer     write SetDefaultPerLayer;
-    property    DefaultPerLayerName : string         read GetDefaultPerLayerName write SetDefaultPerLayerName;
+    property    DefaultPersistenceLayerName : string         read GetDefaultPersistenceLayerName write SetDefaultPersistenceLayerName;
     property    LoadingStyle: TtiPerLayerLoadingStyle read FLayerLoadingStyle write FLayerLoadingStyle;
 
     // Do not call these your self. They are called in the initialization section
@@ -160,7 +160,7 @@ begin
   inherited Add(AObject);
 end;
 
-function TtiPersistenceLayers.FindByPerLayerName(const ALayerName: string): TtiPersistenceLayer;
+function TtiPersistenceLayers.FindByPersistenceLayerName(const ALayerName: string): TtiPersistenceLayer;
 var
   i : integer;
 begin
@@ -217,7 +217,7 @@ function TtiPersistenceLayers.CreateTIDatabase(const ALayerName : string {= ''})
 var
   LPersistenceLayer : TtiPersistenceLayer;
 begin
-  LPersistenceLayer := FindByPerLayerName(ALayerName);
+  LPersistenceLayer := FindByPersistenceLayerName(ALayerName);
   if LPersistenceLayer = nil then
     raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
   result := LPersistenceLayer.DatabaseClass.Create;
@@ -227,7 +227,7 @@ function TtiPersistenceLayers.CreateTIQuery(const ALayerName : string {= ''}): T
 var
   LPersistenceLayer : TtiPersistenceLayer;
 begin
-  LPersistenceLayer := FindByPerLayerName(ALayerName);
+  LPersistenceLayer := FindByPersistenceLayerName(ALayerName);
   if LPersistenceLayer = nil then
     raise Exception.Create('Request for unregistered persistence layer <' + ALayerName + '>');
   result := LPersistenceLayer.QueryClass.Create;
@@ -313,7 +313,7 @@ procedure TtiPersistenceLayers.__UnRegisterPersistenceLayer(const ALayerName: st
 var
   lData : TtiPersistenceLayer;
 begin
-  lData := FindByPerLayerName(ALayerName);
+  lData := FindByPersistenceLayerName(ALayerName);
   if lData = nil then
     Exit; //==>
   if gTIOPFManager.DefaultPerLayer = lData then
@@ -323,12 +323,12 @@ end;
 
 function TtiPersistenceLayers.IsDefault(const APersistenceLayerName: string): boolean;
 begin
-  result := SameText(DefaultPerLayerName, APersistenceLayerName);
+  result := SameText(DefaultPersistenceLayerName, APersistenceLayerName);
 end;
 
 function TtiPersistenceLayers.IsLoaded(const APersistenceLayerName: string): boolean;
 begin
-  result := (FindByPerLayerName(APersistenceLayerName) <> nil);
+  result := (FindByPersistenceLayerName(APersistenceLayerName) <> nil);
 end;
 
 function TtiPersistenceLayers.CreateTIQuery(
@@ -363,7 +363,7 @@ var
   lPackageModule : HModule;
   lMessage : string;
 begin
-  result := FindByPerLayerName(APersistenceLayerName);
+  result := FindByPersistenceLayerName(APersistenceLayerName);
   if result <> nil then
     Exit; //==>
 
@@ -372,7 +372,7 @@ begin
 
   try
     lPackageModule := LoadPackage(ExtractFileName(lPackageName));
-    result  := FindByPerLayerName(APersistenceLayerName);
+    result  := FindByPersistenceLayerName(APersistenceLayerName);
     if result = nil then
       raise exception.Create('Unable to locate package in memory after it was loaded.' + Cr +
                               'Check that this application was build with the runtime package tiPersistCore');
@@ -426,7 +426,7 @@ begin
   if not IsLoaded(APersistenceLayerName) then
     raise EtiOPFProgrammerException.CreateFmt(cErrorAttemtpToLoadPerLayerThatsNotLoaded, [LPackageID]);
 
-  LPersistenceLayer := FindByPerLayerName(APersistenceLayerName);
+  LPersistenceLayer := FindByPersistenceLayerName(APersistenceLayerName);
   Assert(LPersistenceLayer.TestValid, CTIErrorInvalidObject);
 
   LPersistenceLayer.DBConnectionPools.DisConnectAll;
@@ -449,7 +449,7 @@ var
   lDBConnectionName : string;
 begin
   if APersistenceLayerName <> '' then
-    lRegPerLayer := FindByPerLayerName(APersistenceLayerName)
+    lRegPerLayer := FindByPersistenceLayerName(APersistenceLayerName)
   else
     lRegPerLayer := DefaultPerLayer;
 
@@ -471,7 +471,7 @@ var
   lRegPerLayer : TtiPersistenceLayer;
 begin
   if APersistenceLayerName <> '' then
-    lRegPerLayer := FindByPerLayerName(APersistenceLayerName)
+    lRegPerLayer := FindByPersistenceLayerName(APersistenceLayerName)
   else
     lRegPerLayer := DefaultPerLayer;
 
@@ -508,7 +508,7 @@ begin
   FDefaultPerLayer := AValue;
 end;
 
-function TtiPersistenceLayers.GetDefaultPerLayerName: string;
+function TtiPersistenceLayers.GetDefaultPersistenceLayerName: string;
 begin
   if DefaultPerLayer <> nil then
     result := DefaultPerLayer.PersistenceLayerName
@@ -516,9 +516,9 @@ begin
     result := '';
 end;
 
-procedure TtiPersistenceLayers.SetDefaultPerLayerName(const AValue: string);
+procedure TtiPersistenceLayers.SetDefaultPersistenceLayerName(const AValue: string);
 begin
-  FDefaultPerLayer := FindByPerLayerName(AValue);
+  FDefaultPerLayer := FindByPersistenceLayerName(AValue);
 end;
 
 function TtiPersistenceLayer.TestConnectToDatabase(const ADatabaseName,

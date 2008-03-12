@@ -142,7 +142,7 @@ var
   LPL: TtiPersistenceLayer;
   LDefaults: TtiPersistenceLayerDefaults;
 begin
-  LPL:= GTIOPFManager.PersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+  LPL:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
   if LPL<>nil then
   begin
     LDefaults:= TtiPersistenceLayerDefaults.Create;

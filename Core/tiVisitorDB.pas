@@ -316,7 +316,7 @@ end;
 
 procedure TtiObjectVisitorController.BeforeExecuteVisitorGroup;
 begin
-  FPersistenceLayer := (TIOPFManager as TtiOPFManager).PersistenceLayers.FindByPerLayerName(
+  FPersistenceLayer := (TIOPFManager as TtiOPFManager).PersistenceLayers.FindByPersistenceLayerName(
     PersistenceLayerName);
   Assert(FPersistenceLayer <> nil, 'Unable to find RegPerLayer <' + PersistenceLayerName + '>');
   FDatabase         := FPersistenceLayer.DBConnectionPools.Lock(DatabaseName);
@@ -485,7 +485,7 @@ begin
   if not LTIOPFManager.PersistenceLayers.IsLoaded(FPersistenceLayerName) then
     raise EtiOPFDataException.CreateFmt(CErrorAttemptToUseUnRegisteredPersistenceLayer,
       [FPersistenceLayerName])
-  else if not LTIOPFManager.PersistenceLayers.FindByPerLayerName(
+  else if not LTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(
     FPersistenceLayerName).DBConnectionPools.IsConnected(FDatabaseName) then
     raise EtiOPFDataException.CreateFmt(CErrorAttemptToUseUnConnectedDatabase, [FDatabaseName]);
 

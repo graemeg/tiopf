@@ -347,7 +347,7 @@ procedure TtiTextTestListener.TestingStarts;
     writeln2Short('', [tlwtFile, tlwtConsole]);
     writeln2Short('Persistence layers to be tested:', [tlwtFile, tlwtConsole]);
     for i:= 0 to GTIOPFTestManager.Count - 1 do
-      writeln2Short('  ' + GTIOPFTestManager.Items[i].PerLayerName, [tlwtFile, tlwtConsole]);
+      writeln2Short('  ' + GTIOPFTestManager.Items[i].PersistenceLayerName, [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
   end;
 

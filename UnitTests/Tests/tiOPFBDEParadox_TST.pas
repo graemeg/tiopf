@@ -3,25 +3,24 @@ unit tiOPFBDEParadox_TST;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiQuery_TST
-  ,tiQuerySQL_TST
-  ,tiAutoMap_TST
-  ,tiAutomapCriteria_TST
-  ,tiOID_tst
- ;
+  tiQuery_TST,
+  tiQuerySQL_TST,
+  tiAutoMap_TST,
+  tiAutomapCriteria_TST,
+  tiOID_TST;
 
 type
 
   TTestTIPersistenceLayersBDEParadox = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseBDEParadox = class(TTestTIDatabase)
-  private
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
@@ -33,72 +32,68 @@ type
   end;
 
   TTestTIQueryBDEParadox = class(TTestTIQuerySQL)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     // Testing of stream support under construction
     // procedure ParamAsStream; override;
   end;
 
   TTestTIAutoMapOperationBDEParadox = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestAutomappingCriteriaBDEParadox = class(TTestAutomappingCriteria)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentGUIDBDEParadox = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerBDEParadox = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 procedure RegisterTests;
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,SysUtils
-  ,tiUtils
-  ,tiTestDependencies
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
-  ,tiLog
-  , tiTestFramework;
+  tiOPFTestManager,
+  SysUtils,
+  tiUtils,
+  tiTestDependencies,
+  FileCtrl,
+  tiLog,
+  tiTestFramework;
 
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistBDEParadox) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIPersistenceLayersBDEParadox.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIDatabaseBDEParadox.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIQueryBDEParadox.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIOIDPersistentGUIDBDEParadox.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIOIDPersistentIntegerBDEParadox.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestTIAutoMapOperationBDEParadox.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistBDEParadox), TTestAutomappingCriteriaBDEParadox.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersBDEParadox);
+  tiRegisterPersistenceTest(TTestTIDatabaseBDEParadox);
+  tiRegisterPersistenceTest(TTestTIQueryBDEParadox);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDBDEParadox);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerBDEParadox);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationBDEParadox);
+  tiRegisterPersistenceTest(TTestAutomappingCriteriaBDEParadox);
 end;
 
 { TtiOPFTestSetupDataBDEParadox }
 
 procedure TTestTIDatabaseBDEParadox.CreateDatabase;
 var
-  lDir : string;
+  lDir: string;
 begin
   SetAllowedLeakArray([40]);
   lDir := tiGetTempFile('');
@@ -120,7 +115,7 @@ end;
 
 procedure TTestTIDatabaseBDEParadox.DatabaseExists;
 var
-  lDir : string;
+  lDir: string;
 begin
   SetAllowedLeakArray([40]);
   lDir := tiSwapExt(TempFileName, '');
@@ -128,20 +123,19 @@ begin
     tiForceRemoveDir(lDir);
     Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
     Check(not FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
-          'FDatabaseClass.DatabaseExists()=true when it should =false');
+      'FDatabaseClass.DatabaseExists()=true when it should =false');
     ForceDirectories(lDir);
     Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
     Check(FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
-          'FDatabaseClass.DatabaseExists()=false when it should =true');
+      'FDatabaseClass.DatabaseExists()=false when it should =true');
   finally
     tiForceRemoveDir(lDir);
   end;
 end;
 
-procedure TTestTIDatabaseBDEParadox.SetUp;
+class function TTestTIDatabaseBDEParadox.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
-  inherited;
+  Result := cTIPersistBDEParadox;
 end;
 
 procedure TTestTIDatabaseBDEParadox.tiOPFManager_ConnectDatabase;
@@ -161,54 +155,46 @@ begin
   LogWarning(ClassName + '.RollBack not tested');
 end;
 
-{ TtiOPFTestSetupDecoratorBDEParadox }
-
 { TTestTIPersistenceLayersBDEParadox }
 
-procedure TTestTIPersistenceLayersBDEParadox.SetUp;
+class function TTestTIPersistenceLayersBDEParadox.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
-  inherited;
-end;
-
-{ TTestTIAutoMapOperationBDEParadox }
-
-procedure TTestTIAutoMapOperationBDEParadox.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
-  inherited;
+  Result := cTIPersistBDEParadox;
 end;
 
 { TTestTIQueryBDEParadox }
 
-procedure TTestTIQueryBDEParadox.SetUp;
+class function TTestTIQueryBDEParadox.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
-  inherited;
+  Result := cTIPersistBDEParadox;
+end;
+
+{ TTestTIAutoMapOperationBDEParadox }
+
+class function TTestTIAutoMapOperationBDEParadox.PersistenceLayerName: string;
+begin
+  Result := cTIPersistBDEParadox;
 end;
 
 { TTestAutomappingCriteriaBDEParadox }
 
-procedure TTestAutomappingCriteriaBDEParadox.SetUp;
+class function TTestAutomappingCriteriaBDEParadox.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
-  inherited;
-end;
-
-{ TTestTIOIDPersistentIntegerBDEParadox }
-
-procedure TTestTIOIDPersistentIntegerBDEParadox.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
-  inherited;
+  Result := cTIPersistBDEParadox;
 end;
 
 { TTestTIOIDPersistentGUIDBDEParadox }
 
-procedure TTestTIOIDPersistentGUIDBDEParadox.SetUp;
+class function TTestTIOIDPersistentGUIDBDEParadox.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistBDEParadox);
-  inherited;
+  Result := cTIPersistBDEParadox;
+end;
+
+{ TTestTIOIDPersistentIntegerBDEParadox }
+
+class function TTestTIOIDPersistentIntegerBDEParadox.PersistenceLayerName: string;
+begin
+  Result := cTIPersistBDEParadox;
 end;
 
 end.

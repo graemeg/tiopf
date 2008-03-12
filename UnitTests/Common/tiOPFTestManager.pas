@@ -42,7 +42,7 @@ type
     procedure   Save; override;
 
     property    PersistenceLayerClass: TtiPersistenceLayerClass read FPersistenceLayerClass;
-    property    PerLayerName : string read GetPersistenceLayerName;
+    property    PersistenceLayerName : string read GetPersistenceLayerName;
     property    DBName       : string read GetDatabaseName;
     property    Username     : string read GetUserName;
     property    Password     : string read GetPassword;
@@ -67,8 +67,8 @@ type
     property    TestAll : boolean read FTestAll;
     property    Items[i:integer]: TtiOPFTestSetupData read GetItems write SetItems;
     procedure   Add(AObject : TtiOPFTestSetupData ; ADefDispOrdr : boolean = true); reintroduce;
-    function    IsRegistered(const APerLayerName : string): boolean;
-    function    FindByPerLayerName(const APerLayerName : string): TtiOPFTestSetupData;
+    function    IsRegistered(const APersistenceLayerName : string): boolean;
+    function    FindByPersistenceLayerName(const APersistenceLayerName : string): TtiOPFTestSetupData;
     procedure   UnloadPersistenceLayersNotSelected;
     procedure   Read; override;
     procedure   Save; override;
@@ -133,13 +133,13 @@ begin
   result:= TtiOIDGeneratorGUID;
 end;
 
-function TtiOPFTestManager.FindByPerLayerName(const APerLayerName: string): TtiOPFTestSetupData;
+function TtiOPFTestManager.FindByPersistenceLayerName(const APersistenceLayerName: string): TtiOPFTestSetupData;
 var
   i : integer;
 begin
   result := nil;
   for i := 0 to Count - 1 do
-    if SameText(Items[i].PerLayerName, APerLayerName) then
+    if SameText(Items[i].PersistenceLayerName, APersistenceLayerName) then
     begin
       result := Items[i];
       Exit; //==>
@@ -153,9 +153,9 @@ begin
 end;
 
 
-function TtiOPFTestManager.IsRegistered(const APerLayerName : string): boolean;
+function TtiOPFTestManager.IsRegistered(const APersistenceLayerName : string): boolean;
 begin
-  result := FindByPerLayerName(APerLayerName) <> nil;
+  result := FindByPersistenceLayerName(APersistenceLayerName) <> nil;
 end;
 
 
@@ -195,7 +195,7 @@ begin
   result := result or FTestAll;
   if not result then
     Exit; //==>
-  lSetup := FindByPerLayerName(pClassID);
+  lSetup := FindByPersistenceLayerName(pClassID);
   result := (lSetup.Selected or FTestAll);
 end;
 
@@ -203,17 +203,17 @@ end;
 procedure TtiOPFTestManager.UnloadPersistenceLayersNotSelected;
 var
   i: integer;
-  LPerLayerName: string;
+  LPersistenceLayerName: string;
   LPerFrameworkSetup: TtiOPFTestSetupData;
 begin
   for i := Count - 1 downto 0 do
   begin
     LPerFrameworkSetup := Items[i];
-    LPerLayerName:= LPerFrameworkSetup.PerLayerName;
+    LPersistenceLayerName:= LPerFrameworkSetup.PersistenceLayerName;
     if not LPerFrameworkSetup.Selected then
     begin
-      if gTIOPFManager.PersistenceLayers.IsLoaded(LPerLayerName) then
-        gTIOPFManager.PersistenceLayers.UnLoadPersistenceLayer(LPerLayerName);
+      if gTIOPFManager.PersistenceLayers.IsLoaded(LPersistenceLayerName) then
+        gTIOPFManager.PersistenceLayers.UnLoadPersistenceLayer(LPersistenceLayerName);
       Delete(i);
     end;
   end;
@@ -256,7 +256,7 @@ end;
 
 procedure TtiOPFTestSetupData.Read;
 begin
-  FSelected := gDUnitINICommon.ReadBool(cINIPerLayersToTest, PerLayerName, True);
+  FSelected := gDUnitINICommon.ReadBool(cINIPerLayersToTest, PersistenceLayerName, True);
 end;
 
 
@@ -319,7 +319,7 @@ end;
 
 procedure TtiOPFTestSetupData.Save;
 begin
-  gDUnitINICommon.WriteBool(cINIPerLayersToTest, PerLayerName, FSelected);
+  gDUnitINICommon.WriteBool(cINIPerLayersToTest, PersistenceLayerName, FSelected);
 end;
 
 initialization

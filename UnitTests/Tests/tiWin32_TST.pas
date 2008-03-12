@@ -35,7 +35,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIWin32);
+  tiRegisterNonPersistentTest(TTestTIWin32);
 end;
 
 

@@ -13,7 +13,6 @@ uses
 
 type
   TTestTIQueryNonSQL = class(TTestTIQueryAbs)
-  private
   protected
     // These don't get run as they only have meaning for SQL databases
     procedure GetSetSQL;       override;
@@ -33,8 +32,6 @@ type
     procedure ParamAsStream; override;
     procedure ParamAsMacro; override;
     procedure ParamIsNull; override;
-  protected
-    procedure SetUp; override;
   end;
 
 
@@ -181,12 +178,6 @@ begin
   CheckEquals( cAns1 + CrLf +
          cAns2 + CrLf +
          cAns3, LActual);
-end;
-
-
-procedure TTestTIQueryNonSQL.SetUp;
-begin
-  inherited;
 end;
 
 

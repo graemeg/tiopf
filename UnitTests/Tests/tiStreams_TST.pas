@@ -59,7 +59,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIStream);
+  tiRegisterNonPersistentTest(TTestTIStream);
 end;
 
 { TTestTIStream }

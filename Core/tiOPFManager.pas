@@ -48,11 +48,11 @@ type
     function  GetDefaultDBConnectionName: string;
     procedure SetDefaultDBConnectionName(const AValue: string);
     function  GetDefaultDBConnectionPool: TtiDBConnectionPool;
-    function  GetDefaultPerLayerName: string;
+    function  GetDefaultPersistenceLayerName: string;
     function  GetClassDBMappingMgr: TtiClassDBMappingMgr;
     function  GetDefaultPerLayer: TtiPersistenceLayer;
     procedure SetDefaultPerLayer(const AValue: TtiPersistenceLayer);
-    procedure SetDefaultPerLayerName(const AValue: string);
+    procedure SetDefaultPersistenceLayerName(const AValue: string);
     function  GetApplicationData: TList;
     procedure SetDefaultOIDGenerator(const AValue: TtiOIDGenerator);
   public
@@ -191,7 +191,7 @@ type
     property    ApplicationStartTime : TDateTime read FApplicationStartTime;
 
     property    DefaultPerLayer        : TtiPersistenceLayer    read GetDefaultPerLayer write SetDefaultPerLayer;
-    property    DefaultPerLayerName    : string            read GetDefaultPerLayerName write SetDefaultPerLayerName;
+    property    DefaultPersistenceLayerName    : string            read GetDefaultPersistenceLayerName write SetDefaultPersistenceLayerName;
     property    DefaultDBConnectionPool : TtiDBConnectionPool read GetDefaultDBConnectionPool;
     property    DefaultDBConnectionName : string            read GetDefaultDBConnectionName write SetDefaultDBConnectionName;
 
@@ -227,7 +227,9 @@ uses
   ,tiConstants
   ,tiExcept
   ,tiLog
-
+  {$IFNDEF OID_AS_INT64}
+  ,tiOIDGUID
+  {$ENDIF}
   {$IFDEF LINK_ADOACCESS}    ,tiQueryADOAccess    {$ENDIF}
   {$IFDEF LINK_ADOSQLSERVER} ,tiQueryADOSQLServer {$ENDIF}
   {$IFDEF LINK_BDEPARADOX}   ,tiQueryBDEParadox   {$ENDIF}
@@ -248,9 +250,6 @@ uses
   {$IFDEF LINK_ZEOS_MYSQL50} ,tiQueryZeosMySQL50  {$ENDIF}
   {$IFDEF LINK_DBISAM4}      ,tiQueryDBISAM4      {$ENDIF}
   {$IFDEF LINK_ASQLITE3}     ,tiQueryAsqlite3     {$ENDIF}
-  {$IFNDEF FPC}
-  ,Forms
-  {$ENDIF}
  ;
 
 
@@ -321,7 +320,7 @@ begin
   if APersistenceLayerName = '' then
     LPersistenceLayer:= DefaultPerLayer
   else
-    LPersistenceLayer := FPersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+    LPersistenceLayer := FPersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
 
   if LPersistenceLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APersistenceLayerName]);
@@ -349,6 +348,11 @@ begin
 
   FActiveThreadList := TtiActiveThreadList.Create;
   FApplicationData := TObjectList.Create(true);
+
+  {$IFNDEF OID_AS_INT64}
+  DefaultOIDGenerator:= TtiOIDGeneratorGUID.Create; // Set the default OID Generator to GUID
+  {$ENDIF}
+
   FApplicationStartTime := Now;
 end;
 
@@ -390,7 +394,7 @@ begin
 end;
 
 
-function TtiOPFManager.GetDefaultPerLayerName: string;
+function TtiOPFManager.GetDefaultPersistenceLayerName: string;
 var
   LPersistenceLayer : TtiPersistenceLayer;
 begin
@@ -498,10 +502,7 @@ begin
   ActiveThreadList.Terminate;
   while ActiveThreadList.Count >0 do
   begin
-    Sleep(10);
-    {$IFNDEF FPC}
-    Application.ProcessMessages;
-    {$ENDIF}
+    Sleep(20);
     if (ACheckFor>0) and ((tiGetTickCount - LStart) > ACheckFor) then Exit;
   end;
   Result := (ActiveThreadList.Count =0);
@@ -549,7 +550,7 @@ begin
   Assert(ADatabaseName <> '', 'ADatabaseName not assigned');
   Assert(APackageID <> '', 'APackageID not assigned');
 
-  lRegPerLayer := FPersistenceLayers.FindByPerLayerName(APackageID);
+  lRegPerLayer := FPersistenceLayers.FindByPersistenceLayerName(APackageID);
   if lRegPerLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
 
@@ -712,9 +713,9 @@ begin
 end;
 
 
-procedure TtiOPFManager.SetDefaultPerLayerName(const AValue: string);
+procedure TtiOPFManager.SetDefaultPersistenceLayerName(const AValue: string);
 begin
-  FPersistenceLayers.DefaultPerLayerName := AValue;
+  FPersistenceLayers.DefaultPersistenceLayerName := AValue;
 end;
 
 procedure TtiOPFManager.ReadMetaDataFields(
@@ -771,7 +772,7 @@ procedure TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
 var
   LPersistenceLayer : TtiPersistenceLayer;
 begin
-  LPersistenceLayer := PersistenceLayers.FindByPerLayerName(APackageID);
+  LPersistenceLayer := PersistenceLayers.FindByPersistenceLayerName(APackageID);
   if LPersistenceLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APackageID]);
   LPersistenceLayer.DatabaseClass.CreateDatabase(ADatabaseName, AUserName, pUserPassword);
@@ -827,7 +828,7 @@ begin
 
   if LRetryCount > ARetryCount then
     raise EtiOPFDBExceptionCanNotConnect.Create(
-      GTIOPFManager.DefaultPerLayerName,
+      GTIOPFManager.DefaultPersistenceLayerName,
       ADatabaseName,
       AUserName,
       CPasswordMasked,
@@ -874,7 +875,7 @@ begin
   if APersistenceLayerName = '' then
     LPersistenceLayer:= DefaultPerLayer
   else
-    LPersistenceLayer := FPersistenceLayers.FindByPerLayerName(APersistenceLayerName);
+    LPersistenceLayer := FPersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
 
   if LPersistenceLayer = nil then
     raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer,[APersistenceLayerName]);
@@ -910,23 +911,23 @@ initialization
   // directive, but not if there are more.
   // Have added this code to solve the problem of forcing the correct default per layer
   // when the remote layer is pulled in from code, and a SQL layer is required as well.
-  {$IFDEF LINK_ADOACCESS}     gTIOPFManager.DefaultPerLayerName := cTIPersistADOAccess;   {$ENDIF}
-  {$IFDEF LINK_ADOSQLSERVER}  gTIOPFManager.DefaultPerLayerName := cTIPersistADOSQLServer;{$ENDIF}
-  {$IFDEF LINK_BDEPARADOX}    gTIOPFManager.DefaultPerLayerName := cTIPersistBDEParadox;  {$ENDIF}
-  {$IFDEF LINK_CSV}           gTIOPFManager.DefaultPerLayerName := cTIPersistCSV;         {$ENDIF}
-  {$IFDEF LINK_DOA}           gTIOPFManager.DefaultPerLayerName := cTIPersistDOA;         {$ENDIF}
-  {$IFDEF LINK_FBL}           gTIOPFManager.DefaultPerLayerName := cTIPersistFBL;         {$ENDIF}
-  {$IFDEF LINK_IBO}           gTIOPFManager.DefaultPerLayerName := cTIPersistIBO;         {$ENDIF}
-  {$IFDEF LINK_IBX}           gTIOPFManager.DefaultPerLayerName := cTIPersistIBX;         {$ENDIF}
-  {$IFDEF LINK_REMOTE}        gTIOPFManager.DefaultPerLayerName := cTIPersistRemote;      {$ENDIF}
-  {$IFDEF LINK_SQLDB_IB}      gTIOPFManager.DefaultPerLayerName := cTIPersistSqldbIB;     {$ENDIF}
-  {$IFDEF LINK_TAB}           gTIOPFManager.DefaultPerLayerName := cTIPersistTAB;         {$ENDIF}
-  {$IFDEF LINK_XML}           gTIOPFManager.DefaultPerLayerName := cTIPersistXML;         {$ENDIF}
-  {$IFDEF LINK_XMLLIGHT}      gTIOPFManager.DefaultPerLayerName := cTIPersistXMLLight;    {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB10}     gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB10;    {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB15}     gTIOPFManager.DefaultPerLayerName := cTIPersistZeosFB15;    {$ENDIF}
-  {$IFDEF LINK_ZEOS_MySQLl50} gTIOPFManager.DefaultPerLayerName := cTIPersistZeosMySQL50; {$ENDIF}
-  {$IFDEF LINK_DBISAM4}       gTIOPFManager.DefaultPerLayerName := cTIPersistDBISAM4;     {$ENDIF}
+  {$IFDEF LINK_ADOACCESS}     gTIOPFManager.DefaultPersistenceLayerName := cTIPersistADOAccess;   {$ENDIF}
+  {$IFDEF LINK_ADOSQLSERVER}  gTIOPFManager.DefaultPersistenceLayerName := cTIPersistADOSQLServer;{$ENDIF}
+  {$IFDEF LINK_BDEPARADOX}    gTIOPFManager.DefaultPersistenceLayerName := cTIPersistBDEParadox;  {$ENDIF}
+  {$IFDEF LINK_CSV}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistCSV;         {$ENDIF}
+  {$IFDEF LINK_DOA}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistDOA;         {$ENDIF}
+  {$IFDEF LINK_FBL}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistFBL;         {$ENDIF}
+  {$IFDEF LINK_IBO}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistIBO;         {$ENDIF}
+  {$IFDEF LINK_IBX}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistIBX;         {$ENDIF}
+  {$IFDEF LINK_REMOTE}        gTIOPFManager.DefaultPersistenceLayerName := cTIPersistRemote;      {$ENDIF}
+  {$IFDEF LINK_SQLDB_IB}      gTIOPFManager.DefaultPersistenceLayerName := cTIPersistSqldbIB;     {$ENDIF}
+  {$IFDEF LINK_TAB}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistTAB;         {$ENDIF}
+  {$IFDEF LINK_XML}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistXML;         {$ENDIF}
+  {$IFDEF LINK_XMLLIGHT}      gTIOPFManager.DefaultPersistenceLayerName := cTIPersistXMLLight;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB10}     gTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosFB10;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB15}     gTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosFB15;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_MySQLl50} gTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosMySQL50; {$ENDIF}
+  {$IFDEF LINK_DBISAM4}       gTIOPFManager.DefaultPersistenceLayerName := cTIPersistDBISAM4;     {$ENDIF}
 
 finalization
   uShuttingDown := True;

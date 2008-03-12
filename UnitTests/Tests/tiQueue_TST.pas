@@ -51,7 +51,7 @@ uses
   
 procedure RegisterTests;
 Begin
-  RegisterNonPersistentTest(TTestTIQueue);
+  tiRegisterNonPersistentTest(TTestTIQueue);
 End;
 
 

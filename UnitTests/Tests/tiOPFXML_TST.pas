@@ -3,85 +3,82 @@ unit tiOPFXML_TST;
 {$I tiDefines.inc}
 
 interface
+
 uses
-   tiQuery_TST
-  ,tiQueryNonSQL_TST
-  ,tiAutoMap_TST
-  ,tiOID_tst
- ;
+  tiQuery_TST,
+  tiQueryNonSQL_TST,
+  tiAutoMap_TST,
+  tiOID_TST;
 
 type
 
   TTestTIPersistenceLayersXML = class(TTestTIPersistenceLayers)
-  protected
-    procedure SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIDatabaseXML = class(TTestTIDatabase)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure DatabaseExists; override;
     procedure CreateDatabase; override;
   end;
 
   TTestTIQueryXML = class(TTestTIQueryNonSQL)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   published
     procedure FieldByNameVSFieldByIndex; override;
   end;
 
   TTestTIAutoMapOperationXM = class(TTestTIAutoMapOperation)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentGUIDXML = class(TTestTIOIDPersistentGUID)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
   TTestTIOIDPersistentIntegerXML = class(TTestTIOIDPersistentInteger)
-  protected
-    procedure   SetUp; override;
+  public
+    class function PersistenceLayerName: string; override;
   end;
 
 procedure RegisterTests;
 
 implementation
+
 uses
-  tiConstants
+  tiConstants,
   {$IFDEF FPC}
-  ,tiFPCUnitUtils
+  tiFPCUnitUtils,
   {$ELSE}
-  ,TestFramework
+  TestFramework,
   {$ENDIF}
-  ,tiOPFTestManager
-  ,tiTestFramework
-  ,SysUtils
-  ,tiUtils
-  ,tiTestDependencies
- ;
+  tiOPFTestManager,
+  tiTestFramework,
+  SysUtils,
+  tiUtils,
+  tiTestDependencies;
 
 procedure RegisterTests;
 begin
-  if gTIOPFTestManager.ToRun(cTIPersistXML) then
-  begin
-    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIPersistenceLayersXML.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIDatabaseXML.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIQueryXML.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIAutoMapOperationXM.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIOIDPersistentGUIDXML.Suite);
-    RegisterTest(PersistentSuiteName(cTIPersistXML), TTestTIOIDPersistentIntegerXML.Suite);
-  end;
+  tiRegisterPersistenceTest(TTestTIPersistenceLayersXML);
+  tiRegisterPersistenceTest(TTestTIDatabaseXML);
+  tiRegisterPersistenceTest(TTestTIQueryXML);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationXM);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDXML);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerXML);
 end;
 
 { TTestTIDatabaseXML }
 
 procedure TTestTIDatabaseXML.CreateDatabase;
 var
-  lFileName : string;
+  lFileName: string;
 begin
   lFileName := PerFrameworkSetup.DBName;
   tiDeleteFile(lFileName);
@@ -92,74 +89,63 @@ end;
 
 procedure TTestTIDatabaseXML.DatabaseExists;
 var
-  lFileName : string;
+  lFileName: string;
 begin
   SetAllowedLeakArray([24]);
   lFileName := PerFrameworkSetup.DBName;
   tiDeleteFile(lFileName);
   Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
-        'FDatabaseClass.DatabaseExists()=true when it should =false');
-  tiStringToFile('test',lFileName);
+  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=true when it should =false');
+  tiStringToFile('test', lFileName);
   Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password),
-        'FDatabaseClass.DatabaseExists()=false when it should =true');
+  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 
-procedure TTestTIDatabaseXML.SetUp;
+class function TTestTIDatabaseXML.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
-  inherited;
+  Result := cTIPersistXML;
 end;
-
-{ TtiOPFTestSetupDecoratorXML }
-
-{ TTestTIQueryXML }
 
 procedure TTestTIQueryXML.FieldByNameVSFieldByIndex;
 begin
   Check(True); // Dont test because it will always fail.
 end;
 
-procedure TTestTIQueryXML.SetUp;
+{ TTestTIPersistenceLayersXML }
+
+class function TTestTIPersistenceLayersXML.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
-  inherited;
+  Result := cTIPersistXML;
+end;
+
+class function TTestTIQueryXML.PersistenceLayerName: string;
+begin
+  Result := cTIPersistXML;
 end;
 
 { TTestTIAutoMapOperationXM }
 
-procedure TTestTIAutoMapOperationXM.SetUp;
+class function TTestTIAutoMapOperationXM.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
-  inherited;
-end;
-
-{ TTestTIPersistenceLayersXML }
-
-procedure TTestTIPersistenceLayersXML.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
-  inherited;
-end;
-
-{ TTestTIOIDPersistentIntegerXML }
-
-procedure TTestTIOIDPersistentIntegerXML.SetUp;
-begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
-  inherited;
+  Result := cTIPersistXML;
 end;
 
 { TTestTIOIDPersistentGUIDXML }
 
-procedure TTestTIOIDPersistentGUIDXML.SetUp;
+class function TTestTIOIDPersistentGUIDXML.PersistenceLayerName: string;
 begin
-  PerFrameworkSetup:= gTIOPFTestManager.FindByPerLayerName(cTIPersistXML);
-  inherited;
+  Result := cTIPersistXML;
+end;
+
+{ TTestTIOIDPersistentIntegerXML }
+
+class function TTestTIOIDPersistentIntegerXML.PersistenceLayerName: string;
+begin
+  Result := cTIPersistXML;
 end;
 
 end.
-
-
-

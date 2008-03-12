@@ -56,7 +56,7 @@ uses
 procedure TTestTIQuerySQL.ExecSQL;
 begin
   CreateTableTestGroup(Database);
-  DoAttachAndConnect;
+  AttachDatabaseAndStartTransaction;
   try
     InsertIntoTestGroup(Database, 1);
     Query.SQLText := 'select count(*) from test_group';
@@ -70,7 +70,7 @@ begin
     Check(Query.FieldAsInteger[Query.FieldName(0)] = 0, 'FQuery.ExecSQL failed');
     Query.Close;
   finally
-    DoDetachAndDisconnect;
+    CommitAndAttachDatabase;
   end;
 end;
 
@@ -78,7 +78,7 @@ end;
 procedure TTestTIQuerySQL.OpenCloseActive;
 begin
   CreateTableTestGroup(Database);
-  DoAttachAndConnect;
+  AttachDatabaseAndStartTransaction;
   try
     InsertIntoTestGroup(Database, 1);
     Query.SQLText := 'select * from Test_Group';
@@ -93,7 +93,7 @@ begin
     Check(not Query.Active, 'FQuery.Active := false failed');
     Database.DeleteRow('test_group', nil);
   finally
-    DoDetachAndDisconnect;
+    CommitAndAttachDatabase;
   end;
 end;
 
@@ -159,7 +159,7 @@ procedure TTestTIQuerySQL.ParamAsBoolean;
 begin
   CreateTableInteger(Database);
   try
-    DoAttachAndConnect;
+    AttachDatabaseAndStartTransaction;
     try
       Query.SQLText := 'Update ' + cTIQueryTableName +
                          ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
@@ -168,7 +168,7 @@ begin
       Query.ParamAsBoolean[ cTIQueryColName ]:= True;
       CheckEquals(True, Query.ParamAsBoolean[ cTIQueryColName ],  'True');
     finally
-      DoDetachAndDisconnect;
+      CommitAndAttachDatabase;
     end;
   finally
     DropTestTable;
@@ -185,14 +185,14 @@ begin
   lDate := Now;
   CreateTableDateTime(Database);
   try
-    DoAttachAndConnect;
+    AttachDatabaseAndStartTransaction;
     try
       Query.SQLText := 'Update ' + cTIQueryTableName +
                          ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
       Query.ParamAsDateTime[ cTIQueryColName ]:= lDate;
       CheckEquals(lDate, Query.ParamAsDateTime[ cTIQueryColName ], 0.0001);
     finally
-      DoDetachAndDisconnect;
+      CommitAndAttachDatabase;
     end;
   finally
     DropTestTable;
@@ -208,14 +208,14 @@ const
 begin
   CreateTableFloat(Database);
   try
-    DoAttachAndConnect;
+    AttachDatabaseAndStartTransaction;
     try
       Query.SQLText := 'Update ' + cTIQueryTableName +
                          ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
       Query.ParamAsFloat[ cTIQueryColName ]:= cValue;
       CheckEquals(cValue, Query.ParamAsFloat[ cTIQueryColName ], 0.00001);
     finally
-      DoDetachAndDisconnect;
+      CommitAndAttachDatabase;
     end;
   finally
     DropTestTable;
@@ -229,14 +229,14 @@ procedure TTestTIQuerySQL.ParamAsInteger;
 begin
   CreateTableInteger(Database);
   try
-    DoAttachAndConnect;
+    AttachDatabaseAndStartTransaction;
     try
       Query.SQLText := 'Update ' + cTIQueryTableName +
                          ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
       Query.ParamAsInteger[ cTIQueryColName ]:= 123456;
       CheckEquals(123456, Query.ParamAsInteger[ cTIQueryColName ]);
     finally
-      DoDetachAndDisconnect;
+      CommitAndAttachDatabase;
     end;
   finally
     DropTestTable;
@@ -266,14 +266,14 @@ procedure TTestTIQuerySQL.ParamAsString;
 begin
   CreateTableString(Database);
   try
-    DoAttachAndConnect;
+    AttachDatabaseAndStartTransaction;
     try
       Query.SQLText := 'Update ' + cTIQueryTableName +
                          ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
       Query.ParamAsString[ cTIQueryColName ]:= 'mickymouse';
       CheckEquals('mickymouse', Query.ParamAsString[ cTIQueryColName ]);
     finally
-      DoDetachAndDisconnect;
+      CommitAndAttachDatabase;
     end;
   finally
     DropTestTable;
@@ -286,7 +286,7 @@ end;
 procedure TTestTIQuerySQL.ParamCount;
 begin
   CreateTableTestGroup(Database);
-  DoAttachAndConnect;
+  AttachDatabaseAndStartTransaction;
   try
     Query.SQLText :=
       'Update Test_Group set ' +
@@ -319,7 +319,7 @@ begin
     Check(Query.ParamCount = 3, 'ParamCount failed on 3');
 
   finally
-    DoDetachAndDisconnect;
+    CommitAndAttachDatabase;
   end;
 end;
 {$ENDIF}
@@ -329,7 +329,7 @@ end;
 procedure TTestTIQuerySQL.ParamIsNull;
 begin
   CreateTableTestGroup(Database);
-  DoAttachAndConnect;
+  AttachDatabaseAndStartTransaction;
   try
     Query.SQLText := 'Update Test_Group set Group_STR_FIELD = :Group_Str_Field';
     Query.ParamAsString[ 'Group_Str_Field' ]:= 'mickymouse';
@@ -337,7 +337,7 @@ begin
     Query.ParamIsNull[ 'Group_Str_Field' ]:= true;
     Check(Query.ParamIsNull[ 'Group_Str_Field' ] = true, 'Error checking ParamIsNull (true)');
   finally
-    DoDetachAndDisconnect;
+    CommitAndAttachDatabase;
   end;
 end;
 {$ENDIF}
@@ -347,7 +347,7 @@ end;
 procedure TTestTIQuerySQL.ParamName;
 begin
   CreateTableTestGroup(Database);
-  DoAttachAndConnect;
+  AttachDatabaseAndStartTransaction;
   try
     Query.SQLText :=
       'Update Test_Group set ' +
@@ -365,7 +365,7 @@ begin
     Check(SameText(Query.ParamName(1), 'Group_Int_Field'  ),   'ParamName failed on 1');
     Check(SameText(Query.ParamName(2), 'Group_Float_Field'), 'ParamName failed on 2');
   finally
-    DoDetachAndDisconnect;
+    CommitAndAttachDatabase;
   end;
 end;
 {$ENDIF}
@@ -377,7 +377,7 @@ var
   lResult : string;
 begin
   CreateTableTestGroup(Database);
-  DoAttachAndConnect;
+  AttachDatabaseAndStartTransaction;
   try
     Query.SQLText :=
       'Update Test_Group set ' +
@@ -414,7 +414,7 @@ begin
            'ParamsAsStr failed with 2 params. Returned values was:' + CrLf +
            Query.ParamsAsString);
   finally
-    DoDetachAndDisconnect;
+    CommitAndAttachDatabase;
   end;
 end;
 {$ENDIF}
@@ -449,7 +449,7 @@ begin
   try
     lStreamFrom := TStringStream.Create(LongString);
     try
-      DoAttachAndConnect;
+      AttachDatabaseAndStartTransaction;
       try
         lStreamTo  := TMemoryStream.Create;
         try
@@ -462,7 +462,7 @@ begin
           lStreamTo.Free;
         end;
       finally
-        DoDetachAndDisConnect;
+        CommitAndAttachDatabase;
       end;
     finally
       lStreamFrom.Free;
@@ -474,5 +474,7 @@ end;
 {$ENDIF}
 
 end.
+
+
 
 

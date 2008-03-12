@@ -14,11 +14,11 @@ uses
 {$R *.RES}
 
 begin
-  RegisterExpectedTIOPFMemoryLeaks;
+  tiRegisterExpectedTIOPFMemoryLeaks;
   if not TtiPromptWhichPersistenceLayersToTest.Execute then
     Halt;
   Application.Initialize;
-  tiTestDependencies.RegisterTests;
+  tiTestDependencies.tiRegisterTests;
   GUITestRunner.RunRegisteredTests;
 end.
 

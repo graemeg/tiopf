@@ -85,7 +85,7 @@ end;
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTesTtiDataBuffer);
+  tiRegisterNonPersistentTest(TTesTtiDataBuffer);
 end;
 
 

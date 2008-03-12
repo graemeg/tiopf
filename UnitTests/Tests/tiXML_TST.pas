@@ -120,8 +120,8 @@ const
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIXML);
-  RegisterNonPersistentTest(TTestTIXMLParser);
+  tiRegisterNonPersistentTest(TTestTIXML);
+  tiRegisterNonPersistentTest(TTestTIXMLParser);
 end;
 
 

@@ -1,4 +1,4 @@
-unit tiThread_tst;
+unit tiThread_TST;
 
 {$I tiDefines.inc}
 
@@ -41,7 +41,7 @@ var
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIThread);
+  tiRegisterNonPersistentTest(TTestTIThread);
 end;
 
 type
