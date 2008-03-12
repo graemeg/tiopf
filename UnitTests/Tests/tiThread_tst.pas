@@ -174,7 +174,7 @@ procedure TTestTIThread.TListDeleteLeak;
 var
   LItem: TObject;
 begin
-  SetAllowedLeakArray([24]);
+  AllowedMemoryLeakSize:= 24;
   LItem:= nil;
   try
     LItem:= TObject.Create;
