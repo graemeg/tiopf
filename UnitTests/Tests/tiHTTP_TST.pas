@@ -140,7 +140,8 @@ const
                        '3' + ctiOPFHTTPBlockDelim +
                        '4' + ctiOPFHTTPBlockDelim +
                        '5';
-  cPerformanceIterationCount = 1;
+  cPerformanceIterationCountIndy = 100;
+  cPerformanceIterationCountMSXML = 100;
 
   cBlockResponse0 = 'abc' + #13#10;
   cBlockResponse1 = 'def' + #13#10;
@@ -208,7 +209,7 @@ end;
 
 procedure TTestTIHTTP.TIHTTPIndyPostPerformance;
 begin
-  TIHTTPPostPerformanceTest(TtiHTTPIndy, cPerformanceIterationCount, cIndyTimePerCall);
+  TIHTTPPostPerformanceTest(TtiHTTPIndy, cPerformanceIterationCountIndy, cIndyTimePerCall);
 end;
 
 procedure TTestTIHTTP.TIHTTPIndyGet;
@@ -462,7 +463,7 @@ end;
 
 procedure TTestTIHTTP.TIHTTPIndyGetPerformance;
 begin
-  tiHTTPGetPerformanceTest(TtiHTTPIndy, cPerformanceIterationCount, cIndyTimePerCall);
+  tiHTTPGetPerformanceTest(TtiHTTPIndy, cPerformanceIterationCountIndy, cIndyTimePerCall);
 end;
 
 procedure TTestTIHTTP.tiHTTPGetPerformanceTest(AClass: TtiHTTPClass; ACount: Integer; ATimePerCall: integer);
@@ -472,7 +473,7 @@ var
   lStart : DWord;
   lMSPer10Calls: Extended;
 begin
-Check(True);
+  Check(True);
   FHTTPServer.OnCommandGet:= HTTPGet_Event;
   FHTTPServer.Active:= True;
   try
@@ -524,12 +525,12 @@ end;
 
 procedure TTestTIHTTP.TIHTTPMSXMLHTTPPostPerformance;
 begin
-  tiHTTPPostPerformanceTest(TtiHTTPMSXML, 500, 0);
+  tiHTTPPostPerformanceTest(TtiHTTPMSXML, cPerformanceIterationCountMSXML, 0);
 end;
 
 procedure TTestTIHTTP.TIHTTPMSXMLHTTPGetPerformance;
 begin
-  tiHTTPGetPerformanceTest(TtiHTTPMSXML, 500, cMSXMLTimePerCall);
+  tiHTTPGetPerformanceTest(TtiHTTPMSXML, cPerformanceIterationCountMSXML, cMSXMLTimePerCall);
 end;
 
 procedure TTestTIHTTP.CorrectURL;
