@@ -151,10 +151,12 @@ begin
   BorderStyle:= bsDialog;
 
   FPopupMenu:= TPopupMenu.Create(Self);
-  LMenuItem:= FPopupMenu.CreateMenuItem;
+  LMenuItem:= TMenuItem.Create(FPopupMenu);
+  FPopupMenu.Items.Add(LMenuItem);
   LMenuItem.Caption:= 'Select all';
   LMenuItem.OnClick:= DoSelectAll;
-  LMenuItem:= FPopupMenu.CreateMenuItem;
+  LMenuItem:= TMenuItem.Create(FPopupMenu);
+  FPopupMenu.Items.Add(LMenuItem);
   LMenuItem.Caption:= 'Select none';
   LMenuItem.OnClick:= DoSelectNone;
 

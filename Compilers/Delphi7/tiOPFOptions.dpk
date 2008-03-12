@@ -54,7 +54,6 @@ contains
   tiEncryptSimple in '..\..\Options\tiEncryptSimple.pas',
   tiLogToConsole in '..\..\Options\tiLogToConsole.pas',
   tiMadExcept in '..\..\Options\tiMadExcept.pas',
-  tiOIDGUID in '..\..\Options\tiOIDGUID.pas',
   tiOIDHex in '..\..\Options\tiOIDHex.pas',
   tiOIDInt64 in '..\..\Options\tiOIDInt64.pas',
   tiOIDInteger in '..\..\Options\tiOIDInteger.pas',

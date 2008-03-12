@@ -61,6 +61,7 @@ contains
   tiAutoMap in '..\..\Core\tiAutoMap.pas',
   tiRTTI in '..\..\Core\tiRTTI.pas',
   tiLogToFile in '..\..\Core\tiLogToFile.pas',
-  tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas';
+  tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas',
+  tiOIDGUID in '..\..\Core\tiOIDGUID.pas';
 
 end.

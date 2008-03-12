@@ -105,12 +105,8 @@ HostApplication=
 Launcher=
 UseLauncher=0
 DebugCWD=
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
 [Version Info]
-IncludeVerInfo=0
+IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=0
 MinorVer=0
@@ -141,7 +137,7 @@ Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
 Count=1
-Item0=..\Tests;..\Common;..\..\Core;..\..\Options;..\..\GUI;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\DUnit
+Item0=..\..\Core;..\..\Options;..\..\GUI;..\Common;..\Tests;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\DUnit
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=_Dcu
