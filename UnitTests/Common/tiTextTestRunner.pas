@@ -54,6 +54,7 @@ type
     procedure AddSuccess(test: ITest); override;
     procedure AddError(error: TTestFailure); override;
     procedure AddFailure(failure: TTestFailure); override;
+    procedure AddWarning(AWarning: TTestFailure); override;
 
     procedure TestingEnds(testResult: TTestResult);override;
     procedure StartSuite(suite: ITest); override;
@@ -173,6 +174,7 @@ end;
 
 procedure TtiTextTestListener.AddError(error: TTestFailure);
 begin
+  Errors.Add(Error);
   Write2Short('E', [tlwtFile, tlwtConsole]);
   IncPos;
   Write2Table(
@@ -186,6 +188,7 @@ end;
 
 procedure TtiTextTestListener.AddFailure(failure: TTestFailure);
 begin
+  Failures.Add(failure);
   Write2Short('F', [tlwtFile, tlwtConsole]);
   IncPos;
   Write2Table(
@@ -508,6 +511,19 @@ begin
       ,''
       ,tiIntToCommaStr(test.ElapsedTestTime));
   end;
+end;
+
+procedure TtiTextTestListener.AddWarning(AWarning: TTestFailure);
+begin
+  Failures.Add(AWarning); // ToDo: Convert to a warning
+  Write2Short('W', [tlwtFile, tlwtConsole]);
+  IncPos;
+  Write2Table(
+     FormatTestName(AWarning.FailedTest)
+    ,'<font color="#FF00FF">WARN</font>'
+    ,AWarning.ThrownExceptionName
+    ,AWarning.ThrownExceptionMessage
+    ,'');
 end;
 
 procedure TtiTextTestListener.EndSuite(suite: ITest);
