@@ -85,9 +85,7 @@ const
   COverwriteOldFolders = true;
 
 begin
-  {$IFNDEF FPC}
-  FailsOnNoChecksExecuted := False;  // Prevent NoCheck failure but mark where this is applied.
-  {$ENDIF}
+
   SetLength(LLoggers, Length(CLoggers));
   FmtStr(LThreadID, '%.4d', [GetCurrentThreadID]);
 
@@ -117,6 +115,8 @@ begin
       LLoggers[i].Free;
 
   end;
+
+  Check(True); // To suppress DUnit2 warning
 
 end;
 
