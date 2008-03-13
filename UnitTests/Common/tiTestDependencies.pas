@@ -227,7 +227,7 @@ end;
 
 procedure tiRegisterExpectedTIOPFMemoryLeaks;
 begin
-  {$IFNDEF FPC}
+  {$IFNDEF FPC}                            
   FastMM4.RegisterExpectedMemoryLeak(TidThreadSafeInteger, 1);
   FastMM4.RegisterExpectedMemoryLeak(TidCriticalSection, 2);
   {$ENDIF FPC}

@@ -1410,59 +1410,59 @@ end;
 
 procedure TTestTIUtils.tiSetPrecision;
 begin
-  CheckEquals(1,       tiUtils.tiSetPrecision( 1.2345, 0), cDUnitTestFloatPrecision, 'Failed on  1');
-  CheckEquals(12,      tiUtils.tiSetPrecision( 12.345, 0), cDUnitTestFloatPrecision, 'Failed on  2');
-  CheckEquals(123,     tiUtils.tiSetPrecision( 123.45, 0), cDUnitTestFloatPrecision, 'Failed on  3');
-  CheckEquals(1235,    tiUtils.tiSetPrecision( 1234.5, 0), cDUnitTestFloatPrecision, 'Failed on  4');
-  CheckEquals(12345,   tiUtils.tiSetPrecision( 12345,  0), cDUnitTestFloatPrecision, 'Failed on  5');
+  CheckNearEnough(1,         tiUtils.tiSetPrecision( 1.2345, 0), cDUnitTestFloatPrecision, 'Failed on  1');
+  CheckNearEnough(12,        tiUtils.tiSetPrecision( 12.345, 0), cDUnitTestFloatPrecision, 'Failed on  2');
+  CheckNearEnough(123,       tiUtils.tiSetPrecision( 123.45, 0), cDUnitTestFloatPrecision, 'Failed on  3');
+  CheckNearEnough(1235,      tiUtils.tiSetPrecision( 1234.5, 0), cDUnitTestFloatPrecision, 'Failed on  4');
+  CheckNearEnough(12345,     tiUtils.tiSetPrecision( 12345,  0), cDUnitTestFloatPrecision, 'Failed on  5');
 
-  CheckEquals(1.2,      tiUtils.tiSetPrecision(1.2345, 1), cDUnitTestFloatPrecision, 'Failed on  6');
-  CheckEquals(12.3,     tiUtils.tiSetPrecision(12.345, 1), cDUnitTestFloatPrecision, 'Failed on  7');
-  CheckEquals(123.5,    tiUtils.tiSetPrecision(123.45, 1), cDUnitTestFloatPrecision, 'Failed on  8');
-  CheckEquals(1234.5,   tiUtils.tiSetPrecision(1234.5, 1), cDUnitTestFloatPrecision, 'Failed on  9');
-  CheckEquals(12345.0,  tiUtils.tiSetPrecision(12345,  1), cDUnitTestFloatPrecision, 'Failed on 10');
+  CheckNearEnough(1.2,       tiUtils.tiSetPrecision(1.2345, 1), cDUnitTestFloatPrecision, 'Failed on  6');
+  CheckNearEnough(12.3,      tiUtils.tiSetPrecision(12.345, 1), cDUnitTestFloatPrecision, 'Failed on  7');
+  CheckNearEnough(123.5,     tiUtils.tiSetPrecision(123.45, 1), cDUnitTestFloatPrecision, 'Failed on  8');
+  CheckNearEnough(1234.5,    tiUtils.tiSetPrecision(1234.5, 1), cDUnitTestFloatPrecision, 'Failed on  9');
+  CheckNearEnough(12345.0,   tiUtils.tiSetPrecision(12345,  1), cDUnitTestFloatPrecision, 'Failed on 10');
 
-  CheckEquals(1.23,     tiUtils.tiSetPrecision(1.2345, 2), cDUnitTestFloatPrecision, 'Failed on 11');
-  CheckEquals(12.35,    tiUtils.tiSetPrecision(12.345, 2), cDUnitTestFloatPrecision, 'Failed on 12');
-  CheckEquals(123.45,   tiUtils.tiSetPrecision(123.45, 2), cDUnitTestFloatPrecision, 'Failed on 13');
-  CheckEquals(1234.50,  tiUtils.tiSetPrecision(1234.5, 2), cDUnitTestFloatPrecision, 'Failed on 14');
-  CheckEquals(12345.00, tiUtils.tiSetPrecision(12345,  2), cDUnitTestFloatPrecision, 'Failed on 15');
+  CheckNearEnough(1.23,      tiUtils.tiSetPrecision(1.2345, 2), cDUnitTestFloatPrecision, 'Failed on 11');
+  CheckNearEnough(12.35,     tiUtils.tiSetPrecision(12.345, 2), cDUnitTestFloatPrecision, 'Failed on 12');
+  CheckNearEnough(123.45,    tiUtils.tiSetPrecision(123.45, 2), cDUnitTestFloatPrecision, 'Failed on 13');
+  CheckNearEnough(1234.50,   tiUtils.tiSetPrecision(1234.5, 2), cDUnitTestFloatPrecision, 'Failed on 14');
+  CheckNearEnough(12345.00,  tiUtils.tiSetPrecision(12345,  2), cDUnitTestFloatPrecision, 'Failed on 15');
 
-  CheckEquals(1.235,     tiUtils.tiSetPrecision(1.2345, 3), cDUnitTestFloatPrecision, 'Failed on 12');
-  CheckEquals(12.345,    tiUtils.tiSetPrecision(12.345, 3), cDUnitTestFloatPrecision, 'Failed on 13');
-  CheckEquals(123.450,   tiUtils.tiSetPrecision(123.45, 3), cDUnitTestFloatPrecision, 'Failed on 14');
-  CheckEquals(1234.500,  tiUtils.tiSetPrecision(1234.5, 3), cDUnitTestFloatPrecision, 'Failed on 15');
-  CheckEquals(12345.000, tiUtils.tiSetPrecision(12345,  3), cDUnitTestFloatPrecision, 'Failed on 16');
+  CheckNearEnough(1.235,     tiUtils.tiSetPrecision(1.2345, 3), cDUnitTestFloatPrecision, 'Failed on 12');
+  CheckNearEnough(12.345,    tiUtils.tiSetPrecision(12.345, 3), cDUnitTestFloatPrecision, 'Failed on 13');
+  CheckNearEnough(123.450,   tiUtils.tiSetPrecision(123.45, 3), cDUnitTestFloatPrecision, 'Failed on 14');
+  CheckNearEnough(1234.500,  tiUtils.tiSetPrecision(1234.5, 3), cDUnitTestFloatPrecision, 'Failed on 15');
+  CheckNearEnough(12345.000, tiUtils.tiSetPrecision(12345,  3), cDUnitTestFloatPrecision, 'Failed on 16');
 
-  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -1), cDUnitTestFloatPrecision, 'Failed on 17');
-  CheckEquals(10,        tiUtils.tiSetPrecision(12.345, -1), cDUnitTestFloatPrecision, 'Failed on 18');
-  CheckEquals(120,       tiUtils.tiSetPrecision(123.45, -1), cDUnitTestFloatPrecision, 'Failed on 19');
-  CheckEquals(1230,      tiUtils.tiSetPrecision(1234.5, -1), cDUnitTestFloatPrecision, 'Failed on 20');
-  CheckEquals(12350,     tiUtils.tiSetPrecision(12345,  -1), cDUnitTestFloatPrecision, 'Failed on 21');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(1.2345, -1), cDUnitTestFloatPrecision, 'Failed on 17');
+  CheckNearEnough(10,        tiUtils.tiSetPrecision(12.345, -1), cDUnitTestFloatPrecision, 'Failed on 18');
+  CheckNearEnough(120,       tiUtils.tiSetPrecision(123.45, -1), cDUnitTestFloatPrecision, 'Failed on 19');
+  CheckNearEnough(1230,      tiUtils.tiSetPrecision(1234.5, -1), cDUnitTestFloatPrecision, 'Failed on 20');
+  CheckNearEnough(12350,     tiUtils.tiSetPrecision(12345,  -1), cDUnitTestFloatPrecision, 'Failed on 21');
 
-  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -2), cDUnitTestFloatPrecision, 'Failed on 22');
-  CheckEquals(0,         tiUtils.tiSetPrecision(12.345, -2), cDUnitTestFloatPrecision, 'Failed on 23');
-  CheckEquals(100,       tiUtils.tiSetPrecision(123.45, -2), cDUnitTestFloatPrecision, 'Failed on 24');
-  CheckEquals(1200,      tiUtils.tiSetPrecision(1234.5, -2), cDUnitTestFloatPrecision, 'Failed on 25');
-  CheckEquals(12300,     tiUtils.tiSetPrecision(12345,  -2), cDUnitTestFloatPrecision, 'Failed on 26');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(1.2345, -2), cDUnitTestFloatPrecision, 'Failed on 22');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(12.345, -2), cDUnitTestFloatPrecision, 'Failed on 23');
+  CheckNearEnough(100,       tiUtils.tiSetPrecision(123.45, -2), cDUnitTestFloatPrecision, 'Failed on 24');
+  CheckNearEnough(1200,      tiUtils.tiSetPrecision(1234.5, -2), cDUnitTestFloatPrecision, 'Failed on 25');
+  CheckNearEnough(12300,     tiUtils.tiSetPrecision(12345,  -2), cDUnitTestFloatPrecision, 'Failed on 26');
 
-  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -3), cDUnitTestFloatPrecision, 'Failed on 27');
-  CheckEquals(0,         tiUtils.tiSetPrecision(12.345, -3), cDUnitTestFloatPrecision, 'Failed on 28');
-  CheckEquals(0,         tiUtils.tiSetPrecision(123.45, -3), cDUnitTestFloatPrecision, 'Failed on 29');
-  CheckEquals(1000,      tiUtils.tiSetPrecision(1234.5, -3), cDUnitTestFloatPrecision, 'Failed on 30');
-  CheckEquals(12000,     tiUtils.tiSetPrecision(12345,  -3), cDUnitTestFloatPrecision, 'Failed on 31');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(1.2345, -3), cDUnitTestFloatPrecision, 'Failed on 27');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(12.345, -3), cDUnitTestFloatPrecision, 'Failed on 28');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(123.45, -3), cDUnitTestFloatPrecision, 'Failed on 29');
+  CheckNearEnough(1000,      tiUtils.tiSetPrecision(1234.5, -3), cDUnitTestFloatPrecision, 'Failed on 30');
+  CheckNearEnough(12000,     tiUtils.tiSetPrecision(12345,  -3), cDUnitTestFloatPrecision, 'Failed on 31');
 
-  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -4), cDUnitTestFloatPrecision, 'Failed on 32');
-  CheckEquals(0,         tiUtils.tiSetPrecision(12.345, -4), cDUnitTestFloatPrecision, 'Failed on 33');
-  CheckEquals(0,         tiUtils.tiSetPrecision(123.45, -4), cDUnitTestFloatPrecision, 'Failed on 34');
-  CheckEquals(0,         tiUtils.tiSetPrecision(1234.5, -4), cDUnitTestFloatPrecision, 'Failed on 35');
-  CheckEquals(10000,     tiUtils.tiSetPrecision(12345,  -4), cDUnitTestFloatPrecision, 'Failed on 36');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(1.2345, -4), cDUnitTestFloatPrecision, 'Failed on 32');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(12.345, -4), cDUnitTestFloatPrecision, 'Failed on 33');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(123.45, -4), cDUnitTestFloatPrecision, 'Failed on 34');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(1234.5, -4), cDUnitTestFloatPrecision, 'Failed on 35');
+  CheckNearEnough(10000,     tiUtils.tiSetPrecision(12345,  -4), cDUnitTestFloatPrecision, 'Failed on 36');
 
-  CheckEquals(0,         tiUtils.tiSetPrecision(1.2345, -5), cDUnitTestFloatPrecision, 'Failed on 37');
-  CheckEquals(0,         tiUtils.tiSetPrecision(12.345, -5), cDUnitTestFloatPrecision, 'Failed on 38');
-  CheckEquals(0,         tiUtils.tiSetPrecision(123.45, -5), cDUnitTestFloatPrecision, 'Failed on 39');
-  CheckEquals(0,         tiUtils.tiSetPrecision(1234.5, -5), cDUnitTestFloatPrecision, 'Failed on 40');
-  CheckEquals(0,         tiUtils.tiSetPrecision(12345,  -5), cDUnitTestFloatPrecision, 'Failed on 41');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(1.2345, -5), cDUnitTestFloatPrecision, 'Failed on 37');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(12.345, -5), cDUnitTestFloatPrecision, 'Failed on 38');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(123.45, -5), cDUnitTestFloatPrecision, 'Failed on 39');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(1234.5, -5), cDUnitTestFloatPrecision, 'Failed on 40');
+  CheckNearEnough(0,         tiUtils.tiSetPrecision(12345,  -5), cDUnitTestFloatPrecision, 'Failed on 41');
 
 end;
 
@@ -2837,235 +2837,227 @@ end;
 
 procedure TTestTIUtils.tiDecimalRoundDbl;
 begin
-  CheckEquals(1, tiUtils.tiDecimalRoundDbl(1,   0));
-  CheckEquals(1, tiUtils.tiDecimalRoundDbl(1.4, 0));
-  CheckEquals(2, tiUtils.tiDecimalRoundDbl(1.5, 0));
-  CheckEquals(2, tiUtils.tiDecimalRoundDbl(1.6, 0));
+  CheckNearEnough(1, tiUtils.tiDecimalRoundDbl(1,   0));
+  CheckNearEnough(1, tiUtils.tiDecimalRoundDbl(1.4, 0));
+  CheckNearEnough(2, tiUtils.tiDecimalRoundDbl(1.5, 0));
+  CheckNearEnough(2, tiUtils.tiDecimalRoundDbl(1.6, 0));
 
-  CheckEquals(12, tiUtils.tiDecimalRoundDbl(12,   0));
-  CheckEquals(12, tiUtils.tiDecimalRoundDbl(12.4, 0));
-  CheckEquals(13, tiUtils.tiDecimalRoundDbl(12.5, 0));
-  CheckEquals(13, tiUtils.tiDecimalRoundDbl(12.6, 0));
+  CheckNearEnough(12, tiUtils.tiDecimalRoundDbl(12,   0));
+  CheckNearEnough(12, tiUtils.tiDecimalRoundDbl(12.4, 0));
+  CheckNearEnough(13, tiUtils.tiDecimalRoundDbl(12.5, 0));
+  CheckNearEnough(13, tiUtils.tiDecimalRoundDbl(12.6, 0));
 
-  CheckEquals(123, tiUtils.tiDecimalRoundDbl(123,   0));
-  CheckEquals(123, tiUtils.tiDecimalRoundDbl(123.4, 0));
-  CheckEquals(124, tiUtils.tiDecimalRoundDbl(123.5, 0));
-  CheckEquals(124, tiUtils.tiDecimalRoundDbl(123.6, 0));
+  CheckNearEnough(123, tiUtils.tiDecimalRoundDbl(123,   0));
+  CheckNearEnough(123, tiUtils.tiDecimalRoundDbl(123.4, 0));
+  CheckNearEnough(124, tiUtils.tiDecimalRoundDbl(123.5, 0));
+  CheckNearEnough(124, tiUtils.tiDecimalRoundDbl(123.6, 0));
 
-  CheckEquals(1234, tiUtils.tiDecimalRoundDbl(1234,   0));
-  CheckEquals(1234, tiUtils.tiDecimalRoundDbl(1234.4, 0));
-  CheckEquals(1235, tiUtils.tiDecimalRoundDbl(1234.5, 0));
-  CheckEquals(1235, tiUtils.tiDecimalRoundDbl(1234.6, 0));
+  CheckNearEnough(1234, tiUtils.tiDecimalRoundDbl(1234,   0));
+  CheckNearEnough(1234, tiUtils.tiDecimalRoundDbl(1234.4, 0));
+  CheckNearEnough(1235, tiUtils.tiDecimalRoundDbl(1234.5, 0));
+  CheckNearEnough(1235, tiUtils.tiDecimalRoundDbl(1234.6, 0));
 
-  CheckEquals(12345, tiUtils.tiDecimalRoundDbl(12345,   0));
-  CheckEquals(12345, tiUtils.tiDecimalRoundDbl(12345.4, 0));
-  CheckEquals(12346, tiUtils.tiDecimalRoundDbl(12345.5, 0));
-  CheckEquals(12346, tiUtils.tiDecimalRoundDbl(12345.6, 0));
+  CheckNearEnough(12345, tiUtils.tiDecimalRoundDbl(12345,   0));
+  CheckNearEnough(12345, tiUtils.tiDecimalRoundDbl(12345.4, 0));
+  CheckNearEnough(12346, tiUtils.tiDecimalRoundDbl(12345.5, 0));
+  CheckNearEnough(12346, tiUtils.tiDecimalRoundDbl(12345.6, 0));
 
-//  CheckEquals(3.333333333333, tiUtils.tiDecimalRoundDbl(3.3333333333334, 13));
-//  CheckEquals(3.333333333334, tiUtils.tiDecimalRoundDbl(3.3333333333335, 13));
-//  CheckEquals(3.333333333334, tiUtils.tiDecimalRoundDbl(3.3333333333336, 13));
+  CheckNearEnough(3.33333333333, tiUtils.tiDecimalRoundDbl(3.333333333334, 11));
+  CheckNearEnough(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333335, 11));
+  CheckNearEnough(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333336, 11));
 
-//  CheckEquals(3.33333333333, tiUtils.tiDecimalRoundDbl(3.333333333334, 12));
-//  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333335, 12));
-//  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333336, 12));
+  CheckNearEnough(3.3333333333, tiUtils.tiDecimalRoundDbl(3.33333333334, 10));
+  CheckNearEnough(3.3333333334, tiUtils.tiDecimalRoundDbl(3.33333333335, 10));
+  CheckNearEnough(3.3333333334, tiUtils.tiDecimalRoundDbl(3.33333333336, 10));
 
-  CheckEquals(3.33333333333, tiUtils.tiDecimalRoundDbl(3.333333333334, 11));
-  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333335, 11));
-  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundDbl(3.333333333336, 11));
+  CheckNearEnough(3.333333333, tiUtils.tiDecimalRoundDbl(3.3333333334, 9));
+  CheckNearEnough(3.333333334, tiUtils.tiDecimalRoundDbl(3.3333333335, 9));
+  CheckNearEnough(3.333333334, tiUtils.tiDecimalRoundDbl(3.3333333336, 9));
 
-  CheckEquals(3.3333333333, tiUtils.tiDecimalRoundDbl(3.33333333334, 10));
-  CheckEquals(3.3333333334, tiUtils.tiDecimalRoundDbl(3.33333333335, 10));
-  CheckEquals(3.3333333334, tiUtils.tiDecimalRoundDbl(3.33333333336, 10));
+  CheckNearEnough(3.33333333, tiUtils.tiDecimalRoundDbl(3.333333334,   8));
+  CheckNearEnough(3.33333334, tiUtils.tiDecimalRoundDbl(3.333333335,   8));
+  CheckNearEnough(3.33333334, tiUtils.tiDecimalRoundDbl(3.333333336,   8));
 
-  CheckEquals(3.333333333, tiUtils.tiDecimalRoundDbl(3.3333333334, 9));
-  CheckEquals(3.333333334, tiUtils.tiDecimalRoundDbl(3.3333333335, 9));
-  CheckEquals(3.333333334, tiUtils.tiDecimalRoundDbl(3.3333333336, 9));
+  CheckNearEnough(3.3333333, tiUtils.tiDecimalRoundDbl(3.33333334,   7));
+  CheckNearEnough(3.3333334, tiUtils.tiDecimalRoundDbl(3.33333335,   7));
+  CheckNearEnough(3.3333334, tiUtils.tiDecimalRoundDbl(3.33333336,   7));
 
-  CheckEquals(3.33333333, tiUtils.tiDecimalRoundDbl(3.333333334,   8));
-  CheckEquals(3.33333334, tiUtils.tiDecimalRoundDbl(3.333333335,   8));
-  CheckEquals(3.33333334, tiUtils.tiDecimalRoundDbl(3.333333336,   8));
+  CheckNearEnough(3.333333, tiUtils.tiDecimalRoundDbl(3.3333334,   6));
+  CheckNearEnough(3.333334, tiUtils.tiDecimalRoundDbl(3.3333335,   6));
+  CheckNearEnough(3.333334, tiUtils.tiDecimalRoundDbl(3.3333336,   6));
 
-  CheckEquals(3.3333333, tiUtils.tiDecimalRoundDbl(3.33333334,   7));
-  CheckEquals(3.3333334, tiUtils.tiDecimalRoundDbl(3.33333335,   7));
-  CheckEquals(3.3333334, tiUtils.tiDecimalRoundDbl(3.33333336,   7));
+  CheckNearEnough(3.33333, tiUtils.tiDecimalRoundDbl(3.333334,   5));
+  CheckNearEnough(3.33334, tiUtils.tiDecimalRoundDbl(3.333335,   5));
+  CheckNearEnough(3.33334, tiUtils.tiDecimalRoundDbl(3.333336,   5));
 
-  CheckEquals(3.333333, tiUtils.tiDecimalRoundDbl(3.3333334,   6));
-  CheckEquals(3.333334, tiUtils.tiDecimalRoundDbl(3.3333335,   6));
-  CheckEquals(3.333334, tiUtils.tiDecimalRoundDbl(3.3333336,   6));
+  CheckNearEnough(3.3333, tiUtils.tiDecimalRoundDbl(3.33334,   4));
+  CheckNearEnough(3.3334, tiUtils.tiDecimalRoundDbl(3.33335,   4));
+  CheckNearEnough(3.3334, tiUtils.tiDecimalRoundDbl(3.33336,   4));
 
-  CheckEquals(3.33333, tiUtils.tiDecimalRoundDbl(3.333334,   5));
-  CheckEquals(3.33334, tiUtils.tiDecimalRoundDbl(3.333335,   5));
-  CheckEquals(3.33334, tiUtils.tiDecimalRoundDbl(3.333336,   5));
+  CheckNearEnough(3.333, tiUtils.tiDecimalRoundDbl(3.3334,   3));
+  CheckNearEnough(3.334, tiUtils.tiDecimalRoundDbl(3.3335,   3));
+  CheckNearEnough(3.334, tiUtils.tiDecimalRoundDbl(3.3336,   3));
 
-  CheckEquals(3.3333, tiUtils.tiDecimalRoundDbl(3.33334,   4));
-  CheckEquals(3.3334, tiUtils.tiDecimalRoundDbl(3.33335,   4));
-  CheckEquals(3.3334, tiUtils.tiDecimalRoundDbl(3.33336,   4));
+  CheckNearEnough(3.33, tiUtils.tiDecimalRoundDbl(3.334,   2));
+  CheckNearEnough(3.34, tiUtils.tiDecimalRoundDbl(3.335,   2));
+  CheckNearEnough(3.34, tiUtils.tiDecimalRoundDbl(3.336,   2));
 
-  CheckEquals(3.333, tiUtils.tiDecimalRoundDbl(3.3334,   3));
-  CheckEquals(3.334, tiUtils.tiDecimalRoundDbl(3.3335,   3));
-  CheckEquals(3.334, tiUtils.tiDecimalRoundDbl(3.3336,   3));
+  CheckNearEnough(3.3, tiUtils.tiDecimalRoundDbl(3.34,   1));
+  CheckNearEnough(3.4, tiUtils.tiDecimalRoundDbl(3.35,   1));
+  CheckNearEnough(3.4, tiUtils.tiDecimalRoundDbl(3.36,   1));
 
-  CheckEquals(3.33, tiUtils.tiDecimalRoundDbl(3.334,   2));
-  CheckEquals(3.34, tiUtils.tiDecimalRoundDbl(3.335,   2));
-  CheckEquals(3.34, tiUtils.tiDecimalRoundDbl(3.336,   2));
-
-  CheckEquals(3.3, tiUtils.tiDecimalRoundDbl(3.34,   1));
-  CheckEquals(3.4, tiUtils.tiDecimalRoundDbl(3.35,   1));
-  CheckEquals(3.4, tiUtils.tiDecimalRoundDbl(3.36,   1));
-
-  CheckEquals(3, tiUtils.tiDecimalRoundDbl(3.4,   0));
-  CheckEquals(4, tiUtils.tiDecimalRoundDbl(3.5,   0));
-  CheckEquals(4, tiUtils.tiDecimalRoundDbl(3.6,   0));
+  CheckNearEnough(3, tiUtils.tiDecimalRoundDbl(3.4,   0));
+  CheckNearEnough(4, tiUtils.tiDecimalRoundDbl(3.5,   0));
+  CheckNearEnough(4, tiUtils.tiDecimalRoundDbl(3.6,   0));
 end;
 
 procedure TTestTIUtils.tiDecimalRoundExt;
 begin
-  CheckEquals(1, tiUtils.tiDecimalRoundExt(1,   0));
-  CheckEquals(1, tiUtils.tiDecimalRoundExt(1.4, 0));
-  CheckEquals(2, tiUtils.tiDecimalRoundExt(1.5, 0));
-  CheckEquals(2, tiUtils.tiDecimalRoundExt(1.6, 0));
+  CheckNearEnough(1, tiUtils.tiDecimalRoundExt(1,   0));
+  CheckNearEnough(1, tiUtils.tiDecimalRoundExt(1.4, 0));
+  CheckNearEnough(2, tiUtils.tiDecimalRoundExt(1.5, 0));
+  CheckNearEnough(2, tiUtils.tiDecimalRoundExt(1.6, 0));
 
-  CheckEquals(12, tiUtils.tiDecimalRoundExt(12,   0));
-  CheckEquals(12, tiUtils.tiDecimalRoundExt(12.4, 0));
-  CheckEquals(13, tiUtils.tiDecimalRoundExt(12.5, 0));
-  CheckEquals(13, tiUtils.tiDecimalRoundExt(12.6, 0));
+  CheckNearEnough(12, tiUtils.tiDecimalRoundExt(12,   0));
+  CheckNearEnough(12, tiUtils.tiDecimalRoundExt(12.4, 0));
+  CheckNearEnough(13, tiUtils.tiDecimalRoundExt(12.5, 0));
+  CheckNearEnough(13, tiUtils.tiDecimalRoundExt(12.6, 0));
 
-  CheckEquals(123, tiUtils.tiDecimalRoundExt(123,   0));
-  CheckEquals(123, tiUtils.tiDecimalRoundExt(123.4, 0));
-  CheckEquals(124, tiUtils.tiDecimalRoundExt(123.5, 0));
-  CheckEquals(124, tiUtils.tiDecimalRoundExt(123.6, 0));
+  CheckNearEnough(123, tiUtils.tiDecimalRoundExt(123,   0));
+  CheckNearEnough(123, tiUtils.tiDecimalRoundExt(123.4, 0));
+  CheckNearEnough(124, tiUtils.tiDecimalRoundExt(123.5, 0));
+  CheckNearEnough(124, tiUtils.tiDecimalRoundExt(123.6, 0));
 
-  CheckEquals(1234, tiUtils.tiDecimalRoundExt(1234,   0));
-  CheckEquals(1234, tiUtils.tiDecimalRoundExt(1234.4, 0));
-  CheckEquals(1235, tiUtils.tiDecimalRoundExt(1234.5, 0));
-  CheckEquals(1235, tiUtils.tiDecimalRoundExt(1234.6, 0));
+  CheckNearEnough(1234, tiUtils.tiDecimalRoundExt(1234,   0));
+  CheckNearEnough(1234, tiUtils.tiDecimalRoundExt(1234.4, 0));
+  CheckNearEnough(1235, tiUtils.tiDecimalRoundExt(1234.5, 0));
+  CheckNearEnough(1235, tiUtils.tiDecimalRoundExt(1234.6, 0));
 
-  CheckEquals(12345, tiUtils.tiDecimalRoundExt(12345,   0));
-  CheckEquals(12345, tiUtils.tiDecimalRoundExt(12345.4, 0));
-  CheckEquals(12346, tiUtils.tiDecimalRoundExt(12345.5, 0));
-  CheckEquals(12346, tiUtils.tiDecimalRoundExt(12345.6, 0));
+  CheckNearEnough(12345, tiUtils.tiDecimalRoundExt(12345,   0));
+  CheckNearEnough(12345, tiUtils.tiDecimalRoundExt(12345.4, 0));
+  CheckNearEnough(12346, tiUtils.tiDecimalRoundExt(12345.5, 0));
+  CheckNearEnough(12346, tiUtils.tiDecimalRoundExt(12345.6, 0));
 
-  CheckEquals(3.3333333333333333, tiUtils.tiDecimalRoundExt(3.33333333333333334, 16));
-  CheckEquals(3.3333333333333334, tiUtils.tiDecimalRoundExt(3.33333333333333335, 16));
-  CheckEquals(3.3333333333333334, tiUtils.tiDecimalRoundExt(3.33333333333333336, 16));
+  CheckNearEnough(3.3333333333333333, tiUtils.tiDecimalRoundExt(3.33333333333333334, 16));
+  CheckNearEnough(3.3333333333333334, tiUtils.tiDecimalRoundExt(3.33333333333333335, 16));
+  CheckNearEnough(3.3333333333333334, tiUtils.tiDecimalRoundExt(3.33333333333333336, 16));
 
-  CheckEquals(3.333333333333333, tiUtils.tiDecimalRoundExt(3.3333333333333334, 15));
-  CheckEquals(3.333333333333334, tiUtils.tiDecimalRoundExt(3.3333333333333335, 15));
-  CheckEquals(3.333333333333334, tiUtils.tiDecimalRoundExt(3.3333333333333336, 15));
+  CheckNearEnough(3.333333333333333, tiUtils.tiDecimalRoundExt(3.3333333333333334, 15));
+  CheckNearEnough(3.333333333333334, tiUtils.tiDecimalRoundExt(3.3333333333333335, 15));
+  CheckNearEnough(3.333333333333334, tiUtils.tiDecimalRoundExt(3.3333333333333336, 15));
 
-  CheckEquals(3.33333333333333, tiUtils.tiDecimalRoundExt(3.333333333333334, 14));
-  CheckEquals(3.33333333333334, tiUtils.tiDecimalRoundExt(3.333333333333335, 14));
-  CheckEquals(3.33333333333334, tiUtils.tiDecimalRoundExt(3.333333333333336, 14));
+  CheckNearEnough(3.33333333333333, tiUtils.tiDecimalRoundExt(3.333333333333334, 14));
+  CheckNearEnough(3.33333333333334, tiUtils.tiDecimalRoundExt(3.333333333333335, 14));
+  CheckNearEnough(3.33333333333334, tiUtils.tiDecimalRoundExt(3.333333333333336, 14));
 
-  CheckEquals(3.3333333333333, tiUtils.tiDecimalRoundExt(3.33333333333334, 13));
-  CheckEquals(3.3333333333334, tiUtils.tiDecimalRoundExt(3.33333333333335, 13));
-  CheckEquals(3.3333333333334, tiUtils.tiDecimalRoundExt(3.33333333333336, 13));
+  CheckNearEnough(3.3333333333333, tiUtils.tiDecimalRoundExt(3.33333333333334, 13));
+  CheckNearEnough(3.3333333333334, tiUtils.tiDecimalRoundExt(3.33333333333335, 13));
+  CheckNearEnough(3.3333333333334, tiUtils.tiDecimalRoundExt(3.33333333333336, 13));
 
-  CheckEquals(3.333333333333, tiUtils.tiDecimalRoundExt(3.3333333333334, 12));
-  CheckEquals(3.333333333334, tiUtils.tiDecimalRoundExt(3.3333333333335, 12));
-  CheckEquals(3.333333333334, tiUtils.tiDecimalRoundExt(3.3333333333336, 12));
+  CheckNearEnough(3.333333333333, tiUtils.tiDecimalRoundExt(3.3333333333334, 12));
+  CheckNearEnough(3.333333333334, tiUtils.tiDecimalRoundExt(3.3333333333335, 12));
+  CheckNearEnough(3.333333333334, tiUtils.tiDecimalRoundExt(3.3333333333336, 12));
 
-  CheckEquals(3.33333333333, tiUtils.tiDecimalRoundExt(3.333333333334, 11));
-  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundExt(3.333333333335, 11));
-  CheckEquals(3.33333333334, tiUtils.tiDecimalRoundExt(3.333333333336, 11));
+  CheckNearEnough(3.33333333333, tiUtils.tiDecimalRoundExt(3.333333333334, 11));
+  CheckNearEnough(3.33333333334, tiUtils.tiDecimalRoundExt(3.333333333335, 11));
+  CheckNearEnough(3.33333333334, tiUtils.tiDecimalRoundExt(3.333333333336, 11));
 
-  CheckEquals(3.3333333333, tiUtils.tiDecimalRoundExt(3.33333333334, 10));
-  CheckEquals(3.3333333334, tiUtils.tiDecimalRoundExt(3.33333333335, 10));
-  CheckEquals(3.3333333334, tiUtils.tiDecimalRoundExt(3.33333333336, 10));
+  CheckNearEnough(3.3333333333, tiUtils.tiDecimalRoundExt(3.33333333334, 10));
+  CheckNearEnough(3.3333333334, tiUtils.tiDecimalRoundExt(3.33333333335, 10));
+  CheckNearEnough(3.3333333334, tiUtils.tiDecimalRoundExt(3.33333333336, 10));
 
-  CheckEquals(3.333333333, tiUtils.tiDecimalRoundExt(3.3333333334, 9));
-  CheckEquals(3.333333334, tiUtils.tiDecimalRoundExt(3.3333333335, 9));
-  CheckEquals(3.333333334, tiUtils.tiDecimalRoundExt(3.3333333336, 9));
+  CheckNearEnough(3.333333333, tiUtils.tiDecimalRoundExt(3.3333333334, 9));
+  CheckNearEnough(3.333333334, tiUtils.tiDecimalRoundExt(3.3333333335, 9));
+  CheckNearEnough(3.333333334, tiUtils.tiDecimalRoundExt(3.3333333336, 9));
 
-  CheckEquals(3.33333333, tiUtils.tiDecimalRoundExt(3.333333334,   8));
-  CheckEquals(3.33333334, tiUtils.tiDecimalRoundExt(3.333333335,   8));
-  CheckEquals(3.33333334, tiUtils.tiDecimalRoundExt(3.333333336,   8));
+  CheckNearEnough(3.33333333, tiUtils.tiDecimalRoundExt(3.333333334,   8));
+  CheckNearEnough(3.33333334, tiUtils.tiDecimalRoundExt(3.333333335,   8));
+  CheckNearEnough(3.33333334, tiUtils.tiDecimalRoundExt(3.333333336,   8));
 
-  CheckEquals(3.3333333, tiUtils.tiDecimalRoundExt(3.33333334,   7));
-  CheckEquals(3.3333334, tiUtils.tiDecimalRoundExt(3.33333335,   7));
-  CheckEquals(3.3333334, tiUtils.tiDecimalRoundExt(3.33333336,   7));
+  CheckNearEnough(3.3333333, tiUtils.tiDecimalRoundExt(3.33333334,   7));
+  CheckNearEnough(3.3333334, tiUtils.tiDecimalRoundExt(3.33333335,   7));
+  CheckNearEnough(3.3333334, tiUtils.tiDecimalRoundExt(3.33333336,   7));
 
-  CheckEquals(3.333333, tiUtils.tiDecimalRoundExt(3.3333334,   6));
-  CheckEquals(3.333334, tiUtils.tiDecimalRoundExt(3.3333335,   6));
-  CheckEquals(3.333334, tiUtils.tiDecimalRoundExt(3.3333336,   6));
+  CheckNearEnough(3.333333, tiUtils.tiDecimalRoundExt(3.3333334,   6));
+  CheckNearEnough(3.333334, tiUtils.tiDecimalRoundExt(3.3333335,   6));
+  CheckNearEnough(3.333334, tiUtils.tiDecimalRoundExt(3.3333336,   6));
 
-  CheckEquals(3.33333, tiUtils.tiDecimalRoundExt(3.333334,   5));
-  CheckEquals(3.33334, tiUtils.tiDecimalRoundExt(3.333335,   5));
-  CheckEquals(3.33334, tiUtils.tiDecimalRoundExt(3.333336,   5));
+  CheckNearEnough(3.33333, tiUtils.tiDecimalRoundExt(3.333334,   5));
+  CheckNearEnough(3.33334, tiUtils.tiDecimalRoundExt(3.333335,   5));
+  CheckNearEnough(3.33334, tiUtils.tiDecimalRoundExt(3.333336,   5));
 
-  CheckEquals(3.3333, tiUtils.tiDecimalRoundDbl(3.33334,   4));
-  CheckEquals(3.3334, tiUtils.tiDecimalRoundDbl(3.33335,   4));
-  CheckEquals(3.3334, tiUtils.tiDecimalRoundDbl(3.33336,   4));
+  CheckNearEnough(3.3333, tiUtils.tiDecimalRoundDbl(3.33334,   4));
+  CheckNearEnough(3.3334, tiUtils.tiDecimalRoundDbl(3.33335,   4));
+  CheckNearEnough(3.3334, tiUtils.tiDecimalRoundDbl(3.33336,   4));
 
-  CheckEquals(3.333, tiUtils.tiDecimalRoundExt(3.3334,   3));
-  CheckEquals(3.334, tiUtils.tiDecimalRoundExt(3.3335,   3));
-  CheckEquals(3.334, tiUtils.tiDecimalRoundExt(3.3336,   3));
+  CheckNearEnough(3.333, tiUtils.tiDecimalRoundExt(3.3334,   3));
+  CheckNearEnough(3.334, tiUtils.tiDecimalRoundExt(3.3335,   3));
+  CheckNearEnough(3.334, tiUtils.tiDecimalRoundExt(3.3336,   3));
 
-  CheckEquals(3.33, tiUtils.tiDecimalRoundExt(3.334,   2));
-  CheckEquals(3.34, tiUtils.tiDecimalRoundExt(3.335,   2));
-  CheckEquals(3.34, tiUtils.tiDecimalRoundExt(3.336,   2));
+  CheckNearEnough(3.33, tiUtils.tiDecimalRoundExt(3.334,   2));
+  CheckNearEnough(3.34, tiUtils.tiDecimalRoundExt(3.335,   2));
+  CheckNearEnough(3.34, tiUtils.tiDecimalRoundExt(3.336,   2));
 
-  CheckEquals(3.3, tiUtils.tiDecimalRoundExt(3.34,   1));
-  CheckEquals(3.4, tiUtils.tiDecimalRoundExt(3.35,   1));
-  CheckEquals(3.4, tiUtils.tiDecimalRoundExt(3.36,   1));
+  CheckNearEnough(3.3, tiUtils.tiDecimalRoundExt(3.34,   1));
+  CheckNearEnough(3.4, tiUtils.tiDecimalRoundExt(3.35,   1));
+  CheckNearEnough(3.4, tiUtils.tiDecimalRoundExt(3.36,   1));
 
-  CheckEquals(3, tiUtils.tiDecimalRoundExt(3.4,   0));
-  CheckEquals(4, tiUtils.tiDecimalRoundExt(3.5,   0));
-  CheckEquals(4, tiUtils.tiDecimalRoundExt(3.6,   0));
+  CheckNearEnough(3, tiUtils.tiDecimalRoundExt(3.4,   0));
+  CheckNearEnough(4, tiUtils.tiDecimalRoundExt(3.5,   0));
+  CheckNearEnough(4, tiUtils.tiDecimalRoundExt(3.6,   0));
 
 end;
 
 procedure TTestTIUtils.tiDecimalRoundSgl;
 begin
-  CheckEquals(1, tiUtils.tiDecimalRoundSgl(1,   0));
-  CheckEquals(1, tiUtils.tiDecimalRoundSgl(1.4, 0));
-  CheckEquals(2, tiUtils.tiDecimalRoundSgl(1.5, 0));
-  CheckEquals(2, tiUtils.tiDecimalRoundSgl(1.6, 0));
+  CheckNearEnough(1, tiUtils.tiDecimalRoundSgl(1,   0));
+  CheckNearEnough(1, tiUtils.tiDecimalRoundSgl(1.4, 0));
+  CheckNearEnough(2, tiUtils.tiDecimalRoundSgl(1.5, 0));
+  CheckNearEnough(2, tiUtils.tiDecimalRoundSgl(1.6, 0));
 
-  CheckEquals(12, tiUtils.tiDecimalRoundSgl(12,   0));
-  CheckEquals(12, tiUtils.tiDecimalRoundSgl(12.4, 0));
-  CheckEquals(13, tiUtils.tiDecimalRoundSgl(12.5, 0));
-  CheckEquals(13, tiUtils.tiDecimalRoundSgl(12.6, 0));
+  CheckNearEnough(12, tiUtils.tiDecimalRoundSgl(12,   0));
+  CheckNearEnough(12, tiUtils.tiDecimalRoundSgl(12.4, 0));
+  CheckNearEnough(13, tiUtils.tiDecimalRoundSgl(12.5, 0));
+  CheckNearEnough(13, tiUtils.tiDecimalRoundSgl(12.6, 0));
 
-  CheckEquals(123, tiUtils.tiDecimalRoundSgl(123,   0));
-  CheckEquals(123, tiUtils.tiDecimalRoundSgl(123.4, 0));
-  CheckEquals(124, tiUtils.tiDecimalRoundSgl(123.5, 0));
-  CheckEquals(124, tiUtils.tiDecimalRoundSgl(123.6, 0));
+  CheckNearEnough(123, tiUtils.tiDecimalRoundSgl(123,   0));
+  CheckNearEnough(123, tiUtils.tiDecimalRoundSgl(123.4, 0));
+  CheckNearEnough(124, tiUtils.tiDecimalRoundSgl(123.5, 0));
+  CheckNearEnough(124, tiUtils.tiDecimalRoundSgl(123.6, 0));
 
-  CheckEquals(1234, tiUtils.tiDecimalRoundSgl(1234,   0));
-  CheckEquals(1234, tiUtils.tiDecimalRoundSgl(1234.4, 0));
-  CheckEquals(1235, tiUtils.tiDecimalRoundSgl(1234.5, 0));
-  CheckEquals(1235, tiUtils.tiDecimalRoundSgl(1234.6, 0));
+  CheckNearEnough(1234, tiUtils.tiDecimalRoundSgl(1234,   0));
+  CheckNearEnough(1234, tiUtils.tiDecimalRoundSgl(1234.4, 0));
+  CheckNearEnough(1235, tiUtils.tiDecimalRoundSgl(1234.5, 0));
+  CheckNearEnough(1235, tiUtils.tiDecimalRoundSgl(1234.6, 0));
 
-  CheckEquals(12345, tiUtils.tiDecimalRoundSgl(12345,   0));
-  CheckEquals(12345, tiUtils.tiDecimalRoundSgl(12345.4, 0));
-  CheckEquals(12346, tiUtils.tiDecimalRoundSgl(12345.5, 0));
-  CheckEquals(12346, tiUtils.tiDecimalRoundSgl(12345.6, 0));
+  CheckNearEnough(12345, tiUtils.tiDecimalRoundSgl(12345,   0));
+  CheckNearEnough(12345, tiUtils.tiDecimalRoundSgl(12345.4, 0));
+  CheckNearEnough(12346, tiUtils.tiDecimalRoundSgl(12345.5, 0));
+  CheckNearEnough(12346, tiUtils.tiDecimalRoundSgl(12345.6, 0));
 
-  CheckEquals(3.33333, tiUtils.tiDecimalRoundSgl(3.333334,   5));
-  CheckEquals(3.33334, tiUtils.tiDecimalRoundSgl(3.333335,   5));
-  CheckEquals(3.33334, tiUtils.tiDecimalRoundSgl(3.333336,   5));
+  CheckNearEnough(3.33333, tiUtils.tiDecimalRoundSgl(3.333334,   5));
+  CheckNearEnough(3.33334, tiUtils.tiDecimalRoundSgl(3.333335,   5));
+  CheckNearEnough(3.33334, tiUtils.tiDecimalRoundSgl(3.333336,   5));
 
-  CheckEquals(3.3333, tiUtils.tiDecimalRoundSgl(3.33334,   4));
-  CheckEquals(3.3334, tiUtils.tiDecimalRoundSgl(3.33335,   4));
-  CheckEquals(3.3334, tiUtils.tiDecimalRoundSgl(3.33336,   4));
+  CheckNearEnough(3.3333, tiUtils.tiDecimalRoundSgl(3.33334,   4));
+  CheckNearEnough(3.3334, tiUtils.tiDecimalRoundSgl(3.33335,   4));
+  CheckNearEnough(3.3334, tiUtils.tiDecimalRoundSgl(3.33336,   4));
 
-  CheckEquals(3.333, tiUtils.tiDecimalRoundSgl(3.3334,   3));
-  CheckEquals(3.334, tiUtils.tiDecimalRoundSgl(3.3335,   3));
-  CheckEquals(3.334, tiUtils.tiDecimalRoundSgl(3.3336,   3));
+  CheckNearEnough(3.333, tiUtils.tiDecimalRoundSgl(3.3334,   3));
+  CheckNearEnough(3.334, tiUtils.tiDecimalRoundSgl(3.3335,   3));
+  CheckNearEnough(3.334, tiUtils.tiDecimalRoundSgl(3.3336,   3));
 
-  CheckEquals(3.33, tiUtils.tiDecimalRoundSgl(3.334,   2));
-  CheckEquals(3.34, tiUtils.tiDecimalRoundSgl(3.335,   2));
-  CheckEquals(3.34, tiUtils.tiDecimalRoundSgl(3.336,   2));
+  CheckNearEnough(3.33, tiUtils.tiDecimalRoundSgl(3.334,   2));
+  CheckNearEnough(3.34, tiUtils.tiDecimalRoundSgl(3.335,   2));
+  CheckNearEnough(3.34, tiUtils.tiDecimalRoundSgl(3.336,   2));
 
-  CheckEquals(3.3, tiUtils.tiDecimalRoundSgl(3.34,   1));
-  CheckEquals(3.4, tiUtils.tiDecimalRoundSgl(3.35,   1));
-  CheckEquals(3.4, tiUtils.tiDecimalRoundSgl(3.36,   1));
+  CheckNearEnough(3.3, tiUtils.tiDecimalRoundSgl(3.34,   1));
+  CheckNearEnough(3.4, tiUtils.tiDecimalRoundSgl(3.35,   1));
+  CheckNearEnough(3.4, tiUtils.tiDecimalRoundSgl(3.36,   1));
 
-  CheckEquals(3, tiUtils.tiDecimalRoundSgl(3.4,   0));
-  CheckEquals(4, tiUtils.tiDecimalRoundSgl(3.5,   0));
-  CheckEquals(4, tiUtils.tiDecimalRoundSgl(3.6,   0));
+  CheckNearEnough(3, tiUtils.tiDecimalRoundSgl(3.4,   0));
+  CheckNearEnough(4, tiUtils.tiDecimalRoundSgl(3.5,   0));
+  CheckNearEnough(4, tiUtils.tiDecimalRoundSgl(3.6,   0));
 end;
 
 procedure TTestTIUtils.tiDeleteFiles;

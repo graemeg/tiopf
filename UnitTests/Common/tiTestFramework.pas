@@ -102,8 +102,6 @@ type
     property    Name: string read GetName;
       // DUnit compatibility interface
       {$I DUnitCompatableInterface.inc}
-    {$ELSE}
-      constructor Create {$IFNDEF DUNIT2}(AMethodName: string){$ENDIF}; override;
     {$ENDIF}
     destructor Destroy; override;
     class function TempDirectory: string;
@@ -170,17 +168,16 @@ type
     {: Check a TtiObject's IsValid Method by calling AData.IsValid, then changing APropName to ANewValue and trying again.
        APropName must be a real property.}
     procedure CheckTIObjectIsValidMethod(const AData: TtiObject; const APropName: string; const AInvalidValue: Real; const AErrorProperty: string = ''); overload;
-//    {: Check a delete visitor is working by creating an instance of TtiObjectClass (which must be a list), then calling it's read method.
-//       There must be one object in the list. This object will be marked as deleted, then saved and the list will be re-read. The
-//       list must be empty on the second read.}
-//    procedure CheckDeletionFromDatabase(const AListClass: TtiObjectClass);
-    procedure CheckINIFileEntry(const AExpected: TDateTime; const AINIFileName, AINISection, AINIIdent: string);
 
+    procedure CheckINIFileEntry(const AExpected: TDateTime; const AINIFileName, AINISection, AINIIdent: string);
 
   end;
 
   TtiTestCaseClass    = class of TtiTestCase;
 
+  {: Adds the class function PersistenceLayerName, which must be overridden in
+     the concrete classes. SetUpOnce uses PersistenceLayerName to find the
+     appropriate tiOPFTestSetupData object in the GTIOPFTestManager}
   TtiTestCaseWithTestSetupData = class(TtiTestCase)
   private
     FtiOPFTestSetupData: TtiOPFTestSetupData;
@@ -523,12 +520,6 @@ procedure TtiTestCase.Check(const ACondition: Boolean; AMessage: string; const A
 begin
   Check(ACondition, Format(AMessage, AArgs));
 end;
-
-constructor TtiTestCase.Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF};
-begin
-  inherited;
-end;
-
 
 {$IFDEF FPC}
 // DUnit compatibility interface
