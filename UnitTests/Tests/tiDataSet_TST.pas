@@ -65,11 +65,11 @@ begin
 end;
 
 const
-  FirstValue = 1;
-  LastValue = 100;
+  CFirstValue = 1;
+  CLastValue = 100;
 
 type
-  TtiDatasetItem = class(TtiObject)
+  TtiDatasetItemForTesting = class(TtiObject)
   private
     FIntField: integer;
     FFloatField: Double;
@@ -89,38 +89,35 @@ type
   { TTestTiDataset }
 
 procedure TTestTiDataset.PopulateList;
-var i: integer;
-  d: TtiDatasetItem;
+var
+  i: integer;
+  LO: TtiDatasetItemForTesting;
 begin
-  for i := FirstValue to LastValue do begin
-    d := TtiDatasetItem.CreateNew;
-    d.IntField := i;
-    d.StrField := IntToStr(1);
-    d.BoolField := Odd(i);
-    d.DateField := Now;
-    d.FloatField := i - 0.1;
-    d.MemoField := stringofchar(chr(i), i);
-    FList.Add(d);
+  for i := CFirstValue to CLastValue do begin
+    LO := TtiDatasetItemForTesting.Create;
+    LO.OID.AsString:= IntToStr(i);
+    LO.IntField := i;
+    LO.StrField := IntToStr(1);
+    LO.BoolField := Odd(i);
+    LO.DateField := Now;
+    LO.FloatField := i - 0.1;
+    LO.MemoField := stringofchar(chr(i), i);
+    FList.Add(LO);
   end;
 end;
 
 procedure TTestTiDataset.LinkListToDataset;
 begin
-//  with FDataset do begin
-//    ObjectList := FList;
-//  end;
-  FDataset.LinkObject(FList, TtiDatasetItem);
+  FDataset.LinkObject(FList, TtiDatasetItemForTesting);
 end;
 
 { TTestTiDataSetElements }
 procedure TTestTiDataset.Setup;
 begin
   inherited;
-//  gTIOPFManager.DefaultPersistenceLayerName:= 'XML';
-//  gTIOPFManager.ConnectDatabase('dbdemos.xml', '', '');
   FList := TtiObjectList.Create;
   FDataset := TtiDataset.Create(nil);
-  FDataset.ObjectClass := TtiDatasetItem;
+  FDataset.ObjectClass := TtiDatasetItemForTesting;
   PopulateList; //Adds 100 Items 1..100
   LinkListToDataset;
   FDataset.Open;
@@ -156,13 +153,13 @@ procedure TTestTiDataset.CheckOpenFirstBug;
 //This wasn't the case; I repaired this on 22 Feb 2004
 begin
   with FDataset do begin
-    Check(FieldByName('IntField').AsInteger = FirstValue, 'Open CheckOpenFirstBug retrieves incorrect object (1)');
-    Check((GetActiveItem as TtiDatasetItem).IntField = FirstValue, 'Open CheckOpenFirstBug.GetActiveItem retrieves incorrect object (1)');
+    Check(FieldByName('IntField').AsInteger = CFirstValue, 'Open CheckOpenFirstBug retrieves incorrect object (1)');
+    Check((GetActiveItem as TtiDatasetItemForTesting).IntField = CFirstValue, 'Open CheckOpenFirstBug.GetActiveItem retrieves incorrect object (1)');
 
     Close;
     Open;
-    Check(FieldByName('IntField').AsInteger = FirstValue, 'Open CheckOpenFirstBug retrieves incorrect object (2)');
-    Check((GetActiveItem as TtiDatasetItem).IntField = FirstValue, 'Open CheckOpenFirstBug.GetActiveItem retrieves incorrect object (2)');
+    Check(FieldByName('IntField').AsInteger = CFirstValue, 'Open CheckOpenFirstBug retrieves incorrect object (2)');
+    Check((GetActiveItem as TtiDatasetItemForTesting).IntField = CFirstValue, 'Open CheckOpenFirstBug.GetActiveItem retrieves incorrect object (2)');
   end;
 end;
 
@@ -170,8 +167,8 @@ procedure TTestTiDataset.CheckFirst;
 begin
   with FDataset do begin
     First;
-    Check(FieldByName('IntField').AsInteger = FirstValue, 'CheckFirst retrieves incorrect object');
-    Check((GetActiveItem as TtiDatasetItem).IntField = FirstValue, 'CheckFirst.GetActiveItem retrieves incorrect object');
+    Check(FieldByName('IntField').AsInteger = CFirstValue, 'CheckFirst retrieves incorrect object');
+    Check((GetActiveItem as TtiDatasetItemForTesting).IntField = CFirstValue, 'CheckFirst.GetActiveItem retrieves incorrect object');
   end;
 end;
 
@@ -179,7 +176,7 @@ procedure TTestTiDataset.CheckIterate;
 var AValue: integer;
 begin
   with FDataset do begin
-    for AValue := FirstValue to LastValue do begin
+    for AValue := CFirstValue to CLastValue do begin
       Check(FieldByName('IntField').AsInteger = AValue, 'CheckIterate retrieves incorrect object ' + IntToStr(AValue));
       Next;
     end;
@@ -190,8 +187,8 @@ procedure TTestTiDataset.CheckLast;
 begin
   with FDataset do begin
     Last;
-    Check(FieldByName('IntField').AsInteger = LastValue, 'CheckLast retrieves incorrect object');
-    Check((GetActiveItem as TtiDatasetItem).IntField = LastValue, 'CheckLast.GetActiveItem retrieves incorrect object');
+    Check(FieldByName('IntField').AsInteger = CLastValue, 'CheckLast retrieves incorrect object');
+    Check((GetActiveItem as TtiDatasetItemForTesting).IntField = CLastValue, 'CheckLast.GetActiveItem retrieves incorrect object');
   end;
 end;
 
@@ -207,7 +204,7 @@ procedure TTestTiDataset.RecordCount;
 var ARecordcount: integer;
 begin
   ARecordCount := FDataset.RecordCount;
-  Check(ARecordCount = LastValue - FirstValue + 1, 'Incorrect RecordCount');
+  Check(ARecordCount = CLastValue - CFirstValue + 1, 'Incorrect RecordCount');
   //ADataset.OnFilterRecord := FilterData;
   //ADataset.Filtered := true;
   //ARecordCount := ADataset.RecordCount
@@ -232,11 +229,11 @@ begin
 
     First;
     ARecordId := FieldByName('IntField').AsInteger;
-    Check(ARecordId = FirstValue, 'Navigation Error - First has not moved to first record');
+    Check(ARecordId = CFirstValue, 'Navigation Error - First has not moved to first record');
 
     Last;
     ARecordId := FieldByName('IntField').AsInteger;
-    Check(ARecordId = LastValue, 'Navigation Error - Last has not moved to last record');
+    Check(ARecordId = CLastValue, 'Navigation Error - Last has not moved to last record');
 
     GotoBookmark(SavePlace21);
     ARecordId := FieldByName('IntField').AsInteger;
@@ -254,7 +251,7 @@ begin
   checkres := 0;
   FDataset.First;
   for i := 0 to FList.Count - 1 do begin
-    checkres := checkres +(FList[i]as TtiDatasetItem).IntField;
+    checkres := checkres +(FList[i]as TtiDatasetItemForTesting).IntField;
   end;
 
   rsum := 0;
@@ -452,7 +449,7 @@ begin
 
   ATrueVales := 0;
   for i:= 0 to FList.Count-1 do begin
-    if TtiDatasetItem(FList[i]).BoolField
+    if TtiDatasetItemForTesting(FList[i]).BoolField
     then Inc(ATrueVales);
   end;
 
@@ -462,7 +459,7 @@ begin
     Filtered := true;
     First;
     while not Eof do begin
-      Check((GetActiveItem as TtiDatasetItem).BoolField, 'Only true booleans should show');
+      Check((GetActiveItem as TtiDatasetItemForTesting).BoolField, 'Only true booleans should show');
       inc(AFoundValues);
       Next;
     end;
@@ -514,12 +511,12 @@ begin
     First; //Record #1
     MoveBy(23); //#24
     for c := 0 to 9 do MoveBy( - 1); // 14
-    Check((GetActiveItem as TtiDatasetItem).IntField = 14, 'Error in navigation');
+    Check((GetActiveItem as TtiDatasetItemForTesting).IntField = 14, 'Error in navigation');
 
     Last; //Record #100
     MoveBy(-25); //#75
     for c := 0 to 9 do MoveBy( - 1); // 65
-    Check((GetActiveItem as TtiDatasetItem).IntField = 65, 'Error in navigation');
+    Check((GetActiveItem as TtiDatasetItemForTesting).IntField = 65, 'Error in navigation');
   end;
 end;
 
@@ -528,7 +525,7 @@ begin
   with FDataset do begin
     //We are siting on record 1
     MoveBy(3); // to record 4
-    Check((GetActiveItem as TtiDatasetItem).IntField = 4, 'GetActiveItem retrieves incorrect object');
+    Check((GetActiveItem as TtiDatasetItemForTesting).IntField = 4, 'GetActiveItem retrieves incorrect object');
   end;
 end;
 
