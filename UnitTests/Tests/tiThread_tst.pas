@@ -4,8 +4,7 @@ unit tiThread_TST;
 
 interface
 uses
-   tiTestFrameWork
- ;
+   tiTestFrameWork;
 
 type
 
@@ -19,6 +18,7 @@ type
     procedure TThreadDoTerminateFreeOnTerminateDoTerminate; // Leak
     procedure tiThreadFreeOnTerminate; // Leak
     procedure tiThreadExplicitFree; // No leak
+    procedure TMultiReadSingleWriteSynchronizer;
   end;
 
 procedure RegisterTests;
@@ -38,6 +38,7 @@ const
 
 var
   URunOnce: Boolean = False;
+  UVCLSynchronizer: TMultiReadExclusiveWriteSynchronizer;
 
 procedure RegisterTests;
 begin
@@ -214,6 +215,16 @@ begin
   Check(True);
 end;
 
+procedure TTestTIThread.TMultiReadSingleWriteSynchronizer;
+begin
+  AllowedMemoryLeakSize:= 24;
+  UVCLSynchronizer.BeginRead;
+  UVCLSynchronizer.EndRead;
+  UVCLSynchronizer.BeginWrite;
+  UVCLSynchronizer.EndWrite;
+  Check(True);
+end;
+
 procedure TTestTIThread.TThreadDoTerminateFreeOnTerminateDoTerminate;
 var
   LThread: TThreadOnTerminateForTesting;
@@ -231,12 +242,15 @@ begin
   Check(True);
 end;
 
+{ TtiMultiReadExclusiveWriteSynchronizerForTesting }
+
 initialization
   UList:= TList.Create;
   UObjectList:= TObjectList.Create(False);
+  UVCLSynchronizer:= TMultiReadExclusiveWriteSynchronizer.Create;
 
 finalization
   FreeAndNil(UList);
   FreeAndNil(UObjectList);
-
+  FreeAndNil(UVCLSynchronizer);
 end.

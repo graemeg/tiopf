@@ -88,30 +88,30 @@ end;
 
 procedure TTestTIDatabaseRemote.CreateDatabase;
 begin
-  try
-    FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
-    Fail('Exception not raised when it should have been');
-  except
-    on e: Exception do
-    begin
-      CheckIs(e, EAssertionFailed);
-      Check(Pos('CreateDatabase not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
-    end;
-  end;
+//  try
+//    FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+//    Fail('Exception not raised when it should have been');
+//  except
+//    on e: Exception do
+//    begin
+//      CheckIs(e, EAssertionFailed);
+//      Check(Pos('CreateDatabase not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
+//    end;
+//  end;
 end;
 
 procedure TTestTIDatabaseRemote.DatabaseExists;
 begin
-  try
-    FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
-    Fail('Exception not raised when it should have been');
-  except
-    on e: Exception do
-    begin
-      CheckIs(e, EAssertionFailed);
-      Check(Pos('DatabaseExists not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
-    end;
-  end;
+//  try
+//    FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+//    Fail('Exception not raised when it should have been');
+//  except
+//    on e: Exception do
+//    begin
+//      CheckIs(e, EAssertionFailed);
+//      Check(Pos('DatabaseExists not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
+//    end;
+//  end;
 end;
 
 class function TTestTIDatabaseRemote.PersistenceLayerName: string;

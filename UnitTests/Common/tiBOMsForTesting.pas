@@ -466,7 +466,6 @@ var
 begin
   inherited;
   SortByProps(['OIDAsInteger']);
-  ;
   for i := 0 to Count - 1 do
     Items[i].SortByProps(['OIDAsInteger']);
 end;

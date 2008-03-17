@@ -4,29 +4,14 @@ unit tiVisitor;
 
 {$I tiDefines.inc}
 
- // ToDo:
-
- //    Add comments in PasDoc format
-
- //    Change signature of
- //      AcceptVisitor
- //      Init
- //      SetupParams
- //      MapRowToObject
- //    Remove reference to Visited in TtiObjectVisitor
- //    Update code templates
-
- //    Refactor tiTestFramework to remove duplication
- //    Refactor the DBConnectionPool so Lock returns a TtiDatabase
-
 interface
 
 uses
   tiBaseObject,
   tiStreams,
+  tiUtils,
   Classes,
   TypInfo,
-//  SyncObjs,
   SysUtils,
   Contnrs;
 
@@ -285,7 +270,7 @@ type
   private
     FTIOPFManager:     TtiBaseObject;
     FVisitorMappings:  TObjectList;
-    FSynchronizer:     TMultiReadExclusiveWriteSynchronizer;
+    FSynchronizer:     TtiMultiReadExclusiveWriteSynchronizer;
     procedure ExecuteVisitors(const AVisitorController: TtiVisitorController;
       const AVisitors: TList; const AVisited: TtiVisited);
     function GetVisitorMappings: TList;
@@ -374,9 +359,7 @@ uses
   tiLog,
   tiOPFManager,
   tiConstants,
-//  tiPersistenceLayers,
   tiExcept,
-  tiUtils,
   tiRTTI;
 
 procedure VisStreamToFile(const AData: TtiVisited; const AFileName: string;
@@ -878,7 +861,7 @@ begin
   Assert(ATIOPFManager.TestValid(TtiOPFManager, True), CTIErrorInvalidObject);
   inherited Create;
   FTIOPFManager     := ATIOPFManager;
-  FSynchronizer     := TMultiReadExclusiveWriteSynchronizer.Create;
+  FSynchronizer     := TtiMultiReadExclusiveWriteSynchronizer.Create;
   FVisitorMappings  := TObjectList.Create;
 end;
 

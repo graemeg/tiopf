@@ -63,7 +63,8 @@ type
 
   TTestTIAutoMapOperation = class(TtiTestCaseWithDatabaseConnection)
   private
-    procedure InserTtiObjectListForTesting;
+    procedure InserTtiObjectListForTesting(
+      const AGroupCount, AItemCount: Integer);
     function  CreateTIOPFTestData : TtiObjectListForTesting;
     procedure UpdateTIOPFTestData(AData : TtiObjectListForTesting);
     function  TestIntToFloat(pInt : Integer): extended;
@@ -72,6 +73,7 @@ type
     procedure InserTtiObjectListForTestingInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);
     procedure InserTtiObjectListForTestingInheritedGroup(AOID: integer);
   protected
+    procedure SetUpOnce; override;
     procedure SetUp; override;
     procedure TearDown; override;
     procedure DoReadWriteString(const pLen : integer);
@@ -85,7 +87,7 @@ type
     procedure DoReadWriteOID(AValue: string);
 
   published
-    procedure TestSetupAndTearDown;
+    procedure TestSetupAndTearDown; virtual;
 
     procedure ReadWriteString1;
     procedure ReadWriteString10;
@@ -146,6 +148,7 @@ type
     procedure CollectionOfInheritedObjWithFKRead;
     procedure CollectionOfInheritedObjWithOutFKRead;
     procedure CollectionReadPK;
+    procedure CollectionReadPKThreaded; virtual;
     procedure CollectionReadAll;
     procedure CollectionReadAllItems;
     procedure CollectionCreate;
@@ -169,6 +172,7 @@ uses
   ,tiOIDGUID
   ,Contnrs
   ,tiTestDependencies
+  ,tiThread
  ;
 
 const
@@ -256,7 +260,7 @@ var
   lGroupVal : integer;
   lItemVal, lOID : integer;
 begin
-  InserTtiObjectListForTesting;
+  InserTtiObjectListForTesting(CGroupCount, CItemCount);
   lData := TtiObjectListForTesting.Create;
   try
     lData.Read(DatabaseName, PersistenceLayerName);
@@ -289,7 +293,7 @@ var
   lData : TtiObjectListNestedForTesting;
   i : integer;
 begin
-  InserTtiObjectListForTesting;
+  InserTtiObjectListForTesting(CGroupCount, CItemCount);
   lData := TtiObjectListNestedForTesting.Create;
   try
     lData.Read(DatabaseName, PersistenceLayerName);
@@ -412,6 +416,12 @@ procedure TTestTIAutoMapOperation.SetUp;
 begin
   inherited;
   SetupTestTables;
+end;
+
+procedure TTestTIAutoMapOperation.SetUpOnce;
+  begin
+  inherited;
+  DeleteTestTables;
 end;
 
 procedure TTestTIAutoMapOperation.TearDown;
@@ -1468,7 +1478,7 @@ var
   i : integer;
   lGroupVal : integer;
 begin
-  InserTtiObjectListForTesting;
+  InserTtiObjectListForTesting(CGroupCount, CItemCount);
   lData := TtiObjectListForTesting.Create;
   try
     lData.ReadPK(DatabaseName, PersistenceLayerName);
@@ -1487,6 +1497,62 @@ begin
   finally
     lData.Free;
   end;
+end;
+
+type
+
+  TtiObjectyListForTestingThread = class(TtiThread)
+  private
+    FTestCase: TtiTestCase;
+    FDatabaseName: String;
+    FPersistenceLayerName: String;
+    FGroupCount: integer;
+    FItemCount: integer;
+  public
+    constructor Create(const ATestCase: TtiTestCase;
+      const ADatabaseName: string; const APersistenceLayerName: string;
+      const AGroupCount: integer);
+    procedure Execute; override;
+  end;
+
+  constructor TtiObjectyListForTestingThread.Create(
+    const ATestCase: TtiTestCase;
+    const ADatabaseName, APersistenceLayerName: string;
+    const AGroupCount: integer);
+  begin
+    inherited Create(True);
+    FreeOnTerminate:= False;
+    FTestCase:= ATestCase;
+    FDatabaseName:= ADatabaseName;
+    FPersistenceLayerName:= APersistenceLayerName;
+    FGroupCount:= AGroupCount;
+  end;
+
+  procedure TtiObjectyListForTestingThread.Execute;
+  var
+    LData : TtiObjectListForTesting;
+  begin
+    LData := TtiObjectListForTesting.Create;
+    try
+      LData.ReadPK(FDatabaseName, FPersistenceLayerName);
+      FTestCase.Check(posClean = LData.ObjectState, 'ObjectState');
+      FTestCase.CheckNotEquals(FGroupCount, LData.Count);
+    finally
+      LData.Free;
+    end;
+  end;
+
+
+procedure TTestTIAutoMapOperation.CollectionReadPKThreaded;
+var
+  LThread: TtiObjectyListForTestingThread;
+begin
+  InserTtiObjectListForTesting(1, 1);
+  LThread:= TtiObjectyListForTestingThread.Create(Self, DatabaseName, PersistenceLayerName, 1);
+  LThread.Resume;
+  LThread.WaitFor;
+  LThread.Free;
+  Check(True);
 end;
 
 procedure TTestTIAutoMapFramework.TestClassDBCollections_IsCollection;
@@ -1509,7 +1575,8 @@ begin
   end;
 end;
 
-procedure TTestTIAutoMapOperation.InserTtiObjectListForTesting;
+procedure TTestTIAutoMapOperation.InserTtiObjectListForTesting(
+  const AGroupCount, AItemCount: Integer);
   procedure _InsertGroup(pI : integer);
   var
     lQueryParams : TtiQueryParams;
@@ -1554,10 +1621,10 @@ var
   lItemOID : integer;
 begin
   lItemOID := 1;
-  for i := 1 to cGroupCount do
+  for i := 1 to AGroupCount do
   begin
     _InsertGroup(i);
-    for j := 1 to cItemCount do
+    for j := 1 to AItemCount do
     begin
       _InsertItem(lItemOID, i, j);
       inc(lItemOID);

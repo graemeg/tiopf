@@ -11,6 +11,7 @@ uses
   ,Classes
   ,Math
   ,Contnrs
+  ,SyncObjs
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
@@ -499,6 +500,28 @@ type
     function    Remove(AValue: Int64): Integer;
     property    Items[i: Integer]: Int64 Read GetItems Write SetItems;
     property    Count: Integer Read GetCount;
+  end;
+
+  {: Provides similar functionality to the VCL's TMultiReadSingleWriteSynchronizer,
+     except that a Read can not be promoted to a write. The VCL's version reports
+     a leak under DUnit2 and this has been fixed in the tiOPF version.}
+  TtiMultiReadExclusiveWriteSynchronizer = class(TtiBaseObject)
+  private
+    FReadCount: Cardinal;
+    FWriting: Boolean;
+    FCritSect: TCriticalSection;
+    function LockForWrite: boolean;
+    function LockForRead: boolean;
+  protected
+    function CanLockForWrite: boolean; virtual;
+    function CanLockForRead: boolean; virtual;
+  public
+    constructor Create;
+    destructor  Destroy; override;
+    procedure   BeginRead;
+    procedure   EndRead;
+    procedure   BeginWrite;
+    procedure   EndWrite;
   end;
 
 implementation
@@ -3456,6 +3479,85 @@ end;
 function tiSetPrecision(const AValue : Extended; const APrecision : integer = 3): Extended;
 begin
   Result:= tiDecimalRoundExt(AValue, APrecision);
+end;
+
+function TtiMultiReadExclusiveWriteSynchronizer.LockForRead: boolean;
+begin
+  FCritSect.Enter;
+  try
+    result:= CanLockForRead;
+    if Result then
+      Inc(FReadCount);
+  finally
+    FCritSect.Leave;
+  end;
+end;
+
+function TtiMultiReadExclusiveWriteSynchronizer.LockForWrite: boolean;
+begin
+  FCritSect.Enter;
+  try
+    result:= CanLockForWrite;
+    if Result then
+      FWriting:= True;
+  finally
+    FCritSect.Leave;
+  end;
+end;
+
+function TtiMultiReadExclusiveWriteSynchronizer.CanLockForRead: boolean;
+begin
+  result:= not FWriting;
+end;
+
+function TtiMultiReadExclusiveWriteSynchronizer.CanLockForWrite: boolean;
+begin
+  result:= (FReadCount = 0) and not FWriting;
+end;
+
+constructor TtiMultiReadExclusiveWriteSynchronizer.Create;
+begin
+  inherited Create;
+  FCritSect:= TCriticalSection.Create;
+end;
+
+destructor TtiMultiReadExclusiveWriteSynchronizer.Destroy;
+begin
+  BeginWrite;
+  FCritSect.Free;
+  inherited Destroy;
+end;
+
+procedure TtiMultiReadExclusiveWriteSynchronizer.BeginWrite;
+begin
+  while not LockForWrite do
+    Sleep(100);
+end;
+
+procedure TtiMultiReadExclusiveWriteSynchronizer.EndWrite;
+begin
+  FCritSect.Enter;
+  try
+    FWriting:= False;
+  finally
+    FCritSect.Leave;
+  end;
+end;
+
+procedure TtiMultiReadExclusiveWriteSynchronizer.BeginRead;
+begin
+  while not LockForRead do
+    Sleep(100);
+end;
+
+procedure TtiMultiReadExclusiveWriteSynchronizer.EndRead;
+begin
+  FCritSect.Enter;
+  try
+    Dec(FReadCount);
+  finally
+    FCritSect.Leave;
+  end;
 end;
 
 end.

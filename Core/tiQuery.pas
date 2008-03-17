@@ -209,6 +209,7 @@ type
     function    Test : boolean; virtual; abstract;
     function    TIQueryClass: TtiQueryClass; virtual; abstract;
     function    CreateTIQuery : TtiQuery;
+    function    CreateAndAttachTIQuery: TtiQuery;
     procedure   ReadMetaDataTables(AData : TtiDBMetaData); virtual; abstract;
     procedure   ReadMetaDataFields(AData : TtiDBMetaDataTable); virtual; abstract;
     procedure   ExecSQL(const pSQL : string; AParams : TtiQueryParams = nil); virtual; // ToDo: Refactor down...
@@ -956,6 +957,12 @@ begin
   inherited;
   FErrorInLastCall := false;
   FParams         := TStringList.Create;
+end;
+
+function TtiDatabase.CreateAndAttachTIQuery: TtiQuery;
+begin
+  result:= CreateTIQuery;
+  Result.AttachDatabase(Self);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -2349,6 +2356,8 @@ begin
 end;
 
 end.
+
+
 
 
 

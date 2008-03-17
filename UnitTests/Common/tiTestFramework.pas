@@ -190,7 +190,6 @@ type
 
   TtiTestCaseWithPersistenceLayer = class(TtiTestCaseWithTestSetupData)
   private
-    function    GetPersistenceLayerName: string;
     function    GetPersistenceLayer: TtiPersistenceLayer;
   protected
     procedure   CheckObjectState(AObjectState: TPerObjectState; const AData : TtiObject);
@@ -199,6 +198,8 @@ type
     procedure   CreateDBIfNotExists;
     procedure   WriteTimingResult(const pAction, APersistenceLayerName : string; AValue : Extended);
 
+    function    PersistenceLayerSupportsMultiUser: boolean;
+    function    PersistenceLayerSupportsSQL: boolean;
     property    PersistenceLayer: TtiPersistenceLayer read GetPersistenceLayer;
   public
 
@@ -215,11 +216,8 @@ type
     function    GetUserName: string;
     function    GetPassword: string;
   protected
-    procedure SetupOnce; override;
+    procedure SetUpOnce; override;
     procedure TearDownOnce; override;
-
-    function PersistenceLayerSupportsMultiUser: boolean;
-    function PersistenceLayerSupportsSQL: boolean;
 
     property DBConnectionPool: TtiDBConnectionPool read FDBConnectionPool;
 
@@ -228,12 +226,11 @@ type
     procedure   SetupTestTables(const AManager: TtiOPFManager); overload;
     procedure   DeleteTestTables(const AManager: TtiOPFManager); overload;
     procedure   EmptyTestTables;
-    procedure   DropTestTable;
     procedure   DropTable(const ATableName: string);
 
     procedure   CreateTableTestBin( const ADatabase: TtiDatabase = nil);
     procedure   CreateTableTestGroup(const ADatabase: TtiDatabase = nil);
-    procedure   InsertIntoTestGroup(const ADatabase: TtiDatabase; AValue : integer);
+    procedure   InsertIntoTestGroup(const ADatabase: TtiDatabase; const AValue : integer);
     procedure   DropTableTestBin(   const ADatabase: TtiDatabase = nil);
     procedure   DropTableTestGroup( const ADatabase: TtiDatabase = nil);
     procedure   CreateTable(const   ATable : TtiDBMetaDataTable);
@@ -245,6 +242,7 @@ type
 
 
     // ToDo: These overloaded method are confusing. Fix.
+    procedure   DropTestTable;
     procedure   CreateTableInteger(   const ADatabaseName, APersistenceLayerName : string);overload;
 //    procedure   CreateTableInt64(     const ADatabaseName, APersistenceLayerName : string);overload;
     procedure   CreateTableString(    const ADatabaseName, APersistenceLayerName : string);overload;
@@ -610,26 +608,16 @@ end;
 
 
 procedure TtiTestCaseWithDatabaseConnection.DropTestTable;
-var
-  LDatabase: TtiDatabase;
 begin
-  try
-      LDatabase:= DBConnectionPool.Lock;
-      try
-        LDatabase.DropTable(cTIQueryTableName);
-      finally
-        DBConnectionPool.UnLock(LDatabase);
-      end;
-  except
-    // Swallow
-  end;
+  DropTable(cTIQueryTableName);
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.DeleteTestTables;
 begin
-  DropTableTestGroup;
-  DropTableTestBin;
+  DropTable(cTIQueryTableName);
+  DropTable('test_bin');
   DropTable('test_item');
+  DropTable(cTableNameTestGroup);
   DropTable(cTableNameTIOPFTestChild_A);
   DropTable(cTableNameTIOPFTestChild_B);
   DropTable(cTableNameTIOPFTestParent);
@@ -643,50 +631,46 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableTestGroup(const ADatabase : TtiDatabase = nil) ;
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := cTableNameTestGroup;
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Group_Str_Field',   qfkString, 10);
-    lTable.AddField('Group_Int_Field',   qfkInteger);
-    lTable.AddField('Group_Float_Field', qfkFloat);
-    lTable.AddField('Group_Date_Field',  qfkDateTime);
-    lTable.AddField('Group_Bool_Field',  qfkLogical);
-    lTable.AddField('Group_Notes_Field', qfkLongString);
+    LTable.Name := cTableNameTestGroup;
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Group_Str_Field',   qfkString, 10);
+    LTable.AddField('Group_Int_Field',   qfkInteger);
+    LTable.AddField('Group_Float_Field', qfkFloat);
+    LTable.AddField('Group_Date_Field',  qfkDateTime);
+    LTable.AddField('Group_Bool_Field',  qfkLogical);
+    LTable.AddField('Group_Notes_Field', qfkLongString);
     if ADatabase = nil then
-      CreateTable(lTable)
+      CreateTable(LTable)
     else
-      ADatabase.CreateTable(lTable);
+      ADatabase.CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
 
-procedure TtiTestCaseWithDatabaseConnection.InsertIntoTestGroup(const ADatabase: TtiDatabase; AValue : integer);
+procedure TtiTestCaseWithDatabaseConnection.InsertIntoTestGroup(const ADatabase: TtiDatabase;
+  const AValue : integer);
 var
-  lParams : TtiQueryParams;
-  e: extended;
+  LParams : TtiQueryParams;
+  LExtended: Extended;
 begin
-  e := 1000;  // removes compiler warning
   Check(LongString <> '', 'FLongString not assigned');
-  lParams := TtiQueryParams.Create;
+  LExtended:= 1000; // Removes compiler warning at SetValueAsFloat
+  LParams := TtiQueryParams.Create;
   try
-    lParams.SetValueAsString('OID', IntToStr(AValue));
-    lParams.SetValueAsString('Group_Str_Field', tiPad0(IntToStr(AValue), 10));
-    lParams.SetValueAsInteger('Group_Int_Field', AValue);
-    lParams.SetValueAsFloat('Group_Float_Field', StrToInt(tiReplicate(IntToStr(AValue), 4)) / e);
-    lParams.SetValueAsDateTime('Group_Date_Field', EncodeDate(1900, 1, AValue)) ;
-    lParams.SetValueAsBoolean('Group_Bool_Field', ((AValue mod 2) = 0)) ;
-    lParams.SetValueAsString('Group_Notes_Field', LongString) ;
-    ADatabase.InsertRow(cTableNameTestGroup, lParams);
-    // Each test takes place inside a transaction.
-    // If you want the test data to be setup inside it's own
-    // transaction, then uncomment these lines.
-    // FDatabase.Commit;
-    // FDatabase.StartTransaction;
+    LParams.SetValueAsString('OID', IntToStr(AValue));
+    LParams.SetValueAsString('Group_Str_Field', tiPad0(IntToStr(AValue), 10));
+    LParams.SetValueAsInteger('Group_Int_Field', AValue);
+    LParams.SetValueAsFloat('Group_Float_Field', StrToInt(tiReplicate(IntToStr(AValue), 4)) / LExtended);
+    LParams.SetValueAsDateTime('Group_Date_Field', EncodeDate(1900, 1, AValue)) ;
+    LParams.SetValueAsBoolean('Group_Bool_Field', ((AValue mod 2) = 0)) ;
+    LParams.SetValueAsString('Group_Notes_Field', LongString) ;
+    ADatabase.InsertRow(cTableNameTestGroup, LParams);
   finally
     lParams.Free;
   end;
@@ -708,19 +692,19 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableTestBin(const ADatabase : TtiDatabase = nil);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := 'Test_Bin';
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Item_Binary_Field', qfkBinary );
+    LTable.Name := 'Test_Bin';
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Item_Binary_Field', qfkBinary );
     if ADatabase = nil then
-      CreateTable(lTable)
+      CreateTable(LTable)
     else
-      ADatabase.CreateTable(lTable);
+      ADatabase.CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
@@ -798,7 +782,7 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.SetupTestTables(const AManager: TtiOPFManager);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
   LDatabase: TtiDatabase;
 begin
   DeleteTestTables(AManager);
@@ -808,144 +792,144 @@ begin
   finally
     AManager.DefaultDBConnectionPool.UnLock(LDatabase);
   end;
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
 
-    lTable.Clear;
-    lTable.Name := 'Test_Item';
-    lTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('OID_Group',          qfkString, 36); // Should be Not Null & FK
-    lTable.AddField('Item_Str_Field',     qfkString, 10);
-    lTable.AddField('Item_Int_Field',     qfkInteger);
-    lTable.AddField('Item_Float_Field',   qfkFloat);
-    lTable.AddField('Item_Bool_Field',    qfkLogical);
-    lTable.AddField('Item_Date_Field',    qfkDateTime);
-    lTable.AddField('Item_Notes_Field',   qfkLongString);
-    AManager.CreateTable(lTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    LTable.Clear;
+    LTable.Name := 'Test_Item';
+    LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('OID_Group',          qfkString, 36); // Should be Not Null & FK
+    LTable.AddField('Item_Str_Field',     qfkString, 10);
+    LTable.AddField('Item_Int_Field',     qfkInteger);
+    LTable.AddField('Item_Float_Field',   qfkFloat);
+    LTable.AddField('Item_Bool_Field',    qfkLogical);
+    LTable.AddField('Item_Date_Field',    qfkDateTime);
+    LTable.AddField('Item_Notes_Field',   qfkLongString);
+    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestParent;
-    lTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Parent_Str_Field',   qfkString, 10);
-    AManager.CreateTable(lTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestParent;
+    LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Parent_Str_Field',   qfkString, 10);
+    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestChild_A;
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Child_Int_Field',   qfkInteger);
-    lTable.AddField('Child_Float_Field', qfkFloat);
-    AManager.CreateTable(lTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestChild_A;
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Child_Int_Field',   qfkInteger);
+    LTable.AddField('Child_Float_Field', qfkFloat);
+    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestChild_B;
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Child_Int_Field',   qfkInteger);
-    lTable.AddField('Child_Float_Field', qfkFloat);
-    AManager.CreateTable(lTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestChild_B;
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Child_Int_Field',   qfkInteger);
+    LTable.AddField('Child_Float_Field', qfkFloat);
+    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestParentGrouped;
-    lTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Parent_Str_Field',   qfkString, 10);
-    AManager.CreateTable(lTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestParentGrouped;
+    LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Parent_Str_Field',   qfkString, 10);
+    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestChildGrouped_A;
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Child_Int_Field',   qfkInteger);
-    lTable.AddField('Child_Float_Field', qfkFloat);
-    AManager.CreateTable(lTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestChildGrouped_A;
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Child_Int_Field',   qfkInteger);
+    LTable.AddField('Child_Float_Field', qfkFloat);
+    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestChildGrouped_B;
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Child_Int_Field',   qfkInteger);
-    lTable.AddField('Child_Float_Field', qfkFloat);
-    AManager.CreateTable(lTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestChildGrouped_B;
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Child_Int_Field',   qfkInteger);
+    LTable.AddField('Child_Float_Field', qfkFloat);
+    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestParentGroup;
-    lTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
-    AManager.CreateTable(lTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestParentGroup;
+    LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
+    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
 
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.SetupTestTables;
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
   DeleteTestTables;
   CreateTableTestGroup;
   CreateTableTestBin;
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
 
-    lTable.Clear;
-    lTable.Name := 'Test_Item';
-    lTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('OID_Group',          qfkString, 36); // Should be Not Null & FK
-    lTable.AddField('Item_Str_Field',     qfkString, 10);
-    lTable.AddField('Item_Int_Field',     qfkInteger);
-    lTable.AddField('Item_Float_Field',   qfkFloat);
-    lTable.AddField('Item_Bool_Field',    qfkLogical);
-    lTable.AddField('Item_Date_Field',    qfkDateTime);
-    lTable.AddField('Item_Notes_Field',   qfkLongString);
-    CreateTable(lTable);
+    LTable.Clear;
+    LTable.Name := 'Test_Item';
+    LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('OID_Group',          qfkString, 36); // Should be Not Null & FK
+    LTable.AddField('Item_Str_Field',     qfkString, 10);
+    LTable.AddField('Item_Int_Field',     qfkInteger);
+    LTable.AddField('Item_Float_Field',   qfkFloat);
+    LTable.AddField('Item_Bool_Field',    qfkLogical);
+    LTable.AddField('Item_Date_Field',    qfkDateTime);
+    LTable.AddField('Item_Notes_Field',   qfkLongString);
+    CreateTable(LTable);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestParent;
-    lTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Parent_Str_Field',   qfkString, 10);
-    CreateTable(lTable);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestParent;
+    LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Parent_Str_Field',   qfkString, 10);
+    CreateTable(LTable);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestChild_A;
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Child_Int_Field',   qfkInteger);
-    lTable.AddField('Child_Float_Field', qfkFloat);
-    CreateTable(lTable);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestChild_A;
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Child_Int_Field',   qfkInteger);
+    LTable.AddField('Child_Float_Field', qfkFloat);
+    CreateTable(LTable);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestChild_B;
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Child_Int_Field',   qfkInteger);
-    lTable.AddField('Child_Float_Field', qfkFloat);
-    CreateTable(lTable);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestChild_B;
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Child_Int_Field',   qfkInteger);
+    LTable.AddField('Child_Float_Field', qfkFloat);
+    CreateTable(LTable);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestParentGrouped;
-    lTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Parent_Str_Field',   qfkString, 10);
-    CreateTable(lTable);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestParentGrouped;
+    LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Parent_Str_Field',   qfkString, 10);
+    CreateTable(LTable);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestChildGrouped_A;
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Child_Int_Field',   qfkInteger);
-    lTable.AddField('Child_Float_Field', qfkFloat);
-    CreateTable(lTable);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestChildGrouped_A;
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Child_Int_Field',   qfkInteger);
+    LTable.AddField('Child_Float_Field', qfkFloat);
+    CreateTable(LTable);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestChildGrouped_B;
-    lTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
-    lTable.AddField('Child_Int_Field',   qfkInteger);
-    lTable.AddField('Child_Float_Field', qfkFloat);
-    CreateTable(lTable);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestChildGrouped_B;
+    LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
+    LTable.AddField('Child_Int_Field',   qfkInteger);
+    LTable.AddField('Child_Float_Field', qfkFloat);
+    CreateTable(LTable);
 
-    lTable.Clear;
-    lTable.Name :=  cTableNameTIOPFTestParentGroup;
-    lTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
-    CreateTable(lTable);
+    LTable.Clear;
+    LTable.Name :=  cTableNameTIOPFTestParentGroup;
+    LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
+    CreateTable(LTable);
 
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
@@ -990,19 +974,19 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateNextOIDIntTable;
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
   lParams : TtiQueryParams;
 begin
 
   DropNextOIDTable;
 
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := 'Next_OID';
-    lTable.AddField('OID', qfkInteger);
-    CreateTable(lTable);
+    LTable.Name := 'Next_OID';
+    LTable.AddField('OID', qfkInteger);
+    CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 
   lParams := TtiQueryParams.Create;
@@ -1017,19 +1001,19 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateNextOIDStrTable;
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
   lParams : TtiQueryParams;
 begin
 
   DropNextOIDTable;
 
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := 'Next_OID';
-    lTable.AddField('OID', qfkString, 10);
-    CreateTable(lTable);
+    LTable.Name := 'Next_OID';
+    LTable.AddField('OID', qfkString, 10);
+    CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 
   lParams := TtiQueryParams.Create;
@@ -1073,18 +1057,18 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableBoolean(const ADatabase : TtiDatabase);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
   // If the structure of the table created is changed, also change the
   // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkLogical);
-    ADatabase.CreateTable(lTable);
+    LTable.Name := cTIQueryTableName;
+    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddField(cTIQueryColName, qfkLogical);
+    ADatabase.CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
@@ -1106,18 +1090,18 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableDateTime(const ADatabase : TtiDatabase);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
   // If the structure of the table created is changed, also change the
   // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkDateTime);
-    ADatabase.CreateTable(lTable);
+    LTable.Name := cTIQueryTableName;
+    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddField(cTIQueryColName, qfkDateTime);
+    ADatabase.CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
@@ -1139,54 +1123,54 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableFloat(const ADatabase : TtiDatabase);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
   // If the structure of the table created is changed, also change the
   // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkFloat);
-    ADatabase.CreateTable(lTable);
+    LTable.Name := cTIQueryTableName;
+    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddField(cTIQueryColName, qfkFloat);
+    ADatabase.CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableInteger(const ADatabaseName, APersistenceLayerName : string);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
   // If the structure of the table created is changed, also change the
   // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkInteger);
+    LTable.Name := cTIQueryTableName;
+    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddField(cTIQueryColName, qfkInteger);
     CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableInteger(const ADatabase : TtiDatabase);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
   // If the structure of the table created is changed, also change the
   // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkInteger);
-    ADatabase.CreateTable(lTable);
+    LTable.Name := cTIQueryTableName;
+    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddField(cTIQueryColName, qfkInteger);
+    ADatabase.CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
@@ -1208,18 +1192,18 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableLongString(const ADatabase : TtiDatabase);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
   // If the structure of the table created is changed, also change the
   // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkLongString);
-    ADatabase.CreateTable(lTable);
+    LTable.Name := cTIQueryTableName;
+    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddField(cTIQueryColName, qfkLongString);
+    ADatabase.CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
@@ -1241,18 +1225,18 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableStream(const ADatabase : TtiDatabase);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
   // If the structure of the table created is changed, also change the
   // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkBinary);
-    ADatabase.CreateTable(lTable);
+    LTable.Name := cTIQueryTableName;
+    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddField(cTIQueryColName, qfkBinary);
+    ADatabase.CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
@@ -1274,18 +1258,18 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableString(const ADatabase : TtiDatabase);
 var
-  lTable : TtiDBMetaDataTable;
+  LTable : TtiDBMetaDataTable;
 begin
   // If the structure of the table created is changed, also change the
   // constant: cFieldAs_Index
-  lTable := TtiDBMetaDataTable.Create;
+  LTable := TtiDBMetaDataTable.Create;
   try
-    lTable.Name := cTIQueryTableName;
-    lTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    lTable.AddField(cTIQueryColName, qfkString, 255);
-    ADatabase.CreateTable(lTable);
+    LTable.Name := cTIQueryTableName;
+    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
+    LTable.AddField(cTIQueryColName, qfkString, 255);
+    ADatabase.CreateTable(LTable);
   finally
-    lTable.Free;
+    LTable.Free;
   end;
 end;
 
@@ -1343,14 +1327,6 @@ function TtiTestCaseWithPersistenceLayer.GetName: string;
 begin
   result := '[' + PersistenceLayerName + '] ' + inherited GetName;
 end;
-
-
-function TtiTestCaseWithPersistenceLayer.GetPersistenceLayerName: string;
-begin
-  Assert(FtiOPFTestSetupData.TestValid, CTIErrorInvalidObject);
-  result:= FtiOPFTestSetupData.PersistenceLayerName;
-end;
-
 
 procedure TtiTestCase.CheckFormattedMessage(const AFormat: string;
   const AArgs: array of const; const AActual: string;
@@ -1498,8 +1474,9 @@ end;
 
 procedure TtiTestCase.CheckNearEnough(const AExpected, AActual, AFEPS: Double; const AString: string);
 begin
-  if not tiIsNearEnough(AExpected, AActual, AFEPS) then
-    FailNotEquals(FloatToStr(AExpected), FloatToStr(AActual), Format('(feps: %g) %s', [AFEPS, AString]), {$IFDEF FPC} nil {$ELSE} CallerAddr {$ENDIF});
+  Check(tiIsNearEnough(AExpected, AActual, AFEPS),
+        NotEqualsErrorMessage(FloatToStr(AExpected), FloatToStr(AActual),
+          Format('(feps: %g) %s', [AFEPS, AString])));
 end;
 
 procedure TtiTestCase.CheckNearEnough(const AExpected, AActual: Double; const AMessage: string; pArgs: array of const);
@@ -1936,7 +1913,7 @@ end;
 
 { TtiTestCaseWithDatabaseConnection }
 
-function TtiTestCaseWithDatabaseConnection.PersistenceLayerSupportsMultiUser: boolean;
+function TtiTestCaseWithPersistenceLayer.PersistenceLayerSupportsMultiUser: boolean;
 var
   LDefaults: TtiPersistenceLayerDefaults;
 begin
@@ -1949,7 +1926,7 @@ begin
   end;
 end;
 
-function TtiTestCaseWithDatabaseConnection.PersistenceLayerSupportsSQL: boolean;
+function TtiTestCaseWithPersistenceLayer.PersistenceLayerSupportsSQL: boolean;
 var
   LDefaults: TtiPersistenceLayerDefaults;
 begin
@@ -2014,6 +1991,8 @@ initialization
   ULongString:= tiCreateStringOfSize(3000);
 
 end.
+
+
 
 
 

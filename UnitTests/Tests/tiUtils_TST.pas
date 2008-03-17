@@ -191,6 +191,9 @@ type
     procedure tiYear;
     procedure tiYearToEndAusFinancialYear;
     procedure tiYearToStartAusFinancialYear;
+
+    procedure tiMultiReadSingleWriteSynchronizer;
+
   end;
   
 
@@ -927,6 +930,54 @@ begin
   Check(not tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Failed on 6');
 end;
 
+
+type
+
+  TtiMultiReadExclusiveWriteSynchronizerForTesting = class(TtiMultiReadExclusiveWriteSynchronizer)
+  public
+    function CanLockForWrite: boolean; override;
+    function CanLockForRead: boolean; override;
+  end;
+
+  function TtiMultiReadExclusiveWriteSynchronizerForTesting.CanLockForRead: boolean;
+  begin
+    result:= inherited CanLockForRead;
+  end;
+
+  function TtiMultiReadExclusiveWriteSynchronizerForTesting.CanLockForWrite: boolean;
+  begin
+    result:= inherited CanLockForWrite;
+  end;
+
+procedure TTestTIUtils.tiMultiReadSingleWriteSynchronizer;
+var
+  LO: TtiMultiReadExclusiveWriteSynchronizerForTesting;
+begin
+  LO:= TtiMultiReadExclusiveWriteSynchronizerForTesting.Create;
+  try
+    Check(LO.CanLockForRead);
+    Check(LO.CanLockForWrite);
+
+    LO.BeginRead;
+    Check(LO.CanLockForRead);
+    Check(not LO.CanLockForWrite);
+
+    LO.EndRead;
+    Check(LO.CanLockForRead);
+    Check(LO.CanLockForWrite);
+
+    LO.BeginWrite;
+    Check(not LO.CanLockForRead);
+    Check(not LO.CanLockForWrite);
+
+    LO.EndWrite;
+    Check(LO.CanLockForRead);
+    Check(LO.CanLockForWrite);
+
+  finally
+    LO.Free;
+  end;
+end;
 
 procedure TTestTIUtils.tiNormalizeStr;
 begin

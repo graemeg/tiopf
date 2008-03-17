@@ -52,38 +52,36 @@ type
   end;
 
   TTestTIPersistenceLayers = class(TtiTestCaseWithPersistenceLayer)
+  protected
+    procedure DoThreadedDBConnectionPool(
+      const ADBConnectionPool: TtiDBConnectionPool;
+      const AThreadCount : integer);
   published
-    procedure   ConnectDatabase;
+    procedure   ConnectDatabase; virtual;
+    procedure   tiOPFManager_ConnectDatabase; virtual;
+    procedure   Database_Connect; virtual;
+    procedure   DBConnectionPoolConnectDisconnect; virtual;
+    procedure   NonThreadedDBConnectionPool; virtual;
+    procedure   ThreadedDBConnectionPool; virtual;
+
     // ToDo: There are many tests on TtiPersistenceLayerList that must be tested here
   end;
 
   // Test TtiDatabase connectivity
-  TTestTIDatabase = class(TtiTestCaseWithPersistenceLayer)
-  private
-
+  TTestTIDatabase = class(TtiTestCaseWithDatabaseConnection)
   protected
-    FTIOPFManager: TtiOPFManager;
-    FPersistenceLayer : TtiPersistenceLayer;
-    FDatabase : TtiDatabase;
-    FDatabaseClass : TtiDatabaseClass;
-    FPersistenceLayerDefaults: TtiPersistenceLayerDefaults;
 
-    procedure SetUp; override;
-    procedure TearDown; override;
-    procedure DatabaseExists; virtual; abstract;
-    procedure CreateDatabase; virtual; abstract;
-    procedure DoThreadedDBConnectionPool(const ADBConnectionPool: TtiDBConnectionPool; const AThreadCount : integer);
     procedure CheckFieldMetaData(const pDBMetaDataTable : TtiDBMetaDataTable;
                                    const AFieldName : string;
                                    pKind : TtiQueryFieldKind;
                                    pWidth : integer = 0);
+
+    procedure DatabaseExists; virtual; abstract;
+    procedure CreateDatabase; virtual; abstract;
+
   published
-
-    procedure tiOPFManager_ConnectDatabase; virtual;
-    procedure Database_Connect; virtual;
-    procedure NonThreadedDBConnectionPool; virtual;
-    procedure ThreadedDBConnectionPool; virtual;
-
+    procedure CreateTIQuery;
+    procedure CreateAndAttachTIQuery;
     procedure Transaction_InTransaction; virtual;
     procedure Transaction_Commit; virtual;
     procedure Transaction_RollBack; virtual;
@@ -106,9 +104,6 @@ type
     procedure TearDown; override;
 
     // Helper methods used in the concretes
-    procedure AttachDatabaseAndStartTransaction;
-    procedure CommitAndAttachDatabase;
-    procedure DoReAttach;
     procedure PopulateTableString(  const AValue : String   );
     procedure PopulateTableInteger( const AValue : Integer  );
 {$IFDEF TESTINT64}
@@ -118,10 +113,11 @@ type
     procedure PopulateTableBoolean( const AValue : Boolean  );
     procedure PopulateTableDateTime(const AValue : TDateTime);
     procedure PopulateTableStream(  const AValue : TStream);
-    procedure DropTestTable;
     procedure DoFieldAsStringLong(pStrLen: integer);
 
     // Implement (or hide) these in the concrete
+    // Implemented for SQL persistence layers,
+    // Hidden for Non SQL Persistence layers
     procedure GetSetSQL; virtual; abstract;
     procedure QueryType; virtual; abstract;
     procedure ParamName; virtual; abstract;
@@ -137,13 +133,13 @@ type
     procedure ParamIsNull; virtual; abstract;
     procedure OpenCloseActive; virtual; abstract;
     procedure ExecSQL; virtual; abstract;
+
   published
+
     procedure ConfirmSetupWorks; virtual;
     procedure ConfirmDBConnectionWorks; virtual;
     procedure TypeKindToQueryFieldKind;
-    // TtiQuery to TtiDatabase connection
     procedure QueryToDatabaseConnection; // AttachDatabase, DetachDatabase;
-    // Data (field) access
     procedure FieldAsInteger;
 {$IFDEF TESTINT64}
     procedure FieldAsInt64;
@@ -175,13 +171,11 @@ type
     procedure FieldAsStream;
     procedure FieldIsNull; virtual;
     procedure FieldByNameVSFieldByIndex; virtual;
-    // Meta data access methods
     procedure FieldCount; virtual;
     procedure FieldName ; virtual;
     procedure FieldIndex; virtual;
     procedure FieldKind ; virtual;
     procedure FieldSize ; virtual;
-    // Traversing result set
     procedure EOF; virtual;
     procedure Next; virtual;
     procedure InsertDeleteUpdate_Timing;
@@ -194,7 +188,7 @@ const
   // Number of threads and iterations for DBPool testing
   // Set a high number for thorough testing (eg, 100)
   // Set a low number for quick testing (eg, 5)
-  cuThreadCount     = 5;
+  CThreadCount     = 5;
   cuIterations      = 5;
   cRepeatCount      = 5;
   // Seconds. Run the timing test for this number of seconds and count the
@@ -233,128 +227,169 @@ begin
 end;
 
 
-procedure TTestTIDatabase.tiOPFManager_ConnectDatabase;
+procedure TTestTIPersistenceLayers.tiOPFManager_ConnectDatabase;
+var
+  LTIOPFManager: TtiOPFManager;
 begin
-  FTIOPFManager.ConnectDatabase(
+  LTIOPFManager:= TtiOPFManager.Create;
+  try
+     LTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(PerFrameworkSetup.PersistenceLayerClass);
+     LTIOPFManager.ConnectDatabase(
+       PerFrameworkSetup.DBName,
+       PerFrameworkSetup.Username,
+       PerFrameworkSetup.Password,
+       '',
+       PerFrameworkSetup.PersistenceLayerName);
+     try
+       CheckEquals(PerFrameworkSetup.PersistenceLayerName, LTIOPFManager.DefaultPersistenceLayerName, 'PersistenceLayerName');
+       CheckNotNull(LTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+       CheckEquals(PerFrameworkSetup.DBName, LTIOPFManager.DefaultDBConnectionName, 'DatabaseName');
+     finally
+       LTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+     end;
+     CheckNull(LTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+  finally
+    LTIOPFManager.Free;
+  end;
+end;
+
+
+
+procedure TTestTIPersistenceLayers.Database_Connect;
+var
+  LDatabase: TtiDatabase;
+begin
+  LDatabase:= PersistenceLayer.DatabaseClass.Create;
+  try
+    LDatabase.Connect(
+      PerFrameworkSetup.DBName,
+      PerFrameworkSetup.UserName,
+      PerFrameworkSetup.Password,
+      '');
+    Check(LDatabase.Connected, 'Connect failed');
+    LDatabase.Connected := false;
+    Check(not LDatabase.Connected, 'Connected := false failed');
+  finally
+    LDatabase.Free;
+  end;
+end;
+
+
+procedure TTestTIPersistenceLayers.DBConnectionPoolConnectDisconnect;
+const
+  CAlias = 'TestAliasName';
+begin
+  PersistenceLayer.DBConnectionPools.Connect(
+    CAlias,
     PerFrameworkSetup.DBName,
     PerFrameworkSetup.Username,
     PerFrameworkSetup.Password,
-    '',
-    PerFrameworkSetup.PersistenceLayerName);
-  try
-    CheckEquals(PerFrameworkSetup.PersistenceLayerName, FPersistenceLayer.PersistenceLayerName, 'PersistenceLayerName');
-    CheckNotNull(FPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-    CheckEquals(PerFrameworkSetup.DBName, FPersistenceLayer.DefaultDBConnectionPool.DBConnectParams.DatabaseName, 'DatabaseName');
-  finally
-    FTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
-  end;
-  CheckNull(FPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+    '');
+  CheckEquals(1, PersistenceLayer.DBConnectionPools.Count);
+  PersistenceLayer.DBConnectionPools.Disconnect(CAlias);
+  CheckEquals(0, PersistenceLayer.DBConnectionPools.Count);
 end;
 
-
-
-procedure TTestTIDatabase.Database_Connect;
+procedure TTestTIDatabase.CreateAndAttachTIQuery;
+var
+  LQuery: TtiQuery;
+  LDatabase: TtiDatabase;
 begin
-  FDatabase.Connect(PerFrameworkSetup.DBName,
-                     PerFrameworkSetup.UserName,
-                     PerFrameworkSetup.Password,
-                     '');
-  Check(FDatabase.Connected, 'Connect failed');
-  FDatabase.Connected := false;
-  Check(not FDatabase.Connected, 'Connected := false failed');
+  LDatabase:= DBConnectionPool.Lock;
+  try
+    LQuery:= LDatabase.CreateAndAttachTIQuery;
+    try
+      CheckIs(LQuery, LDatabase.TIQueryClass);
+      CheckNotNull(LQuery.Database);
+      CheckSame(LDatabase, LQuery.Database);
+    finally
+      LQuery.Free;
+    end;
+  finally
+    DBConnectionPool.UnLock(LDatabase);
+  end;
 end;
-
 
 procedure TTestTIDatabase.CreateTableDropTable;
   procedure _CreateTableDropTable(const AFieldName : string; AFieldKind : TtiQueryFieldKind; AFieldWidth : integer);
   var
-    lTable : TtiDBMetaDataTable;
-    lDBMetaData : TtiDBMetaData;
-    lDBMetaDataTable : TtiDBMetaDataTable;
+    LDatabase: TtiDatabase;
+    LTable : TtiDBMetaDataTable;
+    LDBMetaData : TtiDBMetaData;
+    LDBMetaDataTable : TtiDBMetaDataTable;
   begin
-    lTable := TtiDBMetaDataTable.Create;
+
+    LDBMetaData := TtiDBMetaData.Create;
     try
-      lTable.Name := cTableNameCreateTable;
-      lTable.AddField(AFieldName, AFieldKind, AFieldWidth);
-      FDatabase.CreateTable(lTable);
+      LTable := TtiDBMetaDataTable.Create;
+      try
+        LTable.Name := cTableNameCreateTable;
+        LTable.AddField(AFieldName, AFieldKind, AFieldWidth);
+        CreateTable(LTable);
+      finally
+        LTable.Free;
+      end;
+
+      try
+
+        LDatabase:= DBConnectionPool.Lock;
+        try
+          LDatabase.ReadMetaDataTables(LDBMetaData);
+          LDBMetaDataTable := LDBMetaData.FindByTableName(cTableNameCreateTable);
+          Check(LDBMetaDataTable <> nil, 'Unable to find metadata for <test_create_table> on field  <' + AFieldName + '>');
+          Check(SameText(LDBMetaDataTable.Name, cTableNameCreateTable), 'Wrong table found when searching for <test_create_table> on field <' + AFieldName + '>');
+          LDatabase.ReadMetaDataFields(LDBMetaDataTable);
+        finally
+          DBConnectionPool.UnLock(LDatabase);
+        end;
+
+        CheckFieldMetaData(LDBMetaDataTable, AFieldName, AFieldKind, AFieldWidth);
+      finally
+        DropTable(cTableNameCreateTable);
+      end;
+
+      LDatabase:= DBConnectionPool.Lock;
+      try
+        LDBMetaData.Clear;
+        LDatabase.ReadMetaDataTables(LDBMetaData);
+        LDBMetaDataTable := LDBMetaData.FindByTableName(cTableNameCreateTable);
+        Check(LDBMetaDataTable = nil, 'Drop table <test_create_table> failed on field <' + AFieldName + '>');
+      finally
+        DBConnectionPool.UnLock(LDatabase);
+      end;
     finally
-      lTable.Free;
-    end;
-
-    lDBMetaData := TtiDBMetaData.Create;
-    try
-      FDatabase.ReadMetaDataTables(lDBMetaData);
-      lDBMetaDataTable := lDBMetaData.FindByTableName(cTableNameCreateTable);
-      Check(lDBMetaDataTable <> nil, 'Unable to find metadata for <test_create_table> on field  <' + AFieldName + '>');
-      Check(SameText(lDBMetaDataTable.Name, cTableNameCreateTable), 'Wrong table found when searching for <test_create_table> on field <' + AFieldName + '>');
-      FDatabase.ReadMetaDataFields(lDBMetaDataTable);
-
-      CheckFieldMetaData(lDBMetaDataTable, AFieldName, AFieldKind, AFieldWidth);
-
-      FDatabase.DropTable(cTableNameCreateTable);
-      lDBMetaData.Clear;
-      FDatabase.ReadMetaDataTables(lDBMetaData);
-      lDBMetaDataTable := lDBMetaData.FindByTableName(cTableNameCreateTable);
-      Check(lDBMetaDataTable = nil, 'Drop table <test_create_table> failed on field <' + AFieldName + '>');
-    finally
-      lDBMetaData.Free;
+      LDBMetaData.Free;
     end;
   end;
 begin
-  FDatabase.Connect(PerFrameworkSetup.DBName,
-                     PerFrameworkSetup.UserName,
-                     PerFrameworkSetup.Password,
-                     '');
-  try
-    try FDatabase.DropTable(cTableNameCreateTable) except end;
-    _CreateTableDropTable( 'Str_Field',   qfkString,    10);
-    _CreateTableDropTable( 'Int_Field',   qfkInteger,    0);
-    _CreateTableDropTable( 'Float_Field', qfkFloat,      0);
-    _CreateTableDropTable( 'Date_Field',  qfkDateTime,   0);
-    _CreateTableDropTable( 'Bool_Field' , qfkLogical,    0);
-    _CreateTableDropTable( 'Notes_Field', qfkLongString, 0);
-  finally
-    FDatabase.Connected := false;
-  end;
+  _CreateTableDropTable( 'Str_Field',   qfkString,    10);
+  _CreateTableDropTable( 'Int_Field',   qfkInteger,    0);
+  _CreateTableDropTable( 'Float_Field', qfkFloat,      0);
+  _CreateTableDropTable( 'Date_Field',  qfkDateTime,   0);
+  _CreateTableDropTable( 'Bool_Field' , qfkLogical,    0);
+  _CreateTableDropTable( 'Notes_Field', qfkLongString, 0);
 end;
-
-
-procedure TTestTIQueryAbs.AttachDatabaseAndStartTransaction;
-begin
-  FQuery.AttachDatabase(FDatabase);
-  FDatabase.StartTransaction;
-end;
-
-
-procedure TTestTIQueryAbs.CommitAndAttachDatabase;
-begin
-  if Database.InTransaction then
-    Database.Commit;
-  FQuery.DetachDatabase;
-end;
-
-
-procedure TTestTIQueryAbs.DoReAttach;
-begin
-  CommitAndAttachDatabase;
-  AttachDatabaseAndStartTransaction;
-end;
-
 
 procedure TTestTIQueryAbs.EOF;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  Database.StartTransaction;
   try
     FQuery.SelectRow('test_group', nil);
     Check(FQuery.EOF, 'FQuery.EOF = true failed.');
     FQuery.Close;
-    InsertIntoTestGroup(Database, 1);
+  finally
+    Database.Commit;
+  end;
+
+  InsertIntoTestGroup(Database, 1);
+  Database.StartTransaction;
+  try
     FQuery.SelectRow('test_group', nil);
     Check(not FQuery.EOF, 'FQuery.EOF = false failed.');
     FQuery.Close;
   finally
-    CommitAndAttachDatabase;
+    Database.Rollback;
   end;
 end;
 
@@ -362,20 +397,15 @@ end;
 procedure TTestTIQueryAbs.FieldAsBoolean;
 begin
   CreateTableBoolean(Database);
+  PopulateTableBoolean(True);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      PopulateTableBoolean(True);
-      DoReAttach;
-      FQuery.SelectRow(cTIQueryTableName, nil);
-      CheckEquals(FQuery.FieldAsBoolean[ cTIQueryColName ], True, 'FieldAsBoolean');
-      CheckEquals(FQuery.FieldAsBooleanByIndex[ cFieldAs_Index ], True, 'FieldAsBoolean');
-      FQuery.Close;
-    finally
-      CommitAndAttachDatabase;
-    end;
+    FQuery.SelectRow(cTIQueryTableName, nil);
+    CheckEquals(FQuery.FieldAsBoolean[ cTIQueryColName ], True, 'FieldAsBoolean');
+    CheckEquals(FQuery.FieldAsBooleanByIndex[ cFieldAs_Index ], True, 'FieldAsBoolean');
+    FQuery.Close;
   finally
-    DropTestTable;
+    Database.RollBack;
   end;
 end;
 
@@ -386,20 +416,15 @@ var
 begin
   lNow := Now;
   CreateTableDateTime(Database);
+  PopulateTableDateTime(lNow);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      PopulateTableDateTime(lNow);
-      DoReAttach;
-      FQuery.SelectRow(cTIQueryTableName, nil);
-      CheckEquals(FQuery.FieldAsDateTime[ cTIQueryColName ], lNow, cdtOneSecond, 'FieldAsDateTime');
-      CheckEquals(FQuery.FieldAsDateTimeByIndex[ cFieldAs_Index ], lNow, cdtOneSecond, 'FieldAsDateTime');
-      FQuery.Close;
-    finally
-      CommitAndAttachDatabase;
-    end;
+    FQuery.SelectRow(cTIQueryTableName, nil);
+    CheckEquals(FQuery.FieldAsDateTime[ cTIQueryColName ], lNow, cdtOneSecond, 'FieldAsDateTime');
+    CheckEquals(FQuery.FieldAsDateTimeByIndex[ cFieldAs_Index ], lNow, cdtOneSecond, 'FieldAsDateTime');
+    FQuery.Close;
   finally
-    DropTestTable;
+    Database.Rollback;
   end;
 end;
 
@@ -409,20 +434,15 @@ const
   cPrecision = 6;
 begin
   CreateTableFloat(Database);
+  PopulateTableReal(1234.5678);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      PopulateTableReal(1234.5678);
-      DoReAttach;
-      FQuery.SelectRow(cTIQueryTableName, nil);
-      CheckEquals(FQuery.FieldAsFloat[ cTIQueryColName ], 1234.5678, 0.00001, 'FieldAsFloat');
-      CheckEquals(FQuery.FieldAsFloatByIndex[ cFieldAs_Index ], 1234.5678, 0.00001, 'FieldAsFloat');
-      FQuery.Close;
-    finally
-      CommitAndAttachDatabase;
-    end;
+    FQuery.SelectRow(cTIQueryTableName, nil);
+    CheckEquals(FQuery.FieldAsFloat[ cTIQueryColName ], 1234.5678, 0.00001, 'FieldAsFloat');
+    CheckEquals(FQuery.FieldAsFloatByIndex[ cFieldAs_Index ], 1234.5678, 0.00001, 'FieldAsFloat');
+    FQuery.Close;
   finally
-    DropTestTable;
+    Database.Rollback;
   end;
 end;
 
@@ -430,20 +450,15 @@ end;
 procedure TTestTIQueryAbs.FieldAsInteger;
 begin
   CreateTableInteger(Database);
+  PopulateTableInteger(1);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      PopulateTableInteger(1);
-      DoReAttach;
-      FQuery.SelectRow(cTIQueryTableName, nil);
-      CheckEquals(FQuery.FieldAsInteger[ cTIQueryColName ], 1, 'FieldAsInteger');
-      CheckEquals(FQuery.FieldAsIntegerByIndex[ cFieldAs_Index ], 1, 'FieldAsIntegerByIndex');
-      FQuery.Close;
-    finally
-      CommitAndAttachDatabase;
-    end;
+    FQuery.SelectRow(cTIQueryTableName, nil);
+    CheckEquals(FQuery.FieldAsInteger[ cTIQueryColName ], 1, 'FieldAsInteger');
+    CheckEquals(FQuery.FieldAsIntegerByIndex[ cFieldAs_Index ], 1, 'FieldAsIntegerByIndex');
+    FQuery.Close;
   finally
-    DropTestTable;
+    Database.Rollback;
   end;
 end;
 
@@ -476,20 +491,15 @@ const
   cString = 'abcdefghij';
 begin
   CreateTableString(Database);
+  PopulateTableString(cString);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      PopulateTableString(cString);
-      DoReAttach;
-      FQuery.SelectRow(cTIQueryTableName, nil);
-      CheckEquals(FQuery.FieldAsString[ cTIQueryColName ], cString, 'FieldAsString');
-      CheckEquals(FQuery.FieldAsStringByIndex[ cFieldAs_Index ], cString, 'FieldAsStringByIndex');
-      FQuery.Close;
-    finally
-      CommitAndAttachDatabase;
-    end;
+    FQuery.SelectRow(cTIQueryTableName, nil);
+    CheckEquals(FQuery.FieldAsString[ cTIQueryColName ], cString, 'FieldAsString');
+    CheckEquals(FQuery.FieldAsStringByIndex[ cFieldAs_Index ], cString, 'FieldAsStringByIndex');
+    FQuery.Close;
   finally
-    DropTestTable;
+    Database.Rollback;
   end;
 end;
 
@@ -499,16 +509,15 @@ var
   lFieldCount : integer;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  InsertIntoTestGroup(Database, 1);
+  Database.StartTransaction;
   try
-    Database.DeleteRow('test_group', nil);
-    InsertIntoTestGroup(Database, 1);
     FQuery.SelectRow('test_group', nil);
     lFieldCount := FQuery.FieldCount;
     CheckEquals(7, lFieldCount);
     FQuery.Close;
   finally
-    CommitAndAttachDatabase;
+    Database.Rollback;
   end;
 end;
 
@@ -516,9 +525,9 @@ end;
 procedure TTestTIQueryAbs.FieldIndex;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  InsertIntoTestGroup(Database, 1);
+  Database.StartTransaction;
   try
-    InsertIntoTestGroup(Database, 1);
     FQuery.SelectRow('test_Group', nil);
     Check(FQuery.FieldIndex('oid'              ) = 0, 'FQuery.FieldIndex = 0 failed');
     Check(FQuery.FieldIndex('Group_Str_Field'  ) = 1, 'FQuery.FieldIndex = 1 failed');
@@ -529,7 +538,7 @@ begin
     Check(FQuery.FieldIndex('Group_Notes_Field') = 6, 'FQuery.FieldIndex = 6 failed');
     FQuery.Close;
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 
@@ -539,7 +548,7 @@ var
   lParams : TtiQueryParams;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  Database.StartTransaction;
   try
     lParams := TtiQueryParams.Create;
     try
@@ -549,8 +558,18 @@ begin
       Check(FQuery.FieldIsNull[ 'group_str_field' ], 'FieldIsNull  = true failed');
       Check(FQuery.FieldIsNullByIndex[ cFieldAs_Index ], 'FieldIsNull  = true failed');
       FQuery.Close;
+    finally
+      lParams.Free;
+    end;
+  finally
+    Database.Commit;
+  end;
 
-      Database.DeleteRow('test_group', nil);
+  Database.DeleteRow('test_group', nil);
+  Database.StartTransaction;
+  try
+    lParams := TtiQueryParams.Create;
+    try
       lParams.SetValueAsString('OID', '2');
       lParams.SetValueAsString('Group_Str_Field', '2');
       Database.InsertRow('Test_Group', lParams);
@@ -562,17 +581,18 @@ begin
       lParams.Free;
     end;
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
+
 end;
 
 
 procedure TTestTIQueryAbs.FieldKind;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  InsertIntoTestGroup(Database, 1);
+  Database.StartTransaction;
   try
-    InsertIntoTestGroup(Database, 1);
     FQuery.SelectRow('test_group', nil);
     Check(FQuery.FieldKind(FQuery.FieldIndex('Group_Str_Field'  ))  = qfkString,     'FQuery.FieldKind = qfkString failed');
     Check(FQuery.FieldKind(FQuery.FieldIndex('Group_Int_Field'  ))  = qfkInteger,    'FQuery.FieldKind = qfkInteger failed');
@@ -583,7 +603,7 @@ begin
     Check(FQuery.FieldKind(FQuery.FieldIndex('Group_Notes_Field' )) = qfkLongString, 'FQuery.FieldKind = qfkLongString failed');
     FQuery.Close;
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 
@@ -591,9 +611,9 @@ end;
 procedure TTestTIQueryAbs.FieldName;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  InsertIntoTestGroup(Database, 1);
+  Database.StartTransaction;
   try
-    InsertIntoTestGroup(Database, 1);
     FQuery.SelectRow('test_group', nil);
     Check(SameText(FQuery.FieldName(0), 'oid'              ),  'FQuery.FieldName(0) failed');
     Check(SameText(FQuery.FieldName(1), 'Group_Str_Field'  ),  'FQuery.FieldName(1) failed');
@@ -604,7 +624,7 @@ begin
     Check(SameText(FQuery.FieldName(6), 'Group_Notes_Field' ), 'FQuery.FieldName(6) failed');
     FQuery.Close;
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 
@@ -612,9 +632,9 @@ end;
 procedure TTestTIQueryAbs.FieldSize;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  InsertIntoTestGroup(Database, 1);
+  Database.StartTransaction;
   try
-    InsertIntoTestGroup(Database, 1);
     FQuery.SelectRow('Test_Group', nil);
     CheckEquals(10, FQuery.FieldSize(FQuery.FieldIndex('Group_Str_Field'   )), 'Group_Str_Field'  );
     CheckEquals(0,  FQuery.FieldSize(FQuery.FieldIndex('Group_Int_Field'   )), 'Group_Int_Field'  );
@@ -632,7 +652,7 @@ begin
 // qfkMacro,
 // qfkLongString
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 
@@ -640,13 +660,13 @@ end;
 procedure TTestTIQueryAbs.Next;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  InsertIntoTestGroup(Database, 1);
+  InsertIntoTestGroup(Database, 2);
+  InsertIntoTestGroup(Database, 3);
+  InsertIntoTestGroup(Database, 4);
+  InsertIntoTestGroup(Database, 5);
+  Database.StartTransaction;
   try
-    InsertIntoTestGroup(Database, 1);
-    InsertIntoTestGroup(Database, 2);
-    InsertIntoTestGroup(Database, 3);
-    InsertIntoTestGroup(Database, 4);
-    InsertIntoTestGroup(Database, 5);
     FQuery.SelectRow('test_group', nil);
     Check(not FQuery.EOF, '0 FQuery.EOF = true failed.');
     FQuery.Next;
@@ -661,7 +681,7 @@ begin
     Check(FQuery.EOF, '5 FQuery.EOF = true failed.');
     FQuery.Close;
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 
@@ -677,61 +697,55 @@ end;
 
 procedure TTestTIDatabase.ReadMetaData;
 var
-  lDBMetaData : TtiDBMetaData;
-  lDBMetaDataTable : TtiDBMetaDataTable;
-  lDatabase : TtiDatabase;
+  LDBMetaData : TtiDBMetaData;
+  LDBMetaDataTable : TtiDBMetaDataTable;
+  LDatabase : TtiDatabase;
 begin
-//  FDatabase.Connect( PerFrameworkSetup.DBName,
-//                     PerFrameworkSetup.UserName,
-//                     PerFrameworkSetup.Password,
-//                     '',
-//                     PerFrameworkSetup.PersistenceLayerName);
-//
-//  SetupTestTables(FTIOPFManager);
-//  try
-//    lDBMetaData := TtiDBMetaData.Create;
-//    try
-//      LDatabase := FPersistenceLayer.DBConnectionPools.Lock(PerFrameworkSetup.DBName);
-//      try
-//        lDatabase.ReadMetaDataTables(lDBMetaData);
-//        lDBMetaDataTable := lDBMetaData.FindByTableName('test_item');
-//        Check(lDBMetaDataTable <> nil, 'Unable to find metadata for test_item');
-//        Check(SameText(lDBMetaDataTable.Name, 'Test_Item'), 'Wrong table found when searching for <test_item>');
-//        lDatabase.ReadMetaDataFields(lDBMetaDataTable);
-//
-//        // So, we will just search for the field.
-//        // Currently, there is no field information like type or size returned.
-//        // This should be added.
-//        CheckFieldMetaData(lDBMetaDataTable, 'OID',              qfkInteger);
-//        CheckFieldMetaData(lDBMetaDataTable, 'OID_GROUP',        qfkInteger);
-//        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_INT_FIELD',   qfkInteger);
-//        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_FLOAT_FIELD', qfkFloat);
-//        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_STR_FIELD',   qfkString, 10);
-//        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_Bool_FIELD',  qfkLogical);
-//        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_Date_FIELD',  qfkDateTime);
-//        CheckFieldMetaData(lDBMetaDataTable, 'ITEM_Notes_FIELD', qfkLongString);
-//
-//        lDBMetaDataTable := lDBMetaData.FindByTableName('test_group');
-//        Check(lDBMetaDataTable <> nil, 'Unable to find metadata for test_group');
-//        Check(SameText(lDBMetaDataTable.Name, 'Test_Group'), 'Wrong table found when searching for <test_group>');
-//        lDatabase.ReadMetaDataFields(lDBMetaDataTable);
-//
-//        CheckFieldMetaData(lDBMetaDataTable, 'OID',               qfkInteger);
-//        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_INT_FIELD',   qfkInteger);
-//        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_FLOAT_FIELD', qfkFloat  );
-//        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_STR_FIELD',   qfkString, 10);
-//        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Bool_FIELD',  qfkLogical);
-//        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Date_FIELD',  qfkDateTime);
-//        CheckFieldMetaData(lDBMetaDataTable, 'GROUP_Notes_FIELD', qfkLongString);
-//      finally
-//        FPersistenceLayer.DBConnectionPools.UnLock(PerFrameworkSetup.DBName, LDatabase);
-//      end;
-//    finally
-//      lDBMetaData.Free;
-//    end;
-//  finally
-//    DeleteTestTables(FTIOPFManager);
-//  end;
+  SetupTestTables;
+  try
+    LDBMetaData := TtiDBMetaData.Create;
+    try
+      LDatabase:= DBConnectionPool.Lock;
+      try
+        LDatabase.ReadMetaDataTables(LDBMetaData);
+        LDBMetaDataTable := LDBMetaData.FindByTableName('test_item');
+        Check(LDBMetaDataTable <> nil, 'Unable to find metadata for test_item');
+        Check(SameText(LDBMetaDataTable.Name, 'Test_Item'), 'Wrong table found when searching for <test_item>');
+        LDatabase.ReadMetaDataFields(LDBMetaDataTable);
+
+        // So, we will just search for the field.
+        // Currently, there is no field information like type or size returned.
+        // This should be added.
+        CheckFieldMetaData(LDBMetaDataTable, 'OID',              qfkInteger);
+        CheckFieldMetaData(LDBMetaDataTable, 'OID_GROUP',        qfkInteger);
+        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_INT_FIELD',   qfkInteger);
+        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_FLOAT_FIELD', qfkFloat);
+        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_STR_FIELD',   qfkString, 10);
+        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Bool_FIELD',  qfkLogical);
+        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Date_FIELD',  qfkDateTime);
+        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Notes_FIELD', qfkLongString);
+
+        LDBMetaDataTable := LDBMetaData.FindByTableName('test_group');
+        Check(LDBMetaDataTable <> nil, 'Unable to find metadata for test_group');
+        Check(SameText(LDBMetaDataTable.Name, 'Test_Group'), 'Wrong table found when searching for <test_group>');
+        LDatabase.ReadMetaDataFields(LDBMetaDataTable);
+
+        CheckFieldMetaData(LDBMetaDataTable, 'OID',               qfkInteger);
+        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_INT_FIELD',   qfkInteger);
+        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_FLOAT_FIELD', qfkFloat  );
+        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_STR_FIELD',   qfkString, 10);
+        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_Bool_FIELD',  qfkLogical);
+        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_Date_FIELD',  qfkDateTime);
+        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_Notes_FIELD', qfkLongString);
+      finally
+        DBConnectionPool.UnLock(LDatabase);
+      end;
+    finally
+      LDBMetaData.Free;
+    end;
+  finally
+    DeleteTestTables;
+  end;
 end;
 
 
@@ -740,8 +754,8 @@ begin
   inherited;
   DropTestTable;
   DropTableTestGroup;
-  FQuery   := PersistenceLayer.QueryClass.Create;
   FDatabase:= DBConnectionPool.Lock;
+  FQuery:= FDatabase.CreateAndAttachTIQuery;
 end;
 
 
@@ -755,20 +769,22 @@ begin
 end;
 
 procedure TTestTIDatabase.Transaction_InTransaction;
+var
+  LDatabase: TtiDatabase;
 begin
-  FDatabase.Connect(PerFrameworkSetup.DBName,
-                     PerFrameworkSetup.UserName,
-                     PerFrameworkSetup.Password,
-                     '');
-  FDatabase.StartTransaction;
-  Check(FDatabase.InTransaction, 'Database not in a transaction');
-  FDatabase.Commit;
-  Check(not FDatabase.InTransaction, 'Database in a transaction when it should not be');
-  FDatabase.StartTransaction;
-  Check(FDatabase.InTransaction, 'Database not in a transaction');
-  FDatabase.RollBack;
-  Check(not FDatabase.InTransaction, 'Database in a transaction when it should not be');
-  FDatabase.Connected := false;
+  LDatabase:= DBConnectionPool.Lock;
+  try
+    LDatabase.StartTransaction;
+    Check(LDatabase.InTransaction, 'Database not in a transaction');
+    LDatabase.Commit;
+    Check(not LDatabase.InTransaction, 'Database in a transaction when it should not be');
+    LDatabase.StartTransaction;
+    Check(LDatabase.InTransaction, 'Database not in a transaction');
+    LDatabase.RollBack;
+    Check(not LDatabase.InTransaction, 'Database in a transaction when it should not be');
+  finally
+    DBConnectionPool.UnLock(LDatabase);
+  end;
 end;
 
 procedure TTestTIDatabase.CheckFieldMetaData(
@@ -864,7 +880,7 @@ begin
   end;
 end;
 
-procedure TTestTIDatabase.DoThreadedDBConnectionPool(
+procedure TTestTIPersistenceLayers.DoThreadedDBConnectionPool(
   const ADBConnectionPool: TtiDBConnectionPool; const AThreadCount : integer);
   procedure _CreateThreads(
     const ADBConnectionPool: TtiDBConnectionPool;
@@ -889,15 +905,15 @@ procedure TTestTIDatabase.DoThreadedDBConnectionPool(
   procedure _WaitForThreads(AList : TList);
   var
     i : integer;
-    lAllFinished : boolean;
+    LAllFinished : boolean;
   begin
-    lAllFinished := false;
-    while not lAllFinished do
+    LAllFinished := false;
+    while not LAllFinished do
     begin
-      lAllFinished := true;
+      LAllFinished := true;
       for i := 0 to AList.Count - 1 do
       begin
-        lAllFinished := lAllFinished and TThrdDBConnectionPoolTest(AList.Items[i]).Done;
+        LAllFinished := LAllFinished and TThrdDBConnectionPoolTest(AList.Items[i]).Done;
       end;
       Sleep(100);
     end;
@@ -916,7 +932,7 @@ begin
   end;
 end;
 
-procedure TTestTIDatabase.NonThreadedDBConnectionPool;
+procedure TTestTIPersistenceLayers.NonThreadedDBConnectionPool;
 var
   i : integer;
   LDatabase : TtiDatabase;
@@ -924,7 +940,7 @@ var
 const
   CAlias = 'TestAliasName';
 begin
-  FPersistenceLayer.DBConnectionPools.Connect(
+  PersistenceLayer.DBConnectionPools.Connect(
     CAlias,
     PerFrameworkSetup.DBName,
     PerFrameworkSetup.Username,
@@ -932,160 +948,147 @@ begin
     '');
   try
     lDBConnectionName := PerFrameworkSetup.DBName;
-    for i := 1 to 10 do
+    for i := 1 to 1 do
     begin
-      LDatabase := FPersistenceLayer.DBConnectionPools.Lock(CAlias);
+      LDatabase := PersistenceLayer.DBConnectionPools.Lock(CAlias);
       CheckNotNull(LDatabase);
-      Sleep(100);
-      FPersistenceLayer.DBConnectionPools.UnLock(CAlias, LDatabase);
-      Sleep(100);
+      PersistenceLayer.DBConnectionPools.UnLock(CAlias, LDatabase);
     end;
   finally
-    FPersistenceLayer.DBConnectionPools.Disconnect(CAlias);
+    PersistenceLayer.DBConnectionPools.Disconnect(CAlias);
   end;
 end;
 
-procedure TTestTIDatabase.ThreadedDBConnectionPool;
+procedure TTestTIPersistenceLayers.ThreadedDBConnectionPool;
 const
   CAlias = 'TestAliasName';
 begin
-  FPersistenceLayer.DBConnectionPools.Connect(
+  PersistenceLayer.DBConnectionPools.Connect(
     CAlias,
     PerFrameworkSetup.DBName,
     PerFrameworkSetup.Username,
     PerFrameworkSetup.Password,
     '');
   try
-    if FPersistenceLayerDefaults.CanSupportMultiUser then
-      DoThreadedDBConnectionPool(FPersistenceLayer.DefaultDBConnectionPool, cuThreadCount)
+    if PersistenceLayerSupportsMultiUser then
+      DoThreadedDBConnectionPool(PersistenceLayer.DefaultDBConnectionPool, CThreadCount)
     else
-      DoThreadedDBConnectionPool(FPersistenceLayer.DefaultDBConnectionPool, 1)
+      DoThreadedDBConnectionPool(PersistenceLayer.DefaultDBConnectionPool, 1)
   finally
-    FPersistenceLayer.DBConnectionPools.Disconnect(CAlias);
+    PersistenceLayer.DBConnectionPools.Disconnect(CAlias);
   end;
 end;
 
 { TTestTIDatabase }
 
-procedure TTestTIDatabase.SetUp;
-begin
-  inherited;
-  FTIOPFManager:= TtiOPFManager.Create;
-  FTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(PerFrameworkSetup.PersistenceLayerClass);
-  FPersistenceLayer:= FTIOPFManager.DefaultPerLayer;
-  FPersistenceLayerDefaults:= TtiPersistenceLayerDefaults.Create;
-  FPersistenceLayer.AssignPersistenceLayerDefaults(FPersistenceLayerDefaults);
-  FDatabaseClass := FPersistenceLayer.DatabaseClass;
-  FDatabase := FDatabaseClass.Create;
-end;
-
-procedure TTestTIDatabase.TearDown;
-begin
-  if FDatabase.Connected then
-    FDatabase.Connected := false;
-  FreeAndNil(FDatabase);
-  FDatabaseClass := nil;
-  FreeAndNil(FTIOPFManager);
-  FreeAndNil(FPersistenceLayerDefaults);
-  inherited;
-end;
-
 procedure TTestTIDatabase.Transaction_Commit;
 var
-  lQuery : TtiQuery;
+  LQuery : TtiQuery;
+  LDatabase: TtiDatabase;
 begin
-//  FDatabase.Connect(PerFrameworkSetup.DBName,
-//                     PerFrameworkSetup.UserName,
-//                     PerFrameworkSetup.Password,
-//                     '');
-//  try FDatabase.DropTable(cTableNameTestGroup) except end;
-//
-//  CreateTableTestGroup(FDatabase);
-//
-//  FDatabase.StartTransaction;
-//  try
-//    InsertIntoTestGroup(FDatabase, 1);
-//    FDatabase.Commit;
-//    lQuery := FPersistenceLayer.QueryClass.Create;
-//    try
-//      lQuery.AttachDatabase(FDatabase);
-//      FDatabase.StartTransaction;
-//      lQuery.SelectRow(cTableNameTestGroup, nil);
-//      Check(not lQuery.EOF, 'Transaction not committed');
-//      lQuery.Next;
-//      Check(lQuery.EOF, 'Wrong number of records');
-//      FDatabase.Commit;
-//    finally
-//      lQuery.Free;
-//    end;
-//  finally
-//    FDatabase.DropTable(cTableNameTestGroup);
-//  end;
-Assert(False, 'Under construction');
+  try
+    CreateTableTestGroup;
+    LDatabase:= DBConnectionPool.Lock;
+    try
+      InsertIntoTestGroup(LDatabase, 1);
+      LQuery := LDatabase.CreateAndAttachTIQuery;
+      try
+        Check(not LDatabase.InTransaction);
+        LDatabase.StartTransaction;
+        Check(LDatabase.InTransaction);
+        LQuery.SelectRow(cTableNameTestGroup, nil);
+        Check(not LQuery.EOF, 'Transaction not committed');
+        LQuery.Next;
+        Check(LQuery.EOF, 'Wrong number of records');
+        LDatabase.Commit;
+        Check(not LDatabase.InTransaction);
+      finally
+        LQuery.Free;
+      end;
+    finally
+      DBConnectionPool.UnLock(LDatabase);
+    end;
+  finally
+    DropTable(cTableNameTestGroup);
+  end;
 end;
 
 procedure TTestTIDatabase.Transaction_RollBack;
 var
-  lQuery : TtiQuery;
-  lEOF : boolean;
+  LDatabase: TtiDatabase;
+  LQuery : TtiQuery;
+  LParams: TtiQueryParams;
+  LEOF : boolean;
 begin
-//  FDatabase.Connect(PerFrameworkSetup.DBName,
-//                     PerFrameworkSetup.UserName,
-//                     PerFrameworkSetup.Password,
-//                     '');
-//  try FDatabase.DropTable(cTableNameTestGroup) except end;
-//  CreateTableTestGroup(FDatabase);
-//
-//  FDatabase.StartTransaction;
-//  try
-//    InsertIntoTestGroup(FDatabase, 1);
-//    FDatabase.RollBack;
-//    lQuery := FPersistenceLayer.QueryClass.Create;
-//    try
-//      lQuery.AttachDatabase(FDatabase);
-//      FDatabase.StartTransaction;
-//      lQuery.SelectRow(cTableNameTestGroup, nil);
-//      lEOF := lQuery.EOF;
-//      Check(lEOF, 'Transaction not rolled back');
-//      FDatabase.Commit;
-//    finally
-//      lQuery.Free;
-//    end;
-//  finally
-//    FDatabase.DropTable(cTableNameTestGroup);
-//  end;
-Assert(False, 'Under construction');
+  try
+    CreateTableTestGroup;
+    LDatabase:= DBConnectionPool.Lock;
+    try
+      LQuery := nil;
+      LParams:= nil;
+      try
+        LQuery := LDatabase.CreateAndAttachTIQuery;
+        LParams:= TtiQueryParams.Create;
+        LParams.SetValueAsInteger('oid', 1);
+        LDatabase.StartTransaction;
+        LQuery.InsertRow('test_group', LParams);
+        LDatabase.Rollback;
+
+        LDatabase.StartTransaction;
+        LQuery.SelectRow(cTableNameTestGroup, nil);
+        LEOF := LQuery.EOF;
+        Check(LEOF, 'Transaction not rolled back');
+        LQuery.Close;
+
+        LQuery.InsertRow('test_group', LParams);
+        LDatabase.Commit;
+
+        LDatabase.StartTransaction;
+        LQuery.SelectRow(cTableNameTestGroup, nil);
+        LEOF := LQuery.EOF;
+        LDatabase.Commit;
+
+        LDatabase.StartTransaction;
+        Check(not LEOF, 'Transaction not committed');
+
+      finally
+        LQuery.Free;
+        LParams.Free;
+      end;
+    finally
+      DBConnectionPool.UnLock(LDatabase);
+    end;
+  finally
+    DropTable(cTableNameTestGroup);
+  end;
 end;
 
 procedure TTestTIDatabase.CreateTableDropTable_Timing;
 var
-  lTable1         : TtiDBMetaDataTable;
-  lTable2         : TtiDBMetaDataTable;
-  lCreateTableTime : DWord;
-  lDropTableTime  : DWord;
-  lMetaDataTime   : DWord;
+  LDatabase: TtiDatabase;
+  LTable1         : TtiDBMetaDataTable;
+  LTable2         : TtiDBMetaDataTable;
+  LCreateTableTime : DWord;
+  LDropTableTime  : DWord;
+  LMetaDataTime   : DWord;
   LBulkTestStart:   DWord;
   LSingleTestStart: DWord;
   LCount               : integer;
 begin
   Check(True); // To Force OnCheckCalled to be called
-  lCreateTableTime := 0;
-  lDropTableTime  := 0;
-  lMetaDataTime   := 0;
-  FDatabase.Connect(PerFrameworkSetup.DBName,
-                     PerFrameworkSetup.UserName,
-                     PerFrameworkSetup.Password,
-                     '');
+  LCreateTableTime := 0;
+  LDropTableTime  := 0;
+  LMetaDataTime   := 0;
+  DropTable(cTableNameCreateTable);
+  LDatabase:= DBConnectionPool.Lock;
   try
-    try FDatabase.DropTable(cTableNameCreateTable) except end;
-    
-    lTable1 := TtiDBMetaDataTable.Create;
+    LTable1 := TtiDBMetaDataTable.Create;
     try
-      lTable1.Name := cTableNameCreateTable;
-      lTable2 := TtiDBMetaDataTable.Create;
+      LTable1.Name := cTableNameCreateTable;
+      LTable2 := TtiDBMetaDataTable.Create;
       try
-        lTable2.Name := cTableNameCreateTable;
-        lTable1.AddField('test', qfkString, 10);
+        LTable2.Name := cTableNameCreateTable;
+        LTable1.AddField('test', qfkString, 10);
         LCount:= 0;
         LBulkTestStart:= tiGetTickCount;
         while (tiGetTickCount - LBulkTestStart) < (CTimingTestPeriod*1000) do
@@ -1093,35 +1096,54 @@ begin
           Inc(LCount);
           // Create Table
           LSingleTestStart := tiGetTickCount;
-          FDatabase.CreateTable(lTable1);
-          Inc(lCreateTableTime, tiGetTickCount - LSingleTestStart);
+          LDatabase.CreateTable(LTable1);
+          Inc(LCreateTableTime, tiGetTickCount - LSingleTestStart);
 
           // Meta Data
-          lTable2.Clear;
+          LTable2.Clear;
           LSingleTestStart := tiGetTickCount;
-          FDatabase.ReadMetaDataFields(lTable2);
-          Inc(lMetaDataTime, tiGetTickCount - LSingleTestStart);
+          LDatabase.ReadMetaDataFields(LTable2);
+          Inc(LMetaDataTime, tiGetTickCount - LSingleTestStart);
 
           // Drop Table
           LSingleTestStart := tiGetTickCount;
-          FDatabase.DropTable(cTableNameCreateTable);
-          Inc(lDropTableTime, tiGetTickCount - LSingleTestStart);
+          LDatabase.DropTable(cTableNameCreateTable);
+          Inc(LDropTableTime, tiGetTickCount - LSingleTestStart);
 
         end;
         WriteTimingResult('TableTestIterationCount',     PerFrameworkSetup.PersistenceLayerName, LCount);
         WriteTimingResult('TotalTestTime',  PerFrameworkSetup.PersistenceLayerName, CTimingTestPeriod);
-        WriteTimingResult('CreateTable',    PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(lCreateTableTime, LCount));
-        WriteTimingResult('DropTableTable', PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(lDropTableTime, LCount));
-        WriteTimingResult('ReadMetaData',   PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(lMetaDataTime, LCount));
+        WriteTimingResult('CreateTable',    PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LCreateTableTime, LCount));
+        WriteTimingResult('DropTableTable', PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LDropTableTime, LCount));
+        WriteTimingResult('ReadMetaData',   PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LMetaDataTime, LCount));
       finally
-        lTable2.Free;
+        LTable2.Free;
       end;
     finally
-      lTable1.Free;
+      LTable1.Free;
     end;
 
   finally
-    FDatabase.Connected := false;
+    DBConnectionPool.UnLock(LDatabase);
+  end;
+end;
+
+procedure TTestTIDatabase.CreateTIQuery;
+var
+  LQuery: TtiQuery;
+  LDatabase: TtiDatabase;
+begin
+  LDatabase:= DBConnectionPool.Lock;
+  try
+    LQuery:= LDatabase.CreateTIQuery;
+    try
+      CheckIs(LQuery, LDatabase.TIQueryClass);
+      CheckNull(LQuery.Database);
+    finally
+      LQuery.Free;
+    end;
+  finally
+    DBConnectionPool.UnLock(LDatabase);
   end;
 end;
 
@@ -1341,12 +1363,12 @@ end;
 
 procedure TTestTIQueryAbs.ConfirmDBConnectionWorks;
 begin
-  AttachDatabaseAndStartTransaction;
+  Database.StartTransaction;
   try
     Check(Database.InTransaction, 'Database not InTransaction when it should be');
     // Do nothing;
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 
@@ -1440,34 +1462,22 @@ var
 begin
   lTarget := tiCreateStringOfSize(pStrLen);
   CreateTableLongString(Database);
+  PopulateTableString(lTarget);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      PopulateTableString(lTarget);
-      DoReAttach;
-      FQuery.SelectRow(cTIQueryTableName, nil);
-      lValue := FQuery.FieldAsString[ cTIQueryColName ];
+    FQuery.SelectRow(cTIQueryTableName, nil);
+    lValue := FQuery.FieldAsString[ cTIQueryColName ];
 
-      CheckEquals(Length(lTarget), Length(lValue), 'FieldAsString: ' + IntToStr(pStrLen));
-      CheckEquals(lTarget, lValue, 'FieldAsString: ' + IntToStr(pStrLen));
+    CheckEquals(Length(lTarget), Length(lValue), 'FieldAsString: ' + IntToStr(pStrLen));
+    CheckEquals(lTarget, lValue, 'FieldAsString: ' + IntToStr(pStrLen));
 
-      lValue := FQuery.FieldAsStringByIndex[ cFieldAs_Index ];
-      CheckEquals(lTarget, lValue, 'FieldAsStringByIndex: ' + IntToStr(pStrLen));
+    lValue := FQuery.FieldAsStringByIndex[ cFieldAs_Index ];
+    CheckEquals(lTarget, lValue, 'FieldAsStringByIndex: ' + IntToStr(pStrLen));
 
-      FQuery.Close;
-    finally
-      CommitAndAttachDatabase;
-    end;
+    FQuery.Close;
   finally
-    DropTestTable;
+    Database.Commit;
   end;
-end;
-
-procedure TTestTIQueryAbs.DropTestTable;
-begin
-  try
-    Database.DropTable(cTIQueryTableName);
-  except end;
 end;
 
 procedure TTestTIQueryAbs.PopulateTableReal(const AValue: Extended);
@@ -1963,37 +1973,32 @@ end;
 
 procedure TTestTIQueryAbs.FieldAsStream;
 var
-  lStream1 : TStringStream;
-  lStream2 : TMemoryStream;
+  LStream1 : TStringStream;
+  LStream2 : TMemoryStream;
 begin
   CreateTableStream(Database);
+  LStream1 := TStringStream.Create(tiCreateStringOfSize(1000));
   try
-    AttachDatabaseAndStartTransaction;
+    PopulateTableStream(LStream1);
+    Database.StartTransaction;
     try
-      lStream1 := TStringStream.Create(tiCreateStringOfSize(1000));
+      FQuery.SelectRow(cTIQueryTableName, nil);
+      LStream2 := TMemoryStream.Create;
       try
-        PopulateTableStream(lStream1);
-        DoReAttach;
-        FQuery.SelectRow(cTIQueryTableName, nil);
-        lStream2 := TMemoryStream.Create;
-        try
-          FQuery.AssignFieldAsStream(cTIQueryColName, lStream2);
-          CheckStreamContentsSame(lStream1, lStream2);
-          lStream2.Size := 0;
-          FQuery.AssignFieldAsStreamByIndex(cFieldAs_Index, lStream2);
-          CheckStreamContentsSame(lStream1, lStream2);
-        finally
-          lStream2.Free;
-        end;
-        FQuery.Close;
+        FQuery.AssignFieldAsStream(cTIQueryColName, LStream2);
+        CheckStreamContentsSame(LStream1, LStream2);
+        LStream2.Size := 0;
+        FQuery.AssignFieldAsStreamByIndex(cFieldAs_Index, LStream2);
+        CheckStreamContentsSame(LStream1, LStream2);
       finally
-        lStream1.Free;
+        LStream2.Free;
       end;
+      FQuery.Close;
     finally
-      CommitAndAttachDatabase;
+      Database.Commit;
     end;
   finally
-    DropTestTable;
+    LStream1.Free;
   end;
 end;
 
@@ -2012,69 +2017,61 @@ end;
 
 procedure TTestTIQueryAbs.InsertDeleteUpdate_Timing;
 var
-  lParams : TtiQueryParams;
-  lInsertTime : DWord;
-  lUpdateTime : DWord;
-  lDeleteTime : DWord;
+  LParams : TtiQueryParams;
+  LInsertTime : DWord;
+  LUpdateTime : DWord;
+  LDeleteTime : DWord;
   LSingleTestStart     : DWord;
   LCount : integer;
   LBulkTestStart: DWord;
 begin
   Check(True); // To Force OnCheckCalled to be called
-  lInsertTime := 0;
-  lUpdateTime := 0;
-  lDeleteTime := 0;
+  LInsertTime := 0;
+  LUpdateTime := 0;
+  LDeleteTime := 0;
   CreateTableString(Database);
+
+  LParams := TtiQueryParams.Create;
   try
-    FQuery.AttachDatabase(Database);
-    try
+    LParams.SetValueAsString(cTIQueryColName, 'test');
 
-      lParams := TtiQueryParams.Create;
-      try
-        lParams.SetValueAsString(cTIQueryColName, 'test');
+    LCount:= 0;
+    LBulkTestStart:= tiGetTickCount;
+    while (tiGetTickCount - LBulkTestStart) < (CTimingTestPeriod*1000) do
+    begin
+      Inc(LCount);
 
-        LCount:= 0;
-        LBulkTestStart:= tiGetTickCount;
-        while (tiGetTickCount - LBulkTestStart) < (CTimingTestPeriod*1000) do
-        begin
-          Inc(LCount);
+      LSingleTestStart := tiGetTickCount;
+      Database.StartTransaction;
+      FQuery.InsertRow(cTIQueryTableName, LParams);
+      Database.Commit;
+      Inc(LInsertTime, tiGetTickCount - LSingleTestStart);
+      FQuery.Close;
 
-          LSingleTestStart := tiGetTickCount;
-          Database.StartTransaction;
-          FQuery.InsertRow(cTIQueryTableName, lParams);
-          Database.Commit;
-          Inc(lInsertTime, tiGetTickCount - LSingleTestStart);
-          FQuery.Close;
+      LSingleTestStart := tiGetTickCount;
+      Database.StartTransaction;
+      FQuery.UpdateRow(cTIQueryTableName, LParams, LParams);
+      Database.Commit;
+      Inc(LUpdateTime, tiGetTickCount - LSingleTestStart);
+      FQuery.Close;
 
-          LSingleTestStart := tiGetTickCount;
-          Database.StartTransaction;
-          FQuery.UpdateRow(cTIQueryTableName, lParams, lParams);
-          Database.Commit;
-          Inc(lUpdateTime, tiGetTickCount - LSingleTestStart);
-          FQuery.Close;
-
-          LSingleTestStart := tiGetTickCount;
-          Database.StartTransaction;
-          FQuery.DeleteRow(cTIQueryTableName, lParams);
-          Database.Commit;
-          Inc(lDeleteTime, tiGetTickCount - LSingleTestStart);
-          FQuery.Close;
-        end;
-
-      finally
-        lParams.Free;
-      end;
-    finally
-      FQuery.DetachDatabase;
+      LSingleTestStart := tiGetTickCount;
+      Database.StartTransaction;
+      FQuery.DeleteRow(cTIQueryTableName, LParams);
+      Database.Commit;
+      Inc(LDeleteTime, tiGetTickCount - LSingleTestStart);
+      FQuery.Close;
     end;
+
   finally
-    DropTestTable;
+    LParams.Free;
   end;
+
   WriteTimingResult('RowTestIterationCount',  PerFrameworkSetup.PersistenceLayerName, LCount);
   WriteTimingResult('TotalTestTime', PerFrameworkSetup.PersistenceLayerName, CTimingTestPeriod);
-  WriteTimingResult('InsertRow',     PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(lInsertTime, LCount));
-  WriteTimingResult('UpdateRow',     PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(lUpdateTime, LCount));
-  WriteTimingResult('DeleteRow',     PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(lDeleteTime, LCount));
+  WriteTimingResult('InsertRow',     PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LInsertTime, LCount));
+  WriteTimingResult('UpdateRow',     PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LUpdateTime, LCount));
+  WriteTimingResult('DeleteRow',     PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LDeleteTime, LCount));
 end;
 
 {$IFDEF TESTINT64}
@@ -2105,33 +2102,26 @@ var
   lByIndex : DWord;
 begin
   CreateTableString(Database);
+  PopulateTableString(cString);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      PopulateTableString(cString);
-      FQuery.SelectRow(cTIQueryTableName, nil);
-      lStart := tiGetTickCount;
-      for i := 1 to cCount do
-        FQuery.FieldAsString[ cTIQueryColName ];
-      lByName := tiGetTickCount - lStart;
+    FQuery.SelectRow(cTIQueryTableName, nil);
+    lStart := tiGetTickCount;
+    for i := 1 to cCount do
+      FQuery.FieldAsString[ cTIQueryColName ];
+    lByName := tiGetTickCount - lStart;
 
-      lStart := tiGetTickCount;
-      for i := 1 to cCount do
-        FQuery.FieldAsStringByIndex[ cFieldAs_Index ];
-      lByIndex := tiGetTickCount - lStart;
+    lStart := tiGetTickCount;
+    for i := 1 to cCount do
+      FQuery.FieldAsStringByIndex[ cFieldAs_Index ];
+    lByIndex := tiGetTickCount - lStart;
 
-      FQuery.Close;
-    finally
-      CommitAndAttachDatabase;
-    end;
+    FQuery.Close;
   finally
-    DropTestTable;
+    Database.Commit;
   end;
   Check(lByIndex < lByName, 'It got slower. ByIndex: ' +
          IntToStr(lByIndex) + ' ByName: ' + IntToStr(lByName));
-//  lRatio := 10000 / (lByIndex * 10000 div lByName);
-//  Check(lRatio > cImprovement, 'Not fast enough: ' + tiFloatToStr(lRatio, 2) + ' x faster (should be ' + IntToStr(cImprovement) + ')');
-
 end;
 
 procedure TTestTIQueryAbs.FieldAsStringLong1999;
@@ -2195,6 +2185,8 @@ begin
 end;
 
 end.
+
+
 
 
 

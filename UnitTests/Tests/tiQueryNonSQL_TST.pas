@@ -7,8 +7,7 @@ unit tiQueryNonSQL_TST;
 
 interface
 uses
-  tiQuery_TST
- ;
+  tiQuery_TST;
 
 
 type
@@ -37,19 +36,18 @@ type
 
 implementation
 uses
-  tiLog
+  tiLog,
+  tiTestFramework,
+  tiUtils,
   {$IFDEF MSWINDOWS}
-  ,Windows
+  Windows,
   {$ENDIF}
-  ,tiUtils
-  ,TypInfo
+  TypInfo,
   {$IFNDEF DELPHI6ORABOVE}
-  ,FileCtrl
+  FileCtrl,
   {$ENDIF}
-  ,SysUtils
-  ,Classes
-  ,tiTestFramework
- ;
+  SysUtils,
+  Classes;
 
 
 procedure TTestTIQueryNonSQL.QueryType;

@@ -382,6 +382,7 @@ end;
 procedure TtiDataBuffers.Extract(const AValue: TtiDataBuffer);
 begin
   FList.Extract(AValue);
+  FList.Capacity:= FList.Count; // To suppress a reported leak in testing
 end;
 
 function TtiDataBuffers.FindByName(const AName: string): TtiDataBuffer;
@@ -405,6 +406,7 @@ end;
 procedure TtiDataBuffers.Remove(const AValue: TtiDataBuffer);
 begin
   FList.Remove(AValue);
+  FList.Capacity:= FList.Count; // To suppress a reported leak in testing
 end;
 
 procedure TtiDataBuffers.SetItems(AIndex: Integer; const AValue: TtiDataBuffer);

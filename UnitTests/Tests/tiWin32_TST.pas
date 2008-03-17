@@ -102,6 +102,7 @@ const
   CThreadCount= 5; // Crank ThreadCount up to about 20, and DUnit2 will report leaks
                     // ToDo: Track down leak.
 begin
+  AllowedMemoryLeakSize:= 56;
   LList:= TObjectList.Create(True);
   try
     for i:= 1 to CThreadCount do

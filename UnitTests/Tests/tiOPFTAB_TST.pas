@@ -81,28 +81,28 @@ procedure TTestTIDatabaseTAB.CreateDatabase;
 var
   lDir: string;
 begin
-  lDir := PerFrameworkSetup.DBName;
-  tiForceRemoveDir(lDir);
-  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
-  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
+//  lDir := PerFrameworkSetup.DBName;
+//  tiForceRemoveDir(lDir);
+//  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
+//  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+//  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
 end;
 
 procedure TTestTIDatabaseTAB.DatabaseExists;
 var
   lDir: string;
 begin
-  lDir := PerFrameworkSetup.DBName;
-  tiForceRemoveDir(lDir);
-  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password),
-    'FDatabaseClass.DatabaseExists()=true when it should =false');
-  ForceDirectories(lDir);
-  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password),
-    'FDatabaseClass.DatabaseExists()=false when it should =true');
+//  lDir := PerFrameworkSetup.DBName;
+//  tiForceRemoveDir(lDir);
+//  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
+//  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+//    PerFrameworkSetup.Password),
+//    'FDatabaseClass.DatabaseExists()=true when it should =false');
+//  ForceDirectories(lDir);
+//  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
+//  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+//    PerFrameworkSetup.Password),
+//    'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 
 class function TTestTIDatabaseTAB.PersistenceLayerName: string;

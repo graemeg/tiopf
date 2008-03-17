@@ -81,16 +81,16 @@ end;
 
 procedure TTestTIDatabaseCrSdac.CreateDatabase;
 begin
-  try
-    FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
-    Fail('Exception not raised when it should have been');
-  except
-    on e: Exception do
-    begin
-      CheckIs(e, EAssertionFailed);
-      Check(Pos('CreateDatabase not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
-    end;
-  end;
+//  try
+//    FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+//    Fail('Exception not raised when it should have been');
+//  except
+//    on e: Exception do
+//    begin
+//      CheckIs(e, EAssertionFailed);
+//      Check(Pos('CreateDatabase not implemented in ' + FDatabaseClass.ClassName, e.Message) <> 0);
+//    end;
+//  end;
 end;
 
 procedure TTestTIDatabaseCrSdac.DatabaseExists;
@@ -98,20 +98,20 @@ var
   lDB:       string;
   lDBExists: boolean;
 begin
-  lDB       := PerFrameworkSetup.DBName;
-  lDBExists :=
-    FDatabaseClass.DatabaseExists(
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
-  Check(lDBExists, 'DBExists returned false when it should return true');
-
-  lDBExists :=
-    FDatabaseClass.DatabaseExists(
-    PerFrameworkSetup.DBName + 'Tmp',
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
-  Check(not lDBExists, 'DBExists returned true when it should return false');
+//  lDB       := PerFrameworkSetup.DBName;
+//  lDBExists :=
+//    FDatabaseClass.DatabaseExists(
+//    PerFrameworkSetup.DBName,
+//    PerFrameworkSetup.Username,
+//    PerFrameworkSetup.Password);
+//  Check(lDBExists, 'DBExists returned false when it should return true');
+//
+//  lDBExists :=
+//    FDatabaseClass.DatabaseExists(
+//    PerFrameworkSetup.DBName + 'Tmp',
+//    PerFrameworkSetup.Username,
+//    PerFrameworkSetup.Password);
+//  Check(not lDBExists, 'DBExists returned true when it should return false');
 end;
 
 class function TTestTIDatabaseCrSdac.PersistenceLayerName: string;

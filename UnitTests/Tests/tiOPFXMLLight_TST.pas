@@ -5,12 +5,9 @@ unit tiOPFXMLLight_TST;
 interface
 
 uses
-  tiQuery_TST
-  ,
-  tiQueryNonSQL_TST
-  ,
-  tiAutoMap_TST
-  ,
+  tiQuery_TST,
+  tiQueryNonSQL_TST,
+  tiAutoMap_TST,
   tiOID_TST;
 
 type
@@ -55,22 +52,23 @@ implementation
 
 uses
   tiConstants,
+  tiOPFTestManager,
+  tiUtils,
+  tiTestDependencies,
+  tiQuery,
   {$IFDEF FPC}
   tiFPCUnitUtils,
   {$ELSE}
   TestFramework,
   {$ENDIF}
-  tiOPFTestManager,
-  SysUtils,
-  tiUtils,
-  tiTestDependencies;
+  SysUtils;
 
 procedure RegisterTests;
 begin
   tiRegisterPersistenceTest(TTestTIPersistenceLayersXMLLight);
   tiRegisterPersistenceTest(TTestTIDatabaseXMLLight);
   tiRegisterPersistenceTest(TTestTIQueryXMLLight);
-  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDXMLLight);
+//  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDXMLLight);
   tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerXMLLight);
   tiRegisterPersistenceTest(TTestTIAutoMapOperationXMLLight);
 end;
@@ -81,28 +79,32 @@ end;
 
 procedure TTestTIDatabaseXMLLight.CreateDatabase;
 var
-  lFileName: string;
+  LFileName: string;
+  LDatabaseClass: TtiDatabaseClass;
 begin
-  lFileName := PerFrameworkSetup.DBName;
-  tiDeleteFile(lFileName);
-  Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
-  Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
+  LDatabaseClass:= PersistenceLayer.DatabaseClass;
+  LFileName := PerFrameworkSetup.DBName;
+  tiDeleteFile(LFileName);
+  Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
+  LDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+  Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
 end;
 
 procedure TTestTIDatabaseXMLLight.DatabaseExists;
 var
-  lFileName: string;
+  LFileName: string;
+  LDatabaseClass: TtiDatabaseClass;
 begin
-  lFileName := PerFrameworkSetup.DBName;
-  tiDeleteFile(lFileName);
-  Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+  LDatabaseClass:= PersistenceLayer.DatabaseClass;
+  LFileName := PerFrameworkSetup.DBName;
+  tiDeleteFile(LFileName);
+  Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
+  Check(not LDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
     PerFrameworkSetup.Password),
     'FDatabaseClass.DatabaseExists()=true when it should =false');
-  tiStringToFile('test', lFileName);
-  Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
-  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+  tiStringToFile('test', LFileName);
+  Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
+  Check(LDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
     PerFrameworkSetup.Password),
     'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;

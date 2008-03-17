@@ -13,7 +13,6 @@ uses
 
 type
   TTestTIQuerySQL = class(TTestTIQueryAbs)
-  private
   published
     procedure GetSetSQL; override;
     procedure QueryType; override;
@@ -56,9 +55,9 @@ uses
 procedure TTestTIQuerySQL.ExecSQL;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  InsertIntoTestGroup(Database, 1);
+  Database.StartTransaction;
   try
-    InsertIntoTestGroup(Database, 1);
     Query.SQLText := 'select count(*) from test_group';
     Query.Open;
     Check(Query.FieldAsInteger[ Query.FieldName(0) ] = 1, 'FQuery.ExecSQL failed');
@@ -70,7 +69,7 @@ begin
     Check(Query.FieldAsInteger[Query.FieldName(0)] = 0, 'FQuery.ExecSQL failed');
     Query.Close;
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 
@@ -78,9 +77,9 @@ end;
 procedure TTestTIQuerySQL.OpenCloseActive;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  InsertIntoTestGroup(Database, 1);
+  Database.StartTransaction;
   try
-    InsertIntoTestGroup(Database, 1);
     Query.SQLText := 'select * from Test_Group';
     Check(not Query.Active, 'FQuery.Active = false failed');
     Query.Open;
@@ -93,7 +92,7 @@ begin
     Check(not Query.Active, 'FQuery.Active := false failed');
     Database.DeleteRow('test_group', nil);
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 
@@ -158,20 +157,16 @@ end;
 procedure TTestTIQuerySQL.ParamAsBoolean;
 begin
   CreateTableInteger(Database);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      Query.SQLText := 'Update ' + cTIQueryTableName +
-                         ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
-      Query.ParamAsBoolean[ cTIQueryColName ]:= False;
-      CheckEquals(False, Query.ParamAsBoolean[ cTIQueryColName ], 'False');
-      Query.ParamAsBoolean[ cTIQueryColName ]:= True;
-      CheckEquals(True, Query.ParamAsBoolean[ cTIQueryColName ],  'True');
-    finally
-      CommitAndAttachDatabase;
-    end;
+    Query.SQLText := 'Update ' + cTIQueryTableName +
+                       ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
+    Query.ParamAsBoolean[ cTIQueryColName ]:= False;
+    CheckEquals(False, Query.ParamAsBoolean[ cTIQueryColName ], 'False');
+    Query.ParamAsBoolean[ cTIQueryColName ]:= True;
+    CheckEquals(True, Query.ParamAsBoolean[ cTIQueryColName ],  'True');
   finally
-    DropTestTable;
+    Database.Commit;
   end;
 end;
 {$ENDIF}
@@ -184,18 +179,14 @@ var
 begin
   lDate := Now;
   CreateTableDateTime(Database);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      Query.SQLText := 'Update ' + cTIQueryTableName +
-                         ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
-      Query.ParamAsDateTime[ cTIQueryColName ]:= lDate;
-      CheckEquals(lDate, Query.ParamAsDateTime[ cTIQueryColName ], 0.0001);
-    finally
-      CommitAndAttachDatabase;
-    end;
+    Query.SQLText := 'Update ' + cTIQueryTableName +
+                       ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
+    Query.ParamAsDateTime[ cTIQueryColName ]:= lDate;
+    CheckEquals(lDate, Query.ParamAsDateTime[ cTIQueryColName ], 0.0001);
   finally
-    DropTestTable;
+    Database.Commit;
   end;
 end;
 {$ENDIF}
@@ -207,18 +198,14 @@ const
   cValue = 12345.6789;
 begin
   CreateTableFloat(Database);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      Query.SQLText := 'Update ' + cTIQueryTableName +
-                         ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
-      Query.ParamAsFloat[ cTIQueryColName ]:= cValue;
-      CheckEquals(cValue, Query.ParamAsFloat[ cTIQueryColName ], 0.00001);
-    finally
-      CommitAndAttachDatabase;
-    end;
+    Query.SQLText := 'Update ' + cTIQueryTableName +
+                       ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
+    Query.ParamAsFloat[ cTIQueryColName ]:= cValue;
+    CheckEquals(cValue, Query.ParamAsFloat[ cTIQueryColName ], 0.00001);
   finally
-    DropTestTable;
+    Database.Commit;
   end;
 end;
 {$ENDIF}
@@ -228,18 +215,14 @@ end;
 procedure TTestTIQuerySQL.ParamAsInteger;
 begin
   CreateTableInteger(Database);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      Query.SQLText := 'Update ' + cTIQueryTableName +
-                         ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
-      Query.ParamAsInteger[ cTIQueryColName ]:= 123456;
-      CheckEquals(123456, Query.ParamAsInteger[ cTIQueryColName ]);
-    finally
-      CommitAndAttachDatabase;
-    end;
+    Query.SQLText := 'Update ' + cTIQueryTableName +
+                       ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
+    Query.ParamAsInteger[ cTIQueryColName ]:= 123456;
+    CheckEquals(123456, Query.ParamAsInteger[ cTIQueryColName ]);
   finally
-    DropTestTable;
+    Database.Commit;
   end;
 end;
 {$ENDIF}
@@ -265,18 +248,14 @@ end;
 procedure TTestTIQuerySQL.ParamAsString;
 begin
   CreateTableString(Database);
+  Database.StartTransaction;
   try
-    AttachDatabaseAndStartTransaction;
-    try
-      Query.SQLText := 'Update ' + cTIQueryTableName +
-                         ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
-      Query.ParamAsString[ cTIQueryColName ]:= 'mickymouse';
-      CheckEquals('mickymouse', Query.ParamAsString[ cTIQueryColName ]);
-    finally
-      CommitAndAttachDatabase;
-    end;
+    Query.SQLText := 'Update ' + cTIQueryTableName +
+                       ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
+    Query.ParamAsString[ cTIQueryColName ]:= 'mickymouse';
+    CheckEquals('mickymouse', Query.ParamAsString[ cTIQueryColName ]);
   finally
-    DropTestTable;
+    Database.Commit;
   end;
 end;
 {$ENDIF}
@@ -286,7 +265,7 @@ end;
 procedure TTestTIQuerySQL.ParamCount;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  Database.StartTransaction;
   try
     Query.SQLText :=
       'Update Test_Group set ' +
@@ -319,7 +298,7 @@ begin
     Check(Query.ParamCount = 3, 'ParamCount failed on 3');
 
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 {$ENDIF}
@@ -329,7 +308,7 @@ end;
 procedure TTestTIQuerySQL.ParamIsNull;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  Database.StartTransaction;
   try
     Query.SQLText := 'Update Test_Group set Group_STR_FIELD = :Group_Str_Field';
     Query.ParamAsString[ 'Group_Str_Field' ]:= 'mickymouse';
@@ -337,7 +316,7 @@ begin
     Query.ParamIsNull[ 'Group_Str_Field' ]:= true;
     Check(Query.ParamIsNull[ 'Group_Str_Field' ] = true, 'Error checking ParamIsNull (true)');
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 {$ENDIF}
@@ -347,7 +326,7 @@ end;
 procedure TTestTIQuerySQL.ParamName;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  Database.StartTransaction;
   try
     Query.SQLText :=
       'Update Test_Group set ' +
@@ -365,7 +344,7 @@ begin
     Check(SameText(Query.ParamName(1), 'Group_Int_Field'  ),   'ParamName failed on 1');
     Check(SameText(Query.ParamName(2), 'Group_Float_Field'), 'ParamName failed on 2');
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 {$ENDIF}
@@ -377,7 +356,7 @@ var
   lResult : string;
 begin
   CreateTableTestGroup(Database);
-  AttachDatabaseAndStartTransaction;
+  Database.StartTransaction;
   try
     Query.SQLText :=
       'Update Test_Group set ' +
@@ -414,7 +393,7 @@ begin
            'ParamsAsStr failed with 2 params. Returned values was:' + CrLf +
            Query.ParamsAsString);
   finally
-    CommitAndAttachDatabase;
+    Database.Commit;
   end;
 end;
 {$ENDIF}
@@ -446,34 +425,32 @@ var
   lStreamTo  : TMemoryStream;
 begin
   CreateTableStream(Database);
+  lStreamFrom := TStringStream.Create(LongString);
   try
-    lStreamFrom := TStringStream.Create(LongString);
+    Database.StartTransaction;
     try
-      AttachDatabaseAndStartTransaction;
+      lStreamTo  := TMemoryStream.Create;
       try
-        lStreamTo  := TMemoryStream.Create;
-        try
-          Query.SQLText := 'Update ' + cTIQueryTableName +
-                             ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
-          Query.AssignParamFromStream(cTIQueryColName, lStreamFrom);
-          Query.AssignParamToStream(cTIQueryColName, lStreamTo);
-          CheckStreamContentsSame(lStreamFrom, lStreamTo);
-        finally
-          lStreamTo.Free;
-        end;
+        Query.SQLText := 'Update ' + cTIQueryTableName +
+                           ' set ' + cTIQueryColName + ' =:' + cTIQueryColName;
+        Query.AssignParamFromStream(cTIQueryColName, lStreamFrom);
+        Query.AssignParamToStream(cTIQueryColName, lStreamTo);
+        CheckStreamContentsSame(lStreamFrom, lStreamTo);
       finally
-        CommitAndAttachDatabase;
+        lStreamTo.Free;
       end;
     finally
-      lStreamFrom.Free;
+      Database.Commit;
     end;
   finally
-    DropTestTable;
+    lStreamFrom.Free;
   end;
 end;
 {$ENDIF}
 
 end.
+
+
 
 
 

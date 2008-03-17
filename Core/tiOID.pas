@@ -55,6 +55,26 @@ type
 
   TtiOIDClass = class of TtiOID;
 
+  TOIDStringAbs = class(TtiOID)
+  private
+    FAsString: string;
+  protected
+    function GetAsString: ShortString; override;
+    procedure SetAsString(const AValue: ShortString); override;
+    function GetAsVariant: variant; override;
+    procedure SetAsVariant(const AValue: variant); override;
+  public
+    function IsNull: boolean; override;
+    procedure AssignToTIQueryParam(const AFieldName: string; const AParams: TtiBaseObject); override;
+    procedure AssignToTIQuery(const AFieldName: string; const AQuery: TtiBaseObject); override;
+    procedure AssignFromTIQuery(const AFieldName: string; const AQuery: TtiBaseObject); override;
+    function EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean; override;
+    procedure Assign(const ASource: TtiOID); override;
+    function Compare(const ACompareWith: TtiOID): integer; override;
+    procedure SetToNull; override;
+    function NullOIDAsString: string; override;
+  end;
+
   // Each TtiOID must have an associated TtiOIDGenerator that is responsible
   // for returning the next OID for that generation stratergy
   TtiOIDGenerator = class(TtiBaseObject)
@@ -78,7 +98,8 @@ uses
   tiUtils,
   tiOPFManager,
   tiConstants,
-  tiPersistenceLayers;
+  tiPersistenceLayers,
+  tiQuery;
 
 function OIDToString(const AOID: TtiOID): string;
 begin
@@ -133,6 +154,105 @@ constructor TtiOIDGenerator.Create;
 begin
   inherited;
 end;
+
+function TOIDStringAbs.getAsString: ShortString;
+begin
+  Result := FAsString;
+end;
+
+
+procedure TOIDStringAbs.SetAsString(const AValue: ShortString);
+begin
+  FAsString := AValue;
+end;
+
+
+function TOIDStringAbs.IsNull: boolean;
+begin
+  Result := (FAsString = NullOIDAsString);
+end;
+
+
+procedure TOIDStringAbs.AssignFromTIQuery(const AFieldName: string; const AQuery: TtiBaseObject);
+var
+  lQuery: TtiQuery;
+begin
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery    := TtiQuery(AQuery);
+  FAsString := lQuery.FieldAsString[AFieldName];
+end;
+
+
+procedure TOIDStringAbs.AssignToTIQuery(const AFieldName: string; const AQuery: TtiBaseObject);
+var
+  lQuery: TtiQuery;
+begin
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery := TtiQuery(AQuery);
+  lQuery.ParamAsString[AFieldName] := FAsString;
+end;
+
+
+function TOIDStringAbs.EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean;
+var
+  lQuery: TtiQuery;
+begin
+  Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
+  lQuery := TtiQuery(AQuery);
+  Result := (FAsString = lQuery.FieldAsString[AFieldName]);
+end;
+
+
+procedure TOIDStringAbs.Assign(const ASource: TtiOID);
+begin
+  FAsString := ASource.AsString;
+end;
+
+
+function TOIDStringAbs.Compare(const ACompareWith: TtiOID): integer;
+begin
+  if AsString < ACompareWith.AsString then
+    Result := -1
+  else if AsString > ACompareWith.AsString then
+    Result := 1
+  else
+    Result := 0;
+end;
+
+
+procedure TOIDStringAbs.SetToNull;
+begin
+  FAsString := NullOIDAsString;
+end;
+
+
+function TOIDStringAbs.GetAsVariant: variant;
+begin
+  Result := FAsString;
+end;
+
+
+procedure TOIDStringAbs.SetAsVariant(const AValue: variant);
+begin
+  FAsString := AValue;
+end;
+
+
+function TOIDStringAbs.NullOIDAsString: string;
+begin
+  Result := '';
+end;
+
+
+procedure TOIDStringAbs.AssignToTIQueryParam(const AFieldName: string; const AParams: TtiBaseObject);
+var
+  lParams: TtiQueryParams;
+begin
+  Assert(AParams is TtiQueryParams, 'AQuery not a TtiQuery');
+  lParams := TtiQueryParams(AParams);
+  lParams.SetValueAsString(AFieldName, FAsString);
+end;
+
 
 {$ENDIF}
 

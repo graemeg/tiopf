@@ -33,7 +33,7 @@ type
     procedure TearDown; override;
 
   published
-    procedure TestSetupAndTearDown;
+    procedure TestSetupAndTearDown; virtual;
     procedure CollectionReadAllNoCriteria;
     procedure CollectionReadStringCriteria;
     procedure ItemsNoCriteria;

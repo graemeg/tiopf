@@ -12,6 +12,7 @@ uses
   tiTestFramework,
   tiOID;
 
+
 type
 
   // Persistence TtiOID tests
@@ -24,8 +25,9 @@ type
     procedure TearDown; override;
   published
 
-    procedure TtiNextOIDGeneratorAssignNextOIDSingleUser;
-    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser;
+    procedure TtiNextOIDGeneratorAssignNextOIDSingleUser; virtual;
+    procedure TtiNextOIDGeneratorAssignNextOIDThreaded; virtual;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; virtual;
 
     procedure TtiOIDAssignToTIQueryParam;
     procedure TtiOIDAssignToTIQuery;
@@ -126,7 +128,7 @@ uses
   tiOPFTestManager,
   tiTestDependencies,
   tiUtils,
-  tiConstants;
+  tiConstants, tiQueryXMLLight, tiDialogs, tiXML, tiXMLtoTIDataSet;
 
 const
   // Number of times to repeat NextOID test
@@ -139,6 +141,7 @@ begin
   tiRegisterNonPersistentTest(TTestTIOIDInteger);
   tiRegisterNonPersistentTest(TTestTIOIDString);
   tiRegisterNonPersistentTest(TTestTIOIDGUID);
+  tiRegisterNonPersistentTest(TTestTIOIDPersistentGUID);
 end;
 
 
@@ -675,7 +678,8 @@ begin
   finally
     LList.Free;
   end;
-  Check(True); // To suppress DUnit2 warnings
+  FOIDList.Clear;
+  Check(True); // Suppress DUnit2 warning
 end;
 
 procedure TTestTIOIDPersistent.TtiNextOIDGeneratorAssignNextOIDSingleUser;
@@ -699,9 +703,24 @@ begin
         LOID.Free;
       end;
     end;
+    FOIDList.Clear;
   finally
     LNextOIDGenerator.Free;
   end;
+end;
+
+procedure TTestTIOIDPersistent.TtiNextOIDGeneratorAssignNextOIDThreaded;
+var
+  LThread: TtiOIDGeneratorThread;
+begin
+  LThread:= TtiOIDGeneratorThread.Create(FOIDGeneratorClass, 0, CRepeatCount, DatabaseName, PersistenceLayerName);
+  try
+    LThread.Resume;
+    LThread.WaitFor;
+  finally
+    LThread.Free;
+  end;
+  Check(True); // Suppress DUnit2 warning
 end;
 
 procedure TTestTIOIDPersistent.TtiOIDAssignToTIQueryParam;

@@ -67,8 +67,6 @@ var
   SHGetFolderPath: PFNSHGetFolderPath = nil;
   CFGDLLHandle: THandle = 0;
 
-
-
 procedure _InitDLL;
 var
   LProcAddress: Pointer;

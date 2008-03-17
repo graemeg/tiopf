@@ -88,7 +88,7 @@ uses
   ,tiUtils
   ,tiDUnitINI
   ,tiConstants
-  ,tiOIDGUID
+  ,tiOIDForTesting
  ;
 
 const
@@ -130,7 +130,7 @@ end;
 
 function TtiOPFTestManager.DefaultOIDGeneratorClass: TtiOIDGeneratorClass;
 begin
-  result:= TtiOIDGeneratorGUID;
+  result:= TtiOIDGeneratorForTesting;
 end;
 
 function TtiOPFTestManager.FindByPersistenceLayerName(const APersistenceLayerName: string): TtiOPFTestSetupData;

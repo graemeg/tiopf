@@ -11,7 +11,8 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ,SyncObjs   // This unit must always appear after the Windows unit!
+  ,SyncObjs
+  ,SysUtils   // This unit must always appear after the Windows unit!
  ;
 
 const
@@ -93,7 +94,6 @@ uses
   ,tiWin32
   {$ENDIF MSWINDOWS}
   ,tiUtils
-  ,SysUtils    // Used by FPC for the Sleep method.
  ;
 
 

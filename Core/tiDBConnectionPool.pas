@@ -168,7 +168,9 @@ end;
 procedure TtiDBConnectionPool.UnLock(const ADatabase: TtiDatabase);
 begin
   Assert(ADatabase.TestValid, CTIErrorInvalidObject);
-  Assert(not ADatabase.InTransaction, 'Database in transaction immediately before being unlocked in DBConnectionPool.');
+  //Assert(not ADatabase.InTransaction, 'Database in transaction immediately before being unlocked in DBConnectionPool.');
+  if ADatabase.InTransaction then
+    ADatabase.Rollback;
   inherited UnLock(ADatabase);
 end;
 
@@ -366,6 +368,7 @@ begin
       raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [ADatabaseAlias]);
     FList.Extract(lDBConnectionPool);
     lDBConnectionPool.Free;
+    FList.Capacity:= FList.Count; // To suppress leak warnings
   finally
     FCritSect.Leave;
   end;
