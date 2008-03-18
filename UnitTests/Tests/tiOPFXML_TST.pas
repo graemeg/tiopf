@@ -80,29 +80,30 @@ procedure TTestTIDatabaseXML.CreateDatabase;
 var
   LFileName: string;
 begin
-  LFileName := TestSetupData.DBName;
+  LFileName:= TempFileName('temp.msxml');
+  if FileExists(LFileName) then
   tiDeleteFile(LFileName);
   Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
-  PersistenceLayer.DatabaseClass.CreateDatabase(TestSetupData.DBName, TestSetupData.Username, TestSetupData.Password);
+  PersistenceLayer.DatabaseClass.CreateDatabase(LFileName, '', '');
   Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
+  tiDeleteFile(LFileName);
 end;
 
 procedure TTestTIDatabaseXML.DatabaseExists;
 var
   LFileName: string;
 begin
-//  SetAllowedLeakArray([24]);
-  LFileName := TestSetupData.DBName;
-  tiDeleteFile(LFileName);
+  LFileName:= TempFileName('temp.msxml');
+  if FileExists(LFileName) then
+    tiDeleteFile(LFileName);
   Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
-  Check(not PersistenceLayer.DatabaseClass.DatabaseExists(TestSetupData.DBName, TestSetupData.Username,
-    TestSetupData.Password),
+  Check(not PersistenceLayer.DatabaseClass.DatabaseExists(LFileName, '', ''),
     'FDatabaseClass.DatabaseExists()=true when it should =false');
   tiStringToFile('test', LFileName);
   Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
-  Check(PersistenceLayer.DatabaseClass.DatabaseExists(TestSetupData.DBName, TestSetupData.Username,
-    TestSetupData.Password),
+  Check(PersistenceLayer.DatabaseClass.DatabaseExists(LFileName, '', ''),
     'FDatabaseClass.DatabaseExists()=false when it should =true');
+  tiDeleteFile(LFileName);
 end;
 
 class function TTestTIDatabaseXML.PersistenceLayerName: string;
