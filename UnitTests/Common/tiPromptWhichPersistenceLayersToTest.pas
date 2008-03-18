@@ -83,6 +83,7 @@ begin
   end;
   GTIOPFTestManager.Save;
   GTIOPFTestManager.UnloadPersistenceLayersNotSelected;
+  GTIOPFTestManager.DeleteDatabaseFiles;
 end;
 
 

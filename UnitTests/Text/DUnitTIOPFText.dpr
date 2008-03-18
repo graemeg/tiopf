@@ -27,6 +27,7 @@ begin
   if not FindCmdLineSwitch(cCommandLineParamsNoTests, ['-', '/'], true) then
   begin
     GTIOPFTestManager.Read;
+    GTIOPFTestManager.DeleteDatabaseFiles;
     tiRemoveXMLLightIfNotRegistered;
     tiTestDependencies.tiRegisterTests;
     tiTextTestRunner.RunRegisteredTests(LExitBehavior);

@@ -70,6 +70,7 @@ type
     function    IsRegistered(const APersistenceLayerName : string): boolean;
     function    FindByPersistenceLayerName(const APersistenceLayerName : string): TtiOPFTestSetupData;
     procedure   UnloadPersistenceLayersNotSelected;
+    procedure   DeleteDatabaseFiles;
     procedure   Read; override;
     procedure   Save; override;
 
@@ -131,6 +132,22 @@ end;
 function TtiOPFTestManager.DefaultOIDGeneratorClass: TtiOIDGeneratorClass;
 begin
   result:= TtiOIDGeneratorForTesting;
+end;
+
+procedure TtiOPFTestManager.DeleteDatabaseFiles;
+var
+  i: integer;
+  LDatabaseName:string;
+begin
+  for i := 0 to Count - 1 do
+    if Items[i].CanCreateDatabase then
+    begin
+      LDatabaseName:= Items[i].DBName;
+      if FileExists(LDatabaseName) then
+        tiDeleteFile(LDatabaseName)
+      else if DirectoryExists(LDatabaseName) then
+        tiForceRemoveDir(LDatabaseName)
+    end;
 end;
 
 function TtiOPFTestManager.FindByPersistenceLayerName(const APersistenceLayerName: string): TtiOPFTestSetupData;
