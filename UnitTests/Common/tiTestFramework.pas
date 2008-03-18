@@ -87,6 +87,7 @@ type
     procedure   SetUpOnce; override;
     procedure   SetUp; override;
     procedure   TearDown; override;
+    procedure   TearDownOnce; override;
     function    TempFileName(const AFilename: string = ''): string;
     property    LongString : string read GetLongString;
     function    tstIntToStr(pInt:Integer):string;
@@ -104,7 +105,6 @@ type
       // DUnit compatibility interface
       {$I DUnitCompatableInterface.inc}
     {$ENDIF}
-    destructor Destroy; override;
     class function TempDirectory: string;
     function  PerformanceCounter: TtiPerformanceCounter;
 
@@ -437,6 +437,8 @@ begin
     {$ENDIF}
   end;
   result := uTempPath + PathDelim + 'TempDUnitFiles';
+  if not DirectoryExists(result) then
+    tiForceDirectories(result);
 end;
 
 
@@ -525,6 +527,12 @@ begin
   inherited;
   if DirectoryExists(FTempDirectory) then
     try tiForceRemoveDir(FTempDirectory) except end;
+end;
+
+procedure TtiTestCase.TearDownOnce;
+begin
+  FreeAndNil(FPerformanceCounter);
+  inherited;
 end;
 
 function TtiTestCase.tstIntToBool(pInt: Integer): boolean;
@@ -1068,12 +1076,6 @@ begin
         '> but got <' +
         AData.ObjectStateAsString +
         '> on ' + AData.ClassName + '. ' + AMessage);
-end;
-
-destructor TtiTestCase.Destroy;
-begin
-  FreeAndNil(FPerformanceCounter);
-  inherited;
 end;
 
 function TtiTestCase.PerformanceCounter: TtiPerformanceCounter;

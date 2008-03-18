@@ -32,6 +32,7 @@ type
     procedure Save;
     procedure BuildForm;
     procedure CreatePersistenceLayerSelectionCheckBoxes;
+    procedure SetAllCheckBoxes(const AValue: Boolean);
   public
     class function Execute: boolean;
     constructor CreateNew(AOwner: TComponent; Dummy: Integer = 0); override;
@@ -117,19 +118,23 @@ begin
 end;
 
 
-procedure TtiPromptWhichPersistenceLayersToTest.DoSelectAll(Sender: TObject);
-//var
-//  i: integer;
+procedure TtiPromptWhichPersistenceLayersToTest.SetAllCheckBoxes(const AValue: Boolean);
+var
+  i: integer;
 begin
-  Assert(False, 'Under construction');
-//  for i := 0 to ControlCount - 1 do
-//    if Controls[i] is TCheckBox then
-//      (Controls[i] as TCheckBox).Checked:= True;
+  for i := 0 to ComponentCount - 1 do
+    if Components[i] is TCheckBox then
+      (Components[i] as TCheckBox).Checked:= AValue;
+end;
+
+procedure TtiPromptWhichPersistenceLayersToTest.DoSelectAll(Sender: TObject);
+begin
+  SetAllCheckBoxes(True);
 end;
 
 procedure TtiPromptWhichPersistenceLayersToTest.DoSelectNone(Sender: TObject);
 begin
-  Assert(False, 'Under construction');
+  SetAllCheckBoxes(False);
 end;
 
 procedure TtiPromptWhichPersistenceLayersToTest.cbTestNonPersistentClassesClick(Sender: TObject);
