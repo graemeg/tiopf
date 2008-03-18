@@ -200,6 +200,19 @@ begin
 
 end;
 
+procedure TtiTextTestListener.AddWarning(AWarning: TTestFailure);
+begin
+  Warnings.Add(AWarning); // ToDo: Convert to a warning
+  Write2Short('W', [tlwtFile, tlwtConsole]);
+  IncPos;
+  Write2Table(
+     FormatTestName(AWarning.FailedTest)
+    ,'<font color="#FF00FF">WARN</font>'
+    ,AWarning.ThrownExceptionName
+    ,AWarning.ThrownExceptionMessage
+    ,'');
+end;
+
 constructor TtiTextTestListener.Create;
 var
   LReportDir : string;
@@ -511,19 +524,6 @@ begin
       ,''
       ,tiIntToCommaStr(test.ElapsedTestTime));
   end;
-end;
-
-procedure TtiTextTestListener.AddWarning(AWarning: TTestFailure);
-begin
-  Failures.Add(AWarning); // ToDo: Convert to a warning
-  Write2Short('W', [tlwtFile, tlwtConsole]);
-  IncPos;
-  Write2Table(
-     FormatTestName(AWarning.FailedTest)
-    ,'<font color="#FF00FF">WARN</font>'
-    ,AWarning.ThrownExceptionName
-    ,AWarning.ThrownExceptionMessage
-    ,'');
 end;
 
 procedure TtiTextTestListener.EndSuite(suite: ITest);
