@@ -224,6 +224,7 @@ type
 
   protected
     procedure SetUpOnce; override;
+    procedure SetUp; override;
     procedure TearDown; override;
     procedure TearDownOnce; override;
 
@@ -1623,10 +1624,9 @@ begin
   CreateDBIfNotExists;
 end;
 
-procedure TtiTestCaseWithDatabaseConnection.SetupOnce;
+procedure TtiTestCaseWithDatabaseConnection.SetUp;
 begin
   inherited;
-  FCreatedTables:= TStringList.Create;
   PersistenceLayer.DBConnectionPools.Connect(
     DatabaseName,
     DatabaseName,
@@ -1636,16 +1636,22 @@ begin
   FDBConnectionPool:= PersistenceLayer.DBConnectionPools.Find(TestSetupData.DBName);
 end;
 
+procedure TtiTestCaseWithDatabaseConnection.SetupOnce;
+begin
+  inherited;
+  FCreatedTables:= TStringList.Create;
+end;
+
 procedure TtiTestCaseWithDatabaseConnection.TearDown;
 begin
   DropCreatedTables;
+  PersistenceLayer.DBConnectionPools.Disconnect(
+    TestSetupData.DBName);
   inherited;
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.TearDownOnce;
 begin
-  PersistenceLayer.DBConnectionPools.Disconnect(
-    TestSetupData.DBName);
   FCreatedTables.Free;
   inherited;
 end;
