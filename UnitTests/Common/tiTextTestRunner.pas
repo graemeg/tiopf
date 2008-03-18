@@ -346,6 +346,7 @@ procedure TtiTextTestListener.TestingStarts;
   procedure _WriteShort(const pDelphiVersion: string);
   var
     i: Integer;
+    LSelected: Boolean;
   begin
     writeln2Short('', [tlwtConsole]);
     {$IFDEF DUNIT2}
@@ -356,12 +357,21 @@ procedure TtiTextTestListener.TestingStarts;
     writeln2Short('Compiler name "' + cCompilerName + '"', [tlwtFile, tlwtConsole]);
     writeln2Short('Compiler version "' + FDelphiVersion + '"', [tlwtFile, tlwtConsole]);
     writeln2Short('Testing started at ' + DateTimeToStr(Now), [tlwtFile, tlwtConsole]);
-    writeln2Short('(E = Exception, F = Test failure  x = Test Excluded)', [tlwtFile, tlwtConsole]);
+    writeln2Short('(E = Exception, F = Test failure, W = Warning, x = Test Excluded)', [tlwtFile, tlwtConsole]);
     writeln2Short('', [tlwtFile, tlwtConsole]);
     writeln2Short('Persistence layers to be tested:', [tlwtFile, tlwtConsole]);
+    LSelected := False;
     for i:= 0 to GTIOPFTestManager.Count - 1 do
-      writeln2Short('  ' + GTIOPFTestManager.Items[i].PersistenceLayerName, [tlwtFile, tlwtConsole]);
-    writeln2Short('', [tlwtFile, tlwtConsole]);
+    begin
+      if GTIOPFTestManager.Items[i].Selected then
+      begin
+        LSelected := True;
+        writeln2Short('  ' + GTIOPFTestManager.Items[i].PersistenceLayerName, [tlwtFile, tlwtConsole]);
+          writeln2Short('', [tlwtFile, tlwtConsole]);
+      end;
+    end;
+    if not LSelected then
+      writeln2Short('None selected',[tlwtFile, tlwtConsole]);
   end;
 
   procedure _WriteLong(const pDelphiVersion: string);
