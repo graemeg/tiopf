@@ -702,49 +702,45 @@ var
   LDatabase : TtiDatabase;
 begin
   CreateTestTables;
+  LDBMetaData := TtiDBMetaData.Create;
   try
-    LDBMetaData := TtiDBMetaData.Create;
+    LDatabase:= DBConnectionPool.Lock;
     try
-      LDatabase:= DBConnectionPool.Lock;
-      try
-        LDatabase.ReadMetaDataTables(LDBMetaData);
-        LDBMetaDataTable := LDBMetaData.FindByTableName('test_item');
-        Check(LDBMetaDataTable <> nil, 'Unable to find metadata for test_item');
-        Check(SameText(LDBMetaDataTable.Name, 'Test_Item'), 'Wrong table found when searching for <test_item>');
-        LDatabase.ReadMetaDataFields(LDBMetaDataTable);
+      LDatabase.ReadMetaDataTables(LDBMetaData);
+      LDBMetaDataTable := LDBMetaData.FindByTableName('test_item');
+      Check(LDBMetaDataTable <> nil, 'Unable to find metadata for test_item');
+      Check(SameText(LDBMetaDataTable.Name, 'Test_Item'), 'Wrong table found when searching for <test_item>');
+      LDatabase.ReadMetaDataFields(LDBMetaDataTable);
 
-        // So, we will just search for the field.
-        // Currently, there is no field information like type or size returned.
-        // This should be added.
-        CheckFieldMetaData(LDBMetaDataTable, 'OID',              qfkInteger);
-        CheckFieldMetaData(LDBMetaDataTable, 'OID_GROUP',        qfkInteger);
-        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_INT_FIELD',   qfkInteger);
-        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_FLOAT_FIELD', qfkFloat);
-        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_STR_FIELD',   qfkString, 10);
-        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Bool_FIELD',  qfkLogical);
-        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Date_FIELD',  qfkDateTime);
-        CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Notes_FIELD', qfkLongString);
+      // So, we will just search for the field.
+      // Currently, there is no field information like type or size returned.
+      // This should be added.
+      CheckFieldMetaData(LDBMetaDataTable, 'OID',              qfkInteger);
+      CheckFieldMetaData(LDBMetaDataTable, 'OID_GROUP',        qfkInteger);
+      CheckFieldMetaData(LDBMetaDataTable, 'ITEM_INT_FIELD',   qfkInteger);
+      CheckFieldMetaData(LDBMetaDataTable, 'ITEM_FLOAT_FIELD', qfkFloat);
+      CheckFieldMetaData(LDBMetaDataTable, 'ITEM_STR_FIELD',   qfkString, 10);
+      CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Bool_FIELD',  qfkLogical);
+      CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Date_FIELD',  qfkDateTime);
+      CheckFieldMetaData(LDBMetaDataTable, 'ITEM_Notes_FIELD', qfkLongString);
 
-        LDBMetaDataTable := LDBMetaData.FindByTableName('test_group');
-        Check(LDBMetaDataTable <> nil, 'Unable to find metadata for test_group');
-        Check(SameText(LDBMetaDataTable.Name, 'Test_Group'), 'Wrong table found when searching for <test_group>');
-        LDatabase.ReadMetaDataFields(LDBMetaDataTable);
+      LDBMetaDataTable := LDBMetaData.FindByTableName('test_group');
+      Check(LDBMetaDataTable <> nil, 'Unable to find metadata for test_group');
+      Check(SameText(LDBMetaDataTable.Name, 'Test_Group'), 'Wrong table found when searching for <test_group>');
+      LDatabase.ReadMetaDataFields(LDBMetaDataTable);
 
-        CheckFieldMetaData(LDBMetaDataTable, 'OID',               qfkInteger);
-        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_INT_FIELD',   qfkInteger);
-        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_FLOAT_FIELD', qfkFloat  );
-        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_STR_FIELD',   qfkString, 10);
-        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_Bool_FIELD',  qfkLogical);
-        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_Date_FIELD',  qfkDateTime);
-        CheckFieldMetaData(LDBMetaDataTable, 'GROUP_Notes_FIELD', qfkLongString);
-      finally
-        DBConnectionPool.UnLock(LDatabase);
-      end;
+      CheckFieldMetaData(LDBMetaDataTable, 'OID',               qfkInteger);
+      CheckFieldMetaData(LDBMetaDataTable, 'GROUP_INT_FIELD',   qfkInteger);
+      CheckFieldMetaData(LDBMetaDataTable, 'GROUP_FLOAT_FIELD', qfkFloat  );
+      CheckFieldMetaData(LDBMetaDataTable, 'GROUP_STR_FIELD',   qfkString, 10);
+      CheckFieldMetaData(LDBMetaDataTable, 'GROUP_Bool_FIELD',  qfkLogical);
+      CheckFieldMetaData(LDBMetaDataTable, 'GROUP_Date_FIELD',  qfkDateTime);
+      CheckFieldMetaData(LDBMetaDataTable, 'GROUP_Notes_FIELD', qfkLongString);
     finally
-      LDBMetaData.Free;
+      DBConnectionPool.UnLock(LDatabase);
     end;
   finally
-    DropTestTables;
+    LDBMetaData.Free;
   end;
 end;
 
@@ -752,8 +748,6 @@ end;
 procedure TTestTIQueryAbs.SetUp;
 begin
   inherited;
-  DropTestTable;
-  DropTableTestGroup;
   FDatabase:= DBConnectionPool.Lock;
   FQuery:= FDatabase.CreateAndAttachTIQuery;
 end;
@@ -762,8 +756,6 @@ end;
 procedure TTestTIQueryAbs.TearDown;
 begin
   DBConnectionPool.UnLock(FDatabase);
-  DropTestTable;
-  DropTableTestGroup;
   FQuery.Free;
   inherited;
 end;
@@ -2160,7 +2152,6 @@ var
 const
   CDatabaseAlias = 'TestDatabaseAlias';  
 begin
-  CreateDBIfNotExists;
   LPersistenceLayer:= TestSetupData.PersistenceLayerClass.Create;
   try
     LPersistenceLayer.DBConnectionPools.Connect(

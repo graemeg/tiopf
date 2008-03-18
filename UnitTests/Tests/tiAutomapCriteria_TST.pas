@@ -30,7 +30,6 @@ type
     function  TestIntToBool(pInt : Integer): Boolean;
   protected
     procedure SetUp; override;
-    procedure TearDown; override;
 
   published
     procedure TestSetupAndTearDown; virtual;
@@ -417,12 +416,6 @@ procedure TTestAutomappingCriteria.SetUp;
 begin
   inherited;
   CreateTestTables;
-end;
-
-procedure TTestAutomappingCriteria.TearDown;
-begin
-  DropTestTables;
-  inherited;
 end;
 
 function TTestAutomappingCriteria.TestIntToBool(pInt: Integer): Boolean;

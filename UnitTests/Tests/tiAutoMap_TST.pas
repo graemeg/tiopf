@@ -73,9 +73,7 @@ type
     procedure InserTtiObjectListForTestingInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);
     procedure InserTtiObjectListForTestingInheritedGroup(AOID: integer);
   protected
-    procedure SetUpOnce; override;
     procedure SetUp; override;
-    procedure TearDown; override;
     procedure DoReadWriteString(const pLen : integer);
     procedure DoReadWriteInteger(AValue: integer);
 {$IFDEF TESTINT64}
@@ -130,7 +128,8 @@ type
     procedure ReadWriteBooleanTrue;
     procedure ReadWriteBooleanFalse;
     procedure ReadWriteStream;
-    procedure ReadWriteOID;
+    procedure ReadWriteOID1;
+    procedure ReadWriteOID2;
 
     procedure SingleFlatObjReadThis;
     procedure SingleFlatObjCreate  ;
@@ -416,18 +415,6 @@ procedure TTestTIAutoMapOperation.SetUp;
 begin
   inherited;
   CreateTestTables;
-end;
-
-procedure TTestTIAutoMapOperation.SetUpOnce;
-begin
-  inherited;
-  DropTestTables;
-end;
-
-procedure TTestTIAutoMapOperation.TearDown;
-begin
-  DropTestTables;
-  inherited;
 end;
 
 procedure TTestTIAutoMapOperation.SingleFlatObjCreate;
@@ -2089,7 +2076,7 @@ begin
       lData.Free;
     end;
   finally
-    DropTestTable;
+    DropCreatedTables;
   end;
 end;
 
@@ -2125,7 +2112,7 @@ begin
       lData.Free;
     end;
   finally
-    DropTestTable;
+    DropCreatedTables;
   end;
 end;
 
@@ -2161,7 +2148,7 @@ begin
       lData.Free;
     end;
   finally
-    DropTestTable;
+    DropCreatedTables;
   end;
 end;
 
@@ -2206,7 +2193,7 @@ begin
     end;
 
   finally
-    DropTestTable;
+    DropCreatedTables;
   end;
 end;
 
@@ -2238,7 +2225,7 @@ begin
       lData.Free;
     end;
   finally
-    DropTestTable;
+    DropCreatedTables;
   end;
 
 end;
@@ -2272,7 +2259,7 @@ begin
       lData.Free;
     end;
   finally
-    DropTestTable;
+    DropCreatedTables;
   end;
 end;
 
@@ -2315,7 +2302,7 @@ begin
       lData.Free;
     end;
   finally
-    DropTestTable;
+    DropCreatedTables;
   end;
 
 end;
@@ -2410,9 +2397,13 @@ begin
   DoReadWriteInteger(-10);
 end;
 
-procedure TTestTIAutoMapOperation.ReadWriteOID;
+procedure TTestTIAutoMapOperation.ReadWriteOID1;
 begin
   DoReadWriteOID('1');
+end;
+
+procedure TTestTIAutoMapOperation.ReadWriteOID2;
+begin
   DoReadWriteOID('753951');
 end;
 
