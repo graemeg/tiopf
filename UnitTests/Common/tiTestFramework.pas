@@ -193,11 +193,14 @@ type
   TtiTestCaseWithPersistenceLayer = class(TtiTestCaseWithTestSetupData)
   private
     function    GetPersistenceLayer: TtiPersistenceLayer;
+    procedure   CreateDBIfNotExists;
+
   protected
+    procedure   SetUpOnce; override;
+
     procedure   CheckObjectState(AObjectState: TPerObjectState; const AData : TtiObject);
     procedure   CheckExceptionMessage(const AMessage : string; const AException : Exception);
 
-    procedure   CreateDBIfNotExists;
     procedure   WriteTimingResult(const pAction, APersistenceLayerName : string; AValue : Extended);
 
     function    PersistenceLayerSupportsMultiUser: boolean;
@@ -1612,11 +1615,16 @@ begin
   end;
 end;
 
+procedure TtiTestCaseWithPersistenceLayer.SetUpOnce;
+begin
+  inherited;
+  CreateDBIfNotExists;
+end;
+
 procedure TtiTestCaseWithDatabaseConnection.SetupOnce;
 begin
   inherited;
   FCreatedTables:= TStringList.Create;
-  CreateDBIfNotExists;
   PersistenceLayer.DBConnectionPools.Connect(
     DatabaseName,
     DatabaseName,
