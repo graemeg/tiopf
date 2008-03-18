@@ -57,8 +57,8 @@ type
     FDirtyList : TObjectList;
     FFilenameExt : string;
 
-
   protected
+    procedure   ClearDirtyList;
     function    GetDataSetCount: integer;
     function    ExpandFileName(const ATableName : string): string;
     procedure   SetDirty(const pDataSet : TtiDataBuffer; pDirty : boolean);
@@ -88,6 +88,7 @@ type
     FCurrentRecordIndex : integer;
     FSelectedRows : TObjectList;
     FActive : boolean;
+    procedure ClearSelectedRows;
   protected
     FXMLRCTrans: IXMLReservedCharsTranslator;
     FReservedChars : TtiReservedChar;
@@ -121,7 +122,7 @@ type
     function    GetEOF: boolean; override;
 
     property    CurrentRecordIndex : Integer     read FCurrentRecordIndex write FCurrentRecordIndex;
-    property    SelectedRows     : TObjectList read FSelectedRows       write FSelectedRows;
+    property    SelectedRows     : TObjectList read FSelectedRows;
 
   public
     constructor Create; override;
@@ -237,6 +238,13 @@ begin
   inherited;
 end;
 
+
+procedure TtiQueryTXTAbs.ClearSelectedRows;
+begin
+  FSelectedRows.Clear;
+  FSelectedRows.Capacity:= 0;
+  FCurrentRecordIndex := -1;
+end;
 
 procedure TtiQueryTXTAbs.Close;
 begin
@@ -382,8 +390,7 @@ begin
     Exit; //==>
   if Active and Not AValue then
   begin
-    FCurrentRecordIndex := -1;
-    FSelectedRows.Clear;
+    ClearSelectedRows;
     FActive := false;
     Exit; //==>
   end;
@@ -462,15 +469,19 @@ begin
 end;
 
 
+procedure TtiDatabaseTXTFlatFileAbs.ClearDirtyList;
+begin
+  FDirtyList.Clear;
+  FDirtyList.Capacity:= FDirtyList.Count;
+end;
+
 procedure TtiDatabaseTXTFlatFileAbs.Commit;
 var
   i : integer;
 begin
   for i := 0 to FDataSets.Count - 1 do
     if IsDirty(FDataSets.Items[i]) then
-    begin
       SaveDataSet(FDataSets.Items[i]);
-    end;
   FInTransaction := false;
 end;
 
@@ -487,7 +498,10 @@ var
 begin
   for i := 0 to FDataSets.Count - 1 do
     if IsDirty(FDataSets.Items[i]) then
+    begin
       ReadDataSet(FDataSets.Items[i]);
+      SetDirty(FDataSets.Items[i],False);
+    end;
   FInTransaction := false;
 end;
 
@@ -563,6 +577,7 @@ begin
   if (not AValue) then
   begin
     Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);
+    ClearDirtyList;
     FDataSets.Clear;
     FConnected := false;
     Exit; //==>
@@ -658,13 +673,14 @@ end;
 
 procedure TtiDatabaseTXTFlatFileAbs.SetDirty(const pDataSet : TtiDataBuffer; pDirty : boolean);
 var
-  lDirty : boolean;
+  LDirty : boolean;
 begin
-  lDirty := IsDirty(pDataSet);
-  if (pDirty) and (not lDirty) then
+  LDirty := IsDirty(pDataSet);
+  if (pDirty) and (not LDirty) then
     FDirtyList.Add(pDataSet)
-  else if (not pDirty) and (lDirty)then
+  else if (not pDirty) and (LDirty)then
     FDirtyList.Remove(pDataSet);
+  FDirtyList.Capacity:= FDirtyList.Count; // To Suppress leak reported in DUnit2
 end;
 
 
@@ -687,6 +703,7 @@ begin
   finally
     lWriter.Free;
   end;
+  SetDirty(pDataSet,False);
 end;
 
 
@@ -704,6 +721,7 @@ begin
   finally
     lWriter.Free;
   end;
+  SetDirty(pDataSet,False);
 end;
 
 
@@ -731,8 +749,7 @@ procedure TtiQueryTXTAbs.DoSelectRows(const pDataSet: TtiDataBuffer; AWhere: Tti
 var
   i : integer;
 begin
-  FSelectedRows.Clear;
-  FCurrentRecordIndex := 0;
+  ClearSelectedRows;
   if AWhere = nil then
     for i := 0 to pDataSet.Count - 1 do
       FSelectedRows.Add(pDataSet.Items[i])
@@ -748,8 +765,7 @@ var
   i : integer;
   lCell : TtiDataBufferCell;
 begin
-  FSelectedRows.Clear;
-  FCurrentRecordIndex := 0;
+  ClearSelectedRows;
   for i := 0 to AParams.Count - 1 do
   begin
     lCell := pDataSetRow.FindByFieldName(AParams.Items[i].Name);

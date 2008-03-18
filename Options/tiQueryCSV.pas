@@ -77,6 +77,7 @@ begin
   finally
     lWriter.Free;
   end;
+  SetDirty(pDataSet, False);
 end;
 
 function TtiDatabaseCSV.TIQueryClass: TtiQueryClass;
@@ -98,6 +99,7 @@ begin
   finally
     lWriter.Free;
   end;
+  SetDirty(pDataSet, False);
 end;
 
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

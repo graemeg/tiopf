@@ -106,9 +106,6 @@ type
     // Helper methods used in the concretes
     procedure PopulateTableString(  const AValue : String   );
     procedure PopulateTableInteger( const AValue : Integer  );
-{$IFDEF TESTINT64}
-    procedure PopulateTableInt64(   const AValue : Int64    );
-{$ENDIF}
     procedure PopulateTableReal(    const AValue : Extended     );
     procedure PopulateTableBoolean( const AValue : Boolean  );
     procedure PopulateTableDateTime(const AValue : TDateTime);
@@ -141,9 +138,6 @@ type
     procedure TypeKindToQueryFieldKind;
     procedure QueryToDatabaseConnection; // AttachDatabase, DetachDatabase;
     procedure FieldAsInteger;
-{$IFDEF TESTINT64}
-    procedure FieldAsInt64;
-{$ENDIF}
     procedure FieldAsString;
     procedure FieldAsStringLong1;
     procedure FieldAsStringLong10;
@@ -458,32 +452,9 @@ begin
     CheckEquals(FQuery.FieldAsIntegerByIndex[ cFieldAs_Index ], 1, 'FieldAsIntegerByIndex');
     FQuery.Close;
   finally
-    Database.Rollback;
+    Database.Commit;
   end;
 end;
-
-
-{$IFDEF TESTINT64}
-procedure TTestTIQueryAbs.FieldAsInt64;
-begin
-//  CreateTableInt64(FDatabase);
-  try
-    AttachDatabaseAndStartTransaction;
-    try
-      PopulateTableInt64(1);
-      DoReAttach;
-      FQuery.SelectRow(cTIQueryTableNameInt64, nil);
-      CheckEquals(FQuery.FieldAsInteger[ cTIQueryColName ], 1, 'FieldAsInt64');
-      CheckEquals(FQuery.FieldAsIntegerByIndex[ cFieldAs_Index ], 1, 'FieldAsInt64ByIndex');
-      FQuery.Close;
-    finally
-      CommitAndAttachDatabase;
-    end;
-  finally
-//    DropTestTable;
-  end;
-end;
-{$ENDIF}
 
 
 procedure TTestTIQueryAbs.FieldAsString;
@@ -499,7 +470,7 @@ begin
     CheckEquals(FQuery.FieldAsStringByIndex[ cFieldAs_Index ], cString, 'FieldAsStringByIndex');
     FQuery.Close;
   finally
-    Database.Rollback;
+    Database.Commit;
   end;
 end;
 

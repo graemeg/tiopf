@@ -1530,29 +1530,28 @@ end;
 procedure TtiDatabase.InsertRow(const ATableName : string;
                                     const AParams   : TtiQueryParams);
 var
-  lQuery : TtiQuery;
-  lHadToStartTransaction : boolean;
+  LQuery : TtiQuery;
+  LHadToStartTransaction : boolean;
 begin
-  lQuery   := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  LQuery:= CreateAndAttachTIQuery;
   try
-    lQuery.AttachDatabase(Self);
-    lHadToStartTransaction := not InTransaction;
-    if lHadToStartTransaction then
+    LHadToStartTransaction := not InTransaction;
+    if LHadToStartTransaction then
       StartTransaction;
     try
-      lQuery.InsertRow(ATableName, AParams);
-      if lHadToStartTransaction then
+      LQuery.InsertRow(ATableName, AParams);
+      if LHadToStartTransaction then
         Commit;
     except
       on e:exception do
       begin
-        if lHadToStartTransaction then
+        if LHadToStartTransaction then
           RollBack;
         raise;
       end;
     end;
   finally
-    lQuery.Free;
+    LQuery.Free;
   end;
 end;
 
