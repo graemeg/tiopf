@@ -669,6 +669,8 @@ var
 const
   CNumThreads = 10; // 3 is the minimum for testing, 10 will give a more indepth test
 begin
+  SetAllowedLeakArray([32, 56]); // CoInitialize
+
   LNumThreads := tiIf(PersistenceLayerSupportsMultiUser, CNumThreads, 1);
   LList       := TtiThreadList.Create(True);
   try
@@ -691,6 +693,8 @@ var
   LOID: TtiOID;
   i:    integer;
 begin
+  SetAllowedLeakArray([32, 56]); // CoInitialize
+
   Assert(Assigned(FOIDGeneratorClass), 'FOIDGeneratorClass not assigned');
   LNextOIDGenerator := FOIDGeneratorClass.Create;
   try
@@ -716,6 +720,7 @@ procedure TTestTIOIDPersistent.TtiNextOIDGeneratorAssignNextOIDThreaded;
 var
   LThread: TtiOIDGeneratorThread;
 begin
+  SetAllowedLeakArray([32, 56]); // CoInitialize
   LThread:= TtiOIDGeneratorThread.Create(FOIDGeneratorClass, 0, CRepeatCount, DatabaseName, PersistenceLayerName);
   try
     LThread.Resume;
@@ -951,6 +956,7 @@ procedure TTestTIOIDPersistent.TtiObjectCreateNew;
 var
   LObject: TtiObject;
 begin
+  SetAllowedLeakArray([32, 56, 88]); // CoInitialize
   GTIOPFManager.DefaultOIDGenerator := FOIDGeneratorClass.Create;
   try
 

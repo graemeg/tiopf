@@ -359,16 +359,22 @@ end;
 
 procedure TtiDBConnectionPools.Disconnect(const ADatabaseAlias: string);
 var
-  lDBConnectionPool : TtiDBConnectionPool;
+  LDBConnectionPool : TtiDBConnectionPool;
+  LWasDefault: boolean;
 begin
   FCritSect.Enter;
   try
-    lDBConnectionPool := Find(ADatabaseAlias);
-    if lDBConnectionPool =  nil then
+    LDBConnectionPool := Find(ADatabaseAlias);
+    if LDBConnectionPool =  nil then
       raise EtiOPFProgrammerException.CreateFmt(cErrorUnableToFindDBConnectionPool, [ADatabaseAlias]);
-    FList.Extract(lDBConnectionPool);
-    lDBConnectionPool.Free;
+    LWasDefault:= (PersistenceLayer as TtiPersistenceLayer).DefaultDBConnectionPool = LDBConnectionPool;
+    FList.Extract(LDBConnectionPool);
+    LDBConnectionPool.Free;
     FList.Capacity:= FList.Count; // To suppress leak warnings
+    if LWasDefault and (Count > 0) then
+      (PersistenceLayer as TtiPersistenceLayer).DefaultDBConnectionName:= Items[0].DatabaseAlias;
+    if LWasDefault and (Count = 0) then
+      (PersistenceLayer as TtiPersistenceLayer).DefaultDBConnectionName:= '';
   finally
     FCritSect.Leave;
   end;

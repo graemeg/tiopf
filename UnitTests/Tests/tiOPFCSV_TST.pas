@@ -36,11 +36,6 @@ type
     class function PersistenceLayerName: string; override;
   end;
 
-  TTestTIOIDPersistentGUIDCSV = class(TTestTIOIDPersistentGUID)
-  public
-    class function PersistenceLayerName: string; override;
-  end;
-
   TTestTIOIDPersistentIntegerCSV = class(TTestTIOIDPersistentInteger)
   public
     class function PersistenceLayerName: string; override;
@@ -69,7 +64,6 @@ begin
   tiRegisterPersistenceTest(TTestTIPersistenceLayersCSV);
   tiRegisterPersistenceTest(TTestTIDatabaseCSV);
   tiRegisterPersistenceTest(TTestTIQueryCSV);
-  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDCSV);
   tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerCSV);
   tiRegisterPersistenceTest(TTestTIAutoMapOperationCSV);
 end;
@@ -126,13 +120,6 @@ end;
 { TTestTIAutoMapOperationCSV }
 
 class function TTestTIAutoMapOperationCSV.PersistenceLayerName: string;
-begin
-  Result := cTIPersistCSV;
-end;
-
-{ TTestTIOIDPersistentGUIDCSV }
-
-class function TTestTIOIDPersistentGUIDCSV.PersistenceLayerName: string;
 begin
   Result := cTIPersistCSV;
 end;
