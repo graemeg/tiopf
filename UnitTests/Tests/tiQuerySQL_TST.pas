@@ -55,7 +55,7 @@ uses
 procedure TTestTIQuerySQL.ExecSQL;
 begin
   CreateTableTestGroup(Database);
-  InsertIntoTestGroup(1);
+  InsertIntoTestGroup(1, Database);
   Database.StartTransaction;
   try
     Query.SQLText := 'select count(*) from test_group';
@@ -77,7 +77,7 @@ end;
 procedure TTestTIQuerySQL.OpenCloseActive;
 begin
   CreateTableTestGroup(Database);
-  InsertIntoTestGroup(1);
+  InsertIntoTestGroup(1, Database);
   Database.StartTransaction;
   try
     Query.SQLText := 'select * from Test_Group';

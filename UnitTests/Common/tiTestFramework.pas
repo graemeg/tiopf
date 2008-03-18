@@ -230,15 +230,15 @@ type
 
     procedure   CreateTableTestBin( const ADatabase: TtiDatabase = nil);
     procedure   CreateTableTestGroup(const ADatabase: TtiDatabase = nil);
-    procedure   InsertIntoTestGroup(const AValue : integer);
+    procedure   InsertIntoTestGroup(const AValue : integer; const ADatabase: TtiDatabase = nil);
     procedure   DropTableTestBin(   const ADatabase: TtiDatabase = nil);
-    procedure   DropTableTestGroup( const ADatabase: TtiDatabase = nil);
-    procedure   CreateTable(const   ATable : TtiDBMetaDataTable);
+    procedure   DropTableTestGroup(const ADatabase: TtiDatabase = nil);
+    procedure   CreateTable(const ATable : TtiDBMetaDataTable; const ADatabase: TtiDatabase = nil);
 
     procedure   DropNextOIDTable;
     procedure   CreateNextOIDIntTable;
     procedure   CreateNextOIDStrTable;
-    procedure   InsertRow(const ATableName: string; AParams: TtiQueryParams);
+    procedure   InsertRow(const ATableName: string; AParams: TtiQueryParams; const ADatabase: TtiDatabase = nil);
 
 
     // ToDo: These overloaded method are confusing. Fix.
@@ -643,17 +643,15 @@ begin
     LTable.AddField('Group_Date_Field',  qfkDateTime);
     LTable.AddField('Group_Bool_Field',  qfkLogical);
     LTable.AddField('Group_Notes_Field', qfkLongString);
-    if ADatabase = nil then
-      CreateTable(LTable)
-    else
-      ADatabase.CreateTable(LTable);
+    CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
   end;
 end;
 
 
-procedure TtiTestCaseWithDatabaseConnection.InsertIntoTestGroup(const AValue : integer);
+procedure TtiTestCaseWithDatabaseConnection.InsertIntoTestGroup(
+  const AValue : integer; const ADatabase: TtiDatabase = nil);
 var
   LParams : TtiQueryParams;
   LExtended: Extended;
@@ -669,7 +667,7 @@ begin
     LParams.SetValueAsDateTime('Group_Date_Field', EncodeDate(1900, 1, AValue)) ;
     LParams.SetValueAsBoolean('Group_Bool_Field', ((AValue mod 2) = 0)) ;
     LParams.SetValueAsString('Group_Notes_Field', LongString) ;
-    InsertRow(cTableNameTestGroup, LParams);
+    InsertRow(cTableNameTestGroup, LParams, ADatabase);
   finally
     lParams.Free;
   end;
@@ -677,16 +675,20 @@ end;
 
 
 procedure TtiTestCaseWithDatabaseConnection.InsertRow(const ATableName: string;
-  AParams: TtiQueryParams);
+  AParams: TtiQueryParams; const ADatabase: TtiDatabase = nil);
 var
   LDatabase: TtiDatabase;
 begin
-  LDatabase:= DBConnectionPool.Lock;
-  try
-    LDatabase.InsertRow(ATableName, AParams);
-  finally
-    DBConnectionPool.UnLock(LDatabase);
-  end;
+  if ADatabase = nil then
+  begin
+    LDatabase:= DBConnectionPool.Lock;
+    try
+      LDatabase.InsertRow(ATableName, AParams);
+    finally
+      DBConnectionPool.UnLock(LDatabase);
+    end;
+  end else
+    ADatabase.InsertRow(ATableName, AParams);
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableTestBin(const ADatabase : TtiDatabase = nil);
@@ -698,10 +700,7 @@ begin
     LTable.Name := 'Test_Bin';
     LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
     LTable.AddField('Item_Binary_Field', qfkBinary );
-    if ADatabase = nil then
-      CreateTable(LTable)
-    else
-      ADatabase.CreateTable(LTable);
+    CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
   end;
@@ -1042,16 +1041,21 @@ end;
 
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTable(
-  const ATable: TtiDBMetaDataTable);
+  const ATable: TtiDBMetaDataTable;
+  const ADatabase: TtiDatabase = nil);
 var
   LDatabase: TtiDatabase;
 begin
-  LDatabase:= DBConnectionPool.Lock;
-  try
-    LDatabase.CreateTable(ATable);
-  finally
-    DBConnectionPool.UnLock(LDatabase);
-  end;
+  if ADatabase = nil then
+  begin
+    LDatabase:= DBConnectionPool.Lock;
+    try
+      LDatabase.CreateTable(ATable);
+    finally
+      DBConnectionPool.UnLock(LDatabase);
+    end;
+  end else
+    ADatabase.CreateTable(ATable);
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableBoolean(const ADatabase : TtiDatabase);
