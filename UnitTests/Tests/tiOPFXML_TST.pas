@@ -78,31 +78,31 @@ end;
 
 procedure TTestTIDatabaseXML.CreateDatabase;
 var
-  lFileName: string;
+  LFileName: string;
 begin
-//  lFileName := PerFrameworkSetup.DBName;
-//  tiDeleteFile(lFileName);
-//  Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-//  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
-//  Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
+  LFileName := PerFrameworkSetup.DBName;
+  tiDeleteFile(LFileName);
+  Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
+  PersistenceLayer.DatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+  Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
 end;
 
 procedure TTestTIDatabaseXML.DatabaseExists;
 var
-  lFileName: string;
+  LFileName: string;
 begin
 //  SetAllowedLeakArray([24]);
-//  lFileName := PerFrameworkSetup.DBName;
-//  tiDeleteFile(lFileName);
-//  Check(not FileExists(lFileName), '<' + lFileName + '> Exists when it should not');
-//  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-//    PerFrameworkSetup.Password),
-//    'FDatabaseClass.DatabaseExists()=true when it should =false');
-//  tiStringToFile('test', lFileName);
-//  Check(FileExists(lFileName), '<' + lFileName + '> Does not exists when it should');
-//  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-//    PerFrameworkSetup.Password),
-//    'FDatabaseClass.DatabaseExists()=false when it should =true');
+  LFileName := PerFrameworkSetup.DBName;
+  tiDeleteFile(LFileName);
+  Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
+  Check(not PersistenceLayer.DatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=true when it should =false');
+  tiStringToFile('test', LFileName);
+  Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
+  Check(PersistenceLayer.DatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 
 class function TTestTIDatabaseXML.PersistenceLayerName: string;

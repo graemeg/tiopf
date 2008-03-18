@@ -85,55 +85,55 @@ end;
 
 procedure TTestTIDatabaseAsqlite3.CreateDatabase;
 var
-  lDB:       string;
-  lDBExists: boolean;
+  LDB:       string;
+  LDBExists: boolean;
 begin
-  lDB := ExpandFileName(PerFrameworkSetup.DBName);
-  lDB := tiSwapExt(lDB, 'tmp');
-  if FileExists(lDB) then
+  LDB := ExpandFileName(PerFrameworkSetup.DBName);
+  LDB := tiSwapExt(LDB, 'tmp');
+  if FileExists(LDB) then
   begin
-    tiDeleteFile(lDB);
-    if FileExists(lDB) then
+    tiDeleteFile(LDB);
+    if FileExists(LDB) then
       Fail('Can not remove old database file');
   end;
 
-  Check(not FileExists(lDB), 'Database exists when it should not');
-//  FDatabaseClass.CreateDatabase(
-//    lDB,
-//    PerFrameworkSetup.Username,
-//    PerFrameworkSetup.Password);
-//  Check(FileExists(lDB), 'Database not created');
-//
-//  lDBExists :=
-//    FDatabaseClass.DatabaseExists(
-//    lDB,
-//    PerFrameworkSetup.Username,
-//    PerFrameworkSetup.Password);
-//
-//  Check(lDBExists, 'Database does not exist when it should do');
-//  tiDeleteFile(lDB);
+  Check(not FileExists(LDB), 'Database exists when it should not');
+  PersistenceLayer.DatabaseClass.CreateDatabase(
+    LDB,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
+  Check(FileExists(LDB), 'Database not created');
+
+  LDBExists :=
+    PersistenceLayer.DatabaseClass.DatabaseExists(
+    LDB,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
+
+  Check(LDBExists, 'Database does not exist when it should do');
+  tiDeleteFile(LDB);
 end;
 
 procedure TTestTIDatabaseAsqlite3.DatabaseExists;
 var
-  lDB:       string;
-  lDBExists: boolean;
+  LDB:       string;
+  LDBExists: boolean;
 begin
-  lDB       := PerFrameworkSetup.DBName;
-  Check(FileExists(lDB), 'Database file not found so test can not be performed');
-//  lDBExists :=
-//    FDatabaseClass.DatabaseExists(
-//    PerFrameworkSetup.DBName,
-//    PerFrameworkSetup.Username,
-//    PerFrameworkSetup.Password);
-//  Check(lDBExists, 'DBExists returned false when it should return true');
-//  Check(not FileExists(lDB + 'Tmp'), 'Database file found so test can not be performed');
-//  lDBExists :=
-//    FDatabaseClass.DatabaseExists(
-//    PerFrameworkSetup.DBName + 'Tmp',
-//    PerFrameworkSetup.Username,
-//    PerFrameworkSetup.Password);
-//  Check(not lDBExists, 'DBExists returned true when it should return false');
+  LDB       := PerFrameworkSetup.DBName;
+  Check(FileExists(LDB), 'Database file not found so test can not be performed');
+  LDBExists :=
+    PersistenceLayer.DatabaseClass.DatabaseExists(
+    PerFrameworkSetup.DBName,
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
+  Check(LDBExists, 'DBExists returned false when it should return true');
+  Check(not FileExists(LDB + 'Tmp'), 'Database file found so test can not be performed');
+  LDBExists :=
+    PersistenceLayer.DatabaseClass.DatabaseExists(
+    PerFrameworkSetup.DBName + 'Tmp',
+    PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password);
+  Check(not LDBExists, 'DBExists returned true when it should return false');
 
 end;
 

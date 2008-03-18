@@ -1507,7 +1507,6 @@ type
     FDatabaseName: String;
     FPersistenceLayerName: String;
     FGroupCount: integer;
-    FItemCount: integer;
   public
     constructor Create(const ATestCase: TtiTestCase;
       const ADatabaseName: string; const APersistenceLayerName: string;

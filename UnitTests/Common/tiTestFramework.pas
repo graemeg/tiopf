@@ -230,7 +230,7 @@ type
 
     procedure   CreateTableTestBin( const ADatabase: TtiDatabase = nil);
     procedure   CreateTableTestGroup(const ADatabase: TtiDatabase = nil);
-    procedure   InsertIntoTestGroup(const ADatabase: TtiDatabase; const AValue : integer);
+    procedure   InsertIntoTestGroup(const AValue : integer);
     procedure   DropTableTestBin(   const ADatabase: TtiDatabase = nil);
     procedure   DropTableTestGroup( const ADatabase: TtiDatabase = nil);
     procedure   CreateTable(const   ATable : TtiDBMetaDataTable);
@@ -653,8 +653,7 @@ begin
 end;
 
 
-procedure TtiTestCaseWithDatabaseConnection.InsertIntoTestGroup(const ADatabase: TtiDatabase;
-  const AValue : integer);
+procedure TtiTestCaseWithDatabaseConnection.InsertIntoTestGroup(const AValue : integer);
 var
   LParams : TtiQueryParams;
   LExtended: Extended;
@@ -670,7 +669,7 @@ begin
     LParams.SetValueAsDateTime('Group_Date_Field', EncodeDate(1900, 1, AValue)) ;
     LParams.SetValueAsBoolean('Group_Bool_Field', ((AValue mod 2) = 0)) ;
     LParams.SetValueAsString('Group_Notes_Field', LongString) ;
-    ADatabase.InsertRow(cTableNameTestGroup, LParams);
+    InsertRow(cTableNameTestGroup, LParams);
   finally
     lParams.Free;
   end;

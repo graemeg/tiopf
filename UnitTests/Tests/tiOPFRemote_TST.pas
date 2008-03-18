@@ -121,47 +121,39 @@ end;
 
 procedure TTestTIDatabaseRemote.Transaction_TimeOut;
 var
-  lQuery: TtiQuery;
+  LQuery: TtiQuery;
+  LDatabase: TtiDatabase;
 begin
-//  FDatabase.Connect(PerFrameworkSetup.DBName,
-//    PerFrameworkSetup.UserName,
-//    PerFrameworkSetup.Password,
-//    '');
-//  try
-//    FDatabase.DropTable(cTableNameTestGroup)
-//  except
-//  end;
-//
-//  CreateTableTestGroup(FDatabase);
-//
-//  FDatabase.StartTransaction;
-//  try
-//    InsertIntoTestGroup(FDatabase, 1);
-//    FDatabase.Commit;
-//    lQuery := FPersistenceLayer.QueryClass.Create;
-//    try
-//      lQuery.AttachDatabase(FDatabase);
-//      FDatabase.StartTransaction;
-//      lQuery.SelectRow(cTableNameTestGroup, nil);
-//      Check(not lQuery.EOF, 'Transaction not committed');
-//      lQuery.Next;
-//      Check(lQuery.EOF, 'Wrong number of records');
-//      Sleep(Trunc(cDBProxyServerTimeOut * 60000 * 1.5));
-//      try
-//        FDatabase.Commit;
-//        Fail('tiDBProxyServer did not time out as expected');
-//      except
-//        on e: Exception do
-//          Check(Pos('TIMED OUT', UpperCase(e.message)) <> 0,
-//            'tiDBProxyServer did not raise the right exception. Exception message: ' + e.message);
-//      end;
-//    finally
-//      lQuery.Free;
-//    end;
-//  finally
-//    FDatabase.DropTable(cTableNameTestGroup);
-//  end;
-Assert(False, 'Under construction');
+  DropTable(cTableNameTestGroup);
+  CreateTableTestGroup;
+  InsertIntoTestGroup(1);
+
+  LDatabase:= DBConnectionPool.Lock;
+  try
+    LDatabase.StartTransaction;
+    LQuery := LDatabase.CreateAndAttachTIQuery;
+    try
+      LDatabase.StartTransaction;
+      LQuery.SelectRow(cTableNameTestGroup, nil);
+      Check(not LQuery.EOF, 'Transaction not committed');
+      LQuery.Next;
+      Check(LQuery.EOF, 'Wrong number of records');
+      Sleep(Trunc(cDBProxyServerTimeOut * 60000 * 1.5));
+      try
+        lDatabase.Commit;
+        Fail('tiDBProxyServer did not time out as expected');
+      except
+        on e: Exception do
+          Check(Pos('TIMED OUT', UpperCase(e.message)) <> 0,
+            'tiDBProxyServer did not raise the right exception. Exception message: ' + e.message);
+      end;
+    finally
+      LQuery.Free;
+    end;
+  finally
+    DBConnectionPool.UnLock(LDatabase);
+  end;
+  DropTable(cTableNameTestGroup);
 end;
 
 { TTestTIPersistenceLayersRemote }

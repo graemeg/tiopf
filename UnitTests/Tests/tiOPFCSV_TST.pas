@@ -78,30 +78,30 @@ end;
 
 procedure TTestTIDatabaseCSV.CreateDatabase;
 var
-  lDir: string;
+  LDir: string;
 begin
-//  lDir := PerFrameworkSetup.DBName;
-//  tiForceRemoveDir(lDir);
-//  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-//  FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
-//  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
+  LDir := PerFrameworkSetup.DBName;
+  tiForceRemoveDir(LDir);
+  Check(not DirectoryExists(LDir), '<' + LDir + '> Exists when it should not');
+  PersistenceLayer.DatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+  Check(DirectoryExists(LDir), '<' + LDir + '> Does not exists when it should');
 end;
 
 procedure TTestTIDatabaseCSV.DatabaseExists;
 var
-  lDir: string;
+  LDir: string;
 begin
-//  lDir := PerFrameworkSetup.DBName;
-//  tiForceRemoveDir(lDir);
-//  Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-//  Check(not FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-//    PerFrameworkSetup.Password),
-//    'FDatabaseClass.DatabaseExists()=true when it should =false');
-//  ForceDirectories(lDir);
-//  Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
-//  Check(FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-//    PerFrameworkSetup.Password),
-//    'FDatabaseClass.DatabaseExists()=false when it should =true');
+  LDir := PerFrameworkSetup.DBName;
+  tiForceRemoveDir(LDir);
+  Check(not DirectoryExists(LDir), '<' + LDir + '> Exists when it should not');
+  Check(not PersistenceLayer.DatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=true when it should =false');
+  ForceDirectories(LDir);
+  Check(DirectoryExists(LDir), '<' + LDir + '> Does not exists when it should');
+  Check(PersistenceLayer.DatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
+    PerFrameworkSetup.Password),
+    'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 
 class function TTestTIDatabaseCSV.PersistenceLayerName: string;

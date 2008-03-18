@@ -382,7 +382,7 @@ begin
     Database.Commit;
   end;
 
-  InsertIntoTestGroup(Database, 1);
+  InsertIntoTestGroup(1);
   Database.StartTransaction;
   try
     FQuery.SelectRow('test_group', nil);
@@ -509,7 +509,7 @@ var
   lFieldCount : integer;
 begin
   CreateTableTestGroup(Database);
-  InsertIntoTestGroup(Database, 1);
+  InsertIntoTestGroup(1);
   Database.StartTransaction;
   try
     FQuery.SelectRow('test_group', nil);
@@ -525,7 +525,7 @@ end;
 procedure TTestTIQueryAbs.FieldIndex;
 begin
   CreateTableTestGroup(Database);
-  InsertIntoTestGroup(Database, 1);
+  InsertIntoTestGroup(1);
   Database.StartTransaction;
   try
     FQuery.SelectRow('test_Group', nil);
@@ -590,7 +590,7 @@ end;
 procedure TTestTIQueryAbs.FieldKind;
 begin
   CreateTableTestGroup(Database);
-  InsertIntoTestGroup(Database, 1);
+  InsertIntoTestGroup(1);
   Database.StartTransaction;
   try
     FQuery.SelectRow('test_group', nil);
@@ -611,7 +611,7 @@ end;
 procedure TTestTIQueryAbs.FieldName;
 begin
   CreateTableTestGroup(Database);
-  InsertIntoTestGroup(Database, 1);
+  InsertIntoTestGroup(1);
   Database.StartTransaction;
   try
     FQuery.SelectRow('test_group', nil);
@@ -632,7 +632,7 @@ end;
 procedure TTestTIQueryAbs.FieldSize;
 begin
   CreateTableTestGroup(Database);
-  InsertIntoTestGroup(Database, 1);
+  InsertIntoTestGroup(1);
   Database.StartTransaction;
   try
     FQuery.SelectRow('Test_Group', nil);
@@ -660,11 +660,11 @@ end;
 procedure TTestTIQueryAbs.Next;
 begin
   CreateTableTestGroup(Database);
-  InsertIntoTestGroup(Database, 1);
-  InsertIntoTestGroup(Database, 2);
-  InsertIntoTestGroup(Database, 3);
-  InsertIntoTestGroup(Database, 4);
-  InsertIntoTestGroup(Database, 5);
+  InsertIntoTestGroup(1);
+  InsertIntoTestGroup(2);
+  InsertIntoTestGroup(3);
+  InsertIntoTestGroup(4);
+  InsertIntoTestGroup(5);
   Database.StartTransaction;
   try
     FQuery.SelectRow('test_group', nil);
@@ -990,7 +990,7 @@ begin
     CreateTableTestGroup;
     LDatabase:= DBConnectionPool.Lock;
     try
-      InsertIntoTestGroup(LDatabase, 1);
+      InsertIntoTestGroup(1);
       LQuery := LDatabase.CreateAndAttachTIQuery;
       try
         Check(not LDatabase.InTransaction);

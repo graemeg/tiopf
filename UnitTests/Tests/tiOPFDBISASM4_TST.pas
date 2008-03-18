@@ -88,36 +88,36 @@ end;
 
 procedure TTestTIDatabaseDBISAM4.CreateDatabase;
 var
-  lDir: string;
+  LDir: string;
 begin
-//  lDir := tiGetTempFile('');
-//  try
-//    tiForceRemoveDir(lDir);
-//    Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-//    FDatabaseClass.CreateDatabase(lDir, 'null', 'null');
-//    Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
-//  finally
-//    tiForceRemoveDir(lDir);
-//  end;
+  LDir := tiGetTempFile('');
+  try
+    tiForceRemoveDir(LDir);
+    Check(not DirectoryExists(LDir), '<' + LDir + '> Exists when it should not');
+    PersistenceLayer.DatabaseClass.CreateDatabase(LDir, 'null', 'null');
+    Check(DirectoryExists(LDir), '<' + LDir + '> Does not exists when it should');
+  finally
+    tiForceRemoveDir(LDir);
+  end;
 end;
 
 procedure TTestTIDatabaseDBISAM4.DatabaseExists;
 var
-  lDir: string;
+  LDir: string;
 begin
-//  lDir := tiSwapExt(TempFileName, '');
-//  try
-//    tiForceRemoveDir(lDir);
-//    Check(not DirectoryExists(lDir), '<' + lDir + '> Exists when it should not');
-//    Check(not FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
-//      'FDatabaseClass.DatabaseExists()=true when it should =false');
-//    ForceDirectories(lDir);
-//    Check(DirectoryExists(lDir), '<' + lDir + '> Does not exists when it should');
-//    Check(FDatabaseClass.DatabaseExists(lDir, 'null', 'null'),
-//      'FDatabaseClass.DatabaseExists()=false when it should =true');
-//  finally
-//    tiForceRemoveDir(lDir);
-//  end;
+  LDir := tiSwapExt(TempFileName, '');
+  try
+    tiForceRemoveDir(LDir);
+    Check(not DirectoryExists(LDir), '<' + LDir + '> Exists when it should not');
+    Check(not PersistenceLayer.DatabaseClass.DatabaseExists(LDir, 'null', 'null'),
+      'FDatabaseClass.DatabaseExists()=true when it should =false');
+    ForceDirectories(LDir);
+    Check(DirectoryExists(LDir), '<' + LDir + '> Does not exists when it should');
+    Check(PersistenceLayer.DatabaseClass.DatabaseExists(LDir, 'null', 'null'),
+      'FDatabaseClass.DatabaseExists()=false when it should =true');
+  finally
+    tiForceRemoveDir(LDir);
+  end;
 end;
 
 class function TTestTIDatabaseDBISAM4.PersistenceLayerName: string;
