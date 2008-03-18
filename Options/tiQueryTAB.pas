@@ -79,6 +79,7 @@ begin
   finally
     lWriter.Free;
   end;
+  SetDirty(pDataSet, False);
 end;
 
 function TtiDatabaseTAB.TIQueryClass: TtiQueryClass;
@@ -100,6 +101,7 @@ begin
   finally
     lWriter.Free;
   end;
+  SetDirty(pDataSet, False);
 end;
 
 
