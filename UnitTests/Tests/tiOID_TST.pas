@@ -23,6 +23,9 @@ type
     procedure TestThenAddOIDAsString(const AOID: string);
     procedure SetUp; override;
     procedure TearDown; override;
+    procedure DropNextOIDTable;
+    procedure CreateNextOIDIntTable;
+    procedure CreateNextOIDStrTable;
   published
 
     procedure TtiNextOIDGeneratorAssignNextOIDSingleUser; virtual;
@@ -560,8 +563,8 @@ procedure TTestTIOIDPersistent.Setup;
 begin
   inherited;
   FOIDList := TStringList.Create;
-  GTIOPFManager.DefaultPersistenceLayerName := PerFrameworkSetup.PersistenceLayerName;
-  GTIOPFManager.DefaultDBConnectionName := PerFrameworkSetup.DBName;
+  GTIOPFManager.DefaultPersistenceLayerName := TestSetupData.PersistenceLayerName;
+  GTIOPFManager.DefaultDBConnectionName := TestSetupData.DBName;
 end;
 
 procedure TTestTIOIDPersistent.TearDown;
@@ -1000,5 +1003,66 @@ begin
   DropNextOIDTable;
   inherited;
 end;
+
+procedure TTestTIOIDPersistent.DropNextOIDTable;
+begin
+  DropTable('Next_OID');
+end;
+
+
+procedure TTestTIOIDPersistent.CreateNextOIDIntTable;
+var
+  LTable : TtiDBMetaDataTable;
+  lParams : TtiQueryParams;
+begin
+
+  DropNextOIDTable;
+
+  LTable := TtiDBMetaDataTable.Create;
+  try
+    LTable.Name := 'Next_OID';
+    LTable.AddField('OID', qfkInteger);
+    CreateTable(LTable);
+  finally
+    LTable.Free;
+  end;
+
+  lParams := TtiQueryParams.Create;
+  try
+    lParams.SetValueAsInteger('OID', 1000000);
+    InsertRow('Next_OID', lParams);
+  finally
+    lParams.Free;
+  end;
+end;
+
+
+procedure TTestTIOIDPersistent.CreateNextOIDStrTable;
+var
+  LTable : TtiDBMetaDataTable;
+  lParams : TtiQueryParams;
+begin
+
+  DropNextOIDTable;
+
+  LTable := TtiDBMetaDataTable.Create;
+  try
+    LTable.Name := 'Next_OID';
+    LTable.AddField('OID', qfkString, 10);
+    CreateTable(LTable);
+  finally
+    LTable.Free;
+  end;
+
+  lParams := TtiQueryParams.Create;
+  try
+    lParams.SetValueAsString('OID', '0');
+    InsertRow('Next_OID', lParams);
+  finally
+    lParams.Free;
+  end;
+
+end;
+
 
 end.

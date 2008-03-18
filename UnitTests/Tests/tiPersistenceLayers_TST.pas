@@ -198,7 +198,7 @@ begin
      (not gTIOPFTestManager.ToRun(cTIPersistXML)) then
     Dec(lLayerCount);
   CheckEquals(lSetupCount, lLayerCount,
-            'gPerFrameworkSetupFactory.Count <> gTIOPFManager.PersistenceLayers.Count');
+            'gTestSetupDataFactory.Count <> gTIOPFManager.PersistenceLayers.Count');
 end;
 
 

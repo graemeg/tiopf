@@ -415,18 +415,18 @@ end;
 procedure TTestTIAutoMapOperation.SetUp;
 begin
   inherited;
-  SetupTestTables;
+  CreateTestTables;
 end;
 
 procedure TTestTIAutoMapOperation.SetUpOnce;
-  begin
+begin
   inherited;
-  DeleteTestTables;
+  DropTestTables;
 end;
 
 procedure TTestTIAutoMapOperation.TearDown;
 begin
-  DeleteTestTables;
+  DropTestTables;
   inherited;
 end;
 
@@ -2066,7 +2066,7 @@ procedure TTestTIAutoMapOperation.DoReadWriteBoolean(AValue : boolean);
 var
   lData : TtiOPFTestBooleanProp;
 begin
-  CreateTableBoolean(DatabaseName, PersistenceLayerName);
+  CreateTableBoolean;
   try
     lData := TtiOPFTestBooleanProp.Create;
     try
@@ -2102,7 +2102,7 @@ procedure TTestTIAutoMapOperation.DoReadWriteDateTime(AValue : TDateTime);
 var
   lData : TtiOPFTestDateTimeProp;
 begin
-  CreateTableDateTime(DatabaseName, PersistenceLayerName);
+  CreateTableDateTime;
   try
     lData := TtiOPFTestDateTimeProp.Create;
     try
@@ -2138,7 +2138,7 @@ procedure TTestTIAutoMapOperation.DoReadWriteFloat(AValue : extended);
 var
   lData : TtiOPFTestFloatProp;
 begin
-  CreateTableFloat(DatabaseName, PersistenceLayerName);
+  CreateTableFloat;
   try
     lData := TtiOPFTestFloatProp.Create;
     try
@@ -2181,7 +2181,7 @@ procedure TTestTIAutoMapOperation.DoReadWriteInteger(AValue : integer);
 var
   lData : TtiOPFTestIntegerProp;
 begin
-  CreateTableInteger(DatabaseName, PersistenceLayerName);
+  CreateTableInteger;
   try
     lData := TtiOPFTestIntegerProp.Create;
     try
@@ -2214,7 +2214,7 @@ procedure TTestTIAutoMapOperation.DoReadWriteOID(AValue: string);
 var
   lData : TtiOPFTestOIdProp;
 begin
-  CreateTableString(DatabaseName, PersistenceLayerName);
+  CreateTableString;
 
   try
     lData := TtiOPFTestOIdProp.Create;
@@ -2248,7 +2248,7 @@ var
   lData : TtiOPFTestStreamProp;
   ls : string;
 begin
-  CreateTableStream(DatabaseName, PersistenceLayerName);
+  CreateTableStream;
   try
     lData := TtiOPFTestStreamProp.Create;
     try
@@ -2287,9 +2287,9 @@ var
   ls : string;
 begin
   if pLen <= 255 then
-    CreateTableString(DatabaseName, PersistenceLayerName)
+    CreateTableString
   else
-    CreateTableLongString(DatabaseName, PersistenceLayerName);
+    CreateTableLongString;
 
   try
     ls := tiCreateStringOfSize(pLen);
@@ -2540,6 +2540,8 @@ end;
 {$ENDIF}
 
 end.
+
+
 
 
 

@@ -84,6 +84,7 @@ type
     FTempDirectory: string;
     function GetLongString: string;
   protected
+    procedure   SetUpOnce; override;
     procedure   SetUp; override;
     procedure   TearDown; override;
     function    TempFileName(const AFilename: string = ''): string;
@@ -180,14 +181,15 @@ type
      appropriate tiOPFTestSetupData object in the GTIOPFTestManager}
   TtiTestCaseWithTestSetupData = class(TtiTestCase)
   private
-    FtiOPFTestSetupData: TtiOPFTestSetupData;
+    FTestSetupData: TtiOPFTestSetupData;
   protected
     procedure   SetUpOnce; override;
   public
     class function PersistenceLayerName: string; virtual; abstract;
-    property    PerFrameworkSetup : TtiOPFTestSetupData read FtiOPFTestSetupData;
+    property    TestSetupData : TtiOPFTestSetupData read FTestSetupData;
   end;
 
+  {: Adds a reference to the appropriate persistence layer}
   TtiTestCaseWithPersistenceLayer = class(TtiTestCaseWithTestSetupData)
   private
     function    GetPersistenceLayer: TtiPersistenceLayer;
@@ -208,23 +210,28 @@ type
 
   TtiTestCaseWithPersistenceLayerClass    = class of TtiTestCaseWithPersistenceLayer;
 
-
+  {: Adds a reference to the appropriate DBConnectionPool}
   TtiTestCaseWithDatabaseConnection = class(TtiTestCaseWithPersistenceLayer)
   private
     FDBConnectionPool: TtiDBConnectionPool;
     function    GetDatabaseName: string;
     function    GetUserName: string;
     function    GetPassword: string;
+
   protected
     procedure SetUpOnce; override;
     procedure TearDownOnce; override;
 
+    property    DatabaseName     : string read GetDatabaseName;
+    property    UserName         : string read GetUserName;
+    property    Password         : string read GetPassword;
+
     property DBConnectionPool: TtiDBConnectionPool read FDBConnectionPool;
 
-    procedure   SetupTestTables; overload;
-    procedure   DeleteTestTables; overload;
-    procedure   SetupTestTables(const AManager: TtiOPFManager); overload;
-    procedure   DeleteTestTables(const AManager: TtiOPFManager); overload;
+    procedure   CreateTestTables; overload;
+    procedure   DropTestTables; overload;
+    procedure   CreateTestTables(const AManager: TtiOPFManager); overload;
+    procedure   DropTestTables(const AManager: TtiOPFManager); overload;
     procedure   EmptyTestTables;
     procedure   DropTable(const ATableName: string);
 
@@ -235,42 +242,16 @@ type
     procedure   DropTableTestGroup(const ADatabase: TtiDatabase = nil);
     procedure   CreateTable(const ATable : TtiDBMetaDataTable; const ADatabase: TtiDatabase = nil);
 
-    procedure   DropNextOIDTable;
-    procedure   CreateNextOIDIntTable;
-    procedure   CreateNextOIDStrTable;
     procedure   InsertRow(const ATableName: string; AParams: TtiQueryParams; const ADatabase: TtiDatabase = nil);
 
-
-    // ToDo: These overloaded method are confusing. Fix.
     procedure   DropTestTable;
-    procedure   CreateTableInteger(   const ADatabaseName, APersistenceLayerName : string);overload;
-//    procedure   CreateTableInt64(     const ADatabaseName, APersistenceLayerName : string);overload;
-    procedure   CreateTableString(    const ADatabaseName, APersistenceLayerName : string);overload;
-    procedure   CreateTableFloat(     const ADatabaseName, APersistenceLayerName : string);overload;
-    procedure   CreateTableBoolean(   const ADatabaseName, APersistenceLayerName : string);overload;
-    procedure   CreateTableDateTime(  const ADatabaseName, APersistenceLayerName : string);overload;
-    procedure   CreateTableLongString(const ADatabaseName, APersistenceLayerName : string);overload;
-    procedure   CreateTableStream(    const ADatabaseName, APersistenceLayerName : string);overload;
-    procedure   CreateTableInteger(   const ADatabase : TtiDatabase);overload;
-//    procedure   CreateTableInt64(     const ADatabase : TtiDatabase);overload;
-    procedure   CreateTableString(    const ADatabase : TtiDatabase);overload;
-    procedure   CreateTableFloat(     const ADatabase : TtiDatabase);overload;
-    procedure   CreateTableBoolean(   const ADatabase : TtiDatabase);overload;
-    procedure   CreateTableDateTime(  const ADatabase : TtiDatabase);overload;
-    procedure   CreateTableLongString(const ADatabase : TtiDatabase);overload;
-    procedure   CreateTableStream(    const ADatabase : TtiDatabase);overload;
-
-
-  public
-    property    DatabaseName     : string read GetDatabaseName;
-    property    UserName         : string read GetUserName;
-    property    Password         : string read GetPassword;
-  end;
-
-  TtiTestCaseWithTables = class(TtiTestCaseWithDatabaseConnection)
-  protected
-    procedure SetUp; override;
-    procedure TearDown; override;
+    procedure   CreateTableInteger(   const ADatabase : TtiDatabase = nil);
+    procedure   CreateTableString(    const ADatabase : TtiDatabase = nil);overload;
+    procedure   CreateTableFloat(     const ADatabase : TtiDatabase = nil);overload;
+    procedure   CreateTableBoolean(   const ADatabase : TtiDatabase = nil);overload;
+    procedure   CreateTableDateTime(  const ADatabase : TtiDatabase = nil);overload;
+    procedure   CreateTableLongString(const ADatabase : TtiDatabase = nil);overload;
+    procedure   CreateTableStream(    const ADatabase : TtiDatabase = nil);overload;
 
   end;
 
@@ -531,20 +512,19 @@ end;
 procedure TtiTestCase.SetUp;
 begin
   inherited;
-  // ToDo: Must look into this - sometimes TempDirectory contains a file that's locked
+end;
+
+procedure TtiTestCase.SetUpOnce;
+begin
+  inherited;
   FTempDirectory := TempDirectory;
-  if not DirectoryExists(FTempDirectory) then
-    try tiForceDirectories(FTempDirectory) except end;
 end;
 
 procedure TtiTestCase.TearDown;
 begin
   inherited;
-  // ToDo: Must look into this - sometimes TempDirectory contains a file that's locked
   if DirectoryExists(FTempDirectory) then
     try tiForceRemoveDir(FTempDirectory) except end;
-  uTempPath := '';
-  FTempDirectory := '';
 end;
 
 function TtiTestCase.tstIntToBool(pInt: Integer): boolean;
@@ -612,7 +592,7 @@ begin
   DropTable(cTIQueryTableName);
 end;
 
-procedure TtiTestCaseWithDatabaseConnection.DeleteTestTables;
+procedure TtiTestCaseWithDatabaseConnection.DropTestTables;
 begin
   DropTable(cTIQueryTableName);
   DropTable('test_bin');
@@ -735,25 +715,25 @@ var
   LPersistenceLayer  : TtiPersistenceLayer;
   LDatabaseClass : TtiDatabaseClass;
 begin
-  if PerFrameworkSetup.CanCreateDatabase then
+  if TestSetupData.CanCreateDatabase then
   begin
     LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
     Assert(LPersistenceLayer <> nil, 'Unable to find registered persistence layer <' + PersistenceLayerName +'>');
     LDatabaseClass := LPersistenceLayer.DatabaseClass;
     if not LDatabaseClass.DatabaseExists(
-      PerFrameworkSetup.DBName,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password) then
+      TestSetupData.DBName,
+      TestSetupData.Username,
+      TestSetupData.Password) then
     begin
       LDatabaseClass.CreateDatabase(
-        PerFrameworkSetup.DBName,
-        PerFrameworkSetup.Username,
-        PerFrameworkSetup.Password);
+        TestSetupData.DBName,
+        TestSetupData.Username,
+        TestSetupData.Password);
       if not LDatabaseClass.DatabaseExists(
-        PerFrameworkSetup.DBName,
-        PerFrameworkSetup.Username,
-        PerFrameworkSetup.Password) then
-        EtiOPFDUnitException.Create('Unable to create database <' + PerFrameworkSetup.DBName + '>');
+        TestSetupData.DBName,
+        TestSetupData.Username,
+        TestSetupData.Password) then
+        EtiOPFDUnitException.Create('Unable to create database <' + TestSetupData.DBName + '>');
     end;
   end;
 end;
@@ -778,12 +758,12 @@ end;
 
 
 
-procedure TtiTestCaseWithDatabaseConnection.SetupTestTables(const AManager: TtiOPFManager);
+procedure TtiTestCaseWithDatabaseConnection.CreateTestTables(const AManager: TtiOPFManager);
 var
   LTable : TtiDBMetaDataTable;
   LDatabase: TtiDatabase;
 begin
-  DeleteTestTables(AManager);
+  DropTestTables(AManager);
   LDatabase:= AManager.DefaultDBConnectionPool.Lock;
   try
     CreateTableTestGroup(LDatabase);
@@ -803,65 +783,65 @@ begin
     LTable.AddField('Item_Bool_Field',    qfkLogical);
     LTable.AddField('Item_Date_Field',    qfkDateTime);
     LTable.AddField('Item_Notes_Field',   qfkLongString);
-    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    AManager.CreateTable(LTable, TestSetupData.DBName, TestSetupData.PersistenceLayerName);
 
     LTable.Clear;
     LTable.Name :=  cTableNameTIOPFTestParent;
     LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
     LTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
     LTable.AddField('Parent_Str_Field',   qfkString, 10);
-    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    AManager.CreateTable(LTable, TestSetupData.DBName, TestSetupData.PersistenceLayerName);
 
     LTable.Clear;
     LTable.Name :=  cTableNameTIOPFTestChild_A;
     LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
     LTable.AddField('Child_Int_Field',   qfkInteger);
     LTable.AddField('Child_Float_Field', qfkFloat);
-    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    AManager.CreateTable(LTable, TestSetupData.DBName, TestSetupData.PersistenceLayerName);
 
     LTable.Clear;
     LTable.Name :=  cTableNameTIOPFTestChild_B;
     LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
     LTable.AddField('Child_Int_Field',   qfkInteger);
     LTable.AddField('Child_Float_Field', qfkFloat);
-    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    AManager.CreateTable(LTable, TestSetupData.DBName, TestSetupData.PersistenceLayerName);
 
     LTable.Clear;
     LTable.Name :=  cTableNameTIOPFTestParentGrouped;
     LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
     LTable.AddField('Owner_OID',          qfkString, 36); // Should be Not Null & PK
     LTable.AddField('Parent_Str_Field',   qfkString, 10);
-    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    AManager.CreateTable(LTable, TestSetupData.DBName, TestSetupData.PersistenceLayerName);
 
     LTable.Clear;
     LTable.Name :=  cTableNameTIOPFTestChildGrouped_A;
     LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
     LTable.AddField('Child_Int_Field',   qfkInteger);
     LTable.AddField('Child_Float_Field', qfkFloat);
-    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    AManager.CreateTable(LTable, TestSetupData.DBName, TestSetupData.PersistenceLayerName);
 
     LTable.Clear;
     LTable.Name :=  cTableNameTIOPFTestChildGrouped_B;
     LTable.AddField('OID',               qfkString, 36); // Should be Not Null & PK
     LTable.AddField('Child_Int_Field',   qfkInteger);
     LTable.AddField('Child_Float_Field', qfkFloat);
-    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    AManager.CreateTable(LTable, TestSetupData.DBName, TestSetupData.PersistenceLayerName);
 
     LTable.Clear;
     LTable.Name :=  cTableNameTIOPFTestParentGroup;
     LTable.AddField('OID',                qfkString, 36); // Should be Not Null & PK
-    AManager.CreateTable(LTable, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+    AManager.CreateTable(LTable, TestSetupData.DBName, TestSetupData.PersistenceLayerName);
 
   finally
     LTable.Free;
   end;
 end;
 
-procedure TtiTestCaseWithDatabaseConnection.SetupTestTables;
+procedure TtiTestCaseWithDatabaseConnection.CreateTestTables;
 var
   LTable : TtiDBMetaDataTable;
 begin
-  DeleteTestTables;
+  DropTestTables;
   CreateTableTestGroup;
   CreateTableTestBin;
   LTable := TtiDBMetaDataTable.Create;
@@ -934,12 +914,12 @@ end;
 
 function TtiTestCaseWithDatabaseConnection.GetDatabaseName: string;
 begin
-  Assert(PerFrameworkSetup.TestValid, CTIErrorInvalidObject);
-  result := PerFrameworkSetup.DBName;
+  Assert(TestSetupData.TestValid, CTIErrorInvalidObject);
+  result := TestSetupData.DBName;
 end;
 
 
-procedure TtiTestCaseWithDatabaseConnection.DeleteTestTables(const AManager: TtiOPFManager);
+procedure TtiTestCaseWithDatabaseConnection.DropTestTables(const AManager: TtiOPFManager);
 var
   LDatabase: TtiDatabase;
 begin
@@ -951,94 +931,18 @@ begin
   end;
 
   try AManager.DropTable('test_item',
-                           PerFrameworkSetup.DBName,
-                           PerFrameworkSetup.PersistenceLayerName)  except end;
+                           TestSetupData.DBName,
+                           TestSetupData.PersistenceLayerName)  except end;
 
-  try AManager.DropTable(cTableNameTIOPFTestChild_A, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName)  except end;
-  try AManager.DropTable(cTableNameTIOPFTestChild_B, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName)  except end;
-  try AManager.DropTable(cTableNameTIOPFTestParent, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName)  except end;
+  try AManager.DropTable(cTableNameTIOPFTestChild_A, TestSetupData.DBName, TestSetupData.PersistenceLayerName)  except end;
+  try AManager.DropTable(cTableNameTIOPFTestChild_B, TestSetupData.DBName, TestSetupData.PersistenceLayerName)  except end;
+  try AManager.DropTable(cTableNameTIOPFTestParent, TestSetupData.DBName, TestSetupData.PersistenceLayerName)  except end;
 
-  try AManager.DropTable(cTableNameTIOPFTestChildGrouped_A, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName)  except end;
-  try AManager.DropTable(cTableNameTIOPFTestChildGrouped_B, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName)  except end;
-  try AManager.DropTable(cTableNameTIOPFTestParentGrouped, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName)  except end;
-  try AManager.DropTable(cTableNameTIOPFTestParentGroup, PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName)  except end;
+  try AManager.DropTable(cTableNameTIOPFTestChildGrouped_A, TestSetupData.DBName, TestSetupData.PersistenceLayerName)  except end;
+  try AManager.DropTable(cTableNameTIOPFTestChildGrouped_B, TestSetupData.DBName, TestSetupData.PersistenceLayerName)  except end;
+  try AManager.DropTable(cTableNameTIOPFTestParentGrouped, TestSetupData.DBName, TestSetupData.PersistenceLayerName)  except end;
+  try AManager.DropTable(cTableNameTIOPFTestParentGroup, TestSetupData.DBName, TestSetupData.PersistenceLayerName)  except end;
 end;
-
-procedure TtiTestCaseWithDatabaseConnection.DropNextOIDTable;
-begin
-  DropTable('Next_OID');
-end;
-
-
-procedure TtiTestCaseWithDatabaseConnection.CreateNextOIDIntTable;
-var
-  LTable : TtiDBMetaDataTable;
-  lParams : TtiQueryParams;
-begin
-
-  DropNextOIDTable;
-
-  LTable := TtiDBMetaDataTable.Create;
-  try
-    LTable.Name := 'Next_OID';
-    LTable.AddField('OID', qfkInteger);
-    CreateTable(LTable);
-  finally
-    LTable.Free;
-  end;
-
-  lParams := TtiQueryParams.Create;
-  try
-    lParams.SetValueAsInteger('OID', 1000000);
-    InsertRow('Next_OID', lParams);
-  finally
-    lParams.Free;
-  end;
-end;
-
-
-procedure TtiTestCaseWithDatabaseConnection.CreateNextOIDStrTable;
-var
-  LTable : TtiDBMetaDataTable;
-  lParams : TtiQueryParams;
-begin
-
-  DropNextOIDTable;
-
-  LTable := TtiDBMetaDataTable.Create;
-  try
-    LTable.Name := 'Next_OID';
-    LTable.AddField('OID', qfkString, 10);
-    CreateTable(LTable);
-  finally
-    LTable.Free;
-  end;
-
-  lParams := TtiQueryParams.Create;
-  try
-    lParams.SetValueAsString('OID', '0');
-    InsertRow('Next_OID', lParams);
-  finally
-    lParams.Free;
-  end;
-
-end;
-
-
-procedure TtiTestCaseWithDatabaseConnection.CreateTableBoolean(const ADatabaseName, APersistenceLayerName : string);
-var
-  LPersistenceLayer: TtiPersistenceLayer;
-  LDatabase: TtiDatabase;
-begin
-  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
-  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
-  try
-    CreateTableBoolean(LDatabase);
-  finally
-    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
-  end;
-end;
-
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTable(
   const ATable: TtiDBMetaDataTable;
@@ -1058,7 +962,7 @@ begin
     ADatabase.CreateTable(ATable);
 end;
 
-procedure TtiTestCaseWithDatabaseConnection.CreateTableBoolean(const ADatabase : TtiDatabase);
+procedure TtiTestCaseWithDatabaseConnection.CreateTableBoolean(const ADatabase : TtiDatabase = nil);
 var
   LTable : TtiDBMetaDataTable;
 begin
@@ -1069,27 +973,11 @@ begin
     LTable.Name := cTIQueryTableName;
     LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
     LTable.AddField(cTIQueryColName, qfkLogical);
-    ADatabase.CreateTable(LTable);
+    CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
   end;
 end;
-
-
-procedure TtiTestCaseWithDatabaseConnection.CreateTableDateTime(const ADatabaseName, APersistenceLayerName : string);
-var
-  LPersistenceLayer: TtiPersistenceLayer;
-  LDatabase: TtiDatabase;
-begin
-  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
-  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
-  try
-    CreateTableDateTime(LDatabase);
-  finally
-    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
-  end;
-end;
-
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableDateTime(const ADatabase : TtiDatabase);
 var
@@ -1102,27 +990,11 @@ begin
     LTable.Name := cTIQueryTableName;
     LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
     LTable.AddField(cTIQueryColName, qfkDateTime);
-    ADatabase.CreateTable(LTable);
+    CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
   end;
 end;
-
-
-procedure TtiTestCaseWithDatabaseConnection.CreateTableFloat(const ADatabaseName, APersistenceLayerName : string);
-var
-  LPersistenceLayer: TtiPersistenceLayer;
-  LDatabase: TtiDatabase;
-begin
-  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
-  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
-  try
-    CreateTableFloat(LDatabase);
-  finally
-    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
-  end;
-end;
-
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableFloat(const ADatabase : TtiDatabase);
 var
@@ -1135,14 +1007,13 @@ begin
     LTable.Name := cTIQueryTableName;
     LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
     LTable.AddField(cTIQueryColName, qfkFloat);
-    ADatabase.CreateTable(LTable);
+    CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
   end;
 end;
 
-
-procedure TtiTestCaseWithDatabaseConnection.CreateTableInteger(const ADatabaseName, APersistenceLayerName : string);
+procedure TtiTestCaseWithDatabaseConnection.CreateTableInteger(const ADatabase : TtiDatabase = nil);
 var
   LTable : TtiDBMetaDataTable;
 begin
@@ -1153,45 +1024,11 @@ begin
     LTable.Name := cTIQueryTableName;
     LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
     LTable.AddField(cTIQueryColName, qfkInteger);
-    CreateTable(LTable);
+    CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
   end;
 end;
-
-
-procedure TtiTestCaseWithDatabaseConnection.CreateTableInteger(const ADatabase : TtiDatabase);
-var
-  LTable : TtiDBMetaDataTable;
-begin
-  // If the structure of the table created is changed, also change the
-  // constant: cFieldAs_Index
-  LTable := TtiDBMetaDataTable.Create;
-  try
-    LTable.Name := cTIQueryTableName;
-    LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
-    LTable.AddField(cTIQueryColName, qfkInteger);
-    ADatabase.CreateTable(LTable);
-  finally
-    LTable.Free;
-  end;
-end;
-
-
-procedure TtiTestCaseWithDatabaseConnection.CreateTableLongString(const ADatabaseName, APersistenceLayerName : string);
-var
-  LPersistenceLayer: TtiPersistenceLayer;
-  LDatabase: TtiDatabase;
-begin
-  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
-  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
-  try
-    CreateTableLongString(LDatabase);
-  finally
-    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
-  end;
-end;
-
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableLongString(const ADatabase : TtiDatabase);
 var
@@ -1204,27 +1041,11 @@ begin
     LTable.Name := cTIQueryTableName;
     LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
     LTable.AddField(cTIQueryColName, qfkLongString);
-    ADatabase.CreateTable(LTable);
+    CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
   end;
 end;
-
-
-procedure TtiTestCaseWithDatabaseConnection.CreateTableStream(const ADatabaseName, APersistenceLayerName : string);
-var
-  LPersistenceLayer: TtiPersistenceLayer;
-  LDatabase: TtiDatabase;
-begin
-  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
-  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
-  try
-    CreateTableStream(LDatabase);
-  finally
-    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
-  end;
-end;
-
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableStream(const ADatabase : TtiDatabase);
 var
@@ -1237,27 +1058,11 @@ begin
     LTable.Name := cTIQueryTableName;
     LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
     LTable.AddField(cTIQueryColName, qfkBinary);
-    ADatabase.CreateTable(LTable);
+    CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
   end;
 end;
-
-
-procedure TtiTestCaseWithDatabaseConnection.CreateTableString(const ADatabaseName, APersistenceLayerName : string);
-var
-  LPersistenceLayer: TtiPersistenceLayer;
-  LDatabase: TtiDatabase;
-begin
-  LPersistenceLayer:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
-  LDatabase:= LPersistenceLayer.DBConnectionPools.Lock(ADatabaseName);
-  try
-    CreateTableString(LDatabase);
-  finally
-    LPersistenceLayer.DBConnectionPools.UnLock(ADatabaseName, LDatabase);
-  end;
-end;
-
 
 procedure TtiTestCaseWithDatabaseConnection.CreateTableString(const ADatabase : TtiDatabase);
 var
@@ -1270,7 +1075,7 @@ begin
     LTable.Name := cTIQueryTableName;
     LTable.AddField('OID', qfkString, 36); // Should be Not Null & PK
     LTable.AddField(cTIQueryColName, qfkString, 255);
-    ADatabase.CreateTable(LTable);
+    CreateTable(LTable, ADatabase);
   finally
     LTable.Free;
   end;
@@ -1314,15 +1119,15 @@ end;
 
 function TtiTestCaseWithDatabaseConnection.GetPassword: string;
 begin
-  Assert(PerFrameworkSetup.TestValid, CTIErrorInvalidObject);
-  result := PerFrameworkSetup.Password;
+  Assert(TestSetupData.TestValid, CTIErrorInvalidObject);
+  result := TestSetupData.Password;
 end;
 
 
 function TtiTestCaseWithDatabaseConnection.GetUserName: string;
 begin
-  Assert(PerFrameworkSetup.TestValid, CTIErrorInvalidObject);
-  result := PerFrameworkSetup.Username;
+  Assert(TestSetupData.TestValid, CTIErrorInvalidObject);
+  result := TestSetupData.Username;
 end;
 
 
@@ -1946,18 +1751,18 @@ procedure TtiTestCaseWithDatabaseConnection.SetupOnce;
 begin
   inherited;
   PersistenceLayer.DBConnectionPools.Connect(
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password,
+    DatabaseName,
+    DatabaseName,
+    Username,
+    Password,
     '');
-  FDBConnectionPool:= PersistenceLayer.DBConnectionPools.Find(PerFrameworkSetup.DBName);
+  FDBConnectionPool:= PersistenceLayer.DBConnectionPools.Find(TestSetupData.DBName);
 end;
 
 procedure TtiTestCaseWithDatabaseConnection.TearDownOnce;
 begin
   PersistenceLayer.DBConnectionPools.Disconnect(
-    PerFrameworkSetup.DBName);
+    TestSetupData.DBName);
   inherited;
 end;
 
@@ -1971,22 +1776,8 @@ end;
 procedure TtiTestCaseWithTestSetupData.SetUpOnce;
 begin
   inherited;
-  FtiOPFTestSetupData:= gTIOPFTestManager.FindByPersistenceLayerName(PersistenceLayerName);
-  Assert(FtiOPFTestSetupData <> nil, 'FtiOPFTestSetupData not assigned');
-end;
-
-{ TtiTestCaseWithTables }
-
-procedure TtiTestCaseWithTables.SetUp;
-begin
-  inherited;
-  SetupTestTables;
-end;
-
-procedure TtiTestCaseWithTables.TearDown;
-begin
-  DeleteTestTables;
-  inherited;
+  FTestSetupData:= gTIOPFTestManager.FindByPersistenceLayerName(PersistenceLayerName);
+  Assert(FTestSetupData <> nil, 'FTestSetupData not assigned');
 end;
 
 initialization
@@ -1994,6 +1785,10 @@ initialization
   ULongString:= tiCreateStringOfSize(3000);
 
 end.
+
+
+
+
 
 
 

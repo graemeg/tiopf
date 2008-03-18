@@ -233,19 +233,19 @@ var
 begin
   LTIOPFManager:= TtiOPFManager.Create;
   try
-     LTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(PerFrameworkSetup.PersistenceLayerClass);
+     LTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(TestSetupData.PersistenceLayerClass);
      LTIOPFManager.ConnectDatabase(
-       PerFrameworkSetup.DBName,
-       PerFrameworkSetup.Username,
-       PerFrameworkSetup.Password,
+       TestSetupData.DBName,
+       TestSetupData.Username,
+       TestSetupData.Password,
        '',
-       PerFrameworkSetup.PersistenceLayerName);
+       TestSetupData.PersistenceLayerName);
      try
-       CheckEquals(PerFrameworkSetup.PersistenceLayerName, LTIOPFManager.DefaultPersistenceLayerName, 'PersistenceLayerName');
+       CheckEquals(TestSetupData.PersistenceLayerName, LTIOPFManager.DefaultPersistenceLayerName, 'PersistenceLayerName');
        CheckNotNull(LTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-       CheckEquals(PerFrameworkSetup.DBName, LTIOPFManager.DefaultDBConnectionName, 'DatabaseName');
+       CheckEquals(TestSetupData.DBName, LTIOPFManager.DefaultDBConnectionName, 'DatabaseName');
      finally
-       LTIOPFManager.DisconnectDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.PersistenceLayerName);
+       LTIOPFManager.DisconnectDatabase(TestSetupData.DBName, TestSetupData.PersistenceLayerName);
      end;
      CheckNull(LTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
   finally
@@ -262,9 +262,9 @@ begin
   LDatabase:= PersistenceLayer.DatabaseClass.Create;
   try
     LDatabase.Connect(
-      PerFrameworkSetup.DBName,
-      PerFrameworkSetup.UserName,
-      PerFrameworkSetup.Password,
+      TestSetupData.DBName,
+      TestSetupData.UserName,
+      TestSetupData.Password,
       '');
     Check(LDatabase.Connected, 'Connect failed');
     LDatabase.Connected := false;
@@ -281,9 +281,9 @@ const
 begin
   PersistenceLayer.DBConnectionPools.Connect(
     CAlias,
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password,
+    TestSetupData.DBName,
+    TestSetupData.Username,
+    TestSetupData.Password,
     '');
   CheckEquals(1, PersistenceLayer.DBConnectionPools.Count);
   PersistenceLayer.DBConnectionPools.Disconnect(CAlias);
@@ -701,7 +701,7 @@ var
   LDBMetaDataTable : TtiDBMetaDataTable;
   LDatabase : TtiDatabase;
 begin
-  SetupTestTables;
+  CreateTestTables;
   try
     LDBMetaData := TtiDBMetaData.Create;
     try
@@ -744,7 +744,7 @@ begin
       LDBMetaData.Free;
     end;
   finally
-    DeleteTestTables;
+    DropTestTables;
   end;
 end;
 
@@ -942,12 +942,12 @@ const
 begin
   PersistenceLayer.DBConnectionPools.Connect(
     CAlias,
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password,
+    TestSetupData.DBName,
+    TestSetupData.Username,
+    TestSetupData.Password,
     '');
   try
-    lDBConnectionName := PerFrameworkSetup.DBName;
+    lDBConnectionName := TestSetupData.DBName;
     for i := 1 to 1 do
     begin
       LDatabase := PersistenceLayer.DBConnectionPools.Lock(CAlias);
@@ -965,9 +965,9 @@ const
 begin
   PersistenceLayer.DBConnectionPools.Connect(
     CAlias,
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password,
+    TestSetupData.DBName,
+    TestSetupData.Username,
+    TestSetupData.Password,
     '');
   try
     if PersistenceLayerSupportsMultiUser then
@@ -1111,11 +1111,11 @@ begin
           Inc(LDropTableTime, tiGetTickCount - LSingleTestStart);
 
         end;
-        WriteTimingResult('TableTestIterationCount',     PerFrameworkSetup.PersistenceLayerName, LCount);
-        WriteTimingResult('TotalTestTime',  PerFrameworkSetup.PersistenceLayerName, CTimingTestPeriod);
-        WriteTimingResult('CreateTable',    PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LCreateTableTime, LCount));
-        WriteTimingResult('DropTableTable', PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LDropTableTime, LCount));
-        WriteTimingResult('ReadMetaData',   PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LMetaDataTime, LCount));
+        WriteTimingResult('TableTestIterationCount',     TestSetupData.PersistenceLayerName, LCount);
+        WriteTimingResult('TotalTestTime',  TestSetupData.PersistenceLayerName, CTimingTestPeriod);
+        WriteTimingResult('CreateTable',    TestSetupData.PersistenceLayerName, tiSafeDiv(LCreateTableTime, LCount));
+        WriteTimingResult('DropTableTable', TestSetupData.PersistenceLayerName, tiSafeDiv(LDropTableTime, LCount));
+        WriteTimingResult('ReadMetaData',   TestSetupData.PersistenceLayerName, tiSafeDiv(LMetaDataTime, LCount));
       finally
         LTable2.Free;
       end;
@@ -1357,7 +1357,7 @@ end;
 procedure TTestTIQueryAbs.ConfirmSetupWorks;
 begin
   CheckNotNull(PersistenceLayer, 'RegPerlayerNotAssigned');
-  CheckEquals(PerFrameworkSetup.PersistenceLayerName, PersistenceLayer.PersistenceLayerName, 'Wrong RegPerLayer');
+  CheckEquals(TestSetupData.PersistenceLayerName, PersistenceLayer.PersistenceLayerName, 'Wrong RegPerLayer');
   Check(not Database.InTransaction, 'Database InTransaction when it should not be');
 end;
 
@@ -2067,11 +2067,11 @@ begin
     LParams.Free;
   end;
 
-  WriteTimingResult('RowTestIterationCount',  PerFrameworkSetup.PersistenceLayerName, LCount);
-  WriteTimingResult('TotalTestTime', PerFrameworkSetup.PersistenceLayerName, CTimingTestPeriod);
-  WriteTimingResult('InsertRow',     PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LInsertTime, LCount));
-  WriteTimingResult('UpdateRow',     PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LUpdateTime, LCount));
-  WriteTimingResult('DeleteRow',     PerFrameworkSetup.PersistenceLayerName, tiSafeDiv(LDeleteTime, LCount));
+  WriteTimingResult('RowTestIterationCount',  TestSetupData.PersistenceLayerName, LCount);
+  WriteTimingResult('TotalTestTime', TestSetupData.PersistenceLayerName, CTimingTestPeriod);
+  WriteTimingResult('InsertRow',     TestSetupData.PersistenceLayerName, tiSafeDiv(LInsertTime, LCount));
+  WriteTimingResult('UpdateRow',     TestSetupData.PersistenceLayerName, tiSafeDiv(LUpdateTime, LCount));
+  WriteTimingResult('DeleteRow',     TestSetupData.PersistenceLayerName, tiSafeDiv(LDeleteTime, LCount));
 end;
 
 {$IFDEF TESTINT64}
@@ -2161,13 +2161,13 @@ const
   CDatabaseAlias = 'TestDatabaseAlias';  
 begin
   CreateDBIfNotExists;
-  LPersistenceLayer:= PerFrameworkSetup.PersistenceLayerClass.Create;
+  LPersistenceLayer:= TestSetupData.PersistenceLayerClass.Create;
   try
     LPersistenceLayer.DBConnectionPools.Connect(
       CDatabaseAlias,
-      PerFrameworkSetup.DBName,
-      PerFrameworkSetup.Username,
-      PerFrameworkSetup.Password,
+      TestSetupData.DBName,
+      TestSetupData.Username,
+      TestSetupData.Password,
       '');
     try
       CheckNotNull(LPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
@@ -2185,6 +2185,9 @@ begin
 end;
 
 end.
+
+
+
 
 
 

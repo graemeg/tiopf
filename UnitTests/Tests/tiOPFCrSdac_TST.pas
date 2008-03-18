@@ -82,7 +82,7 @@ end;
 procedure TTestTIDatabaseCrSdac.CreateDatabase;
 begin
   try
-    PersistenceLayer.DatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+    PersistenceLayer.DatabaseClass.CreateDatabase(TestSetupData.DBName, TestSetupData.Username, TestSetupData.Password);
     Fail('Exception not raised when it should have been');
   except
     on e: Exception do
@@ -98,19 +98,19 @@ var
   lDB:       string;
   lDBExists: boolean;
 begin
-  lDB       := PerFrameworkSetup.DBName;
+  lDB       := TestSetupData.DBName;
   lDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.DBName,
+    TestSetupData.Username,
+    TestSetupData.Password);
   Check(lDBExists, 'DBExists returned false when it should return true');
 
   lDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
-    PerFrameworkSetup.DBName + 'Tmp',
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.DBName + 'Tmp',
+    TestSetupData.Username,
+    TestSetupData.Password);
   Check(not lDBExists, 'DBExists returned true when it should return false');
 end;
 

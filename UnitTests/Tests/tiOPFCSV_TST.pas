@@ -80,10 +80,10 @@ procedure TTestTIDatabaseCSV.CreateDatabase;
 var
   LDir: string;
 begin
-  LDir := PerFrameworkSetup.DBName;
+  LDir := TestSetupData.DBName;
   tiForceRemoveDir(LDir);
   Check(not DirectoryExists(LDir), '<' + LDir + '> Exists when it should not');
-  PersistenceLayer.DatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+  PersistenceLayer.DatabaseClass.CreateDatabase(TestSetupData.DBName, TestSetupData.Username, TestSetupData.Password);
   Check(DirectoryExists(LDir), '<' + LDir + '> Does not exists when it should');
 end;
 
@@ -91,16 +91,16 @@ procedure TTestTIDatabaseCSV.DatabaseExists;
 var
   LDir: string;
 begin
-  LDir := PerFrameworkSetup.DBName;
+  LDir := TestSetupData.DBName;
   tiForceRemoveDir(LDir);
   Check(not DirectoryExists(LDir), '<' + LDir + '> Exists when it should not');
-  Check(not PersistenceLayer.DatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password),
+  Check(not PersistenceLayer.DatabaseClass.DatabaseExists(TestSetupData.DBName, TestSetupData.Username,
+    TestSetupData.Password),
     'FDatabaseClass.DatabaseExists()=true when it should =false');
   ForceDirectories(LDir);
   Check(DirectoryExists(LDir), '<' + LDir + '> Does not exists when it should');
-  Check(PersistenceLayer.DatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password),
+  Check(PersistenceLayer.DatabaseClass.DatabaseExists(TestSetupData.DBName, TestSetupData.Username,
+    TestSetupData.Password),
     'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 

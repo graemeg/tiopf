@@ -416,12 +416,12 @@ end;
 procedure TTestAutomappingCriteria.SetUp;
 begin
   inherited;
-  SetupTestTables;
+  CreateTestTables;
 end;
 
 procedure TTestAutomappingCriteria.TearDown;
 begin
-  DeleteTestTables;
+  DropTestTables;
   inherited;
 end;
 

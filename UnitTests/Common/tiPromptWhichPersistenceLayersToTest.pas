@@ -68,7 +68,7 @@ var
   i: integer;
   lCheckBox: TCheckBox;
   lPersistenceLayerName: string;
-  lPerFrameworkSetup: TtiOPFTestSetupData;
+  lTestSetupData: TtiOPFTestSetupData;
 begin
   Tmr.Enabled := False;
   TDUntiLocalSettings.CreateDefaultFile;
@@ -77,8 +77,8 @@ begin
   begin
     lPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
     lCheckBox := TCheckBox(FindComponent('cb' + lPersistenceLayerName));
-    lPerFrameworkSetup := GTIOPFTestManager.FindByPersistenceLayerName(lPersistenceLayerName);
-    lPerFrameworkSetup.Selected := lCheckBox.Checked;
+    lTestSetupData := GTIOPFTestManager.FindByPersistenceLayerName(lPersistenceLayerName);
+    lTestSetupData.Selected := lCheckBox.Checked;
   end;
   GTIOPFTestManager.Save;
   GTIOPFTestManager.UnloadPersistenceLayersNotSelected;
@@ -282,7 +282,7 @@ var
   i: integer;
   lCheckBox: TCheckBox;
   lPersistenceLayerName: string;
-  lPerFrameworkSetup: TtiOPFTestSetupData;
+  lTestSetupData: TtiOPFTestSetupData;
 const
   cBorder = 8;
 begin
@@ -291,7 +291,7 @@ begin
   for i := 0 to GTIOPFTestManager.Count - 1 do
   begin
     lPersistenceLayerName      := GTIOPFTestManager.Items[i].PersistenceLayerName;
-    lPerFrameworkSetup := GTIOPFTestManager.FindByPersistenceLayerName(lPersistenceLayerName);
+    lTestSetupData := GTIOPFTestManager.FindByPersistenceLayerName(lPersistenceLayerName);
     lCheckBox := TCheckBox.Create(self);
     lCheckBox.Parent := pnlCheckBoxes;
     lCheckBox.Top    := i * (cBorder + lCheckBox.Height) + cBorder;
@@ -299,7 +299,7 @@ begin
     lCheckBox.Caption := lPersistenceLayerName;
     lCheckBox.Name   := 'cb' + lPersistenceLayerName;
     lCheckBox.Tag    := i;
-    lCheckBox.Checked := lPerFrameworkSetup.Selected;
+    lCheckBox.Checked := lTestSetupData.Selected;
     lCheckBox.OnClick := DoCheckBoxClick;
     lCheckBox.PopupMenu:= FPopupMenu;
   end;

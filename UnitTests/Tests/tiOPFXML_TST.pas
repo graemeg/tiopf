@@ -80,10 +80,10 @@ procedure TTestTIDatabaseXML.CreateDatabase;
 var
   LFileName: string;
 begin
-  LFileName := PerFrameworkSetup.DBName;
+  LFileName := TestSetupData.DBName;
   tiDeleteFile(LFileName);
   Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
-  PersistenceLayer.DatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+  PersistenceLayer.DatabaseClass.CreateDatabase(TestSetupData.DBName, TestSetupData.Username, TestSetupData.Password);
   Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
 end;
 
@@ -92,16 +92,16 @@ var
   LFileName: string;
 begin
 //  SetAllowedLeakArray([24]);
-  LFileName := PerFrameworkSetup.DBName;
+  LFileName := TestSetupData.DBName;
   tiDeleteFile(LFileName);
   Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
-  Check(not PersistenceLayer.DatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password),
+  Check(not PersistenceLayer.DatabaseClass.DatabaseExists(TestSetupData.DBName, TestSetupData.Username,
+    TestSetupData.Password),
     'FDatabaseClass.DatabaseExists()=true when it should =false');
   tiStringToFile('test', LFileName);
   Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
-  Check(PersistenceLayer.DatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password),
+  Check(PersistenceLayer.DatabaseClass.DatabaseExists(TestSetupData.DBName, TestSetupData.Username,
+    TestSetupData.Password),
     'FDatabaseClass.DatabaseExists()=false when it should =true');
 end;
 

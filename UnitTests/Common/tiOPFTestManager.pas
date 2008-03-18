@@ -204,13 +204,13 @@ procedure TtiOPFTestManager.UnloadPersistenceLayersNotSelected;
 var
   i: integer;
   LPersistenceLayerName: string;
-  LPerFrameworkSetup: TtiOPFTestSetupData;
+  LTestSetupData: TtiOPFTestSetupData;
 begin
   for i := Count - 1 downto 0 do
   begin
-    LPerFrameworkSetup := Items[i];
-    LPersistenceLayerName:= LPerFrameworkSetup.PersistenceLayerName;
-    if not LPerFrameworkSetup.Selected then
+    LTestSetupData := Items[i];
+    LPersistenceLayerName:= LTestSetupData.PersistenceLayerName;
+    if not LTestSetupData.Selected then
     begin
       if gTIOPFManager.PersistenceLayers.IsLoaded(LPersistenceLayerName) then
         gTIOPFManager.PersistenceLayers.UnLoadPersistenceLayer(LPersistenceLayerName);

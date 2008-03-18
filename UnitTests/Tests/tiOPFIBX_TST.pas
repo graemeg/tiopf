@@ -85,7 +85,7 @@ var
   LDB:       string;
   LDBExists: boolean;
 begin
-  LDB := ExpandFileName(PerFrameworkSetup.DBName);
+  LDB := ExpandFileName(TestSetupData.DBName);
   LDB := tiSwapExt(LDB, 'tmp');
   if FileExists(LDB) then
   begin
@@ -97,15 +97,15 @@ begin
   Check(not FileExists(LDB), 'Database exists when it should not');
   PersistenceLayer.DatabaseClass.CreateDatabase(
     LDB,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.Username,
+    TestSetupData.Password);
   Check(FileExists(LDB), 'Database not created');
 
   LDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
     LDB,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.Username,
+    TestSetupData.Password);
 
   Check(LDBExists, 'Database does not exist when it should do');
   tiDeleteFile(LDB);
@@ -117,20 +117,20 @@ var
   LDBExists: boolean;
 begin
   SetAllowedLeakArray([504]);
-  LDB       := PerFrameworkSetup.DBName;
+  LDB       := TestSetupData.DBName;
   Check(FileExists(LDB), 'Database file not found so test can not be performed');
   LDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.DBName,
+    TestSetupData.Username,
+    TestSetupData.Password);
   Check(LDBExists, 'DBExists returned false when it should return true');
   Check(not FileExists(LDB + 'Tmp'), 'Database file found so test can not be performed');
   LDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
-    PerFrameworkSetup.DBName + 'Tmp',
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.DBName + 'Tmp',
+    TestSetupData.Username,
+    TestSetupData.Password);
   Check(not LDBExists, 'DBExists returned true when it should return false');
 end;
 

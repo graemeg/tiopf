@@ -98,7 +98,7 @@ var
   LDatabaseClass: TtiDatabaseClass;
 begin
   LDatabaseClass:= PersistenceLayer.DatabaseClass;
-  LDatabaseName := ExpandFileName(PerFrameworkSetup.DBName);
+  LDatabaseName := ExpandFileName(TestSetupData.DBName);
   LDatabaseName := tiSwapExt(LDatabaseName, 'tmp');
   if FileExists(LDatabaseName) then
   begin
@@ -110,15 +110,15 @@ begin
   Check(not FileExists(LDatabaseName), 'Database exists when it should not');
   LDatabaseClass.CreateDatabase(
     LDatabaseName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.Username,
+    TestSetupData.Password);
   Check(FileExists(LDatabaseName), 'Database not created');
 
   LDatabaseExists :=
     LDatabaseClass.DatabaseExists(
     LDatabaseName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.Username,
+    TestSetupData.Password);
 
   Check(LDatabaseExists, 'Database does not exist when it should do');
   tiDeleteFile(LDatabaseName);
@@ -136,21 +136,21 @@ var
   LDatabaseExists: boolean;
   LDatabaseClass: TtiDatabaseClass;
 begin
-  LDatabaseName       := PerFrameworkSetup.DBName;
+  LDatabaseName       := TestSetupData.DBName;
   LDatabaseClass:= PersistenceLayer.DatabaseClass;
   Check(FileExists(LDatabaseName), 'Database file not found so test can not be performed');
   LDatabaseExists :=
     LDatabaseClass.DatabaseExists(
-    PerFrameworkSetup.DBName,
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.DBName,
+    TestSetupData.Username,
+    TestSetupData.Password);
   Check(LDatabaseExists, 'DBExists returned false when it should return true');
   Check(not FileExists(LDatabaseName + 'Tmp'), 'Database file found so test can not be performed');
   LDatabaseExists :=
     LDatabaseClass.DatabaseExists(
-    PerFrameworkSetup.DBName + 'Tmp',
-    PerFrameworkSetup.Username,
-    PerFrameworkSetup.Password);
+    TestSetupData.DBName + 'Tmp',
+    TestSetupData.Username,
+    TestSetupData.Password);
   Check(not LDatabaseExists, 'DBExists returned true when it should return false');
 end;
 

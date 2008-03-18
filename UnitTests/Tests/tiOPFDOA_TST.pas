@@ -75,7 +75,7 @@ end;
 procedure TTestTIDatabaseDOA.CreateDatabase;
 begin
 //  try
-//    FDatabaseClass.CreateDatabase(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+//    FDatabaseClass.CreateDatabase(TestSetupData.DBName, TestSetupData.Username, TestSetupData.Password);
 //    Fail('Exception not raised when it should have been');
 //  except
 //    on e: Exception do
@@ -89,7 +89,7 @@ end;
 procedure TTestTIDatabaseDOA.DatabaseExists;
 begin
 //  try
-//    FDatabaseClass.DatabaseExists(PerFrameworkSetup.DBName, PerFrameworkSetup.Username, PerFrameworkSetup.Password);
+//    FDatabaseClass.DatabaseExists(TestSetupData.DBName, TestSetupData.Username, TestSetupData.Password);
 //    Fail('Exception not raised when it should have been');
 //  except
 //    on e: Exception do
