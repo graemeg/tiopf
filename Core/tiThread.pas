@@ -80,6 +80,7 @@ type
     property    OnThreadCountChange: TThreadMethod read FOnThreadCountChange write SetOnThreadCountChange;
     property    Count: integer read GetThreadCount;
     property    ActiveThreadNames: string read GetActiveThreadNames;
+    procedure   WaitForAll; 
   end;
 
 {$IFDEF MSWINDOWS}
@@ -347,6 +348,12 @@ begin
   end;
 end;
 
+
+procedure TtiActiveThreadList.WaitForAll;
+begin
+  while Count > 0 do
+    Sleep(100);
+end;
 
 { TtiSleepThread }
 

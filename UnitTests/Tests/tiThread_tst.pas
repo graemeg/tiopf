@@ -77,6 +77,8 @@ begin
     CheckEquals(0, LList.Count);
     LList.Add(LThread);
     CheckEquals(1, LList.Count);
+    LList.WaitForAll;
+    CheckEquals(0, LList.Count);
   finally
     LList.Free;
     LThread.Free;
