@@ -87,11 +87,14 @@ procedure TTestTIThread.tiThreadExplicitFree;
 var
   LThread: TtiThreadForTesting;
 begin
+  if GTIOPFManager.ActiveThreadList.Count > 0 then
+    Fail(Format('Expected 0 threads, but found "%s"', [GTIOPFManager.ActiveThreadList.ActiveThreadNames]));
   LThread:= TtiThreadForTesting.Create(True);
   LThread.FreeOnTerminate:= False;
   try
     LThread.Priority:= tpHigher;
-    CheckEquals(1, GTIOPFManager.ActiveThreadList.Count);
+    if GTIOPFManager.ActiveThreadList.Count > 1 then
+      Fail(Format('Expected 1 thread, but found "%s"', [GTIOPFManager.ActiveThreadList.ActiveThreadNames]));
     LThread.Resume;
     LThread.WaitFor;
   finally
