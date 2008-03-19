@@ -43,8 +43,6 @@ type
     procedure Write2Table(const pCell1 : string); overload;
     procedure IncPos;
     function  PrintHeader(r: TTestResult): string; override;
-    function  PrintFailureItems(r :TTestResult): string; override;
-    function  PrintErrorItems(r :TTestResult): string; override;
     procedure WriteSummaryToINIFile(testResult: TTestResult);
     function  FormatTestName(ATest: ITest): string;
     function  ShouldRunTest(const ATest :ITest):boolean; override;
@@ -269,50 +267,6 @@ begin
   begin
     FPos := 1;
     WriteLn2Short('', [tlwtFile, tlwtConsole]);
-  end;
-end;
-
-function TtiTextTestListener.PrintErrorItems(r: TTestResult): string;
-var
-  i: Integer;
-  failure: TTestFailure;
-begin
-  result := '';
-  if r= nil then
-    Exit;
-
-  for i := 0 to r.ErrorCount-1 do begin
-    failure := r.Errors[i];
-    if Assigned(Failure) then
-      result := result + format('%3d) %s  %s'#13#10'          "%s"',
-                               [
-                               i+1,
-                               tiPadR(failure.failedTest.name, 20),
-                               tiPadR(failure.thrownExceptionName, 20),
-                               failure.thrownExceptionMessage
-                               ]) + CRLF + CRLF;
-  end;
-end;
-
-function TtiTextTestListener.PrintFailureItems(r: TTestResult): string;
-var
-  i: Integer;
-  failure: TTestFailure;
-begin
-  result := '';
-  if r= nil then
-    Exit;
-
-  for i := 0 to r.FailureCount-1 do begin
-    failure := r.Failures[i];
-    if Assigned(Failure) then
-    result := result + format('%3d) %s  %s'#13#10'          "%s"',
-                               [
-                               i+1,
-                               tiPadR(failure.failedTest.name, 20),
-                               tiPadR(failure.thrownExceptionName, 20),
-                               failure.thrownExceptionMessage
-                               ]) + CRLF + CRLF;
   end;
 end;
 
