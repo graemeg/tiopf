@@ -14,13 +14,9 @@ uses
 
 type
 
-  TTestPersistenceLayers = class(TtiTestCaseWithPersistenceLayer)
+  TTestPersistenceLayers = class(TtiTestCase)
   private
-    procedure LoadAllPersistenceLayers;
     procedure CheckLoadedPerLayerCount;
-  protected
-    procedure   SetUp; override;
-    procedure   TearDown; override;
   published
     procedure   ConfirmStaticLinking;
     procedure   DefaultPersistenceLayerName;
@@ -181,10 +177,10 @@ begin
   end;
 end;
 
-  procedure TTestPersistenceLayers.ConfirmStaticLinking;
-  begin
-    CheckLoadedPerLayerCount;
-  end;
+procedure TTestPersistenceLayers.ConfirmStaticLinking;
+begin
+  CheckLoadedPerLayerCount;
+end;
 
 procedure TTestPersistenceLayers.CheckLoadedPerLayerCount;
 var
@@ -199,25 +195,6 @@ begin
     Dec(lLayerCount);
   CheckEquals(lSetupCount, lLayerCount,
             'gTestSetupDataFactory.Count <> gTIOPFManager.PersistenceLayers.Count');
-end;
-
-
-procedure TTestPersistenceLayers.SetUp;
-begin
-  LoadAllPersistenceLayers;
-end;
-
-
-procedure TTestPersistenceLayers.LoadAllPersistenceLayers;
-begin
-  ConfirmStaticLinking;
-end;
-
-
-procedure TTestPersistenceLayers.TearDown;
-begin
-  ConfirmStaticLinking;
-  inherited;
 end;
 
 procedure TTestPersistenceLayers.DefaultPersistenceLayerName;
