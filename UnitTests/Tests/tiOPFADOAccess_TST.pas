@@ -19,6 +19,7 @@ type
   published
     procedure ConnectDatabase; override;
     procedure CreateTIQuery_LayerName; override;
+    procedure CreateTIQuery_DatabaseClass; override;
   end;
 
   TTestTIDatabaseADOAccess = class(TTestTIDatabase)
@@ -183,6 +184,12 @@ end;
 procedure TTestTIPersistenceLayersADOAccess.ConnectDatabase;
 begin
   AllowedMemoryLeakSize:= 24;
+  inherited;
+end;
+
+procedure TTestTIPersistenceLayersADOAccess.CreateTIQuery_DatabaseClass;
+begin
+  AllowedMemoryLeakSize:= 32; 
   inherited;
 end;
 

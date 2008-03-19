@@ -45,6 +45,7 @@ type
     class function PersistenceLayerName: string; override;
   published
     procedure ReadWriteString255; override;
+    procedure ReadWriteString256; override;
   end;
 
   TTestAutomappingCriteriaBDEParadox = class(TTestAutomappingCriteria)
@@ -172,6 +173,12 @@ begin
 end;
 
 procedure TTestTIAutoMapOperationBDEParadox.ReadWriteString255;
+begin
+  AllowedMemoryLeakSize:= 8;
+  inherited;
+end;
+
+procedure TTestTIAutoMapOperationBDEParadox.ReadWriteString256;
 begin
   AllowedMemoryLeakSize:= 8;
   inherited;

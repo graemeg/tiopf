@@ -33,7 +33,7 @@ type
     procedure   ThreadedDBConnectionPool; virtual;
 
     procedure   CreateTIQuery_LayerName; virtual;
-    procedure   CreateTIQuery_DatabaseClass;
+    procedure   CreateTIQuery_DatabaseClass; virtual;
     procedure   CreateTIDatabase;
 
     // ToDo: There are many tests on TtiPersistenceLayerList that must be tested here
