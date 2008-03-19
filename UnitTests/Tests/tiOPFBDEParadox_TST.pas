@@ -43,6 +43,8 @@ type
   TTestTIAutoMapOperationBDEParadox = class(TTestTIAutoMapOperation)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure ReadWriteString255; override;
   end;
 
   TTestAutomappingCriteriaBDEParadox = class(TTestAutomappingCriteria)
@@ -109,7 +111,7 @@ end;
 
 procedure TTestTIDatabaseBDEParadox.CreateTableDropTable;
 begin
-//  SetAllowedLeakArray([504]);
+  SetAllowedLeakArray([504]);
   inherited;
 end;
 
@@ -140,7 +142,7 @@ end;
 
 procedure TTestTIPersistenceLayersBDEParadox.tiOPFManager_ConnectDatabase;
 begin
-  SetAllowedLeakArray([136]);
+  SetAllowedLeakArray([136, 176]);
   inherited;
 end;
 
@@ -167,6 +169,12 @@ end;
 class function TTestTIQueryBDEParadox.PersistenceLayerName: string;
 begin
   Result := cTIPersistBDEParadox;
+end;
+
+procedure TTestTIAutoMapOperationBDEParadox.ReadWriteString255;
+begin
+  AllowedMemoryLeakSize:= 8;
+  inherited;
 end;
 
 { TTestTIAutoMapOperationBDEParadox }

@@ -367,7 +367,6 @@ procedure TtiTextTestListener.TestingStarts;
       begin
         LSelected := True;
         writeln2Short('  ' + GTIOPFTestManager.Items[i].PersistenceLayerName, [tlwtFile, tlwtConsole]);
-          writeln2Short('', [tlwtFile, tlwtConsole]);
       end;
     end;
     if not LSelected then

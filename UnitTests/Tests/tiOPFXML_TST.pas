@@ -15,6 +15,8 @@ type
   TTestTIPersistenceLayersXML = class(TTestTIPersistenceLayers)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure   ConnectDatabase; override;
   end;
 
   TTestTIDatabaseXML = class(TTestTIDatabase)
@@ -32,9 +34,11 @@ type
     procedure FieldByNameVSFieldByIndex; override;
   end;
 
-  TTestTIAutoMapOperationXM = class(TTestTIAutoMapOperation)
+  TTestTIAutoMapOperationXML = class(TTestTIAutoMapOperation)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure CollectionReadPKThreaded; override;
   end;
 
   TTestTIOIDPersistentGUIDXML = class(TTestTIOIDPersistentGUID)
@@ -45,6 +49,8 @@ type
   TTestTIOIDPersistentIntegerXML = class(TTestTIOIDPersistentInteger)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; virtual;
   end;
 
 procedure RegisterTests;
@@ -69,7 +75,7 @@ begin
   tiRegisterPersistenceTest(TTestTIPersistenceLayersXML);
   tiRegisterPersistenceTest(TTestTIDatabaseXML);
   tiRegisterPersistenceTest(TTestTIQueryXML);
-  tiRegisterPersistenceTest(TTestTIAutoMapOperationXM);
+  tiRegisterPersistenceTest(TTestTIAutoMapOperationXML);
   tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDXML);
   tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerXML);
 end;
@@ -118,6 +124,12 @@ end;
 
 { TTestTIPersistenceLayersXML }
 
+procedure TTestTIPersistenceLayersXML.ConnectDatabase;
+begin
+  AllowedMemoryLeakSize:= 24;
+  inherited;
+end;
+
 class function TTestTIPersistenceLayersXML.PersistenceLayerName: string;
 begin
   Result := cTIPersistXML;
@@ -128,9 +140,15 @@ begin
   Result := cTIPersistXML;
 end;
 
-{ TTestTIAutoMapOperationXM }
+{ TTestTIAutoMapOperationXML }
 
-class function TTestTIAutoMapOperationXM.PersistenceLayerName: string;
+procedure TTestTIAutoMapOperationXML.CollectionReadPKThreaded;
+begin
+  AllowedMemoryLeakSize:= 32;
+  inherited;
+end;
+
+class function TTestTIAutoMapOperationXML.PersistenceLayerName: string;
 begin
   Result := cTIPersistXML;
 end;
@@ -147,6 +165,12 @@ end;
 class function TTestTIOIDPersistentIntegerXML.PersistenceLayerName: string;
 begin
   Result := cTIPersistXML;
+end;
+
+procedure TTestTIOIDPersistentIntegerXML.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+begin
+  SetAllowedLeakArray([32]);
+  inherited;
 end;
 
 end.

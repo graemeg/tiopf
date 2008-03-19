@@ -23,9 +23,6 @@ type
     procedure   FindByLayerName;
     procedure   FindByTIDatabaseClass;
     procedure   IsLoaded;
-    procedure   CreateTIQuery_LayerName;
-    procedure   CreateTIQuery_DatabaseClass;
-    procedure   CreateTIDatabase;
 
   end;
 
@@ -54,74 +51,6 @@ end;
 
 
 { TTestPersistenceLayers }
-
-procedure TTestPersistenceLayers.CreateTIDatabase;
-var
-  i            : integer;
-  LPersistenceLayerName : string;
-  LPersistenceLayer : TtiPersistenceLayer ;
-  LDatabase    : TtiDatabase;
-begin
-  CheckLoadedPerLayerCount;
-  for i := 0 to GTIOPFTestManager.Count - 1 do
-  begin
-    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
-    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
-    LDatabase := GTIOPFManager.PersistenceLayers.CreateTIDatabase(LPersistenceLayerName);
-    try
-      CheckNotNull(LDatabase, 'Failed creating TtiDatabase for <' + LPersistenceLayerName + '>');
-      CheckIs(LDatabase, LPersistenceLayer.DatabaseClass, 'Database wrong class');
-    finally
-      LDatabase.Free;
-    end;
-  end;
-end;
-
-
-procedure TTestPersistenceLayers.CreateTIQuery_DatabaseClass;
-var
-  i : integer;
-  LPersistenceLayerName   : string;
-  LPersistenceLayer : TtiPersistenceLayer ;
-  LQuery : TtiQuery;
-begin
-  CheckLoadedPerLayerCount;
-  for i := 0 to GTIOPFTestManager.Count - 1 do
-  begin
-    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
-    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
-    LQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayer.DatabaseClass);
-    try
-      CheckNotNull(LQuery, 'Failed creating TtiQuery for <' + LPersistenceLayerName + '>');
-      CheckIs(LQuery, LPersistenceLayer.QueryClass, 'Query wrong class');
-    finally
-      LQuery.Free;
-    end;
-  end;
-end;
-
-
-procedure TTestPersistenceLayers.CreateTIQuery_LayerName;
-var
-  i : integer;
-  LPersistenceLayerName   : string;
-  LPersistenceLayer : TtiPersistenceLayer ;
-  lQuery : TtiQuery;
-begin
-  CheckLoadedPerLayerCount;
-  for i := 0 to GTIOPFTestManager.Count - 1 do
-  begin
-    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
-    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
-    lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayerName);
-    try
-      CheckNotNull(lQuery, 'Failed creating TtiQuery for <' + LPersistenceLayerName + '>');
-      CheckIs(lQuery, LPersistenceLayer.QueryClass, 'Query wrong class');
-    finally
-      lQuery.Free;
-    end;
-  end;
-end;
 
 
 procedure TTestPersistenceLayers.FindByLayerName;

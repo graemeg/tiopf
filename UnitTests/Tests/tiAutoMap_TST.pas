@@ -1528,18 +1528,19 @@ type
     end;
   end;
 
-
 procedure TTestTIAutoMapOperation.CollectionReadPKThreaded;
 var
   LThread: TtiObjectyListForTestingThread;
 begin
-  InserTtiObjectListForTesting(1, 1);
-  LThread:= TtiObjectyListForTestingThread.Create(Self, DatabaseName, PersistenceLayerName, 1);
-  LThread.Resume;
-  LThread.WaitFor;
-  LThread.Free;
-  CheckEquals(1, DBConnectionPool.Count);
-  CheckEquals(0, DBConnectionPool.CountLocked);
+  if PersistenceLayerSupportsMultiUser then
+  begin
+    InserTtiObjectListForTesting(1, 1);
+    LThread:= TtiObjectyListForTestingThread.Create(Self, DatabaseName, PersistenceLayerName, 1);
+    LThread.Resume;
+    LThread.WaitFor;
+    LThread.Free;
+  end else
+    Check(True);
 end;
 
 procedure TTestTIAutoMapFramework.TestClassDBCollections_IsCollection;

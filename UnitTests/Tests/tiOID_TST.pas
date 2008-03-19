@@ -49,6 +49,10 @@ type
   TTestTIOIDPersistentGUID = class(TTestTIOIDPersistent)
   protected
     procedure SetUp; override;
+  published
+    procedure TtiNextOIDGeneratorAssignNextOIDSingleUser; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDThreaded; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; override;
   end;
 
   TTestTIOIDPersistentInteger = class(TTestTIOIDPersistent)
@@ -663,27 +667,25 @@ procedure TTestTIOIDPersistent.TtiNextOIDGeneratorAssignNextOIDMultiUser;
   end;
 
 var
-  LNumThreads: byte;
   LList:       TtiThreadList;
   i:           integer;
 const
   CNumThreads = 10; // 3 is the minimum for testing, 10 will give a more indepth test
 begin
-  SetAllowedLeakArray([32, 56]); // CoInitialize
-
-  LNumThreads := tiIf(PersistenceLayerSupportsMultiUser, CNumThreads, 1);
-  LList       := TtiThreadList.Create(True);
-  try
-    for i := 0 to LNumThreads - 1 do
-      LList.Add(TtiOIDGeneratorThread.Create(FOIDGeneratorClass, i, CRepeatCount, DatabaseName, PersistenceLayerName));
-    LList.ResumeAll;
-    LList.WaitForAll;
-    for i := 0 to LList.Count - 1 do
-      _CheckForDuplicates(Self, LList.Items[i] as TtiOIDGeneratorThread);
-  finally
-    LList.Free;
+  if PersistenceLayerSupportsMultiUser then
+  begin
+    LList       := TtiThreadList.Create(True);
+    try
+      for i := 0 to CNumThreads - 1 do
+        LList.Add(TtiOIDGeneratorThread.Create(FOIDGeneratorClass, i, CRepeatCount, DatabaseName, PersistenceLayerName));
+      LList.ResumeAll;
+      LList.WaitForAll;
+      for i := 0 to LList.Count - 1 do
+        _CheckForDuplicates(Self, LList.Items[i] as TtiOIDGeneratorThread);
+    finally
+      LList.Free;
+    end;
   end;
-  FOIDList.Clear;
   Check(True); // Suppress DUnit2 warning
 end;
 
@@ -720,13 +722,16 @@ procedure TTestTIOIDPersistent.TtiNextOIDGeneratorAssignNextOIDThreaded;
 var
   LThread: TtiOIDGeneratorThread;
 begin
-  SetAllowedLeakArray([32, 56]); // CoInitialize
-  LThread:= TtiOIDGeneratorThread.Create(FOIDGeneratorClass, 0, CRepeatCount, DatabaseName, PersistenceLayerName);
-  try
-    LThread.Resume;
-    LThread.WaitFor;
-  finally
-    LThread.Free;
+  if PersistenceLayerSupportsMultiUser then
+  begin
+    SetAllowedLeakArray([32, 56]); // CoInitialize
+    LThread:= TtiOIDGeneratorThread.Create(FOIDGeneratorClass, 0, CRepeatCount, DatabaseName, PersistenceLayerName);
+    try
+      LThread.Resume;
+      LThread.WaitFor;
+    finally
+      LThread.Free;
+    end;
   end;
   Check(True); // Suppress DUnit2 warning
 end;
@@ -995,8 +1000,8 @@ begin
   inherited;
   CreateNextOIDStrTable; // Required here for testing persistence of GUID OID
   FOIDGeneratorClass    := TtiOIDGeneratorGUID;
-  AllowedMemoryLeakSize := 56; // CoInitialize
 end;
+
 procedure TTestTIOIDPersistent.CreateNextOIDIntTable;
 var
   LTable : TtiDBMetaDataTable;
@@ -1044,8 +1049,24 @@ begin
   finally
     lParams.Free;
   end;
-
 end;
 
+procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+begin
+  SetAllowedLeakArray([32, 208, 265]);
+  inherited;
+end;
+
+procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDSingleUser;
+begin
+  SetAllowedLeakArray([32, 208, 265]);
+  inherited;
+end;
+
+procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDThreaded;
+begin
+  SetAllowedLeakArray([32, 208, 265]);
+  inherited;
+end;
 
 end.

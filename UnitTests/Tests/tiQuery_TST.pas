@@ -19,38 +19,6 @@ uses
 
 type
 
-  // Test the meta data objects. No database access required.
-  TTestTIMetaData = class(TtiTestCase)
-  published
-    procedure DBMetaDataAdd;
-    procedure DBMetaDataFindByTableName;
-    procedure MetaDataTableAdd;
-    procedure MetaDataTableAddField;
-    procedure MetaDataTableFindByFieldName;
-    procedure MetaDataTableMaxFieldNameWidth;
-    procedure MetaDataFieldClone;
-    procedure MetaDataTableClone;
-  end;
-
-
-  TTestTIQueryParams = class(TtiTestCase)
-  published
-    procedure TestCheckStreamContentsSame;
-    procedure AsString;
-    procedure AsVariant_String;
-    procedure AsInteger;
-    procedure AsVariant_Integer;
-    procedure AsFloat;
-    procedure AsVariant_Float;
-    procedure AsDateTime;
-    procedure AsVariant_DateTime;
-    procedure AsBoolean;
-    procedure AsVariant_Boolean;
-    procedure AsStream;
-    procedure ParamByName;
-    procedure ParamIsNull;
-  end;
-
   TTestTIPersistenceLayers = class(TtiTestCaseWithPersistenceLayer)
   protected
     procedure DoThreadedDBConnectionPool(
@@ -63,6 +31,10 @@ type
     procedure   DBConnectionPoolConnectDisconnect; virtual;
     procedure   NonThreadedDBConnectionPool; virtual;
     procedure   ThreadedDBConnectionPool; virtual;
+
+    procedure   CreateTIQuery_LayerName; virtual;
+    procedure   CreateTIQuery_DatabaseClass;
+    procedure   CreateTIDatabase;
 
     // ToDo: There are many tests on TtiPersistenceLayerList that must be tested here
   end;
@@ -174,7 +146,39 @@ type
     procedure Next; virtual;
     procedure InsertDeleteUpdate_Timing;
   end;
-  
+
+  // Test the meta data objects. No database access required.
+  TTestTIMetaData = class(TtiTestCase)
+  published
+    procedure DBMetaDataAdd;
+    procedure DBMetaDataFindByTableName;
+    procedure MetaDataTableAdd;
+    procedure MetaDataTableAddField;
+    procedure MetaDataTableFindByFieldName;
+    procedure MetaDataTableMaxFieldNameWidth;
+    procedure MetaDataFieldClone;
+    procedure MetaDataTableClone;
+  end;
+
+
+  TTestTIQueryParams = class(TtiTestCase)
+  published
+    procedure TestCheckStreamContentsSame;
+    procedure AsString;
+    procedure AsVariant_String;
+    procedure AsInteger;
+    procedure AsVariant_Integer;
+    procedure AsFloat;
+    procedure AsVariant_Float;
+    procedure AsDateTime;
+    procedure AsVariant_DateTime;
+    procedure AsBoolean;
+    procedure AsVariant_Boolean;
+    procedure AsStream;
+    procedure ParamByName;
+    procedure ParamIsNull;
+  end;
+
 procedure RegisterTests;
 
 const
@@ -926,20 +930,21 @@ procedure TTestTIPersistenceLayers.ThreadedDBConnectionPool;
 const
   CAlias = 'TestAliasName';
 begin
-  PersistenceLayer.DBConnectionPools.Connect(
-    CAlias,
-    TestSetupData.DBName,
-    TestSetupData.Username,
-    TestSetupData.Password,
-    '');
-  try
-    if PersistenceLayerSupportsMultiUser then
+  if PersistenceLayerSupportsMultiUser then
+  begin
+    PersistenceLayer.DBConnectionPools.Connect(
+      CAlias,
+      TestSetupData.DBName,
+      TestSetupData.Username,
+      TestSetupData.Password,
+      '');
+    try
       DoThreadedDBConnectionPool(PersistenceLayer.DefaultDBConnectionPool, CThreadCount)
-    else
-      DoThreadedDBConnectionPool(PersistenceLayer.DefaultDBConnectionPool, 1)
-  finally
-    PersistenceLayer.DBConnectionPools.Disconnect(CAlias);
-  end;
+    finally
+      PersistenceLayer.DBConnectionPools.Disconnect(CAlias);
+    end;
+  end else
+    Check(True);
 end;
 
 { TTestTIDatabase }
@@ -2146,13 +2151,56 @@ begin
   end;
 end;
 
+procedure TTestTIPersistenceLayers.CreateTIQuery_LayerName;
+var
+  LPersistenceLayerName   : string;
+  LPersistenceLayer : TtiPersistenceLayer ;
+  lQuery : TtiQuery;
+begin
+  LPersistenceLayerName := PersistenceLayerName;
+  LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+  lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayerName);
+  try
+    CheckNotNull(lQuery, 'Failed creating TtiQuery for <' + LPersistenceLayerName + '>');
+    CheckIs(lQuery, LPersistenceLayer.QueryClass, 'Query wrong class');
+  finally
+    lQuery.Free;
+  end;
+end;
+
+procedure TTestTIPersistenceLayers.CreateTIQuery_DatabaseClass;
+var
+  LPersistenceLayerName   : string;
+  LPersistenceLayer : TtiPersistenceLayer ;
+  LQuery : TtiQuery;
+begin
+  LPersistenceLayerName := PersistenceLayerName;
+  LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+  LQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayer.DatabaseClass);
+  try
+    CheckNotNull(LQuery, 'Failed creating TtiQuery for <' + LPersistenceLayerName + '>');
+    CheckIs(LQuery, LPersistenceLayer.QueryClass, 'Query wrong class');
+  finally
+    LQuery.Free;
+  end;
+end;
+
+procedure TTestTIPersistenceLayers.CreateTIDatabase;
+var
+  LPersistenceLayerName : string;
+  LPersistenceLayer : TtiPersistenceLayer ;
+  LDatabase    : TtiDatabase;
+begin
+  LPersistenceLayerName := PersistenceLayerName;
+  LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+  LDatabase := GTIOPFManager.PersistenceLayers.CreateTIDatabase(LPersistenceLayerName);
+  try
+    CheckNotNull(LDatabase, 'Failed creating TtiDatabase for <' + LPersistenceLayerName + '>');
+    CheckIs(LDatabase, LPersistenceLayer.DatabaseClass, 'Database wrong class');
+  finally
+    LDatabase.Free;
+  end;
+end;
+
+
 end.
-
-
-
-
-
-
-
-
-
