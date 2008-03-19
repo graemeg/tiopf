@@ -83,11 +83,15 @@ var
   LDatabaseClass: TtiDatabaseClass;
 begin
   LDatabaseClass:= PersistenceLayer.DatabaseClass;
-  LFileName := TestSetupData.DBName;
+  LFileName:= TempFileName('temp.xmllight');
   tiDeleteFile(LFileName);
   Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
-  LDatabaseClass.CreateDatabase(TestSetupData.DBName, TestSetupData.Username, TestSetupData.Password);
-  Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
+  LDatabaseClass.CreateDatabase(LFileName, '', '');
+  try
+    Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
+  finally
+    tiDeleteFile(LFileName);
+  end;
 end;
 
 procedure TTestTIDatabaseXMLLight.DatabaseExists;
@@ -96,17 +100,19 @@ var
   LDatabaseClass: TtiDatabaseClass;
 begin
   LDatabaseClass:= PersistenceLayer.DatabaseClass;
-  LFileName := TestSetupData.DBName;
+  LFileName:= TempFileName('temp.xmllight');
   tiDeleteFile(LFileName);
   Check(not FileExists(LFileName), '<' + LFileName + '> Exists when it should not');
-  Check(not LDatabaseClass.DatabaseExists(TestSetupData.DBName, TestSetupData.Username,
-    TestSetupData.Password),
+  Check(not LDatabaseClass.DatabaseExists(LFileName, '', ''),
     'FDatabaseClass.DatabaseExists()=true when it should =false');
   tiStringToFile('test', LFileName);
-  Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
-  Check(LDatabaseClass.DatabaseExists(TestSetupData.DBName, TestSetupData.Username,
-    TestSetupData.Password),
-    'FDatabaseClass.DatabaseExists()=false when it should =true');
+  try
+    Check(FileExists(LFileName), '<' + LFileName + '> Does not exists when it should');
+    Check(LDatabaseClass.DatabaseExists(LFileName, '', ''),
+      'FDatabaseClass.DatabaseExists()=false when it should =true');
+  finally
+    tiDeleteFile(LFileName);
+  end;
 end;
 
 class function TTestTIDatabaseXMLLight.PersistenceLayerName: string;
