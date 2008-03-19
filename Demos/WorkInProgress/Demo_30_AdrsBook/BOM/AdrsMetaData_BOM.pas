@@ -294,7 +294,7 @@ begin
     lTable.AddInstance('State', qfkString, 30);
     lTable.AddInstance('PCode', qfkString, 20);
     lTable.AddInstance('Country', qfkString, 30);
-    gTIOPFManager.CreateTable(lTable);
+    GTIOPFManager.CreateTable(lTable);
   finally
     lTable.Free;
   end;
@@ -310,7 +310,7 @@ begin
     lTable.AddInstance('OID', qfkString, 36);
     lTable.AddInstance('Company_Name', qfkString, 60);
     lTable.AddInstance('Notes', qfkString, 255);
-    gTIOPFManager.CreateTable(lTable);
+    GTIOPFManager.CreateTable(lTable);
   finally
     lTable.Free;
   end;
@@ -327,7 +327,7 @@ begin
     lTable.AddInstance('Owner_OID', qfkString,  36);
     lTable.AddInstance('EAdrs_Type', qfkString, 36);
     lTable.AddInstance('EAdrs_Text', qfkString, 60);
-    gTIOPFManager.CreateTable(lTable);
+    GTIOPFManager.CreateTable(lTable);
   finally
     lTable.Free;
   end;
@@ -342,7 +342,7 @@ begin
     lTable.Name:= cTableName_LookupListName;
     lTable.AddInstance('OID', qfkString, 36);
     lTable.AddInstance('List_Name', qfkString, 10);
-    gTIOPFManager.CreateTable(lTable);
+    GTIOPFManager.CreateTable(lTable);
   finally
     lTable.Free;
   end;
@@ -358,7 +358,7 @@ begin
     lTable.AddInstance('OID', qfkString, 36);
     lTable.AddInstance('Owner_OID', qfkString, 36);
     lTable.AddInstance('Item_Text', qfkString, 30);
-    gTIOPFManager.CreateTable(lTable);
+    GTIOPFManager.CreateTable(lTable);
   finally
     lTable.Free;
   end;
@@ -378,7 +378,7 @@ begin
     lTable.AddInstance('Title', qfkString, 10);
     lTable.AddInstance('Initials', qfkString, 10);
     lTable.AddInstance('Notes', qfkString, 255);
-    gTIOPFManager.CreateTable(lTable);
+    GTIOPFManager.CreateTable(lTable);
   finally
     lTable.Free;
   end;
@@ -393,22 +393,22 @@ end;
 procedure TAdrsMetaData.DropTables;
 begin
   if TableExists_LookUpListName then
-    gTIOPFManager.DropTable(cTableName_LookupListName);
+    GTIOPFManager.DropTable(cTableName_LookupListName);
 
   if TableExists_LookUpListValue then
-    gTIOPFManager.DropTable(cTableName_LookupListValue);
+    GTIOPFManager.DropTable(cTableName_LookupListValue);
 
   if TableExists_Company then
-    gTIOPFManager.DropTable(cTableName_Company);
+    GTIOPFManager.DropTable(cTableName_Company);
 
   if TableExists_Person then
-    gTIOPFManager.DropTable(cTableName_Person);
+    GTIOPFManager.DropTable(cTableName_Person);
 
   if TableExists_EAdrs then
-    gTIOPFManager.DropTable(cTableName_EAdrs);
+    GTIOPFManager.DropTable(cTableName_EAdrs);
 
   if TableExists_Adrs then
-    gTIOPFManager.DropTable(cTableName_Adrs);
+    GTIOPFManager.DropTable(cTableName_Adrs);
 
 end;
 
@@ -418,13 +418,13 @@ var
   i: integer;
 begin
   FDBMetaData.Clear;
-  lPooledDB:= gTIOPFManager.DefaultDBConnectionPool.Lock;
+  lPooledDB:= GTIOPFManager.DefaultDBConnectionPool.Lock;
   try
     lPooledDB.Database.ReadMetaDataTables(FDBMetaData);
     for i:= 0 to FDBMetaData.Count - 1 do
       lPooledDB.Database.ReadMetaDataFields(FDBMetaData.Items[i]);
   finally
-    gTIOPFManager.DefaultDBConnectionPool.UnLock(lPooledDB);
+    GTIOPFManager.DefaultDBConnectionPool.UnLock(lPooledDB);
   end;
 end;
 

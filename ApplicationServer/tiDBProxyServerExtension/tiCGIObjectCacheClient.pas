@@ -151,11 +151,11 @@ end;
 //    LFileName := tiGetTempFile('xml');
 //    tiStringToFile(AStr, LFileName);
 //    try
-//      gTIOPFManager.ConnectDatabase( LFileName, 'null', 'null', lParams, cTIPersistXMLLight);
+//      GTIOPFManager.ConnectDatabase( LFileName, 'null', 'null', lParams, cTIPersistXMLLight);
 //      try
-//        gTIOPFManager.VisitorManager.Execute(LO.VisitorGroupName, AData, LFileName, cTIPersistXMLLight ) ;
+//        GTIOPFManager.VisitorManager.Execute(LO.VisitorGroupName, AData, LFileName, cTIPersistXMLLight ) ;
 //      finally
-//        gTIOPFManager.DisconnectDatabase(LFileName, cTIPersistXMLLight);
+//        GTIOPFManager.DisconnectDatabase(LFileName, cTIPersistXMLLight);
 //      end;
 //    finally
 //      SysUtils.DeleteFile(LFileName);
@@ -175,11 +175,11 @@ begin
   lStart := GetTickCount;
   lParams := tiMakeXMLLightParams( True, cgsCompressZLib, optDBSizeOn, xfnsInteger );
   lFileName := GetCachedFileDirAndName;
-  gTIOPFManager.ConnectDatabase( lFileName, 'null', 'null', lParams, cTIPersistXMLLight);
+  GTIOPFManager.ConnectDatabase( lFileName, 'null', 'null', lParams, cTIPersistXMLLight);
   try
-    gTIOPFManager.VisitorManager.Execute( VisitorGroupName, AData, lFileName, cTIPersistXMLLight ) ;
+    GTIOPFManager.VisitorManager.Execute( VisitorGroupName, AData, lFileName, cTIPersistXMLLight ) ;
   finally
-    gTIOPFManager.DisconnectDatabase(lFileName, cTIPersistXMLLight);
+    GTIOPFManager.DisconnectDatabase(lFileName, cTIPersistXMLLight);
   end;
   Log('  :) Finished loading ' + AData.ClassName +
       '. (' + IntToStr(GetTickCount - lStart) + 'ms)', lsQueryTiming);

@@ -219,12 +219,12 @@ begin
 end;
 
 Initialization
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerADOSQLServer);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-   gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistADOSQLServer);
+   GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistADOSQLServer);
 
 end.
 

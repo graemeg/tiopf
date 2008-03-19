@@ -33,7 +33,7 @@ uses
 procedure TFormConnectToDatabase.Button1Click(Sender: TObject);
 begin
   try
-    gTIOPFManager.DefaultPersistenceLayerName:= PersistenceLayerName;
+    GTIOPFManager.DefaultPersistenceLayerName:= PersistenceLayerName;
     if not DatabaseExists then
       CreateDatabase;
     ConnectToDatabase;
@@ -46,13 +46,13 @@ end;
 
 function TFormConnectToDatabase.DatabaseExists: boolean;
 begin
-  Assert(gTIOPFManager.DefaultPerLayer.TestValid, CTIErrorInvalidObject);
-  result:= gTIOPFManager.DefaultPerLayer.DatabaseExists(DatabaseName, UserName, Password);
+  Assert(GTIOPFManager.DefaultPerLayer.TestValid, CTIErrorInvalidObject);
+  result:= GTIOPFManager.DefaultPerLayer.DatabaseExists(DatabaseName, UserName, Password);
 end;
 
 procedure TFormConnectToDatabase.ConnectToDatabase;
 begin
-  gTIOPFManager.ConnectDatabase(
+  GTIOPFManager.ConnectDatabase(
     DatabaseName,
     UserName,
     Password);
@@ -60,8 +60,8 @@ end;
 
 procedure TFormConnectToDatabase.CreateDatabase;
 begin
-  Assert(gTIOPFManager.DefaultPerLayer.TestValid, CTIErrorInvalidObject);
-  gTIOPFManager.DefaultPerLayer.CreateDatabase(DatabaseName, UserName, Password);
+  Assert(GTIOPFManager.DefaultPerLayer.TestValid, CTIErrorInvalidObject);
+  GTIOPFManager.DefaultPerLayer.CreateDatabase(DatabaseName, UserName, Password);
 end;
 
 procedure TFormConnectToDatabase.btnCancelClick(Sender: TObject);

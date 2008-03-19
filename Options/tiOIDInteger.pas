@@ -203,7 +203,7 @@ begin
   try
     if FDirty then
     begin
-      gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData,
+      GTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData,
         ADatabaseAliasName, APersistenceLayerName);
       FDirty := False;
     end;
@@ -265,7 +265,7 @@ end;
 procedure TVisDBNextOIDAmblerRead.Execute(const AData: TtiVisited);
 begin
 
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   inherited Execute(AData);
@@ -292,7 +292,7 @@ procedure TVisDBNextOIDAmblerUpdate.Execute(const AData: TtiVisited);
 var
   lParams: TtiQueryParams;
 begin
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   inherited Execute(AData);
@@ -320,7 +320,7 @@ procedure TVisDBNextOIDSql.Execute(const AData: TtiVisited);
 var
   i: integer;
 begin
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit;
 
   inherited Execute(AData);
@@ -363,8 +363,8 @@ begin
 end;
 
 initialization
-  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDSql);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDSql);
 
 end.

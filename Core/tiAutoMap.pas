@@ -1391,7 +1391,7 @@ begin
   Result :=
     ((Visited.ObjectState = posEmpty) or
     (Visited.ObjectState = posPK)) and
-    (gTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
+    (GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
     TtiClass(Visited.ClassType)));
 end;
 
@@ -1408,7 +1408,7 @@ begin
   lCollections    := TList.Create;
   try
     lCollections.Clear;
-    gTIOPFManager.ClassDBMappingMgr.Collections.FindByCollection(
+    GTIOPFManager.ClassDBMappingMgr.Collections.FindByCollection(
       FVisitedClassType,
       lCollections);
     ReadDataForParentClass(TtiClassDBCollection(lCollections.Items[0]));
@@ -1448,7 +1448,7 @@ procedure TVisAutoCollectionRead.ReadDataForChildClasses(ACollection: TtiClassDB
   begin
     Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
 
-    gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+    GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
       TtiClass(FClassDBCollection.PerObjAbsClass), FWhereAttrColMaps);
 
     // Remove any mappings that are not foreign key mappings
@@ -1574,7 +1574,7 @@ procedure TVisAutoCollectionRead.MapRowToObject(ACheckForDuplicates: boolean);
     else
       AIndex := -1;
     {$ELSE}
-    lOID := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
+    lOID := GTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
     try
       lOID.AssignFromTIQuery(lPKColName, Query);
       lData  := TtiObjectList(Visited).Find(lOID);
@@ -1628,7 +1628,7 @@ begin
 
   // Can do better than this rather messy call
   // (If its a collection, or it owns objects - not totally reliable
-  if ((gTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(FClassToCreate)) or
+  if ((GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(FClassToCreate)) or
     (_DoesOwnObjects(lDataNew))) {or
       (FHasParent)} then
     lDataNew.ObjectState := posPK
@@ -1657,7 +1657,7 @@ begin
   lClassMaps := TtiClassMaps.Create;
   try
     lClassMaps.OwnsObjects := False;
-    gTIOPFManager.ClassDBMappingMgr.ClassMaps.FindAllParents(
+    GTIOPFManager.ClassDBMappingMgr.ClassMaps.FindAllParents(
       FVisitedClassType, lClassMaps);
     // For Create and Update
     // ToDo: This should be a case
@@ -1689,7 +1689,7 @@ var
   i: integer;
 begin
   Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
-  gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
     FVisitedClassType, FAttrColMaps);
 
   // Remove any mappings that are primary key mappings
@@ -1710,7 +1710,7 @@ var
   i: integer;
 begin
   Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
-  gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
     FVisitedClassType, FWhereAttrColMaps);
   // Remove any mappings that are not primary key mappings
   for i := FWhereAttrColMaps.Count - 1 downto 0 do
@@ -1724,7 +1724,7 @@ end;
 function TVisAutoDelete.AcceptVisitor: boolean;
 begin
   Result := (Visited.ObjectState = posDelete) and
-    (gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
+    (GTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
     TtiClass(Visited.ClassType)));
 end;
 
@@ -1749,7 +1749,7 @@ end;
 function TVisAutoUpdate.AcceptVisitor: boolean;
 begin
   Result := (Visited.ObjectState = posUpdate) and
-    (gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
+    (GTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
     TtiClass(Visited.ClassType)));
 end;
 
@@ -1770,7 +1770,7 @@ end;
 function TVisAutoCreate.AcceptVisitor: boolean;
 begin
   Result := (Visited.ObjectState = posCreate) and
-    (gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
+    (GTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(
     TtiClass(Visited.ClassType)));
 end;
 
@@ -1782,7 +1782,7 @@ end;
 procedure TVisAutoCreate.GetAttrColMaps;
 begin
   Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
-  gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
     FVisitedClassType, FAttrColMaps);
   AddToParams(FParams, FAttrColMaps, Visited);
 end;
@@ -1799,7 +1799,7 @@ begin
   Result :=
     ((Visited.ObjectState = posEmpty) or
     (Visited.ObjectState = posPK)) and
-    (gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(TtiClass(Visited.ClassType)));
+    (GTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(TtiClass(Visited.ClassType)));
 end;
 
 procedure TVisAutoReadThis.DoExecute;
@@ -1840,7 +1840,7 @@ begin
   lClassMaps := TtiClassMaps.Create;
   try
     lClassMaps.OwnsObjects := False;
-    gTIOPFManager.ClassDBMappingMgr.ClassMaps.FindAllParents(
+    GTIOPFManager.ClassDBMappingMgr.ClassMaps.FindAllParents(
       FVisitedClassType, lClassMaps);
     for i := 0 to lClassMaps.Count - 1 do
     begin
@@ -1868,7 +1868,7 @@ begin
       'Object state on ' + Visited.ClassName +
       ' not posEmpty or posPK it''s ' +
       AVisited.ObjectStateAsString);
-    if (gTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
+    if (GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
       TtiClass(Visited.ClassType))) then
       AVisited.ObjectState := posPK
     else
@@ -1881,7 +1881,7 @@ var
   i: integer;
 begin
   Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
-  gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
     FVisitedClassType, FAttrColMaps);
   for i := FAttrColMaps.Count - 1 downto 0 do
     if ((pktFK in FAttrColMaps.Items[i].DBColMap.PKInfo)) then
@@ -1891,7 +1891,7 @@ end;
 procedure TVisAutoReadThis.GetWhereAttrColMaps;
 begin
   Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
-  gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllPKMappingsByMapToClass(
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllPKMappingsByMapToClass(
     FVisitedClassType, FWhereAttrColMaps);
   AddToParams(FWhere, FWhereAttrColMaps, Visited);
 end;
@@ -2015,11 +2015,11 @@ var
 begin
   Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
 
-  gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
     TtiClass(FClassDBCollection.PerObjAbsClass), FAttrColMaps);
 
   FClassToCreate := FAttrColMaps.Items[0].AttrMap.Owner.PerObjAbsClass;
-  FHasParent     := gTIOPFManager.ClassDBMappingMgr.ClassMaps.HasParent(FClassToCreate);
+  FHasParent     := GTIOPFManager.ClassDBMappingMgr.ClassMaps.HasParent(FClassToCreate);
 
   // If the class we are reading is a concrete class and it
   // has parents registered, the we should only read its
@@ -2045,7 +2045,7 @@ var
 begin
   Assert(FVisitedClassType <> NIL, 'FVisitedClassType = nil');
 
-  gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
     TtiClass(FClassDBCollection.PerObjAbsClass), FWhereAttrColMaps);
 
   // Remove any mappings that are not foreign key mappings
@@ -2091,7 +2091,7 @@ end;
  //procedure TVisAutoCollectionRead.Final;
  //begin
  //  if FSetObjectState then
- //    if (gTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
+ //    if (GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
  //       TtiClass(Visited.ClassType))) then
  //      Visited.ObjectState := posPK
  //    else

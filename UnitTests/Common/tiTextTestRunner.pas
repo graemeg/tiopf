@@ -391,9 +391,9 @@ procedure TtiTextTestListener.TestingStarts;
     {$ENDIF}
     write2Long('<h3>Persistence layers to be tested</h3>' + CrLf);
     write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + CrLf);
-    for i:= 0 to gTIOPFManager.PersistenceLayers.Count - 1 do
+    for i:= 0 to GTIOPFManager.PersistenceLayers.Count - 1 do
     begin
-      write2Long('<tr><td>' + gTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName + '</td></tr>' + CrLf);
+      write2Long('<tr><td>' + GTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName + '</td></tr>' + CrLf);
     end;
     Write2Long('</table>');
 

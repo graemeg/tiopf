@@ -68,7 +68,7 @@ begin
   tiRegisterPersistenceTest(TTestTIPersistenceLayersXMLLight);
   tiRegisterPersistenceTest(TTestTIDatabaseXMLLight);
   tiRegisterPersistenceTest(TTestTIQueryXMLLight);
-//  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDXMLLight);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDXMLLight);
   tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerXMLLight);
   tiRegisterPersistenceTest(TTestTIAutoMapOperationXMLLight);
 end;

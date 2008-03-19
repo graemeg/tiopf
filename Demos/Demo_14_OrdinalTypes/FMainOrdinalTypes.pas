@@ -77,7 +77,7 @@ begin
     lTableMetaData.AddField('OID',          qfkString,  36); // Using GUID OIDs
     lTableMetaData.AddField('Client_Name',  qfkString, 200);
     lTableMetaData.AddField('Sex',          qfkString,   7);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;
@@ -86,12 +86,12 @@ end;
 // Drop table
 procedure TFormMainOrdinalTypes.DropTables;
 begin
-  try gtiOPFManager.DropTable('Client') except end;
+  try GTIOPFManager.DropTable('Client') except end;
 end;
 
 procedure TFormMainOrdinalTypes.FormCreate(Sender: TObject);
 begin
-  Caption:= 'Connected to ' + gtiOPFManager.DefaultDBConnectionName;
+  Caption:= 'Connected to ' + GTIOPFManager.DefaultDBConnectionName;
   LV.AddColumn('ClientName',     vttkString, 'Client name', 200);
   LV.AddColumn('SexAsGUIString', vttkString, 'Sex', 80);
 

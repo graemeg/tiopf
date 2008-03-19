@@ -5,7 +5,7 @@
   persistence layers.
 
   eg:
-    gTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
         'sysdba', 'masterkey', '');
 
   TODO:
@@ -788,7 +788,7 @@ var
   lTable:    TtiDBMetaDataTable;
 begin
   lMetaData := (AData as TtiDBMetaData);
-  lQuery   := gTIOPFManager.RegPerLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery   := GTIOPFManager.RegPerLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -846,7 +846,7 @@ const
 begin
   lTable    := (AData as TtiDBMetaDataTable);
   lTableName := UpperCase(lTable.Name);
-  lQuery    := gTIOPFManager.RegPerLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery    := GTIOPFManager.RegPerLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -1039,11 +1039,11 @@ end;
 
 initialization
 
-  gTIOPFManager.RegPerLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.RegPerLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerSqldIB);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.RegPerLayers.__UnRegisterPersistenceLayer(cTIPersistSqldbIB);
+    GTIOPFManager.RegPerLayers.__UnRegisterPersistenceLayer(cTIPersistSqldbIB);
 
 end.

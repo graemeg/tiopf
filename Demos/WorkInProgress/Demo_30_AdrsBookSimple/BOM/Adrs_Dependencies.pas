@@ -16,7 +16,7 @@ implementation
 
 procedure ConnectToDatabase;
 begin
-  gTIOPFManager.ConnectDatabase('..\Data\AdrsBookSimple.fdb', 'sysdba', 'masterkey');
+  GTIOPFManager.ConnectDatabase('..\Data\AdrsBookSimple.fdb', 'sysdba', 'masterkey');
 end;
 
 end.

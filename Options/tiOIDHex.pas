@@ -292,7 +292,7 @@ begin
   try
     if FDirty then
     begin
-      gTIOPFManager.VisitorManager.Execute(CNextOIDHexReadHigh,
+      GTIOPFManager.VisitorManager.Execute(CNextOIDHexReadHigh,
         FNextOIDHexData, ADatabaseAliasName, APersistenceLayerName);
       FDirty        := False;
       FLastOIDValue := FNextOIDHexData.NextHexOID + FLowRangeMask;
@@ -328,7 +328,7 @@ end;
 
 procedure TVisDBNextOIDHexAmblerRead.Execute(const AData: TtiVisited);
 begin
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   inherited Execute(AData);
@@ -359,7 +359,7 @@ var
   lParams: TtiQueryParams;
   lHex:    ShortString;
 begin
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   inherited Execute(AData);
@@ -380,7 +380,7 @@ end;
 
 initialization
 
-  gTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerRead);
-  gTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerUpdate);
+  GTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerRead);
+  GTIOPFManager.VisitorManager.RegisterVisitor(CNextOIDHexReadHigh, TVisDBNextOIDHexAmblerUpdate);
 
 end.

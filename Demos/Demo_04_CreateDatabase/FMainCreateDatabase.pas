@@ -34,7 +34,7 @@ procedure TFormMainCreateDatabase.btnDatabaseExistsClick(Sender: TObject);
 var
   LPerLayer: TtiPersistenceLayer;
 begin
-  LPerLayer:= gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
+  LPerLayer:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
   Assert(LPerLayer<>nil, '"' + PersistenceLayerName + '" not registered');
   if LPerLayer.DatabaseExists(DatabaseName, UserName, Password)
   then
@@ -47,7 +47,7 @@ procedure TFormMainCreateDatabase.btnCreateDatabaseClick(Sender: TObject);
 var
   LPerLayer: TtiPersistenceLayer;
 begin
-  LPerLayer:= gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
+  LPerLayer:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
   Assert(LPerLayer<>nil, '"' + PersistenceLayerName + '" not registered');
   LPerLayer.CreateDatabase(DatabaseName, UserName, Password);
   ShowMessage('Database "' + DatabaseName + '" has been created.');

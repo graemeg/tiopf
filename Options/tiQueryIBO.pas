@@ -796,7 +796,7 @@ begin
     raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
     {
-      gTIOPFManager.ExecSQL(
+      GTIOPFManager.ExecSQL(
         'create table Test_Group ' +
         '  (OID                 Integer not null, ' +
         '    Group_Str_Field     VarChar(10), ' +
@@ -807,7 +807,7 @@ begin
     }
 
     {
-      gTIOPFManager.ExecSQL(
+      GTIOPFManager.ExecSQL(
         'create table Test_Item ' +
         '  (OID                Integer not null, ' +
         '    OID_Group          Integer, ' +
@@ -820,7 +820,7 @@ begin
         '    Primary Key (OID) ' +
         '   ) ');
 
-      gTIOPFManager.ExecSQL(
+      GTIOPFManager.ExecSQL(
         'create table Test_Bin ' +
         '  (OID                Integer not null, ' +
         '    Item_Binary_Field  blob sub_type 2, ' +
@@ -879,7 +879,7 @@ const
 begin
   lTable := (AData as TtiDBMetaDataTable);
   lTableName := lTable.Name;
-  lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery;
+  lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery;
   try
     StartTransaction;
     try
@@ -963,7 +963,7 @@ var
   lTable: TtiDBMetaDataTable;
 begin
   lMetaData := (AData as TtiDBMetaData);
-  lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery;
+  lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery;
   try
     StartTransaction;
     try
@@ -1095,12 +1095,12 @@ end;
 
 initialization
 
-  gTIOPFManager.PersistenceLayers.RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.RegisterPersistenceLayer(
     TtiPersistenceLayerIBO);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.UnRegisterPersistenceLayer (cTIPersistIBO);
+    GTIOPFManager.PersistenceLayers.UnRegisterPersistenceLayer (cTIPersistIBO);
 
 end.
 

@@ -702,7 +702,7 @@ var
 begin
   if TestSetupData.CanCreateDatabase then
   begin
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
+    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
     Assert(LPersistenceLayer <> nil, 'Unable to find registered persistence layer <' + PersistenceLayerName +'>');
     LDatabaseClass := LPersistenceLayer.DatabaseClass;
     if not LDatabaseClass.DatabaseExists(
@@ -1666,7 +1666,7 @@ end;
 procedure TtiTestCaseWithTestSetupData.SetUpOnce;
 begin
   inherited;
-  FTestSetupData:= gTIOPFTestManager.FindByPersistenceLayerName(PersistenceLayerName);
+  FTestSetupData:= GTIOPFTestManager.FindByPersistenceLayerName(PersistenceLayerName);
   Assert(FTestSetupData <> nil, 'FTestSetupData not assigned');
 end;
 

@@ -110,7 +110,7 @@ begin
   gFormMgr.ParentPnl:= pnlCntr;
   tiSaveWindowHandle(Self);
   Application.OnHint:= HintToStatusBar;
-  Caption:= Caption + ' - ' + gTIOPFManager.DefaultDBConnectionName;
+  Caption:= Caption + ' - ' + GTIOPFManager.DefaultDBConnectionName;
   SP.Align:= alClient;
   FSelectedClients:= TObjectList.Create(false);
   gINI.ReadFormState(self);

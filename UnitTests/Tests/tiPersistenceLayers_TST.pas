@@ -63,11 +63,11 @@ var
   LDatabase    : TtiDatabase;
 begin
   CheckLoadedPerLayerCount;
-  for i := 0 to gTIOPFTestManager.Count - 1 do
+  for i := 0 to GTIOPFTestManager.Count - 1 do
   begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
-    LDatabase := gTIOPFManager.PersistenceLayers.CreateTIDatabase(LPersistenceLayerName);
+    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    LDatabase := GTIOPFManager.PersistenceLayers.CreateTIDatabase(LPersistenceLayerName);
     try
       CheckNotNull(LDatabase, 'Failed creating TtiDatabase for <' + LPersistenceLayerName + '>');
       CheckIs(LDatabase, LPersistenceLayer.DatabaseClass, 'Database wrong class');
@@ -86,11 +86,11 @@ var
   LQuery : TtiQuery;
 begin
   CheckLoadedPerLayerCount;
-  for i := 0 to gTIOPFTestManager.Count - 1 do
+  for i := 0 to GTIOPFTestManager.Count - 1 do
   begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
-    LQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayer.DatabaseClass);
+    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    LQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayer.DatabaseClass);
     try
       CheckNotNull(LQuery, 'Failed creating TtiQuery for <' + LPersistenceLayerName + '>');
       CheckIs(LQuery, LPersistenceLayer.QueryClass, 'Query wrong class');
@@ -109,11 +109,11 @@ var
   lQuery : TtiQuery;
 begin
   CheckLoadedPerLayerCount;
-  for i := 0 to gTIOPFTestManager.Count - 1 do
+  for i := 0 to GTIOPFTestManager.Count - 1 do
   begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
-    lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayerName);
+    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(LPersistenceLayerName);
     try
       CheckNotNull(lQuery, 'Failed creating TtiQuery for <' + LPersistenceLayerName + '>');
       CheckIs(lQuery, LPersistenceLayer.QueryClass, 'Query wrong class');
@@ -131,10 +131,10 @@ var
   LPersistenceLayer : TtiPersistenceLayer ;
 begin
   CheckLoadedPerLayerCount;
-  for i := 0 to gTIOPFTestManager.Count - 1 do
+  for i := 0 to GTIOPFTestManager.Count - 1 do
   begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
     CheckNotNull(LPersistenceLayer, 'Can not find PersistenceLayerName <' + LPersistenceLayerName +'>');
     CheckEquals(LPersistenceLayer.PersistenceLayerName, LPersistenceLayerName, 'LPersistenceLayer.LayerName <> ' + LPersistenceLayerName);
   end;
@@ -150,14 +150,14 @@ var
   LClass : TtiDatabaseClass;
 begin
   CheckLoadedPerLayerCount;
-  for i := 0 to gTIOPFTestManager.Count - 1 do
+  for i := 0 to GTIOPFTestManager.Count - 1 do
   begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
     CheckNotNull(LPersistenceLayer, 'Can not find PersistenceLayerName <' + LPersistenceLayerName +'>');
     CheckEquals(LPersistenceLayer.PersistenceLayerName, LPersistenceLayerName, 'LPersistenceLayer.LayerName <> ' + LPersistenceLayerName);
     LClass := LPersistenceLayer.DatabaseClass;
-    LPersistenceLayer1 := gTIOPFManager.PersistenceLayers.FindByTIDatabaseClass(LClass);
+    LPersistenceLayer1 := GTIOPFManager.PersistenceLayers.FindByTIDatabaseClass(LClass);
     CheckNotNull(LPersistenceLayer1, 'Can not find PersistenceLayerName by class <' + LClass.ClassName + '>');
     CheckSame(LPersistenceLayer, LPersistenceLayer1);
   end;
@@ -170,10 +170,10 @@ var
   LPersistenceLayerName   : string;
 begin
   CheckLoadedPerLayerCount;
-  for i := 0 to gTIOPFTestManager.Count - 1 do
+  for i := 0 to GTIOPFTestManager.Count - 1 do
   begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
-    Check(gTIOPFManager.PersistenceLayers.IsLoaded(LPersistenceLayerName), 'Failed for <' + LPersistenceLayerName + '>');
+    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
+    Check(GTIOPFManager.PersistenceLayers.IsLoaded(LPersistenceLayerName), 'Failed for <' + LPersistenceLayerName + '>');
   end;
 end;
 
@@ -187,14 +187,14 @@ var
   lSetupCount : integer;
   lLayerCount : integer;
 begin
-  lSetupCount := gTIOPFTestManager.Count;
-  lLayerCount := gTIOPFManager.PersistenceLayers.Count;
+  lSetupCount := GTIOPFTestManager.Count;
+  lLayerCount := GTIOPFManager.PersistenceLayers.Count;
 
-  if gTIOPFTestManager.ToRun(cTIPersistRemote) and
-     (not gTIOPFTestManager.ToRun(cTIPersistXML)) then
+  if GTIOPFTestManager.ToRun(cTIPersistRemote) and
+     (not GTIOPFTestManager.ToRun(cTIPersistXML)) then
     Dec(lLayerCount);
   CheckEquals(lSetupCount, lLayerCount,
-            'gTestSetupDataFactory.Count <> gTIOPFManager.PersistenceLayers.Count');
+            'gTestSetupDataFactory.Count <> GTIOPFManager.PersistenceLayers.Count');
 end;
 
 procedure TTestPersistenceLayers.DefaultPersistenceLayerName;
@@ -204,26 +204,28 @@ var
   LPersistenceLayerName: string;
   LPersistenceLayer: TtiPersistenceLayer;
 begin
-  LDefaultPersistenceLayerName:= gTIOPFManager.DefaultPersistenceLayerName;
+  LDefaultPersistenceLayerName:= GTIOPFManager.DefaultPersistenceLayerName;
   try
-  for i := 0 to gTIOPFTestManager.Count - 1 do
+  for i := 0 to GTIOPFTestManager.Count - 1 do
   begin
-    LPersistenceLayerName := gTIOPFTestManager.Items[i].PersistenceLayerName;
-    LPersistenceLayer := gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
-    gTIOPFManager.DefaultPersistenceLayerName:= LPersistenceLayerName;
-    CheckNotNull(gTIOPFManager.DefaultPerLayer);
-    CheckSame(LPersistenceLayer, gTIOPFManager.DefaultPerLayer);
-    CheckEquals(LPersistenceLayerName, gTIOPFManager.DefaultPersistenceLayerName);
-    CheckEquals(LPersistenceLayerName, gTIOPFManager.DefaultPerLayer.PersistenceLayerName);
+    LPersistenceLayerName := GTIOPFTestManager.Items[i].PersistenceLayerName;
+    LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(LPersistenceLayerName);
+    GTIOPFManager.DefaultPersistenceLayerName:= LPersistenceLayerName;
+    CheckNotNull(GTIOPFManager.DefaultPerLayer);
+    CheckSame(LPersistenceLayer, GTIOPFManager.DefaultPerLayer);
+    CheckEquals(LPersistenceLayerName, GTIOPFManager.DefaultPersistenceLayerName);
+    CheckEquals(LPersistenceLayerName, GTIOPFManager.DefaultPerLayer.PersistenceLayerName);
   end;
   finally
-    gTIOPFManager.DefaultPersistenceLayerName:= LDefaultPersistenceLayerName;
+    GTIOPFManager.DefaultPersistenceLayerName:= LDefaultPersistenceLayerName;
   end;
-  CheckEquals(LDefaultPersistenceLayerName, gTIOPFManager.DefaultPersistenceLayerName);
+  CheckEquals(LDefaultPersistenceLayerName, GTIOPFManager.DefaultPersistenceLayerName);
 end;
 
 
 end.
+
+
 
 
 

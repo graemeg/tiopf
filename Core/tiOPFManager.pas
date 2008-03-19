@@ -817,7 +817,7 @@ begin
   LRetryCount:= 1;
   LogDatabaseConnectionAttempt(ADatabaseName, AUserName, LRetryCount);
   while (LRetryCount <= ARetryCount) and
-    (not gTIOPFManager.TestThenConnectDatabase(
+    (not GTIOPFManager.TestThenConnectDatabase(
       ADatabaseName, AUsername, APassword, '')) do
   begin
     Sleep(ARetryInterval * 1000);
@@ -836,7 +836,7 @@ begin
              [ARetryCount, ARetryInterval]));
 
   Log('Connecting to database successful' + CrLf +
-      gTIOPFManager.DefaultDBConnectionPool.DetailsAsString, lsUserInfo);
+      GTIOPFManager.DefaultDBConnectionPool.DetailsAsString, lsUserInfo);
 
 end;
 
@@ -911,23 +911,23 @@ initialization
   // directive, but not if there are more.
   // Have added this code to solve the problem of forcing the correct default per layer
   // when the remote layer is pulled in from code, and a SQL layer is required as well.
-  {$IFDEF LINK_ADOACCESS}     gTIOPFManager.DefaultPersistenceLayerName := cTIPersistADOAccess;   {$ENDIF}
-  {$IFDEF LINK_ADOSQLSERVER}  gTIOPFManager.DefaultPersistenceLayerName := cTIPersistADOSQLServer;{$ENDIF}
-  {$IFDEF LINK_BDEPARADOX}    gTIOPFManager.DefaultPersistenceLayerName := cTIPersistBDEParadox;  {$ENDIF}
-  {$IFDEF LINK_CSV}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistCSV;         {$ENDIF}
-  {$IFDEF LINK_DOA}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistDOA;         {$ENDIF}
-  {$IFDEF LINK_FBL}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistFBL;         {$ENDIF}
-  {$IFDEF LINK_IBO}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistIBO;         {$ENDIF}
-  {$IFDEF LINK_IBX}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistIBX;         {$ENDIF}
-  {$IFDEF LINK_REMOTE}        gTIOPFManager.DefaultPersistenceLayerName := cTIPersistRemote;      {$ENDIF}
-  {$IFDEF LINK_SQLDB_IB}      gTIOPFManager.DefaultPersistenceLayerName := cTIPersistSqldbIB;     {$ENDIF}
-  {$IFDEF LINK_TAB}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistTAB;         {$ENDIF}
-  {$IFDEF LINK_XML}           gTIOPFManager.DefaultPersistenceLayerName := cTIPersistXML;         {$ENDIF}
-  {$IFDEF LINK_XMLLIGHT}      gTIOPFManager.DefaultPersistenceLayerName := cTIPersistXMLLight;    {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB10}     gTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosFB10;    {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB15}     gTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosFB15;    {$ENDIF}
-  {$IFDEF LINK_ZEOS_MySQLl50} gTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosMySQL50; {$ENDIF}
-  {$IFDEF LINK_DBISAM4}       gTIOPFManager.DefaultPersistenceLayerName := cTIPersistDBISAM4;     {$ENDIF}
+  {$IFDEF LINK_ADOACCESS}     GTIOPFManager.DefaultPersistenceLayerName := cTIPersistADOAccess;   {$ENDIF}
+  {$IFDEF LINK_ADOSQLSERVER}  GTIOPFManager.DefaultPersistenceLayerName := cTIPersistADOSQLServer;{$ENDIF}
+  {$IFDEF LINK_BDEPARADOX}    GTIOPFManager.DefaultPersistenceLayerName := cTIPersistBDEParadox;  {$ENDIF}
+  {$IFDEF LINK_CSV}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistCSV;         {$ENDIF}
+  {$IFDEF LINK_DOA}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistDOA;         {$ENDIF}
+  {$IFDEF LINK_FBL}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistFBL;         {$ENDIF}
+  {$IFDEF LINK_IBO}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistIBO;         {$ENDIF}
+  {$IFDEF LINK_IBX}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistIBX;         {$ENDIF}
+  {$IFDEF LINK_REMOTE}        GTIOPFManager.DefaultPersistenceLayerName := cTIPersistRemote;      {$ENDIF}
+  {$IFDEF LINK_SQLDB_IB}      GTIOPFManager.DefaultPersistenceLayerName := cTIPersistSqldbIB;     {$ENDIF}
+  {$IFDEF LINK_TAB}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistTAB;         {$ENDIF}
+  {$IFDEF LINK_XML}           GTIOPFManager.DefaultPersistenceLayerName := cTIPersistXML;         {$ENDIF}
+  {$IFDEF LINK_XMLLIGHT}      GTIOPFManager.DefaultPersistenceLayerName := cTIPersistXMLLight;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB10}     GTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosFB10;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB15}     GTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosFB15;    {$ENDIF}
+  {$IFDEF LINK_ZEOS_MySQLl50} GTIOPFManager.DefaultPersistenceLayerName := cTIPersistZeosMySQL50; {$ENDIF}
+  {$IFDEF LINK_DBISAM4}       GTIOPFManager.DefaultPersistenceLayerName := cTIPersistDBISAM4;     {$ENDIF}
 
 finalization
   uShuttingDown := True;

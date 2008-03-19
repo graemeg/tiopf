@@ -223,12 +223,12 @@ begin
 end;
 
 Initialization
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerCrSdac);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-   gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistCrSdac);
+   GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistCrSdac);
 
 end.
 

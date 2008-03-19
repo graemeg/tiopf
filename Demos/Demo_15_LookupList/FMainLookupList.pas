@@ -82,7 +82,7 @@ begin
     lTableMetaData.Name:= 'Client_Source';
     lTableMetaData.AddField('OID',          qfkString,  36); // Using GUID OIDs
     lTableMetaData.AddField('Display_Text',  qfkString, 20);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;
@@ -94,7 +94,7 @@ begin
     lTableMetaData.AddField('OID',           qfkString,  36); // Using GUID OIDs
     lTableMetaData.AddField('Client_Name',   qfkString, 200);
     lTableMetaData.AddField('Client_Source', qfkString,  36);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;
@@ -112,13 +112,13 @@ end;
 // Drop table
 procedure TFormMainLookupList.DropTables;
 begin
-  try gTIOPFManager.DropTable('Client') except end;
-  try gTIOPFManager.DropTable('Client_Source') except end;
+  try GTIOPFManager.DropTable('Client') except end;
+  try GTIOPFManager.DropTable('Client_Source') except end;
 end;
 
 procedure TFormMainLookupList.FormCreate(Sender: TObject);
 begin
-  Caption:= 'Connected to ' + gTIOPFManager.DefaultDBConnectionName;
+  Caption:= 'Connected to ' + GTIOPFManager.DefaultDBConnectionName;
   LV.AddColumn('ClientSourceAsGUIString', vttkString, 'Client source', 80);
   LV.AddColumn('ClientName',     vttkString, 'Client name', 200);
 

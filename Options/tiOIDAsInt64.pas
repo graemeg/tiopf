@@ -119,7 +119,7 @@ end;
 function TtiOIDGenerator.NextOID: TtiOID;
 begin
   if FDirty then
-    gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, Self);
+    GTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, Self);
 
   Inc(FLow);
   if FLow >= FLowRange then
@@ -189,7 +189,7 @@ var
   lDatabaseName : string;
 begin
   if ADatabaseName = '' then
-    lDatabaseName := gTIOPFManager.DefaultDBConnectionName
+    lDatabaseName := GTIOPFManager.DefaultDBConnectionName
   else
     lDatabaseName := ADatabaseName;
   lNextOIDGenerator := (FindByDatabaseName(lDatabaseName) as TtiOIDGenerator);
@@ -216,7 +216,7 @@ end;
 procedure TVisDBNextOIDAmblerRead.Execute(const AData: TtiVisited);
 begin
 
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   Inherited Execute(AData);
@@ -243,7 +243,7 @@ procedure TVisDBNextOIDAmblerUpdate.Execute(const AData: TtiVisited);
 var
   lParams : TtiQueryParams;
 begin
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   Inherited Execute(AData);
@@ -262,7 +262,7 @@ end;
 
 
 initialization
-  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
 
 

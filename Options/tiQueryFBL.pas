@@ -12,7 +12,7 @@
   split the ADatabaseName param passed into the ConnectDatabase procedure.
 
   eg:
-    gTIOPFManager.ConnectDatabase('192.168.0.20|E:\Databases\Test.fdb',
+    GTIOPFManager.ConnectDatabase('192.168.0.20|E:\Databases\Test.fdb',
         'sysdba', 'masterkey', '');
         
   Note the | (pipe) sign between the IP address and the database name.
@@ -725,7 +725,7 @@ var
   lTable: TtiDBMetaDataTable;
 begin
   lMetaData := (AData as TtiDBMetaData);
-  lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -787,7 +787,7 @@ const
 begin
   lTable := (AData as TtiDBMetaDataTable);
   lTableName := UpperCase(lTable.Name);
-  lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -1013,11 +1013,11 @@ begin
 end;
 
 initialization
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerFBL);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistFBL);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistFBL);
 
 end.

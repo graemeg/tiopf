@@ -65,7 +65,7 @@ uses
 procedure TFormMainInheritance.FormCreate(Sender: TObject);
 begin
 
-  Caption:= 'Connected to ' + gTIOPFManager.DefaultDBConnectionName;
+  Caption:= 'Connected to ' + GTIOPFManager.DefaultDBConnectionName;
   lvClient.AddColumn('ClientName',  vttkString, 'Client name', 200);
   lvClient.AddColumn(lvClientListDeriveAdrs, 'Address', 200);
 
@@ -167,7 +167,7 @@ begin
     lTableMetaData.Name:= 'Client';
     lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
     lTableMetaData.AddField('Client_Name',       qfkString,  200);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;
@@ -180,7 +180,7 @@ begin
     lTableMetaData.AddField('Locality',  qfkString,  46);
     lTableMetaData.AddField('State',     qfkString,   3);
     lTableMetaData.AddField('Post_Code', qfkString,   4);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;
@@ -189,8 +189,8 @@ end;
 
 procedure TFormMainInheritance.DropTables;
 begin
-  try gTIOPFManager.DropTable('Client') except end;
-  try gTIOPFManager.DropTable('Adrs') except end;
+  try GTIOPFManager.DropTable('Client') except end;
+  try GTIOPFManager.DropTable('Adrs') except end;
 end;
 
 procedure TFormMainInheritance.Button2Click(Sender: TObject);

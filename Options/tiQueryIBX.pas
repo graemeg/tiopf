@@ -796,7 +796,7 @@ var
   lTable: TtiDBMetaDataTable;
 begin
   lMetaData := (AData as TtiDBMetaData);
-  lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -858,7 +858,7 @@ const
 begin
   lTable := (AData as TtiDBMetaDataTable);
   lTableName := UpperCase(lTable.Name);
-  lQuery := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -1228,12 +1228,12 @@ end;
 
 initialization
 
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerIBX);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistIBX);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistIBX);
 
 end.
 

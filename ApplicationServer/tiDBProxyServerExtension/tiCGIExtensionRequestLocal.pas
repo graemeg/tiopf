@@ -50,9 +50,9 @@ begin
   LParams:= TtiCGIParams.Create;
   try
     LParams.AsCompressedEncodedString:= AParams;
-    LParams.Values[cINIIdentDatabaseName]:= gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.DatabaseName;
-    LParams.Values[cINIIdentUserName]:= gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.UserName;
-    LParams.Values[cINIIdentPassword]:= gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.Password;
+    LParams.Values[cINIIdentDatabaseName]:= GTIOPFManager.DefaultDBConnectionPool.DBConnectParams.DatabaseName;
+    LParams.Values[cINIIdentUserName]:= GTIOPFManager.DefaultDBConnectionPool.DBConnectParams.UserName;
+    LParams.Values[cINIIdentPassword]:= GTIOPFManager.DefaultDBConnectionPool.DBConnectParams.Password;
     Result:= LParams.AsCompressedEncodedString;
   finally
     LParams.Free;

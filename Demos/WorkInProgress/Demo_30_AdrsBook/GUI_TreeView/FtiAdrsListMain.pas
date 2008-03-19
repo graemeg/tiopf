@@ -110,7 +110,7 @@ uses
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   TV.Align:= alClient;
-  Caption:= 'TI Persistence Framework - ' + gtiOPFManager.DefaultDBConnectionName;
+  Caption:= 'TI Persistence Framework - ' + GTIOPFManager.DefaultDBConnectionName;
   gReg.ReadFormState(Self);
 //  TV.RegisterChildForm(TPerson,  TFormEditPerson);
 //  TV.RegisterChildForm(TCompany, TFormEditCompany);
@@ -212,10 +212,10 @@ procedure TFormMain.TVSelectNode(ptiTreeView: TtiTreeView;
 begin
 {
   if pData is TPerson then
-    gTIOPFManager.Read(TPerson(pData))
+    GTIOPFManager.Read(TPerson(pData))
   else
   if pData is TCompany then
-    gTIOPFManager.Read(TCompany(pData));
+    GTIOPFManager.Read(TCompany(pData));
 }
 end;
 
@@ -275,7 +275,7 @@ procedure TFormMain.aShowDatabaseConnectionDetailsExecute(Sender: TObject);
 var
   ls: string;
 begin
-//  ls:= gTIOPFManager.DefaultPerLayer.DBConnectionPools.DetailsAsString;
+//  ls:= GTIOPFManager.DefaultPerLayer.DBConnectionPools.DetailsAsString;
 //  tiShowMessage(ls);
 end;
 

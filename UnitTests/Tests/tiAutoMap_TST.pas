@@ -235,12 +235,12 @@ var
 begin
   lData1 := CreateTIOPFTestData;
   try
-    gTIOPFManager.Save(lData1, DatabaseName, PersistenceLayerName);
+    GTIOPFManager.Save(lData1, DatabaseName, PersistenceLayerName);
     lData1.Deleted := true;
-    gTIOPFManager.Save(lData1, DatabaseName, PersistenceLayerName );
+    GTIOPFManager.Save(lData1, DatabaseName, PersistenceLayerName );
     lData2 := TtiObjectListForTesting.Create;
     try
-      gTIOPFManager.Read(lData2, DatabaseName, PersistenceLayerName );
+      GTIOPFManager.Read(lData2, DatabaseName, PersistenceLayerName );
       CheckObjectState(posClean, lData2);
       CheckEquals(0, lData2.Count, 'Failed on lData2.Count = 0');
     finally
@@ -519,7 +519,7 @@ begin
     lQP.SetValueAsDateTime('Group_Date_Field',   TestIntToDate(1111));
     lQP.SetValueAsBoolean('Group_Bool_Field',   TestIntToBool(1));
     lQP.SetValueAsString('Group_Notes_Field',  LongString);
-    gTIOPFManager.InsertRow('Test_Group', lQP, DatabaseName, PersistenceLayerName);
+    GTIOPFManager.InsertRow('Test_Group', lQP, DatabaseName, PersistenceLayerName);
   finally
     lQP.Free;
   end;
@@ -1522,7 +1522,7 @@ type
     try
       LData.ReadPK(FDatabaseName, FPersistenceLayerName);
       FTestCase.Check(posClean = LData.ObjectState, 'ObjectState');
-      FTestCase.CheckNotEquals(FGroupCount, LData.Count);
+      FTestCase.CheckEquals(FGroupCount, LData.Count);
     finally
       LData.Free;
     end;
@@ -1538,7 +1538,8 @@ begin
   LThread.Resume;
   LThread.WaitFor;
   LThread.Free;
-  Check(True);
+  CheckEquals(1, DBConnectionPool.Count);
+  CheckEquals(0, DBConnectionPool.CountLocked);
 end;
 
 procedure TTestTIAutoMapFramework.TestClassDBCollections_IsCollection;
@@ -1576,7 +1577,7 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTesting(
       lQueryParams.SetValueAsDateTime('Group_Date_Field',   TestIntToDate(pI));
       lQueryParams.SetValueAsBoolean('Group_Bool_Field',   TestIntToBool(pI));
       lQueryParams.SetValueAsString('Group_Notes_Field',  LongString);
-      gTIOPFManager.InsertRow('Test_Group', lQueryParams, DatabaseName, PersistenceLayerName );
+      GTIOPFManager.InsertRow('Test_Group', lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -1596,7 +1597,7 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTesting(
       lQueryParams.SetValueAsDateTime('Item_Date_Field', TestIntToDate(pJ));
       lQueryParams.SetValueAsBoolean('Item_Bool_Field',  TestIntToBool(pJ));
       lQueryParams.SetValueAsString('Item_Notes_Field', LongString);
-      gTIOPFManager.InsertRow('Test_Item', lQueryParams, DatabaseName, PersistenceLayerName );
+      GTIOPFManager.InsertRow('Test_Item', lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -1630,7 +1631,7 @@ begin
   lQueryParams := TtiQueryParams.Create;
   try
     lQueryParams.SetValueAsString('OID', IntToStr(AOID));
-    gTIOPFManager.InsertRow(cTableNameTIOPFTestParentGroup, lQueryParams, DatabaseName, PersistenceLayerName );
+    GTIOPFManager.InsertRow(cTableNameTIOPFTestParentGroup, lQueryParams, DatabaseName, PersistenceLayerName );
   finally
     lQueryParams.Free;
   end;
@@ -1646,7 +1647,7 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTestingInherited(const pP
       lQueryParams.SetValueAsString('OID',              IntToStr(pI));
       lQueryParams.SetValueAsString('Owner_OID',        IntToStr(pOwnerOID));
       lQueryParams.SetValueAsString('Parent_Str_Field', IntToStr(pI));
-      gTIOPFManager.InsertRow(ATableName, lQueryParams, DatabaseName, PersistenceLayerName );
+      GTIOPFManager.InsertRow(ATableName, lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -1661,7 +1662,7 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTestingInherited(const pP
       lQueryParams.SetValueAsString('OID', IntToStr(pI));
       lQueryParams.SetValueAsInteger('Child_Int_Field', pI);
       lQueryParams.SetValueAsFloat('Child_Float_Field', TestIntToFloat(pI));
-      gTIOPFManager.InsertRow(ATableName, lQueryParams, DatabaseName, PersistenceLayerName );
+      GTIOPFManager.InsertRow(ATableName, lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -2437,7 +2438,7 @@ begin
 
   try
     // clear table (seeing that we are not creating it above)
-    gTIOPFManager.DeleteRow(cTIQueryTableNameInt64, nil);
+    GTIOPFManager.DeleteRow(cTIQueryTableNameInt64, nil);
     lData := TtiOPFTestInt64Prop.Create;
     try
       lData.ObjectState := posCreate;

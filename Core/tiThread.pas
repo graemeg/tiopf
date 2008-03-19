@@ -144,7 +144,7 @@ begin
   inherited Create(ACreateSuspended);
   FreeOnTerminate := true;
   OnTerminate := DoOnTerminate;
-  gTIOPFManager.ActiveThreadList.Add(Self);
+  GTIOPFManager.ActiveThreadList.Add(Self);
 end;
 
 destructor TtiThread.Destroy;
@@ -152,7 +152,7 @@ begin
   {$IFDEF MSWINDOWS}
   tiWin32CoUnInitialize; // You never know, perhpas COM was used in this thread.
   {$ENDIF}
-  gTIOPFManager.ActiveThreadList.Remove(Self);
+  GTIOPFManager.ActiveThreadList.Remove(Self);
   inherited;
 end;
 

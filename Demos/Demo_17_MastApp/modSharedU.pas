@@ -62,9 +62,9 @@ end;
 
 procedure TmodShared.DataModuleCreate(Sender: TObject);
 begin
-  gTIOPFManager.DefaultPersistenceLayerName:= 'ADOAccess';
-//old  gTIOPFManager.ConnectDatabase('Data\MastApp.mdb', '', '');
-  gTIOPFManager.ConnectDatabase('..\_bin\Data\MastApp.mdb', '', '');
+  GTIOPFManager.DefaultPersistenceLayerName:= 'ADOAccess';
+//old  GTIOPFManager.ConnectDatabase('Data\MastApp.mdb', '', '');
+  GTIOPFManager.ConnectDatabase('..\_bin\Data\MastApp.mdb', '', '');
 
   RegisterAutoMappings;  // auto mapped
 //  RegisterVisitors;      // visitors after automapped

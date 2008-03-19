@@ -79,12 +79,12 @@ begin
 end;
 
 initialization
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerZeosFB10);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistZeosFB10);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistZeosFB10);
 
 
 end.

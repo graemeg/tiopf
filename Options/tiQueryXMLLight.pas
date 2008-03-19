@@ -365,10 +365,10 @@ begin
 end;
 
 Initialization
-  RegisterPersistenceLayer(gTIOPFManager.PersistenceLayers);
+  RegisterPersistenceLayer(GTIOPFManager.PersistenceLayers);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXMLLight);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXMLLight);
 
 end.

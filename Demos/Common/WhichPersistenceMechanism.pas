@@ -39,8 +39,8 @@ begin
   Assert(Assigned(ARegisterDBIndependentMethod));
   Result:= true;
   // ToDo: Require a property on the PersistenceLayer - SQLSupport or the like
-  if (gtiOPFManager.DefaultPersistenceLayerName = cTIPersistIBX) or
-     (gTIOPFManager.DefaultPersistenceLayerName = cTIPersistADOAccess) then
+  if (GTIOPFManager.DefaultPersistenceLayerName = cTIPersistIBX) or
+     (GTIOPFManager.DefaultPersistenceLayerName = cTIPersistADOAccess) then
     LSelected:= tiMessageDlg(
       'Which persistence mechanism?' + CrLF(2) +
       'Auto map: Good for simple, small lists of objects.'+ CrLf +

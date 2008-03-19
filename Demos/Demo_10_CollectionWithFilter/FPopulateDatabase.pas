@@ -98,8 +98,8 @@ end;
 procedure TFormPopulateDatabase.FormCreate(Sender: TObject);
 begin
   paeCount.Value:= 5000;
-  if gTIOPFManager.TableExists('Client') then
-    gTIOPFManager.DropTable('Client');
+  if GTIOPFManager.TableExists('Client') then
+    GTIOPFManager.DropTable('Client');
   CreateTable;
 end;
 
@@ -114,7 +114,7 @@ begin
     lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
     lTableMetaData.AddField('Client_Name',       qfkString, 200);
     lTableMetaData.AddField('Client_ID',         qfkString,  9);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;

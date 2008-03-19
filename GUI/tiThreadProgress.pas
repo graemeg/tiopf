@@ -27,7 +27,7 @@
 
    1.Put into mainform OnClose or OnDestroy event:
 
-    gtiOPFManager.TerminateThreads(Period)
+    GTIOPFManager.TerminateThreads(Period)
     (where Period could be 0 if not waiting
     or X seconds to wait)
 
@@ -35,7 +35,7 @@
    or
 
    2. Put into mainform OnCloseQuery event:
-      (gTIOPFManager.ActiveThreadList.RunningThreadCount could also be used)
+      (GTIOPFManager.ActiveThreadList.RunningThreadCount could also be used)
 
      if gFormThreadProgress.ThreadCount>0 then
      begin

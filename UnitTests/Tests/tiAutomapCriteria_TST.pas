@@ -290,7 +290,7 @@ procedure TTestAutomappingCriteria.InserTtiObjectListForTesting;
       lQueryParams.SetValueAsDateTime('Group_Date_Field',   TestIntToDate(pI));
       lQueryParams.SetValueAsBoolean('Group_Bool_Field',   TestIntToBool(pI));
       lQueryParams.SetValueAsString('Group_Notes_Field',   IntToStr(pI) + '<<<' + IntToStr(pI * 2));
-      gTIOPFManager.InsertRow('Test_Group', lQueryParams, DatabaseName, PersistenceLayerName );
+      GTIOPFManager.InsertRow('Test_Group', lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;
@@ -310,7 +310,7 @@ procedure TTestAutomappingCriteria.InserTtiObjectListForTesting;
       lQueryParams.SetValueAsDateTime('Item_Date_Field', TestIntToDate(pJ));
       lQueryParams.SetValueAsBoolean('Item_Bool_Field',  TestIntToBool(pJ));
       lQueryParams.SetValueAsString('Item_Notes_Field', IntToStr(pI) + '<<<' + IntToStr(pJ) + '>>>>' + IntToStr(pI * 2));
-      gTIOPFManager.InsertRow('Test_Item', lQueryParams, DatabaseName, PersistenceLayerName );
+      GTIOPFManager.InsertRow('Test_Item', lQueryParams, DatabaseName, PersistenceLayerName );
     finally
       lQueryParams.Free;
     end;

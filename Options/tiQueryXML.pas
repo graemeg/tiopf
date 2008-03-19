@@ -583,46 +583,45 @@ end;
 
 procedure TtiDatabaseXML.CreateTable(const ATableMetaData: TtiDBMetaDataTable);
 var
-  lTables : IXMLDomElement;
-  lTable : IXMLDomElement;
-  lFields : IXMLDomElement;
-  lField : IXMLDomElement;
-  lRows  : IXMLDomElement;
+  LTables : IXMLDomElement;
+  LTable : IXMLDomElement;
+  LFields : IXMLDomElement;
+  LField : IXMLDomElement;
+  LRows  : IXMLDomElement;
   i : integer;
 begin
 
-  lTable := DOMFindTable(ATableMetaData.Name);
-  if lTable <> nil then
-    raise EtiOPFInternalException.Create('Attempt to create duplicate table name <' +
-                    ATableMetaData.Name + '>');
-
-
   StartTransaction;
   try
-    lTable := FXMLDomDoc.CreateElement(uXMLTags.Table);
+    LTable := DOMFindTable(ATableMetaData.Name);
+    if LTable <> nil then
+      raise EtiOPFInternalException.Create('Attempt to create duplicate table name <' +
+                      ATableMetaData.Name + '>');
 
-    lTable.setAttribute(uXMLTags.TableName, LowerCase(ATableMetaData.Name));
+    LTable := FXMLDomDoc.CreateElement(uXMLTags.Table);
 
-    lFields      := FXMLDomDoc.CreateElement(uXMLTags.Fields);
-    lTable.AppendChild(lFields);
+    LTable.setAttribute(uXMLTags.TableName, LowerCase(ATableMetaData.Name));
+
+    LFields      := FXMLDomDoc.CreateElement(uXMLTags.Fields);
+    LTable.AppendChild(LFields);
 
     for i := 0 to ATableMetaData.Count - 1 do
     begin
-      lField       := FXMLDomDoc.CreateElement(uXMLTags.Field);
-      lField.SetAttribute(uXMLTags.FieldName, LowerCase(ATableMetaData.Items[i].Name));
-      lField.SetAttribute(uXMLTags.FieldKind, LowerCase(ATableMetaData.Items[i].KindAsStr));
-      lField.SetAttribute(uXMLTags.FieldSize, ATableMetaData.Items[i].Width);
-      lFields.AppendChild(lField);
+      LField       := FXMLDomDoc.CreateElement(uXMLTags.Field);
+      LField.SetAttribute(uXMLTags.FieldName, LowerCase(ATableMetaData.Items[i].Name));
+      LField.SetAttribute(uXMLTags.FieldKind, LowerCase(ATableMetaData.Items[i].KindAsStr));
+      LField.SetAttribute(uXMLTags.FieldSize, ATableMetaData.Items[i].Width);
+      LFields.AppendChild(LField);
     end;
 
-    lRows        := FXMLDomDoc.CreateElement(uXMLTags.Rows);
-    lTable.AppendChild(lRows);
+    LRows        := FXMLDomDoc.CreateElement(uXMLTags.Rows);
+    LTable.AppendChild(LRows);
 
-    lTables := FXMLDomDoc.SelectSingleNode('//' + uXMLTags.Tables) as IXMLDomElement;
-    if lTables = nil then
+    LTables := FXMLDomDoc.SelectSingleNode('//' + uXMLTags.Tables) as IXMLDomElement;
+    if LTables = nil then
       raise EtiOPFInternalException.Create('Cant find XML <' +  uXMLTags.Tables + '> element');
 
-    lTables.appendChild(lTable);
+    LTables.appendChild(LTable);
     Commit;
   except
     on e:exception do
@@ -638,22 +637,23 @@ var
   lTables : IXMLDomElement;
   lTable : IXMLDomElement;
 begin
-  lTable := DOMFindTable(ATableMetaData.Name);
-  if lTable <> nil then
-  begin
-    StartTransaction;
-    try
+  StartTransaction;
+  try
+    lTable := DOMFindTable(ATableMetaData.Name);
+    if lTable <> nil then
+    begin
       lTables := FXMLDomDoc.SelectSingleNode('//' + uXMLTags.Tables) as IXMLDomElement;
       if lTables = nil then
         raise EtiOPFInternalException('Unable to find XML Element <' + uXMLTags.Tables + '>');
       lTables.RemoveChild(lTable);
       Commit;
-    except
-      on e:exception do
-      begin
-        RollBack;
-        raise;
-      end;
+    end else
+      Rollback;
+  except
+    on e:exception do
+    begin
+      RollBack;
+      raise;
     end;
   end;
 end;
@@ -1037,12 +1037,12 @@ end;
 
 Initialization
   uXMLTags := TtiXMLTags.Create;
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerMSXML);
 
 finalization
   uXMLTags.Free;
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXML);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistXML);
 
 end.

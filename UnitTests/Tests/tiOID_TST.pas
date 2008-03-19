@@ -23,22 +23,25 @@ type
     procedure TestThenAddOIDAsString(const AOID: string);
     procedure SetUp; override;
     procedure TearDown; override;
-    procedure DropNextOIDTable;
     procedure CreateNextOIDIntTable;
     procedure CreateNextOIDStrTable;
   published
 
+    // These must be run for each persistence layer & oid class
+    // if the OID generator touches the database. Integer OIDs touch the
+    // database. GUID oid generators dont. The down side of the test hierarchy
+    // is that GUID tests will be run for each persistence layer.
     procedure TtiNextOIDGeneratorAssignNextOIDSingleUser; virtual;
     procedure TtiNextOIDGeneratorAssignNextOIDThreaded; virtual;
     procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; virtual;
 
+    // These must be run for each persistence layer & each OID class
     procedure TtiOIDAssignToTIQueryParam;
     procedure TtiOIDAssignToTIQuery;
     procedure TtiOIDAssignToTIQueryFieldName;
     procedure TtiOIDAssignFromTIQuery;
     procedure TtiOIDAssignFromTIQueryFieldName;
     procedure TtiOIDEqualsQueryField;
-
     procedure TtiObjectCreateNew;
 
   end;
@@ -46,13 +49,11 @@ type
   TTestTIOIDPersistentGUID = class(TTestTIOIDPersistent)
   protected
     procedure SetUp; override;
-    procedure TearDown; override;
   end;
 
   TTestTIOIDPersistentInteger = class(TTestTIOIDPersistent)
   protected
     procedure SetUp; override;
-    procedure TearDown; override;
   end;
 
   TTestTIOIDNonPersistent = class(TtiTestCase)
@@ -144,7 +145,6 @@ begin
   tiRegisterNonPersistentTest(TTestTIOIDInteger);
   tiRegisterNonPersistentTest(TTestTIOIDString);
   tiRegisterNonPersistentTest(TTestTIOIDGUID);
-  tiRegisterNonPersistentTest(TTestTIOIDPersistentGUID);
 end;
 
 
@@ -988,41 +988,20 @@ begin
   CreateNextOIDIntTable;
 end;
 
-procedure TTestTIOIDPersistentInteger.TearDown;
-begin
-  DropNextOIDTable;
-  inherited;
-end;
-
 { TTestTIOIDPersistentGUID }
 
 procedure TTestTIOIDPersistentGUID.Setup;
 begin
   inherited;
+  CreateNextOIDStrTable; // Required here for testing persistence of GUID OID
   FOIDGeneratorClass    := TtiOIDGeneratorGUID;
   AllowedMemoryLeakSize := 56; // CoInitialize
-  CreateNextOIDStrTable;
 end;
-
-procedure TTestTIOIDPersistentGUID.TearDown;
-begin
-  DropNextOIDTable;
-  inherited;
-end;
-
-procedure TTestTIOIDPersistent.DropNextOIDTable;
-begin
-  DropTable('Next_OID');
-end;
-
-
 procedure TTestTIOIDPersistent.CreateNextOIDIntTable;
 var
   LTable : TtiDBMetaDataTable;
   lParams : TtiQueryParams;
 begin
-
-  DropNextOIDTable;
 
   LTable := TtiDBMetaDataTable.Create;
   try
@@ -1048,8 +1027,6 @@ var
   LTable : TtiDBMetaDataTable;
   lParams : TtiQueryParams;
 begin
-
-  DropNextOIDTable;
 
   LTable := TtiDBMetaDataTable.Create;
   try

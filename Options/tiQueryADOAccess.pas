@@ -264,11 +264,11 @@ begin
 end;
 
 Initialization
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerADOAccess);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistADOAccess);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistADOAccess);
 
 end.

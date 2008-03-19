@@ -140,7 +140,7 @@ var
   LResultEncode: string;
   LFileName: string;
 begin
-  Assert(gTIOPFManager.DefaultDBConnectionName <> '', 'No database connection');
+  Assert(GTIOPFManager.DefaultDBConnectionName <> '', 'No database connection');
   LFileName := GetCachedFileDirAndName;
   LResult := GetDataAsXML;
   LResultEncode := tiCompressEncode(LResult);

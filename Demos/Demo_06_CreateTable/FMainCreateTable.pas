@@ -59,7 +59,7 @@ begin
     LTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
     LTableMetaData.AddField('Client_Name',       qfkString, 200);
     LTableMetaData.AddField('ACN',               qfkString,   9);
-    gTIOPFManager.CreateTable(LTableMetaData);
+    GTIOPFManager.CreateTable(LTableMetaData);
   finally
     LTableMetaData.Free;
   end;
@@ -69,7 +69,7 @@ end;
 // Drop table
 procedure TFormMainCreateTable.btnDropTableClick(Sender: TObject);
 begin
-  gTIOPFManager.DropTable('Client');
+  GTIOPFManager.DropTable('Client');
   ShowMessage('Table ''Client'' dropped');
 end;
 
@@ -82,12 +82,12 @@ begin
   LTableMetaData:= TtiDBMetaDataTable.Create;
   try
     LTableMetaData.Name:= 'Client';
-    LDatabase:= gTIOPFManager.DefaultDBConnectionPool.Lock;
+    LDatabase:= GTIOPFManager.DefaultDBConnectionPool.Lock;
     try
       LDatabase.ReadMetaDataFields(LTableMetaData);
       tiShowMessage(LTableMetaData.AsDebugString);
     finally
-      gTIOPFManager.DefaultDBConnectionPool.UnLock(LDatabase);
+      GTIOPFManager.DefaultDBConnectionPool.UnLock(LDatabase);
     end;
   finally
     LTableMetaData.Free;
@@ -102,7 +102,7 @@ var
 begin
   LDBMetaData:= TtiDBMetaData.Create;
   try
-    LDatabase:= gTIOPFManager.DefaultDBConnectionPool.Lock;
+    LDatabase:= GTIOPFManager.DefaultDBConnectionPool.Lock;
     try
       LDatabase.ReadMetaDataTables(LDBMetaData);
       if LDBMetaData.FindByTableName('Client') <> nil then
@@ -110,7 +110,7 @@ begin
       else
         ShowMessage('Table <Client> does not exist');
     finally
-      gTIOPFManager.DefaultDBConnectionPool.UnLock(LDatabase);
+      GTIOPFManager.DefaultDBConnectionPool.UnLock(LDatabase);
     end;
   finally
     LDBMetaData.Free;
@@ -119,7 +119,7 @@ end;
 
 procedure TFormMainCreateTable.FormCreate(Sender: TObject);
 begin
-  lblConnectedTo.Caption:= 'Connected to: ' + gTIOPFManager.DefaultDBConnectionName;
+  lblConnectedTo.Caption:= 'Connected to: ' + GTIOPFManager.DefaultDBConnectionName;
 end;
 
 end.

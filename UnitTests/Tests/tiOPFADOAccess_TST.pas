@@ -53,6 +53,15 @@ type
     procedure TestSetupAndTearDown; override;
   end;
 
+  TTestTIOIDPersistentGUIDADOAccess = class(TTestTIOIDPersistentGUID)
+  public
+    class function PersistenceLayerName: string; override;
+  published
+    procedure TtiNextOIDGeneratorAssignNextOIDSingleUser; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDThreaded; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; override;
+  end;
+
   TTestTIOIDPersistentIntegerADOAccess = class(TTestTIOIDPersistentInteger)
   public
     class function PersistenceLayerName: string; override;
@@ -84,6 +93,7 @@ begin
   tiRegisterPersistenceTest(TTestTIPersistenceLayersADOAccess);
   tiRegisterPersistenceTest(TTestTIDatabaseADOAccess);
   tiRegisterPersistenceTest(TTestTIQueryADOAccess);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDADOAccess);
   tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerADOAccess);
   tiRegisterPersistenceTest(TTestTIAutoMapOperationADOAccess);
   tiRegisterPersistenceTest(TTestAutomappingCriteriaADOAccess);
@@ -252,6 +262,28 @@ end;
 procedure TTestTIOIDPersistentIntegerADOAccess.TtiNextOIDGeneratorAssignNextOIDThreaded;
 begin
   AllowedMemoryLeakSize:= 32;
+  inherited;
+end;
+
+{ TTestTIOIDPersistentGUIDADOAccess }
+
+class function TTestTIOIDPersistentGUIDADOAccess.PersistenceLayerName: string;
+begin
+  Result := cTIPersistADOAccess;
+end;
+
+procedure TTestTIOIDPersistentGUIDADOAccess.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+begin
+  inherited;
+end;
+
+procedure TTestTIOIDPersistentGUIDADOAccess.TtiNextOIDGeneratorAssignNextOIDSingleUser;
+begin
+  inherited;
+end;
+
+procedure TTestTIOIDPersistentGUIDADOAccess.TtiNextOIDGeneratorAssignNextOIDThreaded;
+begin
   inherited;
 end;
 

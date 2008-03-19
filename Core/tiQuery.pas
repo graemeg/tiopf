@@ -1257,7 +1257,7 @@ var
   lQuery : TtiQuery;
   lHadToStartTransaction : boolean;
 begin
-  lQuery   := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery   := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     lQuery.AttachDatabase(Self);
     lHadToStartTransaction := not InTransaction;
@@ -1562,7 +1562,7 @@ var
   lQuery : TtiQuery;
   lHadToStartTransaction : boolean;
 begin
-  lQuery   := gTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery   := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     lQuery.AttachDatabase(Self);
     lHadToStartTransaction := not InTransaction;

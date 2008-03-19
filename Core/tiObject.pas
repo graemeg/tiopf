@@ -1182,7 +1182,7 @@ begin
                      ObjectState := posCreate   ;
                      {$IFDEF OID_AS_INT64}
                        if OID = cNullOIDInteger then
-                         OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
+                         OID := GTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
                      {$ELSE}
                        if OID.IsNull then
                            Assert(false, 'Under construction');
@@ -1374,9 +1374,9 @@ end;
 
 function TtiObject.OIDGenerator: TtiOIDGenerator;
 begin
-  if not Assigned(gTIOPFManager.DefaultOIDGenerator) then
+  if not Assigned(GTIOPFManager.DefaultOIDGenerator) then
     raise EtiOPFProgrammerException.Create(CErrorDefaultOIDGeneratorNotAssigned);
-  result:= gTIOPFManager.DefaultOIDGenerator;
+  result:= GTIOPFManager.DefaultOIDGenerator;
 end;
 
 { TPerStream }
@@ -1919,7 +1919,7 @@ begin
     Owner := AOwner;
   ObjectState := posCreate;
   {$IFDEF OID_AS_INT64}
-    OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
+    OID := GTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
     OIDGenerator.AssignNextOID(OID);
   {$ENDIF}
@@ -1930,7 +1930,7 @@ begin
   Create;
   ObjectState := posCreate;
   {$IFDEF OID_AS_INT64}
-    OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
+    OID := GTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
     OIDGenerator.AssignNextOID(OID);
   {$ENDIF}
@@ -2059,7 +2059,7 @@ end;
 
 procedure TtiObject.Read(const ADBConnectionName: string; APersistenceLayerName : string = '');
 begin
-  gTIOPFManager.Read(Self, ADBConnectionName, APersistenceLayerName);
+  GTIOPFManager.Read(Self, ADBConnectionName, APersistenceLayerName);
 end;
 
 procedure TtiObject.Read;
@@ -2069,7 +2069,7 @@ end;
 
 procedure TtiObject.ReadPK(const ADBConnectionName: string; APersistenceLayerName : string = '');
 begin
-  gTIOPFManager.ReadPK(Self, ADBConnectionName, APersistenceLayerName);
+  GTIOPFManager.ReadPK(Self, ADBConnectionName, APersistenceLayerName);
 end;
 
 procedure TtiObject.ReadPK;
@@ -2079,7 +2079,7 @@ end;
 
 procedure TtiObject.Save(const ADBConnectionName: string; APersistenceLayerName : string = '');
 begin
-  gTIOPFManager.Save(Self, ADBConnectionName, APersistenceLayerName);
+  GTIOPFManager.Save(Self, ADBConnectionName, APersistenceLayerName);
 end;
 
 procedure TtiObject.Save;
@@ -2448,7 +2448,7 @@ begin
   {$ELSE}
     Assert(not OID.IsNull, 'OID not assigned');
   {$ENDIF}
-  gTIOPFManager.ReadThis(Self, ADBConnectionName, APersistenceLayerName);
+  GTIOPFManager.ReadThis(Self, ADBConnectionName, APersistenceLayerName);
 end;
 
 procedure TtiObject.ReadThis;
@@ -3387,7 +3387,7 @@ end;
 procedure TtiObject.ForceAsCreate(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
 begin
   {$IFDEF OID_AS_INT64}
-    OID := gTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
+    OID := GTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
   {$ELSE}
     OIDGenerator.AssignNextOID(OID);
   {$ENDIF}
@@ -3498,7 +3498,7 @@ begin
     {$IFDEF OID_AS_INT64}
       Write(IntToStr(TtiObject(AVisited).OID));
     {$ELSE}
-      if (gTIOPFManager.DefaultOIDGenerator.OIDClass <> nil) then
+      if (GTIOPFManager.DefaultOIDGenerator.OIDClass <> nil) then
         Write('OID=' +TtiObject(AVisited).OID.AsString)
       else
         Write('OID=Null');

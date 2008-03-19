@@ -457,82 +457,82 @@ end;
 
 procedure RegisterAutoMappings ;
 begin
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'OID', 'CustNo', [pktDB] );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Company', 'Company' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Address1', 'Addr1' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Address2', 'Addr2' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'City', 'City' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'State', 'State' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Zip', 'Zip' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Country', 'Country' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Phone', 'Phone' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'FAX', 'FAX' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'TaxRate', 'TaxRate' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Contact', 'Contact' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'LastInvoiceDate', 'LastInvoiceDate' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TCustomers, TCustomer);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'OID', 'CustNo', [pktDB] );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Company', 'Company' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Address1', 'Addr1' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Address2', 'Addr2' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'City', 'City' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'State', 'State' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Zip', 'Zip' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Country', 'Country' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Phone', 'Phone' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'FAX', 'FAX' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'TaxRate', 'TaxRate' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'Contact', 'Contact' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCustomer, 'Customer', 'LastInvoiceDate', 'LastInvoiceDate' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TCustomers, TCustomer);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'OID', 'VendorNo', [pktDB] );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'VendorName', 'VendorName' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Address1', 'Address1' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Address2', 'Address2' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'City', 'City' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'State', 'State' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Zip', 'Zip' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Country', 'Country' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Phone', 'Phone' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'FAX', 'FAX' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TVendors, TVendor);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'OID', 'VendorNo', [pktDB] );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'VendorName', 'VendorName' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Address1', 'Address1' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Address2', 'Address2' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'City', 'City' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'State', 'State' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Zip', 'Zip' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Country', 'Country' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'Phone', 'Phone' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TVendor, 'Vendors', 'FAX', 'FAX' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TVendors, TVendor);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'OID', 'EmpNo', [pktDB] );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'LastName', 'LastName' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'FirstName', 'FirstName' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'PhoneExt', 'PhoneExt' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'HireDate', 'HireDate' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'Salary', 'Salary' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TEmployees, TEmployee);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'OID', 'EmpNo', [pktDB] );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'LastName', 'LastName' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'FirstName', 'FirstName' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'PhoneExt', 'PhoneExt' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'HireDate', 'HireDate' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEmployee, 'Employee', 'Salary', 'Salary' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TEmployees, TEmployee);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'OID', 'OrderNo', [pktDB] );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'CustNo', 'CustNo' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'SaleDate', 'SaleDate' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipDate', 'ShipDate' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'EmpNo', 'EmpNo' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToContact', 'ShipToContact' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToAddress1', 'ShipToAddr1' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToAddress2', 'ShipToAddr2' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToCity', 'ShipToCity' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToState', 'ShipToState' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToZip', 'ShipToZip' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToCountry', 'ShipToCountry' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToPhone', 'ShipToPhone' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipVIA', 'ShipVIA' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'PurchaseOrder', 'PO' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'Terms', 'Terms' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'PaymentMethod', 'PaymentMethod' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ItemsTotal', 'ItemsTotal' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'TaxRate', 'TaxRate' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'Freight', 'Freight' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'AmountPaid', 'AmountPaid' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TOrders, TOrder);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'OID', 'OrderNo', [pktDB] );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'CustNo', 'CustNo' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'SaleDate', 'SaleDate' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipDate', 'ShipDate' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'EmpNo', 'EmpNo' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToContact', 'ShipToContact' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToAddress1', 'ShipToAddr1' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToAddress2', 'ShipToAddr2' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToCity', 'ShipToCity' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToState', 'ShipToState' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToZip', 'ShipToZip' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToCountry', 'ShipToCountry' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipToPhone', 'ShipToPhone' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ShipVIA', 'ShipVIA' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'PurchaseOrder', 'PO' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'Terms', 'Terms' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'PaymentMethod', 'PaymentMethod' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'ItemsTotal', 'ItemsTotal' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'TaxRate', 'TaxRate' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'Freight', 'Freight' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrder, 'Orders', 'AmountPaid', 'AmountPaid' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TOrders, TOrder);
 
   // this gives the write visitors
 //  //                                              Class,  Table,    Property,     Column
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'OID',         'PartNo',  [pktDB] );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'VendorNo',   'VendorNo' );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'Description', 'Description'   );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'OnHand',      'OnHand' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'OnOrder',     'OnOrder' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'Cost',        'Cost' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'ListPrice',   'ListPrice' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TParts, TPart);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'OID',         'PartNo',  [pktDB] );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'VendorNo',   'VendorNo' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'Description', 'Description'   );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'OnHand',      'OnHand' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'OnOrder',     'OnOrder' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'Cost',        'Cost' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPart,  'Parts', 'ListPrice',   'ListPrice' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TParts, TPart);
 
 //                                                Class,      Table,    Property,     Column
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'OID', 'ItemNo', [pktDB] );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'Owner.OID', 'OrderNo', [pktFK] );
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'PartNo', 'PartNo' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'Quantity', 'Qty' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'Discount', 'Discount' ) ;
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TOrderItems, TOrderItem);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'OID', 'ItemNo', [pktDB] );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'Owner.OID', 'OrderNo', [pktFK] );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'PartNo', 'PartNo' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'Quantity', 'Qty' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TOrderItem, 'Items', 'Discount', 'Discount' ) ;
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TOrderItems, TOrderItem);
 end;
 
 
@@ -865,7 +865,7 @@ function TPart.GetVendorNo: TtiOID;
 begin
   {$IFNDEF OID_AS_INT64}
     if FVendorNo = nil then
-      FVendorNo := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
+      FVendorNo := GTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
   {$ENDIF}
   result:= FVendorNo;
 end;
@@ -1058,7 +1058,7 @@ function TOrderItem.GetOrderNo: TtiOID;
 begin
   {$IFNDEF OID_AS_INT64}
     if FOrderNo = nil then
-      FOrderNo := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
+      FOrderNo := GTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
   {$ENDIF}
   result:= FOrderNo;
 end;
@@ -1088,7 +1088,7 @@ end;
 //begin
 //  {$IFNDEF OID_AS_INT64}
 //    if FPartNo = nil then
-//      FPartNo := gTIOPFManager.OIDFactory.CreateOID;
+//      FPartNo := GTIOPFManager.OIDFactory.CreateOID;
 //  {$ENDIF}
 //  result:= FPartNo;
 //end;
@@ -1231,7 +1231,7 @@ function TOrder.GetCustNo: TtiOID;
 begin
   {$IFNDEF OID_AS_INT64}
     if FCustNo = nil then
-      FCustNo := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
+      FCustNo := GTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
   {$ENDIF}
   result:= FCustNo;
 end;
@@ -1240,7 +1240,7 @@ function TOrder.GetEmpNo: TtiOID;
 begin
   {$IFNDEF OID_AS_INT64}
     if FEmpNo = nil then
-      FEmpNo := gTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
+      FEmpNo := GTIOPFManager.DefaultOIDGenerator.OIDClass.Create;
   {$ENDIF}
   result:= FEmpNo;
 end;

@@ -80,7 +80,7 @@ end;
 procedure TVisDBAutoGenUpdate.Execute(const AData: TtiVisited);
 begin
 
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   try

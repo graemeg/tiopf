@@ -163,13 +163,13 @@ begin
   LAppServerVersion:= TtiAppServerVersion.Create;
   try
     LAppServerVersion.LoadDefaultValues;
-    lDBConnectionName := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;
+    lDBConnectionName := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;
     try
-      LDatabase := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+      LDatabase := GTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
       try
         LAppServerVersion.SetConnectionStatus(LDatabase.Test);
       finally
-        gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, LDatabase);
+        GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, LDatabase);
       end;
     except
       on e:exception do
@@ -270,16 +270,16 @@ const
 
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
-  lDBConnectionName := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;
+  lDBConnectionName := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;
   try
-    LDatabase := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
+    LDatabase := GTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(lDBConnectionName);
     try
       if LDatabase.Test then
         lResult := cPassed
       else
         lResult := cFailed;
     finally
-      gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, LDatabase);
+      GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lDBConnectionName, LDatabase);
     end;
   except
     on e:exception do

@@ -33,7 +33,7 @@ const
   cDBProxyServerTimeOut  = 1; // Minute
 
   cTIPersistPackageRootName = 'tiPersist';
-  // When multiple database names are provided to gTIOPFManager.DetectAndConnect()
+  // When multiple database names are provided to GTIOPFManager.DetectAndConnect()
   // they will be separated by this character.
   cDatabaseNameDelim        = ';';
   CPasswordMasked = 'Password masked from view';

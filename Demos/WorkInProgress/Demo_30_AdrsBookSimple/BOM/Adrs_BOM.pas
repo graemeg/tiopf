@@ -140,12 +140,12 @@ end;
 
 procedure TAdrsBook.Read;
 begin
-  gTIOPFManager.VisitorManager.Execute(cVisAdrsReadPK, Self);
+  GTIOPFManager.VisitorManager.Execute(cVisAdrsReadPK, Self);
 end;
 
 procedure TAdrsBook.Save;
 begin
-  gTIOPFManager.VisitorManager.Execute(cVisAdrsSave, Self);
+  GTIOPFManager.VisitorManager.Execute(cVisAdrsSave, Self);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -219,12 +219,12 @@ end;
 
 procedure TPerson.Read;
 begin
-  gTIOPFManager.VisitorManager.Execute(cVisAdrsRead, Self);
+  GTIOPFManager.VisitorManager.Execute(cVisAdrsRead, Self);
 end;
 
 procedure TPerson.Save;
 begin
-  gTIOPFManager.VisitorManager.Execute(cVisAdrsSave, Self);
+  GTIOPFManager.VisitorManager.Execute(cVisAdrsSave, Self);
 end;
 
 procedure TPerson.SetOwner(const AValue: TPersonList);
@@ -284,7 +284,7 @@ end;
 
 procedure TEAdrs.Save;
 begin
-  gTIOPFManager.VisitorManager.Execute(cVisAdrsSave, Self);
+  GTIOPFManager.VisitorManager.Execute(cVisAdrsSave, Self);
 end;
 
 procedure TEAdrs.SetOwner(const AValue: TEAdrsList);

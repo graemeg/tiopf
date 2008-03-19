@@ -322,12 +322,12 @@ end;
 
 procedure RegisterMappings;
 begin
-  if not gTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(TtiQueryParamAbs) then
+  if not GTIOPFManager.ClassDBMappingMgr.ClassMaps.IsClassReg(TtiQueryParamAbs) then
   begin
-    gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'Name',          'Name', [pktDB]);
-    gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'KindAsStr',     'Kind');
-    gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'ValueAsString', 'AValue');
-    gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiQueryTransParams, TtiQueryParamAbs);
+    GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'Name',          'Name', [pktDB]);
+    GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'KindAsStr',     'Kind');
+    GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiQueryParamAbs, uXMLTags.TableNameQueryParam, 'ValueAsString', 'AValue');
+    GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiQueryTransParams, TtiQueryParamAbs);
   end;
 end;
 
@@ -700,10 +700,10 @@ begin
 
 //  lDifTime := GetTickCount - FLastCallTime;
 //  if (lDifTime <= 75) and
-//     (not gTIOPFManager.Terminated) then
+//     (not GTIOPFManager.Terminated) then
 //    Sleep(75-lDifTime);
 
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   RefreshHTTPInstance;
@@ -713,7 +713,7 @@ begin
 
   TryHTTPPost(ls);
 
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   ls := FHTTP.Output.DataString;
@@ -721,12 +721,12 @@ begin
 //  Log('Response');
 //  Log(ls);
 
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   DBResponseXML.AsString := ls;
 
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   ReadMessagesFromResponse;
@@ -1275,20 +1275,20 @@ begin
 
   RegisterMappings;
 
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerRemoteXML);
 
   // Change the default package from XML to Remote
-  if (gTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(cTIPersistXMLLight) <> nil) and
-     (gTIOPFManager.PersistenceLayers.DefaultPersistenceLayerName = cTIPersistXMLLight) then
-    gTIOPFManager.PersistenceLayers.DefaultPersistenceLayerName := cTIPersistRemote;
+  if (GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(cTIPersistXMLLight) <> nil) and
+     (GTIOPFManager.PersistenceLayers.DefaultPersistenceLayerName = cTIPersistXMLLight) then
+    GTIOPFManager.PersistenceLayers.DefaultPersistenceLayerName := cTIPersistRemote;
 
 end;
 
 finalization
   uXMLTags.Free;
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistRemote);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistRemote);
     
 end.
 

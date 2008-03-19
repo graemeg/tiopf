@@ -192,8 +192,8 @@ end;
 
 procedure TTestAdrsBook.EmptyDatabase;
 begin
-  gTIOPFManager.ExecSQL('delete from eadrs');
-  gTIOPFManager.ExecSQL('delete from person');
+  GTIOPFManager.ExecSQL('delete from eadrs');
+  GTIOPFManager.ExecSQL('delete from person');
 end;
 
 procedure TTestAdrsBook.Person_Create;

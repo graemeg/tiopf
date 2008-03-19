@@ -329,96 +329,96 @@ uses
 
 procedure RegisterMappings;
 begin
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStringProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStringProp, cTIQueryTableName, 'StrField', cTIQueryColName);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStringProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStringProp, cTIQueryTableName, 'StrField', cTIQueryColName);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestOIdProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestOIdProp, cTIQueryTableName, 'OIDField', cTIQueryColName);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestOIdProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestOIdProp, cTIQueryTableName, 'OIDField', cTIQueryColName);
 
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestNotesProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestNotesProp, cTIQueryTableName, 'NotesField', cTIQueryColName);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestNotesProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestNotesProp, cTIQueryTableName, 'NotesField', cTIQueryColName);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestIntegerProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestIntegerProp, cTIQueryTableName, 'IntField', cTIQueryColName);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestIntegerProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestIntegerProp, cTIQueryTableName, 'IntField', cTIQueryColName);
 
 {$IFDEF TESTINT64}
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestInt64Prop, cTIQueryTableNameInt64, 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestInt64Prop, cTIQueryTableNameInt64, 'Int64Field', cTIQueryColName);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestInt64Prop, cTIQueryTableNameInt64, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestInt64Prop, cTIQueryTableNameInt64, 'Int64Field', cTIQueryColName);
 {$ENDIF}
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestFloatProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestFloatProp, cTIQueryTableName, 'FloatField', cTIQueryColName);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestFloatProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestFloatProp, cTIQueryTableName, 'FloatField', cTIQueryColName);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestDateTimeProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestDateTimeProp, cTIQueryTableName, 'DateField', cTIQueryColName);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestDateTimeProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestDateTimeProp, cTIQueryTableName, 'DateField', cTIQueryColName);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestBooleanProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestBooleanProp, cTIQueryTableName, 'BoolField', cTIQueryColName);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestBooleanProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestBooleanProp, cTIQueryTableName, 'BoolField', cTIQueryColName);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStreamProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStreamProp, cTIQueryTableName, 'StreamField', cTIQueryColName);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStreamProp, cTIQueryTableName, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestStreamProp, cTIQueryTableName, 'StreamField', cTIQueryColName);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'StrField', 'Group_Str_Field', [pktReadable]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'IntField', 'Group_Int_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'FloatField', 'Group_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'DateField', 'Group_Date_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'BoolField', 'Group_Bool_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'NotesField', 'Group_Notes_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectListForTesting, TtiObjectListNestedForTesting);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'StrField', 'Group_Str_Field', [pktReadable]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'IntField', 'Group_Int_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'FloatField', 'Group_Float_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'DateField', 'Group_Date_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'BoolField', 'Group_Bool_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectListNestedForTesting, 'Test_Group', 'NotesField', 'Group_Notes_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectListForTesting, TtiObjectListNestedForTesting);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'Owner.OID', 'OID_Group', [pktFK]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'StrField', 'Item_Str_Field', [pktReadable]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'IntField', 'Item_Int_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'FloatField', 'Item_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'DateField', 'Item_Date_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'BoolField', 'Item_Bool_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'NotesField', 'Item_Notes_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectListNestedForTesting, TtiOPFTestItem);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'Owner.OID', 'OID_Group', [pktFK]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'StrField', 'Item_Str_Field', [pktReadable]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'IntField', 'Item_Int_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'FloatField', 'Item_Float_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'DateField', 'Item_Date_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'BoolField', 'Item_Bool_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestItem, 'Test_Item', 'NotesField', 'Item_Notes_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectListNestedForTesting, TtiOPFTestItem);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTesting, 'Test_Parent', 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTesting, 'Test_Parent', 'StrField', 'Parent_Str_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTesting, 'Test_Parent', 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTesting, 'Test_Parent', 'StrField', 'Parent_Str_Field');
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingA, cTableNameTIOPFTestChild_A, 'OID', 'OID', [pktDB, pktFK]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingA, cTableNameTIOPFTestChild_A, 'IntField', 'Child_Int_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingA, cTableNameTIOPFTestChild_A,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingA, cTableNameTIOPFTestChild_A, 'OID', 'OID', [pktDB, pktFK]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingA, cTableNameTIOPFTestChild_A, 'IntField', 'Child_Int_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingA, cTableNameTIOPFTestChild_A,
     'FloatField', 'Child_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTesting, TtiObjectChildForTestingA);
+  GTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTesting, TtiObjectChildForTestingA);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingB, cTableNameTIOPFTestChild_B, 'OID', 'OID', [pktDB, pktFK]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingB, cTableNameTIOPFTestChild_B, 'IntField', 'Child_Int_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingB, cTableNameTIOPFTestChild_B,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingB, cTableNameTIOPFTestChild_B, 'OID', 'OID', [pktDB, pktFK]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingB, cTableNameTIOPFTestChild_B, 'IntField', 'Child_Int_Field');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectChildForTestingB, cTableNameTIOPFTestChild_B,
     'FloatField', 'Child_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTesting, TtiObjectChildForTestingB);
+  GTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTesting, TtiObjectChildForTestingB);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGroup, cTableNameTIOPFTestParentGroup, 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGroup, cTableNameTIOPFTestParentGroup, 'OID', 'OID', [pktDB]);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGrouped, cTableNameTIOPFTestParentGrouped,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGrouped, cTableNameTIOPFTestParentGrouped,
     'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGrouped, cTableNameTIOPFTestParentGrouped,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGrouped, cTableNameTIOPFTestParentGrouped,
     'Owner.OID', 'Owner_OID', [pktFK]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGrouped, cTableNameTIOPFTestParentGrouped,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiObjectParentForTestingGrouped, cTableNameTIOPFTestParentGrouped,
     'StrField', 'Parent_Str_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiObjectParentForTestingGrouped);
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiObjectParentForTestingGrouped);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_A, cTableNameTIOPFTestChildGrouped_A,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_A, cTableNameTIOPFTestChildGrouped_A,
     'OID', 'OID', [pktDB, pktFK]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_A, cTableNameTIOPFTestChildGrouped_A,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_A, cTableNameTIOPFTestChildGrouped_A,
     'IntField', 'Child_Int_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_A, cTableNameTIOPFTestChildGrouped_A,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_A, cTableNameTIOPFTestChildGrouped_A,
     'FloatField', 'Child_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTestingGrouped, TtiOPFTestChildGrouped_A);
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiOPFTestChildGrouped_A);
+  GTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTestingGrouped, TtiOPFTestChildGrouped_A);
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiOPFTestChildGrouped_A);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_B, cTableNameTIOPFTestChildGrouped_B,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_B, cTableNameTIOPFTestChildGrouped_B,
     'OID', 'OID', [pktDB, pktFK]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_B, cTableNameTIOPFTestChildGrouped_B,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_B, cTableNameTIOPFTestChildGrouped_B,
     'IntField', 'Child_Int_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_B, cTableNameTIOPFTestChildGrouped_B,
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TtiOPFTestChildGrouped_B, cTableNameTIOPFTestChildGrouped_B,
     'FloatField', 'Child_Float_Field');
-  gTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTestingGrouped, TtiOPFTestChildGrouped_B);
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiOPFTestChildGrouped_B);
+  GTIOPFManager.ClassDBMappingMgr.RegisterInheritance(TtiObjectParentForTestingGrouped, TtiOPFTestChildGrouped_B);
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TtiObjectParentForTestingGroup, TtiOPFTestChildGrouped_B);
 end;
 
 

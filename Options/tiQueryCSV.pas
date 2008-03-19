@@ -216,12 +216,12 @@ begin
 end;
 
 initialization
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerCSV);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistCSV);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistCSV);
 
 
 end.

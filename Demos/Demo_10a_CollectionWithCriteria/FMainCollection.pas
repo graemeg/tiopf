@@ -84,7 +84,7 @@ begin
     LTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
     LTableMetaData.AddField('Client_Name',       qfkString, 200);
     LTableMetaData.AddField('Client_ID',          qfkString,   9);
-    gTIOPFManager.CreateTable(LTableMetaData);
+    GTIOPFManager.CreateTable(LTableMetaData);
   finally
     LTableMetaData.Free;
   end;
@@ -93,7 +93,7 @@ end;
 // Drop table
 procedure TFormCollection.DropTable;
 begin
-  gTIOPFManager.DropTable('Client');
+  GTIOPFManager.DropTable('Client');
 end;
 
 // Does a table exist?
@@ -104,12 +104,12 @@ var
 begin
   LDBMetaData:= TtiDBMetaData.Create;
   try
-    LDatabase:= gTIOPFManager.DefaultDBConnectionPool.Lock;
+    LDatabase:= GTIOPFManager.DefaultDBConnectionPool.Lock;
     try
       LDatabase.ReadMetaDataTables(LDBMetaData);
       result:= LDBMetaData.FindByTableName('Client') <> nil;
     finally
-      gTIOPFManager.DefaultDBConnectionPool.UnLock(LDatabase);
+      GTIOPFManager.DefaultDBConnectionPool.UnLock(LDatabase);
     end;
   finally
     LDBMetaData.Free;
@@ -118,7 +118,7 @@ end;
 
 procedure TFormCollection.FormCreate(Sender: TObject);
 begin
-  Caption:= 'Connected to ' + gTIOPFManager.DefaultDBConnectionName;
+  Caption:= 'Connected to ' + GTIOPFManager.DefaultDBConnectionName;
   FClients:= TClients.Create;
   // Drop and re-create to be sure we start with the correct structure
   if TableExists then

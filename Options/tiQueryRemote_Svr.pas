@@ -367,7 +367,7 @@ var
 begin
   Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
   Assert(FTransactionID <> '', 'TransactionID not assigned');
-  lQuery := gTIOPFManager.DefaultPerLayer.QueryClass.Create;
+  lQuery := GTIOPFManager.DefaultPerLayer.QueryClass.Create;
   try
     lSavedDBConnectionHolder := gStatefulDBConnectionPool.FindSavedDBConnectionHolder(FTransactionID);
     lSavedDBConnectionHolder.InUse := true;
@@ -401,7 +401,7 @@ begin
   Assert(gStatefulDBConnectionPool.TestValid(TtiStatefulDBConnectionPool), CTIErrorInvalidObject);
   FTransactionID :=
     gStatefulDBConnectionPool.StartTransaction(
-      gTIOPFManager.DefaultDBConnectionName,
+      GTIOPFManager.DefaultDBConnectionName,
       FRemoteComputerName, FRemoteUserName);
 end;
 
@@ -444,7 +444,7 @@ begin
     finally
       lQuery.Free;
     end;
-    gTIOPFManager.CreateTable(lMD);
+    GTIOPFManager.CreateTable(lMD);
   finally
     lMD.Free;
   end;
@@ -456,7 +456,7 @@ var
 begin
   lMD := TtiDBMetaDataTable.Create;
   try
-    gTIOPFManager.DropTable(FRemoteCommandText);
+    GTIOPFManager.DropTable(FRemoteCommandText);
   finally
     lMD.Free;
   end;
@@ -471,7 +471,7 @@ begin
   Assert(FXMLWriterData.TestValid(TtiDataBufferToXMLWriter), CTIErrorInvalidObject);
   CreateResponseMetaDataTable;
 
-  LDatabase := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
+  LDatabase := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
   try
     lMD := TtiDBMetaDataTable.Create;
     try
@@ -489,7 +489,7 @@ begin
       lMD.Free;
     end;
   finally
-    gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.UnLock(LDatabase);
+    GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.UnLock(LDatabase);
   end;
 end;
 
@@ -501,7 +501,7 @@ var
 begin
   Assert(FXMLWriterMessage.TestValid(TtiDataBufferToXMLWriter), CTIErrorInvalidObject);
   CreateResponseMetaDataTable;
-  LDatabase := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
+  LDatabase := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock;
   try
     lMD := TtiDBMetaData.Create;
     try
@@ -518,7 +518,7 @@ begin
       lMD.Free;
     end;
   finally
-    gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.UnLock(LDatabase);
+    GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.UnLock(LDatabase);
   end;
 end;
 
@@ -560,7 +560,7 @@ begin
     result := TSavedDBConnectionHolder.Create;
     result.DBConnectionName := ADBConnectionName;
     result.TransactionID   := NextTransID;
-    result.DBConnection := gTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(ADBConnectionName);
+    result.DBConnection := GTIOPFManager.DefaultPerLayer.DBConnectionPools.Lock(ADBConnectionName);
     result.Owner := Self;
     Assert(result.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
     FSavedDBConnections.Add(result);
@@ -622,7 +622,7 @@ begin
     Assert(lSavedDBConnection.TestValid(TSavedDBConnectionHolder), CTIErrorInvalidObject);
     Assert(lSavedDBConnection.DBConnection.TestValid(TtiDatabase), CTIErrorInvalidObject);
     AMethod(lSavedDBConnection.DBConnection);
-    gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lSavedDBConnection.DBConnectionName,
+    GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lSavedDBConnection.DBConnectionName,
                                  lSavedDBConnection.DBConnection);
     i := FSavedDBConnections.IndexOf(lSavedDBConnection);
     FSavedDBConnections.Delete(i);
@@ -721,7 +721,7 @@ begin
       begin
         if lSavedDBConnectionHolder.DBConnection.InTransaction then
             lSavedDBConnectionHolder.DBConnection.Rollback;
-        gTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lSavedDBConnectionHolder.DBConnectionName,
+        GTIOPFManager.DefaultPerLayer.DBConnectionPools.UnLock(lSavedDBConnectionHolder.DBConnectionName,
                                      lSavedDBConnectionHolder.DBConnection);
         FSavedDBConnections.Delete(i);
       end;

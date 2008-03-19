@@ -361,7 +361,7 @@ procedure TVisOwnedQrySelectAbs.Execute(const AData: TtiVisited);
     Query.ContinueScan := True;
     while (not Query.EOF) and
       (Query.ContinueScan) and
-      (not gTIOPFManager.Terminated) do
+      (not GTIOPFManager.Terminated) do
     begin
       MapRowToObject;
       Query.Next;
@@ -373,7 +373,7 @@ var
   liStart:     DWord;
   liQueryTime: DWord;
 begin
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   inherited Execute(AData);
@@ -413,7 +413,7 @@ procedure TVisOwnedQryUpdate.Execute(const AData: TtiVisited);
 var
   lStart: DWord;
 begin
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
   inherited Execute(AData);
   if not AcceptVisitor then
@@ -427,7 +427,7 @@ end;
 
 procedure TVisOwnedQrySelect.OpenQuery;
 begin
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
   Query.Open;
 end;

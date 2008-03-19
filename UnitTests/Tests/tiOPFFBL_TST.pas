@@ -72,6 +72,7 @@ begin
   tiRegisterPersistenceTest(TTestTIPersistenceLayersFBL);
   tiRegisterPersistenceTest(TTestTIDatabaseFBL);
   tiRegisterPersistenceTest(TTestTIQueryFBL);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDFBL);
   tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerFBL);
   tiRegisterPersistenceTest(TTestTIAutoMapOperationFBL);
 end;

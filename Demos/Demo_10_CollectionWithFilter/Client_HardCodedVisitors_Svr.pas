@@ -34,8 +34,8 @@ uses
 
 procedure RegisterVisitors;
 begin
-  gTIOPFManager.RegReadVisitor(TVisClient_Read);
-  gTIOPFManager.RegSaveVisitor(TVisClient_Create);
+  GTIOPFManager.RegReadVisitor(TVisClient_Read);
+  GTIOPFManager.RegSaveVisitor(TVisClient_Create);
 end;
 
 { TVisClient_Read }

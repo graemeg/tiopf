@@ -1846,7 +1846,7 @@ end;
 procedure TTestTIVisitor.SetUp;
 begin
   inherited;
-  gTIOPFManager.Terminated := False;
+  GTIOPFManager.Terminated := False;
 end;
 
 procedure TTestTIVisitor.TouchedByVisitorList_Add;

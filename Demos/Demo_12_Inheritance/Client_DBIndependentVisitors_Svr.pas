@@ -106,21 +106,21 @@ procedure RegisterVisitors;
 begin
 
   // Note: Registration order is important
-  gTIOPFManager.RegReadVisitor(TVisClientCompany_Read);
-  gTIOPFManager.RegReadVisitor(TVisClientPerson_Read);
-  gTIOPFManager.RegReadVisitor(TVisClientAbs_Read);
+  GTIOPFManager.RegReadVisitor(TVisClientCompany_Read);
+  GTIOPFManager.RegReadVisitor(TVisClientPerson_Read);
+  GTIOPFManager.RegReadVisitor(TVisClientAbs_Read);
 
-  gTIOPFManager.RegSaveVisitor(TVisClientAbs_Update);
-  gTIOPFManager.RegSaveVisitor(TVisClientPerson_Update);
-  gTIOPFManager.RegSaveVisitor(TVisClientCompany_Update);
+  GTIOPFManager.RegSaveVisitor(TVisClientAbs_Update);
+  GTIOPFManager.RegSaveVisitor(TVisClientPerson_Update);
+  GTIOPFManager.RegSaveVisitor(TVisClientCompany_Update);
 
-  gTIOPFManager.RegSaveVisitor(TVisClientPerson_Delete);
-  gTIOPFManager.RegSaveVisitor(TVisClientCompany_Delete);
-  gTIOPFManager.RegSaveVisitor(TVisClientAbs_Delete);
+  GTIOPFManager.RegSaveVisitor(TVisClientPerson_Delete);
+  GTIOPFManager.RegSaveVisitor(TVisClientCompany_Delete);
+  GTIOPFManager.RegSaveVisitor(TVisClientAbs_Delete);
 
-  gTIOPFManager.RegSaveVisitor(TVisClientAbs_Create);
-  gTIOPFManager.RegSaveVisitor(TVisClientPerson_Create);
-  gTIOPFManager.RegSaveVisitor(TVisClientCompany_Create);
+  GTIOPFManager.RegSaveVisitor(TVisClientAbs_Create);
+  GTIOPFManager.RegSaveVisitor(TVisClientPerson_Create);
+  GTIOPFManager.RegSaveVisitor(TVisClientCompany_Create);
 
 end;
 

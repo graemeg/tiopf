@@ -37,7 +37,7 @@ uses
 
 procedure TFormMainConnectToDBCode.btnConnectToDatabaseClick(Sender: TObject);
 begin
-  gTIOPFManager.ConnectDatabase(
+  GTIOPFManager.ConnectDatabase(
     DatabaseName,
     UserName,
     Password,
@@ -53,7 +53,7 @@ end;
 
 procedure TFormMainConnectToDBCode.btnDisconnectFromDatabaseClick(Sender: TObject);
 begin
-  gTIOPFManager.DisconnectDatabase(
+  GTIOPFManager.DisconnectDatabase(
     DatabaseName,
     PersistenceLayerName);
   tiAppMessage('Disconnected from "' + DatabaseName + '"');

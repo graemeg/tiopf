@@ -114,22 +114,22 @@ uses
 //begin
 //
 //  // The registration order is important
-////  gTIOPFManager.RegReadVisitor(TVisCustomer_Read);
-////  gTIOPFManager.RegReadVisitor(TVisVendor_Read);
-//  gTIOPFManager.RegReadVisitor(TVisPart_Read);
-//  gTIOPFManager.RegReadVisitor(TVisOrder_Read);
+////  GTIOPFManager.RegReadVisitor(TVisCustomer_Read);
+////  GTIOPFManager.RegReadVisitor(TVisVendor_Read);
+//  GTIOPFManager.RegReadVisitor(TVisPart_Read);
+//  GTIOPFManager.RegReadVisitor(TVisOrder_Read);
 //
-////  gTIOPFManager.RegSaveVisitor(TVisVendor_Update);
-////  gTIOPFManager.RegSaveVisitor(TVisCustomer_Update);
-////  gTIOPFManager.RegSaveVisitor(TVisPart_Update);
+////  GTIOPFManager.RegSaveVisitor(TVisVendor_Update);
+////  GTIOPFManager.RegSaveVisitor(TVisCustomer_Update);
+////  GTIOPFManager.RegSaveVisitor(TVisPart_Update);
 //
-////  gTIOPFManager.RegSaveVisitor(TVisVendor_Delete);
-////  gTIOPFManager.RegSaveVisitor(TVisCustomer_Delete);
-////  gTIOPFManager.RegSaveVisitor(TVisPart_Delete);
+////  GTIOPFManager.RegSaveVisitor(TVisVendor_Delete);
+////  GTIOPFManager.RegSaveVisitor(TVisCustomer_Delete);
+////  GTIOPFManager.RegSaveVisitor(TVisPart_Delete);
 //
-////  gTIOPFManager.RegSaveVisitor(TVisCustomer_Create);
-////  gTIOPFManager.RegSaveVisitor(TVisVendor_Create);
-////  gTIOPFManager.RegSaveVisitor(TVisPart_Delete);
+////  GTIOPFManager.RegSaveVisitor(TVisCustomer_Create);
+////  GTIOPFManager.RegSaveVisitor(TVisVendor_Create);
+////  GTIOPFManager.RegSaveVisitor(TVisPart_Delete);
 //end;
 
 //{ TVisCustomer_Read }

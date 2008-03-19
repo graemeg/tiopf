@@ -220,7 +220,7 @@ var
   LPersistenceLayerName: string;
 begin
   LPersistenceLayerName:= ATestCaseClass.PersistenceLayerName;
-  if gTIOPFTestManager.ToRun(LPersistenceLayerName) then
+  if GTIOPFTestManager.ToRun(LPersistenceLayerName) then
   begin
     LTestSuiteName:= Format(cSuiteNamePersistentTests, [LPersistenceLayerName]);
     RegisterTest(LTestSuiteName, ATestCaseClass.Suite);

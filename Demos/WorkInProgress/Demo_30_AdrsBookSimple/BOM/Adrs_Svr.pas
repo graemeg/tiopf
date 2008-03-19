@@ -286,15 +286,15 @@ end;
 
 initialization
 
-  gTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsReadPK, TVisPersonList_Read);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsRead,   TVisEAdrsList_Read);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsReadPK, TVisPersonList_Read);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsRead,   TVisEAdrsList_Read);
 
-  gTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisPerson_Delete);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisPerson_Update);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisPerson_Create);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisPerson_Delete);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisPerson_Update);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisPerson_Create);
 
-  gTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisEAdrs_Create);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisEAdrs_Update);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisEAdrs_Delete);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisEAdrs_Create);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisEAdrs_Update);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cVisAdrsSave,   TVisEAdrs_Delete);
 
 end.

@@ -65,7 +65,7 @@ uses
 procedure TFormMainInheritance.FormCreate(Sender: TObject);
 begin
   paeClientCount.Value:= 10;
-  Caption:= 'Connected to ' + gTIOPFManager.DefaultDBConnectionName;
+  Caption:= 'Connected to ' + GTIOPFManager.DefaultDBConnectionName;
   lvClients.AddColumn('ClientType', vttkString, 'Client Type', 80);
   lvClients.AddColumn('ClientID', vttkString, 'Client ID', 80);
   lvClients.AddColumn('Caption',  vttkString, 'Client name', 250);
@@ -171,7 +171,7 @@ begin
     lTableMetaData.Name:= 'Client_Abs';
     lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
     lTableMetaData.AddField('Client_ID',         qfkString,   9);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;
@@ -181,7 +181,7 @@ begin
     lTableMetaData.Name:= 'Client_Company';
     lTableMetaData.AddField('OID',                 qfkString,  36); // Using GUID OIDs
     lTableMetaData.AddField('Company_Name',         qfkString, 200);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;
@@ -192,7 +192,7 @@ begin
     lTableMetaData.AddField('OID',                 qfkString,  36); // Using GUID OIDs
     lTableMetaData.AddField('Given_Name',          qfkString,  40);
     lTableMetaData.AddField('Family_Name',         qfkString,  40);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;
@@ -201,9 +201,9 @@ end;
 
 procedure TFormMainInheritance.DropTables;
 begin
-  try gTIOPFManager.DropTable('Client_Abs') except end;
-  try gTIOPFManager.DropTable('Client_Company') except end;
-  try gTIOPFManager.DropTable('Client_Person') except end;
+  try GTIOPFManager.DropTable('Client_Abs') except end;
+  try GTIOPFManager.DropTable('Client_Company') except end;
+  try GTIOPFManager.DropTable('Client_Person') except end;
 end;
 
 procedure TFormMainInheritance.Button2Click(Sender: TObject);

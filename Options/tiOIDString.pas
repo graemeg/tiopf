@@ -148,7 +148,7 @@ begin
     begin
       FLow   := FOIDChars[0];
       FNextOIDData.ThisOIDGenerator := Self;
-      gTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData,
+      GTIOPFManager.VisitorManager.Execute(cNextOIDReadHigh, FNextOIDData,
         ADatabaseAliasName, APersistenceLayerName);
       FDirty := False;
     end
@@ -182,7 +182,7 @@ var
   lNextOID:     string;
 begin
 
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   inherited Execute(AData);
@@ -265,7 +265,7 @@ var
   lNextOID:     string;
   lNextOIDData: TNextOIDData;
 begin
-  if gTIOPFManager.Terminated then
+  if GTIOPFManager.Terminated then
     Exit; //==>
 
   inherited Execute(AData);
@@ -318,7 +318,7 @@ begin
 end;
 
 initialization
-  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
-  gTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerRead);
+  GTIOPFManager.VisitorManager.RegisterVisitor(cNextOIDReadHigh, TVisDBNextOIDAmblerUpdate);
 
 end.

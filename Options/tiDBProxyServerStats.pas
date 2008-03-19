@@ -208,8 +208,8 @@ var
   FParams : TtiQueryParams;
 begin
 
-  lTotalDBConnections    := gTIOPFManager.DefaultDBConnectionPool.Count;
-  lLockedDBConnections   := gTIOPFManager.DefaultDBConnectionPool.CountLocked;
+  lTotalDBConnections    := GTIOPFManager.DefaultDBConnectionPool.Count;
+  lLockedDBConnections   := GTIOPFManager.DefaultDBConnectionPool.CountLocked;
   lAvailableDBConnections := lTotalDBConnections - lLockedDBConnections;
 
   gStatefulDBConnectionPool.GetSummaryStats(
@@ -220,16 +220,16 @@ begin
   FParams := TtiQueryParams.Create;
   try
     FParams.SetValueAsDateTime(cFieldSummaryTimeOnServer, Now);
-    FParams.SetValueAsDateTime(cFieldSummaryApplicationStartTime, gTIOPFManager.ApplicationStartTime);
+    FParams.SetValueAsDateTime(cFieldSummaryApplicationStartTime, GTIOPFManager.ApplicationStartTime);
     FParams.SetValueAsString( cFieldSummaryApplicationUpTime, GetApplicationUpTimeAsString);
-    FParams.SetValueAsString( cFieldSummaryPersistenceLayerName, gTIOPFManager.DefaultPersistenceLayerName);
-    FParams.SetValueAsString( cFieldSummaryDatabaseName, gTIOPFManager.DefaultDBConnectionName);
-    FParams.SetValueAsString( cFieldSummaryUserName, gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.UserName);
-    FParams.SetValueAsString( cFieldSummaryPassword,  tiReplicate('*', Length(gTIOPFManager.DefaultDBConnectionPool.DBConnectParams.Password)));
+    FParams.SetValueAsString( cFieldSummaryPersistenceLayerName, GTIOPFManager.DefaultPersistenceLayerName);
+    FParams.SetValueAsString( cFieldSummaryDatabaseName, GTIOPFManager.DefaultDBConnectionName);
+    FParams.SetValueAsString( cFieldSummaryUserName, GTIOPFManager.DefaultDBConnectionPool.DBConnectParams.UserName);
+    FParams.SetValueAsString( cFieldSummaryPassword,  tiReplicate('*', Length(GTIOPFManager.DefaultDBConnectionPool.DBConnectParams.Password)));
     FParams.SetValueAsInteger(cFieldSummaryTotalDBConnections, lTotalDBConnections);
     FParams.SetValueAsInteger(cFieldSummaryLockedDBConnections, lLockedDBConnections);
     FParams.SetValueAsInteger(cFieldSummaryAvailableDBConnections, lAvailableDBConnections);
-    FParams.SetValueAsInteger(cFieldSummaryDBConnectionTimeOut, gTIOPFManager.DefaultDBConnectionPool.WaitTime);
+    FParams.SetValueAsInteger(cFieldSummaryDBConnectionTimeOut, GTIOPFManager.DefaultDBConnectionPool.WaitTime);
 
     FParams.SetValueAsInteger(cFieldSummaryTotalStatefulDBConnections,   lTotalStatefulDBConnections);
     FParams.SetValueAsInteger(cFieldSummaryInUseStatefulDBConnections,   lInUseStatefulDBConnections);
@@ -268,7 +268,7 @@ procedure TtiDBProxyServerStats.InsertDBConnectionPool;
 var
   lPool : TtiDBConnectionPool;
 begin
-  lPool := gTIOPFManager.DefaultDBConnectionPool;
+  lPool := GTIOPFManager.DefaultDBConnectionPool;
   lPool.ForEachPooledItem(ForEachDBConnectionPoolItem);
 end;
 
@@ -332,7 +332,7 @@ end;
 
 function TtiDBProxyServerStats.GetStatsPageTitle: string;
 begin
-  result := gTIOPFManager.DefaultDBConnectionName + ' Status';
+  result := GTIOPFManager.DefaultDBConnectionName + ' Status';
 end;
 
 function TtiDBProxyServerStats.GetApplicationUpTimeAsString: string;
@@ -340,7 +340,7 @@ var
   lTime : TDateTime;
   lH, lM, lS, lMS : Word;
 begin
-  lTime := Now-gTIOPFManager.ApplicationStartTime;
+  lTime := Now-GTIOPFManager.ApplicationStartTime;
   DecodeTime(lTime, lH, lM, lS, lMS);
   result := IntToStr(Trunc(lTime)) + ' days ' +
     IntToStr(lH) + ':' +

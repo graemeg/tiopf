@@ -893,9 +893,9 @@ end;
 
 procedure TAdrsBook.Read(const pDBConnectionName: string; pPersistenceLayerName: string = '');
 begin
-  gTIOPFManager.Read(  AdrsTypes, pDBConnectionName, pPersistenceLayerName);
-  gTIOPFManager.ReadPK(Self, pDBConnectionName, pPersistenceLayerName);
-  gTIOPFManager.Read(  Self, pDBConnectionName, pPersistenceLayerName);
+  GTIOPFManager.Read(  AdrsTypes, pDBConnectionName, pPersistenceLayerName);
+  GTIOPFManager.ReadPK(Self, pDBConnectionName, pPersistenceLayerName);
+  GTIOPFManager.Read(  Self, pDBConnectionName, pPersistenceLayerName);
 end;
 
 procedure TAdrsBook.SetDeleted(const Value: boolean);

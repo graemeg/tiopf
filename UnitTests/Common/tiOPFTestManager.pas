@@ -229,8 +229,8 @@ begin
     LPersistenceLayerName:= LTestSetupData.PersistenceLayerName;
     if not LTestSetupData.Selected then
     begin
-      if gTIOPFManager.PersistenceLayers.IsLoaded(LPersistenceLayerName) then
-        gTIOPFManager.PersistenceLayers.UnLoadPersistenceLayer(LPersistenceLayerName);
+      if GTIOPFManager.PersistenceLayers.IsLoaded(LPersistenceLayerName) then
+        GTIOPFManager.PersistenceLayers.UnLoadPersistenceLayer(LPersistenceLayerName);
       Delete(i);
     end;
   end;

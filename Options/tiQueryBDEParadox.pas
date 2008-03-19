@@ -225,11 +225,11 @@ begin
 end;
 
 Initialization
-  gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerBDEParadox);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistBDEParadox);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistBDEParadox);
 
 end.

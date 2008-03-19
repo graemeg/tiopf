@@ -95,7 +95,7 @@ begin
   Log(Format('%s (%s) service stopping...', [Name, DisplayName]));
   // ToDo: Will have to do better than this. Should wait for database activity to end. Then shut down.
   Stopped := False;
-  gTIOPFManager.Terminate;
+  GTIOPFManager.Terminate;
   gTIDBProxy.Stop;
   FreeAndNilTIPerMgr;
   Stopped := True;

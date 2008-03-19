@@ -316,8 +316,8 @@ begin
   lData := FindByPersistenceLayerName(ALayerName);
   if lData = nil then
     Exit; //==>
-  if gTIOPFManager.DefaultPerLayer = lData then
-    gTIOPFManager.DefaultPerLayer := nil;
+  if GTIOPFManager.DefaultPerLayer = lData then
+    GTIOPFManager.DefaultPerLayer := nil;
   Remove(lData);
 end;
 

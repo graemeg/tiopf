@@ -436,7 +436,7 @@ var
   lOID: TtiOID;
   lAdrsType: TLookupListItem;
 begin
-  lOID:= gTIOPFManager.OIDFactory.CreateOID;
+  lOID:= GTIOPFManager.OIDFactory.CreateOID;
   try
     lOID.AssignFromTIQuery('Adrs_Type', Query);
     lAdrsType:=
@@ -485,7 +485,7 @@ var
   lOID: TtiOID;
   lAdrsType: TLookupListItem;
 begin
-  lOID:= gTIOPFManager.OIDFactory.CreateOID;
+  lOID:= GTIOPFManager.OIDFactory.CreateOID;
   try
     lOID.AssignFromTIQuery('EAdrs_Type', Query);
     lAdrsType:= TAdrsBook(Visited.TopOfHierarchy).AdrsTypes.Find(lOID)
@@ -923,38 +923,38 @@ end;
 initialization
 
   // Read PK visitors
-  gTIOPFManager.RegReadPKVisitor(TVisCompanyRead_PK);
-  gTIOPFManager.RegReadPKVisitor(TVisPersonRead_PK);
-  gTIOPFManager.RegReadPKVisitor(TVisCompanyEmployeeRead_PK);
+  GTIOPFManager.RegReadPKVisitor(TVisCompanyRead_PK);
+  GTIOPFManager.RegReadPKVisitor(TVisPersonRead_PK);
+  GTIOPFManager.RegReadPKVisitor(TVisCompanyEmployeeRead_PK);
 
   // Read detail visitors
-  gTIOPFManager.RegReadVisitor(TVisLookupListRead);
-  gTIOPFManager.RegReadVisitor(TVisCompanyRead_Detail);
-  gTIOPFManager.RegReadVisitor(TVisPersonRead_Detail);
-  gTIOPFManager.RegReadVisitor(TVisAdrsRead);
-  gTIOPFManager.RegReadVisitor(TVisEAdrsRead);
+  GTIOPFManager.RegReadVisitor(TVisLookupListRead);
+  GTIOPFManager.RegReadVisitor(TVisCompanyRead_Detail);
+  GTIOPFManager.RegReadVisitor(TVisPersonRead_Detail);
+  GTIOPFManager.RegReadVisitor(TVisAdrsRead);
+  GTIOPFManager.RegReadVisitor(TVisEAdrsRead);
 
   // Delete visitors
-  gTIOPFManager.RegSaveVisitor(TVisEAdrsDelete);
-  gTIOPFManager.RegSaveVisitor(TVisAdrsDelete);
-  gTIOPFManager.RegSaveVisitor(TVisPersonDelete);
-  gTIOPFManager.RegSaveVisitor(TVisCompanyDelete);
+  GTIOPFManager.RegSaveVisitor(TVisEAdrsDelete);
+  GTIOPFManager.RegSaveVisitor(TVisAdrsDelete);
+  GTIOPFManager.RegSaveVisitor(TVisPersonDelete);
+  GTIOPFManager.RegSaveVisitor(TVisCompanyDelete);
 
   // Update visitors
-  gTIOPFManager.RegSaveVisitor(TVisCompanyUpdate);
-  gTIOPFManager.RegSaveVisitor(TVisPersonUpdate);
-  gTIOPFManager.RegSaveVisitor(TVisEAdrsUpdate);
-  gTIOPFManager.RegSaveVisitor(TVisAdrsUpdate);
+  GTIOPFManager.RegSaveVisitor(TVisCompanyUpdate);
+  GTIOPFManager.RegSaveVisitor(TVisPersonUpdate);
+  GTIOPFManager.RegSaveVisitor(TVisEAdrsUpdate);
+  GTIOPFManager.RegSaveVisitor(TVisAdrsUpdate);
 
   // Create visitors
-  gTIOPFManager.RegSaveVisitor(TVisCompanyCreate);
-  gTIOPFManager.RegSaveVisitor(TVisPersonCreate);
-  gTIOPFManager.RegSaveVisitor(TVisEAdrsCreate);
-  gTIOPFManager.RegSaveVisitor(TVisAdrsCreate);
+  GTIOPFManager.RegSaveVisitor(TVisCompanyCreate);
+  GTIOPFManager.RegSaveVisitor(TVisPersonCreate);
+  GTIOPFManager.RegSaveVisitor(TVisEAdrsCreate);
+  GTIOPFManager.RegSaveVisitor(TVisAdrsCreate);
 
   // List clean up visitors
-  gTIOPFManager.RegSaveVisitor(TVisPersonListObjectStateDeleted  );
-  gTIOPFManager.RegSaveVisitor(TVisAddressListObjectStateDeleted );
-  gTIOPFManager.RegSaveVisitor(TVisEAddressListObjectStateDeleted);
+  GTIOPFManager.RegSaveVisitor(TVisPersonListObjectStateDeleted  );
+  GTIOPFManager.RegSaveVisitor(TVisAddressListObjectStateDeleted );
+  GTIOPFManager.RegSaveVisitor(TVisEAddressListObjectStateDeleted);
 
 end.

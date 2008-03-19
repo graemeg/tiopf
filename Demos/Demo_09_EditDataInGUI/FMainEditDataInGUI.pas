@@ -73,7 +73,7 @@ begin
     lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
     lTableMetaData.AddField('Client_Name',       qfkString, 200);
     lTableMetaData.AddField('Client_ID',         qfkString,   9);
-    gTIOPFManager.CreateTable(lTableMetaData);
+    GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
   end;
@@ -82,12 +82,12 @@ end;
 // Drop table
 procedure TForm2.DropTables;
 begin
-  try gTIOPFManager.DropTable('Client') except end;
+  try GTIOPFManager.DropTable('Client') except end;
 end;
 
 procedure TForm2.FormCreate(Sender: TObject);
 begin
-  Caption:= 'Connected to ' + gTIOPFManager.DefaultDBConnectionName;
+  Caption:= 'Connected to ' + GTIOPFManager.DefaultDBConnectionName;
   LV.AddColumn('ClientID',   vttkString, 'Client ID', 80);
   LV.AddColumn('ClientName', vttkString, 'Client name', 200);
 

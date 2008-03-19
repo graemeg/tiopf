@@ -97,14 +97,14 @@ var
 
 procedure RegisterMappings;
 begin
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClientSource, 'Client_Source', 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClientSource, 'Client_Source', 'DisplayText', 'Display_Text');
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TClientSources, TClientSource);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClientSource, 'Client_Source', 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClientSource, 'Client_Source', 'DisplayText', 'Display_Text');
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TClientSources, TClientSource);
 
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID', 'OID', [pktDB]);
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name');
-  gTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientSourceOIDAsString', 'Client_Source');
-  gTIOPFManager.ClassDBMappingMgr.RegisterCollection(TClients, TClient);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'OID', 'OID', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientName', 'Client_Name');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TClient, 'Client', 'ClientSourceOIDAsString', 'Client_Source');
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TClients, TClient);
 end;
 
 function  gClientSources: TClientSources;

@@ -50,10 +50,10 @@ uses
 
 procedure RegisterVisitors;
 begin
-  gTIOPFManager.RegReadVisitor(TVisClient_Read);
-  gTIOPFManager.RegSaveVisitor(TVisClient_Create);
-  gTIOPFManager.RegSaveVisitor(TVisClient_Update);
-  gTIOPFManager.RegSaveVisitor(TVisClient_Delete);
+  GTIOPFManager.RegReadVisitor(TVisClient_Read);
+  GTIOPFManager.RegSaveVisitor(TVisClient_Create);
+  GTIOPFManager.RegSaveVisitor(TVisClient_Update);
+  GTIOPFManager.RegSaveVisitor(TVisClient_Delete);
 end;
 
 { TVisClient_Read }

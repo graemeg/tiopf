@@ -677,7 +677,7 @@ begin
   maps:= TtiAttrColMaps(FCriteriaAttrColMaps);
 
   // map property based critera to table based
-  gTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
+  GTIOPFManager.ClassDBMappingMgr.AttrColMaps.FindAllMappingsByMapToClass(
     AClass, maps);
 
   lVisProAttributeToFieldName :=

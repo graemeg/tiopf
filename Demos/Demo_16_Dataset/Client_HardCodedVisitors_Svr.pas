@@ -75,15 +75,15 @@ uses
 procedure RegisterVisitors;
 begin
   // Note: Registration order is important
-  gTIOPFManager.RegReadVisitor(TVisClient_Read);
+  GTIOPFManager.RegReadVisitor(TVisClient_Read);
 
-  gTIOPFManager.RegSaveVisitor(TVisClient_Create);
-  gTIOPFManager.RegSaveVisitor(TVisClient_Update);
-  gTIOPFManager.RegSaveVisitor(TVisPhoneNumber_Create);
-  gTIOPFManager.RegSaveVisitor(TVisPhoneNumber_Update);
+  GTIOPFManager.RegSaveVisitor(TVisClient_Create);
+  GTIOPFManager.RegSaveVisitor(TVisClient_Update);
+  GTIOPFManager.RegSaveVisitor(TVisPhoneNumber_Create);
+  GTIOPFManager.RegSaveVisitor(TVisPhoneNumber_Update);
 
-  gTIOPFManager.RegSaveVisitor(TVisPhoneNumber_Delete);
-  gTIOPFManager.RegSaveVisitor(TVisClient_Delete);
+  GTIOPFManager.RegSaveVisitor(TVisPhoneNumber_Delete);
+  GTIOPFManager.RegSaveVisitor(TVisClient_Delete);
 
 end;
 

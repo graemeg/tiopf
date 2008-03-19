@@ -63,12 +63,12 @@ end;
 procedure TTestAdrsMetaData.Setup;
 begin
   inherited;
-  try gTIOPFManager.DropTable('adrs') except end;
-  try gTIOPFManager.DropTable('EAdrs') except end;
-  try gTIOPFManager.DropTable('Person') except end;
-  try gTIOPFManager.DropTable('Company') except end;
-  try gTIOPFManager.DropTable('Lookup_List_Value') except end;
-  try gTIOPFManager.DropTable('Lookup_List_Name') except end;
+  try GTIOPFManager.DropTable('adrs') except end;
+  try GTIOPFManager.DropTable('EAdrs') except end;
+  try GTIOPFManager.DropTable('Person') except end;
+  try GTIOPFManager.DropTable('Company') except end;
+  try GTIOPFManager.DropTable('Lookup_List_Value') except end;
+  try GTIOPFManager.DropTable('Lookup_List_Name') except end;
   FAdrsMetaData:=TAdrsMetaData.Create;
   FAdrsMetaData.Refresh;
 end;

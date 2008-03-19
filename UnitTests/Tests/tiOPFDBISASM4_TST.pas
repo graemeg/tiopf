@@ -79,6 +79,7 @@ begin
   tiRegisterPersistenceTest(TTestTIPersistenceLayersDBISAM4);
   tiRegisterPersistenceTest(TTestTIDatabaseDBISAM4);
   tiRegisterPersistenceTest(TTestTIQueryDBISAM4);
+  tiRegisterPersistenceTest(TTestTIOIDPersistentGUIDDBISAM4);
   tiRegisterPersistenceTest(TTestTIOIDPersistentIntegerDBISAM4);
   tiRegisterPersistenceTest(TTestTIAutoMapOperationDBISAM4);
   tiRegisterPersistenceTest(TTestAutomappingCriteriaDBISAM4);

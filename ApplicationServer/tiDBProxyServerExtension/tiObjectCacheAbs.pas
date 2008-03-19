@@ -114,7 +114,7 @@ end;
 function TtiOjectCacheAbs.LockDBConnectionCreateQuery(
   var ADatabase: TtiDatabase ): TtiQuery;
 begin
-  ADatabase := gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock ;
+  ADatabase := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock ;
   result := ADatabase.CreateTIQuery;
   result.AttachDatabase(ADatabase);
 end;
@@ -164,7 +164,7 @@ begin
     end;
   finally
     LQuery.Free;
-    gTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.UnLock(LDatabase) ;
+    GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.UnLock(LDatabase) ;
   end;
 end;
 

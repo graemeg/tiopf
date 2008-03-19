@@ -894,12 +894,12 @@ end;
 
 procedure TTestAdrs.EmptyTables;
 begin
-  gTIOPFManager.DeleteRow('Adrs', nil);
-  gTIOPFManager.DeleteRow('EAdrs', nil);
-  gTIOPFManager.DeleteRow('Person', nil);
-  gTIOPFManager.DeleteRow('Company', nil);
-  gTIOPFManager.DeleteRow('Lookup_List_Value', nil);
-  gTIOPFManager.DeleteRow('Lookup_List_Name', nil);
+  GTIOPFManager.DeleteRow('Adrs', nil);
+  GTIOPFManager.DeleteRow('EAdrs', nil);
+  GTIOPFManager.DeleteRow('Person', nil);
+  GTIOPFManager.DeleteRow('Company', nil);
+  GTIOPFManager.DeleteRow('Lookup_List_Value', nil);
+  GTIOPFManager.DeleteRow('Lookup_List_Name', nil);
 end;
 
 procedure TTestAdrs.Setup;
@@ -917,7 +917,7 @@ begin
   try
     lParams.ParamAsVariant['OID']:= pOID;
     lParams.ParamAsVariant['List_Name']:= pListName;
-    gTIOPFManager.InsertRow('Lookup_List_Name', lParams);
+    GTIOPFManager.InsertRow('Lookup_List_Name', lParams);
   finally
     lParams.Free;
   end;
@@ -943,7 +943,7 @@ begin
     lParams.ParamAsVariant['OID']:= pOID;
     lParams.ParamAsVariant['Owner_OID']:= pOwnerOID;
     lParams.ParamAsVariant['Item_Text']:= pItemText;
-    gTIOPFManager.InsertRow('Lookup_List_Value', lParams);
+    GTIOPFManager.InsertRow('Lookup_List_Value', lParams);
   finally
     lParams.Free;
   end;
@@ -974,7 +974,7 @@ begin
     lParams.ParamAsVariant['Suburb']     := pValue;
     lParams.ParamAsVariant['State']      := pValue;
     lParams.ParamAsVariant['PCode']      := pValue;
-    gTIOPFManager.InsertRow('Adrs', lParams);
+    GTIOPFManager.InsertRow('Adrs', lParams);
   finally
     lParams.Free;
   end;
@@ -1009,7 +1009,7 @@ begin
     lParams.ParamAsVariant['Owner_OID']  := pOwnerOID;
     lParams.ParamAsVariant['EAdrs_Type'] := pAdrsTypeOID;
     lParams.ParamAsVariant['EAdrs_Text'] := pValue;
-    gTIOPFManager.InsertRow('EAdrs', lParams);
+    GTIOPFManager.InsertRow('EAdrs', lParams);
   finally
     lParams.Free;
   end;
@@ -1037,7 +1037,7 @@ begin
     lParams.ParamAsVariant['Initials']:= pValue;
     lParams.ParamAsVariant['First_Name']:= pValue;
     lParams.ParamAsVariant['Family_Name']:= pValue;
-    gTIOPFManager.InsertRow('Person', lParams);
+    GTIOPFManager.InsertRow('Person', lParams);
   finally
     lParams.Free;
   end;
@@ -1375,7 +1375,7 @@ begin
     lParams.ParamAsVariant['OID']:= pOID;
     lParams.ParamAsVariant['Notes']:= pValue;
     lParams.ParamAsVariant['Company_Name']:= pValue;
-    gTIOPFManager.InsertRow('Company', lParams);
+    GTIOPFManager.InsertRow('Company', lParams);
   finally
     lParams.Free;
   end;

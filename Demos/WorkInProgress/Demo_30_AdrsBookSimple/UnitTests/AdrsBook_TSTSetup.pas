@@ -64,7 +64,7 @@ begin
       LParams.SetValueAsString('oid_person', AOIDPerson);
       LParams.SetValueAsString('eadrs_type', LData.AdrsType);
       LParams.SetValueAsString('eadrs_text', LData.AdrsText);
-      gTIOPFManager.InsertRow('eadrs', LParams);
+      GTIOPFManager.InsertRow('eadrs', LParams);
     finally
       LParams.Free;
     end;
@@ -117,7 +117,7 @@ begin
       LParams.SetValueAsString('title', LData.Title);
       LParams.SetValueAsString('initials', LData.Initials);
       LParams.SetValueAsString('notes', LData.Notes);
-      gTIOPFManager.InsertRow('person', LParams);
+      GTIOPFManager.InsertRow('person', LParams);
     finally
       LParams.Free;
     end;
