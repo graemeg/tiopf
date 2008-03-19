@@ -50,7 +50,7 @@ type
   public
     class function PersistenceLayerName: string; override;
   published
-    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; virtual;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; override;
   end;
 
 procedure RegisterTests;

@@ -90,7 +90,7 @@ type
     procedure ReadWriteString1;
     procedure ReadWriteString10;
     procedure ReadWriteString100;
-    procedure ReadWriteString255;
+    procedure ReadWriteString255; virtual;
     procedure ReadWriteString256;
     procedure ReadWriteString257;
     procedure ReadWriteString511;
