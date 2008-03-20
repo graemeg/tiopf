@@ -80,7 +80,7 @@ type
     property    OnThreadCountChange: TThreadMethod read FOnThreadCountChange write SetOnThreadCountChange;
     property    Count: integer read GetThreadCount;
     property    ActiveThreadNames: string read GetActiveThreadNames;
-    procedure   WaitForAll; 
+    procedure   WaitForAll;
   end;
 
 {$IFDEF MSWINDOWS}
@@ -93,6 +93,7 @@ uses
   tiOPFManager
   {$IFDEF MSWINDOWS}
   ,tiWin32
+  ,Forms // Application.ProcessMessages. ToDo: Remove when threads are better understood
   {$ENDIF MSWINDOWS}
   ,tiUtils
  ;
@@ -352,7 +353,12 @@ end;
 procedure TtiActiveThreadList.WaitForAll;
 begin
   while Count > 0 do
+  begin
     Sleep(100);
+    {$IFDEF MSWINDOWS}
+      Application.ProcessMessages;
+    {$ENDIF MSWINDOWS}
+  end;
 end;
 
 { TtiSleepThread }

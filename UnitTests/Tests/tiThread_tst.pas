@@ -31,7 +31,7 @@ uses
   Windows,
   Classes,
   SysUtils,
-  Contnrs;
+  Contnrs, Forms;
 
 const
   CSleep = 100;
@@ -63,15 +63,12 @@ var
   LThread: TtiThreadForTesting;
 begin
   AllowedMemoryLeakSize:= 152;
-  // ToDo: WaitForAll is locking up. Investigate
   CheckEquals(0, GTIOPFManager.ActiveThreadList.Count);
   LThread:= TtiThreadForTesting.CreateAndResume;
+  LThread.Priority:= tpHighest;
   CheckEquals(1, GTIOPFManager.ActiveThreadList.Count);
-//  GTIOPFManager.ActiveThreadList.WaitForAll;
-  Sleep(200);
-// ActiveThreadList.Count will return 1 until this proc goes out of scope.
-// Something to do with FreeOnTerminate.
-//  CheckEquals(0, GTIOPFManager.ActiveThreadList.Count);
+  GTIOPFManager.ActiveThreadList.WaitForAll;
+  CheckEquals(0, GTIOPFManager.ActiveThreadList.Count);
 end;
 
 procedure TTestTIThread.tiThreadExplicitFree;
@@ -83,7 +80,7 @@ begin
   LThread:= TtiThreadForTesting.Create(True);
   LThread.FreeOnTerminate:= False;
   try
-    LThread.Priority:= tpHigher;
+    LThread.Priority:= tpHighest;
     if GTIOPFManager.ActiveThreadList.Count > 1 then
       Fail(Format('Expected 1 thread, but found "%s"', [GTIOPFManager.ActiveThreadList.ActiveThreadNames]));
     LThread.Resume;
