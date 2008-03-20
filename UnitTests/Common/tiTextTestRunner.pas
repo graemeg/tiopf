@@ -285,8 +285,9 @@ begin
     result := result + format(
       '  Run:      %8d'+CRLF+
       '  Failures: %8d'+CRLF+
-      '  Errors:   %8d'+CRLF+CRLF,
-      [r.runCount, r.failureCount, r.errorCount]);
+      '  Errors:   %8d'+CRLF+
+      '  Warnings: %8d'+CRLF+CRLF,
+      [r.runCount, r.failureCount, r.errorCount, r.WarningCount]);
   end
 end;
 
