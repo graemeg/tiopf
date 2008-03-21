@@ -276,11 +276,13 @@ begin
   if r.wasSuccessful then
   begin
     result := result + CRLF + CrLf;
+    Result := Result + PrintSettings(r);
     result := result + format('OK: %d tests'+ CRLF, [r.runCount]);
   end
   else
   begin
     result := result + CRLF + CRLF;
+    Result := Result + PrintSettings(r);
     result := result + 'Test Results:'+CRLF + CrLf;
     result := result + format(
       '  Run:      %8d'+CRLF+

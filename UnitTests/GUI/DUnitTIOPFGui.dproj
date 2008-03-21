@@ -47,6 +47,7 @@
     <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
     <DCC_UNIT_DEPRECATED>False</DCC_UNIT_DEPRECATED>
     <DCC_MapFile>3</DCC_MapFile>
+    <DCC_GenerateStackFrames>True</DCC_GenerateStackFrames>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>
