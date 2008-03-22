@@ -1470,6 +1470,7 @@ begin
       GTIOPFManager.DefaultOIDGenerator:= nil;
     end;
 
+    InhibitStackTrace;
     LObject:= TtiObjectForTestingOID.Create;
     try
       try
@@ -1841,6 +1842,7 @@ begin
         CheckIs(e, Exception, 'Failed on ObjectProp');
     end;
 
+    FExecControl.InhibitStackTrace := True;
     try
       lObj.PropType('MethodProp');
       Check(false, 'Failed on MethodProp');

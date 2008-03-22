@@ -2494,6 +2494,7 @@ procedure TTestTIUtils.tiForceDirectories;
 var
   LDir: string;
 begin
+  InhibitStackTrace;
   LDir := tiFixPathDelim(TempDirectory + '\level1\level2\level3\level4');
   tiUtils.tiForceDirectories(LDir);
   try

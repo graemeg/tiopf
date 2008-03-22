@@ -527,6 +527,7 @@ begin
     CreateTIObjectVisitorControllerTestInstance(LM, LVC, LConfig, LDatabaseName);
     LM.VisitorManager.RegisterVisitor('test', TtiObjectSensingVisitorException);
     LVisited := TtiObjectSensingVisited.Create;
+    InhibitStackTrace;
     try
       LM.VisitorManager.Execute('test', LVisited, LDatabaseName, cTIPersistXMLLight);
       Fail(CErrorExceptionNotRaised);

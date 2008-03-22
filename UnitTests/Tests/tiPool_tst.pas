@@ -130,6 +130,7 @@ var
   lThrd : TThresPoolThread;
   lList : TObjectList;
 begin
+  InhibitStackTrace;
   Check(True); // To Force OnCheckCalled to be called
   lList := TObjectList.Create(true);
   try

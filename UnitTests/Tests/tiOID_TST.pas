@@ -1053,7 +1053,8 @@ end;
 
 procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDMultiUser;
 begin
-  SetAllowedLeakArray([32, 208, 265]);
+  AllowedMemoryLeakSize := 32;  //Sneaky way to get 4 values
+  SetAllowedLeakArray([208, 265, 376]);
   inherited;
 end;
 

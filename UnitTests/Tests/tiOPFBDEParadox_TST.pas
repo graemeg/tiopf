@@ -112,7 +112,7 @@ end;
 
 procedure TTestTIDatabaseBDEParadox.CreateTableDropTable;
 begin
-  SetAllowedLeakArray([504]);
+  SetAllowedLeakArray([488, 504]);
   inherited;
 end;
 

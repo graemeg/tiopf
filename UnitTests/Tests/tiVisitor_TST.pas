@@ -2233,6 +2233,7 @@ begin
     LVM := TtiVisitorManager.Create(nil);
     LO := TtiObject.Create;
 
+    InhibitStackTrace;
     LVM.RegisterVisitor('test', TTestVisitorManagerVCVisitorException);
     try
       LVM.Execute('test', LO);
