@@ -37,7 +37,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="50">
+    <Files Count="49">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -119,7 +119,7 @@
         <Type Value="Include"/>
       </Item20>
       <Item21>
-        <Filename Value="../../Options/tiOIDGUID.pas"/>
+        <Filename Value="../../Core/tiOIDGUID.pas"/>
         <UnitName Value="tiOIDGUID"/>
       </Item21>
       <Item22>
@@ -175,69 +175,65 @@
         <UnitName Value="tiTextParser"/>
       </Item34>
       <Item35>
-        <Filename Value="../../Options/tiTextParserStructCSV.pas"/>
-        <UnitName Value="tiTextParserStructCSV"/>
-      </Item35>
-      <Item36>
         <Filename Value="../../Options/tiLogToConsole.pas"/>
         <UnitName Value="tiLogToConsole"/>
-      </Item36>
-      <Item37>
+      </Item35>
+      <Item36>
         <Filename Value="../../Options/tiXML.pas"/>
         <UnitName Value="tiXML"/>
-      </Item37>
-      <Item38>
+      </Item36>
+      <Item37>
         <Filename Value="../../Options/tiQueryCSV.pas"/>
         <UnitName Value="tiQueryCSV"/>
-      </Item38>
-      <Item39>
+      </Item37>
+      <Item38>
         <Filename Value="../../Options/tiQueryTAB.pas"/>
         <UnitName Value="tiQueryTAB"/>
-      </Item39>
-      <Item40>
+      </Item38>
+      <Item39>
         <Filename Value="../../Core/tiLogToFile.pas"/>
         <UnitName Value="tiLogToFile"/>
-      </Item40>
-      <Item41>
+      </Item39>
+      <Item40>
         <Filename Value="../../Core/tiCriteria.pas"/>
         <UnitName Value="tiCriteria"/>
-      </Item41>
-      <Item42>
+      </Item40>
+      <Item41>
         <Filename Value="../../Core/tiVisitorCriteria.pas"/>
         <UnitName Value="tiVisitorCriteria"/>
-      </Item42>
-      <Item43>
+      </Item41>
+      <Item42>
         <Filename Value="../../Options/tiXMLToTIDataset.pas"/>
         <UnitName Value="tiXMLToTIDataSet"/>
-      </Item43>
-      <Item44>
+      </Item42>
+      <Item43>
         <Filename Value="../../Options/tiQueryXMLLight.pas"/>
         <UnitName Value="tiQueryXMLLight"/>
-      </Item44>
-      <Item45>
+      </Item43>
+      <Item44>
         <Filename Value="../../Core/tiRTTI.pas"/>
         <UnitName Value="tiRTTI"/>
-      </Item45>
-      <Item46>
+      </Item44>
+      <Item45>
         <Filename Value="../../Core/tiTokenLibrary.pas"/>
         <UnitName Value="tiTokenLibrary"/>
-      </Item46>
-      <Item47>
+      </Item45>
+      <Item46>
         <Filename Value="../../Core/tiINI.pas"/>
         <UnitName Value="tiINI"/>
-      </Item47>
-      <Item48>
+      </Item46>
+      <Item47>
         <Filename Value="../../Options/tiQueue.pas"/>
         <UnitName Value="tiQueue"/>
-      </Item48>
-      <Item49>
+      </Item47>
+      <Item48>
         <Filename Value="../../Core/tiAutoMap.pas"/>
         <UnitName Value="tiAutoMap"/>
-      </Item49>
-      <Item50>
+      </Item48>
+      <Item49>
         <Filename Value="../../Core/tiVisitorDBAutoGen.pas"/>
         <UnitName Value="tiVisitorDBAutoGen"/>
-      </Item50>
+      </Item49>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="2">

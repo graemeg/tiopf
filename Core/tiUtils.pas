@@ -317,9 +317,11 @@ type
   function tiDateTimeAsIntlDateDisp(const ADateTime: TDateTime): string;
   function tiIntlDateStorAsDateTime(const AValue: string): TDateTime;
   function tiIntlDateDispAsDateTime(const AValue: string): TDateTime;
+  {$IFDEF MSWINDOWS}
   function tiGMTOffset: TDateTime;
   function tiLocalTimeToGMT(const ALocalTime: TDateTime): TDateTime;
   function tiGMTToLocalTime(const AGMTTime: TDateTime): TDateTime;
+  {$ENDIF}
 
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -532,6 +534,9 @@ uses
     ,FileCtrl
     {$ENDIF}
   ,tiWin32
+    {$IFDEF FPC}
+    ,winsysut
+    {$ENDIF}
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
   ,unix
@@ -3153,6 +3158,7 @@ begin
     Result := EncodeDate(lY, lM, lD) + EncodeTime(lH, lMi, lS, 0);
 end;
 
+{$IFDEF MSWINDOWS}
 function tiGMTOffset: TDateTime;
 var
   TZI: TTimeZoneInformation;
@@ -3176,6 +3182,7 @@ function tiGMTToLocalTime(const AGMTTime: TDateTime): TDateTime;
 begin
   Result := AGMTTime - tiGMTOffset;
 end;
+{$ENDIF}
 
 procedure tiConsoleAppPause;
 begin
