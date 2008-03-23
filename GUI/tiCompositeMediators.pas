@@ -24,14 +24,14 @@ type
   { Composite mediator for TListView }
   TCompositeListViewMediator = class(TtiObject)
   private
-    FIsObserving: Boolean;
-    FDisplayNames: string;
-    FShowDeleted: Boolean;
     function    GetSelectedObject: TtiObject;
     procedure   SetSelectedObject(const AValue: TtiObject);
     procedure   SetShowDeleted(const AValue: Boolean);
     procedure   DoCreateItemMediator(AData: TtiObject);
   protected
+    FIsObserving: Boolean;
+    FDisplayNames: string;
+    FShowDeleted: Boolean;
     FView: TListView;
     FModel: TtiObjectList;
     FMediatorList: TObjectList;
@@ -46,7 +46,6 @@ type
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; ADisplayNames: string; IsObserving: Boolean = True);
     procedure   BeforeDestruction; override;
     procedure   Update(ASubject: TtiObject); override;
-    
     { Called from the GUI to trigger events }
     procedure   HandleSelectionChanged; virtual;
   published
@@ -62,15 +61,15 @@ type
   { Composite mediator for TStringGrid }
   TCompositeStringGridMediator = class(TtiObject)
   private
-    FDisplayNames: string;
-    FIsObserving: boolean;
-    FShowDeleted: Boolean;
     function    GetSelectedObjected: TtiObject;
     procedure   SetSelectedObject(const AValue: TtiObject);
     procedure   SetShowDeleted(const AValue: Boolean);
     procedure   DoCreateItemMediator(AData: TtiObject); overload;
     procedure   DoCreateItemMediator(AData: TtiObject; pRowIdx : Integer); overload;
   protected
+    FDisplayNames: string;
+    FIsObserving: boolean;
+    FShowDeleted: Boolean;
     FView: TStringGrid;
     FModel: TtiObjectList;
     FMediatorList: TObjectList;
@@ -95,11 +94,11 @@ type
   { Used internally for sub-mediators in ListView mediator. Moved to interface
     section so it can be overridden. }
   TListViewListItemMediator = class(TtiObject)
-  private
+  protected
     FModel: TtiObject;
     FView: TListItem;
     FDisplayNames: string;
-    procedure   SetupFields;
+    procedure   SetupFields; virtual;
   public
     constructor CreateCustom(AModel: TtiObject; AView: TListItem; const ADisplayNames: string; IsObserving: Boolean = True);
     procedure   BeforeDestruction; override;
@@ -119,6 +118,7 @@ type
     FView: TStringGrid;
     FModel: TtiObject;
     FRowIndex : Integer;
+  protected
 //    procedure   SetupFields;
   public
     constructor CreateCustom(AModel: TtiObject; AGrid: TStringGrid; ADisplayNames: string; pRowIndex: integer; IsObserving: Boolean = True);
@@ -131,6 +131,11 @@ type
   end;
 
 
+function tiFieldName(const AField: string): string;
+function tiFieldWidth(const AField: string): integer;
+function tiFieldCaption(const AField: string): string;
+
+
 implementation
 
 uses
@@ -140,11 +145,11 @@ uses
   ,tiExcept
   ,tiGenericEditMediators
   ;
-  
+
 const
   cFieldDelimiter = ';';
   cBrackets = '()';
-  
+
 { Helper functions }
 
 { Extract the field name part from the AField string which is in the format
