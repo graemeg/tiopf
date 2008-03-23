@@ -112,6 +112,25 @@ type
     class function ComponentClass: TClass; override;
   end;
 
+  TMediatorRadioButtonView = class(TMediatorView)
+  private
+    FCheckedValue: String;
+
+    function GetEditControl: TRadioButton;
+    procedure SetEditControl(const AValue: TRadioButton);
+  protected
+    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+  public
+    class function ComponentClass: TClass; override;
+
+    constructor CreateCustom(pEditControl: TControl; pSubject: TtiObject; pFieldName: string; pCheckedValue: String); reintroduce;
+
+    procedure   ObjectToGui; override;
+    procedure   GuiToObject; override;
+
+    property    EditControl: TRadioButton read GetEditControl write SetEditControl;
+
+  end;
 
   TMediatorStaticTextView = class(TMediatorView)
   private
@@ -926,6 +945,61 @@ end;
 class function TMediatorStaticTextView.ComponentClass: TClass;
 begin
   Result := TStaticText;
+end;
+
+{ TMediatorRadioButtonView }
+
+class function TMediatorRadioButtonView.ComponentClass: TClass;
+begin
+  Result := TRadioButton;
+end;
+
+constructor TMediatorRadioButtonView.CreateCustom(pEditControl: TControl;
+  pSubject: TtiObject; pFieldName: string;
+  pCheckedValue: String);
+begin
+  inherited CreateCustom(pEditControl, pSubject, pFieldName, 'Checked');
+
+  FCheckedValue := pCheckedValue;
+end;
+
+function TMediatorRadioButtonView.GetEditControl: TRadioButton;
+begin
+  Result := TRadioButton(FEditControl);
+end;
+
+procedure TMediatorRadioButtonView.GuiToObject;
+begin
+  Subject.PropValue[FieldName] := FCheckedValue;
+end;
+
+procedure TMediatorRadioButtonView.ObjectToGui;
+begin
+  TypInfo.SetPropValue(FEditControl, GuiFieldName, Subject.PropValue[FieldName] = FCheckedValue);
+end;
+
+procedure TMediatorRadioButtonView.SetEditControl(const AValue: TRadioButton);
+begin
+  FEditControl := AValue;
+end;
+
+procedure TMediatorRadioButtonView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+var
+  oError: TtiObjectError;
+begin
+  inherited UpdateGuiValidStatus(pErrors);
+
+  oError := pErrors.FindByErrorProperty(FieldName);
+  if oError <> nil then
+  begin
+    EditControl.Color  := clError;
+    EditControl.Hint   := oError.ErrorMessage;
+  end
+  else
+  begin
+    EditControl.Color  := ColorToRGB(clWindow);
+    EditControl.Hint   := '';
+  end;
 end;
 
 initialization
