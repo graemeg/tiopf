@@ -625,10 +625,20 @@ end;
 
 procedure TCompositeStringGridMediator.RebuildStringGrid;
 begin
+  { This rebuilds the whole list. Not very efficient. }
+//  View.BeginUpdate;
+  try
+    FMediatorList.Clear;
+//    View.Columns.Clear;
+    CreateSubMediators;
+  finally
+//    View.EndUpdate;
+  end;
+
   { Do nothing. Can be implement as you see fit. A simple example is given
     in the Demos/GenericMediatingViews/Composite_ListView_Mediator }
-  raise EtiOPFProgrammerException.Create('You are trying to call ' + Classname
-    + '.RebuildStringGrid, which must be overridden in the concrete class.');
+//  raise EtiOPFProgrammerException.Create('You are trying to call ' + Classname
+//    + '.RebuildStringGrid, which must be overridden in the concrete class.');
 end;
 
 function TCompositeStringGridMediator.DataAndPropertyValid(const AData: TtiObject): Boolean;
@@ -688,6 +698,7 @@ end;
 procedure TCompositeStringGridMediator.Update(ASubject: TtiObject);
 begin
   Assert(FModel = ASubject);
+  SetupGUIandObject;
   RebuildStringGrid;
 end;
 
