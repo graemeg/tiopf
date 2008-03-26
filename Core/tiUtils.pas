@@ -11,17 +11,14 @@ uses
   ,Classes
   ,Math
   ,Contnrs
-  ,SyncObjs
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
   {$IFDEF MSWINDOWS}
-  ,Windows
+  ,Windows       // Graeme: This must appear before SyncObjs for Free Pascal!
   ,shellAPI
   {$ENDIF MSWINDOWS}
-  {$IFDEF FPC}
-//  ,LCLType
-  {$ENDIF}
+  ,SyncObjs
  ;
 
 {$IFDEF VER130}

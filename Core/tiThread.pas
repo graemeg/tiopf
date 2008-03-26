@@ -93,7 +93,9 @@ uses
   tiOPFManager
   {$IFDEF MSWINDOWS}
   ,tiWin32
+  {$IFNDEF FPC}
   ,Forms // Application.ProcessMessages. ToDo: Remove when threads are better understood
+  {$ENDIF}
   {$ENDIF MSWINDOWS}
   ,tiUtils
  ;
@@ -356,7 +358,9 @@ begin
   begin
     Sleep(100);
     {$IFDEF MSWINDOWS}
+      {$IFNDEF FPC}
       Application.ProcessMessages;
+      {$ENDIF}
     {$ENDIF MSWINDOWS}
   end;
 end;
