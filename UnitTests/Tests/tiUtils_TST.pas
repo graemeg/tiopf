@@ -2100,6 +2100,8 @@ procedure TTestTIUtils.tiForceRemoveDir;
 var
   lRoot : string;
 begin
+  // Prevent legit handled exception creating one off temporary string leak 
+  InhibitStackTrace;
   lRoot := TempFileName(tiFixPathDelim('DUnitTests\ForceRemoveDir'));
   ForceDirectories(lRoot);
   tiCreateTextFileOfSize(tiFixPathDelim(lRoot + '\file1.txt'), 100);
