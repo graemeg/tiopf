@@ -20,6 +20,7 @@ type
     procedure   SetItems(i: integer; const Value: TEAdrsType); reintroduce;
   public
     procedure   Read; override;
+    procedure   Save; override;
     property    Items[i:integer]: TEAdrsType read GetItems write SetItems;
     procedure   Add(const AObject    : TEAdrsType); reintroduce;
   end;
@@ -65,6 +66,11 @@ procedure TEAdrsTypeList.Read;
 begin
   inherited;
   SortByOID;
+end;
+
+procedure TEAdrsTypeList.Save;
+begin
+  inherited;
 end;
 
 procedure TEAdrsTypeList.SetItems(i: integer; const Value: TEAdrsType);

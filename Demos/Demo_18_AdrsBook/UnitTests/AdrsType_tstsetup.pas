@@ -66,7 +66,6 @@ var
 begin
   LExpected:= EAdrsTypeCreate(AOID);
   try
-    TC.CheckEquals(LExpected.OID.AsString, AData.OID.AsString, 'OID');
     TC.CheckEquals(LExpected.Text, AData.Text, 'Text');
   finally
     LExpected.Free;
