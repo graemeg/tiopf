@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{69153c48-6f98-48d4-9a37-7496ba380e01}</ProjectGuid>
+    <MainSource>DUnitAdrsBookGUI.dpr</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>..\_Bin\DUnitAdrsBookGUI.exe</DCC_DependencyCheckOutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_ExeOutput>..\..\_Bin</DCC_ExeOutput>
+    <DCC_DcuOutput>_Dcu</DCC_DcuOutput>
+    <DCC_ObjOutput>_Dcu</DCC_ObjOutput>
+    <DCC_HppOutput>_Dcu</DCC_HppOutput>
+    <DCC_UnitSearchPath>..\..\..\..\tiOPF2\Trunk\Core;..\..\..\..\tiOPF2\Trunk\Options;..\..\..\..\tiOPF2\Trunk\GUI;..\..\..\..\tiOPF2\Trunk\3rdParty\DUnit;..\..\..\..\tiOPF2\Trunk\3rdParty\JCL\Common;..\..\..\..\tiOPF2\Trunk\3rdParty\JCL\Windows;..\BOM</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\..\..\tiOPF2\Trunk\Core;..\..\..\..\tiOPF2\Trunk\Options;..\..\..\..\tiOPF2\Trunk\GUI;..\..\..\..\tiOPF2\Trunk\3rdParty\DUnit;..\..\..\..\tiOPF2\Trunk\3rdParty\JCL\Common;..\..\..\..\tiOPF2\Trunk\3rdParty\JCL\Windows;..\BOM</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\..\..\tiOPF2\Trunk\Core;..\..\..\..\tiOPF2\Trunk\Options;..\..\..\..\tiOPF2\Trunk\GUI;..\..\..\..\tiOPF2\Trunk\3rdParty\DUnit;..\..\..\..\tiOPF2\Trunk\3rdParty\JCL\Common;..\..\..\..\tiOPF2\Trunk\3rdParty\JCL\Windows;..\BOM</DCC_ObjPath>
+    <DCC_IncludePath>..\..\..\..\tiOPF2\Trunk\Core;..\..\..\..\tiOPF2\Trunk\Options;..\..\..\..\tiOPF2\Trunk\GUI;..\..\..\..\tiOPF2\Trunk\3rdParty\DUnit;..\..\..\..\tiOPF2\Trunk\3rdParty\JCL\Common;..\..\..\..\tiOPF2\Trunk\3rdParty\JCL\Windows;..\BOM</DCC_IncludePath>
+    <DCC_Define>CLASS_TRACKING;OBJECT_TRACKING;FASTMM;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESSx;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOA;RELEASE</DCC_Define>
+    <DCC_SYMBOL_DEPRECATED>False</DCC_SYMBOL_DEPRECATED>
+    <DCC_SYMBOL_LIBRARY>False</DCC_SYMBOL_LIBRARY>
+    <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
+    <DCC_UNIT_LIBRARY>False</DCC_UNIT_LIBRARY>
+    <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
+    <DCC_UNIT_DEPRECATED>False</DCC_UNIT_DEPRECATED>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_ExeOutput>..\_Bin</DCC_ExeOutput>
+    <DCC_DcuOutput>_Dcu</DCC_DcuOutput>
+    <DCC_ObjOutput>_Dcu</DCC_ObjOutput>
+    <DCC_HppOutput>_Dcu</DCC_HppOutput>
+    <DCC_UnitSearchPath>..\BOM;..\..\..\UnitTests\Common;..\..\3rdParty\FastMM;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\DUnit;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\common;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\windows</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\BOM;..\..\..\UnitTests\Common;..\..\3rdParty\FastMM;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\DUnit;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\common;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\windows</DCC_ResourcePath>
+    <DCC_ObjPath>..\BOM;..\..\..\UnitTests\Common;..\..\3rdParty\FastMM;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\DUnit;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\common;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\windows</DCC_ObjPath>
+    <DCC_IncludePath>..\BOM;..\..\..\UnitTests\Common;..\..\3rdParty\FastMM;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\DUnit;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\common;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\windows</DCC_IncludePath>
+    <DCC_Define>DUNIT2;FASTMM;USE_JEDI_JCL;LINK_IBX</DCC_Define>
+    <DCC_SYMBOL_DEPRECATED>False</DCC_SYMBOL_DEPRECATED>
+    <DCC_SYMBOL_LIBRARY>False</DCC_SYMBOL_LIBRARY>
+    <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
+    <DCC_UNIT_LIBRARY>False</DCC_UNIT_LIBRARY>
+    <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
+    <DCC_UNIT_DEPRECATED>False</DCC_UNIT_DEPRECATED>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType>VCLApplication</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">0</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">1033</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">0.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys></VersionInfoKeys><Excluded_Packages>
+      
+      
+      <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcltee100.bpl">TeeChart Components</Excluded_Packages>
+    </Excluded_Packages><Source><Source Name="MainSource">DUnitAdrsBookGUI.dpr</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="DUnitAdrsBookGUI.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="AdrsBook_TST.pas" />
+  </ItemGroup>
+</Project>

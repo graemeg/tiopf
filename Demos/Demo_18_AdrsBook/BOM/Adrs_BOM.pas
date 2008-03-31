@@ -163,7 +163,7 @@ type
   public
     property    Owner      : TPeople read GetOwner      write SetOwner;
     function    Clone: TPerson; reintroduce;
-    function    IsValid(const AErrors: TPerObjErrors): boolean; override;
+    function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
     property Caption;
     property LastName : string read FsLastName  write FsLastName;
@@ -187,7 +187,7 @@ type
     destructor  Destroy; override;
     property    Owner      : TCompanies  read GetOwner      write SetOwner;
     function    Clone: TCompany; reintroduce;
-    function    IsValid(const AErrors: TPerObjErrors): boolean; override;
+    function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
     property    CompanyName: string read FCompanyName write FCompanyName;
     property    People   : TPeople read FPersonList;
@@ -788,7 +788,7 @@ begin
   result:= TCompanies(inherited GetOwner);
 end;
 
-function TCompany.IsValid(const AErrors: TPerObjErrors): boolean;
+function TCompany.IsValid(const AErrors: TtiObjectErrors): boolean;
 begin
   inherited IsValid(AErrors);
   if (CompanyName = '') then
@@ -812,7 +812,6 @@ end;
 constructor TAdrsAbs.Create;
 begin
   inherited;
-  SelfIterate:= false;
 end;
 
 function TAdrsAbs.GetAdrsTypeOID: String;
@@ -851,7 +850,7 @@ begin
   result:= TPeople(inherited GetOwner);
 end;
 
-function TPerson.IsValid(const AErrors: TPerObjErrors): boolean;
+function TPerson.IsValid(const AErrors: TtiObjectErrors): boolean;
 begin
   inherited IsValid(AErrors);
   if (FirstName = '') and (LastName = '') then

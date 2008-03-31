@@ -1,4 +1,4 @@
-program DUnit_AdrsBook;
+program DUnitAdrsBookGUI;
 
 uses
   FastMM4,
