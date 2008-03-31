@@ -4,10 +4,9 @@ unit AdrsBook_TST;
 
 interface
 uses
-   TestFramework
-  ,Adrs_BOM
-  ,AdrsBook_TSTSetup
- ;
+  tiTestFramework,
+  Adrs_BOM,
+  AdrsBook_TSTSetup;
 
 const
   cOIDPerson = '0001';
@@ -15,7 +14,7 @@ const
 
 type
 
-  TTestAdrsBook = class(TTestCase)
+  TTestAdrsBook = class(TtiTestCase)
   private
     FAdrsBookSetup: TAdrsBookTestSetup;
   protected
@@ -40,21 +39,27 @@ type
 
   end;
 
+procedure RegisterTests;
+
 implementation
 uses
-  SysUtils
-  ,tiConstants
-  ,tiOPFManager
-  ,tiObject
- ;
-  
+  tiConstants,
+  tiOPFManager,
+  tiObject,
+  SysUtils,
+  TestFramework;
+
+procedure RegisterTests;
+begin
+  TestFramework.RegisterTest(TTestAdrsBook.Suite);
+end;
+
 { TTestAdrsBook }
 
 constructor TTestAdrsBook.Create(MethodName: string);
 begin
   inherited;
-//  FAdrsBookSetup:= TAdrsBookTestSetup.Create(Self);
-Assert(False, 'Under construction');
+  FAdrsBookSetup:= TAdrsBookTestSetup.Create(Self);
 end;
 
 destructor TTestAdrsBook.Destroy;
@@ -72,16 +77,13 @@ begin
   AdrsBookSetup.Person_Insert(cOIDPerson);
   LAdrsBook:= TAdrsBook.Create;
   try
-//    LAdrsBook.Read;
-Assert(False, 'Under construction');
+    LAdrsBook.Read;
     CheckEquals(1, LAdrsBook.People.Count);
     LPerson:= LAdrsBook.People.Items[0];
     LEAdrs:= AdrsBookSetup.EAdrs_Create(cOIDEAdrs);
     LEAdrs.ObjectState:= posCreate;
-//    LPerson.EAdrsList.Add(LEAdrs);
-Assert(False, 'Under construction');
-//    LPerson.Save;
-Assert(False, 'Under construction');
+    LPerson.EAddressList.Add(LEAdrs);
+    LPerson.Save;
     Check(LEAdrs.ObjectState = posClean);
   finally
     LAdrsBook.Free;
@@ -89,12 +91,11 @@ Assert(False, 'Under construction');
 
   LAdrsBook:= TAdrsBook.Create;
   try
-//    LAdrsBook.Read;
-Assert(False, 'Under construction');
+    LAdrsBook.Read;
     LPerson:= LAdrsBook.People.Items[0];
-//    LPerson.Read;
-//    CheckEquals(1, LPerson.EAdrsList.Count);
-//    LEAdrs:= LPerson.EAdrsList.Items[0];
+    LPerson.Read;
+    CheckEquals(1, LPerson.EAddressList.Count);
+    LEAdrs:= LPerson.EAddressList.Items[0];
     AdrsBookSetup.EAdrs_Check(cOIDEAdrs, LEAdrs);
   finally
     LAdrsBook.Free;
@@ -112,25 +113,22 @@ begin
   AdrsBookSetup.EAdrs_Insert(cOIDPerson, cOIDEAdrs);
   LAdrsBook:= TAdrsBook.Create;
   try
-//    LAdrsBook.Read;
-Assert(False, 'Under construction');
+    LAdrsBook.Read;
     LPerson:= LAdrsBook.People.Items[0];
-//    LPerson.Read;
-Assert(False, 'Under construction');
-//    LEAdrs:= LPerson.EAdrsList.Items[0];
+    LPerson.Read;
+    LEAdrs:= LPerson.EAddressList.Items[0];
 
     LEAdrs.Deleted:= True;
-//    LEAdrs.Save;
+    LPerson.Save;
   finally
     LAdrsBook.Free;
   end;
 
   LAdrsBook:= TAdrsBook.Create;
   try
-//    LAdrsBook.Read;
+    LAdrsBook.Read;
     LPerson:= LAdrsBook.People.Items[0];
-//    LPerson.Read;
-//    CheckEquals(0,LPerson.EAdrsList.Count);
+    LPerson.Read;
   finally
     LAdrsBook.Free;
   end;
@@ -175,23 +173,23 @@ begin
   AdrsBookSetup.EAdrs_Insert(cOIDPerson, cOIDEAdrs);
   LAdrsBook:= TAdrsBook.Create;
   try
-//    LAdrsBook.Read;
+    LAdrsBook.Read;
     LPerson:= LAdrsBook.People.Items[0];
-//    LPerson.Read;
-//    LEAdrs:= LPerson.EAdrsList.Items[0];
+    LPerson.Read;
+    LEAdrs:= LPerson.EAddressList.Items[0];
     AdrsBookSetup.EAdrs_Set(cOIDEAdrs+'1', LEAdrs);
     LEAdrs.Dirty:= True;
-//    LEAdrs.Save;
+    LPerson.Save;
   finally
     LAdrsBook.Free;
   end;
 
   LAdrsBook:= TAdrsBook.Create;
   try
-//    LAdrsBook.Read;
+    LAdrsBook.Read;
     LPerson:= LAdrsBook.People.Items[0];
-//    LPerson.Read;
-//    LEAdrs:= LPerson.EAdrsList.Items[0];
+    LPerson.Read;
+    LEAdrs:= LPerson.EAddressList.Items[0];
     AdrsBookSetup.EAdrs_Check(cOIDEAdrs+'1', LEAdrs);
   finally
     LAdrsBook.Free;
@@ -311,9 +309,6 @@ procedure TTestAdrsBook.TearDown;
 begin
   inherited;
 end;
-
-Initialization
-  RegisterTest(TTestAdrsBook.Suite);
 
 end.
 

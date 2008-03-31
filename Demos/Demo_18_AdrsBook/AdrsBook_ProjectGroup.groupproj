@@ -1,0 +1,34 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{5aa946ca-9e5b-4b52-88ee-f7353995f9f6}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="UnitTests\DUnit_AdrsBook.dproj" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+  <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="DUnit_AdrsBook">
+    <MSBuild Projects="UnitTests\DUnit_AdrsBook.dproj" Targets="" />
+  </Target>
+  <Target Name="DUnit_AdrsBook:Clean">
+    <MSBuild Projects="UnitTests\DUnit_AdrsBook.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DUnit_AdrsBook:Make">
+    <MSBuild Projects="UnitTests\DUnit_AdrsBook.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="DUnit_AdrsBook" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="DUnit_AdrsBook:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="DUnit_AdrsBook:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>

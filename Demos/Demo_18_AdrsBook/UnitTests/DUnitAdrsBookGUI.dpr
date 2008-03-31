@@ -2,17 +2,21 @@ program DUnitAdrsBookGUI;
 
 uses
   FastMM4,
-  tiBaseObject,
-  tiLogToGUI,
-  Forms,
-  TestFramework,
   GUITestRunner,
-  AdrsBook_TST in 'AdrsBook_TST.pas';
+  Forms,
+  Adrs_SrvAutoGenSQL,
+  DUnitAdrsBookDependencies in 'DUnitAdrsBookDependencies.pas ';
 
 {$R *.RES}
 
 begin
   Application.Initialize;
+
+  // ToDo: Ask which persistence mechanism
+  Adrs_SrvAutoGenSQL.RegisterMappings;
+
+  DUnitAdrsBookDependencies.RegisterTests;
+  DUnitAdrsBookDependencies.ConnectToDatabase;
   GUITestRunner.RunRegisteredTests;
 end.
 

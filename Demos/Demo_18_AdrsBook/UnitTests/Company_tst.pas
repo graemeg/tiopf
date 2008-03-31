@@ -1,27 +1,22 @@
-unit Adrs_TST;
+unit Company_TST;
 
 interface
 uses
-   tiOPFManagerAbs_TST
-  ,tiVisitorDB
-  ,Adrs_BOM
- ;
+  tiTestFramework,
+  tiVisitorDB,
+  Adrs_BOM,
+  Adrs_tst,
+  AdrsType_BOM;
 
 type
 
-  //TTestAdrs = class(TTestPerFrameworkConnectAbs)
-  TTestAdrs = class(TtiTestCase)
+  TTestCompany = class(TAdrsTestCase)
   private
-    procedure EmptyTables;
-    procedure InsertTestLookupListName(pOID: Integer; const pListName: string);
-    procedure InsertTestLookupListItem(pOwnerOID: Integer; pOID: Integer; const pItemText: string);
     procedure InsertTestAdrs(pOwnerOID: Integer; pOID: Integer; pAdrsTypeOID: integer; const pValue: string);
     procedure InsertTestEAdrs(pOwnerOID: Integer; pOID: Integer; pAdrsTypeOID: integer; const pValue: string);
     procedure InsertTestPerson(pOwnerOID: Integer; pOID: Integer; const pValue: string);
     procedure InsertTestCompany(pOID: Integer; const pValue: string);
 
-    procedure CheckLookupListName(pData: TLookupList; pOID: Integer; const pListName: string);
-    procedure CheckLookupListItem(pData: TLookupListItem; pOID: Integer; const pItemText: string);
     procedure CheckAdrs(pData: TAdrs; pOID: Integer; pAdrsTypeOID: integer; const pValue: string);
     procedure CheckEAdrs(pData: TEAdrs; pOID: Integer; pAdrsTypeOID: integer; const pValue: string);
     procedure CheckPerson(pData: TPerson; pOID: Integer; const pValue: string);
@@ -29,23 +24,7 @@ type
     function  CreateCompoundCompany: TCompany;
     procedure CheckCompoundCompany(pCompany: TCompany);
 
-  protected
-    procedure Setup; override;
-    procedure TearDown;override;
-  public
-    constructor Create(MethodName: string); override;
   published
-    procedure TestLookupList_Read       ;
-    procedure TestLookupList_Save       ;
-    procedure TestLookupList_Update     ;
-    procedure TestLookupList_Delete     ;
-
-    procedure TestLookupListItem_Read   ;
-    procedure TestLookupListItem_Save   ;
-    procedure TestLookupListItem_Update ;
-    procedure TestLookupListItem_Delete ;
-
-    procedure TestLookupLists_Read      ;
 
     procedure TestAdrs_Read             ;
     procedure TestAdrs_Save             ;
@@ -91,72 +70,55 @@ type
 
 
 procedure RegisterTests;
+
 implementation
 uses
-  tiDBConnectionSetupAbs_TST
-  ,ctiOPFManager
-  ,TestFramework
-  ,tiOPFManager
-  ,SysUtils
-  ,tiQuery
-  ,tiVisitorDB_Cli
-  ,tiTestDependencies
- ;
+  TestFramework,
+  SysUtils,
+  tiObject,
+  tiOPFManager,
+  tiQuery,
+  AdrsUnitTestConstants;
 
-const
-  cOIDLookupListName  = 1;
-  cOIDLookupListItem  = 2;
-  cOIDLookupListItem1 = 3;
-  cOIDAdrs            = 4;
-  cOIDEAdrs           = 5;
-  cOIDPerson          = 6;
-  cOIDCompany         = 7;
-
-  cUpdateValue        = 'test';
-
-{ TTestAdrs }
+{ TTestCompany }
 
 procedure RegisterTests;
 begin
-  RegisterDBTests('Adrs', TTestAdrs);
+  TestFramework.RegisterTest(TTestCompany.Suite);
 end;
 
-constructor TTestAdrs.Create(MethodName: string);
-begin
-  inherited;
-  SetupTasks:= [sutPerLayer, sutDBConnection, sutTables];
-end;
+{ TTestCompany }
 
-{ TTestAdrs }
-
-procedure TTestAdrs.TestAdrs_Delete;
+procedure TTestCompany.TestAdrs_Delete;
 var
-  lAdrses: TAdrsList;
+  lAdrses: TAddressList;
   lAdrs: TAdrs;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestAdrs(-1, cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-  gAdrsBook.AdrsTypes.Read;
-  lAdrses:= TAdrsList.Create;
+//  InsertTestLookupListName(cOIDEAdrsType1);
+  InsertTestAdrs(-1, cOIDAdrs, StrToInt(cOIDEAdrsType1), IntToStr(cOIDAdrs));
+  gAdrsBook.EAdrsTypeList.Read;
+  lAdrses:= TAddressList.Create;
   try
     lAdrses.OID.AsString:= '-1';
-    lAdrses.Read;
+//    lAdrses.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
     lAdrs:= lAdrses.Items[0];
     lAdrs.ObjectState:= posDelete;
-    lAdrses.Save;
+//    lAdrses.Save;
+Assert(False, 'Under construction');
     Check(posDeleted = lAdrs.ObjectState, 'Failed on lAdr.ObjectState = posDelete');
   finally
     lAdrses.Free;
   end;
 
-  lAdrses:= TAdrsList.Create;
+  lAdrses:= TAddressList.Create;
   try
     lAdrses.OID.AsString:= '-1';
-    lAdrses.Read;
+//    lAdrses.Read;
+Assert(False, 'Under construction');
     CheckEquals(0, lAdrses.Count, 'Failed on lAdrses.Count');
   finally
     lAdrses.Free;
@@ -164,37 +126,36 @@ begin
 
 end;
 
-procedure TTestAdrs.TestAdrs_Read;
+procedure TTestCompany.TestAdrs_Read;
 var
-  lAdrses: TAdrsList;
+  lAdrses: TAddressList;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestAdrs(-1, cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-  gAdrsBook.AdrsTypes.Read;
-  lAdrses:= TAdrsList.Create;
+//  InsertTestLookupListName(cOIDEAdrsType1);
+  InsertTestAdrs(-1, cOIDAdrs, StrToInt(cOIDEAdrsType1), IntToStr(cOIDAdrs));
+  gAdrsBook.EAdrsTypeList.Read;
+  lAdrses:= TAddressList.Create;
   try
     lAdrses.OID.AsString:= '-1';
-    lAdrses.Read;
+//    lAdrses.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
-    CheckAdrs(lAdrses.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+    CheckAdrs(lAdrses.Items[0], cOIDAdrs, StrToInt(cOIDEAdrsType1), IntToStr(cOIDAdrs));
   finally
     lAdrses.Free;
   end;
 end;
 
-procedure TTestAdrs.TestAdrs_Save;
+procedure TTestCompany.TestAdrs_Save;
 var
-  lAdrses: TAdrsList;
+  lAdrses: TAddressList;
   lAdrs: TAdrs;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-  gAdrsBook.AdrsTypes.Read;
-  lAdrses:= TAdrsList.Create;
+//  InsertTestLookupListName(cOIDEAdrsType1);
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+  gAdrsBook.EAdrsTypeList.Read;
+  lAdrses:= TAddressList.Create;
   try
     lAdrses.OID.AsString:= '-1';
     lAdrses.ObjectState:= posClean;
@@ -206,43 +167,46 @@ begin
     lAdrs.State  := IntToStr(cOIDAdrs);
     lAdrs.PCode  := IntToStr(cOIDAdrs);
     lAdrs.Country:= IntToStr(cOIDAdrs);
-    lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+//    lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
     lAdrses.Add(lAdrs);
-    lAdrses.Save;
+//    lAdrses.Save;
+Assert(False, 'Under construction');
     Check(posClean = lAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
   finally
     lAdrses.Free;
   end;
 
-  lAdrses:= TAdrsList.Create;
+  lAdrses:= TAddressList.Create;
   try
     lAdrses.OID.AsString:= '-1';
-    lAdrses.Read;
+//    lAdrses.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
-    CheckAdrs(lAdrses.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+//    CheckAdrs(lAdrses.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
   finally
     lAdrses.Free;
   end;
 
 end;
 
-procedure TTestAdrs.TestAdrs_Update;
+procedure TTestCompany.TestAdrs_Update;
 var
-  lAdrses: TAdrsList;
+  lAdrses: TAddressList;
   lAdrs  : TAdrs;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-  InsertTestAdrs(-1, cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-  gAdrsBook.AdrsTypes.Read;
-  lAdrses:= TAdrsList.Create;
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestAdrs(-1, cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+  gAdrsBook.EAdrsTypeList.Read;
+  lAdrses:= TAddressList.Create;
   try
     lAdrses.OID.AsString:= '-1';
-    lAdrses.Read;
+//    lAdrses.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
@@ -252,62 +216,66 @@ begin
     lAdrs.State  := cUpdateValue;
     lAdrs.PCode  := cUpdateValue;
     lAdrs.Country:= cUpdateValue;
-    lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
+//    lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
     lAdrs.ObjectState:= posUpdate;
-    lAdrses.Save;
+//    lAdrses.Save;
+Assert(False, 'Under construction');
   finally
     lAdrses.Free;
   end;
 
-  lAdrses:= TAdrsList.Create;
+  lAdrses:= TAddressList.Create;
   try
     lAdrses.OID.AsString:= '-1';
-    lAdrses.Read;
+//    lAdrses.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
-    CheckAdrs(lAdrses.Items[0], cOIDAdrs, cOIDLookupListItem1, cUpdateValue);
+//    CheckAdrs(lAdrses.Items[0], cOIDAdrs, cOIDLookupListItem1, cUpdateValue);
   finally
     lAdrses.Free;
   end;
 
 end;
 
-procedure TTestAdrs.TestCompanyFlat_Delete;
+procedure TTestCompany.TestCompanyFlat_Delete;
 var
-  lCompanies: TCompanies;
+  lCompanies: TCompanyList;
 begin
   InsertTestCompany(cOIDCompany, IntToStr(cOIDCompany));
-  lCompanies:= TCompanies.Create;
+  lCompanies:= TCompanyList.Create;
   try
     lCompanies.OID.AsString:= '-1';
-    lCompanies.Read;
+//    lCompanies.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lCompanies.Count, 'Failed on lCompanies.Count');
     lCompanies.Items[0].ObjectState:= posDelete;
-    lCompanies.Save;
+//    lCompanies.Save;
     Check(posDeleted = lCompanies.Items[0].ObjectState, 'Failed on lCompanies.Items[0].ObjectState = posDeleted');
   finally
     lCompanies.Free;
   end;
-  lCompanies:= TCompanies.Create;
+  lCompanies:= TCompanyList.Create;
   try
     lCompanies.OID.AsString:= '-1';
-    lCompanies.Read;
+//    lCompanies.Read;
     CheckEquals(0, lCompanies.Count, 'Failed on lCompanies.Count');
   finally
     lCompanies.Free;
   end;
 end;
 
-procedure TTestAdrs.TestCompanyFlat_Read;
+procedure TTestCompany.TestCompanyFlat_Read;
 var
-  lCompanies: TCompanies;
+  lCompanies: TCompanyList;
 begin
   InsertTestCompany(cOIDCompany, IntToStr(cOIDCompany));
-  lCompanies:= TCompanies.Create;
+  lCompanies:= TCompanyList.Create;
   try
     lCompanies.OID.AsString:= '-1';
-    lCompanies.Read;
+//    lCompanies.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lCompanies.Count, 'Failed on lCompanies.Count');
     Check(posClean = lCompanies.ObjectState, 'Failed on lCompanies.ObjectState = posClean');
     Check(posPK = lCompanies.Items[0].ObjectState, 'Failed on lCompanies.Items[0].ObjectState = posClean');
@@ -317,12 +285,12 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestCompanyFlat_Save;
+procedure TTestCompany.TestCompanyFlat_Save;
 var
-  lCompanies: TCompanies;
+  lCompanies: TCompanyList;
   lCompany: TCompany;
 begin
-  lCompanies:= TCompanies.Create;
+  lCompanies:= TCompanyList.Create;
   try
     lCompanies.OID.AsString:= '-1';
     lCompany:= TCompany.Create;
@@ -331,15 +299,17 @@ begin
     lCompany.CompanyName:= IntToStr(cOIDCompany);
     lCompany.ObjectState:= posCreate;
     lCompanies.Add(lCompany);
-    lCompanies.Save;
+//    lCompanies.Save;
+Assert(False, 'Under construction');
     Check(posClean = lCompany.ObjectState, 'Failed on lCompany.ObjectState = posClean');
   finally
     lCompanies.Free;
   end;
-  lCompanies:= TCompanies.Create;
+  lCompanies:= TCompanyList.Create;
   try
     lCompanies.OID.AsString:= '-1';
-    lCompanies.Read;
+//    lCompanies.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lCompanies.Count, 'Failed on lCompanies.Count');
     Check(posClean = lCompanies.ObjectState, 'Failed on lCompanies.ObjectState = posClean');
     Check(posPK = lCompanies.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posClean');
@@ -349,30 +319,32 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestCompanyFlat_Update;
+procedure TTestCompany.TestCompanyFlat_Update;
 var
-  lCompanies: TCompanies;
+  lCompanies: TCompanyList;
   lCompany: TCompany;
 begin
   InsertTestCompany(cOIDCompany, IntToStr(cOIDCompany));
-  lCompanies:= TCompanies.Create;
+  lCompanies:= TCompanyList.Create;
   try
     lCompanies.OID.AsString:= '-1';
-    lCompanies.Read;
+//    lCompanies.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lCompanies.Count, 'Failed on lCompanies.Count');
     lCompany:= lCompanies.Items[0];
     lCompany.Notes:= cUpdateValue;
     lCompany.CompanyName:= cUpdateValue;
     lCompany.ObjectState:= posUpdate;
-    lCompanies.Save;
+//    lCompanies.Save;
     Check(posClean = lCompany.ObjectState, 'Failed on lCompany.ObjectState = posClean');
   finally
     lCompanies.Free;
   end;
-  lCompanies:= TCompanies.Create;
+  lCompanies:= TCompanyList.Create;
   try
     lCompanies.OID.AsString:= '-1';
-    lCompanies.Read;
+//    lCompanies.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lCompanies.Count, 'Failed on lCompanies.Count');
     Check(posClean = lCompanies.ObjectState, 'Failed on lCompanies.ObjectState = posClean');
     Check(posPK = lCompanies.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posClean');
@@ -382,67 +354,71 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestEAdrs_Delete;
+procedure TTestCompany.TestEAdrs_Delete;
 var
-  lEAdrses: TEAdrsList;
+  lEAdrses: TEAddressList;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestEAdrs(-1, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
-  gAdrsBook.AdrsTypes.Read;
-  lEAdrses:= TEAdrsList.Create;
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestEAdrs(-1, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
+  gAdrsBook.EAdrsTypeList.Read;
+  lEAdrses:= TEAddressList.Create;
   try
     lEAdrses.OID.AsString:= '-1';
-    lEAdrses.Read;
+//    lEAdrses.Read;
+Assert(False, 'Under construction');
     CheckEquals(1, lEAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lEAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lEAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
     lEAdrses.Items[0].ObjectState:= posDelete;
-    lEAdrses.Save;
+Assert(False, 'Under construction');
+//    lEAdrses.Save;
     Check(posDeleted = lEAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posDeleted');
   finally
     lEAdrses.Free;
   end;
-  lEAdrses:= TEAdrsList.Create;
+  lEAdrses:= TEAddressList.Create;
   try
     lEAdrses.OID.AsString:= '-1';
-    lEAdrses.Read;
+Assert(False, 'Under construction');
+//    lEAdrses.Read;
     CheckEquals(0, lEAdrses.Count, 'Failed on lEAdrses.Count');
   finally
     lEAdrses.Free;
   end;
 end;
 
-procedure TTestAdrs.TestEAdrs_Read;
+procedure TTestCompany.TestEAdrs_Read;
 var
-  lEAdrses: TEAdrsList;
+  lEAdrses: TEAddressList;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestEAdrs(-1, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
-  gAdrsBook.AdrsTypes.Read;
-  lEAdrses:= TEAdrsList.Create;
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestEAdrs(-1, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
+  gAdrsBook.EAdrsTypeList.Read;
+  lEAdrses:= TEAddressList.Create;
   try
     lEAdrses.OID.AsString:= '-1';
-    lEAdrses.Read;
+Assert(False, 'Under construction');
+//    lEAdrses.Read;
     CheckEquals(1, lEAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lEAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lEAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
-    CheckEAdrs(lEAdrses.Items[0], cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
+//    CheckEAdrs(lEAdrses.Items[0], cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
   finally
     lEAdrses.Free;
   end;
 end;
 
-procedure TTestAdrs.TestEAdrs_Save;
+procedure TTestCompany.TestEAdrs_Save;
 var
-  lEAdrses: TEAdrsList;
+  lEAdrses: TEAddressList;
   lEAdrs  : TEAdrs;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  gAdrsBook.AdrsTypes.Read;
-  lEAdrses:= TEAdrsList.Create;
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+  gAdrsBook.EAdrsTypeList.Read;
+  lEAdrses:= TEAddressList.Create;
   try
     lEAdrses.OID.AsString:= '-1';
     lEAdrs  := TEAdrs.Create;
@@ -450,367 +426,111 @@ begin
     lEAdrses.Add(lEAdrs);
     lEAdrs.OID.AsString:= IntToStr(cOIDEAdrs);
     lEAdrs.Text:= IntToStr(cOIDEAdrs);
-    lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
-    lEAdrses.Save;
+//    lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+Assert(False, 'Under construction');
+//    lEAdrses.Save;
     Check(posClean = lEAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
   finally
     lEAdrses.Free;
   end;
 
-  lEAdrses:= TEAdrsList.Create;
+  lEAdrses:= TEAddressList.Create;
   try
     lEAdrses.OID.AsString:= '-1';
-    lEAdrses.Read;
+Assert(False, 'Under construction');
+//    lEAdrses.Read;
     CheckEquals(1, lEAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lEAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lEAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
-    CheckEAdrs(lEAdrses.Items[0], cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
+//    CheckEAdrs(lEAdrses.Items[0], cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
   finally
     lEAdrses.Free;
   end;
 
 end;
 
-procedure TTestAdrs.TestEAdrs_Update;
+procedure TTestCompany.TestEAdrs_Update;
 var
-  lEAdrses: TEAdrsList;
+  lEAdrses: TEAddressList;
   lEAdrs: TEAdrs;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-  InsertTestEAdrs(-1, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
-  gAdrsBook.AdrsTypes.Read;
-  lEAdrses:= TEAdrsList.Create;
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestEAdrs(-1, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
+  gAdrsBook.EAdrsTypeList.Read;
+  lEAdrses:= TEAddressList.Create;
   try
     lEAdrses.OID.AsString:= '-1';
-    lEAdrses.Read;
+Assert(False, 'Under construction');
+//    lEAdrses.Read;
     CheckEquals(1, lEAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lEAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lEAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
     lEAdrs  := lEAdrses.Items[0];
-    CheckEAdrs(lEAdrs, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
+//    CheckEAdrs(lEAdrs, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
     lEAdrs.Text:= cUpdateValue;
-    lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
+//    lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
     lEAdrs.ObjectState:= posUpdate;
-    lEAdrses.Save;
+Assert(False, 'Under construction');
+//    lEAdrses.Save;
   finally
     lEAdrses.Free;
   end;
-  lEAdrses:= TEAdrsList.Create;
+  lEAdrses:= TEAddressList.Create;
   try
     lEAdrses.OID.AsString:= '-1';
-    lEAdrses.Read;
+Assert(False, 'Under construction');
+//    lEAdrses.Read;
     CheckEquals(1, lEAdrses.Count, 'Failed on lAdrses.Count');
     Check(posClean = lEAdrses.ObjectState, 'Failed on lAdrses.ObjectState = posClean');
     Check(posClean = lEAdrses.Items[0].ObjectState, 'Failed on lAdrses.Items[0].ObjectState = posClean');
-    CheckEAdrs(lEAdrses.Items[0], cOIDEAdrs, cOIDLookupListItem1, cUpdateValue);
+//    CheckEAdrs(lEAdrses.Items[0], cOIDEAdrs, cOIDLookupListItem1, cUpdateValue);
   finally
     lEAdrses.Free;
   end;
 end;
 
-procedure TTestAdrs.TestLookupList_Delete;
+procedure TTestCompany.TestPersonFlat_Delete;
 var
-  lLookupLists: TLookupLists;
-begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    lLookupLists.Items[0].ObjectState:= posDelete;
-    lLookupLists.Save;
-    Check(posDeleted = lLookupLists.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-  finally
-    lLookupLists.Free;
-  end;
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(0, lLookupLists.Count, 'Failed on count');
-    Check(posClean = lLookupLists.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-  finally
-    lLookupLists.Free;
-  end;
-end;
-
-procedure TTestAdrs.TestLookupList_Read;
-var
-  lLookupLists: TLookupLists;
-begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(1, lLookupLists.Count, 'Failed on count');
-    Check(posClean = lLookupLists.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupLists.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-    CheckLookupListName(lLookupLists.Items[0], cOIDLookupListName, IntToStr(cOIDLookupListName));
-  finally
-    lLookupLists.Free;
-  end;
-end;
-
-procedure TTestAdrs.TestLookupList_Save;
-var
-  lLookupLists: TLookupLists;
-  lLookupList : TLookupList;
-begin
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupList := TLookupList.Create;
-    lLookupList.ObjectState:= posCreate;
-    lLookupList.OID.AsString:= IntToStr(cOIDLookupListName);
-    lLookupList.ListName:= IntToStr(cOIDLookupListName);
-    lLookupLists.Add(lLookupList);
-    lLookupLists.Save;
-    Check(posClean = lLookupList.ObjectState, 'Failed on lLookupList.ObjectState = posClean');
-  finally
-    lLookupLists.Free;
-  end;
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(1, lLookupLists.Count, 'Failed on count');
-    Check(posClean = lLookupLists.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupLists.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-    CheckLookupListName(lLookupLists.Items[0], cOIDLookupListName, IntToStr(cOIDLookupListName));
-  finally
-    lLookupLists.Free;
-  end;
-end;
-
-procedure TTestAdrs.TestLookupList_Update;
-var
-  lLookupLists: TLookupLists;
-begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(1, lLookupLists.Count, 'Failed on count');
-    Check(posClean = lLookupLists.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupLists.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-    CheckLookupListName(lLookupLists.Items[0], cOIDLookupListName, IntToStr(cOIDLookupListName));
-    lLookupLists.Items[0].ListName:= cUpdateValue;
-    lLookupLists.Items[0].ObjectState:= posUpdate;
-    lLookupLists.Save;
-    Check(posClean = lLookupLists.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-  finally
-    lLookupLists.Free;
-  end;
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(1, lLookupLists.Count, 'Failed on count');
-    Check(posClean = lLookupLists.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupLists.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-    CheckLookupListName(lLookupLists.Items[0], cOIDLookupListName, cUpdateValue);
-  finally
-    lLookupLists.Free;
-  end;
-end;
-
-procedure TTestAdrs.TestLookupListItem_Delete;
-var
-  lLookupLists: TLookupLists;
-  lLookupListItem : TLookupListItem;
-begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(1, lLookupLists.Count, 'Failed on count');
-    Check(posClean = lLookupLists.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupLists.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-    CheckLookupListName(lLookupLists.Items[0], cOIDLookupListName, IntToStr(cOIDLookupListName));
-
-    CheckEquals(1, lLookupLists.Items[0].Count, 'Failed on lLookupLists.Items[0].count');
-    lLookupListItem := lLookupLists.Items[0].Items[0];
-    lLookupListItem.ObjectState:= posDelete;
-    lLookupLists.Save;
-    Check(posDeleted = lLookupListItem.ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-  finally
-    lLookupLists.Free;
-  end;
-
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(1, lLookupLists.Count, 'Failed on count');
-    CheckEquals(0, lLookupLists.Items[0].Count, 'Failed on lLookupLists.Items[0].count');
-  finally
-    lLookupLists.Free;
-  end;
-
-end;
-
-procedure TTestAdrs.TestLookupListItem_Read;
-var
-  lLookupLists: TLookupLists;
-  lLookupList : TLookupList;
-begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(1, lLookupLists.Count, 'Failed on count');
-    Check(posClean = lLookupLists.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupLists.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-    CheckLookupListName(lLookupLists.Items[0], cOIDLookupListName, IntToStr(cOIDLookupListName));
-
-    CheckEquals(1, lLookupLists.Items[0].Count, 'Failed on lLookupLists.Items[0].count');
-    lLookupList := lLookupLists.Items[0];
-    Check(posClean = lLookupList.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupList.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-    CheckLookupListItem(lLookupList.Items[0], cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  finally
-    lLookupLists.Free;
-  end;
-end;
-
-procedure TTestAdrs.TestLookupListItem_Save;
-var
-  lLookupList : TLookupList;
-  lLookupListItem: TLookupListItem;
-begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-
-  lLookupList:= TLookupList.Create;
-  try
-    lLookupList.ObjectState:= posClean;
-    lLookupList.OID.AsString:= IntToStr(cOIDLookupListName);
-    lLookupListItem:= TLookupListItem.Create;
-    lLookupListItem.ObjectState:= posCreate;
-    lLookupListItem.OID.AsString:= IntToStr(cOIDLookupListItem);
-    lLookupListItem.Text:= IntToStr(cOIDLookupListItem);
-    lLookupList.Add(lLookupListItem);
-    lLookupList.Save;
-    Check(posClean = lLookupList.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupList.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-  finally
-    lLookupList.Free;
-  end;
-end;
-
-procedure TTestAdrs.TestLookupListItem_Update;
-var
-  lLookupLists: TLookupLists;
-  lLookupList : TLookupList;
-  lLookupListItem: TLookupListItem;
-begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(1, lLookupLists.Count, 'Failed on count');
-    CheckEquals(1, lLookupLists.Items[0].Count, 'Failed on lLookupLists.Items[0].count');
-    lLookupListItem:= lLookupLists.Items[0].Items[0];
-    CheckLookupListItem(lLookupListItem, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-
-    lLookupListItem.Text:= cUpdateValue;
-    lLookupListItem.ObjectState:= posUpdate;
-    lLookupLists.Save;
-  finally
-    lLookupLists.Free;
-  end;
-
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(1, lLookupLists.Count, 'Failed on count');
-    Check(posClean = lLookupLists.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupLists.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-    CheckLookupListName(lLookupLists.Items[0], cOIDLookupListName, IntToStr(cOIDLookupListName));
-
-    CheckEquals(1, lLookupLists.Items[0].Count, 'Failed on lLookupLists.Items[0].count');
-    lLookupList := lLookupLists.Items[0];
-    Check(posClean = lLookupList.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    Check(posClean = lLookupList.Items[0].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-    CheckLookupListItem(lLookupList.Items[0], cOIDLookupListItem, cUpdateValue);
-  finally
-    lLookupLists.Free;
-  end;
-end;
-
-procedure TTestAdrs.TestLookupLists_Read;
-var
-  lLookupLists    : TLookupLists;
-  lLookupList     : TLookupList;
-  i, j: integer;
-begin
-  for i:= 1 to 9 do
-  begin
-    InsertTestLookupListName(i*10, IntToStr(i*10));
-    for j:= 1 to 9 do
-      InsertTestLookupListItem(i*10, i*10+j, IntToStr(i*10+j));
-  end;
-
-  lLookupLists:= TLookupLists.Create;
-  try
-    lLookupLists.Read;
-    CheckEquals(9, lLookupLists.Count, 'Failed on count');
-    Check(posClean = lLookupLists.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-    for i:= 0 to 8 do
-    begin
-      Check(posClean = lLookupLists.Items[i].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-      CheckLookupListName(lLookupLists.Items[i], (i+1)*10, IntToStr((i+1)*10));
-      lLookupList := lLookupLists.Items[i];
-      CheckEquals(9, lLookupList.Count, 'Failed on lLookupList.count');
-      for j:= 0 to 8 do
-      begin
-        Check(posClean = lLookupList.ObjectState, 'Failed on lLookupLists.ObjectState = posClean');
-        Check(posClean = lLookupList.Items[j].ObjectState, 'Failed on lLookupLists.Items[0].ObjectState = posClean');
-        CheckLookupListItem(lLookupList.Items[j], (i+1)*10+j+1, IntToStr((i+1)*10+j+1));
-      end;
-    end;
-  finally
-    lLookupLists.Free;
-  end;
-end;
-
-procedure TTestAdrs.TestPersonFlat_Delete;
-var
-  lPeople: TPeople;
+  lPeople: TPersonList;
 begin
   InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-  lPeople:= TPeople.Create;
+  lPeople:= TPersonList.Create;
   try
     lPeople.OID.AsString:= '-1';
-    lPeople.Read;
+Assert(False, 'Under construction');
+//    lPeople.Read;
     CheckEquals(1, lPeople.Count, 'Failed on lPeople.Count');
     lPeople.Items[0].ObjectState:= posDelete;
-    lPeople.Save;
+Assert(False, 'Under construction');
+//    lPeople.Save;
     Check(posDeleted = lPeople.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posDeleted');
   finally
     lPeople.Free;
   end;
 
-  lPeople:= TPeople.Create;
+  lPeople:= TPersonList.Create;
   try
     lPeople.OID.AsString:= '-1';
-    lPeople.Read;
+Assert(False, 'Under construction');
+//    lPeople.Read;
     CheckEquals(0, lPeople.Count, 'Failed on lPeople.Count');
   finally
     lPeople.Free;
   end;
 end;
 
-procedure TTestAdrs.TestPersonFlat_Read;
+procedure TTestCompany.TestPersonFlat_Read;
 var
-  lPeople: TPeople;
+  lPeople: TPersonList;
 begin
   InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-  lPeople:= TPeople.Create;
+  lPeople:= TPersonList.Create;
   try
     lPeople.OID.AsString:= '-1';
-    lPeople.Read;
+Assert(False, 'Under construction');
+//    lPeople.Read;
     CheckEquals(1, lPeople.Count, 'Failed on lPeople.Count');
     Check(posClean = lPeople.ObjectState, 'Failed on lPeople.ObjectState = posClean');
     Check(posPK = lPeople.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posClean');
@@ -820,12 +540,12 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestPersonFlat_Save;
+procedure TTestCompany.TestPersonFlat_Save;
 var
-  lPeople: TPeople;
+  lPeople: TPersonList;
   lPerson: TPerson;
 begin
-  lPeople:= TPeople.Create;
+  lPeople:= TPersonList.Create;
   try
     lPeople.OID.AsString:= '-1';
     lPerson:= TPerson.Create;
@@ -837,15 +557,17 @@ begin
     lPerson.FirstName:= IntToStr(cOIDPerson);
     lPerson.LastName := IntToStr(cOIDPerson);
     lPeople.Add(lPerson);
-    lPeople.Save;
+Assert(False, 'Under construction');
+//    lPeople.Save;
     Check(posClean = lPeople.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posClean');
   finally
     lPeople.Free;
   end;
-  lPeople:= TPeople.Create;
+  lPeople:= TPersonList.Create;
   try
     lPeople.OID.AsString:= '-1';
-    lPeople.Read;
+Assert(False, 'Under construction');
+//    lPeople.Read;
     CheckEquals(1, lPeople.Count, 'Failed on lPeople.Count');
     Check(posClean = lPeople.ObjectState, 'Failed on lPeople.ObjectState = posClean');
     Check(posPK = lPeople.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posClean');
@@ -855,16 +577,17 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestPersonFlat_Update;
+procedure TTestCompany.TestPersonFlat_Update;
 var
-  lPeople: TPeople;
+  lPeople: TPersonList;
   lPerson: TPerson;
 begin
   InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-  lPeople:= TPeople.Create;
+  lPeople:= TPersonList.Create;
   try
     lPeople.OID.AsString:= '-1';
-    lPeople.Read;
+Assert(False, 'Under construction');
+//    lPeople.Read;
     CheckEquals(1, lPeople.Count, 'Failed on lPeople.Count');
     lPerson:= lPeople.Items[0];
     lPerson.Notes:= cUpdateValue;
@@ -873,16 +596,18 @@ begin
     lPerson.FirstName:= cUpdateValue;
     lPerson.LastName := cUpdateValue;
     lPerson.ObjectState:= posUpdate;
-    lPeople.Save;
+Assert(False, 'Under construction');
+//    lPeople.Save;
     Check(posClean = lPeople.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posClean');
   finally
     lPeople.Free;
   end;
 
-  lPeople:= TPeople.Create;
+  lPeople:= TPersonList.Create;
   try
     lPeople.OID.AsString:= '-1';
-    lPeople.Read;
+Assert(False, 'Under construction');
+//    lPeople.Read;
     CheckEquals(1, lPeople.Count, 'Failed on lPeople.Count');
     Check(posClean = lPeople.ObjectState, 'Failed on lPeople.ObjectState = posClean');
     Check(posPK = lPeople.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posClean');
@@ -892,73 +617,7 @@ begin
   end;
 end;
 
-procedure TTestAdrs.EmptyTables;
-begin
-  GTIOPFManager.DeleteRow('Adrs', nil);
-  GTIOPFManager.DeleteRow('EAdrs', nil);
-  GTIOPFManager.DeleteRow('Person', nil);
-  GTIOPFManager.DeleteRow('Company', nil);
-  GTIOPFManager.DeleteRow('Lookup_List_Value', nil);
-  GTIOPFManager.DeleteRow('Lookup_List_Name', nil);
-end;
-
-procedure TTestAdrs.Setup;
-begin
-  inherited;
-  EmptyTables;
-  FreeAndNilAdrsBook;
-end;
-
-procedure TTestAdrs.InsertTestLookupListName(pOID: Integer; const pListName: string);
-var
-  lParams: TtiQueryParams;
-begin
-  lParams:= TtiQueryParams.Create;
-  try
-    lParams.ParamAsVariant['OID']:= pOID;
-    lParams.ParamAsVariant['List_Name']:= pListName;
-    GTIOPFManager.InsertRow('Lookup_List_Name', lParams);
-  finally
-    lParams.Free;
-  end;
-end;
-
-procedure TTestAdrs.CheckLookupListName(
-  pData: TLookupList;
-  pOID: Integer;
-  const pListName: string);
-begin
-  CheckEquals(IntToStr(pOID), pData.OID.AsString, 'Failed on OID');
-  CheckEquals(pListName, pData.ListName, 'Failed on ListName');
-end;
-
-procedure TTestAdrs.InsertTestLookupListItem(
-  pOwnerOID, pOID: Integer;
-  const pItemText: string);
-var
-  lParams: TtiQueryParams;
-begin
-  lParams:= TtiQueryParams.Create;
-  try
-    lParams.ParamAsVariant['OID']:= pOID;
-    lParams.ParamAsVariant['Owner_OID']:= pOwnerOID;
-    lParams.ParamAsVariant['Item_Text']:= pItemText;
-    GTIOPFManager.InsertRow('Lookup_List_Value', lParams);
-  finally
-    lParams.Free;
-  end;
-end;
-
-procedure TTestAdrs.CheckLookupListItem(
-  pData: TLookupListItem;
-  pOID: Integer;
-  const pItemText: string);
-begin
-  CheckEquals(INtToStr(pOID), pData.OID.AsString, 'Failed on OID');
-  CheckEquals(pItemText, pData.Text, 'Failed on ItemText');
-end;
-
-procedure TTestAdrs.InsertTestAdrs(
+procedure TTestCompany.InsertTestAdrs(
   pOwnerOID, pOID, pAdrsTypeOID: Integer;
   const pValue: string);
 var
@@ -966,21 +625,22 @@ var
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lParams.ParamAsVariant['OID']        := pOID;
-    lParams.ParamAsVariant['Owner_OID']  := pOwnerOID;
-    lParams.ParamAsVariant['Adrs_Type']  := pAdrsTypeOID;
-    lParams.ParamAsVariant['Country']    := pValue;
-    lParams.ParamAsVariant['Lines']      := pValue;
-    lParams.ParamAsVariant['Suburb']     := pValue;
-    lParams.ParamAsVariant['State']      := pValue;
-    lParams.ParamAsVariant['PCode']      := pValue;
+Assert(False, 'Under construction');
+//    lParams.ParamAsVariant['OID']        := pOID;
+//    lParams.ParamAsVariant['Owner_OID']  := pOwnerOID;
+//    lParams.ParamAsVariant['Adrs_Type']  := pAdrsTypeOID;
+//    lParams.ParamAsVariant['Country']    := pValue;
+//    lParams.ParamAsVariant['Lines']      := pValue;
+//    lParams.ParamAsVariant['Suburb']     := pValue;
+//    lParams.ParamAsVariant['State']      := pValue;
+//    lParams.ParamAsVariant['PCode']      := pValue;
     GTIOPFManager.InsertRow('Adrs', lParams);
   finally
     lParams.Free;
   end;
 end;
 
-procedure TTestAdrs.CheckAdrs(pData: TAdrs; pOID, pAdrsTypeOID: integer; const pValue: string);
+procedure TTestCompany.CheckAdrs(pData: TAdrs; pOID, pAdrsTypeOID: integer; const pValue: string);
 begin
   CheckEquals(IntToStr(pOID), pData.OID.AsString, 'Failed on OID');
   CheckEquals(IntToStr(pAdrsTypeOID), pData.AdrsTypeOID, 'Failed on AdrsTypeOID');
@@ -991,13 +651,7 @@ begin
   CheckEquals(pValue, pData.Country, 'Failed on Country');
 end;
 
-procedure TTestAdrs.TearDown;
-begin
-  EmptyTables;
-  inherited;
-end;
-
-procedure TTestAdrs.InsertTestEAdrs(
+procedure TTestCompany.InsertTestEAdrs(
   pOwnerOID, pOID, pAdrsTypeOID: integer;
   const pValue: string);
 var
@@ -1005,17 +659,18 @@ var
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lParams.ParamAsVariant['OID']        := pOID;
-    lParams.ParamAsVariant['Owner_OID']  := pOwnerOID;
-    lParams.ParamAsVariant['EAdrs_Type'] := pAdrsTypeOID;
-    lParams.ParamAsVariant['EAdrs_Text'] := pValue;
+Assert(False, 'Under construction');
+//    lParams.ParamAsVariant['OID']        := pOID;
+//    lParams.ParamAsVariant['Owner_OID']  := pOwnerOID;
+//    lParams.ParamAsVariant['EAdrs_Type'] := pAdrsTypeOID;
+//    lParams.ParamAsVariant['EAdrs_Text'] := pValue;
     GTIOPFManager.InsertRow('EAdrs', lParams);
   finally
     lParams.Free;
   end;
 end;
 
-procedure TTestAdrs.CheckEAdrs(
+procedure TTestCompany.CheckEAdrs(
   pData: TEAdrs; pOID, pAdrsTypeOID: integer;
   const pValue: string);
 begin
@@ -1024,26 +679,27 @@ begin
   CheckEquals(pValue, pData.Text, 'Failed on Text');
 end;
 
-procedure TTestAdrs.InsertTestPerson(pOwnerOID, pOID: Integer; const pValue: string);
+procedure TTestCompany.InsertTestPerson(pOwnerOID, pOID: Integer; const pValue: string);
 var
   lParams: TtiQueryParams;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lParams.ParamAsVariant['OID']:= pOID;
-    lParams.ParamAsVariant['Owner_OID']:= pOwnerOID;
-    lParams.ParamAsVariant['Notes']:= pValue;
-    lParams.ParamAsVariant['Title']:= pValue;
-    lParams.ParamAsVariant['Initials']:= pValue;
-    lParams.ParamAsVariant['First_Name']:= pValue;
-    lParams.ParamAsVariant['Family_Name']:= pValue;
+Assert(False, 'Under construction');
+//    lParams.ParamAsVariant['OID']:= pOID;
+//    lParams.ParamAsVariant['Owner_OID']:= pOwnerOID;
+//    lParams.ParamAsVariant['Notes']:= pValue;
+//    lParams.ParamAsVariant['Title']:= pValue;
+//    lParams.ParamAsVariant['Initials']:= pValue;
+//    lParams.ParamAsVariant['First_Name']:= pValue;
+//    lParams.ParamAsVariant['Family_Name']:= pValue;
     GTIOPFManager.InsertRow('Person', lParams);
   finally
     lParams.Free;
   end;
 end;
 
-procedure TTestAdrs.CheckPerson(
+procedure TTestCompany.CheckPerson(
   pData: TPerson; pOID: Integer;
   const pValue: string);
 begin
@@ -1055,16 +711,16 @@ begin
   CheckEquals(pValue, pData.LastName, 'Failed on LastName');
 end;
 
-procedure TTestAdrs.TestCompanyCompound_Delete;
+procedure TTestCompany.TestCompanyCompound_Delete;
 begin
   gAdrsBook;
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
   InsertTestCompany(cOIDCompany, IntToStr(cOIDCompany));
-  InsertTestAdrs(  cOIDCompany, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
-  InsertTestEAdrs( cOIDCompany, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
-  InsertTestPerson(cOIDCompany, cOIDPerson, IntToStr(cOIDPerson));
+//  InsertTestAdrs(  cOIDCompany, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  InsertTestEAdrs( cOIDCompany, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  InsertTestPerson(cOIDCompany, cOIDPerson, IntToStr(cOIDPerson));
 
   gAdrsBook.Read;
   CheckEquals(1, gAdrsBook.Companies.Count, 'gAdrsBook.Companies.Count');
@@ -1072,7 +728,8 @@ begin
   CheckEquals(1, gAdrsBook.Companies.Items[0].EAddressList.Count, 'gAdrsBook.Companies.Items[0].EAdrses.Count');
   CheckEquals(1, gAdrsBook.Companies.Count, 'gAdrsBook.Companies.Count');
   gAdrsBook.Companies.Items[0].ObjectState:= posDelete;
-  gAdrsBook.Save;
+Assert(False, 'Under construction');
+//  gAdrsBook.Save;
   Check(posDeleted = gAdrsBook.Companies.Items[0].ObjectState, 'gAdrsBook.Companies.Items[0].ObjectState');
 
   FreeAndNilAdrsBook;
@@ -1081,16 +738,16 @@ begin
 
 end;
 
-procedure TTestAdrs.TestCompanyCompound_Read;
+procedure TTestCompany.TestCompanyCompound_Read;
 begin
   gAdrsBook;
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-  InsertTestCompany(cOIDCompany, IntToStr(cOIDCompany));
-  InsertTestAdrs(  cOIDCompany, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
-  InsertTestEAdrs( cOIDCompany, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
-  InsertTestPerson(cOIDCompany, cOIDPerson, IntToStr(cOIDPerson));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestCompany(cOIDCompany, IntToStr(cOIDCompany));
+//  InsertTestAdrs(  cOIDCompany, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  InsertTestEAdrs( cOIDCompany, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  InsertTestPerson(cOIDCompany, cOIDPerson, IntToStr(cOIDPerson));
 
   gAdrsBook.Read;
   CheckEquals(1, gAdrsBook.Companies.Count, 'gAdrsBook.Companies.Count');
@@ -1098,12 +755,12 @@ begin
   CheckEquals(1, gAdrsBook.Companies.Items[0].EAddressList.Count, 'gAdrsBook.Companies.Items[0].EAdrses.Count');
   CheckEquals(1, gAdrsBook.Companies.Count, 'gAdrsBook.Companies.Count');
   CheckCompany(gAdrsBook.Companies.Items[0], cOIDCompany, IntToStr(cOIDCompany));
-  CheckAdrs(gAdrsBook.Companies.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-  CheckEAdrs(gAdrsBook.Companies.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
-  CheckPerson(gAdrsBook.Companies.Items[0].People.Items[0], cOIDPerson, IntToStr(cOIDPerson));
+//  CheckAdrs(gAdrsBook.Companies.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  CheckEAdrs(gAdrsBook.Companies.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  CheckPerson(gAdrsBook.Companies.Items[0].People.Items[0], cOIDPerson, IntToStr(cOIDPerson));
 end;
 
-procedure TTestAdrs.TestCompanyCompound_Save;
+procedure TTestCompany.TestCompanyCompound_Save;
 var
   lCompany: TCompany;
   lAdrs: TAdrs;
@@ -1111,9 +768,9 @@ var
   lPerson: TPerson;
 begin
   gAdrsBook;
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
 
   gAdrsBook.Read;
 
@@ -1132,14 +789,14 @@ begin
   lAdrs.State  := IntToStr(cOIDAdrs);
   lAdrs.PCode  := IntToStr(cOIDAdrs);
   lAdrs.Country:= IntToStr(cOIDAdrs);
-  lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+//  lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
   lCompany.AddressList.Add(lAdrs);
 
   lEAdrs  := TEAdrs.Create;
   lEAdrs.OID.AsString:= IntToStr(cOIDEAdrs);
   lEAdrs.ObjectState:= posCreate;
   lEAdrs.Text:= IntToStr(cOIDEAdrs);
-  lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
+//  lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
   lCompany.EAddressList.Add(lEAdrs);
 
   lPerson := TPerson.Create;
@@ -1151,7 +808,8 @@ begin
   lPerson.FirstName  := IntToStr(cOIDPerson);
   lPerson.Notes      := IntToStr(cOIDPerson);
   lCompany.People.Add(lPerson);
-  gAdrsBook.Save;
+Assert(False, 'Under construction');
+//  gAdrsBook.Save;
   FreeAndNilAdrsBook;
 
   gAdrsBook.Read;
@@ -1160,13 +818,13 @@ begin
   CheckEquals(1, gAdrsBook.Companies.Items[0].EAddressList.Count, 'gAdrsBook.Companies.Items[0].EAdrses.Count');
   CheckEquals(1, gAdrsBook.Companies.Count, 'gAdrsBook.Companies.Count');
   CheckCompany(gAdrsBook.Companies.Items[0], cOIDCompany, IntToStr(cOIDCompany));
-  CheckAdrs(gAdrsBook.Companies.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-  CheckEAdrs(gAdrsBook.Companies.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
-  CheckPerson(gAdrsBook.Companies.Items[0].People.Items[0], cOIDPerson, IntToStr(cOIDPerson));
+//  CheckAdrs(gAdrsBook.Companies.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  CheckEAdrs(gAdrsBook.Companies.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  CheckPerson(gAdrsBook.Companies.Items[0].People.Items[0], cOIDPerson, IntToStr(cOIDPerson));
 
 end;
 
-procedure TTestAdrs.TestCompanyCompound_Update;
+procedure TTestCompany.TestCompanyCompound_Update;
 var
   lCompany: TCompany;
   lAdrs: TAdrs;
@@ -1174,13 +832,13 @@ var
   lPerson: TPerson;
 begin
   gAdrsBook;
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-  InsertTestCompany(cOIDCompany, IntToStr(cOIDCompany));
-  InsertTestAdrs(  cOIDCompany, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
-  InsertTestEAdrs( cOIDCompany, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
-  InsertTestPerson(cOIDCompany, cOIDPerson, IntToStr(cOIDPerson));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestCompany(cOIDCompany, IntToStr(cOIDCompany));
+//  InsertTestAdrs(  cOIDCompany, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  InsertTestEAdrs( cOIDCompany, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  InsertTestPerson(cOIDCompany, cOIDPerson, IntToStr(cOIDPerson));
 
   gAdrsBook.Read;
   CheckEquals(1, gAdrsBook.Companies.Count, 'gAdrsBook.Companies.Count');
@@ -1212,31 +870,33 @@ begin
   lPerson.LastName:= cUpdateValue;
   lPerson.FirstName:= cUpdateValue;
   lPerson.Notes:= cUpdateValue;
-  gAdrsBook.Save;
+Assert(False, 'Under construction');
+//  gAdrsBook.Save;
 
   CheckCompany(gAdrsBook.Companies.Items[0], cOIDCompany, cUpdateValue);
-  CheckAdrs(gAdrsBook.Companies.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, cUpdateValue);
-  CheckEAdrs(gAdrsBook.Companies.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, cUpdateValue);
-  CheckPerson(gAdrsBook.Companies.Items[0].People.Items[0], cOIDPerson, cUpdateValue);
+//  CheckAdrs(gAdrsBook.Companies.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, cUpdateValue);
+//  CheckEAdrs(gAdrsBook.Companies.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, cUpdateValue);
+//  CheckPerson(gAdrsBook.Companies.Items[0].People.Items[0], cOIDPerson, cUpdateValue);
 
 end;
 
-procedure TTestAdrs.TestPersonCompound_Delete;
+procedure TTestCompany.TestPersonCompound_Delete;
 begin
   gAdrsBook;
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-  InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-  InsertTestAdrs(  cOIDPerson, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
-  InsertTestEAdrs( cOIDPerson, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
+//  InsertTestAdrs(  cOIDPerson, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  InsertTestEAdrs( cOIDPerson, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
 
   gAdrsBook.Read;
   CheckEquals(1, gAdrsBook.People.Count, 'gAdrsBook.People.Count');
   CheckEquals(1, gAdrsBook.People.Items[0].AddressList.Count, 'gAdrsBook.People.Items[0].Adrses.Count');
   CheckEquals(1, gAdrsBook.People.Items[0].EAddressList.Count, 'gAdrsBook.People.Items[0].EAdrses.Count');
   gAdrsBook.People.Items[0].ObjectState:= posDelete;
-  gAdrsBook.Save;
+Assert(False, 'Under construction');
+//  gAdrsBook.Save;
   Check(posDeleted = gAdrsBook.People.Items[0].ObjectState, 'Failed on posDeleted = gAdrsBook.People.Items[0]');
 
   FreeAndNilAdrsBook;
@@ -1245,35 +905,35 @@ begin
 
 end;
 
-procedure TTestAdrs.TestPersonCompound_Read;
+procedure TTestCompany.TestPersonCompound_Read;
 begin
   gAdrsBook;
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-  InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-  InsertTestAdrs(  cOIDPerson, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
-  InsertTestEAdrs( cOIDPerson, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
+//  InsertTestAdrs(  cOIDPerson, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  InsertTestEAdrs( cOIDPerson, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
 
   gAdrsBook.Read;
   CheckEquals(1, gAdrsBook.People.Count, 'gAdrsBook.People.Count');
   CheckEquals(1, gAdrsBook.People.Items[0].AddressList.Count, 'gAdrsBook.People.Items[0].Adrses.Count');
   CheckEquals(1, gAdrsBook.People.Items[0].EAddressList.Count, 'gAdrsBook.People.Items[0].EAdrses.Count');
   CheckPerson(gAdrsBook.People.Items[0], cOIDPerson, IntToStr(cOIDPerson));
-  CheckAdrs(gAdrsBook.People.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-  CheckEAdrs(gAdrsBook.People.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  CheckAdrs(gAdrsBook.People.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  CheckEAdrs(gAdrsBook.People.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
 end;
 
-procedure TTestAdrs.TestPersonCompound_Save;
+procedure TTestCompany.TestPersonCompound_Save;
 var
   lPerson: TPerson;
   lAdrs  : TAdrs;
   lEAdrs : TEAdrs;
 begin
 
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
   gAdrsBook.Read;
 
   lPerson:= TPerson.Create;
@@ -1289,7 +949,7 @@ begin
   lAdrs  := TAdrs.Create;
   lAdrs.OID.AsString:= IntToStr(cOIDAdrs);
   lAdrs.ObjectState:= posCreate;
-  lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+//  lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
   lAdrs.Lines:= IntToStr(cOIDAdrs);
   lAdrs.Suburb:= IntToStr(cOIDAdrs);
   lAdrs.State:= IntToStr(cOIDAdrs);
@@ -1300,10 +960,11 @@ begin
   lEAdrs := TEAdrs.Create;;
   lEADrs.OID.AsString:= IntToStr(cOIDEAdrs);
   lEAdrs.ObjectState:= posCreate;
-  lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
+//  lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
   lEAdrs.Text:= IntToStr(cOIDEAdrs);
   lPerson.EAddressList.Add(lEAdrs);
-  gAdrsBook.Save;
+Assert(False, 'Under construction');
+//  gAdrsBook.Save;
 
   FreeAndNilAdrsBook;
   gAdrsBook.Read;
@@ -1311,24 +972,24 @@ begin
   CheckEquals(1, gAdrsBook.People.Items[0].AddressList.Count, 'gAdrsBook.People.Items[0].Adrses.Count');
   CheckEquals(1, gAdrsBook.People.Items[0].EAddressList.Count, 'gAdrsBook.People.Items[0].EAdrses.Count');
   CheckPerson(gAdrsBook.People.Items[0], cOIDPerson, IntToStr(cOIDPerson));
-  CheckAdrs(gAdrsBook.People.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-  CheckEAdrs(gAdrsBook.People.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  CheckAdrs(gAdrsBook.People.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  CheckEAdrs(gAdrsBook.People.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
 
 end;
 
-procedure TTestAdrs.TestPersonCompound_Update;
+procedure TTestCompany.TestPersonCompound_Update;
 var
   lPerson: TPerson;
   lAdrs  : TAdrs;
   lEAdrs : TEAdrs;
 begin
   gAdrsBook;
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
   InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-  InsertTestAdrs(  cOIDPerson, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
-  InsertTestEAdrs( cOIDPerson, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  InsertTestAdrs(  cOIDPerson, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  InsertTestEAdrs( cOIDPerson, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
   gAdrsBook.Read;
 
   lPerson:= gAdrsBook.People.Items[0];
@@ -1341,7 +1002,7 @@ begin
 
   lAdrs            := lPerson.AddressList.Items[0];
   lAdrs.ObjectState:= posUpdate;
-  lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
+//  lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
   lAdrs.Lines      := cUpdateValue;
   lAdrs.Suburb     := cUpdateValue;
   lAdrs.State      := cUpdateValue;
@@ -1350,9 +1011,10 @@ begin
 
   lEAdrs           := lPerson.EAddressList.Items[0];
   lEAdrs.ObjectState:= posUpdate;
-  lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+//  lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
   lEAdrs.Text:= cUpdateValue;
-  gAdrsBook.Save;
+Assert(False, 'Under construction');
+//  gAdrsBook.Save;
 
   FreeAndNilAdrsBook;
   gAdrsBook.Read;
@@ -1360,28 +1022,29 @@ begin
   CheckEquals(1, gAdrsBook.People.Items[0].AddressList.Count, 'gAdrsBook.People.Items[0].Adrses.Count');
   CheckEquals(1, gAdrsBook.People.Items[0].EAddressList.Count, 'gAdrsBook.People.Items[0].EAdrses.Count');
   CheckPerson(gAdrsBook.People.Items[0], cOIDPerson, cUpdateValue);
-  CheckAdrs(gAdrsBook.People.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem1, cUpdateValue);
-  CheckEAdrs(gAdrsBook.People.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem, cUpdateValue);
+//  CheckAdrs(gAdrsBook.People.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem1, cUpdateValue);
+//  CheckEAdrs(gAdrsBook.People.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem, cUpdateValue);
 
 end;
 
-procedure TTestAdrs.InsertTestCompany(pOID: Integer;
+procedure TTestCompany.InsertTestCompany(pOID: Integer;
   const pValue: string);
 var
   lParams: TtiQueryParams;
 begin
   lParams:= TtiQueryParams.Create;
   try
-    lParams.ParamAsVariant['OID']:= pOID;
-    lParams.ParamAsVariant['Notes']:= pValue;
-    lParams.ParamAsVariant['Company_Name']:= pValue;
+Assert(False, 'Under construction');
+//    lParams.ParamAsVariant['OID']:= pOID;
+//    lParams.ParamAsVariant['Notes']:= pValue;
+//    lParams.ParamAsVariant['Company_Name']:= pValue;
     GTIOPFManager.InsertRow('Company', lParams);
   finally
     lParams.Free;
   end;
 end;
 
-procedure TTestAdrs.CheckCompany(pData: TCompany; pOID: Integer;
+procedure TTestCompany.CheckCompany(pData: TCompany; pOID: Integer;
   const pValue: string);
 begin
   CheckEquals(IntToStr(pOID), pData.OID.AsString, 'Failed on OID');
@@ -1389,14 +1052,14 @@ begin
   CheckEquals(pValue, pData.CompanyName, 'Failed on CompanyName');
 end;
 
-procedure TTestAdrs.TestAdrs_Assign;
+procedure TTestCompany.TestAdrs_Assign;
 var
   lAdrsFrom: TAdrs;
   lAdrsTo  : TAdrs;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  gAdrsBook.AdrsTypes.Read;
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+  gAdrsBook.EAdrsTypeList.Read;
   lAdrsFrom:= TAdrs.Create;
   try
     lAdrsFrom.OID.AsString:= IntToStr(cOIDAdrs);
@@ -1406,11 +1069,11 @@ begin
     lAdrsFrom.State  := IntToStr(cOIDAdrs);
     lAdrsFrom.PCode  := IntToStr(cOIDAdrs);
     lAdrsFrom.Country:= IntToStr(cOIDAdrs);
-    lAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+//    lAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
     lAdrsTo:= TAdrs.Create;
     try
       lAdrsTo.Assign(lAdrsFrom);
-      CheckAdrs(lAdrsTo, cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+//      CheckAdrs(lAdrsTo, cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
     finally
       lAdrsTo.Free;
     end;
@@ -1420,14 +1083,14 @@ begin
 
 end;
 
-procedure TTestAdrs.TestAdrs_Clone;
+procedure TTestCompany.TestAdrs_Clone;
 var
   lAdrsFrom: TAdrs;
   lAdrsTo  : TAdrs;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  gAdrsBook.AdrsTypes.Read;
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+  gAdrsBook.EAdrsTypeList.Read;
   lAdrsFrom:= TAdrs.Create;
   try
     lAdrsFrom.OID.AsString:= IntToStr(cOIDAdrs);
@@ -1437,10 +1100,10 @@ begin
     lAdrsFrom.State  := IntToStr(cOIDAdrs);
     lAdrsFrom.PCode  := IntToStr(cOIDAdrs);
     lAdrsFrom.Country:= IntToStr(cOIDAdrs);
-    lAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+//    lAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
     lAdrsTo:= lAdrsFrom.Clone;
     try
-      CheckAdrs(lAdrsTo, cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+//      CheckAdrs(lAdrsTo, cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
     finally
       lAdrsTo.Free;
     end;
@@ -1449,14 +1112,14 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestCompanyCompound_Assign;
+procedure TTestCompany.TestCompanyCompound_Assign;
 var
   lCompanyFrom: TCompany;
   lCompanyTo  : TCompany;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
   gAdrsBook.Read;
 
   lCompanyFrom:= CreateCompoundCompany;
@@ -1474,14 +1137,14 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestCompanyCompound_Clone;
+procedure TTestCompany.TestCompanyCompound_Clone;
 var
   lCompanyFrom: TCompany;
   lCompanyTo  : TCompany;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
   gAdrsBook.Read;
 
   lCompanyFrom:= CreateCompoundCompany;
@@ -1498,7 +1161,7 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestCompanyFlat_Assign;
+procedure TTestCompany.TestCompanyFlat_Assign;
 var
   lCompanyFrom: TCompany;
   lCompanyTo  : TCompany;
@@ -1522,7 +1185,7 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestCompanyFlat_Clone;
+procedure TTestCompany.TestCompanyFlat_Clone;
 var
   lCompanyFrom: TCompany;
   lCompanyTo  : TCompany;
@@ -1545,24 +1208,24 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestEAdrs_Assign;
+procedure TTestCompany.TestEAdrs_Assign;
 var
   lEAdrsFrom: TEAdrs;
   lEAdrsTo  : TEAdrs;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  gAdrsBook.AdrsTypes.Read;
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+  gAdrsBook.EAdrsTypeList.Read;
   lEAdrsFrom:= TEAdrs.Create;
   try
     lEAdrsFrom.OID.AsString:= IntToStr(cOIDEAdrs);
     lEAdrsFrom.ObjectState:= posClean;
     lEAdrsFrom.Text  := IntToStr(cOIDEAdrs);
-    lEAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+//    lEAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
     lEAdrsTo:= TEAdrs.Create;
     try
       lEAdrsTo.Assign(lEAdrsFrom);
-      CheckEAdrs(lEAdrsTo, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
+//      CheckEAdrs(lEAdrsTo, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
     finally
       lEAdrsTo.Free;
     end;
@@ -1571,23 +1234,23 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestEAdrs_Clone;
+procedure TTestCompany.TestEAdrs_Clone;
 var
   lEAdrsFrom: TEAdrs;
   lEAdrsTo  : TEAdrs;
 begin
-  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-  gAdrsBook.AdrsTypes.Read;
+//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
+//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
+  gAdrsBook.EAdrsTypeList.Read;
   lEAdrsFrom:= TEAdrs.Create;
   try
     lEAdrsFrom.OID.AsString:= IntToStr(cOIDEAdrs);
     lEAdrsFrom.ObjectState:= posClean;
     lEAdrsFrom.Text  := IntToStr(cOIDEAdrs);
-    lEAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+//    lEAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
     lEAdrsTo:= lEAdrsFrom.Clone;
     try
-      CheckEAdrs(lEAdrsTo, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
+//      CheckEAdrs(lEAdrsTo, cOIDEAdrs, cOIDLookupListItem, IntToStr(cOIDEAdrs));
     finally
       lEAdrsTo.Free;
     end;
@@ -1596,7 +1259,7 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestPersonFlat_Assign;
+procedure TTestCompany.TestPersonFlat_Assign;
 var
   lPersonFrom: TPerson;
   lPersonTo  : TPerson;
@@ -1623,7 +1286,7 @@ begin
   end;
 end;
 
-procedure TTestAdrs.TestPersonFlat_Clone;
+procedure TTestCompany.TestPersonFlat_Clone;
 var
   lPersonFrom: TPerson;
   lPersonTo  : TPerson;
@@ -1649,17 +1312,17 @@ begin
   end;
 end;
 
-procedure TTestAdrs.CheckCompoundCompany(pCompany: TCompany);
+procedure TTestCompany.CheckCompoundCompany(pCompany: TCompany);
 begin
   CheckEquals(1, pCompany.AddressList.Count, 'gAdrsBook.Companies.Items[0].Adrses.Count');
   CheckEquals(1, pCompany.EAddressList.Count, 'gAdrsBook.Companies.Items[0].EAdrses.Count');
   CheckCompany(pCompany, cOIDCompany, IntToStr(cOIDCompany));
-  CheckAdrs(pCompany.AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-  CheckEAdrs(pCompany.EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
+//  CheckAdrs(pCompany.AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
+//  CheckEAdrs(pCompany.EAddressList.Items[0], cOIDEAdr0s, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
   CheckPerson(pCompany.People.Items[0], cOIDPerson, IntToStr(cOIDPerson));
 end;
 
-function TTestAdrs.CreateCompoundCompany: TCompany;
+function TTestCompany.CreateCompoundCompany: TCompany;
 var
   lAdrsFrom: TAdrs;
   lEAdrsFrom: TEAdrs;
@@ -1679,14 +1342,14 @@ begin
   lAdrsFrom.State  := IntToStr(cOIDAdrs);
   lAdrsFrom.PCode  := IntToStr(cOIDAdrs);
   lAdrsFrom.Country:= IntToStr(cOIDAdrs);
-  lAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
+//  lAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
   result.AddressList.Add(lAdrsFrom);
 
   lEAdrsFrom  := TEAdrs.Create;
   lEAdrsFrom.OID.AsString:= IntToStr(cOIDEAdrs);
   lEAdrsFrom.ObjectState:= posCreate;
   lEAdrsFrom.Text:= IntToStr(cOIDEAdrs);
-  lEAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
+//  lEAdrsFrom.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
   result.EAddressList.Add(lEAdrsFrom);
 
   lPersonFrom := TPerson.Create;

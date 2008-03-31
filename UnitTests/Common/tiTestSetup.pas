@@ -19,6 +19,7 @@ type
     constructor Create(const ATestCase : TtiTestCase); virtual ;
     destructor  Destroy; override;
 
+    function    tvToStr(const AValue: string; const AInc: integer = 0): string;
     function    tvToDateTime( const AValue: string; const AInc: integer = 0): TDateTime;
     function    tvToDate(     const AValue: string; const AInc: integer = 0): TDateTime;
     function    tvToInt(      const AValue: string; const AInc: integer = 0): Int64;
@@ -73,6 +74,15 @@ end;
 function TtiTestSetup.tvToStatus(const AValue: string): byte;
 begin
   result:= Ord(StrToInt(AValue) mod 2 = 0);
+end;
+
+function TtiTestSetup.tvToStr(const AValue: string;
+  const AInc: integer): string;
+begin
+  if AInc = 0 then
+    result:= AValue
+  else
+    result:= AValue + IntToStr(AInc);
 end;
 
 procedure TtiTestSetup.tvToStream(

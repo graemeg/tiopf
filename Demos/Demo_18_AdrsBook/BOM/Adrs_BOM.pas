@@ -4,10 +4,10 @@ unit Adrs_BOM;
 
 interface
 uses
-   tiObject
-  ,Classes
-  ,tiOID
- ;
+  tiObject,
+  Classes,
+  tiOID,
+  AdrsType_BOM;
 
 const
   cErrorPersonNameNotAssigned = 'Please enter the person''s name';
@@ -16,98 +16,40 @@ const
 type
 
   TAdrsBook       = class;
-  TLookupLists    = class;
-  TLookupList     = class;
-  TLookupListItem = class;
-  TPeople         = class;
+  TPersonList         = class;
   TPerson         = class;
-  TCompanies      = class;
+  TCompanyList      = class;
   TCompany        = class;
-  TAdrsList       = class;
-  TEAdrsList      = class;
+  TAddressList       = class;
+  TEAddressList      = class;
   TAdrsAbs        = class;
   TAdrs           = class;
   TEAdrs          = class;
 
-  //----------------------------------------------------------------------------
-  TLookupLists = class(TtiObjectList)
-  private
-  protected
-    function    GetItems(i: integer): TLookupList; reintroduce;
-    procedure   SetItems(i: integer; const Value: TLookupList); reintroduce;
-  public
-    constructor Create; override;
-    procedure   Read; override;
-    property    Items[i:integer]: TLookupList read GetItems write SetItems;
-    procedure   Add(AObject    : TLookupList  ; pbDefaultDispOrder: boolean = true); reintroduce;
-    function    Find(pOIDAsString: String ): TLookupListItem; reintroduce;
-    function    FindByListName(const pListName: string): TLookupList;
-  end;
-
-  //----------------------------------------------------------------------------
-  TLookupList    = class(TtiObjectList)
-  private
-    FListName: string;
-  protected
-    function    GetItems(i: integer): TLookupListItem; reintroduce;
-    procedure   SetItems(i: integer; const Value: TLookupListItem); reintroduce;
-    function    GetOwner: TLookupLists; reintroduce;
-    procedure   SetOwner(const Value: TLookupLists); reintroduce;
-  public
-    procedure   Read; override;
-    property    Items[i:integer]: TLookupListItem read GetItems write SetItems;
-    procedure   Add(AObject    : TLookupListItem  ; pbDefaultDispOrder: boolean = true); reintroduce;
-  published
-    property    ListName: string read FListName write FListName;
-  end;
-
-  //----------------------------------------------------------------------------
-  TLookupListItem     = class(TtiObject)
-  private
-    FText: string;
-  protected
-    function    GetOwner: TLookupList; reintroduce;
-    procedure   SetOwner(const Value: TLookupList); reintroduce;
-  public
-    property    Owner      : TLookupList             read GetOwner      write SetOwner;
-  published
-    property    Text: string read FText write FText;
-  end;
-
   // The TAdrsBook class. Top of the tree of the Address Book BOM
-  //----------------------------------------------------------------------------
   TAdrsBook = class(TtiObject)
   private
-    FPeople   : TPeople   ;
-    FCompanies: TCompanies;
-    FAdrsTypes: TLookupLists;
+    FPeople   : TPersonList   ;
+    FCompanies: TCompanyList;
+    FEAdrsTypeList: TEAdrsTypeList;
   protected
     function    GetCaption: string; override;
     procedure   SetDeleted(const Value: boolean); override;
-    // There are problems cloning the entire address book because the TAdrsBook
-    // owns the list of valid address types (TLookupLists). Each address owned by
-    // a person or a company has a pointer into this list. The AssignClassProps
-    // method in TAdrsBookItemAbs has been overridden to copy pointers to these
-    // objects so if we are cloning the entire address book, there will be a
-    // duplicate of TLookupLists, but the TAdrsBookItemAbs will have pointers
-    // into the wrong copy of this list.
-    // procedure   AssignClassProps(pSource: TtiObject); override;
   published
-    property    People   : TPeople read FPeople;
-    property    Companies: TCompanies read FCompanies;
-    property    AdrsTypes: TLookupLists read FAdrsTypes;
+    property    People   : TPersonList read FPeople;
+    property    Companies: TCompanyList read FCompanies;
+    property    EAdrsTypeList: TEAdrsTypeList read FEAdrsTypeList;
   public
     constructor Create; override;
     destructor  Destroy; override;
     procedure   Clear;
-    procedure   Read(const pDBConnectionName: string; pPersistenceLayerName: string = ''); override;
+    procedure   Read; override;
     procedure   FindAllLike(const pLike: string; const pList: TList);
   end;
 
   // A list of TPerson objects, with some published properties for display in a
   // TtiTreeView
-  //----------------------------------------------------------------------------
-  TPeople   = class(TtiObjectList)
+  TPersonList   = class(TtiObjectList)
   protected
     function    GetCaption: string; override;
     function    GetItems(i: integer): TPerson; reintroduce;
@@ -119,8 +61,7 @@ type
     procedure   Add(AObject: TPerson; pbDefaultDispOrder: boolean = true); reintroduce;
   end;
 
-  //----------------------------------------------------------------------------
-  TCompanies   = class(TtiObjectList)
+  TCompanyList   = class(TtiObjectList)
   protected
     function    GetCaption: string; override;
     function    GetItems(i: integer): TCompany; reintroduce;
@@ -131,25 +72,25 @@ type
     function    Last: TCompany; reintroduce;
   end;
 
-  //----------------------------------------------------------------------------
   TAdrsBookItemAbs = class(TtiObject)
   private
-    FAddressList : TAdrsList;
-    FEAddressList: TEAdrsList;
+    FAddressList : TAddressList;
+    FEAddressList: TEAddressList;
     FsNotes: string;
   protected
     procedure   AssignClassProps(pSource: TtiObject); override;
   public
     constructor Create; override;
     destructor  Destroy; override;
+    procedure   Save; override;
+    procedure   Read; override;
   published
-    property EAddressList: TEAdrsList read FEAddressList;
-    property AddressList : TAdrsList  read FAddressList;
+    property EAddressList: TEAddressList read FEAddressList;
+    property AddressList : TAddressList  read FAddressList;
     property Notes: string read FsNotes write FsNotes;
   end;
 
   // TPerson class. Holds information about a person
-  //----------------------------------------------------------------------------
   TPerson = class(TAdrsBookItemAbs)
   private
     FsFirstname: string;
@@ -158,10 +99,10 @@ type
     FsTitle: string;
   protected
     function    GetCaption: string; override;
-    function    GetOwner: TPeople; reintroduce;
-    procedure   SetOwner(const Value: TPeople); reintroduce;
+    function    GetOwner: TPersonList; reintroduce;
+    procedure   SetOwner(const Value: TPersonList); reintroduce;
   public
-    property    Owner      : TPeople read GetOwner      write SetOwner;
+    property    Owner      : TPersonList read GetOwner      write SetOwner;
     function    Clone: TPerson; reintroduce;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
@@ -172,30 +113,28 @@ type
     property Initials : string read FsInitials  write FsInitials;
   end;
 
-  //----------------------------------------------------------------------------
   TCompany = class(TAdrsBookItemAbs)
   private
     FCompanyName: string;
-    FPersonList : TPeople;
+    FPersonList : TPersonList;
   protected
     function    GetCaption: string; override;
-    function    GetOwner: TCompanies; reintroduce;
-    procedure   SetOwner(const Value: TCompanies); reintroduce;
+    function    GetOwner: TCompanyList; reintroduce;
+    procedure   SetOwner(const Value: TCompanyList); reintroduce;
     procedure   AssignClassProps(pSource: TtiObject); override;
   public
     constructor Create; override;
     destructor  Destroy; override;
-    property    Owner      : TCompanies  read GetOwner      write SetOwner;
+    property    Owner      : TCompanyList  read GetOwner      write SetOwner;
     function    Clone: TCompany; reintroduce;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
     property    CompanyName: string read FCompanyName write FCompanyName;
-    property    People   : TPeople read FPersonList;
+    property    People   : TPersonList read FPersonList;
   end;
 
   // A list of TAddress objects
-  //----------------------------------------------------------------------------
-  TAdrsList  = class(TtiObjectList)
+  TAddressList  = class(TtiObjectList)
   protected
     function    GetItems(i: integer): TAdrs; reintroduce;
     procedure   SetItems(i: integer; const Value: TAdrs); reintroduce;
@@ -206,8 +145,7 @@ type
   end;
 
   // A list of TEAddress objects
-  //----------------------------------------------------------------------------
-  TEAdrsList = class(TtiObjectList)
+  TEAddressList = class(TtiObjectList)
   protected
     function    GetItems(i: integer): TEAdrs; reintroduce;
     procedure   SetItems(i: integer; const Value: TEAdrs); reintroduce;
@@ -217,15 +155,14 @@ type
     procedure   Add(AObject: TEAdrs ; pbDefaultDispOrder: boolean = true); reintroduce;
   end;
 
-  //----------------------------------------------------------------------------
   TAdrsAbs = class(TtiObject)
   private
-    FAdrsType: TLookupListItem;
+//    FAdrsType: TLookupListItem;
     function    GetLookupListItemAsString: string;
     function    GetAdrsTypeOID: String;
     procedure   SetAdrsTypeOID(const pOIDAsString: string);
   published
-    property    AdrsType: TLookupListItem read FAdrsType write FAdrsType;
+//    property    AdrsType: TLookupListItem read FAdrsType write FAdrsType;
     property    AdrsTypeAsString: string read GeTLookupListItemAsString ;
     property    AdrsTypeOID: String read GetAdrsTypeOID write SetAdrsTypeOID;
   public
@@ -234,7 +171,6 @@ type
   end;
 
   // The TAddress class. Holds conventional (street & postage) address info
-  //----------------------------------------------------------------------------
   TAdrs = class(TAdrsAbs)
   private
     FsLines  : string;
@@ -244,10 +180,10 @@ type
     FSuburb: string;
   protected
     function    GetCaption: string; override;
-    function    GetOwner: TAdrsList; reintroduce;
-    procedure   SetOwner(const Value: TAdrsList); reintroduce;
+    function    GetOwner: TAddressList; reintroduce;
+    procedure   SetOwner(const Value: TAddressList); reintroduce;
   public
-    property    Owner      : TAdrsList  read GetOwner      write SetOwner;
+    property    Owner      : TAddressList  read GetOwner      write SetOwner;
     function    Clone: TAdrs; reintroduce;
   published
     property Country: string read FsCountry write FsCountry;
@@ -258,16 +194,15 @@ type
   end;
 
   // The TEAddress class. Holds info about an EAddress like phone number or EMail
-  //----------------------------------------------------------------------------
   TEAdrs = class(TAdrsAbs)
   private
     FsText: string;
   protected
     function    GetCaption: string; override;
-    function    GetOwner: TEAdrsList; reintroduce;
-    procedure   SetOwner(const Value: TEAdrsList); reintroduce;
+    function    GetOwner: TEAddressList; reintroduce;
+    procedure   SetOwner(const Value: TEAddressList); reintroduce;
   public
-    property    Owner      : TEAdrsList read GetOwner      write SetOwner;
+    property    Owner      : TEAddressList read GetOwner      write SetOwner;
     function    Clone: TEAdrs; reintroduce;
   published
     property Text: string read FsText write FsText;
@@ -303,175 +238,72 @@ begin
 end;
 
 procedure PopulateAdrsBook(const pAdrsBook: TAdrsBook);
-var
-  lLookupList: TLookupList;
-  lLookupListItem: TLookupListItem;
+//var
+//  lLookupList: TLookupList;
+//  lLookupListItem: TLookupListItem;
 begin
-Assert(False, 'Under construction');
-//  pAdrsBook.AdrsTypes.MarkListItemsForDeletion;
-  lLookupList:= TLookupList.CreateNew;
-  lLookupList.ObjectState:= posCreate;
-  lLookupList.ListName:= 'ADRS';
-  pAdrsBook.AdrsTypes.Add(lLookupList);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Street Address';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Postal Address';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Home Address';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Work Address';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Other';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupList:= TLookupList.CreateNew;
-  lLookupList.ObjectState:= posCreate;
-  lLookupList.ListName:= 'EADRS';
-  pAdrsBook.AdrsTypes.Add(lLookupList);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Home phone';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Work phone';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Mobile phone';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Fax';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'EMail';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Web';
-  lLookupList.Add(lLookupListItem);
-
-  lLookupListItem:= TLookupListItem.CreateNew;
-  lLookupListItem.Text:= 'Other';
-  lLookupList.Add(lLookupListItem);
-
-  gAdrsBook.AdrsTypes.Save;
-
-end;
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TLookupLists
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TLookupLists.Add(AObject: TLookupList; pbDefaultDispOrder: boolean);
-begin
-  inherited Add(AObject);
-end;
-
-//------------------------------------------------------------------------------
-constructor TLookupLists.Create;
-begin
-  inherited;
-  OID.AsString:= '0'; // Because if it's -1, then find will fail when passed -1 as a param
-end;
-
-function TLookupLists.Find(pOIDAsString: string): TLookupListItem;
-begin
-  result:= (inherited Find(pOIDAsString)) as TLookupListItem;
-end;
-
-//------------------------------------------------------------------------------
-function TLookupLists.FindByListName(const pListName: string): TLookupList;
-begin
-  result:= TLookupList(FindByProps(['ListName'], [pListName], false));
-  Assert(result <> nil, 'Unable to find list name <' + pListName + '>');
-end;
-
-//------------------------------------------------------------------------------
-function TLookupLists.GetItems(i: integer): TLookupList;
-begin
-  result:= TLookupList(inherited GetItems(i));
-end;
-
-//------------------------------------------------------------------------------
-procedure TLookupLists.Read;
-begin
-  inherited;
-  SortByOID;
-end;
-
-procedure TLookupLists.SetItems(i: integer; const Value: TLookupList);
-begin
-  inherited SetItems(i, Value);
-end;
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TLookupList
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TLookupList.Add(AObject: TLookupListItem; pbDefaultDispOrder: boolean);
-begin
-  inherited Add(AObject);
-end;
-
-//------------------------------------------------------------------------------
-function TLookupList.GetItems(i: integer): TLookupListItem;
-begin
-  result:= TLookupListItem(inherited GetItems(i));
-end;
-
-//------------------------------------------------------------------------------
-function TLookupList.GetOwner: TLookupLists;
-begin
-  result:= TLookupLists(inherited GetOwner);
-end;
-
-//------------------------------------------------------------------------------
-procedure TLookupList.Read;
-begin
-  inherited;
-  SortByOID;
-end;
-
-procedure TLookupList.SetItems(i: integer; const Value: TLookupListItem);
-begin
-  inherited SetItems(i, Value);
-end;
-
-//------------------------------------------------------------------------------
-procedure TLookupList.SetOwner(const Value: TLookupLists);
-begin
-  inherited SetOwner(Value);
-end;
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TLookupList
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-function TLookupListItem.GetOwner: TLookupList;
-begin
-  result:= TLookupList(inherited GetOwner);
-end;
-
-//------------------------------------------------------------------------------
-procedure TLookupListItem.SetOwner(const Value: TLookupList);
-begin
-  inherited SetOwner(Value);
+//Assert(False, 'Under construction');
+////  pAdrsBook.AdrsTypes.MarkListItemsForDeletion;
+//  lLookupList:= TLookupList.CreateNew;
+//  lLookupList.ObjectState:= posCreate;
+//  lLookupList.ListName:= 'ADRS';
+//  pAdrsBook.AdrsTypes.Add(lLookupList);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Street Address';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Postal Address';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Home Address';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Work Address';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Other';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupList:= TLookupList.CreateNew;
+//  lLookupList.ObjectState:= posCreate;
+//  lLookupList.ListName:= 'EADRS';
+//  pAdrsBook.AdrsTypes.Add(lLookupList);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Home phone';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Work phone';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Mobile phone';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Fax';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'EMail';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Web';
+//  lLookupList.Add(lLookupListItem);
+//
+//  lLookupListItem:= TLookupListItem.CreateNew;
+//  lLookupListItem.Text:= 'Other';
+//  lLookupList.Add(lLookupListItem);
+//
+//  gAdrsBook.AdrsTypes.Save;
+//
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -483,11 +315,11 @@ procedure TAdrsBook.Clear;
 begin
   FPeople.Clear;
   FCompanies.Clear;
-  FAdrsTypes.Clear;
+  FEAdrsTypeList.Clear;
 
   FCompanies.ObjectState:= posEmpty;
   FPeople.ObjectState:= posEmpty;
-  FAdrsTypes.ObjectState:= posEmpty;
+  FEAdrsTypeList.ObjectState:= posEmpty;
 
   ObjectState:= posEmpty;
 
@@ -496,28 +328,26 @@ end;
 constructor TAdrsBook.Create;
 begin
   inherited;
-  FAdrsTypes:= TLookupLists.Create;
-  FAdrsTypes.Owner:= self;
+  FEAdrsTypeList:= TEAdrsTypeList.Create;
+  FEAdrsTypeList.Owner:= self;
 
-  FPeople := TPeople.Create;
+  FPeople := TPersonList.Create;
   FPeople.Owner:= Self;
   FPeople.OID.AsString:= 'AdrsBook';
 
-  FCompanies:= TCompanies.Create;
+  FCompanies:= TCompanyList.Create;
   FCompanies.Owner:= Self;
 
 end;
 
-//------------------------------------------------------------------------------
 destructor TAdrsBook.Destroy;
 begin
-  FAdrsTypes.Free;
+  FEAdrsTypeList.Free;
   FPeople.Free;
   FCompanies.Free;
   inherited;
 end;
 
-//------------------------------------------------------------------------------
 procedure TAdrsBook.FindAllLike(const pLike: string; const pList: TList);
 var
   i: integer;
@@ -552,19 +382,18 @@ end;
 constructor TAdrsBookItemAbs.Create;
 begin
   inherited;
-  FAddressList := TAdrsList.Create;
+  FAddressList := TAddressList.Create;
   FAddressList.Owner:= self;
   // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FAddressList.ItemOwner:= self;
 
-  FEAddressList:= TEAdrsList.Create;
+  FEAddressList:= TEAddressList.Create;
   FEAddressList.Owner:= self;
   // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FEAddressList.ItemOwner:= self;
 
 end;
 
-//------------------------------------------------------------------------------
 destructor TAdrsBookItemAbs.Destroy;
 begin
   FAddressList.Free;
@@ -572,7 +401,16 @@ begin
   inherited;
 end;
 
-//------------------------------------------------------------------------------
+procedure TAdrsBookItemAbs.Read;
+begin
+  inherited;
+end;
+
+procedure TAdrsBookItemAbs.Save;
+begin
+  inherited;
+end;
+
 function TPerson.Clone: TPerson;
 begin
   result:= TPerson(inherited Clone);
@@ -594,18 +432,18 @@ end;
 // * TPeople
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TPeople.Add(AObject: TPerson; pbDefaultDispOrder: boolean);
+procedure TPersonList.Add(AObject: TPerson; pbDefaultDispOrder: boolean);
 begin
   inherited Add(AObject, pbDefaultDispOrder);
 end;
 
-constructor TPeople.Create;
+constructor TPersonList.Create;
 begin
   inherited;
   OID.AsString:= '-1';
 end;
 
-function TPeople.GetCaption: string;
+function TPersonList.GetCaption: string;
 begin
   result:= 'People';
 end;
@@ -629,12 +467,12 @@ begin
             State + ' ' + PCode;
 end;
 
-function TAdrs.GetOwner: TAdrsList;
+function TAdrs.GetOwner: TAddressList;
 begin
-  result:= TAdrsList(inherited GetOwner);
+  result:= TAddressList(inherited GetOwner);
 end;
 
-procedure TAdrs.SetOwner(const Value: TAdrsList);
+procedure TAdrs.SetOwner(const Value: TAddressList);
 begin
   inherited SetOwner(Value);
 end;
@@ -652,29 +490,29 @@ begin
 end;
 
 
-function TEAdrs.GetOwner: TEAdrsList;
+function TEAdrs.GetOwner: TEAddressList;
 begin
-    result:= TEAdrsList(inherited GetOwner);
+    result:= TEAddressList(inherited GetOwner);
 end;
 
-procedure TEAdrs.SetOwner(const Value: TEAdrsList);
+procedure TEAdrs.SetOwner(const Value: TEAddressList);
 begin
   inherited SetOwner(Value);
 end;
 
 { TAdrsList }
 
-procedure TAdrsList.Add(AObject: TAdrs; pbDefaultDispOrder: boolean);
+procedure TAddressList.Add(AObject: TAdrs; pbDefaultDispOrder: boolean);
 begin
   inherited Add(AObject, pbDefaultDispOrder);
 end;
 
-function TAdrsList.GetItems(i: integer): TAdrs;
+function TAddressList.GetItems(i: integer): TAdrs;
 begin
   result:= TAdrs(inherited GetItems(i));
 end;
 
-function TAdrsList.GetOID: TtiOID;
+function TAddressList.GetOID: TtiOID;
 begin
   if Owner <> nil then
     result:= Owner.OID
@@ -682,30 +520,30 @@ begin
     result:= inherited GetOID;
 end;
 
-procedure TAdrsList.SetItems(i: integer; const Value: TAdrs);
+procedure TAddressList.SetItems(i: integer; const Value: TAdrs);
 begin
   inherited SetItems(i, Value);
 end;
 
 { TEAddressList }
 
-procedure TEAdrsList.Add(AObject: TEAdrs; pbDefaultDispOrder: boolean);
+procedure TEAddressList.Add(AObject: TEAdrs; pbDefaultDispOrder: boolean);
 begin
   inherited Add(AObject, pbDefaultDispOrder);
 end;
 
-function TPeople.GetItems(i: integer): TPerson;
+function TPersonList.GetItems(i: integer): TPerson;
 begin
   result:= TPerson(inherited GetItems(i));
 end;
 
 
-function TEAdrsList.GetItems(i: integer): TEAdrs;
+function TEAddressList.GetItems(i: integer): TEAdrs;
 begin
   result:= TEAdrs(inherited GetItems(i));
 end;
 
-function TEAdrsList.GetOID: TtiOID;
+function TEAddressList.GetOID: TtiOID;
 begin
   if Owner <> nil then
     result:= Owner.OID
@@ -713,34 +551,34 @@ begin
     result:= inherited GetOID;
 end;
 
-procedure TEAdrsList.SetItems(i: integer; const Value: TEAdrs);
+procedure TEAddressList.SetItems(i: integer; const Value: TEAdrs);
 begin
   inherited SetItems(i, Value);
 end;
 
 { TCompanies }
 
-procedure TCompanies.Add(AObject: TCompany; pbDefaultDispOrder: boolean);
+procedure TCompanyList.Add(AObject: TCompany; pbDefaultDispOrder: boolean);
 begin
   inherited Add(AObject, pbDefaultDispOrder);
 end;
 
-function TCompanies.GetCaption: string;
+function TCompanyList.GetCaption: string;
 begin
   result:= 'Companies';
 end;
 
-function TCompanies.GetItems(i: integer): TCompany;
+function TCompanyList.GetItems(i: integer): TCompany;
 begin
   result:= TCompany(inherited GetItems(i));
 end;
 
-function TCompanies.Last: TCompany;
+function TCompanyList.Last: TCompany;
 begin
   result:= TCompany(inherited Last);
 end;
 
-procedure TCompanies.SetItems(i: integer; const Value: TCompany);
+procedure TCompanyList.SetItems(i: integer; const Value: TCompany);
 begin
   inherited SetItems(i, Value);
 end;
@@ -761,7 +599,7 @@ end;
 constructor TCompany.Create;
 begin
   inherited;
-  FPersonList:= TPeople.Create;
+  FPersonList:= TPersonList.Create;
   FPersonList.Owner:= Self;
   // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
   FPersonList.ItemOwner:= Self;
@@ -783,9 +621,9 @@ end;
 //  result:= People.List;
 //end;
 
-function TCompany.GetOwner: TCompanies;
+function TCompany.GetOwner: TCompanyList;
 begin
-  result:= TCompanies(inherited GetOwner);
+  result:= TCompanyList(inherited GetOwner);
 end;
 
 function TCompany.IsValid(const AErrors: TtiObjectErrors): boolean;
@@ -796,7 +634,7 @@ begin
   result:= AErrors.Count = 0;
 end;
 
-procedure TCompany.SetOwner(const Value: TCompanies);
+procedure TCompany.SetOwner(const Value: TCompanyList);
 begin
   inherited SetOwner(Value);
 end;
@@ -806,7 +644,8 @@ end;
 procedure TAdrsAbs.AssignClassProps(pSource: TtiObject);
 begin
   // Copy pointers...
-  Self.AdrsType:= TAdrsAbs(pSource).AdrsType;
+//  Self.AdrsType:= TAdrsAbs(pSource).AdrsType;
+Assert(False, 'Under construction');
 end;
 
 constructor TAdrsAbs.Create;
@@ -816,22 +655,24 @@ end;
 
 function TAdrsAbs.GetAdrsTypeOID: String;
 begin
-  if FAdrsType <> nil then
-    result:= FAdrsType.OID.AsString 
-  else
-    result:= OID.NullOIDAsString;
+Assert(False, 'Under construction');
+//  if FAdrsType <> nil then
+//    result:= FAdrsType.OID.AsString
+//  else
+//    result:= OID.NullOIDAsString;
 end;
 
 function TAdrsAbs.GeTLookupListItemAsString: string;
 begin
-  if FAdrsType <> nil then
-    result:= FAdrsType.Text
-  else
-    result:= 'Unknown';
+Assert(False, 'Under construction');
+//  if FAdrsType <> nil then
+//    result:= FAdrsType.Text
+//  else
+//    result:= 'Unknown';
 end;
 
 // This is a hack to get the auto mapping working
-function TPeople.GetOID: TtiOID;
+function TPersonList.GetOID: TtiOID;
 begin
   if Owner <> nil then
     result:= Owner.OID
@@ -840,14 +681,14 @@ begin
 
 end;
 
-procedure TPeople.SetItems(i: integer; const Value: TPerson);
+procedure TPersonList.SetItems(i: integer; const Value: TPerson);
 begin
   inherited SetItems(i, Value);
 end;
 
-function TPerson.GetOwner: TPeople;
+function TPerson.GetOwner: TPersonList;
 begin
-  result:= TPeople(inherited GetOwner);
+  result:= TPersonList(inherited GetOwner);
 end;
 
 function TPerson.IsValid(const AErrors: TtiObjectErrors): boolean;
@@ -858,7 +699,7 @@ begin
   result:= AErrors.Count = 0;
 end;
 
-procedure TPerson.SetOwner(const Value: TPeople);
+procedure TPerson.SetOwner(const Value: TPersonList);
 begin
   inherited SetOwner(Value);
 end;
@@ -874,10 +715,12 @@ begin
   //    Problem with this is that the TAdrsAbs may not have it's owner
   //    set yet.
   // The code below implements (b)
-  if pOIDAsString <> OID.NullOIDAsString then
-    FAdrsType:= gAdrsBook.AdrsTypes.Find(pOIDAsString)
-  else
-    FAdrsType:= nil;
+
+Assert(False, 'Under construction');
+//  if pOIDAsString <> OID.NullOIDAsString then
+//    FAdrsType:= gAdrsBook.AdrsTypes.Find(pOIDAsString)
+//  else
+//    FAdrsType:= nil;
 
 // This code implements (c)
 //var
@@ -890,11 +733,11 @@ begin
 //    FAdrsType:= nil;
 end;
 
-procedure TAdrsBook.Read(const pDBConnectionName: string; pPersistenceLayerName: string = '');
+procedure TAdrsBook.Read;
 begin
-  GTIOPFManager.Read(  AdrsTypes, pDBConnectionName, pPersistenceLayerName);
-  GTIOPFManager.ReadPK(Self, pDBConnectionName, pPersistenceLayerName);
-  GTIOPFManager.Read(  Self, pDBConnectionName, pPersistenceLayerName);
+  EAdrsTypeList.Read;
+//  GTIOPFManager.ReadPK(Self);
+//GTIOPFManager.Read(  Self);
 end;
 
 procedure TAdrsBook.SetDeleted(const Value: boolean);
