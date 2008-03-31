@@ -7,7 +7,8 @@ uses
   {$IFDEF FPC}
   testregistry,
   {$ENDIF}
-  tiTestFramework
+  tiTestFramework,
+  tiOPFTestCase
   ,tiDBConnectionPool
   ,tiQuery
   ,SysUtils

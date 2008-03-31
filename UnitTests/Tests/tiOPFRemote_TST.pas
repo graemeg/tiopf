@@ -69,7 +69,8 @@ uses
   SysUtils,
   tiTestDependencies,
   tiQuery,
-  tiTestFramework;
+  tiTestFramework,
+  tiOPFTestCase;
 
 const
   cRemoteServerMainFormName = 'TFormMainTIDBProxyServer';

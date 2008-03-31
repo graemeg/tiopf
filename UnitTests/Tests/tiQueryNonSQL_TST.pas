@@ -38,6 +38,7 @@ implementation
 uses
   tiLog,
   tiTestFramework,
+  tiOPFTestCase,
   tiUtils,
   {$IFDEF MSWINDOWS}
   Windows,

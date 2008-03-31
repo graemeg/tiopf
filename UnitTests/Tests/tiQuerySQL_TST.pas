@@ -48,6 +48,7 @@ uses
   ,FileCtrl
   {$ENDIF}
   ,tiTestFramework
+  ,tiOPFTestCase
   ,tiQuery
  ;
 

@@ -9,6 +9,7 @@ uses
   ,testregistry
   {$ENDIF}
   ,tiTestFramework
+  ,tiOPFTestCase
   ,tiObject
   ;
 

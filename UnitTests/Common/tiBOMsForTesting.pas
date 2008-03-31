@@ -315,16 +315,11 @@ procedure RegisterMappings;
 implementation
 
 uses
-  tiAutoMap
-  ,
-  tiOPFManager
-  ,
-  SysUtils
-  ,
-  tiUtils
-  ,
-  tiTestFramework
-  ,
+  tiAutoMap,
+  tiOPFManager,
+  SysUtils,
+  tiUtils,
+  tiOPFTestCase,
   tiConstants;
 
 procedure RegisterMappings;

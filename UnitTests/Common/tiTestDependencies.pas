@@ -12,11 +12,8 @@ uses
   {$ENDIF}
   TestExtensions,
   tiTestFramework,
-  tiOPFTestManager
-  ;
-
-type
-  TtiTestDecoratorClass = class of TTestSetup;
+  tiOPFTestManager,
+  tiOPFTestCase;
 
 procedure tiRegisterTests;
 procedure tiRemoveUnSelectedPersistenceLayerSetups;

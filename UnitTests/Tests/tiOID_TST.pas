@@ -10,6 +10,7 @@ uses
   testregistry,
   {$ENDIF}
   tiTestFramework,
+  tiOPFTestCase,
   tiOID;
 
 
