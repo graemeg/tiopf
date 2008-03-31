@@ -53,6 +53,9 @@ type
     {: Performs the method AMethod on every thread in the list.}
     procedure   ForEach(AMethod: TObjForEachMethodRegular); overload;
     property    Items[Index:integer]: TtiThread read GetItem write SetItem;
+
+    // ToDo: Should override Add() and check that the thread's FreeOnTerminate
+    //       = False (WaitForAll will fail if FreeOnTerminate = True)
     procedure   WaitForAll;
     procedure   ResumeAll;
   end;
@@ -80,6 +83,12 @@ type
     property    OnThreadCountChange: TThreadMethod read FOnThreadCountChange write SetOnThreadCountChange;
     property    Count: integer read GetThreadCount;
     property    ActiveThreadNames: string read GetActiveThreadNames;
+    // ToDo: WaitForAll is buggy. It depends on TtiThread's Destroy method
+    //       executing when the thread terminates (Destroy is where each
+    //       thread removes it self from the list.) Destroy will only be called
+    //       after Application.ProcessMessages when ther is  GUI, and never
+    //       for console apps. This needs investigation. So, for the meantime,
+    //       don't use WaitForAll.
     procedure   WaitForAll;
   end;
 
@@ -247,6 +256,7 @@ end;
 
 destructor TtiActiveThreadList.Destroy;
 begin
+  // ToDo: Should call WaitForAll, but that has problems...
   FList.Free;
   FCritSect.Free;
   inherited;
