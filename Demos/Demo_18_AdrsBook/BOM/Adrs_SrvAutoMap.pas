@@ -1,4 +1,4 @@
-unit Adrs_SrvAutoGenSQL;
+unit Adrs_SrvAutoMap;
 
 {$I tiDefines.inc}
 
@@ -30,15 +30,14 @@ begin
 //  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCompany, cTableName_Company, 'Notes',       'Notes'               );
 //  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TCompanies, TCompany );
 //
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, cTableName_Person, 'OID',       'OID', [pktDB]);
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, cTableName_Person, 'Owner.OID', 'Owner_OID', [pktFK]);
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, cTableName_Person, 'Notes',     'Notes'       );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, cTableName_Person, 'LastName',  'Family_Name', [pktReadable] );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, cTableName_Person, 'FirstName', 'First_Name', [pktReadable]  );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, cTableName_Person, 'Title',     'Title'       );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, cTableName_Person, 'Initials',  'Initials'    );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TPeople, TPerson );
-//
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'oid',       'oid', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'LastName',  'last_name'{, [pktReadable]} );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'FirstName', 'first_name'{, [pktReadable]}  );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'Title',     'title'       );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'Initials',  'initials'    );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'Notes',     'notes'       );
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TPersonList, TPerson);
+
 //  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'OID',         'OID', [pktDB]);
 //  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'Owner.OID',   'Owner_OID', [pktFK]);
 //  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'AdrsTypeOID', 'Adrs_Type' );

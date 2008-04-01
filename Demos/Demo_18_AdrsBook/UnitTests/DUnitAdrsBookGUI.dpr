@@ -4,7 +4,7 @@ uses
   FastMM4,
   GUITestRunner,
   Forms,
-  Adrs_SrvAutoGenSQL,
+  Adrs_SrvAutoMap,
   DUnitAdrsBookDependencies in 'DUnitAdrsBookDependencies.pas ';
 
 {$R *.RES}
@@ -13,7 +13,7 @@ begin
   Application.Initialize;
 
   // ToDo: Ask which persistence mechanism
-  Adrs_SrvAutoGenSQL.RegisterMappings;
+  Adrs_SrvAutoMap.RegisterMappings;
 
   DUnitAdrsBookDependencies.RegisterTests;
   DUnitAdrsBookDependencies.ConnectToDatabase;

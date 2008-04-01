@@ -93,6 +93,8 @@ type
   public
     property    Items[i:integer]: TPerson read GetItems write SetItems;
     procedure   Add(const AObject: TPerson); reintroduce;
+    procedure   Read; override;
+    procedure   Sort; 
   end;
 
   TCompanyList   = class(TtiObjectList)
@@ -520,6 +522,12 @@ begin
 end;
 
 
+procedure TPersonList.Read;
+begin
+  inherited;
+  Sort;
+end;
+
 function TEAddressList.GetItems(i: integer): TEAdrs;
 begin
   result:= TEAdrs(inherited GetItems(i));
@@ -656,6 +664,23 @@ end;
 procedure TPersonList.SetItems(i: integer; const AValue: TPerson);
 begin
   inherited SetItems(i, AValue);
+end;
+
+function _ComparePerson(AItem1, AItem2: Pointer): integer;
+var
+  LItem1: TPerson;
+  LItem2: TPerson;
+begin
+  LItem1:= TPerson(AItem1);
+  LItem2:= TPerson(AItem2);
+  result:= CompareText(LItem1.LastName, LItem2.LastName);
+  if Result = 0 then
+    result:= CompareText(LItem1.FirstName, LItem2.FirstName);
+end;
+
+procedure TPersonList.Sort;
+begin
+  List.Sort(_ComparePerson);
 end;
 
 function TPerson.GetParent: TAdrsBook;

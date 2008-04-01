@@ -524,21 +524,25 @@ end;
 
 procedure TTestPerson.TestPersonFlat_Read;
 var
-  lPeople: TPersonList;
+  LList: TPersonList;
 begin
-  //InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-  lPeople:= TPersonList.Create;
+  PersonTestSetup.PersonInsert(COIDPerson2);
+  PersonTestSetup.PersonInsert(COIDPerson1);
+  LList:= TPersonList.Create;
   try
-    lPeople.OID.AsString:= '-1';
-Assert(False, 'Under construction');
-//    lPeople.Read;
-    CheckEquals(1, lPeople.Count, 'Failed on lPeople.Count');
-    Check(posClean = lPeople.ObjectState, 'Failed on lPeople.ObjectState = posClean');
-    Check(posPK = lPeople.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posClean');
-//    CheckPerson(lPeople.Items[0], cOIDPerson, IntToStr(cOIDPerson));
+    LList.Read;
+    CheckEquals(2, LList.Count, 'Failed on lPeople.Count');
+    CheckObjectState(posClean, LList);
+    CheckObjectState(posPK, LList.Items[0]);
+    CheckObjectState(posPK, LList.Items[1]);
+    PersonTestSetup.PersonCheck(LList.Items[0], COIDPerson1);
+    CheckEquals(COIDPerson1, LList.Items[0].OID.AsString);
+    PersonTestSetup.PersonCheck(LList.Items[1], COIDPerson2);
+    CheckEquals(COIDPerson2, LList.Items[1].OID.AsString);
   finally
-    lPeople.Free;
+    LList.Free;
   end;
+  Check(True);
 end;
 
 procedure TTestPerson.TestPersonFlat_Save;
@@ -551,13 +555,13 @@ begin
     lPeople.OID.AsString:= '-1';
     lPerson:= TPerson.Create;
     lPerson.ObjectState:= posCreate;
-    lPerson.OID.AsString:= IntToStr(cOIDPerson);
-    lPerson.Notes:= IntToStr(cOIDPerson);
-    lPerson.Title:= IntToStr(cOIDPerson);
-    lPerson.Initials:= IntToStr(cOIDPerson);
-    lPerson.FirstName:= IntToStr(cOIDPerson);
-    lPerson.LastName := IntToStr(cOIDPerson);
-    lPeople.Add(lPerson);
+//    lPerson.OID.AsString:= IntToStr(cOIDPerson);
+//    lPerson.Notes:= IntToStr(cOIDPerson);
+//    lPerson.Title:= IntToStr(cOIDPerson);
+//    lPerson.Initials:= IntToStr(cOIDPerson);
+//    lPerson.FirstName:= IntToStr(cOIDPerson);
+//    lPerson.LastName := IntToStr(cOIDPerson);
+//    lPeople.Add(lPerson);
 Assert(False, 'Under construction');
 //    lPeople.Save;
     Check(posClean = lPeople.Items[0].ObjectState, 'Failed on lPeople.Items[0].ObjectState = posClean');
@@ -769,13 +773,13 @@ begin
   lCompany.EAddressList.Add(lEAdrs);
 
   lPerson := TPerson.Create;
-  lPerson.OID.AsString:= IntToStr(cOIDPerson);
-  lPerson.ObjectState:= posCreate;
-  lPerson.Title      := IntToStr(cOIDPerson);
-  lPerson.Initials   := IntToStr(cOIDPerson);
-  lPerson.LastName   := IntToStr(cOIDPerson);
-  lPerson.FirstName  := IntToStr(cOIDPerson);
-  lPerson.Notes      := IntToStr(cOIDPerson);
+//  lPerson.OID.AsString:= IntToStr(cOIDPerson);
+//  lPerson.ObjectState:= posCreate;
+//  lPerson.Title      := IntToStr(cOIDPerson);
+//  lPerson.Initials   := IntToStr(cOIDPerson);
+//  lPerson.LastName   := IntToStr(cOIDPerson);
+//  lPerson.FirstName  := IntToStr(cOIDPerson);
+//  lPerson.Notes      := IntToStr(cOIDPerson);
   lCompany.People.Add(lPerson);
 Assert(False, 'Under construction');
 //  gAdrsBook.Save;
@@ -906,14 +910,14 @@ begin
   gAdrsBook.Read;
 
   lPerson:= TPerson.Create;
-  lPerson.OID.AsString:= IntToStr(cOIDPerson);
-  lPerson.ObjectState:= posCreate;
-  lPerson.Title:= IntToStr(cOIDPerson);
-  lPerson.Initials := IntToStr(cOIDPerson);
-  lPerson.FirstName:= IntToStr(cOIDPerson);
-  lPerson.LastName := IntToStr(cOIDPerson);
-  lPerson.Notes    := IntToStr(cOIDPerson);
-  gAdrsBook.People.Add(lPerson);
+//  lPerson.OID.AsString:= IntToStr(cOIDPerson);
+//  lPerson.ObjectState:= posCreate;
+//  lPerson.Title:= IntToStr(cOIDPerson);
+//  lPerson.Initials := IntToStr(cOIDPerson);
+//  lPerson.FirstName:= IntToStr(cOIDPerson);
+//  lPerson.LastName := IntToStr(cOIDPerson);
+//  lPerson.Notes    := IntToStr(cOIDPerson);
+//  gAdrsBook.People.Add(lPerson);
 
   lAdrs  := TAdrs.Create;
   lAdrs.OID.AsString:= IntToStr(cOIDAdrs);
@@ -1236,12 +1240,12 @@ begin
   lPersonFrom:= TPerson.Create;
   try
     lPersonFrom.ObjectState:= posCreate;
-    lPersonFrom.OID.AsString:= IntToStr(cOIDPerson);
-    lPersonFrom.Notes:= IntToStr(cOIDPerson);
-    lPersonFrom.Title:= IntToStr(cOIDPerson);
-    lPersonFrom.Initials:= IntToStr(cOIDPerson);
-    lPersonFrom.FirstName:= IntToStr(cOIDPerson);
-    lPersonFrom.LastName := IntToStr(cOIDPerson);
+//    lPersonFrom.OID.AsString:= IntToStr(cOIDPerson);
+//    lPersonFrom.Notes:= IntToStr(cOIDPerson);
+//    lPersonFrom.Title:= IntToStr(cOIDPerson);
+//    lPersonFrom.Initials:= IntToStr(cOIDPerson);
+//    lPersonFrom.FirstName:= IntToStr(cOIDPerson);
+//    lPersonFrom.LastName := IntToStr(cOIDPerson);
     //CheckPerson(lPersonFrom, cOIDPerson, IntToStr(cOIDPerson));
     lPersonTo:= TPerson.Create;
     try
@@ -1263,12 +1267,12 @@ begin
   lPersonFrom:= TPerson.Create;
   try
     lPersonFrom.ObjectState:= posCreate;
-    lPersonFrom.OID.AsString:= IntToStr(cOIDPerson);
-    lPersonFrom.Notes:= IntToStr(cOIDPerson);
-    lPersonFrom.Title:= IntToStr(cOIDPerson);
-    lPersonFrom.Initials:= IntToStr(cOIDPerson);
-    lPersonFrom.FirstName:= IntToStr(cOIDPerson);
-    lPersonFrom.LastName := IntToStr(cOIDPerson);
+//    lPersonFrom.OID.AsString:= IntToStr(cOIDPerson);
+//    lPersonFrom.Notes:= IntToStr(cOIDPerson);
+//    lPersonFrom.Title:= IntToStr(cOIDPerson);
+//    lPersonFrom.Initials:= IntToStr(cOIDPerson);
+//    lPersonFrom.FirstName:= IntToStr(cOIDPerson);
+//    lPersonFrom.LastName := IntToStr(cOIDPerson);
     //CheckPerson(lPersonFrom, cOIDPerson, IntToStr(cOIDPerson));
     lPersonTo:= lPersonFrom.Clone;
     try
@@ -1322,13 +1326,13 @@ begin
   result.EAddressList.Add(lEAdrsFrom);
 
   lPersonFrom := TPerson.Create;
-  lPersonFrom.OID.AsString:= IntToStr(cOIDPerson);
-  lPersonFrom.ObjectState:= posCreate;
-  lPersonFrom.Title      := IntToStr(cOIDPerson);
-  lPersonFrom.Initials   := IntToStr(cOIDPerson);
-  lPersonFrom.LastName   := IntToStr(cOIDPerson);
-  lPersonFrom.FirstName  := IntToStr(cOIDPerson);
-  lPersonFrom.Notes      := IntToStr(cOIDPerson);
+//  lPersonFrom.OID.AsString:= IntToStr(cOIDPerson);
+//  lPersonFrom.ObjectState:= posCreate;
+//  lPersonFrom.Title      := IntToStr(cOIDPerson);
+//  lPersonFrom.Initials   := IntToStr(cOIDPerson);
+//  lPersonFrom.LastName   := IntToStr(cOIDPerson);
+//  lPersonFrom.FirstName  := IntToStr(cOIDPerson);
+//  lPersonFrom.Notes      := IntToStr(cOIDPerson);
   result.People.Add(lPersonFrom);
 end;
 

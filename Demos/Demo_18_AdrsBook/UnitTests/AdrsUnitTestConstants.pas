@@ -3,11 +3,14 @@ unit AdrsUnitTestConstants;
 interface
 
 const
-  cOIDEAdrsType1      = '1';
-  cOIDEAdrsType2      = '2';
+  cOIDEAdrsType1      = '101';
+  cOIDEAdrsType2      = '102';
+
+  cOIDPerson1         = '201';
+  cOIDPerson2         = '202';
+
   cOIDAdrs            = 4;
   cOIDEAdrs           = 5;
-  cOIDPerson          = 6;
   cOIDCompany         = 7;
 
   cUpdateValue        = 'test';
