@@ -9,10 +9,10 @@ type
 
   TEAdrsTestSetup = class(TtiTestSetup)
   public
-    function  EAdrsCreate(const AOID: string): TEAdrs;
-    procedure EAdrsAssign(const AData: TEAdrs; const AOID: string);
+    function  EAdrsCreate(const AOID, AOIDAdrsType: string): TEAdrs;
+    procedure EAdrsAssign(const AData: TEAdrs; const AOID, AOIDAdrsType: string);
     procedure EAdrsInsert(const AOIDPerson, AOID, AOIDAdrsType: string);
-    procedure EAdrsCheck(const AData: TEAdrs; const AOID, AOIDEAdrsType: string);
+    procedure EAdrsCheck(const AData: TEAdrs; const AOID, AOIDAdrsType: string);
   end;
 
 
@@ -27,11 +27,11 @@ uses
 
 { TTestAdrs }
 
-function TEAdrsTestSetup.EAdrsCreate(const AOID: string): TEAdrs;
+function TEAdrsTestSetup.EAdrsCreate(const AOID, AOIDAdrsType: string): TEAdrs;
 begin
   result:= TEAdrs.Create;
   result.OID.AsString:= AOID;
-  EAdrsAssign(result, AOID);
+  EAdrsAssign(result, AOID, AOIDAdrsType);
 end;
 
 procedure TEAdrsTestSetup.EAdrsInsert(const AOIDPerson, AOID, AOIDAdrsType: string);
@@ -42,7 +42,7 @@ begin
   LData:= nil;
   LParams:= nil;
   try
-    LData:= EAdrsCreate(AOID);
+    LData:= EAdrsCreate(AOID, AOIDAdrsType);
     LParams:= TtiQueryParams.Create;
     LParams.SetValueAsString('oid',            LData.OID.AsString);
     LParams.SetValueAsString('oid_person',     AOIDPerson);
@@ -56,24 +56,21 @@ begin
 end;
 
 procedure TEAdrsTestSetup.EAdrsAssign(const AData: TEAdrs;
-  const AOID: string);
+  const AOID, AOIDAdrsType: string);
 begin
-//  AData.LastName:= tvToStr(AOID, 1);
-//  AData.FirstName:= tvToStr(AOID, 2);
-//  AData.Title:= tvToStr(AOID, 3);
-//  AData.Initials:= tvToStr(AOID, 4);
-//  AData.Notes:= tvToStr(AOID, 5);
+  AData.Text:= tvToStr(AOID, 1);
+  AData.OIDAdrsType:= AOIDAdrsType;
 end;
 
 procedure TEAdrsTestSetup.EAdrsCheck(const AData: TEAdrs;
-  const AOID, AOIDEAdrsType: string);
+  const AOID, AOIDAdrsType: string);
 var
   LExpected: TEAdrs;
 begin
-  LExpected:= EAdrsCreate(AOID);
+  LExpected:= EAdrsCreate(AOID, AOIDAdrsType);
   try
     TC.CheckEquals(LExpected.Text, AData.Text, 'Text');
-    TC.CheckEquals(AOIDEAdrsType, AData.OIDAdrsType, 'OIDAdrsType');
+    TC.CheckEquals(AOIDAdrsType, AData.OIDAdrsType, 'OIDAdrsType');
   finally
     LExpected.Free;
   end;

@@ -33,6 +33,31 @@ alter table person add
 constraint person_pk
 primary key (oid);
 
+create table adrs
+  ( oid               varchar(36)    not null,
+    oid_person        varchar(36)    not null,
+    oid_adrs_type     varchar(36)    not null,
+    lines             varchar(120),
+    suburb            varchar(60),
+    state             varchar(60),
+    pcode             varchar(60),
+    country           varchar(60)
+  );
+
+alter table adrs add
+constraint adrs_pk
+primary key (oid);
+
+alter table adrs add
+constraint adrs_person_fk
+foreign key (oid_person)
+references person;
+
+alter table adrs add
+constraint adrs_adrs_type_fk
+foreign key (oid_adrs_type)
+references eadrs_type;
+
 create table eadrs
   ( oid               varchar(36)    not null,
     oid_person        varchar(36)    not null,
@@ -54,7 +79,5 @@ alter table eadrs add
 constraint eadrs_adrs_type_fk
 foreign key (oid_adrs_type)
 references eadrs_type;
-
-commit;
 
 exit;

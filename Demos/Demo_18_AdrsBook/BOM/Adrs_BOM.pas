@@ -120,32 +120,26 @@ type
   published
     property    AdrsTypeAsString: string read GeTLookupListItemAsString ;
     property    OIDAdrsType: String read FOIDAdrsType write SetOIDAdrsType;
-  public
-    constructor Create; override;
-    procedure   AssignClassProps(pSource: TtiObject); override;
   end;
 
-  // The TAddress class. Holds conventional (street & postage) address info
   TAdrs = class(TAdrsAbs)
   private
-    FsLines  : string;
-    FsState  : string;
-    FsCountry: string;
-    FsPCode: string;
+    FLines  : string;
+    FState  : string;
+    FCountry: string;
+    FPCode: string;
     FSuburb: string;
   protected
     function    GetCaption: string; override;
-    function    GetOwner: TAddressList; reintroduce;
-    procedure   SetOwner(const Value: TAddressList); reintroduce;
+    function    GetParent: TPerson; reintroduce;
   public
-    property    Owner      : TAddressList  read GetOwner      write SetOwner;
-    function    Clone: TAdrs; reintroduce;
+    property    Parent      : TPerson read GetParent;
   published
-    property Country: string read FsCountry write FsCountry;
-    property Lines  : string read FsLines   write FsLines;
-    property Suburb : string read FSuburb   write FSuburb;
-    property State  : string read FsState   write FsState;
-    property PCode  : string read FsPCode   write FsPCode;
+    property Lines  : string read FLines   write FLines;
+    property Suburb : string read FSuburb  write FSuburb;
+    property State  : string read FState   write FState;
+    property PCode  : string read FPCode   write FPCode;
+    property Country: string read FCountry write FCountry;
   end;
 
   TEAdrs = class(TAdrsAbs)
@@ -156,7 +150,6 @@ type
     function    GetParent: TPerson; reintroduce;
   public
     property    Parent      : TPerson read GetParent;
-    function    Clone: TEAdrs; reintroduce;
   published
     property Text: string read FText write FText;
   end;
@@ -360,33 +353,18 @@ end;
 
 { TAddress }
 
-function TAdrs.Clone: TAdrs;
-begin
-  result:= TAdrs(inherited Clone);
-end;
-
 function TAdrs.GetCaption: string;
 begin
   result:= tiStrTran(Lines, CrLf, ' ') + ' ' +
             State + ' ' + PCode;
 end;
 
-function TAdrs.GetOwner: TAddressList;
+function TAdrs.GetParent: TPerson;
 begin
-  result:= TAddressList(inherited GetOwner);
-end;
-
-procedure TAdrs.SetOwner(const Value: TAddressList);
-begin
-  inherited SetOwner(Value);
+  result:= TPerson(inherited GetOwner);
 end;
 
 { TEAddress }
-
-function TEAdrs.Clone: TEAdrs;
-begin
-  result:= TEAdrs(inherited Clone);
-end;
 
 function TEAdrs.GetCaption: string;
 begin
@@ -463,25 +441,9 @@ end;
 
 { TAdrsAbs }
 
-procedure TAdrsAbs.AssignClassProps(pSource: TtiObject);
-begin
-  // Copy pointers...
-//  Self.AdrsType:= TAdrsAbs(pSource).AdrsType;
-Assert(False, 'Under construction');
-end;
-
-constructor TAdrsAbs.Create;
-begin
-  inherited;
-end;
-
 function TAdrsAbs.GeTLookupListItemAsString: string;
 begin
-Assert(False, 'Under construction');
-//  if FAdrsType <> nil then
-//    result:= FAdrsType.Text
-//  else
-//    result:= 'Unknown';
+  Assert(False, 'Under construction');
 end;
 
 procedure TPersonList.SetItems(i: integer; const AValue: TPerson);

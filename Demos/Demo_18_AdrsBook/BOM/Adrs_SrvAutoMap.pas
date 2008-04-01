@@ -38,18 +38,18 @@ begin
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'Notes',     'notes'       );
   GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TPersonList, TPerson);
 
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'OID',         'OID', [pktDB]);
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'Owner.OID',   'Owner_OID', [pktFK]);
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'AdrsTypeOID', 'Adrs_Type' );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'Country',     'Country'  );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'Lines',       'Lines'    );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'Suburb',      'Suburb'   );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'State',       'State'    );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'PCode',       'PCode'    );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TAdrsList, TAdrs );
-//
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, 'adrs', 'OID',         'oid', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, 'adrs', 'Owner.OID',   'oid_person', [pktFK]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, 'adrs', 'OIDAdrsType', 'oid_adrs_type' );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, 'adrs', 'Lines',       'lines'    );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, 'adrs', 'Suburb',      'suburb'   );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, 'adrs', 'State',       'state'    );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, 'adrs', 'PCode',       'pCode'    );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, 'adrs', 'Country',     'country'  );
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TAddressList, TAdrs );
+
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'OID',         'oid', [pktDB]);
-  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'Owner.OID',  'oid_person', [pktFK]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'Owner.OID',   'oid_person', [pktFK]);
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'OIDAdrsType', 'oid_adrs_type');
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'Text',        'eadrs_text');
   GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TEAddressList, TEAdrs );
