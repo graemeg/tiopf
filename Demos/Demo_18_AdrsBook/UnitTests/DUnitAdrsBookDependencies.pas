@@ -11,7 +11,6 @@ procedure RegisterTests;
 
 implementation
 uses
-  AdrsBook_tst,
   Adrs_tst,
   AdrsType_tst,
   Person_tst;

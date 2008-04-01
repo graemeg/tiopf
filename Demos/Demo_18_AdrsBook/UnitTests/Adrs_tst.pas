@@ -13,7 +13,7 @@ uses
 
 type
 
-  TAdrsTestCase = class(TtiTestCase)
+  TAdrsBaseTestCase = class(TtiTestCase)
   private
     FAdrsTypeTestSetup: TAdrsTypeTestSetup;
     FPersonTestSetup: TPersonTestSetup;
@@ -53,10 +53,10 @@ uses
 
 procedure RegisterTests;
 begin
-  TestFramework.RegisterTest(TAdrsTestCase.Suite);
+  TestFramework.RegisterTest(TAdrsBaseTestCase.Suite);
 end;
 
-constructor TAdrsTestCase.Create;
+constructor TAdrsBaseTestCase.Create;
 begin
   inherited;
   FAdrsTypeTestSetup:= TAdrsTypeTestSetup.Create(Self);
@@ -65,7 +65,7 @@ begin
   FEAdrsTestSetup:= TEAdrsTestSetup.Create(Self);
 end;
 
-destructor TAdrsTestCase.Destroy;
+destructor TAdrsBaseTestCase.Destroy;
 begin
   FAdrsTypeTestSetup.Free;
   FPersonTestSetup.Free;
@@ -74,7 +74,7 @@ begin
   inherited;
 end;
 
-procedure TAdrsTestCase.EmptyTables;
+procedure TAdrsBaseTestCase.EmptyTables;
 begin
   GTIOPFManager.DeleteRow('adrs', nil);
   GTIOPFManager.DeleteRow('eadrs', nil);
@@ -83,14 +83,13 @@ begin
   GTIOPFManager.DeleteRow('adrs_type', nil);
 end;
 
-procedure TAdrsTestCase.Setup;
+procedure TAdrsBaseTestCase.Setup;
 begin
   inherited;
   EmptyTables;
-  FreeAndNilAdrsBook;
 end;
 
-procedure TAdrsTestCase.TearDown;
+procedure TAdrsBaseTestCase.TearDown;
 begin
   EmptyTables;
   inherited;

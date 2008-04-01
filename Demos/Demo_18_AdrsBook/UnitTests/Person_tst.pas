@@ -10,7 +10,7 @@ uses
 
 type
 
-  TTestPerson = class(TAdrsTestCase)
+  TTestPerson = class(TAdrsBaseTestCase)
   published
     procedure TestPersonFlat_Read;
     procedure TestPersonFlat_Save;
@@ -40,7 +40,6 @@ type
 
     procedure TestPersonCompound_Read   ;
     procedure TestPersonCompound_Save   ;
-    procedure TestPersonCompound_Update ;
     procedure TestPersonCompound_Delete ;
 
   end;
@@ -55,7 +54,8 @@ uses
   tiObject,
   tiOPFManager,
   tiQuery,
-  AdrsUnitTestConstants;
+  AdrsUnitTestConstants,
+  tiDialogs;
 
 { TTestPerson }
 
@@ -511,8 +511,39 @@ begin
 end;
 
 procedure TTestPerson.TestPersonFlat_IsValid;
+var
+  LItem: TPerson;
+  LErrors: TtiObjectErrors;
 begin
+  LErrors:= nil;
+  LItem:= nil;
+  try
+    LErrors:= TtiObjectErrors.Create;
+    LItem:= PersonTestSetup.PersonCreate(cOIDPerson1);
+    Check(LItem.IsValid(LErrors));
+    CheckEquals(0, LErrors.Count);
 
+    LItem.Title:= '';
+    Check(LItem.IsValid(LErrors));
+    CheckEquals(0, LErrors.Count);
+
+    LItem.Initials:= '';
+    Check(LItem.IsValid(LErrors));
+    CheckEquals(0, LErrors.Count);
+
+    LItem.FirstName:= '';
+    Check(LItem.IsValid(LErrors));
+    CheckEquals(0, LErrors.Count);
+
+    LItem.LastName:= '';
+    Check(not LItem.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals(CErrorPersonNameNotAssigned, LErrors.Items[0].ErrorMessage);
+
+  finally
+    LErrors.Free;
+    LItem.Free;
+  end;
 end;
 
 procedure TTestPerson.TestPersonFlat_Read;
@@ -595,19 +626,121 @@ begin
 end;
 
 procedure TTestPerson.TestPersonCompound_Delete;
+var
+  LAdrsBook: TAdrsBook;
+  LPerson: TPerson;
 begin
+  AdrsTypeSetup.EAdrsTypeInsert(cOIDEAdrsType1);
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
+  PersonTestSetup.PersonInsert(COIDPerson1);
+  AdrsTestSetup.AdrsInsert(COIDPerson1, COIDAdrs1, COIDAdrsType1);
+  EAdrsTestSetup.EAdrsInsert(COIDPerson1, COIDEAdrs1, COIDEAdrsType1);
+
+  LAdrsBook:= TAdrsBook.Create;
+  try
+    LAdrsBook.Read;
+    CheckEquals(1, LAdrsBook.PersonList.Count, 'Failed on lPeople.Count');
+    LPerson:= LAdrsBook.PersonList.Items[0];
+    LPerson.Deleted:= True;
+    CheckObjectState(posDelete, LPerson);
+    CheckObjectState(posDelete, LPerson.AddressList.Items[0]);
+    CheckObjectState(posDelete, LPerson.EAddressList.Items[0]);
+    LPerson.Save;
+    CheckObjectState(posDeleted, LPerson);
+    CheckObjectState(posDeleted, LPerson.AddressList.Items[0]);
+    CheckObjectState(posDeleted, LPerson.EAddressList.Items[0]);
+
+  finally
+    LAdrsBook.Free;
+  end;
 end;
 
 procedure TTestPerson.TestPersonCompound_Read;
+var
+  LAdrsBook: TAdrsBook;
 begin
+  AdrsTypeSetup.EAdrsTypeInsert(cOIDEAdrsType1);
+  AdrsTypeSetup.EAdrsTypeInsert(cOIDEAdrsType2);
+
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType2);
+
+  PersonTestSetup.PersonInsert(COIDPerson2);
+  PersonTestSetup.PersonInsert(COIDPerson1);
+
+  AdrsTestSetup.AdrsInsert(COIDPerson1, COIDAdrs1, COIDAdrsType1);
+  AdrsTestSetup.AdrsInsert(COIDPerson2, COIDAdrs2, COIDAdrsType2);
+
+  EAdrsTestSetup.EAdrsInsert(COIDPerson1, COIDEAdrs1, COIDEAdrsType1);
+  EAdrsTestSetup.EAdrsInsert(COIDPerson2, COIDEAdrs2, COIDEAdrsType2);
+
+  LAdrsBook:= TAdrsBook.Create;
+  try
+    LAdrsBook.Read;
+    CheckEquals(2, LAdrsBook.PersonList.Count, 'Failed on lPeople.Count');
+    PersonTestSetup.PersonCheck(LAdrsBook.PersonList.Items[0], COIDPerson1);
+    PersonTestSetup.PersonCheck(LAdrsBook.PersonList.Items[1], COIDPerson2);
+
+    AdrsTestSetup.AdrsCheck(LAdrsBook.PersonList.Items[0].AddressList.Items[0], COIDAdrs1, COIDAdrsType1);
+    EAdrsTestSetup.EAdrsCheck(LAdrsBook.PersonList.Items[0].EAddressList.Items[0], COIDEAdrs1, COIDEAdrsType1);
+
+    AdrsTestSetup.AdrsCheck(LAdrsBook.PersonList.Items[1].AddressList.Items[0], COIDAdrs2, COIDAdrsType2);
+    EAdrsTestSetup.EAdrsCheck(LAdrsBook.PersonList.Items[1].EAddressList.Items[0], COIDEAdrs2, COIDEAdrsType2);
+
+  finally
+    LAdrsBook.Free;
+  end;
 end;
 
 procedure TTestPerson.TestPersonCompound_Save;
+var
+  LAdrsBook: TAdrsBook;
+  LPerson: TPerson;
+  LAdrs: TAdrs;
+  LEAdrs: TEAdrs;
 begin
-end;
+  AdrsTypeSetup.EAdrsTypeInsert(cOIDEAdrsType1);
+  AdrsTypeSetup.EAdrsTypeInsert(cOIDEAdrsType2);
 
-procedure TTestPerson.TestPersonCompound_Update;
-begin
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType2);
+
+  LAdrsBook:= TAdrsBook.Create;
+  try
+    LPerson:= PersonTestSetup.PersonCreate(COIDPerson1);
+    LPerson.Dirty:= True;
+    LAdrsBook.PersonList.Add(LPerson);
+
+    LAdrs:= AdrsTestSetup.AdrsCreate(COIDAdrs1, COIDAdrsType1);
+    LPerson.AddressList.Add(LAdrs);
+    LAdrs.Dirty:= True;
+
+    LEAdrs:= EAdrsTestSetup.EAdrsCreate(COIDEAdrs1, COIDEAdrsType1);
+    LPerson.EAddressList.Add(LEAdrs);
+    LEAdrs.Dirty:= True;
+    LPerson.Save;
+
+    CheckObjectState(posClean, LPerson);
+    CheckObjectState(posClean, LAdrs);
+    CheckObjectState(posClean, LEAdrs);
+
+  finally
+    LAdrsBook.Free;
+  end;
+
+  LAdrsBook:= TAdrsBook.Create;
+  try
+    LAdrsBook.Read;
+    CheckEquals(1, LAdrsBook.PersonList.Count, 'Failed on lPeople.Count');
+    PersonTestSetup.PersonCheck(LAdrsBook.PersonList.Items[0], COIDPerson1);
+
+    AdrsTestSetup.AdrsCheck(LAdrsBook.PersonList.Items[0].AddressList.Items[0], COIDAdrs1, COIDAdrsType1);
+    EAdrsTestSetup.EAdrsCheck(LAdrsBook.PersonList.Items[0].EAddressList.Items[0], COIDEAdrs1, COIDEAdrsType1);
+
+  finally
+    LAdrsBook.Free;
+  end;
+
 end;
 
 procedure TTestPerson.TestAdrs_Assign;

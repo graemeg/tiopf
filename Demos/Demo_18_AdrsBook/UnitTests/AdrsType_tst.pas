@@ -8,8 +8,11 @@ uses
 
 type
 
-  TTestAdrsType = class(TAdrsTestCase)
+  TTestAdrsType = class(TAdrsBaseTestCase)
   published
+
+    procedure AdrsTypeAbs_Find;
+    procedure AdrsTypeAbs_AdrsTypeAsStringByOID;
 
     procedure AdrsTypeList_Read;
     procedure AdrsType_Save;
@@ -132,6 +135,45 @@ begin
   finally
     LErrors.Free;
     LItem.Free;
+  end;
+end;
+
+type
+
+  TAdrsTypeListForTesting = class(TAdrsTypeListAbs)
+  end;
+
+procedure TTestAdrsType.AdrsTypeAbs_AdrsTypeAsStringByOID;
+var
+  LList: TAdrsTypeListForTesting;
+begin
+  LList:= TAdrsTypeListForTesting.Create;
+  try
+    LList.Add(AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType1));
+    LList.Add(AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType2));
+    CheckEquals(TAdrsType(LList.Items[0]).Text, LList.AdrsTypeAsStringByOID(COIDAdrsType1));
+    CheckEquals(TAdrsType(LList.Items[1]).Text, LList.AdrsTypeAsStringByOID(COIDAdrsType2));
+    CheckEquals('', LList.AdrsTypeAsStringByOID('YouWontFindMe'));
+  finally
+    LList.Free;
+  end;
+end;
+
+procedure TTestAdrsType.AdrsTypeAbs_Find;
+var
+  LList: TAdrsTypeListForTesting;
+begin
+  LList:= TAdrsTypeListForTesting.Create;
+  try
+    LList.Add(AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType1));
+    LList.Add(AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType2));
+    CheckNotNull(LList.Find(COIDAdrsType1));
+    CheckEquals(COIDAdrsType1, LList.Find(COIDAdrsType1).OID.AsString);
+    CheckNotNull(LList.Find(COIDAdrsType2));
+    CheckEquals(COIDAdrsType2, LList.Find(COIDAdrsType2).OID.AsString);
+    CheckNull(LList.Find('YouWontFindMe'));
+  finally
+    LList.Free;
   end;
 end;
 

@@ -35,7 +35,7 @@ type
   protected
     procedure   SetDeleted(const Value: boolean); override;
   published
-    property    People   : TPersonList read FPeople;
+    property    PersonList   : TPersonList read FPeople;
     property    EAdrsTypeList: TEAdrsTypeList read FEAdrsTypeList;
     property    AdrsTypeList: TAdrsTypeList read FAdrsTypeList;
   public
@@ -143,6 +143,7 @@ type
     FSuburb: string;
   protected
     function    GetCaption: string; override;
+  public
     function  IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
     property Lines  : string read FLines   write FLines;
@@ -162,10 +163,6 @@ type
   published
     property Text: string read FText write FText;
   end;
-
-function gAdrsBook: TAdrsBook;
-procedure FreeAndNilAdrsBook;
-procedure PopulateAdrsBook(const pAdrsBook: TAdrsBook);
 
 implementation
 uses
@@ -191,75 +188,6 @@ end;
 procedure FreeAndNilAdrsBook;
 begin
   FreeAndNil(uAdrsBook);
-end;
-
-procedure PopulateAdrsBook(const pAdrsBook: TAdrsBook);
-//var
-//  lLookupList: TLookupList;
-//  lLookupListItem: TLookupListItem;
-begin
-//Assert(False, 'Under construction');
-////  pAdrsBook.AdrsTypes.MarkListItemsForDeletion;
-//  lLookupList:= TLookupList.CreateNew;
-//  lLookupList.ObjectState:= posCreate;
-//  lLookupList.ListName:= 'ADRS';
-//  pAdrsBook.AdrsTypes.Add(lLookupList);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Street Address';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Postal Address';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Home Address';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Work Address';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Other';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupList:= TLookupList.CreateNew;
-//  lLookupList.ObjectState:= posCreate;
-//  lLookupList.ListName:= 'EADRS';
-//  pAdrsBook.AdrsTypes.Add(lLookupList);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Home phone';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Work phone';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Mobile phone';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Fax';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'EMail';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Web';
-//  lLookupList.Add(lLookupListItem);
-//
-//  lLookupListItem:= TLookupListItem.CreateNew;
-//  lLookupListItem.Text:= 'Other';
-//  lLookupList.Add(lLookupListItem);
-//
-//  gAdrsBook.AdrsTypes.Save;
-//
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -306,13 +234,9 @@ begin
   inherited;
   FAddressList := TAddressList.Create;
   FAddressList.Owner:= self;
-  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
-  FAddressList.ItemOwner:= self;
 
   FEAddressList:= TEAddressList.Create;
   FEAddressList.Owner:= self;
-  // ToDo: Refactor to remove need for ItemOwner. Use Parent instead
-  FEAddressList.ItemOwner:= self;
 
 end;
 
@@ -461,8 +385,8 @@ end;
 
 function TAdrsAbs.AdrsTypeList: TAdrsTypeListAbs;
 begin
-  Assert(Parent.TestValid, CTIErrorInvalidObject);
-  Assert(Parent.Parent.TestValid, CTIErrorInvalidObject);
+  Assert(Parent <> nil, CTIErrorInvalidObject);
+  Assert(Parent.Parent <> nil, CTIErrorInvalidObject);
   result:= Parent.Parent.AdrsTypeList;
 end;
 
@@ -473,7 +397,7 @@ end;
 
 function TAdrsAbs.GetAdrsTypeAsString: string;
 begin
-  Assert(False, 'Under construction');
+  Result:= AdrsTypeList.AdrsTypeAsStringByOID(OIDAdrsType);
 end;
 
 procedure TPersonList.SetItems(i: integer; const AValue: TPerson);
@@ -519,8 +443,7 @@ end;
 procedure TAdrsBook.Read;
 begin
   EAdrsTypeList.Read;
-//  GTIOPFManager.ReadPK(Self);
-//GTIOPFManager.Read(  Self);
+  PersonList.Read;
 end;
 
 procedure TAdrsBook.SetDeleted(const Value: boolean);

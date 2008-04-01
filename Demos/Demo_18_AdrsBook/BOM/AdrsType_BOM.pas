@@ -24,6 +24,7 @@ type
     procedure   Read; override;
     procedure   Save; override;
     function    Find(const AOIDToFind: string): TAdrsTypeAbs; reintroduce;
+    function    AdrsTypeAsStringByOID(const AOID: string): string;
   end;
 
   // Abstract item
@@ -74,6 +75,17 @@ end;
 function TEAdrsTypeList.GetItems(i: integer): TEAdrsType;
 begin
   result:= TEAdrsType(inherited GetItems(i));
+end;
+
+function TAdrsTypeListAbs.AdrsTypeAsStringByOID(const AOID: string): string;
+var
+  LItem: TAdrsTypeAbs;
+begin
+  LItem:= Find(AOID);
+  if LItem <> nil then
+    result:= LItem.Text
+  else
+    result:= '';
 end;
 
 function TAdrsTypeListAbs.Find(const AOIDToFind: string): TAdrsTypeAbs;
