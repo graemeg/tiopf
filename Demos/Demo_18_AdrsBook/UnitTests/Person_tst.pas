@@ -18,7 +18,7 @@ type
     procedure TestPersonFlat_Delete;
     procedure TestPersonFlat_Equals;
     procedure TestPersonFlat_Assign;
-    procedure TestPersonFlat_Clone;
+    procedure TestPersonFlat_IsValid;
 
     procedure TestEAdrs_Read            ;
     procedure TestEAdrs_Save            ;
@@ -26,7 +26,7 @@ type
     procedure TestEAdrs_Delete          ;
     procedure TestEAdrs_Equals          ;
     procedure TestEAdrs_Assign          ;
-    procedure TestEAdrs_Clone           ;
+    procedure TestEAdrs_IsValid         ;
     procedure TestEAdrs_AdrsType;
 
     procedure TestAdrs_Read             ;
@@ -35,10 +35,8 @@ type
     procedure TestAdrs_Delete           ;
     procedure TestAdrs_Equals           ;
     procedure TestAdrs_Assign           ;
-    procedure TestAdrs_Clone            ;
+    procedure TestAdrs_IsValid          ;
     procedure TestAdrs_EAdrsType        ;
-
-  public
 
     procedure TestPersonCompound_Read   ;
     procedure TestPersonCompound_Save   ;
@@ -69,29 +67,231 @@ end;
 { TTestPerson }
 
 procedure TTestPerson.TestAdrs_Delete;
+var
+  LList: TPersonList;
+  LPerson: TPerson;
 begin
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
+  PersonTestSetup.PersonInsert(cOIDPerson1);
+  AdrsTestSetup.AdrsInsert(COIDPerson1, COIDAdrs1, cOIDAdrsType1);
+  LList:= TPersonList.Create;
+  try
+    LList.Read;
+    LPerson:= LList.Items[0];
+    LPerson.AddressList.Items[0].Deleted:= True;
+    LPerson.Save;
+    CheckObjectState(posDeleted, LPerson.AddressList.Items[0]);
+  finally
+    LList.Free;
+  end;
+
+  LList:= TPersonList.Create;
+  try
+    LList.Read;
+    LPerson:= LList.Items[0];
+    CheckEquals(0, LPerson.AddressList.Count);
+  finally
+    LList.Free;
+  end;
 end;
 
-procedure TTestPerson.TestAdrs_EAdrsType;
-begin
+type
+  TAdrsForTesting = class(TAdrs)
+  private
+    FAdrsTypeList: TAdrsTypeListAbs;
+  protected
+    function AdrsTypeList: TAdrsTypeListAbs; override;
+    procedure SetAdrsTypeList(const AAdrsTypeList: TAdrsTypeListAbs);
+  end;
 
+  function TAdrsForTesting.AdrsTypeList: TAdrsTypeListAbs;
+  begin
+    result:= FAdrsTypeList;
+  end;
+
+  procedure TAdrsForTesting.SetAdrsTypeList(const AAdrsTypeList: TAdrsTypeListAbs);
+  begin
+    FAdrsTypeList:= AAdrsTypeList;
+  end;
+
+procedure TTestPerson.TestAdrs_EAdrsType;
+var
+  LItem: TAdrsForTesting;
+  LAdrsTypeList: TAdrsTypeList;
+begin
+  LAdrsTypeList:= TAdrsTypeList.Create;
+  try
+    LAdrsTypeList.Add(AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType1));
+    LAdrsTypeList.Add(AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType2));
+    LItem:= TAdrsForTesting.Create;
+    try
+      LItem.SetAdrsTypeList(LAdrsTypeList);
+
+      LItem.OIDAdrsType:= COIDAdrsType1;
+      CheckNotNull(LItem.AdrsType);
+      CheckEquals(COIDAdrsType1, LItem.AdrsType.OID.AsString);
+
+      LItem.OIDAdrsType:= COIDAdrsType2;
+      CheckNotNull(LItem.AdrsType);
+      CheckEquals(COIDAdrsType2, LItem.AdrsType.OID.AsString);
+
+    finally
+      LItem.Free;
+    end;
+  finally
+    LAdrsTypeList.Free;
+  end;
 end;
 
 procedure TTestPerson.TestAdrs_Equals;
+var
+  LItem1: TAdrs;
+  LItem2: TAdrs;
 begin
+  LItem1:= nil;
+  LItem2:= nil;
+  try
+    LItem1:= AdrsTestSetup.AdrsCreate(cOIDAdrs1, cOIDAdrsType1);
+    LItem2:= AdrsTestSetup.AdrsCreate(cOIDAdrs1, cOIDAdrsType1);
+    TestTIObjectEquals(LItem1, LItem2, 'Lines');
+    TestTIObjectEquals(LItem1, LItem2, 'Suburb');
+    TestTIObjectEquals(LItem1, LItem2, 'State');
+    TestTIObjectEquals(LItem1, LItem2, 'PCode');
+    TestTIObjectEquals(LItem1, LItem2, 'Country');
+  finally
+    LItem1.Free;
+    LItem2.Free;
+  end;
+end;
+
+procedure TTestPerson.TestAdrs_IsValid;
+var
+  LItem: TAdrs;
+  LErrors: TtiObjectErrors;
+begin
+  LErrors:= nil;
+  LItem:= nil;
+  try
+    LErrors:= TtiObjectErrors.Create;
+    LItem:= AdrsTestSetup.AdrsCreate(COIDAdrs1, cOIDAdrsType1);
+
+    Check(LItem.IsValid(LErrors));
+    CheckEquals(0, LErrors.Count);
+
+    LItem.OIDAdrsType:= '';
+    Check(not LItem.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals(CErrorAdrsAbsAdrsTypeNotAssigned, LErrors.Items[0].ErrorMessage);
+    LItem.OIDAdrsType:= COIDAdrsType1;
+
+    LItem.Lines:= '';
+    LItem.Suburb:= '';
+    LItem.State:= '';
+    LItem.PCode:= '';
+    LItem.Country:= '';
+    Check(not LItem.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals(CErrorAdrsAddressNotAssigned, LErrors.Items[0].ErrorMessage);
+
+  finally
+    LErrors.Free;
+    LItem.Free;
+  end;
 
 end;
 
 procedure TTestPerson.TestAdrs_Read;
+var
+  LList: TPersonList;
+  LPerson: TPerson;
 begin
+  AdrsTypeSetup.EAdrsTypeInsert(cOIDEAdrsType1);
+  AdrsTypeSetup.EAdrsTypeInsert(cOIDEAdrsType2);
+  PersonTestSetup.PersonInsert(cOIDPerson1);
+  EAdrsTestSetup.EAdrsInsert(COIDPerson1, COIDEAdrs1, COIDEAdrsType1);
+  EAdrsTestSetup.EAdrsInsert(COIDPerson1, COIDEAdrs2, COIDEAdrsType2);
+  LList:= TPersonList.Create;
+  try
+    LList.Read;
+    CheckEquals(1, LList.Count);
+    LPerson:= LList.Items[0];
+    CheckEquals(2, LPerson.EAddressList.Count);
+    EAdrsTestSetup.EAdrsCheck(LPerson.EAddressList.Items[0], COIDEAdrs1, COIDEAdrsType1);
+    CheckEquals(COIDEAdrs1, LPerson.EAddressList.Items[0].OID);
+    EAdrsTestSetup.EAdrsCheck(LPerson.EAddressList.Items[1], COIDEAdrs2, COIDEAdrsType2);
+    CheckEquals(COIDEAdrs2, LPerson.EAddressList.Items[1].OID);
+  finally
+    LList.Free;
+  end;
 end;
 
 procedure TTestPerson.TestAdrs_Save;
+var
+  LList: TPersonList;
+  LPerson: TPerson;
+  LItem: TAdrs;
 begin
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType2);
+  PersonTestSetup.PersonInsert(cOIDPerson1);
+
+  LList:= TPersonList.Create;
+  try
+    LList.Read;
+    LPerson:= LList.Items[0];
+    LItem:= AdrsTestSetup.AdrsCreate(cOIDAdrs1, cOIDAdrsType1);
+    LItem.Dirty:= True;
+    LPerson.AddressList.Add(LItem);
+    LPerson.Save;
+    CheckObjectState(posClean, LItem);
+  finally
+    LList.Free;
+  end;
+
+  LList:= TPersonList.Create;
+  try
+    LList.Read;
+    CheckEquals(1, LList.Count);
+    LPerson:= LList.Items[0];
+    AdrsTestSetup.AdrsCheck(LPerson.AddressList.Items[0], cOIDAdrs1, cOIDAdrsType1);
+    CheckEquals(cOIDAdrs1, LPerson.AddressList.Items[0].OID);
+  finally
+    LList.Free;
+  end;
+
 end;
 
 procedure TTestPerson.TestAdrs_Update;
+var
+  LList: TPersonList;
+  LPerson: TPerson;
 begin
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType2);
+  PersonTestSetup.PersonInsert(cOIDPerson1);
+  AdrsTestSetup.AdrsInsert(COIDPerson1, COIDAdrs1, cOIDAdrsType1);
+  LList:= TPersonList.Create;
+  try
+    LList.Read;
+    LPerson:= LList.Items[0];
+    AdrsTestSetup.AdrsAssign(LPerson.AddressList.Items[0], COIDAdrs2, cOIDAdrsType2);
+    LPerson.AddressList.Items[0].Dirty:= True;
+    LPerson.Save;
+    CheckObjectState(posClean, LPerson.AddressList.Items[0]);
+  finally
+    LList.Free;
+  end;
+
+  LList:= TPersonList.Create;
+  try
+    LList.Read;
+    LPerson:= LList.Items[0];
+    AdrsTestSetup.AdrsCheck(LPerson.AddressList.Items[0], COIDAdrs2, cOIDAdrsType2);
+    CheckEquals(COIDAdrs1, LPerson.AddressList.Items[0].OID);
+  finally
+    LList.Free;
+  end;
+
 end;
 
 procedure TTestPerson.TestEAdrs_Delete;
@@ -106,7 +306,6 @@ begin
   try
     LList.Read;
     LPerson:= LList.Items[0];
-    EAdrsTestSetup.EAdrsAssign(LPerson.EAddressList.Items[0], COIDEAdrs2, COIDEAdrsType2);
     LPerson.EAddressList.Items[0].Deleted:= True;
     LPerson.Save;
     CheckObjectState(posDeleted, LPerson.EAddressList.Items[0]);
@@ -134,11 +333,40 @@ begin
   try
     LItem1:= EAdrsTestSetup.EAdrsCreate(cOIDEAdrs1, cOIDEAdrsType1);
     LItem2:= EAdrsTestSetup.EAdrsCreate(cOIDEAdrs1, cOIDEAdrsType1);
-    Check(LItem1.Equals(LItem2));
-
+    TestTIObjectEquals(LItem1, LItem2, 'Text');
   finally
     LItem1.Free;
     LItem2.Free;
+  end;
+end;
+
+procedure TTestPerson.TestEAdrs_IsValid;
+var
+  LItem: TEAdrs;
+  LErrors: TtiObjectErrors;
+begin
+  LErrors:= nil;
+  LItem:= nil;
+  try
+    LErrors:= TtiObjectErrors.Create;
+    LItem:= EAdrsTestSetup.EAdrsCreate(COIDEAdrs1, COIDEAdrsType1);
+    Check(LItem.IsValid(LErrors));
+    CheckEquals(0, LErrors.Count);
+
+    LItem.OIDAdrsType:= '';
+    Check(not LItem.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals(CErrorAdrsAbsAdrsTypeNotAssigned, LErrors.Items[0].ErrorMessage);
+    LItem.OIDAdrsType:= COIDEAdrsType1;
+
+    LItem.Text:= '';
+    Check(not LItem.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals(CErrorEAdrsTextNotAssigned, LErrors.Items[0].ErrorMessage);
+
+  finally
+    LErrors.Free;
+    LItem.Free;
   end;
 end;
 
@@ -272,12 +500,19 @@ begin
   try
     LItem1:= PersonTestSetup.PersonCreate(COIDPerson1);
     LItem2:= PersonTestSetup.PersonCreate(COIDPerson1);
-    Check(LItem1.Equals(LItem2));
-    
+    TestTIObjectEquals(LItem1, LItem2, 'LastName');
+    TestTIObjectEquals(LItem1, LItem2, 'FirstName');
+    TestTIObjectEquals(LItem1, LItem2, 'Title');
+    TestTIObjectEquals(LItem1, LItem2, 'Initials');
   finally
     LItem1.Free;
     LItem2.Free;
   end;
+end;
+
+procedure TTestPerson.TestPersonFlat_IsValid;
+begin
+
 end;
 
 procedure TTestPerson.TestPersonFlat_Read;
@@ -361,162 +596,85 @@ end;
 
 procedure TTestPerson.TestPersonCompound_Delete;
 begin
-  gAdrsBook;
-//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-//  InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-//  InsertTestAdrs(  cOIDPerson, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
-//  InsertTestEAdrs( cOIDPerson, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
-
-  gAdrsBook.Read;
-  CheckEquals(1, gAdrsBook.People.Count, 'gAdrsBook.People.Count');
-  CheckEquals(1, gAdrsBook.People.Items[0].AddressList.Count, 'gAdrsBook.People.Items[0].Adrses.Count');
-  CheckEquals(1, gAdrsBook.People.Items[0].EAddressList.Count, 'gAdrsBook.People.Items[0].EAdrses.Count');
-  gAdrsBook.People.Items[0].ObjectState:= posDelete;
-Assert(False, 'Under construction');
-//  gAdrsBook.Save;
-  Check(posDeleted = gAdrsBook.People.Items[0].ObjectState, 'Failed on posDeleted = gAdrsBook.People.Items[0]');
-
-  FreeAndNilAdrsBook;
-  gAdrsBook.Read;
-  CheckEquals(0, gAdrsBook.People.Count, 'gAdrsBook.People.Count');
-
 end;
 
 procedure TTestPerson.TestPersonCompound_Read;
 begin
-  gAdrsBook;
-//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-//  InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-//  InsertTestAdrs(  cOIDPerson, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
-//  InsertTestEAdrs( cOIDPerson, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
-
-  gAdrsBook.Read;
-  CheckEquals(1, gAdrsBook.People.Count, 'gAdrsBook.People.Count');
-  CheckEquals(1, gAdrsBook.People.Items[0].AddressList.Count, 'gAdrsBook.People.Items[0].Adrses.Count');
-  CheckEquals(1, gAdrsBook.People.Items[0].EAddressList.Count, 'gAdrsBook.People.Items[0].EAdrses.Count');
-//  CheckPerson(gAdrsBook.People.Items[0], cOIDPerson, IntToStr(cOIDPerson));
-//  CheckAdrs(gAdrsBook.People.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-//  CheckEAdrs(gAdrsBook.People.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
 end;
 
 procedure TTestPerson.TestPersonCompound_Save;
-var
-  lPerson: TPerson;
-  lAdrs  : TAdrs;
-  lEAdrs : TEAdrs;
 begin
-
-//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-  gAdrsBook.Read;
-
-  lPerson:= TPerson.Create;
-//  lPerson.OID.AsString:= IntToStr(cOIDPerson);
-//  lPerson.ObjectState:= posCreate;
-//  lPerson.Title:= IntToStr(cOIDPerson);
-//  lPerson.Initials := IntToStr(cOIDPerson);
-//  lPerson.FirstName:= IntToStr(cOIDPerson);
-//  lPerson.LastName := IntToStr(cOIDPerson);
-//  lPerson.Notes    := IntToStr(cOIDPerson);
-//  gAdrsBook.People.Add(lPerson);
-
-  lAdrs  := TAdrs.Create;
-  lAdrs.OID.AsString:= IntToStr(cOIDAdrs);
-  lAdrs.ObjectState:= posCreate;
-//  lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
-  lAdrs.Lines:= IntToStr(cOIDAdrs);
-  lAdrs.Suburb:= IntToStr(cOIDAdrs);
-  lAdrs.State:= IntToStr(cOIDAdrs);
-  lAdrs.PCode:= IntToStr(cOIDAdrs);
-  lAdrs.Country:= IntToStr(cOIDAdrs);
-  lPerson.AddressList.Add(lAdrs);
-
-  lEAdrs := TEAdrs.Create;;
-//  lEADrs.OID.AsString:= IntToStr(cOIDEAdrs);
-  lEAdrs.ObjectState:= posCreate;
-//  lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
-//  lEAdrs.Text:= IntToStr(cOIDEAdrs);
-  lPerson.EAddressList.Add(lEAdrs);
-Assert(False, 'Under construction');
-//  gAdrsBook.Save;
-
-  FreeAndNilAdrsBook;
-  gAdrsBook.Read;
-  CheckEquals(1, gAdrsBook.People.Count, 'gAdrsBook.People.Count');
-  CheckEquals(1, gAdrsBook.People.Items[0].AddressList.Count, 'gAdrsBook.People.Items[0].Adrses.Count');
-  CheckEquals(1, gAdrsBook.People.Items[0].EAddressList.Count, 'gAdrsBook.People.Items[0].EAdrses.Count');
-  //CheckPerson(gAdrsBook.People.Items[0], cOIDPerson, IntToStr(cOIDPerson));
-//  CheckAdrs(gAdrsBook.People.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem, IntToStr(cOIDAdrs));
-//  CheckEAdrs(gAdrsBook.People.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem1, IntToStr(cOIDEAdrs));
-
 end;
 
 procedure TTestPerson.TestPersonCompound_Update;
-var
-  lPerson: TPerson;
-  lAdrs  : TAdrs;
-  lEAdrs : TEAdrs;
 begin
-  gAdrsBook;
-//  InsertTestLookupListName(cOIDLookupListName, IntToStr(cOIDLookupListName));
-//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem, IntToStr(cOIDLookupListItem));
-//  InsertTestLookupListItem(cOIDLookupListName, cOIDLookupListItem1, IntToStr(cOIDLookupListItem));
-  //InsertTestPerson(-1, cOIDPerson, IntToStr(cOIDPerson));
-//  InsertTestAdrs(  cOIDPerson, cOIDAdrs,   cOIDLookupListItem, IntToStr(cOIDAdrs));
-//  InsertTestEAdrs( cOIDPerson, cOIDEAdrs,  cOIDLookupListItem1, IntToStr(cOIDEAdrs));
-  gAdrsBook.Read;
-
-  lPerson:= gAdrsBook.People.Items[0];
-  lPerson.ObjectState:= posUpdate;
-  lPerson.Title      := cUpdateValue;
-  lPerson.Initials   := cUpdateValue;
-  lPerson.FirstName  := cUpdateValue;
-  lPerson.LastName   := cUpdateValue;
-  lPerson.Notes      := cUpdateValue;
-
-  lAdrs            := lPerson.AddressList.Items[0];
-  lAdrs.ObjectState:= posUpdate;
-//  lAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem1);
-  lAdrs.Lines      := cUpdateValue;
-  lAdrs.Suburb     := cUpdateValue;
-  lAdrs.State      := cUpdateValue;
-  lAdrs.PCode      := cUpdateValue;
-  lAdrs.Country    := cUpdateValue;
-
-  lEAdrs           := lPerson.EAddressList.Items[0];
-  lEAdrs.ObjectState:= posUpdate;
-//  lEAdrs.AdrsTypeOID:= IntToStr(cOIDLookupListItem);
-  lEAdrs.Text:= cUpdateValue;
-Assert(False, 'Under construction');
-//  gAdrsBook.Save;
-
-  FreeAndNilAdrsBook;
-  gAdrsBook.Read;
-  CheckEquals(1, gAdrsBook.People.Count, 'gAdrsBook.People.Count');
-  CheckEquals(1, gAdrsBook.People.Items[0].AddressList.Count, 'gAdrsBook.People.Items[0].Adrses.Count');
-  CheckEquals(1, gAdrsBook.People.Items[0].EAddressList.Count, 'gAdrsBook.People.Items[0].EAdrses.Count');
-  //CheckPerson(gAdrsBook.People.Items[0], cOIDPerson, cUpdateValue);
-//  CheckAdrs(gAdrsBook.People.Items[0].AddressList.Items[0], cOIDAdrs, cOIDLookupListItem1, cUpdateValue);
-//  CheckEAdrs(gAdrsBook.People.Items[0].EAddressList.Items[0], cOIDEAdrs, cOIDLookupListItem, cUpdateValue);
-
 end;
 
 procedure TTestPerson.TestAdrs_Assign;
+var
+  LFrom: TAdrs;
+  LTo  : TAdrs;
 begin
+  LFrom:= AdrsTestSetup.AdrsCreate(COIDAdrs1, cOIDAdrsType1);
+  try
+    LTo:= TAdrs.Create;
+    try
+      LTo.Assign(LFrom);
+      Check(LFrom.Equals(LTo));
+    finally
+      LTo.Free;
+    end;
+  finally
+    LFrom.Free;
+  end;
 end;
 
-procedure TTestPerson.TestAdrs_Clone;
-begin
-end;
+type
+  TEAdrsForTesting = class(TEAdrs)
+  private
+    FAdrsTypeList: TAdrsTypeListAbs;
+  protected
+    function AdrsTypeList: TAdrsTypeListAbs; override;
+    procedure SetAdrsTypeList(const AAdrsTypeList: TAdrsTypeListAbs);
+  end;
+
+  function TEAdrsForTesting.AdrsTypeList: TAdrsTypeListAbs;
+  begin
+    result:= FAdrsTypeList;
+  end;
+
+  procedure TEAdrsForTesting.SetAdrsTypeList(const AAdrsTypeList: TAdrsTypeListAbs);
+  begin
+    FAdrsTypeList:= AAdrsTypeList;
+  end;
 
 procedure TTestPerson.TestEAdrs_AdrsType;
+var
+  LItem: TEAdrsForTesting;
+  LEAdrsTypeList: TEAdrsTypeList;
 begin
+  LEAdrsTypeList:= TEAdrsTypeList.Create;
+  try
+    LEAdrsTypeList.Add(AdrsTypeSetup.EAdrsTypeCreate(COIDEAdrsType1));
+    LEAdrsTypeList.Add(AdrsTypeSetup.EAdrsTypeCreate(COIDEAdrsType2));
+    LItem:= TEAdrsForTesting.Create;
+    try
+      LItem.SetAdrsTypeList(LEAdrsTypeList);
 
+      LItem.OIDAdrsType:= COIDEAdrsType1;
+      CheckNotNull(LItem.AdrsType);
+      CheckEquals(COIDEAdrsType1, LItem.AdrsType.OID.AsString);
+
+      LItem.OIDAdrsType:= COIDEAdrsType2;
+      CheckNotNull(LItem.AdrsType);
+      CheckEquals(COIDEAdrsType2, LItem.AdrsType.OID.AsString);
+
+    finally
+      LItem.Free;
+    end;
+  finally
+    LEAdrsTypeList.Free;
+  end;
 end;
 
 procedure TTestPerson.TestEAdrs_Assign;
@@ -529,24 +687,6 @@ begin
     LTo:= TEAdrs.Create;
     try
       LTo.Assign(LFrom);
-      Check(LFrom.Equals(LTo));
-    finally
-      LTo.Free;
-    end;
-  finally
-    LFrom.Free;
-  end;
-end;
-
-procedure TTestPerson.TestEAdrs_Clone;
-var
-  LFrom: TEAdrs;
-  LTo  : TEAdrs;
-begin
-  LFrom:= EAdrsTestSetup.EAdrsCreate(COIDEAdrs1, cOIDEAdrsType1);
-  try
-    LTo:= LFrom.Clone as TEAdrs;
-    try
       Check(LFrom.Equals(LTo));
     finally
       LTo.Free;
@@ -575,22 +715,6 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestPersonFlat_Clone;
-var
-  LFrom: TPerson;
-  LTo  : TPerson;
-begin
-  LFrom:= PersonTestSetup.PersonCreate(COIDPerson1);
-  try
-    LTo:= LFrom.Clone;
-    try
-      PersonTestSetup.PersonCheck(LTo, COIDPerson1);
-    finally
-      LTo.Free;
-    end;
-  finally
-    LFrom.Free;
-  end;
-end;
+{ TEAdrsForTesting }
 
 end.

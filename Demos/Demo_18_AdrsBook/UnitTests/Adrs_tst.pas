@@ -8,15 +8,16 @@ uses
   AdrsType_BOM,
   AdrsType_TSTSetup,
   Person_TSTSetup,
+  Adrs_TSTSetup,
   EAdrs_TSTSetup;
 
 type
 
-  //TTestAdrs = class(TTestPerFrameworkConnectAbs)
   TAdrsTestCase = class(TtiTestCase)
   private
     FAdrsTypeTestSetup: TAdrsTypeTestSetup;
     FPersonTestSetup: TPersonTestSetup;
+    FAdrsTestSetup: TAdrsTestSetup;
     FEAdrsTestSetup: TEAdrsTestSetup;
 
     procedure EmptyTables;
@@ -27,6 +28,7 @@ type
 
     property  AdrsTypeSetup: TAdrsTypeTestSetup read FAdrsTypeTestSetup;
     property  PersonTestSetup: TPersonTestSetup read FPersonTestSetup;
+    property  AdrsTestSetup: TAdrsTestSetup read FAdrsTestSetup;
     property  EAdrsTestSetup: TEAdrsTestSetup read FEAdrsTestSetup;
 
   public
@@ -59,26 +61,26 @@ begin
   inherited;
   FAdrsTypeTestSetup:= TAdrsTypeTestSetup.Create(Self);
   FPersonTestSetup:= TPersonTestSetup.Create(Self);
+  FAdrsTestSetup:= TAdrsTestSetup.Create(Self);
   FEAdrsTestSetup:= TEAdrsTestSetup.Create(Self);
-
 end;
 
 destructor TAdrsTestCase.Destroy;
 begin
   FAdrsTypeTestSetup.Free;
   FPersonTestSetup.Free;
+  FAdrsTestSetup.Free;
   FEAdrsTestSetup.Free;
   inherited;
 end;
 
 procedure TAdrsTestCase.EmptyTables;
 begin
-//  GTIOPFManager.DeleteRow('Adrs', nil);
+  GTIOPFManager.DeleteRow('adrs', nil);
   GTIOPFManager.DeleteRow('eadrs', nil);
   GTIOPFManager.DeleteRow('person', nil);
-//  GTIOPFManager.DeleteRow('Company', nil);
   GTIOPFManager.DeleteRow('eadrs_type', nil);
-//  GTIOPFManager.DeleteRow('Lookup_List_Name', nil);
+  GTIOPFManager.DeleteRow('adrs_type', nil);
 end;
 
 procedure TAdrsTestCase.Setup;

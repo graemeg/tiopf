@@ -16,23 +16,17 @@ uses
 
 procedure RegisterMappings;
 begin
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrsType, 'adrs_type', 'oid',  'oid', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrsType, 'adrs_type', 'text', 'text');
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TAdrsTypeList, TAdrsType);
+
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrsType, 'eadrs_type', 'oid',  'oid', [pktDB]);
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrsType, 'eadrs_type', 'text', 'text');
   GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TEAdrsTypeList, TEAdrsType);
 
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TLookupListItem, cTableName_LookUpListValue, 'OID',      'OID',      [pktDB]);
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TLookupListItem, cTableName_LookUpListValue, 'Owner.OID',      'Owner_OID',      [pktFK]);
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TLookupListItem, cTableName_LookUpListValue, 'Text',     'Item_Text'        );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TLookupList, TLookupListItem );
-//
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCompany, cTableName_Company, 'OID',         'OID',         [pktDB]);
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCompany, cTableName_Company, 'CompanyName', 'Company_Name', [pktReadable]        );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TCompany, cTableName_Company, 'Notes',       'Notes'               );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TCompanies, TCompany );
-//
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'oid',       'oid', [pktDB]);
-  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'LastName',  'last_name'{, [pktReadable]} );
-  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'FirstName', 'first_name'{, [pktReadable]}  );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'LastName',  'last_name');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'FirstName', 'first_name');
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'Title',     'title'       );
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'Initials',  'initials'    );
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TPerson, 'person', 'Notes',     'notes'       );

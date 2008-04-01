@@ -155,7 +155,7 @@ begin
 //    CheckEquals(1, LPerson.EAdrsList.Count);
 //    LEAdrs:= LPerson.EAdrsList.Items[0];
 
-    AdrsBookSetup.EAdrs_Check(cOIDEAdrs, LEAdrs);
+//    AdrsBookSetup.EAdrs_Check(cOIDEAdrs, LEAdrs);
 
 
   finally

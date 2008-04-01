@@ -10,8 +10,10 @@ uses
   AdrsType_BOM;
 
 const
-  cErrorPersonNameNotAssigned = 'Please enter the person''s name';
-  cErrorCompanyNameNotAssigned = 'Please enter the companies name';
+  CErrorPersonNameNotAssigned = 'Please enter the person''s name';
+  CErrorAdrsAbsAdrsTypeNotAssigned = 'Address type not assigned';
+  CErrorAdrsAddressNotAssigned = 'Address details not assigned';
+  CErrorEAdrsTextNotAssigned = 'E-Address details not assigned';
 
 type
 
@@ -28,12 +30,14 @@ type
   TAdrsBook = class(TtiObject)
   private
     FPeople   : TPersonList   ;
+    FAdrsTypeList: TAdrsTypeList;
     FEAdrsTypeList: TEAdrsTypeList;
   protected
     procedure   SetDeleted(const Value: boolean); override;
   published
     property    People   : TPersonList read FPeople;
     property    EAdrsTypeList: TEAdrsTypeList read FEAdrsTypeList;
+    property    AdrsTypeList: TAdrsTypeList read FAdrsTypeList;
   public
     constructor Create; override;
     destructor  Destroy; override;
@@ -115,10 +119,18 @@ type
   TAdrsAbs = class(TtiObject)
   private
     FOIDAdrsType: String;
-    function    GetLookupListItemAsString: string;
+    function    GetAdrsTypeAsString: string;
     procedure   SetOIDAdrsType(const AValue: string);
+    function GetAdrsType: TAdrsTypeAbs;
+  protected
+    function    AdrsTypeList: TAdrsTypeListAbs; virtual;
+    function    GetParent: TPerson; reintroduce;
+  public
+    property    Parent      : TPerson read GetParent;
+    property    AdrsType: TAdrsTypeAbs read GetAdrsType;
+    function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
-    property    AdrsTypeAsString: string read GeTLookupListItemAsString ;
+    property    AdrsTypeAsString: string read GetAdrsTypeAsString ;
     property    OIDAdrsType: String read FOIDAdrsType write SetOIDAdrsType;
   end;
 
@@ -131,9 +143,7 @@ type
     FSuburb: string;
   protected
     function    GetCaption: string; override;
-    function    GetParent: TPerson; reintroduce;
-  public
-    property    Parent      : TPerson read GetParent;
+    function  IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
     property Lines  : string read FLines   write FLines;
     property Suburb : string read FSuburb  write FSuburb;
@@ -147,9 +157,8 @@ type
     FText: string;
   protected
     function    GetCaption: string; override;
-    function    GetParent: TPerson; reintroduce;
   public
-    property    Parent      : TPerson read GetParent;
+    function  IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
     property Text: string read FText write FText;
   end;
@@ -166,6 +175,7 @@ uses
   ,tiAutoMap
   ,SysUtils
   ,tiVisitorDB
+  ,tiConstants
  ;
 
 var
@@ -260,6 +270,9 @@ end;
 constructor TAdrsBook.Create;
 begin
   inherited;
+  FAdrsTypeList:= TAdrsTypeList.Create;
+  FAdrsTypeList.Owner:= self;
+
   FEAdrsTypeList:= TEAdrsTypeList.Create;
   FEAdrsTypeList.Owner:= self;
 
@@ -271,6 +284,7 @@ end;
 
 destructor TAdrsBook.Destroy;
 begin
+  FAdrsTypeList.Free;
   FEAdrsTypeList.Free;
   FPeople.Free;
   inherited;
@@ -359,9 +373,17 @@ begin
             State + ' ' + PCode;
 end;
 
-function TAdrs.GetParent: TPerson;
+function TAdrsAbs.GetParent: TPerson;
 begin
   result:= TPerson(inherited GetOwner);
+end;
+
+function TAdrsAbs.IsValid(const AErrors: TtiObjectErrors): boolean;
+begin
+  inherited IsValid(AErrors);
+  if OIDAdrsType = '' then
+    AErrors.AddError(CErrorAdrsAbsAdrsTypeNotAssigned);
+  result:= AErrors.Count = 0;
 end;
 
 { TEAddress }
@@ -372,10 +394,6 @@ begin
 end;
 
 
-function TEAdrs.GetParent: TPerson;
-begin
-    result:= TPerson(inherited GetOwner);
-end;
 
 { TAdrsList }
 
@@ -441,7 +459,19 @@ end;
 
 { TAdrsAbs }
 
-function TAdrsAbs.GeTLookupListItemAsString: string;
+function TAdrsAbs.AdrsTypeList: TAdrsTypeListAbs;
+begin
+  Assert(Parent.TestValid, CTIErrorInvalidObject);
+  Assert(Parent.Parent.TestValid, CTIErrorInvalidObject);
+  result:= Parent.Parent.AdrsTypeList;
+end;
+
+function TAdrsAbs.GetAdrsType: TAdrsTypeAbs;
+begin
+  result:= AdrsTypeList.Find(OIDAdrsType);
+end;
+
+function TAdrsAbs.GetAdrsTypeAsString: string;
 begin
   Assert(False, 'Under construction');
 end;
@@ -477,7 +507,7 @@ function TPerson.IsValid(const AErrors: TtiObjectErrors): boolean;
 begin
   inherited IsValid(AErrors);
   if (FirstName = '') and (LastName = '') then
-    AErrors.AddError('', cErrorPersonNameNotAssigned);
+    AErrors.AddError('', CErrorPersonNameNotAssigned);
   result:= AErrors.Count = 0;
 end;
 
@@ -500,6 +530,24 @@ begin
   lObjectState:= ObjectState;
   FPeople.Deleted:= Value;
   ObjectState:= lObjectState;
+end;
+
+function TAdrs.IsValid(const AErrors: TtiObjectErrors): boolean;
+begin
+  inherited IsValid(AErrors);
+  if (Lines = '') and (State = '') and
+     (Country = '') and (PCode = '') and
+     (Suburb = '') then
+    AErrors.AddError(CErrorAdrsAddressNotAssigned);
+  result:= AErrors.Count = 0;
+end;
+
+function TEAdrs.IsValid(const AErrors: TtiObjectErrors): boolean;
+begin
+  inherited IsValid(AErrors);
+  if (Text = '')  then
+    AErrors.AddError(CErrorEAdrsTextNotAssigned);
+  result:= AErrors.Count = 0;
 end;
 
 initialization

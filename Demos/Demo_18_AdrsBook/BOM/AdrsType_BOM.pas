@@ -4,54 +4,68 @@ unit AdrsType_BOM;
 
 interface
 uses
-   tiObject
-  ,Classes
-  ,tiOID
- ;
+  tiObject;
+
+const
+  CErrorAdrsTypeAbsTextNotAssigned = 'Text not assigned';
 
 type
 
-  TEAdrsTypeList     = class;
+  TAdrsTypeListAbs = class;
+  TAdrsTypeAbs = class;
+  TAdrsTypeList = class;
+  TAdrsType = class;
+  TEAdrsTypeList = class;
   TEAdrsType = class;
 
-  TEAdrsTypeList    = class(TtiObjectList)
-  protected
-    function    GetItems(i: integer): TEAdrsType; reintroduce;
-    procedure   SetItems(i: integer; const Value: TEAdrsType); reintroduce;
+  // Abstract list
+  TAdrsTypeListAbs    = class(TtiObjectList)
   public
     procedure   Read; override;
     procedure   Save; override;
-    property    Items[i:integer]: TEAdrsType read GetItems write SetItems;
-    procedure   Add(const AObject    : TEAdrsType); reintroduce;
+    function    Find(const AOIDToFind: string): TAdrsTypeAbs; reintroduce;
   end;
 
-  TEAdrsType     = class(TtiObject)
+  // Abstract item
+  TAdrsTypeAbs     = class(TtiObject)
   private
     FText: string;
-  protected
-    function    GetOwner: TEAdrsTypeList; reintroduce;
-    procedure   SetOwner(const Value: TEAdrsTypeList); reintroduce;
   public
-    property    Owner      : TEAdrsTypeList             read GetOwner      write SetOwner;
+    function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
     property    Text: string read FText write FText;
   end;
 
-implementation
-uses
-  tiUtils
-  ,TypInfo
-  ,tiOPFManager
-  ,tiAutoMap
-  ,SysUtils
-  ,tiVisitorDB
- ;
+  // Concrete EAdrsTypeList
+  TAdrsTypeList    = class(TAdrsTypeListAbs)
+  protected
+    function    GetItems(i: integer): TAdrsType; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TAdrsType); reintroduce;
+  public
+    property    Items[i:integer]: TAdrsType read GetItems write SetItems;
+    procedure   Add(const AObject    : TAdrsType); reintroduce;
+  end;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TAdrsTypeList
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+  // Concrete EAdrsType Item
+  TAdrsType     = class(TAdrsTypeAbs)
+  end;
+
+  // Concrete EAdrsTypeList
+  TEAdrsTypeList    = class(TAdrsTypeListAbs)
+  protected
+    function    GetItems(i: integer): TEAdrsType; reintroduce;
+    procedure   SetItems(i: integer; const Value: TEAdrsType); reintroduce;
+  public
+    property    Items[i:integer]: TEAdrsType read GetItems write SetItems;
+    procedure   Add(const AObject    : TEAdrsType); reintroduce;
+  end;
+
+  // Concrete EAdrsType Item
+  TEAdrsType     = class(TAdrsTypeAbs)
+  end;
+
+implementation
+
 procedure TEAdrsTypeList.Add(const AObject: TEAdrsType);
 begin
   inherited Add(AObject);
@@ -62,13 +76,18 @@ begin
   result:= TEAdrsType(inherited GetItems(i));
 end;
 
-procedure TEAdrsTypeList.Read;
+function TAdrsTypeListAbs.Find(const AOIDToFind: string): TAdrsTypeAbs;
+begin
+  result:= inherited Find(AOIDToFind) as TAdrsTypeAbs;
+end;
+
+procedure TAdrsTypeListAbs.Read;
 begin
   inherited;
   SortByOID;
 end;
 
-procedure TEAdrsTypeList.Save;
+procedure TAdrsTypeListAbs.Save;
 begin
   inherited;
 end;
@@ -78,27 +97,31 @@ begin
   inherited SetItems(i, Value);
 end;
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// * TAdrsTypeList
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-function TEAdrsType.GetOwner: TEAdrsTypeList;
+{ TAdrsTypeList }
+
+procedure TAdrsTypeList.Add(const AObject: TAdrsType);
 begin
-  result:= TEAdrsTypeList(inherited GetOwner);
+  inherited Add(AObject);
 end;
 
-procedure TEAdrsType.SetOwner(const Value: TEAdrsTypeList);
+function TAdrsTypeList.GetItems(i: integer): TAdrsType;
 begin
-  inherited SetOwner(Value);
+  result:= inherited GetItems(i) as TAdrsType;
+end;
+
+procedure TAdrsTypeList.SetItems(i: integer; const AValue: TAdrsType);
+begin
+  inherited SetItems(i, AValue);
+end;
+
+{ TAdrsTypeAbs }
+
+function TAdrsTypeAbs.IsValid(const AErrors: TtiObjectErrors): boolean;
+begin
+  inherited IsValid(AErrors);
+  if Text = '' then
+    AErrors.AddError('Text', CErrorAdrsTypeAbsTextNotAssigned);
+  Result:= AErrors.Count = 0;
 end;
 
 end.
-
-
-
-
-
-
-
-

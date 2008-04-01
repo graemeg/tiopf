@@ -10,10 +10,23 @@ type
 
   TTestAdrsType = class(TAdrsTestCase)
   published
+
+    procedure AdrsTypeList_Read;
+    procedure AdrsType_Save;
+    procedure AdrsType_Update;
+    procedure AdrsType_Delete;
+    procedure AdrsType_Equals;
+    procedure AdrsType_Assign;
+    procedure AdrsType_IsValid;
+
     procedure EAdrsTypeList_Read;
     procedure EAdrsType_Save;
     procedure EAdrsType_Update;
     procedure EAdrsType_Delete;
+    procedure EAdrsType_Equals;
+    procedure EAdrsType_Assign;
+    procedure EAdrsType_IsValid;
+
   end;
 
 procedure RegisterTests;
@@ -36,6 +49,24 @@ end;
 
 { TTestAdrs }
 
+procedure TTestAdrsType.EAdrsType_Assign;
+var
+  LItem1: TEAdrsType;
+  LItem2: TEAdrsType;
+begin
+  LItem1:= nil;
+  LItem2:= nil;
+  try
+    LItem1:= AdrsTypeSetup.EAdrsTypeCreate(COIDEAdrsType1);
+    LItem2:= AdrsTypeSetup.EAdrsTypeCreate(COIDEAdrsType2);
+    LItem2.Assign(LItem1);
+    AdrsTypeSetup.EAdrsTypeCheck(LItem2, COIDEAdrsType1);
+  finally
+    LItem1.Free;
+    LItem2.Free;
+  end;
+end;
+
 procedure TTestAdrsType.EAdrsType_Delete;
 var
   LList: TEAdrsTypeList;
@@ -56,6 +87,216 @@ begin
   try
     LList.Read;
     CheckEquals(0, LList.Count);
+  finally
+    LList.Free;
+  end;
+
+end;
+
+procedure TTestAdrsType.EAdrsType_Equals;
+var
+  LItem1: TEAdrsType;
+  LItem2: TEAdrsType;
+begin
+  LItem1:= nil;
+  LItem2:= nil;
+  try
+    LItem1:= AdrsTypeSetup.EAdrsTypeCreate(COIDEAdrsType1);
+    LItem2:= AdrsTypeSetup.EAdrsTypeCreate(COIDEAdrsType1);
+    TestTIObjectEquals(LItem1, LItem2, 'Text');
+  finally
+    LItem1.Free;
+    LItem2.Free;
+  end;
+end;
+
+procedure TTestAdrsType.EAdrsType_IsValid;
+var
+  LItem: TEAdrsType;
+  LErrors: TtiObjectErrors;
+begin
+  LErrors:= nil;
+  LItem:= nil;
+  try
+    LErrors:= TtiObjectErrors.Create;
+    LItem:= AdrsTypeSetup.EAdrsTypeCreate(COIDEAdrsType1);
+
+    Check(LItem.IsValid(LErrors));
+
+    LItem.Text:= '';
+    Check(not LItem.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals('Text', LErrors.Items[0].ErrorProperty);
+    CheckEquals(CErrorAdrsTypeAbsTextNotAssigned, LErrors.Items[0].ErrorMessage);
+
+  finally
+    LErrors.Free;
+    LItem.Free;
+  end;
+end;
+
+procedure TTestAdrsType.AdrsTypeList_Read;
+var
+  LList: TAdrsTypeList;
+begin
+  AdrsTypeSetup.AdrsTypeInsert(cOIDEAdrsType2);
+  AdrsTypeSetup.AdrsTypeInsert(cOIDEAdrsType1);
+  LList:= TAdrsTypeList.Create;
+  try
+    LList.Read;
+    CheckEquals(2, LList.Count);
+    CheckObjectState(posClean, LList);
+    CheckObjectState(posClean, LList.Items[0]);
+    CheckObjectState(posClean, LList.Items[1]);
+
+    AdrsTypeSetup.AdrsTypeCheck(LList.Items[0], COIDEAdrsType1);
+    CheckEquals(cOIDEAdrsType1, LList.Items[0].OID.AsString);
+
+    AdrsTypeSetup.AdrsTypeCheck(LList.Items[1], cOIDEAdrsType2);
+    CheckEquals(cOIDEAdrsType2, LList.Items[1].OID.AsString);
+
+  finally
+    LList.Free;
+  end;
+end;
+
+procedure TTestAdrsType.AdrsType_Assign;
+var
+  LItem1: TAdrsType;
+  LItem2: TAdrsType;
+begin
+  LItem1:= nil;
+  LItem2:= nil;
+  try
+    LItem1:= AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType1);
+    LItem2:= AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType2);
+    LItem2.Assign(LItem1);
+    AdrsTypeSetup.AdrsTypeCheck(LItem2, COIDAdrsType1);
+  finally
+    LItem1.Free;
+    LItem2.Free;
+  end;
+end;
+
+procedure TTestAdrsType.AdrsType_Delete;
+var
+  LList: TAdrsTypeList;
+begin
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
+
+  LList:= TAdrsTypeList.Create;
+  try
+    LList.Read;
+    CheckEquals(1, LList.Count);
+    LList.Items[0].Deleted:= True;
+    LList.Save;
+  finally
+    LList.Free;
+  end;
+
+  LList:= TAdrsTypeList.Create;
+  try
+    LList.Read;
+    CheckEquals(0, LList.Count);
+  finally
+    LList.Free;
+  end;
+end;
+
+procedure TTestAdrsType.AdrsType_Equals;
+var
+  LItem1: TAdrsType;
+  LItem2: TAdrsType;
+begin
+  LItem1:= nil;
+  LItem2:= nil;
+  try
+    LItem1:= AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType1);
+    LItem2:= AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType1);
+    TestTIObjectEquals(LItem1, LItem2, 'Text');
+  finally
+    LItem1.Free;
+    LItem2.Free;
+  end;
+end;
+
+procedure TTestAdrsType.AdrsType_IsValid;
+var
+  LItem: TAdrsType;
+  LErrors: TtiObjectErrors;
+begin
+  LErrors:= nil;
+  LItem:= nil;
+  try
+    LErrors:= TtiObjectErrors.Create;
+    LItem:= AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType1);
+
+    Check(LItem.IsValid(LErrors));
+
+    LItem.Text:= '';
+    Check(not LItem.IsValid(LErrors));
+    CheckEquals(1, LErrors.Count);
+    CheckEquals('Text', LErrors.Items[0].ErrorProperty);
+    CheckEquals(CErrorAdrsTypeAbsTextNotAssigned, LErrors.Items[0].ErrorMessage);
+
+  finally
+    LErrors.Free;
+    LItem.Free;
+  end;
+end;
+
+procedure TTestAdrsType.AdrsType_Save;
+var
+  LList: TAdrsTypeList;
+  LItem: TAdrsType;
+begin
+  LList:= TAdrsTypeList.Create;
+  try
+    LItem:= AdrsTypeSetup.AdrsTypeCreate(cOIDAdrsType1);
+    LItem.Dirty:= True;
+    LList.Add(LItem);
+    LList.Save;
+    CheckObjectState(posClean, LItem);
+  finally
+    LList.Free;
+  end;
+
+  LList:= TAdrsTypeList.Create;
+  try
+    LList.Read;
+    CheckEquals(1, LList.Count);
+    AdrsTypeSetup.AdrsTypeCheck(LList.Items[0], cOIDAdrsType1);
+  finally
+    LList.Free;
+  end;
+
+end;
+
+procedure TTestAdrsType.AdrsType_Update;
+var
+  LList: TAdrsTypeList;
+  LItem: TAdrsType;
+begin
+
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
+  LList:= TAdrsTypeList.Create;
+  try
+    LList.Read;
+    CheckEquals(1, LList.Count);
+    LItem:= LList.Items[0];
+    AdrsTypeSetup.AdrsTypeCheck(LItem, cOIDAdrsType1);
+    AdrsTypeSetup.AdrsTypeAssign(LItem, cOIDAdrsType2);
+    LItem.Dirty:= True;
+    LList.Save;
+  finally
+    LList.Free;
+  end;
+
+  LList:= TAdrsTypeList.Create;
+  try
+    LList.Read;
+    CheckEquals(1, LList.Count);
+    AdrsTypeSetup.AdrsTypeCheck(LList.Items[0], cOIDAdrsType2);
   finally
     LList.Free;
   end;
