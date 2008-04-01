@@ -7,7 +7,8 @@ uses
   Adrs_BOM,
   AdrsType_BOM,
   AdrsType_TSTSetup,
-  Person_TSTSetup;
+  Person_TSTSetup,
+  EAdrs_TSTSetup;
 
 type
 
@@ -16,6 +17,8 @@ type
   private
     FAdrsTypeTestSetup: TAdrsTypeTestSetup;
     FPersonTestSetup: TPersonTestSetup;
+    FEAdrsTestSetup: TEAdrsTestSetup;
+
     procedure EmptyTables;
 
   protected
@@ -24,6 +27,7 @@ type
 
     property  AdrsTypeSetup: TAdrsTypeTestSetup read FAdrsTypeTestSetup;
     property  PersonTestSetup: TPersonTestSetup read FPersonTestSetup;
+    property  EAdrsTestSetup: TEAdrsTestSetup read FEAdrsTestSetup;
 
   public
     constructor Create; override;
@@ -55,12 +59,15 @@ begin
   inherited;
   FAdrsTypeTestSetup:= TAdrsTypeTestSetup.Create(Self);
   FPersonTestSetup:= TPersonTestSetup.Create(Self);
+  FEAdrsTestSetup:= TEAdrsTestSetup.Create(Self);
+
 end;
 
 destructor TAdrsTestCase.Destroy;
 begin
   FAdrsTypeTestSetup.Free;
   FPersonTestSetup.Free;
+  FEAdrsTestSetup.Free;
   inherited;
 end;
 

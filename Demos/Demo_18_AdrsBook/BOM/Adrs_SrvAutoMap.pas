@@ -48,11 +48,11 @@ begin
 //  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TAdrs, cTableName_Adrs, 'PCode',       'PCode'    );
 //  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TAdrsList, TAdrs );
 //
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, cTableName_EAdrs, 'OID',         'OID', [pktDB]);
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, cTableName_EAdrs, 'Owner.OID',         'Owner_OID', [pktFK]);
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, cTableName_EAdrs, 'AdrsTypeOID', 'EAdrs_Type' );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, cTableName_EAdrs, 'Text', 'EAdrs_Text' );
-//  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TEAdrsList, TEAdrs );
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'OID',         'oid', [pktDB]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'Owner.OID',  'oid_person', [pktFK]);
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'OIDAdrsType', 'oid_adrs_type');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'Text',        'eadrs_text');
+  GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TEAddressList, TEAdrs );
 
 end;
 

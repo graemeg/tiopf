@@ -9,8 +9,10 @@ const
   cOIDPerson1         = '201';
   cOIDPerson2         = '202';
 
+  cOIDEAdrs1           = '201';
+  cOIDEAdrs2           = '202';
+
   cOIDAdrs            = 4;
-  cOIDEAdrs           = 5;
   cOIDCompany         = 7;
 
   cUpdateValue        = 'test';

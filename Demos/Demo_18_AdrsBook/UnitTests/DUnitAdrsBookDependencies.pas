@@ -14,8 +14,7 @@ uses
   AdrsBook_tst,
   Adrs_tst,
   AdrsType_tst,
-  Person_tst,
-  Company_tst;
+  Person_tst;
 
 procedure ConnectToDatabase;
 begin
@@ -24,10 +23,8 @@ end;
 
 procedure RegisterTests;
 begin
-  //AdrsBook_tst.RegisterTests;
   AdrsType_tst.RegisterTests;
   Person_tst.RegisterTests;
-  Company_tst.RegisterTests;
 end;
 
 end.
