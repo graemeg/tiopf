@@ -6,7 +6,8 @@ uses
   tiVisitorDB,
   Adrs_BOM,
   AdrsType_BOM,
-  AdrsType_TSTSetup;
+  AdrsType_TSTSetup,
+  Person_TSTSetup;
 
 type
 
@@ -14,16 +15,20 @@ type
   TAdrsTestCase = class(TtiTestCase)
   private
     FAdrsTypeTestSetup: TAdrsTypeTestSetup;
+    FPersonTestSetup: TPersonTestSetup;
     procedure EmptyTables;
+
   protected
     procedure SetUp; override;
     procedure TearDown;override;
 
     property  AdrsTypeSetup: TAdrsTypeTestSetup read FAdrsTypeTestSetup;
+    property  PersonTestSetup: TPersonTestSetup read FPersonTestSetup;
 
   public
     constructor Create; override;
     destructor  Destroy; override;
+
   end;
 
 
@@ -49,11 +54,13 @@ constructor TAdrsTestCase.Create;
 begin
   inherited;
   FAdrsTypeTestSetup:= TAdrsTypeTestSetup.Create(Self);
+  FPersonTestSetup:= TPersonTestSetup.Create(Self);
 end;
 
 destructor TAdrsTestCase.Destroy;
 begin
   FAdrsTypeTestSetup.Free;
+  FPersonTestSetup.Free;
   inherited;
 end;
 

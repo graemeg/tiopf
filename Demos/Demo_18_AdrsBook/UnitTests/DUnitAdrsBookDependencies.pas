@@ -24,7 +24,7 @@ end;
 
 procedure RegisterTests;
 begin
-  AdrsBook_tst.RegisterTests;
+  //AdrsBook_tst.RegisterTests;
   AdrsType_tst.RegisterTests;
   Person_tst.RegisterTests;
   Company_tst.RegisterTests;

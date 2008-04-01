@@ -47,18 +47,52 @@ type
     procedure   FindAllLike(const pLike: string; const pList: TList);
   end;
 
-  // A list of TPerson objects, with some published properties for display in a
-  // TtiTreeView
-  TPersonList   = class(TtiObjectList)
+  TAdrsBookItemAbs = class(TtiObject)
+  private
+    FAddressList : TAddressList;
+    FEAddressList: TEAddressList;
+    FNotes: string;
   protected
-    function    GetCaption: string; override;
-    function    GetItems(i: integer): TPerson; reintroduce;
-    procedure   SetItems(i: integer; const Value: TPerson); reintroduce;
-    function    GetOID: TtiOID; override;
+    procedure   AssignClassProps(ASource: TtiObject); override;
   public
     constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Save; override;
+    procedure   Read; override;
+  published
+    property EAddressList: TEAddressList read FEAddressList;
+    property AddressList : TAddressList  read FAddressList;
+    property Notes: string read FNotes write FNotes;
+  end;
+
+  // TPerson class. Holds information about a person
+  TPerson = class(TAdrsBookItemAbs)
+  private
+    FFirstname: string;
+    FLastName: string;
+    FInitials: string;
+    FTitle: string;
+  protected
+    function  GetCaption: string; override;
+    function  GetParent: TAdrsBook; reintroduce;
+  public
+    property  Parent: TAdrsBook read GetParent;
+    function  Clone: TPerson; reintroduce;
+    function  IsValid(const AErrors: TtiObjectErrors): boolean; override;
+  published
+    property LastName : string read FLastName  write FLastName;
+    property FirstName: string read FFirstname write FFirstName;
+    property Title    : string read FTitle     write FTitle;
+    property Initials : string read FInitials  write FInitials;
+  end;
+
+  TPersonList   = class(TtiObjectList)
+  protected
+    function    GetItems(i: integer): TPerson; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TPerson); reintroduce;
+  public
     property    Items[i:integer]: TPerson read GetItems write SetItems;
-    procedure   Add(AObject: TPerson; pbDefaultDispOrder: boolean = true); reintroduce;
+    procedure   Add(const AObject: TPerson); reintroduce;
   end;
 
   TCompanyList   = class(TtiObjectList)
@@ -70,47 +104,6 @@ type
     property    Items[i:integer]: TCompany read GetItems write SetItems;
     procedure   Add(AObject: TCompany; pbDefaultDispOrder: boolean = true); reintroduce;
     function    Last: TCompany; reintroduce;
-  end;
-
-  TAdrsBookItemAbs = class(TtiObject)
-  private
-    FAddressList : TAddressList;
-    FEAddressList: TEAddressList;
-    FsNotes: string;
-  protected
-    procedure   AssignClassProps(pSource: TtiObject); override;
-  public
-    constructor Create; override;
-    destructor  Destroy; override;
-    procedure   Save; override;
-    procedure   Read; override;
-  published
-    property EAddressList: TEAddressList read FEAddressList;
-    property AddressList : TAddressList  read FAddressList;
-    property Notes: string read FsNotes write FsNotes;
-  end;
-
-  // TPerson class. Holds information about a person
-  TPerson = class(TAdrsBookItemAbs)
-  private
-    FsFirstname: string;
-    FsLastName: string;
-    FsInitials: string;
-    FsTitle: string;
-  protected
-    function    GetCaption: string; override;
-    function    GetOwner: TPersonList; reintroduce;
-    procedure   SetOwner(const Value: TPersonList); reintroduce;
-  public
-    property    Owner      : TPersonList read GetOwner      write SetOwner;
-    function    Clone: TPerson; reintroduce;
-    function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
-  published
-    property Caption;
-    property LastName : string read FsLastName  write FsLastName;
-    property FirstName: string read FsFirstname write FsFirstName;
-    property Title    : string read FsTitle     write FsTitle;
-    property Initials : string read FsInitials  write FsInitials;
   end;
 
   TCompany = class(TAdrsBookItemAbs)
@@ -373,10 +366,10 @@ end;
 // * TAdrsBookItemAbs
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TAdrsBookItemAbs.AssignClassProps(pSource: TtiObject);
+procedure TAdrsBookItemAbs.AssignClassProps(ASource: TtiObject);
 begin
-  FEAddressList.Assign(TAdrsBookItemAbs(pSource).EAddressList);
-  FAddressList.Assign(TAdrsBookItemAbs(pSource).AddressList);
+  FEAddressList.Assign(TAdrsBookItemAbs(ASource).EAddressList);
+  FAddressList.Assign(TAdrsBookItemAbs(ASource).AddressList);
 end;
 
 constructor TAdrsBookItemAbs.Create;
@@ -432,20 +425,9 @@ end;
 // * TPeople
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TPersonList.Add(AObject: TPerson; pbDefaultDispOrder: boolean);
+procedure TPersonList.Add(const AObject: TPerson);
 begin
-  inherited Add(AObject, pbDefaultDispOrder);
-end;
-
-constructor TPersonList.Create;
-begin
-  inherited;
-  OID.AsString:= '-1';
-end;
-
-function TPersonList.GetCaption: string;
-begin
-  result:= 'People';
+  inherited Add(AObject);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -671,24 +653,14 @@ Assert(False, 'Under construction');
 //    result:= 'Unknown';
 end;
 
-// This is a hack to get the auto mapping working
-function TPersonList.GetOID: TtiOID;
+procedure TPersonList.SetItems(i: integer; const AValue: TPerson);
 begin
-  if Owner <> nil then
-    result:= Owner.OID
-  else
-    result:= inherited GetOID;
-
+  inherited SetItems(i, AValue);
 end;
 
-procedure TPersonList.SetItems(i: integer; const Value: TPerson);
+function TPerson.GetParent: TAdrsBook;
 begin
-  inherited SetItems(i, Value);
-end;
-
-function TPerson.GetOwner: TPersonList;
-begin
-  result:= TPersonList(inherited GetOwner);
+  result:= TAdrsBook(inherited GetParent);
 end;
 
 function TPerson.IsValid(const AErrors: TtiObjectErrors): boolean;
@@ -697,11 +669,6 @@ begin
   if (FirstName = '') and (LastName = '') then
     AErrors.AddError('', cErrorPersonNameNotAssigned);
   result:= AErrors.Count = 0;
-end;
-
-procedure TPerson.SetOwner(const Value: TPersonList);
-begin
-  inherited SetOwner(Value);
 end;
 
 procedure TAdrsAbs.SetAdrsTypeOID(const pOIDAsString: string);
