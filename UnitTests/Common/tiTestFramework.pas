@@ -13,6 +13,7 @@ uses
   ,tiOPFManager
   ,tiPersistenceLayers
   ,tiDBConnectionPool
+  ,tiOID
   {$IFDEF FPC}
   ,fpcunit
   ,testregistry
@@ -102,6 +103,7 @@ type
     procedure CheckNearEnough(const AExpected: TDateTime; const AField: TtiFieldDateTime); overload;
     procedure CheckNearEnough(const AExpected: Real; const AField: TtiFieldFloat); overload;
     procedure CheckNearEnough(const AExpected, AActual: TtiFieldFloat); overload;
+    procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const APropName: String); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldString); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldInteger); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldFloat); overload;
@@ -133,6 +135,8 @@ type
     procedure CheckEquals(const AField: TtiFieldDateTime; const AValue: TDateTime); overload;
 
     procedure CheckLessThan(const AMustBeLessThan, AValue: Int64); overload;
+
+    procedure CheckEquals(const AExpected: string; const AOID: TtiOID; const AMessage: string = ''); overload;
 
     {: Check a TtiObject's Equals Method by calling AData1.Equals(AData2), then changing APropName to ANewValue and trying again.
        APropName must be a string property.}
@@ -171,6 +175,7 @@ uses
    tiUtils
   ,tiConstants
   ,tiINI
+  ,tiRTTI
   ,StrUtils
   ,TypInfo
   {$IFDEF MSWINDOWS}
@@ -688,6 +693,41 @@ begin
   Check(AObj1.Equals(AObj2));
 end;
 
+procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject;
+  const APropName: String);
+var
+  LSavedStr: string;
+begin
+//  CheckEquals(AObj1.PropValue[APropName], AObj2.PropValue[APropName]);
+  case AObj1.PropType(APropName) of
+  tiTKInteger:  begin
+                  Assert(False, 'Under construction');
+                end;
+  tiTKFloat:    begin
+                  Assert(False, 'Under construction');
+                end;
+  tiTKString:   begin
+                  Check(AObj1.Equals(AObj2), 'Expected equality');
+                  LSavedStr:= AObj2.PropValue[APropName];
+                  AObj2.PropValue[APropName]:= AObj2.PropValue[APropName] + 'A';
+                  Check(not AObj1.Equals(AObj2), 'Expected inequality');
+                  AObj2.PropValue[APropName]:=LSavedStr;
+                  Check(AObj1.Equals(AObj2), 'Expected equality');
+                end;
+  tiTKDateTime: begin
+                  Assert(False, 'Under construction');
+                end;
+  tiTKBoolean:  begin
+                  Assert(False, 'Under construction');
+                end;
+  //tiTKBinary:
+  else
+    raise EtiOPFDUnitException.CreateFmt('Invalid type for property "%s.%s"',
+      [AObj1.ClassName, APropName]);
+  end;
+
+end;
+
 procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldDateTime);
 var
   lFieldName: string;
@@ -1057,6 +1097,11 @@ end;
 
 
 { TtiTestCaseWithTestSetupData }
+
+procedure TtiTestCase.CheckEquals(const AExpected: string; const AOID: TtiOID; const AMessage: string = '');
+begin
+  CheckEquals(AExpected, AOID.AsString, AMessage);
+end;
 
 initialization
   // Slow to create every test, so recycle one instance
