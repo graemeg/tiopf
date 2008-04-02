@@ -486,7 +486,10 @@ type
     constructor Create; override;
     destructor  Destroy; override;
 
+    {: Assign all data from ASource into Self}
     procedure   Assign(const ASource : TtiObject); override;
+    {: Assign the captions from all objects to the TStrings AList}
+    procedure   AssignCaptions(const AStrings: TStrings);
     {: The number of items in the list.}
     property    Count : integer read GetCount;
     {: The number of items in the list that are not marked as deleted.}
@@ -1754,6 +1757,15 @@ begin
   FItemOwner := AValue;
   for I := 0 to Count - 1 do
     Items[ I ].Owner := FItemOwner;
+end;
+
+procedure TtiObjectList.AssignCaptions(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  for i := 0 to count - 1 do
+    AStrings.Add(Items[i].Caption);
 end;
 
 procedure TtiObjectList.AssignClassProps(ASource: TtiObject);

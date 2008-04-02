@@ -63,6 +63,7 @@ type
     procedure AssignFlat;
     procedure AssignList;
     procedure AssignCompound;
+    procedure AssignCaptions;
     procedure CloneFlat;
     procedure CloneList;
     procedure CloneCompound;
@@ -428,6 +429,11 @@ begin
     LL.Free;
     LO3.Free;
   end;
+end;
+
+procedure TTestTIObject.AssignCaptions;
+begin
+
 end;
 
 procedure TTestTIObject.AssignCompound;
