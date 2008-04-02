@@ -5,12 +5,16 @@ uses
   tiTestFramework,
   tiVisitorDB,
   Adrs_BOM,
-  Adrs_tst,
+  AdrsBase_TST,
   AdrsType_BOM;
 
 type
 
   TTestPerson = class(TAdrsBaseTestCase)
+  private
+    function CreateCompoundPerson(const AOIDPerson, AOIDAdrs, AOIDAdrsType,
+                                   AOIDEAdrs, AOIDEAdrsType: string): TPerson;
+
   published
     procedure PersonFlat_Read;
     procedure PersonFlat_Save;
@@ -51,6 +55,17 @@ type
 
   end;
 
+  TPersonXMLLightTestCase = class(TTestPerson)
+  protected
+    procedure SetUpOnce; override;
+  end;
+
+  TPersonIBXTestCase = class(TTestPerson)
+  protected
+    procedure SetUpOnce; override;
+  end;
+
+
 
 procedure RegisterTests;
 
@@ -61,14 +76,15 @@ uses
   tiObject,
   tiOPFManager,
   tiQuery,
-  AdrsUnitTestConstants,
-  tiDialogs;
+  tiConstants,
+  AdrsUnitTestConstants;
 
 { TTestPerson }
 
 procedure RegisterTests;
 begin
-  TestFramework.RegisterTest(TTestPerson.Suite);
+  TestFramework.RegisterTest(cTIPersistIBX, TPersonIBXTestCase.Suite);
+  TestFramework.RegisterTest(cTIPersistXMLLight, TPersonXMLLightTestCase.Suite);
 end;
 
 { TTestPerson }
@@ -299,6 +315,19 @@ begin
     LList.Free;
   end;
 
+end;
+
+function TTestPerson.CreateCompoundPerson(const AOIDPerson, AOIDAdrs,
+  AOIDAdrsType, AOIDEAdrs, AOIDEAdrsType: string): TPerson;
+var
+  LAdrs: TAdrs;
+  LEAdrs: TEAdrs;
+begin
+  Result:= PersonTestSetup.PersonCreate(AOIDPerson);
+  LAdrs:= AdrsTestSetup.AdrsCreate(AOIDAdrs, AOIDAdrsType);
+  Result.AddressList.Add(LAdrs);
+  LEAdrs:= EAdrsTestSetup.EAdrsCreate(AOIDEAdrs, AOIDEAdrsType);
+  Result.EAddressList.Add(LEAdrs);
 end;
 
 procedure TTestPerson.EAdrs_Delete;
@@ -633,7 +662,30 @@ begin
 end;
 
 procedure TTestPerson.PersonCompound_Assign;
+var
+  LAdrsBook: TAdrsBook;
+  LFrom: TPerson;
+  LTo: TPerson;
 begin
+  AdrsTypeSetup.EAdrsTypeInsert(cOIDEAdrsType1);
+  AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
+
+  LAdrsBook:= nil;
+  LFrom:= nil;
+  LTo:= nil;
+  try
+    LAdrsBook:= TAdrsBook.Create;
+    LAdrsBook.Read;
+    LFrom:= CreateCompoundPerson(
+      COIDPerson1, COIDAdrs1, COIDAdrsType1, COIDEAdrs1, COIDEAdrsType1);
+    LAdrsBook.PersonList.Add(LFrom);
+    LTo:= TPerson.Create;
+    LAdrsBook.PersonList.Add(LTo);
+    LTo.Assign(LFrom);
+    Check(LFrom.Equals(LTo));
+  finally
+    LAdrsBook.Free;
+  end;
 
 end;
 
@@ -719,16 +771,16 @@ begin
 
   LAdrsBook:= TAdrsBook.Create;
   try
-    LPerson:= PersonTestSetup.PersonCreate(COIDPerson1);
+    LPerson:= CreateCompoundPerson(
+      COIDPerson1, COIDAdrs1, COIDAdrsType1, COIDEAdrs1, COIDEAdrsType1);
+
     LPerson.Dirty:= True;
     LAdrsBook.PersonList.Add(LPerson);
 
-    LAdrs:= AdrsTestSetup.AdrsCreate(COIDAdrs1, COIDAdrsType1);
-    LPerson.AddressList.Add(LAdrs);
+    LAdrs:= LPerson.AddressList.Items[0];
     LAdrs.Dirty:= True;
 
-    LEAdrs:= EAdrsTestSetup.EAdrsCreate(COIDEAdrs1, COIDEAdrsType1);
-    LPerson.EAddressList.Add(LEAdrs);
+    LEAdrs:= LPerson.EAddressList.Items[0];
     LEAdrs.Dirty:= True;
     LPerson.Save;
 
@@ -756,13 +808,29 @@ begin
 end;
 
 procedure TTestPerson.Adrs_AsSingleLine;
+var
+  LItem: TAdrs;
+  LExpected: string;
 begin
-
+  LExpected:= '5011 5012 5013 5014 5015';
+  LItem:= AdrsTestSetup.AdrsCreate(cOIDAdrs1, COIDAdrsType1);
+  try
+    CheckEquals(LItem.AsSingleLine, LExpected);
+  finally
+    LItem.Free;
+  end;
 end;
 
 procedure TTestPerson.Adrs_Caption;
+var
+  LItem: TAdrs;
 begin
-
+  LItem:= AdrsTestSetup.AdrsCreate(cOIDAdrs1, COIDAdrsType1);
+  try
+    CheckEquals(LItem.Caption, LItem.AsSingleLine);
+  finally
+    LItem.Free;
+  end;
 end;
 
 procedure TTestPerson.AdrsBook_Parent;
@@ -900,8 +968,15 @@ begin
 end;
 
 procedure TTestPerson.EAdrs_Caption;
+var
+  LItem: TEAdrs;
 begin
-
+  LItem:= EAdrsTestSetup.EAdrsCreate(cOIDEAdrs1, COIDEAdrsType1);
+  try
+    CheckEquals(LItem.Caption, LItem.Text);
+  finally
+    LItem.Free;
+  end;
 end;
 
 procedure TTestPerson.PersonFlat_Assign;
@@ -926,5 +1001,21 @@ end;
 { TEAdrsForTesting }
 
 { TEAdrsForTesting }
+
+{ TPersonXMLLightTestCase }
+
+procedure TPersonXMLLightTestCase.SetUpOnce;
+begin
+  PersistenceLayerName:= CTIPersistXMLLight;
+  inherited;
+end;
+
+{ TPersonIBXTestCase }
+
+procedure TPersonIBXTestCase.SetUpOnce;
+begin
+  PersistenceLayerName:= CTIPersistIBX;
+  inherited;
+end;
 
 end.

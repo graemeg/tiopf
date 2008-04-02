@@ -15,7 +15,6 @@ type
     procedure PersonCheck(const AData: TPerson; const AOID: string);
   end;
 
-
 implementation
 uses
   TestFramework,

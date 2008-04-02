@@ -4,7 +4,7 @@ interface
 uses
   tiTestFramework,
   AdrsType_BOM,
-  Adrs_TST;
+  AdrsBase_TST;
 
 type
 
@@ -32,6 +32,16 @@ type
 
   end;
 
+  TAdrsTypeXMLLightTestCase = class(TTestAdrsType)
+  protected
+    procedure SetUpOnce; override;
+  end;
+
+  TAdrsTypeIBXTestCase = class(TTestAdrsType)
+  protected
+    procedure SetUpOnce; override;
+  end;
+
 procedure RegisterTests;
 
 implementation
@@ -41,13 +51,15 @@ uses
   tiObject,
   tiOPFManager,
   tiQuery,
+  tiConstants,
   AdrsUnitTestConstants;
 
 { TTestAdrs }
 
 procedure RegisterTests;
 begin
-  TestFramework.RegisterTest(TTestAdrsType.Suite);
+  TestFramework.RegisterTest(cTIPersistIBX, TAdrsTypeIBXTestCase.Suite);
+  TestFramework.RegisterTest(cTIPersistXMLLight, TAdrsTypeXMLLightTestCase.Suite);
 end;
 
 { TTestAdrs }
@@ -429,5 +441,21 @@ begin
 end;
 
 
+
+{ TAdrsTypeXMLLightTestCase }
+
+procedure TAdrsTypeXMLLightTestCase.SetUpOnce;
+begin
+  PersistenceLayerName:= CTIPersistXMLLight;
+  inherited;
+end;
+
+{ TAdrsTypeIBXTestCase }
+
+procedure TAdrsTypeIBXTestCase.SetUpOnce;
+begin
+  PersistenceLayerName:= CTIPersistIBX;
+  inherited;
+end;
 
 end.

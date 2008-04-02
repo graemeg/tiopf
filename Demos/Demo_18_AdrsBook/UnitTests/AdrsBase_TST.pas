@@ -1,4 +1,4 @@
-unit Adrs_TST;
+unit AdrsBase_TST;
 
 interface
 uses
@@ -15,6 +15,7 @@ type
 
   TAdrsBaseTestCase = class(TtiTestCase)
   private
+    FPersistenceLayerName: string;
     FAdrsTypeTestSetup: TAdrsTypeTestSetup;
     FPersonTestSetup: TPersonTestSetup;
     FAdrsTestSetup: TAdrsTestSetup;
@@ -23,8 +24,10 @@ type
     procedure EmptyTables;
 
   protected
+    procedure SetUpOnce; override;
     procedure SetUp; override;
     procedure TearDown;override;
+    property  PersistenceLayerName: string read FPersistenceLayerName write FPersistenceLayerName;
 
     property  AdrsTypeSetup: TAdrsTypeTestSetup read FAdrsTypeTestSetup;
     property  PersonTestSetup: TPersonTestSetup read FPersonTestSetup;
@@ -87,6 +90,12 @@ procedure TAdrsBaseTestCase.Setup;
 begin
   inherited;
   EmptyTables;
+end;
+
+procedure TAdrsBaseTestCase.SetUpOnce;
+begin
+  inherited;
+  GTIOPFManager.DefaultPersistenceLayerName:= PersistenceLayerName;
 end;
 
 procedure TAdrsBaseTestCase.TearDown;

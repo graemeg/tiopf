@@ -11,7 +11,7 @@ implementation
 uses
   tiOPFManager,
   tiConstants,
-  Adrs_TST,
+  AdrsBase_TST,
   AdrsType_TST,
   AdrsCreateXML_TST,
   Person_TST,
