@@ -10,5 +10,7 @@ if exist Adrs.fdb erase Adrs.fdb
 copy Adrs.fdb %PathToUnitTest%\Adrs.fdb
 copy Adrs.fdb %PathToBin%\Adrs.fdb
 erase Adrs.fdb
+copy Adrs.XMLLight %PathToUnitTest%\Adrs.XMLLight
+copy Adrs.XMLLight %PathToBin%\Adrs.XMLLight
 
 pause
