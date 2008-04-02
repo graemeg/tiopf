@@ -23,6 +23,7 @@ uses
 
  const
   cgsSaveAndClose = 'Do you want to save your changes before exiting?';
+  CDeleteConfirmation = 'Are you sure you want to delete "%s"?';
 
   {: Don't use tiPerObjAbsAsString. Use TtiObject.AsDebugString}
   function  tiPerObjAbsAsString(const AVisited: TtiObject; AIncludeDeleted: boolean = false): string;
@@ -48,7 +49,7 @@ uses
   procedure tiDataSetToListView(pDataSet: TtiDataBuffer; pLV: TListView);
   procedure tiDataSetToListItem(pDataSet: TtiDataBuffer; AItem: TListItem);
 
-
+  function  tiObjectConfirmDelete(const AData: TtiObject): boolean;
 
 {$IFDEF MSWINDOWS}
 type
@@ -643,6 +644,12 @@ begin
   Result := 0;    // To get rid of the compiler warning, until I implement this.
 end;
 {$ENDIF LINUX}
+
+function tiObjectConfirmDelete(const AData: TtiObject): boolean;
+begin
+  result:=
+    tiAppConfirmation(Format(CDeleteConfirmation, [AData.Caption]));
+end;
 
 initialization
 
