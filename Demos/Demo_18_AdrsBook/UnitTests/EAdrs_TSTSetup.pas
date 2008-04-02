@@ -47,7 +47,7 @@ begin
     LParams.SetValueAsString('oid',            LData.OID.AsString);
     LParams.SetValueAsString('oid_person',     AOIDPerson);
     LParams.SetValueAsString('eadrs_text',     LData.Text);
-    LParams.SetValueAsString('oid_adrs_type',  AOIDAdrsType);
+    LParams.SetValueAsString('oid_eadrs_type',  AOIDAdrsType);
     GTIOPFManager.InsertRow('eadrs',           LParams);
   finally
     LData.Free;

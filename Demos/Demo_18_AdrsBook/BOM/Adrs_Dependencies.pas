@@ -66,14 +66,32 @@ procedure ConnectToDatabase;
 implementation
 uses
   tiOPFManager,
-  Adrs_SrvAutoMap  // For auto generated SQL
- ;
+  tiDialogs,
+  tiUtils,
+  tiQueryIBX,
+  tiQueryXMLLight,
+  tiConstants,
+  Adrs_SrvAutoMap;  // For auto generated SQL
 
 procedure ConnectToDatabase;
+var
+  LResult: string;
 begin
-  // ToDo: Ask which persistence mechanism
   Adrs_SrvAutoMap.RegisterMappings;
-  GTIOPFManager.ConnectDatabase('adrs', 'adrs.fdb', 'SYSDBA', 'masterkey', '', '');
+  LResult:=
+    tiMessageTextDlg('Which persistence layer do you want to use?' + CrLf(2) +
+                     'Firebird or XML?',
+                     [CTIPersistIBX, CTIPersistXMLLight]);
+  if LResult = CTIPersistIBX then
+  begin
+    GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistIBX;
+    GTIOPFManager.ConnectDatabase('adrs', 'adrs.fdb', 'SYSDBA', 'masterkey', '', '');
+  end else if LResult = CTIPersistXMLLight then
+  begin
+    GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistXMLLight;
+    GTIOPFManager.ConnectDatabase('adrs', 'adrs.xmllight', '', '', '', '');
+  end ;
+  // To: Add Cancel...
 end;
 
 end.

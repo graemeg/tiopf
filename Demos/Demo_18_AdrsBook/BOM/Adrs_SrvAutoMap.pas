@@ -44,7 +44,7 @@ begin
 
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'OID',         'oid', [pktDB]);
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'Owner.OID',   'oid_person', [pktFK]);
-  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'OIDAdrsType', 'oid_adrs_type');
+  GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'OIDAdrsType', 'oid_eadrs_type');
   GTIOPFManager.ClassDBMappingMgr.RegisterMapping(TEAdrs, 'eadrs', 'Text',        'eadrs_text');
   GTIOPFManager.ClassDBMappingMgr.RegisterCollection(TEAddressList, TEAdrs );
 

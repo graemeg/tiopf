@@ -1,0 +1,45 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{178f7355-9e68-4204-9502-94b56704b696}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>_Bin\DUnitAdrsBookText.exe</DCC_DependencyCheckOutputName>
+    <MainSource>DUnitAdrsBookText.dpr</MainSource>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_Define>RELEASE</DCC_Define>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_Define>DUNIT2;FASTMM</DCC_Define>
+    <DCC_UnitSearchPath>..\BOM;..\..\..\UnitTests\Common;..\..\3rdParty\FastMM;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\DUnit;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\common;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\windows</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\BOM;..\..\..\UnitTests\Common;..\..\3rdParty\FastMM;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\DUnit;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\common;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\windows</DCC_ResourcePath>
+    <DCC_ObjPath>..\BOM;..\..\..\UnitTests\Common;..\..\3rdParty\FastMM;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\DUnit;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\common;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\windows</DCC_ObjPath>
+    <DCC_IncludePath>..\BOM;..\..\..\UnitTests\Common;..\..\3rdParty\FastMM;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\FastMM;..\..\..\Core;..\..\..\Options;..\..\..\GUI;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\DUnit;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\common;C:\Sourceforge\TechInsite\tiOPF2\Trunk\3rdParty\JCL\windows</DCC_IncludePath>
+    <DCC_ExeOutput>_Bin</DCC_ExeOutput>
+    <DCC_DcuOutput>_dcu</DCC_DcuOutput>
+    <DCC_ObjOutput>_dcu</DCC_ObjOutput>
+    <DCC_HppOutput>_dcu</DCC_HppOutput>
+    <DCC_MapFile>3</DCC_MapFile>
+    <DCC_SYMBOL_DEPRECATED>False</DCC_SYMBOL_DEPRECATED>
+    <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters><Parameters Name="RunParams">-p</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">False</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">3081</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">DUnitAdrsBookText.dpr</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="DUnitAdrsBookText.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="DUnitAdrsBookDependencies.pas" />
+  </ItemGroup>
+</Project>

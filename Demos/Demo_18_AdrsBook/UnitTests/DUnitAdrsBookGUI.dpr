@@ -4,7 +4,6 @@ uses
   FastMM4,
   GUITestRunner,
   Forms,
-  Adrs_Dependencies,
   DUnitAdrsBookDependencies in 'DUnitAdrsBookDependencies.pas';
 
 {$R *.RES}
@@ -12,7 +11,7 @@ uses
 begin
   Application.Initialize;
   DUnitAdrsBookDependencies.RegisterTests;
-  Adrs_Dependencies.ConnectToDatabase;
+  DUnitAdrsBookDependencies.ConnectToDatabase;
   GUITestRunner.RunRegisteredTests;
 end.
 

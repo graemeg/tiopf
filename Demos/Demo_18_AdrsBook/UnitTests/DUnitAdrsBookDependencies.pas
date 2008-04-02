@@ -5,18 +5,36 @@ unit DUnitAdrsBookDependencies;
 interface
 
 procedure RegisterTests;
+procedure ConnectToDatabase;
 
 implementation
 uses
-  Adrs_tst,
-  AdrsType_tst,
-  Person_tst;
+  tiOPFManager,
+  tiConstants,
+  Adrs_TST,
+  AdrsType_TST,
+  AdrsCreateXML_TST,
+  Person_TST,
+  Adrs_SrvAutoMap,
+  tiQueryIBX,
+  tiQueryXMLLight;
 
 procedure RegisterTests;
 begin
-  AdrsType_tst.RegisterTests;
-  Person_tst.RegisterTests;
+  AdrsType_TST.RegisterTests;
+  Person_TST.RegisterTests;
+  AdrsCreateXML_TST.RegisterTests;
 end;
+
+procedure ConnectToDatabase;
+begin
+  Adrs_SrvAutoMap.RegisterMappings;
+  GTIOPFManager.DefaultPersistenceLayerName:= cTIPersistIBX;
+  GTIOPFManager.ConnectDatabase('adrs', 'adrs.fdb', 'SYSDBA', 'masterkey', '', '');
+  GTIOPFManager.DefaultPersistenceLayerName:= cTIPersistXMLLight;
+  GTIOPFManager.ConnectDatabase('adrs', 'adrs.xmllight', '', '', '', '');
+end;
+
 
 end.
 

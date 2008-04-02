@@ -61,7 +61,7 @@ references adrs_type;
 create table eadrs
   ( oid               varchar(36)    not null,
     oid_person        varchar(36)    not null,
-    oid_adrs_type     varchar(36)    not null,
+    oid_eadrs_type     varchar(36)    not null,
     eadrs_text        varchar(60)
   );
 
@@ -77,7 +77,7 @@ references person;
 
 alter table eadrs add
 constraint eadrs_adrs_type_fk
-foreign key (oid_adrs_type)
+foreign key (oid_eadrs_type)
 references eadrs_type;
 
 exit;

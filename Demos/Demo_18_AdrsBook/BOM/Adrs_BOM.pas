@@ -119,13 +119,13 @@ type
   TAdrsAbs = class(TtiObject)
   private
     FOIDAdrsType: String;
-    function    GetAdrsTypeAsString: string;
-    procedure   SetAdrsTypeAsString(const AValue: string);
     procedure   SetOIDAdrsType(const AValue: string);
     function    GetAdrsType: TAdrsTypeAbs;
   protected
     function    AdrsTypeList: TAdrsTypeListAbs; virtual; abstract;
     function    GetParent: TPerson; reintroduce;
+    function    GetAdrsTypeAsString: string; virtual;
+    procedure   SetAdrsTypeAsString(const AValue: string); virtual;
   public
     property    Parent      : TPerson read GetParent;
     property    AdrsType: TAdrsTypeAbs read GetAdrsType;

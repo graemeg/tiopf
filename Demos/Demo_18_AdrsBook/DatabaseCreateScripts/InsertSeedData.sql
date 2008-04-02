@@ -43,17 +43,17 @@ values
 insert into person
 (oid, first_name, last_name, title)
 values
-(3000, 'Peter', 'Hinrichsen', 'Mr');
+(3000, 'Edna', 'Everage', 'Dame');
 
 insert into adrs
 (oid, oid_person, oid_adrs_type, lines, suburb, state, pcode, country)
 values
-(4000, 3000, 1001, 'L12 15 William St', 'Melbourne', 'VIC', '3000', 'Australia');
+(4000, 3000, 1001, 'Arts Center', 'Melbourne', 'VIC', '3000', 'Australia');
 
 insert into eadrs
-(oid, oid_person, oid_adrs_type, eadrs_text)
+(oid, oid_person, oid_eadrs_type, eadrs_text)
 values
-(5000, 3000, 2005, 'peter_hinrichsen@techinsite.com.au');
+(5000, 3000, 2005, 'dame_edna@housewifesuperstar.com.au');
 
 commit;
 

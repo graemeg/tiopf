@@ -794,20 +794,30 @@ end;
 
 procedure TTestPerson.Adrs_Assign;
 var
-  LFrom: TAdrs;
-  LTo  : TAdrs;
+  LFrom: TAdrsForTesting;
+  LTo  : TAdrsForTesting;
+  LAdrsTypeList: TAdrsTypeList;
 begin
-  LFrom:= AdrsTestSetup.AdrsCreate(COIDAdrs1, cOIDAdrsType1);
+  LAdrsTypeList:= TAdrsTypeList.Create;
   try
-    LTo:= TAdrs.Create;
+    LAdrsTypeList.Add(AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType1));
+    LAdrsTypeList.Add(AdrsTypeSetup.AdrsTypeCreate(COIDAdrsType2));
+    LFrom:= TAdrsForTesting.Create;
     try
-      LTo.Assign(LFrom);
-      Check(LFrom.Equals(LTo));
+      LFrom.SetAdrsTypeList(LAdrsTypeList);
+      LTo:= TAdrsForTesting.Create;
+      try
+        LTo.SetAdrsTypeList(LAdrsTypeList);
+        LTo.Assign(LFrom);
+        Check(LFrom.Equals(LTo));
+      finally
+        LTo.Free;
+      end;
     finally
-      LTo.Free;
+      LFrom.Free;
     end;
   finally
-    LFrom.Free;
+    LAdrsTypeList.Free;
   end;
 end;
 
@@ -861,20 +871,31 @@ end;
 
 procedure TTestPerson.EAdrs_Assign;
 var
-  LFrom: TEAdrs;
-  LTo  : TEAdrs;
+  LFrom: TEAdrsForTesting;
+  LTo  : TEAdrsForTesting;
+  LEAdrsTypeList: TEAdrsTypeList;
 begin
-  LFrom:= EAdrsTestSetup.EAdrsCreate(COIDEAdrs1, cOIDEAdrsType1);
+  LEAdrsTypeList:= TEAdrsTypeList.Create;
   try
-    LTo:= TEAdrs.Create;
+    LEAdrsTypeList.Add(AdrsTypeSetup.EAdrsTypeCreate(COIDEAdrsType1));
+    LEAdrsTypeList.Add(AdrsTypeSetup.EAdrsTypeCreate(COIDEAdrsType2));
+    LFrom:= TEAdrsForTesting.Create;
     try
-      LTo.Assign(LFrom);
-      Check(LFrom.Equals(LTo));
+      LFrom.SetAdrsTypeList(LEAdrsTypeList);
+      EAdrsTestSetup.EAdrsAssign(LFrom, COIDEAdrs1, cOIDEAdrsType1);
+      LTo:= TEAdrsForTesting.Create;
+      try
+        LTo.SetAdrsTypeList(LEAdrsTypeList);
+        LTo.Assign(LFrom);
+        Check(LFrom.Equals(LTo));
+      finally
+        LTo.Free;
+      end;
     finally
-      LTo.Free;
+      LFrom.Free;
     end;
   finally
-    LFrom.Free;
+    LEAdrsTypeList.Free;
   end;
 end;
 
@@ -901,6 +922,8 @@ begin
     LFrom.Free;
   end;
 end;
+
+{ TEAdrsForTesting }
 
 { TEAdrsForTesting }
 
