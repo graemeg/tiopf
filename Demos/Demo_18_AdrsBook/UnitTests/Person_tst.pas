@@ -12,35 +12,42 @@ type
 
   TTestPerson = class(TAdrsBaseTestCase)
   published
-    procedure TestPersonFlat_Read;
-    procedure TestPersonFlat_Save;
-    procedure TestPersonFlat_Update;
-    procedure TestPersonFlat_Delete;
-    procedure TestPersonFlat_Equals;
-    procedure TestPersonFlat_Assign;
-    procedure TestPersonFlat_IsValid;
+    procedure PersonFlat_Read;
+    procedure PersonFlat_Save;
+    procedure PersonFlat_Update;
+    procedure PersonFlat_Delete;
+    procedure PersonFlat_Equals;
+    procedure PersonFlat_Assign;
+    procedure PersonFlat_IsValid;
 
-    procedure TestEAdrs_Read            ;
-    procedure TestEAdrs_Save            ;
-    procedure TestEAdrs_Update          ;
-    procedure TestEAdrs_Delete          ;
-    procedure TestEAdrs_Equals          ;
-    procedure TestEAdrs_Assign          ;
-    procedure TestEAdrs_IsValid         ;
-    procedure TestEAdrs_AdrsType;
+    procedure EAdrs_Read            ;
+    procedure EAdrs_Save            ;
+    procedure EAdrs_Update          ;
+    procedure EAdrs_Delete          ;
+    procedure EAdrs_Equals          ;
+    procedure EAdrs_Assign          ;
+    procedure EAdrs_IsValid         ;
+    procedure EAdrs_AdrsType;
+    procedure EAdrs_Caption;
 
-    procedure TestAdrs_Read             ;
-    procedure TestAdrs_Save             ;
-    procedure TestAdrs_Update           ;
-    procedure TestAdrs_Delete           ;
-    procedure TestAdrs_Equals           ;
-    procedure TestAdrs_Assign           ;
-    procedure TestAdrs_IsValid          ;
-    procedure TestAdrs_EAdrsType        ;
+    procedure Adrs_Read             ;
+    procedure Adrs_Save             ;
+    procedure Adrs_Update           ;
+    procedure Adrs_Delete           ;
+    procedure Adrs_Equals           ;
+    procedure Adrs_Assign           ;
+    procedure Adrs_IsValid          ;
+    procedure Adrs_EAdrsType        ;
+    procedure Adrs_AsSingleLine;
+    procedure Adrs_Caption;
 
-    procedure TestPersonCompound_Read   ;
-    procedure TestPersonCompound_Save   ;
-    procedure TestPersonCompound_Delete ;
+    procedure PersonCompound_Read;
+    procedure PersonCompound_Save;
+    procedure PersonCompound_Delete;
+    // procedure PersonCompound_Equals; // Design decision
+    procedure PersonCompound_Assign;
+
+    procedure AdrsBook_Parent;
 
   end;
 
@@ -66,7 +73,7 @@ end;
 
 { TTestPerson }
 
-procedure TTestPerson.TestAdrs_Delete;
+procedure TTestPerson.Adrs_Delete;
 var
   LList: TPersonList;
   LPerson: TPerson;
@@ -114,7 +121,7 @@ type
     FAdrsTypeList:= AAdrsTypeList;
   end;
 
-procedure TTestPerson.TestAdrs_EAdrsType;
+procedure TTestPerson.Adrs_EAdrsType;
 var
   LItem: TAdrsForTesting;
   LAdrsTypeList: TAdrsTypeList;
@@ -143,7 +150,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestAdrs_Equals;
+procedure TTestPerson.Adrs_Equals;
 var
   LItem1: TAdrs;
   LItem2: TAdrs;
@@ -164,7 +171,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestAdrs_IsValid;
+procedure TTestPerson.Adrs_IsValid;
 var
   LItem: TAdrs;
   LErrors: TtiObjectErrors;
@@ -200,7 +207,7 @@ begin
 
 end;
 
-procedure TTestPerson.TestAdrs_Read;
+procedure TTestPerson.Adrs_Read;
 var
   LList: TPersonList;
   LPerson: TPerson;
@@ -225,7 +232,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestAdrs_Save;
+procedure TTestPerson.Adrs_Save;
 var
   LList: TPersonList;
   LPerson: TPerson;
@@ -261,7 +268,7 @@ begin
 
 end;
 
-procedure TTestPerson.TestAdrs_Update;
+procedure TTestPerson.Adrs_Update;
 var
   LList: TPersonList;
   LPerson: TPerson;
@@ -294,7 +301,7 @@ begin
 
 end;
 
-procedure TTestPerson.TestEAdrs_Delete;
+procedure TTestPerson.EAdrs_Delete;
 var
   LList: TPersonList;
   LPerson: TPerson;
@@ -323,7 +330,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestEAdrs_Equals;
+procedure TTestPerson.EAdrs_Equals;
 var
   LItem1: TEAdrs;
   LItem2: TEAdrs;
@@ -340,7 +347,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestEAdrs_IsValid;
+procedure TTestPerson.EAdrs_IsValid;
 var
   LItem: TEAdrs;
   LErrors: TtiObjectErrors;
@@ -370,7 +377,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestEAdrs_Read;
+procedure TTestPerson.EAdrs_Read;
 var
   LList: TPersonList;
   LPerson: TPerson;
@@ -395,7 +402,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestEAdrs_Save;
+procedure TTestPerson.EAdrs_Save;
 var
   LList: TPersonList;
   LPerson: TPerson;
@@ -431,7 +438,7 @@ begin
 
 end;
 
-procedure TTestPerson.TestEAdrs_Update;
+procedure TTestPerson.EAdrs_Update;
 var
   LList: TPersonList;
   LPerson: TPerson;
@@ -464,7 +471,7 @@ begin
 
 end;
 
-procedure TTestPerson.TestPersonFlat_Delete;
+procedure TTestPerson.PersonFlat_Delete;
 var
   LList: TPersonList;
 begin
@@ -490,7 +497,7 @@ begin
 
 end;
 
-procedure TTestPerson.TestPersonFlat_Equals;
+procedure TTestPerson.PersonFlat_Equals;
 var
   LItem1: TPerson;
   LItem2: TPerson;
@@ -510,7 +517,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestPersonFlat_IsValid;
+procedure TTestPerson.PersonFlat_IsValid;
 var
   LItem: TPerson;
   LErrors: TtiObjectErrors;
@@ -546,7 +553,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestPersonFlat_Read;
+procedure TTestPerson.PersonFlat_Read;
 var
   LList: TPersonList;
 begin
@@ -568,7 +575,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestPersonFlat_Save;
+procedure TTestPerson.PersonFlat_Save;
 var
   LList: TPersonList;
   LItem: TPerson;
@@ -595,7 +602,7 @@ begin
 
 end;
 
-procedure TTestPerson.TestPersonFlat_Update;
+procedure TTestPerson.PersonFlat_Update;
 var
   LList: TPersonList;
 begin
@@ -625,7 +632,12 @@ begin
 
 end;
 
-procedure TTestPerson.TestPersonCompound_Delete;
+procedure TTestPerson.PersonCompound_Assign;
+begin
+
+end;
+
+procedure TTestPerson.PersonCompound_Delete;
 var
   LAdrsBook: TAdrsBook;
   LPerson: TPerson;
@@ -655,7 +667,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestPersonCompound_Read;
+procedure TTestPerson.PersonCompound_Read;
 var
   LAdrsBook: TAdrsBook;
 begin
@@ -692,7 +704,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestPersonCompound_Save;
+procedure TTestPerson.PersonCompound_Save;
 var
   LAdrsBook: TAdrsBook;
   LPerson: TPerson;
@@ -743,7 +755,44 @@ begin
 
 end;
 
-procedure TTestPerson.TestAdrs_Assign;
+procedure TTestPerson.Adrs_AsSingleLine;
+begin
+
+end;
+
+procedure TTestPerson.Adrs_Caption;
+begin
+
+end;
+
+procedure TTestPerson.AdrsBook_Parent;
+var
+  LAdrsBook: TAdrsBook;
+  LPerson: TPerson;
+  LAdrs: TAdrs;
+  LEAdrs: TEAdrs;
+begin
+  LAdrsBook:= TAdrsBook.Create;
+  try
+    LPerson:= PersonTestSetup.PersonCreate(COIDPerson1);
+    LAdrsBook.PersonList.Add(LPerson);
+
+    LAdrs:= AdrsTestSetup.AdrsCreate(COIDAdrs1, COIDAdrsType1);
+    LPerson.AddressList.Add(LAdrs);
+
+    LEAdrs:= EAdrsTestSetup.EAdrsCreate(COIDEAdrs1, COIDEAdrsType1);
+    LPerson.EAddressList.Add(LEAdrs);
+
+    CheckIs(LPerson.Parent, TAdrsBook, 'Person');
+    CheckIs(LAdrs.Parent, TPerson, 'Adrs');
+    CheckIs(LEAdrs.Parent, TPerson, 'EAdrs');
+
+  finally
+    LAdrsBook.Free;
+  end;
+end;
+
+procedure TTestPerson.Adrs_Assign;
 var
   LFrom: TAdrs;
   LTo  : TAdrs;
@@ -781,7 +830,7 @@ type
     FAdrsTypeList:= AAdrsTypeList;
   end;
 
-procedure TTestPerson.TestEAdrs_AdrsType;
+procedure TTestPerson.EAdrs_AdrsType;
 var
   LItem: TEAdrsForTesting;
   LEAdrsTypeList: TEAdrsTypeList;
@@ -810,7 +859,7 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestEAdrs_Assign;
+procedure TTestPerson.EAdrs_Assign;
 var
   LFrom: TEAdrs;
   LTo  : TEAdrs;
@@ -829,7 +878,12 @@ begin
   end;
 end;
 
-procedure TTestPerson.TestPersonFlat_Assign;
+procedure TTestPerson.EAdrs_Caption;
+begin
+
+end;
+
+procedure TTestPerson.PersonFlat_Assign;
 var
   LFrom: TPerson;
   LTo  : TPerson;

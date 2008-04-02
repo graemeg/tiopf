@@ -120,17 +120,18 @@ type
   private
     FOIDAdrsType: String;
     function    GetAdrsTypeAsString: string;
+    procedure   SetAdrsTypeAsString(const AValue: string);
     procedure   SetOIDAdrsType(const AValue: string);
-    function GetAdrsType: TAdrsTypeAbs;
+    function    GetAdrsType: TAdrsTypeAbs;
   protected
-    function    AdrsTypeList: TAdrsTypeListAbs; virtual;
+    function    AdrsTypeList: TAdrsTypeListAbs; virtual; abstract;
     function    GetParent: TPerson; reintroduce;
   public
     property    Parent      : TPerson read GetParent;
     property    AdrsType: TAdrsTypeAbs read GetAdrsType;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
-    property    AdrsTypeAsString: string read GetAdrsTypeAsString ;
+    property    AdrsTypeAsString: string read GetAdrsTypeAsString write SetAdrsTypeAsString;
     property    OIDAdrsType: String read FOIDAdrsType write SetOIDAdrsType;
   end;
 
@@ -141,7 +142,9 @@ type
     FCountry: string;
     FPCode: string;
     FSuburb: string;
+    function GetAsSingleLine: string;
   protected
+    function    AdrsTypeList: TAdrsTypeListAbs; override;
     function    GetCaption: string; override;
   public
     function  IsValid(const AErrors: TtiObjectErrors): boolean; override;
@@ -151,12 +154,14 @@ type
     property State  : string read FState   write FState;
     property PCode  : string read FPCode   write FPCode;
     property Country: string read FCountry write FCountry;
+    property AsSingleLine: string read GetAsSingleLine;
   end;
 
   TEAdrs = class(TAdrsAbs)
   private
     FText: string;
   protected
+    function    AdrsTypeList: TAdrsTypeListAbs; override;
     function    GetCaption: string; override;
   public
     function  IsValid(const AErrors: TtiObjectErrors): boolean; override;
@@ -171,23 +176,23 @@ uses
   ,tiOPFManager
   ,tiAutoMap
   ,SysUtils
-  ,tiVisitorDB
+  ,tiVisitorDB                                
   ,tiConstants
  ;
 
 var
-  uAdrsBook: TAdrsBook;
+  UAdrsBook: TAdrsBook;
 
 function gAdrsBook: TAdrsBook;
 begin
-  if uAdrsBook = nil then
-    uAdrsBook:= TAdrsBook.Create;
-  result:= uAdrsBook;
+  if UAdrsBook = nil then
+    UAdrsBook:= TAdrsBook.Create;
+  result:= UAdrsBook;
 end;
 
 procedure FreeAndNilAdrsBook;
 begin
-  FreeAndNil(uAdrsBook);
+  FreeAndNil(UAdrsBook);
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -291,15 +296,28 @@ end;
 
 { TAddress }
 
+function TAdrs.GetAsSingleLine: string;
+begin
+  result:= tiStrTran(Lines, #10, '');
+  Result:= tiStrTran(Result, #13, ' ');
+  if Suburb <> '' then
+    Result:= Result + ' ' + Suburb;
+  if State <> '' then
+    Result:= Result + ' ' + State;
+  if PCode <> '' then
+    Result:= Result + ' ' + PCode;
+  if Country <> '' then
+    Result:= Result + ' ' + Country;
+end;
+
 function TAdrs.GetCaption: string;
 begin
-  result:= tiStrTran(Lines, CrLf, ' ') + ' ' +
-            State + ' ' + PCode;
+  result:= AsSingleLine;
 end;
 
 function TAdrsAbs.GetParent: TPerson;
 begin
-  result:= TPerson(inherited GetOwner);
+  result:= TPerson(inherited GetParent);
 end;
 
 function TAdrsAbs.IsValid(const AErrors: TtiObjectErrors): boolean;
@@ -383,11 +401,18 @@ end;
 
 { TAdrsAbs }
 
-function TAdrsAbs.AdrsTypeList: TAdrsTypeListAbs;
+function TAdrs.AdrsTypeList: TAdrsTypeListAbs;
 begin
   Assert(Parent <> nil, CTIErrorInvalidObject);
   Assert(Parent.Parent <> nil, CTIErrorInvalidObject);
   result:= Parent.Parent.AdrsTypeList;
+end;
+
+function TEAdrs.AdrsTypeList: TAdrsTypeListAbs;
+begin
+  Assert(Parent <> nil, CTIErrorInvalidObject);
+  Assert(Parent.Parent <> nil, CTIErrorInvalidObject);
+  result:= Parent.Parent.EAdrsTypeList;
 end;
 
 function TAdrsAbs.GetAdrsType: TAdrsTypeAbs;
@@ -435,6 +460,11 @@ begin
   result:= AErrors.Count = 0;
 end;
 
+procedure TAdrsAbs.SetAdrsTypeAsString(const AValue: string);
+begin
+  OIDAdrsType:= AdrsTypeList.FindOIDByAdrsTypeAsString(AValue);
+end;
+
 procedure TAdrsAbs.SetOIDAdrsType(const AValue: string);
 begin
   FOIDAdrsType:= AValue;
@@ -443,6 +473,7 @@ end;
 procedure TAdrsBook.Read;
 begin
   EAdrsTypeList.Read;
+  AdrsTypeList.Read;
   PersonList.Read;
 end;
 

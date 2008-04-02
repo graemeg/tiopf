@@ -20,17 +20,24 @@ type
 
   // Abstract list
   TAdrsTypeListAbs    = class(TtiObjectList)
+  protected
+    function GetItems(i: integer): TAdrsTypeAbs; reintroduce;
+    procedure SetItems(i: integer; const AValue: TAdrsTypeAbs); reintroduce;
   public
     procedure   Read; override;
     procedure   Save; override;
     function    Find(const AOIDToFind: string): TAdrsTypeAbs; reintroduce;
     function    AdrsTypeAsStringByOID(const AOID: string): string;
+    function    FindOIDByAdrsTypeAsString(const AValue: string): string;
+    property    Items[i:integer]: TAdrsTypeAbs read GetItems write SetItems;
   end;
 
   // Abstract item
   TAdrsTypeAbs     = class(TtiObject)
   private
     FText: string;
+  protected
+    function    GetCaption: string; override;
   public
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
   published
@@ -66,6 +73,8 @@ type
   end;
 
 implementation
+uses
+  SysUtils;
 
 procedure TEAdrsTypeList.Add(const AObject: TEAdrsType);
 begin
@@ -91,6 +100,20 @@ end;
 function TAdrsTypeListAbs.Find(const AOIDToFind: string): TAdrsTypeAbs;
 begin
   result:= inherited Find(AOIDToFind) as TAdrsTypeAbs;
+end;
+
+function TAdrsTypeListAbs.FindOIDByAdrsTypeAsString(
+  const AValue: string): string;
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do
+    if SameText(Items[i].Text, AValue) then
+    begin
+      result:= Items[i].OID.AsString;
+      Exit; //==>
+    end;
+  result:= '';
 end;
 
 procedure TAdrsTypeListAbs.Read;
@@ -128,12 +151,27 @@ end;
 
 { TAdrsTypeAbs }
 
+function TAdrsTypeListAbs.GetItems(i: integer): TAdrsTypeAbs;
+begin
+  result:= inherited GetItems(i) as TAdrsTypeAbs;
+end;
+
+function TAdrsTypeAbs.GetCaption: string;
+begin
+  result:= Text;
+end;
+
 function TAdrsTypeAbs.IsValid(const AErrors: TtiObjectErrors): boolean;
 begin
   inherited IsValid(AErrors);
   if Text = '' then
     AErrors.AddError('Text', CErrorAdrsTypeAbsTextNotAssigned);
   Result:= AErrors.Count = 0;
+end;
+
+procedure TAdrsTypeListAbs.SetItems(i: integer; const AValue: TAdrsTypeAbs);
+begin
+  inherited SetItems(i, AValue);
 end;
 
 end.
