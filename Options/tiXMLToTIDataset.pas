@@ -354,12 +354,15 @@ end;
 
 procedure TtiXMLToDataSetReadWriter.SaveToFile(const AFileName: string);
 var
+  LDirectory: string;
   lStream : TFileStream;
   ls : string;
 begin
   Assert(AFileName <> '', 'File name not assigned');
-  if not DirectoryExists(ExtractFilePath(AFileName)) then
-    tiForceDirectories(ExtractFilePath(AFileName));
+  LDirectory:= ExtractFilePath(AFileName);
+  if (LDirectory <> '') and
+     (not DirectoryExists(LDirectory)) then
+    tiForceDirectories(LDirectory);
   lStream := TFileStream.Create(AFileName, fmCreate or fmShareExclusive);
   try
     ls := AsString;
