@@ -56,6 +56,7 @@ begin
   FAppServer:= TtiDBProxyServer.Create(80);
   FAppServer.ReadPageLocationAtStartup:= False;
   FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages\';
+  FAppServer.CGIBinLocation:= tiGetEXEPath + '\CGI-Bin\';
 
   GTIOPFManager.ConnectDatabase(
     'adrs', 'adrs.fdb', 'SYSDBA', 'masterkey', '', '');

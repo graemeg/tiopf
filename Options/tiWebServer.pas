@@ -416,7 +416,7 @@ begin
     ForceDirectories(StaticPageLocation);
   if not DirectoryExists(StaticPageLocation) then
     raise exception.create('Unable to locate or create directory for static pages "' + StaticPageLocation + '"');
-  if not FileExists(StaticPageLocation + 'default.htm') then
+  if not FileExists(tiAddTrailingSlash(StaticPageLocation) + 'default.htm') then
     CreateDefaultPage;
 
   Log('Attempting to start HTTP server on port ' + IntToStr(FidHTTPServer.DefaultPort));
@@ -746,7 +746,7 @@ end;
 procedure TtiWebServer.CreateDefaultPage;
 begin
   tiStringToFile(cDefaultPageText,
-                  StaticPageLocation + 'default.htm');
+                 tiAddTrailingSlash(StaticPageLocation) + 'default.htm');
 end;
 
 { TtiWebServerAction_TestAlive }
