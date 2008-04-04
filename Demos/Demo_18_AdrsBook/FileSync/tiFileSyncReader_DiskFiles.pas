@@ -40,7 +40,6 @@ implementation
 uses
    tiUtils
   ,tiObject
-  ,tiLog
   ,tiCRC32
   ,tiConstants
   ,Classes
@@ -185,7 +184,6 @@ var
   lStartDir: string;
 begin
   lStartDir := pPathNames.StartDir;
-  Log(['ReadPathIndex', lStartDir]);
 
   // Read files to include
   if pSourceFileNameFilters = nil then
@@ -211,6 +209,5 @@ end;
 initialization
 
   gFileSyncReaderFactory.RegisterClass(cgsDiskFiles, TFileSyncReaderDiskFiles);
-
 
 end.
