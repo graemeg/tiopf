@@ -34,7 +34,5 @@ object Form1: TForm1
     Height = 154
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 1
-    ExplicitWidth = 410
-    ExplicitHeight = 239
   end
 end

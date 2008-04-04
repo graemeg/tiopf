@@ -55,7 +55,7 @@ begin
   GLog.RegisterLog(TtiLogToEventHandler.Create(DoLog));
   FAppServer:= TtiDBProxyServer.Create(80);
   FAppServer.ReadPageLocationAtStartup:= False;
-  FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages';
+  FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages\';
 
   GTIOPFManager.ConnectDatabase(
     'adrs', 'adrs.fdb', 'SYSDBA', 'masterkey', '', '');

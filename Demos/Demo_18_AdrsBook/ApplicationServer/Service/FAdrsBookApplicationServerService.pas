@@ -65,7 +65,7 @@ begin
   GLog.RegisterLog(TtiLogToFile.CreateWithDateInFileName);
   FAppServer:= TtiDBProxyServer.Create(80);
   FAppServer.ReadPageLocationAtStartup:= False;
-  FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages';
+  FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages\';
 end;
 
 procedure TAddressBookApplicationServer.ServiceDestroy(Sender: TObject);
