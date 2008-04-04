@@ -11,7 +11,7 @@ AppPublisher=TechInsite
 AppPublisherURL=http://www.tiopf.com
 AppSupportURL=http://www.tiopf.com
 AppUpdatesURL=http://www.tiopf.com
-DefaultDirName=C:\{#Application_Name_Short}
+DefaultDirName=C:\{#Application_Name_Long}
 DefaultGroupName=tiOPF\{#Application_Name_Long}
 Compression=lzma/fast
 SolidCompression=yes
@@ -33,10 +33,12 @@ Source: ..\_Deploy\ADRS.FDB; DestDir: {app}; Flags: ignoreversion touch
 Source: ..\_Deploy\StaticPages\default.htm; DestDir: {app}\StaticPages; Flags: ignoreversion touch
 Source: ..\_Deploy\StartApplicationServer.bat; DestDir: {app}; Flags: ignoreversion touch
 Source: ..\_Deploy\StopApplicationServer.bat; DestDir: {app}; Flags: ignoreversion touch
+Source: ..\_Deploy\LauncherServer.exe; DestDir: {app}\CGI-Bin; Flags: ignoreversion touch
+Source: ..\_Deploy\AddressBook_Setup.zip; DestDir: {app}\StaticPages; Flags: ignoreversion touch
+Source: ..\_Deploy\AdrsBookUIModalForms.exe; DestDir: {app}\StaticPages\AddressBook; Flags: ignoreversion touch
 
 [UninstallDelete]
 Type: filesandordirs; Name: {app}\Log
-
 
 [Code]
 
