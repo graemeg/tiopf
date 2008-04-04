@@ -4,6 +4,8 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
+    <Projects Include="ApplicationServer\AdrsBookApplicationServer.dproj" />
+    <Projects Include="ApplicationServer\AdrsBookApplicationServerGUI.dproj" />
     <Projects Include="UIModalForms\AdrsBookUIModalForms.dproj" />
     <Projects Include="UnitTests\DUnitAdrsBookGUI.dproj" />
     <Projects Include="UnitTests\DUnitAdrsBookText.dproj" />
@@ -12,7 +14,7 @@
     <Borland.Personality>Default.Personality</Borland.Personality>
     <Borland.ProjectType />
     <BorlandProject>
-  <BorlandProject xmlns=""> <Default.Personality> </Default.Personality> </BorlandProject></BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
   </ProjectExtensions>
   <Target Name="DUnitAdrsBookGUI">
     <MSBuild Projects="UnitTests\DUnitAdrsBookGUI.dproj" Targets="" />
@@ -41,14 +43,32 @@
   <Target Name="AdrsBookUIModalForms:Make">
     <MSBuild Projects="UIModalForms\AdrsBookUIModalForms.dproj" Targets="Make" />
   </Target>
+  <Target Name="AdrsBookApplicationServer">
+    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServer.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer:Clean">
+    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServer.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer:Make">
+    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServer.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookApplicationServerGUI">
+    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServerGUI.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookApplicationServerGUI:Clean">
+    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServerGUI.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookApplicationServerGUI:Make">
+    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServerGUI.dproj" Targets="Make" />
+  </Target>
   <Target Name="Build">
-    <CallTarget Targets="DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookUIModalForms" />
+    <CallTarget Targets="DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookUIModalForms;AdrsBookApplicationServer;AdrsBookApplicationServerGUI" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookUIModalForms:Clean" />
+    <CallTarget Targets="DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookUIModalForms:Clean;AdrsBookApplicationServer:Clean;AdrsBookApplicationServerGUI:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookUIModalForms:Make" />
+    <CallTarget Targets="DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookUIModalForms:Make;AdrsBookApplicationServer:Make;AdrsBookApplicationServerGUI:Make" />
   </Target>
   <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>

@@ -1187,8 +1187,8 @@ end;
 
 function TtiDatabaseIBX.Test: boolean;
 begin
-  result := false;
-  Assert(false, 'Under construction');  
+  result := Connected;
+  // ToDo: Not ideal. Should select a record to confirm connection is OK
 end;
 
 function TtiDatabaseIBX.TIQueryClass: TtiQueryClass;

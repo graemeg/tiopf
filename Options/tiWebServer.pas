@@ -174,6 +174,8 @@ type
     FCGIBinLocation: string;
     FBlockStreamCache: TtiBlockStreamCache;
     FOnServerException: TtiWebServerExceptionEvent;
+    FReadPageLocationAtStartup: Boolean;
+    function GetActive: Boolean;
   protected
     procedure SetStaticPageLocation(const AValue: string); virtual;
     procedure SetCGIBinLocation(const AValue: string); virtual;
@@ -198,12 +200,14 @@ type
     constructor Create(APort: integer); virtual;
     destructor  Destroy; override;
 
-    property    StaticPageLocation : string read FStaticPageLocation;
-    property    CGIBinLocation    : string read FCGIBinLocation;
+    property    ReadPageLocationAtStartUp: Boolean read FReadPageLocationAtStartup write FReadPageLocationAtStartup;
+    property    StaticPageLocation : string read FStaticPageLocation write FStaticPageLocation;
+    property    CGIBinLocation    : string read FCGIBinLocation write FCGIBinLocation;
     property    OnServerException: TtiWebServerExceptionEvent read FOnServerException write FOnServerException;
 
     procedure   Start;
     procedure   Stop;
+    property    Active: Boolean read GetActive;
 
   end;
 
@@ -229,7 +233,8 @@ uses
 constructor TtiWebServer.Create(APort: Integer);
 begin
   inherited Create;
-
+  FReadPageLocationAtStartup:= True;
+  
   FServerActions:= TObjectList.Create(true);
   FServerActions.Add(TtiWebServerAction_Ignore.Create(       Self,  1));
   FServerActions.Add(TtiWebServerAction_Default.Create(      Self,  2));
@@ -322,6 +327,11 @@ begin
 
 end;
 
+function TtiWebServer.GetActive: Boolean;
+begin
+  result:= FIdHTTPServer.Active;
+end;
+
 procedure TtiWebServer.ApplyResponseStreamToHTTPResponse(
   AResponseInfo: TIdHTTPResponseInfo;
   AResponse: TStream;
@@ -391,26 +401,29 @@ procedure TtiWebServer.Start;
 var
   LConfig: TtiWebServerConfig;
 begin
-  LConfig:= TtiWebServerConfig.Create;
-  try
-    FStaticPageLocation:= tiAddTrailingSlash(LConfig.PathToStaticPages);
-    FCGIBinLocation:= tiAddTrailingSlash(LConfig.PathToCGIBin);
-  finally
-    LConfig.Free;
+  if ReadPageLocationAtStartup then
+  begin
+    LConfig:= TtiWebServerConfig.Create;
+    try
+      FStaticPageLocation:= tiAddTrailingSlash(LConfig.PathToStaticPages);
+      FCGIBinLocation:= tiAddTrailingSlash(LConfig.PathToCGIBin);
+    finally
+      LConfig.Free;
+    end;
   end;
 
   if not DirectoryExists(StaticPageLocation) then
     ForceDirectories(StaticPageLocation);
   if not DirectoryExists(StaticPageLocation) then
-    raise exception.create('Unable to locate or create directory for static pages <' + StaticPageLocation + '>');
+    raise exception.create('Unable to locate or create directory for static pages "' + StaticPageLocation + '"');
   if not FileExists(StaticPageLocation + 'default.htm') then
     CreateDefaultPage;
 
   Log('Attempting to start HTTP server on port ' + IntToStr(FidHTTPServer.DefaultPort));
   FIdHTTPServer.Active := true;
   Log('HTTP server started');
-  Log('Static web pages location <' + StaticPageLocation + '>');
-  Log('CGI-Bin location <' + FCGIBinLocation + '>');
+  Log('Static web pages location "' + StaticPageLocation + '"');
+  Log('CGI-Bin location "' + FCGIBinLocation + '"');
 
   BlockStreamCache.Start;
 

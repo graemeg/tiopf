@@ -318,10 +318,10 @@ begin
   Assert(DBConnectionPools.PersistenceLayer.TestValid(TtiPersistenceLayer), CTIErrorInvalidObject);
   LPersistenceLayer := DBConnectionPools.PersistenceLayer as TtiPersistenceLayer;
   result :=
-    'Persistence layer:   ' + LPersistenceLayer.PersistenceLayerName + Cr +
-    'Database name:       ' + DBConnectParams.DatabaseName + Cr +
-    'User name:           ' + DBConnectParams.UserName     + Cr +
-    'Password:            ' + CPasswordMasked + Cr +
+    'Persistence layer:   ' + LPersistenceLayer.PersistenceLayerName + CrLf +
+    'Database name:       ' + DBConnectParams.DatabaseName + CrLf +
+    'User name:           ' + DBConnectParams.UserName     + CrLf +
+    'Password:            ' + CPasswordMasked + CrLf +
     'Number in pool:      ' + IntToStr(Count);
 end;
 

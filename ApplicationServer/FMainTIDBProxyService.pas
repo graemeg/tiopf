@@ -12,7 +12,8 @@ type
     procedure ServiceAfterInstall(Sender: TService);
     procedure ServiceStart(Sender: TService; var Started: Boolean);
     procedure ServiceStop(Sender: TService; var Stopped: Boolean);
-  private
+  protected
+    procedure ConnectToDatabase; virtual;
   public
     function GetServiceController: TServiceController; override;
     { Public declarations }
@@ -48,6 +49,11 @@ end;
 function TtiDBProxyServer.GetServiceController: TServiceController;
 begin
   Result := ServiceController;
+end;
+
+procedure TtiDBProxyServer.ConnectToDatabase;
+begin
+  tiDBProxyServerDependencies.ConnectToDatabase;
 end;
 
 procedure TtiDBProxyServer.ServiceCreate(Sender: TObject);

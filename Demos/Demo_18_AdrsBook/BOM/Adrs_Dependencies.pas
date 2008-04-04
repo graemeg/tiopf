@@ -68,8 +68,10 @@ uses
   tiOPFManager,
   tiDialogs,
   tiUtils,
-  tiQueryIBX,
-  tiQueryXMLLight,
+  tiQueryIBX,      // Firebird via IBX
+  tiQueryXMLLight, // XMLLight
+  tiQueryRemote,   // Remote
+  tiHTTPIndy,      // Link one of the two available connection libraries (tiHTTPIndy & tiHTTPMSXML)
   tiConstants,
   Adrs_SrvAutoMap;  // For auto generated SQL
 
@@ -80,8 +82,8 @@ begin
   Adrs_SrvAutoMap.RegisterMappings;
   LResult:=
     tiMessageTextDlg('Which persistence layer do you want to use?' + CrLf(2) +
-                     'Firebird or XML?',
-                     [CTIPersistIBX, CTIPersistXMLLight]);
+                     'Firebird, XMLLight or Remote?',
+                     [CTIPersistIBX, CTIPersistXMLLight, CTIPersistRemote]);
   if LResult = CTIPersistIBX then
   begin
     GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistIBX;
@@ -90,6 +92,10 @@ begin
   begin
     GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistXMLLight;
     GTIOPFManager.ConnectDatabase('adrs', 'adrs.xmllight', '', '', '', '');
+  end else if LResult = CTIPersistRemote then
+  begin
+    GTIOPFManager.DefaultPersistenceLayerName:= CTIPersistRemote;
+    GTIOPFManager.ConnectDatabase('adrs', 'http:\\localhost', '', '', '', '');
   end ;
   // To: Add Cancel...
 end;
