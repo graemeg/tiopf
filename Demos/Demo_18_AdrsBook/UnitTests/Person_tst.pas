@@ -671,8 +671,6 @@ begin
   AdrsTypeSetup.AdrsTypeInsert(cOIDAdrsType1);
 
   LAdrsBook:= nil;
-  LFrom:= nil;
-  LTo:= nil;
   try
     LAdrsBook:= TAdrsBook.Create;
     LAdrsBook.Read;

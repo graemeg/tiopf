@@ -3,11 +3,11 @@ program AdrsBookUIModalForms;
 uses
   Forms,
   FMain in 'FMain.pas' {FormMain},
-  FtiPerEditDialog in '..\..\..\GUI\FtiPerEditDialog.pas' {FormTIPerEditDialog},
   FPersonEdit in 'FPersonEdit.pas' {FormPersonEdit},
   FAdrsEdit in 'FAdrsEdit.pas' {FormAdrsEdit},
   FEAdrsEdit in 'FEAdrsEdit.pas' {FormEAdrsEdit},
-  FAdrsAbs in 'FAdrsAbs.pas' {FormAdrsAbs};
+  FAdrsAbs in 'FAdrsAbs.pas' {FormAdrsAbs},
+  FtiPerEditDialog in '..\..\..\..\GUI\FtiPerEditDialog.pas' {FormTIPerEditDialog};
 
 {$R *.res}
 
