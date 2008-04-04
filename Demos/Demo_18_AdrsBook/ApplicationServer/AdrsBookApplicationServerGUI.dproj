@@ -25,6 +25,8 @@
     <DCC_DcuOutput>_dcu</DCC_DcuOutput>
     <DCC_ObjOutput>_dcu</DCC_ObjOutput>
     <DCC_HppOutput>_dcu</DCC_HppOutput>
+    <DCC_SYMBOL_DEPRECATED>False</DCC_SYMBOL_DEPRECATED>
+    <DCC_SYMBOL_LIBRARY>False</DCC_SYMBOL_LIBRARY>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>
@@ -34,6 +36,7 @@
       <Parameters Name="UseLauncher">False</Parameters>
       <Parameters Name="LoadAllSymbols">True</Parameters>
       <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+      <Parameters Name="RunParams">-install</Parameters>
     </Parameters>
     <VersionInfo>
       <VersionInfo Name="IncludeVerInfo">False</VersionInfo>

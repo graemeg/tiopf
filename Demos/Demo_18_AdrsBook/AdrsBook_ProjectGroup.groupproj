@@ -43,15 +43,6 @@
   <Target Name="AdrsBookUIModalForms:Make">
     <MSBuild Projects="UIModalForms\AdrsBookUIModalForms.dproj" Targets="Make" />
   </Target>
-  <Target Name="AdrsBookApplicationServer">
-    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServer.dproj" Targets="" />
-  </Target>
-  <Target Name="AdrsBookApplicationServer:Clean">
-    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServer.dproj" Targets="Clean" />
-  </Target>
-  <Target Name="AdrsBookApplicationServer:Make">
-    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServer.dproj" Targets="Make" />
-  </Target>
   <Target Name="AdrsBookApplicationServerGUI">
     <MSBuild Projects="ApplicationServer\AdrsBookApplicationServerGUI.dproj" Targets="" />
   </Target>
@@ -61,14 +52,23 @@
   <Target Name="AdrsBookApplicationServerGUI:Make">
     <MSBuild Projects="ApplicationServer\AdrsBookApplicationServerGUI.dproj" Targets="Make" />
   </Target>
+  <Target Name="AdrsBookApplicationServer">
+    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServer.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer:Clean">
+    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServer.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer:Make">
+    <MSBuild Projects="ApplicationServer\AdrsBookApplicationServer.dproj" Targets="Make" />
+  </Target>
   <Target Name="Build">
-    <CallTarget Targets="DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookUIModalForms;AdrsBookApplicationServer;AdrsBookApplicationServerGUI" />
+    <CallTarget Targets="DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookUIModalForms;AdrsBookApplicationServerGUI;AdrsBookApplicationServer" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookUIModalForms:Clean;AdrsBookApplicationServer:Clean;AdrsBookApplicationServerGUI:Clean" />
+    <CallTarget Targets="DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookUIModalForms:Clean;AdrsBookApplicationServerGUI:Clean;AdrsBookApplicationServer:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookUIModalForms:Make;AdrsBookApplicationServer:Make;AdrsBookApplicationServerGUI:Make" />
+    <CallTarget Targets="DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookUIModalForms:Make;AdrsBookApplicationServerGUI:Make;AdrsBookApplicationServer:Make" />
   </Target>
   <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>

@@ -1,69 +1,82 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{4d25fb99-fb0a-4e73-9c00-1bb97aa44214}</ProjectGuid>
-    <MainSource>AdrsBookApplicationServer.dpr</MainSource>
+    <ProjectGuid>{d830d0f3-26ad-4b5a-bf0a-a018633ce6a5}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-    <DCC_DependencyCheckOutputName>..\_bin\AdrsBookApplicationServer.exe</DCC_DependencyCheckOutputName>
+    <DCC_DependencyCheckOutputName>..\_Bin\AdrsBookApplicationServer.exe</DCC_DependencyCheckOutputName>
+    <MainSource>AdrsBookApplicationServer.dpr</MainSource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Version>7.0</Version>
     <DCC_DebugInformation>False</DCC_DebugInformation>
-    <DCC_WriteableConstants>True</DCC_WriteableConstants>
     <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
-    <DCC_Optimize>False</DCC_Optimize>
     <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
-    <DCC_MapFile>3</DCC_MapFile>
-    <DCC_ExeOutput>..\..\..\_Bin\AppServer\Bin</DCC_ExeOutput>
-    <DCC_DcuOutput>.\_Dcu</DCC_DcuOutput>
-    <DCC_ObjOutput>.\_Dcu</DCC_ObjOutput>
-    <DCC_HppOutput>.\_Dcu</DCC_HppOutput>
-    <DCC_UnitSearchPath>..\..\..\3rdParty\DOA;..\..\..\3rdParty\Indy\System;..\..\..\3rdParty\Indy\Protocols;..\..\..\3rdParty\Indy\Core;..\..\..\3rdParty\tiOPF2_SupportApps\tiDBProxyServer</DCC_UnitSearchPath>
-    <DCC_ResourcePath>..\..\..\3rdParty\DOA;..\..\..\3rdParty\Indy\System;..\..\..\3rdParty\Indy\Protocols;..\..\..\3rdParty\Indy\Core;..\..\..\3rdParty\tiOPF2_SupportApps\tiDBProxyServer</DCC_ResourcePath>
-    <DCC_ObjPath>..\..\..\3rdParty\DOA;..\..\..\3rdParty\Indy\System;..\..\..\3rdParty\Indy\Protocols;..\..\..\3rdParty\Indy\Core;..\..\..\3rdParty\tiOPF2_SupportApps\tiDBProxyServer</DCC_ObjPath>
-    <DCC_IncludePath>..\..\..\3rdParty\DOA;..\..\..\3rdParty\Indy\System;..\..\..\3rdParty\Indy\Protocols;..\..\..\3rdParty\Indy\Core;..\..\..\3rdParty\tiOPF2_SupportApps\tiDBProxyServer</DCC_IncludePath>
-    <DCC_Define>LINK_DOA;BOOLEAN_CHAR_1;OID_AS_INT64;DONOTUSE_LOCALCACHE;USE_JEDI_JCL;OBJECT_TRACKING;DETECTMEMLEAKS;FullDebugModeX;LogMemoryLeakDetailToFileX;RELEASE</DCC_Define>
-    <DCC_UNSAFE_TYPE>True</DCC_UNSAFE_TYPE>
-    <DCC_UNSAFE_CODE>True</DCC_UNSAFE_CODE>
-    <DCC_UNSAFE_CAST>True</DCC_UNSAFE_CAST>
+    <DCC_Define>RELEASE</DCC_Define>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Version>7.0</Version>
-    <DCC_WriteableConstants>True</DCC_WriteableConstants>
-    <DCC_Optimize>False</DCC_Optimize>
-    <DCC_MapFile>3</DCC_MapFile>
-    <DCC_ExeOutput>..\_bin</DCC_ExeOutput>
+    <DCC_ExeOutput>..\_Bin</DCC_ExeOutput>
     <DCC_DcuOutput>_dcu</DCC_DcuOutput>
     <DCC_ObjOutput>_dcu</DCC_ObjOutput>
     <DCC_HppOutput>_dcu</DCC_HppOutput>
-    <DCC_UnitSearchPath>..\..\..\3rdParty\Indy\System;..\..\..\3rdParty\Indy\Protocols;..\..\..\3rdParty\Indy\Core;..\..\..\3rdParty\JCL\common;..\..\..\3rdParty\JCL\windows;..\..\..\ApplicationServer</DCC_UnitSearchPath>
-    <DCC_ResourcePath>..\..\..\3rdParty\Indy\System;..\..\..\3rdParty\Indy\Protocols;..\..\..\3rdParty\Indy\Core;..\..\..\3rdParty\JCL\common;..\..\..\3rdParty\JCL\windows;..\..\..\ApplicationServer</DCC_ResourcePath>
-    <DCC_ObjPath>..\..\..\3rdParty\Indy\System;..\..\..\3rdParty\Indy\Protocols;..\..\..\3rdParty\Indy\Core;..\..\..\3rdParty\JCL\common;..\..\..\3rdParty\JCL\windows;..\..\..\ApplicationServer</DCC_ObjPath>
-    <DCC_IncludePath>..\..\..\3rdParty\Indy\System;..\..\..\3rdParty\Indy\Protocols;..\..\..\3rdParty\Indy\Core;..\..\..\3rdParty\JCL\common;..\..\..\3rdParty\JCL\windows;..\..\..\ApplicationServer</DCC_IncludePath>
-    <DCC_Define>USE_JEDI_JCL;LINK_IBX</DCC_Define>
+    <DCC_UnitSearchPath>..\..\..\ApplicationServer</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\..\ApplicationServer</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\..\ApplicationServer</DCC_ObjPath>
+    <DCC_IncludePath>..\..\..\ApplicationServer</DCC_IncludePath>
     <DCC_SYMBOL_DEPRECATED>False</DCC_SYMBOL_DEPRECATED>
     <DCC_SYMBOL_LIBRARY>False</DCC_SYMBOL_LIBRARY>
     <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>
-    <Borland.ProjectType>VCLApplication</Borland.ProjectType>
+    <Borland.ProjectType />
     <BorlandProject>
-<BorlandProject><Delphi.Personality><Parameters><Parameters Name="RunParams">-uninstall</Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">5</VersionInfo><VersionInfo Name="MinorVer">7</VersionInfo><VersionInfo Name="Release">3</VersionInfo><VersionInfo Name="Build">3041</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">3081</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">5.7.3.3041</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">0.0.0.0</VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">AdrsBookApplicationServer.dpr</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
+<BorlandProject xmlns=""> <Delphi.Personality>   <Parameters>
+      <Parameters Name="UseLauncher">False</Parameters>
+      <Parameters Name="LoadAllSymbols">True</Parameters>
+      <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+      <Parameters Name="RunParams">-uninstall</Parameters>
+    </Parameters>
+    <VersionInfo>
+      <VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+      <VersionInfo Name="AutoIncBuild">False</VersionInfo>
+      <VersionInfo Name="MajorVer">1</VersionInfo>
+      <VersionInfo Name="MinorVer">0</VersionInfo>
+      <VersionInfo Name="Release">0</VersionInfo>
+      <VersionInfo Name="Build">0</VersionInfo>
+      <VersionInfo Name="Debug">False</VersionInfo>
+      <VersionInfo Name="PreRelease">False</VersionInfo>
+      <VersionInfo Name="Special">False</VersionInfo>
+      <VersionInfo Name="Private">False</VersionInfo>
+      <VersionInfo Name="DLL">False</VersionInfo>
+      <VersionInfo Name="Locale">3081</VersionInfo>
+      <VersionInfo Name="CodePage">1252</VersionInfo>
+    </VersionInfo>
+    <VersionInfoKeys>
+      <VersionInfoKeys Name="CompanyName"></VersionInfoKeys>
+      <VersionInfoKeys Name="FileDescription"></VersionInfoKeys>
+      <VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+      <VersionInfoKeys Name="InternalName"></VersionInfoKeys>
+      <VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys>
+      <VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys>
+      <VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys>
+      <VersionInfoKeys Name="ProductName"></VersionInfoKeys>
+      <VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+      <VersionInfoKeys Name="Comments"></VersionInfoKeys>
+    </VersionInfoKeys>
+    <Source>
+      <Source Name="MainSource">AdrsBookApplicationServer.dpr</Source>
+    </Source>
+  </Delphi.Personality> </BorlandProject></BorlandProject>
   </ProjectExtensions>
   <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
   <ItemGroup>
     <DelphiCompile Include="AdrsBookApplicationServer.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\..\..\ApplicationServer\FMainTIDBProxyService.pas">
-      <Form>tiDBProxyServer</Form>
-      <DesignClass>TService</DesignClass>
-    </DCCReference>
     <DCCReference Include="FAdrsBookApplicationServerService.pas">
-      <Form>FormAdrsBookApplicationServer</Form>
+      <Form>AddressBookApplicationServer</Form>
       <DesignClass>TService</DesignClass>
     </DCCReference>
   </ItemGroup>
