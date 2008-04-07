@@ -106,7 +106,7 @@ Launcher=
 UseLauncher=0
 DebugCWD=
 [Version Info]
-IncludeVerInfo=1
+IncludeVerInfo=0
 AutoIncBuild=0
 MajorVer=0
 MinorVer=0
@@ -129,18 +129,3 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=
-[HistoryLists\hlConditionals]
-Count=1
-Item0=OBJECT_TRACKING;FASTMM;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBXx;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;DUNIT2
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=1
-Item0=..\..\Core;..\..\Options;..\..\GUI;..\Common;..\Tests;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\DUnit
-[HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=_Dcu
-[HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=..\..\_bin

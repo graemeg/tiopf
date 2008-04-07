@@ -13,9 +13,6 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    677
-    201)
   PixelsPerInch = 96
   TextHeight = 13
   object btnStartStop: TButton

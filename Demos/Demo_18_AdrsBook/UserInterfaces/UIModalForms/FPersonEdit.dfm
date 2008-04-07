@@ -2,34 +2,25 @@ inherited FormPersonEdit: TFormPersonEdit
   Caption = 'Edit a person'
   ClientHeight = 352
   ClientWidth = 511
-  ExplicitWidth = 517
-  ExplicitHeight = 384
   PixelsPerInch = 96
   TextHeight = 13
   inherited lblErrors: TLabel
     Top = 267
     Width = 495
-    ExplicitTop = 279
-    ExplicitWidth = 495
   end
   inherited btnOK: TBitBtn
     Left = 351
     Top = 322
     TabOrder = 3
-    ExplicitLeft = 351
-    ExplicitTop = 322
   end
   inherited btnCancel: TBitBtn
     Left = 431
     Top = 322
     TabOrder = 4
-    ExplicitLeft = 431
-    ExplicitTop = 322
   end
   inherited cbEnterAsTab: TCheckBox
     Top = 326
     TabOrder = 7
-    ExplicitTop = 326
   end
   object paeTitle: TtiPerAwareEdit
     Left = 8

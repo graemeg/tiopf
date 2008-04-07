@@ -82,6 +82,7 @@ Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_14_OrdinalTypes\*.*; DestDir: {app}
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_15_LookupList\*.*; DestDir: {app}\tiOPF2\Demos\Demo_15_LookupList; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_16_Dataset\*.*; DestDir: {app}\tiOPF2\Demos\Demo_16_Dataset; Flags: recursesubdirs; components: tiOPF2Demos
 Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_17_MastApp\*.*; DestDir: {app}\tiOPF2\Demos\Demo_17_MastApp; Flags: recursesubdirs; components: tiOPF2Demos
+Source: {#PATH_TO_WORKING_TIOPF2}\Demos\Demo_18_AdrsBook\*.*; DestDir: {app}\tiOPF2\Demos\Demo_1_AdrsBook; Flags: recursesubdirs; components: tiOPF2Demos
 
 [Dirs]
 Name: {app}\tiOPF2\Compilers\Delphi7\_dcu

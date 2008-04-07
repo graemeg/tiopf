@@ -2,34 +2,26 @@ inherited FormAdrsEdit: TFormAdrsEdit
   Caption = 'Edit an address'
   ClientHeight = 266
   ClientWidth = 319
-  ExplicitWidth = 325
-  ExplicitHeight = 298
   PixelsPerInch = 96
   TextHeight = 13
   inherited lblErrors: TLabel
     Left = 4
     Top = 181
     Width = 307
-    ExplicitLeft = 4
-    ExplicitTop = 181
-    ExplicitWidth = 318
   end
   inherited btnOK: TBitBtn
     Left = 159
     Top = 236
     TabOrder = 6
-    ExplicitTop = 243
   end
   inherited btnCancel: TBitBtn
     Left = 239
     Top = 236
     TabOrder = 7
-    ExplicitTop = 243
   end
   inherited cbEnterAsTab: TCheckBox
     Top = 240
     TabOrder = 8
-    ExplicitTop = 247
   end
   object paeAdrsType: TtiPerAwareComboBoxStatic
     Left = 8

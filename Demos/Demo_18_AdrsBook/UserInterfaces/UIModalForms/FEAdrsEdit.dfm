@@ -2,8 +2,6 @@ inherited FormEAdrsEdit: TFormEAdrsEdit
   Caption = 'Edit an electronic address (phone, fax, email)'
   ClientHeight = 161
   ClientWidth = 318
-  ExplicitWidth = 324
-  ExplicitHeight = 193
   PixelsPerInch = 96
   TextHeight = 13
   inherited lblErrors: TLabel
