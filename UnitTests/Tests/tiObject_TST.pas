@@ -431,8 +431,40 @@ begin
   end;
 end;
 
+type
+
+  TtiObjectForTestingAssignCaptions = class(TtiObject)
+  protected
+    function GetCaption: string; override;
+  end;
+
+  function TtiObjectForTestingAssignCaptions.GetCaption: string;
+  begin
+    result:= IntToStr(Index);
+  end;
+
 procedure TTestTIObject.AssignCaptions;
+var
+  LObjectList: TtiObjectList;
+  LStringList: TStringList;
 begin
+  LObjectList:= nil;
+  LStringList:= nil;
+  try
+    LObjectList := TtiObjectList.Create;
+    LStringList:= TStringList.Create;
+    LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
+    LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
+    LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
+    LObjectList.AssignCaptions(LStringList);
+    CheckEquals(3, LStringList.Count);
+    CheckEquals('0', LStringList.Strings[0]);
+    CheckEquals('1', LStringList.Strings[1]);
+    CheckEquals('2', LStringList.Strings[2]);
+  finally
+    LObjectList.Free;
+    LStringList.Free;
+  end;
 
 end;
 
@@ -4012,6 +4044,8 @@ end;
 { TTestTIObjectDeleteOwned }
 
 { TtiObjectForTestingOID }
+
+{ TtiObjectForTestingAssignCaptions }
 
 end.
 
