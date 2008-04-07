@@ -1,7 +1,5 @@
-Implement the remote persistence layer
-Install script
-Build script
 Unit test status feedback
+Audit build script for excess constants
 
 UIApplicationMenuSystem
 UIDataAwareControls

@@ -1055,14 +1055,14 @@ action.CompilerVersion = delphi_compiler_version
               <Property name="MinorVersion" type="Integer">0</Property>
               <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_root%\GUI\UIModalForms\AdrsBookUIModalForms.dpr</Property>
+              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_root%\UserInterfaces\UIModalForms\AdrsBookUIModalForms.dpr</Property>
               <Property name="RegenerateResource" type="WordBool">True</Property>
               <Property name="ReleaseVersion" type="Integer">0</Property>
               <Property MultiValue="0" name="ResourceCompilerOptions" type="string"></Property>
               <Property MultiValue="0" name="ResourceCompilerPath" type="string"></Property>
               <Property name="ResourceCompilerType" type="TFBDelphiResourceCompiler">rcBorland</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_root%\GUI\UIModalForms</Property>
+              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_root%\UserInterfaces\UIModalForms</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               <Property name="UpdateDofFile" type="Boolean">False</Property>
               <Property name="UpdatePackageSource" type="Boolean">False</Property>
