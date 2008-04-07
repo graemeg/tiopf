@@ -1,0 +1,144 @@
+object ContactMaintFrm: TContactMaintFrm
+  Left = 375
+  Height = 353
+  Top = 201
+  Width = 540
+  HorzScrollBar.Page = 539
+  VertScrollBar.Page = 352
+  ActiveControl = edFName
+  Caption = 'Contact Maintenance'
+  ClientHeight = 353
+  ClientWidth = 540
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  object Label1: TLabel
+    Left = 12
+    Height = 17
+    Top = 10
+    Width = 77
+    Caption = 'Firstname:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 12
+    Height = 17
+    Top = 54
+    Width = 77
+    Caption = 'Lastname:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 12
+    Height = 17
+    Top = 98
+    Width = 44
+    Caption = 'EMail:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label4: TLabel
+    Left = 12
+    Height = 17
+    Top = 144
+    Width = 51
+    Caption = 'Mobile:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label5: TLabel
+    Left = 12
+    Height = 17
+    Top = 194
+    Width = 85
+    Caption = 'Comments:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label7: TLabel
+    Left = 268
+    Height = 17
+    Top = 10
+    Width = 81
+    Caption = 'Addresses:'
+    Color = clNone
+    ParentColor = False
+  end
+  object edFName: TEdit
+    Left = 12
+    Height = 23
+    Top = 26
+    Width = 231
+    OnChange = edFNameChange
+    TabOrder = 0
+    Text = 'edFName'
+  end
+  object edLName: TEdit
+    Left = 12
+    Height = 23
+    Top = 70
+    Width = 231
+    OnChange = edLNameChange
+    TabOrder = 1
+    Text = 'edLName'
+  end
+  object edEmail: TEdit
+    Left = 12
+    Height = 23
+    Top = 114
+    Width = 231
+    OnChange = edEmailChange
+    TabOrder = 2
+    Text = 'edEmail'
+  end
+  object edMobile: TEdit
+    Left = 12
+    Height = 23
+    Top = 163
+    Width = 165
+    OnChange = edMobileChange
+    TabOrder = 3
+    Text = 'edMobile'
+  end
+  object meComments: TMemo
+    Left = 12
+    Height = 90
+    Top = 210
+    Width = 284
+    Lines.Strings = (
+      'Memo1'
+    )
+    OnEnter = meCommentsEnter
+    TabOrder = 4
+  end
+  object btnSave: TButton
+    Left = 376
+    Height = 25
+    Top = 320
+    Width = 75
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Save'
+    ModalResult = 1
+    TabOrder = 5
+  end
+  object btnCancel: TButton
+    Left = 453
+    Height = 25
+    Top = 320
+    Width = 75
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 6
+  end
+  object ListView1: TListView
+    Left = 268
+    Height = 111
+    Top = 26
+    Width = 260
+    Columns = <>
+    ScrollBars = ssAutoBoth
+    TabOrder = 7
+  end
+end
