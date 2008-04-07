@@ -43,7 +43,7 @@ type
   end;
 
 // Singleton
-function gCommandLineParams : TtiCommandLineParams;
+function GCommandLineParams : TtiCommandLineParams;
 
 implementation
 uses
@@ -51,14 +51,14 @@ uses
  ;
 
 var
-  uCommandLineParams : TtiCommandLineParams;
+  UCommandLineParams : TtiCommandLineParams;
 
 // Singleton
-function gCommandLineParams : TtiCommandLineParams;
+function GCommandLineParams : TtiCommandLineParams;
 begin
-  if uCommandLineParams = nil then
-    uCommandLineParams := TtiCommandLineParams.Create;
-  result := uCommandLineParams;
+  if UCommandLineParams = nil then
+    UCommandLineParams := TtiCommandLineParams.Create;
+  result := UCommandLineParams;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -382,7 +382,7 @@ end;
 initialization
 
 finalization
-  uCommandLineParams.Free;
+  UCommandLineParams.Free;
 
 end.
 
