@@ -43,6 +43,9 @@ begin
 
   Adrs_Dependencies.ConnectToDatabase;
 
+  Caption:= Caption + ' (' +
+        ConnectionDetailsAsString + ')';
+
   LV.AddColumn('Title', vttkString, 'Title', 70);
   LV.AddColumn('FirstName', vttkString, 'First Name', 120);
   LV.AddColumn('LastName', vttkString, 'Last Name', 120);

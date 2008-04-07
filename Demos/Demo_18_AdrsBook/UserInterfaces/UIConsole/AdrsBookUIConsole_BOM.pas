@@ -79,6 +79,7 @@ begin
   inherited;
   Adrs_SrvAutoMap.RegisterMappings;
   GTIOPFManager.ConnectDatabase('adrs.fdb', 'SYSDBA', 'masterkey');
+
   FAdrsBook:= TAdrsBook.Create;
   FAdrsBook.Read;
   FCommandList:= TObjectList.Create;
@@ -227,6 +228,7 @@ var
 begin
   for i := 1 to 24 do
     WriteLn;
+  WriteLn(ConnectionDetailsAsString);
 end;
 
 { TAdrsBookConsoleCommandHelp }

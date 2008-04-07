@@ -1017,7 +1017,7 @@ action.CompilerVersion = delphi_compiler_version
                 </Object>
               </Object>
             <Object Class="TDelphiCompilerAction" XMLID="{75AA9CD4-866E-4FE4-8A97-ECC63F945997}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="0" name="ActionDescription" type="string">%path_to_root%\GUI\UIModalForms\AdrsBookUIModalForms.dpr</Property>
+              <Property MultiValue="0" name="ActionDescription" type="string">%path_to_root%\UserInterfaces\UIModalForms\AdrsBookUIModalForms.dpr</Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property name="AllowImplicitImport" type="Boolean">True</Property>
@@ -1030,7 +1030,7 @@ action.CompilerVersion = delphi_compiler_version
               <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
-              <Property MultiValue="0" name="Description" type="string">%path_to_root%\GUI\UIModalForms\AdrsBookUIModalForms.dpr</Property>
+              <Property MultiValue="0" name="Description" type="string">%path_to_root%\UserInterfaces\UIModalForms\AdrsBookUIModalForms.dpr</Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
@@ -1095,6 +1095,138 @@ action.CompilerVersion = delphi_compiler_version
                 <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
                 </Object>
               <Object Class="TDelphiCompilerOptions" XMLID="{05D05D00-E1FA-49FD-BA27-AD208BF0D1E4}"><Property name="AlwaysUseConditionalsFromDOF" type="WordBool">True</Property>
+                <Property name="AlwaysUseDelphiLibraryPath" type="WordBool">False</Property>
+                <Property name="AlwaysUseDOFSearchPath" type="WordBool">True</Property>
+                <Property name="Assertions" type="WordBool">True</Property>
+                <Property name="AssignableConst" type="WordBool">True</Property>
+                <Property name="BoolEval" type="WordBool">False</Property>
+                <Property MultiValue="0" name="BPLOutputDir" type="WideString"></Property>
+                <Property name="CompilerWarnings" type="TStrings"><![CDATA[]]>
+                  </Property>
+                <Property MultiValue="0" name="Conditionals" type="WideString"></Property>
+                <Property name="ConsoleApp" type="WordBool">False</Property>
+                <Property MultiValue="0" name="DCPOutputDir" type="WideString"></Property>
+                <Property name="DebugInfo" type="WordBool">True</Property>
+                <Property MultiValue="0" name="DefaultNamespace" type="string"></Property>
+                <Property name="DefinitionsOnly" type="WordBool">True</Property>
+                <Property MultiValue="0" name="ExeDescription" type="WideString"></Property>
+                <Property name="ExportAllSymbols" type="WordBool">False</Property>
+                <Property name="ExtendedSyntax" type="WordBool">True</Property>
+                <Property name="GenerateDocumentation" type="Boolean">False</Property>
+                <Property name="GenerateHPP" type="WordBool">False</Property>
+                <Property name="HugeStrings" type="WordBool">True</Property>
+                <Property name="ImageBase" type="Cardinal">4194304</Property>
+                <Property name="IncludeNamespaces" type="WordBool">False</Property>
+                <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
+                <Property name="IncludeTD32" type="WordBool">False</Property>
+                <Property name="IOChecking" type="WordBool">True</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_library_path%</Property>
+                <Property name="LinkerOutput" type="Integer">0</Property>
+                <Property name="LocalSymbols" type="WordBool">True</Property>
+                <Property name="Mapfile" type="Integer">0</Property>
+                <Property name="MaxStackSize" type="Cardinal">1048576</Property>
+                <Property name="MinStackSize" type="Cardinal">16384</Property>
+                <Property MultiValue="0" name="NamespacePrefixes" type="string"></Property>
+                <Property name="OpenStrings" type="WordBool">True</Property>
+                <Property name="Optimisation" type="WordBool">False</Property>
+                <Property MultiValue="0" name="OutputDir" type="WideString">%path_to_deploy%</Property>
+                <Property name="OverflowChecking" type="WordBool">False</Property>
+                <Property MultiValue="0" name="Packages" type="WideString"></Property>
+                <Property name="RangeChecking" type="WordBool">False</Property>
+                <Property name="RecordFieldAlign" type="TFieldAlign">fa1</Property>
+                <Property name="ReferenceInfo" type="WordBool">True</Property>
+                <Property name="SafeDivide" type="WordBool">False</Property>
+                <Property MultiValue="0" name="SearchPath" type="WideString"></Property>
+                <Property name="ShowHints" type="WordBool">True</Property>
+                <Property name="ShowWarnings" type="WordBool">True</Property>
+                <Property name="StackFrames" type="WordBool">False</Property>
+                <Property name="TypedPointers" type="WordBool">False</Property>
+                <Property MultiValue="0" name="UnitAliases" type="WideString">WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;</Property>
+                <Property MultiValue="0" name="UnitOutputDir" type="WideString">%path_to_dcu%</Property>
+                <Property name="UseDebugDCU" type="WordBool">False</Property>
+                <Property name="UsePackages" type="WordBool">False</Property>
+                <Property name="VarStringChecks" type="WordBool">True</Property>
+                </Object>
+              </Object>
+            <Object Class="TDelphiCompilerAction" XMLID="{4F97233B-7EE9-49DF-8717-C908A420A15B}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="0" name="ActionDescription" type="string">%path_to_root%\UserInterfaces\UIModalForms\AdrsBookUIConsole.dpr</Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="AllowImplicitImport" type="Boolean">True</Property>
+              <Property name="AlwaysUseConditionalsFromDOF" type="WordBool">True</Property>
+              <Property name="AutoIncBuild" type="WordBool">False</Property>
+              <Property name="AutoUpdateFileVersion" type="Boolean">True</Property>
+              <Property name="BuildAll" type="WordBool">True</Property>
+              <Property name="BuildVersion" type="Integer">0</Property>
+              <Property name="CodePage" type="Integer">1252</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
+              <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
+              <Property name="DebugVersionNumbers" type="Boolean">False</Property>
+              <Property MultiValue="0" name="Description" type="string">%path_to_root%\UserInterfaces\UIModalForms\AdrsBookUIConsole.dpr</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
+              <Property name="HintsAsError" type="Boolean">False</Property>
+              <Property MultiValue="0" name="IconFile" type="WideString"></Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IncludeCompileDate" type="WordBool">False</Property>
+              <Property name="IncludeVerInfo" type="WordBool">True</Property>
+              <Property name="IsAction" type="Boolean">True</Property>
+              <Property name="IsBreakPoint" type="WordBool">False</Property>
+              <Property name="IsDebug" type="WordBool">False</Property>
+              <Property name="IsDLL" type="WordBool">False</Property>
+              <Property name="IsPreRelease" type="WordBool">False</Property>
+              <Property name="IsPrivate" type="WordBool">False</Property>
+              <Property name="IsSpecial" type="WordBool">False</Property>
+              <Property name="KeepCFG" type="Boolean">False</Property>
+              <Property name="LinkProductVersionToFileVersion" type="Boolean">False</Property>
+              <Property name="Locale" type="Integer">3081</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MajorVersion" type="Integer">1</Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="MinorVersion" type="Integer">0</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_root%\UserInterfaces\UIConsole\AdrsBookUIConsole.dpr</Property>
+              <Property name="RegenerateResource" type="WordBool">True</Property>
+              <Property name="ReleaseVersion" type="Integer">0</Property>
+              <Property MultiValue="0" name="ResourceCompilerOptions" type="string"></Property>
+              <Property MultiValue="0" name="ResourceCompilerPath" type="string"></Property>
+              <Property name="ResourceCompilerType" type="TFBDelphiResourceCompiler">rcBorland</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_root%\UserInterfaces\UIConsole</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Property name="UpdateDofFile" type="Boolean">False</Property>
+              <Property name="UpdatePackageSource" type="Boolean">False</Property>
+              <Property name="UseEurekaLogCompiler" type="Boolean">False</Property>
+              <Property name="UseProjectSettings" type="TFBUseProjectSettings">[]</Property>
+              <Property name="UsePropertySet" type="Boolean">True</Property>
+              <Property name="UseVersionFromDOF" type="Boolean">False</Property>
+              <Property MultiValue="1" name="VersionInfoKeys" type="WideString"><![CDATA[CompanyName=TechInsite
+FileDescription=Address Book
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=
+Comments=
+]]>
+                </Property>
+              <Property MultiValue="0" name="VersionInfoPropertySetName" type="string">version_number</Property>
+              <Property name="WarningsAsError" type="Boolean">False</Property>
+              <Property name="WorkAroundD5Bug" type="WordBool">True</Property>
+              <Object Class="TBuildScript" XMLID="{ADC104C1-FC10-4855-9C5B-EBA80F7B3153}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
+                <Property MultiValue="0" name="Name" type="string">BeforeAction</Property>
+                <Property MultiValue="1" name="Script" type="string"><![CDATA[action.ConfigName = delphi_build_configuration
+action.CompilerVersion = delphi_compiler_version
+
+]]>
+                  </Property>
+                <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
+                </Object>
+              <Object Class="TDelphiCompilerOptions" XMLID="{FA8CC64D-3413-4D2C-A1DD-2D7C898BD0BE}"><Property name="AlwaysUseConditionalsFromDOF" type="WordBool">True</Property>
                 <Property name="AlwaysUseDelphiLibraryPath" type="WordBool">False</Property>
                 <Property name="AlwaysUseDOFSearchPath" type="WordBool">True</Property>
                 <Property name="Assertions" type="WordBool">True</Property>
@@ -1227,6 +1359,138 @@ action.CompilerVersion = delphi_compiler_version
                 <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
                 </Object>
               <Object Class="TDelphiCompilerOptions" XMLID="{4E77C93F-656E-4692-BC23-9DA98BC21813}"><Property name="AlwaysUseConditionalsFromDOF" type="WordBool">True</Property>
+                <Property name="AlwaysUseDelphiLibraryPath" type="WordBool">False</Property>
+                <Property name="AlwaysUseDOFSearchPath" type="WordBool">True</Property>
+                <Property name="Assertions" type="WordBool">True</Property>
+                <Property name="AssignableConst" type="WordBool">True</Property>
+                <Property name="BoolEval" type="WordBool">False</Property>
+                <Property MultiValue="0" name="BPLOutputDir" type="WideString"></Property>
+                <Property name="CompilerWarnings" type="TStrings"><![CDATA[]]>
+                  </Property>
+                <Property MultiValue="0" name="Conditionals" type="WideString"></Property>
+                <Property name="ConsoleApp" type="WordBool">False</Property>
+                <Property MultiValue="0" name="DCPOutputDir" type="WideString"></Property>
+                <Property name="DebugInfo" type="WordBool">True</Property>
+                <Property MultiValue="0" name="DefaultNamespace" type="string"></Property>
+                <Property name="DefinitionsOnly" type="WordBool">True</Property>
+                <Property MultiValue="0" name="ExeDescription" type="WideString"></Property>
+                <Property name="ExportAllSymbols" type="WordBool">False</Property>
+                <Property name="ExtendedSyntax" type="WordBool">True</Property>
+                <Property name="GenerateDocumentation" type="Boolean">False</Property>
+                <Property name="GenerateHPP" type="WordBool">False</Property>
+                <Property name="HugeStrings" type="WordBool">True</Property>
+                <Property name="ImageBase" type="Cardinal">4194304</Property>
+                <Property name="IncludeNamespaces" type="WordBool">False</Property>
+                <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
+                <Property name="IncludeTD32" type="WordBool">False</Property>
+                <Property name="IOChecking" type="WordBool">True</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_library_path%</Property>
+                <Property name="LinkerOutput" type="Integer">0</Property>
+                <Property name="LocalSymbols" type="WordBool">True</Property>
+                <Property name="Mapfile" type="Integer">0</Property>
+                <Property name="MaxStackSize" type="Cardinal">1048576</Property>
+                <Property name="MinStackSize" type="Cardinal">16384</Property>
+                <Property MultiValue="0" name="NamespacePrefixes" type="string"></Property>
+                <Property name="OpenStrings" type="WordBool">True</Property>
+                <Property name="Optimisation" type="WordBool">False</Property>
+                <Property MultiValue="0" name="OutputDir" type="WideString">%path_to_deploy%</Property>
+                <Property name="OverflowChecking" type="WordBool">False</Property>
+                <Property MultiValue="0" name="Packages" type="WideString"></Property>
+                <Property name="RangeChecking" type="WordBool">False</Property>
+                <Property name="RecordFieldAlign" type="TFieldAlign">fa1</Property>
+                <Property name="ReferenceInfo" type="WordBool">True</Property>
+                <Property name="SafeDivide" type="WordBool">False</Property>
+                <Property MultiValue="0" name="SearchPath" type="WideString"></Property>
+                <Property name="ShowHints" type="WordBool">True</Property>
+                <Property name="ShowWarnings" type="WordBool">True</Property>
+                <Property name="StackFrames" type="WordBool">False</Property>
+                <Property name="TypedPointers" type="WordBool">False</Property>
+                <Property MultiValue="0" name="UnitAliases" type="WideString">WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;</Property>
+                <Property MultiValue="0" name="UnitOutputDir" type="WideString">%path_to_dcu%</Property>
+                <Property name="UseDebugDCU" type="WordBool">False</Property>
+                <Property name="UsePackages" type="WordBool">False</Property>
+                <Property name="VarStringChecks" type="WordBool">True</Property>
+                </Object>
+              </Object>
+            <Object Class="TDelphiCompilerAction" XMLID="{2756EA74-1C7D-4ADD-B7F3-470671C35351}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="0" name="ActionDescription" type="string">%path_to_root%\ApplicationServer\GUI\AdrsBookHTMLClient\AdrsBookUIHTML.dpr</Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="AllowImplicitImport" type="Boolean">True</Property>
+              <Property name="AlwaysUseConditionalsFromDOF" type="WordBool">True</Property>
+              <Property name="AutoIncBuild" type="WordBool">False</Property>
+              <Property name="AutoUpdateFileVersion" type="Boolean">True</Property>
+              <Property name="BuildAll" type="WordBool">True</Property>
+              <Property name="BuildVersion" type="Integer">0</Property>
+              <Property name="CodePage" type="Integer">1252</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
+              <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
+              <Property name="DebugVersionNumbers" type="Boolean">False</Property>
+              <Property MultiValue="0" name="Description" type="string">%path_to_root%\ApplicationServer\GUI\AdrsBookHTMLClient\AdrsBookUIHTML.dpr</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
+              <Property name="HintsAsError" type="Boolean">False</Property>
+              <Property MultiValue="0" name="IconFile" type="WideString"></Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IncludeCompileDate" type="WordBool">False</Property>
+              <Property name="IncludeVerInfo" type="WordBool">True</Property>
+              <Property name="IsAction" type="Boolean">True</Property>
+              <Property name="IsBreakPoint" type="WordBool">False</Property>
+              <Property name="IsDebug" type="WordBool">False</Property>
+              <Property name="IsDLL" type="WordBool">False</Property>
+              <Property name="IsPreRelease" type="WordBool">False</Property>
+              <Property name="IsPrivate" type="WordBool">False</Property>
+              <Property name="IsSpecial" type="WordBool">False</Property>
+              <Property name="KeepCFG" type="Boolean">False</Property>
+              <Property name="LinkProductVersionToFileVersion" type="Boolean">False</Property>
+              <Property name="Locale" type="Integer">3081</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MajorVersion" type="Integer">1</Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="MinorVersion" type="Integer">0</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_root%\ApplicationServer\HTMLClient\AdrsBookUIHTML.dpr</Property>
+              <Property name="RegenerateResource" type="WordBool">True</Property>
+              <Property name="ReleaseVersion" type="Integer">0</Property>
+              <Property MultiValue="0" name="ResourceCompilerOptions" type="string"></Property>
+              <Property MultiValue="0" name="ResourceCompilerPath" type="string"></Property>
+              <Property name="ResourceCompilerType" type="TFBDelphiResourceCompiler">rcBorland</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_root%\ApplicationServer\HTMLClient</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Property name="UpdateDofFile" type="Boolean">False</Property>
+              <Property name="UpdatePackageSource" type="Boolean">False</Property>
+              <Property name="UseEurekaLogCompiler" type="Boolean">False</Property>
+              <Property name="UseProjectSettings" type="TFBUseProjectSettings">[]</Property>
+              <Property name="UsePropertySet" type="Boolean">True</Property>
+              <Property name="UseVersionFromDOF" type="Boolean">False</Property>
+              <Property MultiValue="1" name="VersionInfoKeys" type="WideString"><![CDATA[CompanyName=TechInsite
+FileDescription=Address Book
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=
+Comments=
+]]>
+                </Property>
+              <Property MultiValue="0" name="VersionInfoPropertySetName" type="string">version_number</Property>
+              <Property name="WarningsAsError" type="Boolean">False</Property>
+              <Property name="WorkAroundD5Bug" type="WordBool">True</Property>
+              <Object Class="TBuildScript" XMLID="{E5E4424A-7A20-41DD-8182-4DFC06AFCB19}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
+                <Property MultiValue="0" name="Name" type="string">BeforeAction</Property>
+                <Property MultiValue="1" name="Script" type="string"><![CDATA[action.ConfigName = delphi_build_configuration
+action.CompilerVersion = delphi_compiler_version
+
+]]>
+                  </Property>
+                <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
+                </Object>
+              <Object Class="TDelphiCompilerOptions" XMLID="{74ABABC4-261C-4321-808F-C66DA350D3E0}"><Property name="AlwaysUseConditionalsFromDOF" type="WordBool">True</Property>
                 <Property name="AlwaysUseDelphiLibraryPath" type="WordBool">False</Property>
                 <Property name="AlwaysUseDOFSearchPath" type="WordBool">True</Property>
                 <Property name="Assertions" type="WordBool">True</Property>

@@ -19,23 +19,23 @@ type
 
   TAdrsBook = class;
   TPersonList = class;
-  TPerson         = class;
-  TAddressList       = class;
-  TEAddressList      = class;
-  TAdrsAbs        = class;
-  TAdrs           = class;
-  TEAdrs          = class;
+  TPerson = class;
+  TAddressList = class;
+  TEAddressList = class;
+  TAdrsAbs = class;
+  TAdrs = class;
+  TEAdrs = class;
 
   // The TAdrsBook class. Top of the tree of the Address Book BOM
   TAdrsBook = class(TtiObject)
   private
-    FPeople   : TPersonList   ;
+    FPersonList   : TPersonList   ;
     FAdrsTypeList: TAdrsTypeList;
     FEAdrsTypeList: TEAdrsTypeList;
   protected
     procedure   SetDeleted(const Value: boolean); override;
   published
-    property    PersonList   : TPersonList read FPeople;
+    property    PersonList   : TPersonList read FPersonList;
     property    EAdrsTypeList: TEAdrsTypeList read FEAdrsTypeList;
     property    AdrsTypeList: TAdrsTypeList read FAdrsTypeList;
   public
@@ -102,7 +102,7 @@ type
     function    GetOID: TtiOID; override;
   public
     property    Items[i:integer]: TAdrs read GetItems write SetItems;
-    procedure   Add(AObject: TAdrs  ; pbDefaultDispOrder: boolean = true); reintroduce;
+    procedure   Add(AObject: TAdrs); reintroduce;
   end;
 
   // A list of TEAddress objects
@@ -113,7 +113,7 @@ type
     function    GetOID: TtiOID; override;
   public
     property    Items[i:integer]: TEAdrs read GetItems write SetItems;
-    procedure   Add(AObject: TEAdrs ; pbDefaultDispOrder: boolean = true); reintroduce;
+    procedure   Add(AObject: TEAdrs); reintroduce;
   end;
 
   TAdrsAbs = class(TtiObject)
@@ -169,6 +169,9 @@ type
     property Text: string read FText write FText;
   end;
 
+// For display in the UI so we know what we are connected to
+function ConnectionDetailsAsString: string;
+
 implementation
 uses
   tiUtils
@@ -176,7 +179,7 @@ uses
   ,tiOPFManager
   ,tiAutoMap
   ,SysUtils
-  ,tiVisitorDB                                
+  ,tiVisitorDB
   ,tiConstants
  ;
 
@@ -188,6 +191,13 @@ begin
   if UAdrsBook = nil then
     UAdrsBook:= TAdrsBook.Create;
   result:= UAdrsBook;
+end;
+
+function ConnectionDetailsAsString: string;
+begin
+  Result:=
+    'Connected to: ' + GTIOPFManager.DefaultPersistenceLayerName + '\' + 
+    GTIOPFManager.DefaultDBConnectionPool.DBConnectParams.DatabaseName;
 end;
 
 procedure FreeAndNilAdrsBook;
@@ -209,9 +219,9 @@ begin
   FEAdrsTypeList:= TEAdrsTypeList.Create;
   FEAdrsTypeList.Owner:= self;
 
-  FPeople := TPersonList.Create;
-  FPeople.Owner:= Self;
-  FPeople.OID.AsString:= 'AdrsBook';
+  FPersonList := TPersonList.Create;
+  FPersonList.Owner:= Self;
+  FPersonList.OID.AsString:= 'AdrsBook';
 
 end;
 
@@ -219,7 +229,7 @@ destructor TAdrsBook.Destroy;
 begin
   FAdrsTypeList.Free;
   FEAdrsTypeList.Free;
-  FPeople.Free;
+  FPersonList.Free;
   inherited;
 end;
 
@@ -339,9 +349,9 @@ end;
 
 { TAdrsList }
 
-procedure TAddressList.Add(AObject: TAdrs; pbDefaultDispOrder: boolean);
+procedure TAddressList.Add(AObject: TAdrs);
 begin
-  inherited Add(AObject, pbDefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 function TAddressList.GetItems(i: integer): TAdrs;
@@ -364,9 +374,9 @@ end;
 
 { TEAddressList }
 
-procedure TEAddressList.Add(AObject: TEAdrs; pbDefaultDispOrder: boolean);
+procedure TEAddressList.Add(AObject: TEAdrs);
 begin
-  inherited Add(AObject, pbDefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 function TPersonList.GetItems(i: integer): TPerson;
@@ -482,7 +492,7 @@ var
   lObjectState: TPerObjectState;
 begin
   lObjectState:= ObjectState;
-  FPeople.Deleted:= Value;
+  FPersonList.Deleted:= Value;
   ObjectState:= lObjectState;
 end;
 

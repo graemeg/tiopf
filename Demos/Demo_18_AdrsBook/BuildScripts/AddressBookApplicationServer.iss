@@ -11,7 +11,7 @@ AppPublisher=TechInsite
 AppPublisherURL=http://www.tiopf.com
 AppSupportURL=http://www.tiopf.com
 AppUpdatesURL=http://www.tiopf.com
-DefaultDirName=C:\{#Application_Name_Long}
+DefaultDirName=C:\tiOPF Address Book Demo
 DefaultGroupName=tiOPF\{#Application_Name_Long}
 Compression=lzma/fast
 SolidCompression=yes
@@ -20,25 +20,28 @@ OutputBaseFilename={#Application_Name_Short}_Setup
 Uninstallable=yes
 UninstallFilesDir={app}
 
-
 [Files]
-Source: ..\_Deploy\Version.txt; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\AdrsBookApplicationServer.exe; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\AdrsBookApplicationServerGUI.exe; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\AdrsBookUIModalForms.exe; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\DUnitAdrsBookGUI.exe; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\DUnitAdrsBookText.exe; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\Adrs.XMLLight; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\ADRS.FDB; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\StaticPages\default.htm; DestDir: {app}\StaticPages; Flags: ignoreversion touch
-Source: ..\_Deploy\StartApplicationServer.bat; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\StopApplicationServer.bat; DestDir: {app}; Flags: ignoreversion touch
-Source: ..\_Deploy\LauncherServer.exe; DestDir: {app}\CGI-Bin; Flags: ignoreversion touch
-Source: ..\_Deploy\AddressBook_Setup.zip; DestDir: {app}\StaticPages; Flags: ignoreversion touch
-Source: ..\_Deploy\AdrsBookUIModalForms.exe; DestDir: {app}\StaticPages\AddressBook; Flags: ignoreversion touch
+Source: ..\_Deploy\Version.txt; DestDir: {app}\Application Server; Flags: ignoreversion touch
+Source: ..\_Deploy\AdrsBookApplicationServer.exe; DestDir: {app}\Application Server; Flags: ignoreversion touch
+Source: ..\_Deploy\AdrsBookApplicationServerGUI.exe; DestDir: {app}\Application Server; Flags: ignoreversion touch
+Source: ..\_Deploy\ADRS.FDB; DestDir: {app}\Application Server; Flags: ignoreversion touch
+Source: ..\_Deploy\StaticPages\default.htm; DestDir: {app}\Application Server\StaticPages; Flags: ignoreversion touch
+Source: ..\_Deploy\StartApplicationServer.bat; DestDir: {app}\Application Server; Flags: ignoreversion touch
+Source: ..\_Deploy\StopApplicationServer.bat; DestDir: {app}\Application Server; Flags: ignoreversion touch
+Source: ..\_Deploy\LauncherServer.exe; DestDir: {app}\Application Server\CGI-Bin; Flags: ignoreversion touch
+Source: ..\_Deploy\AdrsBookUIHTML.exe; DestDir: {app}\Application Server\CGI-Bin; Flags: ignoreversion touch
+Source: ..\_Deploy\AddressBook_Setup.zip; DestDir: {app}\Application Server\StaticPages; Flags: ignoreversion touch
+Source: ..\_Deploy\AdrsBookUIModalForms.exe; DestDir: {app}\Application Server\StaticPages\AddressBook; Flags: ignoreversion touch
+
+Source: ..\_Deploy\AdrsBookUIModalForms.exe; DestDir: {app}\Client; Flags: ignoreversion touch
+Source: ..\_Deploy\AdrsBookUIConsole.exe; DestDir: {app}\Client; Flags: ignoreversion touch
+Source: ..\_Deploy\DUnitAdrsBookGUI.exe; DestDir: {app}\Client; Flags: ignoreversion touch
+Source: ..\_Deploy\DUnitAdrsBookText.exe; DestDir: {app}\Client; Flags: ignoreversion touch
+Source: ..\_Deploy\Adrs.XMLLight; DestDir: {app}\Client; Flags: ignoreversion touch
+Source: ..\_Deploy\ADRS.FDB; DestDir: {app}\Client; Flags: ignoreversion touch
 
 [UninstallDelete]
-Type: filesandordirs; Name: {app}\Log
+Type: filesandordirs; Name: {app}\Application Server\Log
 
 [Code]
 
@@ -47,7 +50,7 @@ Type: filesandordirs; Name: {app}\Log
 const
   CServiceName        = 'AddressBookApplicationServer';
   CServiceDisplayName = 'tiOPF - Address book application server';
-  CServiceEXEName     = '{app}\AdrsBookApplicationServer.exe';
+  CServiceEXEName     = '{app}\Application Server\AdrsBookApplicationServer.exe';
 
 var
   LAppServerWasRunning: boolean;

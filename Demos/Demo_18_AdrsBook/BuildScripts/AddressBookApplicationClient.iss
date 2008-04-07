@@ -11,7 +11,7 @@ AppPublisher=TechInsite
 AppPublisherURL=http://www.tiopf.com
 AppSupportURL=http://www.tiopf.com
 AppUpdatesURL=http://www.tiopf.com
-DefaultDirName=C:\{#Application_Name_Long}
+DefaultDirName=C:\tiOPF Address Book Demo\Client - Remote
 DefaultGroupName=tiOPF\{#Application_Name_Long}
 Compression=lzma/fast
 SolidCompression=yes
@@ -24,11 +24,11 @@ UninstallFilesDir={app}
 [Files]
 Source: ..\_Deploy\LauncherClient.exe; DestDir: {app}; Flags: ignoreversion touch
 
-[Icons]
-Name: {group}\Address book (remote); Filename: {app}\LauncherClient.exe
-Name: {userdesktop}\Address book (remote); Filename: {app}\LauncherClient.exe
-Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Address book (remote); Filename: {app}\LauncherClient.exe
-Name: {app}\Address book (remote); Filename: {app}\LauncherClient.exe
+;[Icons]
+;Name: {group}\Address book (remote); Filename: {app}\Remote Client\LauncherClient.exe
+;Name: {userdesktop}\Address book (remote); Filename: {app}\Remote Client\LauncherClient.exe
+;Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Address book (remote); Filename: {app}\Remote Client\LauncherClient.exe
+;Name: {app}\Address book (remote); Filename: {app}\Remote Client\LauncherClient.exe
 
 [Run]
 Filename: {app}\LauncherClient.exe; Description: Run Address Book (Remote); Flags: nowait postinstall skipifsilent
