@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="av" invoke="auto">
+		<point name="VisitedType">
+			<hint>
+				Visited type
+			</hint>
+			<text>
+				TtiObject
+			</text>
+		</point>
+	 <point name="VisitedObjectState">
+			<hint>
+				Visited ObjectState
+			</hint>
+			<text>
+				posEmpty
+			</text>
+		</point>
+  <description>
+			result:= (Visited is TMyObject) and (Visited.ObjectState = posEmpty)
+		</description>
+		<author>
+			Peter Hinrichsen
+		</author>
+		<code language="Delphi" context="methodbody" delimiter="|">
+    <![CDATA[
+  result:= (Visited is |VisitedType|) and
+           (Visited.ObjectState = |VisitedObjectState|);
+    ]]>
+		</code>
+	</template>
+</codetemplate>

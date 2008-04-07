@@ -11,9 +11,9 @@
 				TMyObject
 			</text>
 		</point>
-		<point name="objectsowner">
+		<point name="objectparent">
 			<hint>
-				Objects owner
+				Object's parent
 			</hint>
 			<text>
 				TMyList
@@ -30,14 +30,12 @@
 |objectclass| = class(TtiObject)
 private
 protected
-  function    GetOwner: |objectsowner|; reintroduce;
-  procedure   SetOwner(const AValue: |objectsowner|); reintroduce;
+  function    GetParent: |objectparent|; reintroduce;
 public
-  property    Owner: |objectsowner| read GetOwner write SetOwner;
-  function    Clone : |objectclass|; reintroduce; 
+  property    Parent: |objectparent| read GetParent;
   function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
 published
-end ;
+end;
 		]]>
 		</code>
 	</template>
