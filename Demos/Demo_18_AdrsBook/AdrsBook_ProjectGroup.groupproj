@@ -5,6 +5,7 @@
   <ItemGroup />
   <ItemGroup>
     <Projects Include="ApplicationServer\GUI\AdrsBookApplicationServerGUI.dproj" />
+    <Projects Include="ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" />
     <Projects Include="ApplicationServer\Launcher\LauncherServer.dproj" />
     <Projects Include="ApplicationServer\Service\AdrsBookApplicationServer.dproj" />
     <Projects Include="Launcher\LauncherClient.dproj" />
@@ -81,14 +82,23 @@
   <Target Name="AdrsBookUIModalForms:Make">
     <MSBuild Projects="UserInterfaces\UIModalForms\AdrsBookUIModalForms.dproj" Targets="Make" />
   </Target>
+  <Target Name="AdrsBookUIHTML">
+    <MSBuild Projects="ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookUIHTML:Clean">
+    <MSBuild Projects="ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookUIHTML:Make">
+    <MSBuild Projects="ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" Targets="Make" />
+  </Target>
   <Target Name="Build">
-    <CallTarget Targets="DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookApplicationServer;AdrsBookApplicationServerGUI;LauncherServer;LauncherClient;AdrsBookUIModalForms" />
+    <CallTarget Targets="DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookApplicationServer;AdrsBookApplicationServerGUI;LauncherServer;LauncherClient;AdrsBookUIModalForms;AdrsBookUIHTML" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookApplicationServer:Clean;AdrsBookApplicationServerGUI:Clean;LauncherServer:Clean;LauncherClient:Clean;AdrsBookUIModalForms:Clean" />
+    <CallTarget Targets="DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookApplicationServer:Clean;AdrsBookApplicationServerGUI:Clean;LauncherServer:Clean;LauncherClient:Clean;AdrsBookUIModalForms:Clean;AdrsBookUIHTML:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookApplicationServer:Make;AdrsBookApplicationServerGUI:Make;LauncherServer:Make;LauncherClient:Make;AdrsBookUIModalForms:Make" />
+    <CallTarget Targets="DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookApplicationServer:Make;AdrsBookApplicationServerGUI:Make;LauncherServer:Make;LauncherClient:Make;AdrsBookUIModalForms:Make;AdrsBookUIHTML:Make" />
   </Target>
   <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>
