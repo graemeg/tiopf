@@ -779,7 +779,7 @@ p_delphi_version=2007
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">False</Property>
+            <Property name="NodeCollapsed" type="Boolean">True</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -4293,7 +4293,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_01_ReadMe]]>
@@ -4428,7 +4428,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_02_LoadPersistenceLayerIfDef]]>
@@ -4563,7 +4563,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_03_LoadPersistenceLayerUses]]>
@@ -4698,7 +4698,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_04_CreateDatabase]]>
@@ -4833,7 +4833,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_05_ConnectToDatabase]]>
@@ -4968,7 +4968,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_06_CreateTable]]>
@@ -5103,7 +5103,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_07_VisitorBasics]]>
@@ -5238,7 +5238,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_08_Collection]]>
@@ -5373,7 +5373,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_09_EditDataInGUI]]>
@@ -5508,7 +5508,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_10_CollectionWithFilter]]>
@@ -5643,7 +5643,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_10a_CollectionWithCriteria]]>
@@ -5778,7 +5778,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_11_OnetoMany]]>
@@ -5913,7 +5913,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_12_Inheritance]]>
@@ -6048,7 +6048,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_13_OneToOne]]>
@@ -6183,7 +6183,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_14_OrdinalTypes]]>
@@ -6318,7 +6318,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_15_LookupList]]>
@@ -6453,7 +6453,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_16_Dataset]]>
@@ -6588,7 +6588,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_17_MastApp]]>
@@ -6723,7 +6723,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_18_AdrsBook - DUnitAdrsBookGUI.dpr]]>
@@ -6818,7 +6818,7 @@ Comments=
               <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -6858,7 +6858,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_18_AdrsBook - DUnitAdrsBookText.dpr]]>
@@ -6953,7 +6953,7 @@ Comments=
               <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -6993,7 +6993,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_18_AdrsBook - AdrsBookUIConsole.dpr]]>
@@ -7088,7 +7088,7 @@ Comments=
               <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7128,7 +7128,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_18_AdrsBook - AdrsBookUIModalForms.dpr]]>
@@ -7223,7 +7223,7 @@ Comments=
               <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7263,7 +7263,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_18_AdrsBook - ApplicationServer\GUI\AdrsBookApplicationServerGUI.dpr]]>
@@ -7398,7 +7398,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_18_AdrsBook - ApplicationServer\Service\AdrsBookApplicationServerService.dpr]]>
@@ -7533,7 +7533,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_18_AdrsBook - ApplicationServer\Launcher\LauncherClient.dpr]]>
@@ -7628,7 +7628,7 @@ Comments=
               <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\..\FileSync</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7668,7 +7668,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">12</Property>
+            <Property name="CompilerVersion" type="Integer">4</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_18_AdrsBook - ApplicationServer\HTMLClient\AdrsBookUIHTML.dpr]]>
@@ -7763,7 +7763,7 @@ Comments=
               <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -8065,7 +8065,7 @@ Comments=
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{CEAF6BD8-9FAF-410F-8F17-1ED6C9047070}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\Core;%path_to_working_tiOPF2%\Options;%path_to_working_tiOPF2%\GUI;%path_to_working_tiOPF2%\ApplicationServer\tiDBProxyServerExtension;%path_to_working_tiOPF2%\ApplicationServer;%path_to_working_3rdparty%\FastMM;%path_to_working_3rdparty%\DUnit;%path_to_working_3rdparty%\JCL\Common;%path_to_working_3rdparty%\JCL\Windows;%path_to_working_3rdparty%\Indy\Core;%path_to_working_3rdparty%\Indy\Protocols;%path_to_working_3rdparty%\Indy\System;%path_to_working_3rdparty%\DOA</Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\Core;%path_to_working_tiOPF2%\Options;%path_to_working_tiOPF2%\GUI;%path_to_working_tiOPF2%\ApplicationServer\tiDBProxyServerExtension;%path_to_working_tiOPF2%\ApplicationServer;%path_to_working_tiOPF2%\UnitTests\Common;%path_to_working_3rdparty%\FastMM;%path_to_working_3rdparty%\DUnit;%path_to_working_3rdparty%\JCL\Common;%path_to_working_3rdparty%\JCL\Windows;%path_to_working_3rdparty%\Indy\Core;%path_to_working_3rdparty%\Indy\Protocols;%path_to_working_3rdparty%\Indy\System;%path_to_working_3rdparty%\DOA</Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
