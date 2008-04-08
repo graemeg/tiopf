@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{C968A59E-8A5E-40DC-80EF-8F9488FC9BD0}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>
+    
+    <Projects>
+      <Projects Name="DUnitAdrsBookGUI.exe">UnitTests\DUnitAdrsBookGUI.bdsproj</Projects>
+      <Projects Name="DUnitAdrsBookText.exe">UnitTests\DUnitAdrsBookText.bdsproj</Projects>
+      <Projects Name="AdrsBookApplicationServerGUI.exe">ApplicationServer\GUI\AdrsBookApplicationServerGUI.bdsproj</Projects>
+      <Projects Name="AdrsBookApplicationServer.exe">ApplicationServer\Service\AdrsBookApplicationServer.bdsproj</Projects>
+      <Projects Name="LauncherServer.exe">ApplicationServer\Launcher\LauncherServer.bdsproj</Projects>
+      <Projects Name="AdrsBookUIHTML.exe">ApplicationServer\HTMLClient\AdrsBookUIHTML.bdsproj</Projects>
+      <Projects Name="AdrsBookUIConsole.exe">UserInterfaces\UIConsole\AdrsBookUIConsole.bdsproj</Projects>
+      <Projects Name="AdrsBookUIModalForms.exe">UserInterfaces\UIModalForms\AdrsBookUIModalForms.bdsproj</Projects>
+      <Projects Name="Targets">DUnitAdrsBookGUI.exe DUnitAdrsBookText.exe AdrsBookApplicationServerGUI.exe AdrsBookApplicationServer.exe LauncherServer.exe AdrsBookUIHTML.exe AdrsBookUIConsole.exe AdrsBookUIModalForms.exe</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>
