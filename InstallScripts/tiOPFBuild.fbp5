@@ -758,6 +758,29 @@ p_delphi_version=2007
               <Property name="ShareHostVariableNameSpace" type="Boolean">True</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               </Object>
+            <Object Class="TDeleteDirectoryAction" XMLID="{B034CC27-645A-4822-BCEA-F218ED084603}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delete Directory [ %path_to_working_demos%\Demo_18_AdrsBook\_Deploy ]]]>
+                </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="DeleteHidden" type="WordBool">False</Property>
+              <Property name="DeleteReadOnly" type="WordBool">False</Property>
+              <Property name="DeleteTree" type="WordBool">True</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_demos%\Demo_18_AdrsBook\_Deploy</Property>
+              <Property name="Force" type="Boolean">False</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IsAction" type="Boolean">True</Property>
+              <Property name="IsBreakPoint" type="WordBool">False</Property>
+              <Property name="LogDeletedFiles" type="Boolean">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              </Object>
             <Object Class="TBuildScript" XMLID="{841EA18D-36B1-4402-97F2-00AD4DBED917}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
               <Property MultiValue="0" name="Name" type="string">Condition</Property>
               <Property MultiValue="1" name="Script" type="string"><![CDATA[PROMPT_COMPILE_DEMOS = "1"]]>
@@ -779,7 +802,7 @@ p_delphi_version=2007
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
