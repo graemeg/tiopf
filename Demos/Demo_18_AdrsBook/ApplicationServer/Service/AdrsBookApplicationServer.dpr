@@ -21,8 +21,12 @@ begin
   //
   // Application.DelayInitialize := True;
   //
+  {$ifdef DELPHI2007ORABOVE}
   if not Application.DelayInitialize or Application.Installing then
+  {$endif}
     Application.Initialize;
   Application.CreateForm(TAddressBookApplicationServer, AddressBookApplicationServer);
   Application.Run;
 end.
+
+

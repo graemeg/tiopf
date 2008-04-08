@@ -1,0 +1,44 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = DUnitAdrsBookGUI.exe DUnitAdrsBookText.exe \
+  AdrsBookApplicationServerGUI.exe AdrsBookApplicationServer.exe \
+  LauncherServer.exe AdrsBookUIHTML.exe AdrsBookUIConsole.exe \
+  AdrsBookUIModalForms.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+DUnitAdrsBookGUI.exe: UnitTests\DUnitAdrsBookGUI.dpr
+  $(DCC)
+
+DUnitAdrsBookText.exe: UnitTests\DUnitAdrsBookText.dpr
+  $(DCC)
+
+AdrsBookApplicationServerGUI.exe: ApplicationServer\GUI\AdrsBookApplicationServerGUI.dpr
+  $(DCC)
+
+AdrsBookApplicationServer.exe: ApplicationServer\Service\AdrsBookApplicationServer.dpr
+  $(DCC)
+
+LauncherServer.exe: ApplicationServer\Launcher\LauncherServer.dpr
+  $(DCC)
+
+AdrsBookUIHTML.exe: ApplicationServer\HTMLClient\AdrsBookUIHTML.dpr
+  $(DCC)
+
+AdrsBookUIConsole.exe: UserInterfaces\UIConsole\AdrsBookUIConsole.dpr
+  $(DCC)
+
+AdrsBookUIModalForms.exe: UserInterfaces\UIModalForms\AdrsBookUIModalForms.dpr
+  $(DCC)
+
+

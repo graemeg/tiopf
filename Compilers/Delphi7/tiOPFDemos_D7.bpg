@@ -14,7 +14,8 @@ PROJECTS = Demo_ReadMe.exe Demo_LoadPersistenceLayerIfDef.exe \
   Demo_ConnectToDatabase.exe Demo_CreateTable.exe Demo_VisitorBasics.exe \
   Demo_Collection.exe Demo_CollectionWithCriteria.exe Demo_EditDataInGUI.exe \
   Demo_CollectionWithFilter.exe Demo_OneToMany.exe Demo_Inheritance.exe \
-  Demo_OneToOne.exe Demo_OrdinalTypes.exe Demo_LookupList.exe
+  Demo_OneToOne.exe Demo_OrdinalTypes.exe Demo_LookupList.exe Demo_TIDataSet.exe \
+  Demo_MastApp.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -65,6 +66,12 @@ Demo_LookupList.exe: ..\..\Demos\Demo_15_LookupList\Demo_LookupList.dpr
   $(DCC)
 
 Demo_CollectionWithCriteria.exe: ..\..\Demos\Demo_10a_CollectionWithCriteria\Demo_CollectionWithCriteria.dpr
+  $(DCC)
+
+Demo_TIDataSet.exe: ..\..\Demos\Demo_16_Dataset\Demo_TIDataSet.dpr
+  $(DCC)
+
+Demo_MastApp.exe: ..\..\Demos\Demo_17_MastApp\Demo_MastApp.dpr
   $(DCC)
 
 

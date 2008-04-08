@@ -116,7 +116,7 @@ procedure TAdrsBookUIConsole.ParseCommand(const AInput: string; out ACommand,
   AParams: string);
 begin
   ACommand:= tiToken(AInput, ' ', 1);
-  AParams:= Trim(Copy(AInput, Length(ACommand) + 1));
+  AParams:= Trim(Copy(AInput, 1, Length(ACommand) + 1));
 end;
 
 procedure TAdrsBookUIConsole.ProcessCommand(const ACommand: string;

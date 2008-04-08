@@ -58,7 +58,7 @@ UnsupportedConstruct=1
 FileOpen=1
 FileOpenUnitSrc=1
 BadGlobalSymbol=1
-DuplicateConstructorDestructor=1
+DuplicateConstructorDestructor=0
 InvalidDirective=1
 PackageNoLink=1
 PackageThreadVar=1
@@ -106,7 +106,7 @@ Launcher=
 UseLauncher=0
 DebugCWD=
 [Version Info]
-IncludeVerInfo=0
+IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=0
 MinorVer=0
@@ -129,3 +129,24 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=
+[Excluded Packages]
+c:\program files\borland\delphi7\Projects\Bpl\tiOPFGUIDsgn70.bpl=TechInsite Object Persistence Framework (tiOPF) GUI Controls
+[HistoryLists\hlConditionals]
+Count=1
+Item0=FASTMM;USE_JEDI_JCL;DUNIT2;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBXx;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlSearchPath]
+Count=3
+Item0=..\..\Core
+Item1=..\..\Core;..\..\Options;..\..\GUI;..\Common;..\Tests;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\DUnit
+Item2=..\Tests;..\Common;..\..\Core;..\..\Options;..\..\GUI;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\3rdParty\Indy\Core;..\..\3rdParty\Indy\Protocols;..\..\3rdParty\Indy\System;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\FastMM;..\..\3rdParty\DUnit
+[HistoryLists\hlUnitOutputDirectory]
+Count=2
+Item0=.\_dcu
+Item1=_Dcu
+[HistoryLists\hlOutputDirectorry]
+Count=2
+Item0=.\_bin
+Item1=..\..\_bin

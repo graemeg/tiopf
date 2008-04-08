@@ -19,13 +19,14 @@
       <Projects Name="Demo_Collection.exe">..\..\Demos\Demo_08_Collection\Demo_Collection.bdsproj</Projects>
       <Projects Name="Demo_EditDataInGUI.exe">..\..\Demos\Demo_09_EditDataInGUI\Demo_EditDataInGUI.bdsproj</Projects>
       <Projects Name="Demo_CollectionWithFilter.exe">..\..\Demos\Demo_10_CollectionWithFilter\Demo_CollectionWithFilter.bdsproj</Projects>
-      <Projects Name="Demo_CollectionWithCriteria.exe">..\..\Demos\Demo_10a_CollectionWithCriteria\Demo_CollectionWithCriteria.bdsproj</Projects>
       <Projects Name="Demo_OneToMany.exe">..\..\Demos\Demo_11_OnetoMany\Demo_OneToMany.bdsproj</Projects>
       <Projects Name="Demo_Inheritance.exe">..\..\Demos\Demo_12_Inheritance\Demo_Inheritance.bdsproj</Projects>
       <Projects Name="Demo_OneToOne.exe">..\..\Demos\Demo_13_OneToOne\Demo_OneToOne.bdsproj</Projects>
       <Projects Name="Demo_OrdinalTypes.exe">..\..\Demos\Demo_14_OrdinalTypes\Demo_OrdinalTypes.bdsproj</Projects>
       <Projects Name="Demo_LookupList.exe">..\..\Demos\Demo_15_LookupList\Demo_LookupList.bdsproj</Projects>
-      <Projects Name="Targets">Demo_ReadMe.exe Demo_LoadPersistenceLayerIfDef.exe Demo_LoadPersistenceLayerUses.exe Demo_CreateDatabase.exe Demo_ConnectToDatabase.exe Demo_CreateTable.exe Demo_VisitorBasics.exe Demo_Collection.exe Demo_EditDataInGUI.exe Demo_CollectionWithFilter.exe Demo_CollectionWithCriteria.exe Demo_OneToMany.exe Demo_Inheritance.exe Demo_OneToOne.exe Demo_OrdinalTypes.exe Demo_LookupList.exe</Projects>
+      <Projects Name="Demo_TIDataSet.exe">..\..\Demos\Demo_16_Dataset\Demo_TIDataSet.bdsproj</Projects>
+      <Projects Name="Demo_MastApp.exe">..\..\Demos\Demo_17_MastApp\Demo_MastApp.bdsproj</Projects>
+      <Projects Name="Targets">Demo_ReadMe.exe Demo_LoadPersistenceLayerIfDef.exe Demo_LoadPersistenceLayerUses.exe Demo_CreateDatabase.exe Demo_ConnectToDatabase.exe Demo_CreateTable.exe Demo_VisitorBasics.exe Demo_Collection.exe Demo_EditDataInGUI.exe Demo_CollectionWithFilter.exe Demo_OneToMany.exe Demo_Inheritance.exe Demo_OneToOne.exe Demo_OrdinalTypes.exe Demo_LookupList.exe Demo_TIDataSet.exe Demo_MastApp.exe</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

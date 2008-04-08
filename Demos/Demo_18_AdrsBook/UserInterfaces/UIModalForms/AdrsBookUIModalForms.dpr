@@ -13,7 +13,9 @@ uses
 
 begin
   Application.Initialize;
+  {$ifdef DELPHI2007ORABOVE}
   Application.MainFormOnTaskbar := True;
+  {$endif}
   Application.CreateForm(TFormMain, FormMain);
   Application.Run;
 end.

@@ -95,6 +95,7 @@
   {$WARN UNSAFE_CODE OFF}
   {$WARN UNSAFE_TYPE OFF}
   {$WARN UNSAFE_CAST OFF}
+  {$WARN DUPLICATE_CTOR_DTOR OFF}
 {$ENDIF}
 
 // Turn this on if you have SynEdit installed and want colour syntax hilighting in

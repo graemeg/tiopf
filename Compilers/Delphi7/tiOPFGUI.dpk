@@ -78,6 +78,9 @@ contains
   tiVTExportHTML in '..\..\GUI\tiVTExportHTML.pas',
   tiVTFilter in '..\..\GUI\tiVTFilter.pas' {frmLVFilter},
   tiHotImage in '..\..\GUI\tiHotImage.pas',
-  tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas';
+  tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas',
+  tiGUIINI in '..\..\GUI\tiGUIINI.pas',
+  tiMulticastEvent in '..\..\GUI\tiMulticastEvent.pas',
+  tiVTAbstract in '..\..\GUI\tiVTAbstract.pas';
 
 end.
