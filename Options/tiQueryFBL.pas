@@ -371,20 +371,20 @@ begin
   Prepare;
 {$IFDEF BOOLEAN_CHAR_1}
   if AValue then
-    FQuery.ParamByNameAsString(UpperCase(AName), 'T')
+    FQuery.ParamByNameAsString(AName, 'T')
   else
-    FQuery.ParamByNameAsString(UpperCase(AName), 'F');
+    FQuery.ParamByNameAsString(AName, 'F');
 {$ELSE}
   {$IFDEF BOOLEAN_NUM_1}
     if AValue then
-      FQuery.ParamByNameAsInt64(UpperCase(AName), 1)
+      FQuery.ParamByNameAsInt64(AName, 1)
     else
-      FQuery.ParamByNameAsInt64(UpperCase(AName), 0);
+      FQuery.ParamByNameAsInt64(AName, 0);
   {$ELSE}
     if AValue then
-      FQuery.ParamByNameAsString(UpperCase(AName), 'TRUE')
+      FQuery.ParamByNameAsString(AName, 'TRUE')
     else
-      FQuery.ParamByNameAsString(UpperCase(AName), 'FALSE');
+      FQuery.ParamByNameAsString(AName, 'FALSE');
   {$ENDIF}
 {$ENDIF BOOLEAN_CHAR_1}
 end;
@@ -392,31 +392,31 @@ end;
 procedure TtiQueryFBL.SetParamAsFloat(const AName: string; const AValue: extended);
 begin
   Prepare;
-  FQuery.ParamByNameAsDouble(UpperCase(AName), AValue);
+  FQuery.ParamByNameAsDouble(AName, AValue);
 end;
 
 procedure TtiQueryFBL.SetParamAsInteger(const AName: string; const AValue: Int64);
 begin
   Prepare;
-  FQuery.ParamByNameAsInt64(UpperCase(AName), AValue);
+  FQuery.ParamByNameAsInt64(AName, AValue);
 end;
 
 procedure TtiQueryFBL.SetParamAsDateTime(const AName: string; const AValue: TDateTime);
 begin
   Prepare;
-  FQuery.ParamByNameAsDateTime(UpperCase(AName), AValue);
+  FQuery.ParamByNameAsDateTime(AName, AValue);
 end;
 
 procedure TtiQueryFBL.SetParamAsTextBLOB(const AName, AValue: string);
 begin
   Prepare;
-  FQuery.BlobParamByNameAsString(UpperCase(AName), AValue);
+  FQuery.BlobParamByNameAsString(AName, AValue);
 end;
 
 procedure TtiQueryFBL.SetParamAsString(const AName, AValue: string);
 begin
   Prepare;
-  FQuery.ParamByNameAsString(UpperCase(AName), AValue);
+  FQuery.ParamByNameAsString(AName, AValue);
 end;
 
 procedure TtiQueryFBL.SetSQL(const AValue: TStrings);
@@ -441,6 +441,7 @@ end;
 
 procedure TtiQueryFBL.AssignParamToStream(const AName: string; const AStream: TStream);
 begin
+  raise EtiOPFInternalException.Create('FBLib does not support AssignParamToStream yet.');
   Assert(AStream <> nil, 'Stream not assigned');
 //  FQuery.Params.ByName(UpperCase(AName)).SaveToStream(AStream);
   AStream.Position := 0;
