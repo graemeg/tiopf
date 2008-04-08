@@ -57,6 +57,7 @@ Source: {#PATH_TO_WORKING_TIOPF2}\Core\*.*; DestDir: {app}\tiOPF2\Core; Flags: r
 Source: {#PATH_TO_WORKING_TIOPF2}\GUI\*.*; DestDir: {app}\tiOPF2\GUI; Flags: recursesubdirs; components: tiOPF2
 Source: {#PATH_TO_WORKING_TIOPF2}\Options\*.*; DestDir: {app}\tiOPF2\Options; Flags: recursesubdirs; components: tiOPF2
 Source: {#PATH_TO_WORKING_TIOPF2}\UnitTests\*.*; DestDir: {app}\tiOPF2\UnitTests; Flags: recursesubdirs; components: tiOPF2
+Source: {#PATH_TO_WORKING_TIOPF2}\ApplicationServer\*.*; DestDir: {app}\tiOPF2\ApplicationServer; Flags: recursesubdirs; components: tiOPF2
 
 Source: {#PATH_TO_WORKING_3RDPARTY}\DUnit\*.*; DestDir: {app}\tiOPF2\3rdParty\DUnit; Flags: recursesubdirs; components: TrdParty\DUnit
 Source: {#PATH_TO_WORKING_3RDPARTY}\FastMM\*.*; DestDir: {app}\tiOPF2\3rdParty\FastMM; Flags: recursesubdirs; components: TrdParty\FastMM
