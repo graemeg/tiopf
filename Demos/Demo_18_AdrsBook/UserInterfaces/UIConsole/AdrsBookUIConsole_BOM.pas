@@ -102,7 +102,7 @@ var
   LExit: boolean;
   LCommand: string;
 begin
-  ProcessCommand('CLS', LExit);
+  ProcessCommand('c', LExit);
   LExit:= True;
   repeat
     WriteLn('');
@@ -116,7 +116,7 @@ procedure TAdrsBookUIConsole.ParseCommand(const AInput: string; out ACommand,
   AParams: string);
 begin
   ACommand:= tiToken(AInput, ' ', 1);
-  AParams:= Trim(Copy(AInput, 1, Length(ACommand) + 1));
+  AParams:= Trim(Copy(AInput, Length(ACommand) + 1, Length(AInput)));
 end;
 
 procedure TAdrsBookUIConsole.ProcessCommand(const ACommand: string;
@@ -126,8 +126,7 @@ var
   LCommand: string;
   LParams: string;
 begin
-  AExit:= SameText(ACommand, 'exit') or SameText(ACommand, 'quit') or
-          SameText(ACommand, 'e')    or SameText(ACommand, 'q');
+  AExit:= SameText(ACommand, 'e')    or SameText(ACommand, 'q');
   if AExit then
     Exit; //==>
 
@@ -155,7 +154,7 @@ end;
 function TAdrsBookConsoleCommandList.CanExecute(
   const ACommand: string): boolean;
 begin
-  result:= SameText(ACommand, 'list') or SameText(ACommand, 'l');
+  result:= SameText(ACommand, 'l');
 end;
 
 procedure TAdrsBookConsoleCommandList.Execute(const AAdrsBook: TAdrsBook; const AParams: string);
@@ -170,7 +169,7 @@ end;
 
 function TAdrsBookConsoleCommandAdd.CanExecute(const ACommand: string): boolean;
 begin
-  result:= SameText(ACommand, 'add') or SameText(ACommand, 'a');
+  result:= SameText(ACommand, 'a');
 end;
 
 procedure TAdrsBookConsoleCommandAdd.Execute(const AAdrsBook: TAdrsBook;
@@ -200,7 +199,7 @@ end;
 function TAdrsBookConsoleCommandDelete.CanExecute(
   const ACommand: string): boolean;
 begin
-  result:= SameText(ACommand, 'delete') or SameText(ACommand, 'del') or SameText(ACommand, 'd');
+  result:= SameText(ACommand, 'd');
 end;
 
 procedure TAdrsBookConsoleCommandDelete.Execute(const AAdrsBook: TAdrsBook;
@@ -218,7 +217,7 @@ end;
 
 function TAdrsBookConsoleCommandCLS.CanExecute(const ACommand: string): boolean;
 begin
-  result:= SameText(ACommand, 'cls') or SameText(ACommand, 'c');
+  result:= SameText(ACommand, 'c');
 end;
 
 procedure TAdrsBookConsoleCommandCLS.Execute(const AAdrsBook: TAdrsBook;
@@ -236,17 +235,17 @@ end;
 function TAdrsBookConsoleCommandHelp.CanExecute(
   const ACommand: string): boolean;
 begin
-  result:= SameText(ACommand, 'help') or SameText(ACommand, 'h');
+  result:= SameText(ACommand, 'h');
 end;
 
 procedure TAdrsBookConsoleCommandHelp.Execute(const AAdrsBook: TAdrsBook;
   const AParams: string);
 begin
-  WriteLn('help                                    - Describe the commands');
-  WriteLn('list                                    - List all entries');
-  WriteLn('add <Title>, <First Name>, <Last Name>  - Add a new entry');
-  WriteLn('del <Index number>                      - Delete an entry');
-  WriteLn('cls                                     - Clear the screen');
+  WriteLn('h                                       - Describe the commands');
+  WriteLn('l                                       - List all entries');
+  WriteLn('a <Title>, <First Name>, <Last Name>    - Add a new entry');
+  WriteLn('d <Index number>                        - Delete an entry');
+  WriteLn('c                                       - Clear the screen');
 end;
 
 end.
