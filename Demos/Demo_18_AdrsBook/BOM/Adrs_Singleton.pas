@@ -7,9 +7,12 @@ uses
   Adrs_BOM;
 
 function GAdrsBook: TAdrsBook;
+procedure FreeAndNilAdrsBook;
 
 implementation
-
+uses
+  SysUtils;
+  
 var
   UAdrsBook: TAdrsBook;
 
@@ -21,6 +24,11 @@ begin
     UAdrsBook.Read;
   end;
   result:= UAdrsBook;
+end;
+
+procedure FreeAndNilAdrsBook;
+begin
+  FreeAndNil(UAdrsBook);
 end;
 
 initialization

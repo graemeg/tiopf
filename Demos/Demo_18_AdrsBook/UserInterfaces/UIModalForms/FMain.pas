@@ -10,6 +10,8 @@ uses
 type
   TFormMain = class(TForm)
     LV: TtiVTListView;
+    Panel1: TPanel;
+    btnRefresh: TButton;
     procedure FormCreate(Sender: TObject);
     procedure LVItemInsert(pVT: TtiCustomVirtualTree; AData: TtiObject;
       AItem: PVirtualNode);
@@ -18,7 +20,9 @@ type
     procedure LVItemDelete(pVT: TtiCustomVirtualTree; AData: TtiObject;
       AItem: PVirtualNode);
     procedure FormDestroy(Sender: TObject);
+    procedure btnRefreshClick(Sender: TObject);
   private
+    procedure Refresh;
   public
     { Public declarations }
   end;
@@ -37,6 +41,11 @@ uses
 
 {$R *.dfm}
 
+procedure TFormMain.btnRefreshClick(Sender: TObject);
+begin
+  Refresh;
+end;
+
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
   GGUIINI.ReadFormState(Self);
@@ -50,7 +59,7 @@ begin
   LV.AddColumn('FirstName', vttkString, 'First Name', 120);
   LV.AddColumn('LastName', vttkString, 'Last Name', 120);
 
-  LV.Data:= GAdrsBook.PersonList;
+  Refresh;
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
@@ -97,6 +106,13 @@ begin
     LV.Refresh(LData);
   end else
     LData.Free;
+end;
+
+procedure TFormMain.Refresh;
+begin
+  LV.Data:= nil;
+  FreeAndNilAdrsBook;
+  LV.Data:= GAdrsBook.PersonList;
 end;
 
 end.

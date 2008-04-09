@@ -19,7 +19,7 @@ object FormMain: TFormMain
     Left = 0
     Top = 0
     Width = 426
-    Height = 286
+    Height = 248
     Align = alClient
     Header.AutoSizeIndex = 0
     Header.Font.Charset = DEFAULT_CHARSET
@@ -38,7 +38,7 @@ object FormMain: TFormMain
     VT.Left = 2
     VT.Top = 26
     VT.Width = 422
-    VT.Height = 232
+    VT.Height = 194
     VT.Align = alClient
     VT.Colors.UnfocusedColor = clMedGray
     VT.Header.AutoSizeIndex = 0
@@ -55,9 +55,33 @@ object FormMain: TFormMain
     VT.TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect]
+    VT.ExplicitHeight = 232
     VT.Columns = <>
     OnItemDelete = LVItemDelete
     OnItemEdit = LVItemEdit
     OnItemInsert = LVItemInsert
+    ExplicitHeight = 249
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 248
+    Width = 426
+    Height = 38
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 1
+    DesignSize = (
+      426
+      38)
+    object btnRefresh: TButton
+      Left = 340
+      Top = 7
+      Width = 75
+      Height = 25
+      Anchors = [akTop, akRight]
+      Caption = '&Refresh'
+      TabOrder = 0
+      OnClick = btnRefreshClick
+    end
   end
 end
