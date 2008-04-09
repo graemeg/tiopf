@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <CONFIG>
-  <Package Version="2">
+  <Package Version="3">
     <Name Value="tiOPFGUIDsgn"/>
     <Author Value="Graeme Geldenhuys"/>
     <CompilerOptions>
@@ -36,8 +36,7 @@
     <Type Value="DesignTime"/>
     <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="tiOPFGUILaz"/>
-        <MinVersion Major="2" Valid="True"/>
+        <PackageName Value="tiOPFGUI"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>

@@ -22,7 +22,6 @@ uses
   ,DtiDefaultActionValues
   ,tiPerAwareCtrls
   ,tiPerAwareFileCombos
-  ,tiPerAwareDirectoryCombos
   ,tiMemoReadOnly
   ,tiPerAwareMultiSelect
   ,tiReadOnly
@@ -40,6 +39,7 @@ uses
   ,tiTreeView
   ,tiTreeViewChildForm
   {$IFNDEF FPC}
+  ,tiPerAwareDirectoryCombos
   ,tiVTListView
   ,tiVTTreeView
   {$ENDIF}
@@ -77,9 +77,11 @@ begin
   RegisterComponents('TechInsite Extra',
                       [  TtiUserDefinedPicker
                          ,TtiPickFile
-                         ,TtiPickDirectory
                          ,TtiPerAwarePickFile
+                         {$IFNDEF FPC}
+                         ,TtiPickDirectory
                          ,TtiPerAwarePickDirectory
+                         {$ENDIF}
                          ,TtiMemoReadOnly
                          ,TtiPerAwareMultiSelect
                          ,TtiReadOnly

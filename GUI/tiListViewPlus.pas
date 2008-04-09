@@ -6,6 +6,7 @@ interface
 uses
 {$IFNDEF FPC}
   Messages
+  ,CommCtrl
 {$ELSE}
   LMessages
   ,LCLType
@@ -15,7 +16,6 @@ uses
   ,tiSpeedButton
   ,tiObject
   ,ComCtrls
-  ,CommCtrl
   ,Classes
   ,Menus
   ,Forms
