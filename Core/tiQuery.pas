@@ -1028,7 +1028,7 @@ end;
 
 function TtiQuery.ParamsAsString: string;
 var
-  i : integer;
+  i: integer;
 begin
   try
     result := '';
@@ -1040,7 +1040,7 @@ begin
       if ParamIsNull[ ParamName(i)] then      // Display the fact
         result := result + 'Null'
       else
-        result := result + tiAddEllipsis(ParamAsString[ ParamName(i)], 120);
+        result := result + tiAddEllipsis(ParamAsString[ParamName(i)], 120);
     end;
   except
     on e:exception do

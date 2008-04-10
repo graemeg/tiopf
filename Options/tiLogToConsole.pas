@@ -91,7 +91,7 @@ begin
   Assert(AMessage = AMessage);    // regarding params not used.
   
   if gCommandLineParams.IsParam(csLogConsole) then
-    result := (ASeverity = lsUserInfo) or (ASeverity in GLog.SevToLog)
+    result := (ASeverity = lsUserInfo) or (ASeverity in SevToLog)
   else
     result := ASeverity in [lsUserInfo];
 end;

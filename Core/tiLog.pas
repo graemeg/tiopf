@@ -589,7 +589,7 @@ end;
 constructor TtiLogToAbs.Create;
 begin
   inherited Create;
-  FSevToLog := cSevToLog;
+  FSevToLog := GLog.SevToLog;
   FTerminated := False;
 end;
 

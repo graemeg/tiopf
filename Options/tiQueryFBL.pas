@@ -81,6 +81,7 @@ type
     FbActive: boolean;
     function  IBFieldKindToTIFieldKind(AData: TXSQLVar): TtiQueryFieldKind;
     procedure Prepare;
+    procedure LogParams;
   protected
     function  GetFieldAsString(const AName: string): string; override;
     function  GetFieldAsFloat(const AName: string): extended; override;
@@ -125,6 +126,7 @@ type
 
     function    ParamCount: integer; override;
     function    ParamName(AIndex: integer): string; override;
+    function    ParamsAsStringList: TStringList;
 
     procedure   AssignParamFromStream(const AName: string; const AStream: TStream); override;
     procedure   AssignParamToStream(const AName: string; const AStream: TStream); override;
@@ -182,7 +184,7 @@ procedure TtiQueryFBL.ExecSQL;
 begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   Prepare;
-  Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
+  LogParams;
   FQuery.ExecSQL;
 end;
 
@@ -338,7 +340,7 @@ end;
 procedure TtiQueryFBL.Open;
 begin
   Log(ClassName + ': ' + tiNormalizeStr(self.SQLText), lsSQL);
-  Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
+  LogParams;
   Active := true;
 end;
 
@@ -350,6 +352,27 @@ end;
 function TtiQueryFBL.ParamName(AIndex: integer): string;
 begin
   Result := FQuery.ParamName(AIndex);
+end;
+
+function TtiQueryFBL.ParamsAsStringList: TStringList;
+var
+  i: integer;
+  s: string;
+begin
+  result := TStringList.Create;
+  try
+    for i := 0 to ParamCount-1 do
+    begin
+      if ParamIsNull[ ParamName(i)] then      // Display the fact
+        s := 'Null'
+      else
+        s := ParamAsString[ParamName(i)];
+      result.Add(ParamName(i) + '=' + s);
+    end;
+  except
+    on e: exception do
+      LogError(e, true);
+  end;
 end;
 
 procedure TtiQueryFBL.SetActive(const AValue: boolean);
@@ -429,6 +452,18 @@ begin
   if FQuery.Prepared then
     Exit; //==>
   FQuery.Prepare;
+end;
+
+procedure TtiQueryFBL.LogParams;
+const
+  cLogLine = '%s: [Param %d] %s = %s';
+var
+  sl: TStringList;
+  i: integer;
+begin
+  sl := ParamsAsStringList;
+  for i := 0 to sl.Count-1 do
+    Log(Format(cLogLine, [ClassName, i+1, sl.Names[i], sl.ValueFromIndex[i]]), lsSQL);
 end;
 
 procedure TtiQueryFBL.AssignParamFromStream(const AName: string; const AStream: TStream);
