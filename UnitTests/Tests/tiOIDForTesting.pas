@@ -5,8 +5,7 @@ unit tiOIDForTesting;
 interface
 
 uses
-  tiOID,
-  tiBaseObject;
+  tiOID;
 
 type
 
@@ -22,9 +21,11 @@ type
 
 implementation
 uses
-  tiConstants,
-  SysUtils,
-  SyncObjs;
+   tiBaseObject
+  ,tiConstants
+  ,SysUtils
+  ,SyncObjs
+ ;
 
 var
   UNextOID: Cardinal = 0;

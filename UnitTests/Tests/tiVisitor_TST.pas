@@ -7,7 +7,6 @@ interface
 uses
   Classes
   ,tiTestFramework
-  ,tiOPFTestCase
   ,tiVisitor
   ,Contnrs
   ;

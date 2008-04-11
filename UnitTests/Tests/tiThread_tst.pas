@@ -26,7 +26,6 @@ procedure RegisterTests;
 implementation
 uses
   tiThread,
-  tiOPFManager,
   tiTestDependencies,
   Windows,
   Classes,

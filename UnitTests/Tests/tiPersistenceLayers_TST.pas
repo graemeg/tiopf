@@ -6,9 +6,6 @@ interface
 uses
   Classes
   ,tiTestFramework
-  ,tiBOMsForTesting
-  ,tiPersistenceLayers
-  ,tiOPFTestManager
  ;
 
 
@@ -36,10 +33,11 @@ uses
   {$ELSE}
   TestFramework
   {$ENDIF}
+  ,tiPersistenceLayers
+  ,tiOPFTestManager
   ,tiOPFManager
   ,tiTestDependencies
   ,tiQuery
-  ,tiDBConnectionPool
   ,tiConstants
  ;
 

@@ -8,11 +8,7 @@ interface
 uses
    tiBaseObject
   ,tiObject
-  ,tiQuery
   ,tiExcept
-  ,tiOPFManager
-  ,tiPersistenceLayers
-  ,tiDBConnectionPool
   ,tiOID
   {$IFDEF FPC}
   ,fpcunit

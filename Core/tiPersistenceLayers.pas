@@ -6,7 +6,6 @@ interface
 uses
    tiBaseObject
   ,tiObject
-  ,tiOID
   ,tiDBConnectionPool
   ,tiQuery
   ,SysUtils

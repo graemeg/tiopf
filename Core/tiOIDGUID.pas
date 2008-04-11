@@ -12,8 +12,7 @@ unit tiOIDGUID;
 interface
 
 uses
-  tiOID,
-  tiBaseObject;
+  tiOID;
 
 type
 
@@ -30,11 +29,11 @@ type
 implementation
 
 uses
-  tiQuery,
-  tiOPFManager,
-  tiConstants,
-  tiUtils,
-  SysUtils;
+   tiBaseObject
+  ,tiConstants
+  ,tiUtils
+  ,SysUtils
+ ;
 
 { TOIDGUID }
 

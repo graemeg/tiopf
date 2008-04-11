@@ -8,13 +8,11 @@ unit tiOPFTestCase;
 
 interface
 uses
-   tiBaseObject
-  ,tiTestFramework
+   tiTestFramework
   ,tiOPFTestManager
   ,tiObject
   ,tiQuery
   ,tiExcept
-  ,tiOPFManager
   ,tiPersistenceLayers
   ,tiDBConnectionPool
   {$IFDEF FPC}
@@ -149,10 +147,11 @@ const
 
 implementation
 uses
-   tiUtils
+   tiBaseObject
+  ,tiOPFManager
+  ,tiUtils
   ,tiConstants
-  ,tiINI
-  ,StrUtils 
+  ,StrUtils
   ,TypInfo
   {$IFDEF MSWINDOWS}
   ,Windows

@@ -64,7 +64,6 @@ uses
   {$ELSE}
   TestFramework,
   {$ENDIF}
-  tiOPFTestManager,
   tiTestFramework,
   SysUtils,
   tiUtils,

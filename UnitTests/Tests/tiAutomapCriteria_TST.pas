@@ -8,7 +8,6 @@ uses
   {$IFDEF FPC}
   ,testregistry
   {$ENDIF}
-  ,tiTestFramework
   ,tiOPFTestCase
   ,tiObject
   ;
@@ -51,10 +50,10 @@ type
 implementation
 uses
   SysUtils
+  ,tiTestFramework
   ,tiOPFManager
   ,tiBOMsForTesting
   ,tiQuery
-  ,tiOIDGUID
   ,Contnrs
   ,tiCriteria
  ;

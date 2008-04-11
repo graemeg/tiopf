@@ -2,9 +2,7 @@ unit TiOPFManager_TST;
 
 interface
 uses
-  tiTestFramework
-  ,tiOPFManager
-  ;
+  tiTestFramework;
 
 type
   TTesttiOPFManager = class(TtiTestCase)
@@ -16,8 +14,10 @@ procedure RegisterTests;
 
 implementation
 uses
-  SysUtils,
-  tiTestDependencies;
+   SysUtils
+  ,tiOPFManager
+  ,tiTestDependencies
+ ;
 
   { TTesttiOPFManager }
 

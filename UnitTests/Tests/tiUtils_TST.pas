@@ -9,7 +9,6 @@ uses
   ,testregistry
   {$ENDIF}
   ,tiTestFramework
-  ,tiOPFTestCase
   ,tiDUnitINI
   ,math
  ;
@@ -204,6 +203,7 @@ implementation
 uses
   tiUtils
   ,tiConstants
+  ,tiOPFTestCase
   ,tiExcept
   {$IFDEF MSWINDOWS}
   ,tiWin32

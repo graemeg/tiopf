@@ -43,7 +43,6 @@ type
 implementation
 uses
    tiOPFTestManager
-  ,tiTestDependencies
   ,tiDUnitINI
   ,tiGUIUtils
  ;

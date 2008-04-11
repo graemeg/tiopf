@@ -95,10 +95,6 @@ implementation
 
 uses
   SysUtils,
-  tiUtils,
-  tiOPFManager,
-  tiConstants,
-  tiPersistenceLayers,
   tiQuery;
 
 function OIDToString(const AOID: TtiOID): string;

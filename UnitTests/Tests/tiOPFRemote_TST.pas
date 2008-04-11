@@ -65,11 +65,9 @@ uses
   {$ELSE}
   TestFramework,
   {$ENDIF}
-  tiOPFTestManager,
   SysUtils,
   tiTestDependencies,
   tiQuery,
-  tiTestFramework,
   tiOPFTestCase;
 
 const

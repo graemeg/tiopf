@@ -69,8 +69,7 @@ uses
   SysUtils,
   tiUtils,
   tiTestDependencies,
-  FileCtrl,
-  tiTestFramework;
+  FileCtrl;
 
 procedure RegisterTests;
 begin

@@ -136,8 +136,7 @@ uses
   {$ENDIF}
   tiOPFTestManager,
   tiTestDependencies,
-  tiUtils,
-  tiConstants, tiQueryXMLLight, tiDialogs, tiXML, tiXMLtoTIDataSet;
+  tiUtils;
 
 const
   // Number of times to repeat NextOID test

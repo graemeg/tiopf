@@ -13,8 +13,6 @@ uses
   ,tiQuery
   ,SysUtils
   ,Classes
-  ,tiPersistenceLayers
-  ,tiOPFManager
  ;
 
 
@@ -205,12 +203,13 @@ uses
   ,Contnrs
   ,TypInfo
   ,SyncObjs
-  ,tiLog
   ,tiUtils
   ,tiConstants
   {$IFDEF DELPHI5}
   ,FileCtrl
   {$ENDIF}
+  ,tiPersistenceLayers
+  ,tiOPFManager
   ,tiOPFTestManager
   ,tiTestDependencies
   ,tiThread

@@ -47,8 +47,7 @@ type
 
 implementation
 uses
-   tiWebServerConstants
-  ,tiLog
+  tiLog
   ,tiLogToFile
   ,tiUtils
   ,SysUtils

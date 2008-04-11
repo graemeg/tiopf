@@ -52,7 +52,6 @@ implementation
 
 uses
   tiConstants,
-  tiOPFTestManager,
   tiUtils,
   tiTestDependencies,
   tiQuery,

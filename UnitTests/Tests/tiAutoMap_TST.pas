@@ -169,7 +169,6 @@ uses
   ,tiAutoMap
   ,tiQuery
   ,tiUtils
-  ,tiOIDGUID
   ,Contnrs
   ,tiTestDependencies
   ,tiThread

@@ -14,7 +14,6 @@ interface
 
 uses
   tiOID,
-  tiBaseObject,
   tiObject,
   tiVisitorDB,
   tiVisitor,
@@ -102,6 +101,7 @@ const
 implementation
 
 uses
+  tiBaseObject,
   tiQuery,
   tiConstants,
   tiOPFManager,
