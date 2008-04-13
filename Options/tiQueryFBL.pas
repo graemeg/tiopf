@@ -462,8 +462,12 @@ var
   i: integer;
 begin
   sl := ParamsAsStringList;
-  for i := 0 to sl.Count-1 do
-    Log(Format(cLogLine, [ClassName, i+1, sl.Names[i], sl.ValueFromIndex[i]]), lsSQL);
+  try
+    for i := 0 to sl.Count-1 do
+      Log(Format(cLogLine, [ClassName, i+1, sl.Names[i], sl.ValueFromIndex[i]]), lsSQL);
+  finally
+    sl.Free;
+  end;
 end;
 
 procedure TtiQueryFBL.AssignParamFromStream(const AName: string; const AStream: TStream);
