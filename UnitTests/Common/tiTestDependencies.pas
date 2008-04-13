@@ -12,7 +12,6 @@ uses
   {$ENDIF}
   TestExtensions,
   tiTestFramework,
-  tiOPFTestManager,
   tiOPFTestCase;
 
 procedure tiRegisterTests;
@@ -34,6 +33,7 @@ uses
   SysUtils
 
   ,tiOPFManager
+  ,tiOPFTestManager
   ,tiLog // Confirm which of these must be referenced here
   ,tiLogToFile
   ,tiBOMsForTesting
