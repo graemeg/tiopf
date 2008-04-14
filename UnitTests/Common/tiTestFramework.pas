@@ -30,6 +30,12 @@ uses
 
 const
   CErrorExceptionNotRaised = 'Exception not raised when it should have been';
+  {$IFDEF FPC}
+  sExpectedButWasFmt = 'Expected:'#13#10'"%s"'#13#10'But was:'#13#10'"%s"';
+  sExpectedButWasAndMessageFmt = '%s'#13#10 + sExpectedButWasFmt;
+  sMsgActualEqualsExpFmt = '%s'#13#10'Expected '#13#10'< %s > '#13#10'equals actual '#13#10'< %s >';
+  sActualEqualsExpFmt = 'Expected '#13#10'< %s > '#13#10'equals actual '#13#10'< %s >';
+  {$ENDIF}
 
 type
 
@@ -61,10 +67,10 @@ type
     FTempDirectory: string;
     function GetLongString: string;
   protected
-    procedure   SetUpOnce; override;
+    procedure   SetUpOnce; {$IFDEF FPC}virtual;{$ELSE}override;{$ENDIF}
     procedure   SetUp; override;
     procedure   TearDown; override;
-    procedure   TearDownOnce; override;
+    procedure   TearDownOnce; {$IFDEF FPC}virtual;{$ELSE}override;{$ENDIF}
     function    TempFileName(const AFilename: string = ''): string;
     property    LongString : string read GetLongString;
     function    tstIntToStr(pInt:Integer):string;
@@ -76,11 +82,8 @@ type
                                   const Section :string); {$IFNDEF FPC}override;{$ENDIF}
   public
     {$IFDEF FPC}
-    constructor Create; override;
-    function    GetName: string; virtual;
-    property    Name: string read GetName;
       // DUnit compatibility interface
-      {$I DUnitCompatableInterface.inc}
+      {$I FPCUnitHelper_intf.inc}
     {$ENDIF}
     class function TempDirectory: string;
     function  PerformanceCounter: TtiPerformanceCounter;
@@ -405,10 +408,7 @@ end;
 
 {$IFDEF FPC}
 // DUnit compatibility interface
-function TtiTestCase.GetName: string;
-begin
-  Result := TestName;
-end;
+  {$I FPCUnitHelper_impl.inc}
 {$ENDIF}
 
 
@@ -470,12 +470,6 @@ procedure TtiTestCase.tstIntToStream(pInt: Integer;const AStream: TStream);
 begin
   tiStringToStream(tstIntToStr(pInt), AStream);
 end;
-
-{$IFDEF FPC}
-  // DUnit compatibility interface
-  {$I DUnitCompatableInterface.inc}
-{$ENDIF}
-
 
 procedure TtiTestCase.CheckFormattedMessage(const AFormat: string;
   const AArgs: array of const; const AActual: string;
@@ -1104,12 +1098,6 @@ initialization
   ULongString:= tiCreateStringOfSize(3000);
 
 end.
-
-
-
-
-
-
 
 
 

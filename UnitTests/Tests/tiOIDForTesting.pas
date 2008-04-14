@@ -21,8 +21,8 @@ type
 
 implementation
 uses
-   tiBaseObject
-  ,tiConstants
+//   tiBaseObject
+  tiConstants
   ,SysUtils
   ,SyncObjs
  ;

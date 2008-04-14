@@ -16,7 +16,8 @@ uses
     tiDataBuffer_BOM, tiQueryTXTAbs, tiTextParser, tiLogToConsole, tiXML, 
     tiQueryCSV, tiQueryTAB, tiLogToFile, tiCriteria, tiVisitorCriteria, 
     tiXMLToTIDataset, tiQueryXMLLight, tiRTTI, tiTokenLibrary, tiINI, tiQueue, 
-    tiAutoMap, tiVisitorDBAutoGen; 
+    tiAutoMap, tiVisitorDBAutoGen, tiStructuredCSVReader, 
+    tiStructuredCSVWriter; 
 
 implementation
 

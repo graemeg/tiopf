@@ -9,8 +9,9 @@ uses
   testregistry,
   testdecorator,
   tiFPCUnitUtils, // Helper functions to fake DUnit methods
-  {$ENDIF}
+  {$ELSE}
   TestExtensions,
+  {$ENDIF}
   tiTestFramework,
   tiOPFTestCase;
 

@@ -27,7 +27,9 @@ implementation
 uses
   tiThread,
   tiTestDependencies,
+  {$IFDEF MSWINDOWS}
   Windows,
+  {$ENDIF}
   Classes,
   SysUtils,
   Contnrs;
@@ -61,7 +63,7 @@ procedure TTestTIThread.tiActiveThreadList;
 //var
 //  LThread: TtiThreadForTesting;
 begin
-  FailsOnNoChecksExecuted := False;
+  Check(True);
   // See not in TtiActiveThreadList.WaitForAll for description of problems with
   // this method
 //  AllowedMemoryLeakSize:= 152;
@@ -79,7 +81,7 @@ procedure TTestTIThread.tiThreadExplicitFree;
 begin
   // See not in TtiActiveThreadList.WaitForAll for description of problems that
   // relates to this method
-  FailsOnNoChecksExecuted := False;
+  Check(True);
 //  if GTIOPFManager.ActiveThreadList.Count > 0 then
 //    Fail(Format('Expected 0 threads, but found "%s"', [GTIOPFManager.ActiveThreadList.ActiveThreadNames]));
 //  LThread:= TtiThreadForTesting.Create(True);

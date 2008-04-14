@@ -238,8 +238,6 @@ end;
 
 { TtiOPFTestSetupData }
 constructor TtiOPFTestSetupData.Create(const APersistenceLayer: TtiPersistenceLayer);
-const
-  cUnknown = 'Unknown';
 begin
   inherited Create;
   FPersistenceLayerClass:= TtiPersistenceLayerClass(APersistenceLayer.ClassType);

@@ -28,8 +28,8 @@ begin
   App.Initialize;
   App.Title := 'FPCUnit Console test runner';
 
-  GTIOPFTestManager.Read;
-  tiTestDependencies.RegisterTests;
+//  GTIOPFTestManager.Read;
+//  tiTestDependencies.RegisterTests;
   
 //  tiTestDependencies.RemoveUnSelectedPersistenceLayerSetups;
   

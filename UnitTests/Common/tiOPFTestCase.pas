@@ -298,12 +298,6 @@ begin
   Inc(AInc);
 end;
 
-
-{$IFDEF FPC}
-  // DUnit compatibility interface
-  {$I DUnitCompatableInterface.inc}
-{$ENDIF}
-
 procedure TtiTestCaseWithDatabaseConnection.CreateTableTestGroup(const ADatabase : TtiDatabase = nil) ;
 var
   LTable : TtiDBMetaDataTable;

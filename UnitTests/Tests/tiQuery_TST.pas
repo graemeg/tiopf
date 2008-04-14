@@ -198,9 +198,9 @@ implementation
 uses
   {$IFDEF MSWINDOWS}
    Forms
-  ,Windows
+  ,Windows,
   {$ENDIF}
-  ,Contnrs
+  Contnrs
   ,TypInfo
   ,SyncObjs
   ,tiUtils

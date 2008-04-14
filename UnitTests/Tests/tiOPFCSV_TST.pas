@@ -57,12 +57,12 @@ uses
   tiFPCUnitUtils,
   {$ELSE}
   TestFramework,
+  FileCtrl,
   {$ENDIF}
   tiOPFTestManager,
   SysUtils,
   tiUtils,
-  tiTestDependencies,
-  FileCtrl;
+  tiTestDependencies;
 
 procedure RegisterTests;
 begin

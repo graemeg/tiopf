@@ -1880,7 +1880,9 @@ begin
         CheckIs(e, Exception, 'Failed on ObjectProp');
     end;
 
+    {$IFNDEF FPC}
     FExecControl.InhibitStackTrace := True;
+    {$ENDIF}
     try
       lObj.PropType('MethodProp');
       Check(false, 'Failed on MethodProp');

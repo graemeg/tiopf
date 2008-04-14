@@ -37,7 +37,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="49">
+    <Files Count="51">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -234,6 +234,14 @@
         <Filename Value="../../Core/tiVisitorDBAutoGen.pas"/>
         <UnitName Value="tiVisitorDBAutoGen"/>
       </Item49>
+      <Item50>
+        <Filename Value="../../Options/tiStructuredCSVReader.pas"/>
+        <UnitName Value="tiStructuredCSVReader"/>
+      </Item50>
+      <Item51>
+        <Filename Value="../../Options/tiStructuredCSVWriter.pas"/>
+        <UnitName Value="tiStructuredCSVWriter"/>
+      </Item51>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="2">

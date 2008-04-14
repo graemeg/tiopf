@@ -73,11 +73,11 @@ uses
   tiFPCUnitUtils,
   {$ELSE}
   TestFramework,
+  FileCtrl,
   {$ENDIF}
   SysUtils,
   tiUtils,
   tiTestDependencies,
-  FileCtrl,
   tiLog,
   tiTestFramework;
 
