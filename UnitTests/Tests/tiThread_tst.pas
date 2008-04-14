@@ -30,7 +30,7 @@ uses
   Windows,
   Classes,
   SysUtils,
-  Contnrs, Forms;
+  Contnrs;
 
 const
   CSleep = 100;
@@ -61,7 +61,7 @@ procedure TTestTIThread.tiActiveThreadList;
 //var
 //  LThread: TtiThreadForTesting;
 begin
-  Check(True);
+  FailsOnNoChecksExecuted := False;
   // See not in TtiActiveThreadList.WaitForAll for description of problems with
   // this method
 //  AllowedMemoryLeakSize:= 152;
@@ -79,7 +79,7 @@ procedure TTestTIThread.tiThreadExplicitFree;
 begin
   // See not in TtiActiveThreadList.WaitForAll for description of problems that
   // relates to this method
-  Check(True);
+  FailsOnNoChecksExecuted := False;
 //  if GTIOPFManager.ActiveThreadList.Count > 0 then
 //    Fail(Format('Expected 0 threads, but found "%s"', [GTIOPFManager.ActiveThreadList.ActiveThreadNames]));
 //  LThread:= TtiThreadForTesting.Create(True);

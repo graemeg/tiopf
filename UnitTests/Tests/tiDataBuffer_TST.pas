@@ -136,18 +136,18 @@ begin
     try
       lWriter.TextFileMetaData := [tfmdFieldName];
       lWriter.Read(lDataSet, TempFileName);
-      CheckEquals(lDataSet.Fields.Count, 2, 'lDataSet.Fields.Count');
-      CheckEquals(lDataSet.Fields.Items[0].Name, 'fieldA', 'fieldA');
-      CheckEquals(lDataSet.Fields.Items[1].Name, 'fieldB', 'fieldB');
+      CheckEquals(2, lDataSet.Fields.Count, 'lDataSet.Fields.Count');
+      CheckEquals('fieldA', lDataSet.Fields.Items[0].Name, 'fieldA');
+      CheckEquals('fieldB', lDataSet.Fields.Items[1].Name, 'fieldB');
       Check(lDataSet.Fields.Items[0].Kind = qfkString, 'fieldA.Kind');
       Check(lDataSet.Fields.Items[1].Kind = qfkString, 'fieldB.Kind');
       CheckEquals(2, lDataSet.Count, 'DataSet.Count');
-      CheckEquals(lDataSet.Items[0].Count, 2, 'DataSet.Items[0].Count');
-      CheckEquals(lDataSet.Items[0].Items[0].ValueAsString, 'a1');
-      CheckEquals(lDataSet.Items[0].Items[1].ValueAsString, 'b1');
-      CheckEquals(lDataSet.Items[1].Count, 2, 'DataSet.Items[0].Count');
-      CheckEquals(lDataSet.Items[1].Items[0].ValueAsString, 'a2');
-      CheckEquals(lDataSet.Items[1].Items[1].ValueAsString, 'b2');
+      CheckEquals(2, lDataSet.Items[0].Count, 'DataSet.Items[0].Count');
+      CheckEquals('a1', lDataSet.Items[0].Items[0].ValueAsString);
+      CheckEquals('b1', lDataSet.Items[0].Items[1].ValueAsString);
+      CheckEquals(2, lDataSet.Items[1].Count, 'DataSet.Items[0].Count');
+      CheckEquals('a2', lDataSet.Items[1].Items[0].ValueAsString);
+      CheckEquals('b2', lDataSet.Items[1].Items[1].ValueAsString);
     finally
       lWriter.Free;
     end;
@@ -169,18 +169,18 @@ begin
     try
       lWriter.TextFileMetaData := [];
       lWriter.Read(lDataSet, TempFileName);
-      CheckEquals(lDataSet.Fields.Count, 2, 'lDataSet.Fields.Count');
-      CheckEquals(lDataSet.Fields.Items[0].Name, 'Field1', 'Field1');
-      CheckEquals(lDataSet.Fields.Items[1].Name, 'Field2', 'Field2');
+      CheckEquals(2, lDataSet.Fields.Count, 'lDataSet.Fields.Count');
+      CheckEquals('Field1', lDataSet.Fields.Items[0].Name, 'Field1');
+      CheckEquals('Field2', lDataSet.Fields.Items[1].Name, 'Field2');
       Check(lDataSet.Fields.Items[0].Kind = qfkString, 'Field1.Kind');
       Check(lDataSet.Fields.Items[1].Kind = qfkString, 'Field2.Kind');
       CheckEquals(2, lDataSet.Count, 'DataSet.Count');
-      CheckEquals(lDataSet.Items[0].Count, 2, 'DataSet.Items[0].Count');
-      CheckEquals(lDataSet.Items[0].Items[0].ValueAsString, 'a1');
-      CheckEquals(lDataSet.Items[0].Items[1].ValueAsString, 'b1');
-      CheckEquals(lDataSet.Items[1].Count, 2, 'DataSet.Items[0].Count');
-      CheckEquals(lDataSet.Items[1].Items[0].ValueAsString, 'a2');
-      CheckEquals(lDataSet.Items[1].Items[1].ValueAsString, 'b2');
+      CheckEquals(2, lDataSet.Items[0].Count, 'DataSet.Items[0].Count');
+      CheckEquals('a1', lDataSet.Items[0].Items[0].ValueAsString);
+      CheckEquals('b1', lDataSet.Items[0].Items[1].ValueAsString);
+      CheckEquals(2, lDataSet.Items[1].Count, 'DataSet.Items[0].Count');
+      CheckEquals('a2', lDataSet.Items[1].Items[0].ValueAsString);
+      CheckEquals('b2', lDataSet.Items[1].Items[1].ValueAsString);
     finally
       lWriter.Free;
     end;
@@ -202,9 +202,9 @@ begin
     try
       lWriter.TextFileMetaData := [tfmdFieldName];
       lWriter.Read(lDataSet, TempFileName);
-      CheckEquals(lDataSet.Fields.Count, 2, 'lDataSet.Fields.Count');
-      CheckEquals(lDataSet.Fields.Items[0].Name, 'fieldA', 'fieldA');
-      CheckEquals(lDataSet.Fields.Items[1].Name, 'fieldB', 'fieldB');
+      CheckEquals(2, lDataSet.Fields.Count, 'lDataSet.Fields.Count');
+      CheckEquals('fieldA', lDataSet.Fields.Items[0].Name, 'fieldA');
+      CheckEquals('fieldB', lDataSet.Fields.Items[1].Name, 'fieldB');
       Check(lDataSet.Fields.Items[0].Kind = qfkString, 'fieldA.Kind');
       Check(lDataSet.Fields.Items[1].Kind = qfkString, 'fieldB.Kind');
       CheckEquals(0, lDataSet.Count, 'DataSet.Count');
@@ -570,10 +570,10 @@ begin
       lWriter.Read(lDataSet, TempFileName);
       CheckEquals(cCols, lDataSet.Fields.Count, 'lDataSet.Fields.Count');
       for j := 1 to cCols do
-        CheckEquals(lDataSet.Fields.Items[j-1].Name, 'field' + IntToStr(j), 'field'+IntToStr(j));
+        CheckEquals('field' + IntToStr(j), lDataSet.Fields.Items[j-1].Name, 'field'+IntToStr(j));
       for i := 0 to cRows do
         for j := 1 to cCols do
-          CheckEquals(lDataSet.Items[i].Items[j-1].ValueAsString, 'value' + IntToStr(((i+1)*100)+(j)));
+          CheckEquals('value' + IntToStr(((i+1)*100)+(j)), lDataSet.Items[i].Items[j-1].ValueAsString);
     finally
       lWriter.Free;
     end;
