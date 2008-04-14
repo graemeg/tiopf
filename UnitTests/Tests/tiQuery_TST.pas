@@ -399,8 +399,8 @@ begin
   Database.StartTransaction;
   try
     FQuery.SelectRow(cTIQueryTableName, nil);
-    CheckEquals(FQuery.FieldAsBoolean[ cTIQueryColName ], True, 'FieldAsBoolean');
-    CheckEquals(FQuery.FieldAsBooleanByIndex[ cFieldAs_Index ], True, 'FieldAsBoolean');
+    CheckEquals(True, FQuery.FieldAsBoolean[ cTIQueryColName ], 'FieldAsBoolean');
+    CheckEquals(True, FQuery.FieldAsBooleanByIndex[ cFieldAs_Index ], 'FieldAsBoolean');
     FQuery.Close;
   finally
     Database.RollBack;
@@ -418,8 +418,8 @@ begin
   Database.StartTransaction;
   try
     FQuery.SelectRow(cTIQueryTableName, nil);
-    CheckEquals(FQuery.FieldAsDateTime[ cTIQueryColName ], lNow, cdtOneSecond, 'FieldAsDateTime');
-    CheckEquals(FQuery.FieldAsDateTimeByIndex[ cFieldAs_Index ], lNow, cdtOneSecond, 'FieldAsDateTime');
+    CheckEquals(lNow, FQuery.FieldAsDateTime[ cTIQueryColName ], cdtOneSecond, 'FieldAsDateTime');
+    CheckEquals(lNow, FQuery.FieldAsDateTimeByIndex[ cFieldAs_Index ], cdtOneSecond, 'FieldAsDateTime');
     FQuery.Close;
   finally
     Database.Rollback;
@@ -436,8 +436,8 @@ begin
   Database.StartTransaction;
   try
     FQuery.SelectRow(cTIQueryTableName, nil);
-    CheckEquals(FQuery.FieldAsFloat[ cTIQueryColName ], 1234.5678, 0.00001, 'FieldAsFloat');
-    CheckEquals(FQuery.FieldAsFloatByIndex[ cFieldAs_Index ], 1234.5678, 0.00001, 'FieldAsFloat');
+    CheckEquals(1234.5678, FQuery.FieldAsFloat[ cTIQueryColName ], 0.00001, 'FieldAsFloat');
+    CheckEquals(1234.5678, FQuery.FieldAsFloatByIndex[ cFieldAs_Index ], 0.00001, 'FieldAsFloat');
     FQuery.Close;
   finally
     Database.Rollback;
@@ -452,8 +452,8 @@ begin
   Database.StartTransaction;
   try
     FQuery.SelectRow(cTIQueryTableName, nil);
-    CheckEquals(FQuery.FieldAsInteger[ cTIQueryColName ], 1, 'FieldAsInteger');
-    CheckEquals(FQuery.FieldAsIntegerByIndex[ cFieldAs_Index ], 1, 'FieldAsIntegerByIndex');
+    CheckEquals(1, FQuery.FieldAsInteger[ cTIQueryColName ], 'FieldAsInteger');
+    CheckEquals(1, FQuery.FieldAsIntegerByIndex[ cFieldAs_Index ], 'FieldAsIntegerByIndex');
     FQuery.Close;
   finally
     Database.Commit;
@@ -470,8 +470,8 @@ begin
   Database.StartTransaction;
   try
     FQuery.SelectRow(cTIQueryTableName, nil);
-    CheckEquals(FQuery.FieldAsString[ cTIQueryColName ], cString, 'FieldAsString');
-    CheckEquals(FQuery.FieldAsStringByIndex[ cFieldAs_Index ], cString, 'FieldAsStringByIndex');
+    CheckEquals(cString, FQuery.FieldAsString[ cTIQueryColName ], 'FieldAsString');
+    CheckEquals(cString, FQuery.FieldAsStringByIndex[ cFieldAs_Index ], 'FieldAsStringByIndex');
     FQuery.Close;
   finally
     Database.Commit;
@@ -2145,7 +2145,7 @@ begin
       LPersistenceLayer.DBConnectionPools.Disconnect(CDatabaseAlias);
     end;
     CheckNull(LPersistenceLayer.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-    CheckEquals( '', LPersistenceLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');
+    CheckEquals('', LPersistenceLayer.DefaultDBConnectionName, 'DefaultDBConnectionName');
   finally
     LPersistenceLayer.Free;
   end;
