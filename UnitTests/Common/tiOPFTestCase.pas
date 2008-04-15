@@ -421,7 +421,8 @@ var
   LPersistenceLayer  : TtiPersistenceLayer;
   LDatabaseClass : TtiDatabaseClass;
 begin
-  if TestSetupData.CanCreateDatabase then
+// The following statement always returns false for the FBL Layer.
+//##  if TestSetupData.CanCreateDatabase then
   begin
     LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
     Assert(LPersistenceLayer <> nil, 'Unable to find registered persistence layer <' + PersistenceLayerName +'>');

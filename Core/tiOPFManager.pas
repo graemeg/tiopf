@@ -307,8 +307,7 @@ end;
 procedure TtiOPFManager.SetDefaultOIDGenerator(const AValue: TtiOIDGenerator);
 begin
   FreeAndNil(FDefaultOIDGenerator);
-  if Assigned(AValue) then
-    FDefaultOIDGenerator := AValue
+  FDefaultOIDGenerator := AValue
 end;
 
 procedure TtiOPFManager.ConnectDatabase(const ADatabaseAlias, ADatabaseName,
