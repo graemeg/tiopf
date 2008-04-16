@@ -4,6 +4,13 @@ This readme file will contain any FAQ's from the newsgroups.
 
 Question:
 ----------
+> How do I use tiOPF with Lazarus?
+
+See the following wiki page:  http://wiki.freepascal.org/tiOPF
+
+
+Question:
+----------
 > Which of the two fpcUnitTIOPFGui files with extents .lpr .lpi noramlly 
 > load the project? Either seems to work.
 
