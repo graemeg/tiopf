@@ -22,7 +22,7 @@ begin
   if not TtiPromptWhichPersistenceLayersToTest.Execute then
     Halt;
 
-  tiTestDependencies.RegisterTests;
+  tiTestDependencies.tiRegisterTests;
   Application.CreateForm(TGuiTestRunner, TestRunner);
   Application.Run;
 end.

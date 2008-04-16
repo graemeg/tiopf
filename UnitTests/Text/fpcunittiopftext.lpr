@@ -9,6 +9,7 @@ uses
   Classes
   ,ConsoleTestRunner
   ,tiTestDependencies
+  ,tiOPFTestManager
   ;
 
 type
@@ -25,14 +26,18 @@ var
 
 begin
   App := TMyTestRunner.Create(nil);
-  App.Initialize;
-  App.Title := 'FPCUnit Console test runner';
+  try
+    App.Initialize;
+    App.Title := 'FPCUnit Console test runner';
 
-//  GTIOPFTestManager.Read;
-//  tiTestDependencies.RegisterTests;
-  
-//  tiTestDependencies.RemoveUnSelectedPersistenceLayerSetups;
-  
-  App.Run;
-  App.Free;
+    GTIOPFTestManager.Read;
+    GTIOPFTestManager.DeleteDatabaseFiles;
+    tiTestDependencies.tiRegisterTests;
+
+//   tiTestDependencies.RemoveUnSelectedPersistenceLayerSetups;
+
+    App.Run;
+  finally
+    App.Free;
+  end
 end.
