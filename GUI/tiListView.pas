@@ -2392,7 +2392,7 @@ procedure TtiCustomListView.DoStartDrag(Sender: TObject; var DragObject: TDragOb
 var
   lDragObject : TtiLVDragObject;
 begin
-  lDragObject           := TtiLVDragObject.Create{$IFDEF FPC}(nil){$ENDIF};
+  lDragObject           := TtiLVDragObject.Create;
   lDragObject.tiListView := Self;
   lDragObject.Data      := SelectedData;
   lDragObject.Item      := Selected;

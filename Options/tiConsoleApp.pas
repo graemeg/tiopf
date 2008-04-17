@@ -241,7 +241,12 @@ const
 
 implementation
 uses
-  tiConstants;
+  tiConstants
+  {$IFDEF FPC}
+  ,JwaWinNT
+  {$ENDIF}
+  ;
+
 
 procedure tiGetConsoleExecutableInfo(const Filename: String; var BinaryType, Subsystem: DWORD);
 var
@@ -260,7 +265,11 @@ begin
     BlockRead(f, ImageDosHeader, Sizeof(ImageDosHeader));
     if (ImageDosHeader.e_magic <> IMAGE_DOS_SIGNATURE) then {not executable}
       raise EInOutError.Create('Dos signature not present');
+    {$IFDEF FPC}
+    Seek(f, ImageDosHeader.e_lfanew);
+    {$ELSE}
     Seek(f, ImageDosHeader._lfanew);
+    {$ENDIF}
     BlockRead(f, Signature, SizeOf(Signature));
     Signature:= Signature and $FFFF;
     case Signature of

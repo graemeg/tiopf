@@ -58,7 +58,9 @@ uses
   ,tiWin32_TST
   ,tiGUIUtils_TST
   ,TiOPFManager_TST
-  ,tiDataSet_TST
+  {$IFNDEF FPC}
+  ,tiDataSet_TST  // tiDataset not FPC ready yet
+  {$ENDIF}
   {$ENDIF}
   ,tiDataBuffer_TST
   ,tiTextParser_TST
@@ -135,7 +137,9 @@ begin
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
   TiOPFManager_TST.RegisterTests;
+  {$IFNDEF FPC}
   tiDataSet_TST.RegisterTests;
+  {$ENDIF}
   {$ENDIF}
   tiDataBuffer_TST.RegisterTests;
   tiTextParser_TST.RegisterTests;

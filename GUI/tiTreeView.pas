@@ -2041,7 +2041,7 @@ begin
 
   // Get the current node's information
   GetNodeInfo(lNode, lData, lParentNode, lParentData, lMapping);
-  lDragObject := TtiTVDragObject.Create{$IFDEF FPC}(nil){$ENDIF};
+  lDragObject := TtiTVDragObject.Create;
   lDragObject.Data := lData;
   lDragObject.ParentData := lParentData;
   lDragObject.tiTreeView := Self;
