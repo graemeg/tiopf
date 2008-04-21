@@ -97,6 +97,7 @@ type
     // AddNotIn() still needs to be implemented
     procedure   AddNotIn(AAttribute, ASubQuery: string); overload;
     procedure   AddNotIn(AAttribute: string; AValueArray: array of variant); overload;
+    procedure   AddNotIn(AAttribute: string; AObjectList: TtiObjectList; const AFieldName: string); overload;
 
     procedure   AddNotLike(AAttribute, AValue: string);
     procedure   AddNotNull(AAttribute: string);
@@ -503,6 +504,40 @@ var
 begin
   lData := TtiExistsCriteria.Create(ASubQuery, True);
   FSelectionCriterias.Add(lData);
+end;
+
+procedure TtiCriteria.AddNotIn(AAttribute: string; AObjectList: TtiObjectList;
+  const AFieldName: string);
+var
+  lData: TtiInCriteria;
+  i: Integer;
+  lVarArray: array of Variant;
+begin
+  Assert(AObjectList <> nil, ClassName + '.AddNotIn: AObjectList is nil');
+
+  if AObjectList.Count = 0 then
+    Exit; //==>
+
+   
+  for i := 0 to AObjectList.Count -1 do
+    if AObjectList.Items[i].ObjectState <> posDelete then
+      begin
+        SetLength(lVarArray, Length(lVarArray) + 1);
+        lVarArray[High(lVarArray)] := AObjectList.Items[i].PropValue[AFieldName];
+      end;
+
+  if Length(lVarArray) = 0 then
+    Exit; //==>
+
+  lData := TtiInCriteria.Create(AAttribute, '', True);
+
+  // copy array values
+  SetLength(lData.ValueArray, Length(lVarArray));
+  for i := Low(lVarArray) to High(lVarArray) do
+    lData.ValueArray[i] := lVarArray[i];
+
+  FSelectionCriterias.Add(lData);
+
 end;
 
 procedure TtiCriteria.AddNotIn(AAttribute: string;
