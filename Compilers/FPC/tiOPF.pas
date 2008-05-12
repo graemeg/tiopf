@@ -17,7 +17,7 @@ uses
     tiQueryCSV, tiQueryTAB, tiLogToFile, tiCriteria, tiVisitorCriteria, 
     tiXMLToTIDataset, tiQueryXMLLight, tiRTTI, tiTokenLibrary, tiINI, tiQueue, 
     tiAutoMap, tiVisitorDBAutoGen, tiStructuredCSVReader, 
-    tiStructuredCSVWriter; 
+    tiStructuredCSVWriter, tiFilteredObjectList; 
 
 implementation
 
