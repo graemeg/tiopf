@@ -194,7 +194,7 @@ type
   function tiDeleteFile(const AFileName: string): boolean;
   // Does a directory have any subdirectories?
   function  tiHasSubDirectory(AStartDir : string): boolean;
-  // Write the string in psText to a file named AFileName
+  // Write the string in AText to a file named AFileName
   procedure tiStringToFile(const AText, AFileName : string);
   // Read a text file into a string
   function  tiFileToString(const AFileName : TFileName): string;

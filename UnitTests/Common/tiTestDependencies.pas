@@ -33,6 +33,7 @@ uses
 {$ENDIF}
   SysUtils
 
+  ,tiConstants
   ,tiOPFManager
   ,tiOPFTestManager
   ,tiLog // Confirm which of these must be referenced here
@@ -57,11 +58,11 @@ uses
   {$IFDEF MSWINDOWS}
   ,tiWin32_TST
   ,tiGUIUtils_TST
-  ,TiOPFManager_TST
-  {$IFNDEF FPC}
+  ,tiOPFManager_TST
+    {$IFNDEF FPC}
   ,tiDataSet_TST  // tiDataset not FPC ready yet
-  {$ENDIF}
-  {$ENDIF}
+    {$ENDIF FPC}
+  {$ENDIF MSWINDOWS}
   ,tiDataBuffer_TST
   ,tiTextParser_TST
   ,tiTextParserStructCSV_TST

@@ -829,7 +829,9 @@ begin
   Check(tiUtils.tiRemoveExtension('c:\temp\test') = 'c:\temp\test', 'Failed on 4');
   Check(tiUtils.tiRemoveExtension('\temp\test.txt') = '\temp\test', 'Failed on 5');
   Check(tiUtils.tiRemoveExtension('\test.txt') = '\test', 'Failed on 6');
-  Check(tiUtils.tiRemoveExtension('..\test.txt') = '..\test', 'Failed on 2');
+  Check(tiUtils.tiRemoveExtension('..\test.txt') = '..\test', 'Failed on 7');
+  Check(tiUtils.tiRemoveExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test.txt') = 'C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test', 'Failed on 8');
+  Check(tiUtils.tiRemoveExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test') = 'C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test', 'Failed on 9');
 end;
 
 
@@ -850,6 +852,8 @@ begin
   Check(tiUtils.tiExtractExtension('c:\temp\test.txt') = 'txt', 'Failed on 2');
   Check(tiUtils.tiExtractExtension('c:\temp\test.') = '', 'Failed on 3');
   Check(tiUtils.tiExtractExtension('c:\temp\test') = '', 'Failed on 4');
+  Check(tiUtils.tiExtractExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test.txt') = 'txt', 'Failed on 5');
+  Check(tiUtils.tiExtractExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test') = '', 'Failed on 6');
 end;
 
 
@@ -2496,12 +2500,13 @@ end;
 procedure TTestTIUtils.tiForceDirectories;
 var
   LDir: string;
+  l: string;
 begin
   InhibitStackTrace;
   LDir := tiFixPathDelim(TempDirectory + '\level1\level2\level3\level4');
   tiUtils.tiForceDirectories(LDir);
   try
-    Check(DirectoryExists(LDir));
+    Check(DirectoryExists(LDir), 'Failed on 1');
   finally
     tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
   end;
@@ -2509,7 +2514,7 @@ begin
   LDir := tiFixPathDelim(TempDirectory + '\level1\level2\MyFile.txt');
   tiUtils.tiForceDirectories(LDir);
   try
-  Check(DirectoryExists(ExtractFilePath(LDir)));
+    Check(DirectoryExists(ExtractFilePath(LDir)), 'Failed on 2');
   finally
     tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
   end;
@@ -2517,27 +2522,40 @@ begin
   LDir := tiFixPathDelim(TempDirectory + '\level1\level2\level3.level4');
   tiUtils.tiForceDirectories(LDir);
   try
-    Check(DirectoryExists(TempDirectory + '\level1\level2'));
-    Check(not DirectoryExists(TempDirectory + '\level1\level2\level3'));
+    l := tiFixPathDelim(TempDirectory + '\level1\level2'); // path we're looking for
+    Check(DirectoryExists(l), 'Failed on 3');
+    Check(not DirectoryExists(LDir), 'Failed on 4');
   finally
     tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
   end;
 
+  {$IFDEF MSWINDOWS}
   LDir:= TempDirectory + '\test';
   tiUtils.tiStringToFile('test', LDir);
   tiUtils.tiSetFileReadOnly(LDir, True);
+  {$ELSE}
+  LDir := '/etc'; // normal user will definately not be allowed to delete this
+  {$ENDIF}
   try
     try
       tiUtils.tiForceDirectories(LDir);
       Fail('Exception not raised');
     except
       on e: exception do
-        CheckIs(E, EtiOPFFileSystemException);
+        CheckIs(E, EtiOPFFileSystemException, 'Failed on 5');
     end;
   finally
+    {$IFDEF MSWINDOWS}
     tiUtils.tiSetFileReadOnly(LDir, False);
     tiDUnitForceRemoveDir(LDir);
+    {$ELSE}
+    // nothing to do
+    {$ENDIF}
   end;
+  
+  // todo: Add the following path check after new patch - graeme
+//  Check(tiUtils.tiExtractExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test.txt') = 'txt', 'Failed on 5');
+
 end;
 
 procedure TTestTIUtils.tiForceDirectories1;
