@@ -169,6 +169,7 @@ const
   cFieldDelimiter = ';';
   cBrackets = '()';
 
+
 { Helper functions }
 
 { Extract the field name part from the AField string which is in the format
@@ -359,7 +360,7 @@ begin
     lValue := FModel.PropValue[lMemberName];
 
     if Assigned(FOnBeforeSetupField) then
-      FOnBeforeSetupField(FModel, lField, lValue);
+      FOnBeforeSetupField(FModel, lMemberName, lValue);
     FView.SubItems[c-2] := lValue;
   end;
 end;
@@ -793,7 +794,8 @@ end;
 procedure TCompositeStringGridMediator.BeforeDestruction;
 begin
   FMediatorList.Free;
-  FModel.DetachObserver(Self);
+  if Assigned(FModel) then
+    FModel.DetachObserver(Self);
   FModel  := nil;
   FView   := nil;
   
