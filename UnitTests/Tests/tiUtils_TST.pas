@@ -50,12 +50,11 @@ type
   public
     constructor Create {$IFNDEF DUNIT2ORFPC} (AMethodName: string){$ENDIF}; override;
     destructor  Destroy; override;
-
   published
 //    procedure tiDateToStr;
 //    procedure tiDirectoryTreeToStringList;
 //    procedure tiExtractDirToLevel;
-//  protected
+
     procedure tiForceRemoveDir; // Must be one of the first things tested as it's used in TearDown
 
     procedure _tiFloatToStr;
@@ -74,6 +73,8 @@ type
     procedure tiAddTrailingValue;
     procedure tiAppendStringToStream;
     procedure tiApplicationName;
+    procedure tiAusFinancialYearDayCount;
+    procedure tiAusFinancialYearToString;
     procedure tiBooleanToStr;
     procedure tiCheckSum;
     procedure tiCIStrTran;
@@ -83,13 +84,12 @@ type
     procedure tiDateTimeAsIntlDateStor;
     procedure tiDateTimeToStr;
     procedure tiDateToAusFinancialYear;
-    procedure tiAusFinancialYearToString;
-    procedure tiAusFinancialYearDayCount;
     procedure tiDateToPreviousWeekDayDate;
     procedure tiDateToStr;
     procedure tiDateWithinRange;
-    procedure tiRoundDateToPreviousMinute;
-    procedure tiWeekNumber;
+    procedure tiDecimalRoundDbl;
+    procedure tiDecimalRoundExt;
+    procedure tiDecimalRoundSgl;
     procedure tiDeleteFiles;
     procedure tiDirectoryTreeToStringList;
     procedure tiEnclose;
@@ -101,6 +101,10 @@ type
     procedure tiFileToStream;
     procedure tiFileToString;
     procedure tiFixPathDelim_Test;
+    procedure tiFloatToCommaStr;
+    procedure tiFloatToCurrency;
+    procedure tiFloatToCurrencyHide0;
+    procedure tiFloatToStr;
     procedure tiForceDirectories;
     procedure tiForceDirectories1;
     procedure tiGetAppDataDirPrivate;
@@ -124,15 +128,17 @@ type
     procedure tiIntToCommaStr;
     procedure tiIntToStrHide0;
     procedure tiIsClassOfType;
+    procedure tiIsDateTimeNearEnough;
     procedure tiIsEMailAddressValid;
     procedure tiIsFileNameValid;
     procedure tiIsFileReadOnly;
     procedure tiIsNearEnough;
-    procedure tiIsDateTimeNearEnough;
     procedure tiIsVariantOfType;
     procedure tiJoinPath;
+    procedure tiLocateExtension;
     procedure tiMixedCase;
     procedure tiMoveFile;
+    procedure tiMultiReadSingleWriteSynchronizer;
     procedure tiNormalizeStr;
     procedure tiNumToken;
     procedure tiPad0;
@@ -152,17 +158,11 @@ type
     procedure tiRemoveTrailingValue;
     procedure tiReplicate;
     procedure tiRound;
+    procedure tiRoundDateToPreviousMinute;
     procedure tiSafeDiv;
     procedure tiSetFileDate;
     procedure tiSetFileReadOnly;
-    procedure tiDecimalRoundSgl;
-    procedure tiDecimalRoundDbl;
-    procedure tiDecimalRoundExt;
     procedure tiSetPrecision;
-    procedure tiFloatToCommaStr;
-    procedure tiFloatToCurrency;
-    procedure tiFloatToCurrencyHide0;
-    procedure tiFloatToStr;
     procedure tiSpace;
     procedure tiStreamToFile;
     procedure tiStreamToString1;
@@ -185,15 +185,13 @@ type
     procedure tiTrimR;
     procedure tiTrimTrailingWhiteSpace;
     procedure tiVariantArrayToString;
+    procedure tiWeekNumber;
     procedure tiWildcardMatch;
     procedure tiWrap;
     procedure tiXCopy;
     procedure tiYear;
     procedure tiYearToEndAusFinancialYear;
     procedure tiYearToStartAusFinancialYear;
-
-    procedure tiMultiReadSingleWriteSynchronizer;
-
   end;
   
 
@@ -822,29 +820,35 @@ end;
 
 
 procedure TTestTIUtils.tiRemoveExtension;
+  function _fix(AValue: string): string;
+  begin
+    Result := tiUtils.tiFixPathDelim(AValue);
+  end;
 begin
   Check(tiUtils.tiRemoveExtension('test.txt') = 'test', 'Failed on 1');
-  Check(tiUtils.tiRemoveExtension('c:\temp\test.txt') = 'c:\temp\test', 'Failed on 2');
-  Check(tiUtils.tiRemoveExtension('c:\temp\test.') = 'c:\temp\test', 'Failed on 3');
-  Check(tiUtils.tiRemoveExtension('c:\temp\test') = 'c:\temp\test', 'Failed on 4');
-  Check(tiUtils.tiRemoveExtension('\temp\test.txt') = '\temp\test', 'Failed on 5');
-  Check(tiUtils.tiRemoveExtension('\test.txt') = '\test', 'Failed on 6');
-  Check(tiUtils.tiRemoveExtension('..\test.txt') = '..\test', 'Failed on 7');
-  Check(tiUtils.tiRemoveExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test.txt') = 'C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test', 'Failed on 8');
-  Check(tiUtils.tiRemoveExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test') = 'C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test', 'Failed on 9');
+  Check(tiUtils.tiRemoveExtension('c:\temp\test.txt') = _fix('c:\temp\test'), 'Failed on 2');
+  Check(tiUtils.tiRemoveExtension('c:\temp\test.') = _fix('c:\temp\test'), 'Failed on 3');
+  Check(tiUtils.tiRemoveExtension('c:\temp\test') = _fix('c:\temp\test'), 'Failed on 4');
+  Check(tiUtils.tiRemoveExtension('\temp\test.txt') = _fix('\temp\test'), 'Failed on 5');
+  Check(tiUtils.tiRemoveExtension('\test.txt') = _fix('\test'), 'Failed on 6');
+  Check(tiUtils.tiRemoveExtension('..\test.txt') = _fix('..\test'), 'Failed on 7');
+  Check(tiUtils.tiRemoveExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test.txt') = _fix('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test'), 'Failed on 8');
+  Check(tiUtils.tiRemoveExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test') = _fix('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test'), 'Failed on 9');
 end;
 
-
 procedure TTestTIUtils.tiSwapExt;
+  function _fix(AValue: string): string;
+  begin
+    Result := tiUtils.tiFixPathDelim(AValue);
+  end;
 begin
   CheckEquals('test.txt',         tiUtils.tiSwapExt('test.txt', 'txt'), 'Failed on 1');
   CheckEquals('test.hos',         tiUtils.tiSwapExt('test.txt', 'hos'), 'Failed on 2');
-  CheckEquals('c:\temp\test.txt', tiUtils.tiSwapExt('c:\temp\test.txt', 'txt'), 'Failed on 3');
-  CheckEquals('c:\temp\test.hos', tiUtils.tiSwapExt('c:\temp\test.txt', 'hos'), 'Failed on 3');
-  CheckEquals('c:\temp\test.txt', tiUtils.tiSwapExt('c:\temp\test', 'txt'), 'Failed on 4');
-  CheckEquals('c:\temp\test.',     tiUtils.tiSwapExt('c:\temp\test.txt', ''), 'Failed on 5');
+  CheckEquals(_fix('c:\temp\test.txt'), tiUtils.tiSwapExt('c:\temp\test.txt', 'txt'), 'Failed on 3');
+  CheckEquals(_fix('c:\temp\test.hos'), tiUtils.tiSwapExt('c:\temp\test.txt', 'hos'), 'Failed on 4');
+  CheckEquals(_fix('c:\temp\test.txt'), tiUtils.tiSwapExt('c:\temp\test', 'txt'), 'Failed on 5');
+  CheckEquals(_fix('c:\temp\test.'),     tiUtils.tiSwapExt('c:\temp\test.txt', ''), 'Failed on 6');
 end;
-
 
 procedure TTestTIUtils.tiExtractExtension;
 begin
@@ -856,14 +860,12 @@ begin
   Check(tiUtils.tiExtractExtension('C:\DOCUME~1\V8632~1.CHE\LOCALS~1\Temp\TempDUnitFiles\test') = '', 'Failed on 6');
 end;
 
-
 procedure TTestTIUtils.tiCopyFile;
 var
   lslFrom : TStringList;
   lslTo  : TStringList;
   lFrom  : string;
   lTo    : string;
-
 begin
   ForceDirectories(TempDirectory);
 
@@ -2199,6 +2201,14 @@ begin
   CheckEquals('',   tiUtils.tiJoinPath(['\']), 'Failed on 13');
 end;
 
+procedure TTestTIUtils.tiLocateExtension;
+begin
+  CheckEquals(5, tiUtils.tiLocateExtension('test.txt'), 'Failed on 1');
+  CheckEquals(0, tiUtils.tiLocateExtension('test'), 'Failed on 2');
+  CheckEquals(19, tiUtils.tiLocateExtension(tiFixPathDelim('test\my.space\test.txt')), 'Failed on 3');
+  CheckEquals(0, tiUtils.tiLocateExtension(tiFixPathDelim('test\my.space\test')), 'Failed on 4');
+  CheckEquals(22, tiUtils.tiLocateExtension(tiFixPathDelim('test\my.space\test.me.txt')), 'Failed on 5');
+end;
 
 procedure TTestTIUtils.tiStreamToString1;
 var

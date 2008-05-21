@@ -162,11 +162,11 @@ type
   // Extract the file name part of a file name (ie, remove the path and extension)
   function  tiExtractFileNameOnly(     AValue : string): string;
   // Remove the extension from a filename. Similar to Delphi's ChangeFileExt() except the '.' is managed.
-  function  tiRemoveExtension(         AValue : string): string;
+  function  tiRemoveExtension(AValue: string): string;
   // Change a file's extenstion. Similar to Delphi's ChangeFileExt() except the '.' is managed.
   function  tiSwapExt(                 const AFileName, AExt : string): string;
   // Extract a file's extension. Similar to Delphi's ExtractFileExt except the '.' is not extracted.
-  function  tiExtractExtension(        AValue : string): string;
+  function  tiExtractExtension(AValue: string): string;
   // Copy a file from AFileFrom to AFileTo
   procedure tiCopyFile(          const AFrom, ATo : string);
   // Move a file from AFromFileName to AToFileName
@@ -234,7 +234,8 @@ type
   function tiExpandURI(const AURI: string): string;
   // Check for file based URI.
   function tiIsFileURI(const AURI: string): Boolean;
-
+  // Find the position of the file extension.
+  function tiLocateExtension(aValue: TFileName): integer;
 
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -454,7 +455,7 @@ type
   // Read a file into a stream
   procedure tiFileToStream(const AFileName : string; const AStream : TStream);
   // Save the contents of a stream to a file
-  function  tiStreamToFile(const AFileName : string; const AStream : TStream): string;
+  procedure tiStreamToFile(const AFileName : string; const AStream : TStream);
   // Copy one stream to another
   procedure tiCopyStream(const AStreamFrom, AStreamTo : TStream);
 
@@ -545,6 +546,7 @@ uses
   {$ENDIF}
   ,StrUtils   // used for DelSpace1 and tiEnclose
  ;
+
 
 function tiGetTempFile(const AFileNameExtension : string): string;
 {$IFNDEF FPC}
@@ -1030,36 +1032,36 @@ begin
   result := tiRemoveExtension(extractFileName(AValue));
 end;
 
-
-function tiRemoveExtension(AValue : string): string;
-var i : integer;
+function tiRemoveExtension(AValue: string): string;
+var
+  i: integer;
+  s: string;
 begin
-  i := tiPosR('.', AValue);
-  if i <> 0 then begin
-    result := copy(AValue, 1, i - 1);
-  end else begin
-    result := AValue;
-  end;
+  s := tiFixPathDelim(AValue);
+  i := tiLocateExtension(s);
+  if i <> 0 then
+    result := copy(s, 1, i - 1)
+  else
+    result := s;
 end;
 
-
-function  tiSwapExt(const AFileName, AExt : string): string;
+function tiSwapExt(const AFileName, AExt : string): string;
 begin
   result := tiAddTrailingValue(tiRemoveExtension(AFileName), '.', false) + AExt;
 end;
 
-
-function tiExtractExtension(AValue : string): string;
-var i : integer;
+function tiExtractExtension(AValue: string): string;
+var
+  i: integer;
+  s: string;
 begin
-  i := tiPosR('.', AValue);
-  if i <> 0 then begin
-    result := copy(AValue, i+1, length(AValue) - i);
-  end else begin
+  s := tiFixPathDelim(AValue);
+  i := tiLocateExtension(s);
+  if i <> 0 then
+    result := copy(s, i+1, length(s) - i)
+  else
     result := '';
-  end;
 end;
-
 
 procedure tiCopyFile(const AFrom, ATo : string);
 var
@@ -1968,11 +1970,13 @@ end;
 procedure tiForceDirectories(const AValue : TFileName);
 var
   lDirName: string;
+  s: string;
 begin
-  if Pos('.', AValue) <> 0 then
-    lDirName := ExtractFilePath(ExpandFileName(AValue))
+  s := tiFixPathDelim(AValue);
+  if tiLocateExtension (s) <> 0 then
+    lDirName := ExtractFilePath(ExpandFileName(s))
   else
-    lDirName := AValue;
+    lDirName := s;
   if not ForceDirectories(lDirName) then
     raise EtiOPFFileSystemException.CreateFmt(cErrorUnableToCreateDirectory, [lDirName]);
 end;
@@ -2419,7 +2423,6 @@ begin
   finally
     AStream.Position:= LPos;
   end;
-
 end;
 
 procedure tiFileToStream(const AFileName : string; const AStream : TStream);
@@ -2436,7 +2439,7 @@ begin
 end;
 
 
-function  tiStreamToFile(const AFileName : string; const AStream : TStream): string;
+procedure tiStreamToFile(const AFileName : string; const AStream : TStream);
 var
   lStream : TMemoryStream;
   lPosition: Integer;
@@ -2859,6 +2862,7 @@ function tiTestStreamsIdentical(AStream1, AStream2 : TStream):Boolean;
 var
   ls: string;
 begin
+  ls := '';
   Result := tiTestStreamsIdentical(AStream1, AStream2, ls);
 end;
 
@@ -3259,6 +3263,23 @@ var
 begin
   LURI := LowerCase(AURI);
   Result := ((Pos('://', LURI) = 0) or (Pos('file://', LURI) = 1));
+end;
+
+function tiLocateExtension(aValue: TFileName): integer;
+var
+  i: integer;
+  Done: boolean;
+begin
+  result := 0;
+  Done := false;
+  i := Length(AValue);
+  while not Done and (Result = 0) and (i > 0) do
+    if (AValue[i] = PathDelim) then
+      Done := true
+    else if (AValue[i] = '.') then
+      result := i
+    else
+      Dec(i);
 end;
 
 { TtiIntegerList }
