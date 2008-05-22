@@ -205,10 +205,8 @@ type
   //    tiExtractDirToLevel('c:\temp\dir', 2) gives 'c:\temp\dir'
   function tiExtractDirToLevel(const AFileName : TFileName; ALevel : byte): TFileName;
   {: Same as Delphi's ForceDirectory, but will raise an exception if create fails
-     If there is a period in AValue, then AValue is assumed to be a file name and
-     ExtractFilePath() will be called and the result of this call will be used as
-     the directory to create. This will cause unexpected results if there is a
-     period in the directory name.}
+     If there is a period in AValue, it will be handled correctly by looking for
+     path delimiters as well.}
   procedure tiForceDirectories(const AValue : TFileName);
   {: Same as Delphi's ForceDirectory, but will raise an exception if create fails.}
   procedure tiForceDirectories1(const AValue : TFileName);
