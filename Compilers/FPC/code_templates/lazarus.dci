@@ -1,0 +1,79 @@
+[tiol | tiOPF - a new TtiObjectList descendant]
+$(AttributesStart)
+EnableMakros=true
+$(AttributesEnd)
+$Paste()List = class(TtiObjectList)
+private
+protected
+  function    GetItems(i: integer): $Paste(); reintroduce;
+  procedure   SetItems(i: integer; const Value: $Paste()); reintroduce;
+public
+  property    Items[i:integer]: $Paste() read GetItems write SetItems;
+  function    Add(const AObject: $Paste()): integer; reintroduce;
+published
+end;
+[tio | tiOPF - a new TtiObject descendant]
+$(AttributesStart)
+EnableMakros=true
+$(AttributesEnd)
+$Paste() = class(TtiObject)
+private
+protected
+  function    GetOwner: $Paste()List; reintroduce;
+  procedure   SetOwner(const Value: $Paste()List); reintroduce;
+public
+  property    Owner: $Paste()List read GetOwner write SetOwner;
+published
+end;
+[igi | tiOPF - Inherited GetItem ]
+result := TMyClass(inherited GetItems(i));
+[isi | tiOPF - Inherited SetItems ]
+inherited SetItems(i, Value);
+[igo | tiOPF - Inherited GetOwner ]
+result := TMyClass(inherited GetOwner);
+[iso | tiOPF - Inherited SetOwner ]
+inherited SetOwner(Value);
+[ia | tiOPF - Inherited Add ]
+result := inherited Add(AObject);
+[vr | tiOPF - Visitor Read ]
+TVisXXX_Read = class(TVisOwnedQrySelect)
+protected
+  function    AcceptVisitor: boolean; override;
+  procedure   Init; override;
+  procedure   SetupParams; override;
+  procedure   MapRowToObject; override;
+end;
+
+[vc | tiOPF - Visitor Create ]
+TVisXXX_Create = class(TVisOwnedQryUpdate)
+protected
+  function    AcceptVisitor: boolean; override;
+  procedure   Init; override;
+  procedure   SetupParams; override;
+end;
+
+[vu | tiOPF - Visitor Update ]
+TVisXXX_Update = class(TVisOwnedQryUpdate)
+protected
+  function    AcceptVisitor: boolean; override;
+  procedure   Init; override;
+  procedure   SetupParams; override;
+end;
+
+[vd | tiOPF - Visitor Delete ]
+TVisXXX_Delete = class(TVisOwnedQryUpdate)
+protected
+  function    AcceptVisitor: boolean; override;
+  procedure   Init; override;
+  procedure   SetupParams; override;
+end;
+
+[rv | tiOPF - Register Visitor ]
+gTIOPFManager.VisitorManager.RegisterVisitor('SaveXXX', TVisXXX_Create);
+[ev | tiOPF - Execute Visitor ]
+gTIOPFManager.VisitorManager.Execute('SaveLoadXXX|', self);
+[ve | tiOPF - VisitorManager.Execute ]
+gTIOPFManager.VisitorManager.Execute('SaveLoadXXX|', self);
+[chke | CheckEquals (DUnit) ]
+CheckEquals(|, 1, 0.00001, 'Failing at  1');
+
