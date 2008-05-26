@@ -154,7 +154,6 @@ function tiFieldName(const AField: string): string;
 function tiFieldWidth(const AField: string): integer;
 function tiFieldCaption(const AField: string): string;
 
-
 implementation
 
 uses
@@ -168,6 +167,7 @@ uses
 const
   cFieldDelimiter = ';';
   cBrackets = '()';
+  
 
 
 { Helper functions }
@@ -432,15 +432,18 @@ var
   lc: TListColumn;
   lField: string;
 begin
-  { Create column headers }
-  for c := 1 to tiNumToken(FDisplayNames, cFieldDelimiter) do
-  begin
-    lc            := FView.Columns.Add;
-    lc.AutoSize   := False;
-    lField        := tiToken(FDisplayNames, cFieldDelimiter, c);
-    lc.Caption    := tiFieldCaption(lField);
-    lc.Width      := tiFieldWidth(lField);
-  end;
+  if View.Columns.Count = 0 then
+    begin
+      { Create column headers }
+      for c := 1 to tiNumToken(FDisplayNames, cFieldDelimiter) do
+      begin
+        lc            := FView.Columns.Add;
+        lc.AutoSize   := False;
+        lField        := tiToken(FDisplayNames, cFieldDelimiter, c);
+        lc.Caption    := tiFieldCaption(lField);
+        lc.Width      := tiFieldWidth(lField);
+      end;
+    end;
 
   FModel.ForEach(DoCreateItemMediator, FShowDeleted);
 end;
@@ -470,7 +473,8 @@ begin
   {$endif}
   try
     FMediatorList.Clear;
-    View.Columns.Clear;
+    if View.Columns[0].Caption = '' then
+      View.Columns.Clear;
     View.Items.Clear;
     CreateSubMediators;
   finally
