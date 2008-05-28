@@ -76,4 +76,15 @@ gTIOPFManager.VisitorManager.Execute('SaveLoadXXX|', self);
 gTIOPFManager.VisitorManager.Execute('SaveLoadXXX|', self);
 [chke | CheckEquals (DUnit) ]
 CheckEquals(|, 1, 0.00001, 'Failing at  1');
-
+[opfmgr | tiOPF - gTIOPFManager]
+$(AttributesStart)
+AutoOnLineBreak=true
+RemoveChar=true
+$(AttributesEnd)
+gTIOPFManager
+[gtiopfmanager | tiOPF - gTIOPFManager]
+$(AttributesStart)
+AutoOnLineBreak=true
+RemoveChar=true
+$(AttributesEnd)
+gTIOPFManager
