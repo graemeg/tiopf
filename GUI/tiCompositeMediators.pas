@@ -113,7 +113,6 @@ type
     FView: TListItem;
     FDisplayNames: string;
     procedure   SetupFields; virtual;
-  published
   public
     constructor CreateCustom(AModel: TtiObject; AView: TListItem; const ADisplayNames: string; IsObserving: Boolean = True); overload;
     constructor CreateCustom(AModel: TtiObject; AView: TListItem;
@@ -145,7 +144,7 @@ type
     procedure   Update(ASubject: TtiObject); override;
   published
     property    Model: TtiObject read FModel;
-    property    View: TStringGrid Read FView;
+    property    View: TStringGrid read FView;
     property    DisplayNames: string read FDisplayNames;
   end;
 
@@ -238,18 +237,16 @@ procedure TStringGridRowMediator.BeforeDestruction;
 begin
   FModel.DetachObserver(self);
   FModel := nil;
-  
   inherited BeforeDestruction;
 end;
 
 procedure TStringGridRowMediator.Update(ASubject: TtiObject);
 var
-  i : Integer;
-  lField : string;
-  lFieldName : string;
+  i: Integer;
+  lField: string;
+  lFieldName: string;
 begin
   Assert(FModel = ASubject);
-
   for i := 1 to tiNumToken(FDisplayNames, cFieldDelimiter) do
   begin
     lField := tiToken(FDisplayNames, cFieldDelimiter, i);
@@ -377,7 +374,7 @@ procedure TCompositeListViewMediator.SetSelectedObject(const AValue: TtiObject);
 var
   i: integer;
 begin
-  for i := 0 to FView.Items.Count - 1 do
+  for i := 0 to FView.Items.Count-1 do
   begin
     if TtiObject(FView.Items[i].Data) = AValue then
     begin
@@ -400,7 +397,7 @@ end;
 procedure TCompositeListViewMediator.SetShowDeleted(const AValue: Boolean);
 begin
   if FShowDeleted = AValue then
-    exit; //==>
+    Exit; //==>
     
   BeginUpdate;
   try
@@ -608,7 +605,7 @@ begin
       FSelectedObject.ObserverList.Assign(FObserversInTransit);
 
     { Set the Observers Subject property to the selected object }
-    for i := 0 to FSelectedObject.ObserverList.Count - 1 do
+    for i := 0 to FSelectedObject.ObserverList.Count-1 do
     begin
       TMediatorView(FSelectedObject.ObserverList.Items[i]).Subject :=
           FSelectedObject;
@@ -652,7 +649,6 @@ begin
   BeginUpdate;
   try
     FShowDeleted := AVAlue;
-
     RebuildStringGrid;
   finally
     EndUpdate;
@@ -704,12 +700,10 @@ begin
       lColumnTotalWidth := lColumnTotalWidth + FView.ColWidths[i] + 20;
   end;
   
-  for i := 0 to FModel.Count - 1 do
+  for i := 0 to FModel.Count-1 do
   begin
     if not FModel.Items[i].Deleted or FShowDeleted then
-    begin
       DoCreateItemMediator(FModel.Items[i], i);
-    end;
   end;
 end;
 

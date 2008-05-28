@@ -65,29 +65,29 @@ type
        If no parameter is passed, the default persistence layer will be unloaded.}
     procedure   UnLoadPersistenceLayer(const APersistenceLayerName : string = '');
 
-    procedure   ConnectDatabase(           const ADatabaseAlias : string;
-                                           const ADatabaseName : string;
-                                           const AUserName    : string;
-                                           const APassword    : string;
-                                           const AParams      : string;
-                                           const APersistenceLayerName : string); overload;
+    procedure   ConnectDatabase(           const ADatabaseAlias,
+                                                 ADatabaseName,
+                                                 AUserName,
+                                                 APassword,
+                                                 AParams,
+                                                 APersistenceLayerName: string); overload;
 
-    procedure   ConnectDatabase(           const ADatabaseName : string;
-                                           const AUserName    : string;
-                                           const APassword    : string;
-                                           const AParams      : string;
-                                           const APersistenceLayerName : string); overload;
+    procedure   ConnectDatabase(           const ADatabaseName,
+                                                 AUserName,
+                                                 APassword,
+                                                 AParams,
+                                                 APersistenceLayerName : string); overload;
 
-    procedure   ConnectDatabase(           const ADatabaseName : string;
-                                           const AUserName    : string;
-                                           const APassword    : string;
-                                           const AParams      : string); overload;
+    procedure   ConnectDatabase(           const ADatabaseName,
+                                                 AUserName,
+                                                 APassword,
+                                                 AParams: string); overload;
 
-    procedure   ConnectDatabase(           const ADatabaseName : string;
-                                           const AUserName    : string;
-                                           const APassword    : string); overload;
+    procedure   ConnectDatabase(           const ADatabaseName,
+                                                 AUserName,
+                                                 APassword: string); overload;
 
-    // ToDo: Require an Out param that returns an exception message if there was onep
+    // ToDo: Require an Out param that returns an exception message if there was one
     function    TestThenConnectDatabase(   const ADatabaseAlias : string;
                                            const ADatabaseName : string;
                                            const AUserName    : string;
@@ -311,13 +311,12 @@ begin
 end;
 
 procedure TtiOPFManager.ConnectDatabase(const ADatabaseAlias, ADatabaseName,
-  AUserName, APassword, AParams, APersistenceLayerName: string);
+    AUserName, APassword, AParams, APersistenceLayerName: string);
 var
   LPersistenceLayer: TtiPersistenceLayer;
 begin
-
   if APersistenceLayerName = '' then
-    LPersistenceLayer:= DefaultPerLayer
+    LPersistenceLayer := DefaultPerLayer
   else
     LPersistenceLayer := FPersistenceLayers.FindByPersistenceLayerName(APersistenceLayerName);
 
@@ -461,13 +460,8 @@ begin
     APersistenceLayerName);
 end;
 
-
-procedure TtiOPFManager.ConnectDatabase(
-  const ADatabaseName : string;
-  const AUserName    : string;
-  const APassword : string;
-  const AParams      : string;
-  const APersistenceLayerName   : string);
+procedure TtiOPFManager.ConnectDatabase(const ADatabaseName, AUserName,
+    APassword, AParams, APersistenceLayerName: string);
 begin
   ConnectDatabase(ADatabaseName, ADatabaseName, AUserName, APassword, AParams, APersistenceLayerName);
 end;
