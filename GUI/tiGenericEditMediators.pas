@@ -201,6 +201,7 @@ type
     procedure   GuiToObject; override;
     procedure   ObjectToGui; override;
     property    List: TtiObjectList read FList write SetList;
+    procedure   RefreshList; virtual;
   end;
   
 
@@ -886,6 +887,11 @@ begin
     end;
 
   SetOnChangeActive(true);
+end;
+
+procedure TMediatorDynamicComboBoxView.RefreshList;
+begin
+  InternalListRefresh;
 end;
 
 { TMediatorCheckBoxView }

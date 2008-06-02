@@ -803,7 +803,6 @@ end;
 procedure TCompositeStringGridMediator.Update(ASubject: TtiObject);
 begin
   Assert(FModel = ASubject);
-  SetupGUIandObject;
   RebuildStringGrid;
 end;
 
