@@ -174,7 +174,7 @@ type
   // Store a TtiListViewPlus configuration data
   TtiLVConfig = class(TObject)
   private
-    FSorts          : TList;
+    FSorts          : TObjectList;
     FFilters        : TList;
     FFinds          : TList;
     FbApplyFilter   : boolean;
@@ -981,7 +981,7 @@ end;
 constructor TtiLVConfig.Create;
 begin
   inherited;
-  FSorts          := TList.Create;
+  FSorts          := TObjectList.Create;
   FFilters        := TList.Create;
   FFinds          := TList.Create;
   FColsAvailable := TStringList.Create;
@@ -1031,8 +1031,6 @@ begin
     FLV.SetApplySortNoRefresh(false, false);
     FLV.SortOrders.Clear;
   end;
-  for i := 0 to FSorts.Count - 1 do
-    TObject(FSorts.Items[i]).Free;
   FSorts.Clear;
 end;
 
@@ -2658,6 +2656,7 @@ end;
 procedure TtiEditSort.AddFieldEdit(AData: TObject);
 var
   lSortEdit : TtiLVSortEdit;
+  lOld      : integer;
 begin
   lSortEdit    := TtiLVSortEdit.Create(self);
   lSortEdit.AssignAvailableCols(LVConfig.LV.ListColumns);
@@ -2667,7 +2666,10 @@ begin
       lSortEdit.FieldPropName := Field    ;
       lSortEdit.Direction := Direction;
     end;
+  lOld := EditList.Count;
   DoAddFieldEdit(lSortEdit);
+  if (lOld > 0) and (EditList.Count > lOld) then
+    (EditList[Pred(lOld)] as TtiLVSortEdit).ThenBy := true;
 end;
 
 procedure TtiEditSort.AssignSorts(AList: TList);
