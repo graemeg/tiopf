@@ -250,6 +250,9 @@ uses
   {$IFDEF LINK_ZEOS_MYSQL50} ,tiQueryZeosMySQL50  {$ENDIF}
   {$IFDEF LINK_DBISAM4}      ,tiQueryDBISAM4      {$ENDIF}
   {$IFDEF LINK_ASQLITE3}     ,tiQueryAsqlite3     {$ENDIF}
+  {$IFDEF LINK_UIB_EB}       ,tiQueryUIB_EB       {$ENDIF}
+  {$IFDEF LINK_UIB_FB}       ,tiQueryUIB_FB       {$ENDIF}
+  {$IFDEF LINK_UIB_IB}       ,tiQueryUIB_IB       {$ENDIF}
  ;
 
 

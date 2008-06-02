@@ -28,7 +28,10 @@ const
   cTIPersistZeosMySQL41  = 'Zeos_MySQL41';
   cTIPersistZeosMySQL50  = 'Zeos_MySQL50';
   cTIPersistDBISAM4      = 'DBISAM4';
-  cTIPersistAsqlite3      = 'Asqlite3';
+  cTIPersistAsqlite3     = 'Asqlite3';
+  cTIPersistUIB_EB       = 'UIB_EB';  // Embedded server
+  cTIPersistUIB_FB       = 'UIB_FB';  // Firebird server
+  cTIPersistUIB_IB       = 'UIB_IB';  // Interbase server
 
   cDBProxyServerTimeOut  = 1; // Minute
 

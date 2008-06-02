@@ -272,7 +272,6 @@ begin
   inherited;
   FLow          := 0;
   FLowRangeMask := StringOfChar('0', COIDHexChacheSize);
-  ;
   FLowRange     := StrToInt('$1' + FLowRangeMask);
   FDirty        := True;
   FNextOIDHexData := TNextOIDHexData.Create;
@@ -341,7 +340,6 @@ begin
     TNextOIDHexData(Visited).NextHexOID := Query.FieldAsString['OID'];
     if TNextOIDHexData(Visited).NextHexOID = '' then
       TNextOIDHexData(Visited).NextHexOID := StringOfChar('0', COIDHexSize - COIDHexChacheSize);
-    ;
   finally
     Query.Close;
   end;

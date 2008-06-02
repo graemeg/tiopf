@@ -37,11 +37,21 @@ unit tiQueryUIB_IB;
 interface
 
 uses
-  tiQueryUIBAbs;
+  tiQueryUIBAbs,
+  tiPersistenceLayers;
 
 type
 
-  // ---------------------------------------------------------------------------
+  TtiPersistenceLayerUIBIB = class(TtiPersistenceLayer)
+  protected
+    function  GetPersistenceLayerName: string; override;
+    function  GetDatabaseClass: TtiDatabaseClass; override;
+    function  GetQueryClass: TtiQueryClass; override;
+  public
+    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
+  end;
+
+
   TtiDatabaseUIB_IB = class (TtiDatabaseUIBAbs)
   public
     constructor create; override;
@@ -51,20 +61,17 @@ type
       pPassword: string): Boolean; override;
   end;
 
-  // ---------------------------------------------------------------------------
   TtiQueryUIB_IB = class (TtiQueryUIBAbs)
   end;
 
-  // ---------------------------------------------------------------------------
- { TtiExtractUIB_IB = class (TtiExtractUIBAbs)
-  end;}
+
 
 implementation
 
 uses
-  tiPersist,
+  tiOPFManager,
   tiDBConnectionPool,
-  ctiPersist;
+  tiConstants;
 
 { TtiDatabaseUIB_IB }
 
@@ -117,16 +124,44 @@ begin
   end ;
 end;
 
-initialization
+{ TtiPersistenceLayerUIBIB }
 
-  gtiPerMgr.RegPerLayers.RegisterPersistenceLayer(
-    cTIPersistUIB_IB,
-    TtiDBConnectionPoolDataAbs,
-    TtiQueryUIB_IB,
-    TtiDatabaseUIB_IB);
+function TtiPersistenceLayerUIBIB.GetPersistenceLayerName: string;
+begin
+  Result := cTIPersistUIB_IB;
+end;
+
+function TtiPersistenceLayerUIBIB.GetDatabaseClass: TtiDatabaseClass;
+begin
+  Result := TtiDatabaseUIB_IB;
+end;
+
+function TtiPersistenceLayerUIBIB.GetQueryClass: TtiQueryClass;
+begin
+  Result := TtiQueryUIB_IB;
+end;
+
+procedure TtiPersistenceLayerUIBIB.AssignPersistenceLayerDefaults(
+  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+begin
+  Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  APersistenceLayerDefaults.PersistenceLayerName := cTIPersistUIB_IB;
+  APersistenceLayerDefaults.DatabaseName := CDefaultDatabaseDirectory + CDefaultDatabaseName + '.gdb';
+  APersistenceLayerDefaults.Username := 'SYSDBA';
+  APersistenceLayerDefaults.Password := 'masterkey';
+  APersistenceLayerDefaults.CanCreateDatabase := False;
+  APersistenceLayerDefaults.CanSupportMultiUser := True;
+  APersistenceLayerDefaults.CanSupportSQL := True;
+end;
+
+
+initialization
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
+    TtiPersistenceLayerUIBIB);
 
 finalization
-  gtiPerMgr.RegPerLayers.UnRegisterPersistenceLayer(cTIPersistUIB_IB);
+  if not tiOPFManager.ShuttingDown then
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistUIB_IB);
 
 end.
 

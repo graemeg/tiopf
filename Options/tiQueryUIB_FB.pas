@@ -46,14 +46,14 @@ Type
 
   TtiPersistenceLayerUIB_FB = Class(TtiPersistenceLayer)
   Protected
-    Function GetPersistenceLayerName : String; Override;
-    Function GetDatabaseClass : TtiDatabaseClass; Override;
-    Function GetQueryClass : TtiQueryClass; Override;
+    Function  GetPersistenceLayerName : String; Override;
+    Function  GetDatabaseClass : TtiDatabaseClass; Override;
+    Function  GetQueryClass : TtiQueryClass; Override;
   Public
     Procedure AssignPersistenceLayerDefaults(Const APersistenceLayerDefaults : TtiPersistenceLayerDefaults); Override;
   End;
 
-  // ---------------------------------------------------------------------------
+
   TtiDatabaseUIB_FB = Class(TtiDatabaseUIBAbs)
   Public
     Constructor create; Override;
@@ -64,9 +64,10 @@ Type
     Function TIQueryClass : TtiQueryClass; Override;
   End;
 
-  // ---------------------------------------------------------------------------
+
   TtiQueryUIB_FB = Class(TtiQueryUIBAbs)
   End;
+
 
 Implementation
 
@@ -160,13 +161,14 @@ Begin
   Result := TtiQueryUIB_FB;
 End;
 
-Initialization
 
+initialization
   gTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerUIB_FB);
 
-Finalization
-  If Not tiOPFManager.ShuttingDown Then
+finalization
+  if not tiOPFManager.ShuttingDown then
     gTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistUIB_FB);
-End.
+
+end.
 
