@@ -1023,8 +1023,6 @@ begin
 end;
 
 procedure TtiLVConfig.ClearSorts;
-var
-  i : integer;
 begin
   if FLV <> nil then
   begin

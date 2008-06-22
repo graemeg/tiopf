@@ -31,14 +31,12 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure sbDefaultToPresetValuesClick(Sender: TObject);
   private
-    FDataDirDepth: integer;
     FSingleUserPersistenceLayers: TObjectList;
     function  GetDatabaseName: string;
     function  GetPassword: string;
     function  GetPersistenceLayerName: string;
     function  GetUserName: string;
     procedure SetPersistenceLayer(const APersistenceLayerName: string);
-    procedure SetDataDirDepth(const Value: integer);
     procedure RegisterPersistenceLayersAsTests;
     procedure RegisterPersistenceLayerAsTest(
       const APersistenceLayer: TtiPersistenceLayer);
@@ -51,7 +49,6 @@ type
     property  DatabaseName        : string  read GetDatabaseName;
     property  UserName            : string  read GetUserName;
     property  Password            : string  read GetPassword;
-    property  DataDirDepth        : integer read FDataDirDepth write SetDataDirDepth;
   end;
 
 
@@ -71,8 +68,7 @@ begin
   result:=
     ExpandFileName(
       tiAddTrailingSlash(
-        ExtractFilePath(ParamStr(0))) +
-      tiReplicate('..\', FDataDirDepth) + '_Data\');
+        ExtractFilePath(ParamStr(0))) + '\_Data\');
 end;
 
 procedure TFormPickDatabase.RegisterPersistenceLayerAsTest(
@@ -132,7 +128,6 @@ var
 begin
   FSingleUserPersistenceLayers:= TObjectList.Create(False);
   RegisterPersistenceLayersAsTests;
-  FDataDirDepth:= 1;
   lLastPerLayer:= gINI.ReadString(Name, 'LastPerLayer', '');
   SetPersistenceLayer(lLastPerLayer);
 end;
@@ -189,12 +184,6 @@ procedure TFormPickDatabase.FormDestroy(Sender: TObject);
 begin
   FSingleUserPersistenceLayers.Free;
   gINI.WriteString(Name, cINIIdentLastPerLayer, paePersistenceLayer.Value);
-end;
-
-procedure TFormPickDatabase.SetDataDirDepth(const Value: integer);
-begin
-  FDataDirDepth:= Value;
-  SetPersistenceLayer(paePersistenceLayer.Value);
 end;
 
 end.
