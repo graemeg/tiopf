@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <DCC_UsePackage>tiPersistCore</DCC_UsePackage>
     <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-    <DCC_DependencyCheckOutputName>..\..\_bin\Demo_OrdinalTypes.exe</DCC_DependencyCheckOutputName>
+    <DCC_DependencyCheckOutputName>..\_bin\Demo_OrdinalTypes.exe</DCC_DependencyCheckOutputName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Version>7.0</Version>
@@ -26,7 +26,7 @@
     <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
     <DCC_UNIT_LIBRARY>False</DCC_UNIT_LIBRARY>
     <DCC_UNIT_PLATFORM>False</DCC_UNIT_PLATFORM>
-    <DCC_ExeOutput>..\..\_bin</DCC_ExeOutput>
+    <DCC_ExeOutput>..\_bin</DCC_ExeOutput>
     <DCC_DcuOutput>..\_dcu</DCC_DcuOutput>
     <DCC_ObjOutput>..\_dcu</DCC_ObjOutput>
     <DCC_HppOutput>..\_dcu</DCC_HppOutput>

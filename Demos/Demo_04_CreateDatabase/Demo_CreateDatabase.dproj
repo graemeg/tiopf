@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-    <DCC_DependencyCheckOutputName>..\..\_bin\Demo_CreateDatabase.exe</DCC_DependencyCheckOutputName>
+    <DCC_DependencyCheckOutputName>..\_bin\Demo_CreateDatabase.exe</DCC_DependencyCheckOutputName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Version>7.0</Version>
@@ -27,7 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Version>7.0</Version>
     <DCC_WriteableConstants>True</DCC_WriteableConstants>
-    <DCC_ExeOutput>..\..\_bin</DCC_ExeOutput>
+    <DCC_ExeOutput>..\_bin</DCC_ExeOutput>
     <DCC_DcuOutput>..\_dcu</DCC_DcuOutput>
     <DCC_ObjOutput>..\_dcu</DCC_ObjOutput>
     <DCC_HppOutput>..\_dcu</DCC_HppOutput>
