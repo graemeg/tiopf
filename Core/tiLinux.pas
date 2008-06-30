@@ -18,15 +18,15 @@ uses
 
 implementation
 uses
-  Libc
-  ,Process
+  Process
   ,unix
  ;
 
 
 function GetCurrentThreadID: Cardinal;
 begin
-  Result := pthread_self;
+  Result:=system.GetCurrentThreadID;
+//  Result := pthread_self;
 end;
 
 

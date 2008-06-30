@@ -5,7 +5,7 @@ name=tiopf
 version=2.0.2.1
 
 [default]
-fpcdir=/opt/fpc/src
+fpcdir=/home/michael/fpc
 
 [compiler]
 unittargetdir=lib/$(CPU_TARGET)-$(OS_TARGET)
@@ -43,6 +43,6 @@ export LCL_PLATFORM
 cleartarget:
         -$(DEL) $(COMPILER_UNITTARGETDIR)/tiopf$(PPUEXT)
 
-all: tiOPF.pas
+#all: tiOPF.pas
 #  cleartarget 
 #  tiOPF.pas

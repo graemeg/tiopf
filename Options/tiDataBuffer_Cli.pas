@@ -198,6 +198,15 @@ const
   stStrOffset = SizeOf(stLStrRec);
 {.Z-}
 
+{ Delphi compatible defines }
+{$DEFINE USEASM}
+{$IFDEF FPC}
+{$IFNDEF CPU386}
+{$UNDEF USEASM}
+{$ENDIF}
+{$ENDIF}
+
+{$IFDEF USEASM}
 function stCharExistsL(const S : AnsiString; C : AnsiChar): Boolean; register;
   {-Count the number of a given character in a string. }
 asm
@@ -255,6 +264,23 @@ asm
   mov   eax, ecx
   pop   ebx
 end;
+{$ELSE}
+function stCharExistsL(const S : AnsiString; C : AnsiChar): Boolean; register;
+
+Var
+  I,L : Integer;
+
+begin
+  Result:=False;
+  I:=1;
+  L:=Length(S);
+  While (I<L) and Not Result do
+    begin
+    Result:=S[i]=C;
+    Inc(I);
+    end;
+end;
+{$ENDIF}
 
 
 function stExtractTokensL(const S : AnsiString;
