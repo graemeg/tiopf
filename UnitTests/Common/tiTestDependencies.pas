@@ -90,7 +90,7 @@ uses
   ,tiOPFIBO_TST
   ,tiOPFIBX_TST
   ,tiOPFRemote_TST
-  //,tiOPFSQLDB_IB_TST  // no such test
+  ,tiOPFSQLDB_IB_TST
   ,tiOPFTAB_TST
   ,tiOPFXML_TST
   ,tiOPFXMLLight_TST
@@ -170,7 +170,7 @@ begin
   tiOPFIBO_TST.RegisterTests;
   tiOPFIBX_TST.RegisterTests;
   tiOPFRemote_TST.RegisterTests;
-  //tiOPFSQLDB_IB_TST.RegisterTests; // No tests
+  tiOPFSQLDB_IB_TST.RegisterTests;
   tiOPFTAB_TST.RegisterTests;
   tiOPFXML_TST.RegisterTests;
   tiOPFXMLLight_TST.RegisterTests;

@@ -20,10 +20,9 @@ type
   TTestTIDatabaseFBL = class(TTestTIDatabase)
   protected
     procedure CreateDatabase; override;
+    procedure DatabaseExists; override;
   public
     class function PersistenceLayerName: string; override;
-  published
-    procedure DatabaseExists; override;
   end;
 
 
