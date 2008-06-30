@@ -23,13 +23,13 @@ unit tiQuerySqldbIB;
 interface
 
 uses
-  Classes
+  tiQuery
+  ,Classes
   ,db
   ,sqldb
   ,IBConnection
   ,tiDBConnectionPool
   ,tiObject
-  ,tiQuery
   ,tiPersistenceLayers
  ;
 
@@ -37,8 +37,8 @@ type
 
   TtiPersistenceLayerSqldIB = class(TtiPersistenceLayer)
   protected
-    function GetDatabaseClass: TtiDatabaseClass; override;
     function GetPersistenceLayerName: string; override;
+    function GetDatabaseClass: TtiDatabaseClass; override;
     function GetQueryClass: TtiQueryClass; override;
   public
     procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
@@ -55,7 +55,7 @@ type
   public
     constructor Create; override;
     destructor  Destroy; override;
-    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean; override;
+    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
     property    IBDatabase: TIBConnection Read FDatabase Write FDatabase;
     procedure   StartTransaction; override;
@@ -68,43 +68,49 @@ type
     function    TIQueryClass: TtiQueryClass; override;
   end;
 
-  // ---------------------------------------------------------------------------
+
+  { TtiQuerySqldbIB }
+
   TtiQuerySqldbIB = class(TtiQuerySQL)
   private
     FIBSQL: TSQLQuery;
     FbActive: boolean;
-    function    IBFieldKindToTIFieldKind(pDataType: TFieldType): TtiQueryFieldKind;
-    procedure   Prepare;
+    function  IBFieldKindToTIFieldKind(pDataType: TFieldType): TtiQueryFieldKind;
+    procedure Prepare;
   protected
-    function    GetFieldAsString(const AName: string): string; override;
-    function    GetFieldAsFloat(const AName: string): extended; override;
-    function    GetFieldAsBoolean(const AName: string): boolean; override;
-    function    GetFieldAsInteger(const AName: string): int64; override;
-    function    GetFieldAsDateTime(const AName: string): TDateTime; override;
-    function    GetFieldAsStringByIndex(AIndex: integer): string; override;
-    function    GetFieldAsFloatByIndex(AIndex: integer): extended; override;
-    function    GetFieldAsBooleanByIndex(AIndex: integer): boolean; override;
-    function    GetFieldAsIntegerByIndex(AIndex: integer): int64; override;
-    function    GetFieldAsDateTimeByIndex(AIndex: integer): TDateTime; override;
-    function    GetFieldIsNullByIndex(AIndex: integer): boolean; override;
-    function    GetSQL: TStrings; override;
-    procedure   SetSQL(const AValue: TStrings); override;
-    function    GetActive: boolean; override;
-    procedure   SetActive(const AValue: boolean); override;
-    function    GetEOF: boolean; override;
-    function    GetParamAsString(const AName: string): string; override;
-    function    GetParamAsBoolean(const AName: string): boolean; override;
-    function    GetParamAsFloat(const AName: string): extended; override;
-    function    GetParamAsInteger(const AName: string): int64; override;
-    procedure   SetParamAsString(const AName, AValue: string); override;
-    procedure   SetParamAsBoolean(const AName: string; const AValue: boolean); override;
-    procedure   SetParamAsFloat(const AName: string; const AValue: extended); override;
-    procedure   SetParamAsInteger(const AName: string; const AValue: int64); override;
-    function    GetParamAsDateTime(const AName: string): TDateTime; override;
-    procedure   SetParamAsDateTime(const AName: string; const AValue: TDateTime); override;
-    function    GetParamIsNull(const AName: string): boolean; override;
-    procedure   SetParamIsNull(const AName: string; const AValue: boolean); override;
-    function    GetFieldIsNull(const AName: string): boolean; override;
+    function  GetFieldAsString(const AName: string): string; override;
+    function  GetFieldAsFloat(const AName: string): extended; override;
+    function  GetFieldAsBoolean(const AName: string): boolean; override;
+    function  GetFieldAsInteger(const AName: string): int64; override;
+    function  GetFieldAsDateTime(const AName: string): TDateTime; override;
+
+    function  GetFieldAsStringByIndex(AIndex: integer): string; override;
+    function  GetFieldAsFloatByIndex(AIndex: integer): extended; override;
+    function  GetFieldAsBooleanByIndex(AIndex: integer): boolean; override;
+    function  GetFieldAsIntegerByIndex(AIndex: integer): int64; override;
+    function  GetFieldAsDateTimeByIndex(AIndex: integer): TDateTime; override;
+    function  GetFieldIsNullByIndex(AIndex: integer): boolean; override;
+
+    function  GetSQL: TStrings; override;
+    procedure SetSQL(const AValue: TStrings); override;
+    function  GetActive: boolean; override;
+    procedure SetActive(const AValue: boolean); override;
+    function  GetEOF: boolean; override;
+    function  GetParamAsString(const AName: string): string; override;
+    function  GetParamAsBoolean(const AName: string): boolean; override;
+    function  GetParamAsFloat(const AName: string): extended; override;
+    function  GetParamAsInteger(const AName: string): int64; override;
+    function  GetParamAsDateTime(const AName: string): TDateTime; override;
+    function  GetParamAsTextBLOB(const AName: string): string; override;
+    function  GetParamIsNull(const AName: string): Boolean; override;
+    procedure SetParamAsString(const AName, AValue: string); override;
+    procedure SetParamAsBoolean(const AName: string; const AValue: boolean); override;
+    procedure SetParamAsFloat(const AName: string; const AValue: extended); override;
+    procedure SetParamAsInteger(const AName: string; const AValue: int64); override;
+    procedure SetParamAsDateTime(const AName: string; const AValue: TDateTime); override;
+    procedure SetParamAsTextBLOB(const AName, AValue: string); override;
+    procedure SetParamIsNull(const AName: string; const AValue: Boolean); override;
+    function  GetFieldIsNull(const AName: string): boolean; override;
   public
     constructor Create; override;
     destructor  Destroy; override;
@@ -112,16 +118,20 @@ type
     procedure   Close; override;
     procedure   Next; override;
     procedure   ExecSQL; override;
+
     function    ParamCount: integer; override;
     function    ParamName(AIndex: integer): string; override;
+
     procedure   AssignParamFromStream(const AName: string; const AStream: TStream); override;
     procedure   AssignParamToStream(const AName: string; const AStream: TStream); override;
     procedure   AssignFieldAsStream(const AName: string; const AStream: TStream); override;
     procedure   AssignFieldAsStreamByIndex(AIndex: integer; const AValue: TStream); override;
     procedure   AssignParams(const AParams: TtiQueryParams; const AWhere: TtiQueryParams = nil); override;
+
     procedure   AttachDatabase(ADatabase: TtiDatabase); override;
     procedure   DetachDatabase; override;
     procedure   Reset; override;
+
     function    FieldCount: integer; override;
     function    FieldName(AIndex: integer): string; override;
     function    FieldIndex(const AName: string): integer; override;
@@ -132,50 +142,42 @@ type
 
 
 implementation
-
 uses
-  SysUtils
+  tiUtils
+  ,tiLog
+  ,TypInfo
+  ,tiOPFManager
+  ,SysUtils
   ,tiConstants
   ,tiExcept
-  ,tiLog
-  ,tiOPFManager
-  ,tiUtils
-  ,TypInfo
   ,Variants
  ;
 
-{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
- * TtiQuerySqldbIB
- *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * }
+{ TtiQuerySqldbIB }
+
 constructor TtiQuerySqldbIB.Create;
 begin
   inherited;
   FIBSQL := TSQLQuery.Create(nil);
 end;
 
-// -----------------------------------------------------------------------------
 destructor TtiQuerySqldbIB.Destroy;
 begin
   FIBSQL.Free;
   inherited;
 end;
 
-// -----------------------------------------------------------------------------
 procedure TtiQuerySqldbIB.Close;
 begin
   Active := False;
 end;
 
-// -----------------------------------------------------------------------------
 procedure TtiQuerySqldbIB.ExecSQL;
 begin
   Prepare;
   FIBSQL.ExecSQL;
 end;
 
-// -----------------------------------------------------------------------------
 function TtiQuerySqldbIB.GetFieldAsBoolean(const AName: string): boolean;
 var
   lsValue: string;
@@ -188,25 +190,21 @@ begin
     (lsValue = '1');
 end;
 
-// -----------------------------------------------------------------------------
 function TtiQuerySqldbIB.GetFieldAsDateTime(const AName: string): TDateTime;
 begin
   Result := FIBSQL.FieldByName(UpperCase(AName)).AsDateTime;
 end;
 
-// -----------------------------------------------------------------------------
 function TtiQuerySqldbIB.GetFieldAsFloat(const AName: string): extended;
 begin
   Result := FIBSQL.FieldByName(UpperCase(AName)).AsFloat;
 end;
 
-// -----------------------------------------------------------------------------
 function TtiQuerySqldbIB.GetFieldAsInteger(const AName: string): int64;
 begin
   Result := FIBSQL.FieldByName(UpperCase(AName)).AsInteger;
 end;
 
-// -----------------------------------------------------------------------------
 function TtiQuerySqldbIB.GetFieldAsString(const AName: string): string;
 begin
   Result := FIBSQL.FieldByName(UpperCase(AName)).AsString;
@@ -286,6 +284,11 @@ end;
 function TtiQuerySqldbIB.GetParamAsDateTime(const AName: string): TDateTime;
 begin
   Result := FIBSQL.Params.ParamByName(UpperCase(AName)).AsDateTime;
+end;
+
+function TtiQuerySqldbIB.GetParamAsTextBLOB(const AName: string): string;
+begin
+  Result := FIBSQL.Params.ParamByName(UpperCase(AName)).AsString;
 end;
 
 // -----------------------------------------------------------------------------
@@ -384,6 +387,14 @@ procedure TtiQuerySqldbIB.SetParamAsDateTime(const AName: string;
 begin
   Prepare;
   FIBSQL.Params.ParamByName(UpperCase(AName)).AsDateTime := AValue;
+end;
+
+procedure TtiQuerySqldbIB.SetParamAsTextBLOB(const AName, AValue: string);
+begin
+  log('>>> TtiQuerySqldbIB.SetParamAsTextBLOB');
+  Prepare;
+  FIBSQL.Params.ParamByName(UpperCase(AName)).AsString := AValue;
+  log('<<< TtiQuerySqldbIB.SetParamAsTextBLOB');
 end;
 
 // -----------------------------------------------------------------------------
@@ -788,7 +799,7 @@ var
   lTable:    TtiDBMetaDataTable;
 begin
   lMetaData := (AData as TtiDBMetaData);
-  lQuery   := GTIOPFManager.RegPerLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery   := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -846,7 +857,7 @@ const
 begin
   lTable    := (AData as TtiDBMetaDataTable);
   lTableName := UpperCase(lTable.Name);
-  lQuery    := GTIOPFManager.RegPerLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery    := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -947,7 +958,7 @@ begin
 end;
 
 
-procedure TtiQuerySqldbIB.AssignParams(const AParams, AWhere: TtiQueryParams);
+procedure TtiQuerySqldbIB.AssignParams(const AParams: TtiQueryParams; const AWhere: TtiQueryParams = nil);
 begin
   if AParams = NIL then
     Exit;
@@ -1013,7 +1024,7 @@ procedure TtiPersistenceLayerSqldIB.AssignPersistenceLayerDefaults(
   const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
 begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
-  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistSQLLibIB;
+  APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistSqldbIB;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
   APersistenceLayerDefaults.Username:= 'SYSDBA';
   APersistenceLayerDefaults.Password:= 'masterkey';
@@ -1039,11 +1050,11 @@ end;
 
 initialization
 
-  GTIOPFManager.RegPerLayers.__RegisterPersistenceLayer(
+  GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerSqldIB);
 
 finalization
   if not tiOPFManager.ShuttingDown then
-    GTIOPFManager.RegPerLayers.__UnRegisterPersistenceLayer(cTIPersistSqldbIB);
+    GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistSqldbIB);
 
 end.

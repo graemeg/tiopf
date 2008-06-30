@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="/"/>
+    <Version Value="6"/>
+    <General>
+      <Flags>
+        <SaveOnlyProjectUnits Value="True"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=""/>
+      <UseAppBundle Value="False"/>
+    </General>
+    <VersionInfo>
+      <CurrentVersionNr Value="1"/>
+      <ProjectVersion Value=""/>
+      <FileDescription Value="FPCUnit text test runner for tiOPF project"/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="tiOPF"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="5">
+      <Unit0>
+        <Filename Value="textrunner.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="textrunner"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="../Common/tiTestDependencies.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiTestDependencies"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="../Common/tiOPFTestManager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiOPFTestManager"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../Common/tiDUnitINI.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiDUnitINI"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../Tests/tiUtils_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiUtils_TST"/>
+      </Unit4>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <SearchPaths>
+      <OtherUnitFiles Value="../Common/;../Tests/"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Other>
+      <CustomOptions Value="-FU_Dcu
+"/>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+</CONFIG>
