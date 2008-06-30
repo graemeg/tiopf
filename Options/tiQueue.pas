@@ -9,12 +9,7 @@ interface
 uses
   SysUtils
   ,Classes
-  {$IFDEF MSWINDOWS}
-  ,Windows
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  ,Libc
-  {$ENDIF LINUX}
+  ,SyncObjs
   ,tiObject
  ;
 
@@ -49,12 +44,7 @@ type
   queue operations are protected by it's own internal locking mechanism.}
   TtiObjThreadQueue = Class(TtiObjQueue)
   Private
-    {$IFDEF MSWINDOWS}
-    FSemaphore : THandle;
-    {$ENDIF MSWINDOWS}
-    {$IFDEF LINUX}
-    FSemaphore : TSemaphore;
-    {$ENDIF LINUX}
+    FSection: TCriticalSection;
     FLockCount : Integer;
     Procedure InternalLock(AExternalLock : boolean);
     Procedure InternalUnLock(AExternalLock : boolean);
@@ -239,24 +229,10 @@ End;
 
 {: Creates a thread-safe object queue with an initial size of ACapacity objects.}
 Constructor TtiObjThreadQueue.Create(ACapacity : Integer);
-Var
-  lSemaphoreName : String;
-  {$IFDEF LINUX}
-  error: integer;
-  {$ENDIF LINUX}
+
 Begin
   Inherited;
-  lSemaphoreName := ClassName;
-
-  {$IFDEF MSWINDOWS}
-  FSemaphore := CreateSemaphore(Nil, 1, 1, PChar(lSemaphoreName));
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  error := sem_init(FSemaphore, ord(false), 0);
-  if error <> 0 then
-    raise Exception.Create('Failed to create the semaphore');
-  {$ENDIF LINUX}
-
+  FSection:=TCriticalSection.Create;
   FLockCount := 0;
 End;
 
@@ -271,19 +247,9 @@ Begin
 End;
 
 destructor TtiObjThreadQueue.Destroy;
-{$IFDEF LINUX}
-var
-  error: integer;
-{$ENDIF LINUX}
+
 begin
-  {$IFDEF MSWINDOWS}
-  CloseHandle(FSemaphore);
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  error := sem_destroy(FSemaphore);
-  if error <> 0 then
-    raise Exception.Create('Failed to destroy the semaphore');
-  {$ENDIF LINUX}
+  FreeAndNil(FSection);
   inherited;
 end;
 
@@ -319,40 +285,19 @@ Begin
     Inc(FLockCount);
     Exit;
   End;
-  {$IFDEF MSWINDOWS}
-  If (WaitForSingleObject(FSemaphore, 60000) = WAIT_TIMEOUT) Then
-  Begin
-    LogError('Timed out waiting to lock ' + ClassName);
-    Exit;
-  End;
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  sem_wait(FSemaphore);
-  {$ENDIF LINUX}
+  FSection.Enter;
   Inc(FLockCount);
 End;
 
 Procedure TtiObjThreadQueue.InternalUnLock(AExternalLock : boolean);
-{$IFDEF LINUX}
-var
-  error: integer;
-{$ENDIF LINUX}
+
 Begin
   If (Not AExternalLock) And (FLockCount > 1) Then
   Begin
     Dec(FLockCount);
     Exit;
   End;
-
-  {$IFDEF MSWINDOWS}
-  ReleaseSemaphore(FSemaphore, 1, nil);
-  {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  error := sem_post(FSemaphore);
-  if error <> 0 then
-    raise Exception.Create('Failed to unlock the semaphore in ' + ClassName);
-  {$ENDIF LINUX}
-
+  FSection.Leave;
   Dec(FLockCount);
 End;
 
