@@ -388,7 +388,7 @@ begin
  ByteBuffer := 0;
  ByteBufferSpace := 4;
  l := MimeDecodePartial (Pointer (s)^, l, Pointer (Result)^, ByteBuffer, ByteBufferSpace);
- Inc (l, MimeDecodePartialEnd ((PChar (Result) + l)^, ByteBuffer, ByteBufferSpace));
+ Inc (l, MimeDecodePartialEnd (Pointer (Cardinal (Result) + l)^, ByteBuffer, ByteBufferSpace));
  SetLength (Result, l);
  Exit;
  NothingToDo:
@@ -458,7 +458,7 @@ begin
   InPtr := @InputBuffer;
   InMax3 := InputByteCount div 3 * 3;
   OutPtr := @OutputBuffer;
-  InLimitPtr:= PByte(PChar(InPtr) + InMax3);
+  Cardinal (InLimitPtr):= Cardinal (InPtr) + InMax3;
   while InPtr <> InLimitPtr do
   begin
     b := InPtr^;
@@ -527,7 +527,7 @@ begin
  if InputBytesCount > 0 then
   begin
    InPtr := @InputBuffer;
-   InLimitPtr:= PByte(Pchar(InPtr) + InputBytesCount);
+   Cardinal (InLimitPtr):= Cardinal (InPtr) + InputBytesCount;
    OutPtr := @OutputBuffer;
    lByteBuffer := ByteBuffer;
    lByteBufferSpace := ByteBufferSpace;
@@ -1028,7 +1028,3 @@ begin
 end;
 
 end.
-
-
-
-
