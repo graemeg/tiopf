@@ -65,10 +65,11 @@
     <Other>
       <CustomOptions Value="-FU_Dcu
 -dUseCThreads
--dLink_TAB
--dLink_CSV
--dLink_FBL
--dLink_XMLLIGHT
+-dLINK_TAB
+-dLINK_CSV
+-dLINK_FBL
+-dLINK_XMLLIGHTx
+-dLINK_SQLDB_IBx
 "/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>

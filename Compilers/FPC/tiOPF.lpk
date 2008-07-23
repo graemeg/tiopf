@@ -21,11 +21,11 @@
       </CodeGeneration>
       <Other>
         <WriteFPCLogo Value="False"/>
-        <CustomOptions Value="-dLINK_CSV
--dLINK_TAB
+        <CustomOptions Value="-dLINK_CSVx
+-dLINK_TABx
 -dLINK_FBL
 -dLINK_SQLDB_IBx
--dLINK_XMLLIGHT
+-dLINK_XMLLIGHTx
 -dLINK_ZEOS_FB15x
 -dUseCThreads
 "/>
