@@ -108,6 +108,7 @@ end;
 function _GetSpecialDir(ID: Integer): string;
 var
   APath: Array[0..MAX_PATH] of char;
+  APtr: PAnsiChar;
 begin
   Result := '';
   if (CFGDLLHandle = 0) then
@@ -115,7 +116,10 @@ begin
   if Assigned(SHGetFolderPath) then
   begin
     if SHGetFolderPath(0,ID or CSIDL_FLAG_CREATE,0,0,@APATH[0]) = S_OK then
-      Result := IncludeTrailingPathDelimiter(StrPas(@APath[0]));
+    begin
+      APtr    := PAnsiChar(@APath[0]);
+      Result  := IncludeTrailingPathDelimiter(StrPas(APtr));
+    end;
   end;
 end;
 
