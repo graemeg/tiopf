@@ -90,10 +90,10 @@ begin
   Assert(ADateTime = ADateTime);  // Getting rid of compiler hints
   Assert(AMessage = AMessage);    // regarding params not used.
   
-  if gCommandLineParams.IsParam(csLogConsole) then
+//  if gCommandLineParams.IsParam(csLogConsole) then
     result := (ASeverity = lsUserInfo) or (ASeverity in SevToLog)
-  else
-    result := ASeverity in [lsUserInfo];
+//  else
+//    result := ASeverity in [lsUserInfo];
 end;
 
 destructor TtiLogToConsole.Destroy;

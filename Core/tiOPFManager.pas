@@ -230,29 +230,36 @@ uses
   {$IFNDEF OID_AS_INT64}
   ,tiOIDGUID
   {$ENDIF}
-  {$IFDEF LINK_ADOACCESS}    ,tiQueryADOAccess    {$ENDIF}
-  {$IFDEF LINK_ADOSQLSERVER} ,tiQueryADOSQLServer {$ENDIF}
-  {$IFDEF LINK_BDEPARADOX}   ,tiQueryBDEParadox   {$ENDIF}
-  {$IFDEF LINK_CRSDAC}       ,tiQueryCrSdac       {$ENDIF}
-  {$IFDEF LINK_CSV}          ,tiQueryCSV          {$ENDIF}
-  {$IFDEF LINK_DOA}          ,tiQueryDOA          {$ENDIF}
-  {$IFDEF LINK_FBL}          ,tiQueryFBL          {$ENDIF}
-  {$IFDEF LINK_IBO}          ,tiQueryIBO          {$ENDIF}
-  {$IFDEF LINK_IBX}          ,tiQueryIBX          {$ENDIF}
-  {$IFDEF LINK_REMOTE}       ,tiQueryRemote       {$ENDIF}
-  {$IFDEF LINK_SQLDB_IB}     ,tiQuerySqldbIB      {$ENDIF}
-  {$IFDEF LINK_TAB}          ,tiQueryTAB          {$ENDIF}
-  {$IFDEF LINK_XML}          ,tiQueryXML          {$ENDIF}
-  {$IFDEF LINK_XMLLIGHT}     ,tiQueryXMLLight     {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB10}    ,tiQueryZeosFB10     {$ENDIF}
-  {$IFDEF LINK_ZEOS_FB15}    ,tiQueryZeosFB15     {$ENDIF}
-  {$IFDEF LINK_ZEOS_MYSQL41} ,tiQueryZeosMySQL41  {$ENDIF}
-  {$IFDEF LINK_ZEOS_MYSQL50} ,tiQueryZeosMySQL50  {$ENDIF}
-  {$IFDEF LINK_DBISAM4}      ,tiQueryDBISAM4      {$ENDIF}
-  {$IFDEF LINK_ASQLITE3}     ,tiQueryAsqlite3     {$ENDIF}
-  {$IFDEF LINK_UIB_EB}       ,tiQueryUIB_EB       {$ENDIF}
-  {$IFDEF LINK_UIB_FB}       ,tiQueryUIB_FB       {$ENDIF}
-  {$IFDEF LINK_UIB_IB}       ,tiQueryUIB_IB       {$ENDIF}
+  {$IFDEF LINK_ADOACCESS}       ,tiQueryADOAccess     {$ENDIF}
+  {$IFDEF LINK_ADOSQLSERVER}    ,tiQueryADOSQLServer  {$ENDIF}
+  {$IFDEF LINK_BDEPARADOX}      ,tiQueryBDEParadox    {$ENDIF}
+  {$IFDEF LINK_CRSDAC}          ,tiQueryCrSdac        {$ENDIF}
+  {$IFDEF LINK_CSV}             ,tiQueryCSV           {$ENDIF}
+  {$IFDEF LINK_DOA}             ,tiQueryDOA           {$ENDIF}
+  {$IFDEF LINK_FBL}             ,tiQueryFBL           {$ENDIF}
+  {$IFDEF LINK_IBO}             ,tiQueryIBO           {$ENDIF}
+  {$IFDEF LINK_IBX}             ,tiQueryIBX           {$ENDIF}
+  {$IFDEF LINK_REMOTE}          ,tiQueryRemote        {$ENDIF}
+  {$IFDEF LINK_SQLDB_IB}        ,tiQuerySqldbIB       {$ENDIF}
+  {$IFDEF LINK_SQLDB_PQ}        ,tiQuerySqldbPQ       {$ENDIF}
+  {$IFDEF LINK_SQLDB_Oracle}    ,tiQuerySqldbOracle   {$ENDIF}
+  {$IFDEF LINK_SQLDB_SQLLite3}  ,tiQuerySqldbSQLLite3 {$ENDIF}
+//  {$IFDEF LINK_SQLDB_ODBC}      ,tiQuerySqldbODBC    {$ENDIF}
+  {$IFDEF LINK_SQLDB_MySQL40}   ,tiQuerySqldbMySQL40  {$ENDIF}
+  {$IFDEF LINK_SQLDB_MySQL41}   ,tiQuerySqldbMySQL41  {$ENDIF}
+  {$IFDEF LINK_SQLDB_MySQL50}   ,tiQuerySqldbMySQL50  {$ENDIF}
+  {$IFDEF LINK_TAB}             ,tiQueryTAB           {$ENDIF}
+  {$IFDEF LINK_XML}             ,tiQueryXML           {$ENDIF}
+  {$IFDEF LINK_XMLLIGHT}        ,tiQueryXMLLight      {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB10}       ,tiQueryZeosFB10      {$ENDIF}
+  {$IFDEF LINK_ZEOS_FB15}       ,tiQueryZeosFB15      {$ENDIF}
+  {$IFDEF LINK_ZEOS_MYSQL41}    ,tiQueryZeosMySQL41   {$ENDIF}
+  {$IFDEF LINK_ZEOS_MYSQL50}    ,tiQueryZeosMySQL50   {$ENDIF}
+  {$IFDEF LINK_DBISAM4}         ,tiQueryDBISAM4       {$ENDIF}
+  {$IFDEF LINK_ASQLITE3}        ,tiQueryAsqlite3      {$ENDIF}
+  {$IFDEF LINK_UIB_EB}          ,tiQueryUIB_EB        {$ENDIF}
+  {$IFDEF LINK_UIB_FB}          ,tiQueryUIB_FB        {$ENDIF}
+  {$IFDEF LINK_UIB_IB}          ,tiQueryUIB_IB        {$ENDIF}
  ;
 
 

@@ -10,7 +10,7 @@ uses
   tiBaseObject, tiCommandLineParams, tiCompress, tiConstants, 
   tiDBConnectionPool, tiEncrypt, tiExcept, tiLog, tiObject, tiOID, 
   tiOPFManager, tiPool, tiQuery, tiStreams, tiSyncObjs, tiThread, tiUtils, 
-  tiVisitor, tiVisitorDB, tiOIDGUID, tiQueryFBL, tiOIDInteger, tiCompressNone, 
+  tiVisitor, tiVisitorDB, tiOIDGUID, tiOIDInteger, tiCompressNone, 
   tiCompressZLib, tiEncryptSimple, tiEncryptNone, tiEncryptDES, 
   tiEncryptBlowfish, tiOIDString, tiDataBuffer_Cli, tiDataBuffer_BOM, 
   tiQueryTXTAbs, tiTextParser, tiLogToConsole, tiXML, tiQueryCSV, tiQueryTAB, 

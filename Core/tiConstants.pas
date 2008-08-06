@@ -7,33 +7,40 @@ interface
 const
   // Got problems setting this to 2.00 for the time being. Have a dependency in the XML files. Will fix.
   //cTIOPFVersion          = '2.000';
-  cTIOPFVersion          = '1.405';
+  cTIOPFVersion           = '1.405';
   // There are quite a few of these now, so keep them sorted in alapha order
-  cTIPersistADOAccess    = 'ADOAccess';
-  cTIPersistADOSQLServer = 'ADOSQLServer';
-  cTIPersistBDEParadox   = 'BDEParadox';
-  cTIPersistCrSdac       = 'CrSdac';
-  cTIPersistCSV          = 'CSV';
-  cTIPersistDOA          = 'DOA';
-  cTIPersistFBL          = 'FBL';          // Free Pascal only
-  cTIPersistIBO          = 'IBO';
-  cTIPersistIBX          = 'IBX';
-  cTIPersistRemote       = 'Remote';
-  cTIPersistSqldbIB      = 'Sqldb_IB';     // Free Pascal equivalent to Delphi dbExpress
-  cTIPersistTAB          = 'TAB';
-  cTIPersistXML          = 'XML';          // ToDo: Rename this MSXML
-  cTIPersistXMLLight     = 'XMLLight';
-  cTIPersistZeosFB10     = 'Zeos_FB10';
-  cTIPersistZeosFB15     = 'Zeos_FB15';
-  cTIPersistZeosMySQL41  = 'Zeos_MySQL41';
-  cTIPersistZeosMySQL50  = 'Zeos_MySQL50';
-  cTIPersistDBISAM4      = 'DBISAM4';
-  cTIPersistAsqlite3     = 'Asqlite3';
-  cTIPersistUIB_EB       = 'UIB_EB';  // Embedded server
-  cTIPersistUIB_FB       = 'UIB_FB';  // Firebird server
-  cTIPersistUIB_IB       = 'UIB_IB';  // Interbase server
+  cTIPersistADOAccess     = 'ADOAccess';
+  cTIPersistADOSQLServer  = 'ADOSQLServer';
+  cTIPersistBDEParadox    = 'BDEParadox';
+  cTIPersistCrSdac        = 'CrSdac';
+  cTIPersistCSV           = 'CSV';
+  cTIPersistDOA           = 'DOA';
+  cTIPersistFBL           = 'FBL';          // Free Pascal only
+  cTIPersistIBO           = 'IBO';
+  cTIPersistIBX           = 'IBX';
+  cTIPersistRemote        = 'Remote';
+  cTIPersistSqldbIB       = 'Sqldb_IB';     // Free Pascal equivalent to Delphi dbExpress
+  cTIPersistSqldbPQ       = 'Sqldb_PQ';
+  cTIPersistSqldbOracle   = 'Sqldb_Oracle';
+  cTIPersistSqldbSQLLite3 = 'Sqldb_SQLLite3';
+  cTIPersistSqldbODBC     = 'Sqldb_ODBC';
+  cTIPersistSqldbMySQL40  = 'Sqldb_MySQL40';
+  cTIPersistSqldbMySQL41  = 'Sqldb_MySQL41';
+  cTIPersistSqldbMySQL50  = 'Sqldb_MySQL50';
+  cTIPersistTAB           = 'TAB';
+  cTIPersistXML           = 'XML';          // ToDo: Rename this MSXML
+  cTIPersistXMLLight      = 'XMLLight';
+  cTIPersistZeosFB10      = 'Zeos_FB10';
+  cTIPersistZeosFB15      = 'Zeos_FB15';
+  cTIPersistZeosMySQL41   = 'Zeos_MySQL41';
+  cTIPersistZeosMySQL50   = 'Zeos_MySQL50';
+  cTIPersistDBISAM4       = 'DBISAM4';
+  cTIPersistAsqlite3      = 'Asqlite3';
+  cTIPersistUIB_EB        = 'UIB_EB';  // Embedded server
+  cTIPersistUIB_FB        = 'UIB_FB';  // Firebird server
+  cTIPersistUIB_IB        = 'UIB_IB';  // Interbase server
 
-  cDBProxyServerTimeOut  = 1; // Minute
+  cDBProxyServerTimeOut   = 1; // Minute
 
   cTIPersistPackageRootName = 'tiPersist';
   // When multiple database names are provided to GTIOPFManager.DetectAndConnect()

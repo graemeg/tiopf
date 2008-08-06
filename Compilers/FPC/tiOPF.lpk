@@ -23,8 +23,15 @@
         <WriteFPCLogo Value="False"/>
         <CustomOptions Value="-dLINK_CSVx
 -dLINK_TABx
--dLINK_FBL
--dLINK_SQLDB_IBx
+-dLINK_FBLx
+-dLINK_SQLDB_IB
+-dLINK_SQLDB_PQx
+-dLINK_SQLDB_Oraclex
+-dLINK_SQLDB_SQLLite3x
+-dLINK_SQLDB_ODBCx
+-dLINK_SQLDB_MySQL40x
+-dLINK_SQLDB_MySQL41x
+-dLINK_SQLDB_MySQL50x
 -dLINK_XMLLIGHTx
 -dLINK_ZEOS_FB15x
 -dUseCThreads
@@ -37,7 +44,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="52">
+    <Files Count="51">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -123,140 +130,132 @@
         <UnitName Value="tiOIDGUID"/>
       </Item21>
       <Item22>
-        <Filename Value="../../Options/tiQueryFBL.pas"/>
-        <UnitName Value="tiQueryFBL"/>
-      </Item22>
-      <Item23>
         <Filename Value="../../Options/tiOIDInteger.pas"/>
         <UnitName Value="tiOIDInteger"/>
-      </Item23>
-      <Item24>
+      </Item22>
+      <Item23>
         <Filename Value="../../Options/tiCompressNone.pas"/>
         <UnitName Value="tiCompressNone"/>
-      </Item24>
-      <Item25>
+      </Item23>
+      <Item24>
         <Filename Value="../../Options/tiCompressZLib.pas"/>
         <UnitName Value="tiCompressZLib"/>
-      </Item25>
-      <Item26>
+      </Item24>
+      <Item25>
         <Filename Value="../../Options/tiEncryptSimple.pas"/>
         <UnitName Value="tiEncryptSimple"/>
-      </Item26>
-      <Item27>
+      </Item25>
+      <Item26>
         <Filename Value="../../Options/tiEncryptNone.pas"/>
         <UnitName Value="tiEncryptNone"/>
-      </Item27>
-      <Item28>
+      </Item26>
+      <Item27>
         <Filename Value="../../Options/tiEncryptDES.pas"/>
         <UnitName Value="tiEncryptDES"/>
-      </Item28>
-      <Item29>
+      </Item27>
+      <Item28>
         <Filename Value="../../Options/tiEncryptBlowfish.pas"/>
         <UnitName Value="tiEncryptBlowfish"/>
-      </Item29>
-      <Item30>
+      </Item28>
+      <Item29>
         <Filename Value="../../Options/tiOIDString.pas"/>
         <UnitName Value="tiOIDString"/>
-      </Item30>
-      <Item31>
+      </Item29>
+      <Item30>
         <Filename Value="../../Options/tiDataBuffer_Cli.pas"/>
         <UnitName Value="tiDataBuffer_Cli"/>
-      </Item31>
-      <Item32>
+      </Item30>
+      <Item31>
         <Filename Value="../../Options/tiDataBuffer_BOM.pas"/>
         <UnitName Value="tiDataBuffer_BOM"/>
-      </Item32>
-      <Item33>
+      </Item31>
+      <Item32>
         <Filename Value="../../Options/tiQueryTXTAbs.pas"/>
         <UnitName Value="tiQueryTXTAbs"/>
-      </Item33>
-      <Item34>
+      </Item32>
+      <Item33>
         <Filename Value="../../Options/tiTextParser.pas"/>
         <UnitName Value="tiTextParser"/>
-      </Item34>
-      <Item35>
+      </Item33>
+      <Item34>
         <Filename Value="../../Options/tiLogToConsole.pas"/>
         <UnitName Value="tiLogToConsole"/>
-      </Item35>
-      <Item36>
+      </Item34>
+      <Item35>
         <Filename Value="../../Options/tiXML.pas"/>
         <UnitName Value="tiXML"/>
-      </Item36>
-      <Item37>
+      </Item35>
+      <Item36>
         <Filename Value="../../Options/tiQueryCSV.pas"/>
         <UnitName Value="tiQueryCSV"/>
-      </Item37>
-      <Item38>
+      </Item36>
+      <Item37>
         <Filename Value="../../Options/tiQueryTAB.pas"/>
         <UnitName Value="tiQueryTAB"/>
-      </Item38>
-      <Item39>
+      </Item37>
+      <Item38>
         <Filename Value="../../Core/tiLogToFile.pas"/>
         <UnitName Value="tiLogToFile"/>
-      </Item39>
-      <Item40>
+      </Item38>
+      <Item39>
         <Filename Value="../../Core/tiCriteria.pas"/>
         <UnitName Value="tiCriteria"/>
-      </Item40>
-      <Item41>
+      </Item39>
+      <Item40>
         <Filename Value="../../Core/tiVisitorCriteria.pas"/>
         <UnitName Value="tiVisitorCriteria"/>
-      </Item41>
-      <Item42>
+      </Item40>
+      <Item41>
         <Filename Value="../../Options/tiXMLToTIDataset.pas"/>
         <UnitName Value="tiXMLToTIDataSet"/>
-      </Item42>
-      <Item43>
+      </Item41>
+      <Item42>
         <Filename Value="../../Options/tiQueryXMLLight.pas"/>
         <UnitName Value="tiQueryXMLLight"/>
-      </Item43>
-      <Item44>
+      </Item42>
+      <Item43>
         <Filename Value="../../Core/tiRTTI.pas"/>
         <UnitName Value="tiRTTI"/>
-      </Item44>
-      <Item45>
+      </Item43>
+      <Item44>
         <Filename Value="../../Core/tiTokenLibrary.pas"/>
         <UnitName Value="tiTokenLibrary"/>
-      </Item45>
-      <Item46>
+      </Item44>
+      <Item45>
         <Filename Value="../../Core/tiINI.pas"/>
         <UnitName Value="tiINI"/>
-      </Item46>
-      <Item47>
+      </Item45>
+      <Item46>
         <Filename Value="../../Options/tiQueue.pas"/>
         <UnitName Value="tiQueue"/>
-      </Item47>
-      <Item48>
+      </Item46>
+      <Item47>
         <Filename Value="../../Core/tiAutoMap.pas"/>
         <UnitName Value="tiAutoMap"/>
-      </Item48>
-      <Item49>
+      </Item47>
+      <Item48>
         <Filename Value="../../Core/tiVisitorDBAutoGen.pas"/>
         <UnitName Value="tiVisitorDBAutoGen"/>
-      </Item49>
-      <Item50>
+      </Item48>
+      <Item49>
         <Filename Value="../../Options/tiStructuredCSVReader.pas"/>
         <UnitName Value="tiStructuredCSVReader"/>
-      </Item50>
-      <Item51>
+      </Item49>
+      <Item50>
         <Filename Value="../../Options/tiStructuredCSVWriter.pas"/>
         <UnitName Value="tiStructuredCSVWriter"/>
-      </Item51>
-      <Item52>
+      </Item50>
+      <Item51>
         <Filename Value="../../Core/tiFilteredObjectList.pas"/>
         <UnitName Value="tiFilteredObjectList"/>
-      </Item52>
+      </Item51>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="1">
       <Item1>
-        <PackageName Value="fblib"/>
-        <MinVersion Minor="8" Release="3" Valid="True"/>
-      </Item1>
-      <Item2>
         <PackageName Value="FCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item2>
+      </Item1>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)/"/>
