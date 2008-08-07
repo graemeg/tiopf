@@ -129,6 +129,9 @@ uses
   ,SysUtils
   ,ClipBrd
   ,Math
+  {$IFDEF UNIX}
+  ,unix
+  {$ENDIF}
   ;
 
 
@@ -637,11 +640,26 @@ end;
 
 {$IFDEF LINUX}
 function tiEditFile(const AFileName : string): integer;
+var
+  Helper: string;
 begin
   { TODO: There is no standard editor included with all
-    flavours of linux. Might implement tiEditFile as a form with
-    a memo control and basic edit functions. ie: Something like NotePad for Windows }
-  Result := 0;    // To get rid of the compiler warning, until I implement this.
+    flavours of linux. Might implement tiEditFile with a fallback as a form with
+    a memo control and basic edit functions. ie: Something like
+    NotePad for Windows }
+
+  Helper := '';
+  if fpsystem('which xdg-open') = 0 then
+    Helper := 'xdg-open'
+  else if FileExists('/etc/alternatives/gnome-text-editor') then
+    Helper := '/etc/alternatives/gnome-text-editor'
+  else if FileExists('/etc/alternatives/editor') then
+    Helper := '/etc/alternatives/editor';
+
+  Result := Ord(Helper <> '');
+
+  if Helper <> '' then
+    fpSystem(Helper + ' ' + AFileName + '&');
 end;
 {$ENDIF LINUX}
 

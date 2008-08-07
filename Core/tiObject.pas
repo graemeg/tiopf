@@ -309,35 +309,35 @@ type
     procedure   SetPropValue(const APropName: string; const APropValue: Variant); virtual;
 
     {: Read in the primary Key values only from the database for this object.
-       You must overide ReadPK and implement a call to the visitor manager (if you
+       You must override ReadPK and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
     procedure   ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Read in the primary Key values only from the database for this object.
-       You must overide ReadPK and implement a call to the visitor manager (if you
+       You must override ReadPK and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
     procedure   ReadPK; overload; virtual;
     {: Read this object, but no owned objects from the database
-       You must overide ReadPK and implement a call to the visitor manager (if you
+       You must override ReadThis and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
     procedure   ReadThis(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Read this object, but no owned objects from the database
-       You must overide ReadThis and implement a call to the visitor manager (if you
+       You must override ReadThis and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
     procedure   ReadThis; overload;  virtual;
     {: Read this object, along with any owned objects from the database
-       You must overide ReadThis and implement a call to the visitor manager (if you
+       You must override Read and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
     procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Read this object, along with any owned objects from the database
-       You must overide Read and implement a call to the visitor manager (if you
+       You must override Read and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
     procedure   Read; overload;  virtual;
     {: Updates the database with the current property values for this object.
-       You must overide Save and implement a call to the visitor manager (if you
+       You must override Save and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
     procedure   Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Updates the database with the current property values for this object.
-       You must overide Save and implement a call to the visitor manager (if you
+       You must override Save and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
     procedure   Save; overload; virtual;
 
