@@ -42,6 +42,7 @@ type
     procedure       Commit; override;
     class procedure CreateDatabase (const ADatabaseName, AUserName, APassword : string); override;
     class function  DatabaseExists (const ADatabaseName, AUserName, APassword: string): Boolean; override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     function        InTransaction: Boolean; override;
     function        ReadGeneratorOID (AGeneratorName: string; AIncrement: integer = 1) :Integer;
     procedure       ReadMetaDataFields (AData: TtiDBMetaData); override;
@@ -643,7 +644,7 @@ begin
         end;
     else
       FIBSQL.ParamByName (AName) .AsVariant := lValue;
-    end
+    end                   gui/appstart.pp
   //    else
   //    begin
   //      case lFieldKind of
@@ -768,6 +769,12 @@ begin
     FDatabase.Connected := false;
     FDatabase.Free;
   end;
+end;
+
+class procedure TtiDatabaseIBO.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 function TtiDatabaseIBO.FieldMetaDataToSQLCreate (const AFieldMetaData:
@@ -1073,6 +1080,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
   APersistenceLayerDefaults.Username:= 'SYSDBA';
   APersistenceLayerDefaults.Password:= 'masterkey';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;

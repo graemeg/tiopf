@@ -36,6 +36,7 @@ type
 
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
 
     procedure   StartTransaction; override;
     function    InTransaction : boolean; override;
@@ -629,14 +630,20 @@ end;
 
 class procedure TtiDatabaseADOAbs.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
 begin
-  Assert(false, 'Not implemented in ' + ClassName);
+  Assert(false, 'CreateDatabase not implemented in ' + ClassName);
+end;
+
+class procedure TtiDatabaseADOAbs.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ', ClassName);
 end;
 
 class function TtiDatabaseADOAbs.DatabaseExists(const ADatabaseName,
   AUserName, APassword: string): boolean;
 begin
   result := false;
-  Assert(false, 'Not implemented in ' + ClassName);
+  Assert(false, 'DatabaseExists not implemented in ' + ClassName);
 end;
 
 procedure TtiQueryADO.AssignFieldAsStreamByIndex(AIndex: Integer;const AValue: TStream);

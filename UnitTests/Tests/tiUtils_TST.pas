@@ -1060,16 +1060,18 @@ end;
 
 procedure TTestTIUtils.tiRemoveDrive;
 begin
-  {$IFDEF FPC202}
-  {$NOTE FPC 2.0.2 has a bug in ExtractFileDrive (BUG ID: 4585), so lets test for it }
-  CheckEquals('', ExtractFileDrive('c:'), 'Failed on 1.1 (fpc)');
-  CheckEquals('c:', tiUtils.tiRemoveDrive('c:'), 'Failed on 1.2 (fpc)');
+  {$IFDEF UNIX}
+  // c: is a valid part of unix filename. Weird but true!  :-)
+  CheckEquals('c:', tiUtils.tiRemoveDrive('c:'), 'Failed on 1');
+  CheckEquals('c:\temp', tiUtils.tiRemoveDrive('c:\temp'), 'Failed on 2');
+  CheckEquals('c:\temp\hos.txt', tiUtils.tiRemoveDrive('c:\temp\hos.txt'), 'Failed on 3');
+  CheckEquals('c:\Program Files\My Program\run.bat', tiUtils.tiRemoveDrive('c:\Program Files\My Program\run.bat'), 'Failed on 4');
   {$ELSE}
   CheckEquals('', tiUtils.tiRemoveDrive('c:'), 'Failed on 1');
-  {$ENDIF}
   CheckEquals('\temp', tiUtils.tiRemoveDrive('c:\temp'), 'Failed on 2');
   CheckEquals('\temp\hos.txt', tiUtils.tiRemoveDrive('c:\temp\hos.txt'), 'Failed on 3');
   CheckEquals('\Program Files\My Program\run.bat', tiUtils.tiRemoveDrive('c:\Program Files\My Program\run.bat'), 'Failed on 4');
+  {$ENDIF}
 end;
 
 
@@ -2544,15 +2546,15 @@ begin
   tiUtils.tiStringToFile('test', LDir);
   tiUtils.tiSetFileReadOnly(LDir, True);
   {$ELSE}
-  LDir := '/etc'; // normal user will definately not be allowed to delete this
+  LDir := '/etc/test'; // normal user will not be allowed to create this
   {$ENDIF}
   try
     try
       tiUtils.tiForceDirectories(LDir);
-      Fail('Exception not raised');
+      Fail('Failed on 5');
     except
       on e: exception do
-        CheckIs(E, EtiOPFFileSystemException, 'Failed on 5');
+        CheckIs(E, EtiOPFFileSystemException, 'Failed on 6');
     end;
   finally
     {$IFDEF MSWINDOWS}
@@ -2596,10 +2598,17 @@ begin
     tiDUnitForceRemoveDir(tiFixPathDelim(TempDirectory + '\level1\'));
   end;
 
+  {$IFDEF MSWINDOWS}
   LDir:= TempDirectory + '\test.txt';
   tiUtils.tiStringToFile('test', LDir);
+  {$ENDIF}
+  {$IFDEF UNIX}
+  LDir := '/etc/test';
+  {$ENDIF}
   try
+    {$IFNDEF UNIX}
     tiUtils.tiSetFileReadOnly(LDir, True);
+    {$ENDIF}
     try
       tiUtils.tiForceDirectories1(LDir);
       Fail('Exception not raised');
@@ -2608,8 +2617,10 @@ begin
         CheckIs(E, EtiOPFFileSystemException);
     end;
   finally
+    {$IFNDEF UNIX}
     tiUtils.tiSetFileReadOnly(LDir, False);
     tiDUnitForceRemoveDir(LDir);
+    {$ENDIF}
   end;
 end;
 
@@ -2626,7 +2637,7 @@ end;
 procedure TTestTIUtils.tiGetAppDataDirPublic;
 begin
   {$IFDEF UNIX}
-  CheckEquals('/etc', tiUtils.tiGetAppDataDirPublic, 'Failed on 2');
+  CheckEquals('/etc/'+ApplicationName+'/', tiUtils.tiGetAppDataDirPublic, 'Failed on 1');
   {$ELSE}
   CheckEquals(
     FLocalINISettings.AppDataDirPublic,

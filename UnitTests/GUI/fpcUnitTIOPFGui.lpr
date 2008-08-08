@@ -16,7 +16,6 @@ uses
   
 
 begin
-  Application.Title:='fpcUnit TIOPF Gui';
   Application.Initialize;
   
   if not TtiPromptWhichPersistenceLayersToTest.Execute then

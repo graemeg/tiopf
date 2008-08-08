@@ -198,6 +198,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.XXX';
   APersistenceLayerDefaults.Username:= 'XXX';
   APersistenceLayerDefaults.Password:= 'XXX';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;

@@ -26,6 +26,7 @@ type
     FPersistenceLayerDefaults: TtiPersistenceLayerDefaults;
     FPersistenceLayerClass: TtiPersistenceLayerClass;
     function GetCanCreateDatabase: boolean;
+    function GetCanDropDatabase: boolean;
     function GetDatabaseName: string;
     function GetPassword: string;
     function GetPersistenceLayerName: string;
@@ -47,6 +48,7 @@ type
     property    Username     : string read GetUserName;
     property    Password     : string read GetPassword;
     property    CanCreateDatabase : boolean read GetCanCreateDatabase;
+    property    CanDropDatabase : boolean read GetCanDropDatabase;
     procedure   ForceTestDataDirectory;
     property    Selected     : boolean read FSelected write FSelected;
 
@@ -279,6 +281,12 @@ function TtiOPFTestSetupData.GetCanCreateDatabase: boolean;
 begin
   Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   result:= FPersistenceLayerDefaults.CanCreateDatabase;
+end;
+
+function TtiOPFTestSetupData.GetCanDropDatabase: boolean;
+begin
+  Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
+  result:= FPersistenceLayerDefaults.CanDropDatabase;
 end;
 
 function TtiOPFTestSetupData.GetDatabaseName: string;

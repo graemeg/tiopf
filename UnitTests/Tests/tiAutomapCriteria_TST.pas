@@ -54,7 +54,6 @@ uses
   ,tiOPFManager
   ,tiBOMsForTesting
   ,tiQuery
-  ,Contnrs
   ,tiCriteria
  ;
 

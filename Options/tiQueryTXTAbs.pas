@@ -75,6 +75,7 @@ type
 
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     procedure   Commit; override;
     procedure   RollBack; override;
 
@@ -809,6 +810,12 @@ begin
     raise EtiOPFDBExceptionAlreadyExists.Create('Generic flat file persistence layer', ADatabaseName, AUserName, APassword);
   if not ForceDirectories(ADatabaseName) then
     raise EtiOPFDBExceptionCanNotCreateDatabase.Create('Generic flat file persistence layer', ADatabaseName, AUserName, APassword);
+end;
+
+class procedure TtiDatabaseTXTFlatFileAbs.DropDatabase(const ADatabaseName,
+  AUserName, APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 

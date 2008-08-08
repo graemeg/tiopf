@@ -55,10 +55,9 @@ type
   TtiDatabaseUIB_IB = class (TtiDatabaseUIBAbs)
   public
     constructor create; override;
-    class procedure CreateDatabase(const pDatabaseName, pUserName,
-      pPassword: string); override;
-    class function DatabaseExists(const pDatabaseName, pUserName,
-      pPassword: string): Boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string): Boolean; override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
   end;
 
   TtiQueryUIB_IB = class (TtiQueryUIBAbs)
@@ -82,17 +81,17 @@ begin
   UIBDatabase.LibraryName := 'GDS32.dll';
 end;
 
-class procedure TtiDatabaseUIB_IB.CreateDatabase(const pDatabaseName, pUserName,
-        pPassword : string );
+class procedure TtiDatabaseUIB_IB.CreateDatabase(const ADatabaseName, AUserName,
+        APassword : string );
 var
   lDatabase: TtiDatabaseUIB_IB;
 begin
   lDatabase := TtiDatabaseUIB_IB.Create ;
   try
     with lDatabase.UIBDatabase do begin
-      DatabaseName := pDatabaseName;
-      UserName := pUserName;
-      PassWord := pPassword;
+      DatabaseName := ADatabaseName;
+      UserName := AUserName;
+      PassWord := APassword;
       CreateDatabase ;
     end;
   finally
@@ -100,17 +99,17 @@ begin
   end ;
 end;
 
-class function TtiDatabaseUIB_IB.DatabaseExists(const pDatabaseName, pUserName,
-        pPassword : string ): Boolean;
+class function TtiDatabaseUIB_IB.DatabaseExists(const ADatabaseName, AUserName,
+        APassword : string ): Boolean;
 var
   lDatabase: TtiDatabaseUIB_IB;
 begin
   lDatabase := TtiDatabaseUIB_IB.Create ;
   try
     with lDatabase.UIBDatabase do begin
-      DatabaseName := pDatabaseName;
-      UserName := pUserName;
-      PassWord := pPassword;
+      DatabaseName := ADatabaseName;
+      UserName := AUserName;
+      PassWord := APassword;
       try
         Connected := true ;
         Result := true ;
@@ -122,6 +121,12 @@ begin
   finally
     lDatabase.Free;
   end ;
+end;
+
+class procedure TtiDatabaseUIB_IB.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 { TtiPersistenceLayerUIBIB }
@@ -149,6 +154,7 @@ begin
   APersistenceLayerDefaults.DatabaseName := CDefaultDatabaseDirectory + CDefaultDatabaseName + '.gdb';
   APersistenceLayerDefaults.Username := 'SYSDBA';
   APersistenceLayerDefaults.Password := 'masterkey';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase := False;
   APersistenceLayerDefaults.CanSupportMultiUser := True;
   APersistenceLayerDefaults.CanSupportSQL := True;

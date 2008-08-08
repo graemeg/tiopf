@@ -19,8 +19,9 @@ type
     constructor Create; override;
     procedure ReadMetaDataTables(pData: TtiDBMetaData); override;
     procedure ReadMetaDataFields(pData: TtiDBMetaDataTable); override;
-    class function DatabaseExists(const psDatabaseName, psUserName, psPassword: String): boolean; override;
-    class procedure CreateDatabase(const psDatabaseName, psUserName, psPassword: string); override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: String): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
   end;
 
 
@@ -217,16 +218,16 @@ begin
   end;
 end;
 
-class function TtiDatabaseZeosIBFB.DatabaseExists(const psDatabaseName,
-  psUserName, psPassword: String): boolean;
+class function TtiDatabaseZeosIBFB.DatabaseExists(const ADatabaseName,
+  AUserName, APassword: String): boolean;
 var
   lDatabase: TtiDatabaseZeosIBFB;
 begin
   lDatabase := TtiDatabaseZeosIBFB.Create;
   try
-    lDatabase.Connection.Database := psDatabaseName;
-    lDatabase.Connection.User     := psUserName;
-    lDatabase.Connection.Password := psPassword;
+    lDatabase.Connection.Database := ADatabaseName;
+    lDatabase.Connection.User     := AUserName;
+    lDatabase.Connection.Password := APassword;
 
     try
       lDatabase.Connected := true;
@@ -241,16 +242,16 @@ begin
   end ;
 end;
 
-class procedure TtiDatabaseZeosIBFB.CreateDatabase(const psDatabaseName,
-  psUserName, psPassword: string);
+class procedure TtiDatabaseZeosIBFB.CreateDatabase(const ADatabaseName,
+  AUserName, APassword: string);
 var
   lDatabase : TtiDatabaseZeosIBFB;
 begin
   lDatabase := TtiDatabaseZeosIBFB.Create;
   try
-    lDatabase.Connection.Database := psDatabaseName;
-    lDatabase.Connection.User     := psUserName;
-    lDatabase.Connection.Password := psPassword;
+    lDatabase.Connection.Database := ADatabaseName;
+    lDatabase.Connection.User     := AUserName;
+    lDatabase.Connection.Password := APassword;
 
     { Default character set can be passed as a parameter. Probably
       the page_size too. }
@@ -263,6 +264,12 @@ begin
   finally
     lDatabase.Free;
   end;
+end;
+
+class procedure TtiDatabaseZeosIBFB.DropDatabase(const ADatabaseName,
+  AUserName, APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 function TtiDatabaseZeosIBFB.FieldMetaDataToSQLCreate(

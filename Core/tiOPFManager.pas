@@ -147,32 +147,36 @@ type
                           const APersistenceLayerName    : string = '');
 
     // These execute database independant commands
-    procedure   CreateDatabase(const ADatabaseName : string;
-                                const AUserName    : string;
-                                const pUserPassword : string;
-                                const APackageID   : string = '');
-    procedure   DropTable(  const ATableName       : TTableName;
-                             const ADBConnectionName : string = '';
-                             const APersistenceLayerName    : string = ''); overload;
-    procedure   DropTable(  const ATableMetaData : TtiDBMetaDataTable;
-                             const ADBConnectionName : string = '';
-                             const APersistenceLayerName    : string = ''); overload;
-    procedure   CreateTable(const ATableMetaData   : TtiDBMetaDataTable;
-                             const ADBConnectionName : string = '';
-                             const APersistenceLayerName    : string = '');
-    procedure   DeleteRow(  const ATableName       : string;
-                             const AWhere           : TtiQueryParams;
-                             const ADBConnectionName : string = '';
-                             const APersistenceLayerName    : string = ''); virtual;
-    procedure   InsertRow(  const ATableName       : string;
-                             const AParams          : TtiQueryParams;
-                             const ADBConnectionName : string = '';
-                             const APersistenceLayerName    : string = ''); virtual;
-    procedure   UpdateRow(  const ATableName       : string;
-                             const AWhere           : TtiQueryParams;
-                             const AParams          : TtiQueryParams;
-                             const ADBConnectionName : string = '';
-                             const APersistenceLayerName    : string = ''); virtual;
+    procedure   CreateDatabase(const ADatabaseName: string;
+                               const AUserName: string;
+                               const pUserPassword: string;
+                               const APackageID: string = '');
+    procedure   DropDatabase(const ADatabaseName: string;
+                             const AUserName: string;
+                             const AUserPassword: string;
+                             const APackageID: string = '');
+    procedure   DropTable(const ATableName: TTableName;
+                          const ADBConnectionName: string = '';
+                          const APersistenceLayerName: string = ''); overload;
+    procedure   DropTable(const ATableMetaData: TtiDBMetaDataTable;
+                          const ADBConnectionName: string = '';
+                          const APersistenceLayerName: string = ''); overload;
+    procedure   CreateTable(const ATableMetaData: TtiDBMetaDataTable;
+                            const ADBConnectionName: string = '';
+                            const APersistenceLayerName: string = '');
+    procedure   DeleteRow(const ATableName: string;
+                          const AWhere: TtiQueryParams;
+                          const ADBConnectionName: string = '';
+                          const APersistenceLayerName: string = ''); virtual;
+    procedure   InsertRow(const ATableName: string;
+                          const AParams: TtiQueryParams;
+                          const ADBConnectionName: string = '';
+                          const APersistenceLayerName: string = ''); virtual;
+    procedure   UpdateRow(const ATableName: string;
+                          const AWhere: TtiQueryParams;
+                          const AParams: TtiQueryParams;
+                          const ADBConnectionName: string = '';
+                          const APersistenceLayerName: string = ''); virtual;
     function    TableExists(const ATableName       : string;
                              const ADBConnectionName : string = '';
                              const APersistenceLayerName    : string = ''): boolean; virtual;
@@ -756,7 +760,6 @@ begin
   result := FApplicationData;
 end;
 
-
 function TtiOPFManager.TestThenConnectDatabase(
   const ADatabaseName : string;
   const AUserName    : string;
@@ -764,16 +767,15 @@ function TtiOPFManager.TestThenConnectDatabase(
   const AParams      : string;
   const APackageID   : string): boolean;
 begin
-  result:= TestThenConnectDatabase(
+  result := TestThenConnectDatabase(
     ADatabaseName, ADatabaseName, AUserName,
     APassword, AParams, APackageID);
 end;
 
-
 procedure TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
   pUserPassword, APackageID: string);
 var
-  LPersistenceLayer : TtiPersistenceLayer;
+  LPersistenceLayer: TtiPersistenceLayer;
 begin
   LPersistenceLayer := PersistenceLayers.FindByPersistenceLayerName(APackageID);
   if LPersistenceLayer = nil then
@@ -781,6 +783,16 @@ begin
   LPersistenceLayer.DatabaseClass.CreateDatabase(ADatabaseName, AUserName, pUserPassword);
 end;
 
+procedure TtiOPFManager.DropDatabase(const ADatabaseName, AUserName,
+  AUserPassword, APackageID: string);
+var
+  LPersistenceLayer: TtiPersistenceLayer;
+begin
+  LPersistenceLayer := PersistenceLayers.FindByPersistenceLayerName(APackageID);
+  if LPersistenceLayer = nil then
+    raise EtiOPFInternalException.CreateFmt(cErrorUnableToFindPerLayer, [APackageID]);
+  LPersistenceLayer.DatabaseClass.DropDatabase(ADatabaseName, AUserName, AUserPassword);
+end;
 
 procedure TtiOPFManager.RegisterVisitor(const AGroupName: string; const AClassRef: TtiVisitorClass);
 begin
@@ -788,18 +800,15 @@ begin
   FVisitorManager.RegisterVisitor(AGroupName, AClassRef);
 end;
 
-
 procedure TtiOPFManager.ConnectDatabase(const ADatabaseName, AUserName, APassword, AParams: string);
 begin
   ConnectDatabase(ADatabaseName, ADatabaseName, AUserName, APassword, AParams, '');
 end;
 
-
 procedure TtiOPFManager.ConnectDatabase(const ADatabaseName, AUserName, APassword: string);
 begin
   ConnectDatabase(ADatabaseName, AUserName, APassword, '');
 end;
-
 
 procedure TtiOPFManager.ConnectDatabaseWithRetry(const ADatabaseName, AUserName,
   APassword: string; const ARetryCount, ARetryInterval: Word);
@@ -852,7 +861,6 @@ begin
     raise EtiOPFInternalException.Create(cErrorUnableToFindDefaultPerLayer);
   DisconnectDatabase(ADatabaseName, LPersistenceLayer.PersistenceLayerName);
 end;
-
 
 function TtiOPFManager.TestThenConnectDatabase(const ADatabaseName,
   AUserName, APassword, AParams: string): boolean;

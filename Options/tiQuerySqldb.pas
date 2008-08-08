@@ -43,6 +43,7 @@ Type
     destructor  Destroy; override;
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string); override;
     property    SQLConnection: TSQLConnection Read FDatabase Write FDatabase;
     procedure   StartTransaction; override;
     function    InTransaction: boolean; override;
@@ -930,38 +931,54 @@ end;
 class procedure TtiDatabaseSQLDB.CreateDatabase(
   const ADatabaseName, AUserName, APassword: string);
 var
-  DB : TSQLConnection;
+  DB: TSQLConnection;
 begin
   if (ADatabaseName <> '') or (AUserName <> '') or (APassword <> '') then
     begin
     DB:=CreateSQLConnection;
     try
-      with DB do
-        begin
-        DatabaseName:=aDatabasename;
-        UserName:=AUsername;
-        Password:=APassword;
-        CreateDB;
-        end;
+      DB.DatabaseName := ADatabasename;
+      DB.UserName     := AUsername;
+      DB.Password     := APassword;
+      DB.CreateDB;
     finally
       DB.Free;
     end;
     end;
 end;
 
+class procedure TtiDatabaseSQLDB.DropDatabase(
+  const ADatabaseName, AUserName, APassword: string);
+var
+  DB: TSQLConnection;
+begin
+  if (ADatabaseName <> '') or (AUserName <> '') or (APassword <> '') then
+  begin
+    DB := CreateSQLConnection;
+    try
+      DB.DatabaseName := ADatabasename;
+      DB.UserName     := AUsername;
+      DB.Password     := APassword;
+      DB.DropDB;
+    finally
+      DB.Free;
+    end;
+  end;
+end;
+
 class function TtiDatabaseSQLDB.DatabaseExists(
   const ADatabaseName, AUserName, APassword: string): boolean;
 var
-  DB : TSQLConnection;
+  DB: TSQLConnection;
 begin
   Result:=False;
   if (ADatabaseName <> '') or (AUserName <> '') or (APassword <> '') then
     begin
-    DB:=CreateSQLConnection;
+    DB := CreateSQLConnection;
     try
       DB.DatabaseName := ADatabaseName;
-      DB.UserName := AUserName;
-      DB.Password := APassword;
+      DB.UserName     := AUserName;
+      DB.Password     := APassword;
       try
         DB.Connected := True;
         Result := True;

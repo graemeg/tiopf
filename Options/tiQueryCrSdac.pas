@@ -203,6 +203,7 @@ begin
   APersistenceLayerDefaults.Username:= 'XXX';
   APersistenceLayerDefaults.Password:= 'XXX';
   APersistenceLayerDefaults.CanCreateDatabase:= True;
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;
 end;

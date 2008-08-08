@@ -172,6 +172,7 @@ type
 
     class function DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     procedure   StartTransaction; override;
     function    InTransaction : boolean; override;
     procedure   Commit; override;
@@ -462,6 +463,12 @@ class procedure TtiDatabaseRemoteXML.CreateDatabase(const ADatabaseName,
   AUserName, APassword: string);
 begin
   Assert(false, 'CreateDatabase not implemented in ' + ClassName);
+end;
+
+class procedure TtiDatabaseRemoteXML.DropDatabase(const ADatabaseName,
+  AUserName, APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 procedure TtiDatabaseRemoteXML.CreateTable(const ATableMetaData: TtiDBMetaDataTable);
@@ -1248,6 +1255,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= cLocalHost;
   APersistenceLayerDefaults.Username:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= False;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;

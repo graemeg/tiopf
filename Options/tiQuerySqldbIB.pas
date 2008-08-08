@@ -70,6 +70,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
   APersistenceLayerDefaults.Username:= 'SYSDBA';
   APersistenceLayerDefaults.Password:= 'masterkey';
+  APersistenceLayerDefaults.CanDropDatabase:= True;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;

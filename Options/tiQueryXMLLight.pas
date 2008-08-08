@@ -45,6 +45,7 @@ type
     constructor     Create; override;
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     procedure       CreateTable(const ATableMetaData : TtiDBMetaDataTable); override;
     procedure       DropTable(const ATableMetaData: TtiDBMetaDataTable); override;
     procedure       Commit; override;
@@ -211,6 +212,12 @@ begin
   end;
 end;
 
+class procedure TtiDatabaseXMLLight.DropDatabase(const ADatabaseName,
+  AUserName, APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
+end;
+
 procedure TtiDatabaseXMLLight.CreateTable(const ATableMetaData: TtiDBMetaDataTable);
 begin
   inherited CreateTable(ATableMetaData);
@@ -344,6 +351,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName + '.XMLLight';
   APersistenceLayerDefaults.UserName:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= False;
   APersistenceLayerDefaults.CanSupportSQL:= False;

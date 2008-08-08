@@ -19,8 +19,9 @@ type
     constructor Create; override;
     procedure ReadMetaDataTables(pData: TtiDBMetaData); override;
     procedure ReadMetaDataFields(pData: TtiDBMetaDataTable); override;
-    class function DatabaseExists(const psDatabaseName, psUserName, psPassword: String): boolean; override;    
-    class procedure CreateDatabase(const psDatabaseName, psUserName, psPassword: string); override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: String): boolean; override;
+    class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
   end;
 
 implementation
@@ -46,8 +47,8 @@ begin
   Connection.TransactIsolationLevel := tiReadCommitted;
 end;
 
-class procedure TtiDatabaseZeosMySQL.CreateDatabase(const psDatabaseName,
-  psUserName, psPassword: string);
+class procedure TtiDatabaseZeosMySQL.CreateDatabase(const ADatabaseName,
+  AUserName, APassword: string);
 var
   lDatabase : TtiDatabaseZeosMySQL;
   conn: IZConnection;
@@ -57,14 +58,14 @@ begin
   lDatabase := TtiDatabaseZeosMySQL.Create;
   try
     lDatabase.DatabaseName := 'mysql';
-    lDatabase.UserName := psUserName;
-    lDatabase.Password := psPassword;
+    lDatabase.UserName := AUserName;
+    lDatabase.Password := APassword;
     lDatabase.Connection.Protocol := 'mysql';
     try
       lDatabase.Connected := True;
       conn := lDatabase.Connection.dbcConnection;
       lzQuery := conn.CreateStatement;
-      SQL := Format('create database %s',[psDatabaseName]);
+      SQL := Format('create database %s',[ADatabaseName]);
       try
         lzQuery.Execute( SQL );
       except
@@ -82,16 +83,22 @@ begin
   end;
 end;
 
-class function TtiDatabaseZeosMySQL.DatabaseExists(const psDatabaseName,
-  psUserName, psPassword: String): boolean;
+class procedure TtiDatabaseZeosMySQL.DropDatabase(const ADatabaseName,
+  AUserName, APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
+end;
+
+class function TtiDatabaseZeosMySQL.DatabaseExists(const ADatabaseName,
+  AUserName, APassword: String): boolean;
 var
   lDatabase: TtiDatabaseZeosMySQL;
 begin
   lDatabase := TtiDatabaseZeosMySQL.Create;
   try
-    lDatabase.DatabaseName := psDatabaseName;
-    lDatabase.UserName := psUserName;
-    lDatabase.Password := psPassword;
+    lDatabase.DatabaseName := ADatabaseName;
+    lDatabase.UserName := AUserName;
+    lDatabase.Password := APassword;
     lDatabase.Connection.Protocol := 'mysql';
     try
       lDatabase.Connected := true;

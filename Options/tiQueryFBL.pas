@@ -63,6 +63,7 @@ type
     destructor  Destroy; override;
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     property    IBDatabase: TFBLDatabase read FDBase write FDBase;
     procedure   StartTransaction; override;
     function    InTransaction: boolean; override;
@@ -920,9 +921,8 @@ end;
 
 class procedure TtiDatabaseFBL.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
 var
-  lDatabase : TtiDatabaseFBL;
+  lDatabase: TtiDatabaseFBL;
 begin
-//  Assert(False, 'CreateDatabase not implemented in ' + ClassName);
   lDatabase := TtiDatabaseFBL.Create;
   try
     lDatabase.FDBase.DBFile      := ADatabaseName;
@@ -932,6 +932,12 @@ begin
   finally
     lDatabase.Free;
   end;
+end;
+
+class procedure TtiDatabaseFBL.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 // Test is an Interbase server is available. Will not test for the existance of a GDB
@@ -1032,6 +1038,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
   APersistenceLayerDefaults.Username:= 'SYSDBA';
   APersistenceLayerDefaults.Password:= 'masterkey';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= False;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;

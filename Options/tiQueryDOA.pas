@@ -46,6 +46,7 @@ type
     property        OracleSession : TOracleSession read FOracleSession;
     class procedure CreateDatabase(const ADatabaseName, AUserName,APassword: string); override;
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean; override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     procedure       StartTransaction; override;
     function        InTransaction : boolean; override;
     procedure       Commit; override;
@@ -944,6 +945,12 @@ begin
   Assert(false, 'DatabaseExists not implemented in ' + ClassName);
 end;
 
+class procedure TtiDatabaseDOA.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
+end;
+
 function TtiQueryDOA.HasNativeLogicalType: boolean;
 begin
   result := false;
@@ -1120,6 +1127,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= 'ocrl';
   APersistenceLayerDefaults.Username:= 'scott';
   APersistenceLayerDefaults.Password:= 'tiger';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= False;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;

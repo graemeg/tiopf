@@ -77,6 +77,8 @@ type
     {$ENDIF}
   end;
 
+  { TtiPersistenceLayer }
+
   TtiPersistenceLayer = class(TtiObject)
   private
     FModuleID: HModule;
@@ -113,14 +115,18 @@ type
 
     function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean;
     procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string);
+    procedure DropDatabase(const ADatabaseName, AUserName, APassword : string);
     function  TestConnectToDatabase(const ADatabaseName, AUserName, APassword, AParams : string): boolean;
     // Must be overridden in the concreate class
     procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); virtual; abstract;
   end;
 
+  { TtiPersistenceLayerDefaults }
+
   TtiPersistenceLayerDefaults = class(TtiBaseObject)
   private
     FCanCreateDatabae: Boolean;
+    FCanDropDatabae: Boolean;
     FDatabaseName: string;
     FPassword: string;
     FCanSupportMultiUser: Boolean;
@@ -133,6 +139,7 @@ type
     property UserName: string read FUserName write FUserName;
     property Password: string read FPassword write FPassword;
     property CanCreateDatabase: Boolean read FCanCreateDatabae write FCanCreateDatabae;
+    property CanDropDatabase: Boolean read FCanDropDatabae write FCanDropDatabae;
     property CanSupportMultiUser: Boolean read FCanSupportMultiUser write FCanSupportMultiUser;
     property CanSupportSQL: Boolean read FCanSupportSQL write FCanSupportSQL;
   end;
@@ -237,6 +244,13 @@ procedure TtiPersistenceLayer.CreateDatabase(const ADatabaseName, AUserName,
 begin
   Assert(DatabaseClass<>nil, 'DatabaseClass not assigned');
   DatabaseClass.CreateDatabase(ADatabaseName, AUserName, APassword);
+end;
+
+procedure TtiPersistenceLayer.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string);
+begin
+  Assert(DatabaseClass<>nil, 'DatabaseClass not assigned');
+  DatabaseClass.DropDatabase(ADatabaseName, AUserName, APassword);
 end;
 
 function TtiPersistenceLayer.DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean;

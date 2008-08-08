@@ -55,6 +55,7 @@ type
 
     class function DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     procedure   StartTransaction; override;
     function    InTransaction : boolean; override;
     procedure   Commit; override;
@@ -839,6 +840,12 @@ begin
   tiStringToFile(lXML, ADatabaseName);
 end;
 
+class procedure TtiDatabaseXML.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
+end;
+
 class function TtiDatabaseXML.DatabaseExists(const ADatabaseName,AUserName, APassword: string): boolean;
 begin
   result := FileExists(ADatabaseName);
@@ -1015,6 +1022,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.xml';
   APersistenceLayerDefaults.Username:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= False;
   APersistenceLayerDefaults.CanSupportSQL:= False;

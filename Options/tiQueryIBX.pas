@@ -49,6 +49,7 @@ type
 
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     property        IBDatabase: TIBDatabase read FDatabase write FDatabase;
     property        TraceLevel  : integer read FTraceLevel    write FTraceLevel  ;
     procedure       StartTransaction; override;
@@ -1106,6 +1107,12 @@ begin
   end;
 end;
 
+class procedure TtiDatabaseIBX.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
+end;
+
 // Test is an Interbase server is available. Will not test for the existance of a GDB
 // file, just if the server is up. Will also return the server version.
 // Problem is, that this routine takes an IP address and an interbase connection
@@ -1206,6 +1213,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
   APersistenceLayerDefaults.Username:= 'SYSDBA';
   APersistenceLayerDefaults.Password:= 'masterkey';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;

@@ -57,10 +57,9 @@ Type
   TtiDatabaseUIB_FB = Class(TtiDatabaseUIBAbs)
   Public
     Constructor create; Override;
-    Class Procedure CreateDatabase(Const pDatabaseName, pUserName,
-      pPassword : String); Override;
-    Class Function DatabaseExists(Const pDatabaseName, pUserName,
-      pPassword : String) : Boolean; Override;
+    Class Procedure CreateDatabase(Const ADatabaseName, AUserName, APassword : String); Override;
+    Class Function DatabaseExists(Const ADatabaseName, AUserName, APassword : String) : Boolean; Override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     Function TIQueryClass : TtiQueryClass; Override;
   End;
 
@@ -85,16 +84,16 @@ Begin
   UIBDatabase.LibraryName := 'FbClient.dll';
 End;
 
-Class Procedure TtiDatabaseUIB_FB.CreateDatabase(Const pDatabaseName, pUserName, pPassword : String);
+Class Procedure TtiDatabaseUIB_FB.CreateDatabase(Const ADatabaseName, AUserName, APassword : String);
 Var
   lDatabase : TtiDatabaseUIB_FB;
 Begin
   lDatabase := TtiDatabaseUIB_FB.Create;
   Try
     With lDatabase.UIBDatabase Do Begin
-      DatabaseName := pDatabaseName;
-      UserName := pUserName;
-      PassWord := pPassword;
+      DatabaseName := ADatabaseName;
+      UserName := AUserName;
+      PassWord := APassword;
       CreateDatabase;
     End;
   Finally
@@ -102,17 +101,17 @@ Begin
   End;
 End;
 
-Class Function TtiDatabaseUIB_FB.DatabaseExists(Const pDatabaseName, pUserName,
-  pPassword : String) : Boolean;
+Class Function TtiDatabaseUIB_FB.DatabaseExists(Const ADatabaseName, AUserName,
+  APassword : String) : Boolean;
 Var
   lDatabase : TtiDatabaseUIB_FB;
 Begin
   lDatabase := TtiDatabaseUIB_FB.Create;
   Try
     With lDatabase.UIBDatabase Do Begin
-      DatabaseName := pDatabaseName;
-      UserName := pUserName;
-      PassWord := pPassword;
+      DatabaseName := ADatabaseName;
+      UserName := AUserName;
+      PassWord := APassword;
       Try
         Connected := true;
         Result := true;
@@ -127,6 +126,12 @@ Begin
   End;
 End;
 
+class procedure TtiDatabaseUIB_FB.DropDatabase(const ADatabaseName, AUserName,
+  APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
+end;
+
 { TtiPersistenceLayerUIB_FB }
 
 Procedure TtiPersistenceLayerUIB_FB.AssignPersistenceLayerDefaults(
@@ -137,6 +142,7 @@ Begin
   APersistenceLayerDefaults.DatabaseName := CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
   APersistenceLayerDefaults.Username := 'SYSDBA';
   APersistenceLayerDefaults.Password := 'masterkey';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase := True;
   APersistenceLayerDefaults.CanSupportMultiUser := True;
 End;

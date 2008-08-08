@@ -200,6 +200,7 @@ type
     // Implement these in the concrete
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string): boolean; virtual; abstract;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); virtual; abstract;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); virtual; abstract;
     class function  TestConnectTo( const ADatabaseName, AUserName, APassword, AParams : string): boolean; virtual;
 
     procedure   StartTransaction; virtual; abstract;

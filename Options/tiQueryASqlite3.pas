@@ -42,6 +42,7 @@ type
     procedure   RollBack; override;
     class function  DatabaseExists(const ADatabaseName, AUserName, APassword : string):boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword : string); override;
+    class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
     procedure       ReadMetaDataTables(AData : TtiDBMetaData); override;
     procedure       ReadMetaDataFields(AData : TtiDBMetaDataTable); override;
     function        Test : boolean; override;
@@ -421,6 +422,12 @@ begin
     raise EtiOPFDBExceptionCanNotCreateDatabase.Create(cTIPersistASqlite3, ADatabaseName, AUserName, APassword);
 end;
 
+class procedure TtiDatabaseASqlite3.DropDatabase(const ADatabaseName,
+  AUserName, APassword: string);
+begin
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
+end;
+
 //procedure TtiDatabaseASqlite3.CreateTable(
 //  const ATableMetaData: TtiDBMetaDataTable);
 //begin
@@ -756,6 +763,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= 'Demo.sqb';
   APersistenceLayerDefaults.Username:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= false;
   APersistenceLayerDefaults.CanSupportSQL:= True;

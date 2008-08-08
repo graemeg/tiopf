@@ -243,6 +243,7 @@ begin
   APersistenceLayerDefaults.DatabaseName:= 'Demo.mdb';
   APersistenceLayerDefaults.UserName:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
+  APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= False;
   APersistenceLayerDefaults.CanSupportSQL:= True;
