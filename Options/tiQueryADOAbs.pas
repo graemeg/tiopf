@@ -636,7 +636,7 @@ end;
 class procedure TtiDatabaseADOAbs.DropDatabase(const ADatabaseName, AUserName,
   APassword: string);
 begin
-  Assert(False, 'DropDatabase not implemented in ', ClassName);
+  Assert(False, 'DropDatabase not implemented in ' + ClassName);
 end;
 
 class function TtiDatabaseADOAbs.DatabaseExists(const ADatabaseName,
