@@ -174,9 +174,9 @@ uses
   {$IFDEF MSWINDOWS}
   Windows
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   Types
-  {$ENDIF LINUX};
+  {$ENDIF UNIX};
 
 
 constructor TtiObjectVisitor.Create;

@@ -1666,7 +1666,7 @@ begin
   end;
 end;
 {$ENDIF MSWINDOWS}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 { Works on Owner rights only. Unix has 3 sets of rights: Owner, Group and Global }
 procedure tiSetFileReadOnly(AFileName: string; AReadOnly: boolean);
 var
@@ -1687,7 +1687,7 @@ begin
   else
     raise Exception.Create('Unable to set ReadOnly attribute');
 end;
-{$ENDIF LINUX}
+{$ENDIF UNIX}
 
 
 {$IFDEF MSWINDOWS}
@@ -1701,12 +1701,12 @@ begin
   result := tiIsBitSet(iCurrentState, 0);
 end;
 {$ENDIF MSWINDOWS}
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 function tiIsFileReadOnly(AValue: string): boolean;
 begin
   Result := FileIsReadOnly(AValue);
 end;
-{$ENDIF LINUX}
+{$ENDIF UNIX}
 
 
 function tiGetModuleFileName: string;
