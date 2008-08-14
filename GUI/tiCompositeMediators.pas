@@ -58,6 +58,7 @@ type
     FSelectedObject: TtiObject;
     FFieldsInfo : TStringList;
     procedure ParseDisplayNames;
+    procedure CleanUpFieldInfos;
     procedure   CreateSubMediators; virtual;
     procedure   SetupGUIandObject; virtual;
     procedure   RebuildList; virtual;
@@ -615,7 +616,7 @@ end;
 
 procedure TCompositeListViewMediator.BeforeDestruction;
 begin
-  FFieldsInfo.Free;
+  CleanUpFieldInfos;
   FObserversInTransit.Free;
   FMediatorList.Free;
   FModel.DetachObserver(self);
@@ -682,6 +683,15 @@ begin
     lInfo.Alignment := tiFieldAlignment(lField);
     FFieldsInfo.AddObject(lInfo.Caption + '=' + tiFieldName(lField), lInfo);
   end; { Loop }
+end;
+
+procedure TCompositeListViewMediator.CleanUpFieldInfos;
+var
+  I : Integer;
+begin
+  for I := Pred(FFieldsInfo.Count) downto 0 do
+      FFieldsInfo.Objects[I].Free;
+  FFieldsInfo.Free;
 end;
 
 { TCompositeStringGridMediator }
