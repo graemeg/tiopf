@@ -780,7 +780,7 @@ begin
   
   for i := 0 to FModel.Count-1 do
   begin
-    if not FModel.Items[i].Deleted or FShowDeleted then
+    if (not FModel.Items[i].Deleted) or FShowDeleted then
       DoCreateItemMediator(FModel.Items[i], i);
   end;
 end;
@@ -794,7 +794,10 @@ begin
   {$endif}
   FView.Options       := FView.Options + [goRowSelect];
   FView.ColCount      := tiNumToken(FDisplayNames, cFieldDelimiter) + 1;
-  FView.RowCount      := FModel.Count + 1;
+  if FShowDeleted then
+    FView.RowCount := FModel.Count + 1
+  else
+    FView.RowCount := FModel.CountNotDeleted + 1;
   FView.FixedCols     := 1;
   FView.FixedRows     := 1;
   FView.ColWidths[0]  := 20;
@@ -859,9 +862,7 @@ begin
   SetupGUIandObject;
   
   if (FDisplayNames <> '') and (tiNumToken(ADisplayNames, cFieldDelimiter) > 0) then
-  begin
     CreateSubMediators;
-  end;
 
   if IsObserving then
     FModel.AttachObserver(Self);
@@ -885,3 +886,4 @@ begin
 end;
 
 end.
+
