@@ -272,6 +272,7 @@ type
     property Items[Index: Integer]: TtiFieldAbs read GetItem write SetItem; default;
   end;
 
+
   TtiObject = class(TtiVisited)
   private
     FOID : TtiOID;
@@ -307,7 +308,9 @@ type
     procedure   DoFindAllNotUnique(AObject: TtiObject; var AFound: boolean; AData: TtiObject); virtual;
     function    GetPropValue(const APropName: string): Variant; virtual;
     procedure   SetPropValue(const APropName: string; const APropValue: Variant); virtual;
-
+    procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: Integer; var HasBounds: Boolean); overload;
+    procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: Extended; var HasBounds: Boolean); overload;
+    procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: TDateTime; var HasBounds: Boolean); overload;
     {: Read in the primary Key values only from the database for this object.
        You must override ReadPK and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
@@ -413,6 +416,11 @@ type
     function    IsValid(const AStrings: TStrings; AAppend: boolean): boolean; overload; // Don't override this one
     {: Is the Object a valid one. Does it adhere to all the business rules you defined? }
     function    IsValid: boolean; overload; // Don't override this one
+    {: Get the minimum and maximum values for a property. Returns false if there are no bounds.
+       For string fields, this is the min and max length. }
+    function    GetFieldBounds(const AFieldName: string; var MinValue, MaxValue: Integer): Boolean; overload;
+    function    GetFieldBounds(const AFieldName: string; var MinValue, MaxValue: Extended): Boolean; overload;
+    function    GetFieldBounds(const AFieldName: string; var MinValue, MaxValue: TDateTime): Boolean; overload;
 
     procedure   AssignFieldList(var AFieldList: TtiFieldList);
     {: ForceAsCreate will get a new OID, and set ObjectState := posCreate}
@@ -449,6 +457,7 @@ type
 
   TtiObjectListCompareEvent = procedure(AItem1, AItem2: TtiObject) of object;
 
+
   TtiEnumerator = class(TtiBaseObject)
   private
     FIndex: Integer;
@@ -459,6 +468,7 @@ type
     function MoveNext: Boolean;
     property Current: TtiObject read GetCurrent;
   end;
+
 
   TtiObjectList = class(TtiObject)
   private
@@ -585,6 +595,7 @@ type
   TPerObjListClass = class of TtiObjectList;
   TtiObjectListClass = class of TtiObjectList;
 
+
   TtiObjectErrors = class(TtiObjectList)
   private
   protected
@@ -604,6 +615,7 @@ type
   published
   end;
 
+
   TtiObjectError = class(TtiObject)
   private
     FErrorMessage: string;
@@ -620,6 +632,7 @@ type
     property    ErrorCode: Word read FErrorCode write FErrorCode;
   end;
 
+
   TPerObjClassMapping = class(TtiBaseObject)
   private
     FPerObjAbsClassName: string;
@@ -629,6 +642,7 @@ type
     property PerObjAbsClassName : string read FPerObjAbsClassName write FPerObjAbsClassName;
     property PerObjAbsClass : TtiClass read FPerObjAbsClass write FPerObjAbsClass;
   end;
+
 
   TPerObjFactory = class(TtiBaseObject)
   private
@@ -648,6 +662,7 @@ type
     function    Count : integer;
   end;
 
+
   TPerStream = class(TtiObject)
   private
     FStream : TMemoryStream;
@@ -666,6 +681,7 @@ type
     procedure   Clear;
     property    AsString : string read GetAsString write SetAsString;
   end;
+
 
   TPerStringStream = class(TtiObject)
   private
@@ -837,7 +853,6 @@ begin
   end;
 end;
 
-
 procedure tiListToCSV(AList: TtiObjectList;
                        const AFileName: string;
                        AColsSelected: TStringList);
@@ -855,7 +870,6 @@ begin
     lStream.Free;
   end;
 end;
-
 
 procedure tiListToCSV(AList: TtiObjectList; const AFileName: string);
 var
@@ -941,6 +955,17 @@ begin
     tiAppendStringToStream(lLine, AStream)
   end;
 end;
+
+function GetFieldAbsProp(Instance: TTiObject; APropName: string): TTiFieldAbs;
+var
+  tk: TtiTypeKind;
+begin
+  Result := Nil;
+  tk := tiGetSimplePropType(Instance, APropName);
+  if (tk = tiTKBinary)  then
+    Result := TTiFieldAbs(GetObjectProp(Instance, APropName, TtiFieldAbs));
+end;
+
 
 { TtiObject }
 
@@ -2657,6 +2682,27 @@ begin
   end;
 end;
 
+function TtiObject.GetFieldBounds(const AFieldName: string; var MinValue,
+  MaxValue: Integer): Boolean;
+begin
+  Result := False;
+  DoGetFieldBounds(AFieldName, MinValue, MaxValue, Result);
+end;
+
+function TtiObject.GetFieldBounds(const AFieldName: string; var MinValue,
+  MaxValue: Extended): Boolean;
+begin
+  Result := False;
+  DoGetFieldBounds(AFieldName, MinValue, MaxValue, Result);
+end;
+
+function TtiObject.GetFieldBounds(const AFieldName: string; var MinValue,
+  MaxValue: TDateTime): Boolean;
+begin
+  Result := False;
+  DoGetFieldBounds(AFieldName, MinValue, MaxValue, Result);
+end;
+
 function TtiObject.IsValid(const AStrings: TStrings): boolean;
 var
   lMessage : string;
@@ -2911,6 +2957,51 @@ begin
       raise EtiOPFProgrammerException.CreateFmt(cErrorSettingProperty,
         [ClassName, APropName, e.message ]);
   end;
+end;
+
+procedure TtiObject.DoGetFieldBounds(const AFieldName: String; var MinValue,
+    MaxValue: Integer; var HasBounds: Boolean);
+var
+  F: TTiFieldAbs;
+  FS: TtiFieldString;
+  FI: TtiFieldInteger;
+  I: integer;
+begin
+  HasBounds := False;
+  F := GetFieldAbsProp(Self, AFieldName);
+  if Assigned(F) then
+    if F is TtiFieldString then
+    begin
+      FS := F as TtiFieldString;
+      MinValue := Ord(FS.NullValidation);
+      MaxValue := FS.MaxLength;
+      HasBounds := (MinValue>0) or (MaxValue>0);
+    end
+    else if F is TtiFieldInteger then
+    begin
+      FI := F as TtiFieldInteger;
+      HasBounds := (FI.MaxDigits>0);
+      if HasBounds then
+      begin
+        MaxValue := 10;
+        For I:=2 to FI.MaxDigits do
+          MaxValue := MaxValue*10;
+        Dec(MaxValue);
+        MinValue := -MaxValue;
+      end;
+    end;
+end;
+
+procedure TtiObject.DoGetFieldBounds(const AFieldName: String; var MinValue,
+    MaxValue: Extended; var HasBounds: Boolean);
+begin
+  HasBounds := False;
+end;
+
+procedure TtiObject.DoGetFieldBounds(const AFieldName: String; var MinValue,
+    MaxValue: TDateTime; var HasBounds: Boolean);
+begin
+  HasBounds := False;
 end;
 
 function TtiObject.IsReadWriteProp(const APropName: string): boolean;
