@@ -286,6 +286,18 @@ uses
 var
   uMediatorManager: TMediatorManager;
 
+resourcestring
+  sErrInvalidFieldName      = 'No fieldname specified for column %d';
+  sErrInvalidAlignmentChar  = 'Invalid alignment character "%s" specified for column %d';
+  sErrInvalidWidthSpecifier = 'Invalid with "%s" specified for column %d';
+  sErrNotListObject         = '%s is not a TTiListObject';
+  sErrCompositeNeedsList    = '%s needs a TtiObjectList class but is registered with %s';
+
+const
+  DefFieldWidth = 75;   // default width
+  cFieldDelimiter = ';';
+  cBrackets = '()';
+  
 
 function gMediatorManager: TMediatorManager;
 begin
@@ -536,7 +548,16 @@ begin
 end;
 
 function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass): TMediatorDef;
+var
+  s: string;
 begin
+  if MediatorClass.CompositeMediator then
+    s := 'composite '
+  else
+    s := '';
+//  writeln(format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]));
+  if not (MinSubjectClass.inheritsfrom(TtiObjectList)) and MediatorClass.CompositeMediator then
+    raise EMediator.CreateFmt(sErrCompositeNeedsList, [MediatorClass.ClassName, MinSubjectClass.ClassName]);
   Result      := FDefs.AddDef;
   Result.MediatorClass := MediatorClass;
   Result.FMSC := MinSubjectClass;
@@ -645,17 +666,6 @@ begin
     end;
   end;
 end;
-
-resourcestring
-  SErrInvalidFieldName = 'No fieldname specified for column %d';
-  SErrInvalidAlignmentChar = 'Invalid alignment character "%s" specified for column %d';
-  SErrInvalidWidthSpecifier = 'Invalid with "%s" specified for column %d';
-  SErrNotListObject = '%s is not a TTiListObject';
-
-const
-  DefFieldWidth   = 75;   // default width
-  cFieldDelimiter = ';';
-  cBrackets       = '()';
 
 
 { Helper functions }
