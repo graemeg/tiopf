@@ -60,7 +60,7 @@ type
     procedure UpdateGuiValidStatus(pErrors: TtiObjectErrors); virtual;
     // Check whether data and GUI property are OK. Not used in this class
     function DataAndPropertyValid: Boolean;
-    // By default, copies published FieldName to published GUIfieldName.
+    // By default, copies published FieldName to published GUIFieldName.
     procedure DoGuiToObject; virtual;
     // Copy object property to GUI. By default it copies published GUIFieldName to published FieldName
     procedure DoObjectToGui; virtual;

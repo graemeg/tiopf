@@ -290,7 +290,7 @@ end;
 procedure TFormMediator.CheckSubject;
 begin
   if not Assigned(FSubject) then
-    raise EMediator.CreateFmt(SerrNoSubject, [Self.Name]);
+    raise EMediator.CreateFmt(SErrNoSubject, [Self.Name]);
 end;
 
 procedure TFormMediator.CheckInactive;
