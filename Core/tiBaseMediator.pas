@@ -7,6 +7,9 @@ unit tiBaseMediator;
 
 {$I tiDefines.inc}
 
+// For debug use only. Enabled the following define
+{.$DEFINE DEBUG}
+
 interface
 
 uses
@@ -59,7 +62,7 @@ type
     function DataAndPropertyValid: Boolean;
     // By default, copies published FieldName to published GUIfieldName.
     procedure DoGuiToObject; virtual;
-    // Copy object property to GUI By default, copies published GUIFieldName to published fieldName
+    // Copy object property to GUI. By default it copies published GUIFieldName to published FieldName
     procedure DoObjectToGui; virtual;
     // Set value list object. Override to provide additional handling.
     procedure SetListObject(const AValue: TtiObjectList); virtual;
@@ -102,7 +105,7 @@ type
     property GuiFieldName: string read FGuiFieldName write FGuiFieldName;
     // Property ObjectUpdateMoment : Do action e.g. in OnExit instead of OnChange.
     // Up to the descendent class to decide this.
-    property ObjectUpdateMoment: TObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment;
+    property ObjectUpdateMoment: TObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouOnChange;
     // OnGUIToObject
     property OnGUIToObject: TGUIToObjectEvent read FOnGUIToObject write FOnGUIToObject;
     // OnObjectToGUI
@@ -314,6 +317,7 @@ begin
   inherited;
   UseInternalOnChange := True;
   FActive := True;
+  FObjectUpdateMoment := ouOnChange;
 end;
 
 constructor TMediatorView.CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGuiFieldName: string);
@@ -476,6 +480,9 @@ end;
 
 procedure TMediatorView.DoGuiToObject;
 begin
+  {$IFDEF DEBUG}
+  writeln(format('> TMediatorView.DoGuiToObject for %s.%s', [Subject.ClassName, FieldName]));
+  {$ENDIF}
   CheckFieldNames;
   Subject.PropValue[FieldName] := TypInfo.GetPropValue(GetGUIControl, GuiFieldName);
 end;
@@ -504,6 +511,9 @@ end;
 
 procedure TMediatorView.DoObjectToGui;
 begin
+  {$IFDEF DEBUG}
+  writeln(format('> TMediatorView.DoObjectToGui for %s.%s', [Subject.ClassName, FieldName]));
+  {$ENDIF}
   CheckFieldNames;
   TypInfo.SetPropValue(GetGUIControl, GuiFieldName, Subject.PropValue[FieldName]);
 end;
@@ -548,14 +558,18 @@ begin
 end;
 
 function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass): TMediatorDef;
+{$IFDEF DEBUG}
 var
   s: string;
+{$ENDIF}
 begin
+  {$IFDEF DEBUG}
   if MediatorClass.CompositeMediator then
     s := 'composite '
   else
     s := '';
-//  writeln(format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]));
+  writeln(format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]));
+  {$ENDIF}
   if not (MinSubjectClass.inheritsfrom(TtiObjectList)) and MediatorClass.CompositeMediator then
     raise EMediator.CreateFmt(sErrCompositeNeedsList, [MediatorClass.ClassName, MinSubjectClass.ClassName]);
   Result      := FDefs.AddDef;
@@ -566,7 +580,18 @@ begin
 end;
 
 function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyName: string): TMediatorDef;
+{$IFDEF DEBUG}
+var
+  s: string;
+{$ENDIF}
 begin
+  {$IFDEF DEBUG}
+  if MediatorClass.CompositeMediator then
+    s := 'composite '
+  else
+    s := '';
+  writeln(format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]));
+  {$ENDIF}
   Result      := FDefs.AddDef;
   Result.MediatorClass := MediatorClass;
   Result.FMSC := MinSubjectClass;
@@ -575,7 +600,18 @@ begin
 end;
 
 function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyTypes: TTypeKinds): TMediatorDef;
+{$IFDEF DEBUG}
+var
+  s: string;
+{$ENDIF}
 begin
+  {$IFDEF DEBUG}
+  if MediatorClass.CompositeMediator then
+    s := 'composite '
+  else
+    s := '';
+  writeln(format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]));
+  {$ENDIF}
   Result      := FDefs.AddDef;
   Result.MediatorClass := MediatorClass;
   Result.FMSC := MinSubjectClass;
