@@ -308,9 +308,9 @@ type
     procedure   DoFindAllNotUnique(AObject: TtiObject; var AFound: boolean; AData: TtiObject); virtual;
     function    GetPropValue(const APropName: string): Variant; virtual;
     procedure   SetPropValue(const APropName: string; const APropValue: Variant); virtual;
-    procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: Integer; var HasBounds: Boolean); virtual; overload;
-    procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: Extended; var HasBounds: Boolean); virtual; overload;
-    procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: TDateTime; var HasBounds: Boolean); virtual; overload;
+    procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: Integer; var HasBounds: Boolean); overload; virtual;
+    procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: Extended; var HasBounds: Boolean); overload; virtual;
+    procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: TDateTime; var HasBounds: Boolean); overload; virtual;
     {: Read in the primary Key values only from the database for this object.
        You must override ReadPK and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
