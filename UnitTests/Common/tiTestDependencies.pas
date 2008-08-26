@@ -71,7 +71,7 @@ uses
   ,tiCriteria_TST
   ,tiRTTI_TST
   ,tiTokenLibrary_TST
-//  ,tiBaseMediator_TST
+  ,tiBaseMediator_TST
   {$IFNDEF FPC}
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
@@ -151,7 +151,7 @@ begin
   tiCriteria_TST.RegisterTests;
   tiTokenLibrary_TST.RegisterTests;
   tiLogToFile_TST.RegisterTests;
-//  tiBaseMediator_TST.RegisterTests;
+  tiBaseMediator_TST.RegisterTests;
   {$IFNDEF FPC}
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;

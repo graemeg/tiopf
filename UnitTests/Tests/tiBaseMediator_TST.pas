@@ -327,6 +327,7 @@ end;
 procedure TTestTIBaseMediator.TestAdd2;
 var
   M: TMediatorDef;
+  p: PPropInfo;
 begin
   gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, [tkInteger]);
   CheckEquals(1, gMediatorManager.Defs.Count, 'Global manager has 1 definition');
@@ -334,13 +335,16 @@ begin
   CheckEquals(TTestMediatorA, M.MediatorClass, 'Mediator class correct');
   CheckEquals(TTestSubjectA, M.MinSubjectClass, 'Min subject class correct');
   if (M.PropertyTypes <> [tkInteger]) then
-    Fail('PropertyTypes does not match tkInteger: ' + SetToString(PTypeInfo(TypeInfo(TTypeKinds)), integer(M.PropertyTypes), True));
+  begin
+    p := GetPropInfo(M, 'PropertyTypes');
+    Fail('PropertyTypes does not match tkInteger: ' + SetToString(p, Integer(M.PropertyTypes), True));
+  end;    
   CheckEquals('', M.PropertyName, 'Property name empty');
 end;
 
 procedure TTestTIBaseMediator.TestAdd3;
 const
-  Props = tkProperties - [tkClass, tkObject, tkInterface, tkDynArray, tkInterfaceRaw];
+  Props = tkProperties - [tkClass, tkInterface, tkDynArray {$IFDEF FPC}, tkObject, tkInterfaceRaw{$ENDIF}];
 var
   M: TMediatorDef;
 begin

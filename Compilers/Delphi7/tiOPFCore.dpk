@@ -62,6 +62,8 @@ contains
   tiRTTI in '..\..\Core\tiRTTI.pas',
   tiLogToFile in '..\..\Core\tiLogToFile.pas',
   tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas',
-  tiOIDGUID in '..\..\Core\tiOIDGUID.pas';
+  tiOIDGUID in '..\..\Core\tiOIDGUID.pas',
+  tiBaseMediator in '..\..\Core\tiBaseMediator.pas',
+  tiFormMediator in '..\..\Core\tiFormMediator.pas';
 
 end.

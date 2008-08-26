@@ -538,8 +538,11 @@ begin
 end;
 
 function TMediatorManager.FindDefFor(ASubject: TtiObject; AGui: TComponent; APropName: string): TMediatorDef;
+var
+  propinfo: PPropInfo;
 begin
-  Result := FindDefFor(ASubject, AGUI, FindPropInfo(ASubject, APropName));
+  propinfo := GetPropInfo(ASubject, APropName);
+  Result := FindDefFor(ASubject, AGUI, propinfo);
 end;
 
 function TMediatorManager.FindDefFor(ASubject: TtiObject; AGui: TComponent; APropInfo: PPropInfo): TMediatorDef;
@@ -576,7 +579,7 @@ begin
   Result.MediatorClass := MediatorClass;
   Result.FMSC := MinSubjectClass;
   Result.FPN  := '';
-  Result.FPT  := tkProperties - [tkClass, tkObject, tkInterface, tkDynArray, tkInterfaceRaw];
+  Result.FPT  := tkProperties - [tkClass, tkInterface, tkDynArray {$IFDEF FPC}, tkObject, tkInterfaceRaw{$ENDIF}];
 end;
 
 function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyName: string): TMediatorDef;
@@ -664,8 +667,6 @@ begin
 end;
 
 function TMediatorDef.BetterMatch(M: TMediatorDef): Boolean;
-var
-  CGC, CSC: Boolean;
 begin
   Result := (M = nil);
   if not Result then
