@@ -16,10 +16,8 @@ uses
   ;
 
 type
-
-  // Log to a console
+  {: Log to a console }
   TtiLogToConsole = class(TtiLogToAbs)
-  private
   protected
     function  AcceptEvent(const ADateTime : string;
                            const AMessage : string;
@@ -129,7 +127,7 @@ procedure TtiLogToConsole.Log(const ADateTime, AThreadID,
   end;
 
 var
-  lLogEvent : TtiLogEvent;
+  lLogEvent: TtiLogEvent;
   lMessage: string;
 begin
   Assert(AThreadID = AThreadID);  // Getting rid of compiler hints, unused params
@@ -143,9 +141,8 @@ begin
     lMessage := lLogEvent.AsStringStripCrLf;
     lMessage := Copy(lMessage, cuiWidthSeverity+4, Length(lMessage));
     if Length(lMessage) > 79 then
-    begin
-      _WriteLines(lMessage);
-    end else
+      _WriteLines(lMessage)
+    else
       DebugLn(lMessage);
   finally
     lLogEvent.Free;
@@ -154,7 +151,7 @@ end;
 
 procedure TtiLogToConsole.WriteToOutput;
 begin
-
+  // Nothing to do because we don't use caching and threading while logging to console
 end;
 
 end.

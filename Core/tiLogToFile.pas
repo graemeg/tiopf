@@ -13,7 +13,7 @@ type
 
   ELogToFile = class (Exception);
 
-  // Log to a file
+  {: Log to a file }
   TtiLogToFile = class(TtiLogToCacheAbs)
   private
     FFileName : TFileName;
@@ -139,9 +139,11 @@ end;
 
 function TtiLogToFile.GetDefaultFileName: TFileName;
 var
+  {$IFDEF MSWINDOWS}
   path: array[0..MAX_PATH - 1] of char;
-  lFileName : string;
-  lFilePath : string;
+  {$ENDIF}
+  lFileName: string;
+  lFilePath: string;
 begin
   {$IFDEF MSWINDOWS}
   if IsLibrary then
@@ -229,10 +231,9 @@ end;
 
 procedure TtiLogToFile.WriteToOutput;
 var
-  i        : integer;
-  LLine   : string;
-  LFileStream : TFileStream;
-
+  i: integer;
+  LLine: string;
+  LFileStream: TFileStream;
 begin
   inherited WriteToOutput;
   if ListWorking.Count = 0 then

@@ -7,9 +7,6 @@ unit tiBaseMediator;
 
 {$I tiDefines.inc}
 
-// For debug use only. Enabled the following define
-{.$DEFINE DEBUG}
-
 interface
 
 uses
@@ -284,7 +281,7 @@ function tiFieldAlignment(const AField: string): TAlignment;
 implementation
 
 uses
-  tiUtils;
+  tiUtils, tiLog;
 
 var
   uMediatorManager: TMediatorManager;
@@ -480,9 +477,7 @@ end;
 
 procedure TMediatorView.DoGuiToObject;
 begin
-  {$IFDEF DEBUG}
-  writeln(format('> TMediatorView.DoGuiToObject for %s.%s', [Subject.ClassName, FieldName]));
-  {$ENDIF}
+  Log(Format('> TMediatorView.DoGuiToObject for %s.%s', [Subject.ClassName, FieldName]), lsDebug);
   CheckFieldNames;
   Subject.PropValue[FieldName] := TypInfo.GetPropValue(GetGUIControl, GuiFieldName);
 end;
@@ -511,9 +506,7 @@ end;
 
 procedure TMediatorView.DoObjectToGui;
 begin
-  {$IFDEF DEBUG}
-  writeln(format('> TMediatorView.DoObjectToGui for %s.%s', [Subject.ClassName, FieldName]));
-  {$ENDIF}
+  Log(Format('> TMediatorView.DoObjectToGui for %s.%s', [Subject.ClassName, FieldName]), lsDebug);
   CheckFieldNames;
   TypInfo.SetPropValue(GetGUIControl, GuiFieldName, Subject.PropValue[FieldName]);
 end;
@@ -561,18 +554,15 @@ begin
 end;
 
 function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass): TMediatorDef;
-{$IFDEF DEBUG}
 var
   s: string;
-{$ENDIF}
 begin
-  {$IFDEF DEBUG}
   if MediatorClass.CompositeMediator then
     s := 'composite '
   else
     s := '';
-  writeln(format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]));
-  {$ENDIF}
+  Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
+
   if not (MinSubjectClass.inheritsfrom(TtiObjectList)) and MediatorClass.CompositeMediator then
     raise EMediator.CreateFmt(sErrCompositeNeedsList, [MediatorClass.ClassName, MinSubjectClass.ClassName]);
   Result      := FDefs.AddDef;
@@ -583,18 +573,15 @@ begin
 end;
 
 function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyName: string): TMediatorDef;
-{$IFDEF DEBUG}
 var
   s: string;
-{$ENDIF}
 begin
-  {$IFDEF DEBUG}
   if MediatorClass.CompositeMediator then
     s := 'composite '
   else
     s := '';
-  writeln(format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]));
-  {$ENDIF}
+  Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
+
   Result      := FDefs.AddDef;
   Result.MediatorClass := MediatorClass;
   Result.FMSC := MinSubjectClass;
@@ -603,18 +590,15 @@ begin
 end;
 
 function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyTypes: TTypeKinds): TMediatorDef;
-{$IFDEF DEBUG}
 var
   s: string;
-{$ENDIF}
 begin
-  {$IFDEF DEBUG}
   if MediatorClass.CompositeMediator then
     s := 'composite '
   else
     s := '';
-  writeln(format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]));
-  {$ENDIF}
+  Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
+
   Result      := FDefs.AddDef;
   Result.MediatorClass := MediatorClass;
   Result.FMSC := MinSubjectClass;
