@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{04DF7146-25DE-43BA-837B-B6430AD22E07}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  <Projects>
+      <Projects Name="GUITest.exe">GUI\GUITest.bdsproj</Projects>
+      <Projects Name="RMUnitTests.exe">UnitTests\RMUnitTests.bdsproj</Projects>
+      <Projects Name="Targets">GUITest.exe RMUnitTests.exe</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>  <StarTeamAssociation></StarTeamAssociation>
+  <StarTeamNonRelativeFiles></StarTeamNonRelativeFiles>
+</BorlandProject>
