@@ -182,7 +182,7 @@ type
     FOnBeforeSetupField: TOnBeforeSetupField;
     FShowDeleted: Boolean;
     FMediatorList: TObjectList;
-    FSelectedObject: TtiObject;
+//    FSelectedObject: TtiObject;
     FFieldsInfo: TtiMediatorFieldInfoList;
     function GetDisplayNames: string;
     function GetIsObserving: Boolean;

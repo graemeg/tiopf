@@ -71,7 +71,7 @@ type
     FSubject: TtiObject;
     procedure CreateMediators;
     procedure SetActive(const AValue: Boolean);
-    procedure SeTPropertyLinkDefs(const AValue: TPropertyLinkDefs);
+    procedure SetPropertyLinkDefs(const AValue: TPropertyLinkDefs);
     procedure SetSubject(const AValue: TtiObject);
   protected
     function CreatePropertyDefs: TPropertyLinkDefs; virtual;
@@ -116,6 +116,7 @@ var
 begin
   if FComposite = AValue then
     Exit;
+  F := FormMediator;
   if Assigned(F) then
     F.CheckInactive;
   FComposite := AValue;
@@ -235,7 +236,7 @@ begin
   FSubject.NotifyObservers;
 end;
 
-procedure TFormMediator.SeTPropertyLinkDefs(const AValue: TPropertyLinkDefs);
+procedure TFormMediator.SetPropertyLinkDefs(const AValue: TPropertyLinkDefs);
 begin
   if FDefs = AValue then
     Exit;
