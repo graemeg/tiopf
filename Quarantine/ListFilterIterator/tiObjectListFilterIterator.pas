@@ -8,6 +8,25 @@ unit tiObjectListFilterIterator;
       "Between" Syntax: 'AFieldName Between(1|10)'
       "In" Syntax:  'AFieldName In(Value1|Value2|Value3)'
 
+
+  Note on Constructor for TtiListFilterIterator:
+
+    CreateCustom(AListToCopy: TtiObjectList; const AFilter: string;
+        AStopOnFirstFail: Boolean = false);
+
+    AListToCopy:            The list to filter.
+
+    AFilter:                The filter to use to retrieve items from AListToCopy
+
+    AStopOnFirstFail:       This is intended for lists that are sorted by properties
+                            to be filtered by, usually a single field.  For instance,
+                            if AListToCopy has objects with property "FirstName" and the
+                            list is sorted by "FirstName" and AStopOnFirstFail is true,
+                            then the iterator's filter method will wait until it finds the first
+                            match and then set a flag.  When the first non-match is encountered
+                            after the first match is found, searching stops since the list is
+                            assumed to be sorted by that property and no other matches are expected to be found.
+
 }
 
 interface
@@ -134,6 +153,8 @@ type
     function    DoGetComparisonType(ACompToken: string): TtiComparisonKind; virtual;
     {: Tests a single object in the external list. }
     function    DoTestSingleObject(AObject: TtiObject): Boolean; virtual;
+    {: Tests each field name in filter to ensure that it is a valid published property of subject. }
+    function    DoTestFilterFields(const AFilter: string; AObject: TtiObject): Boolean; virtual;
     {: Iterates the external list and adds references to its items if filters are met. }
     procedure   IterateAndFilter(ASubjectList: TtiObjectList); virtual;
   public
@@ -201,7 +222,15 @@ type
 
   function  gListIteratorMgr: TtiIteratorManager;
 
+
+const
+  cInvalidFilterFieldName = 'Invalid Property Field Name In Filter';
+
 implementation
+
+uses
+  TypInfo
+  ;
 
 var
   mIteratorManager: TtiIteratorManager;
@@ -234,6 +263,8 @@ function TtiIntegerFilter.InFilter(AObject: TtiObject): Boolean;
 var
   lObjValue: Int64;
 begin
+  Result := false;
+
   lObjValue := AObject.PropValue[FFieldName];
   case FCompareType of
     ckEqualTo:              result := (lObjValue = FIntValue);
@@ -261,6 +292,8 @@ function TtiFloatFilter.InFilter(AObject: TtiObject): Boolean;
 var
   lObjValue: Double;
 begin
+  result := false;
+
   lObjValue := AObject.PropValue[FFieldName];
   case FCompareType of
     ckEqualTo:              result := (lObjValue = FFloatValue);
@@ -287,6 +320,8 @@ function TtiStringFilter.InFilter(AObject: TtiObject): Boolean;
 var
   lObjValue: string;
 begin
+  result := false;
+
   lObjValue := AObject.PropValue[FFieldName];
   case FCompareType of
     ckEqualTo:              result := (lObjValue = FStringValue);
@@ -491,7 +526,14 @@ begin
 
   lFilter := Trim(AFilter);
 
+  // Grab first items off the list.  Use it for validation of filter fields and to get property types
   lSubjectObject := ASubjectList.Items[0];
+
+
+  // Test to ensure that fields listed in the filter are in fact, published members of the object
+  // If filter is empty, doesn't matter since all objects in list are returned.
+  if lFilter <> '' then
+    Assert(DoTestFilterFields(lFilter, lSubjectObject), cInvalidFilterFieldName);
 
   for lCounter := 1 to tiNumToken(lFilter, ',') do
     begin
@@ -519,6 +561,29 @@ begin
           raise Exception.Create(ClassName + '.DoParseFilter: Binary types not supported');
       end;
     end;
+end;
+
+function TtiListFilterIterator.DoTestFilterFields(const AFilter: string;
+  AObject: TtiObject): Boolean;
+var
+  lElement: string;
+  lCounter: Integer;
+  lCompToken: string;
+  lField: string;
+begin
+  result := false;
+
+  for lCounter := 1 to tiNumToken(AFilter, ',') do
+    begin
+      lElement := tiToken(AFilter, ',', lCounter);
+      lCompToken := DoGetComparisonToken(lElement);
+      lField := DoGetFieldName(lElement, lCompToken);
+
+      result := IsPublishedProp(AObject,lField);
+      if not result then
+        Exit; //==>
+    end;
+
 end;
 
 function TtiListFilterIterator.DoTestSingleObject(AObject: TtiObject): Boolean;
@@ -563,7 +628,10 @@ procedure TtiListFilterIterator.IterateAndFilter(ASubjectList: TtiObjectList);
 var
   lCounter: Integer;
   lSuccess: Boolean;
+  lFirstFound: Boolean;
 begin
+  lFirstFound := false;
+  
   if FFilterList.Count = 0 then
     begin
       for lCounter := 0 to ASubjectList.Count -1 do
@@ -578,11 +646,13 @@ begin
           lSuccess := DoTestSingleObject(ASubjectList.Items[lCounter]);
           if lSuccess then
             begin
+              if not lFirstFound then
+                lFirstFound := True; // Used with FStopOnFail
               FInternalList.Add(ASubjectList.Items[lCounter]);
             end
           else
             begin
-              if FStopOnFail then
+              if (FStopOnFail) and (lFirstFound) then
                 Break;
             end;
         end;
@@ -604,7 +674,6 @@ end;
 
 function TtiListFilterIterator.Next: Boolean;
 begin
-  result := false;
 
   if FCurrentIdx = -1 then
     Result := FInternalList.Count > 0
@@ -643,6 +712,9 @@ function TtiDateTimeFilter.InFilter(AObject: TtiObject): Boolean;
 var
   lObjValue: TDateTime;
 begin
+
+  result := false;
+  
   lObjValue := AObject.PropValue[FFieldName];
 
   case FCompareType of
@@ -749,11 +821,17 @@ var
 begin
   lReg := FindIteratorRegistration(TtiListClass(AObjectList.ClassType));
 
-  Assert(lReg <> nil, ClassName + '.FindIteratorRegistration: Registration not found');
-
-  lIteratorClass := lReg.IteratorClass;
-
-  result := lIteratorClass.CreateCustom(AObjectList, AFilter, AStopFirstFail);
+  // Check to see if a registered version of TtiListFilterIterator is present.
+  // If so, use it.  If not then use the generic base class.  Doesn't matter anyway
+  // since the IListFilterIterator interface returns a generic TtiObject in it's .Current
+  // function which needs to be cast to the proper object type anyway.
+  if lReg = nil then
+    Result := TtiListFilterIterator.CreateCustom(AObjectList, AFilter, AStopFirstFail)
+  else
+    begin
+      lIteratorClass := lReg.IteratorClass;
+      result := lIteratorClass.CreateCustom(AObjectList, AFilter, AStopFirstFail);
+    end;
 
 end;
 
@@ -767,6 +845,7 @@ begin
   lIteratorReg.IteratorClass := AIteratorClass;
   FRegList.Add(lIteratorReg);
 end;
+
 
 initialization;
 finalization

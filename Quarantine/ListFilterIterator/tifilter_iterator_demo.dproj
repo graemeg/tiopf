@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{2ab446d7-3030-4ea7-afc6-f40dbfdec8d0}</ProjectGuid>
@@ -16,7 +17,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Version>7.0</Version>
-    <DCC_Define>DEBUG;EUREKALOG;EUREKALOG_VER6</DCC_Define>
+    <DCC_Define>DEBUG</DCC_Define>
     <DCC_MapFile>3</DCC_MapFile>
     <DCC_GenerateStackFrames>True</DCC_GenerateStackFrames>
   </PropertyGroup>
@@ -63,13 +64,12 @@
       <Form>Form3</Form>
     </DCCReference>
     <DCCReference Include="person.pas" />
-    <DCCReference Include="tiObjectListFilterIterator.pas" />
   </ItemGroup>
 </Project>
 <!-- EurekaLog First Line
 [Exception Log]
 EurekaLog Version=6012
-Activate=1
+Activate=0
 Activate Handle=1
 Save Log File=1
 Foreground Tab=0

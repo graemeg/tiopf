@@ -12,6 +12,14 @@ uses
   ;
 
 type
+
+  // -----------------------------------------------------------------
+  //  Enumeration
+  // -----------------------------------------------------------------
+
+  {: Person gender. }
+  TPersonGender = (pgFemale, pgMale);
+
   // -----------------------------------------------------------------
   //  Class Objects
   // -----------------------------------------------------------------
@@ -24,17 +32,20 @@ type
     FAlive: Boolean;
     FFirstName: string;
     FDateOfHire: TDateTime;
+    FGender: TPersonGender;
     procedure SetAge(const Value: Integer);
     procedure SetAlive(const Value: Boolean);
     procedure SetFirstName(const Value: string);
     procedure SetLastName(const Value: string);
     procedure SetDateOfHire(const Value: TDateTime);
+    procedure SetGender(const Value: TPersonGender);
   published
     property    FirstName: string read FFirstName write SetFirstName;
     property    LastName: string read FLastName write SetLastName;
     property    Age: Integer read FAge write SetAge;
     property    DateOfHire: TDateTime read FDateOfHire write SetDateOfHire;
     property    Alive: Boolean read FAlive write SetAlive;
+    property    Gender: TPersonGender read FGender write SetGender;
   end;
 
   {: List of @link(TPerson) objects. }
@@ -52,8 +63,6 @@ type
   TPersonListIterator = class(TtiListFilterIterator)
   public
     function    Current: TPerson; reintroduce;
-    function    Next: Boolean; override;
-
   end;
 
 implementation
@@ -78,6 +87,11 @@ end;
 procedure TPerson.SetFirstName(const Value: string);
 begin
   FFirstName := Value;
+end;
+
+procedure TPerson.SetGender(const Value: TPersonGender);
+begin
+  FGender := Value;
 end;
 
 procedure TPerson.SetLastName(const Value: string);
@@ -107,11 +121,6 @@ end;
 function TPersonListIterator.Current: TPerson;
 begin
   result := TPerson(inherited Current);
-end;
-
-function TPersonListIterator.Next: Boolean;
-begin
-  result := inherited Next;
 end;
 
 initialization;
