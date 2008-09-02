@@ -63,8 +63,10 @@ type
     function AddPropertyLinkDef: TPropertyLinkDef;
     function IndexOfComponent(AComponent: TComponent): integer;
     function IndexOfMediator(AMediator: TMediatorView): integer;
+    function IndexOfTag(ATag: LongInt): integer;
     function FindByComponent(AComponent: TComponent): TPropertyLinkDef;
     function FindByMediator(AMediator: TMediatorView): TPropertyLinkDef;
+    function FindByTag(ATag: LongInt): TPropertyLinkDef;
     property FormMediator: TFormMediator read FFormMediator;
     property Defs[Index: integer]: TPropertyLinkDef read GetD write SetD; default;
   end;
@@ -95,6 +97,7 @@ type
     function AddComposite(const ADisplayNames: string; const AGUIComponent: TComponent): TPropertyLinkDef;
     function FindByComponent(AComponent: TComponent): TPropertyLinkDef;
     function FindByMediator(AMediator: TMediatorView): TPropertyLinkDef;
+    function FindByTag(ATag: LongInt): TPropertyLinkDef;
     function ComponentMediator(AComponent: TComponent): TMediatorView;
     function MediatorComponent(AMediator: TMediatorView): TComponent;
     property Subject: TtiObject read FSubject write SetSubject;
@@ -368,6 +371,11 @@ begin
   Result := FDefs.FindByMediator(AMediator);
 end;
 
+function TFormMediator.FindByTag(ATag: LongInt): TPropertyLinkDef;
+begin
+  Result := FDefs.FindByTag(ATag);
+end;
+
 function TFormMediator.ComponentMediator(AComponent: TComponent): TMediatorView;
 var
   L: TPropertyLinkDef;
@@ -427,6 +435,13 @@ begin
     Dec(Result);
 end;
 
+function TPropertyLinkDefs.IndexOfTag(ATag: LongInt): integer;
+begin
+  Result := Count - 1;
+  while (Result >= 0) and (GetD(Result).Component.Tag <> ATag) do
+    Dec(Result);
+end;
+
 function TPropertyLinkDefs.FindByComponent(AComponent: TComponent): TPropertyLinkDef;
 var
   I: integer;
@@ -442,11 +457,22 @@ function TPropertyLinkDefs.FindByMediator(AMediator: TMediatorView): TPropertyLi
 var
   I: integer;
 begin
-  I := IndexOfMediator(Amediator);
+  I := IndexOfMediator(AMediator);
   if (I = -1) then
     Result := nil
   else
     Result := GetD(I);
+end;
+
+function TPropertyLinkDefs.FindByTag(ATag: LongInt): TPropertyLinkDef;
+var
+  i: integer;
+begin
+  i := IndexOfTag(ATag);
+  if (i = -1) then
+    Result := nil
+  else
+    Result := GetD(i);
 end;
 
 end.
