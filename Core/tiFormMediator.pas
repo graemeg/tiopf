@@ -61,10 +61,10 @@ type
   public
     function GetOwner: TPersistent; override;
     function AddPropertyLinkDef: TPropertyLinkDef;
-    Function IndexOfComponent(AComponent : TComponent) : Integer;
-    Function IndexOfMediator(AMediator : TMediatorView) : Integer;
-    Function FindByComponent(AComponent : TComponent) : TPropertyLinkDef;
-    Function FindByMediator(AMediator : TMediatorView) : TPropertyLinkDef;
+    function IndexOfComponent(AComponent: TComponent): integer;
+    function IndexOfMediator(AMediator: TMediatorView): integer;
+    function FindByComponent(AComponent: TComponent): TPropertyLinkDef;
+    function FindByMediator(AMediator: TMediatorView): TPropertyLinkDef;
     property FormMediator: TFormMediator read FFormMediator;
     property Defs[Index: integer]: TPropertyLinkDef read GetD write SetD; default;
   end;
@@ -93,16 +93,15 @@ type
     destructor Destroy; override;
     function AddProperty(const AFieldName: string; const AGUIComponent: TComponent): TPropertyLinkDef;
     function AddComposite(const ADisplayNames: string; const AGUIComponent: TComponent): TPropertyLinkDef;
-    Function FindByComponent(AComponent : TComponent) : TPropertyLinkDef;
-    Function FindByMediator(AMediator : TMediatorView) : TPropertyLinkDef;
-    Function ComponentMediator(AComponent : TComponent) : TMediatorView;
-    Function MediatorComponent(AMediator : TMediatorView) : TComponent;
+    function FindByComponent(AComponent: TComponent): TPropertyLinkDef;
+    function FindByMediator(AMediator: TMediatorView): TPropertyLinkDef;
+    function ComponentMediator(AComponent: TComponent): TMediatorView;
+    function MediatorComponent(AMediator: TMediatorView): TComponent;
     property Subject: TtiObject read FSubject write SetSubject;
     property Active: Boolean read FActive write SetActive;
   published
     property PropertyLinks: TPropertyLinkDefs read FDefs write SeTPropertyLinkDefs;
   end;
-
 
 
 implementation
@@ -361,38 +360,34 @@ end;
 
 function TFormMediator.FindByComponent(AComponent: TComponent): TPropertyLinkDef;
 begin
-  Result:=FDefs.FindByComponent(AComponent);
+  Result := FDefs.FindByComponent(AComponent);
 end;
 
 function TFormMediator.FindByMediator(AMediator: TMediatorView): TPropertyLinkDef;
 begin
-  Result:=FDefs.FindByMediator(AMediator);
+  Result := FDefs.FindByMediator(AMediator);
 end;
 
 function TFormMediator.ComponentMediator(AComponent: TComponent): TMediatorView;
-
-Var
-  L : TPropertyLinkDef;
-
+var
+  L: TPropertyLinkDef;
 begin
-  L:=FindByComponent(AComponent);
-  If (L=Nil) then
-    Result:=Nil
+  L := FindByComponent(AComponent);
+  if (L = nil) then
+    Result := nil
   else
-    Result:=L.Mediator;
+    Result := L.Mediator;
 end;
 
 function TFormMediator.MediatorComponent(AMediator: TMediatorView): TComponent;
-
-Var
-  L : TPropertyLinkDef;
-
+var
+  L: TPropertyLinkDef;
 begin
-  L:=FindByMediator(AMediator);
-  If (L=Nil) then
-    Result:=Nil
+  L := FindByMediator(AMediator);
+  if (L = nil) then
+    Result := nil
   else
-    Result:=L.Component;
+    Result := L.Component;
 end;
 
 
@@ -418,44 +413,40 @@ begin
   Result := Add as TPropertyLinkDef;
 end;
 
-function TPropertyLinkDefs.IndexOfComponent(AComponent: TComponent): Integer;
+function TPropertyLinkDefs.IndexOfComponent(AComponent: TComponent): integer;
 begin
-  Result:=Count-1;
-  While (Result>=0) and (GetD(Result).Component<>AComponent) do
+  Result := Count - 1;
+  while (Result >= 0) and (GetD(Result).Component <> AComponent) do
     Dec(Result);
 end;
 
-function TPropertyLinkDefs.IndexOfMediator(AMediator: TMediatorView): Integer;
+function TPropertyLinkDefs.IndexOfMediator(AMediator: TMediatorView): integer;
 begin
-  Result:=Count-1;
-  While (Result>=0) and (GetD(Result).Mediator<>AMediator) do
+  Result := Count - 1;
+  while (Result >= 0) and (GetD(Result).Mediator <> AMediator) do
     Dec(Result);
 end;
 
 function TPropertyLinkDefs.FindByComponent(AComponent: TComponent): TPropertyLinkDef;
-
-Var
-  I : Integer;
-
+var
+  I: integer;
 begin
-  I:=IndexOfComponent(AComponent);
-  If (I=-1) then
-    Result:=Nil
+  I := IndexOfComponent(AComponent);
+  if (I = -1) then
+    Result := nil
   else
-    Result:=GetD(I);
+    Result := GetD(I);
 end;
 
 function TPropertyLinkDefs.FindByMediator(AMediator: TMediatorView): TPropertyLinkDef;
-
-Var
-  I : Integer;
-
+var
+  I: integer;
 begin
-  I:=IndexOfMediator(Amediator);
-  If (I=-1) then
-    Result:=Nil
+  I := IndexOfMediator(Amediator);
+  if (I = -1) then
+    Result := nil
   else
-    Result:=GetD(I);
+    Result := GetD(I);
 end;
 
 end.
