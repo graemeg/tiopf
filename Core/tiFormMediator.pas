@@ -51,6 +51,8 @@ type
   end;
 
 
+  { TPropertyLinkDefs }
+
   TPropertyLinkDefs = class(TCollection)
   private
     FFormMediator: TFormMediator;
@@ -59,10 +61,16 @@ type
   public
     function GetOwner: TPersistent; override;
     function AddPropertyLinkDef: TPropertyLinkDef;
+    Function IndexOfComponent(AComponent : TComponent) : Integer;
+    Function IndexOfMediator(AMediator : TMediatorView) : Integer;
+    Function FindByComponent(AComponent : TComponent) : TPropertyLinkDef;
+    Function FindByMediator(AMediator : TMediatorView) : TPropertyLinkDef;
     property FormMediator: TFormMediator read FFormMediator;
     property Defs[Index: integer]: TPropertyLinkDef read GetD write SetD; default;
   end;
 
+
+  { TFormMediator }
 
   TFormMediator = class(TComponent)
   private
@@ -85,6 +93,10 @@ type
     destructor Destroy; override;
     function AddProperty(const AFieldName: string; const AGUIComponent: TComponent): TPropertyLinkDef;
     function AddComposite(const ADisplayNames: string; const AGUIComponent: TComponent): TPropertyLinkDef;
+    Function FindByComponent(AComponent : TComponent) : TPropertyLinkDef;
+    Function FindByMediator(AMediator : TMediatorView) : TPropertyLinkDef;
+    Function ComponentMediator(AComponent : TComponent) : TMediatorView;
+    Function MediatorComponent(AMediator : TMediatorView) : TComponent;
     property Subject: TtiObject read FSubject write SetSubject;
     property Active: Boolean read FActive write SetActive;
   published
@@ -347,6 +359,42 @@ begin
   Result.Composite := True;
 end;
 
+function TFormMediator.FindByComponent(AComponent: TComponent): TPropertyLinkDef;
+begin
+  Result:=FDefs.FindByComponent(AComponent);
+end;
+
+function TFormMediator.FindByMediator(AMediator: TMediatorView): TPropertyLinkDef;
+begin
+  Result:=FDefs.FindByMediator(AMediator);
+end;
+
+function TFormMediator.ComponentMediator(AComponent: TComponent): TMediatorView;
+
+Var
+  L : TPropertyLinkDef;
+
+begin
+  L:=FindByComponent(AComponent);
+  If (L=Nil) then
+    Result:=Nil
+  else
+    Result:=L.Mediator;
+end;
+
+function TFormMediator.MediatorComponent(AMediator: TMediatorView): TComponent;
+
+Var
+  L : TPropertyLinkDef;
+
+begin
+  L:=FindByMediator(AMediator);
+  If (L=Nil) then
+    Result:=Nil
+  else
+    Result:=L.Component;
+end;
+
 
 { TPropertyLinkDefs }
 
@@ -368,6 +416,46 @@ end;
 function TPropertyLinkDefs.AddPropertyLinkDef: TPropertyLinkDef;
 begin
   Result := Add as TPropertyLinkDef;
+end;
+
+function TPropertyLinkDefs.IndexOfComponent(AComponent: TComponent): Integer;
+begin
+  Result:=Count-1;
+  While (Result>=0) and (GetD(Result).Component<>AComponent) do
+    Dec(Result);
+end;
+
+function TPropertyLinkDefs.IndexOfMediator(AMediator: TMediatorView): Integer;
+begin
+  Result:=Count-1;
+  While (Result>=0) and (GetD(Result).Mediator<>AMediator) do
+    Dec(Result);
+end;
+
+function TPropertyLinkDefs.FindByComponent(AComponent: TComponent): TPropertyLinkDef;
+
+Var
+  I : Integer;
+
+begin
+  I:=IndexOfComponent(AComponent);
+  If (I=-1) then
+    Result:=Nil
+  else
+    Result:=GetD(I);
+end;
+
+function TPropertyLinkDefs.FindByMediator(AMediator: TMediatorView): TPropertyLinkDef;
+
+Var
+  I : Integer;
+
+begin
+  I:=IndexOfMediator(Amediator);
+  If (I=-1) then
+    Result:=Nil
+  else
+    Result:=GetD(I);
 end;
 
 end.
