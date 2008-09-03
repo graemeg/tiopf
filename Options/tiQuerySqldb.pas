@@ -17,14 +17,14 @@ interface
 uses
   Classes,
   SysUtils,
-  db,
+  DB,
   sqldb,
   tiQuery,
   tiQueryDataset,
   tiObject,
   tiPersistenceLayers;
 
-Type
+type
   { TtiPersistenceLayerSqldDB }
   TtiPersistenceLayerSqldDB = class(TtiPersistenceLayer)
     function GetQueryClass: TtiQueryClass; override;
@@ -37,26 +37,26 @@ Type
     FDatabase: TSQLConnection;
     FTransaction: TSQLTransaction;
   protected
-    procedure   SetConnected(AValue: boolean); override;
-    function    GetConnected: boolean; override;
-    function    FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string; override;
-    Class Function CreateSQLConnection : TSQLConnection; virtual; abstract;
-    function    HasNativeLogicalType: boolean; virtual;
+    procedure SetConnected(AValue: Boolean); override;
+    function GetConnected: Boolean; override;
+    function FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string; override;
+    class function CreateSQLConnection: TSQLConnection; virtual; abstract;
+    function HasNativeLogicalType: Boolean; virtual;
   public
     constructor Create; override;
-    destructor  Destroy; override;
-    class function  DatabaseExists(const ADatabaseName, AUserName, APassword: string): boolean; override;
+    destructor Destroy; override;
+    class function DatabaseExists(const ADatabaseName, AUserName, APassword: string): Boolean; override;
     class procedure CreateDatabase(const ADatabaseName, AUserName, APassword: string); override;
     class procedure DropDatabase(const ADatabaseName, AUserName, APassword: string); override;
-    property    SQLConnection: TSQLConnection Read FDatabase Write FDatabase;
-    procedure   StartTransaction; override;
-    function    InTransaction: boolean; override;
-    procedure   Commit; override;
-    procedure   RollBack; override;
-    procedure   ReadMetaDataTables(AData: TtiDBMetaData); override;
-    procedure   ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
-    function    Test: boolean; override;
-    function    TIQueryClass: TtiQueryClass; override;
+    property SQLConnection: TSQLConnection read FDatabase write FDatabase;
+    procedure StartTransaction; override;
+    function InTransaction: Boolean; override;
+    procedure Commit; override;
+    procedure RollBack; override;
+    procedure ReadMetaDataTables(AData: TtiDBMetaData); override;
+    procedure ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
+    function Test: Boolean; override;
+    function TIQueryClass: TtiQueryClass; override;
   end;
 
 
@@ -65,41 +65,39 @@ Type
   TtiQuerySQLDB = class(TtiQueryDataset)
   private
     FIBSQL: TSQLQuery;
-    FbActive: boolean;
+    FbActive: Boolean;
     procedure Prepare;
   protected
-    Procedure CheckPrepared; override;
-    procedure SetActive(const AValue: boolean); override;
-    function  GetSQL: TStrings; override;
+    procedure CheckPrepared; override;
+    procedure SetActive(const AValue: Boolean); override;
+    function GetSQL: TStrings; override;
     procedure SetSQL(const AValue: TStrings); override;
   public
     constructor Create; override;
-    destructor  Destroy; override;
-    procedure   Close; override;
-    procedure   ExecSQL; override;
+    destructor Destroy; override;
+    procedure Close; override;
+    procedure ExecSQL; override;
 
-    procedure   AttachDatabase(ADatabase: TtiDatabase); override;
-    procedure   DetachDatabase; override;
-    procedure   Reset; override;
+    procedure AttachDatabase(ADatabase: TtiDatabase); override;
+    procedure DetachDatabase; override;
+    procedure Reset; override;
 
-    function    HasNativeLogicalType: boolean; override;
+    function HasNativeLogicalType: Boolean; override;
   end;
 
 
 implementation
 
 uses
-  tiUtils
+  tiUtils,
 {$ifdef LOGSQLDB}
-  ,tiLog
+  tiLog,
 {$endif}
-  ,TypInfo
-  ,tiOPFManager
-  ,tiConstants
-  ,tiExcept
-  ,Variants
- ;
-
+  TypInfo,
+  tiOPFManager,
+  tiConstants,
+  tiExcept,
+  Variants;
 
 
 { TtiQuerySQLDB }
@@ -107,32 +105,40 @@ uses
 constructor TtiQuerySQLDB.Create;
 begin
   inherited;
-  FIBSQL := TSQLQuery.Create(nil);
-  Dataset:=FIBSQL;
-  Params:=FIBSQL.Params;
+  FIBSQL  := TSQLQuery.Create(nil);
+  Dataset := FIBSQL;
+  Params  := FIBSQL.Params;
 end;
 
 destructor TtiQuerySQLDB.Destroy;
 begin
-  Params := Nil;
-  Dataset := Nil;
+  Params  := nil;
+  Dataset := nil;
   FIBSQL.Free;
   inherited;
 end;
 
 procedure TtiQuerySQLDB.Close;
 begin
-{$ifdef LOGSQLDB}Log('>>> TtiQuerySQLDB.Close');{$endif}
+{$ifdef LOGSQLDB}
+  Log('>>> TtiQuerySQLDB.Close');
+{$endif}
   Active := False;
-{$ifdef LOGSQLDB}Log('<<< TtiQuerySQLDB.Close');{$endif}
+{$ifdef LOGSQLDB}
+  Log('<<< TtiQuerySQLDB.Close');
+{$endif}
 end;
 
 procedure TtiQuerySQLDB.ExecSQL;
 begin
-{$ifdef LOGSQLDB}Log('>>> TtiQuerySQLDB.ExecSQL: '+FIBSQL.SQL.Text);{$endif}
+{$ifdef LOGSQLDB}
+  Log('>>> TtiQuerySQLDB.ExecSQL: ' + FIBSQL.SQL.Text);
+{$endif}
   Prepare;
   FIBSQL.ExecSQL;
-{$ifdef LOGSQLDB}Log('<<< TtiQuerySQLDB.ExecSQL');{$endif}
+{$ifdef LOGSQLDB}
+  Log('<<< TtiQuerySQLDB.ExecSQL');
+{$endif}
 end;
 
 function TtiQuerySQLDB.GetSQL: TStrings;
@@ -140,48 +146,67 @@ begin
   Result := FIBSQL.SQL;
 end;
 
-
-procedure TtiQuerySQLDB.SetActive(const AValue: boolean);
+procedure TtiQuerySQLDB.SetActive(const AValue: Boolean);
 begin
-{$ifdef LOGSQLDB}log('>>> TtiQuerySQLDB.SetActive');{$endif}
+{$ifdef LOGSQLDB}
+  log('>>> TtiQuerySQLDB.SetActive');
+{$endif}
   Assert(Database.TestValid(TtiDatabase), CTIErrorInvalidObject);
   if AValue then
   begin
-    {$ifdef LOGSQLDB}Log('Exec Query');{$endif}
+    {$ifdef LOGSQLDB}
+    Log('Exec Query');
+    {$endif}
     FIBSQL.ExecSQL;
     FbActive := True;
   end
   else
   begin
-    {$ifdef LOGSQLDB}Log('Closing Query');{$endif}
+    {$ifdef LOGSQLDB}
+    Log('Closing Query');
+    {$endif}
     FIBSQL.Close;
     FbActive := False;
   end;
-{$ifdef LOGSQLDB}log('<<< TtiQuerySQLDB.SetActive');{$endif}
+{$ifdef LOGSQLDB}
+  log('<<< TtiQuerySQLDB.SetActive');
+{$endif}
 end;
 
 procedure TtiQuerySQLDB.SetSQL(const AValue: TStrings);
 begin
-{$ifdef LOGSQLDB}log('>>>> SetSQL: '+AValue.Text);{$endif}
+{$ifdef LOGSQLDB}
+  log('>>>> SetSQL: ' + AValue.Text);
+{$endif}
   FIBSQL.SQL.Assign(AValue);
-{$ifdef LOGSQLDB}log('<<<< SetSQL');{$endif}
+{$ifdef LOGSQLDB}
+  log('<<<< SetSQL');
+{$endif}
 end;
 
 procedure TtiQuerySQLDB.CheckPrepared;
 begin
-{$ifdef LOGSQLDB}Log('>>> TtiQuerySQLDB.CheckPrepared');{$endif}
-  If Not FIBSQL.Prepared then
+{$ifdef LOGSQLDB}
+  Log('>>> TtiQuerySQLDB.CheckPrepared');
+{$endif}
+  if not FIBSQL.Prepared then
     Prepare;
-{$ifdef LOGSQLDB}Log('<<< TtiQuerySQLDB.CheckPrepared');{$endif}
+{$ifdef LOGSQLDB}
+  Log('<<< TtiQuerySQLDB.CheckPrepared');
+{$endif}
 end;
 
 procedure TtiQuerySQLDB.Prepare;
 begin
-{$ifdef LOGSQLDB}Log('>>> TtiQuerySQLDB.Prepare');{$endif}
+{$ifdef LOGSQLDB}
+  Log('>>> TtiQuerySQLDB.Prepare');
+{$endif}
   if FIBSQL.Prepared then
     Exit; //==>
   FIBSQL.Prepare;
-{$ifdef LOGSQLDB}Log('<<< TtiQuerySQLDB.Prepare');{$endif}
+{$ifdef LOGSQLDB}
+  Log('<<< TtiQuerySQLDB.Prepare');
+{$endif}
 end;
 
 procedure TtiQuerySQLDB.AttachDatabase(ADatabase: TtiDatabase);
@@ -189,7 +214,7 @@ begin
   inherited AttachDatabase(ADatabase);
   if (Database is TtiDatabaseSQLDB) then
   begin
-    FIBSQL.Database := TtiDatabaseSQLDB(Database).SQLConnection;
+    FIBSQL.Database    := TtiDatabaseSQLDB(Database).SQLConnection;
     FIBSQL.Transaction := TtiDatabaseSQLDB(Database).SQLConnection.Transaction;
   end;
 end;
@@ -200,7 +225,7 @@ begin
   if FIBSQL.Active then
     FIBSQL.Close;
   FIBSQL.Transaction := nil;
-  FIBSQL.Database   := nil;
+  FIBSQL.Database    := nil;
 end;
 
 procedure TtiQuerySQLDB.Reset;
@@ -209,12 +234,12 @@ begin
   FIBSQL.SQL.Clear;
 end;
 
-function TtiQuerySQLDB.HasNativeLogicalType: boolean;
+function TtiQuerySQLDB.HasNativeLogicalType: Boolean;
 begin
-  If not assigned(Database) then
-    Result:=True
+  if not assigned(Database) then
+    Result := True
   else
-    Result:=TtiDatabaseSQLDB(Database).HasNativeLogicalType;
+    Result := TtiDatabaseSQLDB(Database).HasNativeLogicalType;
 end;
 
 
@@ -223,28 +248,28 @@ end;
 constructor TtiDatabaseSQLDB.Create;
 begin
   inherited Create;
-  FDatabase              := CreateSQLConnection;
-  FDatabase.LoginPrompt  := False;
-  FTransaction         := TSQLTransaction.Create(nil);
+  FDatabase           := CreateSQLConnection;
+  FDatabase.LoginPrompt := False;
+  FTransaction        := TSQLTransaction.Create(nil);
   FTransaction.DataBase := FDatabase;
-  FDatabase.Transaction  := FTransaction;
+  FDatabase.Transaction := FTransaction;
   FTransaction.Active := False;
 end;
 
 destructor TtiDatabaseSQLDB.Destroy;
 begin
   try
-    FTransaction.Active  := False;
-    FDatabase.Connected    := False;
-    FDatabase.Transaction  := nil;
+    FTransaction.Active   := False;
+    FDatabase.Connected   := False;
+    FDatabase.Transaction := nil;
     FTransaction.Database := nil;
     FTransaction.Free;
     FDatabase.Free;
   except
-{$ifdef logsqldb}
+    {$ifdef logsqldb}
     on e: Exception do
       LogError(e.message);
-{$endif}
+    {$endif}
   end;
   inherited;
 end;
@@ -254,57 +279,63 @@ begin
   if not InTransaction then
     raise EtiOPFInternalException.Create('Attempt to commit but not in a transaction.');
 
-//  FTransaction.CommitRetaining;
+  //  FTransaction.CommitRetaining;
   FTransaction.Commit;
 end;
 
-function TtiDatabaseSQLDB.InTransaction: boolean;
+function TtiDatabaseSQLDB.InTransaction: Boolean;
 begin
-//  Result := False;
+  //  Result := False;
   Result := FTransaction.Active;
-//  Result := (FTransaction.Handle <> NIL);
+  //  Result := (FTransaction.Handle <> NIL);
 end;
 
 procedure TtiDatabaseSQLDB.RollBack;
 begin
-//  FTransaction.RollbackRetaining;
+  //  FTransaction.RollbackRetaining;
   FTransaction.RollBack;
 end;
 
 procedure TtiDatabaseSQLDB.StartTransaction;
 begin
-{$ifdef LOGSQLDB}Log('>>>> Start transaction...');{$endif}
+{$ifdef LOGSQLDB}
+  Log('>>>> Start transaction...');
+{$endif}
   if InTransaction then
     raise EtiOPFInternalException.Create(
       'Attempt to start a transaction but transaction already exists.');
 
   FTransaction.StartTransaction;
-{$ifdef LOGSQLDB}Log('<<<< Start transaction...');{$endif}
+{$ifdef LOGSQLDB}
+  Log('<<<< Start transaction...');
+{$endif}
 end;
 
-function TtiDatabaseSQLDB.GetConnected: boolean;
+function TtiDatabaseSQLDB.GetConnected: Boolean;
 begin
   Result := FDatabase.Connected;
 end;
 
-procedure TtiDatabaseSQLDB.SetConnected(AValue: boolean);
+procedure TtiDatabaseSQLDB.SetConnected(AValue: Boolean);
 var
   lMessage: string;
 begin
   try
     if (not AValue) then
     begin
-      {$ifdef LOGSQLDB}Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);{$endif}
+      {$ifdef LOGSQLDB}
+      Log('Disconnecting from %s', [DatabaseName], lsConnectionPool);
+      {$endif}
       FDatabase.Connected := False;
       Exit; //==>
     end;
 
     FDatabase.DatabaseName := DatabaseName;
-    FDatabase.UserName := Username;
-    FDatabase.Password := Password;
+    FDatabase.UserName     := Username;
+    FDatabase.Password     := Password;
     FDatabase.Params.Values['user_name'] := UserName;
-    FDatabase.Params.Values['password']  := Password;
-    FDatabase.Connected := True;
+    FDatabase.Params.Values['password'] := Password;
+    FDatabase.Connected    := True;
   except
     // ToDo: Must come up with a better solution that this:
     //       Try several times before raising an exception.
@@ -330,12 +361,12 @@ end;
 
 procedure TtiDatabaseSQLDB.ReadMetaDataTables(AData: TtiDBMetaData);
 var
-  lQuery:    TtiQuery;
+  lQuery: TtiQuery;
   lMetaData: TtiDBMetaData;
-  lTable:    TtiDBMetaDataTable;
+  lTable: TtiDBMetaDataTable;
 begin
   lMetaData := (AData as TtiDBMetaData);
-  lQuery   := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery    := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -345,12 +376,12 @@ begin
         'SELECT RDB$RELATION_NAME as Table_Name ' +
         '  FROM RDB$RELATIONS ' +
         'WHERE ((RDB$SYSTEM_FLAG = 0) OR (RDB$SYSTEM_FLAG IS NULL)) ' +
-//        '  AND (RDB$VIEW_SOURCE IS NULL) ' +
+        //        '  AND (RDB$VIEW_SOURCE IS NULL) ' +
         'ORDER BY RDB$RELATION_NAME ';
       lQuery.Open;
       while not lQuery.EOF do
       begin
-        lTable     := TtiDBMetaDataTable.Create;
+        lTable      := TtiDBMetaDataTable.Create;
         lTable.Name := Trim(lQuery.FieldAsString['table_name']);
         lTable.ObjectState := posPK;
         lMetaData.Add(lTable);
@@ -368,11 +399,11 @@ end;
 
 procedure TtiDatabaseSQLDB.ReadMetaDataFields(AData: TtiDBMetaDataTable);
 var
-  lTableName:   string;
-  lQuery:       TtiQuery;
-  lTable:       TtiDBMetaDataTable;
-  lField:       TtiDBMetaDataField;
-  lFieldType:   integer;
+  lTableName: string;
+  lQuery: TtiQuery;
+  lTable: TtiDBMetaDataTable;
+  lField: TtiDBMetaDataField;
+  lFieldType: integer;
   lFieldLength: integer;
 const
   cIBField_LONG      = 8;
@@ -383,16 +414,15 @@ const
   cIBField_VARYING   = 37;
   cIBField_BLOB      = 261;
   cIBField_TEXT      = 14;
-
-{  cIBField_SHORT     = 7;
+  {  cIBField_SHORT     = 7;
   cIBField_QUAD      = 9;
   cIBField_FLOAT     = 10;
   cIBField_CSTRING   = 40;
   cIBField_BLOB_ID   = 45;}
 begin
-  lTable    := (AData as TtiDBMetaDataTable);
+  lTable     := (AData as TtiDBMetaDataTable);
   lTableName := UpperCase(lTable.Name);
-  lQuery    := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery     := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
     try
@@ -413,9 +443,9 @@ begin
       lQuery.Open;
       while not lQuery.EOF do
       begin
-        lField      := TtiDBMetaDataField.Create;
-        lField.Name := Trim(lQuery.FieldAsString['field_name']);
-        lFieldType  := lQuery.FieldAsInteger['field_type'];
+        lField       := TtiDBMetaDataField.Create;
+        lField.Name  := Trim(lQuery.FieldAsString['field_name']);
+        lFieldType   := lQuery.FieldAsInteger['field_type'];
         lFieldLength := lQuery.FieldAsInteger['field_length'];
 
         lField.Width := 0;
@@ -429,13 +459,12 @@ begin
           cIBField_VARYING,
           cIBField_TEXT:
           begin
-            lField.Kind := qfkString;
+            lField.Kind  := qfkString;
             lField.Width := lFieldLength;
           end;
           cIBField_BLOB:
           begin
-            Assert(
-              not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
+            Assert(not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
             if lQuery.FieldAsInteger['field_sub_type'] = 1 then
               lField.Kind := qfkLongString
             else
@@ -460,55 +489,34 @@ begin
   end;
 end;
 
-function TtiDatabaseSQLDB.FieldMetaDataToSQLCreate(
-  const AFieldMetaData: TtiDBMetaDataField): string;
+function TtiDatabaseSQLDB.FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string;
 var
   lFieldName: string;
 begin
   lFieldName := AFieldMetaData.Name;
   case AFieldMetaData.Kind of
     qfkString: Result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
-    qfkInteger: Result := 'Integer';
+    qfkInteger: Result    := 'Integer';
     //    qfkFloat: result := 'Decimal(10, 5)';
-    qfkFloat: Result  := 'DOUBLE PRECISION';
+    qfkFloat: Result      := 'DOUBLE PRECISION';
     // Just for new version of IB (6.x)
     // DATE holds only DATE without TIME...
-    qfkDateTime:  Result := 'TIMESTAMP';
+    qfkDateTime: Result   := 'TIMESTAMP';
     {$IFDEF BOOLEAN_CHAR_1}
-    qfkLogical: Result := 'Char(1) default ''F'' check(' +
+    qfkLogical: Result    := 'Char(1) default ''F'' check(' +
         lFieldName + ' in (''T'', ''F''))';
     {$ELSE}
-    qfkLogical: Result := 'VarChar(5) default ''FALSE'' check(' +
+    qfkLogical: Result    := 'VarChar(5) default ''FALSE'' check(' +
         lFieldName + ' in (''TRUE'', ''FALSE'')) ';
     {$ENDIF}
-    qfkBinary: Result := 'Blob sub_type 0';
+    qfkBinary: Result     := 'Blob sub_type 0';
     qfkLongString: Result := 'Blob sub_type 1';
     else
       raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
 end;
 
-class procedure TtiDatabaseSQLDB.CreateDatabase(
-  const ADatabaseName, AUserName, APassword: string);
-var
-  DB: TSQLConnection;
-begin
-  if (ADatabaseName <> '') or (AUserName <> '') or (APassword <> '') then
-    begin
-    DB:=CreateSQLConnection;
-    try
-      DB.DatabaseName := ADatabasename;
-      DB.UserName     := AUsername;
-      DB.Password     := APassword;
-      DB.CreateDB;
-    finally
-      DB.Free;
-    end;
-    end;
-end;
-
-class procedure TtiDatabaseSQLDB.DropDatabase(
-  const ADatabaseName, AUserName, APassword: string);
+class procedure TtiDatabaseSQLDB.CreateDatabase(const ADatabaseName, AUserName, APassword: string);
 var
   DB: TSQLConnection;
 begin
@@ -517,8 +525,26 @@ begin
     DB := CreateSQLConnection;
     try
       DB.DatabaseName := ADatabasename;
-      DB.UserName     := AUsername;
-      DB.Password     := APassword;
+      DB.UserName := AUsername;
+      DB.Password := APassword;
+      DB.CreateDB;
+    finally
+      DB.Free;
+    end;
+  end;
+end;
+
+class procedure TtiDatabaseSQLDB.DropDatabase(const ADatabaseName, AUserName, APassword: string);
+var
+  DB: TSQLConnection;
+begin
+  if (ADatabaseName <> '') or (AUserName <> '') or (APassword <> '') then
+  begin
+    DB := CreateSQLConnection;
+    try
+      DB.DatabaseName := ADatabasename;
+      DB.UserName := AUsername;
+      DB.Password := APassword;
       DB.DropDB;
     finally
       DB.Free;
@@ -526,19 +552,18 @@ begin
   end;
 end;
 
-class function TtiDatabaseSQLDB.DatabaseExists(
-  const ADatabaseName, AUserName, APassword: string): boolean;
+class function TtiDatabaseSQLDB.DatabaseExists(const ADatabaseName, AUserName, APassword: string): Boolean;
 var
   DB: TSQLConnection;
 begin
-  Result:=False;
+  Result := False;
   if (ADatabaseName <> '') or (AUserName <> '') or (APassword <> '') then
-    begin
+  begin
     DB := CreateSQLConnection;
     try
       DB.DatabaseName := ADatabaseName;
-      DB.UserName     := AUserName;
-      DB.Password     := APassword;
+      DB.UserName := AUserName;
+      DB.Password := APassword;
       try
         DB.Connected := True;
         Result := True;
@@ -550,10 +575,10 @@ begin
     finally
       DB.Free;
     end;
-    end;
+  end;
 end;
 
-function TtiDatabaseSQLDB.Test: boolean;
+function TtiDatabaseSQLDB.Test: Boolean;
 begin
   Result := False;
   Assert(False, 'Under construction');
@@ -561,17 +586,17 @@ end;
 
 function TtiDatabaseSQLDB.TIQueryClass: TtiQueryClass;
 begin
-  result:= TtiQuerySQLDB;
+  Result := TtiQuerySQLDB;
 end;
 
-function TtiDatabaseSQLDB.HasNativeLogicalType: boolean;
+function TtiDatabaseSQLDB.HasNativeLogicalType: Boolean;
 begin
-  Result:=True;
+  Result := True;
 end;
 
 function TtiPersistenceLayerSqldDB.GetQueryClass: TtiQueryClass;
 begin
-  result:= TtiQuerySqldb;
+  Result := TtiQuerySqldb;
 end;
 
 
