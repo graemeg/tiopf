@@ -9,6 +9,9 @@ unit tiQuerySqldb;
 
 {$mode objfpc}{$H+}
 
+{.$Define LOGSQLDB}
+
+
 interface
 
 uses
@@ -17,6 +20,7 @@ uses
   db,
   sqldb,
   tiQuery,
+  tiQueryDataset,
   tiObject,
   tiPersistenceLayers;
 
@@ -55,82 +59,35 @@ Type
     function    TIQueryClass: TtiQueryClass; override;
   end;
 
+
   { TtiQuerySQLDB }
 
-  TtiQuerySQLDB = class(TtiQuerySQL)
+  TtiQuerySQLDB = class(TtiQueryDataset)
   private
     FIBSQL: TSQLQuery;
     FbActive: boolean;
-    function  IBFieldKindToTIFieldKind(pDataType: TFieldType): TtiQueryFieldKind;
-    Procedure CheckPrepared;
     procedure Prepare;
   protected
-    function  GetFieldAsString(const AName: string): string; override;
-    function  GetFieldAsFloat(const AName: string): extended; override;
-    function  GetFieldAsBoolean(const AName: string): boolean; override;
-    function  GetFieldAsInteger(const AName: string): int64; override;
-    function  GetFieldAsDateTime(const AName: string): TDateTime; override;
-
-    function  GetFieldAsStringByIndex(AIndex: integer): string; override;
-    function  GetFieldAsFloatByIndex(AIndex: integer): extended; override;
-    function  GetFieldAsBooleanByIndex(AIndex: integer): boolean; override;
-    function  GetFieldAsIntegerByIndex(AIndex: integer): int64; override;
-    function  GetFieldAsDateTimeByIndex(AIndex: integer): TDateTime; override;
-    function  GetFieldIsNullByIndex(AIndex: integer): boolean; override;
-
+    Procedure CheckPrepared; override;
+    procedure SetActive(const AValue: boolean); override;
     function  GetSQL: TStrings; override;
     procedure SetSQL(const AValue: TStrings); override;
-    function  GetActive: boolean; override;
-    procedure SetActive(const AValue: boolean); override;
-    function  GetEOF: boolean; override;
-    function  GetParamAsString(const AName: string): string; override;
-    function  GetParamAsBoolean(const AName: string): boolean; override;
-    function  GetParamAsFloat(const AName: string): extended; override;
-    function  GetParamAsInteger(const AName: string): int64; override;
-    function  GetParamAsDateTime(const AName: string): TDateTime; override;
-    function  GetParamAsTextBLOB(const AName: string): string; override;
-    function  GetParamIsNull(const AName: string): Boolean; override;
-    procedure SetParamAsString(const AName, AValue: string); override;
-    procedure SetParamAsBoolean(const AName: string; const AValue: boolean); override;
-    procedure SetParamAsFloat(const AName: string; const AValue: extended); override;
-    procedure SetParamAsInteger(const AName: string; const AValue: int64); override;
-    procedure SetParamAsDateTime(const AName: string; const AValue: TDateTime); override;
-    procedure SetParamAsTextBLOB(const AName, AValue: string); override;
-    procedure SetParamIsNull(const AName: string; const AValue: Boolean); override;
-    function  GetFieldIsNull(const AName: string): boolean; override;
   public
     constructor Create; override;
     destructor  Destroy; override;
-    procedure   Open; override;
     procedure   Close; override;
-    procedure   Next; override;
     procedure   ExecSQL; override;
-
-    function    ParamCount: integer; override;
-    function    ParamName(AIndex: integer): string; override;
-
-    procedure   AssignParamFromStream(const AName: string; const AStream: TStream); override;
-    procedure   AssignParamToStream(const AName: string; const AStream: TStream); override;
-    procedure   AssignFieldAsStream(const AName: string; const AStream: TStream); override;
-    procedure   AssignFieldAsStreamByIndex(AIndex: integer; const AValue: TStream); override;
-    procedure   AssignParams(const AParams: TtiQueryParams; const AWhere: TtiQueryParams = nil); override;
 
     procedure   AttachDatabase(ADatabase: TtiDatabase); override;
     procedure   DetachDatabase; override;
     procedure   Reset; override;
 
-    function    FieldCount: integer; override;
-    function    FieldName(AIndex: integer): string; override;
-    function    FieldIndex(const AName: string): integer; override;
-    function    FieldKind(AIndex: integer): TtiQueryFieldKind; override;
-    function    FieldSize(AIndex: integer): integer; override;
     function    HasNativeLogicalType: boolean; override;
   end;
 
 
 implementation
 
-{$define LOGSQLDB}
 uses
   tiUtils
 {$ifdef LOGSQLDB}
@@ -143,16 +100,22 @@ uses
   ,Variants
  ;
 
+
+
 { TtiQuerySQLDB }
 
 constructor TtiQuerySQLDB.Create;
 begin
   inherited;
   FIBSQL := TSQLQuery.Create(nil);
+  Dataset:=FIBSQL;
+  Params:=FIBSQL.Params;
 end;
 
 destructor TtiQuerySQLDB.Destroy;
 begin
+  Params := Nil;
+  Dataset := Nil;
   FIBSQL.Free;
   inherited;
 end;
@@ -172,158 +135,11 @@ begin
 {$ifdef LOGSQLDB}Log('<<< TtiQuerySQLDB.ExecSQL');{$endif}
 end;
 
-function TtiQuerySQLDB.GetFieldAsBoolean(const AName: string): boolean;
-var
-  lsValue: string;
-begin
-  lsValue := Trim(upperCase(FIBSQL.FieldByName(UpperCase(AName)).AsString));
-  Result := (lsValue = 'T') or
-    (lsValue = 'TRUE') or
-    (lsValue = 'Y') or
-    (lsValue = 'YES') or
-    (lsValue = '1');
-end;
-
-function TtiQuerySQLDB.GetFieldAsDateTime(const AName: string): TDateTime;
-begin
-  Result := FIBSQL.FieldByName(UpperCase(AName)).AsDateTime;
-end;
-
-function TtiQuerySQLDB.GetFieldAsFloat(const AName: string): extended;
-begin
-  Result := FIBSQL.FieldByName(UpperCase(AName)).AsFloat;
-end;
-
-function TtiQuerySQLDB.GetFieldAsInteger(const AName: string): int64;
-begin
-  Result := FIBSQL.FieldByName(UpperCase(AName)).AsInteger;
-end;
-
-function TtiQuerySQLDB.GetFieldAsString(const AName: string): string;
-begin
-  Result := FIBSQL.FieldByName(UpperCase(AName)).AsString;
-end;
-
-function TtiQuerySQLDB.GetFieldAsStringByIndex(AIndex: integer): string;
-begin
-  Result := FIBSQL.Fields[AIndex].AsString;
-end;
-
-function TtiQuerySQLDB.GetFieldAsFloatByIndex(AIndex: integer): extended;
-begin
-  Result := FIBSQL.Fields[AIndex].AsFloat;
-end;
-
-function TtiQuerySQLDB.GetFieldAsBooleanByIndex(AIndex: integer): boolean;
-var
-  lsValue: string;
-begin
-  lsValue := Trim(FIBSQL.Fields[AIndex].AsString);
-  Result := (lsValue = 'T') or
-    (lsValue = 'TRUE') or
-    (lsValue = 'Y') or
-    (lsValue = 'YES') or
-    (lsValue = '1');
-end;
-
-function TtiQuerySQLDB.GetFieldAsIntegerByIndex(AIndex: integer): int64;
-begin
-  Result := FIBSQL.Fields[AIndex].AsInteger;
-end;
-
-function TtiQuerySQLDB.GetFieldAsDateTimeByIndex(AIndex: integer): TDateTime;
-begin
-  Result := FIBSQL.Fields[AIndex].AsDateTime;
-end;
-
-function TtiQuerySQLDB.GetFieldIsNullByIndex(AIndex: integer): boolean;
-begin
-  Result := FIBSQL.Fields[AIndex].IsNull;
-end;
-
-function TtiQuerySQLDB.GetActive: boolean;
-begin
-{$ifdef LOGSQLDB}Log('>>> TtiQuerySQLDB.GetActive');{$endif}
-  Result := FIBSQL.Active; //FbActive;
-{$ifdef LOGSQLDB}Log('<<< TtiQuerySQLDB.GetActive');{$endif}
-end;
-
-function TtiQuerySQLDB.GetEOF: boolean;
-begin
-{$ifdef LOGSQLDB}Log('>>> TtiQuerySQLDB.GetEOF');{$endif}
-  Result := FIBSQL.EOF;
-{$ifdef LOGSQLDB}Log('<<< TtiQuerySQLDB.GetEOF');{$endif}
-end;
-
-function TtiQuerySQLDB.GetParamAsBoolean(const AName: string): boolean;
-var
-  lValue: string;
-begin
-  lValue := FIBSQL.Params.ParamByName(UpperCase(AName)).AsString;
-{$IFDEF BOOLEAN_CHAR_1}
-  Result := SameText(lValue, 'T');
-{$ELSE}
-  Result := SameText(lValue, 'TRUE');
-{$ENDIF}// BOOLEAN_CHAR_1
-end;
-
-function TtiQuerySQLDB.GetParamAsDateTime(const AName: string): TDateTime;
-begin
-  Result := FIBSQL.Params.ParamByName(UpperCase(AName)).AsDateTime;
-end;
-
-function TtiQuerySQLDB.GetParamAsTextBLOB(const AName: string): string;
-begin
-  Result := FIBSQL.Params.ParamByName(UpperCase(AName)).AsString;
-end;
-
-function TtiQuerySQLDB.GetParamAsFloat(const AName: string): extended;
-begin
-  Result := FIBSQL.Params.ParamByName(UpperCase(AName)).AsFloat;
-end;
-
-function TtiQuerySQLDB.GetParamAsInteger(const AName: string): int64;
-begin
-  Result := FIBSQL.Params.ParamByName(UpperCase(AName)).AsInteger;
-end;
-
-function TtiQuerySQLDB.GetParamAsString(const AName: string): string;
-begin
-{$ifdef LOGSQLDB}Log('>>> TtiQuerySQLDB.GetParamAsString ('+AName+')');{$endif}
-  Result := FIBSQL.Params.ParamByName(UpperCase(AName)).AsString;
-{$ifdef LOGSQLDB}Log('<<< TtiQuerySQLDB.GetParamAsString ('+Aname+')');{$endif}
-end;
-
 function TtiQuerySQLDB.GetSQL: TStrings;
 begin
   Result := FIBSQL.SQL;
 end;
 
-procedure TtiQuerySQLDB.Next;
-begin
-  FIBSQL.Next;
-end;
-
-procedure TtiQuerySQLDB.Open;
-begin
-{$ifdef LOGSQLDB}
-  Log('>>> Open');
-  log('ParamCount: ' + IntToStr(ParamCount));
-{$endif}
-  CheckPrepared;
-  FIBSQL.Open;
-{$ifdef LOGSQLDB}Log('<<< Open');{$endif}
-end;
-
-function TtiQuerySQLDB.ParamCount: integer;
-begin
-  Result := FIBSQL.Params.Count;
-end;
-
-function TtiQuerySQLDB.ParamName(AIndex: integer): string;
-begin
-  Result := FIBSQL.Params[AIndex].Name;
-end;
 
 procedure TtiQuerySQLDB.SetActive(const AValue: boolean);
 begin
@@ -344,61 +160,6 @@ begin
 {$ifdef LOGSQLDB}log('<<< TtiQuerySQLDB.SetActive');{$endif}
 end;
 
-procedure TtiQuerySQLDB.SetParamAsBoolean(const AName: string; const AValue: boolean);
-begin
-  CheckPrepared;
-{$IFDEF BOOLEAN_CHAR_1}
-  if AValue then
-    FIBSQL.Params.ParamByName(UpperCase(AName)).AsString := 'T'
-  else
-    FIBSQL.Params.ParamByName(UpperCase(AName)).AsString := 'F';
-{$ELSE}
-  if AValue then
-    FIBSQL.Params.ParamByName(UpperCase(AName)).AsString := 'TRUE'
-  else
-    FIBSQL.Params.ParamByName(UpperCase(AName)).AsString := 'FALSE';
-{$ENDIF}// BOOLEAN_CHAR_1
-end;
-
-procedure TtiQuerySQLDB.SetParamAsDateTime(const AName: string;
-  const AValue: TDateTime);
-begin
-  CheckPrepared;
-  FIBSQL.Params.ParamByName(UpperCase(AName)).AsDateTime := AValue;
-end;
-
-procedure TtiQuerySQLDB.SetParamAsTextBLOB(const AName, AValue: string);
-begin
-{$ifdef LOGSQLDB}log('>>> TtiQuerySQLDB.SetParamAsTextBLOB');{$endif}
-  CheckPrepared;
-  FIBSQL.Params.ParamByName(UpperCase(AName)).AsString := AValue;
-{$ifdef LOGSQLDB}log('<<< TtiQuerySQLDB.SetParamAsTextBLOB');{$endif}
-end;
-
-procedure TtiQuerySQLDB.SetParamAsFloat(const AName: string; const AValue: extended);
-begin
-{$ifdef LOGSQLDB}log('>>> TtiQuerySQLDB.SetParamAsFloat');{$endif}
-  CheckPrepared;
-  FIBSQL.Params.ParamByName(UpperCase(AName)).AsFloat := AValue;
-{$ifdef LOGSQLDB}log('<<< TtiQuerySQLDB.SetParamAsFloat');{$endif}
-end;
-
-procedure TtiQuerySQLDB.SetParamAsInteger(const AName: string; const AValue: int64);
-begin
-{$ifdef LOGSQLDB}log('>>> TtiQuerySQLDB.SetParamAsInteger');{$endif}
-  CheckPrepared;
-  FIBSQL.Params.ParamByName(UpperCase(AName)).AsInteger := AValue;
-{$ifdef LOGSQLDB}log('<<< TtiQuerySQLDB.SetParamAsInteger');{$endif}
-end;
-
-procedure TtiQuerySQLDB.SetParamAsString(const AName, AValue: string);
-begin
-{$ifdef LOGSQLDB}log('>>> TtiQuerySQLDB.SetParamAsString');{$endif}
-  CheckPrepared;
-  FIBSQL.Params.ParamByName(UpperCase(AName)).AsString := AValue;
-{$ifdef LOGSQLDB}log('<<< TtiQuerySQLDB.SetParamAsString');{$endif}
-end;
-
 procedure TtiQuerySQLDB.SetSQL(const AValue: TStrings);
 begin
 {$ifdef LOGSQLDB}log('>>>> SetSQL: '+AValue.Text);{$endif}
@@ -407,7 +168,6 @@ begin
 end;
 
 procedure TtiQuerySQLDB.CheckPrepared;
-
 begin
 {$ifdef LOGSQLDB}Log('>>> TtiQuerySQLDB.CheckPrepared');{$endif}
   If Not FIBSQL.Prepared then
@@ -423,64 +183,6 @@ begin
   FIBSQL.Prepare;
 {$ifdef LOGSQLDB}Log('<<< TtiQuerySQLDB.Prepare');{$endif}
 end;
-
-procedure TtiQuerySQLDB.AssignParamFromStream(const AName: string;
-  const AStream: TStream);
-begin
-  Assert(AStream <> NIL, 'Stream not assigned');
-  AStream.Position := 0;
-  Prepare;
-  FIBSQL.Params.ParamByName(UpperCase(AName)).LoadFromStream(AStream, ftBlob);
-end;
-
-procedure TtiQuerySQLDB.AssignParamToStream(const AName: string;
-  const AStream: TStream);
-var
-  lBinData:          olevariant;
-  lDataPtr:          Pointer;
-  lHigh, lLow, lLen: integer;
-  lParameter:        TParam;
-begin
-  Assert(AStream <> NIL, 'Stream not assigned');
-  lParameter := FIBSQL.Params.ParamByName(UpperCase(AName));
-  lLow      := VarArrayLowBound(lParameter.Value, 1);
-  lHigh     := VarArrayHighBound(lParameter.Value, 1);
-  lLen      := lHigh - lLow + 1;
-  lBinData  := VarArrayCreate([0, lLen], varByte);
-  lBinData  := lParameter.Value;
-  lDataPtr  := VarArrayLock(lBinData);
-  try
-    AStream.WriteBuffer(lDataPtr^, lLen);
-  finally
-    VarArrayUnlock(lBinData);
-  end;
-
-{$Note  Please try this option of saving to a Stream as well }
-{
-  Assert(AStream <> nil, 'Stream not assigned');
-  AStream.Position := 0;
-  (FIBSQL.Params.ParamByName(UpperCase(AName)) as TBlobField).SaveToStream(AStream);
-  AStream.Position := 0;
-}
-end;
-
-procedure TtiQuerySQLDB.AssignFieldAsStream(const AName: string;
-  const AStream: TStream);
-begin
-  {$Note Look at AssignParamToStream if this doesn't work}
-  Assert(AStream <> NIL, 'Stream not assigned');
-  AStream.Position := 0;
-  (FIBSQL.FieldByName(UpperCase(AName)) as TBlobField).SaveToStream(AStream);
-end;
-
-procedure TtiQuerySQLDB.AssignFieldAsStreamByIndex(AIndex: integer;
-  const AValue: TStream);
-begin
-  Assert(AValue <> NIL, 'Stream not assigned');
-  AValue.Position := 0;
-  TBlobField(FIBSQL.Fields[AIndex]).SaveToStream(AValue);
-end;
-
 
 procedure TtiQuerySQLDB.AttachDatabase(ADatabase: TtiDatabase);
 begin
@@ -501,153 +203,10 @@ begin
   FIBSQL.Database   := nil;
 end;
 
-function TtiQuerySQLDB.FieldCount: integer;
-begin
-  Result := FIBSQL.FieldCount;
-end;
-
-function TtiQuerySQLDB.FieldName(AIndex: integer): string;
-begin
-  Result := FIBSQL.Fields[AIndex].Name;
-end;
-
 procedure TtiQuerySQLDB.Reset;
 begin
   Active := False;
   FIBSQL.SQL.Clear;
-end;
-
-function TtiQuerySQLDB.FieldIndex(const AName: string): integer;
-begin
-  Result := FIBSQL.FieldByName(UpperCase(AName)).Index;
-end;
-
-// -----------------------------------------------------------------------------
-// This code is cloned in TtiQueryBDEAbs - Looks like we need to abstract more
-// and introduce a TDataSet version of the TtiQuery
-// -----------------------------------------------------------------------------
-function TtiQuerySQLDB.FieldKind(AIndex: integer): TtiQueryFieldKind;
-var
-  lDataType: TFieldType;
-begin
-  lDataType := FIBSQL.Fields[AIndex].DataType;
-
-{ These are the available field types for a TDataSet descendant
-  TFieldType = (ftUnknown, ftString, ftSmallint, ftInteger, ftWord,
-    ftBoolean, ftFloat, ftCurrency, ftBCD, ftDate,  ftTime, ftDateTime,
-    ftBytes, ftVarBytes, ftAutoInc, ftBlob, ftMemo, ftGraphic, ftFmtMemo,
-    ftParadoxOle, ftDBaseOle, ftTypedBinary, ftCursor, ftFixedChar,
-    ftWideString, ftLargeint, ftADT, ftArray, ftReference,
-    ftDataSet, ftOraBlob, ftOraClob, ftVariant, ftInterface,
-    ftIDispatch, ftGuid, ftTimeStamp, ftFMTBcd);
-}
-  // These are the available TtiQueryFieldKind(s)
-  //  ,
-  //  qfkInteger,
-  //  qfkFloat,
-  //  qfkDateTime,
-  //  qfkLogical,
-  //  qfkBinary,
-  //  qfkMacro,
-  //  qfkLongString
-
-  case lDataType of
-    ftString, ftWideString: Result := qfkString;
-    ftSmallint, ftInteger, ftWord, ftLargeint: Result := qfkInteger;
-    ftBoolean: Result        := qfkLogical;
-    ftFloat, ftCurrency, ftBCD: Result := qfkFloat;
-    ftDate, ftTime, ftDateTime: Result := qfkDateTime;
-    ftBlob, ftGraphic, ftVarBytes: Result := qfkBinary;
-    ftMemo, ftFmtMemo: Result := qfkLongString;
-    else
-      raise Exception.Create('Invalid FIBSQL.Fields[ AIndex ].DataType <' +
-        GetEnumName(TypeInfo(TFieldType), Ord(lDataType)));
-  end;
-  //    ftUnknown,
-  //    ftBytes, ftVarBytes, ftAutoInc,
-  //    ftParadoxOle, ftDBaseOle, ftTypedBinary, ftCursor, ftFixedChar,
-  //    ftADT, ftArray, ftReference, ftDataSet, ftOraBlob, ftOraClob,
-  //    ftVariant, ftInterface, ftIDispatch, ftGuid
-end;
-
-{ -----------------------------------------------------------------------------
- This code is cloned in TtiQueryBDEAbs - Looks like we need to abstract more
- and introduce a TDataSet version of the TtiQuery
- -----------------------------------------------------------------------------}
-function TtiQuerySQLDB.IBFieldKindToTIFieldKind(pDataType: TFieldType): TtiQueryFieldKind;
-var
-  s: string;
-begin
-  case pDataType of
-    ftString,
-    ftWideString:     Result := qfkString;
-
-    ftSmallint,
-    ftInteger,
-    ftWord,
-    ftLargeint:       Result := qfkInteger;
-
-    ftBoolean:        Result := qfkLogical;
-
-    ftFloat,
-    ftCurrency,
-    ftBCD:            Result := qfkFloat;
-
-    ftDate,
-    ftTime,
-    ftDateTime:       Result := qfkDateTime;
-
-    ftBlob,
-    ftGraphic,
-    ftVarBytes:       Result := qfkBinary;
-
-    ftMemo,
-    ftFmtMemo:        Result := qfkLongString;
-  else
-    begin
-    s := GetEnumName(TypeInfo(TFieldType), Ord(pDataType));
-    raise Exception.Create('Invalid FIBSQL.Fields[ AIndex ].DataType <' +
-       s +
-//      GetEnumName(TypeInfo(TFieldType), Ord(pDataType)) +
-      '>');
-    end;
-  end;
-end;
-
-function TtiQuerySQLDB.FieldSize(AIndex: integer): integer;
-begin
-  if FieldKind(AIndex) in [qfkInteger, qfkFloat, qfkDateTime,
-    qfkLogical, qfkLongString] then
-    Result := 0
-  else
-    Result := FIBSQL.Fields[AIndex].Size;
-end;
-
-function TtiQuerySQLDB.GetParamIsNull(const AName: string): boolean;
-begin
-  Result := FIBSQL.Params.ParamByName(UpperCase(AName)).IsNull;
-end;
-
-procedure TtiQuerySQLDB.SetParamIsNull(const AName: string; const AValue: boolean);
-begin
-  if AValue then
-  begin
-    Prepare;
-    FIBSQL.Params.ParamByName(UpperCase(AName)).Value := Null;
-  end;
-end;
-
-function TtiQuerySQLDB.GetFieldIsNull(const AName: string): boolean;
-begin
-  Result := FIBSQL.FieldByName(UpperCase(AName)).IsNull;
-end;
-
-procedure TtiQuerySQLDB.AssignParams(const AParams: TtiQueryParams; const AWhere: TtiQueryParams = nil);
-begin
-  if AParams = NIL then
-    Exit;
-  Prepare;
-  inherited;
 end;
 
 function TtiQuerySQLDB.HasNativeLogicalType: boolean;
@@ -657,6 +216,7 @@ begin
   else
     Result:=TtiDatabaseSQLDB(Database).HasNativeLogicalType;
 end;
+
 
 { TtiDatabaseSQLDB }
 
@@ -822,13 +382,13 @@ const
   cIBField_TIME      = 13;
   cIBField_VARYING   = 37;
   cIBField_BLOB      = 261;
+  cIBField_TEXT      = 14;
 
-  cIBField_SHORT     = 7;
+{  cIBField_SHORT     = 7;
   cIBField_QUAD      = 9;
   cIBField_FLOAT     = 10;
-  cIBField_TEXT      = 14;
   cIBField_CSTRING   = 40;
-  cIBField_BLOB_ID   = 45;
+  cIBField_BLOB_ID   = 45;}
 begin
   lTable    := (AData as TtiDBMetaDataTable);
   lTableName := UpperCase(lTable.Name);
@@ -1013,6 +573,7 @@ function TtiPersistenceLayerSqldDB.GetQueryClass: TtiQueryClass;
 begin
   result:= TtiQuerySqldb;
 end;
+
 
 end.
 

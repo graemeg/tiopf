@@ -17,6 +17,8 @@ unit tiQuerySqldbIB;
 
 {$I tiDefines.inc}
 
+{.$Define LOGSQLDB}
+
 interface
 
 uses
@@ -25,12 +27,10 @@ uses
   ,sqldb
   ,IBConnection
   ,tiPersistenceLayers
-  ,tiQuerySqldb;
+  ,tiQuerySqldb
+  ;
 
 type
-
-  { TtiPersistenceLayerSqldIB }
-
   TtiPersistenceLayerSqldIB = class(TtiPersistenceLayerSqldDB)
   protected
     function GetPersistenceLayerName: string; override;
@@ -38,20 +38,18 @@ type
   public
     procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
-  { TtiDatabaseSQLDBIB }
 
-  TtiDatabaseSQLDBIB = Class(TtiDatabaseSQLDB)
+
+  TtiDatabaseSQLDBIB = class(TtiDatabaseSQLDB)
   protected
-    Class Function CreateSQLConnection : TSQLConnection; override;
-    function    FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string; override;
-    function    HasNativeLogicalType: boolean; override;
+    class function CreateSQLConnection: TSQLConnection; override;
+    function FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string; override;
+    function HasNativeLogicalType: Boolean; override;
   end;
-
 
 
 implementation
 
-{ $define LOGSQLDB}
 uses
 {$ifdef LOGSQLDB}
   tiLog,
@@ -62,61 +60,59 @@ uses
 
 { TtiPersistenceLayerSqldIB }
 
-procedure TtiPersistenceLayerSqldIB.AssignPersistenceLayerDefaults(
-  const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
+procedure TtiPersistenceLayerSqldIB.AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
 begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
-  APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistSqldbIB;
-  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
-  APersistenceLayerDefaults.Username:= 'SYSDBA';
-  APersistenceLayerDefaults.Password:= 'masterkey';
-  APersistenceLayerDefaults.CanDropDatabase:= True;
-  APersistenceLayerDefaults.CanCreateDatabase:= True;
-  APersistenceLayerDefaults.CanSupportMultiUser:= True;
-  APersistenceLayerDefaults.CanSupportSQL:= True;
+  APersistenceLayerDefaults.PersistenceLayerName := cTIPersistSqldbIB;
+  APersistenceLayerDefaults.DatabaseName      := CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
+  APersistenceLayerDefaults.Username          := 'SYSDBA';
+  APersistenceLayerDefaults.Password          := 'masterkey';
+  APersistenceLayerDefaults.CanDropDatabase   := True;
+  APersistenceLayerDefaults.CanCreateDatabase := True;
+  APersistenceLayerDefaults.CanSupportMultiUser := True;
+  APersistenceLayerDefaults.CanSupportSQL     := True;
 end;
 
 function TtiPersistenceLayerSqldIB.GetDatabaseClass: TtiDatabaseClass;
 begin
-  result:= TtiDatabaseSQLDBIB;
+  Result := TtiDatabaseSQLDBIB;
 end;
 
 function TtiPersistenceLayerSqldIB.GetPersistenceLayerName: string;
 begin
-  result:= cTIPersistSqldbIB;
+  Result := cTIPersistSqldbIB;
 end;
 
 
 { TtiDatabaseSQLDBIB }
 
-Class function TtiDatabaseSQLDBIB.CreateSQLConnection: TSQLConnection;
+class function TtiDatabaseSQLDBIB.CreateSQLConnection: TSQLConnection;
 begin
-  Result:=TIBConnection.Create(Nil);
-  TIBConnection(Result).Dialect:=3;
+  Result := TIBConnection.Create(nil);
+  TIBConnection(Result).Dialect := 3;
 end;
 
-function TtiDatabaseSQLDBIB.FieldMetaDataToSQLCreate(
-  const AFieldMetaData: TtiDBMetaDataField): string;
+function TtiDatabaseSQLDBIB.FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string;
 begin
-  If AFieldMetaData.Kind=qfkDateTime then
-    begin
+  if AFieldMetaData.Kind = qfkDateTime then
+  begin
     // Take into account dialect
     if TIBConnection(SQLConnection).Dialect <> 1 then
       Result := 'TIMESTAMP'
     else
       Result := 'Date';
-    end
+  end
   else
-    Result:=inherited FieldMetaDataToSQLCreate(AFieldMetaData);
+    Result := inherited FieldMetaDataToSQLCreate(AFieldMetaData);
 end;
 
-function TtiDatabaseSQLDBIB.HasNativeLogicalType: boolean;
+function TtiDatabaseSQLDBIB.HasNativeLogicalType: Boolean;
 begin
-  Result:=False;
+  Result := False;
 end;
+
 
 initialization
-
   GTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(
     TtiPersistenceLayerSqldIB);
 
@@ -125,3 +121,4 @@ finalization
     GTIOPFManager.PersistenceLayers.__UnRegisterPersistenceLayer(cTIPersistSqldbIB);
 
 end.
+

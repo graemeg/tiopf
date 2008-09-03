@@ -2,9 +2,10 @@
 <CONFIG>
   <Package Version="3">
     <Name Value="tiOPF"/>
+    <AddToProjectUsesSection Value="False"/>
     <Author Value="Graeme Geldenhuys"/>
     <CompilerOptions>
-      <Version Value="5"/>
+      <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../../Core/"/>
         <OtherUnitFiles Value="../../Core/;../../Options/"/>
@@ -16,9 +17,6 @@
           <AllowLabel Value="False"/>
         </SyntaxOptions>
       </Parsing>
-      <CodeGeneration>
-        <Generate Value="Faster"/>
-      </CodeGeneration>
       <Other>
         <WriteFPCLogo Value="False"/>
         <CustomOptions Value="-dLINK_CSVx
@@ -44,7 +42,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="53">
+    <Files Count="54">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -257,6 +255,10 @@
         <Filename Value="../../Core/tiFormMediator.pas"/>
         <UnitName Value="tiFormMediator"/>
       </Item53>
+      <Item54>
+        <Filename Value="../../Options/tiQueryDataset.pas"/>
+        <UnitName Value="tiQueryDataset"/>
+      </Item54>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="1">
