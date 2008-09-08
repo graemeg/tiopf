@@ -405,7 +405,7 @@ end;
 
 procedure TMediatorView.SetupGUIandObject;
 begin
-
+  // Does nothing by default
 end;
 
 procedure TMediatorView.SetListObject(const AValue: TtiObjectList);
