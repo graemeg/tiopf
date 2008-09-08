@@ -175,14 +175,12 @@ type
   end;
 
 
-  { Custom mediator that handles lists of objects.
-    Should move to tiBaseMediator }
+  { Custom mediator that handles lists of objects. }
   TCustomListMediator = class(TMediatorView)
   private
     FOnBeforeSetupField: TOnBeforeSetupField;
     FShowDeleted: Boolean;
     FMediatorList: TObjectList;
-//    FSelectedObject: TtiObject;
     FFieldsInfo: TtiMediatorFieldInfoList;
     function GetDisplayNames: string;
     function GetIsObserving: Boolean;
@@ -211,6 +209,7 @@ type
   public
     constructor Create; override;
     class function CompositeMediator: Boolean; override;
+    procedure HandleSelectionChanged; virtual; // Called from the GUI to trigger events
     property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
   published
     property OnBeforeSetupField: TOnBeforeSetupField read FOnBeforeSetupField write SetOnBeforeSetupField;
@@ -1035,6 +1034,11 @@ end;
 class function TCustomListMediator.CompositeMediator: Boolean;
 begin
   Result := True;
+end;
+
+procedure TCustomListMediator.HandleSelectionChanged;
+begin
+  // do nothing. Descendants can complete this if needed.
 end;
 
 procedure TCustomListMediator.ParseDisplayNames(const AValue: string);
