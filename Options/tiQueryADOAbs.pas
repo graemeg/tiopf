@@ -6,6 +6,7 @@ uses
   ,Classes
   ,Windows
   ,ADODb
+  ,tiQueryDataset
   ,DB
  ;
 
@@ -27,7 +28,7 @@ type
     property  Connection : TADOConnection read GetADOConnection;
     procedure SetConnected(AValue : boolean); override;
     function  GetConnected : boolean; override;
-    procedure SetupDBParams; virtual; 
+    procedure SetupDBParams; virtual;
     function  FieldDataTypeToTIQueryFieldKind(pDataType: TFieldType): TtiQueryFieldKind;
 
   public
@@ -46,7 +47,7 @@ type
 
   end;
 
-  TtiQueryADO = class(TtiQuerySQL)
+  TtiQueryADO = class(TtiQueryDataset)
   private
     FADOQuery : TADOQuery;
   {:FSQL is used as a private placeholder for converting the WideString version (in D2006+). Ref GetSQL}
@@ -54,24 +55,12 @@ type
     procedure DoOnChangeSQL(Sender: TObject);
   protected
 
-    function  GetFieldAsString(const AName: string): string    ; override;
-    function  GetFieldAsFloat(const AName: string): extended   ; override;
     function  GetFieldAsBoolean(const AName: string): boolean  ; override;
-    function  GetFieldAsInteger(const AName: string): Int64    ; override;
-    function  GetFieldAsDateTime(const AName: string):TDateTime; override;
-
-    function  GetFieldAsStringByIndex(AIndex: Integer): string    ; override;
-    function  GetFieldAsFloatByIndex(AIndex: Integer)  : extended; override;
     function  GetFieldAsBooleanByIndex(AIndex: Integer): boolean ; override;
-    function  GetFieldAsIntegerByIndex(AIndex: Integer): Int64   ; override;
-    function  GetFieldAsDateTimeByIndex(AIndex: Integer):TDateTime; override;
-    function  GetFieldIsNullByIndex(AIndex: Integer):Boolean      ; override;
 
     function  GetSQL: TStrings; override;
     procedure SetSQL(const AValue: TStrings); override;
-    function  GetActive: boolean; override;
     procedure SetActive(const AValue: boolean); override;
-    function  GetEOF: boolean; override;
     function  GetParamAsString(const AName: string): string; override;
     function  GetParamAsBoolean(const AName: string): boolean; override;
     function  GetParamAsFloat(const AName: string): extended;override;
@@ -85,14 +74,12 @@ type
 
     function  GetParamIsNull(const AName: String): Boolean; override;
     procedure SetParamIsNull(const AName: String; const AValue: Boolean); override;
-    function  GetFieldIsNull(const AName: string): Boolean; override;
 
   public
     constructor Create; override;
     destructor  Destroy; override;
     procedure   Open   ; override;
     procedure   Close  ; override;
-    procedure   Next   ; override;
     procedure   ExecSQL; override;
 
     function    ParamCount : integer; override;
@@ -100,18 +87,11 @@ type
 
     procedure   AssignParamToStream(  const AName : string;  const AValue : TStream); override;
     procedure   AssignParamFromStream(const AName : string;  const AValue : TStream); override;
-    procedure   AssignFieldAsStream(  const AName : string;  const AValue : TStream); override;
-    procedure   AssignFieldAsStreamByIndex(AIndex : integer; const AValue : TStream); override;
 
     procedure   AttachDatabase(ADatabase : TtiDatabase); override;
     procedure   DetachDatabase;  override;
     procedure   Reset; override;
 
-    function    FieldCount : integer; override;
-    function    FieldName(AIndex : integer): string; override;
-    function    FieldIndex(const AName : string): integer; override;
-    function    FieldKind(AIndex : integer): TtiQueryFieldKind; override;
-    function    FieldSize(AIndex : integer): integer; override;
     function    HasNativeLogicalType : boolean; override;
 
   end;
@@ -137,6 +117,7 @@ begin
   FADOQuery := TADOQuery.Create(nil);
   FADOQuery.CursorType := ctOpenForwardOnly;
   FADOQuery.CursorLocation := clUseServer;
+  Dataset:=FADOQuery;
   FSQL := TStringList.Create;
   FSQL.OnChange:= DoOnChangeSQL;
 end;
@@ -176,36 +157,6 @@ var
 begin
   lValue := FADOQuery.FieldByName(AName).Value;
   result := lValue = -1;
-end;
-
-function TtiQueryADO.GetFieldAsDateTime(const AName: string): TDateTime;
-begin
-  result := FADOQuery.FieldByName(AName).AsDateTime;
-end;
-
-function TtiQueryADO.GetFieldAsFloat(const AName: string): extended;
-begin
-  result := FADOQuery.FieldByName(AName).AsFloat;
-end;
-
-function TtiQueryADO.GetFieldAsInteger(const AName: string): Int64;
-begin
-  result := FADOQuery.FieldByName(AName).AsInteger;
-end;
-
-function TtiQueryADO.GetFieldAsString(const AName: string): string;
-begin
-  result := FADOQuery.FieldByName(AName).AsString;
-end;
-
-function TtiQueryADO.GetActive: boolean;
-begin
-  result := FADOQuery.Active;
-end;
-
-function TtiQueryADO.GetEOF: boolean;
-begin
-  result := FADOQuery.EOF;
 end;
 
 function TtiQueryADO.GetParamAsBoolean(const AName: string): boolean;
@@ -249,11 +200,6 @@ begin
     FSQL.OnChange:= DoOnChangeSQL;
   end;
   result := FSQL;
-end;
-
-procedure TtiQueryADO.Next;
-begin
-  FADOQuery.Next;
 end;
 
 procedure TtiQueryADO.Open;
@@ -348,16 +294,6 @@ begin
   FADOQuery.Parameters.ParamByName(AName).LoadFromStream(AValue, ftBlob);
 end;
 
-procedure TtiQueryADO.AssignFieldAsStream(const AName: string; const AValue: TStream);
-begin
-  // This does not look right, but it's the best I can do in the time available.
-  // DUnit tests pass, but then at the time of writing, we don't have any
-  // tests for 'real' binary data, just strings in a TStream.
-  // Updated 2005-05-17 ipk  NB qfkBinary field type mapped to 'image' in MS SQL
-  Assert(AValue <> nil, 'Stream not assigned');
-  AValue.Position := 0;
-  (FADOQuery.FieldByName(AName) as TBlobField).SaveToStream(AValue);
-end;
 
 procedure TtiQueryADO.AttachDatabase(ADatabase: TtiDatabase);
 var
@@ -386,26 +322,13 @@ begin
   FADOQuery.Connection := nil;
 end;
 
-function TtiQueryADO.FieldCount: integer;
-begin
-  result := FADOQuery.FieldCount;
-end;
 
-function TtiQueryADO.FieldName(AIndex: integer): string;
-begin
-  result := FADOQuery.Fields[AIndex].FieldName;
-end;
 
 procedure TtiQueryADO.Reset;
 begin
   Active := false;
   FADOQuery.SQL.Clear;
   FADOQuery.Parameters.Clear;
-end;
-
-function TtiQueryADO.FieldIndex(const AName: string): integer;
-begin
-  result := FADOQuery.FieldByName(AName).Index;
 end;
 
 constructor TtiDatabaseADOAbs.Create;
@@ -451,69 +374,6 @@ begin
   FInTransaction:= True;
 end;
 
-// This code is cloned in TtiQueryIB - Looks like we need to abstract more
-// and introduce a TDataSet version of the TtiQuery
-function TtiQueryADO.FieldKind(AIndex: integer): TtiQueryFieldKind;
-var
-  lDataType : TFieldType;
-begin
-  lDataType := FADOQuery.Fields[ AIndex ].DataType;
-
-  // These are the available field types for a TDataSet descendant
-//  TFieldType = (ftUnknown, ftString, ftSmallint, ftInteger, ftWord,
-//    ftBoolean, ftFloat, ftCurrency, ftBCD, ftDate, ftTime, ftDateTime,
-//    ftBytes, ftVarBytes, ftAutoInc, ftBlob, ftMemo, ftGraphic, ftFmtMemo,
-//    ftParadoxOle, ftDBaseOle, ftTypedBinary, ftCursor, ftFixedChar, ftWideString,
-//    ftLargeint, ftADT, ftArray, ftReference, ftDataSet, ftOraBlob, ftOraClob,
-//    ftVariant, ftInterface, ftIDispatch, ftGuid);
-
-  // These are the available TtiQueryFieldKind(s)
-//  ,
-//  qfkInteger,
-//  qfkFloat,
-//  qfkDateTime,
-//  qfkLogical,
-//  qfkBinary,
-//  qfkMacro,
-//  qfkLongString
-
-    case lDataType of
-    ftString, ftWideString :                    result := qfkString  ;
-    ftSmallint, ftInteger, ftWord, ftLargeint : result := qfkInteger ;
-    ftBoolean :                                 result := qfkLogical ;
-    ftFloat, ftCurrency, ftBCD :                result := qfkFloat   ;
-    ftDate, ftTime, ftDateTime :                result := qfkDateTime;
-    ftBlob, ftGraphic, ftVarBytes :             result := qfkBinary  ;
-    ftMemo, ftFmtMemo:                          result := qfkLongString;
-    {$ifdef DELPHI10ORABOVE}
-    ftWideMemo :                                result := qfkLongString;
-    {$endif}
-    else
-      raise Exception.Create('Invalid FADOQuery.Fields[ AIndex ].DataType <' +
-                      GetEnumName(TypeInfo(TFieldType), Ord(lDataType)));
-    end;
-//    ftUnknown,
-//    ftBytes, ftVarBytes, ftAutoInc,
-//    ftParadoxOle, ftDBaseOle, ftTypedBinary, ftCursor, ftFixedChar,
-//    ftADT, ftArray, ftReference, ftDataSet, ftOraBlob, ftOraClob,
-//    ftVariant, ftInterface, ftIDispatch, ftGuid
-
-end;
-
-function TtiQueryADO.FieldSize(AIndex: integer): integer;
-begin
-  case FieldKind(AIndex) of
-    qfkString    : result := FADOQuery.FieldDefs[ AIndex ].Size;
-    qfkLongString : result := 0;
-    qfkInteger   : result := 0;
-    qfkFloat     : result := 0;
-    qfkDateTime  : result := 0;
-    qfkBinary    : result := 0;
-    qfkLogical   : result := 0;
-  else
-    raise Exception.Create('Invalid field type');
-  end;
-end;
 
 function TtiQueryADO.GetParamIsNull(const AName: String): Boolean;
 begin
@@ -572,10 +432,6 @@ begin
   Connection.ConnectionString := ConnectionString;
 end;
 
-function TtiQueryADO.GetFieldIsNull(const AName: string): Boolean;
-begin
-  result := FADOQuery.FieldByName(AName).IsNull;
-end;
 
 // This function is cloned in tiQueryBDEAbs - must move it to a common location, but without pulling DB.pas into any packages where it is not required
 function TtiDatabaseADOAbs.FieldDataTypeToTIQueryFieldKind(pDataType : TFieldType): TtiQueryFieldKind;
@@ -646,15 +502,6 @@ begin
   Assert(false, 'DatabaseExists not implemented in ' + ClassName);
 end;
 
-procedure TtiQueryADO.AssignFieldAsStreamByIndex(AIndex: Integer;const AValue: TStream);
-begin
-  // This does not look right, but it's the best I can do in the time available.
-  // DUnit tests pass, but then at the time of writing, we don't have any
-  // tests for 'real' binary data, just strings in a TStream.
-  Assert(AValue <> nil, 'Stream not assigned');
-  AValue.Position := 0;
-  TBlobField(FADOQuery.Fields[AIndex]).SaveToStream(AValue);
-end;
 
 function TtiQueryADO.GetFieldAsBooleanByIndex(AIndex: Integer): boolean;
 var
@@ -662,31 +509,6 @@ var
 begin
   lValue := FADOQuery.Fields[AIndex].Value;
   result := lValue = -1;
-end;
-
-function TtiQueryADO.GetFieldAsDateTimeByIndex(AIndex: Integer): TDateTime;
-begin
-  result := FADOQuery.Fields[AIndex].AsDateTime;
-end;
-
-function TtiQueryADO.GetFieldAsFloatByIndex(AIndex: Integer): extended;
-begin
-  result := FADOQuery.Fields[AIndex].AsFloat;
-end;
-
-function TtiQueryADO.GetFieldAsIntegerByIndex(AIndex: Integer): Int64;
-begin
-  result := FADOQuery.Fields[AIndex].AsInteger;
-end;
-
-function TtiQueryADO.GetFieldAsStringByIndex(AIndex: Integer): string;
-begin
-  result := FADOQuery.Fields[AIndex].AsString;
-end;
-
-function TtiQueryADO.GetFieldIsNullByIndex(AIndex: Integer): Boolean;
-begin
-  result := FADOQuery.Fields[AIndex].IsNull;
 end;
 
 procedure TtiQueryADO.DoOnChangeSQL(Sender: TObject);
