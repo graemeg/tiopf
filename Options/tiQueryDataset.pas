@@ -8,9 +8,7 @@
 
 unit tiQueryDataset;
 
-{$ifdef fpc}
-{$mode objfpc}{$H+}
-{$endif}
+{$I tiDefines.inc}
 
 interface
 
