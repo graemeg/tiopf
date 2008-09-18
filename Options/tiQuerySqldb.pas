@@ -75,6 +75,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+    procedure Open; override;
     procedure Close; override;
     procedure ExecSQL; override;
 
@@ -116,6 +117,17 @@ begin
   Dataset := nil;
   FIBSQL.Free;
   inherited;
+end;
+
+procedure TtiQuerySQLDB.Open;
+begin
+{$ifdef LOGSQLDB}
+  Log('>>> TtiQuerySQLDB.Open');
+{$endif}
+  Active := True;
+{$ifdef LOGSQLDB}
+  Log('<<< TtiQuerySQLDB.Open');
+{$endif}
 end;
 
 procedure TtiQuerySQLDB.Close;
