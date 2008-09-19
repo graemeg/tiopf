@@ -42,8 +42,6 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure Open; override;
-    procedure Close; override;
     procedure ExecSQL; override;
 
     procedure AttachDatabase(ADatabase: TtiDatabase); override;
@@ -75,11 +73,6 @@ end;
 procedure TtiQueryDatasnap.CheckPrepared;
 begin
   // Always prepared
-end;
-
-procedure TtiQueryDatasnap.Close;
-begin
-  FQuery.Active := False;
 end;
 
 constructor TtiQueryDatasnap.Create;
@@ -136,11 +129,6 @@ end;
 function TtiQueryDatasnap.HasNativeLogicalType: Boolean;
 begin
   Result := True;
-end;
-
-procedure TtiQueryDatasnap.Open;
-begin
-  Active := True;
 end;
 
 procedure TtiQueryDatasnap.Reset;

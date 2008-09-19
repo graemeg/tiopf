@@ -9,6 +9,7 @@ unit tiQuerySqldb;
 
 {$mode objfpc}{$H+}
 
+{ For debug purposes only }
 {.$Define LOGSQLDB}
 
 
@@ -25,12 +26,11 @@ uses
   tiPersistenceLayers;
 
 type
-  { TtiPersistenceLayerSqldDB }
+
   TtiPersistenceLayerSqldDB = class(TtiPersistenceLayer)
     function GetQueryClass: TtiQueryClass; override;
   end;
 
-  { TtiDatabaseSQLDB }
 
   TtiDatabaseSQLDB = class(TtiDatabaseSQL)
   private
@@ -60,8 +60,6 @@ type
   end;
 
 
-  { TtiQuerySQLDB }
-
   TtiQuerySQLDB = class(TtiQueryDataset)
   private
     FIBSQL: TSQLQuery;
@@ -75,14 +73,10 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure Open; override;
-    procedure Close; override;
     procedure ExecSQL; override;
-
     procedure AttachDatabase(ADatabase: TtiDatabase); override;
     procedure DetachDatabase; override;
     procedure Reset; override;
-
     function HasNativeLogicalType: Boolean; override;
   end;
 
@@ -117,28 +111,6 @@ begin
   Dataset := nil;
   FIBSQL.Free;
   inherited;
-end;
-
-procedure TtiQuerySQLDB.Open;
-begin
-{$ifdef LOGSQLDB}
-  Log('>>> TtiQuerySQLDB.Open');
-{$endif}
-  Active := True;
-{$ifdef LOGSQLDB}
-  Log('<<< TtiQuerySQLDB.Open');
-{$endif}
-end;
-
-procedure TtiQuerySQLDB.Close;
-begin
-{$ifdef LOGSQLDB}
-  Log('>>> TtiQuerySQLDB.Close');
-{$endif}
-  Active := False;
-{$ifdef LOGSQLDB}
-  Log('<<< TtiQuerySQLDB.Close');
-{$endif}
 end;
 
 procedure TtiQuerySQLDB.ExecSQL;
@@ -388,7 +360,7 @@ begin
         'SELECT RDB$RELATION_NAME as Table_Name ' +
         '  FROM RDB$RELATIONS ' +
         'WHERE ((RDB$SYSTEM_FLAG = 0) OR (RDB$SYSTEM_FLAG IS NULL)) ' +
-        //        '  AND (RDB$VIEW_SOURCE IS NULL) ' +
+//        '  AND (RDB$VIEW_SOURCE IS NULL) ' +
         'ORDER BY RDB$RELATION_NAME ';
       lQuery.Open;
       while not lQuery.EOF do

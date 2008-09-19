@@ -10,6 +10,9 @@ unit tiQueryDataset;
 
 {$I tiDefines.inc}
 
+{ For debug purposes only }
+{.$DEFINE LOGQUERYDATASET}
+
 interface
 
 uses
@@ -34,6 +37,8 @@ type
     // General dataset methods.
     function GetActive: Boolean; override;
     function GetEOF: Boolean; override;
+    procedure Open; override;
+    procedure Close; override;
     procedure Next; override;
 
     // Called before parameters are accessed.
@@ -405,6 +410,28 @@ begin
   Result := FDataset.EOF;
 {$ifdef LOGQUERYDATASET}
   Log('<<< TtiQueryDataset.GetEOF');
+{$endif}
+end;
+
+procedure TtiQueryDataset.Open;
+begin
+{$ifdef LOGQUERYDATASET}
+  Log('>>> TtiQueryDataset.Open');
+{$endif}
+  Active := True;
+{$ifdef LOGQUERYDATASET}
+  Log('<<< TtiQueryDataset.Open');
+{$endif}
+end;
+
+procedure TtiQueryDataset.Close;
+begin
+{$ifdef LOGQUERYDATASET}
+  Log('>>> TtiQueryDataset.Close);
+{$endif}
+  Active := False;
+{$ifdef LOGQUERYDATASET}
+  Log('<<< TtiQueryDataset.Close');
 {$endif}
 end;
 
