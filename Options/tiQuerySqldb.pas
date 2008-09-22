@@ -139,9 +139,9 @@ begin
   if AValue then
   begin
     {$ifdef LOGSQLDB}
-    Log('Exec Query');
+    Log('Open Query');
     {$endif}
-    FIBSQL.ExecSQL;
+    FIBSQL.Open;
     FbActive := True;
   end
   else
