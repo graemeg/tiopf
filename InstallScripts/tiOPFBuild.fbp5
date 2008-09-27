@@ -837,7 +837,7 @@ p_delphi_version=2007
               <Property MultiValue="1" name="ReplacementText" type="string"><![CDATA[ ]]>
                 </Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="SearchString" type="string">%</Property>
+              <Property MultiValue="0" name="SearchString" type="string">%%</Property>
               <Property MultiValue="0" name="SourcePath" type="string">%report_unit_tests_d7%</Property>
               <Property name="Substitute" type="Boolean">False</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -878,7 +878,7 @@ p_delphi_version=2007
               <Property MultiValue="1" name="ReplacementText" type="string"><![CDATA[ ]]>
                 </Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="SearchString" type="string">%</Property>
+              <Property MultiValue="0" name="SearchString" type="string">%%</Property>
               <Property MultiValue="0" name="SourcePath" type="string">%report_unit_tests_d2006%</Property>
               <Property name="Substitute" type="Boolean">False</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -919,7 +919,7 @@ p_delphi_version=2007
               <Property MultiValue="1" name="ReplacementText" type="string"><![CDATA[ ]]>
                 </Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="SearchString" type="string">%</Property>
+              <Property MultiValue="0" name="SearchString" type="string">%%</Property>
               <Property MultiValue="0" name="SourcePath" type="string">%report_unit_tests_d2007%</Property>
               <Property name="Substitute" type="Boolean">False</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
