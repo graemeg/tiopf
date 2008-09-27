@@ -817,7 +817,7 @@ p_delphi_version=2007
               <Property MultiValue="0" name="DestinationFile" type="string"></Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="ExpandVarsWhenReplacing" type="Boolean">True</Property>
+              <Property name="ExpandVarsWhenReplacing" type="Boolean">False</Property>
               <Property name="FailMatchCount" type="Integer">1</Property>
               <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
               <Property MultiValue="0" name="FBVariable" type="string"></Property>
@@ -858,7 +858,7 @@ p_delphi_version=2007
               <Property MultiValue="0" name="DestinationFile" type="string"></Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="ExpandVarsWhenReplacing" type="Boolean">True</Property>
+              <Property name="ExpandVarsWhenReplacing" type="Boolean">False</Property>
               <Property name="FailMatchCount" type="Integer">1</Property>
               <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
               <Property MultiValue="0" name="FBVariable" type="string"></Property>
@@ -899,7 +899,7 @@ p_delphi_version=2007
               <Property MultiValue="0" name="DestinationFile" type="string"></Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="ExpandVarsWhenReplacing" type="Boolean">True</Property>
+              <Property name="ExpandVarsWhenReplacing" type="Boolean">False</Property>
               <Property name="FailMatchCount" type="Integer">1</Property>
               <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
               <Property MultiValue="0" name="FBVariable" type="string"></Property>
