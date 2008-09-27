@@ -807,11 +807,13 @@ p_delphi_version=2007
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             <Object Class="TFBTextFindAction" XMLID="{C1E7BE67-0925-420D-B27E-E16F69F4BB64}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace [ % ] with [   ]  in [ %report_unit_tests_d7% ]]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace reserved chars in d7 DUnit report]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property name="CaseSensitive" type="Boolean">False</Property>
+              <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace reserved chars in d7 DUnit report]]>
+                </Property>
               <Property MultiValue="0" name="DestinationFile" type="string"></Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
@@ -846,11 +848,13 @@ p_delphi_version=2007
               <Property name="WholeWords" type="Boolean">False</Property>
               </Object>
             <Object Class="TFBTextFindAction" XMLID="{F84ED209-6098-4D5B-9ACC-C18345C71CEC}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace [ % ] with [   ]  in [ %report_unit_tests_d2006% ]]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace reserved chars in d2006 DUnit report]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property name="CaseSensitive" type="Boolean">False</Property>
+              <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace reserved chars in d2006 DUnit report]]>
+                </Property>
               <Property MultiValue="0" name="DestinationFile" type="string"></Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
@@ -885,11 +889,13 @@ p_delphi_version=2007
               <Property name="WholeWords" type="Boolean">False</Property>
               </Object>
             <Object Class="TFBTextFindAction" XMLID="{C196E76D-98AE-47C2-B638-7F81C846BCA3}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace [ % ] with [   ]  in [ %report_unit_tests_d2007% ]]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace reserved chars in d2007 DUnit report]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property name="CaseSensitive" type="Boolean">False</Property>
+              <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace reserved chars in d2007 DUnit report]]>
+                </Property>
               <Property MultiValue="0" name="DestinationFile" type="string"></Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
