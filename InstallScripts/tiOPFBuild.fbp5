@@ -345,7 +345,7 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -434,6 +434,47 @@ p_delphi_version=7
                 <Property name="PutContentsInVar" type="Boolean">True</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                </Object>
+              <Object Class="TFBTextFindAction" XMLID="{971EA886-EF0D-4BA9-A530-496AA990124C}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace reserved chars in d7 DUnit report]]>
+                  </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="CaseSensitive" type="Boolean">False</Property>
+                <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace reserved chars in d7 DUnit report]]>
+                  </Property>
+                <Property MultiValue="0" name="DestinationFile" type="string"></Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="ExpandVarsWhenReplacing" type="Boolean">False</Property>
+                <Property name="FailMatchCount" type="Integer">1</Property>
+                <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
+                <Property MultiValue="0" name="FBVariable" type="string">report_unit_tests_d7</Property>
+                <Property name="FileSetCountAllMatches" type="Boolean">False</Property>
+                <Property MultiValue="0" name="FileSetName" type="string"></Property>
+                <Property name="IgnoreFailure" type="WordBool">True</Property>
+                <Property name="IsAction" type="Boolean">True</Property>
+                <Property name="IsBreakPoint" type="WordBool">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MatchRegExpr" type="Boolean">False</Property>
+                <Property name="MatchWildcards" type="Boolean">False</Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="PutCountIntoVar" type="string"></Property>
+                <Property name="ReplacementMode" type="TFBReplaceMode">trOriginalFile</Property>
+                <Property MultiValue="1" name="ReplacementText" type="string"><![CDATA[ ]]>
+                  </Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property MultiValue="0" name="SearchString" type="string">%%</Property>
+                <Property MultiValue="0" name="SourcePath" type="string"></Property>
+                <Property name="Substitute" type="Boolean">False</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="TextFindBehaviour" type="TTextFindBehaviour">tfDontFail</Property>
+                <Property name="UseFileSet" type="Boolean">False</Property>
+                <Property name="UseVariable" type="Boolean">True</Property>
+                <Property name="WholeLinesOnly" type="Boolean">False</Property>
+                <Property name="WholeWords" type="Boolean">False</Property>
                 </Object>
               <Object Class="TBuildScript" XMLID="{5E2E255D-7F67-46BE-9F71-305E7DF3C685}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
                 <Property MultiValue="0" name="Name" type="string">Condition</Property>
@@ -528,6 +569,47 @@ p_delphi_version=2006
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                 </Object>
+              <Object Class="TFBTextFindAction" XMLID="{B9DFA82C-D7F2-4F8D-9EE9-2C034E03DAED}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace reserved chars in d2006 DUnit report]]>
+                  </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="CaseSensitive" type="Boolean">False</Property>
+                <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace reserved chars in d2006 DUnit report]]>
+                  </Property>
+                <Property MultiValue="0" name="DestinationFile" type="string"></Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="ExpandVarsWhenReplacing" type="Boolean">False</Property>
+                <Property name="FailMatchCount" type="Integer">1</Property>
+                <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
+                <Property MultiValue="0" name="FBVariable" type="string">report_unit_tests_d2006</Property>
+                <Property name="FileSetCountAllMatches" type="Boolean">False</Property>
+                <Property MultiValue="0" name="FileSetName" type="string"></Property>
+                <Property name="IgnoreFailure" type="WordBool">True</Property>
+                <Property name="IsAction" type="Boolean">True</Property>
+                <Property name="IsBreakPoint" type="WordBool">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MatchRegExpr" type="Boolean">False</Property>
+                <Property name="MatchWildcards" type="Boolean">False</Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="PutCountIntoVar" type="string"></Property>
+                <Property name="ReplacementMode" type="TFBReplaceMode">trOriginalFile</Property>
+                <Property MultiValue="1" name="ReplacementText" type="string"><![CDATA[ ]]>
+                  </Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property MultiValue="0" name="SearchString" type="string">%%</Property>
+                <Property MultiValue="0" name="SourcePath" type="string"></Property>
+                <Property name="Substitute" type="Boolean">False</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="TextFindBehaviour" type="TTextFindBehaviour">tfDontFail</Property>
+                <Property name="UseFileSet" type="Boolean">False</Property>
+                <Property name="UseVariable" type="Boolean">True</Property>
+                <Property name="WholeLinesOnly" type="Boolean">False</Property>
+                <Property name="WholeWords" type="Boolean">False</Property>
+                </Object>
               <Object Class="TBuildScript" XMLID="{A83DB945-5898-46CC-B08C-A90CABF70C86}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
                 <Property MultiValue="0" name="Name" type="string">Condition</Property>
                 <Property MultiValue="1" name="Script" type="string"><![CDATA[prompt_build_with_d2006 = "1"]]>
@@ -620,6 +702,47 @@ p_delphi_version=2007
                 <Property name="PutContentsInVar" type="Boolean">True</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                </Object>
+              <Object Class="TFBTextFindAction" XMLID="{E2D07C28-7C06-416D-9EB5-21465BF4503B}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace reserved chars in d2007 DUnit report]]>
+                  </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="CaseSensitive" type="Boolean">False</Property>
+                <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace reserved chars in d2007 DUnit report]]>
+                  </Property>
+                <Property MultiValue="0" name="DestinationFile" type="string"></Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="ExpandVarsWhenReplacing" type="Boolean">False</Property>
+                <Property name="FailMatchCount" type="Integer">1</Property>
+                <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
+                <Property MultiValue="0" name="FBVariable" type="string">report_unit_tests_d2007</Property>
+                <Property name="FileSetCountAllMatches" type="Boolean">False</Property>
+                <Property MultiValue="0" name="FileSetName" type="string"></Property>
+                <Property name="IgnoreFailure" type="WordBool">True</Property>
+                <Property name="IsAction" type="Boolean">True</Property>
+                <Property name="IsBreakPoint" type="WordBool">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MatchRegExpr" type="Boolean">False</Property>
+                <Property name="MatchWildcards" type="Boolean">False</Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="PutCountIntoVar" type="string"></Property>
+                <Property name="ReplacementMode" type="TFBReplaceMode">trOriginalFile</Property>
+                <Property MultiValue="1" name="ReplacementText" type="string"><![CDATA[ ]]>
+                  </Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property MultiValue="0" name="SearchString" type="string">%%</Property>
+                <Property MultiValue="0" name="SourcePath" type="string"></Property>
+                <Property name="Substitute" type="Boolean">False</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="TextFindBehaviour" type="TTextFindBehaviour">tfDontFail</Property>
+                <Property name="UseFileSet" type="Boolean">False</Property>
+                <Property name="UseVariable" type="Boolean">True</Property>
+                <Property name="WholeLinesOnly" type="Boolean">False</Property>
+                <Property name="WholeWords" type="Boolean">False</Property>
                 </Object>
               <Object Class="TBuildScript" XMLID="{0E38D2A7-C12A-4A93-AEF0-BAE7291B8EC3}"><Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
                 <Property MultiValue="0" name="Name" type="string">Condition</Property>
@@ -786,148 +909,6 @@ p_delphi_version=2007
               <Property MultiValue="1" name="Script" type="string"><![CDATA[PROMPT_COMPILE_DEMOS = "1"]]>
                 </Property>
               <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
-              </Object>
-            </Object>
-          <Object Class="TGroupAction" XMLID="{3142B69F-39E7-4F59-BE73-FA453F426674}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-            <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Remove reserved characters from DUnit reports]]>
-              </Property>
-            <Property name="ActionTextColor" type="Cardinal">0</Property>
-            <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-            <Property MultiValue="1" name="Description" type="string"><![CDATA[Remove reserved characters from DUnit reports]]>
-              </Property>
-            <Property name="Enabled" type="WordBool">True</Property>
-            <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-            <Property name="IgnoreFailure" type="WordBool">False</Property>
-            <Property name="IsAction" type="Boolean">True</Property>
-            <Property name="IsBreakPoint" type="WordBool">False</Property>
-            <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-            <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">False</Property>
-            <Property name="PauseInterval" type="Cardinal">0</Property>
-            <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-            <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-            <Object Class="TFBTextFindAction" XMLID="{C1E7BE67-0925-420D-B27E-E16F69F4BB64}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace reserved chars in d7 DUnit report]]>
-                </Property>
-              <Property name="ActionTextColor" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="CaseSensitive" type="Boolean">False</Property>
-              <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace reserved chars in d7 DUnit report]]>
-                </Property>
-              <Property MultiValue="0" name="DestinationFile" type="string"></Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="ExpandVarsWhenReplacing" type="Boolean">False</Property>
-              <Property name="FailMatchCount" type="Integer">1</Property>
-              <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
-              <Property MultiValue="0" name="FBVariable" type="string"></Property>
-              <Property name="FileSetCountAllMatches" type="Boolean">False</Property>
-              <Property MultiValue="0" name="FileSetName" type="string"></Property>
-              <Property name="IgnoreFailure" type="WordBool">True</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MatchRegExpr" type="Boolean">False</Property>
-              <Property name="MatchWildcards" type="Boolean">False</Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="PutCountIntoVar" type="string"></Property>
-              <Property name="ReplacementMode" type="TFBReplaceMode">trOriginalFile</Property>
-              <Property MultiValue="1" name="ReplacementText" type="string"><![CDATA[ ]]>
-                </Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="SearchString" type="string">%%</Property>
-              <Property MultiValue="0" name="SourcePath" type="string">%report_unit_tests_d7%</Property>
-              <Property name="Substitute" type="Boolean">False</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property name="TextFindBehaviour" type="TTextFindBehaviour">tfDontFail</Property>
-              <Property name="UseFileSet" type="Boolean">False</Property>
-              <Property name="UseVariable" type="Boolean">False</Property>
-              <Property name="WholeLinesOnly" type="Boolean">False</Property>
-              <Property name="WholeWords" type="Boolean">False</Property>
-              </Object>
-            <Object Class="TFBTextFindAction" XMLID="{F84ED209-6098-4D5B-9ACC-C18345C71CEC}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace reserved chars in d2006 DUnit report]]>
-                </Property>
-              <Property name="ActionTextColor" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="CaseSensitive" type="Boolean">False</Property>
-              <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace reserved chars in d2006 DUnit report]]>
-                </Property>
-              <Property MultiValue="0" name="DestinationFile" type="string"></Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="ExpandVarsWhenReplacing" type="Boolean">False</Property>
-              <Property name="FailMatchCount" type="Integer">1</Property>
-              <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
-              <Property MultiValue="0" name="FBVariable" type="string"></Property>
-              <Property name="FileSetCountAllMatches" type="Boolean">False</Property>
-              <Property MultiValue="0" name="FileSetName" type="string"></Property>
-              <Property name="IgnoreFailure" type="WordBool">True</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MatchRegExpr" type="Boolean">False</Property>
-              <Property name="MatchWildcards" type="Boolean">False</Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="PutCountIntoVar" type="string"></Property>
-              <Property name="ReplacementMode" type="TFBReplaceMode">trOriginalFile</Property>
-              <Property MultiValue="1" name="ReplacementText" type="string"><![CDATA[ ]]>
-                </Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="SearchString" type="string">%%</Property>
-              <Property MultiValue="0" name="SourcePath" type="string">%report_unit_tests_d2006%</Property>
-              <Property name="Substitute" type="Boolean">False</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property name="TextFindBehaviour" type="TTextFindBehaviour">tfDontFail</Property>
-              <Property name="UseFileSet" type="Boolean">False</Property>
-              <Property name="UseVariable" type="Boolean">False</Property>
-              <Property name="WholeLinesOnly" type="Boolean">False</Property>
-              <Property name="WholeWords" type="Boolean">False</Property>
-              </Object>
-            <Object Class="TFBTextFindAction" XMLID="{C196E76D-98AE-47C2-B638-7F81C846BCA3}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace reserved chars in d2007 DUnit report]]>
-                </Property>
-              <Property name="ActionTextColor" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="CaseSensitive" type="Boolean">False</Property>
-              <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace reserved chars in d2007 DUnit report]]>
-                </Property>
-              <Property MultiValue="0" name="DestinationFile" type="string"></Property>
-              <Property name="Enabled" type="WordBool">True</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="ExpandVarsWhenReplacing" type="Boolean">False</Property>
-              <Property name="FailMatchCount" type="Integer">1</Property>
-              <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
-              <Property MultiValue="0" name="FBVariable" type="string"></Property>
-              <Property name="FileSetCountAllMatches" type="Boolean">False</Property>
-              <Property MultiValue="0" name="FileSetName" type="string"></Property>
-              <Property name="IgnoreFailure" type="WordBool">True</Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MatchRegExpr" type="Boolean">False</Property>
-              <Property name="MatchWildcards" type="Boolean">False</Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="PutCountIntoVar" type="string"></Property>
-              <Property name="ReplacementMode" type="TFBReplaceMode">trOriginalFile</Property>
-              <Property MultiValue="1" name="ReplacementText" type="string"><![CDATA[ ]]>
-                </Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="SearchString" type="string">%%</Property>
-              <Property MultiValue="0" name="SourcePath" type="string">%report_unit_tests_d2007%</Property>
-              <Property name="Substitute" type="Boolean">False</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property name="TextFindBehaviour" type="TTextFindBehaviour">tfDontFail</Property>
-              <Property name="UseFileSet" type="Boolean">False</Property>
-              <Property name="UseVariable" type="Boolean">False</Property>
-              <Property name="WholeLinesOnly" type="Boolean">False</Property>
-              <Property name="WholeWords" type="Boolean">False</Property>
               </Object>
             </Object>
           <Object Class="TGroupAction" XMLID="{A8C2638D-DA86-4529-B1E9-28DDC51E7828}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
