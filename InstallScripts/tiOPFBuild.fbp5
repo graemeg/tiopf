@@ -8602,32 +8602,9 @@ Comments=
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{98238883-1F67-4FF2-8DEF-77A139C98F18}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA[Build time:
-  %build_date%
-
-SVN revision:
-  %version_build%
-
-Summary:
-  Build errors - %fbignorederrors%
-  Delphi 7 - %report_long_d7%
-  Delphi 2006 - %report_long_d2006%
-  Delphi 2007 - %report_long_d2007%
-
-Details:
-
-Delphi 7
-%report_unit_tests_d7%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-Delphi 2006
-%report_unit_tests_d2006%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-Delphi 2007
-%report_unit_tests_d2007%]]>
+        <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA[Finalbuilder failed to expand DUnit report]]>
           </Property>
-        <Property name="IsMacro" type="Boolean">True</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_body</Property>
@@ -8771,6 +8748,38 @@ Delphi 2007
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">path_to_release_notes</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{A1F12E0E-4995-4A06-BABA-6A152C6134A0}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA[Build time:
+  %build_date%
+
+SVN revision:
+  %version_build%
+
+Summary:
+  Build errors - %fbignorederrors%
+  Delphi 7 - %report_long_d7%
+  Delphi 2006 - %report_long_d2006%
+  Delphi 2007 - %report_long_d2007%
+
+Details:
+
+Delphi 7
+%report_unit_tests_d7%
+* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Delphi 2006
+%report_unit_tests_d2006%
+* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Delphi 2007
+%report_unit_tests_d2007%]]>
+          </Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">report_body_backup</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       </Object>
