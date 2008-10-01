@@ -125,14 +125,14 @@ end;
 
 function TtiQueryDataset.GetFieldAsBoolean(const AName: string): Boolean;
 var
-  lsValue: string;
+  LValue: string;
 begin
-  lsValue := Trim(upperCase(FDataset.FieldByName(AName).AsString));
-  Result  := (lsValue = 'T') or
-    (lsValue = 'TRUE') or
-    (lsValue = 'Y') or
-    (lsValue = 'YES') or
-    (lsValue = '1');
+  LValue := UpperCase(Trim(FDataset.FieldByName(AName).AsString));
+  Result  := (LValue = 'T') or
+    (LValue = 'TRUE') or
+    (LValue = 'Y') or
+    (LValue = 'YES') or
+    (LValue = '1');
 end;
 
 function TtiQueryDataset.GetFieldAsDateTime(const AName: string): TDateTime;
@@ -224,14 +224,14 @@ end;
 
 function TtiQueryDataset.GetFieldAsBooleanByIndex(AIndex: integer): Boolean;
 var
-  lsValue: string;
+  LValue: string;
 begin
-  lsValue := Trim(FDataset.Fields[AIndex].AsString);
-  Result  := (lsValue = 'T') or
-    (lsValue = 'TRUE') or
-    (lsValue = 'Y') or
-    (lsValue = 'YES') or
-    (lsValue = '1');
+  LValue := UpperCase(Trim(FDataset.Fields[AIndex].AsString));
+  Result  := (LValue = 'T') or
+    (LValue = 'TRUE') or
+    (LValue = 'Y') or
+    (LValue = 'YES') or
+    (LValue = '1');
 end;
 
 
@@ -314,7 +314,7 @@ end;
 
 function TtiQueryDataset.FieldName(AIndex: integer): string;
 begin
-  Result := FDataset.Fields[AIndex].Name;
+  Result := FDataset.Fields[AIndex].FieldName;
 end;
 
 function TtiQueryDataset.GetActive: Boolean;
