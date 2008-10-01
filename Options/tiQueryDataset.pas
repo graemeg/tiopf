@@ -249,7 +249,7 @@ begin
   CheckPrepared;
   Assert(AStream <> nil, 'Stream not assigned');
   AStream.Position := 0;
-  FPArams.ParamByName(AName).LoadFromStream(AStream, ftBlob);
+  FParams.ParamByName(AName).LoadFromStream(AStream, ftBlob);
 end;
 
 procedure TtiQueryDataset.AssignParamToStream(const AName: string; const AStream: TStream);
@@ -260,7 +260,7 @@ var
   lParameter: TParam;
 begin
   Assert(AStream <> nil, 'Stream not assigned');
-  lParameter := FPArams.ParamByName(AName);
+  lParameter := FParams.ParamByName(AName);
   lLow       := VarArrayLowBound(lParameter.Value, 1);
   lHigh      := VarArrayHighBound(lParameter.Value, 1);
   lLen       := lHigh - lLow + 1;
@@ -279,7 +279,7 @@ begin
 {
   Assert(AStream <> nil, 'Stream not assigned');
   AStream.Position := 0;
-  (FPArams.ParamByName(AName) as TBlobField).SaveToStream(AStream);
+  (FParams.ParamByName(AName) as TBlobField).SaveToStream(AStream);
   AStream.Position := 0;
 }
 end;
@@ -460,12 +460,12 @@ end;
 
 function TtiQueryDataset.GetParamAsDateTime(const AName: string): TDateTime;
 begin
-  Result := FPArams.ParamByName(AName).AsDateTime;
+  Result := FParams.ParamByName(AName).AsDateTime;
 end;
 
 function TtiQueryDataset.GetParamAsTextBLOB(const AName: string): string;
 begin
-  Result := FPArams.ParamByName(AName).AsString;
+  Result := FParams.ParamByName(AName).AsString;
 end;
 
 function TtiQueryDataset.GetParamIsNull(const AName: string): Boolean;
@@ -475,12 +475,12 @@ end;
 
 function TtiQueryDataset.GetParamAsFloat(const AName: string): extended;
 begin
-  Result := FPArams.ParamByName(AName).AsFloat;
+  Result := FParams.ParamByName(AName).AsFloat;
 end;
 
 function TtiQueryDataset.GetParamAsInteger(const AName: string): int64;
 begin
-  Result := FPArams.ParamByName(AName).AsInteger;
+  Result := FParams.ParamByName(AName).AsInteger;
 end;
 
 function TtiQueryDataset.GetParamAsString(const AName: string): string;
@@ -488,7 +488,7 @@ begin
 {$ifdef LOGQUERYDATASET}
   Log('>>> TtiQueryDataset.GetParamAsString (' + AName + ')');
 {$endif}
-  Result := FPArams.ParamByName(AName).AsString;
+  Result := FParams.ParamByName(AName).AsString;
 {$ifdef LOGQUERYDATASET}
   Log('<<< TtiQueryDataset.GetParamAsString (' + Aname + ')');
 {$endif}
@@ -515,12 +515,12 @@ begin
     if AValue then
       FParams.ParamByName(AName).AsString := 'T'
     else
-      FPArams.ParamByName(AName).AsString := 'F';
+      FParams.ParamByName(AName).AsString := 'F';
   {$ELSE}
     if AValue then
-      FPArams.ParamByName(AName).AsString := 'TRUE'
+      FParams.ParamByName(AName).AsString := 'TRUE'
     else
-      FPArams.ParamByName(AName).AsString := 'FALSE';
+      FParams.ParamByName(AName).AsString := 'FALSE';
   {$ENDIF}
   end;
 end;
@@ -528,7 +528,7 @@ end;
 procedure TtiQueryDataset.SetParamAsDateTime(const AName: string; const AValue: TDateTime);
 begin
   CheckPrepared;
-  FPArams.ParamByName(AName).AsDateTime := AValue;
+  FParams.ParamByName(AName).AsDateTime := AValue;
 end;
 
 procedure TtiQueryDataset.SetParamAsTextBLOB(const AName, AValue: string);
@@ -537,7 +537,7 @@ begin
   log('>>> TtiQueryDataset.SetParamAsTextBLOB');
 {$endif}
   CheckPrepared;
-  FPArams.ParamByName(AName).AsString := AValue;
+  FParams.ParamByName(AName).AsString := AValue;
 {$ifdef LOGQUERYDATASET}
   log('<<< TtiQueryDataset.SetParamAsTextBLOB');
 {$endif}
@@ -555,7 +555,7 @@ begin
   log('>>> TtiQueryDataset.SetParamAsFloat');
 {$endif}
   CheckPrepared;
-  FPArams.ParamByName(AName).AsFloat := AValue;
+  FParams.ParamByName(AName).AsFloat := AValue;
 {$ifdef LOGQUERYDATASET}
   log('<<< TtiQueryDataset.SetParamAsFloat');
 {$endif}
@@ -567,7 +567,7 @@ begin
   log('>>> TtiQueryDataset.SetParamAsInteger');
 {$endif}
   CheckPrepared;
-  FPArams.ParamByName(AName).AsInteger := AValue;
+  FParams.ParamByName(AName).AsInteger := AValue;
 {$ifdef LOGQUERYDATASET}
   log('<<< TtiQueryDataset.SetParamAsInteger');
 {$endif}
@@ -579,7 +579,7 @@ begin
   log('>>> TtiQueryDataset.SetParamAsString');
 {$endif}
   CheckPrepared;
-  FPArams.ParamByName(AName).AsString := AValue;
+  FParams.ParamByName(AName).AsString := AValue;
 {$ifdef LOGQUERYDATASET}
   log('<<< TtiQueryDataset.SetParamAsString');
 {$endif}
