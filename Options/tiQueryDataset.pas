@@ -30,26 +30,18 @@ type
     FParams: TParams;
     procedure SetDataset(const AValue: TDataset);
     procedure SetParams(const AValue: TParams);
+
   protected
+
     property Dataset: TDataset read FDataset write SetDataset;
     property Params: TParams read FParams write SetParams;
 
     // General dataset methods.
     function GetActive: Boolean; override;
     function GetEOF: Boolean; override;
-    procedure Open; override;
-    procedure Close; override;
-    procedure Next; override;
 
     // Called before parameters are accessed.
     procedure CheckPrepared; virtual;
-
-    // Field Overrides
-    function FieldCount: integer; override;
-    function FieldName(AIndex: integer): string; override;
-    function FieldIndex(const AName: string): integer; override;
-    function FieldKind(AIndex: integer): TtiQueryFieldKind; override;
-    function FieldSize(AIndex: integer): integer; override;
 
     function GetFieldAsString(const AName: string): string; override;
     function GetFieldAsFloat(const AName: string): extended; override;
@@ -64,13 +56,6 @@ type
     function GetFieldAsDateTimeByIndex(AIndex: integer): TDateTime; override;
     function GetFieldIsNullByIndex(AIndex: integer): Boolean; override;
     function GetFieldIsNull(const AName: string): Boolean; override;
-
-    procedure AssignFieldAsStream(const AName: string; const AStream: TStream); override;
-    procedure AssignFieldAsStreamByIndex(AIndex: integer; const AValue: TStream); override;
-
-    // Parameter Overrides
-    function ParamCount: integer; override;
-    function ParamName(AIndex: integer): string; override;
 
     function GetParamAsString(const AName: string): string; override;
     function GetParamAsBoolean(const AName: string): Boolean; override;
@@ -88,9 +73,30 @@ type
     procedure SetParamAsTextBLOB(const AName, AValue: string); override;
     procedure SetParamIsNull(const AName: string; const AValue: Boolean); override;
 
+  public
+
+    procedure Open; override;
+    procedure Close; override;
+    procedure Next; override;
+
+    // Field Overrides
+    function FieldCount: integer; override;
+    function FieldName(AIndex: integer): string; override;
+    function FieldIndex(const AName: string): integer; override;
+    function FieldKind(AIndex: integer): TtiQueryFieldKind; override;
+    function FieldSize(AIndex: integer): integer; override;
+
+    // Parameter Overrides
+    function ParamCount: integer; override;
+    function ParamName(AIndex: integer): string; override;
+
+    procedure AssignFieldAsStream(const AName: string; const AStream: TStream); override;
+    procedure AssignFieldAsStreamByIndex(AIndex: integer; const AValue: TStream); override;
+
     procedure AssignParamFromStream(const AName: string; const AStream: TStream); override;
     procedure AssignParamToStream(const AName: string; const AStream: TStream); override;
     procedure AssignParams(const AParams: TtiQueryParams; const AWhere: TtiQueryParams = nil); override;
+
   end;
 
 
