@@ -42,6 +42,7 @@ type
     function    GetSQL: TStrings; override;
     procedure   SetSQL(const AValue: TStrings); override;
     procedure   SetActive(const AValue: boolean); override;
+    procedure   SetParamAsString(const AName, AValue: string); override;
 
   public
     constructor Create; override;
@@ -116,6 +117,18 @@ begin
     FQuery.Prepare;
 end;
 
+procedure TtiQueryBDE.SetParamAsString(const AName, AValue: string);
+var
+  lParam : TParam;
+begin
+  if not FQuery.Prepared then
+    FQuery.Prepare;
+  lParam := FQuery.ParamByName(AName);
+  if length(AValue) <= 255 then
+    lParam.AsString := AValue
+  else
+    lParam.AsMemo := AValue;
+end;
 
 procedure TtiQueryBDE.SetSQL(const AValue: TStrings);
 begin
