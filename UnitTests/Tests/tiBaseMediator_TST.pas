@@ -285,6 +285,9 @@ procedure TTestTIBaseMediator.TearDown;
 begin
   FreeAndNil(FTestA);
   FreeAndNil(FTestB);
+  FreeAndNil(FTestC);
+  FreeAndNil(FTestD);
+  FreeAndNil(FTestE);
   FreeAndNil(FComponentA);
   FreeAndNil(FComponentB);
   FreeAndNil(FComponentC);
