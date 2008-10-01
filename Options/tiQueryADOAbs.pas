@@ -47,9 +47,15 @@ type
 
   end;
 
+  // Don't use this class. Introduced here to gain access to PSGetParams.
+  TADOQueryLocal = class(TADOQuery)
+  public
+    function PSGetParams: TParams; override;
+  end;
+
   TtiQueryADO = class(TtiQueryDataset)
   private
-    FADOQuery : TADOQuery;
+    FADOQuery : TADOQueryLocal;
   {:FSQL is used as a private placeholder for converting the WideString version (in D2006+). Ref GetSQL}
     FSQL     : TStringList;
     procedure DoOnChangeSQL(Sender: TObject);
@@ -114,10 +120,11 @@ constructor TtiQueryADO.Create;
 begin
   inherited;
   tiWin32CoInitialize;
-  FADOQuery := TADOQuery.Create(nil);
+  FADOQuery := TADOQueryLocal.Create(nil);
   FADOQuery.CursorType := ctOpenForwardOnly;
   FADOQuery.CursorLocation := clUseServer;
   Dataset:=FADOQuery;
+  Params:= FADOQuery.PSGetParams;
   FSQL := TStringList.Create;
   FSQL.OnChange:= DoOnChangeSQL;
 end;
@@ -550,6 +557,13 @@ begin
     FADOConnection.Connected := LConnOpen;
   end;
   Result:= FADOConnection;
+end;
+
+{ TADOQueryLocal }
+
+function TADOQueryLocal.PSGetParams: TParams;
+begin
+  result:= inherited PSGetParams;
 end;
 
 end.
