@@ -90,9 +90,14 @@ const
   cCompilerName = 'Delphi 2007';
 {$ENDIF}
 
+{$IFDEF DELPHI12}
+  cPackageSuffix = '120';
+  cCompileName = 'Delphi 2009';
+{$ENDIF}
+
 {$IFDEF FPC}
   cPackageSuffix = '';
-  cCompilerName = 'FreePascal';
+  cCompilerName = 'Free Pascal';
 {$ENDIF}
 
   // Compression constants

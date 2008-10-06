@@ -369,6 +369,9 @@ begin
   tkChar,
   tkWChar,
   tkLString,
+  {$IFDEF DELPHI12}
+  tkUString,
+  {$ENDIF}
   {$IFDEF FPC}
   tkAString,
   {$ENDIF}
