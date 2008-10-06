@@ -360,10 +360,17 @@ begin
   else
     FIBSQL.Params.ByName(UpperCase(AName)).AsString := 'F';
 {$ELSE}
-  if AValue then
-    FIBSQL.Params.ByName(UpperCase(AName)).AsString := 'TRUE'
-  else
-    FIBSQL.Params.ByName(UpperCase(AName)).AsString := 'FALSE';
+  {$IFDEF BOOLEAN_NUM_1}
+    if AValue then
+      FIBSQL.ParamByName(AName).AsInt64 := 1
+    else
+      FIBSQL.ParamByName(AName).AsInt64 := 0;
+  {$ELSE}
+    if AValue then
+      FIBSQL.Params.ByName(UpperCase(AName)).AsString := 'TRUE'
+    else
+      FIBSQL.Params.ByName(UpperCase(AName)).AsString := 'FALSE';
+  {$ENDIF}
 {$ENDIF} // BOOLEAN_CHAR_1
 end;
 
