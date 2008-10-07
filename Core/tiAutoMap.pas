@@ -1865,11 +1865,11 @@ begin
     // Just a double check, the same as AcceptVisitor
     Assert((AVisited.ObjectState = posEmpty) or
       (AVisited.ObjectState = posPK),
-      'Object state on ' + Visited.ClassName +
+      'Object state on ' + AVisited.ClassName +
       ' not posEmpty or posPK it''s ' +
       AVisited.ObjectStateAsString);
     if (GTIOPFManager.ClassDBMappingMgr.Collections.IsCollection(
-      TtiClass(Visited.ClassType))) then
+      TtiClass(AVisited.ClassType))) then
       AVisited.ObjectState := posPK
     else
       AVisited.ObjectState := posClean;
