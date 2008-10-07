@@ -645,8 +645,7 @@ begin
     if (PropertyName <> '') then
       Result := (CompareText(N, PropertyName) = 0)
     else // Property kind should match. Note that property MUST be set to something.
-      Result := (APropInfo^.PropType^.Kind in PropertyTypes)// If PropertyName is set, it must match
-  ;
+      Result := (APropInfo^.PropType^.Kind in PropertyTypes); // If PropertyName is set, it must match
 end;
 
 function TMediatorDef.BetterMatch(M: TMediatorDef): Boolean;

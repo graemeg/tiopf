@@ -28,8 +28,6 @@ type
     FComponentB: TComponent;
     FComponentC: TComponent;
     FComponentD: TComponent;
-  private
-    procedure DoTestFindError;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -533,11 +531,6 @@ begin
   CheckSame(M1, M, 'Correct closest mediator found');
 end;
 
-procedure TTestTIBaseMediator.DoTestFindError;
-begin
-  gMediatorManager.FindDefFor(FTestA, FComponentB, 'BlaBla');
-end;
-
 procedure TTestTIBaseMediator.TestFind5;
 var
   M1, M2: TMediatorDef;
@@ -546,15 +539,7 @@ begin
   M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
   // Specifics
   M2 := gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsString');
-  try
-    DoTestFindError;
-    //  AssertException('Wrong property name',EPropertyError,@DoTestFindError);
-    Fail('Failed on 1');
-  except
-    on e: Exception do
-      CheckIs(e, EPropertyError, 'Wrong property name');
-  end;
-
+  CheckNull(gMediatorManager.FindDefFor(FTestA, FComponentB, 'Blabla'));
 end;
 
 procedure TTestTIBaseMediator.TestFind6;

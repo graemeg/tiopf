@@ -19,7 +19,7 @@ unit tiOIDCustom;
 
   GTIOPFManager.DefaultOIDGenerator := TtiOIDGeneratorCustom.Create;
 
-{
+}
 
 {$I tiDefines.inc}
 
