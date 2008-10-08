@@ -1,56 +1,22 @@
-{ $HDR$}
-
-{* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  The contents of this file are subject to the Mozilla Public
-  License Version 1.1 (the "License"); you may not use this file
-  except in compliance with the License. You may obtain a copy of
-  the License at http://www.mozilla.org/MPL/
-
-  Software distributed under the License is distributed on an "AS
-  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-  implied. See the License for the specific language governing
-  rights and limitations under the License.
-
-  Originally developed and released by Peter Hinrichsen, TechInsite Pty. Ltd.
-  as the tiOPF (TechInsite Object Persistence Framework)
-
-    23 Victoria Pde, Collingwood, Melbourne, Victoria 3066 Australia
-    PO Box 429, Abbotsford, Melbourne, Victoria 3067 Australia
-    Phone: +61 3 9419 6456 Fax:   +61 3 9419 1682
-    Latest source:   www.techinsite.com.au/tiOPF/Download.htm
-    Documentation:   www.techinsite.com.au/tiOPF/Doc/
-    Support:         www.techinsite.com.au/tiOPF/MailingList.htm
-
-  Please submit changes to tiOPF@techinsite.com.au
-
-  Purpose:
-    Use the Adapter Pattern [GoF 139] to wrapper the TIBQuery
-    component to allow a standard interface to be presented to the
-    application for all data access APIs.
-
-  Classes:
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
+unit tiQueryUIBAbs;
 
 {$I tiDefines.inc}
 
-Unit tiQueryUIBAbs;
-
-Interface
-Uses
+interface
+uses
   tiQuery
-  , SysUtils
-  , Classes
-  , jvUIB
-  , jvUIBase
-  , jvUIBLib
-  , tiAutoMap
-  , tiObject
-  , tiPersistenceLayers
-  , tiDBConnectionPool
+  ,SysUtils
+  ,Classes
+  ,jvUIB
+  ,jvUIBase
+  ,jvUIBLib
+  ,tiAutoMap
+  ,tiObject
+  ,tiPersistenceLayers
+  ,tiDBConnectionPool
   ;
 
-Type
+type
   EtiOPFDBException = Class(Exception)
     Constructor Create(Const pPerLayerName, pDatabaseName, pUserName, pPassword : String; Const pMessage : String = ''); Virtual;
   End;
@@ -660,15 +626,22 @@ Procedure TtiQueryUIBAbs.SetParamAsBoolean(Const psName : String; Const Value :
 Begin
   InternalPrepare;
 {$IFDEF BOOLEAN_CHAR_1}
-  If Value Then
+  if Value then
     FQuery.Params.ByNameAsString[UpperCase(psName)] := 'T'
-  Else
+  else
     FQuery.Params.ByNameAsString[UpperCase(psName)] := 'F';
 {$ELSE}
-  If Value Then
-    FQuery.Params.ByNameAsString[UpperCase(psName)] := 'TRUE'
-  Else
-    FQuery.Params.ByNameAsString[UpperCase(psName)] := 'FALSE';
+  {$IFDEF BOOLEAN_NUM_1}
+    if Value then
+      FQuery.Params.ByNameAsInt64[UpperCase(psName)] := 1
+    else
+      FQuery.Params.ByNameAsInt64[UpperCase(psName)] := 0;
+  {$ELSE}
+    if Value then
+      FQuery.Params.ByNameAsString[UpperCase(psName)] := 'TRUE'
+    else
+      FQuery.Params.ByNameAsString[UpperCase(psName)] := 'FALSE';
+  {$ENDIF}
 {$ENDIF} // BOOLEAN_CHAR_1
 End;
 
