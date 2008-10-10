@@ -1,0 +1,61 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TAddressTypeListForm','FORMDATA',[
+  'TPF0'#20'TAddressTypeListForm'#19'AddressTypeListForm'#4'Left'#3#135#1#6'Hei'
+  +'ght'#3#229#0#3'Top'#3#200#0#5'Width'#3#128#1#11'HelpContext'#2#0#5'Align'#7
+  +#6'alNone'#14'AllowDropFiles'#8#8'AutoSize'#8#11'BorderIcons'#11#12'biSystem'
+  +'Menu'#10'biMinimize'#10'biMaximize'#0#11'BorderStyle'#7#10'bsSizeable'#7'Ca'
+  +'ption'#6#18'Address types list'#28'ChildSizing.LeftRightSpacing'#2#0#28'Chi'
+  +'ldSizing.TopBottomSpacing'#2#0#29'ChildSizing.HorizontalSpacing'#2#0#27'Chi'
+  +'ldSizing.VerticalSpacing'#2#0#27'ChildSizing.ControlsPerLine'#2#0#12'Client'
+  +'Height'#3#229#0#11'ClientWidth'#3#128#1#8'DockSite'#8#8'DragKind'#7#6'dkDra'
+  +'g'#8'DragMode'#7#8'dmManual'#11'Font.Height'#2#0#10'Font.Style'#11#0#9'Form'
+  +'Style'#7#8'fsNormal'#10'ParentFont'#8#8'Position'#7#10'poDesigned'#13'ShowI'
+  +'nTaskBar'#7#9'stDefault'#14'UseDockManager'#8#10'LCLVersion'#6#6'0.9.25'#11
+  +'WindowState'#7#8'wsNormal'#0#7'TButton'#4'BAdd'#4'Left'#2#8#6'Height'#2#25#3
+  +'Top'#2#10#5'Width'#2'K'#11'HelpContext'#2#0#5'Align'#7#6'alNone'#8'AutoSize'
+  +#8#18'BorderSpacing.Left'#2#0#17'BorderSpacing.Top'#2#0#19'BorderSpacing.Rig'
+  +'ht'#2#0#20'BorderSpacing.Bottom'#2#0#20'BorderSpacing.Around'#2#0'!BorderSp'
+  +'acing.CellAlignHorizontal'#7#7'ccaFill'#31'BorderSpacing.CellAlignVertical'
+  +#7#7'ccaFill'#6'Cancel'#8#7'Caption'#6#4'&Add'#7'Default'#8#10'DragCursor'#7
+  +#6'crDrag'#8'DragMode'#7#8'dmManual'#11'Font.Height'#2#0#10'Font.Style'#11#0
+  +#11'ModalResult'#2#0#7'OnClick'#7#9'BAddClick'#10'ParentFont'#8#8'TabOrder'#2
+  +#0#0#0#7'TButton'#5'BEdit'#4'Left'#2'`'#6'Height'#2#25#3'Top'#2#10#5'Width'#2
+  +'K'#11'HelpContext'#2#0#5'Align'#7#6'alNone'#8'AutoSize'#8#18'BorderSpacing.'
+  +'Left'#2#0#17'BorderSpacing.Top'#2#0#19'BorderSpacing.Right'#2#0#20'BorderSp'
+  +'acing.Bottom'#2#0#20'BorderSpacing.Around'#2#0'!BorderSpacing.CellAlignHori'
+  +'zontal'#7#7'ccaFill'#31'BorderSpacing.CellAlignVertical'#7#7'ccaFill'#6'Can'
+  +'cel'#8#7'Caption'#6#5'&Edit'#7'Default'#8#10'DragCursor'#7#6'crDrag'#8'Drag'
+  +'Mode'#7#8'dmManual'#11'Font.Height'#2#0#10'Font.Style'#11#0#11'ModalResult'
+  +#2#0#7'OnClick'#7#10'BEditClick'#10'ParentFont'#8#8'TabOrder'#2#1#0#0#7'TBut'
+  +'ton'#7'BDelete'#4'Left'#3#184#0#6'Height'#2#25#3'Top'#2#10#5'Width'#2'K'#11
+  +'HelpContext'#2#0#5'Align'#7#6'alNone'#8'AutoSize'#8#18'BorderSpacing.Left'#2
+  +#0#17'BorderSpacing.Top'#2#0#19'BorderSpacing.Right'#2#0#20'BorderSpacing.Bo'
+  +'ttom'#2#0#20'BorderSpacing.Around'#2#0'!BorderSpacing.CellAlignHorizontal'#7
+  +#7'ccaFill'#31'BorderSpacing.CellAlignVertical'#7#7'ccaFill'#6'Cancel'#8#7'C'
+  +'aption'#6#7'&Delete'#7'Default'#8#10'DragCursor'#7#6'crDrag'#8'DragMode'#7#8
+  +'dmManual'#11'Font.Height'#2#0#10'Font.Style'#11#0#11'ModalResult'#2#0#7'OnC'
+  +'lick'#7#12'BDeleteClick'#10'ParentFont'#8#8'TabOrder'#2#2#0#0#11'TStringGri'
+  +'d'#13'GAddressTypes'#4'Left'#2#8#6'Height'#3#136#0#3'Top'#2'0'#5'Width'#3'p'
+  +#1#11'HelpContext'#2#0#5'Align'#7#6'alNone'#11'AutoAdvance'#7#7'aaRight'#15
+  +'AutoFillColumns'#8#18'BorderSpacing.Left'#2#0#17'BorderSpacing.Top'#2#0#19
+  +'BorderSpacing.Right'#2#0#20'BorderSpacing.Bottom'#2#0#20'BorderSpacing.Arou'
+  +'nd'#2#0'!BorderSpacing.CellAlignHorizontal'#7#7'ccaFill'#31'BorderSpacing.C'
+  +'ellAlignVertical'#7#7'ccaFill'#11'BorderStyle'#7#8'bsSingle'#8'ColCount'#2#5
+  +#15'DefaultColWidth'#2'@'#10'DragCursor'#7#6'crDrag'#8'DragKind'#7#6'dkDrag'
+  +#8'DragMode'#7#8'dmManual'#10'FixedColor'#7#9'clBtnFace'#9'FixedCols'#2#0#9
+  +'FixedRows'#2#1#4'Flat'#8#11'Font.Height'#2#0#10'Font.Style'#11#0#13'GridLin'
+  +'eWidth'#2#1#14'HeaderHotZones'#11#11'gzFixedCols'#0#15'HeaderPushZones'#11
+  +#11'gzFixedCols'#0#7'Options'#11#15'goFixedVertLine'#15'goFixedHorzLine'#10
+  +'goVertLine'#10'goHorzLine'#13'goRangeSelect'#14'goSmoothScroll'#0#8'RowCoun'
+  +'t'#2#5#10'ScrollBars'#7#10'ssAutoBoth'#8'TabOrder'#2#3#16'TitleFont.Height'
+  +#2#0#15'TitleFont.Style'#11#0#10'TitleStyle'#7#9'tsLazarus'#14'UseXORFeature'
+  +'s'#8#0#0#7'TButton'#6'BClose'#4'Left'#3'('#1#6'Height'#2#25#3'Top'#3#192#0#5
+  +'Width'#2'K'#11'HelpContext'#2#0#5'Align'#7#6'alNone'#8'AutoSize'#8#18'Borde'
+  +'rSpacing.Left'#2#0#17'BorderSpacing.Top'#2#0#19'BorderSpacing.Right'#2#0#20
+  +'BorderSpacing.Bottom'#2#0#20'BorderSpacing.Around'#2#0'!BorderSpacing.CellA'
+  +'lignHorizontal'#7#7'ccaFill'#31'BorderSpacing.CellAlignVertical'#7#7'ccaFil'
+  +'l'#6'Cancel'#8#7'Caption'#6#6'&Close'#7'Default'#8#10'DragCursor'#7#6'crDra'
+  +'g'#8'DragMode'#7#8'dmManual'#11'Font.Height'#2#0#10'Font.Style'#11#0#11'Mod'
+  +'alResult'#2#1#10'ParentFont'#8#8'TabOrder'#2#4#0#0#0
+]);

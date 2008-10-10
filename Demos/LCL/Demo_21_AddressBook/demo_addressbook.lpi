@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="/"/>
+    <Version Value="6"/>
+    <General>
+      <Flags>
+        <SaveOnlyProjectUnits Value="True"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=""/>
+      <Title Value="demo_addressbook"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="tiopfLCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="11">
+      <Unit0>
+        <Filename Value="demo_addressbook.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="demo_addressbook"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="frmmain.pp"/>
+        <ComponentName Value="MainForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="frmmain.lrs"/>
+        <UnitName Value="frmmain"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="model.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="model"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="contactmanager.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="contactmanager"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="frmeditcontact.pp"/>
+        <ComponentName Value="ContactEditForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="frmeditcontact.lrs"/>
+        <UnitName Value="frmeditcontact"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="frmeditaddress.pp"/>
+        <ComponentName Value="EditAddressForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="frmeditaddress.lrs"/>
+        <UnitName Value="frmEditAddress"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="frmcitylist.pp"/>
+        <ComponentName Value="CityListForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="frmcitylist.lrs"/>
+        <UnitName Value="frmCityList"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="frmeditcity.pp"/>
+        <ComponentName Value="EditCityForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="frmeditcity.lrs"/>
+        <UnitName Value="frmeditcity"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="frmcountrylist.pp"/>
+        <ComponentName Value="CountryListForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="frmcountrylist.lrs"/>
+        <UnitName Value="frmCountryList"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="frmeditcountry.pp"/>
+        <ComponentName Value="EditCountryForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="frmeditcountry.lrs"/>
+        <UnitName Value="frmeditcountry"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="frmaddresstypelist.pp"/>
+        <ComponentName Value="AddressTypeListForm"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <ResourceFilename Value="frmaddresstypelist.lrs"/>
+        <UnitName Value="frmAddressTypeList"/>
+      </Unit10>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="8"/>
+    <SearchPaths>
+      <Libraries Value="/opt/gnome/lib64/"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CustomOptions Value="-FUunits"/>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+</CONFIG>
