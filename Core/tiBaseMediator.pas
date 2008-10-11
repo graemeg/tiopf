@@ -117,6 +117,8 @@ type
   TSubjectClass = class of TtiObject;
 
 
+  { TtiMediatorFieldInfo }
+
   TtiMediatorFieldInfo = class(TCollectionItem)
   private
     FWidth: integer;
@@ -124,6 +126,7 @@ type
     FPropName: string;
     FAlign: TAlignment;
     FOrigStyle: Boolean;
+    function GetCaption: string;
   protected
     function GetAsString: string; virtual;
     procedure SetAsString(const AValue: string); virtual;
@@ -132,12 +135,14 @@ type
     // Setting this will parse everything.
     property AsString: string read GetAsString write SetAsString;
   published
-    property Caption: string read FCaption write FCaption;
+    property Caption: string read GetCaption write FCaption;
     property PropName: string read FPropName write FPropName;
     property FieldWidth: integer read FWidth write FWidth;
     property Alignment: TAlignment read FAlign write FAlign default taLeftJustify;
   end;
 
+
+  { TtiMediatorFieldInfoList }
 
   TtiMediatorFieldInfoList = class(TCollection)
   private
@@ -145,7 +150,10 @@ type
     function GetI(Index: integer): TtiMediatorFieldInfo;
     procedure SetI(Index: integer; const AValue: TtiMediatorFieldInfo);
   public
-    function AddFieldInfo: TtiMediatorFieldInfo;
+    function AddFieldInfo: TtiMediatorFieldInfo; overload;
+    function AddFieldInfo (Const APropName : String; AFieldWidth : Integer) : TtiMediatorFieldInfo; overload;
+    function AddFieldInfo (Const APropName,ACaption : String; AFieldWidth : Integer) : TtiMediatorFieldInfo; overload;
+    function AddFieldInfo (Const APropName,ACaption : String; AFieldWidth : Integer; AAlignment : TAlignment) : TtiMediatorFieldInfo; overload;
     property FieldInfo[Index: integer]: TtiMediatorFieldInfo read GetI write SetI; default;
     property AsString: string read GetAsString;
   end;
@@ -773,6 +781,13 @@ const
 
 { TtiMediatorFieldInfo }
 
+function TtiMediatorFieldInfo.GetCaption: string;
+begin
+  Result:=FCaption;
+  if Result='' then
+    Result:=FPropName;
+end;
+
 function TtiMediatorFieldInfo.GetAsString: string;
 begin
   if FOrigStyle then
@@ -863,6 +878,29 @@ end;
 function TtiMediatorFieldInfoList.AddFieldInfo: TtiMediatorFieldInfo;
 begin
   Result := Add as TtiMediatorFieldInfo;
+end;
+
+function TtiMediatorFieldInfoList.AddFieldInfo(const APropName: String;
+  AFieldWidth: Integer): TtiMediatorFieldInfo;
+begin
+  Result:=AddFieldInfo();
+  Result.PropName:=APropName;
+  Result.FieldWidth:=AFieldWidth;
+end;
+
+function TtiMediatorFieldInfoList.AddFieldInfo(const APropName,
+  ACaption: String; AFieldWidth: Integer): TtiMediatorFieldInfo;
+begin
+  Result:=AddFieldInfo(APropName,AFieldWidth);
+  Result.Caption:=ACaption;
+end;
+
+function TtiMediatorFieldInfoList.AddFieldInfo(const APropName,
+  ACaption: String; AFieldWidth: Integer; AAlignment: TAlignment
+  ): TtiMediatorFieldInfo;
+begin
+  Result:=AddFieldInfo(APropName,ACaption,AFieldWidth);
+  Result.Alignment:=AAlignment;
 end;
 
 

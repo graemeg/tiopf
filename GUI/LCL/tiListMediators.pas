@@ -329,7 +329,6 @@ begin
     if Assigned(OnBeforeSetupField) then
       OnBeforeSetupField(FModel, lMemberName, lValue);
     FView.SubItems.Add(lValue);
-    writeln('SubItems.Add for ', lMemberName, ' with value <', lValue, '>');
   end;
 end;
 
@@ -465,16 +464,19 @@ begin
     else
       lColumnTotalWidth := lColumnTotalWidth + C.Width + 20;
   end;
-end;
-
-procedure TStringGridMediator.SetupGUIandObject;
-begin
-  //Setup default properties for the StringGrid
-  FView.Options:=FView.Options+[goRowSelect];
   if ShowDeleted then
     FView.RowCount := Model.Count
   else
     FView.RowCount := Model.CountNotDeleted;
+end;
+
+procedure TStringGridMediator.SetupGUIandObject;
+
+begin
+  //Setup default properties for the StringGrid
+  FView.Options:=FView.Options+[goRowSelect];
+  // Rowcount is set after columns are created, because clearing columns
+  //  resets rowcount.
 end;
 
 procedure TStringGridMediator.RebuildList;
@@ -484,8 +486,6 @@ begin
   try
     SetupGUIandObject;
     MediatorList.Clear;
-    //    for i := View.ColumnCount-1 downto 0 do
-    //      View.DeleteColumn(i);
     CreateSubMediators;
   finally
     View.EndUpdate;
