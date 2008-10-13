@@ -37,6 +37,7 @@ type
     FFieldName: string;
     FSubject: TtiObject;
     FGuiFieldName: string;
+    FCopying: Boolean;
     procedure CheckFieldNames;
     procedure TestIfValid;
   protected
@@ -75,6 +76,9 @@ type
     constructor Create; override;
     constructor CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGuiFieldName: string);
     destructor Destroy; override;
+    // By default, copying GUI <-> Object is one way. If this method returns true, then
+    // it will copy till no more change events are generated. By default, false is returned
+    class function AllowRecursiveCopy: Boolean; virtual;
     // Must return a minimum GUI class for which this mediator is valid.
     class function ComponentClass: TClass; virtual;
     // Must return TRUE if the class is a composite mediator.
@@ -341,6 +345,11 @@ begin
   inherited Destroy;
 end;
 
+class function TMediatorView.AllowRecursiveCopy: Boolean;
+begin
+  Result := False;
+end;
+
 class function TMediatorView.ComponentClass: TClass;
 begin
   Result := TComponent;
@@ -493,22 +502,36 @@ procedure TMediatorView.GuiToObject;
 var
   B: Boolean;
 begin
-  B := False;
-  if Assigned(FOnGUIToObject) then
-    FOnGUIToObject(Self, GuiControl, Subject, B);
-  if not B then
-    DoGuiToObject;
+  if FCopying and (not AllowRecursiveCopy) then
+    Exit;
+  FCopying := True;
+  try
+    B := False;
+    if Assigned(FOnGUIToObject) then
+      FOnGUIToObject(Self, GuiControl, Subject, B);
+    if not B then
+      DoGuiToObject;
+  finally
+    FCopying := False;
+  end;
 end;
 
 procedure TMediatorView.ObjectToGui;
 var
   B: Boolean;
 begin
-  B := False;
-  if Assigned(FOnObjectToGUI) then
-    FOnObjectToGUI(Self, Subject, GuiControl, B);
-  if not B then
-    DoObjectToGUI;
+  if FCopying and (not AllowRecursiveCopy) then
+    Exit;
+  FCopying := True;
+  try
+    B := False;
+    if Assigned(FOnObjectToGUI) then
+      FOnObjectToGUI(Self, Subject, GuiControl, B);
+    if not B then
+      DoObjectToGUI;
+  finally
+    FCopying := False;
+  end;
 end;
 
 procedure TMediatorView.DoObjectToGui;
@@ -803,6 +826,7 @@ var
   I: integer;
   P1, P2: integer;
 begin
+  I := 0;
   P1         := Pos('(', AVAlue);
   P2         := Pos('|', AVAlue);
   // Have ( and Not (have | and | before ()
