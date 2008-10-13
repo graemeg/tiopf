@@ -275,11 +275,12 @@ type
 
   TtiObject = class(TtiVisited)
   private
-    FOID : TtiOID;
+    FOID: TtiOID;
     FObjectState : TPerObjectState;
     FObserverList: TList;
     FUpdateCount: Integer;
     function GetObserverList: TList;
+    procedure StopObservers;
   protected
     FOwner: TtiObject; // Want FOwner here as there are time when we may want
                         // go get access without going through the GetOwner and
@@ -343,7 +344,10 @@ type
        You must override Save and implement a call to the visitor manager (if you
        are using hard coded visitors, or call inheried (if you are using automap)).}
     procedure   Save; overload; virtual;
-
+    {: Only needed if performing a observing role: called when an object under
+       observation is freed. The observer should stop observing it. It may or may not
+       perform a DetachObserver. }
+    procedure   StopObserving(ASubject: TtiObject); virtual;
   public
     {: Creates a new instance of the class}
     constructor Create ; override;
@@ -2733,8 +2737,9 @@ begin
   {$IFNDEF OID_AS_INT64}
     FOID.Free;
   {$ENDIF}
-  FObserverList.Free;
-  FObserverList := nil;
+  if (FObserverList<>Nil) then
+    StopObservers;
+  FreeAndNil(FObserverList);
   inherited;
 end;
 
@@ -3884,11 +3889,30 @@ begin
   { Do nothing here. This will be implemented in decendant classes when needed }
 end;
 
+procedure TtiObject.StopObserving(ASubject: TtiObject);
+begin
+  { Do nothing here. This will be implemented in decendant classes when needed }
+end;
+
 function TtiObject.GetObserverList: TList;
 begin
   if not Assigned(FObserverList) then
     FObserverList := TList.Create;
   Result := FObserverList;
+end;
+
+procedure TtiObject.StopObservers;
+var
+  I: Integer;
+  O: TtiObject;
+begin
+  if Assigned(FObserverList) then
+    for I := FObserverList.Count-1 downto 0 do
+    begin
+      O := TTiObject(FObserverList[i]);
+      if Assigned(O) then
+        O.StopObserving(Self);
+    end;
 end;
 
 procedure TtiObjectList.FreeDeleted;

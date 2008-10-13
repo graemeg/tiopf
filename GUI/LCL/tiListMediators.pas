@@ -20,9 +20,6 @@ uses
 
 type
   { Composite mediator for TListView }
-
-  { TListViewMediator }
-
   TListViewMediator = class(TCustomListMediator)
   private
     FObserversInTransit: TList;
@@ -38,6 +35,7 @@ type
     procedure SetupGUIandObject; override;
     procedure ClearList; override;
     procedure RebuildList; override;
+    procedure SetActive(const AValue: Boolean); override;
   public
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; ADisplayNames: string; AIsObserving: Boolean = True); overload;
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; AOnBeforeSetupField: TOnBeforeSetupField; ADisplayNames: string; AIsObserving: Boolean = True); overload;
@@ -56,9 +54,6 @@ type
 
 
   { Composite mediator for TStringGrid }
-
-  { TStringGridMediator }
-
   TStringGridMediator = class(TCustomListMediator)
   private
     FView: TStringGrid;
@@ -95,7 +90,6 @@ type
   public
     constructor CreateCustom(AModel: TtiObject; AView: TListItem; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean = True);
     constructor CreateCustom(AModel: TtiObject; AView: TListItem; AOnBeforeSetupField: TOnBeforeSetupField; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean = True); overload;
-    procedure BeforeDestruction; override;
     procedure Update(ASubject: TtiObject); override;
   published
     property View: TListItem read FView;
@@ -152,7 +146,7 @@ var
   i: integer;
 begin
   for i := 0 to FView.Items.Count - 1 do
-    if TtiObject(FView.Items.Item[i].Data) = AValue then
+    if TListItemMediator(FView.Items[i].Data).Model = AValue then
     begin
       FView.Selected:=FView.Items.Item[i];
       HandleSelectionChanged;
@@ -165,7 +159,7 @@ begin
   if FView.Selected=Nil then
     Result := nil
   else
-    Result := TtiObject(FView.Selected.Data);
+    Result := TListItemMediator(FView.Selected.Data).Model;
 end;
 
 procedure TListViewMediator.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer);
@@ -176,8 +170,8 @@ begin
   DataAndPropertyValid(AData);
   { Create ListItem and Mediator }
   li:=FView.Items.Add;
-  li.Data := AData;
   m:= TListViewListItemMediator.CreateCustom(AData, li, OnBeforeSetupField, FieldsInfo, Active);
+  li.Data := M;
   MediatorList.Add(m);
 end;
 
@@ -216,12 +210,13 @@ end;
 
 procedure TListViewMediator.ClearList;
 begin
-  View.Items.Clear;
+  MediatorList.Clear;
+  If Assigned(View) then
+    View.Items.Clear;
 end;
 
 procedure TListViewMediator.RebuildList;
 begin
-  MediatorList.Clear;
   ClearList;
 
   { This rebuilds the whole list. Not very efficient. You can always override
@@ -234,6 +229,13 @@ begin
   finally
     View.EndUpdate;
   end;
+end;
+
+procedure TListViewMediator.SetActive(const AValue: Boolean);
+begin
+  if not AValue then
+    ClearList;
+  inherited SetActive(AValue);
 end;
 
 constructor TListViewMediator.CreateCustom(AModel: TtiObjectList; AView: TListView; AOnBeforeSetupField: TOnBeforeSetupField; ADisplayNames: string; AIsObserving: Boolean);
@@ -318,16 +320,16 @@ var
   lValue: string;
 begin
   lMemberName := FFieldsInfo[0].PropName;
-  lValue      := FModel.PropValue[lMemberName];
+  lValue      := Model.PropValue[lMemberName];
   if Assigned(OnBeforeSetupField) then
-    OnBeforeSetupField(FModel, lMemberName, lValue);
+    OnBeforeSetupField(Model, lMemberName, lValue);
   FView.Caption := lValue;
   for c := 1 to FFieldsInfo.Count - 1 do
   begin
     lMemberName := FFieldsInfo[c].PropName;
-    lValue      := FModel.PropValue[lMemberName];
+    lValue      := Model.PropValue[lMemberName];
     if Assigned(OnBeforeSetupField) then
-      OnBeforeSetupField(FModel, lMemberName, lValue);
+      OnBeforeSetupField(Model, lMemberName, lValue);
     FView.SubItems.Add(lValue);
   end;
 end;
@@ -340,20 +342,12 @@ end;
 constructor TListViewListItemMediator.CreateCustom(AModel: TtiObject; AView: TListItem; AOnBeforeSetupField: TOnBeforeSetupField; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean);
 begin
   inherited Create;
-  FModel      := AModel;
+  Model      := AModel;
   FView       := AView;
   FFieldsInfo := AFieldsInfo;
   OnBeforeSetupField := AOnBeforeSetupField;
   SetupFields;
   Active      := IsObserving; // Will attach
-end;
-
-procedure TListViewListItemMediator.BeforeDestruction;
-begin
-  FModel.DetachObserver(self);
-  FModel := nil;
-  FView  := nil;
-  inherited BeforeDestruction;
 end;
 
 procedure TListViewListItemMediator.Update(ASubject: TtiObject);
@@ -362,22 +356,17 @@ var
   lMemberName: string;
   lValue: string;
 begin
-  Assert(FModel = ASubject);
-
-  lMemberName := FFieldsInfo[0].PropName;
-  lValue      := FModel.PropValue[lMemberName];
-  if Assigned(OnBeforeSetupField) then
-    OnBeforeSetupField(FModel, lMemberName, lValue);
-
-  FView.Caption := lValue;
-
-  for c := 1 to FFieldsInfo.Count - 1 do
+  Assert(Model = ASubject);
+  for c := 0 to FFieldsInfo.Count - 1 do
   begin
     lMemberName := FFieldsInfo[c].PropName;
-    lValue      := FModel.PropValue[lMemberName];
+    lValue      := Model.PropValue[lMemberName];
     if Assigned(OnBeforeSetupField) then
-      OnBeforeSetupField(FModel, lMemberName, lValue);
-    FView.SubItems[c - 1] := lValue;
+      OnBeforeSetupField(Model, lMemberName, lValue);
+    If c=0 Then
+      FView.Caption := lValue
+    else
+      FView.SubItems[c - 1] := lValue;
   end;
 end;
 
@@ -395,7 +384,7 @@ begin
   if FView.Row = -1 then
     Result := nil
   else
-    Result := TtiObject(FView.Objects[0, FView.Row]);
+    Result := TListItemMediator(FView.Objects[0, FView.Row]).Model;
 end;
 
 procedure TStringGridMediator.SetSelectedObject(const AValue: TtiObject);
@@ -403,7 +392,7 @@ var
   i: integer;
 begin
   for i := 0 to FView.RowCount - 1 do
-    if TtiObject(FView.Objects[0, i]) = AValue then
+    if TListItemMediator(FView.Objects[0, i]).Model = AValue then
     begin
       FView.Row := i;
       Exit; //==>
@@ -431,13 +420,13 @@ var
   lFieldName: string;
   lMediatorView: TStringGridRowMediator;
 begin
-  FView.Objects[0, ARowIdx] := AData;   // set Object reference inside grid
   for i := 0 to FieldsInfo.Count - 1 do
   begin
     lFieldName := FieldsInfo[i].PropName;
-    FView.Cells[i, ARowIdx] := AData.PropValue[lFieldName];  // set Cell text
+    FView.Cells[i, ARowIdx+1] := AData.PropValue[lFieldName];  // set Cell text
   end;
-  lMediatorView := TStringGridRowMediator.CreateCustom(AData, FView, FieldsInfo, ARowIdx, Active);
+  lMediatorView := TStringGridRowMediator.CreateCustom(AData, FView, FieldsInfo, ARowIdx+1, Active);
+  FView.Objects[0, ARowIdx+1] := lMediatorView;   // set Object reference inside grid
   MediatorList.Add(lMediatorView);
 end;
 
@@ -465,9 +454,9 @@ begin
       lColumnTotalWidth := lColumnTotalWidth + C.Width + 20;
   end;
   if ShowDeleted then
-    FView.RowCount := Model.Count
+    FView.RowCount := Model.Count+1
   else
-    FView.RowCount := Model.CountNotDeleted;
+    FView.RowCount := Model.CountNotDeleted+1;
 end;
 
 procedure TStringGridMediator.SetupGUIandObject;
@@ -518,7 +507,7 @@ end;
 constructor TStringGridRowMediator.CreateCustom(AModel: TtiObject; AGrid: TStringGrid; const AFieldsInfo: TtiMediatorFieldInfoList; ARowIndex: integer; IsObserving: Boolean);
 begin
   inherited Create;
-  FModel      := AModel;
+  Model      := AModel;
   FView       := AGrid;
   FFieldsInfo := AFieldsInfo;
   FRowIndex   := ARowIndex;
@@ -530,13 +519,13 @@ var
   i: integer;
   lvalue, lFieldName: string;
 begin
-  Assert(FModel = ASubject);
+  Assert(Model = ASubject);
   for i := 0 to FFieldsInfo.Count - 1 do
   begin
     lFieldName := FFieldsInfo[I].PropName;
-    lValue     := FModel.PropValue[lFieldName];
+    lValue     := Model.PropValue[lFieldName];
     if Assigned(OnBeforeSetupField) then
-      OnBeforeSetupField(FModel, lFieldName, lValue);
+      OnBeforeSetupField(Model, lFieldName, lValue);
     FView.Cells[i, FRowIndex] := lValue;
   end;
 end;

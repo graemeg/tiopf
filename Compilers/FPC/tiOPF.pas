@@ -17,7 +17,8 @@ uses
   tiLogToFile, tiCriteria, tiVisitorCriteria, tiXMLToTIDataset, 
   tiQueryXMLLight, tiRTTI, tiTokenLibrary, tiINI, tiQueue, tiAutoMap, 
   tiVisitorDBAutoGen, tiStructuredCSVReader, tiStructuredCSVWriter, 
-  tiFilteredObjectList, tiBaseMediator, tiFormMediator, tiQueryDataset;
+  tiFilteredObjectList, tiBaseMediator, tiFormMediator, tiQueryDataset, 
+  tiopfsqlscript;
 
 implementation
 

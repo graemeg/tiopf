@@ -42,7 +42,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="54">
+    <Files Count="55">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -259,6 +259,10 @@
         <Filename Value="../../Options/tiQueryDataset.pas"/>
         <UnitName Value="tiQueryDataset"/>
       </Item54>
+      <Item55>
+        <Filename Value="../../Options/tiopfsqlscript.pas"/>
+        <UnitName Value="tiopfsqlscript"/>
+      </Item55>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="1">

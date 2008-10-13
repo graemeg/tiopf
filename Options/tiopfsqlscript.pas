@@ -7,6 +7,8 @@ unit tiopfsqlscript;
 
 interface
 
+{ So we can compile with 2.2.x as well }
+{$IF defined(FPC) and defined(VER2_3_0)}
 uses
   Classes, SysUtils, sqlscript, tiQuery;
 
@@ -38,6 +40,7 @@ type
     property UseDefines;
     property OnException;
   end;
+{$ENDIF}
 
 
 implementation
@@ -46,6 +49,7 @@ resourcestring
   sNoDatabase = 'No database assigned to script';
 
 { TtiOPFSQLscript }
+{$IF defined(FPC) and defined(VER2_3_0)}
 
 procedure TtiOPFSQLscript.CheckDatabase;
 begin
@@ -82,6 +86,7 @@ begin
     FQuery.Free;
   end;
 end;
+{$ENDIF}
 
 end.
 

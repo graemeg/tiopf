@@ -121,8 +121,6 @@ type
   TSubjectClass = class of TtiObject;
 
 
-  { TtiMediatorFieldInfo }
-
   TtiMediatorFieldInfo = class(TCollectionItem)
   private
     FWidth: integer;
@@ -146,8 +144,6 @@ type
   end;
 
 
-  { TtiMediatorFieldInfoList }
-
   TtiMediatorFieldInfoList = class(TCollection)
   private
     function GetAsString: string;
@@ -169,20 +165,22 @@ type
 
   TListItemMediator = class(TtiObject)
   private
+    FModel: TtiObject;
     Factive: Boolean;
     FOnBeforeSetupField: TOnBeforeSetupField;
     function GetDisplayNames: string;
     procedure SetActive(const AValue: Boolean);
   protected
-    FModel: TtiObject;
     FFieldsInfo: TtiMediatorFieldInfoList;
+    procedure SetModel(const AValue: TtiObject); virtual;
+    procedure StopObserving(ASubject: TtiObject); override;
   public
     destructor Destroy; override;
     property OnBeforeSetupField: TOnBeforeSetupField read FOnBeforeSetupField write FOnBeforeSetupField;
     property DisplayNames: string read GetDisplayNames;
     property FieldsInfo: TtiMediatorFieldInfoList read FFieldsInfo;
   published
-    property Model: TtiObject read FModel;
+    property Model: TtiObject read FModel write SetModel;
     property Active: Boolean read Factive write SetActive;
   end;
 
@@ -947,6 +945,29 @@ begin
       FModel.DetachObserver(Self);
 end;
 
+procedure TListItemMediator.SetModel(const AValue: TtiObject);
+var
+  B : Boolean;
+begin
+  if Avalue=FModel then
+    Exit;
+  B := Assigned(FModel);
+  if B then
+    FModel.DetachObserver(Self);
+  FModel := Avalue;
+  if Assigned(FModel) then
+  begin
+    FModel.AttachObserver(Self);
+    if B and Active then
+      Update(FModel);
+  end;
+end;
+
+procedure TListItemMediator.StopObserving(ASubject: TtiObject);
+begin
+  FModel:=Nil;
+end;
+
 destructor TListItemMediator.Destroy;
 begin
   Active := False;
@@ -1048,8 +1069,15 @@ var
 begin
   CreateColumns;
   for I := 0 to Model.Count - 1 do
+    begin
     if (not Model.Items[i].Deleted) or FShowDeleted then
-      DoCreateItemMediator(Model.Items[i], i);
+      If I<MediatorList.Count then
+        TListItemMediator(MediatorList[i]).Model:=Model.Items[i]
+      else
+        DoCreateItemMediator(Model.Items[i], i);
+    end;
+  for I:=MediatorList.Count-1 downto Model.Count do
+    MediatorList.Delete(I);
 end;
 
 function TCustomListMediator.DataAndPropertyValid(const AData: TtiObject): Boolean;
