@@ -7,8 +7,12 @@ unit tiopfsqlscript;
 
 interface
 
+{$IF defined(FPC) and not defined(VER2_2)}
+{$define HAVESQLSCRIPT}
+{$endif}
+
 { So we can compile with 2.2.x as well }
-{$IF defined(FPC) and defined(VER2_3_0)}
+{$IFDEF HAVESQLSCRIPT}
 uses
   Classes, SysUtils, sqlscript, tiQuery;
 
@@ -45,11 +49,12 @@ type
 
 implementation
 
+{$IFDEF HAVESQLSCRIPT}
+
 resourcestring
   sNoDatabase = 'No database assigned to script';
 
 { TtiOPFSQLscript }
-{$IF defined(FPC) and defined(VER2_3_0)}
 
 procedure TtiOPFSQLscript.CheckDatabase;
 begin
