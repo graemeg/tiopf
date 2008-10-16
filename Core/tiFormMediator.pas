@@ -230,6 +230,7 @@ end;
 
 function TPropertyLinkDef.FormMediator: TFormMediator;
 begin
+  Result := nil;
   if Assigned(Collection) then
     Result := (Collection as TPropertyLinkDefs).FormMediator;
 end;
