@@ -1293,22 +1293,28 @@ end;
 function TtiObjectList.Add(const AObject : TtiObject): integer;
 begin
   BeginUpdate;
-  if FbAutoSetItemOwner then
-    AObject.Owner := FItemOwner;
-  result := FList.Add(AObject);
-  EndUpdate;
+  Try
+    if FbAutoSetItemOwner then
+      AObject.Owner := FItemOwner;
+    result := FList.Add(AObject);
+  Finally
+    EndUpdate;
+  end;
 end;
 
 procedure TtiObjectList.Clear;
 begin
   BeginUpdate;
-  FList.Clear;
-  // Should Clear set the ObjectState to posEmpty. Originally we thought yes,
-  // then got burnt by side effects, so this was removed 26/09/2001
-  { 2005-08-25 graemeg: I thought I would take my chances as it makes sense
-    to set the ObjectState }
-  ObjectState := posEmpty;
-  EndUpdate;
+  Try
+    FList.Clear;
+    // Should Clear set the ObjectState to posEmpty. Originally we thought yes,
+    // then got burnt by side effects, so this was removed 26/09/2001
+    { 2005-08-25 graemeg: I thought I would take my chances as it makes sense
+      to set the ObjectState }
+    ObjectState := posEmpty;
+  Finally
+    EndUpdate;
+  end;
 end;
 
 {: Call Delete to remove the object at Index from the list. (The first object 
@@ -1325,10 +1331,13 @@ end;
 procedure TtiObjectList.Delete(i: integer);
 begin
   BeginUpdate;
-  if AutoSetItemOwner then
-    TtiObject(Items[i]).Owner := nil;
-  FList.Delete(i);
-  EndUpdate;
+  try
+    if AutoSetItemOwner then
+      TtiObject(Items[i]).Owner := nil;
+    FList.Delete(i);
+  finally
+    EndUpdate;
+  end;
 end;
 
 
@@ -1343,9 +1352,12 @@ var
   i: integer;
 begin
   BeginUpdate;
-  for i := Count - 1 downto 0 do
-    FList.Extract(FList.Items[i]);
-  EndUpdate;
+  try
+    for i := Count - 1 downto 0 do
+      FList.Extract(FList.Items[i]);
+  finally
+    EndUpdate;
+  end;
 end;
 
 function TtiObjectList.GetCount: integer;
@@ -1482,10 +1494,13 @@ end;
 function TtiObjectList.Remove(const AObject: TtiObject):integer;
 begin
   BeginUpdate;
-  if AutoSetItemOwner then
-    AObject.Owner := nil;
-  result := FList.Remove(AObject);
-  EndUpdate;
+  Try
+    if AutoSetItemOwner then
+      AObject.Owner := nil;
+    result := FList.Remove(AObject);
+  Finally
+    EndUpdate;
+  end;
 end;
 
 {: Call Extract to remove an object from the list without freeing the object
@@ -1494,10 +1509,13 @@ end;
 procedure TtiObjectList.Extract(const AObject: TtiObject);
 begin
   BeginUpdate;
-  if AutoSetItemOwner then
-    AObject.Owner := nil;
-  FList.Extract(AObject);
-  EndUpdate;
+  Try
+    if AutoSetItemOwner then
+      AObject.Owner := nil;
+    FList.Extract(AObject);
+  Finally
+    EndUpdate;
+  end;
 end;
 
 {: Call Insert to add an object at a specified position in the list, shifting
@@ -1509,10 +1527,13 @@ end;
 procedure TtiObjectList.Insert(const AIndex: integer; const AObject: TtiObject);
 begin
   BeginUpdate;
-  FList.Insert(AIndex, AObject);
-  if FbAutoSetItemOwner then
-    AObject.Owner := FItemOwner;
-  EndUpdate;
+  Try
+    FList.Insert(AIndex, AObject);
+    if FbAutoSetItemOwner then
+      AObject.Owner := FItemOwner;
+  Finally
+    EndUpdate;
+  end;
 end;
 
 procedure TtiObjectList.Insert(const AInsertBefore: TtiObject; const AObject: TtiObject);
@@ -3924,11 +3945,16 @@ procedure TtiObjectList.FreeDeleted;
 var
   i: Integer;
 begin
-  // ToDo: Should really be handled through a visitor that iterates,
-  //       bottom up, freeing all nested objects
-  for i:= Pred(Count) downto 0 do
-    if Items[i].ObjectState = posDeleted then
-      Delete(i);
+  BeginUpdate;
+  Try
+    // ToDo: Should really be handled through a visitor that iterates,
+    //       bottom up, freeing all nested objects
+    for i:= Pred(Count) downto 0 do
+      if Items[i].ObjectState = posDeleted then
+        Delete(i);
+  finally
+    EndUpdate;
+  end;
 end;
 
 { TtiFieldStringMethod }
