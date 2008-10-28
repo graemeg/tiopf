@@ -92,7 +92,7 @@ type
     function FindByPerObjAbsClass(const AClass: TtiClass): TtiClassMap;
   public
     property Items[i: integer]: TtiClassMap read GetItems write SetItems;
-    procedure Add(AObject: TtiClassMap; ADefaultDispOrder: boolean = True); reintroduce;
+    procedure Add(AObject: TtiClassMap); reintroduce;
     property Owner: TtiClassDBMappingMgr read GetOwner write SetOwner;
     function AddClassMap(const AClass: TtiClass): TtiClassMap;
     function FindCreate(const AClass: TtiClass): TtiClassMap;
@@ -119,7 +119,7 @@ type
     procedure SetOwner(const AValue: TtiClassDBMappingMgr); reintroduce;
   public
     property Items[i: integer]: TtiAttrMap read GetItems write SetItems;
-    procedure Add(AObject: TtiAttrMap; ADefaultDispOrder: boolean = True); reintroduce;
+    procedure Add(AObject: TtiAttrMap); reintroduce;
     property Owner: TtiClassDBMappingMgr read GetOwner write SetOwner;
     property PerObjAbsClass: TtiClass read FPerObjAbsClass write FPerObjAbsClass;
     function AddAttrMap(const AAttrName: string): TtiAttrMap;
@@ -152,7 +152,7 @@ type
     procedure SetOwner(const AValue: TtiClassDBMappingMgr); reintroduce;
   public
     property Items[i: integer]: TtiDBMap read GetItems write SetItems;
-    procedure Add(AObject: TtiDBMap; ADefaultDispOrder: boolean = True); reintroduce;
+    procedure Add(AObject: TtiDBMap); reintroduce;
     property Owner: TtiClassDBMappingMgr read GetOwner write SetOwner;
     function AddDBMap(const ADatabaseName: string): TtiDBMap;
     function FindCreate(const ADatabaseName: string): TtiDBMap;
@@ -171,7 +171,7 @@ type
     procedure SetOwner(const AValue: TtiClassDBMappingMgr); reintroduce;
   public
     property Items[i: integer]: TtiDBTableMap read GetItems write SetItems;
-    procedure Add(AObject: TtiDBTableMap; ADefaultDispOrder: boolean = True); reintroduce;
+    procedure Add(AObject: TtiDBTableMap); reintroduce;
     property Owner: TtiClassDBMappingMgr read GetOwner write SetOwner;
     function AddTableMap(const ATableName: string): TtiDBTableMap;
     function FindCreate(const ATableName: string): TtiDBTableMap;
@@ -192,7 +192,7 @@ type
     procedure SetOwner(const AValue: TtiDBMap); reintroduce;
   public
     property Items[i: integer]: TtiDBColMap read GetItems write SetItems;
-    procedure Add(AObject: TtiDBColMap; ADefaultDispOrder: boolean = True); reintroduce;
+    procedure Add(AObject: TtiDBColMap); reintroduce;
     property Owner: TtiDBMap read GetOwner write SetOwner;
     function AddColMap(const AColName: string; APKInfo: TPKInfo): TtiDBColMap;
   published
@@ -225,7 +225,7 @@ type
     procedure SetOwner(const AValue: TtiClassDBMappingMgr); reintroduce;
   public
     property Items[i: integer]: TtiAttrColMap read GetItems write SetItems;
-    procedure Add(AObject: TtiAttrColMap; ADefaultDispOrder: boolean = True); reintroduce;
+    procedure Add(AObject: TtiAttrColMap); reintroduce;
     property Owner: TtiClassDBMappingMgr read GetOwner write SetOwner;
     procedure AddMapping(const pAttrMap: TtiAttrMap; const pColMap: TtiDBColMap);
     procedure FindAllMappingsByMapToClass(const AClass: TtiClass; const AList: TtiAttrColMaps);
@@ -259,8 +259,7 @@ type
     procedure SetOwner(const AValue: TtiClassDBMappingMgr); reintroduce;
   public
     property Items[i: integer]: TtiClassDBCollection read GetItems write SetItems;
-    procedure Add(AObject: TtiClassDBCollection; ADefaultDispOrder: boolean = True);
-      reintroduce;
+    procedure Add(AObject: TtiClassDBCollection); reintroduce;
     property Owner: TtiClassDBMappingMgr read GetOwner write SetOwner;
     function AddClassCollectionMapping(const ACollectionClass: TPerObjListClass; const AClass: TtiClass): TtiClassDBCollection;
       overload;
@@ -556,14 +555,11 @@ begin
   inherited;
 end;
 
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- // *
- // * TtiClassMaps
- // *
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiClassMaps.Add(AObject: TtiClassMap; ADefaultDispOrder: boolean);
+{ TtiClassMaps }
+
+procedure TtiClassMaps.Add(AObject: TtiClassMap);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 function TtiClassMaps.AddClassMap(const AClass: TtiClass): TtiClassMap;
@@ -694,14 +690,11 @@ begin
   inherited SetOwner(AValue);
 end;
 
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- // *
- // * TtiClassMap
- // *
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiClassMap.Add(AObject: TtiAttrMap; ADefaultDispOrder: boolean);
+{ TtiClassMap }
+
+procedure TtiClassMap.Add(AObject: TtiAttrMap);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 function TtiClassMap.AddAttrMap(const AAttrName: string): TtiAttrMap;
@@ -775,14 +768,11 @@ begin
   inherited SetOwner(AValue);
 end;
 
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- // *
- // * TtiDBMaps
- // *
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDBMaps.Add(AObject: TtiDBMap; ADefaultDispOrder: boolean);
+{ TtiDBMaps }
+
+procedure TtiDBMaps.Add(AObject: TtiDBMap);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 function TtiDBMaps.FindCreate(const ADatabaseName: string): TtiDBMap;
@@ -825,14 +815,11 @@ begin
   inherited SetOwner(AValue);
 end;
 
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- // *
- // * TtiDBMap
- // *
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDBMap.Add(AObject: TtiDBTableMap; ADefaultDispOrder: boolean);
+{ TtiDBMap }
+
+procedure TtiDBMap.Add(AObject: TtiDBTableMap);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 function TtiDBMap.AddTableMap(const ATableName: string): TtiDBTableMap;
@@ -913,14 +900,11 @@ begin
   inherited SetOwner(AValue);
 end;
 
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- // *
- // * TtiDBTableMap
- // *
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiDBTableMap.Add(AObject: TtiDBColMap; ADefaultDispOrder: boolean);
+{ TtiDBTableMap }
+
+procedure TtiDBTableMap.Add(AObject: TtiDBColMap);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 function TtiDBTableMap.AddColMap(const AColName: string; APKInfo: TPKInfo): TtiDBColMap;
@@ -986,14 +970,11 @@ begin
   inherited SetOwner(AValue);
 end;
 
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- // *
- // * TtiAttrColMaps
- // *
- // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiAttrColMaps.Add(AObject: TtiAttrColMap; ADefaultDispOrder: boolean);
+{ TtiAttrColMaps }
+
+procedure TtiAttrColMaps.Add(AObject: TtiAttrColMap);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 procedure TtiAttrColMaps.AddMapping(const pAttrMap: TtiAttrMap; const pColMap: TtiDBColMap);
@@ -1129,9 +1110,9 @@ end;
 
 { TtiClassDBCollections }
 
-procedure TtiClassDBCollections.Add(AObject: TtiClassDBCollection; ADefaultDispOrder: boolean);
+procedure TtiClassDBCollections.Add(AObject: TtiClassDBCollection);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 function TtiClassDBCollections.AddClassCollectionMapping(const ACollectionClass: TPerObjListClass;

@@ -527,10 +527,6 @@ type
     procedure   ForEach(AMethod : TPerObjForEachMethod       ; AIncludeDeleted : boolean = false); overload; virtual;
     {: Performs the method AMethod on every object in the list.}
     procedure   ForEach(AMethod : TPerObjForEachMethodRegular; AIncludeDeleted : boolean = false); overload; virtual;
-    {: Add an object to the list.
-       Don't override Add(AObject : TtiObject ; ADefDispOrdr : boolean = true),
-       It's an old method for backward compatibility . Override Add(const AObject:TtiObject).}
-    function    Add(const AObject: TtiObject; ADefDispOrdr: Boolean): integer; overload; virtual;
     {: Add an object to the list.}
     function    Add(const AObject : TtiObject): integer; overload; virtual;
     {: Empty list and delete all owned objects}
@@ -718,7 +714,7 @@ type
     procedure   UnLock;
 
     procedure   Delete(i : integer); override;
-    function    Add(const AObject: TtiObject; ADefDispOrdr: boolean = true): integer; override;
+    function    Add(const AObject: TtiObject): integer; override;
     procedure   Clear; override; // Empty list and delete all owned objects
     procedure   Empty; override; // Empty list, but do not delete owned objects
     function    IndexOf(const AObject: TtiObject): integer; override;
@@ -1294,26 +1290,25 @@ begin
   inherited;
 end;
 
-function TtiObjectList.Add(const AObject: TtiObject; ADefDispOrdr: boolean): integer;
-begin
-  result := Add(AObject);
-end;
-
 function TtiObjectList.Add(const AObject : TtiObject): integer;
 begin
+  BeginUpdate;
   if FbAutoSetItemOwner then
     AObject.Owner := FItemOwner;
   result := FList.Add(AObject);
+  EndUpdate;
 end;
 
 procedure TtiObjectList.Clear;
 begin
+  BeginUpdate;
   FList.Clear;
   // Should Clear set the ObjectState to posEmpty. Originally we thought yes,
   // then got burnt by side effects, so this was removed 26/09/2001
   { 2005-08-25 graemeg: I thought I would take my chances as it makes sense
     to set the ObjectState }
   ObjectState := posEmpty;
+  EndUpdate;
 end;
 
 {: Call Delete to remove the object at Index from the list. (The first object 
@@ -1329,9 +1324,11 @@ end;
   Extract. }
 procedure TtiObjectList.Delete(i: integer);
 begin
+  BeginUpdate;
   if AutoSetItemOwner then
     TtiObject(Items[i]).Owner := nil;
   FList.Delete(i);
+  EndUpdate;
 end;
 
 
@@ -1345,8 +1342,10 @@ procedure TtiObjectList.Empty;
 var
   i: integer;
 begin
+  BeginUpdate;
   for i := Count - 1 downto 0 do
     FList.Extract(FList.Items[i]);
+  EndUpdate;
 end;
 
 function TtiObjectList.GetCount: integer;
@@ -1482,9 +1481,11 @@ end;
   without freeing it, call Extract. }
 function TtiObjectList.Remove(const AObject: TtiObject):integer;
 begin
+  BeginUpdate;
   if AutoSetItemOwner then
     AObject.Owner := nil;
   result := FList.Remove(AObject);
+  EndUpdate;
 end;
 
 {: Call Extract to remove an object from the list without freeing the object
@@ -1492,9 +1493,11 @@ end;
   up in index position and Count is decremented.}
 procedure TtiObjectList.Extract(const AObject: TtiObject);
 begin
+  BeginUpdate;
   if AutoSetItemOwner then
     AObject.Owner := nil;
   FList.Extract(AObject);
+  EndUpdate;
 end;
 
 {: Call Insert to add an object at a specified position in the list, shifting
@@ -1505,9 +1508,11 @@ end;
   without growing the array, set the Items property directly. }
 procedure TtiObjectList.Insert(const AIndex: integer; const AObject: TtiObject);
 begin
+  BeginUpdate;
   FList.Insert(AIndex, AObject);
   if FbAutoSetItemOwner then
     AObject.Owner := FItemOwner;
+  EndUpdate;
 end;
 
 procedure TtiObjectList.Insert(const AInsertBefore: TtiObject; const AObject: TtiObject);
@@ -2159,11 +2164,11 @@ end;
 
 { TPerObjThreadList }
 
-function TPerObjThreadList.Add(const AObject: TtiObject; ADefDispOrdr: boolean): integer;
+function TPerObjThreadList.Add(const AObject: TtiObject): integer;
 begin
   Lock;
   try
-    result := inherited Add(AObject, ADefDispOrdr);
+    result := inherited Add(AObject);
   finally
     Unlock;
   end;

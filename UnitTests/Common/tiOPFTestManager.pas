@@ -68,7 +68,7 @@ type
     function    ToRun(const pClassID : string):boolean;
     property    TestAll : boolean read FTestAll;
     property    Items[i:integer]: TtiOPFTestSetupData read GetItems write SetItems;
-    procedure   Add(AObject : TtiOPFTestSetupData ; ADefDispOrdr : boolean = true); reintroduce;
+    procedure   Add(AObject: TtiOPFTestSetupData); reintroduce;
     function    IsRegistered(const APersistenceLayerName : string): boolean;
     function    FindByPersistenceLayerName(const APersistenceLayerName : string): TtiOPFTestSetupData;
     procedure   UnloadPersistenceLayersNotSelected;
@@ -109,9 +109,9 @@ end;
 
 { TtiOPFTestManager }
 
-procedure TtiOPFTestManager.Add(AObject: TtiOPFTestSetupData;ADefDispOrdr: boolean);
+procedure TtiOPFTestManager.Add(AObject: TtiOPFTestSetupData);
 begin
-  inherited Add(AObject, ADefDispOrdr);
+  inherited Add(AObject);
 end;
 
 

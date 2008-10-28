@@ -107,7 +107,7 @@ type
 //    procedure   SetOwner(const AValue: TtiObject); reintroduce;
   public
     property    Items[i:integer]: TtiDBMetaDataTable read GetItems write SetItems;
-    procedure   Add(AObject : TtiDBMetaDataTable; ADefaultDispOrder : boolean = true); reintroduce;
+    procedure   Add(AObject: TtiDBMetaDataTable); reintroduce;
 //    property    Owner       : TtiObject   read GetOwner      write SetOwner;
     procedure   Read(const ADBConnectionName: string = ''; APersistenceLayerName : string = ''); override;
     procedure   Clear; override;
@@ -130,7 +130,7 @@ type
     destructor  Destroy; override;
     property    Items[i:integer]: TtiDBMetaDataField read GetItems write SetItems;
     property    Owner      : TtiDBMetaData   read GetOwner      write SetOwner;
-    procedure   Add(AObject : TtiDBMetaDataField; ADefaultDispOrder : boolean = true); reintroduce;
+    procedure   Add(AObject: TtiDBMetaDataField); reintroduce;
     function    AddInstance(const AFieldName : string;
                              const AFieldKind : TtiQueryFieldKind;
                              AFieldWidth : integer = 0): TtiDBMetaDataField; overload;
@@ -478,7 +478,7 @@ type
     function    FindCreateParamByName(const AName : string; const AClass : TtiQueryParamClass): TtiQueryParamAbs; virtual;
   public
     property    Items[i:integer]: TtiQueryParamAbs read GetItems write SetItems;
-    procedure   Add(AObject : TtiQueryParamAbs  ; ADefDispOrdr : boolean = true); reintroduce;
+    procedure   Add(AObject: TtiQueryParamAbs); reintroduce;
     function    FindParamByName(const AName : string): TtiQueryParamAbs; virtual;
 
     property    ParamIsNull[const AName : string ]: boolean read GetParamIsNull write SetParamIsNull;
@@ -693,9 +693,9 @@ end;
 
 { TtiDBMetaData }
 
-procedure TtiDBMetaData.Add(AObject: TtiDBMetaDataTable; ADefaultDispOrder: boolean);
+procedure TtiDBMetaData.Add(AObject: TtiDBMetaDataTable);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 procedure TtiDBMetaData.Clear;
@@ -763,10 +763,9 @@ end;
 
 { TtiDBMetaDataTable }
 
-procedure TtiDBMetaDataTable.Add(AObject: TtiDBMetaDataField;
-  ADefaultDispOrder: boolean);
+procedure TtiDBMetaDataTable.Add(AObject: TtiDBMetaDataField);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
   FMaxFieldWidth := 0;
 end;
 
@@ -1291,9 +1290,9 @@ end;
 
 { TtiQueryParams }
 
-procedure TtiQueryParams.Add(AObject: TtiQueryParamAbs; ADefDispOrdr: boolean);
+procedure TtiQueryParams.Add(AObject: TtiQueryParamAbs);
 begin
-  inherited Add(AObject, ADefDispOrdr);
+  inherited Add(AObject);
 end;
 
 function TtiQueryParams.FindCreateParamByName(const AName: string; const AClass : TtiQueryParamClass): TtiQueryParamAbs;

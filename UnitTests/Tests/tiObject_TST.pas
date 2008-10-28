@@ -166,7 +166,7 @@ type
     procedure   SetItems(i: integer; const AValue: TtstTIObject); reintroduce;
   public
     property    Items[i:integer]: TtstTIObject read GetItems write SetItems;
-    function    Add(AObject : TtstTIObject ; ADefDispOrdr : boolean = true): integer; reintroduce;
+    function    Add(AObject: TtstTIObject): integer; reintroduce;
     function    Clone : TtstTIObjectList; reintroduce;
     constructor CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = ''); override;
   published
@@ -3689,9 +3689,9 @@ end;
 
 { TtstPerObjList }
 
-function TtstTIObjectList.Add(AObject: TtstTIObject; ADefDispOrdr: boolean): integer;
+function TtstTIObjectList.Add(AObject: TtstTIObject): integer;
 begin
-  result := inherited Add(AObject, ADefDispOrdr);
+  result := inherited Add(AObject);
 end;
 
 function TtstTIObjectList.Clone: TtstTIObjectList;

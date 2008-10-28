@@ -210,7 +210,7 @@ type
     procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
     procedure   Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
     property Items[i: integer]: TtiObjectParentForTestingGrouped read GetItems write SetItems;
-    procedure Add(AObject: TtiObjectParentForTestingGrouped; ADefDispOrdr: boolean = True); reintroduce;
+    procedure Add(AObject: TtiObjectParentForTestingGrouped); reintroduce;
   published
   end;
 
@@ -556,9 +556,9 @@ end;
 
 { TtiObjectParentForTestingGroup }
 
-procedure TtiObjectParentForTestingGroup.Add(AObject: TtiObjectParentForTestingGrouped; ADefDispOrdr: boolean);
+procedure TtiObjectParentForTestingGroup.Add(AObject: TtiObjectParentForTestingGrouped);
 begin
-  inherited Add(AObject, ADefDispOrdr);
+  inherited Add(AObject);
 end;
 
 

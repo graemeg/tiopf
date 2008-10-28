@@ -97,7 +97,7 @@ type
     procedure   SetItems(i: integer; const AValue: TtiStructCSVMetaData); reintroduce;
   public
     property    Items[i:integer]: TtiStructCSVMetaData read GetItems write SetItems;
-    procedure   Add(AObject: TtiStructCSVMetaData; ADefDispOrdr: boolean = true); reintroduce;
+    procedure   Add(AObject: TtiStructCSVMetaData); reintroduce;
     function    FindByDataGroupName(const pDataGroupName: string): TtiStructCSVMetaData;
     function    FindCreateByDataGroupName(const pDataGroupName: string;
                                           const pRowStartEvent: TtiTextParserRowEvent;
@@ -131,7 +131,7 @@ type
     function    AddToIndex(const AFieldName: string):Boolean;
     function    FindByFieldName(const AFieldName: string):TtiStructCSVMetaDataItem;
     function    FindInIndex(const AFieldName: string):TtiStructCSVMetaDataItem;
-    procedure   Add(AObject: TtiStructCSVMetaDataItem; ADefDispOrdr: boolean = true); reintroduce;
+    procedure   Add(AObject: TtiStructCSVMetaDataItem); reintroduce;
     procedure   ClearIndexedItems;
     property    DataGroupName: string read FDataGroupName Write SetDataGroupName;
     property    IndexedCount: Integer read GetIndexedCount;
@@ -496,9 +496,9 @@ end;
 
 { TtiStructCSVMetaDatas }
 
-procedure TtiStructCSVMetaDatas.Add(AObject: TtiStructCSVMetaData; ADefDispOrdr: boolean);
+procedure TtiStructCSVMetaDatas.Add(AObject: TtiStructCSVMetaData);
 begin
-  inherited Add(AObject, false);
+  inherited Add(AObject);
 end;
 
 function TtiStructCSVMetaDatas.AddInstance(
@@ -579,9 +579,9 @@ end;
 
 { TtiStructCSVMetaData }
 
-procedure TtiStructCSVMetaData.Add(AObject: TtiStructCSVMetaDataItem; ADefDispOrdr: boolean);
+procedure TtiStructCSVMetaData.Add(AObject: TtiStructCSVMetaDataItem);
 begin
-  inherited Add(AObject, false);
+  inherited Add(AObject);
 end;
 
 function TtiStructCSVMetaData.AddInstance(const AFieldName: string; const pSetter: TtiTextParserSetterEvent): TtiStructCSVMetaDataItem;
