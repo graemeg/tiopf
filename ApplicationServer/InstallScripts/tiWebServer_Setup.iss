@@ -11,10 +11,10 @@ AppUpdatesURL=http://www.techinsite.com.au
 ;AppMutex=tiDBProxyServerMutex
 DefaultDirName={pf}\TechInsite\tiWebServer
 DefaultGroupName=TechInsite
-;OutputDir=%PATH_TO_DEPLOYROOT%
+OutputDir=%path_to_deploy%
 OutputBaseFilename=tiWebServer_Setup
 Uninstallable=yes
-;UninstallDisplayIcon={app}\OPDMSAppService_Setup.exe
+;UninstallDisplayIcon={app}\AppService_Setup.exe
 ;InfoAfterFile=%PATH_TO_DEPLOYROOT%\tiDBProxyService\SetupTNSNamesMessage.txt
 
 ;[Tasks]
@@ -22,27 +22,30 @@ Uninstallable=yes
 ;Name: "quicklaunchicon"; Description: "Create a &Quick Launch icon"; GroupDescription: "Additional icons:"
 
 [Files]
-Source: "..\Bin\tiDBProxyService.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Bin\start.bat"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Bin\stop.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: %path_to_deploy%\tiDBProxyService.exe; DestDir: {app}; Flags: ignoreversion
+Source: %path_to_deploy%\start.bat; DestDir: {app}; Flags: ignoreversion
+Source: %path_to_deploy%\stop.bat; DestDir: {app}; Flags: ignoreversion
+Source: %path_to_deploy%\tiWebServer.ini; DestDir: {app}; Flags: ignoreversion
+Source: %path_to_deploy%\default.htm; DestDir: C:\Documents and Settings\All Users\Documents\tiWebServer\www; Flags: ignoreversion
 
 [Icons]
 ;Name: "{group}\tiWebServer"; Filename: "{app}\tiDBProxyServer.exe"; WorkingDir: "{app}"
-;Name: "{userdesktop}\OPDMSAppService-%OPDMS_ENVIRONMENT_NAME%"; Filename: "{app}\OPDMSAppServiceController.exe"; Tasks: desktopicon; WorkingDir: "{app}"
-;Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\OPDMSAppService-%OPDMS_ENVIRONMENT_NAME%"; Filename: "{app}\OPDMSAppServiceController.exe"; Tasks: quicklaunchicon; WorkingDir: "{app}"
-Name: "{group}\Uninstall tiWebServer"; Filename: "{uninstallexe}"
+;Name: "{userdesktop}\AppService%ENVIRONMENT_NAME%"; Filename: "{app}\AppServiceController.exe"; Tasks: desktopicon; WorkingDir: "{app}"
+;Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\AppService-%_ENVIRONMENT_NAME%"; Filename: "{app}\AppServiceController.exe"; Tasks: quicklaunchicon; WorkingDir: "{app}"
+Name: {group}\Uninstall tiWebServer; Filename: {uninstallexe}
+
+[Registry]
+Root: HKLM; Subkey: Software\TechInsite\Shared; ValueType: string; ValueName: Shared INI File Location; ValueData: {app}\tiWebServer.ini
 
 [Run]
-Filename: "{app}\tiDBProxyService.exe"; Description: "Register tiWebServer as a service"; parameters: /INSTALL
-Filename: "{app}\start.bat"; Description: "Start tiWebServer as a service";
-Filename: "http://localhost/"; Description: "Test the tiWebServer"; Flags: postinstall skipifsilent shellexec
+Filename: {app}\tiDBProxyService.exe; Description: Register tiWebServer as a service; parameters: /INSTALL
+Filename: {app}\start.bat; Description: Start tiWebServer as a service
+Filename: http://localhost/; Description: Test the tiWebServer; Flags: postinstall skipifsilent shellexec
 
 
-[UnInstallRun]
-Filename: "{app}\stop.bat";
-Filename: "{app}\tiDBProxyService.exe"; parameters: /UNINSTALL
+[UninstallRun]
+Filename: {app}\stop.bat
+Filename: {app}\tiDBProxyService.exe; parameters: /UNINSTALL
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{app}"
-
-
+Type: filesandordirs; Name: {app}

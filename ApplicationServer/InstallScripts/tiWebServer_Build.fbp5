@@ -48,7 +48,7 @@
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             <Object Class="TDeleteDirectoryAction" XMLID="{A03C0EDA-DA33-4F08-AFD9-3B14A4C29153}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delete Directory [ %PATH_TO_BIN% ]]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delete Directory [ %path_to_deploy% ]]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
@@ -57,7 +57,7 @@
               <Property name="DeleteTree" type="WordBool">True</Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%PATH_TO_BIN%</Property>
+              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_deploy%</Property>
               <Property name="Force" type="Boolean">False</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
               <Property name="IsAction" type="Boolean">True</Property>
@@ -71,13 +71,13 @@
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               </Object>
             <Object Class="TCreateDirectoryAction" XMLID="{462B7B03-9C0B-4363-BE0C-4E497B9FD332}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Create Directory [ %PATH_TO_BIN% ]]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Create Directory [ %path_to_deploy% ]]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%PATH_TO_BIN%</Property>
+              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_deploy%</Property>
               <Property name="Force" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
               <Property name="IsAction" type="Boolean">True</Property>
@@ -89,15 +89,15 @@
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               </Object>
-            <Object Class="TGroupAction" XMLID="{3DE61CD0-83C1-4BEB-BE34-BC8227E5ACE0}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Action Group - Create start.bat]]>
+            <Object Class="TCreateDirectoryAction" XMLID="{9B04212F-B43B-43DB-BDA9-F249A2892620}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Create Directory [ %path_to_dcu% ]]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="1" name="Description" type="string"><![CDATA[Action Group - Create start.bat]]>
-                </Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_dcu%</Property>
+              <Property name="Force" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
               <Property name="IsAction" type="Boolean">True</Property>
               <Property name="IsBreakPoint" type="WordBool">False</Property>
@@ -107,99 +107,13 @@
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Object Class="TWriteIniFileAction" XMLID="{C04E3AFA-7F10-4C93-BE45-5C59B775E551}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write Ini File]]>
-                  </Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property name="AllowCreate" type="WordBool">True</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property MultiValue="0" name="IniFile" type="WideString">%PATH_TO_BIN%\start.bat</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="NewValue" type="WideString"></Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property MultiValue="0" name="Section" type="WideString">dummy</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property MultiValue="0" name="ValueName" type="WideString">dummy</Property>
-                <Property name="ValueType" type="TIniValueType">vtString</Property>
-                </Object>
-              <Object Class="TTextReplaceAction" XMLID="{334481D5-2F27-41A4-B986-3D3C27042D18}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace]]>
-                  </Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property name="CaseSensitive" type="Boolean">False</Property>
-                <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace]]>
-                  </Property>
-                <Property name="DoRepeat" type="Integer">0</Property>
-                <Property name="DoReplaceText" type="Boolean">True</Property>
-                <Property name="DoReplaceVariables" type="Boolean">False</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="FailMinimumCount" type="Integer">1</Property>
-                <Property name="FailOnFewReplacements" type="Boolean">False</Property>
-                <Property MultiValue="0" name="Filename" type="string">%PATH_TO_BIN%\start.bat</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MatchRegularExpression" type="Boolean">False</Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="NewFileName" type="string"></Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property MultiValue="1" name="ReplaceText" type="string"><![CDATA[net start tiDBProxyService]]>
-                  </Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property MultiValue="0" name="SearchText" type="string">[dummy]</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property name="WholeWordsOnly" type="Boolean">False</Property>
-                </Object>
-              <Object Class="TTextReplaceAction" XMLID="{C72E2E63-ACF7-477C-BEE7-99FB8615B24A}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace]]>
-                  </Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property name="CaseSensitive" type="Boolean">False</Property>
-                <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace]]>
-                  </Property>
-                <Property name="DoRepeat" type="Integer">0</Property>
-                <Property name="DoReplaceText" type="Boolean">True</Property>
-                <Property name="DoReplaceVariables" type="Boolean">False</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="FailMinimumCount" type="Integer">1</Property>
-                <Property name="FailOnFewReplacements" type="Boolean">False</Property>
-                <Property MultiValue="0" name="Filename" type="string">%PATH_TO_BIN%\start.bat</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MatchRegularExpression" type="Boolean">False</Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="NewFileName" type="string"></Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ReplaceText" type="string"></Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property MultiValue="0" name="SearchText" type="string">dummy=</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property name="WholeWordsOnly" type="Boolean">False</Property>
-                </Object>
               </Object>
             <Object Class="TGroupAction" XMLID="{996C86B2-659E-4A0A-A306-74F4C31A43E1}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Action Group - Create stop.bat]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Action Group - Create Start.bat &amp; Stop.bat]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="1" name="Description" type="string"><![CDATA[Action Group - Create stop.bat]]>
+              <Property MultiValue="1" name="Description" type="string"><![CDATA[Action Group - Create Start.bat &amp; Stop.bat]]>
                 </Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
@@ -212,91 +126,123 @@
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Object Class="TWriteIniFileAction" XMLID="{9E941804-1E4A-4EF1-AF71-41C2E0878848}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write Ini File]]>
+              <Object Class="TFBWriteToTextFileAction" XMLID="{C00E764B-DFA4-4566-833C-812AD3E5AEF9}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write to Text File - Start.bat]]>
                   </Property>
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property name="AllowCreate" type="WordBool">True</Property>
+                <Property name="CreateIfNotExists" type="Boolean">True</Property>
+                <Property MultiValue="1" name="Description" type="string"><![CDATA[Write to Text File - Start.bat]]>
+                  </Property>
                 <Property name="Enabled" type="WordBool">True</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property MultiValue="0" name="FileName" type="string">%path_to_deploy%\start.bat</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property MultiValue="0" name="IniFile" type="WideString">%PATH_TO_BIN%\stop.bat</Property>
                 <Property name="IsAction" type="Boolean">True</Property>
                 <Property name="IsBreakPoint" type="WordBool">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="NewValue" type="WideString"></Property>
+                <Property MultiValue="1" name="NewContent" type="string"><![CDATA[net start tiWebServer
+pause]]>
+                  </Property>
                 <Property name="NodeCollapsed" type="Boolean">False</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property MultiValue="0" name="Section" type="WideString">dummy</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property MultiValue="0" name="ValueName" type="WideString">dummy</Property>
-                <Property name="ValueType" type="TIniValueType">vtString</Property>
+                <Property name="WriteToPosition" type="TFBWriteToPos">toEnd</Property>
                 </Object>
-              <Object Class="TTextReplaceAction" XMLID="{9353C972-9F0D-4264-ABA4-D708EA4777A7}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace]]>
+              <Object Class="TFBWriteToTextFileAction" XMLID="{0C739559-6FE1-46A3-8A1C-DC31238DFC0A}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write to Text File - Stop.bat]]>
                   </Property>
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property name="CaseSensitive" type="Boolean">False</Property>
-                <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace]]>
+                <Property name="CreateIfNotExists" type="Boolean">True</Property>
+                <Property MultiValue="1" name="Description" type="string"><![CDATA[Write to Text File - Stop.bat]]>
                   </Property>
-                <Property name="DoRepeat" type="Integer">0</Property>
-                <Property name="DoReplaceText" type="Boolean">True</Property>
-                <Property name="DoReplaceVariables" type="Boolean">False</Property>
                 <Property name="Enabled" type="WordBool">True</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="FailMinimumCount" type="Integer">1</Property>
-                <Property name="FailOnFewReplacements" type="Boolean">False</Property>
-                <Property MultiValue="0" name="Filename" type="string">%PATH_TO_BIN%\stop.bat</Property>
+                <Property MultiValue="0" name="FileName" type="string">%path_to_deploy%\stop.bat</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
                 <Property name="IsAction" type="Boolean">True</Property>
                 <Property name="IsBreakPoint" type="WordBool">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MatchRegularExpression" type="Boolean">False</Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="NewFileName" type="string"></Property>
+                <Property MultiValue="1" name="NewContent" type="string"><![CDATA[net stop tiWebServer
+pause]]>
+                  </Property>
                 <Property name="NodeCollapsed" type="Boolean">False</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property MultiValue="1" name="ReplaceText" type="string"><![CDATA[net stop tiDBProxyService]]>
-                  </Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property MultiValue="0" name="SearchText" type="string">[dummy]</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property name="WholeWordsOnly" type="Boolean">False</Property>
+                <Property name="WriteToPosition" type="TFBWriteToPos">toEnd</Property>
                 </Object>
-              <Object Class="TTextReplaceAction" XMLID="{D1586893-3C1C-4457-A463-94D19966A0D4}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace]]>
+              <Object Class="TFBWriteToTextFileAction" XMLID="{C3945C6F-DDCC-4D01-A02F-920ACDC19317}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write to Text File - tiWebServer.ini]]>
                   </Property>
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property name="CaseSensitive" type="Boolean">False</Property>
-                <Property MultiValue="1" name="Description" type="string"><![CDATA[Text Replace]]>
+                <Property name="CreateIfNotExists" type="Boolean">True</Property>
+                <Property MultiValue="1" name="Description" type="string"><![CDATA[Write to Text File - tiWebServer.ini]]>
                   </Property>
-                <Property name="DoRepeat" type="Integer">0</Property>
-                <Property name="DoReplaceText" type="Boolean">True</Property>
-                <Property name="DoReplaceVariables" type="Boolean">False</Property>
                 <Property name="Enabled" type="WordBool">True</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="FailMinimumCount" type="Integer">1</Property>
-                <Property name="FailOnFewReplacements" type="Boolean">False</Property>
-                <Property MultiValue="0" name="Filename" type="string">%PATH_TO_BIN%\stop.bat</Property>
+                <Property MultiValue="0" name="FileName" type="string">%path_to_deploy%\tiWebServer.ini</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
                 <Property name="IsAction" type="Boolean">True</Property>
                 <Property name="IsBreakPoint" type="WordBool">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MatchRegularExpression" type="Boolean">False</Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="NewFileName" type="string"></Property>
+                <Property MultiValue="1" name="NewContent" type="string"><![CDATA[[Web Server]
+Port=80
+ShortName=tiWebServer
+DiaplayName=TechInsite Web Server
+PathToStaticPages=C:\Documents and Settings\All Users\Documents\tiWebServer\www
+PathToCGIBin=C:\Documents and Settings\All Users\Documents\tiWebServer\CGI-Bin
+
+[Log]
+LogToApplicationSubDirectory=False
+PathToSharedFiles=C:\Documents and Settings\All Users\Documents\tiWebServer\log
+
+[Database Connection]
+Enabled=0
+DatabaseName=C:\Documents and Settings\All Users\Documents\tiWebServer\Data.gdb
+UserName=SYSDBA
+Password=masterkey
+RetryCount=6
+RetryInterval=10
+TransactionTimeout=1]]>
+                  </Property>
                 <Property name="NodeCollapsed" type="Boolean">False</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ReplaceText" type="string"></Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property MultiValue="0" name="SearchText" type="string">dummy=</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property name="WholeWordsOnly" type="Boolean">False</Property>
+                <Property name="WriteToPosition" type="TFBWriteToPos">toEnd</Property>
+                </Object>
+              <Object Class="TFBWriteToTextFileAction" XMLID="{92756AF7-0D6F-4481-88A6-FF92BF9DAA3D}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Write to Text File - default.htm]]>
+                  </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="CreateIfNotExists" type="Boolean">True</Property>
+                <Property MultiValue="1" name="Description" type="string"><![CDATA[Write to Text File - default.htm]]>
+                  </Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property MultiValue="0" name="FileName" type="string">%path_to_deploy%\default.htm</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="IsAction" type="Boolean">True</Property>
+                <Property name="IsBreakPoint" type="WordBool">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property MultiValue="1" name="NewContent" type="string"><![CDATA[&lt;html&gt;
+  &lt;h2&gt;TechInsite Web Server - Default Page&lt;/h2&gt;
+&lt;/html&gt;]]>
+                  </Property>
+                <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="WriteToPosition" type="TFBWriteToPos">toEnd</Property>
                 </Object>
               </Object>
             </Object>
@@ -330,7 +276,7 @@
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">4</Property>
+              <Property name="CompilerVersion" type="Integer">12</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Delphi Project [ %PATH_TO_SOURCE%\3rdParty\tiOPF\SupportApps\tiDBProxyServer\tiDBProxyService.dpr ]]]>
@@ -390,7 +336,7 @@ Comments=
               <Property name="WarningsAsError" type="Boolean">False</Property>
               <Property name="WorkAroundD5Bug" type="WordBool">False</Property>
               <Object Class="TDelphiCompilerOptions" XMLID="{962D7465-A8B6-4E55-92CC-C2A4F7AE6A89}"><Property name="AlwaysUseConditionalsFromDOF" type="WordBool">False</Property>
-                <Property name="AlwaysUseDelphiLibraryPath" type="WordBool">True</Property>
+                <Property name="AlwaysUseDelphiLibraryPath" type="WordBool">False</Property>
                 <Property name="AlwaysUseDOFSearchPath" type="WordBool">True</Property>
                 <Property name="Assertions" type="WordBool">True</Property>
                 <Property name="AssignableConst" type="WordBool">True</Property>
@@ -401,7 +347,7 @@ Comments=
 -w-UNSAFE_CAST=0
 ]]>
                   </Property>
-                <Property MultiValue="0" name="Conditionals" type="WideString">madexcept</Property>
+                <Property MultiValue="0" name="Conditionals" type="WideString"></Property>
                 <Property name="ConsoleApp" type="WordBool">False</Property>
                 <Property MultiValue="0" name="DCPOutputDir" type="WideString"></Property>
                 <Property name="DebugInfo" type="WordBool">True</Property>
@@ -418,7 +364,7 @@ Comments=
                 <Property name="IncludeRemoteSymbols" type="WordBool">False</Property>
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString"></Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">$(BDS)\lib;$(BDSCOMMONDIR)\Dcp;%delphi_search_path%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">3</Property>
@@ -427,7 +373,7 @@ Comments=
                 <Property MultiValue="0" name="NamespacePrefixes" type="string"></Property>
                 <Property name="OpenStrings" type="WordBool">True</Property>
                 <Property name="Optimisation" type="WordBool">True</Property>
-                <Property MultiValue="0" name="OutputDir" type="WideString">%PATH_TO_BIN%</Property>
+                <Property MultiValue="0" name="OutputDir" type="WideString">%path_to_deploy%</Property>
                 <Property name="OverflowChecking" type="WordBool">False</Property>
                 <Property MultiValue="0" name="Packages" type="WideString"></Property>
                 <Property name="RangeChecking" type="WordBool">False</Property>
@@ -440,23 +386,23 @@ Comments=
                 <Property name="StackFrames" type="WordBool">False</Property>
                 <Property name="TypedPointers" type="WordBool">False</Property>
                 <Property MultiValue="0" name="UnitAliases" type="WideString">WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;</Property>
-                <Property MultiValue="0" name="UnitOutputDir" type="WideString">%PATH_TO_SOURCE%</Property>
+                <Property MultiValue="0" name="UnitOutputDir" type="WideString">%path_to_dcu%</Property>
                 <Property name="UseDebugDCU" type="WordBool">False</Property>
                 <Property name="UsePackages" type="WordBool">False</Property>
                 <Property name="VarStringChecks" type="WordBool">True</Property>
                 </Object>
               </Object>
             <Object Class="TFileExistsAction" XMLID="{7810616A-28CE-4E10-8204-72050CFD3E5D}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Check if File Exists [ %PATH_TO_BIN%\tiDBProxyService.exe ]]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Check if File Exists [ %path_to_deploy%\tiDBProxyService.exe ]]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="1" name="Description" type="string"><![CDATA[Check if File Exists [ %PATH_TO_BIN%\tiDBProxyService.exe ]]]>
+              <Property MultiValue="1" name="Description" type="string"><![CDATA[Check if File Exists [ %path_to_deploy%\tiDBProxyService.exe ]]]>
                 </Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExistsMode" type="TFileExistsMode">feFailIfMissing</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%PATH_TO_BIN%\tiDBProxyService.exe</Property>
+              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_deploy%\tiDBProxyService.exe</Property>
               <Property MultiValue="0" name="FileSet" type="string"></Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
               <Property name="IsAction" type="Boolean">True</Property>
@@ -484,7 +430,7 @@ Comments=
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -553,47 +499,6 @@ Comments=
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                 </Object>
-              </Object>
-            <Object Class="TRunDosCMDAction" XMLID="{0756AB79-2D05-42E8-99CC-64FEB8598017}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Run DOS Command [ %PATH_TO_UPX% %PATH_TO_BIN%\tiDBProxyService.exe ]]]>
-                </Property>
-              <Property name="ActionTextColor" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property name="CaptureOutput" type="Boolean">True</Property>
-              <Property MultiValue="1" name="Command" type="WideString"><![CDATA[%PATH_TO_UPX% %PATH_TO_BIN%\tiDBProxyService.exe]]>
-                </Property>
-              <Property name="Enabled" type="WordBool">False</Property>
-              <Property name="EnableLiveCapture" type="Boolean">True</Property>
-              <Property name="EnableReturnCodeCheck" type="Boolean">True</Property>
-              <Property name="EnableTimeout" type="Boolean">False</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="ExtraCmdLineParamsAtEnd" type="string"></Property>
-              <Property MultiValue="0" name="ExtraCmdLineParamsAtStart" type="string"></Property>
-              <Property name="HideWindow" type="Boolean">True</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property MultiValue="0" name="ImpersonateToken" type="string"></Property>
-              <Property name="ImpersonateUser" type="Boolean">False</Property>
-              <Property MultiValue="0" name="ImpersonateUserName" type="string"></Property>
-              <Property name="IsAction" type="Boolean">True</Property>
-              <Property name="IsBreakPoint" type="WordBool">False</Property>
-              <Property name="LogOutput" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property MultiValue="1" name="Params" type="WideString"><![CDATA[%PATH_TO_UPX% %PATH_TO_BIN%\tiDBProxyService.exe]]>
-                </Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="ProcessorAffinity" type="Cardinal">0</Property>
-              <Property name="ProcessPriority" type="TFBExecuteThreadPriority">tpNormal</Property>
-              <Property name="RedirectStdErr" type="Boolean">True</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="ReturnCodeComparator" type="TFBRunReturnCodeComparator">rcLessThanEqualTo</Property>
-              <Property name="ReturnCodeToCheck" type="Integer">0</Property>
-              <Property MultiValue="0" name="StartInDir" type="WideString"></Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Property name="TerminateOnTimeout" type="Boolean">True</Property>
-              <Property name="TimeoutLength" type="Cardinal">0</Property>
-              <Property name="WaitForCompletion" type="Boolean">True</Property>
               </Object>
             <Object Class="TGroupAction" XMLID="{5FAE358B-366C-4897-BC6E-BE5F49A4B172}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Setup tiDBProxyServer.ini]]>
@@ -1413,15 +1318,53 @@ Comments=
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+            <Object Class="TFBTextFindAction" XMLID="{69788396-BBFE-4CE0-AA16-D08494C5FFE0}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Text Replace [ %%path_to_deploy%%... ] with [ %path_to_deploy%... ]  in [ %path_to_install_script% ]]]>
+                </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="CaseSensitive" type="Boolean">False</Property>
+              <Property MultiValue="0" name="DestinationFile" type="string">%path_to_install_script_working%</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="ExpandVarsWhenReplacing" type="Boolean">True</Property>
+              <Property name="FailMatchCount" type="Integer">1</Property>
+              <Property name="FailOnMoreMatchCount" type="Integer">1</Property>
+              <Property MultiValue="0" name="FBVariable" type="string"></Property>
+              <Property name="FileSetCountAllMatches" type="Boolean">False</Property>
+              <Property MultiValue="0" name="FileSetName" type="string"></Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="IsAction" type="Boolean">True</Property>
+              <Property name="IsBreakPoint" type="WordBool">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MatchRegExpr" type="Boolean">False</Property>
+              <Property name="MatchWildcards" type="Boolean">False</Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="PutCountIntoVar" type="string"></Property>
+              <Property name="ReplacementMode" type="TFBReplaceMode">trDestinationFile</Property>
+              <Property MultiValue="0" name="ReplacementText" type="string">%path_to_deploy%</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property MultiValue="0" name="SearchString" type="string">%%path_to_deploy%%</Property>
+              <Property MultiValue="0" name="SourcePath" type="string">%path_to_install_script%</Property>
+              <Property name="Substitute" type="Boolean">False</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Property name="TextFindBehaviour" type="TTextFindBehaviour">tfDontFail</Property>
+              <Property name="UseFileSet" type="Boolean">False</Property>
+              <Property name="UseVariable" type="Boolean">False</Property>
+              <Property name="WholeLinesOnly" type="Boolean">False</Property>
+              <Property name="WholeWords" type="Boolean">False</Property>
+              </Object>
             <Object Class="TInnoSetupAction" XMLID="{0930965E-58EA-4448-A5E5-5F62B148234E}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Build Inno Setup Script [ %PATH_TO_SOURCE%\InstallScripts\tiWebServer_Setup.iss ]]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Build Inno Setup Script [ %path_to_install_script_working% ]]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="InnoVersion" type="TInnoSetupVersion">Inno3</Property>
+              <Property name="InnoVersion" type="TInnoSetupVersion">Inno5</Property>
               <Property name="IsAction" type="Boolean">True</Property>
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
@@ -1429,12 +1372,12 @@ Comments=
               <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="ScriptFile" type="string">%PATH_TO_SOURCE%\InstallScripts\tiWebServer_Setup.iss</Property>
+              <Property MultiValue="0" name="ScriptFile" type="string">%path_to_install_script_working%</Property>
               <Property name="ShowProgress" type="Boolean">False</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               </Object>
             <Object Class="TFBZipAction" XMLID="{2239506F-B8BC-4B72-A0BC-899B10CF5D7D}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Create Zip File [ %PATH_TO_SOURCE%\InstallScripts\tiWebServer_Setup.zip ]]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Create Zip File [ %path_to_deploy%\tiWebServer_Setup.zip ]]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
@@ -1447,7 +1390,7 @@ Comments=
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property name="FailIfFileMissing" type="WordBool">True</Property>
               <Property name="FailIfZeroFiles" type="WordBool">False</Property>
-              <Property name="FilesList" type="TStrings"><![CDATA[%PATH_TO_SOURCE%\InstallScripts\Output\tiWebServer_Setup.exe
+              <Property name="FilesList" type="TStrings"><![CDATA[%path_to_deploy%\tiWebServer_Setup.exe
 ]]>
                 </Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
@@ -1459,7 +1402,7 @@ Comments=
               <Property name="NoCompressList" type="TStrings"><![CDATA[]]>
                 </Property>
               <Property name="NodeCollapsed" type="Boolean">False</Property>
-              <Property MultiValue="0" name="OutputFileName" type="WideString">%PATH_TO_SOURCE%\InstallScripts\tiWebServer_Setup.zip</Property>
+              <Property MultiValue="0" name="OutputFileName" type="WideString">%path_to_deploy%\tiWebServer_Setup.zip</Property>
               <Property name="PackLevel" type="Integer">9</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="Recurse" type="WordBool">False</Property>
@@ -1475,7 +1418,7 @@ Comments=
               <Property MultiValue="0" name="ZipComment" type="WideString"></Property>
               </Object>
             <Object Class="TDeleteDirectoryAction" XMLID="{34CCD87B-7104-41BC-A05A-79952A198299}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delete Directory [ %PATH_TO_SOURCE%\InstallScripts\Output ]]]>
+              <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Delete Directory [ %path_to_dcu% ]]]>
                 </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
@@ -1484,7 +1427,7 @@ Comments=
               <Property name="DeleteTree" type="WordBool">True</Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%PATH_TO_SOURCE%\InstallScripts\Output</Property>
+              <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_dcu%</Property>
               <Property name="Force" type="Boolean">False</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
               <Property name="IsAction" type="Boolean">True</Property>
@@ -2437,7 +2380,7 @@ Comments=
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -2794,7 +2737,7 @@ Comments=
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property MultiValue="0" name="Section" type="WideString">ExceptionBox</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property MultiValue="0" name="ValueName" type="WideString"></Property>
+                <Property MultiValue="0" name="ValueName" type="WideString">ShowBugReportText</Property>
                 <Property name="ValueType" type="TIniValueType">vtString</Property>
                 </Object>
               <Object Class="TWriteIniFileAction" XMLID="{E3C4DDE0-554F-4FFC-B20F-9779D039BBC1}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
@@ -4133,7 +4076,7 @@ Comments=
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">True</Property>
+              <Property name="NodeCollapsed" type="Boolean">False</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -4490,7 +4433,7 @@ Comments=
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property MultiValue="0" name="Section" type="WideString">ExceptionBox</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property MultiValue="0" name="ValueName" type="WideString"></Property>
+                <Property MultiValue="0" name="ValueName" type="WideString">ShowBugReportText</Property>
                 <Property name="ValueType" type="TIniValueType">vtString</Property>
                 </Object>
               <Object Class="TWriteIniFileAction" XMLID="{21A79903-84A6-42AD-A243-9CA25DE19B2A}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
@@ -4926,8 +4869,8 @@ Comments=
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       <Object Class="TFBVariable" XMLID="{6A8A6EF7-1CB8-422C-99D6-7A146562E293}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">C:\NEMMCO\OPDMS\Source\3rdParty\tiOPF\SupportApps\tiDBProxyServer</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%FBPROJECTDIR%\..\</Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">PATH_TO_ROOT</Property>
@@ -4941,21 +4884,60 @@ Comments=
         <Property MultiValue="0" name="Name" type="string">PATH_TO_SOURCE</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{C49CBB23-7F99-4C1F-957C-5BF027AA2422}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">%PATH_TO_ROOT%\Bin</Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
+      <Object Class="TFBVariable" XMLID="{95983E2D-AF1C-4239-98CB-2E0A051595A5}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_root%\..\</Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">PATH_TO_BIN</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_tiopf</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
-      <Object Class="TFBVariable" XMLID="{0CD0D637-8B3C-4AEF-A58F-87C520ECDB20}"><Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="1" name="DefaultValue" type="string"><![CDATA["C:\Program Files\UPX125w\UPX.EXE"]]>
-          </Property>
+      <Object Class="TFBVariable" XMLID="{EF623267-E806-4D54-BD18-8646C3B1DC1D}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_tiopf%\Core;%path_to_tiopf%\Options;%path_to_3rdparty%\FastMM;%path_to_3rdParty%\Indy\Core;%path_to_3rdParty%\Indy\Protocols;%path_to_3rdParty%\Indy\System</Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">PATH_TO_UPX</Property>
+        <Property MultiValue="0" name="Name" type="string">delphi_search_path</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{E86F8DA7-C0F7-4079-A444-84173BD1730B}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_tiopf%\3rdParty</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_3rdparty</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{17618E79-1F88-4579-9A25-60E550EB85CB}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_root%\_Deploy</Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_deploy</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{0E6505B3-5EB4-4BB4-872B-ACDA0B5683DF}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_deploy%\_dcu</Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_dcu</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{36F73192-4BFC-4C4A-847A-87C8A8822EBA}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_source%\InstallScripts\tiWebServer_Setup.iss</Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_install_script</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{8884E8A7-4DCA-4548-8860-F41883FD3377}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_source%\InstallScripts\tiWebServer_Setup_Working.iss</Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_install_script_working</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       </Object>

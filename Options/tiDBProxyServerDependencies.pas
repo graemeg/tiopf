@@ -45,20 +45,23 @@ var
 begin
   LINI:= TtiDBProxyServerConfig.Create;
   try
-    LDatabaseName:= LINI.DatabaseName;
-    LUserName:= LINI.UserName;
-    LPassword:= LINI.Password;
-    LRetryCount:= LINI.RetryCount;
-    LRetryInterval:= LINI.RetryInterval;
-    LTransactionTimeout:= LINI.TransactionTimeout;
+    if LINI.DatabaseConnectionEnabled then
+    begin
+      LDatabaseName:= LINI.DatabaseName;
+      LUserName:= LINI.UserName;
+      LPassword:= LINI.Password;
+      LRetryCount:= LINI.RetryCount;
+      LRetryInterval:= LINI.RetryInterval;
+      LTransactionTimeout:= LINI.TransactionTimeout;
+      gStatefulDBConnectionPool.TimeOut := LTransactionTimeout;
+      GTIOPFManager.ConnectDatabaseWithRetry(
+        LDatabaseName, LUserName, LPassword, LRetryCount, LRetryInterval);
+      Log('Transaction timeout: ' + FloatToStr(gStatefulDBConnectionPool.TimeOut) + ' min');
+    end;
   finally
     LINI.Free;
   end;
 
-  gStatefulDBConnectionPool.TimeOut := LTransactionTimeout;
-  GTIOPFManager.ConnectDatabaseWithRetry(
-    LDatabaseName, LUserName, LPassword, LRetryCount, LRetryInterval);
-  Log('Transaction timeout: ' + FloatToStr(gStatefulDBConnectionPool.TimeOut) + ' min');
 end;
 
 function  gTIDBProxy : TtiDBProxyServer;

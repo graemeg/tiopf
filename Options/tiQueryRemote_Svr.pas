@@ -150,14 +150,12 @@ function gStatefulDBConnectionPool : TtiStatefulDBConnectionPool;
 implementation
 uses
    tiUtils
-  ,tiGUIUtils
   ,tiOPFManager
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
   ,tiLog
   ,tiConstants
-  ,tiDialogs
   ,tiXML
   ,tiExcept
   ,SysUtils

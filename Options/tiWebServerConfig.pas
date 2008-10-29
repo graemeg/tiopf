@@ -13,6 +13,7 @@ type
     FINI: TtiINIFile;
     function GetPort: integer;
     function GetSendBugReportEmailOnCGIFailure: boolean;
+    function GetLogToApplicationSubDirectory: boolean;
   protected
     function  GetRegistryValue(const AName, ADefault: string): string; virtual;
     function  GetINIFileName: string; virtual;
@@ -31,6 +32,7 @@ type
 
     procedure   RegisterLog; virtual;
     property    LogPathToSharedFiles: string Read GetLogPathToSharedFiles;
+    property    LogToApplicationSubDirectory: boolean read GetLogToApplicationSubDirectory;
     property    CGIExtensionLogging: boolean read GetCIGExtensionLogging;
 
     property    WebServiceShortName: string Read GetWebServiceShortName;
@@ -61,16 +63,18 @@ const
   cINILog_PathToSharedFiles = 'PathToSharedFiles';
   cINILog_DefaultPathToSharedFiles = 'C:\TechInsite\Log';
   cINILog_CGIExtensionLogging = 'CGIExtensionLogging';
+  CINILog_LogToApplicationSubDirectory = 'LogToApplicationSubDirectory';
 
   cINIService = 'Web Server';
   cINIService_ShortName = 'ShortName';
   cINIService_DisplayName  = 'DiaplayName';
-  cINIService_ShortNameDefault = 'tiDBWebServer';
+  cINIService_ShortNameDefault = 'tiWebServer';
   cINIService_DisplayNameDefault  = 'TechInsite Web Server';
   cINIService_PathToStaticPages = 'PathToStaticPages';
   cINIService_PathToCGIBin = 'PathToCGIBin';
   cINIService_DefaultPathToStaticPages = 'StaticPages';
   cINIService_DefaultPathToCGIBin = 'CGI-Bin';
+  CINILog_DefaultLogToApplicationSubDirectory = true;
   cINIService_SendBugReportEmailOnCGIFailure = 'SendBugReportEmailOnCGIFailure';
   cINIService_SendBugReportEmailOnCGIFailureDefault = true;
 
@@ -122,8 +126,14 @@ end;
 function TtiWebServerConfig.GetLogPathToSharedFiles: string;
 begin
   Result:= INI.ReadString(cINILog, cINILog_PathToSharedFiles, cINILog_DefaultPathToSharedFiles);
-  Result:= tiAddTrailingSlash(Result) + tiExtractFileNameOnly(ParamStr(0));
+  if LogToApplicationSubDirectory then
+    Result:= tiAddTrailingSlash(Result) + tiExtractFileNameOnly(ParamStr(0));
   ExpandFileName(Result);
+end;
+
+function TtiWebServerConfig.GetLogToApplicationSubDirectory: boolean;
+begin
+  Result:= INI.ReadBool(cINILog, cINILog_LogToApplicationSubDirectory, cINILog_DefaultLogToApplicationSubDirectory);
 end;
 
 function TtiWebServerConfig.GetCIGExtensionLogging: boolean;

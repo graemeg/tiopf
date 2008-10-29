@@ -65,6 +65,7 @@ begin
     LConfig.RegisterLog;
     Self.Name:= LConfig.WebServiceShortName;
     Self.DisplayName:= LConfig.WebServiceDisplayName;
+    Self.StartType:= stAuto; // ToDo: Should be parameterised
   finally
     LConfig.Free;
   end;

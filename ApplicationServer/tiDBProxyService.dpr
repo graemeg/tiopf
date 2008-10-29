@@ -2,12 +2,11 @@ program tiDBProxyService;
 
 uses
   FastMM4,
-  madExcept,
   tiLog,
   tiLogToFile,
   SvcMgr,
   FMainTIDBProxyService in 'FMainTIDBProxyService.pas' {tiDBProxyServer: TService},
-  tiDBProxyServerDependencies in '..\..\Source\Options\tiDBProxyServerDependencies.pas';
+  tiDBProxyServerDependencies in '..\Options\tiDBProxyServerDependencies.pas';
 
 {$R *.RES}
 

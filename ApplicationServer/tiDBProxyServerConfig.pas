@@ -10,7 +10,7 @@ const
   cINIDatabaseConnection_DatabaseName = 'DatabaseName';
   cINIDatabaseConnection_UserName     = 'UserName';
   cINIDatabaseConnection_Password     = 'Password';
-
+  CINIDatabaseConnection_Enabled      = 'Enabled';
   cINIApplicationServer = 'Application Server';
 
 type
@@ -22,9 +22,11 @@ type
     function   GetUserName: string;
     function   GetTransactionTimeout: Byte;
     function   GetTestRefreshRateSec: Byte;
-    function GetRetryCount: Word;
-    function GetRetryInterval: Word;
+    function   GetRetryCount: Word;
+    function   GetRetryInterval: Word;
+    function   GetDatabaseConnectionEnabled: boolean;
   public
+    property    DatabaseConnectionEnabled: boolean read GetDatabaseConnectionEnabled;
     property    DatabaseName: string Read GetDatabaseName;
     property    UserName: string     Read GetUserName;
     property    Password: string     Read GetPassword;
@@ -42,6 +44,7 @@ uses
 const
   cINIDatabaseConnection_TransactionTimeout = 'TransactionTimeout';
 
+  CINIDatabaseConnection_DefaultDatabaseConnectionEnabled = True;
   cINIDatabaseConnection_DefaultDatabaseName = '..\Data\Data.gdb';
   cINIDatabaseConnection_DefaultPassword = 'masterkey';
   cINIDatabaseConnection_DefaultTransactionTimeout = 1;
@@ -57,6 +60,11 @@ const
 
 
 { TtiDBProxyServerConfig }
+
+function TtiDBProxyServerConfig.GetDatabaseConnectionEnabled: boolean;
+begin
+  Result:= INI.ReadBool(cINIDatabaseConnection, cINIDatabaseConnection_Enabled, cINIDatabaseConnection_DefaultDatabaseConnectionEnabled);
+end;
 
 function TtiDBProxyServerConfig.GetDatabaseName: string;
 begin

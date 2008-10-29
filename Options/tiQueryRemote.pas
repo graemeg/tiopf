@@ -286,7 +286,6 @@ uses
   ,tiObject
   ,tiUtils
   ,tiLog
-  ,tiDialogs
   ,tiCompress
   ,tiCompressNone
   ,tiCompressZLib
