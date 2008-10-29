@@ -4,8 +4,6 @@
     standard edit components and make them object-aware.  See the demo
     application for usage.
 
-  ToDo:
-    * As soon as TSpinEdit has been implemented, port the SpinEdit mediator
 }
 
 unit tiMediators;
@@ -21,6 +19,7 @@ uses
   ,stdctrls
   ,extctrls
   ,comctrls
+  ,spin
   ;
 
 type
@@ -52,6 +51,7 @@ type
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   SetupGUIandObject; override;
   public
     Constructor Create; override;
     property    EditControl: TCheckBox read FEditControl write FEditControl;
@@ -75,21 +75,19 @@ type
 
 
   { Base class to handle TSpinEdit controls }
-{
   TMediatorSpinEditView = class(TMediatorView)
   private
-    function    GetEditControl: TSpinEdit;
-    procedure   OnLostFocus(Sender: TObject);
-    procedure   SetEditControl(const AValue: TSpinEdit);
+    FEditControl: TSpinEdit;
   protected
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   SetupGUIandObject; override;
     procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
   public
-    property    EditControl: TSpinEdit read GetEditControl write SetEditControl;
-    procedure   GuiToObject; override;
+    constructor Create; override;
+    property    EditControl: TSpinEdit read FEditControl write FEditControl;
     class function ComponentClass: TClass; override;
   end;
-}
 
 
   { Base class to handle TTrackBar controls }
@@ -280,50 +278,30 @@ end;
 
 
 { TMediatorSpinEditView}
-(*
+
 class function TMediatorSpinEditView.ComponentClass: TClass;
 begin
   Result := TSpinEdit;
 end;
 
-
-procedure TMediatorSpinEditView.GuiToObject;
+function TMediatorSpinEditView.GetGUIControl: TComponent;
 begin
-  { Control is busy clearing the value before replacing it with what the user
-    typed. }
-  if (TSpinEdit(EditControl).Text = '') then
-    Exit; //==>
-
-  { continue as normal }
-  inherited;
+  Result := FEditControl;
 end;
 
-function TMediatorSpinEditView.GetEditControl: TSpinEdit;
+procedure TMediatorSpinEditView.SetGUIControl(const AValue: TComponent);
 begin
-  Result := TSpinEdit(FEditControl);
+  FEditControl := AValue as TSpinEdit;
+  inherited SetGUIControl(AValue);
 end;
-
-procedure TMediatorSpinEditView.OnLostFocus(Sender: TObject);
-begin
-  if (TSpinEdit(EditControl).Text = '') then
-  begin
-    { Default the EditControl to a valid value }
-    TSpinEdit(EditControl).Value := 0;
-    GUIChanged;
-  end;
-end;
-
-procedure TMediatorSpinEditView.SetEditControl(const AValue: TSpinEdit);
-begin
-  FEditControl := AValue;
-end;
-
 
 procedure TMediatorSpinEditView.SetupGUIandObject;
 begin
-  inherited;
-  TSpinEdit(EditControl).Text := '';
-  TSpinEdit(EditControl).OnExit := OnLostFocus;
+  inherited SetupGUIandObject;
+  if ObjectUpdateMoment in [ouOnChange,ouCustom] then
+    FEditControl.OnChange := @DoOnChange
+  else
+    FEditControl.OnExit := @DoOnChange;
 end;
 
 procedure TMediatorSpinEditView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
@@ -344,7 +322,12 @@ begin
     EditControl.Hint   := '';
   end;
 end;
-*)
+
+constructor TMediatorSpinEditView.Create;
+begin
+  inherited Create;
+  GuiFieldName := 'Value';
+end;
 
 { TMediatorTrackBarView}
 
@@ -374,6 +357,10 @@ begin
     FEditControl.Min := Mi;
     FEditControl.Max := Ma;
   end;
+  if ObjectUpdateMoment in [ouOnChange,ouCustom] then
+    FEditControl.OnChange := @DoOnChange
+  else
+    FEditControl.OnExit := @DoOnChange;
 end;
 
 constructor TMediatorTrackBarView.Create;
@@ -437,7 +424,7 @@ end;
 constructor TMediatorComboBoxView.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Text'; //'ItemIndex';
+  GuiFieldName := 'Text';
 end;
 
 procedure TMediatorComboBoxView.DoObjectToGui;
@@ -479,16 +466,10 @@ procedure TMediatorMemoView.SetupGUIandObject;
 begin
   inherited;
   EditControl.Lines.Clear;
-
-  //if UseInternalOnChange then
-    //EditControl.OnChange := @DoOnChange; // default OnChange event handler
   if ObjectUpdateMoment in [ouOnChange,ouCustom] then
     FEditControl.OnChange := @DoOnChange
   else
     FEditControl.OnExit := @DoOnChange;
-
-//  EditControl.ScrollBars := ssVertical;
-//  EditControl.WordWrap   := True;
 end;
 
 
@@ -647,6 +628,15 @@ begin
     EditControl.Color  := clWindow;
     EditControl.Hint   := '';
   end;
+end;
+
+procedure TMediatorCheckBoxView.SetupGUIandObject;
+begin
+  inherited SetupGUIandObject;
+  if ObjectUpdateMoment in [ouOnChange,ouCustom] then
+    FEditControl.OnChange := @DoOnChange
+  else
+    FEditControl.OnExit := @DoOnChange;
 end;
 
 constructor TMediatorCheckBoxView.Create;
