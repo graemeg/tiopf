@@ -2066,20 +2066,29 @@ begin
       lValue1 := TtiObject(AItem1).GetPropValue(lsPropName);
       lValue2 := TtiObject(AItem2).GetPropValue(lsPropName);
 
-      if lValue1 < lValue2 then
-      Begin
-        If (AAscendingOrder) Then
-          result := -1
-        Else
-          Result := 1;
-      End
-      else if lValue1 > lValue2 then
-      Begin
-        If (AAscendingOrder) Then
-          result := 1
-        Else
-          Result := -1;
-      End;
+      if VarType(lValue1)=varString then
+      begin
+        If (AAscendingOrder)
+        then Result:=AnsiCompareText(lValue1,lValue2)
+        else Result:=AnsiCompareText(lValue2,lValue1)
+      end
+      else begin
+        if lValue1 < lValue2 then
+        Begin
+          If (AAscendingOrder) Then
+            result := -1
+          Else
+            Result := 1;
+        End
+        else if lValue1 > lValue2 then
+        Begin
+          If (AAscendingOrder) Then
+            result := 1
+          Else
+            Result := -1;
+        End;
+      end;
+
       if result <> 0 then
         Break; //==>
     end;

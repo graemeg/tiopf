@@ -1430,15 +1430,8 @@ begin
   Assert(pData1.TestValid(TtiObject), CTIErrorInvalidObject);
   Assert(pData2.TestValid(TtiObject), CTIErrorInvalidObject);
 
-  if pData1.PropType(pOrder.FieldName) = tiTKString then
-    lVal1 := UpperCase(pData1.PropValue[pOrder.FieldName])
-  else
-    lVal1 := pData1.PropValue[pOrder.FieldName];
-
-  if pData2.PropType(pOrder.FieldName) = tiTKString then
-    lVal2 := UpperCase(pData2.PropValue[pOrder.FieldName])
-  else
-    lVal2 := pData2.PropValue[pOrder.FieldName];
+  lVal1 := pData1.PropValue[pOrder.FieldName];
+  lVal2 := pData2.PropValue[pOrder.FieldName];
 
   if VarIsNull(lval1) then
     _DoRaiseException(pOrder.FieldName, pData1.ClassName);
@@ -1446,12 +1439,16 @@ begin
   if VarIsNull(lval2) then
     _DoRaiseException(pOrder.FieldName, pData2.ClassName);
 
-  if lval1 < lval2 then
-    Result := -1
-  else if lval1 > lval2 then
-    Result := 1
-  else
-    Result := 0;
+  if pData1.PropType(pOrder.FieldName) = tiTKString then
+     result:=AnsiCompareText(lval1,lval2)
+  else begin
+    if lval1 < lval2 then
+      Result := -1
+    else if lval1 > lval2 then
+      Result := 1
+    else
+      Result := 0;
+  end;
 
   if pOrder.SortDirection = vtsdDescending then
     Result := -Result;
