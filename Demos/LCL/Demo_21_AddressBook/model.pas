@@ -354,7 +354,7 @@ end;
 
 procedure TAddress.AssignClassProps(ASource: TtiObject);
 begin
-  FAddressType.Assign(ASource);
+  FAddressType := TAddress(ASource).AddressType;  // reference only
   FCity:= TAddress(ASource).City;  // reference only
 end;
 
@@ -370,11 +370,11 @@ end;
 
 procedure TAddress.SetAddressType(const AValue: TAddressType);
 begin
-  if FAddressType.Name = AValue.Name then
+  if FAddressType = AValue then
     Exit; //==>
-  
+
   BeginUpdate;
-  FAddressType.Assign(AValue);
+  FAddressType := AValue;
   Mark;
   EndUpdate;
 end;

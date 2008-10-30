@@ -67,7 +67,6 @@ begin
 end;
 
 procedure TMainForm.EditContactClick(Sender: TObject);
-
 var
   c: TContact;
 begin
@@ -80,7 +79,6 @@ begin
 end;
 
 procedure TMainForm.MIAddContactClick(Sender: TObject);
-
 var
   c: TContact;
 begin
@@ -105,7 +103,6 @@ procedure TMainForm.DeleteContactClick(Sender: TObject);
 var
   c: TContact;
   M : TMediatorView;
-
 begin
   M:=FMediator.FindByComponent(GContacts).Mediator;
   c := TContact(TStringGridMediator(M).SelectedObject);
