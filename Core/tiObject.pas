@@ -451,13 +451,13 @@ type
     {: End a update process }
     procedure   EndUpdate;
     {: Only needed if performing a observing role }
-    procedure   Update(ASubject: TtiObject); virtual; overload;
+    procedure   Update(ASubject: TtiObject); overload; virtual;
     {: Only needed if performing a observing role where other events than changed need to be observed }
-    procedure   Update(ASubject: TtiObject; AOperation : TNotifyOperation); virtual; overload;
+    procedure   Update(ASubject: TtiObject; AOperation : TNotifyOperation); overload; virtual;
     {: Notify all the attached observers about a change }
-    procedure   NotifyObservers; virtual; overload;
+    procedure   NotifyObservers; overload; virtual;
     {: Notify all the attached observers about a change operation}
-    procedure   NotifyObservers(ASubject : TTiObject; AOperation : TNotifyOperation); virtual; overload;
+    procedure   NotifyObservers(ASubject : TTiObject; AOperation : TNotifyOperation); overload; virtual;
     {: Used to get access to the internal observer list. This has been surfaced
        so that the MGM List Views can atttach/detach observers to the selected
        object. Not a great way of doing it - we need a different design. }
