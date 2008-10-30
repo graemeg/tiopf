@@ -2,6 +2,7 @@
 <CONFIG>
   <Package Version="3">
     <Name Value="tiopfLCL"/>
+    <Author Value="Graeme &amp; Michael"/>
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
@@ -17,7 +18,10 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="Lazarus specific GUI support"/>
+    <Description Value="Lazarus specific GUI support
+"/>
+    <License Value="Mozilla Public License 1.1 or Modified LGPL"/>
+    <Version Major="2" Release="4"/>
     <Files Count="2">
       <Item1>
         <Filename Value="../../GUI/LCL/tiMediators.pas"/>

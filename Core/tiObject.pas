@@ -59,6 +59,9 @@ type
 
   TtiObjectAsDebugStringValuesToShow = set of TtiObjectAsDebugStringValues;
 
+  {: Various observer Notifications }
+  TNotifyOperation = (noChanged,noAddItem,noDeleteItem,noFree,noCustom);
+
 const
   CTIAsDebugStringDataAll =
     [adsData, adsClassName, adsObjectState, adsOID, adsCaption, adsDeleted, adsChildren];
@@ -280,7 +283,6 @@ type
     FObserverList: TList;
     FUpdateCount: Integer;
     function GetObserverList: TList;
-    procedure StopObservers;
   protected
     FOwner: TtiObject; // Want FOwner here as there are time when we may want
                         // go get access without going through the GetOwner and
@@ -449,9 +451,13 @@ type
     {: End a update process }
     procedure   EndUpdate;
     {: Only needed if performing a observing role }
-    procedure   Update(ASubject: TtiObject); virtual;
+    procedure   Update(ASubject: TtiObject); virtual; overload;
+    {: Only needed if performing a observing role where other events than changed need to be observed }
+    procedure   Update(ASubject: TtiObject; AOperation : TNotifyOperation); virtual; overload;
     {: Notify all the attached observers about a change }
-    procedure   NotifyObservers; virtual;
+    procedure   NotifyObservers; virtual; overload;
+    {: Notify all the attached observers about a change operation}
+    procedure   NotifyObservers(ASubject : TTiObject; AOperation : TNotifyOperation); virtual; overload;
     {: Used to get access to the internal observer list. This has been surfaced
        so that the MGM List Views can atttach/detach observers to the selected
        object. Not a great way of doing it - we need a different design. }
@@ -1297,6 +1303,7 @@ begin
     if FbAutoSetItemOwner then
       AObject.Owner := FItemOwner;
     result := FList.Add(AObject);
+    NotifyObservers(AObject,noAddItem);
   Finally
     EndUpdate;
   end;
@@ -1332,6 +1339,7 @@ procedure TtiObjectList.Delete(i: integer);
 begin
   BeginUpdate;
   try
+    NotifyObservers(TtiObject(Items[i]),noDeleteItem);
     if AutoSetItemOwner then
       TtiObject(Items[i]).Owner := nil;
     FList.Delete(i);
@@ -1495,6 +1503,7 @@ function TtiObjectList.Remove(const AObject: TtiObject):integer;
 begin
   BeginUpdate;
   Try
+    NotifyObservers(AObject,noDeleteItem);
     if AutoSetItemOwner then
       AObject.Owner := nil;
     result := FList.Remove(AObject);
@@ -1510,6 +1519,7 @@ procedure TtiObjectList.Extract(const AObject: TtiObject);
 begin
   BeginUpdate;
   Try
+    NotifyObservers(AObject,noDeleteItem);
     if AutoSetItemOwner then
       AObject.Owner := nil;
     FList.Extract(AObject);
@@ -1531,6 +1541,7 @@ begin
     FList.Insert(AIndex, AObject);
     if FbAutoSetItemOwner then
       AObject.Owner := FItemOwner;
+    NotifyObservers(AObject,noAddItem);
   Finally
     EndUpdate;
   end;
@@ -2763,8 +2774,7 @@ begin
   {$IFNDEF OID_AS_INT64}
     FOID.Free;
   {$ENDIF}
-  if (FObserverList<>Nil) then
-    StopObservers;
+  NotifyObservers(Self,noFree);
   FreeAndNil(FObserverList);
   inherited;
 end;
@@ -3895,6 +3905,12 @@ begin
 end;
 
 procedure TtiObject.NotifyObservers;
+begin
+  NotifyObservers(Self,noChanged);
+end;
+
+procedure TtiObject.NotifyObservers(ASubject: TTiObject;
+    AOperation: TNotifyOperation);
 var
   ObjectIndex: Integer;
   Observer: TtiObject;
@@ -3906,13 +3922,21 @@ begin
   begin
     Observer := TtiObject(FObserverList.Items[ObjectIndex]);
     if Assigned(Observer) then
-      Observer.Update(self);
+      Observer.Update(ASubject,AOperation);
   end;
 end;
 
 procedure TtiObject.Update(ASubject: TtiObject);
 begin
   { Do nothing here. This will be implemented in decendant classes when needed }
+end;
+
+procedure TtiObject.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+begin
+  If (AOperation=noChanged) then
+    Update(ASubject)
+  else if (AOperation=noFree) then
+    StopObserving(ASubject)
 end;
 
 procedure TtiObject.StopObserving(ASubject: TtiObject);
@@ -3925,20 +3949,6 @@ begin
   if not Assigned(FObserverList) then
     FObserverList := TList.Create;
   Result := FObserverList;
-end;
-
-procedure TtiObject.StopObservers;
-var
-  I: Integer;
-  O: TtiObject;
-begin
-  if Assigned(FObserverList) then
-    for I := FObserverList.Count-1 downto 0 do
-    begin
-      O := TTiObject(FObserverList[i]);
-      if Assigned(O) then
-        O.StopObserving(Self);
-    end;
 end;
 
 procedure TtiObjectList.FreeDeleted;

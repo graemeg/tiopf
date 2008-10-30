@@ -30,6 +30,7 @@ type
     procedure SetSelectedObject(const AValue: TtiObject); override;
     procedure CreateColumns; override;
     procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
+    procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TListItemMediator); override;
     function GetGuiControl: TComponent; override;
     procedure SetGuiControl(const AValue: TComponent); override;
     procedure SetupGUIandObject; override;
@@ -58,6 +59,7 @@ type
   private
     FView: TStringGrid;
     procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
+    procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TListItemMediator); override;
     procedure SetView(const AValue: TStringGrid);
   protected
     function GetSelectedObject: TtiObject; override;
@@ -66,6 +68,7 @@ type
     function GetGuiControl: TComponent; override;
     procedure SetGuiControl(const AValue: TComponent); override;
     procedure SetupGUIandObject; override;
+    procedure ClearList; override;
     procedure RebuildList; override;
   public
     constructor CreateCustom(AModel: TtiObjectList; AGrid: TStringGrid; ADisplayNames: string; AIsObserving: Boolean = True);
@@ -169,10 +172,15 @@ var
 begin
   DataAndPropertyValid(AData);
   { Create ListItem and Mediator }
-  li:=FView.Items.Add;
-  m:= TListViewListItemMediator.CreateCustom(AData, li, OnBeforeSetupField, FieldsInfo, Active);
-  li.Data := M;
-  MediatorList.Add(m);
+  FView.BeginUpdate;
+  try
+    li:=FView.Items.Add;
+    m:= TListViewListItemMediator.CreateCustom(AData, li, OnBeforeSetupField, FieldsInfo, Active);
+    li.Data := M;
+    MediatorList.Add(m);
+  Finally
+    FView.EndUpdate;
+  end;
 end;
 
 procedure TListViewMediator.CreateColumns;
@@ -181,7 +189,9 @@ var
   lc: TListColumn;
   lInfo: TtiMediatorFieldInfo;
 begin
-  if View.Columns.Count = 0 then
+  If (View.Columns.Count<>FieldsInfo.Count) then
+    View.Columns.Clear;
+  if View.Columns.Count=0 then
   begin
     for c := 0 to FieldsInfo.Count-1 do
     begin
@@ -217,14 +227,11 @@ end;
 
 procedure TListViewMediator.RebuildList;
 begin
-  ClearList;
-
   { This rebuilds the whole list. Not very efficient. You can always override
     this in your mediators to create a more optimised rebuild. }
   View.BeginUpdate;
   try
-    View.Columns.Clear;
-    View.Items.Clear;
+    CreateColumns;
     CreateSubMediators;
   finally
     View.EndUpdate;
@@ -236,6 +243,13 @@ begin
   if not AValue then
     ClearList;
   inherited SetActive(AValue);
+end;
+
+procedure TListViewMediator.DoDeleteItemMediator(AIndex: Integer;
+  AMediator: TListItemMediator);
+begin
+  FView.Items.Delete(TListViewListItemMediator(AMediator).FView.Index);
+  inherited DoDeleteItemMediator(AIndex, AMediator);
 end;
 
 constructor TListViewMediator.CreateCustom(AModel: TtiObjectList; AView: TListView; AOnBeforeSetupField: TOnBeforeSetupField; ADisplayNames: string; AIsObserving: Boolean);
@@ -420,14 +434,28 @@ var
   lFieldName: string;
   lMediatorView: TStringGridRowMediator;
 begin
-  for i := 0 to FieldsInfo.Count - 1 do
-  begin
-    lFieldName := FieldsInfo[i].PropName;
-    FView.Cells[i, ARowIdx+1] := AData.PropValue[lFieldName];  // set Cell text
+  FView.BeginUpdate;
+  try
+    If ARowIdx=FView.RowCount then // In case of add notification
+      FView.RowCount:=FView.RowCount+1;
+    for i := 0 to FieldsInfo.Count - 1 do
+    begin
+      lFieldName := FieldsInfo[i].PropName;
+      FView.Cells[i, ARowIdx] := AData.PropValue[lFieldName];  // set Cell text
+    end;
+    lMediatorView := TStringGridRowMediator.CreateCustom(AData, FView, FieldsInfo, ARowIdx+1, Active);
+    FView.Objects[0, ARowIdx] := lMediatorView;   // set Object reference inside grid
+    MediatorList.Add(lMediatorView);
+  Finally
+    FView.EndUpdate;
   end;
-  lMediatorView := TStringGridRowMediator.CreateCustom(AData, FView, FieldsInfo, ARowIdx+1, Active);
-  FView.Objects[0, ARowIdx+1] := lMediatorView;   // set Object reference inside grid
-  MediatorList.Add(lMediatorView);
+end;
+
+procedure TStringGridMediator.DoDeleteItemMediator(AIndex: Integer;
+  AMediator: TListItemMediator);
+begin
+  FView.DeleteColRow(False,AIndex+1);
+  Inherited DoDeleteItemMediator(AIndex,AMediator);
 end;
 
 procedure TStringGridMediator.CreateColumns;
@@ -466,6 +494,13 @@ begin
   FView.Options:=FView.Options+[goRowSelect];
   // Rowcount is set after columns are created, because clearing columns
   //  resets rowcount.
+end;
+
+procedure TStringGridMediator.ClearList;
+begin
+  MediatorList.Clear;
+  If Assigned(View) then
+    View.RowCount:=1;
 end;
 
 procedure TStringGridMediator.RebuildList;
