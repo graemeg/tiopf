@@ -122,7 +122,8 @@ begin
   tiWin32CoInitialize;
   FADOQuery := TADOQueryLocal.Create(nil);
   FADOQuery.CursorType := ctOpenForwardOnly;
-  FADOQuery.CursorLocation := clUseServer;
+  FADOQuery.CursorLocation := clUseClient;
+  FADOQuery.DisableControls;
   Dataset:=FADOQuery;
   Params:= FADOQuery.PSGetParams;
   FSQL := TStringList.Create;
