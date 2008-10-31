@@ -1116,12 +1116,12 @@ begin
   for i := 0 to Model.Count - 1 do
     begin
     if (not Model.Items[i].Deleted) or FShowDeleted then
-      if I<MediatorList.Count then
-        TListItemMediator(MediatorList[i]).Model:=Model.Items[i]
+      if i < MediatorList.Count then
+        TListItemMediator(MediatorList[i]).Model := Model.Items[i]
       else
         DoCreateItemMediator(Model.Items[i], i);
     end;
-  for I:=MediatorList.Count-1 downto Model.Count do
+  for i := MediatorList.Count-1 downto Model.Count do
     DoDeleteItemMediator(I,TListItemMediator(MediatorList[i]));
 end;
 
