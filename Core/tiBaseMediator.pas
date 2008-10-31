@@ -91,7 +91,7 @@ type
     // Copy GUI to Object. Calls OnObjectToGUI if set, and then calls DoGUIToObject if needed
     procedure ObjectToGui;
     // Called by NotifyObservers of subject. Calls ObjectToGUI by default.
-    procedure   Update(pSubject: TtiObject; AOperation : TNotifyOperation); override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
     // Call when GUI changed. Will call GUIToObject.
     procedure GUIChanged;
     // Access properties.
@@ -464,9 +464,9 @@ begin
   CheckSetupGUIAndObject;
 end;
 
-procedure TMediatorView.Update(pSubject: TtiObject; AOperation : TNotifyOperation);
+procedure TMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 begin
-  inherited;
+  inherited Update(ASubject, AOperation);
   if AOperation=noChanged then
   begin
     ObjectToGui;
@@ -1184,7 +1184,7 @@ begin
                        DoDeleteItemMediator(I,M);
                    end;
     noChanged    : if (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
-                     RebuildList
+                     RebuildList;
   end;
 end;
 

@@ -60,7 +60,7 @@ type
   TtiObjectAsDebugStringValuesToShow = set of TtiObjectAsDebugStringValues;
 
   {: Various observer Notifications }
-  TNotifyOperation = (noChanged,noAddItem,noDeleteItem,noFree,noCustom);
+  TNotifyOperation = (noChanged, noAddItem, noDeleteItem, noFree, noCustom);
 
 const
   CTIAsDebugStringDataAll =
@@ -453,7 +453,7 @@ type
     {: Only needed if performing a observing role }
     procedure   Update(ASubject: TtiObject); overload; virtual;
     {: Only needed if performing a observing role where other events than changed need to be observed }
-    procedure   Update(ASubject: TtiObject; AOperation : TNotifyOperation); overload; virtual;
+    procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation); overload; virtual;
     {: Notify all the attached observers about a change }
     procedure   NotifyObservers; overload; virtual;
     {: Notify all the attached observers about a change operation}
@@ -802,7 +802,9 @@ const
   cgNullDBString             = '' ;
   cgNullDBDate               = 0.0;
 
-function ObjectStateToString(AObjectState : TPerObjectState): string;
+function ObjectStateToString(AObjectState: TPerObjectState): string;
+
+function NotifyOperationToString(AOperation: TNotifyOperation): string;
 
 {:Copy a TtiObjectList of TtiObject(s) data to a TStream using CSV format}
 procedure tiListToStream(AStream: TStream;
@@ -841,6 +843,12 @@ function ObjectStateToString(AObjectState : TPerObjectState): string;
 begin
   result := GetEnumName(TypeInfo(TPerObjectState),
                          Ord(AObjectState));
+end;
+
+function NotifyOperationToString(AOperation: TNotifyOperation): string;
+begin
+  result := GetEnumName(TypeInfo(TNotifyOperation),
+                         Ord(AOperation));
 end;
 
 procedure tiListToStream(AStream : TStream; AList : TtiObjectList);
