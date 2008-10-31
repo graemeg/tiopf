@@ -222,7 +222,7 @@ type
     procedure SetSubject(const AValue: TtiObject); override;
     procedure SetFieldName(const AValue: string); override;
     procedure SetActive(const AValue: Boolean); override;
-    Function FindObjectMediator(AObject : TTiObject; Var AtIndex : Integer) : TListItemMediator;
+    Function FindObjectMediator(AObject : TTiObject; out AtIndex : Integer) : TListItemMediator;
     property MediatorList: TObjectList read FMediatorList;
   public
     constructor Create; override;
@@ -1038,11 +1038,10 @@ begin
     TListItemMediator(FMediatorList[i]).Active := AValue;
 end;
 
-function TCustomListMediator.FindObjectMediator(AObject: TTiObject;
-  var AtIndex: Integer): TListItemMediator;
+function TCustomListMediator.FindObjectMediator(AObject: TTiObject; out AtIndex: Integer): TListItemMediator;
 begin
   AtIndex:=FMediatorList.Count-1;
-  While (ATIndex>=0) and (TListItemMediator(FMediatorList[AtIndex]).Model<>AObject) do
+  While (AtIndex>=0) and (TListItemMediator(FMediatorList[AtIndex]).Model<>AObject) do
     Dec(AtIndex);
   If (AtIndex=-1) then
     Result:=Nil
@@ -1180,8 +1179,8 @@ begin
   Case AOperation of
     noAddItem    : DoCreateItemMediator(ASubject,Model.Count-1); // always at the end...
     noDeleteItem : begin
-                     M:=FindObjectmediator(ASubject,I);
-                     if M<>Nil then
+                     M := FindObjectMediator(ASubject,I);
+                     if M<>nil then
                        DoDeleteItemMediator(I,M);
                    end;
     noChanged    : if (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
