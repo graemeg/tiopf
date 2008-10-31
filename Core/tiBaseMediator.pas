@@ -1110,13 +1110,13 @@ end;
 
 procedure TCustomListMediator.CreateSubMediators;
 var
-  I: integer;
+  i: integer;
 begin
   CreateColumns;
-  for I := 0 to Model.Count - 1 do
+  for i := 0 to Model.Count - 1 do
     begin
     if (not Model.Items[i].Deleted) or FShowDeleted then
-      If I<MediatorList.Count then
+      if I<MediatorList.Count then
         TListItemMediator(MediatorList[i]).Model:=Model.Items[i]
       else
         DoCreateItemMediator(Model.Items[i], i);
@@ -1171,21 +1171,20 @@ begin
   Result := True;
 end;
 
-procedure TCustomListMediator.Update(ASubject: TtiObject;
-  AOperation: TNotifyOperation);
+procedure TCustomListMediator.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 var
-  M : TListItemMediator;
-  I : Integer;
+  M: TListItemMediator;
+  I: Integer;
 begin
   // Do not call inherited, it will rebuild the list !!
   Case AOperation of
-    noAddItem    : DoCreateItemMediator(ASubject,Model.Count); // always at the end...
+    noAddItem    : DoCreateItemMediator(ASubject,Model.Count-1); // always at the end...
     noDeleteItem : begin
-                   M:=FindObjectmediator(ASubject,I);
-                   If M<>Nil then
-                     DoDeleteItemMediator(I,M);
+                     M:=FindObjectmediator(ASubject,I);
+                     if M<>Nil then
+                       DoDeleteItemMediator(I,M);
                    end;
-    noChanged    : If (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
+    noChanged    : if (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
                      RebuildList
   end;
 end;

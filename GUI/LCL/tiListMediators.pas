@@ -436,15 +436,15 @@ var
 begin
   FView.BeginUpdate;
   try
-    If ARowIdx=FView.RowCount then // In case of add notification
+    if ARowIdx+1 = FView.RowCount then // In case of add notification
       FView.RowCount:=FView.RowCount+1;
     for i := 0 to FieldsInfo.Count - 1 do
     begin
       lFieldName := FieldsInfo[i].PropName;
-      FView.Cells[i, ARowIdx] := AData.PropValue[lFieldName];  // set Cell text
+      FView.Cells[i, ARowIdx+1] := AData.PropValue[lFieldName];  // set Cell text
     end;
     lMediatorView := TStringGridRowMediator.CreateCustom(AData, FView, FieldsInfo, ARowIdx+1, Active);
-    FView.Objects[0, ARowIdx] := lMediatorView;   // set Object reference inside grid
+    FView.Objects[0, ARowIdx+1] := lMediatorView;   // set Object reference inside grid
     MediatorList.Add(lMediatorView);
   Finally
     FView.EndUpdate;

@@ -1299,12 +1299,12 @@ end;
 function TtiObjectList.Add(const AObject : TtiObject): integer;
 begin
   BeginUpdate;
-  Try
+  try
     if FbAutoSetItemOwner then
       AObject.Owner := FItemOwner;
     result := FList.Add(AObject);
     NotifyObservers(AObject,noAddItem);
-  Finally
+  finally
     EndUpdate;
   end;
 end;
@@ -3918,8 +3918,7 @@ begin
   NotifyObservers(Self,noChanged);
 end;
 
-procedure TtiObject.NotifyObservers(ASubject: TTiObject;
-    AOperation: TNotifyOperation);
+procedure TtiObject.NotifyObservers(ASubject: TTiObject; AOperation: TNotifyOperation);
 var
   ObjectIndex: Integer;
   Observer: TtiObject;
@@ -3942,7 +3941,7 @@ end;
 
 procedure TtiObject.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 begin
-  If (AOperation=noChanged) then
+  if (AOperation=noChanged) then
     Update(ASubject)
   else if (AOperation=noFree) then
     StopObserving(ASubject)
