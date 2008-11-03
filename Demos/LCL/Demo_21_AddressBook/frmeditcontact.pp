@@ -44,14 +44,19 @@ type
     property  Data: TContact read FData write SetData;
   end;
 
+
 function EditContact(AData: TContact): Boolean;
+
 
 var
   ContactEditForm: TContactEditForm;
 
+
 implementation
 
-uses frmEditAddress;
+uses
+  frmEditAddress;
+
 
 function EditContact(AData: TContact): Boolean;
 var
@@ -70,10 +75,8 @@ end;
 { TContactEditForm }
 
 procedure TContactEditForm.BEditClick(Sender: TObject);
-
 Var
   A : TAddress;
-
 begin
   A := TAddress(TListViewMediator(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
   if Assigned(A) then
@@ -84,10 +87,8 @@ begin
 end;
 
 procedure TContactEditForm.BDeleteClick(Sender: TObject);
-
 Var
   A : TAddress;
-
 begin
   A := TAddress(TListViewMediator(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
   if Assigned(A) then

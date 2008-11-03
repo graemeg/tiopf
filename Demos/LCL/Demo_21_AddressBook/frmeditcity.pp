@@ -63,7 +63,6 @@ begin
 end;
 
 procedure TEditCityForm.SetupMediators;
-
 begin
   if not Assigned(FMediator) then
   begin

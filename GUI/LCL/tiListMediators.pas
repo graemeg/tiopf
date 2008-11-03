@@ -41,6 +41,7 @@ type
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; ADisplayNames: string; AIsObserving: Boolean = True); overload;
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; AOnBeforeSetupField: TOnBeforeSetupField; ADisplayNames: string; AIsObserving: Boolean = True); overload;
     class function ComponentClass: TClass; override;
+    function GetObjectFromItem(AItem: TListItem): TtiObject;
     constructor Create; override;
     destructor Destroy; override;
     procedure HandleSelectionChanged; override;
@@ -74,6 +75,7 @@ type
     constructor CreateCustom(AModel: TtiObjectList; AGrid: TStringGrid; ADisplayNames: string; AIsObserving: Boolean = True);
     class function ComponentClass: TClass; override;
     class function CompositeMediator: Boolean; override;
+    function GetObjectFromRow(ARow: Integer): TtiObject;
   published
     property View: TStringGrid read FView write SetView;
     property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
@@ -159,10 +161,7 @@ end;
 
 function TListViewMediator.GetSelectedObject: TtiObject;
 begin
-  if FView.Selected=Nil then
-    Result := nil
-  else
-    Result := TListItemMediator(FView.Selected.Data).Model;
+  Result := GetObjectFromItem(FView.Selected);
 end;
 
 procedure TListViewMediator.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer);
@@ -266,6 +265,14 @@ end;
 class function TListViewMediator.ComponentClass: TClass;
 begin
   Result := TListView;
+end;
+
+function TListViewMediator.GetObjectFromItem(AItem: TListItem): TTiObject;
+begin
+  if (AItem = nil) or (AItem.Data = nil) then
+    Result := nil
+  else
+    Result := TListItemMediator(AItem.Data).Model;
 end;
 
 constructor TListViewMediator.Create;
@@ -388,18 +395,11 @@ end;
 { TStringGridMediator }
 
 function TStringGridMediator.GetSelectedObject: TtiObject;
-begin
-  if FView.RowCount = 0 then
-  begin
-    Result := nil;
-    Exit;
-  end;
 
-  if FView.Row = -1 then
-    Result := nil
-  else
-    Result := TListItemMediator(FView.Objects[0, FView.Row]).Model;
+begin
+  Result := GetObjectFromRow(FView.Row);
 end;
+
 
 procedure TStringGridMediator.SetSelectedObject(const AValue: TtiObject);
 var
@@ -534,6 +534,30 @@ end;
 class function TStringGridMediator.CompositeMediator: Boolean;
 begin
   Result:=true;
+end;
+
+function TStringGridMediator.GetObjectFromRow(ARow: Integer): TTiObject;
+
+var
+  O : TObject;
+
+begin
+  if FView.RowCount = 0 then
+  begin
+    Result := nil;
+    Exit;
+  end;
+
+  if ARow = -1 then
+    Result := nil
+  else
+    begin
+    O:=FView.Objects[0, ARow];
+    If O<>Nil then
+      Result := TListItemMediator(O).Model
+    else
+      Result:=Nil;
+    end;
 end;
 
 
