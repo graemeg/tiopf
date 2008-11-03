@@ -1168,7 +1168,7 @@ end;
 
 destructor TCustomListMediator.Destroy;
 begin
-  FMediatorList.Clear;
+  FMediatorList.Free;
   FFieldsInfo.Free;
   inherited Destroy;
 end;
