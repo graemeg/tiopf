@@ -226,6 +226,7 @@ type
     property MediatorList: TObjectList read FMediatorList;
   public
     constructor Create; override;
+    destructor Destroy; override;
     class function CompositeMediator: Boolean; override;
     procedure Update(ASubject: TtiObject; AOperation : TNotifyOperation); override;
     procedure HandleSelectionChanged; virtual; // Called from the GUI to trigger events
@@ -1163,6 +1164,13 @@ begin
   FMediatorList := TObjectList.Create;
   FShowDeleted  := False;
   Active        := False;
+end;
+
+destructor TCustomListMediator.Destroy;
+begin
+  FMediatorList.Clear;
+  FFieldsInfo.Free;
+  inherited Destroy;
 end;
 
 class function TCustomListMediator.CompositeMediator: Boolean;

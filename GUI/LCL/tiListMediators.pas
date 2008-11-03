@@ -41,11 +41,11 @@ type
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; ADisplayNames: string; AIsObserving: Boolean = True); overload;
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; AOnBeforeSetupField: TOnBeforeSetupField; ADisplayNames: string; AIsObserving: Boolean = True); overload;
     class function ComponentClass: TClass; override;
+    class function CompositeMediator: Boolean; override;
     function GetObjectFromItem(AItem: TListItem): TtiObject;
     constructor Create; override;
     destructor Destroy; override;
     procedure HandleSelectionChanged; override;
-    class function CompositeMediator: Boolean; override;
   published
     property View: TListView read FView write SetView;
   end;

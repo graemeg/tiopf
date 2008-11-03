@@ -255,6 +255,7 @@ procedure TFormMediator.SetPropertyLinkDefs(const AValue: TPropertyLinkDefs);
 begin
   if FDefs = AValue then
     Exit;
+  FDefs.Clear;
   FDefs.Assign(AValue);
 end;
 
