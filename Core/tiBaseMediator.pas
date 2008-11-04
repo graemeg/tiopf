@@ -993,7 +993,7 @@ end;
 destructor TListItemMediator.Destroy;
 begin
   Active := False;
-  FModel := nil;
+  Model := nil;
   inherited Destroy;
 end;
 
