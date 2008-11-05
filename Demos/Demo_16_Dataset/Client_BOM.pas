@@ -27,7 +27,7 @@ type
     procedure   SetItems(i: integer; const Value: TClient); reintroduce ;
   public
     property    Items[i:integer] : TClient read GetItems write SetItems ;
-    procedure   Add( pObject : TClient   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add(const AObject : TClient) ; reintroduce ;
     procedure   Clear ; override ;
     procedure   Read ; override ;
     procedure   Save; override;
@@ -68,7 +68,7 @@ type
     function    GetOID : TtiOID ; override ;
   public
     property    Items[i:integer] : TPhoneNumber read GetItems write SetItems ;
-    procedure   Add( pObject : TPhoneNumber   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add(const AObject : TPhoneNumber) ; reintroduce ;
     property    Owner : TClient read GetOwner      write SetOwner ;
   published
   end ;
@@ -100,9 +100,9 @@ uses
 
 { TClients }
 
-procedure TClients.Add(pObject: TClient; pDefDispOrdr: boolean);
+procedure TClients.Add(const AObject: TClient);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add(AObject) ;
 end;
 
 procedure TClients.Clear;
@@ -192,9 +192,9 @@ end;
 
 { TPhoneNumbers }
 
-procedure TPhoneNumbers.Add(pObject: TPhoneNumber; pDefDispOrdr: boolean);
+procedure TPhoneNumbers.Add(const AObject: TPhoneNumber);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add(AObject) ;
 end;
 
 function TPhoneNumbers.GetItems(i: integer): TPhoneNumber;

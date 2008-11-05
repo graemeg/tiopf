@@ -63,7 +63,7 @@ type
     procedure   SetItems(i: integer; const Value: TCustomer); reintroduce ;
   public
     property    Items[i:integer] : TCustomer read GetItems write SetItems ;
-    procedure   Add( pObject : TCustomer   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add(const AObject : TCustomer) ; reintroduce ;
   published
   end ;
 
@@ -132,7 +132,7 @@ type
     procedure   SetItems(i: integer; const Value: TVendor); reintroduce ;
   public
     property    Items[i:integer] : TVendor read GetItems write SetItems ;
-    procedure   Add( pObject : TVendor   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add(const AObject : TVendor) ; reintroduce ;
   published
   end ;
 
@@ -191,7 +191,7 @@ type
     procedure   SetItems(i: integer; const Value: TPart); reintroduce ;
   public
     property    Items[i:integer] : TPart read GetItems write SetItems ;
-    procedure   Add( pObject : TPart   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add(const AObject : TPart) ; reintroduce ;
   published
   end ;
 
@@ -241,7 +241,7 @@ type
     procedure   SetItems(i: integer; const Value: TEmployee); reintroduce ;
   public
     property    Items[i:integer] : TEmployee read GetItems write SetItems ;
-    procedure   Add( pObject : TEmployee   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add(const AObject : TEmployee) ; reintroduce ;
   published
   end ;
 
@@ -274,7 +274,7 @@ type
     function    GetOID: TtiOID; override;
   public
     property    Items[i:integer] : TOrderItem read GetItems write SetItems ;  default;
-    procedure   Add( pObject : TOrderItem   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add(const AObject : TOrderItem) ; reintroduce ;
   published
   end ;
 
@@ -331,7 +331,7 @@ type
     destructor  Destroy ; override ;
 
     property    Items[i:integer] : TOrder read GetItems write SetItems ;
-    procedure   Add( pObject : TOrder   ; pDefDispOrdr : boolean = true ) ; reintroduce ;
+    procedure   Add(const AObject : TOrder) ; reintroduce ;
 
     // no longer required, as we are now using filtered object lists
 //    property    Where: TtiQueryParams read FWhere;
@@ -685,9 +685,9 @@ end;
 
 { TCustomers }
 
-procedure TCustomers.Add(pObject: TCustomer; pDefDispOrdr: boolean);
+procedure TCustomers.Add(const AObject: TCustomer);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add(AObject) ;
 end;
 
 function TCustomers.GetItems(i: integer): TCustomer;
@@ -807,9 +807,9 @@ end;
 
 { TVendors }
 
-procedure TVendors.Add(pObject: TVendor; pDefDispOrdr: boolean);
+procedure TVendors.Add(const AObject: TVendor);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add(AObject) ;
 end;
 
 function TVendors.GetItems(i: integer): TVendor;
@@ -940,9 +940,9 @@ end;
 
  TParts }
 
-procedure TParts.Add(pObject: TPart; pDefDispOrdr: boolean);
+procedure TParts.Add(const AObject: TPart);
 begin
-  inherited Add( pObject, pDefDispOrdr ) ;
+  inherited Add(AObject) ;
 end;
 
 function TParts.GetItems(i: integer): TPart;
@@ -957,9 +957,9 @@ end;
 
 { TEmployees }
 
-procedure TEmployees.Add(pObject: TEmployee; pDefDispOrdr: boolean);
+procedure TEmployees.Add(const AObject: TEmployee);
 begin
-  inherited Add(pObject, pDefDispOrdr);
+  inherited Add(AObject);
 end;
 
 function TEmployees.GetItems(i: integer): TEmployee;
@@ -1000,9 +1000,9 @@ end;
 
 { TOrderItems }
 
-procedure TOrderItems.Add(pObject: TOrderItem; pDefDispOrdr: boolean);
+procedure TOrderItems.Add(const AObject: TOrderItem);
 begin
-  inherited Add(pObject, pDefDispOrdr);
+  inherited Add(AObject);
 end;
 
 function TOrderItems.GetItems(i: integer): TOrderItem;
@@ -1152,9 +1152,9 @@ end;
 
 { TOrderItems }
 
-procedure TOrders.Add( pObject : TOrder   ; pDefDispOrdr : boolean = true ) ;
+procedure TOrders.Add(const AObject : TOrder) ;
 begin
-  inherited Add(pObject, pDefDispOrdr);
+  inherited Add(AObject);
 end;
 
 procedure TOrders.AssignClassProps(ASource: TtiObject);
