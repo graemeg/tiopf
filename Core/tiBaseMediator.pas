@@ -197,6 +197,7 @@ type
     FShowDeleted: Boolean;
     FMediatorList: TObjectList;
     FFieldsInfo: TtiMediatorFieldInfoList;
+    FListChanged : Boolean;
     function GetDisplayNames: string;
     function GetIsObserving: Boolean;
     function GetModel: TtiObjectList;
@@ -463,6 +464,8 @@ begin
   if Assigned(FSubject) and FActive then
     FSubject.AttachObserver(self);
   CheckSetupGUIAndObject;
+  if Assigned(FSubject) and FActive then
+    Update(FSubject,noChanged);
 end;
 
 procedure TMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
@@ -981,7 +984,7 @@ begin
   begin
     FModel.AttachObserver(Self);
     if B and Active then
-      Update(FModel);
+      Update(FModel,noChanged);
   end;
 end;
 
@@ -1021,6 +1024,7 @@ begin
   if (AValue <> nil) then
     if not (AValue is TtiObjectList) then
       raise Emediator.CreateFmt(SErrNotListObject, [AValue.ClassName]);
+  FListChanged:=True;
   inherited SetSubject(AValue);
 end;
 
@@ -1123,6 +1127,7 @@ begin
     end;
   for i := MediatorList.Count-1 downto Model.Count do
     DoDeleteItemMediator(I,TListItemMediator(MediatorList[i]));
+  FListChanged:=False;
 end;
 
 function TCustomListMediator.DataAndPropertyValid(const AData: TtiObject): Boolean;
@@ -1191,7 +1196,7 @@ begin
                      if M<>nil then
                        DoDeleteItemMediator(I,M);
                    end;
-    noChanged    : if (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
+    noChanged    : if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
                      RebuildList;
   end;
 end;
