@@ -14,6 +14,8 @@ type
   TFormMediator = class;
 
 
+  { TPropertyLinkDef }
+
   TPropertyLinkDef = class(TCollectionItem)
   private
     FComponent: TComponent;
@@ -24,6 +26,7 @@ type
     FMediatorDef: TMediatorDef;
     FOnGUIToObject: TGUIToObjectEvent;
     FOnObjectToGUI: TObjectToGUIEvent;
+    FOnSetupMediator: TNotifyEvent;
     FValueList: TtiObjectList;
     procedure SetComponent(const AValue: TComponent);
     procedure SetComposite(const AValue: Boolean);
@@ -48,6 +51,7 @@ type
     property ObjectUpdateMoment: TObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment;
     property OnGUIToObject: TGUIToObjectEvent read FOnGUIToObject write SetOnGUIToObject;
     property OnObjectToGUI: TObjectToGUIEvent read FOnObjectToGUI write SetOnObjectToGUI;
+    Property OnSetupMediator : TNotifyEvent Read FOnSetupMediator Write FOnSetupMediator;
   end;
 
 
@@ -110,9 +114,9 @@ type
 implementation
 
 resourcestring
-  SErrNoSubject  = '%s: Cannot perform this operation if subject is not set.';
-  SErrActive     = '%s: Cannot perform this operation while active.';
-  SErrNoMediator = '%s: Cannot find a mediator for control %s, property %s.';
+  SErrNoSubject  = 'Cannot perform this operation if subject is not set.';
+  SErrActive     = 'Cannot perform this operation while active.';
+  SErrNoMediator = 'Cannot find a mediator for control %s, property %s.';
 
 
 { TPropertyLinkDef }
@@ -184,19 +188,22 @@ end;
 procedure TPropertyLinkDef.CreateMediator;
 begin
   if (FMediatorDef = nil) then
-    raise EMediator.CreateFmt(SErrNoMediator, [FormMediator.Name, Component.Name, FieldName]);
+    MediatorError(Self,SErrNoMediator, [Component.Name, FieldName]);
   FMediator           := FMediatorDef.MediatorClass.Create;
   FMediator.FieldName := FieldName;
-  FMediator.GUIControl := Self.Component;
-  FMediator.Subject   := FormMediator.Subject;
   FMediator.OnGUIToObject := Self.OnGUIToObject;
   FMediator.OnObjectToGUI := Self.OnObjectToGUI;
+  FMediator.GUIControl := Self.Component;
   FMediator.ValueList := Self.ValueList;
+  FMediator.Subject   := FormMediator.Subject;
   FMediator.Active    := True;
+  If Assigned(FOnSetupMediator) then
+    FOnSetupMediator(FMediator);
 end;
 
 procedure TPropertyLinkDef.FreeMediator(FreeDef: Boolean = True);
 begin
+  FMediator.Active     := False;
   FMediator.Subject    := nil;
   FMediator.GUIControl := nil;
   FreeAndNil(FMediator);
@@ -307,13 +314,13 @@ end;
 procedure TFormMediator.CheckSubject;
 begin
   if not Assigned(FSubject) then
-    raise EMediator.CreateFmt(SErrNoSubject, [Self.Name]);
+    MediatorError(Self,SErrNoSubject);
 end;
 
 procedure TFormMediator.CheckInactive;
 begin
   if Active then
-    raise EMediator.CreateFmt(SErrActive, [Self.Name]);
+    MediatorError(Self,SErrActive);
 end;
 
 procedure TFormMediator.CheckMediators;
@@ -331,7 +338,7 @@ begin
       else
         D.FMediatorDef := gMediatorManager.FindDefFor(Subject, D.Component, D.FieldName);
       if (D.FMediatorDef = nil) then
-        raise EMediator.CreateFmt(SErrNoMediator, [Self.Name, D.Component.Name, D.FieldName]);
+        MediatorError(Self,SErrNoMediator, [D.Component.Name, D.FieldName]);
     end;
   end;
 end;

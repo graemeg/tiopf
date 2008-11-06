@@ -27,6 +27,9 @@ type
   TObjectUpdateMoment = (ouOnChange, ouOnExit, ouCustom);
 
   { Base class to inherit from to make more customised Mediator Views. }
+
+  { TMediatorView }
+
   TMediatorView = class(TtiObject)
   private
     FActive: Boolean;
@@ -73,6 +76,10 @@ type
     procedure SetFieldName(const AValue: string); virtual;
     // Set ObjectUpdateMoment. Override to provide additional handling;
     procedure SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); virtual;
+    // Raise an error which shows more information about the control, subject and fieldname.
+    Procedure RaiseMediatorError(Const Msg : String); overload;
+    // Format version
+    Procedure RaiseMediatorError(Const Fmt : String; Args : Array of const); overload;
   public
     constructor Create; override;
     constructor CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGuiFieldName: string);
@@ -296,7 +303,8 @@ function tiFieldName(const AField: string): string;
 function tiFieldWidth(const AField: string): integer;
 function tiFieldCaption(const AField: string): string;
 function tiFieldAlignment(const AField: string): TAlignment;
-
+Procedure MediatorError(Sender : TObject; Const Msg : String); overload;
+Procedure MediatorError(Sender : TObject; Fmt : String; Args : Array of const); overload;
 
 implementation
 
@@ -313,12 +321,58 @@ resourcestring
   sErrNotListObject         = '%s is not a TTiListObject';
   sErrCompositeNeedsList    = '%s needs a TtiObjectList class but is registered with %s';
   SErrActive                = 'Operation not allowed while the mediator is active';
+  SErrNoGuiFieldName        = 'no gui fieldname set';
+  SErrNoSubjectFieldName    = 'no subject fieldname set';
+  SErrInvalidPropertyName   = '<%s> is not a property of <%s>';
 
 const
   DefFieldWidth = 75;   // default width
   cFieldDelimiter = ';';
   cBrackets = '()';
   
+Procedure MediatorError(Sender : TObject; Const Msg : String); overload;
+
+Var
+  M : TMediatorView;
+  C : TComponent;
+  S : TTiObject;
+  CN,SN,Err : String;
+
+begin
+  if (Sender=Nil) then
+    Err:=Msg
+  else If Sender is TMediatorView then
+    begin
+    M:=Sender as TMediatorView;
+    C:=M.GuiControl;
+    S:=M.Subject;
+    If Assigned(C) then
+      begin
+      CN:=C.Name;
+      If (CN='') then
+        CN:=C.ClassName+' instance';
+      end
+    else
+      CN:='Nil';
+    If Assigned(S) then
+      SN:=S.ClassName
+    else
+      SN:='Nil';
+    Err:=Format('Mediator %s (%s,%s,%s) : %s',[M.ClassName,SN,CN,M.FieldName,Msg]);
+    end
+  else if (Sender is TComponent) and (TComponent(Sender).Name<>'') then
+    Err:=Format('%s : %s',[TComponent(Sender).Name,Msg])
+  else
+    Err:=Format('%s : %s',[Sender.ClassName,Msg]);
+  Raise EMediator.Create(Err);
+end;
+
+Procedure MediatorError(Sender : TObject; Fmt : String; Args : Array of const); overload;
+
+begin
+  MediatorError(Sender,Format(Fmt,Args));
+end;
+
 
 function gMediatorManager: TMediatorManager;
 begin
@@ -394,7 +448,7 @@ begin
   begin
     Result := (IsPublishedProp(FSubject, FFieldName));
     if not Result then
-      raise EMediator.CreateFmt('<%s> is not a property of <%s>',
+      RaiseMediatorError('<%s> is not a property of <%s>',
         [FFieldName, FSubject.ClassName]);
   end;
 
@@ -449,6 +503,17 @@ begin
   FObjectUpdateMoment := AValue;
 end;
 
+procedure TMediatorView.RaiseMediatorError(Const Msg: String);
+
+begin
+  MediatorError(Self,Msg);
+end;
+
+procedure TMediatorView.RaiseMediatorError(Const Fmt: String; Args: array of const);
+begin
+  RaiseMediatorError(Format(FMT,Args));
+end;
+
 procedure TMediatorView.SetFieldName(const AValue: string);
 begin
   FFieldName := AValue;
@@ -471,7 +536,7 @@ end;
 procedure TMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 begin
   inherited Update(ASubject, AOperation);
-  if AOperation=noChanged then
+  if (AOperation=noChanged) and Active then
   begin
     ObjectToGui;
     TestIfValid;
@@ -486,9 +551,9 @@ end;
 procedure TMediatorView.CheckFieldNames;
 begin
   if (GuiFieldName = '') then
-    raise EMediator.CreateFmt('%s : no gui fieldname set', [ClassName]);
+    RaiseMediatorError(SErrNoGUIFieldName);
   if (FieldName = '') then
-    raise EMediator.CreateFmt('%s : no subject fieldname set', [ClassName]);
+    RaiseMediatorError(SErrNoSubjectFieldName)
 end;
 
 procedure TMediatorView.SetActive(const AValue: Boolean);
@@ -609,7 +674,7 @@ begin
   Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
 
   if not (MinSubjectClass.inheritsfrom(TtiObjectList)) and MediatorClass.CompositeMediator then
-    raise EMediator.CreateFmt(sErrCompositeNeedsList, [MediatorClass.ClassName, MinSubjectClass.ClassName]);
+    MediatorError(Self,sErrCompositeNeedsList, [MediatorClass.ClassName, MinSubjectClass.ClassName]);
   Result      := FDefs.AddDef;
   Result.MediatorClass := MediatorClass;
   Result.FMSC := MinSubjectClass;
@@ -857,7 +922,7 @@ begin
   begin
     PropName := tiToken(AValue, '|', 1);
     if (PropName = '') then
-      raise EMediator.CreateFmt(SErrInvalidFieldName, [Index + 1]);
+      MediatorError(Self,SErrInvalidFieldName, [Index + 1]);
     Caption    := PropName;
     Alignment  := taLeftJustify;
     FieldWidth := DefFieldWidth;
@@ -865,7 +930,7 @@ begin
     if (S <> '') then
     begin
       if (length(S) <> 1) then
-        raise EMediator.CreateFmt(SErrInvalidAlignmentChar, [S, Index + 1]);
+        MediatorError(Self,SErrInvalidAlignmentChar, [S, Index + 1]);
       for A := Low(Talignment) to High(TAlignment) do
         if (Upcase(AlignChars[A]) = Upcase(S[1])) then
           Alignment := A;
@@ -873,7 +938,7 @@ begin
       if (S <> '') then
       begin
         if not TryStrToInt(S, i) then
-          raise EMediator.CreateFmt(SErrInvalidWidthSpecifier, [S]);
+          MediatorError(Self,SErrInvalidWidthSpecifier, [S]);
         FieldWidth := I;
         S          := tiToken(AValue, '|', 4);
         if (S <> '') then
@@ -918,7 +983,7 @@ procedure TtiMediatorFieldInfoList.Notify(Item: TCollectionItem;
   Action: TCollectionNotification);
 begin
   inherited Notify(Item, Action);
-  If Assigned(FMediator) and FMediator.Active then
+  If Assigned(FMediator) then
     FMediator.FieldInfoChanged(Item as TtiMediatorFieldInfo,Action)
 end;
 
@@ -1016,14 +1081,15 @@ procedure TCustomListMediator.FieldInfoChanged(Item: TtiMediatorFieldInfo;
   Action: TCollectionNotification);
 begin
   If Active  then
-    Raise EMediator.Create(SErrActive);
+    RaiseMediatorError(SErrActive);
 end;
 
 procedure TCustomListMediator.SetSubject(const AValue: TtiObject);
 begin
   if (AValue <> nil) then
     if not (AValue is TtiObjectList) then
-      raise Emediator.CreateFmt(SErrNotListObject, [AValue.ClassName]);
+      RaiseMediatorError(SErrNotListObject, [AValue.ClassName]);
+  FListChanged:=True;
   FListChanged:=True;
   inherited SetSubject(AValue);
 end;
@@ -1145,8 +1211,7 @@ begin
     { WRONG!!  We should test the items of the Model }
     Result := (IsPublishedProp(AData, lField));
     if not Result then
-      raise Exception.CreateFmt('<%s> is not a property of <%s>',
-        [lField, AData.ClassName]);
+      RaiseMediatorError(SErrInvalidPropertyName,[lField, AData.ClassName]);
   end;
 end;
 
@@ -1173,6 +1238,7 @@ end;
 
 destructor TCustomListMediator.Destroy;
 begin
+  Active:=False;
   FMediatorList.Free;
   FFieldsInfo.Free;
   inherited Destroy;
