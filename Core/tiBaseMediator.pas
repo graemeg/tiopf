@@ -540,7 +540,9 @@ begin
   begin
     ObjectToGui;
     TestIfValid;
-  end;
+  end
+  else if (AOperation=noFree) and (ASubject=FSubject) then
+    FSubject:=Nil;
 end;
 
 function TMediatorView.GetSubject: TtiObject;
