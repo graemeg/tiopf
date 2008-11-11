@@ -1,3 +1,4 @@
+
 {* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 The contents of this file are subject to the Mozilla Public
 License Version 1.1 (the "License"); you may not use this file
@@ -50,10 +51,16 @@ unit tiDataset;
 interface
 
 uses
-  Classes, SysUtils, Forms, Db, TypInfo, Graphics, Controls, windows,
-  {$IFDEF DELPHI6ORABOVE} Variants, {$ENDIF} SqlTimSt, tiObject;
+  Classes, SysUtils, Forms, Db, TypInfo, Graphics, Controls,
+  {$IFDEF DELPHI6ORABOVE} Variants, {$ENDIF} {$ifndef fpc}SqlTimSt,{$endif} 
+  tiObject;
 
 type
+
+{$ifndef FPC}
+  PtrInt = Longint; { Delphi doesn't know PtrInt, a pointer-sized integer. } 
+{$endif}
+
   TTiListSortCompare = function(Item1, Item2: TObject): integer of object;
 
   PtiObjectBookmark = ^TTiObjectBookmark;
@@ -145,7 +152,7 @@ type
     function CreateBlobStream(Field: TField;Mode: TBlobStreamMode): TStream;override;
     function Locate(const KeyFields: string;const KeyValues: Variant;Options: TLocateOptions): boolean;override;
     function Lookup(const KeyFields: string;const KeyValues: Variant;const ResultFields: string): Variant;override;
-    procedure DataEvent(Event: TDataEvent;Info: longint);override;
+    procedure DataEvent(Event: TDataEvent;Info: ptrint);override;
     property ObjectClass: TtiObjectClass read GetObjectClass write SetObjectClass;
   published
     property StringWidth: integer read FStringWidth write FStringWidth;
@@ -174,7 +181,9 @@ type
     property OnEditError;
     property OnNewRecord;
     property OnPostError;
+{$ifndef fpc}
     property ObjectView;
+{$endif}
   end;
 
 
@@ -217,16 +226,18 @@ type
 
 
   //Nested datasets maintain a list of classes held in a TList (or successor)
+{$ifndef fpc}
   TTiNestedDataset = class(TTiDataset)
   protected
     function GetObjectList: TtiObjectList;override;
     procedure DoBeforeInsert;override;
     procedure OpenCursor(InfoQuery: boolean);override;
   public
-    procedure DataEvent(Event: TDataEvent;Info: longint);override;
+    procedure DataEvent(Event: TDataEvent;Info: ptrint);override;
   published
     property DataSetField;
   end;
+{$endif fpc}
 
 
   TTiRecordDataset = class(TTiCustomDataset)
@@ -251,15 +262,17 @@ type
   end;
 
 
+{$ifndef fpc}
   TTiNestedRecordDataset = class(TTiRecordDataset)
   protected
     procedure OpenCursor(InfoQuery: boolean);override;
     function GetObjectRecord: TtiObject;override;
   public
-    procedure DataEvent(Event: TDataEvent;Info: longint);override;
+    procedure DataEvent(Event: TDataEvent;Info: Ptrint);override;
   published
     property DataSetField;
   end;
+{$endif}
 
 
   TTiDatasetBlobStream = class(TMemoryStream)
@@ -425,7 +438,9 @@ begin
   inherited;
   FStringWidth := 255;
   FObjectFields := TStringlist.Create;
+{$ifndef fpc}
   NestedDataSetClass := TTiCustomDataset;
+{$endif}
   BookmarkSize := SizeOf(TTiObjectBookmark);
   FStartCalculated := BookmarkSize;
   //Observer := TOpfFieldObserver.Create(nil);
@@ -695,8 +710,12 @@ begin
         for i := Count - 1 downto 0 do begin
           cFieldName := Strings[i];
           PropInfo := GetPropInfo(oObject, Copy(cFieldName, nLen + 1, Maxint));
-          if integer(Objects[i]) > 0
-          then oObject := GetTypeData(PropInfo^.PropType^).ClassType;
+          if integer(Objects[i]) > 0 then
+{$ifdef fpc}
+          oObject := GetTypeData(PropInfo^.PropType).ClassType;
+{$else fpc}
+          oObject := GetTypeData(PropInfo^.PropType^).ClassType;
+{$endif fpc}
           nLen := Length(cFieldName);
         end;
 
@@ -751,11 +770,18 @@ procedure TTiCustomDataset.InternalInitFieldDefs;
       for i := 0 to Data^.propCount - 1 do begin
         PropInfo := PropList^[i];
         if Assigned(PropInfo^.GetProc) then begin
+{$ifdef fpc}
+          TypeData := GetTypeData(PropInfo^.PropType);
+{$else fpc}
           TypeData := GetTypeData(PropInfo^.PropType^);
+{$endif fpc}
           case PropInfo^.PropType^.Kind of
             //Long strings and Widestrings with no real limit (except available
             //memory). We use the given StringWidth to limit the length of the
             //string and increase the buffersize with 1 for a #0 character.
+            {$ifdef fpc}
+            tkAString,
+            {$endif}
             tkLString, tkWString: AddFieldDef(PropInfo, ftString, StringWidth);
             //Other strings like type string[50] and shortstrings have a length
             tkString: AddFieldDef(PropInfo, ftString, TypeData^.MaxLength);
@@ -763,7 +789,7 @@ procedure TTiCustomDataset.InternalInitFieldDefs;
             tkSet: AddFieldDef(PropInfo, ftInteger);
             tkInt64: AddFieldDef(PropInfo, ftLargeint);
             tkEnumeration: begin
-              if TypeData^.BaseType^ = TypeInfo(boolean)
+              if {$ifdef fpc}TypeData^.BaseType{$else}TypeData^.BaseType^{$endif} = TypeInfo(boolean)
               then AddFieldDef(PropInfo, ftBoolean)
               else AddFieldDef(PropInfo, ftInteger);
             end;
@@ -841,7 +867,9 @@ var RecBuffer, pDst: PChar;
   TempInt64: int64;
   TempDouble: Double;
   TimeStamp: TTimeStamp;
+{$ifndef fpc}
   SQLTimeStamp: TSQLTimeStamp;
+{$endif}
   Data: TDateTimeRec;
   TempBool: WordBool;
   PropInfo: PPropInfo;
@@ -927,8 +955,12 @@ begin
       end;
       ftTimeStamp: begin
         TempDouble := GetFloatProp(oObject, PropInfo);
+        {$ifndef fpc}
         SQLTimeStamp := DateTimeToSQLTimeStamp(TempDouble);
         Move(SQLTimeStamp, pDst^, SizeOf(SQLTimeStamp));
+        {$else}
+        Move(TempDouble, pDst^, SizeOf(Double));
+        {$endif}
       end;
       ftDateTime: begin
         TempDouble := GetFloatProp(oObject, PropInfo);
@@ -965,7 +997,7 @@ begin
         Obj := GetObjectProp(oObject, PropInfo);
         Move(Obj, pDst^, SizeOf(TObject));
       end;
-      else raise Exception.CreateFmt('Onbekend veldtype',[Field.FullName]);
+      else raise Exception.CreateFmt('Onbekend veldtype',[{$ifndef fpc}Field.FullName{$else}Field.DisplayName{$endif fpc}]);
     end;
     Result := true;
   end;
@@ -981,7 +1013,9 @@ var RecBuffer, pSrc: Pchar;
   TempSmallInt: smallint;
   TempSmallWord: word;
   TempBool: WordBool;
+{$ifndef fpc}
   SQLTimeStamp: TSQLTimeStamp;
+{$endif}
   Stream: TStream;
   TempInt64: int64;
   TimeStamp: TTimeStamp;
@@ -1059,8 +1093,12 @@ begin
         if Buffer = nil
         then TempDouble := 0
         else begin
+{$ifndef fpc}
           Move(pSrc^, SQLTimeStamp, SizeOf(SQLTimeStamp));
           TempDouble := SQLTimeStampToDateTime(SQLTimeStamp);
+{$else}
+          Move(pSrc^, TempDouble, SizeOf(Double));
+{$endif}
         end;
         SetFloatProp(oObject, PropInfo, TempDouble);
       end;
@@ -1112,7 +1150,7 @@ begin
         SetObjectProp(oObject, PropInfo, Obj);
       end;
       else begin
-        raise Exception.CreateFmt('Onbekend veldtype',[Field.FullName]);
+        raise Exception.CreateFmt('Onbekend veldtype',[{$ifndef fpc}Field.FullName{$else}Field.DisplayName{$endif fpc}]);
       end;
     end;
 
@@ -1315,7 +1353,7 @@ begin
   end;
 end;
 
-procedure TTiCustomDataset.DataEvent(Event: TDataEvent;Info: integer);
+procedure TTiCustomDataset.DataEvent(Event: TDataEvent;Info: ptrint);
 
 
   procedure CheckIfParentScrolled;
@@ -1440,6 +1478,7 @@ begin
   Result := 0;
   if GetPropertyInfo(Item1, PropInfo1, SortColumn)and GetPropertyInfo(Item2, PropInfo2, SortColumn) then begin
     case PropInfo1^.PropType^.Kind of
+    {$ifdef fpc}tkAstring,{$endif}
       tkWString, tkLString, tkString: Result := CompareText(GetStrProp(Item1, PropInfo1), GetStrProp(Item2, PropInfo1));
       tkEnumeration, tkInteger: Result := GetOrdProp(Item1, PropInfo1) - GetOrdProp(Item2, PropInfo2);
       tkFloat: begin
@@ -1632,8 +1671,10 @@ begin
     if AComponent is TTiCustomDataset then begin
       if FParentDataSet = AComponent
       then FParentDataSet := nil
+{$ifndef fpc}
       else if DataSetField = AComponent
       then DataSetField := nil
+{$endif}
     end;
   end;
 end;
@@ -1981,7 +2022,7 @@ begin
 end;
 
 { TTiNestedDataset }
-
+ {$ifndef fpc}
 procedure TTiNestedDataset.DoBeforeInsert;
 begin
   inherited;
@@ -2012,13 +2053,13 @@ begin
   else Result := nil;
 end;
 
-procedure TTiNestedDataset.DataEvent(Event: TDataEvent;Info: integer);
+procedure TTiNestedDataset.DataEvent(Event: TDataEvent;Info: ptrint);
 begin
   inherited;
   if Assigned(DataSetField) then begin
     //Force parent dataset to Modified (otherwise it could be cancelled)
     if(Event = deFieldChange)and not(DataSetField.Dataset.Modified)
-    then TTiCustomDataset(DataSetField.Dataset).DataEvent(Event, integer(DataSetField));
+    then TTiCustomDataset(DataSetField.Dataset).DataEvent(Event, ptrint(DataSetField));
   end;
 end;
 
@@ -2056,7 +2097,7 @@ begin
   OpenParentDataSet(FParentDataSet);
   inherited;
 end;
-
+{$endif}
 end.
 
 
