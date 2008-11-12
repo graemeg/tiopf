@@ -65,8 +65,14 @@
   <CompilerOptions>
     <Version Value="8"/>
     <SearchPaths>
+      <IncludeFiles Value="../../Core/"/>
       <OtherUnitFiles Value="../Common/;../Tests/"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
     <Other>
       <CustomOptions Value="-FU_Dcu
 "/>

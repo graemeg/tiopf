@@ -1281,8 +1281,6 @@ begin
   tiDUnitForceRemoveDir(lRoot);
 end;
 
-
-// Copy all the files, from the directory pStrStartDir, matching the wildcard pStrWildCard
 procedure TTestTIUtils.tiFilesToStringList;
 var
   lsl : TStringList;
@@ -1293,7 +1291,7 @@ begin
   tiDUnitForceRemoveDir(lRoot);
   if not ForceDirectories(lRoot) then
     Fail('Unable to create directory <' + lRoot + '>');
-  Check(DirectoryExists(lRoot), 'Unable to create directory <' + lRoot + '>');
+  Check(DirectoryExists(lRoot), 'Failed on 1');
   for i := 0 to 100000 do begin end;
 
   lsl := TStringList.Create;
@@ -1305,23 +1303,23 @@ begin
     lsl.SaveToFile(tiFixPathDelim(lRoot + '\file4.txt'));
     tiUtils.tiFilesToStringList(lRoot, AllFilesWildCard, lsl, false);
 
-    CheckEquals(4, lsl.Count, 'Count');
-    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')));
-    CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file2.csv')));
-    CheckEquals(UpperCase(lsl.Strings[2]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')));
-    CheckEquals(UpperCase(lsl.Strings[3]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')));
+    CheckEquals(4, lsl.Count, 'Failed on 2');
+    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')), 'Failed on 3');
+    CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file2.csv')), 'Failed on 4');
+    CheckEquals(UpperCase(lsl.Strings[2]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')), 'Failed on 5');
+    CheckEquals(UpperCase(lsl.Strings[3]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')), 'Failed on 6');
 
     tiUtils.tiFilesToStringList(lRoot, '*.txt', lsl, false);
-    CheckEquals(2, lsl.Count, 'Count');
-    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')));
-    CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')));
+    CheckEquals(2, lsl.Count, 'Failed on 7');
+    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file1.txt')), 'Failed on 8');
+    CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\file4.txt')), 'Failed on 9');
     tiUtils.tiFilesToStringList(lRoot, '*3.*', lsl, false);
-    CheckEquals(1, lsl.Count, 'Count');
-    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')));
+    CheckEquals(1, lsl.Count, 'Failed on 10');
+    CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\file3.exe')), 'Failed on 11');
 
     if not ForceDirectories(tiFixPathDelim(lRoot + '\Dir1\')) then
       Fail('Unable to create directory <' + tiFixPathDelim(lRoot + '\Dir1\') + '>');
-    Check(DirectoryExists(tiFixPathDelim(lRoot + '\Dir1\')), 'Unable to create directory <' + tiFixPathDelim(lRoot + '\Dir1\') + '>');
+    Check(DirectoryExists(tiFixPathDelim(lRoot + '\Dir1\')), 'Failed on 12');
     lsl.Text := 'test';
 
     lsl.SaveToFile(tiFixPathDelim(lRoot + '\Dir1\file1.txt'));
@@ -1330,7 +1328,7 @@ begin
     lsl.SaveToFile(tiFixPathDelim(lRoot + '\Dir1\file4.txt'));
 
     tiUtils.tiFilesToStringList(lRoot, AllFilesWildCard, lsl, true);
-    CheckEquals(8, lsl.Count, 'Count');
+    CheckEquals(8, lsl.Count, 'Failed on 13');
     CheckEquals(UpperCase(lsl.Strings[0]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file1.txt')));
     CheckEquals(UpperCase(lsl.Strings[1]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file2.txt')));
     CheckEquals(UpperCase(lsl.Strings[2]), UpperCase(tiFixPathDelim(lRoot + '\Dir1\file3.txt')));
@@ -2636,15 +2634,15 @@ end;
 
 procedure TTestTIUtils.tiGetAppDataDirPublic;
 begin
-  {$IFDEF UNIX}
-  CheckEquals('/etc/'+ApplicationName+'/', tiUtils.tiGetAppDataDirPublic, 'Failed on 1');
-  {$ELSE}
+//  {$IFDEF UNIX}
+//  CheckEquals('/etc/'+ApplicationName+'/', tiUtils.tiGetAppDataDirPublic, 'Failed on 1');
+//  {$ELSE}
   CheckEquals(
     FLocalINISettings.AppDataDirPublic,
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppDataDirPublic),
     'tiGetAppDataDirPublic (No trailing path delimiter)' +
     CLocalINISettingsMessage);
-  {$ENDIF}
+//  {$ENDIF}
 end;
 
 procedure TTestTIUtils.tiTestStreamsIdentical;
@@ -3169,18 +3167,18 @@ begin
     Lsl := TStringList.Create;
     try
       tiUtils.tiFilesToStringList(tiFixPathDelim(lTempPath + '\'), AllFilesWildCard, lsl, true);
-      CheckEquals(3, lsl.Count);
+      CheckEquals(3, lsl.Count, 'Failed on 1');
     finally
       lsl.Free;
     end;
 
     tiUtils.tiDeleteFiles(LTempPath, '*.abc');
 
-    Check(DirectoryExists(LTempPath));
+    Check(DirectoryExists(LTempPath), 'Failed on 2');
     Lsl := TStringList.Create;
     try
       tiUtils.tiFilesToStringList(tiFixPathDelim(lTempPath + '\'), AllFilesWildCard, lsl, true);
-      CheckEquals(1, lsl.Count);
+      CheckEquals(1, lsl.Count, 'Failed on 3');
     finally
       lsl.Free;
     end;

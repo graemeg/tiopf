@@ -1,0 +1,17 @@
+[PerLayersToTest]
+NonPersistent=1
+CSV=1
+TAB=1
+FBL=0
+XMLLight=0
+
+[MachineSettings]
+ComputerName=graemeg-laptop
+TempDir=/tmp
+UserName=graemeg
+ApplicationName=textrunner
+AppDataDirPrivate=/home/graemeg/.config/textrunner
+AppDataDirPublic=/etc/textrunner
+
+[DB_FBL]
+DBName=/home/graemeg/programming/tiOPF2/Source/UnitTests/_Data/Demo.fdb
