@@ -637,7 +637,6 @@ uses
   ,tiUtils
   ,tiExcept
   ,tiLog
-  ,tiOPFManager
   ,tiDBConnectionPool
   ,tiConstants
   ,tiStreams
@@ -1257,9 +1256,8 @@ var
   lQuery : TtiQuery;
   lHadToStartTransaction : boolean;
 begin
-  lQuery   := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery := CreateAndAttachTIQuery;
   try
-    lQuery.AttachDatabase(Self);
     lHadToStartTransaction := not InTransaction;
     if lHadToStartTransaction then
       StartTransaction;
@@ -1493,9 +1491,8 @@ var
   lHadToStartTransaction : boolean;
   lMessage : string;
 begin
-  lQuery   := CreateTIQuery;
+  lQuery := CreateAndAttachTIQuery;
   try
-    lQuery.AttachDatabase(Self);
     lHadToStartTransaction := not InTransaction;
     if lHadToStartTransaction then
       StartTransaction;
@@ -1562,14 +1559,13 @@ var
   lQuery : TtiQuery;
   lHadToStartTransaction : boolean;
 begin
-  lQuery   := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  lQuery := CreateAndAttachTIQuery;
   try
-    lQuery.AttachDatabase(Self);
     lHadToStartTransaction := not InTransaction;
     if lHadToStartTransaction then
       StartTransaction;
     try
-      lQuery.UpdateRow(ATableName, AWhere, AParams);
+      lQuery.UpdateRow(ATableName, AParams, AWhere);
       if lHadToStartTransaction then
         Commit;
     except

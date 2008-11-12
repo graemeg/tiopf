@@ -142,7 +142,7 @@ type
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = ''); reintroduce;
 
-    procedure   ExecSQL( const pSQL : string;
+    procedure   ExecSQL( const ASQL : string;
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = '');
 
@@ -526,24 +526,17 @@ begin
   FActiveThreadList.Terminate;
 end;
 
-procedure TtiOPFManager.ExecSQL(const pSQL             : string;
-                            const ADBConnectionName : string = '';
-                            const APersistenceLayerName    : string = '');
+procedure TtiOPFManager.ExecSQL(const ASQL : string;
+                                const ADBConnectionName : string = '';
+                                const APersistenceLayerName : string = '');
 var
-  LDBConnectionName : string;
-  LDatabase: TtiDatabase;
+  lDB : TtiDatabase;
 begin
-Assert(APersistenceLayerName = '', 'Not implemented whe pPreLayerName <> ''');
-  Assert(DefaultPerLayer <> nil, 'DefaultPerLayer not assigned');
-  if ADBConnectionName = '' then
-    LDBConnectionName := DefaultDBConnectionName
-  else
-    LDBConnectionName := ADBConnectionName;
-  LDatabase:= DefaultPerLayer.DBConnectionPools.Lock(LDBConnectionName);
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-    LDatabase.ExecSQL(pSQL);
+    lDB.ExecSQL(ASQL);
   finally
-    DefaultPerLayer.DBConnectionPools.UnLock(LDBConnectionName, LDatabase);
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
   end;
 end;
 
@@ -655,7 +648,7 @@ var
 begin
   lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
   try
-   lDB.UpdateRow(ATableName, AWhere, AParams);
+   lDB.UpdateRow(ATableName, AParams, AWhere);
   finally
     PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
   end;
