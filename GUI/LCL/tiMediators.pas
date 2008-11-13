@@ -180,12 +180,11 @@ uses
   SysUtils
   ,TypInfo
   ,graphics
-  ,tiExcept
   ;
 
 const
   // RGB color values
-  clPaleBlue    = TColor($FEF5E9);
+//  clPaleBlue    = TColor($FEF5E9);
   clError       = clYellow;
 
 const

@@ -871,7 +871,7 @@ var RecBuffer, pDst: PChar;
   SQLTimeStamp: TSQLTimeStamp;
 {$endif}
   Data: TDateTimeRec;
-  TempBool: WordBool;
+  TempBool: LongBool;
   PropInfo: PPropInfo;
   Stream: TStream;
   Obj: TObject;
@@ -946,8 +946,8 @@ begin
         Move(TempInt64, pDst^, SizeOf(int64));
       end;
       ftBoolean: begin
-        TempBool := WordBool(GetOrdProp(oObject, PropInfo));
-        Move(TempBool, pDst^, SizeOf(WordBool));
+        TempBool := LongBool(GetOrdProp(oObject, PropInfo));
+        Move(TempBool, pDst^, SizeOf(LongBool));
       end;
       ftFloat, ftBCD, ftCurrency: begin
         TempDouble := GetFloatProp(oObject, PropInfo);
@@ -1012,7 +1012,7 @@ var RecBuffer, pSrc: Pchar;
   TempDouble: Double;
   TempSmallInt: smallint;
   TempSmallWord: word;
-  TempBool: WordBool;
+  TempBool: LongBool;
 {$ifndef fpc}
   SQLTimeStamp: TSQLTimeStamp;
 {$endif}
@@ -1071,7 +1071,7 @@ begin
       ftBoolean: begin
         if Buffer = nil
         then TempBool := false
-        else Move(pSrc^, TempBool, SizeOf(WordBool));
+        else Move(pSrc^, TempBool, SizeOf(LongBool));
         SetOrdProp(oObject, PropInfo, ord(TempBool));
       end;
       ftFloat, ftBCD, ftCurrency: begin

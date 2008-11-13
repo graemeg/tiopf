@@ -154,7 +154,7 @@ begin
     if TListItemMediator(FView.Items[i].Data).Model = AValue then
     begin
       FView.Selected:=FView.Items.Item[i];
-      HandleSelectionChanged;
+      //HandleSelectionChanged;
       Exit; //==>
     end;
 end;
