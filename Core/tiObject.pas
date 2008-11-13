@@ -424,9 +424,9 @@ type
     function    IsValid: boolean; overload; // Don't override this one
     {: Get the minimum and maximum values for a property. Returns false if there are no bounds.
        For string fields, this is the min and max length. }
-    function    GetFieldBounds(const AFieldName: string; var MinValue, MaxValue: Integer): Boolean; overload;
-    function    GetFieldBounds(const AFieldName: string; var MinValue, MaxValue: Extended): Boolean; overload;
-    function    GetFieldBounds(const AFieldName: string; var MinValue, MaxValue: TDateTime): Boolean; overload;
+    function    GetFieldBounds(const AFieldName: string; out MinValue, MaxValue: Integer): Boolean; overload;
+    function    GetFieldBounds(const AFieldName: string; out MinValue, MaxValue: Extended): Boolean; overload;
+    function    GetFieldBounds(const AFieldName: string; out MinValue, MaxValue: TDateTime): Boolean; overload;
 
     procedure   AssignFieldList(var AFieldList: TtiFieldList);
     {: ForceAsCreate will get a new OID, and set ObjectState := posCreate}
@@ -2740,21 +2740,21 @@ begin
   end;
 end;
 
-function TtiObject.GetFieldBounds(const AFieldName: string; var MinValue,
+function TtiObject.GetFieldBounds(const AFieldName: string; out MinValue,
   MaxValue: Integer): Boolean;
 begin
   Result := False;
   DoGetFieldBounds(AFieldName, MinValue, MaxValue, Result);
 end;
 
-function TtiObject.GetFieldBounds(const AFieldName: string; var MinValue,
+function TtiObject.GetFieldBounds(const AFieldName: string; out MinValue,
   MaxValue: Extended): Boolean;
 begin
   Result := False;
   DoGetFieldBounds(AFieldName, MinValue, MaxValue, Result);
 end;
 
-function TtiObject.GetFieldBounds(const AFieldName: string; var MinValue,
+function TtiObject.GetFieldBounds(const AFieldName: string; out MinValue,
   MaxValue: TDateTime): Boolean;
 begin
   Result := False;
