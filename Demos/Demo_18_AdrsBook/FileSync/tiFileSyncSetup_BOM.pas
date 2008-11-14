@@ -48,7 +48,7 @@ type
     procedure   SetItems(i: integer; const Value: TtiFileSyncDir); reintroduce ;
   public
     property    Items[i:integer] : TtiFileSyncDir read GetItems write SetItems ;
-    procedure   Add( pObject : TtiFileSyncDir ; pbDefaultDispOrder : boolean = true ) ; reintroduce ;
+    function    Add(const AObject : TtiFileSyncDir): integer; reintroduce;
     function    Clone : TtiFileSyncDirs ; reintroduce ;
     procedure   Assign( pSource : TtiFileSyncDirs ) ; reintroduce ;
   end ;
@@ -81,7 +81,7 @@ type
     procedure   SetItems(i: integer; const Value: TtiFileNameFilter); reintroduce ;
   public
     property    Items[i:integer] : TtiFileNameFilter read GetItems write SetItems ;
-    procedure   Add( pObject : TtiFileNameFilter ; pbDefaultDispOrder : boolean = true ) ; reintroduce ;
+    function    Add(const AObject : TtiFileNameFilter): integer; reintroduce;
     procedure   AddFilter( pFilterType : TtiFileFilterType ;
                            pWildCard   : TFileName ) ;
     function    Clone : TtiFileNameFilters ; reintroduce ;
@@ -168,10 +168,9 @@ end ;
 
 { TtiFileSyncDirs }
 
-procedure TtiFileSyncDirs.Add(pObject: TtiFileSyncDir;
-  pbDefaultDispOrder: boolean);
+function TtiFileSyncDirs.Add(const AObject: TtiFileSyncDir): integer;
 begin
-  inherited Add( pObject, pbDefaultDispOrder ) ;
+  result:= inherited Add(AObject);
 end;
 
 procedure TtiFileSyncDirs.Assign(pSource: TtiFileSyncDirs);
@@ -300,10 +299,9 @@ end;
 
 { TtiFileNameFilters }
 
-procedure TtiFileNameFilters.Add(pObject: TtiFileNameFilter;
-  pbDefaultDispOrder: boolean);
+function TtiFileNameFilters.Add(const AObject: TtiFileNameFilter): integer;
 begin
-  inherited Add( pObject, pbDefaultDispOrder ) ;
+  result:= inherited Add(AObject);
 end;
 
 procedure TtiFileNameFilters.AddFilter(pFilterType: TtiFileFilterType; pWildCard: TFileName);
