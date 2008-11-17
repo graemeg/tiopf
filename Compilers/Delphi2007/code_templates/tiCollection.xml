@@ -4,7 +4,7 @@
 				version="1.0.0">
 	<template name="tic" invoke="auto">
 		<description>
-			TtiObjectList template;
+			TtiObjectList & TtiObject template;
 		</description>
 		<author>
 			Peter Hinrichsen
@@ -35,7 +35,7 @@ protected
   function    GetParent: T|ObjectListParentClass|; reintroduce;
 public
   property    Items[i:integer] : T|ObjectClass| read GetItems write SetItems;
-  procedure   Add(AObject : T|ObjectClass|); reintroduce;
+  procedure   Add(const AObject : T|ObjectClass|); reintroduce;
   property    Parent: T|ObjectListParentClass| read GetParent;
 published
 end;
