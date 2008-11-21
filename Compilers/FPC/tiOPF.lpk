@@ -39,7 +39,7 @@
     </CompilerOptions>
     <Description Value="TechInsite Object Persistent Framework
 "/>
-    <License Value="Mozilla Public License 1.1
+    <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
     <Version Major="2" Release="4"/>
     <Files Count="55">
