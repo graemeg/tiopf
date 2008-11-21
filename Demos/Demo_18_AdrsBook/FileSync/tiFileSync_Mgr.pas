@@ -42,7 +42,7 @@ type
     procedure   SetItems(i: integer; const Value: TtiFileSyncTask); reintroduce;
   public
     property    Items[i:integer] : TtiFileSyncTask read GetItems write SetItems;
-    procedure   Add(pObject : TtiFileSyncTask  ; pDefDispOrdr : boolean = true); reintroduce;
+    procedure   Add(const AObject : TtiFileSyncTask); reintroduce;
     function    AddInstance(pFileName: TtiFileName; pTargetFileNames: TtiFileNames): TtiFileSyncTask;
   end;
 
@@ -974,9 +974,9 @@ end;
 
 { TtiFileSyncTasks }
 
-procedure TtiFileSyncTasks.Add(pObject: TtiFileSyncTask;pDefDispOrdr: boolean);
+procedure TtiFileSyncTasks.Add(const AObject: TtiFileSyncTask);
 begin
-  inherited Add(pObject, pDefDispOrdr);
+  inherited Add(AObject);
 end;
 
 function TtiFileSyncTasks.AddInstance(pFileName: TtiFileName;
