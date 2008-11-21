@@ -247,7 +247,7 @@ procedure TOIDStringAbs.AssignToTIQueryParam(const AFieldName: string; const APa
 var
   lParams: TtiQueryParams;
 begin
-  Assert(AParams is TtiQueryParams, 'AQuery not a TtiQuery');
+  Assert(AParams is TtiQueryParams, 'AQuery not a TtiQueryParams  ');
   lParams := TtiQueryParams(AParams);
   lParams.SetValueAsString(AFieldName, FAsString);
 end;
