@@ -319,6 +319,13 @@ begin
     FDatabase.Password     := Password;
     FDatabase.Params.Values['user_name'] := UserName;
     FDatabase.Params.Values['password'] := Password;
+
+    { Assign some well known extra parameters if they exist. }
+    if Params.Values['ROLE'] <> '' then
+      FDatabase.Role := Params.Values['ROLE'];
+    if Params.Values['CHARSET'] <> '' then
+      FDatabase.CharSet := Params.Values['CHARSET'];
+
     FDatabase.Connected    := True;
   except
     // ToDo: Must come up with a better solution that this:

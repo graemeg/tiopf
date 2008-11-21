@@ -329,8 +329,17 @@ begin
 end;
 
 function TtiQueryDataset.FieldIndex(const AName: string): integer;
+var
+  fld: TField;
 begin
-  Result := FDataset.FieldByName(AName).Index;
+  Result := -1;
+  try
+    fld := FDataset.FieldByName(AName);
+    if fld <> nil then
+      Result := fld.Index;
+  except
+    // If "Field not found" exception is created, silently do nothing
+  end;
 end;
 
 function TtiQueryDataset.FieldKind(AIndex: integer): TtiQueryFieldKind;
