@@ -185,7 +185,10 @@ var
 begin
   Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
   lQuery := TtiQuery(AQuery);
-  lQuery.ParamAsString[AFieldName] := FAsString;
+  if IsNull then
+    lQuery.ParamIsNull[AFieldName] := True
+  else
+    lQuery.ParamAsString[AFieldName] := FAsString;
 end;
 
 

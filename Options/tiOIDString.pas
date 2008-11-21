@@ -89,13 +89,13 @@ const
   // 88 Characters, so if the OID string is 4 characters long, there are
   // Power(88, 4) available OIDs = 59969536
   // Power(88, 5) available OIDs = 5277319168
-  // Integer gives                   2147483647
-  // Int64 gives                     4610000000000000000
+  // Integer gives                 2147483647
+  // Int64 gives                   4610000000000000000
 
-  COIDChars         = '!#$%&()*+,-./0123456789:;<=>?@' +
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
-    '[\]^_' +
-    'abcdefghijklmnopqrstuvwxyz';
+  COIDChars = '!#$%&()*+,-./0123456789:;<=>?@' +
+              'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+              '[\]^_' +
+              'abcdefghijklmnopqrstuvwxyz';
 
 
 implementation

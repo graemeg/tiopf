@@ -44,7 +44,6 @@ type
     procedure TtiOIDAssignFromTIQueryFieldName;
     procedure TtiOIDEqualsQueryField;
     procedure TtiObjectCreateNew;
-
   end;
 
   TTestTIOIDPersistentGUID = class(TTestTIOIDPersistent)
@@ -74,7 +73,6 @@ type
     procedure Compare;
     procedure Equals;
     procedure Clone;
-
   end;
 
   TTestTIOIDInteger = class(TTestTIOIDNonPersistent)

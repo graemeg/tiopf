@@ -135,7 +135,10 @@ var
 begin
   Assert(AQuery is TtiQuery, 'AQuery not a TtiQuery');
   lQuery := TtiQuery(AQuery);
-  lQuery.ParamAsInteger[AFieldName] := FAsInteger;
+  if IsNull then
+    lQuery.ParamIsNull[AFieldName] := True
+  else
+    lQuery.ParamAsInteger[AFieldName] := FAsInteger;
 end;
 
 function TOIDInteger.EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean;
