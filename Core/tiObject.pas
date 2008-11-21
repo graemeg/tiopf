@@ -354,8 +354,8 @@ type
     {: Creates a new instance of the class}
     constructor Create ; override;
     {: Creates a new instance of the class and initialises it's OID with next available value}
-    constructor CreateNew(const AOwner : TtiObject; const ADatabaseName : string = ''; const APersistenceLayerName : string = ''); overload; virtual;
-    constructor CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = ''); overload; virtual;
+    constructor CreateNew(const AOwner: TtiObject; const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
+    constructor CreateNew(const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
     destructor  Destroy; override;
     {: Dos this object equal another? }
     function    Equals(const AData : TtiObject): boolean; virtual;
@@ -1997,8 +1997,7 @@ begin
   result := FOID;
 end;
 
-
-constructor TtiObject.CreateNew(const AOwner : TtiObject; const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
+constructor TtiObject.CreateNew(const AOwner: TtiObject; const ADatabaseName: string = ''; const APersistenceLayerName: string = '');
 begin
   Create;
   if AOwner <> nil then
@@ -2013,13 +2012,7 @@ end;
 
 constructor TtiObject.CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
 begin
-  Create;
-  ObjectState := posCreate;
-  {$IFDEF OID_AS_INT64}
-    OID := GTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
-  {$ELSE}
-    OIDGenerator.AssignNextOID(OID);
-  {$ENDIF}
+  CreateNew(nil, ADatabaseName, APersistenceLayerName);
 end;
 
 function TtiObjectList.First: TtiObject;
