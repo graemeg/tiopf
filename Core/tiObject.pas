@@ -1227,8 +1227,7 @@ begin
                          OID := GTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
                      {$ELSE}
                        if OID.IsNull then
-                           Assert(false, 'Under construction');
-                         // OID.GetNextValue;
+                         OIDGenerator.AssignNextOID(OID);
                      {$ENDIF}
                    end;
       posPK     : ObjectState := posUpdate   ;
