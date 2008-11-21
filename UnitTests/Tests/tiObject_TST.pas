@@ -46,6 +46,7 @@ type
     procedure Deleted_Referenced;
 
     procedure Dirty;
+    procedure Dirty_And_OID;
     procedure Index;
     procedure SetPropValue;
     procedure GetPropValue;
@@ -336,9 +337,27 @@ type
     property ObjectProp: TtstAsDebugStringObject read FObjectProp write FObjectProp;
   end;
 
+
+  TtiObjectForTestingOID = class(TtiObject)
+  public
+    function OIDGenerator: TtiOIDGenerator; override;
+    function GetOID: TtiOID; override;
+  end;
+
+
 function TtstAsDebugStringObjectList.GetCaption: string;
 begin
   result:= 'Class name for ' + ClassName;
+end;
+
+function TtiObjectForTestingOID.GetOID: TtiOID;
+begin
+  result:= inherited GetOID;
+end;
+
+function TtiObjectForTestingOID.OIDGenerator: TtiOIDGenerator;
+begin
+  result:= inherited OIDGenerator;
 end;
 
 procedure TTestTIObject.AsDebugString;
@@ -850,6 +869,34 @@ begin
   end;
 end;
 
+{ testing automatic generation or OID value }
+procedure TTestTIObject.Dirty_And_OID;
+var
+  LObject: TtiObjectForTestingOID;
+  LOIDGeneratorClass: TtiOIDGeneratorClass;
+begin
+  LOIDGeneratorClass:= TtiOIDGeneratorClass(GTIOPFManager.DefaultOIDGenerator.ClassType);
+  try
+    GTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorGUID.Create;
+    try
+      LObject:= TtiObjectForTestingOID.Create;
+      try
+        Check(LObject.GetOID.ClassType = GTIOPFManager.DefaultOIDGenerator.OIDClass, 'Failed on 1');
+        LObject.ObjectState := posEmpty;
+        Check(LObject.OID.IsNull, 'Failed on 2');
+        LObject.Dirty := True;
+        Check(not LObject.OID.IsNull, 'Failed on 3');
+      finally
+        LObject.Free;
+      end;
+    finally
+      GTIOPFManager.DefaultOIDGenerator:= nil;
+    end;
+  finally
+    GTIOPFManager.DefaultOIDGenerator:= LOIDGeneratorClass.Create;
+  end;
+end;
+
 
 procedure TTestTIObject.Equals;
 var
@@ -1171,24 +1218,6 @@ begin
     lItem.Free;
   end;
 end;
-
-type
-
-  TtiObjectForTestingOID = class(TtiObject)
-  public
-    function OIDGenerator: TtiOIDGenerator; override;
-    function GetOID: TtiOID; override;
-  end;
-
-  function TtiObjectForTestingOID.GetOID: TtiOID;
-  begin
-    result:= inherited GetOID;
-  end;
-
-  function TtiObjectForTestingOID.OIDGenerator: TtiOIDGenerator;
-  begin
-    result:= inherited OIDGenerator;
-  end;
 
 procedure TTestTIObject.OIDGenerator;
 var
