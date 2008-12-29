@@ -27,6 +27,11 @@
 		</point>
 		<code language="Delphi" context="methodbody" delimiter="|">
 		<![CDATA[
+
+
+T|ObjectClass|List = class;
+T|ObjectClass| = class;
+
 T|ObjectClass|List = class(TtiObjectList)
 private
 protected
