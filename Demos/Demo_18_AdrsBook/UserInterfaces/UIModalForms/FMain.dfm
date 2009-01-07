@@ -55,12 +55,10 @@ object FormMain: TFormMain
     VT.TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toExtendedFocus, toFullRowSelect]
-    VT.ExplicitHeight = 232
     VT.Columns = <>
     OnItemDelete = LVItemDelete
     OnItemEdit = LVItemEdit
     OnItemInsert = LVItemInsert
-    ExplicitHeight = 249
   end
   object Panel1: TPanel
     Left = 0
@@ -70,9 +68,6 @@ object FormMain: TFormMain
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    DesignSize = (
-      426
-      38)
     object btnRefresh: TButton
       Left = 340
       Top = 7

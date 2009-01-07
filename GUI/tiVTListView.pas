@@ -7,8 +7,7 @@ interface
 
 uses
 {.$IFDEF _PROFILE}
-   Dialogs
-  ,Classes
+   Classes
   ,SysUtils
   ,Graphics
   ,Contnrs
@@ -35,7 +34,6 @@ uses
   ,tiStreams
   ,tiMulticastEvent
 {$IFNDEF FPC}
-//  ,tiVirtualTrees
   ,tiINI
 {$ELSE}
   ,tiINI
@@ -45,6 +43,11 @@ uses
 {$ENDIF}
   ,tiVTAbstract
   ;
+
+{
+  TVirtualTreeOptions = class(TCustomVirtualTreeOptions)
+    property SelectionOptions; toMultiSelect
+}
 
 
 const
@@ -98,7 +101,7 @@ type
   TLVFilter = Class
   Private
     FJoin : TFilterConj;
-    FOperator : TFilterOp;
+    FFilterOperator : TFilterOp;
     FFieldName : String;
     FValue : String;
     FListView : TtiVTListView;
@@ -114,7 +117,7 @@ type
     Property ListView : TtiVTListView Read FListView;
     Property Join : TFilterConj Read FJoin Write FJoin;
     Property PropName : String Read FFieldName Write FFieldName;
-    Property Operator : TFilterOp Read FOperator Write FOperator;
+    Property FilterOperator : TFilterOp Read FFilterOperator Write FFilterOperator;
     Property Value : String Read FValue Write FValue;
     Property StringExpression : String Read GetStringExpression;
   End;
@@ -304,6 +307,9 @@ type
     FOnShowing: TtiVTSearchPanelShowing;
     FOnFindNext: TNotifyEvent;
     FOnFindPrevious: TNotifyEvent;
+    FOnReturnKey: TNotifyEvent;
+    FOnEnterFindEdit: TNotifyEvent;
+    FOnExitFindEdit: TNotifyEvent;
 
     procedure SetOnFindTextChange(const AValue: TtiVTSearchPanelFindTextChange);
     procedure SetTextMatching(const Value: boolean);
@@ -315,8 +321,15 @@ type
     procedure SetOnFindNext(const AValue: TNotifyEvent);
     procedure DoFindPrevious(Sender: TObject);
     procedure SetOnFindPrevious(const AValue: TNotifyEvent);
+    procedure SetOnReturnKey(const Value: TNotifyEvent);
+    procedure SetOnEnterFindEdit(const Value: TNotifyEvent);
+    procedure SetOnExitFindEdit(const Value: TNotifyEvent);
     function  GetSearchText: string;
     procedure DoFindKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+
+    procedure DoReturnKey;
+    procedure DoOnEnterFindEdit(Sender: TObject);
+    procedure DoOnExitFindEdit(Sender: TObject);
     procedure ClearWrapMessage;
 
   public
@@ -329,6 +342,10 @@ type
     property Showing: boolean read FShowing write SetShowing;
     property OnFindNext: TNotifyEvent read FOnFindNext write SetOnFindNext;
     property OnFindPrevious: TNotifyEvent read FOnFindPrevious write SetOnFindPrevious;
+    property OnReturnKey: TNotifyEvent read FOnReturnKey write SetOnReturnKey;
+    property OnEnterFindEdit: TNotifyEvent read FOnEnterFindEdit write SetOnEnterFindEdit;
+    property OnExitFindEdit: TNotifyEvent read FOnExitFindEdit write SetOnExitFindEdit;
+
     property OnFindTextChange: TtiVTSearchPanelFindTextChange
       read FOnFindTextChange write SetOnFindTextChange;
     property OnShowing: TtiVTSearchPanelShowing
@@ -454,6 +471,7 @@ type
     FHeaderClickSorting: boolean;
     FSPFindNext: TGetNextNodeProc;
     FSPWrapToNode: TGetFirstNodeProc;
+    FMultiSelect: boolean;
 
     procedure ClearSearchState;
     procedure DrawSortGlyph(const ACanvas: TCanvas;
@@ -496,8 +514,6 @@ type
       const AFindText: string);
     procedure SPFindNext(Sender: TObject);
     procedure SPFindPrevious(Sender: TObject);
-    procedure SPShowing(const ASender: TtiVTSearchPanel;
-      const AIsShowing: Boolean);
 
     function ItemPassesFilter(pObject : TtiObject) : Boolean;
 
@@ -516,6 +532,8 @@ type
         Column: TColumnIndex);
     procedure VTNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
         Column: TColumnIndex; NewText: WideString);
+    procedure SetMultiSelect(const AValue: boolean);
+    function GetSelectedCount: integer;
 
     //
     //FOnDblClick  : TtiLVItemEditEvent;
@@ -583,12 +601,17 @@ type
     procedure DoOnPaintText(pSender: TBaseVirtualTree; const pTargetCanvas: TCanvas; pNode: PVirtualNode;  pColumn: TColumnIndex; pTextType: TVSTTextType);
     procedure DoOnBeforeCellPaint(ASender: TBaseVirtualTree; ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex; ACellRect: TRect);
     procedure DoOnGetHint(Sender: TBaseVirtualTree; ANode: PVirtualNode; Column: TColumnIndex; var ALineBreakStyle: TVTTooltipLineBreakStyle; var AHintText: WideString);
+    procedure SPEnterFindEdit(Sender: TObject); virtual;
+    procedure SPExitFindEdit(Sender: TObject); virtual;
+    procedure SPEnterKey(Sender: TObject); virtual;
+    procedure SPShowing(const ASender: TtiVTSearchPanel; const AIsShowing: Boolean); virtual;
 
     property AlternateRowColor: TColor read FAlternateRowColor write SetAlternateRowColor default cDefaultAlternateRowColor;
     property AlternateRowCount: Byte Read FAlternateRowCount Write FAlternateRowCount default cDefaultAlternateRowCount;
     property DisabledColor: TColor Read FDisabledColor Write FDisabledColor default clBtnFace;
     property HeaderClickSorting: boolean read FHeaderClickSorting write SetHeaderClickSorting default True;
     property Images: TCustomImageList read GetImages write SetImages;
+    property MultiSelect: boolean read FMultiSelect write SetMultiSelect default False;
     property RowSelect: boolean read FRowSelect write SetRowSelect default True;
     property ShowAlternateRowColor: Boolean read FShowAlternateRowColor write SetShowAlternateRowColor default True;
     property ShowNodeHint: boolean read FShowNodeHint write SetShowNodeHint;
@@ -644,6 +667,8 @@ type
 
     property    SelectedData : TtiObject read GetSelectedData write SetSelectedData;
     property    SelectedIndex : integer read GetSelectedIndex write SetSelectedIndex;
+    procedure   AssignSelectedDataList(const AList: TtiObjectList);
+    property    SelectedCount: integer read GetSelectedCount;
 
     procedure   SetFocus; override;
     procedure   BeginUpdate;
@@ -671,6 +696,7 @@ type
     function    IsInFilteredData(AObject: TObject): boolean;
     procedure   RefreshObject(AObject: TtiObject);
     function    CanInlineEditFocusedCell: boolean;
+    procedure   ScrollSelectedIntoView;
   published
   end;
 
@@ -733,13 +759,14 @@ type
 
     procedure DoMenuPopup(Sender: TObject); virtual;
     procedure DoClearSort(Sender: TObject); virtual;
-    procedure DoDelete(Sender: TObject); virtual;
+    procedure DoViewOrEdit(Sender: TObject); virtual;
+    procedure DoView(Sender: TObject); virtual;
     procedure DoEdit(Sender: TObject); virtual;
+    procedure DoDelete(Sender: TObject); virtual;
     procedure DoExportTree(Sender: TObject); virtual;
     procedure DoShowFind(Sender: TObject); virtual;
     procedure DoFilter(Sender : TObject); virtual;
     procedure DoNew(Sender: TObject); virtual;
-    procedure DoView(Sender: TObject); virtual;
     procedure DoDblClick(Sender: TObject); override;
 
     procedure   Loaded; override;
@@ -761,6 +788,13 @@ type
     property OnItemEdit: TtiVTItemEditEvent read FOnItemEdit write SetOnItemEdit;
     property OnItemInsert: TtiVTItemEditEvent read FOnItemInsert write SetOnItemInsert;
     property OnItemView: TtiVTItemEditEvent read FOnItemView write SetOnItemView;
+
+    procedure EnablePopupMenu;
+    procedure DisablePopupMenu;
+    procedure SPEnterFindEdit(Sender: TObject); override;
+    procedure SPExitFindEdit(Sender: TObject); override;
+    procedure SPEnterKey(Sender: TObject); override;
+    procedure SPShowing(const ASender: TtiVTSearchPanel; const AIsShowing: Boolean); override;
 
   public
     constructor Create(AOwner: TComponent); override;
@@ -800,6 +834,7 @@ type
     property HelpType;
     property Images;
     property EditInlineOnly;
+    property MultiSelect;
     property RowSelect;
     property Searching;
     property ShowAlternateRowColor;
@@ -925,11 +960,11 @@ function tiVTExportRegistry: TtiVTExportRegistry;
 
 function tiVTDisplayMaskFromDataType(const AValue : TvtTypeKind): string;
 
-//______________________________________________________________________________________________________________________________
 implementation
 
 uses
-  Math
+   Math
+  ,Dialogs 
   ,tiConstants
   ,tiExcept
   ,tiGUIUtils
@@ -981,7 +1016,6 @@ end;
 
 
 
-//______________________________________________________________________________________________________________________________
 { TtiVTSortOrders }
 
 function TtiVTSortOrders.Add(AFieldName: string; ADirection: TvtSortDirection = vtsdAscending): TtiVTSortOrder;
@@ -1036,7 +1070,6 @@ begin
 
 end;
 
-//______________________________________________________________________________________________________________________________
 { TtiVTSortOrder }
 
 procedure TtiVTSortOrder.Assign(source: TPersistent);
@@ -1057,7 +1090,6 @@ begin
 end;
 
 
-//______________________________________________________________________________________________________________________________
 { TtiVTColumn }
 
 function TtiVTColumn.Clone: TtiVTColumn;
@@ -1167,14 +1199,11 @@ begin
 end;
 
 
-//______________________________________________________________________________________________________________________________
 { TtiVTColumns }
 
 constructor TtiVTColumns.Create(AOwner: TtiVTHeader);
 begin
   inherited Create(AOwner);
-  //TtiVTColumn);
-  //FOwner := Owner;
 end;
 
 destructor TtiVTColumns.Destroy;
@@ -1227,7 +1256,6 @@ begin
 end;
 
 
-//______________________________________________________________________________________________________________________________
 { TtiVTHeader }
 
 constructor TtiVTHeader.Create(AOwner: TBaseVirtualTree);
@@ -1313,7 +1341,6 @@ begin
   RegisterEventHandler(AValue, {AIsDefaultHandler} True);
 end;
 
-//______________________________________________________________________________________________________________________________
 { TtiVTEdit }
 
 constructor TtiVTEdit.Create(Link: TStringEditLink);
@@ -1357,7 +1384,6 @@ begin
   end;
 end;
 
-//______________________________________________________________________________________________________________________________
 { TtiStringEditLink }
 
 constructor TtiStringEditLink.Create(AtiTree: TtiCustomVirtualTree);
@@ -1365,7 +1391,6 @@ begin
   FtiTree := AtiTree;
 end;
 
-//______________________________________________________________________________________________________________________________
 { TtiCustomVirtualTree }
 
 function TtiCustomVirtualTree.AddColumn(const AFieldName: string;
@@ -1540,6 +1565,27 @@ begin
 {$ENDIF}
 end;
 
+procedure TtiCustomVirtualTree.AssignSelectedDataList(const AList: TtiObjectList);
+var
+ LNode: PVirtualNode;
+ LData: TtiObject;
+begin
+  Assert(AList.TestValid, CTIErrorInvalidObject);
+  Assert(AList.OwnsObjects = false, 'AList.OwnsObjects = false');
+  Assert(AList.AutoSetItemOwner = false, 'AList.AutoSetItemOwner = false');
+
+  LNode:= VT.RootNode.FirstChild;
+  while Assigned(LNode) do
+  begin
+    if vsSelected in LNode.States then
+    begin
+      LData:= GetObjectFromNode(LNode);
+      AList.Add(LData);
+    end;
+    LNode := VT.GetNext(LNode);
+  end;
+end;
+
 procedure TtiCustomVirtualTree.ClearGrouping;
 begin
   FGroupedData.Clear;
@@ -1653,6 +1699,9 @@ begin
   FSP.OnShowing := SPShowing;
   FSP.OnFindNext := SPFindNext;
   FSP.OnFindPrevious := SPFindPrevious;
+  FSP.OnReturnKey := SPEnterKey;
+  FSP.OnEnterFindEdit:= SPEnterFindEdit;
+  FSP.OnExitFindEdit:= SPExitFindEdit;
 
   SetVT(TtiInternalVirtualTree.Create(Self));
   VT.Name:= tiGetUniqueComponentName(Name + 'VT');
@@ -1679,6 +1728,7 @@ begin
   VT.TreeOptions.PaintOptions := [toShowButtons, toShowDropmark, toShowRoot, {toShowTreeLines,} toShowVertGridLines, toThemeAware, toUseBlendedImages];
   FRowSelect:= True;
   VT.TreeOptions.SelectionOptions := [toFullRowSelect, toExtendedFocus];
+  FMultiSelect:= False;
   VT.Header.Style := hsXPStyle;
 
   // Editing
@@ -1833,6 +1883,21 @@ end;
 function TtiCustomVirtualTree.GetOnKeyPress: TKeyPressEvent;
 begin
   Result := VT.OnKeyPress;
+end;
+
+function TtiCustomVirtualTree.GetSelectedCount: integer;
+var
+  LList: TtiObjectList;
+begin
+  LList:= TtiObjectList.Create;
+  try
+    LList.AutoSetItemOwner:= False;
+    LList.OwnsObjects:= False;
+    AssignSelectedDataList(LList);
+    result:= LList.Count;
+  finally
+    LList.Free;
+  end;
 end;
 
 function TtiCustomVirtualTree.GetSelectedData: TtiObject;
@@ -2115,6 +2180,17 @@ begin
   VT.Images := AValue;
 end;
 
+procedure TtiCustomVirtualTree.SetMultiSelect(const AValue: boolean);
+begin
+  if AValue = FMultiSelect then
+    Exit; //==>
+  FMultiSelect := AValue;
+  if FMultiSelect then
+    VT.TreeOptions.SelectionOptions:= VT.TreeOptions.SelectionOptions + [toMultiSelect]
+  else
+    VT.TreeOptions.SelectionOptions:= VT.TreeOptions.SelectionOptions - [toMultiSelect];
+end;
+
 procedure TtiCustomVirtualTree.SetOnKeyDown(const AValue: TKeyEvent);
 begin
   VT.OnKeyDown := AValue;
@@ -2168,10 +2244,12 @@ begin
   begin
     VT.TreeOptions.SelectionOptions:= VT.TreeOptions.SelectionOptions + [toFullRowSelect] - [toExtendedFocus];
     VT.TreeOptions.MiscOptions:= VT.TreeOptions.MiscOptions - [toGridExtensions];
+    VT.TreeOptions.PaintOptions:= VT.TreeOptions.PaintOptions + [toHideFocusRect];
   end else
   begin
     VT.TreeOptions.SelectionOptions:= VT.TreeOptions.SelectionOptions - [toFullRowSelect] + [toExtendedFocus];
     VT.TreeOptions.MiscOptions:= VT.TreeOptions.MiscOptions + [toGridExtensions];
+    VT.TreeOptions.PaintOptions:= VT.TreeOptions.PaintOptions - [toHideFocusRect];
   end;
 end;
 
@@ -2460,6 +2538,21 @@ begin
     FLastMatchedNode := nil;
   end;
 
+end;
+
+procedure TtiCustomVirtualTree.SPEnterFindEdit(Sender: TObject);
+begin
+  // Do nothing. Implement in concrete class
+end;
+
+procedure TtiCustomVirtualTree.SPEnterKey(Sender: TObject);
+begin
+  // Do nothing. Implement in the concrete class
+end;
+
+procedure TtiCustomVirtualTree.SPExitFindEdit(Sender: TObject);
+begin
+  // Do nothing. Implement in concrete class
 end;
 
 procedure TtiCustomVirtualTree.ClearSearchState;
@@ -2786,7 +2879,6 @@ begin
 
 end;
 
-//______________________________________________________________________________________________________________________________
 
 function TtiCustomVirtualTree.GetSelectedIndex: integer;
 var
@@ -2840,6 +2932,14 @@ begin
     lNode := VT.FocusedNode;
     FOnDblClick(Self, GetObjectFromNode(lNode), lNode);
   end;
+end;
+
+procedure TtiCustomVirtualTree.ScrollSelectedIntoView;
+var
+  LData: TtiObject;
+begin
+  LData:= SelectedData;
+  SelectedData:= LData;
 end;
 
 function TtiCustomVirtualTree.SelectedNodeScreenOrigin: TPoint;
@@ -3080,7 +3180,6 @@ begin
 end;
 
 
-//______________________________________________________________________________________________________________________________
 { TtiCustomVirtualEditTree }
 
 function TtiCustomVirtualEditTree.CanDelete: Boolean;
@@ -3139,12 +3238,11 @@ begin
   FPopupMenu := TPopupMenu.Create(self);
   FPopupMenu.Images := gTIImageListMgr.ILNormal16;
   FPopupMenu.OnPopup := DoMenuPopup;
-  PopupMenu := FPopupMenu;
 
   // Create select columns menu item
   FpmiView         := TMenuItem.Create(self);
   FpmiView.Caption := '&View';
-  FpmiView.OnClick := DoView;
+  FpmiView.OnClick := DoViewOrEdit;
   FpmiView.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_View);
   FPopupMenu.Items.Add(FpmiView);
 
@@ -3186,6 +3284,7 @@ begin
   FpmiShowFind.Visible := true;
   FpmiShowFind.ShortCut := ShortCut(Word('F'), [ssCtrl]);
   FPopupMenu.Items.Add(FpmiShowFind);
+  EnablePopupMenu;
 
   FFiltering := true;
   FFiltered  := true;
@@ -3242,11 +3341,11 @@ begin
   if Assigned(FOnItemDelete) then
     FCtrlBtnPnl.OnDelete := DoDelete;
   if FEditInlineOnly or Assigned(FOnItemEdit) then
-    FCtrlBtnPnl.OnEdit := DoEdit;
+    FCtrlBtnPnl.OnEdit := DoViewOrEdit;
   if Assigned(FOnItemInsert) then
     FCtrlBtnPnl.OnNew := DoNew;
   if Assigned(FOnItemView) then
-    FCtrlBtnPnl.OnView := DoView;
+    FCtrlBtnPnl.OnView := DoViewOrEdit;
 
   FCtrlBtnPnl.RefreshButtons;
 end;
@@ -3262,6 +3361,11 @@ procedure TtiCustomVirtualEditTree.DestroyWnd;
 begin
   FreeAndNil(FCtrlBtnPnl);
   inherited;
+end;
+
+procedure TtiCustomVirtualEditTree.DisablePopupMenu;
+begin
+  PopupMenu:= nil;
 end;
 
 procedure TtiCustomVirtualEditTree.DoClearSort(Sender: TObject);
@@ -3282,10 +3386,8 @@ begin
   // If the OnDblClick property is assigned, this gets precedence over Edit/View/New
   if Assigned(FOnDblClick) then
     inherited DoDblClick(Sender)
-  else if CanEdit then
-    DoEdit(Self)
-  else if CanView then
-    DoView(Self)
+  else if CanEdit or CanView then
+    DoViewOrEdit(Self)
   else if CanInsert then
     DoNew(Self);
 end;
@@ -3328,6 +3430,19 @@ begin
   end;
 end;
 
+procedure TtiCustomVirtualEditTree.DoViewOrEdit(Sender: TObject);
+begin
+  if CanEdit then 
+    DoEdit(Sender)
+  else if CanView then
+    DoView(Sender);
+end;
+
+procedure TtiCustomVirtualEditTree.EnablePopupMenu;
+begin
+  PopupMenu:= FPopupMenu;
+end;
+
 procedure TtiCustomVirtualEditTree.Loaded;
 begin
   inherited;
@@ -3348,25 +3463,22 @@ begin
   FpmiNew.Visible   := (tiLVBtnVisNew in VisibleButtons) and Assigned(FOnItemInsert);
   FpmiDelete.Visible := (tiLVBtnVisDelete in VisibleButtons) and Assigned(FOnItemDelete);
 
+  FpmiView.Shortcut := TextToShortcut('');
+  FpmiEdit.Shortcut := TextToShortcut('');
+  FpmiNew.Shortcut := TextToShortcut('');
+  FpmiDelete.Shortcut := TextToShortcut('');
+
   if FpmiView.Visible then
-    FpmiView.Shortcut := TextToShortcut('Enter')
-  else
-    FpmiView.Shortcut := TextToShortcut('');
+    FpmiView.Shortcut := TextToShortcut('Enter');
 
   if FpmiEdit.Visible then
-    FpmiEdit.Shortcut := TextToShortcut('Enter')
-  else
-    FpmiEdit.Shortcut := TextToShortcut('');
+    FpmiEdit.Shortcut := TextToShortcut('Enter');
 
   if FpmiNew.Visible then
-    FpmiNew.Shortcut := TextToShortcut('Ins')
-  else
-    FpmiNew.Shortcut := TextToShortcut('');
+    FpmiNew.Shortcut := TextToShortcut('Ins');
 
   if FpmiDelete.Visible then
-    FpmiDelete.Shortcut := TextToShortcut('Del')
-  else
-    FpmiDelete.Shortcut := TextToShortcut('');
+    FpmiDelete.Shortcut := TextToShortcut('Del');
 
   FpmiView.Enabled  := CanView;
   FpmiEdit.Enabled  := CanEdit;
@@ -3499,7 +3611,7 @@ begin
   FOnItemView := AValue;
   if Assigned(FCtrlBtnPnl) then
     if Assigned(FOnItemView) then
-      FCtrlBtnPnl.OnView := DoView
+      FCtrlBtnPnl.OnView := DoViewOrEdit
     else
       FCtrlBtnPnl.OnView := nil;
 end;
@@ -3517,6 +3629,29 @@ begin
   FVisibleButtons := AValue;
   if Assigned(FCtrlBtnPnl) then
     FCtrlBtnPnl.VisibleButtons := AValue;
+end;
+
+procedure TtiCustomVirtualEditTree.SPEnterFindEdit(Sender: TObject);
+begin
+  DisablePopupMenu;
+end;
+
+procedure TtiCustomVirtualEditTree.SPEnterKey(Sender: TObject);
+begin
+  DoViewOrEdit(Self);
+end;
+
+procedure TtiCustomVirtualEditTree.SPExitFindEdit(Sender: TObject);
+begin
+  EnablePopupMenu;
+end;
+
+procedure TtiCustomVirtualEditTree.SPShowing(const ASender: TtiVTSearchPanel;
+  const AIsShowing: Boolean);
+begin
+  inherited;
+  if not AIsShowing then
+    EnablePopupMenu;
 end;
 
 procedure TtiCustomVirtualEditTree.VTDoFocusChanged(Node: PVirtualNode; Column: TColumnIndex);
@@ -3663,6 +3798,8 @@ begin
   FFindText.Left := FFindLabel.Left + FFindLabel.Width;
   FFindText.OnChange := DoFindText;
   FFindText.OnKeyDown := DoFindKeyDown;
+  FFindText.OnEnter:= DoOnEnterFindEdit;
+  FFindText.OnExit:= DoOnExitFindEdit;
 
   FFindNext := TtiSpeedButton.Create(self);
   FFindNext.Parent := self;
@@ -3705,19 +3842,35 @@ begin
   Showing:= False;
 end;
 
+procedure TtiVTSearchPanel.DoReturnKey;
+begin
+  if Showing and Assigned(FOnReturnKey) and TextMatching then
+  begin
+    Showing:= False;
+    FOnReturnKey(Self);
+  end;
+end;
+
 procedure TtiVTSearchPanel.DoFindKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   ClearWrapMessage;
-
   case Key of
     VK_F3:
       if Shift = [] then
         DoFindNext(FFindNext)
       else if Shift = [ssShift] then
         DoFindPrevious(FFindPrevious);
-    VK_ESCAPE:
-        Showing := false;
+    VK_DOWN: begin
+               DoFindNext(FFindNext);
+               Key:= 0;
+             end;
+    VK_UP:   begin
+               DoFindPrevious(FFindPrevious);
+               Key:= 0;
+             end;
+    VK_RETURN: DoReturnKey;
+    VK_ESCAPE: Showing := false;
   end;
 
 end;
@@ -3753,9 +3906,36 @@ begin
 end;
 
 
+procedure TtiVTSearchPanel.DoOnEnterFindEdit(Sender: TObject);
+begin
+  if Showing and Assigned(FOnEnterFindEdit) then
+    FOnEnterFindEdit(Self);
+end;
+
+procedure TtiVTSearchPanel.DoOnExitFindEdit(Sender: TObject);
+begin
+  if Showing and Assigned(FOnExitFindEdit) then
+    FOnExitFindEdit(Self);
+end;
+
 function TtiVTSearchPanel.GetSearchText: string;
 begin
   Result := FFindText.Text;
+end;
+
+procedure TtiVTSearchPanel.SetOnReturnKey(const Value: TNotifyEvent);
+begin
+  FOnReturnKey := Value;
+end;
+
+procedure TtiVTSearchPanel.SetOnEnterFindEdit(const Value: TNotifyEvent);
+begin
+  FOnEnterFindEdit := Value;
+end;
+
+procedure TtiVTSearchPanel.SetOnExitFindEdit(const Value: TNotifyEvent);
+begin
+  FOnExitFindEdit := Value;
 end;
 
 procedure TtiVTSearchPanel.SetOnFindNext(const AValue: TNotifyEvent);
@@ -3790,6 +3970,7 @@ begin
     Parent.SetFocus;
     FFindText.Text := '';
     ClearWrapMessage;
+    FTextMatching:= False;
   end;
 
   if Assigned(FOnShowing) then
@@ -4008,7 +4189,7 @@ begin
   except
     on E: Exception do
     begin
-      ShowMessage(Format('Error creating output file %s (%s).', [FFileName,
+      tiAppError(Format('Error creating output file %s (%s).', [FFileName,
         E.Message]));
     end;
   end;
@@ -4229,7 +4410,7 @@ Constructor TLVFilter.Create;
 Begin
   Inherited;
   Join := fcNone;
-  Operator := foNone;
+  FilterOperator := foNone;
   Value := '';
   PropName := '';
 End;
@@ -4264,7 +4445,7 @@ Begin
   End;
   If lValidNum Then
   Begin
-    Case Operator Of
+    Case FilterOperator Of
       foEqual : Result := (lrProp = lrVal);
       foNotEqual : Result := (lrProp <> lrVal);
       foGreater : Result := (lrProp > lrVal);
@@ -4307,7 +4488,7 @@ End;
 
 Function TLVFilter.GetStringExpression : String;
 Begin
-  Result := Format('%s %s "%s" %s', [FFieldName, FilterOps[Ord(FOperator)], FValue, FilterConjs[Ord(FJoin)]]);
+  Result := Format('%s %s "%s" %s', [FFieldName, FilterOps[Ord(FFilterOperator)], FValue, FilterConjs[Ord(FJoin)]]);
 End;
 
 Function TLVFilter.IntPropPasses(pValue : TtiObject) : Boolean;
@@ -4332,7 +4513,7 @@ Begin
   Except
     liVal := 0
   End;
-  Case Operator Of
+  Case FilterOperator Of
     foEqual : Result := (liProp = liVal);
     foNotEqual : Result := (liProp <> liVal);
     foGreater : Result := (liProp > liVal);
@@ -4370,7 +4551,7 @@ Begin
       Raise Exception.CreateFmt('Error reading property <%s> %s. Called from StringPropPasses', [FFieldName, E.Message]);
   End;
   lsVal := UpperCase(Value);
-  Case Operator Of
+  Case FilterOperator Of
     foEqual : Result := (lsProp = lsVal);
     foNotEqual : Result := (lsProp <> lsVal);
     foGreater : Result := (lsProp > lsVal);

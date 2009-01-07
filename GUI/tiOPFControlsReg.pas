@@ -69,6 +69,8 @@ begin
                          ,TtiPerAwareFloatEdit
                          ,TtiPerAwareImageEdit
                          ,TtiDateRange
+                         ,TtiPerAwareTimeEdit
+                         ,TtiPerAwareDateEdit
                       ]);
 
 

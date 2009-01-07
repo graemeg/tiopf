@@ -10,7 +10,8 @@ const
   cWebServerStatus_passed  = 'passed';
   cWebServerStatus_failed  = 'failed';
   cXMLVersion = '2.0';
-  cFileSyncVersion = '1.3';
+  //cFileSyncVersion = '1.3';
+  cFileSyncVersion = '2.0'; // 21/11/2008, PH, Added CRC, parameterised BlockSize & Retry
 
 type
 

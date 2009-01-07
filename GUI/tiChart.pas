@@ -8,7 +8,7 @@ uses
   Classes, Controls, Contnrs, Forms, Graphics, Menus, Series, Types, StdCtrls,
   ExtCtrls, Grids,
   TeeProcs, TeEngine, Chart, Tabs, DockTabSet, ComCtrls,
-  tiBaseObject, tiObject, tiSpeedButton, tiRoundedPanel;
+  tiBaseObject, tiObject, tiSpeedButton, tiRoundedPanel, tiResources;
 
 const
   cZoomPercent = 10;
@@ -45,8 +45,8 @@ type
   TtiChartTestData = class(TtiObjectList)
   public
     constructor Create; override;
-    procedure AssignGraphData(AData: TObject; pChart: TtiTimeSeriesChart);
-    procedure DataGap(ADataBeforeGap: TObject; ADataAfterGap: TObject; pChart:
+    procedure AssignGraphData(const AData: TObject; const AChart: TtiTimeSeriesChart);
+    procedure DataGap(const ADataBeforeGap: TObject; const ADataAfterGap: TObject; const AChart:
         TtiTimeSeriesChart);
   end;
 
@@ -78,20 +78,20 @@ type
     destructor Destroy; override;
     function Add: TtiChartDataMapping;
     procedure Clear; reintroduce;
-    function FindByFieldName(psFieldName : string): TtiChartDataMapping;
-    procedure NamesToStringList(pSL : TStringList);
+    function FindByFieldName(const AFieldName : string): TtiChartDataMapping;
+    procedure NamesToStringList(const AStringList : TStringList);
     property Items[Index: integer]: TtiChartDataMapping read GetItem write
         SetItem;
   end;
 
-  TAssignGraphDataEvent = procedure (AData : TObject; pChart :
+  TAssignGraphDataEvent = procedure (const AData : TObject; const AChart :
       TtiTimeSeriesChart) of object;
-  TDataGapEvent = procedure (ADataBeforeGap: TObject; ADataAfterGap: TObject;
-      pChart: TtiTimeSeriesChart) of object;
-  TCrossHairEvent = procedure (pSeries : TChartSeries; AIndex : integer; AData
-      : TObject; AList : TtiObjectList) of object;
+  TDataGapEvent = procedure (const ADataBeforeGap: TObject; const ADataAfterGap: TObject;
+      const AChart: TtiTimeSeriesChart) of object;
+  TCrossHairEvent = procedure (const ASeries : TChartSeries; const AIndex : integer;
+      const AData: TObject; const AList : TtiObjectList) of object;
   TRangeChangeEvent = procedure(
-      AChart: TtiTimeSeriesChart;
+      const AChart: TtiTimeSeriesChart;
       const AZoomed: Boolean;
       const ABottomAxisMin: TDateTime;
       const ABottomAxisMax: TDateTime;
@@ -113,7 +113,7 @@ type
     FscbHorizontal: TScrollBar;
     FscbVertical: TScrollBar;
     FScrollStyle: TScrollStyle;
-    procedure SetScrollStyle(const Value: TScrollStyle);
+    procedure SetScrollStyle(const AValue: TScrollStyle);
   public
     constructor Create(Owner : TComponent; AParenttiChart: TtiTimeSeriesChart); reintroduce; overload;
     destructor Destroy; override;
@@ -133,7 +133,7 @@ type
     FtiChart   : TtiTimeSeriesChart;
     procedure DoOnCheckBoxClick(Sender: TObject);
     function GetChecked: Boolean;
-    procedure SetChecked(const Value: Boolean);
+    procedure SetChecked(const AValue: Boolean);
   protected
     procedure Paint; override;
   public
@@ -152,8 +152,8 @@ type
     FForm: TForm;
     FOnSetCaption: TOnSetCaptionEvent;
     FOnSetForm: TOnSetUserPanelForm;
-    procedure SetCaption(ACaption: string);
-    procedure SetForm(AForm: TForm);
+    procedure SetCaption(const ACaption: string);
+    procedure SetForm(const AForm: TForm);
   public
     property Form: TForm read FForm write SetForm;
     property Caption: string read FCaption write SetCaption;
@@ -219,7 +219,7 @@ type
     FParenttiChart: TtiTimeSeriesChart;
     FtiChartPanel: TtiChartPanel;
     function GetShowLegend: Boolean;
-    procedure SetShowLegend(const Value: Boolean);
+    procedure SetShowLegend(const AValue: Boolean);
   public
     constructor Create(Owner : TComponent; ALegendPosition:
         TtiChartLegendPosition); reintroduce; overload;
@@ -231,20 +231,61 @@ type
 //tiChartButtonsPanel
   TtiChartButtonsPosition = (cbpLeft, cbpTop);
 
+  TtiChartButtonDetailList = class;
+  TtiChartButtonsPanel = class;
+
+  TtiChartButtonDetail = class(TtiObject)
+  private
+    FHint: string;
+    FImageResName: string;
+    FDoButtonClick: TNotifyEvent;
+  protected
+    function    GetParent: TtiChartButtonDetailList; reintroduce;
+  public
+    constructor Create(
+        const AHint: string;
+        const AImageResName: string;
+        const ADoButtonClick: TNotifyEvent); reintroduce;
+    function    CreateButton(const AParent: TtiChartButtonsPanel; const APosLeft, APosTop: Integer): TtiSpeedButton;
+    property    Parent: TtiChartButtonDetailList read GetParent;
+  published
+  end;
+
+  TtiChartButtonDetailList = class(TtiObjectList)
+  private
+    FButtonComponentList: TObjectList;
+  protected
+    function    GetItems(i: integer): TtiChartButtonDetail; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiChartButtonDetail); reintroduce;
+  public
+    constructor Create; override;
+    destructor  Destroy; override;
+    procedure   Add(const AObject: TtiChartButtonDetail); reintroduce;
+    procedure   Insert(const AIndex: integer; const AObject: TtiChartButtonDetail); reintroduce;
+    procedure   AddButton(
+        const AButtonHint: string;
+        const AImageResName: string;
+        const ADoButtonClick: TNotifyEvent;
+        const AButtonOrder: Integer = -1);
+    procedure   CreateButtons(const AParent: TtiChartButtonsPanel; const AChartButtonsPosition: TtiChartButtonsPosition);
+    property    Items[i:integer] : TtiChartButtonDetail read GetItems write SetItems;
+  end;
+
   TtiChartButtonsPanel = class(TtiClearPanel)
   private
     FChartButtonsPosition: TtiChartButtonsPosition;
     FParenttiChart: TtiTimeSeriesChart;
-    FsbCopyToClipBrd: TtiSpeedButton;
-    FsbDefaultZoom: TtiSpeedButton;
-   // FsbViewLegend: TtiSpeedButton;
-    FsbZoomIn: TtiSpeedButton;
-    FsbZoomOut: TtiSpeedButton;
+    FChartButtonDetailList: TtiChartButtonDetailList;
  //   procedure SnapEditDialogToButton(pForm: TForm; pSender: TObject);
   public
     constructor Create(Owner : TComponent; AButtonsPosition:
         TtiChartButtonsPosition); reintroduce; overload;
     destructor Destroy; override;
+    procedure   AddButton(
+        const AButtonHint: string;
+        const AImageResName: string;
+        const ADoButtonClick: TNotifyEvent;
+        const AButtonOrder: Integer);
   end;
 
 //TtiDatapointHintForm----------------------------------------------------------
@@ -255,14 +296,14 @@ type
     FPnl: TtiRoundedPanel;
     function GetColCount: integer;
     function GetRowCount: integer;
-    procedure SetColCount(const Value: integer);
-    procedure SetRowCount(const Value: integer);
-    function  GetCells(piCol, piRow: integer): string;
-    procedure SetCells(piCol, piRow: integer; const Value: string);
-    procedure CheckCellCount(piCol, piRow: integer);
+    procedure SetColCount(const AValue: integer);
+    procedure SetRowCount(const AValue: integer);
+    function  GetCells(const ACol, ARow: integer): string;
+    procedure SetCells(const ACol, ARow: integer; const AValue: string);
+    procedure CheckCellCount(const ACol, ARow: integer);
     procedure HideSelected ;
-    procedure SetRowHeight( piRow : integer ; const psText : string ) ;
-    procedure SetColWidth( piCol : integer ; const psText : string ) ;
+    procedure SetRowHeight(const ARow : integer ; const AText : string ) ;
+    procedure SetColWidth(const ACol : integer ; const AText : string ) ;
   published
     property Anchors     ;
     property Alignment   ;
@@ -274,12 +315,12 @@ type
   public
     Constructor Create( Owner : TComponent ) ; override ;
     Destructor Destroy; override;
-    property    Cells[ piCol, piRow : integer ] : string
+    property    Cells[ const ACol, ARow : integer ] : string
                   read GetCells write SetCells ;
     procedure   Clear ;
-    procedure   ClearCol( piCol : integer ) ;
-    procedure   ClearCell( piCol, piRow : integer ) ;
-    procedure   ClearRow( piRow : integer ) ;
+    procedure   ClearCol(const ACol : integer ) ;
+    procedure   ClearCell(const ACol, ARow : integer ) ;
+    procedure   ClearRow(const ARow : integer ) ;
     function    IsEmpty: boolean;
     procedure   SetContent(const AContent: string);
   end ;
@@ -289,6 +330,7 @@ type
     { Private declarations }
 //    FDG: TtiDisplayGrid;
     FContent: TMemo;
+    FFirstShow: boolean;
     function GetContent: string;
     procedure SetContent(const Value: string);
     function MaxStringWidth(const AStrings: TStrings;
@@ -307,26 +349,20 @@ type
 
 //TtiChart
 
-//  TAssignGraphDataEvent = procedure (AData : TObject;
-//                                      pChart : TtiTimeSeriesChart) of object;
-//  TDataGapEvent = procedure (ADataBeforeGap: TObject;
-//                             ADataAfterGap: TObject;
-//                             pChart: TtiTimeSeriesChart) of object;
-
   // ToDo: Refactor into TtiChart & TtiChartTimeSeries
   TtiChart = class(TtiClearPanel)
   end;
 
   TtiTimeSeriesChart = class(TtiChart)
   private
-    FbCrossHairsDrawn: Boolean;
+    FCrossHairsDrawn: Boolean;
     FDataCircleDrawn: Boolean;
-    FbDisplayTestData: Boolean;
-    FbDrawCrossHairs: Boolean;
-    FbDrawCrossHairsNow: Boolean;
-    FbDrawCrossHairsSaved: Boolean;
-    FbShowTestData: Boolean;
-    FbTimeSeriesChart: Boolean;
+    FDisplayTestData: Boolean;
+    FDrawCrossHairs: Boolean;
+    FDrawCrossHairsNow: Boolean;
+    FDrawCrossHairsSaved: Boolean;
+    FShowTestData: Boolean;
+    FTimeSeriesChart: Boolean;
     FButtonsPanel: TtiChartButtonsPanel;
     FButtonsPosition: TtiChartButtonsPosition;
     FChart: TChart;
@@ -338,26 +374,26 @@ type
     FData: TtiObjectList;
     FDataUnderMouse: TObject;
     FDataPointHintForm: TtiDataPointHintForm;
-    FiOldCircX: Integer;
-    FiOldCircY: Integer;
-    FiOldX: Integer;
-    FiOldY: Integer;
-    FiSnapToDataRadius: Integer;
-    FiSnapToDataSize: Integer;
+    FOldCircX: Integer;
+    FOldCircY: Integer;
+    FOldX: Integer;
+    FOldY: Integer;
+    FSnapToDataRadius: Integer;
+    FSnapToDataSize: Integer;
     FLegendPosition: TtiChartLegendPosition;
     FOnAssignGraphData: TAssignGraphDataEvent;
     FOnCrossHair: TCrossHairEvent;
     FOnDataGap: TDataGapEvent;
     FOnRangeChange: TRangeChangeEvent;
     FOnGetDataByDateTime: TGetDataByDateTimeEvent;
-    FrBottomAxisMax: Real;
-    FrBottomAxisMin: Real;
-    FrLeftAxisMax: Real;
-    FrLeftAxisMin: Real;
-    FrXDataValueUnderMouse: Real;
-    FrXValueUnderMouse: Real;
-    FrYDataValueUnderMouse: Real;
-    FrYValueUnderMouse: Real;
+    FBottomAxisMax: Real;
+    FBottomAxisMin: Real;
+    FLeftAxisMax: Real;
+    FLeftAxisMin: Real;
+    FXDataValueUnderMouse: Real;
+    FXValueUnderMouse: Real;
+    FYDataValueUnderMouse: Real;
+    FYValueUnderMouse: Real;
 
     FScrollStyle: TScrollStyle;
     FTestData: TtiChartTestData;
@@ -366,10 +402,10 @@ type
     procedure AdjustScrollBarPositions;
     procedure ClearMousePositionVisualCues;
     procedure HideCrossHairs;
-    procedure ShowCrossHairs(X, Y: Integer);
+    procedure ShowCrossHairs(const AX, AY: Integer);
     procedure DoChartMouseMove(Sender: TObject; Shift: TShiftState; X, Y:
         Integer);
-    procedure DoDrawCrossHairs(piX, piY: Integer; pbDraw : boolean);
+    procedure DoDrawCrossHairs(const AX, AY: Integer; const ADoDraw : boolean);
     procedure DoHorizontalScroll(Sender : TObject);
     procedure DoMouseDown(Sender: TObject;Button: TMouseButton; Shift:
         TShiftState; X, Y: Integer);
@@ -407,7 +443,7 @@ type
         TObject; AList : TtiObjectList);
     procedure ResetMousePositionVisualCues;
     procedure ResetZoom;
-    function SeriesTitleToName(const psTitle: string): string;
+    function SeriesTitleToName(const ATitle: string): string;
     procedure SetChartColor(const AValue: TColor);
     procedure SetChartPopupMenu(const AValue: TPopupMenu);
     procedure SetConstrainViewToData(const Value: Boolean);
@@ -417,7 +453,7 @@ type
 //    procedure SetLayeredAttribs;
     procedure SetOnDblClickChart(const AValue: TNotifyEvent);
     procedure SetScrollStyle(const AValue: TScrollStyle);
-    procedure SetSeriesPointerVisible(AValue: Boolean);
+    procedure SetSeriesPointerVisible(const AValue: Boolean);
     procedure SetShowTestData(const AValue: Boolean);
     procedure SetSnapToDataSize(const AValue: Integer);
     procedure SetTimeSeriesChart(const AValue: Boolean);
@@ -426,17 +462,17 @@ type
     function  GetVisibleSeriesAsString: string;
     procedure ShowDataPointHint;
 //    procedure SnapEditDialogToButton(pForm: TForm; pSender: TObject);
-    procedure Zoom(AZoomPercent: double);
+    procedure Zoom(const AZoomPercent: double);
     procedure DoShowDataPointHintTmr(Sender: TObject);
 
     function GetShowButtons: Boolean;
     function GetShowLegend: Boolean;
-    procedure SetShowButtons(const Value: Boolean);
-    procedure SetShowLegend(const Value: Boolean);
+    procedure SetShowButtons(const AValue: Boolean);
+    procedure SetShowLegend(const AValue: Boolean);
     function GetZoomPen: TTeeZoomPen;
     procedure RangeChange;
     function GetDataPointHintText: string;
-    procedure SetDataPointHintText(const Value: string);
+    procedure SetDataPointHintText(const AValue: string);
     function GetVisiblesSeriesMaxY: real;
     function GetVisiblesSeriesMinY: real;
     function GetVisiblesSeriesMaxX: real;
@@ -448,32 +484,37 @@ type
     function GetUserPanel: TtiChartUserPanel;
   protected
     procedure ClearSeries;
-    procedure AddSeries(ASeries: TChartSeries);
-    function AddBarSeries(const psTitle: string): TBarSeries;
-    function AddLineSeries(const psTitle: string): TLineSeries;
+    procedure AddSeries(const ASeries: TChartSeries);
+    function AddBarSeries(const ATitle: string): TBarSeries;
+    function AddLineSeries(const ATitle: string): TLineSeries;
     procedure ClearSeriesValues;
     procedure Loaded; override;
   public
-    constructor Create(Owner : TComponent; AButtonsPosition:
-        TtiChartButtonsPosition; ALegendPosition: TtiChartLegendPosition);
+    constructor Create(Owner : TComponent; const AButtonsPosition:
+        TtiChartButtonsPosition; const ALegendPosition: TtiChartLegendPosition);
         reintroduce; overload;
     destructor Destroy; override;
-    function AddDateTimeBarSeries(const psTitle : string): TBarSeries;
-    procedure AddDateTimeGap(const psSeriesName: string; const pXBeforeGap:
-        TDateTime; const pXAfterGap: TDateTime);
-    function AddDateTimeLineSeries(const psTitle: string): TLineSeries;
+    function AddDateTimeBarSeries(const ATitle : string): TBarSeries;
+    procedure AddDateTimeGap(const ASeriesName: string; const AXBeforeGap:
+        TDateTime; const AXAfterGap: TDateTime);
+    function AddDateTimeLineSeries(const ATitle: string): TLineSeries;
     procedure AddDateTimeValues(const ASeriesTitle : string;
         const AX: TDateTime; const AY: real; const ALabel: string = '';
         const AColor: TColor = clDefault);
     procedure Clear;
     procedure RefreshSeries;
     procedure RedrawChart;
-    function SeriesByName(const psSeriesName : string): TChartSeries;
+    function SeriesByName(const ASeriesName : string): TChartSeries;
     procedure ShowSeries(var ASeries: TLineSeries; const AVisible: Boolean);
+
+    procedure AddButton(const AButtonHint: string; const AImageResName: string;
+        const ADoButtonClick: TNotifyEvent; const AButtonOrder: Integer);
+
     property Chart: TChart read FChart write FChart;
     property ChartPanel: TtiChartPanel read FChartPanel write FChartPanel;
-    property CrossHairsDrawn: Boolean read FbCrossHairsDrawn write
-        FbCrossHairsDrawn default true;
+    property ChartWithLegendPanel: TtiChartWithLegendPanel read FChartWithLegendPanel;
+    property CrossHairsDrawn: Boolean read FCrossHairsDrawn write
+        FCrossHairsDrawn default true;
     property ShowButtons: Boolean read GetShowButtons write SetShowButtons;
     property ShowLegend: Boolean read GetShowLegend write SetShowLegend;
     property ZoomPen: TTeeZoomPen read GetZoomPen;
@@ -482,18 +523,18 @@ type
     property DataPointHintText: string read GetDataPointHintText write SetDataPointHintText;
     property DataUnderMouse: TObject read FDataUnderMouse;
     property MouseInCrossHairRegion: Boolean read GetMouseInCrossHairRegion;
-    property TimeSeriesChart: Boolean read FbTimeSeriesChart write
+    property TimeSeriesChart: Boolean read FTimeSeriesChart write
         SetTimeSeriesChart;
     property VisibleSeriesAsString: string read GetVisibleSeriesAsString write
         SetVisibleSeriesAsString;
-    property XDataValueUnderMouse: Real read FrXDataValueUnderMouse write
-        FrXDataValueUnderMouse;
-    property XValueUnderMouse: Real read FrXValueUnderMouse write
-        FrXValueUnderMouse;
-    property YDataValueUnderMouse: Real read FrYDataValueUnderMouse write
-        FrYDataValueUnderMouse;
-    property YValueUnderMouse: Real read FrYValueUnderMouse write
-        FrYValueUnderMouse;
+    property XDataValueUnderMouse: Real read FXDataValueUnderMouse write
+        FXDataValueUnderMouse;
+    property XValueUnderMouse: Real read FXValueUnderMouse write
+        FXValueUnderMouse;
+    property YDataValueUnderMouse: Real read FYDataValueUnderMouse write
+        FYDataValueUnderMouse;
+    property YValueUnderMouse: Real read FYValueUnderMouse write
+        FYValueUnderMouse;
     property Zoomed: Boolean read GetZoomed;
     function IsSeriesVisible(const ASeriesTitle: string): boolean;
     function PointsVisible: Integer;
@@ -520,15 +561,15 @@ type
     property Color;
     property ConstrainViewToData: Boolean read FConstrainViewToData write
         SetConstrainViewToData;
-    property DrawCrossHairs: Boolean read FbDrawCrossHairs write
+    property DrawCrossHairs: Boolean read FDrawCrossHairs write
         SetDrawCrossHairs default true;
-    property DrawCrossHairsNow: Boolean read FbDrawCrossHairsNow write
+    property DrawCrossHairsNow: Boolean read FDrawCrossHairsNow write
         SetDrawCrossHairsNow;
     property ScrollBars: TScrollStyle read FScrollStyle write SetScrollStyle
         default ssBoth;
-    property ShowTestData: Boolean read FbShowTestData write SetShowTestData
+    property ShowTestData: Boolean read FShowTestData write SetShowTestData
         default false;
-    property SnapToDataSize: Integer read FiSnapToDataSize write
+    property SnapToDataSize: Integer read FSnapToDataSize write
         SetSnapToDataSize default 15;
     property View3D: Boolean read GetView3D write SetView3D default false;
     property OnAssignGraphData: TAssignGraphDataEvent read FOnAssignGraphData
@@ -548,8 +589,8 @@ uses
   SysUtils
   ,Math
   ,tiImageMgr
-  ,tiResources
   ,tiUtils
+  ,tiConstants
 ;
 
 type
@@ -573,6 +614,12 @@ const
   cScrollResolution = 400;
 
   CAxisEpsilon = 0.0000001;
+
+const
+  CSBLeft   =  4;
+  CSBTop    = 10;
+  CSBSize   = 20;
+  CSBVerticalSpace = 8;
 
 // Register with the component pallet
 //procedure Register;
@@ -662,14 +709,14 @@ begin
   inherited;
 end;
 
-function TtiChartDataMappings.FindByFieldName(psFieldName : string):
+function TtiChartDataMappings.FindByFieldName(const AFieldName : string):
     TtiChartDataMapping;
 var
   i: Integer;
 begin
   result := nil;
   for i := 0 to Count - 1 do
-    if Items[i].PropertyName = psFieldName then begin
+    if Items[i].PropertyName = AFieldName then begin
       result := Items[i];
       break; //==>
     end;
@@ -685,13 +732,13 @@ begin
   result := FOwner;
 end;
 
-procedure TtiChartDataMappings.NamesToStringList(pSL : TStringList);
+procedure TtiChartDataMappings.NamesToStringList(const AStringList : TStringList);
 var
   i: Integer;
 begin
-  pSL.Clear;
+  AStringList.Clear;
   for i := 0 to count - 1 do
-    pSL.Add(Items[i].PropertyName);
+    AStringList.Add(Items[i].PropertyName);
 end;
 
 procedure TtiChartDataMappings.SetItem(Index: integer; const AValue:
@@ -707,14 +754,14 @@ end;
 }
 procedure TtiChartInternal.Paint;
 var
-  lbDrawCrossHairsSaved: Boolean;
+  LDrawCrossHairsSaved: Boolean;
 begin
-  lbDrawCrossHairsSaved := TtiTimeSeriesChart(Owner).DrawCrossHairs;
+  LDrawCrossHairsSaved := TtiTimeSeriesChart(Owner).DrawCrossHairs;
   TtiTimeSeriesChart(Owner).DrawCrossHairs := false;
   try
     inherited;
   finally
-    TtiTimeSeriesChart(Owner).DrawCrossHairs := lbDrawCrossHairsSaved;
+    TtiTimeSeriesChart(Owner).DrawCrossHairs := LDrawCrossHairsSaved;
   end;
 end;
 
@@ -726,36 +773,36 @@ end;
 constructor TtiChartTestData.create;
 var
   i: Integer;
-  lData: TtiChartTestDataItem;
+  LData: TtiChartTestDataItem;
 begin
   inherited;
 
   for i := 0 to 359 do begin
-    lData := TtiChartTestDataItem.Create;
-    lData.XValue := Date + i;
-    lData.YValue1 := Sin(i/180*Pi);
-    lData.YValue2 := Cos(i/180*Pi);
-    Add(lData);
+    LData := TtiChartTestDataItem.Create;
+    LData.XValue := Date + i;
+    LData.YValue1 := Sin(i/180*Pi);
+    LData.YValue2 := Cos(i/180*Pi);
+    Add(LData);
   end;
 end;
 
-procedure TtiChartTestData.AssignGraphData(AData: TObject; pChart:
+procedure TtiChartTestData.AssignGraphData(const AData: TObject; const AChart:
     TtiTimeSeriesChart);
 begin
-  pChart.SeriesByName('Sin').AddXY(
+  AChart.SeriesByName('Sin').AddXY(
     TtiChartTestDataItem(AData).XValue,
     TtiChartTestDataItem(AData).YValue1);
-  pChart.SeriesByName('Cos').AddXY(
+  AChart.SeriesByName('Cos').AddXY(
     TtiChartTestDataItem(AData).XValue,
     TtiChartTestDataItem(AData).YValue2);
 end;
 
-procedure TtiChartTestData.DataGap(ADataBeforeGap: TObject; ADataAfterGap:
-    TObject; pChart: TtiTimeSeriesChart);
+procedure TtiChartTestData.DataGap(const ADataBeforeGap: TObject; const ADataAfterGap:
+    TObject; const AChart: TtiTimeSeriesChart);
 begin
   if (TtiChartTestDataItem(ADataBeforeGap).YValue2 <= 0) and
      (TtiChartTestDataItem(ADataAfterGap).YValue2 >= 0) then
-    pChart.AddDateTimeGap('Cos', TtiChartTestDataItem(ADataBeforeGap).XValue, TtiChartTestDataItem(ADataAfterGap).XValue);
+    AChart.AddDateTimeGap('Cos', TtiChartTestDataItem(ADataBeforeGap).XValue, TtiChartTestDataItem(ADataAfterGap).XValue);
 end;
 
 // Create a test gap as the Cos data goes above zero.
@@ -884,9 +931,9 @@ begin
   inherited;
 end;
 
-procedure TtiChartPanel.SetScrollStyle(const Value: TScrollStyle);
+procedure TtiChartPanel.SetScrollStyle(const AValue: TScrollStyle);
 begin
-  FScrollStyle := Value;
+  FScrollStyle := AValue;
   case FScrollStyle of
   ssNone      : begin
                    FscbHorizontal.Visible := false;
@@ -917,7 +964,7 @@ end;
 
 { TtiChartUserPanel }
 
-procedure TtiChartUserPanel.SetCaption(ACaption: string);
+procedure TtiChartUserPanel.SetCaption(const ACaption: string);
 begin
   if FCaption <> ACaption then
   begin
@@ -927,7 +974,7 @@ begin
   end;
 end;
 
-procedure TtiChartUserPanel.SetForm(AForm: TForm);
+procedure TtiChartUserPanel.SetForm(const AForm: TForm);
 begin
   if FForm <> AForm then
   begin
@@ -1324,39 +1371,39 @@ end;
 
 procedure TtiChartLegendItem.Paint;
 var
-  lColor: TColor;
-  lRow: Integer;
-  lCol: Integer;
-  lPenWidth: Integer;
-  lRowWidth: Integer;
+  LColor: TColor;
+  LRow: Integer;
+  LCol: Integer;
+  LPenWidth: Integer;
+  LRowWidth: Integer;
 begin
   inherited;
   if FChartSeries = nil then
     Exit; //==>
   // Setup the pen
-  lColor := Canvas.Pen.Color;
-  lPenWidth := Canvas.Pen.Width;
+  LColor := Canvas.Pen.Color;
+  LPenWidth := Canvas.Pen.Width;
   Canvas.Pen.Width := 1;
   Canvas.Pen.Color := FChartSeries.SeriesColor;
   // Draw horozontal line
-  lRow := cChartLegendItemHeight div 2;
-  Canvas.PenPos := Point(4, lRow);
-  Canvas.LineTo(cChartLegendItemCheckBoxLeft - 4, lRow);
+  LRow := cChartLegendItemHeight div 2;
+  Canvas.PenPos := Point(4, LRow);
+  Canvas.LineTo(cChartLegendItemCheckBoxLeft - 4, LRow);
   // Draw vertical line
-  lCol := (cChartLegendItemCheckBoxLeft - 8) div 2;
-  Canvas.PenPos := Point(lCol, 4);
-  Canvas.LineTo(lCol, cChartLegendItemHeight - 8);
+  LCol := (cChartLegendItemCheckBoxLeft - 8) div 2;
+  Canvas.PenPos := Point(LCol, 4);
+  Canvas.LineTo(LCol, cChartLegendItemHeight - 8);
   // Restore the pen properties
-  Canvas.Pen.Color := lColor;
-  Canvas.Pen.Width := lPenWidth;
+  Canvas.Pen.Color := LColor;
+  Canvas.Pen.Width := LPenWidth;
 
-  LRowWidth := cChartLegendItemCheckBoxLeft - 4 - lRow;
+  LRowWidth := cChartLegendItemCheckBoxLeft - 4 - LRow;
   Width := FCheckBox.Width + LRowWidth + 20;
 end;
 
-procedure TtiChartLegendItem.SetChecked(const Value: Boolean);
+procedure TtiChartLegendItem.SetChecked(const AValue: Boolean);
 begin
-  FCheckBox.Checked:= Value;
+  FCheckBox.Checked:= AValue;
 end;
 
 { TtiChartWithLegendPanel }
@@ -1397,9 +1444,9 @@ begin
   Result := FChartLegendPanel.Visible;
 end;
 
-procedure TtiChartWithLegendPanel.SetShowLegend(const Value: Boolean);
+procedure TtiChartWithLegendPanel.SetShowLegend(const AValue: Boolean);
 begin
-  FChartLegendPanel.Visible := Value;
+  FChartLegendPanel.Visible := AValue;
 end;
 
 { TtiChartButtonsPanel }
@@ -1407,174 +1454,173 @@ end;
 {
 ***************************** TtiChartButtonsPanel *****************************
 }
+procedure TtiChartButtonsPanel.AddButton(const AButtonHint: string;
+  const AImageResName: string; const ADoButtonClick: TNotifyEvent;
+  const AButtonOrder: Integer);
+begin
+  FChartButtonDetailList.AddButton(AButtonHint, AImageResName, ADoButtonClick, AButtonOrder);
+  FChartButtonDetailList.CreateButtons(self, FChartButtonsPosition);
+end;
+
 constructor TtiChartButtonsPanel.Create(Owner : TComponent; AButtonsPosition:
     TtiChartButtonsPosition);
-
-  const
-    ciSBLeft   =  4;
-    ciSBTop    = 10;
-    ciSBSize   = 20;
-    ciSBVerticalSpace = 8;
-  var
-    liSBTop : integer;
-    liSBLeft : integer;
-
 begin
   inherited Create(Owner);
   FParenttiChart := TtiTimeSeriesChart(Owner);
   FChartButtonsPosition := AButtonsPosition;
 
-  liSBTop  := ciSBTop;
-  liSBLeft := ciSBLeft;
+  FChartButtonDetailList := TtiChartButtonDetailList.Create;
+  FChartButtonDetailList.AddButton('Zoom in',   cResTI_ZoomIn,   FParenttiChart.DoSBZoomInClick);
+  FChartButtonDetailList.AddButton('Zoom out',  cResTI_ZoomOut,  FParenttiChart.DoSBZoomOutClick);
+  FChartButtonDetailList.AddButton('Undo zoom', cResTI_Maximize, FParenttiChart.DoSBDefaultZoomClick);
+  FChartButtonDetailList.AddButton('Copy to clipboard', cResTI_CopyToClipboard, FParenttiChart.DoSBCopyToClipBrdClick);
 
-  Height := ciSBSize + ciSBLeft * 2 + ciSBVerticalSpace;
-  Width := ciSBSize + ciSBLeft * 2;
+//  Height := CSBSize + CSBLeft * 2 + CSBVerticalSpace;
+//  Width := CSBSize + CSBLeft * 2;
 
-  FsbZoomIn     := TtiSpeedButton.Create(self);
-  with FsbZoomIn do begin
-    Parent := self;
-    Top := liSBTop;
-    Left := liSBLeft;
-    case FChartButtonsPosition of
-      cbpLeft: begin
-                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
-               end;
-      cbpTop: begin
-                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
-               end;
-    end;
+  FChartButtonDetailList.CreateButtons(self, FChartButtonsPosition);
 
-    Height := ciSBSize;
-    Width := ciSBSize;
-    Flat   := true;
-    ImageRes := tiRIZoomIn;
-    Hint  := 'Zoom in';
-    ShowHint := true;
-    OnClick := FParenttiChart.DoSBZoomInClick;
-  end;
-
-  FsbZoomOut    := TtiSpeedButton.Create(self);
-  With FsbZoomOut do begin
-    Parent := self;
-    Top := liSBTop;
-    Left := liSBLeft;
-    case FChartButtonsPosition of
-      cbpLeft: begin
-                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
-               end;
-      cbpTop: begin
-                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
-               end;
-    end;
-    Height := ciSBSize;
-    Width := ciSBSize;
-    Flat   := true;
-    Color  := Self.Color;
-    ImageRes := tiRIZoomOut;
-    Hint  := 'Zoom out';
-    ShowHint := true;
-    OnClick := FParenttiChart.DoSBZoomOutClick;
-  end;
-
-  FsbDefaultZoom := TtiSpeedButton.Create(self);
-  With FsbDefaultZoom do begin
-    Parent := self;
-    Top := liSBTop;
-    Left := liSBLeft;
-    case FChartButtonsPosition of
-      cbpLeft: begin
-                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
-               end;
-      cbpTop: begin
-                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
-               end;
-    end;
-    Height := ciSBSize;
-    Width := ciSBSize;
-    Flat   := true;
-    Color  := Self.Color;
-    ImageRes := tiRIMaximize;
-    Hint  := 'Undo zoom';
-    ShowHint := true;
-    OnClick := FParenttiChart.DoSBDefaultZoomClick;
-  end;
-
-//  FsbViewLegend := TtiSpeedButton.Create(self);
-//  With FsbViewLegend do begin
+//  FsbZoomIn     := TtiSpeedButton.Create(self);
+//  with FsbZoomIn do begin
 //    Parent := self;
-//    Top := liSBTop;
-//    Left := liSBLeft;
+//    Top := LSBTop;
+//    Left := LSBLeft;
 //    case FChartButtonsPosition of
 //      cbpLeft: begin
-//                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
+//                 LSBTop := LSBTop + CSBLeft + CSBSize;
 //               end;
 //      cbpTop: begin
-//                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
+//                 LSBLeft := LSBLeft + CSBLeft + CSBSize;
 //               end;
 //    end;
-//    Height := ciSBSize;
-//    Width := ciSBSize;
+//
+//    Height := CSBSize;
+//    Width := CSBSize;
+//    Flat   := true;
+//    ImageRes := tiRIZoomIn;
+//    Hint  := 'Zoom in';
+//    ShowHint := true;
+//    OnClick := FParenttiChart.DoSBZoomInClick;
+//  end;
+//
+//  FsbZoomOut    := TtiSpeedButton.Create(self);
+//  With FsbZoomOut do begin
+//    Parent := self;
+//    Top := LSBTop;
+//    Left := LSBLeft;
+//    case FChartButtonsPosition of
+//      cbpLeft: begin
+//                 LSBTop := LSBTop + CSBLeft + CSBSize;
+//               end;
+//      cbpTop: begin
+//                 LSBLeft := LSBLeft + CSBLeft + CSBSize;
+//               end;
+//    end;
+//    Height := CSBSize;
+//    Width := CSBSize;
 //    Flat   := true;
 //    Color  := Self.Color;
-//    ImageRes := tiRIGraphLine;
-//    Hint  := 'View legend';
+//    ImageRes := tiRIZoomOut;
+//    Hint  := 'Zoom out';
 //    ShowHint := true;
-//    OnClick := FParenttiChart.DoSBViewLegendClick;
+//    OnClick := FParenttiChart.DoSBZoomOutClick;
 //  end;
-
-  {
-    FsbConfig     := TSpeedButton.Create(self);
-    With FsbConfig do begin
-      Parent := self;
-      Top   := liSBTop;
-      Left  := ciSBLeft;
-      Height := ciSBSize;
-      Width := ciSBSize;
-      liSBTop := liSBTop + ciSBLeft + ciSBSize;
-      Flat   := true;
-      Color := self.color;
-      Glyph.LoadFromResourceName(HInstance, 'tiChart_Configure');
-      Hint  := 'Configure';
-      ShowHint := true;
-      OnClick := DoSBConfigClick;
-    end;
-  }
-
-  FsbCopyToClipBrd := TtiSpeedButton.Create(self);
-  With FsbCopyToClipBrd do begin
-    Parent := self;
-    Top := liSBTop;
-    Left := liSBLeft;
-      //uncomment the following if you add more buttons
-  //    case ChartButtonsPosition of
-  //      cbpLeft: begin
-  //                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
-  //               end;
-  //      cbpTop: begin
-  //                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
-  //               end;
-  //    end;
-
-    Height := ciSBSize;
-    Width := ciSBSize;
-    Flat   := true;
-    Color := self.color;
-  //    gTIImageListMgr.LoadGlyphToTISpeedButton(cResTI_CopyToClipboard, FsbCopyToClipBrd);
-    ImageRes := tiRICopyToClipboard;
-    Hint  := 'Copy to clipboard';
-    ShowHint := true;
-    OnClick := FParenttiChart.DoSBCopyToClipBrdClick;
-
-  end;
+//
+//  FsbDefaultZoom := TtiSpeedButton.Create(self);
+//  With FsbDefaultZoom do begin
+//    Parent := self;
+//    Top := LSBTop;
+//    Left := LSBLeft;
+//    case FChartButtonsPosition of
+//      cbpLeft: begin
+//                 LSBTop := LSBTop + CSBLeft + CSBSize;
+//               end;
+//      cbpTop: begin
+//                 LSBLeft := LSBLeft + CSBLeft + CSBSize;
+//               end;
+//    end;
+//    Height := CSBSize;
+//    Width := CSBSize;
+//    Flat   := true;
+//    Color  := Self.Color;
+//    ImageRes := tiRIMaximize;
+//    Hint  := 'Undo zoom';
+//    ShowHint := true;
+//    OnClick := FParenttiChart.DoSBDefaultZoomClick;
+//  end;
+//
+////  FsbViewLegend := TtiSpeedButton.Create(self);
+////  With FsbViewLegend do begin
+////    Parent := self;
+////    Top := liSBTop;
+////    Left := liSBLeft;
+////    case FChartButtonsPosition of
+////      cbpLeft: begin
+////                 liSBTop := liSBTop + ciSBLeft + ciSBSize;
+////               end;
+////      cbpTop: begin
+////                 liSBLeft := liSBLeft + ciSBLeft + ciSBSize;
+////               end;
+////    end;
+////    Height := ciSBSize;
+////    Width := ciSBSize;
+////    Flat   := true;
+////    Color  := Self.Color;
+////    ImageRes := tiRIGraphLine;
+////    Hint  := 'View legend';
+////    ShowHint := true;
+////    OnClick := FParenttiChart.DoSBViewLegendClick;
+////  end;
+//
+//  {
+//    FsbConfig     := TSpeedButton.Create(self);
+//    With FsbConfig do begin
+//      Parent := self;
+//      Top   := liSBTop;
+//      Left  := ciSBLeft;
+//      Height := ciSBSize;
+//      Width := ciSBSize;
+//      liSBTop := liSBTop + ciSBLeft + ciSBSize;
+//      Flat   := true;
+//      Color := self.color;
+//      Glyph.LoadFromResourceName(HInstance, 'tiChart_Configure');
+//      Hint  := 'Configure';
+//      ShowHint := true;
+//      OnClick := DoSBConfigClick;
+//    end;
+//  }
+//
+//  FsbCopyToClipBrd := TtiSpeedButton.Create(self);
+//  With FsbCopyToClipBrd do begin
+//    Parent := self;
+//    Top := LSBTop;
+//    Left := LSBLeft;
+//      //uncomment the following if you add more buttons
+//  //    case ChartButtonsPosition of
+//  //      cbpLeft: begin
+//  //                 LSBTop := LSBTop + ciSBLeft + ciSBSize;
+//  //               end;
+//  //      cbpTop: begin
+//  //                 LSBLeft := LSBLeft + ciSBLeft + ciSBSize;
+//  //               end;
+//  //    end;
+//
+//    Height := CSBSize;
+//    Width := CSBSize;
+//    Flat   := true;
+//    Color := self.color;
+//  //    gTIImageListMgr.LoadGlyphToTISpeedButton(cResTI_CopyToClipboard, FsbCopyToClipBrd);
+//    ImageRes := tiRICopyToClipboard;
+//    Hint  := 'Copy to clipboard';
+//    ShowHint := true;
+//    OnClick := FParenttiChart.DoSBCopyToClipBrdClick;
+//
+//  end;
 end;
 
 destructor TtiChartButtonsPanel.Destroy;
 begin
-    FsbCopyToClipBrd.Free;
-    FsbDefaultZoom.Free;
-   // FsbViewLegend.Free;
-    FsbZoomIn.Free;
-    FsbZoomOut.Free;
+  FChartButtonDetailList.Free;
   inherited;
 end;
 
@@ -1648,9 +1694,9 @@ begin
   inherited;
 end;
 
-function TtiDisplayGrid.GetCells(piCol, piRow: integer): string;
+function TtiDisplayGrid.GetCells(const ACol, ARow: integer): string;
 begin
-  result := FGrid.Cells[piCol,piRow] ;
+  result := FGrid.Cells[ACol,ARow] ;
 end;
 
 function TtiDisplayGrid.GetColCount: integer;
@@ -1663,64 +1709,64 @@ begin
   result := FGrid.RowCount ;
 end;
 
-procedure TtiDisplayGrid.SetCells( piCol, piRow: integer;
-                                   const Value: string);
+procedure TtiDisplayGrid.SetCells( const ACol, ARow: integer;
+                                   const AValue: string);
 begin
-  CheckCellCount( piCol, piRow ) ;
-  FGrid.Cells[piCol,piRow] := Value ;
-  SetColWidth( piCol, Value ) ;
-  SetRowHeight( piRow, Value ) ;
+  CheckCellCount( ACol, ARow ) ;
+  FGrid.Cells[ACol,ARow] := AValue ;
+  SetColWidth( ACol, AValue ) ;
+  SetRowHeight( ARow, AValue ) ;
 end;
 
-procedure TtiDisplayGrid.CheckCellCount(piCol, piRow: integer);
+procedure TtiDisplayGrid.CheckCellCount(const ACol, ARow: integer);
 begin
-  if FGrid.ColCount < piCol + 1 then begin
-    FGrid.ColCount := piCol + 1 ;
+  if FGrid.ColCount < ACol + 1 then begin
+    FGrid.ColCount := ACol + 1 ;
     HideSelected ;
   end ;
 
-  if FGrid.RowCount < piRow + 1 then begin
-    FGrid.RowCount := piRow + 1 ;
+  if FGrid.RowCount < ARow + 1 then begin
+    FGrid.RowCount := ARow + 1 ;
     HideSelected ;
   end ;
 
 end ;
 
-procedure TtiDisplayGrid.SetColCount(const Value: integer);
+procedure TtiDisplayGrid.SetColCount(const AValue: integer);
 begin
-  FGrid.ColCount := Value ;
+  FGrid.ColCount := AValue ;
 end;
 
-procedure TtiDisplayGrid.SetRowCount(const Value: integer);
+procedure TtiDisplayGrid.SetRowCount(const AValue: integer);
 begin
-  FGrid.RowCount := Value ;
+  FGrid.RowCount := AValue ;
 end;
 
 procedure TtiDisplayGrid.HideSelected;
 var
-  lEmptyRect: TGridRect;
+  LEmptyRect: TGridRect;
 begin
-  FGrid.Selection := lEmptyRect ;
+  FGrid.Selection := LEmptyRect ;
 end;
 
 function TtiDisplayGrid.IsEmpty: boolean;
 var
-  c, r: integer;
+  LCol, LRow: integer;
 begin
   result := true;
-  for c := 0 to FGrid.ColCount - 1 do
-    for r := 0 to FGrid.RowCount - 1 do
-      if self.Cells[c, r] <> '' then
+  for LCol := 0 to FGrid.ColCount - 1 do
+    for LRow := 0 to FGrid.RowCount - 1 do
+      if self.Cells[LCol, LRow] <> '' then
         result := false;
 end;
 
-procedure TtiDisplayGrid.SetColWidth(piCol: integer; const psText: string);
+procedure TtiDisplayGrid.SetColWidth(const ACol: integer; const AText: string);
 //var
 //  i: Integer;
 //  LGridWidth: Cardinal;
 begin
-  if Canvas.TextWidth( psText )+cuiHMargin > FGrid.ColWidths[piCol] then
-    FGrid.ColWidths[piCol] := Canvas.TextWidth( psText )+cuiHMargin ;
+  if Canvas.TextWidth( AText )+cuiHMargin > FGrid.ColWidths[ACol] then
+    FGrid.ColWidths[ACol] := Canvas.TextWidth( AText )+cuiHMargin ;
 
 //  LGridWidth := 0;
 //  for i := 0 to FGrid.ColCount-1 do
@@ -1771,13 +1817,13 @@ begin
   HideSelected;
 end;
 
-procedure TtiDisplayGrid.SetRowHeight(piRow: integer; const psText: string);
+procedure TtiDisplayGrid.SetRowHeight(const ARow: integer; const AText: string);
 //var
 //  i: Integer;
 //  LGridHeight: Cardinal;
 begin
-  if Canvas.TextHeight( psText )+cuiVMargin > FGrid.RowHeights[piRow] then
-    FGrid.RowHeights[piRow] := Canvas.TextHeight( psText )+cuiVMargin ;
+  if Canvas.TextHeight( AText )+cuiVMargin > FGrid.RowHeights[ARow] then
+    FGrid.RowHeights[ARow] := Canvas.TextHeight( AText )+cuiVMargin ;
 
 //  LGridHeight := 0;
 //  for i := 0 to FGrid.RowCount-1 do
@@ -1796,30 +1842,31 @@ begin
     ClearRow( i ) ;
 end;
 
-procedure TtiDisplayGrid.ClearCell(piCol, piRow: integer);
+procedure TtiDisplayGrid.ClearCell(const ACol, ARow: integer);
 begin
-  FGrid.Cells[piCol, piRow] := '' ;
+  FGrid.Cells[ACol, ARow] := '' ;
 end;
 
-procedure TtiDisplayGrid.ClearCol(piCol: integer);
+procedure TtiDisplayGrid.ClearCol(const ACol: integer);
 var
   i : integer ;
 begin
   for i := 0 to FGrid.RowCount - 1 do
-    ClearCell( piCol, i ) ;
+    ClearCell( ACol, i ) ;
 end;
 
-procedure TtiDisplayGrid.ClearRow(piRow: integer);
+procedure TtiDisplayGrid.ClearRow(const ARow: integer);
 var
   i : integer ;
 begin
   for i := 0 to FGrid.ColCount - 1 do
-    ClearCell( i, piRow ) ;
+    ClearCell( i, ARow ) ;
 end;
 
 constructor TtiDataPointHintForm.CreateNew(AOwner: TComponent; Dummy: Integer = 0);
 begin
   inherited CreateNew(AOwner);
+  FFirstShow:= True;
   Color := clInfoText;
   BorderWidth := 1;
   BorderStyle := bsNone;
@@ -1894,11 +1941,17 @@ procedure TtiDataPointHintForm.Show;
 //  LAlphaBlendDiff: Byte;
 //  LAlphaBlendinc: Byte;
 begin
-  inherited;
    ClientHeight := FContent.Lines.Count * Canvas.TextHeight( 'M')
      + FContent.Margins.Top + FContent.Margins.Bottom;
    ClientWidth := MaxStringWidth(FContent.Lines, Canvas)
      + FContent.Margins.Left + FContent.Margins.Right;
+  // ToDo: There is a problem with show being called multiple times while the
+  //       form is still being positioned. This causes mouse litter. I can
+  //       not identify the source of the problem, but this works around it.
+  if FFirstShow then
+    FFirstShow:= false
+  else
+    inherited;
 //  AlphaBlendValue := 0;
 //
 //  LAlphaBlendDiff := FinalAlphaBlendValue - AlphaBlendValue;
@@ -1914,8 +1967,8 @@ end;
 {
 ****************************** TtiTimeSeriesChart ******************************
 }
-constructor TtiTimeSeriesChart.Create(Owner : TComponent; AButtonsPosition:
-    TtiChartButtonsPosition; ALegendPosition: TtiChartLegendPosition);
+constructor TtiTimeSeriesChart.Create(Owner : TComponent; const AButtonsPosition:
+    TtiChartButtonsPosition; const ALegendPosition: TtiChartLegendPosition);
 begin
   inherited Create(Owner);
   Parent := Owner as TWinControl;
@@ -1956,23 +2009,23 @@ begin
 //  FDataPointHintForm.AlphaBlend := true;
 //  FDataPointHintForm.AlphaBlendValue := 200;
 
-  FbDrawCrossHairs    := true;
-  FbDrawCrossHairsNow := true;
+  FDrawCrossHairs    := true;
+  FDrawCrossHairsNow := true;
   ResetMousePositionVisualCues;
-  FbCrossHairsDrawn := false;
+  FCrossHairsDrawn := false;
   FDataCircleDrawn := False;
   SnapToDataSize   := 15;
-  FbTimeSeriesChart := false;
-  FbDisplayTestData := false;
+  FTimeSeriesChart := false;
+  FDisplayTestData := false;
   FConstrainViewToData := false;
 
-  FrBottomAxisMin := MaxInt;
-  FrBottomAxisMax := -MaxInt;
-  FrLeftAxisMin  := MaxInt;
-  FrLeftAxisMax  := -MaxInt;
+  FBottomAxisMin := MaxInt;
+  FBottomAxisMax := -MaxInt;
+  FLeftAxisMin  := MaxInt;
+  FLeftAxisMax  := -MaxInt;
 
   FScrollStyle   := ssBoth;
-  FbShowTestData := false;
+  FShowTestData := false;
 
   FShowDataPointHintTmr:= TTimer.Create(nil);
   FShowDataPointHintTmr.Enabled:= false;
@@ -2000,45 +2053,53 @@ begin
   FChartLegendForm.ClearSeries;
 end;
 
-procedure TtiTimeSeriesChart.AddSeries(ASeries: TChartSeries);
+procedure TtiTimeSeriesChart.AddSeries(const ASeries: TChartSeries);
 begin
   FSeriesList.Add(ASeries);
   FChart.AddSeries(ASeries);
 end;
 
-function TtiTimeSeriesChart.AddBarSeries(const psTitle: string): TBarSeries;
+function TtiTimeSeriesChart.AddBarSeries(const ATitle: string): TBarSeries;
 var
-  lSeries: TBarSeries;
+  LSeries: TBarSeries;
 begin
-  lSeries := TBarSeries.Create(nil);
-  lSeries.Title := psTitle;
-  lSeries.Marks.Visible := false;
-  lSeries.BarWidthPercent := 100; // Perhaps this should be a param ?
-  AddSeries(lSeries);
-  result := lSeries;
+  LSeries := TBarSeries.Create(nil);
+  LSeries.Title := ATitle;
+  LSeries.Marks.Visible := false;
+  LSeries.BarWidthPercent := 100; // Perhaps this should be a param ?
+  AddSeries(LSeries);
+  result := LSeries;
 end;
 
-function TtiTimeSeriesChart.AddDateTimeBarSeries(const psTitle : string):
+procedure TtiTimeSeriesChart.AddButton(const AButtonHint: string;
+  const AImageResName: string; const ADoButtonClick: TNotifyEvent;
+  const AButtonOrder: Integer);
+begin
+  Assert(Assigned(FButtonsPanel));
+  FButtonsPanel.AddButton(AButtonHint, AImageResName, ADoButtonClick, AButtonOrder);
+end;
+
+function TtiTimeSeriesChart.AddDateTimeBarSeries(const ATitle : string):
     TBarSeries;
 begin
   TimeSeriesChart := true;
-  result         := AddBarSeries(psTitle);
+  result         := AddBarSeries(ATitle);
 end;
 
-procedure TtiTimeSeriesChart.AddDateTimeGap(const psSeriesName: string; const
-    pXBeforeGap: TDateTime; const pXAfterGap: TDateTime);
+procedure TtiTimeSeriesChart.AddDateTimeGap(const ASeriesName: string; const
+    AXBeforeGap: TDateTime; const AXAfterGap: TDateTime);
 var
   LSeries: TChartSeries;
 begin
-  LSeries := SeriesByName(SeriesTitleToName(psSeriesName));
-  Assert(LSeries <> nil, 'Can not find series <' + psSeriesName + '>');
-  LSeries.AddNullXY((pXBeforeGap + pXAfterGap) / 2.0, (FrLeftAxisMin + FrLeftAxisMax) / 2.0, '');
+  LSeries := SeriesByName(SeriesTitleToName(ASeriesName));
+  Assert(LSeries <> nil, 'Can not find series <' + ASeriesName + '>');
+  LSeries.AddNullXY((AXBeforeGap + AXAfterGap) / 2.0, (FLeftAxisMin + FLeftAxisMax) / 2.0, '');
 end;
 
-function TtiTimeSeriesChart.AddDateTimeLineSeries(const psTitle: string): TLineSeries;
+function TtiTimeSeriesChart.AddDateTimeLineSeries(const ATitle: string): TLineSeries;
 begin
   TimeSeriesChart := true;
-  result := AddLineSeries(psTitle);
+  result := AddLineSeries(ATitle);
 end;
 
 procedure TtiTimeSeriesChart.AddDateTimeValues(const ASeriesTitle : string;
@@ -2048,11 +2109,11 @@ var
   LSeries: TChartSeries;
   LColor: TColor;
 begin
-  FrBottomAxisMin := Min(FrBottomAxisMin, AX);
-  FrBottomAxisMax := Max(FrBottomAxisMax, AX);
+  FBottomAxisMin := Min(FBottomAxisMin, AX);
+  FBottomAxisMax := Max(FBottomAxisMax, AX);
 
-  FrLeftAxisMin := Min(FrLeftAxisMin, AY);
-  FrLeftAxisMax := Max(FrLeftAxisMax, AY);
+  FLeftAxisMin := Min(FLeftAxisMin, AY);
+  FLeftAxisMax := Max(FLeftAxisMax, AY);
 
   LSeries := SeriesByName(SeriesTitleToName(ASeriesTitle));
   Assert(LSeries <> nil, 'Can not find series <' + ASeriesTitle + '>');
@@ -2064,13 +2125,13 @@ begin
   LSeries.AddXY(AX, AY, ALabel, LColor);
 end;
 
-function TtiTimeSeriesChart.AddLineSeries(const psTitle: string): TLineSeries;
+function TtiTimeSeriesChart.AddLineSeries(const ATitle: string): TLineSeries;
 var
   LSeries: TLineSeries;
 begin
   LSeries := TLineSeries.Create(nil);
-  LSeries.Name := SeriesTitleToName(psTitle);
-  LSeries.Title := psTitle;
+  LSeries.Name := SeriesTitleToName(ATitle);
+  LSeries.Title := ATitle;
   LSeries.Pointer.Style := psCross;
   LSeries.Pointer.InflateMargins := false;
   LSeries.XValues.DateTime := true;
@@ -2093,7 +2154,7 @@ procedure TtiTimeSeriesChart.AdjustScrollBarPositions;
                                prPosition : real;
                                Axis: TtiAxis);
     var
-      lOnChange : TNotifyEvent;
+      LOnChange : TNotifyEvent;
       LScrollAxisRange: Double;
       LScrollBarRange: Integer;
     begin
@@ -2109,7 +2170,7 @@ procedure TtiTimeSeriesChart.AdjustScrollBarPositions;
       // Work with the scroll bar minimum and maximum to allow the scroll resolution to be changed.
       LScrollBarRange := pScrollBar.Max - pScrollBar.Min;
 
-      lOnChange := pScrollBar.OnChange;
+      LOnChange := pScrollBar.OnChange;
       pScrollBar.OnChange := nil;
       try
         if prMaxAxisRange <> 0 then
@@ -2128,14 +2189,14 @@ procedure TtiTimeSeriesChart.AdjustScrollBarPositions;
         end else
           pScrollBar.Position := 0;
       finally
-        pScrollBar.OnChange := lOnChange;
+        pScrollBar.OnChange := LOnChange;
       end;
     end;
 
   var
-    lrMaxAxisRange : real;
-    lrCurrentAxisRange : real;
-    lrPosition : real;
+    LMaxAxisRange : real;
+    LCurrentAxisRange : real;
+    LPosition : real;
     LScrollStyle: TScrollStyle;
 
 begin
@@ -2159,10 +2220,10 @@ begin
     FscbBottom.Width := FChart.ChartWidth;
 
     // Set the position of the slider in the scroll bar
-    lrMaxAxisRange    := VisiblesSeriesMaxX           - VisiblesSeriesMinX;
-    lrCurrentAxisRange := FChart.BottomAxis.Maximum - FChart.BottomAxis.Minimum;
-    lrPosition        := FChart.BottomAxis.Minimum - VisiblesSeriesMinX;
-    _SetupScrollBar(FscbBottom, lrMaxAxisRange, lrCurrentAxisRange, lrPosition, axHorizontal);
+    LMaxAxisRange    := VisiblesSeriesMaxX           - VisiblesSeriesMinX;
+    LCurrentAxisRange := FChart.BottomAxis.Maximum - FChart.BottomAxis.Minimum;
+    LPosition        := FChart.BottomAxis.Minimum - VisiblesSeriesMinX;
+    _SetupScrollBar(FscbBottom, LMaxAxisRange, LCurrentAxisRange, LPosition, axHorizontal);
   end;
 
   // Setup the left scrollbar
@@ -2173,10 +2234,10 @@ begin
     FscbLeft.Height := FChart.ChartHeight;
 
     // Set the position of the slider in the scroll bar
-    lrMaxAxisRange    := VisiblesSeriesMaxY           - VisiblesSeriesMinY;
-    lrCurrentAxisRange := FChart.LeftAxis.Maximum - FChart.LeftAxis.Minimum;
-    lrPosition        := FChart.LeftAxis.Minimum - VisiblesSeriesMinY;
-    _SetupScrollBar(FscbLeft, lrMaxAxisRange, lrCurrentAxisRange, lrPosition, axVertical);
+    LMaxAxisRange    := VisiblesSeriesMaxY           - VisiblesSeriesMinY;
+    LCurrentAxisRange := FChart.LeftAxis.Maximum - FChart.LeftAxis.Minimum;
+    LPosition        := FChart.LeftAxis.Minimum - VisiblesSeriesMinY;
+    _SetupScrollBar(FscbLeft, LMaxAxisRange, LCurrentAxisRange, LPosition, axVertical);
   end;
 end;
 
@@ -2197,20 +2258,20 @@ end;
 procedure TtiTimeSeriesChart.HideCrossHairs;
 begin
   // Erase the old cross hairs
-  if (FiOldX <> -1) then begin
-    DoDrawCrossHairs(FiOldX, FiOldY, False {pbDraw});
-    FiOldX := -1;
+  if (FOldX <> -1) then begin
+    DoDrawCrossHairs(FOldX, FOldY, False {pbDraw});
+    FOldX := -1;
   end;
 end;
 
-procedure TtiTimeSeriesChart.ShowCrossHairs(X, Y: Integer);
+procedure TtiTimeSeriesChart.ShowCrossHairs(const AX, AY: Integer);
 begin
   // Draw crosshair at current position
-  DoDrawCrossHairs(X, Y, True {pbDraw});
+  DoDrawCrossHairs(AX, AY, True {pbDraw});
 
   // Store old position
-  FiOldX := X;
-  FiOldY := Y;
+  FOldX := AX;
+  FOldY := AY;
 end;
 
 procedure TtiTimeSeriesChart.DoChartMouseMove(Sender: TObject; Shift:
@@ -2232,19 +2293,19 @@ procedure TtiTimeSeriesChart.DoChartMouseMove(Sender: TObject; Shift:
         Pen.Width := 1      ;
         Brush.Style := bsClear;
 
-        Ellipse(aX-FiSnapToDataRadius,
-                 aY-FiSnapToDataRadius,
-                 aX+FiSnapToDataRadius,
-                 aY+FiSnapToDataRadius);
+        Ellipse(aX-FSnapToDataRadius,
+                 aY-FSnapToDataRadius,
+                 aX+FSnapToDataRadius,
+                 aY+FSnapToDataRadius);
 
-        FiOldCircX := aX;
-        FiOldCircY := aY;
+        FOldCircX := aX;
+        FOldCircY := aY;
       end;
     end;
 
 var
-  lSeries      : TChartSeries;
-  liDataIndex  : integer;
+  LSeries      : TChartSeries;
+  LSeriesIndex  : integer;
   i : integer;
 begin
   // Clear the values under the mouse cursor which are surfaced as
@@ -2267,9 +2328,9 @@ begin
   HideCrossHairs;
 
   // Erase old circle
-  if (FiOldCircX <> -1) then begin
-    DrawCircle(FiOldCircX, FiOldCircY, False {ADraw});
-    FiOldCircX := -1;
+  if (FOldCircX <> -1) then begin
+    DrawCircle(FOldCircX, FOldCircY, False {ADraw});
+    FOldCircX := -1;
   end;
 
   // Check if mouse is inside Chart rectangle
@@ -2288,13 +2349,13 @@ begin
     Screen.Cursor := crNone;
 
   // Scan all the series looking for the closest data point
-  // If found, lSeries and liDataIndex will have been set.
-  liDataIndex := -1;
-  lSeries := nil;
+  // If found, LSeries and LSeriesIndex will have been set.
+  LSeriesIndex := -1;
+  LSeries := nil;
   for i := 0 to FChart.SeriesCount - 1 do begin
-    lSeries := FChart.Series[i];
-    if lSeries.Active then
-      liDataIndex := lSeries.GetCursorValueIndex;
+    LSeries := FChart.Series[i];
+    if LSeries.Active then
+      LSeriesIndex := LSeries.GetCursorValueIndex;
 // ToDo: Series.GetCursorValueIndex is returning a value offset by
 //       1 for each NullXY value that has been added.
 //       Action: TtiTimeSeriesChart.AddDateTimeValues and
@@ -2303,32 +2364,33 @@ begin
 //               and Series.AddNullXY, and the actual index value (calculated by
 //               keeping track of how many NullXY values have been added)
 
-    if liDataIndex <> -1 then
+    if LSeriesIndex <> -1 then
       Break; //==>
   end;
 
   FDataUnderMouse := nil;
 
   // A data point was found close to the mouse cursor, so set some values
-  if (liDataIndex <> -1) and
-     (lSeries <> nil) then
+  if (LSeriesIndex <> -1) and
+     (LSeries <> nil) then
   begin
-    XDataValueUnderMouse := lSeries.XValues[liDataIndex];
-    YDataValueUnderMouse := lSeries.YValues[liDataIndex];
-    if liDataIndex < FData.Count then
-    begin
-      if Assigned(FOnGetDataByDateTime) then
-        FOnGetDataByDateTime(XDataValueUnderMouse, FDataUnderMouse);
-      if not Assigned(FDataUnderMouse) then
-        FDataUnderMouse := TObject(FData.Items[liDataIndex]);
-    end;
+    XDataValueUnderMouse := LSeries.XValues[LSeriesIndex];
+    YDataValueUnderMouse := LSeries.YValues[LSeriesIndex];
 
-    DrawCircle(lSeries.CalcXPosValue(XDataValueUnderMouse),
-               lSeries.CalcYPosValue(YDataValueUnderMouse),
+    if  Assigned(FOnDataGap) then
+    begin
+      Assert(Assigned(FOnGetDataByDateTime));
+      FOnGetDataByDateTime(XDataValueUnderMouse, FDataUnderMouse);
+    end;
+    if (not Assigned(FDataUnderMouse)) and (LSeriesIndex < FData.Count) then
+      FDataUnderMouse := TObject(FData.Items[LSeriesIndex]);
+
+    DrawCircle(LSeries.CalcXPosValue(XDataValueUnderMouse),
+               LSeries.CalcYPosValue(YDataValueUnderMouse),
                True {ADraw});
 
-    OnDrawKey(lSeries,
-               liDataIndex,
+    OnDrawKey(LSeries,
+               LSeriesIndex,
                DataUnderMouse,
                FData);
 
@@ -2349,31 +2411,31 @@ begin
   Application.ProcessMessages;
 end;
 
-procedure TtiTimeSeriesChart.DoDrawCrossHairs(piX, piY: Integer; pbDraw :
+procedure TtiTimeSeriesChart.DoDrawCrossHairs(const AX, AY: Integer; const ADoDraw :
     boolean);
 begin
-  if FbCrossHairsDrawn = pbDraw then
+  if FCrossHairsDrawn = ADoDraw then
     Exit; //==>
 
-  FbCrossHairsDrawn := pbDraw;
+  FCrossHairsDrawn := ADoDraw;
   FChart.Canvas.Pen.Color := clGray;
   FChart.Canvas.Pen.Mode := pmXor  ;
   FChart.Canvas.Pen.Style := psSolid;
   FChart.Canvas.Pen.Width := 1      ;
 
   // Draw the vertical line
-  FChart.Canvas.MoveTo(piX,FChart.ChartRect.Top-FChart.Height3D);
-  FChart.Canvas.LineTo(piX,FChart.ChartRect.Bottom-FChart.Height3D);
+  FChart.Canvas.MoveTo(AX,FChart.ChartRect.Top-FChart.Height3D);
+  FChart.Canvas.LineTo(AX,FChart.ChartRect.Bottom-FChart.Height3D);
 
   // Draw the horizontal line
-  FChart.Canvas.MoveTo(FChart.ChartRect.Left+FChart.Width3D,piY);
-  FChart.Canvas.LineTo(FChart.ChartRect.Right+FChart.Width3D,piY);
+  FChart.Canvas.MoveTo(FChart.ChartRect.Left+FChart.Width3D,AY);
+  FChart.Canvas.LineTo(FChart.ChartRect.Right+FChart.Width3D,AY);
 end;
 
 procedure TtiTimeSeriesChart.DoHorizontalScroll(Sender : TObject);
 var
-  LrMin: Double;
-  LrMax: Double;
+  LMin: Double;
+  LMax: Double;
   LMaxAxisRange: Double;
   LCurrentAxisRange: Double;
   LScrollAxisRange: Double;
@@ -2391,10 +2453,10 @@ begin
 
   // Scroll amount
   LScrollAxisAmount := ((FscbBottom.Min + LScrollBarRange - FscbBottom.Position) / LScrollBarRange) * LScrollAxisRange;
-  LrMin := (VisiblesSeriesMaxX - LCurrentAxisRange) - LScrollAxisAmount;
-  LrMax := LrMin + LCurrentAxisRange;
+  LMin := (VisiblesSeriesMaxX - LCurrentAxisRange) - LScrollAxisAmount;
+  LMax := LMin + LCurrentAxisRange;
 
-  FChart.BottomAxis.SetMinMax(LrMin, LrMax);
+  FChart.BottomAxis.SetMinMax(LMin, LMax);
   RangeChange;
 end;
 
@@ -2403,7 +2465,7 @@ procedure TtiTimeSeriesChart.DoMouseDown(Sender: TObject;Button: TMouseButton;
 begin
   if (Button = mbRight) then
   begin
-    FbDrawCrossHairsSaved := DrawCrossHairs;
+    FDrawCrossHairsSaved := DrawCrossHairs;
     DrawCrossHairs := false;
   end;
 end;
@@ -2421,7 +2483,7 @@ procedure TtiTimeSeriesChart.DoMouseUp(Sender: TObject;Button: TMouseButton;
 begin
   if (Button = mbRight) then
   begin
-    DrawCrossHairs := FbDrawCrossHairsSaved;
+    DrawCrossHairs := FDrawCrossHairsSaved;
   end;
 end;
 
@@ -2434,24 +2496,24 @@ end;
 procedure TtiTimeSeriesChart.DoOnBeforeDrawAxes(sender : TObject);
 
   const
-    cdtSecond  = 1/24/60/60;
-    cdtMinute  = 1/24/60  ;
-    cdtHour    = 1/24     ;
-    cdtDay     = 1.0      ;
-    cdtMonth   = 365/12;
-    cdtYear    = 365;
-    cdt20Years = cdtYear*20;
+    CDTSecond  = 1/24/60/60;
+    CDTMinute  = 1/24/60  ;
+    CDTHour    = 1/24     ;
+    CDTDay     = 1.0      ;
+    CDTMonth   = 365/12;
+    CDTYear    = 365;
+    CDT20Years = CDTYear*20;
   var
-    ldtPeriod : TDateTime;
+    LDTPeriod : TDateTime;
 
 begin
-  if not FbTimeSeriesChart then
+  if not FTimeSeriesChart then
       Exit; //==>
 
     if FData = nil then
       Exit; //==>
 
-    ldtPeriod := FChart.BottomAxis.Maximum -
+    LDTPeriod := FChart.BottomAxis.Maximum -
                  FChart.BottomAxis.Minimum;
 
   {
@@ -2464,71 +2526,81 @@ begin
   }
 
     // > 20 years
-    if ldtPeriod > cdt20Years then begin
+    if LDTPeriod > CDT20Years then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtOneYear];
       FChart.BottomAxis.LabelsMultiline := false;
       FChart.BottomAxis.DateTimeFormat := 'yyyy';
-      //Log('> 20 Years');
     // > 1 and       <= 20 years
-    end else if (ldtPeriod > cdtYear) and (ldtPeriod <= cdt20Years) then begin
+    end else if (LDTPeriod > CDTYear) and (LDTPeriod <= CDT20Years) then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtOneYear];
       FChart.BottomAxis.LabelsMultiline := false;
       FChart.BottomAxis.DateTimeFormat := 'yyyy';
-      //Log('> 1 and       <= 20 years');
     // > 3 months  and <= 1 year
-    end else if (ldtPeriod > cdtMonth*3) and (ldtPeriod <= cdtYear) then begin
+    end else if (LDTPeriod > CDTMonth*3) and (LDTPeriod <= CDTYear) then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtOneMonth];
       FChart.BottomAxis.LabelsMultiline := true;
       FChart.BottomAxis.DateTimeFormat := 'mmm yyyy';
-      //Log('> 1 month  and <= 1 year');
     // > 2 months <= 3 months
-    end else if (ldtPeriod > cdtMonth*2) and (ldtPeriod <= cdtMonth*3) then begin
+    end else if (LDTPeriod > CDTMonth*2) and (LDTPeriod <= CDTMonth*3) then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtOneWeek];
       FChart.BottomAxis.LabelsMultiline := false;
       FChart.BottomAxis.DateTimeFormat := 'dd mmm';
-      //Log('> 2 months <= 3 months');
     // > 1 months <= 2 months
-    end else if (ldtPeriod > cdtMonth) and (ldtPeriod <= cdtMonth*2) then begin
+    end else if (LDTPeriod > CDTMonth) and (LDTPeriod <= CDTMonth*2) then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtThreeDays];
       FChart.BottomAxis.LabelsMultiline := false;
       FChart.BottomAxis.DateTimeFormat := 'dd mmm';
-      //Log('> 1 month <= 3 months');
     // > 10 day    and <= 1 month
-    end else if (ldtPeriod > cdtDay*10) and (ldtPeriod <= cdtMonth) then begin
+    end else if (LDTPeriod > CDTDay*10) and (LDTPeriod <= CDTMonth) then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtTwoDays];
       FChart.BottomAxis.LabelsMultiline := false;
       FChart.BottomAxis.DateTimeFormat := 'dd mmm';
-      //Log('> 10 days    and <= 1 month');
     // > 3 days    and <= 10 days
-    end else if (ldtPeriod > cdtDay*3) and (ldtPeriod <= cdtDay*10) then begin
+    end else if (LDTPeriod > CDTDay*3) and (LDTPeriod <= CDTDay*10) then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtOneDay];
       FChart.BottomAxis.LabelsMultiline := false;
       FChart.BottomAxis.DateTimeFormat := 'dd mmm';
-      //Log('> 3 day    and <= 10 days');
     // > 1 day    and <= 3 days
-    end else if (ldtPeriod > cdtDay) and (ldtPeriod <= cdtDay*3) then begin
+    end else if (LDTPeriod > CDTDay) and (LDTPeriod <= CDTDay*3) then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtSixHours];
       FChart.BottomAxis.LabelsMultiline := true;
       FChart.BottomAxis.DateTimeFormat := 'hh:mm dd-mmm';
-      //Log('> 1 day    and <= 3 days');
-    // > 1 hour   and <= 1 day
-    end else if (ldtPeriod > cdtHour) and (ldtPeriod <= cdtDay) then begin
+    // > 4 hours  and <= 1 day
+    end else if (LDTPeriod > CDTHour * 4) and (LDTPeriod <= CDTDay) then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtOneHour];
       FChart.BottomAxis.LabelsMultiline := false;
       FChart.BottomAxis.DateTimeFormat := 'hh:mm';
-      //Log('> 1 hour   and <= 1 day');
-    // > 1 minute and <= 1 hour
-    end else if (ldtPeriod > cdtMinute) and (ldtPeriod <= cdtHour) then begin
-      FChart.BottomAxis.Increment      := DateTimeStep[dtTenMinutes];
+    // > 29 minutes and <= 4 hours
+    end else if (LDTPeriod > CDTMinute * 29) and (LDTPeriod <= CDTHour * 4) then begin
+      FChart.BottomAxis.Increment      := DateTimeStep[dtFifteenMinutes];
       FChart.BottomAxis.LabelsMultiline := false;
       FChart.BottomAxis.DateTimeFormat := 'hh:mm';
-      //Log('> 1 minute and <= 1 hour');
-    // > 1 second and <= 1 minute
-    end else if (ldtPeriod > cdtSecond) and (ldtPeriod <= cdtMinute) then begin
+    // > 10 minutes and <= 29 minutes
+    end else if (LDTPeriod > CDTMinute * 10) and (LDTPeriod <= CDTMinute * 29) then begin
+      FChart.BottomAxis.Increment      := DateTimeStep[dtOneMinute];
+      FChart.BottomAxis.LabelsMultiline := false;
+      FChart.BottomAxis.DateTimeFormat := 'hh:mm';
+    // > 2 minutes and <= 10 minutes
+    end else if (LDTPeriod > CDTMinute * 2) and (LDTPeriod <= CDTMinute * 10) then begin
+      FChart.BottomAxis.Increment      := DateTimeStep[dtThirtySeconds];
+      FChart.BottomAxis.LabelsMultiline := false;
+      FChart.BottomAxis.DateTimeFormat := 'hh:mm:ss';
+    // > 20 seconds and <= 2 minutes
+    end else if (LDTPeriod > CDTSecond * 20) and (LDTPeriod <= CDTMinute * 2) then begin
       FChart.BottomAxis.Increment      := DateTimeStep[dtTenSeconds];
       FChart.BottomAxis.LabelsMultiline := false;
-      FChart.BottomAxis.DateTimeFormat := 'mm:ss';
-      //Log('> 1 second and <= 1 minute');
+      FChart.BottomAxis.DateTimeFormat := 'hh:mm:ss';
+    // > 5 seconds and <= 20 seconds
+    end else if (LDTPeriod > CDTSecond * 5) and (LDTPeriod <= CDTSecond * 20) then begin
+      FChart.BottomAxis.Increment      := DateTimeStep[dtOneSecond];
+      FChart.BottomAxis.LabelsMultiline := false;
+      FChart.BottomAxis.DateTimeFormat := 'hh:mm:ss';
+    // > 250 milliseconds and <= 5 seconds
+    end else if (LDTPeriod > CDTSecond / 4) and (LDTPeriod <= CDTSecond * 5) then begin
+      FChart.BottomAxis.Increment      := DateTimeStep[dtOneSecond];
+      FChart.BottomAxis.LabelsMultiline := false;
+      FChart.BottomAxis.DateTimeFormat := 'hh:mm:ss';
+    // <= 250 milliseconds
     end else
       // Do Nothing;
   ;
@@ -2563,7 +2635,7 @@ var
   LPoint: TPoint;
 begin
   // The repaint overwrites any custom drawing.
-  FbCrossHairsDrawn := False;
+  FCrossHairsDrawn := False;
   FDataCircleDrawn := False;
 
   if MouseInCrossHairRegion and DrawCrossHairs and DrawCrossHairsNow then
@@ -2588,12 +2660,12 @@ end;
 
 procedure TtiTimeSeriesChart.DoSBDefaultZoomClick(sender : TObject);
 begin
-  FbDrawCrossHairsSaved := DrawCrossHairs;
+  FDrawCrossHairsSaved := DrawCrossHairs;
   DrawCrossHairs := false;
   try
     ResetZoom;
   finally
-    DrawCrossHairs := FbDrawCrossHairsSaved;
+    DrawCrossHairs := FDrawCrossHairsSaved;
   end;
 end;
 
@@ -2624,8 +2696,8 @@ end;
 
 procedure TtiTimeSeriesChart.DoVerticalScroll(Sender : TObject);
 var
-  LrMin: Double;
-  LrMax: Double;
+  LMin: Double;
+  LMax: Double;
   LMaxAxisRange: Double;
   LCurrentAxisRange: Double;
   LScrollAxisRange: Double;
@@ -2643,10 +2715,10 @@ begin
 
   // Scroll amount
   LScrollAxisAmount := (FscbLeft.Position / LScrollBarRange) * LScrollAxisRange;
-  LrMin := (VisiblesSeriesMaxY - LCurrentAxisRange) - LScrollAxisAmount;
-  LrMax := LrMin + LCurrentAxisRange;
+  LMin := (VisiblesSeriesMaxY - LCurrentAxisRange) - LScrollAxisAmount;
+  LMax := LMin + LCurrentAxisRange;
 
-  FChart.LeftAxis.SetMinMax(LrMin, LrMax);
+  FChart.LeftAxis.SetMinMax(LMin, LMax);
   RangeChange;
 end;
 
@@ -2687,11 +2759,11 @@ end;
 
 function TtiTimeSeriesChart.GetMouseInCrossHairRegion: Boolean;
 var
-  lPoint: TPoint;
+  LPoint: TPoint;
 begin
   try
-    lPoint.X := Mouse.CursorPos.X;
-    lPoint.Y := Mouse.CursorPos.Y;
+    LPoint.X := Mouse.CursorPos.X;
+    LPoint.Y := Mouse.CursorPos.Y;
   except
     // Ignore unable to get cursor pos (such as when screensaver is active
     // or workstation is locked)
@@ -2703,11 +2775,11 @@ begin
   end;
 
   try
-    lPoint  := FChart.ScreenToClient(lPoint);
+    LPoint  := FChart.ScreenToClient(LPoint);
     result  := IsFormFocused and
                   PtInRect(Chart.ChartRect,
-                           Point(lPoint.X-Chart.Width3D,
-                           lPoint.Y+Chart.Height3D));
+                           Point(LPoint.X-Chart.Width3D,
+                           LPoint.Y+Chart.Height3D));
   except
     on e: EInvalidOperation do
       result := False;
@@ -2716,12 +2788,12 @@ end;
 
 function TtiTimeSeriesChart.GetNextSeriesColor: TColor;
 var
-  liColorIndex: Integer;
+  LColorIndex: Integer;
 begin
-  liColorIndex := FChart.SeriesCount;
-  while liColorIndex > High(cuaSeriesColors) do
-    liColorIndex := liColorIndex - High(cuaSeriesColors);
-  result := cuaSeriesColors[liColorIndex];
+  LColorIndex := FChart.SeriesCount;
+  while LColorIndex > High(cuaSeriesColors) do
+    LColorIndex := LColorIndex - High(cuaSeriesColors);
+  result := cuaSeriesColors[LColorIndex];
 end;
 
 function TtiTimeSeriesChart.GetOnDblClickChart: TNotifyEvent;
@@ -2756,18 +2828,18 @@ end;
 function TtiTimeSeriesChart.GetVisibleSeriesAsString: string;
 var
   i: Integer;
-  LSL: TStringList;
+  LStringList: TStringList;
 begin
-  LSL:= TStringList.Create;
+  LStringList:= TStringList.Create;
   try
     for i:= 0 to FChart.SeriesCount - 1 do
       if FChartLegendForm.SeriesVisible[FChart.Series[i].Name] then
-        LSL.Values[FChart.Series[i].Name]:= '1'
+        LStringList.Values[FChart.Series[i].Name]:= '1'
       else
-        LSL.Values[FChart.Series[i].Name]:= '0';
-    Result:= LSL.CommaText;
+        LStringList.Values[FChart.Series[i].Name]:= '0';
+    Result:= LStringList.CommaText;
   finally
-    LSL.Free;
+    LStringList.Free;
   end;
 end;
 
@@ -2865,17 +2937,17 @@ end;
 
 function TtiTimeSeriesChart.IsFormFocused: Boolean;
 var
-  lForm: TForm;
+  LForm: TForm;
 begin
   result := true;
 
   // This may AV when used in an ActiveX
-  lForm := TForm(GetOwnerForm(self));
+  LForm := TForm(GetOwnerForm(self));
 
   // Added (and assert removed) for ActiveX deployment
-  if lForm = nil then
+  if LForm = nil then
     Exit; //==>
-  //Assert(lForm <> nil, 'Owner form not found');
+  //Assert(LForm <> nil, 'Owner form not found');
 
   // This will return the correct answere if
   // a) An MDIChildForm is active, and the application is deactiveate
@@ -2883,11 +2955,11 @@ begin
   // but will not return the correct answer if
   // c) An MIDChildForm is active, and a ModalDialog is activated over it.
   // Non MDIChildForms, non modal dialogs have not been tested.
-  case (lForm.FormStyle) of
+  case (LForm.FormStyle) of
     fsMDIChild :
     begin
       try
-        result := (Application.Active) and (Application.MainForm.ActiveMDIChild = lForm);
+        result := (Application.Active) and (Application.MainForm.ActiveMDIChild = LForm);
       except
         on e: EInvalidOperation do
         begin
@@ -2900,16 +2972,16 @@ begin
     // Form.Active will not work for an MDIForm. Must use Application.Active,
     // but this will return true if one of the child forms is active, but the
     // main form is not.
-    //  fsMDIForm  : result := (lForm.Active) and (Application.Active);
+    //  fsMDIForm  : result := (LForm.Active) and (Application.Active);
 
     // This is not fool proof yet. The commented out code below will work for a
     // normal, mdi app. But will fail for an "Outlook" style ap where the client
     // forms are contained inside a main form.
-    // fsNormal   : result := (lForm.Active);
+    // fsNormal   : result := (LForm.Active);
     // The line below hacks around that problem.
     fsNormal   : result := true;
 
-    fsStayOnTop : result := (lForm.Active);
+    fsStayOnTop : result := (LForm.Active);
   else
     raise exception.create('Invalid FormStyle passed to TtiChart.IsFormFocused');
   end;
@@ -2932,23 +3004,23 @@ end;
 
 function TtiTimeSeriesChart.PointsVisible: Integer;
 var
-  I: Integer;
-  J: Integer;
+  i: Integer;
+  j: Integer;
 begin
   Result := 0;
-  for I := 0 to FChart.SeriesCount - 1 do
-    // Original solution was to iterate between FChart.Series[I].FirstValueIndex
-    // and FChart.Series[I].LastValueIndex if they were not -1 but they aren't
+  for i := 0 to FChart.SeriesCount - 1 do
+    // Original solution was to iterate between FChart.Series[i].FirstValueIndex
+    // and FChart.Series[i].LastValueIndex if they were not -1 but they aren't
     // updated until late in the chart update process.
-    if FChart.Series[I].Visible then
+    if FChart.Series[i].Visible then
     begin
       // For each point within the charts current X axis range
-      for J := 0 to FChart.Series[I].Count - 1 do
+      for j := 0 to FChart.Series[i].Count - 1 do
       begin
-        if (FChart.Series[I].XValue[J] >= FChart.BottomAxis.Minimum) and
-           (FChart.Series[I].XValue[J] <= FChart.BottomAxis.Maximum) and
-           (FChart.Series[I].YValue[J] >= FChart.LeftAxis.Minimum) and
-           (FChart.Series[I].YValue[J] <= FChart.LeftAxis.Maximum) then
+        if (FChart.Series[i].XValue[j] >= FChart.BottomAxis.Minimum) and
+           (FChart.Series[i].XValue[j] <= FChart.BottomAxis.Maximum) and
+           (FChart.Series[i].YValue[j] >= FChart.LeftAxis.Minimum) and
+           (FChart.Series[i].YValue[j] <= FChart.LeftAxis.Maximum) then
           Inc(Result);
       end;
     end;
@@ -2957,8 +3029,8 @@ end;
 procedure TtiTimeSeriesChart.Loaded;
 begin
   inherited;
-  if FbShowTestData then
-    SetShowTestData(FbShowTestData);
+  if FShowTestData then
+    SetShowTestData(FShowTestData);
   SetScrollStyle(FScrollStyle);
 end;
 
@@ -2988,10 +3060,10 @@ end;
 
 procedure TtiTimeSeriesChart.ResetMousePositionVisualCues;
 begin
-  FiOldX := -1;
-  FiOldY := -1;
-  FiOldCircX := -1;
-  FiOldCircY := -1;
+  FOldX := -1;
+  FOldY := -1;
+  FOldCircX := -1;
+  FOldCircY := -1;
 end;
 
 procedure TtiTimeSeriesChart.ResetZoom;
@@ -3010,34 +3082,34 @@ begin
   FChartWithLegendPanel.ChartLegendPanel.SelectUserPanel;
 end;
 
-function TtiTimeSeriesChart.SeriesByName(const psSeriesName : string):
+function TtiTimeSeriesChart.SeriesByName(const ASeriesName : string):
     TChartSeries;
 var
   i: Integer;
 begin
   result := nil;
   for i := 0 to FChart.SeriesCount - 1 do begin
-    if SameText(FChart.Series[i].Name, psSeriesName) then begin
+    if SameText(FChart.Series[i].Name, ASeriesName) then begin
       result := FChart.Series[i];
       Break; //==>
     end;
   end;
 end;
 
-function TtiTimeSeriesChart.SeriesTitleToName(const psTitle: string): string;
+function TtiTimeSeriesChart.SeriesTitleToName(const ATitle: string): string;
 var
   I: Integer;
 begin
   Result := '';
 
   // Must only contain alphanumeric characters.
-  for I := 1 to Length(psTitle) do
-    if psTitle[I] in ['a'..'z','A'..'Z','0'..'9'] then
-      Result := Result + psTitle[I];
+  for I := 1 to Length(ATitle) do
+    if ATitle[I] in ['a'..'z','A'..'Z','0'..'9'] then
+      Result := Result + ATitle[I];
 
   // Must start with non-digit.
   Result := 'cs' + Result;
-//  result := 'cs' + StringReplace(psTitle, ' ', '', [rfReplaceAll, rfIgnoreCase]);
+//  result := 'cs' + StringReplace(ATitle, ' ', '', [rfReplaceAll, rfIgnoreCase]);
 end;
 
 procedure TtiTimeSeriesChart.SetChartColor(const AValue: TColor);
@@ -3165,26 +3237,26 @@ begin
   DoDrawChart(False {ANewSeries}, not Zoomed);
 end;
 
-procedure TtiTimeSeriesChart.SetDataPointHintText(const Value: string);
+procedure TtiTimeSeriesChart.SetDataPointHintText(const AValue: string);
 begin
-  DataPointHintForm.Content := Value;
+  DataPointHintForm.Content := AValue;
 end;
 
 procedure TtiTimeSeriesChart.SetDrawCrossHairs(const AValue: Boolean);
 begin
-  FbDrawCrossHairs := AValue;
+  FDrawCrossHairs := AValue;
   Screen.Cursor := crDefault;
   DrawCrossHairsNow := AValue;
 end;
 
 procedure TtiTimeSeriesChart.SetDrawCrossHairsNow(const AValue: Boolean);
 begin
-  if FbDrawCrossHairsNow = AValue then
+  if FDrawCrossHairsNow = AValue then
     Exit; //==>
 
-  FbDrawCrossHairsNow := AValue;
+  FDrawCrossHairsNow := AValue;
 
-  if FbDrawCrossHairsNow then begin
+  if FDrawCrossHairsNow then begin
     OnMouseMove := DoChartMouseMove;
     // These two lines will cause the XHairs to be drawn when Alt+Tab back onto
     // the app, but will cause XHair litter when mousing over the chart region
@@ -3239,7 +3311,7 @@ begin
     FChartPanel.ScrollBars := FScrollStyle;
 end;
 
-procedure TtiTimeSeriesChart.SetSeriesPointerVisible(AValue: Boolean);
+procedure TtiTimeSeriesChart.SetSeriesPointerVisible(const AValue: Boolean);
 var
   i: Integer;
 begin
@@ -3258,9 +3330,9 @@ begin
   Result := FButtonsPanel.Visible;
 end;
 
-procedure TtiTimeSeriesChart.SetShowButtons(const Value: Boolean);
+procedure TtiTimeSeriesChart.SetShowButtons(const AValue: Boolean);
 begin
-  FButtonsPanel.Visible := Value;
+  FButtonsPanel.Visible := AValue;
 end;
 
 function TtiTimeSeriesChart.GetShowLegend: Boolean;
@@ -3273,15 +3345,15 @@ begin
   Result := FChartWithLegendPanel.ChartLegendPanel.UserPanel;
 end;
 
-procedure TtiTimeSeriesChart.SetShowLegend(const Value: Boolean);
+procedure TtiTimeSeriesChart.SetShowLegend(const AValue: Boolean);
 begin
-  FChartWithLegendPanel.ShowLegend := Value;
+  FChartWithLegendPanel.ShowLegend := AValue;
 end;
 
 procedure TtiTimeSeriesChart.SetShowTestData(const AValue: Boolean);
 begin
-  FbShowTestData := AValue;
-  if FbShowTestData then
+  FShowTestData := AValue;
+  if FShowTestData then
   begin
     if FTestData = nil then
       FTestData := TtiChartTestData.Create;
@@ -3301,19 +3373,19 @@ end;
 
 procedure TtiTimeSeriesChart.SetSnapToDataSize(const AValue: Integer);
 begin
-  FiSnapToDataSize := AValue;
-  FiSnapToDataRadius := FiSnapToDataSize div 2;
+  FSnapToDataSize := AValue;
+  FSnapToDataRadius := FSnapToDataSize div 2;
 end;
 
 procedure TtiTimeSeriesChart.SetTimeSeriesChart(const AValue: Boolean);
 begin
-  if (not FbTimeSeriesChart) and
+  if (not FTimeSeriesChart) and
      (AValue) then begin
-    FbTimeSeriesChart := true;
+    FTimeSeriesChart := true;
     Exit; //==>
   end;
 
-  FbTimeSeriesChart := AValue;
+  FTimeSeriesChart := AValue;
   //  FChart.BottomAxis.RoundFirstLabel := true;
   //  FChart.BottomAxis.ExactDateTime  := true;
   // FChart.BottomAxis.LabelsOnAxis := true;
@@ -3328,19 +3400,19 @@ end;
 procedure TtiTimeSeriesChart.SetVisibleSeriesAsString(const AValue: string);
 var
   i: Integer;
-  LSL: TStringList;
+  LStringList: TStringList;
   LSeries: TLineSeries;
 begin
-  LSL:= TStringList.Create;
+  LStringList:= TStringList.Create;
   try
-    LSL.CommaText:= AValue;
+    LStringList.CommaText:= AValue;
     for i:= 0 to FChart.SeriesCount - 1 do
     begin
       LSeries:= FChart.Series[i] as TLineSeries;
-      FChartLegendForm.SeriesVisible[LSeries.Name] := LSL.Values[LSeries.Name] = '1';
+      FChartLegendForm.SeriesVisible[LSeries.Name] := LStringList.Values[LSeries.Name] = '1';
     end;
   finally
-    LSL.Free;
+    LStringList.Free;
   end;
 end;
 
@@ -3360,12 +3432,14 @@ begin
       Exit; //==>
   end;
 
-  if LPoint.X + FDataPointHintForm.Width > Left + Width then
+  if (FDataPointHintForm.Left <> 0) and
+    (LPoint.X + FDataPointHintForm.Width > Left + Width) then
     FDataPointHintForm.Left := LPoint.X - FDataPointHintForm.Width - CHintSpacing
   else
     FDataPointHintForm.Left := LPoint.X + CHintSpacing;
 
-  if LPoint.Y + FDataPointHintForm.Height > Top + Height then
+  if (FDataPointHintForm.Top <> 0) and
+    (LPoint.Y + FDataPointHintForm.Height > Top + Height) then
     FDataPointHintForm.Top := LPoint.Y - FDataPointHintForm.Height - CHintSpacing
   else
     FDataPointHintForm.Top := LPoint.Y + CHintSpacing;
@@ -3402,7 +3476,7 @@ end;
 //  pForm.Left := lPoint.X;
 //end;
 
-procedure TtiTimeSeriesChart.Zoom(AZoomPercent: double);
+procedure TtiTimeSeriesChart.Zoom(const AZoomPercent: double);
 var
   LZoomFactor: Double;
   LCurrentAxisRange: Double;
@@ -3482,6 +3556,118 @@ begin
     FOnRangeChange(Self, Zoomed, LBottomAxisMin, LBottomAxisMax, LLeftAxisMin,
         LLeftAxisMax);
   end;
+end;
+
+{ TtiChartButtonsList }
+
+procedure TtiChartButtonDetailList.Add(const AObject: TtiChartButtonDetail);
+begin
+  inherited Add(AObject);
+end;
+
+procedure TtiChartButtonDetailList.AddButton(const AButtonHint: string;
+    const AImageResName: string; const ADoButtonClick: TNotifyEvent;
+    const AButtonOrder: Integer);
+var
+  LButton: TtiChartButtonDetail;
+begin
+  LButton := TtiChartButtonDetail.Create(AButtonHint, AImageResName, ADoButtonClick);
+  if AButtonOrder = -1 then
+    Add(LButton)
+  else
+    Insert(AButtonOrder, LButton);
+end;
+
+constructor TtiChartButtonDetailList.Create;
+begin
+  inherited;
+  FButtonComponentList := TObjectList.Create;
+  FButtonComponentList.OwnsObjects := true;
+end;
+
+procedure TtiChartButtonDetailList.CreateButtons(const AParent: TtiChartButtonsPanel; const AChartButtonsPosition: TtiChartButtonsPosition);
+var
+  LButton: TtiSpeedButton;
+  i: Integer;
+  LSBLeft: Integer;
+  LSBTop: Integer;
+begin
+  LSBTop  := CSBTop;
+  LSBLeft := CSBLeft;
+
+  FButtonComponentList.Clear;
+
+  for i := 0 to Count - 1 do
+  begin
+    if i > 0 then //position first button in top corner and subsequent buttons either vertically or horizontally
+      case AChartButtonsPosition of
+        cbpLeft: LSBTop  := LSBTop  + CSBLeft + CSBSize;
+        cbpTop:  LSBLeft := LSBLeft + CSBLeft + CSBSize;
+      end;
+
+    LButton := Items[i].CreateButton(AParent, LSBLeft, LSBTop);
+    FButtonComponentList.Add(LButton);
+  end;
+end;
+
+destructor TtiChartButtonDetailList.Destroy;
+begin
+  FButtonComponentList.Clear;
+  FButtonComponentList.Free;
+  inherited;
+end;
+
+function TtiChartButtonDetailList.GetItems(i: integer): TtiChartButtonDetail;
+begin
+  result := inherited GetItems(i) as TtiChartButtonDetail;
+end;
+
+procedure TtiChartButtonDetailList.Insert(const AIndex: integer;
+  const AObject: TtiChartButtonDetail);
+begin
+  inherited Insert(AIndex, AObject);
+end;
+
+procedure TtiChartButtonDetailList.SetItems(i: integer;
+  const AValue: TtiChartButtonDetail);
+begin
+  inherited SetItems(i, AValue);
+end;
+
+{ TtiChartButtonDetail }
+
+constructor TtiChartButtonDetail.Create(const AHint: string;
+    const AImageResName: string; const ADoButtonClick: TNotifyEvent);
+begin
+  inherited Create;
+  FHint := AHint;
+  FImageResName := AImageResName;
+  FDoButtonClick := ADoButtonClick;
+end;
+
+function TtiChartButtonDetail.CreateButton(const AParent: TtiChartButtonsPanel;
+  const APosLeft, APosTop: Integer): TtiSpeedButton;
+var
+  LButton: TtiSpeedButton;
+begin
+  LButton := TtiSpeedButton.Create(AParent);
+  LButton.Parent   := AParent;
+  LButton.Top      := APosTop;
+  LButton.Left     := APosLeft;
+  LButton.Height   := CSBSize;
+  LButton.Width    := CSBSize;
+  LButton.Flat     := true;
+  gTIImageListMgr.LoadBMPToTISPeedButton16(FImageResName, LButton);
+  LButton.Hint     := FHint;
+  LButton.ShowHint := true;
+  LButton.OnClick  := FDoButtonClick;
+  Result := LButton;
+end;
+
+function TtiChartButtonDetail.GetParent: TtiChartButtonDetailList;
+begin
+  Assert(inherited GetParent.TestValid(TtiChartButtonDetailList), CTIErrorInvalidObject);
+  result := inherited GetParent as TtiChartButtonDetailList;
 end;
 
 end.

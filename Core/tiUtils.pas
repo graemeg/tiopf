@@ -98,10 +98,17 @@ type
   function  tiRemoveCrLf(const AString : string): string;
   // Returns true if the email address is valid
   function tiIsEMailAddressValid(const AValue: string): boolean;
+  // Returns true if the character is valid for a file name.
+  function tiIsFileNameCharValid(const AFileNameChar : char): boolean;
   // Returns true if the file name is valid. Will not test if the
   // directory part of the file name exists, or is valid, will just
   // test the file name part
   function tiIsFileNameValid(const AFileName : string): boolean;
+  // Substitute the invalid characters in the given filename with the given
+  // character. If the substitute character is not a valid filename character
+  // then an exception is raised.
+  function tiConvertToValidFileName(const AFileName : string;
+                                    const ASubstituteChar: char): string;
   {: Replacement for Delphi's StrPos, but much faster. Not for FPC though!}
   function tiStrPos(const AString, ASubString: PChar): PChar;
   {: Normalize the string by replacing all repeated Spaces, Tabs and NewLines
@@ -109,6 +116,8 @@ type
   function tiNormalizeStr(const AString: string): string;
   {: Encode a URI, replacing characters with %HH as appropriate }
   function tiURIEncode(const AString: string): string;
+  {: Decode a URI, replacing %H with characters as appropriate }
+  function tiURIDecode(const AString: string): string;
   {: Add the given prefix and suffix to the given string, optionally only if
     they are not already present }
   function tiEnclose(const AString: string;
@@ -122,7 +131,7 @@ type
   {: Wrap a string at a column position by inserting newline separators as
      typically used in the OS. }
   function tiWrap(const AString: string; const AColumnWidth: Integer): string;
-
+  function tiStripNonAlphaCharacters(const AString: string): string;
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -190,6 +199,8 @@ type
   procedure tiXCopy(const ASource, ATarget: string);
   {: Delete all the files that match AWildCard found in ADirectory}
   procedure tiDeleteFiles(const ADirectory, AWildCard: string);
+  {: Delete all the files that match AWildCard found in ADirectory where file date modified is < CurrentDate - ADaysOld}
+  procedure tiDeleteOldFiles(const ADirectory, AWildCard: string; ADaysOld: Integer; const ARecurseDirectories: Boolean);
   {: Delete a file, but without BDS2006 function inlining warning}
   function tiDeleteFile(const AFileName: string): boolean;
   // Does a directory have any subdirectories?
@@ -205,8 +216,10 @@ type
   //    tiExtractDirToLevel('c:\temp\dir', 2) gives 'c:\temp\dir'
   function tiExtractDirToLevel(const AFileName : TFileName; ALevel : byte): TFileName;
   {: Same as Delphi's ForceDirectory, but will raise an exception if create fails
-     If there is a period in AValue, it will be handled correctly by looking for
-     path delimiters as well.}
+     If there is a period in AValue, then AValue is assumed to be a file name and
+     ExtractFilePath() will be called and the result of this call will be used as
+     the directory to create. This will cause unexpected results if there is a
+     period in the directory name.}
   procedure tiForceDirectories(const AValue : TFileName);
   {: Same as Delphi's ForceDirectory, but will raise an exception if create fails.}
   procedure tiForceDirectories1(const AValue : TFileName);
@@ -232,9 +245,13 @@ type
   function tiExpandURI(const AURI: string): string;
   // Check for file based URI.
   function tiIsFileURI(const AURI: string): Boolean;
+  // Checks if a filename can be created. Puts user friendly error into AErrorMsg and returns false if there is an error.
+  function tiCheckFileCanBeCreated(const AFileName: string; var AErrorMsg: string): boolean;
   // Find the position of the file extension.
   function tiLocateExtension(aValue: TFileName): integer;
-
+  function tiGetCommonAppDataDir(const AAppDataSubDir: string): string;
+  function tiGetUserLocalAppDataDir(const AAppDataSubDir: string): string;
+  function tiGetCurrentUserPersonalDir: string;
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -279,6 +296,13 @@ type
   // * Also see the VCL unit DateUtils
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+  type TtiTimeInterval =
+     (titiDay,
+      titiHour,
+      titiMinute,
+      titiSecond,
+      titiMillisecond);
+
   // What is the date of the previous week day?
   function tiDateToPreviousWeekDayDate(AValue : TDateTime): TDateTime;
   // Get the current year as an integer
@@ -301,8 +325,13 @@ type
      (allowing for leap years)}
   function tiAusFinancialYearDayCount(const AYear: Word): Word;
 
-  {: Round a date time to the previous hole minute}
+  {: Round a date time to the previous whole minute}
   function tiRoundDateToPreviousMinute(const ADateTime: TDateTime): TDateTime;
+  {: Round a date time to the next whole minute (not rounded if already a whole minute) }
+  function tiRoundDateToNextMinute(const ADateTime: TDateTime): TDateTime;
+  {: Increment a date time to the next specified interval}
+  function tiNextInterval(const ADateTime: TDateTime;
+      const AInterval: TtiTimeInterval): TDateTime;
   {: Convert a date to the week number}
   function tiWeekNumber(const ADate: TDateTime): Byte;
 
@@ -314,11 +343,15 @@ type
   function tiIntlDateStorAsDateTime(const AValue: string): TDateTime;
   function tiIntlDateDispAsDateTime(const AValue: string): TDateTime;
   {$IFDEF MSWINDOWS}
+  {: Offset (in days or a fraction thereof) to convert current local time to GMT.}
   function tiGMTOffset: TDateTime;
+  {: Offset (in days or a fraction thereof) to convert GMT to current local time.}
+  function tiOffsetFromGMT: TDateTime;
+  function tiTimeToGMT(const ALocalTime: TDateTime; const AOffsetFromGMTHours: Integer): TDateTime;
   function tiLocalTimeToGMT(const ALocalTime: TDateTime): TDateTime;
+  function tiGMTToTime(const AGMTTime: TDateTime; const AOffsetFromGMTHours: Integer): TDateTime;
   function tiGMTToLocalTime(const AGMTTime: TDateTime): TDateTime;
   {$ENDIF}
-
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -461,6 +494,8 @@ type
   function tiTestStreamsIdentical(AStream1, AStream2 : TStream; Var VMessage : string):boolean; overload;
   function tiTestStreamsIdentical(AStream1, AStream2 : TStream):boolean; overload;
 
+  function tiTestFilesIdentical(const AFileName1, AFileName2: string): boolean;
+
   function tiHasRTTI(AObject : TObject): boolean; overload;
   function tiHasRTTI(AClass : TClass): boolean; overload;
 
@@ -496,7 +531,7 @@ type
     procedure   Add(AValue: Int64);
     function    IndexOf(AValue: Int64): Integer;
     function    Remove(AValue: Int64): Integer;
-    property    Items[i: Integer]: Int64 Read GetItems Write SetItems;
+    property    Items[i: Integer]: Int64 Read GetItems Write SetItems; default;
     property    Count: Integer Read GetCount;
   end;
 
@@ -543,8 +578,8 @@ uses
   ,Process
   {$ENDIF}
   ,StrUtils   // used for DelSpace1 and tiEnclose
+  ,Dialogs
  ;
-
 
 function tiGetTempFile(const AFileNameExtension : string): string;
 {$IFNDEF FPC}
@@ -914,7 +949,67 @@ var
 begin
   LDate:= Trunc(ADateTime);
   DecodeTime(ADateTime, LH, LM, LS, LMS);
-  Result:= LDate + EncodeTime(LH, LM, 0, 0);
+  Result:= LDate +
+      ((LH * MinsPerHour * SecsPerMin * MSecsPerSec +
+        LM * SecsPerMin * MSecsPerSec) / MSecsPerDay); // Allow for values out of range
+end;
+
+function tiRoundDateToNextMinute(const ADateTime: TDateTime): TDateTime;
+var
+  LDate: TDateTime;
+  LH: Word;
+  LM: Word;
+  LS: Word;
+  LMS: Word;
+begin
+  LDate:= Trunc(ADateTime);
+  DecodeTime(ADateTime, LH, LM, LS, LMS);
+  if (LS = 0) and (LMS = 0) then
+    Result := ADateTime
+  else
+    Result:= LDate +
+      ((LH * MinsPerHour * SecsPerMin * MSecsPerSec +
+        (LM+1) * SecsPerMin * MSecsPerSec) / MSecsPerDay); // Allow for values out of range
+end;
+
+function tiNextInterval(const ADateTime: TDateTime;
+  const AInterval: TtiTimeInterval): TDateTime;
+var
+  LH: Word;
+  LM: Word;
+  LS: Word;
+  LMS: Word;
+begin
+  result := Trunc(ADateTime);
+  if AInterval = titiDay then
+    result := result + 1
+  else
+  begin
+    DecodeTime(ADateTime, LH, LM, LS, LMS);
+    case AInterval of
+      titiHour:
+        begin
+          Inc(LH);
+          LM := 0;
+          LS := 0;
+          LMS := 0;
+        end;
+      titiMinute:
+        begin
+          Inc(LM);
+          LS := 0;
+          LMS := 0;
+        end;
+      titiSecond:
+        begin
+          Inc(LS);
+          LMS := 0;
+        end;
+      titiMillisecond:
+        Inc(LMS);
+    end;
+    result := result + EncodeTime(LH, LM, LS, LMS);
+  end;
 end;
 
 function tiWeekNumber(const ADate: TDateTime): Byte;
@@ -1063,7 +1158,7 @@ end;
 
 procedure tiCopyFile(const AFrom, ATo : string);
 var
-  iErrorCode : Longword;
+  LResultCode : Longword;
   {$IFDEF FPC}
     function fpcCopyFile(Org, Dest:string): boolean;
     var
@@ -1090,24 +1185,17 @@ var
 begin
 {$IFNDEF FPC}
   copyFile(pChar(AFrom), pChar(ATo), false);
-  iErrorCode := getLastError();
+  LResultCode := getLastError();
 {$ELSE}
   if fpcCopyFile(AFrom, ATo) then
     iErrorCode := 0
   else
     iErrorCode := GetLastOSError;
 {$ENDIF}
-
-  if iErrorCode <> 0 then begin
-    raise exception.Create('Unable to copy <' +
-                            AFrom +
-                            '> to <' +
-                            ATo + '>' + #13 +
-                            'System error code: ' +
-                            intToStr(iErrorCode) + #13 +
-                            'System error message: ' +
-                            sysErrorMessage(iErrorCode));
-  end;
+  if LResultCode <> 0 then
+    raise EtiOPFFileSystemException.CreateFmt(
+      CErrorCanNotCopyFile,
+      [AFrom, ATo, LResultCode, sysErrorMessage(LResultCode)]);
 end;
 
 
@@ -1927,6 +2015,33 @@ begin
   end;
 end;
 
+procedure tiDeleteOldFiles(const ADirectory, AWildCard: string; ADaysOld: Integer
+    ; const ARecurseDirectories: Boolean);
+var
+  Lsl: TStringList;
+  i : Integer;
+  LFileModifiedDate: TDateTime;
+begin
+  Lsl:= TStringList.Create;
+  try
+    tiFilesToStringList(ADirectory, AWildCard, Lsl, ARecurseDirectories);
+    for i := 0 to Lsl.Count - 1 do
+    begin
+      LFileModifiedDate := Trunc(tiReadFileDate(Lsl.Strings[i]));
+      if (LFileModifiedDate < Date - ADaysOld) and
+         (not tiIsFileReadOnly(lsl.Strings[i])) then
+        if not SysUtils.DeleteFile(Lsl.Strings[i]) then
+          raise EtiOPFFileSystemException.CreateFmt(cErrorCanNotDeleteFile, [Lsl.Strings[i]]);
+    end;
+    Lsl.Clear;
+    tiDirectoryTreeToStringList(ADirectory, lsl, ARecurseDirectories);
+    for i := lsl.Count - 1 downto 0 do
+      SysUtils.RemoveDir(lsl.Strings[i]);
+  finally
+    Lsl.Free;
+  end;
+end;
+
 {$HINTS OFF}
 function tiDeleteFile(const AFileName: string): boolean;
 begin
@@ -2483,7 +2598,6 @@ begin
   end;
 end;
 
-
 function  tiFileToString(const AFileName : TFileName): string;
 var
   lFileStream: TFileStream;
@@ -2703,12 +2817,22 @@ begin
 end;
 
 
+function tiIsFileNameCharValid(const AFileNameChar : char): boolean;
+const
+  ExcludedChars = [ '\', '/', ':', '*', '?', '"', '<', '>', '|' ];
+begin
+  // From the NT help
+  //A filename can contain up to 255 characters, including spaces.
+  // But, it cannot contain any of the following characters:
+  // \ /: * ? " < > |
+  result := not (AFileNameChar in ExcludedChars);
+end;
+
+
 function tiIsFileNameValid(const AFileName : string): boolean;
 var
   lFileName : string;
   i : integer;
-const
-  ExcludedChars = [ '\', '/', ':', '*', '?', '"', '<', '>', '|' ];
 begin
   lFileName := ExtractFileName(AFileName);
   result :=
@@ -2722,11 +2846,28 @@ begin
   // But, it cannot contain any of the following characters:
   // \ /: * ? " < > |
   for i := 1 to Length(lFileName) do
-    if  lFileName[i] in ExcludedChars then
+    if not tiIsFileNameCharValid(lFileName[i]) then
     begin
       result := false;
       Exit; //==>
     end;
+end;
+
+
+function tiConvertToValidFileName(const AFileName : string;
+  const ASubstituteChar: char): string;
+var
+  lFileName : string;
+  i : integer;
+begin
+  if not tiIsFileNameCharValid(ASubstituteChar) then
+    raise Exception.CreateFmt('Invalid substitute character: %s', [ASubstituteChar]);
+
+  lFileName := Copy(ExtractFileName(AFileName), 1, 255);
+  for i := 1 to Length(lFileName) do
+    if not tiIsFileNameCharValid(lFileName[i]) then
+      lFileName[i] := ASubstituteChar;
+  result := ExtractFilePath(AFileName) + lFileName;
 end;
 
 
@@ -2864,6 +3005,25 @@ begin
   Result := tiTestStreamsIdentical(AStream1, AStream2, ls);
 end;
 
+function tiTestFilesIdentical(const AFileName1, AFileName2: string): boolean;
+var
+  LStream1: TStream;
+  LStream2: TStream;
+begin
+  LStream1 := nil;
+  LStream2 := nil;
+  try
+    LStream1 := TMemoryStream.Create;
+    LStream2 := TMemoryStream.Create;
+    tiFileToStream(AFileName1, LStream1);
+    tiFileToStream(AFileName2, LStream2);
+    result := tiTestStreamsIdentical(LStream1, LStream2);
+  finally
+    LStream2.Free;
+    LStream1.Free;
+  end;
+end;
+
 function tiStrPos(const AString, ASubString: PChar): PChar;
   {
   From Paul Spain. paul@xpro.com.au
@@ -2957,6 +3117,44 @@ begin
   end;
 end;
 
+function tiURIDecode(const AString: string): string;
+const
+  UnsafeChars: Array [0..6] of AnsiChar = ('*', '#', '%', '<', '>', '+', ' ');
+
+  function _ContainsEncodedChars(const AValue: string): Boolean;
+  var
+    I: Integer;
+    LCharCode: Integer;
+    LEncodedCharString: string;
+  begin
+    for I := Low(UnsafeChars) to High(UnsafeChars) do
+    begin
+      LCharCode := Ord(UnsafeChars[I]);
+      LEncodedCharString := '%' + IntToHex(LCharCode, 2);
+      Result := AnsiContainsStr(AValue, LEncodedCharString);
+      if Result then
+        exit; //-->
+    end;
+  Result := false;
+  end;
+var
+  I: Integer;
+  LCharCode: Integer;
+  LEncodedCharString: string;
+  LResult: string;
+begin
+  LResult := AString;
+
+  while _ContainsEncodedChars(LResult) do
+    for I := Low(UnsafeChars) to High(UnsafeChars) do
+    begin
+      LCharCode := Ord(UnsafeChars[I]);
+      LEncodedCharString := '%' + IntToHex(LCharCode, 2);
+      LResult := tiStrTran(LResult, LEncodedCharString, UnsafeChars[I]);
+    end;
+  Result := LResult;
+end;
+
 function tiEnclose(
     const AString: string;
     const APrefix: string;
@@ -3005,6 +3203,18 @@ begin
 {$ELSE}
   Result := tiAddSeparators(AString, AColumnWidth, Lf);
 {$ENDIF}
+end;
+
+function tiStripNonAlphaCharacters(const AString: string): string;
+var
+  i: integer;
+  LResult: string;
+begin
+  LResult := '';
+  for i := 1 to Length(AString) do
+    if isCharAlpha(AString[i]) then
+      LResult := LResult + AString[i];
+  Result := LResult;
 end;
 
 function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;
@@ -3172,15 +3382,31 @@ begin
   end;
 end;
 
+function tiOffsetFromGMT: TDateTime;
+begin
+  Result := -tiGMTOffset;
+end;
+
+function tiTimeToGMT(const ALocalTime: TDateTime; const AOffsetFromGMTHours: Integer): TDateTime;
+begin
+  Result := ALocalTime - (AOffsetFromGMTHours / 24);
+end;
+
 function tiLocalTimeToGMT(const ALocalTime: TDateTime): TDateTime;
 begin
   Result := ALocalTime + tiGMTOffset;
 end;
 
+function tiGMTToTime(const AGMTTime: TDateTime; const AOffsetFromGMTHours: Integer): TDateTime;
+begin
+  Result := AGMTTime + (AOffsetFromGMTHours / 24);
+end;
+
 function tiGMTToLocalTime(const AGMTTime: TDateTime): TDateTime;
 begin
-  Result := AGMTTime - tiGMTOffset;
+  Result := AGMTTime + tiOffsetFromGMT;
 end;
+
 {$ENDIF}
 
 procedure tiConsoleAppPause;
@@ -3261,6 +3487,218 @@ var
 begin
   LURI := LowerCase(AURI);
   Result := ((Pos('://', LURI) = 0) or (Pos('file://', LURI) = 1));
+end;
+
+function tiCheckFileCanBeCreated(const AFileName: string; var AErrorMsg: string): boolean;
+
+  function _CheckValidPathStart(const AFilePath: string): string;
+  var
+    LValid: Boolean;
+    LUNCFileNameStart: string;
+  begin
+    //blank path
+    LValid := AFilePath <> '';
+
+    if LValid then
+    begin
+      //no drive entered and not UNC filename
+      LUNCFileNameStart := PathDelim+PathDelim;
+      if Pos(LUNCFileNameStart, AFilePath) = 0 then
+      begin
+        LValid := (Pos(DriveDelim, AFilePath) <> 0) and
+                  (Pos(DriveDelim, AFilePath) < Pos(PathDelim, AFilePath));
+      end
+      else
+      //UNC filename
+        LValid := PosEx(PathDelim, AFilePath, 3) <> 0;
+    end;
+
+    if LValid then
+      result := ''
+    else
+      result := CNoPathEntered;
+  end;
+
+  procedure _DeconstructPath(var APathList: TStringList;
+    AFileName: string);
+  var
+    LDelimPos: integer;
+    LPathSubString: string;
+    LUNCFileNameStart: string;
+  begin
+    Assert(Assigned(APathList));
+    APathList.Clear;
+
+    //If path starts with '\\' (ie. It's a UNC filename) then start looking for
+    //instances of PathDelim at Pos=3.
+    LUNCFileNameStart := PathDelim+PathDelim;
+    if Pos(LUNCFileNameStart, AFileName) = 0 then
+      LDelimPos := PosEx(PathDelim, AFileName, 1)
+    else
+      LDelimPos := PosEx(PathDelim, AFileName, 3);
+
+    while LDelimPos <> 0 do
+    begin
+      LPathSubString := LeftStr(AFileName, LDelimPos - 1);
+      LPathSubString := tiAddTrailingSlash(LPathSubString);
+      APathList.Add(LPathSubString);
+      LDelimPos := PosEx(PathDelim, AFileName, LDelimPos + 1);
+    end;
+  end;
+
+  function _CheckDrive(const AFilePath: string): string;
+  var
+    LUNCFileNameStart: string;
+    LFileDrive: string;
+  begin
+    result := '';
+    LUNCFileNameStart := PathDelim+PathDelim;
+    if Pos(LUNCFileNameStart, AFilePath) <> 1 then
+    begin
+      LFileDrive := LeftStr(AFilePath, Pos(DriveDelim, AFilePath));
+      if not DirectoryExists(LFileDrive) then
+        result := Format(CInvalidDrive, [LFileDrive]);
+    end;
+  end;
+
+  function _CheckDirectories(const APathList: TStringList;
+             var ADirsCreatedByCheck: TStringList): string;
+  var
+    i: integer;
+  begin
+    result := '';
+    for i := 0 to APathList.Count - 1 do
+    begin
+      if not DirectoryExists(APathList.Strings[i]) then
+      begin
+        if ForceDirectories(APathList.Strings[i]) then
+          ADirsCreatedByCheck.Add(APathList.Strings[i])
+        else
+          if i = APathList.Count - 1 then
+            result := Format(CInvalidDirName, [APathList.Strings[i]]);
+      end;
+      end;
+    end;
+
+  function _CheckFileName(const AFileName: string): string;
+  begin
+    if tiIsFileNameValid(AFileName) then
+    begin
+      try
+        tiStringToFile('', AFileName);
+      except
+        on e: exception do
+          result := Format(CFileAccessDenied, [AFileName]);
+      end;
+    end else
+      result := Format(CInvalidFileName, [AFileName]);
+  end;
+
+  procedure _CleanupDirsCreatedByCheck(const ADirsCreatedByCheck: TStringList);
+  var
+    i: integer;
+  begin
+  for i := ADirsCreatedByCheck.Count - 1 downto 0 do
+    tiForceRemoveDir(ADirsCreatedByCheck.Strings[i]);
+  end;
+
+var
+  i: Integer;
+  LPathString: string;
+  LPathList: TStringList;
+  LDirsCreatedByCheck: TStringList;
+  LFileCreatedByCheck: Boolean;
+  LFileName: string;
+  LFilePath: string;
+begin
+  AErrorMsg := '';
+  LFileName := AFileName;
+  if FileExists(LFileName) and not tiIsFileReadOnly(LFileName) then
+  begin
+    result := true;
+    exit;
+  end else
+  begin
+
+    LFilePath := ExtractFilePath(LFileName);
+
+    AErrorMsg := _CheckValidPathStart(LFilePath);
+    if (AErrorMsg = '') then
+    begin
+
+      LFileCreatedByCheck := not FileExists(LFileName);
+
+      AErrorMsg := _CheckDrive(LFilePath);
+
+      if (AErrorMsg = '') then
+      begin
+        LPathList := TStringList.Create;
+        try
+          _DeconstructPath(LPathList, LFilePath);
+
+          //Directory names ending in a space are invalid
+          for i := 0 to LPathList.Count - 1 do
+          begin
+            LPathString := tiRemoveTrailingSlash(LPathList.Strings[i]);
+            if LPathString[Length(LPathString)] = ' ' then
+            AErrorMsg := CDirsEndingInSpace;
+          end;
+
+          if (AErrorMsg = '') then
+          begin
+            LDirsCreatedByCheck := TStringList.Create;
+            try
+              AErrorMsg := _CheckDirectories(LPathList, LDirsCreatedByCheck);
+
+              if AErrorMsg = '' then
+                AErrorMsg := _CheckFileName(LFileName);
+
+              if LFileCreatedByCheck then
+                tiDeleteFile(LFileName);
+
+              _CleanupDirsCreatedByCheck(LDirsCreatedByCheck);
+
+            finally
+              LDirsCreatedByCheck.Free;
+            end;
+          end;
+        finally
+          LPathList.Free;
+        end;
+      end;
+    end;
+  end;
+  result := AErrorMsg = '';
+end;
+
+function tiGetCommonAppDataDir(const AAppDataSubDir: string): string;
+begin
+  {$IFDEF FPC}
+  //TODO: Change to point at the correct subfolder
+  result := GetAppConfigDir(True);
+  {$ELSE}
+  result := tiWin32GetCommonAppDir + AAppDataSubDir;
+  {$ENDIF}
+end;
+
+function tiGetUserLocalAppDataDir(const AAppDataSubDir: string): string;
+begin
+  {$IFDEF FPC}
+  //TODO: Change to point at the correct subfolder
+  result := GetAppConfigDir(False);
+  {$ELSE}
+  result := tiWin32GetUserLocalAppDir + AAppDataSubDir;
+  {$ENDIF}
+end;
+
+function tiGetCurrentUserPersonalDir: string;
+begin
+  {$IFDEF FPC}
+  //TODO
+  result := '';
+  {$ELSE}
+  result := tiWin32GetCurrentUserPersonalDir;
+  {$ENDIF}
 end;
 
 function tiLocateExtension(aValue: TFileName): integer;

@@ -65,11 +65,13 @@ type
   TtiPerAwareAbs = class(TtiFocusPanel)
   private
     FHint : TTranslateString;
+    FPendingChange: Boolean;
     function GetLabelFont: TFont;
     function GetLabelParentFont: Boolean;
     procedure SetLabelFont(const AValue: TFont);
     procedure SetLabelParentFont(const AValue: Boolean);
     procedure SetLayout(const AValue: TTextLayout);
+    procedure DoOnDelayedChangeTimer(Sender: TObject);
   protected
     FLabelStyle : TLabelStyle;
     FLabel     : TLabel;
@@ -85,6 +87,10 @@ type
     FbError : boolean;
     FErrorColor : TColor;
     FGreyWhenReadOnly: boolean;
+
+    FChangeTimer: TTimer;
+    FOnChangeDelayInterval: Cardinal;
+
     FOnKeyPress: TKeyPressEvent;
     FOnKeyDown: TKeyEvent;
 
@@ -131,6 +137,7 @@ type
     function    DataAndPropertyValid : boolean;
     function    IsPropReadOnly : boolean; virtual;
 
+    procedure DoValidation; virtual;
   published
     property    Align;
     property    Anchors;
@@ -152,6 +159,8 @@ type
     {$ELSE}
     property    Hint read FHint write SetHint;
     {$ENDIF}
+
+    property    OnChangeDelayInterval: Cardinal read FOnChangeDelayInterval write FOnChangeDelayInterval;
 
     property    LabelStyle : TLabelStyle read FLabelStyle   write SetLabelStyle default lsLeft;
     property    LabelLayout: TTextLayout read FLayout write SetLayout default tlCenter;
@@ -187,13 +196,13 @@ type
     procedure   Refresh; virtual;
     property    WinControl: TWinControl read FWinControl write FWinControl;
     function    Focused: Boolean; override;
+    procedure   CancelAnyPendingChanges;
+    property    PendingChange: Boolean read FPendingChange;
   end;
 
   // A wrapper for the TEdit control
   TtiPerAwareEdit = class(TtiPerAwareAbs)
   private
-    function  GetValue: String;
-    procedure SetValue(const AValue: String);
     function  GetMaxLength: integer;
     procedure SetMaxLength(const AValue: integer);
     function  GetCharCase: TEditCharCase;
@@ -208,6 +217,8 @@ type
     {$IFNDEF FPC}
     procedure   CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
+    function  GetValue: String;
+    procedure SetValue(const AValue: String); virtual;
   published
     property Value : String read GetValue write SetValue;
     property MaxLength : integer read GetMaxLength write SetMaxLength;
@@ -217,6 +228,37 @@ type
     property OnKeyDown;
   public
     constructor Create(AOwner : TComponent); override;
+  end;
+
+  TtiPerAwareTimeEdit = class(TtiPerAwareEdit)
+  private
+    FLastValidTime: TDateTime;
+    FFormatString: string;
+    procedure SetValueAsTime(const AValue: TDateTime);
+    procedure SetFormatString(const AValue: string);
+    procedure UpdateValue(const AValue: TDateTime);
+  protected
+    procedure DoValidation; override;
+    procedure SetValue(const AValue: String); override;
+  published
+    property ValueAsTime: TDateTime read FLastValidTime write SetValueAsTime;
+    property LastValidTime: TDateTime read FLastValidTime write FLastValidTime;
+    property FormatString: string read FFormatString write SetFormatString;
+  public
+    constructor Create(AOwner : TComponent); override;
+  end;
+
+  TtiPerAwareDateEdit = class(TtiPerAwareEdit)
+  private
+    FLastValidDate: TDateTime;
+  protected
+    procedure DoValidation; override;
+    procedure SetValue(const AValue: String); override;
+  public
+    constructor Create(AOwner : TComponent); override;
+  published
+    property LastValidDate: TDateTime read FLastValidDate write FLastValidDate;
+    procedure SetValueAsDate(const AValue: TDateTime);
   end;
 
   // A wrapper for the TMemo control
@@ -735,6 +777,8 @@ constructor TtiPerAwareAbs.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
+  FChangeTimer := nil;
+  FOnChangeDelayInterval := 0;
   FOnChange     := nil;
 
   Constraints.MinHeight := cDefaultHeightSingleRow;
@@ -772,6 +816,8 @@ begin
   FbError           := False;
   FErrorColor       := clError;
   FGreyWhenReadOnly := True;
+
+  FPendingChange := false;
 end;
 
 procedure TtiPerAwareAbs.Refresh;
@@ -977,6 +1023,17 @@ end;
 
 
 {$IFNDEF FPC}
+procedure TtiPerAwareAbs.CancelAnyPendingChanges;
+begin
+  if Assigned(FChangeTimer) then
+  begin
+    FPendingChange := FChangeTimer.Enabled;
+    FChangeTimer.Enabled := false;
+    FreeAndNil(FChangeTimer);
+  end else
+    FPendingChange := false;
+end;
+
 procedure TtiPerAwareAbs.CMFontChanged(var Message: TMessage);
 begin
   inherited;
@@ -1035,8 +1092,6 @@ begin
  Result := FLabel.WordWrap;
 end;
 
-
-
 procedure TtiPerAwareAbs.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -1047,13 +1102,30 @@ begin
     FWinControl := nil;
 end;
 
-
 procedure TtiPerAwareAbs.DoChange(Sender: TObject);
 begin
   FbDirty := true;
   WinControlToData;
-  if Assigned(FOnChange) then
-    FOnChange(self);
+  DoValidation;
+  if FOnChangeDelayInterval = 0 then
+  begin
+    if Assigned(FOnChange) then
+      FOnChange(self);
+  end else
+  begin
+    if Assigned(FOnChange) then
+    begin
+      if Assigned(FChangeTimer) then
+        FChangeTimer.Enabled := false
+      else
+      begin
+        FChangeTimer := TTimer.Create(self);
+        FChangeTimer.Interval := FOnChangeDelayInterval;
+        FChangeTimer.OnTimer := DoOnDelayedChangeTimer;
+      end;
+      FChangeTimer.Enabled := true;
+    end;
+  end;
 end;
 
 function TtiPerAwareAbs.DataAndPropertyValid: boolean;
@@ -1089,10 +1161,27 @@ begin
     SetFocus;
 end;
 
+procedure TtiPerAwareAbs.DoOnDelayedChangeTimer(Sender: TObject);
+begin
+  Assert(Assigned(FChangeTimer));
+
+  FChangeTimer.Enabled := false;
+  if Assigned(FOnChange) then
+    FOnChange(self);
+
+  FreeAndNil(FChangeTimer);
+end;
+
 procedure TtiPerAwareAbs.DoOnKeyPress(Sender: TObject; var Key: Char);
 begin
   if Assigned(FOnKeyPress) then
     FOnKeyPress(Sender, Key);
+end;
+
+procedure TtiPerAwareAbs.DoValidation;
+begin
+//TODO: Make abstract.
+//do nothing
 end;
 
 procedure TtiPerAwareAbs.DoOnKeyDown(Sender : TObject; var Key: Word; Shift: TShiftState);
@@ -3576,6 +3665,66 @@ end;
 procedure TtiImageExportAction.UpdateTarget(Target: TObject);
 begin
   Enabled := Assigned(ImageControl) and not ImageControl.IsEmpty;
+end;
+
+{ TtiPerAwareTimeEdit }
+
+constructor TtiPerAwareTimeEdit.Create(AOwner: TComponent);
+begin
+  inherited;
+  FFormatString := ShortTimeFormat;
+end;
+
+procedure TtiPerAwareTimeEdit.DoValidation;
+begin
+  inherited;
+  Error := not TryStrToTime(Value, FLastValidTime);
+end;
+
+procedure TtiPerAwareTimeEdit.SetFormatString(const AValue: string);
+begin
+  FFormatString := AValue;
+  UpdateValue(FLastValidTime);
+end;
+
+procedure TtiPerAwareTimeEdit.SetValue(const AValue: String);
+begin
+  inherited;
+  DoValidation;
+end;
+
+procedure TtiPerAwareTimeEdit.SetValueAsTime(const AValue: TDateTime);
+begin
+  UpdateValue(AValue);
+end;
+
+procedure TtiPerAwareTimeEdit.UpdateValue(const AValue: TDateTime);
+begin
+  Value := FormatDateTime(FormatString, AValue);
+end;
+
+{ TtiPerAwareDateEdit }
+
+constructor TtiPerAwareDateEdit.Create(AOwner: TComponent);
+begin
+  inherited;
+end;
+
+procedure TtiPerAwareDateEdit.DoValidation;
+begin
+  inherited;
+  Error := not TryStrToDate(Value, FLastValidDate);
+end;
+
+procedure TtiPerAwareDateEdit.SetValue(const AValue: String);
+begin
+  inherited;
+  DoValidation;
+end;
+
+procedure TtiPerAwareDateEdit.SetValueAsDate(const AValue: TDateTime);
+begin
+  Value := DateToStr(AValue);
 end;
 
 initialization

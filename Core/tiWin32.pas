@@ -5,9 +5,8 @@ unit tiWin32;
 
 interface
 uses
-  SysUtils
-  ,Windows
- ;
+  SysUtils,
+  Windows;
 
   procedure tiWin32RunEXEAndWait(const AEXE : string);
   function  tiWin32FileGetAttr(const AFileName : string): integer;
@@ -24,21 +23,37 @@ uses
   function  tiWin32GetAppConfigDir(Global: Boolean): string;
   function  tiWin32AuthenticateWithDomain(const AUserName, ADomain, APassword: string): Boolean;
 
+  function  tiWin32GetCommonAppDir: string;
+  function  tiWin32GetUserLocalAppDir: string;
+  function  tiWin32GetCurrentUserPersonalDir: string;
+
+  //Start a process, wait until timeout reached then kill a process
+  procedure tiWin32RunProcessWithTimeout(const AProcessCommandLine: string; const AParams: string = '';
+        const AProcessCurrentDirectory: string = '';
+        const ATimeoutIntervalSecs: Cardinal = 0; const AProcessNameToKill: string = '');
+        
+  function tiWin32KillProcess(const AEXEName: String): Integer;
+
 implementation
 uses
-   tiBaseObject
-  ,tiUtils
-  ,ComObj
-  ,ActiveX
-  ,Classes
-  ,SyncObjs
- ;
+  tiBaseObject,
+  tiUtils,
+  tiConstants,
+  tiExcept,
+  ComObj,
+  ActiveX,
+  Classes,
+  SyncObjs,
+  ShlObj,
+  Messages,
+  Tlhelp32;
 
 
 const
   CSIDL_LOCAL_APPDATA = $001C; { %USERPROFILE%\Local Settings\Application Data (non roaming)}
   CSIDL_COMMON_APPDATA = $0023 { %USERPROFILE%\All Users\Application Data };
   CSIDL_FLAG_CREATE   = $8000; { (force creation of requested folder if it doesn't exist yet)}
+  CErrorCanNotExecuteApplication = 'Can not execute application "%s". Error code "%d". Error message "%s"';
 
   {$IFDEF FPC}
   // Graeme [2007-11-27]: This constant is missing from FPC 2.2.0. I created
@@ -123,6 +138,21 @@ begin
   end;
 end;
 
+function tiWin32GetCommonAppDir: string;
+begin
+  result := _GetSpecialDir(CSIDL_COMMON_APPDATA);
+end;
+
+function tiWin32GetUserLocalAppDir: string;
+begin
+  result := _GetSpecialDir(CSIDL_LOCAL_APPDATA);
+end;
+
+function tiWin32GetCurrentUserPersonalDir: string;
+begin
+  result := _GetSpecialDir(CSIDL_PERSONAL);
+end;
+
 procedure tiWin32RunEXEAndWait(const AEXE: string);
 var
   SI: TStartupInfo;
@@ -134,6 +164,62 @@ begin
     False, 0, nil, nil, SI, PI);
   WaitForInputIdle(PI.hProcess, Infinite);
   WaitForSingleObject(PI.hProcess, Infinite);
+end;
+
+procedure tiWin32RunProcessWithTimeout(const AProcessCommandLine,
+  AParams, AProcessCurrentDirectory: string; const ATimeoutIntervalSecs: Cardinal;
+  const AProcessNameToKill: string);
+var
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  LCreateOK: Boolean;
+  LProcessNameToKill: string;
+  LPProcessCurrentDirectory: PAnsiChar;
+  LCommandLine: string;
+  LErrorCode: LongWord;
+  LErrorMessage: string;
+begin
+
+//  Assertion added for testing.
+//  Assert(FileExists(tiAddTrailingSlash(AProcessCurrentDirectory) + AProcessCommandLine),
+//    'Application to execute not found: "' +
+//    tiAddTrailingSlash(AProcessCurrentDirectory) + AProcessCommandLine + '"');
+
+  LCommandLine := '"' + AProcessCommandLine + '" ' + AParams;
+
+  if AProcessNameToKill = '' then
+    LProcessNameToKill := AProcessCommandLine
+  else
+    LProcessNameToKill := AProcessNameToKill;
+
+  if AProcessCurrentDirectory = '' then
+    LPProcessCurrentDirectory := nil
+  else
+    LPProcessCurrentDirectory := PChar(tiRemoveTrailingSlash(AProcessCurrentDirectory));
+
+  GetStartupInfo(SI);
+  try
+    // CreateProcess docs are here: http://msdn.microsoft.com/en-us/library/ms682425.aspx
+    LCreateOK := CreateProcess(
+      nil, PAnsiChar(LCommandLine), nil, nil,
+      False, 0, nil, LPProcessCurrentDirectory, SI, PI);
+
+    if LCreateOK then
+    begin
+      WaitForInputIdle(PI.hProcess, ATimeoutIntervalSecs * 1000);
+      WaitForSingleObject(PI.hProcess, ATimeoutIntervalSecs * 1000);
+      tiWin32KillProcess(LProcessNameToKill);
+    end else
+    begin
+      LErrorCode:= GetLastError();
+      LErrorMessage:= sysErrorMessage(LErrorCode);
+      Raise EtiOPFFileSystemException.CreateFmt(CErrorCanNotExecuteApplication,
+        [LCommandLine, LErrorCode, LErrorMessage]);
+    end;
+  finally
+    CloseHandle(PI.hProcess);
+    CloseHandle(PI.hThread);
+  end;
 end;
 
 function tiWin32FileGetAttr(const AFileName : string): integer;
@@ -171,30 +257,29 @@ end;
 
 procedure tiWin32CoInitialize;
 begin
-//  if UTICoInitializeManager = nil then
-//    UTICoInitializeManager := TtiCoInitializeManager.Create;
+  Assert(UTICoInitializeManager.TestValid, CTIErrorInvalidObject);
   UTICoInitializeManager.CoInitialize;
 end;
 
 procedure tiWin32ForceCoInitialize;
 begin
-//  if UTICoInitializeManager = nil then
-//    UTICoInitializeManager := TtiCoInitializeManager.Create;
+  Assert(UTICoInitializeManager.TestValid, CTIErrorInvalidObject);
   UTICoInitializeManager.ForceCoInitialize;
 end;
 
+// ToDo: This may leak as TtiThread's destructor calls tiWin32CoUnInitiliaze,
+//       and there is no thread protection around the creation of TtiCoInitializeManager.
+//       Fix.
 procedure tiWin32CoUnInitialize;
 begin
-//  if UTICoInitializeManager = nil then
-//    UTICoInitializeManager := TtiCoInitializeManager.Create;
+  Assert(UTICoInitializeManager.TestValid, CTIErrorInvalidObject);
   UTICoInitializeManager.CoUnInitialize;
 end;
 
 
 function  tiWin32HasCoInitializeBeenCalled: Boolean;
 begin
-//  if UTICoInitializeManager = nil then
-//    UTICoInitializeManager := TtiCoInitializeManager.Create;
+  Assert(UTICoInitializeManager.TestValid, CTIErrorInvalidObject);
   Result:= UTICoInitializeManager.HasBeenCalled;
 end;
 
@@ -252,6 +337,69 @@ begin
   end;
 end;
 
+function tiWin32KillProcess(const AEXEName: String): Integer;
+const
+  PROCESS_TERMINATE = $0001;
+var
+  LContinueLoop: BOOL;
+  LSnapshotHandle: THandle;
+  LProcessEntry32: TProcessEntry32;
+  LEXEName: string;
+begin
+  Result := 0;
+  LSnapshotHandle := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  LProcessEntry32.dwSize := SizeOf(LProcessEntry32);
+  LContinueLoop := Process32First(LSnapshotHandle, LProcessEntry32);
+  LEXEName := ExtractFileName(AEXEName);
+
+  while Integer(LContinueLoop) <> 0 do
+  begin
+    if ((UpperCase(ExtractFileName(LProcessEntry32.szExeFile)) =
+      UpperCase(LEXEName)) or (UpperCase(LProcessEntry32.szExeFile) =
+      UpperCase(LEXEName))) then
+      Result := Integer(TerminateProcess(
+                        OpenProcess(PROCESS_TERMINATE,
+                                    BOOL(0),
+                                    LProcessEntry32.th32ProcessID),
+                                    0));
+     LContinueLoop := Process32Next(LSnapshotHandle, LProcessEntry32);
+  end;
+  CloseHandle(LSnapshotHandle);
+end;
+
+//var
+//  LhWindowHandle: HWND;
+//  LProcessID: INTEGER;
+//  LhProcessHandle: THandle;
+//  LDWResult: DWORD;
+//begin
+//
+//  LhWindowHandle := FindWindow(PAnsiChar(AEXEName), nil);
+//
+//  SendMessageTimeout(LhWindowHandle, WM_CLOSE, 0, 0,
+//    SMTO_ABORTIFHUNG or SMTO_NORMAL, 5000, LDWResult);
+//
+//  if isWindow(LhWindowHandle) then
+//  begin
+//    // PostMessage(LhWindowHandle, WM_QUIT, 0, 0);
+//
+//    { Get the process identifier for the window}
+//    GetWindowThreadProcessID(LhWindowHandle, @LProcessID);
+//    if LProcessID <> 0 then
+//    begin
+//      { Get the process handle }
+//      LhProcessHandle := OpenProcess(PROCESS_TERMINATE or PROCESS_QUERY_INFORMATION,
+//        False, LProcessID);
+//      if LhProcessHandle <> 0 then
+//      begin
+//        { Terminate the process }
+//        TerminateProcess(LhProcessHandle, 0);
+//        CloseHandle(LhProcessHandle);
+//      end;
+//    end;
+//  end;
+//  Result := 0;
+//end;
 
 { TtiCoInitializeManager }
 
@@ -332,6 +480,9 @@ begin
 end;
 
 initialization
+  // ToDo: Just because we are linking tiWin32 does not mean we are going
+  //       to use COM. TtiCoInitializeManager should be in it's own tiCOM.pas
+  //       unit. (TtiThreads call tiCoUnitialize. This should be tidied up.)
   UTICoInitializeManager := TtiCoInitializeManager.Create;
 
 finalization

@@ -80,7 +80,7 @@ initialization
   public
     property    Items[i:integer]: TtiGUIPackageMenuItem read GetItems write SetItems;
     property    Owner      : TtiGUIPackageCommand             read GetOwner      write SetOwner;
-    procedure   Add(AObject : TtiGUIPackageMenuItem; ADefaultDispOrder : boolean = true); reintroduce;
+    procedure   Add(const AObject : TtiGUIPackageMenuItem); reintroduce;
     procedure   AddMenuItem(const pCaption : string;
                               AIndex : integer = -1);
     function    Last : TtiGUIPackageMenuItem; reintroduce;
@@ -636,10 +636,9 @@ end;
 //* TtiGUIPackageMenuItems
 //*
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-procedure TtiGUIPackageMenuItems.Add(
-  AObject: TtiGUIPackageMenuItem; ADefaultDispOrder: boolean);
+procedure TtiGUIPackageMenuItems.Add(const AObject: TtiGUIPackageMenuItem);
 begin
-  inherited Add(AObject, ADefaultDispOrder);
+  inherited Add(AObject);
 end;
 
 procedure TtiGUIPackageMenuItems.AddMenuItem(

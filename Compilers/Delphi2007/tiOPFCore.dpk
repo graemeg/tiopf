@@ -61,7 +61,8 @@ contains
   tiRTTI in '..\..\Core\tiRTTI.pas',
   tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas',
   tiWin32 in '..\..\Core\tiWin32.pas',
-  tiOIDGUID in '..\..\Core\tiOIDGUID.pas';
+  tiOIDGUID in '..\..\Core\tiOIDGUID.pas',
+  tiScheduledTasks in '..\..\Core\tiScheduledTasks.pas';
 
 {$I tiDefines.inc}
 

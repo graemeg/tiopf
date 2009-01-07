@@ -672,7 +672,7 @@ const
 begin
   if PersistenceLayerSupportsMultiUser then
   begin
-    LList       := TtiThreadList.Create(True);
+    LList       := TtiThreadList.Create;
     try
       for i := 0 to CNumThreads - 1 do
         LList.Add(TtiOIDGeneratorThread.Create(FOIDGeneratorClass, i, CRepeatCount, DatabaseName, PersistenceLayerName));

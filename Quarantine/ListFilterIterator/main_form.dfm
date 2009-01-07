@@ -14,9 +14,6 @@ object Form3: TForm3
   Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
-  DesignSize = (
-    305
-    428)
   PixelsPerInch = 96
   TextHeight = 13
   object lblFilter: TLabel
@@ -26,7 +23,6 @@ object Form3: TForm3
     Height = 13
     Anchors = [akLeft, akBottom]
     Caption = 'Enter Filter Below'
-    ExplicitTop = 278
   end
   object memOutput: TMemo
     Left = 8
@@ -46,7 +42,6 @@ object Form3: TForm3
     Caption = 'Iterate'
     TabOrder = 1
     OnClick = btnIterateClick
-    ExplicitTop = 277
   end
   object btnClose: TButton
     Left = 222
@@ -57,7 +52,6 @@ object Form3: TForm3
     Caption = 'Close'
     TabOrder = 2
     OnClick = btnCloseClick
-    ExplicitTop = 277
   end
   object memFilter: TMemo
     Left = 8

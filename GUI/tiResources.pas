@@ -158,6 +158,10 @@ const
   cResTI_ReDo16D                 = 'ti_ReDo_16D';
   cResTI_ReDo16H                 = 'ti_ReDo_16H';
   cResTI_ReDo16N                 = 'ti_ReDo_16N';
+  cResTI_Refresh                 = 'ti_Refresh';
+  cResTI_Refresh16D              = 'ti_Refresh_16D';
+  cResTI_Refresh16H              = 'ti_Refresh_16H';
+  cResTI_Refresh16N              = 'ti_Refresh_16N';
   cResTI_Save                    = 'ti_Save';
   cResTI_Save16D                 = 'ti_Save_16D';
   cResTI_Save16H                 = 'ti_Save_16H';

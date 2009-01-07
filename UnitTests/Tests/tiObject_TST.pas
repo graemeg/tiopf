@@ -109,7 +109,7 @@ type
     procedure In2OnlyEvent(AItem1, AItem2: TtiObject);
 
     function  CreateList: TtstTIObjectList;
-    procedure DoForEachMethod(AData: TtiObject);
+    procedure DoForEachMethod(const AData: TtiObject);
   public
     procedure   SetUp; override;
     procedure   TearDown; override;
@@ -146,6 +146,7 @@ type
     procedure   SortByProps;
     procedure   Find;
     procedure   FindInHierarchy;
+    procedure   FindSortedUntyped;
     procedure   CompareWithEvent;
     procedure   FreeDeleted;
     procedure   tiListToCSVDefault;
@@ -170,6 +171,7 @@ type
     function    Add(AObject: TtstTIObject): integer; reintroduce;
     function    Clone : TtstTIObjectList; reintroduce;
     constructor CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = ''); override;
+    function    FindCompareIntProp(const AObject: TtiObject; const AValue): integer;
   published
   end;
 
@@ -2911,7 +2913,7 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.DoForEachMethod(AData : TtiObject);
+procedure TTestTIObjectList.DoForEachMethod(const AData : TtiObject);
 begin
   Assert(AData is TtstTIObject, 'AData not a TtstPerObjAbs');
   TtstTIObject(AData).StrProp := 'tested';
@@ -2941,7 +2943,7 @@ begin
   end;
 end;
 
-procedure DoForEachMethodRegular(AData : TtiObject);
+procedure DoForEachMethodRegular(const AData : TtiObject);
 begin
   Assert(AData is TtstTIObject, 'AData not a TtstPerObjAbs');
   TtstTIObject(AData).StrProp := 'tested';
@@ -3089,8 +3091,8 @@ begin
     lList := TTestListOfPersistents.Create;
     try
       tiObject.tiListToStream(lStream, lList);
-      CheckEquals(Length(lList.AsString), lStream.Size, 'Failing on 1');
-      CheckEquals(lList.AsString, lStream.DataString, 'Failing on 2');
+      CheckEquals(lList.AsString, lStream.DataString, 'Failing on contents');
+      CheckEquals(Length(lList.AsString), lStream.Size, 'Failing on size');
     finally
       lList.Free;
     end;
@@ -3117,8 +3119,8 @@ begin
         lFields.Add('DateTimeProp');
         lFields.Add('FloatProp');
         tiObject.tiListToStream(lStream, lList, #9, '|', lFields);
-        CheckEquals(Length(lList.AsString(#9, '|', lFields)), lStream.Size);
-        CheckEquals(lList.AsString(#9, '|', lFields), lStream.DataString);
+        CheckEquals(lList.AsString(#9, '|', lFields), lStream.DataString, 'Contents');
+        CheckEquals(Length(lList.AsString(#9, '|', lFields)), lStream.Size, 'Failed on size');
       finally
         lFields.Free;
       end;
@@ -3146,8 +3148,8 @@ begin
         lFields.Add('IntProp');
         lFields.Add('FloatProp');
         tiObject.tiListToStream(lStream, lList, ',', #13#10, lFields);
-        CheckEquals(Length(lList.AsString(',', #13#10, lFields)), lStream.Size);
-        CheckEquals(lList.AsString(',', #13#10, lFields), lStream.DataString);
+        CheckEquals(lList.AsString(',', #13#10, lFields), lStream.DataString, 'Failed on contents');
+        CheckEquals(Length(lList.AsString(',', #13#10, lFields)), lStream.Size, 'Failed on size');
       finally
         lFields.Free;
       end;
@@ -3188,9 +3190,7 @@ begin
   finally
     lList.Free;
   end;
-
-  CheckEquals(Length(lString1), Length(lString2), 'Failed on 1');
-  CheckEquals(lString1, lString2, 'Failed on 2');
+  CheckEquals(lString1, lString2);
 end;
 
 procedure TTestTIObjectList.tiListToCSVFields;
@@ -3220,8 +3220,6 @@ begin
   finally
     lList.Free;
   end;
-
-  CheckEquals(Length(lString1), Length(lString2), 'Length');
   CheckEquals(lString1, lString2, 'String');
 end;
 
@@ -3716,6 +3714,124 @@ begin
   end;
 end;
 
+procedure TTestTIObjectList.FindSortedUntyped;
+var
+  LList: TtstTIObjectList;
+  LObject: TtiObject;
+  LtstObject: TtstTIObject;
+  LIndex: integer;
+  LValue: integer;
+begin
+  LList := TtstTIObjectList.Create;
+  try
+    LValue := 10;
+    CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNull(LObject);
+    CheckEquals(0, LIndex);
+    LtstObject := TtstTIObject.Create;
+    LList.Insert(LIndex, LtstObject);
+    LtstObject.IntProp := LValue;
+    CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNotNull(LObject);
+    LtstObject := LObject as TtstTIObject;
+    CheckEquals(LValue, LtstObject.IntProp);
+    CheckEquals(0, LIndex);
+
+    LValue := 20;
+    CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNull(LObject);
+    CheckEquals(1, LIndex);
+    LtstObject := TtstTIObject.Create;
+    LList.Insert(LIndex, LtstObject);
+    LtstObject.IntProp := LValue;
+    CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNotNull(LObject);
+    LtstObject := LObject as TtstTIObject;
+    CheckEquals(LValue, LtstObject.IntProp);
+    CheckEquals(1, LIndex);
+
+    LValue := 0;
+    CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNull(LObject);
+    CheckEquals(0, LIndex);
+    LtstObject := TtstTIObject.Create;
+    LList.Insert(LIndex, LtstObject);
+    LtstObject.IntProp := LValue;
+    CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNotNull(LObject);
+    LtstObject := LObject as TtstTIObject;
+    CheckEquals(LValue, LtstObject.IntProp);
+    CheckEquals(0, LIndex);
+
+    LValue := 5;
+    CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNull(LObject);
+    CheckEquals(1, LIndex);
+    LtstObject := TtstTIObject.Create;
+    LList.Insert(LIndex, LtstObject);
+    LtstObject.IntProp := LValue;
+    CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNotNull(LObject);
+    LtstObject := LObject as TtstTIObject;
+    CheckEquals(LValue, LtstObject.IntProp);
+    CheckEquals(1, LIndex);
+
+    LValue := 15;
+    CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNull(LObject);
+    CheckEquals(3, LIndex);
+    LtstObject := TtstTIObject.Create;
+    LList.Insert(LIndex, LtstObject);
+    LtstObject.IntProp := LValue;
+    CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNotNull(LObject);
+    LtstObject := LObject as TtstTIObject;
+    CheckEquals(LValue, LtstObject.IntProp);
+    CheckEquals(3, LIndex);
+
+    LValue := 30;
+    CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNull(LObject);
+    CheckEquals(5, LIndex);
+    LtstObject := TtstTIObject.Create;
+    LList.Insert(LIndex, LtstObject);
+    LtstObject.IntProp := LValue;
+    CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNotNull(LObject);
+    LtstObject := LObject as TtstTIObject;
+    CheckEquals(LValue, LtstObject.IntProp);
+    CheckEquals(5, LIndex);
+
+    LValue := -5;
+    CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNull(LObject);
+    CheckEquals(0, LIndex);
+    LtstObject := TtstTIObject.Create;
+    LList.Insert(LIndex, LtstObject);
+    LtstObject.IntProp := LValue;
+    CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNotNull(LObject);
+    LtstObject := LObject as TtstTIObject;
+    CheckEquals(LValue, LtstObject.IntProp);
+    CheckEquals(0, LIndex);
+
+    LValue := 25;
+    CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNull(LObject);
+    CheckEquals(6, LIndex);
+    LtstObject := TtstTIObject.Create;
+    LList.Insert(LIndex, LtstObject);
+    LtstObject.IntProp := LValue;
+    CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
+    CheckNotNull(LObject);
+    LtstObject := LObject as TtstTIObject;
+    CheckEquals(LValue, LtstObject.IntProp);
+    CheckEquals(6, LIndex);
+  finally
+    LList.Free;
+  end;
+end;
+
 { TtstPerObjList }
 
 function TtstTIObjectList.Add(AObject: TtstTIObject): integer;
@@ -3736,6 +3852,29 @@ end;
 procedure TtstTIObjectList.SetItems(i: integer; const AValue: TtstTIObject);
 begin
   inherited SetItems(i, AValue);
+end;
+
+constructor TtstTIObjectList.CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
+begin
+  Create;
+  OID.AsString := IntToStr(Integer(Self));
+  ObjectState := posCreate;
+end;
+
+function TtstTIObjectList.FindCompareIntProp(const AObject: TtiObject;
+  const AValue): integer;
+var
+  LObject: TtstTIObject;
+  LValue: integer;
+begin
+  LObject := AObject as TtstTIObject;
+  LValue := integer(AValue);
+  if LObject.IntProp < LValue then
+    result := -1
+  else if LObject.IntProp > LValue then
+    result := +1
+  else
+    result := 0;
 end;
 
 { TtstPerObjAbs }
@@ -4063,13 +4202,6 @@ begin
   Assert(AItem2.TestValid, CTIErrorInvalidObject);
   Assert(FInBothAndNotEquals.TestValid, CTIErrorInvalidObject);
   FInBothAndNotEquals.Add(AItem1);
-end;
-
-constructor TtstTIObjectList.CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
-begin
-  Create;
-  OID.AsString := IntToStr(Integer(Self));
-  ObjectState := posCreate;
 end;
 
 { TTestTIObjectDeleteOwned }

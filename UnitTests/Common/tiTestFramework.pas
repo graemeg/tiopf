@@ -78,6 +78,9 @@ type
     function    tstIntToFloat(pInt:Integer): Extended;
     function    tstIntToDateTime(pInt:Integer): TDateTime;
     procedure   tstIntToStream(pInt:Integer; const AStream : TStream);
+    function    tstStrToStr(const AStr: string; const AInc: Integer): string;
+    function    tstStrToInt(const AStr: string; const AInc: Integer): integer;
+    function    tstStrToFloat(const AStr: string; const AInc: Integer): real;
     procedure   LoadConfiguration(const iniFile :TCustomIniFile;
                                   const Section :string); {$IFNDEF FPC}override;{$ENDIF}
   public
@@ -153,7 +156,12 @@ type
        APropName must be a real property.}
     procedure CheckTIObjectIsValidMethod(const AData: TtiObject; const APropName: string; const AInvalidValue: Real; const AErrorProperty: string = ''); overload;
 
-    procedure CheckINIFileEntry(const AExpected: TDateTime; const AINIFileName, AINISection, AINIIdent: string);
+    {: Check the INI file AINIFileName contains the TDateTime AExpected in the AINISection:AINIIdent location}
+    procedure CheckINIFileEntry(const AExpected: TDateTime; const AINIFileName, AINISection, AINIIdent: string); overload;
+    {: Check the INI file AINIFileName contains the Int64 AExpected in the AINISection:AINIIdent location}
+    procedure CheckINIFileEntry(const AExpected: Int64; const AINIFileName, AINISection, AINIIdent: string); overload;
+    {: Check the contents of an exception's message property}
+    procedure CheckExceptionMessage(const AMessage : string; const AException : Exception);
 
   end;
 
@@ -471,6 +479,24 @@ begin
   tiStringToStream(tstIntToStr(pInt), AStream);
 end;
 
+function TtiTestCase.tstStrToFloat(const AStr: string;
+  const AInc: Integer): real;
+begin
+  result:= StrToFloat(tiIncStr(AStr, AInc)) / 100;
+end;
+
+function TtiTestCase.tstStrToInt(const AStr: string;
+  const AInc: Integer): integer;
+begin
+  result:= StrToInt(tiIncStr(AStr, AInc));
+end;
+
+function TtiTestCase.tstStrToStr(const AStr: string;
+  const AInc: Integer): string;
+begin
+  result:= tiIncStr(AStr, AInc);
+end;
+
 procedure TtiTestCase.CheckFormattedMessage(const AFormat: string;
   const AArgs: array of const; const AActual: string;
   const AMessage: string = '');
@@ -493,6 +519,20 @@ begin
   end;
 end;
 
+procedure TtiTestCase.CheckINIFileEntry(const AExpected: Int64; const AINIFileName, AINISection, AINIIdent: string);
+var
+  LINI: TtiINIFile;
+  LActual: Int64;
+begin
+  LINI:= TtiINIFile.Create(AINIFileName);
+  try
+    LActual:= LINI.ReadInteger(AINISection, AINIIdent, 0);
+    CheckEquals(AExpected, LActual);
+  finally
+    LINI.Free;
+  end;
+end;
+
 procedure TtiTestCase.CheckLessThan(const AMustBeLessThan, AValue: Int64);
 const
   CCheckLessThanMessage =
@@ -503,6 +543,7 @@ end;
 
 procedure TtiTestCase.CheckNearEnough(AExpected, AActual: Extended; const AMessage: string = '');
 begin
+  Check(True); // To suppress DUnit warning
   CheckEquals(AExpected, AActual, 0.000001, AMessage);
 end;
 
@@ -1090,7 +1131,19 @@ end;
 
 procedure TtiTestCase.CheckEquals(const AExpected: string; const AOID: TtiOID; const AMessage: string = '');
 begin
+  {$IFNDEF OID_AS_INT64}
   CheckEquals(AExpected, AOID.AsString, AMessage);
+  {$ELSE}
+  CheckEquals(StrToInt(AExpected), AOID, AMessage);
+  {$ENDIF}
+end;
+
+procedure TtiTestCase.CheckExceptionMessage(const AMessage: string;
+  const AException: Exception);
+begin
+  Check(Pos(UpperCase(AMessage), UpperCase(AException.Message)) <> 0,
+         'Expected "' + AMessage +'" in exception message but found "' +
+         AException.message + '"');
 end;
 
 initialization

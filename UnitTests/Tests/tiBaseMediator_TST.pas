@@ -485,9 +485,9 @@ end;
 
 procedure TTestTIBaseMediator.TestFind1;
 var
-  M, M1, M2: TMediatorDef;
+  M, {M1,} M2: TMediatorDef;
 begin
-  M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubjectA, 'AsInteger');
+  {M1 :=} gMediatorManager.RegisterMediator(TTestMediator, TTestSubjectA, 'AsInteger');
   M2 := gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsInteger');
   M  := gMediatorManager.FindDefFor(FTestA, FComponentA, 'AsInteger');
   CheckSame(M2, M, 'Correct closest mediator found');
@@ -495,12 +495,12 @@ end;
 
 procedure TTestTIBaseMediator.TestFind2;
 var
-  M, M1, M2, M3: TMediatorDef;
+  M, {M1,} {M2,} M3: TMediatorDef;
 begin
   // Catchall
-  M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
+  {M1 :=} gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
   // Specifics
-  M2 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubjectA, 'AsInteger');
+  {M2 :=} gMediatorManager.RegisterMediator(TTestMediator, TTestSubjectA, 'AsInteger');
   M3 := gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsInteger');
   M  := gMediatorManager.FindDefFor(FTestA, FComponentA, 'AsInteger');
   CheckSame(M3, M, 'Correct closest mediator found');
@@ -508,70 +508,70 @@ end;
 
 procedure TTestTIBaseMediator.TestFind3;
 var
-  M, M1, M2, M3: TMediatorDef;
+  M, M1{, M2}{, M3}: TMediatorDef;
 begin
   // Catchall
   M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
   // Specifics
-  M2 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubjectB, 'AsInteger');
-  M3 := gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsInteger');
+  {M2 :=} gMediatorManager.RegisterMediator(TTestMediator, TTestSubjectB, 'AsInteger');
+  {M3 :=} gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsInteger');
   M  := gMediatorManager.FindDefFor(FTestA, FComponentB, 'AsInteger');
   CheckSame(M1, M, 'Correct closest mediator found');
 end;
 
 procedure TTestTIBaseMediator.TestFind4;
 var
-  M, M1, M2, M3: TMediatorDef;
+  M, M1{, M2}{, M3}: TMediatorDef;
 begin
   // Catchall
   M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
   // Specifics
-  M3 := gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsString');
+  {M3 :=} gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsString');
   M  := gMediatorManager.FindDefFor(FTestA, FComponentB, 'AsInteger');
   CheckSame(M1, M, 'Correct closest mediator found');
 end;
 
 procedure TTestTIBaseMediator.TestFind5;
-var
-  M1, M2: TMediatorDef;
+{var
+  M1, M2: TMediatorDef;}
 begin
   // Catchall
-  M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
+  {M1 := }gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
   // Specifics
-  M2 := gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsString');
+  {M2 :=} gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsString');
   CheckNull(gMediatorManager.FindDefFor(FTestA, FComponentB, 'Blabla'));
 end;
 
 procedure TTestTIBaseMediator.TestFind6;
-var
-  M1, M2: TMediatorDef;
+{var
+  M1, M2: TMediatorDef;}
 begin
   // Catchall
-  M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
+  {M1 :=} gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
   // Specifics
-  M2 := gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsString');
+  {M2 :=} gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsString');
   CheckNull(gMediatorManager.FindDefFor(FTestA, FComponentB, PPropInfo(nil)));
 end;
 
 procedure TTestTIBaseMediator.TestFind7;
 var
-  M1, M: TMediatorDef;
+  {M1,} M: TMediatorDef;
 begin
   // Specifics
-  M1 := gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubject, 'AsString');
+  {M1 :=} gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubject, 'AsString');
   M  := gMediatorManager.FindDefFor(FTestC, FComponentA, 'AsString');
   CheckNull(M, 'No mediator found, no matching test class');
 end;
 
 procedure TTestTIBaseMediator.TestFind8;
 var
-  M1, M2, Mr: TMediatorDef;
+  {M1,} {M2,} Mr: TMediatorDef;
   L: TtiObjectList;
 begin
   // Catchall
-  M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
+  {M1 :=} gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
   // Specifics
-  M2 := gMediatorManager.RegisterMediator(TTestMediatorComposite, TtiObjectList);
+  {M2 :=} gMediatorManager.RegisterMediator(TTestMediatorComposite, TtiObjectList);
   L  := TtiObjectList.Create;
   try
     Mr := gMediatorManager.FindDefFor(L, FComponentA, PPropInfo(nil));

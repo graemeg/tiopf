@@ -19,6 +19,11 @@ uses
 
 type
 
+  TtiLogTestCase = class(TtiTestCase)
+  published
+    procedure LogLevel;
+  end;
+
   TestTtiLogToFile = class(TtiTestCase)
   published
     procedure TestLogFileContention;
@@ -40,6 +45,7 @@ uses
 
 procedure RegisterTests;
 begin
+  tiRegisterNonPersistentTest(TtiLogTestCase);
   tiRegisterNonPersistentTest(TestTtiLogToFile);
 end;
 
@@ -116,8 +122,15 @@ begin
 
   end;
 
-  Check(True); // To suppress DUnit2 warning
+  Check(True); // To suppress DUnit2's warnings
+end;
 
+{ TtiLogTestCase }
+
+procedure TtiLogTestCase.LogLevel;
+begin
+ Check(True);
+ // ToDo: Implement 
 end;
 
 end.

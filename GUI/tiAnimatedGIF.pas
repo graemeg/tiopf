@@ -18,7 +18,7 @@ Features:
 - OnHint property:
   Event handler is called when the hint is about to be shown. The
   event handler can change the hint message to be displayed.
-- GIF and animated GIF support comes from the third-party TGifImage.
+- GIF and animated GIF support comes from the TGIFImage in D2007 and later.
 }
 
 interface
@@ -27,7 +27,7 @@ uses
   // Delphi units
   Windows, Messages, SysUtils, Classes, ExtCtrls, Forms, Controls,
   // TGIFImage units
-  GIFImage
+  GIFImg
  ;
 
 type
@@ -99,6 +99,7 @@ end;
 procedure TtiAnimatedGIF.UpdateImage;
 var
   GIFImage: TGIFImage;
+  GraphicGIFImage: TGIFImage;
   ResourceNameSuffix: string;
   ResourceStream: TResourceStream;
 begin
@@ -121,7 +122,9 @@ begin
       end;
 
       Self.Picture.Assign(GIFImage);
-      (Self.Picture.Graphic as TGIFImage).AnimationSpeed := FAnimationSpeed;
+      GraphicGIFImage := (Self.Picture.Graphic as TGIFImage);
+      GraphicGIFImage.AnimationSpeed := FAnimationSpeed;
+      GraphicGIFImage.Animate := FAnimationEnabled;
     finally
       FreeAndNil(GIFImage);
     end;

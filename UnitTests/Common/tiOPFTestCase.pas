@@ -84,9 +84,8 @@ type
   protected
     procedure   SetUpOnce; override;
 
+    // ToDo: Move CheckObjectState upstairs
     procedure   CheckObjectState(AObjectState: TPerObjectState; const AData : TtiObject);
-    procedure   CheckExceptionMessage(const AMessage : string; const AException : Exception);
-
     procedure   WriteTimingResult(const pAction, APersistenceLayerName : string; AValue : Extended);
 
     function    PersistenceLayerSupportsMultiUser: boolean;
@@ -421,8 +420,9 @@ var
   LPersistenceLayer  : TtiPersistenceLayer;
   LDatabaseClass : TtiDatabaseClass;
 begin
-// The following statement always returns false for the FBL Layer.
-//##  if TestSetupData.CanCreateDatabase then
+  // Some database require a DBA to create (Oracle for example),
+  // so don't run this setup code
+  if TestSetupData.CanCreateDatabase then
   begin
     LPersistenceLayer := GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
     Assert(LPersistenceLayer <> nil, 'Unable to find registered persistence layer <' + PersistenceLayerName +'>');
@@ -704,15 +704,6 @@ begin
         AData.ClassName + '.' + ObjectStateToString(AObjectState) +
         ' but is ' +
         AData.ObjectStateAsString);
-end;
-
-
-procedure TtiTestCaseWithPersistenceLayer.CheckExceptionMessage(const AMessage: string;
-  const AException: Exception);
-begin
-  Check(Pos(UpperCase(AMessage), UpperCase(AException.Message)) <> 0,
-         'Expected "' + AMessage +'" in exception message but found "' +
-         AException.message + '"');
 end;
 
 

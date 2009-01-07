@@ -247,7 +247,6 @@ uses
   {$ENDIF}
   ;
 
-
 procedure tiGetConsoleExecutableInfo(const Filename: String; var BinaryType, Subsystem: DWORD);
 var
   f: File;

@@ -1,6 +1,6 @@
-{$I tiDefines.inc}
-
 unit FtiFormMgrDataForm;
+
+{$I tiDefines.inc}
 
 interface
 
@@ -87,6 +87,8 @@ type
     procedure aUndoExecute(Sender: TObject);virtual;
     procedure aSaveCloseExecute(Sender: TObject);virtual;
     procedure aCancelCloseExecute(Sender: TObject);virtual;
+
+    procedure DoCancelClose;
 
     procedure Save;
     procedure SetupButtons; override;
@@ -426,9 +428,14 @@ begin
   DoAfterSave;
 end;
 
-procedure TtiFormMgrDataForm.aCloseExecute(Sender: TObject);
+procedure TtiFormMgrDataForm.DoCancelClose;
 begin
   DoCloseForm(CancelCloseHandler);
+end;
+
+procedure TtiFormMgrDataForm.aCloseExecute(Sender: TObject);
+begin
+  DoCancelClose;
 end;
 
 procedure TtiFormMgrDataForm.aSaveCloseExecute(Sender: TObject);
@@ -439,7 +446,7 @@ end;
 
 procedure TtiFormMgrDataForm.aCancelCloseExecute(Sender: TObject);
 begin
-  DoCloseForm(CancelCloseHandler);
+  DoCancelClose;
 end;
 
 procedure TtiFormMgrDataForm.SaveCloseHandler;

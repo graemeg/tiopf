@@ -104,7 +104,7 @@ Begin
   Begin
     lStr := cmbProperties.Text;
     PropName := lStr;
-    Operator := TFilterOp(cmbOperator.ItemIndex);
+    FilterOperator := TFilterOp(cmbOperator.ItemIndex);
     Value := edValue.Text;
     Join := TFilterConj(cmbConj.ItemIndex);
   End;
@@ -116,7 +116,7 @@ Begin
   Begin
     cmbProperties.ItemIndex := cmbProperties.Items.IndexOf(PropName);
     edValue.Text := Value;
-    cmbOperator.ItemIndex := Ord(Operator);
+    cmbOperator.ItemIndex := Ord(FilterOperator);
     cmbConj.ItemIndex := Ord(Join);
   End;
 End;

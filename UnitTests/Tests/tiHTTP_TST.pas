@@ -634,7 +634,7 @@ end;
 
 procedure TTestTIHTTP.tiMakeTIOPFHTTPBlockHeader;
 begin
-  CheckEquals('1/2/3/4', tiHTTP.tiMakeTIOPFHTTPBlockHeader(1, 2, 3, 4));
+  CheckEquals('1/2/3/4/5', tiHTTP.tiMakeTIOPFHTTPBlockHeader(1, 2, 3, 4, 5));
 end;
 
 procedure TTestTIHTTP.tiParseTIOPFHTTPBlockHeader;
@@ -643,48 +643,56 @@ var
   LBlockCount:  LongWord;
   LBlockSize:   LongWord;
   LTransID:     LongWord;
+  LBlockCRC:    LongWord;
 begin
-  tiHTTP.tiParseTIOPFHTTPBlockHeader('1/2/3/4', LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader('1/2/3/4/5', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(2, LBlockCount);
   CheckEquals(3, LBlockSize);
   CheckEquals(4, LTransID);
+  CheckEquals(5, LBlockCRC);
 
-  tiHTTP.tiParseTIOPFHTTPBlockHeader('1/2/3', LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader('1/2/3', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(2, LBlockCount);
   CheckEquals(3, LBlockSize);
   CheckEquals(0, LTransID);
+  CheckEquals(0, LBlockCRC);
 
-  tiHTTP.tiParseTIOPFHTTPBlockHeader('1/2', LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader('1/2', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(2, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
   CheckEquals(0, LTransID);
+  CheckEquals(0, LBlockCRC);
 
-  tiHTTP.tiParseTIOPFHTTPBlockHeader('1/', LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader('1/', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(1, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
   CheckEquals(0, LTransID);
+  CheckEquals(0, LBlockCRC);
 
-  tiHTTP.tiParseTIOPFHTTPBlockHeader('1', LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader('1', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(1, LBlockIndex);
   CheckEquals(1, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
   CheckEquals(0, LTransID);
+  CheckEquals(0, LBlockCRC);
 
-  tiHTTP.tiParseTIOPFHTTPBlockHeader('', LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader('', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(0, LBlockIndex);
   CheckEquals(1, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
   CheckEquals(0, LTransID);
+  CheckEquals(0, LBlockCRC);
 
-  tiHTTP.tiParseTIOPFHTTPBlockHeader('a/b/c/d', LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader('a/b/c/d', LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(0, LBlockIndex);
   CheckEquals(1, LBlockCount);
   CheckEquals(ctiOPDHTTPNullBlockSize, LBlockSize);
   CheckEquals(0, LTransID);
+  CheckEquals(0, LBlockCRC);
 
 end;
 
@@ -717,10 +725,11 @@ var
   LBlockCount: Longword;
   LBlockSize:  LongWord;
   LTransID:    Longword;
+  LBlockCRC:   Longword;
 begin
   LText:= ARequestInfo.RawHeaders.Values[ctiOPFHTTPBlockHeader];
-  tiHTTP.tiParseTIOPFHTTPBlockHeader(LText, LBlockIndex, LBlockCount, LBlockSize, LTransID);
-  LText:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader(LText, LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
+  LText:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   AResponseInfo.ContentText:= LText;
 end;
 
@@ -743,7 +752,7 @@ begin
     LHTTP := AClass.Create;
     try
       LHTTP.DeriveRequestTIOPFBlockHeader:= False;
-      LHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(2, 3, 4, 5);
+      LHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(2, 3, 4, 5, 0);
       LHTTP.RequestTIOPFBlockHeader:= LHeader;
       LHTTP.Get(MakeTestURL(cTestDocName+LRandom));
       CheckEquals(LHeader, LHTTP.Output.DataString);
@@ -763,8 +772,9 @@ var
   LBlockCount: Longword;
   LBlockSize:  LongWord;
   LTransID:    Longword;
+  LBlockCRC:   Longword;
 begin
-  tiHTTP.tiParseTIOPFHTTPBlockHeader(ABlockHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader(ABlockHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   CheckEquals(ABlockIndex, LBlockIndex);
   CheckEquals(ABlockCount, LBlockCount);
   CheckEquals(ABlockSize, LBlockSize);
@@ -783,7 +793,7 @@ begin
     LHTTP := AClass.Create;
     try
       LHTTP.DeriveRequestTIOPFBlockHeader:= False;
-      LHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(2, 3, 4, 5);
+      LHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(2, 3, 4, 5, 0);
       LHTTP.RequestTIOPFBlockHeader:= LHeader;
       LHTTP.Post(MakeTestURL(cTestDocName));
       CheckEquals(LHeader, LHTTP.Output.DataString);
@@ -818,9 +828,10 @@ var
   LBlockCount: Longword;
   LBlockSize:  Longword;
   LTransID:    Longword;
+  LBlockCRC:   Longword;
 begin
   LText:= ARequestInfo.RawHeaders.Values[ctiOPFHTTPBlockHeader];
-  tiHTTP.tiParseTIOPFHTTPBlockHeader(LText, LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader(LText, LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
   case LBlockIndex of
   0: begin
        AResponseInfo.ContentText:= cBlockResponse0;
@@ -832,7 +843,7 @@ begin
     Assert(False, 'Invalid BlockIndex');
   end;
   AResponseInfo.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:=
-    tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID);
+    tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
 end;
 
 procedure TTestTIHTTP.tiHTTPIndyGetBlockResponse;

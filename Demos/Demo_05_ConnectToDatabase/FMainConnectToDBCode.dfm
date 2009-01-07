@@ -2,34 +2,25 @@ inherited FormMainConnectToDBCode: TFormMainConnectToDBCode
   Caption = 'FormMainConnectToDBCode'
   ClientHeight = 251
   OldCreateOrder = True
-  ExplicitWidth = 734
-  ExplicitHeight = 283
   PixelsPerInch = 96
   TextHeight = 13
   inherited GroupBox1: TGroupBox
     Left = 8
     Width = 712
-    ExplicitLeft = 8
-    ExplicitWidth = 712
     inherited sbDefaultToPresetValues: TtiSpeedButton
       Left = 551
-      ExplicitLeft = 551
     end
     inherited paePersistenceLayer: TtiPerAwareEdit
       Width = 536
-      ExplicitWidth = 536
     end
     inherited paeDatabaseName: TtiPerAwareEdit
       Width = 536
-      ExplicitWidth = 536
     end
     inherited paeUserName: TtiPerAwareEdit
       Width = 536
-      ExplicitWidth = 536
     end
     inherited paePassword: TtiPerAwareEdit
       Width = 536
-      ExplicitWidth = 536
     end
   end
   object btnConnectToDatabase: TButton [1]

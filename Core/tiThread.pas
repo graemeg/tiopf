@@ -11,76 +11,112 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  ,SyncObjs
-  ,SysUtils   // This unit must always appear after the Windows unit!
+  ,SyncObjs   // This unit must always appear after the Windows unit!
  ;
 
 const
   cDefaultSleepResponse = 100; // Will check Terminated while sleeping every 100ms
 
 type
+
+  TtiThread = class;
+
   // ToDo: TtiThread should be renamed to TtiRegisteredThread and descend
   //       from TtiSleepThread
   TtiSleepThread = class(TThread)
   private
     FSleepResponse: Cardinal;
     FName: string;
+    FUpdateEvent: TEvent;
+    FThreadInstanceID: Integer;
   protected
+    procedure WakeUpAndTerminate;
     function SleepAndCheckTerminated(ASleepFor: Cardinal): boolean;
+    property UpdateEvent: TEvent read FUpdateEvent;
   public
     constructor Create(ASuspended: boolean); virtual;
     destructor  Destroy; override;
     procedure   SetThreadName(const AName: string);
+    procedure   WakeUp;
+    property    ThreadInstanceID: Integer read FThreadInstanceID;
   end;
 
   TtiThread = class(TtiSleepThread)
+  private
+    FText: string;
+    FInActiveThreadList: boolean;
   protected
     procedure   DoOnTerminate(Sender: TObject); virtual;
+    procedure SetText(const AValue: string); virtual;
   public
     constructor Create; reintroduce; overload;
     constructor Create(ACreateSuspended: Boolean); overload; override;
+    constructor Create(const ACreateSuspended: boolean; const AAddToActiveThreadList: boolean); reintroduce; overload;
     constructor CreateAndResume; virtual; // See note in body of method
     destructor  Destroy; override;
+    Property    Text: string read FText write SetText;
   end;
 
+  TtiThreadEvent = procedure(const AThread: TtiThread) of object;
+  TtiThreadEventRegular = procedure(const AThread: TtiThread);
+
   TtiThreadList = class(TObjectList)
+  private
+    FCritSect : TCriticalSection;
   protected
     function    GetItem(Index: integer): TtiThread; reintroduce;
     procedure   SetItem(Index: integer; const Value: TtiThread); reintroduce;
   public
+    constructor Create;
+    destructor  Destroy; override;
     {: Performs the class method AMethod on every thread in the list.}
-    procedure   ForEach(AMethod: TObjForEachMethod); overload;
+    procedure   ForEach(AMethod: TtiThreadEvent); overload;
     {: Performs the method AMethod on every thread in the list.}
-    procedure   ForEach(AMethod: TObjForEachMethodRegular); overload;
+    procedure   ForEach(AMethod: TtiThreadEventRegular); overload;
+    procedure   Lock;
+    procedure   Unlock;
+    procedure   Terminate;
     property    Items[Index:integer]: TtiThread read GetItem write SetItem;
-
     // ToDo: Should override Add() and check that the thread's FreeOnTerminate
     //       = False (WaitForAll will fail if FreeOnTerminate = True)
     procedure   WaitForAll;
     procedure   ResumeAll;
   end;
 
+  TtiThreadClass = class of TtiThread;
+
+  TtiThreadCountChangeEvent = procedure(const AThreadCount: integer) of object;
+
   TtiActiveThreadList = class(TtiBaseObject)
   private
     FList: TtiThreadList;
     FCritSect : TCriticalSection;
-    FOnThreadCountChange: TThreadMethod;
+    FOnThreadCountChange: TtiThreadCountChangeEvent;
     FThreadCount: integer;
+
+    FNewThreadInstanceID: Integer;
+
     procedure DoThreadCountChange(AThreadCount: Integer; const AThread: TThread);
-    procedure SetOnThreadCountChange(const AValue: TThreadMethod);
+    procedure DoThreadCountChangeSynchronized;
+    procedure SetOnThreadCountChange(const AValue: TtiThreadCountChangeEvent);
     function GetThreadCount: integer;
     function GetActiveThreadNames: string;
+    function GetActiveThreadTextDescriptions: string;
+    function FindThreadByInstanceID(const AThreadInstanceID: Integer): TtiThread;
   public
     constructor Create;
     destructor  Destroy; override;
     procedure   Add(const AThread : TtiThread);
     procedure   Remove(const AThread : TtiThread);
     procedure   Terminate;
+
+    function  GetNewThreadInstanceID: Integer;
+    procedure TerminateThreadByInstanceID(const AThreadInstanceID: Integer);
     {: Performs the class method AMethod on every thread in the list.}
-    procedure   ForEach(AMethod: TObjForEachMethod); overload;
+    procedure   ForEach(AMethod: TtiThreadEvent); overload;
     {: Performs the method AMethod on every thread in the list.}
-    procedure   ForEach(AMethod: TObjForEachMethodRegular); overload;
-    property    OnThreadCountChange: TThreadMethod read FOnThreadCountChange write SetOnThreadCountChange;
+    procedure   ForEach(AMethod: TtiThreadEventRegular); overload;
+    property    OnThreadCountChange: TtiThreadCountChangeEvent read FOnThreadCountChange write SetOnThreadCountChange;
     property    Count: integer read GetThreadCount;
     property    ActiveThreadNames: string read GetActiveThreadNames;
     // ToDo: WaitForAll is buggy. It depends on TtiThread's Destroy method
@@ -90,6 +126,8 @@ type
     //       for console apps. This needs investigation. So, for the meantime,
     //       don't use WaitForAll.
     procedure   WaitForAll;
+    property    ActiveThreadTextDescriptions: string read GetActiveThreadTextDescriptions;
+    function    InstanceOfThreadClassIsActive(const AThreadClass: TtiThreadClass): boolean;
   end;
 
 {$IFDEF MSWINDOWS}
@@ -102,11 +140,10 @@ uses
   tiOPFManager
   {$IFDEF MSWINDOWS}
   ,tiWin32
-  {$IFNDEF FPC}
-  ,Forms // Application.ProcessMessages. ToDo: Remove when threads are better understood
-  {$ENDIF}
   {$ENDIF MSWINDOWS}
   ,tiUtils
+  ,SysUtils    // Used by FPC for the Sleep method.
+  ,Forms // Hack to work around problem in TtiActiveThreadList.WaitForAll
  ;
 
 
@@ -154,18 +191,32 @@ end;
 
 constructor TtiThread.Create(ACreateSuspended: Boolean);
 begin
+  Create(ACreateSuspended, true {AAddToActiveThreadList});
+end;
+
+
+constructor TtiThread.Create(const ACreateSuspended: boolean; const AAddToActiveThreadList: boolean);
+begin
   inherited Create(ACreateSuspended);
   FreeOnTerminate := true;
   OnTerminate := DoOnTerminate;
-  GTIOPFManager.ActiveThreadList.Add(Self);
+  if AAddToActiveThreadList then
+  begin
+    FThreadInstanceID := gTIOPFManager.ActiveThreadList.GetNewThreadInstanceID;
+    gTIOPFManager.ActiveThreadList.Add(Self);
+  end;
+
+  FInActiveThreadList := AAddToActiveThreadList;
 end;
+
 
 destructor TtiThread.Destroy;
 begin
   {$IFDEF MSWINDOWS}
   tiWin32CoUnInitialize; // You never know, perhpas COM was used in this thread.
   {$ENDIF}
-  GTIOPFManager.ActiveThreadList.Remove(Self);
+  if FInActiveThreadList then
+    gTIOPFManager.ActiveThreadList.Remove(Self);
   inherited;
 end;
 
@@ -173,6 +224,11 @@ end;
 procedure TtiThread.DoOnTerminate(Sender: TObject);
 begin
   // Implement in the concrete
+end;
+
+procedure TtiThread.SetText(const AValue: string);
+begin
+  FText := AValue;
 end;
 
 constructor TtiThread.Create;
@@ -188,25 +244,57 @@ end;
 
 { TtiThreadList }
 
-procedure TtiThreadList.ForEach(AMethod: TObjForEachMethod);
-var
-  i: integer;
+constructor TtiThreadList.Create;
 begin
-  for i := 0 to Count - 1 do
-    AMethod(Items[i]);
+  inherited;
+  FCritSect := TCriticalSection.Create;
 end;
 
-procedure TtiThreadList.ForEach(AMethod: TObjForEachMethodRegular);
+destructor TtiThreadList.Destroy;
+begin
+  FCritSect.Free;
+  inherited;
+end;
+
+procedure TtiThreadList.ForEach(AMethod: TtiThreadEvent);
 var
   i: integer;
 begin
-  for i := 0 to Count - 1 do
-    AMethod(Items[i]);
+  Lock;
+  try
+    for i := 0 to Count - 1 do
+      AMethod(Items[i]);
+  finally
+    Unlock;
+  end;
+end;
+
+procedure TtiThreadList.ForEach(AMethod: TtiThreadEventRegular);
+var
+  i: integer;
+begin
+  Lock;
+  try
+    for i := 0 to Count - 1 do
+      AMethod(Items[i]);
+  finally
+    Unlock;
+  end;
 end;
 
 function TtiThreadList.GetItem(Index: integer): TtiThread;
 begin
   result := TtiThread(inherited GetItem(Index));
+end;
+
+procedure TtiThreadList.SetItem(Index: integer; const Value: TtiThread);
+begin
+  inherited SetItem(Index, Value);
+end;
+
+procedure TtiThreadList.Lock;
+begin
+  FCritSect.Enter;
 end;
 
 procedure TtiThreadList.ResumeAll;
@@ -217,9 +305,22 @@ begin
     Items[i].Resume;
 end;
 
-procedure TtiThreadList.SetItem(Index: integer; const Value: TtiThread);
+procedure TtiThreadList.Unlock;
 begin
-  inherited SetItem(Index, Value);
+  FCritSect.Leave;
+end;
+
+procedure TtiThreadList.Terminate;
+var
+  i: integer;
+begin
+  Lock;
+  try
+    for i := 0 to Count - 1 do
+      Items[i].Terminate;
+  finally
+    Unlock;
+  end;
 end;
 
 procedure TtiThreadList.WaitForAll;
@@ -252,6 +353,7 @@ begin
   FList.OwnsObjects := False;
   FCritSect := TCriticalSection.Create;
   FThreadCount:= 0;
+  FNewThreadInstanceID := 0;
 end;
 
 destructor TtiActiveThreadList.Destroy;
@@ -264,15 +366,35 @@ end;
 
 procedure TtiActiveThreadList.DoThreadCountChange(AThreadCount: integer; const AThread: TThread);
 begin
-  if FThreadCount <> AThreadCount then
-  begin
-    FThreadCount:= AThreadCount;
-    if Assigned(FOnThreadCountChange) then
-      TThread.Synchronize(AThread, FOnThreadCountChange);
+  // We should be called whilst the critical section lock is acquired so
+  // this is just protection in case we forget!
+  FCritSect.Enter;
+  try
+    if FThreadCount <> AThreadCount then
+    begin
+      FThreadCount:= AThreadCount;
+      if Assigned(FOnThreadCountChange) then
+        TThread.Synchronize(AThread, DoThreadCountChangeSynchronized);
+    end;
+  finally
+    FCritSect.Leave;
   end;
 end;
 
-procedure TtiActiveThreadList.ForEach(AMethod: TObjForEachMethod);
+procedure TtiActiveThreadList.DoThreadCountChangeSynchronized;
+begin
+  Assert(GetCurrentThreadID = MainThreadID, 'Current thread not main thread');
+
+  // Call the thread count change event handler passing the thread count.
+  // We pass the thread count so that the main thread does not need to
+  // retrieve it as this would require a lock on the critical section which
+  // would cause a deadlock as the thread that was added/removed in the list
+  // that caused the thread count change already has the lock.
+  if Assigned(FOnThreadCountChange) then
+    FOnThreadCountChange(FThreadCount);
+end;
+
+procedure TtiActiveThreadList.ForEach(AMethod: TtiThreadEvent);
 begin
   FCritSect.Enter;
   try
@@ -282,7 +404,21 @@ begin
   end;
 end;
 
-procedure TtiActiveThreadList.ForEach(AMethod: TObjForEachMethodRegular);
+function TtiActiveThreadList.FindThreadByInstanceID(
+  const AThreadInstanceID: Integer): TtiThread;
+var
+  i: Integer;
+begin
+  result := nil;
+  for i := 0 to FList.Count - 1 do
+    if FList.Items[i].ThreadInstanceID = AThreadInstanceID then
+    begin
+      result := FList.Items[i];
+      exit; //-->
+    end; 
+end;
+
+procedure TtiActiveThreadList.ForEach(AMethod: TtiThreadEventRegular);
 begin
   FCritSect.Enter;
   try
@@ -310,6 +446,42 @@ begin
   end;
 end;
 
+function TtiActiveThreadList.GetActiveThreadTextDescriptions: string;
+var
+  i: Integer;
+  LUnknownThreadCount: Integer;
+begin
+  FCritSect.Enter;
+  try
+    result:= '';
+    LUnknownThreadCount := 0;
+    for i := 0 to FList.Count-1 do
+    begin
+      if FList.Items[i].Text <> '' then
+      begin
+        if result <> '' then
+          result:= result + CrLf;
+        result:= result + FList.Items[i].Text;
+      end else
+        Inc(LUnknownThreadCount);
+    end;
+    if LUnknownThreadCount > 0 then
+    begin
+      if result <> '' then
+        result:= result + CrLf + 'and ';
+      result:= result + Format('%d system background tasks', [LUnknownThreadCount]);
+    end;
+  finally
+    FCritSect.Leave;
+  end;
+end;
+
+function TtiActiveThreadList.GetNewThreadInstanceID: Integer;
+begin
+  Inc(FNewThreadInstanceID);
+  result := FNewThreadInstanceID;
+end;
+
 function TtiActiveThreadList.GetThreadCount: integer;
 begin
   FCritSect.Enter;
@@ -318,6 +490,25 @@ begin
   finally
     FCritSect.Leave;
   end;
+end;
+
+function TtiActiveThreadList.InstanceOfThreadClassIsActive(
+  const AThreadClass: TtiThreadClass): boolean;
+var
+  i: integer;
+begin
+  result := false;
+  FCritSect.Enter;
+  try
+    for i := 0 to FList.Count - 1 do
+      if FList.Items[i] is AThreadClass then
+      begin
+        result := true;
+        exit;
+      end;
+  finally
+    FCritSect.Leave;
+  end;  
 end;
 
 procedure TtiActiveThreadList.Remove(const AThread: TtiThread);
@@ -338,7 +529,8 @@ begin
   end;
 end;
 
-procedure TtiActiveThreadList.SetOnThreadCountChange(const AValue: TThreadMethod);
+procedure TtiActiveThreadList.SetOnThreadCountChange(
+  const AValue: TtiThreadCountChangeEvent);
 begin
   FCritSect.Enter;
   try
@@ -362,6 +554,15 @@ begin
 end;
 
 
+procedure TtiActiveThreadList.TerminateThreadByInstanceID(const AThreadInstanceID: Integer);
+var
+  LThread: TtiThread;
+begin
+  LThread := FindThreadByInstanceID(AThreadInstanceID);
+  //TODO: How should we handle FindThreadByThreadID = nil? Throw exception or just check assigned?
+  LThread.WakeUpAndTerminate;
+end;
+
 procedure TtiActiveThreadList.WaitForAll;
 begin
   while Count > 0 do
@@ -381,6 +582,7 @@ constructor TtiSleepThread.Create(ASuspended: boolean);
 begin
   inherited Create(ASuspended);
   FSleepResponse:= cDefaultSleepResponse;
+  FUpdateEvent := TEvent.Create(nil, True, False, '');
 end;
 
 
@@ -391,9 +593,21 @@ begin
   LStart := tiGetTickCount;
   while ((tiGetTickCount - LStart) <= ASleepFor) and (not Terminated) do
     Sleep(FSleepResponse);
+  //Call wakeup if terminated
   Result := not Terminated;
 end;
 
+
+procedure TtiSleepThread.WakeUp;
+begin
+  FUpdateEvent.SetEvent;
+end;
+
+procedure TtiSleepThread.WakeUpAndTerminate;
+begin
+  WakeUp;
+  Terminate;
+end;
 
 destructor TtiSleepThread.Destroy;
 begin
@@ -402,8 +616,8 @@ begin
   // This became an issue with Delphi 6 apps hanging on shutdown.
   if Priority < tpNormal then
     Priority := tpNormal;
+  FUpdateEvent.Free;
   inherited Destroy;
 end;
 
 end.
-

@@ -75,7 +75,7 @@ type
 
     procedure SetVisible(const AValue: Boolean);
 
-    procedure CreateAnimatedGIF(AAnimationEnabled: boolean);
+    procedure AnimateGIF(AAnimationEnabled: boolean);
   public
     constructor Create(Toolbar: TTBXToolbar); virtual;
     procedure Resize;
@@ -351,20 +351,22 @@ begin
   FAnimatedGIFSpaceLabel.Transparent := True;
   FAnimatedGIFSpaceLabel.Height := 16;
   FAnimatedGIFSpaceLabel.Caption := '';
-  CreateAnimatedGIF(False);
+  AnimateGIF(False);
 
 end;
 
-procedure TtiApplicationBusyToolbarImage.CreateAnimatedGIF(AAnimationEnabled: boolean);
+procedure TtiApplicationBusyToolbarImage.AnimateGIF(AAnimationEnabled: boolean);
 begin
-  if Assigned(FAnimatedGIF) then
-    FAnimatedGIF.Free;
-  FAnimatedGIF := TtiAnimatedGIF.Create(FToolbar);
-  FAnimatedGIF.AutoSize := True;
-  FAnimatedGIF.ShowHint := True;
+  if not Assigned(FAnimatedGIF) then
+  begin
+    FAnimatedGIF := TtiAnimatedGIF.Create(FToolbar);
+    FAnimatedGIF.AutoSize := True;
+    FAnimatedGIF.ShowHint := True;
+    FAnimatedGIF.AnimationSpeed:= FAnimationSpeed;
+    FAnimatedGIF.ResourceName:= FResourceName;
+    FAnimatedGIF.Transparent := true;
+  end;
   FAnimatedGIF.AnimationEnabled:= AAnimationEnabled;
-  FAnimatedGIF.AnimationSpeed:= FAnimationSpeed;
-  FAnimatedGIF.ResourceName:= FResourceName;
   if Visible then
     FAnimatedGIF.Parent := FToolbar;
   if AAnimationEnabled then
@@ -382,7 +384,7 @@ procedure TtiApplicationBusyToolbarImage.SetAnimationEnabled(const AValue: Boole
 begin
   if AValue <> FAnimationEnabled then
   begin
-    CreateAnimatedGIF(AValue);
+    AnimateGIF(AValue);
     FAnimationEnabled:= AValue;
   end;
 end;

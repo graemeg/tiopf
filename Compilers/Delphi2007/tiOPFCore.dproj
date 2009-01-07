@@ -56,7 +56,6 @@
     <DelphiCompile Include="tiOPFCore.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\..\Core\rtl.dcp" />
     <DCCReference Include="..\..\Core\tiAutoMap.pas" />
     <DCCReference Include="..\..\Core\tiBaseObject.pas" />
     <DCCReference Include="..\..\Core\tiCommandLineParams.pas" />
@@ -78,6 +77,7 @@
     <DCCReference Include="..\..\Core\tiPool.pas" />
     <DCCReference Include="..\..\Core\tiQuery.pas" />
     <DCCReference Include="..\..\Core\tiRTTI.pas" />
+    <DCCReference Include="..\..\Core\tiScheduledTasks.pas" />
     <DCCReference Include="..\..\Core\tiStreams.pas" />
     <DCCReference Include="..\..\Core\tiSyncObjs.pas" />
     <DCCReference Include="..\..\Core\tiThread.pas" />
@@ -88,6 +88,7 @@
     <DCCReference Include="..\..\Core\tiVisitorDB.pas" />
     <DCCReference Include="..\..\Core\tiVisitorDBAutoGen.pas" />
     <DCCReference Include="..\..\Core\tiWin32.pas" />
-    <DCCReference Include="..\..\Core\vcl.dcp" />
+    <DCCReference Include="H:\rtl.dcp" />
+    <DCCReference Include="H:\vcl.dcp" />
   </ItemGroup>
 </Project>

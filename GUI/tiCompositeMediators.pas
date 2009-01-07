@@ -45,7 +45,7 @@ type
     function    GetSelectedObject: TtiObject;
     procedure   SetSelectedObject(const AValue: TtiObject);
     procedure   SetShowDeleted(const AValue: Boolean);
-    procedure   DoCreateItemMediator(AData: TtiObject);
+    procedure   DoCreateItemMediator(const AData: TtiObject);
     procedure   SetOnBeforeSetupField(const Value: TOnBeforeSetupField);
   protected
     FIsObserving: Boolean;
@@ -455,7 +455,7 @@ begin
   end;
 end;
 
-procedure TCompositeListViewMediator.DoCreateItemMediator(AData: TtiObject);
+procedure TCompositeListViewMediator.DoCreateItemMediator(const AData: TtiObject);
 var
   li: TListItem;
   m: TListViewListItemMediator;

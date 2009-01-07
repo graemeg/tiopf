@@ -11711,7 +11711,6 @@ var
   UncheckedCount,
   MixedCheckCount,
   CheckedCount: Cardinal;
-
 begin
   Result := not (vsChecking in Node.States);
   with Node^ do
@@ -11753,7 +11752,10 @@ begin
                         csMixedNormal:
                           Inc(MixedCheckCount);
                         csUncheckedNormal:
-                          Inc(UncheckedCount);
+                        begin
+                          if not (vsDisabled in Run.States) then
+                            Inc(UncheckedCount);
+                        end;
                       end;
                     end;
                     Run := Run.NextSibling;
@@ -11791,7 +11793,10 @@ begin
                         csMixedNormal:
                           Inc(MixedCheckCount);
                         csUncheckedNormal:
-                          Inc(UncheckedCount);
+                        begin
+                          if not (vsDisabled in Run.States) then
+                            Inc(UncheckedCount);
+                        end;
                       end;
                     end;
                     Run := Run.NextSibling;
@@ -17158,7 +17163,8 @@ begin
       if Run.CheckType in [ctCheckBox, ctTriStateCheckBox] then
       begin
         Inc(BoxCount);
-        if NewCheckState in [csCheckedNormal, csCheckedPressed] then
+        if (NewCheckState in [csCheckedNormal, csCheckedPressed]) or
+           (vsDisabled in Run.States) then
           Inc(CheckCount);
         PartialCheck := PartialCheck or (NewCheckState = csMixedNormal);
       end;
@@ -17167,7 +17173,8 @@ begin
       if Run.CheckType in [ctCheckBox, ctTriStateCheckBox] then
       begin
         Inc(BoxCount);
-        if Run.CheckState in [csCheckedNormal, csCheckedPressed] then
+        if (Run.CheckState in [csCheckedNormal, csCheckedPressed]) or
+           (vsDisabled in Run.States) then
           Inc(CheckCount);
         PartialCheck := PartialCheck or (Run.CheckState = csMixedNormal);
       end;

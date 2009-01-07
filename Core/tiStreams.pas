@@ -38,14 +38,13 @@ type
     property    Position: Int64 read GetPosition;
   end;
 
-  {: Adds ReadLn to a TFileStream}
+  {: Adds ReadLn and WriteLn to a TFileStream}
   TtiFileStream = class(TFileStream)
   private
     FLineDelim: string;
     FLineDelimLen : Byte;
     function GetLineDelim: string;
     procedure SetLineDelim(const AValue: string);
-    procedure DiscoverLineDelim;
   public
     constructor Create(const AFileName: string; Mode: Word);
     constructor CreateReadWrite(const AFileName : string; pOverwrite : boolean = false);
@@ -55,6 +54,33 @@ type
     procedure   WriteLn(const AString : string = '');
     function    ReadLn : string;
     function    EOF : boolean;
+  end;
+
+  {: Adds ReadLn and WriteLn to any stream }
+  TtiLineStream = class(TtiBaseObject)
+  private
+    FStream: TStream;
+    FLineDelim: string;
+    FLineDelimLen: Byte;
+    function    GetLineDelim: string;
+    procedure   SetLineDelim(const AValue: string);
+    function    GetPosition: Int64;
+    procedure   SetPosition(const Pos: Int64);
+    function    GetSize: Int64;
+    procedure   SetSize(const NewSize: Int64);
+    function    GetEOF: boolean;
+  public
+    constructor Create(const AStream: TStream);
+    procedure   Write(const AString : string);
+    procedure   WriteLn(const AString : string = '');
+    function    ReadLn: string;
+    function    Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
+
+    property    Stream: TStream read FStream;
+    property    LineDelim: string read GetLineDelim write SetLineDelim;
+    property    Position: Int64 read GetPosition write SetPosition;
+    property    Size: Int64 read GetSize write SetSize;
+    property    EOF: boolean read GetEOF;
   end;
 
   {: Manage a stream in chunks, or blocks. Current interface supports access to the stream via the AsString property.
@@ -583,6 +609,95 @@ begin
  end;
 end;
 
+function tiStreamDiscoverLineDelim(AStream: TStream): string;
+const
+  cBufLen = 1024;
+var
+  crPos, LfPos : LongInt;
+  ls: string;
+  lReadCount: LongInt;
+  lOldPos: Int64;
+begin
+  lOldPos := AStream.Position;
+  AStream.Seek(0, soFromBeginning);
+  crPos := 0;
+  lfPos := 0;
+  // default
+  Result := CrLf;
+
+  while (crPos = 0) and (lfPos = 0) and (AStream.Position <> AStream.Size) do
+  begin
+    SetLength(ls, cBufLen);
+    lReadCount := AStream.Read(ls[1], cBufLen);
+
+    if lReadCount < cBufLen then
+      SetLength(ls, lReadCount);
+
+    crPos := Pos(Cr, ls);
+    lfPos := Pos(Lf, ls);
+
+    if (crPos = 0) and (lfPos > 0) then
+      Result := Lf
+    else if (crPos > 0) and (lfPos = 0) then
+    begin
+      if AStream.Position = AStream.Size then
+        Result := Cr
+      else
+        // handle case of Cr at end of buffer - rewind to crPos
+        AStream.Seek(crPos - 1 - lReadCount, soFromCurrent);
+    end;
+  end;
+
+  // reset stream state
+  AStream.Seek(lOldPos, soFromBeginning);
+end;
+
+function tiStreamReadLn(AStream: TStream; const ALineDelim: string): string;
+const
+  cBufLen = 1024;
+var
+  lPos : LongInt;
+  lReadCount: LongInt;
+  lTrim: LongInt;
+  lStart: Int64;
+  ls: string;
+  lLineDelimLen: integer;
+begin
+  lLineDelimLen := Length(ALineDelim);
+  lStart := AStream.Position;
+  lPos := 0;
+
+  while (lPos = 0) and (AStream.Position <> AStream.Size) do
+  begin
+    SetLength(ls, cBufLen);
+    lReadCount := AStream.Read(ls[1], cBufLen);
+
+    if lReadCount < cBufLen then
+      SetLength(ls, lReadCount);
+
+    lPos := Pos(ALineDelim, ls);
+
+    if lPos <> 0 then
+    begin
+      lTrim := lReadCount - (lPos - 1);
+      SetLength(Result, AStream.Position - lTrim - lStart);
+      AStream.Seek(lStart, soFromBeginning);
+      AStream.Read(Result[1], Length(Result));
+      // skip over ALineDelim
+      AStream.Seek(lLineDelimLen, soFromCurrent);
+    end
+    else if lReadCount = cBufLen then
+      // rewind far enough to handle partial ALineDelim at end of current buffer
+      AStream.Seek( 1 - lLineDelimLen, soFromCurrent)
+    else
+    begin
+      SetLength(Result, AStream.Position - lStart);
+      AStream.Seek(lStart, soFromBeginning);
+      AStream.Read(Result[1], Length(Result));
+    end;
+  end;
+end;
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TtiFileStream
@@ -594,106 +709,9 @@ begin
   LineDelim := '';
 end;
 
-
-procedure TtiFilestream.DiscoverLineDelim;
-const
-  cBufLen = 1024;
-
-var
-  crPos, LfPos : LongInt;
-  ls: string;
-  lReadCount: LongInt;
-  lOldPos: Int64;
-
-begin
-
-  if FLineDelimLen = 0 then
-  begin
-    lOldPos := Position;
-    Seek(0, soFromBeginning);
-    crPos := 0;
-    lfPos := 0;
-    // default
-    LineDelim := CrLf;
-
-    while (crPos = 0) and (lfPos = 0) and (not EOF) do
-    begin
-      SetLength(ls, cBufLen);
-      lReadCount := Read(ls[1], cBufLen);
-
-      if lReadCount < cBufLen then
-        SetLength(ls, lReadCount);
-
-      crPos := Pos(Cr, ls);
-      lfPos := Pos(Lf, ls);
-
-      if (crPos = 0) and (lfPos > 0) then
-        LineDelim := Lf
-      else if (crPos > 0) and (lfPos = 0) then
-      begin
-
-        if EOF then
-          LineDelim := Cr
-        else
-          // handle case of Cr at end of buffer - rewind to crPos
-          Seek(crPos - 1 - lReadCount, soFromCurrent);
-
-      end;
-
-    end;
-
-    // reset stream state
-    Seek(lOldPos, soFromBeginning);
-  end;
-
-end;
-
 function TtiFileStream.ReadLn: string;
-const
-  cBufLen = 1024;
-
-var
-  lPos : LongInt;
-  lReadCount: LongInt;
-  lTrim: LongInt;
-  lStart: Int64;
-  ls: string;
-
 begin
-  lStart := Position;
-  lPos := 0;
-
-  while (lPos = 0) and (not EOF) do
-  begin
-    SetLength(ls, cBufLen);
-    lReadCount := Read(ls[1], cBufLen);
-
-    if lReadCount < cBufLen then
-      SetLength(ls, lReadCount);
-
-    lPos := Pos(LineDelim, ls);
-
-    if lPos <> 0 then
-    begin
-      lTrim := lReadCount - (lPos - 1);
-      SetLength(Result, Position - lTrim - lStart);
-      Seek(lStart, soFromBeginning);
-      Read(Result[1], Length(Result));
-      // skip over LineDelim
-      Seek(FLineDelimLen, soFromCurrent);
-    end
-    else if lReadCount = cBufLen then
-      // rewind far enough to handle partial LineDelim at end of current buffer
-      Seek( 1 - FLineDelimLen, soFromCurrent)
-    else
-    begin
-      SetLength(Result, Position - lStart);
-      Seek(lStart, soFromBeginning);
-      Read(Result[1], Length(Result));
-    end;
-
-  end;
-
+  Result := tiStreamReadLn(Self, LineDelim);
 end;
 
 procedure TtiFileStream.Write(const AString: string);
@@ -719,9 +737,8 @@ end;
 
 function TtiFileStream.GetLineDelim: string;
 begin
-
   if FLineDelimLen = 0 then
-    DiscoverLineDelim;
+    LineDelim := tiStreamDiscoverLineDelim(Self);
 
   Result := FLineDelim;
 end;
@@ -738,6 +755,8 @@ constructor TtiFileStream.CreateReadOnly(const AFileName: string);
 begin
   Create(AFileName, fmOpenRead or fmShareDenyNone);
 end;
+
+{ TtiPreSizedStream }
 
 function TtiPreSizedStream.AsString: string;
 var
@@ -1025,6 +1044,73 @@ end;
 procedure TtiBlockStreamItem.SetAsString(const AValue: string);
 begin
   tiStringToStream(AValue, FStream);
+end;
+
+{ TtiLineStream }
+constructor TtiLineStream.Create(const AStream: TStream);
+begin
+  Assert(Assigned(AStream), CTIErrorInvalidObject);
+  inherited Create;
+  FStream := AStream;
+  LineDelim := '';
+end;
+
+function TtiLineStream.GetEOF: boolean;
+begin
+  result := (FStream.Position = FStream.Size);
+end;
+
+function TtiLineStream.GetLineDelim: string;
+begin
+  if FLineDelimLen = 0 then
+    LineDelim := tiStreamDiscoverLineDelim(FStream);
+  Result := FLineDelim;
+end;
+
+function TtiLineStream.GetPosition: Int64;
+begin
+  result := FStream.Position;
+end;
+
+function TtiLineStream.GetSize: Int64;
+begin
+  result := FStream.Size;
+end;
+
+function TtiLineStream.ReadLn: string;
+begin
+  Result := tiStreamReadLn(FStream, LineDelim);
+end;
+
+function TtiLineStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;
+begin
+  result := FStream.Seek(Offset, Origin);
+end;
+
+procedure TtiLineStream.SetLineDelim(const AValue: string);
+begin
+  FLineDelim := AValue;
+  FLineDelimLen := Length(FLineDelim);
+end;
+
+procedure TtiLineStream.SetPosition(const Pos: Int64);
+begin
+  FStream.Position := Pos;
+end;
+
+procedure TtiLineStream.SetSize(const NewSize: Int64);
+begin
+  FStream.Size := NewSize;
+end;
+
+procedure TtiLineStream.Write(const AString: string);
+begin
+  tiAppendStringToStream(AString, FStream);
+end;
+
+procedure TtiLineStream.WriteLn(const AString: string);
+begin
+  Write(AString + LineDelim);
 end;
 
 end.

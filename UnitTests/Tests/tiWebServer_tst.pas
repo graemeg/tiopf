@@ -1,4 +1,4 @@
-unit tiWebServer_TST;
+unit tiWebServer_tst;
 
 {$I tiDefines.inc}
 
@@ -15,15 +15,18 @@ type
     procedure Assign;
   end;
 
-  TTestTIWebServer = class(TtiTestCase)
+  TtiWebServerTestCase = class(TtiTestCase)
   protected
     procedure SetUp; override;
     procedure TearDown; override;
     function  TestHTTPRequest(const ADocument: string;
       const AFormatException: boolean = True;
       const AParams: string = ''): string;
-    function  TestHTTPRequestInBlocks(const ADocument: string;
-                                      var   ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword): string;
+    function  TestHTTPRequestInBlocks(
+      const ADocument: string;
+      const ABlockSize: Longword;
+      const ABlockIndex: Longword;
+      var   ABlockCount, ATransID, ABlockCRC: Longword): string;
     procedure TestRunCGIExtension(const AParam: string);
   published
     procedure tiBlockStreamCache_AddRead;
@@ -70,6 +73,7 @@ uses
   ,tiStreams
   ,tiConsoleApp
   ,tiConstants
+  ,tiCRC32
 
   ,SysUtils
   ,Classes
@@ -78,7 +82,7 @@ uses
 procedure RegisterTests;
 begin
   tiRegisterNonPersistentTest(TTestTIWebServerClientConnectionDetails);
-  tiRegisterNonPersistentTest(TTestTIWebServer);
+  tiRegisterNonPersistentTest(TtiWebServerTestCase);
   tiRegisterNonPersistentTest(TtestTICGIParams);
 end;
 
@@ -87,13 +91,13 @@ const
 
 { TTestTIWebServer }
 
-procedure TTestTIWebServer.SetUp;
+procedure TtiWebServerTestCase.SetUp;
 begin
   inherited;
 
 end;
 
-procedure TTestTIWebServer.TearDown;
+procedure TtiWebServerTestCase.TearDown;
 begin
   inherited;
 
@@ -107,7 +111,17 @@ type
     property  BlockStreamCache;
   end;
 
-procedure TTestTIWebServer.tiWebServer_Create;
+  procedure TtiWebServerForTesting.SetCGIBinLocation(const AValue: string);
+  begin
+    inherited;
+  end;
+
+  procedure TtiWebServerForTesting.SetStaticPageLocation(const AValue: string);
+  begin
+    inherited;
+  end;
+
+procedure TtiWebServerTestCase.tiWebServer_Create;
 var
   LO: TtiWebServerForTesting;
 begin
@@ -120,7 +134,7 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServer_CreateStartAndStop;
+procedure TtiWebServerTestCase.tiWebServer_CreateStartAndStop;
 var
   LConfig: TtiWebServerConfig;
   LO: TtiWebServerForTesting;
@@ -146,7 +160,7 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServerVersion;
+procedure TtiWebServerTestCase.tiWebServerVersion;
 var
   L: TtiAppServerVersion;
   LS: string;
@@ -194,7 +208,7 @@ begin
   end;
 
 end;
-procedure TTestTIWebServer.tiWebServer_CanFindPage;
+procedure TtiWebServerTestCase.tiWebServer_CanFindPage;
 var
   LO: TtiWebServerForTesting;
   LResult: string;
@@ -234,7 +248,7 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServer_CanNotFindPage;
+procedure TtiWebServerTestCase.tiWebServer_CanNotFindPage;
 var
   LO: TtiWebServer;
   LResult: string;
@@ -276,7 +290,7 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServer_Default;
+procedure TtiWebServerTestCase.tiWebServer_Default;
 var
   LO: TtiWebServer;
   LResult: string;
@@ -291,7 +305,7 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServer_GetLogFile;
+procedure TtiWebServerTestCase.tiWebServer_GetLogFile;
   function _WaitForLogFile(const AFileName: string): boolean;
   var
     LStream: TFileStream;
@@ -340,7 +354,7 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServer_Ignore;
+procedure TtiWebServerTestCase.tiWebServer_Ignore;
 var
   LO: TtiWebServer;
   LResult: string;
@@ -355,7 +369,7 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServer_RunCGIExtensionLargeParameter;
+procedure TtiWebServerTestCase.tiWebServer_RunCGIExtensionLargeParameter;
 var
   LWebServer: TtiWebServerForTesting;
   LHTTP: TtiHTTPIndy;
@@ -388,12 +402,12 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServer_RunCGIExtensionSmallParameter;
+procedure TtiWebServerTestCase.tiWebServer_RunCGIExtensionSmallParameter;
 begin
   TestRunCGIExtension('teststring');
 end;
 
-procedure TTestTIWebServer.tiWebServer_TestWebServerCGIForTestingEXE;
+procedure TtiWebServerTestCase.tiWebServer_TestWebServerCGIForTestingEXE;
 var
   LExpected: string;
   LActual: string;
@@ -405,8 +419,7 @@ begin
   // of less than this length will be OK, but longer strings will be mangled
   // so must be encoded first.
   LPath:= tiAddTrailingSlash(tiGetEXEPath) + 'CGI-Bin\tiWebServerCGIForTesting.exe';
-   // Testing against a different EXE location
-  //LPath:= 'C:\Temp\tiWebServerCGIForTesting.exe';
+  Check(FileExists(LPath), 'Can not find "%s"', [LPath]);
 
   // Test a short string
   LActual:= '';
@@ -441,7 +454,7 @@ begin
   end;
 end;
 
-function TTestTIWebServer.TestHTTPRequest(const ADocument: string;
+function TtiWebServerTestCase.TestHTTPRequest(const ADocument: string;
   const AFormatException: boolean = True;
   const AParams: string = ''): string;
 var
@@ -458,23 +471,28 @@ begin
   end;
 end;
 
-procedure TTestTIWebServer.tiWebServer_PageInBlocks;
+procedure TtiWebServerTestCase.tiWebServer_PageInBlocks;
 var
   LO: TtiWebServerForTesting;
+  LBlockContent: string;
   LFileName: string;
-  LPage: string;
-  LBlockCount, LBlockIndex, LBlockSize, LTransID: Longword;
+  LBlockCount, LTransID, LBlockCRC: Longword;
   LDir: string;
-  LHTTP: TtiHTTPIndy;
-  LHeader: string;
-  LSaveBlockSize: LongWord;
+const
+  CBlockSize = 3;
+  CBlock0 = 'abc';
+  CBlock1 = 'DEF';
+  CBlock2 = 'ghi';
+  CBlock3 = 'JKL';
+  CBlock4 = 'mn';
+  CPageContent = CBlock0 + CBlock1 + CBlock2 + CBlock3 + CBlock4;
+
 begin
 
   LFileName:= TempFileName('testpage.htm');
   LDir:= ExtractFilePath(LFileName);
   tiForceDirectories(LDir);
-  LPage:= 'abcDEFghiJKLmn';
-  tiStringToFile(LPage, LFileName);
+  tiStringToFile(CPageContent, LFileName);
 
   LO:= TtiWebServerForTesting.Create(cPort);
   try
@@ -483,61 +501,119 @@ begin
     LO.SetStaticPageLocation(LDir);
 
     LBlockCount:= 0;
-    LBlockIndex:= 0;
-    LBlockSize:=  3;
     LTransID:=    0;
 
-    LSaveBlockSize:= tiHTTP.GTIOPFHTTPDefaultBlockSize;
-    try
-      LHTTP:= TtiHTTPIndy.Create;
-      try
-        tiHTTP.GTIOPFHTTPDefaultBlockSize:= LBlockSize;
-        LHTTP.Post('http://localhost:' + IntToStr(cPort) + '/' + 'testpage.htm');
-        LHeader:= LHTTP.ResponseTIOPFBlockHeader;
-        tiHTTP.tiParseTIOPFHTTPBlockHeader(LHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID);
-      finally
-        LHTTP.Free;
-      end;
-    finally
-      tiHTTP.GTIOPFHTTPDefaultBlockSize:= LSaveBlockSize;
-    end;
+    CheckEquals(0, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
+    LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 0, LBlockCount, LTransID, LBlockCRC);
+    CheckEquals(CBlock0, LBlockContent, 'BlockContent #0');
+    CheckEquals(5, LBlockCount, 'BlockCount #0');
+    CheckEquals(1, LTransID,    'TransID #0');
+    CheckEquals(tiCRC32FromString(CBlock0), LBlockCRC,   'BlockCRC #0');
+    CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
 
+    LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 1, LBlockCount, LTransID, LBlockCRC);
+    CheckEquals(CBlock1, LBlockContent, 'BlockContent #1');
     CheckEquals(5, LBlockCount, 'BlockCount #1');
-    CheckEquals(4, LBlockIndex, 'BlockIndex #1');
-    CheckEquals(3, LBlockSize,  'BlockSize #1');
     CheckEquals(1, LTransID,    'TransID #1');
+    CheckEquals(tiCRC32FromString(CBlock1), LBlockCRC,   'BlockCRC #1');
+    CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
+
+    LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 2, LBlockCount, LTransID, LBlockCRC);
+    CheckEquals(CBlock2, LBlockContent, 'BlockContent #2');
+    CheckEquals(5, LBlockCount, 'BlockCount #2');
+    CheckEquals(1, LTransID,    'TransID #2');
+    CheckEquals(tiCRC32FromString(CBlock2), LBlockCRC,   'BlockCRC #2');
+    CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
+
+    LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 3, LBlockCount, LTransID, LBlockCRC);
+    CheckEquals(CBlock3, LBlockContent, 'BlockContent #3');
+    CheckEquals(5, LBlockCount, 'BlockCount #3');
+    CheckEquals(1, LTransID,    'TransID #3');
+    CheckEquals(tiCRC32FromString(CBlock3), LBlockCRC,   'BlockCRC #3');
+    CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
+
+    LBlockContent:= TestHTTPRequestInBlocks('testpage.htm', CBlockSize, 4, LBlockCount, LTransID, LBlockCRC);
+    CheckEquals(CBlock4, LBlockContent, 'BlockContent #4');
+    CheckEquals(5, LBlockCount, 'BlockCount #4');
+    CheckEquals(1, LTransID,    'TransID #4');
+    CheckEquals(tiCRC32FromString(CBlock4), LBlockCRC,   'BlockCRC #4');
+    CheckEquals(1, LO.BlockStreamCache.Count, 'LO.BlockStreamCache.Count');
 
   finally
     LO.Free;
   end;
-
 end;
 
-function TTestTIWebServer.TestHTTPRequestInBlocks(const ADocument: string;
-  var ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword): string;
+type
+  TtiHTTPIndyForTesting = class(TtiHTTPIndy)
+  public
+   procedure   DoGetOrPostBlockWithRetry(
+      const AURL: string;
+      const AGetOrPostMethod: TtiHTTPGetOrPostMethod;
+      const AInput: TStringStream;
+      const AOutput: TStringStream;
+      const ABlockIndex: LongWord;
+      var   ATransID: LongWord;
+      out   ABlockCRC: LongWord;
+      out   ABlockCount: LongWord); override;
+    procedure   DoPost(const AURL : string; AInput, AOutput: TStringStream); override;
+  end;
+
+  procedure TtiHTTPIndyForTesting.DoGetOrPostBlockWithRetry(const AURL: string;
+  const AGetOrPostMethod: TtiHTTPGetOrPostMethod; const AInput,
+  AOutput: TStringStream; const ABlockIndex: LongWord;
+  var ATransID: LongWord; out ABlockCRC, ABlockCount: LongWord);
+  begin
+    inherited;
+  end;
+
+  procedure TtiHTTPIndyForTesting.DoPost(const AURL: string; AInput,
+    AOutput: TStringStream);
+  begin
+    inherited;
+  end;
+
+function TtiWebServerTestCase.TestHTTPRequestInBlocks(
+  const ADocument: string;
+  const ABlockSize: Longword;
+  const ABlockIndex: Longword;
+  var   ABlockCount, ATransID, ABlockCRC: Longword): string;
 var
-  LHTTP: TtiHTTPIndy;
-  LHeader: string;
-  LSaveBlockSize: LongWord;
+  LInput: TStringStream;
+  LOutput: TStringStream;
+  LHTTP: TtiHTTPIndyForTesting;
 begin
-  LSaveBlockSize:= tiHTTP.GTIOPFHTTPDefaultBlockSize;
+
+  LHTTP:= nil;
+  LInput:= nil;
+  LOutput:= nil;
   try
-    LHTTP:= TtiHTTPIndy.Create;
-    try
-      tiHTTP.GTIOPFHTTPDefaultBlockSize:= ABlockSize;
-      LHTTP.Post('http://localhost:' + IntToStr(cPort) + '/' + ADocument);
-      Result:= LHTTP.Output.DataString;
-      LHeader:= LHTTP.ResponseTIOPFBlockHeader;
-      tiHTTP.tiParseTIOPFHTTPBlockHeader(LHeader, ABlockIndex, ABlockCount, ABlockSize, ATransID);
-    finally
-      LHTTP.Free;
-    end;
+    LHTTP:= TtiHTTPIndyForTesting.Create;
+    
+    LInput:= TStringStream.Create('');
+    LOutput:= TStringStream.Create('');
+
+    LHTTP.BlockSize:= ABlockSize;
+    LHTTP.DoGetOrPostBlockWithRetry(
+      'http://localhost:' + IntToStr(cPort) + '/' + ADocument,
+      LHTTP.DoPost,
+      LInput,
+      LOutput,
+      ABlockIndex,
+      ATransID,
+      ABlockCRC,
+      ABlockCount);
+
+    Result:= LOutput.DataString;
+
   finally
-    tiHTTP.GTIOPFHTTPDefaultBlockSize:= LSaveBlockSize;
+    LHTTP.Free;
+    LInput.Free;
+    LOutput.Free;
   end;
 end;
 
-procedure TTestTIWebServer.TestRunCGIExtension(const AParam: string);
+procedure TtiWebServerTestCase.TestRunCGIExtension(const AParam: string);
 var
   LO: TtiWebServerForTesting;
   LResult: string;
@@ -560,7 +636,7 @@ type
     property Count;
   end;
 
-procedure TTestTIWebServer.tiBlockStreamCache_AddRead;
+procedure TtiWebServerTestCase.tiBlockStreamCache_AddRead;
 var
   L: TtiBlockStreamCacheForTesting;
   LBlockText: string;
@@ -574,12 +650,14 @@ begin
     CheckEquals('abc', LBlockText);
     CheckEquals(3, LBlockCount);
     CheckEquals(1, LTransID);
+    CheckEquals(1, L.Count);
 
     L.AddBlockStream('jklMNOpq', 3, LBlockText, LBlockCount, LTransID);
     CheckEquals(2, L.Count);
     CheckEquals('jkl', LBlockText);
     CheckEquals(3, LBlockCount);
     CheckEquals(2, LTransID);
+    CheckEquals(2, L.Count);
 
     L.ReadBlock(2, 0, LBlockText);
     CheckEquals('jkl', LBlockText);
@@ -587,7 +665,7 @@ begin
     CheckEquals('MNO', LBlockText);
     L.ReadBlock(2, 2, LBlockText);
     CheckEquals('pq', LBlockText);
-    CheckEquals(1, L.Count);
+    CheckEquals(2, L.Count);
 
     L.ReadBlock(1, 0, LBlockText);
     CheckEquals('abc', LBlockText);
@@ -595,14 +673,14 @@ begin
     CheckEquals('DEF', LBlockText);
     L.ReadBlock(1, 2, LBlockText);
     CheckEquals('gh', LBlockText);
-    CheckEquals(0, L.Count);
+    CheckEquals(2, L.Count);
 
   finally
     L.Free;
   end;
 end;
 
-procedure TTestTIWebServer.tiBlockStreamCache_SweepForTimeOuts;
+procedure TtiWebServerTestCase.tiBlockStreamCache_SweepForTimeOuts;
 var
   L: TtiBlockStreamCacheForTesting;
   LBlockText: string;
@@ -616,11 +694,12 @@ begin
     L.Start;
     L.AddBlockStream('abcDEFgh', 3, LBlockText, LBlockCount, LTransID);
     L.AddBlockStream('jklMNOpq', 3, LBlockText, LBlockCount, LTransID);
-    Sleep(2500);
+    Sleep(2000);
     CheckEquals(2, L.Count);
     L.TimeOutSec:= 1;
-    Sleep(2500);
+    Sleep(2000);
     CheckEquals(0, L.Count);
+    
   finally
     L.Free;
   end;
@@ -638,6 +717,8 @@ const
   CProxyServerActive= True;
   CProxyServerName= '3';
   CProxyServerPort= 4;
+  CBlockSize = 5;
+  CRetryLimit = 6;
 
 begin
   LA:= nil;
@@ -651,6 +732,8 @@ begin
     LA.ProxyServerActive:= CProxyServerActive;
     LA.ProxyServerName:= CProxyServerName;
     LA.ProxyServerPort:= CProxyServerPort;
+    LA.BlockSize:= CBlockSize;
+    LA.RetryLimit:= CRetryLimit;
 
     LB.Assign(LA);
 
@@ -659,6 +742,8 @@ begin
     CheckEquals(CProxyServerActive, LA.ProxyServerActive);
     CheckEquals(CProxyServerName, LA.ProxyServerName);
     CheckEquals(CProxyServerPort, LA.ProxyServerPort);
+    CheckEquals(CBlockSize, LA.BlockSize);
+    CheckEquals(CRetryLimit, LA.RetryLimit);
 
   finally
     LA.Free;
@@ -676,6 +761,8 @@ const
   CProxyServerActive= True;
   CProxyServerName= '3';
   CProxyServerPort= 4;
+  CBlockSize = 5;
+  CRetryLimit = 6;
 
 begin
   LA:= nil;
@@ -689,12 +776,16 @@ begin
     LA.ProxyServerActive:= CProxyServerActive;
     LA.ProxyServerName:= CProxyServerName;
     LA.ProxyServerPort:= CProxyServerPort;
+    LA.BlockSize:= CBlockSize;
+    LA.RetryLimit:= CRetryLimit;
 
     LB.AppServerURL:= CAppServerURL;
     LB.ConnectWith:= CConnectWith;
     LB.ProxyServerActive:= CProxyServerActive;
     LB.ProxyServerName:= CProxyServerName;
     LB.ProxyServerPort:= CProxyServerPort;
+    LB.BlockSize:= CBlockSize;
+    LB.RetryLimit:= CRetryLimit;
 
     Check(LA.Equals(LB));
     LB.AppServerURL:= 'test';
@@ -720,6 +811,16 @@ begin
     LB.ProxyServerPort:= LB.ProxyServerPort+1;
     Check(not LA.Equals(LB));
     LB.ProxyServerPort:= CProxyServerPort;
+
+    Check(LA.Equals(LB));
+    LB.BlockSize:= LB.BlockSize+1;
+    Check(not LA.Equals(LB));
+    LB.BlockSize:= CBlockSize;
+
+    Check(LA.Equals(LB));
+    LB.RetryLimit:= LB.RetryLimit+1;
+    Check(not LA.Equals(LB));
+    LB.RetryLimit:= CRetryLimit;
 
   finally
     LA.Free;
@@ -800,18 +901,6 @@ begin
     L.Free;
   end;
 
-end;
-
-{ TtiWebServerForTesting }
-
-procedure TtiWebServerForTesting.SetCGIBinLocation(const AValue: string);
-begin
-  inherited;
-end;
-
-procedure TtiWebServerForTesting.SetStaticPageLocation(const AValue: string);
-begin
-  inherited;
 end;
 
 end.

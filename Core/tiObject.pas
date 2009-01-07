@@ -81,9 +81,9 @@ type
   TPerObjFindMethod = procedure(AObject : TtiObject; var AFound : boolean) of object;
   TPerObjFindMethodExt = procedure(AObject : TtiObject; var AFound : boolean; AUserContext: Pointer) of object;
   TPerObjFindMethodData = procedure(AObject : TtiObject; var AFound : boolean; AData : TtiObject) of object;
-  TPerObjForEachMethod        = procedure(AObject : TtiObject) of object;
-  TPerObjForEachMethodRegular = procedure(AObject : TtiObject);
-  TtiObjectEvent = procedure(const AData: TtiObject) of object;
+
+  TtiObjectEventRegular = procedure(const AObject: TtiObject);
+  TtiObjectEvent = procedure(const AObject: TtiObject) of object;
 
   {: Does the field allow null values. This is one of the possibly many tests
     that the field will make when the TestValidValue function is called. }
@@ -122,8 +122,8 @@ type
     constructor Create(const AOwner: TtiObject); overload; virtual;
     constructor Create(const AOwner: TtiObject; const ANullValidation: TtiNullValidation); overload; virtual;
     function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; virtual;
-    function    Equals(ACompareWith: TtiFieldAbs): Boolean; virtual; abstract;
-    procedure   Assign(AAssignFrom: TtiFieldAbs); virtual; abstract;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; virtual; abstract;
+    procedure   Assign(const AAssignFrom: TtiFieldAbs); virtual; abstract;
 
     property    Owner:            TtiObject         read FOwner;
     property    FieldName:        string            read GetFieldName write SetFieldName;
@@ -148,14 +148,14 @@ type
                        const ANullValidation: TtiNullValidation = nvAllowNull;
                        const AMaxLength: Integer = 0); reintroduce; overload; virtual;
     function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; override;
-    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
-    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
 
     property    MaxLength: Integer read FMaxLength;
   end;
 
   TtiFieldStringMethod = class;
-  TtiStringFieldMethodReadEvent = procedure(ASender: TtiFieldStringMethod; var AValue: string) of object;
+  TtiStringFieldMethodReadEvent = procedure(const ASender: TtiFieldStringMethod; var AValue: string) of object;
 
   {: Concrete persistent string field that uses a user defined method to access it's data}
   TtiFieldStringMethod = class(TtiFieldString)
@@ -169,8 +169,8 @@ type
     constructor Create(const AOwner: TtiObject;
                        const AReadMethod: TtiStringFieldMethodReadEvent); reintroduce; overload; virtual;
     function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; override;
-    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
-    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
   end;
 
   // ToDo: Implement checking for null in GetAsString
@@ -190,8 +190,8 @@ type
                        const ANullValidation: TtiNullValidation = nvAllowNull;
                        const AMaxDigits: Integer = 0); reintroduce; overload; virtual;
     function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; override;
-    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
-    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
 
     property    AsInteger : Int64 read FValue Write SetAsInteger;
     property    MaxDigits : Integer read FMaxDigits;
@@ -216,8 +216,8 @@ type
     constructor Create(const AOwner: TtiObject;
                        const ANullValidation: TtiNullValidation;
                        const APrecision: Integer); reintroduce; overload;
-    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
-    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
     property    AsFloat: Extended read FValue Write SetAsFloat;
     property    Precision: Integer Read FPrecision Write SetPrecision;
     property    Epsilon: Extended Read FEpsilon Write FEpsilon;
@@ -233,8 +233,8 @@ type
     procedure   SetAsString(const AValue: string);  override;
     function    GetAsString: string;               override;
   public
-    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
-    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
     property    AsBoolean: Boolean read FValue Write SetAsBoolean;
   end;
 
@@ -254,8 +254,8 @@ type
     procedure   SetAsString(const AValue: string);  override;
     function    GetAsString: string;               override;
   public
-    function    Equals(ACompareWith: TtiFieldAbs): Boolean; override;
-    procedure   Assign(AAssignFrom: TtiFieldAbs); override;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
     property    AsDateTime: TDateTime read FValue Write SetAsDateTime;
     property    Days: Word read GetDays;
     property    Months: Word read GetMonths;
@@ -391,7 +391,7 @@ type
     {: Find an object in the hierarchy by OID with the OID passed as a string}
     function    Find(AOIDToFindAsString : string): TtiObject;  overload; virtual;
     {: Find an object in the hierarchy by OID with the OID passed as a TtiOID object}
-    function    Find(AOIDToFind : TtiOID): TtiObject;  overload; virtual;
+    function    Find(const AOIDToFind : TtiOID): TtiObject;  overload; virtual;
     {: Find an object in the hierarchy using the find method passed}
     function    Find(AtiObjectFindMethod : TPerObjFindMethod): TtiObject; overload;
     {: Find an object in the hierarchy using the extended find method passed}
@@ -466,6 +466,7 @@ type
 
 
   TtiObjectListCompareEvent = procedure(AItem1, AItem2: TtiObject) of object;
+  TtiObjectListFindCompareFunc = function(const AObject: TtiObject; const AValue): integer of object;
 
 
   TtiEnumerator = class(TtiBaseObject)
@@ -524,15 +525,19 @@ type
     {: Finds the object in the list whose OID value matches.}
     function    Find(AOIDToFindAsString : string): TtiObject;  override;
     {: Finds the object in the list whose OID value matches.}
-    function    Find(AOIDToFind : TtiOID): TtiObject; override;
+    function    Find(const AOIDToFind : TtiOID): TtiObject; override;
     {: Finds the object in the list whose OID value matches. Faster search if sorted by OID. }
     function    Find(AOIDToFind : TtiOID; ASortType: TtiPerObjListSortType): TtiObject; overload;
     {: Finds the object in the list whose OID value matches. Will search the list, and if not found, will search all owned objects }
     function    FindInHierarchy(AOIDToFind : TtiOID): TtiObject; overload;
+    {: Finds the object in the sorted list given a comparison function. If not found the index is the insertion point.
+       This provides a convenient way to search for an existing object in a sorted list and if not found insert it at
+       the correct position to keep the list in sorted order. }
+    function    FindSortedUntyped(const AFindCompare: TtiObjectListFindCompareFunc; const AValue; out AObject: TtiObject; out AIndex: integer): boolean;
     {: Performs the method AMethod on every object in the list.}
-    procedure   ForEach(AMethod : TPerObjForEachMethod       ; AIncludeDeleted : boolean = false); overload; virtual;
+    procedure   ForEach(const AMethod: TtiObjectEvent; const AIncludeDeleted: boolean = false); overload; virtual;
     {: Performs the method AMethod on every object in the list.}
-    procedure   ForEach(AMethod : TPerObjForEachMethodRegular; AIncludeDeleted : boolean = false); overload; virtual;
+    procedure   ForEach(const AMethod: TtiObjectEventRegular; const AIncludeDeleted: boolean = false); overload; virtual;
     {: Add an object to the list.}
     function    Add(const AObject : TtiObject): integer; overload; virtual;
     {: Empty list and delete all owned objects}
@@ -577,11 +582,11 @@ type
     procedure   SortByOID; virtual;
 
     {: Compare Self with AList. Fire an event for each object depending on the differences}
-    procedure   CompareWith(AList: TtiObjectList;
-                            AInBothAndEquals: TtiObjectListCompareEvent;
-                            AInBothAndNotEquals: TtiObjectListCompareEvent;
-                            AIn1Only: TtiObjectListCompareEvent;
-                            AIn2Only: TtiObjectListCompareEvent); virtual;
+    procedure   CompareWith(const AList: TtiObjectList;
+                            const AInBothAndEquals: TtiObjectListCompareEvent;
+                            const AInBothAndNotEquals: TtiObjectListCompareEvent;
+                            const AIn1Only: TtiObjectListCompareEvent;
+                            const AIn2Only: TtiObjectListCompareEvent); virtual;
 
     {: Compare Self with AList. Add each object to the appropriate list depending on the differences}
 //    procedure   CompareWith(AList: TtiObjectList;
@@ -914,11 +919,11 @@ procedure tiListToStream(AStream : TStream;
                          AColsSelected : TStringList);
 var
   i, j      : integer;
-  lsValue   : string;
-  lFieldName : string;
-  AData     : TtiBaseObject;
-  lLine     : string;
-  lPropType: TTypeKind;
+  LValue   : string;
+  LFieldName : string;
+  LData     : TtiBaseObject;
+  LLine     : string;
+  LPropType: TTypeKind;
 begin
   // Write column headings
   for i := 0 to AColsSelected.Count - 1 do begin
@@ -932,41 +937,41 @@ begin
   // Write the data
   for i := 0 to AList.Count - 1 do
   begin
-    AData := (TObject(AList.Items[i]) as TtiBaseObject);
-    lLine := '';
+    LData := (TObject(AList.Items[i]) as TtiBaseObject);
+    LLine := '';
     for j := 0 to AColsSelected.Count - 1 do
     begin
-      if lLine <> '' then
-        lLine := lLine + AFieldDelim;
-      lFieldName := AColsSelected.Strings[j];
-      if GetPropInfo(AData,lFieldName)^.PropType^.Name = 'TDateTime' then
-        lsValue := tiDateTimeToStr(GetPropValue(AData,lFieldName))
+      if LLine <> '' then
+        LLine := LLine + AFieldDelim;
+      LFieldName := AColsSelected.Strings[j];
+      if GetPropInfo(LData,lFieldName)^.PropType^.Name = 'TDateTime' then
+        LValue := tiDateTimeToStr(GetPropValue(LData, LFieldName))
       else
       begin
-        lPropType := TypInfo.PropType(AData, lFieldName);
+        LPropType := TypInfo.PropType(LData, lFieldName);
         case lPropType of
-          tkChar       : lsValue := IntToStr(GetOrdProp(AData, lFieldName));
-          tkWChar      : lsValue := IntToStr(GetOrdProp(AData, lFieldName));
-          tkString     : lsValue := GetStrProp(AData, lFieldName);
-          tkLString    : lsValue := GetStrProp(AData, lFieldName);
-          tkWString    : lsValue := GetWideStrProp(AData, lFieldName);
+          tkChar       : LValue := IntToStr(GetOrdProp(LData, LFieldName));
+          tkWChar      : LValue := IntToStr(GetOrdProp(LData, LFieldName));
+          tkString     : LValue := GetStrProp(LData, LFieldName);
+          tkLString    : LValue := GetStrProp(LData, LFieldName);
+          tkWString    : LValue := GetWideStrProp(LData, LFieldName);
           {$IFDEF FPC}
-          tkAString    : lsValue := GetStrProp(AData, lFieldName);
+          tkAString    : LValue := GetStrProp(LData, LFieldName);
           {$ENDIF}
-          tkInteger    : lsValue := IntToStr(GetInt64Prop(AData, lFieldName));
-          tkInt64      : lsValue := IntToStr(GetInt64Prop(AData, lFieldName));
-          tkFloat      : lsValue := FloatToStr(GetFloatProp(AData, lFieldName));
-          tkEnumeration : lsValue := IntToStr(GetOrdProp(AData, lFieldName));
+          tkInteger    : LValue := IntToStr(Integer(GetInt64Prop(LData, LFieldName)));
+          tkInt64      : LValue := IntToStr(GetInt64Prop(LData, LFieldName));
+          tkFloat      : LValue := FloatToStr(GetFloatProp(LData, LFieldName));
+          tkEnumeration: LValue := IntToStr(GetOrdProp(LData, LFieldName));
           {$IFDEF FPC}
-          tkBool       : lsValue := IntToStr(GetInt64Prop(AData, lFieldName));
+          tkBool       : LValue := IntToStr(GetInt64Prop(LData, LFieldName));
           {$ENDIF}
         end;
       end;
-      lLine := lLine + lsValue;
+      LLine := LLine + LValue;
     end;
     if i <> 0 then
-      lLine := ARowDelim + lLine;
-    tiAppendStringToStream(lLine, AStream)
+      LLine := ARowDelim + LLine;
+    tiAppendStringToStream(LLine, AStream)
   end;
 end;
 
@@ -1224,7 +1229,7 @@ begin
                      ObjectState := posCreate   ;
                      {$IFDEF OID_AS_INT64}
                        if OID = cNullOIDInteger then
-                         OID := GTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
+                         OID:= OIDGenerator.NextOID;
                      {$ELSE}
                        if OID.IsNull then
                          OIDGenerator.AssignNextOID(OID);
@@ -1638,7 +1643,7 @@ begin
   result := AList.Count;
 end;
 
-function TtiObject.Find(AOIDToFind : TtiOID): TtiObject;
+function TtiObject.Find(const AOIDToFind : TtiOID): TtiObject;
 var
   lVis : TVisPerObjFindByOID;
 begin
@@ -1747,7 +1752,8 @@ begin
   end;
 end;
 
-procedure TtiObjectList.ForEach(AMethod: TPerObjForEachMethod; AIncludeDeleted: boolean=false);
+procedure TtiObjectList.ForEach(const AMethod: TtiObjectEvent;
+  const AIncludeDeleted: boolean=false);
 var
   i : integer;
 begin
@@ -1756,7 +1762,8 @@ begin
       AMethod(Items[i]);
 end;
 
-procedure TtiObjectList.ForEach(AMethod: TPerObjForEachMethodRegular; AIncludeDeleted: boolean);
+procedure TtiObjectList.ForEach(const AMethod: TtiObjectEventRegular;
+  const AIncludeDeleted: boolean);
 var
   i : integer;
 begin
@@ -2003,7 +2010,7 @@ begin
     Owner := AOwner;
   ObjectState := posCreate;
   {$IFDEF OID_AS_INT64}
-    OID := GTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
+    OID := OIDGenerator.NextOID;
   {$ELSE}
     OIDGenerator.AssignNextOID(OID);
   {$ENDIF}
@@ -2552,7 +2559,7 @@ begin
 //  AutoSetItemOwner := TtiObjectList(ASource).AutoSetItemOwner;
 end;
 
-function TtiObjectList.Find(AOIDToFind: TtiOID): TtiObject;
+function TtiObjectList.Find(const AOIDToFind: TtiOID): TtiObject;
 var
   i : integer;
 begin
@@ -2574,6 +2581,50 @@ begin
     Result := Items[FindIndex]
   else
     Result := nil;
+end;
+
+function TtiObjectList.FindInHierarchy(AOIDToFind: TtiOID): TtiObject;
+begin
+  Result := Find(AOIDToFind);
+  if Result = nil then
+    Result := inherited Find(AOIDToFind);
+end;
+
+function TtiObjectList.FindSortedUntyped(
+  const AFindCompare: TtiObjectListFindCompareFunc; const AValue;
+  out AObject: TtiObject; out AIndex: integer): boolean;
+var
+  LLow: Integer;
+  LHigh: Integer;
+  LMid: Integer;
+  LCompareResult: Integer;
+begin
+  Assert(@AFindCompare <> nil, 'FindCompare function is required');
+
+  result := false;
+  AObject := nil;
+  AIndex := -1;
+
+  // Binary search
+  LLow := 0;
+  LHigh := Count - 1;
+  while LLow <= LHigh do
+  begin
+    LMid := ((LHigh + LLow) div 2);
+    LCompareResult := AFindCompare(Items[LMid], AValue);
+    if LCompareResult > 0 then
+      LHigh := LMid - 1
+    else if LCompareResult < 0 then
+      LLow := LMid + 1
+    else begin
+      result := true;
+      AObject := Items[LMid];
+      AIndex := LMid;
+      Exit; //==>
+    end;
+  end;
+
+  AIndex := LLow; // Insertion point
 end;
 
 function TtiObjectList.IndexOf(AOIDToFind: TtiOID; ASortType: TtiPerObjListSortType = stNone): integer;
@@ -3114,7 +3165,7 @@ begin
   FMaxLength := AMaxLength;
 end;
 
-procedure TtiFieldString.Assign(AAssignFrom: TtiFieldAbs);
+procedure TtiFieldString.Assign(const AAssignFrom: TtiFieldAbs);
 begin
   Assert(AAssignFrom.TestValid(TtiFieldString), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
@@ -3152,7 +3203,7 @@ begin
   end;
 end;
 
-function TtiFieldString.Equals(ACompareWith: TtiFieldAbs): Boolean;
+function TtiFieldString.Equals(const ACompareWith: TtiFieldAbs): Boolean;
 begin
   Assert(ACompareWith.TestValid(TtiFieldString), CTIErrorInvalidObject);
   Result :=
@@ -3171,7 +3222,7 @@ begin
   FMaxDigits := AMaxDigits;
 end;
 
-procedure TtiFieldInteger.Assign(AAssignFrom: TtiFieldAbs);
+procedure TtiFieldInteger.Assign(const AAssignFrom: TtiFieldAbs);
 begin
   Assert(AAssignFrom.TestValid(TtiFieldInteger), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
@@ -3225,7 +3276,7 @@ begin
   end;
 end;
 
-function TtiFieldInteger.Equals(ACompareWith: TtiFieldAbs): Boolean;
+function TtiFieldInteger.Equals(const ACompareWith: TtiFieldAbs): Boolean;
 begin
   Assert(ACompareWith.TestValid(TtiFieldAbs), CTIErrorInvalidObject);
   Result :=
@@ -3235,7 +3286,7 @@ end;
 
 { TtiFieldFloat }
 
-procedure TtiFieldFloat.Assign(AAssignFrom: TtiFieldAbs);
+procedure TtiFieldFloat.Assign(const AAssignFrom: TtiFieldAbs);
 begin
   Assert(AAssignFrom.TestValid(TtiFieldFloat), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
@@ -3269,7 +3320,7 @@ begin
   Create(AOwner, ANullValidation, 0);
 end;
 
-function TtiFieldFloat.Equals(ACompareWith: TtiFieldAbs): Boolean;
+function TtiFieldFloat.Equals(const ACompareWith: TtiFieldAbs): Boolean;
 var
   lF1: extended;
   lF2: extended;
@@ -3313,7 +3364,7 @@ end;
 
 { TtiFieldBoolean }
 
-procedure TtiFieldBoolean.Assign(AAssignFrom: TtiFieldAbs);
+procedure TtiFieldBoolean.Assign(const AAssignFrom: TtiFieldAbs);
 begin
   Assert(AAssignFrom.TestValid(TtiFieldBoolean), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
@@ -3371,7 +3422,7 @@ begin
   SetValue;
 end;
 
-function TtiFieldBoolean.Equals(ACompareWith: TtiFieldAbs): Boolean;
+function TtiFieldBoolean.Equals(const ACompareWith: TtiFieldAbs): Boolean;
 begin
   Assert(ACompareWith.TestValid(TtiFieldBoolean), CTIErrorInvalidObject);
   Result :=
@@ -3381,7 +3432,7 @@ end;
 
 { TtiFieldDateTime }
 
-procedure TtiFieldDateTime.Assign(AAssignFrom: TtiFieldAbs);
+procedure TtiFieldDateTime.Assign(const AAssignFrom: TtiFieldAbs);
 begin
   Assert(AAssignFrom.TestValid(TtiFieldDateTime), CTIErrorInvalidObject);
   if AAssignFrom.IsNull then
@@ -3502,7 +3553,7 @@ begin
   Result := FFieldName;
 end;
 
-function TtiFieldDateTime.Equals(ACompareWith: TtiFieldAbs): Boolean;
+function TtiFieldDateTime.Equals(const ACompareWith: TtiFieldAbs): Boolean;
 begin
   Assert(ACompareWith.TestValid(TtiFieldDateTime), CTIErrorInvalidObject);
   Result :=
@@ -3540,7 +3591,7 @@ end;
 procedure TtiObject.ForceAsCreate(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
 begin
   {$IFDEF OID_AS_INT64}
-    OID := GTIOPFManager.DefaultPerLayer.NextOIDMgr.NextOID;
+    OID := OIDGenerator.NextOID;
   {$ELSE}
     OIDGenerator.AssignNextOID(OID);
   {$ENDIF}
@@ -3551,13 +3602,6 @@ function TtiObject.PropType(const APropName: string): TtiTypeKind;
 begin
   Assert(APropName <> '', 'APropName not assigned');
   Result := tiGetSimplePropType(Self, APropName);
-end;
-
-function TtiObjectList.FindInHierarchy(AOIDToFind: TtiOID): TtiObject;
-begin
-  Result := Find(AOIDToFind);
-  if Result = nil then
-    Result := inherited Find(AOIDToFind);
 end;
 
 type
@@ -3846,7 +3890,7 @@ begin
   result := nil;
 end;
 
-procedure TtiObjectList.CompareWith(AList: TtiObjectList; AInBothAndEquals,
+procedure TtiObjectList.CompareWith(const AList: TtiObjectList; const AInBothAndEquals,
   AInBothAndNotEquals, AIn1Only, AIn2Only: TtiObjectListCompareEvent);
 var
   i: Integer;
@@ -3977,7 +4021,7 @@ end;
 
 { TtiFieldStringMethod }
 
-procedure TtiFieldStringMethod.Assign(AAssignFrom: TtiFieldAbs);
+procedure TtiFieldStringMethod.Assign(const AAssignFrom: TtiFieldAbs);
 begin
   Assert(False, 'Assign not implemented');
 end;
@@ -3996,7 +4040,7 @@ begin
   FReadEvent:= AReadMethod;
 end;
 
-function TtiFieldStringMethod.Equals(ACompareWith: TtiFieldAbs): Boolean;
+function TtiFieldStringMethod.Equals(const ACompareWith: TtiFieldAbs): Boolean;
 begin
   Assert(ACompareWith.TestValid(TtiFieldString), CTIErrorInvalidObject);
   Result :=(AsString = ACompareWith.AsString);
@@ -4045,5 +4089,4 @@ begin
 end;
 
 end.
-
 

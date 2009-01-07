@@ -65,6 +65,8 @@ uses
   ,SyncObjs
   ,tiThread
   ,Graphics
+  ,Htmlview
+  ,tiAnimatedGIF
  ;
 
 type
@@ -72,55 +74,10 @@ type
   TProgInd = class;
   TProgressVisibleChangeEvent = procedure(const AVisible: Boolean) of object;
 
-  {$IFDEF NOTHREADS}
-  // A dummy stub with the same interface as a TThread which can be used for
-  // debugging processes which will eventually be run in a TtiThreadProgress.
-  // Use of the TThreadDebugger as the parent of TtiThreadProgress makes
-  // debugging easier as exceptions and GUI interaction is difficult within
-  // a thread.
-  // Note: This class still needs a little work as OnTerminate will not be called
-  //       when the thread finished.
-
-  { TThreadDebugger }
-
-  TThreadDebugger = class(TObject)
-  private
-    FbTerminated: boolean;
-    FOnTerminate: TNotifyEvent;
-    FbSuspended: boolean;
-    FbFreeOnTerminate: boolean;
-    FReturnValue: Integer;
-  protected
-    procedure   Synchronize(Method : TThreadMethod);
-    procedure   DoOnTerminate(sender : TObject); virtual;
-  public
-    constructor Create(Suspended : boolean); virtual;
-    procedure   Terminate; virtual;
-    procedure   Resume;
-
-    procedure   Execute; virtual; abstract;
-
-    property    Terminated : boolean read FbTerminated write FbTerminated;
-    property    OnTerminate : TNotifyEvent read FOnTerminate write FOnTerminate;
-    property    Suspended  : boolean read FbSuspended write FbSuspended;
-    property    FreeOnTerminate : boolean read FbFreeOnTerminate write FbFreeOnTerminate;
-    property    ReturnValue : Integer read FReturnValue write FReturnValue;
-  end;
-  {$ENDIF}
-
-
-  // To remove the multi-threaded functionality of the TtiThreadProgress,
-  // use TThreadDebugger as the parent of TtiThreadProgress.
-  // To make long processes multi-threaded, use TThread as the parent.
-  {$IFDEF NOTHREADS}
-    TtiThreadProgress = class(TThreadDebugger)
-  {$ELSE}
-    TtiThreadProgress = class(TtiThread)
-  {$ENDIF}
+  TtiThreadProgress = class(TtiThread)
   private
     FProgInd : TProgInd;
     FPosition : integer;
-    FText : string;
     FMin: integer;
     FMax: integer;
     FAutoProgress: boolean;
@@ -128,16 +85,25 @@ type
     FCanCancel: boolean;
     FConfirmCancel : boolean;
     FOnCancel : TNotifyEvent;
+    FShowAnimation: boolean;
+
+    //FCrtiSectLabelHotspotClick: TCriticalSection;
+
     procedure SynchronizeProgress;
     procedure SetPosition(const AValue: integer);
     procedure SetMax(const AValue: integer);
     procedure SetMin(const AValue: integer);
-    procedure SetText(const AValue: string);
     procedure SetAutoProgress(const AValue: Boolean);
     procedure SetCaption(const AValue: TCaption);
     procedure SetCanCancel(const AValue: boolean);
+    procedure SetShowAnimation(const Value: boolean);
+    procedure OnLabelHotspotClick(Sender: TObject; const SRC: string;
+                     var Handled: boolean);
   protected
     procedure   DoOnTerminate(sender : TObject); override;
+    procedure   DoLabelHotspotClick(Sender: TObject; const SRC: string;
+                     var Handled: boolean); virtual;
+    procedure   SetText(const AValue: string); override;
   public
     constructor Create(ACreateSuspended: Boolean); override;
     Destructor  Destroy; override;
@@ -145,12 +111,12 @@ type
     Property    Max    : integer      read FMax          write SetMax;
     Property    Min    : integer      read FMin          write SetMin;
     Property    Position : integer     read FPosition     write SetPosition;
-    Property    Text    : string      read FText         write SetText;
     Property    Caption : TCaption    read FCaption      write SetCaption;
     Property    AutoProgress : Boolean read FAutoProgress write SetAutoProgress;
     Property    CanCancel : boolean    read FCanCancel     write SetCanCancel;
     property    ConfirmCancel : boolean    read FConfirmCancel   write FConfirmCancel;
     property    OnCancel     : TNotifyEvent read FOnCancel      write FOnCancel;
+    property    ShowAnimation: boolean read FShowAnimation write SetShowAnimation;
     Procedure   IncPosition; virtual;
     //DO NOT call inherited in the overridden execute method !!!
   end;
@@ -206,11 +172,13 @@ type
 
   TProgInd = class(TCustomPanel)
   private
-    FLabel      : TLabel;
-    FProgressBar : TtiProgressBar;
-    FSpeedButton : TSpeedButton;
+    FLabel      : THTMLViewer;
+    FProgressBar: TtiProgressBar;
+    FSpeedButton: TSpeedButton;
     FThread     : TtiThreadProgress;
     FCaption    : TCaption;
+    FShowAnimation: boolean;
+    FAnimation  : TtiAnimatedGIF;
     function    GetMax: integer;
     function    GetMin: integer;
     function    GetPosition: integer;
@@ -225,6 +193,12 @@ type
     function    GetCanCancel: boolean;
     procedure   SetCanCancel(const AValue: boolean);
     function    GetProgressBarWidth: integer;
+    procedure   SetShowAnimation(const AValue: boolean);
+    function    AnimationShowing: boolean;
+    procedure   AddAnimation;
+    procedure   RemoveAnimation;
+    function GetOnLabelHotspotClick: THotSpotClickEvent;
+    procedure SetOnLabelHotspotClick(const AValue: THotSpotClickEvent);
     {$IFDEF FPC}
     procedure Async(Data: PtrInt);
     {$ENDIF}
@@ -237,6 +211,8 @@ type
     Property    Caption : TCaption read GetCaption write SetCaption;
     property    Thread : TtiThreadProgress read FThread write FThread;
     property    CanCancel : boolean read GetCanCancel write SetCanCancel;
+    property    ShowAnimation: boolean read FShowAnimation write SetShowAnimation;
+    property    OnLabelHotspotClick: THotSpotClickEvent read GetOnLabelHotspotClick write SetOnLabelHotspotClick;
   end;
 
 // The FormThreadProgress is a Singleton
@@ -247,6 +223,7 @@ uses
   tiUtils
   ,tiLog
   ,tiDialogs
+  ,tiResources
   ,SysUtils
   {$IFNDEF FPC}
   ,Windows
@@ -263,9 +240,10 @@ var
   uFormThreadProgressIsOwned : boolean;
 
 const
-  cuiProgIndHeight   =  24;
+  cuiProgIndHeight   =  30;
   cuiFormWidth       = 450;
   cuiLabelWidth      = 150;
+  cuiAnimationWidth  = 16;
   cuCancelButtonSize = 17;
   cuWaitForTerminate = 'Waiting to terminate';
 
@@ -281,6 +259,7 @@ end;
 // * TProgInd
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 constructor TProgInd.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner)   ;
@@ -293,20 +272,25 @@ begin
   Anchors     := [akLeft,akTop];
   Width       := TForm(Owner).ClientWidth - 8;
 
-  FLabel                 := TLabel.Create(self);
+  FLabel                 := THtmlviewer.Create(self);
   FLabel.Parent          := self;
-  FLabel.Left            :=  10;
-  FLabel.Top             :=   6;
-  FLabel.Width           := cuiLabelWidth;
-  FLabel.Height          :=  13;
+  FLabel.Left            := 6;
+  FLabel.Top             := 1;
+  FLabel.DefFontSize := 8;
+  FLabel.MarginHeight := 0;
+  Flabel.MarginWidth := 0;
+  FLabel.BorderStyle := htNone;
+  FLabel.DefBackground := clWhite;
+  FLabel.Width           := Width - (Left * 2);
+  FLabel.Height          :=  16;
+  FLabel.DefFontName := TForm(Owner).Font.Name;
 
   FProgressBar           := TtiProgressBar.Create(self);
   FProgressBar.Parent    := self;
-  FProgressBar.Left      := 124;
-  FProgressBar.Left      := cuiLabelWidth + 20;
-  FProgressBar.Top       :=   4;
+  FProgressBar.Left      := 4;//cuiLabelWidth + 20;
+  FProgressBar.Top       := 18;
   FProgressBar.Width     := GetProgressBarWidth;
-  FProgressBar.Height    :=  17;
+  FProgressBar.Height    :=  12;
   FProgressBar.Anchors   := [akLeft, akTop, akRight];
   FProgressBar.Smooth    := true;
   {$IFNDEF FPC}
@@ -330,7 +314,6 @@ begin
   FSpeedButton.Visible := false;
 end;
 
-
 function TProgInd.GetMax: integer;
 begin
   result := FProgressBar.Max;
@@ -342,6 +325,12 @@ begin
   result := FProgressBar.Min;
 end;
 
+
+function TProgInd.GetOnLabelHotspotClick: THotSpotClickEvent;
+begin
+  Assert(Assigned(FLabel));
+  result := FLabel.OnHotspotClick;
+end;
 
 function TProgInd.GetPosition: integer;
 begin
@@ -361,22 +350,81 @@ begin
 end;
 
 
+procedure TProgInd.SetOnLabelHotspotClick(const AValue: THotSpotClickEvent);
+begin
+  Assert(Assigned(FLabel));
+  FLabel.OnHotspotClick := AValue;
+end;
+
 procedure TProgInd.SetPosition(const AValue: integer);
 begin
   FProgressBar.Position := AValue;
 end;
 
 
+procedure TProgInd.SetShowAnimation(const AValue: boolean);
+begin
+  if AValue <> FShowAnimation then
+  begin
+    FShowAnimation := AValue;
+    if FShowAnimation and (not AnimationShowing) then
+      AddAnimation
+    else if (not FShowAnimation) and AnimationShowing then
+      RemoveAnimation;
+  end;
+end;
+
+
+function TProgInd.AnimationShowing: boolean;
+begin
+  result := Assigned(FAnimation);
+end;
+
+
+procedure TProgInd.AddAnimation;
+begin
+  if not AnimationShowing then
+  begin
+    FAnimation := TtiAnimatedGIF.Create(self);
+    FAnimation.ResourceName := cResTI_NetworkTraffic;
+    FAnimation.AutoSize := true;
+    // Right aligned to progress area.
+    FAnimation.Left := self.ClientWidth - FAnimation.Width - 8;
+    FAnimation.Anchors := [akTop, akRight];
+    // Centre vertically to progress bar.
+    FAnimation.Top := FProgressBar.Top + ((FProgressBar.Height - FAnimation.Height) div 2);
+    FAnimation.Transparent := true;
+    FAnimation.Parent := self;
+    FAnimation.AnimationSpeed := 300;
+    FAnimation.AnimationEnabled := true;
+
+    // Adjust the progress bar to make room for the animation.
+    FProgressBar.Width := GetProgressBarWidth;
+  end;
+end;
+
+
+procedure TProgInd.RemoveAnimation;
+begin
+  if AnimationShowing then
+  begin
+    FreeAndNil(FAnimation);
+    // Adjust the progress bar to fill the space where the animation was displayed.
+    FProgressBar.Width := GetProgressBarWidth;
+  end;
+end;
+
+
 function TProgInd.GetText: string;
 begin
-  result := FLabel.Caption;
+  result := FLabel.DocumentSource;
 end;
 
 
 procedure TProgInd.SetText(const AValue: string);
 begin
-  if FLabel.Caption <> cuWaitForTerminate then
-    FLabel.Caption := AValue;
+  if FLabel.DocumentSource <> cuWaitForTerminate then
+    FLabel.LoadFromString(AValue);
 end;
 
 
@@ -419,6 +467,7 @@ begin
   OnCloseQuery := DoCloseQuery;
   OnResize := DoResize;
   FTimer      := TTimer.Create(Self);
+  FTimer.Interval:= 500;
   FTimer.Enabled := false;
   FTimer.OnTimer := UpdateAutoProgressThreads;
   FPanelBevelInner  := bvLowered   ;
@@ -438,12 +487,23 @@ begin
 end;
 
 
+//TODO: Better co-ordination during destroy and thread termination.
+// There are a few potential problems here if TFormThreadProgress is being
+// destroyed and the threads are terminating at the same time. When threads
+// call DetachThread we could be in the late stages of Destroy, or destroyed
+// altogether (in which case a new global TFormThreadProgress will be created
+// which will cause an assertion failure as the thread will not be found).
 destructor TFormThreadProgress.Destroy;
 var
   i : integer;
 begin
-  for i := 0 to FProgInds.Count - 1 do
-    TtiThreadProgress(FProgInds.Items[i]).Terminate;
+  FCritSect.Enter;
+  try
+    for i := 0 to FProgInds.Count - 1 do
+      TtiThreadProgress(FProgInds.Items[i]).Terminate;
+  finally
+    FCritSect.Leave;
+  end;
   FTimer.Free;
   gGUIINI.WriteFormState(self);
   FProgInds.Free;
@@ -541,9 +601,20 @@ begin
     gGUIINI.WriteInteger('ThreadProgress',
                        ClassName,
                        FPosition + 1);
+//  FCrtiSectLabelHotspotClick.Free;
   inherited;
 end;
 
+
+procedure TtiThreadProgress.DoLabelHotspotClick(Sender: TObject;
+  const SRC: string; var Handled: boolean);
+begin
+  if not Handled then
+  begin
+    tiShellExecute(SRC);
+    Handled := true;
+  end;
+end;
 
 procedure TtiThreadProgress.DoOnTerminate(sender : TObject);
 begin
@@ -557,10 +628,22 @@ begin
 end;
 
 
+procedure TtiThreadProgress.OnLabelHotspotClick(Sender: TObject;
+  const SRC: string; var Handled: boolean);
+begin
+//  FCrtiSectLabelHotspotClick.Enter;
+//  try
+    DoLabelHotspotClick(Sender, SRC, Handled);
+//  finally
+//    FCrtiSectLabelHotspotClick.Leave;
+//  end;
+end;
+
 procedure TtiThreadProgress.SetAutoProgress(const AValue: Boolean);
 begin
   FAutoProgress := AValue;
-  if AutoProgress then begin
+  if AutoProgress then
+  begin
     FPosition := 0;
     FMin     := 0;
     Max := gGUIINI.ReadInteger('ThreadProgress', ClassName, 10);
@@ -590,10 +673,18 @@ begin
   Synchronize(SynchronizeProgress);
 end;
 
+procedure TtiThreadProgress.SetShowAnimation(const Value: boolean);
+begin
+  if Value <> FShowAnimation then
+  begin
+    FShowAnimation := Value;
+    ProgInd.ShowAnimation := FShowAnimation;
+  end;
+end;
 
 procedure TtiThreadProgress.SetText(const AValue: string);
 begin
-  FText := AValue;
+  inherited;
   Synchronize(SynchronizeProgress);
 end;
 
@@ -603,7 +694,6 @@ begin
   FCaption := AValue;
   Synchronize(SynchronizeProgress);
 end;
-
 
 procedure TtiThreadProgress.SynchronizeProgress;
 const
@@ -621,7 +711,7 @@ begin
     FProgInd.Position := FPosition;
   end;
 
-  FProgInd.Text    := FText;
+  FProgInd.Text    := Text;
   FProgInd.Caption := FCaption;
   FProgInd.CanCancel := FCancancel;
 end;
@@ -830,6 +920,8 @@ end;
 function TProgInd.GetProgressBarWidth : integer;
 begin
   result := Self.ClientWidth - FProgressBar.Left - 8;
+  if AnimationShowing then
+    result := result - FAnimation.Width - 6;
   if CanCancel then
     Dec(Result, cuCancelButtonSize);
 end;
@@ -902,6 +994,9 @@ begin
   CanCancel := false;
   ConfirmCancel := True;
   ReturnValue   := 0;
+
+  //FCrtiSectLabelHotspotClick := TCriticalSection.Create;
+  FProgInd.OnLabelHotspotClick := OnLabelHotspotClick;
   if not ACreateSuspended then
     Resume;
 end;

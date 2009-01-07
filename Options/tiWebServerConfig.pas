@@ -44,12 +44,12 @@ type
     property    Port: integer read GetPort;
 
     property    SendBugReportEmailOnCGIFailure: boolean read GetSendBugReportEmailOnCGIFailure;
-
+    function    INIFileName: string;
   end;
 
 implementation
 uses
-  tiLog
+   tiLog
   ,tiLogToFile
   ,tiUtils
   ,SysUtils
@@ -68,7 +68,7 @@ const
   cINIService = 'Web Server';
   cINIService_ShortName = 'ShortName';
   cINIService_DisplayName  = 'DiaplayName';
-  cINIService_ShortNameDefault = 'tiWebServer';
+  cINIService_ShortNameDefault = 'tiDBWebServer';
   cINIService_DisplayNameDefault  = 'TechInsite Web Server';
   cINIService_PathToStaticPages = 'PathToStaticPages';
   cINIService_PathToCGIBin = 'PathToCGIBin';
@@ -149,6 +149,11 @@ end;
 function TtiWebServerConfig.GetWebServiceShortName: string;
 begin
   Result:= FINI.ReadString(cINIService, cINIService_ShortName, cINIService_ShortNameDefault);
+end;
+
+function TtiWebServerConfig.INIFileName: string;
+begin
+  result := INI.FileName;
 end;
 
 procedure TtiWebServerConfig.RegisterLog;

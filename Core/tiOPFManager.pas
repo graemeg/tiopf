@@ -41,9 +41,8 @@ type
     FActiveThreadList: TtiActiveThreadList;
     FApplicationData: TObjectList;
     FApplicationStartTime: TDateTime;
-    {$IFNDEF OID_AS_INT64}
-      FDefaultOIDGenerator: TtiOIDGenerator;
-    {$ENDIF}
+    FDefaultOIDGenerator: TtiOIDGenerator;
+    procedure SetDefaultOIDGenerator(const AValue: TtiOIDGenerator);
 
     function  GetDefaultDBConnectionName: string;
     procedure SetDefaultDBConnectionName(const AValue: string);
@@ -54,7 +53,6 @@ type
     procedure SetDefaultPerLayer(const AValue: TtiPersistenceLayer);
     procedure SetDefaultPersistenceLayerName(const AValue: string);
     function  GetApplicationData: TList;
-    procedure SetDefaultOIDGenerator(const AValue: TtiOIDGenerator);
   public
     constructor Create; override;
     destructor  Destroy; override;
@@ -99,7 +97,7 @@ type
                                            const AUserName    : string;
                                            const APassword    : string;
                                            const AParams      : string;
-                                           const APackageID   : string): boolean; overload;
+                                           const APersistenceLayerName: string): boolean; overload;
 
     function   TestThenConnectDatabase(    const ADatabaseName : string;
                                            const AUserName    : string;
@@ -110,7 +108,8 @@ type
                                            const AUserName    : string;
                                            const APassword    : string): boolean; overload;
 
-    procedure   ConnectDatabaseWithRetry(  const ADatabaseName:  string;
+    procedure   ConnectDatabaseWithRetry(  const ADatabaseAlias : string;
+                                           const ADatabaseName:  string;
                                            const AUserName:      string;
                                            const APassword:      string;
                                            const ARetryCount:    Word;
@@ -206,10 +205,8 @@ type
     //       The code exists inside the ClassDBMappingMgr but is is stubbed out as it
     //       loads before a persistence layer is available hence is not working.
     property    ClassDBMappingMgr     : TtiClassDBMappingMgr read GetClassDBMappingMgr;
-
-    {$IFNDEF OID_AS_INT64}
     property    DefaultOIDGenerator: TtiOIDGenerator read FDefaultOIDGenerator write SetDefaultOIDGenerator;
-    {$ENDIF}
+
   end;
 
 
@@ -233,7 +230,10 @@ uses
   ,tiLog
   {$IFNDEF OID_AS_INT64}
   ,tiOIDGUID
+  {$ELSE}
+//  ,tiOIDAsInt64
   {$ENDIF}
+
   {$IFDEF LINK_ADOACCESS}       ,tiQueryADOAccess     {$ENDIF}
   {$IFDEF LINK_ADOSQLSERVER}    ,tiQueryADOSQLServer  {$ENDIF}
   {$IFDEF LINK_BDEPARADOX}      ,tiQueryBDEParadox    {$ENDIF}
@@ -317,12 +317,13 @@ begin
     lRegPerLayer.DefaultDBConnectionName := AValue;
 end;
 
-
+//{$IFNDEF OID_AS_INT64}
 procedure TtiOPFManager.SetDefaultOIDGenerator(const AValue: TtiOIDGenerator);
 begin
   FreeAndNil(FDefaultOIDGenerator);
   FDefaultOIDGenerator := AValue
 end;
+//{$ENDIF}
 
 procedure TtiOPFManager.ConnectDatabase(const ADatabaseAlias, ADatabaseName,
     AUserName, APassword, AParams, APersistenceLayerName: string);
@@ -354,16 +355,15 @@ begin
   FDefaultPackageName := '';
   FTerminated := false;
 
-  {$IFNDEF OID_AS_INT64}
-  FDefaultOIDGenerator:= nil;
-  {$ENDIF}
-
   FActiveThreadList := TtiActiveThreadList.Create;
   FApplicationData := TObjectList.Create(true);
 
   {$IFNDEF OID_AS_INT64}
-  DefaultOIDGenerator:= TtiOIDGeneratorGUID.Create; // Set the default OID Generator to GUID
+    DefaultOIDGenerator:= TtiOIDGeneratorGUID.Create; // Set the default OID Generator to GUID
+  {$ELSE}
+    FDefaultOIDGenerator:= TtiOIDAsInt64Generator.Create;
   {$ENDIF}
+
 
   FApplicationStartTime := Now;
 end;
@@ -758,11 +758,11 @@ function TtiOPFManager.TestThenConnectDatabase(
   const AUserName    : string;
   const APassword : string;
   const AParams      : string;
-  const APackageID   : string): boolean;
+  const APersistenceLayerName   : string): boolean;
 begin
   result := TestThenConnectDatabase(
     ADatabaseName, ADatabaseName, AUserName,
-    APassword, AParams, APackageID);
+    APassword, AParams, APersistenceLayerName);
 end;
 
 procedure TtiOPFManager.CreateDatabase(const ADatabaseName, AUserName,
@@ -803,14 +803,20 @@ begin
   ConnectDatabase(ADatabaseName, AUserName, APassword, '');
 end;
 
-procedure TtiOPFManager.ConnectDatabaseWithRetry(const ADatabaseName, AUserName,
-  APassword: string; const ARetryCount, ARetryInterval: Word);
+procedure TtiOPFManager.ConnectDatabaseWithRetry(
+  const ADatabaseAlias : string;
+  const ADatabaseName:  string;
+  const AUserName:      string;
+  const APassword:      string;
+  const ARetryCount:    Word;
+  const ARetryInterval: Word);
 
-  procedure LogDatabaseConnectionAttempt(const ADatabaseName: string;
-    const AUserName: string; const ARetryCount: Integer);
+  procedure LogDatabaseConnectionAttempt(
+    const ADatabaseAlias, ADatabaseName, AUserName: string;
+    const ARetryCount: Integer);
   begin
-    Log('Attempt %d to connect to database %s as %s',
-      [ARetryCount, ADatabaseName, AUserName], lsUserInfo);
+    Log('Attempt %d to connect to database %s as %s (alias "%s"',
+      [ARetryCount, ADatabaseName, AUserName, ADatabaseAlias], lsUserInfo);
   end;
 
 var
@@ -820,15 +826,15 @@ begin
   //       For example, incorrect username/password does not warrent a retry
   //       Database unavailable does.
   LRetryCount:= 1;
-  LogDatabaseConnectionAttempt(ADatabaseName, AUserName, LRetryCount);
+  LogDatabaseConnectionAttempt(ADatabaseAlias, ADatabaseName, AUserName, LRetryCount);
   while (LRetryCount <= ARetryCount) and
-    (not GTIOPFManager.TestThenConnectDatabase(
-      ADatabaseName, AUsername, APassword, '')) do
+    (not gTIOPFManager.TestThenConnectDatabase(
+      ADatabaseAlias, ADatabaseName, AUsername, APassword, '', '')) do
   begin
     Sleep(ARetryInterval * 1000);
     Inc(LRetryCount);
     if LRetryCount <= ARetryCount then
-      LogDatabaseConnectionAttempt(ADatabaseName, AUserName, LRetryCount);
+      LogDatabaseConnectionAttempt(ADatabaseAlias, ADatabaseName, AUserName, LRetryCount);
   end;
 
   if LRetryCount > ARetryCount then
@@ -841,7 +847,7 @@ begin
              [ARetryCount, ARetryInterval]));
 
   Log('Connecting to database successful' + CrLf +
-      GTIOPFManager.DefaultDBConnectionPool.DetailsAsString, lsUserInfo);
+      gTIOPFManager.DefaultDBConnectionPool.DetailsAsString, lsUserInfo);
 
 end;
 
@@ -938,4 +944,3 @@ finalization
   FreeAndNilTIPerMgr;
 
 end.
-

@@ -20,7 +20,7 @@ const
   cErrorInvalidCachedBlockStreamTransID = 'Invalid cached block TransID "%d"';
   cDefaultBlockStreamCacheTimeout= 120;
   cDefaultBlockStreamCacheSweepEvery= 120;
-  cDefaultSleepSec= 1;
+  cDefaultSleepSec= 10;
 
 type
 
@@ -139,6 +139,13 @@ type
     procedure   Execute; override;
   end;
 
+  // ToDo: We depend on SweepForTimeouts to clean up items that have been added
+  //       to the cache, used and no longer required. We could add a command
+  //       that's sent from the client to delete an entry from the cache, based
+  //       on TransID, but this will require another network round trip. Have
+  //       decided (for the time being) to depend on SweepForTimeout to clean
+  //       up the cahce. We may need to review this decision if memory use on
+  //       the server becomes an issue.
   TtiBlockStreamCache = class(TtiBaseObject)
   private
     FList: TObjectList;
@@ -152,7 +159,6 @@ type
     function    FindByTransID(ATransID: Longword): TtiCachedBlockStream;
     function    GetCount: Longword;
   protected
-    property    Count: Longword Read GetCount;
     procedure   SweepForTimeOuts;
   public
     constructor Create;
@@ -163,6 +169,7 @@ type
     property    TimeOutSec: Longword Read FTimeOutSec Write FTimeOutSec;
     property    SweepEverySec: Longword Read FSweepEverySec Write FSweepEverySec;
     property    SleepSec: Longword Read FSleepSec Write FSleepSec;
+    property    Count: Longword Read GetCount;
     procedure   Start;
   end;
 
@@ -176,6 +183,8 @@ type
     FOnServerException: TtiWebServerExceptionEvent;
     FReadPageLocationAtStartup: Boolean;
     function GetActive: Boolean;
+    function  GetPort: Integer;
+    procedure SetPort(const AValue: Integer);
   protected
     procedure SetStaticPageLocation(const AValue: string); virtual;
     procedure SetCGIBinLocation(const AValue: string); virtual;
@@ -200,10 +209,12 @@ type
     constructor Create(APort: integer); virtual;
     destructor  Destroy; override;
 
+    property    Port: Integer read GetPort write SetPort;
+    property    StaticPageLocation : string read FStaticPageLocation;
     property    ReadPageLocationAtStartUp: Boolean read FReadPageLocationAtStartup write FReadPageLocationAtStartup;
-    property    StaticPageLocation : string read FStaticPageLocation write FStaticPageLocation;
-    property    CGIBinLocation    : string read FCGIBinLocation write FCGIBinLocation;
+    property    CGIBinLocation    : string read FCGIBinLocation;
     property    OnServerException: TtiWebServerExceptionEvent read FOnServerException write FOnServerException;
+
 
     procedure   Start;
     procedure   Stop;
@@ -222,6 +233,7 @@ uses
   ,tiConsoleApp
   ,tiHTTP
   ,tiWebServerConfig
+  ,tiCRC32
   ,Math
   {$IFDEF DELPHI5}
   ,FileCtrl
@@ -234,7 +246,7 @@ constructor TtiWebServer.Create(APort: Integer);
 begin
   inherited Create;
   FReadPageLocationAtStartup:= True;
-  
+
   FServerActions:= TObjectList.Create(true);
   FServerActions.Add(TtiWebServerAction_Ignore.Create(       Self,  1));
   FServerActions.Add(TtiWebServerAction_Default.Create(      Self,  2));
@@ -247,7 +259,7 @@ begin
   FIdHTTPServer := TIdHTTPServer.Create(Nil);
   FIdHTTPServer.OnCommandGet := DoIDHTTPServerCommandGet;
   FIdHTTPServer.KeepAlive := False;
-  FidHTTPServer.DefaultPort:= APort;
+  Port:= APort;
 
   FBlockStreamCache:= TtiBlockStreamCache.Create;
 end;
@@ -275,6 +287,7 @@ var
   LBlockCount: Longword;
   LBlockSize:  LongWord;
   LTransID:    Longword;
+  LBlockCRC:   Longword;
   LResponseTIOPFBlockHeader: string;
 
   LTemp: string; // Change to a stream
@@ -286,7 +299,7 @@ begin
 
   LParams:= ARequestInfo.UnparsedParams;
   LRequestTIOPFBlockHeader:= ARequestInfo.RawHeaders.Values[ctiOPFHTTPBlockHeader];
-  tiHTTP.tiParseTIOPFHTTPBlockHeader(LRequestTIOPFBlockHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID);
+  tiHTTP.tiParseTIOPFHTTPBlockHeader(LRequestTIOPFBlockHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
 
   LResponseCode:= cHTTPResponseCodeOK;
   LContentType:= cHTTPContentTypeTextHTML;
@@ -297,7 +310,7 @@ begin
     if (LBlockSize = 0) then
     begin
       ProcessHTTPGet(LDocument, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
-      LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, 0, 0, 0);
+      LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, 0, 0, 0, 0);
     end
     // BlockSize <> 0 and TransID = 0, a new blocked request
     else if (LBlockSize <> 0) and (LTransID = 0) then
@@ -305,17 +318,19 @@ begin
       ProcessHTTPGet(LDocument, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
       FBlockStreamCache.AddBlockStream(tiStreamToString(LResponse), LBlockSize, LTemp, LBlockCount, LTransID);
       tiStringToStream(LTemp, LResponse);
+      LBlockCRC:= tiCRC32FromStream(LResponse);
       if LBlockCount > 1 then
         Log('Returning block 0 of ' + IntToStr(LBlockCount) + ' in TransID ' + IntToStr(LTransID));
-      LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, LBlockCount, LBlockSize, LTransID);
+      LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, LBlockCount, LBlockSize, LTransID, LBlockCRC);
     end
     // BlockSize <> 0 and TransID <> 0, Retrun and existing block from the cache
     else if (LBlockSize <> 0) and (LTransID <> 0) then
     begin
       FBlockStreamCache.ReadBlock(LTransID, LBlockIndex, LTemp);
       tiStringToStream(LTemp, LResponse);
+      LBlockCRC:= tiCRC32FromStream(LResponse);
       Log('Returning block ' + IntToStr(LBlockIndex) + ' of ' + IntToStr(LBlockCount) + ' in TransID ' + IntToStr(LTransID));
-      LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID);
+      LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
     end;
 
     ApplyResponseStreamToHTTPResponse(AResponseInfo, LResponse, LContentType, LResponseCode);
@@ -327,9 +342,9 @@ begin
 
 end;
 
-function TtiWebServer.GetActive: Boolean;
+function TtiWebServer.GetPort: Integer;
 begin
-  result:= FIdHTTPServer.Active;
+  result:= FidHTTPServer.DefaultPort;
 end;
 
 procedure TtiWebServer.ApplyResponseStreamToHTTPResponse(
@@ -415,7 +430,7 @@ begin
   if not DirectoryExists(StaticPageLocation) then
     ForceDirectories(StaticPageLocation);
   if not DirectoryExists(StaticPageLocation) then
-    raise exception.create('Unable to locate or create directory for static pages "' + StaticPageLocation + '"');
+    raise exception.create('Unable to locate or create directory for static pages <' + StaticPageLocation + '>');
   if not FileExists(tiAddTrailingSlash(StaticPageLocation) + 'default.htm') then
     CreateDefaultPage;
 
@@ -433,6 +448,11 @@ procedure TtiWebServer.Stop;
 begin
   FIdHTTPServer.Active := False;
   //ToDo: Implement BlockStreamCache.Stop;
+end;
+
+function TtiWebServer.GetActive: Boolean;
+begin
+  result:= FIdHTTPServer.Active;
 end;
 
 function _CompareWebServerActions(AItem1, AItem2: Pointer): Integer;
@@ -453,6 +473,11 @@ begin
     FCGIBinLocation:= tiAddtrailingSlash(AValue)
   else
     FCGIBinLocation:= AValue;
+end;
+
+procedure TtiWebServer.SetPort(const AValue: Integer);
+begin
+  FidHTTPServer.DefaultPort:= AValue;
 end;
 
 procedure TtiWebServer.SetStaticPageLocation(const AValue: string);
@@ -852,9 +877,6 @@ begin
       raise EtiOPFDataException.CreateFmt(cErrorInvalidCachedBlockStreamTransID, [ATransID]);
     ABlockAsString:= L.BlockAsString[ABlockIndex];
     L.LastAccessed:= Now;
-    // ToDo: Will have to remove this when we start using multi threaded access to the block stream cache
-    if ABlockIndex = L.BlockCount-1 then
-      FList.Remove(L);
   finally
     FCritSect.Leave;
   end;

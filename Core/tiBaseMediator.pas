@@ -63,9 +63,9 @@ type
     // Check whether data and GUI property are OK. Not used in this class
     function DataAndPropertyValid: Boolean;
     // By default, copies published FieldName to published GUIFieldName.
-    procedure DoGuiToObject; virtual;
+    procedure DoGUIToObject; virtual;
     // Copy object property to GUI. By default it copies published GUIFieldName to published FieldName
-    procedure DoObjectToGui; virtual;
+    procedure DoObjectToGUI; virtual;
     // Set value list object. Override to provide additional handling.
     procedure SetListObject(const AValue: TtiObjectList); virtual;
     //  Set up subject, attach as observer. Override to provide additional handling.
@@ -96,7 +96,7 @@ type
     // Copy GUI to Object. Calls OnGUIToObject if set, and then calls DoGUIToObject if needed
     procedure GuiToObject;
     // Copy GUI to Object. Calls OnObjectToGUI if set, and then calls DoGUIToObject if needed
-    procedure ObjectToGui;
+    procedure ObjectToGUI;
     // Called by NotifyObservers of subject. Calls ObjectToGUI by default.
     procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
     // Call when GUI changed. Will call GUIToObject.
@@ -573,7 +573,7 @@ begin
       FSubject.DetachObserver(Self);
 end;
 
-procedure TMediatorView.DoGuiToObject;
+procedure TMediatorView.DoGUIToObject;
 begin
   Log(Format('> TMediatorView.DoGuiToObject for %s.%s', [Subject.ClassName, FieldName]), lsDebug);
   CheckFieldNames;
@@ -598,7 +598,7 @@ begin
   end;
 end;
 
-procedure TMediatorView.ObjectToGui;
+procedure TMediatorView.ObjectToGUI;
 var
   B: Boolean;
 begin
@@ -616,7 +616,7 @@ begin
   end;
 end;
 
-procedure TMediatorView.DoObjectToGui;
+procedure TMediatorView.DoObjectToGUI;
 begin
   Log(Format('> TMediatorView.DoObjectToGui for %s.%s', [Subject.ClassName, FieldName]), lsDebug);
   CheckFieldNames;

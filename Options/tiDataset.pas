@@ -295,7 +295,10 @@ type
 // procedure Register;
 
 implementation
-
+{$ifdef MSWINDOWS}
+  uses
+    Windows; // To inline function AnsisCompareText 
+{$endif}
 
 // moved to separate unit
 //procedure Register;

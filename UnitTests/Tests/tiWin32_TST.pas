@@ -18,6 +18,8 @@ type
     procedure CoInitialize_CoUnInitialize_MainThread;
     procedure CoInitialize_CoUnInitialize_MultiThread;
     procedure CoInitialize_ForceCoUnInitialize;
+
+    procedure TestTIWin32_tiWin32RunProcessWithTimeout;
   public
     constructor Create{$IFNDEF DUNIT2ORFPC}(AMethodName: string){$ENDIF}; override;
   end;
@@ -48,6 +50,77 @@ begin
   // and I cannot pinpoint it's cause.
   tiWin32CoInitialize;
   tiWin32CoUnInitialize;
+end;
+
+procedure TTestTIWin32.TestTIWin32_tiWin32RunProcessWithTimeout;
+const
+  CTimeoutSecs = 5;
+  CParamName = '-s';
+  CEXEName = 'sleepfor.exe';
+  CBATName = 'sleepfor.bat';
+  CDirectory = '';
+//var
+//  LCommandLine: string;
+//  LParams: string;
+//  LDirectory: string;
+//  LTimeoutInterval: Cardinal;
+//  LProcessNameToKill: string;
+//
+//  LSleepForSecs: Cardinal;
+//  LTimeoutSecs: Cardinal;
+begin
+  //full path exe name - process to kill specified
+//    //SleepFor > Timeout
+//    LCommandLine := CDirectory + CEXEName;
+//    LSleepForSecs := 2;
+//    LTimeoutSecs  := 1;
+//    LParams := CParamName + IntToStr(LSleepForSecs);
+//    LDirectory := '';
+//    LProcessToKill := CEXEName;
+//
+//    //Timeout > SleepFor
+//    LCommandLine := CDirectory + CEXEName;
+//    LSleepForSecs := 1;
+//    LTimeoutSecs  := 2;
+//    LParams := CParamName + IntToStr(LSleepForSecs);
+//    LDirectory := '';
+//    LProcessToKill := CEXEName;
+//
+//  //no path exe name - no process to kill specified
+//    //SleepFor > Timeout
+//    LCommandLine := CEXEName;
+//    LSleepForSecs := 2;
+//    LTimeoutSecs  := 1;
+//    LParams := CParamName + IntToStr(LSleepForSecs);
+//    LDirectory := CDirectory;
+//    LProcessToKill := '';
+//
+//    //Timeout > SleepFor
+//    LCommandLine := CEXEName;
+//    LSleepForSecs := 1;
+//    LTimeoutSecs  := 2;
+//    LParams := CParamName + IntToStr(LSleepForSecs);
+//    LDirectory := CDirectory;
+//    LProcessToKill := '';
+//
+//  //no path batch file name - process to kill specified
+//    //SleepFor > Timeout
+//    LCommandLine := CBATName;
+//    LSleepForSecs := 2;
+//    LTimeoutSecs  := 1;
+//    LParams := CParamName + IntToStr(LSleepForSecs);
+//    LDirectory := CDirectory;
+//    LProcessToKill := CEXEName;
+//
+//    //Timeout > SleepFor
+//    LCommandLine := CBATName;
+//    LSleepForSecs := 2;
+//    LTimeoutSecs  := 1;
+//    LParams := CParamName + IntToStr(LSleepForSecs);
+//    LDirectory := CDirectory;
+//    LProcessToKill := CEXEName;
+//
+//  tiWin32RunProcessWithTimeout(
 end;
 
 procedure TTestTIWin32.CoInitialize_CoUnInitialize_MainThread;

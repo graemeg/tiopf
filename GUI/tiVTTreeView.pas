@@ -57,6 +57,12 @@ type
     AData: TtiObject;
     ACanvas : TCanvas) of object;
 
+  TtiVTTVNodeCheckboxClickEvent = procedure(
+    AtiVTTreeView: TtiVTTreeView;
+    ANode: PVirtualNode;   // What ever data type you suggest here. Want to have access to the node to delete, paint, etc
+    AData: TtiObject;
+    ASetChecked: Boolean) of object;
+
   // Does not have to be a collection. Perhaps better if it's not because one of the
   // main properties is a class reference
   TtiVTTVDataMapping = class(TCollectionItem)
@@ -65,6 +71,7 @@ type
     FCanEdit: boolean;
     FCanInsert: boolean;
     FCanView: Boolean;
+    FUseCheckbox: Boolean;
     FImageIndex: integer;
     FDisplayPropName: string;
     FDataClass: TtiClass;
@@ -83,6 +90,8 @@ type
     property CanInsert: boolean read FCanInsert write FCanInsert default false;
     property CanEdit:   boolean read FCanEdit   write FCanEdit default false;
     property CanView:   boolean read FCanView   write FCanView default false;
+
+    property UseCheckBox: boolean read FUseCheckbox write FUseCheckbox default false;
 
     property DataClass: TtiClass   read FDataClass write FDataClass;
     property DisplayPropName: string      read FDisplayPropName write FDisplayPropName;
@@ -161,6 +170,8 @@ type
     FOwnsData: Boolean;
     FApplyFilter: Boolean;
     FOnFilter: TtiVTTVOnFilterDataEvent;
+    FOnNodeCheckboxClick: TtiVTTVNodeCheckboxClickEvent;
+
     procedure DoOnChange(sender: TBaseVirtualTree; node: PVirtualNode);
     procedure SetTVDataMappings(const AValue: TtiVTTVDataMappings);
     function  GetSelectedAddress: string;
@@ -176,6 +187,10 @@ type
     procedure DoOnFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure DoOnGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
     procedure DoOnGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer);
+    procedure DoOnCheckChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure DoOnChecking(Sender: TBaseVirtualTree; Node: PVirtualNode; var NewState: TCheckState;
+        var Allowed: Boolean);
+
     function  GetSelectedData: TtiObject;
     procedure SetSelectedData(const AValue: TtiObject);
     function  GetOnKeyDown: TKeyEvent;
@@ -208,20 +223,24 @@ type
     function  CalcNodeChildren(Node: PVirtualNode): Integer;
     function  IsMappingForObject(AtiVTTVDataMapping: TtiVTTVDataMapping; AObj: TtiObject): Boolean;
     function  CalcMappingForObject(pObj: TtiObject): TtiVTTVDataMapping;
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
     procedure   SetFocus; override;
 
+    procedure   Refresh; reintroduce;
+
     procedure   DoInsert(Sender: TObject);
     procedure   DoDelete(Sender: TObject);
     procedure   DoEdit(Sender: TObject);
     procedure   DoDblClick(Sender: TObject);
+
     procedure   FullExpand(pLevel: Integer = -1);
     procedure   FullCollapse;
 
     function    GetObjectFromNode(Node: PVirtualNode): TtiObject; override;
+    function    GetNodeFromObject(const AData: TtiObject): PVirtualNode;
+
     function    GetListForNode(Node: PVirtualNode): TtiObjectList;
     procedure   SetObjectForNode(pNode: PVirtualNode;  AObject: TtiObject);
     function    GetMappingForNode(Node: PVirtualNode): TtiVTTVDataMapping;
@@ -230,6 +249,9 @@ type
     function    CanInsert: boolean;
     function    CanEdit: boolean;
     function    CanView: boolean;
+
+    procedure   SetDataNodeCheckState(const AData: TtiObject; const ACheckState: TCheckState);
+    function    GetDataNodeCheckState(const AData: TtiObject): TCheckState;
 
     procedure   RefreshCurrentNode;
 
@@ -261,7 +283,11 @@ type
 
     property OnGetNodeHint;
     property OnPaintText;
+    property OnScroll;
+    property OnCollapsed;
+    property OnExpanded;
 
+    property OnNodeCheckboxClick: TtiVTTVNodeCheckboxClickEvent read FOnNodeCheckboxClick write FOnNodeCheckboxClick;
   end;
 
 implementation
@@ -341,6 +367,8 @@ begin
   FVTDataMappings := TtiVTTVDataMappings.Create(self);
   VT.OnChange := DoOnChange;
   VT.OnDblClick := DoDblClick;
+  VT.OnChecking := DoOnChecking;
+  VT.OnChecked:= DoOnCheckChange;
 
   FPopupMenu := TTVPopupMenu.Create(nil);
   FPopupMenu.VT := self;
@@ -362,7 +390,8 @@ begin
   VT.OnGetImageIndex := DoOnGetImageIndex;
 
   VT.TreeOptions.AnimationOptions := VT.TreeOptions.AnimationOptions + [toAnimatedToggle];
-
+  VT.CheckImageKind := ckSystem;
+  
   FVTDefaultDataMapping := TtiVTTVDataMapping.Create(nil);
   FVTDefaultDataMapping.DisplayPropName := 'Caption';
   FVTDefaultDataMapping.ImageIndex := 0;
@@ -399,6 +428,19 @@ begin
          which is currently ignored.  I tried including it in above test
          but a RootNodeCount := 0 results in nothing showing.
          Do we need to set RootNodeCount to actual (first level) count? }
+end;
+
+procedure TtiVTTreeView.SetDataNodeCheckState(const AData: TtiObject;
+  const ACheckState: TCheckState);
+var
+  LNode: PVirtualNode;
+begin
+  LNode := GetNodeFromObject(AData);
+
+  if LNode = nil then
+    exit;
+
+  VT.CheckState[LNode] := ACheckState;
 end;
 
 procedure TtiVTTreeView.SetDefaultText(const AValue: WideString);
@@ -634,6 +676,37 @@ begin
     FOnSelectNode(Self, Node, GetObjectFromNode(Node));
     FCtrlBtnPnl.EnableButtons;
   end;
+end;
+
+procedure TtiVTTreeView.DoOnCheckChange(Sender: TBaseVirtualTree;
+  Node: PVirtualNode);
+var
+  LData: TtiObject;
+  LCheckState: Boolean;
+begin
+  if Assigned(FOnNodeCheckboxClick) then
+  begin
+    LData:= GetObjectFromNode(Node);
+    LCheckState:= Node.CheckState in [csCheckedNormal, csCheckedPressed];
+    FOnNodeCheckboxClick(Self, Node, LData, LCheckState);
+  end;
+
+//    csUncheckedNormal,  // unchecked and not pressed
+//    csUncheckedPressed, // unchecked and pressed
+//    csCheckedNormal,    // checked and not pressed
+//    csCheckedPressed,   // checked and pressed
+//    csMixedNormal,      // 3-state check box and not pressed
+//    csMixedPressed      // 3-state check box and pressed
+end;
+
+procedure TtiVTTreeView.DoOnChecking(Sender: TBaseVirtualTree; Node: PVirtualNode; var NewState: TCheckState;
+    var Allowed: Boolean);
+begin
+  if not assigned(FOnNodeCheckboxClick) then
+    exit;
+
+  if (Allowed) and (NewState in [csCheckedNormal, csCheckedPressed]) then
+    VT.Expanded[Node] := true;
 end;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -999,6 +1072,12 @@ procedure TtiVTTreeView.EndUpdate;
 begin
 end;
 
+procedure TtiVTTreeView.Refresh;
+begin
+  inherited;
+  VT.Refresh;
+end;
+
 procedure TtiVTTreeView.RefreshCurrentNode;
 begin
   VT.RepaintNode(VT.GetFirstSelected);
@@ -1024,6 +1103,19 @@ end;
 function TtiVTTreeView.GetButtonStyle: TLVButtonStyle;
 begin
   Result := FCtrlBtnPnl.ButtonStyle;
+end;
+
+function TtiVTTreeView.GetDataNodeCheckState(
+  const AData: TtiObject): TCheckState;
+var
+  LNode: PVirtualNode;
+begin
+  LNode := GetNodeFromObject(AData);
+
+  if LNode = nil then
+    raise Exception.Create(Format('No treeview node assigned for object %s', [AData.Caption]));
+
+  Result := LNode.CheckState;
 end;
 
 function TtiVTTreeView.GetDefaultText: WideString;
@@ -1118,20 +1210,35 @@ end;
 
 procedure TtiVTTreeView.DoOnInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
 var
-  AData: TtiObject;
+  LData: TtiObject;
+  LMapping: TtiVTTVDataMapping;
+  LNodeHasChildren: Boolean;
 begin
   if (VT.GetNodeLevel(Node)) = 0 then
   begin
-    AData := FData;
+    LData := FData;
     Include(InitialStates, ivsExpanded);
   end
   else
-    AData := GetListForNode(ParentNode).Items[Node{$IFDEF FPC}^{$ENDIF}.Index];
+    LData := GetListForNode(ParentNode).Items[Node{$IFDEF FPC}^{$ENDIF}.Index];
 
-  SetObjectForNode(Node, AData);
+  SetObjectForNode(Node, LData);
 
-  if CalcIfNodeHasChildren(Node) then
+  LNodeHasChildren := CalcIfNodeHasChildren(Node);
+
+  if LNodeHasChildren then
     Include(InitialStates, ivsHasChildren);
+
+  LMapping:= GetMappingForNode(Node);
+
+  if not Assigned(LMapping) then
+    Exit; //==>
+
+  if LMapping.UseCheckBox then
+    if LNodeHasChildren then
+      Node.CheckType := ctTriStateCheckBox
+    else
+      Node.CheckType := ctCheckBox;
 end;
 
 function TtiVTTreeView.CalcIfNodeHasChildren(Node: PVirtualNode): Boolean;
@@ -1234,16 +1341,23 @@ begin
   if not Assigned(LMapping) then
     Exit; //==>
 
+  //Set cell in all columns after the first to blank.
+  if Column > 0 then
+  begin
+    CellText := '';
+    Exit; //==>
+  end;
+      
   LData:= GetObjectFromNode(Node);
 
   if not Assigned(LMapping.OnDeriveNodeText) then
+    //TODO: Handle multiple columns
     CellText := LData.PropValue[LMapping.DisplayPropName]
   else
   begin
     LMapping.OnDeriveNodeText(Self, Node, LData, LCellText);
     CellText:= LCellText;
   end;
-    
 end;
 
 procedure TtiVTTreeView.DoOnGetImageIndex(
@@ -1288,6 +1402,27 @@ begin
     NodeRec{$IFDEF FPC}^{$ENDIF}.NodeMapping := CalcMappingForObject(NodeRec{$IFDEF FPC}^{$ENDIF}.NodeData);
 
   Result := NodeRec{$IFDEF FPC}^{$ENDIF}.NodeMapping;
+end;
+
+function TtiVTTreeView.GetNodeFromObject(
+  const AData: TtiObject): PVirtualNode;
+var
+  LNode: PVirtualNode;
+  LNodeData: TtiObject;
+begin
+  result := nil;
+
+  LNode := VT.GetFirst;
+  while Assigned(LNode) do
+  begin
+    LNodeData := GetObjectFromNode(LNode);
+    if LNodeData = AData then
+    begin
+      result := LNode;
+      break;
+    end else
+      LNode := VT.GetNext(LNode);
+  end;
 end;
 
 function TtiVTTreeView.GetObjectFromNode(Node: PVirtualNode): TtiObject;
@@ -1347,7 +1482,8 @@ begin
     if IsClassOfType(pObj, DataMappings.Items[i].DataClass.ClassName) then
     begin
       Result := DataMappings.Items[i];
-      if IsPublishedProp(pObj, Result.DisplayPropName) then
+      if (IsPublishedProp(pObj, Result.DisplayPropName))
+      or (assigned(Result.OnDeriveNodeText)) then
         Exit; //==>
     end;
   end;

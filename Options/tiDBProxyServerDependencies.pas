@@ -61,7 +61,6 @@ begin
   finally
     LINI.Free;
   end;
-
 end;
 
 function  gTIDBProxy : TtiDBProxyServer;

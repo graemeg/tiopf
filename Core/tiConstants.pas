@@ -127,6 +127,8 @@ const
   cHTTPProxyServeractive  = 'proxyserveractive';
   cHTTPProxyServerName    = 'proxyservername';
   cHTTPProxyPort          = 'proxyport';
+  CHTTPBlockSize          = 'blocksize';
+  CHTTPRetryLimit         = 'retrylimit';
 
   cPathToCachedData       = 'CachedData';
 
@@ -220,12 +222,13 @@ const
   {$ENDIF UNIX}
 
   // Error messages
-  cErrorDecodeNumError          = 'tiDecodeNum: <%s> does not represent a number in base %d.';
-  cErrorUnableToCreateDirectory = 'Unable to create directory <%s>';
-  cErrorRemoveDirectory         = 'Error removing <%s> from <%s>';
-  cErrorInvalidVariantType      = 'Invalid variant type';
-  cErrorXMLStringToDate         = 'Error converting string to date. String <%s> Error: %s';
-  cErrorCanNotDeleteFile        = 'Can not delete file <%s>. It may be locked by another application.';
+  CErrorDecodeNumError          = 'tiDecodeNum: <%s> does not represent a number in base %d.';
+  CErrorUnableToCreateDirectory = 'Unable to create directory <%s>';
+  CErrorRemoveDirectory         = 'Error removing <%s> from <%s>';
+  CErrorInvalidVariantType      = 'Invalid variant type';
+  CErrorXMLStringToDate         = 'Error converting string to date. String <%s> Error: %s';
+  CErrorCanNotDeleteFile        = 'Can not delete file <%s>. It may be locked by another application.';
+  CErrorCanNotCopyFile          = 'Unable to copy "%s" to "%s". System error code: "%d" System error message: "%s"';
 
   CUnknownGUI = 'Unknown' ;
   CUnknownDB = 'UNKNOWN';
@@ -258,6 +261,13 @@ const
   // Structured CSV line prefixes
   CStructCSVPrefixI = 'I';
   CStructCSVPrefixD = 'D';
+
+  CNoPathEntered = 'Please enter a path to save to.';
+  CDirsEndingInSpace = 'Folder names cannot end in a space';
+  CInvalidDrive = '%s is not a valid drive.';
+  CInvalidDirName = '%s is not a valid directory name or you do not have write permission.';
+  CInvalidFileName = '%s is not a valid file name.';
+  CFileAccessDenied = '%s is locked by another application or you do not have permission to create it.';
 
 implementation
 

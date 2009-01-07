@@ -172,7 +172,7 @@ end;
 
 procedure TtiTextTestListener.AddError(error: TTestFailure);
 begin
-  Errors.Add(Error);
+  inherited;
   Write2Short('E', [tlwtFile, tlwtConsole]);
   IncPos;
   Write2Table(
@@ -186,7 +186,7 @@ end;
 
 procedure TtiTextTestListener.AddFailure(failure: TTestFailure);
 begin
-  Failures.Add(failure);
+  inherited;
   Write2Short('F', [tlwtFile, tlwtConsole]);
   IncPos;
   Write2Table(
@@ -234,7 +234,7 @@ begin
   begin
     FFileNameINI := gCommandLineParams.GetParam(CCommandLineSummaryINIFile);
     if ExtractFilePath(FFileNameINI) = '' then
-      FFileNameINI := tiAddTrailingSlash(tiGetEXEPath) + FFileNameINI;
+      FFileNameINI := LReportDir + FFileNameINI;
   end else
     FFileNameINI  := LReportDir + 'DUnitReportSummary.ini';
   FFileNameINI:= ExpandFileName(FFileNameINI);
@@ -437,12 +437,17 @@ var
 begin
   lINIFile := TINIFile.Create(FFileNameINI);
   try
-    LLong := 'Tests run: ' + IntToStr(testResult.RunCount) + ', ' +
-          'Failures: ' + IntToStr(testResult.FailureCount) + ', ' +
-          'Errors: ' + IntToStr(testResult.ErrorCount);
+    LLong :=
+       'Run: ' + IntToStr(testResult.RunCount) + ', ' +
+       'Warn: ' + IntToStr(testResult.WarningCount) + ', ' +
+       'Fail: ' + IntToStr(testResult.FailureCount) + ', ' +
+       'Error: ' + IntToStr(testResult.ErrorCount);
 
-    LShort := IntToStr(testResult.FailureCount + testResult.ErrorCount) + '/' +
-              IntToStr(testResult.RunCount);
+    LShort :=
+      IntToStr(testResult.FailureCount +
+               testResult.ErrorCount +
+               testResult.ErrorCount) + '/' +
+      IntToStr(testResult.RunCount);
 
     {$IFDEF DELPHI5}
       LIdentLong := 'report_long_d5';

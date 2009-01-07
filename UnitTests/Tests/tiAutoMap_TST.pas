@@ -73,6 +73,7 @@ type
     function  TestIntToBool(pInt : Integer): Boolean;
     procedure InserTtiObjectListForTestingInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);
     procedure InserTtiObjectListForTestingInheritedGroup(AOID: integer);
+    function  IntToOIDForTesting(const AOID: Integer): string;
   protected
     procedure SetUp; override;
     procedure DoReadWriteString(const pLen : integer);
@@ -163,16 +164,16 @@ procedure RegisterTests;
 
 implementation
 uses
-  SysUtils
-  ,tiOPFManager
-  ,tiConstants
-  ,tiAutoMap
-  ,tiQuery
-  ,tiUtils
-  ,Contnrs
-  ,tiTestDependencies
-  ,tiThread
- ;
+  SysUtils,
+  tiOPFManager,
+  tiConstants,
+  tiAutoMap,
+  tiQuery,
+  tiUtils,
+  tiOIDGUID,
+  tiThread,
+  Contnrs,
+  tiTestDependencies;
 
 const
   cGroupCount = 5;
@@ -263,11 +264,12 @@ begin
   lData := TtiObjectListForTesting.Create;
   try
     lData.Read(DatabaseName, PersistenceLayerName);
+    LData.SortByOID;
     CheckEquals(cGroupCount, lData.Count, 'Failed on 1');
     for i := 0 to cGroupCount - 1 do
     begin
       lGroupVal := i + 1;
-      CheckEquals(IntToStr(lGroupVal), lData.Items[i].OID.AsString, 'Failed on Group.OID');
+      CheckEquals(IntToOIDForTesting(lGroupVal), lData.Items[i].OID.AsString, 'Failed on Group.OID');
       CheckEquals(IntToStr(lGroupVal), lData.Items[i].StrField, 'Failed on Group.StrField');
       CheckEquals(lGroupVal, lData.Items[i].IntField, 'Failed on Group.IntField');
       CheckNearEnough(TestIntToFloat(lGroupVal), lData.Items[i].FloatField, 'Failed on Group.FloatField');
@@ -276,7 +278,7 @@ begin
       begin
         lItemVal := j + 1;
         lOID:= i * cItemCount + lItemVal;
-        CheckEquals(IntToStr(lOID), lData.Items[i].Items[j].OID.AsString, 'Failed on Item.OID');
+        CheckEquals(IntToOIDForTesting(lOID), lData.Items[i].Items[j].OID.AsString, 'Failed on Item.OID');
         CheckEquals(IntToStr(lItemVal), lData.Items[i].Items[j].StrField, 'Failed on Item.StrField');
         CheckEquals(lItemVal, lData.Items[i].Items[j].IntField, 'Failed on Item.IntField');
         CheckNearEnough(TestIntToFloat(lItemVal), lData.Items[i].Items[j].FloatField, 'Failed on Item.FloatField');
@@ -296,11 +298,10 @@ begin
   lData := TtiObjectListNestedForTesting.Create;
   try
     lData.Read(DatabaseName, PersistenceLayerName);
+    LData.SortByOID;
     CheckEquals(cItemTotal, lData.Count, 'Failed on 1');
     for i := 0 to cItemTotal - 1 do
-    begin
-      CheckEquals(IntToStr(i+1), lData.Items[i].OID.AsString, 'Failed on Item.OID');
-    end;
+      CheckEquals(IntToOIDForTesting(i+1), lData.Items[i].OID.AsString, 'Failed on Item.OID');
   finally
     lData.Free;
   end;
@@ -1475,7 +1476,7 @@ begin
     begin
       lGroupVal := i + 1;
       Check(posPK = lData.Items[i].ObjectState, 'ObjectState');
-      CheckEquals(IntToStr(lGroupVal), lData.Items[i].OID.AsString, 'Failed on Group.OID');
+      CheckEquals(IntToOIDForTesting(lGroupVal), lData.Items[i].OID.AsString, 'Failed on Group.OID');
       CheckEquals(IntToStr(lGroupVal), lData.Items[i].StrField, 'Failed on Group.StrField');
       CheckEquals(0, lData.Items[i].IntField, 'Failed on Group.IntField');
       Check(      0 = lData.Items[i].FloatField, 'FloatField');
@@ -1571,7 +1572,7 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTesting(
   begin
     lQueryParams := TtiQueryParams.Create;
     try
-      lQueryParams.SetValueAsString('OID',                IntToStr(pI));
+      lQueryParams.SetValueAsString('OID',                IntToOIDForTesting(pI));
       lQueryParams.SetValueAsString('Group_Str_Field',    IntToStr(pI));
       lQueryParams.SetValueAsInteger('Group_Int_Field',    pI);
       lQueryParams.SetValueAsFloat('Group_Float_Field',  TestIntToFloat(pI));
@@ -1590,8 +1591,8 @@ procedure TTestTIAutoMapOperation.InserTtiObjectListForTesting(
   begin
     lQueryParams := TtiQueryParams.Create;
     try
-      lQueryParams.SetValueAsString('OID',              IntToStr(AOID));
-      lQueryParams.SetValueAsString('OID_Group',        IntToStr(pI));
+      lQueryParams.SetValueAsString('OID',              IntToOIDForTesting(AOID));
+      lQueryParams.SetValueAsString('OID_Group',        IntToOIDForTesting(pI));
       lQueryParams.SetValueAsString('Item_Str_Field',   IntToStr(pJ));
       lQueryParams.SetValueAsInteger('Item_Int_Field',   pJ);
       lQueryParams.SetValueAsFloat('Item_Float_Field', TestIntToFloat(pJ));
@@ -1636,6 +1637,12 @@ begin
   finally
     lQueryParams.Free;
   end;
+end;
+
+function TTestTIAutoMapOperation.IntToOIDForTesting(
+  const AOID: Integer): string;
+begin
+  result:= tiPad0(IntToStr(AOID), 5);
 end;
 
 procedure TTestTIAutoMapOperation.InserTtiObjectListForTestingInherited(const pParentTableName, ATableName : string; pI: Integer; pOwnerOID : integer);

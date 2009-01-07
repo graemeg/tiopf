@@ -159,6 +159,7 @@ type
     procedure tiReplicate;
     procedure tiRound;
     procedure tiRoundDateToPreviousMinute;
+    procedure tiNextInterval;
     procedure tiSafeDiv;
     procedure tiSetFileDate;
     procedure tiSetFileReadOnly;
@@ -192,6 +193,8 @@ type
     procedure tiYear;
     procedure tiYearToEndAusFinancialYear;
     procedure tiYearToStartAusFinancialYear;
+    procedure tiCheckFileCanBeCreated;
+    procedure tiDeleteOldFiles;
   end;
   
 
@@ -2167,6 +2170,147 @@ begin
   Check(not tiUtils.tiIsFileNameValid('test|'), 'test|');
 end;
 
+procedure TTestTIUtils.tiCheckFileCanBeCreated;
+var
+  LFileName: string;
+  LPathName: string;
+  LErrorMsgActual: string;
+  LErrorMsgExpected: string;
+  LPathWithError: string;
+begin
+  //TODO: Fill in missing checks below
+
+  //File that can be created
+  LFileName := TempFileName('DUnit2.txt');
+  Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  CheckEquals('', LErrorMsgActual);
+
+  //Non-existant drive. What's the easiest way to be sure the drive does not exist on the machine that runs this test?
+
+  //Invalid directory name. Add an invalid character to the directory name.
+  LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory) + PathDelim + '*' + PathDelim;
+  LFileName := LPathName + 'DUnit2.txt';
+  CheckEquals(false, tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  LPathWithError := ExtractFilePath(LFileName);
+  LErrorMsgExpected := Format(CInvalidDirName, [LPathWithError]);
+  CheckEquals(LErrorMsgExpected, LErrorMsgActual);
+
+  //Attempt to create subdirectory without write permission. How can we test this?
+
+  //Invalid parent directory name - returns right level
+  LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory) + PathDelim +'1*' + PathDelim + '2' + PathDelim;
+  LFileName := LPathName + 'DUnit2.txt';
+  CheckEquals(false, tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  LPathWithError := tiUtils.tiRemoveTrailingSlash(TempDirectory) + PathDelim +'1*' + PathDelim;
+  LErrorMsgExpected := Format(CInvalidDirName, [LPathWithError]);
+  CheckEquals(LErrorMsgExpected, LErrorMsgActual);
+
+  //Invalid subdirectory name - returns right level
+  LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory) + PathDelim +'1' + PathDelim + '2*' + PathDelim;
+  LFileName := LPathName + 'DUnit2.txt';
+  CheckEquals(false, tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  LPathWithError := tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim + '2*' + PathDelim;
+  LErrorMsgExpected := Format(CInvalidDirName, [LPathWithError]);
+  CheckEquals(LErrorMsgExpected, LErrorMsgActual);
+
+  //Invalid file name
+  LFileName := TempFileName('DUnit2*.txt');
+  CheckEquals(false, tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  LErrorMsgExpected := Format(CInvalidFileName, [LFileName]);
+  CheckEquals(LErrorMsgExpected, LErrorMsgActual);
+
+  //File exists and is not locked or read only
+  LFileName := TempFileName('DUnit2.txt');
+  tiUtils.tiStringToFile('', LFileName);
+  Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  CheckEquals('', LErrorMsgActual);
+  tiUtils.tiDeleteFile(LFileName);
+
+  //File exists and is locked. What's the easiest way to lock a file?
+
+  //File exists and is read only + not locked
+  LFileName := TempFileName('DUnit2.txt');
+  tiUtils.tiStringToFile('', LFileName);
+  tiUtils.tiSetFileReadOnly(LFileName, true);
+  CheckEquals(false, tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  LErrorMsgExpected := Format(CFileAccessDenied, [LFileName]);
+  CheckEquals(LErrorMsgExpected, LErrorMsgActual);
+  tiUtils.tiSetFileReadOnly(LFileName, false);
+  tiUtils.tiDeleteFile(LFileName);
+
+  //Directory not created by check is not removed
+  LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim;
+  tiUtils.tiForceDirectories(LPathName);
+  LFileName := LPathName + 'DUnit2.txt';
+  Check(DirectoryExists(LPathName));
+  Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  CheckEquals('', LErrorMsgActual);
+  Check(DirectoryExists(LPathName));
+  tiUtils.tiForceRemoveDir(LPathName);
+
+  //Directory created by check is removed
+  LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim;
+  LFileName := LPathName + 'DUnit2.txt';
+  CheckEquals(false, DirectoryExists(LPathName));
+  Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  CheckEquals('', LErrorMsgActual);
+  CheckEquals(false, DirectoryExists(LPathName));
+
+  //Subdirectory created by check is removed, preexisting parent directory remains
+  LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim + '2' + PathDelim;
+  tiUtils.tiForceDirectories(tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim);
+  LFileName := LPathName + 'DUnit2.txt';
+  Check(DirectoryExists(tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim));
+  CheckEquals(false, DirectoryExists(LPathName));
+  Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  CheckEquals('', LErrorMsgActual);
+  Check(DirectoryExists(tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim));
+  CheckEquals(false, DirectoryExists(LPathName));
+  tiUtils.tiForceRemoveDir(tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim);
+
+  //Directory + subdirectory created by check are removed
+  LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim + '2' + PathDelim;
+  LFileName := LPathName + 'DUnit2.txt';
+  CheckEquals(false, DirectoryExists(LPathName));
+  CheckEquals(false, DirectoryExists(tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim));
+  Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  CheckEquals('', LErrorMsgActual);
+  CheckEquals(false, DirectoryExists(LPathName));
+  CheckEquals(false, DirectoryExists(tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim));
+  tiUtils.tiForceRemoveDir(tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim);
+
+  //File not created by check is not removed
+  LFileName := TempFileName('DUnit2.txt');
+  tiUtils.tiStringToFile('', LFileName);
+  CheckEquals(true, FileExists(LFileName));
+  Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  CheckEquals('', LErrorMsgActual);
+  CheckEquals(true, FileExists(LFileName));
+  tiUtils.tiDeleteFile(LFileName);
+
+  //File created by check in preexisting directory is removed
+  LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim;
+  tiUtils.tiForceDirectories(LPathName);
+  LFileName := LPathName + 'DUnit2.txt';
+  CheckEquals(false, FileExists(LFileName));
+  Check(DirectoryExists(LPathName));
+  Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  CheckEquals('', LErrorMsgActual);
+  CheckEquals(false, FileExists(LFileName));
+  Check(DirectoryExists(LPathName));
+  tiUtils.tiForceRemoveDir(LPathName);
+
+  //File created by check in directory created by check is removed
+  LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim;
+  LFileName := LPathName + 'DUnit2.txt';
+  CheckEquals(false, FileExists(LFileName));
+  CheckEquals(false, DirectoryExists(LPathName));
+  Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
+  CheckEquals('', LErrorMsgActual);
+  CheckEquals(false, FileExists(LFileName));
+  CheckEquals(false, DirectoryExists(LPathName));
+end;
+
 
 procedure TTestTIUtils.tiCheckSum;
 begin
@@ -2745,6 +2889,37 @@ begin
                EncodeDateTime(2007, 06, 02, 12, 30, 00, 001)));
 end;
 
+procedure TTestTIUtils.tiNextInterval;
+begin
+  CheckEquals(EncodeDateTime(2008, 07, 10, 0, 0, 0, 0),
+              tiUtils.tiNextInterval(
+                EncodeDateTime(2008, 07, 09, 15, 42, 35, 678), titiDay));
+  CheckEquals(EncodeDateTime(2008, 07, 10, 0, 0, 0, 0),
+              tiUtils.tiNextInterval(
+                EncodeDateTime(2008, 07, 09, 0, 0, 0, 0), titiDay));
+  CheckEquals(EncodeDateTime(2008, 07, 09, 16, 0, 0, 0),
+              tiUtils.tiNextInterval(
+                EncodeDateTime(2008, 07, 09, 15, 42, 35, 678), titiHour));
+  CheckEquals(EncodeDateTime(2008, 07, 09, 16, 0, 0, 0),
+              tiUtils.tiNextInterval(                     
+                EncodeDateTime(2008, 07, 09, 15, 0, 0, 0), titiHour));
+  CheckEquals(EncodeDateTime(2008, 07, 09, 15, 43, 0, 0),
+              tiUtils.tiNextInterval(
+                EncodeDateTime(2008, 07, 09, 15, 42, 35, 678), titiMinute));
+  CheckEquals(EncodeDateTime(2008, 07, 09, 15, 43, 0, 0),
+              tiUtils.tiNextInterval(
+                EncodeDateTime(2008, 07, 09, 15, 42, 0, 0), titiMinute));
+  CheckEquals(EncodeDateTime(2008, 07, 09, 15, 42, 36, 0),
+              tiUtils.tiNextInterval(
+                EncodeDateTime(2008, 07, 09, 15, 42, 35, 678), titiSecond));
+  CheckEquals(EncodeDateTime(2008, 07, 09, 15, 42, 36, 0),
+              tiUtils.tiNextInterval(
+                EncodeDateTime(2008, 07, 09, 15, 42, 35, 0), titiSecond));
+  CheckEquals(EncodeDateTime(2008, 07, 09, 15, 42, 35, 679),
+              tiUtils.tiNextInterval(
+                EncodeDateTime(2008, 07, 09, 15, 42, 35, 678), titiMillisecond));
+end;
+
 procedure TTestTIUtils.tiRemoveDirectory;
 var
   lDir: string;
@@ -3187,6 +3362,80 @@ begin
   end;
 end;
 
+
+procedure TTestTIUtils.tiDeleteOldFiles;
+var
+  LDirectory: string;
+  LWildCard: string;
+  LDaysOld: Cardinal;
+  LRecurseDirectories: Boolean;
+
+//  LSubDir1: string;
+//  LSubDir2: string;
+
+  LTempFileNameAAA1: string;
+  LTempFileNameAAA2: string;
+  LTempFileNameAAA3: string;
+  LTempFileNameBBB1: string;
+  LTempFileNameBBB2: string;
+  LTempFileNameBBB3: string;
+
+//  LTempReadOnlyFileNameAAA: string;
+//  LTempLockedFileNameAAA: string;
+
+  LFileCutoffDate: TDateTime;
+begin
+//  tiDeleteOldFiles(LDirectory, LWildCard, LDaysOld, LRecurseDirectories);
+
+  LDirectory := tiUtils.tiAddTrailingSlash(tiUtils.tiGetTempDir);
+
+  if not DirectoryExists(LDirectory + '1\') then CreateDir(LDirectory + '1\');
+  if not DirectoryExists(LDirectory + '2\') then CreateDir(LDirectory + '2\');
+
+  //Create temp files based on LDaysOld
+
+  LTempFileNameAAA1 := '1.AAA';
+  LTempFileNameAAA2 := '2.AAA';
+  LTempFileNameAAA3 := '3.AAA';
+  LTempFileNameBBB1 := '1.BBB';
+  LTempFileNameBBB2 := '2.BBB';
+  LTempFileNameBBB3 := '3.BBB';
+
+  tiUtils.tiStringToFile('', LDirectory + LTempFileNameAAA1);
+  tiUtils.tiStringToFile('', LDirectory + LTempFileNameAAA2);
+  tiUtils.tiStringToFile('', LDirectory + LTempFileNameAAA3);
+  tiUtils.tiStringToFile('', LDirectory + LTempFileNameBBB1);
+  tiUtils.tiStringToFile('', LDirectory + LTempFileNameBBB2);
+  tiUtils.tiStringToFile('', LDirectory + LTempFileNameBBB3);
+
+  LDaysOld := 20;
+
+  LFileCutoffDate := IncDay(DateOf(Now), -LDaysOld);
+
+  tiUtils.tiSetFileDate(LDirectory + LTempFileNameAAA1, IncDay(LFileCutoffDate, -1));
+  tiUtils.tiSetFileDate(LDirectory + LTempFileNameAAA2, LFileCutoffDate);
+  tiUtils.tiSetFileDate(LDirectory + LTempFileNameAAA3, IncDay(LFileCutoffDate, +1));
+  tiUtils.tiSetFileDate(LDirectory + LTempFileNameBBB1, IncDay(LFileCutoffDate, -1));
+  tiUtils.tiSetFileDate(LDirectory + LTempFileNameBBB2, LFileCutoffDate);
+  tiUtils.tiSetFileDate(LDirectory + LTempFileNameBBB3, IncDay(LFileCutoffDate, +1));
+
+//  Check that stringlist of files matches what would be expected from tiFilesToStringList with
+//  the inputs passed.
+
+  LWildCard  := '*.AAA';
+  LRecurseDirectories := false;
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, LDaysOld, LRecurseDirectories);
+
+  //Check there is no attempt to delete read only files
+
+  //Check that exception is raised when file cannot be deleted - eg. file is locked by another app
+
+  //Check dirs are cleaned up
+
+  //Clean up any left over files
+  tiUtils.tiForceRemoveDir(LDirectory);
+
+end;
 
 procedure TTestTIUtils.tiIntegerList;
 var

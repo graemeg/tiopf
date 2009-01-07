@@ -236,7 +236,6 @@ begin
   FAsString := AValue;
 end;
 
-
 function TOIDStringAbs.NullOIDAsString: string;
 begin
   Result := '';
@@ -252,7 +251,7 @@ begin
   lParams.SetValueAsString(AFieldName, FAsString);
 end;
 
-
 {$ENDIF}
 
 end.
+

@@ -44,7 +44,10 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="..\..\Options\ADOX_TLB.pas" />
+    <DCCReference Include="..\..\Options\bdertl.dcp" />
+    <DCCReference Include="..\..\Options\dbrtl.dcp" />
     <DCCReference Include="..\..\Options\MSXML_TLB.pas" />
+    <DCCReference Include="..\..\Options\rtl.dcp" />
     <DCCReference Include="..\..\Options\tiCompressNone.pas" />
     <DCCReference Include="..\..\Options\tiCompressZLib.pas" />
     <DCCReference Include="..\..\Options\tiConsoleApp.pas" />
@@ -59,13 +62,16 @@
     <DCCReference Include="..\..\Options\tiEncryptSimple.pas" />
     <DCCReference Include="..\..\Options\tiLogToConsole.pas" />
     <DCCReference Include="..\..\Options\tiMadExcept.pas" />
+    <DCCReference Include="..\..\Options\tiOIDGUID.pas" />
     <DCCReference Include="..\..\Options\tiOIDHex.pas" />
     <DCCReference Include="..\..\Options\tiOIDInt64.pas" />
     <DCCReference Include="..\..\Options\tiOIDInteger.pas" />
     <DCCReference Include="..\..\Options\tiOIDString.pas" />
+    <DCCReference Include="..\..\Options\tiOPFCore.dcp" />
     <DCCReference Include="..\..\Options\tiQueryBDEAbs.pas" />
     <DCCReference Include="..\..\Options\tiQueryBDEParadox.pas" />
     <DCCReference Include="..\..\Options\tiQueryCSV.pas" />
+    <DCCReference Include="..\..\Options\tiQueryDataset.pas" />
     <DCCReference Include="..\..\Options\tiQueryTAB.pas" />
     <DCCReference Include="..\..\Options\tiQueryTXTAbs.pas" />
     <DCCReference Include="..\..\Options\tiQueryXML.pas" />
@@ -90,10 +96,6 @@
     <DCCReference Include="..\..\Options\tiTextParserStructCSV.pas" />
     <DCCReference Include="..\..\Options\tiXML.pas" />
     <DCCReference Include="..\..\Options\tiXMLToTIDataset.pas" />
-    <DCCReference Include="H:\bdertl.dcp" />
-    <DCCReference Include="H:\dbrtl.dcp" />
-    <DCCReference Include="H:\rtl.dcp" />
-    <DCCReference Include="H:\tiOPFCore.dcp" />
-    <DCCReference Include="H:\vcl.dcp" />
+    <DCCReference Include="..\..\Options\vcl.dcp" />
   </ItemGroup>
 </Project>

@@ -33,9 +33,9 @@ UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=
 NamespacePrefix=
 SymbolDeprecated=1
 SymbolLibrary=1
-SymbolPlatform=1
-UnitLibrary=1
-UnitPlatform=1
+SymbolPlatform=0
+UnitLibrary=0
+UnitPlatform=0
 UnitDeprecated=1
 HResultCompat=1
 HidingMember=1
@@ -126,20 +126,11 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=1.0.0.0
+FileVersion=0.0.0.0
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
-ProductVersion=1.0.0.0
+ProductVersion=
 Comments=
-[HistoryLists\hlUnitAliases]
-Count=1
-Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=1
-Item0=..\..\Core;..\..\GUI
-[HistoryLists\hlUnitOutputDirectory]
-Count=1
-Item0=units

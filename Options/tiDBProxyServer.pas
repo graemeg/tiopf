@@ -32,6 +32,15 @@ type
                       const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
+  TtiDBPS_ForceException = class(TtiWebServerAction)
+  public
+    function  CanExecute(const ADocument: string): boolean; override;
+    procedure Execute(const ADocument: string; const ARequestParams: string;
+                      const AResponse: TStream; var AContentType: string;
+                      var   AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
+  end;
+
   // For a legacy system. Use TtiDBPS_TestAlive1 in new applications
   TtiDBPS_TestAlive = class(TtiWebServerAction)
   public
@@ -108,11 +117,12 @@ begin
   FXMLTags.OptXMLDBSize := optDBSizeOn;
 
   ServerActions.Add(TtiDBPS_ExecuteRemoteXML.Create(Self, 10));
-  ServerActions.Add(TtiDBPS_ServerVersion.Create(  Self, 11));
-  ServerActions.Add(TtiDBPS_TestAlive1.Create(     Self, 12));
-  ServerActions.Add(TtiDBPS_TestHTML.Create(       Self, 13));
-  ServerActions.Add(TtiDBPS_TestXML.Create(        Self, 14));
-  ServerActions.Add(TtiDBPS_TestAlive.Create(      Self, 15));
+  ServerActions.Add(TtiDBPS_ServerVersion.Create(   Self, 11));
+  ServerActions.Add(TtiDBPS_TestAlive1.Create(      Self, 12));
+  ServerActions.Add(TtiDBPS_TestHTML.Create(        Self, 13));
+  ServerActions.Add(TtiDBPS_TestXML.Create(         Self, 14));
+  ServerActions.Add(TtiDBPS_TestAlive.Create(       Self, 15));
+  ServerActions.Add(TtiDBPS_ForceException.Create(  Self, 16));
   Sort;
 
 end;
@@ -314,6 +324,22 @@ begin
   LItem1:= TtiWebServerAction(AItem1);
   LItem2:= TtiWebServerAction(AItem2);
   result:= CompareValue(LItem1.SortOrder, LItem2.SortOrder);
+end;
+
+{ TtiDBPS_ForceException }
+
+function TtiDBPS_ForceException.CanExecute(const ADocument: string): boolean;
+begin
+  result := SameText(ADocument, cgTIDBProxyServerException);
+end;
+
+procedure TtiDBPS_ForceException.Execute(const ADocument,
+  ARequestParams: string; const AResponse: TStream; var AContentType: string;
+  var AResponseCode: Integer; const AResponseInfo: TIdHTTPResponseInfo);
+begin
+  raise EtiOPFProgrammerException.CreateFmt(
+    'Test exception raised at the request of the user at %s',
+    [DateTimeToStr(now)]);
 end;
 
 end.

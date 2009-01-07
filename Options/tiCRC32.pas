@@ -214,12 +214,16 @@ end;
 function tiCRC32FromStream(AStream: TStream): Longword;
 var
   AValue: byte;
+  LPosition: Int64;
 begin
   Assert(AStream<>nil, 'AStream not assigned');
+  LPosition:= AStream.Position;
+  AStream.Position:= 0;
   Result:=$FFFFFFFF;
   while (AStream.Read(AValue,1)=1) do
     Result:=((Result shr 8) and $00FFFFFF) xor Crc32Table[(Result xor AValue) and $000000FF];
   Result:=not Result;
+  AStream.Position:= LPosition;
 end;
 
 function tiCRC32FromStreamFirstNBytes(AStream: TStream; ACountOfBytesToCheck : Longint): Longword;

@@ -14,8 +14,10 @@ type
 
   TTestTIStream = class(TtiTestCase)
   private
-    procedure TestReadLn(const AStr, pLineDelim : string; ACount : integer);
-    procedure TestEOF(ACount : integer);
+    procedure TestFileReadLn(const AStr, pLineDelim : string; ACount : integer);
+    procedure TestLineReadLn(const AStr, pLineDelim : string; ACount : integer);
+    procedure TestFileEOF(ACount : integer);
+    procedure TestLineEOF(ACount : integer);
   protected
   published
     procedure FileStream_Props;
@@ -33,6 +35,18 @@ type
     procedure PreSizedStream_WriteLn;
     procedure PreSizedStream_Clear;
     procedure PreSizedStream_AsString;
+
+    procedure LineStream_Props;
+    procedure LineStream_ReadLn1;
+    procedure LineStream_ReadLn1WithLineEnd;
+    procedure LineStream_ReadLn100;
+    procedure LineStream_ReadLn1000;
+    procedure LineStream_ReadLn2000;
+    procedure LineStream_LineDelims;
+    procedure LineStream_LineDelims2;
+    procedure LineStream_EOF;
+    procedure LineStream_Write;
+    procedure LineStream_WriteLn;
 
     procedure BlockStream_GetBlockAsString;
     procedure BlockStream_SetBlockAsString_InSequence;
@@ -64,6 +78,127 @@ end;
 
 { TTestTIStream }
 
+procedure TTestTIStream.TestFileReadLn(const AStr, pLineDelim: string; ACount: integer);
+var
+  ls : string;
+  lStream : TtiFileStream;
+  i : integer;
+begin
+  ls := '';
+  for i := 1 to ACount do
+    ls := ls + tiPad0(IntToStr(i),2) + AStr + pLineDelim;
+  tiStringToFile(ls, TempFileName);
+  lStream := TtiFileStream.CreateReadOnly(TempFileName);
+  try
+    lStream.LineDelim := pLineDelim;
+    for i := 1 to ACount do
+    begin
+      ls := lStream.ReadLn;
+      CheckEquals(tiPad0(IntToStr(i),2) + AStr, ls, '#' + IntToStr(i));
+    end;
+  finally
+    lStream.Free;
+  end;
+end;
+
+
+procedure TTestTIStream.TestLineReadLn(const AStr, pLineDelim: string; ACount: integer);
+var
+  ls : string;
+  lStream : TMemoryStream;
+  lLineStream : TtiLineStream;
+  i : integer;
+begin
+  ls := '';
+  for i := 1 to ACount do
+    ls := ls + tiPad0(IntToStr(i),2) + AStr + pLineDelim;
+
+  lStream := nil;
+  lLineStream := nil;
+  try
+    lStream := TMemoryStream.Create;
+    lLineStream := TtiLineStream.Create(lStream);
+
+    tiStringToStream(ls, lStream);
+    lLineStream.LineDelim := pLineDelim;
+    for i := 1 to ACount do
+    begin
+      ls := lLineStream.ReadLn;
+      CheckEquals(tiPad0(IntToStr(i),2) + AStr, ls, '#' + IntToStr(i));
+    end;
+  finally
+    lLineStream.Free;
+    lStream.Free;
+  end;
+end;
+
+
+procedure TTestTIStream.TestFileEOF(ACount: integer);
+var
+  ls: string;
+  lStream: TtiFileStream;
+  i, lCount: integer;
+
+const
+  testString: string = 'test' + #13#10;
+
+begin
+  SetLength(ls, 0);
+  for i := 1 to ACount do
+     ls := ls + testString;
+
+  tiStringToFile(ls, TempFileName);
+  lStream := TtiFileStream.Create(TempFileName, fmOpenRead or fmShareDenyNone);
+  try
+    lCount := 0;
+    while not lStream.EOF do
+    begin
+      Inc(lCount);
+      lStream.ReadLn;
+    end;
+    CheckEquals(ACount, lCount);
+  finally
+    lStream.Free;
+  end;
+end;
+
+
+procedure TTestTIStream.TestLineEOF(ACount: integer);
+var
+  ls: string;
+  lStream: TMemoryStream;
+  lLineStream: TtiLineStream;
+  i, lCount: integer;
+
+const
+  testString: string = 'test' + #13#10;
+
+begin
+  SetLength(ls, 0);
+  for i := 1 to ACount do
+     ls := ls + testString;
+
+  lStream := nil;
+  lLineStream := nil;
+  try
+    lStream := TMemoryStream.Create;
+    lLineStream := TtiLineStream.Create(lStream);
+
+    tiStringToStream(ls, lStream);
+    lCount := 0;
+    while not lLineStream.EOF do
+    begin
+      Inc(lCount);
+      lLineStream.ReadLn;
+    end;
+    CheckEquals(ACount, lCount);
+  finally
+    lLineStream.Free;
+    lStream.Free;
+  end;
+end;
+
+
 procedure TTestTIStream.FileStream_Props;
 var
   lData : TtiFileStream;
@@ -81,7 +216,7 @@ end;
 
 procedure TTestTIStream.FileStream_ReadLn100;
 begin
-  TestReadLn('test', CrLf, 99);
+  TestFileReadLn('test', CrLf, 99);
 end;
 
 
@@ -145,45 +280,209 @@ begin
 end;
 
 
-procedure TTestTIStream.FileStream_ReadLn1WithLineEnd;
+procedure TTestTIStream.LineStream_EOF;
 begin
-  TestReadLn('test', CrLf, 1);
+  TestLineEOF(0);
+  TestLineEOF(1);
+  TestLineEOF(2);
+  TestLineEOF(10);
+  TestLineEOF(1000);
 end;
 
 
-procedure TTestTIStream.FileStream_ReadLn1000;
+procedure TTestTIStream.LineStream_LineDelims;
 begin
-  TestReadLn('test', CrLf, 1000);
+  TestLineReadLn('test', Cr, 10);
+  TestLineReadLn('test', Lf, 10);
+  TestLineReadLn('test', '|', 10);
+  TestLineReadLn('test', '<p>', 10);
+  TestLineReadLn('test', 'MyLineEnd', 10);
 end;
 
 
-procedure TTestTIStream.TestReadLn(const AStr, pLineDelim: string; ACount: integer);
-var
-  ls : string;
-  lStream : TtiFileStream;
-  i : integer;
-begin
-  ls := '';
-  for i := 1 to ACount do
-    ls := ls + tiPad0(IntToStr(i),2) + AStr + pLineDelim;
-  tiStringToFile(ls, TempFileName);
-  lStream := TtiFileStream.CreateReadOnly(TempFileName);
-  try
-    lStream.LineDelim := pLineDelim;
-    for i := 1 to ACount do
-    begin
-      ls := lStream.ReadLn;
-      CheckEquals(tiPad0(IntToStr(i),2) + AStr, ls, '#' + IntToStr(i));
+procedure TTestTIStream.LineStream_LineDelims2;
+
+  procedure _Test(ALineDelim, AError: string);
+  var
+    ls : string;
+    lStream : TMemoryStream;
+    lLineStream : TtiLineStream;
+  begin
+    lStream := nil;
+    lLineStream := nil;
+    try
+      lStream := TMemoryStream.Create;
+      lLineStream := TtiLineStream.Create(lStream);
+      tiStringToStream('test' + ALineDelim, lStream);
+      ls := lLineStream.ReadLn;
+      CheckEquals(ALineDelim, lLineStream.LineDelim, AError);
+      CheckEquals('test', ls, AError);
+    finally
+      lLineStream.Free;
+      lStream.Free;
     end;
+  end;
+
+begin
+  _Test(CrLf, 'CrLf');
+  _Test(Cr, 'Cr');
+  _Test(Lf, 'Lf');
+end;
+
+
+procedure TTestTIStream.LineStream_Props;
+var
+  lStream : TMemoryStream;
+  lLineStream : TtiLineStream;
+begin
+  lStream := nil;
+  lLineStream := nil;
+  try
+    lStream := TMemoryStream.Create;
+    lLineStream := TtiLineStream.Create(lStream);
+
+    Check(lLineStream.Stream = lStream, 'Stream');
+    CheckEquals(0, lLineStream.Position, 'Position');
+    CheckEquals(0, lLineStream.Size, 'Size');
+    CheckEquals(true, lLineStream.EOF, 'EOF');
+    CheckEquals(CrLf, lLineStream.LineDelim, 'LineDelim');
+
+    lLineStream.LineDelim := Cr;
+    CheckEquals(Cr, lLineStream.LineDelim, 'LineDelim');
+
+    tiStringToStream('1234567890', lStream);
+    lStream.Position := 5;
+    CheckEquals(5, lLineStream.Position, 'Position');
+    CheckEquals(10, lLineStream.Size, 'Size');
+    CheckEquals(false, lLineStream.EOF, 'EOF');
   finally
+    lLineStream.Free;
     lStream.Free;
   end;
 end;
 
 
+procedure TTestTIStream.LineStream_ReadLn1;
+var
+  ls : string;
+  lStream : TMemoryStream;
+  lLineStream : TtiLineStream;
+begin
+  lStream := nil;
+  lLineStream := nil;
+  try
+    lStream := TMemoryStream.Create;
+    lLineStream := TtiLineStream.Create(lStream);
+    tiStringToStream('test', lStream);
+    ls := lLineStream.ReadLn;
+    CheckEquals('test', ls);
+  finally
+    lLineStream.Free;
+    lStream.Free;
+  end;
+end;
+
+
+procedure TTestTIStream.LineStream_ReadLn100;
+begin
+  TestLineReadLn('test', CrLf, 99);
+end;
+
+
+procedure TTestTIStream.LineStream_ReadLn1000;
+begin
+  TestLineReadLn('test', CrLf, 1000);
+end;
+
+
+procedure TTestTIStream.LineStream_ReadLn1WithLineEnd;
+begin
+  TestLineReadLn('test', CrLf, 1);
+end;
+
+
+procedure TTestTIStream.LineStream_ReadLn2000;
+begin
+  TestLineReadLn('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+              '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+              '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+              '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+              '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+              '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+              '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+              '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+              '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+              '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+              CrLf,
+              2000);
+end;
+
+
+procedure TTestTIStream.LineStream_Write;
+var
+  ls : string;
+  lStream : TMemoryStream;
+  lLineStream : TtiLineStream;
+begin
+  lStream := nil;
+  lLineStream := nil;
+  try
+    lStream := TMemoryStream.Create;
+    lLineStream := TtiLineStream.Create(lStream);
+
+    lLineStream.Write('test');
+    ls := tiStreamToString(lStream);
+    CheckEquals('test', ls);
+  finally
+    lLineStream.Free;
+    lStream.Free;
+  end;
+end;
+
+
+procedure TTestTIStream.LineStream_WriteLn;
+var
+  ls : string;
+  lStream : TMemoryStream;
+  lLineStream : TtiLineStream;
+begin
+  lStream := nil;
+  lLineStream := nil;
+  try
+    lStream := TMemoryStream.Create;
+    lLineStream := TtiLineStream.Create(lStream);
+
+    lLineStream.WriteLn('test');
+    ls := tiStreamToString(lStream);
+    CheckEquals('test'+CrLf, ls);
+
+    lStream.Clear;
+    lLineStream.LineDelim := Cr;
+    lLineStream.WriteLn('test');
+    ls := tiStreamToString(lStream);
+    CheckEquals('test'+Cr, ls);
+  finally
+    lLineStream.Free;
+    lStream.Free;
+  end;
+end;
+
+
+procedure TTestTIStream.FileStream_ReadLn1WithLineEnd;
+begin
+  TestFileReadLn('test', CrLf, 1);
+end;
+
+
+procedure TTestTIStream.FileStream_ReadLn1000;
+begin
+  TestFileReadLn('test', CrLf, 1000);
+end;
+
+
 procedure TTestTIStream.FileStream_ReadLn2000;
 begin
-  TestReadLn('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
+  TestFileReadLn('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
               '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
               '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
               '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
@@ -200,21 +499,21 @@ end;
 
 procedure TTestTIStream.FileStream_EOF;
 begin
-  TestEOF(0);
-  TestEOF(1);
-  TestEOF(2);
-  TestEOF(10);
-  TestEOF(1000);
+  TestFileEOF(0);
+  TestFileEOF(1);
+  TestFileEOF(2);
+  TestFileEOF(10);
+  TestFileEOF(1000);
 end;
 
 
 procedure TTestTIStream.FileStream_LineDelims;
 begin
-  TestReadLn('test', Cr, 10);
-  TestReadLn('test', Lf, 10);
-  TestReadLn('test', '|', 10);
-  TestReadLn('test', '<p>', 10);
-  TestReadLn('test', 'MyLineEnd', 10);
+  TestFileReadLn('test', Cr, 10);
+  TestFileReadLn('test', Lf, 10);
+  TestFileReadLn('test', '|', 10);
+  TestFileReadLn('test', '<p>', 10);
+  TestFileReadLn('test', 'MyLineEnd', 10);
 end;
 
 
@@ -240,35 +539,6 @@ begin
   _Test(CrLf, 'CrLf');
   _Test(Cr, 'Cr');
   _Test(Lf, 'Lf');
-end;
-
-procedure TTestTIStream.TestEOF(ACount: integer);
-var
-  ls: string;
-  lStream: TtiFileStream;
-  i, lCount: integer;
-
-const
-  testString: string = 'test' + #13#10;
-
-begin
-  SetLength(ls, 0);
-  for i := 1 to ACount do
-     ls := ls + testString;
-
-  tiStringToFile(ls, TempFileName);
-  lStream := TtiFileStream.Create(TempFileName, fmOpenRead or fmShareDenyNone);
-  try
-    lCount := 0;
-    while not lStream.EOF do
-    begin
-      Inc(lCount);
-      lStream.ReadLn;
-    end;
-    CheckEquals(ACount, lCount);
-  finally
-    lStream.Free;
-  end;
 end;
 
 procedure TTestTIStream.PreSizedStream_AsString;

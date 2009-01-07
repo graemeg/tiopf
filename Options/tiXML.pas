@@ -232,6 +232,7 @@ const
   cgTIDBProxyTestAlive       = 'tidbproxytestalive';
   cgTIDBProxyTestAlive1      = 'tidbproxytestalive1';
   cgTIDBProxyServerVersion   = 'tidbproxyserverversion';
+  cgTIDBProxyServerException = 'tidbproxyserverexception';
 
   cgXMLNodeTIOPF             = 'tiopf';
   cgXMLAttrTIOPFVersion      = 'version'; // <tiopf version="9.999"/>

@@ -875,6 +875,9 @@ begin
       FHTTP:= gTIHTTPClass.Create;
     end;
 
+    FHTTP.BlockSize:= StrToInt64Def(Params.Values[CHTTPBlockSize], 0);
+    FHTTP.RetryLimit:= StrToIntDef(Params.Values[CHTTPRetryLimit], 1);
+
     if not SameText(cHTTPMSXML, FHTTP.MappingName) then
     begin
       lProxyActive := tiStrToBool(Params.Values[cHTTPProxyServeractive]);

@@ -630,7 +630,6 @@ procedure TtiTreeView.AddNodeChildren({ptiTreeView : TtiTreeView;}
     lNode := {ptiTreeView.} Items.AddChildObject(pParentNode, lsCaption, AData);
     lNode.HasChildren := HasNodeChildren(AData);
     GetNodeImageIndex(lNode, AData, pDataMapping);
-
   end;
 
   procedure AddChildPersistent(pParentNode: TTreeNode;
