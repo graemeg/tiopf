@@ -41,8 +41,8 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="FAdrsBookApplicationServerService.pas">
-      <DesignClass>TService</DesignClass>
       <Form>AddressBookApplicationServer</Form>
+      <DesignClass>TService</DesignClass>
     </DCCReference>
   </ItemGroup>
 </Project>

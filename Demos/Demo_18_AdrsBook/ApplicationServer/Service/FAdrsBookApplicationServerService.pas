@@ -65,8 +65,11 @@ begin
   GLog.RegisterLog(TtiLogToFile.CreateWithDateInFileName);
   FAppServer:= TtiDBProxyServer.Create(80);
   FAppServer.ReadPageLocationAtStartup:= False;
-  FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages\';
-  FAppServer.CGIBinLocation:= tiGetEXEPath + '\CGI-Bin\';
+  // ToDo: These are only accessable through the config object
+  //       This change was made to tidy the app server, but it's broken this
+  //       demo. Fix.
+//  FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages\';
+//  FAppServer.CGIBinLocation:= tiGetEXEPath + '\CGI-Bin\';
 end;
 
 procedure TAddressBookApplicationServer.ServiceDestroy(Sender: TObject);

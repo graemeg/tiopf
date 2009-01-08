@@ -55,9 +55,11 @@ begin
   GLog.RegisterLog(TtiLogToEventHandler.Create(DoLog));
   FAppServer:= TtiDBProxyServer.Create(80);
   FAppServer.ReadPageLocationAtStartup:= False;
-  FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages\';
-  FAppServer.CGIBinLocation:= tiGetEXEPath + '\CGI-Bin\';
-
+  // ToDo: These are only accessable through the config object
+  //       This change was made to tidy the app server, but it's broken this
+  //       demo. Fix.
+  //FAppServer.StaticPageLocation:= tiGetEXEPath + '\StaticPages\';
+  //FAppServer.CGIBinLocation:= tiGetEXEPath + '\CGI-Bin\';
   GTIOPFManager.ConnectDatabase(
     'adrs', 'adrs.fdb', 'SYSDBA', 'masterkey', '', '');
   Log('Connected to database ' + GTIOPFManager.DefaultDBConnectionPool.DetailsAsString);

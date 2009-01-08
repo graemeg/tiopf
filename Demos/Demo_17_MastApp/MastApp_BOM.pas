@@ -375,7 +375,7 @@ type
     procedure SetPaymentMethodString(const Value: string);
     procedure SetShipViaString(const Value: string);
     procedure SetTermsString(const Value: string);
-    procedure AddItem(AObject: TtiObject);
+    procedure AddItem(const AObject: TtiObject);
   protected
     function    GetCaption: string; override;
     procedure   AssignClassProps(ASource: TtiObject); override;    
@@ -1191,7 +1191,7 @@ begin
   OrderItems.Assign(TOrder(ASource).OrderItems);
 end;
 
-procedure TOrder.AddItem(AObject : TtiObject);
+procedure TOrder.AddItem(const AObject : TtiObject);
 begin
   FItemsTotal:= FItemsTotal + TOrderItem(AObject).TotalPrice;
 end;

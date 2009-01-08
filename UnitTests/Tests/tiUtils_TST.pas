@@ -2176,7 +2176,6 @@ var
   LPathName: string;
   LErrorMsgActual: string;
   LErrorMsgExpected: string;
-  LPathWithError: string;
 begin
   //TODO: Fill in missing checks below
 
@@ -2185,32 +2184,29 @@ begin
   Check(tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
   CheckEquals('', LErrorMsgActual);
 
-  //Non-existant drive. What's the easiest way to be sure the drive does not exist on the machine that runs this test?
+  //TODO: Non-existant drive. What's the easiest way to be sure the drive does not exist on the machine that runs this test?
 
   //Invalid directory name. Add an invalid character to the directory name.
   LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory) + PathDelim + '*' + PathDelim;
   LFileName := LPathName + 'DUnit2.txt';
   CheckEquals(false, tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
-  LPathWithError := ExtractFilePath(LFileName);
-  LErrorMsgExpected := Format(CInvalidDirName, [LPathWithError]);
+  LErrorMsgExpected := Format(CInvalidDirName, [LPathName]);
   CheckEquals(LErrorMsgExpected, LErrorMsgActual);
 
-  //Attempt to create subdirectory without write permission. How can we test this?
+  //TODO: Attempt to create subdirectory without write permission. How can we test this?
 
   //Invalid parent directory name - returns right level
   LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory) + PathDelim +'1*' + PathDelim + '2' + PathDelim;
   LFileName := LPathName + 'DUnit2.txt';
   CheckEquals(false, tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
-  LPathWithError := tiUtils.tiRemoveTrailingSlash(TempDirectory) + PathDelim +'1*' + PathDelim;
-  LErrorMsgExpected := Format(CInvalidDirName, [LPathWithError]);
+  LErrorMsgExpected := Format(CInvalidDirName, [LPathName]);
   CheckEquals(LErrorMsgExpected, LErrorMsgActual);
 
   //Invalid subdirectory name - returns right level
   LPathName := tiUtils.tiRemoveTrailingSlash(TempDirectory) + PathDelim +'1' + PathDelim + '2*' + PathDelim;
   LFileName := LPathName + 'DUnit2.txt';
   CheckEquals(false, tiUtils.tiCheckFileCanBeCreated(LFileName, LErrorMsgActual));
-  LPathWithError := tiUtils.tiRemoveTrailingSlash(TempDirectory)+ PathDelim + '1' + PathDelim + '2*' + PathDelim;
-  LErrorMsgExpected := Format(CInvalidDirName, [LPathWithError]);
+  LErrorMsgExpected := Format(CInvalidDirName, [LPathName]);
   CheckEquals(LErrorMsgExpected, LErrorMsgActual);
 
   //Invalid file name

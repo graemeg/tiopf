@@ -22,6 +22,14 @@
     <Projects Include="..\..\Demos\Demo_15_LookupList\Demo_LookupList.dproj" />
     <Projects Include="..\..\Demos\Demo_16_Dataset\Demo_TIDataSet.dproj" />
     <Projects Include="..\..\Demos\Demo_17_MastApp\Demo_MastApp.dproj" />
+    <Projects Include="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\GUI\AdrsBookApplicationServerGUI.dproj" />
+    <Projects Include="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" />
+    <Projects Include="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\Launcher\LauncherServer.dproj" />
+    <Projects Include="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\Service\AdrsBookApplicationServer.dproj" />
+    <Projects Include="..\..\Demos\Demo_18_AdrsBook\UnitTests\DUnitAdrsBookGUI.dproj" />
+    <Projects Include="..\..\Demos\Demo_18_AdrsBook\UnitTests\DUnitAdrsBookText.dproj" />
+    <Projects Include="..\..\Demos\Demo_18_AdrsBook\UserInterfaces\UIConsole\AdrsBookUIConsole.dproj" />
+    <Projects Include="..\..\Demos\Demo_18_AdrsBook\UserInterfaces\UIModalForms\AdrsBookUIModalForms.dproj" />
   </ItemGroup>
   <ProjectExtensions>
     <Borland.Personality>Default.Personality</Borland.Personality>
@@ -191,14 +199,86 @@
   <Target Name="Demo_MastApp:Make">
     <MSBuild Projects="..\..\Demos\Demo_17_MastApp\Demo_MastApp.dproj" Targets="Make" />
   </Target>
+  <Target Name="DUnitAdrsBookGUI">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UnitTests\DUnitAdrsBookGUI.dproj" Targets="" />
+  </Target>
+  <Target Name="DUnitAdrsBookGUI:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UnitTests\DUnitAdrsBookGUI.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DUnitAdrsBookGUI:Make">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UnitTests\DUnitAdrsBookGUI.dproj" Targets="Make" />
+  </Target>
+  <Target Name="DUnitAdrsBookText">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UnitTests\DUnitAdrsBookText.dproj" Targets="" />
+  </Target>
+  <Target Name="DUnitAdrsBookText:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UnitTests\DUnitAdrsBookText.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DUnitAdrsBookText:Make">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UnitTests\DUnitAdrsBookText.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookUIConsole">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UserInterfaces\UIConsole\AdrsBookUIConsole.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookUIConsole:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UserInterfaces\UIConsole\AdrsBookUIConsole.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookUIConsole:Make">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UserInterfaces\UIConsole\AdrsBookUIConsole.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookUIModalForms">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UserInterfaces\UIModalForms\AdrsBookUIModalForms.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookUIModalForms:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UserInterfaces\UIModalForms\AdrsBookUIModalForms.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookUIModalForms:Make">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\UserInterfaces\UIModalForms\AdrsBookUIModalForms.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookApplicationServerGUI">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\GUI\AdrsBookApplicationServerGUI.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookApplicationServerGUI:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\GUI\AdrsBookApplicationServerGUI.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookApplicationServerGUI:Make">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\GUI\AdrsBookApplicationServerGUI.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\Service\AdrsBookApplicationServer.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\Service\AdrsBookApplicationServer.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer:Make">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\Service\AdrsBookApplicationServer.dproj" Targets="Make" />
+  </Target>
+  <Target Name="LauncherServer">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\Launcher\LauncherServer.dproj" Targets="" />
+  </Target>
+  <Target Name="LauncherServer:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\Launcher\LauncherServer.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="LauncherServer:Make">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\Launcher\LauncherServer.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookUIHTML">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookUIHTML:Clean">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookUIHTML:Make">
+    <MSBuild Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" Targets="Make" />
+  </Target>
   <Target Name="Build">
-    <CallTarget Targets="Demo_ReadMe;Demo_LoadPersistenceLayerIfDef;Demo_LoadPersistenceLayerUses;Demo_CreateDatabase;Demo_ConnectToDatabase;Demo_CreateTable;Demo_VisitorBasics;Demo_Collection;Demo_EditDataInGUI;Demo_CollectionWithFilter;Demo_CollectionWithCriteria;Demo_OneToMany;Demo_Inheritance;Demo_OneToOne;Demo_OrdinalTypes;Demo_LookupList;Demo_TIDataSet;Demo_MastApp" />
+    <CallTarget Targets="Demo_ReadMe;Demo_LoadPersistenceLayerIfDef;Demo_LoadPersistenceLayerUses;Demo_CreateDatabase;Demo_ConnectToDatabase;Demo_CreateTable;Demo_VisitorBasics;Demo_Collection;Demo_EditDataInGUI;Demo_CollectionWithFilter;Demo_CollectionWithCriteria;Demo_OneToMany;Demo_Inheritance;Demo_OneToOne;Demo_OrdinalTypes;Demo_LookupList;Demo_TIDataSet;Demo_MastApp;DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookUIConsole;AdrsBookUIModalForms;AdrsBookApplicationServerGUI;AdrsBookApplicationServer;LauncherServer;AdrsBookUIHTML" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="Demo_ReadMe:Clean;Demo_LoadPersistenceLayerIfDef:Clean;Demo_LoadPersistenceLayerUses:Clean;Demo_CreateDatabase:Clean;Demo_ConnectToDatabase:Clean;Demo_CreateTable:Clean;Demo_VisitorBasics:Clean;Demo_Collection:Clean;Demo_EditDataInGUI:Clean;Demo_CollectionWithFilter:Clean;Demo_CollectionWithCriteria:Clean;Demo_OneToMany:Clean;Demo_Inheritance:Clean;Demo_OneToOne:Clean;Demo_OrdinalTypes:Clean;Demo_LookupList:Clean;Demo_TIDataSet:Clean;Demo_MastApp:Clean" />
+    <CallTarget Targets="Demo_ReadMe:Clean;Demo_LoadPersistenceLayerIfDef:Clean;Demo_LoadPersistenceLayerUses:Clean;Demo_CreateDatabase:Clean;Demo_ConnectToDatabase:Clean;Demo_CreateTable:Clean;Demo_VisitorBasics:Clean;Demo_Collection:Clean;Demo_EditDataInGUI:Clean;Demo_CollectionWithFilter:Clean;Demo_CollectionWithCriteria:Clean;Demo_OneToMany:Clean;Demo_Inheritance:Clean;Demo_OneToOne:Clean;Demo_OrdinalTypes:Clean;Demo_LookupList:Clean;Demo_TIDataSet:Clean;Demo_MastApp:Clean;DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookUIConsole:Clean;AdrsBookUIModalForms:Clean;AdrsBookApplicationServerGUI:Clean;AdrsBookApplicationServer:Clean;LauncherServer:Clean;AdrsBookUIHTML:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="Demo_ReadMe:Make;Demo_LoadPersistenceLayerIfDef:Make;Demo_LoadPersistenceLayerUses:Make;Demo_CreateDatabase:Make;Demo_ConnectToDatabase:Make;Demo_CreateTable:Make;Demo_VisitorBasics:Make;Demo_Collection:Make;Demo_EditDataInGUI:Make;Demo_CollectionWithFilter:Make;Demo_CollectionWithCriteria:Make;Demo_OneToMany:Make;Demo_Inheritance:Make;Demo_OneToOne:Make;Demo_OrdinalTypes:Make;Demo_LookupList:Make;Demo_TIDataSet:Make;Demo_MastApp:Make" />
+    <CallTarget Targets="Demo_ReadMe:Make;Demo_LoadPersistenceLayerIfDef:Make;Demo_LoadPersistenceLayerUses:Make;Demo_CreateDatabase:Make;Demo_ConnectToDatabase:Make;Demo_CreateTable:Make;Demo_VisitorBasics:Make;Demo_Collection:Make;Demo_EditDataInGUI:Make;Demo_CollectionWithFilter:Make;Demo_CollectionWithCriteria:Make;Demo_OneToMany:Make;Demo_Inheritance:Make;Demo_OneToOne:Make;Demo_OrdinalTypes:Make;Demo_LookupList:Make;Demo_TIDataSet:Make;Demo_MastApp:Make;DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookUIConsole:Make;AdrsBookUIModalForms:Make;AdrsBookApplicationServerGUI:Make;AdrsBookApplicationServer:Make;LauncherServer:Make;AdrsBookUIHTML:Make" />
   </Target>
   <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
 </Project>

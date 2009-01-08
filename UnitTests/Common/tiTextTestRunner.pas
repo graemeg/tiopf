@@ -173,7 +173,7 @@ end;
 procedure TtiTextTestListener.AddError(error: TTestFailure);
 begin
   inherited;
-  Write2Short('E', [tlwtFile, tlwtConsole]);
+  Write2Short('E', [tlwtFile]);
   IncPos;
   Write2Table(
     FormatTestName(error.FailedTest)
@@ -187,7 +187,7 @@ end;
 procedure TtiTextTestListener.AddFailure(failure: TTestFailure);
 begin
   inherited;
-  Write2Short('F', [tlwtFile, tlwtConsole]);
+  Write2Short('F', [tlwtFile]);
   IncPos;
   Write2Table(
      FormatTestName(failure.FailedTest)
@@ -201,7 +201,7 @@ end;
 procedure TtiTextTestListener.AddWarning(AWarning: TTestFailure);
 begin
   Warnings.Add(AWarning); // ToDo: Convert to a warning
-  Write2Short('W', [tlwtFile, tlwtConsole]);
+  Write2Short('W', [tlwtFile]);
   IncPos;
   Write2Table(
      FormatTestName(AWarning.FailedTest)

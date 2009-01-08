@@ -97,7 +97,7 @@ var
   lsl : TStringList;
   lParams: string;
 begin
-  tiHTTP.gTIOPFHTTPDefaultBlockSize:= 256000;
+  //tiHTTP.gTIOPFHTTPDefaultBlockSize:= 256000;
   Show;
 
   lsl := TStringList.Create;

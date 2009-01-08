@@ -356,7 +356,7 @@ String
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Delphi 7]]>
                 </Property>
-              <Property name="Enabled" type="WordBool">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
               <Property name="IsAction" type="Boolean">True</Property>
@@ -544,7 +544,7 @@ p_delphi_version=7
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property MultiValue="1" name="Description" type="string"><![CDATA[Delphi 2006]]>
                 </Property>
-              <Property name="Enabled" type="WordBool">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property name="IgnoreFailure" type="WordBool">False</Property>
               <Property name="IsAction" type="Boolean">True</Property>
@@ -1105,7 +1105,7 @@ p_delphi_version=2007
               <Property name="IsBreakPoint" type="WordBool">False</Property>
               <Property MultiValue="0" name="LogToVariable" type="string"></Property>
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="NodeCollapsed" type="Boolean">False</Property>
+              <Property name="NodeCollapsed" type="Boolean">True</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -1944,7 +1944,7 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">False</Property>
+            <Property name="NodeCollapsed" type="Boolean">True</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -4601,7 +4601,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_01_ReadMe]]>
@@ -4736,7 +4736,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_02_LoadPersistenceLayerIfDef]]>
@@ -4871,7 +4871,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_03_LoadPersistenceLayerUses]]>
@@ -5006,7 +5006,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_04_CreateDatabase]]>
@@ -5141,7 +5141,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_05_ConnectToDatabase]]>
@@ -5276,7 +5276,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_06_CreateTable]]>
@@ -5411,7 +5411,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_07_VisitorBasics]]>
@@ -5546,7 +5546,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_08_Collection]]>
@@ -5681,7 +5681,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_09_EditDataInGUI]]>
@@ -5816,7 +5816,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_10_CollectionWithFilter]]>
@@ -5951,7 +5951,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_10a_CollectionWithCriteria]]>
@@ -6086,7 +6086,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_11_OnetoMany]]>
@@ -6221,7 +6221,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_12_Inheritance]]>
@@ -6356,7 +6356,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_13_OneToOne]]>
@@ -6491,7 +6491,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_14_OrdinalTypes]]>
@@ -6626,7 +6626,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_15_LookupList]]>
@@ -6761,7 +6761,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_16_Dataset]]>
@@ -6896,7 +6896,7 @@ Comments=
             <Property name="BuildAll" type="WordBool">True</Property>
             <Property name="BuildVersion" type="Integer">0</Property>
             <Property name="CodePage" type="Integer">1252</Property>
-            <Property name="CompilerVersion" type="Integer">4</Property>
+            <Property name="CompilerVersion" type="Integer">12</Property>
             <Property MultiValue="0" name="ConfigName" type="string">Release</Property>
             <Property name="DebugVersionNumbers" type="Boolean">False</Property>
             <Property MultiValue="1" name="Description" type="string"><![CDATA[Compile Demo_17_MastApp]]>

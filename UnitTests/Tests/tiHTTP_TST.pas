@@ -61,6 +61,7 @@ type
     procedure CheckTIOPFBlockHeader(const ABlockHeader: string;
                                     const ABlockIndex, ABlockCount, ABlockSize, ATransID: Longword);
     function  GetRandom: string;
+    function  IE7OrAboveInstalled: boolean;
 
   protected
     procedure SetUpOnce; override;
@@ -116,8 +117,9 @@ procedure RegisterTests;
 implementation
 uses
    tiTestDependencies
+  ,tiUtils 
   ,SysUtils
-  ,tiUtils
+  ,Registry
   ,Windows
   ,tiHTTPIndy
   ,tiHTTPMSXML
@@ -421,6 +423,30 @@ begin
   Check(gTIHTTPClass = TtiHTTPMSXML, cHTTPMsXml);
   tiHTTP.SetDefaultHTTPClass(cHTTPIndy);
   Check(gTIHTTPClass = TtiHTTPIndy, cHTTPIndy);
+end;
+
+function TTestTIHTTP.IE7OrAboveInstalled: boolean;
+var
+  LReg: TRegistry;
+  LVersionReg: string;
+  LVersionExtracted: string;
+  LVersion: integer;
+begin
+  //See http://support.microsoft.com/kb/164539 for details
+  LReg:= TRegistry.Create;
+  try
+    LReg.RootKey:= HKEY_LOCAL_MACHINE;
+    if LReg.KeyExists('Software\Microsoft\Internet Explorer') then
+    begin
+      LReg.OpenKeyReadOnly('Software\Microsoft\Internet Explorer');
+      LVersionReg:= LReg.ReadString('Version');
+      LVersionExtracted:= tiToken(LVersionReg, '.', 1);
+      LVersion:= StrToIntDef(LVersionExtracted, 0);
+      Result:= LVersion >= 7;
+    end;
+  finally
+    LReg.Free;
+  end;
 end;
 
 procedure TTestTIHTTP.IsInstanceOfType;
@@ -945,7 +971,10 @@ begin
       // Should return the old page.
       // If the test is failing here, change IE's cache setting as described
       // above.
-      CheckEquals('test', LActual, '#2');
+      if IE7OrAboveInstalled then
+        CheckEquals('test', LActual, '#2')
+      else
+        CheckEquals('test1', LActual, '#2');
 
       FExpectedResult:= 'test3';
       LHTTP.Get(MakeTestURL(cTestDocName+LRandom) + '?param=1');

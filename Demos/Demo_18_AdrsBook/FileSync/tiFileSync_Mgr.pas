@@ -122,10 +122,10 @@ type
     FError: Boolean;
     FFileNameLockList: TtiFileNameLockList;
 
-    procedure BuildCreatePathList(pData : TtiObject);
-    procedure BuildDeletePathList(    pData : TtiObject);
-    procedure BuildCopyUpdateFileList(pData : TtiObject);
-    procedure BuildDeleteFileList(    pData : TtiObject);
+    procedure BuildCreatePathList(const AData : TtiObject);
+    procedure BuildDeletePathList(const AData : TtiObject);
+    procedure BuildCopyUpdateFileList(const AData : TtiObject);
+    procedure BuildDeleteFileList( const AData : TtiObject);
     procedure ReadFileIndex(const pReaderType: string;
                              const pReaderParams: string;
                              const ptiFileNames: TtiFileNames;
@@ -279,32 +279,32 @@ uses
 
 { TtiFileSyncMgrMgr }
 
-procedure TtiFileSyncMgr.BuildCopyUpdateFileList(pData: TtiObject);
+procedure TtiFileSyncMgr.BuildCopyUpdateFileList(const AData: TtiObject);
 var
   lData : TtiFileName;
 begin
-  lData := FTargetFileNames.FindLikeRootRemoved(pData as TtiFileName);
+  lData := FTargetFileNames.FindLikeRootRemoved(AData as TtiFileName);
 
   // Copy
   if (lData = nil) then
-    FCopyFileNames.AddInstance(pData as TtiFileName,
+    FCopyFileNames.AddInstance(AData as TtiFileName,
                                 FTargetFileNames)
 
   // Update
   else if (lData <> nil) and
-          ((TtiFileName(pData).Size <> lData.Size) or
-           (TtiFileName(pData).CRC <> lData.CRC)) then
-    FUpdateFileNames.Add(pData)
+          ((TtiFileName(AData).Size <> lData.Size) or
+           (TtiFileName(AData).CRC <> lData.CRC)) then
+    FUpdateFileNames.Add(AData)
 
 end;
 
-procedure TtiFileSyncMgr.BuildDeleteFileList(pData: TtiObject);
+procedure TtiFileSyncMgr.BuildDeleteFileList(const AData: TtiObject);
 var
   lData : TtiFileName;
 begin
-  lData := FSourceFileNames.FindLikeRootRemoved(TtiFileName(pData));
+  lData := FSourceFileNames.FindLikeRootRemoved(TtiFileName(AData));
   if lData = nil then
-    FDeleteFileNames.Add(pData);
+    FDeleteFileNames.Add(AData);
 end;
 
 constructor TtiFileSyncMgr.Create;
@@ -455,7 +455,7 @@ begin
   // Directories to create
   if FVerboseLogging then
     Log('Building list of directories to create');
-  FSourcePathNames.ForEach(BuildCreatePathList  );
+  FSourcePathNames.ForEach(BuildCreatePathList);
   if FVerboseLogging then
     Log('  Directories to be created: ' + IntToStr(FCopyPathNames.Count));
 
@@ -471,7 +471,7 @@ begin
   if FTerminated then Exit; //==>
   if FVerboseLogging then
     Log('Building list of files to create or update');
-  FSourceFileNames.ForEach(BuildCopyUpdateFileList  );
+  FSourceFileNames.ForEach(BuildCopyUpdateFileList);
   if FCopyFileNames.Count <> 0 then
     Log(IntToStr(FCopyFileNames.Count) + ' ' + ctiFSNewFilesToBeCopied);
   if FUpdateFileNames.Count <> 0 then
@@ -859,22 +859,22 @@ begin
   end;
 end;
 
-procedure TtiFileSyncMgr.BuildCreatePathList(pData: TtiObject);
+procedure TtiFileSyncMgr.BuildCreatePathList(const AData: TtiObject);
 var
   lData : TtiPathName;
 begin
-  lData := FTargetPathNames.FindLikeRootRemoved(TtiPathName(pData));
+  lData := FTargetPathNames.FindLikeRootRemoved(TtiPathName(AData));
   if (lData = nil) then
-    FCopyPathNames.Add(pData)
+    FCopyPathNames.Add(AData)
 end;
 
-procedure TtiFileSyncMgr.BuildDeletePathList(pData: TtiObject);
+procedure TtiFileSyncMgr.BuildDeletePathList(const AData: TtiObject);
 var
   lData : TtiPathName;
 begin
-  lData := FSourcePathNames.FindLikeRootRemoved(TtiPathName(pData));
+  lData := FSourcePathNames.FindLikeRootRemoved(TtiPathName(AData));
   if lData = nil then
-    FDeletePathNames.Add(pData);
+    FDeletePathNames.Add(AData);
 end;
 
 {
