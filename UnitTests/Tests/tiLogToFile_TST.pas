@@ -41,7 +41,9 @@ uses
   {$ENDIF}
   ,tiConstants
   ,tiLog
-  ,tiLogToFile;
+  ,tiLogToFile
+  ,tiUtils
+  ;
 
 procedure RegisterTests;
 begin
@@ -87,10 +89,11 @@ var
   LLogFileName: string;
 
 const
-  CIterations = 100000;
+  CIterations = 5000;   //  Original was 100000. Why not make this a INI file parameter if needed.
   COverwriteOldFolders = true;
 
 begin
+  LLogFilename := tiGetTempFile('log'); // workable with limited user rights
 
   SetLength(LLoggers, Length(CLoggers));
   FmtStr(LThreadID, '%.4d', [GetCurrentThreadID]);
@@ -103,7 +106,6 @@ begin
   end;
 
   try
-
     for i := 0 to CIterations - 1 do
     begin
       FmtStr(LMessage, 'Message (%.5d)', [i]);
@@ -114,12 +116,9 @@ begin
         LLoggers[j].Log(LTimestamp, LThreadID, LMessage, lsNormal);
       end;
     end;
-
   finally
-
     for i := Low(LLoggers) to High(LLoggers) do
       LLoggers[i].Free;
-
   end;
 
   Check(True); // To suppress DUnit2's warnings

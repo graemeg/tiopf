@@ -3385,8 +3385,8 @@ begin
 
   LDirectory := tiUtils.tiAddTrailingSlash(tiUtils.tiGetTempDir);
 
-  if not DirectoryExists(LDirectory + '1\') then CreateDir(LDirectory + '1\');
-  if not DirectoryExists(LDirectory + '2\') then CreateDir(LDirectory + '2\');
+  if not DirectoryExists(tiFixPathDelim(LDirectory + '1\')) then CreateDir(tiFixPathDelim(LDirectory + '1\'));
+  if not DirectoryExists(tiFixPathDelim(LDirectory + '2\')) then CreateDir(tiFixPathDelim(LDirectory + '2\'));
 
   //Create temp files based on LDaysOld
 
@@ -3430,7 +3430,6 @@ begin
 
   //Clean up any left over files
   tiUtils.tiForceRemoveDir(LDirectory);
-
 end;
 
 procedure TTestTIUtils.tiIntegerList;

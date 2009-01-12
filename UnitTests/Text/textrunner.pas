@@ -66,24 +66,25 @@ end;
 procedure TProgressWriter.AddFailure(ATest: TTest; AFailure: TTestFailure);
 begin
   FSuccess := false;
-  write('F');
+  writeln('  FAILED');
 end;
 
 procedure TProgressWriter.AddError(ATest: TTest; AError: TTestFailure);
 begin
   FSuccess := false;
-  write('E');
+  writeln('  ERROR');
 end;
 
 procedure TProgressWriter.StartTest(ATest: TTest);
 begin
   FSuccess := true; // assume success, until proven otherwise
+  Write(ATest.TestName + ': ...');
 end;
 
 procedure TProgressWriter.EndTest(ATest: TTest);
 begin
   if FSuccess then
-    write('.');
+    writeln('  DONE');
 end;
 
 procedure TProgressWriter.StartTestSuite(ATestSuite: TTestSuite);
