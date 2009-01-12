@@ -14,6 +14,7 @@ uses
   function  tiLinuxGetTickCount: Cardinal;
   function  tiLinuxGetUserName: string;
   function  tiLinuxGetComputerName: string;
+  function  IsCharAlpha(AChar: Char): Boolean;
 
 
 implementation
@@ -58,6 +59,16 @@ end;
 function tiLinuxGetComputerName: string;
 begin
   Result := GetHostName;
+end;
+
+function IsCharAlpha(AChar: Char): Boolean;
+begin
+  // This is very primitive and doesn't take special chars or unicode in
+  // consideration.
+  if AChar in ['a'..'z', 'A'..'Z'] then
+    Result := True
+  else
+    Result := False;
 end;
 
 end.

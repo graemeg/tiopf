@@ -1,6 +1,6 @@
-{$I tiDefines.inc}
-
 unit tiQueryTAB;
+
+{$I tiDefines.inc}
 
 interface
 uses

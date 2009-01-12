@@ -1188,9 +1188,9 @@ begin
   LResultCode := getLastError();
 {$ELSE}
   if fpcCopyFile(AFrom, ATo) then
-    iErrorCode := 0
+    LResultCode := 0
   else
-    iErrorCode := GetLastOSError;
+    LResultCode := GetLastOSError;
 {$ENDIF}
   if LResultCode <> 0 then
     raise EtiOPFFileSystemException.CreateFmt(

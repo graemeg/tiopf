@@ -140,10 +140,10 @@ uses
   tiOPFManager
   {$IFDEF MSWINDOWS}
   ,tiWin32
+  ,Forms // Hack to work around problem in TtiActiveThreadList.WaitForAll
   {$ENDIF MSWINDOWS}
   ,tiUtils
   ,SysUtils    // Used by FPC for the Sleep method.
-  ,Forms // Hack to work around problem in TtiActiveThreadList.WaitForAll
  ;
 
 
