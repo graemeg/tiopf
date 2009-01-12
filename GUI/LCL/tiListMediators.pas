@@ -404,12 +404,16 @@ end;
 procedure TStringGridMediator.SetSelectedObject(const AValue: TtiObject);
 var
   i: integer;
+  o : TObject;
 begin
   for i := 0 to FView.RowCount - 1 do
-    if TListItemMediator(FView.Objects[0, i]).Model = AValue then
+    begin
+    O := FView.Objects[0, i];
+    if assigned (O) and (TListItemMediator(O).Model = AValue) then
     begin
       FView.Row := i;
       Exit; //==>
+    end;
     end;
 end;
 
