@@ -6,7 +6,6 @@ interface
 uses
   Classes
   ,tiBaseObject
-  ,tiObject
   ,Contnrs
   {$IFDEF MSWINDOWS}
   ,Windows
@@ -140,7 +139,9 @@ uses
   tiOPFManager
   {$IFDEF MSWINDOWS}
   ,tiWin32
+  {$IFNDEF FPC}
   ,Forms // Hack to work around problem in TtiActiveThreadList.WaitForAll
+  {$ENDIF}
   {$ENDIF MSWINDOWS}
   ,tiUtils
   ,SysUtils    // Used by FPC for the Sleep method.

@@ -27,12 +27,14 @@ uses
   function  tiWin32GetUserLocalAppDir: string;
   function  tiWin32GetCurrentUserPersonalDir: string;
 
+  {$IFNDEF FPC}
   //Start a process, wait until timeout reached then kill a process
   procedure tiWin32RunProcessWithTimeout(const AProcessCommandLine: string; const AParams: string = '';
         const AProcessCurrentDirectory: string = '';
         const ATimeoutIntervalSecs: Cardinal = 0; const AProcessNameToKill: string = '');
         
   function tiWin32KillProcess(const AEXEName: String): Integer;
+  {$ENDIF}
 
 implementation
 uses
@@ -45,14 +47,18 @@ uses
   Classes,
   SyncObjs,
   ShlObj,
-  Messages,
-  Tlhelp32;
+  Messages
+  {$IFNDEF FPC}
+  ,Tlhelp32
+  {$ENDIF};
 
 
 const
   CSIDL_LOCAL_APPDATA = $001C; { %USERPROFILE%\Local Settings\Application Data (non roaming)}
   CSIDL_COMMON_APPDATA = $0023 { %USERPROFILE%\All Users\Application Data };
   CSIDL_FLAG_CREATE   = $8000; { (force creation of requested folder if it doesn't exist yet)}
+  CSIDL_PERSONAL = $0005;
+
   CErrorCanNotExecuteApplication = 'Can not execute application "%s". Error code "%d". Error message "%s"';
 
   {$IFDEF FPC}
@@ -166,6 +172,7 @@ begin
   WaitForSingleObject(PI.hProcess, Infinite);
 end;
 
+{$IFNDEF FPC}
 procedure tiWin32RunProcessWithTimeout(const AProcessCommandLine,
   AParams, AProcessCurrentDirectory: string; const ATimeoutIntervalSecs: Cardinal;
   const AProcessNameToKill: string);
@@ -221,6 +228,7 @@ begin
     CloseHandle(PI.hThread);
   end;
 end;
+{$ENDIF}
 
 function tiWin32FileGetAttr(const AFileName : string): integer;
 begin
@@ -337,6 +345,7 @@ begin
   end;
 end;
 
+{$IFNDEF FPC}
 function tiWin32KillProcess(const AEXEName: String): Integer;
 const
   PROCESS_TERMINATE = $0001;
@@ -366,6 +375,7 @@ begin
   end;
   CloseHandle(LSnapshotHandle);
 end;
+{$ENDIF}
 
 //var
 //  LhWindowHandle: HWND;
