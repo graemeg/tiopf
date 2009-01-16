@@ -39,6 +39,7 @@ type
     // General dataset methods.
     function GetActive: Boolean; override;
     function GetEOF: Boolean; override;
+    procedure LogParams;
 
     // Called before parameters are accessed.
     procedure CheckPrepared; virtual;
@@ -89,6 +90,7 @@ type
     // Parameter Overrides
     function ParamCount: integer; override;
     function ParamName(AIndex: integer): string; override;
+    function ParamsAsStringList: TStringList;
 
     procedure AssignFieldAsStream(const AName: string; const AStream: TStream); override;
     procedure AssignFieldAsStreamByIndex(AIndex: integer; const AValue: TStream); override;
@@ -104,10 +106,9 @@ implementation
 
 uses
   TypInfo
-  {$ifdef LOGQUERYDATASET}
   ,tiLog
-  {$endif}
   ,tiExcept
+  ,tiUtils
   ,Variants
   ;
 
@@ -428,26 +429,32 @@ begin
 {$endif}
 end;
 
+procedure TtiQueryDataset.LogParams;
+const
+  cLogLine = '%s: [Param %d] %s = %s';
+var
+  sl: TStringList;
+  i: integer;
+begin
+  sl := ParamsAsStringList;
+  try
+    for i := 0 to sl.Count-1 do
+      Log(Format(cLogLine, [ClassName, i+1, sl.Names[i], sl.ValueFromIndex[i]]), lsSQL);
+  finally
+    sl.Free;
+  end;
+end;
+
 procedure TtiQueryDataset.Open;
 begin
-{$ifdef LOGQUERYDATASET}
-  Log('>>> TtiQueryDataset.Open');
-{$endif}
+  Log(ClassName + ': ' + tiNormalizeStr(self.SQLText), lsSQL);
+  LogParams;
   Active := True;
-{$ifdef LOGQUERYDATASET}
-  Log('<<< TtiQueryDataset.Open');
-{$endif}
 end;
 
 procedure TtiQueryDataset.Close;
 begin
-{$ifdef LOGQUERYDATASET}
-  Log('>>> TtiQueryDataset.Close);
-{$endif}
   Active := False;
-{$ifdef LOGQUERYDATASET}
-  Log('<<< TtiQueryDataset.Close');
-{$endif}
 end;
 
 procedure TtiQueryDataset.CheckPrepared;
@@ -500,13 +507,7 @@ end;
 
 function TtiQueryDataset.GetParamAsString(const AName: string): string;
 begin
-{$ifdef LOGQUERYDATASET}
-  Log('>>> TtiQueryDataset.GetParamAsString (' + AName + ')');
-{$endif}
   Result := FParams.ParamByName(AName).AsString;
-{$ifdef LOGQUERYDATASET}
-  Log('<<< TtiQueryDataset.GetParamAsString (' + Aname + ')');
-{$endif}
 end;
 
 function TtiQueryDataset.ParamCount: integer;
@@ -517,6 +518,27 @@ end;
 function TtiQueryDataset.ParamName(AIndex: integer): string;
 begin
   Result := FParams[AIndex].Name;
+end;
+
+function TtiQueryDataset.ParamsAsStringList: TStringList;
+var
+  i: integer;
+  s: string;
+begin
+  result := TStringList.Create;
+  try
+    for i := 0 to ParamCount-1 do
+    begin
+      if ParamIsNull[ ParamName(i)] then      // Display the fact
+        s := 'Null'
+      else
+        s := ParamAsString[ParamName(i)];
+      result.Add(ParamName(i) + '=' + s);
+    end;
+  except
+    on e: exception do
+      LogError(e, true);
+  end;
 end;
 
 procedure TtiQueryDataset.SetParamAsBoolean(const AName: string; const AValue: Boolean);

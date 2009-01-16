@@ -85,9 +85,7 @@ implementation
 
 uses
   tiUtils,
-{$ifdef LOGSQLDB}
   tiLog,
-{$endif}
   TypInfo,
   tiOPFManager,
   tiConstants,
@@ -115,14 +113,10 @@ end;
 
 procedure TtiQuerySQLDB.ExecSQL;
 begin
-{$ifdef LOGSQLDB}
-  Log('>>> TtiQuerySQLDB.ExecSQL: ' + FIBSQL.SQL.Text);
-{$endif}
+  Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   Prepare;
+  LogParams;
   FIBSQL.ExecSQL;
-{$ifdef LOGSQLDB}
-  Log('<<< TtiQuerySQLDB.ExecSQL');
-{$endif}
 end;
 
 function TtiQuerySQLDB.GetSQL: TStrings;
@@ -263,6 +257,7 @@ begin
   if not InTransaction then
     raise EtiOPFInternalException.Create('Attempt to commit but not in a transaction.');
 
+  Log(ClassName + ': [Commit Trans]', lsSQL);
   //  FTransaction.CommitRetaining;
   FTransaction.Commit;
 end;
@@ -276,23 +271,19 @@ end;
 
 procedure TtiDatabaseSQLDB.RollBack;
 begin
+  Log(ClassName + ': [RollBack Trans]', lsSQL);
   //  FTransaction.RollbackRetaining;
   FTransaction.RollBack;
 end;
 
 procedure TtiDatabaseSQLDB.StartTransaction;
 begin
-{$ifdef LOGSQLDB}
-  Log('>>>> Start transaction...');
-{$endif}
   if InTransaction then
     raise EtiOPFInternalException.Create(
       'Attempt to start a transaction but transaction already exists.');
 
+  Log(ClassName + ': [Start Trans]', lsSQL);
   FTransaction.StartTransaction;
-{$ifdef LOGSQLDB}
-  Log('<<<< Start transaction...');
-{$endif}
 end;
 
 function TtiDatabaseSQLDB.GetConnected: Boolean;
