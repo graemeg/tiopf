@@ -7,9 +7,9 @@ uses
   tiQuery
   ,SysUtils
   ,Classes
-  ,jvUIB
-  ,jvUIBase
-  ,jvUIBLib
+  ,UIB
+  ,UIBase
+  ,UIBLib
   ,tiAutoMap
   ,tiObject
   ,tiPersistenceLayers
@@ -28,8 +28,8 @@ type
   // ---------------------------------------------------------------------------
   TtiDatabaseUIBAbs = Class(TtiDatabaseSQL)
   Private
-    FDatabase : TjvUIBDatabase;
-    FTransaction : TjvUIBTransaction;
+    FDatabase : TUIBDatabase;
+    FTransaction : TUIBTransaction;
     FLayerName : String;
   Protected
     Function FieldMetaDataToSQLCreate(Const pFieldMetaData :
@@ -37,7 +37,7 @@ type
     Function GetConnected : Boolean; Override;
     Procedure SetConnected(pbValue : boolean); Override;
   Public
-    Constructor create; Override;
+    Constructor Create; Override;
     Destructor Destroy; Override;
     Procedure Commit; Override;
     Function InTransaction : Boolean; Override;
@@ -46,7 +46,7 @@ type
     Procedure RollBack; Override;
     Procedure StartTransaction; Override;
     Function Test : Boolean; Override;
-    Property UIBDatabase : TjvUIBDatabase Read FDatabase Write FDatabase;
+    Property UIBDatabase : TUIBDatabase Read FDatabase Write FDatabase;
     Property LayerName : String Read FLayerName Write FLayerName;
   End;
 
@@ -55,7 +55,7 @@ type
   Private
     FActive : Boolean;
     FWasPrepared : Boolean;
-    FQuery : TjvUIBQuery;
+    FQuery : TUIBQuery;
     FSQLParams : TSQLParams;
     Function IBFieldKindToTIFieldKind(pData : TUIBSQLVar) : TtiQueryFieldKind;
   Protected
@@ -285,9 +285,9 @@ Const
 Constructor TtiQueryUIBAbs.Create;
 Begin
   Inherited;
-  FSQLParams := TSQLParams.Create;
+  FSQLParams := TSQLParams.Create(csUTF8);
   FWasPrepared := false;
-  FQuery := TjvUIBQuery.Create(Nil);
+  FQuery := TUIBQuery.Create(Nil);
   With FQuery Do
   Begin
     FetchBlobs := True;
@@ -772,9 +772,9 @@ End;
 Constructor TtiDatabaseUIBAbs.Create;
 Begin
   Inherited Create;
-  FDatabase := TjvUIBDataBase.Create(Nil);
+  FDatabase := TUIBDatabase.Create(Nil);
   FDatabase.SQLDialect := 3;
-  FTransaction := TjvUIBTransaction.Create(Nil);
+  FTransaction := TUIBTransaction.Create(Nil);
   With FTransaction Do
   Begin
     Database := FDatabase;
@@ -1013,6 +1013,7 @@ Begin
     FDatabase.DatabaseName := DatabaseName;
     FDatabase.Params.Values['user_name'] := UserName;
     FDatabase.Params.Values['password'] := Password;
+    //FDatabase.CharacterSet := csUTF8;
     FDatabase.Connected := True;
 
   Except

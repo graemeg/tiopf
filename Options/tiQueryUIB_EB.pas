@@ -37,7 +37,10 @@ unit tiQueryUIB_EB;
 interface
 
 uses
-  tiQueryUIBAbs;
+  tiQuery
+  ,tiQueryUIBAbs
+  ,tiPersistenceLayers
+  ;
 
 type
 

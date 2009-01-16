@@ -56,7 +56,7 @@ Type
 
   TtiDatabaseUIB_FB = Class(TtiDatabaseUIBAbs)
   Public
-    Constructor create; Override;
+    Constructor Create; Override;
     Class Procedure CreateDatabase(Const ADatabaseName, AUserName, APassword : String); Override;
     Class Function DatabaseExists(Const ADatabaseName, AUserName, APassword : String) : Boolean; Override;
     class procedure DropDatabase(const ADatabaseName, AUserName, APassword : string); override;
