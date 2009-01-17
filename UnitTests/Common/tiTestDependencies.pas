@@ -126,6 +126,7 @@ begin
   tiVisitor_TST.RegisterTests;
   tiVisitorDB_TST.RegisterTests;
   tiObject_TST.RegisterTests;
+(*  
   tiCompress_TST.RegisterTests;
   tiEncrypt_TST.RegisterTests;
   tiStreams_TST.RegisterTests;
@@ -133,7 +134,6 @@ begin
   tiPool_TST.RegisterTests;
   tiQueue_Tst.RegisterTests;
   tiOID_TST.RegisterTests;
-(*  
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
