@@ -129,10 +129,10 @@ begin
 //  tiCompress_TST.RegisterTests;
 //  tiEncrypt_TST.RegisterTests;
 //  tiStreams_TST.RegisterTests;
-  tiThread_TST.RegisterTests;
-  tiPool_TST.RegisterTests;
-  tiQueue_Tst.RegisterTests;
-  tiOID_TST.RegisterTests;
+//  tiThread_TST.RegisterTests;
+//  tiPool_TST.RegisterTests;
+//  tiQueue_Tst.RegisterTests;
+//  tiOID_TST.RegisterTests;
 (*  
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
