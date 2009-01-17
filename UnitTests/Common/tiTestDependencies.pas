@@ -120,20 +120,20 @@ begin
 
   // These are all the 'non persistence' tests
   tiBaseObject_TST.RegisterTests;
-(*  
   tiUtils_TST.RegisterTests;
   tiRTTI_TST.RegisterTests;
   tiPersistenceLayers_TST.RegisterTests;
   tiVisitor_TST.RegisterTests;
   tiVisitorDB_TST.RegisterTests;
   tiObject_TST.RegisterTests;
-  tiCompress_TST.RegisterTests;
-  tiEncrypt_TST.RegisterTests;
-  tiStreams_TST.RegisterTests;
+//  tiCompress_TST.RegisterTests;
+//  tiEncrypt_TST.RegisterTests;
+//  tiStreams_TST.RegisterTests;
   tiThread_TST.RegisterTests;
   tiPool_TST.RegisterTests;
   tiQueue_Tst.RegisterTests;
   tiOID_TST.RegisterTests;
+(*  
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
