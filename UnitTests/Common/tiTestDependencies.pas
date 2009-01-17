@@ -123,18 +123,17 @@ begin
 //  tiUtils_TST.RegisterTests;
   tiRTTI_TST.RegisterTests;
 
-//  tiPersistenceLayers_TST.RegisterTests;
-//  tiVisitor_TST.RegisterTests;
-//  tiVisitorDB_TST.RegisterTests;
-//  tiObject_TST.RegisterTests;
-//  tiCompress_TST.RegisterTests;
-//  tiEncrypt_TST.RegisterTests;
-//  tiStreams_TST.RegisterTests;
-//  tiThread_TST.RegisterTests;
-//  tiPool_TST.RegisterTests;
-//  tiQueue_Tst.RegisterTests;
-//  tiOID_TST.RegisterTests;
-(*  
+  tiPersistenceLayers_TST.RegisterTests;
+  tiVisitor_TST.RegisterTests;
+  tiVisitorDB_TST.RegisterTests;
+  tiObject_TST.RegisterTests;
+  tiCompress_TST.RegisterTests;
+  tiEncrypt_TST.RegisterTests;
+  tiStreams_TST.RegisterTests;
+  tiThread_TST.RegisterTests;
+  tiPool_TST.RegisterTests;
+  tiQueue_Tst.RegisterTests;
+  tiOID_TST.RegisterTests;
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
@@ -183,7 +182,6 @@ begin
   tiOPFDBISASM4_TST.RegisterTests;
   tiOPFAsqlite3_TST.RegisterTests;
   
-*)  
 end;
 
 procedure tiRemoveUnSelectedPersistenceLayerSetups;
