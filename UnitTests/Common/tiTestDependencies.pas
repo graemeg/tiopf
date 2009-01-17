@@ -152,6 +152,7 @@ begin
   tiTokenLibrary_TST.RegisterTests;
   tiLogToFile_TST.RegisterTests;
   tiBaseMediator_TST.RegisterTests;
+(*  
   {$IFNDEF FPC}
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
@@ -180,6 +181,8 @@ begin
   //tiOPFZeos_MySQL50_TST.RegisterTests; // No tests
   tiOPFDBISASM4_TST.RegisterTests;
   tiOPFAsqlite3_TST.RegisterTests;
+  
+*)  
 end;
 
 procedure tiRemoveUnSelectedPersistenceLayerSetups;
