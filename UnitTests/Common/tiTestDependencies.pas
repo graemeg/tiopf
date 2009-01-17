@@ -133,6 +133,7 @@ begin
   tiPool_TST.RegisterTests;
   tiQueue_Tst.RegisterTests;
   tiOID_TST.RegisterTests;
+(*  
   {$IFDEF MSWINDOWS}
   tiWin32_TST.RegisterTests;
   tiGUIUtils_TST.RegisterTests;
@@ -152,7 +153,6 @@ begin
   tiTokenLibrary_TST.RegisterTests;
   tiLogToFile_TST.RegisterTests;
   tiBaseMediator_TST.RegisterTests;
-(*  
   {$IFNDEF FPC}
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
