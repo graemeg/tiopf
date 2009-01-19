@@ -138,7 +138,7 @@ type
   // * Directory, file and file name manipulation
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-  // Get a tempory file name with the extension AFileNameExtension
+  // Get a temporary file name with the extension AFileNameExtension
   function  tiGetTempFile(const AFileNameExtension : string): string;
   // Add a trailing slash ('\' or '/' based on platform) if there is not already one
   function  tiAddTrailingSlash(  const AValue : string): string;
@@ -146,8 +146,8 @@ type
   function  tiRemoveTrailingSlash(const AValue : string): string;
   // Remove a leading slash ('\' or '/' based on platform) if there is one
   function  tiRemoveLeadingSlash(const AValue : string): string;
-  // Get the systems tempory directory
-  function  tiGetTempDir  : string;
+  // Get the systems temporary directory
+  function  tiGetTempDir: string;
 {$IFDEF MSWINDOWS}
   // Get the windows system directory
   function  tiGetWindowsSysDir : string;
@@ -578,8 +578,7 @@ uses
   ,Process
   {$ENDIF}
   ,StrUtils   // used for DelSpace1 and tiEnclose
-  ,Dialogs
- ;
+  ;
 
 function tiGetTempFile(const AFileNameExtension : string): string;
 {$IFNDEF FPC}
