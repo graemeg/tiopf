@@ -25,6 +25,7 @@ type
     destructor  Destroy; override;
   end;
 
+
   TVisDBAutoGenUpdate = class(TtiObjectVisitor)
   private
     FQueryParams : TtiQueryParams;
@@ -42,6 +43,7 @@ type
     procedure   Execute(const AData: TtiVisited); override;
   end;
 
+
   TVisDBAutoGenDelete = class(TVisDBAutoGenUpdate)
   protected
     function  AcceptVisitor: Boolean; override;
@@ -54,10 +56,8 @@ uses
   // tiOPF
    tiOPFManager
   ,tiObject
-//  ,tiUtils
   ,tiConstants
   ,tiExcept
-  ,tiFilteredObjectList
   ,tiCriteria
   // Delphi
   ,SysUtils
@@ -117,21 +117,25 @@ begin
     end;
 
   except
-    on e:exception do
+    on E: Exception do
       raise EtiOPFProgrammerException.CreateFmt(cErrorInVisitorExecute,
-        [ClassName, Visited.ClassName, e.Message]);
+        [ClassName, Visited.ClassName, E.Message]);
   end;
 
 end;
 
 procedure TVisDBAutoGenRead.OpenQuery;
 var
+  lFilter: ItiFiltered;
   lCriteria: TtiCriteria;
 begin
-  lCriteria := NIL;
+  lCriteria := nil;
 
-  if (visited is TtiFilteredObjectList) and TtiFilteredObjectList(visited).HasCriteria then
-    lCriteria := TtiFilteredObjectList(visited).Criteria;
+  if Supports(Visited, ItiFiltered, lFilter) then
+  begin
+    if lFilter.HasCriteria then
+      lCriteria := lFilter.GetCriteria;
+  end;
 
   Assert(FTableName <> '', 'TableName not assigned');
 

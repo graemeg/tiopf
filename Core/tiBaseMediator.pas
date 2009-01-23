@@ -575,7 +575,6 @@ end;
 
 procedure TMediatorView.DoGUIToObject;
 begin
-  Log(Format('> TMediatorView.DoGuiToObject for %s.%s', [Subject.ClassName, FieldName]), lsDebug);
   CheckFieldNames;
   Subject.PropValue[FieldName] := TypInfo.GetPropValue(GetGUIControl, GuiFieldName);
 end;
@@ -618,7 +617,6 @@ end;
 
 procedure TMediatorView.DoObjectToGUI;
 begin
-  Log(Format('> TMediatorView.DoObjectToGui for %s.%s', [Subject.ClassName, FieldName]), lsDebug);
   CheckFieldNames;
   TypInfo.SetPropValue(GetGUIControl, GuiFieldName, Subject.PropValue[FieldName]);
 end;

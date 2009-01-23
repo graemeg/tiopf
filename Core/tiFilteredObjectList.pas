@@ -12,34 +12,38 @@ type
   TtiFilteredObjectList = class(TtiObjectList, ItiFiltered)
   private
     FCriteria: TtiCriteria;
-  protected
-    function GetCriteria: TtiCriteria;
-  public
-    constructor Create; override;
-    destructor Destroy; override;
-
+    { ItiFiltered interface implementation. They are define as private because
+     you are only supposed to access these methods via the Interface, not the
+     Object instance! }
     {: Returns true if the ObjectList has selection critera }
     function HasCriteria: boolean;
     function HasOrderBy: boolean;
+    function GetCriteria: TtiCriteria;
     {: Property based selection critera used when reading the list.  This is declared as TtiObject to get around circular references but is of type TtiCriteria}
     property Criteria: TtiCriteria read GetCriteria;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
   end;
+
 
   TtiFilteredObjThreadList = class(TPerObjThreadList, ItiFiltered)
   private
     FCriteria: TtiCriteria;
-  protected
-    function GetCriteria: TtiCriteria;
-  public
-    constructor Create; override;
-    destructor Destroy; override;
-
+    { ItiFiltered interface implementation. They are define as private because
+     you are only supposed to access these methods via the Interface, not the
+     Object instance! }
     {: Returns true if the ObjectList has selection critera }
     function HasCriteria: boolean;
     function HasOrderBy: boolean;
+    function GetCriteria: TtiCriteria;
     {: Property based selection critera used when reading the list.  This is declared as TtiObject to get around circular references but is of type TtiCriteria}
     property Criteria: TtiCriteria read GetCriteria;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
   end;
+
 
 implementation
 
