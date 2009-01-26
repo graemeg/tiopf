@@ -86,7 +86,7 @@ type
     destructor  Destroy; override;
     procedure   Open   ; override;
     procedure   Close  ; override;
-    procedure   ExecSQL; override;
+    function    ExecSQL: integer; override;
 
     function    ParamCount : integer; override;
     function    ParamName(AIndex : integer): string; override;
@@ -128,6 +128,7 @@ begin
   Params:= FADOQuery.PSGetParams;
   FSQL := TStringList.Create;
   FSQL.OnChange:= DoOnChangeSQL;
+  FSupportsRowsAffected := True;
 end;
 
 destructor TtiQueryADO.Destroy;
@@ -142,13 +143,13 @@ begin
   Active := false;
 end;
 
-procedure TtiQueryADO.ExecSQL;
+function TtiQueryADO.ExecSQL: integer;
 var
   ls : string;
 begin
   try
     FADOQuery.Prepared:=true;
-    FADOQuery.ExecSQL;
+    Result := FADOQuery.ExecSQL;
   except
     on e:exception do
     begin
@@ -568,3 +569,4 @@ begin
 end;
 
 end.
+

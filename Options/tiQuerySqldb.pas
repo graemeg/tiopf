@@ -73,7 +73,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure ExecSQL; override;
+    function ExecSQL: integer; override;
     procedure AttachDatabase(ADatabase: TtiDatabase); override;
     procedure DetachDatabase; override;
     procedure Reset; override;
@@ -111,12 +111,17 @@ begin
   inherited;
 end;
 
-procedure TtiQuerySQLDB.ExecSQL;
+function TtiQuerySQLDB.ExecSQL: integer;
 begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   Prepare;
   LogParams;
   FIBSQL.ExecSQL;
+  Result := -1;
+  { TODO :
+When implementing RowsAffected,
+please return correct result
+and put FSupportsRowsAffected := True; in TtiQueryXXX.Create;}
 end;
 
 function TtiQuerySQLDB.GetSQL: TStrings;

@@ -156,6 +156,8 @@ type
 
   // ToDo: Rename to TtiVisitorUpdate
   TVisOwnedQryUpdate = class(TtiObjectVisitor)
+  protected
+    procedure AfterExecSQL(const pRowsAffected:integer);
   public
     procedure Execute(const AData: TtiVisited); override;
   end;
@@ -409,9 +411,19 @@ begin
     'overridden in the concrete: ' + ClassName);
 end;
 
+procedure TVisOwnedQryUpdate.AfterExecSQL(const pRowsAffected: integer);
+begin
+  // this gets called only if FQuery.SupportsRowsAffected
+
+  // implement in concrete wisitor
+  // You can do something like:
+  // if pRowsAffected=0 then raise ERecordAlreadyChanged.Create('Another user changed row.');
+end;
+
 procedure TVisOwnedQryUpdate.Execute(const AData: TtiVisited);
 var
   lStart: DWord;
+  lRowsAffected: integer;
 begin
   if GTIOPFManager.Terminated then
     Exit; //==>
@@ -421,7 +433,8 @@ begin
   Init;
   lStart := tiGetTickCount;
   SetupParams;
-  Query.ExecSQL;
+  lRowsAffected := Query.ExecSQL;
+  if FQuery.SupportsRowsAffected then AfterExecSQL(lRowsAffected);
   LogQueryTiming(ClassName, tiGetTickCount - lStart, 0);
 end;
 

@@ -234,6 +234,7 @@ type
     FDatabase : TtiDatabase;
     FOptions: TStringList;
   protected
+    FSupportsRowsAffected: boolean;
     //function  GetSession: TObject; virtual; abstract;
     //procedure SetSession(const AValue: TObject); virtual; abstract;
     function  GetSQL: TStrings; virtual; abstract;
@@ -282,6 +283,7 @@ type
     destructor  Destroy; override;
     property    Options: TStringList read GetOptions;
     procedure   AssignParams(const AParams : TtiQueryParams; const AWhere : TtiQueryParams = nil); virtual;
+    property    SupportsRowsAffected: boolean read FSupportsRowsAffected;
 
     property  ParamAsString[ const AName : string ]: string
                 read  GetParamAsString
@@ -357,7 +359,7 @@ type
 
     procedure Open; virtual; abstract;
     procedure Close; virtual; abstract;
-    procedure ExecSQL; virtual; abstract;
+    function  ExecSQL: integer; virtual; abstract;
 
     procedure SelectRow(const ATableName : string; const AWhere : TtiQueryParams; const ACriteria: TtiCriteria); overload; virtual; abstract;
     procedure SelectRow(const ATableName : string; const AWhere : TtiQueryParams); overload; virtual; abstract;
@@ -972,6 +974,7 @@ end;
 constructor TtiQuery.Create;
 begin
   inherited;
+  FSupportsRowsAffected := False;
 end;
 
 destructor TtiQuery.destroy;

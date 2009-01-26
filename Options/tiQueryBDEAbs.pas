@@ -49,7 +49,7 @@ type
     destructor  Destroy; override;
     procedure   Open   ; override;
     procedure   Close  ; override;
-    procedure   ExecSQL; override;
+    function    ExecSQL: integer; override;
 
     procedure   AssignParamToStream(const AName : string; const AStream : TStream); override;
     procedure   AttachDatabase(ADatabase : TtiDatabase); override;
@@ -82,6 +82,7 @@ begin
   FQuery := TQuery.Create(nil);
   Dataset:=FQuery;
   Params:=FQuery.Params;
+  FSupportsRowsAffected := True;
 end;
 
 destructor TtiQueryBDE.Destroy;
@@ -95,9 +96,10 @@ begin
   Active := false;
 end;
 
-procedure TtiQueryBDE.ExecSQL;
+function TtiQueryBDE.ExecSQL: integer;
 begin
   FQuery.ExecSQL;
+  Result := FQuery.RowsAffected;
 end;
 
 
@@ -272,3 +274,4 @@ begin
 end;
 
 end.
+

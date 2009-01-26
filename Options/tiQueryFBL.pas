@@ -123,7 +123,7 @@ type
     procedure   Open; override;
     procedure   Close; override;
     procedure   Next; override;
-    procedure   ExecSQL; override;
+    function    ExecSQL: integer; override;
 
     function    ParamCount: integer; override;
     function    ParamName(AIndex: integer): string; override;
@@ -181,12 +181,17 @@ begin
   Active := false;
 end;
 
-procedure TtiQueryFBL.ExecSQL;
+function TtiQueryFBL.ExecSQL: integer;
 begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   Prepare;
   LogParams;
   FQuery.ExecSQL;
+  Result := -1;
+  { TODO :
+When implementing RowsAffected,
+please return correct result
+and put FSupportsRowsAffected := True; in TtiQueryXXX.Create;}
 end;
 
 function TtiQueryFBL.GetFieldAsBoolean(const AName: string): boolean;

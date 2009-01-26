@@ -110,7 +110,7 @@ type
     procedure   Open   ; override;
     procedure   Close  ; override;
     procedure   Next   ; override;
-    procedure   ExecSQL; override;
+    function    ExecSQL: integer; override;
 
     procedure   AttachDatabase(ADatabase : TtiDatabase); override;
     procedure   DetachDatabase;  override;
@@ -174,7 +174,7 @@ begin
   Active := false;
 end;
 
-procedure TtiQueryXML.ExecSQL;
+function TtiQueryXML.ExecSQL: integer;
 begin
   Assert(false, 'Not implemented in ' + ClassName);
 end;

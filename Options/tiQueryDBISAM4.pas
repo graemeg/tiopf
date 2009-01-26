@@ -86,7 +86,7 @@ type
     procedure   Open   ; override;
     procedure   Close  ; override;
     procedure   Next   ; override;
-    procedure   ExecSQL; override;
+    function    ExecSQL: integer; override;
 
     function    ParamCount : integer; override;
     function    ParamName(AIndex : integer): string; override;
@@ -157,9 +157,14 @@ begin
   Active := false;
 end;
 
-procedure TtiQueryDBISAM4.ExecSQL;
+function TtiQueryDBISAM4.ExecSQL: integer;
 begin
   FQuery.ExecSQL;
+  Result := -1;
+  { TODO :
+When implementing RowsAffected,
+please return correct result
+and put FSupportsRowsAffected := True; in TtiQueryXXX.Create;}
 end;
 
 function TtiQueryDBISAM4.GetFieldAsBoolean(const AName: string): boolean;

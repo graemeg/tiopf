@@ -101,6 +101,7 @@ type
     procedure ParamIsNull; virtual; abstract;
     procedure OpenCloseActive; virtual; abstract;
     procedure ExecSQL; virtual; abstract;
+    procedure RowsAffected; virtual; abstract;
 
   published
 

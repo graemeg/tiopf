@@ -31,6 +31,7 @@ type
     {$ENDIF}
     procedure OpenCloseActive; override;
     procedure ExecSQL; override;
+    procedure RowsAffected;
   end;
 
 
@@ -401,7 +402,7 @@ end;
 
 
 procedure TTestTIQuerySQL.QueryType;
-begin                                               
+begin
   // This should be extended to:
   // a) Manage the removal of comments
   // b) Manage DML SQL
@@ -448,6 +449,47 @@ begin
   end;
 end;
 {$ENDIF}
+
+procedure TTestTIQuerySQL.RowsAffected;
+const
+  NewOID='B9B61BB1-52E3-43F5-9143-A5B96149310E';
+var
+  lRecsAff:integer;
+begin
+  CreateTableTestGroup(Database);
+  try
+    InsertIntoTestGroup(1, Database);
+    Database.StartTransaction;
+    try
+      Query.SQLText := 'insert into test_group (OID,Group_Int_Field) VALUES ('+QuotedStr(NewOID)+',1)';
+      lRecsAff:=Query.ExecSQL;
+      if not(Query.SupportsRowsAffected) then
+      begin
+        CheckEquals(-1,lRecsAff,'ExecSQL should return -1 if SupportsRowsAffected is false!');
+        Exit; //==>
+      end;
+      CheckEquals(1,lRecsAff,'Error testing ExecSQL WITH INSERT');
+
+      Query.SQLText := 'update test_group SET Group_Int_Field=3 '
+                      +' WHERE OID='+QuotedStr(NewOID)+' AND Group_Int_Field=2';
+      lRecsAff:=Query.ExecSQL;
+      CheckEquals(0,lRecsAff,'Error testing ExecSQL WITH UPDATE');
+
+      Query.SQLText := 'update test_group SET Group_Int_Field=3 '
+                      +' WHERE OID='+QuotedStr(NewOID)+' AND Group_Int_Field=1';
+      lRecsAff:=Query.ExecSQL;
+      CheckEquals(1,lRecsAff,'Error testing ExecSQL WITH UPDATE');
+
+      Query.SQLText := 'delete from test_group';
+      lRecsAff:=Query.ExecSQL;
+      CheckEquals(2,lRecsAff,'Error testing ExecSQL WITH DELETE');
+    finally
+      Database.Commit;
+    end;
+  finally
+    DropTable('test_group',Database);
+  end;
+end;
 
 end.
 

@@ -19,7 +19,7 @@ uses
 // IBX can be upgraded from:
 //   http://codecentral.borland.com/codecentral/ccweb.exe/author?authorid=102
 {$IFDEF DELPHI6ORABOVE}
-  {$DEFINE IBXx08ORABOVE}
+  {.$DEFINE IBXx08ORABOVE}
 {$ENDIF}
 
 type
@@ -115,7 +115,7 @@ type
     procedure   Open; override;
     procedure   Close; override;
     procedure   Next; override;
-    procedure   ExecSQL; override;
+    function    ExecSQL: integer; override;
 
     function    ParamCount: integer; override;
     function    ParamName(AIndex: integer): string; override;
@@ -180,12 +180,17 @@ begin
 end;
 
 
-procedure TtiQueryIBX.ExecSQL;
+function TtiQueryIBX.ExecSQL: integer;
 begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   Prepare;
   Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
   FIBSQL.ExecQuery;
+  Result := -1;
+  { TODO :
+When implementing RowsAffected,
+please return correct result
+and put FSupportsRowsAffected := True; in TtiQueryXXX.Create;}
 end;
 
 

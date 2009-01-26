@@ -97,7 +97,7 @@ type
     procedure   Open; override;
     procedure   Close; override;
     procedure   Next; override;
-    procedure   ExecSQL; override;
+    function    ExecSQL: integer; override;
 
     function    ParamCount: integer; override;
     function    ParamName(AIndex: integer): string; override;
@@ -219,13 +219,14 @@ begin
   FffQuery.DatabaseName := '';
 end;
 
-procedure TtiQueryFlashFiler.ExecSQL;
+function TtiQueryFlashFiler.ExecSQL: integer;
 begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   Prepare;
   Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
 
   FffQuery.ExecSQL;
+  Result := -1;
 end;
 
 function TtiQueryFlashFiler.FieldCount: integer;

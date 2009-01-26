@@ -250,7 +250,7 @@ type
     procedure   Open; override;
     procedure   Close; override;
     procedure   Next; override;
-    procedure   ExecSQL; override;
+    function    ExecSQL: integer; override;
 
     function    ParamCount: integer; override;
     function    ParamName(AIndex: integer): string; override;
@@ -915,7 +915,7 @@ begin
   inherited;
 end;
 
-procedure TtiQueryRemoteXML.ExecSQL;
+function TtiQueryRemoteXML.ExecSQL: integer;
   procedure _SaveParams(const ADatabase : TtiDatabase);
   var
     i : integer;
@@ -954,7 +954,11 @@ begin
 
   if DBRemoteXML.HasResultSet then
     FQueryResponseXML.SelectRow(uXMLTags.TableNameResultSet);
-
+  Result := -1;
+  { TODO :
+When implementing RowsAffected,
+please return correct result
+and put FSupportsRowsAffected := True; in TtiQueryXXX.Create;}
 end;
 
 function TtiQueryRemoteXML.FieldCount: integer;
