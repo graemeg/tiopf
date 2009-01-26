@@ -12,7 +12,8 @@ type
   TtiFilteredObjectList = class(TtiObjectList, ItiFiltered)
   private
     FCriteria: TtiCriteria;
-    { ItiFiltered interface implementation. They are define as private because
+  protected
+    { ItiFiltered interface implementation. They are define as protected because
      you are only supposed to access these methods via the Interface, not the
      Object instance! }
     {: Returns true if the ObjectList has selection critera }
@@ -30,7 +31,8 @@ type
   TtiFilteredObjThreadList = class(TPerObjThreadList, ItiFiltered)
   private
     FCriteria: TtiCriteria;
-    { ItiFiltered interface implementation. They are define as private because
+  protected
+    { ItiFiltered interface implementation. They are define as protected because
      you are only supposed to access these methods via the Interface, not the
      Object instance! }
     {: Returns true if the ObjectList has selection critera }
