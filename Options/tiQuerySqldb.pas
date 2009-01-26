@@ -305,7 +305,17 @@ begin
       Exit; //==>
     end;
 
-    FDatabase.DatabaseName := DatabaseName;
+    if POS(':', DatabaseName) > 0 then
+      begin
+        // Assumes "databasehost:databasename" format.
+        FDatabase.DatabaseName := tiToken(DatabaseName, ':', 2);
+        FDatabase.HostName := tiToken(DatabaseName, ':', 1);
+      end
+    else
+      begin
+        FDatabase.DatabaseName := DatabaseName;
+      end;
+      
     FDatabase.UserName     := Username;
     FDatabase.Password     := Password;
     FDatabase.Params.Values['user_name'] := UserName;
