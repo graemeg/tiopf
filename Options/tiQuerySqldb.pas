@@ -294,6 +294,7 @@ end;
 procedure TtiDatabaseSQLDB.SetConnected(AValue: Boolean);
 var
   lMessage: string;
+  p: integer;
 begin
   try
     if (not AValue) then
@@ -305,11 +306,12 @@ begin
       Exit; //==>
     end;
 
-    if POS(':', DatabaseName) > 0 then
+    p := Pos(':', DatabaseName);
+    if p > 0 then
       begin
         // Assumes "databasehost:databasename" format.
-        FDatabase.DatabaseName := tiToken(DatabaseName, ':', 2);
-        FDatabase.HostName := tiToken(DatabaseName, ':', 1);
+        FDatabase.HostName      := Copy(DatabaseName, 1, p-1);
+        FDatabase.DatabaseName  := Copy(DatabaseName, p+1, Length(DatabaseName));
       end
     else
       begin
