@@ -4,14 +4,13 @@ unit tiQueryIBX;
 
 interface
 uses
-   tiQuery
-  ,Classes
-  ,IB
-  ,IBDatabase
-  ,IBSQL
-  ,IBHeader
-  ,tiPersistenceLayers
-  ;
+  tiPersistenceLayers,
+  tiQuery,
+  Classes,
+  IB,
+  IBDatabase,
+  IBSQL,
+  IBHeader;
 
 // Turn this on if you have upgraded you IBX from the version that comes
 // out of the box with Delphi. If you have not upgraded your IBX components,
@@ -19,7 +18,7 @@ uses
 // IBX can be upgraded from:
 //   http://codecentral.borland.com/codecentral/ccweb.exe/author?authorid=102
 {$IFDEF DELPHI6ORABOVE}
-  {.$DEFINE IBXx08ORABOVE}
+  {$DEFINE IBXx08ORABOVE}
 {$ENDIF}
 
 type
@@ -141,18 +140,17 @@ type
 
 implementation
 uses
-   tiUtils
-  ,tiLog
-  ,TypInfo
-  ,tiOPFManager
-  ,tiObject
-  ,tiConstants
-  ,tiExcept
-  ,SysUtils
+  tiUtils,
+  tiLog,
+  TypInfo,
+  SysUtils,
 {$IFDEF DELPHI6ORABOVE}
-  ,Variants
+  Variants,
 {$ENDIF}
- ;
+  tiOPFManager,
+  tiObject,
+  tiConstants,
+  tiExcept;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
