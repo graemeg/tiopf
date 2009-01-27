@@ -112,6 +112,7 @@ type
     procedure Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
     procedure ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
     procedure Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    property Criteria;
   published
     property OIDAsInteger: integer read GetOIDAsInteger;
   end;
@@ -136,6 +137,7 @@ type
     procedure Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
     procedure ReadThis(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
     procedure Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); override;
+    property  Criteria;
   published
     property OIDAsInteger: integer read GetOIDAsInteger;
     property StrField: string read FStrField write FStrField;
