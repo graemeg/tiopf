@@ -176,6 +176,7 @@ end;
 
 function TtiQueryXML.ExecSQL: integer;
 begin
+  Result:= 0;
   Assert(false, 'Not implemented in ' + ClassName);
 end;
 
