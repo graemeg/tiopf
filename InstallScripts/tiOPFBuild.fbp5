@@ -2122,7 +2122,7 @@ String
             <Property name="IsBreakPoint" type="WordBool">False</Property>
             <Property MultiValue="0" name="LogToVariable" type="string"></Property>
             <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-            <Property name="NodeCollapsed" type="Boolean">True</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -2194,6 +2194,29 @@ String
                   <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                   <Property MultiValue="0" name="VariableName" type="WideString">report_fb_error_message</Property>
                   </Object>
+                <Object Class="TSetVariableAction" XMLID="{E44F44B2-8FF4-4562-AC66-5B99A9F54EAB}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                  <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Set Variable report_fb_log to [  ]]]>
+                    </Property>
+                  <Property name="ActionTextColor" type="Cardinal">0</Property>
+                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                  <Property name="ApplyToExisting" type="Boolean">False</Property>
+                  <Property name="DoExpandExpression" type="Boolean">True</Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
+                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                  <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
+                  <Property name="IgnoreFailure" type="WordBool">False</Property>
+                  <Property name="IsAction" type="Boolean">True</Property>
+                  <Property name="IsBreakPoint" type="WordBool">False</Property>
+                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                  <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
+                  <Property MultiValue="0" name="NewValue" type="WideString"></Property>
+                  <Property name="NodeCollapsed" type="Boolean">False</Property>
+                  <Property name="PauseInterval" type="Cardinal">0</Property>
+                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                  <Property MultiValue="0" name="VariableName" type="WideString">report_fb_log</Property>
+                  </Object>
                 </Object>
               <Object Class="TFBIfThenAction" XMLID="{98853DD3-9585-44C5-8D24-5FEC38AE0DE2}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
                 <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[If [%fbignorederrors%] = [1]]]>
@@ -2245,6 +2268,26 @@ String
                   <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                   <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                   <Property MultiValue="0" name="VariableName" type="WideString">report_fb_error_message</Property>
+                  </Object>
+                <Object Class="TRunActionListAction" XMLID="{995AD3A6-8D1B-4707-A873-34310989B250}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                  <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Run Action List [ Export FB Log to Var ]]]>
+                    </Property>
+                  <Property MultiValue="0" name="ActionListID" type="string">{9F46A5B0-014A-4820-A287-DB98D3D0FF2B}</Property>
+                  <Property name="ActionTextColor" type="Cardinal">0</Property>
+                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
+                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                  <Property name="IgnoreFailure" type="WordBool">False</Property>
+                  <Property name="IsAction" type="Boolean">True</Property>
+                  <Property name="IsBreakPoint" type="WordBool">False</Property>
+                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                  <Property name="NodeCollapsed" type="Boolean">False</Property>
+                  <Property name="Parameters" type="TStrings"><![CDATA[]]>
+                    </Property>
+                  <Property name="PauseInterval" type="Cardinal">0</Property>
+                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                   </Object>
                 </Object>
               <Object Class="TFBIfThenAction" XMLID="{DB86D6C0-AD13-48DE-A57F-A25C3618E54D}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
@@ -2298,6 +2341,26 @@ String
                   <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                   <Property MultiValue="0" name="VariableName" type="WideString">report_fb_error_message</Property>
                   </Object>
+                <Object Class="TRunActionListAction" XMLID="{46D462CE-2932-4B05-9F26-08288A8036D0}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                  <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Run Action List [ Export FB Log to Var ]]]>
+                    </Property>
+                  <Property MultiValue="0" name="ActionListID" type="string">{9F46A5B0-014A-4820-A287-DB98D3D0FF2B}</Property>
+                  <Property name="ActionTextColor" type="Cardinal">0</Property>
+                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                  <Property name="Enabled" type="WordBool">True</Property>
+                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                  <Property name="IgnoreFailure" type="WordBool">False</Property>
+                  <Property name="IsAction" type="Boolean">True</Property>
+                  <Property name="IsBreakPoint" type="WordBool">False</Property>
+                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                  <Property name="NodeCollapsed" type="Boolean">False</Property>
+                  <Property name="Parameters" type="TStrings"><![CDATA[]]>
+                    </Property>
+                  <Property name="PauseInterval" type="Cardinal">0</Property>
+                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                  </Object>
                 </Object>
               </Object>
             <Object Class="TEmailAction" XMLID="{15641293-F8B0-42B5-A51D-C651065C4FB0}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
@@ -2309,6 +2372,8 @@ String
                 </Property>
               <Property name="Authenticate" type="WordBool">False</Property>
               <Property name="BodyObject" type="TStrings"><![CDATA[%report_body%
+
+%report_fb_log%
 ]]>
                 </Property>
               <Property name="Enabled" type="WordBool">True</Property>
@@ -2364,7 +2429,7 @@ String
                 <Property MultiValue="0" name="Name" type="WideString"></Property>
                 </Object>
               <Object Class="TFBAddressList" XMLID="{9D12846E-FB8C-406C-B220-6D6D40AAA7EA}"><Property MultiValue="0" name="ListType" type="string">recipients</Property>
-                <Object Class="TFBEmailAddress" XMLID="{6B5C9891-32A0-4727-AFFA-DF4603666887}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
+                <Object Class="TFBEmailAddress" XMLID="{00B60618-3704-4F24-A47A-2404E655A199}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
                   <Property MultiValue="0" name="AddressType" type="WideString"></Property>
                   <Property name="Enabled" type="Boolean">True</Property>
                   <Property MultiValue="0" name="Name" type="WideString"></Property>
@@ -2398,6 +2463,8 @@ String
                 <Property name="Attachments" type="TStrings"><![CDATA[]]>
                   </Property>
                 <Property name="Body" type="TStrings"><![CDATA[%report_body%
+
+%report_fb_log%
 ]]>
                   </Property>
                 <Property MultiValue="0" name="EmailAddress" type="string">%report_sender_email%</Property>
@@ -2442,56 +2509,23 @@ String
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Object Class="TExportLogAction" XMLID="{EC2F2541-E047-4042-93C6-8C3DD9A1E90A}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Export Log [ %path_to_log_text% ]]]>
+              <Object Class="TRunActionListAction" XMLID="{35D1E5E4-2C0B-4E9D-AFF2-9AD190FA2613}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Run Action List [ Export FB Log to Var ]]]>
                   </Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property MultiValue="1" name="Description" type="string"><![CDATA[Export Log [ %path_to_log_text% ]]]>
-                  </Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ErrorActionsOnly" type="Boolean">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="ExportFormat" type="TExportFormat">efText</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="IncludeActionEndTime" type="Boolean">False</Property>
-                <Property name="IncludeActionRunTime" type="Boolean">False</Property>
-                <Property name="IncludeActionStartTime" type="Boolean">False</Property>
-                <Property name="IncludeActionType" type="Boolean">True</Property>
-                <Property name="IncludeHeading" type="Boolean">True</Property>
-                <Property name="IncludeOutput" type="Boolean">True</Property>
-                <Property name="IncludeSummary" type="Boolean">True</Property>
-                <Property name="IsAction" type="Boolean">True</Property>
-                <Property name="IsBreakPoint" type="WordBool">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="NodeCollapsed" type="Boolean">False</Property>
-                <Property name="OtherParameters" type="TStrings"><![CDATA[]]>
-                  </Property>
-                <Property MultiValue="0" name="OutputFile" type="string">%path_to_log_text%</Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Property MultiValue="0" name="TemplateFile" type="string"></Property>
-                </Object>
-              <Object Class="TFBReadTextFileAction" XMLID="{58A2C587-D1D3-4701-94FD-401BD32F9EF1}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Read Text File [ %path_to_log_text% ]]]>
-                  </Property>
+                <Property MultiValue="0" name="ActionListID" type="string">{9F46A5B0-014A-4820-A287-DB98D3D0FF2B}</Property>
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                 <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="EscapeVariables" type="Boolean">False</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property MultiValue="0" name="FBVariable" type="string">_temp</Property>
-                <Property MultiValue="0" name="FileName" type="string">%path_to_log_text%</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
                 <Property name="IsAction" type="Boolean">True</Property>
                 <Property name="IsBreakPoint" type="WordBool">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
                 <Property name="NodeCollapsed" type="Boolean">False</Property>
+                <Property name="Parameters" type="TStrings"><![CDATA[]]>
+                  </Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="PutContentsInVar" type="Boolean">True</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
                 </Object>
@@ -2503,7 +2537,7 @@ String
                 <Property name="AttachmentsObject" type="TStrings"><![CDATA[]]>
                   </Property>
                 <Property name="Authenticate" type="WordBool">False</Property>
-                <Property name="BodyObject" type="TStrings"><![CDATA[%_temp%
+                <Property name="BodyObject" type="TStrings"><![CDATA[%report_fb_log%
 ]]>
                   </Property>
                 <Property name="Enabled" type="WordBool">True</Property>
@@ -2560,7 +2594,7 @@ String
                   <Property MultiValue="0" name="Name" type="WideString"></Property>
                   </Object>
                 <Object Class="TFBAddressList" XMLID="{8F2721A4-2835-442C-A12F-1CE84CA8AE9D}"><Property MultiValue="0" name="ListType" type="string">recipients</Property>
-                  <Object Class="TFBEmailAddress" XMLID="{498F81A0-F528-4379-B36D-7898F129730F}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
+                  <Object Class="TFBEmailAddress" XMLID="{188387B6-4DFF-41E1-84F8-2FC855F00B5B}"><Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
                     <Property MultiValue="0" name="AddressType" type="WideString"></Property>
                     <Property name="Enabled" type="Boolean">True</Property>
                     <Property MultiValue="0" name="Name" type="WideString"></Property>
@@ -8106,6 +8140,82 @@ Comments=
             </Object>
           </Object>
         </Object>
+      <Object Class="TFBActionList" XMLID="{C3E6C6B4-02E3-49E1-8397-D26BE1EC0021}"><Property name="IsFailure" type="Boolean">False</Property>
+        <Property name="IsMain" type="Boolean">False</Property>
+        <Property MultiValue="1" name="Name" type="string"><![CDATA[Export FB Log to Var]]>
+          </Property>
+        <Property MultiValue="0" name="UniqueID" type="string">{9F46A5B0-014A-4820-A287-DB98D3D0FF2B}</Property>
+        <Object Class="TFBAction" XMLID="{4D20FC15-EA9F-4290-8219-F081AC41C6C2}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+          <Property MultiValue="0" name="ActionDescription" type="string">FinalBuilderAction</Property>
+          <Property name="ActionTextColor" type="Cardinal">0</Property>
+          <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+          <Property name="Enabled" type="WordBool">True</Property>
+          <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+          <Property name="IgnoreFailure" type="WordBool">False</Property>
+          <Property name="IsAction" type="Boolean">True</Property>
+          <Property name="IsBreakPoint" type="WordBool">False</Property>
+          <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+          <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+          <Property name="NodeCollapsed" type="Boolean">False</Property>
+          <Property name="PauseInterval" type="Cardinal">0</Property>
+          <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+          <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+          <Object Class="TExportLogAction" XMLID="{D367C3D3-B199-4C27-8E99-C172E316561F}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+            <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Export Log [ %path_to_log_text% ]]]>
+              </Property>
+            <Property name="ActionTextColor" type="Cardinal">0</Property>
+            <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+            <Property MultiValue="1" name="Description" type="string"><![CDATA[Export Log [ %path_to_log_text% ]]]>
+              </Property>
+            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="ErrorActionsOnly" type="Boolean">True</Property>
+            <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+            <Property name="ExportFormat" type="TExportFormat">efText</Property>
+            <Property name="IgnoreFailure" type="WordBool">False</Property>
+            <Property name="IncludeActionEndTime" type="Boolean">False</Property>
+            <Property name="IncludeActionRunTime" type="Boolean">False</Property>
+            <Property name="IncludeActionStartTime" type="Boolean">False</Property>
+            <Property name="IncludeActionType" type="Boolean">True</Property>
+            <Property name="IncludeHeading" type="Boolean">True</Property>
+            <Property name="IncludeOutput" type="Boolean">True</Property>
+            <Property name="IncludeSummary" type="Boolean">True</Property>
+            <Property name="IsAction" type="Boolean">True</Property>
+            <Property name="IsBreakPoint" type="WordBool">False</Property>
+            <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+            <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
+            <Property name="OtherParameters" type="TStrings"><![CDATA[]]>
+              </Property>
+            <Property MultiValue="0" name="OutputFile" type="string">%path_to_log_text%</Property>
+            <Property name="PauseInterval" type="Cardinal">0</Property>
+            <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+            <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+            <Property MultiValue="0" name="TemplateFile" type="string"></Property>
+            </Object>
+          <Object Class="TFBReadTextFileAction" XMLID="{07A6A852-7FC2-4CC2-A851-DF2A89A05BA0}"><Property MultiValue="0" name="ActionComment" type="string"></Property>
+            <Property MultiValue="1" name="ActionDescription" type="string"><![CDATA[Read Text File [ %path_to_log_text% ]]]>
+              </Property>
+            <Property name="ActionTextColor" type="Cardinal">0</Property>
+            <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="EscapeVariables" type="Boolean">False</Property>
+            <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+            <Property MultiValue="0" name="FBVariable" type="string">report_fb_log</Property>
+            <Property MultiValue="0" name="FileName" type="string">%path_to_log_text%</Property>
+            <Property name="IgnoreFailure" type="WordBool">False</Property>
+            <Property name="IsAction" type="Boolean">True</Property>
+            <Property name="IsBreakPoint" type="WordBool">False</Property>
+            <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+            <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+            <Property name="NodeCollapsed" type="Boolean">False</Property>
+            <Property name="PauseInterval" type="Cardinal">0</Property>
+            <Property name="PutContentsInVar" type="Boolean">True</Property>
+            <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+            <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+            </Object>
+          </Object>
+        <Object Class="TFBActionListParametersCollection" XMLID="{8E53DFA0-B48A-459F-9C1C-1AFA1E7EBF8B}"/>
+        </Object>
       </Object>
     <Object Class="TFBVariablesCollection" XMLID="999995"><Property MultiValue="0" name="Name" type="string"></Property>
       <Object Class="TFBVariable" XMLID="{23AAA16A-86CD-4E6A-A4ED-40B1F4BEC16F}"><Property MultiValue="0" name="Comment" type="string"></Property>
@@ -8780,6 +8890,14 @@ Delphi 2007
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_body_backup1</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+        </Object>
+      <Object Class="TFBVariable" XMLID="{1A72593A-9FD8-4057-AC67-1BE52748D03C}"><Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string"></Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">report_fb_log</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
         </Object>
       </Object>
