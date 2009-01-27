@@ -336,6 +336,10 @@ type
     // no longer required, as we are now using filtered object lists
 //    property    Where: TtiQueryParams read FWhere;
 //    property    FilterCustNo: TtiOID read GetFilterCustNo write SetFilterCustNo;  xx
+
+    // ToDo: Remove Criteria and access it through ItiFiltered
+    property Criteria;
+
   published
   end ;
 

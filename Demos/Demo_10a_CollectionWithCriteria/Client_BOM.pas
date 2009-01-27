@@ -18,6 +18,9 @@ type
   public
     procedure Read; override;
     procedure Save; override;
+    // ToDo: Remove Criteria and HasCriteria and access them through ItiFiltered
+    function HasCriteria: boolean;
+    property Criteria;
   end;
 
   TClient = class(TtiObject)
@@ -50,6 +53,11 @@ begin
 end;
 
 { TClients }
+
+function TClients.HasCriteria: boolean;
+begin
+  result:= inherited HasCriteria;
+end;
 
 procedure TClients.Read;
 begin
