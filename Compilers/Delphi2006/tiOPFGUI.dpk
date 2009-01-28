@@ -69,7 +69,6 @@ contains
   tiRoundedPanel in '..\..\GUI\tiRoundedPanel.pas',
   tiSpeedButton in '..\..\GUI\tiSpeedButton.pas',
   tiSplitter in '..\..\GUI\tiSplitter.pas',
-  tiThreadProgress in '..\..\GUI\tiThreadProgress.pas',
   tiTreeView in '..\..\GUI\tiTreeView.pas',
   tiTreeViewChildForm in '..\..\GUI\tiTreeViewChildForm.pas',
   tiVTFilter in '..\..\GUI\tiVTFilter.pas',

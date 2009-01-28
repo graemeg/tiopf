@@ -449,34 +449,9 @@ begin
   inherited Create(nil);
   FMaskControl := AControlToMask;
   BoundsRect := FMaskControl.BoundsRect;
-
   ScreenPt := FMaskControl.ClientToScreen(Classes.Point(0,0));
-
   FControlSnapshot := TBitmap.Create;
-
   ScreenShot(FControlSnapshot, ScreenPt.X, ScreenPt.Y, Width, Height, HWND_DESKTOP);
-
-  // 29/08/2007 Commented this out to fix the following error:
-  //   Main ($ab0):
-  //   004392cc OPDMS_SYS.exe SysUtils                     RaiseLastOSError
-  //   00439255 OPDMS_SYS.exe SysUtils                     RaiseLastOSError
-  //   004a9350 OPDMS_SYS.exe Controls                     TWinControl.CreateWnd
-  //   004a9752 OPDMS_SYS.exe Controls                     TWinControl.CreateHandle
-  //   004a9a18 OPDMS_SYS.exe Controls                     TWinControl.UpdateShowing
-  //   004a9a46 OPDMS_SYS.exe Controls                     TWinControl.UpdateShowing
-  //   004a9bf9 OPDMS_SYS.exe Controls                     TWinControl.UpdateControlState
-  //   004a8e74 OPDMS_SYS.exe Controls                     TWinControl.InsertControl
-  //   004a4e24 OPDMS_SYS.exe Controls                     TControl.SetParent
-  //   004ae671 OPDMS_SYS.exe Controls                     TWinControl.SetParent
-  //   0054aa2c OPDMS_SYS.exe tiGUIUtils               396 TtiBruteForceNoFlicker.Create
-  //   006a5251 OPDMS_SYS.exe tiApplicationMenuSystem 1650 TtiApplicationMenuSystem.DoBeginUpdate
-  //   00642553 OPDMS_SYS.exe FtiFormMgrDataForm           918 TtiFormMgr.DoBeginUpdate
-  //   00641bf6 OPDMS_SYS.exe FtiFormMgrDataForm           721 TtiFormMgr.ShowForm
-  //   00853a2b OPDMS_SYS.exe FTrendAnalysisConfig     349 TthrdFormTrendAnalysisConfig.DoOnTerminate
-  //   00453417 OPDMS_SYS.exe Classes                      TThread.CallOnTerminate
-
-  // Parent := FMaskControl.Parent;
-
   Update;
 end;
 
