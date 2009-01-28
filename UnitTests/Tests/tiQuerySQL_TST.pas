@@ -31,7 +31,7 @@ type
     {$ENDIF}
     procedure OpenCloseActive; override;
     procedure ExecSQL; override;
-    procedure RowsAffected;
+    procedure RowsAffected; override;
   end;
 
 
@@ -454,40 +454,36 @@ procedure TTestTIQuerySQL.RowsAffected;
 const
   NewOID='B9B61BB1-52E3-43F5-9143-A5B96149310E';
 var
-  lRecsAff:integer;
+  LCountRowsAffected:integer;
 begin
   CreateTableTestGroup(Database);
+  InsertIntoTestGroup(1, Database);
+  Database.StartTransaction;
   try
-    InsertIntoTestGroup(1, Database);
-    Database.StartTransaction;
-    try
-      Query.SQLText := 'insert into test_group (OID,Group_Int_Field) VALUES ('+QuotedStr(NewOID)+',1)';
-      lRecsAff:=Query.ExecSQL;
-      if not(Query.SupportsRowsAffected) then
-      begin
-        CheckEquals(-1,lRecsAff,'ExecSQL should return -1 if SupportsRowsAffected is false!');
-        Exit; //==>
-      end;
-      CheckEquals(1,lRecsAff,'Error testing ExecSQL WITH INSERT');
+    Query.SQLText := 'insert into test_group (OID,Group_Int_Field) VALUES ('+QuotedStr(NewOID)+',1)';
+    LCountRowsAffected:=Query.ExecSQL;
+    if Query.SupportsRowsAffected then
+    begin
+      CheckEquals(1,LCountRowsAffected,'Error testing ExecSQL WITH INSERT');
 
       Query.SQLText := 'update test_group SET Group_Int_Field=3 '
                       +' WHERE OID='+QuotedStr(NewOID)+' AND Group_Int_Field=2';
-      lRecsAff:=Query.ExecSQL;
-      CheckEquals(0,lRecsAff,'Error testing ExecSQL WITH UPDATE');
+      LCountRowsAffected:=Query.ExecSQL;
+      CheckEquals(0,LCountRowsAffected,'Error testing ExecSQL WITH UPDATE');
 
       Query.SQLText := 'update test_group SET Group_Int_Field=3 '
                       +' WHERE OID='+QuotedStr(NewOID)+' AND Group_Int_Field=1';
-      lRecsAff:=Query.ExecSQL;
-      CheckEquals(1,lRecsAff,'Error testing ExecSQL WITH UPDATE');
+      LCountRowsAffected:=Query.ExecSQL;
+      CheckEquals(1,LCountRowsAffected,'Error testing ExecSQL WITH UPDATE');
 
       Query.SQLText := 'delete from test_group';
-      lRecsAff:=Query.ExecSQL;
-      CheckEquals(2,lRecsAff,'Error testing ExecSQL WITH DELETE');
-    finally
-      Database.Commit;
-    end;
+      LCountRowsAffected:=Query.ExecSQL;
+      CheckEquals(2,LCountRowsAffected,'Error testing ExecSQL WITH DELETE');
+    end else
+      CheckEquals(-1,LCountRowsAffected,'ExecSQL should return -1 if SupportsRowsAffected is false!');
+    Query.Close;
   finally
-    DropTable('test_group',Database);
+    Database.Commit;
   end;
 end;
 
