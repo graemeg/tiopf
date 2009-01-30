@@ -25,8 +25,6 @@ const
   cErrorFieldNotAssigned = 'Field <%s> is null. OID=%d';
   cErrorFieldTooLong = 'Field <%s> field too long. Allowed length %d, current length %d';
   cErrorUnableToDetermineFieldName = 'Unable to determine field name on <%s>';
-  cErrorSettingProperty      = 'Error setting property %s.%s Message %s';
-  cErrorGettingProperty      = 'Error getting property %s.%s Message %s';
   cErrorInvalidObjectState   = 'Invalid ObjectState';
   cErrorNoFindMethodAssigned = 'No find method assigned';
   cErrorAttemptToSetNonPublishedProperty = 'Attempt to set non-published property %s.%s to %s';
@@ -2947,117 +2945,33 @@ begin
 end;
 
 function TtiObject.GetPropValue(const APropName: string): Variant;
-var
-  lDate : TDateTime;
-  lbValue : boolean;
-  lTypeKind : TtiTypeKind;
 begin
+  // ToDo: OID is a special case. We should publish OID so it can be accessed
+  //       without special code, but that will have side effects.
+  //       (We will also have to modify tiRTTI to handle object properties.)
   if SameText(APropName, 'OID') then
   {$IFDEF OID_AS_INT64}
     result := Integer(OID)
   {$ELSE}
     result := OID.AsVariant
   {$ENDIF}
-//  else if SameText(APropName, 'DispOrder') then
-//    result := DispOrder
   else
-  begin
-    Assert(IsPublishedProp(Self, APropName), APropName + ' is not a published property on ' + ClassName);
-    try
-      lTypeKind := tiGetSimplePropType(Self, APropName);
-      case lTypeKind of
-      tiTKDateTime : begin
-                       lDate := TypInfo.GetPropValue(Self, APropName);
-                       result := lDate;
-                     end;
-      tiTKBoolean :  begin
-                       lbValue := TypInfo.GetPropValue(Self, APropName);
-                       result := lbValue;
-                     end;
-      else
-        result := TypInfo.GetPropValue(Self, APropName);
-      end;
-    except
-      on e:exception do
-        raise EtiOPFProgrammerException.CreateFmt(
-          cErrorGettingProperty, [APropName, ClassName, e.Message]);
-    end;
-  end;
+    result:= tiGetProperty(Self, APropName);
 end;
 
 procedure TtiObject.SetPropValue(const APropName: string; const APropValue: Variant);
-var
-  ldtValue : TDateTime;
-  lsValue : string;
-  liValue : integer;
-  lbValue : boolean;
-  lPropTypeKind : TtiTypeKind;
-  lValueTypeKind : TtiTypeKind;
 begin
-
-  // OID is a special case. Should we publish OID?
+  // ToDo: OID is a special case. We should publish OID so it can be accessed
+  //       without special code, but that will have side effects.
+  //       (We will also have to modify tiRTTI to handle object properties.)
   if SameText(APropName, 'OID') then
-  begin
     {$IFDEF OID_AS_INT64}
-      OID := Integer(APropValue);
+      OID := Integer(APropValue)
     {$ELSE}
-      OID.AsVariant := APropValue;
+      OID.AsVariant := APropValue
     {$ENDIF}
-    Exit; //==>
-  end;
-
-  if not IsPublishedProp(Self, APropName) then
-    raise EtiOPFProgrammerException.CreateFmt(cErrorAttemptToSetNonPublishedProperty,
-      [APropName,ClassName, VarToStr(APropValue) ]);
-
-  try
-
-    lPropTypeKind := tiGetSimplePropType(Self, APropName);
-    case lPropTypeKind of
-    tiTKDateTime : begin
-                     ldtValue := VarToDateTime(APropValue);
-                     TypInfo.SetPropValue(Self, APropName, ldtValue);
-                   end;
-    tiTKBoolean : begin
-                    lValueTypeKind := tiVarSimplePropType(APropValue);
-                    case lValueTypeKind of
-                    tiTKString : begin
-                                   lsValue := APropValue;
-                                   if SameText(lsValue, 'true') or
-                                     (lsValue = '1') or
-                                     SameText(lsValue, 't') then
-                                     TypInfo.SetPropValue(Self, APropName, 1)
-                                   else
-                                     TypInfo.SetPropValue(Self, APropName, 0);
-                                 end;
-                    tiTKInteger : begin
-                                    liValue := APropValue;
-                                    if liValue = 0 then
-                                      TypInfo.SetPropValue(Self, APropName, 0)
-                                    else
-                                      TypInfo.SetPropValue(Self, APropName, 1);
-                                  end;
-                    tiTKBoolean : begin
-                                    lbValue := APropValue;
-                                    if lbValue then
-                                      TypInfo.SetPropValue(Self, APropName, 1)
-                                    else
-                                      TypInfo.SetPropValue(Self, APropName, 0);
-                                  end;
-                    else
-                      raise EtiOPFProgrammerException.CreateFmt(cErrorSettingProperty,
-                        [ClassName, APropName, 'Unknown type' ]);
-                    end
-                  end;
-    else
-      TypInfo.SetPropValue(Self, APropName, APropValue);
-    end;
-
-  except
-    on e:exception do
-      raise EtiOPFProgrammerException.CreateFmt(cErrorSettingProperty,
-        [ClassName, APropName, e.message ]);
-  end;
+  else
+    tiSetProperty(Self, APropName, APropValue);
 end;
 
 procedure TtiObject.DoGetFieldBounds(const AFieldName: String; var MinValue,
@@ -3109,7 +3023,7 @@ function TtiObject.IsReadWriteProp(const APropName: string): boolean;
 begin
   result :=
     SameText(APropName, 'OID') or
-    tiIsReadWriteProp(Self, APropName);   
+    tiIsReadWriteProp(Self, APropName);
 end;
 
 { TPerObjClassMapping }

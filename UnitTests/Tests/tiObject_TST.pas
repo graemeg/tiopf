@@ -5,30 +5,27 @@ unit tiObject_TST;
 interface
 
 uses
-  Classes  // needed for TStringList
+  Classes,  // needed for TStringList
   {$IFDEF FPC}
-  ,testregistry
+  testregistry,
   {$ENDIF}
-  ,tiTestFramework
-  ,tiObject
- ;
-
+  tiTestFramework,
+  tiObject;
 
 type
-  TtstTIObjectList  = class;
-  TtstTIObject   = class;
+  TtiObjectListForTesting  = class;
+  TtiObjectForTesting   = class;
 
-
-  TTestTIObject = class(TtiTestCase)
+  TtiObjectTestCase = class(TtiTestCase)
   private
-    procedure CheckTSTPerObjAbs(AData: TtstTIObject; AValue: integer);
-    procedure SetTSTPerObjAbs(AData: TtstTIObject; AValue: integer);
-    procedure CheckTSTPerObjList(AData: TtstTIObjectList; AValue: integer);
-    procedure SetTSTPerObjList(AData: TtstTIObjectList; AValue: integer);
+    procedure CheckTSTPerObjAbs(AData: TtiObjectForTesting; AValue: integer);
+    procedure SetTSTPerObjAbs(AData: TtiObjectForTesting; AValue: integer);
+    procedure CheckTSTPerObjList(AData: TtiObjectListForTesting; AValue: integer);
+    procedure SetTSTPerObjList(AData: TtiObjectListForTesting; AValue: integer);
     procedure TstFindMethod(AObject : TtiObject; var AFound : boolean);
     procedure TstFindMethodWithParam(AObject : TtiObject; var AFound : boolean; AUserContext: Pointer);
     procedure TstFindAll(AObject : TtiObject; var AFound : boolean);
-    function  CreateTestDataList: TtstTIObjectList;
+    function  CreateTestDataList: TtiObjectListForTesting;
   protected
   published
     procedure Owner;
@@ -39,21 +36,23 @@ type
     procedure OIDGenerator;
     procedure GetOID;
 
+    procedure PropType;
+    procedure IsReadWriteProp;
+    procedure PropCount;
+    procedure SetPropValue;
+    procedure SetBooleanPropValue;
+    procedure GetPropValue;
+    procedure SetPropValueNested;
+    procedure GetPropValueNested;
+
     procedure Deleted_TtiObject;
     procedure Deleted_TtiObjectList_AutoSetItemOwnerTrue;
     procedure Deleted_TtiObjectList_AutoSetItemOwnerFalse;
     procedure Deleted_Owned;
     procedure Deleted_Referenced;
-
     procedure Dirty;
     procedure Dirty_And_OID;
     procedure Index;
-    procedure SetPropValue;
-    procedure GetPropValue;
-    procedure PropType;
-    procedure IsReadWriteProp;
-    procedure PropCount;
-
     procedure Equals;
     procedure ObjectStateAsString;
     procedure FindByOID;
@@ -96,7 +95,7 @@ type
   end;
 
 
-  TTestTIObjectList = class(TtiTestCase)
+  TtiObjectListTestCase = class(TtiTestCase)
   private
     FInBothAndEquals: TtiObjectList;
     FInBothAndNotEquals: TtiObjectList;
@@ -108,7 +107,7 @@ type
     procedure In1OnlyEvent(AItem1, AItem2: TtiObject);
     procedure In2OnlyEvent(AItem1, AItem2: TtiObject);
 
-    function  CreateList: TtstTIObjectList;
+    function  CreateList: TtiObjectListForTesting;
     procedure DoForEachMethod(const AData: TtiObject);
   public
     procedure   SetUp; override;
@@ -161,15 +160,15 @@ type
   end;
 
 
-  TtstTIObjectList = class(TtiObjectList)
+  TtiObjectListForTesting = class(TtiObjectList)
   private
   protected
-    function    GetItems(i: integer): TtstTIObject; reintroduce;
-    procedure   SetItems(i: integer; const AValue: TtstTIObject); reintroduce;
+    function    GetItems(i: integer): TtiObjectForTesting; reintroduce;
+    procedure   SetItems(i: integer; const AValue: TtiObjectForTesting); reintroduce;
   public
-    property    Items[i:integer]: TtstTIObject read GetItems write SetItems;
-    function    Add(AObject: TtstTIObject): integer; reintroduce;
-    function    Clone : TtstTIObjectList; reintroduce;
+    property    Items[i:integer]: TtiObjectForTesting read GetItems write SetItems;
+    function    Add(AObject: TtiObjectForTesting): integer; reintroduce;
+    function    Clone : TtiObjectListForTesting; reintroduce;
     constructor CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = ''); override;
     function    FindCompareIntProp(const AObject: TtiObject; const AValue): integer;
   published
@@ -179,7 +178,7 @@ type
   TtstOrdProp = (tstOrdProp_1, tstOrdProp_2, tstOrdProp_3);
 
 
-  TtstTIObject = class(TtiObject)
+  TtiObjectForTesting = class(TtiObject)
   private
     FBoolProp: boolean;
     FIntProp: integer;
@@ -188,14 +187,14 @@ type
     FDateProp: TDateTime;
     FOrdProp: TtstOrdProp;
   protected
-    function    GetOwner: TtstTIObjectList; reintroduce;
-    procedure   SetOwner(const AValue: TtstTIObjectList); reintroduce;
+    function    GetOwner: TtiObjectListForTesting; reintroduce;
+    procedure   SetOwner(const AValue: TtiObjectListForTesting); reintroduce;
   public
     constructor Create; override;
     constructor CreateNew(const AOwner: TtiObject; const ADatabaseName: string = ''; const APersistenceLayerName : string = ''); override;
-    property    Owner: TtstTIObjectList read GetOwner write SetOwner;
+    property    Owner: TtiObjectListForTesting read GetOwner write SetOwner;
     procedure   Populate;
-    function    Clone: TtstTIObject; reintroduce;
+    function    Clone: TtiObjectForTesting; reintroduce;
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
     function    Equals(const AData: TtiObject): boolean; override;
   published
@@ -209,19 +208,19 @@ type
   end;
 
 
-  TtstPerObjOwnedObj = class(TtstTIObject)
+  TtiObjectWithOwnedForTesting = class(TtiObjectForTesting)
   private
-    FObjProp: TtstTIObject;
+    FObjProp: TtiObjectForTesting;
   public
     constructor Create; override;
     destructor  Destroy; override;
     function    Equals(const AData : TtiObject): boolean; override;
   published
-    property ObjProp : TtstTIObject read FObjProp;
+    property ObjProp : TtiObjectForTesting read FObjProp;
   end;
 
 
-  TtstPerObjOwnedObjCanAssign = class(TtstPerObjOwnedObj)
+  TtstPerObjOwnedObjCanAssign = class(TtiObjectWithOwnedForTesting)
   protected
     procedure   AssignClassProps(ASource: TtiObject); override;
   public
@@ -229,11 +228,11 @@ type
   end;
 
 
-  TtstPerObjMappedObj = class(TtstTIObject)
+  TtstPerObjMappedObj = class(TtiObjectForTesting)
   private
-    FObjProp: TtstTIObject;
+    FObjProp: TtiObjectForTesting;
   published
-    property ObjProp : TtstTIObject read FObjProp write FObjProp;
+    property ObjProp : TtiObjectForTesting read FObjProp write FObjProp;
   end;
 
 
@@ -271,44 +270,44 @@ const
 
 implementation
 uses
-  tiBOMsForTesting
-  ,tiTestDependencies
-  ,tiOPFManager
-  ,tiUtils
-  ,tiVisitor
-  ,tiConstants
-  ,tiOID
-  ,tiOIDGUID
-  ,tiRTTI
-  ,tiExcept
+  tiBOMsForTesting,
+  tiTestDependencies,
+  tiOPFManager,
+  tiUtils,
+  tiVisitor,
+  tiConstants,
+  tiOID,
+  tiOIDGUID,
+  tiRTTI,
+  tiExcept,
 
   // Delphi
-  ,SysUtils
-  ,TypInfo
- ;
+  SysUtils,
+  TypInfo,
+  DateUtils;
 
 procedure RegisterTests;
 begin
-  tiRegisterNonPersistentTest(TTestTIObject);
-  tiRegisterNonPersistentTest(TTestTIObjectList);
+  tiRegisterNonPersistentTest(TtiObjectTestCase);
+  tiRegisterNonPersistentTest(TtiObjectListTestCase);
 end;
 
 
-function CreateTestData : TtstTIObjectList;
+function CreateTestData : TtiObjectListForTesting;
 var
   lOID : Integer;
   i : integer;
-  lData : TtstPerObjOwnedObj;
+  lData : TtiObjectWithOwnedForTesting;
 begin
   lOID := 1;
-  result := TtstTIObjectList.Create;
+  result := TtiObjectListForTesting.Create;
   result.ObjectState := posClean;
   result.OID.AsString := IntToStr(lOID);
   Inc(lOID);
 
   for i := 9 downto 0 do
   begin
-    lData := TtstPerObjOwnedObj.Create;
+    lData := TtiObjectWithOwnedForTesting.Create;
     lData.ObjectState := posClean;
     lData.OID.AsString := IntToStr(lOID);
     Inc(lOID);
@@ -362,7 +361,7 @@ begin
   result:= inherited OIDGenerator;
 end;
 
-procedure TTestTIObject.AsDebugString;
+procedure TtiObjectTestCase.AsDebugString;
 var
   LL: TtstAsDebugStringObjectList;
   LO1: TtstAsDebugStringObject;
@@ -464,7 +463,7 @@ type
     result:= IntToStr(Index);
   end;
 
-procedure TTestTIObject.AssignCaptions;
+procedure TtiObjectTestCase.AssignCaptions;
 var
   LObjectList: TtiObjectList;
   LStringList: TStringList;
@@ -489,16 +488,16 @@ begin
 
 end;
 
-procedure TTestTIObject.AssignCompound;
+procedure TtiObjectTestCase.AssignCompound;
 var
-  lTestExceptionFrom : TtstPerObjOwnedObj;
-  lTestExceptionTo  : TtstPerObjOwnedObj;
+  lTestExceptionFrom : TtiObjectWithOwnedForTesting;
+  lTestExceptionTo  : TtiObjectWithOwnedForTesting;
   lFrom : TtstPerObjOwnedObjCanAssign;
   lTo  : TtstPerObjOwnedObjCanAssign;
 begin
-  lTestExceptionFrom := TtstPerObjOwnedObj.Create;
+  lTestExceptionFrom := TtiObjectWithOwnedForTesting.Create;
   try
-    lTestExceptionTo := TtstPerObjOwnedObj.Create;
+    lTestExceptionTo := TtiObjectWithOwnedForTesting.Create;
     try
       try
         lTestExceptionTo.Assign(lTestExceptionFrom);
@@ -532,7 +531,7 @@ begin
 end;
 
 
-procedure TTestTIObject.SetTSTPerObjAbs(AData : TtstTIObject; AValue : integer);
+procedure TtiObjectTestCase.SetTSTPerObjAbs(AData : TtiObjectForTesting; AValue : integer);
 begin
   AData.StrProp  := IntToStr(AValue);
   AData.IntProp  := AValue;
@@ -543,7 +542,7 @@ begin
 end;
 
 
-procedure TTestTIObject.CheckTSTPerObjAbs(AData : TtstTIObject; AValue : integer);
+procedure TtiObjectTestCase.CheckTSTPerObjAbs(AData : TtiObjectForTesting; AValue : integer);
 begin
   CheckEquals(IntToStr(AValue), AData.StrProp, 'Failed on StrField');
   CheckEquals(AValue, AData.IntProp,'Failed on IntField');
@@ -554,27 +553,27 @@ begin
 end;
 
 
-procedure TTestTIObject.SetTSTPerObjList(AData : TtstTIObjectList; AValue : integer);
+procedure TtiObjectTestCase.SetTSTPerObjList(AData : TtiObjectListForTesting; AValue : integer);
 begin
   AData.OID.AsString       := IntToStr(AValue);
 end;
 
 
-procedure TTestTIObject.CheckTSTPerObjList(AData : TtstTIObjectList; AValue : integer);
+procedure TtiObjectTestCase.CheckTSTPerObjList(AData : TtiObjectListForTesting; AValue : integer);
 begin
   CheckEquals(IntToStr(AValue), AData.OID.AsString,'Failed on OID');
 end;
 
 
-procedure TTestTIObject.AssignFlat;
+procedure TtiObjectTestCase.AssignFlat;
 var
-  lFrom : TtstTIObject;
-  lTo  : TtstTIObject;
+  lFrom : TtiObjectForTesting;
+  lTo  : TtiObjectForTesting;
 begin
-  lFrom := TtstTIObject.Create;
+  lFrom := TtiObjectForTesting.Create;
   try
     SetTSTPerObjAbs(lFrom, 1);
-    lTo  := TtstTIObject.Create;
+    lTo  := TtiObjectForTesting.Create;
     try
       SetTSTPerObjAbs(lTo, 2);
       lTo.Assign(lFrom);
@@ -591,20 +590,20 @@ begin
 end;
 
 
-procedure TTestTIObject.AssignList;
+procedure TtiObjectTestCase.AssignList;
 var
-  lFrom : TtstTIObjectList;
-  lItem : TtstTIObject;
-  lTo  : TtstTIObjectList;
+  lFrom : TtiObjectListForTesting;
+  lItem : TtiObjectForTesting;
+  lTo  : TtiObjectListForTesting;
 begin
-  lFrom := TtstTIObjectList.Create;
+  lFrom := TtiObjectListForTesting.Create;
   try
     lFrom.OwnsObjects := true;
     SetTSTPerObjList(lFrom, 1);
-    lItem := TtstTIObject.Create;
+    lItem := TtiObjectForTesting.Create;
     SetTSTPerObjAbs(lItem, 2);
     lFrom.Add(lItem);
-    lTo  := TtstTIObjectList.Create;
+    lTo  := TtiObjectListForTesting.Create;
     try
       SetTSTPerObjList(lTo, 3);
       lTo.Assign(lFrom);
@@ -622,16 +621,16 @@ begin
     lFrom.Free;
   end;
 
-  lFrom := TtstTIObjectList.Create;
+  lFrom := TtiObjectListForTesting.Create;
   try
     lFrom.OwnsObjects := false;
     lFrom.AutoSetItemOwner := false;
     SetTSTPerObjList(lFrom, 1);
-    lItem := TtstTIObject.Create;
+    lItem := TtiObjectForTesting.Create;
     try
       SetTSTPerObjAbs(lItem, 2);
       lFrom.Add(lItem);
-      lTo  := TtstTIObjectList.Create;
+      lTo  := TtiObjectListForTesting.Create;
       lTo.OwnsObjects := false;
       lTo.AutoSetItemOwner := false;
       try
@@ -655,13 +654,12 @@ begin
   end;
 end;
 
-
-procedure TTestTIObject.CloneFlat;
+procedure TtiObjectTestCase.CloneFlat;
 var
-  lFrom : TtstTIObject;
-  lTo  : TtstTIObject;
+  lFrom : TtiObjectForTesting;
+  lTo  : TtiObjectForTesting;
 begin
-  lFrom := TtstTIObject.Create;
+  lFrom := TtiObjectForTesting.Create;
   try
     SetTSTPerObjAbs(lFrom, 1);
     lTo  := lFrom.Clone;
@@ -681,7 +679,7 @@ begin
 end;
 
 
-procedure TTestTIObject.Deleted_TtiObjectList_AutoSetItemOwnerFalse;
+procedure TtiObjectTestCase.Deleted_TtiObjectList_AutoSetItemOwnerFalse;
 var
   LList : TtiObjectList;
 begin
@@ -703,7 +701,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.Deleted_TtiObjectList_AutoSetItemOwnerTrue;
+procedure TtiObjectTestCase.Deleted_TtiObjectList_AutoSetItemOwnerTrue;
 var
   LList : TtiObjectList;
 begin
@@ -750,7 +748,7 @@ type
     inherited;
   end;
 
-procedure TTestTIObject.Deleted_Owned;
+procedure TtiObjectTestCase.Deleted_Owned;
 var
   LData: TTestTIObjectDeleteOwned;
 begin
@@ -766,7 +764,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.Deleted_Referenced;
+procedure TtiObjectTestCase.Deleted_Referenced;
 var
   LData: TTestTIObjectDeleteOwned;
 begin
@@ -782,7 +780,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.Deleted_TtiObject;
+procedure TtiObjectTestCase.Deleted_TtiObject;
 var
   LItem : TtiObject;
 begin
@@ -808,14 +806,14 @@ begin
   end;
 end;
 
-procedure TTestTIObject.Dirty;
+procedure TtiObjectTestCase.Dirty;
 var
-  lData : TtstTIObjectList;
-  lGroup : TtstTIObject;
-  lItem : TtstPerObjOwnedObj;
+  lData : TtiObjectListForTesting;
+  lGroup : TtiObjectForTesting;
+  lItem : TtiObjectWithOwnedForTesting;
 begin
   { Test reading and writing to the .Dirty property }
-  lData := TtstTIObjectList.Create;
+  lData := TtiObjectListForTesting.Create;
   try
     Check(Not lData.Dirty, 'Failed on 1');
     lData.ObjectState := posPK;
@@ -850,14 +848,14 @@ begin
     lData.ObjectState := posClean;
     Check(Not lData.Dirty, 'Failed on 8');
 
-    lGroup := TtstTIObject.Create;
+    lGroup := TtiObjectForTesting.Create;
     lData.Add(lGroup);
     Check(Not lData.Dirty, 'Failed on 9');
     lGroup.ObjectState := posUpdate;
     Check(lData.Dirty, 'Failed on 10');
     lGroup.ObjectState := posClean;
 
-    lItem := TtstPerObjOwnedObj.Create;
+    lItem := TtiObjectWithOwnedForTesting.Create;
     lData.Add(lItem);
     Check(Not lData.Dirty, 'Failed on 11');
     lItem.ObjectState := posUpdate;
@@ -872,7 +870,7 @@ begin
 end;
 
 { testing automatic generation or OID value }
-procedure TTestTIObject.Dirty_And_OID;
+procedure TtiObjectTestCase.Dirty_And_OID;
 var
   LObject: TtiObjectForTestingOID;
   LOIDGeneratorClass: TtiOIDGeneratorClass;
@@ -900,20 +898,20 @@ begin
 end;
 
 
-procedure TTestTIObject.Equals;
+procedure TtiObjectTestCase.Equals;
 var
-  lObj1     : TtstTIObject;
-  lObj2     : TtstTIObject;
-  lObj3     : TtstTIObject;
-  lObj4     : TtstTIObject;
-  lList1    : TtstTIObjectList;
-  lList2    : TtstTIObjectList;
-  lOwnedObj1 : TtstPerObjOwnedObj;
-  lOwnedObj2 : TtstPerObjOwnedObj;
+  lObj1     : TtiObjectForTesting;
+  lObj2     : TtiObjectForTesting;
+  lObj3     : TtiObjectForTesting;
+  lObj4     : TtiObjectForTesting;
+  lList1    : TtiObjectListForTesting;
+  lList2    : TtiObjectListForTesting;
+  lOwnedObj1 : TtiObjectWithOwnedForTesting;
+  lOwnedObj2 : TtiObjectWithOwnedForTesting;
 begin
-  lObj1 := TtstTIObject.Create;
+  lObj1 := TtiObjectForTesting.Create;
   try
-    lObj2 := TtstTIObject.Create;
+    lObj2 := TtiObjectForTesting.Create;
     try
       Check(lObj1.Equals(lObj2), 'Failed on 1');
       Check(lObj2.Equals(lObj1), 'Failed on 2');
@@ -961,29 +959,29 @@ begin
     lObj1.Free;
   end;
 
-  lList1 := TtstTIObjectList.Create;
+  lList1 := TtiObjectListForTesting.Create;
   try
-    lList2 := TtstTIObjectList.Create;
+    lList2 := TtiObjectListForTesting.Create;
     try
       Check(lList1.Equals(lList2), 'Failed on 20');
       Check(lList2.Equals(lList1), 'Failed on 21');
 
-      lObj1 := TtstTIObject.Create;
+      lObj1 := TtiObjectForTesting.Create;
       lList1.Add(lObj1);
       Check(not lList1.Equals(lList2), 'Failed on 22');
       Check(not lList2.Equals(lList1), 'Failed on 23');
 
-      lObj2 := TtstTIObject.Create;
+      lObj2 := TtiObjectForTesting.Create;
       lList2.Add(lObj2);
       Check(lList1.Equals(lList2), 'Failed on 24');
       Check(lList2.Equals(lList1), 'Failed on 25');
 
-      lObj3 := TtstTIObject.Create;
+      lObj3 := TtiObjectForTesting.Create;
       lList1.Add(lObj3);
       Check(not lList1.Equals(lList2), 'Failed on 26');
       Check(not lList2.Equals(lList1), 'Failed on 27');
 
-      lObj4 := TtstTIObject.Create;
+      lObj4 := TtiObjectForTesting.Create;
       lList2.Add(lObj4);
       Check(lList1.Equals(lList2), 'Failed on 28');
       Check(lList2.Equals(lList1), 'Failed on 29');
@@ -1015,9 +1013,9 @@ begin
     lList1.Free;
   end;
 
-  lOwnedObj1 := TtstPerObjOwnedObj.Create;
+  lOwnedObj1 := TtiObjectWithOwnedForTesting.Create;
   try
-    lOwnedObj2 := TtstPerObjOwnedObj.Create;
+    lOwnedObj2 := TtiObjectWithOwnedForTesting.Create;
     try
       Check(lOwnedObj1.Equals(lOwnedObj2), 'Failed on 38');
       Check(lOwnedObj2.Equals(lOwnedObj1), 'Failed on 39');
@@ -1038,9 +1036,9 @@ begin
 end;
 
 
-procedure TTestTIObject.FindAllWithMethod;
+procedure TtiObjectTestCase.FindAllWithMethod;
 var
-  lData : TtstTIObjectList;
+  lData : TtiObjectListForTesting;
   lList : TList;
   i : integer;
 begin
@@ -1051,7 +1049,7 @@ begin
       lData.FindAll(TstFindAll, lList);
       CheckEquals(6, lList.Count, 'Failed on count');
       for i := 0 to 5 do
-        CheckEquals(IntToStr(i), TtstTIObject(lList.Items[i]).OID.AsString, 'Failed on OID');
+        CheckEquals(IntToStr(i), TtiObjectForTesting(lList.Items[i]).OID.AsString, 'Failed on OID');
     finally
       lList.Free;
     end;
@@ -1061,9 +1059,9 @@ begin
 end;
 
 
-procedure TTestTIObject.FindByOID;
+procedure TtiObjectTestCase.FindByOID;
 var
-  lData : TtstTIObjectList;
+  lData : TtiObjectListForTesting;
   lToFind : TtiObject;
   lFound : TtiObject;
   i : integer;
@@ -1078,7 +1076,7 @@ begin
       lToFind := lData.Items[i];
       lFound := lData.Find(lToFind.OID);
       CheckSame(lToFind, lFound, 'Failed on 2');
-      lToFind := (lData.Items[i] as TtstPerObjOwnedObj).ObjProp;
+      lToFind := (lData.Items[i] as TtiObjectWithOwnedForTesting).ObjProp;
       lFound := lData.Find(lToFind.OID);
       CheckNull(lFound, 'Failed on 3');
     end;
@@ -1088,16 +1086,16 @@ begin
 end;
 
 
-function TTestTIObject.CreateTestDataList : TtstTIObjectList;
+function TtiObjectTestCase.CreateTestDataList : TtiObjectListForTesting;
 var
-  lItem : TtstPerObjOwnedObj;
+  lItem : TtiObjectWithOwnedForTesting;
   i     : integer;
 begin
-  result := TtstTIObjectList.Create;
+  result := TtiObjectListForTesting.Create;
   SetTSTPerObjList(Result, -1);
   for i := 0 to 4 do
   begin
-    lItem := TtstPerObjOwnedObj.Create;
+    lItem := TtiObjectWithOwnedForTesting.Create;
     Result.Add(lItem);
     SetTSTPerObjAbs(lItem, i*2);
     SetTSTPerObjAbs(lItem.ObjProp, i*2+1);
@@ -1105,14 +1103,14 @@ begin
 end;
 
 
-procedure TTestTIObject.FindWithMethod;
+procedure TtiObjectTestCase.FindWithMethod;
 var
-  lData : TtstTIObjectList;
-  lFound : TtstTIObject;
+  lData : TtiObjectListForTesting;
+  lFound : TtiObjectForTesting;
 begin
   lData := CreateTestDataList;
   try
-    lFound := lData.Find(TstFindMethod) as TtstTIObject;
+    lFound := lData.Find(TstFindMethod) as TtiObjectForTesting;
     Check(Assigned(lFound), 'Find failed');
     CheckEquals('1', lFound.OID.AsString, 'Find failed');
   finally
@@ -1121,27 +1119,27 @@ begin
 end;
 
 
-procedure TTestTIObject.TstFindMethod(AObject: TtiObject; var AFound: boolean);
+procedure TtiObjectTestCase.TstFindMethod(AObject: TtiObject; var AFound: boolean);
 begin
   AFound := false;
-  if not (AObject is TtstTIObject) then
+  if not (AObject is TtiObjectForTesting) then
     Exit; //==>
-  AFound := TtstTIObject(AObject).IntProp = 1;
+  AFound := TtiObjectForTesting(AObject).IntProp = 1;
 end;
 
 
-procedure TTestTIObject.FindWithMethodAndParam;
+procedure TtiObjectTestCase.FindWithMethodAndParam;
 var
-  lData : TtstTIObjectList;
-  lFound : TtstTIObject;
+  lData : TtiObjectListForTesting;
+  lFound : TtiObjectForTesting;
 begin
   lData := CreateTestDataList;
   try
-    lFound := lData.Find(TstFindMethodWithParam, Pointer(1)) as TtstTIObject;
+    lFound := lData.Find(TstFindMethodWithParam, Pointer(1)) as TtiObjectForTesting;
     Check(Assigned(lFound), 'Find failed');
     CheckEquals('1', lFound.OID.AsString, 'Find failed');
 
-    lFound := lData.Find(TstFindMethodWithParam, Pointer(100)) as TtstTIObject;
+    lFound := lData.Find(TstFindMethodWithParam, Pointer(100)) as TtiObjectForTesting;
     Check(not Assigned(lFound), 'Found when it shoud have failed');
 
   finally
@@ -1150,18 +1148,18 @@ begin
 end;
 
 
-procedure TTestTIObject.Index;
+procedure TtiObjectTestCase.Index;
 var
-  lData : TtstTIObjectList;
-  lItem0 : TtstTIObject;
-  lItem1 : TtstTIObject;
-  lItem2 : TtstTIObject;
-  lItem3: TtstTIObject;
+  lData : TtiObjectListForTesting;
+  lItem0 : TtiObjectForTesting;
+  lItem1 : TtiObjectForTesting;
+  lItem2 : TtiObjectForTesting;
+  lItem3: TtiObjectForTesting;
 begin
-  lData := TtstTIObjectList.Create;
+  lData := TtiObjectListForTesting.Create;
   try
     lData.ObjectState := posClean;
-    lItem0 := TtstTIObject.Create;
+    lItem0 := TtiObjectForTesting.Create;
     try
       lItem0.ObjectState := posClean;
       lItem0.Index;
@@ -1172,11 +1170,11 @@ begin
     end;
     lData.Add(lItem0);
     CheckEquals(0, lItem0.Index);
-    lItem1 := TtstTIObject.Create;
+    lItem1 := TtiObjectForTesting.Create;
     lItem1.ObjectState := posClean;
     lData.Add(lItem1);
     CheckEquals(1, lItem1.Index);
-    lItem2 := TtstTIObject.Create;
+    lItem2 := TtiObjectForTesting.Create;
     lItem2.ObjectState := posClean;
     lData.Insert(lItem1, lItem2);
 
@@ -1184,7 +1182,7 @@ begin
     CheckEquals(1, lItem2.Index);
     CheckEquals(2, lItem1.Index);
 
-    lItem3 := TtstTIObject.Create;
+    lItem3 := TtiObjectForTesting.Create;
     lItem3.ObjectState := posClean;
     lData.Insert(2, lItem3);
     CheckEquals(0, lItem0.Index);
@@ -1197,7 +1195,7 @@ begin
 end;
 
 
-procedure TTestTIObject.ObjectStateAsString;
+procedure TtiObjectTestCase.ObjectStateAsString;
 var
   lItem : TtiOPFTestItem;
 begin
@@ -1221,7 +1219,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.OIDGenerator;
+procedure TtiObjectTestCase.OIDGenerator;
 var
   LObject: TtiObjectForTestingOID;
   LOIDGeneratorClass: TtiOIDGeneratorClass;
@@ -1241,7 +1239,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.Owner;
+procedure TtiObjectTestCase.Owner;
 var
   lGroup : TtiObjectListNestedForTesting;
   lItem : TtiOPFTestItem;
@@ -1266,17 +1264,17 @@ begin
 end;
 
 
-procedure TTestTIObject.TopOfHierarchy;
+procedure TtiObjectTestCase.TopOfHierarchy;
 var
-  lData : TtstTIObjectList;
-  lGroup : TtstTIObject;
-  lItem : TtstPerObjOwnedObj;
+  lData : TtiObjectListForTesting;
+  lGroup : TtiObjectForTesting;
+  lItem : TtiObjectWithOwnedForTesting;
 begin
-  lData := TtstTIObjectList.Create;
+  lData := TtiObjectListForTesting.Create;
   try
-    lGroup := TtstTIObject.Create;
+    lGroup := TtiObjectForTesting.Create;
     lData.Add(lGroup);
-    lItem := TtstPerObjOwnedObj.Create;
+    lItem := TtiObjectWithOwnedForTesting.Create;
     lData.Add(lItem);
     Check(lData.TopOfHierarchy = lData, 'Failed on 1');
     Check(lGroup.TopOfHierarchy = lData, 'Failed on 2');
@@ -1287,21 +1285,21 @@ begin
 end;
 
 
-procedure TTestTIObject.IsUnique;
+procedure TtiObjectTestCase.IsUnique;
 var
-  lTop : TtstTIObjectList;
-  lItem : TtstTIObject;
+  lTop : TtiObjectListForTesting;
+  lItem : TtiObjectForTesting;
 begin
-  lTop := TtstTIObjectList.Create;
+  lTop := TtiObjectListForTesting.Create;
   try
     lTop.OID.AsString := '1';
     Check(lTop.IsUnique(lTop), 'Failed on test 1');
-    lItem := TtstTIObject.Create;
+    lItem := TtiObjectForTesting.Create;
     lItem.OID.AsString := '1';
     Check(not lTop.IsUnique(lItem), 'Failed on test 2');
     lTop.Add(lItem);
     Check(not lTop.IsUnique(lItem), 'Failed on test 3');
-    lItem := TtstTIObject.Create;
+    lItem := TtiObjectForTesting.Create;
     lItem.OID.AsString := '2';
     Check(lTop.IsUnique(lItem), 'Failed on test 4');
     lTop.Add(lItem);
@@ -1312,7 +1310,7 @@ begin
 end;
 
 
-procedure TTestTIObject.CloneCompound;
+procedure TtiObjectTestCase.CloneCompound;
 var
   lFrom : TtstPerObjOwnedObjCanAssign;
   lTo  : TtstPerObjOwnedObjCanAssign;
@@ -1334,18 +1332,18 @@ begin
 end;
 
 
-procedure TTestTIObject.CloneList;
+procedure TtiObjectTestCase.CloneList;
 var
-  lFrom : TtstTIObjectList;
-  lItem : TtstTIObject;
-  lTo  : TtstTIObjectList;
+  lFrom : TtiObjectListForTesting;
+  lItem : TtiObjectForTesting;
+  lTo  : TtiObjectListForTesting;
   i: integer;
 begin
-  lFrom := TtstTIObjectList.Create;
+  lFrom := TtiObjectListForTesting.Create;
   try
     lFrom.OwnsObjects := true;
     SetTSTPerObjList(lFrom, 1);
-    lItem := TtstTIObject.Create;
+    lItem := TtiObjectForTesting.Create;
     SetTSTPerObjAbs(lItem, 2);
     lFrom.Add(lItem);
     lTo  := lFrom.Clone;
@@ -1364,12 +1362,12 @@ begin
     lFrom.Free;
   end;
 
-  lFrom := TtstTIObjectList.Create;
+  lFrom := TtiObjectListForTesting.Create;
   try
     lFrom.OwnsObjects := false;
     lFrom.AutoSetItemOwner := false;
     SetTSTPerObjList(lFrom, 1);
-    lItem := TtstTIObject.Create;
+    lItem := TtiObjectForTesting.Create;
     SetTSTPerObjAbs(lItem, 2);
     lFrom.Add(lItem);
     lTo  := lFrom.Clone;
@@ -1395,31 +1393,31 @@ begin
 end;
 
 
-procedure TTestTIObject.TstFindMethodWithParam(AObject: TtiObject;
+procedure TtiObjectTestCase.TstFindMethodWithParam(AObject: TtiObject;
   var AFound: boolean; AUserContext: Pointer);
 begin
   AFound := false;
-  if not (AObject is TtstTIObject) then
+  if not (AObject is TtiObjectForTesting) then
     Exit; //==>
-  AFound := TtstTIObject(AObject).IntProp = Integer(AUserContext);
+  AFound := TtiObjectForTesting(AObject).IntProp = Integer(AUserContext);
 end;
 
 
-procedure TTestTIObject.TstFindAll(AObject : TtiObject; var AFound : boolean);
+procedure TtiObjectTestCase.TstFindAll(AObject : TtiObject; var AFound : boolean);
 begin
   AFound := false;
-  if not (AObject is TtstTIObject) then
+  if not (AObject is TtiObjectForTesting) then
     Exit; //==>
-  AFound := TtstTIObject(AObject).IntProp <= 5;
+  AFound := TtiObjectForTesting(AObject).IntProp <= 5;
 end;
 
 
-procedure TTestTIObject.IsValid;
+procedure TtiObjectTestCase.IsValid;
 var
-  lData : TtstTIObject;
+  lData : TtiObjectForTesting;
   lErrors : TtiObjectErrors;
 begin
-  lData := TtstTIObject.Create;
+  lData := TtiObjectForTesting.Create;
   try
     lData.StrProp := '';
     lData.IntProp := 0;
@@ -1459,23 +1457,12 @@ begin
 end;
 
 
-procedure TTestTIObject.SetPropValue;
+procedure TtiObjectTestCase.SetBooleanPropValue;
 var
-  lData : TtstTIObject;
+  lData : TtiObjectForTesting;
 begin
-  lData := TtstTIObject.Create;
+  lData := TtiObjectForTesting.Create;
   try
-    lData.PropValue['StrProp']:= 'test';
-    CheckEquals('test', lData.StrProp, 'StrProp');
-
-    lData.PropValue['IntProp']:= 1234;
-    CheckEquals(1234, lData.IntProp, 'IntProp');
-
-    lData.PropValue['FloatProp']:= 1234.5678;
-    CheckEquals(1234.5678, lData.FloatProp, cDUnitTestFloatPrecision, 'FloatProp');
-
-    lData.PropValue['DateProp']:= EncodeDate(2003, 01, 01);
-    CheckEquals(EncodeDate(2003, 01, 01), lData.DateProp, 0.00001, 'DateProp');
 
     lData.PropValue['BoolProp']:= true;
     CheckEquals(true, lData.BoolProp, 'BoolProp true');
@@ -1512,15 +1499,100 @@ begin
     lData.PropValue['BoolProp']:= '0';
     CheckEquals(false, lData.BoolProp, 'BoolProp ''0''');
 
-    lData.PropValue['OrdProp']:= tstOrdProp_2;
-    Check(tstOrdProp_2 = lData.OrdProp, 'OrdProp');
+  finally
+    lData.Free;
+  end;
+end;
+
+const
+  CTestPropValOID = '{8DE032BE-1BE2-4F69-A894-334B023E5DF9}';
+  CTestPropValString   = 'test';
+  CTestPropValInteger  = 1234;
+  CTestPropValFloat    = 1234.5678;
+  CTestPropValBoolean  = True;
+  CTestPropValOrd      = tstOrdProp_2;
+  CTestPropValDateTime = 37622.4274305556; // EncodeDateTime(2003, 01, 01, 10, 15, 30, 00)
+
+procedure TtiObjectTestCase.SetPropValue;
+var
+  lData : TtiObjectForTesting;
+begin
+  lData := TtiObjectForTesting.Create;
+  try
+    lData.PropValue['OID']:= CTestPropValOID;
+    CheckEquals(CTestPropValOID, lData.OID.AsString, 'OID');
+
+    lData.PropValue['StrProp']:= CTestPropValString;
+    CheckEquals(CTestPropValString, lData.StrProp, 'StrProp');
+
+    lData.PropValue['IntProp']:= CTestPropValInteger;
+    CheckEquals(CTestPropValInteger, lData.IntProp, 'IntProp');
+
+    lData.PropValue['FloatProp']:= CTestPropValFloat;
+    CheckEquals(CTestPropValFloat, lData.FloatProp, cDUnitTestFloatPrecision, 'FloatProp');
+
+    lData.PropValue['DateProp']:= CTestPropValDateTime;
+    CheckNearEnough(CTestPropValDateTime, lData.DateProp, 'DateProp');
+
+    lData.PropValue['BoolProp']:= CTestPropValBoolean;
+    CheckEquals(CTestPropValBoolean, lData.BoolProp, 'BoolProp true');
+
+    lData.PropValue['OrdProp']:= CTestPropValOrd;
+    Check(CTestPropValOrd = lData.OrdProp, 'OrdProp');
+
   finally
     lData.Free;
   end;
 end;
 
 
-procedure TTestTIObject.GetOID;
+procedure TtiObjectTestCase.SetPropValueNested;
+var
+  LData : TtiObjectWithOwnedForTesting;
+begin
+  LData := TtiObjectWithOwnedForTesting.Create;
+  try
+    LData.PropValue['OID']:= CTestPropValOID;
+    LData.PropValue['StrProp']   := CTestPropValString;
+    LData.PropValue['IntProp']   := CTestPropValInteger;
+    LData.PropValue['FloatProp'] := CTestPropValFloat;
+    LData.PropValue['DateProp']  := CTestPropValDateTime;
+    LData.PropValue['BoolProp']  := CTestPropValBoolean;
+    LData.PropValue['OrdProp']   := CTestPropValOrd;
+
+    LData.PropValue['ObjProp.OID']:= CTestPropValOID;
+    LData.PropValue['ObjProp.StrProp']   := CTestPropValString;
+    LData.PropValue['ObjProp.IntProp']   := CTestPropValInteger;
+    LData.PropValue['ObjProp.FloatProp'] := CTestPropValFloat;
+    LData.PropValue['ObjProp.DateProp']  := CTestPropValDateTime;
+    LData.PropValue['ObjProp.BoolProp']  := CTestPropValBoolean;
+    LData.PropValue['ObjProp.OrdProp']   := CTestPropValOrd;
+
+    CheckEquals(CTestPropValOID,      LData.OID.AsString, 'OID');
+    CheckEquals(CTestPropValString,   LData.StrProp, 'StrProp');
+    CheckEquals(CTestPropValInteger,  LData.IntProp, 'IntProp');
+    CheckEquals(CTestPropValFloat,    LData.FloatProp, cDUnitTestFloatPrecision, 'FloatProp');
+    CheckEquals(CTestPropValDateTime, LData.DateProp, 0.00001, 'DateProp');
+    CheckEquals(CTestPropValBoolean,  LData.BoolProp, 'BoolProp true');
+    Check(CTestPropValOrd = LData.OrdProp, 'OrdProp');
+
+// ToDo: OID will have to be published for this to work, but that will have side effects.
+//       Fix, but with care
+//    CheckEquals(CTestPropValOID,      LData.ObjProp.OID.AsString, 'OID');
+    CheckEquals('',                   LData.ObjProp.OID.AsString, 'OID');
+    CheckEquals(CTestPropValString,   LData.ObjProp.StrProp, 'StrProp');
+    CheckEquals(CTestPropValInteger,  LData.ObjProp.IntProp, 'IntProp');
+    CheckEquals(CTestPropValFloat,    LData.ObjProp.FloatProp, cDUnitTestFloatPrecision, 'FloatProp');
+    CheckEquals(CTestPropValDateTime, LData.ObjProp.DateProp, 0.00001, 'DateProp');
+    CheckEquals(CTestPropValBoolean,  LData.ObjProp.BoolProp, 'BoolProp true');
+    Check(CTestPropValOrd = LData.ObjProp.OrdProp, 'OrdProp');
+
+  finally
+    LData.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.GetOID;
 var
   LObject: TtiObjectForTestingOID;
   LOIDGeneratorClass: TtiOIDGeneratorClass;
@@ -1560,54 +1632,105 @@ begin
   end;
 end;
 
-procedure TTestTIObject.GetPropValue;
+procedure TtiObjectTestCase.GetPropValue;
 var
-  lData : TtstTIObject;
-  lOrd : String;
-  lStr : string;      
-  lInt : integer;
-  lFloat : extended;
+  LData : TtiObjectForTesting;
+  LOrd : String;
 begin
-  lData := TtstTIObject.Create;
+  LData := TtiObjectForTesting.Create;
   try
-    lData.StrProp := 'test';
-    lStr := lData.PropValue['StrProp'];
-    CheckEquals('test', lStr, 'StrProp');
+    LData.OID.AsString:= CTestPropValOID;
+    LData.StrProp := CTestPropValString;
+    LData.IntProp := CTestPropValInteger;
+    LData.FloatProp := CTestPropValFloat;
+    LData.DateProp := CTestPropValDateTime;
+    LData.BoolProp := CTestPropValBoolean;
+    LData.OrdProp := CTestPropValOrd;
 
-    lData.IntProp := 1234;
-    lInt := lData.PropValue['IntProp'];
-    CheckEquals(1234, lInt, 'IntProp');
-
-    lData.FloatProp := 1234.5678;
-    lFloat := lData.PropValue['FloatProp'];
-    CheckEquals(1234.5678, lFloat, cDUnitTestFloatPrecision, 'FloatProp');
-
-    lData.DateProp := EncodeDate(2003, 01, 01);
-    CheckEquals(EncodeDate(2003, 01, 01), lData.PropValue['DateProp'], 0.00001, 'DateProp');
-
-    lData.BoolProp := true;
-    CheckEquals(true, lData.PropValue['BoolProp'], 'BoolProp');
+    CheckEquals(CTestPropValOID, LData.PropValue['OID'], 'OID');
+    CheckEquals(CTestPropValString, LData.PropValue['StrProp'], 'StrProp');
+    CheckEquals(CTestPropValInteger, LData.PropValue['IntProp'], 'IntProp');
+    CheckEquals(CTestPropValFloat, LData.PropValue['FloatProp'], cDUnitTestFloatPrecision, 'FloatProp');
+    CheckNearEnough(CTestPropValDateTime, LData.PropValue['DateProp'], 'DateProp');
+    CheckEquals(CTestPropValBoolean, LData.PropValue['BoolProp'], 'BoolProp');
 
     // This is a bit of a mess, but it was the
     // best I could come up with to get PropValue working
     // with ordinals.
-    lData.OrdProp := tstOrdProp_2;
-    lOrd := lData.PropValue['OrdProp'];
-    CheckEquals('tstOrdProp_2',
-      GetEnumName(TypeInfo(TtstOrdProp),
-                   ord(tstOrdProp_2)),
+    LOrd := LData.PropValue['OrdProp'];
+    CheckEquals(LOrd,
+      GetEnumName(TypeInfo(TtstOrdProp), ord(CTestPropValOrd)),
       'OrdProp');
+
   finally
-    lData.Free;
+    LData.Free;
   end;
 end;
 
 
-procedure TTestTIObject.IsReadWriteProp;
+procedure TtiObjectTestCase.GetPropValueNested;
 var
-  lData : TtstTIObject;
+  LData : TtiObjectWithOwnedForTesting;
+  LOrd: String;
 begin
-  lData := TtstTIObject.Create;
+  LData := TtiObjectWithOwnedForTesting.Create;
+  try
+    LData.OID.AsString:= CTestPropValOID;
+    LData.StrProp := CTestPropValString;
+    LData.IntProp := CTestPropValInteger;
+    LData.FloatProp := CTestPropValFloat;
+    LData.DateProp := CTestPropValDateTime;
+    LData.BoolProp := CTestPropValBoolean;
+
+    LData.ObjProp.OID.AsString:= CTestPropValOID;
+    LData.ObjProp.StrProp := CTestPropValString;
+    LData.ObjProp.IntProp := CTestPropValInteger;
+    LData.ObjProp.FloatProp := CTestPropValFloat;
+    LData.ObjProp.DateProp := CTestPropValDateTime;
+    LData.ObjProp.BoolProp := CTestPropValBoolean;
+
+    CheckEquals(CTestPropValOID, LData.PropValue['OID'], 'OID');
+    CheckEquals(CTestPropValString, LData.PropValue['StrProp'], 'StrProp');
+    CheckEquals(CTestPropValInteger, LData.PropValue['IntProp'], 'IntProp');
+    CheckEquals(CTestPropValFloat, LData.PropValue['FloatProp'], cDUnitTestFloatPrecision, 'FloatProp');
+    CheckNearEnough(CTestPropValDateTime, LData.PropValue['DateProp'], 'DateProp');
+    CheckEquals(CTestPropValBoolean, LData.PropValue['BoolProp'], 'BoolProp');
+
+    // This is a bit of a mess, but it was the
+    // best I could come up with to get PropValue working
+    // with ordinals.
+    LData.OrdProp := CTestPropValOrd;
+    LOrd := LData.PropValue['OrdProp'];
+    CheckEquals(LOrd,
+      GetEnumName(TypeInfo(TtstOrdProp), ord(CTestPropValOrd)),
+      'OrdProp');
+
+    CheckEquals(CTestPropValOID, LData.ObjProp.PropValue['OID'], 'OID');
+    CheckEquals(CTestPropValString, LData.ObjProp.PropValue['StrProp'], 'StrProp');
+    CheckEquals(CTestPropValInteger, LData.ObjProp.PropValue['IntProp'], 'IntProp');
+    CheckEquals(CTestPropValFloat, LData.ObjProp.PropValue['FloatProp'], cDUnitTestFloatPrecision, 'FloatProp');
+    CheckNearEnough(CTestPropValDateTime, LData.ObjProp.PropValue['DateProp'], 'DateProp');
+    CheckEquals(CTestPropValBoolean, LData.ObjProp.PropValue['BoolProp'], 'BoolProp');
+
+    // This is a bit of a mess, but it was the
+    // best I could come up with to get PropValue working
+    // with ordinals.
+    LData.ObjProp.OrdProp := CTestPropValOrd;
+    LOrd := LData.ObjProp.PropValue['OrdProp'];
+    CheckEquals(LOrd,
+      GetEnumName(TypeInfo(TtstOrdProp), ord(CTestPropValOrd)),
+      'OrdProp');
+
+  finally
+    LData.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.IsReadWriteProp;
+var
+  lData : TtiObjectForTesting;
+begin
+  lData := TtiObjectForTesting.Create;
   try
     Check(lData.IsReadWriteProp('StrProp'),   'StrProp');
     Check(lData.IsReadWriteProp('IntProp'),   'IntProp');
@@ -1637,7 +1760,7 @@ type
   end;
 
 
-procedure TTestTIObject.FieldName;
+procedure TtiObjectTestCase.FieldName;
 var
   lObj: TtiFieldTest;
 begin
@@ -1651,7 +1774,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldBoolean;
+procedure TtiObjectTestCase.FieldBoolean;
 var
   lPerObj: TtiObject;
   lField:  TtiFieldBoolean;
@@ -1690,7 +1813,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldDateTime;
+procedure TtiObjectTestCase.FieldDateTime;
 var
   lPerObj: TtiObject;
   lField:  TtiFieldDateTime;
@@ -1734,7 +1857,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldFloat;
+procedure TtiObjectTestCase.FieldFloat;
 var
   lPerObj: TtiObject;
   lField:  TtiFieldFloat;
@@ -1812,7 +1935,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldInt64;
+procedure TtiObjectTestCase.FieldInt64;
 var
   lPerObj: TtiObject;
   lField:  TtiFieldInteger;
@@ -1854,7 +1977,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldString;
+procedure TtiObjectTestCase.FieldString;
 var
   lPerObj: TtiObject;
   lField:  TtiFieldString;
@@ -1884,7 +2007,7 @@ begin
 end;
 
 
-procedure TTestTIObject.PropType;
+procedure TtiObjectTestCase.PropType;
 var
   lObj : TTestGetPropNames;
 begin
@@ -1927,7 +2050,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldBoolean_Assign;
+procedure TtiObjectTestCase.FieldBoolean_Assign;
 var
   lF1: TtiFieldBoolean;
   lF2: TtiFieldBoolean;
@@ -1949,7 +2072,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.FieldBoolean_Equals;
+procedure TtiObjectTestCase.FieldBoolean_Equals;
 var
   lF1: TtiFieldBoolean;
   lF2: TtiFieldBoolean;
@@ -1974,7 +2097,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldDateTime_Assign;
+procedure TtiObjectTestCase.FieldDateTime_Assign;
 var
   lF1: TtiFieldDateTime;
   lF2: TtiFieldDateTime;
@@ -1996,7 +2119,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.FieldDateTime_YearsMonthsDays;
+procedure TtiObjectTestCase.FieldDateTime_YearsMonthsDays;
 var
   lPerObj: TtiObject;
   lField:  TtiFieldDateTime;
@@ -2029,7 +2152,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.FieldDateTime_HoursMinutesSeconds;
+procedure TtiObjectTestCase.FieldDateTime_HoursMinutesSeconds;
 var
   lPerObj: TtiObject;
   lField:  TtiFieldDateTime;
@@ -2062,7 +2185,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.FieldDateTime_Equals;
+procedure TtiObjectTestCase.FieldDateTime_Equals;
 var
   lF1: TtiFieldDateTime;
   lF2: TtiFieldDateTime;
@@ -2097,7 +2220,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldFloat_Assign;
+procedure TtiObjectTestCase.FieldFloat_Assign;
 var
   lF1: TtiFieldFloat;
   lF2: TtiFieldFloat;
@@ -2119,7 +2242,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.FieldFloat_Equals;
+procedure TtiObjectTestCase.FieldFloat_Equals;
 var
   lF1: TtiFieldFloat;
   lF2: TtiFieldFloat;
@@ -2191,7 +2314,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldInt64_Assign;
+procedure TtiObjectTestCase.FieldInt64_Assign;
 var
   lF1: TtiFieldInteger;
   lF2: TtiFieldInteger;
@@ -2213,7 +2336,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.FieldInt64_Equals;
+procedure TtiObjectTestCase.FieldInt64_Equals;
 var
   lF1: TtiFieldInteger;
   lF2: TtiFieldInteger;
@@ -2238,7 +2361,7 @@ begin
 end;
 
 
-procedure TTestTIObject.FieldString_Assign;
+procedure TtiObjectTestCase.FieldString_Assign;
 var
   lF1: TtiFieldString;
   lF2: TtiFieldString;
@@ -2260,7 +2383,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.FieldString_Equals;
+procedure TtiObjectTestCase.FieldString_Equals;
 var
   lF1: TtiFieldString;
   lF2: TtiFieldString;
@@ -2291,7 +2414,7 @@ type
   TtiObjectListForTestingParent = class(TtiObjectList)
   end;
 
-procedure TTestTIObject.Parent_InheritsFromVsIs;
+procedure TtiObjectTestCase.Parent_InheritsFromVsIs;
 var
   LList: TtiObjectListForTestingParent;
 begin
@@ -2309,7 +2432,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.Parent_TtiObject;
+procedure TtiObjectTestCase.Parent_TtiObject;
 var
   LObject1: TtiObjectForTestingParent;
   LObject2: TtiObjectForTestingParent;
@@ -2331,7 +2454,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.Parent_TtiObjectList;
+procedure TtiObjectTestCase.Parent_TtiObjectList;
 var
   LObject1: TtiObjectForTestingParent;
   LObject2: TtiObjectForTestingParent;
@@ -2356,7 +2479,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.PropCount;
+procedure TtiObjectTestCase.PropCount;
 var
   lData : TtiObject;
 begin
@@ -2374,19 +2497,18 @@ begin
   end;
 end;
 
-
-procedure TTestTIObjectList.Add;
+procedure TtiObjectListTestCase.Add;
 var
-  lList : TtstTIObjectList;
-  lData : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData : TtiObjectForTesting;
   i : integer;
   idx: integer;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
     for i := 0 to 9 do
     begin
-      lData := TtstTIObject.Create;
+      lData := TtiObjectForTesting.Create;
       idx := lList.Add(lData);
       CheckEquals(i, lList.List.IndexOf(lData), 'Failed on ' + IntToStr(i));
       CheckEquals(idx, i, 'Failed on ' + IntToStr(i));
@@ -2398,7 +2520,7 @@ begin
 end;
 
 
-procedure TTestTIObjectList.AddItemOwner;
+procedure TtiObjectListTestCase.AddItemOwner;
 var
   LList: TtiObjectList;
   LItemOwner: TtiObject;
@@ -2453,19 +2575,19 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.AutoSetItemOwner;
+procedure TtiObjectListTestCase.AutoSetItemOwner;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
     lList.Add(lData1);
     CheckSame(lList, lData1.Owner, 'Failed on test 1');
     lList.AutoSetItemOwner := false;
-    lData2 := TtstTIObject.Create;
+    lData2 := TtiObjectForTesting.Create;
     lList.Add(lData2);
     CheckNull(lData2.Owner, 'Failed on test 2');
   finally
@@ -2474,19 +2596,19 @@ begin
 end;
 
 
-procedure TTestTIObjectList.PropToStrings;
+procedure TtiObjectListTestCase.PropToStrings;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
-  lData3     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
+  lData3     : TtiObjectForTesting;
   lsl        : TStringList;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
-    lData2 := TtstTIObject.Create;
-    lData3 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
+    lData2 := TtiObjectForTesting.Create;
+    lData3 := TtiObjectForTesting.Create;
     lData1.StrProp := '1';
     lData2.StrProp := '2';
     lData3.StrProp := '3';
@@ -2512,14 +2634,14 @@ begin
 end;
 
 
-procedure TTestTIObjectList.Clear;
+procedure TtiObjectListTestCase.Clear;
 var
-  lList : TtstTIObjectList;
-  lData : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData := TtstTIObject.Create;
+    lData := TtiObjectForTesting.Create;
     lList.Add(lData);
     CheckEquals(1, lList.Count, 'Count');
     lList.Clear;
@@ -2535,7 +2657,7 @@ begin
     end;
 
     lList.OwnsObjects := false;
-    lData := TtstTIObject.Create;
+    lData := TtiObjectForTesting.Create;
     lList.Add(lData);
     CheckEquals(1, lList.Count, 'Count');
     lList.Clear;
@@ -2555,18 +2677,18 @@ begin
 end;
 
 
-procedure TTestTIObjectList.Count;
+procedure TtiObjectListTestCase.Count;
 var
-  lList : TtstTIObjectList;
-  lData : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData : TtiObjectForTesting;
   i : integer;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
     CheckEquals(0, lList.Count, 'Failed on 0');
     for i := 1 to 10 do
     begin
-      lData := TtstTIObject.Create;
+      lData := TtiObjectForTesting.Create;
       lList.Add(lData);
       CheckEquals(i, lList.Count, 'Failed on ' + IntToStr(i));
     end;
@@ -2576,18 +2698,18 @@ begin
 end;
 
 
-procedure TTestTIObjectList.CountNotDeleted;
+procedure TtiObjectListTestCase.CountNotDeleted;
 var
-  lList : TtstTIObjectList;
-  lData : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData : TtiObjectForTesting;
   i : integer;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
     CheckEquals(0, lList.Count, 'Failed on 0');
     for i := 1 to 10 do
     begin
-      lData := TtstTIObject.Create;
+      lData := TtiObjectForTesting.Create;
       lList.Add(lData);
       CheckEquals(i, lList.CountNotDeleted, 'Failed on ' + IntToStr(i));
     end;
@@ -2602,13 +2724,13 @@ begin
 end;
 
 
-function TTestTIObjectList.CreateList: TtstTIObjectList;
+function TtiObjectListTestCase.CreateList: TtiObjectListForTesting;
 var
-  xItem : TtstTIObject;
+  xItem : TtiObjectForTesting;
 begin
-  result:=TtstTIObjectList.Create;
+  result:=TtiObjectListForTesting.Create;
   // 1
-  xItem:=TtstTIObject.Create;
+  xItem:=TtiObjectForTesting.Create;
   xItem.OID.AsString:='1';
   with xITem do
   begin
@@ -2620,7 +2742,7 @@ begin
   end;
   result.Add(xItem);
   // 2
-  xItem:=TtstTIObject.Create;
+  xItem:=TtiObjectForTesting.Create;
   xItem.OID.AsString:='2';
   with xITem do
   begin
@@ -2632,7 +2754,7 @@ begin
   end;
   result.Add(xItem);
   // 3
-  xItem:=TtstTIObject.Create;
+  xItem:=TtiObjectForTesting.Create;
   xItem.OID.AsString:='3';
   with xITem do
   begin
@@ -2644,7 +2766,7 @@ begin
   end;
   result.Add(xItem);
   // 4
-  xItem:=TtstTIObject.Create;
+  xItem:=TtiObjectForTesting.Create;
   xItem.OID.AsString:='4';
   with xITem do
   begin
@@ -2656,7 +2778,7 @@ begin
   end;
   result.Add(xItem);
   // 5
-  xItem:=TtstTIObject.Create;
+  xItem:=TtiObjectForTesting.Create;
   xItem.OID.AsString:='5';
   with xITem do
   begin
@@ -2670,17 +2792,17 @@ begin
 end;
 
 
-procedure TTestTIObjectList.Delete;
+procedure TtiObjectListTestCase.Delete;
 var
-  lList : TtstTIObjectList;
-  lData : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData : TtiObjectForTesting;
   i : integer;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
     for i := 0 to 9 do
     begin
-      lData := TtstTIObject.Create;
+      lData := TtiObjectForTesting.Create;
       lList.Add(lData);
       CheckEquals(i, lList.IndexOf(lData), 'Failed on add ' + IntToStr(i));
     end;
@@ -2695,15 +2817,15 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.Empty;
+procedure TtiObjectListTestCase.Empty;
 var
-  lList : TtstTIObjectList;
-  lData : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData : TtiObjectForTesting;
 begin
   Check(True); // To Force OnCheckCalled to be called
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData := TtstTIObject.Create;
+    lData := TtiObjectForTesting.Create;
     lList.Add(lData);
     lList.Empty;
     try
@@ -2718,17 +2840,17 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.Extract;
+procedure TtiObjectListTestCase.Extract;
 var
-  lList : TtstTIObjectList;
-  lData : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData : TtiObjectForTesting;
   i : integer;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
     for i := 0 to 9 do
     begin
-      lData := TtstTIObject.Create;
+      lData := TtiObjectForTesting.Create;
       lList.Add(lData);
       CheckEquals(i, lList.IndexOf(lData), 'Failed on add ' + IntToStr(i));
     end;
@@ -2748,67 +2870,67 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.FindByProps_DirectValue;
+procedure TtiObjectListTestCase.FindByProps_DirectValue;
 var
-  LList: TtstTIObjectList;
-  LItem: TtstTIObject;
+  LList: TtiObjectListForTesting;
+  LItem: TtiObjectForTesting;
 begin
   LList := CreateList;
   try
     // by boolean
     CheckEquals(5,LList.Count,'Wrong list! - Wrong count!');
-    LItem:=TtstTIObject(LList.FindByProps(['BoolProp'],[true]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['BoolProp'],[true]));
     CheckNotNull(LItem,'Find By Boolean value - NO result when expected');
     CheckEquals('1',LItem.OID.AsString,'Find By Boolean value - wrong object!');
-    LItem:=TtstTIObject(LList.FindByProps(['BoolProp'],[false]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['BoolProp'],[false]));
     CheckNull(LItem,'Find By Boolean value - result when not expected');
     // by int
-    LItem:=TtstTIObject(LList.FindByProps(['IntProp'],[-4942345]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['IntProp'],[-4942345]));
     CheckNotNull(LItem,'Find By Integer value - NO result when expected -4942345');
     CheckEquals('2',LItem.OID.AsString,'Find By Integer value - wrong object! -4942345');
-    LItem:=TtstTIObject(LList.FindByProps(['IntProp'],[7878787]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['IntProp'],[7878787]));
     CheckNull(LItem,'Find By Integer value - result when not expected 7878787');
     // by string
-    LItem:=TtstTIObject(LList.FindByProps(['StrProp'],['TEST VALUE']));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['StrProp'],['TEST VALUE']));
     CheckNotNull(LItem,'Find By String value (case sensitive) - NO result when expected <TEST VALUE>');
     CheckEquals('3',LItem.OID.AsString,'Find By String value (case sensitive) - wrong object! <TEST VALUE>');
-    LItem:=TtstTIObject(LList.FindByProps(['StrProp'],['Test Value'],false));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['StrProp'],['Test Value'],false));
     CheckNotNull(LItem,'Find By String value (not case sensitive) - NO result when expected <Test AValue>');
     CheckEquals('3',LItem.OID.AsString,'Find By String value (not case sensitive) - wrong object! <Test AValue>');
-    LItem:=TtstTIObject(LList.FindByProps(['StrProp'],['Test Value'],true));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['StrProp'],['Test Value'],true));
     CheckNull(LItem,'Find By String value (case sensitive) - result when not expected <Test AValue>');
-    LItem:=TtstTIObject(LList.FindByProps(['StrProp'],['_Test Value_'],false));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['StrProp'],['_Test Value_'],false));
     CheckNull(LItem,'Find By String value (not case sensitive) - result when not expected <_Test Value_>');
     // float
-    LItem:=TtstTIObject(LList.FindByProps(['FloatProp'],[235465.34321]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['FloatProp'],[235465.34321]));
     CheckNotNull(LItem,'Find By Float value - NO result when expected 235465.34321');
     CheckEquals('4',LItem.OID.AsString,'Find By Float value - wrong object! 235465.34321');
-    LItem:=TtstTIObject(LList.FindByProps(['FloatProp'],[235465.3432]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['FloatProp'],[235465.3432]));
     CheckNull(LItem,'Find By Float value - result when not expected 235465.3432');
     // by Date
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[EncodeDate(2004,05,12)]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[EncodeDate(2004,05,12)]));
     CheckNotNull(LItem,'Find By Date value 2004-05-12 - NO result when expected');
     CheckEquals('5',LItem.OID.AsString,'Find By Date value - wrong object!');
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[0]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[0]));
     CheckNotNull(LItem,'Find By Date value 0 - NO result when expected');
     CheckEquals('4',LItem.OID.AsString,'Find By Date value - wrong object!');
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[EncodeDate(2004,05,13)]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[EncodeDate(2004,05,13)]));
     CheckNull(LItem,'Find By Date value 2004-05-13 - result when not expected');
     // by DateTime
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[EncodeDate(2000,02,03)+EncodeTime(4,5,6,7)]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[EncodeDate(2000,02,03)+EncodeTime(4,5,6,7)]));
     CheckNotNull(LItem,'Find By DateTime value 2000-02-03, 4:05:06.007 - NO result when expected');
     CheckEquals('2',LItem.OID.AsString,'Find By Integer value 2000-02-03, 4:05:06.007 - wrong object!');
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[EncodeDate(1999,02,06)+EncodeTime(20,0,0,1)]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[EncodeDate(1999,02,06)+EncodeTime(20,0,0,1)]));
     CheckNull(LItem,'Find By DateTime value 1999-02-06, 20:00:00.001 - result when not expected');
   finally
     LList.Free;
   end;
 end;
 
-procedure TTestTIObjectList.FindByProps_TypedValue;
+procedure TtiObjectListTestCase.FindByProps_TypedValue;
 var
-  LList : TtstTIObjectList;
-  LItem : TtstTIObject;
+  LList : TtiObjectListForTesting;
+  LItem : TtiObjectForTesting;
   LInt : integer;
   LDate : TDateTime;
   LStr : string;
@@ -2820,89 +2942,89 @@ begin
     // by boolean
     CheckEquals(5,LList.Count,'Wrong list! - Wrong count!');
     LBool:=true;
-    LItem:=TtstTIObject(LList.FindByProps(['BoolProp'],[LBool]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['BoolProp'],[LBool]));
     CheckNotNull(LItem,'Find By Boolean value - NO result when expected');
     CheckEquals('1',LItem.OID.AsString,'Find By Boolean value - wrong object!');
     LBool:=false;
-    LItem:=TtstTIObject(LList.FindByProps(['BoolProp'],[LBool]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['BoolProp'],[LBool]));
     CheckNull(LItem,'Find By Boolean value - result when not expected');
     // by int
     LInt:=-4942345;
-    LItem:=TtstTIObject(LList.FindByProps(['IntProp'],[LInt]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['IntProp'],[LInt]));
     CheckNotNull(LItem,'Find By Integer value - NO result when expected -4942345');
     CheckEquals('2',LItem.OID.AsString,'Find By Integer value - wrong object! -4942345');
     LInt:=7878787;
-    LItem:=TtstTIObject(LList.FindByProps(['IntProp'],[LInt]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['IntProp'],[LInt]));
     CheckNull(LItem,'Find By Integer value - result when not expected 7878787');
     // by string
     LStr:='TEST VALUE';
-    LItem:=TtstTIObject(LList.FindByProps(['StrProp'],[LStr]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['StrProp'],[LStr]));
     CheckNotNull(LItem,'Find By String value (case sensitive) - NO result when expected <TEST VALUE>');
     CheckEquals('3',LItem.OID.AsString,'Find By String value (case sensitive) - wrong object! <TEST VALUE>');
 
     LStr:='Test Value';
-    LItem:=TtstTIObject(LList.FindByProps(['StrProp'],[LStr],false));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['StrProp'],[LStr],false));
     CheckNotNull(LItem,'Find By String value (not case sensitive) - NO result when expected <Test AValue>');
     CheckEquals('3',LItem.OID.AsString,'Find By String value (not case sensitive) - wrong object! <Test AValue>');
-    LItem:=TtstTIObject(LList.FindByProps(['StrProp'],[LStr],true));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['StrProp'],[LStr],true));
     CheckNull(LItem,'Find By String value (case sensitive) - result when not expected <Test AValue>');
 
     LStr:='_Test Value_';
-    LItem:=TtstTIObject(LList.FindByProps(['StrProp'],[LStr],false));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['StrProp'],[LStr],false));
     CheckNull(LItem,'Find By String value (not case sensitive) - result when not expected <_Test Value_>');
 
     // float
     LFloat:=235465.34321;
-    LItem:=TtstTIObject(LList.FindByProps(['FloatProp'],[LFloat]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['FloatProp'],[LFloat]));
     CheckNotNull(LItem,'Find By Float value - NO result when expected 235465.34321');
     CheckEquals('4',LItem.OID.AsString,'Find By Float value - wrong object! 235465.34321');
     LFloat:=235465.3432;
-    LItem:=TtstTIObject(LList.FindByProps(['FloatProp'],[LFloat]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['FloatProp'],[LFloat]));
     CheckNull(LItem,'Find By Float value - result when not expected 235465.3432');
 
     // by Date
     LDate:=EncodeDate(2004,05,12);
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[LDate]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[LDate]));
     CheckNotNull(LItem,'Find By Date value 2004-05-12 - NO result when expected');
     CheckEquals('5',LItem.OID.AsString,'Find By Date value - wrong object!');
 
     LDate:=0;
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[LDate]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[LDate]));
     CheckNotNull(LItem,'Find By Date value 0 - NO result when expected');
     CheckEquals('4',LItem.OID.AsString,'Find By Date value - wrong object!');
 
     LDate:=EncodeDate(2004,05,13);
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[LDate]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[LDate]));
     CheckNull(LItem,'Find By Date value 2004-05-13 - result when not expected');
 
     // by DateTime
     LDate:=EncodeDate(2000,02,03)+EncodeTime(4,5,6,7);
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[LDate]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[LDate]));
     CheckNotNull(LItem,'Find By DateTime value 2000-02-03, 4:05:06.007 - NO result when expected');
     CheckEquals('2',LItem.OID.AsString,'Find By Integer value 2000-02-03, 4:05:06.007 - wrong object!');
 
     LDate:=EncodeDate(1999,02,06)+EncodeTime(20,0,0,1);
-    LItem:=TtstTIObject(LList.FindByProps(['DateProp'],[LDate]));
+    LItem:=TtiObjectForTesting(LList.FindByProps(['DateProp'],[LDate]));
     CheckNull(LItem,'Find By DateTime value 1999-02-06, 20:00:00.001 - result when not expected');
   finally
     LList.Free;
   end;
 end;
 
-procedure TTestTIObjectList.First;
+procedure TtiObjectListTestCase.First;
 var
-  lList : TtstTIObjectList;
-  lData0 : TtstTIObject;
-  lData1 : TtstTIObject;
-  lData2 : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData0 : TtiObjectForTesting;
+  lData1 : TtiObjectForTesting;
+  lData2 : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData0 := TtstTIObject.Create;
+    lData0 := TtiObjectForTesting.Create;
     lList.Add(lData0);
-    lData1 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
     lList.Add(lData1);
-    lData2 := TtstTIObject.Create;
+    lData2 := TtiObjectForTesting.Create;
     lList.Add(lData2);
     CheckSame(lData0, lList.First, 'Failed on First');
     lData0.Deleted := true;
@@ -2913,24 +3035,24 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.DoForEachMethod(const AData : TtiObject);
+procedure TtiObjectListTestCase.DoForEachMethod(const AData : TtiObject);
 begin
-  Assert(AData is TtstTIObject, 'AData not a TtstPerObjAbs');
-  TtstTIObject(AData).StrProp := 'tested';
+  Assert(AData is TtiObjectForTesting, 'AData not a TtstPerObjAbs');
+  TtiObjectForTesting(AData).StrProp := 'tested';
 end;
 
-procedure TTestTIObjectList.ForEachMethod;
+procedure TtiObjectListTestCase.ForEachMethod;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
-  lData3     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
+  lData3     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
-    lData2 := TtstTIObject.Create;
-    lData3 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
+    lData2 := TtiObjectForTesting.Create;
+    lData3 := TtiObjectForTesting.Create;
     lList.Add(lData1);
     lList.Add(lData2);
     lList.Add(lData3);
@@ -2945,22 +3067,22 @@ end;
 
 procedure DoForEachMethodRegular(const AData : TtiObject);
 begin
-  Assert(AData is TtstTIObject, 'AData not a TtstPerObjAbs');
-  TtstTIObject(AData).StrProp := 'tested';
+  Assert(AData is TtiObjectForTesting, 'AData not a TtstPerObjAbs');
+  TtiObjectForTesting(AData).StrProp := 'tested';
 end;
 
-procedure TTestTIObjectList.ForEachMethodRegular;
+procedure TtiObjectListTestCase.ForEachMethodRegular;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
-  lData3     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
+  lData3     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
-    lData2 := TtstTIObject.Create;
-    lData3 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
+    lData2 := TtiObjectForTesting.Create;
+    lData3 := TtiObjectForTesting.Create;
     lList.Add(lData1);
     lList.Add(lData2);
     lList.Add(lData3);
@@ -2974,27 +3096,27 @@ begin
 end;
 
 {$IFDEF DELPHI9ORABOVE}
-procedure TTestTIObjectList.ForIn;
+procedure TtiObjectListTestCase.ForIn;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
-  lData3     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
+  lData3     : TtiObjectForTesting;
   lItem      : TtiObject;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
-    lData2 := TtstTIObject.Create;
-    lData3 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
+    lData2 := TtiObjectForTesting.Create;
+    lData3 := TtiObjectForTesting.Create;
     lList.Add(lData1);
     lList.Add(lData2);
     lList.Add(lData3);
 
     for lItem in lList do
     begin
-      Assert(lItem is TtstTIObject, 'AData not a TtstPerObjAbs');
-      TtstTIObject(lItem).StrProp := 'tested';
+      Assert(lItem is TtiObjectForTesting, 'AData not a TtstPerObjAbs');
+      TtiObjectForTesting(lItem).StrProp := 'tested';
     end;
 
     CheckEquals('tested', lList.Items[0].StrProp, 'Failed on 1');
@@ -3008,7 +3130,7 @@ end;
 {$ENDIF}
 
 
-procedure TTestTIObjectList.FreeDeleted;
+procedure TtiObjectListTestCase.FreeDeleted;
 var
   LList: TtiObjectList;
   LItem1: TtiObject;
@@ -3038,7 +3160,7 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.GetEnumerator;
+procedure TtiObjectListTestCase.GetEnumerator;
 var
   LList: TtiObjectList;
   LItem1: TtiObject;
@@ -3081,7 +3203,7 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.tiListToStreamDefault;
+procedure TtiObjectListTestCase.tiListToStreamDefault;
 var
   lStream : TStringStream;
   lList  : TTestListOfPersistents;
@@ -3101,7 +3223,7 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.tiListToStreamDelims;
+procedure TtiObjectListTestCase.tiListToStreamDelims;
 var
   lStream : TStringStream;
   lList  : TTestListOfPersistents;
@@ -3132,7 +3254,7 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.tiListToStreamFields;
+procedure TtiObjectListTestCase.tiListToStreamFields;
 var
   lStream : TStringStream;
   lList  : TTestListOfPersistents;
@@ -3161,7 +3283,7 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.tiListToCSVDefault;
+procedure TtiObjectListTestCase.tiListToCSVDefault;
 var
   lList: TTestListOfPersistents;
   lString1: string;
@@ -3193,7 +3315,7 @@ begin
   CheckEquals(lString1, lString2);
 end;
 
-procedure TTestTIObjectList.tiListToCSVFields;
+procedure TtiObjectListTestCase.tiListToCSVFields;
 var
   lList      : TTestListOfPersistents;
   lString1: string;
@@ -3223,17 +3345,17 @@ begin
   CheckEquals(lString1, lString2, 'String');
 end;
 
-procedure TTestTIObjectList.IndexOf;
+procedure TtiObjectListTestCase.IndexOf;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
     lList.Add(lData1);
-    lData2 := TtstTIObject.Create;
+    lData2 := TtiObjectForTesting.Create;
     lList.Add(lData2);
     CheckEquals(0, lList.IndexOf(lData1), 'Failed on test 1');
     CheckEquals(1, lList.IndexOf(lData2), 'Failed on test 2');
@@ -3242,28 +3364,28 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.InsertByObject;
+procedure TtiObjectListTestCase.InsertByObject;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
-  lData3     : TtstTIObject;
-  lData4     : TtstTIObject;
-  lData5     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
+  lData3     : TtiObjectForTesting;
+  lData4     : TtiObjectForTesting;
+  lData5     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
     lData1.ObjectState := posClean;
     lList.Add(lData1);
-    lData2 := TtstTIObject.Create;
+    lData2 := TtiObjectForTesting.Create;
     lData2.ObjectState := posClean;
     lList.Add(lData2);
-    lData3 := TtstTIObject.Create;
+    lData3 := TtiObjectForTesting.Create;
     lData3.ObjectState := posClean;
-    lData4 := TtstTIObject.Create;
+    lData4 := TtiObjectForTesting.Create;
     lData4.ObjectState := posClean;
-    lData5 := TtstTIObject.Create;
+    lData5 := TtiObjectForTesting.Create;
     lData5.ObjectState := posClean;
     // Test inserting before the last element
     lList.Insert(lData2, lData3);
@@ -3291,7 +3413,7 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.InsertItemOwner;
+procedure TtiObjectListTestCase.InsertItemOwner;
 var
   LList: TtiObjectList;
   LItemOwner: TtiObject;
@@ -3346,28 +3468,28 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.InsertByIndex;
+procedure TtiObjectListTestCase.InsertByIndex;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
-  lData3     : TtstTIObject;
-  lData4     : TtstTIObject;
-  lData5     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
+  lData3     : TtiObjectForTesting;
+  lData4     : TtiObjectForTesting;
+  lData5     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
     lData1.ObjectState := posClean;
     lList.Add(lData1);
-    lData2 := TtstTIObject.Create;
+    lData2 := TtiObjectForTesting.Create;
     lData2.ObjectState := posClean;
     lList.Add(lData2);
-    lData3 := TtstTIObject.Create;
+    lData3 := TtiObjectForTesting.Create;
     lData3.ObjectState := posClean;
-    lData4 := TtstTIObject.Create;
+    lData4 := TtiObjectForTesting.Create;
     lData4.ObjectState := posClean;
-    lData5 := TtstTIObject.Create;
+    lData5 := TtiObjectForTesting.Create;
     lData5.ObjectState := posClean;
     // Test inserting before the last element
     lList.Insert(1, lData3);
@@ -3395,19 +3517,19 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.ItemOwner;
+procedure TtiObjectListTestCase.ItemOwner;
 var
-  lList      : TtstTIObjectList;
-  lItemOwner1 : TtstTIObject;
-  lData      : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lItemOwner1 : TtiObjectForTesting;
+  lData      : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
     CheckSame(lList, lList.ItemOwner, 'Failed on test 1');
-    lData := TtstTIObject.Create;
+    lData := TtiObjectForTesting.Create;
     lList.Add(lData);
     CheckSame(lList, lData.Owner, 'Failed on test 2');
-    lItemOwner1 := TtstTIObject.Create;
+    lItemOwner1 := TtiObjectForTesting.Create;
     try
       lList.ItemOwner := lItemOwner1;
       CheckSame(lItemOwner1, lList.ItemOwner, 'Failed on test 3');
@@ -3420,17 +3542,17 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.Items;
+procedure TtiObjectListTestCase.Items;
 var
-  lList : TtstTIObjectList;
-  lData : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData : TtiObjectForTesting;
   i : integer;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
     for i := 0 to 9 do
     begin
-      lData := TtstTIObject.Create;
+      lData := TtiObjectForTesting.Create;
       lList.Add(lData);
       CheckSame(lData, lList.Items[i], 'Failed on ' + IntToStr(i));
     end;
@@ -3439,20 +3561,20 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.Last;
+procedure TtiObjectListTestCase.Last;
 var
-  lList : TtstTIObjectList;
-  lData0 : TtstTIObject;
-  lData1 : TtstTIObject;
-  lData2 : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData0 : TtiObjectForTesting;
+  lData1 : TtiObjectForTesting;
+  lData2 : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData0 := TtstTIObject.Create;
+    lData0 := TtiObjectForTesting.Create;
     lList.Add(lData0);
-    lData1 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
     lList.Add(lData1);
-    lData2 := TtstTIObject.Create;
+    lData2 := TtiObjectForTesting.Create;
     lList.Add(lData2);
     CheckSame(lData2, lList.Last, 'Failed on Last');
     lData0.Deleted := true;
@@ -3462,20 +3584,20 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.LastExcludeDeleted;
+procedure TtiObjectListTestCase.LastExcludeDeleted;
 var
-  lList : TtstTIObjectList;
-  lData0 : TtstTIObject;
-  lData1 : TtstTIObject;
-  lData2 : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData0 : TtiObjectForTesting;
+  lData1 : TtiObjectForTesting;
+  lData2 : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData0 := TtstTIObject.Create;
+    lData0 := TtiObjectForTesting.Create;
     lList.Add(lData0);
-    lData1 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
     lList.Add(lData1);
-    lData2 := TtstTIObject.Create;
+    lData2 := TtiObjectForTesting.Create;
     lList.Add(lData2);
     CheckSame(lData2, lList.LastExcludeDeleted, 'Failed on LastExcludeDeleted');
     lData2.Deleted := true;
@@ -3485,16 +3607,16 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.MarkListItemsDirty;
+procedure TtiObjectListTestCase.MarkListItemsDirty;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
-    lData2 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
+    lData2 := TtiObjectForTesting.Create;
     lData1.ObjectState := posClean;
     lData2.ObjectState := posClean;
     lList.Add(lData1);
@@ -3507,16 +3629,16 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.MarkListItemsForDeletion;
+procedure TtiObjectListTestCase.MarkListItemsForDeletion;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
-    lData2 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
+    lData2 := TtiObjectForTesting.Create;
     lList.Add(lData1);
     lList.Add(lData2);
     Check(not lList.Items[0].Deleted, 'Failed on test 1');
@@ -3529,13 +3651,13 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.OwnsObjects;
+procedure TtiObjectListTestCase.OwnsObjects;
 var
-  lList : TtstTIObjectList;
+  lList : TtiObjectListForTesting;
 begin
   // A trivial test because OwnsObjects is delegated to the
   // owned instance of TObjectList
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
     Check(lList.OwnsObjects, 'failed on OwnsObjects = true');
     lList.OwnsObjects := false;
@@ -3547,17 +3669,17 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.Remove;
+procedure TtiObjectListTestCase.Remove;
 var
-  lList : TtstTIObjectList;
-  lData : TtstTIObject;
+  lList : TtiObjectListForTesting;
+  lData : TtiObjectForTesting;
   i : integer;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
     for i := 0 to 9 do
     begin
-      lData := TtstTIObject.Create;
+      lData := TtiObjectForTesting.Create;
       lList.Add(lData);
       CheckEquals(i, lList.IndexOf(lData), 'Failed on add ' + IntToStr(i));
     end;
@@ -3576,26 +3698,26 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.SortByOID;
+procedure TtiObjectListTestCase.SortByOID;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
-  lData3     : TtstTIObject;
-  lData4     : TtstTIObject;
-  lData5     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
+  lData3     : TtiObjectForTesting;
+  lData4     : TtiObjectForTesting;
+  lData5     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
     lData1.OID.AsString := '1';
-    lData2 := TtstTIObject.Create;
+    lData2 := TtiObjectForTesting.Create;
     lData2.OID.AsString := '2';
-    lData3 := TtstTIObject.Create;
+    lData3 := TtiObjectForTesting.Create;
     lData3.OID.AsString := '3';
-    lData4 := TtstTIObject.Create;
+    lData4 := TtiObjectForTesting.Create;
     lData4.OID.AsString := '4';
-    lData5 := TtstTIObject.Create;
+    lData5 := TtiObjectForTesting.Create;
     lData5.OID.AsString := '5';
 
     lList.Add(lData2);
@@ -3615,26 +3737,26 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.SortByProps;
+procedure TtiObjectListTestCase.SortByProps;
 var
-  lList      : TtstTIObjectList;
-  lData1     : TtstTIObject;
-  lData2     : TtstTIObject;
-  lData3     : TtstTIObject;
-  lData4     : TtstTIObject;
-  lData5     : TtstTIObject;
+  lList      : TtiObjectListForTesting;
+  lData1     : TtiObjectForTesting;
+  lData2     : TtiObjectForTesting;
+  lData3     : TtiObjectForTesting;
+  lData4     : TtiObjectForTesting;
+  lData5     : TtiObjectForTesting;
 begin
-  lList := TtstTIObjectList.Create;
+  lList := TtiObjectListForTesting.Create;
   try
-    lData1 := TtstTIObject.Create;
+    lData1 := TtiObjectForTesting.Create;
     lData1.StrProp := '1';
-    lData2 := TtstTIObject.Create;
+    lData2 := TtiObjectForTesting.Create;
     lData2.StrProp := '2';
-    lData3 := TtstTIObject.Create;
+    lData3 := TtiObjectForTesting.Create;
     lData3.StrProp := '3';
-    lData4 := TtstTIObject.Create;
+    lData4 := TtiObjectForTesting.Create;
     lData4.StrProp := '4';
-    lData5 := TtstTIObject.Create;
+    lData5 := TtiObjectForTesting.Create;
     lData5.StrProp := '5';
 
     lList.Add(lData2);
@@ -3654,10 +3776,10 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.Find;
+procedure TtiObjectListTestCase.Find;
 var
-  lData : TtstTIObjectList;
-  lTarget: TtstTIObject;
+  lData : TtiObjectListForTesting;
+  lTarget: TtiObjectForTesting;
   lOID: TtiOID;
   i : integer;
 begin
@@ -3669,7 +3791,7 @@ begin
       lOID := lTarget.OID;
       CheckSame(lTarget, lData.Find(lOID), '#' + lOID.AsString);
 
-      lTarget := (lData.Items[i] as TtstPerObjOwnedObj).ObjProp;
+      lTarget := (lData.Items[i] as TtiObjectWithOwnedForTesting).ObjProp;
       lOID := lTarget.OID;
       CheckNull(lData.Find(lOID), '#' + lOID.AsString);
     end;
@@ -3681,7 +3803,7 @@ begin
       lOID := lTarget.OID;
       CheckSame(lTarget, lData.Find(lOID), '#' + lOID.AsString);
 
-      lTarget := (lData.Items[i] as TtstPerObjOwnedObj).ObjProp;
+      lTarget := (lData.Items[i] as TtiObjectWithOwnedForTesting).ObjProp;
       lOID := lTarget.OID;
       CheckNull(lData.Find(lOID), '#' + lOID.AsString);
     end;
@@ -3690,10 +3812,10 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.FindInHierarchy;
+procedure TtiObjectListTestCase.FindInHierarchy;
 var
-  lData : TtstTIObjectList;
-  lTarget: TtstTIObject;
+  lData : TtiObjectListForTesting;
+  lTarget: TtiObjectForTesting;
   lOID: TtiOID;
   i : integer;
 begin
@@ -3705,7 +3827,7 @@ begin
       lOID := lTarget.OID;
       CheckSame(lTarget, lData.FindInHierarchy(lOID), '#' + lOID.AsString);
 
-      lTarget := (lData.Items[i] as TtstPerObjOwnedObj).ObjProp;
+      lTarget := (lData.Items[i] as TtiObjectWithOwnedForTesting).ObjProp;
       lOID := lTarget.OID;
       CheckSame(lTarget, lData.FindInHierarchy(lOID), '#' + lOID.AsString);
     end;
@@ -3714,26 +3836,26 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.FindSortedUntyped;
+procedure TtiObjectListTestCase.FindSortedUntyped;
 var
-  LList: TtstTIObjectList;
+  LList: TtiObjectListForTesting;
   LObject: TtiObject;
-  LtstObject: TtstTIObject;
+  LtstObject: TtiObjectForTesting;
   LIndex: integer;
   LValue: integer;
 begin
-  LList := TtstTIObjectList.Create;
+  LList := TtiObjectListForTesting.Create;
   try
     LValue := 10;
     CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNull(LObject);
     CheckEquals(0, LIndex);
-    LtstObject := TtstTIObject.Create;
+    LtstObject := TtiObjectForTesting.Create;
     LList.Insert(LIndex, LtstObject);
     LtstObject.IntProp := LValue;
     CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNotNull(LObject);
-    LtstObject := LObject as TtstTIObject;
+    LtstObject := LObject as TtiObjectForTesting;
     CheckEquals(LValue, LtstObject.IntProp);
     CheckEquals(0, LIndex);
 
@@ -3741,12 +3863,12 @@ begin
     CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNull(LObject);
     CheckEquals(1, LIndex);
-    LtstObject := TtstTIObject.Create;
+    LtstObject := TtiObjectForTesting.Create;
     LList.Insert(LIndex, LtstObject);
     LtstObject.IntProp := LValue;
     CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNotNull(LObject);
-    LtstObject := LObject as TtstTIObject;
+    LtstObject := LObject as TtiObjectForTesting;
     CheckEquals(LValue, LtstObject.IntProp);
     CheckEquals(1, LIndex);
 
@@ -3754,12 +3876,12 @@ begin
     CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNull(LObject);
     CheckEquals(0, LIndex);
-    LtstObject := TtstTIObject.Create;
+    LtstObject := TtiObjectForTesting.Create;
     LList.Insert(LIndex, LtstObject);
     LtstObject.IntProp := LValue;
     CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNotNull(LObject);
-    LtstObject := LObject as TtstTIObject;
+    LtstObject := LObject as TtiObjectForTesting;
     CheckEquals(LValue, LtstObject.IntProp);
     CheckEquals(0, LIndex);
 
@@ -3767,12 +3889,12 @@ begin
     CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNull(LObject);
     CheckEquals(1, LIndex);
-    LtstObject := TtstTIObject.Create;
+    LtstObject := TtiObjectForTesting.Create;
     LList.Insert(LIndex, LtstObject);
     LtstObject.IntProp := LValue;
     CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNotNull(LObject);
-    LtstObject := LObject as TtstTIObject;
+    LtstObject := LObject as TtiObjectForTesting;
     CheckEquals(LValue, LtstObject.IntProp);
     CheckEquals(1, LIndex);
 
@@ -3780,12 +3902,12 @@ begin
     CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNull(LObject);
     CheckEquals(3, LIndex);
-    LtstObject := TtstTIObject.Create;
+    LtstObject := TtiObjectForTesting.Create;
     LList.Insert(LIndex, LtstObject);
     LtstObject.IntProp := LValue;
     CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNotNull(LObject);
-    LtstObject := LObject as TtstTIObject;
+    LtstObject := LObject as TtiObjectForTesting;
     CheckEquals(LValue, LtstObject.IntProp);
     CheckEquals(3, LIndex);
 
@@ -3793,12 +3915,12 @@ begin
     CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNull(LObject);
     CheckEquals(5, LIndex);
-    LtstObject := TtstTIObject.Create;
+    LtstObject := TtiObjectForTesting.Create;
     LList.Insert(LIndex, LtstObject);
     LtstObject.IntProp := LValue;
     CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNotNull(LObject);
-    LtstObject := LObject as TtstTIObject;
+    LtstObject := LObject as TtiObjectForTesting;
     CheckEquals(LValue, LtstObject.IntProp);
     CheckEquals(5, LIndex);
 
@@ -3806,12 +3928,12 @@ begin
     CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNull(LObject);
     CheckEquals(0, LIndex);
-    LtstObject := TtstTIObject.Create;
+    LtstObject := TtiObjectForTesting.Create;
     LList.Insert(LIndex, LtstObject);
     LtstObject.IntProp := LValue;
     CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNotNull(LObject);
-    LtstObject := LObject as TtstTIObject;
+    LtstObject := LObject as TtiObjectForTesting;
     CheckEquals(LValue, LtstObject.IntProp);
     CheckEquals(0, LIndex);
 
@@ -3819,12 +3941,12 @@ begin
     CheckFalse(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNull(LObject);
     CheckEquals(6, LIndex);
-    LtstObject := TtstTIObject.Create;
+    LtstObject := TtiObjectForTesting.Create;
     LList.Insert(LIndex, LtstObject);
     LtstObject.IntProp := LValue;
     CheckTrue(LList.FindSortedUntyped(LList.FindCompareIntProp, LValue, LObject, LIndex));
     CheckNotNull(LObject);
-    LtstObject := LObject as TtstTIObject;
+    LtstObject := LObject as TtiObjectForTesting;
     CheckEquals(LValue, LtstObject.IntProp);
     CheckEquals(6, LIndex);
   finally
@@ -3834,40 +3956,40 @@ end;
 
 { TtstPerObjList }
 
-function TtstTIObjectList.Add(AObject: TtstTIObject): integer;
+function TtiObjectListForTesting.Add(AObject: TtiObjectForTesting): integer;
 begin
   result := inherited Add(AObject);
 end;
 
-function TtstTIObjectList.Clone: TtstTIObjectList;
+function TtiObjectListForTesting.Clone: TtiObjectListForTesting;
 begin
-  result := TtstTIObjectList(inherited Clone);
+  result := TtiObjectListForTesting(inherited Clone);
 end;
 
-function TtstTIObjectList.GetItems(i: integer): TtstTIObject;
+function TtiObjectListForTesting.GetItems(i: integer): TtiObjectForTesting;
 begin
-  result := TtstTIObject(inherited GetItems(i));
+  result := TtiObjectForTesting(inherited GetItems(i));
 end;
 
-procedure TtstTIObjectList.SetItems(i: integer; const AValue: TtstTIObject);
+procedure TtiObjectListForTesting.SetItems(i: integer; const AValue: TtiObjectForTesting);
 begin
   inherited SetItems(i, AValue);
 end;
 
-constructor TtstTIObjectList.CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
+constructor TtiObjectListForTesting.CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
 begin
   Create;
   OID.AsString := IntToStr(Integer(Self));
   ObjectState := posCreate;
 end;
 
-function TtstTIObjectList.FindCompareIntProp(const AObject: TtiObject;
+function TtiObjectListForTesting.FindCompareIntProp(const AObject: TtiObject;
   const AValue): integer;
 var
-  LObject: TtstTIObject;
+  LObject: TtiObjectForTesting;
   LValue: integer;
 begin
-  LObject := AObject as TtstTIObject;
+  LObject := AObject as TtiObjectForTesting;
   LValue := integer(AValue);
   if LObject.IntProp < LValue then
     result := -1
@@ -3879,31 +4001,31 @@ end;
 
 { TtstPerObjAbs }
 
-function TtstTIObject.Clone: TtstTIObject;
+function TtiObjectForTesting.Clone: TtiObjectForTesting;
 begin
-  result := TtstTIObject(inherited Clone);
+  result := TtiObjectForTesting(inherited Clone);
 end;
 
-constructor TtstTIObject.Create;
+constructor TtiObjectForTesting.Create;
 begin
   inherited;
   Populate;
 end;
 
-constructor TtstTIObject.CreateNew(const AOwner : TtiObject; const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
+constructor TtiObjectForTesting.CreateNew(const AOwner : TtiObject; const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
 begin
   Create;
-  Owner := AOwner as TtstTIObjectList;
+  Owner := AOwner as TtiObjectListForTesting;
   OID.AsString := IntToStr(Integer(Self));
   ObjectState := posCreate;
 end;
 
-function TtstTIObject.Equals(const AData: TtiObject): boolean;
+function TtiObjectForTesting.Equals(const AData: TtiObject): boolean;
 var
-  LData: TtstTIObject;
+  LData: TtiObjectForTesting;
 begin
-  Assert(AData.TestValid(TtstTIObject), CTIErrorInvalidObject);
-  LData:= AData as TtstTIObject;
+  Assert(AData.TestValid(TtiObjectForTesting), CTIErrorInvalidObject);
+  LData:= AData as TtiObjectForTesting;
   result :=
     (Self.StrProp   = LData.StrProp)   and
     (Self.IntProp   = LData.IntProp)   and
@@ -3913,12 +4035,12 @@ begin
     (Self.OrdProp   = LData.OrdProp);
 end;
 
-function TtstTIObject.GetOwner: TtstTIObjectList;
+function TtiObjectForTesting.GetOwner: TtiObjectListForTesting;
 begin
-  result := TtstTIObjectList(inherited GetOwner);
+  result := TtiObjectListForTesting(inherited GetOwner);
 end;
 
-function TtstTIObject.IsValid(const AErrors: TtiObjectErrors): boolean;
+function TtiObjectForTesting.IsValid(const AErrors: TtiObjectErrors): boolean;
 begin
   inherited IsValid(AErrors);
   if StrProp = '' then
@@ -3930,7 +4052,7 @@ begin
   result := AErrors.Count = 0;
 end;
 
-procedure TtstTIObject.Populate;
+procedure TtiObjectForTesting.Populate;
 begin
   BoolProp := false;
   IntProp  := 1;
@@ -3940,31 +4062,31 @@ begin
   OrdProp  := tstOrdProp_1;
 end;
 
-procedure TtstTIObject.SetOwner(const AValue: TtstTIObjectList);
+procedure TtiObjectForTesting.SetOwner(const AValue: TtiObjectListForTesting);
 begin
   inherited SetOwner(AValue);
 end;
 
 { TtstPerObjOwnedObj }
 
-constructor TtstPerObjOwnedObj.Create;
+constructor TtiObjectWithOwnedForTesting.Create;
 begin
   inherited;
-  FObjProp := TtstTIObject.Create;
+  FObjProp := TtiObjectForTesting.Create;
 end;
 
-destructor TtstPerObjOwnedObj.Destroy;
+destructor TtiObjectWithOwnedForTesting.Destroy;
 begin
   FObjProp.Free;
   inherited;
 end;
 
-function TtstPerObjOwnedObj.Equals(const AData: TtiObject): boolean;
+function TtiObjectWithOwnedForTesting.Equals(const AData: TtiObject): boolean;
 var
-  LData: TtstPerObjOwnedObj;
+  LData: TtiObjectWithOwnedForTesting;
 begin
-  Assert(AData.TestValid(TtstPerObjOwnedObj), CTIErrorInvalidObject);
-  LData:= AData as TtstPerObjOwnedObj;
+  Assert(AData.TestValid(TtiObjectWithOwnedForTesting), CTIErrorInvalidObject);
+  LData:= AData as TtiObjectWithOwnedForTesting;
   result :=
     (inherited Equals(LData))   and
     (Self.ObjProp.Equals(LData.ObjProp));
@@ -3998,20 +4120,20 @@ begin
   inherited;
 end;
 
-procedure TTestTIObjectList.FirstExcludeDeleted;
+procedure TtiObjectListTestCase.FirstExcludeDeleted;
 var
-  LList : TtstTIObjectList;
-  LData0 : TtstTIObject;
-  LData1 : TtstTIObject;
-  LData2 : TtstTIObject;
+  LList : TtiObjectListForTesting;
+  LData0 : TtiObjectForTesting;
+  LData1 : TtiObjectForTesting;
+  LData2 : TtiObjectForTesting;
 begin
-  LList := TtstTIObjectList.Create;
+  LList := TtiObjectListForTesting.Create;
   try
-    LData0 := TtstTIObject.Create;
+    LData0 := TtiObjectForTesting.Create;
     LList.Add(LData0);
-    LData1 := TtstTIObject.Create;
+    LData1 := TtiObjectForTesting.Create;
     LList.Add(LData1);
-    LData2 := TtstTIObject.Create;
+    LData2 := TtiObjectForTesting.Create;
     LList.Add(LData2);
     CheckSame(LData0, lList.FirstExcludeDeleted, 'Failed on FirstExcludeDeleted');
     LData0.Deleted := true;
@@ -4021,7 +4143,7 @@ begin
   end;
 end;
 
-procedure TTestTIObject.AttachDetachObserver;
+procedure TtiObjectTestCase.AttachDetachObserver;
 var
   lSubject: TtstSubject;
   lObserver: TtstObserver;
@@ -4079,27 +4201,27 @@ begin
   FName := TtstSubject(ASubject).Name;
 end;
 
-procedure TTestTIObjectList.CompareWithEvent;
+procedure TtiObjectListTestCase.CompareWithEvent;
 var
   LList1: TtiObjectList;
   LList2: TtiObjectList;
-  LItemInBothSame1: TtstTIObject;
-  LItemInBothSame2: TtstTIObject;
-  LItemInBothNotSame1: TtstTIObject;
-  LItemInBothNotSame2: TtstTIObject;
-  LItemIn1Only: TtstTIObject;
-  LItemIn2Only: TtstTIObject;
+  LItemInBothSame1: TtiObjectForTesting;
+  LItemInBothSame2: TtiObjectForTesting;
+  LItemInBothNotSame1: TtiObjectForTesting;
+  LItemInBothNotSame2: TtiObjectForTesting;
+  LItemIn1Only: TtiObjectForTesting;
+  LItemIn2Only: TtiObjectForTesting;
 begin
   LList1:= TtiObjectList.Create;
   try
     LList2:= TtiObjectList.Create;
     try
-      LItemInBothSame1  := TtstTIObject.Create;
-      LItemInBothSame2  := TtstTIObject.Create;
-      LItemInBothNotSame1:= TtstTIObject.Create;
-      LItemInBothNotSame2:= TtstTIObject.Create;
-      LItemIn1Only      := TtstTIObject.Create;
-      LItemIn2Only      := TtstTIObject.Create;
+      LItemInBothSame1  := TtiObjectForTesting.Create;
+      LItemInBothSame2  := TtiObjectForTesting.Create;
+      LItemInBothNotSame1:= TtiObjectForTesting.Create;
+      LItemInBothNotSame2:= TtiObjectForTesting.Create;
+      LItemIn1Only      := TtiObjectForTesting.Create;
+      LItemIn2Only      := TtiObjectForTesting.Create;
 
       LItemInBothSame1.OID.AsString   := '1';
       LItemInBothSame2.OID.AsString   := '1';
@@ -4144,7 +4266,7 @@ begin
   end;
 end;
 
-procedure TTestTIObjectList.SetUp;
+procedure TtiObjectListTestCase.SetUp;
 begin
   inherited SetUp;
   FInBothAndEquals   := TtiObjectList.Create;
@@ -4164,7 +4286,7 @@ begin
   FIn2Only.AutoSetItemOwner:= False;
 end;
 
-procedure TTestTIObjectList.TearDown;
+procedure TtiObjectListTestCase.TearDown;
 begin
   inherited TearDown;
   FInBothAndEquals.Free;
@@ -4173,7 +4295,7 @@ begin
   FIn2Only.Free;
 end;
 
-procedure TTestTIObjectList.In1OnlyEvent(AItem1, AItem2: TtiObject);
+procedure TtiObjectListTestCase.In1OnlyEvent(AItem1, AItem2: TtiObject);
 begin
   Assert(AItem1.TestValid, CTIErrorInvalidObject);
   Assert(AItem2=nil, 'AItem2 assigned');
@@ -4181,14 +4303,14 @@ begin
   FIn1Only.Add(AItem1);
 end;
 
-procedure TTestTIObjectList.In2OnlyEvent(AItem1, AItem2: TtiObject);
+procedure TtiObjectListTestCase.In2OnlyEvent(AItem1, AItem2: TtiObject);
 begin
   Assert(AItem1=nil, 'AItem1 assigned');
   Assert(AItem2.TestValid, CTIErrorInvalidObject);
   FIn2Only.Add(AItem2);
 end;
 
-procedure TTestTIObjectList.InBothAndEqualsEvent(AItem1, AItem2: TtiObject);
+procedure TtiObjectListTestCase.InBothAndEqualsEvent(AItem1, AItem2: TtiObject);
 begin
   Assert(AItem1.TestValid, CTIErrorInvalidObject);
   Assert(AItem2.TestValid, CTIErrorInvalidObject);
@@ -4196,7 +4318,7 @@ begin
   FInBothAndEquals.Add(AItem1);
 end;
 
-procedure TTestTIObjectList.InBothAndNotEqualsEvent(AItem1, AItem2: TtiObject);
+procedure TtiObjectListTestCase.InBothAndNotEqualsEvent(AItem1, AItem2: TtiObject);
 begin
   Assert(AItem1.TestValid, CTIErrorInvalidObject);
   Assert(AItem2.TestValid, CTIErrorInvalidObject);

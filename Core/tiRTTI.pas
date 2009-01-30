@@ -16,6 +16,9 @@ uses
 
 const
 
+  CErrorSettingProperty      = 'Error setting property %s.%s Message %s';
+  CErrorGettingProperty      = 'Error getting property %s.%s Message %s';
+
   // Type kinds for use with tiGetPropertyNames
   // All string type properties
   ctkString = [ tkChar, tkString, tkWChar, tkLString, tkWString {$IFDEF FPC},tkAString{$ENDIF} ];
@@ -68,8 +71,8 @@ type
   function tiIsReadWriteProp(const AData : TtiBaseObjectClass; const APropName : string): boolean; overload;
 
   function  tiGetTypeInfo(PropInfo: PPropInfo): PTypeInfo;
-  function  tiGetProperty(AObject: TObject; PropPath: string): Variant;
-  procedure tiSetProperty(AObject: TObject; PropPath: string; Value: Variant);
+  function  tiGetProperty(const AObject: TObject; const APropPath: string): Variant;
+  procedure tiSetProperty(const AObject: TObject; const APropPath: string; const APropValue: Variant);
   function  tiGetPropInfo(AClass: TClass; PropPath: string; PInstance: Pointer): PPropInfo;
   procedure tiGetEnumNames(TypeInfo: PTypeInfo; Names: TStrings; PrefixLen: Integer = 0);
   function  tiPropertyInheritsFrom(AClass: TClass; PropPath: string; AParentClass: TClass): boolean;
@@ -83,59 +86,46 @@ uses
   tiExcept,
   tiConstants,
   SysUtils,
-  Variants
-  ;
+  Variants;
 
-
-function AccessProperty(AObject: TObject; PropPath: string; Value: Variant): Variant;
+procedure tiSetBooleanPropValue(
+  const AObject: TObject;
+  const APropName: string;
+  const APropValue: Variant);
 var
-  PropInfo: PPropInfo;
+  LStr: string;
+  LInt: Integer;
+  LBool: Boolean;
 begin
-  if Assigned(AObject) then
-  begin
-    if SameText(PropPath, 'self') then
-    begin
-      Result := Integer(AObject);
-      Exit; //==>
-    end;
-    PropInfo := tiGetPropInfo(AObject.ClassType, PropPath, @AObject);
-    if not Assigned(AObject) then
-      VarClear(Result)
-    else if Assigned(PropInfo) then
-    begin
-      if not VarIsNull(Value) and Assigned(PropInfo.SetProc) then
-      begin
-        case tiGetTypeInfo(PropInfo)^.Kind of
-          tkClass:
-            SetObjectProp(AObject, PropInfo, TObject(Integer(Value)));
-          tkEnumeration:
-            begin
-              {$IFDEF DELPHI6ORABOVE}
-              if VarIsStr(Value) and (VarToStr(Value) = '') then
-              {$ELSE}
-              if Value = '' then
-              {$ENDIF}
-                Value := 0;
-              SetPropValue(AObject, PropInfo^.Name, Value);
-            end;
-          tkSet:
-            if VarToStr(Value) = '' then
-              SetPropValue(AObject, PropInfo^.Name, '[]')
-            else
-              SetPropValue(AObject, PropInfo^.Name, Value);
-        else
-          SetPropValue(AObject, PropInfo^.Name, Value);
-        end;  { case }
-      end;  { if }
-      Result := GetPropValue(AObject, PropInfo^.Name);
-    end
-    else
-      Result := Null;
-  end
+  case tiVarSimplePropType(APropValue) of
+  tiTKString : begin
+                 LStr := APropValue;
+                 if SameText(LStr, 'true') or
+                   (LStr = '1') or
+                   SameText(LStr, 't') then
+                   TypInfo.SetPropValue(AObject, APropName, 1)
+                 else
+                   TypInfo.SetPropValue(AObject, APropName, 0);
+               end;
+  tiTKInteger : begin
+                  LInt := APropValue;
+                  if LInt = 0 then
+                    TypInfo.SetPropValue(AObject, APropName, 0)
+                  else
+                    TypInfo.SetPropValue(AObject, APropName, 1);
+                end;
+  tiTKBoolean : begin
+                  LBool := APropValue;
+                  if LBool then
+                    TypInfo.SetPropValue(AObject, APropName, 1)
+                  else
+                    TypInfo.SetPropValue(AObject, APropName, 0);
+                end;
   else
-    VarClear(Result);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorSettingProperty,
+      [AObject.ClassName, APropName, 'Unknown type' ]);
+  end
 end;
-
 
 function tiGetTypeInfo(PropInfo: PPropInfo): PTypeInfo;
 begin
@@ -146,14 +136,68 @@ begin
 {$ENDIF}
 end;
 
-function tiGetProperty(AObject: TObject; PropPath: string): Variant;
+function tiGetProperty(const AObject: TObject; const APropPath: string): Variant;
+var
+  LPropInfo: PPropInfo;
 begin
-  Result := AccessProperty(AObject, PropPath, Null);
+  // ToDo: I'm not sure that invalid AObject or APropPath should be swallowed with null returned
+  //       Would it be better if an exception was raised?
+  //       How should we differentiate between invalid parameters, and an actual null result?
+  if Assigned(AObject) then
+  begin
+    if not SameText(APropPath, 'self') then
+    begin
+      if Assigned(AObject) then
+      begin
+        LPropInfo := tiGetPropInfo(AObject.ClassType, APropPath, @AObject);
+        if Assigned(LPropInfo) and Assigned(LPropInfo.GetProc) then
+          Result := GetPropValue(AObject, LPropInfo^.Name)
+        else
+          Result:= Null;
+      end;
+    end else
+      Result := Integer(AObject);
+  end else
+    Result:= Null;
 end;
 
-procedure tiSetProperty(AObject: TObject; PropPath: string; Value: Variant);
+procedure tiSetProperty(const AObject: TObject; const APropPath: string; const APropValue: Variant);
+var
+  LPropInfo: PPropInfo;
+  LValue: Variant;
 begin
-  AccessProperty(AObject, PropPath, Value);
+  Assert(Assigned(AObject), CTIErrorInvalidObject);
+  Assert(APropPath <> '', 'APropPath not aassigned');
+  LPropInfo := tiGetPropInfo(AObject.ClassType, APropPath, @AObject);
+  if Assigned(LPropInfo) and Assigned(LPropInfo.SetProc) then
+  begin
+    case tiGetTypeInfo(LPropInfo)^.Kind of
+      tkClass:
+        SetObjectProp(AObject, LPropInfo, TObject(Integer(APropValue)));
+      tkEnumeration:
+        begin
+          {$IFDEF DELPHI6ORABOVE}
+          if VarIsStr(APropValue) and (VarToStr(APropValue) = '') then
+          {$ELSE}
+          if APropValue = '' then
+          {$ENDIF}
+            LValue:= 0
+          else
+            LValue:= APropValue;
+          if SameText(LPropInfo^.PropType^.Name, 'Boolean') then // Special handling if it's a boolean
+            tiSetBooleanPropValue(AObject, LPropInfo^.Name, LValue)
+          else
+            SetPropValue(AObject, LPropInfo^.Name, LValue);
+        end;
+      tkSet:
+        if VarToStr(APropValue) = '' then
+          SetPropValue(AObject, LPropInfo^.Name, '[]')
+        else
+          SetPropValue(AObject, LPropInfo^.Name, APropValue);
+    else
+      SetPropValue(AObject, LPropInfo^.Name, APropValue);
+    end;  { case }
+  end;
 end;
 
 function tiGetPropInfo(AClass: TClass; PropPath: string; PInstance: Pointer): PPropInfo;

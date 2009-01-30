@@ -33,6 +33,19 @@ type
     procedure GetProperty_PropertyPath;
     procedure GetPropertyClass;
     procedure PropertyInheritsFrom;
+
+//    procedure tiGetSimplePropType;
+//    procedure tiIsNumericProp;
+//    procedure tiGetPropertyNamesObject;
+//    procedure tiIsReadWritePropObject;
+//
+//    procedure SetProperty_Simple;
+//    procedure SetProperty_PropertyPath;
+//    procedure GetProperty_Simple;
+//    procedure GetProperty_PropertyPath;
+//    procedure GetPropertyClass;
+//    procedure PropertyInheritsFrom;
+
   end;
   
 
@@ -64,12 +77,14 @@ procedure RegisterTests;
 implementation
 
 uses
-  tiTestDependencies
-  ,tiRTTI
-  ,tiBaseObject
-  ,SysUtils
-  ,TypInfo
-  ;
+  tiTestDependencies,
+  tiRTTI,
+  tiBaseObject,
+  SysUtils,
+  {$IFDEF DELPHI6ORABOVE}
+  Variants,
+  {$ENDIF}
+  TypInfo;
 
 
 procedure RegisterTests;
@@ -79,29 +94,30 @@ end;
 
 procedure TTesttiRTTI.SetProperty_Simple;
 var
-  c: TtiOPFTestItem;
-  lDate: TDateTime;
+  LItem: TtiOPFTestItem;
+  LDate: TDateTime;
 begin
-  lDate := EncodeDate(2007, 2, 15) + EncodeTime(6, 30, 15, 10);
+  LDate := EncodeDate(2007, 2, 15) + EncodeTime(6, 30, 15, 10);
 
-  c := TtiOPFTestItem.Create;
+  LItem := TtiOPFTestItem.Create;
   try
-    tiSetProperty(c, 'StrField', 'Graeme');
-    CheckEquals('Graeme', c.StrField, 'Failed on 1');
+    tiSetProperty(LItem, 'StrField', 'Graeme');
+    CheckEquals('Graeme', LItem.StrField, 'StrField');
 
-    tiSetProperty(c, 'IntField', 32);
-    CheckEquals(32, c.IntField, 'Failed on 2');
+    tiSetProperty(LItem, 'IntField', 32);
+    CheckEquals(32, LItem.IntField, 'IntField');
 
-    tiSetProperty(c, 'FloatField', 12.345);
-    CheckEquals(12.345, c.FloatField, 0.0001, 'Failed on 3');
+    tiSetProperty(LItem, 'FloatField', 12.345);
+    CheckEquals(12.345, LItem.FloatField, 0.0001, 'FloatField');
 
-    tiSetProperty(c, 'DateField', lDate);
-    CheckEquals(lDate, c.DateField, 'Failed on 4');
+    tiSetProperty(LItem, 'DateField', LDate);
+    CheckEquals(LDate, LItem.DateField, 'DateField');
 
-    tiSetProperty(c, 'BoolField', True);
-    CheckEquals(True, c.BoolField, 'Failed on 5');
+    tiSetProperty(LItem, 'BoolField', True);
+    CheckEquals(True, LItem.BoolField, 'BoolField');
+
   finally
-    c.Free;
+    LItem.Free;
   end;
 end;
 
@@ -473,26 +489,29 @@ end;
 
 procedure TTesttiRTTI.GetProperty_Simple;
 var
-  c: TtiOPFTestItem;
+  LItem: TtiOPFTestItem;
   lDate: TDateTime;
 begin
   lDate := EncodeDate(2007, 2, 15) + EncodeTime(6, 30, 15, 10);
 
-  c := TtiOPFTestItem.Create;
+  LItem := TtiOPFTestItem.Create;
   try
-    c.StrField    := 'Graeme';
-    c.IntField    := 32;
-    c.FloatField  := 12.345;
-    c.DateField   := lDate;
-    c.BoolField   := True;
+    LItem.StrField    := 'Graeme';
+    LItem.IntField    := 32;
+    LItem.FloatField  := 12.345;
+    LItem.DateField   := lDate;
+    LItem.BoolField   := True;
 
-    CheckEquals('Graeme', tiGetProperty(c, 'StrField'), 'Failed on 1');
-    CheckEquals(32, tiGetProperty(c, 'IntField'), 'Failed on 2');
-    CheckEquals(12.345, tiGetProperty(c, 'FloatField'), 0.0001, 'Failed on 3');
-    CheckEquals(lDate, tiGetProperty(c, 'DateField'), 'Failed on 4');
-    CheckEquals(True, tiGetProperty(c, 'BoolField'), 'Failed on 5');
+    CheckEquals('Graeme', tiGetProperty(LItem, 'StrField'), 'Failed on 1');
+    CheckEquals(32, tiGetProperty(LItem, 'IntField'), 'Failed on 2');
+    CheckEquals(12.345, tiGetProperty(LItem, 'FloatField'), 0.0001, 'Failed on 3');
+    CheckEquals(lDate, tiGetProperty(LItem, 'DateField'), 'Failed on 4');
+    CheckEquals(True, tiGetProperty(LItem, 'BoolField'), 'Failed on 5');
+    Check(VarIsNull(tiGetProperty(LItem, 'NonExistantProperty')));
+    Check(VarIsNull(tiGetProperty(nil, 'BoolField')));
+
   finally
-    c.Free;
+    LItem.Free;
   end;
 end;
 
