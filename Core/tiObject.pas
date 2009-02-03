@@ -1913,14 +1913,26 @@ var
     
     // If the property is a TtiFieldAbs then compare the value with the field
     // objects AsString, else compare the value with the property itself
-    lPropInfo := GetPropInfo(Items[Idx], PropName, [tkClass]);
+    lPropInfo := GetPropInfo(Items[Idx], PropName, [tkClass,tkEnumeration]);
     if Assigned(lPropInfo) then
     begin
-      tiFieldAbs := GetObjectProp(Items[Idx], PropName, TtiFieldAbs) as TtiFieldAbs;
-      if Assigned(tiFieldAbs) then
-        lItem := tiFieldAbs.AsString
-      else
-        lItem := TypInfo.GetPropValue(Items[Idx], PropName);
+      if lPropInfo.PropType^.Kind=tkClass then
+      begin
+        tiFieldAbs := GetObjectProp(Items[Idx], PropName, TtiFieldAbs) as TtiFieldAbs;
+        if Assigned(tiFieldAbs) then
+          lItem := tiFieldAbs.AsString
+        else
+          lItem := TypInfo.GetPropValue(Items[Idx], PropName);
+      end
+      else // tkEnumeration
+      begin
+        // If the property is an enumeration and the search is on a numeric value,
+        // compare the ordinary values of the enumeration, instead of it' s name
+        if VarIsNumeric(lSearch) then
+          lItem := TypInfo.GetOrdProp(Items[Idx], PropName)
+        else
+          lItem := TypInfo.GetPropValue(Items[Idx], PropName);
+      end;
     end
     else
       lItem := TypInfo.GetPropValue(Items[Idx], PropName);
