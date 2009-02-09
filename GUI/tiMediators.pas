@@ -201,9 +201,10 @@ begin
   gMediatorManager.RegisterMediator(TMediatorEditView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TMediatorCheckBoxView, TtiObject, [tkInteger]); // ???  Delphi doesn't have a tkBool like FPC ???
   gMediatorManager.RegisterMediator(TMediatorComboboxView, TtiObject, [tkString,tkLString]);
+  gMediatorManager.RegisterMediator(TMediatorItemComboBoxView, TtiObject, [tkInteger, tkEnumeration]);
+  gMediatorManager.RegisterMediator(TMediatorDynamicComboBoxView, TtiObject, [tkClass]);
   gMediatorManager.RegisterMediator(TMediatorStaticTextView, TtiObject);
   gMediatorManager.RegisterMediator(TMediatorTrackBarView, TtiObject, [tkInteger]);
-  gMediatorManager.RegisterMediator(TMediatorDynamicComboBoxView, TtiObject, [tkClass]);
   gMediatorManager.RegisterMediator(TMediatorMemoView, TtiObject, [tkString,tkLString]);
 end;
 
