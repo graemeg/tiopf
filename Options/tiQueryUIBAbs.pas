@@ -522,7 +522,10 @@ End;
 
 Function TtiQueryUIBAbs.GetParamAsString(Const psName : String) : String;
 Begin
-  Result := FQuery.Params.ByNameAsString[UpperCase(psName)];
+  if FQuery.Params.ByNameIsBlob[UpperCase(psName)] then
+    result := '[BlobData]'
+  else
+    Result := FQuery.Params.ByNameAsString[UpperCase(psName)];
 End;
 
 Function TtiQueryUIBAbs.GetParamAsTextBLOB(Const psName : String) : String;
@@ -1000,6 +1003,7 @@ End;
 Procedure TtiDatabaseUIBAbs.SetConnected(pbValue : boolean);
 Var
   lMessage : String;
+  lCounter: integer;
 Begin
 
   Try
@@ -1013,8 +1017,14 @@ Begin
     FDatabase.DatabaseName := DatabaseName;
     FDatabase.Params.Values['user_name'] := UserName;
     FDatabase.Params.Values['password'] := Password;
-    //FDatabase.CharacterSet := csUTF8;
-    FDatabase.Connected := True;
+
+    for lCounter := 0 to Params.Count -1 do
+      begin
+        FDatabase.Params.Values[Params.Names[lCounter]] :=
+          Params.ValueFromIndex[lCounter];
+      end;
+
+     FDatabase.Connected := True;
 
   Except
       // ToDo: Must come up with a better solution that this:
