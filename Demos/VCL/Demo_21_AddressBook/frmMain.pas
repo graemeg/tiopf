@@ -29,7 +29,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure AddContactClick(Sender: TObject);
     procedure CityListClick(Sender: TObject);
-    procedure MIAddressTypeListClick(Sender: TObject);
+    procedure AddressTypeListClick(Sender: TObject);
     procedure MIExitClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
   private
@@ -49,21 +49,21 @@ implementation
 uses
   model,
   contactmanager,
-  frmeditcontact{,
-  frmcitylist,
+  frmEditContact,
+  frmCityList,
   frmCountryList,
-  frmAddressTypeList};
+  frmAddressTypeList;
 
 { TForm1 }
 
 procedure TForm1.CityListClick(Sender: TObject);
 begin
-//
+  ShowCities(gContactManager.CityList);
 end;
 
 procedure TForm1.CountryListClick(Sender: TObject);
 begin
-//
+  ShowCountries(gContactManager.CountryList);
 end;
 
 procedure TForm1.DeleteContactClick(Sender: TObject);
@@ -112,9 +112,9 @@ begin
     c.Free;
 end;
 
-procedure TForm1.MIAddressTypeListClick(Sender: TObject);
+procedure TForm1.AddressTypeListClick(Sender: TObject);
 begin
-//
+  ShowAddressTypes(gContactManager.AddressTypeList);
 end;
 
 procedure TForm1.MIExitClick(Sender: TObject);

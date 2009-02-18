@@ -82,12 +82,15 @@ object Form1: TForm1
       Caption = 'System'
       object CityList1: TMenuItem
         Caption = 'City List'
+        OnClick = CityListClick
       end
       object CountryList1: TMenuItem
         Caption = 'Country List'
+        OnClick = CountryListClick
       end
       object AddressTypeList1: TMenuItem
         Caption = 'Address Type List'
+        OnClick = AddressTypeListClick
       end
     end
   end

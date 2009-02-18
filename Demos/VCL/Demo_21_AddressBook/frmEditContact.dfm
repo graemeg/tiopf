@@ -14,6 +14,7 @@ object ContactEditForm: TContactEditForm
   Font.Style = []
   OldCreateOrder = True
   Position = poMainFormCenter
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 16
   object LEFirstName: TLabel

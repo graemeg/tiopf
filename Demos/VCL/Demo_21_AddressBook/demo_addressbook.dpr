@@ -6,7 +6,12 @@ uses
   contactmanager in 'contactmanager.pas',
   model in 'model.pas',
   frmEditContact in 'frmEditContact.pas',
-  frmEditAddress in 'frmEditAddress.pas' {EditAddressForm};
+  frmEditAddress in 'frmEditAddress.pas' {EditAddressForm},
+  frmCityList in 'frmCityList.pas' {CityListForm},
+  frmeditcity in 'frmEditCity.pas' {EditCityForm},
+  frmAddressTypeList in 'frmAddressTypeList.pas' {AddressTypeListForm},
+  frmCountryList in 'frmCountryList.pas' {CountryListForm},
+  frmeditcountry in 'frmEditCountry.pas' {EditCountryForm};
 
 {$R *.res}
 

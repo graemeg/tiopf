@@ -30,6 +30,7 @@ type
     MComments: TMemo;
     procedure BDeleteClick(Sender: TObject);
     procedure BEditClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     FData: TContact;
     FMediator: TFormMediator;
@@ -62,8 +63,8 @@ var
 begin
   frm:= TContactEditForm.Create(nil);
   try
-    frm.Data:=AData;
-    result:= frm.ShowModal = mrOK;
+    frm.Data := AData;
+    result := (frm.ShowModal = mrOK);
   finally
     frm.Free;
   end;
@@ -123,6 +124,12 @@ begin
   FAdrsMediator.Active := True;
 end;
 
+
+procedure TContactEditForm.FormDestroy(Sender: TObject);
+begin
+  FAdrsMediator.Active := False;
+  FMediator.Active := False;
+end;
 
 end.
 
