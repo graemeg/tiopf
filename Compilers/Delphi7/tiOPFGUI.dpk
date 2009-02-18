@@ -34,7 +34,9 @@ requires
   vclactnband,
   vcljpg,
   tiOPFCore,
-  tiOPFOptions;
+  tiOPFOptions,
+  VclSmp,
+  vclx;
 
 contains
   tiVirtualTrees in '..\..\GUI\tiVirtualTrees.pas',
@@ -80,6 +82,8 @@ contains
   tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas',
   tiGUIINI in '..\..\GUI\tiGUIINI.pas',
   tiMulticastEvent in '..\..\GUI\tiMulticastEvent.pas',
-  tiVTAbstract in '..\..\GUI\tiVTAbstract.pas';
+  tiVTAbstract in '..\..\GUI\tiVTAbstract.pas',
+  tiMediators in '..\..\GUI\VCL\tiMediators.pas',
+  tiListMediators in '..\..\GUI\VCL\tiListMediators.pas';
 
 end.

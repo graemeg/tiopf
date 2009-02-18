@@ -82,7 +82,7 @@ type
     Procedure RaiseMediatorError(Const Fmt : String; Args : Array of const); overload;
   public
     constructor Create; override;
-    constructor CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGuiFieldName: string);
+    constructor CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGuiFieldName: string); overload; virtual;
     destructor Destroy; override;
     // By default, copying GUI <-> Object is one way. If this method returns true, then
     // it will copy till no more change events are generated. By default, false is returned
