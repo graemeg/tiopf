@@ -7,7 +7,7 @@ for something.
 
 
 DISCLAIMER:
-All software in this directory and sub-directories is supplied on a "as is"
+All software in this directory and sub-directories are supplied on a "as is"
 basis without warranties of any kind. In no circumstances will any tiOPF member
 be liable for any incidental or consequential damages for the user of the 
 software or any third party (including without limitation, indirect, special 
@@ -17,7 +17,7 @@ the software. All standard disclaimers apply.
 
 
 In summary:
-  We're not responsible if this kills your PC or fries your database!
+  We're not responsible if this kills your PC or fries your database. ;-)
 
                      -----=-=-=-=-=-=-=-=-=-=-=-=-----
 
