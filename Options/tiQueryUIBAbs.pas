@@ -102,7 +102,7 @@ type
     Procedure AttachDatabase(pDatabase : TtiDatabase); Override;
     Procedure Close; Override;
     Procedure DetachDatabase; Override;
-    Procedure ExecSQL; Override;
+    function ExecSQL : Integer; Override;
     Function FieldCount : Integer; Override;
     Function FieldIndex(Const psName : String) : Integer; Override;
     Function FieldKind(pIndex : integer) : TtiQueryFieldKind; Override;
@@ -372,12 +372,13 @@ Begin
   FQuery.Database := Nil;
 End;
 
-Procedure TtiQueryUIBAbs.ExecSQL;
+Function TtiQueryUIBAbs.ExecSQL : Integer;
 Begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   InternalPrepare;
   Log(ClassName + ': [Params] ' + ParamsAsString, lsSQL);
   FQuery.Execute;
+  Result := -1;
 End;
 
 Function TtiQueryUIBAbs.FieldCount : Integer;

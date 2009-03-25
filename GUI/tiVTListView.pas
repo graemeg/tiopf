@@ -231,6 +231,7 @@ type
     FDerived: boolean;
     FOnDeriveColumn: TtiDeriveListColumnValue;
     FOnIsValidValue: TtiVTOnIsValidColumnValue;
+    FStoredWidth: Integer;
     procedure   SetFieldName(const AValue: string);
     procedure   SetDataType(const AValue: TvtTypeKind);
     procedure   SetDerived(const AValue: boolean);
@@ -241,6 +242,8 @@ type
     destructor  Destroy; override;
     function    Clone : TtiVTColumn;
     function    IsValidValue(AData: TtiObject; var AValue: WideString): Boolean;
+    Procedure StoreWidth;
+    Property StoredWidth : Integer Read FStoredWidth Write FStoredWidth;
   published
     property    FieldName   : string read FsFieldName    write SetFieldName;
     property    DisplayMask : string read FsDisplayMask  write FsDisplayMask;
@@ -260,6 +263,8 @@ type
   public
     constructor Create(AOwner : TtiVTHeader);
     destructor  Destroy; override;
+    Procedure StoreWidths;
+    Procedure RevertToStoredWidths;
     property  Items[Index: TColumnIndex ]: TtiVTColumn read GetItem write SetItem; default;
     procedure DisplayLabelsToStringList(pSL : TStringList);
     function  FindByDisplayLabel(const AValue : string): TtiVTColumn;
@@ -1199,6 +1204,11 @@ begin
 end;
 
 
+procedure TtiVTColumn.StoreWidth;
+begin
+  StoredWidth := Width;
+end;
+
 { TtiVTColumns }
 
 constructor TtiVTColumns.Create(AOwner: TtiVTHeader);
@@ -1250,11 +1260,27 @@ begin
   result := TtiVTColumn(inherited GetItem(Index));
 end;
 
+procedure TtiVTColumns.RevertToStoredWidths;
+Var
+  I : Integer;
+begin
+  For I := 0 To Pred(Count) Do
+    Items[I].Width := Items[I].StoredWidth;
+end;
+
 procedure TtiVTColumns.SetItem(Index: TColumnIndex; const AValue: TtiVTColumn);
 begin
   inherited SetItem(Index, AValue);
 end;
 
+
+procedure TtiVTColumns.StoreWidths;
+Var
+  I : Integer;
+begin
+  For I := 0 To Pred(Count) Do
+    Items[I].StoreWidth;
+end;
 
 { TtiVTHeader }
 
