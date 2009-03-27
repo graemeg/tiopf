@@ -1045,9 +1045,9 @@ Begin
           'Error code: ' + IntToStr(EUIBError(E).ErrorCode);
         Raise EtiOPFDBExceptionUserNamePassword.Create(FLayerName, DatabaseName, UserName, Password, lMessage)
       End;
-    End
-  Else
-    Raise EtiOPFDBException.Create(FLayerName, DatabaseName, UserName, Password)
+    End;
+    On E : Exception Do
+      Raise EtiOPFDBExceptionUserNamePassword.Create(FLayerName, DatabaseName, UserName, Password, E.Message)
   End;
 End;
 
