@@ -224,7 +224,7 @@ type
 function  GLog : TtiLog;
 procedure ReleaseLog; //Allow testing to fully close then re-open Log; Peterm
 
-// Some global proces to make logging easier
+// Some global procedures to make logging easier
 procedure Log(const AMessage : string; ASeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const AMessage : integer; ASeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const AMessage : Extended; ASeverity : TtiLogSeverity = lsNormal); overload;
@@ -238,6 +238,17 @@ procedure LogWarning(const AMessage : string); overload;
 procedure LogError(const AMessage : string; ARaiseException : boolean = true); overload;
 procedure LogError(const AException : Exception; ARaiseException : boolean = true); overload;
 procedure LogError(const AMessage : string; const AArray : Array of Const); overload;
+
+// helper procedures to debug values
+procedure LogValue(const AIdentifier: string; const AValue: Integer); overload;
+procedure LogValue(const AIdentifier: string; const AValue: Cardinal); overload;
+procedure LogValue(const AIdentifier: string; const AValue: Extended); overload;
+procedure LogValue(const AIdentifier: string; const AValue: Boolean); overload;
+procedure LogValue(const AIdentifier: string; const AValue: String); overload;
+procedure LogValue(const AIdentifier: string; const ARect: TRect); overload;
+procedure LogValue(const AIdentifier: string; const APoint: TPoint); overload;
+procedure LogValue(const AIdentifier: string; const AValue: TDateTime); overload;
+procedure LogValue(const AIdentifier: string; const AValue: Currency); overload;
 
 function LogSeverityToString(const ALogSeverity: TtiLogSeverity): string;
 function StringToLogSeverity(const AValue: string; out ALogSeverity: TtiLogSeverity): boolean;
@@ -354,6 +365,17 @@ begin
             _IsThisParam(AParam, '\', lsCommandLineParams);
 end;
 
+function RectToStr(const ARect: TRect): String;
+begin
+  with ARect do
+    Result := Format('(Left: %d; Top: %d; Right: %d; Bottom: %d)', [Left, Top, Right, Bottom]);
+end;
+
+function PointToStr(const APoint: TPoint): String;
+begin
+  with APoint do
+    Result := Format('(X: %d; Y: %d)', [X, Y]);
+end;
 
 procedure Log(const AMessage : string; ASeverity : TtiLogSeverity = lsNormal);
 begin
@@ -491,6 +513,51 @@ begin
   Log(AObject.AsDebugString, ASeverity);
 end;
 
+procedure LogValue(const AIdentifier: string; const AValue: Integer);
+begin
+  Log(AIdentifier + ' = ' + IntToStr(AValue), lsDebug);
+end;
+
+procedure LogValue(const AIdentifier: string; const AValue: Cardinal);
+begin
+  Log(AIdentifier + ' = ' + IntToStr(AValue), lsDebug);
+end;
+
+procedure LogValue(const AIdentifier: string; const AValue: Extended);
+begin
+  Log(AIdentifier + ' = ' + FloatToStr(AValue), lsDebug);
+end;
+
+procedure LogValue(const AIdentifier: string; const AValue: Boolean);
+begin
+  Log(AIdentifier + ' = ' + tiBooleanToStr(AValue), lsDebug);
+end;
+
+procedure LogValue(const AIdentifier: string; const AValue: String);
+begin
+  Log(AIdentifier + ' = ' + AValue, lsDebug);
+end;
+
+procedure LogValue(const AIdentifier: string; const ARect: TRect);
+begin
+  Log(AIdentifier + ' = ' + RectToStr(ARect), lsDebug);
+end;
+
+procedure LogValue(const AIdentifier: string; const APoint: TPoint);
+begin
+  Log(AIdentifier + ' = ' + PointToStr(APoint), lsDebug);
+end;
+
+procedure LogValue(const AIdentifier: string; const AValue: TDateTime);
+begin
+  Log(AIdentifier + ' = ' + tiDateTimeAsIntlDateDisp(AValue), lsDebug);
+end;
+
+procedure LogValue(const AIdentifier: string; const AValue: Currency);
+begin
+//  Log(AIdentifier + ' = ' + CurrToStrF(AValue, ffCurrency, 4), lsDebug);
+  Log(AIdentifier + ' = ' + FormatFloat('¤ #,##0.0000', AValue), lsDebug);
+end;
 
 function LogSeverityToString(const ALogSeverity: TtiLogSeverity): string;
 begin

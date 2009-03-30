@@ -10,8 +10,7 @@ interface
 
 uses
   Classes,
-  tiBaseObject,
-  Contnrs;
+  tiBaseObject;
 
 const
   cDefaultOIDFieldName = 'OID';
