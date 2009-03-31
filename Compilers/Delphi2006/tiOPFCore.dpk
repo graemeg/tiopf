@@ -63,6 +63,8 @@ contains
   tiAutoMap in '..\..\Core\tiAutoMap.pas',
   tiRTTI in '..\..\Core\tiRTTI.pas',
   tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas',
-  tiOIDGUID in '..\..\Core\tiOIDGUID.pas';
+  tiOIDGUID in '..\..\Core\tiOIDGUID.pas',
+  tiFormMediator in '..\..\Core\tiFormMediator.pas',
+  tiBaseMediator in '..\..\Core\tiBaseMediator.pas';
 
 end.
