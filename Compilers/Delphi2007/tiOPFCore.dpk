@@ -62,7 +62,9 @@ contains
   tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas',
   tiWin32 in '..\..\Core\tiWin32.pas',
   tiOIDGUID in '..\..\Core\tiOIDGUID.pas',
-  tiScheduledTasks in '..\..\Core\tiScheduledTasks.pas';
+  tiScheduledTasks in '..\..\Core\tiScheduledTasks.pas',
+  tiFormMediator in '..\..\Core\tiFormMediator.pas',
+  tiBaseMediator in '..\..\Core\tiBaseMediator.pas';
 
 {$I tiDefines.inc}
 
