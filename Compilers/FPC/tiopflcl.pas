@@ -7,14 +7,8 @@ unit tiopfLCL;
 interface
 
 uses
-tiMediators, tiListMediators, LazarusPackageIntf;
+tiMediators, tiListMediators;
 
 implementation
 
-procedure Register; 
-begin
-end; 
-
-initialization
-  RegisterPackage('tiopfLCL', @Register); 
 end.
