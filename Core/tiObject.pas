@@ -1908,39 +1908,41 @@ var
     lVarType: TVarType;
     tiFieldAbs: TtiFieldAbs;
     lPropInfo: PPropInfo;
+    AObject: TObject;
   begin
     lSearch := PropValue;
-    
+
     // If the property is a TtiFieldAbs then compare the value with the field
     // objects AsString, else compare the value with the property itself
-    lPropInfo := GetPropInfo(Items[Idx], PropName, [tkClass,tkEnumeration]);
-    if Assigned(lPropInfo) then
+    AObject := Items[Idx];
+    lPropInfo := tiGetPropInfo(Items[Idx].ClassType, PropName, @AObject);
+    if Assigned(lPropInfo) and (tiGetTypeInfo(lPropInfo).Kind in [tkClass,tkEnumeration]) then
     begin
       if lPropInfo.PropType^.Kind=tkClass then
       begin
-        tiFieldAbs := GetObjectProp(Items[Idx], PropName, TtiFieldAbs) as TtiFieldAbs;
+        tiFieldAbs := GetObjectProp(AObject, PropName, TtiFieldAbs) as TtiFieldAbs;
         if Assigned(tiFieldAbs) then
           lItem := tiFieldAbs.AsString
         else
-          lItem := TypInfo.GetPropValue(Items[Idx], PropName);
+          lItem := TypInfo.GetPropValue(AObject, LPropInfo^.Name);
       end
       else // tkEnumeration
       begin
         // If the property is an enumeration and the search is on a numeric value,
         // compare the ordinary values of the enumeration, instead of it' s name
         if VarIsNumeric(lSearch) then
-          lItem := TypInfo.GetOrdProp(Items[Idx], PropName)
+          lItem := TypInfo.GetOrdProp(AObject, LPropInfo^.Name)
         else
-          lItem := TypInfo.GetPropValue(Items[Idx], PropName);
+          lItem := TypInfo.GetPropValue(AObject, LPropInfo^.Name);
       end;
     end
     else
-      lItem := TypInfo.GetPropValue(Items[Idx], PropName);
+      lItem := tiGetProperty(Items[Idx], PropName);
 
     // Just to be sure that I'm comparing the SAME kind of values,
     // plus Boolean types need some extra help under FPC
     if VarIsType(PropValue, varBoolean) then
-      lItem := Boolean(GetOrdProp(Items[Idx], PropName))
+      lItem := Boolean(TypInfo.GetOrdProp(AObject, LPropInfo^.Name))
     else
     begin
       lVarType  := VarType(lItem);

@@ -12,7 +12,7 @@ program textrunner;
 uses
   cthreads, custapp, Classes, SysUtils, fpcunit, testutils, testregistry,
   testdecorator, tiTestDependencies, tiOPFTestManager, xmlwrite,
-  xmltestreport, tiDUnitINI, tiUtils_TST;
+  xmltestreport, plaintestreport, tiDUnitINI, tiUtils_TST;
 
 
 const
@@ -42,6 +42,7 @@ type
   TTestRunner = Class(TCustomApplication)
   private
     FXMLResultsWriter: TXMLResultsWriter;
+    FPlainResultsWriter: TPlainResultsWriter;
     progressWriter: TProgressWriter;
     FShowProgress: Boolean;
     procedure   DisplayTests(ATests: TTestSuite);
@@ -104,6 +105,7 @@ constructor TTestRunner.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FXMLResultsWriter := TXMLResultsWriter.Create(nil);
+  FPlainResultsWriter := TPlainResultsWriter.Create(nil);
   FShowProgress := False;
 end;
 
@@ -111,6 +113,7 @@ end;
 destructor TTestRunner.Destroy;
 begin
   FXMLResultsWriter.Free;
+  FPlainResultsWriter.Free;
 end;
 
 
@@ -126,10 +129,19 @@ begin
       testResult.AddListener(progressWriter);
     end;
 
-    testResult.AddListener(FXMLResultsWriter);
+    if HasOption('format') and (GetOptionValue('format') = 'plain') then
+      testResult.AddListener(FPlainResultsWriter)
+    else if HasOption('format') and (GetOptionValue('format') = 'xml') then
+      testResult.AddListener(FXMLResultsWriter);
+
     aTest.Run(testResult);
-    FXMLResultsWriter.WriteResult(testResult);
-    WriteXMLFile(FXMLResultsWriter.Document, 'results.xml');
+    if HasOption('format') and (GetOptionValue('format') = 'plain') then
+      FPlainResultsWriter.WriteResult(testResult)
+    else if HasOption('format') and (GetOptionValue('format') = 'xml') then
+    begin
+      FXMLResultsWriter.WriteResult(testResult);
+      WriteXMLFile(FXMLResultsWriter.Document, 'results.xml');
+    end;
   finally
     if FShowProgress then
       progressWriter.Free;
@@ -184,7 +196,7 @@ end;
 
 procedure TTestRunner.DoRun;
 var
-  I : Integer;
+//  I : Integer;
   S : String;
 begin
   S:=CheckOptions(ShortOpts,LongOpts);
@@ -196,7 +208,7 @@ begin
     writeln(Version);
     writeln('Usage: ');
     writeln('-l or --list to show a list of registered tests');
-    writeln('default format is xml, add --format=latex to output the list as latex source');
+    writeln('default format is xml, add --format=[latex,plain] to output in other formats');
     writeln('-a or --all to run all the tests and show the results in xml format');
     writeln('The results can be redirected to an xml file,');
     writeln('for example: ./testrunner --all > results.xml');
