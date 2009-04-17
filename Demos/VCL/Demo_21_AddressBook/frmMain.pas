@@ -77,6 +77,7 @@ begin
   begin
     gContactManager.ContactList.Extract(c);
     c.Deleted:=True;
+    c.Free;
     m.ObjectToGui;
   end;
 end;
