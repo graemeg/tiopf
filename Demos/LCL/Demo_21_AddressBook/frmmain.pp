@@ -39,12 +39,9 @@ type
     procedure MIExitClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
   private
-    { private declarations }
     FMediator: TFormMediator;
     procedure SetupMediators;
-  public
-    { public declarations }
-  end; 
+  end;
 
 var
   MainForm: TMainForm;
@@ -69,13 +66,15 @@ end;
 procedure TMainForm.EditContactClick(Sender: TObject);
 var
   c: TContact;
+  M: TMediatorView;
 begin
-  c := TContact(TStringGridMediator(FMediator.FindByComponent(GContacts).Mediator).SelectedObject);
+  M := FMediator.FindByComponent(GContacts).Mediator;
+  c := TContact(TStringGridMediator(M).SelectedObject);
   if Assigned(c) then
     if EditContact(c) then
-      begin
-        // we can save contact here
-      end;
+    begin
+      // we can save contact here
+    end;
 end;
 
 procedure TMainForm.MIAddContactClick(Sender: TObject);
@@ -107,11 +106,12 @@ begin
   M:=FMediator.FindByComponent(GContacts).Mediator;
   c := TContact(TStringGridMediator(M).SelectedObject);
   if Assigned(c) then
-    begin
+  begin
     gcontactmanager.ContactList.extract(c);
     C.Deleted:=True;
+    C.Free;
     M.ObjectToGui;
-    end;
+  end;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);

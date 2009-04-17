@@ -299,6 +299,7 @@ destructor TListViewMediator.Destroy;
 begin
   IsObserving := False;
   FView       := nil;
+  FObserversInTransit.Free;
   inherited;
 end;
 

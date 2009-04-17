@@ -60,7 +60,7 @@ type
   private
     FView: TStringGrid;
     procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
-    procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TListItemMediator); override;
+    procedure DoDeleteItemMediator(AIndex: Integer; AMediator: TListItemMediator); override;
     procedure SetView(const AValue: TStringGrid);
   protected
     function GetSelectedObject: TtiObject; override;
@@ -72,7 +72,7 @@ type
     procedure ClearList; override;
     procedure RebuildList; override;
   public
-    constructor CreateCustom(AModel: TtiObjectList; AGrid: TStringGrid; ADisplayNames: string; AIsObserving: Boolean = True);
+    constructor CreateCustom(AModel: TtiObjectList; AGrid: TStringGrid; ADisplayNames: string; AIsObserving: Boolean = True); reintroduce; overload;
     class function ComponentClass: TClass; override;
     class function CompositeMediator: Boolean; override;
     function GetObjectFromRow(ARow: Integer): TtiObject;
@@ -93,8 +93,8 @@ type
     FView: TListItem;
     procedure SetupFields; virtual;
   public
-    constructor CreateCustom(AModel: TtiObject; AView: TListItem; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean = True);
-    constructor CreateCustom(AModel: TtiObject; AView: TListItem; AOnBeforeSetupField: TOnBeforeSetupField; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean = True); overload;
+    constructor CreateCustom(AModel: TtiObject; AView: TListItem; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean = True); reintroduce; overload;
+    constructor CreateCustom(AModel: TtiObject; AView: TListItem; AOnBeforeSetupField: TOnBeforeSetupField; const AFieldsInfo: TtiMediatorFieldInfoList; IsObserving: Boolean = True); reintroduce; overload;
     procedure Update(ASubject: TtiObject); override;
   published
     property View: TListItem read FView;
@@ -290,6 +290,7 @@ destructor TListViewMediator.Destroy;
 begin
   IsObserving := False;
   FView       := nil;
+  FObserversInTransit.Free;
   inherited;
 end;
 

@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="/"/>
-    <Version Value="6"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <SaveOnlyProjectUnits Value="True"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
@@ -46,7 +46,6 @@
         <ComponentName Value="MainForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="frmmain.lrs"/>
         <UnitName Value="frmmain"/>
       </Unit1>
       <Unit2>
@@ -64,7 +63,6 @@
         <ComponentName Value="ContactEditForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="frmeditcontact.lrs"/>
         <UnitName Value="frmeditcontact"/>
       </Unit4>
       <Unit5>
@@ -72,7 +70,6 @@
         <ComponentName Value="EditAddressForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="frmeditaddress.lrs"/>
         <UnitName Value="frmEditAddress"/>
       </Unit5>
       <Unit6>
@@ -80,7 +77,6 @@
         <ComponentName Value="CityListForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="frmcitylist.lrs"/>
         <UnitName Value="frmCityList"/>
       </Unit6>
       <Unit7>
@@ -88,7 +84,6 @@
         <ComponentName Value="EditCityForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="frmeditcity.lrs"/>
         <UnitName Value="frmeditcity"/>
       </Unit7>
       <Unit8>
@@ -96,7 +91,6 @@
         <ComponentName Value="CountryListForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="frmcountrylist.lrs"/>
         <UnitName Value="frmCountryList"/>
       </Unit8>
       <Unit9>
@@ -104,7 +98,6 @@
         <ComponentName Value="EditCountryForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="frmeditcountry.lrs"/>
         <UnitName Value="frmeditcountry"/>
       </Unit9>
       <Unit10>
@@ -112,7 +105,6 @@
         <ComponentName Value="AddressTypeListForm"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="frmaddresstypelist.lrs"/>
         <UnitName Value="frmAddressTypeList"/>
       </Unit10>
     </Units>
@@ -128,6 +120,9 @@
       </SyntaxOptions>
     </Parsing>
     <Linking>
+      <Debugging>
+        <UseHeaptrc Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
