@@ -7,7 +7,8 @@
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
-        <OtherUnitFiles Value="../../Core/;../../GUI/LCL/"/>
+        <IncludeFiles Value="../../Core/"/>
+        <OtherUnitFiles Value="../../Core/;../../GUI/LCL/;../../GUI/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -19,12 +20,12 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="Lazarus specific GUI support
+    <Description Value="Lazarus specific GUI support. This packages does not contain any of the tiOPF custom GUI components. Those are unsupported for Lazarus IDE.
 "/>
     <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
-    <Version Major="2" Release="4"/>
-    <Files Count="2">
+    <Version Major="2" Release="5"/>
+    <Files Count="7">
       <Item1>
         <Filename Value="../../GUI/LCL/tiMediators.pas"/>
         <UnitName Value="tiMediators"/>
@@ -33,6 +34,21 @@
         <Filename Value="../../GUI/LCL/tiListMediators.pas"/>
         <UnitName Value="tiListMediators"/>
       </Item2>
+      <Item3>
+        <Filename Value="../../GUI/tiGUIINI.pas"/>
+      </Item3>
+      <Item4>
+        <Filename Value="../../GUI/tiDialogs.pas"/>
+      </Item4>
+      <Item5>
+        <Filename Value="../../GUI/tiGUIConstants.pas"/>
+      </Item5>
+      <Item6>
+        <Filename Value="../../GUI/tiGUIUtils.pas"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../../GUI/tiLogToGUI.pas"/>
+      </Item7>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
