@@ -314,48 +314,49 @@ type
     procedure   DoGetFieldBounds(const AFieldName: String; var MinValue, MaxValue: TDateTime; var HasBounds: Boolean); overload; virtual;
     {: Read in the primary Key values only from the database for this object.
        You must override ReadPK and implement a call to the visitor manager (if you
-       are using hard coded visitors, or call inheried (if you are using automap)).}
+       are using hard coded visitors, or call inherited (if you are using automap)).}
     procedure   ReadPK(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Read in the primary Key values only from the database for this object.
        You must override ReadPK and implement a call to the visitor manager (if you
-       are using hard coded visitors, or call inheried (if you are using automap)).}
+       are using hard coded visitors, or call inherited (if you are using automap)).}
     procedure   ReadPK; overload; virtual;
     {: Read this object, but no owned objects from the database
        You must override ReadThis and implement a call to the visitor manager (if you
-       are using hard coded visitors, or call inheried (if you are using automap)).}
+       are using hard coded visitors, or call inherited (if you are using automap)).}
     procedure   ReadThis(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Read this object, but no owned objects from the database
        You must override ReadThis and implement a call to the visitor manager (if you
-       are using hard coded visitors, or call inheried (if you are using automap)).}
+       are using hard coded visitors, or call inherited (if you are using automap)).}
     procedure   ReadThis; overload;  virtual;
     {: Read this object, along with any owned objects from the database
        You must override Read and implement a call to the visitor manager (if you
-       are using hard coded visitors, or call inheried (if you are using automap)).}
+       are using hard coded visitors, or call inherited (if you are using automap)).}
     procedure   Read(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Read this object, along with any owned objects from the database
        You must override Read and implement a call to the visitor manager (if you
-       are using hard coded visitors, or call inheried (if you are using automap)).}
+       are using hard coded visitors, or call inherited (if you are using automap)).}
     procedure   Read; overload;  virtual;
     {: Updates the database with the current property values for this object.
        You must override Save and implement a call to the visitor manager (if you
-       are using hard coded visitors, or call inheried (if you are using automap)).}
+       are using hard coded visitors, or call inherited (if you are using automap)).}
     procedure   Save(const ADBConnectionName: string; APersistenceLayerName: string = ''); overload; virtual;
     {: Updates the database with the current property values for this object.
        You must override Save and implement a call to the visitor manager (if you
-       are using hard coded visitors, or call inheried (if you are using automap)).}
+       are using hard coded visitors, or call inherited (if you are using automap)).}
     procedure   Save; overload; virtual;
     {: Only needed if performing a observing role: called when an object under
        observation is freed. The observer should stop observing it. It may or may not
        perform a DetachObserver. }
     procedure   StopObserving(ASubject: TtiObject); virtual;
   public
-    {: Creates a new instance of the class}
+    {: Creates a new instance of the class setting ObjectState property to posEmpty.}
     constructor Create ; override;
-    {: Creates a new instance of the class and initialises it's OID with next available value}
+    {: Creates a new instance of the class and initialises it's OID with next available value
+       setting ObjectState property to posCreate. }
     constructor CreateNew(const AOwner: TtiObject; const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
     constructor CreateNew(const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
     destructor  Destroy; override;
-    {: Dos this object equal another? }
+    {: Does this object equal another? }
     function    Equals(const AData : TtiObject): boolean; virtual;
     {: The OID of this object }
    {$IFDEF OID_AS_INT64}
