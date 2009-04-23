@@ -147,7 +147,7 @@ type
   public
     procedure   RefreshList; virtual;
   end;
-  
+
 
   { Base class to handle TMemo controls }
   TMediatorMemoView = class(TMediatorView)
@@ -172,6 +172,9 @@ type
   protected
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent);override;
+    procedure   DoGuiToObject; override;
+    procedure   SetupGUIAndObject; override;
+    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
     property    EditControl: TDateTimePicker read FEditControl write FEditControl;
@@ -189,6 +192,7 @@ uses
   ,TypInfo
   ,tiExcept
   ,tiGUIConstants   // for error color
+  ,tiLog
   ,Graphics
   ;
 
@@ -206,6 +210,7 @@ begin
   gMediatorManager.RegisterMediator(TMediatorStaticTextView, TtiObject);
   gMediatorManager.RegisterMediator(TMediatorTrackBarView, TtiObject, [tkInteger]);
   gMediatorManager.RegisterMediator(TMediatorMemoView, TtiObject, [tkString,tkLString]);
+  gMediatorManager.RegisterMediator(TMediatorCalendarComboView, TtiObject, [tkFloat]);
 end;
 
 { TMediatorEditView }
@@ -456,10 +461,15 @@ end;
 
 procedure TMediatorMemoView.SetupGUIandObject;
 begin
-  inherited;
+  inherited SetupGUIAndObject;
   EditControl.Lines.Clear;
   EditControl.ScrollBars := ssVertical;
   EditControl.WordWrap   := True;
+  if Assigned(FEditControl) then
+    If ObjectUpdateMoment in [ouOnchange,ouCustom] then
+      FEditControl.OnChange := DoOnChange
+    else
+      FEditControl.OnExit := DoOnChange;
 end;
 
 
@@ -670,6 +680,16 @@ begin
   inherited;
 end;
 
+// Stupid bug in TDateTimePicker. It always returns the current time in
+// dtkDate mode which can cause weird problems if you are not aware of it.
+procedure TMediatorCalendarComboView.DoGuiToObject;
+begin
+  If (EditControl.Kind = dtkDate) Then
+    Subject.PropValue[FieldName] := Trunc(EditControl.DateTime)
+  Else
+    Subject.PropValue[FieldName] := Frac(EditControl.DateTime);
+end;
+
 constructor TMediatorCalendarComboView.Create;
 begin
   inherited Create;
@@ -681,6 +701,25 @@ begin
   Result := TDateTimePicker;
 end;
 
+procedure TMediatorCalendarComboView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+begin
+  inherited SetObjectUpdateMoment(AValue);
+  if Assigned(FEditControl) then
+    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
+      FEditControl.OnChange := DoOnChange
+    else
+      FEditControl.OnExit := DoOnChange;
+end;
+
+procedure TMediatorCalendarComboView.SetupGUIAndObject;
+begin
+  inherited SetupGUIandObject;
+  if Assigned(FEditControl) then
+    If ObjectUpdateMoment in [ouOnchange,ouCustom] then
+      FEditControl.OnChange := DoOnChange
+    else
+      FEditControl.OnExit := DoOnChange;
+end;
 
 { TMediatorItemComboBoxView }
 
