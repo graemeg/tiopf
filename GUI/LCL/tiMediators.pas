@@ -20,6 +20,7 @@ uses
   ,extctrls
   ,comctrls
   ,spin
+  ,EditBtn
   ;
 
 type
@@ -33,7 +34,7 @@ type
     procedure   SetGUIControl(const AValue: TComponent); override;
     procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
     procedure   SetupGUIandObject; override;
-    procedure   SetObjectUpdateMoment (Const AValue : TObjectUpdateMoment); override;
+    procedure   SetObjectUpdateMoment (const AValue : TObjectUpdateMoment); override;
   public
     constructor Create; override;
     constructor CreateCustom(pEditControl: TControl; pSubject: TtiObject; pFieldName: string; pGuiFieldName: string = 'Text'); reintroduce;
@@ -134,9 +135,6 @@ type
 
 
   { TComboBox observing a list and setting a Object property }
-
-  { TMediatorDynamicComboBoxView }
-
   TMediatorDynamicComboBoxView = class(TMediatorComboBoxView)
   private
     FDisplayFieldName: String;
@@ -165,8 +163,27 @@ type
     procedure   SetupGUIandObject; override;
     procedure   DoObjectToGui; override;
     procedure   DoGuiToObject; override;
+    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     property    EditControl: TMemo read FEditControl write FEditControl;
+    class function ComponentClass: TClass; override;
+  end;
+
+
+  { Base class to handle TDateEdit controls }
+  TMediatorDateEditView = class(TMediatorView)
+  private
+    FEditControl: TDateEdit;
+  protected
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent);override;
+    procedure   DoObjectToGui; override;
+    procedure   DoGuiToObject; override;
+    procedure   SetupGUIandObject; override;
+    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
+  public
+    constructor Create; override;
+    property    EditControl: TDateEdit read FEditControl write FEditControl;
     class function ComponentClass: TClass; override;
   end;
 
@@ -203,6 +220,7 @@ begin
   gMediatorManager.RegisterMediator(TMediatorDynamicComboBoxView, TtiObject, [tkClass]);
   gMediatorManager.RegisterMediator(TMediatorMemoView, TtiObject, [tkSString,tkAString]);
   gMediatorManager.RegisterMediator(TMediatorSpinEditView, TtiObject, [tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TMediatorDateEditView, TtiObject, [tkFloat]);
 end;
 
 { TMediatorEditView }
@@ -241,23 +259,21 @@ procedure TMediatorEditView.SetupGUIandObject;
 var
   Mi, Ma: Integer;
 begin
-  inherited;
+  inherited SetupGUIandObject;
   if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
     FEditControl.MaxLength := Ma;
-  if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-    FEditControl.OnChange := @DoOnChange
-  else
-    FEditControl.OnExit := @DoOnChange;
 end;
 
 procedure TMediatorEditView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
 begin
   inherited SetObjectUpdateMoment(AValue);
   if Assigned(FEditControl) then
+  begin
     If ObjectUpdateMoment in [ouOnchange,ouCustom] then
       FeditControl.OnChange := @DoOnChange
     else
       FeditControl.OnExit := @DoOnChange;
+  end;
 end;
 
 constructor TMediatorEditView.Create;
@@ -454,6 +470,16 @@ begin
   Subject.PropValue[FieldName] := EditControl.Lines.Text;
 end;
 
+procedure TMediatorMemoView.SetObjectUpdateMoment(
+  const AValue: TObjectUpdateMoment);
+begin
+  inherited SetObjectUpdateMoment(AValue);
+  if ObjectUpdateMoment in [ouOnChange,ouCustom] then
+    FEditControl.OnChange := @DoOnChange
+  else
+    FEditControl.OnExit := @DoOnChange;
+end;
+
 procedure TMediatorMemoView.DoObjectToGui;
 begin
   EditControl.Lines.Text := Subject.PropValue[FieldName];
@@ -461,7 +487,7 @@ end;
 
 function TMediatorMemoView.GetGUIControl: TComponent;
 begin
-  Result:=FEditControl;
+  Result := FEditControl;
 end;
 
 procedure TMediatorMemoView.SetGUIControl(const AValue: TComponent);
@@ -711,6 +737,60 @@ constructor TMediatorItemComboBoxView.Create;
 begin
   inherited Create;
   GuiFieldName := 'ItemIndex';
+end;
+
+{ TMediatorDateEditView }
+
+function TMediatorDateEditView.GetGUIControl: TComponent;
+begin
+  Result := FEditControl;
+end;
+
+procedure TMediatorDateEditView.SetGUIControl(const AValue: TComponent);
+begin
+  FEditControl := AValue as TDateEdit;
+  inherited SetGUIControl(AValue);
+end;
+
+procedure TMediatorDateEditView.DoObjectToGui;
+begin
+  EditControl.Date := Subject.PropValue[FieldName];
+end;
+
+procedure TMediatorDateEditView.DoGuiToObject;
+begin
+  Subject.PropValue[FieldName] := EditControl.Date;
+end;
+
+procedure TMediatorDateEditView.SetupGUIandObject;
+begin
+  inherited SetupGUIandObject;
+  if Assigned(FEditControl) then
+    If ObjectUpdateMoment in [ouOnchange,ouCustom] then
+      FEditControl.OnChange := @DoOnChange
+    else
+      FEditControl.OnExit := @DoOnChange;
+end;
+
+procedure TMediatorDateEditView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+begin
+  inherited SetObjectUpdateMoment(AValue);
+  if Assigned(FEditControl) then
+    If ObjectUpdateMoment in [ouOnchange,ouCustom] then
+      FEditControl.OnChange := @DoOnChange
+    else
+      FEditControl.OnExit := @DoOnChange;
+end;
+
+constructor TMediatorDateEditView.Create;
+begin
+  inherited Create;
+  GuiFieldName := 'Date';
+end;
+
+class function TMediatorDateEditView.ComponentClass: TClass;
+begin
+  Result := TDateEdit;
 end;
 
 end.
