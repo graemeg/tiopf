@@ -1,9 +1,9 @@
-object Form1: TForm1
-  Left = 192
-  Top = 107
+object frmDemoMain: TfrmDemoMain
+  Left = 467
+  Top = 213
   Width = 572
   Height = 388
-  Caption = 'Form1'
+  Caption = 'VCL Mediators Demo'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,7 +15,7 @@ object Form1: TForm1
   OnCreate = FormCreate
   DesignSize = (
     564
-    342)
+    334)
   PixelsPerInch = 96
   TextHeight = 13
   object btnAdd: TButton

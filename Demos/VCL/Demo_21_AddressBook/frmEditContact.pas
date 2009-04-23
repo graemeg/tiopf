@@ -28,6 +28,8 @@ type
     LVAddresses: TListView;
     LMComments: TLabel;
     MComments: TMemo;
+    dtpDOB: TDateTimePicker;
+    lblDOB: TLabel;
     procedure BDeleteClick(Sender: TObject);
     procedure BEditClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -110,6 +112,7 @@ begin
     FMediator.AddProperty('LastName', ELastName);
     FMediator.AddProperty('EMail', EEmail);
     FMediator.AddProperty('Mobile', EMobile);
+    FMediator.AddProperty('DateOfBirth', dtpDOB);
     FMediator.AddProperty('Comments', MComments);
   end;
   FMediator.Subject := FData;

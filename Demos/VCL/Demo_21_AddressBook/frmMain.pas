@@ -8,7 +8,7 @@ uses
   tiBaseMediator, tiFormMediator, tiMediators, tiListMediators;
 
 type
-  TForm1 = class(TForm)
+  TfrmDemoMain = class(TForm)
     MainMenu1: TMainMenu;
     File1: TMenuItem;
     Exit1: TMenuItem;
@@ -40,7 +40,7 @@ type
   end;
 
 var
-  Form1: TForm1;
+  frmDemoMain: TfrmDemoMain;
 
 implementation
 
@@ -56,17 +56,17 @@ uses
 
 { TForm1 }
 
-procedure TForm1.CityListClick(Sender: TObject);
+procedure TfrmDemoMain.CityListClick(Sender: TObject);
 begin
   ShowCities(gContactManager.CityList);
 end;
 
-procedure TForm1.CountryListClick(Sender: TObject);
+procedure TfrmDemoMain.CountryListClick(Sender: TObject);
 begin
   ShowCountries(gContactManager.CountryList);
 end;
 
-procedure TForm1.DeleteContactClick(Sender: TObject);
+procedure TfrmDemoMain.DeleteContactClick(Sender: TObject);
 var
   c: TContact;
   m: TMediatorView;
@@ -82,7 +82,7 @@ begin
   end;
 end;
 
-procedure TForm1.EditContactClick(Sender: TObject);
+procedure TfrmDemoMain.EditContactClick(Sender: TObject);
 var
   c: TContact;
 begin
@@ -94,7 +94,7 @@ begin
     end;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TfrmDemoMain.FormCreate(Sender: TObject);
 begin
   RegisterFallBackMediators;
   RegisterFallBackListmediators;
@@ -102,7 +102,7 @@ begin
   SetupMediators;
 end;
 
-procedure TForm1.AddContactClick(Sender: TObject);
+procedure TfrmDemoMain.AddContactClick(Sender: TObject);
 var
   c: TContact;
 begin
@@ -113,22 +113,22 @@ begin
     c.Free;
 end;
 
-procedure TForm1.AddressTypeListClick(Sender: TObject);
+procedure TfrmDemoMain.AddressTypeListClick(Sender: TObject);
 begin
   ShowAddressTypes(gContactManager.AddressTypeList);
 end;
 
-procedure TForm1.MIExitClick(Sender: TObject);
+procedure TfrmDemoMain.MIExitClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TForm1.SetupMediators;
+procedure TfrmDemoMain.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
     FMediator := TFormMediator.Create(self);
-    FMediator.AddComposite('FirstName;LastName(130);EMail(180);Mobile(130);Comments(200)', GContacts);
+    FMediator.AddComposite('FirstName;LastName(130);EMail(180);DateOfBirth(100);Mobile(130);Comments(200)', GContacts);
   end;
   FMediator.Subject := gContactManager.ContactList;
   FMediator.Active := True;

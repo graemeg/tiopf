@@ -211,6 +211,9 @@ var
   C: TContact;
   I,J: Integer;
   A: TAddress;
+  lDay,
+  lMonth,
+  lYear : Word;
 begin
   PopulateCountries;
   PopulateCities;
@@ -222,6 +225,10 @@ begin
     C.LastName := LastNames[I];
     C.Mobile   := GenPhone;
     C.Email    := LowerCase(FirstNames[i])+ '@freepascal.org';
+    lDay := Random(27) + 1;
+    lMonth:= Random(11) + 1;
+    lYear := 1960 + Random(25) + 1;
+    C.DateOfBirth := EncodeDate(lYear, lMonth, lDay);
     for J:= 1 to 1+Random(2) do
     begin
       A:= TAddress.CreateNew;
