@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  model,ComCtrls, tiFormMediator, tiListMediators;
+  model,ComCtrls, tiFormMediator, tiListMediators, EditBtn;
 
 type
 
@@ -30,17 +30,19 @@ type
     LVAddresses: TListView;
     LMComments: TLabel;
     MComments: TMemo;
+    EDateOfBirth: TDateEdit;
+    Button1: TButton;
+    Label2: TLabel;
     procedure BDeleteClick(Sender: TObject);
     procedure BEditClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     FData: TContact;
     FMediator: TFormMediator;
     FAdrsMediator: TFormMediator;
     procedure SetData(const AValue: TContact);
-    { private declarations }
-    Procedure SetupMediators;
+    procedure SetupMediators;
   public
-    { public declarations }
     property  Data: TContact read FData write SetData;
   end;
 
@@ -55,7 +57,7 @@ var
 implementation
 
 uses
-  frmEditAddress;
+  frmEditAddress, tiDialogs;
 
 
 function EditContact(AData: TContact): Boolean;
@@ -86,6 +88,11 @@ begin
       end;
 end;
 
+procedure TContactEditForm.Button1Click(Sender: TObject);
+begin
+  tiShowString(FData.AsDebugString);
+end;
+
 procedure TContactEditForm.BDeleteClick(Sender: TObject);
 Var
   A : TAddress;
@@ -112,6 +119,7 @@ begin
     FMediator.AddProperty('EMail', EEmail);
     FMediator.AddProperty('Mobile', EMobile);
     FMediator.AddProperty('Comments', MComments);
+    FMediator.AddProperty('DateOfBirth', EDateOfBirth);
   end;
   FMediator.Subject := FData;
   FMediator.Active := True;

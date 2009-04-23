@@ -7,12 +7,14 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms
-  { you can add units after this }, frmmain, model, contactmanager, tiopfLCL,
+  Forms, SysUtils, frmmain, model, contactmanager,
   frmeditcontact, frmEditAddress, frmCityList, frmeditcity, frmCountryList,
   frmeditcountry, frmAddressTypeList;
 
 begin
+  { Let default to the ISO international date format }
+  ShortDateFormat := 'yyyy-mm-dd';
+
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;

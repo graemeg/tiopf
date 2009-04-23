@@ -226,6 +226,7 @@ begin
     C.LastName := LastNames[I];
     C.Mobile   := GenPhone;
     C.Email    := LowerCase(FirstNames[i])+ '@freepascal.org';
+    C.DateOfBirth := EncodeDate(1900+Random(100), 1+Random(11), 1+Random(27));
     for J:= 1 to 1+Random(2) do
     begin
       A:= TAddress.CreateNew;

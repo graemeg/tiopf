@@ -2,6 +2,7 @@ program demo_addressbook;
 
 uses
   Forms,
+  SysUtils,
   frmMain in 'frmMain.pas' {Form1},
   contactmanager in 'contactmanager.pas',
   model in 'model.pas',
@@ -16,6 +17,9 @@ uses
 {$R *.res}
 
 begin
+  { Let default to the ISO international date format }
+  ShortDateFormat := 'yyyy-mm-dd';
+
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
   Application.Run;

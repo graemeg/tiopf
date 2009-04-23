@@ -47,7 +47,7 @@ var
 implementation
 
 uses
-  tiListMediators, tiMediators, contactmanager;
+  contactmanager;
 
 
 function EditAddress(AData: TAddress): Boolean;
