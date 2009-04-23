@@ -3,6 +3,7 @@
 }
 unit model;
 
+{$I tiDefines.inc}
 interface
 
 uses
@@ -150,11 +151,13 @@ type
     FFirstName: string;
     FLastName: string;
     FMobile: string;
+    FDateOfBirth: TDateTime;
     procedure SetComments(const AValue: string);
     procedure SetEmail(const AValue: string);
     procedure SetFirstName(const AValue: string);
     procedure SetLastName(const AValue: string);
     procedure SetMobile(const AValue: string);
+    procedure SetDateOfBirth(const AValue: TDateTime);
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -164,6 +167,7 @@ type
     property EMail: string read FEmail write SetEmail;
     property Mobile: string read FMobile write SetMobile;
     property Comments: string read FComments write SetComments;
+    property DateOfBirth: TDateTime read FDateOfBirth write SetDateOfBirth;
     property AddressList: TAddressList read FAddressList;
   end;
   
@@ -397,7 +401,6 @@ end;
 procedure TContact.SetFirstName(const AValue: string);
 begin
   if FFirstName=AValue then exit;
-  
   BeginUpdate;
   FFirstName:=AValue;
   Mark;
@@ -407,7 +410,6 @@ end;
 procedure TContact.SetEmail(const AValue: string);
 begin
   if FEmail=AValue then exit;
-  
   BeginUpdate;
   FEmail:=AValue;
   Mark;
@@ -417,7 +419,6 @@ end;
 procedure TContact.SetComments(const AValue: string);
 begin
   if FComments=AValue then exit;
-  
   BeginUpdate;
   FComments:=AValue;
   Mark;
@@ -427,7 +428,6 @@ end;
 procedure TContact.SetLastName(const AValue: string);
 begin
   if FLastName=AValue then exit;
-  
   BeginUpdate;
   FLastName:=AValue;
   Mark;
@@ -437,9 +437,17 @@ end;
 procedure TContact.SetMobile(const AValue: string);
 begin
   if FMobile=AValue then exit;
-  
   BeginUpdate;
   FMobile:=AValue;
+  Mark;
+  EndUpdate;
+end;
+
+procedure TContact.SetDateOfBirth(const AValue: TDateTime);
+begin
+  if FDateOfBirth = AValue then exit;
+  BeginUpdate;
+  FDateOfBirth := AValue;
   Mark;
   EndUpdate;
 end;
