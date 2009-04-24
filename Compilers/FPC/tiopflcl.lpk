@@ -17,6 +17,21 @@
         </SyntaxOptions>
       </Parsing>
       <Other>
+        <CustomOptions Value="-dLINK_CSV
+-dLINK_TAB
+-dLINK_FBLx
+-dLINK_SQLDB_IB
+-dLINK_SQLDB_PQx
+-dLINK_SQLDB_Oraclex
+-dLINK_SQLDB_SQLLite3x
+-dLINK_SQLDB_ODBCx
+-dLINK_SQLDB_MySQL40x
+-dLINK_SQLDB_MySQL41x
+-dLINK_SQLDB_MySQL50x
+-dLINK_XMLLIGHT
+-dLINK_ZEOS_FB15x
+-dUseCThreads
+"/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
@@ -36,20 +51,26 @@
       </Item2>
       <Item3>
         <Filename Value="../../GUI/tiGUIINI.pas"/>
+        <UnitName Value="tiGUIINI"/>
       </Item3>
       <Item4>
         <Filename Value="../../GUI/tiDialogs.pas"/>
+        <UnitName Value="tiDialogs"/>
       </Item4>
       <Item5>
         <Filename Value="../../GUI/tiGUIConstants.pas"/>
+        <UnitName Value="tiGUIConstants"/>
       </Item5>
       <Item6>
         <Filename Value="../../GUI/tiGUIUtils.pas"/>
+        <UnitName Value="tiGUIUtils"/>
       </Item6>
       <Item7>
         <Filename Value="../../GUI/tiLogToGUI.pas"/>
+        <UnitName Value="tiLogToGUI"/>
       </Item7>
     </Files>
+    <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="3">
       <Item1>
         <PackageName Value="LCL"/>

@@ -5,7 +5,7 @@ unit tiQuery;
 interface
 uses
    Classes
-  ,Contnrs
+//  ,Contnrs
   ,tiObject
   ,tiBaseObject
   ,SysUtils
