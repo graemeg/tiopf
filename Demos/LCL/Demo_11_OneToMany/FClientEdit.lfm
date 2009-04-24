@@ -1,0 +1,55 @@
+object FormClientEdit: TFormClientEdit
+  Left = 183
+  Height = 208
+  Top = 276
+  Width = 371
+  ActiveControl = paeOID
+  Caption = 'FormClientEdit'
+  ClientHeight = 208
+  ClientWidth = 371
+  Position = poScreenCenter
+  LCLVersion = '0.9.27'
+  object paeOID: TEdit
+    Left = 10
+    Height = 23
+    Top = 12
+    Width = 357
+    Constraints.MinHeight = 23
+    MaxLength = 36
+    ReadOnly = True
+    TabOrder = 0
+  end
+  object paeClientName: TEdit
+    Left = 10
+    Height = 23
+    Top = 40
+    Width = 357
+    Constraints.MinHeight = 23
+    MaxLength = 200
+    TabOrder = 1
+  end
+  object paeClientID: TEdit
+    Left = 10
+    Height = 23
+    Top = 68
+    Width = 185
+    Constraints.MinHeight = 23
+    MaxLength = 9
+    TabOrder = 2
+  end
+  object memoErrors: TMemo
+    Left = 8
+    Height = 69
+    Top = 100
+    Width = 357
+    Font.Color = clRed
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Lines.Strings = (
+      'memoErrors'
+    )
+    ParentFont = False
+    TabOrder = 3
+    TabStop = False
+  end
+end
