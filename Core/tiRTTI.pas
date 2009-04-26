@@ -77,6 +77,7 @@ type
   procedure tiGetEnumNames(TypeInfo: PTypeInfo; Names: TStrings; PrefixLen: Integer = 0);
   function  tiPropertyInheritsFrom(AClass: TClass; PropPath: string; AParentClass: TClass): boolean;
   function  tiGetPropertyClass(AClass: TClass; PropPath: string): TClass;
+  function  tiIsPublishedProp(Instance: TObject; PropPath: string): boolean;
 
 
 implementation
@@ -283,6 +284,42 @@ begin
         result := TypeData.ClassType;
     end;
   end;
+end;
+
+function tiIsPublishedProp(Instance: TObject; PropPath: string): boolean;
+var
+  FirstDot: Integer;
+  PropName: string;
+  PropInfo: PPropInfo;
+  TypeData: PTypeData;
+begin
+  if Assigned(Instance) then
+  begin
+    FirstDot := Pos('.', PropPath);
+    if FirstDot = 0 then
+      Result := IsPublishedProp(Instance, PropPath)
+    else
+    begin
+      PropName := Copy(PropPath, 1, FirstDot - 1);
+      System.Delete(PropPath, 1, FirstDot);
+      PropInfo := GetPropInfo(Instance.ClassType, PropName);
+      if Assigned(PropInfo) and (PropInfo^.PropType^.Kind = tkClass) then
+      begin
+        TypeData := GetTypeData(tiGetTypeInfo(PropInfo));
+        if Assigned(TypeData) then
+          begin
+            result := IsPublishedProp(TypeData.ClassType, PropPath);
+          end
+        else
+          Result := false;
+      end
+      else
+        Result := false;
+    end;  { if }
+  end
+  else
+    Result := false;
+
 end;
 
 procedure tiGetPropertyNames(AObject : TtiBaseObject; AStringList : TStringList;

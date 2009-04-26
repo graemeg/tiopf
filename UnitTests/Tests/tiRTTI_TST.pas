@@ -26,6 +26,8 @@ type
     procedure tiGetPropertyNamesClass;
     procedure tiIsReadWritePropObject;
     procedure tiIsReadWritePropClass;
+    procedure tiIsPublishedProp_Simple;
+    procedure tiIsPublishedProp_PropertyPath;
 
     procedure SetProperty_Simple;
     procedure SetProperty_PropertyPath;
@@ -33,18 +35,6 @@ type
     procedure GetProperty_PropertyPath;
     procedure GetPropertyClass;
     procedure PropertyInheritsFrom;
-
-//    procedure tiGetSimplePropType;
-//    procedure tiIsNumericProp;
-//    procedure tiGetPropertyNamesObject;
-//    procedure tiIsReadWritePropObject;
-//
-//    procedure SetProperty_Simple;
-//    procedure SetProperty_PropertyPath;
-//    procedure GetProperty_Simple;
-//    procedure GetProperty_PropertyPath;
-//    procedure GetPropertyClass;
-//    procedure PropertyInheritsFrom;
 
   end;
   
@@ -391,6 +381,46 @@ begin
   Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'ObjectProp'),      'Failed on ObjectProp'       );
   Check(tiRTTI.tiIsReadWriteProp(TTestGetPropNames, 'MethodProp'),      'Failed on MethodProp'       );
 
+end;
+
+procedure TTesttiRTTI.tiIsPublishedProp_Simple;
+var
+  c: TTestGetPropNames;
+begin
+  c := TTestGetPropNames.Create;
+  try
+    CheckTrue(tiIsPublishedProp(c, 'StringProp'), 'Failed on 1');
+    CheckTrue(tiIsPublishedProp(c, 'ShortStringProp'), 'Failed on 2');
+    CheckTrue(tiIsPublishedProp(c, 'WideStringProp'), 'Failed on 3');
+    CheckTrue(tiIsPublishedProp(c, 'CharProp'), 'Failed on 4');
+    CheckTrue(tiIsPublishedProp(c, 'IntProp'), 'Failed on 5');
+
+    CheckTrue(tiIsPublishedProp(c, 'Int64Prop'), 'Failed on 6');
+    CheckTrue(tiIsPublishedProp(c, 'BoolProp'), 'Failed on 7');
+    CheckTrue(tiIsPublishedProp(c, 'DateTimeProp'), 'Failed on 8');
+    CheckTrue(tiIsPublishedProp(c, 'FloatProp'), 'Failed on 9');
+    CheckTrue(tiIsPublishedProp(c, 'ObjectProp'), 'Failed on 10');
+    CheckTrue(tiIsPublishedProp(c, 'MethodProp'), 'Failed on 11');
+    CheckTrue(tiIsPublishedProp(c, 'ReadOnlyIntProp'), 'Failed on 12');
+  finally
+    c.Free;
+  end;
+end;
+
+procedure TTesttiRTTI.tiIsPublishedProp_PropertyPath;
+var
+  c: TtiRTTITestClass;
+begin
+  c := TtiRTTITestClass.Create;
+  try
+    CheckTrue(tiIsPublishedProp(c, 'TestItem.StrField'), 'Failed on 1');
+    CheckTrue(tiIsPublishedProp(c, 'TestItem.IntField'), 'Failed on 2');
+    CheckTrue(tiIsPublishedProp(c, 'TestItem.FloatField'), 'Failed on 3');
+    CheckTrue(tiIsPublishedProp(c, 'TestItem.DateField'), 'Failed on 4');
+    CheckTrue(tiIsPublishedProp(c, 'TestItem.BoolField'), 'Failed on 5');
+  finally
+    c.Free;
+  end;
 end;
 
 procedure TTesttiRTTI.tiIsReadWritePropObject;

@@ -306,7 +306,10 @@ Procedure MediatorError(Sender : TObject; Fmt : String; Args : Array of const); 
 implementation
 
 uses
-  tiUtils, tiLog;
+  tiUtils
+  ,tiLog
+  ,tiRTTI
+  ;
 
 var
   uMediatorManager: TMediatorManager;
@@ -641,7 +644,7 @@ function TMediatorManager.FindDefFor(ASubject: TtiObject; AGui: TComponent; APro
 var
   propinfo: PPropInfo;
 begin
-  propinfo := GetPropInfo(ASubject, APropName);
+  propinfo := tiGetPropInfo(ASubject.ClassType, APropName, @ASubject);
   Result := FindDefFor(ASubject, AGUI, propinfo);
 end;
 
@@ -1206,7 +1209,7 @@ begin
   begin
     lField := FFieldsInfo[c].PropName;
     { WRONG!!  We should test the items of the Model }
-    Result := (IsPublishedProp(AData, lField));
+    result := tiIsPublishedProp(AData, lField);
     if not Result then
       RaiseMediatorError(SErrInvalidPropertyName,[lField, AData.ClassName]);
   end;

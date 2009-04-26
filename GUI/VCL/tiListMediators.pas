@@ -116,9 +116,12 @@ type
   end;
 
 
-Procedure RegisterFallBackListmediators;
+procedure RegisterFallBackListmediators;
 
 implementation
+
+uses
+  tiRTTI;
 
 type
   // friend class to get access to protected methods
@@ -351,14 +354,14 @@ var
   lValue: string;
 begin
   lMemberName := FFieldsInfo[0].PropName;
-  lValue      := Model.PropValue[lMemberName];
+  lValue      := tiGetProperty(Model, lMemberName);
   if Assigned(OnBeforeSetupField) then
     OnBeforeSetupField(Model, lMemberName, lValue);
   FView.Caption := lValue;
   for c := 1 to FFieldsInfo.Count - 1 do
   begin
     lMemberName := FFieldsInfo[c].PropName;
-    lValue      := Model.PropValue[lMemberName];
+    lValue      := tiGetProperty(Model, lMemberName);
     if Assigned(OnBeforeSetupField) then
       OnBeforeSetupField(Model, lMemberName, lValue);
     FView.SubItems.Add(lValue);
@@ -394,7 +397,7 @@ begin
   for c := 0 to FFieldsInfo.Count - 1 do
   begin
     lMemberName := FFieldsInfo[c].PropName;
-    lValue      := Model.PropValue[lMemberName];
+    lValue      := tiGetProperty(Model, lMemberName);
     if Assigned(OnBeforeSetupField) then
       OnBeforeSetupField(Model, lMemberName, lValue);
     If c=0 Then
@@ -459,7 +462,7 @@ begin
     for i := 0 to FieldsInfo.Count - 1 do
     begin
       lFieldName := FieldsInfo[i].PropName;
-      FView.Cells[i, ARowIdx+1] := AData.PropValue[lFieldName];  // set Cell text
+      FView.Cells[i, ARowIdx+1] := tiGetProperty(AData, lFieldName);  // set Cell text
     end;
     lMediatorView := TStringGridRowMediator.CreateCustom(AData, FView, FieldsInfo, ARowIdx+1, Active);
     FView.Objects[0, ARowIdx+1] := lMediatorView;   // set Object reference inside grid
@@ -603,7 +606,7 @@ begin
   for i := 0 to FFieldsInfo.Count - 1 do
   begin
     lFieldName := FFieldsInfo[I].PropName;
-    lValue     := Model.PropValue[lFieldName];
+    lValue     := tiGetProperty(Model, lFieldName);
     if Assigned(OnBeforeSetupField) then
       OnBeforeSetupField(Model, lFieldName, lValue);
     FView.Cells[i, FRowIndex] := lValue;
