@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics,
-  Controls, Forms, Dialogs, Grids, StdCtrls, Menus,
-  tiBaseMediator, tiFormMediator, tiMediators, tiListMediators;
+  Controls, Forms, Dialogs, Grids, StdCtrls, Menus, tiBaseMediator,
+  tiFormMediator, tiMediators, tiListMediators, ContactDisplay;
 
 type
   TfrmDemoMain = class(TForm)
@@ -34,9 +34,12 @@ type
     procedure EditContactClick(Sender: TObject);
   private
     FMediator: TFormMediator;
+    FDisplayList : TContactDisplayList;
     procedure SetupMediators;
   public
     { Public declarations }
+  published
+    Property DisplayList : TContactDisplayList Read FDisplayList Write FDisplayList;
   end;
 
 var
@@ -68,11 +71,13 @@ end;
 
 procedure TfrmDemoMain.DeleteContactClick(Sender: TObject);
 var
-  c: TContact;
-  m: TMediatorView;
+  D : TContactDisplay;
+  C : TContact;
+  M : TMediatorView;
 begin
-  m := FMediator.FindByComponent(GContacts).Mediator;
-  c := TContact(TStringGridMediator(m).SelectedObject);
+  M := FMediator.FindByComponent(GContacts).Mediator;
+  D := TContactDisplay(TStringGridMediator(M).SelectedObject);
+  C := D.Contact;
   if Assigned(c) then
   begin
     gContactManager.ContactList.Extract(c);
@@ -84,13 +89,17 @@ end;
 
 procedure TfrmDemoMain.EditContactClick(Sender: TObject);
 var
-  c: TContact;
+  D : TContactDisplay;
+  C : TContact;
+  M : TMediatorView;
 begin
-  c := TContact(TStringGridMediator(FMediator.FindByComponent(GContacts).Mediator).SelectedObject);
-  if Assigned(c) then
-    if EditContact(c) then
+  M := FMediator.FindByComponent(GContacts).Mediator;
+  D := TContactDisplay(TStringGridMediator(M).SelectedObject);
+  C := D.Contact;
+  if Assigned(C) then
+    if EditContact(C) then
     begin
-      // we can save contact here
+      // we can save contact here or modify EditContact to handle it for us.
     end;
 end;
 
@@ -98,6 +107,7 @@ procedure TfrmDemoMain.FormCreate(Sender: TObject);
 begin
   RegisterFallBackMediators;
   RegisterFallBackListmediators;
+  FDisplayList := TContactDisplayList.CreateCustom(gContactManager.ContactList);
   gContactManager.PopulateContacts;
   SetupMediators;
 end;
@@ -130,7 +140,7 @@ begin
     FMediator := TFormMediator.Create(self);
     FMediator.AddComposite('FirstName;LastName(130);EMail(180);DateOfBirth(100);Mobile(130);Comments(200)', GContacts);
   end;
-  FMediator.Subject := gContactManager.ContactList;
+  FMediator.Subject := DisplayList;
   FMediator.Active := True;
 end;
 

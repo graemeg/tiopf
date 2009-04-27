@@ -37,10 +37,12 @@ type
     FData: TContact;
     FMediator: TFormMediator;
     FAdrsMediator: TFormMediator;
+    FMemento : TContactMemento;
     procedure SetData(const AValue: TContact);
     Procedure SetupMediators;
   public
-    property  Data: TContact read FData write SetData;
+    property Data: TContact read FData write SetData;
+    property Memento : TContactMemento read FMemento Write FMemento;
   end;
 
 
@@ -67,6 +69,12 @@ begin
   try
     frm.Data := AData;
     result := (frm.ShowModal = mrOK);
+    if not result then
+    begin
+      frm.Data.BeginUpdate;
+      frm.Data.Memento := frm.Memento;
+      frm.Data.EndUpdate;
+    end;
   finally
     frm.Free;
   end;
@@ -100,6 +108,8 @@ procedure TContactEditForm.SetData(const AValue: TContact);
 begin
   if FData=AValue then exit;
   FData:=AValue;
+  FreeAndNil(FMemento);
+  FMemento := FData.Memento;
   SetupMediators;
 end;
 

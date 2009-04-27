@@ -1,7 +1,7 @@
 object frmDemoMain: TfrmDemoMain
-  Left = 467
-  Top = 213
-  Width = 572
+  Left = 253
+  Top = 351
+  Width = 818
   Height = 388
   Caption = 'VCL Mediators Demo'
   Color = clBtnFace
@@ -12,9 +12,10 @@ object frmDemoMain: TfrmDemoMain
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
+  Position = poScreenCenter
   OnCreate = FormCreate
   DesignSize = (
-    564
+    810
     334)
   PixelsPerInch = 96
   TextHeight = 13
@@ -48,7 +49,7 @@ object frmDemoMain: TfrmDemoMain
   object GContacts: TStringGrid
     Left = 8
     Top = 40
-    Width = 545
+    Width = 791
     Height = 293
     Anchors = [akLeft, akTop, akRight, akBottom]
     TabOrder = 3

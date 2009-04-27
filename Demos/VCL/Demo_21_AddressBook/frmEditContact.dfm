@@ -1,6 +1,6 @@
 object ContactEditForm: TContactEditForm
-  Left = 734
-  Top = 360
+  Left = 541
+  Top = 502
   BorderIcons = [biSystemMenu]
   BorderStyle = bsDialog
   Caption = 'Contact edit form'
@@ -297,8 +297,8 @@ object ContactEditForm: TContactEditForm
     Top = 120
     Width = 97
     Height = 24
-    Date = 39926.603568819450000000
-    Time = 39926.603568819450000000
+    Date = 39926.603568819460000000
+    Time = 39926.603568819460000000
     TabOrder = 2
   end
 end

@@ -1,9 +1,14 @@
 program demo_addressbook;
 
 uses
-  Forms,
+   madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
+ Forms,
   SysUtils,
-  frmMain in 'frmMain.pas' {Form1},
+  frmMain in 'frmMain.pas' {frmDemoMain},
   contactmanager in 'contactmanager.pas',
   model in 'model.pas',
   frmEditContact in 'frmEditContact.pas',
@@ -12,7 +17,8 @@ uses
   frmeditcity in 'frmEditCity.pas' {EditCityForm},
   frmAddressTypeList in 'frmAddressTypeList.pas' {AddressTypeListForm},
   frmCountryList in 'frmCountryList.pas' {CountryListForm},
-  frmeditcountry in 'frmEditCountry.pas' {EditCountryForm};
+  frmeditcountry in 'frmEditCountry.pas' {EditCountryForm},
+  ContactDisplay in 'ContactDisplay.pas';
 
 {$R *.res}
 
@@ -21,6 +27,6 @@ begin
   ShortDateFormat := 'yyyy-mm-dd';
 
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TfrmDemoMain, frmDemoMain);
   Application.Run;
 end.

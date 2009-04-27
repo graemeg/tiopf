@@ -142,7 +142,19 @@ type
     property Items[i: integer]: TAddress read GetItems write SetItems; default;
   end;
 
-  
+
+  TContactMemento = class
+  private
+    FObjectState : TPerObjectState;
+    FOID : String;
+    FFirstName : String;
+    FLastName : String;
+    FMobile : String;
+    FEMail : String;
+    FDOB : TDateTime;
+    FComments : String;
+  end;
+
   TContact = class(TMarkObject)
   private
     FAddressList: TAddressList;
@@ -158,9 +170,12 @@ type
     procedure SetLastName(const AValue: string);
     procedure SetMobile(const AValue: string);
     procedure SetDateOfBirth(const AValue: TDateTime);
+    function GetMemento: TContactMemento;
+    procedure SetMemento(const Value: TContactMemento);
   public
     constructor Create; override;
     destructor Destroy; override;
+    property Memento : TContactMemento read GetMemento Write SetMemento; 
   published
     property FirstName: string read FFirstName write SetFirstName;
     property LastName: string read FLastName write SetLastName;
@@ -465,6 +480,33 @@ destructor TContact.Destroy;
 begin
   FAddressList.Free;
   inherited Destroy;
+end;
+
+function TContact.GetMemento: TContactMemento;
+begin
+  Result := TContactMemento.Create;
+  Result.FOID := OID.AsString;
+  Result.FObjectState := ObjectState;
+  Result.FFirstName := FFirstName;
+  Result.FLastName := FLastName;
+  Result.FMobile := FMobile;
+  Result.FEMail := FEmail;
+  Result.FDOB := FDateOfBirth;
+  Result.FComments := FComments;
+end;
+
+procedure TContact.SetMemento(const Value: TContactMemento);
+begin
+  If (OID.AsString = Value.FOID) then
+  begin
+    ObjectState := Value.FObjectState;
+    FFirstName := Value.FFirstName;
+    FLastName := Value.FLastName;
+    FMobile := Value.FMobile;
+    FEmail := Value.FEMail;
+    FComments:= Value.FComments;
+    FDateOfBirth := Value.FDOB;
+  end;
 end;
 
 { TCountryList }
