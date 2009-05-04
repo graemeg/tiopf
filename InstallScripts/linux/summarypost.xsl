@@ -46,7 +46,7 @@ SVN revision:
 
 <xsl:template name="summary">
 <xsl:text>Summary:&#10;</xsl:text>
-<xsl:text>   </xsl:text>FPC 2.1.3 - Tests run: <xsl:value-of select="/TestResults/NumberOfRunTests"/>, Failures: <xsl:value-of select="/TestResults/NumberOfFailures"/>, Errors: <xsl:value-of select="/TestResults/NumberOfErrors"/>
+<xsl:text>   </xsl:text>FPC #FPCVER (#FPCCPU) - Tests run: <xsl:value-of select="/TestResults/NumberOfRunTests"/>, Failures: <xsl:value-of select="/TestResults/NumberOfFailures"/>, Errors: <xsl:value-of select="/TestResults/NumberOfErrors"/>
 <xsl:text>&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
 <xsl:text>   Note:
