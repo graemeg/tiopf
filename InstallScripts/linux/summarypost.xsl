@@ -5,7 +5,7 @@
 <xsl:template match="/">
 
 <xsl:text>From: Linux Daily Build &#60;dailybuild&#64;spamfilter.co.za&#62;&#10;</xsl:text>
-<xsl:text>Subject: Linux Build Status (r####) - </xsl:text>
+<xsl:text>Subject: Linux Build Status (r#REV) - </xsl:text>
   <xsl:value-of select="/TestResults/DateTimeRan"/><xsl:text>&#10;</xsl:text>
 <xsl:text>Newsgroups: tiopf.dailybuilds&#10;</xsl:text>
 <xsl:text>Content-Type: text/plain; charset=ISO-8859-1&#10;</xsl:text>
