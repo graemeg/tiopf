@@ -811,7 +811,15 @@ end;
 procedure TtiLogToCacheAbs.Terminate;
 begin
   FThrdLog.Terminate;
+  {$IFDEF FPC}
+  { graemeg: 2009-05-04
+    FPC handles WaitFor slightly different under Unix enviroments, so I rather
+    do the following which seems safer. Delphi could probably also use this
+    method. }
+  while not FThrdLog.Terminated do sleep(100);
+  {$ELSE}
   FThrdLog.WaitFor;
+  {$ENDIF}
 end;
 
 

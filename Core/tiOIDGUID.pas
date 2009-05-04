@@ -29,13 +29,11 @@ type
 implementation
 
 uses
-   tiBaseObject
-  ,tiConstants
+  tiConstants
   ,tiUtils
   ,SysUtils
  ;
 
-{ TOIDGUID }
 
 { TtiOIDGeneratorGUID }
 

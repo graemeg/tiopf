@@ -31,6 +31,7 @@ type
   // * String manipulation
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
   { ToDo 5 -cUtils: Convert params to const }
   // Scan the string AValue, and replace any characters ADel with AIns (Case sensitive)
   function  tiStrTran(        AValue, ADel, AIns : string): string;
@@ -138,6 +139,7 @@ type
   // * Directory, file and file name manipulation
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
   // Get a temporary file name with the extension AFileNameExtension
   function  tiGetTempFile(const AFileNameExtension : string): string;
   // Add a trailing slash ('\' or '/' based on platform) if there is not already one
@@ -258,6 +260,7 @@ type
   // * Number manipulation
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
   Type TtiDecimalRoundingCtrl =    {The defined rounding methods}
      (drNone,    {No rounding.}
       drHalfEven,{Round to nearest or to even whole number. (a.k.a Bankers) }
@@ -296,6 +299,7 @@ type
   // * Also see the VCL unit DateUtils
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
   type TtiTimeInterval =
      (titiDay,
       titiHour,
@@ -358,6 +362,7 @@ type
   // * Type conversions
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
   // Convert a string to an integer using StrToInt, default to 0 if an exception is raised
   function  tiStrToInt(         const AValue : string)   : integer;
   // Convert a string to a float using StrToFloat, default to 0 if an exception is raised
@@ -402,6 +407,7 @@ type
   // *  Win32 API wrappers
   // *
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
 {$IFDEF MSWINDOWS}
   // Call Windows ShellExecute with exception handling
   function _tiShellExecute(AHwnd : integer;

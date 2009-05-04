@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="/"/>
-    <Version Value="6"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <SaveOnlyProjectUnits Value="True"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <IconPath Value="./"/>
       <TargetFileExt Value=".exe"/>
     </General>
     <PublishOptions>
@@ -25,17 +24,16 @@
     </RunParams>
     <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="FCL"/>
+        <PackageName Value="tiopfLCL"/>
       </Item1>
       <Item2>
-        <PackageName Value="FPCUnitTestRunner"/>
+        <PackageName Value="FCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FPCUnitTestRunner"/>
       </Item3>
       <Item4>
-        <PackageName Value="tiOPFGUI"/>
-        <MinVersion Major="2" Valid="True"/>
+        <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
     <Units Count="23">
@@ -157,7 +155,7 @@
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
+    <Version Value="8"/>
     <Target>
       <Filename Value="fpcUnitTIOPFGui"/>
     </Target>
@@ -170,9 +168,6 @@
         <AllowLabel Value="False"/>
       </SyntaxOptions>
     </Parsing>
-    <CodeGeneration>
-      <Generate Value="Faster"/>
-    </CodeGeneration>
     <Other>
       <CustomOptions Value="-FU_Dcu
 -dUseCThreads

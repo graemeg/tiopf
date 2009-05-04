@@ -64,7 +64,7 @@ const
 
 constructor TtiLogToFile.Create;
 begin
-  inherited;
+  inherited Create;
   FOverwriteOldFile := false;
   FDateInFileName    := false;
   FFileName          := GetDefaultFileName;

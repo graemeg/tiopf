@@ -109,7 +109,6 @@ const
 
 procedure tiRegisterTests;
 begin
-
   gLog.RegisterLog(TtiLogToFile.CreateWithFileName('', '', True));
   (GLog.FindByLogClass(TtiLogToFile) as TtiLogToFile).EnableCaching:= False;
 
@@ -120,7 +119,7 @@ begin
 
   // These are all the 'non persistence' tests
   tiBaseObject_TST.RegisterTests;
-//  tiUtils_TST.RegisterTests;
+  tiUtils_TST.RegisterTests;
   tiRTTI_TST.RegisterTests;
 
   tiPersistenceLayers_TST.RegisterTests;
@@ -159,6 +158,8 @@ begin
   tiWebServer_TST.RegisterTests;
   {$IFDEF LINK_REMOTE} tiApplicationServer_TST.RegisterTests; {$ENDIF} // Work in progress
   {$ENDIF}
+
+
 
   // Persistent test fixtures (in alpha order)
   tiOPFADOAccess_TST.RegisterTests;

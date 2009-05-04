@@ -26,8 +26,7 @@ type
   TProgressWriter= class(TNoRefCountObject, ITestListener)
   private
     FSuccess: boolean;
-  public
-    destructor Destroy; override;
+  protected
     { ITestListener interface requirements }
     procedure AddFailure(ATest: TTest; AFailure: TTestFailure);
     procedure AddError(ATest: TTest; AError: TTestFailure);
@@ -35,6 +34,8 @@ type
     procedure EndTest(ATest: TTest);
     procedure StartTestSuite(ATestSuite: TTestSuite);
     procedure EndTestSuite(ATestSuite: TTestSuite);
+  public
+    destructor Destroy; override;
   end;
 
 
@@ -114,8 +115,8 @@ destructor TTestRunner.Destroy;
 begin
   FXMLResultsWriter.Free;
   FPlainResultsWriter.Free;
+  inherited Destroy;
 end;
-
 
 procedure TTestRunner.doTestRun(aTest: TTest);
 var
