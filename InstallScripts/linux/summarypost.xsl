@@ -16,7 +16,7 @@
 <xsl:text>&#10;</xsl:text>
 
 SVN revision:
-   r####
+   r#REV
    
   <xsl:call-template name="build_time"/>
   <xsl:call-template name="elapsed_time"/>
