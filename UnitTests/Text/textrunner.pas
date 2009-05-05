@@ -12,7 +12,7 @@ program textrunner;
 uses
   cthreads, custapp, Classes, SysUtils, fpcunit, testutils, testregistry,
   testdecorator, tiTestDependencies, tiOPFTestManager, xmlwrite,
-  xmltestreport, plaintestreport, tiDUnitINI, tiUtils_TST;
+  xmltestreport, plaintestreport, tiDUnitINI;
 
 
 const

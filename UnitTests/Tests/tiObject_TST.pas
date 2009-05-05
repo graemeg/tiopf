@@ -1457,49 +1457,46 @@ begin
   end;
 end;
 
-
 procedure TtiObjectTestCase.SetBooleanPropValue;
 var
   lData : TtiObjectForTesting;
 begin
   lData := TtiObjectForTesting.Create;
   try
-
     lData.PropValue['BoolProp']:= true;
-    CheckEquals(true, lData.BoolProp, 'BoolProp true');
+    CheckEquals(true, lData.BoolProp, 'failed on 1');
     lData.PropValue['BoolProp']:= false;
-    CheckEquals(false, lData.BoolProp, 'BoolProp false');
+    CheckEquals(false, lData.BoolProp, 'failed on 2');
 
     lData.PropValue['BoolProp']:= 'true';
-    CheckEquals(true, lData.BoolProp, 'BoolProp ''true''');
+    CheckEquals(true, lData.BoolProp, 'failed on 3');
     lData.PropValue['BoolProp']:= 'false';
-    CheckEquals(false, lData.BoolProp, 'BoolProp ''false''');
+    CheckEquals(false, lData.BoolProp, 'failed on 4');
 
     lData.PropValue['BoolProp']:= 'TRUE';
-    CheckEquals(true, lData.BoolProp, 'BoolProp ''TRUE''');
+    CheckEquals(true, lData.BoolProp, 'failed on 5');
     lData.PropValue['BoolProp']:= 'FALSE';
-    CheckEquals(false, lData.BoolProp, 'BoolProp ''FALSE''');
+    CheckEquals(false, lData.BoolProp, 'failed on 6');
 
     lData.PropValue['BoolProp']:= 'True';
-    CheckEquals(true, lData.BoolProp, 'BoolProp ''True''');
+    CheckEquals(true, lData.BoolProp, 'failed on 7');
     lData.PropValue['BoolProp']:= 'False';
-    CheckEquals(false, lData.BoolProp, 'BoolProp ''False''');
+    CheckEquals(false, lData.BoolProp, 'failed on 8');
 
     lData.PropValue['BoolProp']:= 'T';
-    CheckEquals(true, lData.BoolProp, 'BoolProp ''T''');
+    CheckEquals(true, lData.BoolProp, 'failed on 9');
     lData.PropValue['BoolProp']:= 'F';
-    CheckEquals(false, lData.BoolProp, 'BoolProp ''F''');
+    CheckEquals(false, lData.BoolProp, 'failed on 10');
 
     lData.PropValue['BoolProp']:= 1;
-    CheckEquals(true, lData.BoolProp, 'BoolProp 1');
+    CheckEquals(true, lData.BoolProp, 'failed on 11');
     lData.PropValue['BoolProp']:= 0;
-    CheckEquals(false, lData.BoolProp, 'BoolProp 0');
+    CheckEquals(false, lData.BoolProp, 'failed on 12');
 
     lData.PropValue['BoolProp']:= '1';
-    CheckEquals(true, lData.BoolProp, 'BoolProp ''1''');
+    CheckEquals(true, lData.BoolProp, 'failed on 13');
     lData.PropValue['BoolProp']:= '0';
-    CheckEquals(false, lData.BoolProp, 'BoolProp ''0''');
-
+    CheckEquals(false, lData.BoolProp, 'failed on 14');
   finally
     lData.Free;
   end;

@@ -175,17 +175,14 @@ begin
     case tiGetTypeInfo(LPropInfo)^.Kind of
       tkClass:
         SetObjectProp(AObject, LPropInfo, TObject(Integer(APropValue)));
-      tkEnumeration:
+      tkEnumeration{$IFDEF FPC},tkBool{$ENDIF}:
         begin
-          {$IFDEF DELPHI6ORABOVE}
           if VarIsStr(APropValue) and (VarToStr(APropValue) = '') then
-          {$ELSE}
-          if APropValue = '' then
-          {$ENDIF}
             LValue:= 0
           else
             LValue:= APropValue;
-          if SameText(LPropInfo^.PropType^.Name, 'Boolean') then // Special handling if it's a boolean
+          // Special handling if it's a boolean
+          if SameText(LPropInfo^.PropType^.Name, 'Boolean') then
             tiSetBooleanPropValue(AObject, LPropInfo^.Name, LValue)
           else
             SetPropValue(AObject, LPropInfo^.Name, LValue);

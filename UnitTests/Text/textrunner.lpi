@@ -5,7 +5,8 @@
     <General>
       <Flags>
         <SaveOnlyProjectUnits Value="True"/>
-        <LRSInOutputDirectory Value="False"/>
+        <MainUnitHasUsesSectionForAllUnits Value="False"/>
+        <AlwaysBuild Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
@@ -26,7 +27,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <CommandLineParams Value="-p -a"/>
+        <CommandLineParams Value="-p --suite=TtiObjectTestCase"/>
         <LaunchingApplication Use="True" PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
@@ -35,7 +36,7 @@
         <PackageName Value="tiOPF"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="9">
       <Unit0>
         <Filename Value="textrunner.pas"/>
         <IsPartOfProject Value="True"/>
@@ -61,12 +62,32 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiUtils_TST"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="../Tests/tiObject_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiObject_TST"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../Tests/tiBaseObject_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiBaseObject_TST"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="../Common/tiBOMsForTesting.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiBOMsForTesting"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="../Common/tiTestFramework.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiTestFramework"/>
+      </Unit8>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
     <SearchPaths>
-      <IncludeFiles Value="../../Core/"/>
+      <IncludeFiles Value="../../Core/;$(ProjOutDir)/"/>
       <OtherUnitFiles Value="../Common/;../Tests/"/>
     </SearchPaths>
     <Parsing>
