@@ -153,7 +153,7 @@ type
   private
     FTextFileMetaData: TTextFileMetaDatas;
     FFieldDelim: string;
-    FStringDelim: string;
+    FStringDelim: AnsiString;
     FStringDelimAsChar: AnsiChar;
     FRowDelim  : string;
     FStream    : TtiFileStream;
@@ -167,13 +167,13 @@ type
     procedure DoExtractFieldName(AIndex : integer; const AValue : string);
     procedure DoExtractData(AIndex : integer; const AValue : string);
     procedure DoExtractDefaultFieldNames(AIndex : integer; const AValue : string);
-    procedure SetStringDelim(const AValue: string);
+    procedure SetStringDelim(const AValue: AnsiString);
   protected
   public
     constructor Create; virtual;
     property    TextFileMetaData : TTextFileMetaDatas read FTextFileMetaData write FTextFileMetaData;
     property    FieldDelim : string read FFieldDelim write FFieldDelim;
-    property    StringDelim : string read FStringDelim write SetStringDelim;
+    property    StringDelim : AnsiString read FStringDelim write SetStringDelim;
     property    RowDelim   : string read FRowDelim write FRowDelim;
     procedure   Save(pDataSet : TtiDataBuffer; AFileName : TFileName);
     procedure   Read(pDataSet : TtiDataBuffer; AFileName : TFileName);
@@ -937,7 +937,7 @@ begin
 end;
 
 
-procedure TTXTToTIDataSetAbs.SetStringDelim(const AValue: string);
+procedure TTXTToTIDataSetAbs.SetStringDelim(const AValue: AnsiString);
 begin
   Assert(Length(AValue)<=1, 'StringDelim must be a single character');
   FStringDelim := AValue;

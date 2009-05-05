@@ -364,7 +364,7 @@ begin
 
     ftFloat,
     ftCurrency,
-    ftBCD:
+    ftBCD, ftFMTBcd:
         Result := qfkFloat;
 
     ftDate,

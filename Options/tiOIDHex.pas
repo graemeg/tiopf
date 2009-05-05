@@ -38,8 +38,8 @@ type
   private
     FAsString: string;
   protected
-    function GetAsString: ShortString; override;
-    procedure SetAsString(const AValue: ShortString); override;
+    function GetAsString: string; override;
+    procedure SetAsString(const AValue: string); override;
     function GetAsVariant: variant; override;
     procedure SetAsVariant(const AValue: variant); override;
   public
@@ -52,16 +52,16 @@ type
     function Compare(const ACompareWith: TtiOID): integer; override;
     procedure SetToNull; override;
     function NullOIDAsString: string; override;
-    class function CheckValue(AValue: ShortString): boolean;
-    class function IncHex(pHex: ShortString; pInc: integer = 1): ShortString;
-    class function ZeroHex: ShortString;
+    class function CheckValue(AValue: string): boolean;
+    class function IncHex(pHex: string; pInc: integer = 1): string;
+    class function ZeroHex: string;
   end;
 
   TNextOIDHexData = class(TtiObject)
   private
-    FNextHexOID: ShortString;
+    FNextHexOID: string;
   public
-    property NextHexOID: ShortString read FNextHexOID write FNextHexOID;
+    property NextHexOID: string read FNextHexOID write FNextHexOID;
   end;
 
   TtiOIDGeneratorHex = class(TtiOIDGenerator)
@@ -151,7 +151,7 @@ begin
   lParams.SetValueAsString(AFieldName, FAsString);
 end;
 
-class function TOIDHex.CheckValue(AValue: ShortString): boolean;
+class function TOIDHex.CheckValue(AValue: string): boolean;
 var
   //  lI64 : int64;
   lHex1, lHex2: string;
@@ -192,7 +192,7 @@ begin
   Result := (FAsString = lQuery.FieldAsString[AFieldName]);
 end;
 
-function TOIDHex.GetAsString: ShortString;
+function TOIDHex.GetAsString: string;
 begin
   Result := FAsString;
 end;
@@ -202,7 +202,7 @@ begin
   Result := FAsString;
 end;
 
-class function TOIDHex.IncHex(pHex: ShortString; pInc: integer): ShortString;
+class function TOIDHex.IncHex(pHex: string; pInc: integer): string;
 
   procedure _IncHex(APos: integer);
   var
@@ -240,7 +240,7 @@ begin
   Result := '';
 end;
 
-procedure TOIDHex.SetAsString(const AValue: ShortString);
+procedure TOIDHex.SetAsString(const AValue: string);
 begin
   if CheckValue(AValue) then
     FAsString := AValue;
@@ -256,7 +256,7 @@ begin
   FAsString := NullOIDAsString;
 end;
 
-class function TOIDHex.ZeroHex: ShortString;
+class function TOIDHex.ZeroHex: string;
 begin
   Result := StringOfChar('0', COIDHexSize);
 end;
@@ -358,7 +358,7 @@ end;
 procedure TVisDBNextOIDHexAmblerUpdate.Execute(const AData: TtiVisited);
 var
   lParams: TtiQueryParams;
-  lHex:    ShortString;
+  lHex:    string;
 begin
   if GTIOPFManager.Terminated then
     Exit; //==>

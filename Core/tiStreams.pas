@@ -30,9 +30,9 @@ type
     constructor Create(AInitialSize, AGrowBy : Int64);
     destructor  Destroy; override;
     procedure   Clear;
-    procedure   Write(const AStr: string);
+    procedure   Write(const AStr: ansistring);
     procedure   WriteLn(const AStr: string = '');
-    function    AsString: string;
+    function    AsString: ansistring;
     procedure   SaveToFile(const AFileName: string);
     property    Size: Int64 read FDataSize;
     property    Position: Int64 read GetPosition;
@@ -50,9 +50,9 @@ type
     constructor CreateReadWrite(const AFileName : string; pOverwrite : boolean = false);
     constructor CreateReadOnly( const AFileName : string);
     property    LineDelim : string read GetLineDelim write SetLineDelim;
-    procedure   Write(const AString : string); reintroduce;
-    procedure   WriteLn(const AString : string = '');
-    function    ReadLn : string;
+    procedure   Write(const AString : ansistring); reintroduce;
+    procedure   WriteLn(const AString : ansistring = '');
+    function    ReadLn : ansistring;
     function    EOF : boolean;
   end;
 
@@ -414,7 +414,8 @@ begin
  ByteBuffer := 0;
  ByteBufferSpace := 4;
  l := MimeDecodePartial (Pointer (s)^, l, Pointer (Result)^, ByteBuffer, ByteBufferSpace);
- Inc (l, MimeDecodePartialEnd (Pointer(PChar(Pointer(Result)) + l)^, ByteBuffer, ByteBufferSpace));
+// Inc (l, MimeDecodePartialEnd (Pointer(PByte(Pointer(Result)) + l)^, ByteBuffer, ByteBufferSpace));
+ Inc (l, MimeDecodePartialEnd (Pointer(PAnsiChar(Pointer(Result)) + l)^, ByteBuffer, ByteBufferSpace));
  SetLength (Result, l);
  Exit;
  NothingToDo:
@@ -484,7 +485,7 @@ begin
   InPtr := @InputBuffer;
   InMax3 := InputByteCount div 3 * 3;
   OutPtr := @OutputBuffer;
-  Pchar(InLimitPtr):= Pchar(InPtr) + InMax3;
+  PAnsiChar(InLimitPtr):= PAnsiChar(InPtr) + InMax3;
   while InPtr <> InLimitPtr do
   begin
     b := InPtr^;
@@ -553,7 +554,7 @@ begin
  if InputBytesCount > 0 then
   begin
    InPtr := @InputBuffer;
-   PChar (InLimitPtr):= Pchar(InPtr) + InputBytesCount;
+   PAnsiChar (InLimitPtr):= PAnsiChar(InPtr) + InputBytesCount;
    OutPtr := @OutputBuffer;
    lByteBuffer := ByteBuffer;
    lByteBufferSpace := ByteBufferSpace;
@@ -614,7 +615,7 @@ const
   cBufLen = 1024;
 var
   crPos, LfPos : LongInt;
-  ls: string;
+  ls: ansistring;
   lReadCount: LongInt;
   lOldPos: Int64;
 begin
@@ -652,7 +653,7 @@ begin
   AStream.Seek(lOldPos, soFromBeginning);
 end;
 
-function tiStreamReadLn(AStream: TStream; const ALineDelim: string): string;
+function tiStreamReadLn(AStream: TStream; const ALineDelim: string): AnsiString;
 const
   cBufLen = 1024;
 var
@@ -660,7 +661,7 @@ var
   lReadCount: LongInt;
   lTrim: LongInt;
   lStart: Int64;
-  ls: string;
+  ls: ansistring;
   lLineDelimLen: integer;
 begin
   lLineDelimLen := Length(ALineDelim);
@@ -709,17 +710,17 @@ begin
   LineDelim := '';
 end;
 
-function TtiFileStream.ReadLn: string;
+function TtiFileStream.ReadLn: AnsiString;
 begin
   Result := tiStreamReadLn(Self, LineDelim);
 end;
 
-procedure TtiFileStream.Write(const AString: string);
+procedure TtiFileStream.Write(const AString: AnsiString);
 begin
   tiAppendStringToStream(AString, Self);
 end;
 
-procedure TtiFileStream.WriteLn(const AString: string = '');
+procedure TtiFileStream.WriteLn(const AString: ansistring = '');
 begin
   Write(AString + LineDelim);
 end;
@@ -756,9 +757,7 @@ begin
   Create(AFileName, fmOpenRead or fmShareDenyNone);
 end;
 
-{ TtiPreSizedStream }
-
-function TtiPreSizedStream.AsString: string;
+function TtiPreSizedStream.AsString: AnsiString;
 var
   LPosition: Cardinal;
 begin
@@ -807,13 +806,13 @@ begin
   FStream.Seek(0, soFromEnd);
 end;
 
-procedure TtiPreSizedStream.Write(const AStr: string);
+procedure TtiPreSizedStream.Write(const AStr: ansistring);
 var
-  lPC : PChar;
+  lPC : Pointer;
   lLen : Integer;
 begin
-  lPC := PChar(AStr);
-  lLen := length(AStr);
+  lPC := Pointer(AStr);
+  lLen := length(AStr); // * sizeof(char);
   while FStreamSize < FDataSize + lLen do
   begin
     Inc(FStreamSize, FGrowBy);

@@ -901,8 +901,8 @@ procedure TTestTIUtils.tiMoveFile;
 var
   LFileNameFrom: string;
   LFileNameTo: string;
-  LFrom: string;
-  LTo: string;
+  LFrom: ansistring;
+  LTo: ansistring;
 begin
   ForceDirectories(TempDirectory);
 
@@ -918,11 +918,11 @@ begin
   tiUtils.tiStringToFile(LFrom, LFileNameFrom);
 
   // This move should succeed
-  Check(tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Failed on 1');
-  Check(FileExists(LFileNameTo), 'Failed on 2');
-  Check(not FileExists(LFileNameFrom), 'Failed on 3');
+  Check(tiUtils.tiMoveFile(LFileNameFrom, LFileNameTo), 'Failed on 1 ');
+  Check(FileExists(LFileNameTo), 'Failed on 2 ');
+  Check(not FileExists(LFileNameFrom), 'Failed on 3 ');
   LTo:= tiUtils.tiFileToString(LFileNameTo);
-  CheckEquals(LFrom, LTo, 'Failed on 4');
+  CheckEquals(LFrom, LTo, 'Failed on 4 ');
 
   tiUtils.tiStringToFile(LFrom, LFileNameFrom);
   {$IFDEF MSWINDOWS}
@@ -2059,9 +2059,9 @@ var
   i, j : integer;
 begin
   result := '' ;
-  for i := 0 to 1000 do
+  for i := 0 to 3000 do
   begin
-    for j := 32 to 255 do
+    for j := 32 to 127 do
       result := result + Chr(j);
     result := result + #13;
   end;
@@ -2448,7 +2448,7 @@ end;
 procedure TTestTIUtils.tiFileToStream;
 var
   lSt: TStringStream;
-  lS: string;
+  lS: ansistring;
   lFileName: string;
   lsl: TStringList;
 begin

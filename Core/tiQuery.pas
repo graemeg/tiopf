@@ -90,8 +90,8 @@ type
   TtiDBMetaDataField  = class;
   TtiQueryParams      = class;
   TtiQueryParamAbs    = class;
-  TTableName          = String[ 255 ];
-  TFieldName          = String[ 255 ];
+  TTableName          = String; //[ 255 ];   //
+  TFieldName          = String; // [ 255 ];
   TtiQueryClass       = class of TtiQuery;
   TtiDatabaseClass    = class of TtiDatabase;
   TtiQueryParamClass  = class of TtiQueryParamAbs;

@@ -16,8 +16,8 @@ type
 
   TEncryptNone = class(TtiEncryptAbs)
   public
-    function    EncryptString(const AData : string): string; override;
-    function    DecryptString(const AData : string): string; override;
+    function    EncryptString(const AData : AnsiString): AnsiString; override;
+    function    DecryptString(const AData : AnsiString): AnsiString; override;
     procedure   EncryptStream(const pSrc, pDest : TStream); override;
     procedure   DecryptStream(const pSrc, pDest : TStream); override;
   end;
@@ -31,13 +31,13 @@ implementation
 // *  TEncryptNone
 // *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-function TEncryptNone.EncryptString(const AData : string): string;
+function TEncryptNone.EncryptString(const AData : AnsiString): AnsiString;
 begin
   result := AData;
 end;
 
 
-function TEncryptNone.DecryptString(const AData : string): string;
+function TEncryptNone.DecryptString(const AData : AnsiString): AnsiString;
 begin
   result := AData;
 end;

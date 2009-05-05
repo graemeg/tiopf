@@ -25,8 +25,8 @@ type
   private
     FAsInteger: integer;
   protected
-    function GetAsString: ShortString; override;
-    procedure SetAsString(const AValue: ShortString); override;
+    function GetAsString: String; override;
+    procedure SetAsString(const AValue: String); override;
     function GetAsVariant: variant; override;
     procedure SetAsVariant(const AValue: variant); override;
   public
@@ -102,12 +102,12 @@ uses
 
 { TOIDInteger }
 
-function TOIDInteger.getAsString: ShortString;
+function TOIDInteger.getAsString: String;
 begin
   Result := IntToStr(FAsInteger);
 end;
 
-procedure TOIDInteger.SetAsString(const AValue: ShortString);
+procedure TOIDInteger.SetAsString(const AValue: String);
 begin
   if AValue <> '' then
     FAsInteger := StrToInt(AValue)

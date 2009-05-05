@@ -474,21 +474,22 @@ end;
 
 function TTestTIXML.tiReplicate1(const AValue : string ; ACount : Word): string ;
 var
-  LResult, LValue: PChar;
+//  LResult, LValue: PChar;
   LLen: cardinal;
-
 begin
   if (ACount = 0) or (Pointer(AValue) = nil) then
     exit;
   LLen := Length(AValue);
   SetLength(Result, LLen * ACount);
-  LResult := Pointer(Result);
-  LValue := Pointer(AValue);
+//  LResult := Pointer(Result);
+//  LValue := Pointer(AValue);
 
+  result:= '';
   while ACount <> 0 do
   begin
-    Move(LValue^, LResult^, LLen);
-    Inc(LResult, LLen);
+//    Move(LValue^, LResult^, LLen);
+//    Inc(LResult, LLen);
+    result:= result + AValue;
     Dec(ACount);
   end;
 end;

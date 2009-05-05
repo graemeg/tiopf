@@ -35,7 +35,7 @@ const
 
   // Type kinds for use with tiGetProperty
   // All string type properties
-  ctkString = [ tkChar, tkString, tkWChar, tkLString, tkWString ];
+  ctkString = [ tkChar, tkString, tkWChar, tkLString, tkWString {$IFDEF UNICODE} , tkUString {$ENDIF} ];
   // Integer type properties
   ctkInt    = [ tkInteger, tkInt64 ];
   // Float type properties

@@ -27,6 +27,9 @@ type
   TObjectUpdateMoment = (ouOnChange, ouOnExit, ouCustom);
 
   { Base class to inherit from to make more customised Mediator Views. }
+
+  { TMediatorView }
+
   TMediatorView = class(TtiObject)
   private
     FActive: Boolean;

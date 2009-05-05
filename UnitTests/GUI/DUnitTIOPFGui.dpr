@@ -1,7 +1,9 @@
 program DUnitTIOPFGui;
 
 uses
-  FastMM4,
+  {$IFDEF FASTMM}
+     FastMM4,
+  {$ENDIF}
   tiBaseObject,
   tiLog,
   Forms,

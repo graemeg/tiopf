@@ -452,11 +452,11 @@ end;
 
 function StrRetToString(PIDL: PItemIDList; StrRet: TStrRet): string;
 var
-  P: PChar;
+  P: PAnsiChar;
 begin
   case StrRet.uType of
     STRRET_CSTR:
-      SetString(Result, StrRet.cStr, lStrLen(StrRet.cStr));
+      SetString(Result, StrRet.cStr, StrLen(StrRet.cStr));
     STRRET_OFFSET:
       begin
         P := @PIDL.mkid.abID[StrRet.uOffset - SizeOf(PIDL.mkid.cb)];
@@ -662,7 +662,7 @@ procedure GetCSIDLLocation(const ASpecialDirectory: TFromDirectory;
 { This function is a bit overkill }
 var
   LSpecialDirectory: TFromDirectory;
-  Buffer: PChar;
+  Buffer: PAnsiChar;
 
   function IsOk: Boolean;
   begin

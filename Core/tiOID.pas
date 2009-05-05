@@ -24,15 +24,15 @@ type
   // The abstract OID class
   TtiOID = class(TtiBaseObject)
   protected
-    function GetAsString: ShortString; virtual; abstract;
-    procedure SetAsString(const AValue: ShortString); virtual; abstract;
+    function GetAsString: String; virtual; abstract;
+    procedure SetAsString(const AValue: String); virtual; abstract;
     function GetAsVariant: variant; virtual; abstract;
     procedure SetAsVariant(const AValue: variant); virtual; abstract;
   public
     constructor Create; virtual;
 
     // Test these ones under NonPersistent group
-    property AsString: ShortString read GetAsString write SetAsString;
+    property AsString: String read GetAsString write SetAsString;
     property AsVariant: variant read GetAsVariant write SetAsVariant;
     function IsNull: boolean; virtual; abstract;
     procedure AssignToTIQueryParam(const AFieldName: string; const AParams: TtiBaseObject); virtual; abstract;
@@ -58,8 +58,8 @@ type
   private
     FAsString: string;
   protected
-    function GetAsString: ShortString; override;
-    procedure SetAsString(const AValue: ShortString); override;
+    function GetAsString: String; override;
+    procedure SetAsString(const AValue: String); override;
     function GetAsVariant: variant; override;
     procedure SetAsVariant(const AValue: variant); override;
   public
@@ -150,13 +150,13 @@ begin
   inherited;
 end;
 
-function TOIDStringAbs.getAsString: ShortString;
+function TOIDStringAbs.getAsString: String;
 begin
   Result := FAsString;
 end;
 
 
-procedure TOIDStringAbs.SetAsString(const AValue: ShortString);
+procedure TOIDStringAbs.SetAsString(const AValue: String);
 begin
   FAsString := AValue;
 end;

@@ -25,8 +25,8 @@ type
   private
     FAsInt64: int64;
   protected
-    function GetAsString: ShortString; override;
-    procedure SetAsString(const AValue: ShortString); override;
+    function GetAsString: string; override;
+    procedure SetAsString(const AValue: string); override;
     function GetAsVariant: variant; override;
     procedure SetAsVariant(const AValue: variant); override;
   public
@@ -91,12 +91,12 @@ uses
 
 { TOIDInt64 }
 
-function TOIDInt64.getAsString: ShortString;
+function TOIDInt64.getAsString: string;
 begin
   Result := IntToStr(FAsInt64);
 end;
 
-procedure TOIDInt64.SetAsString(const AValue: ShortString);
+procedure TOIDInt64.SetAsString(const AValue: string);
 begin
   FAsInt64 := StrToInt(AValue);
 end;

@@ -21,7 +21,7 @@ const
 
   // Type kinds for use with tiGetPropertyNames
   // All string type properties
-  ctkString = [ tkChar, tkString, tkWChar, tkLString, tkWString {$IFDEF FPC},tkAString{$ENDIF} ];
+  ctkString = [ tkChar, tkString, tkWChar, tkLString, tkWString {$IFDEF FPC},tkAString{$ENDIF}{$IFDEF UNICODE} , tkUString {$ENDIF} ];
   // Integer type properties
   ctkInt    = [ tkInteger, tkInt64 {$IFDEF FPC},tkBool{$ENDIF}];
   // Float type properties
@@ -450,7 +450,7 @@ begin
   tkChar,
   tkWChar,
   tkLString,
-  {$IFDEF DELPHI12}
+  {$IFDEF UNICODE}
   tkUString,
   {$ENDIF}
   {$IFDEF FPC}
@@ -492,6 +492,7 @@ varString       Reference to a dynamically allocated Pascal string (type AnsiStr
 varTypeMask     Bit mask for extracting type code.
 varArray        Bit indicating variant array.
 varByRef        Bit indicating variant contains a reference (rather than a value).
+varUString      Delphi 2009 up, unicode string
 }
 
   if tiIsVariantOfType(AValue, varSmallint) or
@@ -509,6 +510,9 @@ varByRef        Bit indicating variant contains a reference (rather than a value
           tiIsVariantOfType(AValue, varCurrency) then
     Result := tiTKFloat
   else if tiIsVariantOfType(AValue, varString) or
+  {$ifdef UNICODE}
+          tiIsVariantOfType(AValue, varUString) or
+  {$endif}
           tiIsVariantOfType(AValue, varOLEStr) then
     Result := tiTKString
   else if tiIsVariantOfType(AValue, varDate) then

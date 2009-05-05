@@ -64,7 +64,7 @@ var
   lAfter    : TStringStream;
   lEncrypt  : TtiEncryptAbs;
   lZero     : Byte;
-  lsTest    : string;
+  lsTest    : ansistring;
 begin
 
   lBefore   := TStringStream.Create('');
@@ -87,9 +87,15 @@ begin
     end;
 
   if pIntSeed <> 0 then
-    Check(lBefore.DataString = lAfter.DataString, 'Seeded Encryption failed. Streams are not the same.') 
+  begin
+    CheckEquals(lBefore.Size, lAfter.Size, 'Seeded Encryption failed. Stream lengths are not the same.');
+    Check(lBefore.DataString = lAfter.DataString, 'Seeded Encryption failed. Streams are not the same.')
+  end
   else
+  begin
+    CheckEquals(lBefore.Size, lAfter.Size, 'Encryption failed. Stream lengths are not the same.');
     Check(lBefore.DataString = lAfter.DataString, 'Encryption failed. Streams are not the same.');
+  end;
 
   finally
     lBefore.Free;

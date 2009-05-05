@@ -556,7 +556,7 @@ end;
 procedure LogValue(const AIdentifier: string; const AValue: Currency);
 begin
 //  Log(AIdentifier + ' = ' + CurrToStrF(AValue, ffCurrency, 4), lsDebug);
-  Log(AIdentifier + ' = ' + FormatFloat('Â¤ #,##0.0000', AValue), lsDebug);
+  Log(AIdentifier + ' = ' + FormatFloat('¤ #,##0.0000', AValue), lsDebug);
 end;
 
 function LogSeverityToString(const ALogSeverity: TtiLogSeverity): string;

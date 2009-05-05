@@ -73,7 +73,7 @@ Const
     'Does Not Contain'
     );
 
-  ctkString = [tkChar, tkString, tkWChar, tkLString, tkWString];
+  ctkString = [tkChar, tkString, tkWChar, tkLString, tkWString {$IFDEF UNICODE} , tkUString {$ENDIF}];
   ctkInt = [tkInteger, tkInt64];
   ctkFloat = [tkFloat];
   ctkSimple = ctkString + ctkInt + ctkFloat;

@@ -50,7 +50,7 @@ type
     procedure   Open   ; override;
     procedure   Close  ; override;
     function    ExecSQL: integer; override;
-
+    procedure   AssignParamFromStream(const AName: string; const AStream: TStream); override;
     procedure   AssignParamToStream(const AName : string; const AStream : TStream); override;
     procedure   AttachDatabase(ADatabase : TtiDatabase); override;
     procedure   DetachDatabase;  override;
@@ -160,9 +160,18 @@ begin
   FQuery.Params.Clear;
 end;
 
+procedure TtiQueryBDE.AssignParamFromStream(const AName: string;
+  const AStream: TStream);
+begin
+  inherited;
+  Assert(AStream <> nil, 'Stream not assigned');
+
+  FQuery.ParamByName(AName).Value:= tiStreamToString(AStream);
+end;
+
 procedure TtiQueryBDE.AssignParamToStream(const AName: string; const AStream : TStream);
 var
-  ls : string;
+  ls : ansistring;
 begin
   Assert(AStream <> nil, 'Stream not assigned');
   ls := FQuery.ParamByName(AName).Value;

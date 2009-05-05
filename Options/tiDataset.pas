@@ -37,6 +37,8 @@ Revision history:
     Removed ObjectClassName as it is of no use.  TtiObject no longer descends from TPersistant
     Altered Delete and RecordCount
 
+    4-11-2008
+    Altered Delphi 2009 (Sean Cross)
 Purpose:
   Browse, edit and Create business objects as easy as the normal RAD
   approach. (The populair DB components & reportbuilders can be used)
@@ -53,13 +55,19 @@ interface
 uses
   Classes, SysUtils, Forms, Db, TypInfo, Graphics, Controls,
   {$IFDEF DELPHI6ORABOVE} Variants, {$ENDIF} {$ifndef fpc}SqlTimSt,{$endif} 
-  tiObject;
+  tiObject {$ifdef UNICODE}, WideStrUtils {$endif};
 
 type
 
 {$ifndef FPC}
   PtrInt = Longint; { Delphi doesn't know PtrInt, a pointer-sized integer. } 
 {$endif}
+
+{$IFDEF UNICODE}
+  PByteOrChar = PByte;
+{$ELSE}
+  PByteOrChar = PChar;
+{$ENDIF}
 
   TTiListSortCompare = function(Item1, Item2: TObject): integer of object;
 
@@ -75,7 +83,7 @@ type
   private
     FParentDataSet: TTiCustomDataset;
     FCursorOpen: boolean;
-    FFilterBuffer: pchar;
+    FFilterBuffer: PByteOrChar;
     FStringWidth: integer;
 //    FObjectClassName: string;
     FStartCalculated: integer;
@@ -112,8 +120,8 @@ type
     procedure InternalPost;override;
     procedure InternalInitFieldDefs;override;
     procedure InternalHandleException;override;
-    procedure InternalInitRecord(Buffer: PChar);override;
-    procedure InternalSetToRecord(Buffer: PChar);override;
+    procedure InternalInitRecord(Buffer: PByteOrChar);override;
+    procedure InternalSetToRecord(Buffer: PByteOrChar);override;
     procedure InternalAddRecord(Buffer: pointer;Append: boolean);override;
     procedure Notification(AComponent: TComponent;Operation: TOperation);override;
 
@@ -122,17 +130,17 @@ type
     procedure DoAfterInsert;override;
     function IsCursorOpen: boolean;override;
     function GetRecordSize: word;override;
-    function AllocRecordBuffer: PChar;override;
-    function GetActiveRecordBuffer: PChar;virtual;
-    procedure ClearCalcFields(Buffer: PChar);override;
-    procedure FreeRecordBuffer(var Buffer: PChar);override;
+    function AllocRecordBuffer: PByteOrChar;override;
+    function GetActiveRecordBuffer: PByteOrChar;virtual;
+    procedure ClearCalcFields(Buffer: PByteOrChar);override;
+    procedure FreeRecordBuffer(var Buffer: PByteOrChar);override;
     procedure Sort(Compare: TTiListSortCompare);virtual;abstract;
     function GetBookmarkIndex(Bookmark: pointer): integer;virtual;
     procedure SetFieldData(Field: TField;Buffer: pointer);override;
-    procedure GetBookmarkData(Buffer: PChar;Data: pointer);override;
-    procedure SetBookmarkData(Buffer: PChar;Data: pointer);override;
-    function GetBookmarkFlag(Buffer: PChar): TBookmarkFlag;override;
-    procedure SetBookmarkFlag(Buffer: PChar;Value: TBookmarkFlag);override;
+    procedure GetBookmarkData(Buffer: PByteOrChar;Data: pointer);override;
+    procedure SetBookmarkData(Buffer: PByteOrChar;Data: pointer);override;
+    function GetBookmarkFlag(Buffer: PByteOrChar): TBookmarkFlag;override;
+    procedure SetBookmarkFlag(Buffer: PByteOrChar;Value: TBookmarkFlag);override;
     property SortColumn: string read FSortColumn write SetSortColumn;
     property SortAscending: boolean read FSortAscending write SetSortAscending;
   public
@@ -145,7 +153,7 @@ type
     //procedure ObserverFieldChanged(AObject: TtiObject;AFieldName: string);
     procedure SetSortOrder(AColumn: string;AAscending: boolean);
 
-    function GetBookMarkPtr(Buffer: pchar): PtiObjectBookmark;
+    function GetBookMarkPtr(Buffer: PByteOrChar): PtiObjectBookmark;
     function BookmarkValid(Bookmark: TBookmark): boolean;override;
     function GetFieldData(Field: TField;Buffer: pointer): boolean;override;
     function CompareBookmarks(Bookmark1, Bookmark2: TBookmark): integer;override;
@@ -192,7 +200,7 @@ type
     FOwnsObjects: boolean;
     FObjectList: TtiObjectList;
     FShowDeleted: boolean;
-    function InternalGetRecord(Buffer: PChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;
+    function InternalGetRecord(Buffer: PByteOrChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;
     procedure SetObjectList(const Value: TtiObjectList);
   protected
     function NewRecord: TtiObject;override;
@@ -206,7 +214,7 @@ type
     procedure SetFiltered(Value: boolean);override;
     procedure Sort(Compare: TTiListSortCompare);override;
 
-    function GetRecord(Buffer: PChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;override;
+    function GetRecord(Buffer: PByteOrChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;override;
     function GetRecNo: integer;override;
     function GetRecordCount: integer;override;
     procedure InternalFirst;override;
@@ -248,7 +256,7 @@ type
     procedure Sort(Compare: TTiListSortCompare);override;
     procedure InternalGotoBookmark(Bookmark: pointer);override;
 
-    function GetRecord(Buffer: PChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;override;
+    function GetRecord(Buffer: PByteOrChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;override;
     function GetRecordCount: integer;override;
     procedure InternalFirst;override;
     procedure InternalLast;override;
@@ -359,7 +367,7 @@ end;
 
 procedure TTiDatasetBlobStream.LoadBlobData;
 //Load data from object into BlobField
-var Buffer: PChar;
+var Buffer: PByteOrChar;
   TempStr: string;
   PropInfo: PPropInfo;
   Obj, oObject: TObject;
@@ -394,7 +402,7 @@ end;
 
 procedure TTiDatasetBlobStream.SaveBlobData;
 //Save data from BlobField into object
-var ABuffer: PChar;
+var ABuffer: PByteOrChar;
   TempStr: string;
   PropInfo: PPropInfo;
   Obj, AObject: TObject;
@@ -458,12 +466,12 @@ begin
   inherited;
 end;
 
-procedure TTiCustomDataset.ClearCalcFields(Buffer: PChar);
+procedure TTiCustomDataset.ClearCalcFields(Buffer: PByteOrChar);
 begin
   FillChar(Buffer[FStartCalculated], CalcFieldsSize, 0);
 end;
 
-function TTiCustomDataset.GetActiveRecordBuffer: PChar;
+function TTiCustomDataset.GetActiveRecordBuffer: PByteOrChar;
 begin
   case State of
     dsBrowse: begin
@@ -503,18 +511,18 @@ end;
 //  FObjectClassName := Value;
 //end;
 
-function TTiCustomDataset.GetBookMarkPtr(Buffer: pchar): PtiObjectBookmark;
+function TTiCustomDataset.GetBookMarkPtr(Buffer: PByteOrChar): PtiObjectBookmark;
 begin
   Result := PtiObjectBookmark(Buffer);
 end;
 
-procedure TTiCustomDataset.GetBookmarkData(Buffer: PChar;Data: pointer);
+procedure TTiCustomDataset.GetBookmarkData(Buffer: PByteOrChar;Data: pointer);
 begin
   if Assigned(Data)
   then Move(GetBookMarkPtr(Buffer)^, Data^, BookmarkSize);
 end;
 
-procedure TTiCustomDataset.SetBookmarkData(Buffer: PChar;Data: pointer);
+procedure TTiCustomDataset.SetBookmarkData(Buffer: PByteOrChar;Data: pointer);
 const bfNA = TBookmarkFlag(ord(High(TBookmarkFlag)) + 1);
 begin
   if Assigned(Data)
@@ -522,27 +530,27 @@ begin
   else SetBookmarkFlag(Buffer, bfNA);
 end;
 
-function TTiCustomDataset.GetBookmarkFlag(Buffer: PChar): TBookmarkFlag;
+function TTiCustomDataset.GetBookmarkFlag(Buffer: PByteOrChar): TBookmarkFlag;
 begin
   Result := GetBookMarkPtr(Buffer)^.BookMarkFlag;
 end;
 
-procedure TTiCustomDataset.SetBookmarkFlag(Buffer: PChar;Value: TBookmarkFlag);
+procedure TTiCustomDataset.SetBookmarkFlag(Buffer: PByteOrChar;Value: TBookmarkFlag);
 begin
   GetBookMarkPtr(Buffer)^.BookMarkFlag := Value;
 end;
 
-procedure TTiCustomDataset.InternalSetToRecord(Buffer: PChar);
+procedure TTiCustomDataset.InternalSetToRecord(Buffer: PByteOrChar);
 begin
   InternalGotoBookmark(GetBookMarkPtr(Buffer));
 end;
 
-function TTiCustomDataset.AllocRecordBuffer: PChar;
+function TTiCustomDataset.AllocRecordBuffer: PByteOrChar;
 begin
   Result := AllocMem(RecordSize);
 end;
 
-procedure TTiCustomDataset.FreeRecordBuffer(var Buffer: PChar);
+procedure TTiCustomDataset.FreeRecordBuffer(var Buffer: PByteOrChar);
 begin
   FreeMem(Buffer);
 end;
@@ -786,6 +794,9 @@ procedure TTiCustomDataset.InternalInitFieldDefs;
             tkAString,
             {$endif}
             tkLString, tkWString: AddFieldDef(PropInfo, ftString, StringWidth);
+{$ifdef UNICODE}
+            tkUString: AddFieldDef(PropInfo, ftString, StringWidth);
+{$endif}
             //Other strings like type string[50] and shortstrings have a length
             tkString: AddFieldDef(PropInfo, ftString, TypeData^.MaxLength);
             tkChar: AddFieldDef(PropInfo, ftString, 1);
@@ -861,7 +872,7 @@ end;
 
 function TTiCustomDataset.GetFieldData(Field: TField;Buffer: pointer): boolean;
 //"Load"; Copy the object property value to the field value
-var RecBuffer, pDst: PChar;
+var RecBuffer, pDst: PByteOrChar;
   oObject: TObject;
   TempStr: string;
   TempInt: integer;
@@ -923,11 +934,17 @@ begin
       then exit;
     end;
 
-    pDst := pchar(Buffer);
+    pDst := PByteOrChar(Buffer);
     case Field.DataType of
       ftString: begin
         TempStr := GetStrProp(oObject, PropInfo);
-        StrLCopy(pDst, PChar(TempStr), Field.DataSize);
+{$ifdef UNICODE}
+            PAnsiChar(Buffer)[Field.Size] := #0;
+            WideCharToMultiByte(0, 0, pwidechar(TempStr), Length(TempStr)+1,
+              Buffer, Field.Size, nil, nil);
+{$else}
+        StrLCopy(PChar(Buffer), PChar(TempStr), Field.DataSize);
+{$endif}
       end;
       ftInteger: begin
         TempInt := GetOrdProp(oObject, PropInfo);
@@ -1008,7 +1025,7 @@ end;
 
 procedure TTiCustomDataset.SetFieldData(Field: TField;Buffer: pointer);
 //"Save"; Copy the field value to the object property value
-var RecBuffer, pSrc: Pchar;
+var RecBuffer, pSrc: PByteOrChar;
   oObject: TObject;
   Obj: TObject;
   TempInt: integer;
@@ -1050,9 +1067,16 @@ begin
     then exit;
 
     (oObject as TtiObject).Dirty := true;
-    pSrc := pchar(Buffer);
+    pSrc := PByteOrChar(Buffer);
     case Field.DataType of
-      ftString: SetStrProp(oObject, PropInfo, pSrc);
+      ftString:
+      begin
+{$ifdef UNICODE}
+        SetStrProp(oObject, PropInfo, AnsiString(PAnsiChar(Buffer)));
+{$else}
+        SetStrProp(oObject, PropInfo, PChar(Buffer));
+{$endif}
+      end;
       ftInteger: begin
         if Buffer = nil
         then TempInt := 0
@@ -1164,7 +1188,7 @@ begin
   then DataEvent(deFieldChange, longint(Field));
 end;
 
-procedure TTiCustomDataset.InternalInitRecord(Buffer: PChar);
+procedure TTiCustomDataset.InternalInitRecord(Buffer: PByteOrChar);
 //This is called by the TDataset to initialize an already existing buffer.
 //We cannot just fill the buffer with 0s since that would overwrite our BLOB
 //pointers. Therefore we free the blob pointers first, then fill the buffer
@@ -1245,7 +1269,7 @@ begin
 end;
 
 procedure TTiCustomDataset.InternalEdit;
-var Buffer: pchar;
+var Buffer: PByteOrChar;
 begin
   Buffer := GetActiveRecordBuffer;
   if Buffer <> nil then begin
@@ -1258,7 +1282,7 @@ begin
 end;
 
 procedure TTiCustomDataset.InternalCancel;
-var Buffer: pchar;
+var Buffer: PByteOrChar;
 begin
   Buffer := GetActiveRecordBuffer;
   with GetBookMarkPtr(Buffer)^ do begin
@@ -1275,7 +1299,7 @@ end;
 
 procedure TTiCustomDataset.InternalInsert;
 //Create a new record (no backup needed)
-var Buffer: pchar;
+var Buffer: PByteOrChar;
 begin
   Buffer := GetActiveRecordBuffer;
   with GetBookMarkPtr(Buffer)^ do begin
@@ -1287,7 +1311,7 @@ end;
 
 procedure TTiCustomDataset.InternalPost;
 //Flush the edited or inserted record
-var Buffer: pchar;
+var Buffer: PByteOrChar;
 begin
   inherited;
   Buffer := GetActiveRecordBuffer;
@@ -1405,7 +1429,7 @@ var Fields: TList;
   FieldCount: integer;
   OldObject: integer;
   Index: integer;
-  Buffer: pchar;
+  Buffer: PByteOrChar;
 begin
   //Variants do not support int64 (<Delphi6)
   CheckBrowseMode;
@@ -1685,7 +1709,7 @@ end;
 
 { TTiRecordDataset }
 
-function TTiRecordDataset.GetRecord(Buffer: PChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;
+function TTiRecordDataset.GetRecord(Buffer: PByteOrChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;
 begin
   Result := grError;
   try
@@ -1799,7 +1823,7 @@ end;
 
 { TTiDataset }
 
-function TTiDataset.InternalGetRecord(Buffer: PChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;
+function TTiDataset.InternalGetRecord(Buffer: PByteOrChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;
 begin
   if Assigned(FParentDataSet)and FParentDataSet.Active and(FParentDataSet.IsEmpty or(FParentDataset.State = dsInsert)) then begin
     Result := grEOF;
@@ -1851,7 +1875,7 @@ begin
   end;
 end;
 
-function TTiDataset.GetRecord(Buffer: PChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;
+function TTiDataset.GetRecord(Buffer: PByteOrChar;GetMode: TGetMode;DoCheck: boolean): TGetResult;
 var Accept: boolean;
   SaveState: TDataSetState;
   oObject: TtiObject;
@@ -1937,7 +1961,7 @@ function TTiDataset.GetRecordCount: integer;
 var
   oList: TtiObjectList;
   lPassesFilter : Boolean;
-  Buffer : PChar;
+  Buffer : PByteOrChar;
   OldObject : Integer;
   lTempResult : Integer;
 begin
@@ -2014,7 +2038,7 @@ begin
 end;
 
 function TTiDataset.GetRecNo: integer;
-var ABuffer: PChar;
+var ABuffer: PByteOrChar;
   AObjList: TtiObjectList;
 begin
   AObjList := ObjectList;

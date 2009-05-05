@@ -29,9 +29,9 @@ uses
 
   {$IFNDEF FPC}
   //Start a process, wait until timeout reached then kill a process
-  procedure tiWin32RunProcessWithTimeout(const AProcessCommandLine: string; const AParams: string = '';
-        const AProcessCurrentDirectory: string = '';
-        const ATimeoutIntervalSecs: Cardinal = 0; const AProcessNameToKill: string = '');
+  procedure tiWin32RunProcessWithTimeout(const AProcessCommandLine: String; const AParams: String = '';
+        const AProcessCurrentDirectory: String = '';
+        const ATimeoutIntervalSecs: Cardinal = 0; const AProcessNameToKill: String = '');
         
   function tiWin32KillProcess(const AEXEName: String): Integer;
   {$ENDIF}
@@ -128,7 +128,7 @@ end;
 
 function _GetSpecialDir(ID: Integer): string;
 var
-  APath: Array[0..MAX_PATH] of char;
+  APath: Array[0..MAX_PATH] of ansichar;
   APtr: PAnsiChar;
 begin
   Result := '';
@@ -139,7 +139,7 @@ begin
     if SHGetFolderPath(0,ID or CSIDL_FLAG_CREATE,0,0,@APATH[0]) = S_OK then
     begin
       APtr    := PAnsiChar(@APath[0]);
-      Result  := IncludeTrailingPathDelimiter(StrPas(APtr));
+      Result  := IncludeTrailingPathDelimiter(APtr);
     end;
   end;
 end;
@@ -174,17 +174,17 @@ end;
 
 {$IFNDEF FPC}
 procedure tiWin32RunProcessWithTimeout(const AProcessCommandLine,
-  AParams, AProcessCurrentDirectory: string; const ATimeoutIntervalSecs: Cardinal;
-  const AProcessNameToKill: string);
+  AParams, AProcessCurrentDirectory: String; const ATimeoutIntervalSecs: Cardinal;
+  const AProcessNameToKill: String);
 var
   SI: TStartupInfo;
   PI: TProcessInformation;
   LCreateOK: Boolean;
-  LProcessNameToKill: string;
-  LPProcessCurrentDirectory: PAnsiChar;
+  LProcessNameToKill: String;
+  LPProcessCurrentDirectory: PChar;
   LCommandLine: string;
   LErrorCode: LongWord;
-  LErrorMessage: string;
+  LErrorMessage: String;
 begin
 
 //  Assertion added for testing.
@@ -208,7 +208,7 @@ begin
   try
     // CreateProcess docs are here: http://msdn.microsoft.com/en-us/library/ms682425.aspx
     LCreateOK := CreateProcess(
-      nil, PAnsiChar(LCommandLine), nil, nil,
+      nil, PChar(LCommandLine), nil, nil,
       False, 0, nil, LPProcessCurrentDirectory, SI, PI);
 
     if LCreateOK then

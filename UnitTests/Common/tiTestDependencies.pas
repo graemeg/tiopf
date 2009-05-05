@@ -24,8 +24,10 @@ procedure tiRegisterExpectedTIOPFMemoryLeaks;
 implementation
 uses
 {$IFNDEF FPC}
-   FastMM4
-  ,IdThreadSafe
+  {$IFDEF FASTMM}
+   FastMM4,
+  {$ENDIF}
+  IdThreadSafe
   ,IdGlobal
   ,TestFramework,
 {$ENDIF}

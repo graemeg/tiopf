@@ -964,6 +964,9 @@ begin
           {$IFDEF FPC}
           tkBool       : LValue := IntToStr(GetInt64Prop(LData, LFieldName));
           {$ENDIF}
+          {$IFDEF UNICODE}
+          tkUString    : LValue := GetStrProp(LData, LFieldName);
+          {$ENDIF}
         end;
       end;
       LLine := LLine + LValue;
@@ -1132,6 +1135,9 @@ begin
       tkEnumeration : SetOrdProp(Self, APropName, GetOrdProp(ASource, APropName));
       {$IFDEF FPC}
       tkBool       : SetInt64Prop(Self, APropName, GetInt64Prop(ASource, APropName));
+      {$ENDIF}
+      {$IFDEF UNICODE}
+      tkUString : SetStrProp(Self, APropName, GetStrProp(ASource, APropName));
       {$ENDIF}
     end;
   end
@@ -1952,8 +1958,10 @@ var
     end;
 
     // PWH Changed for D5 compat
-    if (tiIsVariantOfType(lSearch, varOleStr) or
-        tiIsVariantOfType(lSearch, varString)) and not ACaseSensitive then
+    if (tiIsVariantOfType(lSearch, varOleStr)
+       or tiIsVariantOfType(lSearch, varString)
+       {$IFDEF UNICODE} or tiIsVariantOfType(lSearch, varUString) {$ENDIF}
+        ) and not ACaseSensitive then
     begin
       result := SameText(lSearch, lItem);
     end

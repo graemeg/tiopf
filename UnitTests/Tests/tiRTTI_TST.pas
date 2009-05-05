@@ -117,7 +117,7 @@ var
 begin
   lsl := TStringList.Create;
   try
-    tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF} ]);
+    tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF}  {$IFDEF UNICODE} , tkUString {$ENDIF} ]);
     CheckEquals(3, lsl.Count, 'Failed on StringProp');
     CheckEquals('Caption',            lsl.Strings[0], 'Caption');
     CheckEquals('StringProp',         lsl.Strings[1], 'StringProp');
@@ -133,15 +133,28 @@ begin
     CheckEquals('WideStringProp', lsl.Strings[0], 'Failed on WideStringProp');
     CheckEquals('ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp');
 
-    tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [tkChar]);
-    CheckEquals(2, lsl.Count, 'Failed on CharProp');
-    CheckEquals('CharProp', lsl.Strings[0], 'Failed on CharProp');
-    CheckEquals('ReadOnlyCharProp', lsl.Strings[1], 'Failed on ReadOnlyCharProp');
+{$IFDEF UNICODE}
+// char and wide char are the same...
+      tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [tkWChar]);
+      CheckEquals(4, lsl.Count, 'Failed on WideCharProp');
+      CheckEquals('CharProp', lsl.Strings[0], 'Failed on WideCharProp');
+      CheckEquals('WideCharProp', lsl.Strings[1], 'Failed on WideCharProp');
+      CheckEquals('ReadOnlyCharProp', lsl.Strings[2], 'Failed on ReadOnlyCharProp');
+      CheckEquals('ReadOnlyWideCharProp', lsl.Strings[3], 'Failed on ReadOnlyWideCharProp');
 
-    tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [tkWChar]);
-    CheckEquals(2, lsl.Count, 'Failed on WideCharProp');
-    CheckEquals('WideCharProp', lsl.Strings[0], 'Failed on WideCharProp');
-    CheckEquals('ReadOnlyWideCharProp', lsl.Strings[1], 'Failed on ReadOnlyWideCharProp');
+      tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [tkChar]);
+      CheckEquals(0, lsl.Count, 'Failed on CharProp');
+{$ELSE}
+      tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [tkWChar]);
+      CheckEquals(2, lsl.Count, 'Failed on WideCharProp');
+      CheckEquals('WideCharProp', lsl.Strings[0], 'Failed on WideCharProp');
+      CheckEquals('ReadOnlyWideCharProp', lsl.Strings[1], 'Failed on ReadOnlyWideCharProp');
+
+      tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [tkChar]);
+      CheckEquals(2, lsl.Count, 'Failed on CharProp');
+      CheckEquals('CharProp', lsl.Strings[0], 'Failed on CharProp');
+      CheckEquals('ReadOnlyCharProp', lsl.Strings[1], 'Failed on ReadOnlyCharProp');
+{$ENDIF}
 
     tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, ctkString);
     CheckEquals(11, lsl.Count, 'Failed testing ctkString');
@@ -208,7 +221,7 @@ begin
   try
     lObj := TTestGetPropNames.Create;
     try
-      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF} ]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF} {$IFDEF UNICODE} , tkUString {$ENDIF} ]);
       CheckEquals(3, lsl.Count, 'Failed on StringProp');
       CheckEquals('Caption',            lsl.Strings[0], 'Caption');
       CheckEquals('StringProp',         lsl.Strings[1], 'StringProp');
@@ -224,16 +237,29 @@ begin
       CheckEquals('WideStringProp', lsl.Strings[0], 'Failed on WideStringProp');
       CheckEquals('ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp');
 
-      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkChar]);
-      CheckEquals(2, lsl.Count, 'Failed on CharProp');
-      CheckEquals('CharProp', lsl.Strings[0], 'Failed on CharProp');
-      CheckEquals('ReadOnlyCharProp', lsl.Strings[1], 'Failed on ReadOnlyCharProp');
 
+{$IFDEF UNICODE}
+// char and wide char are the same...
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkWChar]);
+      CheckEquals(4, lsl.Count, 'Failed on WideCharProp');
+      CheckEquals('CharProp', lsl.Strings[0], 'Failed on WideCharProp');
+      CheckEquals('WideCharProp', lsl.Strings[1], 'Failed on WideCharProp');
+      CheckEquals('ReadOnlyCharProp', lsl.Strings[2], 'Failed on ReadOnlyCharProp');
+      CheckEquals('ReadOnlyWideCharProp', lsl.Strings[3], 'Failed on ReadOnlyWideCharProp');
+
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkChar]);
+      CheckEquals(0, lsl.Count, 'Failed on CharProp');
+{$ELSE}
       tiRTTI.tiGetPropertyNames(lObj, lsl, [tkWChar]);
       CheckEquals(2, lsl.Count, 'Failed on WideCharProp');
       CheckEquals('WideCharProp', lsl.Strings[0], 'Failed on WideCharProp');
       CheckEquals('ReadOnlyWideCharProp', lsl.Strings[1], 'Failed on ReadOnlyWideCharProp');
 
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [tkChar]);
+      CheckEquals(2, lsl.Count, 'Failed on CharProp');
+      CheckEquals('CharProp', lsl.Strings[0], 'Failed on CharProp');
+      CheckEquals('ReadOnlyCharProp', lsl.Strings[1], 'Failed on ReadOnlyCharProp');
+{$ENDIF}
       tiRTTI.tiGetPropertyNames(lObj, lsl, ctkString);
       CheckEquals(11, lsl.Count, 'Failed testing ctkString');
 

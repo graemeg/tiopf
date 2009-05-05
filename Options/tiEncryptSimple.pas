@@ -16,13 +16,13 @@ type
 
   TEncryptSimple = class(TtiEncryptAbs)
   private
-    function  SimpleEncrypt(const Source: String): String;
+    function  SimpleEncrypt(const Source: AnsiString): AnsiString;
   protected
-    procedure SetSeed   (const AValue: string); override;
+    procedure SetSeed   (const AValue: ansistring); override;
   public
     constructor Create; override;
-    function    EncryptString(const psData : string): string; override;
-    function    DecryptString(const psData : string): string; override;
+    function    EncryptString(const psData : AnsiString): AnsiString; override;
+    function    DecryptString(const psData : AnsiString): AnsiString; override;
     procedure   EncryptStream(const pSrc, pDest : TStream); override;
     procedure   DecryptStream(const pSrc, pDest : TStream); override;
   end;
@@ -53,24 +53,24 @@ begin
 end;
 
 
-function TEncryptSimple.SimpleEncrypt(const Source: String): String;
+function TEncryptSimple.SimpleEncrypt(const Source: AnsiString): AnsiString;
 var
   Index: Integer;
 begin
   SetLength(Result, Length(Source));
   for Index := 1 to Length(Source) do
-    Result[Index]:= Chr((Ord(Seed[Index mod Length(Seed)]) xor Ord(Source[Index])));
+    Result[Index]:= ansichar((Ord(Seed[Index mod Length(Seed)]) xor Ord(Source[Index])));
 end;
 
 
-function TEncryptSimple.EncryptString(const psData : string): string;
+function TEncryptSimple.EncryptString(const psData : AnsiString): AnsiString;
 var
   OrdValue: Byte;
   Index: Integer;
   BitCount: Integer;
   BitValue: Byte;
   ByteValue: Byte;
-  Source: String;
+  Source: ansiString;
 begin
   ByteValue := Random(255) + 1;
   Source := SimpleEncrypt(psData);
@@ -83,7 +83,7 @@ begin
       BitValue := Byte(OrdValue and (1 shl BitCount) = 1 shl BitCount);
       RandSeed := ByteValue;
       ByteValue := (((Random(255) + 1) div 2) * 2) + BitValue;
-      Result[(Index - 1) * 8 + BitCount + 1]:= Chr(ByteValue);
+      Result[(Index - 1) * 8 + BitCount + 1]:= AnsiChar(ByteValue);
     end;
   end;
 
@@ -93,15 +93,15 @@ begin
   begin
     Sleep(1);
     Randomize;
-    Result := Result + Chr(Random(256));
+    Result := Result + AnsiChar(Random(256));
   end;
 end;
 
 
-function TEncryptSimple.DecryptString(const psData : string): string;
+function TEncryptSimple.DecryptString(const psData : AnsiString): AnsiString;
 var
-  ListText: String;
-  EncryptedOrd: String;
+  ListText: ansistring;
+  EncryptedOrd: ansistring;
   OrdValue: Integer;
   Index: Integer;
   BitCount: Integer;
@@ -121,7 +121,7 @@ begin
       else
         OrdValue := OrdValue or (1 shl BitCount);
     end;
-    ListText := ListText + Chr(OrdValue);
+    ListText := ListText + AnsiChar(OrdValue);
     Inc(Index, 8);
   end;
 
@@ -131,7 +131,7 @@ end;
 
 procedure TEncryptSimple.EncryptStream(const pSrc, pDest : TStream);
 var
-  ls : String;
+  ls : ansiString;
 begin
   pSrc.Seek(0, soFromBeginning);
   SetLength(ls, pSrc.Size);
@@ -143,7 +143,7 @@ end;
 
 procedure TEncryptSimple.DecryptStream(const pSrc, pDest : TStream);
 var
-  ls : String;
+  ls : ansiString;
 begin
   pSrc.Seek(0, soFromBeginning);
   SetLength(ls, pSrc.Size);
@@ -153,7 +153,7 @@ begin
 end;
 
 
-procedure TEncryptSimple.SetSeed(const AValue: string);
+procedure TEncryptSimple.SetSeed(const AValue: ansistring);
 begin
   inherited;
   if SameText(Seed, '') then // zero length not valid

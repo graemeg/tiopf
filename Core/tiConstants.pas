@@ -92,7 +92,7 @@ const
 
 {$IFDEF DELPHI12}
   cPackageSuffix = '120';
-  cCompileName = 'Delphi 2009';
+  cCompilerName = 'Delphi 2009';
 {$ENDIF}
 
 {$IFDEF FPC}

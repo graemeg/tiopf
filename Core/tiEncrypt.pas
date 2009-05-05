@@ -19,18 +19,18 @@ type
   // NewSeed method to increase security in comms apps
   TtiEncryptAbs = class(TObject)
   private
-    FSeed : string;
+    FSeed : ansistring;
     FIntSeed : Int64;
   protected
-    procedure SetSeed   (const AValue: string); virtual;
+    procedure SetSeed   (const AValue: ansistring); virtual;
     procedure SetIntSeed(const AValue: Int64); virtual;
   public
     constructor Create; virtual;
-    function    EncryptString(const psData : string): string; virtual; abstract;
-    function    DecryptString(const psData : string): string; virtual; abstract;
+    function    EncryptString(const psData : AnsiString): AnsiString; virtual; abstract;
+    function    DecryptString(const psData : AnsiString): AnsiString; virtual; abstract;
     procedure   EncryptStream(const pSrc, pDest : TStream); virtual; abstract;
     procedure   DecryptStream(const pSrc, pDest : TStream); virtual; abstract;
-    property    Seed   : string read FSeed    write SetSeed;
+    property    Seed   : ansistring read FSeed    write SetSeed;
     property    IntSeed : Int64  read FIntSeed write SetIntSeed;
     procedure   NewSeed;
   end;
@@ -208,7 +208,7 @@ begin
   FIntSeed := AValue;
 end;
 
-procedure TtiEncryptAbs.SetSeed(const AValue: string);
+procedure TtiEncryptAbs.SetSeed(const AValue: ansistring);
 begin
   FSeed := AValue;
 end;

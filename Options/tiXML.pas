@@ -793,8 +793,28 @@ function TtiXMLReservedCharsTranslator.Remove(const ASource: string;
   const ALookup: TReplacementLookup;
   const ASubstMaxLength: integer): string;
 var
+{$ifdef UNICODE}
+  curChar: char;
+  i: integer;
+{$else}
   pSrc, pResult: PChar;
+{$endif}
+
 begin
+{$ifdef UNICODE}
+  // slower but safer (and works)
+  result:= '';
+  for i := 1 to length(ASource) do
+  begin
+    curChar:= ASource[i];
+
+    if(curChar <= char(255)) and (ALookup[curChar] <> nil) then
+      result:= result + ALookup[curChar].Replacement
+    else
+      result:= result + curChar;
+  end;
+
+{$else}
   if ASource = '' then begin
     Result := '';
     Exit; //==>
@@ -802,7 +822,7 @@ begin
 
   // max possible length = every char in ASource requires substitution
   // with maximum length escaped char
-  SetLength(result, Length(ASource) * ASubstMaxLength);
+  SetLength(result, Length(ASource) * ASubstMaxLength * sizeof(char));
   pSrc := Pointer(ASource);
 
   pResult := Pointer(Result);
@@ -817,7 +837,7 @@ begin
       with ALookup[pSrc^]^ do
       begin
         // found a replacement - copy to result
-        Move(Pointer(Replacement)^, pResult^, ReplacementLength);
+        Move(Pointer(Replacement)^, pResult^, ReplacementLength  * sizeof(char));
         Inc(pResult, ReplacementLength);
       end
     else
@@ -834,15 +854,29 @@ begin
   pResult^:= #0;
   // resync (Delphi string) length of result after pchar manipulations
   ResyncString(Result, pResult);
+{$endif}
 end;
 
 
 function TtiXMLReservedCharsTranslator.Insert(const ASource: string;
   const AReplacements: array of TtiXMLReservedChar1): string;
 var
+{$ifdef UNICODE}
+{$else}
   pMatch, pNull, pRemainder: PChar;
+
+{$endif}
   idx: integer;
 begin
+{$ifdef UNICODE}
+  // slower but working
+   Result:= ASource;
+   for idx := High(AReplacements) downto Low(AReplacements) do
+     with AReplacements[idx] do
+     begin
+       Result:= StringReplace(Result, EscWith, ResChar, [rfReplaceAll]);
+     end;
+{$else}
   if ASource = '' then begin
     Result := '';
     Exit; //==>
@@ -851,7 +885,7 @@ begin
   // copy of source as starting point
   result := ASource;
   // pointer to null terminator at end of result
-  pNull := pointer(cardinal(pointer(result)) + cardinal(Length(result)));
+  pNull := pointer(cardinal(pointer(result)) + sizeof(char) * cardinal(Length(result)));
 
   for idx := High(AReplacements) downto Low(AReplacements) do
      with AReplacements[idx] do
@@ -861,12 +895,12 @@ begin
        while pMatch <> nil do
        begin
          // pointer to portion of string beyond this instance of EscWith
-         pRemainder := pointer(cardinal(pMatch) + EscLen);
+         pRemainder := pointer(cardinal(pMatch) + sizeof(char) * EscLen);
          // insert ResChar
          pMatch^:= ResChar;
          Inc(pMatch);
          // move remainder of string (beyond EscWith) down
-         Move(pRemainder^, pMatch^, cardinal(pNull) - cardinal(pRemainder));
+         Move(pRemainder^, pMatch^, sizeof(char) * (cardinal(pNull) - cardinal(pRemainder)));
          // adjust position of null to match shift down of remainder
          Dec(pNull, EscLen - 1);
          // apply null terminator at end of "moved" block
@@ -877,6 +911,7 @@ begin
 
      end;
   ResyncString(result, pNull);
+{$endif}
 end;
 
 

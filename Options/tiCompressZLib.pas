@@ -58,7 +58,12 @@ begin
 //  vToSize := AToSize;
 //  PasZLib.Compress(ATo, vToSize, AFrom, vFromSize);
   {$ELSE}
-  ZLib.CompressBuf(AFrom, AFromSize, ATo, AToSize);
+     {$IFDEF DELPHI2009ORABOVE}
+      ZLib.ZCompress(AFrom, AFromSize, ATo, AToSize);
+     {$ELSE}
+       ZLib.CompressBuf(AFrom, AFromSize, ATo, AToSize);
+     {$ENDIF}
+
   {$ENDIF}
   if AFromSize <> 0 then
     result := AToSize / AFromSize * 100
@@ -170,7 +175,11 @@ begin
 //  vToSize := AToSize;
 //  PasZLib.uncompress(ATo, vToSize, AFrom, vFromSize);
   {$ELSE}
-  ZLib.DecompressBuf(AFrom, AFromSize, AFromSize*2, ATo, AToSize);
+     {$IFDEF DELPHI2009ORABOVE}
+     ZLib.ZDecompress(AFrom, AFromSize, ATo, AToSize, AFromSize*2);
+     {$ELSE}
+       ZLib.DecompressBuf(AFrom, AFromSize, AFromSize*2, ATo, AToSize);
+     {$ENDIF}
   {$ENDIF}
 end;
 

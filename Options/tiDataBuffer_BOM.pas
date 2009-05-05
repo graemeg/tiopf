@@ -272,11 +272,13 @@ end;
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 procedure TtiDataBufferCell.AssignFromStream(AStream: TStream);
 var
-  lValue : string;
+  lValue : ansistring;
+  newValue: ansistring;
 begin
   Assert(AStream<>nil, 'AStream not assigned');
   lValue := tiStreamToString(AStream);
-  FValue := MimeEncodeString(lValue);
+  newValue:= MimeEncodeString(lValue);
+  FValue:= newValue;
 end;
 
 procedure TtiDataBufferCell.AssignToStream(AStream: TStream);

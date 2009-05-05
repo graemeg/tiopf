@@ -3017,8 +3017,6 @@ var
   LList: TtiObjectListForTesting;
   lData: TtiObjectWithOwnedForTesting;
   lFound: TtiObjectWithOwnedForTesting;
-  b: Boolean;
-  s: string;
   d: TDateTime;
 begin
   LList := TtiObjectListForTesting.Create;

@@ -123,8 +123,8 @@ type
 
     // from TtiEncrypt...
     constructor Create; override;
-    function    EncryptString(const psData : string): string; override;
-    function    DecryptString(const psData : string): string; override;
+    function    EncryptString(const psData : AnsiString): AnsiString; override;
+    function    DecryptString(const psData : AnsiString): AnsiString; override;
     procedure   EncryptStream(const pSrc, pDest : TStream); override;
     procedure   DecryptStream(const pSrc, pDest : TStream); override;
   end;
@@ -242,7 +242,7 @@ begin
 end;
 
 
-function TtiEncryptBlockCipher.EncryptString(const psData: string): string;
+function TtiEncryptBlockCipher.EncryptString(const psData: AnsiString): AnsiString;
 var
   lPS, lPD: PInt64;
   lSource: Int64;
@@ -276,7 +276,7 @@ begin
   lPD^:= EncryptedBlock(lSource);
 end;
 
-function TtiEncryptBlockCipher.DecryptString(const psData: string): string;
+function TtiEncryptBlockCipher.DecryptString(const psData: AnsiString): AnsiString;
 var
   lDest: Int64;
   lPS, lPD: PInt64;

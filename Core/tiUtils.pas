@@ -208,9 +208,9 @@ type
   // Does a directory have any subdirectories?
   function  tiHasSubDirectory(AStartDir : string): boolean;
   // Write the string in AText to a file named AFileName
-  procedure tiStringToFile(const AText, AFileName : string);
+  procedure tiStringToFile(const AText : ansistring; const AFileName: string);
   // Read a text file into a string
-  function  tiFileToString(const AFileName : TFileName): string;
+  function  tiFileToString(const AFileName : TFileName): ansistring;
   // Get the current directory
   // Extract a directory name to a certain level.
   // eg tiExtractDirToLevel('c:\temp\dir', 0) gives 'c:'
@@ -480,15 +480,15 @@ type
   // Returns the checksum of a string of numbers
   function tiCheckSum(const AValue: string): Integer;
   {: Write a string into a stream overwriting all contents}
-  procedure tiStringToStream(const AStr : string; const AStream : TStream);
+  procedure tiStringToStream(const AStr : ansistring; const AStream : TStream);
   {: Append a string to a stream}
-  procedure tiAppendStringToStream(const AStr : string; const AStream : TStream);
+  procedure tiAppendStringToStream(const AStr : ansistring; const AStream : TStream);
   {: Insert a string to a stream}
-  procedure tiInsertStringToStream(const AStr : string; const AStream : TStream; APos: Longword);
+  procedure tiInsertStringToStream(const AStr : ansistring; const AStream : TStream; APos: Longword);
   {: Read the entire contents of a stream as a string}
-  function  tiStreamToString(const AStream : TStream): string; overload;
+  function  tiStreamToString(const AStream : TStream): ansistring; overload;
   {: Read part of the contents of a stream as a string}
-  function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): string; overload;
+  function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): ansistring; overload;
   // Read a file into a stream
   procedure tiFileToStream(const AFileName : string; const AStream : TStream);
   // Save the contents of a stream to a file
@@ -1224,11 +1224,13 @@ end;
 
 
 function tiReplicate(const AValue : string; ARepCount : Word): string;
-var
+(*var
   LResult, LValue: PChar;
-  LLen: cardinal;
+  LLen: cardinal;*)
 begin
-  if (ARepCount = 0) or (Pointer(AValue) = nil) then
+  Result:= DupeString(AValue, ARepCount);
+
+(* if (ARepCount = 0) or (Pointer(AValue) = nil) then
     exit;
 
   LLen := Length(AValue);
@@ -1241,7 +1243,7 @@ begin
     Move(LValue^, LResult^, LLen);
     Inc(LResult, LLen);
     Dec(ARepCount);
-  end;
+  end;   *)
 end;
 
 
@@ -1515,6 +1517,7 @@ end;
   varTypeMask	Bit mask for extracting type code.
   varArray	Bit indicating variant array.
   varByRef	Bit indicating variant contains a reference (rather than a value).
+  varUString	Reference to a dynamically allocated unicode Pascal string (type String).
 }
 function tiIsVariantOfType(AVariant : Variant; AVarType : TVarType): boolean;
 var
@@ -2442,12 +2445,12 @@ end;
 }
 
 
-procedure tiStringToStream(const AStr : string; const AStream : TStream);
+procedure tiStringToStream(const AStr : ansistring; const AStream : TStream);
 var
-  lBuffer : PChar;
+  lBuffer : Pointer;
   lLen : integer;
 begin
-  lBuffer := PChar(AStr);
+  lBuffer := Pointer(AStr);
   lLen := length(AStr);
   AStream.Size := 0;
   AStream.write(lBuffer^, lLen);
@@ -2455,18 +2458,18 @@ begin
 end;
 
 
-procedure tiAppendStringToStream(const AStr : string; const AStream : TStream);
+procedure tiAppendStringToStream(const AStr : ansistring; const AStream : TStream);
 var
-  lPC : PChar;
+  lPC : Pointer;
 begin
   Assert(AStream <> nil, 'Stream unassigned.');
   AStream.Position := AStream.Size;
-  lPC := PChar(AStr);
+  lPC := Pointer(AStr);
   AStream.WriteBuffer(lPC^, length(AStr));
 end;
 
 
-procedure tiInsertStringToStream(const AStr : string; const AStream : TStream; APos: Longword);
+procedure tiInsertStringToStream(const AStr : ansistring; const AStream : TStream; APos: Longword);
 var
   LRHLength: Longword;
   LRHPChar: PChar;
@@ -2488,7 +2491,7 @@ begin
     AStream.Position:= APos;
 
     // Append the new string + the RH portion
-    AStream.WriteBuffer(PChar(AStr)^, Length(AStr));
+    AStream.WriteBuffer(PAnsiChar(AStr)^, Length(AStr));
     AStream.WriteBuffer(LRHPChar^, LRHLength);
   finally
     FreeMem(LRHPChar);
@@ -2496,7 +2499,7 @@ begin
 end;
 
 
-function  tiStreamToString(const AStream : TStream): string;
+function  tiStreamToString(const AStream : TStream): ansistring;
 var
   lPos : integer;
 begin
@@ -2508,7 +2511,7 @@ begin
 end;
 
 
-function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): string;
+function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): ansistring;
 var
   LPos: Longword;
   LEnd: Longword;
@@ -2589,21 +2592,21 @@ begin
 end;
 
 
-procedure tiStringToFile(const AText, AFileName : string);
+procedure tiStringToFile(const AText : ansistring; const AFileName: string);
 var
   lStream : TFileStream;
-  lpcText : PChar;
+  lpcText : PAnsiChar;
 begin
   lStream := TFileStream.Create(AFileName, fmCreate or fmShareCompat);
   try
-    lpcText := PChar(AText);
+    lpcText := PAnsiChar(AText);
     lStream.WriteBuffer(lpcText^, length(AText));
   finally
     lStream.Free;
   end;
 end;
 
-function  tiFileToString(const AFileName : TFileName): string;
+function  tiFileToString(const AFileName : TFileName): ansistring;
 var
   lFileStream: TFileStream;
 begin
