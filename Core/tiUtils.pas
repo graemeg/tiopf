@@ -1854,13 +1854,19 @@ begin
 end;
 
 
-procedure tiDirectoryTreeToStringList(const AStartDir : string; const ADirList : TStringList; ARecurse : boolean);
-  procedure _ReadDirectories(const psStartDir: string; slTree: TStringList; bRecurse: boolean);
-    procedure _AddIfDir(searchRec: TSearchRec; sStartDir: string; slTree: TStringList; bRecurse: boolean);
+procedure tiDirectoryTreeToStringList(const AStartDir: string;
+    const ADirList: TStringList; ARecurse: boolean);
+  //-----------
+  procedure _ReadDirectories(const psStartDir: string; slTree: TStringList;
+      bRecurse: boolean);
+    //-----------
+    procedure _AddIfDir(searchRec: TSearchRec; sStartDir: string;
+        slTree: TStringList; bRecurse: boolean);
     begin
-        if ((searchRec.attr and faDirectory) > 0) and
+        if ((searchRec.Attr and faDirectory) <> 0) and
            (searchRec.name <> '.') and
-           (searchRec.name <> '..') then begin
+           (searchRec.name <> '..') then
+        begin
           slTree.add(sStartDir + searchRec.name);
           if bRecurse then begin
             _ReadDirectories(sStartDir + searchRec.name, slTree, bRecurse);
@@ -1873,12 +1879,10 @@ procedure tiDirectoryTreeToStringList(const AStartDir : string; const ADirList :
   begin
     lsStartDir := tiAddTrailingSlash(psStartDir);
     try
-      if sysUtils.FindFirst(lsStartDir + AllFilesWildCard,
-                             faDirectory,
-                             SearchRec) = 0 then
+      if SysUtils.FindFirst(lsStartDir + AllFilesWildCard, faAnyFile, SearchRec) = 0 then
       begin
         _AddIfDir(searchRec, lsStartDir, slTree, bRecurse);
-        while sysUtils.findNext(searchRec) = 0 do
+        while SysUtils.FindNext(searchRec) = 0 do
         begin
           _AddIfDir(searchRec, lsStartDir, slTree, bRecurse);
         end;
@@ -1897,7 +1901,7 @@ begin
   ADirList.Sorted := True;
 
   if not DirectoryExists(lStartDir) then
-    exit;
+    Exit; //==>
 
   ADirList.Add(lStartDir);
   _ReadDirectories(lStartDir, ADirList, ARecurse);
@@ -1910,12 +1914,12 @@ procedure tiFilesToStringList(const AStartDir, AWildCard : string;
                                const AResults : TStringList;
                                const ARecurse : boolean);
   // Locally visible proc
-  procedure AddFile(searchRec: TSearchRec; sStartDir, pStrWildCard: string; slTree: TStringList; bRecurse: boolean);
+  procedure AddFile(SearchRec: TSearchRec; sStartDir, pStrWildCard: string; slTree: TStringList; bRecurse: boolean);
   begin
-    Assert(not ((searchRec.attr and faDirectory) > 0), 'A directory passed, but a file expected');
-    Assert((searchRec.name <> '.'),                      'A directory passed, but a file expected');
-    Assert((searchRec.name <> '..'),                    'A directory passed, but a file expected');
-    slTree.add(sStartDir + searchRec.name);
+    // We only want files, not directories
+    if (SearchRec.Attr and faDirectory) <> 0 then
+      Exit; //==>
+    slTree.Add(sStartDir + SearchRec.Name);
   end;
 
 var
@@ -1936,34 +1940,23 @@ begin
     for i := 0 to lslDirTree.Count-1 do
     begin
       lsStartDir := tiAddTrailingSlash(lslDirTree.Strings[i]);
-      {$IFDEF MSWINDOWS}
       try
+        {$IFDEF MSWINDOWS}
         if tiWin32FindFirstFile(lsStartDir + AWildCard, SearchRec) = 0 then
+        {$ENDIF MSWINDOWS}
+        {$IFDEF LINUX}
+        { FPC under Linux has some bug in <= v2.2.5 so faAnyFile is all we
+          can use instead of the following:  faAnyFile-faSysFile-faDirectory, }
+        if SysUtils.FindFirst(lsStartDir + AWildCard, faAnyFile, SearchRec) = 0 then
+        {$ENDIF LINUX}
         begin
-          AddFile(searchRec, lsStartDir, AWildCard, AResults, ARecurse);
-          while sysUtils.findNext(searchRec) = 0 do
-          begin
-            AddFile(searchRec, lsStartDir, AWildCard, AResults, ARecurse);
-          end;
+          repeat
+            AddFile(SearchRec, lsStartDir, AWildCard, AResults, ARecurse);
+          until SysUtils.FindNext(SearchRec) <> 0;
         end;
       finally
-        sysUtils.FindClose(SearchRec);
+        SysUtils.FindClose(SearchRec);
       end;
-      {$ENDIF MSWINDOWS}
-      {$IFDEF LINUX}
-      try
-        if sysUtils.FindFirst(lsStartDir + AWildCard,
-                               faAnyFile-faSysFile-faDirectory,
-                               SearchRec) = 0 then begin
-          AddFile(searchRec, lsStartDir, AWildCard, AResults, ARecurse);
-          while sysUtils.findNext(searchRec) = 0 do begin
-            AddFile(searchRec, lsStartDir, AWildCard, AResults, ARecurse);
-          end;
-        end;
-      finally
-        sysUtils.FindClose(SearchRec);
-      end;
-      {$ENDIF LINUX}
     end;
   finally
     lslDirTree.Free;

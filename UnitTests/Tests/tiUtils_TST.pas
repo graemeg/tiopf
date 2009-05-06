@@ -1295,7 +1295,9 @@ begin
   if not ForceDirectories(lRoot) then
     Fail('Unable to create directory <' + lRoot + '>');
   Check(DirectoryExists(lRoot), 'Failed on 1');
-  for i := 0 to 100000 do begin end;
+
+  //for i := 0 to 100000 do begin
+  //end;
 
   lsl := TStringList.Create;
   try
