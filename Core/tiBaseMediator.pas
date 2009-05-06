@@ -162,6 +162,7 @@ type
     procedure Notify(Item: TCollectionItem;Action: TCollectionNotification); override;
     Property Mediator : TCustomListMediator read FMediator;
   public
+    function FieldInfoByName(Const pName : String) : TtiMediatorFieldInfo;
     function AddFieldInfo: TtiMediatorFieldInfo; overload;
     function AddFieldInfo (Const APropName : String; AFieldWidth : Integer) : TtiMediatorFieldInfo; overload;
     function AddFieldInfo (Const APropName,ACaption : String; AFieldWidth : Integer) : TtiMediatorFieldInfo; overload;
@@ -203,7 +204,6 @@ type
     FOnBeforeSetupField: TOnBeforeSetupField;
     FShowDeleted: Boolean;
     FMediatorList: TObjectList;
-    FFieldsInfo: TtiMediatorFieldInfoList;
     FListChanged : Boolean;
     function GetDisplayNames: string;
     function GetIsObserving: Boolean;
@@ -214,6 +214,7 @@ type
     procedure SetShowDeleted(const AValue: Boolean);
     procedure SetOnBeforeSetupField(const Value: TOnBeforeSetupField);
   protected
+    FFieldsInfo: TtiMediatorFieldInfoList;
     procedure FieldInfoChanged(Item: TtiMediatorFieldInfo;Action: TCollectionNotification); virtual;
     function GetSelectedObject: TtiObject; virtual;
     procedure SetSelectedObject(const AValue: TtiObject); virtual;
@@ -1018,6 +1019,21 @@ begin
   Result.Alignment:=AAlignment;
 end;
 
+
+function TtiMediatorFieldInfoList.FieldInfoByName(const pName: String): TtiMediatorFieldInfo;
+Var
+  I : Integer;
+begin
+  Result := nil;
+  for I := 0 To pred(Count) do
+  begin
+    if (FieldInfo[I].Caption = pName) then
+    begin
+      Result := FieldInfo[I];
+      Break;
+    end;
+  end; { Loop }
+end;
 
 { TListItemMediator }
 
