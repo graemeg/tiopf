@@ -40,7 +40,7 @@
     <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
     <Version Major="2" Release="5"/>
-    <Files Count="7">
+    <Files Count="9">
       <Item1>
         <Filename Value="../../GUI/LCL/tiMediators.pas"/>
         <UnitName Value="tiMediators"/>
@@ -69,6 +69,12 @@
         <Filename Value="../../GUI/tiLogToGUI.pas"/>
         <UnitName Value="tiLogToGUI"/>
       </Item7>
+      <Item8>
+        <Filename Value="../../GUI/tiTreeBuildVisitor.pas"/>
+      </Item8>
+      <Item9>
+        <Filename Value="../../GUI/tiGenericTreeViewMediator.pas"/>
+      </Item9>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="3">
