@@ -50,9 +50,13 @@ end;
 
 function tiLinuxGetUserName: string;
 begin
+  // the first two are used when run from a normal login shell
   Result := GetEnvironmentVariable('USERNAME');
   if Result = '' then
     Result := GetEnvironmentVariable('USER');
+  // Used it program is run from cron jobs
+  if Result = '' then
+    Result := GetEnvironmentVariable('LOGNAME');
 end;
 
 
