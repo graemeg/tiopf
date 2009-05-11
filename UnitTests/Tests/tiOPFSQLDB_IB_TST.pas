@@ -16,6 +16,8 @@ type
   TTestTIPersistenceLayersSQLDB_IB = class(TTestTIPersistenceLayers)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure   ThreadedDBConnectionPool; override;
   end;
   
 
@@ -43,6 +45,8 @@ type
   TTestTIOIDPersistentGUIDSQLDB_IB = class(TTestTIOIDPersistentGUID)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure TtiNextOIDGeneratorAssignNextOIDThreaded; override;
   end;
 
 
@@ -147,6 +151,15 @@ begin
   Result := cTIPersistSqldbIB;
 end;
 
+procedure TTestTIPersistenceLayersSQLDB_IB.ThreadedDBConnectionPool;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ELSE}
+  inherited ThreadedDBConnectionPool;
+  {$ENDIF}
+end;
+
 { TTestTIQuerySQLDB_IB }
 
 class function TTestTIQuerySQLDB_IB.PersistenceLayerName: string;
@@ -166,6 +179,14 @@ end;
 class function TTestTIOIDPersistentGUIDSQLDB_IB.PersistenceLayerName: string;
 begin
   Result := cTIPersistSqldbIB;
+end;
+
+procedure TTestTIOIDPersistentGUIDSQLDB_IB.TtiNextOIDGeneratorAssignNextOIDThreaded;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ENDIF}
+  inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
 end;
 
 { TTestTIOIDPersistentIntegerSQLDB_IB }

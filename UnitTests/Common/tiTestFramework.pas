@@ -423,6 +423,9 @@ end;
 procedure TtiTestCase.SetUp;
 begin
   inherited;
+  {$IFDEF FPC}
+  SetupOnce;
+  {$ENDIF}
 end;
 
 procedure TtiTestCase.SetUpOnce;

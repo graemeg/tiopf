@@ -2129,6 +2129,12 @@ var
 const
   CDatabaseAlias = 'TestDatabaseAlias';  
 begin
+  // just a safety precaution.
+  if not Assigned(TestSetupData) then
+    raise Exception.Create('TestSetupData is not assigned')
+  else if not Assigned(TestSetupData.PersistenceLayerClass) then
+    raise Exception.Create('TestSetupData.PersistenceLayerClass is not assigned');
+
   LPersistenceLayer:= TestSetupData.PersistenceLayerClass.Create;
   try
     LPersistenceLayer.DBConnectionPools.Connect(

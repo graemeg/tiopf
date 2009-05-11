@@ -36,7 +36,7 @@
         <PackageName Value="tiOPF"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="9">
+    <Units Count="10">
       <Unit0>
         <Filename Value="textrunner.pas"/>
         <IsPartOfProject Value="True"/>
@@ -82,6 +82,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tiTestFramework"/>
       </Unit8>
+      <Unit9>
+        <Filename Value="../Tests/tiQuery_TST.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiQuery_TST"/>
+      </Unit9>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -102,6 +107,20 @@
         <IgnoredMessages idx5024="True"/>
       </CompilerMessages>
       <CustomOptions Value="-FU_Dcu
+-dLINK_CSV
+-dLINK_TAB
+-dLINK_FBLx
+-dLINK_SQLDB_IB
+-dLINK_SQLDB_PQx
+-dLINK_SQLDB_Oraclex
+-dLINK_SQLDB_SQLLite3x
+-dLINK_SQLDB_ODBCx
+-dLINK_SQLDB_MySQL40x
+-dLINK_SQLDB_MySQL41x
+-dLINK_SQLDB_MySQL50x
+-dLINK_XMLLIGHT
+-dLINK_ZEOS_FB15x
+-dUseCThreads
 "/>
       <CompilerPath Value="$(CompPath)"/>
     </Other>

@@ -12,7 +12,7 @@ program textrunner;
 uses
   cthreads, custapp, Classes, SysUtils, fpcunit, testutils, testregistry,
   testdecorator, tiTestDependencies, tiOPFTestManager, xmlwrite,
-  xmltestreport, plaintestreport, tiDUnitINI;
+  xmltestreport, plaintestreport, tiDUnitINI, tiOPFManager;
 
 
 const
@@ -197,8 +197,8 @@ end;
 
 procedure TTestRunner.DoRun;
 var
-//  I : Integer;
-  S : String;
+  i: Integer;
+  S: String;
 begin
   S:=CheckOptions(ShortOpts,LongOpts);
   If (S<>'') then
@@ -228,6 +228,12 @@ begin
   begin
     FShowProgress := True;
   end;
+
+  { show what persistence layers will be tested}
+  writeln(' ');
+  writeln('Persistence layers to be tested:');
+  for i := 0 to GTIOPFManager.PersistenceLayers.Count - 1 do
+    writeln(#9 + GTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName);
 
   if HasOption('a', 'all') then
   begin
@@ -259,14 +265,16 @@ end;
 var
   App: TTestRunner;
 
-
 begin
   App := TTestRunner.Create(nil);
   App.Initialize;
   App.Title := 'tiOPF Console Test runner.';
 
+  GTIOPFTestManager.Read;
+  GTIOPFTestManager.UnloadPersistenceLayersNotSelected;
+  GTIOPFTestManager.DeleteDatabaseFiles;
   tiTestDependencies.tiRegisterTests;
-//  tiTestDependencies.RemoveUnSelectedPersistenceLayerSetups;
+
   App.Run;
   App.Free;
 end.

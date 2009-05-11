@@ -1,6 +1,7 @@
 unit tiOPFTestManager;
 
 {$I tiDefines.inc}
+{$Define gDEBUG}   // remove . (dot) to enable define
 
 interface
 uses
@@ -123,8 +124,10 @@ begin
   inherited;
   FTestNonPersistentClasses:= True;
   FTestAll := FindCmdLineSwitch('All', ['-', '/'], true);
+  {$IFDEF gDEBUG}writeln('Persistence layers found:');{$ENDIF}
   for i := 0 to GTIOPFManager.PersistenceLayers.Count - 1 do
   begin
+    {$IFDEF gDEBUG} writeln(#9 + GTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName); {$ENDIF}
     L:= TtiOPFTestSetupData.Create(GTIOPFManager.PersistenceLayers.Items[i]);
     Add(L);
   end;
@@ -182,6 +185,9 @@ procedure TtiOPFTestManager.Read;
 var
   i: Integer;
 begin
+  {$IFDEF gDEBUG}
+  writeln('DUnit ini file: ' + gDUnitINICommon.FileName);
+  {$ENDIF}
   if not gDUnitINICommon.ValueExists(cINIPerLayersToTest, 'NonPersistent') then
     gDUnitINICommon.WriteBool(cINIPerLayersToTest, 'NonPersistent', True);
   FTestNonPersistentClasses := gDUnitINICommon.ReadBool(cINIPerLayersToTest, 'NonPersistent', True);

@@ -87,7 +87,7 @@ var
 begin
   if UDUnitINICommon = nil then
   begin
-    LFileName := tiGetEXEPath + PathDelim + 'DUnitTIOPF.ini';
+    LFileName := tiRemoveTrailingSlash(tiGetAppDataDirPrivate) + PathDelim + 'DUnitTIOPF.ini';
     UDUnitINICommon := _CreateINIFile(LFileName);
   end;
   result := UDUnitINICommon;
@@ -127,9 +127,7 @@ end;
 
 class function TDUntiLocalSettings.FileName: string;
 begin
-  Result := tiGetAppDataDirPrivate;
-  Result:= Copy(Result, 1, tiPosR(PathDelim, Result)-1);
-  Result:= Result + PathDelim + 'DUnitTIOPF' + PathDelim + 'DUnitTIOPF.ini';
+  Result := tiRemoveTrailingSlash(tiGetAppDataDirPrivate) + PathDelim + 'DUnitTIOPF.ini';
 end;
 
 function TDUntiLocalSettings.GetAppDataDirPublic: string;
