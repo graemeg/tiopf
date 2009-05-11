@@ -295,7 +295,8 @@ end;
 
 procedure TtiTextTestListener.StartTest(test: ITest);
 begin
-  write2Short('.', [tlwtFile, tlwtConsole]);
+//  write2Short('.', [tlwtFile, tlwtConsole]);
+  writeLn2Short(test.ParentPath + '.' + test.GetName, [tlwtFile, tlwtConsole]); // ToDo: Remove this debugging code
   IncPos;
 end;
 
