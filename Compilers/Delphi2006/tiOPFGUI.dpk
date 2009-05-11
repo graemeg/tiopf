@@ -75,8 +75,6 @@ contains
   tiVTListView in '..\..\GUI\tiVTListView.pas',
   tiVTTreeView in '..\..\GUI\tiVTTreeView.pas',
   tiGUIUtils in '..\..\GUI\tiGUIUtils.pas',
-  tiGenericEditMediators in '..\..\GUI\tiGenericEditMediators.pas',
-  tiGenericListMediators in '..\..\GUI\tiGenericListMediators.pas',
   tiTreeBuildVisitor in '..\..\GUI\tiTreeBuildVisitor.pas',
   tiGenericTreeViewMediator in '..\..\GUI\tiGenericTreeViewMediator.pas',
   tiCompositeMediators in '..\..\GUI\tiCompositeMediators.pas',
@@ -87,6 +85,8 @@ contains
   tiVTExportHTML in '..\..\GUI\tiVTExportHTML.pas',
   tiGUIINI in '..\..\GUI\tiGUIINI.pas',
   tiMulticastEvent in '..\..\GUI\tiMulticastEvent.pas',
-  tiVTAbstract in '..\..\GUI\tiVTAbstract.pas';
+  tiVTAbstract in '..\..\GUI\tiVTAbstract.pas',
+  tiMediators in '..\..\GUI\VCL\tiMediators.pas',
+  tiListMediators in '..\..\GUI\VCL\tiListMediators.pas';
 
 end.
