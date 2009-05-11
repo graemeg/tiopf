@@ -3422,7 +3422,8 @@ begin
 
   LWildCard  := '*.AAA';
   LRecurseDirectories := false;
-  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, LDaysOld, LRecurseDirectories);
+//  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, LDaysOld, LRecurseDirectories);
+Fail('Under construction');
 
   //Check there is no attempt to delete read only files
 
