@@ -1,7 +1,7 @@
 unit tiOPFTestManager;
 
 {$I tiDefines.inc}
-{$Define gDEBUG}   // remove . (dot) to enable define
+{.$Define gDEBUG}   // remove . (dot) to enable define
 
 interface
 uses
