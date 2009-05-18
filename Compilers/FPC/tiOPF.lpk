@@ -49,7 +49,7 @@
     <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="55">
+    <Files Count="56">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -270,6 +270,10 @@
         <Filename Value="../../Options/tiopfsqlscript.pas"/>
         <UnitName Value="tiopfsqlscript"/>
       </Item55>
+      <Item56>
+        <Filename Value="../../Options/tiOIDInt64.pas"/>
+        <UnitName Value="tiOIDInt64"/>
+      </Item56>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="1">

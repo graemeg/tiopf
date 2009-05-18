@@ -75,15 +75,30 @@ type
     procedure Clone;
   end;
 
-  TTestTIOIDInteger = class(TTestTIOIDNonPersistent)
+  { base test class for Integer and Int64 tests }
+  TTestTIOIDIntBase = class(TTestTIOIDNonPersistent)
+  published
+    procedure Assign; override;
+    procedure AsString; override;
+    procedure IsNullAndSetToNull; override;
+  end;
+
+  TTestTIOIDInteger = class(TTestTIOIDIntBase)
+  protected
+    procedure SetUp; override;
+  published
+    procedure NextOIDGeneratorClass; override;
+    procedure AsVariant; override;
+    procedure NullOIDAsString; override;
+  end;
+
+  TTestTIOIDInt64 = class(TTestTIOIDIntBase)
   protected
     procedure SetUp; override;
   published
     procedure NextOIDGeneratorClass; override;
     procedure AsString; override;
     procedure AsVariant; override;
-    procedure IsNullAndSetToNull; override;
-    procedure Assign; override;
     procedure NullOIDAsString; override;
   end;
 
@@ -124,9 +139,10 @@ uses
   tiOPFManager,
   tiObject,
   SysUtils,
-  tiOIDGUID,    // Pull in the integer OID framework
+  tiOIDGUID,    // Pull in the GUID OID framework
   tiOIDInteger, // Pull in the integer OID framework
   tiOIDString,  // Pull in the string OID framework
+  tiOIDInt64, // Pull in the Int64 OID framework
   tiQuery,
   tiThread,
   {$IFDEF MSWINDOWS}
@@ -145,6 +161,7 @@ const
 procedure RegisterTests;
 begin
   tiRegisterNonPersistentTest(TTestTIOIDInteger);
+  tiRegisterNonPersistentTest(TTestTIOIDInt64);
   tiRegisterNonPersistentTest(TTestTIOIDString);
   tiRegisterNonPersistentTest(TTestTIOIDGUID);
 end;
@@ -237,41 +254,6 @@ end;
 
 { TTestTIOIDInteger }
 
-procedure TTestTIOIDInteger.Assign;
-var
-  lOID1: TtiOID;
-  lOID2: TtiOID;
-begin
-  lOID1 := FOIDClass.Create;
-  try
-    lOID2 := FOIDClass.Create;
-    try
-      lOID1.AsVariant := 1;
-      lOID2.Assign(lOID1);
-      CheckEquals(lOID1.AsString, lOID2.AsString);
-    finally
-      lOID2.Free;
-    end;
-  finally
-    lOID1.Free;
-  end;
-end;
-
-
-procedure TTestTIOIDInteger.AsString;
-var
-  lOID: TtiOID;
-begin
-  lOID := FOIDClass.Create;
-  try
-    lOID.AsString := '1';
-    CheckEquals('1', lOID.AsString, 'Failed on AsString');
-  finally
-    lOID.Free;
-  end;
-end;
-
-
 procedure TTestTIOIDInteger.AsVariant;
 var
   lOID: TtiOID;
@@ -304,23 +286,6 @@ begin
   end;
 end;
 
-procedure TTestTIOIDInteger.IsNullAndSetToNull;
-var
-  lOID: TtiOID;
-begin
-  lOID := FOIDClass.Create;
-  try
-    Check(lOID.IsNull, 'Failed on IsNull');
-    lOID.AsVariant := 1;
-    Check(not lOID.IsNull, 'Failed on not IsNull');
-    lOID.SetToNull;
-    Check(lOID.IsNull, 'Failed on SetToNull');
-  finally
-    lOID.Free;
-  end;
-end;
-
-
 procedure TTestTIOIDInteger.NullOIDAsString;
 var
   LOID: TtiOID;
@@ -335,7 +300,7 @@ end;
 
 procedure TTestTIOIDInteger.SetUp;
 begin
-  inherited;
+  inherited Setup;
   FOIDClass := TOIDInteger;
 end;
 
@@ -1066,6 +1031,125 @@ procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDThreaded;
 begin
   SetAllowedLeakArray([32, 208, 265]);
   inherited;
+end;
+
+{ TTestTIOIDInt64 }
+
+procedure TTestTIOIDInt64.SetUp;
+begin
+  inherited SetUp;
+  FOIDClass := TOIDInt64;
+end;
+
+procedure TTestTIOIDInt64.NextOIDGeneratorClass;
+var
+  LOIDGenerator: TtiOIDGenerator;
+begin
+  LOIDGenerator := TtiOIDGeneratorInt64.Create;
+  try
+    Check(LOIDGenerator.OIDClass = TOIDInt64);
+  finally
+    LOIDGenerator.Free;
+  end;
+end;
+
+procedure TTestTIOIDInt64.AsString;
+const
+  cHighInt64 = '9223372036854775807';
+var
+  lOID: TtiOID;
+begin
+  lOID := FOIDClass.Create;
+  try
+    lOID.AsString := '1';
+    CheckEquals('1', lOID.AsString, 'Failed on 1');
+    lOID.AsString := cHighInt64;
+    CheckEquals(cHighInt64, lOID.AsString, 'Failed on 2');
+  finally
+    lOID.Free;
+  end;
+end;
+
+procedure TTestTIOIDInt64.AsVariant;
+var
+  lOID: TtiOID;
+  lInt: Int64;
+  lStr: string;
+begin
+  lOID := FOIDClass.Create;
+  try
+    lOID.AsVariant := '1';
+    CheckEquals('1', lOID.AsString, 'Failed on AsString');
+    lStr := lOID.AsVariant;
+    CheckEquals('1', lStr, 'Failed on AsVariant #1');
+    lInt := lOID.AsVariant;
+    CheckEquals(1, lInt, 'Failed on AsVariant #2');
+  finally
+    lOID.Free;
+  end;
+end;
+
+procedure TTestTIOIDInt64.NullOIDAsString;
+var
+  LOID: TtiOID;
+begin
+  LOID := TOIDInt64.Create;
+  try
+    CheckEquals('0', LOID.NullOIDAsString);
+  finally
+    LOID.Free;
+  end;
+end;
+
+{ TTestTIOIDIntBase }
+
+procedure TTestTIOIDIntBase.Assign;
+var
+  lOID1: TtiOID;
+  lOID2: TtiOID;
+begin
+  lOID1 := FOIDClass.Create;
+  try
+    lOID2 := FOIDClass.Create;
+    try
+      lOID1.AsVariant := 1;
+      lOID2.Assign(lOID1);
+      CheckEquals(lOID1.AsString, lOID2.AsString);
+    finally
+      lOID2.Free;
+    end;
+  finally
+    lOID1.Free;
+  end;
+end;
+
+procedure TTestTIOIDIntBase.AsString;
+var
+  lOID: TtiOID;
+begin
+  lOID := FOIDClass.Create;
+  try
+    lOID.AsString := '1';
+    CheckEquals('1', lOID.AsString, 'Failed on AsString');
+  finally
+    lOID.Free;
+  end;
+end;
+
+procedure TTestTIOIDIntBase.IsNullAndSetToNull;
+var
+  lOID: TtiOID;
+begin
+  lOID := FOIDClass.Create;
+  try
+    Check(lOID.IsNull, 'Failed on IsNull');
+    lOID.AsVariant := 1;
+    Check(not lOID.IsNull, 'Failed on not IsNull');
+    lOID.SetToNull;
+    Check(lOID.IsNull, 'Failed on SetToNull');
+  finally
+    lOID.Free;
+  end;
 end;
 
 end.

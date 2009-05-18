@@ -146,23 +146,25 @@ type
     procedure Execute(const AData: TtiVisited); override;
   end;
 
-  // ToDo: Rename to TtiVisitorSelect
-  TVisOwnedQrySelect = class(TVisOwnedQrySelectAbs)
+
+  TtiVisitorSelect = class(TVisOwnedQrySelectAbs)
   protected
     procedure OpenQuery; override;
   end;
 
-  TtiVisitorSelect = class(TVisOwnedQrySelect);
+  // alias class will be removed soon.
+  TVisOwnedQrySelect = class(TtiVisitorSelect);
 
-  // ToDo: Rename to TtiVisitorUpdate
-  TVisOwnedQryUpdate = class(TtiObjectVisitor)
+
+  TtiVisitorUpdate = class(TtiObjectVisitor)
   protected
     procedure AfterExecSQL(const pRowsAffected:integer);
   public
     procedure Execute(const AData: TtiVisited); override;
   end;
 
-  TtiVisitorUpdate = class(TVisOwnedQryUpdate);
+  // alias class will be removed soon.
+  TVisOwnedQryUpdate = class(TtiVisitorUpdate);
 
 
 implementation
@@ -411,7 +413,7 @@ begin
     'overridden in the concrete: ' + ClassName);
 end;
 
-procedure TVisOwnedQryUpdate.AfterExecSQL(const pRowsAffected: integer);
+procedure TtiVisitorUpdate.AfterExecSQL(const pRowsAffected: integer);
 begin
   // this gets called only if FQuery.SupportsRowsAffected
 
@@ -420,7 +422,7 @@ begin
   // if pRowsAffected=0 then raise ERecordAlreadyChanged.Create('Another user changed row.');
 end;
 
-procedure TVisOwnedQryUpdate.Execute(const AData: TtiVisited);
+procedure TtiVisitorUpdate.Execute(const AData: TtiVisited);
 var
   lStart: DWord;
   lRowsAffected: integer;
@@ -438,7 +440,7 @@ begin
   LogQueryTiming(ClassName, tiGetTickCount - lStart, 0);
 end;
 
-procedure TVisOwnedQrySelect.OpenQuery;
+procedure TtiVisitorSelect.OpenQuery;
 begin
   if GTIOPFManager.Terminated then
     Exit; //==>

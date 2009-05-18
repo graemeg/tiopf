@@ -1,4 +1,4 @@
-{ This file was automatically created by Lazarus. do not edit!
+{ This file was automatically created by Lazarus. do not edit ! 
   This source is only used to compile and install the package.
  }
 
@@ -7,7 +7,7 @@ unit tiOPF;
 interface
 
 uses
-  tiBaseObject, tiCommandLineParams, tiCompress, tiConstants, 
+    tiBaseObject, tiCommandLineParams, tiCompress, tiConstants, 
   tiDBConnectionPool, tiEncrypt, tiExcept, tiLog, tiObject, tiOID, 
   tiOPFManager, tiPool, tiQuery, tiStreams, tiSyncObjs, tiThread, tiUtils, 
   tiVisitor, tiVisitorDB, tiOIDGUID, tiOIDInteger, tiCompressNone, 
@@ -18,7 +18,7 @@ uses
   tiQueryXMLLight, tiRTTI, tiTokenLibrary, tiINI, tiQueue, tiAutoMap, 
   tiVisitorDBAutoGen, tiStructuredCSVReader, tiStructuredCSVWriter, 
   tiFilteredObjectList, tiBaseMediator, tiFormMediator, tiQueryDataset, 
-  tiopfsqlscript;
+  tiopfsqlscript, tiOIDInt64;
 
 implementation
 

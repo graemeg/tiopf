@@ -98,7 +98,7 @@ end;
 
 procedure TOIDInt64.SetAsString(const AValue: string);
 begin
-  FAsInt64 := StrToInt(AValue);
+  FAsInt64 := StrToInt64(AValue);
 end;
 
 function TOIDInt64.IsNull: boolean;
