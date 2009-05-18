@@ -59,6 +59,7 @@ type
   {:FSQL is used as a private placeholder for converting the WideString version (in D2006+). Ref GetSQL}
     FSQL     : TStringList;
     procedure DoOnChangeSQL(Sender: TObject);
+    procedure SetParamAsVariant(const AName: string;const AValue: Variant);
   protected
 
     function  GetFieldAsBoolean(const AName: string): boolean  ; override;
@@ -242,32 +243,54 @@ begin
 end;
 
 procedure TtiQueryADO.SetParamAsBoolean(const AName: string; const AValue: boolean);
+var
+  i: Integer;
 begin
-  if AValue then
-    FADOQuery.Parameters.ParamByName(AName).Value := True
-  else
-    FADOQuery.Parameters.ParamByName(AName).Value := False;
+  for i := 0 to FAdoQuery.Parameters.Count - 1 do
+    if SameText(AName, FADOQuery.Parameters.Items[i].Name) then
+    begin
+      if AValue then
+        FADOQuery.Parameters.Items[i].Value := True
+      else
+        FADOQuery.Parameters.Items[i].Value := False;
+    end;
 end;
 
 procedure TtiQueryADO.SetParamAsDateTime(const AName : string; const AValue: TDateTime);
 begin
-  FADOQuery.Parameters.ParamByName(AName).Value := AValue;
+  SetParamAsVariant(AName, AValue);
 end;
 
 procedure TtiQueryADO.SetParamAsFloat(const AName: string;
   const AValue: extended);
 begin
-  FADOQuery.Parameters.ParamByName(AName).Value := AValue;
+  SetParamAsVariant(AName, AValue);
 end;
 
 procedure TtiQueryADO.SetParamAsInteger(const AName: string; const AValue: Int64);
+var
+  i: Integer;
 begin
-  FADOQuery.Parameters.ParamByName(AName).Value := Longint(AValue);
+  for i := 0 to FAdoQuery.Parameters.Count - 1 do
+    if SameText(AName, FADOQuery.Parameters.Items[i].Name) then
+      FADOQuery.Parameters.Items[i].Value := Longint(AValue);
 end;
 
 procedure TtiQueryADO.SetParamAsString(const AName, AValue: string);
 begin
-  FADOQuery.Parameters.ParamByName(AName).Value := AValue;
+  SetParamAsVariant(AName, AValue);
+end;
+
+procedure TtiQueryADO.SetParamAsVariant(const AName: string; const AValue: Variant);
+var
+  i: Integer;
+begin
+  // Loop through all parameters, because ADODB creates two TParameter's when
+  // two parameters with the same name are used in a query. Without this loop
+  // only the first TParameter's value got assigned
+  for i := 0 to FAdoQuery.Parameters.Count - 1 do
+    if SameText(AName, FADOQuery.Parameters.Items[i].Name) then
+      FADOQuery.Parameters.Items[i].Value := AValue;
 end;
 
 procedure TtiQueryADO.SetSQL(const AValue: TStrings);
@@ -392,7 +415,7 @@ end;
 procedure TtiQueryADO.SetParamIsNull(const AName: String; const AValue: Boolean);
 begin
   if AValue then
-    FADOQuery.Parameters.ParamByName(AName).Value := Null;
+    SetParamAsVariant(AName, Null);
 end;
 
 function TtiDatabaseADOAbs.GetConnected: boolean;
