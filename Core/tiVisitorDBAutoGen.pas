@@ -139,8 +139,8 @@ begin
 
   Assert(FTableName <> '', 'TableName not assigned');
 
-  // use old SelectRow if we don't have a lCriteris just in case!
-  if assigned(lCriteria) then
+  // use old SelectRow if we don't have a lCriteria just in case!
+  if Assigned(lCriteria) then
     Query.SelectRow(FTableName, FQueryParams, lCriteria)
   else
     Query.SelectRow(FTableName, FQueryParams);

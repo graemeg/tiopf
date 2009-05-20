@@ -245,7 +245,7 @@ const
 {$ifndef Delphi6OrAbove}
 const
   {$ifdef MSWINDOWS}PathDelim = '\';{$endif}
-  {$ifdef LINUX}PathDelim = '/';{$endif}
+  {$ifdef UNIX}PathDelim = '/';{$endif}
 {$endif}
 
   {: The maximum length a command passed to an console EXE can be. This length

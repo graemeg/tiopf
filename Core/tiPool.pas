@@ -8,9 +8,9 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   ,pthreads
-  {$ENDIF LINUX}
+  {$ENDIF UNIX}
   ,tiBaseObject
   ,tiThread
  ;
@@ -69,9 +69,9 @@ type
     {$IFDEF MSWINDOWS}
     FSemaphore : THandle;
     {$ENDIF MSWINDOWS}
-    {$IFDEF LINUX}
+    {$IFDEF UNIX}
     FSemaphore : TSemaphore;
-    {$ENDIF LINUX}
+    {$ENDIF UNIX}
     FMinPoolSize: Word;
     FMaxPoolSize: Word;
     FWaitTime: Word;
@@ -166,19 +166,19 @@ end;
 
 
 procedure TtiPool.DestroyPoolSemaphore;
-{$IFDEF LINUX}
+{$IFDEF UNIX}
 var
   error: integer;
-{$ENDIF LINUX}
+{$ENDIF UNIX}
 begin
   {$IFDEF MSWINDOWS}
   CloseHandle(FSemaphore);
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   error := sem_destroy(FSemaphore);
   if error <> 0 then
     raise Exception.Create('Failed to destroy the semaphore');
-  {$ENDIF LINUX}
+  {$ENDIF UNIX}
 end;
 
 procedure TtiPool.Clear;
@@ -312,13 +312,13 @@ begin
   {$IFDEF MSWINDOWS}
   result:= WaitForSingleObject(FSemaphore, FWaitTime * 1000) <> WAIT_TIMEOUT;
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   { TODO: The timeout option is not available in POSIX semaphores. This can be
     achieved by issuing a non-blocking sem_trywait() within a loop, which
     counts the timeout value: int sem_trywait(sem_t * sem).
     i := fpgeterrno; }
   result:= sem_trywait(FSemaphore) = 0;
-  {$ENDIF LINUX}
+  {$ENDIF UNIX}
 end;
 
 procedure TtiPool.UnLock(const APooledItemData : TtiBaseObject);
@@ -484,10 +484,10 @@ begin
   {$IFDEF MSWINDOWS}
   ReleaseSemaphore(FSemaphore, 1, nil);
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   if sem_post(FSemaphore) <> 0 then
     raise Exception.Create('Failed to unlock the semaphore');
-  {$ENDIF LINUX}
+  {$ENDIF UNIX}
 end;
 
 procedure TtiPool.CreatePoolSemaphore;
@@ -497,11 +497,11 @@ begin
     CloseHandle(FSemaphore);
   FSemaphore := CreateSemaphore(nil, FMaxPoolSize, FMaxPoolSize, nil);
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   sem_destroy(FSemaphore);
   if sem_init(FSemaphore, 0, FMaxPoolSize) <> 0 then
     raise Exception.Create('Failed to create the semaphore');
-  {$ENDIF LINUX}
+  {$ENDIF UNIX}
 end;
 
 
@@ -575,8 +575,4 @@ begin
 end;
 
 end.
-
-
-
-
 

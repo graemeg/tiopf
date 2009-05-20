@@ -13,6 +13,7 @@ uses
   ,Windows
   ,tiPersistenceLayers
   ,tiDBConnectionPool
+  ,tiUtils
  ;
 
 const
@@ -140,7 +141,7 @@ type
     FInTransaction : boolean;
 
     FHTTP: TtiHTTPAbs;
-    FCurrentThreadID: DWord;
+    FCurrentThreadID: TThreadID;
 
     FDBResponseXML   : TtiDatabaseXMLLight;
     FDBRequestXML    : TtiDatabaseXMLLight;
@@ -284,7 +285,6 @@ uses
   ,tiConstants
   ,tiAutoMap
   ,tiObject
-  ,tiUtils
   ,tiLog
   ,tiCompress
   ,tiCompressNone
@@ -855,7 +855,7 @@ var
   lProxyPort : Integer;
   lProxyActive: Boolean;
   LHTTPClassMapping : string;
-  LCurrentThreadID: DWord;
+  LCurrentThreadID: TThreadID;
 begin
 
   LCurrentThreadID:= GetCurrentThreadID;

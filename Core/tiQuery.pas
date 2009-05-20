@@ -1132,7 +1132,7 @@ begin
       begin
         lWhere := tiAddTrailingValue(lWhere, ' and ' + CrLf);
         lWhere := lWhere +
-                  AWhere.Items[i].Name + ' =:' +
+                  AWhere.Items[i].Name + ' = :' +
                   AWhere.Items[i].Name;
       end;
 
@@ -1149,7 +1149,7 @@ begin
 
     if lWhere <> '' then
       lSQL := 'select * from ' + ATableName + CrLf +
-              'where' + CrLf +
+              ' where ' + CrLf +
               lWhere
     else
       lSQL := 'select * from ' + ATableName;

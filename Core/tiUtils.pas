@@ -26,6 +26,11 @@ type
   TVarType = Word;
 {$ENDIF}
 
+{$IFNDEF FPC}
+type
+  TThreadID = THandle;   // So Delphi can be FPC compatible
+{$ENDIF}
+
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
   // * String manipulation
@@ -578,7 +583,7 @@ uses
   {$IFDEF UNIX}
   ,unix
   ,baseunix
-  ,tiLinux
+  ,tiUnix
   {$ENDIF UNIX}
   {$IFDEF FPC}
   ,Process
@@ -1673,8 +1678,8 @@ begin
   {$IFDEF MSWINDOWS}
     Result := tiWin32GetUserName;
   {$ENDIF}
-  {$IFDEF LINUX}
-    Result := tiLinuxGetUserName;
+  {$IFDEF UNIX}
+    Result := tiUnixGetUserName;
   {$ENDIF}
 end;
 
@@ -1684,9 +1689,9 @@ begin
   {$IFDEF MSWINDOWS}
   Result := tiWin32GetComputerName;
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
-  Result := tiLinuxGetComputerName;
-  {$ENDIF LINUX}
+  {$IFDEF UNIX}
+  Result := tiUnixGetComputerName;
+  {$ENDIF}
 end;
 
 
@@ -1944,11 +1949,11 @@ begin
         {$IFDEF MSWINDOWS}
         if tiWin32FindFirstFile(lsStartDir + AWildCard, SearchRec) = 0 then
         {$ENDIF MSWINDOWS}
-        {$IFDEF LINUX}
+        {$IFDEF UNIX}
         { FPC under Linux has some bug in <= v2.2.5 so faAnyFile is all we
           can use instead of the following:  faAnyFile-faSysFile-faDirectory, }
         if SysUtils.FindFirst(lsStartDir + AWildCard, faAnyFile, SearchRec) = 0 then
-        {$ENDIF LINUX}
+        {$ENDIF UNIX}
         begin
           repeat
             AddFile(SearchRec, lsStartDir, AWildCard, AResults, ARecurse);
@@ -2242,8 +2247,8 @@ begin
 {$IFDEF MSWINDOWS}
   tiWin32RunEXEAndWait(LCommand);
 {$ENDIF MSWINDOWS}
-{$IFDEF LINUX}
-  tiLinuxRunEXEAndWait(LCommand);
+{$IFDEF UNIX}
+  tiUnixRunEXEAndWait(LCommand);
 {$ENDIF}
 end;
 
@@ -2361,9 +2366,9 @@ var
   {$IFDEF MSWINDOWS}
   lFileHandle : Integer;
   {$ENDIF MSWINDOWS}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
   lError     : Integer;
-  {$ENDIF LINUX}
+  {$ENDIF UNIX}
 begin
   lFileDate  := DateTimeToFileDate(ADateTime);
   {$IFDEF MSWINDOWS}
@@ -2379,11 +2384,11 @@ begin
   end;
   {$ENDIF MSWINDOWS}
 
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
     lError := FileSetDate(AFileName, lFileDate);
     if lError <> 0 then
       raise Exception.Create('Unable to set file date on <' + AFileName);
-  {$ENDIF LINUX}
+  {$ENDIF UNIX}
 end;
 
 
@@ -3436,8 +3441,8 @@ begin
 {$IFDEF MSWINDOWS}
   Result := tiWin32GetTickCount;
 {$ENDIF}
-{$IFDEF LINUX}
-  Result := tiLinuxGetTickCount;
+{$IFDEF UNIX}
+  Result := tiUnixGetTickCount;
 {$ENDIF}
 end;
 

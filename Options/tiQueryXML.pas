@@ -1,7 +1,6 @@
+unit tiQueryXML;
 
 {$I tiDefines.inc}
-
-unit tiQueryXML;
 
 interface
 uses
@@ -35,7 +34,7 @@ type
   private
     FXMLDomDoc : IXMLDOMDocument;
     FConnected : boolean;
-    FCurrentThreadID: DWord;
+    FCurrentThreadID: TThreadID;
     FInTransaction : boolean;
     FTerminateOnConnectError: boolean;
     FXMLRCTrans: IXMLReservedCharsTranslator;
@@ -990,7 +989,7 @@ end;
 
 function TtiDatabaseXML.GetXMLDomDoc: IXMLDOMDocument;
 var
-  LCurrentThreadID: DWord;
+  LCurrentThreadID: TThreadID;
   LNewThread: Boolean;
 begin
   LCurrentThreadID:= GetCurrentThreadID;

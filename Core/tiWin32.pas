@@ -415,7 +415,7 @@ end;
 
 procedure TtiCoInitializeManager.CoInitialize;
 var
-  LCurrentThreadID: DWord;
+  LCurrentThreadID: TThreadID;
 begin
   FCritSect.Enter;
   try
@@ -432,7 +432,7 @@ end;
 
 procedure TtiCoInitializeManager.ForceCoInitialize;
 var
-  LCurrentThreadID: DWord;
+  LCurrentThreadID: TThreadID;
 begin
   FCritSect.Enter;
   try
@@ -447,7 +447,7 @@ end;
 
 procedure TtiCoInitializeManager.CoUnInitialize;
 var
-  LCurrentThreadID: DWord;
+  LCurrentThreadID: TThreadID;
 begin
   FCritSect.Enter;
   try
@@ -478,7 +478,7 @@ end;
 
 function TtiCoInitializeManager.HasBeenCalled: Boolean;
 var
-  LThreadID : integer;
+  LThreadID: TThreadID;
 begin
   FCritSect.Enter;
   try

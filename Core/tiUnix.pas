@@ -1,19 +1,18 @@
-{ Linux specific functions used by tiUtils. }
-unit tiLinux;
+{ Base Unix (Linux, MacOS, *BSD) specific functions used by tiUtils. }
+unit tiUnix;
 
 {$I tiDefines.inc}
 
 interface
 uses
   SysUtils
- ;
+  ;
 
   { Wraps the Linux call in a method with the equavalent Windows name }
-  function  GetCurrentThreadID: Cardinal;
-  procedure tiLinuxRunEXEAndWait(pStrEXE: string);
-  function  tiLinuxGetTickCount: Cardinal;
-  function  tiLinuxGetUserName: string;
-  function  tiLinuxGetComputerName: string;
+  procedure tiUnixRunEXEAndWait(pStrEXE: string);
+  function  tiUnixGetTickCount: Cardinal;
+  function  tiUnixGetUserName: string;
+  function  tiUnixGetComputerName: string;
   function  IsCharAlpha(AChar: Char): Boolean;
 
 
@@ -21,17 +20,10 @@ implementation
 uses
   Process
   ,unix
- ;
+  ;
 
 
-function GetCurrentThreadID: Cardinal;
-begin
-  Result:=system.GetCurrentThreadID;
-//  Result := pthread_self;
-end;
-
-
-procedure tiLinuxRunEXEAndWait(pStrEXE: string);
+procedure tiUnixRunEXEAndWait(pStrEXE: string);
 var
   lProcess: TProcess;
 begin
@@ -41,14 +33,12 @@ begin
   lProcess.Execute;
 end;
 
-
-function tiLinuxGetTickCount: Cardinal;
+function tiUnixGetTickCount: Cardinal;
 begin
   Result := Cardinal(Trunc(Now * 24 * 60 * 60 * 1000));
 end;
 
-
-function tiLinuxGetUserName: string;
+function tiUnixGetUserName: string;
 begin
   // the first two are used when run from a normal login shell
   Result := GetEnvironmentVariable('USERNAME');
@@ -59,8 +49,7 @@ begin
     Result := GetEnvironmentVariable('LOGNAME');
 end;
 
-
-function tiLinuxGetComputerName: string;
+function tiUnixGetComputerName: string;
 begin
   Result := GetHostName;
 end;

@@ -42,9 +42,6 @@ procedure tiFreeThreadList(var AThreadList: TThreadList; const AOwnsContent: boo
 implementation
 uses
   tiUtils
-  {$IFDEF LINUX}
-  ,cthreads
-  {$ENDIF}
   ,SysUtils    // used for Sleep under Free Pascal
  ;
 
@@ -57,7 +54,7 @@ type
   private
     FMutexName: string;
     FMutexHandle: THandle;
-    {$IFDEF LINUX}
+    {$IFDEF UNIX}
     FCriticalSection: TRTLCriticalSection;
 //    InitializeMutex(pCritSec: TRTLCriticalSection);
     {$ENDIF}
@@ -101,7 +98,7 @@ begin
     lMutex.Free;
   end;
   {$ENDIF}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
     {$Warning This needs to be completed! }
 //  pthread_mutex_lock
 //   pthread_cond_wait and pthread_cond_signal seems to be a Linux replacement
@@ -142,7 +139,7 @@ begin
   {$IFDEF MSWINDOWS}
   FMutexHandle := CreateMutex(nil, False, PChar(FMutexName));
   {$ENDIF}
-  {$IFDEF LINUX}
+  {$IFDEF UNIX}
     {$Warning This needs to be completed! }
 //  InitializeMutex(FCriticalSection);
 (*
@@ -171,8 +168,8 @@ begin
   ReleaseMutex(FMutexHandle);
   CloseHandle(FMutexHandle);
   {$ENDIF}
-  {$IFDEF LINUX}
-    {$Warning This needs to be completed! }
+  {$IFDEF UNIX}
+    {$Warning This needs to be implemented! }
 //    pthread_mutex_unlock
 //    pthread_mutex_destroy
   {$ENDIF}
@@ -264,7 +261,6 @@ initialization
   uMutexes := TThreadList.Create;
 
 finalization
-
   tiFreeThreadList(uMutexes, true);
 
 end.
