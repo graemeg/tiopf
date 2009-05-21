@@ -13,6 +13,7 @@ uses
   {$ENDIF}
   ,Windows
   ,tiPersistenceLayers
+  ,tiUtils
  ;
 
 const
@@ -134,7 +135,6 @@ implementation
 uses
    tiLog
   ,tiObject
-  ,tiUtils
   ,TypInfo
   ,tiOPFManager
   ,tiConstants
