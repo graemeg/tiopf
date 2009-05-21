@@ -14,7 +14,6 @@ uses
   {$ENDIF}
   ,Windows
   ,tiPersistenceLayers
-  ,tiUtils
  ;
 
 const

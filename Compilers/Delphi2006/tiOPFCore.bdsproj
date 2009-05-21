@@ -170,9 +170,7 @@
 			<VersionInfoKeys Name="ProductName"></VersionInfoKeys>
 			<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 			<VersionInfoKeys Name="Comments"></VersionInfoKeys>
-		</VersionInfoKeys>  
-    
-    <Excluded_Packages>
+		</VersionInfoKeys>  <Excluded_Packages>
       <Excluded_Packages Name="c:\program files\borland\bds\4.0\Bin\dcltee100.bpl">TeeChart Components</Excluded_Packages>
     </Excluded_Packages>
   </Delphi.Personality>
