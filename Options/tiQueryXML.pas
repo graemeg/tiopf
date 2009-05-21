@@ -6,6 +6,7 @@ interface
 uses
    tiQuery
   ,tiXML
+  ,tiUtils
   ,Classes
   ,MSXML_TLB
   {$IFNDEF VER130}

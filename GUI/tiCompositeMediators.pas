@@ -176,7 +176,7 @@ uses
   ,StdCtrls
   ,typinfo
   ,tiExcept
-  ,tiGenericEditMediators
+//  ,tiGenericEditMediators
   ;
 
 const
@@ -658,8 +658,9 @@ begin
     { Set the Observers Subject property to the selected object }
     for i := 0 to FSelectedObject.ObserverList.Count-1 do
     begin
-      TMediatorView(FSelectedObject.ObserverList.Items[i]).Subject :=
-          FSelectedObject;
+Assert(False, 'Under Construction');
+//      TMediatorView(FSelectedObject.ObserverList.Items[i]).Subject :=
+//          FSelectedObject;
     end;
 
     // execute the NotifyObservers event to update the observers.
