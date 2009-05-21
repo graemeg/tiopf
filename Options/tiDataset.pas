@@ -55,14 +55,9 @@ interface
 uses
   Classes, SysUtils, Forms, Db, TypInfo, Graphics, Controls,
   {$IFDEF DELPHI6ORABOVE} Variants, {$ENDIF} {$ifndef fpc}SqlTimSt,{$endif} 
-  tiObject {$ifdef UNICODE}, WideStrUtils {$endif};
+  tiObject {$ifdef UNICODE}, WideStrUtils {$endif}, tiUtils;
 
 type
-
-{$ifndef FPC}
-  PtrInt = Longint; { Delphi doesn't know PtrInt, a pointer-sized integer. } 
-{$endif}
-
 {$IFDEF UNICODE}
   PByteOrChar = PByte;
 {$ELSE}

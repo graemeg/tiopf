@@ -256,8 +256,6 @@ type
     class function ComponentClass: TClass; override;
   end;
 
-  { user data source to be used with the grid. PtrInt and TString are helper classes }
-  PtrInt = Integer;
 
   TString = class(TObject)
   private
@@ -326,7 +324,7 @@ procedure RegisterFallBackMediators;
 implementation
 
 uses
-  SysUtils, StdCtrls, tiOPFManager, Variants, tiRTTI,
+  SysUtils, StdCtrls, tiOPFManager, Variants, tiRTTI, tiUtils,
   cxDataStorage, cxGridBandedTableView, cxCurrencyEdit;
 
 procedure RegisterFallBackMediators;

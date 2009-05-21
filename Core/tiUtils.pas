@@ -27,8 +27,11 @@ type
 {$ENDIF}
 
 {$IFNDEF FPC}
+// So Delphi can be FPC compatible
 type
-  TThreadID = THandle;   // So Delphi can be FPC compatible
+  TThreadID = THandle;
+  PtrInt = integer;
+  PtrUInt = cardinal;
 {$ENDIF}
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

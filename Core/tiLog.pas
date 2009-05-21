@@ -694,7 +694,7 @@ begin
   lsNow := _PadR(FormatDateTime(cIntlDateTimeDisp, Now), Length(cIntlDateTimeDisp));
   lsMessage := AMessage;
 
-  lsThreadID := IntToStr(GetCurrentThreadID);
+  lsThreadID := IntToStr(PtrUInt(GetCurrentThreadID));   // So it's compatible with MacOSX
   lsThreadID := _PadL(lsThreadID, cuiWidthThread);
 
   FCritSect.Enter;
