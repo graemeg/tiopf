@@ -35,7 +35,7 @@ uses
   ,tiExcept
   ,SysUtils
   ,ZDbcIntfs
-  ,ZDbcMySqlMetadata, Dialogs
+  ,ZDbcMySqlMetadata
   ;
 
 { TtiDatabaseZeosMySQL }

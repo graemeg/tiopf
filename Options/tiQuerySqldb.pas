@@ -323,6 +323,8 @@ begin
         FDatabase.DatabaseName := DatabaseName;
       end;
       
+    FDatabase.Params.Assign(Params);
+
     FDatabase.UserName     := Username;
     FDatabase.Password     := Password;
     FDatabase.Params.Values['user_name'] := UserName;
@@ -331,8 +333,12 @@ begin
     { Assign some well known extra parameters if they exist. }
     if Params.Values['ROLE'] <> '' then
       FDatabase.Role := Params.Values['ROLE'];
+    { charset is a db neutral property we defined for tiOPF. }
     if Params.Values['CHARSET'] <> '' then
       FDatabase.CharSet := Params.Values['CHARSET'];
+    { lc_ctype is native to Interface/Firebird databases. }
+    if Params.Values['LC_CTYPE'] <> '' then
+      FDatabase.CharSet := Params.Values['LC_CTYPE'];
 
     FDatabase.Connected    := True;
   except

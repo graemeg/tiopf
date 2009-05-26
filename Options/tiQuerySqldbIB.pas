@@ -5,9 +5,17 @@
   persistence layers.
 
   eg:
+
     GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
         'sysdba', 'masterkey', '');
 
+    ...or with extra connection parameters...
+
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
+        'sysdba', 'masterkey', 'charset=UTF8,role=admin');
+
+  If you specify extra connection parameters (which are optional), they
+  are in name=value pairs and seperated by a comma - as shown above.
 
   Authors:  Graeme Geldenhuys (graemeg@gmail.com) - Feb 2006
             Michael Van Canneyt (michael@freepascal.org) - Aug 2008

@@ -1,5 +1,7 @@
 unit tiQueryZeosMySQL50;
 
+{$I tiDefines.inc}
+
 interface
 
 uses
@@ -29,7 +31,6 @@ implementation
 
 uses
   tiOPFManager
-  ,tiDBConnectionPool
   ,tiAutoMap
   ,tiObject
   ,tiConstants
@@ -50,12 +51,11 @@ end;
 procedure TtiPersistenceLayerZeosMySQL50.AssignPersistenceLayerDefaults(
   const APersistenceLayerDefaults: TtiPersistenceLayerDefaults);
 begin
-  Assert(False, 'Under construction');
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
-  APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistXX;
-  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.XXX';
-  APersistenceLayerDefaults.Username:= 'XXX';
-  APersistenceLayerDefaults.Password:= 'XXX';
+  APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistZeosMySQL50;;
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName;
+  APersistenceLayerDefaults.Username:= 'root';
+  APersistenceLayerDefaults.Password:= '';
   APersistenceLayerDefaults.CanDropDatabase:= False;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
