@@ -36,7 +36,7 @@ inherited SetOwner(Value);
 [ia | tiOPF - Inherited Add ]
 result := inherited Add(AObject);
 [vr | tiOPF - Visitor Read ]
-TVisXXX_Read = class(TVisOwnedQrySelect)
+TVisXXX_Read = class(TtiVisitorSelect)
 protected
   function    AcceptVisitor: boolean; override;
   procedure   Init; override;
@@ -45,7 +45,7 @@ protected
 end;
 
 [vc | tiOPF - Visitor Create ]
-TVisXXX_Create = class(TVisOwnedQryUpdate)
+TVisXXX_Create = class(TtiVisitorUpdate)
 protected
   function    AcceptVisitor: boolean; override;
   procedure   Init; override;
@@ -53,7 +53,7 @@ protected
 end;
 
 [vu | tiOPF - Visitor Update ]
-TVisXXX_Update = class(TVisOwnedQryUpdate)
+TVisXXX_Update = class(TtiVisitorUpdate)
 protected
   function    AcceptVisitor: boolean; override;
   procedure   Init; override;
@@ -61,18 +61,18 @@ protected
 end;
 
 [vd | tiOPF - Visitor Delete ]
-TVisXXX_Delete = class(TVisOwnedQryUpdate)
+TVisXXX_Delete = class(TtiVisitorUpdate)
 protected
   function    AcceptVisitor: boolean; override;
   procedure   Init; override;
   procedure   SetupParams; override;
 end;
 
-[rv | tiOPF - Register Visitor ]
+[rv | tiOPF - Register Visitor]
 gTIOPFManager.VisitorManager.RegisterVisitor('SaveXXX', TVisXXX_Create);
 [ev | tiOPF - Execute Visitor ]
 gTIOPFManager.VisitorManager.Execute('SaveLoadXXX|', self);
-[ve | tiOPF - VisitorManager.Execute ]
+[ve | tiOPF - Visitor Execute]
 gTIOPFManager.VisitorManager.Execute('SaveLoadXXX|', self);
 [chke | CheckEquals (DUnit) ]
 CheckEquals(|, 1, 0.00001, 'Failing at  1');
@@ -98,3 +98,20 @@ begin
 end;
 FMediator.Subject := Data;
 FMediator.Active := True;
+[avlog | tiOPF - AccetpVisitor log() line]
+Log([ClassName, Visited.ClassName, Visited.ObjectStateAsString, Result], lsAcceptVisitor);
+[tobject | Fix case - TObject]
+$(AttributesStart)
+AutoOnWordEnd=true
+$(AttributesEnd)
+TObject
+[l | tiOPF Log line]
+$(AttributesStart)
+EnableMakros=true
+$(AttributesEnd)
+Log('>> $ProcedureName()', lsDebug);
+[le | tiOPF Log line end]
+$(AttributesStart)
+EnableMakros=true
+$(AttributesEnd)
+Log('<< $ProcedureName()', lsDebug);

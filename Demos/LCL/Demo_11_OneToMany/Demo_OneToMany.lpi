@@ -35,7 +35,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="7">
+    <Units Count="8">
       <Unit0>
         <Filename Value="Demo_OneToMany.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -80,6 +80,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="Client_HardCodedVisitors_Svr"/>
       </Unit6>
+      <Unit7>
+        <Filename Value="Client_BOM.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Client_BOM"/>
+      </Unit7>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

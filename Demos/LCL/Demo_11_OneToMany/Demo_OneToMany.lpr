@@ -10,7 +10,7 @@ uses
   Forms,
   FMainOneToMany, FClientEdit, FPhoneNumberEdit, tiOPFManager,
   tiConstants, Client_HardCodedVisitors_Svr, Client_DBIndependentVisitors_Svr,
-  Client_AutoMap_Svr;
+  Client_AutoMap_Svr, Client_BOM;
 
 
 var

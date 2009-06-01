@@ -2,7 +2,7 @@
 
   // Templates
   // Code template key combination: VR
-  TVisXXX_Read = class(TVisOwnedQrySelect)
+  TVisXXX_Read = class(TtiVisitorSelect)
   protected
     function  AcceptVisitor : boolean; override;
     procedure Init          ; override;
@@ -11,7 +11,7 @@
   end;
 
   // Code template key combination: VC
-  TVisXXX_Create = class(TVisOwnedQryUpdate)
+  TVisXXX_Create = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor : boolean; override;
     procedure Init          ; override;
@@ -19,7 +19,7 @@
   end;
 
   // Code template key combination: VU
-  TVisXXX_Update = class(TVisOwnedQryUpdate)
+  TVisXXX_Update = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor : boolean; override;
     procedure Init          ; override;
@@ -27,7 +27,7 @@
   end;
 
   // Code template key combination: VD
-  TVisXXX_Delete = class(TVisOwnedQryUpdate)
+  TVisXXX_Delete = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor : boolean; override;
     procedure Init         ; override;

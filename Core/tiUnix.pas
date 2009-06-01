@@ -8,7 +8,6 @@ uses
   SysUtils
   ;
 
-  { Wraps the Linux call in a method with the equavalent Windows name }
   procedure tiUnixRunEXEAndWait(pStrEXE: string);
   function  tiUnixGetTickCount: Cardinal;
   function  tiUnixGetUserName: string;

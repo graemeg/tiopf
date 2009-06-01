@@ -350,7 +350,7 @@ type
     procedure   StopObserving(ASubject: TtiObject); virtual;
   public
     {: Creates a new instance of the class setting ObjectState property to posEmpty.}
-    constructor Create ; override;
+    constructor Create; override;
     {: Creates a new instance of the class and initialises it's OID with next available value
        setting ObjectState property to posCreate. }
     constructor CreateNew(const AOwner: TtiObject; const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
@@ -401,7 +401,7 @@ type
     function    FindAll(ATIObjectFindMethodExt : TPerObjFindMethodExt; AList : TList; AUserContext: Pointer): integer; overload;
     {: Find all objects in the hierarchy using the find method passed}
     function    FindAll(ATIObjectFindMethodData : TPerObjFindMethodData; AList : TList; AData : TtiObject): integer; overload;
-    {:Is this obect unique in the hierarchy?}
+    {: Is this object unique in the hierarchy?}
     function    IsUnique(const AObject : TtiObject): boolean; virtual;
     {: Creates a cloned instance of this object. }
     function    Clone : TtiObject; virtual; // Must override and typecast if to be used
@@ -431,9 +431,7 @@ type
     {: ForceAsCreate will get a new OID, and set ObjectState := posCreate}
     procedure   ForceAsCreate(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
     {: Display the object tree as a string for debugging (will show all published properties.)}
-    function    AsDebugString(
-                 const AValuesToShow: TtiObjectAsDebugStringValuesToShow
-                         = CTIAsDebugStringDataAll): string; virtual;
+    function    AsDebugString(const AValuesToShow: TtiObjectAsDebugStringValuesToShow = CTIAsDebugStringDataAll): string; virtual;
     {:Assign the published property names to a TStringList}
 //    procedure   GetPropNames(AList: TStringList; APropFilter: TtiPropTypes = []);
     {: Return the propery count filter by APropFilter }
