@@ -153,7 +153,8 @@ type
   end;
 
   // alias class will be removed soon.
-  TVisOwnedQrySelect = class(TtiVisitorSelect);
+  TVisOwnedQrySelect = class(TtiVisitorSelect)
+  end deprecated;
 
 
   TtiVisitorUpdate = class(TtiObjectVisitor)
@@ -164,7 +165,8 @@ type
   end;
 
   // alias class will be removed soon.
-  TVisOwnedQryUpdate = class(TtiVisitorUpdate);
+  TVisOwnedQryUpdate = class(TtiVisitorUpdate)
+  end deprecated;
 
 
 implementation
