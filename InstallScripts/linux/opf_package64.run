@@ -1,0 +1,18 @@
+#!/bin/sh
+# Build script for tiOPF using 64bit Free Pascal Compiler
+
+TIOPF="/home/graemeg/programming/tiopf/Source"
+FBLIB="$TIOPF/3rdParty/FBLib/lib/x86_64-linux"
+FPC="/home/graemeg/programming/fpc/bin/fpc"
+
+#   -Fu$FBLIB/ \
+
+$FPC -MObjFPC -S2cai -O1 -gl -ve \
+  -Fi$TIOPF/Core/ \
+  -Fu$TIOPF/Core/ \
+  -Fu$TIOPF/Options/ \
+  -Fu$TIOPF/GUI/ \
+  -Fu. -FE$TIOPF/Compilers/FPC/lib/x86_64-linux/ \
+  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dUseCThreads \
+  $TIOPF/Compilers/FPC/tiOPF.pas
+
