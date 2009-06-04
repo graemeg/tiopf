@@ -2972,7 +2972,7 @@ begin
   //       (We will also have to modify tiRTTI to handle object properties.)
   if SameText(APropName, 'OID') then
   {$IFDEF OID_AS_INT64}
-    result := Integer(OID)
+    result := PtrInt(OID)
   {$ELSE}
     result := OID.AsVariant
   {$ENDIF}

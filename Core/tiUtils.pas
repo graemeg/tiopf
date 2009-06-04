@@ -30,7 +30,7 @@ type
 // So Delphi can be FPC compatible
 type
   TThreadID = THandle;
-  PtrInt = integer;
+  PtrInt = integer;  // we must watch this when Delphi gets 64bit support
   PtrUInt = cardinal;
 {$ENDIF}
 

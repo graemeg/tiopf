@@ -157,7 +157,7 @@ begin
           Result:= Null;
       end;
     end else
-      Result := Integer(AObject);
+      Result := PtrInt(AObject);
   end else
     Result:= Null;
 end;
