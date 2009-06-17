@@ -4059,7 +4059,7 @@ end;
 constructor TtiObjectListForTesting.CreateNew(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
 begin
   Create;
-  OID.AsString := IntToStr(Integer(Self));
+  OID.AsString := IntToStr(PtrInt(Self));
   ObjectState := posCreate;
 end;
 
@@ -4096,7 +4096,7 @@ constructor TtiObjectForTesting.CreateNew(const AOwner : TtiObject; const ADatab
 begin
   Create;
   Owner := AOwner as TtiObjectListForTesting;
-  OID.AsString := IntToStr(Integer(Self));
+  OID.AsString := IntToStr(PtrInt(Self));
   ObjectState := posCreate;
 end;
 
