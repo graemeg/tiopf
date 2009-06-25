@@ -172,6 +172,7 @@ type
   protected
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent);override;
+    procedure   DoObjectToGui; override;
     procedure   DoGuiToObject; override;
     procedure   SetupGUIAndObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
@@ -719,6 +720,14 @@ begin
       FEditControl.OnChange := DoOnChange
     else
       FEditControl.OnExit := DoOnChange;
+end;
+
+procedure TMediatorCalendarComboView.DoObjectToGui;
+begin
+  if (EditControl.Kind = dtkDate) Then
+    EditControl.DateTime := Trunc(Subject.PropValue[FieldName])
+  else
+    EditControl.DateTime := Frac(Subject.PropValue[FieldName]);
 end;
 
 { TMediatorItemComboBoxView }
