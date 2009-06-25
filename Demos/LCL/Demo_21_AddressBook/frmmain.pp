@@ -38,6 +38,7 @@ type
     procedure MIAddressTypeListClick(Sender: TObject);
     procedure MIExitClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
+    procedure GContactsHeaderClick(Sender: TObject; IsColumn: Boolean; Index: Integer);
   private
     FMediator: TFormMediator;
     procedure SetupMediators;
@@ -75,6 +76,18 @@ begin
     begin
       // we can save contact here
     end;
+end;
+
+procedure TMainForm.GContactsHeaderClick(Sender: TObject; IsColumn: Boolean; Index: Integer);
+begin
+  if IsColumn then
+  begin
+    // We only want to sort by FName and LName
+    if Index = 0 then
+      gContactManager.ContactList.SortByProps(['FirstName'])
+    else if Index = 1 then
+      gContactManager.ContactList.SortByProps(['LastName']);
+  end;
 end;
 
 procedure TMainForm.MIAddContactClick(Sender: TObject);
@@ -120,6 +133,7 @@ begin
   RegisterFallBackListmediators;
   gcontactmanager.PopulateContacts;
   SetupMediators;
+  GContacts.OnHeaderClick  := @GContactsHeaderClick;
 end;
 
 procedure TMainForm.CountryListClick(Sender: TObject);

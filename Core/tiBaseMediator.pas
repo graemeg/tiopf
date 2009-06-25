@@ -1109,7 +1109,6 @@ begin
     if not (AValue is TtiObjectList) then
       RaiseMediatorError(SErrNotListObject, [AValue.ClassName]);
   FListChanged:=True;
-  FListChanged:=True;
   inherited SetSubject(AValue);
 end;
 
@@ -1283,6 +1282,7 @@ begin
                    end;
     noChanged    : if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
                      RebuildList;
+    noReSort     : RebuildList;
   end;
 end;
 

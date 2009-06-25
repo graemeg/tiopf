@@ -58,7 +58,7 @@ type
   TtiObjectAsDebugStringValuesToShow = set of TtiObjectAsDebugStringValues;
 
   {: Various observer Notifications }
-  TNotifyOperation = (noChanged, noAddItem, noDeleteItem, noFree, noCustom);
+  TNotifyOperation = (noChanged, noAddItem, noDeleteItem, noFree, noCustom, noReSort);
 
 const
   CTIAsDebugStringDataAll =
@@ -2065,7 +2065,10 @@ end;
 
 procedure TtiObjectList.SortByOID;
 begin
+  BeginUpdate;
   List.Sort(_DoSortByOID);
+  NotifyObservers(self, noReSort);
+  EndUpdate;
 end;
 
 //procedure TtiObjectList.SortByDispOrder;
@@ -2166,8 +2169,11 @@ end;
 
 procedure TtiObjectList.SortByProps(const ASortProps: array of string; AAscendingOrder : Boolean = True);
 begin
+  BeginUpdate;
   if (FList <> nil) and (Count > 0) then
     QuickSortByProps(FList.List, 0, Count - 1, ASortProps, AAscendingOrder);
+  NotifyObservers(self, noReSort);
+  EndUpdate;
 end;
 
 procedure TtiObject.Read(const ADBConnectionName: string; APersistenceLayerName : string = '');
