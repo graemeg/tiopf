@@ -204,7 +204,7 @@ const
 procedure RegisterFallBackMediators;
 begin
   gMediatorManager.RegisterMediator(TMediatorEditView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorCheckBoxView, TtiObject, [tkInteger]); // ???  Delphi doesn't have a tkBool like FPC ???
+  gMediatorManager.RegisterMediator(TMediatorCheckBoxView, TtiObject, [tkInteger, tkEnumeration]); // ???  Delphi doesn't have a tkBool like FPC ???
   gMediatorManager.RegisterMediator(TMediatorComboboxView, TtiObject, [tkString,tkLString]);
   gMediatorManager.RegisterMediator(TMediatorItemComboBoxView, TtiObject, [tkInteger, tkEnumeration]);
   gMediatorManager.RegisterMediator(TMediatorDynamicComboBoxView, TtiObject, [tkClass]);
