@@ -52,9 +52,14 @@ type
   protected
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent);override;
+    procedure   DoObjectToGui; override;
+    procedure   DoGuiToObject; override;
+    procedure   SetupGUIandObject; override;
     procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
+    destructor  Destroy; override;
     property    EditControl: TCheckBox read FEditControl write FEditControl;
     class function ComponentClass: TClass; override;
   end;
@@ -637,6 +642,41 @@ begin
   Result := TCheckBox;
 end;
 
+
+procedure TMediatorCheckBoxView.DoGuiToObject;
+begin
+  inherited;
+  if FEditControl.Checked then
+    Subject.PropValue[FieldName] := 'True'
+  else
+    Subject.PropValue[FieldName] := 'False';
+end;
+
+procedure TMediatorCheckBoxView.DoObjectToGui;
+begin
+  inherited;
+  FEditControl.Checked := (Subject.PropValue[FieldName] = 'True');
+end;
+
+procedure TMediatorCheckBoxView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+begin
+  inherited SetObjectUpdateMoment(AValue);
+  if Assigned(FEditControl) then
+    FEditControl.OnClick := DoOnChange;
+end;
+
+destructor TMediatorCheckBoxView.Destroy;
+begin
+  if Assigned(EditControl) and Assigned(EditControl.OnClick) then
+    EditControl.OnClick := nil;
+  inherited;
+end;
+
+procedure TMediatorCheckBoxView.SetupGUIandObject;
+begin
+  inherited;
+  ObjectUpdateMoment := ouCustom;
+end;
 
 { TMediatorStaticTextView }
 
