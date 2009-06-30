@@ -89,6 +89,7 @@ type
     procedure   SetGUIControl(const AValue: TComponent); override;
     procedure   SetupGUIandObject; override;
     procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
     property    EditControl: TSpinEdit read FEditControl write FEditControl;
@@ -102,8 +103,9 @@ type
     FEditControl: TTrackBar;
   protected
     function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent);override;
+    procedure   SetGUIControl(const AValue: TComponent); override;
     procedure   SetupGUIandObject; override;
+    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
     property    EditControl: TTrackBar read FEditControl write FEditControl;
@@ -118,9 +120,9 @@ type
   protected
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent); override;
-    procedure   SetupGUIandObject; override;
     procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
     procedure   DoObjectToGui; override;
+    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
     property    EditControl: TComboBox read FEditControl write FEditControl;
@@ -164,6 +166,7 @@ type
     procedure   SetupGUIandObject; override;
     procedure   DoObjectToGui; override;
     procedure   DoGuiToObject; override;
+    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     property    EditControl: TMemo read FEditControl write FEditControl;
     class function ComponentClass: TClass; override;
@@ -179,7 +182,6 @@ type
     procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   DoObjectToGui; override;
     procedure   DoGuiToObject; override;
-    procedure   SetupGUIAndObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
@@ -229,6 +231,7 @@ end;
 procedure TMediatorEditView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TEdit;
+  inherited SetGUIControl(AValue);
 end;
 
 procedure TMediatorEditView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
@@ -254,13 +257,9 @@ procedure TMediatorEditView.SetupGUIandObject;
 var
   Mi, Ma: Integer;
 begin
-  inherited;
+  inherited SetupGUIandObject;
   if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
     FEditControl.MaxLength := Ma;
-  if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-    FEditControl.OnChange := DoOnChange
-  else
-    FEditControl.OnExit := DoOnChange;
 end;
 
 procedure TMediatorEditView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
@@ -306,6 +305,7 @@ end;
 procedure TMediatorSpinEditView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TSpinEdit;
+  inherited SetGUIControl(AValue);
 end;
 
 procedure TMediatorSpinEditView.SetupGUIandObject;
@@ -340,6 +340,17 @@ begin
 end;
 
 
+procedure TMediatorSpinEditView.SetObjectUpdateMoment(
+  const AValue: TObjectUpdateMoment);
+begin
+  inherited;
+  if Assigned(FEditControl) then
+    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
+      FEditControl.OnChange := DoOnChange
+    else
+      FEditControl.OnExit := DoOnChange;
+end;
+
 { TMediatorTrackBarView}
 
 function TMediatorTrackBarView.GetGUIControl: TComponent;
@@ -350,6 +361,7 @@ end;
 procedure TMediatorTrackBarView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TTrackBar;
+  inherited SetGUIControl(AValue);
 end;
 
 procedure TMediatorTrackBarView.SetupGUIandObject;
@@ -362,10 +374,6 @@ begin
     FEditControl.Min := Mi;
     FEditControl.Max := Ma;
   end;
-  if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-    FEditControl.OnChange := DoOnChange
-  else
-    FeditControl.OnExit := DoOnChange;
 end;
 
 constructor TMediatorTrackBarView.Create;
@@ -379,6 +387,16 @@ begin
   Result := TTrackBar;
 end;
 
+procedure TMediatorTrackBarView.SetObjectUpdateMoment(
+  const AValue: TObjectUpdateMoment);
+begin
+  inherited;
+  if Assigned(FEditControl) then
+    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
+      FEditControl.OnChange := DoOnChange
+    else
+      FEditControl.OnExit := DoOnChange;
+end;
 
 { TMediatorComboBoxView }
 
@@ -395,15 +413,7 @@ end;
 procedure TMediatorComboBoxView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TComboBox;
-end;
-
-procedure TMediatorComboBoxView.SetupGUIandObject;
-begin
-  inherited SetupGUIandObject;
-  if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-    FEditControl.OnChange := DoOnChange
-  else
-    FEditControl.OnExit := DoOnChange;
+  inherited;
 end;
 
 procedure TMediatorComboBoxView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
@@ -438,6 +448,17 @@ begin
 end;
 
 
+procedure TMediatorComboBoxView.SetObjectUpdateMoment(
+  const AValue: TObjectUpdateMoment);
+begin
+  inherited;
+  if Assigned(FEditControl) then
+    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
+      FEditControl.OnChange := DoOnChange
+    else
+      FEditControl.OnExit := DoOnChange;
+end;
+
 { TMediatorMemoView }
 
 class function TMediatorMemoView.ComponentClass: TClass;
@@ -463,6 +484,18 @@ end;
 procedure TMediatorMemoView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl:=AValue as TMemo;
+  inherited;
+end;
+
+procedure TMediatorMemoView.SetObjectUpdateMoment(
+  const AValue: TObjectUpdateMoment);
+begin
+  inherited;
+  if Assigned(FEditControl) then
+    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
+      FEditControl.OnChange := DoOnChange
+    else
+      FEditControl.OnExit := DoOnChange;
 end;
 
 procedure TMediatorMemoView.SetupGUIandObject;
@@ -471,11 +504,6 @@ begin
   EditControl.Lines.Clear;
   EditControl.ScrollBars := ssVertical;
   EditControl.WordWrap   := True;
-  if Assigned(FEditControl) then
-    If ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      FEditControl.OnChange := DoOnChange
-    else
-      FEditControl.OnExit := DoOnChange;
 end;
 
 
@@ -483,7 +511,7 @@ end;
 
 procedure TMediatorDynamicComboBoxView.SetListObject(const AValue: TtiObjectList);
 begin
-  Inherited;
+  inherited;
   InternalListRefresh;
 end;
 
@@ -610,6 +638,7 @@ end;
 procedure TMediatorCheckBoxView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl:=AValue as TCheckBox;
+  inherited SetGUIControl(AValue);
 end;
 
 procedure TMediatorCheckBoxView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
@@ -674,7 +703,7 @@ end;
 
 procedure TMediatorCheckBoxView.SetupGUIandObject;
 begin
-  inherited;
+  inherited SetupGUIandObject;
   ObjectUpdateMoment := ouCustom;
 end;
 
@@ -694,6 +723,7 @@ end;
 procedure TMediatorStaticTextView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TLabel;
+  inherited SetGUIControl(AValue);
 end;
 
 constructor TMediatorStaticTextView.Create;
@@ -752,17 +782,7 @@ begin
       FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorCalendarComboView.SetupGUIAndObject;
-begin
-  inherited SetupGUIandObject;
-  if Assigned(FEditControl) then
-    If ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      FEditControl.OnChange := DoOnChange
-    else
-      FEditControl.OnExit := DoOnChange;
-end;
-
-procedure TMediatorCalendarComboView.DoObjectToGui;
+procedure TMediatorCalendarComboView.DoObjectToGui;
 begin
   if (EditControl.Kind = dtkDate) Then
     EditControl.DateTime := Trunc(Subject.PropValue[FieldName])

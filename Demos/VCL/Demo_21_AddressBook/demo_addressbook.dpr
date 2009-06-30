@@ -1,12 +1,12 @@
 program demo_addressbook;
 
 uses
-   madExcept,
+{  madExcept,
   madLinkDisAsm,
   madListHardware,
   madListProcesses,
-  madListModules,
- Forms,
+  madListModules,   }
+  Forms,
   SysUtils,
   frmMain in 'frmMain.pas' {frmDemoMain},
   contactmanager in 'contactmanager.pas',
