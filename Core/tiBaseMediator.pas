@@ -27,9 +27,6 @@ type
   TObjectUpdateMoment = (ouOnChange, ouOnExit, ouCustom);
 
   { Base class to inherit from to make more customised Mediator Views. }
-
-  { TMediatorView }
-
   TMediatorView = class(TtiObject)
   private
     FActive: Boolean;
@@ -486,6 +483,8 @@ end;
 procedure TMediatorView.SetGuiControl(const AValue: TComponent);
 begin
   CheckSetupGUIAndObject;
+  if AValue <> nil then
+    SetObjectUpdateMoment(FObjectUpdateMoment);
 end;
 
 procedure TMediatorView.SetupGUIandObject;
@@ -502,8 +501,11 @@ end;
 
 procedure TMediatorView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
 begin
-  if FObjectUpdateMoment = AValue then
-    Exit;
+  { 2009-06-30 graemeg - Commented this check because it prevents descendant
+    implementations from firing which is required if EditComponent changes,
+    but FObjectUpdateMoment stayed the same. }
+  //if FObjectUpdateMoment = AValue then
+  //  Exit;
   FObjectUpdateMoment := AValue;
 end;
 

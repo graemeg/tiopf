@@ -197,7 +197,7 @@ begin
   FMediator.ValueList := Self.ValueList;
   FMediator.Subject   := FormMediator.Subject;
   FMediator.Active    := True;
-  If Assigned(FOnSetupMediator) then
+  if Assigned(FOnSetupMediator) then
     FOnSetupMediator(FMediator);
 end;
 
