@@ -394,13 +394,15 @@ end;
 function tiGetSimplePropType(const AObject: TtiBaseObject;
     const APropName: string): TtiTypeKind;
 var
-  lPropType : TTypeKind;
-  lPropTypeName : string;
+  lPropType: TTypeKind;
+  lPropTypeName: string;
+  lPropInfo: PPropInfo;
 begin
+  Assert(AObject <> nil, 'AObject is nil');
 
-  Assert(AObject <> nil, 'pPersistent is nil');
-
-  lPropTypeName := GetPropInfo(AObject, APropName)^.PropType^.Name;
+  lPropInfo := GetPropInfo(AObject, APropName);
+  Assert(lPropInfo <> nil, Format('Class %s has no published property %s', [AObject.ClassName, APropName]));
+  lPropTypeName := lPropInfo^.PropType^.Name;
 
   // Check for a TDateTime
   if SameText(lPropTypeName, 'TDateTime') then
