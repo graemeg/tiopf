@@ -1,7 +1,7 @@
 
 { This unit works with the latest Free Pascal 2.3.x only. }
 
-unit tiopfsqlscript;
+unit tiOPFSqlScript;
 
 {$mode objfpc}{$H+}
 
@@ -41,6 +41,7 @@ type
     property CommentsinSQL;
     property UseSetTerm;
     property UseCommit;
+    property AutoCommit;
     property UseDefines;
     property OnException;
   end;

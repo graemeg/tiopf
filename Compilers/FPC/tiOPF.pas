@@ -18,7 +18,7 @@ uses
   tiQueryXMLLight, tiRTTI, tiTokenLibrary, tiINI, tiQueue, tiAutoMap, 
   tiVisitorDBAutoGen, tiStructuredCSVReader, tiStructuredCSVWriter, 
   tiFilteredObjectList, tiBaseMediator, tiFormMediator, tiQueryDataset, 
-  tiopfsqlscript, tiOIDInt64;
+  tiOPFSqlScript, tiOIDInt64;
 
 implementation
 
