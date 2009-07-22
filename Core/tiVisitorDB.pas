@@ -164,6 +164,7 @@ type
     procedure Execute(const AData: TtiVisited); override;
   end;
 
+
   // alias class will be removed soon.
   TVisOwnedQryUpdate = class(TtiVisitorUpdate)
   end deprecated;

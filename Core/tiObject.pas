@@ -514,7 +514,8 @@ type
     property    CountNotDeleted : integer read GetCountNotDeleted;
     property    Items[i:integer]: TtiObject read GetItems write SetItems; default;
 
-    {: Does the list own the objects it contains? i.e. Will the objects be freed when the list is cleared/destroyed?}
+    {: Does the list own the objects it contains? i.e. Will the objects be
+      freed when the list is cleared/destroyed? The default is True. }
     property    OwnsObjects : boolean read GetOwnsObjects write SetOwnsObjects;
     property    ItemOwner     : TtiObject read FItemOwner    write SetItemOwner;
     property    AutoSetItemOwner : boolean read FbAutoSetItemOwner write FbAutoSetItemOwner;
