@@ -236,17 +236,14 @@ type
     property    AsBoolean: Boolean read FValue Write SetAsBoolean;
   end;
 
-  {: Concrete persistent TDateTime field}
-  TtiFieldDateTime = class(TtiFieldAbs)
+  {: Concrete persistent TDateTime field, but for Date portion only}
+  TtiFieldDate = class(TtiFieldAbs)
   private
     FValue: TDateTime;
-    function    GetDays: Word;
-    function    GetHours: Word;
-    function    GetMinutes: Word;
-    function    GetMonths: Word;
-    function    GetSeconds: Word;
-    function    GetYears: Word;
     procedure   SetAsDateTime(const AValue: TDateTime);
+    function    GetDays: Word;
+    function    GetMonths: Word;
+    function    GetYears: Word;
   protected
     procedure   Clear; override;
     procedure   SetAsString(const AValue: string);  override;
@@ -258,6 +255,21 @@ type
     property    Days: Word read GetDays;
     property    Months: Word read GetMonths;
     property    Years: Word read GetYears;
+  end;
+
+  {: Concrete persistent TDateTime field}
+  TtiFieldDateTime = class(TtiFieldDate)
+  private
+    FValue: TDateTime;
+    function    GetHours: Word;
+    function    GetMinutes: Word;
+    function    GetSeconds: Word;
+  protected
+    procedure   SetAsString(const AValue: string);  override;
+    function    GetAsString: string;               override;
+  public
+    procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
+    property    AsDateTime: TDateTime read FValue Write SetAsDateTime;
     property    Hours: Word read GetHours;
     property    Minutes: Word read GetMinutes;
     property    Seconds: Word read GetSeconds;
@@ -3376,17 +3388,6 @@ end;
 
 procedure TtiFieldDateTime.Assign(const AAssignFrom: TtiFieldAbs);
 begin
-  Assert(AAssignFrom.TestValid(TtiFieldDateTime), CTIErrorInvalidObject);
-  if AAssignFrom.IsNull then
-    IsNull:= true
-  else
-    AsDateTime:= (AAssignFrom as TtiFieldDateTime).AsDateTime;
-end;
-
-procedure TtiFieldDateTime.Clear;
-begin
-  inherited;
-  FValue := 0;
 end;
 
 function TtiFieldDateTime.GetAsString: string;
@@ -3398,25 +3399,6 @@ procedure TtiFieldDateTime.SetAsString(const AValue: string);
 begin
   FValue := tiXMLStringToDateTime(AValue);
   SetValue;
-end;
-
-procedure TtiFieldDateTime.SetAsDateTime(const AValue: TDateTime);
-begin
-  FValue := AValue;
-  SetValue;
-end;
-
-function TtiFieldDateTime.GetDays: Word;
-var
-  Year, Month, Day: word;
-begin
-  if IsNull then
-    Result := 0
-  else
-  begin
-    DecodeDate(FValue, Year, Month, Day);
-    Result := Day;
-  end;
 end;
 
 function TtiFieldDateTime.GetHours: Word;
@@ -3435,38 +3417,12 @@ begin
   Result := Min;
 end;
 
-function TtiFieldDateTime.GetMonths: Word;
-var
-  Year, Month, Day: word;
-begin
-  if IsNull then
-    Result := 0
-  else
-  begin
-    DecodeDate(FValue, Year, Month, Day);
-    Result := Month;
-  end;
-end;
-
 function TtiFieldDateTime.GetSeconds: Word;
 var
   Hour, Min, Sec, MSec: word;
 begin
   DecodeTime(FValue, Hour, Min, Sec, MSec);
   Result := Sec;
-end;
-
-function TtiFieldDateTime.GetYears: Word;
-var
-  Year, Month, Day: word;
-begin
-  if IsNull then
-    Result := 0
-  else
-  begin
-    DecodeDate(FValue, Year, Month, Day);
-    Result := Year;
-  end;
 end;
 
 function TtiFieldAbs.GetFieldName: string;
@@ -3494,15 +3450,6 @@ begin
   end;
   Result := FFieldName;
 end;
-
-function TtiFieldDateTime.Equals(const ACompareWith: TtiFieldAbs): Boolean;
-begin
-  Assert(ACompareWith.TestValid(TtiFieldDateTime), CTIErrorInvalidObject);
-  Result :=
-    (IsNull = ACompareWith.IsNull) and
-    (SameValue(AsDateTime, (ACompareWith as TtiFieldDateTime).AsDateTime, cdtOneSecond/2));
-end;
-
 
 { TtiFieldList }
 
@@ -4028,6 +3975,83 @@ begin
   Result := FIndex < FList.Count - 1;
   if Result then
     Inc(FIndex);
+end;
+
+{ TtiFieldDate }
+
+procedure TtiFieldDate.Assign(const AAssignFrom: TtiFieldAbs);
+begin
+
+end;
+
+procedure TtiFieldDate.Clear;
+begin
+  inherited;
+  FValue := 0;
+end;
+
+function TtiFieldDate.Equals(const ACompareWith: TtiFieldAbs): Boolean;
+begin
+  Assert(ACompareWith.TestValid(TtiFieldDateTime), CTIErrorInvalidObject);
+  Result :=
+    (IsNull = ACompareWith.IsNull) and
+    (SameValue(AsDateTime, (ACompareWith as TtiFieldDateTime).AsDateTime, cdtOneSecond/2));
+end;
+
+function TtiFieldDate.GetAsString: string;
+begin
+  Result := tiDateToStr(FValue);
+end;
+
+function TtiFieldDate.GetDays: Word;
+var
+  Year, Month, Day: word;
+begin
+  if IsNull then
+    Result := 0
+  else
+  begin
+    DecodeDate(FValue, Year, Month, Day);
+    Result := Day;
+  end;
+end;
+
+function TtiFieldDate.GetMonths: Word;
+var
+  Year, Month, Day: word;
+begin
+  if IsNull then
+    Result := 0
+  else
+  begin
+    DecodeDate(FValue, Year, Month, Day);
+    Result := Month;
+  end;
+end;
+
+function TtiFieldDate.GetYears: Word;
+var
+  Year, Month, Day: word;
+begin
+  if IsNull then
+    Result := 0
+  else
+  begin
+    DecodeDate(FValue, Year, Month, Day);
+    Result := Year;
+  end;
+end;
+
+procedure TtiFieldDate.SetAsDateTime(const AValue: TDateTime);
+begin
+  FValue := AValue;
+  SetValue;
+end;
+
+procedure TtiFieldDate.SetAsString(const AValue: string);
+begin
+  FValue := StrToDate(AValue);
+  SetValue;
 end;
 
 end.
