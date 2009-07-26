@@ -240,12 +240,13 @@ type
   TtiFieldDate = class(TtiFieldAbs)
   private
     FValue: TDateTime;
-    procedure   SetAsDateTime(const AValue: TDateTime);
     function    GetDays: Word;
     function    GetMonths: Word;
     function    GetYears: Word;
   protected
     procedure   Clear; override;
+    // ToDo: Perhpas this should trunc AValue removing the time portion. Think about this some more...
+    procedure   SetAsDateTime(const AValue: TDateTime);
     procedure   SetAsString(const AValue: string);  override;
     function    GetAsString: string;               override;
   public
