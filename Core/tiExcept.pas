@@ -18,6 +18,7 @@ const
   cTIOPFExcCanNotDetermineSQLType     = 'Can not determine the type of the SQL (SELECT, UPDATE, ALTER, etc)'#13#13'%s';
   cTIOPFExcMsgTIQueryType             = 'Invalid TtiQueryType';
   cTIOPFExcMsgInvalidExecutionPath    = 'Invalid execution path. You should not be in this part of the program. Code is being executed that has not been implemented.';
+  cTIOPFExcMsgFileNotFound            = 'File not found: "%s"';
 
 type
 
