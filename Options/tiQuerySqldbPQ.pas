@@ -1,11 +1,11 @@
 {
   This persistence layer uses standard Free Pascal SQLDB (PostGreSQL) components.
 
-  The connection string format is the same as the standard PostGreSQL persistence layers.
+  The connection string format is show below.
 
   eg:
-    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.fdb',
-        'sysdba', 'masterkey', '');
+    GTIOPFManager.ConnectDatabase('192.168.0.20:mydatabasename',
+        'myusername', 'mypassword', '');
 
   Initial Author:  Michael Van Canneyt (michael@freepascal.org) - Aug 2008
 }
@@ -13,6 +13,9 @@
 unit tiQuerySqldbPQ;
 
 {$I tiDefines.inc}
+
+// for debug purposes only
+{.$define LOGSQLDB}
 
 interface
 
@@ -48,7 +51,6 @@ type
 
 implementation
 
-{ $define LOGSQLDB}
 uses
 {$ifdef LOGSQLDB}
   tiLog,
