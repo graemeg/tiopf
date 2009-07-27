@@ -62,7 +62,7 @@ type
 
   TtiQuerySQLDB = class(TtiQueryDataset)
   private
-    FIBSQL: TSQLQuery;
+    FSQLQuery: TSQLQuery;
     FbActive: Boolean;
     procedure Prepare;
   protected
@@ -98,16 +98,16 @@ uses
 constructor TtiQuerySQLDB.Create;
 begin
   inherited;
-  FIBSQL  := TSQLQuery.Create(nil);
-  Dataset := FIBSQL;
-  Params  := FIBSQL.Params;
+  FSQLQuery  := TSQLQuery.Create(nil);
+  Dataset := FSQLQuery;
+  Params  := FSQLQuery.Params;
 end;
 
 destructor TtiQuerySQLDB.Destroy;
 begin
   Params  := nil;
   Dataset := nil;
-  FIBSQL.Free;
+  FSQLQuery.Free;
   inherited;
 end;
 
@@ -116,7 +116,7 @@ begin
   Log(ClassName + ': [Prepare] ' + tiNormalizeStr(self.SQLText), lsSQL);
   Prepare;
   LogParams;
-  FIBSQL.ExecSQL;
+  FSQLQuery.ExecSQL;
   Result := -1;
   { TODO :
 When implementing RowsAffected,
@@ -126,7 +126,7 @@ end;
 
 function TtiQuerySQLDB.GetSQL: TStrings;
 begin
-  Result := FIBSQL.SQL;
+  Result := FSQLQuery.SQL;
 end;
 
 procedure TtiQuerySQLDB.SetActive(const AValue: Boolean);
@@ -140,7 +140,7 @@ begin
     {$ifdef LOGSQLDB}
     Log('Open Query');
     {$endif}
-    FIBSQL.Open;
+    FSQLQuery.Open;
     FbActive := True;
   end
   else
@@ -148,7 +148,7 @@ begin
     {$ifdef LOGSQLDB}
     Log('Closing Query');
     {$endif}
-    FIBSQL.Close;
+    FSQLQuery.Close;
     FbActive := False;
   end;
 {$ifdef LOGSQLDB}
@@ -161,7 +161,7 @@ begin
 {$ifdef LOGSQLDB}
   log('>>>> SetSQL: ' + AValue.Text);
 {$endif}
-  FIBSQL.SQL.Assign(AValue);
+  FSQLQuery.SQL.Assign(AValue);
 {$ifdef LOGSQLDB}
   log('<<<< SetSQL');
 {$endif}
@@ -172,7 +172,8 @@ begin
 {$ifdef LOGSQLDB}
   Log('>>> TtiQuerySQLDB.CheckPrepared');
 {$endif}
-  if not FIBSQL.Prepared then
+  inherited CheckPrepared;
+  if not FSQLQuery.Prepared then
     Prepare;
 {$ifdef LOGSQLDB}
   Log('<<< TtiQuerySQLDB.CheckPrepared');
@@ -184,9 +185,9 @@ begin
 {$ifdef LOGSQLDB}
   Log('>>> TtiQuerySQLDB.Prepare');
 {$endif}
-  if FIBSQL.Prepared then
+  if FSQLQuery.Prepared then
     Exit; //==>
-  FIBSQL.Prepare;
+  FSQLQuery.Prepare;
 {$ifdef LOGSQLDB}
   Log('<<< TtiQuerySQLDB.Prepare');
 {$endif}
@@ -197,24 +198,24 @@ begin
   inherited AttachDatabase(ADatabase);
   if (Database is TtiDatabaseSQLDB) then
   begin
-    FIBSQL.Database    := TtiDatabaseSQLDB(Database).SQLConnection;
-    FIBSQL.Transaction := TtiDatabaseSQLDB(Database).SQLConnection.Transaction;
+    FSQLQuery.Database    := TtiDatabaseSQLDB(Database).SQLConnection;
+    FSQLQuery.Transaction := TtiDatabaseSQLDB(Database).SQLConnection.Transaction;
   end;
 end;
 
 procedure TtiQuerySQLDB.DetachDatabase;
 begin
   inherited DetachDatabase;
-  if FIBSQL.Active then
-    FIBSQL.Close;
-  FIBSQL.Transaction := nil;
-  FIBSQL.Database    := nil;
+  if FSQLQuery.Active then
+    FSQLQuery.Close;
+  FSQLQuery.Transaction := nil;
+  FSQLQuery.Database    := nil;
 end;
 
 procedure TtiQuerySQLDB.Reset;
 begin
   Active := False;
-  FIBSQL.SQL.Clear;
+  FSQLQuery.SQL.Clear;
 end;
 
 function TtiQuerySQLDB.HasNativeLogicalType: Boolean;
