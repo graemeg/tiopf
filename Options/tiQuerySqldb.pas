@@ -7,7 +7,7 @@
 
 unit tiQuerySqldb;
 
-{$mode objfpc}{$H+}
+{$I tiDefines.inc}
 
 { For debug purposes only }
 {.$Define LOGSQLDB}

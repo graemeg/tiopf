@@ -3,7 +3,7 @@
 
 unit tiOPFSqlScript;
 
-{$mode objfpc}{$H+}
+{$I tiDefines.inc}
 
 interface
 
