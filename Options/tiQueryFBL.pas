@@ -767,10 +767,8 @@ end;
 procedure TtiDatabaseFBL.ReadMetaDataTables(AData: TtiDBMetaData);
 var
   lQuery: TtiQuery;
-  lMetaData: TtiDBMetaData;
   lTable: TtiDBMetaDataTable;
 begin
-  lMetaData := (AData as TtiDBMetaData);
   lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
   try
     StartTransaction;
@@ -789,11 +787,11 @@ begin
         lTable := TtiDBMetaDataTable.Create;
         lTable.Name := Trim(lQuery.FieldAsString['table_name']);
         lTable.ObjectState := posPK;
-        lMetaData.Add(lTable);
+        AData.Add(lTable);
         lQuery.Next;
       end;
       lQuery.DetachDatabase;
-      lMetaData.ObjectState := posClean;
+      AData.ObjectState := posClean;
     finally
       Commit;
     end;
