@@ -1,5 +1,18 @@
 unit tiWebServerVersion;
 
+// To add an application-specific version create a descendant of
+// TtiAppServerVersionAbs, return the app version in GetCurrentFileSyncVersion
+// and register your app server version class by calling
+// gAppServerVersionFactory.RegisterClass(TMyAppServerVersionClass), from the
+// initialization section of your classes unit for example.
+
+// NOTE: If you have existing users at the time that you implement an
+// application specific version then you should use an initial version
+// of 2.0 (or greater if you have made changes that break compatibility), as
+// version 2.0 is the point at which application specific versions were first
+// supported and using an earlier version number may cause existing (old)
+// applications to think that they are up-to-date.
+
 interface
 uses
   tiBaseObject
@@ -9,9 +22,13 @@ const
   cWebServerStatus_unknown = 'unknown';
   cWebServerStatus_passed  = 'passed';
   cWebServerStatus_failed  = 'failed';
-  cXMLVersion = '2.0';
-  //cFileSyncVersion = '1.3';
-  cFileSyncVersion = '2.0'; // 21/11/2008, PH, Added CRC, parameterised BlockSize & Retry
+  ctiOPFXMLVersion = '2.0';
+
+  // NOTE: The following old file sync version is only used if an application
+  // specific version is not defined, that is if an app server version class is
+  // not registered, and is maintained here for backwards compatibility.
+  // Do not increment this in future. 
+  ctiOPFOldFileSyncVersion = '2.0';
 
 type
 
@@ -24,17 +41,22 @@ type
 </appserver>
 }
 
-  TtiAppServerVersion = class(TtiBaseObject)
+  TtiAppServerVersionAbs = class(TtiBaseObject)
   private
     FConnectionStatus: string;
     FFileSyncVersion: string;
     FXMLVersion: string;
     function    GetAsString: string;
     procedure   SetAsString(const AValue: string);
+  protected
+    function    GetCurrentFileSyncVersion: string; virtual; abstract;
   public
+    // NOTE: DO CREATE A DESCENDANT DIRECTLY.
+    // Use gAppServerVersionFactory.CreateInstance instead.
     constructor Create;
     property    ConnectionStatus: string read FConnectionStatus write FConnectionStatus;
     property    XMLVersion: string read FXMLVersion write FXMLVersion;
+    // Application specific version checking.
     property    FileSyncVersion: string read FFileSyncVersion write FFileSyncVersion;
     property    AsString: string read GetAsString write SetAsString;
     procedure   LoadDefaultValues;
@@ -47,10 +69,32 @@ type
     class function ExpectedAsString: String;
   end;
 
+  // A class reference for the TtiAppServerVersionAbs descendants
+  TtiAppServerVersionClass = class of TtiAppServerVersionAbs;
+
+  // Factory pattern - Create a descendant of TtiAppServerVersionAbs at runtime.
+  // Do not create an instance directly. Instead call gAppServerVersionFactory.
+  TtiAppServerVersionFactory = class(TObject)
+  private
+    FAppServerVersionClass: TtiAppServerVersionClass;
+  public
+    procedure RegisterClass(AAppServerVersionClass: TtiAppServerVersionClass);
+    procedure UnRegisterClass;
+    function CreateInstance: TtiAppServerVersionAbs;
+  end;
+
+// The AppServerVersionFactory is a singleton
+function gAppServerVersionFactory: TtiAppServerVersionFactory;
+
 implementation
 uses
   tiXML
+ ,tiExcept
  ;
+
+// Single instance of TtiAppServerVersionFactory
+var
+  uAppServerVersionFactory: TtiAppServerVersionFactory;
 
 const
   cXMLNodeAppServer  = 'appserver';
@@ -60,22 +104,36 @@ const
   cXMLNodeXML        = 'xml';
   cXMLAttrVersion    = 'version';
 
+type
 
-{ TtiVersion }
+  // This is used if an app server version class is not registered. This
+  // should not be used directly by user code. To create an instance of an
+  // app server version class call gAppServerVersionFactory.CreateInstance.
+  TtiAppServerVersionDefault = class(TtiAppServerVersionAbs)
+  protected
+    function GetCurrentFileSyncVersion: string; override;
+  end;
 
-{ TtiWebServerVersion }
+function gAppServerVersionFactory: TtiAppServerVersionFactory;
+begin
+  if not Assigned(uAppServerVersionFactory) then
+    uAppServerVersionFactory := TtiAppServerVersionFactory.Create;
+  result := uAppServerVersionFactory;
+end;
 
-constructor TtiAppServerVersion.Create;
+{ TtiAppServerVersionAbs }
+
+constructor TtiAppServerVersionAbs.Create;
 begin
   inherited;
   FConnectionStatus:=cWebServerStatus_unknown;
 end;
 
-class function TtiAppServerVersion.ExpectedAsString: String;
+class function TtiAppServerVersionAbs.ExpectedAsString: String;
 var
-  L: TtiAppServerVersion;
+  L: TtiAppServerVersionAbs;
 begin
-  L:= TtiAppServerVersion.Create;
+  L:= gAppServerVersionFactory.CreateInstance;
   try
     L.LoadDefaultValues;
     result:= L.AsString;
@@ -84,7 +142,7 @@ begin
   end;
 end;
 
-function TtiAppServerVersion.GetAsString: string;
+function TtiAppServerVersionAbs.GetAsString: string;
 begin
   result:=
       cDefaultXMLDocHeader
@@ -95,11 +153,11 @@ begin
     + tiXMLTagEnd(cXMLNodeAppServer)
 end;
 
-class function TtiAppServerVersion.IsXMLValid(const AXML: string): boolean;
+class function TtiAppServerVersionAbs.IsXMLValid(const AXML: string): boolean;
 var
-  L: TtiAppServerVersion;
+  L: TtiAppServerVersionAbs;
 begin
-  L:= TtiAppServerVersion.Create;
+  L:= gAppServerVersionFactory.CreateInstance;
   try
     L.AsString:= AXML;
     Result:= L.IsValid;
@@ -108,45 +166,82 @@ begin
   end;
 end;
 
-function TtiAppServerVersion.IsDBConnectionValid: boolean;
+function TtiAppServerVersionAbs.IsDBConnectionValid: boolean;
 begin
   result:=
     (ConnectionStatus = cWebServerStatus_passed);
 end;
 
-function TtiAppServerVersion.IsValid: boolean;
+function TtiAppServerVersionAbs.IsValid: boolean;
 begin
   result:=
     IsVersionValid and IsDBConnectionValid;
 end;
 
-function TtiAppServerVersion.IsVersionValid: boolean;
+function TtiAppServerVersionAbs.IsVersionValid: boolean;
 begin
   result:=
-    (FileSyncVersion = cFileSyncVersion) and
-    (XMLVersion = cXMLVersion);
+    (FileSyncVersion = GetCurrentFileSyncVersion) and
+    (XMLVersion = ctiOPFXMLVersion);
 end;
 
-procedure TtiAppServerVersion.LoadDefaultValues;
+procedure TtiAppServerVersionAbs.LoadDefaultValues;
 begin
   FConnectionStatus:= cWebServerStatus_unknown;
-  FFileSyncVersion:= cFileSyncVersion;
-  FXMLVersion:= cXMLVersion;
+  FFileSyncVersion:= GetCurrentFileSyncVersion;
+  FXMLVersion:= ctiOPFXMLVersion;
 end;
 
-procedure TtiAppServerVersion.SetAsString(const AValue: string);
+procedure TtiAppServerVersionAbs.SetAsString(const AValue: string);
 begin
   FConnectionStatus:= tiParseForSingleNodeAttribute(AValue, cXMLNodeConnection, cXMLAttrStatus);
   FFileSyncVersion:= tiParseForSingleNodeAttribute(AValue,  cXMLNodeFileSync,   cXMLAttrVersion);
   FXMLVersion:= tiParseForSingleNodeAttribute(AValue,       cXMLNodeXML,        cXMLAttrVersion);
 end;
 
-procedure TtiAppServerVersion.SetConnectionStatus(AValue: boolean);
+procedure TtiAppServerVersionAbs.SetConnectionStatus(AValue: boolean);
 begin
   if AValue then
     FConnectionStatus:= cWebServerStatus_passed
   else
     FConnectionStatus:= cWebServerStatus_failed;
 end;
+
+{ TtiAppServerVersionDefault }
+
+function TtiAppServerVersionDefault.GetCurrentFileSyncVersion: string;
+begin
+  result := ctiOPFOldFileSyncVersion;
+end;
+
+{ TtiAppServerVersionFactory }
+
+procedure TtiAppServerVersionFactory.RegisterClass(
+  AAppServerVersionClass: TtiAppServerVersionClass);
+begin
+  if Assigned(FAppServerVersionClass) then
+    raise EtiOPFProgrammerException.Create(
+        'AppServerVersionClass is already registered');
+  FAppServerVersionClass := AAppServerVersionClass;
+end;
+
+procedure TtiAppServerVersionFactory.UnRegisterClass;
+begin
+  FAppServerVersionClass := nil;
+end;
+
+function TtiAppServerVersionFactory.CreateInstance: TtiAppServerVersionAbs;
+begin
+  if not Assigned(FAppServerVersionClass) then
+    result := TtiAppServerVersionDefault.Create
+  else
+    result := FAppServerVersionClass.Create;
+end;
+
+initialization
+
+finalization
+  // Free the AppServerVersionFactory
+  uAppServerVersionFactory.Free;
 
 end.

@@ -58,6 +58,19 @@ const
                    ,'Error'
                    ,'SQL'
                );
+  ctiLogSeverityStrings_GUI: array[ TtiLogSeverity ] of String = (
+                    'Normal'
+                   ,'Information'
+                   ,'Object'
+                   ,'Visitor'
+                   ,'DBConnection'
+                   ,'AcceptVisitor'
+                   ,'Query'
+                   ,'Debug'
+                   ,'Warning'
+                   ,'Error'
+                   ,'SQL'
+               );
 
 
 type
@@ -80,6 +93,8 @@ type
     FThreadID : string;
     function  GetSeverityAsString: string;
     procedure SetSeverityAsString(const AValue: string);
+    function  GetSeverityAsGUIString: string;
+    procedure SetSeverityAsGUIString(const AValue: string);
     function  GetShortLogMessage: string;
     function  GetFormattedMessageTimeStamp: string;
   public
@@ -89,6 +104,7 @@ type
     property Severity  : TtiLogSeverity read FSeverity   write FSeverity;
     property ThreadID  : string       read FThreadID  write FThreadID;
     property SeverityAsString : string read GetSeverityAsString write SetSeverityAsString;
+    property SeverityAsGUIString : string read GetSeverityAsGUIString write SetSeverityAsGUIString;
     function AsString  : string;
     function AsStringStripCrLf : string;
     function AsLeftPaddedString: string;
@@ -104,6 +120,7 @@ type
     constructor Create;
     destructor  Destroy; override;
     procedure   Add(AItem: TtiLogEvent);
+    function    Extract(const AItem: TtiLogEvent): TtiLogEvent;
     property    Items[AIndex: Integer]: TtiLogEvent Read GetItems;
     function    Count: Integer;
     procedure   Clear;
@@ -132,8 +149,31 @@ type
     property    SevToLog : TtiSevToLog read FSevToLog Write SetSevToLog;
     { Placeholder method for any terminating code you might require. }
     procedure   Terminate; virtual;
-    procedure   Purge;
+    procedure   Purge; virtual;
     property    Terminated : boolean read FTerminated;
+  end;
+
+
+  TtiLogToList = class(TtiLogToAbs)
+  private
+    FEvents: TtiLogEvents;
+    FCritSect: TCriticalSection;
+    function GetItems(AIndex: Integer): TtiLogEvent;
+    function GetAsString: string;
+  protected
+    procedure WriteToOutput; override;
+    property CritSect: TCriticalSection read FCritSect;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure Log(const ADateTime: string; const AThreadID: string;
+        const AMessage: string; ASeverity: TtiLogSeverity); override;
+    function Extract(const AItem: TtiLogEvent): TtiLogEvent;
+    procedure Clear; virtual;
+    procedure Purge; override;
+    property Items[AIndex: Integer]: TtiLogEvent Read GetItems;
+    property AsString: string read GetAsString;
+    function Count: Integer;
   end;
 
 
@@ -158,11 +198,9 @@ type
 
 
   // Abstract base class to manage cached logging
-  TtiLogToCacheAbs = class(TtiLogToAbs)
+  TtiLogToCacheAbs = class(TtiLogToList)
   private
-    FList: TList;
     FListWorking: TtiLogEvents;
-    FCritSect: TCriticalSection;
     FThrdLog: TtiThrdLog;
     FSynchronized: Boolean;
     FEnableCaching: boolean;
@@ -233,6 +271,9 @@ procedure Log(const AMessages : TStrings; ASeverity : TtiLogSeverity = lsNormal)
 procedure Log(const AArray : Array of Const; ASeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const AMessage : string; const AArray : Array of Const; ASeverity : TtiLogSeverity = lsNormal); overload;
 procedure Log(const AObject : TtiObject; const ASeverity : TtiLogSeverity = lsNormal); overload;
+
+procedure LogUserInfo(const AMessage : string); overload;
+procedure LogUserInfo(const AMessage : string; const AArray : Array of Const); overload;
 
 procedure LogWarning(const AMessage : string); overload;
 procedure LogError(const AMessage : string; ARaiseException : boolean = true); overload;
@@ -457,6 +498,27 @@ begin
   GLog.Log(AMessage, lsWarning);
 end;
 
+procedure LogUserInfo(const AMessage : string);
+begin
+  if UFinalization then
+    Exit; //==>
+  GLog.Log(AMessage, lsUserInfo);
+end;
+
+procedure LogUserInfo(const AMessage : string; const AArray : Array of Const); overload;
+var
+  ls : string;
+begin
+  if UFinalization then
+    Exit; //==>
+  try
+    ls := Format(AMessage, AArray);
+  except
+    on e:exception do
+      ls := 'Unable to evaluate log message <' + AMessage + '> reason: ' + e.Message;
+  end;
+  GLog.Log(ls, lsUserInfo);
+end;
 
 procedure Log(const AArray : Array of Const; ASeverity : TtiLogSeverity = lsNormal);
 const
@@ -710,6 +772,8 @@ begin
 end;
 
 
+{ TtiLogToAbs }
+
 constructor TtiLogToAbs.Create;
 begin
   inherited Create;
@@ -731,6 +795,118 @@ begin
 end;
 
 
+procedure TtiLogToAbs.SetSevToLog(const AValue: TtiSevToLog);
+begin
+  FSevToLog := AValue;
+end;
+
+
+procedure TtiLogToAbs.Terminate;
+begin
+  // Do nothing, implement if required in the concrete
+end;
+
+
+procedure TtiLogToAbs.WriteToOutputSynchronized;
+begin
+  WriteToOutput;
+end;
+
+
+{ TtiLogToList }
+
+constructor TtiLogToList.Create;
+begin
+  inherited;
+  FEvents := TtiLogEvents.Create;
+  FCritSect := TCriticalSection.Create;
+end;
+
+
+destructor TtiLogToList.Destroy;
+begin
+  FEvents.Free;
+  FCritSect.Free;
+  inherited;
+end;
+
+
+function TtiLogToList.Count: Integer;
+begin
+  result := FEvents.Count;
+end;
+
+
+
+function TtiLogToList.GetAsString: string;
+var
+  i: Integer;
+begin
+  result := '';
+  for i := 0 to Count - 1 do
+    result := result + Format('[%s] %s', [Items[i].SeverityAsString, Items[i].LogMessage]);
+end;
+
+
+function TtiLogToList.GetItems(AIndex: Integer): TtiLogEvent;
+begin
+  result := FEvents.Items[AIndex];
+end;
+
+
+function TtiLogToList.Extract(const AItem: TtiLogEvent): TtiLogEvent;
+begin
+  result := FEvents.Extract(AItem);
+end;
+
+
+procedure TtiLogToList.Clear;
+begin
+  CritSect.Enter;
+  try
+    FEvents.Clear;
+  finally
+    CritSect.Leave;
+  end;
+end;
+
+
+procedure TtiLogToList.Log(const ADateTime, AThreadID, AMessage: string;
+  ASeverity: TtiLogSeverity);
+var
+  lLogEvent: TtiLogEvent;
+begin
+  if not AcceptEvent(ADateTime, AMessage, ASeverity) then
+    Exit; //==>
+
+  CritSect.Enter;
+  try
+    lLogEvent := TtiLogEvent.Create;
+    lLogEvent.DateTime := ADateTime;
+    lLogEvent.LogMessage := AMessage;
+    lLogEvent.Severity := ASeverity;
+    lLogEvent.ThreadID := AThreadID;
+    FEvents.Add(lLogEvent);
+  finally
+    CritSect.Leave;
+  end;
+end;
+
+
+procedure TtiLogToList.Purge;
+begin
+  inherited;
+  Clear;
+end;
+
+procedure TtiLogToList.WriteToOutput;
+begin
+  // Do nothing. Events remain in the list until cleared.
+end;
+
+
+{ TtiLogToCacheAbs }
+
 constructor TtiLogToCacheAbs.Create;
 const
   CSynchronized = false;
@@ -746,6 +922,7 @@ const
   CSynchronized = true;
 begin
   inherited Create;
+  FEnableCaching:= true;
   Init(CSynchronized);
 end;
 
@@ -753,25 +930,17 @@ end;
 // Call from all constructors.
 procedure TtiLogToCacheAbs.Init(const ASynchronized: Boolean);
 begin
-  FList        := TList.Create;
   FListWorking := TtiLogEvents.Create;
-  FCritSect    := TCriticalSection.Create;
   FThrdLog     := TtiThrdLog.CreateExt(self); // Must call FThrdLog.Resume in the descandant classes
   FSynchronized := ASynchronized;
 end;
 
 
 destructor TtiLogToCacheAbs.Destroy;
-var
-  i: integer;
 begin
   Terminate;
-  for i := FList.Count - 1 downto 0 do
-    TObject(FList.Items[i]).Free;
-  FThrdLog.Free;  // <== Add this, round about line 597 of tiLog.pas
-  FList.Free;
+  FThrdLog.Free;
   FListWorking.Free;
-  FCritSect.Free;
   inherited;
 end;
 
@@ -780,24 +949,14 @@ procedure TtiLogToCacheAbs.Log(const ADateTime : string;
                               const AThreadID : string;
                               const AMessage : string;
                               ASeverity : TtiLogSeverity);
-var
-  lLogEvent: TtiLogEvent;
 begin
-  if not AcceptEvent(ADateTime, AMessage, ASeverity) then
-    Exit; //==>
-  FCritSect.Enter;
-  try
-    lLogEvent := TtiLogEvent.Create;
-    lLogEvent.DateTime  := ADateTime;
-    lLogEvent.LogMessage := AMessage;
-    lLogEvent.Severity  := ASeverity;
-    lLogEvent.ThreadID  := AThreadID;
-    FList.Add(lLogEvent);
-  finally
-    FCritSect.Leave;
-  end;
-  if Not FEnableCaching then
-    WriteToOutput;
+  inherited;
+
+  if AcceptEvent(ADateTime, AMessage, ASeverity) and (not FEnableCaching) then
+    if FSynchronized then
+      WriteToOutputSynchronized
+    else
+      WriteToOutput;
 end;
 
 
@@ -807,6 +966,7 @@ begin
   Terminate;
   FEnableCaching := AValue;
 end;
+
 
 procedure TtiLogToCacheAbs.Terminate;
 begin
@@ -824,24 +984,25 @@ end;
 
 
 procedure TtiLogToCacheAbs.WriteToOutput;
-var
-  i : integer;
 begin
-  for i := 0 to FList.Count - 1 do
-    FListWorking.Add(TtiLogEvent(FList.Items[i]));
-  FList.Clear;
+  CritSect.Enter;
+  try
+    while Count > 0 do
+      FListWorking.Add(Extract(Items[0]));
+    Clear;
+  finally
+    CritSect.Leave;
+  end;
 end;
 
 
 procedure TtiLogToCacheAbs.WriteToOutputSynchronized;
 begin
-  FCritSect.Enter;
-  try
-    WriteToOutput;
-  finally
-    FCritSect.Leave;
-  end;
+  WriteToOutput;
 end;
+
+
+{ TtiLogEvent }
 
 function TtiLogEvent.AsLeftPaddedString: string;
 var
@@ -900,6 +1061,12 @@ begin
 end;
 
 
+function TtiLogEvent.GetSeverityAsGUIString: string;
+begin
+  result := cTILogSeverityStrings_GUI[ Severity ];
+end;
+
+
 function TtiLogEvent.GetShortLogMessage: string;
 var
   ls : string;
@@ -929,6 +1096,26 @@ begin
   Assert(false, 'Severity <' + AValue + '> unknown');
 end;
 
+
+procedure TtiLogEvent.SetSeverityAsGUIString(const AValue: string);
+var
+  i : TtiLogSeverity;
+  lsSeverity : string;
+begin
+  lsSeverity := Trim(AValue);
+  for i := Low(TtiLogSeverity) to High(TtiLogSeverity) do
+  begin
+    if lsSeverity = cTILogSeverityStrings_GUI[ i ] then
+    begin
+      Severity := i;
+      Exit; //==>
+    end;
+  end;
+  Assert(false, 'Severity <' + AValue + '> unknown');
+end;
+
+
+{ TtiThrdLog }
 
 constructor TtiThrdLog.CreateExt(ALogTo : TtiLogToCacheAbs);
 begin
@@ -1021,23 +1208,6 @@ begin
 end;
 
 
-procedure TtiLogToAbs.SetSevToLog(const AValue: TtiSevToLog);
-begin
-  FSevToLog := AValue;
-end;
-
-
-procedure TtiLogToAbs.Terminate;
-begin
-  // Do nothing, implement if required in the concrete
-end;
-
-
-procedure TtiLogToAbs.WriteToOutputSynchronized;
-begin
-  WriteToOutput;
-end;
-
 procedure TtiLogEvents.Add(AItem: TtiLogEvent);
 begin
   FList.Add(AItem);
@@ -1067,6 +1237,12 @@ destructor TtiLogEvents.Destroy;
 begin
   FList.Free;
   inherited;
+end;
+
+
+function TtiLogEvents.Extract(const AItem: TtiLogEvent): TtiLogEvent;
+begin
+  result := FList.Extract(AItem) as TtiLogEvent;
 end;
 
 

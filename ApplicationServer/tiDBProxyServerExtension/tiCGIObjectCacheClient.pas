@@ -203,7 +203,7 @@ begin
     Init;
     LCachedFileDate := GetCachedFileDate;
     LDatabaseFileDate := GetDBFileDate ;
-    Log([ClassName, 'Execute']);
+    Log(['Reading', CachedFileName]);
     Log(['  FileName', GetCachedFileDirAndName]);
     Log(['  Database date', tiDateTimeToStr(LDatabaseFileDate)]);
     Log(['  Cache date', tiDateTimeToStr(LCachedFileDate)]);
@@ -211,8 +211,10 @@ begin
     begin
       Log('  File WILL be refreshed');
       RefreshCacheFromDB(LDatabaseFileDate);
-    end;
+    end else
+      Log('  File WILL NOT be refreshed');
     CacheToBOM(AData);
+    Log(['Done reading', CachedFileName]);
   finally
     tiReleaseMutex(CachedFileName);
   end;

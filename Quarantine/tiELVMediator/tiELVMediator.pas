@@ -26,8 +26,8 @@ Type
     Procedure CreateColumns; Override;
     Procedure DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer); Override;
     Procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TListItemMediator); Override;
-    Function GetGuiControl : TComponent; Override;
-    Procedure SetGuiControl(Const AValue : TComponent); Override;
+    Function GetGUIControl : TComponent; Override;
+    Procedure SetGUIControl(Const AValue : TComponent); Override;
     Procedure SetupGUIandObject; Override;
     Procedure ClearList; Override;
     Procedure RebuildList; Override;
@@ -178,7 +178,7 @@ Begin
   Inherited DoDeleteItemMediator(AIndex, AMediator);
 End;
 
-Function TEasyListViewMediator.GetGuiControl : TComponent;
+Function TEasyListViewMediator.GetGUIControl : TComponent;
 Begin
   Result := FView;
 End;
@@ -293,10 +293,10 @@ Begin
   Inherited SetActive(AValue);
 End;
 
-Procedure TEasyListViewMediator.SetGuiControl(Const AValue : TComponent);
+Procedure TEasyListViewMediator.SetGUIControl(Const AValue : TComponent);
 Begin
   FView := AValue As TEasyListview;
-  Inherited SetGuiControl(AValue);
+  Inherited SetGUIControl(AValue);
 End;
 
 Procedure TEasyListViewMediator.SetSelectedObject(Const AValue : TtiObject);

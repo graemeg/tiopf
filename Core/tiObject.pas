@@ -246,9 +246,10 @@ type
   protected
     procedure   Clear; override;
     // ToDo: Perhpas this should trunc AValue removing the time portion. Think about this some more...
-    procedure   SetAsDateTime(const AValue: TDateTime);
+    procedure   SetAsDateTime(const AValue: TDateTime); virtual;
     procedure   SetAsString(const AValue: string);  override;
     function    GetAsString: string;               override;
+    property    Value: TDateTime read FValue write FValue;
   public
     function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
@@ -261,16 +262,15 @@ type
   {: Concrete persistent TDateTime field}
   TtiFieldDateTime = class(TtiFieldDate)
   private
-    FValue: TDateTime;
     function    GetHours: Word;
     function    GetMinutes: Word;
     function    GetSeconds: Word;
   protected
+    procedure   SetAsDateTime(const AValue: TDateTime); override;
     procedure   SetAsString(const AValue: string);  override;
     function    GetAsString: string;               override;
   public
     procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
-    property    AsDateTime: TDateTime read FValue Write SetAsDateTime;
     property    Hours: Word read GetHours;
     property    Minutes: Word read GetMinutes;
     property    Seconds: Word read GetSeconds;
@@ -506,6 +506,8 @@ type
                 const ASortProps : array of string; AAscendingOrder : Boolean = True);
   protected
     function    GetCount: integer; virtual;
+    function    GetCapacity: integer;
+    procedure   SetCapacity(const AValue: integer);
     function    GetItems(i: integer): TtiObject; virtual;
     procedure   SetItems(i: integer; const AValue: TtiObject); virtual;
     procedure   SetItemOwner(const AValue: TtiObject); virtual;
@@ -523,6 +525,8 @@ type
     procedure   AssignCaptions(const AStrings: TStrings);
     {: The number of items in the list.}
     property    Count : integer read GetCount;
+    {: The capacity (number of items with allocated memory) of the list.}
+    property    Capacity : integer read GetCapacity write SetCapacity;
     {: The number of items in the list that are not marked as deleted.}
     property    CountNotDeleted : integer read GetCountNotDeleted;
     property    Items[i:integer]: TtiObject read GetItems write SetItems; default;
@@ -1397,6 +1401,11 @@ begin
   end;
 end;
 
+function TtiObjectList.GetCapacity: integer;
+begin
+  result := FList.Capacity;
+end;
+
 function TtiObjectList.GetCount: integer;
 begin
   result := FList.Count;
@@ -1845,6 +1854,11 @@ end;
 procedure TPerStringStream.WriteLn(const AValue: string);
 begin
   FStream.WriteString(AValue + CrLf);
+end;
+
+procedure TtiObjectList.SetCapacity(const AValue: integer);
+begin
+  FList.Capacity := AValue;
 end;
 
 procedure TtiObjectList.SetItemOwner(const AValue: TtiObject);
@@ -3389,16 +3403,27 @@ end;
 
 procedure TtiFieldDateTime.Assign(const AAssignFrom: TtiFieldAbs);
 begin
+  Assert(AAssignFrom.TestValid(TtiFieldDateTime), CTIErrorInvalidObject);
+  if AAssignFrom.IsNull then
+    IsNull:= true
+  else
+    AsDateTime := (AAssignFrom as TtiFieldDateTime).AsDateTime;
 end;
 
 function TtiFieldDateTime.GetAsString: string;
 begin
-  Result := tiDateTimeAsXMLString(FValue);
+  Result := tiDateTimeAsXMLString(Value);
+end;
+
+procedure TtiFieldDateTime.SetAsDateTime(const AValue: TDateTime);
+begin
+  Value := AValue;
+  SetValue;
 end;
 
 procedure TtiFieldDateTime.SetAsString(const AValue: string);
 begin
-  FValue := tiXMLStringToDateTime(AValue);
+  Value := tiXMLStringToDateTime(AValue);
   SetValue;
 end;
 
@@ -3406,7 +3431,7 @@ function TtiFieldDateTime.GetHours: Word;
 var
   Hour, Min, Sec, MSec: word;
 begin
-  DecodeTime(FValue, Hour, Min, Sec, MSec);
+  DecodeTime(Value, Hour, Min, Sec, MSec);
   Result := Hour;
 end;
 
@@ -3414,7 +3439,7 @@ function TtiFieldDateTime.GetMinutes: Word;
 var
   Hour, Min, Sec, MSec: word;
 begin
-  DecodeTime(FValue, Hour, Min, Sec, MSec);
+  DecodeTime(Value, Hour, Min, Sec, MSec);
   Result := Min;
 end;
 
@@ -3422,7 +3447,7 @@ function TtiFieldDateTime.GetSeconds: Word;
 var
   Hour, Min, Sec, MSec: word;
 begin
-  DecodeTime(FValue, Hour, Min, Sec, MSec);
+  DecodeTime(Value, Hour, Min, Sec, MSec);
   Result := Sec;
 end;
 
@@ -3982,7 +4007,11 @@ end;
 
 procedure TtiFieldDate.Assign(const AAssignFrom: TtiFieldAbs);
 begin
-
+  Assert(AAssignFrom.TestValid(TtiFieldDate), CTIErrorInvalidObject);
+  if AAssignFrom.IsNull then
+    IsNull:= true
+  else
+    AsDateTime := (AAssignFrom as TtiFieldDate).AsDateTime;
 end;
 
 procedure TtiFieldDate.Clear;

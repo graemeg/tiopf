@@ -37,7 +37,7 @@ type
     FSettingUp: Boolean;
     FFieldName: string;
     FSubject: TtiObject;
-    FGuiFieldName: string;
+    FGUIFieldName: string;
     FCopying: Boolean;
     procedure CheckFieldNames;
     procedure TestIfValid;
@@ -46,9 +46,9 @@ type
     // If GUI and Object and fieldnames are assigned, calls SetupGUIandObject.
     procedure CheckSetupGUIandObject;
     // Must be implemented to return the GUI component.
-    function GetGuiControl: TComponent; virtual; abstract;
+    function GetGUIControl: TComponent; virtual; abstract;
     // Must be implemented to set the GUI component.
-    procedure SetGuiControl(const AValue: TComponent); virtual;
+    procedure SetGUIControl(const AValue: TComponent); virtual;
     // Set up GUI and Object. Does nothing by default
     procedure SetupGUIandObject; virtual;
     // For use by descendents. Will call GUIChanged
@@ -56,7 +56,7 @@ type
     // Returns FSubject by default.
     function GetSubject: TtiObject; virtual;
     // Do something with errors.
-    procedure UpdateGuiValidStatus(pErrors: TtiObjectErrors); virtual;
+    procedure UpdateGUIValidStatus(pErrors: TtiObjectErrors); virtual;
     // Check whether data and GUI property are OK. Not used in this class
     function DataAndPropertyValid: Boolean;
     // By default, copies published FieldName to published GUIFieldName.
@@ -79,7 +79,7 @@ type
     Procedure RaiseMediatorError(Const Fmt : String; Args : Array of const); overload;
   public
     constructor Create; override;
-    constructor CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGuiFieldName: string); overload; virtual;
+    constructor CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string); overload; virtual;
     destructor Destroy; override;
     // By default, copying GUI <-> Object is one way. If this method returns true, then
     // it will copy till no more change events are generated. By default, false is returned
@@ -91,7 +91,7 @@ type
     // By default, it returns False.
     class function CompositeMediator: Boolean; virtual;
     // Copy GUI to Object. Calls OnGUIToObject if set, and then calls DoGUIToObject if needed
-    procedure GuiToObject;
+    procedure GUIToObject;
     // Copy GUI to Object. Calls OnObjectToGUI if set, and then calls DoGUIToObject if needed
     procedure ObjectToGUI;
     // Called by NotifyObservers of subject. Calls ObjectToGUI by default.
@@ -99,7 +99,7 @@ type
     // Call when GUI changed. Will call GUIToObject.
     procedure GUIChanged;
     // Access properties.
-    property GUIControl: TComponent read GetGuiCOntrol write SetGUIControl;
+    property GUIControl: TComponent read GetGUICOntrol write SetGUIControl;
     // The subject of observation...
     property Subject: TtiObject read GetSubject write SetSubject;
     // Descendents that need a list of values can use this.
@@ -108,7 +108,7 @@ type
     // Property of subject to handle.
     property FieldName: string read FFieldName write SetFieldName;
     // Property of GUI to handle.
-    property GuiFieldName: string read FGuiFieldName write FGuiFieldName;
+    property GUIFieldName: string read FGUIFieldName write FGUIFieldName;
     // Property ObjectUpdateMoment : Do action e.g. in OnExit instead of OnChange.
     // Up to the descendent class to decide this.
     property ObjectUpdateMoment: TObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouOnChange;
@@ -255,8 +255,8 @@ type
     FPN: string;
     FPT: TTypeKinds;
   public
-    // Return True if this definition handles the Subject,Gui,APropinfo trio
-    function Handles(ASubject: TtiObject; AGui: TComponent; APropInfo: PPropInfo): Boolean;
+    // Return True if this definition handles the Subject,GUI,APropinfo trio
+    function Handles(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): Boolean;
     // Return True if this definition matches 'closer' than M.
     // Note that both current and M must have Handles() returned true for this to be useful.
     function BetterMatch(M: TMediatorDef): Boolean;
@@ -285,9 +285,9 @@ type
     constructor Create;
     destructor Destroy; override;
     // If APropName is empty or APropInfo is Nil, a composite mediator will be searched.
-    function FindDefFor(ASubject: TtiObject; AGui: TComponent): TMediatorDef; overload;
-    function FindDefFor(ASubject: TtiObject; AGui: TComponent; APropName: string): TMediatorDef; overload;
-    function FindDefFor(ASubject: TtiObject; AGui: TComponent; APropInfo: PPropInfo): TMediatorDef; overload;
+    function FindDefFor(ASubject: TtiObject; AGUI: TComponent): TMediatorDef; overload;
+    function FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropName: string): TMediatorDef; overload;
+    function FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): TMediatorDef; overload;
     function RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass): TMediatorDef; overload;
     function RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyName: string): TMediatorDef; overload;
     function RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyTypes: TTypeKinds): TMediatorDef; overload;
@@ -322,7 +322,7 @@ resourcestring
   sErrNotListObject         = '%s is not a TTiListObject';
   sErrCompositeNeedsList    = '%s needs a TtiObjectList class but is registered with %s';
   SErrActive                = 'Operation not allowed while the mediator is active';
-  SErrNoGuiFieldName        = 'no gui fieldname set';
+  SErrNoGUIFieldName        = 'no gui fieldname set';
   SErrNoSubjectFieldName    = 'no subject fieldname set';
   SErrInvalidPropertyName   = '<%s> is not a property of <%s>';
 
@@ -345,7 +345,7 @@ begin
   else If Sender is TMediatorView then
     begin
     M:=Sender as TMediatorView;
-    C:=M.GuiControl;
+    C:=M.GUIControl;
     S:=M.Subject;
     If Assigned(C) then
       begin
@@ -393,14 +393,14 @@ begin
   FObjectUpdateMoment := ouOnChange;
 end;
 
-constructor TMediatorView.CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGuiFieldName: string);
+constructor TMediatorView.CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string);
 begin
   FSettingUp   := True;
   Create;
   Subject      := ASubject;
   FieldName    := AFieldName;
-  GuiFieldName := AGuiFieldName;
-  GUIControl   := AEditControl; // At this point, SetupGuiAndObject is called
+  GUIFieldName := AGUIFieldName;
+  GUIControl   := AEditControl; // At this point, SetupGUIAndObject is called
   FSettingUp   := False;
 end;
 
@@ -429,12 +429,12 @@ procedure TMediatorView.GUIChanged;
 begin
   if not FSettingUp then
   begin
-    GuiToObject;
+    GUIToObject;
     TestIfValid;
   end;
 end;
 
-procedure TMediatorView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 begin
   // do nothing
 end;
@@ -468,7 +468,7 @@ begin
   Errors := TtiObjectErrors.Create;
   try
     Subject.IsValid(Errors);
-    UpdateGuiValidStatus(Errors); // always execute this as it also resets EditControl
+    UpdateGUIValidStatus(Errors); // always execute this as it also resets EditControl
   finally
     Errors.Free;
   end;
@@ -480,7 +480,7 @@ begin
     SetupGUIandObject;
 end;
 
-procedure TMediatorView.SetGuiControl(const AValue: TComponent);
+procedure TMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   CheckSetupGUIAndObject;
   if AValue <> nil then
@@ -544,7 +544,7 @@ begin
   inherited Update(ASubject, AOperation);
   if (AOperation=noChanged) and Active then
   begin
-    ObjectToGui;
+    ObjectToGUI;
     TestIfValid;
   end
   else if (AOperation=noFree) and (ASubject=FSubject) then
@@ -558,7 +558,7 @@ end;
 
 procedure TMediatorView.CheckFieldNames;
 begin
-  if (GuiFieldName = '') then
+  if (GUIFieldName = '') then
     RaiseMediatorError(SErrNoGUIFieldName);
   if (FieldName = '') then
     RaiseMediatorError(SErrNoSubjectFieldName)
@@ -582,10 +582,10 @@ end;
 procedure TMediatorView.DoGUIToObject;
 begin
   CheckFieldNames;
-  Subject.PropValue[FieldName] := TypInfo.GetPropValue(GetGUIControl, GuiFieldName);
+  Subject.PropValue[FieldName] := TypInfo.GetPropValue(GetGUIControl, GUIFieldName);
 end;
 
-procedure TMediatorView.GuiToObject;
+procedure TMediatorView.GUIToObject;
 var
   B: Boolean;
 begin
@@ -595,9 +595,9 @@ begin
   try
     B := False;
     if Assigned(FOnGUIToObject) then
-      FOnGUIToObject(Self, GuiControl, Subject, B);
+      FOnGUIToObject(Self, GUIControl, Subject, B);
     if not B then
-      DoGuiToObject;
+      DoGUIToObject;
   finally
     FCopying := False;
   end;
@@ -613,7 +613,7 @@ begin
   try
     B := False;
     if Assigned(FOnObjectToGUI) then
-      FOnObjectToGUI(Self, Subject, GuiControl, B);
+      FOnObjectToGUI(Self, Subject, GUIControl, B);
     if not B then
       DoObjectToGUI;
   finally
@@ -624,7 +624,7 @@ end;
 procedure TMediatorView.DoObjectToGUI;
 begin
   CheckFieldNames;
-  TypInfo.SetPropValue(GetGUIControl, GuiFieldName, Subject.PropValue[FieldName]);
+  TypInfo.SetPropValue(GetGUIControl, GUIFieldName, Subject.PropValue[FieldName]);
 end;
 
 
@@ -641,12 +641,12 @@ begin
   inherited Destroy;
 end;
 
-function TMediatorManager.FindDefFor(ASubject: TtiObject; AGui: TComponent): TMediatorDef;
+function TMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent): TMediatorDef;
 begin
   Result := FindDefFor(ASubject, AGUI, PPropInfo(nil));
 end;
 
-function TMediatorManager.FindDefFor(ASubject: TtiObject; AGui: TComponent; APropName: string): TMediatorDef;
+function TMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropName: string): TMediatorDef;
 var
   propinfo: PPropInfo;
 begin
@@ -654,7 +654,7 @@ begin
   Result := FindDefFor(ASubject, AGUI, propinfo);
 end;
 
-function TMediatorManager.FindDefFor(ASubject: TtiObject; AGui: TComponent; APropInfo: PPropInfo): TMediatorDef;
+function TMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): TMediatorDef;
 var
   D: TMediatorDef;
   I: integer;
@@ -743,7 +743,7 @@ end;
 
 { TMediatorDef }
 
-function TMediatorDef.Handles(ASubject: TtiObject; AGui: TComponent; APropInfo: PPropInfo): Boolean;
+function TMediatorDef.Handles(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): Boolean;
 var
   N: string;
 begin
@@ -757,7 +757,7 @@ begin
   if not Result then
     Exit; // ==>
   // At least the classes must match
-  Result := AGui.InheritsFrom(FMC.ComponentClass) and ASubject.InheritsFrom(FMSC);
+  Result := AGUI.InheritsFrom(FMC.ComponentClass) and ASubject.InheritsFrom(FMSC);
   if Result and not FMC.CompositeMediator then
     if (PropertyName <> '') then
       Result := (CompareText(N, PropertyName) = 0)

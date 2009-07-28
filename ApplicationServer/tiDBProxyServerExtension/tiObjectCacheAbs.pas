@@ -69,7 +69,7 @@ begin
   if ACacheDirectoryRoot <> '' then
     FCacheDirectoryRoot:= ACacheDirectoryRoot
   else
-    FCacheDirectoryRoot:= ExpandFileName(tiAddTrailingSlash(tiGetEXEPath) + PathDelim + CPathToCachedData);
+    FCacheDirectoryRoot:= ExpandFileName(tiAddTrailingSlash(tiGetEXEPath) + PathDelim + CPathToCachedDataRoot);
 end;
 
 destructor TtiOjectCacheAbs.Destroy;

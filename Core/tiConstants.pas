@@ -130,7 +130,7 @@ const
   CHTTPBlockSize          = 'blocksize';
   CHTTPRetryLimit         = 'retrylimit';
 
-  cPathToCachedData       = 'CachedData';
+  CPathToCachedDataRoot       = 'CachedData';
 
   cTIOPFExcMsgConnectionConfirmationFormatWrong = 'Server did not return correctly formatted connection confirmation Expected <%s> Found <%s>';
   cTIOPFExcMsgWrongServerVersion = 'The client and server are incompatable versions.'#13#13 +

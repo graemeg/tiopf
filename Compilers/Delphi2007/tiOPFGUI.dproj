@@ -48,10 +48,6 @@
 <BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><Package_Options><Package_Options Name="ImplicitBuild">True</Package_Options><Package_Options Name="DesigntimeOnly">False</Package_Options><Package_Options Name="RuntimeOnly">True</Package_Options><Package_Options Name="LibSuffix">2007</Package_Options></Package_Options><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">3081</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">tiOPFGUI.dpk</Source></Source><Excluded_Packages>
       
       
-      
-      
-      
-      
       <Excluded_Packages Name="$(BDS)\bin\dclofficexp100.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
       <Excluded_Packages Name="$(BDS)\bin\dcloffice2k100.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
     </Excluded_Packages></Delphi.Personality></BorlandProject></BorlandProject>
@@ -85,30 +81,7 @@
     <DCCReference Include="..\..\GUI\tiLogReg.pas" />
     <DCCReference Include="..\..\GUI\tiLogToErrorDialog.pas" />
     <DCCReference Include="..\..\GUI\tiLogToGUI.pas" />
-    <DCCReference Include="..\..\GUI\tiM.pas" />
-    <DCCReference Include="..\..\GUI\tiMe.pas" />
-    <DCCReference Include="..\..\GUI\tiMem.pas" />
-    <DCCReference Include="..\..\GUI\tiMemo.pas" />
-    <DCCReference Include="..\..\GUI\tiMemoR.pas" />
-    <DCCReference Include="..\..\GUI\tiMemoRe.pas" />
-    <DCCReference Include="..\..\GUI\tiMemoRea.pas" />
-    <DCCReference Include="..\..\GUI\tiMemoRead.pas" />
-    <DCCReference Include="..\..\GUI\tiMemoReadO.pas" />
-    <DCCReference Include="..\..\GUI\tiMemoReadOn.pas" />
-    <DCCReference Include="..\..\GUI\tiMemoReadOnl.pas" />
     <DCCReference Include="..\..\GUI\tiMemoReadOnly.pas" />
-    <DCCReference Include="..\..\GUI\tiMu.pas" />
-    <DCCReference Include="..\..\GUI\tiMul.pas" />
-    <DCCReference Include="..\..\GUI\tiMult.pas" />
-    <DCCReference Include="..\..\GUI\tiMulti.pas" />
-    <DCCReference Include="..\..\GUI\tiMultic.pas" />
-    <DCCReference Include="..\..\GUI\tiMultica.pas" />
-    <DCCReference Include="..\..\GUI\tiMulticas.pas" />
-    <DCCReference Include="..\..\GUI\tiMulticast.pas" />
-    <DCCReference Include="..\..\GUI\tiMulticastE.pas" />
-    <DCCReference Include="..\..\GUI\tiMulticastEv.pas" />
-    <DCCReference Include="..\..\GUI\tiMulticastEve.pas" />
-    <DCCReference Include="..\..\GUI\tiMulticastEven.pas" />
     <DCCReference Include="..\..\GUI\tiMulticastEvent.pas" />
     <DCCReference Include="..\..\GUI\tiPerAwareCombosAbs.pas" />
     <DCCReference Include="..\..\GUI\tiPerAwareCtrls.pas" />
@@ -131,7 +104,10 @@
     <DCCReference Include="..\..\GUI\tiVTExportHTML.pas" />
     <DCCReference Include="..\..\GUI\tiVTFilter.pas" />
     <DCCReference Include="..\..\GUI\tiVTListView.pas" />
+    <DCCReference Include="..\..\GUI\tiVTSearch.pas" />
     <DCCReference Include="..\..\GUI\tiVTTreeView.pas" />
+    <DCCReference Include="..\..\GUI\VCL\tiListMediators.pas" />
+    <DCCReference Include="..\..\GUI\VCL\tiMediators.pas" />
     <DCCReference Include="bdertl.dcp" />
     <DCCReference Include="dbrtl.dcp" />
     <DCCReference Include="designide.dcp" />

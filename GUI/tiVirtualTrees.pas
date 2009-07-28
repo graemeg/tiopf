@@ -892,7 +892,6 @@ type
 
   TVirtualTreeColumn = class(TCollectionItem)
   private
-    FText,
     FHint: WideString;
     FLeft,
     FWidth: Integer;
@@ -911,12 +910,17 @@ type
     FLastWidth: Integer;
     FColor: TColor;
     FSpringRest: Single;               // Accumulator for width adjustment when auto spring option is enabled.
+    FDisplayNames: TStringList;
     function GetLeft: Integer;
     function IsBiDiModeStored: Boolean;
     function IsColorStored: Boolean;
+    function GetDisplayNameCount: integer;
+    function GetDisplayNames(Index: Integer): string;
+    function GetText: WideString;
     procedure SetAlignment(const Value: TAlignment);
     procedure SetBiDiMode(Value: TBiDiMode);
     procedure SetColor(const Value: TColor);
+    procedure SetDisplayNames(Index: Integer; Value: string);
     procedure SetImageIndex(Value: TImageIndex);
     procedure SetLayout(Value: TVTHeaderColumnLayout);
     procedure SetMargin(Value: Integer);
@@ -930,7 +934,8 @@ type
     procedure SetWidth(Value: Integer);
   protected
     procedure ComputeHeaderLayout(DC: HDC; const Client: TRect; UseHeaderGlyph, UseSortGlyph: Boolean;
-      var HeaderGlyphPos, SortGlyphPos: TPoint; var TextBounds: TRect); virtual;
+      AText: string; ARowCount: Integer; ARow: Integer; var HeaderGlyphPos, SortGlyphPos: TPoint;
+      var TextBounds: TRect; var RowBounds: TRect; var DrawFormat: Cardinal); virtual;
     procedure DefineProperties(Filer: TFiler); override;
     procedure GetAbsoluteBounds(var Left, Right: Integer);
     function GetDisplayName: string; override;
@@ -952,9 +957,12 @@ type
     procedure RestoreLastWidth;
     procedure SaveToStream(const Stream: TStream);
     function UseRightToLeftReading: Boolean;
+    procedure ClearDisplayNames;
 
     property Left: Integer read GetLeft;
     property Owner: TVirtualTreeColumns read GetOwner;
+    property DisplayNameCount: integer read GetDisplayNameCount;
+    property DisplayNames[Index: Integer]: string read GetDisplayNames write SetDisplayNames;
   published
     property Alignment: TAlignment read FAlignment write SetAlignment default taLeftJustify;
     property BiDiMode: TBiDiMode read FBiDiMode write SetBiDiMode stored IsBiDiModeStored default bdLeftToRight;
@@ -970,7 +978,7 @@ type
     property Spacing: Integer read FSpacing write SetSpacing default 4;
     property Style: TVirtualTreeColumnStyle read FStyle write SetStyle default vsText;
     property Tag: Integer read FTag write FTag default 0;
-    property Text: WideString read FText write SetText stored False; // Never let the VCL store the wide string,
+    property Text: WideString read GetText write SetText stored False; // Never let the VCL store the wide string,
                                                                      // it is simply unable to write it correctly.
                                                                      // We use DefineProperties here.
     property Width: Integer read FWidth write SetWidth default 50;
@@ -1009,6 +1017,7 @@ type
     procedure AdjustPosition(Column: TVirtualTreeColumn; Position: Cardinal);
     procedure DrawButtonText(DC: HDC; Caption: WideString; Bounds: TRect; Enabled, Hot: Boolean; DrawFormat: Cardinal);
     procedure DrawXPButton(DC: HDC; ButtonR: TRect; DrawSplitter, Down, Hover: Boolean);
+    procedure DrawXPHorizontalSplitter(DC: HDC; Rect: TRect);
     procedure FixPositions;
     function GetColumnAndBounds(P: TPoint; var ColumnLeft, ColumnRight: Integer; Relative: Boolean = True): Integer;
     function GetOwner: TPersistent; override;
@@ -1073,8 +1082,9 @@ type
     hoShowImages,      // Show header images.
     hoShowSortGlyphs,  // Allow visible sort glyphs.
     hoVisible,         // Header is visible.
-    hoAutoSpring       // Distribute size changes of the header to all columns, which are sizable and have the
+    hoAutoSpring,      // Distribute size changes of the header to all columns, which are sizable and have the
                        // coAutoSpring option enabled. hoAutoResize must be enabled too.
+    hoMultiline        // All column headers automatically word-wrapped within column width.
   );
   TVTHeaderOptions = set of TVTHeaderOption;
 
@@ -1128,6 +1138,8 @@ type
     FDragImage: TVTDragImage;          // drag image management during header drag
     FLastWidth: Integer;               // Used to adjust spring columns. This is the width of all visible columns,
                                        // not the header rectangle.
+    FRowCount: Integer;                // Number of header rows
+    FRowHeight: Integer;               // Height of each header row
     procedure FontChanged(Sender: TObject);
     function GetMainColumn: TColumnIndex;
     function GetUseColumns: Boolean;
@@ -1140,6 +1152,8 @@ type
     procedure SetMainColumn(Value: TColumnIndex);
     procedure SetOptions(Value: TVTHeaderOptions);
     procedure SetParentFont(Value: Boolean);
+    procedure SetRowCount(Value: Integer);
+    procedure SetRowHeight(Value: Integer);
     procedure SetSortColumn(Value: TColumnIndex);
     procedure SetSortDirection(const Value: TSortDirection);
     procedure SetStyle(Value: TVTHeaderStyle);
@@ -1188,6 +1202,8 @@ type
     property Options: TVTHeaderOptions read FOptions write SetOptions default [hoColumnResize, hoDrag, hoShowSortGlyphs];
     property ParentFont: Boolean read FParentFont write SetParentFont default False;
     property PopupMenu: TPopupMenu read FPopupMenu write FPopUpMenu;
+    property RowCount: Integer read FRowCount write SetRowCount default 1;
+    property RowHeight: Integer read FRowHeight write SetRowHeight default 17;
     property SortColumn: TColumnIndex read FSortColumn write SetSortColumn default NoColumn;
     property SortDirection: TSortDirection read FSortDirection write SetSortDirection default sdAscending;
     property Style: TVTHeaderStyle read FStyle write SetStyle default hsThickButtons;
@@ -1868,7 +1884,7 @@ type
     FOnPaintBackground: TVTBackgroundPaintEvent; // triggered if a part of the tree's background must be erased which is
                                                  // not covered by any node
     FOnMeasureItem: TVTMeasureItemEvent;         // Triggered when a node is about to be drawn and its height was not yet
-                                                 // determined by the application.   
+                                                 // determined by the application.
 
     // drag'n drop events
     FOnCreateDragManager: TVTCreateDragManagerEvent; // called to allow for app./descendant defined drag managers
@@ -2173,6 +2189,7 @@ type
     procedure DoStartDrag(var DragObject: TDragObject); override;
     procedure DoStateChange(Enter: TVirtualTreeStates; Leave: TVirtualTreeStates = []); virtual;
     procedure DoStructureChange(Node: PVirtualNode; Reason: TChangeReason); virtual;
+    procedure DoTextDrawing(DC: HDC; Text: WideString; var CellRect: TRect; DrawFormat: Cardinal; AdjustRight: Boolean); virtual;
     procedure DoTimerScroll; virtual;
     procedure DoUpdating(State: TVTUpdateState); virtual;
     function DoValidateCache: Boolean; virtual;
@@ -2694,6 +2711,8 @@ type
 
   TVTPaintText = procedure(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
     TextType: TVSTTextType) of object;
+  TVTAdvancedPaintText = procedure(Sender: TBaseVirtualTree; const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+    TextType: TVSTTextType; NodeDisabled: boolean; NodeSelectedAndUnfocused: boolean) of object;
   TVSTGetTextEvent = procedure(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
     TextType: TVSTTextType; var CellText: WideString) of object;
   TVSTGetHintEvent = procedure(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
@@ -2714,6 +2733,9 @@ type
 
     FOnPaintText: TVTPaintText;                  // triggered before either normal or fixed text is painted to allow
                                                  // even finer customization (kind of sub cell painting)
+    FOnAdvancedPaintText: TVTAdvancedPaintText;  // triggered before either normal or fixed text is painted to allow
+                                                 // even finer customization (kind of sub cell painting). Allows
+                                                 // setting of color when node is disabled or unfocused.
     FOnGetText: TVSTGetTextEvent;                // used to retrieve the string to be displayed for a specific node
     FOnGetHint: TVSTGetHintEvent;                // used to retrieve the hint to be displayed for a specific node
     FOnNewText: TVSTNewTextEvent;                // used to notify the application about an edited node caption
@@ -2733,6 +2755,8 @@ type
     procedure WriteText(Writer: TWriter);
 
     procedure WMSetFont(var Msg: TWMSetFont); message WM_SETFONT;
+    function IsDisabled(Node: PVirtualNode): boolean;
+    function IsSelectedAndUnfocused(Node: PVirtualNode; Column: TColumnIndex): boolean;
   protected
     procedure AdjustPaintCellRect(var PaintInfo: TVTPaintInfo; var NextNonEmpty: TColumnIndex); override;
     function CalculateTextWidth(Canvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; Text: WideString): Integer; virtual;
@@ -2749,9 +2773,10 @@ type
     procedure DoPaintNode(var PaintInfo: TVTPaintInfo); override;
     procedure DoPaintText(Node: PVirtualNode; const Canvas: TCanvas; Column: TColumnIndex;
       TextType: TVSTTextType); virtual;
+    procedure DoAdvancedPaintText(Node: PVirtualNode; const Canvas: TCanvas; Column: TColumnIndex;
+      TextType: TVSTTextType; NodeDisabled: boolean; NodeSelectedAndUnfocused: boolean); virtual;
     function DoShortenString(Canvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; const S: WideString; Width: Integer;
       RightToLeft: Boolean; EllipsisWidth: Integer = 0): WideString; virtual;
-    procedure DoTextDrawing(var PaintInfo: TVTPaintInfo; Text: WideString; CellRect: TRect; DrawFormat: Cardinal); virtual;
     function DoTextMeasuring(Canvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; Text: WideString): Integer; virtual;
     function GetOptionsClass: TTreeOptionsClass; override;
     function InternalData(Node: PVirtualNode): Pointer; 
@@ -2770,6 +2795,7 @@ type
     property OnGetText: TVSTGetTextEvent read FOnGetText write FOnGetText;
     property OnNewText: TVSTNewTextEvent read FOnNewText write FOnNewText;
     property OnPaintText: TVTPaintText read FOnPaintText write FOnPaintText;
+    property OnAdvancedPaintText: TVTAdvancedPaintText read FOnAdvancedPaintText write FOnAdvancedPaintText;
     property OnShortenString: TVSTShortenStringEvent read FOnShortenString write FOnShortenString;
   public
     constructor Create(AOwner: TComponent); override;
@@ -2922,6 +2948,7 @@ type
     property OnGetHeaderCursor;
     property OnGetText;
     property OnPaintText;
+    property OnAdvancedPaintText;
     property OnGetHelpContext;
     property OnGetImageIndex;
     property OnGetImageIndexEx;
@@ -3241,6 +3268,8 @@ resourcestring
   SCorruptStream2 = 'Stream data corrupt. Unexpected data after node''s end position.';
   SClipboardFailed = 'Clipboard operation failed.';
   SCannotSetUserData = 'Cannot set initial user data because there is not enough user data space allocated.';
+  SRowCountLEZero = 'RowCount must be greater than 0.';
+  SDisplayNameIndexGERowCount = 'DisplayNames index must be less than Header RowCount.';
 
 const
   ClipboardStates = [tsCopyPending, tsCutPending];
@@ -6548,10 +6577,7 @@ begin
           R.Top := Y;
           if Assigned(Node) and (LineBreakStyle = hlbForceMultiLine) then
             DrawFormat := DrawFormat or DT_WORDBREAK;
-          if IsWinNT then
-            Windows.DrawTextW(Handle, PWideChar(HintText), Length(HintText), R, DrawFormat)
-          else
-            DrawTextW(Handle, PWideChar(HintText), Length(HintText), R, DrawFormat, False);
+          Tree.DoTextDrawing(Handle, HintText, R, DrawFormat, False {AdjustRight});
         end;
     end;
   end;
@@ -6845,10 +6871,7 @@ begin
               // We don't have Unicode word wrap on the latter so the tooltip gets as wide as the largest line
               // in the caption (limited by carriage return), which results in unoptimal overlay of the tooltip.
               // On Windows NT the tooltip exactly overlays the node text.
-              if IsWinNT then
-                Windows.DrawTextW(Canvas.Handle, PWideChar(HintText), Length(HintText), R, DT_CALCRECT or DT_WORDBREAK)
-              else
-                DrawTextW(Canvas.Handle, PWideChar(HintText), Length(HintText), R, DT_CALCRECT, True);
+              Tree.DoTextDrawing(Canvas.Handle, HintText, R, DT_CALCRECT or DT_WORDBREAK, True {AdjustRight});
               if BidiMode = bdLeftToRight then
                 Result.Right := R.Right + Tree.FTextMargin
               else
@@ -6887,10 +6910,7 @@ begin
             // Start with the base size of the hint in client coordinates.
             Result := Rect(0, 0, MaxWidth, FTextHeight);
             // Calculate the true size of the text rectangle.
-            if IsWinNT then
-              Windows.DrawTextW(Canvas.Handle, PWideChar(HintText), Length(HintText), Result, DT_CALCRECT)
-            else
-              DrawTextW(Canvas.Handle, PWideChar(HintText), Length(HintText), Result, DT_CALCRECT, True);
+            Tree.DoTextDrawing(Canvas.Handle, HintText, Result, DT_CALCRECT, False {AdjustRight});
             // The height of the text plus 2 pixels vertical margin plus the border determine the hint window height.
             Inc(Result.Bottom, 6);
             // The text is centered horizontally with usual text margin for left and right borders (plus border).
@@ -7483,12 +7503,14 @@ begin
   FImageIndex := -1;
   FMargin := 4;
   FSpacing := 4;
-  FText := '';
   FOptions := DefaultColumnOptions;
   FAlignment := taLeftJustify;
   FBidiMode := bdLeftToRight;
   FColor := clWindow;
   FLayout := blGlyphLeft;
+
+  FDisplayNames := TStringList.Create;
+  FDisplayNames.Add('');
 
   inherited Create(Collection);
 
@@ -7553,7 +7575,19 @@ begin
     end;
   end;
 
+  FDisplayNames.Free;
+
   inherited;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TVirtualTreeColumn.ClearDisplayNames;
+
+begin
+  FDisplayNames.Clear;
+  FDisplayNames.Add('');
+  Changed(False);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -7622,6 +7656,25 @@ begin
     Exclude(FOptions, coParentColor);
     Changed(False);
     Owner.Header.TreeView.Invalidate;
+  end;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TVirtualTreeColumn.SetDisplayNames(Index: Integer; Value: string);
+
+begin
+  if Index >= Owner.Header.RowCount then
+    ShowError(SDisplayNameIndexGERowCount, 0);
+
+  while Index >= FDisplayNames.Count do
+    FDisplayNames.Add('');
+  if FDisplayNames[Index] <> Value then
+  begin
+    FDisplayNames[Index] := Value;
+    if Index = 0 then
+      DisplayName := Value;
+    Changed(False);
   end;
 end;
 
@@ -7814,11 +7867,7 @@ end;
 procedure TVirtualTreeColumn.SetText(const Value: WideString);
 
 begin
-  if FText <> Value then
-  begin
-    FText := Value;
-    Changed(False);
-  end;
+  DisplayNames[0] := Value;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -7854,7 +7903,8 @@ end;
 //----------------------------------------------------------------------------------------------------------------------
 
 procedure TVirtualTreeColumn.ComputeHeaderLayout(DC: HDC; const Client: TRect; UseHeaderGlyph, UseSortGlyph: Boolean;
-  var HeaderGlyphPos, SortGlyphPos: TPoint; var TextBounds: TRect);
+  AText: string; ARowCount: Integer; ARow: Integer; var HeaderGlyphPos, SortGlyphPos: TPoint; var TextBounds: TRect;
+  var RowBounds: TRect; var DrawFormat: Cardinal);
 
 // The layout of a column header is determined by a lot of factors. This method takes them all into account and
 // determines all necessary positions and bounds:
@@ -7873,30 +7923,47 @@ var
   MaxRight,
   TextSpacing: Integer;
   UseText: Boolean;
+  LY: Integer;
+  LFirstRow: Boolean;
+  LUseHeaderGlyph: Boolean;
+  LUseSortGlyph: Boolean;
+  LMultiLineHeader: Boolean;
 
 begin
-  UseText := Length(FText) > 0;
+  LFirstRow := ARow = 0;
+  LUseHeaderGlyph := UseHeaderGlyph and LFirstRow;
+  LUseSortGlyph := UseSortGlyph and LFirstRow;
+  UseText := Length(AText) > 0;
   // If nothing is to show then don't waste time with useless preparation.
-  if not (UseText or UseHeaderGlyph or UseSortGlyph) then
+  if not (UseText or LUseHeaderGlyph or LUseSortGlyph) then
     Exit;
 
+  LMultiLineHeader := hoMultiline in Owner.Header.Options;
   CurrentAlignment := FAlignment;
   if FBidiMode <> bdLeftToRight then
     ChangeBiDiModeAlignment(CurrentAlignment);
+  if LMultiLineHeader then
+    DrawFormat := (DrawFormat or DT_VCENTER) and (not (DT_TOP or DT_BOTTOM))
+  else
+    DrawFormat := (DrawFormat or DT_LEFT) and (not (DT_CENTER or DT_RIGHT));
 
   // Calculate sizes of the involved items.
   ClientSize := Point(Client.Right - Client.Left, Client.Bottom - Client.Top);
+  if (ARowCount = 1) or (ClientSize.Y < Owner.Header.RowHeight) then
+    LY := ClientSize.Y
+  else
+    LY := Owner.Header.RowHeight;
   with Owner, Header do
   begin
-    if UseHeaderGlyph then
+    if LUseHeaderGlyph then
       HeaderGlyphSize := Point(FImages.Width, FImages.Height)
     else
       HeaderGlyphSize := Point(0, 0);
-    if UseSortGlyph then
+    if LUseSortGlyph then
     begin
       SortGlyphSize := Point(UtilityImages.Width, UtilityImages.Height);
-      // In any case, the sort glyph is vertically centered.
-      SortGlyphPos.Y := (ClientSize.Y - SortGlyphSize.Y) div 2;
+      // In any case, the sort glyph is vertically centered in the top header row.
+      SortGlyphPos.Y := (LY - SortGlyphSize.Y) div 2;
     end
     else
       SortGlyphSize := Point(0, 0);
@@ -7904,7 +7971,7 @@ begin
 
   if UseText then
   begin
-    GetTextExtentPoint32W(DC, PWideChar(FText), Length(FText), TextSize);
+    GetTextExtentPoint32(DC, PAnsiChar(AText), Length(AText), TextSize);
     Inc(TextSize.cx, 2);
     TextBounds := Rect(0, 0, TextSize.cx, TextSize.cy);
     TextSpacing := FSpacing;
@@ -7917,30 +7984,78 @@ begin
   end;
 
   // Check first for the special case where nothing is shown except the sort glyph.
-  if UseSortGlyph and not (UseText or UseHeaderGlyph) then
+  if LUseSortGlyph and not (UseText or LUseHeaderGlyph) then
   begin
     // Center the sort glyph in the available area if nothing else is there.
-    SortGlyphPos := Point((ClientSize.X - SortGlyphSize.X) div 2, (ClientSize.Y - SortGlyphSize.Y) div 2);
+    SortGlyphPos := Point((ClientSize.X - SortGlyphSize.X) div 2, (LY - SortGlyphSize.Y) div 2);
   end
   else
   begin
     // Determine extents of text and glyph and calculate positions which are clear from the layout.
-    if (Layout in [blGlyphLeft, blGlyphRight]) or not UseHeaderGlyph then
+    if (Layout in [blGlyphLeft, blGlyphRight]) or not LUseHeaderGlyph then
     begin
-      HeaderGlyphPos.Y := (ClientSize.Y - HeaderGlyphSize.Y) div 2;
-      TextPos.Y := (ClientSize.Y - TextSize.cy) div 2;
+      HeaderGlyphPos.Y := (LY - HeaderGlyphSize.Y) div 2;
+      TextPos.Y := (LY - TextSize.cy) div 2;
+      if LMultiLineHeader then
+      begin
+        if LUseHeaderGlyph then
+        begin
+          if Layout = blGlyphLeft then
+          begin
+            TextBounds.Left := HeaderGlyphSize.X + TextSpacing;
+            TextBounds.Right := ClientSize.X - TextSpacing;
+          end
+          else
+          begin
+            TextBounds.Left := TextSpacing;
+            TextBounds.Right := ClientSize.X - HeaderGlyphSize.X - TextSpacing;
+          end;
+        end
+        else
+        begin
+          TextBounds.Left := TextSpacing;
+          TextBounds.Right := ClientSize.X - TextSpacing;
+        end;
+        TextBounds.Top := TextSpacing;
+        TextBounds.Bottom := LY - TextSpacing;
+      end;
     end
     else
     begin
+      if LMultiLineHeader then
+      begin
+        TextBounds.Left := TextSpacing;
+        TextBounds.Right := ClientSize.X - TextSpacing;
+      end;
       if Layout = blGlyphTop then
       begin
-        HeaderGlyphPos.Y := (ClientSize.Y - HeaderGlyphSize.Y - TextSize.cy - TextSpacing) div 2;
+        if LMultiLineHeader then
+        begin
+          HeaderGlyphPos.Y := 0;
+          if LUseHeaderGlyph then
+            TextBounds.Top := HeaderGlyphPos.Y + HeaderGlyphSize.Y + TextSpacing
+          else
+            TextBounds.Top := TextSpacing;
+          TextBounds.Bottom := LY - TextSpacing;
+        end
+        else
+          HeaderGlyphPos.Y := (LY - HeaderGlyphSize.Y - TextSize.cy - TextSpacing) div 2;
         TextPos.Y := HeaderGlyphPos.Y + HeaderGlyphSize.Y + TextSpacing;
       end
       else
       begin
-        TextPos.Y := (ClientSize.Y - HeaderGlyphSize.Y - TextSize.cy - TextSpacing) div 2;
-        HeaderGlyphPos.Y := TextPos.Y + TextSize.cy + TextSpacing;
+        TextPos.Y := (LY - HeaderGlyphSize.Y - TextSize.cy - TextSpacing) div 2;
+        if LMultiLineHeader then
+        begin
+          HeaderGlyphPos.Y := LY - HeaderGlyphSize.Y;
+          TextBounds.Top := TextSpacing;
+          if LUseHeaderGlyph then
+            TextBounds.Bottom := HeaderGlyphPos.Y - TextSpacing
+          else
+            TextBounds.Bottom := LY - TextSpacing;
+        end
+        else
+          HeaderGlyphPos.Y := TextPos.Y + TextSize.cy + TextSpacing;
       end;
     end;
 
@@ -7949,7 +8064,7 @@ begin
       taLeftJustify:
         begin
           MinLeft := FMargin;
-          if UseSortGlyph and (FBidiMode <> bdLeftToRight) then
+          if LUseSortGlyph and (FBidiMode <> bdLeftToRight) then
           begin
             // In RTL context is the sort glyph placed on the left hand side.
             SortGlyphPos.X := MinLeft;
@@ -7960,7 +8075,7 @@ begin
             // Header glyph is above or below text, so both must be considered when calculating
             // the left positition of the sort glyph (if it is on the right hand side).
             TextPos.X := MinLeft;
-            if UseHeaderGlyph then
+            if LUseHeaderGlyph then
             begin
               HeaderGlyphPos.X := (ClientSize.X - HeaderGlyphSize.X) div 2;
               if HeaderGlyphPos.X < MinLeft then
@@ -7974,21 +8089,23 @@ begin
           begin
             // Everything is lined up. TextSpacing might be 0 if there is no text.
             // This simplifies the calculation because no extra tests are necessary.
-            if UseHeaderGlyph and (Layout = blGlyphLeft) then
+            if LUseHeaderGlyph and (Layout = blGlyphLeft) then
             begin
               HeaderGlyphPos.X := MinLeft;
               Inc(MinLeft, HeaderGlyphSize.X + FSpacing);
             end;
             TextPos.X := MinLeft;
             Inc(MinLeft, TextSize.cx + TextSpacing);
-            if UseHeaderGlyph and (Layout = blGlyphRight) then
+            if LUseHeaderGlyph and (Layout = blGlyphRight) then
             begin
               HeaderGlyphPos.X := MinLeft;
               Inc(MinLeft, HeaderGlyphSize.X + FSpacing);
             end;
           end;
-          if UseSortGlyph and (FBidiMode = bdLeftToRight) then
+          if LUseSortGlyph and (FBidiMode = bdLeftToRight) then
             SortGlyphPos.X := MinLeft;
+          if LMultiLineHeader then
+            DrawFormat := (DrawFormat or DT_LEFT) and (not (DT_CENTER or DT_RIGHT));
         end;
       taCenter:
         begin
@@ -7996,23 +8113,23 @@ begin
           begin
             HeaderGlyphPos.X := (ClientSize.X - HeaderGlyphSize.X) div 2;
             TextPos.X := (ClientSize.X - TextSize.cx) div 2;
-            if UseSortGlyph then
+            if LUseSortGlyph then
               Dec(TextPos.X, SortGlyphSize.X div 2);
           end
           else
           begin
             MinLeft := (ClientSize.X - HeaderGlyphSize.X - TextSpacing - TextSize.cx) div 2;
-            if UseHeaderGlyph and (Layout = blGlyphLeft) then
+            if LUseHeaderGlyph and (Layout = blGlyphLeft) then
             begin
               HeaderGlyphPos.X := MinLeft;
               Inc(MinLeft, HeaderGlyphSize.X + TextSpacing);
             end;
             TextPos.X := MinLeft;
             Inc(MinLeft, TextSize.cx + TextSpacing);
-            if UseHeaderGlyph and (Layout = blGlyphRight) then
+            if LUseHeaderGlyph and (Layout = blGlyphRight) then
               HeaderGlyphPos.X := MinLeft;
           end;
-          if UseHeaderGlyph then
+          if LUseHeaderGlyph then
           begin
             MinLeft := Min(HeaderGlyphPos.X, TextPos.X);
             MaxRight := Max(HeaderGlyphPos.X + HeaderGlyphSize.X, TextPos.X + TextSize.cx);
@@ -8023,7 +8140,7 @@ begin
             MaxRight := TextPos.X + TextSize.cx;
           end;
           // Place the sort glyph directly to the left or right of the larger item.
-          if UseSortGlyph then
+          if LUseSortGlyph then
             if FBidiMode = bdLeftToRight then
             begin
               // Sort glyph on the right hand side.
@@ -8034,11 +8151,13 @@ begin
               // Sort glyph on the left hand side.
               SortGlyphPos.X := MinLeft - FSpacing - SortGlyphSize.X;
             end;
+          if LMultiLineHeader then
+            DrawFormat := (DrawFormat or DT_CENTER) and (not (DT_LEFT or DT_RIGHT));
         end;
     else
       // taRightJustify
       MaxRight := ClientSize.X - FMargin;
-      if UseSortGlyph and (FBidiMode = bdLeftToRight) then
+      if LUseSortGlyph and (FBidiMode = bdLeftToRight) then
       begin
         // In LTR context is the sort glyph placed on the right hand side.
         Dec(MaxRight, SortGlyphSize.X);
@@ -8048,7 +8167,7 @@ begin
       if Layout in [blGlyphTop, blGlyphBottom] then
       begin
         TextPos.X := MaxRight - TextSize.cx;
-        if UseHeaderGlyph then
+        if LUseHeaderGlyph then
         begin
           HeaderGlyphPos.X := (ClientSize.X - HeaderGlyphSize.X) div 2;
           if HeaderGlyphPos.X + HeaderGlyphSize.X + FSpacing > MaxRight then
@@ -8062,21 +8181,23 @@ begin
       begin
         // Everything is lined up. TextSpacing might be 0 if there is no text.
         // This simplifies the calculation because no extra tests are necessary.
-        if UseHeaderGlyph and (Layout = blGlyphRight) then
+        if LUseHeaderGlyph and (Layout = blGlyphRight) then
         begin
           HeaderGlyphPos.X := MaxRight -  HeaderGlyphSize.X;
           MaxRight := HeaderGlyphPos.X - FSpacing;
         end;
         TextPos.X := MaxRight - TextSize.cx;
         MaxRight := TextPos.X - TextSpacing;
-        if UseHeaderGlyph and (Layout = blGlyphLeft) then
+        if LUseHeaderGlyph and (Layout = blGlyphLeft) then
         begin
           HeaderGlyphPos.X := MaxRight - HeaderGlyphSize.X;
           MaxRight := HeaderGlyphPos.X - FSpacing;
         end;
       end;
-      if UseSortGlyph and (FBidiMode <> bdLeftToRight) then
+      if LUseSortGlyph and (FBidiMode <> bdLeftToRight) then
         SortGlyphPos.X := MaxRight - SortGlyphSize.X;
+      if LMultiLineHeader then
+        DrawFormat := (DrawFormat or DT_RIGHT) and (not (DT_LEFT or DT_CENTER));
     end;
   end;
 
@@ -8087,7 +8208,7 @@ begin
   // These are the maximum bounds. Nothing goes beyond them.
   MinLeft := FMargin;
   MaxRight := ClientSize.X - FMargin;
-  if UseSortGlyph then
+  if LUseSortGlyph then
   begin
     if FBidiMode = bdLeftToRight then
     begin
@@ -8111,7 +8232,7 @@ begin
       Inc(Y, Client.Top);
     end;
   end;
-  if UseHeaderGlyph then
+  if LUseHeaderGlyph then
   begin
     if HeaderGlyphPos.X + HeaderGlyphSize.X > MaxRight then
       HeaderGlyphPos.X := MaxRight - HeaderGlyphSize.X;
@@ -8130,13 +8251,20 @@ begin
   end;
   if UseText then
   begin
-    if TextPos.X < MinLeft then
-      TextPos.X := MinLeft;
-    OffsetRect(TextBounds, TextPos.X, TextPos.Y);
-    if TextBounds.Right > MaxRight then
-      TextBounds.Right := MaxRight;
+    if not LMultiLineHeader then
+    begin
+      if TextPos.X < MinLeft then
+        TextPos.X := MinLeft;
+      OffsetRect(TextBounds, TextPos.X, TextPos.Y);
+      if TextBounds.Right > MaxRight then
+        TextBounds.Right := MaxRight;
+    end;
     OffsetRect(TextBounds, Client.Left, Client.Top);
+    OffsetRect(TextBounds, 0, ARow * Owner.Header.RowHeight);
   end;
+  RowBounds := Rect(0, 0, ClientSize.X, Owner.Header.RowHeight);
+  OffsetRect(RowBounds, Client.Left, Client.Top);
+  OffsetRect(RowBounds, 0, ARow * Owner.Header.RowHeight);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -8148,7 +8276,7 @@ begin
 
   // Must define a new name for the properties otherwise the VCL will try to load the wide string
   // without asking us and screws it completely up.
-  Filer.DefineProperty('WideText', ReadText, WriteText, FText <> '');
+  Filer.DefineProperty('WideText', ReadText, WriteText, FDisplayNames.Strings[0] <> '');
   Filer.DefineProperty('WideHint', ReadHint, WriteHint, FHint <> '');
 end;
 
@@ -8167,26 +8295,37 @@ end;
 
 function TVirtualTreeColumn.GetDisplayName: string;
 
-// Returns the column text if it only contains ANSI characters, otherwise the column id is returned because the IDE
-// still cannot handle Unicode strings.
+begin
+  Result := FDisplayNames.Strings[0];
+end;
 
-var
-  I: Integer;
+//----------------------------------------------------------------------------------------------------------------------
+
+function TVirtualTreeColumn.GetText: WideString;
 
 begin
-  // Check if the text of the column contains characters > 255
-  I := 1;
-  while I <= Length(FText) do
-  begin
-    if Ord(FText[I]) > 255 then
-      Break;
-    Inc(I);
-  end;
+  Result := GetDisplayName;
+end;
 
-  if I > Length(FText) then
-    Result := FText // implicit conversion
+//----------------------------------------------------------------------------------------------------------------------
+
+function TVirtualTreeColumn.GetDisplayNameCount: integer;
+
+begin
+  Result := FDisplayNames.Count;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+function TVirtualTreeColumn.GetDisplayNames(Index: Integer): string;
+
+begin
+  if Index >= Owner.Header.RowCount then
+    ShowError(SDisplayNameIndexGERowCount, 0);
+  if Index < FDisplayNames.Count then
+    Result := FDisplayNames.Strings[Index]
   else
-    Result := Format('Column %d', [Index]);
+    Result := '';
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -8236,7 +8375,7 @@ end;
 procedure TVirtualTreeColumn.WriteText(Writer: TWriter);
 
 begin
-  Writer.WriteWideString(FText);
+  Writer.WriteWideString(FDisplayNames.Strings[0]);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -8245,7 +8384,7 @@ procedure TVirtualTreeColumn.Assign(Source: TPersistent);
 
 var
   OldOptions: TVTColumnOptions;
-  
+
 begin
   if Source is TVirtualTreeColumn then
   begin
@@ -8267,6 +8406,7 @@ begin
     Alignment := TVirtualTreeColumn(Source).Alignment;
     Color := TVirtualTreeColumn(Source).Color;
     Tag := TVirtualTreeColumn(Source).Tag;
+    FDisplayNames.Assign(TVirtualTreeColumn(Source).FDisplayNames);
 
     // Order is important. Assign options last.
     FOptions := OldOptions;
@@ -8298,7 +8438,8 @@ begin
     (Alignment = OtherColumn.Alignment) and
     (Color = OtherColumn.Color) and
     (Tag = OtherColumn.Tag) and
-    (Options = OtherColumn.Options);
+    (Options = OtherColumn.Options) and
+    (FDisplayNames.CommaText = OtherColumn.FDisplayNames.CommaText);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -8345,14 +8486,14 @@ procedure TVirtualTreeColumn.LoadFromStream(const Stream: TStream; Version: Inte
 
 var
   Dummy: Integer;
-  S: WideString;
+  S: string;
 
 begin
   with Stream do
   begin
     ReadBuffer(Dummy, SizeOf(Dummy));
     SetLength(S, Dummy);
-    ReadBuffer(PWideChar(S)^, 2 * Dummy);
+    ReadBuffer(PAnsiChar(S)^, Dummy);
     Text := S;
     ReadBuffer(Dummy, SizeOf(Dummy));
     SetLength(FHint, Dummy);
@@ -8448,13 +8589,15 @@ procedure TVirtualTreeColumn.SaveToStream(const Stream: TStream);
 
 var
   Dummy: Integer;
+  LText: string;
 
 begin
+  LText := DisplayName;
   with Stream do
   begin
-    Dummy := Length(FText);
+    Dummy := Length(LText);
     WriteBuffer(Dummy, SizeOf(Dummy));
-    WriteBuffer(PWideChar(FText)^, 2 * Dummy);
+    WriteBuffer(PAnsiChar(LText)^, Dummy);
     Dummy := Length(FHint);
     WriteBuffer(Dummy, SizeOf(Dummy));
     WriteBuffer(PWideChar(FHint)^, 2 * Dummy);
@@ -8697,7 +8840,10 @@ begin
   // Do we need to shorten the caption due to limited space?
   GetTextExtentPoint32W(DC, PWideChar(Caption), Length(Caption), Size);
   TextSpace := Bounds.Right - Bounds.Left;
-  if TextSpace < Size.cx then
+  if hoMultiline in FHeader.Options then
+    // Edit control ensures that only full height lines are shown
+    DrawFormat := DrawFormat or DT_WORDBREAK or DT_END_ELLIPSIS or DT_EDITCONTROL
+  else if TextSpace < Size.cx then
     Caption := ShortenString(DC, Caption, TextSpace, DT_RTLREADING and DrawFormat <> 0);
 
   SetBkMode(DC, TRANSPARENT);
@@ -8705,16 +8851,11 @@ begin
   begin
     OffsetRect(Bounds, 1, 1);
     SetTextColor(DC, ColorToRGB(clBtnHighlight));
-    if IsWinNT then
-      Windows.DrawTextW(DC, PWideChar(Caption), Length(Caption), Bounds, DrawFormat)
-    else
-      DrawTextW(DC, PWideChar(Caption), Length(Caption), Bounds, DrawFormat, False);
+    FHeader.Treeview.DoTextDrawing(DC, Caption, Bounds, DrawFormat, False {AdjustRight});
+
     OffsetRect(Bounds, -1, -1);
     SetTextColor(DC, ColorToRGB(clBtnShadow));
-    if IsWinNT then
-      Windows.DrawTextW(DC, PWideChar(Caption), Length(Caption), Bounds, DrawFormat)
-    else
-      DrawTextW(DC, PWideChar(Caption), Length(Caption), Bounds, DrawFormat, False);
+    FHeader.Treeview.DoTextDrawing(DC, Caption, Bounds, DrawFormat, False {AdjustRight});
   end
   else
   begin
@@ -8722,10 +8863,8 @@ begin
       SetTextColor(DC, ColorToRGB(FHeader.Treeview.FColors.HeaderHotColor))
     else
       SetTextColor(DC, ColorToRGB(FHeader.FFont.Color));
-    if IsWinNT then
-      Windows.DrawTextW(DC, PWideChar(Caption), Length(Caption), Bounds, DrawFormat)
-    else
-      DrawTextW(DC, PWideChar(Caption), Length(Caption), Bounds, DrawFormat, False);
+
+    FHeader.Treeview.DoTextDrawing(DC, Caption, Bounds, DrawFormat, False {AdjustRight});
   end;
 end;
 
@@ -8879,6 +9018,27 @@ begin
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
+
+procedure TVirtualTreeColumns.DrawXPHorizontalSplitter(DC: HDC; Rect: TRect);
+
+var
+  Pen,
+  OldPen: HPEN;
+
+begin
+  // One solid pen for the dark line...
+  Pen := CreatePen(PS_SOLID, 1, XPDarkSplitBarColor);
+  OldPen := SelectObject(DC, Pen);
+  MoveToEx(DC, Rect.Left, Rect.Bottom - 2, nil);
+  LineTo(DC, Rect.Right, Rect.Bottom - 2);
+  // ... and one solid pen for the light line.
+  Pen := CreatePen(PS_SOLID, 1, XPLightSplitBarColor);
+  DeleteObject(SelectObject(DC, Pen));
+  MoveToEx(DC, Rect.Left, Rect.Bottom - 1, nil);
+  LineTo(DC, Rect.Right, Rect.Bottom - 1);
+  SelectObject(DC, OldPen);
+  DeleteObject(Pen);
+end;
 
 procedure TVirtualTreeColumns.FixPositions;
 
@@ -9579,6 +9739,10 @@ var
 
   SavedDC: Integer;
   Temp: TRect;
+  LText: string;
+  TempPos: TPoint;
+  LRowRect: TRect;
+  LRowCount, LRow: Integer;
   
 begin
   Run := FHeader.Treeview.FHeaderRect;
@@ -9787,11 +9951,12 @@ begin
             begin
               // calculate text and glyph position
               InflateRect(PaintRectangle, -2, -2);
-              DrawFormat := DT_LEFT or DT_TOP or DT_NOPREFIX;
+              DrawFormat := DT_TOP or DT_NOPREFIX;
               if UseRightToLeftReading then
-                DrawFormat := DrawFormat + DT_RTLREADING;
-              ComputeHeaderLayout(Handle, PaintRectangle, ShowHeaderGlyph, ShowSortGlyph, GlyphPos, SortGlyphPos,
-                TextRectangle);
+                DrawFormat := DrawFormat or DT_RTLREADING;
+              ComputeHeaderLayout(Handle, PaintRectangle, ShowHeaderGlyph,
+                  ShowSortGlyph, DisplayName, 1 {RowCount}, 0 {Row}, GlyphPos,
+                  SortGlyphPos, TextRectangle, Temp, DrawFormat);
 
               // Move glyph and text one pixel to the right and down to simulate a pressed button.
               if IsDownIndex then
@@ -9812,10 +9977,36 @@ begin
                 (not ShowSortGlyph or (FBidiMode <> bdLeftToRight) or (GlyphPos.X + Images.Width <= SortGlyphPos.X)) then
                 Images.Draw(FHeaderBitmap.Canvas, GlyphPos.X, GlyphPos.Y, FImageIndex, IsEnabled);
 
-              // caption
-              if not (hpeText in ActualElements) and (Length(Text) > 0) then
-                DrawButtonText(Handle, Text, TextRectangle, IsEnabled, IsHoverIndex and (hoHotTrack in FHeader.FOptions) and
-                not (tsUseThemes in FHeader.Treeview.FStates), DrawFormat);
+              // captions
+              if not (hpeText in ActualElements) then
+              begin
+                if Owner.Header.RowCount < FDisplayNames.Count then
+                  LRowCount := Owner.Header.RowCount
+                else
+                  LRowCount := FDisplayNames.Count;
+                LRow := 0;
+                while LRow < LRowCount do
+                begin
+                  LText := DisplayNames[LRow];
+
+                  ComputeHeaderLayout(Handle, PaintRectangle, ShowHeaderGlyph,
+                      ShowSortGlyph, LText, LRowCount, LRow, TempPos, TempPos,
+                      TextRectangle, LRowRect, DrawFormat);
+                  // Move text one pixel to the right and down to simulate a pressed button.
+                  if IsDownIndex then
+                    OffsetRect(TextRectangle, 1, 1);
+
+                  if Length(LText) > 0 then
+                    DrawButtonText(Handle, LText, TextRectangle, IsEnabled, IsHoverIndex and (hoHotTrack in FHeader.FOptions) and
+                      not (tsUseThemes in FHeader.Treeview.FStates), DrawFormat);
+
+                  // Draw horizontal row splitter if more rows.
+                  if LRow < LRowCount - 1 then
+                    DrawXPHorizontalSplitter(Handle, LRowRect);
+
+                  Inc(LRow);
+                end;
+              end;
 
               // sort glyph
               if not (hpeSortGlyph in ActualElements) and ShowSortGlyph then
@@ -9910,6 +10101,8 @@ begin
   FParentFont := False;
   FBackground := clBtnFace;
   FOptions := [hoColumnResize, hoDrag];
+  FRowCount := 1;
+  FRowHeight := 17;
 
   FImageChangeLink := TChangeLink.Create;
   FImageChangeLink.OnChange := ImageListChange;
@@ -10118,6 +10311,55 @@ begin
     FParentFont := Value;
     if FParentFont then
       FFont.Assign(FOwner.Font);
+  end;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TVTHeader.SetRowCount(Value: Integer);
+
+var
+  I: Integer;
+
+begin
+  if Value <= 0 then
+    ShowError(SRowCountLEZero, 0);
+
+  if FRowCount <> Value then
+  begin
+    FRowCount := Value;
+    for I := 0 to FColumns.Count - 1 do
+      while FColumns.Items[I].FDisplayNames.Count > FRowCount do
+        FColumns.Items[I].FDisplayNames.Delete(FColumns.Items[I].FDisplayNames.Count - 1);
+      
+    if not (csLoading in Treeview.ComponentState) and Treeview.HandleAllocated then
+    begin
+      if hoVisible in FOptions then
+      begin
+        RecalculateHeader;
+        Invalidate(nil);
+        Treeview.Invalidate;
+      end;
+    end;
+  end;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TVTHeader.SetRowHeight(Value: Integer);
+
+begin
+  if FRowHeight <> Value then
+  begin
+    FRowHeight := Value;
+    if not (csLoading in Treeview.ComponentState) and Treeview.HandleAllocated then
+    begin
+      if hoVisible in FOptions then
+      begin
+        Invalidate(nil);
+        Treeview.Invalidate;
+      end;
+    end;
   end;
 end;
 
@@ -11297,7 +11539,7 @@ begin
   FColors[4] := clBtnFace;        // GridLineColor
   FColors[5] := clBtnShadow;      // TreeLineColor
   FColors[6] := clBtnFace;        // UnfocusedSelectionColor
-  FColors[7] := clBtnFace;        // BorderColor   
+  FColors[7] := clBtnFace;        // BorderColor
   FColors[8] := clWindowText;     // HotColor
   FColors[9] := clHighLight;      // FocusedSelectionBorderColor
   FColors[10] := clBtnFace;       // UnfocusedSelectionBorderColor
@@ -19075,6 +19317,18 @@ begin
   DoStateChange([], [tsStructureChangePending]);
   FLastStructureChangeNode := nil;
   FLastStructureChangeReason := crIgnore;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TBaseVirtualTree.DoTextDrawing(DC: HDC; Text: WideString; var CellRect: TRect;
+  DrawFormat: Cardinal; AdjustRight: Boolean);
+
+begin
+  if IsWinNT then
+    Windows.DrawTextW(DC, PWideChar(Text), Length(Text), CellRect, DrawFormat)
+  else
+    DrawTextW(DC, PWideChar(Text), Length(Text), CellRect, DrawFormat, AdjustRight);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -29300,6 +29554,23 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+function TCustomVirtualStringTree.IsDisabled(Node: PVirtualNode): boolean;
+begin
+  result := (Assigned(Node) and (vsDisabled in Node.States)) or (not Enabled);
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+function TCustomVirtualStringTree.IsSelectedAndUnfocused(Node: PVirtualNode;
+  Column: TColumnIndex): boolean;
+begin
+  result := (Assigned(Node) and (vsSelected in Node.States)) and
+      (not Self.Focused) and
+      ((toFullRowSelect in FOptions.FSelectionOptions) or (Column = FFocusedColumn));
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 procedure TCustomVirtualStringTree.PaintNormalText(var PaintInfo: TVTPaintInfo; TextOutFlags: Integer;
   Text: WideString);
 
@@ -29313,6 +29584,8 @@ var
   R: TRect;
   DrawFormat: Cardinal;
   Size: TSize;
+  LNodeDisabled: boolean;
+  LNodeSelectedAndUnfocused: boolean;
 
 begin
   InitializeTextProperties(PaintInfo);
@@ -29320,6 +29593,8 @@ begin
   begin
     R := ContentRect;
     Canvas.TextFlags := 0;
+    LNodeDisabled := IsDisabled(Node);
+    LNodeSelectedAndUnfocused := IsSelectedAndUnfocused(Node, Column);
 
     // Multiline nodes don't need special font handling or text manipulation.
     // Note: multiline support requires the Unicode version of DrawText, which is able to do word breaking.
@@ -29330,13 +29605,14 @@ begin
     begin
       InflateRect(R, -FTextMargin, 0);
       DoPaintText(Node, Canvas, Column, ttNormal);
+
       // Disabled and unfocused node color overrides all other variants.
-      if (vsDisabled in Node.States) or not Enabled then
+      if LNodeDisabled then
         Canvas.Font.Color := FColors.DisabledColor
-      else if (vsSelected in Node.States) and (not Self.Focused) and
-              ((toFullRowSelect in FOptions.FSelectionOptions) or
-               (Column = FFocusedColumn)) then
+      else if LNodeSelectedAndUnfocused then
         Canvas.Font.Color := FColors.UnfocusedColor;
+
+      DoAdvancedPaintText(Node, Canvas, Column, ttNormal, LNodeDisabled, LNodeSelectedAndUnfocused);
 
       // The edit control flag will ensure that no partial line is displayed, that is, only lines
       // which are (vertically) fully visible are drawn.
@@ -29350,6 +29626,15 @@ begin
       FFontChanged := False;
       TripleWidth := FEllipsisWidth;
       DoPaintText(Node, Canvas, Column, ttNormal);
+
+      // Disabled and unfocused node color overrides all other variants.
+      if LNodeDisabled then
+        Canvas.Font.Color := FColors.DisabledColor
+      else if LNodeSelectedAndUnfocused then
+        Canvas.Font.Color := FColors.UnfocusedColor;
+
+      DoAdvancedPaintText(Node, Canvas, Column, ttNormal, LNodeDisabled, LNodeSelectedAndUnfocused);
+
       if FFontChanged then
       begin
         // If the font has been changed then the ellipsis width must be recalculated.
@@ -29358,14 +29643,6 @@ begin
         GetTextExtentPoint32W(Canvas.Handle, PWideChar(Text), Length(Text), Size);
         NodeWidth := Size.cx + 2 * FTextMargin;
       end;
-
-      // Disabled and unfocused node color overrides all other variants.
-      if (vsDisabled in Node.States) or not Enabled then
-        Canvas.Font.Color := FColors.DisabledColor
-      else if (vsSelected in Node.States) and (not Self.Focused) and
-              ((toFullRowSelect in FOptions.FSelectionOptions) or
-               (Column = FFocusedColumn)) then
-        Canvas.Font.Color := FColors.UnfocusedColor;
 
       DrawFormat := DT_NOPREFIX or DT_VCENTER or DT_SINGLELINE;
       if BidiMode <> bdLeftToRight then
@@ -29382,13 +29659,13 @@ begin
       else
         DrawFormat := DrawFormat or AlignmentToDrawFlag[Alignment];
     end;
-    
+
     if Canvas.TextFlags and ETO_OPAQUE = 0 then
       SetBkMode(Canvas.Handle, TRANSPARENT)
     else
       SetBkMode(Canvas.Handle, OPAQUE);
 
-    DoTextDrawing(PaintInfo, Text, R, DrawFormat);
+    DoTextDrawing(Canvas.Handle, Text, R, DrawFormat, False {AdjustRight});
   end;
 end;
 
@@ -29402,6 +29679,8 @@ procedure TCustomVirtualStringTree.PaintStaticText(const PaintInfo: TVTPaintInfo
 var
   R: TRect;
   DrawFormat: Cardinal;
+  LNodeDisabled: boolean;
+  LNodeSelectedAndUnfocused: boolean;
 
 begin
   with PaintInfo do
@@ -29431,12 +29710,14 @@ begin
     DoPaintText(Node, Canvas, Column, ttStatic);
 
     // Disabled and unfocused node color overrides all other variants.
-    if (vsDisabled in Node.States) or not Enabled then
+    LNodeDisabled := IsDisabled(Node);
+    LNodeSelectedAndUnfocused := IsSelectedAndUnfocused(Node, Column);
+    if LNodeDisabled then
       Canvas.Font.Color := FColors.DisabledColor
-    else if (vsSelected in Node.States) and (not Self.Focused) and
-            ((toFullRowSelect in FOptions.FSelectionOptions) or
-             (Column = FFocusedColumn)) then
+    else if LNodeSelectedAndUnfocused then
       Canvas.Font.Color := FColors.UnfocusedColor;
+
+    DoAdvancedPaintText(Node, Canvas, Column, ttNormal, LNodeDisabled, LNodeSelectedAndUnfocused);
 
     R := ContentRect;
     if Alignment = taRightJustify then
@@ -29448,10 +29729,7 @@ begin
       SetBkMode(Canvas.Handle, TRANSPARENT)
     else
       SetBkMode(Canvas.Handle, OPAQUE);
-    if IsWinNT then
-      Windows.DrawTextW(Canvas.Handle, PWideChar(Text), Length(Text), R, DrawFormat)
-    else
-      DrawTextW(Canvas.Handle, PWideChar(Text), Length(Text), R, DrawFormat, False);
+    DoTextDrawing(Canvas.Handle, Text, R, DrawFormat, False {AdjustRight});
   end;
 end;
 
@@ -29783,6 +30061,17 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+procedure TCustomVirtualStringTree.DoAdvancedPaintText(Node: PVirtualNode;
+  const Canvas: TCanvas; Column: TColumnIndex; TextType: TVSTTextType;
+  NodeDisabled: boolean; NodeSelectedAndUnfocused: boolean);
+begin
+  if Assigned(FOnAdvancedPaintText) then
+    FOnAdvancedPaintText(Self, Canvas, Node, Column, TextType, NodeDisabled,
+        NodeSelectedAndUnfocused);
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 function TCustomVirtualStringTree.DoShortenString(Canvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
   const S: WideString; Width: Integer; RightToLeft: Boolean; EllipsisWidth: Integer = 0): WideString;
 
@@ -29795,18 +30084,6 @@ begin
     FOnShortenString(Self, Canvas, Node, Column, S, Width, RightToLeft, Result, Done);
   if not Done then
     Result := ShortenString(Canvas.Handle, S, Width, RightToLeft, EllipsisWidth);
-end;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-procedure TCustomVirtualStringTree.DoTextDrawing(var PaintInfo: TVTPaintInfo; Text: WideString; CellRect: TRect;
-  DrawFormat: Cardinal);
-
-begin
-  if IsWinNT then
-    Windows.DrawTextW(PaintInfo.Canvas.Handle, PWideChar(Text), Length(Text), CellRect, DrawFormat)
-  else
-    DrawTextW(PaintInfo.Canvas.Handle, PWideChar(Text), Length(Text), CellRect, DrawFormat, False);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -30047,10 +30324,7 @@ begin
     DrawFormat := DrawFormat or DT_RIGHT or DT_RTLREADING
   else
     DrawFormat := DrawFormat or DT_LEFT;
-  if IsWinNT then
-    Windows.DrawTextW(Canvas.Handle, PWideChar(S), Length(S), PaintInfo.CellRect, DrawFormat)
-  else
-    DrawTextW(Canvas.Handle, PWideChar(S), Length(S), PaintInfo.CellRect, DrawFormat, False);
+  DoTextDrawing(Canvas.Handle, S, PaintInfo.CellRect, DrawFormat, False {AdjustRight});
   Result := PaintInfo.CellRect.Bottom - PaintInfo.CellRect.Top;
 end;
 

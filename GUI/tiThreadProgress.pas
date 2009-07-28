@@ -193,6 +193,7 @@ type
     function    GetCanCancel: boolean;
     procedure   SetCanCancel(const AValue: boolean);
     function    GetProgressBarWidth: integer;
+    function    GetLabelWidth: integer;
     procedure   SetShowAnimation(const AValue: boolean);
     function    AnimationShowing: boolean;
     procedure   AddAnimation;
@@ -280,8 +281,8 @@ begin
   FLabel.MarginHeight := 0;
   Flabel.MarginWidth := 0;
   FLabel.BorderStyle := htNone;
-  FLabel.DefBackground := clWhite;
-  FLabel.Width           := Width - (Left * 2);
+  FLabel.DefBackground := (AOwner as TFormThreadProgress).Color;
+  FLabel.Width           := GetLabelWidth;
   FLabel.Height          :=  16;
   FLabel.DefFontName := TForm(Owner).Font.Name;
 
@@ -391,8 +392,9 @@ begin
     // Right aligned to progress area.
     FAnimation.Left := self.ClientWidth - FAnimation.Width - 8;
     FAnimation.Anchors := [akTop, akRight];
-    // Centre vertically to progress bar.
-    FAnimation.Top := FProgressBar.Top + ((FProgressBar.Height - FAnimation.Height) div 2);
+    // Centre vertically.
+    FAnimation.Top := FProgressBar.Top + ((FProgressBar.Height - FAnimation.Height) div 2) - 2;
+//    FAnimation.Top := (Height - FAnimation.Height) div 2;
     FAnimation.Transparent := true;
     FAnimation.Parent := self;
     FAnimation.AnimationSpeed := 300;
@@ -400,6 +402,7 @@ begin
 
     // Adjust the progress bar to make room for the animation.
     FProgressBar.Width := GetProgressBarWidth;
+    FLabel.Width       := GetLabelWidth;
   end;
 end;
 
@@ -411,6 +414,7 @@ begin
     FreeAndNil(FAnimation);
     // Adjust the progress bar to fill the space where the animation was displayed.
     FProgressBar.Width := GetProgressBarWidth;
+    FLabel.Width       := GetLabelWidth;
   end;
 end;
 
@@ -433,6 +437,15 @@ begin
   Result := FCaption;
 end;
 
+
+function TProgInd.GetLabelWidth: integer;
+begin
+  result := Self.ClientWidth - FLabel.Left - 8;
+  if AnimationShowing then
+    result := result - FAnimation.Width - 6;
+  if CanCancel then
+    Dec(Result, cuCancelButtonSize);
+end;
 
 procedure TProgInd.SetCaption(const AValue: TCaption);
 begin
@@ -914,6 +927,7 @@ procedure TProgInd.SetCanCancel(const AValue: boolean);
 begin
   FSpeedButton.Visible := AValue;
   FProgressBar.Width := GetProgressBarWidth;
+  FLabel.Width       := GetLabelWidth;
 end;
 
 

@@ -24,7 +24,7 @@ type
     function    GetDataAsXML: string ; virtual ; abstract ;
     procedure   Init; override ;
     procedure   RefreshCacheFromDB(const ACacheFileDate: TDateTime); override;
-    function    DoExecute: string;
+    function    DoExecute: string; virtual;
 
     // You MAY override these
     //function    GetDBFileDataSQL: string ; override ;
@@ -81,7 +81,7 @@ begin
   if ACacheDirectoryRoot <> '' then
     LCacheDirectoryRoot:= ACacheDirectoryRoot
   else
-    LCacheDirectoryRoot:= ExpandFileName( tiAddTrailingSlash(tiGetEXEPath) + '\..\' + cPathToCachedData);
+    LCacheDirectoryRoot:= ExpandFileName( tiAddTrailingSlash(tiGetEXEPath) + '\..\' + CPathToCachedDataRoot);
   inherited Create(LCacheDirectoryRoot);
   FParams := TtiCGIParams.Create;
   if Assigned(AParams) then
@@ -98,15 +98,28 @@ function TtiOjectCacheServer.DoExecute: string;
 var
   lCachedFileDate : TDateTime ;
   lDatabaseFileDate : TDateTime ;
+  LStart: DWord;
 begin
+  LStart:= GetTickCount;
   if tiWaitForMutex(CachedFileName, word(INFINITE)) then
   try
     Init ;
     lCachedFileDate := GetCachedFileDate;
     lDatabaseFileDate := GetDBFileDate ;
+    Log('Reading "' + CachedFileName + '"');
+    Log('  File directory "' + CacheDirectory);
+    Log('  File name "' + CachedFileName);
+    Log('  Database date "' + tiDateTimeToStr(LDatabaseFileDate) + '"');
+    Log('  Cache date "' + tiDateTimeToStr(LCachedFileDate) + '"');
     if MustUpdateCacheFile(lCachedFileDate, lDatabaseFileDate) then
+    begin
+      Log('  File WILL be refreshed (' + tiIntToCommaStr(GetTickCount - LStart) + 'ms)');
+      LStart:= GetTickCount;
       RefreshCacheFromDB(lDatabaseFileDate);
+    end else
+      Log('  File WILL NOT be refreshed (' + tiIntToCommaStr(GetTickCount - LStart) + 'ms)');
     result:= ReturnDataFromCache;
+    Log('Done reading "' + CachedFileName + '" (' + tiIntToCommaStr(GetTickCount - LStart) + 'ms)');
   finally
     tiReleaseMutex(CachedFileName);
   end;

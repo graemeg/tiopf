@@ -1543,7 +1543,6 @@ begin
   end;
 end;
 
-
 procedure TtiObjectTestCase.SetPropValueNested;
 var
   LData : TtiObjectWithOwnedForTesting;

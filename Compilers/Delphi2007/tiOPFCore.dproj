@@ -57,6 +57,7 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="..\..\Core\tiAutoMap.pas" />
+    <DCCReference Include="..\..\Core\tiBaseMediator.pas" />
     <DCCReference Include="..\..\Core\tiBaseObject.pas" />
     <DCCReference Include="..\..\Core\tiCommandLineParams.pas" />
     <DCCReference Include="..\..\Core\tiCompress.pas" />
@@ -66,6 +67,7 @@
     <DCCReference Include="..\..\Core\tiEncrypt.pas" />
     <DCCReference Include="..\..\Core\tiExcept.pas" />
     <DCCReference Include="..\..\Core\tiFilteredObjectList.pas" />
+    <DCCReference Include="..\..\Core\tiFormMediator.pas" />
     <DCCReference Include="..\..\Core\tiINI.pas" />
     <DCCReference Include="..\..\Core\tiLog.pas" />
     <DCCReference Include="..\..\Core\tiLogToFile.pas" />
@@ -88,7 +90,7 @@
     <DCCReference Include="..\..\Core\tiVisitorDB.pas" />
     <DCCReference Include="..\..\Core\tiVisitorDBAutoGen.pas" />
     <DCCReference Include="..\..\Core\tiWin32.pas" />
-    <DCCReference Include="H:\rtl.dcp" />
-    <DCCReference Include="H:\vcl.dcp" />
+    <DCCReference Include="rtl.dcp" />
+    <DCCReference Include="vcl.dcp" />
   </ItemGroup>
 </Project>

@@ -180,6 +180,8 @@ begin
            end;
 
            Inc(lBufferIndex);
+           if Length(FBuffer) < lBufferIndex then
+              SetLength(FBuffer, Length(FBuffer) + cDefaultBufferLength);
            FBuffer[lBufferIndex]:= lChar;
          end;
     ',': begin // chr(44)

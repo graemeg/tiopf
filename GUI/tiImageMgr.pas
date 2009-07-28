@@ -505,12 +505,15 @@ begin
     //LoadImagesFromResource(cResTI_Insert, [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});
     LoadImagesFromResource(cResTI_Query, [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});
     //LoadImagesFromResource(cResTI_ReDo, [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});
+    //LoadImagesFromResource(cResTI_Refresh, [tiIS16]);
     //LoadImagesFromResource(cResTI_SaveAll, [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});
     LoadImagesFromResource(cResTI_Save, [tiIS16]);
+    LoadImagesFromResource(cResTI_Redo, [tiIS16]);
     LoadImagesFromResource(cResTI_Undo, [tiIS16]);
     LoadImagesFromResource(cResTI_Sort, [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});
     LoadImagesFromResource(cResTI_SelectCols, [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});
     LoadImagesFromResource(cResTI_Export, [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});
+    LoadImagesFromResource(cResTI_CutToClipboard, [tiIS16]);
     LoadImagesFromResource(cResTI_CopyToClipboard, [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});
     LoadImagesFromResource(cResTI_PasteFromClipboard, [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});
     LoadImagesFromResource(cResTI_ExportToCSV,     [tiIS16]{, [tiISNormal, tiISHot, tiISDisabled]});

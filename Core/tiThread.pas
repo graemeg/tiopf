@@ -43,6 +43,7 @@ type
   TtiThread = class(TtiSleepThread)
   private
     FText: string;
+    FDescription: string;
     FInActiveThreadList: boolean;
   protected
     procedure   DoOnTerminate(Sender: TObject); virtual;
@@ -54,6 +55,7 @@ type
     constructor CreateAndResume; virtual; // See note in body of method
     destructor  Destroy; override;
     Property    Text: string read FText write SetText;
+    property    Description: string read FDescription write FDescription;
   end;
 
   TtiThreadEvent = procedure(const AThread: TtiThread) of object;
@@ -451,6 +453,7 @@ function TtiActiveThreadList.GetActiveThreadTextDescriptions: string;
 var
   i: Integer;
   LUnknownThreadCount: Integer;
+  LDescription: string;
 begin
   FCritSect.Enter;
   try
@@ -458,11 +461,14 @@ begin
     LUnknownThreadCount := 0;
     for i := 0 to FList.Count-1 do
     begin
-      if FList.Items[i].Text <> '' then
+      LDescription := FList.Items[i].Description;
+      if LDescription = '' then
+        LDescription := FList.Items[i].Text;
+      if LDescription <> '' then
       begin
         if result <> '' then
           result:= result + CrLf;
-        result:= result + FList.Items[i].Text;
+        result:= result + LDescription;
       end else
         Inc(LUnknownThreadCount);
     end;

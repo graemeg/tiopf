@@ -9,6 +9,7 @@ uses
   ,tiConstants
   ,SysUtils
   ,Classes
+  ,Types
   ,Math
   ,Contnrs
   {$IFDEF DELPHI6ORABOVE}
@@ -141,6 +142,8 @@ type
      typically used in the OS. }
   function tiWrap(const AString: string; const AColumnWidth: Integer): string;
   function tiStripNonAlphaCharacters(const AString: string): string;
+  {: Remove sequence of digits from start of string. }
+  function tiStripIntPrefix(const AString : string): string;
 
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
   // *
@@ -344,6 +347,24 @@ type
   {: Increment a date time to the next specified interval}
   function tiNextInterval(const ADateTime: TDateTime;
       const AInterval: TtiTimeInterval): TDateTime;
+  {: Decode a date time to the nearest millisecond. }
+  procedure tiDecodeDateTimeToNearestMilliSecond(const ADateTime: TDateTime;
+    out ADays: Integer; out AHours: Word; out AMins: Word; out ASecs: Word;
+    out AMSecs: Word);
+  {: Round a date time to the nearest millisecond. This helps to overcome precision
+     problems when adding or comparing date-times. }
+  function tiRoundDateTimeToNearestMilliSecond(const ADateTime: TDateTime): TDateTime;
+  {: Compare date-time with millisecond rounding to avoid floating point
+     comparison issues. }
+  function tiCompareDateTimeToMilliSecond(const AFirstDateTime: TDateTime;
+    const ASecondDateTime: TDateTime): TValueRelationship;
+  {: Is the given time within the given time range. Millisecond precision. }
+  function tiIncludesTime(const ADateTime: TDateTime;
+    const AStartDateTime: TDateTime; const AEndDateTime: TDateTime): boolean;
+  {: Do the two given time ranges overlap. Millisecond precision. }
+  function tiOverlapsTime(const AStartDateTimeA: TDateTime;
+    const AEndDateTimeA: TDateTime; const AStartDateTimeB: TDateTime;
+    const AEndDateTimeB: TDateTime): boolean;
   {: Convert a date to the week number}
   function tiWeekNumber(const ADate: TDateTime): Byte;
 
@@ -373,6 +394,8 @@ type
 
   // Convert a string to an integer using StrToInt, default to 0 if an exception is raised
   function  tiStrToInt(         const AValue : string)   : integer;
+  // Convert the numeric prefix of a string to an integer using StrToInt, default to 0 if an exception is raised
+  function  tiStrToIntPrefix(   const AValue : string)   : integer;
   // Convert a string to a float using StrToFloat, default to 0 if an exception is raised
   function  tiStrToFloat(       const AValue : string)   : Extended;
   // Convert a date to a string using FormatDateTime with the standard date format
@@ -425,6 +448,7 @@ type
   function tiShellExecute(const AEXE : string;
                            const AParameters : string = '';
                            const AWinState : integer = SW_SHOWNORMAL): integer;
+  procedure tiOpenFile(const AFileName: string);
 {$ENDIF MSWINDOWS}
   // Run an EXE and wait for it to finish
   procedure tiRunEXEAndWait(const AEXE : string; const AParams: string = '');
@@ -1025,6 +1049,82 @@ begin
   end;
 end;
 
+procedure tiDecodeDateTimeToNearestMilliSecond(const ADateTime: TDateTime;
+  out ADays: Integer; out AHours: Word; out AMins: Word; out ASecs: Word;
+  out AMSecs: Word);
+var
+  LRemainder: TDateTime;
+const
+  cHalfMSec: Extended = 1/24/60/60/1000/2;
+begin
+  LRemainder := ADateTime + cHalfMSec;
+  ADays := Trunc(LRemainder);
+  LRemainder := (LRemainder - ADays) * 24;
+  AHours := Trunc(LRemainder);
+  LRemainder := (LRemainder - AHours) * 60;
+  AMins := Trunc(LRemainder);
+  LRemainder := (LRemainder - AMins) * 60;
+  ASecs := Trunc(LRemainder);
+  LRemainder := (LRemainder - ASecs) * 1000;
+  AMSecs := Trunc(LRemainder);
+end;
+
+function tiRoundDateTimeToNearestMilliSecond(const ADateTime: TDateTime): TDateTime;
+var
+  LDays: Integer;
+  LHours: Word;
+  LMins: Word;
+  LSecs: Word;
+  LMSecs: Word;
+begin
+  tiDecodeDateTimeToNearestMilliSecond(ADateTime, LDays, LHours, LMins, LSecs, LMSecs);
+  result := LDays +
+      ((LHours * MinsPerHour * SecsPerMin * MSecsPerSec +
+        LMins * SecsPerMin * MSecsPerSec +
+        LSecs * MSecsPerSec +
+        LMSecs) / MSecsPerDay); // Allow for values out of range
+end;
+
+function tiCompareDateTimeToMilliSecond(const AFirstDateTime: TDateTime;
+  const ASecondDateTime: TDateTime): TValueRelationship;
+var
+  LFirstDateTime: TDateTime;
+  LSecondDateTime: TDateTime;
+begin
+  // Calculate the two date times to the nearest millisecond.
+  LFirstDateTime := tiRoundDateTimeToNearestMilliSecond(AFirstDateTime);
+  LSecondDateTime := tiRoundDateTimeToNearestMilliSecond(ASecondDateTime);
+  // Values are rounded and encoded identically so just compare values.
+  // Do not use CompareDateTime as it can return the wrong result.
+  if LFirstDateTime < LSecondDateTime then
+    result := LessThanValue
+  else if LFirstDateTime > LSecondDateTime then
+    result := GreaterThanValue
+  else
+    result := EqualsValue;
+end;
+
+function tiIncludesTime(const ADateTime: TDateTime;
+  const AStartDateTime: TDateTime; const AEndDateTime: TDateTime): boolean;
+begin
+  // Millisecond precision - allows for slight differences in numerical values
+  // to be treated as the same time.
+  result :=
+      (tiCompareDateTimeToMilliSecond(ADateTime, AStartDateTime) >= 0) and
+      (tiCompareDateTimeToMilliSecond(ADateTime, AEndDateTime) < 0);
+end;
+
+function tiOverlapsTime(const AStartDateTimeA: TDateTime;
+  const AEndDateTimeA: TDateTime; const AStartDateTimeB: TDateTime;
+  const AEndDateTimeB: TDateTime): boolean;
+begin
+  // Millisecond precision - allows for slight differences in numerical values
+  // to be treated as the same time.
+  result :=
+      (tiCompareDateTimeToMilliSecond(AStartDateTimeB, AEndDateTimeA) < 0) and
+      (tiCompareDateTimeToMilliSecond(AEndDateTimeB, AStartDateTimeA) > 0);
+end;
+
 function tiWeekNumber(const ADate: TDateTime): Byte;
 var
   LD, LM, LY: Word;
@@ -1133,10 +1233,44 @@ end;
 {$ENDIF MSWINDOWS}
 
 
+{$IFDEF MSWINDOWS}
+procedure tiOpenFile(const AFileName: string);
+const
+  CKnownFileTypes: array[0..10] of string = (
+    'txt'
+    ,'htm'
+    ,'html'
+    ,'csv'
+    ,'exe'
+    ,'doc'
+    ,'docx'
+    ,'xls'
+    ,'xlsx'
+    ,'vsd'
+    ,'pdf'
+  );
+var
+  LExt: string;
+  i: integer;
+begin
+  LExt := LowerCase(tiExtractExtension(AFileName));
+  for i := 0 to Length(CKnownFileTypes) - 1 do
+    if LExt = CKnownFileTypes[i] then
+    begin
+      tiShellExecute(AFileName);
+      Exit; //==>
+    end;
+
+  tiShellExecute('notepad.exe', AFileName);
+end;
+{$ENDIF MSWINDOWS}
+
+
 function tiExtractFileNameOnly(AValue : string): string;
 begin
   result := tiRemoveExtension(extractFileName(AValue));
 end;
+
 
 function tiRemoveExtension(AValue: string): string;
 var
@@ -1298,6 +1432,27 @@ function tiStrToInt(const AValue : string): integer;
 begin
   try
     result := strToInt(_RemoveNonNumChars(AValue));
+  except
+    result := 0;
+  end;
+end;
+
+
+function tiStrToIntPrefix(const AValue : string): integer;
+var
+  s: string;
+  i: Integer;
+begin
+  s := AValue;
+  for i := 1 to Length(s) do
+    if (s[i] < '0') or (s[i] > '9') then
+    begin
+      s := Copy(s, 1, i - 1);
+      break;
+    end;
+
+  try
+    result := StrToInt(s);
   except
     result := 0;
   end;
@@ -3224,6 +3379,19 @@ begin
     if isCharAlpha(AString[i]) then
       LResult := LResult + AString[i];
   Result := LResult;
+end;
+
+function tiStripIntPrefix(const AString : string): string;
+var
+  i: Integer;
+begin
+  for i := 1 to Length(AString) do
+    if (AString[i] < '0') or (AString[i] > '9') then
+    begin
+      result := Copy(AString, i, Length(AString));
+      Exit; //==>
+    end;
+  result := '';
 end;
 
 function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;

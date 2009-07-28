@@ -1869,11 +1869,11 @@ begin
     lParams.SetValueAsDateTime('paramD', Date);
     lParams.SetValueAsBoolean('paramB', True);
 
-    Check(lParams.ParamIsNull['parmaS'], 'String param null');
-    Check(lParams.ParamIsNull['parmaI'], 'Integer param null');
-    Check(lParams.ParamIsNull['parmaF'], 'Float param null');
-    Check(lParams.ParamIsNull['parmaD'], 'Date param null');
-    Check(lParams.ParamIsNull['parmaB'], 'Boolean param null');
+    CheckFalse(lParams.ParamIsNull['paramS'], 'String param null');
+    CheckFalse(lParams.ParamIsNull['paramI'], 'Integer param null');
+    CheckFalse(lParams.ParamIsNull['paramF'], 'Float param null');
+    CheckFalse(lParams.ParamIsNull['paramD'], 'Date param null');
+    CheckFalse(lParams.ParamIsNull['paramB'], 'Boolean param null');
 
     lParams.ParamIsNull[ 'paramS' ]:= true;
     lParams.ParamIsNull[ 'paramI' ]:= true;
@@ -1881,11 +1881,11 @@ begin
     lParams.ParamIsNull[ 'paramD' ]:= true;
     lParams.ParamIsNull[ 'paramB' ]:= true;
 
-    Check(lParams.ParamIsNull['parmaS'], 'String param not null');
-    Check(lParams.ParamIsNull['parmaI'], 'Integer param not null');
-    Check(lParams.ParamIsNull['parmaF'], 'Float param not null');
-    Check(lParams.ParamIsNull['parmaD'], 'Date param not null');
-    Check(lParams.ParamIsNull['parmaB'], 'Boolean param not null');
+    Check(lParams.ParamIsNull['paramS'], 'String param not null');
+    Check(lParams.ParamIsNull['paramI'], 'Integer param not null');
+    Check(lParams.ParamIsNull['paramF'], 'Float param not null');
+    Check(lParams.ParamIsNull['paramD'], 'Date param not null');
+    Check(lParams.ParamIsNull['paramB'], 'Boolean param not null');
 
   finally
     lParams.Free;

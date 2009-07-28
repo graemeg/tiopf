@@ -73,6 +73,7 @@ type
     FaUndo: TtiAMSAction;
     FaSaveClose: TtiAMSAction;
     FaCancelClose: TtiAMSAction;
+    FFormSettings: TtiObject;
 
     procedure SaveCloseHandler;
     procedure CancelCloseHandler;
@@ -99,11 +100,14 @@ type
     function  FormIsDirty: boolean; virtual;
 
     procedure SetData(const AValue: TtiObject); virtual;
+    procedure SetFormSettings(const AFormSettings: TtiObject); virtual;
     function  GetData: TtiObject; virtual;
     function  OriginalData: TtiObject; virtual;
     function  EditedData: TtiObject; virtual;
 
     // Implement these in the concrete...
+    procedure ClearControlDataBindings; virtual;
+    procedure SetControlDataBindings; virtual;
     procedure DoSave; virtual;
     procedure DoBeforeSave; virtual;
     procedure DoAfterSave; virtual;
@@ -113,6 +117,7 @@ type
     property  OnEditsSave: TtiObjectEvent read GetOnEditsSave write SetOnEditsSave;
     property  OnEditsCancel: TtiObjectEvent read GetOnEditsCancel write SetOnEditsCancel;
     property  Data: TtiObject read GetData write SetData;
+    property  FormSettings: TtiObject read FFormSettings write SetFormSettings;
     property  FormData: TtiDataFormData read FFormData;
   end;
 
@@ -310,10 +315,17 @@ begin
   Assert(FFormData.TestValid(TtiDataFormData), CTIErrorInvalidObject);
   BeginUpdate;
   try
+    ClearControlDataBindings;
     FFormData.Data := AValue;
+    SetControlDataBindings;
   finally
     EndUpdate;
   end;
+end;
+
+procedure TtiFormMgrDataForm.SetFormSettings(const AFormSettings: TtiObject);
+begin
+  FFormSettings := AFormSettings;
 end;
 
 function TtiFormMgrDataForm.OriginalData: TtiObject;
@@ -489,6 +501,16 @@ begin
   FaUndo.Visible := (ButtonsVisible = btnVisReadWrite) and (FFormData is TtiDataFormClonedData);
   FaSaveClose.Visible := ButtonsVisible = btnVisReadWrite;
   FaCancelClose.Visible := ButtonsVisible = btnVisReadWrite;
+end;
+
+procedure TtiFormMgrDataForm.ClearControlDataBindings;
+begin
+  // Implement in concrete
+end;
+
+procedure TtiFormMgrDataForm.SetControlDataBindings;
+begin
+  // Implement in concrete
 end;
 
 procedure TtiFormMgrDataForm.DoAfterDiscard;

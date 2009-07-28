@@ -432,6 +432,7 @@ var
   LVersionExtracted: string;
   LVersion: integer;
 begin
+  Result:= False;
   //See http://support.microsoft.com/kb/164539 for details
   LReg:= TRegistry.Create;
   try

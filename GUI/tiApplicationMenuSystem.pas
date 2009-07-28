@@ -15,6 +15,8 @@ uses
   dxWinXPBar, dxCore, dxContainer,
   // Help units
   ehshelprouter, ehsbase, ehswhatsthis,
+  // HTML Viewer units
+  Htmlview,
   // tiOPF units
   tiUtils, tiBaseObject, FtiFormMgrForm, tiRoundedPanel, tiAnimatedGIF,
   tiGUIUtils
@@ -102,7 +104,6 @@ type
     FpnlCaption: TPanel;
     FpnlBorder: TtiRoundedPanel;
     FpnlParent: TtiRoundedPanel;
-    FimgWallPaper: TImage;
 
     FTBDockTop: TTBXDock;
     FMainMenuBar : TTBXToolbar;
@@ -143,7 +144,7 @@ type
     FPnlEmptyMessage: TtiRoundedPanel;
     FPnlProgress: TtiRoundedPanel;
     FPnlMessageText: TtiRoundedPanel;
-    FlblMessage: TLabel;
+    FlblMessage: THTMLViewer;
 
     FHelpRouter : THelpRouter;
     FWhatsThis : TWhatsThis;
@@ -207,6 +208,8 @@ type
     procedure DoBeginUpdate(Sender: TObject);
     procedure DoEndUpdate(Sender: TObject);
     procedure DoLBLMessageClick(Sender: TObject);
+    procedure DoLblMessageOnHotSpotClick(Sender: TObject; const SRC: string;
+        var Handled: boolean);
     function  GetMenuSideBarWidth: integer;
     procedure SetMenuSideBarWidth(const AValue: integer);
     function GetStatusPannelMessage: string;
@@ -234,7 +237,6 @@ type
      property    ApplicationBusyToolbarImage: TtiApplicationBusyToolbarImage read FApplicationBusyToolbarImage;
 
 
-     procedure   SetWallpaperImageResName(const pResName : string);
      procedure   HelpJump(const pHelpTopic : string); overload;
      procedure   HelpJump(pHelpContext : integer); overload;
      procedure   HelpJump; overload;
@@ -305,6 +307,8 @@ uses
 //  ,FAbout
   ,tiExcept
   ,tiDialogs
+  // HTML Viewer
+  ,HTMLUn2
  ;
 
 const
@@ -854,7 +858,7 @@ begin
   FdpMenuSidebar.Top := 0;
   FdpMenuSidebar.MinClientHeight := 64;
   FdpMenuSidebar.MinClientWidth := 80;
-  FdpMenuSidebar.Caption := 'Menu side bar';
+  FdpMenuSidebar.ShowCaptionWhenDocked := false;
   FdpMenuSidebar.DockedWidth := CMenuSideBarWidth;
   FdpMenuSidebar.DockPos := 32;
   FdpMenuSidebar.FloatingWidth := 160;
@@ -943,13 +947,15 @@ begin
   FPnlMessageText.HelpContext := FDefHelpContext;
   FPnlMessageText.CornerRadius := 5;
 
-  FlblMessage:= TLabel.Create(FPnlMessageText);
+  FlblMessage:= THTMLViewer.Create(FPnlMessageText);
   FlblMessage.Parent := FPnlMessageText;
-  FlblMessage.AutoSize := False;
-  FlblMessage.WordWrap := True;
   FlblMessage.Align  := alClient;
-  FlblMessage.Font.Style := [fsBold];
-  FlblMessage.ParentColor := True;
+  FlblMessage.DefFontSize := 8;
+  FlblMessage.MarginHeight := 0;
+  FlblMessage.MarginWidth := 0;
+  FlblMessage.BorderStyle := htNone;
+  FlblMessage.DefFontName := FPnlMessageText.Font.Name;
+  FlblMessage.OnHotSpotClick := DoLblMessageOnHotSpotClick;
 
   ltbDockRight:= TTBXDock.Create(FMainForm);
   ltbDockRight.Parent := FMainForm;
@@ -1073,7 +1079,8 @@ begin
     lSideBarGroup := FLastMenuSidebarGroup;
   result := lSideBarGroup.Items.Add;
   result.Action := pAction;
-//  Result.Caption := tiStrTran(pAction.Caption, '&', '');
+  // Side bar items don't use accelerator chars so change && to &
+  Result.Caption := tiDecodeNonAcceleratorInCaption(pAction.Caption);
 //  result.Hint := pAction.Hint;
 end;
 
@@ -1113,31 +1120,13 @@ begin
   FpnlParent.BorderColor := clWhite;
   FpnlParent.CornerRadius := 8; 
 
-  FimgWallPaper:= TImage.Create(FMainForm);
-  FimgWallPaper.Parent := FpnlParent;
-  FimgWallPaper.Left := 20;
-  FimgWallPaper.Top := 32;
-  FimgWallPaper.AutoSize := True;
-  FimgWallPaper.HelpContext := FDefHelpContext;
-
   FormMgr.ParentPnl   := ParentPnl;
   FormMgr.OnFormMessage := SetFormMessage;
 end;
 
 procedure TtiApplicationMenuSystem.OnMainFormReSize(Sender: TObject);
 begin
-  FimgWallpaper.SetBounds(
-    (FpnlBorder.ClientWidth - FimgWallPaper.Width) div 2,
-    (FpnlBorder.ClientHeight - FimgWallPaper.Height) div 2,
-    FimgWallPaper.Width,
-    FimgWallPaper.Height
- );
   ArrangeMessagePanels;
-end;
-
-procedure TtiApplicationMenuSystem.SetWallpaperImageResName(const pResName: string);
-begin
-  gTIImageListMgr.LoadBMPFromRes(pResName, FImgWallPaper.Picture.Bitmap);
 end;
 
 procedure TtiApplicationMenuSystem.HintToStatusBar(Sender: TObject);
@@ -1499,6 +1488,8 @@ begin
 end;
 
 procedure TtiApplicationMenuSystem.SetFormMessage(const AMessage: string; pMessageType: TtiUserFeedbackMessageType);
+var
+  LMessage: string;
 begin
   // ToDo: Must sort this out so the two can co-exist
   if AMessage = '' then
@@ -1522,7 +1513,12 @@ begin
     else
       raise EtiOPFProgrammerException.Create('Invalid pMessageType');
     end;
-    FlblMessage.Caption := AMessage;
+
+    FlblMessage.DefBackground := FPnlMessageText.Color;
+    LMessage := tiStrTran(AMessage, CrLf, Cr);
+    LMessage := tiStrTran(LMessage, Lf, Cr);
+    LMessage := tiStrTran(LMessage, Cr, '<br>');
+    FlblMessage.LoadFromString('<strong>' + LMessage + '</strong>');
     FpnlMessageText.Visible := True;
   end;
 
@@ -1677,6 +1673,16 @@ end;
 procedure TtiApplicationMenuSystem.DoLBLMessageClick(Sender: TObject);
 begin
   SetFormMessage('', tiufmtInfo);
+end;
+
+procedure TtiApplicationMenuSystem.DoLblMessageOnHotSpotClick(Sender: TObject;
+  const SRC: string; var Handled: boolean);
+begin
+  if Pos('file:', SRC) = 1 then
+  begin
+    tiOpenFile(HTMLToDos(SRC));
+    Handled := true;
+  end;
 end;
 
 procedure TtiApplicationMenuSystem.OnMainMenuBarResize(Sender: TObject);

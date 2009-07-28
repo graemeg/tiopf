@@ -27,6 +27,80 @@ const
 
 type
 
+  TtiStructuredCSVtoBOMSetter = class;
+  TtiStructuredCSVtoBOMFileParser = class;
+  TTextParserStructCSV = class;
+  TEMSCSVtoBOMSetterClass = class of TtiStructuredCSVtoBOMSetter;
+  TtiStructCSVMetaDatas = class;
+  TtiStructCSVMetaData = class;
+  TtiStructCSVMetaDataItem = class;
+  TtiTextParserRowEvent    = procedure(const pDataGroup: string) of object;
+  TtiTextParserSetterEvent = procedure(const pDataGroup: string;
+                                        const AFieldName: string;
+                                        const AValue: string) of object;
+
+
+
+  TtiStructuredCSVtoBOMFileParser = class(TtiBaseObject)
+  private
+    FDataOwner:       TtiObject;
+    FTextParserStructCSV: TTextParserStructCSV;
+    FSetters:    TObjectList;
+    FFileName:   string;
+  protected
+    property  FileName: string read FFileName;
+    property  DataOwner: TtiObject read FDataOwner;
+    property  TextParser: TTextParserStructCSV read FTextParserStructCSV;
+    property  Setters: TObjectList read FSetters;
+    procedure IsValid; virtual; abstract; // Must override this
+  public
+    constructor Create(const ADataOwner: TtiObject); virtual;
+    destructor Destroy; override;
+
+    procedure RegisterRowSetter(const ASetterClass: TEMSCSVtoBOMSetterClass);
+    procedure RegisterGroup(const AGroupName: string;
+      const ARowStartEvent: TtiTextParserRowEvent;
+      const ARowEndEvent: TtiTextParserRowEvent);
+    procedure RegisterCellSetter(const AGroupName: string;
+      const AFieldName: string;
+      const ASetter: TtiTextParserSetterEvent); overload;
+    procedure RegisterCellSetter(const AGroupName: string;
+      const AFieldName: string; const ARowStartEvent: TtiTextParserRowEvent;
+      const ASetter: TtiTextParserSetterEvent; const ARowEndEvent: TtiTextParserRowEvent); overload;
+    procedure ParseStringFragment(const AString: string);
+    procedure ParseFile(const AFileName: TFileName);
+    procedure ParseStream(const AStream: TStream);
+  end;
+
+  TtiStructuredCSVtoBOMSetter = class(TtiBaseObject)
+  private
+    FDataOwner: TtiObject;
+    FDataItem: TtiObject;
+    FFileParser: TtiStructuredCSVtoBOMFileParser;
+    FErrorMessage: string;
+    FRowEndEvent: TtiTextParserRowEvent;
+    procedure OnRowEnd(const ADataGroup: string);
+  protected
+    function GetDataOwner: TtiObject; virtual;
+    property DataItem: TtiObject read FDataItem write FDataItem;
+    property ErrorMessage: string read FErrorMessage write FErrorMessage;
+    property DataOwner: TtiObject read GetDataOwner;
+    property FileParser: TtiStructuredCSVtoBOMFileParser read FFileParser;
+
+    procedure IsValidToString(const AValue: TtiObject);
+    procedure SetOID(const ADataGroup, AFieldName, AValue: string); virtual;
+    procedure RegisterGroup(const AGroupName: string;
+      const ARowStartEvent: TtiTextParserRowEvent;
+      const ARowEndEvent: TtiTextParserRowEvent);
+    procedure RegisterCellSetter(const AGroupName: string;
+      const AFieldName: string;
+      const ASetter: TtiTextParserSetterEvent);
+  public
+    constructor Create(const AFileParser: TtiStructuredCSVtoBOMFileParser); virtual;
+    procedure CreateObject(const ADataGroup: string); virtual;
+    procedure CheckValid(const ADataGroup: string); virtual;
+  end;
+
   ETextParserStructCSVException = class(Exception)
   private
     FRow: Integer;
@@ -80,15 +154,6 @@ type
     property SetterErrorMessage: string read FSetterErrorMessage Write FSetterErrorMessage;
   end;
 
-  TtiStructCSVMetaDatas = class;
-  TtiStructCSVMetaData = class;
-  TtiStructCSVMetaDataItem = class;
-  TtiTextParserRowEvent    = procedure(const pDataGroup: string) of object;
-  TtiTextParserSetterEvent = procedure(const pDataGroup: string;
-                                        const AFieldName: string;
-                                        const AValue: string) of object;
-
-
   TtiStructCSVMetaDatas = class(TtiObjectList)
   private
     FLatestUsed : TtiStructCSVMetaData;
@@ -107,7 +172,10 @@ type
                             const AFieldName: string;
                             const pRowStartEvent: TtiTextParserRowEvent;
                             const pSetter: TtiTextParserSetterEvent;
-                            const pRowEndEvent: TtiTextParserRowEvent):TtiStructCSVMetaDataItem;
+                            const pRowEndEvent: TtiTextParserRowEvent):TtiStructCSVMetaDataItem; overload;
+    function    AddInstance(const AGroupName: string;
+                            const AFieldName: string;
+                            const pSetter: TtiTextParserSetterEvent):TtiStructCSVMetaDataItem; overload;
     procedure   ClearIndexedItems;
   end;
 
@@ -517,6 +585,18 @@ begin
     Result := nil;
 end;
 
+function TtiStructCSVMetaDatas.AddInstance(const AGroupName, AFieldName: string;
+  const pSetter: TtiTextParserSetterEvent): TtiStructCSVMetaDataItem;
+var
+  lStructCSVMetaData : TtiStructCSVMetaData;
+begin
+  lStructCSVMetaData := FindByDataGroupName(AGroupName);
+  if lStructCSVMetaData <> nil then
+    Result := lStructCSVMetaData.AddInstance(AFieldName, pSetter)
+  else
+    Result := nil;
+end;
+
 procedure TtiStructCSVMetaDatas.ClearIndexedItems;
 var
   i : Integer;
@@ -746,6 +826,170 @@ begin
     '; Event message: ' + pEventMessage +
     '; Row in data file: ' + IntToStr(pRow) +
     '; Col in data file: ' + IntToStr(pCol);
+end;
+
+procedure TtiStructuredCSVtoBOMFileParser.RegisterRowSetter(const ASetterClass: TEMSCSVtoBOMSetterClass);
+begin
+  Assert(Assigned(ASetterClass), 'ASetterClass not assigned');
+  Setters.Add(ASetterClass.Create(Self));
+end;
+
+constructor TtiStructuredCSVtoBOMFileParser.Create(const ADataOwner: TtiObject);
+begin
+  inherited Create;
+  FDataOwner       := ADataOwner;
+  FTextParserStructCSV := TTextParserStructCSV.Create;
+  FSetters    := TObjectList.Create(True);
+end;
+
+destructor TtiStructuredCSVtoBOMFileParser.Destroy;
+begin
+  FTextParserStructCSV.Free;
+  FSetters.Free;
+  inherited;
+end;
+
+procedure TtiStructuredCSVtoBOMFileParser.ParseFile(const AFileName: TFileName);
+begin
+  Assert(FTextParserStructCSV.TestValid(TTextParserStructCSV), CTIErrorInvalidObject);
+  Assert(FDataOwner.TestValid(TtiObject), CTIErrorInvalidObject);
+  FFileName         := AFileName;
+  FTextParserStructCSV.ParseFile(FFileName);
+  IsValid;
+  FDataOwner.ObjectState := posClean;
+end;
+
+procedure TtiStructuredCSVtoBOMFileParser.ParseStream(const AStream: TStream);
+begin
+  Assert(FTextParserStructCSV.TestValid(TTextParserStructCSV), CTIErrorInvalidObject);
+  Assert(FDataOwner.TestValid(TtiObject), CTIErrorInvalidObject);
+  Assert(AStream <> nil, 'AStream not assigned');
+  FTextParserStructCSV.ParseStream(AStream);
+  IsValid;
+  FDataOwner.ObjectState := posClean;
+end;
+
+procedure TtiStructuredCSVtoBOMFileParser.ParseStringFragment(const AString: string);
+begin
+  Assert(FTextParserStructCSV.TestValid(TTextParserStructCSV), CTIErrorInvalidObject);
+  Assert(FDataOwner.TestValid(TtiObject), CTIErrorInvalidObject);
+  FTextParserStructCSV.ParseString(AString);
+end;
+
+procedure TtiStructuredCSVtoBOMFileParser.RegisterCellSetter(const AGroupName: string;
+  const AFieldName: string; const ASetter: TtiTextParserSetterEvent);
+begin
+  Assert(FTextParserStructCSV.TestValid(TTextParserStructCSV), CTIErrorInvalidObject);
+  Assert(FTextParserStructCSV.MetaDatas.TestValid(TtiStructCSVMetaDatas), CTIErrorInvalidObject);
+  Assert(AGroupName <> '', 'pGroupName = not Assigned');
+  Assert(AFieldName <> '', 'pFieldName not assigned');
+  Assert(Assigned(ASetter), 'pSetter not assigned');
+  FTextParserStructCSV.MetaDatas.AddInstance(AGroupName, AFieldName, ASetter);
+end;
+
+procedure TtiStructuredCSVtoBOMFileParser.RegisterCellSetter(const AGroupName,
+  AFieldName: string; const ARowStartEvent: TtiTextParserRowEvent;
+  const ASetter: TtiTextParserSetterEvent;
+  const ARowEndEvent: TtiTextParserRowEvent);
+begin
+  Assert(FTextParserStructCSV.TestValid(TTextParserStructCSV), CTIErrorInvalidObject);
+  Assert(FTextParserStructCSV.MetaDatas.TestValid(TtiStructCSVMetaDatas), CTIErrorInvalidObject);
+  Assert(AGroupName <> '', 'pGroupName = not Assigned');
+  Assert(AFieldName <> '', 'pFieldName not assigned');
+  Assert(Assigned(ARowStartEvent), 'pRowStartEvent not assigned');
+  Assert(Assigned(ASetter), 'pSetter not assigned');
+  Assert(Assigned(ARowEndEvent), 'pRowEndEvent not assigned');
+  FTextParserStructCSV.MetaDatas.AddInstance(AGroupName, AFieldName, ARowStartEvent, ASetter, ARowEndEvent);
+end;
+
+procedure TtiStructuredCSVtoBOMFileParser.RegisterGroup(
+  const AGroupName: string; const ARowStartEvent,
+  ARowEndEvent: TtiTextParserRowEvent);
+begin
+  FTextParserStructCSV.MetaDatas.FindCreateByDataGroupName(AGroupName, ARowStartEvent, ARowEndEvent);
+end;
+
+procedure TtiStructuredCSVtoBOMSetter.CreateObject(const ADataGroup: string);
+begin
+  FErrorMessage := '';
+end;
+
+function TtiStructuredCSVtoBOMSetter.GetDataOwner: TtiObject;
+begin
+  Result := FDataOwner;
+end;
+
+procedure TtiStructuredCSVtoBOMSetter.IsValidToString(const AValue: TtiObject);
+var
+  LErrors: TtiObjectErrors;
+  i:       integer;
+begin
+  Assert(AValue.TestValid(TtiObject), CTIErrorInvalidObject);
+  LErrors := TtiObjectErrors.Create;
+  try
+    AValue.IsValid(LErrors);
+    for i := 0 to LErrors.Count - 1 do
+    begin
+      if ErrorMessage <> '' then
+        ErrorMessage := ErrorMessage + #13;
+      ErrorMessage :=
+        ErrorMessage +
+        LErrors.Items[i].ErrorMessage + ' (File location. Row=' +
+        IntToStr(FFileParser.TextParser.Row) + ' Col=' +
+        IntToStr(FFileParser.TextParser.Col) + ')';
+
+    end;
+  finally
+    LErrors.Free;
+  end;
+end;
+
+procedure TtiStructuredCSVtoBOMSetter.OnRowEnd(const ADataGroup: string);
+begin
+  CheckValid(ADataGroup);
+  if Assigned(FRowEndEvent) then
+    FRowEndEvent(ADataGroup);
+end;
+
+procedure TtiStructuredCSVtoBOMSetter.RegisterCellSetter(const AGroupName,
+  AFieldName: string; const ASetter: TtiTextParserSetterEvent);
+begin
+  FileParser.RegisterCellSetter(AGroupName, AFieldName, ASetter)
+end;
+
+procedure TtiStructuredCSVtoBOMSetter.RegisterGroup(const AGroupName: string;
+  const ARowStartEvent, ARowEndEvent: TtiTextParserRowEvent);
+begin
+  FileParser.RegisterGroup(AGroupName, ARowStartEvent, OnRowEnd);
+  FRowEndEvent := ARowEndEvent;
+end;
+
+procedure TtiStructuredCSVtoBOMSetter.SetOID(const ADataGroup, AFieldName,
+  AValue: string);
+begin
+  Assert(ADataGroup <> '', 'ADataGroup not assigned');
+  Assert(AFieldName = 'OID', 'AFieldName <> "OID"');
+  Assert(AValue <> '', 'AValue not assigned');
+  {$IFDEF OID_AS_INT64}
+    DataItem.OID := StrToInt64(AValue);
+  {$ELSE}
+    DataItem.OID.AsString := AValue;
+  {$ENDIF}
+end;
+
+procedure TtiStructuredCSVtoBOMSetter.CheckValid(const ADataGroup: string);
+begin
+  if FErrorMessage <> '' then
+    raise Exception.Create(FErrorMessage);
+end;
+
+constructor TtiStructuredCSVtoBOMSetter.Create(const AFileParser: TtiStructuredCSVtoBOMFileParser);
+begin
+  Assert(AFileParser.TestValid(TtiStructuredCSVtoBOMFileParser), CTIErrorInvalidObject);
+  FFileParser := AFileParser;
+  Assert(FFileParser.DataOwner.TestValid(TtiObject), CTIErrorInvalidObject);
+  FDataOwner := FFileParser.DataOwner;
+  inherited Create;
 end;
 
 end.

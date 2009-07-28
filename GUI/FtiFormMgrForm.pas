@@ -95,6 +95,7 @@ type
     property  FormErrorMessage: string read FFormErrorMessage Write SetFormErrorMessage;
     property  FormInfoMessage: string read FFormInfoMessage Write SetFormInfoMessage;
     property  FormMgr: TtiFormMgr read FFormMgr Write FFormMgr;
+    procedure SetEscapeKeyEnabled(const AValue: boolean);
   end;
 
   TtiFormMgrFormClass = class of TtiFormMgrForm;
@@ -132,7 +133,8 @@ type
                                     AModal         : Boolean = False;
                               const AOnEditsSave   : TtiObjectEvent = nil;
                               const AOnEditsCancel : TtiObjectEvent = nil;
-                                    AReadOnly      : boolean = False): TtiFormMgrForm; overload;
+                                    AReadOnly      : boolean = False;
+                              const AFormSettings  : TtiObject = nil): TtiFormMgrForm; overload;
     procedure   ShowForm(     const AForm          : TtiFormMgrForm;
                               const AData          : TtiObject;
                                     AModal         : Boolean = False;
@@ -143,7 +145,8 @@ type
     function    ShowFormModal(const AFormClass     : TtiFormMgrFormClass;
                               const AData          : TtiObject;
                               const AOnEditsSave   : TtiObjectEvent = nil;
-                              const AOnEditsCancel : TtiObjectEvent = nil): TtiFormMgrForm;
+                              const AOnEditsCancel : TtiObjectEvent = nil;
+                              const AFormSettings  : TtiObject = nil): TtiFormMgrForm;
     procedure   BringToFront(const pForm : TtiFormMgrForm; pFocusFirstControl : Boolean);
 
     function    FindForm(const pFormClass : TtiFormMgrFormClass; const AData : TtiObject): TtiFormMgrForm;
@@ -166,6 +169,7 @@ type
     property    OnBeginUpdate: TNotifyEvent read FOnBeginUpdate Write FOnBeginUpdate;
     property    OnEndUpdate:   TNotifyEvent read FOnEndUpdate Write FOnEndUpdate;
     procedure   AssignFormList(const AStrings : TStrings);
+    procedure   SetEscapeKeyEnabled(const AValue: boolean);
   end;
 
 implementation
@@ -303,6 +307,15 @@ procedure TtiFormMgrForm.SetButtonsVisible(const AValue: TtiButtonsVisible);
 begin
   FButtonsVisible := AValue;
   FaClose.Visible := FButtonsVisible = btnVisReadOnly;
+end;
+
+procedure TtiFormMgrForm.SetEscapeKeyEnabled(const AValue: boolean);
+var
+  i: integer;
+begin
+  for i := 0 to FAL.ActionCount-1 do
+    if (FAL.Actions[i] as TAction).ShortCut = Shortcut(Word(VK_ESCAPE), []) then
+      (FAL.Actions[i] as TAction).Enabled:= AValue;
 end;
 
 function TtiFormMgrForm.AddAction(
@@ -519,6 +532,11 @@ begin
   ShowForm(AValue);
 end;
 
+procedure TtiFormMgr.SetEscapeKeyEnabled(const AValue: boolean);
+begin
+  FActiveForm.SetEscapeKeyEnabled(AValue);
+end;
+
 procedure TtiFormMgr.SetForms(i: integer; const AValue: TtiFormMgrForm);
 begin
   FForms[i]:= AValue;
@@ -567,7 +585,8 @@ function TtiFormMgr.ShowForm(
             AModal: Boolean = False;
       const AOnEditsSave: TtiObjectEvent = nil;
       const AOnEditsCancel: TtiObjectEvent = nil;
-            AReadOnly: boolean = False
+            AReadOnly: boolean = False;
+      const AFormSettings: TtiObject = nil
      ): TtiFormMgrForm;
 var
   LForm : TtiFormMgrForm;
@@ -608,6 +627,10 @@ begin
           end;
           LForm.IsModal       := AModal;
           LForm.FormMgr       := Self;
+          if (AFormSettings <> nil) and
+             (LForm is TtiFormMgrDataForm) and
+             (TtiFormMgrDataForm(LForm).FormSettings <> AFormSettings) then
+            TtiFormMgrDataForm(LForm).FormSettings := AFormSettings;
           if (AData <> nil) and
              (LForm is TtiFormMgrDataForm) and
              (TtiFormMgrDataForm(LForm).Data <> AData) then
@@ -635,9 +658,9 @@ end;
 
 function TtiFormMgr.ShowFormModal(const AFormClass: TtiFormMgrFormClass;
   const AData: TtiObject; const AOnEditsSave,
-  AOnEditsCancel: TtiObjectEvent): TtiFormMgrForm;
+  AOnEditsCancel: TtiObjectEvent; const AFormSettings: TtiObject): TtiFormMgrForm;
 begin
-  Result := ShowForm(AFormClass, AData, True {AModal}, AOnEditsSave, AOnEditsCancel, False {AReadOnly});
+  Result := ShowForm(AFormClass, AData, True {AModal}, AOnEditsSave, AOnEditsCancel, False {AReadOnly}, AFormSettings);
 end;
 
 procedure TtiFormMgr.CloseForm(const pForm: TtiFormMgrForm);

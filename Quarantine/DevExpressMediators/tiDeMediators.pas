@@ -37,9 +37,9 @@ type
   private
     FEditControl: TcxCustomTextEdit;
   protected
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent);override;
-    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent);override;
+    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   SetupGUIandObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
@@ -68,9 +68,9 @@ type
   private
     FEditControl: TcxCheckBox;
   protected
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent);override;
-    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent);override;
+    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   SetupGUIandObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
@@ -84,10 +84,10 @@ type
   private
     FEditControl: TcxCustomComboBox;
   protected
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent); override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent); override;
     procedure   SetupGUIandObject; override;
-    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   DoObjectToGUI; override;
   public
     constructor Create; override;
@@ -137,8 +137,8 @@ type
   private
     FEditControl: TcxLabel;
   protected
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent); override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent); override;
     procedure   SetupGUIandObject; override;
   public
     constructor Create; override;
@@ -151,10 +151,10 @@ type
   private
     FEditControl: TcxCustomSpinEdit;
   protected
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent); override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent); override;
     procedure   SetupGUIandObject; override;
-    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
   public
     constructor Create; override;
     property    EditControl: TcxCustomSpinEdit read FEditControl write FEditControl;
@@ -183,8 +183,8 @@ type
   private
     FEditControl: TcxTrackBar;
   protected
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent);override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   SetupGUIandObject; override;
   public
     constructor Create; override;
@@ -197,8 +197,8 @@ type
   private
     FEditControl: TcxMemo;
   protected
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent);override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   SetupGUIandObject; override;
     procedure   DoObjectToGUI; override;
     procedure   DoGUIToObject; override;
@@ -212,8 +212,8 @@ type
   private
     FEditControl: TcxDateEdit;
   protected
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent);override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   DoGUIToObject; override;
     procedure   SetupGUIandObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
@@ -229,8 +229,8 @@ type
     FEditControl: TcxRadioGroup;
   protected
     procedure   DoObjectToGUI; override;
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent);override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   SetupGUIandObject; override;
   public
     constructor Create; override;
@@ -247,8 +247,8 @@ type
     procedure SetProgressBarBasedOnMouse(X: Integer);
   protected
     procedure   DoObjectToGUI; override;
-    function    GetGuiControl: TComponent; override;
-    procedure   SetGuiControl(const AValue: TComponent);override;
+    function    GetGUIControl: TComponent; override;
+    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   SetupGUIandObject; override;
   public
     constructor Create; override;
@@ -304,7 +304,7 @@ type
     function GetSubject: TtiObject;
   protected
     procedure   SetupGUIandObject; override;
-    function    GetGuiControl: TComponent; override;
+    function    GetGUIControl: TComponent; override;
     procedure   DoGUIToObject; override;
     procedure   DoObjectToGUI; override;
   public
@@ -367,7 +367,7 @@ end;
 constructor TMediatorcxTextEdit.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Text';
+  GUIFieldName := 'Text';
 end;
 
 destructor TMediatorcxTextEdit.Destroy;
@@ -377,15 +377,15 @@ begin
   inherited Destroy;
 end;
 
-function TMediatorcxTextEdit.GetGuiControl: TComponent;
+function TMediatorcxTextEdit.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxTextEdit.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxTextEdit.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxCustomTextEdit;
-  inherited SetGuiControl(AValue);
+  inherited SetGUIControl(AValue);
 end;
 
 procedure TMediatorcxTextEdit.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
@@ -413,11 +413,11 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorcxTextEdit.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorcxTextEdit.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
-  inherited UpdateGuiValidStatus(pErrors);
+  inherited UpdateGUIValidStatus(pErrors);
 
   oError := pErrors.FindByErrorProperty(FieldName);
   if oError <> nil then
@@ -442,18 +442,18 @@ end;
 constructor TMediatorcxCheckBox.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Checked';
+  GUIFieldName := 'Checked';
 end;
 
-function TMediatorcxCheckBox.GetGuiControl: TComponent;
+function TMediatorcxCheckBox.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxCheckBox.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxCheckBox.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxCheckBox;
-  inherited SetGuiControl(AValue);
+  inherited SetGUIControl(AValue);
 end;
 
 procedure TMediatorcxCheckBox.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
@@ -477,11 +477,11 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorcxCheckBox.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorcxCheckBox.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
-  inherited UpdateGuiValidStatus(pErrors);
+  inherited UpdateGUIValidStatus(pErrors);
 
   oError := pErrors.FindByErrorProperty(FieldName);
   if oError <> nil then
@@ -506,7 +506,7 @@ end;
 constructor TMediatorcxCustomComboBox.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Text';
+  GUIFieldName := 'Text';
 end;
 
 procedure TMediatorcxCustomComboBox.DoObjectToGUI;
@@ -514,15 +514,15 @@ begin
   EditControl.ItemIndex := EditControl.Properties.Items.IndexOf(Subject.PropValue[FieldName]);
 end;
 
-function TMediatorcxCustomComboBox.GetGuiControl: TComponent;
+function TMediatorcxCustomComboBox.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxCustomComboBox.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxCustomComboBox.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxCustomComboBox;
-  inherited SetGuiControl(AValue);
+  inherited SetGUIControl(AValue);
 end;
 
 procedure TMediatorcxCustomComboBox.SetupGUIandObject;
@@ -534,11 +534,11 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorcxCustomComboBox.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorcxCustomComboBox.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
-  inherited UpdateGuiValidStatus(pErrors);
+  inherited UpdateGUIValidStatus(pErrors);
 
   oError := pErrors.FindByErrorProperty(FieldName);
   if oError <> nil then
@@ -655,7 +655,7 @@ begin
                                  [E.message, FieldName]);
   end;
 
-  ObjectToGui;
+  ObjectToGUI;
 
 end;
 
@@ -707,15 +707,15 @@ end;
 constructor TMediatorcxLabel.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Caption';
+  GUIFieldName := 'Caption';
 end;
 
-function TMediatorcxLabel.GetGuiControl: TComponent;
+function TMediatorcxLabel.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxLabel.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxLabel.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxLabel;
 end;
@@ -736,15 +736,15 @@ end;
 constructor TMediatorcxTrackBar.Create;
 begin
   inherited;
-  GuiFieldName := 'Position';
+  GUIFieldName := 'Position';
 end;
 
-function TMediatorcxTrackBar.GetGuiControl: TComponent;
+function TMediatorcxTrackBar.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxTrackBar.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxTrackBar.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxTrackBar;
 end;
@@ -782,12 +782,12 @@ begin
   EditControl.Lines.Text := Subject.PropValue[FieldName];
 end;
 
-function TMediatorcxMemo.GetGuiControl: TComponent;
+function TMediatorcxMemo.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxMemo.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxMemo.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl:=AValue as TcxMemo;
 end;
@@ -826,12 +826,12 @@ begin
     Subject.PropValue[FieldName] := EditControl.Date;
 end;
 
-function TMediatorcxDateEdit.GetGuiControl: TComponent;
+function TMediatorcxDateEdit.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxDateEdit.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxDateEdit.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxDateEdit;
   inherited;
@@ -867,15 +867,15 @@ end;
 constructor TMediatorcxCustomSpinEdit.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Value';
+  GUIFieldName := 'Value';
 end;
 
-function TMediatorcxCustomSpinEdit.GetGuiControl: TComponent;
+function TMediatorcxCustomSpinEdit.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxCustomSpinEdit.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxCustomSpinEdit.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxCustomSpinEdit;
 end;
@@ -889,11 +889,11 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorcxCustomSpinEdit.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorcxCustomSpinEdit.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
-  inherited UpdateGuiValidStatus(pErrors);
+  inherited UpdateGUIValidStatus(pErrors);
 
   oError := pErrors.FindByErrorProperty(FieldName);
   if oError <> nil then
@@ -913,7 +913,7 @@ end;
 constructor TMediatorcxCalcEdit.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Value';
+  GUIFieldName := 'Value';
 end;
 
 procedure TMediatorcxCalcEdit.SetupGUIandObject;
@@ -930,7 +930,7 @@ end;
 constructor TMediatorcxTimeEdit.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Time';
+  GUIFieldName := 'Time';
 end;
 
 procedure TMediatorcxTimeEdit.SetupGUIandObject;
@@ -972,7 +972,7 @@ end;
 constructor TMediatorcxRadioGroupBox.Create;
 begin
   inherited Create;
-  GuiFieldName := 'ItemIndex';
+  GUIFieldName := 'ItemIndex';
 end;
 
 procedure TMediatorcxRadioGroupBox.DoObjectToGUI;
@@ -986,15 +986,15 @@ begin
     EditCOntrol.ItemIndex := -1; 
 end;
 
-function TMediatorcxRadioGroupBox.GetGuiControl: TComponent;
+function TMediatorcxRadioGroupBox.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxRadioGroupBox.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxRadioGroupBox.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxRadioGroup;
-  inherited SetGuiControl(AValue);
+  inherited SetGUIControl(AValue);
 end;
 
 procedure TMediatorcxRadioGroupBox.SetupGUIandObject;
@@ -1011,7 +1011,7 @@ end;
 constructor TMediatorcxColorComboBox.Create;
 begin
   inherited;
-  GuiFieldName := 'ColorValue';
+  GUIFieldName := 'ColorValue';
 end;
 
 procedure TMediatorcxColorComboBox.SetupGUIandObject;
@@ -1033,7 +1033,7 @@ end;
 constructor TMediatorcxProgressbar.Create;
 begin
   inherited;
-  GuiFieldName := 'Position';
+  GUIFieldName := 'Position';
 end;
 
 procedure TMediatorcxProgressbar.DoObjectToGUI;
@@ -1041,7 +1041,7 @@ begin
   inherited;
 end;
 
-function TMediatorcxProgressbar.GetGuiControl: TComponent;
+function TMediatorcxProgressbar.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
@@ -1057,7 +1057,7 @@ begin
     SetProgressBarBasedOnMouse(X);
 end;
 
-procedure TMediatorcxProgressbar.SetGuiControl(const AValue: TComponent);
+procedure TMediatorcxProgressbar.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxProgressBar;
 end;
@@ -1132,7 +1132,7 @@ begin
 
 end;
 
-function TMediatorcxCustomGridView.GetGuiControl: TComponent;
+function TMediatorcxCustomGridView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;

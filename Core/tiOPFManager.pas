@@ -359,11 +359,10 @@ begin
   FApplicationData := TObjectList.Create(true);
 
   {$IFNDEF OID_AS_INT64}
-    DefaultOIDGenerator:= TtiOIDGeneratorGUID.Create; // Set the default OID Generator to GUID
+    FDefaultOIDGenerator:= TtiOIDGeneratorGUID.Create; // Set the default OID Generator to GUID
   {$ELSE}
     FDefaultOIDGenerator:= TtiOIDAsInt64Generator.Create;
   {$ENDIF}
-
 
   FApplicationStartTime := Now;
 end;
@@ -374,9 +373,7 @@ begin
   Terminate;
   FActiveThreadList.Free;
   FVisitorManager.Free;
-  {$IFNDEF OID_AS_INT64}
-    FDefaultOIDGenerator.Free;
-  {$ENDIF}
+  FDefaultOIDGenerator.Free;
   FClassDBMappingMgr.Free;
   FPersistenceLayers.Free;
   FApplicationData.Free;
@@ -531,12 +528,24 @@ procedure TtiOPFManager.ExecSQL(const ASQL : string;
                                 const APersistenceLayerName : string = '');
 var
   lDB : TtiDatabase;
+  LDBConnectionName: string;
+  LPersistenceLayerName: string;
 begin
-  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, APersistenceLayerName);
+  if ADBConnectionName <> '' then
+    LDBConnectionName:= ADBConnectionName
+  else
+    LDBConnectionName:= DefaultDBConnectionName;
+  if APersistenceLayerName <> '' then
+    LPersistenceLayerName:= APersistenceLayerName
+  else
+    LPersistenceLayerName:= DefaultPersistenceLayerName;
+
+
+  lDB := PersistenceLayers.LockDatabase(ADBConnectionName, LPersistenceLayerName);
   try
     lDB.ExecSQL(ASQL);
   finally
-    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, APersistenceLayerName);
+    PersistenceLayers.UnLockDatabase(lDB, ADBConnectionName, LPersistenceLayerName);
   end;
 end;
 

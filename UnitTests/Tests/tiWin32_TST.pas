@@ -32,6 +32,8 @@ uses
   ,tiTestDependencies
   ,Contnrs
   ,Windows
+  ,tiUtils
+  ,SysUtils
  ;
 
 
@@ -55,72 +57,53 @@ end;
 procedure TTestTIWin32.TestTIWin32_tiWin32RunProcessWithTimeout;
 const
   CTimeoutSecs = 5;
-  CParamName = '-s';
+  CParams = '-s %d -f %s';
+  CLogFileName = 'tiWin32RunProcessWithTimeout_TST.log';
   CEXEName = 'sleepfor.exe';
   CBATName = 'sleepfor.bat';
-  CDirectory = '';
-//var
-//  LCommandLine: string;
-//  LParams: string;
-//  LDirectory: string;
-//  LTimeoutInterval: Cardinal;
-//  LProcessNameToKill: string;
-//
-//  LSleepForSecs: Cardinal;
-//  LTimeoutSecs: Cardinal;
+  CDirectory = 'DUnitSupportApps\SleepFor\_bin\';
+var
+  LCommandLine: string;
+  LParams: string;
+  LDirectory: string;
+  LProcessNameToKill: string;
+
+  LSleepForSecs: Cardinal;
+  LTimeoutSecs: Cardinal;
+
+  LLogFileName: string;
+const
+  CBeforeSleepMessage = 'Before sleep message';
+  CAfterSleepMessage = 'After sleep message';
 begin
-  //full path exe name - process to kill specified
-//    //SleepFor > Timeout
-//    LCommandLine := CDirectory + CEXEName;
-//    LSleepForSecs := 2;
-//    LTimeoutSecs  := 1;
-//    LParams := CParamName + IntToStr(LSleepForSecs);
-//    LDirectory := '';
-//    LProcessToKill := CEXEName;
-//
-//    //Timeout > SleepFor
-//    LCommandLine := CDirectory + CEXEName;
-//    LSleepForSecs := 1;
-//    LTimeoutSecs  := 2;
-//    LParams := CParamName + IntToStr(LSleepForSecs);
-//    LDirectory := '';
-//    LProcessToKill := CEXEName;
-//
-//  //no path exe name - no process to kill specified
-//    //SleepFor > Timeout
-//    LCommandLine := CEXEName;
-//    LSleepForSecs := 2;
-//    LTimeoutSecs  := 1;
-//    LParams := CParamName + IntToStr(LSleepForSecs);
-//    LDirectory := CDirectory;
-//    LProcessToKill := '';
-//
-//    //Timeout > SleepFor
-//    LCommandLine := CEXEName;
-//    LSleepForSecs := 1;
-//    LTimeoutSecs  := 2;
-//    LParams := CParamName + IntToStr(LSleepForSecs);
-//    LDirectory := CDirectory;
-//    LProcessToKill := '';
-//
-//  //no path batch file name - process to kill specified
-//    //SleepFor > Timeout
-//    LCommandLine := CBATName;
-//    LSleepForSecs := 2;
-//    LTimeoutSecs  := 1;
-//    LParams := CParamName + IntToStr(LSleepForSecs);
-//    LDirectory := CDirectory;
-//    LProcessToKill := CEXEName;
-//
-//    //Timeout > SleepFor
-//    LCommandLine := CBATName;
-//    LSleepForSecs := 2;
-//    LTimeoutSecs  := 1;
-//    LParams := CParamName + IntToStr(LSleepForSecs);
-//    LDirectory := CDirectory;
-//    LProcessToKill := CEXEName;
-//
-//  tiWin32RunProcessWithTimeout(
+
+  // Timeout > SleepFor (Task will run to completion)
+  LDirectory := tiAddTrailingSlash(tiGetEXEPath) + CDirectory;
+  LCommandLine := LDirectory + CEXEName;
+  LSleepForSecs := 1;
+  LTimeoutSecs  := 2;
+  LLogFileName := LDirectory + CLogFileName;
+  LParams := Format(CParams, [LSleepForSecs, LLogFileName]);
+  LProcessNameToKill := CEXEName;
+
+  tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs, LProcessNameToKill);
+  CheckEquals(true, FileExists(LLogFileName));
+  CheckEquals(IntToStr(LSleepForSecs), tiFileToString(LLogFileName));
+
+  tiDeleteFile(LLogFileName);
+
+  // SleepFor > Timeout (Task will be killed by timeout)
+  LDirectory := tiAddTrailingSlash(tiGetEXEPath) + CDirectory;
+  LCommandLine := LDirectory + CEXEName;
+  LSleepForSecs := 2;
+  LTimeoutSecs  := 1;
+  LLogFileName := LDirectory + CLogFileName;
+  LParams := Format(CParams, [LSleepForSecs, LLogFileName]);
+  LProcessNameToKill := CEXEName;
+
+  tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs, LProcessNameToKill);
+  Check( not FileExists(LLogFileName), 'Time out failed');
+
 end;
 
 procedure TTestTIWin32.CoInitialize_CoUnInitialize_MainThread;

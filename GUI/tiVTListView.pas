@@ -42,6 +42,7 @@ uses
   ,VirtualStringTree
 {$ENDIF}
   ,tiVTAbstract
+  ,tiVTSearch
   ;
 
 {
@@ -54,7 +55,6 @@ const
   crsDefaultColFieldName    = 'Caption';
   cDefaultAlternateRowColor = clPaleBlue; // Pale blue
   cDefaultAlternateRowCount = 2; // Show every second row in pale blue
-  cSearchFailureColor = $7f7fff;  // pink
   cInvalidValueColor = TColor($00c0ff); // Orange
 
 Const
@@ -283,80 +283,6 @@ type
     property Columns: TtiVTColumns read GetColumns write SetColumns stored False; // VT stores manually
   end;
 
-  TtiVTSearchPanel = class;
-
-  TtiVTSearchPanelFindTextChange = procedure(
-    const ASender: TtiVTSearchPanel; const AFindText: string) of object;
-
-  TtiVTSearchPanelShowing = procedure(
-    const ASender: TtiVTSearchPanel; const AIsShowing: Boolean) of object;
-
-{
- Search behaviour to imitate FireFox - if we have matched, incremental searching
- begins from last matched node. If there is no match or the search text is empty
- we begin from the root.
-}
-
-  TtiVTSearchPanel = class(TCustomPanel)
-    FFindLabel: TLabel;
-    FFindText: TEdit;
-    FClose: TtiSpeedButton;
-    FFindNext: TtiSpeedButton;
-    FFindPrevious: TtiSpeedButton;
-    FWrapLabel: TLabel;
-
-  private
-    FOnFindTextChange: TtiVTSearchPanelFindTextChange;
-    FTextMatching: boolean;
-    FShowing: boolean;
-    FOnShowing: TtiVTSearchPanelShowing;
-    FOnFindNext: TNotifyEvent;
-    FOnFindPrevious: TNotifyEvent;
-    FOnReturnKey: TNotifyEvent;
-    FOnEnterFindEdit: TNotifyEvent;
-    FOnExitFindEdit: TNotifyEvent;
-
-    procedure SetOnFindTextChange(const AValue: TtiVTSearchPanelFindTextChange);
-    procedure SetTextMatching(const Value: boolean);
-    procedure SetShowing(const AValue: boolean);
-    procedure SetOnShowing(const AValue: TtiVTSearchPanelShowing);
-    procedure DoFindText(Sender: TObject);
-    procedure DoFindNext(Sender: TObject);
-    procedure DoClose(Sender: TObject);
-    procedure SetOnFindNext(const AValue: TNotifyEvent);
-    procedure DoFindPrevious(Sender: TObject);
-    procedure SetOnFindPrevious(const AValue: TNotifyEvent);
-    procedure SetOnReturnKey(const Value: TNotifyEvent);
-    procedure SetOnEnterFindEdit(const Value: TNotifyEvent);
-    procedure SetOnExitFindEdit(const Value: TNotifyEvent);
-    function  GetSearchText: string;
-    procedure DoFindKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-
-    procedure DoReturnKey;
-    procedure DoOnEnterFindEdit(Sender: TObject);
-    procedure DoOnExitFindEdit(Sender: TObject);
-    procedure ClearWrapMessage;
-
-  public
-    constructor Create(AOwner: TComponent); override;
-    property TextMatching: boolean read FTextMatching write SetTextMatching;
-    property SearchText: string read GetSearchText;
-    procedure Wrapped(const AForward: boolean = true);
-
-  published
-    property Showing: boolean read FShowing write SetShowing;
-    property OnFindNext: TNotifyEvent read FOnFindNext write SetOnFindNext;
-    property OnFindPrevious: TNotifyEvent read FOnFindPrevious write SetOnFindPrevious;
-    property OnReturnKey: TNotifyEvent read FOnReturnKey write SetOnReturnKey;
-    property OnEnterFindEdit: TNotifyEvent read FOnEnterFindEdit write SetOnEnterFindEdit;
-    property OnExitFindEdit: TNotifyEvent read FOnExitFindEdit write SetOnExitFindEdit;
-
-    property OnFindTextChange: TtiVTSearchPanelFindTextChange
-      read FOnFindTextChange write SetOnFindTextChange;
-    property OnShowing: TtiVTSearchPanelShowing
-      read FOnShowing write SetOnShowing;
-  end;
-
   TtiInternalVirtualTree = class(TVirtualStringTree)
   protected
     FtiOwner: TtiCustomVirtualTree;
@@ -434,14 +360,10 @@ type
 
   TtiCustomVirtualTree = class(TtiVTAbstract)
   private
-    FSP: TtiVTSearchPanel;
-
     FData: TtiObjectList;
     FFilteredData: TObjectList;
     FGroupedData: TList; // List of indexes into FFilteredData
     FGroupingApplied: Boolean;
-    FLastNode: PVirtualNode;
-    FLastSearchedNode, FLastMatchedNode: PVirtualNode;
     FFilterEventDispatcher: TtiVTOnFilterDataMulticastEventDispatcher;
 
     FShowAlternateRowColor: Boolean;
@@ -474,11 +396,8 @@ type
     FShowNodeHint: boolean;
     FOnGetNodeHint: TtiVTOnNodeHint;
     FHeaderClickSorting: boolean;
-    FSPFindNext: TGetNextNodeProc;
-    FSPWrapToNode: TGetFirstNodeProc;
     FMultiSelect: boolean;
 
-    procedure ClearSearchState;
     procedure DrawSortGlyph(const ACanvas: TCanvas;
       const ASortDirection: TSortDirection; const APosition: TPoint);
     function  GetHeader: TtiVTHeader;
@@ -503,7 +422,6 @@ type
     procedure SetSelectedIndex(const AValue: integer);
     procedure DoDblClick(Sender: TObject); virtual;
     procedure FocusNode(ANode: PVirtualNode);
-    function GetLastNode: PVirtualNode;
     procedure SetRowSelect(const AValue: boolean);
     procedure SetShowNodeHint(const AValue: boolean);
     procedure SetOnGetNodeHint(const AValue: TtiVTOnNodeHint);
@@ -513,21 +431,9 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure VTHeaderDrawQueryElements(Sender: TVTHeader;
       var PaintInfo: THeaderPaintInfo; var Elements: THeaderPaintElements);
-    procedure SPFindText(const ASender: TtiVTSearchPanel;
-      const AFindText: string; out ATextFound: boolean);
-    procedure SPFindTextChange(const ASender: TtiVTSearchPanel;
-      const AFindText: string);
-    procedure SPFindNext(Sender: TObject);
-    procedure SPFindPrevious(Sender: TObject);
 
     function ItemPassesFilter(pObject : TtiObject) : Boolean;
 
-    procedure VTSearchInsideNode(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      const SearchText: string; out Result: boolean);
-    procedure VTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Column: TColumnIndex);
-    function WrapToBottom: PVirtualNode;
-    function WrapToTop: PVirtualNode;
     function GetFilterAsString: String;
     procedure VTCreateEditor(Sender: TBaseVirtualTree; Node: PVirtualNode;
         Column: TColumnIndex; out EditLink: IVTEditLink);
@@ -551,6 +457,8 @@ type
     //FOnTipInfo: TtiLVInfoTipEvent;
     //FInfoTipType: TtiLVInfoTypeType;
   protected
+    procedure VTSearchInsideNode(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      const SearchText: string; out Result: boolean); override;
     procedure   ApplyGrouping; virtual;
     procedure   ClearGrouping; virtual;
     procedure   DoEnter; override;
@@ -606,10 +514,6 @@ type
     procedure DoOnPaintText(pSender: TBaseVirtualTree; const pTargetCanvas: TCanvas; pNode: PVirtualNode;  pColumn: TColumnIndex; pTextType: TVSTTextType);
     procedure DoOnBeforeCellPaint(ASender: TBaseVirtualTree; ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex; ACellRect: TRect);
     procedure DoOnGetHint(Sender: TBaseVirtualTree; ANode: PVirtualNode; Column: TColumnIndex; var ALineBreakStyle: TVTTooltipLineBreakStyle; var AHintText: WideString);
-    procedure SPEnterFindEdit(Sender: TObject); virtual;
-    procedure SPExitFindEdit(Sender: TObject); virtual;
-    procedure SPEnterKey(Sender: TObject); virtual;
-    procedure SPShowing(const ASender: TtiVTSearchPanel; const AIsShowing: Boolean); virtual;
 
     property AlternateRowColor: TColor read FAlternateRowColor write SetAlternateRowColor default cDefaultAlternateRowColor;
     property AlternateRowCount: Byte Read FAlternateRowCount Write FAlternateRowCount default cDefaultAlternateRowCount;
@@ -693,7 +597,6 @@ type
     //property    GroupCols      : TtiLVGroupCols read FGroupCols;
     property    Data : TtiObjectList read FData write SetData;
     property    Header: TtiVTHeader read GetHeader write SetHeader;
-    property    SP: TtiVTSearchPanel read FSP;
     property    Sorted: Boolean read FSorted;
     function    SelectedNodeScreenOrigin: TPoint;
     property    FilteredItemCount: Integer read GetFilteredItemCount;
@@ -969,7 +872,7 @@ implementation
 
 uses
    Math
-  ,Dialogs 
+  ,Dialogs
   ,tiConstants
   ,tiExcept
   ,tiGUIUtils
@@ -1719,16 +1622,6 @@ begin
   FSortOrders := TtiVTSortOrders.Create(Self);
   FFilterEventDispatcher := TtiVTOnFilterDataMulticastEventDispatcher.Create;
 
-  FSP := TtiVTSearchPanel.Create(Self);
-  FSP.Parent := Self;
-  FSP.OnFindTextChange := SPFindTextChange;
-  FSP.OnShowing := SPShowing;
-  FSP.OnFindNext := SPFindNext;
-  FSP.OnFindPrevious := SPFindPrevious;
-  FSP.OnReturnKey := SPEnterKey;
-  FSP.OnEnterFindEdit:= SPEnterFindEdit;
-  FSP.OnExitFindEdit:= SPExitFindEdit;
-
   SetVT(TtiInternalVirtualTree.Create(Self));
   VT.Name:= tiGetUniqueComponentName(Name + 'VT');
   VT.SetSubComponent(True);
@@ -1826,55 +1719,6 @@ end;
 function TtiCustomVirtualTree.GetImages: TCustomImageList;
 begin
   Result := VT.Images;
-end;
-
-(*
-function TtiCustomVirtualTree.GetLastNode: PVirtualNode;
-var
- LNode: PVirtualNode;
-
-begin
-  // TODO: Is there a more efficient algorithm?
-  Result := VT.RootNode.FirstChild;
-  LNode := Result;
-
-  while Assigned(Result) do
-  begin
-    LNode := Result;
-    Result := VT.GetNext(LNode);
-  end;
-
-  Result := LNode;
-end;
-*)
-
-function TtiCustomVirtualTree.GetLastNode: PVirtualNode;
-var
- LNode: PVirtualNode;
-
-begin
-  Result := VT.RootNode.LastChild;
-  LNode := Result;
-
-  while Assigned(Result) do
-  begin
-    LNode := Result;
-    Result := LNode.LastChild;
-  end;
-
-  Result := LNode;
-end;
-
-function TtiCustomVirtualTree.WrapToBottom: PVirtualNode;
-begin
-  Result := GetLastNode;
-  SP.Wrapped(false);
-end;
-
-function TtiCustomVirtualTree.WrapToTop: PVirtualNode;
-begin
-  Result := VT.GetFirst;
-  SP.Wrapped(true);
 end;
 
 function TtiCustomVirtualTree.GetObjectFromNode(pNode: PVirtualNode): TtiObject;
@@ -2404,224 +2248,19 @@ end;
 
 procedure TtiCustomVirtualTree.FocusNode(ANode: PVirtualNode);
 begin
-  VT.IsVisible[ANode]:= True;
-  VT.Selected[ANode]:= True;
-  VT.ScrollIntoView(ANode, True, False);
-  VT.FocusedNode := ANode;
+  if not VT.IsVisible[ANode] then
+    VT.IsVisible[ANode]:= True;
+  if not VT.Selected[ANode] then
+    VT.Selected[ANode]:= True;
+  if not VT.IsVisible[ANode] then
+    VT.ScrollIntoView(ANode, True, False);
+  if VT.FocusedNode <> ANode then
+    VT.FocusedNode := ANode;
 end;
 
 procedure TtiCustomVirtualTree.SetSortOrders(const AValue: TtiVTSortOrders);
 begin
   FSortOrders.Assign(AValue);
-end;
-
-procedure TtiCustomVirtualTree.SPFindNext(Sender: TObject);
-var
-  LTextFound: boolean;
-
-begin
-  FSPFindNext := VT.GetNext;
-  FSPWrapToNode := WrapToTop;
-
-  if Assigned(FSPFindNext(FLastMatchedNode)) then
-    FLastSearchedNode := FSPFindNext(FLastMatchedNode)
-  else
-    FLastSearchedNode := FSPWrapToNode;
-
-  SPFindText(SP, SP.SearchText, LTextFound);
-  SP.TextMatching := LTextFound;
-end;
-
-procedure TtiCustomVirtualTree.SPFindPrevious(Sender: TObject);
-var
-  LTextFound: boolean;
-
-begin
-  FSPFindNext := VT.GetPrevious;
-  FSPWrapToNode := WrapToBottom;
-
-  if Assigned(FSPFindNext(FLastMatchedNode)) then
-    FLastSearchedNode := FSPFindNext(FLastMatchedNode)
-  else
-    FLastSearchedNode := FSPWrapToNode;
-
-  SPFindText(SP, SP.SearchText, LTextFound);
-  SP.TextMatching := LTextFound;
-end;
-
-procedure TtiCustomVirtualTree.SPFindTextChange(const ASender: TtiVTSearchPanel;
-  const AFindText: string);
-var
-  LTextFound: boolean;
-
-begin
-  FSPFindNext := VT.GetNext;
-  FSPWrapToNode := WrapToTop;
-  SPFindText(ASender, AFindText, LTextFound);
-  SP.TextMatching := LTextFound or (Length(AFindText) = 0);
-end;
-
-procedure TtiCustomVirtualTree.SPFindText(const ASender: TtiVTSearchPanel;
-  const AFindText: string; out ATextFound: boolean);
-var
-  LLength: integer;
-  LLapGuardNode: PVirtualNode;
-
-begin
-  LLength := Length(AFindText);
-  ATextFound := false;
-
-  if LLength > 0 then
-  begin
-    // we have search text
-
-    // start search from tree root if no prior search
-    if not Assigned(FLastSearchedNode) then
-      FLastSearchedNode := FSPWrapToNode;
-
-    LLapGuardNode := FLastSearchedNode;
-
-    // search through visible nodes from FLastSearchedNode in direction
-    // dictated by FSPFindNext - method point set in caller
-    while (not ATextFound) and Assigned(FLastSearchedNode) do
-    begin
-      VTSearchInsideNode(VT, FLastSearchedNode, AFindText, ATextFound);
-
-      if not ATextFound then
-      begin
-        FLastSearchedNode.States := FLastSearchedNode.States - [vsSelected];
-        FLastSearchedNode := FSPFindNext(FLastSearchedNode);
-
-        if not Assigned(FLastSearchedNode) then
-          FLastSearchedNode := FSPWrapToNode;
-
-        if  FLastSearchedNode = LLapGuardNode then
-          FLastSearchedNode := nil;
-
-      end
-      else
-      begin
-        // we have a match
-
-        // clean up current matched node
-        if Assigned(FLastMatchedNode) then
-        begin
-          FLastMatchedNode.States := FLastMatchedNode.States - [vsSelected];
-          VT.InvalidateNode(FLastMatchedNode);
-          // VT.FocusedNode := nil;
-        end;
-
-        // update matched node reference
-        FLastMatchedNode := FLastSearchedNode;
-      end;
-
-    end;
-
-  end
-  else
-  begin
-    // search text is empty
-
-    if Assigned(FLastMatchedNode) then
-    begin
-      FLastMatchedNode.States := FLastMatchedNode.States - [vsSelected];
-      VT.InvalidateNode(FLastMatchedNode);
-//      VT.FocusedNode := nil;
-    end;
-
-    FLastSearchedNode := VT.GetFirst;
-    FLastMatchedNode := nil;
-    SP.TextMatching := true;
-  end;
-
-  if ATextFound then
-  begin
-    FLastSearchedNode.States := FLastSearchedNode.States + [vsSelected];
-    VT.FocusedNode := FLastSearchedNode;
-  end
-  // search failed - set next search start point to last success
-  else if Assigned(FLastMatchedNode) then
-    FLastSearchedNode := FLastMatchedNode;
-
-end;
-
-
-procedure TtiCustomVirtualTree.SPShowing(const ASender: TtiVTSearchPanel;
-  const AIsShowing: Boolean);
-begin
-
-  if AIsShowing then
-  begin
-
-    if Assigned(VT.FocusedNode) then
-      VT.FocusedNode.States := VT.FocusedNode.States - [vsSelected];
-
-    VT.FocusedNode := nil;
-  end
-  else
-  begin
-    FLastSearchedNode := nil;
-    FLastMatchedNode := nil;
-  end;
-
-end;
-
-procedure TtiCustomVirtualTree.SPEnterFindEdit(Sender: TObject);
-begin
-  // Do nothing. Implement in concrete class
-end;
-
-procedure TtiCustomVirtualTree.SPEnterKey(Sender: TObject);
-begin
-  // Do nothing. Implement in the concrete class
-end;
-
-procedure TtiCustomVirtualTree.SPExitFindEdit(Sender: TObject);
-begin
-  // Do nothing. Implement in concrete class
-end;
-
-procedure TtiCustomVirtualTree.ClearSearchState;
-begin
-
-  if SP.Showing then
-  begin
-
-    // hide last matched node
-    if Assigned(FLastMatchedNode) and (FLastMatchedNode <> VT.FocusedNode) then
-    begin
-      FLastMatchedNode.States := FLastMatchedNode.States - [vsSelected];
-      VT.InvalidateNode(FLastMatchedNode);
-    end;
-
-    FLastMatchedNode := nil;
-    FLastSearchedNode := VT.FocusedNode;
-  end;
-
-end;
-
-procedure TtiCustomVirtualTree.VTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode;
-  Column: TColumnIndex);
-var
-  LTextFound: boolean;
-
-begin
-
-  if SP.Showing then
-    begin
-      ClearSearchState;
-
-      if Assigned(FLastSearchedNode) then
-        VTSearchInsideNode(VT, FLastSearchedNode, SP.SearchText, LTextFound)
-      else
-        LTextFound := false;
-
-      if LTextFound then
-        FLastMatchedNode := FLastSearchedNode;
-
-    end;
-
-//  SP.TextMatching := LTextFound;
 end;
 
 procedure TtiCustomVirtualTree.VTDoBeforeItemErase(Canvas: TCanvas; Node: PVirtualNode; ItemRect: TRect; var ItemColor: TColor;
@@ -2729,6 +2368,7 @@ const
   noGrouping = false;
 
 var
+
   LColumn: TtiVTColumn;
   LSortOrder: TtiVTSortOrder;
   LNewSortDirection: TvtSortDirection;
@@ -2786,28 +2426,6 @@ begin
   end;
 
 end;
-
-procedure TtiCustomVirtualTree.VTSearchInsideNode(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; const SearchText: string; out Result: boolean);
- var
-   I: integer;
-   LSearchText, LColumnText: string;
-
-
- begin
-   I := 0;
-   LSearchText := AnsiUpperCase(SearchText);
-   Result := false;
-
-   while (I < VT.Header.Columns.Count) and ( not Result) do
-   begin
-     LColumnText := AnsiUpperCase(VT.Text[Node, I]);
-     // look for partial match on SearchText as well as complete match
-     Result := (AnsiStrPos(PChar(LColumnText), PChar(LSearchText)) <> nil);
-     Inc(I);
-   end;
-
- end;
 
 procedure TtiCustomVirtualTree.VTInitChildren(Node: PVirtualNode; var ChildCount: Cardinal);
 begin
@@ -3145,6 +2763,28 @@ begin
       SetTextInObject(LObj, Column, NewText);
   end;
 end;
+
+procedure TtiCustomVirtualTree.VTSearchInsideNode(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; const SearchText: string; out Result: boolean);
+ var
+   I: integer;
+   LSearchText, LColumnText: string;
+
+
+ begin
+   I := 0;
+   LSearchText := AnsiUpperCase(SearchText);
+   Result := false;
+
+   while (I < VT.Header.Columns.Count) and ( not Result) do
+   begin
+     LColumnText := AnsiUpperCase(VT.Text[Node, I]);
+     // look for partial match on SearchText as well as complete match
+     Result := (AnsiStrPos(PChar(LColumnText), PChar(LSearchText)) <> nil);
+     Inc(I);
+   end;
+
+ end;
 
 { TtiInternalVirtualTree }
 
@@ -3562,7 +3202,7 @@ end;
 
 procedure TtiCustomVirtualEditTree.DoShowFind(Sender: TObject);
 begin
-  FSP.Showing := not FSP.Showing;
+  SP.Showing := not SP.Showing;
 end;
 
 procedure TtiCustomVirtualEditTree.DoCollapseAll(Sender: TObject);
@@ -3780,256 +3420,6 @@ begin
 end;
 
 
-{ TtiVTSearchPanel }
-
-procedure TtiVTSearchPanel.ClearWrapMessage;
-begin
-  FWrapLabel.Caption := '';
-end;
-
-constructor TtiVTSearchPanel.Create(AOwner: TComponent);
-begin
-  inherited;
-  SetSubComponent(True);
-  Height := 26;
-  BevelOuter := bvNone;
-  BevelInner := bvNone;
-  Align := alBottom;
-  Visible := false;
-
-  FClose:= TtiSpeedButton.Create(Self);
-  FClose.Parent := self;
-  FClose.Top:= 2;
-  FClose.Height := Height-4;
-  FClose.Width := FClose.Height;
-  FClose.Margin:= 2;
-  FClose.Left := 0;
-  FClose.Hint:= 'Close find bar';
-  FClose.ShowHint:= True;
-  gTIImageListMgr.LoadBMPToTISPeedButton16(cResTI_Cross, FClose);
-  FClose.OnClick := DoClose;
-
-  FFindLabel := TLabel.Create(self);
-  FFindLabel.Parent := self;
-  FFindLabel.Top:= 5;
-  FFindLabel.Left:= FClose.Left + FClose.Width + 4;
-  FFindLabel.Layout := tlCenter;
-  FFindLabel.Caption := 'Find: ';
-
-  FFindText := TEdit.Create(self);
-  FFindText.Parent := self;
-  FFindText.Top:= 2;
-  FFindText.Height := Height-4;
-  FFindText.Width := 100;
-  FFindText.Left := FFindLabel.Left + FFindLabel.Width;
-  FFindText.OnChange := DoFindText;
-  FFindText.OnKeyDown := DoFindKeyDown;
-  FFindText.OnEnter:= DoOnEnterFindEdit;
-  FFindText.OnExit:= DoOnExitFindEdit;
-
-  FFindNext := TtiSpeedButton.Create(self);
-  FFindNext.Parent := self;
-  FFindNext.Top:= 2;
-  FFindNext.Height := Height-4;
-  FFindNext.Width := 50;
-  FFindNext.Margin:= 2;
-  FFindNext.Caption := 'Next';
-  FFindNext.Hint:= 'Find the next occurrence of the phrase';
-  FFindNext.ShowHint:= True;
-  FFindNext.Left := FFindText.Left + FFindText.Width + 4;
-  gTIImageListMgr.LoadBMPToTISPeedButton16(cResTI_FindNext, FFindNext);
-  FFindNext.OnClick := DoFindNext;
-
-  FFindPrevious := TtiSpeedButton.Create(self);
-  FFindPrevious.Parent := self;
-  FFindPrevious.Top:= 2;
-  FFindPrevious.Height := Height-4;
-  FFindPrevious.Width := 70;
-  FFindPrevious.Margin:= 2;
-  FFindPrevious.Caption := 'Previous';
-  FFindPrevious.Hint:= 'Find the previous occurrence of the phrase';
-  FFindPrevious.ShowHint:= True;
-  FFindPrevious.Left := FFindNext.Left + FFindNext.Width + 3;
-  gTIImageListMgr.LoadBMPToTISPeedButton16(cResTI_FindPrevious, FFindPrevious);
-  FFindPrevious.OnClick := DoFindPrevious;
-
-  FWrapLabel := TLabel.Create(self);
-  FWrapLabel.Parent := self;
-  FWrapLabel.Left := FFindPrevious.Left + FFindPrevious.Width + 3;
-  FWrapLabel.AutoSize := false;
-  FWrapLabel.Top := 3;
-  FWrapLabel.Height := Height;
-  FWrapLabel.Width := 250;
-  FWrapLabel.Layout := tlCenter;
-end;
-
-procedure TtiVTSearchPanel.DoClose(Sender: TObject);
-begin
-  Showing:= False;
-end;
-
-procedure TtiVTSearchPanel.DoReturnKey;
-begin
-  if Showing and Assigned(FOnReturnKey) and TextMatching then
-  begin
-    Showing:= False;
-    FOnReturnKey(Self);
-  end;
-end;
-
-procedure TtiVTSearchPanel.DoFindKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  ClearWrapMessage;
-  case Key of
-    VK_F3:
-      if Shift = [] then
-        DoFindNext(FFindNext)
-      else if Shift = [ssShift] then
-        DoFindPrevious(FFindPrevious);
-    VK_DOWN: begin
-               DoFindNext(FFindNext);
-               Key:= 0;
-             end;
-    VK_UP:   begin
-               DoFindPrevious(FFindPrevious);
-               Key:= 0;
-             end;
-    VK_RETURN: DoReturnKey;
-    VK_ESCAPE: Showing := false;
-  end;
-
-end;
-
-procedure TtiVTSearchPanel.DoFindNext(Sender: TObject);
-begin
-
-  if Showing and Assigned(OnFindNext) then
-  begin
-    ClearWrapMessage;
-    OnFindNext(Sender);
-  end;
-
-end;
-
-procedure TtiVTSearchPanel.DoFindPrevious(Sender: TObject);
-begin
-
-  if Showing and Assigned(OnFindPrevious) then
-  begin
-    ClearWrapMessage;
-    OnFindPrevious(Sender);
-  end;
-
-end;
-
-procedure TtiVTSearchPanel.DoFindText(Sender: TObject);
-begin
-
-  if Showing and Assigned(OnFindTextChange) then
-    OnFindTextChange(self, FFindText.Text);
-
-end;
-
-
-procedure TtiVTSearchPanel.DoOnEnterFindEdit(Sender: TObject);
-begin
-  if Showing and Assigned(FOnEnterFindEdit) then
-    FOnEnterFindEdit(Self);
-end;
-
-procedure TtiVTSearchPanel.DoOnExitFindEdit(Sender: TObject);
-begin
-  if Showing and Assigned(FOnExitFindEdit) then
-    FOnExitFindEdit(Self);
-end;
-
-function TtiVTSearchPanel.GetSearchText: string;
-begin
-  Result := FFindText.Text;
-end;
-
-procedure TtiVTSearchPanel.SetOnReturnKey(const Value: TNotifyEvent);
-begin
-  FOnReturnKey := Value;
-end;
-
-procedure TtiVTSearchPanel.SetOnEnterFindEdit(const Value: TNotifyEvent);
-begin
-  FOnEnterFindEdit := Value;
-end;
-
-procedure TtiVTSearchPanel.SetOnExitFindEdit(const Value: TNotifyEvent);
-begin
-  FOnExitFindEdit := Value;
-end;
-
-procedure TtiVTSearchPanel.SetOnFindNext(const AValue: TNotifyEvent);
-begin
-  FOnFindNext := AValue;
-end;
-
-procedure TtiVTSearchPanel.SetOnFindPrevious(const AValue: TNotifyEvent);
-begin
-  FOnFindPrevious := AValue;
-end;
-
-procedure TtiVTSearchPanel.SetOnFindTextChange(const AValue: TtiVTSearchPanelFindTextChange);
-begin
-  FOnFindTextChange := AValue;
-end;
-
-procedure TtiVTSearchPanel.SetOnShowing(const AValue: TtiVTSearchPanelShowing);
-begin
-  FOnShowing := AValue;
-end;
-
-procedure TtiVTSearchPanel.SetShowing(const AValue: boolean);
-begin
-  FShowing := AValue;
-  Visible := AValue;
-
-  if FShowing then
-    FFindText.SetFocus
-  else
-  begin
-    Parent.SetFocus;
-    FFindText.Text := '';
-    ClearWrapMessage;
-    FTextMatching:= False;
-  end;
-
-  if Assigned(FOnShowing) then
-    FOnShowing(self, AValue);
-
-end;
-
-procedure TtiVTSearchPanel.SetTextMatching(const Value: boolean);
-begin
-  FTextMatching := Value;
-
-  if FTextMatching then
-  begin
-    FFindText.Color := clWindow;
-  end
-  else
-  begin
-    FFindText.Color :=  cSearchFailureColor; // pink
-    ClearWrapMessage;
-  end;
-
-end;
-
-procedure TtiVTSearchPanel.Wrapped(const AForward: boolean);
-begin
-
-   if AForward then
-     FWrapLabel.Caption := ' Search reached bottom, continued from top'
-   else
-     FWrapLabel.Caption := ' Search reached top, continued from bottom';
-
-end;
-
 { TtiVTExportMenuItem }
 
 procedure TtiVTExportMenuItem.SetExportName(const AValue: string);
@@ -4160,28 +3550,32 @@ end;
 
 procedure TtiVTExport.WriteHeaderEx(const AFieldSeparator, AFieldDelimiter: char);
 var
-  I: integer;
+  I, LHeaderRow: integer;
   LColumn: TtiVTColumn;
   LLastColumnIndex: integer;
 
 begin
-  SetLength(FOutputStr, 0);
   LLastColumnIndex := FSourceTree.VT.Header.Columns.Count - 1;
 
-  for I := 0 to LLastColumnIndex do
+  for LHeaderRow := 0 to FSourceTree.VT.Header.RowCount - 1 do
   begin
-    LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
+    SetLength(FOutputStr, 0);
 
-    if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
-        FmtStr(FOutputStr, '%s%s%s%s%s', [FOutputStr, AFieldSeparator,
-          AFieldDelimiter, LColumn.Text, AFieldDelimiter])
+    for I := 0 to LLastColumnIndex do
+    begin
+      LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
 
+      if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
+          FmtStr(FOutputStr, '%s%s%s%s%s', [FOutputStr, AFieldSeparator,
+            AFieldDelimiter, LColumn.DisplayNames[LHeaderRow], AFieldDelimiter])
+
+    end;
+
+    if LLastColumnIndex >= 0 then
+      Delete(FOutputStr, 1, Length(AFieldSeparator));
+
+    WriteToOutput(FOutputStr);
   end;
-
-  if LLastColumnIndex >= 0 then
-    Delete(FOutputStr, 1, Length(AFieldSeparator));
-
-  WriteToOutput(FOutputStr);
 end;
 
 procedure TtiVTExport.WriteTitles;

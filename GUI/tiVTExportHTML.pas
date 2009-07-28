@@ -119,7 +119,7 @@ end;
 
 procedure TtiVTExportHTML.WriteTitles;
 var
-  I, LColumnCount: integer;
+  I, LColumnCount, LHeaderRow: integer;
   LLastColumnIndex: integer;
   LColumn: TtiVTColumn;
 
@@ -140,19 +140,23 @@ begin
 
   WriteToOutput('<COL ALIGN="LEFT" SPAN=' +
     IntToStr(LColumnCount) + '>');
-  SetLength(FOutputStr, 0);
 
-  for I := 0 to LLastColumnIndex do
+  for LHeaderRow := 0 to FSourceTree.VT.Header.RowCount - 1 do
   begin
-    LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
+    SetLength(FOutputStr, 0);
 
-    if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
-      FOutputStr := FOutputStr + FormatFieldHeader(LColumn.Text);
+    for I := 0 to LLastColumnIndex do
+    begin
+      LColumn := FSourceTree.VT.Header.Columns[I] as TtiVTColumn;
 
+      if (not LColumn.Derived) or Assigned(LColumn.OnDeriveColumn) then
+        FOutputStr := FOutputStr + FormatFieldHeader(LColumn.DisplayNames[LHeaderRow]);
+
+    end;
+
+    WriteToOutput(FormatRow(FOutputStr));
+  //  WriteToOutput(FormatRow('<B>' + FOutputStr + '</B>'));
   end;
-
-  WriteToOutput(FormatRow(FOutputStr));
-//  WriteToOutput(FormatRow('<B>' + FOutputStr + '</B>'));
 end;
 
 initialization

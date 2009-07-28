@@ -34,7 +34,7 @@ type
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent);override;
   protected
-    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   SetupGUIandObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
@@ -52,10 +52,10 @@ type
   protected
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent);override;
-    procedure   DoObjectToGui; override;
-    procedure   DoGuiToObject; override;
+    procedure   DoObjectToGUI; override;
+    procedure   DoGUIToObject; override;
     procedure   SetupGUIandObject; override;
-    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
@@ -88,7 +88,7 @@ type
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent); override;
     procedure   SetupGUIandObject; override;
-    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
@@ -120,8 +120,8 @@ type
   protected
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent); override;
-    procedure   UpdateGuiValidStatus(pErrors: TtiObjectErrors); override;
-    procedure   DoObjectToGui; override;
+    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   DoObjectToGUI; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
@@ -149,8 +149,8 @@ type
     procedure   SetListObject(const AValue: TtiObjectList); override;
     procedure   SetOnChangeActive(AValue: Boolean); virtual;
     procedure   SetupGUIandObject; override;
-    procedure   DoGuiToObject; override;
-    procedure   DoObjectToGui; override;
+    procedure   DoGUIToObject; override;
+    procedure   DoObjectToGUI; override;
   public
     procedure   RefreshList; virtual;
   end;
@@ -164,8 +164,8 @@ type
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   SetupGUIandObject; override;
-    procedure   DoObjectToGui; override;
-    procedure   DoGuiToObject; override;
+    procedure   DoObjectToGUI; override;
+    procedure   DoGUIToObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     property    EditControl: TMemo read FEditControl write FEditControl;
@@ -180,8 +180,8 @@ type
   protected
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent);override;
-    procedure   DoObjectToGui; override;
-    procedure   DoGuiToObject; override;
+    procedure   DoObjectToGUI; override;
+    procedure   DoGUIToObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
     constructor Create; override;
@@ -234,11 +234,11 @@ begin
   inherited SetGUIControl(AValue);
 end;
 
-procedure TMediatorEditView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorEditView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
-  inherited UpdateGuiValidStatus(pErrors);
+  inherited UpdateGUIValidStatus(pErrors);
 
   oError := pErrors.FindByErrorProperty(FieldName);
   if oError <> nil then
@@ -275,7 +275,7 @@ end;
 constructor TMediatorEditView.Create;
 begin
   inherited Create;
-  GuiFieldName:='Text';
+  GUIFieldName:='Text';
 end;
 
 destructor TMediatorEditView.Destroy;
@@ -314,11 +314,11 @@ begin
   EditControl.Value := 0;
 end;
 
-procedure TMediatorSpinEditView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorSpinEditView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
-  inherited UpdateGuiValidStatus(pErrors);
+  inherited UpdateGUIValidStatus(pErrors);
 
   oError := pErrors.FindByErrorProperty(FieldName);
   if oError <> nil then
@@ -336,7 +336,7 @@ end;
 constructor TMediatorSpinEditView.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Value';
+  GUIFieldName := 'Value';
 end;
 
 
@@ -379,7 +379,7 @@ end;
 constructor TMediatorTrackBarView.Create;
 begin
   inherited;
-  GuiFieldName := 'Position';
+  GUIFieldName := 'Position';
 end;
 
 class function TMediatorTrackBarView.ComponentClass: TClass;
@@ -416,11 +416,11 @@ begin
   inherited;
 end;
 
-procedure TMediatorComboBoxView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorComboBoxView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
-  inherited UpdateGuiValidStatus(pErrors);
+  inherited UpdateGUIValidStatus(pErrors);
 
   oError := pErrors.FindByErrorProperty(FieldName);
   if oError <> nil then
@@ -438,10 +438,10 @@ end;
 constructor TMediatorComboBoxView.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Text';
+  GUIFieldName := 'Text';
 end;
 
-procedure TMediatorComboBoxView.DoObjectToGui;
+procedure TMediatorComboBoxView.DoObjectToGUI;
 begin
   EditControl.ItemIndex :=
       EditControl.Items.IndexOf(Subject.PropValue[FieldName]);
@@ -466,12 +466,12 @@ begin
   Result := TMemo;
 end;
 
-procedure TMediatorMemoView.DoGuiToObject;
+procedure TMediatorMemoView.DoGUIToObject;
 begin
   Subject.PropValue[FieldName] := EditControl.Lines.Text;
 end;
 
-procedure TMediatorMemoView.DoObjectToGui;
+procedure TMediatorMemoView.DoObjectToGUI;
 begin
   EditControl.Lines.Text := Subject.PropValue[FieldName];
 end;
@@ -541,7 +541,7 @@ begin
                                  [E.message, FieldName]);
   end;
 
-  ObjectToGui;
+  ObjectToGUI;
 end;
 
 procedure TMediatorDynamicComboBoxView.SetOnChangeActive(AValue: Boolean);
@@ -571,7 +571,7 @@ begin
   EditControl.Enabled   := (ValueList.Count > 0);
 end;
 
-procedure TMediatorDynamicComboBoxView.DoGuiToObject;
+procedure TMediatorDynamicComboBoxView.DoGUIToObject;
 var
   lValue: TtiObject;
   lPropType: TTypeKind;
@@ -590,7 +590,7 @@ begin
     raise EtiOPFProgrammerException.Create('Error property type not a Class');
 end;
 
-procedure TMediatorDynamicComboBoxView.DoObjectToGui;
+procedure TMediatorDynamicComboBoxView.DoObjectToGUI;
 var
   i: Integer;
   lValue: TtiObject;
@@ -641,11 +641,11 @@ begin
   inherited SetGUIControl(AValue);
 end;
 
-procedure TMediatorCheckBoxView.UpdateGuiValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorCheckBoxView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
-  inherited UpdateGuiValidStatus(pErrors);
+  inherited UpdateGUIValidStatus(pErrors);
 
   oError := pErrors.FindByErrorProperty(FieldName);
   if oError <> nil then
@@ -663,7 +663,7 @@ end;
 constructor TMediatorCheckBoxView.Create;
 begin
   inherited Create;
-  GuiFieldName:='Checked';
+  GUIFieldName:='Checked';
 end;
 
 class function TMediatorCheckBoxView.ComponentClass: TClass;
@@ -672,7 +672,7 @@ begin
 end;
 
 
-procedure TMediatorCheckBoxView.DoGuiToObject;
+procedure TMediatorCheckBoxView.DoGUIToObject;
 begin
   inherited;
   if FEditControl.Checked then
@@ -681,7 +681,7 @@ begin
     Subject.PropValue[FieldName] := 'False';
 end;
 
-procedure TMediatorCheckBoxView.DoObjectToGui;
+procedure TMediatorCheckBoxView.DoObjectToGUI;
 begin
   inherited;
   FEditControl.Checked := (Subject.PropValue[FieldName] = 'True');
@@ -729,7 +729,7 @@ end;
 constructor TMediatorStaticTextView.Create;
 begin
   inherited Create;
-  GuiFieldName := 'Caption';
+  GUIFieldName := 'Caption';
 end;
 
 class function TMediatorStaticTextView.ComponentClass: TClass;
@@ -753,7 +753,7 @@ end;
 
 // Stupid bug in TDateTimePicker. It always returns the current time in
 // dtkDate mode which can cause weird problems if you are not aware of it.
-procedure TMediatorCalendarComboView.DoGuiToObject;
+procedure TMediatorCalendarComboView.DoGUIToObject;
 begin
   If (EditControl.Kind = dtkDate) Then
     Subject.PropValue[FieldName] := Trunc(EditControl.DateTime)
@@ -782,7 +782,7 @@ begin
       FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorCalendarComboView.DoObjectToGui;
+procedure TMediatorCalendarComboView.DoObjectToGUI;
 begin
   if (EditControl.Kind = dtkDate) Then
     EditControl.DateTime := Trunc(Subject.PropValue[FieldName])
@@ -805,7 +805,7 @@ end;
 constructor TMediatorItemComboBoxView.Create;
 begin
   inherited Create;
-  GuiFieldName := 'ItemIndex';
+  GUIFieldName := 'ItemIndex';
 end;
 
 end.

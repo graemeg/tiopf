@@ -160,13 +160,24 @@ begin
   end;
 end;
 
+type
+  _TtiAppServerVersionTest = class(TtiAppServerVersionAbs)
+  protected
+    function GetCurrentFileSyncVersion: string; override;
+  end;
+
+  function _TtiAppServerVersionTest.GetCurrentFileSyncVersion: string;
+  begin
+    result := 'abcd';
+  end;
+
 procedure TtiWebServerTestCase.tiWebServerVersion;
 var
-  L: TtiAppServerVersion;
+  L: TtiAppServerVersionAbs;
   LS: string;
 begin
 
-  L:= TtiAppServerVersion.Create;
+  L:= gAppServerVersionFactory.CreateInstance;
   try
     CheckEquals(cWebServerStatus_unknown, L.ConnectionStatus);
     CheckEquals('', L.XMLVersion);
@@ -174,20 +185,44 @@ begin
 
     L.LoadDefaultValues;
     CheckEquals(cWebServerStatus_unknown, L.ConnectionStatus);
-    CheckEquals(cXMLVersion,              L.XMLVersion);
-    CheckEquals(cFileSyncVersion,         L.FileSyncVersion);
+    CheckEquals(ctiOPFXMLVersion,         L.XMLVersion);
+    CheckEquals(ctiOPFOldFileSyncVersion, L.FileSyncVersion);
 
     L.SetConnectionStatus(True);
     CheckEquals(cWebServerStatus_passed, L.ConnectionStatus);
 
     L.SetConnectionStatus(False);
     CheckEquals(cWebServerStatus_failed, L.ConnectionStatus);
-
   finally
     L.free;
   end;
 
-  L:= TtiAppServerVersion.Create;
+  gAppServerVersionFactory.RegisterClass(_TtiAppServerVersionTest);
+  L:= gAppServerVersionFactory.CreateInstance;
+  try
+    CheckFalse(L.IsVersionValid, 'IsVersionValid before LoadDefaultValues');
+    L.LoadDefaultValues;
+    CheckEquals('abcd', L.FileSyncVersion);
+    CheckTrue(L.IsVersionValid, 'IsVersionValid after LoadDefaultValues');
+    L.FileSyncVersion := ctiOPFOldFileSyncVersion;
+    CheckFalse(L.IsVersionValid, 'IsVersionValid with default FileSyncVersion');
+  finally
+    L.free;
+  end;
+
+  gAppServerVersionFactory.UnRegisterClass;
+  L:= gAppServerVersionFactory.CreateInstance;
+  try
+    L.LoadDefaultValues;
+    CheckEquals(ctiOPFOldFileSyncVersion, L.FileSyncVersion);
+    CheckTrue(L.IsVersionValid, 'IsVersionValid after LoadDefaultValues');
+    L.FileSyncVersion := 'abcd';
+    CheckFalse(L.IsVersionValid, 'IsVersionValid with different FileSyncVersion');
+  finally
+    L.free;
+  end;
+
+  L:= gAppServerVersionFactory.CreateInstance;
   try
     L.ConnectionStatus:= 'test1';
     L.XMLVersion:= 'test2';
@@ -197,7 +232,7 @@ begin
     L.free;
   end;
 
-  L:= TtiAppServerVersion.Create;
+  L:= gAppServerVersionFactory.CreateInstance;
   try
     L.AsString:= LS;
     CheckEquals('test1', L.ConnectionStatus);

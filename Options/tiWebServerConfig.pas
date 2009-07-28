@@ -45,6 +45,8 @@ type
 
     property    SendBugReportEmailOnCGIFailure: boolean read GetSendBugReportEmailOnCGIFailure;
     function    INIFileName: string;
+    function    INIFilePath: string;
+    function    ApplicationINISectionName: string;
   end;
 
 implementation
@@ -100,6 +102,16 @@ begin
   Result:= GetRegistryValue('Shared INI File Location', '\TechInsite\Shared\Config.ini');
   if not DirectoryExists(ExtractFilePath(Result)) then
     ForceDirectories(ExtractFilePath(Result));
+end;
+
+function TtiWebServerConfig.INIFilePath: string;
+begin
+  result:= ExtractFilePath(INIFileName);
+end;
+
+function TtiWebServerConfig.ApplicationINISectionName: string;
+begin
+  result := tiRemoveExtension(ExtractFileName(tiGetModuleFileName));
 end;
 
 function TtiWebServerConfig.GetRegistryValue(const AName, ADefault: string): string;

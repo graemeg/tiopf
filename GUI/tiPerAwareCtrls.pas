@@ -230,35 +230,53 @@ type
     constructor Create(AOwner : TComponent); override;
   end;
 
-  TtiPerAwareTimeEdit = class(TtiPerAwareEdit)
+  TtiPerAwareDateTimeEditAbs = class(TtiPerAwareEdit)
   private
-    FLastValidTime: TDateTime;
     FFormatString: string;
-    procedure SetValueAsTime(const AValue: TDateTime);
+    procedure SetValueAsDateTime(const AValue: TDateTime);
     procedure SetFormatString(const AValue: string);
     procedure UpdateValue(const AValue: TDateTime);
   protected
+    FLastValidDateTime: TDateTime;
     procedure DoValidation; override;
     procedure SetValue(const AValue: String); override;
+    procedure DataToWinControl; override;
+    property ValueAsDateTime: TDateTime read FLastValidDateTime write SetValueAsDateTime;
   published
-    property ValueAsTime: TDateTime read FLastValidTime write SetValueAsTime;
-    property LastValidTime: TDateTime read FLastValidTime write FLastValidTime;
     property FormatString: string read FFormatString write SetFormatString;
-  public
-    constructor Create(AOwner : TComponent); override;
   end;
 
-  TtiPerAwareDateEdit = class(TtiPerAwareEdit)
-  private
-    FLastValidDate: TDateTime;
+  TtiPerAwareDateTimeEdit = class(TtiPerAwareDateTimeEditAbs)
   protected
     procedure DoValidation; override;
-    procedure SetValue(const AValue: String); override;
   public
     constructor Create(AOwner : TComponent); override;
   published
-    property LastValidDate: TDateTime read FLastValidDate write FLastValidDate;
+    property ValueAsDateTime;
+  end;
+
+  TtiPerAwareTimeEdit = class(TtiPerAwareDateTimeEditAbs)
+  private
+    function GetValueAsTime: TDateTime;
+    procedure SetValueAsTime(const AValue: TDateTime);
+  protected
+    procedure DoValidation; override;
+  public
+    constructor Create(AOwner : TComponent); override;
+  published
+    property ValueAsTime: TDateTime read GetValueAsTime write SetValueAsTime;
+  end;
+
+  TtiPerAwareDateEdit = class(TtiPerAwareDateTimeEditAbs)
+  private
+    function GetValueAsDate: TDateTime;
     procedure SetValueAsDate(const AValue: TDateTime);
+  protected
+    procedure DoValidation; override;
+  public
+    constructor Create(AOwner : TComponent); override;
+  published
+    property ValueAsDate: TDateTime read GetValueAsDate write SetValueAsDate;
   end;
 
   // A wrapper for the TMemo control
@@ -734,6 +752,7 @@ uses
   ,ExtDlgs
   ,TypInfo
   ,ClipBrd
+  ,DateUtils
   // If the unit below, GifImage is uncommented, then comment it out (I have
   // been testing and forgot to clean up my mess. GifImage is a download from
   // http://www.melander.dk/delphi/gifimage/ and extent's Delphi's TImage
@@ -1300,7 +1319,10 @@ end;
 procedure TtiPerAwareEdit.DataToWinControl;
 begin
   if not DataAndPropertyValid then
+  begin
+    TEdit(FWinControl).Text := '';
     Exit; //==>
+  end;
   SetOnChangeActive(false);
 { NB 3rd param of GetPropValue below is boolean for 'PreferStrings'.
      Up to and including D2005, this has a default value of True.
@@ -1396,7 +1418,10 @@ end;
 procedure TtiPerAwareMemo.DataToWinControl;
 begin
   if not DataAndPropertyValid then
+  begin
+    TMemo(FWinControl).Lines.Text := '';
     Exit; //==>
+  end;
   SetOnChangeActive(false);
   TMemo(FWinControl).Lines.Text := GetPropValue(FData, FsFieldName, True);
   SetOnChangeActive(true);
@@ -1710,7 +1735,10 @@ end;
 procedure TtiPerAwareCheckBox.DataToWinControl;
 begin
   if not DataAndPropertyValid then
+  begin
+    TCheckBox(FWinControl).Checked := False;
     Exit; //==>
+  end;
   SetOnChangeActive(false);
   TCheckBox(FWinControl).Checked := GetPropValue(FData, FsFieldName, True);
   SetOnChangeActive(true);
@@ -2151,7 +2179,10 @@ end;
 procedure TtiPerAwareFloatEdit.DataToWinControl;
 begin
   if not DataAndPropertyValid then
+  begin
+    Value := 0.0;
     Exit; //==>
+  end;
   SetOnChangeActive(false);
   Value := GetPropValue(FData, FsFieldName, True);
   SetOnChangeActive(true);
@@ -2804,7 +2835,10 @@ var
   lsValue : string;
 begin
   if not DataAndPropertyValid then
+  begin
+    TComboBox(FWinControl).ItemIndex := -1;
     Exit; //==>
+  end;
   SetOnChangeActive(false);
   lsValue := GetPropValue(FData, FsFieldName, True);
   TComboBox(FWinControl).ItemIndex :=
@@ -2896,7 +2930,10 @@ var
   lPropType : TTypeKind;
 begin
   if not DataAndPropertyValid then
+  begin
+    SetValue(nil);
     Exit; //==>
+  end;
   SetOnChangeActive(false);
   lPropType := PropType(Data, FieldName);
   if lPropType = tkClass then
@@ -3667,40 +3704,86 @@ begin
   Enabled := Assigned(ImageControl) and not ImageControl.IsEmpty;
 end;
 
-{ TtiPerAwareTimeEdit }
+{ TtiPerAwareDateTimeEditAbs }
 
-constructor TtiPerAwareTimeEdit.Create(AOwner: TComponent);
+procedure TtiPerAwareDateTimeEditAbs.DoValidation;
 begin
   inherited;
-  FFormatString := ShortTimeFormat;
+  Error := DataAndPropertyValid;
 end;
 
-procedure TtiPerAwareTimeEdit.DoValidation;
-begin
-  inherited;
-  Error := not TryStrToTime(Value, FLastValidTime);
-end;
-
-procedure TtiPerAwareTimeEdit.SetFormatString(const AValue: string);
+procedure TtiPerAwareDateTimeEditAbs.SetFormatString(const AValue: string);
 begin
   FFormatString := AValue;
-  UpdateValue(FLastValidTime);
+  UpdateValue(FLastValidDateTime);
 end;
 
-procedure TtiPerAwareTimeEdit.SetValue(const AValue: String);
+procedure TtiPerAwareDateTimeEditAbs.SetValue(const AValue: String);
 begin
   inherited;
   DoValidation;
 end;
 
-procedure TtiPerAwareTimeEdit.SetValueAsTime(const AValue: TDateTime);
+procedure TtiPerAwareDateTimeEditAbs.SetValueAsDateTime(const AValue: TDateTime);
 begin
   UpdateValue(AValue);
 end;
 
-procedure TtiPerAwareTimeEdit.UpdateValue(const AValue: TDateTime);
+procedure TtiPerAwareDateTimeEditAbs.UpdateValue(const AValue: TDateTime);
 begin
   Value := FormatDateTime(FormatString, AValue);
+end;
+
+procedure TtiPerAwareDateTimeEditAbs.DataToWinControl;
+begin
+  if not DataAndPropertyValid then
+  begin
+    TEdit(FWinControl).Text := '';
+    Exit; //==>
+  end;
+  SetOnChangeActive(false);
+  TEdit(FWinControl).Text :=
+      FormatDateTime(FormatString, GetPropValue(FData, FsFieldName, True));
+  SetOnChangeActive(true);
+  DoValidation;
+end;
+
+{ TtiPerAwareDateTimeEdit }
+
+constructor TtiPerAwareDateTimeEdit.Create(AOwner: TComponent);
+begin
+  inherited;
+  FormatString := ShortDateFormat + ' ' + ShortTimeFormat;
+end;
+
+procedure TtiPerAwareDateTimeEdit.DoValidation;
+begin
+  inherited;
+  Error := Error and (not TryStrToDateTime(Value, FLastValidDateTime));
+end;
+
+{ TtiPerAwareTimeEdit }
+
+constructor TtiPerAwareTimeEdit.Create(AOwner: TComponent);
+begin
+  inherited;
+  FormatString := ShortTimeFormat;
+end;
+
+procedure TtiPerAwareTimeEdit.DoValidation;
+begin
+  inherited;
+  Error := Error and (not TryStrToTime(Value, FLastValidDateTime));
+end;
+
+function TtiPerAwareTimeEdit.GetValueAsTime: TDateTime;
+begin
+  result := TimeOf(ValueAsDateTime);
+end;
+
+procedure TtiPerAwareTimeEdit.SetValueAsTime(const AValue: TDateTime);
+begin
+  SetValueAsDateTime(TimeOf(AValue));
 end;
 
 { TtiPerAwareDateEdit }
@@ -3708,24 +3791,25 @@ end;
 constructor TtiPerAwareDateEdit.Create(AOwner: TComponent);
 begin
   inherited;
+  FormatString := ShortDateFormat;
 end;
 
 procedure TtiPerAwareDateEdit.DoValidation;
 begin
   inherited;
-  Error := not TryStrToDate(Value, FLastValidDate);
+  Error := Error and (not TryStrToDate(Value, FLastValidDateTime));
 end;
 
-procedure TtiPerAwareDateEdit.SetValue(const AValue: String);
+function TtiPerAwareDateEdit.GetValueAsDate: TDateTime;
 begin
-  inherited;
-  DoValidation;
+  result := DateOf(ValueAsDateTime);
 end;
 
 procedure TtiPerAwareDateEdit.SetValueAsDate(const AValue: TDateTime);
 begin
-  Value := DateToStr(AValue);
+  SetValueAsDateTime(DateOf(AValue));
 end;
+
 
 initialization
   // 02/01/2002, Ha-Hoe, Made change to decimal separator

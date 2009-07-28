@@ -215,9 +215,9 @@ begin
   Add( lFileSyncSetup ) ;
 
   lFileSyncSetup  := TtiFileSyncSetup.Create ;
-  lFileSyncSetup.LocalDir := 'd:\Nemmco' ;
+  lFileSyncSetup.LocalDir := 'd:\AEMO' ;
   lFileSyncSetup.SourceReader := cgsDiskFiles ;
-  lFileSyncSetup.TargetLocation := 'h:\backup\Nemmco' ;
+  lFileSyncSetup.TargetLocation := 'h:\backup\AEMO' ;
   lFileSyncSetup.TargetReader := cgsDiskFiles ;
   Add( lFileSyncSetup ) ;
 

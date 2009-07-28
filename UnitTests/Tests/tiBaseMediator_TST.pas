@@ -157,10 +157,10 @@ type
 }
 
   TTestMediator = class(TMediatorView)
-    FGuiControl: TTestComponent;
+    FGUIControl: TTestComponent;
   protected
-    function GetGuiControl: TComponent; override;
-    procedure SetGuiControl(const AValue: TComponent); override;
+    function GetGUIControl: TComponent; override;
+    procedure SetGUIControl(const AValue: TComponent); override;
   public
     class function ComponentClass: TClass; override;
   end;
@@ -236,14 +236,14 @@ end;
 
 { TTestMediator }
 
-function TTestMediator.GetGuiControl: TComponent;
+function TTestMediator.GetGUIControl: TComponent;
 begin
-  Result := FGuiControl;
+  Result := FGUIControl;
 end;
 
-procedure TTestMediator.SetGuiControl(const AValue: TComponent);
+procedure TTestMediator.SetGUIControl(const AValue: TComponent);
 begin
-  FGuiControl := AValue as TTestComponent;
+  FGUIControl := AValue as TTestComponent;
 end;
 
 class function TTestMediator.ComponentClass: TClass;

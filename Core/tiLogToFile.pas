@@ -29,10 +29,12 @@ type
     procedure SetFileCreateAttempts(const Value: integer);
   protected
     procedure WriteToOutput; override;
+    procedure DeleteOldFileIfRequired;
   public
     // Require param to control max size of file
     constructor Create; override;
-    constructor CreateWithFileName(const AFilePath: string; AFileName: string; AOverwriteOldFiles: Boolean);
+    constructor CreateOverwriteOld;
+    constructor CreateWithFileName(const AFilePath: string; AFileName: string; AOverwriteOldFile: Boolean);
     constructor CreateWithDateInFileName(const APath: string); overload;
     constructor CreateWithDateInFileName(AUpDirectoryTree: Byte); overload;
     constructor CreateWithDateInFileName; overload;
@@ -68,7 +70,6 @@ begin
   FOverwriteOldFile := false;
   FDateInFileName    := false;
   FFileName          := GetDefaultFileName;
-  ForceLogDirectory;
   FFileCreateAttempts := CDefaultFileCreateAttempts;
   FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
   ThrdLog.Resume;
@@ -76,7 +77,7 @@ end;
 
 
 constructor TtiLogToFile.CreateWithFileName(
-  const AFilePath: string; AFileName: string; AOverwriteOldFiles: Boolean);
+  const AFilePath: string; AFileName: string; AOverwriteOldFile: Boolean);
 var
   LFilePath: string;
   LFileName: string;
@@ -92,14 +93,19 @@ begin
   else
     LFileName:= AFileName;
   FFileName:= ExpandFileName(tiAddTrailingSlash(LFilePath) + LFileName);
-  ForceLogDirectory;
-  if AOverwriteOldFiles and FileExists(FFileName) then
-    SysUtils.DeleteFile(FFileName);
+  DeleteOldFileIfRequired;
   FFileCreateAttempts := CDefaultFileCreateAttempts;
   FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
   ThrdLog.Resume;
 end;
 
+
+constructor TtiLogToFile.CreateOverwriteOld;
+begin
+  Create;
+  FOverwriteOldFile:= True;
+  DeleteOldFileIfRequired;
+end;
 
 constructor TtiLogToFile.CreateWithDateInFileName;
 begin
@@ -123,12 +129,17 @@ begin
   FOverwriteOldFile := false;
   FDateInFileName    := True;
   FFileName          := ExpandFileName(tiAddTrailingSlash(APath) + ExtractFileName(GetDefaultFileName));
-  ForceLogDirectory;
   FFileCreateAttempts := CDefaultFileCreateAttempts;
   FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
   ThrdLog.Resume;
 end;
 
+
+procedure TtiLogToFile.DeleteOldFileIfRequired;
+begin
+  if FOverwriteOldFile and FileExists(FFileName) then
+    SysUtils.DeleteFile(FFileName);
+end;
 
 destructor TtiLogToFile.Destroy;
 begin

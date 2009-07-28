@@ -42,7 +42,7 @@ type
     procedure   FormLogLevelButtonClick(Sender: TObject);
     procedure   DoViewLogFile(Sender: TObject);
     procedure   DoOnPopup(Sender: TObject);
-    procedure WriteToMemo(const AMessage: string);
+    procedure   WriteToMemo(const AMessage: string);
   protected
     procedure   WriteToOutput; override;
     procedure   SetSevToLog(const AValue: TtiSevToLog); override;

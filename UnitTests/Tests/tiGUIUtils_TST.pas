@@ -15,6 +15,8 @@ type
   published
     procedure   tiListToClipboardDefault;
     procedure   tiListToClipboardFields;
+    procedure   tiEncodeNonAcceleratorInCaption;
+    procedure   tiDecodeNonAcceleratorInCaption;
   end;
 
 procedure RegisterTests;
@@ -38,6 +40,30 @@ begin
   inherited;
   ClipBoard.Free;
 end;
+
+
+procedure TTestTIGUIUtils.tiDecodeNonAcceleratorInCaption;
+begin
+  CheckEquals('', tiGUIUtils.tiDecodeNonAcceleratorInCaption(''));
+  CheckEquals('&', tiGUIUtils.tiDecodeNonAcceleratorInCaption('&'));
+  CheckEquals('a&a', tiGUIUtils.tiDecodeNonAcceleratorInCaption('a&a'));
+  CheckEquals('&', tiGUIUtils.tiDecodeNonAcceleratorInCaption('&&'));
+  CheckEquals('&&', tiGUIUtils.tiDecodeNonAcceleratorInCaption('&&&'));
+  CheckEquals('a&a', tiGUIUtils.tiDecodeNonAcceleratorInCaption('a&&a'));
+  CheckEquals('&a&', tiGUIUtils.tiDecodeNonAcceleratorInCaption('&&a&&'));
+end;
+
+
+procedure TTestTIGUIUtils.tiEncodeNonAcceleratorInCaption;
+begin
+  CheckEquals('', tiGUIUtils.tiEncodeNonAcceleratorInCaption(''));
+  CheckEquals('&&', tiGUIUtils.tiEncodeNonAcceleratorInCaption('&'));
+  CheckEquals('a&&a', tiGUIUtils.tiEncodeNonAcceleratorInCaption('a&a'));
+  CheckEquals('&&&&', tiGUIUtils.tiEncodeNonAcceleratorInCaption('&&'));
+  CheckEquals('a&&a', tiGUIUtils.tiEncodeNonAcceleratorInCaption('a&a'));
+  CheckEquals('&&a&&', tiGUIUtils.tiEncodeNonAcceleratorInCaption('&a&'));
+end;
+
 
 procedure TTestTIGUIUtils.tiListToClipboardDefault;
 var

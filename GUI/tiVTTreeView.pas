@@ -27,6 +27,7 @@ uses
   ,tiCtrlButtonPanel
   ,tiObject
   ,tiVTAbstract
+  ,tiVTSearch  
  ;
 
 type
@@ -171,7 +172,11 @@ type
     FApplyFilter: Boolean;
     FOnFilter: TtiVTTVOnFilterDataEvent;
     FOnNodeCheckboxClick: TtiVTTVNodeCheckboxClickEvent;
-
+///
+    FpmiShowFind: TMenuItem;
+    FSearching: boolean;
+    procedure SetSearching(const AValue: boolean);
+///
     procedure DoOnChange(sender: TBaseVirtualTree; node: PVirtualNode);
     procedure SetTVDataMappings(const AValue: TtiVTTVDataMappings);
     function  GetSelectedAddress: string;
@@ -223,6 +228,12 @@ type
     function  CalcNodeChildren(Node: PVirtualNode): Integer;
     function  IsMappingForObject(AtiVTTVDataMapping: TtiVTTVDataMapping; AObj: TtiObject): Boolean;
     function  CalcMappingForObject(pObj: TtiObject): TtiVTTVDataMapping;
+///
+    procedure VTSearchInsideNode(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      const SearchText: string; out Result: boolean); override;
+    procedure DoShowFind(Sender: TObject); virtual;
+    property Searching: boolean read FSearching write SetSearching default true;
+///
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
@@ -252,6 +263,7 @@ type
 
     procedure   SetDataNodeCheckState(const AData: TtiObject; const ACheckState: TCheckState);
     function    GetDataNodeCheckState(const AData: TtiObject): TCheckState;
+    procedure   EnableAllNodes;
 
     procedure   RefreshCurrentNode;
 
@@ -283,6 +295,7 @@ type
 
     property OnGetNodeHint;
     property OnPaintText;
+    property OnAdvancedPaintText;
     property OnScroll;
     property OnCollapsed;
     property OnExpanded;
@@ -359,7 +372,7 @@ begin
   VT.Name := Name + '_TV';
   VT.Top := 1;
   VT.Left := 2;
-  VT.Height := Height - 2;
+  VT.Height := Height - 2 - SP.Height;
   VT.Width := Width - 2;
   VT.Anchors := [akLeft, akTop, akRight, akBottom];
 
@@ -371,6 +384,17 @@ begin
   VT.OnChecked:= DoOnCheckChange;
 
   FPopupMenu := TTVPopupMenu.Create(nil);
+///
+  FSearching := true;
+
+  FpmiShowFind         := TMenuItem.Create(self);
+  FpmiShowFind.Caption := '&Find...';
+  FpmiShowFind.OnClick := DoShowFind;
+  FpmiShowFind.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Find);
+  FpmiShowFind.Visible := true;
+  FpmiShowFind.ShortCut := ShortCut(Word('F'), [ssCtrl]);
+  FPopupMenu.Items.Add(FpmiShowFind);
+///
   FPopupMenu.VT := self;
   VT.PopupMenu := FPopupMenu;
 
@@ -441,6 +465,18 @@ begin
     exit;
 
   VT.CheckState[LNode] := ACheckState;
+end;
+
+procedure TtiVTTreeView.EnableAllNodes;
+var
+  LNode: PVirtualNode;
+begin
+  LNode := VT.RootNode.FirstChild;
+  while Assigned(LNode) do
+  begin
+    Exclude(LNode.States, vsDisabled);
+    LNode := VT.GetNext(LNode);
+  end;
 end;
 
 procedure TtiVTTreeView.SetDefaultText(const AValue: WideString);
@@ -816,6 +852,14 @@ begin
 end;
 
 
+procedure TtiVTTreeView.SetSearching(const AValue: boolean);
+begin
+  FSearching := AValue;
+  FpmiShowFind.Visible := AValue;
+  FpmiShowFind.Enabled := AValue;
+//  FpmiSortGroup.Visible := FpmiClearSort.Visible or FpmiShowFind.Visible;
+end;
+
 procedure TtiVTTreeView.SetSelectedAddress(const AValue: string);
 var
   i: integer;
@@ -1160,9 +1204,18 @@ begin
     1,
     lTop,
     Width - 2,
-    Height - lTop - 1);
+    Height - lTop - 1 - SP.Height);
 
   VT.Anchors := [akLeft, akTop, akRight, akBottom];
+
+  // Hack to correct values for SP
+  // SP.Left previously 0, not 1
+//  SP.SetBounds(VT.Left, VT.Top + VT.Height, VT.Width, SP.Height);
+end;
+
+procedure TtiVTTreeView.DoShowFind(Sender: TObject);
+begin
+  SP.Showing := not SP.Showing;
 end;
 
 procedure TtiVTTreeView.DoDblClick(Sender: TObject);
@@ -1505,6 +1558,17 @@ begin
   Result:= True;
   if ApplyFilter and Assigned(OnFilter) then
     OnFilter(AValue, Result);
+end;
+
+procedure TtiVTTreeView.VTSearchInsideNode(Sender: TBaseVirtualTree;
+  Node: PVirtualNode; const SearchText: string; out Result: boolean);
+ var
+   LNodeText, LSearchText: string;
+begin
+   LSearchText := AnsiUpperCase(SearchText);
+   LNodeText := AnsiUpperCase(VT.Text[Node, 0]);
+   // look for partial match on SearchText as well as complete match
+   Result := (AnsiStrPos(PChar(LNodeText), PChar(LSearchText)) <> nil);
 end;
 
 procedure TtiVTTVDataMappings.Assign(Source: TPersistent);

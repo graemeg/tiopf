@@ -160,6 +160,11 @@ type
     procedure tiRound;
     procedure tiRoundDateToPreviousMinute;
     procedure tiNextInterval;
+    procedure tiDecodeDateTimeToNearestMilliSecond;
+    procedure tiRoundDateTimeToNearestMilliSecond;
+    procedure tiCompareDateTimeToMillisecond;
+    procedure tiIncludesTime;
+    procedure tiOverlapsTime;
     procedure tiSafeDiv;
     procedure tiSetFileDate;
     procedure tiSetFileReadOnly;
@@ -170,10 +175,12 @@ type
     procedure tiStreamToString2;
     procedure tiStringToFile;
     procedure tiStringToStream;
+    procedure tiStripIntPrefix;
     procedure tiStrPos;
     procedure tiStrToBool;
     procedure tiStrToFloat;
     procedure tiStrToInt;
+    procedure tiStrToIntPrefix;
     procedure tiStrTran;
     procedure tiStrTran1;
     procedure tiSubStr;
@@ -1569,6 +1576,21 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiStrToIntPrefix;
+begin
+  CheckEquals(0, tiUtils.tiStrToIntPrefix(''));
+  CheckEquals(0, tiUtils.tiStrToIntPrefix('alpha'));
+  CheckEquals(0, tiUtils.tiStrToIntPrefix('0'));
+  CheckEquals(0, tiUtils.tiStrToIntPrefix('0alpha'));
+  CheckEquals(1, tiUtils.tiStrToIntPrefix('1'));
+  CheckEquals(1, tiUtils.tiStrToIntPrefix('1alpha'));
+  CheckEquals(1, tiUtils.tiStrToIntPrefix('01alpha'));
+  CheckEquals(12345, tiUtils.tiStrToIntPrefix('12345alpha'));
+  CheckEquals(1, tiUtils.tiStrToIntPrefix('1 alpha'));
+  CheckEquals(1, tiUtils.tiStrToIntPrefix('1.9 alpha'));
+  CheckEquals(0, tiUtils.tiStrToIntPrefix('$1 alpha'));
+end;
+
 procedure TTestTIUtils.tiStrToFloat;
 begin
   CheckEquals(0, tiUtils.tiStrToFloat('0'), 'Failed on ''0''');
@@ -2516,6 +2538,21 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiStripIntPrefix;
+begin
+  CheckEquals('', tiUtils.tiStripIntPrefix(''));
+  CheckEquals('alpha', tiUtils.tiStripIntPrefix('alpha'));
+  CheckEquals('', tiUtils.tiStripIntPrefix('0'));
+  CheckEquals('alpha', tiUtils.tiStripIntPrefix('0alpha'));
+  CheckEquals('', tiUtils.tiStripIntPrefix('1'));
+  CheckEquals('alpha', tiUtils.tiStripIntPrefix('1alpha'));
+  CheckEquals('alpha', tiUtils.tiStripIntPrefix('01alpha'));
+  CheckEquals('alpha', tiUtils.tiStripIntPrefix('12345alpha'));
+  CheckEquals(' alpha', tiUtils.tiStripIntPrefix('1 alpha'));
+  CheckEquals('.9 alpha', tiUtils.tiStripIntPrefix('1.9 alpha'));
+  CheckEquals('$1 alpha', tiUtils.tiStripIntPrefix('$1 alpha'));
+end;
+
 procedure TTestTIUtils.tiAppendStringToStream;
 var
   lStream : TStringStream;
@@ -2899,7 +2936,7 @@ begin
               tiUtils.tiNextInterval(
                 EncodeDateTime(2008, 07, 09, 15, 42, 35, 678), titiHour));
   CheckEquals(EncodeDateTime(2008, 07, 09, 16, 0, 0, 0),
-              tiUtils.tiNextInterval(                     
+              tiUtils.tiNextInterval(
                 EncodeDateTime(2008, 07, 09, 15, 0, 0, 0), titiHour));
   CheckEquals(EncodeDateTime(2008, 07, 09, 15, 43, 0, 0),
               tiUtils.tiNextInterval(
@@ -2917,6 +2954,154 @@ begin
               tiUtils.tiNextInterval(
                 EncodeDateTime(2008, 07, 09, 15, 42, 35, 678), titiMillisecond));
 end;
+
+
+procedure TTestTIUtils.tiDecodeDateTimeToNearestMilliSecond;
+var
+  LDateTime: TDateTime;
+  LDays: Integer;
+  LHours: Word;
+  LMins: Word;
+  LSecs: Word;
+  LMSecs: Word;
+const
+  CQuarterMSec: Extended = 1/24/60/60/1000/4;
+  COverHalfMSec: Extended = 1/24/60/60/1000/1.99;
+  CThreeQuarterMSec: Extended = 1/24/60/60/1000/4*3;
+begin
+  LDateTime := EncodeDateTime(2007, 12, 20, 16, 45, 50, 767);
+  tiUtils.tiDecodeDateTimeToNearestMilliSecond(LDateTime, LDays, LHours, LMins, LSecs, LMSecs);
+  CheckEquals(39436, LDays);
+  CheckEquals(16, LHours);
+  CheckEquals(45, LMins);
+  CheckEquals(50, LSecs);
+  CheckEquals(767, LMSecs);
+  tiUtils.tiDecodeDateTimeToNearestMilliSecond(LDateTime + CQuarterMSec, LDays, LHours, LMins, LSecs, LMSecs);
+  CheckEquals(39436, LDays);
+  CheckEquals(16, LHours);
+  CheckEquals(45, LMins);
+  CheckEquals(50, LSecs);
+  CheckEquals(767, LMSecs);
+  tiUtils.tiDecodeDateTimeToNearestMilliSecond(LDateTime + COverHalfMSec, LDays, LHours, LMins, LSecs, LMSecs);
+  CheckEquals(39436, LDays);
+  CheckEquals(16, LHours);
+  CheckEquals(45, LMins);
+  CheckEquals(50, LSecs);
+  CheckEquals(768, LMSecs);
+  tiUtils.tiDecodeDateTimeToNearestMilliSecond(LDateTime + CThreeQuarterMSec, LDays, LHours, LMins, LSecs, LMSecs);
+  CheckEquals(39436, LDays);
+  CheckEquals(16, LHours);
+  CheckEquals(45, LMins);
+  CheckEquals(50, LSecs);
+  CheckEquals(768, LMSecs);
+end;
+
+
+procedure TTestTIUtils.tiRoundDateTimeToNearestMilliSecond;
+var
+  LDateTime: TDateTime;
+const
+  CQuarterMSec: Extended = 1/24/60/60/1000/4;
+  COverHalfMSec: Extended = 1/24/60/60/1000/1.99;
+  CThreeQuarterMSec: Extended = 1/24/60/60/1000/4*3;
+begin
+  LDateTime := EncodeDateTime(2007, 12, 20, 16, 45, 50, 767);
+  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 767),
+      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime), 'Same value');
+  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 767),
+      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime + CQuarterMSec), 'Quarter msec');
+  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 767),
+      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime + COverHalfMSec), 'Over half msec');
+  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 768),
+      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime), 'Three-quarter msec');
+  CheckNearEnough(EncodeDateTime(2007, 12, 20, 16, 45, 50, 768),
+      tiUtils.tiRoundDateTimeToNearestMilliSecond(LDateTime + CThreeQuarterMSec), 'Quarter msec');
+end;
+
+
+procedure TTestTIUtils.tiCompareDateTimeToMillisecond;
+var
+  LBaseDateTime: TDateTime;
+  LCompareDateTime: TDateTime;
+  LEndDateTime: TDateTime;
+  LIncDateTime: TDateTime;
+  LStatusStr: string;
+  i: integer;
+begin
+  LBaseDateTime := DateOf(Now); // Round to whole day.
+  // EndDateTime is sufficient to cause rounding problems but not more than 1/2 msec.
+  LEndDateTime := IncSecond(LBaseDateTime, 2);
+  LIncDateTime := LBaseDateTime;
+  i := 0;
+  repeat
+    LCompareDateTime := IncMillisecond(LBaseDateTime, i);
+    LStatusStr := Format('Iteration: %d', [i]) + ', Time: ' + FormatDateTime('hh:mm:ss.zzz', LCompareDateTime) +
+        ', Values: ' + FloatToStrF(LCompareDateTime, ffFixed, 15, 10) + ',' + FloatToStrF(LIncDateTime, ffFixed, 15, 10);
+    Check(tiUtils.tiCompareDateTimeToMillisecond(LIncDateTime, LCompareDateTime) = 0, 'Equals: ' + LStatusStr);
+    Check(tiUtils.tiCompareDateTimeToMillisecond(IncMillisecond(LIncDateTime, -1), LCompareDateTime) < 0, 'LessThan: ' + LStatusStr);
+    Check(tiUtils.tiCompareDateTimeToMillisecond(IncMillisecond(LIncDateTime, 1), LCompareDateTime) > 0, 'GreaterThan: ' + LStatusStr);
+    LIncDateTime := IncMillisecond(LIncDateTime, 1);
+    Inc(i);
+  until LIncDateTime >= LEndDateTime;
+end;
+
+
+procedure TTestTIUtils.tiIncludesTime;
+var
+  LStartDateTime: TDateTime;
+  LEndDateTime: TDateTime;
+begin
+  LStartDateTime := DateOf(Now);
+  LEndDateTime := IncMinute(LStartDateTime, 1);
+
+  // Start - 1
+  CheckFalse(tiUtils.tiIncludesTime(IncMilliSecond(LStartDateTime, -1), LStartDateTime, LEndDateTime));
+  // Start
+  CheckTrue(tiUtils.tiIncludesTime(LStartDateTime, LStartDateTime, LEndDateTime));
+  // Start + 1
+  CheckTrue(tiUtils.tiIncludesTime(IncMilliSecond(LStartDateTime, 1), LStartDateTime, LEndDateTime));
+  // Middle
+  CheckTrue(tiUtils.tiIncludesTime((LStartDateTime + LEndDateTime) / 2, LStartDateTime, LEndDateTime));
+  // End - 1
+  CheckTrue(tiUtils.tiIncludesTime(IncMilliSecond(LEndDateTime, -1), LStartDateTime, LEndDateTime));
+  // End
+  CheckFalse(tiUtils.tiIncludesTime(LEndDateTime, LStartDateTime, LEndDateTime));
+  // End + 1
+  CheckFalse(tiUtils.tiIncludesTime(IncMilliSecond(LEndDateTime, 1), LStartDateTime, LEndDateTime));
+end;
+
+
+procedure TTestTIUtils.tiOverlapsTime;
+var
+  LStartDateTime: TDateTime;
+  LEndDateTime: TDateTime;
+begin
+  LStartDateTime := DateOf(Now);
+  LEndDateTime := IncMinute(LStartDateTime, 1);
+
+  // Non-overlap
+  // Slighly before start
+  CheckFalse(tiUtils.tiOverlapsTime(IncMilliSecond(LStartDateTime, -100), IncMilliSecond(LStartDateTime, -1), LStartDateTime, LEndDateTime));
+  // Touching start
+  CheckFalse(tiUtils.tiOverlapsTime(IncMilliSecond(LStartDateTime, -100), LStartDateTime, LStartDateTime, LEndDateTime));
+  // Touching end
+  CheckFalse(tiUtils.tiOverlapsTime(LEndDateTime, IncMilliSecond(LEndDateTime, 100), LStartDateTime, LEndDateTime));
+  // Slightly after end
+  CheckFalse(tiUtils.tiOverlapsTime(IncMilliSecond(LEndDateTime, 1), IncMilliSecond(LEndDateTime, 100), LStartDateTime, LEndDateTime));
+
+  // Overlap
+  // Slightly overlap start
+  CheckTrue(tiUtils.tiOverlapsTime(IncMilliSecond(LStartDateTime, -100), IncMilliSecond(LStartDateTime, 1), LStartDateTime, LEndDateTime));
+  // Overlap mid
+  CheckTrue(tiUtils.tiOverlapsTime(IncMilliSecond(LStartDateTime, -100), (LStartDateTime + LEndDateTime) / 2, LStartDateTime, LEndDateTime));
+  // Superset
+  CheckTrue(tiUtils.tiOverlapsTime(IncMilliSecond(LStartDateTime, -100), IncMilliSecond(LEndDateTime, 100), LStartDateTime, LEndDateTime));
+  // Subset
+  CheckTrue(tiUtils.tiOverlapsTime(IncMilliSecond(LStartDateTime, 100), IncMilliSecond(LEndDateTime, -100), LStartDateTime, LEndDateTime));
+  // Slightly overlap end
+  CheckTrue(tiUtils.tiOverlapsTime(IncMilliSecond(LEndDateTime, -1), IncMilliSecond(LEndDateTime, 100), LStartDateTime, LEndDateTime));
+end;
+
 
 procedure TTestTIUtils.tiRemoveDirectory;
 var
@@ -3362,74 +3547,156 @@ end;
 
 
 procedure TTestTIUtils.tiDeleteOldFiles;
+const
+  CDaysOld = 20;
+  CTestDirectory = 'tiDeleteOldFiles_TST';
+
+  CSubDir1 = '1';
+  CSubDir2 = '2';
+
+  CTempFileNameAAA1 = '1.AAA';
+  CTempFileNameAAA2 = '2.AAA';
+  CTempFileNameAAA3 = '3.AAA';
+  CTempFileNameBBB1 = '1.BBB';
+  CTempFileNameBBB2 = '2.BBB';
+  CTempFileNameBBB3 = '3.BBB';
+
+  CTempReadOnlyFileNameAAA = 'ReadOnly.AAA';
+  CTempLockedFileNameAAA = 'Locked.AAA';
 var
   LDirectory: string;
+  LSubDir1: string;
+  LSubDir2: string;
   LWildCard: string;
-  LDaysOld: Cardinal;
   LRecurseDirectories: Boolean;
 
-//  LSubDir1: string;
-//  LSubDir2: string;
-
-  LTempFileNameAAA1: string;
-  LTempFileNameAAA2: string;
-  LTempFileNameAAA3: string;
-  LTempFileNameBBB1: string;
-  LTempFileNameBBB2: string;
-  LTempFileNameBBB3: string;
-
-//  LTempReadOnlyFileNameAAA: string;
-//  LTempLockedFileNameAAA: string;
-
   LFileCutoffDate: TDateTime;
+
+  LLockedFile: TextFile;
+
+  procedure _CreateTempFiles(const ADirectory: string);
+  begin
+    tiUtils.tiForceRemoveDir(ADirectory);
+    CreateDir(ADirectory);
+
+    CheckEquals(true, DirectoryExists(LDirectory));
+
+    tiUtils.tiStringToFile('', ADirectory + CTempFileNameAAA1);
+    tiUtils.tiStringToFile('', ADirectory + CTempFileNameAAA2);
+    tiUtils.tiStringToFile('', ADirectory + CTempFileNameAAA3);
+    tiUtils.tiStringToFile('', ADirectory + CTempFileNameBBB1);
+    tiUtils.tiStringToFile('', ADirectory + CTempFileNameBBB2);
+    tiUtils.tiStringToFile('', ADirectory + CTempFileNameBBB3);
+
+    CheckEquals(true, FileExists(ADirectory + CTempFileNameAAA1));
+    CheckEquals(true, FileExists(ADirectory + CTempFileNameBBB1));
+    CheckEquals(true, FileExists(ADirectory + CTempFileNameAAA2));
+    CheckEquals(true, FileExists(ADirectory + CTempFileNameBBB2));
+    CheckEquals(true, FileExists(ADirectory + CTempFileNameAAA3));
+    CheckEquals(true, FileExists(ADirectory + CTempFileNameBBB3));
+
+    LFileCutoffDate := IncDay(DateOf(Now), -CDaysOld);
+
+    tiUtils.tiSetFileDate(ADirectory + CTempFileNameAAA1, IncDay(LFileCutoffDate, -1));
+    tiUtils.tiSetFileDate(ADirectory + CTempFileNameAAA2, LFileCutoffDate);
+    tiUtils.tiSetFileDate(ADirectory + CTempFileNameAAA3, IncDay(LFileCutoffDate, +1));
+    tiUtils.tiSetFileDate(ADirectory + CTempFileNameBBB1, IncDay(LFileCutoffDate, -1));
+    tiUtils.tiSetFileDate(ADirectory + CTempFileNameBBB2, LFileCutoffDate);
+    tiUtils.tiSetFileDate(ADirectory + CTempFileNameBBB3, IncDay(LFileCutoffDate, +1));
+  end;
 begin
 //  tiDeleteOldFiles(LDirectory, LWildCard, LDaysOld, LRecurseDirectories);
 
-  LDirectory := tiUtils.tiAddTrailingSlash(tiUtils.tiGetTempDir);
+  LDirectory := tiUtils.tiAddTrailingSlash(tiUtils.tiAddTrailingSlash(tiUtils.tiGetTempDir) + CTestDirectory);
+  _CreateTempFiles(LDirectory);
 
-  if not DirectoryExists(tiFixPathDelim(LDirectory + '1\')) then CreateDir(tiFixPathDelim(LDirectory + '1\'));
-  if not DirectoryExists(tiFixPathDelim(LDirectory + '2\')) then CreateDir(tiFixPathDelim(LDirectory + '2\'));
+  //Check that out of date files matching wildcard are deleted.
+  LWildCard  := '*.AAA';
+  LRecurseDirectories := false;
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories);
 
-  //Create temp files based on LDaysOld
+  CheckEquals(false, FileExists(LDirectory + CTempFileNameAAA1));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB1));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA2));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB2));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA3));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB3));
 
-  LTempFileNameAAA1 := '1.AAA';
-  LTempFileNameAAA2 := '2.AAA';
-  LTempFileNameAAA3 := '3.AAA';
-  LTempFileNameBBB1 := '1.BBB';
-  LTempFileNameBBB2 := '2.BBB';
-  LTempFileNameBBB3 := '3.BBB';
+  //Check recurse directories works
+  LSubDir1 := tiUtils.tiAddTrailingSlash(LDirectory + CSubDir1);
+  LSubDir2 := tiUtils.tiAddTrailingSlash(LDirectory + CSubDir2);
 
-  tiUtils.tiStringToFile('', LDirectory + LTempFileNameAAA1);
-  tiUtils.tiStringToFile('', LDirectory + LTempFileNameAAA2);
-  tiUtils.tiStringToFile('', LDirectory + LTempFileNameAAA3);
-  tiUtils.tiStringToFile('', LDirectory + LTempFileNameBBB1);
-  tiUtils.tiStringToFile('', LDirectory + LTempFileNameBBB2);
-  tiUtils.tiStringToFile('', LDirectory + LTempFileNameBBB3);
+  _CreateTempFiles(LDirectory);
+  _CreateTempFiles(LSubDir1);
+  _CreateTempFiles(LSubDir2);
 
-  LDaysOld := 20;
+  LWildCard  := '*.BBB';
+  LRecurseDirectories := true;
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories);
 
-  LFileCutoffDate := IncDay(DateOf(Now), -LDaysOld);
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA1));
+  CheckEquals(false, FileExists(LDirectory + CTempFileNameBBB1));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA2));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB2));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA3));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB3));
 
-  tiUtils.tiSetFileDate(LDirectory + LTempFileNameAAA1, IncDay(LFileCutoffDate, -1));
-  tiUtils.tiSetFileDate(LDirectory + LTempFileNameAAA2, LFileCutoffDate);
-  tiUtils.tiSetFileDate(LDirectory + LTempFileNameAAA3, IncDay(LFileCutoffDate, +1));
-  tiUtils.tiSetFileDate(LDirectory + LTempFileNameBBB1, IncDay(LFileCutoffDate, -1));
-  tiUtils.tiSetFileDate(LDirectory + LTempFileNameBBB2, LFileCutoffDate);
-  tiUtils.tiSetFileDate(LDirectory + LTempFileNameBBB3, IncDay(LFileCutoffDate, +1));
+  CheckEquals(true, FileExists(LSubDir1 + CTempFileNameAAA1));
+  CheckEquals(false, FileExists(LSubDir1 + CTempFileNameBBB1));
+  CheckEquals(true, FileExists(LSubDir1 + CTempFileNameAAA2));
+  CheckEquals(true, FileExists(LSubDir1 + CTempFileNameBBB2));
+  CheckEquals(true, FileExists(LSubDir1 + CTempFileNameAAA3));
+  CheckEquals(true, FileExists(LSubDir1 + CTempFileNameBBB3));
 
-//  Check that stringlist of files matches what would be expected from tiFilesToStringList with
-//  the inputs passed.
+  CheckEquals(true, FileExists(LSubDir2 + CTempFileNameAAA1));
+  CheckEquals(false, FileExists(LSubDir2 + CTempFileNameBBB1));
+  CheckEquals(true, FileExists(LSubDir2 + CTempFileNameAAA2));
+  CheckEquals(true, FileExists(LSubDir2 + CTempFileNameBBB2));
+  CheckEquals(true, FileExists(LSubDir2 + CTempFileNameAAA3));
+  CheckEquals(true, FileExists(LSubDir2 + CTempFileNameBBB3));
+
+  //Check there is no attempt to delete read only files
+  _CreateTempFiles(LDirectory);
+  tiUtils.tiStringToFile('', LDirectory + CTempReadOnlyFileNameAAA);
+  tiUtils.tiSetFileDate(LDirectory + CTempReadOnlyFileNameAAA, IncDay(LFileCutoffDate, -1));
+  tiUtils.tiSetFileReadOnly(LDirectory + CTempReadOnlyFileNameAAA, true);
 
   LWildCard  := '*.AAA';
   LRecurseDirectories := false;
-//  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, LDaysOld, LRecurseDirectories);
-Fail('Under construction');
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories);
 
-  //Check there is no attempt to delete read only files
+  CheckEquals(true, FileExists(LDirectory + CTempReadOnlyFileNameAAA));
+  CheckEquals(false, FileExists(LDirectory + CTempFileNameAAA1));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB1));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA2));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB2));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA3));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB3));
+
+  tiUtils.tiSetFileReadOnly(LDirectory + CTempReadOnlyFileNameAAA, false);
 
   //Check that exception is raised when file cannot be deleted - eg. file is locked by another app
+  _CreateTempFiles(LDirectory);
+  tiUtils.tiStringToFile('', LDirectory + CTempLockedFileNameAAA);
+  tiUtils.tiSetFileDate(LDirectory + CTempLockedFileNameAAA, IncDay(LFileCutoffDate, -1));
+  AssignFile(LLockedFile, LDirectory + CTempLockedFileNameAAA);
+  ReWrite(LLockedFile);
 
-  //Check dirs are cleaned up
+  // Close the file
+
+  LWildCard  := '*.AAA';
+  LRecurseDirectories := false;
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories);
+
+  CheckEquals(true, FileExists(LDirectory + CTempLockedFileNameAAA));
+  CheckEquals(false, FileExists(LDirectory + CTempFileNameAAA1));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB1));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA2));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB2));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA3));
+  CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB3));
+
+  CloseFile(LLockedFile);
 
   //Clean up any left over files
   tiUtils.tiForceRemoveDir(LDirectory);

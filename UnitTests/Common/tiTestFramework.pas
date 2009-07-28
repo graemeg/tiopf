@@ -88,7 +88,8 @@ type
       // DUnit compatibility interface
       {$I FPCUnitHelper_intf.inc}
     {$ENDIF}
-    class function TempDirectory: string;
+    class function TempDirectory: string; virtual; // Remove thsi function, replace with PathToTestTempDirectory
+    class function PathToTestTempDirectory: string; // A better name
     function  PerformanceCounter: TtiPerformanceCounter;
 
     procedure Check(const ACondition: Boolean; AMessage: string; const AArgs: array of const); reintroduce; overload;
@@ -156,6 +157,8 @@ type
        APropName must be a real property.}
     procedure CheckTIObjectIsValidMethod(const AData: TtiObject; const APropName: string; const AInvalidValue: Real; const AErrorProperty: string = ''); overload;
 
+    {: Check the INI file AINIFileName contains the string AExpected in the AINISection:AINIIdent location}
+    procedure CheckINIFileEntry(const AExpected: string; const AINIFileName, AINISection, AINIIdent: string); overload;
     {: Check the INI file AINIFileName contains the TDateTime AExpected in the AINISection:AINIIdent location}
     procedure CheckINIFileEntry(const AExpected: TDateTime; const AINIFileName, AINISection, AINIIdent: string); overload;
     {: Check the INI file AINIFileName contains the Int64 AExpected in the AINISection:AINIIdent location}
@@ -507,6 +510,21 @@ begin
   CheckEquals(Format(AFormat, AArgs), AActual, AMessage);
 end;
 
+procedure TtiTestCase.CheckINIFileEntry(const AExpected: string;
+  const AINIFileName, AINISection, AINIIdent: string);
+var
+  LINI: TtiINIFile;
+  LActual: string;
+begin
+  LINI:= TtiINIFile.Create(AINIFileName);
+  try
+    LActual:= LINI.ReadString(AINISection, AINIIdent, '');
+    CheckEquals(AExpected, LActual);
+  finally
+    LINI.Free;
+  end;
+end;
+
 procedure TtiTestCase.CheckINIFileEntry(const AExpected: TDateTime;
   const AINIFileName, AINISection, AINIIdent: string);
 var
@@ -579,6 +597,11 @@ begin
         '> but got <' +
         AData.ObjectStateAsString +
         '> on ' + AData.ClassName + '. ' + AMessage);
+end;
+
+class function TtiTestCase.PathToTestTempDirectory: string;
+begin
+  result:= TempDirectory;
 end;
 
 function TtiTestCase.PerformanceCounter: TtiPerformanceCounter;

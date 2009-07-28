@@ -26,6 +26,8 @@ const
   cResTI_CancelSave16N           = 'ti_CancelSave_16N';
   cResTI_CheckBoxChecked16D      = 'ti_CheckBoxChecked_16D';
   cResTI_CheckBoxChecked16N      = 'ti_CheckBoxChecked_16N';
+  cResTI_CheckBoxPartChecked16D  = 'ti_CheckBoxPartChecked_16D';
+  cResTI_CheckBoxPartChecked16N  = 'ti_CheckBoxPartChecked_16N';
   cResTI_CheckBoxUnChecked16D    = 'ti_CheckBoxUnChecked_16D';
   cResTI_CheckBoxUnChecked16N    = 'ti_CheckBoxUnChecked_16N';
   cResTI_CloseWindow             = 'ti_CloseWindow';
@@ -44,6 +46,11 @@ const
   cResTI_Cross16H                = 'ti_Cross_16H';
   cResTI_Cross16N                = 'ti_Cross_16N';
   cResTI_Cross16ND               = 'ti_Cross_16ND';
+  cResTI_CutToClipboard          = 'ti_CutToClipboard';
+  cResTI_CutToClipboard16D       = 'ti_CutToClipboard_16D';
+  cResTI_CutToClipboard16H       = 'ti_CutToClipboard_16H';
+  cResTI_CutToClipboard16N       = 'ti_CutToClipboard_16N';
+  cResTI_CutToClipboard16ND      = 'ti_CutToClipboard_16ND';
   cResTI_Delete                  = 'ti_Delete';
   cResTI_Delete08D               = 'ti_Delete_08D';
   cResTI_Delete08H               = 'ti_Delete_08H';
@@ -155,6 +162,7 @@ const
   cResTI_RadioButtonChecked16N   = 'ti_RadioButtonChecked_16N';
   cResTI_RadioButtonUnChecked16D = 'ti_RadioButtonUnChecked_16D';
   cResTI_RadioButtonUnChecked16N = 'ti_RadioButtonUnChecked_16N';
+  cResTI_ReDo                    = 'ti_ReDo';
   cResTI_ReDo16D                 = 'ti_ReDo_16D';
   cResTI_ReDo16H                 = 'ti_ReDo_16H';
   cResTI_ReDo16N                 = 'ti_ReDo_16N';
@@ -205,6 +213,14 @@ const
   cResTI_ZoomOut16D              = 'ti_ZoomOut_16D';
   cResTI_ZoomOut16H              = 'ti_ZoomOut_16H';
   cResTI_ZoomOut16N              = 'ti_ZoomOut_16N';
+  cResTI_ZoomDetail              = 'ti_ZoomDetail';
+  cResTI_ZoomDetail16D           = 'ti_ZoomDetail_16D';
+  cResTI_ZoomDetail16H           = 'ti_ZoomDetail_16H';
+  cResTI_ZoomDetail16N           = 'ti_ZoomDetail_16N';
+  cResTI_ZoomManual              = 'ti_ZoomManual';
+  cResTI_ZoomManual16D           = 'ti_ZoomManual_16D';
+  cResTI_ZoomManual16H           = 'ti_ZoomManual_16H';
+  cResTI_ZoomManual16N           = 'ti_ZoomManual_16N';
 
 type
   TtiImageRes = ( tiRINone

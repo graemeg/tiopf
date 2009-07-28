@@ -31,8 +31,8 @@ type
     procedure CreateColumns; override;
     procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
     procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TListItemMediator); override;
-    function GetGuiControl: TComponent; override;
-    procedure SetGuiControl(const AValue: TComponent); override;
+    function GetGUIControl: TComponent; override;
+    procedure SetGUIControl(const AValue: TComponent); override;
     procedure SetupGUIandObject; override;
     procedure ClearList; override;
     procedure RebuildList; override;
@@ -66,8 +66,8 @@ type
     function GetSelectedObject: TtiObject; override;
     procedure SetSelectedObject(const AValue: TtiObject); override;
     procedure CreateColumns; override;
-    function GetGuiControl: TComponent; override;
-    procedure SetGuiControl(const AValue: TComponent); override;
+    function GetGUIControl: TComponent; override;
+    procedure SetGUIControl(const AValue: TComponent); override;
     procedure SetupGUIandObject; override;
     procedure ClearList; override;
     procedure RebuildList; override;
@@ -143,15 +143,15 @@ begin
   SetGUIControl(AValue);
 end;
 
-function TListViewMediator.GetGuiControl: TComponent;
+function TListViewMediator.GetGUIControl: TComponent;
 begin
   Result := FView;
 end;
 
-procedure TListViewMediator.SetGuiControl(const AValue: TComponent);
+procedure TListViewMediator.SetGUIControl(const AValue: TComponent);
 begin
   FView := AValue as TListView;
-  inherited SetGuiControl(AValue);
+  inherited SetGUIControl(AValue);
 end;
 
 procedure TListViewMediator.SetSelectedObject(const AValue: TtiObject);
@@ -438,12 +438,12 @@ begin
   SetGUIControl(AValue);
 end;
 
-function TStringGridMediator.GetGuiControl: TComponent;
+function TStringGridMediator.GetGUIControl: TComponent;
 begin
   Result := fView;
 end;
 
-procedure TStringGridMediator.SetGuiControl(const AValue: TComponent);
+procedure TStringGridMediator.SetGUIControl(const AValue: TComponent);
 begin
   FView := AValue as TStringGrid;
 end;

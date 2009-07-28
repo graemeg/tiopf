@@ -166,11 +166,11 @@ procedure TtiDBPS_TestAlive1.Execute(
 var
   lResult  : string;
   lDBConnectionName : string;
-  LAppServerVersion: TtiAppServerVersion;
+  LAppServerVersion: TtiAppServerVersionAbs;
   LDatabase: TtiDatabase;
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
-  LAppServerVersion:= TtiAppServerVersion.Create;
+  LAppServerVersion:= gAppServerVersionFactory.CreateInstance;
   try
     LAppServerVersion.LoadDefaultValues;
     lDBConnectionName := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionName;

@@ -126,6 +126,7 @@ type
     // Override in your code
     procedure Init; virtual;
     procedure SetupParams; virtual;
+    procedure UnInit; virtual;
     procedure Final(const AVisited: TtiObject); virtual;
 
   public
@@ -140,7 +141,9 @@ type
   // it's for internal tiOPF use only.
   TVisOwnedQrySelectAbs = class(TtiObjectVisitor)
   protected
+    procedure BeforeRow; virtual;
     procedure MapRowToObject; virtual;
+    procedure AfterRow; virtual;
     procedure OpenQuery; virtual; abstract;
   public
     procedure Execute(const AData: TtiVisited); override;
@@ -225,6 +228,11 @@ begin
 end;
 
 procedure TtiObjectVisitor.Init;
+begin
+  // Do nothing
+end;
+
+procedure TtiObjectVisitor.UnInit;
 begin
   // Do nothing
 end;
@@ -370,7 +378,9 @@ procedure TVisOwnedQrySelectAbs.Execute(const AData: TtiVisited);
       (Query.ContinueScan) and
       (not GTIOPFManager.Terminated) do
     begin
+      BeforeRow;
       MapRowToObject;
+      AfterRow;
       Query.Next;
     end;
     Query.Close;
@@ -396,24 +406,37 @@ begin
     Visited := nil;
 
   Init;
-
-  SetupParams;
-  liStart := tiGetTickCount;
-  OpenQuery;
   try
-    liQueryTime := tiGetTickCount - liStart;
+    SetupParams;
     liStart := tiGetTickCount;
-    _ScanQuery;
-    LogQueryTiming(ClassName, liQueryTime, tiGetTickCount - liStart);
+    OpenQuery;
+    try
+      liQueryTime := tiGetTickCount - liStart;
+      liStart := tiGetTickCount;
+      _ScanQuery;
+      LogQueryTiming(ClassName, liQueryTime, tiGetTickCount - liStart);
+    finally
+      Query.Close;
+    end;
   finally
-    Query.Close;
+    UnInit;
   end;
+end;
+
+procedure TVisOwnedQrySelectAbs.BeforeRow;
+begin
+  // Do nothing
 end;
 
 procedure TVisOwnedQrySelectAbs.MapRowToObject;
 begin
   raise Exception.Create('MapRowToObject has not been ' +
     'overridden in the concrete: ' + ClassName);
+end;
+
+procedure TVisOwnedQrySelectAbs.AfterRow;
+begin
+  // Do nothing
 end;
 
 procedure TtiVisitorUpdate.AfterExecSQL(const pRowsAffected: integer);
@@ -436,11 +459,15 @@ begin
   if not AcceptVisitor then
     exit; //==>
   Init;
-  lStart := tiGetTickCount;
-  SetupParams;
-  lRowsAffected := Query.ExecSQL;
-  if FQuery.SupportsRowsAffected then AfterExecSQL(lRowsAffected);
-  LogQueryTiming(ClassName, tiGetTickCount - lStart, 0);
+  try
+    lStart := tiGetTickCount;
+    SetupParams;
+    lRowsAffected := Query.ExecSQL;
+    if FQuery.SupportsRowsAffected then AfterExecSQL(lRowsAffected);
+    LogQueryTiming(ClassName, tiGetTickCount - lStart, 0);
+  finally
+    UnInit;
+  end;
 end;
 
 procedure TtiVisitorSelect.OpenQuery;

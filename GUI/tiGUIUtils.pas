@@ -45,6 +45,11 @@ uses
   function  tiGetUniqueComponentName(const ANameStub: string): string;
   {$ENDIF}
 
+  {: Translate & to &&}
+  function  tiEncodeNonAcceleratorInCaption(const ACaption: string): string;
+  {: Translate && to &}
+  function  tiDecodeNonAcceleratorInCaption(const ACaption: string): string;
+
   procedure ShowTIDataSet(const pDataSet: TtiDataBuffer); // For debugging
   procedure tiDataSetToListView(pDataSet: TtiDataBuffer; pLV: TListView);
   procedure tiDataSetToListItem(pDataSet: TtiDataBuffer; AItem: TListItem);
@@ -254,6 +259,19 @@ begin
 
 end;
 {$ENDIF}
+
+
+function tiEncodeNonAcceleratorInCaption(const ACaption: string): string;
+begin
+  result := tiStrTran(ACaption, '&', '&&');
+end;
+
+
+function tiDecodeNonAcceleratorInCaption(const ACaption: string): string;
+begin
+  result := tiStrTran(ACaption, '&&', '&');
+end;
+
 
 procedure ShowTIDataSet(const pDataSet: TtiDataBuffer);
 var
