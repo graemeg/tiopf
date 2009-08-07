@@ -43,7 +43,7 @@ protected
   function    GetParent: |objectparent|; reintroduce;
 public
   property    Items[i:integer] : |itemclass| read GetItems write SetItems;
-  procedure   Add(AObject : |itemclass|); reintroduce;
+  procedure   Add(const AObject : |itemclass|); reintroduce;
   property    Parent: |objectparent| read GetParent;
 published
 end;
