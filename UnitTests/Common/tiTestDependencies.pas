@@ -92,6 +92,7 @@ uses
   ,tiOPFIBX_TST
   ,tiOPFRemote_TST
   ,tiOPFSQLDB_IB_TST
+  ,tiOPFSQLDB_PQ_TST
   ,tiOPFTAB_TST
   ,tiOPFXML_TST
   ,tiOPFXMLLight_TST
