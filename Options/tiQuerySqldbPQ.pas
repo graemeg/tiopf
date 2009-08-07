@@ -22,7 +22,6 @@ interface
 uses
   tiQuery
   ,Classes
-  ,db
   ,sqldb
   ,PQConnection
   ,tiPersistenceLayers
@@ -43,8 +42,11 @@ type
 
   TtiDatabaseSQLDBPQ = Class(TtiDatabaseSQLDB)
   protected
-    Class Function CreateSQLConnection : TSQLConnection; override;
+    class function CreateSQLConnection: TSQLConnection; override;
     function    HasNativeLogicalType: boolean; override;
+  public
+    procedure   ReadMetaDataTables(AData: TtiDBMetaData); override;
+    procedure   ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
   end;
 
 
@@ -56,7 +58,9 @@ uses
   tiLog,
 {$endif}
   tiOPFManager,
-  tiConstants;
+  tiConstants,
+  tiExcept,
+  tiObject;
 
 
 { TtiPersistenceLayerSqldPQ }
@@ -66,9 +70,9 @@ procedure TtiPersistenceLayerSqldPQ.AssignPersistenceLayerDefaults(
 begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistSqldbPQ;
-  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
-  APersistenceLayerDefaults.Username:= 'SYSDBA';
-  APersistenceLayerDefaults.Password:= 'masterkey';
+  APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName;
+  APersistenceLayerDefaults.Username:= 'postgres';
+  APersistenceLayerDefaults.Password:= 'postgres';
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= True;
   APersistenceLayerDefaults.CanSupportSQL:= True;
@@ -95,7 +99,126 @@ end;
 
 function TtiDatabaseSQLDBPQ.HasNativeLogicalType: boolean;
 begin
-  Result:=True;
+  {$IFDEF BOOLEAN_CHAR_1}
+  Result := False;
+  {$ELSE}
+  Result := True;
+  {$ENDIF}
+end;
+
+procedure TtiDatabaseSQLDBPQ.ReadMetaDataTables(AData: TtiDBMetaData);
+var
+  lQuery: TtiQuery;
+  lTable: TtiDBMetaDataTable;
+begin
+  lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  try
+    StartTransaction;
+    try
+      lQuery.AttachDatabase(Self);
+      { SQL Views are now also included }
+      lQuery.SQLText :=
+          'SELECT table_name ' +
+          '  FROM information_schema.tables ' +
+          '  WHERE ((table_type = ''VIEW'') or (table_type = ''BASE TABLE'')) ' +
+          '    AND table_schema NOT IN (''pg_catalog'', ''information_schema'') ' +
+          '    AND table_name !~ ''^pg_'' ';
+      lQuery.Open;
+      while not lQuery.EOF do
+      begin
+        lTable := TtiDBMetaDataTable.Create;
+        lTable.Name := lQuery.FieldAsString['table_name'];
+        lTable.ObjectState := posPK;
+        AData.Add(lTable);
+        lQuery.Next;
+      end;
+      lQuery.DetachDatabase;
+      AData.ObjectState := posClean;
+    finally
+      Commit;
+    end;
+  finally
+    lQuery.Free;
+  end;
+end;
+
+procedure TtiDatabaseSQLDBPQ.ReadMetaDataFields(AData: TtiDBMetaDataTable);
+var
+  lQuery: TtiQuery;
+  lField: TtiDBMetaDataField;
+  lFieldType: string;
+  lFieldLength: integer;
+begin
+  lQuery := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
+  try
+    StartTransaction;
+    try
+      lQuery.AttachDatabase(Self);
+      lQuery.SQLText :=
+          'SELECT ordinal_position,              ' +
+          '       column_name,                   ' +
+          '       data_type,                     ' +
+          '       column_default,                ' +
+          '       is_nullable,                   ' +
+          '       character_maximum_length,      ' +
+          '       numeric_precision              ' +
+          '    FROM information_schema.columns   ' +
+          '   WHERE table_name = ''' + lowercase(AData.Name) + ''' ' +
+          'ORDER BY ordinal_position             ';
+      lQuery.Open;
+      while not lQuery.EOF do
+      begin
+        lField        := TtiDBMetaDataField.Create;
+        lField.Name   := lQuery.FieldAsString['column_name'];
+        lFieldType    := lQuery.FieldAsString['data_type'];
+        lFieldLength  := lQuery.FieldAsInteger['character_maximum_length'];
+        lField.Width  := 0;
+
+        if (lFieldType = 'character varying')
+          or (lFieldType = 'character') then
+        begin
+          lField.Kind := qfkString;
+          lField.Width := lFieldLength;
+        end
+        else if lFieldType = 'integer' then
+        begin
+          lField.Kind := qfkInteger;
+        end
+{
+        case lFieldType of
+          cIBField_LONG      : lField.Kind := qfkInteger;
+          cIBField_DOUBLE    : lField.Kind := qfkFloat;
+          cIBField_TIMESTAMP,
+          cIBField_DATE,
+          cIBField_TIME      : lField.Kind := qfkDateTime;
+          cIBField_VARYING,
+          cIBField_TEXT      : begin
+                                  lField.Kind := qfkString;
+                                  lField.Width := lFieldLength;
+                                end;
+          cIBField_BLOB      : begin
+                                  Assert(not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
+                                  if lQuery.FieldAsInteger['field_sub_type'] = 1 then
+                                    lField.Kind := qfkLongString
+                                  else
+                                    raise EtiOPFInternalException.Create('Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>');
+                                end;
+}
+        else
+          raise EtiOPFInternalException.Create('Invalid Interbase FieldType <' + lFieldType + '>');
+
+        lField.ObjectState := posClean;
+        AData.Add(lField);
+        lQuery.Next;
+      end;  // while
+    finally
+      Commit;
+    end;
+    lQuery.DetachDatabase;
+    AData.ObjectState := posClean;
+  finally
+    lQuery.Free;
+  end;
 end;
 
 initialization

@@ -22,7 +22,6 @@ uses
   sqldb,
   tiQuery,
   tiQueryDataset,
-  tiObject,
   tiPersistenceLayers;
 
 type
@@ -53,8 +52,6 @@ type
     function InTransaction: Boolean; override;
     procedure Commit; override;
     procedure RollBack; override;
-    procedure ReadMetaDataTables(AData: TtiDBMetaData); override;
-    procedure ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
     function Test: Boolean; override;
     function TIQueryClass: TtiQueryClass; override;
   end;
@@ -87,7 +84,6 @@ uses
   tiUtils,
   tiLog,
   TypInfo,
-  tiOPFManager,
   tiConstants,
   tiExcept,
   Variants;
@@ -328,8 +324,8 @@ begin
 
     FDatabase.UserName     := Username;
     FDatabase.Password     := Password;
-    FDatabase.Params.Values['user_name'] := UserName;
-    FDatabase.Params.Values['password'] := Password;
+//    FDatabase.Params.Values['user_name'] := UserName;
+//    FDatabase.Params.Values['password'] := Password;
 
     { Assign some well known extra parameters if they exist. }
     if Params.Values['ROLE'] <> '' then
@@ -362,136 +358,6 @@ begin
     end
     else
       raise EtiOPFDBException.Create(cTIPersistSqldbIB, DatabaseName, UserName, Password)
-  end;
-end;
-
-procedure TtiDatabaseSQLDB.ReadMetaDataTables(AData: TtiDBMetaData);
-var
-  lQuery: TtiQuery;
-  lMetaData: TtiDBMetaData;
-  lTable: TtiDBMetaDataTable;
-begin
-  lMetaData := (AData as TtiDBMetaData);
-  lQuery    := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
-  try
-    StartTransaction;
-    try
-      lQuery.AttachDatabase(Self);
-      { SQL Views are now also included }
-      lQuery.SQLText :=
-        'SELECT RDB$RELATION_NAME as Table_Name ' +
-        '  FROM RDB$RELATIONS ' +
-        'WHERE ((RDB$SYSTEM_FLAG = 0) OR (RDB$SYSTEM_FLAG IS NULL)) ' +
-//        '  AND (RDB$VIEW_SOURCE IS NULL) ' +
-        'ORDER BY RDB$RELATION_NAME ';
-      lQuery.Open;
-      while not lQuery.EOF do
-      begin
-        lTable      := TtiDBMetaDataTable.Create;
-        lTable.Name := Trim(lQuery.FieldAsString['table_name']);
-        lTable.ObjectState := posPK;
-        lMetaData.Add(lTable);
-        lQuery.Next;
-      end;
-      lQuery.DetachDatabase;
-      lMetaData.ObjectState := posClean;
-    finally
-      Commit;
-    end;
-  finally
-    lQuery.Free;
-  end;
-end;
-
-procedure TtiDatabaseSQLDB.ReadMetaDataFields(AData: TtiDBMetaDataTable);
-var
-  lTableName: string;
-  lQuery: TtiQuery;
-  lTable: TtiDBMetaDataTable;
-  lField: TtiDBMetaDataField;
-  lFieldType: integer;
-  lFieldLength: integer;
-const
-  cIBField_LONG      = 8;
-  cIBField_DOUBLE    = 27;
-  cIBField_TIMESTAMP = 35;
-  cIBField_DATE      = 12;
-  cIBField_TIME      = 13;
-  cIBField_VARYING   = 37;
-  cIBField_BLOB      = 261;
-  cIBField_TEXT      = 14;
-  {  cIBField_SHORT     = 7;
-  cIBField_QUAD      = 9;
-  cIBField_FLOAT     = 10;
-  cIBField_CSTRING   = 40;
-  cIBField_BLOB_ID   = 45;}
-begin
-  lTable     := (AData as TtiDBMetaDataTable);
-  lTableName := UpperCase(lTable.Name);
-  lQuery     := GTIOPFManager.PersistenceLayers.CreateTIQuery(TtiDatabaseClass(ClassType));
-  try
-    StartTransaction;
-    try
-      lQuery.AttachDatabase(Self);
-      lQuery.SQLText :=
-        '  select ' +
-        '    r.rdb$field_name     as field_name ' +
-        '    ,rdb$field_type      as field_type ' +
-        '    ,rdb$field_sub_type  as field_sub_type ' +
-        '    ,rdb$field_length    as field_length ' +
-        '  from ' +
-        '    rdb$relation_fields r ' +
-        '    ,rdb$fields f ' +
-        '  where ' +
-        '      r.rdb$relation_name = ''' + lTableName + '''' +
-        '  and f.rdb$field_name = r.rdb$field_source ';
-
-      lQuery.Open;
-      while not lQuery.EOF do
-      begin
-        lField       := TtiDBMetaDataField.Create;
-        lField.Name  := Trim(lQuery.FieldAsString['field_name']);
-        lFieldType   := lQuery.FieldAsInteger['field_type'];
-        lFieldLength := lQuery.FieldAsInteger['field_length'];
-
-        lField.Width := 0;
-
-        case lFieldType of
-          cIBField_LONG: lField.Kind := qfkInteger;
-          cIBField_DOUBLE: lField.Kind := qfkFloat;
-          cIBField_TIMESTAMP,
-          cIBField_DATE,
-          cIBField_TIME: lField.Kind := qfkDateTime;
-          cIBField_VARYING,
-          cIBField_TEXT:
-          begin
-            lField.Kind  := qfkString;
-            lField.Width := lFieldLength;
-          end;
-          cIBField_BLOB:
-          begin
-            Assert(not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
-            if lQuery.FieldAsInteger['field_sub_type'] = 1 then
-              lField.Kind := qfkLongString
-            else
-              raise EtiOPFInternalException.Create(
-                'Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>');
-          end;
-          else
-            raise EtiOPFInternalException.Create(
-              'Invalid Interbase FieldType <' + IntToStr(lFieldType) + '>');
-        end;
-        lField.ObjectState := posClean;
-        lTable.Add(lField);
-        lQuery.Next;
-      end;
-    finally
-      Commit;
-    end;
-    lQuery.DetachDatabase;
-    lTable.ObjectState := posClean;
-  finally
-    lQuery.Free;
   end;
 end;
 
