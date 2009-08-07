@@ -410,7 +410,7 @@ procedure TtiQueryDataset.AssignParams(const AParams: TtiQueryParams; const AWhe
 begin
   if AParams = nil then
     Exit;
-  CheckPrepared;
+//  CheckPrepared;
   inherited;
 end;
 
@@ -544,11 +544,13 @@ end;
 
 procedure TtiQueryDataset.SetParamAsBoolean(const AName: string; const AValue: Boolean);
 begin
-  CheckPrepared;
-  If HasNativeLogicalType then
-    FParams.ParamByName(AName).AsBoolean:=AValue
+//  CheckPrepared;
+  if HasNativeLogicalType then
+  begin
+    FParams.ParamByName(AName).AsBoolean := AValue;
+  end
   else
-    begin
+  begin
   {$IFDEF BOOLEAN_CHAR_1}
     if AValue then
       FParams.ParamByName(AName).AsString := 'T'
@@ -565,7 +567,7 @@ end;
 
 procedure TtiQueryDataset.SetParamAsDateTime(const AName: string; const AValue: TDateTime);
 begin
-  CheckPrepared;
+//  CheckPrepared;
   FParams.ParamByName(AName).AsDateTime := AValue;
 end;
 
@@ -574,7 +576,7 @@ begin
 {$ifdef LOGQUERYDATASET}
   log('>>> TtiQueryDataset.SetParamAsTextBLOB');
 {$endif}
-  CheckPrepared;
+//  CheckPrepared;
   FParams.ParamByName(AName).AsString := AValue;
 {$ifdef LOGQUERYDATASET}
   log('<<< TtiQueryDataset.SetParamAsTextBLOB');
@@ -592,7 +594,7 @@ begin
 {$ifdef LOGQUERYDATASET}
   log('>>> TtiQueryDataset.SetParamAsFloat');
 {$endif}
-  CheckPrepared;
+//  CheckPrepared;
   FParams.ParamByName(AName).AsFloat := AValue;
 {$ifdef LOGQUERYDATASET}
   log('<<< TtiQueryDataset.SetParamAsFloat');
@@ -604,7 +606,7 @@ begin
 {$ifdef LOGQUERYDATASET}
   log('>>> TtiQueryDataset.SetParamAsInteger');
 {$endif}
-  CheckPrepared;
+//  CheckPrepared;
   FParams.ParamByName(AName).AsInteger := AValue;
 {$ifdef LOGQUERYDATASET}
   log('<<< TtiQueryDataset.SetParamAsInteger');
@@ -616,7 +618,7 @@ begin
 {$ifdef LOGQUERYDATASET}
   log('>>> TtiQueryDataset.SetParamAsString');
 {$endif}
-  CheckPrepared;
+//  CheckPrepared;
   FParams.ParamByName(AName).AsString := AValue;
 {$ifdef LOGQUERYDATASET}
   log('<<< TtiQueryDataset.SetParamAsString');
