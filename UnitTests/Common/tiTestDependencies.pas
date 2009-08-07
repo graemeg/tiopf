@@ -176,6 +176,7 @@ begin
   tiOPFIBX_TST.RegisterTests;
   tiOPFRemote_TST.RegisterTests;
   tiOPFSQLDB_IB_TST.RegisterTests;
+  tiOPFSQLDB_PQ_TST.RegisterTests;
   tiOPFTAB_TST.RegisterTests;
   tiOPFXML_TST.RegisterTests;
   tiOPFXMLLight_TST.RegisterTests;

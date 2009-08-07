@@ -117,10 +117,8 @@ end;
 
 procedure TTestTIDatabaseSQLDB_PQ.DatabaseExists;
 var
-  LDB:       string;
   LDBExists: boolean;
 begin
-  LDB       := TestSetupData.DBName;
   // DB should exist
   LDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
