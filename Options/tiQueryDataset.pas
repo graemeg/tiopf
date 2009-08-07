@@ -381,12 +381,13 @@ begin
     ftFmtMemo:
         Result := qfkLongString;
     {$ifdef DELPHI10ORABOVE}
-    ftWideMemo :                                result := qfkLongString;
+    ftWideMemo :
+        Result := qfkLongString;
     {$endif}
 
     else
-      raise EtiOPFException.Create('Invalid Dataset.Fields[ AIndex ].DataType <' +
-        GetEnumName(TypeInfo(TFieldType), Ord(lDataType)));
+      raise EtiOPFException.Create('Invalid Dataset.Fields[AIndex].DataType <' +
+        GetEnumName(TypeInfo(TFieldType), Ord(lDataType)) + '>');
   end;
 end;
 
