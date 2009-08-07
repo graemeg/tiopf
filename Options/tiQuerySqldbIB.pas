@@ -41,10 +41,10 @@ uses
 type
   TtiPersistenceLayerSqldIB = class(TtiPersistenceLayerSqldDB)
   protected
-    function GetPersistenceLayerName: string; override;
-    function GetDatabaseClass: TtiDatabaseClass; override;
+    function    GetPersistenceLayerName: string; override;
+    function    GetDatabaseClass: TtiDatabaseClass; override;
   public
-    procedure AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
+    procedure   AssignPersistenceLayerDefaults(const APersistenceLayerDefaults: TtiPersistenceLayerDefaults); override;
   end;
 
 
