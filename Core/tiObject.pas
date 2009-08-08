@@ -444,7 +444,8 @@ type
     {: ForceAsCreate will get a new OID, and set ObjectState := posCreate}
     procedure   ForceAsCreate(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
     {: Display the object tree as a string for debugging (will show all published properties.)}
-    function    AsDebugString(const AValuesToShow: TtiObjectAsDebugStringValuesToShow = CTIAsDebugStringDataAll): string; virtual;
+    function    AsDebugString(const AValuesToShow: TtiObjectAsDebugStringValuesToShow): string; overload; virtual; 
+    function    AsDebugString: string; overload; virtual; 
     {:Assign the published property names to a TStringList}
 //    procedure   GetPropNames(AList: TStringList; APropFilter: TtiPropTypes = []);
     {: Return the propery count filter by APropFilter }
@@ -1037,6 +1038,11 @@ end;
 {: When you create a concrete class that contains object type properties
   you will have to override AssignClassProps() and implement the necessary
   behaviour to copy, clone or create new instances of these properties. }
+function TtiObject.AsDebugString: string;
+begin
+  result:= AsDebugString(CTIAsDebugStringDataAll);
+end;
+
 procedure TtiObject.Assign(const ASource: TtiObject);
 begin
   Assert((ASource is Self.ClassType) or
@@ -3683,8 +3689,7 @@ begin
 end;                           
 
 function TtiObject.AsDebugString(
-  const AValuesToShow: TtiObjectAsDebugStringValuesToShow
-                         = CTIAsDebugStringDataAll): string;
+  const AValuesToShow: TtiObjectAsDebugStringValuesToShow): string;
 var
   lVisitor : TVisTIObjectAsDebugString;
 begin
