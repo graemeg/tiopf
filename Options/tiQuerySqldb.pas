@@ -38,7 +38,6 @@ type
   protected
     procedure SetConnected(AValue: Boolean); override;
     function GetConnected: Boolean; override;
-    function FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string; override;
     class function CreateSQLConnection: TSQLConnection; virtual; abstract;
     function HasNativeLogicalType: Boolean; virtual;
   public
@@ -296,7 +295,6 @@ end;
 procedure TtiDatabaseSQLDB.SetConnected(AValue: Boolean);
 var
   lMessage: string;
-  p: integer;
 begin
   try
     if (not AValue) then
@@ -308,24 +306,18 @@ begin
       Exit; //==>
     end;
 
-    p := Pos(':', DatabaseName);
-    if p > 0 then
-      begin
-        // Assumes "databasehost:databasename" format.
-        FDatabase.HostName      := Copy(DatabaseName, 1, p-1);
-        FDatabase.DatabaseName  := Copy(DatabaseName, p+1, Length(DatabaseName));
-      end
+    if tiNumToken(DatabaseName, ':') > 1 then
+    begin
+      // Assumes tiOPF's "databasehost:databasename" format.
+      FDatabase.HostName      := tiToken(DatabaseName, ':', 1);
+      FDatabase.DatabaseName  := tiToken(DatabaseName, ':', 2);
+    end
     else
-      begin
-        FDatabase.DatabaseName := DatabaseName;
-      end;
-      
-    FDatabase.Params.Assign(Params);
+      FDatabase.DatabaseName := DatabaseName;
 
+    FDatabase.Params.Assign(Params);
     FDatabase.UserName     := Username;
     FDatabase.Password     := Password;
-//    FDatabase.Params.Values['user_name'] := UserName;
-//    FDatabase.Params.Values['password'] := Password;
 
     { Assign some well known extra parameters if they exist. }
     if Params.Values['ROLE'] <> '' then
@@ -358,33 +350,6 @@ begin
     end
     else
       raise EtiOPFDBException.Create(cTIPersistSqldbIB, DatabaseName, UserName, Password)
-  end;
-end;
-
-function TtiDatabaseSQLDB.FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string;
-var
-  lFieldName: string;
-begin
-  lFieldName := AFieldMetaData.Name;
-  case AFieldMetaData.Kind of
-    qfkString: Result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
-    qfkInteger: Result    := 'Integer';
-    //    qfkFloat: result := 'Decimal(10, 5)';
-    qfkFloat: Result      := 'DOUBLE PRECISION';
-    // Just for new version of IB (6.x)
-    // DATE holds only DATE without TIME...
-    qfkDateTime: Result   := 'TIMESTAMP';
-    {$IFDEF BOOLEAN_CHAR_1}
-    qfkLogical: Result    := 'Char(1) default ''F'' check(' +
-        lFieldName + ' in (''T'', ''F''))';
-    {$ELSE}
-    qfkLogical: Result    := 'VarChar(5) default ''FALSE'' check(' +
-        lFieldName + ' in (''TRUE'', ''FALSE'')) ';
-    {$ENDIF}
-    qfkBinary: Result     := 'Blob sub_type 0';
-    qfkLongString: Result := 'Blob sub_type 1';
-    else
-      raise EtiOPFInternalException.Create('Invalid FieldKind');
   end;
 end;
 

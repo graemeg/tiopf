@@ -107,17 +107,32 @@ begin
 end;
 
 function TtiDatabaseSQLDBIB.FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string;
+var
+  lFieldName: string;
 begin
-  if AFieldMetaData.Kind = qfkDateTime then
-  begin
-    // Take into account dialect
-    if TIBConnection(SQLConnection).Dialect <> 1 then
-      Result := 'TIMESTAMP'
+  lFieldName := AFieldMetaData.Name;
+  case AFieldMetaData.Kind of
+    qfkString: Result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
+    qfkInteger: Result    := 'Integer';
+    qfkFloat: Result      := 'DOUBLE PRECISION';    // 'or Decimal(10, 5)';
+    qfkDateTime:
+        // Take into account dialect
+        if TIBConnection(SQLConnection).Dialect <> 1 then
+          Result := 'TIMESTAMP'
+        else
+          Result := 'Date';
+    {$IFDEF BOOLEAN_CHAR_1}
+    qfkLogical: Result    := 'Char(1) default ''F'' check(' +
+        lFieldName + ' in (''T'', ''F''))';
+    {$ELSE}
+    qfkLogical: Result    := 'VarChar(5) default ''FALSE'' check(' +
+        lFieldName + ' in (''TRUE'', ''FALSE'')) ';
+    {$ENDIF}
+    qfkBinary: Result     := 'Blob sub_type 0';
+    qfkLongString: Result := 'Blob sub_type 1';
     else
-      Result := 'Date';
-  end
-  else
-    Result := inherited FieldMetaDataToSQLCreate(AFieldMetaData);
+      raise EtiOPFInternalException.Create('Invalid FieldKind');
+  end;
 end;
 
 function TtiDatabaseSQLDBIB.HasNativeLogicalType: Boolean;

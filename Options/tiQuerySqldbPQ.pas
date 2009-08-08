@@ -41,6 +41,7 @@ type
   protected
     class function CreateSQLConnection: TSQLConnection; override;
     function    HasNativeLogicalType: boolean; override;
+    function    FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string; override;
   public
     procedure   ReadMetaDataTables(AData: TtiDBMetaData); override;
     procedure   ReadMetaDataFields(AData: TtiDBMetaDataTable); override;
@@ -54,6 +55,7 @@ uses
 {$ifdef LOGSQLDB}
   tiLog,
 {$endif}
+  SysUtils,
   tiOPFManager,
   tiConstants,
   tiExcept,
@@ -101,6 +103,30 @@ begin
   {$ELSE}
   Result := True;
   {$ENDIF}
+end;
+
+function TtiDatabaseSQLDBPQ.FieldMetaDataToSQLCreate(const AFieldMetaData: TtiDBMetaDataField): string;
+var
+  lFieldName: string;
+begin
+  lFieldName := AFieldMetaData.Name;
+  case AFieldMetaData.Kind of
+    qfkString:      Result := 'VarChar(' + IntToStr(AFieldMetaData.Width) + ')';
+    qfkInteger:     Result := 'Integer';
+    qfkFloat:       Result := 'DOUBLE PRECISION';  //  or 'Decimal(10, 5)';
+    qfkDateTime:    Result := 'TIMESTAMP';
+    {$IFDEF BOOLEAN_CHAR_1}
+    qfkLogical:     Result := 'Char(1) default ''F'' check(' +
+        lFieldName + ' in (''T'', ''F''))';
+    {$ELSE}
+    qfkLogical:     Result := 'VarChar(5) default ''FALSE'' check(' +
+        lFieldName + ' in (''TRUE'', ''FALSE'')) ';
+    {$ENDIF}
+    qfkBinary:      Result := 'Bytea';
+    qfkLongString:  Result := 'TEXT';
+    else
+      raise EtiOPFInternalException.Create('Invalid FieldKind');
+  end;
 end;
 
 procedure TtiDatabaseSQLDBPQ.ReadMetaDataTables(AData: TtiDBMetaData);
