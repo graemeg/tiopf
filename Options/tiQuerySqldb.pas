@@ -96,6 +96,7 @@ begin
   FSQLQuery  := TSQLQuery.Create(nil);
   Dataset := FSQLQuery;
   Params  := FSQLQuery.Params;
+  FSupportsRowsAffected := True;
 end;
 
 destructor TtiQuerySQLDB.Destroy;
@@ -112,11 +113,7 @@ begin
   Prepare;
   LogParams;
   FSQLQuery.ExecSQL;
-  Result := -1;
-  { TODO :
-When implementing RowsAffected,
-please return correct result
-and put FSupportsRowsAffected := True; in TtiQueryXXX.Create;}
+  Result := FSQLQuery.RowsAffected;
 end;
 
 function TtiQuerySQLDB.GetSQL: TStrings;
@@ -215,7 +212,7 @@ end;
 
 function TtiQuerySQLDB.HasNativeLogicalType: Boolean;
 begin
-  if not assigned(Database) then
+  if not Assigned(Database) then
     Result := True
   else
     Result := TtiDatabaseSQLDB(Database).HasNativeLogicalType;
