@@ -268,7 +268,7 @@
       </Item54>
       <Item55>
         <Filename Value="../../Options/tiopfsqlscript.pas"/>
-        <UnitName Value="tiopfsqlscript"/>
+        <UnitName Value="tiOPFSqlScript"/>
       </Item55>
       <Item56>
         <Filename Value="../../Options/tiOIDInt64.pas"/>
