@@ -47,12 +47,16 @@ type
     class function PersistenceLayerName: string; override;
   published
     procedure TtiNextOIDGeneratorAssignNextOIDThreaded; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; override;
   end;
 
 
   TTestTIOIDPersistentIntegerSQLDB_PQ = class(TTestTIOIDPersistentInteger)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure TtiNextOIDGeneratorAssignNextOIDThreaded; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; override;
   end;
 
 
@@ -87,25 +91,26 @@ end ;
 { TTestTIDatabaseSQLDB_PQ }
 
 procedure TTestTIDatabaseSQLDB_PQ.CreateDatabase;
+const
+  cDB = 'tiopftmp';
 var
-  LDB:       string;
   LDBExists: boolean;
 begin
-  LDB := TestSetupData.DBName + 'tmp';
   PersistenceLayer.DatabaseClass.CreateDatabase(
-    LDB,
+    cDB,
     TestSetupData.Username,
     TestSetupData.Password);
 
   LDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
-    LDB,
+    cDB,
     TestSetupData.Username,
     TestSetupData.Password);
-
   CheckTrue(LDBExists, 'Failed on 1');
+
+  // clean-up
   PersistenceLayer.DatabaseClass.DropDatabase(
-    LDB,
+    cDB,
     TestSetupData.Username,
     TestSetupData.Password);
 end;
@@ -118,18 +123,24 @@ end;
 procedure TTestTIDatabaseSQLDB_PQ.DatabaseExists;
 var
   LDBExists: boolean;
+  LDB: string;
 begin
+  // Assume tiOPF's "server:database" format
+  if tiNumToken(TestSetupData.DBName, ':') > 1 then
+    LDB := tiToken(TestSetupData.DBName, ':', 2)
+  else
+    LDB := TestSetupData.DBName;
   // DB should exist
   LDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
-    TestSetupData.DBName,
+    LDB,
     TestSetupData.Username,
     TestSetupData.Password);
   CheckTrue(LDBExists, 'Failed on 1');
   // DB should not exist
   LDBExists :=
     PersistenceLayer.DatabaseClass.DatabaseExists(
-    TestSetupData.DBName + 'Tmp',
+    LDB + 'Tmp',
     TestSetupData.Username,
     TestSetupData.Password);
   CheckFalse(LDBExists, 'Failed on 2');
@@ -180,11 +191,35 @@ begin
   inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
 end;
 
+procedure TTestTIOIDPersistentGUIDSQLDB_PQ.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ENDIF}
+  inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
+end;
+
 { TTestTIOIDPersistentIntegerSQLDB_PQ }
 
 class function TTestTIOIDPersistentIntegerSQLDB_PQ.PersistenceLayerName: string;
 begin
   Result := cTIPersistSqldbPQ;
+end;
+
+procedure TTestTIOIDPersistentIntegerSQLDB_PQ.TtiNextOIDGeneratorAssignNextOIDThreaded;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ENDIF}
+  inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
+end;
+
+procedure TTestTIOIDPersistentIntegerSQLDB_PQ.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ENDIF}
+  inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
 end;
 
 end.
