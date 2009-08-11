@@ -13,7 +13,7 @@ uses
   ,tiBaseObject
   ,tiObject
   ,tiReadOnly
-  ,FtiDialogAbs
+//  ,FtiDialogAbs
   ,FtiFormMgrForm
   ,tiFormMediator
   ;

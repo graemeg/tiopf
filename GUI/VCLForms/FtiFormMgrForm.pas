@@ -6,7 +6,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  tiObject, ActnList, StdCtrls, Buttons, FtiDialogAbs, tiReadOnly,
+  tiObject, ActnList, StdCtrls, Buttons, tiReadOnly,
   ExtCtrls, ComCtrls, ToolWin, tiBaseObject, Contnrs;
 
 const
