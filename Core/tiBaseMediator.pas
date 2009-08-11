@@ -900,7 +900,7 @@ end;
 function TtiMediatorFieldInfo.GetAsString: string;
 begin
   if FOrigStyle then
-    Result := Format('%s (%d, "%s", %s)', [PropName, origAlignChars[Alignment], FieldWidth, Caption])
+    Result := Format('%s (%d, "%s", %s)', [PropName, FieldWidth, Caption, origAlignChars[Alignment]])
   else
     Result := Format('%s|%s|%d|%s', [PropName, AlignChars[Alignment], FieldWidth, Caption]);
 end;
@@ -1315,4 +1315,3 @@ finalization
   FreeAndNil(uMediatorManager);
 
 end.
-

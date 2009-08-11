@@ -93,6 +93,7 @@ begin
   else
     LFileName:= AFileName;
   FFileName:= ExpandFileName(tiAddTrailingSlash(LFilePath) + LFileName);
+  FOverwriteOldFile :=  AOverwriteOldFile;
   DeleteOldFileIfRequired;
   FFileCreateAttempts := CDefaultFileCreateAttempts;
   FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms

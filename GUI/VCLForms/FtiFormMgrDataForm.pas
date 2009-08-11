@@ -6,8 +6,17 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  tiObject, ActnList, StdCtrls, Buttons, FtiDialogAbs, tiReadOnly,
-  ExtCtrls, ComCtrls, ToolWin, tiBaseObject, Contnrs, FtiFormMgrForm;
+  ActnList, StdCtrls, Buttons,
+  ExtCtrls, ComCtrls, ToolWin, Contnrs
+
+  // tiOPF
+  ,tiBaseObject
+  ,tiObject
+  ,tiReadOnly
+  ,FtiDialogAbs
+  ,FtiFormMgrForm
+  ,tiFormMediator
+  ;
 
 const
   cCaptionUndo        = 'Undo  [Ctrl+Z]';
@@ -74,6 +83,7 @@ type
     FaSaveClose: TtiAMSAction;
     FaCancelClose: TtiAMSAction;
     FFormSettings: TtiObject;
+    FFormMediator: TFormMediator;
 
     procedure SaveCloseHandler;
     procedure CancelCloseHandler;
@@ -113,6 +123,7 @@ type
     procedure DoAfterSave; virtual;
     procedure DoAfterDiscard; virtual;
     procedure DoAfterUndo; virtual;
+    property FormMediator: TFormMediator read FFormMediator;
   public
     property  OnEditsSave: TtiObjectEvent read GetOnEditsSave write SetOnEditsSave;
     property  OnEditsCancel: TtiObjectEvent read GetOnEditsCancel write SetOnEditsCancel;
@@ -123,14 +134,17 @@ type
 
 implementation
 uses
-  tiUtils
+  // Delphi
+  Menus
+  // tiOPF
+  ,tiUtils
   ,tiGUIINI
   ,tiConstants
-  ,Menus
   ,tiGUIUtils
   ,tiImageMgr
   ,tiResources
   ,tiExcept
+  ,tiMediators
  ;
 
 {$R *.DFM}
@@ -296,6 +310,10 @@ begin
 
   FaSaveClose := AddAction(cCaptionSaveClose, 'Save changes' + ClassName , aSaveCloseExecute, Ord('S'), [ssCtrl]);
   FaSaveClose.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Save);
+
+  FFormMediator := TFormMediator.Create(Self);
+  FFormMediator.Name := Self.ClassName + 'FormMediator';
+  tiMediators.RegisterFallBackMediators;
 end;
 
 procedure TtiFormMgrDataForm.FormDestroy(Sender: TObject);
@@ -315,9 +333,15 @@ begin
   Assert(FFormData.TestValid(TtiDataFormData), CTIErrorInvalidObject);
   BeginUpdate;
   try
+    FFormMediator.Subject := nil;
     ClearControlDataBindings;
     FFormData.Data := AValue;
-    SetControlDataBindings;
+    if Assigned(Data) then
+    begin
+      SetControlDataBindings;
+      FFormMediator.Subject := Data; // Original or edited data
+      FFormMediator.Active := true;
+    end;
   finally
     EndUpdate;
   end;

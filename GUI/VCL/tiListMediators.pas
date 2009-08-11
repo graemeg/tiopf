@@ -484,10 +484,14 @@ procedure TStringGridMediator.CreateColumns;
 var
   i: integer;
   lColumnTotalWidth: integer;
+  lGridNonContentWidth: integer;
+  lLastColumnWidth: integer;
 begin
   lColumnTotalWidth := 0;
   FView.ColCount := 0;  // clear columns
   FView.ColCount := FieldsInfo.Count;
+  // Grid is 2 pixel border left + right, 1 pixel col gridline separator
+  lGridNonContentWidth := 2 + 2 + (FieldsInfo.Count - 1);
   for i := 0 to FieldsInfo.Count - 1 do
   begin
     FView.ColWidths[i] := FieldsInfo[i].FieldWidth;
@@ -497,11 +501,15 @@ begin
     //resize the last column to fill the grid.
     if i = FieldsInfo.Count - 1 then
       begin
-      if FView.Width > (lColumnTotalWidth + 10) then
-        FView.ColWidths[i] := FView.Width - (lColumnTotalWidth + 10);
-      end
+      if FView.Width > (lColumnTotalWidth + lGridNonContentWidth) then
+      begin
+        lLastColumnWidth := FView.Width - (lColumnTotalWidth + lGridNonContentWidth);
+        if lLastColumnWidth > 10 then
+          FView.ColWidths[i] := lLastColumnWidth;
+      end;
+    end
     else
-      lColumnTotalWidth := lColumnTotalWidth + FView.ColWidths[i] + 20;
+      lColumnTotalWidth := lColumnTotalWidth + FView.ColWidths[i];
   end;
   if ShowDeleted then
     FView.RowCount := Model.Count+1

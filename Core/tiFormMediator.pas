@@ -116,7 +116,7 @@ implementation
 resourcestring
   SErrNoSubject  = 'Cannot perform this operation if subject is not set.';
   SErrActive     = 'Cannot perform this operation while active.';
-  SErrNoMediator = 'Cannot find a mediator for control %s, property %s.';
+  SErrNoMediator = 'Cannot find a mediator for control %s (%s), property %s.';
 
 
 { TPropertyLinkDef }
@@ -188,7 +188,7 @@ end;
 procedure TPropertyLinkDef.CreateMediator;
 begin
   if (FMediatorDef = nil) then
-    MediatorError(Self,SErrNoMediator, [Component.Name, FieldName]);
+    MediatorError(Self,SErrNoMediator, [Component.Name, Component.ClassName, FieldName]);
   FMediator           := FMediatorDef.MediatorClass.Create;
   FMediator.FieldName := FieldName;
   FMediator.OnGUIToObject := Self.OnGUIToObject;
@@ -338,7 +338,7 @@ begin
       else
         D.FMediatorDef := gMediatorManager.FindDefFor(Subject, D.Component, D.FieldName);
       if (D.FMediatorDef = nil) then
-        MediatorError(Self,SErrNoMediator, [D.Component.Name, D.FieldName]);
+        MediatorError(Self,SErrNoMediator, [D.Component.Name, D.Component.ClassName, D.FieldName]);
     end;
   end;
 end;

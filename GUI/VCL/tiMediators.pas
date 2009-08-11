@@ -15,32 +15,59 @@ uses
   ,Classes
   ,tiBaseMediator
   ,Controls
-  ,StdCtrls   { TEdit, TComboBox, TStaticText }
+  ,Graphics
+  ,StdCtrls   { TCustomEdit, TEdit, TComboBox, TStaticText }
   {$IFDEF FPC}
   ,Spin       { TSpinEdit - standard component included in Lazarus LCL }
   {$ELSE}
   ,tiSpin     { TSpinEdit - tiSpin.pas cloned from Borland's Spin.pas so remove package import warning}
   {$ENDIF}
   ,ComCtrls   { TTrackBar, TDateTimePicker }
+  ,ExtCtrls   { TLabeledEdit }
   ;
 
 type
 
-  { Base class to handle TEdit controls }
-  TMediatorEditView = class(TMediatorView)
+  { Base class to handle TCustomEdit controls (TEdit, TMemo, TLabeledEdit) }
+  TMediatorCustomEditView = class(TMediatorView)
   private
-    FEditControl: TEdit;
+    FEditControl: TCustomEdit;
   protected
     function    GetGUIControl: TComponent; override;
     procedure   SetGUIControl(const AValue: TComponent);override;
-  protected
     procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   SetupGUIandObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
+    function    GetEditControl: TCustomEdit; virtual;
+    procedure   SetEditControl(const AValue: TCustomEdit); virtual;
+
+    procedure   SetControlMaxLength(const AMaxLength: integer); virtual; abstract;
+    procedure   SetControlColor(const AColor: TColor); virtual; abstract;
+    procedure   SetControlHint(const AHint: string); virtual; abstract;
+    procedure   GetControlOnChange(out AOnChange: TNotifyEvent); virtual; abstract;
+    procedure   SetControlOnChange(const AOnChange: TNotifyEvent); virtual; abstract;
+    procedure   SetControlOnExit(const AOnExit: TNotifyEvent); virtual; abstract;
+  public
+    destructor  Destroy; override;
+    property    EditControl: TCustomEdit read GetEditControl write SetEditControl;
+    class function ComponentClass: TClass; override;
+  end;
+
+
+  { Base class to handle TEdit controls }
+  TMediatorEditView = class(TMediatorCustomEditView)
+  protected
+    function    GetEditControl: TEdit; reintroduce; virtual;
+    procedure   SetEditControl(const AValue: TEdit); reintroduce; virtual;
+    procedure   SetControlMaxLength(const AMaxLength: integer); override;
+    procedure   SetControlColor(const AColor: TColor); override;
+    procedure   SetControlHint(const AHint: string); override;
+    procedure   GetControlOnChange(out AOnChange: TNotifyEvent); override;
+    procedure   SetControlOnChange(const AOnChange: TNotifyEvent); override;
+    procedure   SetControlOnExit(const AOnExit: TNotifyEvent); override;
   public
     constructor Create; override;
-    destructor  Destroy; override;
-    property    EditControl: TEdit read FEditControl write FEditControl;
+    property    EditControl: TEdit read GetEditControl write SetEditControl;
     class function ComponentClass: TClass; override;
   end;
 
@@ -157,18 +184,21 @@ type
 
 
   { Base class to handle TMemo controls }
-  TMediatorMemoView = class(TMediatorView)
-  private
-    FEditControl: TMemo;
+  TMediatorMemoView = class(TMediatorCustomEditView)
   protected
-    function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent);override;
+    function    GetEditControl: TMemo; reintroduce; virtual;
+    procedure   SetEditControl(const AValue: TMemo); reintroduce; virtual;
+    procedure   SetControlMaxLength(const AMaxLength: integer); override;
+    procedure   SetControlColor(const AColor: TColor); override;
+    procedure   SetControlHint(const AHint: string); override;
+    procedure   GetControlOnChange(out AOnChange: TNotifyEvent); override;
+    procedure   SetControlOnChange(const AOnChange: TNotifyEvent); override;
+    procedure   SetControlOnExit(const AOnExit: TNotifyEvent); override;
     procedure   SetupGUIandObject; override;
     procedure   DoObjectToGUI; override;
     procedure   DoGUIToObject; override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
-    property    EditControl: TMemo read FEditControl write FEditControl;
+    property    EditControl: TMemo read GetEditControl write SetEditControl;
     class function ComponentClass: TClass; override;
   end;
 
@@ -190,6 +220,25 @@ type
   end;
 
 
+  { Base class to handle TLabeledEdit controls }
+{$IFDEF DELPHI2006ORABOVE}
+  TMediatorLabeledEditView = class(TMediatorCustomEditView)
+  protected
+    function    GetEditControl: TLabeledEdit; reintroduce; virtual;
+    procedure   SetEditControl(const AValue: TLabeledEdit); reintroduce; virtual;
+    procedure   SetControlMaxLength(const AMaxLength: integer); override;
+    procedure   SetControlColor(const AColor: TColor); override;
+    procedure   SetControlHint(const AHint: string); override;
+    procedure   GetControlOnChange(out AOnChange: TNotifyEvent); override;
+    procedure   SetControlOnChange(const AOnChange: TNotifyEvent); override;
+    procedure   SetControlOnExit(const AOnExit: TNotifyEvent); override;
+  public
+    constructor Create; override;
+    property    EditControl: TLabeledEdit read GetEditControl write SetEditControl;
+    class function ComponentClass: TClass; override;
+  end;
+{$ENDIF}
+
 // Registering generic mediators which can handle most cases by default.
 procedure RegisterFallBackMediators;
 
@@ -201,7 +250,6 @@ uses
   ,tiExcept
   ,tiGUIConstants   // for error color
   ,tiLog
-  ,Graphics
   ;
 
 const
@@ -219,22 +267,72 @@ begin
   gMediatorManager.RegisterMediator(TMediatorTrackBarView, TtiObject, [tkInteger]);
   gMediatorManager.RegisterMediator(TMediatorMemoView, TtiObject, [tkString,tkLString]);
   gMediatorManager.RegisterMediator(TMediatorCalendarComboView, TtiObject, [tkFloat]);
+  gMediatorManager.RegisterMediator(TMediatorLabeledEditView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
 end;
 
-{ TMediatorEditView }
+{ TMediatorCustomEditView }
 
-function TMediatorEditView.GetGUIControl: TComponent;
+destructor TMediatorCustomEditView.Destroy;
+var
+  LOnChange: TNotifyEvent;
+begin
+  if Assigned(FEditControl) then
+  begin
+    GetControlOnChange(LOnChange);
+    if Assigned(LOnChange) then
+      SetControlOnChange(nil);
+  end;
+  inherited;
+end;
+
+class function TMediatorCustomEditView.ComponentClass: TClass;
+begin
+  Result := TCustomEdit;
+end;
+
+function TMediatorCustomEditView.GetEditControl: TCustomEdit;
+begin
+  result := FEditControl;
+end;
+
+procedure TMediatorCustomEditView.SetEditControl(const AValue: TCustomEdit);
+begin
+  FEditControl := AValue;
+end;
+
+function TMediatorCustomEditView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorEditView.SetGUIControl(const AValue: TComponent);
+procedure TMediatorCustomEditView.SetGUIControl(const AValue: TComponent);
 begin
-  FEditControl := AValue as TEdit;
-  inherited SetGUIControl(AValue);
+  FEditControl := AValue as TCustomEdit;
+  inherited;
 end;
 
-procedure TMediatorEditView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
+procedure TMediatorCustomEditView.SetObjectUpdateMoment(
+  const AValue: TObjectUpdateMoment);
+begin
+  inherited;
+  if Assigned(FEditControl) then
+    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
+      SetControlOnChange(DoOnChange)
+    else
+      SetControlOnExit(DoOnChange);
+end;
+
+procedure TMediatorCustomEditView.SetupGUIandObject;
+var
+  Mi, Ma: Integer;
+begin
+  inherited;
+  if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
+    SetControlMaxLength(Ma);
+end;
+
+procedure TMediatorCustomEditView.UpdateGUIValidStatus(
+  pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
@@ -243,46 +341,22 @@ begin
   oError := pErrors.FindByErrorProperty(FieldName);
   if oError <> nil then
   begin
-    EditControl.Color  := clError;
-    EditControl.Hint   := oError.ErrorMessage;
+    SetControlColor(clError);
+    SetControlHint(oError.ErrorMessage);
   end
   else
   begin
-    EditControl.Color  := ColorToRGB(clWindow);
-    EditControl.Hint   := '';
+    SetControlColor(ColorToRGB(clWindow));
+    SetControlHint('');
   end;
 end;
 
-procedure TMediatorEditView.SetupGUIandObject;
-var
-  Mi, Ma: Integer;
-begin
-  inherited SetupGUIandObject;
-  if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
-    FEditControl.MaxLength := Ma;
-end;
-
-procedure TMediatorEditView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
-begin
-  inherited SetObjectUpdateMoment(AValue);
-  if Assigned(FEditControl) then
-    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      FEditControl.OnChange := DoOnChange
-    else
-      FEditControl.OnExit := DoOnChange;
-end;
+{ TMediatorEditView }
 
 constructor TMediatorEditView.Create;
 begin
-  inherited Create;
-  GUIFieldName:='Text';
-end;
-
-destructor TMediatorEditView.Destroy;
-begin
-  if Assigned(EditControl) and Assigned(EditControl.OnChange) then
-    EditControl.OnChange := nil;
-  inherited Destroy;
+  inherited;
+  GUIFieldName := 'Text';
 end;
 
 class function TMediatorEditView.ComponentClass: TClass;
@@ -290,8 +364,48 @@ begin
   Result := TEdit;
 end;
 
+function TMediatorEditView.GetEditControl: TEdit;
+begin
+  result := (inherited GetEditControl) as TEdit;
+end;
+
+procedure TMediatorEditView.SetEditControl(const AValue: TEdit);
+begin
+  inherited SetEditControl(AValue);
+end;
+
+procedure TMediatorEditView.SetControlColor(const AColor: TColor);
+begin
+  EditControl.Color := AColor;
+end;
+
+procedure TMediatorEditView.SetControlHint(const AHint: string);
+begin
+  EditControl.Hint := AHint;
+end;
+
+procedure TMediatorEditView.SetControlMaxLength(const AMaxLength: integer);
+begin
+  EditControl.MaxLength := AMaxLength;
+end;
+
+procedure TMediatorEditView.GetControlOnChange(out AOnChange: TNotifyEvent);
+begin
+  AOnChange := EditControl.OnChange;
+end;
+
+procedure TMediatorEditView.SetControlOnChange(const AOnChange: TNotifyEvent);
+begin
+  EditControl.OnChange := AOnChange;
+end;
+
+procedure TMediatorEditView.SetControlOnExit(const AOnExit: TNotifyEvent);
+begin
+  EditControl.OnExit := AOnExit;
+end;
 
 { TMediatorSpinEditView}
+
 class function TMediatorSpinEditView.ComponentClass: TClass;
 begin
   Result := TSpinEdit;
@@ -466,6 +580,24 @@ begin
   Result := TMemo;
 end;
 
+function TMediatorMemoView.GetEditControl: TMemo;
+begin
+  result := (inherited GetEditControl) as TMemo;
+end;
+
+procedure TMediatorMemoView.SetEditControl(const AValue: TMemo);
+begin
+  inherited SetEditControl(AValue);
+end;
+
+procedure TMediatorMemoView.SetupGUIandObject;
+begin
+  inherited SetupGUIAndObject;
+  EditControl.Lines.Clear;
+  EditControl.ScrollBars := ssVertical;
+  EditControl.WordWrap   := True;
+end;
+
 procedure TMediatorMemoView.DoGUIToObject;
 begin
   Subject.PropValue[FieldName] := EditControl.Lines.Text;
@@ -476,34 +608,34 @@ begin
   EditControl.Lines.Text := Subject.PropValue[FieldName];
 end;
 
-function TMediatorMemoView.GetGUIControl: TComponent;
+procedure TMediatorMemoView.SetControlColor(const AColor: TColor);
 begin
-  Result:=FEditControl;
+  EditControl.Color := AColor;
 end;
 
-procedure TMediatorMemoView.SetGUIControl(const AValue: TComponent);
+procedure TMediatorMemoView.SetControlHint(const AHint: string);
 begin
-  FEditControl:=AValue as TMemo;
-  inherited;
+  EditControl.Hint := AHint;
 end;
 
-procedure TMediatorMemoView.SetObjectUpdateMoment(
-  const AValue: TObjectUpdateMoment);
+procedure TMediatorMemoView.SetControlMaxLength(const AMaxLength: integer);
 begin
-  inherited;
-  if Assigned(FEditControl) then
-    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      FEditControl.OnChange := DoOnChange
-    else
-      FEditControl.OnExit := DoOnChange;
+  EditControl.MaxLength := AMaxLength;
 end;
 
-procedure TMediatorMemoView.SetupGUIandObject;
+procedure TMediatorMemoView.GetControlOnChange(out AOnChange: TNotifyEvent);
 begin
-  inherited SetupGUIAndObject;
-  EditControl.Lines.Clear;
-  EditControl.ScrollBars := ssVertical;
-  EditControl.WordWrap   := True;
+  AOnChange := EditControl.OnChange;
+end;
+
+procedure TMediatorMemoView.SetControlOnChange(const AOnChange: TNotifyEvent);
+begin
+  EditControl.OnChange := AOnChange;
+end;
+
+procedure TMediatorMemoView.SetControlOnExit(const AOnExit: TNotifyEvent);
+begin
+  EditControl.OnExit := AOnExit;
 end;
 
 
@@ -671,7 +803,6 @@ begin
   Result := TCheckBox;
 end;
 
-
 procedure TMediatorCheckBoxView.DoGUIToObject;
 begin
   inherited;
@@ -737,7 +868,6 @@ begin
   Result := TLabel;
 end;
 
-
 { TMediatorCalendarComboView }
 
 function TMediatorCalendarComboView.GetGUIControl: TComponent;
@@ -782,7 +912,7 @@ begin
       FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorCalendarComboView.DoObjectToGUI;
+procedure TMediatorCalendarComboView.DoObjectToGUI;
 begin
   if (EditControl.Kind = dtkDate) Then
     EditControl.DateTime := Trunc(Subject.PropValue[FieldName])
@@ -807,6 +937,65 @@ begin
   inherited Create;
   GUIFieldName := 'ItemIndex';
 end;
+
+{ TMediatorLabeledEditView }
+
+{$IFDEF DELPHI2006ORABOVE}
+constructor TMediatorLabeledEditView.Create;
+begin
+  inherited;
+  GUIFieldName := 'Text';
+end;
+
+class function TMediatorLabeledEditView.ComponentClass: TClass;
+begin
+  Result := TLabeledEdit;
+end;
+
+function TMediatorLabeledEditView.GetEditControl: TLabeledEdit;
+begin
+  result := (inherited GetEditControl) as TLabeledEdit;
+end;
+
+procedure TMediatorLabeledEditView.SetEditControl(const AValue: TLabeledEdit);
+begin
+  inherited SetEditControl(AValue);
+end;
+
+procedure TMediatorLabeledEditView.SetControlColor(const AColor: TColor);
+begin
+  EditControl.Color := AColor;
+end;
+
+procedure TMediatorLabeledEditView.SetControlHint(const AHint: string);
+begin
+  EditControl.Hint := AHint;
+end;
+
+procedure TMediatorLabeledEditView.SetControlMaxLength(
+  const AMaxLength: integer);
+begin
+  EditControl.MaxLength := AMaxLength;
+end;
+
+procedure TMediatorLabeledEditView.GetControlOnChange(
+  out AOnChange: TNotifyEvent);
+begin
+  AOnChange := EditControl.OnChange;
+end;
+
+procedure TMediatorLabeledEditView.SetControlOnChange(
+  const AOnChange: TNotifyEvent);
+begin
+  EditControl.OnChange := AOnChange;
+end;
+
+procedure TMediatorLabeledEditView.SetControlOnExit(
+  const AOnExit: TNotifyEvent);
+begin
+  EditControl.OnExit := AOnExit;
+end;
+{$ENDIF}
 
 end.
 

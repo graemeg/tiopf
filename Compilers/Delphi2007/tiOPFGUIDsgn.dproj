@@ -50,6 +50,14 @@
     <DelphiCompile Include="tiOPFGUIDsgn.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\..\..\..\designide.dcp" />
+    <DCCReference Include="..\..\..\..\rtl.dcp" />
+    <DCCReference Include="..\..\..\..\tiOPFCore.dcp" />
+    <DCCReference Include="..\..\..\..\tiOPFGUI.dcp" />
+    <DCCReference Include="..\..\..\..\vcl.dcp" />
+    <DCCReference Include="..\..\..\..\vclactnband.dcp" />
+    <DCCReference Include="..\..\..\..\vcljpg.dcp" />
+    <DCCReference Include="..\..\..\..\vclx.dcp" />
     <DCCReference Include="..\..\GUI\DtiDefaultActionValues.pas">
       <Form>tidmDefaultActionValues</Form>
       <DesignClass>TDataModule</DesignClass>
@@ -58,13 +66,5 @@
     <DCCReference Include="..\..\GUI\tiSplitterEditor.pas" />
     <DCCReference Include="..\..\GUI\tiTreeviewEditor.pas" />
     <DCCReference Include="..\..\Options\tiDataSet_Reg.pas" />
-    <DCCReference Include="designide.dcp" />
-    <DCCReference Include="rtl.dcp" />
-    <DCCReference Include="tiOPFCore.dcp" />
-    <DCCReference Include="tiOPFGUI.dcp" />
-    <DCCReference Include="vcl.dcp" />
-    <DCCReference Include="vclactnband.dcp" />
-    <DCCReference Include="vcljpg.dcp" />
-    <DCCReference Include="vclx.dcp" />
   </ItemGroup>
 </Project>

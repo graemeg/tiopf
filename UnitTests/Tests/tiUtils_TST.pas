@@ -1294,7 +1294,6 @@ end;
 procedure TTestTIUtils.tiFilesToStringList;
 var
   lsl : TStringList;
-  i : integer;
   lRoot : string;
 begin
   lRoot := TempFileName('DUnit');

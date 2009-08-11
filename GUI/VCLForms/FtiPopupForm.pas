@@ -1,4 +1,4 @@
-unit tiPopupForm;
+unit FtiPopupForm;
 
 interface
 
@@ -31,6 +31,11 @@ type
     FAL        : TActionList;
     FaOK       : TAction;
     FaCancel   : TAction;
+
+    FDoOnPopupOK: TNotifyEvent;
+    FDoOnPopupCancel: TNotifyEvent;
+    FDeactivatePopupResult: TModalResult;
+
     function  FormDataIsEdited : boolean;
     procedure SetFormPosition;
   protected
@@ -45,11 +50,16 @@ type
 
     property FormPopupButton: TtiSpeedButton read FFormPopupButton write FFormPopupButton;
     property FormDisplayPosition: TPopupDisplayPosition read FFormDisplayPosition write FFormDisplayPosition;
+    property DoOnPopupOK: TNotifyEvent read FDoOnPopupOK write FDoOnPopupOK;
+    property DoOnPopupCancel: TNotifyEvent read FDoOnPopupCancel write FDoOnPopupCancel;
+    property DeactivatePopupResult: TModalResult read FDeactivatePopupResult write FDeactivatePopupResult;
 
     class function Execute(const AOwner: TWinControl;
         const AData : TtiObject;
         const AFormPopupButton: TtiSpeedButton;
-        const AFormDisplayPosition: TPopupDisplayPosition): TtiPopupDataForm; virtual;
+        const AFormDisplayPosition: TPopupDisplayPosition;
+        const ADoOnPopupOK: TNotifyEvent; const ADoOnPopupCancel: TNotifyEvent;
+        const ADeactivatePopupResult: TModalResult): TtiPopupDataForm; virtual;
   end;
 
 var
@@ -70,6 +80,9 @@ end;
 
 procedure TtiPopupDataForm.DoaCancelExecute(Sender: TObject);
 begin
+  if Assigned(FDoOnPopupCancel) then
+    FDoOnPopupCancel(Sender);
+
   ModalResult := mrCancel;
   Close;
 end;
@@ -87,6 +100,10 @@ begin
   Assert(EditedData.TestValid(TtiObject), CTIErrorInvalidObject);
   Data.Assign(EditedData);
   Data.Dirty := true;
+
+  if Assigned(FDoOnPopupOK) then
+    FDoOnPopupOK(Sender);
+
   ModalResult := mrOK;
   Close;
 end;
@@ -94,10 +111,16 @@ end;
 class function TtiPopupDataForm.Execute(const AOwner: TWinControl;
   const AData: TtiObject;
   const AFormPopupButton: TtiSpeedButton;
-  const AFormDisplayPosition: TPopupDisplayPosition): TtiPopupDataForm;
+  const AFormDisplayPosition: TPopupDisplayPosition;
+  const ADoOnPopupOK: TNotifyEvent; const ADoOnPopupCancel: TNotifyEvent;
+  const ADeactivatePopupResult: TModalResult): TtiPopupDataForm;
 begin
   Result := Create(AOwner);
   Result.Data := AData;
+
+  Result.DoOnPopupOK := ADoOnPopupOK;
+  Result.DoOnPopupCancel := ADoOnPopupCancel;
+  Result.DeactivatePopupResult := ADeactivatePopupResult;
 
   Result.FormPopupButton := AFormPopupButton;
   Result.FormDisplayPosition := AFormDisplayPosition;
@@ -131,9 +154,16 @@ begin
 end;
 
 procedure TtiPopupDataForm.FormDeactivate(Sender: TObject);
+  procedure _OnDeactivate(const AOnDeactivateAction: TAction);
+  begin
+    Assert(AOnDeactivateAction <> nil, Format('%s must be assigned', [AOnDeactivateAction.Name]));
+    AOnDeactivateAction.Execute;
+  end;
 begin
-  Assert(FaCancel <> nil, 'FaCancel must be assigned');
-  FaCancel.Execute;
+  case FDeactivatePopupResult of
+    mrOk:     _OnDeactivate(FaOK);
+    mrCancel: _OnDeactivate(FaCancel);
+  end;
 end;
 
 function TtiPopupDataForm.FormIsValid: boolean;

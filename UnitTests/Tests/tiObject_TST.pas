@@ -3050,35 +3050,30 @@ begin
     CheckEquals(2, LList.Count, 'failed on 2');
 
     // String property - return item 2
-    lFound := nil;
     lFound := TtiObjectWithOwnedForTesting(LList.FindByProps(['ObjProp.StrProp'],['hello']));
     CheckNotNull(lFound, 'failed on 3');
     CheckEquals('OID2', lFound.OID.AsString, 'failed in 3.1');
     CheckEquals('hello', lFound.ObjProp.StrProp, 'failed on 3.2');
 
     // Boolean property - return item 1
-    lFound := nil;
     lFound := TtiObjectWithOwnedForTesting(LList.FindByProps(['ObjProp.BoolProp'],[True]));
     CheckNotNull(lFound, 'failed on 4');
     CheckEquals('OID1', lFound.OID.AsString, 'failed in 4.1');
     CheckEquals(True, lFound.ObjProp.BoolProp, 'failed on 4.2');
 
     // Float property - return item 2
-    lFound := nil;
     lFound := TtiObjectWithOwnedForTesting(LList.FindByProps(['ObjProp.FloatProp'],[1234.56]));
     CheckNotNull(lFound, 'failed on 5');
     CheckEquals('OID2', lFound.OID.AsString, 'failed in 5.1');
     CheckEquals(1234.56, lFound.ObjProp.FloatProp, 'failed on 5.2');
 
     // Integer property - return item 1
-    lFound := nil;
     lFound := TtiObjectWithOwnedForTesting(LList.FindByProps(['ObjProp.IntProp'],[1]));
     CheckNotNull(lFound, 'failed on 6');
     CheckEquals('OID1', lFound.OID.AsString, 'failed in 6.1');
     CheckEquals(1, lFound.ObjProp.IntProp, 'failed on 6.2');
 
     // DateTime property - return item 2
-    lFound := nil;
     d := EncodeDate(2009,04,02)+EncodeTime(3,4,5,6);
     lFound := TtiObjectWithOwnedForTesting(LList.FindByProps(['ObjProp.DateProp'],[d]));
     CheckNotNull(lFound, 'failed on 7');

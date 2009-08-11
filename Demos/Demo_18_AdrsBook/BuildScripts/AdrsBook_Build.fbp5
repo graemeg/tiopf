@@ -2370,7 +2370,7 @@ action.CompilerVersion = delphi_compiler_version
             <Property name="UseProjectSettings" type="TFBUseProjectSettings">[]</Property>
             <Property name="UsePropertySet" type="Boolean">True</Property>
             <Property name="UseVersionFromDOF" type="Boolean">False</Property>
-            <Property MultiValue="1" name="VersionInfoKeys" type="WideString"><![CDATA[CompanyName=NEMMCO
+            <Property MultiValue="1" name="VersionInfoKeys" type="WideString"><![CDATA[CompanyName=AEMO
 FileDescription=MLF Support
 FileVersion=4.1.0.3579
 InternalName=
