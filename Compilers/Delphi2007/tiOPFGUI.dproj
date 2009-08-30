@@ -48,6 +48,10 @@
 <BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><Package_Options><Package_Options Name="ImplicitBuild">True</Package_Options><Package_Options Name="DesigntimeOnly">False</Package_Options><Package_Options Name="RuntimeOnly">True</Package_Options><Package_Options Name="LibSuffix">2007</Package_Options></Package_Options><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">3081</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">tiOPFGUI.dpk</Source></Source><Excluded_Packages>
       
       
+      
+      
+      
+      
       <Excluded_Packages Name="$(BDS)\bin\dclofficexp100.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
       <Excluded_Packages Name="$(BDS)\bin\dcloffice2k100.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
     </Excluded_Packages></Delphi.Personality></BorlandProject></BorlandProject>
@@ -108,17 +112,17 @@
     <DCCReference Include="..\..\GUI\tiVTTreeView.pas" />
     <DCCReference Include="..\..\GUI\VCL\tiListMediators.pas" />
     <DCCReference Include="..\..\GUI\VCL\tiMediators.pas" />
-    <DCCReference Include="bdertl.dcp" />
-    <DCCReference Include="dbrtl.dcp" />
-    <DCCReference Include="designide.dcp" />
-    <DCCReference Include="rtl.dcp" />
-    <DCCReference Include="tiOPFCore.dcp" />
-    <DCCReference Include="tiOPFOptions.dcp" />
-    <DCCReference Include="vcl.dcp" />
-    <DCCReference Include="vclactnband.dcp" />
-    <DCCReference Include="vclimg.dcp" />
-    <DCCReference Include="vcljpg.dcp" />
-    <DCCReference Include="vclx.dcp" />
-    <DCCReference Include="xmlrtl.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\bdertl.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\dbrtl.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\designide.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\rtl.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\tiOPFCore.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\tiOPFOptions.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\vcl.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\vclactnband.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\vclimg.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\vcljpg.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\vclx.dcp" />
+    <DCCReference Include="C:\Documents and Settings\tipwh\xmlrtl.dcp" />
   </ItemGroup>
 </Project>
