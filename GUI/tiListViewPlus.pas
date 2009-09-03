@@ -652,7 +652,7 @@ uses
   ,INIFiles
   ,tiResources
   ,tiImageMgr
-
+  ,tiUtils
  ;
 
 const
@@ -2035,8 +2035,8 @@ begin
   lStream := TStringStream.Create('');
   try
     ListToStream(lStream,
-                  '', ',', #13#10,
-                  '', '', ',', #13#10, '');
+                  '', ',', tiLE,
+                  '', '', ',', tiLE, '');
     GetMem(lBuffer, lStream.Size);
     try
       lStream.Position := 0;
@@ -2080,8 +2080,8 @@ begin
   lStream := TFileStream.Create(CSVFileName, fmCreate or fmShareDenyNone);
   try
     ListToStream(lStream,
-                  '', ',', #13#10,
-                  '', '', ',', #13#10, '');
+                  '', ',', tiLE,
+                  '', '', ',', tiLE, '');
   finally
     lStream.Free;
   end;

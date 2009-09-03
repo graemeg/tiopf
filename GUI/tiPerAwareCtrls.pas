@@ -196,7 +196,9 @@ type
     procedure   Refresh; virtual;
     property    WinControl: TWinControl read FWinControl write FWinControl;
     function    Focused: Boolean; override;
+    {$IFNDEF FPC}
     procedure   CancelAnyPendingChanges;
+    {$ENDIF}
     property    PendingChange: Boolean read FPendingChange;
   end;
 
@@ -670,6 +672,7 @@ type
     FScrollBox : TScrollBox;
     FScrollBars : TScrollStyle;
     FImage     : TImage;
+    FScrollBContainer: TGroupBox;
     FbtnLoadFromFile  : TSpeedButton;
     FbtnSaveToFile    : TSpeedButton;
     FbtnPasteFromClip : TSpeedButton;
@@ -2257,12 +2260,28 @@ begin
   TPanel(FWinControl).BorderStyle := bsNone  ;
   TPanel(FWinControl).ParentFont := true    ;
 
+  FScrollBContainer := TGroupBox.Create(self);
+  FScrollBContainer.Parent := FWinControl;
+  FScrollBContainer.Caption := '';
+  FScrollBContainer.Top   := 0;
+  FScrollBContainer.Left  := 0;
+  FScrollBContainer.Color := clWindow;
+  FScrollBContainer.Align := alClient;
+//  FScrollBContainer.BevelInner := bvNone;
+//  FScrollBContainer.BevelOuter := bvNone;
+//  FScrollBContainer.BorderStyle := bsSingle;
+
   FScrollBox := TScrollBox.Create(Self);
-  FScrollBox.Parent := FWinControl;
-  FScrollBox.Top   := 16;
+  FScrollBox.Parent := FScrollBContainer;
+  FScrollBox.Top   := 0;
   FScrollBox.Left  := 0;
   FScrollBox.Color := clWindow;
-  FScrollBox.Align := alNone;
+  FScrollBox.Align := alClient;
+{$IFNDEF FPC}
+  FScrollBox.BevelInner := bvNone;
+  FScrollBox.BevelOuter := bvNone;
+{$ENDIF}
+  FScrollBox.BorderStyle := bsNone;
 {$IFNDEF FPC}
   FScrollBox.VertScrollBar.Tracking := True;
   FScrollBox.HorzScrollBar.Tracking := True;
@@ -2271,8 +2290,8 @@ begin
 
   FImage       := TImage.Create(Self);
   FImage.Parent := FScrollBox;
-  FImage.Top := 0;
-  FImage.Left := 0;
+  FImage.Width := 10;
+  FImage.Height := 10;
   FImage.Stretch := False;
   FImage.AutoSize := true;
 

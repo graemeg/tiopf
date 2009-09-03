@@ -38,7 +38,7 @@ begin
   try
     LAdrs.Read;
     Result:=
-      '<html>' + CrLf +
+      '<html>' + tiLE +
     PersonListToHTML(LAdrs.PersonList) +
       '</html>';
   finally
@@ -64,11 +64,11 @@ var
   i: integer;
 begin
   Result:=
-    '<table border=1>' + CrLf +
+    '<table border=1>' + tiLE +
     '<tr><th>Title</th><th>First name</th><th>Last Name</th><th>Action</th></tr>';
   for i := 0 to APersonList.Count - 1 do
       Result:= Result + PersonToHTML(APersonList.Items[i]);
-  Result:= Result + '</table>' + CrLf;
+  Result:= Result + '</table>' + tiLE;
 end;
 
 function TAdrsBookUIHTML.PersonToHTML(const APerson: TPerson): string;
@@ -81,7 +81,7 @@ begin
     '<td><a href=''javascript:window.alert("ToDo: Implement Edit");''>Edit</a>' +
     '&nbsp;' +
     '<a href=''javascript:window.alert("ToDo: Implement Delete");''>Delete</a></td>' +
-    '</tr>' + CrLf;
+    '</tr>' + tiLE;
 end;
 
 

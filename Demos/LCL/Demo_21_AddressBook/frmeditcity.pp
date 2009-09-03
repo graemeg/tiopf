@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, model,
-  tiFormMediator, StdCtrls;
+  tiModelMediator, StdCtrls;
 
 type
 
@@ -22,7 +22,7 @@ type
     Label2: TLabel;
     LCBCountry: TLabel;
   private
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
     FData: TCity;
     procedure SetData(const AValue: TCity);
     procedure SetupMediators;
@@ -66,7 +66,7 @@ procedure TEditCityForm.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     FMediator.AddProperty('Name', eName);
     FMediator.AddProperty('ZIP', eZIP);
     FMediator.AddProperty('Country', cbCountry).ValueList := gContactManager.CountryList;

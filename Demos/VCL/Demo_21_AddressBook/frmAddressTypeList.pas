@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  model, tiFormMediator, Grids;
+  model, tiModelMediator, Grids;
 
 type
   TAddressTypeListForm = class(TForm)
@@ -17,7 +17,7 @@ type
     procedure BDeleteClick(Sender: TObject);
     procedure BEditClick(Sender: TObject);
   private
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
     FData: TAddressTypeList;
     function EditType(C: TAddressType): Boolean;
     procedure SetData(const AValue: TAddressTypeList);
@@ -78,7 +78,7 @@ var
   A : TAddressType;
 
 begin
-  A:= TAddressType(TStringGridMediator(FMediator.FindByComponent(gAddressTypes).Mediator).SelectedObject);
+  A:= TAddressType(TtiStringGridMediatorView(FMediator.FindByComponent(gAddressTypes).Mediator).SelectedObject);
   if Assigned(A) then
     if EditType(A) then
     begin
@@ -107,11 +107,11 @@ procedure TAddressTypeListForm.BDeleteClick(Sender: TObject);
 
 var
   A: TAddressType;
-  M : TMediatorView;
+  M : TtiMediatorView;
 
 begin
   M:=FMediator.FindByComponent(gAddressTypes).Mediator;
-  A := TAddressType(TStringGridMediator(M).SelectedObject);
+  A := TAddressType(TtiStringGridMediatorView(M).SelectedObject);
   if Assigned(A) then
     begin
     gContactManager.AddressTypeList.Extract(A);
@@ -130,7 +130,7 @@ procedure TAddressTypeListForm.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     FMediator.AddComposite('Name(110)', GAddressTypes);
   end;
   FMediator.Subject := FData;
@@ -138,4 +138,3 @@ begin
 end;
 
 end.
-

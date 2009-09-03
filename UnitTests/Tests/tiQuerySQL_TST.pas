@@ -367,7 +367,7 @@ begin
     Check(SameText(
            lResult,
            ''),
-           'ParamsAsStr failed with 0 params. Returned values was:' + CrLf +
+           'ParamsAsStr failed with 0 params. Returned values was:' + tiLE +
            Query.ParamsAsString);
 
     Query.SQLText :=
@@ -378,7 +378,7 @@ begin
     Check(SameText(
            lResult,
            'Group_STR_FIELD := test'),
-           'ParamsAsStr failed with 1 param. Returned values was:' + CrLf +
+           'ParamsAsStr failed with 1 param. Returned values was:' + tiLE +
            Query.ParamsAsString);
 
     Query.SQLText :=
@@ -390,9 +390,9 @@ begin
     lResult := Query.ParamsAsString;
     Check(SameText(
            lResult,
-           'Group_STR_FIELD := test' + CrLf +
+           'Group_STR_FIELD := test' + tiLE +
            'Group_INT_FIELD := 123'),
-           'ParamsAsStr failed with 2 params. Returned values was:' + CrLf +
+           'ParamsAsStr failed with 2 params. Returned values was:' + tiLE +
            Query.ParamsAsString);
   finally
     Database.Commit;

@@ -19,12 +19,12 @@ uses
 const
 
   cTIOPFExcMsgConnectionConfirmationFormatWrong = 'Server did not return correctly formatted connection confirmation Expected <%s> Found <%s>';
-  cTIOPFExcMsgCanNotConnectToServer = 'Can not connect to remote server. Some possible reasons may be:' + #13 +
-                                      'a) The server address is wrong; or' + #13 +
-                                      'b) the server is not available (or running); or' + #13 +
-                                      'c) the connection is being blocked by a firewall or network fault.' + #13 + #13 +
+  cTIOPFExcMsgCanNotConnectToServer = 'Can not connect to remote server. Some possible reasons may be:' + #13#10 +
+                                      'a) The server address is wrong; or' + #13#10 +
+                                      'b) the server is not available (or running); or' + #13#10 +
+                                      'c) the connection is being blocked by a firewall or network fault.' + #13#10 + #13#10 +
                                       'The application will now shut down';
-  cTIOPFExcMsgErrorOnRemoteServer = 'Error reading response from remote server:' + #13 + '%s';
+  cTIOPFExcMsgErrorOnRemoteServer = 'Error reading response from remote server:' + #13#10 + '%s';
   cTIOPFErrorAttemptedToConnectTo = 'Attempted to connect to';
 
   cParamProxyServer = 'proxyserver';

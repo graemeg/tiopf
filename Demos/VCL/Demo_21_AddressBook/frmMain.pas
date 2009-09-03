@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics,
   Controls, Forms, Dialogs, Grids, StdCtrls, Menus, tiBaseMediator,
-  tiFormMediator, tiMediators, tiListMediators, ContactDisplay;
+  tiModelMediator, tiMediators, tiListMediators, ContactDisplay;
 
 type
   TfrmDemoMain = class(TForm)
@@ -33,7 +33,7 @@ type
     procedure MIExitClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
   private
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
     FDisplayList : TContactDisplayList;
     procedure SetupMediators;
   public
@@ -73,10 +73,10 @@ procedure TfrmDemoMain.DeleteContactClick(Sender: TObject);
 var
   D : TContactDisplay;
   C : TContact;
-  M : TMediatorView;
+  M : TtiMediatorView;
 begin
   M := FMediator.FindByComponent(GContacts).Mediator;
-  D := TContactDisplay(TStringGridMediator(M).SelectedObject);
+  D := TContactDisplay(TtiStringGridMediatorView(M).SelectedObject);
   C := D.Contact;
   if Assigned(c) then
   begin
@@ -91,10 +91,10 @@ procedure TfrmDemoMain.EditContactClick(Sender: TObject);
 var
   D : TContactDisplay;
   C : TContact;
-  M : TMediatorView;
+  M : TtiMediatorView;
 begin
   M := FMediator.FindByComponent(GContacts).Mediator;
-  D := TContactDisplay(TStringGridMediator(M).SelectedObject);
+  D := TContactDisplay(TtiStringGridMediatorView(M).SelectedObject);
   C := D.Contact;
   if Assigned(C) then
     if EditContact(C) then
@@ -137,7 +137,7 @@ procedure TfrmDemoMain.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     FMediator.AddComposite('FirstName;LastName(130);EMail(180);DateOfBirth(100);Mobile(130);Comments(200)', GContacts);
   end;
   FMediator.Subject := DisplayList;

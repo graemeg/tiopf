@@ -1,5 +1,16 @@
 unit tiDeMediators;
 
+//TODO: View control was moved to base TtiMediatorView. Change descendants:
+// - Delete FEditControl private field.
+// - Change property EditControl to the following function, cast result as
+//   the appropriate control type:
+//   function  View: TSomeControlType; reintroduce;
+//     result := TSomeControlType(inherited View);
+// - Remove SetGUIControl and GetGUIControl methods.
+// - Replace FEditControl := AGridView, with SetView(AGridView). [base class]
+// - Replace other instances of FEditControl with View
+//   (use <> nil instead of Assigned where applicable).
+
 interface
 
 uses
@@ -33,7 +44,7 @@ const
 
 type
 
-  TMediatorcxTextEdit = class(TMediatorView)
+  TticxTextEditMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxCustomTextEdit;
   protected
@@ -41,7 +52,7 @@ type
     procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   SetupGUIandObject; override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
+    procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
     destructor  Destroy; override;
@@ -49,22 +60,22 @@ type
     class function ComponentClass: TClass; override;
   end;
 
-  TMediatorcxMaskEdit = class(TMediatorcxTextEdit);
+  TticxMaskEditMediatorView = class(TticxTextEditMediatorView);
 
-  TMediatorcxButtonEdit = class(TMediatorcxTextEdit);
+  TticxButtonEditMediatorView = class(TticxTextEditMediatorView);
 
-  TMediatorcxCurrencyEdit = class(TMediatorcxTextEdit);
+  TticxCurrencyEditMediatorView = class(TticxTextEditMediatorView);
 
-  TMediatorcxCalcEdit = class(TMediatorcxTextEdit)
+  TticxCalcEditMediatorView = class(TticxTextEditMediatorView)
   protected
     procedure   SetupGUIandObject; override;
   public
     constructor Create; override;
   end;
 
-  TMediatorcxHyperLinkEdit = class(TMediatorcxTextEdit);
+  TticxHyperLinkEditMediatorView = class(TticxTextEditMediatorView);
 
-  TMediatorcxCheckBox = class(TMediatorView)
+  TticxCheckBoxMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxCheckBox;
   protected
@@ -72,7 +83,7 @@ type
     procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   SetupGUIandObject; override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
+    procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
     property    EditControl: TcxCheckBox read FEditControl write FEditControl;
@@ -80,7 +91,7 @@ type
   end;
 
   { Base class to handle TcxCustomComboBox controls }
-  TMediatorcxCustomComboBox = class(TMediatorView)
+  TticxCustomComboBoxMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxCustomComboBox;
   protected
@@ -95,13 +106,13 @@ type
     class function ComponentClass: TClass; override;
   end;
 
-  TMediatorcxMRUEdit = class(TMediatorcxCustomComboBox)
+  TticxMRUEditMediatorView = class(TticxCustomComboBoxMediatorView)
   protected
     procedure DoObjectToGUI; override;
   end;
 
   { Sets ItemIndex based on integer property }
-  TMediatorcxItemComboBox = class(TMediatorcxCustomComboBox)
+  TticxItemComboBoxMediatorView = class(TticxCustomComboBoxMediatorView)
   protected
     procedure   DoGUIToObject; override;
     procedure   DoObjectToGUI; override;
@@ -110,7 +121,7 @@ type
   end;
 
   { TComboBox observing a list and setting a Object property }
-  TMediatorcxDynamicComboBox = class(TMediatorcxCustomComboBox)
+  TticxDynamicComboBoxMediatorView = class(TticxCustomComboBoxMediatorView)
   private
     FExternalOnChange: TNotifyEvent;
     procedure   InternalListRefresh;
@@ -125,7 +136,7 @@ type
     procedure   RefreshList; virtual;
   end;
 
-  TMediatorcxColorComboBox = class(TMediatorcxCustomComboBox)
+  TticxColorComboBoxMediatorView = class(TticxCustomComboBoxMediatorView)
   protected
     procedure   SetupGUIandObject; override;
   public
@@ -133,7 +144,7 @@ type
   end;
 
   { Base class to handle TLabel controls }
-  TMediatorcxLabel = class(TMediatorView)
+  TticxLabelMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxLabel;
   protected
@@ -147,7 +158,7 @@ type
   end;
 
   { Base class to handle TSpinEdit controls }
-  TMediatorcxCustomSpinEdit = class(TMediatorView)
+  TticxCustomSpinEditMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxCustomSpinEdit;
   protected
@@ -161,7 +172,7 @@ type
     class function ComponentClass: TClass; override;
   end;
 
-  TMediatorcxSpinEdit = class(TMediatorView)
+  TticxSpinEditMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxSpinEdit;
   protected
@@ -171,7 +182,7 @@ type
   end;
 
   { I would expect that the cxTimeEdit is close to the cxDateEdit, but it is closer to cxCustomSpinEdit }
-  TMediatorcxTimeEdit = class(TMediatorcxCustomSpinEdit)
+  TticxTimeEditMediatorView = class(TticxCustomSpinEditMediatorView)
   protected
     procedure   SetupGUIandObject; override;
   public
@@ -179,7 +190,7 @@ type
   end;
 
   { Base class to handle TTrackBar controls }
-  TMediatorcxTrackBar = class(TMediatorView)
+  TticxTrackBarMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxTrackBar;
   protected
@@ -193,7 +204,7 @@ type
   end;
 
   { Base class to handle TMemo controls }
-  TMediatorcxMemo = class(TMediatorView)
+  TticxMemoMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxMemo;
   protected
@@ -208,7 +219,7 @@ type
   end;
 
   { Base class to handle TDateTimePicker controls }
-  TMediatorcxDateEdit = class(TMediatorView)
+  TticxDateEditMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxDateEdit;
   protected
@@ -216,7 +227,7 @@ type
     procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   DoGUIToObject; override;
     procedure   SetupGUIandObject; override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
+    procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
     property    EditControl: TcxDateEdit read FEditControl write FEditControl;
@@ -224,7 +235,7 @@ type
   end;
 
   { Base class to handle TcxRadioGroup controls }
-  TMediatorcxRadioGroupBox = class(TMediatorView)
+  TticxRadioGroupBoxMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxRadioGroup;
   protected
@@ -239,7 +250,7 @@ type
   end;
 
   { base class to handle TcxProgresBar }
-  TMediatorcxProgressbar = class(TMediatorView)
+  TticxProgressbarMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxProgressBar;
     procedure ProgressBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -286,7 +297,7 @@ type
 
 
   { base class to handle TcxGrid }
-  TMediatorcxCustomGridView = class(TMediatorView)
+  TticxCustomGridViewMediatorView = class(TtiMediatorView)
   private
     FEditControl: TcxCustomGridView;
     FUserDataSource: TUserDataSource;
@@ -329,66 +340,66 @@ uses
 
 procedure RegisterFallBackMediators;
 begin
-  gMediatorManager.RegisterMediator(TMediatorcxTextEdit, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorcxMaskEdit, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorcxCurrencyEdit, TtiObject, [tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorcxButtonEdit, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorcxHyperLinkEdit, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);    
-  gMediatorManager.RegisterMediator(TMediatorcxCheckBox, TtiObject, [tkInteger, tkEnumeration]);
-  gMediatorManager.RegisterMediator(TMediatorcxCustomComboBox, TtiObject, [tkString,tkLString]);
-  gMediatorManager.RegisterMediator(TMediatorcxMRUEdit, TtiObject, [tkString,tkLString]);
-  gMediatorManager.RegisterMediator(TMediatorcxItemComboBox, TtiObject, [tkInteger, tkEnumeration]);
-  gMediatorManager.RegisterMediator(TMediatorcxDynamicComboBox, TtiObject, [tkClass]);
-  gMediatorManager.RegisterMediator(TMediatorcxLabel, TtiObject);
-  gMediatorManager.RegisterMediator(TMediatorcxTrackBar, TtiObject, [tkInteger]);
-  gMediatorManager.RegisterMediator(TMediatorcxMemo, TtiObject, [tkString,tkLString]);
-  gMediatorManager.RegisterMediator(TMediatorcxDateEdit, TtiObject, [tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorcxTimeEdit, TtiObject, [tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorcxSpinEdit, TtiObject, [tkInteger]);
-  gMediatorManager.RegisterMediator(TMediatorcxCalcEdit, TtiObject, [tkInteger, tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorcxRadioGroupBox, TtiObject, [tkInteger]);
+  gMediatorManager.RegisterMediator(TticxTextEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TticxMaskEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TticxCurrencyEditMediatorView, TtiObject, [tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TticxButtonEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TticxHyperLinkEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);    
+  gMediatorManager.RegisterMediator(TticxCheckBoxMediatorView, TtiObject, [tkInteger, tkEnumeration]);
+  gMediatorManager.RegisterMediator(TticxCustomComboBoxMediatorView, TtiObject, [tkString,tkLString]);
+  gMediatorManager.RegisterMediator(TticxMRUEditMediatorView, TtiObject, [tkString,tkLString]);
+  gMediatorManager.RegisterMediator(TticxItemComboBoxMediatorView, TtiObject, [tkInteger, tkEnumeration]);
+  gMediatorManager.RegisterMediator(TticxDynamicComboBoxMediatorView, TtiObject, [tkClass]);
+  gMediatorManager.RegisterMediator(TticxLabelMediatorView, TtiObject);
+  gMediatorManager.RegisterMediator(TticxTrackBarMediatorView, TtiObject, [tkInteger]);
+  gMediatorManager.RegisterMediator(TticxMemoMediatorView, TtiObject, [tkString,tkLString]);
+  gMediatorManager.RegisterMediator(TticxDateEditMediatorView, TtiObject, [tkFloat]);
+  gMediatorManager.RegisterMediator(TticxTimeEditMediatorView, TtiObject, [tkFloat]);
+  gMediatorManager.RegisterMediator(TticxSpinEditMediatorView, TtiObject, [tkInteger]);
+  gMediatorManager.RegisterMediator(TticxCalcEditMediatorView, TtiObject, [tkInteger, tkFloat]);
+  gMediatorManager.RegisterMediator(TticxRadioGroupBoxMediatorView, TtiObject, [tkInteger]);
 
 
 
 // not fully working
-  gMediatorManager.RegisterMediator(TMediatorcxProgressbar, TtiObject, [tkInteger]);
-  gMediatorManager.RegisterMediator(TMediatorcxColorComboBox, TtiObject, [tkInteger]);
+  gMediatorManager.RegisterMediator(TticxProgressbarMediatorView, TtiObject, [tkInteger]);
+  gMediatorManager.RegisterMediator(TticxColorComboBoxMediatorView, TtiObject, [tkInteger]);
 end;
 
 
 
-{ TMediatorcxTextEdit }
+{ TticxTextEditMediatorView }
 
-class function TMediatorcxTextEdit.ComponentClass: TClass;
+class function TticxTextEditMediatorView.ComponentClass: TClass;
 begin
   Result := TcxCustomTextEdit;
 end;
 
-constructor TMediatorcxTextEdit.Create;
+constructor TticxTextEditMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Text';
 end;
 
-destructor TMediatorcxTextEdit.Destroy;
+destructor TticxTextEditMediatorView.Destroy;
 begin
   if Assigned(EditControl) and Assigned(EditControl.Properties.OnChange) then
     EditControl.Properties.OnChange := nil;
   inherited Destroy;
 end;
 
-function TMediatorcxTextEdit.GetGUIControl: TComponent;
+function TticxTextEditMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxTextEdit.SetGUIControl(const AValue: TComponent);
+procedure TticxTextEditMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxCustomTextEdit;
   inherited SetGUIControl(AValue);
 end;
 
-procedure TMediatorcxTextEdit.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+procedure TticxTextEditMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
 begin
   inherited SetObjectUpdateMoment(AValue);
   if Assigned(FEditControl) then
@@ -400,7 +411,7 @@ begin
   end;
 end;
 
-procedure TMediatorcxTextEdit.SetupGUIandObject;
+procedure TticxTextEditMediatorView.SetupGUIandObject;
 var
   Mi, Ma: Integer;
 begin
@@ -413,7 +424,7 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorcxTextEdit.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
+procedure TticxTextEditMediatorView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
@@ -432,31 +443,31 @@ begin
   end;
 end;
 
-{ TMediatorCheckBoxView }
+{ TtiCheckBoxMediatorView }
 
-class function TMediatorcxCheckBox.ComponentClass: TClass;
+class function TticxCheckBoxMediatorView.ComponentClass: TClass;
 begin
   Result := TcxCheckBox;
 end;
 
-constructor TMediatorcxCheckBox.Create;
+constructor TticxCheckBoxMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Checked';
 end;
 
-function TMediatorcxCheckBox.GetGUIControl: TComponent;
+function TticxCheckBoxMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxCheckBox.SetGUIControl(const AValue: TComponent);
+procedure TticxCheckBoxMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxCheckBox;
   inherited SetGUIControl(AValue);
 end;
 
-procedure TMediatorcxCheckBox.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+procedure TticxCheckBoxMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
 begin
   inherited SetObjectUpdateMoment(AValue);
   if Assigned(FEditControl) then
@@ -468,7 +479,7 @@ begin
   end;
 end;
 
-procedure TMediatorcxCheckBox.SetupGUIandObject;
+procedure TticxCheckBoxMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
   if ObjectUpdateMoment in [ouOnChange,ouCustom] then
@@ -477,7 +488,7 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorcxCheckBox.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
+procedure TticxCheckBoxMediatorView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
@@ -496,36 +507,36 @@ begin
   end;
 end;
 
-{ TMediatorComboBoxView }
+{ TtiComboBoxMediatorView }
 
-class function TMediatorcxCustomComboBox.ComponentClass: TClass;
+class function TticxCustomComboBoxMediatorView.ComponentClass: TClass;
 begin
   Result := TcxCustomCombobox;
 end;
 
-constructor TMediatorcxCustomComboBox.Create;
+constructor TticxCustomComboBoxMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Text';
 end;
 
-procedure TMediatorcxCustomComboBox.DoObjectToGUI;
+procedure TticxCustomComboBoxMediatorView.DoObjectToGUI;
 begin
   EditControl.ItemIndex := EditControl.Properties.Items.IndexOf(Subject.PropValue[FieldName]);
 end;
 
-function TMediatorcxCustomComboBox.GetGUIControl: TComponent;
+function TticxCustomComboBoxMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxCustomComboBox.SetGUIControl(const AValue: TComponent);
+procedure TticxCustomComboBoxMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxCustomComboBox;
   inherited SetGUIControl(AValue);
 end;
 
-procedure TMediatorcxCustomComboBox.SetupGUIandObject;
+procedure TticxCustomComboBoxMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
   if ObjectUpdateMoment in [ouOnChange,ouCustom] then
@@ -534,7 +545,7 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorcxCustomComboBox.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
+procedure TticxCustomComboBoxMediatorView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
@@ -553,32 +564,32 @@ begin
   end;
 end;
 
-{ TMediatorcxItemComboBoxView }
+{ TticxItemComboBoxMediatorViewView }
 
-constructor TMediatorcxItemComboBox.Create;
+constructor TticxItemComboBoxMediatorView.Create;
 begin
   inherited;
 
 end;
 
-procedure TMediatorcxItemComboBox.DoGUIToObject;
+procedure TticxItemComboBoxMediatorView.DoGUIToObject;
 begin
   SetOrdProp(Subject, FieldName, EditControl.ItemIndex);
 end;
 
-procedure TMediatorcxItemComboBox.DoObjectToGUI;
+procedure TticxItemComboBoxMediatorView.DoObjectToGUI;
 begin
   EditCOntrol.ItemIndex := GetOrdProp(Subject, FieldName);
 end;
 
-{ TMediatorcxDynamicComboBoxView }
+{ TticxDynamicComboBoxMediatorViewView }
 
-constructor TMediatorcxDynamicComboBox.Create;
+constructor TticxDynamicComboBoxMediatorView.Create;
 begin
   inherited;
 end;
 
-procedure TMediatorcxDynamicComboBox.DoGUIToObject;
+procedure TticxDynamicComboBoxMediatorView.DoGUIToObject;
 var
   lValue: TtiObject;
   lPropType: TTypeKind;
@@ -597,7 +608,7 @@ begin
     raise EtiOPFProgrammerException.Create('Error property type not a Class');
 end;
 
-procedure TMediatorcxDynamicComboBox.DoObjectToGUI;
+procedure TticxDynamicComboBoxMediatorView.DoObjectToGUI;
 var
   i: Integer;
   lValue: TtiObject;
@@ -629,7 +640,7 @@ begin
   SetOnChangeActive(true);
 end;
 
-procedure TMediatorcxDynamicComboBox.InternalListRefresh;
+procedure TticxDynamicComboBoxMediatorView.InternalListRefresh;
 var
   lItems: TStrings;
   i: Integer;
@@ -659,18 +670,18 @@ begin
 
 end;
 
-procedure TMediatorcxDynamicComboBox.RefreshList;
+procedure TticxDynamicComboBoxMediatorView.RefreshList;
 begin
   InternalListRefresh;
 end;
 
-procedure TMediatorcxDynamicComboBox.SetListObject(const AValue: TtiObjectList);
+procedure TticxDynamicComboBoxMediatorView.SetListObject(const AValue: TtiObjectList);
 begin
   Inherited;
   InternalListRefresh;
 end;
 
-procedure TMediatorcxDynamicComboBox.SetOnChangeActive(AValue: Boolean);
+procedure TticxDynamicComboBoxMediatorView.SetOnChangeActive(AValue: Boolean);
 begin
   if AValue then
   begin
@@ -687,7 +698,7 @@ begin
   end;
 end;
 
-procedure TMediatorcxDynamicComboBox.SetupGUIandObject;
+procedure TticxDynamicComboBoxMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
 
@@ -697,59 +708,59 @@ begin
   EditControl.Enabled   := (ValueList.Count > 0);
 end;
 
-{ TMediatorStaticTextView }
+{ TtiStaticTextMediatorView }
 
-class function TMediatorcxLabel.ComponentClass: TClass;
+class function TticxLabelMediatorView.ComponentClass: TClass;
 begin
   Result := TcxLabel;
 end;
 
-constructor TMediatorcxLabel.Create;
+constructor TticxLabelMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Caption';
 end;
 
-function TMediatorcxLabel.GetGUIControl: TComponent;
+function TticxLabelMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxLabel.SetGUIControl(const AValue: TComponent);
+procedure TticxLabelMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxLabel;
 end;
 
-procedure TMediatorcxLabel.SetupGUIandObject;
+procedure TticxLabelMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
   EditControl.Caption := '';
 end;
 
-{ TMediatorTrackBarView }
+{ TtiTrackBarMediatorView }
 
-class function TMediatorcxTrackBar.ComponentClass: TClass;
+class function TticxTrackBarMediatorView.ComponentClass: TClass;
 begin
   Result := TcxTrackBar;
 end;
 
-constructor TMediatorcxTrackBar.Create;
+constructor TticxTrackBarMediatorView.Create;
 begin
   inherited;
   GUIFieldName := 'Position';
 end;
 
-function TMediatorcxTrackBar.GetGUIControl: TComponent;
+function TticxTrackBarMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxTrackBar.SetGUIControl(const AValue: TComponent);
+procedure TticxTrackBarMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxTrackBar;
 end;
 
-procedure TMediatorcxTrackBar.SetupGUIandObject;
+procedure TticxTrackBarMediatorView.SetupGUIandObject;
 var
   Mi, Ma: Integer;
 begin
@@ -765,34 +776,34 @@ begin
     FeditControl.OnExit := DoOnChange;
 end;
 
-{ TMediatorMemoView }
+{ TtiMemoMediatorView }
 
-class function TMediatorcxMemo.ComponentClass: TClass;
+class function TticxMemoMediatorView.ComponentClass: TClass;
 begin
   Result := TcxMemo;
 end;
 
-procedure TMediatorcxMemo.DoGUIToObject;
+procedure TticxMemoMediatorView.DoGUIToObject;
 begin
   Subject.PropValue[FieldName] := EditControl.Lines.Text;
 end;
 
-procedure TMediatorcxMemo.DoObjectToGUI;
+procedure TticxMemoMediatorView.DoObjectToGUI;
 begin
   EditControl.Lines.Text := Subject.PropValue[FieldName];
 end;
 
-function TMediatorcxMemo.GetGUIControl: TComponent;
+function TticxMemoMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxMemo.SetGUIControl(const AValue: TComponent);
+procedure TticxMemoMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl:=AValue as TcxMemo;
 end;
 
-procedure TMediatorcxMemo.SetupGUIandObject;
+procedure TticxMemoMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIAndObject;
   EditControl.Lines.Clear;
@@ -805,20 +816,20 @@ begin
       FEditControl.OnExit := DoOnChange;
 end;
 
-{ TMediatorCalendarComboView }
+{ TtiCalendarComboMediatorView }
 
-class function TMediatorcxDateEdit.ComponentClass: TClass;
+class function TticxDateEditMediatorView.ComponentClass: TClass;
 begin
   Result := TcxDateEdit;
 end;
 
-constructor TMediatorcxDateEdit.Create;
+constructor TticxDateEditMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'EditValue';
 end;
 
-procedure TMediatorcxDateEdit.DoGUIToObject;
+procedure TticxDateEditMediatorView.DoGUIToObject;
 begin
   If (EditControl.Properties.Kind = ckDate) Then
     Subject.PropValue[FieldName] := Trunc(EditControl.Date)
@@ -826,18 +837,18 @@ begin
     Subject.PropValue[FieldName] := EditControl.Date;
 end;
 
-function TMediatorcxDateEdit.GetGUIControl: TComponent;
+function TticxDateEditMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxDateEdit.SetGUIControl(const AValue: TComponent);
+procedure TticxDateEditMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxDateEdit;
   inherited;
 end;
 
-procedure TMediatorcxDateEdit.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+procedure TticxDateEditMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
 begin
   inherited SetObjectUpdateMoment(AValue);
   if Assigned(FEditControl) then
@@ -847,7 +858,7 @@ begin
       FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorcxDateEdit.SetupGUIAndObject;
+procedure TticxDateEditMediatorView.SetupGUIAndObject;
 begin
   inherited SetupGUIandObject;
   if Assigned(FEditControl) then
@@ -857,30 +868,30 @@ begin
       FEditControl.OnExit := DoOnChange;
 end;
 
-{ TMediatorcxSpinEditView }
+{ TticxSpinEditMediatorViewView }
 
-class function TMediatorcxCustomSpinEdit.ComponentClass: TClass;
+class function TticxCustomSpinEditMediatorView.ComponentClass: TClass;
 begin
   Result := TcxCustomSpinEdit;
 end;
 
-constructor TMediatorcxCustomSpinEdit.Create;
+constructor TticxCustomSpinEditMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Value';
 end;
 
-function TMediatorcxCustomSpinEdit.GetGUIControl: TComponent;
+function TticxCustomSpinEditMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxCustomSpinEdit.SetGUIControl(const AValue: TComponent);
+procedure TticxCustomSpinEditMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxCustomSpinEdit;
 end;
 
-procedure TMediatorcxCustomSpinEdit.SetupGUIandObject;
+procedure TticxCustomSpinEditMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
   if ObjectUpdateMoment in [ouOnChange,ouCustom] then
@@ -889,7 +900,7 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-procedure TMediatorcxCustomSpinEdit.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
+procedure TticxCustomSpinEditMediatorView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
@@ -908,15 +919,15 @@ begin
   end;
 end;
 
-{ TMediatorcxCalcEdit }
+{ TticxCalcEditMediatorView }
 
-constructor TMediatorcxCalcEdit.Create;
+constructor TticxCalcEditMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Value';
 end;
 
-procedure TMediatorcxCalcEdit.SetupGUIandObject;
+procedure TticxCalcEditMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
   if ObjectUpdateMoment in [ouOnChange,ouCustom] then
@@ -925,15 +936,15 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-{ TMediatorcxTimeEdit }
+{ TticxTimeEditMediatorView }
 
-constructor TMediatorcxTimeEdit.Create;
+constructor TticxTimeEditMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Time';
 end;
 
-procedure TMediatorcxTimeEdit.SetupGUIandObject;
+procedure TticxTimeEditMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
   if ObjectUpdateMoment in [ouOnChange,ouCustom] then
@@ -942,17 +953,17 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-{ TMediatorcxSpinEdit }
+{ TticxSpinEditMediatorView }
 
-procedure TMediatorcxSpinEdit.SetupGUIandObject;
+procedure TticxSpinEditMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
   EditControl.Value := 0;
 end;
 
-{ TMediatorcxMRUEdit }
+{ TticxMRUEditMediatorView }
 
-procedure TMediatorcxMRUEdit.DoObjectToGUI;
+procedure TticxMRUEditMediatorView.DoObjectToGUI;
 var
   NewString: string;
 begin
@@ -962,20 +973,20 @@ begin
   inherited;
 end;
 
-{ TMediatorcxRadioGroupBox }
+{ TticxRadioGroupBoxMediatorView }
 
-class function TMediatorcxRadioGroupBox.ComponentClass: TClass;
+class function TticxRadioGroupBoxMediatorView.ComponentClass: TClass;
 begin
   Result := TcxRadioGroup;
 end;
 
-constructor TMediatorcxRadioGroupBox.Create;
+constructor TticxRadioGroupBoxMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'ItemIndex';
 end;
 
-procedure TMediatorcxRadioGroupBox.DoObjectToGUI;
+procedure TticxRadioGroupBoxMediatorView.DoObjectToGUI;
 var
   iValue: integer;
 begin
@@ -986,18 +997,18 @@ begin
     EditCOntrol.ItemIndex := -1; 
 end;
 
-function TMediatorcxRadioGroupBox.GetGUIControl: TComponent;
+function TticxRadioGroupBoxMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxRadioGroupBox.SetGUIControl(const AValue: TComponent);
+procedure TticxRadioGroupBoxMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxRadioGroup;
   inherited SetGUIControl(AValue);
 end;
 
-procedure TMediatorcxRadioGroupBox.SetupGUIandObject;
+procedure TticxRadioGroupBoxMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
   if ObjectUpdateMoment in [ouOnChange,ouCustom] then
@@ -1006,15 +1017,15 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-{ TMediatorcxColorComboBox }
+{ TticxColorComboBoxMediatorView }
 
-constructor TMediatorcxColorComboBox.Create;
+constructor TticxColorComboBoxMediatorView.Create;
 begin
   inherited;
   GUIFieldName := 'ColorValue';
 end;
 
-procedure TMediatorcxColorComboBox.SetupGUIandObject;
+procedure TticxColorComboBoxMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
   if ObjectUpdateMoment in [ouOnChange,ouCustom] then
@@ -1023,46 +1034,46 @@ begin
     FEditControl.OnExit := DoOnChange;
 end;
 
-{ TMediatorcxProgessbar }
+{ TtiMediatorcxProgessbar }
 
-class function TMediatorcxProgressbar.ComponentClass: TClass;
+class function TticxProgressbarMediatorView.ComponentClass: TClass;
 begin
   Result := TcxProgressBar;
 end;
 
-constructor TMediatorcxProgressbar.Create;
+constructor TticxProgressbarMediatorView.Create;
 begin
   inherited;
   GUIFieldName := 'Position';
 end;
 
-procedure TMediatorcxProgressbar.DoObjectToGUI;
+procedure TticxProgressbarMediatorView.DoObjectToGUI;
 begin
   inherited;
 end;
 
-function TMediatorcxProgressbar.GetGUIControl: TComponent;
+function TticxProgressbarMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-procedure TMediatorcxProgressbar.ProgressBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TticxProgressbarMediatorView.ProgressBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   SetProgressBarBasedOnMouse(X);
 end;
 
-procedure TMediatorcxProgressbar.ProgressBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TticxProgressbarMediatorView.ProgressBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   if (ssLeft in Shift) then
     SetProgressBarBasedOnMouse(X);
 end;
 
-procedure TMediatorcxProgressbar.SetGUIControl(const AValue: TComponent);
+procedure TticxProgressbarMediatorView.SetGUIControl(const AValue: TComponent);
 begin
   FEditControl := AValue as TcxProgressBar;
 end;
 
-procedure TMediatorcxProgressbar.SetProgressBarBasedOnMouse(X: Integer);
+procedure TticxProgressbarMediatorView.SetProgressBarBasedOnMouse(X: Integer);
 var
   iValue : integer;
   MyBar: TcxProgressBar;
@@ -1076,21 +1087,21 @@ begin
   DoOnChange(EditControl);
 end;
 
-procedure TMediatorcxProgressbar.SetupGUIandObject;
+procedure TticxProgressbarMediatorView.SetupGUIandObject;
 begin
   inherited;
   EditControl.OnMouseDown := ProgressbarMouseDown;
   EditControl.OnMouseMove := ProgressbarMouseMove;
 end;
 
-{ TMediatorcxCustomGridView }
+{ TticxCustomGridViewMediatorView }
 
-class function TMediatorcxCustomGridView.ComponentClass: TClass;
+class function TticxCustomGridViewMediatorView.ComponentClass: TClass;
 begin
   Result := TcxCustomGridView; 
 end;
 
-constructor TMediatorcxCustomGridView.CreateCustom(AGridView: TcxCustomGridView; ASubject: TtiObjectList; AStoreObjectType: TtiObjectClass);
+constructor TticxCustomGridViewMediatorView.CreateCustom(AGridView: TcxCustomGridView; ASubject: TtiObjectList; AStoreObjectType: TtiObjectClass);
 begin
   Create;
   FEditControl := AGridView;
@@ -1098,23 +1109,23 @@ begin
   Subject := ASubject;
 end;
 
-procedure TMediatorcxCustomGridView.DoGUIToObject;
+procedure TticxCustomGridViewMediatorView.DoGUIToObject;
 begin
   // Do nothing. List is essentially read-only.
 end;
 
-procedure TMediatorcxCustomGridView.DoObjectToGUI;
+procedure TticxCustomGridViewMediatorView.DoObjectToGUI;
 begin
 // Refresh the list?
 end;
 
-procedure TMediatorcxCustomGridView.DoOnFilterRecord(ADataController: TcxCustomDataController; ARecordIndex: Integer; var Accept: Boolean);
+procedure TticxCustomGridViewMediatorView.DoOnFilterRecord(ADataController: TcxCustomDataController; ARecordIndex: Integer; var Accept: Boolean);
 begin
   if not ShowDeleted then
     Accept := not TtiObjectList(Subject)[ARecordIndex].Deleted;
 end;
 
-procedure TMediatorcxCustomGridView.DoOnInitEdit(Sender: TcxCustomGridTableView; AItem: TcxCustomGridTableItem; AEdit: TcxCustomEdit);
+procedure TticxCustomGridViewMediatorView.DoOnInitEdit(Sender: TcxCustomGridTableView; AItem: TcxCustomGridTableItem; AEdit: TcxCustomEdit);
 var
   AIndex: Integer;
   AObject: TtiObject;
@@ -1126,36 +1137,36 @@ begin
   AFieldName:= TString(AItem.DataBinding.Data).Value;
 
   if      (AEdit is TcxTextEdit) then
-    TMediatorcxTextEdit.CreateCustom(AEdit, AObject, AFieldName, 'Text')
+    TticxTextEditMediatorView.CreateCustom(AEdit, AObject, AFieldName, 'Text')
   else if (AEdit is TcxSpinEdit) then
-    TMediatorcxCustomSpinEdit.CreateCustom(AEdit, AObject, AFieldName, 'Value');
+    TticxCustomSpinEditMediatorView.CreateCustom(AEdit, AObject, AFieldName, 'Value');
 
 end;
 
-function TMediatorcxCustomGridView.GetGUIControl: TComponent;
+function TticxCustomGridViewMediatorView.GetGUIControl: TComponent;
 begin
   Result := FEditControl;
 end;
 
-function TMediatorcxCustomGridView.GetSubject: TtiObject;
+function TticxCustomGridViewMediatorView.GetSubject: TtiObject;
 begin
 
 end;
 
-procedure TMediatorcxCustomGridView.SetBooleanColumn(ANewColumn: TcxGridColumn);
+procedure TticxCustomGridViewMediatorView.SetBooleanColumn(ANewColumn: TcxGridColumn);
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxBooleanValueType;
   ANewColumn.PropertiesClass := TcxCheckBoxProperties;
 end;
 
-procedure TMediatorcxCustomGridView.SetFloatColumn(ANewColumn: TcxGridColumn);
+procedure TticxCustomGridViewMediatorView.SetFloatColumn(ANewColumn: TcxGridColumn);
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxFloatValueType;
   ANewColumn.PropertiesClass := TcxCurrencyEditProperties;
   TcxCurrencyEditProperties(ANewColumn.Properties).DisplayFormat := '';
 end;
 
-procedure TMediatorcxCustomGridView.SetColorColumn(ANewColumn: TcxGridColumn);
+procedure TticxCustomGridViewMediatorView.SetColorColumn(ANewColumn: TcxGridColumn);
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxIntegerValueType;
   ANewColumn.PropertiesClass := TcxColorComboBoxProperties;
@@ -1163,30 +1174,30 @@ begin
   TcxColorComboBoxProperties(ANewColumn.Properties).AllowSelectColor := True;
 end;
 
-procedure TMediatorcxCustomGridView.SetCurrencyColumn(ANewColumn: TcxGridColumn);
+procedure TticxCustomGridViewMediatorView.SetCurrencyColumn(ANewColumn: TcxGridColumn);
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxCurrencyValueType;
   ANewColumn.PropertiesClass := TcxCurrencyEditProperties;
 end;
 
-procedure TMediatorcxCustomGridView.SetDateTimeColumn(ANewColumn: TcxGridColumn);
+procedure TticxCustomGridViewMediatorView.SetDateTimeColumn(ANewColumn: TcxGridColumn);
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxDateTimeValueType;
   ANewColumn.PropertiesClass := TcxDateEditProperties;
 end;
 
-procedure TMediatorcxCustomGridView.SetIntegerColumn(ANewColumn: TcxGridColumn);
+procedure TticxCustomGridViewMediatorView.SetIntegerColumn(ANewColumn: TcxGridColumn);
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxIntegerValueType;
   ANewColumn.PropertiesClass := TcxSpinEditProperties;
 end;
 
-procedure TMediatorcxCustomGridView.SetStringColumn(ANewColumn: TcxGridcolumn);
+procedure TticxCustomGridViewMediatorView.SetStringColumn(ANewColumn: TcxGridcolumn);
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxStringValueType;
 end;
 
-procedure TMediatorcxCustomGridView.SetupGUIandObject;
+procedure TticxCustomGridViewMediatorView.SetupGUIandObject;
 var
   ATempObject: TtiObject;
   AProperties: TStringList;

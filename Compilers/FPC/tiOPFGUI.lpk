@@ -4,10 +4,10 @@
     <Name Value="tiOPFGUI"/>
     <Author Value="Graeme Geldenhuys"/>
     <CompilerOptions>
-      <Version Value="5"/>
+      <Version Value="8"/>
       <SearchPaths>
         <IncludeFiles Value="../../Core/"/>
-        <OtherUnitFiles Value="../../Core/;../../Options/;../../GUI/"/>
+        <OtherUnitFiles Value="../../Core/;../../Options/;../../GUI/;../../GUI/LCL/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -43,7 +43,7 @@
     <License Value="Mozilla Public License 1.1
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="34">
+    <Files Count="33">
       <Item1>
         <Filename Value="../../GUI/tiGUIUtils.pas"/>
         <UnitName Value="tiGUIUtils"/>
@@ -145,12 +145,12 @@
         <UnitName Value="DtiDefaultActionValues"/>
       </Item25>
       <Item26>
-        <Filename Value="../../GUI/tiGenericEditMediators.pas"/>
-        <UnitName Value="tiGenericEditMediators"/>
+        <Filename Value="../../GUI/LCL/tiMediators.pas"/>
+        <UnitName Value="tiMediators"/>
       </Item26>
       <Item27>
-        <Filename Value="../../GUI/tiGenericListMediators.pas"/>
-        <UnitName Value="tiGenericListMediators"/>
+        <Filename Value="../../GUI/LCL/tiListMediators.pas"/>
+        <UnitName Value="tiListMediators"/>
       </Item27>
       <Item28>
         <Filename Value="../../GUI/tiTreeBuildVisitor.pas"/>
@@ -161,25 +161,21 @@
         <UnitName Value="tiGenericTreeViewMediator"/>
       </Item29>
       <Item30>
-        <Filename Value="../../GUI/tiCompositeMediators.pas"/>
-        <UnitName Value="tiCompositeMediators"/>
-      </Item30>
-      <Item31>
         <Filename Value="../../GUI/tiGUIConstants.pas"/>
         <UnitName Value="tiGUIConstants"/>
-      </Item31>
-      <Item32>
+      </Item30>
+      <Item31>
         <Filename Value="../../GUI/tiLogToGUI.pas"/>
         <UnitName Value="tiLogToGUI"/>
-      </Item32>
-      <Item33>
+      </Item31>
+      <Item32>
         <Filename Value="../../GUI/tiLogReg.pas"/>
         <UnitName Value="tiLogReg"/>
-      </Item33>
-      <Item34>
+      </Item32>
+      <Item33>
         <Filename Value="../../GUI/tiGUIINI.pas"/>
         <UnitName Value="tiGUIINI"/>
-      </Item34>
+      </Item33>
     </Files>
     <LazDoc Paths="../../../Docs/xml/gui/"/>
     <RequiredPkgs Count="3">

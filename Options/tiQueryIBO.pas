@@ -736,8 +736,8 @@ begin
     except
       on e: EIB_ISCERROR do
         begin
-          tiAppError ('Error attempting to create database:' + CrLf (2) +
-            ADatabaseName + CrLf (2) + e.Message + CrLf (2) +
+          tiAppError ('Error attempting to create database:' + tiLE (2) +
+            ADatabaseName + tiLE (2) + e.Message + tiLE (2) +
             'Error code: ' + IntToStr (EIB_ISCERROR (E) .ERRCODE));
         end;
     end;
@@ -1037,8 +1037,8 @@ begin
           raise
         else
           begin
-            lMessage := 'Error attempting to connect to database.' + CrLf (2) +
-              e.Message + CrLf (2) +
+            lMessage := 'Error attempting to connect to database.' + tiLE (2) +
+              e.Message + tiLE (2) +
               'Error code: ' + IntToStr (EIB_ISCERROR (E) .ERRCODE);
             tiAppError (lMessage);
             LogError(lMessage);

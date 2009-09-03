@@ -61,6 +61,7 @@ type
     procedure Cr;
     procedure CrLf;
     procedure Lf;
+    procedure tiLE;
     procedure TestCreateDir;     // Tests logic used in tiFileToStringList test
     procedure TestCreateFile;    // Tests logic used in tiFileToStringList test
     procedure tiAddEllipsis;
@@ -80,7 +81,11 @@ type
     procedure tiCIStrTran;
     procedure tiCopyFile;
     procedure tiCopyStream;
+    procedure tiDateTimeAsXMLString;
+    procedure tiDateAsXMLString;
+    procedure tiXMLStringToDateTime;
     procedure tiDateTimeAsIntlDateDisp;
+    procedure tiDateAsIntlDateDisp;
     procedure tiDateTimeAsIntlDateStor;
     procedure tiDateTimeToStr;
     procedure tiDateToAusFinancialYear;
@@ -2047,6 +2052,26 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiLE;
+begin
+{$IFDEF MSWINDOWS}
+  Check(tiUtils.tiLE = #13#10);
+  Check(tiUtils.tiLE(1) = #13#10);
+  Check(tiUtils.tiLE(2) = #13#10 + #13#10);
+{$ENDIF}
+{$IFDEF UNIX}
+  Check(tiUtils.tiLE = #10);
+  Check(tiUtils.tiLE(1) = #10);
+  Check(tiUtils.tiLE(2) = #10 + #10);
+{$ENDIF}
+{$IFDEF DARWIN}
+  Check(tiUtils.tiLE = #13);
+  Check(tiUtils.tiLE(1) = #13);
+  Check(tiUtils.tiLE(2) = #13 + #13);
+{$ENDIF}
+end;
+
+
 {$IFDEF DUNIT2ORFPC}
 constructor TTestTIUtils.Create;
 begin
@@ -3172,6 +3197,13 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiXMLStringToDateTime;
+begin
+  CheckEquals(
+    EncodeDateTime(2006, 1, 18, 15, 19, 22, 123),
+    tiUtils.tiXMLStringToDateTime('18/01/2006 15:19:22:123'));
+end;
+
 procedure TTestTIUtils.tiStrPos;
 var
   lFrom: string;
@@ -3738,6 +3770,37 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiDateAsIntlDateDisp;
+var
+  dt: TDateTime;
+begin
+  dt := EncodeDate(2006, 1, 18) + EncodeTime(15, 19, 22, 0);
+  CheckEquals('2006-01-18', tiUtils.tiDateAsIntlDateDisp(dt), 'Failed on 1');
+
+  dt := EncodeDate(2002, 1, 02) + EncodeTime(12, 34, 56, 12);
+  CheckEquals('2002-01-02', tiUtils.tiDateAsIntlDateDisp(dt), 'Failed on 2');
+
+  dt := EncodeDate(2006, 1, 18);
+  CheckEquals('2006-01-18', tiUtils.tiDateAsIntlDateDisp(dt), 'Failed on 3');
+
+  dt := EncodeTime(9, 10, 41, 22);
+  CheckEquals('0000-00-00', tiUtils.tiDateAsIntlDateDisp(dt), 'Failed on 4');
+
+  { Due to bug in Delphi's EncodeDateTime with dates smaller that 1899-12-30 we need
+    to subtract the two values. TDateTime is a Double and the value 0 = 1899-12-30 }
+  dt := EncodeDate(1652, 6, 15) - EncodeTime(12, 34, 56, 12);
+  CheckEquals('1652-06-15', tiUtils.tiDateAsIntlDateDisp(dt), 'Failed on 5');
+
+end;
+
+procedure TTestTIUtils.tiDateAsXMLString;
+var
+  LDt: TDateTime;
+begin
+  LDt:= EncodeDateTime(2006, 1, 18, 15, 19, 22, 0);
+  CheckEquals('18/01/2006', tiUtils.tiDateAsXMLString(LDt));
+end;
+
 procedure TTestTIUtils.tiDateTimeAsIntlDateDisp;
 var
   dt: TDateTime;
@@ -3793,6 +3856,14 @@ begin
   {$ENDIF}
 end;
 
+
+procedure TTestTIUtils.tiDateTimeAsXMLString;
+var
+  LDt: TDateTime;
+begin
+  LDt:= EncodeDateTime(2006, 1, 18, 15, 19, 22, 123);
+  CheckEquals('18/01/2006 15:19:22:123', tiUtils.tiDateTimeAsXMLString(LDt));
+end;
 
 procedure TTestTIUtils.tiIntlDateStorAsDateTime;
 var

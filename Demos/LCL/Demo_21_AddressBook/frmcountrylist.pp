@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Grids, model, tiFormMediator;
+  Grids, model, tiModelMediator;
 
 type
 
@@ -23,7 +23,7 @@ type
     procedure BEditClick(Sender: TObject);
   private
     FData: TCountryList;
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
     procedure SetData(const AValue: TCountryList);
     procedure SetupMediators;
   public
@@ -62,7 +62,7 @@ var
   c: TCountry;
 
 begin
-  c := TCountry(TStringGridMediator(FMediator.FindByComponent(gCountries).Mediator).SelectedObject);
+  c := TCountry(TtiStringGridMediatorView(FMediator.FindByComponent(gCountries).Mediator).SelectedObject);
   if Assigned(c) then
     if EditCountry(c) then
     begin
@@ -90,11 +90,11 @@ procedure TCountryListForm.BDeleteClick(Sender: TObject);
 
 var
   c: TCountry;
-  M : TMediatorView;
+  M : TtiMediatorView;
 
 begin
   M:=FMediator.FindByComponent(gCountries).Mediator;
-  c := TCountry(TStringGridMediator(M).SelectedObject);
+  c := TCountry(TtiStringGridMediatorView(M).SelectedObject);
   if Assigned(c) then
     begin
     gContactManager.CountryList.Extract(c);
@@ -113,7 +113,7 @@ procedure TCountryListForm.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     FMediator.AddComposite('ISO(60);Name(110)', gCountries);
   end;
   FMediator.Subject := FData;

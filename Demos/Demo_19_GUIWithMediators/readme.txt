@@ -1,5 +1,5 @@
 
-  This is a simple little demo showing how to use tiMediator and tiFormMediator
+  This is a simple little demo showing how to use tiMediator and tiModelMediator
 
 Features:
  * using only standard controls

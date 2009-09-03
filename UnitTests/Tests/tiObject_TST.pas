@@ -80,11 +80,18 @@ type
     procedure FieldFloat;
     procedure FieldFloat_Equals;
     procedure FieldFloat_Assign;
+
+    procedure FieldDate;
+    procedure FieldDate_Equals;
+    procedure FieldDate_Assign;
+    procedure FieldDate_YearsMonthsDays;
+
     procedure FieldDateTime;
     procedure FieldDateTime_Equals;
     procedure FieldDateTime_Assign;
     procedure FieldDateTime_YearsMonthsDays;
     procedure FieldDateTime_HoursMinutesSeconds;
+
     procedure FieldBoolean;
     procedure FieldBoolean_Equals;
     procedure FieldBoolean_Assign;
@@ -1810,6 +1817,59 @@ begin
 end;
 
 
+procedure TtiObjectTestCase.FieldDate;
+var
+  lPerObj: TtiObject;
+  lField:  TtiFieldDate;
+  lValue   : TDateTime;
+  lValueStr : string;
+begin
+
+  lPerObj := TtiObject.Create;
+  try
+    lField:= TtiFieldDate.Create(lPerObj);
+    try
+      Check(lField.IsNull, 'IsNull #1');
+
+      lValue   := EncodeDate(2004, 06, 03) + EncodeTime( 12, 45, 15, 00);
+      lValueStr := tiDateTimeAsXMLString(lValue);
+
+      lField.AsString := lValueStr;
+      CheckEquals(tiDateAsXMLString(LValue), lField.AsString, 'AsString #2');
+      CheckEquals(Trunc(lValue), lField.AsDateTime, 0.0001, 'AsDateTime #2');
+      Check(not lField.IsNull, 'IsNull #2');
+
+      lValue   := EncodeDate(2004, 06, 03);
+      lValueStr := tiDateAsXMLString(lValue);
+
+      lField.AsString := lValueStr;
+      CheckEquals(lValueStr, lField.AsString, 'AsString #2');
+      CheckEquals(lValue, lField.AsDateTime, 0.0001, 'AsDateTime #2');
+      Check(not lField.IsNull, 'IsNull #2');
+
+      lField.AsString := '';
+      CheckEquals('30/12/1899', lField.AsString, 'AsString #3');
+      CheckEquals(0, lField.AsDateTime, 0.0001, 'AsDateTime #3');
+      Check(lField.IsNull, 'IsNull #3');
+
+      lField.AsDateTime := lValue + EncodeTime(10, 15, 30, 00);
+      CheckEquals(lValueStr, lField.AsString, 'AsString #4');
+      CheckEquals(lValue, lField.AsDateTime, 0.0001, 'AsDateTime #4');
+      Check(not lField.IsNull, 'IsNull #4');
+
+      lField.IsNull := true;
+      CheckEquals('30/12/1899', lField.AsString, 'AsString #5');
+      CheckEquals(0, lField.AsDateTime, 0.0001, 'AsDateTime #5');
+      Check(lField.IsNull, 'IsNull #5');
+    finally
+      lField.Free;
+    end;
+  finally
+    lPerObj.Free;
+  end;
+end;
+
+
 procedure TtiObjectTestCase.FieldDateTime;
 var
   lPerObj: TtiObject;
@@ -1817,7 +1877,7 @@ var
   lValue   : TDateTime;
   lValueStr : string;
 begin
-  lValue   := EncodeDate(2004, 06, 03) + EncodeTime(13, 45, 20, 00);
+  lValue   := EncodeDateTime(2004, 06, 03, 13, 45, 20, 00);
   lValueStr := tiDateTimeAsXMLString(lValue);
 
   lPerObj := TtiObject.Create;
@@ -1853,6 +1913,127 @@ begin
   end;
 end;
 
+procedure TtiObjectTestCase.FieldDateTime_Assign;
+var
+  lF1: TtiFieldDateTime;
+  lF2: TtiFieldDateTime;
+begin
+  lF1:= TtiFieldDateTime.Create(nil);
+  try
+    lF2:= TtiFieldDateTime.Create(nil);
+    try
+      lF1.AsDateTime := EncodeDate(2006, 01, 01);
+      lF2.AsDateTime := EncodeDate(2006, 01, 02);
+      CheckNotEquals(LF1.AsDateTime, LF2.AsDateTime);
+      lF2.Assign(LF1);
+      CheckEquals(LF1.AsDateTime, LF2.AsDateTime);
+    finally
+      lF2.Free;
+    end;
+  finally
+    lF1.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.FieldDateTime_Equals;
+var
+  lF1: TtiFieldDateTime;
+  lF2: TtiFieldDateTime;
+begin
+  lF1:= TtiFieldDateTime.Create(nil);
+  try
+    lF2:= TtiFieldDateTime.Create(nil);
+    try
+      lF1.AsDateTime := EncodeDate(2005, 01, 01);
+      lF2.AsDateTime := EncodeDate(2005, 01, 01);
+      Check(lF1.Equals(lF2));
+      Check(lF2.Equals(lF1));
+      lF2.AsDateTime := EncodeDate(2005, 01, 02);
+      Check(not lF1.Equals(lF2));
+      Check(not lF2.Equals(lF1));
+      lF1.AsDateTime := EncodeDate(2005, 01, 01) + EncodeTime(10, 15, 30, 00);
+      lF2.AsDateTime := EncodeDate(2005, 01, 01) + EncodeTime(10, 15, 30, 00);
+      Check(lF1.Equals(lF2));
+      Check(lF2.Equals(lF1));
+      lF2.AsDateTime := EncodeDate(2005, 01, 01) + EncodeTime(10, 15, 30, 10);
+      Check(lF1.Equals(lF2));
+      Check(lF2.Equals(lF1));
+      lF2.AsDateTime := EncodeDate(2005, 01, 01) + EncodeTime(10, 15, 31, 00);
+      Check(not lF1.Equals(lF2));
+      Check(not lF2.Equals(lF1));
+    finally
+      lF2.Free;
+    end;
+  finally
+    lF1.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.FieldDateTime_HoursMinutesSeconds;
+var
+  lPerObj: TtiObject;
+  lField:  TtiFieldDateTime;
+  lValue   : TDateTime;
+  lValueStr : string;
+begin
+  lValue   := EncodeDate(2004, 06, 03) + EncodeTime(13, 45, 20, 00);
+  lValueStr := tiDateTimeAsXMLString(lValue);
+
+  lPerObj := TtiObject.Create;
+  try
+    lField:= TtiFieldDateTime.Create(lPerObj);
+    try
+      lField.AsDateTime := lValue;
+      CheckEquals(13, lField.Hours, 'Failed on 1');
+      CheckEquals(45, lField.Minutes, 'Failed on 2');
+      CheckEquals(20, lField.Seconds, 'Failed on 3');
+      Check(not lField.IsNull, 'Failed on 4');
+
+      lField.IsNull := True;
+      CheckEquals(0, lField.Hours, 'Failed on 5');
+      CheckEquals(0, lField.Minutes, 'Failed on 6');
+      CheckEquals(0, lField.Seconds, 'Failed on 7');
+      Check(lField.IsNull, 'Failed on 8');
+    finally
+      lField.Free;
+    end;
+  finally
+    lPerObj.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.FieldDateTime_YearsMonthsDays;
+var
+  lPerObj: TtiObject;
+  lField:  TtiFieldDateTime;
+  lValue   : TDateTime;
+  lValueStr : string;
+begin
+  lValue   := EncodeDate(2004, 06, 03) + EncodeTime(13, 45, 20, 00);
+  lValueStr := tiDateTimeAsXMLString(lValue);
+
+  lPerObj := TtiObject.Create;
+  try
+    lField:= TtiFieldDateTime.Create(lPerObj);
+    try
+      lField.AsDateTime := lValue;
+      CheckEquals(2004, lField.Years, 'Failed on 1');
+      CheckEquals(6, lField.Months, 'Failed on 2');
+      CheckEquals(3, lField.Days, 'Failed on 3');
+      Check(not lField.IsNull, 'Failed on 4');
+
+      lField.IsNull := True;
+      CheckEquals(0, lField.Years, 'Failed on 5');
+      CheckEquals(0, lField.Months, 'Failed on 6');
+      CheckEquals(0, lField.Days, 'Failed on 7');
+      Check(lField.IsNull, 'Failed on 8');
+    finally
+      lField.Free;
+    end;
+  finally
+    lPerObj.Free;
+  end;
+end;
 
 procedure TtiObjectTestCase.FieldFloat;
 var
@@ -2094,14 +2275,14 @@ begin
 end;
 
 
-procedure TtiObjectTestCase.FieldDateTime_Assign;
+procedure TtiObjectTestCase.FieldDate_Assign;
 var
-  lF1: TtiFieldDateTime;
-  lF2: TtiFieldDateTime;
+  lF1: TtiFieldDate;
+  lF2: TtiFieldDate;
 begin
-  lF1:= TtiFieldDateTime.Create(nil);
+  lF1:= TtiFieldDate.Create(nil);
   try
-    lF2:= TtiFieldDateTime.Create(nil);
+    lF2:= TtiFieldDate.Create(nil);
     try
       lF1.AsDateTime := EncodeDate(2006, 01, 01);
       lF2.AsDateTime := EncodeDate(2006, 01, 02);
@@ -2116,10 +2297,10 @@ begin
   end;
 end;
 
-procedure TtiObjectTestCase.FieldDateTime_YearsMonthsDays;
+procedure TtiObjectTestCase.FieldDate_YearsMonthsDays;
 var
   lPerObj: TtiObject;
-  lField:  TtiFieldDateTime;
+  lField:  TtiFieldDate;
   lValue   : TDateTime;
   lValueStr : string;
 begin
@@ -2128,7 +2309,7 @@ begin
 
   lPerObj := TtiObject.Create;
   try
-    lField:= TtiFieldDateTime.Create(lPerObj);
+    lField:= TtiFieldDate.Create(lPerObj);
     try
       lField.AsDateTime := lValue;
       CheckEquals(2004, lField.Years, 'Failed on 1');
@@ -2149,47 +2330,14 @@ begin
   end;
 end;
 
-procedure TtiObjectTestCase.FieldDateTime_HoursMinutesSeconds;
+procedure TtiObjectTestCase.FieldDate_Equals;
 var
-  lPerObj: TtiObject;
-  lField:  TtiFieldDateTime;
-  lValue   : TDateTime;
-  lValueStr : string;
+  lF1: TtiFieldDate;
+  lF2: TtiFieldDate;
 begin
-  lValue   := EncodeDate(2004, 06, 03) + EncodeTime(13, 45, 20, 00);
-  lValueStr := tiDateTimeAsXMLString(lValue);
-
-  lPerObj := TtiObject.Create;
+  lF1:= TtiFieldDate.Create(nil);
   try
-    lField:= TtiFieldDateTime.Create(lPerObj);
-    try
-      lField.AsDateTime := lValue;
-      CheckEquals(13, lField.Hours, 'Failed on 1');
-      CheckEquals(45, lField.Minutes, 'Failed on 2');
-      CheckEquals(20, lField.Seconds, 'Failed on 3');
-      Check(not lField.IsNull, 'Failed on 4');
-
-      lField.IsNull := True;
-      CheckEquals(0, lField.Hours, 'Failed on 5');
-      CheckEquals(0, lField.Minutes, 'Failed on 6');
-      CheckEquals(0, lField.Seconds, 'Failed on 7');
-      Check(lField.IsNull, 'Failed on 8');
-    finally
-      lField.Free;
-    end;
-  finally
-    lPerObj.Free;
-  end;
-end;
-
-procedure TtiObjectTestCase.FieldDateTime_Equals;
-var
-  lF1: TtiFieldDateTime;
-  lF2: TtiFieldDateTime;
-begin
-  lF1:= TtiFieldDateTime.Create(nil);
-  try
-    lF2:= TtiFieldDateTime.Create(nil);
+    lF2:= TtiFieldDate.Create(nil);
     try
       lF1.AsDateTime := EncodeDate(2005, 01, 01);
       lF2.AsDateTime := EncodeDate(2005, 01, 01);
@@ -2205,7 +2353,7 @@ begin
       lF2.AsDateTime := EncodeDate(2005, 01, 01) + EncodeTime(10, 15, 30, 10);
       Check(lF1.Equals(lF2));
       Check(lF2.Equals(lF1));
-      lF2.AsDateTime := EncodeDate(2005, 01, 01) + EncodeTime(10, 15, 31, 00);
+      lF2.AsDateTime := EncodeDate(2005, 01, 01) + 1;
       Check(not lF1.Equals(lF2));
       Check(not lF2.Equals(lF1));
     finally

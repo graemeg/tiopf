@@ -1515,8 +1515,8 @@ begin
             RollBack;
           except
             on e:exception do
-              lMessage := lMessage + Cr +
-                'Error rolling transaction after SQL failed:' + Cr + e.message;
+              lMessage := lMessage + tiLE +
+                'Error rolling transaction after SQL failed:' + tiLE + e.message;
           end;
         end;
         raise EtiOPFProgrammerException.Create(lMessage);
@@ -2321,6 +2321,8 @@ begin
       result := true;
     except
       on e:EtiOPFDBExceptionWrongServerVersion do
+        raise;
+      on e:EtiOPFProgrammerException do
         raise;
       on e:exception do
         result := false;

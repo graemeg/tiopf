@@ -7,6 +7,7 @@ uses
   Classes
   ,Contnrs
   ,tiBaseObject
+  ,tiConstants
   ,IdBaseComponent
   ,IdComponent
   ,IdTCPConnection
@@ -19,10 +20,10 @@ const
   cErrorDuplicateHTTPClassMapping    = 'Attempt to register duplicate TtiHTTP class mapping <%s>';
   cErrorUnRegisteredHTTPClassMapping = 'Unregistered TtiHTTP class mapping <%s>';
   cErrorAccessingHTTPServer =
-    'Error accessing HTTP server.' + #13#10 +
-    'Exception message: %s ' + #13#10 +
-    'Request type: %s ' + #13#10 +
-    'URL: %s ' + #13#10 +
+    'Error accessing HTTP server.' + cLineEnding +
+    'Exception message: %s ' + cLineEnding +
+    'Request type: %s ' + cLineEnding +
+    'URL: %s ' + cLineEnding +
     'Data: %s';
 
   ctiOPFHTTPBlockHeader= 'tiOPFBlockID';
@@ -165,7 +166,6 @@ var
 implementation
 uses
   Windows
-  ,tiConstants
   ,SysUtils
   ,tiUtils
   ,tiCRC32
@@ -275,7 +275,7 @@ var
 begin
   lIndex := FindMapping(AMappingName);
   if lIndex = -1 then
-    raise Exception.CreateFmt(cErrorUnRegisteredHTTPClassMapping, [AMappingName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorUnRegisteredHTTPClassMapping, [AMappingName]);
   Result := TtiHTTPClass(FList.Items[lIndex]).Create as TtiHTTPAbs;
 end;
 
@@ -320,7 +320,7 @@ end;
 procedure TtiHTTPFactory.RegisterMapping(const AMappingName: string;const AMappingClass: TtiHTTPClass);
 begin
   if FindMapping(AMappingName) <> -1 then
-    raise Exception.CreateFmt(cErrorDuplicateHTTPClassMapping, [AMappingName]);
+    raise EtiOPFProgrammerException.CreateFmt(cErrorDuplicateHTTPClassMapping, [AMappingName]);
   Assert(SameText(AMappingClass.MappingName, AMappingName), 'MappingName <> pMappingClass.MappingName');
   FList.Add(AMappingClass);
 end;

@@ -422,8 +422,8 @@ begin
     lPropType := PropType(AObject, APropName);
   except
     on e:exception do
-      raise exception.Create('Error in tiGetSimpleTypeKind ' + Cr +
-                              'Property name: ' + APropName + Cr +
+      raise exception.Create('Error in tiGetSimpleTypeKind ' + tiLE +
+                              'Property name: ' + APropName + tiLE +
                               'Message: ' + e.message);
   end;
 

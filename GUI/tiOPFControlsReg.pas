@@ -45,6 +45,7 @@ uses
   {$ENDIF}
   ,tiTreeviewEditor
   ,tiHyperlinkWithImage
+  ,tiModelMediator
  ;
 
 
@@ -101,7 +102,8 @@ begin
                          ,TtiVTListView
                          ,TtiVTTreeView
                          {$ENDIF}
-
+                         ,TtiModelMediator
+                         ,TtiModelMediatorList
                       ]);
 
 

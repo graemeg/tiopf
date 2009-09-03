@@ -262,7 +262,7 @@ begin
       lsErrorMessage := '';
       for i := 0 to EDBEngineError(e).ErrorCount-1 do
       begin
-        if lsErrorMessage <> '' then lsErrorMessage := lsErrorMessage + CrLf(2);
+        if lsErrorMessage <> '' then lsErrorMessage := lsErrorMessage + tiLE(2);
         lsErrorMessage := lsErrorMessage +
                           'Error class: '   + EDBEngineError(e).classname + Cr +
                           'Error message: ' + EDBEngineError(e).Errors[i].Message + Cr +

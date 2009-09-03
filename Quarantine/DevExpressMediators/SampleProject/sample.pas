@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, cxControls, cxContainer, cxEdit, cxTextEdit,
-  cxCheckBox, StdCtrls, cxRadioGroup, tiFormMediator, tiObject, tiDeMediators,
+  cxCheckBox, StdCtrls, cxRadioGroup, tiModelMediator, tiObject, tiDeMediators,
   Menus, cxLookAndFeelPainters, cxButtons, cxGraphics, cxMaskEdit,
   cxDropDownEdit, cxLabel, cxTrackBar, cxMemo, cxStyles, cxSchedulerStorage,
   cxSchedulerCustomControls, cxSchedulerDateNavigator, cxCalendar, cxSpinEdit,
@@ -104,7 +104,7 @@ type
     procedure bDebugClick(Sender: TObject);
     procedure bDebugListClick(Sender: TObject);
   private
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
     FData: TTestObject;
     FTestObjectList: TTestObjectList;
     FLookupItemList: TLookupItemList;
@@ -129,7 +129,7 @@ procedure TForm1.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     // String controls
     FMediator.AddProperty('TestString', cxTextEdit1);
     FMediator.AddProperty('TestString', cxMaskEdit1);
@@ -169,7 +169,7 @@ begin
     FMediator.AddProperty('TestCurrency', cxCurrencyEdit1);
   end;
 
-  TMediatorcxCustomGridView.CreateCustom(gbtvTest, FTestObjectList, TTestObject);
+  TticxCustomGridViewMediatorView.CreateCustom(gbtvTest, FTestObjectList, TTestObject);
 
   FMediator.Subject := FData;
   FMediator.Active := True;

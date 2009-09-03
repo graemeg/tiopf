@@ -855,7 +855,7 @@ begin
       Format(CTIOPFExcMsgCanNotConnectToDatabaseAfterRetry,
              [ARetryCount, ARetryInterval]));
 
-  Log('Connecting to database successful' + CrLf +
+  Log('Connecting to database successful' + tiLE +
       gTIOPFManager.DefaultDBConnectionPool.DetailsAsString, lsUserInfo);
 
 end;

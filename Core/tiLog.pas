@@ -1025,7 +1025,7 @@ begin
     begin
       if i > 1 then
       begin
-        Result := Result + CrLf + tiSpace(LMessagePrefixLen) + tiToken(LMessage, Cr, i);
+        Result := Result + tiLE + tiSpace(LMessagePrefixLen) + tiToken(LMessage, Cr, i);
       end else
         Result := Result + tiToken(LMessage, Cr, i);
     end;

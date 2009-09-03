@@ -10,45 +10,51 @@ unit tiBaseMediator;
 interface
 
 uses
-  TypInfo,
-  Classes,
-  SysUtils,
-  contnrs,
-  tiObject;
+  TypInfo
+  ,Classes
+  ,SysUtils
+  ,Contnrs
+  ,tiObject
+  ;
 
 type
   // forward declaration
-  TMediatorView = class;
-  TCustomListMediator = Class;
+  TtiMediatorView = class;
+  TtiCustomListMediatorView = Class;
 
-  TObjectToGUIEvent = procedure(Sender: TMediatorView; Src: TtiObject; Dest: TComponent; var Handled: Boolean) of object;
-  TGUIToObjectEvent = procedure(Sender: TMediatorView; Src: TComponent; Dest: TtiObject; var Handled: Boolean) of object;
+  TtiObjectToGUIEvent = procedure(Sender: TtiMediatorView; Src: TtiObject; Dest: TComponent; var Handled: Boolean) of object;
+  TtiGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject; var Handled: Boolean) of object;
+  TtiMediatorEvent = procedure(AMediatorView: TtiMediatorView) of object;
+  TtiComponentNotificationEvent = procedure(AComponent: TComponent; Operation: TOperation) of object;
 
-  TObjectUpdateMoment = (ouOnChange, ouOnExit, ouCustom);
+  TtiObjectUpdateMoment = (ouOnChange, ouOnExit, ouCustom);
+
+  TtiMediatorViewComponentHelper = class;
 
   { Base class to inherit from to make more customised Mediator Views. }
-  TMediatorView = class(TtiObject)
+  TtiMediatorView = class(TtiObject)
   private
     FActive: Boolean;
-    FObjectUpdateMoment: TObjectUpdateMoment;
+    FObjectUpdateMoment: TtiObjectUpdateMoment;
     FListObject: TtiObjectList;
-    FOnGUIToObject: TGUIToObjectEvent;
-    FOnObjectToGUI: TObjectToGUIEvent;
+    FOnGUIToObject: TtiGUIToObjectEvent;
+    FOnObjectToGUI: TtiObjectToGUIEvent;
     FSettingUp: Boolean;
-    FFieldName: string;
+    FFieldName: string; // Published property of model used to get/set value
+    FRootFieldName: string; // The underlying property used by FieldName (usually the same)
     FSubject: TtiObject;
+    FView: TComponent;
     FGUIFieldName: string;
-    FCopying: Boolean;
+    FViewHelper: TtiMediatorViewComponentHelper;
+    FCopyingCount: integer;
     procedure CheckFieldNames;
-    procedure TestIfValid;
+    procedure ViewNotification(AComponent: TComponent; Operation: TOperation);
   protected
     UseInternalOnChange: Boolean;
+    // Check model valid and allow view to change behavior
+    procedure TestIfValid;
     // If GUI and Object and fieldnames are assigned, calls SetupGUIandObject.
     procedure CheckSetupGUIandObject;
-    // Must be implemented to return the GUI component.
-    function GetGUIControl: TComponent; virtual; abstract;
-    // Must be implemented to set the GUI component.
-    procedure SetGUIControl(const AValue: TComponent); virtual;
     // Set up GUI and Object. Does nothing by default
     procedure SetupGUIandObject; virtual;
     // For use by descendents. Will call GUIChanged
@@ -65,21 +71,21 @@ type
     procedure DoObjectToGUI; virtual;
     // Set value list object. Override to provide additional handling.
     procedure SetListObject(const AValue: TtiObjectList); virtual;
-    //  Set up subject, attach as observer. Override to provide additional handling.
+    // Set up subject, attach as observer. Override to provide additional handling.
     procedure SetSubject(const AValue: TtiObject); virtual;
     // Set active - attaches/Detaches observer. Override to provide additional handling.
     procedure SetActive(const AValue: Boolean); virtual;
     // Set fieldname. Override to provide additional handling;
     procedure SetFieldName(const AValue: string); virtual;
     // Set ObjectUpdateMoment. Override to provide additional handling;
-    procedure SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); virtual;
+    procedure SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); virtual;
     // Raise an error which shows more information about the control, subject and fieldname.
     Procedure RaiseMediatorError(Const Msg : String); overload;
     // Format version
     Procedure RaiseMediatorError(Const Fmt : String; Args : Array of const); overload;
   public
     constructor Create; override;
-    constructor CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string); overload; virtual;
+    constructor CreateCustom(AView: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string); overload; virtual;
     destructor Destroy; override;
     // By default, copying GUI <-> Object is one way. If this method returns true, then
     // it will copy till no more change events are generated. By default, false is returned
@@ -93,37 +99,56 @@ type
     // Copy GUI to Object. Calls OnGUIToObject if set, and then calls DoGUIToObject if needed
     procedure GUIToObject;
     // Copy GUI to Object. Calls OnObjectToGUI if set, and then calls DoGUIToObject if needed
-    procedure ObjectToGUI;
+    procedure ObjectToGUI(const AForceUpdate: boolean = false);
     // Called by NotifyObservers of subject. Calls ObjectToGUI by default.
     procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
     // Call when GUI changed. Will call GUIToObject.
     procedure GUIChanged;
-    // Access properties.
-    property GUIControl: TComponent read GetGUICOntrol write SetGUIControl;
+    // Set view. Override if additional handling required.
+    procedure SetView(const AValue: TComponent); virtual;
+    // Returns FView by default. Reintroduce to cast into descendant type.
+    function View: TComponent;
     // The subject of observation...
     property Subject: TtiObject read GetSubject write SetSubject;
     // Descendents that need a list of values can use this.
     property ValueList: TtiObjectList read FListObject write SetListObject;
   published
-    // Property of subject to handle.
+    // Property of subject.
     property FieldName: string read FFieldName write SetFieldName;
+    // Root property of subject. Normally the same as FieldName but could be
+    // different. e.g. MyProperty: TSomeType and MyPropertyAsGUIString: string.
+    // MyPropertyAsGUIString is the FieldName used for mapping to the view
+    // but MyProperty is the root property that is read/modified through
+    // MyPropertyAsGUIString. Defaults to FieldName.
+    property RootFieldName: string read FRootFieldName write FRootFieldName;
     // Property of GUI to handle.
     property GUIFieldName: string read FGUIFieldName write FGUIFieldName;
     // Property ObjectUpdateMoment : Do action e.g. in OnExit instead of OnChange.
     // Up to the descendent class to decide this.
-    property ObjectUpdateMoment: TObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouOnChange;
+    property ObjectUpdateMoment: TtiObjectUpdateMoment read FObjectUpdateMoment write SetObjectUpdateMoment default ouOnChange;
     // OnGUIToObject
-    property OnGUIToObject: TGUIToObjectEvent read FOnGUIToObject write FOnGUIToObject;
+    property OnGUIToObject: TtiGUIToObjectEvent read FOnGUIToObject write FOnGUIToObject;
     // OnObjectToGUI
-    property OnObjectToGUI: TObjectToGUIEvent read FOnObjectToGUI write FOnObjectToGUI;
+    property OnObjectToGUI: TtiObjectToGUIEvent read FOnObjectToGUI write FOnObjectToGUI;
     // Observing or not ?
     property Active: Boolean read FActive write SetActive;
   end;
 
 
-  TMediatorViewClass = class of TMediatorView;
+  TtiMediatorViewClass = class of TtiMediatorView;
 
-  TSubjectClass = class of TtiObject;
+
+  TtiMediatorViewComponentHelper = class(TComponent)
+  private
+    FOnNotification: TtiComponentNotificationEvent;
+  protected
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+  public
+    constructor Create(const AOnNotification: TtiComponentNotificationEvent); reintroduce; virtual;
+  end;
+
+
+  TtiSubjectClass = class of TtiObject;
 
 
   TtiMediatorFieldInfo = class(TCollectionItem)
@@ -151,13 +176,13 @@ type
 
   TtiMediatorFieldInfoList = class(TCollection)
   private
-    FMediator : TCustomListMediator;
+    FMediator : TtiCustomListMediatorView;
     function GetAsString: string;
     function GetI(Index: integer): TtiMediatorFieldInfo;
     procedure SetI(Index: integer; const AValue: TtiMediatorFieldInfo);
   protected
     procedure Notify(Item: TCollectionItem;Action: TCollectionNotification); override;
-    Property Mediator : TCustomListMediator read FMediator;
+    Property Mediator : TtiCustomListMediatorView read FMediator;
   public
     function FieldInfoByName(Const pName : String) : TtiMediatorFieldInfo;
     function AddFieldInfo: TtiMediatorFieldInfo; overload;
@@ -170,14 +195,14 @@ type
 
   { Event object used for OnBeforeSetupField event. Is used to allow formatting
     of fields before written to listview Caption or Items. }
-  TOnBeforeSetupField = procedure(AObject: TtiObject; const AFieldName: string; var AValue: string) of object;
+  TtiOnBeforeSetupField = procedure(AObject: TtiObject; const AFieldName: string; var AValue: string) of object;
 
 
-  TListItemMediator = class(TtiObject)
+  TtiListItemMediator = class(TtiObject)
   private
     FModel: TtiObject;
-    Factive: Boolean;
-    FOnBeforeSetupField: TOnBeforeSetupField;
+    FActive: Boolean;
+    FOnBeforeSetupField: TtiOnBeforeSetupField;
     function GetDisplayNames: string;
     procedure SetActive(const AValue: Boolean);
   protected
@@ -186,19 +211,19 @@ type
     procedure StopObserving(ASubject: TtiObject); override;
   public
     destructor Destroy; override;
-    property OnBeforeSetupField: TOnBeforeSetupField read FOnBeforeSetupField write FOnBeforeSetupField;
+    property OnBeforeSetupField: TtiOnBeforeSetupField read FOnBeforeSetupField write FOnBeforeSetupField;
     property DisplayNames: string read GetDisplayNames;
     property FieldsInfo: TtiMediatorFieldInfoList read FFieldsInfo;
   published
     property Model: TtiObject read FModel write SetModel;
-    property Active: Boolean read Factive write SetActive;
+    property Active: Boolean read FActive write SetActive;
   end;
 
 
   { Custom mediator that handles lists of objects. }
-  TCustomListMediator = class(TMediatorView)
+  TtiCustomListMediatorView = class(TtiMediatorView)
   private
-    FOnBeforeSetupField: TOnBeforeSetupField;
+    FOnBeforeSetupField: TtiOnBeforeSetupField;
     FShowDeleted: Boolean;
     FMediatorList: TObjectList;
     FListChanged : Boolean;
@@ -209,7 +234,7 @@ type
     procedure SetFieldsInfo(const AValue: TtiMediatorFieldInfoList);
     procedure SetIsObserving(const AValue: Boolean);
     procedure SetShowDeleted(const AValue: Boolean);
-    procedure SetOnBeforeSetupField(const Value: TOnBeforeSetupField);
+    procedure SetOnBeforeSetupField(const Value: TtiOnBeforeSetupField);
   protected
     FFieldsInfo: TtiMediatorFieldInfoList;
     procedure FieldInfoChanged(Item: TtiMediatorFieldInfo;Action: TCollectionNotification); virtual;
@@ -218,7 +243,7 @@ type
     procedure CreateColumns; virtual; abstract;
     procedure ClearList; virtual; abstract;
     procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); virtual; abstract;
-    procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TListItemMediator); virtual;
+    procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); virtual;
     procedure ParseDisplayNames(const AValue: string);
     procedure CreateSubMediators; virtual;
     procedure RebuildList; virtual; abstract;
@@ -228,7 +253,7 @@ type
     procedure SetSubject(const AValue: TtiObject); override;
     procedure SetFieldName(const AValue: string); override;
     procedure SetActive(const AValue: Boolean); override;
-    Function FindObjectMediator(AObject : TTiObject; out AtIndex : Integer) : TListItemMediator;
+    Function FindObjectMediator(AObject : TTiObject; out AtIndex : Integer) : TtiListItemMediator;
     property MediatorList: TObjectList read FMediatorList;
   public
     constructor Create; override;
@@ -238,7 +263,7 @@ type
     procedure HandleSelectionChanged; virtual; // Called from the GUI to trigger events
     property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
   published
-    property OnBeforeSetupField: TOnBeforeSetupField read FOnBeforeSetupField write SetOnBeforeSetupField;
+    property OnBeforeSetupField: TtiOnBeforeSetupField read FOnBeforeSetupField write SetOnBeforeSetupField;
     property Model: TtiObjectList read GetModel;
     property DisplayNames: string read GetDisplayNames write SetDisplayNames;
     property ShowDeleted: Boolean read FShowDeleted write SetShowDeleted;
@@ -248,10 +273,10 @@ type
   end;
 
 
-  TMediatorDef = class(TCollectionItem)
+  TtiMediatorDef = class(TCollectionItem)
   private
-    FMC: TMediatorViewClass;
-    FMSC: TSubjectClass;
+    FMC: TtiMediatorViewClass;
+    FMSC: TtiSubjectClass;
     FPN: string;
     FPT: TTypeKinds;
   public
@@ -259,48 +284,50 @@ type
     function Handles(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): Boolean;
     // Return True if this definition matches 'closer' than M.
     // Note that both current and M must have Handles() returned true for this to be useful.
-    function BetterMatch(M: TMediatorDef): Boolean;
+    function BetterMatch(M: TtiMediatorDef): Boolean;
     // Definition
-    property MediatorClass: TMediatorViewClass read FMC write FMC;
-    property MinSubjectClass: TSubjectClass read FMSC write FMSC;
+    property MediatorClass: TtiMediatorViewClass read FMC write FMC;
+    property MinSubjectClass: TtiSubjectClass read FMSC write FMSC;
     property PropertyTypes: TTypeKinds read FPT write FPT;
     property PropertyName: string read FPN write FPN;
   end;
 
 
-  TMediatorDefs = class(TCollection)
+  TtiMediatorDefs = class(TCollection)
   private
-    function GetDef(Index: integer): TMediatorDef;
-    procedure SetDef(Index: integer; const AValue: TMediatorDef);
+    function GetDef(Index: integer): TtiMediatorDef;
+    procedure SetDef(Index: integer; const AValue: TtiMediatorDef);
   public
-    function AddDef: TMediatorDef;
-    property Defs[Index: integer]: TMediatorDef read GetDef write SetDef; default;
+    function AddDef: TtiMediatorDef;
+    property Defs[Index: integer]: TtiMediatorDef read GetDef write SetDef; default;
   end;
 
 
-  TMediatorManager = class(TObject)
+  TtiMediatorManager = class(TObject)
   private
-    FDefs: TMediatorDefs;
+    FDefs: TtiMediatorDefs;
   public
     constructor Create;
     destructor Destroy; override;
     // If APropName is empty or APropInfo is Nil, a composite mediator will be searched.
-    function FindDefFor(ASubject: TtiObject; AGUI: TComponent): TMediatorDef; overload;
-    function FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropName: string): TMediatorDef; overload;
-    function FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): TMediatorDef; overload;
-    function RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass): TMediatorDef; overload;
-    function RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyName: string): TMediatorDef; overload;
-    function RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyTypes: TTypeKinds): TMediatorDef; overload;
-    property Defs: TMediatorDefs read FDefs;
+    function FindDefFor(ASubject: TtiObject; AGUI: TComponent): TtiMediatorDef; overload;
+    function FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropName: string): TtiMediatorDef; overload;
+    function FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): TtiMediatorDef; overload;
+    function RegisterMediator(MediatorClass: TtiMediatorViewClass; MinSubjectClass: TtiSubjectClass): TtiMediatorDef; overload;
+    function RegisterMediator(MediatorClass: TtiMediatorViewClass; MinSubjectClass: TtiSubjectClass; PropertyName: string): TtiMediatorDef; overload;
+    function RegisterMediator(MediatorClass: TtiMediatorViewClass; MinSubjectClass: TtiSubjectClass; PropertyTypes: TTypeKinds): TtiMediatorDef; overload;
+    property Defs: TtiMediatorDefs read FDefs;
   end;
 
-  EMediator = class(Exception);
+  EtiMediator = class(Exception);
 
-function gMediatorManager: TMediatorManager;
+function gMediatorManager: TtiMediatorManager;
 function tiFieldName(const AField: string): string;
 function tiFieldWidth(const AField: string): integer;
 function tiFieldCaption(const AField: string): string;
 function tiFieldAlignment(const AField: string): TAlignment;
+function tiValueFieldName(const AFieldName: string): string;
+function tiRootFieldName(const AFieldName: string): string;
 Procedure MediatorError(Sender : TObject; Const Msg : String); overload;
 Procedure MediatorError(Sender : TObject; Fmt : String; Args : Array of const); overload;
 
@@ -313,13 +340,13 @@ uses
   ;
 
 var
-  uMediatorManager: TMediatorManager;
+  uMediatorManager: TtiMediatorManager;
 
 resourcestring
   sErrInvalidFieldName      = 'No fieldname specified for column %d';
   sErrInvalidAlignmentChar  = 'Invalid alignment character "%s" specified for column %d';
   sErrInvalidWidthSpecifier = 'Invalid with "%s" specified for column %d';
-  sErrNotListObject         = '%s is not a TTiListObject';
+  sErrNotListObject         = '%s is not a TtiObjectList';
   sErrCompositeNeedsList    = '%s needs a TtiObjectList class but is registered with %s';
   SErrActive                = 'Operation not allowed while the mediator is active';
   SErrNoGUIFieldName        = 'no gui fieldname set';
@@ -330,28 +357,29 @@ const
   DefFieldWidth = 75;   // default width
   cFieldDelimiter = ';';
   cBrackets = '()';
+  cRootFieldNameDelimiter = ':';
   
 Procedure MediatorError(Sender : TObject; Const Msg : String); overload;
 
 Var
-  M : TMediatorView;
-  C : TComponent;
+  M : TtiMediatorView;
+  V : TComponent;
   S : TTiObject;
   CN,SN,Err : String;
 
 begin
   if (Sender=Nil) then
     Err:=Msg
-  else If Sender is TMediatorView then
+  else If Sender is TtiMediatorView then
     begin
-    M:=Sender as TMediatorView;
-    C:=M.GUIControl;
+    M:=Sender as TtiMediatorView;
+    V:=M.View;
     S:=M.Subject;
-    If Assigned(C) then
+    If Assigned(V) then
       begin
-      CN:=C.Name;
+      CN:=V.Name;
       If (CN='') then
-        CN:=C.ClassName+' instance';
+        CN:=V.ClassName+' instance';
       end
     else
       CN:='Nil';
@@ -365,7 +393,7 @@ begin
     Err:=Format('%s : %s',[TComponent(Sender).Name,Msg])
   else
     Err:=Format('%s : %s',[Sender.ClassName,Msg]);
-  Raise EMediator.Create(Err);
+  Raise EtiMediator.Create(Err);
 end;
 
 Procedure MediatorError(Sender : TObject; Fmt : String; Args : Array of const); overload;
@@ -375,57 +403,61 @@ begin
 end;
 
 
-function gMediatorManager: TMediatorManager;
+function gMediatorManager: TtiMediatorManager;
 begin
   if (uMediatorManager = nil) then
-    uMediatorManager := TMediatorManager.Create;
+    uMediatorManager := TtiMediatorManager.Create;
   Result := uMediatorManager;
 end;
 
 
-{ TMediatorView }
+{ TtiMediatorView }
 
-constructor TMediatorView.Create;
+constructor TtiMediatorView.Create;
 begin
   inherited;
+  FViewHelper := TtiMediatorViewComponentHelper.Create(ViewNotification);
   UseInternalOnChange := True;
   FActive := True;
   FObjectUpdateMoment := ouOnChange;
 end;
 
-constructor TMediatorView.CreateCustom(AEditControl: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string);
+constructor TtiMediatorView.CreateCustom(AView: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string);
 begin
   FSettingUp   := True;
   Create;
   Subject      := ASubject;
   FieldName    := AFieldName;
   GUIFieldName := AGUIFieldName;
-  GUIControl   := AEditControl; // At this point, SetupGUIAndObject is called
+  SetView(AView); // At this point, SetupGUIAndObject is called
   FSettingUp   := False;
 end;
 
-destructor TMediatorView.Destroy;
+destructor TtiMediatorView.Destroy;
 begin
+  if Assigned(FView) then
+    FView.FreeNotification(FViewHelper);
   Subject := nil; // Will call DetachObserver
+  FViewHelper.Free;
   inherited Destroy;
 end;
 
-class function TMediatorView.AllowRecursiveCopy: Boolean;
+class function TtiMediatorView.AllowRecursiveCopy: Boolean;
 begin
   Result := False;
 end;
 
-class function TMediatorView.ComponentClass: TClass;
+class function TtiMediatorView.ComponentClass: TClass;
 begin
   Result := TComponent;
 end;
 
-class function TMediatorView.CompositeMediator: Boolean;
+class function TtiMediatorView.CompositeMediator: Boolean;
 begin
   Result := False;
 end;
 
-procedure TMediatorView.GUIChanged;
+procedure TtiMediatorView.GUIChanged;
 begin
   if not FSettingUp then
   begin
@@ -434,12 +466,12 @@ begin
   end;
 end;
 
-procedure TMediatorView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
+procedure TtiMediatorView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 begin
   // do nothing
 end;
 
-function TMediatorView.DataAndPropertyValid: Boolean;
+function TtiMediatorView.DataAndPropertyValid: Boolean;
 begin
   Result := (FSubject <> nil) and ((not CompositeMediator) or (FFieldName <> ''));
   if not Result then
@@ -456,12 +488,12 @@ begin
   //  EditControl.ReadOnly := ReadOnly or IsPropReadOnly;
 end;
 
-procedure TMediatorView.DoOnChange(Sender: TObject);
+procedure TtiMediatorView.DoOnChange(Sender: TObject);
 begin
   GUIChanged;
 end;
 
-procedure TMediatorView.TestIfValid;
+procedure TtiMediatorView.TestIfValid;
 var
   Errors: TtiObjectErrors;
 begin
@@ -474,32 +506,52 @@ begin
   end;
 end;
 
-procedure TMediatorView.CheckSetupGUIandObject;
+procedure TtiMediatorView.CheckSetupGUIandObject;
 begin
-  if Assigned(Subject) and Assigned(GUIControl) then
+  if Assigned(Subject) and Assigned(FView) then
     SetupGUIandObject;
 end;
 
-procedure TMediatorView.SetGUIControl(const AValue: TComponent);
+function TtiMediatorView.View: TComponent;
 begin
+  result := FView;
+end;
+
+procedure TtiMediatorView.SetView(const AValue: TComponent);
+begin
+  if Assigned(FView) then
+    FView.RemoveFreeNotification(FViewHelper);
+  FView := AValue;
+  if Assigned(FView) then
+    FView.FreeNotification(FViewHelper);
+
   CheckSetupGUIAndObject;
-  if AValue <> nil then
+
+  if Assigned(FView) then
     SetObjectUpdateMoment(FObjectUpdateMoment);
 end;
 
-procedure TMediatorView.SetupGUIandObject;
+procedure TtiMediatorView.SetupGUIandObject;
 begin
   // Does nothing by default
 end;
 
-procedure TMediatorView.SetListObject(const AValue: TtiObjectList);
+procedure TtiMediatorView.ViewNotification(AComponent: TComponent;
+  Operation: TOperation);
+begin
+  if Assigned(FView) and (AComponent = FView) and
+     (Operation = opRemove) then
+    FView := nil;
+end;
+
+procedure TtiMediatorView.SetListObject(const AValue: TtiObjectList);
 begin
   if FListObject = AValue then
     Exit;
   FListObject := AValue;
 end;
 
-procedure TMediatorView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+procedure TtiMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
 begin
   { 2009-06-30 graemeg - Commented this check because it prevents descendant
     implementations from firing which is required if EditComponent changes,
@@ -509,27 +561,27 @@ begin
   FObjectUpdateMoment := AValue;
 end;
 
-procedure TMediatorView.RaiseMediatorError(Const Msg: String);
+procedure TtiMediatorView.RaiseMediatorError(Const Msg: String);
 
 begin
   MediatorError(Self,Msg);
 end;
 
-procedure TMediatorView.RaiseMediatorError(Const Fmt: String; Args: array of const);
+procedure TtiMediatorView.RaiseMediatorError(Const Fmt: String; Args: array of const);
 begin
   RaiseMediatorError(Format(FMT,Args));
 end;
 
-procedure TMediatorView.SetFieldName(const AValue: string);
+procedure TtiMediatorView.SetFieldName(const AValue: string);
 begin
   FFieldName := AValue;
 end;
 
-procedure TMediatorView.SetSubject(const AValue: TtiObject);
+procedure TtiMediatorView.SetSubject(const AValue: TtiObject);
 begin
   if (FSubject = AValue) then
     Exit;
-  if Assigned(FSubject) and FActive then
+  if Assigned(FSubject) then
     FSubject.DetachObserver(Self);
   FSubject := AValue;
   if Assigned(FSubject) and FActive then
@@ -539,7 +591,7 @@ begin
     Update(FSubject,noChanged);
 end;
 
-procedure TMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+procedure TtiMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 begin
   inherited Update(ASubject, AOperation);
   if (AOperation=noChanged) and Active then
@@ -551,12 +603,12 @@ begin
     FSubject:=Nil;
 end;
 
-function TMediatorView.GetSubject: TtiObject;
+function TtiMediatorView.GetSubject: TtiObject;
 begin
   Result := FSubject;
 end;
 
-procedure TMediatorView.CheckFieldNames;
+procedure TtiMediatorView.CheckFieldNames;
 begin
   if (GUIFieldName = '') then
     RaiseMediatorError(SErrNoGUIFieldName);
@@ -564,7 +616,7 @@ begin
     RaiseMediatorError(SErrNoSubjectFieldName)
 end;
 
-procedure TMediatorView.SetActive(const AValue: Boolean);
+procedure TtiMediatorView.SetActive(const AValue: Boolean);
 begin
   if FActive = AValue then
     Exit;
@@ -579,74 +631,92 @@ begin
       FSubject.DetachObserver(Self);
 end;
 
-procedure TMediatorView.DoGUIToObject;
+procedure TtiMediatorView.DoGUIToObject;
 begin
   CheckFieldNames;
-  Subject.PropValue[FieldName] := TypInfo.GetPropValue(GetGUIControl, GUIFieldName);
+  Subject.PropValue[FieldName] := TypInfo.GetPropValue(View, GUIFieldName);
 end;
 
-procedure TMediatorView.GUIToObject;
+procedure TtiMediatorView.GUIToObject;
 var
   B: Boolean;
 begin
-  if FCopying and (not AllowRecursiveCopy) then
+  if (FCopyingCount > 0) and (not AllowRecursiveCopy) then
     Exit;
-  FCopying := True;
+  Inc(FCopyingCount);
   try
     B := False;
     if Assigned(FOnGUIToObject) then
-      FOnGUIToObject(Self, GUIControl, Subject, B);
+      FOnGUIToObject(Self, View, Subject, B);
     if not B then
       DoGUIToObject;
   finally
-    FCopying := False;
+    Dec(FCopyingCount);
   end;
 end;
 
-procedure TMediatorView.ObjectToGUI;
+procedure TtiMediatorView.ObjectToGUI(const AForceUpdate: boolean);
 var
   B: Boolean;
 begin
-  if FCopying and (not AllowRecursiveCopy) then
+  if (FCopyingCount > 0) and (not AllowRecursiveCopy) and (not AForceUpdate) then
     Exit;
-  FCopying := True;
+  Inc(FCopyingCount);
   try
     B := False;
     if Assigned(FOnObjectToGUI) then
-      FOnObjectToGUI(Self, Subject, GUIControl, B);
+      FOnObjectToGUI(Self, Subject, View, B);
     if not B then
       DoObjectToGUI;
   finally
-    FCopying := False;
+    Dec(FCopyingCount);
   end;
 end;
 
-procedure TMediatorView.DoObjectToGUI;
+procedure TtiMediatorView.DoObjectToGUI;
 begin
   CheckFieldNames;
-  TypInfo.SetPropValue(GetGUIControl, GUIFieldName, Subject.PropValue[FieldName]);
+  TypInfo.SetPropValue(View, GUIFieldName, Subject.PropValue[FieldName]);
 end;
 
 
-{ TMediatorManager }
+{ TtiMediatorViewComponentHelper }
 
-constructor TMediatorManager.Create;
+constructor TtiMediatorViewComponentHelper.Create(
+  const AOnNotification: TtiComponentNotificationEvent);
 begin
-  FDefs := TMediatorDefs.Create(TMediatorDef);
+  Assert(Assigned(AOnNotification), 'AOnNotification must be assigned');
+  inherited Create(nil); // No owner required
+  FOnNotification := AOnNotification;
 end;
 
-destructor TMediatorManager.Destroy;
+procedure TtiMediatorViewComponentHelper.Notification(AComponent: TComponent;
+  Operation: TOperation);
+begin
+  FOnNotification(AComponent, Operation);
+  inherited;
+end;
+
+
+{ TtiMediatorManager }
+
+constructor TtiMediatorManager.Create;
+begin
+  FDefs := TtiMediatorDefs.Create(TtiMediatorDef);
+end;
+
+destructor TtiMediatorManager.Destroy;
 begin
   FreeAndNil(FDefs);
   inherited Destroy;
 end;
 
-function TMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent): TMediatorDef;
+function TtiMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent): TtiMediatorDef;
 begin
   Result := FindDefFor(ASubject, AGUI, PPropInfo(nil));
 end;
 
-function TMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropName: string): TMediatorDef;
+function TtiMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropName: string): TtiMediatorDef;
 var
   propinfo: PPropInfo;
 begin
@@ -654,9 +724,9 @@ begin
   Result := FindDefFor(ASubject, AGUI, propinfo);
 end;
 
-function TMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): TMediatorDef;
+function TtiMediatorManager.FindDefFor(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): TtiMediatorDef;
 var
-  D: TMediatorDef;
+  D: TtiMediatorDef;
   I: integer;
 begin
   Result := nil;
@@ -669,7 +739,7 @@ begin
   end;
 end;
 
-function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass): TMediatorDef;
+function TtiMediatorManager.RegisterMediator(MediatorClass: TtiMediatorViewClass; MinSubjectClass: TtiSubjectClass): TtiMediatorDef;
 var
   s: string;
 begin
@@ -688,7 +758,7 @@ begin
   Result.FPT  := tkProperties - [tkClass, tkInterface, tkDynArray {$IFDEF FPC}, tkObject, tkInterfaceRaw{$ENDIF}];
 end;
 
-function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyName: string): TMediatorDef;
+function TtiMediatorManager.RegisterMediator(MediatorClass: TtiMediatorViewClass; MinSubjectClass: TtiSubjectClass; PropertyName: string): TtiMediatorDef;
 var
   s: string;
 begin
@@ -705,7 +775,7 @@ begin
   Result.FPT  := [];
 end;
 
-function TMediatorManager.RegisterMediator(MediatorClass: TMediatorViewClass; MinSubjectClass: TSubjectClass; PropertyTypes: TTypeKinds): TMediatorDef;
+function TtiMediatorManager.RegisterMediator(MediatorClass: TtiMediatorViewClass; MinSubjectClass: TtiSubjectClass; PropertyTypes: TTypeKinds): TtiMediatorDef;
 var
   s: string;
 begin
@@ -723,27 +793,27 @@ begin
 end;
 
 
-{ TMediatorDefs }
+{ TtiMediatorDefs }
 
-function TMediatorDefs.GetDef(Index: integer): TMediatorDef;
+function TtiMediatorDefs.GetDef(Index: integer): TtiMediatorDef;
 begin
-  Result := TMediatorDef(Items[Index]);
+  Result := TtiMediatorDef(Items[Index]);
 end;
 
-procedure TMediatorDefs.SetDef(Index: integer; const AValue: TMediatorDef);
+procedure TtiMediatorDefs.SetDef(Index: integer; const AValue: TtiMediatorDef);
 begin
   Items[Index] := AValue;
 end;
 
-function TMediatorDefs.AddDef: TMediatorDef;
+function TtiMediatorDefs.AddDef: TtiMediatorDef;
 begin
-  Result := Add as TMediatorDef;
+  Result := Add as TtiMediatorDef;
 end;
 
 
-{ TMediatorDef }
+{ TtiMediatorDef }
 
-function TMediatorDef.Handles(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): Boolean;
+function TtiMediatorDef.Handles(ASubject: TtiObject; AGUI: TComponent; APropInfo: PPropInfo): Boolean;
 var
   N: string;
 begin
@@ -765,7 +835,7 @@ begin
       Result := (APropInfo^.PropType^.Kind in PropertyTypes); // If PropertyName is set, it must match
 end;
 
-function TMediatorDef.BetterMatch(M: TMediatorDef): Boolean;
+function TtiMediatorDef.BetterMatch(M: TtiMediatorDef): Boolean;
 begin
   Result := (M = nil);
   if not Result then
@@ -877,6 +947,23 @@ begin
     p      := PChar(s);
     Result := AnsiExtractQuotedStr(p, '"');
   end;
+end;
+
+{ Extract value field name from field name in the format:
+  FieldName:RootFieldName }
+function tiValueFieldName(const AFieldName: string): string;
+begin
+  result := tiToken(AFieldName, cRootFieldNameDelimiter, 1);
+end;
+
+{ Extract root field name from field name in the format:
+  FieldName:RootFieldName
+  Default to FieldName if no RootFieldName specified }
+function tiRootFieldName(const AFieldName: string): string;
+begin
+  result := tiToken(AFieldName, cRootFieldNameDelimiter, 2);
+  if result = '' then
+    result := AFieldName;
 end;
 
 
@@ -1037,18 +1124,18 @@ begin
   end; { Loop }
 end;
 
-{ TListItemMediator }
+{ TtiListItemMediator }
 
-function TListItemMediator.GetDisplayNames: string;
+function TtiListItemMediator.GetDisplayNames: string;
 begin
   Result := FFieldsInfo.AsString;
 end;
 
-procedure TListItemMediator.SetActive(const AValue: Boolean);
+procedure TtiListItemMediator.SetActive(const AValue: Boolean);
 begin
-  if Factive = AValue then
+  if FActive = AValue then
     Exit;
-  Factive := AValue;
+  FActive := AValue;
   if Assigned(FModel) then
     if Active then
       FModel.AttachObserver(Self)
@@ -1056,7 +1143,7 @@ begin
       FModel.DetachObserver(Self);
 end;
 
-procedure TListItemMediator.SetModel(const AValue: TtiObject);
+procedure TtiListItemMediator.SetModel(const AValue: TtiObject);
 var
   B : Boolean;
 begin
@@ -1074,12 +1161,12 @@ begin
   end;
 end;
 
-procedure TListItemMediator.StopObserving(ASubject: TtiObject);
+procedure TtiListItemMediator.StopObserving(ASubject: TtiObject);
 begin
   FModel:=Nil;
 end;
 
-destructor TListItemMediator.Destroy;
+destructor TtiListItemMediator.Destroy;
 begin
   Active := False;
   Model := nil;
@@ -1087,25 +1174,25 @@ begin
 end;
 
 
-{ TCustomListMediator }
+{ TtiCustomListMediatorView }
 
-procedure TCustomListMediator.SetOnBeforeSetupField(const Value: TOnBeforeSetupField);
+procedure TtiCustomListMediatorView.SetOnBeforeSetupField(const Value: TtiOnBeforeSetupField);
 var
   I: integer;
 begin
   FOnBeforeSetupField := Value;
   for I := 0 to FMediatorList.Count - 1 do
-    TListItemMediator(FMediatorList[i]).OnBeforeSetupField := Value;
+    TtiListItemMediator(FMediatorList[i]).OnBeforeSetupField := Value;
 end;
 
-procedure TCustomListMediator.FieldInfoChanged(Item: TtiMediatorFieldInfo;
+procedure TtiCustomListMediatorView.FieldInfoChanged(Item: TtiMediatorFieldInfo;
   Action: TCollectionNotification);
 begin
   If Active  then
     RaiseMediatorError(SErrActive);
 end;
 
-procedure TCustomListMediator.SetSubject(const AValue: TtiObject);
+procedure TtiCustomListMediatorView.SetSubject(const AValue: TtiObject);
 begin
   if (AValue <> nil) then
     if not (AValue is TtiObjectList) then
@@ -1114,78 +1201,78 @@ begin
   inherited SetSubject(AValue);
 end;
 
-procedure TCustomListMediator.SetFieldName(const AValue: string);
+procedure TtiCustomListMediatorView.SetFieldName(const AValue: string);
 begin
   inherited SetFieldName(AValue);
   ParseDisplayNames(AValue);
 end;
 
-procedure TCustomListMediator.SetActive(const AValue: Boolean);
+procedure TtiCustomListMediatorView.SetActive(const AValue: Boolean);
 var
   I: integer;
 begin
   inherited SetActive(AValue);
   for I := 0 to FMediatorList.Count - 1 do
-    TListItemMediator(FMediatorList[i]).Active := AValue;
+    TtiListItemMediator(FMediatorList[i]).Active := AValue;
 end;
 
-function TCustomListMediator.FindObjectMediator(AObject: TTiObject; out AtIndex: Integer): TListItemMediator;
+function TtiCustomListMediatorView.FindObjectMediator(AObject: TTiObject; out AtIndex: Integer): TtiListItemMediator;
 begin
   AtIndex:=FMediatorList.Count-1;
-  While (AtIndex>=0) and (TListItemMediator(FMediatorList[AtIndex]).Model<>AObject) do
+  While (AtIndex>=0) and (TtiListItemMediator(FMediatorList[AtIndex]).Model<>AObject) do
     Dec(AtIndex);
   If (AtIndex=-1) then
     Result:=Nil
   else
-    Result:=TListItemMediator(FMediatorList[AtIndex]);
+    Result:=TtiListItemMediator(FMediatorList[AtIndex]);
 end;
 
-function TCustomListMediator.GetModel: TtiObjectList;
+function TtiCustomListMediatorView.GetModel: TtiObjectList;
 begin
   Result := Subject as TtiObjectList;
 end;
 
-function TCustomListMediator.GetSelectedObject: TtiObject;
+function TtiCustomListMediatorView.GetSelectedObject: TtiObject;
 begin
   Result := nil;
 end;
 
-function TCustomListMediator.GetDisplayNames: string;
+function TtiCustomListMediatorView.GetDisplayNames: string;
 begin
   Result := FFieldsInfo.AsString;
 end;
 
-function TCustomListMediator.GetIsObserving: Boolean;
+function TtiCustomListMediatorView.GetIsObserving: Boolean;
 begin
   Result := Active;
 end;
 
-procedure TCustomListMediator.SetDisplayNames(const AValue: string);
+procedure TtiCustomListMediatorView.SetDisplayNames(const AValue: string);
 begin
   FieldName := AValue;
 end;
 
-procedure TCustomListMediator.SetFieldsInfo(const AValue: TtiMediatorFieldInfoList);
+procedure TtiCustomListMediatorView.SetFieldsInfo(const AValue: TtiMediatorFieldInfoList);
 begin
   FFieldsInfo.Assign(AValue);
 end;
 
-procedure TCustomListMediator.SetIsObserving(const AValue: Boolean);
+procedure TtiCustomListMediatorView.SetIsObserving(const AValue: Boolean);
 begin
   Active := AValue;
 end;
 
-procedure TCustomListMediator.SetSelectedObject(const AValue: TtiObject);
+procedure TtiCustomListMediatorView.SetSelectedObject(const AValue: TtiObject);
 begin
   // Do nothing
 end;
 
-procedure TCustomListMediator.DoDeleteItemMediator(AIndex : Integer; AMediator : TListItemMediator);
+procedure TtiCustomListMediatorView.DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator);
 begin
   MediatorList.Delete(AIndex);
 end;
 
-procedure TCustomListMediator.SetShowDeleted(const AValue: Boolean);
+procedure TtiCustomListMediatorView.SetShowDeleted(const AValue: Boolean);
 begin
   if FShowDeleted = AValue then
     Exit; //==>
@@ -1198,7 +1285,7 @@ begin
   end;
 end;
 
-procedure TCustomListMediator.CreateSubMediators;
+procedure TtiCustomListMediatorView.CreateSubMediators;
 var
   i: integer;
 begin
@@ -1207,16 +1294,16 @@ begin
     begin
     if (not Model.Items[i].Deleted) or FShowDeleted then
       if i < MediatorList.Count then
-        TListItemMediator(MediatorList[i]).Model := Model.Items[i]
+        TtiListItemMediator(MediatorList[i]).Model := Model.Items[i]
       else
         DoCreateItemMediator(Model.Items[i], i);
     end;
   for i := MediatorList.Count-1 downto Model.Count do
-    DoDeleteItemMediator(I,TListItemMediator(MediatorList[i]));
+    DoDeleteItemMediator(I,TtiListItemMediator(MediatorList[i]));
   FListChanged:=False;
 end;
 
-function TCustomListMediator.DataAndPropertyValid(const AData: TtiObject): Boolean;
+function TtiCustomListMediatorView.DataAndPropertyValid(const AData: TtiObject): Boolean;
 var
   c: integer;
   lField: string;
@@ -1235,18 +1322,18 @@ begin
   end;
 end;
 
-procedure TCustomListMediator.DoGUIToObject;
+procedure TtiCustomListMediatorView.DoGUIToObject;
 begin
   // Do nothing. List is essentially read-only.
   // inherited DoGUIToObject;
 end;
 
-procedure TCustomListMediator.DoObjectToGUI;
+procedure TtiCustomListMediatorView.DoObjectToGUI;
 begin
   RebuildList;
 end;
 
-constructor TCustomListMediator.Create;
+constructor TtiCustomListMediatorView.Create;
 begin
   inherited Create;
   FFieldsInfo   := TtiMediatorFieldInfoList.Create(TtiMediatorFieldInfo);
@@ -1256,7 +1343,7 @@ begin
   Active        := False;
 end;
 
-destructor TCustomListMediator.Destroy;
+destructor TtiCustomListMediatorView.Destroy;
 begin
   Active:=False;
   FMediatorList.Free;
@@ -1264,14 +1351,14 @@ begin
   inherited Destroy;
 end;
 
-class function TCustomListMediator.CompositeMediator: Boolean;
+class function TtiCustomListMediatorView.CompositeMediator: Boolean;
 begin
   Result := True;
 end;
 
-procedure TCustomListMediator.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
+procedure TtiCustomListMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 var
-  M: TListItemMediator;
+  M: TtiListItemMediator;
   I: Integer;
 begin
   // Do not call inherited, it will rebuild the list !!
@@ -1282,18 +1369,20 @@ begin
                      if M<>nil then
                        DoDeleteItemMediator(I,M);
                    end;
+    noFree       : if (ASubject = FSubject) then
+                     Subject := nil;
     noChanged    : if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
                      RebuildList;
     noReSort     : RebuildList;
   end;
 end;
 
-procedure TCustomListMediator.HandleSelectionChanged;
+procedure TtiCustomListMediatorView.HandleSelectionChanged;
 begin
   // do nothing. Descendants can complete this if needed.
 end;
 
-procedure TCustomListMediator.ParseDisplayNames(const AValue: string);
+procedure TtiCustomListMediatorView.ParseDisplayNames(const AValue: string);
 var
   I: integer;
   lField: string;
@@ -1308,6 +1397,7 @@ begin
   end; { Loop }
 end;
 
+
 initialization
   // nothing
 
@@ -1315,3 +1405,4 @@ finalization
   FreeAndNil(uMediatorManager);
 
 end.
+

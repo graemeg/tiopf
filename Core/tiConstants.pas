@@ -187,6 +187,7 @@ const
   { Summary of ISO 8601  http://www.cl.cam.ac.uk/~mgk25/iso-time.html }
   cIntlDateTimeStor = 'yyyymmdd"T"hhmmss';    // for storage
   cIntlDateTimeDisp = 'yyyy-mm-dd hh:mm:ss';  // for display
+  CIntlDateDisp     = 'yyyy-mm-dd';  // for display
 
   cgsComma        = ',';
   {$IFDEF DELPHI5} // These are defined from Delphi 5
@@ -215,10 +216,17 @@ const
   csWinDateTimeFormat = 'dd/MM/YYYY hh:mm:ss';
   {$IFDEF UNIX}
   AllFilesWildCard    = '*';
-  cLineEnding         = #10;
   {$ELSE}
   AllFilesWildCard    = '*.*';
-  cLineEnding         = #13#10;
+  {$ENDIF UNIX}
+  {$IFDEF UNIX}
+  cLineEnding         = #10;
+  {$ELSE}
+  {$IFDEF DARWIN}
+  cLineEnding         = #13;
+  {$ELSE}
+  cLineEnding         = #13#10; // Windows and default
+  {$ENDIF DARWIN}
   {$ENDIF UNIX}
 
   // Error messages

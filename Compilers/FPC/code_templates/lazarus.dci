@@ -88,10 +88,10 @@ AutoOnLineBreak=true
 RemoveChar=true
 $(AttributesEnd)
 gTIOPFManager
-[formmediator | Add a new form mediator]
+[modelmediator | Add a new model mediator]
 if not Assigned(FMediator) then
 begin
-  FMediator := TFormMediator.Create(self);
+  FMediator := TtiModelMediator.Create(self);
   FMediator.AddProperty('|', ed);
   FMediator.AddProperty('', ed);
   FMediator.AddProperty('', ed);

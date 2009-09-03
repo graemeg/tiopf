@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  model,ComCtrls, tiFormMediator, tiListMediators, EditBtn;
+  model,ComCtrls, tiModelMediator, tiListMediators, EditBtn;
 
 type
 
@@ -38,8 +38,8 @@ type
     procedure Button1Click(Sender: TObject);
   private
     FData: TContact;
-    FMediator: TFormMediator;
-    FAdrsMediator: TFormMediator;
+    FMediator: TtiModelMediator;
+    FAdrsMediator: TtiModelMediator;
     procedure SetData(const AValue: TContact);
     procedure SetupMediators;
   public
@@ -80,7 +80,7 @@ procedure TContactEditForm.BEditClick(Sender: TObject);
 Var
   A : TAddress;
 begin
-  A := TAddress(TListViewMediator(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
+  A := TAddress(TtiListViewMediatorView(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
   if Assigned(A) then
     if EditAddress(A) then
       begin
@@ -97,7 +97,7 @@ procedure TContactEditForm.BDeleteClick(Sender: TObject);
 Var
   A : TAddress;
 begin
-  A := TAddress(TListViewMediator(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
+  A := TAddress(TtiListViewMediatorView(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
   if Assigned(A) then
     A.Deleted:=True;
 end;
@@ -113,7 +113,7 @@ procedure TContactEditForm.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     FMediator.AddProperty('FirstName', EFirstName);
     FMediator.AddProperty('LastName', ELastName);
     FMediator.AddProperty('EMail', EEmail);
@@ -126,7 +126,7 @@ begin
 
   if not Assigned(FAdrsMediator) then
   begin
-    FAdrsMediator := TFormMediator.Create(self);
+    FAdrsMediator := TtiModelMediator.Create(self);
     FAdrsMediator.AddComposite({'AddressType.Name;}'AddressType4GUI(50,"Type");Nr;Street;Telephone1', lvAddresses);
   end;
   FAdrsMediator.Subject := FData.AddressList;

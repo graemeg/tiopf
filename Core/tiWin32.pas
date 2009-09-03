@@ -32,7 +32,7 @@ uses
   function tiWin32RunProcessWithTimeout(const AProcessCommandLine: string;
         const AParams: string = '';
         const AProcessCurrentDirectory: string = '';
-        const ATimeoutIntervalSecs: Cardinal = 0; const AProcessNameToKill: string = ''): DWORD;
+        const ATimeoutIntervalSecs: Cardinal = 0): DWORD;
 
 
   function tiWin32KillProcess(const AEXEName: String): Integer;
@@ -177,43 +177,37 @@ end;
 {$IFNDEF FPC}
 function tiWin32RunProcessWithTimeout(const AProcessCommandLine,
   AParams, AProcessCurrentDirectory: string;
-  const ATimeoutIntervalSecs: Cardinal; const AProcessNameToKill: string): DWORD;
+  const ATimeoutIntervalSecs: Cardinal): DWORD;
 
 var
   SI: TStartupInfo;
-  PI: TProcessInformation;
+  LProcessInfo: TProcessInformation;
   SA: TSecurityAttributes;
-  LProcessNameToKill: String;
   LPProcessCurrentDirectory: PChar;
   LCommandLine: string;
-  LErrorCode: LongWord;
   LWaitResult: DWORD;
 const
-  cExitWithoutTimeout = WAIT_OBJECT_0;
-  cInheritParentHandlesFalse = false;
+  // WAIT_ABANDONED, 0x00000080L, 128
+  // WAIT_OBJECT_0, 0x00000000L, 0
+  // WAIT_TIMEOUT, 0x00000102L, 258
+  // WAIT_FAILED, 0xFFFFFFFF, High(DWord), 4294967295
+  CExitWithoutTimeout = WAIT_OBJECT_0;
+  CInheritParentHandlesFalse = false;
 
-  procedure tiRaiseLastSystemError;
+  procedure _RaiseLastSystemError(const ACommandLine: string);
   var
+    LErrorCode: DWord;
     LErrorMessage: string;
   begin
-    LErrorMessage:= sysErrorMessage(GetLastError);
+    LErrorCode:= GetLastError;
+    LErrorMessage:= sysErrorMessage(LErrorCode);
     raise EtiOPFFileSystemException.CreateFmt(CErrorCanNotExecuteApplication,
       [LCommandLine, LErrorCode, LErrorMessage]);
   end;
 
 begin
 
-//  Assertion added for testing.
-//  Assert(FileExists(tiAddTrailingSlash(AProcessCurrentDirectory) + AProcessCommandLine),
-//    'Application to execute not found: "' +
-//    tiAddTrailingSlash(AProcessCurrentDirectory) + AProcessCommandLine + '"');
-
   LCommandLine := '"' + AProcessCommandLine + '" ' + AParams;
-
-  if AProcessNameToKill = '' then
-    LProcessNameToKill := AProcessCommandLine
-  else
-    LProcessNameToKill := AProcessNameToKill;
 
   if AProcessCurrentDirectory = '' then
     LPProcessCurrentDirectory := nil
@@ -229,22 +223,28 @@ begin
     // CreateProcess docs are here: http://msdn.microsoft.com/en-us/library/ms682425.aspx
     if not CreateProcess(
       nil, PChar(LCommandLine), nil, nil,
-      cInheritParentHandlesFalse, CREATE_NO_WINDOW, nil, LPProcessCurrentDirectory, SI, PI) then
-      tiRaiseLastSystemError;
+      cInheritParentHandlesFalse, CREATE_NO_WINDOW, nil,
+      LPProcessCurrentDirectory, SI, LProcessInfo) then
+      _RaiseLastSystemError(LCommandLine);
 
-//    WaitForInputIdle(PI.hProcess, ATimeoutIntervalSecs * 1000);
-    LWaitResult := WaitForSingleObject(PI.hProcess, ATimeoutIntervalSecs * 1000);
+    LWaitResult := WaitForSingleObject(LProcessInfo.hProcess, ATimeoutIntervalSecs * 1000);
+
     if  LWaitResult = cExitWithoutTimeout then
-      GetExitCodeProcess(PI.hProcess, Result)
+      GetExitCodeProcess(LProcessInfo.hProcess, Result)
     else
     begin
       Result := LWaitResult;
-      tiWin32KillProcess(LProcessNameToKill);
+      if not TerminateProcess(LProcessInfo.hProcess, 0) then
+      begin
+        Sleep(1000);
+        if not TerminateProcess(LProcessInfo.hProcess, 0) then
+          _RaiseLastSystemError(LCommandLine);
+      end;
     end;
 
   finally
-    CloseHandle(PI.hProcess);
-    CloseHandle(PI.hThread);
+    CloseHandle(LProcessInfo.hProcess);
+    CloseHandle(LProcessInfo.hThread);
   end;
 end;
 {$ENDIF}

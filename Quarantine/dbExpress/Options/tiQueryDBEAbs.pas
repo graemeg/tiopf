@@ -555,17 +555,17 @@ begin
 {
       for i := 0 to EDatabaseError( e ).ErrorCount-1 do
       begin
-        if lsErrorMessage <> '' then lsErrorMessage := lsErrorMessage + CrLf( 2 ) ;
+        if lsErrorMessage <> '' then lsErrorMessage := lsErrorMessage + tiLE( 2 ) ;
         lsErrorMessage := lsErrorMessage +
-                          'Error class: '   + EDBEngineError( e ).classname + Cr +
-                          'Error message: ' + EDBEngineError( e ).Errors[i].Message + Cr +
-                          'Error Code: ' + IntToStr( EDBEngineError( e ).Errors[i].ErrorCode ) + Cr +
+                          'Error class: '   + EDBEngineError( e ).classname + tiLE +
+                          'Error message: ' + EDBEngineError( e ).Errors[i].Message + tiLE +
+                          'Error Code: ' + IntToStr( EDBEngineError( e ).Errors[i].ErrorCode ) + tiLE +
                           'Native error code: ' + IntToStr( EDBEngineError( e ).Errors[i].NativeError ) ;
       end ;
 }
         lsErrorMessage := lsErrorMessage +
-                          'Error class: '   + EDatabaseError( e ).classname + Cr +
-                          'Error message: ' + EDatabaseError( e ).Message + Cr ;
+                          'Error class: '   + EDatabaseError( e ).classname + tiLE +
+                          'Error message: ' + EDatabaseError( e ).Message + tiLE ;
       raise EtiOPFDBExceptionCanNotConnect.Create( 'Unknown', DatabaseName, UserName, Password, lsErrorMessage ) ;
     end ;
     on e:exception do

@@ -132,6 +132,7 @@ begin
   Color      := clBtnFace;
   BevelOuter := bvNone;
   BorderWidth := 1;
+  Ctl3D := false;
   BorderStyle := bsSingle;
 
   FSpeedButton := TtiSpeedButton.Create(self);

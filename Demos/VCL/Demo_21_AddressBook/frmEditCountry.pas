@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, model,
-  tiFormMediator, StdCtrls;
+  tiModelMediator, StdCtrls;
 
 type
   TEditCountryForm = class(TForm)
@@ -15,7 +15,7 @@ type
     Label1: TLabel;
     LEName: TLabel;
   private
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
     FData: TCountry;
     procedure SetData(const AValue: TCountry);
     procedure SetupMediators;
@@ -59,7 +59,7 @@ procedure TEditCountryForm.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     FMediator.AddProperty('Name', eName);
     FMediator.AddProperty('ISO', eISO);
   end;
@@ -68,4 +68,3 @@ begin
 end;
 
 end.
-

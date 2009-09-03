@@ -66,12 +66,10 @@ var
   LCommandLine: string;
   LParams: string;
   LDirectory: string;
-  LProcessNameToKill: string;
-
   LSleepForSecs: Cardinal;
   LTimeoutSecs: Cardinal;
-
   LLogFileName: string;
+  LResult: DWord;
 const
   CBeforeSleepMessage = 'Before sleep message';
   CAfterSleepMessage = 'After sleep message';
@@ -84,9 +82,9 @@ begin
   LTimeoutSecs  := 2;
   LLogFileName := LDirectory + CLogFileName;
   LParams := Format(CParams, [LSleepForSecs, LLogFileName]);
-  LProcessNameToKill := CEXEName;
 
-  tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs, LProcessNameToKill);
+  LResult:= tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs);
+  CheckEquals(WAIT_OBJECT_0, LResult, 'tiWin32RunProcessWithTimeout result');
   CheckEquals(true, FileExists(LLogFileName));
   CheckEquals(IntToStr(LSleepForSecs), tiFileToString(LLogFileName));
 
@@ -99,9 +97,9 @@ begin
   LTimeoutSecs  := 1;
   LLogFileName := LDirectory + CLogFileName;
   LParams := Format(CParams, [LSleepForSecs, LLogFileName]);
-  LProcessNameToKill := CEXEName;
 
-  tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs, LProcessNameToKill);
+  LResult:= tiWin32RunProcessWithTimeout(LCommandLine, LParams, LDirectory, LTimeoutSecs);
+  CheckEquals(WAIT_TIMEOUT, LResult, 'tiWin32RunProcessWithTimeout result');
   Check( not FileExists(LLogFileName), 'Time out failed');
 
 end;

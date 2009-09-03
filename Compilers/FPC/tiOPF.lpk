@@ -259,8 +259,8 @@
         <UnitName Value="tiBaseMediator"/>
       </Item52>
       <Item53>
-        <Filename Value="../../Core/tiFormMediator.pas"/>
-        <UnitName Value="tiFormMediator"/>
+        <Filename Value="../../Core/tiModelMediator.pas"/>
+        <UnitName Value="tiModelMediator"/>
       </Item53>
       <Item54>
         <Filename Value="../../Options/tiQueryDataset.pas"/>

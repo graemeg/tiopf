@@ -114,8 +114,19 @@ end;
 function TtiOjectCacheAbs.LockDBConnectionCreateQuery(
   var ADatabase: TtiDatabase ): TtiQuery;
 begin
+  if not Assigned(GTIOPFManager.DefaultPerLayer) then
+    raise EtiOPFProgrammerException.Create(
+        'Default persistence layer not set. Add the appropriate tiQuery* ' +
+        'unit(s) to your uses clause');
+
+  if not Assigned(GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool) then
+    raise EtiOPFProgrammerException.Create(
+        'Default DB connection pool not set. Is a connection established?');
+
   ADatabase := GTIOPFManager.DefaultPerLayer.DefaultDBConnectionPool.Lock ;
+  Assert(ADatabase.TestValid(TtiDatabase), CTIErrorInvalidObject);
   result := ADatabase.CreateTIQuery;
+  Assert(result.TestValid(TtiQuery), CTIErrorInvalidObject);
   result.AttachDatabase(ADatabase);
 end;
 

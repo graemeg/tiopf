@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, model, tiFormMediator;
+  StdCtrls, model, tiModelMediator;
 
 type
 
@@ -32,7 +32,7 @@ type
   private
     FData: TAddress;
     { private declarations }
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
     procedure SetData(const AValue: TAddress);
     procedure SetupMediators;
   public
@@ -77,7 +77,7 @@ procedure TEditAddressForm.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     FMediator.AddProperty('AddressType', cbType).ValueList := gContactManager.AddressTypeList;
     FMediator.AddProperty('Nr', ENumber);
     FMediator.AddProperty('Street', EStreet);

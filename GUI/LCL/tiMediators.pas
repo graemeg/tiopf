@@ -3,7 +3,6 @@
     Abstract mediating view and Mediator Factory. This allows you to use
     standard edit components and make them object-aware.  See the demo
     application for usage.
-
 }
 
 unit tiMediators;
@@ -16,117 +15,125 @@ uses
   ,Classes
   ,tiBaseMediator
   ,Controls
-  ,stdctrls
-  ,extctrls
-  ,comctrls
-  ,spin
-  ,EditBtn
+  ,StdCtrls   { TCustomEdit, TEdit, TComboBox, TStaticText }
+  ,ExtCtrls   { TLabeledEdit }
+  ,ComCtrls   { TTrackBar }
+  ,Spin       { TSpinEdit - standard component included in Lazarus LCL }
+  ,EditBtn  
+  ,Graphics
   ;
 
 type
 
-  { Base class to handle TCustomEdit controls }
-  TMediatorEditView = class(TMediatorView)
+  { Base class to handle TControl controls }
+  TtiControlMediatorView = class(TtiMediatorView)
   private
-    FEditControl: TCustomEdit;
+    FViewColor: TColor;
+    FViewHint: string;
+    FViewErrorColor: TColor;
+    procedure   SetViewErrorColor(const AValue: TColor);
   protected
-    function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent); override;
+    function    GetCurrentControlColor: TColor; virtual;
     procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
-    procedure   SetupGUIandObject; override;
-    procedure   SetObjectUpdateMoment (const AValue : TObjectUpdateMoment); override;
   public
     constructor Create; override;
-    constructor CreateCustom(pEditControl: TControl; pSubject: TtiObject; pFieldName: string; pGUIFieldName: string = 'Text'); reintroduce;
+    property    ViewErrorColor: TColor read FViewErrorColor write SetViewErrorColor;
+    procedure   SetView(const AValue: TComponent); override;
+    function    View: TControl; reintroduce;
+    class function ComponentClass: TClass; override;
+  end;
+
+
+  { Base class to handle TCustomEdit controls (TEdit, TMemo, TLabeledEdit) }
+  TtiCustomEditMediatorView = class(TtiControlMediatorView)
+  private
+    FControlReadOnlyColor: TColor;
+    procedure   SetControlReadOnlyColor(const AValue: TColor);
+  protected
+    function    GetCurrentControlColor: TColor; override;
+    procedure   SetupGUIandObject; override;
+    procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
+  public
+    constructor Create; override;
     destructor  Destroy; override;
-    property    EditControl: TCustomEdit read FEditControl write FEditControl;
+    property    ControlReadOnlyColor: TColor read FControlReadOnlyColor write SetControlReadOnlyColor;
+    function    View: TCustomEdit; reintroduce;
+    class function ComponentClass: TClass; override;
+  end;
+
+
+  { Base class to handle TEdit controls }
+  TtiEditMediatorView = class(TtiCustomEditMediatorView)
+  public
+    function    View: TEdit; reintroduce;
     class function ComponentClass: TClass; override;
   end;
 
 
   { Base class to handle TCheckBox controls }
-  TMediatorCheckBoxView = class(TMediatorView)
-  private
-    FEditControl: TCheckBox;
+  TtiCheckBoxMediatorView = class(TtiControlMediatorView)
   protected
-    function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent);override;
-    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
+    procedure   DoObjectToGUI; override;
+    procedure   DoGUIToObject; override;
+    procedure   SetupGUIandObject; override;
+    procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
-    property    EditControl: TCheckBox read FEditControl write FEditControl;
+    destructor  Destroy; override;
+    function    View: TCheckBox; reintroduce;
     class function ComponentClass: TClass; override;
   end;
 
 
-  { Base class to handle TCustomLabel controls }
-  TMediatorStaticTextView = class(TMediatorView)
-  private
-    FEditControl: TCustomLabel;
+  { Base class to handle TLabel controls }
+  TtiStaticTextMediatorView = class(TtiControlMediatorView)
   protected
-    function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   SetupGUIandObject; override;
   public
     constructor Create; override;
-    property    EditControl: TCustomLabel read FEditControl write FEditControl;
+    function    View: TLabel; reintroduce;
     class function ComponentClass: TClass; override;
   end;
 
 
   { Base class to handle TSpinEdit controls }
-  TMediatorSpinEditView = class(TMediatorView)
-  private
-    FEditControl: TSpinEdit;
+  TtiSpinEditMediatorView = class(TtiControlMediatorView)
   protected
-    function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent);override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
-    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
+    procedure   SetupGUIandObject; override;
+    procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
-    property    EditControl: TSpinEdit read FEditControl write FEditControl;
+    function    View: TSpinEdit; reintroduce;
     class function ComponentClass: TClass; override;
   end;
 
 
   { Base class to handle TTrackBar controls }
-  TMediatorTrackBarView = class(TMediatorView)
-  private
-    FEditControl: TTrackBar;
-    procedure   DoTrackBarChanged(Sender: TObject; APosition: integer);
+  TtiTrackBarMediatorView = class(TtiControlMediatorView)
   protected
-    function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   SetupGUIandObject; override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
+    procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
-    property    EditControl: TTrackBar read FEditControl write FEditControl;
+    function    View: TTrackBar; reintroduce;
     class function ComponentClass: TClass; override;
   end;
 
 
   { Base class to handle TComboBox controls }
-  TMediatorComboBoxView = class(TMediatorView)
-  private
-    FEditControl: TComboBox;
+  TtiComboBoxMediatorView = class(TtiControlMediatorView)
   protected
-    function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent); override;
-    procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
     procedure   DoObjectToGUI; override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
+    procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
-    property    EditControl: TComboBox read FEditControl write FEditControl;
+    function    View: TComboBox; reintroduce;
     class function ComponentClass: TClass; override;
   end;
 
 
   { Sets ItemIndex based on integer property }
-  TMediatorItemComboBoxView = class(TMediatorComboBoxView)
+  TtiComboBoxItemMediatorView = class(TtiComboBoxMediatorView)
   protected
     Procedure   DoGUIToObject; override;
     Procedure   DoObjectToGUI; override;
@@ -136,7 +143,7 @@ type
 
 
   { TComboBox observing a list and setting a Object property }
-  TMediatorDynamicComboBoxView = class(TMediatorComboBoxView)
+  TtiDynamicComboBoxMediatorView = class(TtiComboBoxMediatorView)
   private
     FDisplayFieldName: String;
     FExternalOnChange: TNotifyEvent;
@@ -152,41 +159,41 @@ type
     procedure   RefreshList; virtual;
     Property    DisplayFieldName : String Read GetDisplayFieldName Write FDisplayFieldName;
   end;
-  
+
 
   { Base class to handle TMemo controls }
-  TMediatorMemoView = class(TMediatorView)
-  private
-    FEditControl: TMemo;
+  TtiMemoMediatorView = class(TtiCustomEditMediatorView)
   protected
-    function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   SetupGUIandObject; override;
     procedure   DoObjectToGUI; override;
     procedure   DoGUIToObject; override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
   public
-    property    EditControl: TMemo read FEditControl write FEditControl;
+    function    View: TMemo; reintroduce;
     class function ComponentClass: TClass; override;
   end;
 
 
   { Base class to handle TDateEdit controls }
-  TMediatorDateEditView = class(TMediatorView)
-  private
-    FEditControl: TDateEdit;
+  TtiDateEditMediatorView = class(TtiControlMediatorView)
   protected
-    function    GetGUIControl: TComponent; override;
-    procedure   SetGUIControl(const AValue: TComponent);override;
     procedure   DoObjectToGUI; override;
     procedure   DoGUIToObject; override;
-    procedure   SetObjectUpdateMoment(const AValue: TObjectUpdateMoment); override;
+    procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
-    property    EditControl: TDateEdit read FEditControl write FEditControl;
+    function    View: TDateEdit; reintroduce;
     class function ComponentClass: TClass; override;
   end;
 
+
+  { Base class to handle TLabeledEdit controls }
+{$IFDEF DELPHI2006ORABOVE}
+  TtiLabeledEditMediatorView = class(TtiCustomEditMediatorView)
+  public
+    function    View: TLabeledEdit; reintroduce;
+    class function ComponentClass: TClass; override;
+  end;
+{$ENDIF}
 
 // Registering generic mediators which can handle most cases by default.
 procedure RegisterFallBackMediators;
@@ -196,13 +203,15 @@ implementation
 uses
   SysUtils
   ,TypInfo
-  ,graphics
+  ,tiExcept
+  ,tiGUIConstants   // for error color
+  ,tiLog
   ;
 
-const
-  // RGB color values
-//  clPaleBlue    = TColor($FEF5E9);
-  clError       = clYellow;
+type
+  // Friend class to get access to protected methods
+  THackControl = class(TControl);
+  THackCustomEdit = class(TCustomEdit);
 
 const
   cErrorListHasNotBeenAssigned   = 'List has not been assigned';
@@ -212,323 +221,338 @@ const
 
 procedure RegisterFallBackMediators;
 begin
-  gMediatorManager.RegisterMediator(TMediatorEditView, TtiObject, [tkSString,tkAString,tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorCheckBoxView, TtiObject, [tkBool]);
-  gMediatorManager.RegisterMediator(TMediatorComboboxView, TtiObject, [tkSString,tkAString]);
-  gMediatorManager.RegisterMediator(TMediatorStaticTextView, TtiObject);
-  gMediatorManager.RegisterMediator(TMediatorTrackBarView, TtiObject, [tkInteger]);
-  gMediatorManager.RegisterMediator(TMediatorDynamicComboBoxView, TtiObject, [tkClass]);
-  gMediatorManager.RegisterMediator(TMediatorMemoView, TtiObject, [tkSString,tkAString]);
-  gMediatorManager.RegisterMediator(TMediatorSpinEditView, TtiObject, [tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TMediatorDateEditView, TtiObject, [tkFloat]);
+  gMediatorManager.RegisterMediator(TtiEditMediatorView, TtiObject, [tkSString,tkAString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TtiCheckBoxMediatorView, TtiObject, [tkBool]);
+  gMediatorManager.RegisterMediator(TtiComboBoxMediatorView, TtiObject, [tkSString,tkAString]);
+  gMediatorManager.RegisterMediator(TtiComboBoxItemMediatorView, TtiObject, [tkInteger, tkEnumeration]);
+  gMediatorManager.RegisterMediator(TtiStaticTextMediatorView, TtiObject);
+  gMediatorManager.RegisterMediator(TtiTrackBarMediatorView, TtiObject, [tkInteger]);
+  gMediatorManager.RegisterMediator(TtiDynamicComboBoxMediatorView, TtiObject, [tkClass]);
+  gMediatorManager.RegisterMediator(TtiMemoMediatorView, TtiObject, [tkSString,tkAString]);
+  gMediatorManager.RegisterMediator(TtiSpinEditMediatorView, TtiObject, [tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TtiDateEditMediatorView, TtiObject, [tkFloat]);
+{$IFDEF DELPHI2006ORABOVE}
+  gMediatorManager.RegisterMediator(TtiLabeledEditMediatorView, TtiObject, [tkSString,tkAString,tkInteger,tkFloat]);
+{$ENDIF}
 end;
 
-{ TMediatorEditView }
+{ TtiControlMediatorView }
 
-function TMediatorEditView.GetGUIControl: TComponent;
+constructor TtiControlMediatorView.Create;
 begin
-  Result := FEditControl;
+  inherited;
+  FViewErrorColor := clError;
 end;
 
-procedure TMediatorEditView.SetGUIControl(const AValue: TComponent);
+class function TtiControlMediatorView.ComponentClass: TClass;
 begin
-  FEditControl := AValue as TCustomEdit;
-  inherited SetGUIControl(AValue);
+  Result := TControl;
 end;
 
-procedure TMediatorEditView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
+function TtiControlMediatorView.View: TControl;
+begin
+  result := TControl(inherited View);
+end;
+
+procedure TtiControlMediatorView.SetView(const AValue: TComponent);
+var
+  LValue: TControl;
+begin
+  Assert((AValue = nil) or (AValue is TControl), 'Expected TControl');
+  LValue := AValue as TControl;
+
+  if LValue <> View then
+  begin
+    // Restore state of previous view
+    if View <> nil then
+    begin
+      View.Hint := FViewHint;
+      THackControl(View).Color := FViewColor;
+    end;
+
+    // Preserve state of new view
+    if Assigned(LValue) then
+    begin
+      FViewHint := LValue.Hint;
+      FViewColor := THackControl(LValue).Color;
+    end;
+  end;
+
+  inherited SetView(AValue);
+end;
+
+procedure TtiControlMediatorView.SetViewErrorColor(const AValue: TColor);
+begin
+  if AValue <> FViewErrorColor then
+  begin
+    FViewErrorColor := AValue;
+    TestIfValid; // Update view
+  end;
+end;
+
+procedure TtiControlMediatorView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
 var
   oError: TtiObjectError;
 begin
   inherited UpdateGUIValidStatus(pErrors);
 
-  oError := pErrors.FindByErrorProperty(FieldName);
+  oError := pErrors.FindByErrorProperty(RootFieldName);
   if oError <> nil then
   begin
-    EditControl.Color  := clError;
-    EditControl.Hint   := oError.ErrorMessage;
+    THackControl(View).Color := ViewErrorColor;
+    View.Hint := oError.ErrorMessage;
   end
   else
   begin
-    EditControl.Color  := clWindow;
-    EditControl.Hint   := '';
+    THackControl(View).Color := GetCurrentControlColor;
+    View.Hint := FViewHint;
   end;
 end;
 
-procedure TMediatorEditView.SetupGUIandObject;
-var
-  Mi, Ma: Integer;
+function TtiControlMediatorView.GetCurrentControlColor: TColor;
 begin
-  inherited SetupGUIandObject;
-  if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
-    FEditControl.MaxLength := Ma;
+  result := ColorToRGB(FViewColor);
 end;
 
-procedure TMediatorEditView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+{ TtiCustomEditMediatorView }
+
+constructor TtiCustomEditMediatorView.Create;
 begin
-  inherited SetObjectUpdateMoment(AValue);
-  if Assigned(FEditControl) then
+  inherited;
+  FControlReadOnlyColor := clWindow;
+  GUIFieldName := 'Text';
+end;
+
+destructor TtiCustomEditMediatorView.Destroy;
+begin
+  if View <> nil then
   begin
-    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      FEditControl.OnChange := @DoOnChange
-    else
-      FEditControl.OnExit := @DoOnChange;
+    if Assigned(THackCustomEdit(View).OnChange) then
+      THackCustomEdit(View).OnChange := nil;
   end;
+  inherited;
 end;
 
-constructor TMediatorEditView.Create;
-begin
-  inherited Create;
-  GUIFieldName:='Text';
-end;
-
-constructor TMediatorEditView.CreateCustom(pEditControl: TControl;
-  pSubject: TtiObject; pFieldName: string; pGUIFieldName: string);
-begin
-  inherited CreateCustom(pEditControl, pSubject, pFieldName, pGUIFieldName);
-end;
-
-destructor TMediatorEditView.Destroy;
-begin
-  if Assigned(EditControl) and Assigned(EditControl.OnChange) then
-    EditControl.OnChange := nil;
-  inherited Destroy;
-end;
-
-class function TMediatorEditView.ComponentClass: TClass;
+class function TtiCustomEditMediatorView.ComponentClass: TClass;
 begin
   Result := TCustomEdit;
 end;
 
+function TtiCustomEditMediatorView.GetCurrentControlColor: TColor;
+begin
+  if View.ReadOnly then
+    result := ColorToRGB(ControlReadOnlyColor)
+  else
+    result := inherited GetCurrentControlColor;
+end;
 
-{ TMediatorSpinEditView}
+function TtiCustomEditMediatorView.View: TCustomEdit;
+begin
+  result := TCustomEdit(inherited View);
+end;
 
-class function TMediatorSpinEditView.ComponentClass: TClass;
+procedure TtiCustomEditMediatorView.SetControlReadOnlyColor(
+  const AValue: TColor);
+begin
+  if AValue <> FControlReadOnlyColor then
+  begin
+    FControlReadOnlyColor := AValue;
+    TestIfValid; // Update view
+  end;
+end;
+
+procedure TtiCustomEditMediatorView.SetObjectUpdateMoment(
+  const AValue: TtiObjectUpdateMoment);
+begin
+  inherited;
+  if View <> nil then
+    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
+      THackCustomEdit(View).OnChange := @DoOnChange
+    else
+      THackCustomEdit(View).OnExit := @DoOnChange;
+end;
+
+procedure TtiCustomEditMediatorView.SetupGUIandObject;
+var
+  Mi, Ma: Integer;
+begin
+  inherited;
+  if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
+    THackCustomEdit(View).MaxLength := Ma;
+end;
+
+{ TtiEditMediatorView }
+
+class function TtiEditMediatorView.ComponentClass: TClass;
+begin
+  Result := TEdit;
+end;
+
+function TtiEditMediatorView.View: TEdit;
+begin
+  result := TEdit(inherited View);
+end;
+
+{ TtiSpinEditMediatorView}
+
+class function TtiSpinEditMediatorView.ComponentClass: TClass;
 begin
   Result := TSpinEdit;
 end;
 
-function TMediatorSpinEditView.GetGUIControl: TComponent;
+function TtiSpinEditMediatorView.View: TSpinEdit;
 begin
-  Result := FEditControl;
+  Result := TSpinEdit(inherited View);
 end;
 
-procedure TMediatorSpinEditView.SetGUIControl(const AValue: TComponent);
+procedure TtiSpinEditMediatorView.SetupGUIandObject;
 begin
-  FEditControl := AValue as TSpinEdit;
-  inherited SetGUIControl(AValue);
+  inherited SetupGUIandObject;
+  View.Value := 0;
 end;
 
-procedure TMediatorSpinEditView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
-begin
-  inherited SetObjectUpdateMoment(AValue);
-  if Assigned(FEditControl) then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      FEditControl.OnChange := @DoOnChange
-    else
-      FEditControl.OnExit := @DoOnChange;
-end;
-
-procedure TMediatorSpinEditView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
-var
-  oError: TtiObjectError;
-begin
-  inherited UpdateGUIValidStatus(pErrors);
-
-  oError := pErrors.FindByErrorProperty(FieldName);
-  if oError <> nil then
-  begin
-    EditControl.Color  := clError;
-    EditControl.Hint   := oError.ErrorMessage;
-  end
-  else
-  begin
-    EditControl.Color  := ColorToRGB(clWindow);
-    EditControl.Hint   := '';
-  end;
-end;
-
-constructor TMediatorSpinEditView.Create;
+constructor TtiSpinEditMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Value';
 end;
 
-{ TMediatorTrackBarView}
-
-function TMediatorTrackBarView.GetGUIControl: TComponent;
+procedure TtiSpinEditMediatorView.SetObjectUpdateMoment(
+  const AValue: TtiObjectUpdateMoment);
 begin
-  Result := FEditControl;
-end;
-
-procedure TMediatorTrackBarView.SetGUIControl(const AValue: TComponent);
-begin
-  FEditControl := AValue as TTrackBar;
   inherited;
+  if View <> nil then
+    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
+      View.OnChange := @DoOnChange
+    else
+      View.OnExit := @DoOnChange;
 end;
 
-procedure TMediatorTrackBarView.DoTrackBarChanged(Sender: TObject; APosition: integer);
+{ TtiTrackBarMediatorView}
+
+function TtiTrackBarMediatorView.View: TTrackBar;
 begin
-  GUIChanged;
+  Result := TTrackBar(inherited View);
 end;
 
-procedure TMediatorTrackBarView.SetupGUIandObject;
+procedure TtiTrackBarMediatorView.SetupGUIandObject;
 var
   Mi, Ma: Integer;
 begin
   inherited;
   if Subject.GetFieldBounds(FieldName,Mi,Ma) and (Ma>0) then
   begin
-    FEditControl.Min := Mi;
-    FEditControl.Max := Ma;
+    View.Min := Mi;
+    View.Max := Ma;
   end;
 end;
 
-procedure TMediatorTrackBarView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
-begin
-  inherited SetObjectUpdateMoment(AValue);
-  if Assigned(FEditControl) then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      FEditControl.OnChange := @DoOnChange
-    else
-      FEditControl.OnExit := @DoOnChange;
-end;
-
-constructor TMediatorTrackBarView.Create;
+constructor TtiTrackBarMediatorView.Create;
 begin
   inherited;
   GUIFieldName := 'Position';
 end;
 
-class function TMediatorTrackBarView.ComponentClass: TClass;
+class function TtiTrackBarMediatorView.ComponentClass: TClass;
 begin
   Result := TTrackBar;
 end;
 
+procedure TtiTrackBarMediatorView.SetObjectUpdateMoment(
+  const AValue: TtiObjectUpdateMoment);
+begin
+  inherited;
+  if View <> nil then
+    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
+      View.OnChange := @DoOnChange
+    else
+      View.OnExit := @DoOnChange;
+end;
 
-{ TMediatorComboBoxView }
+{ TtiComboBoxMediatorView }
 
-class function TMediatorComboBoxView.ComponentClass: TClass;
+class function TtiComboBoxMediatorView.ComponentClass: TClass;
 begin
   Result := TComboBox;
 end;
 
-function TMediatorComboBoxView.GetGUIControl: TComponent;
+function TtiComboBoxMediatorView.View: TComboBox;
 begin
-  Result := FEditControl;
+  Result := TComboBox(inherited View);
 end;
 
-procedure TMediatorComboBoxView.SetGUIControl(const AValue: TComponent);
-begin
-  FEditControl := AValue as TComboBox;
-  inherited SetGUIControl(AValue);
-end;
-
-procedure TMediatorComboBoxView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
-var
-  oError: TtiObjectError;
-begin
-  inherited UpdateGUIValidStatus(pErrors);
-
-  oError := pErrors.FindByErrorProperty(FieldName);
-  if oError <> nil then
-  begin
-    EditControl.Color  := clError;
-    EditControl.Hint   := oError.ErrorMessage;
-  end
-  else
-  begin
-    EditControl.Color  := clWindow;
-    EditControl.Hint   := '';
-  end;
-end;
-
-constructor TMediatorComboBoxView.Create;
+constructor TtiComboBoxMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Text';
 end;
 
-procedure TMediatorComboBoxView.DoObjectToGUI;
+procedure TtiComboBoxMediatorView.DoObjectToGUI;
 begin
-  EditControl.ItemIndex :=
-      EditControl.Items.IndexOf(Subject.PropValue[FieldName]);
+  View.ItemIndex :=
+      View.Items.IndexOf(Subject.PropValue[FieldName]);
 end;
 
-procedure TMediatorComboBoxView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+procedure TtiComboBoxMediatorView.SetObjectUpdateMoment(
+  const AValue: TtiObjectUpdateMoment);
 begin
-  inherited SetObjectUpdateMoment(AValue);
-  if Assigned(FEditControl) then
+  inherited;
+  if View <> nil then
     if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      FEditControl.OnChange := @DoOnChange
+      View.OnChange := @DoOnChange
     else
-      FEditControl.OnExit := @DoOnChange;
+      View.OnExit := @DoOnChange;
 end;
 
+{ TtiMemoMediatorView }
 
-{ TMediatorMemoView }
-
-class function TMediatorMemoView.ComponentClass: TClass;
+class function TtiMemoMediatorView.ComponentClass: TClass;
 begin
   Result := TMemo;
 end;
 
-procedure TMediatorMemoView.DoGUIToObject;
+function TtiMemoMediatorView.View: TMemo;
 begin
-  Subject.PropValue[FieldName] := EditControl.Lines.Text;
+  result := TMemo(inherited View);
 end;
 
-procedure TMediatorMemoView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+procedure TtiMemoMediatorView.SetupGUIandObject;
 begin
-  inherited SetObjectUpdateMoment(AValue);
-  if Assigned(FEditControl) then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      FEditControl.OnChange := @DoOnChange
-    else
-      FEditControl.OnExit := @DoOnChange;
+  inherited SetupGUIAndObject;
+  View.Lines.Clear;
+  View.ScrollBars := ssVertical;
+  View.WordWrap   := True;
 end;
 
-procedure TMediatorMemoView.DoObjectToGUI;
+procedure TtiMemoMediatorView.DoGUIToObject;
 begin
-  EditControl.Lines.Text := Subject.PropValue[FieldName];
+  Subject.PropValue[FieldName] := View.Lines.Text;
 end;
 
-function TMediatorMemoView.GetGUIControl: TComponent;
+procedure TtiMemoMediatorView.DoObjectToGUI;
 begin
-  Result := FEditControl;
-end;
-
-procedure TMediatorMemoView.SetGUIControl(const AValue: TComponent);
-begin
-  FEditControl:=AValue as TMemo;
-  inherited SetGUIControl(AValue);
-end;
-
-procedure TMediatorMemoView.SetupGUIandObject;
-begin
-  inherited SetupGUIandObject;
-  EditControl.Lines.Clear;
+  View.Lines.Text := Subject.PropValue[FieldName];
 end;
 
 
-{ TMediatorDynamicComboBoxView }
+{ TtiDynamicComboBoxMediatorView }
 
-procedure TMediatorDynamicComboBoxView.SetListObject(const AValue: TtiObjectList);
+procedure TtiDynamicComboBoxMediatorView.SetListObject(const AValue: TtiObjectList);
 begin
   inherited;
   InternalListRefresh;
   if Assigned(ValueList) then
-    EditControl.Enabled := ValueList.Count > 0;
+    View.Enabled := ValueList.Count > 0;
 end;
 
-procedure TMediatorDynamicComboBoxView.InternalListRefresh;
+procedure TtiDynamicComboBoxMediatorView.InternalListRefresh;
 var
   lItems: TStrings;
   i: Integer;
 begin
-  lItems := EditControl.Items;
+  lItems := View.Items;
   lItems.Clear;
-  EditControl.Text := '';
+  View.Text := '';
 
   if (ValueList = nil) or
      (ValueList.Count < 1) or
@@ -548,53 +572,53 @@ begin
   ObjectToGUI;
 end;
 
-function TMediatorDynamicComboBoxView.GetDisplayFieldName: String;
+function TtiDynamicComboBoxMediatorView.GetDisplayFieldName: String;
 begin
   Result:=FDisplayFieldName;
   If (Result='') then
     Result:='Caption'; // Do not localize.
 end;
 
-procedure TMediatorDynamicComboBoxView.SetOnChangeActive(AValue: Boolean);
+procedure TtiDynamicComboBoxMediatorView.SetOnChangeActive(AValue: Boolean);
 begin
   if AValue then
   begin
     if not UseInternalOnChange then
-      EditControl.OnChange := FExternalOnChange
+      View.OnChange := FExternalOnChange
     else
-      EditControl.OnChange := @DoOnChange;
+      View.OnChange := @DoOnChange;
   end
   else
   begin
     if not UseInternalOnChange then
-      FExternalOnChange := EditControl.OnChange;
-    EditControl.OnChange := nil;
+      FExternalOnChange := View.OnChange;
+    View.OnChange := nil;
   end;
 end;
 
-procedure TMediatorDynamicComboBoxView.SetupGUIandObject;
+procedure TtiDynamicComboBoxMediatorView.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
 
   if UseInternalOnChange then
-    EditControl.OnChange := @DoOnChange; // default OnChange event handler
+    View.OnChange := @DoOnChange; // default OnChange event handler
 
   {$Note As far as I can see, ValueList is always going to be nil here! - Graeme }
   if ValueList <> nil then
-    EditControl.Enabled := (ValueList.Count > 0);
+    View.Enabled   := (ValueList.Count > 0);
 end;
 
-procedure TMediatorDynamicComboBoxView.DoGUIToObject;
+procedure TtiDynamicComboBoxMediatorView.DoGUIToObject;
 var
   lValue: TtiObject;
   lPropType: TTypeKind;
 begin
   if not DataAndPropertyValid then
     Exit; //==>
-  if EditControl.ItemIndex < 0 then
+  if View.ItemIndex < 0 then
     Exit; //==>
 
-  lValue := TtiObject(ValueList.Items[EditControl.ItemIndex]);
+  lValue := TtiObject(ValueList.Items[View.ItemIndex]);
 
   lPropType := typinfo.PropType(Subject, FieldName);
   if lPropType = tkClass then
@@ -603,7 +627,7 @@ begin
     RaiseMediatorError(cErrorPropertyNotClass);
 end;
 
-procedure TMediatorDynamicComboBoxView.DoObjectToGUI;
+procedure TtiDynamicComboBoxMediatorView.DoObjectToGUI;
 var
   i: Integer;
   lValue: TtiObject;
@@ -612,13 +636,14 @@ begin
   SetOnChangeActive(false);
 
   //  Set the index only (We're assuming the item is present in the list)
-  EditControl.ItemIndex := -1;
+  View.ItemIndex := -1;
   if Subject = nil then
     Exit; //==>
 
   if not Assigned(ValueList) then
     RaiseMediatorError(cErrorListHasNotBeenAssigned);
 
+  lValue := nil;
   lPropType := typinfo.PropType(Subject, FieldName);
   if lPropType = tkClass then
     lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
@@ -628,165 +653,164 @@ begin
   for i := 0 to ValueList.Count - 1 do
     if ValueList.Items[i] = lValue then
     begin
-      EditControl.ItemIndex := i;
+      View.ItemIndex := i;
       Break; //==>
     end;
 
   SetOnChangeActive(true);
 end;
 
-procedure TMediatorDynamicComboBoxView.RefreshList;
+procedure TtiDynamicComboBoxMediatorView.RefreshList;
 begin
   InternalListRefresh;
 end;
 
 
-{ TMediatorCheckBoxView }
+{ TtiCheckBoxMediatorView }
 
-function TMediatorCheckBoxView.GetGUIControl: TComponent;
+function TtiCheckBoxMediatorView.View: TCheckBox;
 begin
-  Result:=FEditControl;
+  result := TCheckBox(inherited View);
 end;
 
-procedure TMediatorCheckBoxView.SetGUIControl(const AValue: TComponent);
-begin
-  FEditControl:=AValue as TCheckBox;
-  inherited SetGUIControl(AValue);
-end;
-
-procedure TMediatorCheckBoxView.UpdateGUIValidStatus(pErrors: TtiObjectErrors);
-var
-  oError: TtiObjectError;
-begin
-  inherited UpdateGUIValidStatus(pErrors);
-
-  oError := pErrors.FindByErrorProperty(FieldName);
-  if oError <> nil then
-  begin
-    EditControl.Color  := clError;
-    EditControl.Hint   := oError.ErrorMessage;
-  end
-  else
-  begin
-    EditControl.Color  := clWindow;
-    EditControl.Hint   := '';
-  end;
-end;
-
-procedure TMediatorCheckBoxView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
-begin
-  inherited SetObjectUpdateMoment(AValue);
-  if Assigned(FEditControl) then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      FEditControl.OnChange := @DoOnChange
-    else
-      FEditControl.OnExit := @DoOnChange;
-end;
-
-constructor TMediatorCheckBoxView.Create;
+constructor TtiCheckBoxMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName:='Checked';
 end;
 
-class function TMediatorCheckBoxView.ComponentClass: TClass;
+class function TtiCheckBoxMediatorView.ComponentClass: TClass;
 begin
   Result := TCheckBox;
 end;
 
-
-{ TMediatorStaticTextView }
-
-procedure TMediatorStaticTextView.SetupGUIandObject;
+procedure TtiCheckBoxMediatorView.DoGUIToObject;
 begin
-  inherited SetupGUIandObject;
-  EditControl.Caption := '';
+  inherited;
+  if View.Checked then
+    Subject.PropValue[FieldName] := 'True'
+  else
+    Subject.PropValue[FieldName] := 'False';
 end;
 
-constructor TMediatorStaticTextView.Create;
+procedure TtiCheckBoxMediatorView.DoObjectToGUI;
+begin
+  inherited;
+  View.Checked := (Subject.PropValue[FieldName] = 'True');
+end;
+
+procedure TtiCheckBoxMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
+begin
+  inherited SetObjectUpdateMoment(AValue);
+  if View <> nil then
+    View.OnClick := @DoOnChange;
+end;
+
+destructor TtiCheckBoxMediatorView.Destroy;
+begin
+  if (View <> nil) and Assigned(View.OnClick) then
+    View.OnClick := nil;
+  inherited;
+end;
+
+procedure TtiCheckBoxMediatorView.SetupGUIandObject;
+begin
+  inherited SetupGUIandObject;
+  ObjectUpdateMoment := ouCustom;
+end;
+
+{ TtiStaticTextMediatorView }
+
+procedure TtiStaticTextMediatorView.SetupGUIandObject;
+begin
+  inherited SetupGUIandObject;
+  View.Caption := '';
+end;
+
+function TtiStaticTextMediatorView.View: TLabel;
+begin
+  result := TLabel(inherited View);
+end;
+
+constructor TtiStaticTextMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Caption';
 end;
 
-function TMediatorStaticTextView.GetGUIControl: TComponent;
+class function TtiStaticTextMediatorView.ComponentClass: TClass;
 begin
-  Result := FEditControl;
+  Result := TLabel;
 end;
 
-procedure TMediatorStaticTextView.SetGUIControl(const AValue: TComponent);
+{ TtiComboBoxItemMediatorView }
+
+procedure TtiComboBoxItemMediatorView.DoGUIToObject;
 begin
-  FEditControl := AValue as TLabel;
-  inherited SetGUIControl(AValue);
+  SetOrdProp(Subject, FieldName, View.ItemIndex);
 end;
 
-class function TMediatorStaticTextView.ComponentClass: TClass;
+procedure TtiComboBoxItemMediatorView.DoObjectToGUI;
 begin
-  Result := TCustomLabel;
+  View.ItemIndex := GetOrdProp(Subject, FieldName);
 end;
 
-
-{ TMediatorItemComboBoxView }
-
-procedure TMediatorItemComboBoxView.DoGUIToObject;
-begin
-  SetOrdProp(Subject,FieldName,EditControl.ItemIndex);
-end;
-
-procedure TMediatorItemComboBoxView.DoObjectToGUI;
-begin
-  EditCOntrol.ItemIndex := GetOrdProp(Subject,FieldName);
-end;
-
-constructor TMediatorItemComboBoxView.Create;
+constructor TtiComboBoxItemMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'ItemIndex';
 end;
 
-{ TMediatorDateEditView }
+{ TtiDateEditMediatorView }
 
-function TMediatorDateEditView.GetGUIControl: TComponent;
+function TtiDateEditMediatorView.View: TDateEdit;
 begin
-  Result := FEditControl;
+  Result := TDateEdit(inherited View);
 end;
 
-procedure TMediatorDateEditView.SetGUIControl(const AValue: TComponent);
+procedure TtiDateEditMediatorView.DoObjectToGUI;
 begin
-  FEditControl := AValue as TDateEdit;
-  inherited SetGUIControl(AValue);
+  View.Date := Subject.PropValue[FieldName];
 end;
 
-procedure TMediatorDateEditView.DoObjectToGUI;
+procedure TtiDateEditMediatorView.DoGUIToObject;
 begin
-  EditControl.Date := Subject.PropValue[FieldName];
+  Subject.PropValue[FieldName] := View.Date;
 end;
 
-procedure TMediatorDateEditView.DoGUIToObject;
-begin
-  Subject.PropValue[FieldName] := EditControl.Date;
-end;
-
-procedure TMediatorDateEditView.SetObjectUpdateMoment(const AValue: TObjectUpdateMoment);
+procedure TtiDateEditMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
 begin
   inherited SetObjectUpdateMoment(AValue);
-  if Assigned(FEditControl) then
+  if View <> nil then
     if ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      FEditControl.OnChange := @DoOnChange
+      View.OnChange := @DoOnChange
     else
-      FEditControl.OnExit := @DoOnChange;
+      View.OnExit := @DoOnChange;
 end;
 
-constructor TMediatorDateEditView.Create;
+constructor TtiDateEditMediatorView.Create;
 begin
   inherited Create;
   GUIFieldName := 'Date';
 end;
 
-class function TMediatorDateEditView.ComponentClass: TClass;
+class function TtiDateEditMediatorView.ComponentClass: TClass;
 begin
   Result := TDateEdit;
 end;
 
-end.
+{ TtiLabeledEditMediatorView }
 
+{$IFDEF DELPHI2006ORABOVE}
+class function TtiLabeledEditMediatorView.ComponentClass: TClass;
+begin
+  Result := TLabeledEdit;
+end;
+
+function TtiLabeledEditMediatorView.View: TLabeledEdit;
+begin
+  result := TLabeledEdit(inherited View);
+end;
+{$ENDIF}
+
+end.

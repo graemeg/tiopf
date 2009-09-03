@@ -12,7 +12,7 @@ type
     pdpAbove,
     pdpBelow);
 
-  TtiPopupDataForm = class(TForm)
+  TFormTIPopupData = class(TForm)
     pnlBorder: TtiRoundedPanel;
     pnlButtons: TPanel;
     btnOK: TtiSpeedButton;
@@ -21,6 +21,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure DoALUpdate(Action: TBasicAction; var Handled: Boolean);
+    procedure FormShow(Sender: TObject);
+    procedure FormHide(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     FData: TtiObject;
     FEditedData: TtiObject;
@@ -59,26 +62,24 @@ type
         const AFormPopupButton: TtiSpeedButton;
         const AFormDisplayPosition: TPopupDisplayPosition;
         const ADoOnPopupOK: TNotifyEvent; const ADoOnPopupCancel: TNotifyEvent;
-        const ADeactivatePopupResult: TModalResult): TtiPopupDataForm; virtual;
+        const ADeactivatePopupResult: TModalResult): TFormTIPopupData; virtual;
   end;
 
-var
-  tiPopupDataForm: TtiPopupDataForm;
-
 implementation
+uses
+  tiApplicationMenuSystem,
+  tiConstants;
 
 {$R *.dfm}
 
-uses
-  tiConstants;
 
-destructor TtiPopupDataForm.Destroy;
+destructor TFormTIPopupData.Destroy;
 begin
   FreeAndNil(FEditedData);
   inherited;
 end;
 
-procedure TtiPopupDataForm.DoaCancelExecute(Sender: TObject);
+procedure TFormTIPopupData.DoaCancelExecute(Sender: TObject);
 begin
   if Assigned(FDoOnPopupCancel) then
     FDoOnPopupCancel(Sender);
@@ -87,14 +88,14 @@ begin
   Close;
 end;
 
-procedure TtiPopupDataForm.DoALUpdate(Action: TBasicAction; var Handled: Boolean);
+procedure TFormTIPopupData.DoALUpdate(Action: TBasicAction; var Handled: Boolean);
 begin
   Assert(FaOK <> nil, 'FaOK must be assigned');
   Assert(FaCancel <> nil, 'FaCancel must be assigned');
   FaOK.Enabled := FormIsValid and FormDataIsEdited;
 end;
 
-procedure TtiPopupDataForm.DoaOKExecute(Sender: TObject);
+procedure TFormTIPopupData.DoaOKExecute(Sender: TObject);
 begin
   Assert(Data.TestValid(TtiObject), CTIErrorInvalidObject);
   Assert(EditedData.TestValid(TtiObject), CTIErrorInvalidObject);
@@ -108,12 +109,12 @@ begin
   Close;
 end;
 
-class function TtiPopupDataForm.Execute(const AOwner: TWinControl;
+class function TFormTIPopupData.Execute(const AOwner: TWinControl;
   const AData: TtiObject;
   const AFormPopupButton: TtiSpeedButton;
   const AFormDisplayPosition: TPopupDisplayPosition;
   const ADoOnPopupOK: TNotifyEvent; const ADoOnPopupCancel: TNotifyEvent;
-  const ADeactivatePopupResult: TModalResult): TtiPopupDataForm;
+  const ADeactivatePopupResult: TModalResult): TFormTIPopupData;
 begin
   Result := Create(AOwner);
   Result.Data := AData;
@@ -128,7 +129,7 @@ begin
   Result.Show;
 end;
 
-procedure TtiPopupDataForm.FormCreate(Sender: TObject);
+procedure TFormTIPopupData.FormCreate(Sender: TObject);
 begin
   FAL := TActionList.Create(Self);
   FAL.OnUpdate := DoALUpdate;
@@ -146,14 +147,14 @@ begin
   btnCancel.Action := FaCancel;
 end;
 
-function TtiPopupDataForm.FormDataIsEdited: boolean;
+function TFormTIPopupData.FormDataIsEdited: boolean;
 begin
   Assert(Data.TestValid(TtiObject), CTIErrorInvalidObject);
   Assert(EditedData.TestValid(TtiObject), CTIErrorInvalidObject);
   Result := not Data.Equals(EditedData);
 end;
 
-procedure TtiPopupDataForm.FormDeactivate(Sender: TObject);
+procedure TFormTIPopupData.FormDeactivate(Sender: TObject);
   procedure _OnDeactivate(const AOnDeactivateAction: TAction);
   begin
     Assert(AOnDeactivateAction <> nil, Format('%s must be assigned', [AOnDeactivateAction.Name]));
@@ -166,19 +167,36 @@ begin
   end;
 end;
 
-function TtiPopupDataForm.FormIsValid: boolean;
+procedure TFormTIPopupData.FormHide(Sender: TObject);
+begin
+  GAMS.FormMgr.ActiveForm.SetEscapeKeyEnabled(True);
+end;
+
+function TFormTIPopupData.FormIsValid: boolean;
 begin
   Assert(EditedData.TestValid(TtiObject), CTIErrorInvalidObject);
   Result := true;
 end;
 
-function TtiPopupDataForm.EditedData: TtiObject;
+procedure TFormTIPopupData.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+    DoaCancelExecute(nil);
+end;
+
+procedure TFormTIPopupData.FormShow(Sender: TObject);
+begin
+  GAMS.FormMgr.ActiveForm.SetEscapeKeyEnabled(False);
+end;
+
+function TFormTIPopupData.EditedData: TtiObject;
 begin
   Assert(FEditedData.TestValid(TtiObject), CTIErrorInvalidObject);
   Result := FEditedData;
 end;
 
-procedure TtiPopupDataForm.SetData(const AValue: TtiObject);
+procedure TFormTIPopupData.SetData(const AValue: TtiObject);
 begin
   FData := AValue;
   FEditedData := FData.Clone;
@@ -186,7 +204,7 @@ begin
   Assert(FEditedData.TestValid(TtiObject), CTIErrorInvalidObject);
 end;
 
-procedure TtiPopupDataForm.SetFormPosition;
+procedure TFormTIPopupData.SetFormPosition;
 var
   LBtnClientPos: TPoint;
   LBtnScreenPos: TPoint;

@@ -7,9 +7,9 @@
       <Version Value="5"/>
       <SearchPaths>
         <IncludeFiles Value="../../Core/"/>
-        <OtherUnitFiles Value="../../Core/;../../Options/;../../GUI/"/>
+        <OtherUnitFiles Value="../../Core/;../../Options/;../../GUI/;../../GUI/LCL/"/>
         <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-        <SrcPath Value="../../Core/;../../Options/;../../GUI/"/>
+        <SrcPath Value="../../Core/;../../Options/;../../GUI/;../../GUI/LCL/"/>
       </SearchPaths>
       <CodeGeneration>
         <Generate Value="Faster"/>

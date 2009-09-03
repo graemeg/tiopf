@@ -31,8 +31,8 @@ type
   protected
     procedure SetUp; override;
     procedure TearDown; override;
-    function RegisterMediatorA(ASubjectClass: TSubjectClass; APropName: string): TMediatorDef;
-    function RegisterMediatorB(ASubjectClass: TSubjectClass; APropName: string): TMediatorDef;
+    function RegisterMediatorA(ASubjectClass: TtiSubjectClass; APropName: string): TtiMediatorDef;
+    function RegisterMediatorB(ASubjectClass: TtiSubjectClass; APropName: string): TtiMediatorDef;
   published
     procedure TestCreate;
     procedure TestAdd1;
@@ -156,13 +156,10 @@ type
     +--- TTestMediatorComposite (TComponentA)
 }
 
-  TTestMediator = class(TMediatorView)
-    FGUIControl: TTestComponent;
-  protected
-    function GetGUIControl: TComponent; override;
-    procedure SetGUIControl(const AValue: TComponent); override;
+  TTestMediator = class(TtiMediatorView)
   public
     class function ComponentClass: TClass; override;
+    function View: TTestComponent; reintroduce;
   end;
 
 
@@ -236,19 +233,14 @@ end;
 
 { TTestMediator }
 
-function TTestMediator.GetGUIControl: TComponent;
-begin
-  Result := FGUIControl;
-end;
-
-procedure TTestMediator.SetGUIControl(const AValue: TComponent);
-begin
-  FGUIControl := AValue as TTestComponent;
-end;
-
 class function TTestMediator.ComponentClass: TClass;
 begin
   Result := TTestComponent;
+end;
+
+function TTestMediator.View: TTestComponent;
+begin
+  result := TTestComponent(inherited View);
 end;
 
 
@@ -293,12 +285,12 @@ begin
   inherited;
 end;
 
-function TTestTIBaseMediator.RegisterMediatorA(ASubjectClass: TSubjectClass; APropName: string): TMediatorDef;
+function TTestTIBaseMediator.RegisterMediatorA(ASubjectClass: TtiSubjectClass; APropName: string): TtiMediatorDef;
 begin
   Result := gMediatorManager.RegisterMediator(TTestMediatorA, ASubjectClass, APropName);
 end;
 
-function TTestTIBaseMediator.RegisterMediatorB(ASubjectClass: TSubjectClass; APropName: string): TMediatorDef;
+function TTestTIBaseMediator.RegisterMediatorB(ASubjectClass: TtiSubjectClass; APropName: string): TtiMediatorDef;
 begin
   Result := gMediatorManager.RegisterMediator(TTestMediatorB, ASubjectClass, APropName);
 end;
@@ -311,7 +303,7 @@ end;
 
 procedure TTestTIBaseMediator.TestAdd1;
 var
-  MR, M: TMediatorDef;
+  MR, M: TtiMediatorDef;
 begin
   MR := RegisterMediatorA(TTestSubjectA, 'AsInteger');
   CheckEquals(1, gMediatorManager.Defs.Count, 'Global manager has 1 definition');
@@ -327,7 +319,7 @@ end;
 
 procedure TTestTIBaseMediator.TestAdd2;
 var
-  M: TMediatorDef;
+  M: TtiMediatorDef;
   p: PPropInfo;
 begin
   gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, [tkInteger]);
@@ -347,7 +339,7 @@ procedure TTestTIBaseMediator.TestAdd3;
 const
   Props = tkProperties - [tkClass, tkInterface, tkDynArray {$IFDEF FPC}, tkObject, tkInterfaceRaw{$ENDIF}];
 var
-  M: TMediatorDef;
+  M: TtiMediatorDef;
 begin
   gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA);
   CheckEquals(1, gMediatorManager.Defs.Count, 'Global manager has 1 definition');
@@ -361,7 +353,7 @@ end;
 
 procedure TTestTIBaseMediator.TestAdd4;
 var
-  M, MR1, MR2: TMediatorDef;
+  M, MR1, MR2: TtiMediatorDef;
 begin
   MR1 := RegisterMediatorA(TTestSubjectA, 'AsInteger');
   MR2 := RegisterMediatorA(TTestSubjectB, 'AsString');
@@ -380,7 +372,7 @@ end;
 
 procedure TTestTIBaseMediator.TestAdd5;
 var
-  M: TMediatorDef;
+  M: TtiMediatorDef;
 begin
   RegisterMediatorA(TTestSubjectA, 'AsInteger');
   RegisterMediatorB(TTestSubjectB, 'AsString');
@@ -397,7 +389,7 @@ end;
 
 procedure TTestTIBaseMediator.TTestHandles1;
 var
-  M: TMediatorDef;
+  M: TtiMediatorDef;
 begin
   RegisterMediatorA(TTestSubjectA, 'AsInteger');
   CheckEquals(1, gMediatorManager.Defs.Count, 'Global manager has 1 definition');
@@ -411,7 +403,7 @@ end;
 
 procedure TTestTIBaseMediator.TTestHandles2;
 var
-  M: TMediatorDef;
+  M: TtiMediatorDef;
 begin
   gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, [tkInteger]);
   CheckEquals(1, gMediatorManager.Defs.Count, 'Global manager has 1 definition');
@@ -423,7 +415,7 @@ end;
 
 procedure TTestTIBaseMediator.TTestHandles3;
 var
-  M: TMediatorDef;
+  M: TtiMediatorDef;
 begin
   gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, [tkInteger]);
   CheckEquals(1, gMediatorManager.Defs.Count, 'Global manager has 1 definition');
@@ -434,7 +426,7 @@ end;
 
 procedure TTestTIBaseMediator.TBetterHandle1;
 var
-  M1, M2: TMediatorDef;
+  M1, M2: TtiMediatorDef;
 begin
   gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubject, 'AsInteger');
   gMediatorManager.RegisterMediator(TTestMediatorB, TTestSubject, [tkInteger, tkString]);
@@ -448,7 +440,7 @@ end;
 
 procedure TTestTIBaseMediator.TBetterHandle2;
 var
-  M1, M2: TMediatorDef;
+  M1, M2: TtiMediatorDef;
 begin
   gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsInteger');
   gMediatorManager.RegisterMediator(TTestMediatorD, TTestSubjectA, 'AsInteger');
@@ -461,7 +453,7 @@ end;
 
 procedure TTestTIBaseMediator.TBetterHandle3;
 var
-  M1, M2: TMediatorDef;
+  M1, M2: TtiMediatorDef;
 begin
   gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsInteger');
   gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectD, 'AsInteger');
@@ -473,7 +465,7 @@ end;
 
 procedure TTestTIBaseMediator.TBetterHandle4;
 var
-  M1, M2: TMediatorDef;
+  M1, M2: TtiMediatorDef;
 begin
   gMediatorManager.RegisterMediator(TTestMediatorD, TTestSubjectA, 'AsInteger');
   gMediatorManager.RegisterMediator(TTestMediatorB, TTestSubjectD, 'AsInteger');
@@ -485,7 +477,7 @@ end;
 
 procedure TTestTIBaseMediator.TestFind1;
 var
-  M, {M1,} M2: TMediatorDef;
+  M, {M1,} M2: TtiMediatorDef;
 begin
   {M1 :=} gMediatorManager.RegisterMediator(TTestMediator, TTestSubjectA, 'AsInteger');
   M2 := gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubjectA, 'AsInteger');
@@ -495,7 +487,7 @@ end;
 
 procedure TTestTIBaseMediator.TestFind2;
 var
-  M, {M1,} {M2,} M3: TMediatorDef;
+  M, {M1,} {M2,} M3: TtiMediatorDef;
 begin
   // Catchall
   {M1 :=} gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
@@ -508,7 +500,7 @@ end;
 
 procedure TTestTIBaseMediator.TestFind3;
 var
-  M, M1{, M2}{, M3}: TMediatorDef;
+  M, M1{, M2}{, M3}: TtiMediatorDef;
 begin
   // Catchall
   M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
@@ -521,7 +513,7 @@ end;
 
 procedure TTestTIBaseMediator.TestFind4;
 var
-  M, M1{, M2}{, M3}: TMediatorDef;
+  M, M1{, M2}{, M3}: TtiMediatorDef;
 begin
   // Catchall
   M1 := gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
@@ -533,7 +525,7 @@ end;
 
 procedure TTestTIBaseMediator.TestFind5;
 {var
-  M1, M2: TMediatorDef;}
+  M1, M2: TtiMediatorDef;}
 begin
   // Catchall
   {M1 := }gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
@@ -544,7 +536,7 @@ end;
 
 procedure TTestTIBaseMediator.TestFind6;
 {var
-  M1, M2: TMediatorDef;}
+  M1, M2: TtiMediatorDef;}
 begin
   // Catchall
   {M1 :=} gMediatorManager.RegisterMediator(TTestMediator, TTestSubject);
@@ -555,7 +547,7 @@ end;
 
 procedure TTestTIBaseMediator.TestFind7;
 var
-  {M1,} M: TMediatorDef;
+  {M1,} M: TtiMediatorDef;
 begin
   // Specifics
   {M1 :=} gMediatorManager.RegisterMediator(TTestMediatorA, TTestSubject, 'AsString');
@@ -565,7 +557,7 @@ end;
 
 procedure TTestTIBaseMediator.TestFind8;
 var
-  {M1,} {M2,} Mr: TMediatorDef;
+  {M1,} {M2,} Mr: TtiMediatorDef;
   L: TtiObjectList;
 begin
   // Catchall
@@ -584,4 +576,3 @@ end;
 
 
 end.
-

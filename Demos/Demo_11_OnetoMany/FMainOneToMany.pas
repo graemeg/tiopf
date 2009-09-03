@@ -7,7 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiPerAwareCtrls, ActnList,
-  Client_BOM, ComCtrls, tiVirtualTrees, tiVTListView, tiObject
+  Client_BOM, ComCtrls, tiVirtualTrees, tiVTListView, tiObject, tiVTAbstract
   {$IFDEF DELPHI6ORABOVE}
   ,Variants
   {$ENDIF}
@@ -123,7 +123,7 @@ end;
 procedure TFormMainOneToMany.FormCreate(Sender: TObject);
 begin
   if tiAppConfirmation('Do you want to drop and recreate the tables required ' +
-    'for this demo?' + CrLf(2) +
+    'for this demo?' + tiLE(2) +
     '(Select "Yes" if this is the first time you have run the demo.)') then
   begin
     DropTables;

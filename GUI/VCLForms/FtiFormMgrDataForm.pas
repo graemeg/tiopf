@@ -13,9 +13,8 @@ uses
   ,tiBaseObject
   ,tiObject
   ,tiReadOnly
-//  ,FtiDialogAbs
   ,FtiFormMgrForm
-  ,tiFormMediator
+  ,tiModelMediator
   ;
 
 const
@@ -83,7 +82,7 @@ type
     FaSaveClose: TtiAMSAction;
     FaCancelClose: TtiAMSAction;
     FFormSettings: TtiObject;
-    FFormMediator: TFormMediator;
+    FModelMediators: TtiModelMediatorList;
 
     procedure SaveCloseHandler;
     procedure CancelCloseHandler;
@@ -116,14 +115,17 @@ type
     function  EditedData: TtiObject; virtual;
 
     // Implement these in the concrete...
-    procedure ClearControlDataBindings; virtual;
-    procedure SetControlDataBindings; virtual;
+    procedure DoClearControlDataBindings; virtual;
+    procedure DoSetControlDataBindings; virtual;
     procedure DoSave; virtual;
     procedure DoBeforeSave; virtual;
     procedure DoAfterSave; virtual;
     procedure DoAfterDiscard; virtual;
     procedure DoAfterUndo; virtual;
-    property FormMediator: TFormMediator read FFormMediator;
+
+    // If using model-GUI-mediator return a model mediator name for the form data 
+    function  ModelMediatorName: string; virtual;
+    property  ModelMediators: TtiModelMediatorList read FModelMediators;
   public
     property  OnEditsSave: TtiObjectEvent read GetOnEditsSave write SetOnEditsSave;
     property  OnEditsCancel: TtiObjectEvent read GetOnEditsCancel write SetOnEditsCancel;
@@ -145,6 +147,7 @@ uses
   ,tiResources
   ,tiExcept
   ,tiMediators
+  ,tiListMediators
  ;
 
 {$R *.DFM}
@@ -311,15 +314,24 @@ begin
   FaSaveClose := AddAction(cCaptionSaveClose, 'Save changes' + ClassName , aSaveCloseExecute, Ord('S'), [ssCtrl]);
   FaSaveClose.ImageIndex := gTIImageListMgr.ImageIndex16(cResTI_Save);
 
-  FFormMediator := TFormMediator.Create(Self);
-  FFormMediator.Name := Self.ClassName + 'FormMediator';
+  FModelMediators := TtiModelMediatorList.Create(Self);
+  FModelMediators.Name := Self.ClassName + 'ModelMediators';
+  if ModelMediatorName <> '' then
+    FModelMediators.Add(ModelMediatorName);
   tiMediators.RegisterFallBackMediators;
+  tiListMediators.RegisterFallBackListMediators;
 end;
 
 procedure TtiFormMgrDataForm.FormDestroy(Sender: TObject);
 begin
+  FModelMediators.Free;
   FreeAndNil(FFormData);
   inherited;
+end;
+
+function TtiFormMgrDataForm.ModelMediatorName: string;
+begin
+  result := '';
 end;
 
 function TtiFormMgrDataForm.GetData: TtiObject;
@@ -333,14 +345,20 @@ begin
   Assert(FFormData.TestValid(TtiDataFormData), CTIErrorInvalidObject);
   BeginUpdate;
   try
-    FFormMediator.Subject := nil;
-    ClearControlDataBindings;
+    if ModelMediatorName <> '' then
+      FModelMediators.SubjectByName[ModelMediatorName] := nil;
+
+    DoClearControlDataBindings;
     FFormData.Data := AValue;
     if Assigned(Data) then
+      DoSetControlDataBindings;
+
+    // This must be done after DoSetControlDataBindings which could change the
+    // contents of controls and therefore affect item selection by mediators.
+    if ModelMediatorName <> '' then
     begin
-      SetControlDataBindings;
-      FFormMediator.Subject := Data; // Original or edited data
-      FFormMediator.Active := true;
+      FModelMediators.SubjectByName[ModelMediatorName] := Data;
+      FModelMediators.ActiveByName[ModelMediatorName] := true;
     end;
   finally
     EndUpdate;
@@ -527,12 +545,12 @@ begin
   FaCancelClose.Visible := ButtonsVisible = btnVisReadWrite;
 end;
 
-procedure TtiFormMgrDataForm.ClearControlDataBindings;
+procedure TtiFormMgrDataForm.DoClearControlDataBindings;
 begin
   // Implement in concrete
 end;
 
-procedure TtiFormMgrDataForm.SetControlDataBindings;
+procedure TtiFormMgrDataForm.DoSetControlDataBindings;
 begin
   // Implement in concrete
 end;

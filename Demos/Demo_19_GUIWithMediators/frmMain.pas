@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, Model, tiFormMediator;
+  Dialogs, StdCtrls, ComCtrls, Model, tiModelMediator;
 
 type
   TForm1 = class(TForm)
@@ -29,7 +29,7 @@ type
     { The object we will be working with. }
     FPerson: TPerson;
     { Form Mediator }
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
 
     procedure SetupMediators;
   public
@@ -65,8 +65,8 @@ procedure TForm1.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
-    FMediator.Name := 'DemoFormMediator';
+    FMediator := TtiModelMediator.Create(self);
+    FMediator.Name := 'DemoModelMediator';
     FMediator.AddProperty('Name', edtName);
     FMediator.AddProperty('Age', AgeTrackBar);
     FMediator.AddProperty('Age', edtAge);

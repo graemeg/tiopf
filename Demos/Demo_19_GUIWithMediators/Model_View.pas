@@ -9,7 +9,7 @@ uses
 
 type
   { TMemo - Name }
-  TPerson_Name_Memo_Mediator = class(TMediatorMemoView)
+  TPerson_Name_Memo_Mediator = class(TtiMemoMediatorView)
   protected
     procedure SetupGUIandObject; override;
   end;
@@ -45,4 +45,3 @@ initialization
   RegisterMediators;
   
 end.
-

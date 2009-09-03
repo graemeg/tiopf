@@ -616,7 +616,7 @@ begin
     except
       on e:exception do
       begin
-        Log('Error copying file: ' + e.message + #13#10 +
+        Log('Error copying file: ' + e.message + tiLE +
           'Please close all active applications and try again. ' +
           'If this does not work, please re-start your computer and try again. ' +
           'You may need to confirm with your IT support staff that you have ' +

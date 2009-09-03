@@ -64,7 +64,7 @@ contains
   tiRTTI in '..\..\Core\tiRTTI.pas',
   tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas',
   tiOIDGUID in '..\..\Core\tiOIDGUID.pas',
-  tiFormMediator in '..\..\Core\tiFormMediator.pas',
+  tiModelMediator in '..\..\Core\tiModelMediator.pas',
   tiBaseMediator in '..\..\Core\tiBaseMediator.pas';
 
 end.

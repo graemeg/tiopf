@@ -64,6 +64,6 @@ contains
   tiFilteredObjectList in '..\..\Core\tiFilteredObjectList.pas',
   tiOIDGUID in '..\..\Core\tiOIDGUID.pas',
   tiBaseMediator in '..\..\Core\tiBaseMediator.pas',
-  tiFormMediator in '..\..\Core\tiFormMediator.pas';
+  tiModelMediator in '..\..\Core\tiModelMediator.pas';
 
 end.

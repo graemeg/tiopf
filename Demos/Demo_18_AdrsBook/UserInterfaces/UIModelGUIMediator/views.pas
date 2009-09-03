@@ -14,13 +14,13 @@ type
 
   { List Meditators }
   
-  TContacts_ListView_Mediator = class(TCompositeListViewMediator)
+  TContacts_ListView_Mediator = class(TtiCompositeListViewMediator)
   public
     procedure SetupGUIandObject; override;
   end;
   
   
-  TCityList_ListView_Mediator = class(TCompositeListViewMediator)
+  TCityList_ListView_Mediator = class(TtiCompositeListViewMediator)
   public
     procedure SetupGUIandObject; override;
   end;
@@ -28,41 +28,41 @@ type
 
   { Edit Mediators }
   
-  TContact_FirstName_TEdit_Mediator = class(TMediatorEditView)
+  TContact_FirstName_TEdit_Mediator = class(TtiEditMediatorView)
   end;
 
   
-  TContact_LastName_TEdit_Mediator = class(TMediatorEditView)
+  TContact_LastName_TEdit_Mediator = class(TtiEditMediatorView)
   end;
 
   
-  TContact_EMail_TEdit_Mediator = class(TMediatorEditView)
+  TContact_EMail_TEdit_Mediator = class(TtiEditMediatorView)
   end;
 
 
-  TContact_Mobile_TEdit_Mediator = class(TMediatorEditView)
+  TContact_Mobile_TEdit_Mediator = class(TtiEditMediatorView)
   end;
 
 
-  TContact_Comments_TMemo_Mediator = class(TMediatorMemoView)
+  TContact_Comments_TMemo_Mediator = class(TtiMemoMediatorView)
   end;
   
   
-  TContact_City_TCombobox_Mediator = class(TMediatorDynamicComboBoxView)
+  TContact_City_TCombobox_Mediator = class(TtiDynamicComboBoxMediatorView)
   public
     procedure SetupGUIandObject; override;
   end;
   
 
-  TCity_Name_TEdit_Mediator = class(TMediatorEditView)
+  TCity_Name_TEdit_Mediator = class(TtiEditMediatorView)
   end;
   
   
-  TCity_Zip_TEdit_Mediator = class(TMediatorEditView)
+  TCity_Zip_TEdit_Mediator = class(TtiEditMediatorView)
   end;
 
 
-  TCity_Country_TCombobox_Mediator = class(TMediatorDynamicComboBoxView)
+  TCity_Country_TCombobox_Mediator = class(TtiDynamicComboBoxMediatorView)
   public
     procedure SetupGUIandObject; override;
   end;
@@ -110,4 +110,3 @@ begin
 end;
 
 end.
-

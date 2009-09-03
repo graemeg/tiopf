@@ -242,6 +242,7 @@ const
 implementation
 uses
   tiConstants
+  ,tiUtils
   {$IFDEF FPC}
   ,JwaWinNT
   {$ENDIF}
@@ -358,7 +359,7 @@ procedure OutputLine;
 begin
   LineBuf[LineBufPtr]:= #0;
   if NewLine then
-    AppOutput := AppOutput + #13#10 + LineBuf
+    AppOutput := AppOutput + tiLE + LineBuf
   else
     AppOutput := AppOutput + LineBuf;
 {

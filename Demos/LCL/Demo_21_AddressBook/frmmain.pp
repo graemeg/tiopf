@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, Grids, tiBaseMediator, tiFormMediator, tiMediators, tiListMediators;
+  ComCtrls, Grids, tiBaseMediator, tiModelMediator, tiMediators, tiListMediators;
 
 type
 
@@ -40,7 +40,7 @@ type
     procedure EditContactClick(Sender: TObject);
     procedure GContactsHeaderClick(Sender: TObject; IsColumn: Boolean; Index: Integer);
   private
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
     procedure SetupMediators;
   end;
 
@@ -67,10 +67,10 @@ end;
 procedure TMainForm.EditContactClick(Sender: TObject);
 var
   c: TContact;
-  M: TMediatorView;
+  M: TtiMediatorView;
 begin
   M := FMediator.FindByComponent(GContacts).Mediator;
-  c := TContact(TStringGridMediator(M).SelectedObject);
+  c := TContact(TtiStringGridMediatorView(M).SelectedObject);
   if Assigned(c) then
     if EditContact(c) then
     begin
@@ -114,10 +114,10 @@ end;
 procedure TMainForm.DeleteContactClick(Sender: TObject);
 var
   c: TContact;
-  M : TMediatorView;
+  M : TtiMediatorView;
 begin
   M:=FMediator.FindByComponent(GContacts).Mediator;
-  c := TContact(TStringGridMediator(M).SelectedObject);
+  c := TContact(TtiStringGridMediatorView(M).SelectedObject);
   if Assigned(c) then
   begin
     gcontactmanager.ContactList.extract(c);
@@ -145,7 +145,7 @@ procedure TMainForm.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     FMediator.AddComposite('FirstName;LastName(130);EMail(180);Mobile(130);Comments(200)', GContacts);
   end;
   FMediator.Subject := gContactManager.ContactList;

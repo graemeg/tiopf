@@ -275,20 +275,20 @@ begin
   result := '';
   if r.wasSuccessful then
   begin
-    result := result + CRLF + CrLf;
+    result := result + tiLE(2);
     Result := Result + PrintSettings(r);
-    result := result + format('OK: %d tests'+ CRLF, [r.runCount]);
+    result := result + format('OK: %d tests'+ tiLE, [r.runCount]);
   end
   else
   begin
-    result := result + CRLF + CRLF;
+    result := result + tiLE(2);
     Result := Result + PrintSettings(r);
-    result := result + 'Test Results:'+CRLF + CrLf;
+    result := result + 'Test Results:'+ tiLE(2);
     result := result + format(
-      '  Run:      %8d'+CRLF+
-      '  Failures: %8d'+CRLF+
-      '  Errors:   %8d'+CRLF+
-      '  Warnings: %8d'+CRLF+CRLF,
+      '  Run:      %8d'+tiLE+
+      '  Failures: %8d'+tiLE+
+      '  Errors:   %8d'+tiLE+
+      '  Warnings: %8d'+tiLE(2),
       [r.runCount, r.failureCount, r.errorCount, r.WarningCount]);
   end
 end;
@@ -346,23 +346,23 @@ procedure TtiTextTestListener.TestingStarts;
     {$ELSE}
       write2Long('<h2>DUnit testing of tiOPF (Delphi ' + pDelphiVersion + ')</h2>');
     {$ENDIF}
-    write2Long('<h3>Persistence layers to be tested</h3>' + CrLf);
-    write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + CrLf);
+    write2Long('<h3>Persistence layers to be tested</h3>' + tiLE);
+    write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + tiLE);
     for i:= 0 to GTIOPFManager.PersistenceLayers.Count - 1 do
     begin
-      write2Long('<tr><td>' + GTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName + '</td></tr>' + CrLf);
+      write2Long('<tr><td>' + GTIOPFManager.PersistenceLayers.Items[i].PersistenceLayerName + '</td></tr>' + tiLE);
     end;
     Write2Long('</table>');
 
-    write2Long('<h3>Test results</h3>' + CrLf);
-    write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + CrLf);
-    write2Long('  <tr>' + CrLf);
-    write2Long('    <td>Test name</td>' + CrLf);
-    write2Long('    <td>Failure type</td>' + CrLf);
-    write2Long('    <td>Exception</td>' + CrLf);
-    write2Long('    <td>Message</td>' + CrLf);
-    write2Long('    <td>Run time</td>' + CrLf);
-    write2Long('  </tr>' + CrLf);
+    write2Long('<h3>Test results</h3>' + tiLE);
+    write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + tiLE);
+    write2Long('  <tr>' + tiLE);
+    write2Long('    <td>Test name</td>' + tiLE);
+    write2Long('    <td>Failure type</td>' + tiLE);
+    write2Long('    <td>Exception</td>' + tiLE);
+    write2Long('    <td>Message</td>' + tiLE);
+    write2Long('    <td>Run time</td>' + tiLE);
+    write2Long('  </tr>' + tiLE);
   end;
 begin
   FPos := 1;
@@ -402,28 +402,28 @@ begin
 
   Write2Long('<h2>Statistics</h2>');
 
-  Write2Long('<table border="1" cellpadding="4" >' + CrLf);
-  Write2Long('  <tr>' + CrLf);
-  Write2Long('    <td>Tests</td>' + CrLf);
-  Write2Long('    <td>'+intToStr(testResult.runCount)+'</td>' + CrLf);
-  Write2Long('  </tr>' + CrLf);
-  Write2Long('  <tr>' + CrLf);
-  Write2Long('    <td>Failures</td>' + CrLf);
-  Write2Long('    <td>'+intToStr(testResult.failureCount)+'</td>' + CrLf);
-  Write2Long('  </tr>' + CrLf);
-  Write2Long('  <tr>' + CrLf);
-  Write2Long('    <td>Errors</td>' + CrLf);
-  Write2Long('    <td>'+intToStr(testResult.errorCount)+'</td>' + CrLf);
-  Write2Long('  </tr>' + CrLf);
-  Write2Long('  <tr>' + CrLf);
-  Write2Long('    <td>Finished At</td>' + CrLf);
-  Write2Long('    <td>'+DateTimeToStr(now)+'</td>' + CrLf);
-  Write2Long('  </tr>' + CrLf);
-  Write2Long('  <tr>' + CrLf);
-  Write2Long('    <td>Runtime:</td>' + CrLf);
-  Write2Long(Format('%s%d:%2.2d:%2.2d.%3.3d%s', ['    <td>', h, m, s, l,'</td>' + CrLf]));
-  Write2Long('  </tr>' + CrLf);
-  Write2Long('  </table>' + CrLf);
+  Write2Long('<table border="1" cellpadding="4" >' + tiLE);
+  Write2Long('  <tr>' + tiLE);
+  Write2Long('    <td>Tests</td>' + tiLE);
+  Write2Long('    <td>'+intToStr(testResult.runCount)+'</td>' + tiLE);
+  Write2Long('  </tr>' + tiLE);
+  Write2Long('  <tr>' + tiLE);
+  Write2Long('    <td>Failures</td>' + tiLE);
+  Write2Long('    <td>'+intToStr(testResult.failureCount)+'</td>' + tiLE);
+  Write2Long('  </tr>' + tiLE);
+  Write2Long('  <tr>' + tiLE);
+  Write2Long('    <td>Errors</td>' + tiLE);
+  Write2Long('    <td>'+intToStr(testResult.errorCount)+'</td>' + tiLE);
+  Write2Long('  </tr>' + tiLE);
+  Write2Long('  <tr>' + tiLE);
+  Write2Long('    <td>Finished At</td>' + tiLE);
+  Write2Long('    <td>'+DateTimeToStr(now)+'</td>' + tiLE);
+  Write2Long('  </tr>' + tiLE);
+  Write2Long('  <tr>' + tiLE);
+  Write2Long('    <td>Runtime:</td>' + tiLE);
+  Write2Long(Format('%s%d:%2.2d:%2.2d.%3.3d%s', ['    <td>', h, m, s, l,'</td>' + tiLE]));
+  Write2Long('  </tr>' + tiLE);
+  Write2Long('  </table>' + tiLE);
   Write2Long('</body> </html>');
 
 end;
@@ -551,7 +551,7 @@ end;
 
 procedure TtiTextTestListener.Write2Long(const AStr: string);
 begin
-  Write2File(FFileNameLong, AStr + CrLf);
+  Write2File(FFileNameLong, AStr + tiLE);
 end;
 
 procedure TtiTextTestListener.Write2Table(const pCell1, pCell2, pCell3, pCell4, pCell5 : string);
@@ -564,20 +564,20 @@ begin
   if Trim(pCell4) <> '' then lCell4 := pCell4 else lCell4 := '&nbsp;';
   if Trim(pCell5) <> '' then lCell5 := pCell5 else lCell5 := '&nbsp;';
 
-  Write2File(FFileNameLong, '  <tr>' + CrLf);
-  Write2File(FFileNameLong, '    <td>' + lCell1 + '</td>' + CrLf);
-  Write2File(FFileNameLong, '    <td>' + lCell2 + '</td>' + CrLf);
-  Write2File(FFileNameLong, '    <td>' + lCell3 + '</td>' + CrLf);
-  Write2File(FFileNameLong, '    <td>' + lCell4 + '</td>' + CrLf);
-  Write2File(FFileNameLong, '    <td>' + lCell5 + '</td>' + CrLf);
-  Write2File(FFileNameLong, '  </tr>' + CrLf);
+  Write2File(FFileNameLong, '  <tr>' + tiLE);
+  Write2File(FFileNameLong, '    <td>' + lCell1 + '</td>' + tiLE);
+  Write2File(FFileNameLong, '    <td>' + lCell2 + '</td>' + tiLE);
+  Write2File(FFileNameLong, '    <td>' + lCell3 + '</td>' + tiLE);
+  Write2File(FFileNameLong, '    <td>' + lCell4 + '</td>' + tiLE);
+  Write2File(FFileNameLong, '    <td>' + lCell5 + '</td>' + tiLE);
+  Write2File(FFileNameLong, '  </tr>' + tiLE);
 end;
 
 procedure TtiTextTestListener.Write2Table(const pCell1 : string);
 begin
-  Write2File(FFileNameLong, '  <tr>' + CrLf);
-  Write2File(FFileNameLong, '    <td  colspan="5">' + pCell1 + '</td>' + CrLf);
-  Write2File(FFileNameLong, '  </tr>' + CrLf);
+  Write2File(FFileNameLong, '  <tr>' + tiLE);
+  Write2File(FFileNameLong, '    <td  colspan="5">' + pCell1 + '</td>' + tiLE);
+  Write2File(FFileNameLong, '  </tr>' + tiLE);
 end;
 
 function TtiTextTestListener.FormatTestName(ATest: ITest): string;

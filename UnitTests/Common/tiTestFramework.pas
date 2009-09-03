@@ -10,6 +10,7 @@ uses
   ,tiObject
   ,tiExcept
   ,tiOID
+  ,tiConstants
   {$IFDEF FPC}
   ,fpcunit
   ,testregistry
@@ -31,10 +32,10 @@ uses
 const
   CErrorExceptionNotRaised = 'Exception not raised when it should have been';
   {$IFDEF FPC}
-  sExpectedButWasFmt = 'Expected:'#13#10'"%s"'#13#10'But was:'#13#10'"%s"';
-  sExpectedButWasAndMessageFmt = '%s'#13#10 + sExpectedButWasFmt;
-  sMsgActualEqualsExpFmt = '%s'#13#10'Expected '#13#10'< %s > '#13#10'equals actual '#13#10'< %s >';
-  sActualEqualsExpFmt = 'Expected '#13#10'< %s > '#13#10'equals actual '#13#10'< %s >';
+  sExpectedButWasFmt = 'Expected:'+cLineEnding+'"%s"'+cLineEnding+'But was:'+cLineEnding+'"%s"';
+  sExpectedButWasAndMessageFmt = '%s' + cLineEnding + sExpectedButWasFmt;
+  sMsgActualEqualsExpFmt = '%s'+cLineEnding+'Expected '+cLineEnding+'< %s > '+cLineEnding+'equals actual '+cLineEnding+'< %s >';
+  sActualEqualsExpFmt = 'Expected '+cLineEnding+'< %s > '+cLineEnding+'equals actual '+cLineEnding+'< %s >';
   {$ENDIF}
 
 type
@@ -183,7 +184,6 @@ const
 implementation
 uses
    tiUtils
-  ,tiConstants
   ,tiINI
   ,tiRTTI
   ,StrUtils

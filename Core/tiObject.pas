@@ -82,6 +82,7 @@ type
 
   TtiObjectEventRegular = procedure(const AObject: TtiObject);
   TtiObjectEvent = procedure(const AObject: TtiObject) of object;
+  TtiObjectUpdateEvent = procedure(ASubject: TtiObject; AOperation: TNotifyOperation) of object;
 
   {: Does the field allow null values. This is one of the possibly many tests
     that the field will make when the TestValidValue function is called. }
@@ -287,6 +288,19 @@ type
   end;
 
 
+  ItiNotifyObserversHelper = interface(IInterface)
+  ['{43F29C17-5E49-4C62-B68F-522A1C80C17A}']
+  end;
+
+  TtiNotifyObserversHelper = class(TInterfacedObject, ItiNotifyObserversHelper)
+  private
+    FObserved: TtiObject;
+  public
+    constructor Create(const AObserved: TtiObject);
+    destructor Destroy; override;
+  end;
+
+
   TtiObject = class(TtiVisited)
   private
     FOID: TtiOID;
@@ -444,8 +458,8 @@ type
     {: ForceAsCreate will get a new OID, and set ObjectState := posCreate}
     procedure   ForceAsCreate(const ADatabaseName : string = ''; const APersistenceLayerName : string = '');
     {: Display the object tree as a string for debugging (will show all published properties.)}
-    function    AsDebugString(const AValuesToShow: TtiObjectAsDebugStringValuesToShow): string; overload; virtual; 
-    function    AsDebugString: string; overload; virtual; 
+    function    AsDebugString(const AValuesToShow: TtiObjectAsDebugStringValuesToShow): string; overload; virtual;
+    function    AsDebugString: string; overload; virtual;
     {:Assign the published property names to a TStringList}
 //    procedure   GetPropNames(AList: TStringList; APropFilter: TtiPropTypes = []);
     {: Return the propery count filter by APropFilter }
@@ -461,6 +475,8 @@ type
     procedure   BeginUpdate;
     {: End a update process }
     procedure   EndUpdate;
+    {: BeginUpdate when called, EndUpdate when out of scope. }
+    function    NotifyObserversHelper: ItiNotifyObserversHelper;
     {: Only needed if performing a observing role }
     procedure   Update(ASubject: TtiObject); overload; virtual;
     {: Only needed if performing a observing role where other events than changed need to be observed }
@@ -882,7 +898,7 @@ begin
   lFields := TStringList.Create;
   try
     tiGetPropertyNames(AList.Items[0], lFields);
-    tiListToStream(AStream, AList, ',', CrLf, lFields);
+    tiListToStream(AStream, AList, ',', tiLE, lFields);
   finally
     lFields.Free;
   end;
@@ -900,7 +916,7 @@ begin
 
   lStream := TFileStream.Create(AFileName, fmCreate);
   try
-    tiListToStream(lStream, AList, ',', CrLf, AColsSelected);
+    tiListToStream(lStream, AList, ',', tiLE, AColsSelected);
   finally
     lStream.Free;
   end;
@@ -919,7 +935,7 @@ begin
     lStream := TFileStream.Create(AFileName, fmCreate);
     try
       tiGetPropertyNames(AList.Items[0], lFields);
-      tiListToStream(lStream, AList, ',', CrLf, lFields);
+      tiListToStream(lStream, AList, ',', tiLE, lFields);
     finally
       lStream.Free;
     end;
@@ -1005,6 +1021,23 @@ begin
 end;
 
 
+{ TtiNotifyObserversHelper }
+
+constructor TtiNotifyObserversHelper.Create(const AObserved: TtiObject);
+begin
+  Assert(AObserved.TestValid, CTIErrorInvalidObject);
+  inherited Create;
+  FObserved := AObserved;
+  FObserved.BeginUpdate;
+end;
+
+destructor TtiNotifyObserversHelper.Destroy;
+begin
+  FObserved.EndUpdate;
+  inherited;
+end;
+
+
 { TtiObject }
 
 constructor TtiObject.Create;
@@ -1035,14 +1068,14 @@ begin
   result.Assign(self);
 end;
 
-{: When you create a concrete class that contains object type properties
-  you will have to override AssignClassProps() and implement the necessary
-  behaviour to copy, clone or create new instances of these properties. }
 function TtiObject.AsDebugString: string;
 begin
   result:= AsDebugString(CTIAsDebugStringDataAll);
 end;
 
+{: When you create a concrete class that contains object type properties
+  you will have to override AssignClassProps() and implement the necessary
+  behaviour to copy, clone or create new instances of these properties. }
 procedure TtiObject.Assign(const ASource: TtiObject);
 begin
   Assert((ASource is Self.ClassType) or
@@ -1859,7 +1892,7 @@ end;
 
 procedure TPerStringStream.WriteLn(const AValue: string);
 begin
-  FStream.WriteString(AValue + CrLf);
+  FStream.WriteString(AValue + tiLE);
 end;
 
 procedure TtiObjectList.SetCapacity(const AValue: integer);
@@ -2778,7 +2811,7 @@ begin
   for i := 0 to Count - 1 do
   begin
     if Result <> '' then
-      Result := Result + CrLf;
+      Result := Result + tiLE;
     Result := Result + Items[i].ErrorMessage;
   end;
 end;
@@ -3859,6 +3892,7 @@ begin
     Exit; //==>
 
   FObserverList.Remove(AObserver);
+
   { To conserve memory, we free FObserverList when not used anymore }
   if FObserverList.Count = 0 then
   begin
@@ -3877,6 +3911,11 @@ begin
   end;
 end;
 
+function TtiObject.NotifyObserversHelper: ItiNotifyObserversHelper;
+begin
+  result := TtiNotifyObserversHelper.Create(Self);
+end;
+
 procedure TtiObject.NotifyObservers;
 begin
   NotifyObservers(Self,noChanged);
@@ -3886,15 +3925,27 @@ procedure TtiObject.NotifyObservers(ASubject: TTiObject; AOperation: TNotifyOper
 var
   ObjectIndex: Integer;
   Observer: TtiObject;
+  LObserverList: TList;
 begin
   if not Assigned(FObserverList) then
     Exit; //==>
 
-  for ObjectIndex := 0 to FObserverList.Count - 1 do
-  begin
-    Observer := TtiObject(FObserverList.Items[ObjectIndex]);
-    if Assigned(Observer) then
-      Observer.Update(ASubject,AOperation);
+  // Allow observers to be removed during notification.
+  LObserverList := TList.Create;
+  try
+    LObserverList.Assign(FObserverList);
+    for ObjectIndex := 0 to LObserverList.Count - 1 do
+    begin
+      // FObserverList is freed when empty.
+      if not Assigned(FObserverList) then
+        break;
+      Observer := TtiObject(LObserverList.Items[ObjectIndex]);
+      if Assigned(Observer) and
+         ((ObjectIndex = 0) or (FObserverList.IndexOf(Observer) <> -1)) then
+        Observer.Update(ASubject,AOperation);
+    end;
+  finally
+    LObserverList.Free;
   end;
 end;
 

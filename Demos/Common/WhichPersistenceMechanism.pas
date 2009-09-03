@@ -42,21 +42,21 @@ begin
   if (GTIOPFManager.DefaultPersistenceLayerName = cTIPersistIBX) or
      (GTIOPFManager.DefaultPersistenceLayerName = cTIPersistADOAccess) then
     LSelected:= tiMessageDlg(
-      'Which persistence mechanism?' + CrLF(2) +
-      'Auto map: Good for simple, small lists of objects.'+ CrLf +
-      'Required for persistence to non SQL databases.' + CrLf(2) +
-      'DB independent visitors: Persistence to SQL and'+ CrLf +
-      'non SQL database with more control that auto-map.' + CrLf(2) +
-      'Hard coded visitors: The most flexible persistence'+ CrLf +
+      'Which persistence mechanism?' + tiLE(2) +
+      'Auto map: Good for simple, small lists of objects.'+ tiLE +
+      'Required for persistence to non SQL databases.' + tiLE(2) +
+      'DB independent visitors: Persistence to SQL and'+ tiLE +
+      'non SQL database with more control that auto-map.' + tiLE(2) +
+      'Hard coded visitors: The most flexible persistence'+ tiLE +
       'to SQL databases.',
       [cAutoMap, cDBIndependantVisitors, cHardCodedVisitors,  cCancel])
   else
     LSelected:= tiMessageDlg(
-      'Which persistence mechanism?' + CrLF(2) +
-      'Auto map: Good for simple, small lists of objects.'+ CrLf +
-      'Required for persistence to non SQL databases.' + CrLf(2) +
-      'DB independent visitors: Persistence to SQL and' + CrLf +
-      'non SQL database with more control that auto-map.'+ CrLf(2) +
+      'Which persistence mechanism?' + tiLE(2) +
+      'Auto map: Good for simple, small lists of objects.'+ tiLE +
+      'Required for persistence to non SQL databases.' + tiLE(2) +
+      'DB independent visitors: Persistence to SQL and' + tiLE +
+      'non SQL database with more control that auto-map.'+ tiLE(2) +
       '(Hard coded visitors are not available for non-SQL databases.)',
       [cAutoMap, cDBIndependantVisitors, cCancel]);
 

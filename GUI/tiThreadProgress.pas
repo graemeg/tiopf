@@ -65,8 +65,10 @@ uses
   ,SyncObjs
   ,tiThread
   ,Graphics
+  {$IFNDEF FPC}
   ,Htmlview
   ,tiAnimatedGIF
+  {$ENDIF}
  ;
 
 type
@@ -85,7 +87,9 @@ type
     FCanCancel: boolean;
     FConfirmCancel : boolean;
     FOnCancel : TNotifyEvent;
+    {$IFNDEF FPC}
     FShowAnimation: boolean;
+    {$ENDIF}
 
     //FCrtiSectLabelHotspotClick: TCriticalSection;
 
@@ -96,13 +100,17 @@ type
     procedure SetAutoProgress(const AValue: Boolean);
     procedure SetCaption(const AValue: TCaption);
     procedure SetCanCancel(const AValue: boolean);
+    {$IFNDEF FPC}
     procedure SetShowAnimation(const Value: boolean);
     procedure OnLabelHotspotClick(Sender: TObject; const SRC: string;
                      var Handled: boolean);
+    {$ENDIF}
   protected
     procedure   DoOnTerminate(sender : TObject); override;
+    {$IFNDEF FPC}
     procedure   DoLabelHotspotClick(Sender: TObject; const SRC: string;
                      var Handled: boolean); virtual;
+    {$ENDIF}
     procedure   SetText(const AValue: string); override;
   public
     constructor Create(ACreateSuspended: Boolean); override;
@@ -116,7 +124,9 @@ type
     Property    CanCancel : boolean    read FCanCancel     write SetCanCancel;
     property    ConfirmCancel : boolean    read FConfirmCancel   write FConfirmCancel;
     property    OnCancel     : TNotifyEvent read FOnCancel      write FOnCancel;
+    {$IFNDEF FPC}
     property    ShowAnimation: boolean read FShowAnimation write SetShowAnimation;
+    {$ENDIF}
     Procedure   IncPosition; virtual;
     //DO NOT call inherited in the overridden execute method !!!
   end;
@@ -172,13 +182,19 @@ type
 
   TProgInd = class(TCustomPanel)
   private
+    {$IFDEF FPC}
+    FLabel      : TLabel;
+    {$ELSE}
     FLabel      : THTMLViewer;
+    {$ENDIF}
     FProgressBar: TtiProgressBar;
     FSpeedButton: TSpeedButton;
     FThread     : TtiThreadProgress;
     FCaption    : TCaption;
+    {$IFNDEF FPC}
     FShowAnimation: boolean;
     FAnimation  : TtiAnimatedGIF;
+    {$ENDIF}
     function    GetMax: integer;
     function    GetMin: integer;
     function    GetPosition: integer;
@@ -194,12 +210,14 @@ type
     procedure   SetCanCancel(const AValue: boolean);
     function    GetProgressBarWidth: integer;
     function    GetLabelWidth: integer;
+    {$IFNDEF FPC}
     procedure   SetShowAnimation(const AValue: boolean);
     function    AnimationShowing: boolean;
     procedure   AddAnimation;
     procedure   RemoveAnimation;
-    function GetOnLabelHotspotClick: THotSpotClickEvent;
-    procedure SetOnLabelHotspotClick(const AValue: THotSpotClickEvent);
+    function    GetOnLabelHotspotClick: THotSpotClickEvent;
+    procedure   SetOnLabelHotspotClick(const AValue: THotSpotClickEvent);
+    {$ENDIF}
     {$IFDEF FPC}
     procedure Async(Data: PtrInt);
     {$ENDIF}
@@ -212,8 +230,10 @@ type
     Property    Caption : TCaption read GetCaption write SetCaption;
     property    Thread : TtiThreadProgress read FThread write FThread;
     property    CanCancel : boolean read GetCanCancel write SetCanCancel;
+    {$IFNDEF FPC}
     property    ShowAnimation: boolean read FShowAnimation write SetShowAnimation;
     property    OnLabelHotspotClick: THotSpotClickEvent read GetOnLabelHotspotClick write SetOnLabelHotspotClick;
+    {$ENDIF}
   end;
 
 // The FormThreadProgress is a Singleton
@@ -273,18 +293,26 @@ begin
   Anchors     := [akLeft,akTop];
   Width       := TForm(Owner).ClientWidth - 8;
 
+  {$IFDEF FPC}
+  FLabel                 := TLabel.Create(self);
+  {$ELSE}
   FLabel                 := THtmlviewer.Create(self);
+  {$ENDIF}
   FLabel.Parent          := self;
   FLabel.Left            := 6;
   FLabel.Top             := 1;
+  {$IFNDEF FPC}
   FLabel.DefFontSize := 8;
   FLabel.MarginHeight := 0;
   Flabel.MarginWidth := 0;
   FLabel.BorderStyle := htNone;
   FLabel.DefBackground := (AOwner as TFormThreadProgress).Color;
+  {$ENDIF}
   FLabel.Width           := GetLabelWidth;
   FLabel.Height          :=  16;
+  {$IFNDEF FPC}
   FLabel.DefFontName := TForm(Owner).Font.Name;
+  {$ENDIF}
 
   FProgressBar           := TtiProgressBar.Create(self);
   FProgressBar.Parent    := self;
@@ -327,11 +355,13 @@ begin
 end;
 
 
+{$IFNDEF FPC}
 function TProgInd.GetOnLabelHotspotClick: THotSpotClickEvent;
 begin
   Assert(Assigned(FLabel));
   result := FLabel.OnHotspotClick;
 end;
+{$ENDIF}
 
 function TProgInd.GetPosition: integer;
 begin
@@ -351,11 +381,13 @@ begin
 end;
 
 
+{$IFNDEF FPC}
 procedure TProgInd.SetOnLabelHotspotClick(const AValue: THotSpotClickEvent);
 begin
   Assert(Assigned(FLabel));
   FLabel.OnHotspotClick := AValue;
 end;
+{$ENDIF}
 
 procedure TProgInd.SetPosition(const AValue: integer);
 begin
@@ -363,6 +395,7 @@ begin
 end;
 
 
+{$IFNDEF FPC}
 procedure TProgInd.SetShowAnimation(const AValue: boolean);
 begin
   if AValue <> FShowAnimation then
@@ -374,14 +407,18 @@ begin
       RemoveAnimation;
   end;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 function TProgInd.AnimationShowing: boolean;
 begin
   result := Assigned(FAnimation);
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TProgInd.AddAnimation;
 begin
   if not AnimationShowing then
@@ -405,8 +442,10 @@ begin
     FLabel.Width       := GetLabelWidth;
   end;
 end;
+{$ENDIF}
 
 
+{$IFNDEF FPC}
 procedure TProgInd.RemoveAnimation;
 begin
   if AnimationShowing then
@@ -417,18 +456,26 @@ begin
     FLabel.Width       := GetLabelWidth;
   end;
 end;
-
+{$ENDIF}
 
 function TProgInd.GetText: string;
 begin
+  {$IFDEF FPC}
+  result := FLabel.Caption;
+  {$ELSE}
   result := FLabel.DocumentSource;
+  {$ENDIF}
 end;
 
 
 procedure TProgInd.SetText(const AValue: string);
 begin
+  {$IFDEF FPC}
+  FLabel.Caption := AValue;
+  {$ELSE}
   if FLabel.DocumentSource <> cuWaitForTerminate then
     FLabel.LoadFromString(AValue);
+  {$ENDIF}
 end;
 
 
@@ -441,8 +488,10 @@ end;
 function TProgInd.GetLabelWidth: integer;
 begin
   result := Self.ClientWidth - FLabel.Left - 8;
+  {$IFNDEF FPC}
   if AnimationShowing then
     result := result - FAnimation.Width - 6;
+  {$ENDIF}
   if CanCancel then
     Dec(Result, cuCancelButtonSize);
 end;
@@ -619,6 +668,7 @@ begin
 end;
 
 
+{$IFNDEF FPC}
 procedure TtiThreadProgress.DoLabelHotspotClick(Sender: TObject;
   const SRC: string; var Handled: boolean);
 begin
@@ -628,6 +678,7 @@ begin
     Handled := true;
   end;
 end;
+{$ENDIF}
 
 procedure TtiThreadProgress.DoOnTerminate(sender : TObject);
 begin
@@ -641,6 +692,7 @@ begin
 end;
 
 
+{$IFNDEF FPC}
 procedure TtiThreadProgress.OnLabelHotspotClick(Sender: TObject;
   const SRC: string; var Handled: boolean);
 begin
@@ -651,6 +703,7 @@ begin
 //    FCrtiSectLabelHotspotClick.Leave;
 //  end;
 end;
+{$ENDIF}
 
 procedure TtiThreadProgress.SetAutoProgress(const AValue: Boolean);
 begin
@@ -686,6 +739,7 @@ begin
   Synchronize(SynchronizeProgress);
 end;
 
+{$IFNDEF FPC}
 procedure TtiThreadProgress.SetShowAnimation(const Value: boolean);
 begin
   if Value <> FShowAnimation then
@@ -694,6 +748,7 @@ begin
     ProgInd.ShowAnimation := FShowAnimation;
   end;
 end;
+{$ENDIF}
 
 procedure TtiThreadProgress.SetText(const AValue: string);
 begin
@@ -934,8 +989,10 @@ end;
 function TProgInd.GetProgressBarWidth : integer;
 begin
   result := Self.ClientWidth - FProgressBar.Left - 8;
+  {$IFNDEF FPC}
   if AnimationShowing then
     result := result - FAnimation.Width - 6;
+  {$ENDIF}
   if CanCancel then
     Dec(Result, cuCancelButtonSize);
 end;
@@ -1009,8 +1066,10 @@ begin
   ConfirmCancel := True;
   ReturnValue   := 0;
 
+  {$IFNDEF FPC}
   //FCrtiSectLabelHotspotClick := TCriticalSection.Create;
   FProgInd.OnLabelHotspotClick := OnLabelHotspotClick;
+  {$ENDIF}
   if not ACreateSuspended then
     Resume;
 end;

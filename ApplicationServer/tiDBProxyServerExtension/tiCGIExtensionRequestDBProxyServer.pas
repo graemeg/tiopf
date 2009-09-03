@@ -4,11 +4,12 @@ interface
 uses
   tiCGIExtensionRequest
   ,tiWebServerClientConnectionDetails
+  ,tiConstants
   ;
 
 const
-  cErrorTIOPFErrorCode = 'Error executing command on application server: "%s"' + #13#10 + 'Message: "%s"';
-  cErrorExecutingHTTPPost = 'Error calling %s' + #13#10 + 'Message: %s' + #13#10 + 'Response: %s';
+  cErrorTIOPFErrorCode = 'Error executing command on application server: "%s"' + cLineEnding + 'Message: "%s"';
+  cErrorExecutingHTTPPost = 'Error calling %s' + #13#10 + 'Message: %s' + cLineEnding + 'Response: %s';
 
 type
 
@@ -28,7 +29,6 @@ uses
   ,tiExcept
   ,SysUtils
   ,tiQueryRemote
-  ,tiConstants
   ,tiLog
   ;
 

@@ -369,10 +369,12 @@ type
   function tiWeekNumber(const ADate: TDateTime): Byte;
 
   function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;
+  function tiDateAsXMLString(const ADateTime: TDateTime): string;
   function tiXMLStringToDateTime(const AValue : string): TDateTime;
 
   function tiDateTimeAsIntlDateStor(const ADateTime: TDateTime): string;
   function tiDateTimeAsIntlDateDisp(const ADateTime: TDateTime): string;
+  function tiDateAsIntlDateDisp(const ADateTime: TDateTime): string;
   function tiIntlDateStorAsDateTime(const AValue: string): TDateTime;
   function tiIntlDateDispAsDateTime(const AValue: string): TDateTime;
   {$IFDEF MSWINDOWS}
@@ -406,9 +408,9 @@ type
   function  tiTimeToStr(        const ADateTime  : TDateTime;
                                   const ATimeFormat : string = ''): string;
   // Convert an integer to a string and return '' if 0
-  function  tiIntToStrHide0(    const AValue : longInt)  : string;
+  function  tiIntToStrHide0(    const AValue : Int64)  : string;
   // Converts an integer to a string with commas between thousands
-  function  tiIntToCommaStr(    const AValue   : integer): string;
+  function  tiIntToCommaStr(    const AValue   : Int64): string;
   // Convert a float to a currency string and return '' if 0
   function  tiFloatToCurrencyHide0(const AValue : Extended)     : string;
   // Convert a float to a currency string
@@ -507,6 +509,8 @@ type
   function  Cr(const ACount : Byte = 1): string;
   // Return a string with ACount #13+#10 characters
   function  CrLf(const ACount : Byte = 1): string;
+  // Return a string with ACount line endings (OS dependent) characters
+  function  tiLE(const ACount : Byte = 1): string;
   // Returns a string with ACount #9 characters
   function  Tab(const ACount : Byte = 1): string;
   // Returns the checksum of a string of numbers
@@ -537,7 +541,7 @@ type
   function tiHasRTTI(AObject : TObject): boolean; overload;
   function tiHasRTTI(AClass : TClass): boolean; overload;
 
-  {: Writes "Press <Enter> to continue and waits for CrLf in a console application.}
+  {: Writes "Press <Enter> to continue and waits for line input in a console application.}
   procedure tiConsoleAppPause;
 
   {: Platform neutral function to return a GUID string. }
@@ -571,6 +575,7 @@ type
     function    Remove(AValue: Int64): Integer;
     property    Items[i: Integer]: Int64 Read GetItems Write SetItems; default;
     property    Count: Integer Read GetCount;
+    procedure   Sort;
   end;
 
   {: Provides similar functionality to the VCL's TMultiReadSingleWriteSynchronizer,
@@ -1500,7 +1505,7 @@ begin
 end;
 
 
-function tiIntToStrHide0(const AValue : longInt): string;
+function tiIntToStrHide0(const AValue : Int64): string;
 begin
   if AValue = 0 then begin
     result := '';
@@ -1510,7 +1515,7 @@ begin
 end;
 
 
-function  tiIntToCommaStr(const AValue : integer): string;
+function  tiIntToCommaStr(const AValue : Int64): string;
 begin
   result := tiFloatToCommaStr(AValue, 0);
 end;
@@ -2569,6 +2574,13 @@ begin
 end;
 
 
+{ OS dependent line ending character(s) }
+function  tiLE(const ACount : Byte = 1): string;
+begin
+  result := tiReplicate(cLineEnding, ACount);
+end;
+
+
 function  Tab(const ACount : Byte = 1): string;
 begin
   result := tiReplicate(#9, ACount);
@@ -3362,11 +3374,7 @@ end;
 
 function tiWrap(const AString: string; const AColumnWidth: Integer): string;
 begin
-{$IFDEF MSWINDOWS}
-  Result := tiAddSeparators(AString, AColumnWidth, CrLf);
-{$ELSE}
-  Result := tiAddSeparators(AString, AColumnWidth, Lf);
-{$ENDIF}
+  Result := tiAddSeparators(AString, AColumnWidth, tiLE);
 end;
 
 function tiStripNonAlphaCharacters(const AString: string): string;
@@ -3403,31 +3411,54 @@ function tiDateTimeAsXMLString(const ADateTime: TDateTime): string;
 var
   lY, lM, lD, lH, lMi, lS, lMs : Word;
 begin
-    DecodeDate(ADateTime, lY, lM, lD);
-    DecodeTime(ADateTime, lH, lMi, lS, lMs);
-    {$IFDEF DATEFORMAT_YYYYMMDD}
-    Result :=
-      _IntToStr(lY, 4) + '-' +    // NB '-' separator deliberate
-      _IntToStr(lM, 2) + '-' +
-      _IntToStr(lD, 2) + ' ' +
-      _IntToStr(lH, 2) + ':' +
-      _IntToStr(lMi, 2) + ':' +
-      _IntToStr(lS, 2) + ':' +
-      _IntToStr(lMs, 3);
-    {$ELSE}
-    Result :=
-      _IntToStr(lD, 2) + '/' +
-      _IntToStr(lM, 2) + '/' +
-      _IntToStr(lY, 4) + ' ' +
-      _IntToStr(lH, 2) + ':' +
-      _IntToStr(lMi, 2) + ':' +
-      _IntToStr(lS, 2) + ':' +
-      _IntToStr(lMs, 3);
-    {$ENDIF}
+  DecodeDate(ADateTime, lY, lM, lD);
+  DecodeTime(ADateTime, lH, lMi, lS, lMs);
+  {$IFDEF DATEFORMAT_YYYYMMDD}
+  Result :=
+    _IntToStr(lY, 4) + '-' +    // NB '-' separator deliberate
+    _IntToStr(lM, 2) + '-' +
+    _IntToStr(lD, 2) + ' ' +
+    _IntToStr(lH, 2) + ':' +
+    _IntToStr(lMi, 2) + ':' +
+    _IntToStr(lS, 2) + ':' +
+    _IntToStr(lMs, 3);
+  {$ELSE}
+  Result :=
+    _IntToStr(lD, 2) + '/' +
+    _IntToStr(lM, 2) + '/' +
+    _IntToStr(lY, 4) + ' ' +
+    _IntToStr(lH, 2) + ':' +
+    _IntToStr(lMi, 2) + ':' +
+    _IntToStr(lS, 2) + ':' +
+    _IntToStr(lMs, 3);
+  {$ENDIF}
 
   { What about using the ISO 8601 standard!  See cISODateTimeFmt1 in
     tiConstants.
     Also, why not use FormatDateTime()? }
+end;
+
+function tiDateAsXMLString(const ADateTime: TDateTime): string;
+  function _IntToStr(AValue, pSize : integer): string;
+  begin
+    result := IntToStr(AValue);
+    result := tiPad0(result, pSize);
+  end;
+var
+  lY, lM, lD: Word;
+begin
+  DecodeDate(ADateTime, lY, lM, lD);
+  {$IFDEF DATEFORMAT_YYYYMMDD}
+  Result :=
+    _IntToStr(lY, 4) + '-' +    // NB '-' separator deliberate
+    _IntToStr(lM, 2) + '-' +
+    _IntToStr(lD, 2);
+  {$ELSE}
+  Result :=
+    _IntToStr(lD, 2) + '/' +
+    _IntToStr(lM, 2) + '/' +
+    _IntToStr(lY, 4);
+  {$ENDIF}
 end;
 
 function tiXMLStringToDateTime(const AValue : string): TDateTime;
@@ -3488,6 +3519,12 @@ begin
     Result := tiStrTran(Result, '1899-12-30', '0000-00-00');
 end;
 
+function tiDateAsIntlDateDisp(const ADateTime: TDateTime): string;
+begin
+  Result := FormatDateTime(CIntlDateDisp, ADateTime);
+  if Pos('1899-12-30', Result) = 1 then
+    Result := tiStrTran(Result, '1899-12-30', '0000-00-00');
+end;
 
 function tiIntlDateStorAsDateTime(const AValue: string): TDateTime;
 var
@@ -3966,6 +4003,19 @@ begin
   (FList.Items[i] as TtiIntegerListItem).AValue := AValue;
 end;
 
+
+function _DoSort(Item1, Item2: Pointer): Integer;
+begin
+  result:=
+    CompareValue(
+      TtiIntegerListItem(Item2).AValue,
+      TtiIntegerListItem(Item2).AValue);
+end;
+
+procedure TtiIntegerList.Sort;
+begin
+  FList.Sort(_DoSort);
+end;
 
 (* *****************************************************************************
 

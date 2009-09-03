@@ -67,10 +67,11 @@
     <DCCReference Include="..\..\Core\tiEncrypt.pas" />
     <DCCReference Include="..\..\Core\tiExcept.pas" />
     <DCCReference Include="..\..\Core\tiFilteredObjectList.pas" />
-    <DCCReference Include="..\..\Core\tiFormMediator.pas" />
+    <DCCReference Include="..\..\Core\tiModelMediator.pas" />
     <DCCReference Include="..\..\Core\tiINI.pas" />
     <DCCReference Include="..\..\Core\tiLog.pas" />
     <DCCReference Include="..\..\Core\tiLogToFile.pas" />
+    <DCCReference Include="..\..\Core\tiModelMediator.pas" />
     <DCCReference Include="..\..\Core\tiObject.pas" />
     <DCCReference Include="..\..\Core\tiOID.pas" />
     <DCCReference Include="..\..\Core\tiOIDGUID.pas" />

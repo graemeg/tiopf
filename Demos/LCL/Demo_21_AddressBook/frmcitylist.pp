@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs,
-  model, tiFormMediator, ExtCtrls, Grids, StdCtrls;
+  model, tiModelMediator, ExtCtrls, Grids, StdCtrls;
 
 type
 
@@ -22,7 +22,7 @@ type
     procedure BDeleteClick(Sender: TObject);
     procedure BEditClick(Sender: TObject);
   private
-    FMediator: TFormMediator;
+    FMediator: TtiModelMediator;
     FData: TCityList;
     procedure SetData(const AValue: TCityList);
     procedure SetupMediators;
@@ -63,7 +63,7 @@ var
   c: TCity;
 
 begin
-  c := TCity(TStringGridMediator(FMediator.FindByComponent(gCities).Mediator).SelectedObject);
+  c := TCity(TtiStringGridMediatorView(FMediator.FindByComponent(gCities).Mediator).SelectedObject);
   if Assigned(c) then
     if EditCity(c) then
     begin
@@ -91,11 +91,11 @@ procedure TCityListForm.BDeleteClick(Sender: TObject);
 
 var
   c: TCity;
-  M : TMediatorView;
+  M : TtiMediatorView;
 
 begin
   M:=FMediator.FindByComponent(gCities).Mediator;
-  c := TCity(TStringGridMediator(M).SelectedObject);
+  c := TCity(TtiStringGridMediatorView(M).SelectedObject);
   if Assigned(c) then
     begin
     gContactManager.CityList.Extract(c);
@@ -114,7 +114,7 @@ procedure TCityListForm.SetupMediators;
 begin
   if not Assigned(FMediator) then
   begin
-    FMediator := TFormMediator.Create(self);
+    FMediator := TtiModelMediator.Create(self);
     FMediator.AddComposite('Name(110);Zip(80);CountryAsString(150)', gCities);
   end;
   FMediator.Subject := FData;

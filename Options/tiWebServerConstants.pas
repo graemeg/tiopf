@@ -1,12 +1,15 @@
 unit tiWebServerConstants;
 
 interface
+uses
+  tiConstants
+  ;
 
 const
   cDefaultPageName = 'default.htm';
   cDocumentToIgnore = ' HTTP/1.1';
   cDefaultPageText = '<html><h2>TechInsite Web Server - Default Page</h2></html>';
-  cErrorInServerExtension = 'Error in server extension: %s '#13#13'%s';
+  cErrorInServerExtension = 'Error in server extension: %s '+cLineEnding+'%s';
 
   cTIDBProxyServerMutex          = 'tiDBProxyServerMutex'; // So INNO setup asks the user to shutdown first
   cErrorOnServer                 = '<html><body>Error on server: %s</body></html>';
@@ -20,7 +23,8 @@ const
   cHTTPResponseCodePageNotFound  = 404;
   cHTTPResponseCodeInternalError = 500;
 
-  cErrorHTTPCGIExtension         = 'Error in %s.'#13#10#13#10'Error code #%d.'#13#10#13#10'Response text: %s'#13#10;
+  cErrorHTTPCGIExtension         = 'Error in %s.'+cLineEnding+cLineEnding+
+      'Error code #%d.'+cLineEnding+cLineEnding+'Response text: %s'+cLineEnding;
 
   cgTIDBProxyGetLog          = 'log';
   CTIDBProxyForceException   = 'ForceException';

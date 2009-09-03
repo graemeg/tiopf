@@ -266,7 +266,8 @@ type
 
      function    AddMainMenuItem(const pCaption: string; AIndex : integer = -1): TTBXSubmenuItem;
      function    AddMenuItem(const pAction : TAction; const pTBXSubItem : TTBXSubMenuItem = nil): TTBXItem;
-     function    AddMenuItemSeparator: TTBXSeparatorItem;
+     function    AddMenuItemSeparator: TTBXSeparatorItem; overload;
+     function    AddMenuItemSeparator(const ATBXSubMenuItem: TTBXSubMenuItem): TTBXSeparatorItem; overload;
 
      function    AddToolBar(const pCaption: string): TTBXToolbar;
      function    AddDropDownToolButton(const pAction : TAction): TTBXSubmenuItem;
@@ -516,6 +517,15 @@ begin
     lTBXSubMenuItem := FLastTBXSubItem;
   lTBXSubMenuItem.Add(result);
   result.Action := pAction;
+end;
+
+function TtiApplicationMenuSystem.AddMenuItemSeparator(
+  const ATBXSubMenuItem: TTBXSubMenuItem): TTBXSeparatorItem;
+begin
+  Assert(FMainForm <> nil, 'FMainForm not assigned');
+  Assert(ATBXSubMenuItem <> nil, 'FLastTBXSubItem not assigend');
+  result := TTBXSeparatorItem.Create(FMainForm);
+  ATBXSubMenuItem.Add(result);
 end;
 
 function TtiApplicationMenuSystem.AddMenuItemSeparator: TTBXSeparatorItem;

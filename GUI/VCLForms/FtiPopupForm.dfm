@@ -1,9 +1,9 @@
-object tiPopupDataForm: TtiPopupDataForm
+object FormTIPopupData: TFormTIPopupData
   Left = 0
   Top = 0
   BorderIcons = []
   BorderStyle = bsNone
-  Caption = 'tiPopupDataForm'
+  Caption = 'FormTIPopupData'
   ClientHeight = 270
   ClientWidth = 412
   Color = clBtnFace
@@ -12,9 +12,13 @@ object tiPopupDataForm: TtiPopupDataForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDeactivate = FormDeactivate
+  OnHide = FormHide
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlBorder: TtiRoundedPanel

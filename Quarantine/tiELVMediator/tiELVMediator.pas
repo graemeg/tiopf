@@ -12,7 +12,16 @@ Uses Classes, MPCommonObjects, EasyListview, tiObject, Contnrs, tiBaseMediator;
 
 Type
   { Composite mediator for TEasyListView }
-  TEasyListViewMediator = Class(TCustomListMediator)
+  //TODO: View control moved to base TtiMediatorView. Change class as follows:
+  // - Delete FView private field.
+  // - Change property View to the following function, cast result as TEasyListView:
+  //   function  View: TEasyListView; reintroduce;
+  //     result := TEasyListView(inherited View);
+  // - Remove SetView, SetGUIControl and GetGUIControl methods.
+  // - Replace GUIControl := AView, with SetView(AView). [base class]
+  // - Replace FView in TtiEasyListViewMediatorView methods with View
+  //   (use <> nil instead of Assigned where applicable).
+  TtiEasyListViewMediatorView = Class(TtiCustomListMediatorView)
   Private
     FObserversInTransit : TList;
     FView : TEasyListView;
@@ -25,7 +34,7 @@ Type
     Procedure SetSelectedObject(Const AValue : TtiObject); Override;
     Procedure CreateColumns; Override;
     Procedure DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer); Override;
-    Procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TListItemMediator); Override;
+    Procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); Override;
     Function GetGUIControl : TComponent; Override;
     Procedure SetGUIControl(Const AValue : TComponent); Override;
     Procedure SetupGUIandObject; Override;
@@ -36,7 +45,7 @@ Type
     Function PropNameFromCaption(Const pCaption : String) : String;
     Function CaptionFromPropName(Const pPropName : String) : String;
     Constructor CreateCustom(AModel : TtiObjectList; AView : TEasyListView; ADisplayNames : String; AIsObserving : Boolean = True); Reintroduce; Overload;
-    Constructor CreateCustom(AModel : TtiObjectList; AView : TEasyListView; AOnBeforeSetupField : TOnBeforeSetupField; ADisplayNames : String; AIsObserving : Boolean = True); Reintroduce; Overload;
+    Constructor CreateCustom(AModel : TtiObjectList; AView : TEasyListView; AOnBeforeSetupField : TtiOnBeforeSetupField; ADisplayNames : String; AIsObserving : Boolean = True); Reintroduce; Overload;
     Class Function ComponentClass : TClass; Override;
     Class Function CompositeMediator : Boolean; Override;
     Function GetObjectFromItem(AItem : TEasyItem) : TtiObject;
@@ -47,13 +56,13 @@ Type
     Property View : TEasyListView Read FView Write SetView;
   End;
 
-  TEasyItemMediator = Class(TListItemMediator)
+  TtiEasyItemMediator = Class(TtiListItemMediator)
   Private
     FView : TEasyItem;
     Procedure SetupFields; Virtual;
   Public
     Constructor CreateCustom(AModel : TtiObject; AView : TEasyItem; Const AFieldsInfo : TtiMediatorFieldInfoList; IsObserving : Boolean = True); Reintroduce; Overload;
-    Constructor CreateCustom(AModel : TtiObject; AView : TEasyItem; AOnBeforeSetupField : TOnBeforeSetupField; Const AFieldsInfo : TtiMediatorFieldInfoList; IsObserving : Boolean = True); Reintroduce; Overload;
+    Constructor CreateCustom(AModel : TtiObject; AView : TEasyItem; AOnBeforeSetupField : TtiOnBeforeSetupField; Const AFieldsInfo : TtiMediatorFieldInfoList; IsObserving : Boolean = True); Reintroduce; Overload;
     Procedure Update(ASubject : TtiObject); Override;
   Published
     Property View : TEasyItem Read FView;
@@ -64,9 +73,9 @@ Implementation
 
 Uses tiLog, Variants, SysUtils;
 
-{ TEasyListViewMediator }
+{ TtiEasyListViewMediatorView }
 
-Function TEasyListViewMediator.CaptionFromPropName(Const pPropName : String) : String;
+Function TtiEasyListViewMediatorView.CaptionFromPropName(Const pPropName : String) : String;
 Var
   I : Integer;
 Begin
@@ -81,30 +90,30 @@ Begin
   End; { Loop }
 End;
 
-Procedure TEasyListViewMediator.ClearList;
+Procedure TtiEasyListViewMediatorView.ClearList;
 Begin
   MediatorList.Clear;
   If Assigned(View) Then
     View.Items.Clear;
 End;
 
-Class Function TEasyListViewMediator.ComponentClass : TClass;
+Class Function TtiEasyListViewMediatorView.ComponentClass : TClass;
 Begin
   Result := TEasyListview;
 End;
 
-Class Function TEasyListViewMediator.CompositeMediator : Boolean;
+Class Function TtiEasyListViewMediatorView.CompositeMediator : Boolean;
 Begin
   Result := True;
 End;
 
-Constructor TEasyListViewMediator.Create;
+Constructor TtiEasyListViewMediatorView.Create;
 Begin
   Inherited Create;
   FObserversInTransit := TList.Create;
 End;
 
-Procedure TEasyListViewMediator.CreateColumns;
+Procedure TtiEasyListViewMediatorView.CreateColumns;
 Var
   C : Integer;
   lColumn : TEasyColumn;
@@ -126,8 +135,8 @@ Begin
   End;
 End;
 
-Constructor TEasyListViewMediator.CreateCustom(AModel : TtiObjectList;
-  AView : TEasyListView; AOnBeforeSetupField : TOnBeforeSetupField;
+Constructor TtiEasyListViewMediatorView.CreateCustom(AModel : TtiObjectList;
+  AView : TEasyListView; AOnBeforeSetupField : TtiOnBeforeSetupField;
   ADisplayNames : String; AIsObserving : Boolean);
 Begin
   Create; // don't forget this
@@ -139,32 +148,32 @@ Begin
   Active := AIsObserving; // Will attach/Detach
 End;
 
-Constructor TEasyListViewMediator.CreateCustom(AModel : TtiObjectList;
+Constructor TtiEasyListViewMediatorView.CreateCustom(AModel : TtiObjectList;
   AView : TEasyListView; ADisplayNames : String; AIsObserving : Boolean);
 Var
-  p : TOnBeforeSetupField;
+  p : TtiOnBeforeSetupField;
 Begin
   p := Nil;
   CreateCustom(AModel, AView, p, ADisplayNames, AIsObserving);
 End;
 
-Destructor TEasyListViewMediator.Destroy;
+Destructor TtiEasyListViewMediatorView.Destroy;
 Begin
   IsObserving := False;
   FView := Nil;
   Inherited;
 End;
 
-Procedure TEasyListViewMediator.DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer);
+Procedure TtiEasyListViewMediatorView.DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer);
 Var
   lItem : TEasyItem;
-  M : TEasyItemMediator;
+  M : TtiEasyItemMediator;
 Begin
   DataAndPropertyValid(AData);
   FView.BeginUpdate;
   Try
     lItem := FView.Items.Add;
-    M := TEasyItemMediator.CreateCustom(AData, lItem, OnBeforeSetupField, FieldsInfo, Active);
+    M := TtiEasyItemMediator.CreateCustom(AData, lItem, OnBeforeSetupField, FieldsInfo, Active);
     lItem.Data := M;
     MediatorList.Add(M);
   Finally
@@ -172,26 +181,26 @@ Begin
   End;
 End;
 
-Procedure TEasyListViewMediator.DoDeleteItemMediator(AIndex : Integer; AMediator : TListItemMediator);
+Procedure TtiEasyListViewMediatorView.DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator);
 Begin
-  FView.Items.Delete(TEasyItemMediator(AMediator).FView.Index);
+  FView.Items.Delete(TtiEasyItemMediator(AMediator).FView.Index);
   Inherited DoDeleteItemMediator(AIndex, AMediator);
 End;
 
-Function TEasyListViewMediator.GetGUIControl : TComponent;
+Function TtiEasyListViewMediatorView.GetGUIControl : TComponent;
 Begin
   Result := FView;
 End;
 
-Function TEasyListViewMediator.GetObjectFromItem(AItem : TEasyItem) : TtiObject;
+Function TtiEasyListViewMediatorView.GetObjectFromItem(AItem : TEasyItem) : TtiObject;
 Begin
   If (AItem = Nil) Or (AItem.Data = Nil) Then
     Result := Nil
   Else
-    Result := TEasyItemMediator(AItem.Data).Model;
+    Result := TtiEasyItemMediator(AItem.Data).Model;
 End;
 
-Function TEasyListViewMediator.GetSelectedObject : TtiObject;
+Function TtiEasyListViewMediatorView.GetSelectedObject : TtiObject;
 Begin
   If (FView.Selection.Count = 0) Then
     Result := Nil
@@ -199,7 +208,7 @@ Begin
     Result := GetObjectFromItem(FView.Selection.First);
 End;
 
-Procedure TEasyListViewMediator.HandleSelectionChanged;
+Procedure TtiEasyListViewMediatorView.HandleSelectionChanged;
 Var
   I : Integer;
 Begin
@@ -224,7 +233,7 @@ Begin
 
     { Set the Observers Subject property to the selected object }
     For I := 0 To SelectedObject.ObserverList.Count - 1 Do
-      TMediatorView(SelectedObject.ObserverList.Items[I]).Subject :=
+      TtiMediatorView(SelectedObject.ObserverList.Items[I]).Subject :=
         SelectedObject;
 
     // execute the NotifyObservers event to update the observers.
@@ -232,7 +241,7 @@ Begin
   End;
 End;
 
-Function TEasyListViewMediator.ItemCompare(Sender : TCustomEasyListview;
+Function TtiEasyListViewMediatorView.ItemCompare(Sender : TCustomEasyListview;
   Column : TEasyColumn; Group : TEasyGroup; Item1, Item2 : TEasyItem;
   Var DoDefault : Boolean) : Integer;
 Var
@@ -244,8 +253,8 @@ Begin
   lPropName := PropNameFromCaption(Column.Caption);
   If Assigned(Item1.Data) And Assigned(Item2.Data) Then
   Begin
-    lValue1 := TEasyItemMediator(Item1.Data).Model.PropValue[lPropName];
-    lValue2 := TEasyItemMediator(Item2.Data).Model.PropValue[lPropName];
+    lValue1 := TtiEasyItemMediator(Item1.Data).Model.PropValue[lPropName];
+    lValue2 := TtiEasyItemMediator(Item2.Data).Model.PropValue[lPropName];
     If (lValue1 < lValue2) Then
     Begin
       If Column.SortDirection = esdAscending Then
@@ -264,7 +273,7 @@ Begin
   End;
 End;
 
-Function TEasyListViewMediator.PropNameFromCaption(Const pCaption : String) : String;
+Function TtiEasyListViewMediatorView.PropNameFromCaption(Const pCaption : String) : String;
 Var
   lFieldInfo : TtiMediatorFieldInfo;
 Begin
@@ -275,7 +284,7 @@ Begin
     Result := '';
 End;
 
-Procedure TEasyListViewMediator.RebuildList;
+Procedure TtiEasyListViewMediatorView.RebuildList;
 Begin
   View.BeginUpdate;
   Try
@@ -286,20 +295,20 @@ Begin
   End;
 End;
 
-Procedure TEasyListViewMediator.SetActive(Const AValue : Boolean);
+Procedure TtiEasyListViewMediatorView.SetActive(Const AValue : Boolean);
 Begin
   If Not AValue Then
     ClearList;
   Inherited SetActive(AValue);
 End;
 
-Procedure TEasyListViewMediator.SetGUIControl(Const AValue : TComponent);
+Procedure TtiEasyListViewMediatorView.SetGUIControl(Const AValue : TComponent);
 Begin
   FView := AValue As TEasyListview;
   Inherited SetGUIControl(AValue);
 End;
 
-Procedure TEasyListViewMediator.SetSelectedObject(Const AValue : TtiObject);
+Procedure TtiEasyListViewMediatorView.SetSelectedObject(Const AValue : TtiObject);
 Var
   I : Integer;
 Begin
@@ -313,7 +322,7 @@ Begin
   End; { Loop }
 End;
 
-Procedure TEasyListViewMediator.SetupGUIandObject;
+Procedure TtiEasyListViewMediatorView.SetupGUIandObject;
 Begin
   FView.Header.Columns.Clear;
   FView.Items.Clear;
@@ -327,26 +336,26 @@ Begin
   FView.OnItemCompare := ItemCompare;
 End;
 
-Procedure TEasyListViewMediator.SetView(Const AValue : TEasyListView);
+Procedure TtiEasyListViewMediatorView.SetView(Const AValue : TEasyListView);
 Begin
   FView := AValue;
   SetGUIControl(AValue);
 End;
 
-{ TEasyItemMediator }
+{ TtiEasyItemMediator }
 
-Constructor TEasyItemMediator.CreateCustom(AModel : TtiObject;
+Constructor TtiEasyItemMediator.CreateCustom(AModel : TtiObject;
   AView : TEasyItem; Const AFieldsInfo : TtiMediatorFieldInfoList;
   IsObserving : Boolean);
 Var
-  p : TOnBeforeSetupField;
+  p : TtiOnBeforeSetupField;
 Begin
   p := Nil;
   CreateCustom(AModel, AView, p, AFieldsInfo, IsObserving);
 End;
 
-Constructor TEasyItemMediator.CreateCustom(AModel : TtiObject;
-  AView : TEasyItem; AOnBeforeSetupField : TOnBeforeSetupField;
+Constructor TtiEasyItemMediator.CreateCustom(AModel : TtiObject;
+  AView : TEasyItem; AOnBeforeSetupField : TtiOnBeforeSetupField;
   Const AFieldsInfo : TtiMediatorFieldInfoList; IsObserving : Boolean);
 Begin
   Inherited Create;
@@ -359,7 +368,7 @@ Begin
   Active := IsObserving; // Will attach
 End;
 
-Procedure TEasyItemMediator.SetupFields;
+Procedure TtiEasyItemMediator.SetupFields;
 Var
   C : Integer;
   lInfo : TtiMediatorFieldInfo;
@@ -389,7 +398,7 @@ Begin
   End;
 End;
 
-Procedure TEasyItemMediator.Update(ASubject : TtiObject);
+Procedure TtiEasyItemMediator.Update(ASubject : TtiObject);
 Var
   C : Integer;
   lInfo : TtiMediatorFieldInfo;
@@ -418,4 +427,3 @@ Begin
 End;
 
 End.
-

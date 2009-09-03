@@ -7,7 +7,7 @@ interface
 uses
   SysUtils, Classes, Graphics, Controls, Forms, LResources,
   Dialogs, StdCtrls, ExtCtrls, ActnList, Grids,
-  Client_BOM, ComCtrls, tiObject, tiFormMediator;
+  Client_BOM, ComCtrls, tiObject, tiModelMediator;
 
 const
   // Database file name
@@ -50,8 +50,8 @@ type
     procedure lvClientsSelection(Sender: TObject; aCol, aRow: Integer);
   private
     FClients: TClients;
-    FClientMediator: TFormMediator;
-    FPhoneMediator: TFormMediator;
+    FClientMediator: TtiModelMediator;
+    FPhoneMediator: TtiModelMediator;
     procedure CreateTables;
     procedure DropTables;
     procedure SetupMediators;
@@ -121,7 +121,7 @@ procedure TFormMainOneToMany.SetupMediators;
 begin
   if not Assigned(FClientMediator) then
   begin
-    FClientMediator := TFormMediator.Create(self);
+    FClientMediator := TtiModelMediator.Create(self);
     FClientMediator.AddComposite('ClientID(80);ClientName(200)', lvClients);
   end;
   FClientMediator.Subject := FClients;
@@ -129,7 +129,7 @@ begin
 
   if not Assigned(FPhoneMediator) then
   begin
-    FPhoneMediator := TFormMediator.Create(self);
+    FPhoneMediator := TtiModelMediator.Create(self);
     FPhoneMediator.AddProperty('NumberType(80);NumberText(200)', lvPhoneNumbers);
   end;
   if FClients.Count > 0 then
@@ -142,7 +142,7 @@ end;
 procedure TFormMainOneToMany.FormCreate(Sender: TObject);
 begin
   if tiAppConfirmation('Do you want to drop and recreate the tables required ' +
-    'for this demo?' + CrLf(2) +
+    'for this demo?' + tiLE(2) +
     '(Select "Yes" if this is the first time you have run the demo.)') then
   begin
     DropTables;
