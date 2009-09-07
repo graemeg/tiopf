@@ -13,6 +13,9 @@ object FormMainOneToMany: TFormMainOneToMany
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    540
+    343)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -63,6 +66,7 @@ object FormMainOneToMany: TFormMainOneToMany
     Height = 41
     Constraints.MinHeight = 23
     TabOrder = 3
+    OnChangeDelayInterval = 0
     LabelStyle = lsTop
     LabelLayout = tlTop
     Caption = 'Client count'
@@ -86,6 +90,7 @@ object FormMainOneToMany: TFormMainOneToMany
     Height = 41
     Constraints.MinHeight = 23
     TabOrder = 4
+    OnChangeDelayInterval = 0
     LabelStyle = lsTop
     LabelLayout = tlTop
     Caption = 'Phone number count'

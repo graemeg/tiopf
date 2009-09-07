@@ -13,7 +13,9 @@ uses
   VendorEditU in 'VendorEditU.pas' {frmVendor},
   PartEditU in 'PartEditU.pas' {frmPart},
   PartLookupU in 'PartLookupU.pas' {frmPartLookup},
-  BaseListU in 'BaseListU.pas' {frmBaseList};
+  BaseListU in 'BaseListU.pas' {frmBaseList},
+  FtiDialogAbs in '..\..\GUI\VCLForms\FtiDialogAbs.pas' {FormTiDialogAbs},
+  FtiPerEditDialog in '..\..\GUI\VCLForms\FtiPerEditDialog.pas' {FormTIPerEditDialog};
 
 {$R *.res}
 

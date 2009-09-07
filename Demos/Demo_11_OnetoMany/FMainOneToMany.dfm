@@ -1,9 +1,9 @@
 object FormMainOneToMany: TFormMainOneToMany
   Left = 202
   Top = 132
+  Width = 548
+  Height = 431
   Caption = 'FormMainOneToMany'
-  ClientHeight = 397
-  ClientWidth = 523
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,6 +13,9 @@ object FormMainOneToMany: TFormMainOneToMany
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    540
+    397)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -63,8 +66,16 @@ object FormMainOneToMany: TFormMainOneToMany
     Height = 41
     Constraints.MinHeight = 23
     TabOrder = 3
+    OnChangeDelayInterval = 0
     LabelStyle = lsTop
+    LabelLayout = tlTop
     Caption = 'Client count'
+    LabelFont.Charset = DEFAULT_CHARSET
+    LabelFont.Color = clBlack
+    LabelFont.Height = -11
+    LabelFont.Name = 'MS Sans Serif'
+    LabelFont.Style = []
+    LabelParentFont = False
     ReadOnly = False
     ValueAsString = '0'
     Precision = 0
@@ -79,8 +90,16 @@ object FormMainOneToMany: TFormMainOneToMany
     Height = 41
     Constraints.MinHeight = 23
     TabOrder = 4
+    OnChangeDelayInterval = 0
     LabelStyle = lsTop
+    LabelLayout = tlTop
     Caption = 'Phone number count'
+    LabelFont.Charset = DEFAULT_CHARSET
+    LabelFont.Color = clBlack
+    LabelFont.Height = -11
+    LabelFont.Name = 'MS Sans Serif'
+    LabelFont.Style = []
+    LabelParentFont = False
     ReadOnly = False
     ValueAsString = '0'
     Precision = 0
@@ -108,17 +127,20 @@ object FormMainOneToMany: TFormMainOneToMany
     Header.Font.Name = 'Tahoma'
     Header.Font.Style = []
     Header.MainColumn = -1
-    Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
+    EditInlineOnly = False
     ShowAlternateRowColor = False
+    ShowNodeHint = False
     SortOrders.GroupColumnCount = 0
     SortOrders = <>
     VisibleButtons = [tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete]
     VT.Left = 2
     VT.Top = 26
     VT.Width = 365
-    VT.Height = 154
+    VT.Height = 128
     VT.Align = alClient
+    VT.Colors.UnfocusedColor = clMedGray
     VT.Header.AutoSizeIndex = 0
     VT.Header.Font.Charset = DEFAULT_CHARSET
     VT.Header.Font.Color = clWindowText
@@ -126,10 +148,11 @@ object FormMainOneToMany: TFormMainOneToMany
     VT.Header.Font.Name = 'Tahoma'
     VT.Header.Font.Style = []
     VT.Header.MainColumn = -1
-    VT.Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    VT.Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     VT.Header.Style = hsXPStyle
     VT.NodeDataSize = 4
     VT.TabOrder = 0
+    VT.TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
     VT.Columns = <>
@@ -152,17 +175,20 @@ object FormMainOneToMany: TFormMainOneToMany
     Header.Font.Name = 'Tahoma'
     Header.Font.Style = []
     Header.MainColumn = -1
-    Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
+    EditInlineOnly = False
     ShowAlternateRowColor = False
+    ShowNodeHint = False
     SortOrders.GroupColumnCount = 0
     SortOrders = <>
     VisibleButtons = [tiLVBtnVisEdit, tiLVBtnVisNew, tiLVBtnVisDelete]
     VT.Left = 2
     VT.Top = 26
     VT.Width = 365
-    VT.Height = 118
+    VT.Height = 92
     VT.Align = alClient
+    VT.Colors.UnfocusedColor = clMedGray
     VT.Header.AutoSizeIndex = 0
     VT.Header.Font.Charset = DEFAULT_CHARSET
     VT.Header.Font.Color = clWindowText
@@ -170,10 +196,11 @@ object FormMainOneToMany: TFormMainOneToMany
     VT.Header.Font.Name = 'Tahoma'
     VT.Header.Font.Style = []
     VT.Header.MainColumn = -1
-    VT.Header.Options = [hoColumnResize, hoDrag, hoVisible]
+    VT.Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     VT.Header.Style = hsXPStyle
     VT.NodeDataSize = 4
     VT.TabOrder = 0
+    VT.TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning]
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
     VT.Columns = <>

@@ -123,7 +123,7 @@ end;
 procedure TFormMainOneToMany.FormCreate(Sender: TObject);
 begin
   if tiAppConfirmation('Do you want to drop and recreate the tables required ' +
-    'for this demo?' + tiLE(2) +
+    'for this demo?' + tiUtils.tiLE(2) +
     '(Select "Yes" if this is the first time you have run the demo.)') then
   begin
     DropTables;

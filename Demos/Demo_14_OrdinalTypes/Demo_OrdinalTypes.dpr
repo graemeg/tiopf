@@ -9,8 +9,8 @@ uses
   FConnectToDatabase in '..\Common\FConnectToDatabase.pas' {FormConnectToDatabase},
   Client_BOM in 'Client_BOM.pas',
   FClientEdit in 'FClientEdit.pas' {FormClientEdit},
-  FtiPerEditDialog in '..\..\GUI\FtiPerEditDialog.pas' {FormTIPerEditDialog},
-  FtiDialogAbs in '..\..\GUI\FtiDialogAbs.pas' {FormTiDialogAbs};
+  FtiDialogAbs in '..\..\GUI\VCLForms\FtiDialogAbs.pas' {FormTiDialogAbs},
+  FtiPerEditDialog in '..\..\GUI\VCLForms\FtiPerEditDialog.pas' {FormTIPerEditDialog};
 
 {$R *.RES}
 

@@ -7,7 +7,7 @@ uses
 
 type
 
-  TVisClient_Read = class(TVisOwnedQrySelect)
+  TVisClient_Read = class(TtiVisitorSelect)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
@@ -15,7 +15,7 @@ type
     procedure MapRowToObject; override;
   end;
 
-  TVisClient_Create = class(TVisOwnedQryUpdate)
+  TVisClient_Create = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;

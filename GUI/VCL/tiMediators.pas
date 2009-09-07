@@ -343,7 +343,8 @@ end;
 
 function TtiCustomEditMediatorView.GetCurrentControlColor: TColor;
 begin
-  if View.ReadOnly then
+  // In Delphi, TCustomEdit does not have a public ReadOnly property
+  if (View as TEdit).ReadOnly then
     result := ColorToRGB(ControlReadOnlyColor)
   else
     result := inherited GetCurrentControlColor;
