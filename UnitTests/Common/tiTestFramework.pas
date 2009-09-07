@@ -123,6 +123,7 @@ type
     procedure CheckEquals(const AExpected, AActual: TtiFieldFloat); overload;
     procedure CheckEquals(const AExpected, AActual: TtiFieldBoolean); overload;
     procedure CheckEquals(const AExpected, AActual: TtiFieldDateTime); overload;
+    procedure CheckEquals(const AExpected, AActual: TtiFieldDate); overload;
     procedure CheckEquals(const AValue: string;    const AField: TtiFieldString); overload;
     procedure CheckEquals(const AValue: Integer;   const AField: TtiFieldInteger); overload;
     procedure CheckEquals(const AValue: Real;      const AField: TtiFieldFloat); overload;
@@ -657,6 +658,11 @@ begin
 end;
 
 procedure TtiTestCase.CheckEquals(const AExpected, AActual: TtiFieldDateTime);
+begin
+  CheckNearEnough(AExpected.AsDateTime, AActual.AsDateTime, 'Failed on %s', [AExpected.FieldName]);
+end;
+
+procedure TtiTestCase.CheckEquals(const AExpected, AActual: TtiFieldDate);
 begin
   CheckNearEnough(AExpected.AsDateTime, AActual.AsDateTime, 'Failed on %s', [AExpected.FieldName]);
 end;
