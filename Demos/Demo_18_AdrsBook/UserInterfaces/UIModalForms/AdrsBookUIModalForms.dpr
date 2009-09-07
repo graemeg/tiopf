@@ -7,7 +7,8 @@ uses
   FAdrsEdit in 'FAdrsEdit.pas' {FormAdrsEdit},
   FEAdrsEdit in 'FEAdrsEdit.pas' {FormEAdrsEdit},
   FAdrsAbs in 'FAdrsAbs.pas' {FormAdrsAbs},
-  FtiPerEditDialog in '..\..\..\..\GUI\FtiPerEditDialog.pas' {FormTIPerEditDialog};
+  FtiPerEditDialog in '..\..\..\..\GUI\VCLForms\FtiPerEditDialog.pas' {FormTIPerEditDialog},
+  FtiDialogAbs in '..\..\..\..\GUI\VCLForms\FtiDialogAbs.pas' {FormTiDialogAbs};
 
 {$R *.res}
 

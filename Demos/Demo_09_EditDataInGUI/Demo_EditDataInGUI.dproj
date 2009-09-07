@@ -49,17 +49,17 @@
     <DCCReference Include="..\..\GUI\FtiPerEditDialog.pas">
       <Form>FormTIPerEditDialog</Form>
     </DCCReference>
+    <DCCReference Include="..\..\GUI\VCLForms\FtiDialogAbs.pas">
+      <Form>FormTiDialogAbs</Form>
+    </DCCReference>
+    <DCCReference Include="..\..\GUI\VCLForms\FtiPerEditDialog.pas">
+      <Form>FormTIPerEditDialog</Form>
+    </DCCReference>
     <DCCReference Include="..\Common\FConnectToDatabase.pas">
       <Form>FormConnectToDatabase</Form>
     </DCCReference>
     <DCCReference Include="..\Common\FPickDatabase.pas">
       <Form>FormPickDatabase</Form>
-    </DCCReference>
-    <DCCReference Include="..\Common\FtiDialogAbs.pas">
-      <Form>FormTiDialogAbs</Form>
-    </DCCReference>
-    <DCCReference Include="..\Common\FtiPerEditDialog.pas">
-      <Form>FormTIPerEditDialog</Form>
     </DCCReference>
     <DCCReference Include="Client_BOM.pas" />
     <DCCReference Include="FClientEdit.pas">

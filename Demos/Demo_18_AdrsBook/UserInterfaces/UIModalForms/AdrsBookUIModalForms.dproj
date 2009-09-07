@@ -38,7 +38,10 @@
     <DelphiCompile Include="AdrsBookUIModalForms.dpr">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
-    <DCCReference Include="..\..\..\..\GUI\FtiPerEditDialog.pas">
+    <DCCReference Include="..\..\..\..\GUI\VCLForms\FtiDialogAbs.pas">
+      <Form>FormTiDialogAbs</Form>
+    </DCCReference>
+    <DCCReference Include="..\..\..\..\GUI\VCLForms\FtiPerEditDialog.pas">
       <Form>FormTIPerEditDialog</Form>
     </DCCReference>
     <DCCReference Include="FAdrsAbs.pas">
