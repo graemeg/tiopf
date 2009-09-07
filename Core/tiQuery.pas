@@ -506,6 +506,7 @@ type
     procedure   SetValueAsDateTime(const AName : string; const AValue : TDateTime);
     function    GetValueAsDateTime(const AName : string): TDateTime;
     procedure   AssignFromFieldDateTime(const AField: TtiFieldDateTime; const AName: string);
+    procedure   AssignFromFieldDate(const AField: TtiFieldDate; const AName: string);
 
     procedure   SetValueAsStream(const AName : string; const AValue : TStream);
     function    GetValueAsStream(const AName : string): TStream;
@@ -1856,6 +1857,13 @@ procedure TtiQueryParams.AssignFromFieldBoolean(const AField: TtiFieldBoolean; c
 begin
   Assert(AField.TestValid, CTIErrorInvalidObject);
   SetValueAsBoolean(AName, AField.AsBoolean);
+end;
+
+procedure TtiQueryParams.AssignFromFieldDate(const AField: TtiFieldDate;
+  const AName: string);
+begin
+  Assert(AField.TestValid, CTIErrorInvalidObject);
+  SetValueAsDateTime(AName, AField.AsDateTime);
 end;
 
 procedure TtiQueryParams.AssignFromFieldDateTime(const AField: TtiFieldDateTime; const AName: string);
