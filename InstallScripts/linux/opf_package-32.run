@@ -1,10 +1,11 @@
-/opt/fpc/bin/fpc -MObjFPC -S2cai -O1 -gl -ve \
+/opt/fpc_2.3.1/bin/ppc386 -MObjFPC -S2cai -O1 -gl -ve \
   -Fu/home/graemeg/programming/3rdParty/tiOPF2/Source/3rdParty/FBLib/lib/i386-linux/ \
   -Fi/opt/dailybuilds/tiopf/Core/ \
   -Fu/opt/dailybuilds/tiopf/Core/ \
   -Fu/opt/dailybuilds/tiopf/Options/ \
   -Fu/opt/dailybuilds/tiopf/GUI/ \
   -Fu. -FE/opt/dailybuilds/tiopf/Compilers/FPC/lib/i386-linux/ \
-  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dUseCThreads \
+  -dLINK_CSV -dLINK_TAB -dLINK_XMLLIGHT -dLINK_SQLDB_IB -dLINK_SQLDB_PQ \
+  -dUseCThreads \
   /opt/dailybuilds/tiopf/Compilers/FPC/tiOPF.pas
 

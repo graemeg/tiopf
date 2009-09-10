@@ -1,10 +1,10 @@
 #!/bin/sh
 # Build script for tiOPF's TextRunner using 64bit Free Pascal Compiler
 
-TIOPF="/home/graemeg/programming/tiopf/Source"
+TIOPF="/opt/dailybuilds/tiopf"
 FBLIB="$TIOPF/3rdParty/FBLib/lib/x86_64-linux"
-FPC="/home/graemeg/programming/fpc/bin/fpc"
-LAZ="/home/graemeg/programming/lazarus"
+FPC="/opt/fpc_2.3.1/bin/ppcx64"
+LAZ="/opt/lazarus"
 
 $FPC -S2cgi -O1 -gl -ve -l \
   -Fu$LAZ/components/fpcunit/console/lib/x86_64-linux/ \

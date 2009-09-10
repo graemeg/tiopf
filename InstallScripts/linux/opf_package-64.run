@@ -1,9 +1,9 @@
 #!/bin/sh
 # Build script for tiOPF using 64bit Free Pascal Compiler
 
-TIOPF="/home/graemeg/programming/tiopf/Source"
+TIOPF="/opt/dailybuilds/tiopf"
 FBLIB="$TIOPF/3rdParty/FBLib/lib/x86_64-linux"
-FPC="/home/graemeg/programming/fpc/bin/fpc"
+FPC="/opt/fpc_2.3.1/bin/ppcx64"
 
 #   -Fu$FBLIB/ \
 

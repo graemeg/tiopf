@@ -18,13 +18,21 @@
 SVN revision:
    r#REV
    
-  <xsl:call-template name="build_time"/>
-  <xsl:call-template name="elapsed_time"/>
-  <xsl:call-template name="summary"/>
+<xsl:call-template name="build_time"/>
+<xsl:call-template name="elapsed_time"/>
+Persistence Layers Tested:
+   CSV
+   TAB
+   XMLLight
+   SqlDB - Firebird
+   SqlDB - PostgreSQL
+
+<xsl:call-template name="summary"/>
 
 <xsl:text>&#10;</xsl:text>
 <xsl:text>Details:&#10;</xsl:text>
-<xsl:text>  http://opensoft.homeip.net/tiopf/fpcunit/index.html&#10;</xsl:text>
+<xsl:text>  http://opensoft.homeip.net/tiopf/fpcunit/index32.html&#10;</xsl:text>
+<xsl:text>  http://opensoft.homeip.net/tiopf/fpcunit/index64.html&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
 
 </xsl:template>
@@ -40,7 +48,7 @@ SVN revision:
 <xsl:template name="elapsed_time">
 <xsl:text>Elapsed time:&#10;</xsl:text>
 <xsl:text>   </xsl:text><xsl:value-of select="/TestResults/TotalElapsedTime"/>
-<xsl:text>&#10;&#10;</xsl:text>
+<xsl:text>&#10;</xsl:text>
 </xsl:template>
 
 
