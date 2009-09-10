@@ -3,6 +3,7 @@
 
     { DUnit2 compatable interface for FPCUnit and Free Pascal }
 
+    AllowedMemoryLeakSize: Integer;
     function    GetName: string; virtual;
     property    Name: string read GetName;
 
@@ -14,7 +15,6 @@
                                     const ErrorMsg: string): String; virtual;
     procedure InhibitStackTrace;
     
-    AllowedMemoryLeakSize: Integer;
     procedure SetAllowedLeakArray(const AllowedList: array of Integer);
 
     {
