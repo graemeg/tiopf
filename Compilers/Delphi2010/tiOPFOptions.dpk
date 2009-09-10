@@ -1,0 +1,76 @@
+package tiOPFOptions;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$LIBSUFFIX '140'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  vcl,
+  rtl,
+  dbrtl,
+  bdertl,
+  tiOPFCore;
+
+contains
+  ADOX_TLB in '..\..\Options\ADOX_TLB.pas',
+  MSXML_TLB in '..\..\Options\MSXML_TLB.pas',
+  tiCompressNone in '..\..\Options\tiCompressNone.pas',
+  tiCompressZLib in '..\..\Options\tiCompressZLib.pas',
+  tiConsoleApp in '..\..\Options\tiConsoleApp.pas',
+  tiCRC32 in '..\..\Options\tiCRC32.pas',
+  tiDataBuffer_BOM in '..\..\Options\tiDataBuffer_BOM.pas',
+  tiDataBuffer_Cli in '..\..\Options\tiDataBuffer_Cli.pas',
+  tiEncryptBlockCipher in '..\..\Options\tiEncryptBlockCipher.pas',
+  tiEncryptBlowfish in '..\..\Options\tiEncryptBlowfish.pas',
+  tiEncryptDES in '..\..\Options\tiEncryptDES.pas',
+  tiEncryptNone in '..\..\Options\tiEncryptNone.pas',
+  tiEncryptSimple in '..\..\Options\tiEncryptSimple.pas',
+  tiLogToConsole in '..\..\Options\tiLogToConsole.pas',
+  tiMadExcept in '..\..\Options\tiMadExcept.pas',
+  tiOIDHex in '..\..\Options\tiOIDHex.pas',
+  tiOIDInt64 in '..\..\Options\tiOIDInt64.pas',
+  tiOIDInteger in '..\..\Options\tiOIDInteger.pas',
+  tiOIDString in '..\..\Options\tiOIDString.pas',
+  tiQueryBDEAbs in '..\..\Options\tiQueryBDEAbs.pas',
+  tiQueryBDEParadox in '..\..\Options\tiQueryBDEParadox.pas',
+  tiQueryCSV in '..\..\Options\tiQueryCSV.pas',
+  tiQueryTAB in '..\..\Options\tiQueryTAB.pas',
+  tiQueryTXTAbs in '..\..\Options\tiQueryTXTAbs.pas',
+  tiQueryXML in '..\..\Options\tiQueryXML.pas',
+  tiQueryXMLLight in '..\..\Options\tiQueryXMLLight.pas',
+  tiTextParser in '..\..\Options\tiTextParser.pas',
+  tiStructuredCSVReader in '..\..\Options\tiStructuredCSVReader.pas',
+  tiStructuredCSVWriter in '..\..\Options\tiStructuredCSVWriter.pas',
+  tiXML in '..\..\Options\tiXML.pas',
+  tiXMLToTIDataset in '..\..\Options\tiXMLToTIDataset.pas',
+  tiSingleInstanceApp in '..\..\Options\tiSingleInstanceApp.pas',
+  tiQueue in '..\..\Options\tiQueue.pas',
+  tiRegistry in '..\..\Options\tiRegistry.pas',
+  tiQueryDataset in '..\..\Options\tiQueryDataset.pas';
+
+{$I tiDefines.inc}
+
+
+end.

@@ -40,8 +40,10 @@ uses
   ,tiTreeViewChildForm
   {$IFNDEF FPC}
   ,tiPerAwareDirectoryCombos
+  {$IFNDEF DELPHI2009ORABOVE}
   ,tiVTListView
   ,tiVTTreeView
+  {$ENDIF}
   {$ENDIF}
   ,tiTreeviewEditor
   ,tiHyperlinkWithImage
@@ -99,8 +101,10 @@ begin
                          ,TtiButtonPanel
                          ,TtiMicroButton
                          {$IFNDEF FPC}
+                         {$IFNDEF DELPHI2009ORABOVE}
                          ,TtiVTListView
                          ,TtiVTTreeView
+                         {$ENDIF}
                          {$ENDIF}
                          ,TtiModelMediator
                          ,TtiModelMediatorList

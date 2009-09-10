@@ -95,6 +95,11 @@ const
   cCompilerName = 'Delphi 2009';
 {$ENDIF}
 
+{$IFDEF DELPHI14}
+  cPackageSuffix = '140';
+  cCompilerName = 'Delphi 2010';
+{$ENDIF}
+
 {$IFDEF FPC}
   cPackageSuffix = '';
   cCompilerName = 'Free Pascal';
