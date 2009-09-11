@@ -1869,65 +1869,56 @@ end;
 // re-worked to remove the TStringList as the working holder of the data.
 procedure TTestTIUtils.tiVariantArrayToString;
 var
-  lFrom : Variant;
-  lTo  : string;
-const
-  lCrLf = #13 + #10;
+  lFrom: Variant;
+  lTo: string;
 begin
   lFrom := VarArrayOf(['xxx']);
   lTo :=
-    '[' + lCrLf +
-    ' ' + 'xxx' +
-    lCrLf + ']' +
-    lCrLf;
+    '[' + cLineEnding +
+    ' ' + 'xxx' + cLineEnding +
+    ']' + cLineEnding;
 
   CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 1 ('+IntToStr(VarType(lFrom))+')');
 
   lFrom := VarArrayOf(['xxx', 'yyy']);
   lTo :=
-    '[' + lCrLf +
-    ' ' + 'xxx' + lCrLf +
-    ' ' + 'yyy' + lCrLf +
-    ']' + lCrLf;
+    '[' + cLineEnding +
+    ' ' + 'xxx' + cLineEnding +
+    ' ' + 'yyy' + cLineEnding +
+    ']' + cLineEnding;
   CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 2');
 
   lFrom := VarArrayOf(['xxx', 'yyy', 'zzz' ]);
   lTo :=
-    '[' + lCrLf +
-    ' ' + 'xxx' + lCrLf +
-    ' ' + 'yyy' + lCrLf +
-    ' ' + 'zzz' + lCrLf +
-    ']' + lCrLf;
+    '[' + cLineEnding +
+    ' ' + 'xxx' + cLineEnding +
+    ' ' + 'yyy' + cLineEnding +
+    ' ' + 'zzz' + cLineEnding +
+    ']' + cLineEnding;
   CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 3');
 
   lFrom := VarArrayOf(['xxx', VarArrayOf(['yyy'])]);
   lTo :=
-    '[' + lCrLf +
-    ' ' + 'xxx' + lCrLf +
-    '   [' + lCrLf +
-    '    ' + 'yyy' + lCrLf +
-    '   ]' + lCrLf +
-    ']' + lCrLf;
+    '[' + cLineEnding +
+    ' ' + 'xxx' + cLineEnding +
+    '   [' + cLineEnding +
+    '    ' + 'yyy' + cLineEnding +
+    '   ]' + cLineEnding +
+    ']' + cLineEnding;
 
   CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 3');
 
   lFrom := VarArrayOf(['xxx', VarArrayOf(['yyy', 'zzz'])]);
   lTo :=
-    '[' + lCrLf +
-    ' ' + 'xxx' + lCrLf +
-    '   [' + lCrLf +
-    '    ' + 'yyy' + lCrLf +
-    '    ' + 'zzz' + lCrLf +
-    '   ]' + lCrLf +
-    ']' + lCrLf;
+    '[' + cLineEnding +
+    ' ' + 'xxx' + cLineEnding +
+    '   [' + cLineEnding +
+    '    ' + 'yyy' + cLineEnding +
+    '    ' + 'zzz' + cLineEnding +
+    '   ]' + cLineEnding +
+    ']' + cLineEnding;
 
   CheckEquals(lTo, tiUtils.tiVariantArrayToString(lFrom), 'Failed on 3');
-
-//  tiShowString('|' +
-//    tiUtils.tiVariantArrayToString(lFrom) +
-//    '|' + CrLf + CrLf +
-//    '|' + lTo + '|');
-
 end;
 
 

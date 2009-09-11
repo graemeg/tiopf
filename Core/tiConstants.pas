@@ -223,16 +223,17 @@ const
   AllFilesWildCard    = '*';
   {$ELSE}
   AllFilesWildCard    = '*.*';
-  {$ENDIF UNIX}
+  {$ENDIF}
   {$IFDEF UNIX}
-  cLineEnding         = #10;
-  {$ELSE}
+  cLineEnding         = #10;    // Unix type OSes (Linux, *BSD, ...)
+  {$ENDIF}
   {$IFDEF DARWIN}
-  cLineEnding         = #13;
-  {$ELSE}
+  cLineEnding         = #13;    // Mac OS
+  {$ENDIF}
+  {$IFDEF MSWINDOWS}
   cLineEnding         = #13#10; // Windows and default
-  {$ENDIF DARWIN}
-  {$ENDIF UNIX}
+  {$ENDIF}
+
 
   // Error messages
   CErrorDecodeNumError          = 'tiDecodeNum: <%s> does not represent a number in base %d.';
