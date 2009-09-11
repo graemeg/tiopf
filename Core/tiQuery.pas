@@ -138,7 +138,7 @@ type
     // Don't use AddField. Use AddInstance instead
     procedure   AddField(const AFieldName : string;
                           const AFieldKind : TtiQueryFieldKind;
-                          AFieldWidth : integer = 0);
+                          AFieldWidth : integer = 0); deprecated;
     procedure   Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = ''); override;
     function    FindByFieldName(const AFieldName : TFieldName): TtiDBMetaDataField;
     function    IndexOfFieldName(const AFieldName: TFieldName): Integer;
@@ -1240,7 +1240,6 @@ var
   lSQL : string;
   i : integer;
 begin
-
   lSQL := '';
   for i := 0 to ATableMetaData.Count - 1 do
   begin
