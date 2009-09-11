@@ -1962,7 +1962,7 @@ begin
   Assert(Owner <> nil,
           'Owner not assigned');
   Assert(Owner is TtiObjectList,              
-          'Owner not a TtiObjectList, its a ' + Owner.ClassName);
+          'Owner not a TtiObjectList, it''s a ' + Owner.ClassName);
   result := TtiObjectList(Owner).IndexOf(self);
 end;
 
