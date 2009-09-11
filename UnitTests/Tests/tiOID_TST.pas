@@ -974,7 +974,7 @@ begin
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := 'Next_OID';
-    LTable.AddField('OID', qfkInteger);
+    LTable.AddInstance('OID', qfkInteger);
     CreateTable(LTable);
   finally
     LTable.Free;
@@ -995,11 +995,10 @@ var
   LTable : TtiDBMetaDataTable;
   lParams : TtiQueryParams;
 begin
-
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := 'Next_OID';
-    LTable.AddField('OID', qfkString, 10);
+    LTable.AddInstance('OID', qfkString, 10);
     CreateTable(LTable);
   finally
     LTable.Free;
