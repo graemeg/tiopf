@@ -10,6 +10,7 @@ uses
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
   ,pthreads
+  ,baseunix
   {$ENDIF UNIX}
   ,tiBaseObject
   ,tiThread
@@ -21,8 +22,9 @@ const
   CErrorFailedToUnlockPooledItem = 'Attempting to unlock PooledData which can not be found in the pool.';
   CErrorSemaphoreAvailableButNoItemsInPool = 'Semaphore was available but no items ' +
                 'available in the pool. MaxPoolSize: %d, Current pool size: %d';
-type
 
+type
+  // forward declaration
   TtiPool = class;
 
   TtiPooledItem = class(TtiBaseObject)
@@ -30,22 +32,22 @@ type
     FbLocked: boolean;
     FiIndex: integer;
     FdtLastused: TDateTime;
-    FOwner : TtiPool;
-    FData : TtiBaseObject;
-    procedure SetLocked(const AValue: boolean);
-    function  GetSecInUse: integer;
+    FOwner: TtiPool;
+    FData: TtiBaseObject;
+    procedure   SetLocked(const AValue: boolean);
+    function    GetSecInUse: integer;
   public
-    constructor Create(AOwner : TtiPool); virtual;
+    constructor Create(AOwner: TtiPool); virtual;
     destructor  Destroy; override;
-    property    Locked : boolean read FbLocked write SetLocked;
-    property    Index : integer read FiIndex  write FiIndex;
-    property    LastUsed : TDateTime read FdtLastused write FdtLastUsed;
-    property    Owner : TtiPool read FOwner write FOwner;
-    property    Data : TtiBaseObject read FData write FData;
-    property    SecInUse : integer read GetSecInUse;
+    property    Locked: boolean read FbLocked write SetLocked;
+    property    Index: integer read FiIndex  write FiIndex;
+    property    LastUsed: TDateTime read FdtLastused write FdtLastUsed;
+    property    Owner: TtiPool read FOwner write FOwner;
+    property    Data: TtiBaseObject read FData write FData;
+    property    SecInUse: integer read GetSecInUse;
     // The list may already be locked, so count will not be accessable. Pass it in here.
     function    MustRemoveItemFromPool(AListCount: Integer): boolean; virtual;
-    function    SecToTimeOut : integer;
+    function    SecToTimeOut: integer;
   end;
 
   TtiPooledItemClass = class of TtiPooledItem;
@@ -63,30 +65,29 @@ type
 
 
   TtiPooledItemEvent = procedure(const APooledItem : TtiPooledItem) of object;
+
+
   TtiPool = class(TtiBaseObject)
   private
-    FPool : TThreadList;
+    FPool: TThreadList;
     {$IFDEF MSWINDOWS}
-    FSemaphore : THandle;
+    FSemaphore: THandle;
     {$ENDIF MSWINDOWS}
     {$IFDEF UNIX}
-    FSemaphore : TSemaphore;
+    FSemaphore: TSemaphore;
     {$ENDIF UNIX}
     FMinPoolSize: Word;
     FMaxPoolSize: Word;
     FWaitTime: Word;
     FTimeOut: Extended;
-    FThrdPoolMonitor : TtiThrdPoolMonitor;
-
-    // ToDo: Move the semaphore operations to a class wrapper
-    procedure CreatePoolSemaphore;
-    procedure DestroyPoolSemaphore;
-    function  LockPoolSemaphore: boolean;
-    procedure UnlockPoolSemaphore;
-
-    function  GetCount: integer;
-    function  GetCountLocked: integer;
-    function  FindAvailableItemInPool(const AList: TList): TtiPooledItem;
+    FThrdPoolMonitor: TtiThrdPoolMonitor;
+    procedure   CreatePoolSemaphore;        // ToDo: --->
+    procedure   DestroyPoolSemaphore;       //  Move the semaphore
+    function    LockPoolSemaphore: boolean; //  operations to a class wrapper
+    procedure   UnlockPoolSemaphore;        // <---
+    function    GetCount: integer;
+    function    GetCountLocked: integer;
+    function    FindAvailableItemInPool(const AList: TList): TtiPooledItem;
   protected
     procedure   Clear;
     function    AddItem : TtiPooledItem;
@@ -100,7 +101,6 @@ type
     function    GetWaitTime: Word;
     procedure   SetTimeOut(const AValue: Extended); virtual;
     procedure   SetWaitTime(const AValue: Word); virtual;
-
   public
     constructor Create(const AMinPoolSize, AMaxPoolSize: Word); overload;
     destructor  Destroy; override;
@@ -112,14 +112,11 @@ type
     property    MaxPoolSize : Word read GetMaxPoolSize;
     {: WaitTime is the time (in seconds) that the pool will wait for a successful lock before raising an exception}
     property    WaitTime   : Word read GetWaitTime;
-
     property    Count   : integer read GetCount;
     property    CountLocked : integer read GetCountLocked;
-
     function    Lock : TtiBaseObject; virtual;
     procedure   UnLock(const APooledItemData : TtiBaseObject); virtual;
     procedure   ForEachPooledItem(const AMethod : TtiPooledItemEvent);
-
   end;
 
 
@@ -138,11 +135,8 @@ const
   CWaitTime    =    60; // Time to wait for a pool item (in seconds)
 
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-// *
-// *  TtiPool
-// *
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+{ TtiPool }
+
 constructor TtiPool.Create(const AMinPoolSize, AMaxPoolSize: Word);
 begin
   inherited create;
@@ -169,15 +163,24 @@ procedure TtiPool.DestroyPoolSemaphore;
 {$IFDEF UNIX}
 var
   error: integer;
+  i: integer;
 {$ENDIF UNIX}
 begin
   {$IFDEF MSWINDOWS}
   CloseHandle(FSemaphore);
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
+  i := 0;
+  sem_getvalue(FSemaphore, i);
+  while i = 0 do
+  begin
+    if sem_post(FSemaphore) <> 0 then // unlock a semaphore
+      break;  // received an error
+    sem_getvalue(FSemaphore, i);
+  end;
   error := sem_destroy(FSemaphore);
   if error <> 0 then
-    raise Exception.Create('Failed to destroy the semaphore');
+    raise EtiOPFInternalException.Create('Failed to destroy the semaphore');
   {$ENDIF UNIX}
 end;
 
@@ -317,7 +320,10 @@ begin
     achieved by issuing a non-blocking sem_trywait() within a loop, which
     counts the timeout value: int sem_trywait(sem_t * sem).
     i := fpgeterrno; }
-  result:= sem_trywait(FSemaphore) = 0;
+  repeat
+    { TODO -oGraeme -cUnix : Add timeout counter variable here so we can force exit after timeout is reached. }
+    Result := sem_trywait(FSemaphore) = 0;
+  until Result or (GetLastOSError <> ESysEINTR);  // ESysEINTR = System error: Interrupted system call
   {$ENDIF UNIX}
 end;
 
@@ -360,7 +366,7 @@ end;
 
 { TPooledItem }
 
-constructor TtiPooledItem.Create(AOwner : TtiPool);
+constructor TtiPooledItem.Create(AOwner: TtiPool);
 begin
   inherited Create;
   Index := -1;
@@ -370,7 +376,7 @@ begin
 end;
 
 
-destructor TtiPooledItem.destroy;
+destructor TtiPooledItem.Destroy;
 begin
   FData.Free;
   inherited;
@@ -408,7 +414,7 @@ end;
 procedure TtiPooledItem.SetLocked(const AValue: boolean);
 begin
   if FbLocked and not AValue then
-    Lastused := now;
+    LastUsed := now;
   FbLocked := AValue;
 end;
 
@@ -486,7 +492,7 @@ begin
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
   if sem_post(FSemaphore) <> 0 then
-    raise Exception.Create('Failed to unlock the semaphore');
+    raise EtiOPFInternalException.Create('Failed to unlock the semaphore');
   {$ENDIF UNIX}
 end;
 
@@ -498,9 +504,10 @@ begin
   FSemaphore := CreateSemaphore(nil, FMaxPoolSize, FMaxPoolSize, nil);
   {$ENDIF MSWINDOWS}
   {$IFDEF UNIX}
-  sem_destroy(FSemaphore);
+  FillChar(FSemaphore, sizeof(FSemaphore), 0);
+  // pShared = 0 means, shared between the threads of a process
   if sem_init(FSemaphore, 0, FMaxPoolSize) <> 0 then
-    raise Exception.Create('Failed to create the semaphore');
+    raise EtiOPFInternalException.Create('Failed to initialize the semaphore');
   {$ENDIF UNIX}
 end;
 
