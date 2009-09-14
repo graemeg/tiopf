@@ -7,8 +7,8 @@ uses
   Dialogs, cxControls, cxContainer, cxEdit, cxTextEdit,
   cxCheckBox, StdCtrls, cxRadioGroup, tiModelMediator, tiObject, tiDeMediators,
   Menus, cxLookAndFeelPainters, cxButtons, cxGraphics, cxMaskEdit,
-  cxDropDownEdit, cxLabel, cxTrackBar, cxMemo, cxStyles, cxSchedulerStorage,
-  cxSchedulerCustomControls, cxSchedulerDateNavigator, cxCalendar, cxSpinEdit,
+  cxDropDownEdit, cxLabel, cxTrackBar, cxMemo, cxStyles, {cxSchedulerStorage,
+  cxSchedulerCustomControls, cxSchedulerDateNavigator,} cxCalendar, cxSpinEdit,
   cxButtonEdit, ComCtrls, ShlObj,
   cxShellCommon, cxDBExtLookupComboBox, cxShellComboBox, cxRichEdit,
   cxCheckGroup, cxCheckComboBox, cxFontNameComboBox, cxColorComboBox,
@@ -42,15 +42,23 @@ type
     FTestDouble: Double;
     FTestCurrency: Currency;
     FTestColor: TColor;
+    procedure SetTestInteger(const Value: Integer);
+    procedure SetTestBoolean(const Value: Boolean);
+    procedure SetTestColor(const Value: TColor);
+    procedure SetTestCurrency(const Value: Currency);
+    procedure SetTestDateTime(const Value: TDateTime);
+    procedure SetTestDouble(const Value: Double);
+    procedure SetTestLookupItem(const Value: TLookupItem);
+    procedure SetTestString(const Value: string);
   published
-    property TestString: string read FTestString write FTestString;
-    property TestBoolean: Boolean read FTestBoolean write FTestBoolean;
-    property TestInteger: Integer read FTestInteger write FTestInteger;
-    property TestLookupItem: TLookupItem read FTestLookupItem write FTestLookupItem;
-    property TestDateTime: TDateTime read FTestDateTime write FTestDateTime;
-    property TestDouble: Double read FTestDouble write FTestDouble;
-    property TestCurrency: Currency read FTestCurrency write FTestCurrency;
-    property TestColor: TColor read FTestColor write FTestColor;
+    property TestString: string read FTestString write SetTestString;
+    property TestBoolean: Boolean read FTestBoolean write SetTestBoolean;
+    property TestInteger: Integer read FTestInteger write SetTestInteger;
+    property TestLookupItem: TLookupItem read FTestLookupItem write SetTestLookupItem;
+    property TestDateTime: TDateTime read FTestDateTime write SetTestDateTime;
+    property TestDouble: Double read FTestDouble write SetTestDouble;
+    property TestCurrency: Currency read FTestCurrency write SetTestCurrency;
+    property TestColor: TColor read FTestColor write SetTestColor;
   end;
 
   TTestObjectList = class(TtiObjectList)
@@ -93,18 +101,20 @@ type
     cxRichEdit1: TcxRichEdit;
     cxShellComboBox1: TcxShellComboBox;
     cxExtLookupComboBox1: TcxExtLookupComboBox;
-    cxGrid1DBTableView1: TcxGridDBTableView;
     cxGrid1Level1: TcxGridLevel;
     cxGrid1: TcxGrid;
-    gbtvTest: TcxGridBandedTableView;
+    cxgbtvTest: TcxGridBandedTableView;
     bDebugList: TcxButton;
-    gbtvTestColumn1: TcxGridBandedColumn;
     cxCalcEdit1: TcxCalcEdit;
+    cxgtvTest: TcxGridTableView;
+    cxGrid1Level2: TcxGridLevel;
     procedure FormCreate(Sender: TObject);
     procedure bDebugClick(Sender: TObject);
     procedure bDebugListClick(Sender: TObject);
   private
     FMediator: TtiModelMediator;
+    FMediator2: TtiModelMediator;
+    FGridMediator: tiDeMediators.TticxCustomGridTableViewMediatorView;
     FData: TTestObject;
     FTestObjectList: TTestObjectList;
     FLookupItemList: TLookupItemList;
@@ -139,8 +149,8 @@ begin
     FMediator.AddProperty('TestString', cxMemo1);
     FMediator.AddProperty('TestString', cxHyperLinkEdit1);
     FMediator.AddProperty('TestString', cxMRUEdit1);
-    FMediator.AddProperty('TestString', cxPopupEdit1);
-    FMediator.AddProperty('TestString', cxRichEdit1);    
+//    FMediator.AddProperty('TestString', cxPopupEdit1);
+//    FMediator.AddProperty('TestString', cxRichEdit1);
 
     // Color controls
     FMediator.AddProperty('TestColor', cxColorComboBox1);
@@ -169,10 +179,19 @@ begin
     FMediator.AddProperty('TestCurrency', cxCurrencyEdit1);
   end;
 
-  TticxCustomGridViewMediatorView.CreateCustom(gbtvTest, FTestObjectList, TTestObject);
+  if not Assigned(FMediator2) then
+  begin
+    FMediator2 := TtiModelMediator.Create(Self);
+    FMediator2.AddComposite('TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', cxgbtvTest);
+  end;
+
+  FGridMediator := TticxGridTableViewMediatorView.CreateCustom(cxgtvTest, FTestObjectList, 'TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', TTestObject);
 
   FMediator.Subject := FData;
   FMediator.Active := True;
+
+  FMediator2.Subject := FTestObjectList;
+  FMediator2.Active := True;
 end;
 
 procedure TForm1.SetupTestData;
@@ -249,6 +268,72 @@ end;
 function TLookupItem.GetCaption: string;
 begin
   Result := Description;
+end;
+
+{ TTestObject }
+
+procedure TTestObject.SetTestBoolean(const Value: Boolean);
+var
+  Notify: ItiNotifyObserversHelper;
+begin
+  Notify := NotifyObserversHelper;
+  FTestBoolean := Value;
+end;
+
+procedure TTestObject.SetTestColor(const Value: TColor);
+var
+  Notify: ItiNotifyObserversHelper;
+begin
+  Notify := NotifyObserversHelper;
+  FTestColor := Value;
+end;
+
+procedure TTestObject.SetTestCurrency(const Value: Currency);
+var
+  Notify: ItiNotifyObserversHelper;
+begin
+  Notify := NotifyObserversHelper;
+  FTestCurrency := Value;
+end;
+
+procedure TTestObject.SetTestDateTime(const Value: TDateTime);
+var
+  Notify: ItiNotifyObserversHelper;
+begin
+  Notify := NotifyObserversHelper;
+  FTestDateTime := Value;
+end;
+
+procedure TTestObject.SetTestDouble(const Value: Double);
+var
+  Notify: ItiNotifyObserversHelper;
+begin
+  Notify := NotifyObserversHelper;
+  FTestDouble := Value;
+end;
+
+procedure TTestObject.SetTestInteger(const Value: Integer);
+var
+  Notify: ItiNotifyObserversHelper;
+begin
+  Notify := NotifyObserversHelper;
+  FTestInteger := Value;
+end;
+
+procedure TTestObject.SetTestLookupItem(const Value: TLookupItem);
+var
+  Notify: ItiNotifyObserversHelper;
+begin
+  Notify := NotifyObserversHelper;
+  FTestLookupItem := Value;
+end;
+
+procedure TTestObject.SetTestString(const Value: string);
+var
+  Notify: ItiNotifyObserversHelper;
+begin
+  Notify := NotifyObserversHelper;
+  FTestString := Value;
 end;
 
 end.

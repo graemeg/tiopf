@@ -313,13 +313,8 @@ object Form1: TForm1
     Width = 377
     Height = 404
     TabOrder = 33
-    object cxGrid1DBTableView1: TcxGridDBTableView
-      NavigatorButtons.ConfirmDelete = False
-      DataController.Summary.DefaultGroupSummaryItems = <>
-      DataController.Summary.FooterSummaryItems = <>
-      DataController.Summary.SummaryGroups = <>
-    end
-    object gbtvTest: TcxGridBandedTableView
+    RootLevelOptions.DetailTabsPosition = dtpTop
+    object cxgbtvTest: TcxGridBandedTableView
       NavigatorButtons.ConfirmDelete = False
       DataController.Summary.DefaultGroupSummaryItems = <>
       DataController.Summary.FooterSummaryItems = <>
@@ -327,15 +322,20 @@ object Form1: TForm1
       Bands = <
         item
         end>
-      object gbtvTestColumn1: TcxGridBandedColumn
-        PropertiesClassName = 'TcxCurrencyEditProperties'
-        Position.BandIndex = 0
-        Position.ColIndex = 0
-        Position.RowIndex = 0
-      end
+    end
+    object cxgtvTest: TcxGridTableView
+      NavigatorButtons.ConfirmDelete = False
+      DataController.Summary.DefaultGroupSummaryItems = <>
+      DataController.Summary.FooterSummaryItems = <>
+      DataController.Summary.SummaryGroups = <>
     end
     object cxGrid1Level1: TcxGridLevel
-      GridView = gbtvTest
+      Caption = 'TableView'
+      GridView = cxgtvTest
+    end
+    object cxGrid1Level2: TcxGridLevel
+      Caption = 'BandedTable'
+      GridView = cxgbtvTest
     end
   end
   object bDebugList: TcxButton
