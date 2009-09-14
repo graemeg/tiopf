@@ -35,7 +35,7 @@ var
   LPerLayer: TtiPersistenceLayer;
 begin
   LPerLayer:= GTIOPFManager.PersistenceLayers.FindByPersistenceLayerName(PersistenceLayerName);
-  Assert(LPerLayer<>nil, '"' + PersistenceLayerName + '" not registered');
+  Assert(LPerLayer<>nil, '<' + PersistenceLayerName + '> not registered');
   if LPerLayer.DatabaseExists(DatabaseName, UserName, Password)
   then
     ShowMessage('Database <' + DatabaseName + '> exists.')
