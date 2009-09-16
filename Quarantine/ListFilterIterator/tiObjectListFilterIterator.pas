@@ -44,12 +44,16 @@ type
   ['{97218242-07AF-4D68-B254-0DA463F5EDCD}']
     function    GoToStart: Boolean;
     function    GoToEnd: Boolean;
+    function    GoToPos(const APos: Integer): Boolean;
     function    First: Boolean;
     function    Last: Boolean;
     function    Next: Boolean;
     function    Previous: Boolean;
     function    Current: TtiObject;
     function    Count: Integer;
+    procedure   SortByProps(const ASortProps : array of string; AAscendingOrder : Boolean = True);
+    function    FindByProps(const AProps: array of string; const AVals: array of variant;
+      ACaseSensitive: boolean = true): TtiObject;
   end;
 
   {: Enumerated type indicating the type of comparison that will be performed. }
@@ -130,6 +134,16 @@ type
       ACompareValue: TDateTime); reintroduce;
   end;
 
+  {: Enumerated Type Filter. }
+  TtiVariantFilter = class(TtiIteratorFilterAbs)
+  private
+    FVarVal: Variant;
+  public
+    function InFilter(AObject: TtiObject): Boolean; override;
+    constructor CreateCustom(AFieldName: string; ACompareType: TtiComparisonKind;
+      ACompareValue: Variant); reintroduce;
+  end;
+
   {: Class of Iterator. }
   TtiIteratorClass = class of TtiListFilterIterator;
 
@@ -160,12 +174,16 @@ type
   public
     function    GoToStart:  Boolean; virtual;
     function    GoToEnd:    boolean; virtual;
+    function    GoToPos(const APos: Integer): Boolean;
     function    First:      Boolean; virtual;
     function    Last:       Boolean; virtual;
     function    Next:       Boolean; virtual;
     function    Previous:   Boolean; virtual;
     function    Current:    TtiObject; virtual;
     function    Count:      Integer; virtual;
+    procedure   SortByProps(const ASortProps : array of string; AAscendingOrder : Boolean = True);
+    function    FindByProps(const AProps: array of string; const AVals: array of variant;
+      ACaseSensitive: boolean = true): TtiObject;
     constructor CreateCustom(AListToCopy: TtiObjectList; const AFilter: string;
       AStopOnFirstFail: Boolean = false);
     destructor  Destroy; override;
@@ -515,6 +533,7 @@ var
   lElement: string;
   lFilter: string;
   lFieldKind: TtiTypeKind;
+  lFieldType: TTypeKind;
   lSubjectObject: TtiObject;
 begin
 
@@ -546,19 +565,33 @@ begin
       // Get the field type
       lFieldKind := lSubjectObject.PropType(lField);
 
-      case lFieldKind of
-        tiTKInteger:
-          FFilterList.Add(TtiIntegerFilter.CreateCustom(lField, lCompType, StrToInt(lCompValue)));
-        tiTKFloat:
-          FFilterList.Add(TtiFloatFilter.CreateCustom(lField, lCompType, StrToFloat(lCompValue)));
-        tiTKString:
-          FFilterList.Add(TtiStringFilter.CreateCustom(lField, lCompType, lCompValue));
-        tiTKDateTime:
-          FFilterList.Add(TtiDateTimeFilter.CreateCustom(lField, lCompType, StrToDateTime(lCompValue)));
-        tiTKBoolean:
-          FFilterList.Add(TtiBooleanFilter.CreateCustom(lField, lCompType, StrToBool(lCompValue)));
-        tiTKBinary:
-          raise Exception.Create(ClassName + '.DoParseFilter: Binary types not supported');
+      {TTypeKind = (tkUnknown, tkInteger, tkChar, tkEnumeration, tkFloat,
+    tkString, tkSet, tkClass, tkMethod, tkWChar, tkLString, tkWString,
+    tkVariant, tkArray, tkRecord, tkInterface, tkInt64, tkDynArray, tkUString);
+    }
+      lFieldType := TypInfo.PropType(lSubjectObject, lField);
+
+
+      if lFieldType = tkEnumeration then
+        begin
+          FFilterList.Add(TtiVariantFilter.CreateCustom(lField, lCompType, lCompValue));
+        end
+      else
+        begin
+          case lFieldKind of
+            tiTKInteger:
+              FFilterList.Add(TtiIntegerFilter.CreateCustom(lField, lCompType, StrToInt(lCompValue)));
+            tiTKFloat:
+              FFilterList.Add(TtiFloatFilter.CreateCustom(lField, lCompType, StrToFloat(lCompValue)));
+            tiTKString:
+              FFilterList.Add(TtiStringFilter.CreateCustom(lField, lCompType, lCompValue));
+            tiTKDateTime:
+              FFilterList.Add(TtiDateTimeFilter.CreateCustom(lField, lCompType, StrToDateTime(lCompValue)));
+            tiTKBoolean:
+              FFilterList.Add(TtiBooleanFilter.CreateCustom(lField, lCompType, StrToBool(lCompValue)));
+            tiTKBinary:
+              raise Exception.Create(ClassName + '.DoParseFilter: Binary types not supported');
+          end;
       end;
     end;
 end;
@@ -600,6 +633,12 @@ begin
     end;
 end;
 
+function TtiListFilterIterator.FindByProps(const AProps: array of string;
+  const AVals: array of variant; ACaseSensitive: boolean): TtiObject;
+begin
+  result := FInternalList.FindByProps(AProps, AVals, ACaseSensitive);
+end;
+
 function TtiListFilterIterator.First: Boolean;
 begin
   result := false;
@@ -615,6 +654,12 @@ function TtiListFilterIterator.GoToEnd: boolean;
 begin
   Result := FInternalList.Count > 0;
   if Result then FCurrentIdx := FInternalList.Count;
+end;
+
+function TtiListFilterIterator.GoToPos(const APos: Integer): Boolean;
+begin
+  Result := (FInternalList.Count -1) >= APos;
+  FCurrentIdx := APos;
 end;
 
 function TtiListFilterIterator.GoToStart: Boolean;
@@ -698,6 +743,13 @@ begin
 
 end;
 
+procedure TtiListFilterIterator.SortByProps(const ASortProps: array of string;
+  AAscendingOrder: Boolean);
+begin
+  FInternalList.SortByProps(ASortProps, AAscendingOrder);
+  GoToStart;
+end;
+
 { TtiDateTimeFilter }
 
 constructor TtiDateTimeFilter.CreateCustom(AFieldName: string;
@@ -714,7 +766,7 @@ var
 begin
 
   result := false;
-  
+
   lObjValue := AObject.PropValue[FFieldName];
 
   case FCompareType of
@@ -846,6 +898,57 @@ begin
   FRegList.Add(lIteratorReg);
 end;
 
+{var
+  lObjValue: TDateTime;
+begin
+
+  result := false;
+
+  lObjValue := AObject.PropValue[FFieldName];
+
+  case FCompareType of
+    ckEqualTo:              result := (lObjValue = FDateTimeValue);
+    ckNotEqualTo:           result := (lObjValue <> FDateTimeValue);
+    ckGreaterThan:          result := (lObjValue > FDateTimeValue);
+    ckGreaterOrEqual:       Result := (lObjValue >= FDateTimeValue);
+    ckLessThan:             Result := (lObjValue < FDateTimeValue);
+    ckLessOrEqual:          Result := (lObjValue <= FDateTimeValue);
+    ckIn: ;
+    ckLike: ;
+  end;
+}
+
+{ TtiEnumFilter }
+
+constructor TtiVariantFilter.CreateCustom(AFieldName: string;
+  ACompareType: TtiComparisonKind; ACompareValue: Variant);
+begin
+  inherited Create;
+  FCompareType := ACompareType;
+  FFieldName := AFieldName;
+  FVarVal := ACompareValue;
+end;
+
+function TtiVariantFilter.InFilter(AObject: TtiObject): Boolean;
+var
+  lObjValue: Variant;
+begin
+  lObjValue := AObject.PropValue[FFieldName];
+
+  case FCompareType of
+    ckEqualTo: result :=          (lObjValue = FVarVal);
+    ckNotEqualTo: result :=       (lObjValue <> FVarVal);
+    ckGreaterThan: result :=      (lObjValue > FVarVal);
+    ckGreaterOrEqual: result :=   (lObjValue >= FVarVal);
+    ckLessThan: Result :=         (lObjValue < FVarVal);
+    ckLessOrEqual: result :=      (lObjValue <= FVarVal);
+//    ckLessThan: ;
+//    ckLessOrEqual: ;
+//    ckBetween: ;
+//    ckIn: ;
+//    ckLike: ;
+  end;
+end;
 
 initialization;
 finalization
