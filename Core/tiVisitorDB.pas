@@ -162,7 +162,7 @@ type
 
   TtiVisitorUpdate = class(TtiObjectVisitor)
   protected
-    procedure AfterExecSQL(const pRowsAffected:integer);
+    procedure AfterExecSQL(const pRowsAffected:integer); virtual;
   public
     procedure Execute(const AData: TtiVisited); override;
   end;
@@ -443,7 +443,7 @@ procedure TtiVisitorUpdate.AfterExecSQL(const pRowsAffected: integer);
 begin
   // this gets called only if FQuery.SupportsRowsAffected
 
-  // implement in concrete wisitor
+  // implement in concrete visitor
   // You can do something like:
   // if pRowsAffected=0 then raise ERecordAlreadyChanged.Create('Another user changed row.');
 end;
