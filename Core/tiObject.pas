@@ -4078,10 +4078,10 @@ end;
 
 function TtiFieldDate.Equals(const ACompareWith: TtiFieldAbs): Boolean;
 begin
-  Assert(ACompareWith.TestValid(TtiFieldDateTime), CTIErrorInvalidObject);
+  Assert(ACompareWith.TestValid(TtiFieldDate), CTIErrorInvalidObject);
   Result :=
     (IsNull = ACompareWith.IsNull) and
-    (SameValue(AsDateTime, (ACompareWith as TtiFieldDateTime).AsDateTime, cdtOneSecond/2));
+    (SameValue(AsDateTime, (ACompareWith as TtiFieldDate).AsDateTime, cdtOneSecond/2));
 end;
 
 function TtiFieldDate.GetAsString: string;
