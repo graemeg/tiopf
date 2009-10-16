@@ -112,7 +112,9 @@ type
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldInteger); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldFloat); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldDateTime); overload;
+    procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldDate); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldBoolean); overload;
+    procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiOID); overload;
     procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldString); overload;
     procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldInteger); overload;
     procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldFloat); overload;
@@ -166,7 +168,9 @@ type
     {: Check the INI file AINIFileName contains the Int64 AExpected in the AINISection:AINIIdent location}
     procedure CheckINIFileEntry(const AExpected: Int64; const AINIFileName, AINISection, AINIIdent: string); overload;
     {: Check the contents of an exception's message property}
-    procedure CheckExceptionMessage(const AMessage : string; const AException : Exception);
+    procedure CheckExceptionMessage(const AMessage : string; const AException : Exception); overload;
+    procedure CheckExceptionMessage(const AMessage : string; const AArgs: array of const; const AException : Exception); overload;
+    procedure CheckDateTimeEquals(const AExpected, AActual: TDateTime; const AMessage: string = '');
 
   end;
 
@@ -416,6 +420,11 @@ end;
 procedure TtiTestCase.Check(const ACondition: Boolean; AMessage: string; const AArgs: array of const);
 begin
   Check(ACondition, Format(AMessage, AArgs));
+end;
+
+procedure TtiTestCase.CheckDateTimeEquals(const AExpected, AActual: TDateTime; const AMessage: string = '');
+begin
+  CheckEquals(DateTimeToStr(AExpected), DateTimeToStr(AActual), AMessage);
 end;
 
 {$IFDEF FPC}
@@ -855,6 +864,37 @@ begin
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
 end;
 
+procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject;
+  const AField1, AField2: TtiOID);
+begin
+  Assert(AObj1.TestValid, CTIErrorInvalidObject);
+  Assert(AObj2.TestValid, CTIErrorInvalidObject);
+  Assert(AField1.TestValid, CTIErrorInvalidObject);
+  Assert(AField2.TestValid, CTIErrorInvalidObject);
+  Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
+  AField1.AsString := AField2.AsString + '1';
+  Check(not AObj1.Equals(AObj2), 'Equals returned TRUE when it should have returned FALSE after changing field');
+  AField1.AsString := AField2.AsString;
+  Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
+end;
+
+procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject;
+  const AField1, AField2: TtiFieldDate);
+var
+  lFieldName: string;
+begin
+  Assert(AObj1.TestValid, CTIErrorInvalidObject);
+  Assert(AObj2.TestValid, CTIErrorInvalidObject);
+  Assert(AField1.TestValid, CTIErrorInvalidObject);
+  Assert(AField2.TestValid, CTIErrorInvalidObject);
+  lFieldName := AField1.FieldName;
+  Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
+  AField1.AsDateTime := AField2.AsDateTime + 1;
+  Check(not AObj1.Equals(AObj2), 'Equals returned TRUE when it should have returned FALSE after changing field ' + lFieldName);
+  AField1.AsString := AField2.AsString;
+  Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
+end;
+
 procedure TtiTestCase.TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldBoolean);
 var
   LFieldName: string;
@@ -1168,6 +1208,12 @@ begin
   {$ELSE}
   CheckEquals(StrToInt(AExpected), AOID, AMessage);
   {$ENDIF}
+end;
+
+procedure TtiTestCase.CheckExceptionMessage(const AMessage: string;
+  const AArgs: array of const; const AException: Exception);
+begin
+  CheckExceptionMessage(Format(AMessage, AArgs), AException);
 end;
 
 procedure TtiTestCase.CheckExceptionMessage(const AMessage: string;
