@@ -60,6 +60,9 @@ const
   cTIDBProxyServiceName = 'tiDBProxyServer';
   cSecToTimeOutLocked = 999999;
 
+  CTIProtocolFile = 'file';
+  CTIProtocolSelf = 'self';
+
 {$IFDEF DELPHI5}
   cPackageSuffix = '';
   cCompilerName = 'Delphi 5';

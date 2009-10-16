@@ -91,6 +91,8 @@ type
     property Visible: Boolean read FVisible write SetVisible;
   end;
 
+  TLblMessageOnHotSpotClickEvent = procedure(const ASrc: string) of object;
+
   TtiApplicationMenuSystem = class(TtiBaseObject)
   private
     FFormMgr: TtiFormMgr;
@@ -160,6 +162,7 @@ type
     FUpdateCount: Integer;
     FBruteForceNoFlicker: TtiBruteForceNoFlicker;
     FAboutFormClass : TFormClass;
+    FLblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent;
 
     procedure CreateDockSystem;
     procedure CreateContainerPanels;
@@ -208,8 +211,8 @@ type
     procedure DoBeginUpdate(Sender: TObject);
     procedure DoEndUpdate(Sender: TObject);
     procedure DoLBLMessageClick(Sender: TObject);
-    procedure DoLblMessageOnHotSpotClick(Sender: TObject; const SRC: string;
-        var Handled: boolean);
+    procedure DoLblMessageOnHotSpotClick(ASender: TObject; const ASRC: string;
+        var AHandled: boolean);
     function  GetMenuSideBarWidth: integer;
     procedure SetMenuSideBarWidth(const AValue: integer);
     function GetStatusPannelMessage: string;
@@ -218,11 +221,12 @@ type
     procedure DoProgressVisibleChange(const AVisible: Boolean);
     procedure ArrangeMessagePanels;
    public
-     constructor Create(     AMainForm : TForm;
-                              AWorkListFormClass : TtiFormMgrFormClass;
+     constructor Create(const AMainForm: TForm;
+                        const AWorkListFormClass: TtiFormMgrFormClass;
                         const AHelpFileName: string;
-                              ADefHelpContext : Integer;
-                              AAboutFormClass: TFormClass
+                        const ADefHelpContext: Integer;
+                        const AAboutFormClass: TFormClass;
+                        const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent
                       );
      destructor  Destroy; override;
      property    MainForm : TForm read FMainForm;
@@ -291,12 +295,13 @@ type
    end;
 
 function  gAMS: TtiApplicationMenuSystem;
-procedure CreateAMS(AMainForm : TForm;
-                    AWorkListFormClass : TtiFormMgrFormClass;
-                    const AHelpFileName: string;
-                    ADefHelpContext : Integer;
-                    AFormAboutClass: TFormClass
-                      );
+procedure CreateAMS(
+  const AMainForm : TForm;
+  const AWorkListFormClass : TtiFormMgrFormClass;
+  const AHelpFileName: string;
+  const ADefHelpContext : Integer;
+  const AFormAboutClass: TFormClass;
+  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent);
 
 implementation
 uses
@@ -325,12 +330,13 @@ begin
   Result := uAMS;
 end;
 
-procedure CreateAMS(AMainForm : TForm;
-                    AWorkListFormClass : TtiFormMgrFormClass;
-                    const AHelpFileName: string;
-                    ADefHelpContext : Integer;
-                    AFormAboutClass: TFormClass
-                      );
+procedure CreateAMS(
+  const AMainForm : TForm;
+  const AWorkListFormClass : TtiFormMgrFormClass;
+  const AHelpFileName: string;
+  const ADefHelpContext : Integer;
+  const AFormAboutClass: TFormClass;
+  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent);
 begin
   Assert(uAMS = nil, 'AMS already created');
   uAMS := TtiApplicationMenuSystem.Create(
@@ -338,7 +344,8 @@ begin
     AWorkListFormClass,
     AHelpFileName,
     ADefHelpContext,
-    AFormAboutClass);
+    AFormAboutClass,
+    ALblMessageOnHotSpotClickEvent);
 end;
 
 { TtiApplicationBusyToolbarImage }
@@ -568,13 +575,13 @@ begin
   result.DisplayMode := nbdmTextOnlyInMenus;
 end;
 
-constructor TtiApplicationMenuSystem.Create(     AMainForm: TForm;
-                                                  AWorkListFormClass : TtiFormMgrFormClass;
-                                            const AHelpFileName : string;
-                                                  ADefHelpContext : Integer;
-                                                  AAboutFormClass: TFormClass
-                                           );
-
+constructor TtiApplicationMenuSystem.Create(
+  const AMainForm : TForm;
+  const AWorkListFormClass : TtiFormMgrFormClass;
+  const AHelpFileName: string;
+  const ADefHelpContext : Integer;
+  const AAboutFormClass: TFormClass;
+  const ALblMessageOnHotSpotClickEvent: TLblMessageOnHotSpotClickEvent);
 begin
   Assert(AMainForm <> nil, 'pMainForm not assigned');
   Assert(not Assigned(AMainForm.OnResize), 'pMainForm.OnResize assigned');
@@ -631,6 +638,7 @@ begin
   CreateHelpSystem;
   CreateContextMenuItems;
   FMainForm.OnResize := OnMainFormResize;
+  FLblMessageOnHotSpotClickEvent:= ALblMessageOnHotSpotClickEvent;
 
 end;
 
@@ -1685,13 +1693,21 @@ begin
   SetFormMessage('', tiufmtInfo);
 end;
 
-procedure TtiApplicationMenuSystem.DoLblMessageOnHotSpotClick(Sender: TObject;
-  const SRC: string; var Handled: boolean);
+procedure TtiApplicationMenuSystem.DoLblMessageOnHotSpotClick(ASender: TObject;
+  const ASRC: string; var AHandled: boolean);
 begin
-  if Pos('file:', SRC) = 1 then
+  // 'file://...'
+  if Pos(CTIProtocolFile + ':', ASrc) = 1 then
   begin
-    tiOpenFile(HTMLToDos(SRC));
-    Handled := true;
+    tiOpenFile(HTMLToDos(ASrc));
+    AHandled := true;
+  end
+  // 'self://...'
+  else if Pos(CTIProtocolSelf + ':', ASrc) = 1 then
+  begin
+    if Assigned(FLblMessageOnHotSpotClickEvent) then
+      FLblMessageOnHotSpotClickEvent(ASrc);
+    AHandled := true;
   end;
 end;
 
