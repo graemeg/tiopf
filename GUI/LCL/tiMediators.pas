@@ -337,7 +337,7 @@ end;
 
 function TtiCustomEditMediatorView.GetCurrentControlColor: TColor;
 begin
-  if View.ReadOnly then
+  if THackCustomEdit(View).ReadOnly then
     result := ColorToRGB(ControlReadOnlyColor)
   else
     result := inherited GetCurrentControlColor;

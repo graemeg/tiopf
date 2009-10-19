@@ -38,7 +38,6 @@ type
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; ADisplayNames: string; AIsObserving: Boolean = True); reintroduce; overload;
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; AOnBeforeSetupField: TtiOnBeforeSetupField; ADisplayNames: string; AIsObserving: Boolean = True); reintroduce; overload;
     class function ComponentClass: TClass; override;
-    class function CompositeMediator: Boolean; override;
     function GetObjectFromItem(AItem: TListItem): TtiObject;
     constructor Create; override;
     destructor Destroy; override;
@@ -303,12 +302,6 @@ begin
   end;
 end;
 
-class function TtiListViewMediatorView.CompositeMediator: Boolean;
-begin
-  Result:=True;
-end;
-
-
 { TtiListViewListItemMediator }
 
 procedure TtiListViewListItemMediator.SetupFields;
@@ -515,10 +508,8 @@ begin
 end;
 
 function TtiStringGridMediatorView.GetObjectFromRow(ARow: Integer): TTiObject;
-
 var
   O : TObject;
-
 begin
   if View.RowCount = 0 then
   begin
