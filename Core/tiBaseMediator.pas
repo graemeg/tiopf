@@ -47,10 +47,10 @@ type
     FGUIFieldName: string;
     FViewHelper: TtiMediatorViewComponentHelper;
     FCopyingCount: integer;
-    procedure CheckFieldNames;
     procedure ViewNotification(AComponent: TComponent; Operation: TOperation);
   protected
     UseInternalOnChange: Boolean;
+    procedure CheckFieldNames;
     // Check model valid and allow view to change behavior
     procedure TestIfValid;
     // If GUI and Object and fieldnames are assigned, calls SetupGUIandObject.
@@ -562,7 +562,6 @@ begin
 end;
 
 procedure TtiMediatorView.RaiseMediatorError(Const Msg: String);
-
 begin
   MediatorError(Self,Msg);
 end;
