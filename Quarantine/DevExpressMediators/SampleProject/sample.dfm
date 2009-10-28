@@ -11,6 +11,7 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -308,10 +309,10 @@ object Form1: TForm1
     Width = 145
   end
   object cxGrid1: TcxGrid
-    Left = 283
-    Top = 71
+    Left = 313
+    Top = 8
     Width = 377
-    Height = 404
+    Height = 266
     TabOrder = 33
     RootLevelOptions.DetailTabsPosition = dtpTop
     object cxgbtvTest: TcxGridBandedTableView
@@ -353,5 +354,36 @@ object Form1: TForm1
     EditValue = 0.000000000000000000
     TabOrder = 35
     Width = 121
+  end
+  object cxvtlTest: TcxVirtualTreeList
+    Left = 313
+    Top = 280
+    Width = 377
+    Height = 106
+    Bands = <>
+    TabOrder = 36
+  end
+  object cxvtlTest2: TcxVirtualTreeList
+    Left = 313
+    Top = 392
+    Width = 377
+    Height = 113
+    Bands = <>
+    TabOrder = 37
+  end
+  object tiModelMediator1: TtiModelMediator
+    PropertyLinks = <>
+    Left = 152
+    Top = 40
+  end
+  object tiModelMediator2: TtiModelMediator
+    PropertyLinks = <>
+    Left = 184
+    Top = 40
+  end
+  object tiModelMediator3: TtiModelMediator
+    PropertyLinks = <>
+    Left = 216
+    Top = 40
   end
 end

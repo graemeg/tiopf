@@ -46,6 +46,8 @@ uses
   ,cxGridTableView
   ,cxGridBandedTableView
   ,cxColorComboBox
+  ,cxTLData
+  ,cxTL
   ;
 
 type
@@ -240,6 +242,7 @@ type
   protected
     procedure DoGUIToObject; override;
     procedure DoObjectToGUI; override;
+    procedure SetupGUIandObject; override;
   public
     constructor Create; override;
     class function ComponentClass: TClass; override;
@@ -297,24 +300,45 @@ type
     property ValueClass: TtiObjectClass read FValueClass write FValueClass;
   end;
 
-  TticxCustomGridTableViewMediatorView = class(TtiMediatorView)
+  TtiCustomCompositeMediatorView = class(TtiMediatorView)
   private
     FFieldsInfo: TtiMediatorFieldInfoList;
+    FValueClass: TtiObjectClass;
+    procedure SetFieldsInfo(const Value: TtiMediatorFieldInfoList);
+  protected
+    procedure ParseDisplayNames(const AValue: string);
+    procedure SetFieldName(const AValue: string); override;
+  public
+    constructor Create; override;
+    class function CompositeMediator: Boolean; override;
+    destructor Destroy; override;
+    property FieldsInfo: TtiMediatorFieldInfoList read FFieldsInfo write
+        SetFieldsInfo;
+    property ValueClass: TtiObjectClass read FValueClass write FValueClass;
+  end;
+
+  TticxCustomGridTableViewMediatorView = class(TtiCustomCompositeMediatorView)
+  private
     FUserDataSource: TUserDataSource;
     function GetShowDeleted: Boolean;
-    procedure SetFieldsInfo(Value: TtiMediatorFieldInfoList);
     procedure SetShowDeleted(Value: Boolean);
   protected
     procedure CreateColumns; virtual;
     procedure DoObjectToGUI; override;
-    procedure SetBooleanColumn(var ANewColumn: TcxGridColumn); virtual;
-    procedure SetColorColumn(var ANewColumn: TcxGridColumn); virtual;
-    procedure SetCurrencyColumn(var ANewColumn: TcxGridColumn); virtual;
-    procedure SetDateTimeColumn(var ANewColumn: TcxGridColumn); virtual;
-    procedure SetFieldName(const AValue: string); override;
-    procedure SetFloatColumn(var ANewColumn: TcxGridColumn); virtual;
-    procedure SetIntegerColumn(var ANewColumn: TcxGridColumn); virtual;
-    procedure SetStringColumn(var ANewColumn: TcxGridcolumn); virtual;
+    procedure SetBooleanColumn(var ANewColumn: TcxGridColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetColorColumn(var ANewColumn: TcxGridColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetCurrencyColumn(var ANewColumn: TcxGridColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetDateTimeColumn(var ANewColumn: TcxGridColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetFloatColumn(var ANewColumn: TcxGridColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetIntegerColumn(var ANewColumn: TcxGridColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetStringColumn(var ANewColumn: TcxGridcolumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
     procedure SetupGUIandObject; override;
     function View: TcxGridTableView; reintroduce;
   public
@@ -323,10 +347,6 @@ type
         AFieldName: string; AValueClass: TtiObjectClass); reintroduce;
     destructor Destroy; override;
     class function ComponentClass: TClass; override;
-    class function CompositeMediator: Boolean; override;
-    procedure ParseDisplayNames(const AValue: string);
-    property FieldsInfo: TtiMediatorFieldInfoList read FFieldsInfo write
-        SetFieldsInfo;
     property ShowDeleted: Boolean read GetShowDeleted write SetShowDeleted;
   end;
 
@@ -341,6 +361,67 @@ type
   public
     class function ComponentClass: TClass; override;
     function View: TcxGridBandedTableView; reintroduce;
+  end;
+
+  TticxTreeListDataSource = class(TcxTreeListCustomDataSource)
+  private
+    FObjectList: TtiObjectList;
+    FShowDeleted: Boolean;
+    FValueClass: TtiObjectClass;
+  protected
+    function AppendRecord: Pointer; override;
+    procedure DeleteRecord(ARecordHandle: TcxDataRecordHandle); override;
+    function GetItemHandle(AItemIndex: Integer): TcxDataItemHandle; override;
+    function GetValue(ARecordHandle: TcxDataRecordHandle; AItemHandle:
+        TcxDataItemHandle): Variant; override;
+    function InsertRecord(ARecordHandle: TcxDataRecordHandle):
+        TcxDataRecordHandle; override;
+    procedure SetValue(ARecordHandle: TcxDataRecordHandle; AItemHandle:
+        TcxDataItemHandle; const AValue: Variant); override;
+    // Methods used in smart load mode
+    function GetChildCount(AParentHandle: TcxDataRecordHandle): Integer; override;
+    function GetChildRecordHandle(AParentHandle: TcxDataRecordHandle;
+      AChildIndex: Integer): TcxDataRecordHandle; override;
+    function GetRootRecordHandle: TcxDataRecordHandle; override;
+    // Methods used in LoadAllRecords mode
+    function GetParentRecordHandle(ARecordHandle: TcxDataRecordHandle): TcxDataRecordHandle; override;
+    function GetRecordCount: Integer; override;
+    function GetRecordHandle(ARecordIndex: Integer): TcxDataRecordHandle;
+        override;
+  public
+    property ObjectList: TtiObjectList read FObjectList write FObjectList;
+    property ShowDeleted: Boolean read FShowDeleted write FShowDeleted;
+    property ValueClass: TtiObjectClass read FValueClass write FValueClass;
+  end;
+
+  TticxVirtualTreeListMediatorView = class(TtiCustomCompositeMediatorView)
+  private
+    FTreeListDataSource: TticxTreeListDataSource;
+  protected
+    procedure CreateColumns; virtual;
+    procedure DoObjectToGUI; override;
+    procedure SetBooleanColumn(var ANewColumn: TcxTreeListColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetColorColumn(var ANewColumn: TcxTreeListColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetCurrencyColumn(var ANewColumn: TcxTreeListColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetDateTimeColumn(var ANewColumn: TcxTreeListColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetFloatColumn(var ANewColumn: TcxTreeListColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetIntegerColumn(var ANewColumn: TcxTreeListColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetStringColumn(var ANewColumn: TcxTreeListColumn; AFieldInfo:
+      TtiMediatorFieldInfo; ARowObject: TtiObject); virtual;
+    procedure SetupGUIandObject; override;
+    function View: TcxVirtualTreeList; reintroduce;
+  public
+    constructor Create; override;
+    constructor CreateCustom(AView: TComponent; ASubject: TtiObject;
+        AFieldName: string; AValueClass: TtiObjectClass); reintroduce;
+    class function ComponentClass: TClass; override;
+    destructor Destroy; override;
   end;
 
 procedure RegisterFallBackMediators;
@@ -390,6 +471,7 @@ begin
 
   gMediatorManager.RegisterMediator(TticxGridTableViewMediatorView, TtiObjectList);
   gMediatorManager.RegisterMediator(TticxGridBandedTableViewMediatorView, TtiObjectList);
+  gMediatorManager.RegisterMediator(TticxVirtualTreeListMediatorView, TtiObjectList);
 end;
 
 
@@ -528,30 +610,32 @@ var
   lPropType: TTypeKind;
 begin
   SetOnChangeActive(false);
+  try
+    //  Set the index only (We're assuming the item is present in the list)
+    View.ItemIndex := -1;
+    if Subject = nil then
+      Exit; //==>
 
-  //  Set the index only (We're assuming the item is present in the list)
-  View.ItemIndex := -1;
-  if Subject = nil then
-    Exit; //==>
+    if not Assigned(ValueList) then
+      RaiseMediatorError(cErrorListHasNotBeenAssigned);
 
-  if not Assigned(ValueList) then
-    RaiseMediatorError(cErrorListHasNotBeenAssigned);
+    lValue := nil;
+    lPropType := typinfo.PropType(Subject, FieldName);
+    if lPropType = tkClass then
+      lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
+    else
+      RaiseMediatorError(cErrorPropertyNotClass);
 
-  lValue := nil;
-  lPropType := typinfo.PropType(Subject, FieldName);
-  if lPropType = tkClass then
-    lValue := TtiObject(typinfo.GetObjectProp(Subject, FieldName))
-  else
-    RaiseMediatorError(cErrorPropertyNotClass);
-
-  for i := 0 to ValueList.Count - 1 do
-    if ValueList.Items[i].Equals(lValue) then
-    begin
-      View.ItemIndex := i;
-      Break; //==>
-    end;
-
-  SetOnChangeActive(true);
+    if lValue <> nil then
+      for i := 0 to ValueList.Count - 1 do
+        if ValueList.Items[i].Equals(lValue) then
+        begin
+          View.ItemIndex := i;
+          Break; //==>
+        end;
+  finally
+    SetOnChangeActive(true);
+  end;
 end;
 
 function TticxDynamicComboBoxMediatorView.GetDisplayFieldName: string;
@@ -614,8 +698,7 @@ begin
 
   InternalListRefresh;
 
-  if Assigned(ValueList) then
-    View.Enabled := ValueList.Count > 0;
+  View.Properties.DropDownListStyle := lsEditFixedList;
 
   if UseInternalOnChange then
     View.Properties.OnEditValueChanged := DoOnChange; // default OnChange event handler
@@ -735,7 +818,19 @@ procedure TticxDateEditMediatorView.DoObjectToGUI;
 begin
   inherited;
   if Subject.PropValue[FieldName] = 0 then
-    View.EditValue := '';
+    View.EditText := '';
+end;
+
+procedure TticxDateEditMediatorView.SetupGUIandObject;
+var
+  Mi, Ma: TDateTime;
+begin
+  inherited SetupGUIandObject;
+  if Subject.GetFieldBounds(FieldName, Mi, Ma) and (Ma > 0) then
+  begin
+    View.Properties.MinDate := Mi;
+    View.Properties.MaxDate := Ma;
+  end;
 end;
 
 function TticxDateEditMediatorView.View: TcxDateEdit;
@@ -948,7 +1043,10 @@ end;
 
 procedure TUserDataSource.DeleteRecord(ARecordHandle: TcxDataRecordHandle);
 begin
-  TtiObject(ARecordHandle).Deleted := True;
+  if TtiObject(ARecordHandle).ObjectState = posCreate then
+    TtiObject(ARecordHandle).ObjectState := posDeleted
+  else
+    TtiObject(ARecordHandle).Deleted := True;
   DataChanged;
 end;
 
@@ -1029,7 +1127,7 @@ begin
   begin
     PropName := TtiMediatorFieldInfo(DataBinding.Data).PropName;
     TtiObject(ARecordHandle).PropValue[PropName] := AValue;
-    TtiObject(ARecordHandle).Dirty
+    TtiObject(ARecordHandle).Dirty := True;
   end;
 end;
 
@@ -1038,7 +1136,6 @@ end;
 constructor TticxCustomGridTableViewMediatorView.Create;
 begin
   inherited Create;
-  FFieldsInfo := TtiMediatorFieldInfoList.Create(TtiMediatorFieldInfo);
   FUserDataSource := TUserDataSource.Create;
 end;
 
@@ -1055,7 +1152,6 @@ end;
 destructor TticxCustomGridTableViewMediatorView.Destroy;
 begin
   FUserDataSource.Free;
-  FFieldsInfo.Free;
   inherited Destroy;
 end;
 
@@ -1064,17 +1160,13 @@ begin
   Result := TcxGridTableView;
 end;
 
-class function TticxCustomGridTableViewMediatorView.CompositeMediator: Boolean;
-begin
-  Result := True;
-end;
-
 procedure TticxCustomGridTableViewMediatorView.CreateColumns;
 var
   APropTypeName: string;
   i: Integer;
   NewColumn: TcxGridcolumn;
   Propinfo: PPropInfo;
+  RowObject: TtiObject;
 begin
   for i := 0 to FFieldsInfo.Count - 1 do
   begin
@@ -1091,20 +1183,25 @@ begin
       PropInfo := GetPropInfo(ValueClass, FFieldsInfo[i].PropName, []);
       APropTypeName := PropInfo.PropType^.Name;
 
-      if SameText(ApropTypeName, 'string') then
-        SetStringColumn(NewColumn)
-      else if SameText(ApropTypeName, 'integer') then
-        SetIntegerColumn(NewColumn)
-      else if SameText(ApropTypeName, 'TDateTime') then
-        SetDateTimeColumn(NewColumn)
-      else if SameText(ApropTypeName, 'Boolean') then
-        SetBooleanColumn(NewColumn)
-      else if SameText(ApropTypeName, 'Currency') then
-        SetCurrencyColumn(NewColumn)
-      else if SameText(APropTypeName, 'Double') then
-        SetFloatColumn(NewColumn)
-      else if SameText(APropTypeName, 'TColor') then
-        SetColorColumn(NewColumn);
+      RowObject := ValueClass.Create;
+      try
+        if SameText(ApropTypeName, 'string') then
+          SetStringColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(ApropTypeName, 'integer') then
+          SetIntegerColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(ApropTypeName, 'TDateTime') then
+          SetDateTimeColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(ApropTypeName, 'Boolean') then
+          SetBooleanColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(ApropTypeName, 'Currency') then
+          SetCurrencyColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(APropTypeName, 'Double') then
+          SetFloatColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(APropTypeName, 'TColor') then
+          SetColorColumn(NewColumn, FFieldsInfo[i], RowObject);
+      finally
+        RowObject.Free;
+      end;
     end;
   end;
 end;
@@ -1120,24 +1217,8 @@ begin
   Result := FUserDataSource.ShowDeleted;
 end;
 
-procedure TticxCustomGridTableViewMediatorView.ParseDisplayNames(const AValue:
-    string);
-var
-  I: Integer;
-  lField: string;
-  lInfo: TtiMediatorFieldInfo;
-begin
-  FFieldsInfo.Clear;
-  for I := 1 to tiNumToken(AValue, cFieldDelimiter) do
-  begin
-    lField         := tiToken(AValue, cFieldDelimiter, I);
-    lInfo          := FFieldsInfo.AddFieldInfo;
-    lInfo.AsString := lfield;
-  end; { Loop }
-end;
-
 procedure TticxCustomGridTableViewMediatorView.SetBooleanColumn(var ANewColumn:
-    TcxGridColumn);
+  TcxGridColumn; AFieldInfo: TtiMediatorFieldInfo; ARowObject: TtiObject);
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxBooleanValueType;
   if ANewColumn.PropertiesClass = nil then
@@ -1145,63 +1226,98 @@ begin
 end;
 
 procedure TticxCustomGridTableViewMediatorView.SetColorColumn(var ANewColumn:
-    TcxGridColumn);
+  TcxGridColumn; AFieldInfo: TtiMediatorFieldInfo; ARowObject: TtiObject);
+var
+  Mi, Ma: Extended;
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxIntegerValueType;
   if ANewColumn.PropertiesClass = nil then
   begin
     ANewColumn.PropertiesClass := TcxColorComboBoxProperties;
-    TcxColorComboBoxProperties(ANewColumn.Properties).ShowDescriptions := False;
-    TcxColorComboBoxProperties(ANewColumn.Properties).AllowSelectColor := True;
+    (ANewColumn.Properties as TcxColorComboBoxProperties).ShowDescriptions := False;
+    (ANewColumn.Properties as TcxColorComboBoxProperties).AllowSelectColor := True;
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxColorComboBoxProperties).MinValue := Mi;
+      (ANewColumn.Properties as TcxColorComboBoxProperties).MaxValue := Ma;
+    end;
   end;
 end;
 
 procedure TticxCustomGridTableViewMediatorView.SetCurrencyColumn(var
-    ANewColumn: TcxGridColumn);
+  ANewColumn: TcxGridColumn; AFieldInfo: TtiMediatorFieldInfo;
+  ARowObject: TtiObject);
+var
+  Mi, Ma: Extended;
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxCurrencyValueType;
   if ANewColumn.PropertiesClass = nil then
+  begin
     ANewColumn.PropertiesClass := TcxCurrencyEditProperties;
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxCurrencyEditProperties).MinValue := Mi;
+      (ANewColumn.Properties as TcxCurrencyEditProperties).MaxValue := Ma;
+    end;
+  end;
 end;
 
 procedure TticxCustomGridTableViewMediatorView.SetDateTimeColumn(var
-    ANewColumn: TcxGridColumn);
+  ANewColumn: TcxGridColumn; AFieldInfo: TtiMediatorFieldInfo;
+  ARowObject: TtiObject);
+var
+  Mi, Ma: TDateTime;
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxDateTimeValueType;
   if ANewColumn.PropertiesClass = nil then
+  begin
     ANewColumn.PropertiesClass := TcxDateEditProperties;
-end;
 
-procedure TticxCustomGridTableViewMediatorView.SetFieldName(const AValue:
-    string);
-begin
-  inherited SetFieldName(AValue);
-  ParseDisplayNames(AValue);
-end;
-
-procedure TticxCustomGridTableViewMediatorView.SetFieldsInfo(Value:
-    TtiMediatorFieldInfoList);
-begin
-  FFieldsInfo.Assign(Value);
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxDateEditProperties).MinDate := Mi;
+      (ANewColumn.Properties as TcxDateEditProperties).MaxDate := Ma;
+    end;
+  end;
 end;
 
 procedure TticxCustomGridTableViewMediatorView.SetFloatColumn(var ANewColumn:
-    TcxGridColumn);
+  TcxGridColumn; AFieldInfo: TtiMediatorFieldInfo; ARowObject: TtiObject);
+var
+  Mi, Ma: Integer;
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxFloatValueType;
   if ANewColumn.PropertiesClass = nil then
   begin
     ANewColumn.PropertiesClass := TcxCurrencyEditProperties;
-    TcxCurrencyEditProperties(ANewColumn.Properties).DisplayFormat := '';
+    (ANewColumn.Properties as TcxCurrencyEditProperties).DisplayFormat := '';
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxCurrencyEditProperties).MinValue := Mi;
+      (ANewColumn.Properties as TcxCurrencyEditProperties).MaxValue := Ma;
+    end;
   end;
 end;
 
 procedure TticxCustomGridTableViewMediatorView.SetIntegerColumn(var ANewColumn:
-    TcxGridColumn);
+  TcxGridColumn; AFieldInfo: TtiMediatorFieldInfo; ARowObject: TtiObject);
+var
+  Mi, Ma: Integer;
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxIntegerValueType;
   if ANewColumn.PropertiesClass = nil then
+  begin
     ANewColumn.PropertiesClass := TcxSpinEditProperties;
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxSpinEditProperties).MinValue := Mi;
+      (ANewColumn.Properties as TcxSpinEditProperties).MaxValue := Ma;
+    end;
+  end;
 end;
 
 procedure TticxCustomGridTableViewMediatorView.SetShowDeleted(Value: Boolean);
@@ -1210,9 +1326,19 @@ begin
 end;
 
 procedure TticxCustomGridTableViewMediatorView.SetStringColumn(var ANewColumn:
-    TcxGridcolumn);
+    TcxGridcolumn; AFieldInfo: TtiMediatorFieldInfo; ARowObject: TtiObject);
+var
+  Mi, Ma: Integer;
 begin
   ANewColumn.DataBinding.ValueTypeClass := TcxStringValueType;
+
+  if ANewColumn.Properties = nil then
+  begin
+    ANewColumn.PropertiesClass := TcxTextEditProperties;
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+      (ANewColumn.Properties as TcxTextEditProperties).MaxLength := Ma;
+  end;
 end;
 
 procedure TticxCustomGridTableViewMediatorView.SetupGUIandObject;
@@ -1433,6 +1559,402 @@ end;
 function TticxGridTableViewMediatorView.View: TcxGridTableView;
 begin
   Result := inherited View as TcxGridTableView;
+end;
+
+{ TticxVirtualTreeListMediatorView }
+
+class function TticxVirtualTreeListMediatorView.ComponentClass: TClass;
+begin
+  Result := TcxVirtualTreeList;
+end;
+
+constructor TticxVirtualTreeListMediatorView.Create;
+begin
+  inherited;
+  FTreeListDataSource := TticxTreeListDataSource.Create;
+end;
+
+procedure TticxVirtualTreeListMediatorView.CreateColumns;
+var
+  APropTypeName: string;
+  i: Integer;
+  NewColumn: TcxTreeListColumn;
+  Propinfo: PPropInfo;
+  RowObject: TtiObject;
+begin
+  for i := 0 to FFieldsInfo.Count - 1 do
+  begin
+    if i < View.ColumnCount then
+      NewColumn := View.Columns[i]
+    else
+      NewColumn := View.CreateColumn;
+
+    NewColumn.DataBinding.Data := FFieldsInfo[i];
+
+    if NewColumn.Caption.Text = '' then
+      NewColumn.Caption.Text := FFieldsInfo[i].Caption;
+
+    if ValueClass <> nil then
+    begin
+      PropInfo := GetPropInfo(ValueClass, FFieldsInfo[i].PropName, []);
+      APropTypeName := PropInfo.PropType^.Name;
+
+      RowObject := ValueClass.Create;
+      try
+        if SameText(ApropTypeName, 'string') then
+          SetStringColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(ApropTypeName, 'integer') then
+          SetIntegerColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(ApropTypeName, 'TDateTime') then
+          SetDateTimeColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(ApropTypeName, 'Boolean') then
+          SetBooleanColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(ApropTypeName, 'Currency') then
+          SetCurrencyColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(APropTypeName, 'Double') then
+          SetFloatColumn(NewColumn, FFieldsInfo[i], RowObject)
+        else if SameText(APropTypeName, 'TColor') then
+          SetColorColumn(NewColumn, FFieldsInfo[i], RowObject);
+      finally
+        RowObject.Free;
+      end;
+    end;
+  end;
+end;
+
+constructor TticxVirtualTreeListMediatorView.CreateCustom(AView: TComponent;
+  ASubject: TtiObject; AFieldName: string; AValueClass: TtiObjectClass);
+begin
+  Create;
+  FieldName    := AFieldName;
+  SetView(AView);
+  ValueClass   := AValueClass;
+  Subject      := ASubject;
+end;
+
+destructor TticxVirtualTreeListMediatorView.Destroy;
+begin
+  FTreeListDataSource.Free;  
+  inherited;
+end;
+
+procedure TticxVirtualTreeListMediatorView.DoObjectToGUI;
+begin
+  if not View.DataController.DataChangedNotifyLocked then
+    View.DataController.CustomDataSource.DataChanged;
+end;
+
+procedure TticxVirtualTreeListMediatorView.SetBooleanColumn(
+  var ANewColumn: TcxTreeListColumn; AFieldInfo: TtiMediatorFieldInfo;
+  ARowObject: TtiObject);
+begin
+  ANewColumn.DataBinding.ValueTypeClass := TcxBooleanValueType;
+  if ANewColumn.PropertiesClass = nil then
+    ANewColumn.PropertiesClass := TcxCheckBoxProperties;
+end;
+
+procedure TticxVirtualTreeListMediatorView.SetColorColumn(
+  var ANewColumn: TcxTreeListColumn; AFieldInfo: TtiMediatorFieldInfo;
+  ARowObject: TtiObject);
+var
+  Mi, Ma: Extended;
+begin
+  ANewColumn.DataBinding.ValueTypeClass := TcxIntegerValueType;
+  if ANewColumn.PropertiesClass = nil then
+  begin
+    ANewColumn.PropertiesClass := TcxColorComboBoxProperties;
+    (ANewColumn.Properties as TcxColorComboBoxProperties).ShowDescriptions := False;
+    (ANewColumn.Properties as TcxColorComboBoxProperties).AllowSelectColor := True;
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxColorComboBoxProperties).MinValue := Mi;
+      (ANewColumn.Properties as TcxColorComboBoxProperties).MaxValue := Ma;
+    end;
+  end;
+end;
+
+procedure TticxVirtualTreeListMediatorView.SetCurrencyColumn(
+  var ANewColumn: TcxTreeListColumn; AFieldInfo: TtiMediatorFieldInfo;
+  ARowObject: TtiObject);
+var
+  Mi, Ma: Extended;
+begin
+  ANewColumn.DataBinding.ValueTypeClass := TcxCurrencyValueType;
+  if ANewColumn.PropertiesClass = nil then
+  begin
+    ANewColumn.PropertiesClass := TcxCurrencyEditProperties;
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxCurrencyEditProperties).MinValue := Mi;
+      (ANewColumn.Properties as TcxCurrencyEditProperties).MaxValue := Ma;
+    end;
+  end;
+end;
+
+procedure TticxVirtualTreeListMediatorView.SetDateTimeColumn(
+  var ANewColumn: TcxTreeListColumn; AFieldInfo: TtiMediatorFieldInfo;
+  ARowObject: TtiObject);
+var
+  Mi, Ma: TDateTime;
+begin
+  ANewColumn.DataBinding.ValueTypeClass := TcxDateTimeValueType;
+  if ANewColumn.PropertiesClass = nil then
+  begin
+    ANewColumn.PropertiesClass := TcxDateEditProperties;
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxDateEditProperties).MinDate := Mi;
+      (ANewColumn.Properties as TcxDateEditProperties).MaxDate := Ma;
+    end;
+  end;
+end;
+
+procedure TticxVirtualTreeListMediatorView.SetFloatColumn(
+  var ANewColumn: TcxTreeListColumn; AFieldInfo: TtiMediatorFieldInfo;
+  ARowObject: TtiObject);
+var
+  Mi, Ma: Integer;
+begin
+  ANewColumn.DataBinding.ValueTypeClass := TcxFloatValueType;
+  if ANewColumn.PropertiesClass = nil then
+  begin
+    ANewColumn.PropertiesClass := TcxCurrencyEditProperties;
+    (ANewColumn.Properties as TcxCurrencyEditProperties).DisplayFormat := '';
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxCurrencyEditProperties).MinValue := Mi;
+      (ANewColumn.Properties as TcxCurrencyEditProperties).MaxValue := Ma;
+    end;
+  end;
+end;
+
+procedure TticxVirtualTreeListMediatorView.SetIntegerColumn(
+  var ANewColumn: TcxTreeListColumn; AFieldInfo: TtiMediatorFieldInfo;
+  ARowObject: TtiObject);
+var
+  Mi, Ma: Integer;
+begin
+  ANewColumn.DataBinding.ValueTypeClass := TcxIntegerValueType;
+  if ANewColumn.PropertiesClass = nil then
+  begin
+    ANewColumn.PropertiesClass := TcxSpinEditProperties;
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+    begin
+      (ANewColumn.Properties as TcxSpinEditProperties).MinValue := Mi;
+      (ANewColumn.Properties as TcxSpinEditProperties).MaxValue := Ma;
+    end;
+  end;
+end;
+
+procedure TticxVirtualTreeListMediatorView.SetStringColumn(
+  var ANewColumn: TcxTreeListColumn; AFieldInfo: TtiMediatorFieldInfo;
+  ARowObject: TtiObject);
+var
+  Mi, Ma: Integer;
+begin
+  ANewColumn.DataBinding.ValueTypeClass := TcxStringValueType;
+
+  if ANewColumn.Properties = nil then
+  begin
+    ANewColumn.PropertiesClass := TcxTextEditProperties;
+
+    if ARowObject.GetFieldBounds(AFieldInfo.PropName, Mi, Ma) and (Ma > 0) then
+      (ANewColumn.Properties as TcxTextEditProperties).MaxLength := Ma;
+  end;
+end;
+
+procedure TticxVirtualTreeListMediatorView.SetupGUIandObject;
+begin
+  FTreeListDataSource.ObjectList := Subject as TtiObjectList;
+  FTreeListDataSource.ValueClass := ValueClass;
+  View.OptionsData.SmartLoad := True;
+  View.DataController.CustomDataSource := FTreeListDataSource;
+
+  CreateColumns;
+end;
+
+function TticxVirtualTreeListMediatorView.View: TcxVirtualTreeList;
+begin
+  Result := inherited View as TcxVirtualTreeList;
+end;
+
+{ TtiCustomCompositeMediatorView }
+
+class function TtiCustomCompositeMediatorView.CompositeMediator: Boolean;
+begin
+  Result := True;
+end;
+
+constructor TtiCustomCompositeMediatorView.Create;
+begin
+  inherited;
+  FFieldsInfo := TtiMediatorFieldInfoList.Create(TtiMediatorFieldInfo);
+end;
+
+destructor TtiCustomCompositeMediatorView.Destroy;
+begin
+  FFieldsInfo.Free;
+  inherited;
+end;
+
+procedure TtiCustomCompositeMediatorView.ParseDisplayNames(
+  const AValue: string);
+var
+  I: Integer;
+  lField: string;
+  lInfo: TtiMediatorFieldInfo;
+begin
+  FFieldsInfo.Clear;
+  for I := 1 to tiNumToken(AValue, cFieldDelimiter) do
+  begin
+    lField         := tiToken(AValue, cFieldDelimiter, I);
+    lInfo          := FFieldsInfo.AddFieldInfo;
+    lInfo.AsString := lfield;
+  end; { Loop }
+end;
+
+procedure TtiCustomCompositeMediatorView.SetFieldName(const AValue: string);
+begin
+  inherited SetFieldName(AValue);
+  ParseDisplayNames(AValue);
+end;
+
+procedure TtiCustomCompositeMediatorView.SetFieldsInfo(
+  const Value: TtiMediatorFieldInfoList);
+begin
+  FFieldsInfo.Assign(Value);
+end;
+
+{ TticxTreeListDataSource }
+
+function TticxTreeListDataSource.AppendRecord: Pointer;
+begin
+  if FValueClass <> nil then
+  begin
+    Result := FValueClass.CreateNew;
+    FObjectList.Add(TtiObject(Result));
+  end
+  else
+    Result := nil;
+
+  DataChanged;
+end;
+
+procedure TticxTreeListDataSource.DeleteRecord(
+  ARecordHandle: TcxDataRecordHandle);
+begin
+  if TtiObject(ARecordHandle).ObjectState = posCreate then
+    TtiObject(ARecordHandle).ObjectState := posDeleted
+  else
+    TtiObject(ARecordHandle).Deleted := True;
+  DataChanged;
+end;
+
+function TticxTreeListDataSource.GetChildCount(
+  AParentHandle: TcxDataRecordHandle): Integer;
+begin
+  if (AParentHandle <> nil) and (TObject(AParentHandle) is TtiObjectList) then
+    Result := TtiObjectList(AParentHandle).Count
+  else
+    Result := 0;
+end;
+
+function TticxTreeListDataSource.GetChildRecordHandle(
+  AParentHandle: TcxDataRecordHandle;
+  AChildIndex: Integer): TcxDataRecordHandle;
+begin
+  Result := TtiObjectList(AParentHandle)[AChildIndex];
+end;
+
+function TticxTreeListDataSource.GetItemHandle(
+  AItemIndex: Integer): TcxDataItemHandle;
+var
+  GridColumn: TcxTreeListColumn;
+begin
+  GridColumn := DataController.GetItem(AItemIndex) as TcxTreeListColumn;
+  Result := GridColumn.DataBinding.Data;
+end;
+
+function TticxTreeListDataSource.GetParentRecordHandle(
+  ARecordHandle: TcxDataRecordHandle): TcxDataRecordHandle;
+begin
+  // TODO: Not implemented.
+  Result := inherited GetParentRecordHandle(ARecordHandle);
+end;
+
+function TticxTreeListDataSource.GetRecordCount: Integer;
+begin
+  if FShowDeleted then
+    Result := FObjectList.Count
+  else
+    Result := FObjectList.CountNotDeleted;
+end;
+
+function TticxTreeListDataSource.GetRecordHandle(
+  ARecordIndex: Integer): TcxDataRecordHandle;
+var
+  I, J: Integer;
+begin
+  I := 0;
+  J := -1;
+  while (I < FObjectList.Count) do
+  begin
+    if not FObjectList[I].Deleted then
+      Inc(J);
+
+    if J <> ARecordIndex then
+      Inc(I)
+    else
+      Break;
+  end;
+
+  Result := TcxDataRecordHandle(FObjectList[I]);
+end;
+
+function TticxTreeListDataSource.GetRootRecordHandle: TcxDataRecordHandle;
+begin
+  Result := TcxDataRecordHandle(FObjectList);
+end;
+
+function TticxTreeListDataSource.GetValue(ARecordHandle: TcxDataRecordHandle;
+  AItemHandle: TcxDataItemHandle): Variant;
+var
+  PropName: string;
+begin
+  PropName := TtiMediatorFieldInfo(AItemHandle).PropName;
+  Result := TtiObject(ARecordHandle).PropValue[PropName];
+end;
+
+function TticxTreeListDataSource.InsertRecord(
+  ARecordHandle: TcxDataRecordHandle): TcxDataRecordHandle;
+var
+  NewObject: TtiObject;
+begin
+  if FValueClass <> nil then
+  begin
+    NewObject := FValueClass.CreateNew;
+    FObjectList.Insert(FObjectList.IndexOf(TtiObject(ARecordHandle)), NewObject);
+    Result := NewObject;
+  end
+  else
+    Result := nil;
+
+  DataChanged;
+end;
+
+procedure TticxTreeListDataSource.SetValue(ARecordHandle: TcxDataRecordHandle;
+  AItemHandle: TcxDataItemHandle; const AValue: Variant);
+var
+  PropName: string;
+begin
+  PropName := TtiMediatorFieldInfo(AItemHandle).PropName;
+  TtiObject(ARecordHandle).PropValue[PropName] := AValue;
+  TtiObject(ARecordHandle).Dirty := True;
 end;
 
 end.

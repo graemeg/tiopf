@@ -18,7 +18,8 @@ uses
   cxCustomData, cxFilter, cxData, cxDataStorage, DB, cxDBData,
   cxGridBandedTableView, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  cxEditRepositoryItems;
+  cxEditRepositoryItems, cxTL, cxTLdxBarBuiltInMenu, cxInplaceContainer,
+  cxTLData;
 
 type
 
@@ -65,6 +66,35 @@ type
 
   end;
 
+  TTestTreeObject = class(TtiObjectList)
+  private
+    FTestString: string;
+    FTestBoolean: Boolean;
+    FTestInteger: Integer;
+    FTestDateTime: TDateTime;
+    FTestLookupItem: TLookupItem;
+    FTestDouble: Double;
+    FTestCurrency: Currency;
+    FTestColor: TColor;
+    procedure SetTestInteger(const Value: Integer);
+    procedure SetTestBoolean(const Value: Boolean);
+    procedure SetTestColor(const Value: TColor);
+    procedure SetTestCurrency(const Value: Currency);
+    procedure SetTestDateTime(const Value: TDateTime);
+    procedure SetTestDouble(const Value: Double);
+    procedure SetTestLookupItem(const Value: TLookupItem);
+    procedure SetTestString(const Value: string);
+  published
+    property TestString: string read FTestString write SetTestString;
+    property TestBoolean: Boolean read FTestBoolean write SetTestBoolean;
+    property TestInteger: Integer read FTestInteger write SetTestInteger;
+    property TestLookupItem: TLookupItem read FTestLookupItem write SetTestLookupItem;
+    property TestDateTime: TDateTime read FTestDateTime write SetTestDateTime;
+    property TestDouble: Double read FTestDouble write SetTestDouble;
+    property TestCurrency: Currency read FTestCurrency write SetTestCurrency;
+    property TestColor: TColor read FTestColor write SetTestColor;
+  end;
+
   TForm1 = class(TForm)
     cxTextEdit1: TcxTextEdit;
     bDebug: TcxButton;
@@ -108,19 +138,26 @@ type
     cxCalcEdit1: TcxCalcEdit;
     cxgtvTest: TcxGridTableView;
     cxGrid1Level2: TcxGridLevel;
+    cxvtlTest: TcxVirtualTreeList;
+    tiModelMediator1: TtiModelMediator;
+    tiModelMediator2: TtiModelMediator;
+    tiModelMediator3: TtiModelMediator;
+    cxvtlTest2: TcxVirtualTreeList;
     procedure FormCreate(Sender: TObject);
     procedure bDebugClick(Sender: TObject);
     procedure bDebugListClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
-    FMediator: TtiModelMediator;
-    FMediator2: TtiModelMediator;
-    FGridMediator: tiDeMediators.TticxCustomGridTableViewMediatorView;
+    FGridMediator: TticxCustomGridTableViewMediatorView;
+    FTreeMediator: TticxVirtualTreeListMediatorView;
     FData: TTestObject;
     FTestObjectList: TTestObjectList;
+    FTestTreeObject: TTestTreeObject;
     FLookupItemList: TLookupItemList;
     procedure SetupMediators;
     procedure SetupTestData;
     procedure SetupTestObjectList;
+    procedure SetupTestTreeObject;
   public
     { Public declarations }
   end;
@@ -137,61 +174,62 @@ uses
 
 procedure TForm1.SetupMediators;
 begin
-  if not Assigned(FMediator) then
+  with tiModelMediator1 do
   begin
-    FMediator := TtiModelMediator.Create(self);
     // String controls
-    FMediator.AddProperty('TestString', cxTextEdit1);
-    FMediator.AddProperty('TestString', cxMaskEdit1);
-    FMediator.AddProperty('TestString', cxButtonEdit1);
-    FMediator.AddProperty('TestString', cxComboBox1);
-    FMediator.AddProperty('TestString', cxLabel1);
-    FMediator.AddProperty('TestString', cxMemo1);
-    FMediator.AddProperty('TestString', cxHyperLinkEdit1);
-    FMediator.AddProperty('TestString', cxMRUEdit1);
-//    FMediator.AddProperty('TestString', cxPopupEdit1);
-//    FMediator.AddProperty('TestString', cxRichEdit1);
+    AddProperty('TestString', cxTextEdit1);
+    AddProperty('TestString', cxMaskEdit1);
+    AddProperty('TestString', cxButtonEdit1);
+    AddProperty('TestString', cxComboBox1);
+    AddProperty('TestString', cxLabel1);
+    AddProperty('TestString', cxMemo1);
+    AddProperty('TestString', cxHyperLinkEdit1);
+    AddProperty('TestString', cxMRUEdit1);
+//    AddProperty('TestString', cxPopupEdit1);
+//    AddProperty('TestString', cxRichEdit1);
 
     // Color controls
-    FMediator.AddProperty('TestColor', cxColorComboBox1);
+    AddProperty('TestColor', cxColorComboBox1);
 
     // Boolean controls
-    FMediator.AddProperty('TestBoolean', cxCheckBox1);
+    AddProperty('TestBoolean', cxCheckBox1);
 
     // Integer controls
-    FMediator.AddProperty('TestInteger', cxTrackBar1);
-    FMediator.AddProperty('TestInteger', cxItemComboBox1);
-    FMediator.AddProperty('TestInteger', cxSpinEdit1);
-    FMediator.AddProperty('TestInteger', cxRadioGroup1);
-    FMediator.AddProperty('TestInteger', cxProgressBar1);
+    AddProperty('TestInteger', cxTrackBar1);
+    AddProperty('TestInteger', cxItemComboBox1);
+    AddProperty('TestInteger', cxSpinEdit1);
+    AddProperty('TestInteger', cxRadioGroup1);
+    AddProperty('TestInteger', cxProgressBar1);
 
     // Single controls
-    FMediator.AddProperty('TestDouble', cxCalcEdit1);
+    AddProperty('TestDouble', cxCalcEdit1);
 
     // Lookup item controls
-    FMediator.AddProperty('TestLookupItem', cxDynamicComboBox1).ValueList := FLookupItemList;
+    AddProperty('TestLookupItem', cxDynamicComboBox1).ValueList := FLookupItemList;
 
     // DateTime controls
-    FMediator.AddProperty('TestDateTime', cxDateEdit1);
-    FMediator.AddProperty('TestDateTime', cxTimeEdit1);
+    AddProperty('TestDateTime', cxDateEdit1);
+    AddProperty('TestDateTime', cxTimeEdit1);
 
     // Currency controls
-    FMediator.AddProperty('TestCurrency', cxCurrencyEdit1);
+    AddProperty('TestCurrency', cxCurrencyEdit1);
   end;
 
-  if not Assigned(FMediator2) then
-  begin
-    FMediator2 := TtiModelMediator.Create(Self);
-    FMediator2.AddComposite('TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', cxgbtvTest);
-  end;
+  tiModelMediator2.AddComposite('TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', cxgbtvTest);
+  tiModelMediator3.AddComposite('TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', cxvtlTest);
+
 
   FGridMediator := TticxGridTableViewMediatorView.CreateCustom(cxgtvTest, FTestObjectList, 'TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', TTestObject);
+  FTreeMediator := TticxVirtualTreeListMediatorView.CreateCustom(cxvtlTest2, FTestTreeObject, 'TestString;TestBoolean;TestInteger;TestDateTime;TestDouble;TestCurrency;TestColor', TTestTreeObject);
 
-  FMediator.Subject := FData;
-  FMediator.Active := True;
+  tiModelMediator1.Subject := FData;
+  tiModelMediator1.Active := True;
 
-  FMediator2.Subject := FTestObjectList;
-  FMediator2.Active := True;
+  tiModelMediator2.Subject := FTestObjectList;
+  tiModelMediator2.Active := True;
+
+  tiModelMediator3.Subject := FTestTreeObject;
+  tiModelMediator3.Active := True;
 end;
 
 procedure TForm1.SetupTestData;
@@ -245,6 +283,36 @@ begin
   end;
 end;
 
+procedure TForm1.SetupTestTreeObject;
+  procedure FillData(TestTreeObject: TTestTreeObject);
+  var
+    I: Integer;
+    NewItem: TTestTreeObject;
+  begin
+    for I := 0 to 100 do
+    begin
+      NewItem := TTestTreeObject.Create;
+      NewItem.OID.AsString := 'object' + IntToStr(i);
+      NewItem.TestString := 'string ' + IntToStr(i);
+      NewItem.TestBoolean := (i mod 2 = 0);
+      NewItem.TestInteger := i;
+      NewItem.TestDateTime := now - i;
+      NewItem.TestDouble := Random(1000) / 100;
+      NewItem.TestCurrency := Random(1000) / 100;
+      NewItem.TestColor := Random(16777215);
+      TestTreeObject.Add(NewItem);
+    end;
+  end;
+var
+  I: Integer;
+begin
+  FTestTreeObject := TTestTreeObject.Create;
+
+  FillData(FTestTreeObject);
+  for I := 0 to 100 do
+    FillData(FTestTreeObject[i] as TTestTreeObject);
+end;
+
 procedure TForm1.bDebugClick(Sender: TObject);
 begin
   tiShowString(FData.AsDebugString);
@@ -255,11 +323,18 @@ begin
   tiShowString(FTestObjectList.AsDebugString);
 end;
 
+procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  FGridMediator.Free;
+  FTreeMediator.Free;
+end;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   RegisterFallbackMediators;
   SetupTestData;
   SetupTestObjectList;
+  SetupTestTreeObject;
   SetupMediators;
 end;
 
@@ -334,6 +409,55 @@ var
 begin
   Notify := NotifyObserversHelper;
   FTestString := Value;
+end;
+
+{ TTestTreeObject }
+
+procedure TTestTreeObject.SetTestBoolean(const Value: Boolean);
+begin
+  FTestBoolean := Value;
+  NotifyObserversHelper;
+end;
+
+procedure TTestTreeObject.SetTestColor(const Value: TColor);
+begin
+  FTestColor := Value;
+  NotifyObserversHelper;
+end;
+
+procedure TTestTreeObject.SetTestCurrency(const Value: Currency);
+begin
+  FTestCurrency := Value;
+  NotifyObserversHelper;
+end;
+
+procedure TTestTreeObject.SetTestDateTime(const Value: TDateTime);
+begin
+  FTestDateTime := Value;
+  NotifyObserversHelper;
+end;
+
+procedure TTestTreeObject.SetTestDouble(const Value: Double);
+begin
+  FTestDouble := Value;
+  NotifyObserversHelper;
+end;
+
+procedure TTestTreeObject.SetTestInteger(const Value: Integer);
+begin
+  FTestInteger := Value;
+  NotifyObserversHelper;
+end;
+
+procedure TTestTreeObject.SetTestLookupItem(const Value: TLookupItem);
+begin
+  NotifyObserversHelper;
+end;
+
+procedure TTestTreeObject.SetTestString(const Value: string);
+begin
+  FTestString := Value;
+  NotifyObserversHelper;
 end;
 
 end.
