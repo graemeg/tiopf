@@ -88,6 +88,7 @@ uses
   ,tiOPFCSV_TST
   ,tiOPFDOA_TST
   ,tiOPFFBL_TST
+  ,tiOPFFIBP_TST
   ,tiOPFIBO_TST
   ,tiOPFIBX_TST
   ,tiOPFRemote_TST
@@ -172,6 +173,7 @@ begin
   tiOPFCSV_TST.RegisterTests;
   tiOPFDOA_TST.RegisterTests;
   tiOPFFBL_TST.RegisterTests;
+  tiOPFFIBP_TST.RegisterTests;
   tiOPFIBO_TST.RegisterTests;
   tiOPFIBX_TST.RegisterTests;
   tiOPFRemote_TST.RegisterTests;

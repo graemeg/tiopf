@@ -241,6 +241,7 @@ uses
   {$IFDEF LINK_CSV}             ,tiQueryCSV           {$ENDIF}
   {$IFDEF LINK_DOA}             ,tiQueryDOA           {$ENDIF}
   {$IFDEF LINK_FBL}             ,tiQueryFBL           {$ENDIF}
+  {$IFDEF LINK_FIBP}            ,tiQueryFIBP          {$ENDIF}
   {$IFDEF LINK_IBO}             ,tiQueryIBO           {$ENDIF}
   {$IFDEF LINK_IBX}             ,tiQueryIBX           {$ENDIF}
   {$IFDEF LINK_REMOTE}          ,tiQueryRemote        {$ENDIF}

@@ -16,6 +16,7 @@ const
   cTIPersistCSV           = 'CSV';
   cTIPersistDOA           = 'DOA';
   cTIPersistFBL           = 'FBL';          // Free Pascal only
+  cTIPersistFIBP          = 'FIBP';         // FIBPlus
   cTIPersistIBO           = 'IBO';
   cTIPersistIBX           = 'IBX';
   cTIPersistRemote        = 'Remote';
