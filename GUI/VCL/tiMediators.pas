@@ -655,7 +655,7 @@ begin
     RaiseMediatorError(cErrorPropertyNotClass);
 
   for i := 0 to ValueList.Count - 1 do
-    if ValueList.Items[i] = lValue then
+    if ValueList.Items[i].Equals(lValue) then
     begin
       View.ItemIndex := i;
       Break; //==>
