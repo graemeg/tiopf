@@ -1,0 +1,2 @@
+Do not delete this file. It serves as a placeholder so the
+repository can recreate this directory.
