@@ -27,11 +27,15 @@ resourcestring
 const
   // Type kinds for use with tiGetPropertyNames
   // All string type properties
-  ctkString = [ tkChar, tkString, tkWChar, tkLString, tkWString {$IFDEF FPC},tkAString{$ENDIF}{$IFDEF UNICODE} , tkUString {$ENDIF} ];
+  ctkString = [tkChar, tkString, tkWChar, tkLString, tkWString
+              {$IFDEF FPC},tkAString
+                {$IF FPC_FULLVERSION>=20301},tkUString, tkUChar{$ENDIF}
+              {$ENDIF FPC}
+              {$IFDEF UNICODE},tkUString{$ENDIF}];
   // Integer type properties
-  ctkInt    = [ tkInteger, tkInt64 {$IFDEF FPC},tkBool{$ENDIF}];
+  ctkInt    = [tkInteger, tkInt64 {$IFDEF FPC},tkBool{$ENDIF}];
   // Float type properties
-  ctkFloat  = [ tkFloat ];
+  ctkFloat  = [tkFloat];
   // Numeric type properties
   ctkNumeric = [tkInteger, tkInt64, tkFloat];
   // All simple types (string, int, float)
@@ -56,7 +60,7 @@ type
 
   // Convert a property from Delphi's TTypeKind to TtiSimpleTypeKind
   // EG: Change tkInteger, tkInt64 and tkEnumeration to tkInteger
-  function tiGetSimplePropType(const AObject : TtiBaseObject; const APropName : string): TtiTypeKind;
+  function tiGetSimplePropType(const AObject: TtiBaseObject; const APropName: string): TtiTypeKind;
   function tiVarSimplePropType(AValue : Variant): TtiTypeKind;
 
   // Is this a numeric property ?
@@ -406,6 +410,7 @@ begin
   lPropInfo := GetPropInfo(AObject, APropName);
   Assert(lPropInfo <> nil, Format('Class %s has no published property %s', [AObject.ClassName, APropName]));
   lPropTypeName := lPropInfo^.PropType^.Name;
+  lPropType := lPropInfo^.PropType^.Kind;
 
   // Check for a TDateTime
   if SameText(lPropTypeName, 'TDateTime') then
@@ -450,11 +455,15 @@ begin
   tkChar,
   tkWChar,
   tkLString,
-  {$IFDEF UNICODE}
+  {$IFDEF UNICODE}  // Delphi only - for now
   tkUString,
   {$ENDIF}
   {$IFDEF FPC}
   tkAString,
+    {$IF FPC_FULLVERSION>=20301}  // > FPC 2.3.1 only
+    tkUString,
+    tkUChar,
+    {$ENDIF}
   {$ENDIF}
   tkWString    : result := tiTKString;
 
@@ -464,7 +473,6 @@ begin
   else
     raise EtiOPFInternalException.CreateFmt(cErrorUnhandledPropType,
       [AObject.ClassName, APropName, GetEnumName(TypeInfo(TTypeKind), Ord(lPropType))]);
-
   end;
 end;
 
