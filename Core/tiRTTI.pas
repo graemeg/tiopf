@@ -14,11 +14,17 @@ uses
   ;
 
 
-const
-
+resourcestring
   CErrorSettingProperty      = 'Error setting property %s.%s Message %s';
   CErrorGettingProperty      = 'Error getting property %s.%s Message %s';
+  cErrorInvalidTtiTypeKind   = 'Invalid TtiTypeKind';
+  cErrorUnknownType          = 'Unknown type';
+  cErrorCallingReadWriteProp = 'Error calling tiIsReadWriteProp with class: %s and property %s';
+  cErrorUnhandledPropType    = 'Invalid or unhandled property type passed to tiGetSimplePropType. ClassName <%s> Property name <%s> Property type <%s>';
+  cErrorIsNumericProp        = 'Error in tiIsNumericProp. Message: %s';
+  cErrorSimpleTypeKind       = 'Error in tiGetSimpleTypeKind. Property name: %s  Message: %s';
 
+const
   // Type kinds for use with tiGetPropertyNames
   // All string type properties
   ctkString = [ tkChar, tkString, tkWChar, tkLString, tkWString {$IFDEF FPC},tkAString{$ENDIF}{$IFDEF UNICODE} , tkUString {$ENDIF} ];
@@ -43,7 +49,6 @@ const
   // tkString, tkSet, tkClass, tkMethod, tkWChar, tkLString, tkWString,
   // tkVariant, tkArray, tkRecord, tkInterface, tkInt64, tkDynArray);
 
-  cErrorInvalidTtiTypeKind = 'Invalid TtiTypeKind';
 
 type
   // Simple TypeKinds, as summary of the TTypeKinds available in TypInfo
@@ -124,7 +129,7 @@ begin
                 end;
   else
     raise EtiOPFProgrammerException.CreateFmt(cErrorSettingProperty,
-      [AObject.ClassName, APropName, 'Unknown type' ]);
+      [AObject.ClassName, APropName, cErrorUnknownType ]);
   end
 end;
 
@@ -383,10 +388,8 @@ begin
     lPropInfo := GetPropInfo(AData, APropName);
     result   := (lPropInfo^.GetProc <> nil) and (lPropInfo^.SetProc <> nil);
   except
-    on e:exception do
-      raise exception.CreateFmt(
-          'Error calling tiIsReadWriteProp with class: %s and property %s',
-          [AData.ClassName, APropName]);
+    on e: Exception do
+      raise Exception.CreateFmt(cErrorCallingReadWriteProp, [AData.ClassName, APropName]);
   end;
 end;
 
@@ -422,9 +425,7 @@ begin
     lPropType := PropType(AObject, APropName);
   except
     on e:exception do
-      raise exception.Create('Error in tiGetSimpleTypeKind ' + tiLE +
-                              'Property name: ' + APropName + tiLE +
-                              'Message: ' + e.message);
+      raise Exception.CreateFmt(cErrorSimpleTypeKind, [APropName, e.message]);
   end;
 
   // ToDo: Detection of stream properties could be better
@@ -461,11 +462,9 @@ begin
   tkBool       : result := tiTKBoolean;
   {$ENDIF}
   else
-    raise exception.Create('Invalid property type passed to ' +
-                            'tiGetSimplePropType. ClassName <' +
-                            AObject.ClassName +
-                            '> Property name <' +
-                            APropName + '>');
+    raise EtiOPFInternalException.CreateFmt(cErrorUnhandledPropType,
+      [AObject.ClassName, APropName, GetEnumName(TypeInfo(TTypeKind), Ord(lPropType))]);
+
   end;
 end;
 
@@ -534,8 +533,7 @@ begin
     lPropType := PropType(AObject, APropName);
   except
     on e:exception do
-      raise exception.Create('Error in tiGetSimpleTypeKind ' +
-                              'Message: ' + e.message);
+      raise Exception.CreateFmt(cErrorIsNumericProp, [e.message]);
   end;
   result := lPropType in [ tkInteger, tkInt64,tkEnumeration, tkFloat ];
 end;

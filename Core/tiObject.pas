@@ -20,8 +20,7 @@ uses
   ,SyncObjs   // This must come after the Windows unit!
  ;
 
-const
-
+resourcestring
   cErrorFieldNotAssigned = 'Field <%s> is null. OID=%d';
   cErrorFieldTooLong = 'Field <%s> field too long. Allowed length %d, current length %d';
   cErrorUnableToDetermineFieldName = 'Unable to determine field name on <%s>';
@@ -30,6 +29,7 @@ const
   cErrorAttemptToSetNonPublishedProperty = 'Attempt to set non-published property %s.%s to %s';
   cErrorInvalidSortType = 'Invalid TtiPerObjListSortType';
   CErrorDefaultOIDGeneratorNotAssigned = 'Default OIDGenerator not assigned. You must register an instance of TOIDGenerator with the global GTIOPFManager.';
+  cError = 'Error: ';
 
 type
   {: The possible states of a TtiObjector descendant in memory.
@@ -3689,7 +3689,7 @@ begin
               LPropValue := TtiObject(AVisited).PropValue[LPropName];
           except
             on e:exception do
-              LPropValue := 'Error: ' + e.Message;
+              LPropValue := cError + e.Message;
           end;
           WriteLn(Indent + '  ' +
                 LPropName +
