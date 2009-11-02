@@ -114,8 +114,8 @@ type
     property    WaitTime   : Word read GetWaitTime;
     property    Count   : integer read GetCount;
     property    CountLocked : integer read GetCountLocked;
-    function    Lock : TtiBaseObject; virtual;
-    procedure   UnLock(const APooledItemData : TtiBaseObject); virtual;
+    function    Lock: TtiBaseObject; virtual;
+    procedure   UnLock(const APooledItemData: TtiBaseObject); virtual;
     procedure   ForEachPooledItem(const AMethod : TtiPooledItemEvent);
   end;
 
@@ -270,10 +270,9 @@ end;
 
 function TtiPool.Lock: TtiBaseObject;
 var
-  LPool : TList;
-  LItem : TtiPooledItem;
+  LPool: TList;
+  LItem: TtiPooledItem;
 begin
-
   if not LockPoolSemaphore then
     raise EtiOPFInternalException.CreateFmt(CErrorTimedOutWaitingForSemaphore,
       [ClassName, MinPoolSize, MaxPoolSize, CountLocked]);
@@ -283,7 +282,7 @@ begin
   LPool := FPool.LockList;
 
   try
-    LItem:= FindAvailableItemInPool(LPool);
+    LItem := FindAvailableItemInPool(LPool);
 
     // There was a semaphore available, but no PooledItem, so there is room
     // in the pool to create another.
@@ -301,8 +300,7 @@ begin
     if LItem = nil then
       raise EtiOPFProgrammerException.CreateFmt(
         CErrorSemaphoreAvailableButNoItemsInPool, [FMaxPoolSize, LPool.Count]);
-    result:= LItem.Data;
-
+    Result := LItem.Data;
   finally
     FPool.UnLockList;
   end;
@@ -327,10 +325,10 @@ begin
   {$ENDIF UNIX}
 end;
 
-procedure TtiPool.UnLock(const APooledItemData : TtiBaseObject);
+procedure TtiPool.UnLock(const APooledItemData: TtiBaseObject);
 var
-  i : integer;
-  LList : TList;
+  i: integer;
+  LList: TList;
   LItem: TtiPooledItem;
 begin
   Assert(APooledItemData.TestValid, CTIErrorInvalidObject);
@@ -339,12 +337,12 @@ begin
     for i := 0 to LList.Count-1 do
       if TtiPooledItem(LList.Items[i]).Data = APooledItemData then
       begin
-        LItem:= TtiPooledItem(LList.Items[i]);
-        LItem.Locked:= False;
+        LItem := TtiPooledItem(LList.Items[i]);
+        LItem.Locked := False;
         UnlockPoolSemaphore;
         Exit; //==>
       end;
-      Raise EtiOPFProgrammerException.Create(CErrorFailedToUnlockPooledItem);
+      raise EtiOPFProgrammerException.Create(CErrorFailedToUnlockPooledItem);
   finally
     FPool.UnLockList;
   end;
@@ -353,11 +351,11 @@ end;
 
 function TtiPool.GetCount: integer;
 var
-  lList : TList;
+  lList: TList;
 begin
   lList := FPool.LockList;
   try
-    result := lList.Count;
+    Result := lList.Count;
   finally
     FPool.UnLockList;
   end;
