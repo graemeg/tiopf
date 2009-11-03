@@ -155,12 +155,14 @@ type
     FLastName: string;
     FMobile: string;
     FDateOfBirth: TDateTime;
+    FIsConfirmed: Boolean;
     procedure SetComments(const AValue: string);
     procedure SetEmail(const AValue: string);
     procedure SetFirstName(const AValue: string);
     procedure SetLastName(const AValue: string);
     procedure SetMobile(const AValue: string);
     procedure SetDateOfBirth(const AValue: TDateTime);
+    procedure SetIsConfirmed(const AValue: Boolean);
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -172,6 +174,7 @@ type
     property Comments: string read FComments write SetComments;
     property DateOfBirth: TDateTime read FDateOfBirth write SetDateOfBirth;
     property AddressList: TAddressList read FAddressList;
+    property IsConfirmed: Boolean read FIsConfirmed write SetIsConfirmed;
   end;
   
   
@@ -452,6 +455,14 @@ begin
   BeginUpdate;
   FDateOfBirth := AValue;
   Mark;
+  EndUpdate;
+end;
+
+procedure TContact.SetIsConfirmed(const AValue: Boolean);
+begin
+  if FIsConfirmed = AValue then exit;
+  BeginUpdate;
+  FIsConfirmed := AValue;
   EndUpdate;
 end;
 

@@ -43,8 +43,8 @@
       </Unit0>
       <Unit1>
         <Filename Value="frmmain.pp"/>
-        <ComponentName Value="MainForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmmain"/>
       </Unit1>
@@ -60,50 +60,50 @@
       </Unit3>
       <Unit4>
         <Filename Value="frmeditcontact.pp"/>
-        <ComponentName Value="ContactEditForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="ContactEditForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmeditcontact"/>
       </Unit4>
       <Unit5>
         <Filename Value="frmeditaddress.pp"/>
-        <ComponentName Value="EditAddressForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditAddressForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmEditAddress"/>
       </Unit5>
       <Unit6>
         <Filename Value="frmcitylist.pp"/>
-        <ComponentName Value="CityListForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="CityListForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmCityList"/>
       </Unit6>
       <Unit7>
         <Filename Value="frmeditcity.pp"/>
-        <ComponentName Value="EditCityForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditCityForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmeditcity"/>
       </Unit7>
       <Unit8>
         <Filename Value="frmcountrylist.pp"/>
-        <ComponentName Value="CountryListForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="CountryListForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmCountryList"/>
       </Unit8>
       <Unit9>
         <Filename Value="frmeditcountry.pp"/>
-        <ComponentName Value="EditCountryForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="EditCountryForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmeditcountry"/>
       </Unit9>
       <Unit10>
         <Filename Value="frmaddresstypelist.pp"/>
-        <ComponentName Value="AddressTypeListForm"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="AddressTypeListForm"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="frmAddressTypeList"/>
       </Unit10>

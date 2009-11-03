@@ -33,6 +33,7 @@ type
     EDateOfBirth: TDateEdit;
     Button1: TButton;
     Label2: TLabel;
+    chkIsConfirmed: TCheckBox;
     procedure BDeleteClick(Sender: TObject);
     procedure BEditClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -120,6 +121,7 @@ begin
     FMediator.AddProperty('Mobile', EMobile);
     FMediator.AddProperty('Comments', MComments);
     FMediator.AddProperty('DateOfBirth', EDateOfBirth);
+    FMediator.AddProperty('IsConfirmed', chkIsConfirmed);
   end;
   FMediator.Subject := FData;
   FMediator.Active := True;

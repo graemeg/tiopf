@@ -10,7 +10,7 @@ object ContactEditForm: TContactEditForm
   ClientHeight = 330
   ClientWidth = 539
   Position = poMainFormCenter
-  LCLVersion = '0.9.27'
+  LCLVersion = '0.9.29'
   object LEFirstName: TLabel
     Left = 10
     Height = 18
@@ -80,7 +80,7 @@ object ContactEditForm: TContactEditForm
   end
   object EFirstName: TEdit
     Left = 10
-    Height = 23
+    Height = 27
     Top = 24
     Width = 206
     ParentFont = False
@@ -89,7 +89,7 @@ object ContactEditForm: TContactEditForm
   end
   object ELastName: TEdit
     Left = 10
-    Height = 23
+    Height = 27
     Top = 72
     Width = 206
     ParentFont = False
@@ -98,7 +98,7 @@ object ContactEditForm: TContactEditForm
   end
   object EEmail: TEdit
     Left = 10
-    Height = 23
+    Height = 27
     Top = 120
     Width = 206
     ParentFont = False
@@ -107,7 +107,7 @@ object ContactEditForm: TContactEditForm
   end
   object EMobile: TEdit
     Left = 10
-    Height = 23
+    Height = 27
     Top = 168
     Width = 206
     ParentFont = False
@@ -184,13 +184,15 @@ object ContactEditForm: TContactEditForm
   end
   object EDateOfBirth: TDateEdit
     Left = 259
-    Height = 23
+    Height = 27
     Top = 216
     Width = 133
     CalendarDisplaySettings = [dsShowHeadings, dsShowDayNames]
     OKCaption = 'OK'
     CancelCaption = 'Cancel'
+    DateOrder = doNone
     ButtonWidth = 23
+    CharCase = ecNormal
     Glyph.Data = {
       36040000424D3604000000000000360000002800000010000000100000000100
       2000000000000004000064000000640000000000000000000000FFFFFF00FFFF
@@ -228,6 +230,7 @@ object ContactEditForm: TContactEditForm
       FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00
     }
     NumGlyphs = 0
+    MaxLength = 0
     TabOrder = 5
   end
   object Button1: TButton
@@ -238,5 +241,13 @@ object ContactEditForm: TContactEditForm
     Caption = 'Debug'
     OnClick = Button1Click
     TabOrder = 12
+  end
+  object chkIsConfirmed: TCheckBox
+    Left = 264
+    Height = 22
+    Top = 256
+    Width = 160
+    Caption = 'Are details confirmed'
+    TabOrder = 13
   end
 end

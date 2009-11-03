@@ -242,6 +242,7 @@ begin
       C.AddressList.Add(A);
     end;
     C.Comments := 'My name is ' + C.FirstName + '.';
+    C.IsConfirmed := Random(2) > 0.5;
     C.ObjectState := posClean;
     FContactList.Add(C);
   end;
