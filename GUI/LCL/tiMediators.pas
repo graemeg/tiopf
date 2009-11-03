@@ -73,8 +73,6 @@ type
   { Base class to handle TCheckBox controls }
   TtiCheckBoxMediatorView = class(TtiControlMediatorView)
   protected
-    procedure   DoObjectToGUI; override;
-    procedure   DoGUIToObject; override;
     procedure   SetupGUIandObject; override;
     procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
@@ -679,21 +677,6 @@ end;
 class function TtiCheckBoxMediatorView.ComponentClass: TClass;
 begin
   Result := TCheckBox;
-end;
-
-procedure TtiCheckBoxMediatorView.DoGUIToObject;
-begin
-  inherited;
-  if View.Checked then
-    Subject.PropValue[FieldName] := 'True'
-  else
-    Subject.PropValue[FieldName] := 'False';
-end;
-
-procedure TtiCheckBoxMediatorView.DoObjectToGUI;
-begin
-  inherited;
-  View.Checked := (Subject.PropValue[FieldName] = 'True');
 end;
 
 procedure TtiCheckBoxMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
