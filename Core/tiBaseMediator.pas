@@ -436,7 +436,7 @@ end;
 destructor TtiMediatorView.Destroy;
 begin
   if Assigned(FView) then
-    FView.FreeNotification(FViewHelper);
+    FView.RemoveFreeNotification(FViewHelper);
   Subject := nil; // Will call DetachObserver
   FViewHelper.Free;
   inherited Destroy;
