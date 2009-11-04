@@ -145,6 +145,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(const AOnNotification: TtiComponentNotificationEvent); reintroduce; virtual;
+    destructor Destroy; override;
   end;
 
 
@@ -689,10 +690,17 @@ begin
   FOnNotification := AOnNotification;
 end;
 
+destructor TtiMediatorViewComponentHelper.Destroy;
+begin
+  FOnNotification := nil;
+  inherited Destroy;
+end;
+
 procedure TtiMediatorViewComponentHelper.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
-  FOnNotification(AComponent, Operation);
+  if Assigned(FOnNotification) then
+    FOnNotification(AComponent, Operation);
   inherited;
 end;
 
