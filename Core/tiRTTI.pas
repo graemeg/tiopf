@@ -29,7 +29,7 @@ const
   // All string type properties
   ctkString = [tkChar, tkString, tkWChar, tkLString, tkWString
               {$IFDEF FPC},tkAString
-                {$IF FPC_FULLVERSION>=20301},tkUString, tkUChar{$ENDIF}
+                {$IFDEF FPC_FULLVERSION>=20301},tkUString, tkUChar{$ENDIF}
               {$ENDIF FPC}
               {$IFDEF UNICODE},tkUString{$ENDIF}];
   // Integer type properties
@@ -410,7 +410,6 @@ begin
   lPropInfo := GetPropInfo(AObject, APropName);
   Assert(lPropInfo <> nil, Format('Class %s has no published property %s', [AObject.ClassName, APropName]));
   lPropTypeName := lPropInfo^.PropType^.Name;
-  lPropType := lPropInfo^.PropType^.Kind;
 
   // Check for a TDateTime
   if SameText(lPropTypeName, 'TDateTime') then
@@ -460,7 +459,7 @@ begin
   {$ENDIF}
   {$IFDEF FPC}
   tkAString,
-    {$IF FPC_FULLVERSION>=20301}  // > FPC 2.3.1 only
+    {$IFDEF FPC_FULLVERSION>=20301}  // > FPC 2.3.1 only
     tkUString,
     tkUChar,
     {$ENDIF}
