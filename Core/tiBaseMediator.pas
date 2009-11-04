@@ -421,12 +421,13 @@ begin
   UseInternalOnChange := True;
   FActive := True;
   FObjectUpdateMoment := ouOnChange;
+  FSettingUp := False;
 end;
 
 constructor TtiMediatorView.CreateCustom(AView: TComponent; ASubject: TtiObject; AFieldName: string; AGUIFieldName: string);
 begin
-  FSettingUp   := True;
   Create;
+  FSettingUp   := True;
   FieldName    := AFieldName;
   GUIFieldName := AGUIFieldName;
   Subject      := ASubject;
@@ -587,7 +588,7 @@ begin
   if Assigned(FSubject) and FActive then
     FSubject.AttachObserver(self);
   CheckSetupGUIAndObject;
-  if Assigned(FSubject) and FActive then
+  if (not FSettingUp) and Assigned(FSubject) and FActive then
     Update(FSubject,noChanged);
 end;
 

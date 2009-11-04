@@ -313,7 +313,7 @@ end;
 
 constructor TtiCustomEditMediatorView.Create;
 begin
-  inherited;
+  inherited Create;
   FControlReadOnlyColor := clWindow;
   GUIFieldName := 'Text';
 end;
