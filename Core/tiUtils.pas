@@ -3490,7 +3490,7 @@ begin
       lY := StrToInt(Copy(AValue, 7, 4));
     end;
 
-    lH := StrToInt(Copy(AValue, 12, 2));
+    lH := StrToIntDef(Copy(AValue, 12, 2), 0);
     lMi := StrToIntDef(Copy(AValue, 15, 2), 0);
     lS := StrToIntDef(Copy(AValue, 18, 2), 0);
     lMs := StrToIntDef(Copy(AValue, 21, 3), 0);

@@ -18,6 +18,7 @@ uses
   ,Windows
   {$ENDIF MSWINDOWS}
   ,SyncObjs   // This must come after the Windows unit!
+  ,tiExcept
  ;
 
 resourcestring
@@ -30,8 +31,10 @@ resourcestring
   cErrorInvalidSortType = 'Invalid TtiPerObjListSortType';
   CErrorDefaultOIDGeneratorNotAssigned = 'Default OIDGenerator not assigned. You must register an instance of TOIDGenerator with the global GTIOPFManager.';
   cError = 'Error: ';
-
+  CErrorInvalidDate = 'A DateTime was passed when a Date was expected. DateTime="%s"';
+  
 type
+
   {: The possible states of a TtiObjector descendant in memory.
    @enum posEmpty The object has been created, but not filled with data from the DB
    @enum posPK The object has been created, but only it's primary key has been read
@@ -222,6 +225,30 @@ type
     property    Epsilon: Extended Read FEpsilon Write FEpsilon;
   end;
 
+  {: Concrete persistent currency field}
+  TtiFieldCurrency = class(TtiFieldAbs)
+  private
+    FValue: Int64;
+    procedure SetAsInteger(const Value: Int64);
+  protected
+    procedure   Clear; override;
+    procedure   SetAsString(const AValue: string);  override;
+    function    GetAsString: string;               override;
+    procedure   SetAsFloat(const AValue: Extended); virtual;
+    function    GetAsFloat: Extended; virtual;
+    function    GetAsCurrencyString: string;
+    procedure   SetAsCurrencyString(const AValue: string);
+  public
+    constructor Create(const AOwner: TtiObject); overload; override;
+    constructor Create(const AOwner: TtiObject;
+                       const ANullValidation: TtiNullValidation); overload; override;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
+    procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
+    property    AsFloat: Extended read GetAsFloat Write SetAsFloat;
+    property    AsInteger: Int64 read FValue write SetAsInteger;
+    property    AsCurrencyString: string read GetAsCurrencyString write SetAsCurrencyString;
+  end;
+
   {: Concrete persistent boolean field}
   TtiFieldBoolean = class(TtiFieldAbs)
   private
@@ -246,11 +273,10 @@ type
     function    GetYears: Word;
   protected
     procedure   Clear; override;
-    // ToDo: Perhpas this should trunc AValue removing the time portion. Think about this some more...
     procedure   SetAsDateTime(const AValue: TDateTime); virtual;
     procedure   SetAsString(const AValue: string);  override;
     function    GetAsString: string;               override;
-    property    Value: TDateTime read FValue write FValue;
+    property    Value: TDateTime read FValue write SetAsDateTime;
   public
     function    Equals(const ACompareWith: TtiFieldAbs): Boolean; override;
     procedure   Assign(const AAssignFrom: TtiFieldAbs); override;
@@ -866,7 +892,6 @@ uses
   // tiOPF
    tiConstants
   ,tiOPFManager
-  ,tiExcept
   ,tiUtils
   // Delphi
   ,SysUtils
@@ -3370,6 +3395,133 @@ begin
   FEpsilon := Power(10, -(AValue+1))*2;
 end;
 
+{ TtiFieldCurrency }
+
+procedure TtiFieldCurrency.Assign(const AAssignFrom: TtiFieldAbs);
+begin
+  if AAssignFrom.IsNull then
+    IsNull:= True
+  else
+  begin
+    IsNull:= False;
+    FValue:= (AAssignFrom as TtiFieldCurrency).FValue;
+  end;
+end;
+
+procedure TtiFieldCurrency.Clear;
+begin
+  inherited;
+  FValue := 0;
+end;
+
+constructor TtiFieldCurrency.Create(const AOwner: TtiObject);
+begin
+  Create(AOwner, nvAllowNull);
+end;
+
+constructor TtiFieldCurrency.Create(const AOwner: TtiObject;
+  const ANullValidation: TtiNullValidation);
+begin
+  inherited;
+  FValue:= 0;
+end;
+
+function TtiFieldCurrency.Equals(const ACompareWith: TtiFieldAbs): Boolean;
+begin
+  Assert(ACompareWith.TestValid(TtiFieldCurrency), CTIErrorInvalidObject);
+  Result :=
+    (IsNull = ACompareWith.IsNull) and
+    (AsInteger = (ACompareWith as TtiFieldCurrency).AsInteger);
+end;
+
+function TtiFieldCurrency.GetAsCurrencyString: string;
+begin
+  if not IsNull then
+    Result:= tiFloatToCurrency(FValue / 100)
+  else
+    Result:= ''
+end;
+
+function TtiFieldCurrency.GetAsFloat: Extended;
+begin
+  Result:= FValue / 100;
+end;
+
+function TtiFieldCurrency.GetAsString: string;
+var
+  LWhole: integer;
+  LFrac: integer;
+  LValue: integer;
+  LSign: integer;
+begin
+  if not IsNull then
+  begin
+    LSign:= Sign(FValue);
+    LValue:= Abs(FValue);
+    LWhole:= LValue div 100;
+    LFrac:= LValue - LWhole * 100;
+    Result:= IntToStr(LWhole) + '.' + tiPad0(IntToStr(LFrac), 2);
+    if LSign = -1 then
+      Result:= '-' + Result;
+  end else
+    Result:= ''
+end;
+
+procedure TtiFieldCurrency.SetAsCurrencyString(const AValue: string);
+var
+  LValue: string;
+  LSign: Shortint;
+  LWhole: string;
+  LFrac: string;
+begin
+  LValue:= UpperCase(Trim(AValue));
+  if (LValue = '') or (LValue = 'NIL') then
+  begin
+    IsNull:= True;
+    Exit; //==>
+  end;
+  IsNull:= False;
+
+  if Pos('DR', LValue) <> 0 then
+    LSign:= -1
+  else
+    LSign:= 1;
+
+  LValue:= tiStrTran(LValue, ',', '');
+  LValue:= tiStrTran(LValue, '$', '');
+  LValue:= tiStrTran(LValue, 'DR', '');
+  LValue:= tiStrTran(LValue, 'CR', '');
+  LValue:= tiStrTran(LValue, ' ', '');
+  LValue:= Trim(LValue);
+  if (Copy(LValue, Length(LValue), 1) = '-') or
+     (Copy(LValue, 1, 1) = '-') then
+  begin
+    LSign:= -1;
+    LValue:= tiStrTran(LValue, '-', '');
+  end;
+  LWhole:= tiToken(LValue, '.', 1);
+  LFrac:= tiToken(LValue, '.', 2);
+  FValue:= (StrToIntDef(LWhole, 0) * 100 + StrToIntDef(LFrac, 0)) * LSign;
+
+end;
+
+procedure TtiFieldCurrency.SetAsFloat(const AValue: Extended);
+begin
+  IsNull:= False;
+  FValue:= tiRound(AValue * 100);
+end;
+
+procedure TtiFieldCurrency.SetAsInteger(const Value: Int64);
+begin
+  IsNull:= false;
+  FValue := Value;
+end;
+
+procedure TtiFieldCurrency.SetAsString(const AValue: string);
+begin
+  SetAsCurrencyString(AValue);
+end;
+
 { TtiFieldBoolean }
 
 procedure TtiFieldBoolean.Assign(const AAssignFrom: TtiFieldAbs);
@@ -3456,13 +3608,13 @@ end;
 
 procedure TtiFieldDateTime.SetAsDateTime(const AValue: TDateTime);
 begin
-  Value := AValue;
+  FValue := AValue;
   SetValue;
 end;
 
 procedure TtiFieldDateTime.SetAsString(const AValue: string);
 begin
-  Value := tiXMLStringToDateTime(AValue);
+  FValue := tiXMLStringToDateTime(AValue);
   SetValue;
 end;
 
@@ -4129,15 +4281,22 @@ begin
 end;
 
 procedure TtiFieldDate.SetAsDateTime(const AValue: TDateTime);
+var
+  LValue: TDateTime;
 begin
+  LValue:=Trunc(AValue);
+  if not tiIsNearEnough(LValue, AValue) then
+    raise EtiOPFDataException.CreateFmt(CErrorInvalidDate, [tiDateTimeToStr(AValue)]);
   FValue := AValue;
-  SetValue;
+  if FValue <> CNullDate then
+    SetValue
+  else
+    Clear;
 end;
 
 procedure TtiFieldDate.SetAsString(const AValue: string);
 begin
-  FValue := StrToDate(AValue);
-  SetValue;
+  Value := tiXMLStringToDateTime(AValue);
 end;
 
 end.

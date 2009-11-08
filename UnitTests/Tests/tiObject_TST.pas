@@ -74,14 +74,21 @@ type
     procedure FieldString;
     procedure FieldString_Equals;
     procedure FieldString_Assign;
+
     procedure FieldInt64;
     procedure FieldInt64_Equals;
     procedure FieldInt64_Assign;
+
     procedure FieldFloat;
     procedure FieldFloat_Equals;
     procedure FieldFloat_Assign;
 
+    procedure FieldCurrency;
+    procedure FieldCurrency_Equals;
+    procedure FieldCurrency_Assign;
+
     procedure FieldDate;
+    procedure FieldDate_Fail;
     procedure FieldDate_Equals;
     procedure FieldDate_Assign;
     procedure FieldDate_YearsMonthsDays;
@@ -1819,53 +1826,45 @@ end;
 
 procedure TtiObjectTestCase.FieldDate;
 var
-  lPerObj: TtiObject;
-  lField:  TtiFieldDate;
-  lValue   : TDateTime;
-  lValueStr : string;
+  LObj: TtiObject;
+  LField:  TtiFieldDate;
+  LValue   : TDateTime;
+  LValueStr : string;
 begin
 
-  lPerObj := TtiObject.Create;
+  LObj := TtiObject.Create;
   try
-    lField:= TtiFieldDate.Create(lPerObj);
+    LField:= TtiFieldDate.Create(LObj);
     try
-      Check(lField.IsNull, 'IsNull #1');
+      Check(LField.IsNull, 'IsNull #1');
 
-      lValue   := EncodeDate(2004, 06, 03) + EncodeTime( 12, 45, 15, 00);
-      lValueStr := tiDateTimeAsXMLString(lValue);
+      LValue   := EncodeDate(2004, 06, 03);
+      LValueStr := tiDateAsXMLString(LValue);
 
-      lField.AsString := lValueStr;
-      CheckEquals(tiDateAsXMLString(LValue), lField.AsString, 'AsString #2');
-      CheckEquals(Trunc(lValue), lField.AsDateTime, 0.0001, 'AsDateTime #2');
-      Check(not lField.IsNull, 'IsNull #2');
+      LField.AsString := LValueStr;
+      CheckEquals(LValueStr, LField.AsString, 'AsString #1');
+      CheckEquals(LValue, LField.AsDateTime, 0.0001, 'AsDateTime #1');
+      Check(not LField.IsNull, 'IsNull #1');
 
-      lValue   := EncodeDate(2004, 06, 03);
-      lValueStr := tiDateAsXMLString(lValue);
+      LField.AsString := '';
+      CheckEquals('30/12/1899', LField.AsString, 'AsString #2');
+      CheckEquals(0, LField.AsDateTime, 0.0001, 'AsDateTime #2');
+      Check(LField.IsNull, 'IsNull #2');
 
-      lField.AsString := lValueStr;
-      CheckEquals(lValueStr, lField.AsString, 'AsString #2');
-      CheckEquals(lValue, lField.AsDateTime, 0.0001, 'AsDateTime #2');
-      Check(not lField.IsNull, 'IsNull #2');
+      LField.AsDateTime := LValue;
+      CheckEquals(LValueStr, LField.AsString, 'AsString #3');
+      CheckEquals(LValue, LField.AsDateTime, 0.0001, 'AsDateTime #3');
+      Check(not LField.IsNull, 'IsNull #3');
 
-      lField.AsString := '';
-      CheckEquals('30/12/1899', lField.AsString, 'AsString #3');
-      CheckEquals(0, lField.AsDateTime, 0.0001, 'AsDateTime #3');
-      Check(lField.IsNull, 'IsNull #3');
-
-      lField.AsDateTime := lValue + EncodeTime(10, 15, 30, 00);
-      CheckEquals(lValueStr, lField.AsString, 'AsString #4');
-      CheckEquals(lValue, lField.AsDateTime, 0.0001, 'AsDateTime #4');
-      Check(not lField.IsNull, 'IsNull #4');
-
-      lField.IsNull := true;
-      CheckEquals('30/12/1899', lField.AsString, 'AsString #5');
-      CheckEquals(0, lField.AsDateTime, 0.0001, 'AsDateTime #5');
-      Check(lField.IsNull, 'IsNull #5');
+      LField.IsNull := true;
+      CheckEquals('30/12/1899', LField.AsString, 'AsString #4');
+      CheckEquals(0, LField.AsDateTime, 0.0001, 'AsDateTime #4');
+      Check(LField.IsNull, 'IsNull #4');
     finally
-      lField.Free;
+      LField.Free;
     end;
   finally
-    lPerObj.Free;
+    LObj.Free;
   end;
 end;
 
@@ -2275,6 +2274,136 @@ begin
 end;
 
 
+procedure TtiObjectTestCase.FieldCurrency;
+var
+  LObj: TtiObject;
+  LField:  TtiFieldCurrency;
+const
+  CValue    = 1234.56;
+  CValueStr = '1234.56';
+  CValueInt = 123456;
+  CValueCurrencyStr = '$ 1,234.56';
+begin
+  LObj := TtiObject.Create;
+  try
+    LField:= TtiFieldCurrency.Create(LObj);
+    try
+      Check(LField.IsNull, 'IsNull #1');
+
+      LField.AsString := CValueStr;
+      CheckEquals(CValueStr, LField.AsString, 'AsString #1');
+      CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #1');
+      CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #1');
+      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #1');
+      Check(not LField.IsNull, 'IsNull #1');
+
+      LField.AsString := '';
+      CheckEquals('', LField.AsString, 'AsString #2');
+      CheckEquals(0, LField.AsFloat, 0.0001, 'AsFloat #2');
+      CheckEquals(0, LField.AsInteger, 'AsInteger #2');
+      CheckEquals('', LField.AsCurrencyString, 'AsCurrencyStr #2');
+      Check(LField.IsNull, 'IsNull #2');
+
+      LField.AsFloat := CValue;
+      CheckEquals(CValueStr, LField.AsString, 'AsString #3');
+      CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #3');
+      CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #3');
+      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #3');
+      Check(not LField.IsNull, 'IsNull #3');
+
+      LField.IsNull:= True;
+      CheckEquals('', LField.AsString, 'AsString #4');
+      CheckEquals(0, LField.AsFloat, 0.0001, 'AsFloat #4');
+      CheckEquals(0, LField.AsInteger, 'AsInteger #4');
+      CheckEquals('', LField.AsCurrencyString, 'AsCurrencyStr #4');
+      Check(LField.IsNull, 'IsNull #4');
+
+      LField.AsInteger := CValueInt;
+      CheckEquals(CValueStr, LField.AsString, 'AsString #5');
+      CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #5');
+      CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #5');
+      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #5');
+      Check(not LField.IsNull, 'IsNull #5');
+
+      LField.IsNull:= True;
+      CheckEquals('', LField.AsString, 'AsString #6');
+      CheckEquals(0, LField.AsFloat, 0.0001, 'AsFloat #6');
+      CheckEquals(0, LField.AsInteger, 'AsInteger #6');
+      CheckEquals('', LField.AsCurrencyString, 'AsCurrencyStr #6');
+      Check(LField.IsNull, 'IsNull #6');
+
+      LField.AsCurrencyString := CValueCurrencyStr;
+      CheckEquals(CValueStr, LField.AsString, 'AsString #7');
+      CheckEquals(CValue, LField.AsFloat, 0.0001, 'AsFloat #7');
+      CheckEquals(CValueInt, LField.AsInteger, 'AsInteger #7');
+      CheckEquals(CValueCurrencyStr, LField.AsCurrencyString, 'AsCurrencyStr #7');
+      Check(not LField.IsNull, 'IsNull #7');
+
+      LField.IsNull:= True;
+      CheckEquals('', LField.AsString, 'AsString #8');
+      CheckEquals(0, LField.AsFloat, 0.0001, 'AsFloat #8');
+      CheckEquals(0, LField.AsInteger, 'AsInteger #8');
+      CheckEquals('', LField.AsCurrencyString, 'AsCurrencyStr #8');
+      Check(LField.IsNull, 'IsNull #2');
+
+    finally
+      LField.Free;
+    end;
+  finally
+    LObj.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.FieldCurrency_Assign;
+var
+  lF1: TtiFieldCurrency;
+  lF2: TtiFieldCurrency;
+begin
+  lF1:= TtiFieldCurrency.Create(nil);
+  try
+    lF2:= TtiFieldCurrency.Create(nil);
+    try
+      lF1.AsInteger := 110;
+      lF2.AsInteger := 220;
+      CheckNotEquals(LF1.AsInteger, LF2.AsInteger);
+      lF2.Assign(LF1);
+      CheckEquals(LF1.AsInteger, LF2.AsInteger);
+    finally
+      lF2.Free;
+    end;
+  finally
+    lF1.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.FieldCurrency_Equals;
+var
+  lF1: TtiFieldCurrency;
+  lF2: TtiFieldCurrency;
+begin
+  lF1:= TtiFieldCurrency.Create(nil);
+  try
+    lF2:= TtiFieldCurrency.Create(nil);
+    try
+      lF1.AsFloat := 123.45;
+      lF2.AsFloat := 123.45;
+      Check(lF1.Equals(lF2));
+      Check(lF2.Equals(lF1));
+      lF2.AsFloat := 456;
+      Check(not lF1.Equals(lF2));
+      Check(not lF2.Equals(lF1));
+      lF1.AsFloat := 123.451;
+      lF2.AsFloat := 123.452;
+      Check(lF1.Equals(lF2));
+      Check(lF2.Equals(lF1));
+    finally
+      lF2.Free;
+    end;
+  finally
+    lF1.Free;
+  end;
+end;
+
 procedure TtiObjectTestCase.FieldDate_Assign;
 var
   lF1: TtiFieldDate;
@@ -2304,7 +2433,7 @@ var
   lValue   : TDateTime;
   lValueStr : string;
 begin
-  lValue   := EncodeDate(2004, 06, 03) + EncodeTime(13, 45, 20, 00);
+  lValue   := EncodeDate(2004, 06, 03);
   lValueStr := tiDateTimeAsXMLString(lValue);
 
   lPerObj := TtiObject.Create;
@@ -2346,14 +2475,11 @@ begin
       lF2.AsDateTime := EncodeDate(2005, 01, 02);
       Check(not lF1.Equals(lF2));
       Check(not lF2.Equals(lF1));
-      lF1.AsDateTime := EncodeDate(2005, 01, 01) + EncodeTime(10, 15, 30, 00);
-      lF2.AsDateTime := EncodeDate(2005, 01, 01) + EncodeTime(10, 15, 30, 00);
+      lF1.AsDateTime := EncodeDate(2005, 01, 01);
+      lF2.AsDateTime := EncodeDate(2005, 01, 01);
       Check(lF1.Equals(lF2));
       Check(lF2.Equals(lF1));
-      lF2.AsDateTime := EncodeDate(2005, 01, 01) + EncodeTime(10, 15, 30, 10);
-      Check(lF1.Equals(lF2));
-      Check(lF2.Equals(lF1));
-      lF2.AsDateTime := EncodeDate(2005, 01, 01) + 1;
+      lF2.AsDateTime := EncodeDate(2005, 01, 02);
       Check(not lF1.Equals(lF2));
       Check(not lF2.Equals(lF1));
     finally
@@ -2364,6 +2490,39 @@ begin
   end;
 end;
 
+
+procedure TtiObjectTestCase.FieldDate_Fail;
+var
+  LObj: TtiObject;
+  LField:  TtiFieldDate;
+  LValue   : TDateTime;
+  LValueStr : string;
+begin
+
+  LObj := TtiObject.Create;
+  try
+    LField:= TtiFieldDate.Create(LObj);
+    try
+      Check(LField.IsNull, 'IsNull #1');
+
+      LValue   := EncodeDate(2004, 06, 03) + EncodeTime( 12, 45, 15, 00);
+      LValueStr := tiDateTimeAsXMLString(LValue);
+
+//      StartExpectingException(EtiOPFDataException);
+//      LField.AsString := LValueStr;
+//      StopExpectingException;
+//
+//      StartExpectingException(EtiOPFDataException);
+//      LField.AsDateTime := LValue;
+//      StopExpectingException;
+
+    finally
+      LField.Free;
+    end;
+  finally
+    LObj.Free;
+  end;
+end;
 
 procedure TtiObjectTestCase.FieldFloat_Assign;
 var
