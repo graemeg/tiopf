@@ -24,10 +24,12 @@ const
   cResTI_CancelSave16D           = 'ti_CancelSave_16D';
   cResTI_CancelSave16H           = 'ti_CancelSave_16H';
   cResTI_CancelSave16N           = 'ti_CancelSave_16N';
+  cResTI_CheckBoxChecked         = 'ti_CheckBoxChecked';
   cResTI_CheckBoxChecked16D      = 'ti_CheckBoxChecked_16D';
   cResTI_CheckBoxChecked16N      = 'ti_CheckBoxChecked_16N';
   cResTI_CheckBoxPartChecked16D  = 'ti_CheckBoxPartChecked_16D';
   cResTI_CheckBoxPartChecked16N  = 'ti_CheckBoxPartChecked_16N';
+  cResTI_CheckBoxUnChecked       = 'ti_CheckBoxUnChecked';
   cResTI_CheckBoxUnChecked16D    = 'ti_CheckBoxUnChecked_16D';
   cResTI_CheckBoxUnChecked16N    = 'ti_CheckBoxUnChecked_16N';
   cResTI_CloseWindow             = 'ti_CloseWindow';

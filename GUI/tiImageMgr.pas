@@ -536,6 +536,9 @@ begin
     LoadImagesFromResource(cResTI_Print,           [tiIS16]);
     LoadImagesFromResource(cResTI_PrintSetup,      [tiIS16]);
 
+    LoadImagesFromResource(cResTI_CheckBoxChecked,   [tiIS16]);
+    LoadImagesFromResource(cResTI_CheckBoxUnChecked, [tiIS16]);
+
   finally
     FResFileInstance := lResFileInstance;
   end;
