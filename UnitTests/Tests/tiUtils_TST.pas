@@ -61,7 +61,7 @@ type
     procedure Cr;
     procedure CrLf;
     procedure Lf;
-    procedure tiLE;
+    procedure tiLineEnd;
     procedure TestCreateDir;     // Tests logic used in tiFileToStringList test
     procedure TestCreateFile;    // Tests logic used in tiFileToStringList test
     procedure tiAddEllipsis;
@@ -2043,22 +2043,22 @@ begin
 end;
 
 
-procedure TTestTIUtils.tiLE;
+procedure TTestTIUtils.tiLineEnd;
 begin
 {$IFDEF MSWINDOWS}
-  Check(tiUtils.tiLE = #13#10);
-  Check(tiUtils.tiLE(1) = #13#10);
-  Check(tiUtils.tiLE(2) = #13#10 + #13#10);
+  Check(tiUtils.tiLineEnd = #13#10);
+  Check(tiUtils.tiLineEnd(1) = #13#10);
+  Check(tiUtils.tiLineEnd(2) = #13#10 + #13#10);
 {$ENDIF}
 {$IFDEF UNIX}
-  Check(tiUtils.tiLE = #10);
-  Check(tiUtils.tiLE(1) = #10);
-  Check(tiUtils.tiLE(2) = #10 + #10);
+  Check(tiUtils.tiLineEnd = #10);
+  Check(tiUtils.tiLineEnd(1) = #10);
+  Check(tiUtils.tiLineEnd(2) = #10 + #10);
 {$ENDIF}
 {$IFDEF DARWIN}
-  Check(tiUtils.tiLE = #13);
-  Check(tiUtils.tiLE(1) = #13);
-  Check(tiUtils.tiLE(2) = #13 + #13);
+  Check(tiUtils.tiLineEnd = #13);
+  Check(tiUtils.tiLineEnd(1) = #13);
+  Check(tiUtils.tiLineEnd(2) = #13 + #13);
 {$ENDIF}
 end;
 

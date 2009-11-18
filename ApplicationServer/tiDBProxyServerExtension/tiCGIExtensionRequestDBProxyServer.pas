@@ -47,22 +47,15 @@ begin
   Assert(ACGIExeName<>'', 'pCGIExeName not assigned');
 
   LURL:= AConnectionDetails.AppServerURL + '/' + ACGIExeName;
-  LErrorCode:=0;
   LHTTP:= gTIHTTPFactory.CreateInstance(AConnectionDetails);
   try
     LHTTP.FormatExceptions := False ;
     LHTTP.Input.WriteString(AParams);
-    try
-      if LHTTP is TtiHTTPMSXML then
-        (LHTTP as TtiHTTPMSXML).AutoFlushCache:= False;
-      LHTTP.Post(LURL);
-      LErrorCode:= LHTTP.ResponseTIOPFErrorCode;
-      Result := Trim(LHTTP.Output.DataString);
-    except
-      on e:Exception do
-        raise Exception.CreateFmt(cErrorExecutingHTTPPost,
-          [LURL, e.message, LHTTP.ResponseText]);
-    end;
+    if LHTTP is TtiHTTPMSXML then
+      (LHTTP as TtiHTTPMSXML).AutoFlushCache:= False;
+    LHTTP.Post(LURL);
+    LErrorCode:= LHTTP.ResponseTIOPFErrorCode;
+    Result := Trim(LHTTP.Output.DataString);
   finally
     LHTTP.Free;
   end;

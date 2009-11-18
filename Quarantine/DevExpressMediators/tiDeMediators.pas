@@ -64,7 +64,6 @@ type
     procedure UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
   public
     constructor Create; override;
-    destructor Destroy; override;
     class function ComponentClass: TClass; override;
     procedure SetView(const AValue: TComponent); override;
     function View: TcxCustomEdit; reintroduce;
@@ -1380,13 +1379,6 @@ begin
   FViewErrorColor := clError;
 end;
 
-destructor TticxCustomEditMediatorView.Destroy;
-begin
-  if (View <> nil) and Assigned(THackcxCustomEdit(View).Properties.OnEditValueChanged) then
-    THackcxCustomEdit(View).Properties.OnEditValueChanged := nil;
-  inherited;
-end;
-
 class function TticxCustomEditMediatorView.ComponentClass: TClass;
 begin
   Result := TcxCustomEdit;
@@ -1403,10 +1395,15 @@ begin
   inherited;
   if View <> nil then
   begin
-    if ObjectUpdateMoment in [ouOnchange, ouCustom] then
-      THackcxCustomEdit(View).Properties.OnEditValueChanged := DoOnChange
-    else
-      THackcxCustomEdit(View).OnExit := DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: THackcxCustomEdit(View).Properties.OnEditValueChanged := DoOnChange;
+      ouOnExit: THackcxCustomEdit(View).OnExit := DoOnChange;
+      ouNone:
+      begin
+        THackcxCustomEdit(View).Properties.OnEditValueChanged := nil;
+        THackcxCustomEdit(View).OnExit := nil;
+      end;
+    end;
   end;
 end;
 

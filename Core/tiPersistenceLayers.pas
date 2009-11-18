@@ -387,7 +387,7 @@ begin
     lPackageModule := LoadPackage(ExtractFileName(lPackageName));
     result  := FindByPersistenceLayerName(APersistenceLayerName);
     if result = nil then
-      raise exception.Create('Unable to locate package in memory after it was loaded.' + tiLE +
+      raise exception.Create('Unable to locate package in memory after it was loaded.' + tiLineEnd +
                               'Check that this application was build with the runtime package tiPersistCore');
     result.DynamicallyLoaded := true;
     result.ModuleID := lPackageModule;
@@ -396,7 +396,7 @@ begin
     begin
       lMessage := 'Unable to initialize persistence layer <' +
                   APersistenceLayerName + '> Package name <' +
-                  lPackageName + '>' + tiLE(2) +
+                  lPackageName + '>' + tiLineEnd(2) +
                   'Error message: ' + e.message;
       raise Exception.Create(lMessage);
     end;

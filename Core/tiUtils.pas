@@ -142,6 +142,11 @@ type
      typically used in the OS. }
   function tiWrap(const AString: string; const AColumnWidth: Integer): string;
   function tiStripNonAlphaCharacters(const AString: string): string;
+function tiReplaceFileNameReservedChars(const AString: string; 
+                                        const AReplaceWith: string;
+                                        const AReplaceDot: Boolean = false; 
+                                        const AReplaceSlashes: Boolean = false;
+                                        const AReplaceColons: Boolean = false): string;
   {: Remove sequence of digits from start of string. }
   function tiStripIntPrefix(const AString : string): string;
 
@@ -510,7 +515,7 @@ type
   // Return a string with ACount #13+#10 characters
   function  CrLf(const ACount : Byte = 1): string;
   // Return a string with ACount line endings (OS dependent) characters
-  function  tiLE(const ACount : Byte = 1): string;
+  function  tiLineEnd(const ACount : Byte = 1): string;
   // Returns a string with ACount #9 characters
   function  Tab(const ACount : Byte = 1): string;
   // Returns the checksum of a string of numbers
@@ -2575,7 +2580,7 @@ end;
 
 
 { OS dependent line ending character(s) }
-function  tiLE(const ACount : Byte = 1): string;
+function  tiLineEnd(const ACount : Byte = 1): string;
 begin
   result := tiReplicate(cLineEnding, ACount);
 end;
@@ -3374,7 +3379,7 @@ end;
 
 function tiWrap(const AString: string; const AColumnWidth: Integer): string;
 begin
-  Result := tiAddSeparators(AString, AColumnWidth, tiLE);
+  Result := tiAddSeparators(AString, AColumnWidth, tiLineEnd);
 end;
 
 function tiStripNonAlphaCharacters(const AString: string): string;
@@ -3386,6 +3391,30 @@ begin
   for i := 1 to Length(AString) do
     if isCharAlpha(AString[i]) then
       LResult := LResult + AString[i];
+  Result := LResult;
+end;
+
+function tiReplaceFileNameReservedChars(
+    const AString: string; const AReplaceWith: string;
+    const AReplaceDot: Boolean = false; const AReplaceSlashes: Boolean = false;
+    const AReplaceColons: Boolean = false): string;
+var
+  i: integer;
+  LResult: string;
+begin
+  // TODO: Different behaviour for non-Windows OSs
+  LResult := '';
+  for i := 1 to Length(AString) do
+  begin
+    if (AString[i] in ['*', '?', '<', '>', '"', '[', ']', ';', '|', '=', ',']) or
+        (AReplaceDot and (AString[i] in ['.'])) or 
+        (AReplaceSlashes and (AString[i] in ['/', '\'])) or 
+        (AReplaceColons and (AString[i] in [':'])) then
+    begin
+      LResult := LResult + AReplaceWith;
+    end else
+      LResult := LResult + AString[i];
+  end;
   Result := LResult;
 end;
 

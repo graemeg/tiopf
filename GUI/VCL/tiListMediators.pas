@@ -24,13 +24,11 @@ uses
 type
   { Composite mediator for TListView }
   TtiListViewMediatorView = class(TtiCustomListMediatorView)
-  private
-    FObserversInTransit: TList;
   protected
     function GetSelectedObject: TtiObject; override;
     procedure SetSelectedObject(const AValue: TtiObject); override;
     procedure CreateColumns; override;
-    procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
+    function DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
     procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); override;
     procedure SetupGUIandObject; override;
     procedure ClearList; override;
@@ -52,12 +50,12 @@ type
   { Composite mediator for TtiVTListView }
   TtiVTListViewMediatorView = class(TtiCustomListMediatorView)
   private
-    FObserversInTransit: TList;
+    FSelectedObject: TtiObject;
   protected
     function GetSelectedObject: TtiObject; override;
     procedure SetSelectedObject(const AValue: TtiObject); override;
     procedure CreateColumns; override;
-    procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
+    function DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
     procedure SetupGUIandObject; override;
     procedure ClearList; override;
     procedure RebuildList; override;
@@ -71,13 +69,14 @@ type
     function  View: TtiVTListView; reintroduce;
     procedure SetView(const AValue: TComponent); override;
     procedure HandleSelectionChanged; override;
+    procedure ItemDeleted(const ASubject: TtiObject); override;
   end;
 
 
   { Composite mediator for TStringGrid }
   TtiStringGridMediatorView = class(TtiCustomListMediatorView)
   protected
-    procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
+    function DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
     procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); override;
     function GetSelectedObject: TtiObject; override;
     procedure SetSelectedObject(const AValue: TtiObject); override;
@@ -113,7 +112,7 @@ type
 
   { Used internally for sub-mediators in tiVTListView mediator. Moved to interface
     section so it can be overridden. }
-  TtiVTtiListViewListItemMediator = class(TtiListItemMediator)
+  TtiVTListViewListItemMediator = class(TtiListItemMediator)
   private
     FView: TtiVTListView;
   public
@@ -184,19 +183,19 @@ begin
   Result := GetObjectFromItem(View.Selected);
 end;
 
-procedure TtiListViewMediatorView.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer);
+function TtiListViewMediatorView.DoCreateItemMediator(AData: TtiObject;
+  ARowIdx: integer): TtiListItemMediator;
 var
   li: TListItem;
-  m: TtiListViewListItemMediator;
 begin
   DataAndPropertyValid(AData);
   { Create ListItem and Mediator }
   View.Items.BeginUpdate;
   try
     li:=View.Items.Add;
-    m := TtiListViewListItemMediator.CreateCustom(AData, li, OnBeforeSetupField, FieldsInfo, Active);
-    li.Data := M;
-    MediatorList.Add(m);
+    result := TtiListViewListItemMediator.CreateCustom(AData, li, OnBeforeSetupField, FieldsInfo, Active);
+    li.Data := result;
+    MediatorList.Add(result);
   finally
     View.Items.EndUpdate;
   end;
@@ -298,7 +297,6 @@ end;
 constructor TtiListViewMediatorView.Create;
 begin
   inherited Create;
-  FObserversInTransit := TList.Create;
 end;
 
 constructor TtiListViewMediatorView.CreateCustom(AModel: TtiObjectList;
@@ -313,40 +311,44 @@ end;
 destructor TtiListViewMediatorView.Destroy;
 begin
   IsObserving := False;
-  FObserversInTransit.Free;
   inherited;
 end;
 
 procedure TtiListViewMediatorView.HandleSelectionChanged;
 var
   i: integer;
+  LObserversInTransit: TList;
 begin
   if View.Selected = Nil then
     SelectedObject := nil
   else
   begin
-    FObserversInTransit.Clear;
-    { If an item is already selected, assign the item's List of observers to a
-      temporary container. This is done so that the same observers can be
-      assigned to the new item. }
-    if Assigned(SelectedObject) then
-      FObserversInTransit.Assign(SelectedObject.ObserverList);
+    LObserversInTransit := TList.Create;
+    try
+      { If an item is already selected, assign the item's List of observers to a
+        temporary container. This is done so that the same observers can be
+        assigned to the new item. }
+      if Assigned(SelectedObject) then
+        LObserversInTransit.Assign(SelectedObject.ObserverList);
 
-    // Assign Newly selected item to SelectedObject Obj.
-    SelectedObject := TtiObject(View.Selected.Data);
+      // Assign Newly selected item to SelectedObject Obj.
+      SelectedObject := TtiObject(View.Selected.Data);
 
-    { If an object was selected, copy the old item's observer List
-      to the new item's observer List. }
-    if FObserversInTransit.Count > 0 then
-      SelectedObject.ObserverList.Assign(FObserversInTransit);
+      { If an object was selected, copy the old item's observer List
+        to the new item's observer List. }
+      if LObserversInTransit.Count > 0 then
+        SelectedObject.ObserverList.Assign(LObserversInTransit);
 
-    { Set the Observers Subject property to the selected object }
-    for i := 0 to SelectedObject.ObserverList.Count - 1 do
-      TtiMediatorView(SelectedObject.ObserverList.Items[i]).Subject :=
-        SelectedObject;
+      { Set the Observers Subject property to the selected object }
+      for i := 0 to SelectedObject.ObserverList.Count - 1 do
+        TtiMediatorView(SelectedObject.ObserverList.Items[i]).Subject :=
+          SelectedObject;
 
-    // execute the NotifyObservers event to update the observers.
-    SelectedObject.NotifyObservers;
+      // execute the NotifyObservers event to update the observers.
+      SelectedObject.NotifyObservers;
+    finally
+      LObserversInTransit.Free;
+    end;
   end;
 end;
 
@@ -424,7 +426,7 @@ end;
 constructor TtiVTListViewMediatorView.Create;
 begin
   inherited Create;
-  FObserversInTransit := TList.Create;
+  FSelectedObject := nil;
 end;
 
 constructor TtiVTListViewMediatorView.CreateCustom(AModel: TtiObjectList;
@@ -441,7 +443,6 @@ end;
 destructor TtiVTListViewMediatorView.Destroy;
 begin
   IsObserving := False;
-  FObserversInTransit.Free;
   inherited;
 end;
 
@@ -479,17 +480,33 @@ begin
   end;
 end;
 
-procedure TtiVTListViewMediatorView.DoCreateItemMediator(AData: TtiObject;
-  ARowIdx: integer);
+function TtiVTListViewMediatorView.DoCreateItemMediator(AData: TtiObject;
+  ARowIdx: integer): TtiListItemMediator;
 begin
   DataAndPropertyValid(AData);
 
   View.BeginUpdate;
   try
-    MediatorList.Add(TtiVTtiListViewListItemMediator.CreateCustom(
-        AData, View, FieldsInfo, Active));
+    result := TtiVTListViewListItemMediator.CreateCustom(AData, View,
+        FieldsInfo, Active);
+    MediatorList.Add(result);
+    if Active then
+      View.Refresh(View.SelectedData);
   finally
     View.EndUpdate;
+  end;
+end;
+
+procedure TtiVTListViewMediatorView.ItemDeleted(const ASubject: TtiObject);
+var
+  LIndex: integer;
+begin
+  inherited ItemDeleted(ASubject);
+  if Active then
+  begin
+    LIndex := View.SelectedIndex;
+    View.Refresh;
+    View.SelectedIndex := LIndex; // Next or last item
   end;
 end;
 
@@ -506,35 +523,44 @@ end;
 procedure TtiVTListViewMediatorView.HandleSelectionChanged;
 var
   i: integer;
+  LObserversInTransit: TList;
 begin
-  if View.SelectedData = nil then
-    SelectedObject := nil
-  else
+  if SelectedObject <> FSelectedObject then
   begin
-    FObserversInTransit.Clear;
-    { If an item is already selected, assign the item's List of observers to a
-      temporary container. This is done so that the same observers can be
-      assigned to the new item. }
-    if Assigned(SelectedObject) then
-      FObserversInTransit.Assign(SelectedObject.ObserverList);
+    LObserversInTransit := TList.Create;
+    try
+      { If an item is already selected, assign the item's List of observers to a
+        temporary container. This is done so that the same observers can be
+        assigned to the new item. }
+      if Assigned(FSelectedObject) then
+        for i := FSelectedObject.ObserverList.Count - 1 downto 0 do
+          if TObject(FSelectedObject.ObserverList.Items[i]) is TtiMediatorView then
+            LObserversInTransit.Add(FSelectedObject.ObserverList.Extract(FSelectedObject.ObserverList.Items[i]));
 
-    // Assign Newly selected item to SelectedObject Obj.
-    SelectedObject := View.SelectedData;
+      FSelectedObject := SelectedObject;
 
-    { If an object was selected, copy the old item's observer List
-      to the new item's observer List. }
-    //TODO: Only move meditatorview observers
-    if FObserversInTransit.Count > 0 then
-      SelectedObject.ObserverList.Assign(FObserversInTransit);
+      { If an object was selected, copy the old item's observer List
+        to the new item's observer List. }
+      //TODO: Only move meditatorview observers
+      if Assigned(FSelectedObject) then
+      begin
+        if LObserversInTransit.Count > 0 then
+          for i := 0 to LObserversInTransit.Count - 1 do
+            FSelectedObject.ObserverList.Add(LObserversInTransit.Extract(LObserversInTransit.Items[i]));
 
-    { Set the Observers Subject property to the selected object }
-    //TODO: Only move meditatorview observers
-    for i := 0 to SelectedObject.ObserverList.Count - 1 do
-      TtiMediatorView(SelectedObject.ObserverList.Items[i]).Subject :=
-          SelectedObject;
+        { Set the Observers Subject property to the selected object }
+        //TODO: Only move meditatorview observers
+        for i := FSelectedObject.ObserverList.Count - 1 downto 0 do
+          if TObject(FSelectedObject.ObserverList.Items[i]) is TtiMediatorView then
+            TtiMediatorView(FSelectedObject.ObserverList.Items[i]).Subject :=
+                FSelectedObject;
 
-    // execute the NotifyObservers event to update the observers.
-    SelectedObject.NotifyObservers;
+        // execute the NotifyObservers event to update the observers.
+        FSelectedObject.NotifyObservers;
+      end;
+    finally
+      LObserversInTransit.Free;
+    end;
   end;
 end;
 
@@ -595,9 +621,9 @@ begin
 end;
 
 
-{ TtiVTtiListViewListItemMediator }
+{ TtiVTListViewListItemMediator }
 
-constructor TtiVTtiListViewListItemMediator.CreateCustom(AModel: TtiObject;
+constructor TtiVTListViewListItemMediator.CreateCustom(AModel: TtiObject;
   AView: TtiVTListView; const AFieldsInfo: TtiMediatorFieldInfoList;
   IsObserving: Boolean);
 begin
@@ -608,10 +634,12 @@ begin
   Active := IsObserving; // Will attach
 end;
 
-procedure TtiVTtiListViewListItemMediator.Update(ASubject: TtiObject);
+procedure TtiVTListViewListItemMediator.Update(ASubject: TtiObject);
 begin
   Assert(Model = ASubject);
-  FView.RefreshObject(Model);
+  inherited Update(ASubject);
+  if (not ASubject.Deleted) or (ListMediator.ShowDeleted) then
+    View.RefreshObject(Model);
 end;
 
 
@@ -644,11 +672,11 @@ begin
   result := TStringGrid(inherited View);
 end;
 
-procedure TtiStringGridMediatorView.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer);
+function TtiStringGridMediatorView.DoCreateItemMediator(AData: TtiObject;
+  ARowIdx: integer): TtiListItemMediator;
 var
   i: integer;
   lFieldName: string;
-  lMediatorView: TtiStringGridRowMediator;
 begin
 // graeme
 //  View.BeginUpdate;
@@ -660,9 +688,9 @@ begin
       lFieldName := FieldsInfo[i].PropName;
       View.Cells[i, ARowIdx+1] := tiGetProperty(AData, lFieldName);  // set Cell text
     end;
-    lMediatorView := TtiStringGridRowMediator.CreateCustom(AData, View, FieldsInfo, ARowIdx+1, Active);
-    View.Objects[0, ARowIdx+1] := lMediatorView;   // set Object reference inside grid
-    MediatorList.Add(lMediatorView);
+    result := TtiStringGridRowMediator.CreateCustom(AData, View, FieldsInfo, ARowIdx+1, Active);
+    View.Objects[0, ARowIdx+1] := result;   // set Object reference inside grid
+    MediatorList.Add(result);
   finally
 // graeme
 //    View.EndUpdate;

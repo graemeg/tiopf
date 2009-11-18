@@ -205,7 +205,7 @@ var
 begin
   lData := TtiFileStream.Create(TempFileName, fmCreate or fmShareDenyNone);
   try
-    CheckEquals(tiLE, lData.LineDelim, 'LineDelim');
+    CheckEquals(tiLineEnd, lData.LineDelim, 'LineDelim');
     lData.LineDelim := Cr;
     CheckEquals(Cr, lData.LineDelim, 'LineDelim');
   finally
@@ -216,7 +216,7 @@ end;
 
 procedure TTestTIStream.FileStream_ReadLn100;
 begin
-  TestFileReadLn('test', tiLE, 99);
+  TestFileReadLn('test', tiLineEnd, 99);
 end;
 
 
@@ -264,7 +264,7 @@ begin
     lStream.Free;
   end;
   ls := tiFileToString(TempFileName);
-  CheckEquals('test'+tiLE, ls);
+  CheckEquals('test'+tiLineEnd, ls);
 
   tiDeleteFile(TempFileName);
 
@@ -345,7 +345,7 @@ begin
     CheckEquals(0, lLineStream.Position, 'Position');
     CheckEquals(0, lLineStream.Size, 'Size');
     CheckEquals(true, lLineStream.EOF, 'EOF');
-    CheckEquals(tiLE, lLineStream.LineDelim, 'LineDelim');
+    CheckEquals(tiLineEnd, lLineStream.LineDelim, 'LineDelim');
 
     lLineStream.LineDelim := Cr;
     CheckEquals(Cr, lLineStream.LineDelim, 'LineDelim');
@@ -385,19 +385,19 @@ end;
 
 procedure TTestTIStream.LineStream_ReadLn100;
 begin
-  TestLineReadLn('test', tiLE, 99);
+  TestLineReadLn('test', tiLineEnd, 99);
 end;
 
 
 procedure TTestTIStream.LineStream_ReadLn1000;
 begin
-  TestLineReadLn('test', tiLE, 1000);
+  TestLineReadLn('test', tiLineEnd, 1000);
 end;
 
 
 procedure TTestTIStream.LineStream_ReadLn1WithLineEnd;
 begin
-  TestLineReadLn('test', tiLE, 1);
+  TestLineReadLn('test', tiLineEnd, 1);
 end;
 
 
@@ -413,7 +413,7 @@ begin
               '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
               '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
               '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-              tiLE,
+              tiLineEnd,
               2000);
 end;
 
@@ -454,7 +454,7 @@ begin
 
     lLineStream.WriteLn('test');
     ls := tiStreamToString(lStream);
-    CheckEquals('test'+tiLE, ls);
+    CheckEquals('test'+tiLineEnd, ls);
 
     lStream.Clear;
     lLineStream.LineDelim := Cr;
@@ -470,13 +470,13 @@ end;
 
 procedure TTestTIStream.FileStream_ReadLn1WithLineEnd;
 begin
-  TestFileReadLn('test', tiLE, 1);
+  TestFileReadLn('test', tiLineEnd, 1);
 end;
 
 
 procedure TTestTIStream.FileStream_ReadLn1000;
 begin
-  TestFileReadLn('test', tiLE, 1000);
+  TestFileReadLn('test', tiLineEnd, 1000);
 end;
 
 
@@ -492,7 +492,7 @@ begin
               '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
               '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'+
               '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-              tiLE,
+              tiLineEnd,
               2000);
 end;
 

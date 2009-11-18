@@ -36,7 +36,7 @@ end;
 procedure TPerson_Name_Memo_Mediator.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
-  EditControl.Enabled := False; // fpGUI doesn't have a ReadOnly property yet
+  View.Enabled := False; // fpGUI doesn't have a ReadOnly property yet
 end;
 
 

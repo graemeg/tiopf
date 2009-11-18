@@ -107,7 +107,7 @@ begin
     Check([tfmdFieldName] = lData.TextFileMetaData, 'TextFileMetaData');
     CheckEquals(',', lData.FieldDelim, 'FieldDelim');
     CheckEquals('"', lData.StringDelim, 'StringDelim');
-    CheckEquals(tiLE, lData.RowDelim, 'RowDelim');
+    CheckEquals(tiLineEnd, lData.RowDelim, 'RowDelim');
 
     lData.TextFileMetaData := [];
     lData.FieldDelim := '|';
@@ -129,7 +129,7 @@ var
   lDataSet : TtiDataBuffer;
   lWriter : TCSVToTIDataSet;
 begin
-  tiStringToFile('fieldA,fieldB'+tiLE+'a1,b1'+tiLE+'a2,b2'+tiLE, TempFileName);
+  tiStringToFile('fieldA,fieldB'+tiLineEnd+'a1,b1'+tiLineEnd+'a2,b2'+tiLineEnd, TempFileName);
   lDataSet := TtiDataBuffer.Create;
   try
     lWriter := TCSVToTIDataSet.Create;
@@ -162,7 +162,7 @@ var
   lDataSet : TtiDataBuffer;
   lWriter : TCSVToTIDataSet;
 begin
-  tiStringToFile('a1,b1'+tiLE+'a2,b2'+tiLE, TempFileName);
+  tiStringToFile('a1,b1'+tiLineEnd+'a2,b2'+tiLineEnd, TempFileName);
   lDataSet := TtiDataBuffer.Create;
   try
     lWriter := TCSVToTIDataSet.Create;
@@ -242,7 +242,7 @@ begin
       lWriter.Free;
     end;
     ls := tiFileToString(TempFileName);
-    CheckEquals('"field1","field2"'+tiLE+'"a1","b1"'+tiLE+'"a2","b2"'+tiLE, ls);
+    CheckEquals('"field1","field2"'+tiLineEnd+'"a1","b1"'+tiLineEnd+'"a2","b2"'+tiLineEnd, ls);
   finally
     lDataSet.Free;
   end;
@@ -267,7 +267,7 @@ begin
       lWriter.Free;
     end;
     ls := tiFileToString(TempFileName);
-    CheckEquals('"field1","field2"'+tiLE, ls);
+    CheckEquals('"field1","field2"'+tiLineEnd, ls);
   finally
     lDataSet.Free;
   end;
@@ -299,7 +299,7 @@ begin
       lWriter.Free;
     end;
     ls := tiFileToString(TempFileName);
-    CheckEquals('"a1","b1"'+tiLE+'"a2","b2"'+tiLE, ls);
+    CheckEquals('"a1","b1"'+tiLineEnd+'"a2","b2"'+tiLineEnd, ls);
   finally
     lDataSet.Free;
   end;
@@ -548,7 +548,7 @@ begin
     if lLine <> '' then lLine := lLine + ',';
     lLine := lLine + 'field' + IntToStr(j);
   end;
-  ls := lLine + tiLE;
+  ls := lLine + tiLineEnd;
 
   for i := 0 to cRows do
   begin
@@ -558,7 +558,7 @@ begin
       if lLine <> '' then lLine := lLine + ',';
       lLine := lLine + 'value' + IntToStr(((i+1)*100)+(j));
     end;
-    ls := ls + lLine + tiLE;
+    ls := ls + lLine + tiLineEnd;
   end;
 
   tiStringToFile(ls, TempFileName);

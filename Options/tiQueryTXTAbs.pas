@@ -834,7 +834,7 @@ begin
   TextFileMetaData := [tfmdFieldName];
   FFieldDelim      := ',';
   StringDelim      := '"';
-  FRowDelim        := tiLE;
+  FRowDelim        := tiLineEnd;
 end;
 
 
@@ -991,7 +991,7 @@ begin
   inherited Create;
   FieldDelim     := ',';
   StringDelim    := '"';
-  RowDelim       := tiLE;
+  RowDelim       := tiLineEnd;
 end;
 
 
@@ -1002,7 +1002,7 @@ begin
   inherited Create;
   FieldDelim     := #09;
   StringDelim    := '"';
-  RowDelim       := tiLE;
+  RowDelim       := tiLineEnd;
 end;
 
 

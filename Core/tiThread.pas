@@ -38,7 +38,6 @@ type
     procedure   SetThreadName(const AName: string);
     procedure   WakeUp;
     property    ThreadInstanceID: Integer read FThreadInstanceID;
-    procedure   RaiseExecuteException;
   end;
 
   TtiThread = class(TtiSleepThread)
@@ -442,7 +441,7 @@ begin
     for i := 0 to FList.Count-1 do
     begin
       if result <> '' then
-        result:= result + tiLE;
+        result:= result + tiLineEnd;
       result:= result + FList.Items[i].ClassName;
     end;
   finally
@@ -468,7 +467,7 @@ begin
       if LDescription <> '' then
       begin
         if result <> '' then
-          result:= result + tiLE;
+          result:= result + tiLineEnd;
         result:= result + LDescription;
       end else
         Inc(LUnknownThreadCount);
@@ -476,7 +475,7 @@ begin
     if LUnknownThreadCount > 0 then
     begin
       if result <> '' then
-        result:= result + tiLE + 'and ';
+        result:= result + tiLineEnd + 'and ';
       result:= result + Format('%d system background tasks', [LUnknownThreadCount]);
     end;
   finally
@@ -626,18 +625,6 @@ begin
     Priority := tpNormal;
   FUpdateEvent.Free;
   inherited Destroy;
-end;
-
-procedure TtiSleepThread.RaiseExecuteException;
-var
-  LExceptionObj: TObject;
-begin
-  if Assigned(FatalException) then
-  begin
-    LExceptionObj := FatalException; // Change ownership
-    //FatalException := nil;
-    raise LExceptionObj;
-  end;
 end;
 
 end.

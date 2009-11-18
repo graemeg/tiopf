@@ -302,7 +302,7 @@ begin
     // This is not thread safe!
     for i := 0 to FList.Count - 1 do
     begin
-      result := tiAddTrailingValue(result, tiLE(2), true);
+      result := tiAddTrailingValue(result, tiLineEnd(2), true);
       result := result + TtiDBConnectionPool(FList.Items[i]).DetailsAsString;
     end;
   finally
@@ -318,10 +318,10 @@ begin
   Assert(DBConnectionPools.PersistenceLayer.TestValid(TtiPersistenceLayer), CTIErrorInvalidObject);
   LPersistenceLayer := DBConnectionPools.PersistenceLayer as TtiPersistenceLayer;
   result :=
-    'Persistence layer:   ' + LPersistenceLayer.PersistenceLayerName + tiLE +
-    'Database name:       ' + DBConnectParams.DatabaseName + tiLE +
-    'User name:           ' + DBConnectParams.UserName     + tiLE +
-    'Password:            ' + CPasswordMasked + tiLE +
+    'Persistence layer:   ' + LPersistenceLayer.PersistenceLayerName + tiLineEnd +
+    'Database name:       ' + DBConnectParams.DatabaseName + tiLineEnd +
+    'User name:           ' + DBConnectParams.UserName     + tiLineEnd +
+    'Password:            ' + CPasswordMasked + tiLineEnd +
     'Number in pool:      ' + IntToStr(Count);
 end;
 

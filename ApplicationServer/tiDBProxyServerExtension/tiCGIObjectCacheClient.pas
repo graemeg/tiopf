@@ -13,7 +13,7 @@ uses
 
 type
 
-  TtiCGIObjectCacheClient = class( TtiOjectCacheAbs )
+  TtiCGIObjectCacheClient = class( TtiObjectCacheAbs )
   private
     FParams: TtiCGIParams;
     FConnectionDetails: TtiWebServerClientConnectionDetails;
@@ -69,7 +69,7 @@ uses
   ,tiSyncObjs
   ;
 
-{ TtiCGIObjectCacheClientVisitor }
+{ TtiCGIObjectCacheClient }
 
 procedure TtiCGIObjectCacheClient.RefreshCacheFromDB(const ACacheFileDate: TDateTime);
 var
@@ -126,6 +126,56 @@ begin
     lStreamFrom.Free;
   end;
 end;
+
+destructor TtiCGIObjectCacheClient.Destroy;
+begin
+  FParams.Free;
+  FConnectionDetails.Free;
+  inherited;
+end;
+
+procedure TtiCGIObjectCacheClient.DoExecute(const AData: TtiObject);
+var
+  LCachedFileDate : TDateTime ;
+  LDatabaseFileDate : TDateTime ;
+begin
+  if tiWaitForMutex(CachedFileName, word(INFINITE)) then
+  try
+    Init;
+    LCachedFileDate := GetCachedFileDate;
+    LDatabaseFileDate := GetDBFileDate ;
+    Log(['Reading', CachedFileName]);
+    Log(['  FileName', GetCachedFileDirAndName]);
+    Log(['  Database date', tiDateTimeToStr(LDatabaseFileDate)]);
+    Log(['  Cache date', tiDateTimeToStr(LCachedFileDate)]);
+    if MustUpdateCacheFile(LCachedFileDate, LDatabaseFileDate) then
+    begin
+      Log('  File WILL be refreshed');
+      RefreshCacheFromDB(LDatabaseFileDate);
+    end else
+      Log('  File WILL NOT be refreshed');
+    CacheToBOM(AData);
+    Log(['Done reading', CachedFileName]);
+  finally
+    tiReleaseMutex(CachedFileName);
+  end;
+end;
+
+class procedure TtiCGIObjectCacheClient.Execute(const AData: TtiObject;
+  const ACacheDirectoryRoot: string;
+  const AConnectionDetails: TtiWebServerClientConnectionDetails);
+var
+  L: TtiCGIObjectCacheClient;
+begin
+  L:= Create(ACacheDirectoryRoot, AConnectionDetails);
+  try
+    L.DoExecute(AData);
+  finally
+    L.Free;
+  end;
+end;
+
+{ TtiCGIObjectCacheClientVisitor }
 
 procedure TtiCGIObjectCacheClientVisitor.DoExecute(const AData: TtiObject);
 begin
@@ -184,54 +234,6 @@ begin
   Log('  :) Finished loading ' + AData.ClassName +
       '. (' + IntToStr(GetTickCount - lStart) + 'ms)', lsQueryTiming);
 
-end;
-
-destructor TtiCGIObjectCacheClient.Destroy;
-begin
-  FParams.Free;
-  FConnectionDetails.Free;
-  inherited;
-end;
-
-procedure TtiCGIObjectCacheClient.DoExecute(const AData: TtiObject);
-var
-  LCachedFileDate : TDateTime ;
-  LDatabaseFileDate : TDateTime ;
-begin
-  if tiWaitForMutex(CachedFileName, word(INFINITE)) then
-  try
-    Init;
-    LCachedFileDate := GetCachedFileDate;
-    LDatabaseFileDate := GetDBFileDate ;
-    Log(['Reading', CachedFileName]);
-    Log(['  FileName', GetCachedFileDirAndName]);
-    Log(['  Database date', tiDateTimeToStr(LDatabaseFileDate)]);
-    Log(['  Cache date', tiDateTimeToStr(LCachedFileDate)]);
-    if MustUpdateCacheFile(LCachedFileDate, LDatabaseFileDate) then
-    begin
-      Log('  File WILL be refreshed');
-      RefreshCacheFromDB(LDatabaseFileDate);
-    end else
-      Log('  File WILL NOT be refreshed');
-    CacheToBOM(AData);
-    Log(['Done reading', CachedFileName]);
-  finally
-    tiReleaseMutex(CachedFileName);
-  end;
-end;
-
-class procedure TtiCGIObjectCacheClient.Execute(const AData: TtiObject;
-  const ACacheDirectoryRoot: string;
-  const AConnectionDetails: TtiWebServerClientConnectionDetails);
-var
-  L: TtiCGIObjectCacheClient;
-begin
-  L:= Create(ACacheDirectoryRoot, AConnectionDetails);
-  try
-    L.DoExecute(AData);
-  finally
-    L.Free;
-  end;
 end;
 
 end.

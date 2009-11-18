@@ -14,16 +14,16 @@ uses
 
 type
 
-  TtiOjectCacheServer = class( TtiOjectCacheAbs )
+  TtiObjectCacheServer = class( TtiObjectCacheAbs )
   private
     FParams: TtiCGIParams ;
-    function    ReturnDataFromCache: string;
   protected
     property    Params: TtiCGIParams read FParams;
     // ToDo: Rename GetDataAsXML -> GetDataAsString
     function    GetDataAsXML: string ; virtual ; abstract ;
     procedure   Init; override ;
     procedure   RefreshCacheFromDB(const ACacheFileDate: TDateTime); override;
+    function    ReturnDataFromCache: string; virtual;
     function    DoExecute: string; virtual;
 
     // You MAY override these
@@ -74,7 +74,7 @@ end;
 
 { TtiCGIOjectCacheServer }
 
-constructor TtiOjectCacheServer.Create(const AParams: TtiCGIParams; const ACacheDirectoryRoot: string);
+constructor TtiObjectCacheServer.Create(const AParams: TtiCGIParams; const ACacheDirectoryRoot: string);
 var
   LCacheDirectoryRoot: string;
 begin
@@ -88,13 +88,13 @@ begin
     FParams.Assign(AParams);
 end;
 
-destructor TtiOjectCacheServer.Destroy;
+destructor TtiObjectCacheServer.Destroy;
 begin
   FParams.Free;
   inherited;
 end;
 
-function TtiOjectCacheServer.DoExecute: string;
+function TtiObjectCacheServer.DoExecute: string;
 var
   lCachedFileDate : TDateTime ;
   lDatabaseFileDate : TDateTime ;
@@ -125,9 +125,9 @@ begin
   end;
 end;
 
-class function TtiOjectCacheServer.Execute(const AParams: TtiCGIParams; const ACacheDirectoryRoot: string): string;
+class function TtiObjectCacheServer.Execute(const AParams: TtiCGIParams; const ACacheDirectoryRoot: string): string;
 var
-  L: TtiOjectCacheServer;
+  L: TtiObjectCacheServer;
 begin
   Assert(AParams.TestValid(TtiCGIParams, True), CTIErrorInvalidObject);
   L:= Create(AParams, ACacheDirectoryRoot);
@@ -138,7 +138,7 @@ begin
   end;
 end;
 
-function TtiOjectCacheServer.ReturnDataFromCache: string;
+function TtiObjectCacheServer.ReturnDataFromCache: string;
 var
   lFileName : string ;
 begin
@@ -147,7 +147,7 @@ begin
   result:= tiFileToString(lFileName);
 end;
 
-procedure TtiOjectCacheServer.RefreshCacheFromDB(const ACacheFileDate: TDateTime);
+procedure TtiObjectCacheServer.RefreshCacheFromDB(const ACacheFileDate: TDateTime);
 var
   LResult: string ;
   LResultEncode: string;
@@ -161,7 +161,7 @@ begin
   SetCachedFileDate(ACacheFileDate);
 end;
 
-procedure TtiOjectCacheServer.Init;
+procedure TtiObjectCacheServer.Init;
 var
   LPath: string;
 begin
@@ -174,4 +174,3 @@ begin
 end;
 
 end.
-

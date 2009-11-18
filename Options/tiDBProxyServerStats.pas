@@ -132,21 +132,21 @@ begin
   lMDT := TtiDBMetaDataTable.Create;
   try
     lMDT.Name := cTableNameSummary;
-    lMDT.AddField(cFieldSummaryTimeOnServer,qfkDateTIme,0);
-    lMDT.AddField(cFieldSummaryApplicationStartTime,qfkDateTIme,0);
-    lMDT.AddField(cFieldSummaryApplicationUpTime,qfkString,0);
-    lMDT.AddField(cFieldSummaryPersistenceLayerName,qfkString,0);
-    lMDT.AddField(cFieldSummaryDatabaseName,qfkString,0);
-    lMDT.AddField(cFieldSummaryUserName,qfkString,0);
-    lMDT.AddField(cFieldSummaryPassword,qfkString,0);
-    lMDT.AddField(cFieldSummaryTotalDBConnections,qfkInteger,0);
-    lMDT.AddField(cFieldSummaryLockedDBConnections,qfkInteger,0);
-    lMDT.AddField(cFieldSummaryAvailableDBConnections,qfkInteger,0);
-    lMDT.AddField(cFieldSummaryDBConnectionTimeOut,qfkInteger,0);
-    lMDT.AddField(cFieldSummaryTotalStatefulDBConnections,qfkInteger,0);
-    lMDT.AddField(cFieldSummaryInUseStatefulDBConnections,qfkInteger,0);
-    lMDT.AddField(cFieldSummaryWaitingStatefulDBConnections,qfkInteger,0);
-    lMDT.AddField(cFieldSummaryStatefulDBConnectionTimeOut,qfkInteger,0);
+    lMDT.AddInstance(cFieldSummaryTimeOnServer,qfkDateTIme,0);
+    lMDT.AddInstance(cFieldSummaryApplicationStartTime,qfkDateTIme,0);
+    lMDT.AddInstance(cFieldSummaryApplicationUpTime,qfkString,0);
+    lMDT.AddInstance(cFieldSummaryPersistenceLayerName,qfkString,0);
+    lMDT.AddInstance(cFieldSummaryDatabaseName,qfkString,0);
+    lMDT.AddInstance(cFieldSummaryUserName,qfkString,0);
+    lMDT.AddInstance(cFieldSummaryPassword,qfkString,0);
+    lMDT.AddInstance(cFieldSummaryTotalDBConnections,qfkInteger,0);
+    lMDT.AddInstance(cFieldSummaryLockedDBConnections,qfkInteger,0);
+    lMDT.AddInstance(cFieldSummaryAvailableDBConnections,qfkInteger,0);
+    lMDT.AddInstance(cFieldSummaryDBConnectionTimeOut,qfkInteger,0);
+    lMDT.AddInstance(cFieldSummaryTotalStatefulDBConnections,qfkInteger,0);
+    lMDT.AddInstance(cFieldSummaryInUseStatefulDBConnections,qfkInteger,0);
+    lMDT.AddInstance(cFieldSummaryWaitingStatefulDBConnections,qfkInteger,0);
+    lMDT.AddInstance(cFieldSummaryStatefulDBConnectionTimeOut,qfkInteger,0);
     FDatabase.CreateTable(lMDT);
   finally
     lMDT.Free;
@@ -155,11 +155,11 @@ begin
   lMDT := TtiDBMetaDataTable.Create;
   try
     lMDT.Name := cTableNameDBConnectionPool;
-    lMDT.AddField(cFieldDBConPoolID,qfkInteger,0);
-    lMDT.AddField(cFieldDBConPoolLocked,qfkLogical,0);
-    lMDT.AddField(cFieldDBConPoolError,qfkLogical,0);
-    lMDT.AddField(cFieldDBConPoolSecInUse,qfkInteger,0);
-    lMDT.AddField(cFieldDBConPoolSecToTimeOut,qfkInteger,0);
+    lMDT.AddInstance(cFieldDBConPoolID,qfkInteger,0);
+    lMDT.AddInstance(cFieldDBConPoolLocked,qfkLogical,0);
+    lMDT.AddInstance(cFieldDBConPoolError,qfkLogical,0);
+    lMDT.AddInstance(cFieldDBConPoolSecInUse,qfkInteger,0);
+    lMDT.AddInstance(cFieldDBConPoolSecToTimeOut,qfkInteger,0);
     FDatabase.CreateTable(lMDT);
   finally
     lMDT.Free;
@@ -168,12 +168,12 @@ begin
   lMDT := TtiDBMetaDataTable.Create;
   try
     lMDT.Name := cTableNameStateFulDBConPool;
-    lMDT.AddField(cFieldStateFulDBConPoolComputerName, qfkString,0);
-    lMDT.AddField(cFieldStateFulDBConPoolUserName,     qfkString,0);
-    lMDT.AddField(cFieldStateFulDBConPoolTransID,      qfkString,0);
-    lMDT.AddField(cFieldStateFulDBConPoollInUse,       qfkLogical,0);
-    lMDT.AddField(cFieldStateFulDBConPoolSecInUse,     qfkInteger,0);
-    lMDT.AddField(cFieldStateFulDBConPoolSecToTimeOut, qfkInteger,0);
+    lMDT.AddInstance(cFieldStateFulDBConPoolComputerName, qfkString,0);
+    lMDT.AddInstance(cFieldStateFulDBConPoolUserName,     qfkString,0);
+    lMDT.AddInstance(cFieldStateFulDBConPoolTransID,      qfkString,0);
+    lMDT.AddInstance(cFieldStateFulDBConPoollInUse,       qfkLogical,0);
+    lMDT.AddInstance(cFieldStateFulDBConPoolSecInUse,     qfkInteger,0);
+    lMDT.AddInstance(cFieldStateFulDBConPoolSecToTimeOut, qfkInteger,0);
     FDatabase.CreateTable(lMDT);
   finally
     lMDT.Free;

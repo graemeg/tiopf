@@ -23,16 +23,14 @@ const
     'Error accessing HTTP server.' + cLineEnding +
     'Exception message: %s ' + cLineEnding +
     'Request type: %s ' + cLineEnding +
-    'URL: %s ' + cLineEnding +
-    'Data: %s';
+    'URL: %s ';
 
   ctiOPFHTTPBlockHeader= 'tiOPFBlockID';
   ctiOPFHTTPBlockDelim = '/';
   ctiOPDHTTPNullBlockSize = 0;
   ctiOPFHTTPErrorCode= 'tiOPFErrorCode';
 
-  CErrorHTTPRetryLimiteExceded = 'HTTP Retry limit exceded ' +
-    'URL="%s" Params="%s" BlockSize="%d" BlockIndex="%d" TransID="%d"';
+  CErrorHTTPRetryLimiteExceded = '%s (After %d attempts)';
 
 type
 
@@ -170,6 +168,7 @@ uses
   ,tiUtils
   ,tiCRC32
   ,tiExcept
+  ,tiLog
  ;
 
 var
@@ -471,16 +470,39 @@ begin
   while (not LSuccess) and
     (i< FRetryLimit) do
   begin
-    DoGetOrPostBlock(
-      AURL, AGetOrPostMethod, AInput,
-      AOutput, ABlockIndex, ATransID,
-      ABlockCRC, ABlockCount);
-    Inc(i);
-    LSuccess:= (ABlockCRC = 0) or (tiCRC32FromStream(AOutput) = ABlockCRC);
+    // Within the retry range
+    if i < FRetryLimit - 1 then
+    begin
+      try
+        Log('Retry #' + IntToStr(i) + '. ' + AURL, lsWarning);
+        DoGetOrPostBlock(
+          AURL, AGetOrPostMethod, AInput,
+          AOutput, ABlockIndex, ATransID,
+          ABlockCRC, ABlockCount);
+        LSuccess:= (ABlockCRC = 0) or (tiCRC32FromStream(AOutput) = ABlockCRC);
+      except
+        on e:exception do
+        begin
+          Sleep(1000); // ToDo: Parameterise the retry wait period
+          LSuccess:= false;
+        end;
+      end;
+      Inc(i);
+    end
+    else // The last try, so let exception be raised if there is one
+    begin
+      try
+        DoGetOrPostBlock(
+          AURL, AGetOrPostMethod, AInput,
+          AOutput, ABlockIndex, ATransID,
+          ABlockCRC, ABlockCount);
+        LSuccess:= (ABlockCRC = 0) or (tiCRC32FromStream(AOutput) = ABlockCRC);
+      except
+        on e:exception do
+          raise EtiOPFHTTPException.CreateFmt(CErrorHTTPRetryLimiteExceded, [e.message, i+1])
+      end;
+    end;
   end;
-  if (i >= FRetryLimit) and (not LSuccess) then
-    raise EtiOPFException.CreateFmt(CErrorHTTPRetryLimiteExceded,
-      [AURL, AInput.DataString, FBlockSize, ABlockIndex, ATransID])
 end;
 
 procedure TtiHTTPAbs.DoProgressEvent(ABlockIndex, ABlockCount, ABlockSize: Longword);

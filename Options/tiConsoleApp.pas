@@ -359,7 +359,7 @@ procedure OutputLine;
 begin
   LineBuf[LineBufPtr]:= #0;
   if NewLine then
-    AppOutput := AppOutput + tiLE + LineBuf
+    AppOutput := AppOutput + tiLineEnd + LineBuf
   else
     AppOutput := AppOutput + LineBuf;
 {

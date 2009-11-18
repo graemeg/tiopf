@@ -566,11 +566,11 @@ function TtiClassMaps.AddClassMap(const AClass: TtiClass): TtiClassMap;
 begin
   if FindByPerObjAbsClass(AClass) <> NIL then
     raise Exception.Create(
-      'Attempt to register duplicate TtiClassMap' + tiLE +
-      'Classname: ' + AClass.ClassName + tiLE +
+      'Attempt to register duplicate TtiClassMap' + tiLineEnd +
+      'Classname: ' + AClass.ClassName + tiLineEnd +
       'Called in ' + ClassName + '.AddClassMap');
-  //    tiTermError('Attempt to register duplicate TtiClassMap' + tiLE +
-  //                 'Classname: ' + AClass.ClassName + tiLE +
+  //    tiTermError('Attempt to register duplicate TtiClassMap' + tiLineEnd +
+  //                 'Classname: ' + AClass.ClassName + tiLineEnd +
   //                 'Called in ' + ClassName + '.AddClassMap');
 
   Result := TtiClassMap.Create;
@@ -701,14 +701,14 @@ function TtiClassMap.AddAttrMap(const AAttrName: string): TtiAttrMap;
 begin
   if FindByAttrName(AAttrName) <> NIL then
     raise Exception.Create(
-      'Attempt to register duplicate TtiAttrMap' + tiLE +
-      'ClassName: ' + PerObjAbsClass.ClassName + tiLE +
-      'AttrName:  ' + AAttrName + tiLE +
+      'Attempt to register duplicate TtiAttrMap' + tiLineEnd +
+      'ClassName: ' + PerObjAbsClass.ClassName + tiLineEnd +
+      'AttrName:  ' + AAttrName + tiLineEnd +
       '. Called in ' + ClassName + '.AddAttrMap');
   if not _IsPublishedProp(AAttrName) then
     raise Exception.Create(
       AAttrName + ' is not a published property on ' +
-      PerObjAbsClass.ClassName + tiLE +
+      PerObjAbsClass.ClassName + tiLineEnd +
       '. Called in ' + ClassName + '.AddAttrMap');
   Result          := TtiAttrMap.Create;
   Result.AttrName := AAttrName;
@@ -826,13 +826,13 @@ function TtiDBMap.AddTableMap(const ATableName: string): TtiDBTableMap;
 begin
   if FindByTableName(ATableName) <> NIL then
     raise Exception.Create(
-      'Attempt to register duplicate TtiDBTableMap' + tiLE +
-      'DatabaseName: ' + DatabaseName + tiLE +
-      'TableName:    ' + ATableName + tiLE +
+      'Attempt to register duplicate TtiDBTableMap' + tiLineEnd +
+      'DatabaseName: ' + DatabaseName + tiLineEnd +
+      'TableName:    ' + ATableName + tiLineEnd +
       'Called in ' + ClassName + '.AddTableMap');
-  //    tiTermError('Attempt to register duplicate TtiDBTableMap' + tiLE +
-  //                 'DatabaseName: ' + DatabaseName + tiLE +
-  //                 'TableName:    ' + ATableName + tiLE +
+  //    tiTermError('Attempt to register duplicate TtiDBTableMap' + tiLineEnd +
+  //                 'DatabaseName: ' + DatabaseName + tiLineEnd +
+  //                 'TableName:    ' + ATableName + tiLineEnd +
   //                 'Called in ' + ClassName + '.AddTableMap');
   Result           := TtiDBTableMap.Create;
   Result.TableName := ATableName;
@@ -913,9 +913,9 @@ begin
   if Result <> NIL then
     Exit; //==>                     
           //    raise exception.Create(
-          //                 'Attempt to register duplicate TtiDBColMap' + tiLE +
-          //                 'Table name: ' + TableName + tiLE +
-          //                 'Col name:   ' + AColName + tiLE +
+          //                 'Attempt to register duplicate TtiDBColMap' + tiLineEnd +
+          //                 'Table name: ' + TableName + tiLineEnd +
+          //                 'Col name:   ' + AColName + tiLineEnd +
           //                 'Called in ' + ClassName + '.AddColMap');
 
   Result         := TtiDBColMap.Create;
@@ -1090,11 +1090,11 @@ function TtiDBMaps.AddDBMap(const ADatabaseName: string): TtiDBMap;
 begin
   if FindByDatabaseName(ADatabaseName) <> NIL then
     raise Exception.Create(
-      'Attempt to register duplicate TtiDBMap' + tiLE +
-      'DatabaseName: ' + ADatabaseName + tiLE +
+      'Attempt to register duplicate TtiDBMap' + tiLineEnd +
+      'DatabaseName: ' + ADatabaseName + tiLineEnd +
       'Called in ' + ClassName + 'AddDBMap');
-  //    tiTermError('Attempt to register duplicate TtiDBMap' + tiLE +
-  //                 'DatabaseName: ' + ADatabaseName + tiLE +
+  //    tiTermError('Attempt to register duplicate TtiDBMap' + tiLineEnd +
+  //                 'DatabaseName: ' + ADatabaseName + tiLineEnd +
   //                 'Called in ' + ClassName + 'AddDBMap');
   Result := TtiDBMap.Create;
   Result.DatabaseName := ADatabaseName;

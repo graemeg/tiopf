@@ -29,6 +29,7 @@ type
 
   TtiStructuredCSVtoBOMSetter = class;
   TtiStructuredCSVtoBOMFileParser = class;
+  TtiStructuredCSVtoBOMFileParserClass = class of TtiStructuredCSVtoBOMFileParser;
   TTextParserStructCSV = class;
   TEMSCSVtoBOMSetterClass = class of TtiStructuredCSVtoBOMSetter;
   TtiStructCSVMetaDatas = class;

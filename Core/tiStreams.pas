@@ -824,7 +824,7 @@ end;
 
 procedure TtiPreSizedStream.WriteLn(const AStr: string);
 begin
-  Write(AStr + tiLE);
+  Write(AStr + tiLineEnd);
 end;
 
 type

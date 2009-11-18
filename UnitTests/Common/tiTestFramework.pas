@@ -114,7 +114,11 @@ type
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldDateTime); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldDate); overload;
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiFieldBoolean); overload;
+{$IFDEF OID_AS_INT64}
+    procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; var AField1, AField2: TtiOID); overload;
+{$ELSE}
     procedure TestTIObjectEquals(const AObj1, AObj2: TtiObject; const AField1, AField2: TtiOID); overload;
+{$ENDIF}
     procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldString); overload;
     procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldInteger); overload;
     procedure TestTIObjectIsValid(const AObj: TtiObject; const AField: TtiFieldFloat); overload;
@@ -864,6 +868,19 @@ begin
   Check(AObj.IsValid, 'IsValid returned FALSE when it should have returned True');
 end;
 
+{$IFDEF OID_AS_INT64}
+procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject;
+  var AField1, AField2: TtiOID);
+begin
+  Assert(AObj1.TestValid, CTIErrorInvalidObject);
+  Assert(AObj2.TestValid, CTIErrorInvalidObject);
+  Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
+  AField1 := (AField2 * 10) + 1;
+  Check(not AObj1.Equals(AObj2), 'Equals returned TRUE when it should have returned FALSE after changing field');
+  AField1 := AField2;
+  Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
+end;
+{$ELSE}
 procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject;
   const AField1, AField2: TtiOID);
 begin
@@ -877,6 +894,7 @@ begin
   AField1.AsString := AField2.AsString;
   Check(AObj1.Equals(AObj2), 'Equals returned FALSE when it should have returned True');
 end;
+{$ENDIF}
 
 procedure TtiTestCase.TestTIObjectEquals(const AObj1, AObj2: TtiObject;
   const AField1, AField2: TtiFieldDate);

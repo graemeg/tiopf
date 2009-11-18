@@ -235,8 +235,10 @@ type
   TtiPerAwareDateTimeEditAbs = class(TtiPerAwareEdit)
   private
     FFormatString: string;
+    FRequireDataBinding: boolean;
     procedure SetValueAsDateTime(const AValue: TDateTime);
     procedure SetFormatString(const AValue: string);
+    procedure SetRequireDataBinding(const AValue: boolean);
     procedure UpdateValue(const AValue: TDateTime);
   protected
     FLastValidDateTime: TDateTime;
@@ -244,8 +246,11 @@ type
     procedure SetValue(const AValue: String); override;
     procedure DataToWinControl; override;
     property ValueAsDateTime: TDateTime read FLastValidDateTime write SetValueAsDateTime;
+  public
+    constructor Create(AOwner : TComponent); override;
   published
     property FormatString: string read FFormatString write SetFormatString;
+    property RequireDataBinding: boolean read FRequireDataBinding write SetRequireDataBinding default true;
   end;
 
   TtiPerAwareDateTimeEdit = class(TtiPerAwareDateTimeEditAbs)
@@ -3725,16 +3730,32 @@ end;
 
 { TtiPerAwareDateTimeEditAbs }
 
+constructor TtiPerAwareDateTimeEditAbs.Create(AOwner: TComponent);
+begin
+  inherited;
+  FRequireDataBinding := true;
+end;
+
 procedure TtiPerAwareDateTimeEditAbs.DoValidation;
 begin
   inherited;
-  Error := DataAndPropertyValid;
+  Error := FRequireDataBinding and (not DataAndPropertyValid);
 end;
 
 procedure TtiPerAwareDateTimeEditAbs.SetFormatString(const AValue: string);
 begin
   FFormatString := AValue;
   UpdateValue(FLastValidDateTime);
+end;
+
+procedure TtiPerAwareDateTimeEditAbs.SetRequireDataBinding(
+  const AValue: boolean);
+begin
+  if AValue <> FRequireDataBinding then
+  begin
+    FRequireDataBinding := AValue;
+    DoValidation;
+  end;
 end;
 
 procedure TtiPerAwareDateTimeEditAbs.SetValue(const AValue: String);
@@ -3778,7 +3799,8 @@ end;
 procedure TtiPerAwareDateTimeEdit.DoValidation;
 begin
   inherited;
-  Error := Error and (not TryStrToDateTime(Value, FLastValidDateTime));
+  // NOTE: Must always do string to date time, even if inherited error
+  Error := (not TryStrToDateTime(Value, FLastValidDateTime)) or Error;
 end;
 
 { TtiPerAwareTimeEdit }
@@ -3792,7 +3814,8 @@ end;
 procedure TtiPerAwareTimeEdit.DoValidation;
 begin
   inherited;
-  Error := Error and (not TryStrToTime(Value, FLastValidDateTime));
+  // NOTE: Must always do string to time, even if inherited error
+  Error := (not TryStrToTime(Value, FLastValidDateTime)) or Error;
 end;
 
 function TtiPerAwareTimeEdit.GetValueAsTime: TDateTime;
@@ -3816,7 +3839,8 @@ end;
 procedure TtiPerAwareDateEdit.DoValidation;
 begin
   inherited;
-  Error := Error and (not TryStrToDate(Value, FLastValidDateTime));
+  // NOTE: Must always do string to date, even if inherited error
+  Error := (not TryStrToDate(Value, FLastValidDateTime)) or Error;
 end;
 
 function TtiPerAwareDateEdit.GetValueAsDate: TDateTime;

@@ -88,7 +88,7 @@ end;
 procedure TContact_City_TCombobox_Mediator.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
-  EditControl.Style:= csDropDownList;
+  View.Style:= csDropDownList;
 end;
 
 { TCityList_ListView_Mediator }
@@ -106,7 +106,7 @@ end;
 procedure TCity_Country_TCombobox_Mediator.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
-  EditControl.Style:= csDropDownList;
+  View.Style:= csDropDownList;
 end;
 
 end.

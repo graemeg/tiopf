@@ -322,7 +322,7 @@ type
   private
     FObserved: TtiObject;
   public
-    constructor Create(const AObserved: TtiObject);
+    constructor Create(const AObserved: TtiObject; const ATopic: string = '');
     destructor Destroy; override;
   end;
 
@@ -333,7 +333,9 @@ type
     FObjectState : TPerObjectState;
     FObserverList: TList;
     FUpdateCount: Integer;
+    FUpdateTopicList: TStringList;
     function GetObserverList: TList;
+    function GetUpdateTopicList: TStringList;
   protected
     FOwner: TtiObject; // Want FOwner here as there are time when we may want
                         // go get access without going through the GetOwner and
@@ -497,24 +499,33 @@ type
     {: Detach a existing observer }
     procedure   DetachObserver(AObserver: TtiObject); virtual;
     {: Start a update process. This will allow us to update multiple things,
-      before we notify the observers of the updates. }
-    procedure   BeginUpdate;
-    {: End a update process }
+      before we notify the observers of the updates. Topic allows for
+      identification of specific changes. }
+    procedure   BeginUpdate(const ATopic: string = '');
+    {: End an update process }
     procedure   EndUpdate;
-    {: BeginUpdate when called, EndUpdate when out of scope. }
-    function    NotifyObserversHelper: ItiNotifyObserversHelper;
+    {: BeginUpdate when called, EndUpdate when out of scope. Topic allows for
+      identification of specific changes. }
+    function    NotifyObserversHelper(const ATopic: string = ''): ItiNotifyObserversHelper;
     {: Only needed if performing a observing role }
     procedure   Update(ASubject: TtiObject); overload; virtual;
     {: Only needed if performing a observing role where other events than changed need to be observed }
     procedure   Update(ASubject: TtiObject; AOperation: TNotifyOperation); overload; virtual;
     {: Notify all the attached observers about a change }
     procedure   NotifyObservers; overload; virtual;
+    {: Notify all the attached observers about a change for a specific topic }
+    procedure   NotifyObservers(const ATopic: string); overload; virtual;
     {: Notify all the attached observers about a change operation}
     procedure   NotifyObservers(ASubject : TTiObject; AOperation : TNotifyOperation); overload; virtual;
+    {: Notify all the attached observers about a change operation for a specific topic }
+    procedure   NotifyObservers(ASubject : TTiObject; AOperation : TNotifyOperation; const ATopic: string); overload; virtual;
     {: Used to get access to the internal observer list. This has been surfaced
        so that the MGM List Views can atttach/detach observers to the selected
        object. Not a great way of doing it - we need a different design. }
     property    ObserverList: TList read GetObserverList write FObserverList;
+    {: Update notifications can be for specific topics (such as one or more
+       specific properties changed. }
+    property    UpdateTopicList: TStringList read GetUpdateTopicList;
   end;
 
 
@@ -860,6 +871,23 @@ type
     property    Dirty : boolean read FbDirty write FbDirty;
   end;
 
+  { TtiObserverProxy }
+
+  TtiObserverProxy = class(TtiObject)
+  private
+    FSubject: TtiObject;
+    FOnUpdate: TtiObjectUpdateEvent;
+    procedure SetSubject(const AValue: TtiObject);
+  protected
+    procedure StopObserving(ASubject: TtiObject); override;
+  public
+    constructor Create(const ASubject: TtiObject;
+        const AOnUpdate: TtiObjectUpdateEvent); reintroduce; virtual;
+    destructor Destroy; override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    property Subject: TtiObject read FSubject write SetSubject;
+  end;
+
 const
   cgNullDBInteger            = -1 ;
   cgNullDBString             = '' ;
@@ -923,7 +951,7 @@ begin
   lFields := TStringList.Create;
   try
     tiGetPropertyNames(AList.Items[0], lFields);
-    tiListToStream(AStream, AList, ',', tiLE, lFields);
+    tiListToStream(AStream, AList, ',', tiLineEnd, lFields);
   finally
     lFields.Free;
   end;
@@ -941,7 +969,7 @@ begin
 
   lStream := TFileStream.Create(AFileName, fmCreate);
   try
-    tiListToStream(lStream, AList, ',', tiLE, AColsSelected);
+    tiListToStream(lStream, AList, ',', tiLineEnd, AColsSelected);
   finally
     lStream.Free;
   end;
@@ -960,7 +988,7 @@ begin
     lStream := TFileStream.Create(AFileName, fmCreate);
     try
       tiGetPropertyNames(AList.Items[0], lFields);
-      tiListToStream(lStream, AList, ',', tiLE, lFields);
+      tiListToStream(lStream, AList, ',', tiLineEnd, lFields);
     finally
       lStream.Free;
     end;
@@ -1048,12 +1076,13 @@ end;
 
 { TtiNotifyObserversHelper }
 
-constructor TtiNotifyObserversHelper.Create(const AObserved: TtiObject);
+constructor TtiNotifyObserversHelper.Create(const AObserved: TtiObject;
+  const ATopic: string);
 begin
   Assert(AObserved.TestValid, CTIErrorInvalidObject);
   inherited Create;
   FObserved := AObserved;
-  FObserved.BeginUpdate;
+  FObserved.BeginUpdate(ATopic);
 end;
 
 destructor TtiNotifyObserversHelper.Destroy;
@@ -1450,6 +1479,7 @@ procedure TtiObject.SetObjectState(const AValue: TPerObjectState);
 begin
   if FObjectState = AValue then exit;
   FObjectState := AValue;
+  NotifyObserversHelper;
 end;
 
 procedure TtiObjectList.Empty;
@@ -1917,7 +1947,7 @@ end;
 
 procedure TPerStringStream.WriteLn(const AValue: string);
 begin
-  FStream.WriteString(AValue + tiLE);
+  FStream.WriteString(AValue + tiLineEnd);
 end;
 
 procedure TtiObjectList.SetCapacity(const AValue: integer);
@@ -2836,7 +2866,7 @@ begin
   for i := 0 to Count - 1 do
   begin
     if Result <> '' then
-      Result := Result + tiLE;
+      Result := Result + tiLineEnd;
     Result := Result + Items[i].ErrorMessage;
   end;
 end;
@@ -2953,6 +2983,7 @@ begin
   {$ENDIF}
   NotifyObservers(Self,noFree);
   FreeAndNil(FObserverList);
+  FreeAndNil(FUpdateTopicList);
   inherited;
 end;
 
@@ -3914,7 +3945,9 @@ end;
 {$IFDEF OID_AS_INT64}
 procedure TtiObject.SetOID(const AValue: TtiOID);
 begin
+  if FOID = AValue then Exit; //==>
   FOID := AValue;
+  NotifyObserversHelper;
 end;
 {$ENDIF}
 
@@ -4033,9 +4066,11 @@ begin
     FObserverList.Add(AObserver);
 end;
 
-procedure TtiObject.BeginUpdate;
+procedure TtiObject.BeginUpdate(const ATopic: string);
 begin
   Inc(FUpdateCount);
+  if ATopic <> '' then
+    UpdateTopicList.Add(ATopic);
 end;
 
 procedure TtiObject.DetachObserver(AObserver: TtiObject);
@@ -4063,17 +4098,29 @@ begin
   end;
 end;
 
-function TtiObject.NotifyObserversHelper: ItiNotifyObserversHelper;
+function TtiObject.NotifyObserversHelper(const ATopic: string): ItiNotifyObserversHelper;
 begin
-  result := TtiNotifyObserversHelper.Create(Self);
+  result := TtiNotifyObserversHelper.Create(Self, ATopic);
 end;
 
 procedure TtiObject.NotifyObservers;
 begin
-  NotifyObservers(Self,noChanged);
+  NotifyObservers(Self, noChanged, '');
 end;
 
-procedure TtiObject.NotifyObservers(ASubject: TTiObject; AOperation: TNotifyOperation);
+procedure TtiObject.NotifyObservers(const ATopic: string);
+begin
+  NotifyObservers(Self, noChanged, ATopic);
+end;
+
+procedure TtiObject.NotifyObservers(ASubject: TTiObject;
+  AOperation: TNotifyOperation);
+begin
+  NotifyObservers(ASubject, AOperation, '');
+end;
+
+procedure TtiObject.NotifyObservers(ASubject: TTiObject;
+  AOperation: TNotifyOperation; const ATopic: string);
 var
   ObjectIndex: Integer;
   Observer: TtiObject;
@@ -4081,6 +4128,9 @@ var
 begin
   if not Assigned(FObserverList) then
     Exit; //==>
+
+  if ATopic <> '' then
+    UpdateTopicList.Add(ATopic);
 
   // Allow observers to be removed during notification.
   LObserverList := TList.Create;
@@ -4099,6 +4149,11 @@ begin
   finally
     LObserverList.Free;
   end;
+
+  // We free the topic list to conserve memory and to clear the topics to
+  // start a fresh list for future notifications.
+  if Assigned(FUpdateTopicList) then
+    FreeAndNil(FUpdateTopicList);
 end;
 
 procedure TtiObject.Update(ASubject: TtiObject);
@@ -4124,6 +4179,16 @@ begin
   if not Assigned(FObserverList) then
     FObserverList := TList.Create;
   Result := FObserverList;
+end;
+
+function TtiObject.GetUpdateTopicList: TStringList;
+begin
+  if not Assigned(FUpdateTopicList) then
+  begin
+    FUpdateTopicList := TStringList.Create;
+    FUpdateTopicList.Duplicates := dupIgnore;
+  end;
+  result := FUpdateTopicList;
 end;
 
 procedure TtiObjectList.FreeDeleted;
@@ -4297,6 +4362,53 @@ end;
 procedure TtiFieldDate.SetAsString(const AValue: string);
 begin
   Value := tiXMLStringToDateTime(AValue);
+end;
+
+{ TtiObserverProxy }
+
+constructor TtiObserverProxy.Create(const ASubject: TtiObject;
+  const AOnUpdate: TtiObjectUpdateEvent);
+begin
+  Assert(Assigned(AOnUpdate), 'AOnUpdate should be assigned');
+  inherited Create;
+
+  Subject := ASubject;
+  FOnUpdate := AOnUpdate;
+end;
+
+destructor TtiObserverProxy.Destroy;
+begin
+  Subject := nil;
+  inherited;
+end;
+
+procedure TtiObserverProxy.SetSubject(const AValue: TtiObject);
+begin
+  Assert(AValue.TestValid(TtiObject, true), CTIErrorInvalidObject);
+
+  if AValue = FSubject then
+    Exit; //==>
+
+  if Assigned(FSubject) then
+    FSubject.DetachObserver(Self);
+  FSubject := AValue;
+  if Assigned(FSubject) then
+    FSubject.AttachObserver(Self);
+end;
+
+procedure TtiObserverProxy.StopObserving(ASubject: TtiObject);
+begin
+  inherited;
+  Subject := nil;
+end;
+
+procedure TtiObserverProxy.Update(ASubject: TtiObject;
+  AOperation: TNotifyOperation);
+begin
+  inherited;
+  if (ASubject = Subject) and (AOperation = noFree) then
+    Subject := nil;
+  FOnUpdate(ASubject, AOperation);
 end;
 
 end.

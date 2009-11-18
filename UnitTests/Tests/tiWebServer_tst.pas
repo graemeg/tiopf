@@ -298,7 +298,7 @@ begin
       on e:exception do
       begin
         CheckIs(e, Exception);
-        CheckEquals('HTTP/1.1 404 Not Found', e.message);
+        CheckEquals('HTTP/1.1 404 Not Found (After 1 attempts)', e.message);
       end;
     end;
     CheckEquals('', LResult);
@@ -311,12 +311,8 @@ begin
       begin
         CheckIs(e, Exception);
         CheckEquals(
-          Format(cErrorAccessingHTTPServer,
-                 ['HTTP/1.1 404 Not Found',
-                  'Post',
-                  'http://localhost:81/pagethatsnotthere.htm',
-                  '']),
-        e.message);
+          'HTTP/1.1 404 Not Found (After 1 attempts)',
+          e.message);
       end;
     end;
     CheckEquals('', LResult);

@@ -591,6 +591,11 @@ type
     function    AddColumn(const pDeriveColumnMethod : TtiDeriveListColumnValue;
                            const pDisplayLabel : string = '';
                            pColWidth : Integer = -1): TtiVTColumn; overload;
+    function    AddColumn(const AFieldName : string;
+                           const ADataType : TvtTypeKind;
+                           const ADeriveColumnMethod: TtiDeriveListColumnValue;
+                           const ADisplayLabel : string = '';
+                           const AColWidth : Integer = -1): TtiVTColumn; overload;
 
     //procedure   ClearColumns; virtual;
     //property    SortOrders     : TtiVTSortOrders read FSortOrders;
@@ -1784,6 +1789,12 @@ var
   LCurrency: Currency;
 begin
   Assert(Assigned(AObj));
+  if AColumnIndex = NoColumn then
+  begin
+    Result := '';
+    Exit; //==>
+  end;
+
   LColumn := Header.Columns[AColumnIndex];
   LField := LColumn.FieldName;
   if (not LColumn.Derived) and (LField <> '') then
@@ -2673,6 +2684,17 @@ Begin
       End; { Loop }
     End;
   End;
+end;
+
+function TtiCustomVirtualTree.AddColumn(
+    const AFieldName: string;
+    const ADataType: TvtTypeKind;
+    const ADeriveColumnMethod: TtiDeriveListColumnValue;
+    const ADisplayLabel: string;
+    const AColWidth: Integer): TtiVTColumn;
+begin
+  Result := AddColumn(AFieldName, ADataType, ADisplayLabel, AColWidth);
+  Result.OnDeriveColumn := ADeriveColumnMethod;
 end;
 
 procedure TtiCustomVirtualTree.AddFilter(pFilter: TLVFilter);

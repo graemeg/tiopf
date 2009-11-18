@@ -491,9 +491,9 @@ begin
   lTableMetaData := TtiDBMetaDataTable.Create;
   try
     lTableMetaData.Name := uXMLTags.TableNameQueryParam;
-    lTableMetaData.AddField(uXMLTags.FieldNameParamName,       qfkString, 9999);
-    lTableMetaData.AddField(uXMLTags.FieldNameParamKind,       qfkString, 9999);
-    lTableMetaData.AddField(uXMLTags.FieldNameParamValue,      qfkString, 9999);
+    lTableMetaData.AddInstance(uXMLTags.FieldNameParamName,       qfkString, 9999);
+    lTableMetaData.AddInstance(uXMLTags.FieldNameParamKind,       qfkString, 9999);
+    lTableMetaData.AddInstance(uXMLTags.FieldNameParamValue,      qfkString, 9999);
     DBRequestXML.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
@@ -507,11 +507,11 @@ begin
   lTableMetaData := TtiDBMetaDataTable.Create;
   try
     lTableMetaData.Name := uXMLTags.TableNameQuery;
-    lTableMetaData.AddField(uXMLTags.FieldNameQuerySQL,      qfkString, 9999);
-    lTableMetaData.AddField(uXMLTags.FieldNameTransactionID, qfkString, 10);
-    lTableMetaData.AddField(uXMLTags.FieldNameCommandType,   qfkString, 9999);
-    lTableMetaData.AddField(uXMLTags.FieldNameUserName,      qfkString, 9999);
-    lTableMetaData.AddField(uXMLTags.FieldNameComputerName,  qfkString, 9999);
+    lTableMetaData.AddInstance(uXMLTags.FieldNameQuerySQL,      qfkString, 9999);
+    lTableMetaData.AddInstance(uXMLTags.FieldNameTransactionID, qfkString, 10);
+    lTableMetaData.AddInstance(uXMLTags.FieldNameCommandType,   qfkString, 9999);
+    lTableMetaData.AddInstance(uXMLTags.FieldNameUserName,      qfkString, 9999);
+    lTableMetaData.AddInstance(uXMLTags.FieldNameComputerName,  qfkString, 9999);
     DBRequestXML.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
@@ -828,6 +828,7 @@ var
 begin
   LTryCount:= 1;
   LTrySuccessful:= False;
+  // ToDo: Retry not required in TtiDatabaseRemoteXML.TryHTTPPost
   while (not LTrySuccessful) do
   begin
     try

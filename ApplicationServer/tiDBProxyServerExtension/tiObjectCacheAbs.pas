@@ -19,7 +19,7 @@ const
 
 type
 
-  TtiOjectCacheAbs = class( TtiBaseObject )
+  TtiObjectCacheAbs = class( TtiBaseObject )
   private
     FCacheIndex: TtiINIFile ;
     FCacheDirectoryRoot: String;
@@ -28,12 +28,13 @@ type
     // ToDo: Rename to CacheIndexINIFile
     property    CacheIndex   : TtiINIFile read FCacheIndex;
     function    GetCachedFileDirAndName: string; virtual;
-    function    MustUpdateCacheFile(const ADatabaseDate, AFileDate: TDateTime): Boolean;
+    function    MustUpdateCacheFile(const ADatabaseDate, AFileDate: TDateTime): Boolean; virtual;
 
     procedure   Init; virtual;
     function    GetDBFileDate: TDateTime ; virtual ;
 
     function    GetCachedFileDate: TDateTime ; virtual ;
+    function    GetCachedFileSize: Longint ; virtual ;
     procedure   SetCachedFileDate(const AData: TDateTime); virtual;
     function    LockDBConnectionCreateQuery(var ADatabase: TtiDatabase): TtiQuery;
 
@@ -63,7 +64,7 @@ uses
 
 { TtiCGIOjectCacheAbs }
 
-constructor TtiOjectCacheAbs.Create(const ACacheDirectoryRoot: string);
+constructor TtiObjectCacheAbs.Create(const ACacheDirectoryRoot: string);
 begin
   inherited Create;
   if ACacheDirectoryRoot <> '' then
@@ -72,13 +73,13 @@ begin
     FCacheDirectoryRoot:= ExpandFileName(tiAddTrailingSlash(tiGetEXEPath) + PathDelim + CPathToCachedDataRoot);
 end;
 
-destructor TtiOjectCacheAbs.Destroy;
+destructor TtiObjectCacheAbs.Destroy;
 begin
   FCacheIndex.Free ;
   inherited;
 end;
 
-function TtiOjectCacheAbs.GetCachedFileDate: TDateTime;
+function TtiObjectCacheAbs.GetCachedFileDate: TDateTime;
 var
   lFileName: string;
 begin
@@ -89,7 +90,12 @@ begin
   Result := FCacheIndex.ReadDateTime(cCacheIndexINISection, lFileName, 0);
 end;
 
-procedure TtiOjectCacheAbs.SetCachedFileDate(const AData: TDateTime);
+function TtiObjectCacheAbs.GetCachedFileSize: Longint;
+begin
+  result := tiGetFileSize(GetCachedFileDirAndName);
+end;
+
+procedure TtiObjectCacheAbs.SetCachedFileDate(const AData: TDateTime);
 var
   lFileName: string;
 begin
@@ -101,17 +107,17 @@ begin
   tiSetFileDate(GetCachedFileDirAndName, AData);
 end;
 
-function TtiOjectCacheAbs.CachedFileName: string;
+function TtiObjectCacheAbs.CachedFileName: string;
 begin
   Assert(False, 'CachedFileName not overridden in ' + ClassName);
 end;
 
-function TtiOjectCacheAbs.CacheDirectory: string;
+function TtiObjectCacheAbs.CacheDirectory: string;
 begin
   Result:= FCacheDirectoryRoot;
 end;
 
-function TtiOjectCacheAbs.LockDBConnectionCreateQuery(
+function TtiObjectCacheAbs.LockDBConnectionCreateQuery(
   var ADatabase: TtiDatabase ): TtiQuery;
 begin
   if not Assigned(GTIOPFManager.DefaultPerLayer) then
@@ -130,7 +136,7 @@ begin
   result.AttachDatabase(ADatabase);
 end;
 
-function TtiOjectCacheAbs.MustUpdateCacheFile(const ADatabaseDate,
+function TtiObjectCacheAbs.MustUpdateCacheFile(const ADatabaseDate,
   AFileDate: TDateTime): Boolean;
 begin
   result:=
@@ -138,18 +144,18 @@ begin
     (not FileExists(GetCachedFileDirAndName));
 end;
 
-function TtiOjectCacheAbs.GetDBFileDataSQL: string;
+function TtiObjectCacheAbs.GetDBFileDataSQL: string;
 begin
   Assert(False, 'GetDBFileDataSQL not overridden in ' + ClassName);
 end;
 
-function TtiOjectCacheAbs.GetCachedFileDirAndName: string;
+function TtiObjectCacheAbs.GetCachedFileDirAndName: string;
 begin
   Assert( tiExtractExtension( CachedFileName ) <> '', 'CachedFileName missing a file extension');
   Result := tiAddTrailingSlash(CacheDirectory) + CachedFileName ;
 end;
 
-function TtiOjectCacheAbs.GetDBFileDate: TDateTime;
+function TtiObjectCacheAbs.GetDBFileDate: TDateTime;
 var
   LQuery    : TtiQuery;
   LDatabase : TtiDatabase;
@@ -179,7 +185,7 @@ begin
   end;
 end;
 
-procedure TtiOjectCacheAbs.Init;
+procedure TtiObjectCacheAbs.Init;
 var
   lFileName : string;
 begin
@@ -188,4 +194,3 @@ begin
 end;
 
 end.
-

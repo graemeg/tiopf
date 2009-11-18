@@ -107,13 +107,7 @@ begin
     AOutput.WriteString(FHTTP.responseText);
   except
     on e:exception do
-    begin
-      if FormatExceptions then
-        raise EtiOPFProgrammerException.CreateFmt(cErrorAccessingHTTPServer,
-          [e.message, 'Get', AURL, Input.DataString])
-      else
-        raise;
-    end;
+      raise EtiOPFHTTPException.Create(e.message);
   end;
 end;
 
@@ -149,13 +143,7 @@ begin
 
   except
     on e:exception do
-    begin
-      if FormatExceptions then
-        raise EtiOPFProgrammerException.CreateFmt(cErrorAccessingHTTPServer,
-          [e.message, 'Post', AURL, Input.DataString])
-      else
-        raise;
-    end;
+      raise EtiOPFHTTPException.Create(e.message);
   end;
 end;
 

@@ -601,7 +601,7 @@ begin
   Assert(AColsSelected<>nil, 'AColsSelected not assigned');
   lStream := TStringStream.Create('');
   try
-    tiListToStream(lStream, AList, Tab, tiLE, AColsSelected);
+    tiListToStream(lStream, AList, Tab, tiLineEnd, AColsSelected);
     ClipBoard.AsText := lStream.DataString;
   finally
     lStream.Free;

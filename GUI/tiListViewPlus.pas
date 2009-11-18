@@ -2035,8 +2035,8 @@ begin
   lStream := TStringStream.Create('');
   try
     ListToStream(lStream,
-                  '', ',', tiLE,
-                  '', '', ',', tiLE, '');
+                  '', ',', tiLineEnd,
+                  '', '', ',', tiLineEnd, '');
     GetMem(lBuffer, lStream.Size);
     try
       lStream.Position := 0;
@@ -2080,8 +2080,8 @@ begin
   lStream := TFileStream.Create(CSVFileName, fmCreate or fmShareDenyNone);
   try
     ListToStream(lStream,
-                  '', ',', tiLE,
-                  '', '', ',', tiLE, '');
+                  '', ',', tiLineEnd,
+                  '', '', ',', tiLineEnd, '');
   finally
     lStream.Free;
   end;

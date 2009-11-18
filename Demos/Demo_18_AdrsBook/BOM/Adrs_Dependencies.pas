@@ -81,7 +81,7 @@ var
 begin
   Adrs_SrvAutoMap.RegisterMappings;
   LResult:=
-    tiMessageTextDlg('Which persistence layer do you want to use?' + tiLE(2) +
+    tiMessageTextDlg('Which persistence layer do you want to use?' + tiLineEnd(2) +
                      'Firebird, XMLLight or Remote?',
                      [CTIPersistIBX, CTIPersistXMLLight, CTIPersistRemote]);
   if LResult = CTIPersistIBX then

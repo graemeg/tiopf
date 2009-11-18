@@ -50,6 +50,9 @@ type
   EtiOPFUserFeedbackException = class(ETIOPFException)
  ;
 
+  // Raised when a communication link fails
+  EtiOPFCommsException = class(ETIOPFException);
+
   EtiOPFDBException = class(EtiOPFException)
     constructor Create(const APersistenceLayerName, ADatabaseName, AUserName, APassword : string; const AMessage: string = ''); virtual;
   end;
@@ -80,6 +83,8 @@ type
   end;
 
   EtiOPFDBExceptionWrongServerVersion = class(EtiOPFDBException);
+
+  EtiOPFHTTPException = class(EtiOPFCommsException);
 
   procedure tiMailBugReport(const AException: Exception); overload;
   procedure tiMailBugReport(const AText: string); overload;

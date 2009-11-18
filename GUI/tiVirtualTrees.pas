@@ -23346,7 +23346,7 @@ begin
       inherited;
     end;
   end;
-end;                    
+end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -28681,6 +28681,10 @@ begin
             else
               TopNode := Node;
           end;
+
+          // Refresh required before Invalidate to ensure child node checkboxes
+          // are painted correctly.
+          Refresh;
 
           // Check for automatically scrolled tree.
           if LastTopNode <> GetTopNode then

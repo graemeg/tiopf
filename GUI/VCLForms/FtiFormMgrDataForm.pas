@@ -267,8 +267,12 @@ function TtiDataFormClonedData.GetIsDirty: boolean;
 begin
   Assert(FEditedData.TestValid(TtiBaseObject, true), CTIErrorInvalidObject);
   if (OriginalData <> nil) and (EditedData <> nil) then
-    Result := not OriginalData.Equals(EditedData)
-  else
+  begin
+    if EditedData.ObjectState = posCreate then
+      Result := True
+    else
+      Result := not OriginalData.Equals(EditedData)
+  end else
     Result := False;
 end;
 
@@ -360,6 +364,8 @@ begin
       FModelMediators.SubjectByName[ModelMediatorName] := Data;
       FModelMediators.ActiveByName[ModelMediatorName] := true;
     end;
+
+    SetupButtons;
   finally
     EndUpdate;
   end;

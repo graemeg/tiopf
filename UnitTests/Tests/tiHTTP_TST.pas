@@ -133,6 +133,7 @@ const
   cTestParams  = 'prop1=value1,prop2=2,prop3=1.234';
   cExpectedResponseText = 'HTTP/1.1 200 OK';
   cExpectedResponseErrorText = 'HTTP/1.1 500 Internal Server Error';
+  cExpectedResponseErrorTextCountAttempts = 'HTTP/1.1 500 Internal Server Error (After 1 attempts)';
 
   cIndyTimePerCall    = 50;
   cMSXMLTimePerCall   = 65;
@@ -326,7 +327,7 @@ begin
         Fail('Exception not raised when it should have been');
       except
         on e:Exception do
-          CheckEquals(cExpectedResponseErrorText, e.message, 'E.Message');
+          CheckEquals(cExpectedResponseErrorTextCountAttempts, e.message, 'E.Message');
       end;
       CheckEquals(500, LHTTP.ResponseCode, 'ResponseCode');
       CheckEquals(cExpectedResponseErrorText, LHTTP.ResponseText, 'ResponseText');
@@ -358,7 +359,7 @@ begin
         Fail('Exception not raised when expected');
       except
         on e:Exception do
-          CheckEquals(cExpectedResponseErrorText, e.message, 'E.Message');
+          CheckEquals(cExpectedResponseErrorTextCountAttempts, e.message, 'E.Message');
       end;
       lActual := tiStreamToString(LHTTP.Output);
       lExpected := MakeXMLResponse(cTestDocName, cTestParams);

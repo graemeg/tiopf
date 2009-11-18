@@ -1515,8 +1515,8 @@ begin
             RollBack;
           except
             on e:exception do
-              lMessage := lMessage + tiLE +
-                'Error rolling transaction after SQL failed:' + tiLE + e.message;
+              lMessage := lMessage + tiLineEnd +
+                'Error rolling transaction after SQL failed:' + tiLineEnd + e.message;
           end;
         end;
         raise EtiOPFProgrammerException.Create(lMessage);

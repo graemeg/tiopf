@@ -249,7 +249,10 @@ type
     procedure   RegisterLog(ALogTo : TtiLogToClass); overload;
     function    FindByLogClass(ALogToClass : TtiLogToClass): TtiLogToAbs;
     procedure   Log(const AMessage : string;
-                     const ASeverity : TtiLogSeverity = lsNormal);
+                     const ASeverity : TtiLogSeverity = lsNormal); overload;
+    procedure   Log(const AMessage : string;
+                     const AArray : Array of Const;
+                     const ASeverity : TtiLogSeverity = lsNormal); overload;
     property    SevToLog : TtiSevToLog read FSevToLog write SetSevToLog;
     property    SevToLogAsString: string read GetSevToLogAsString write SetSevToLogAsString;
     property    LogLevel: TtiLogLevel read FLogLevel write SetLogLevel;
@@ -1025,7 +1028,7 @@ begin
     begin
       if i > 1 then
       begin
-        Result := Result + tiLE + tiSpace(LMessagePrefixLen) + tiToken(LMessage, Cr, i);
+        Result := Result + tiLineEnd + tiSpace(LMessagePrefixLen) + tiToken(LMessage, Cr, i);
       end else
         Result := Result + tiToken(LMessage, Cr, i);
     end;
@@ -1137,6 +1140,12 @@ end;
 procedure TtiThrdLog.SetLogTo(const AValue: TtiLogToCacheAbs);
 begin
   FLogTo := AValue;
+end;
+
+procedure TtiLog.Log(const AMessage: string; const AArray: array of Const;
+  const ASeverity: TtiLogSeverity);
+begin
+  Log(Format(AMessage, AArray), ASeverity);
 end;
 
 function TtiLog.LogToFileName: string;
