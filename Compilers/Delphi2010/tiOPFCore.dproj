@@ -26,14 +26,14 @@
 			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\tiOPFCore140.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Documents\RAD Studio\7.0\Bpl\tiOPFCore2010.bpl</DCC_DependencyCheckOutputName>
 			<DCC_Alignment>1</DCC_Alignment>
 			<RuntimeOnlyPackage>true</RuntimeOnlyPackage>
 			<DCC_WriteableConstants>true</DCC_WriteableConstants>
 			<DCC_OutputNeverBuildDcps>true</DCC_OutputNeverBuildDcps>
 			<GenDll>true</GenDll>
 			<DCC_ImportedDataReferences>false</DCC_ImportedDataReferences>
-			<DllSuffix>140</DllSuffix>
+			<DllSuffix>2010</DllSuffix>
 			<GenPackage>true</GenPackage>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">

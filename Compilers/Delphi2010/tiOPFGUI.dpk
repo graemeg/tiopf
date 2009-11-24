@@ -22,7 +22,7 @@ package tiOPFGUI;
 {$WRITEABLECONST ON}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$LIBSUFFIX '140'}
+{$LIBSUFFIX '2010'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 {$DEFINE PACKAGE}
@@ -73,16 +73,13 @@ contains
   tiSpin in '..\..\GUI\tiSpin.pas',
   tiHyperlinkWithImage in '..\..\GUI\tiHyperlinkWithImage.pas',
   tiHotImage in '..\..\GUI\tiHotImage.pas',
-//  tiVTExportCSV in '..\..\GUI\tiVTExportCSV.pas',
   tiLogToGUI in '..\..\GUI\tiLogToGUI.pas',
   tiLogReg in '..\..\GUI\tiLogReg.pas',
   tiLogToErrorDialog in '..\..\GUI\tiLogToErrorDialog.pas',
   tiGUIConstants in '..\..\GUI\tiGUIConstants.pas',
-//  tiVTFilter in '..\..\GUI\tiVTFilter.pas',
   tiGUIINI in '..\..\GUI\tiGUIINI.pas',
   tiAnimatedGIF in '..\..\GUI\tiAnimatedGIF.pas',
-  tiMediators in '..\..\GUI\VCL\tiMediators.pas'
-;
+  tiMediators in '..\..\GUI\VCL\tiMediators.pas';
 
 {$I tiDefines.inc}
 

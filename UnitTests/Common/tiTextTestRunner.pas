@@ -66,12 +66,25 @@ function  tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinu
 function  RunRegisteredTests(exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult; overload;
 procedure WriteEmptyLogs(AExitBehavior: TRunnerExitBehavior);
 
+// ToDo: We must be able to do better than this...
+{$UNDEF XMLLISTENER}
+{$IFNDEF VER130}
+  {$IFNDEF VER140}
+    {$IFNDEF CLR}
+      {$IFNDEF VER210}
+        {$DEFINE XMLLISTENER}
+      {$ENDIF}
+    {$ENDIF}
+  {$ENDIF}
+{$ENDIF}
 
 implementation
 uses
   {$IFDEF DUNIT2}
   TestFrameworkProxy,
-  XMLListener,
+    {$IFDEF XMLLISTENER}
+      XMLListener,
+    {$ENDIF}
   {$ENDIF}
   tiUtils
   ,tiConstants
@@ -106,7 +119,9 @@ begin
       Suite.LoadConfiguration(ExtractFilePath(ParamStr(0)) + 'Dunit.ini', False, True);
       try
         Result := RunTest(Suite, [{$IFDEF DUNIT2}
-                                  TXMLListener.Create(ParamStr(0)),
+                                    {$IFDEF XMLLISTENER}
+                                      TXMLListener.Create(ParamStr(0)),
+                                    {$ENDIF}
                                   {$ENDIF}
                                   TtiTextTestListener.Create
                                   ]);
