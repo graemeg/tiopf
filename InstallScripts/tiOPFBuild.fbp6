@@ -2949,6 +2949,91 @@ String
                 </Object>
               </Object>
             </Object>
+            <Object Class="TSetVariableAction" XMLID="{23147D13-DCD7-4627-AF74-E9999D49CF00}">
+              <Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="1" name="ActionDescription" type="string">
+                <![CDATA[Set Variable report_body to [ Build time:
+  %build_date%
+
+SVN revision:
+  %version_build%
+
+Summary:
+  Build errors - %fbignorederrors%
+  Delphi 7 - %report_long_d7%
+  Delphi 2006 - %report_long_d2006%
+  Delphi 2007 - %report_long_d2007%
+  Delphi 2010 - %report_long_d2010%
+
+Details:
+
+Delphi 7
+%report_unit_tests_d7%
+* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Delphi 2006
+%report_unit_tests_d2006%
+* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Delphi 2007
+%report_unit_tests_d2007%
+* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Delphi 2010
+%report_unit_tests_d2010%
+ ]]]>
+              </Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="ApplyToExisting" type="Boolean">False</Property>
+              <Property name="DoExpandExpression" type="Boolean">True</Property>
+              <Property name="DoNotValidateAction" type="Boolean">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
+              <Property name="HideActionFromLog" type="Boolean">False</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="LogActionProperties" type="Boolean">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
+              <Property MultiValue="1" name="NewValue" type="WideString">
+                <![CDATA[Build time:
+  %build_date%
+
+SVN revision:
+  %version_build%
+
+Summary:
+  Build errors - %fbignorederrors%
+  Delphi 7 - %report_long_d7%
+  Delphi 2006 - %report_long_d2006%
+  Delphi 2007 - %report_long_d2007%
+  Delphi 2010 - %report_long_d2010%
+
+Details:
+
+Delphi 7
+%report_unit_tests_d7%
+* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Delphi 2006
+%report_unit_tests_d2006%
+* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Delphi 2007
+%report_unit_tests_d2007%
+* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+Delphi 2010
+%report_unit_tests_d2010%
+]]>
+              </Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Property MultiValue="0" name="VariableName" type="WideString">report_body</Property>
+            </Object>
             <Object Class="TEmailAction" XMLID="{15641293-F8B0-42B5-A51D-C651065C4FB0}">
               <Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string">
@@ -10134,34 +10219,9 @@ Comments=
       </Object>
       <Object Class="TFBVariable" XMLID="{98238883-1F67-4FF2-8DEF-77A139C98F18}">
         <Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="1" name="DefaultValue" type="string">
-          <![CDATA[Build time:
-  %build_date%
-
-SVN revision:
-  %version_build%
-
-Summary:
-  Build errors - %fbignorederrors%
-  Delphi 7 - %report_long_d7%
-  Delphi 2006 - %report_long_d2006%
-  Delphi 2007 - %report_long_d2007%
-
-Details:
-
-Delphi 7
-%report_unit_tests_d7%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-Delphi 2006
-%report_unit_tests_d2006%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-Delphi 2007
-%report_unit_tests_d2007%]]>
-        </Property>
+        <Property MultiValue="0" name="DefaultValue" type="string"></Property>
         <Property MultiValue="0" name="GroupName" type="string"></Property>
-        <Property name="IsMacro" type="Boolean">True</Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_body</Property>
