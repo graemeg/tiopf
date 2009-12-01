@@ -66,6 +66,7 @@ type
   private
     FHint : TTranslateString;
     FPendingChange: Boolean;
+    FShowError: boolean;
     function GetLabelFont: TFont;
     function GetLabelParentFont: Boolean;
     procedure SetLabelFont(const AValue: TFont);
@@ -123,6 +124,7 @@ type
     procedure   SetHint(const AValue : TTranslateString);{$IFDEF FPC} override;{$ENDIF}
     procedure   SetReadOnly(const AValue: Boolean);virtual;
     procedure   SetControlColor; virtual;
+    procedure   SetShowError(const Value: boolean); virtual;
     procedure   SetError(const AValue: boolean); virtual;
     procedure   SetErrorColor(const AValue: TColor); virtual;
     procedure   SetGreyWhenReadOnly(const AValue: boolean); virtual;
@@ -173,6 +175,7 @@ type
 
     property    FieldName : string      read FsFieldName   write SetFieldName;
 
+    property    ShowError: boolean read FShowError write SetShowError default False;
     property    Error : boolean read FbError write SetError default False;
     property    ErrorColor : TColor read FErrorColor write SetErrorColor default clError;
     property    GreyWhenReadOnly : boolean read FGreyWhenReadOnly write SetGreyWhenReadOnly default true;
@@ -840,6 +843,7 @@ begin
 
   FiLabelWidth := cuiDefaultLabelWidth;
 
+  FShowError:= false;
   FbError           := False;
   FErrorColor       := clError;
   FGreyWhenReadOnly := True;
@@ -1236,10 +1240,16 @@ begin
   SetControlColor;
 end;
 
+procedure TtiPerAwareAbs.SetShowError(const Value: boolean);
+begin
+  FShowError := Value;
+  SetControlColor;
+end;
+
 procedure TtiPerAwareAbs.SetControlColor;
 begin
   // the control is in error
-  if Error then
+  if ShowError and Error then
   begin
     FLabel.Font.Color := clBlack;
     FWinControl.Brush.Color := FErrorColor;
