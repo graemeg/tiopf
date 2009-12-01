@@ -1,17 +1,15 @@
-program DUnitTIOPFGui;
+program tiOPFUnitTestsGUI;
 
 uses
-  {$IFDEF FASTMM}
-     FastMM4,
-  {$ENDIF}
+  FastMM4,
   tiBaseObject,
   tiLog,
   Forms,
   TestFramework,
   GUITestRunner,
   tiLogToGUI,
-  tiTestDependencies in '..\Common\tiTestDependencies.pas',
-  tiPromptWhichPersistenceLayersToTest in '..\Common\tiPromptWhichPersistenceLayersToTest.pas';
+  tiTestDependencies in '..\..\UnitTests\Common\tiTestDependencies.pas',
+  tiPromptWhichPersistenceLayersToTest in '..\..\UnitTests\Common\tiPromptWhichPersistenceLayersToTest.pas';
 
 {$R *.RES}
 

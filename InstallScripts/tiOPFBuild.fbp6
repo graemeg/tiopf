@@ -3929,7 +3929,7 @@ String
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">14</Property>
+              <Property name="CompilerVersion" type="Integer">4</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string">
@@ -4015,7 +4015,7 @@ Comments=
 -w-UNSAFE_CAST=0
 ]]>
                 </Property>
-                <Property MultiValue="0" name="Conditionals" type="WideString">object_tracking</Property>
+                <Property MultiValue="0" name="Conditionals" type="WideString"></Property>
                 <Property name="ConsoleApp" type="WordBool">False</Property>
                 <Property MultiValue="0" name="DCPOutputDir" type="WideString">%path_to_working_bin%</Property>
                 <Property name="DebugInfo" type="WordBool">True</Property>
@@ -4034,7 +4034,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%;%path_to_delphi_user_lib%</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%p_library_path%;%path_to_delphi_user_lib%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -4077,7 +4077,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">14</Property>
+              <Property name="CompilerVersion" type="Integer">4</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string">
@@ -4163,7 +4163,7 @@ Comments=
 -w-UNSAFE_CAST=0
 ]]>
                 </Property>
-                <Property MultiValue="0" name="Conditionals" type="WideString">object_tracking</Property>
+                <Property MultiValue="0" name="Conditionals" type="WideString"></Property>
                 <Property name="ConsoleApp" type="WordBool">False</Property>
                 <Property MultiValue="0" name="DCPOutputDir" type="WideString">%path_to_working_bin%</Property>
                 <Property name="DebugInfo" type="WordBool">True</Property>
@@ -4182,7 +4182,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%;%path_to_delphi_user_lib%</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%p_library_path%;%path_to_delphi_user_lib%;%path_to_working_bin%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -4225,7 +4225,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">14</Property>
+              <Property name="CompilerVersion" type="Integer">4</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string">
@@ -4311,7 +4311,7 @@ Comments=
 -w-UNSAFE_CAST=0
 ]]>
                 </Property>
-                <Property MultiValue="0" name="Conditionals" type="WideString">object_tracking</Property>
+                <Property MultiValue="0" name="Conditionals" type="WideString"></Property>
                 <Property name="ConsoleApp" type="WordBool">False</Property>
                 <Property MultiValue="0" name="DCPOutputDir" type="WideString">%path_to_working_bin%</Property>
                 <Property name="DebugInfo" type="WordBool">True</Property>
@@ -4330,7 +4330,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%;%path_to_delphi_user_lib%</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%p_library_path%;%path_to_delphi_user_lib%;%path_to_working_bin%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -4373,7 +4373,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">14</Property>
+              <Property name="CompilerVersion" type="Integer">4</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string">
@@ -4459,7 +4459,7 @@ Comments=
 -w-UNSAFE_CAST=0
 ]]>
                 </Property>
-                <Property MultiValue="0" name="Conditionals" type="WideString">object_tracking</Property>
+                <Property MultiValue="0" name="Conditionals" type="WideString"></Property>
                 <Property name="ConsoleApp" type="WordBool">False</Property>
                 <Property MultiValue="0" name="DCPOutputDir" type="WideString">%path_to_working_bin%</Property>
                 <Property name="DebugInfo" type="WordBool">True</Property>
@@ -4478,7 +4478,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%;%path_to_delphi_user_lib%</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%p_library_path%;%path_to_delphi_user_lib%;%path_to_working_bin%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -4521,7 +4521,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">14</Property>
+              <Property name="CompilerVersion" type="Integer">4</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string">
@@ -4669,7 +4669,7 @@ Comments=
               <Property name="BuildAll" type="WordBool">True</Property>
               <Property name="BuildVersion" type="Integer">0</Property>
               <Property name="CodePage" type="Integer">1252</Property>
-              <Property name="CompilerVersion" type="Integer">14</Property>
+              <Property name="CompilerVersion" type="Integer">4</Property>
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string">
@@ -4888,7 +4888,7 @@ Comments=
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                 <Property MultiValue="0" name="FBVariable" type="string">_running_application_process_id</Property>
                 <Property name="HideActionFromLog" type="Boolean">False</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">True</Property>
                 <Property name="LogActionProperties" type="Boolean">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
@@ -9687,16 +9687,6 @@ Comments=
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">path_to_working_tiOPF2</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-      </Object>
-      <Object Class="TFBVariable" XMLID="{B2B5A020-BBCB-4B5F-B61B-332199BBDFAF}">
-        <Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string"></Property>
-        <Property MultiValue="0" name="GroupName" type="string"></Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">delphi_system_lib</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
       </Object>
       <Object Class="TFBVariable" XMLID="{B034E0AE-AC65-403C-84CA-D3FDA092E185}">

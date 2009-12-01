@@ -1,4 +1,4 @@
-program DUnitTIOPFText;
+program tiOPFUnitTestsText;
 {$APPTYPE CONSOLE}
 uses
   FastMM4,
@@ -6,8 +6,8 @@ uses
   TestFrameWork,
   TextTestRunner,
   tiOPFTestManager,
-  tiTestDependencies in '..\Common\tiTestDependencies.pas',
-  tiTextTestRunner in '..\Common\tiTextTestRunner.pas';
+  tiTextTestRunner in '..\..\UnitTests\Common\tiTextTestRunner.pas',
+  tiTestDependencies in '..\..\UnitTests\Common\tiTestDependencies.pas';
 
 var
   LExitBehavior : TRunnerExitBehavior;
