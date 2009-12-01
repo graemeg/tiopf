@@ -13,9 +13,6 @@ object FormMainOneToMany: TFormMainOneToMany
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    540
-    397)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel

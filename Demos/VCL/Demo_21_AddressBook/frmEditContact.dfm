@@ -15,9 +15,6 @@ object ContactEditForm: TContactEditForm
   OldCreateOrder = True
   Position = poMainFormCenter
   OnDestroy = FormDestroy
-  DesignSize = (
-    538
-    368)
   PixelsPerInch = 96
   TextHeight = 16
   object LEFirstName: TLabel

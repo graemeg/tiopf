@@ -39,9 +39,6 @@ object FormTIPopupData: TFormTIPopupData
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 0
-      DesignSize = (
-        400
-        30)
       object btnOK: TtiSpeedButton
         Left = 237
         Top = 4
@@ -58,7 +55,6 @@ object FormTIPopupData: TFormTIPopupData
         Font.Style = [fsUnderline]
         ParentFont = False
         ImageRes = tiRINone
-        ExplicitLeft = 447
       end
       object btnCancel: TtiSpeedButton
         Left = 318
@@ -76,7 +72,6 @@ object FormTIPopupData: TFormTIPopupData
         Font.Style = [fsUnderline]
         ParentFont = False
         ImageRes = tiRINone
-        ExplicitLeft = 528
       end
     end
     object pnlMain: TPanel
