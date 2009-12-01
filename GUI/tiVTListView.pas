@@ -562,7 +562,8 @@ type
     function    GetTextFromObject(AObj: TtiObject; AColumnIndex: TColumnIndex): string;
     procedure   SetTextInObject(AObj: TtiObject; AColumnIndex: TColumnIndex; AText: string);
 
-    procedure   Refresh(const pSelectedData: TtiObject = nil); reintroduce; virtual;
+    procedure   Refresh(const pSelectedData: TtiObject = nil); reintroduce; overload; virtual;
+    procedure   Refresh(const ASelectedList: TtiObjectList; AFocused: TtiObject); reintroduce; overload; virtual;
 
     //procedure   PositionCursor(AIndex : integer    ); overload;
     //procedure   PositionCursor(AData  : TtiObject); overload;
@@ -1507,7 +1508,7 @@ begin
   Assert(AList.TestValid, CTIErrorInvalidObject);
   Assert(AList.OwnsObjects = false, 'AList.OwnsObjects = false');
   Assert(AList.AutoSetItemOwner = false, 'AList.AutoSetItemOwner = false');
-
+  AList.Clear;
   LNode:= VT.RootNode.FirstChild;
   while Assigned(LNode) do
   begin
@@ -1957,6 +1958,7 @@ end;
 
 procedure TtiCustomVirtualTree.Refresh(const pSelectedData: TtiObject = nil);
 begin
+
   inherited Refresh;
   // ToDo: Can't get the thing to re-draw.
   // VT.Invalidate
@@ -2188,6 +2190,23 @@ begin
     else
       LNode := VT.GetNextSibling(LNode);
   end;
+end;
+
+procedure TtiCustomVirtualTree.Refresh(const ASelectedList: TtiObjectList;
+  AFocused: TtiObject);
+var
+  i: integer;
+  LNode: PVirtualNode;
+begin
+  inherited Refresh;
+  ConnectToData;
+  for i := 0 to ASelectedList.Count-1 do
+  begin
+    LNode := GetNodeFromObject(ASelectedList.Items[i]);
+    VT.Selected[LNode]:= True;
+  end;
+  LNode := GetNodeFromObject(AFocused);
+  VT.FocusedNode := LNode;
 end;
 
 procedure TtiCustomVirtualTree.RefreshObject(AObject: TtiObject);
