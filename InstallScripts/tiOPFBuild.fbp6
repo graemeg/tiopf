@@ -483,7 +483,7 @@ p_delphi_version=7
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                 <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="Enabled" type="WordBool">False</Property>
                 <Property name="EscapeVariables" type="Boolean">False</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                 <Property MultiValue="0" name="FBVariable" type="string">report_unit_tests_d7</Property>
@@ -694,7 +694,7 @@ p_delphi_version=2006
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                 <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="Enabled" type="WordBool">False</Property>
                 <Property name="EscapeVariables" type="Boolean">True</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                 <Property MultiValue="0" name="FBVariable" type="string">report_unit_tests_d2006</Property>
@@ -905,7 +905,7 @@ p_delphi_version=2007
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                 <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="Enabled" type="WordBool">False</Property>
                 <Property name="EscapeVariables" type="Boolean">True</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                 <Property MultiValue="0" name="FBVariable" type="string">report_unit_tests_d2007</Property>
@@ -1077,6 +1077,7 @@ p_delphi_version=2007
                 <Property name="Parameters" type="TStrings">
                   <![CDATA[p_compiler_version=14
 p_delphi_version=2010
+p_library_path=%delphi2010dir%\Lib\Indy10
 ]]>
                 </Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
@@ -1127,7 +1128,7 @@ p_delphi_version=2010
                 <Object Class="TFBReadTextFileAction" XMLID="{0CBDA825-7F46-44FD-A04E-08FE4869E2BF}">
                   <Property MultiValue="0" name="ActionComment" type="string"></Property>
                   <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Read Text File [ DUnitReportShort210.txt ]]]>
+                    <![CDATA[Read Text File [ DUnitReportShort140.txt ]]]>
                   </Property>
                   <Property name="ActionTextColor" type="Cardinal">0</Property>
                   <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
@@ -1136,7 +1137,7 @@ p_delphi_version=2010
                   <Property name="EscapeVariables" type="Boolean">True</Property>
                   <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                   <Property MultiValue="0" name="FBVariable" type="string">report_unit_tests_d2010</Property>
-                  <Property MultiValue="0" name="FileName" type="string">%path_to_working_deploy%\DUnitReportShort210.txt</Property>
+                  <Property MultiValue="0" name="FileName" type="string">%path_to_working_deploy%\DUnitReportShort140.txt</Property>
                   <Property name="HideActionFromLog" type="Boolean">False</Property>
                   <Property name="IgnoreFailure" type="WordBool">False</Property>
                   <Property name="LogActionProperties" type="Boolean">False</Property>
@@ -1157,7 +1158,7 @@ p_delphi_version=2010
                   <Property name="ApplyToExisting" type="Boolean">False</Property>
                   <Property name="DoExpandExpression" type="Boolean">True</Property>
                   <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
+                  <Property name="Enabled" type="WordBool">False</Property>
                   <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
                   <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
                   <Property name="HideActionFromLog" type="Boolean">False</Property>
@@ -1490,240 +1491,6 @@ p_delphi_version=2010
             <Property name="PauseInterval" type="Cardinal">0</Property>
             <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
             <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-            <Object Class="TGroupAction" XMLID="{81A854FA-16C7-424D-A060-EB38955DEF52}">
-              <Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string">
-                <![CDATA[Action Group - Prepare project files]]>
-              </Property>
-              <Property name="ActionTextColor" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="1" name="Description" type="string">
-                <![CDATA[Action Group - Prepare project files]]>
-              </Property>
-              <Property name="DoNotValidateAction" type="Boolean">False</Property>
-              <Property name="Enabled" type="WordBool">False</Property>
-              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-              <Property name="HideActionFromLog" type="Boolean">False</Property>
-              <Property name="IgnoreFailure" type="WordBool">False</Property>
-              <Property name="LogActionProperties" type="Boolean">False</Property>
-              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-              <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Object Class="TGroupAction" XMLID="{56D0DADF-926E-4B6E-87C5-8431898BE9F8}">
-                <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string">
-                  <![CDATA[Delphi 2006]]>
-                </Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property MultiValue="1" name="Description" type="string">
-                  <![CDATA[Delphi 2006]]>
-                </Property>
-                <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="HideActionFromLog" type="Boolean">False</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="LogActionProperties" type="Boolean">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Object Class="TRunActionListAction" XMLID="{822F5FCE-DDB1-46F6-9FDA-74791ECB866C}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFCore]]>
-                  </Property>
-                  <Property MultiValue="0" name="ActionListID" type="string">{B85C2263-6743-404E-A441-083FD4F9D6E5}</Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property MultiValue="1" name="Description" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFCore]]>
-                  </Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="Parameters" type="TStrings">
-                    <![CDATA[p_file_name=tiOPFCore
-p_file_path=%path_to_working_compilers%\Delphi2006
-]]>
-                  </Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                </Object>
-                <Object Class="TRunActionListAction" XMLID="{37657A89-DD38-4276-9B3E-5D27890A43F5}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFGUI]]>
-                  </Property>
-                  <Property MultiValue="0" name="ActionListID" type="string">{B85C2263-6743-404E-A441-083FD4F9D6E5}</Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property MultiValue="1" name="Description" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFGUI]]>
-                  </Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="Parameters" type="TStrings">
-                    <![CDATA[p_file_name=tiOPFGUI
-p_file_path=%path_to_working_compilers%\Delphi2006
-]]>
-                  </Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                </Object>
-                <Object Class="TRunActionListAction" XMLID="{BD4BC0CC-A088-4D7D-9757-9C5E364011B1}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFGUIDsgn]]>
-                  </Property>
-                  <Property MultiValue="0" name="ActionListID" type="string">{B85C2263-6743-404E-A441-083FD4F9D6E5}</Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property MultiValue="1" name="Description" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFGUIDsgn]]>
-                  </Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="Parameters" type="TStrings">
-                    <![CDATA[p_file_name=tiOPFGUIDsgn
-p_file_path=%path_to_working_compilers%\Delphi2006
-]]>
-                  </Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                </Object>
-              </Object>
-              <Object Class="TGroupAction" XMLID="{6EF578D7-A91B-434F-BD59-5A30B2CE2DC3}">
-                <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="1" name="ActionDescription" type="string">
-                  <![CDATA[Delphi 2007]]>
-                </Property>
-                <Property name="ActionTextColor" type="Cardinal">0</Property>
-                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                <Property MultiValue="1" name="Description" type="string">
-                  <![CDATA[Delphi 2007]]>
-                </Property>
-                <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                <Property name="Enabled" type="WordBool">True</Property>
-                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                <Property name="HideActionFromLog" type="Boolean">False</Property>
-                <Property name="IgnoreFailure" type="WordBool">False</Property>
-                <Property name="LogActionProperties" type="Boolean">False</Property>
-                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                <Property name="PauseInterval" type="Cardinal">0</Property>
-                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Object Class="TRunActionListAction" XMLID="{12EFA00E-1686-4CD9-8A10-45003811A7EC}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFCore]]>
-                  </Property>
-                  <Property MultiValue="0" name="ActionListID" type="string">{B85C2263-6743-404E-A441-083FD4F9D6E5}</Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property MultiValue="1" name="Description" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFCore]]>
-                  </Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="Parameters" type="TStrings">
-                    <![CDATA[p_file_name=tiOPFCore
-p_file_path=%path_to_working_compilers%\Delphi2007
-]]>
-                  </Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                </Object>
-                <Object Class="TRunActionListAction" XMLID="{8DC2878A-6B22-424F-89FF-678444F30F01}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFGUI]]>
-                  </Property>
-                  <Property MultiValue="0" name="ActionListID" type="string">{B85C2263-6743-404E-A441-083FD4F9D6E5}</Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property MultiValue="1" name="Description" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFGUI]]>
-                  </Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="Parameters" type="TStrings">
-                    <![CDATA[p_file_name=tiOPFGUI
-p_file_path=%path_to_working_compilers%\Delphi2007
-]]>
-                  </Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                </Object>
-                <Object Class="TRunActionListAction" XMLID="{54870464-40FB-4C26-B8D5-3ED12A046991}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFGUIDsgn]]>
-                  </Property>
-                  <Property MultiValue="0" name="ActionListID" type="string">{B85C2263-6743-404E-A441-083FD4F9D6E5}</Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property MultiValue="1" name="Description" type="string">
-                    <![CDATA[Run Action List [ Setup package bdsproj file ] - tiOPFGUIDsgn]]>
-                  </Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="Parameters" type="TStrings">
-                    <![CDATA[p_file_name=tiOPFGUIDsgn
-p_file_path=%path_to_working_compilers%\Delphi2007
-]]>
-                  </Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                </Object>
-              </Object>
-            </Object>
             <Object Class="TRunActionListAction" XMLID="{005A3D42-9FAB-4DB6-930B-D3644A1D4459}">
               <Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string">
@@ -4194,14 +3961,14 @@ String
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
               <Property name="MinorVersion" type="Integer">0</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%\tiOPFCore.dpk</Property>
+              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_projects%\tiOPFCore.dpk</Property>
               <Property name="RegenerateResource" type="WordBool">True</Property>
               <Property name="ReleaseVersion" type="Integer">0</Property>
               <Property MultiValue="0" name="ResourceCompilerOptions" type="string"></Property>
               <Property MultiValue="0" name="ResourceCompilerPath" type="string"></Property>
               <Property name="ResourceCompilerType" type="TFBDelphiResourceCompiler">rcBorland</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%</Property>
+              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_projects%</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               <Property name="UpdateDofFile" type="Boolean">False</Property>
               <Property name="UpdatePackageSource" type="Boolean">False</Property>
@@ -4267,7 +4034,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\Common;..\Tests</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%;%path_to_delphi_user_lib%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -4342,14 +4109,14 @@ Comments=
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
               <Property name="MinorVersion" type="Integer">0</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%\tiOPFOptions.dpk</Property>
+              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_projects%\tiOPFOptions.dpk</Property>
               <Property name="RegenerateResource" type="WordBool">True</Property>
               <Property name="ReleaseVersion" type="Integer">0</Property>
               <Property MultiValue="0" name="ResourceCompilerOptions" type="string"></Property>
               <Property MultiValue="0" name="ResourceCompilerPath" type="string"></Property>
               <Property name="ResourceCompilerType" type="TFBDelphiResourceCompiler">rcBorland</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%</Property>
+              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_projects%</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               <Property name="UpdateDofFile" type="Boolean">False</Property>
               <Property name="UpdatePackageSource" type="Boolean">False</Property>
@@ -4415,7 +4182,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;%path_to_working_bin%;..\Common;..\Tests</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%;%path_to_delphi_user_lib%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -4490,14 +4257,14 @@ Comments=
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
               <Property name="MinorVersion" type="Integer">0</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%\tiOPFGUI.dpk</Property>
+              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_projects%\tiOPFGUI.dpk</Property>
               <Property name="RegenerateResource" type="WordBool">True</Property>
               <Property name="ReleaseVersion" type="Integer">0</Property>
               <Property MultiValue="0" name="ResourceCompilerOptions" type="string"></Property>
               <Property MultiValue="0" name="ResourceCompilerPath" type="string"></Property>
               <Property name="ResourceCompilerType" type="TFBDelphiResourceCompiler">rcBorland</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%</Property>
+              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_projects%</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               <Property name="UpdateDofFile" type="Boolean">False</Property>
               <Property name="UpdatePackageSource" type="Boolean">False</Property>
@@ -4563,7 +4330,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;%path_to_working_bin%;..\Common;..\Tests</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%;%path_to_delphi_user_lib%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -4638,14 +4405,14 @@ Comments=
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
               <Property name="MinorVersion" type="Integer">0</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%\tiOPFGUIDsgn.dpk</Property>
+              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_projects%\tiOPFGUIDsgn.dpk</Property>
               <Property name="RegenerateResource" type="WordBool">True</Property>
               <Property name="ReleaseVersion" type="Integer">0</Property>
               <Property MultiValue="0" name="ResourceCompilerOptions" type="string"></Property>
               <Property MultiValue="0" name="ResourceCompilerPath" type="string"></Property>
               <Property name="ResourceCompilerType" type="TFBDelphiResourceCompiler">rcBorland</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%</Property>
+              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_projects%</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               <Property name="UpdateDofFile" type="Boolean">False</Property>
               <Property name="UpdatePackageSource" type="Boolean">False</Property>
@@ -4711,7 +4478,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;%path_to_working_bin%;..\Common;..\Tests</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%;%path_to_delphi_user_lib%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -4743,7 +4510,7 @@ Comments=
             <Object Class="TDelphiCompilerAction" XMLID="{9E6600AB-A984-412E-A491-FF5E9BA03D04}">
               <Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string">
-                <![CDATA[Compile DUnitTIOPFGUI]]>
+                <![CDATA[Compile tiOPFUnitTestsGUI]]>
               </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
@@ -4758,7 +4525,7 @@ Comments=
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string">
-                <![CDATA[Compile DUnitTIOPFGUI]]>
+                <![CDATA[Compile tiOPFUnitTestsGUI]]>
               </Property>
               <Property name="DoNotValidateAction" type="Boolean">False</Property>
               <Property name="Enabled" type="WordBool">True</Property>
@@ -4786,14 +4553,14 @@ Comments=
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
               <Property name="MinorVersion" type="Integer">0</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_working_unittests%\GUI\DUnitTIOPFGui.dpr</Property>
+              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_projects%\tiOPFUnitTestsGUI.dpr</Property>
               <Property name="RegenerateResource" type="WordBool">True</Property>
               <Property name="ReleaseVersion" type="Integer">0</Property>
               <Property MultiValue="0" name="ResourceCompilerOptions" type="string"></Property>
               <Property MultiValue="0" name="ResourceCompilerPath" type="string"></Property>
               <Property name="ResourceCompilerType" type="TFBDelphiResourceCompiler">rcBorland</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_working_unittests%\GUI</Property>
+              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_projects%</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               <Property name="UpdateDofFile" type="Boolean">False</Property>
               <Property name="UpdatePackageSource" type="Boolean">False</Property>
@@ -4859,7 +4626,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\Common;..\Tests</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%p_library_path%;%path_to_delphi_user_lib%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -4891,7 +4658,7 @@ Comments=
             <Object Class="TDelphiCompilerAction" XMLID="{0236059C-6F1A-4CD2-B08C-D005555E9F4C}">
               <Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string">
-                <![CDATA[Compile DUnitTIOPFText]]>
+                <![CDATA[Compile tiOPFUnitTestsText]]>
               </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
@@ -4906,7 +4673,7 @@ Comments=
               <Property MultiValue="0" name="ConfigName" type="string">Debug</Property>
               <Property name="DebugVersionNumbers" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string">
-                <![CDATA[Compile DUnitTIOPFText]]>
+                <![CDATA[Compile tiOPFUnitTestsText]]>
               </Property>
               <Property name="DoNotValidateAction" type="Boolean">False</Property>
               <Property name="Enabled" type="WordBool">True</Property>
@@ -4934,14 +4701,14 @@ Comments=
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
               <Property name="MinorVersion" type="Integer">0</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_working_tiOPF2%\UnitTests\Text\DUnitTIOPFText.dpr</Property>
+              <Property MultiValue="0" name="ProjectFile" type="WideString">%path_to_projects%\tiOPFUnitTestsText.dpr</Property>
               <Property name="RegenerateResource" type="WordBool">True</Property>
               <Property name="ReleaseVersion" type="Integer">0</Property>
               <Property MultiValue="0" name="ResourceCompilerOptions" type="string"></Property>
               <Property MultiValue="0" name="ResourceCompilerPath" type="string"></Property>
               <Property name="ResourceCompilerType" type="TFBDelphiResourceCompiler">rcBorland</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_working_tiOPF2%\UnitTests\Text</Property>
+              <Property MultiValue="0" name="StartingDir" type="WideString">%path_to_projects%</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               <Property name="UpdateDofFile" type="Boolean">False</Property>
               <Property name="UpdatePackageSource" type="Boolean">False</Property>
@@ -5007,7 +4774,7 @@ Comments=
                 <Property name="IncludeTD32" type="WordBool">False</Property>
                 <Property name="Inlining" type="TFBInlining">inOn</Property>
                 <Property name="IOChecking" type="WordBool">True</Property>
-                <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\Common;..\Tests</Property>
+                <Property MultiValue="0" name="LibraryPath" type="WideString">%p_library_path%;%path_to_delphi_user_lib%</Property>
                 <Property name="LinkerOutput" type="Integer">0</Property>
                 <Property name="LocalSymbols" type="WordBool">True</Property>
                 <Property name="Mapfile" type="Integer">0</Property>
@@ -5128,7 +4895,7 @@ Comments=
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ProcessID" type="string"></Property>
                 <Property MultiValue="0" name="ProcessName" type="string"></Property>
-                <Property MultiValue="0" name="RemoteExe" type="string">%path_to_working_bin%\DUnitTIOPFText.exe</Property>
+                <Property MultiValue="0" name="RemoteExe" type="string">%path_to_working_bin%\tiOPFUnitTestsText.exe</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property MultiValue="0" name="StartingDir" type="string">%path_to_working_bin%</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
@@ -5435,6 +5202,11 @@ Comments=
           <Object Class="TFBActionListParameter" XMLID="{6A226D0D-3121-4903-B8D8-9CEF3F10D001}">
             <Property MultiValue="0" name="Name" type="string">p_delphi_version</Property>
             <Property MultiValue="0" name="ParameterID" type="string">{A02DE2D5-4305-4C04-99C0-C4C9EA133B16}</Property>
+            <Property name="ParamType" type="TFBActionListParamType">paString</Property>
+          </Object>
+          <Object Class="TFBActionListParameter" XMLID="{97553F4D-EDD4-4FA3-A79E-4500BFAB7912}">
+            <Property MultiValue="0" name="Name" type="string">p_library_path</Property>
+            <Property MultiValue="0" name="ParameterID" type="string">{1B262F53-3516-4F63-84C7-B4F898D798FB}</Property>
             <Property name="ParamType" type="TFBActionListParamType">paString</Property>
           </Object>
         </Object>
@@ -5766,7 +5538,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -5914,7 +5686,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -6062,7 +5834,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -6210,7 +5982,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -6358,7 +6130,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -6506,7 +6278,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -6654,7 +6426,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -6802,7 +6574,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -6950,7 +6722,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7098,7 +6870,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7246,7 +7018,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7394,7 +7166,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7542,7 +7314,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7690,7 +7462,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7838,7 +7610,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -7986,7 +7758,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -8134,7 +7906,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -8282,7 +8054,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -8430,7 +8202,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\BOM</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%;..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -8578,7 +8350,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\BOM</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%;..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -8726,7 +8498,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\..\BOM</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%;..\..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -8874,7 +8646,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\..\BOM</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%;..\..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -9022,7 +8794,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -9170,7 +8942,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -9318,7 +9090,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\..\FileSync</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%;..\..\FileSync</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -9466,7 +9238,7 @@ Comments=
               <Property name="IncludeTD32" type="WordBool">False</Property>
               <Property name="Inlining" type="TFBInlining">inOn</Property>
               <Property name="IOChecking" type="WordBool">True</Property>
-              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%delphi_user_lib%;..\..\BOM</Property>
+              <Property MultiValue="0" name="LibraryPath" type="WideString">%delphi_system_lib%\;%path_to_delphi_user_lib%;..\..\BOM</Property>
               <Property name="LinkerOutput" type="Integer">0</Property>
               <Property name="LocalSymbols" type="WordBool">True</Property>
               <Property name="Mapfile" type="Integer">0</Property>
@@ -9919,32 +9691,12 @@ Comments=
       </Object>
       <Object Class="TFBVariable" XMLID="{B2B5A020-BBCB-4B5F-B61B-332199BBDFAF}">
         <Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">$(DELPHI)\Lib;$(DELPHI)\Bin;$(DELPHI)\Imports;$(DELPHI)\Projects\Bpl;</Property>
+        <Property MultiValue="0" name="DefaultValue" type="string"></Property>
         <Property MultiValue="0" name="GroupName" type="string"></Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">delphi_system_lib</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-      </Object>
-      <Object Class="TFBVariable" XMLID="{CEAF6BD8-9FAF-410F-8F17-1ED6C9047070}">
-        <Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\Core;%path_to_working_tiOPF2%\Options;%path_to_working_tiOPF2%\GUI;%path_to_working_tiOPF2%\ApplicationServer\tiDBProxyServerExtension;%path_to_working_tiOPF2%\ApplicationServer;%path_to_working_tiOPF2%\UnitTests\Common;%path_to_working_3rdparty%\FastMM;%path_to_working_3rdparty%\DUnit;%path_to_working_3rdparty%\JCL\Common;%path_to_working_3rdparty%\JCL\Windows;%path_to_working_3rdparty%\Indy\Core;%path_to_working_3rdparty%\Indy\Protocols;%path_to_working_3rdparty%\Indy\System;%path_to_working_3rdparty%\DOA</Property>
-        <Property MultiValue="0" name="GroupName" type="string"></Property>
-        <Property name="IsMacro" type="Boolean">False</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">delphi_user_lib</Property>
-        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
-      </Object>
-      <Object Class="TFBVariable" XMLID="{0B99FFAB-2B03-4126-9345-4215A9ED8DB4}">
-        <Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_root%\UnitTests</Property>
-        <Property MultiValue="0" name="GroupName" type="string"></Property>
-        <Property name="IsMacro" type="Boolean">True</Property>
-        <Property name="IsPersistent" type="Boolean">False</Property>
-        <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">path_to_working_unittests</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
       </Object>
       <Object Class="TFBVariable" XMLID="{B034E0AE-AC65-403C-84CA-D3FDA092E185}">
@@ -10479,6 +10231,26 @@ Comments=
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
         <Property MultiValue="0" name="Name" type="string">report_unit_tests_d2010</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{E64C3CCD-82F9-4610-BF93-ECC4771DD12D}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%</Property>
+        <Property MultiValue="0" name="GroupName" type="string"></Property>
+        <Property name="IsMacro" type="Boolean">True</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_projects</Property>
+        <Property name="VariableType" type="TFBVariableType">vtProject</Property>
+      </Object>
+      <Object Class="TFBVariable" XMLID="{76A1CB5B-F989-44C6-A915-44F348BD318C}">
+        <Property MultiValue="0" name="Comment" type="string"></Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\Core;%path_to_working_tiOPF2%\Options;%path_to_working_tiOPF2%\GUI</Property>
+        <Property MultiValue="0" name="GroupName" type="string"></Property>
+        <Property name="IsMacro" type="Boolean">False</Property>
+        <Property name="IsPersistent" type="Boolean">False</Property>
+        <Property name="MakeEnv" type="Boolean">False</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_delphi_user_lib</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
       </Object>
     </Object>
