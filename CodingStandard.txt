@@ -1,0 +1,126 @@
+No white space before or after brackets.
+
+  No: MyProc( const AValue: string );
+ 
+  Yes: MyProc(const AValue: string);
+
+---
+No white space before a trailing ;
+
+  No: MyProc(const AValue: string) ;
+  Yes: MyProc(const AValue: string);
+
+---
+Single line between procedure.
+
+  No: TMyClass.DoStuff;
+      begin
+        //
+      end;
+
+
+      TMyClass.DoMoreStuff;
+      begin
+        //
+      end;
+
+  Yes:TMyClass.DoStuff;
+      begin
+        //
+      end;
+
+      TMyClass.DoMoreStuff;
+      begin
+        //
+      end;
+
+---
+Units on a uses clause
+
+No:
+uses 
+  unit1, unit2, unit3;
+
+Yes:
+uses
+   unit1
+  ,unit2
+  ,unit3
+  ;
+
+---
+
+{$I tiDefines.inc} inbetween unit and interface section
+
+unit MyUnit;
+
+{$I tiDefines.inc}
+
+interface
+...
+
+---
+
+Parameters to be prefixed with upper case A (for arguement)
+
+No:
+
+MyProc(const Value: string);
+MyProc(const pValue: string);
+
+Yes:
+
+MyProc(const AValue: string);
+---
+
+Local variables to be prefixed with upper case L (for Local)
+The exception to this rule is loop counters, that may be i
+
+No: 
+
+procedure DoStuff;
+var
+  Value: string;
+  i: integer;
+begin
+  //
+end;
+
+Yes: 
+
+procedure DoStuff;
+var
+  LValue: string;
+  i: integer;
+begin
+  //
+end;
+---
+
+No nested loops
+
+No:
+
+var
+  i, j: integer;
+begin
+  for i:= 0 to Count - 1 do
+    for j:= 0 to Items[i].Count - 1 do
+      Items[i].Items[j].DoStuff;
+end;
+
+Yes
+
+var
+  i, j: integer;
+begin
+  for i:= 0 to Count - 1 do
+    Items[i].DoStuff1; // DoStuff1 contains another for loop
+end;
+---
+
+Datatypes
+
+Use Extended
+
+Don't use Real

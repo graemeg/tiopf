@@ -1,0 +1,37 @@
+ToDo: Object relationship demos:
+
+X DBIndependantVisitors
+
+X One to many
+
+X  Query with a where clause
+ 
+X Inheritance - One table per concrete class
+
+  One to One
+
+  Many to Many: Client Interests  (Unknown, Sport, Reading, Cooking, Gardening)
+
+  n dimentional (recrusive) tree of objects
+
+  Loading objects in 'primary key' state
+
+  Lookup list
+
+  Ordinal property
+
+  Threaded loading in background
+
+  Incremental search against sql database
+
+  Multi database access
+
+  Null support
+
+  Custom visitor registration
+
+  Which class of OID?
+
+  Dunit example
+
+  Full blown application

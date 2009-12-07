@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{c904f3e8-ce14-495b-9702-c7420b1d7f14}</ProjectGuid>
+    <MainSource>AdrsBookUIHTML.dpr</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>..\..\_bin\CGI-Bin\AdrsBookUIHTML.exe</DCC_DependencyCheckOutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_WriteableConstants>True</DCC_WriteableConstants>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_MapFile>3</DCC_MapFile>
+    <DCC_SYMBOL_DEPRECATED>False</DCC_SYMBOL_DEPRECATED>
+    <DCC_SYMBOL_LIBRARY>False</DCC_SYMBOL_LIBRARY>
+    <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_WriteableConstants>True</DCC_WriteableConstants>
+    <DCC_ExeOutput>..\..\_bin\CGI-Bin</DCC_ExeOutput>
+    <DCC_DcuOutput>.\_Dcu</DCC_DcuOutput>
+    <DCC_ObjOutput>.\_Dcu</DCC_ObjOutput>
+    <DCC_HppOutput>.\_Dcu</DCC_HppOutput>
+    <DCC_UnitSearchPath>..\..\..\..\3rdParty\FastMM;..\..\..\..\3rdParty\Indy\Core;..\..\..\..\3rdParty\Indy\System;..\..\..\..\3rdParty\Indy\Protocols;..\..\FileSync;..\..\BOM</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\..\..\3rdParty\FastMM;..\..\..\..\3rdParty\Indy\Core;..\..\..\..\3rdParty\Indy\System;..\..\..\..\3rdParty\Indy\Protocols;..\..\FileSync;..\..\BOM</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\..\..\3rdParty\FastMM;..\..\..\..\3rdParty\Indy\Core;..\..\..\..\3rdParty\Indy\System;..\..\..\..\3rdParty\Indy\Protocols;..\..\FileSync;..\..\BOM</DCC_ObjPath>
+    <DCC_IncludePath>..\..\..\..\3rdParty\FastMM;..\..\..\..\3rdParty\Indy\Core;..\..\..\..\3rdParty\Indy\System;..\..\..\..\3rdParty\Indy\Protocols;..\..\FileSync;..\..\BOM</DCC_IncludePath>
+    <DCC_SYMBOL_DEPRECATED>False</DCC_SYMBOL_DEPRECATED>
+    <DCC_SYMBOL_LIBRARY>False</DCC_SYMBOL_LIBRARY>
+    <DCC_SYMBOL_PLATFORM>False</DCC_SYMBOL_PLATFORM>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType>VCLApplication</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="RunParams">command=ReadFileData,data=eNqNkd1OwzAMhV8l8gM07tZOCDXdBdwiELudhLLVHRFpgpKIv6cnTdvRIkBIkR19Oj6J7Wr71mn2Qs4rawTkGcK2riJr7LGRQdZVUPa5nSvWiMAjlwdNfswsxQcjOxLQKk1QV60i3fgxsxRngnSFET8p0wjwwSlzmthOfUTpqtz0j/3i4aNm6aFMoBO5pQn+YRGb/GYxJ/+ql8v6gzLSvf/gwKeJOPs6RHaehIAs29/eXd/srrQiE/b31NlAA8qOjx2wc8dxCWVRFpv1yPoP95PieMFXiAXL80vE4eCXRgpIvxhe52ljU+7BbOmf80CzFA==</Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><VersionInfo><VersionInfo Name="IncludeVerInfo">False</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">3081</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">AdrsBookUIHTML.dpr</Source></Source></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="AdrsBookUIHTML.dpr">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="AdrsBookUIHTML_BOM.pas" />
+  </ItemGroup>
+</Project>

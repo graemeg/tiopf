@@ -1,0 +1,128 @@
+object FormMainOneToMany: TFormMainOneToMany
+  Left = 249
+  Height = 397
+  Top = 186
+  Width = 523
+  ActiveControl = paeClientCount
+  Caption = 'FormMainOneToMany'
+  ClientHeight = 397
+  ClientWidth = 523
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  ShowHint = True
+  LCLVersion = '0.9.27'
+  object Label1: TLabel
+    Left = 4
+    Height = 14
+    Top = 8
+    Width = 40
+    Caption = 'Clients'
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 8
+    Height = 14
+    Top = 224
+    Width = 91
+    Caption = 'Phone numbers'
+    ParentColor = False
+  end
+  object Button1: TButton
+    Left = 408
+    Height = 25
+    Top = 333
+    Width = 101
+    Action = aSave
+    Anchors = [akRight, akBottom]
+    TabOrder = 0
+  end
+  object Button2: TButton
+    Left = 408
+    Height = 25
+    Top = 301
+    Width = 101
+    Action = aShowObjects
+    Anchors = [akRight, akBottom]
+    TabOrder = 1
+  end
+  object btnRead: TButton
+    Left = 408
+    Height = 25
+    Top = 365
+    Width = 101
+    Action = aRead
+    Anchors = [akRight, akBottom]
+    TabOrder = 2
+  end
+  object paeClientCount: TEdit
+    Left = 408
+    Height = 41
+    Hint = 'Client count'
+    Top = 24
+    Width = 110
+    Constraints.MinHeight = 23
+    TabOrder = 3
+  end
+  object paePhoneNumberCount: TEdit
+    Left = 408
+    Height = 41
+    Hint = 'Phone number count'
+    Top = 72
+    Width = 110
+    Constraints.MinHeight = 23
+    TabOrder = 4
+  end
+  object btnInsert: TButton
+    Left = 408
+    Height = 25
+    Top = 119
+    Width = 102
+    Action = aInsertClients
+    TabOrder = 5
+  end
+  object lvClients: TStringGrid
+    Left = 8
+    Height = 182
+    Top = 27
+    Width = 373
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRowSelect, goThumbTracking, goSmoothScroll]
+    TabOrder = 6
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+    OnSelection = lvClientsSelection
+  end
+  object lvPhoneNumbers: TStringGrid
+    Left = 12
+    Height = 146
+    Top = 243
+    Width = 369
+    FixedCols = 0
+    TabOrder = 7
+    TitleFont.Height = -11
+    TitleFont.Name = 'MS Sans Serif'
+  end
+  object ActionList1: TActionList
+    OnUpdate = ActionList1Update
+    left = 408
+    top = 200
+    object aSave: TAction
+      Caption = 'Save'
+      OnExecute = aSaveExecute
+    end
+    object aRead: TAction
+      Caption = 'Read'
+      OnExecute = aReadExecute
+    end
+    object aInsertClients: TAction
+      Caption = 'Insert clients'
+      OnExecute = aInsertClientsExecute
+    end
+    object aShowObjects: TAction
+      Caption = 'Show objects'
+      OnExecute = aShowObjectsExecute
+    end
+  end
+end

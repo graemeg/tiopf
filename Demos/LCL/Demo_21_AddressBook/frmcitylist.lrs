@@ -1,0 +1,21 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TCityListForm','FORMDATA',[
+  'TPF0'#13'TCityListForm'#12'CityListForm'#4'Left'#3#157#1#6'Height'#3';'#1#3
+  +'Top'#3#23#1#5'Width'#3#164#1#11'BorderIcons'#11#12'biSystemMenu'#0#11'Borde'
+  +'rStyle'#7#8'bsDialog'#7'Caption'#6#12'CityListForm'#12'ClientHeight'#3';'#1
+  +#11'ClientWidth'#3#164#1#10'ParentFont'#8#10'LCLVersion'#6#6'0.9.27'#0#11'TS'
+  +'tringGrid'#7'GCities'#4'Left'#2#8#6'Height'#3#224#0#3'Top'#2'('#5'Width'#3
+  +#136#1#14'ExtendedSelect'#9#10'FixedColor'#7#9'clBtnFace'#9'FixedCols'#2#0#7
+  +'Options'#11#15'goFixedVertLine'#15'goFixedHorzLine'#10'goVertLine'#10'goHor'
+  +'zLine'#13'goRangeSelect'#14'goSmoothScroll'#0#11'ParentColor'#8#8'RowCount'
+  +#2#5#8'TabOrder'#2#0#0#0#7'TButton'#6'BClose'#4'Left'#3'E'#1#6'Height'#2#25#3
+  +'Top'#3#24#1#5'Width'#2'K'#7'Caption'#6#6'&Close'#11'ModalResult'#2#1#10'Par'
+  +'entFont'#8#8'TabOrder'#2#1#0#0#7'TButton'#4'BAdd'#4'Left'#2#8#6'Height'#2#25
+  +#3'Top'#2#6#5'Width'#2'K'#7'Caption'#6#4'&Add'#7'OnClick'#7#9'BAddClick'#10
+  +'ParentFont'#8#8'TabOrder'#2#2#0#0#7'TButton'#5'BEdit'#4'Left'#2'\'#6'Height'
+  +#2#25#3'Top'#2#6#5'Width'#2'K'#7'Caption'#6#5'&Edit'#7'OnClick'#7#10'BEditCl'
+  +'ick'#10'ParentFont'#8#8'TabOrder'#2#3#0#0#7'TButton'#7'BDelete'#4'Left'#3
+  +#176#0#6'Height'#2#25#3'Top'#2#6#5'Width'#2'K'#7'Caption'#6#7'&Delete'#7'OnC'
+  +'lick'#7#12'BDeleteClick'#10'ParentFont'#8#8'TabOrder'#2#4#0#0#0
+]);

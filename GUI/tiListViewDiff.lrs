@@ -1,0 +1,70 @@
+LazarusResources.Add('TILVDIFARROWDOWN','XPM',[
+  '/* XPM */'#10'static char *TILVDIFARROWDOWN_xpm[] = {'#10'/* width height nu'
+  +'m_colors chars_per_pixel */'#10'"    16    16       16            1",'#10'/'
+  +'* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a'
+  +' c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"'
+  +'e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"ffffffffffffffff",'#10'"fffffffmmmffff'
+  +'ff",'#10'"ffffffe``mffffff",'#10'"ffffffe``mffffff",'#10'"ffffffe``mffffff"'
+  +','#10'"ffffffe``mffffff",'#10'"ffffffe``mffffff",'#10'"ffffffe``mffffff",'
+  +#10'"ffffffe``mffffff",'#10'"ffeeeee``eeeeeff",'#10'"ffe``````````fff",'#10
+  +'"fffe````````mfff",'#10'"ffffe``````mffff",'#10'"fffffe````mfffff",'#10'"ff'
+  +'ffffe``mffffff",'#10'"fffffffemfffffff"'#10'};'#10
+]);
+LazarusResources.Add('TILVDIFARROWUP','XPM',[
+  '/* XPM */'#10'static char *TILVDIFARROWUP_xpm[] = {'#10'/* width height num_'
+  +'colors chars_per_pixel */'#10'"    16    16       16            1",'#10'/* '
+  +'colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c'
+  +' #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e '
+  +'c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i'
+  +' c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"'
+  +'m c #ffffff",'#10'/* pixels */'#10'"ffffffffffffffff",'#10'"fffffffefffffff'
+  +'f",'#10'"ffffffe``mffffff",'#10'"fffffe````mfffff",'#10'"ffffe``````mffff",'
+  +#10'"fffe````````mfff",'#10'"ffe``````````mff",'#10'"ffemmme``mmmmmff",'#10
+  +'"ffffffe``mffffff",'#10'"ffffffe``mffffff",'#10'"ffffffe``mffffff",'#10'"ff'
+  +'ffffe``mffffff",'#10'"ffffffe``mffffff",'#10'"ffffffe``mffffff",'#10'"fffff'
+  +'fe``mffffff",'#10'"ffffffeeeeffffff"'#10'};'#10
+]);
+LazarusResources.Add('TILVDIFCOLS','XPM',[
+  '/* XPM */'#10'static char *TILVDIFCOLS_xpm[] = {'#10'/* width height num_col'
+  +'ors chars_per_pixel */'#10'"    16    16       16            1",'#10'/* col'
+  +'ors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #8'
+  +'08000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c #'
+  +'808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c '
+  +'#ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m c'
+  +' #ffffff",'#10'/* pixels */'#10'"ffffffffffffffff",'#10'"ffffffffffffffff",'
+  +#10'"ff`````````````f",'#10'"ff`ff`ffffefff`f",'#10'"ff`ff`ffffefff`f",'#10
+  +'"ff`````````````f",'#10'"ff`ff`mmmmemmm`f",'#10'"ff`ff`mmmmemmm`f",'#10'"ff'
+  +'`ee`eeeeeeee`f",'#10'"ff`ff`mmmmemmm`f",'#10'"ff`ff`mmmmemmm`f",'#10'"ff`ee'
+  +'`eeeeeeee`f",'#10'"ff`ff`mmmmemmm`f",'#10'"ff`ff`mmmmemmm`f",'#10'"ff``````'
+  +'```````f",'#10'"ffffffffffffffff"'#10'};'#10
+]);
+LazarusResources.Add('TILVDIFEDITDIFRULES','XPM',[
+  '/* XPM */'#10'static char *TILVDIFEDITDIFRULES_xpm[] = {'#10'/* width height'
+  +' num_colors chars_per_pixel */'#10'"    16    16       16            1",'#10
+  +'/* colors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"'
+  +'a c #808000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10
+  +'"e c #808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10
+  +'"i c #ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10
+  +'"m c #ffffff",'#10'/* pixels */'#10'"f```````````````",'#10'"f`aaaaaaaaaaa`'
+  +'f`",'#10'"f```````````````",'#10'"f`fffffffffffff`",'#10'"f`ffffff``fffff`"'
+  +','#10'"f`fffff``ffffff`",'#10'"f`f``f``fffffff`",'#10'"f`ff```ffffffff`",'
+  +#10'"f`fff`fffffffff`",'#10'"f`ffffff``fffff`",'#10'"f`fffff``ffffff`",'#10
+  +'"f`f``f``fffffff`",'#10'"f`ff```ffffffff`",'#10'"f`fff`fffffffff`",'#10'"f`'
+  +'fffffffffffff`",'#10'"f```````````````"'#10'};'#10
+]);
+LazarusResources.Add('TILVDIFFIND','XPM',[
+  '/* XPM */'#10'static char *TILVDIFFIND_xpm[] = {'#10'/* width height num_col'
+  +'ors chars_per_pixel */'#10'"    16    16       16            1",'#10'/* col'
+  +'ors */'#10'"` c #000000",'#10'". c #800000",'#10'"# c #008000",'#10'"a c #8'
+  +'08000",'#10'"b c #000080",'#10'"c c #800080",'#10'"d c #008080",'#10'"e c #'
+  +'808080",'#10'"f c #c0c0c0",'#10'"g c #ff0000",'#10'"h c #00ff00",'#10'"i c '
+  +'#ffff00",'#10'"j c #0000ff",'#10'"k c #ff00ff",'#10'"l c #00ffff",'#10'"m c'
+  +' #ffffff",'#10'/* pixels */'#10'"aaae```eaaaaaaaa",'#10'"aa`eeeee`aaaaaaa",'
+  +#10'"a`emfmfme`aaaaaa",'#10'"eemfmgmfmeeaaaaa",'#10'"`efmfgfmfe`aaaaa",'#10
+  +'"`emgggggme`aaaaa",'#10'"`efmfgfmfe`aaaaa",'#10'"eemfmgmfmeeaaaaa",'#10'"a`'
+  +'emfmfme`aaaaaa",'#10'"aa`eeeee``iaaaaa",'#10'"aaae```eaie`aaaa",'#10'"aaaaa'
+  +'aaaaa```aaa",'#10'"aaaaaaaaaaa```aa",'#10'"aaaaaaaaaaaa```a",'#10'"aaaaaaaa'
+  +'aaaaa```",'#10'"aaaaaaaaaaaaaa`a"'#10'};'#10
+]);

@@ -1,0 +1,162 @@
+[tiol | tiOPF - a new TtiObjectList descendant]
+$(AttributesStart)
+AutoOnSpace=true
+RemoveChar=true
+EnableMakros=true
+$(AttributesEnd)
+$Param(list_name) = class(TtiObjectList)
+private
+protected
+   function    GetItems(i: integer): $Param(object_type); reintroduce;
+   procedure   SetItems(i: integer; const AValue: $Param(object_type,Sync=2)); reintroduce;
+public
+   property    Items[i:integer] : $Param(object_type,Sync=2) read GetItems write SetItems;
+   function    Add(const AObject: $Param(object_type,Sync=2)): integer; reintroduce;
+   procedure   Read; override;
+   procedure   ReadPK; override;
+   procedure   Save; override;
+published
+end;
+|
+[tio | tiOPF - a new TtiObject descendant ]
+$(AttributesStart)
+AutoOnSpace=true
+RemoveChar=true
+EnableMakros=true
+$(AttributesEnd)
+$Param(object_name) = class(TtiObject)
+private
+protected
+  function    GetOwner: $Param(object_name,Sync=1)List; reintroduce;
+  procedure   SetOwner(const Value: $Param(object_name,Sync=1)List); reintroduce;
+public
+  property    Owner: $Param(object_name,Sync=1)List read GetOwner write SetOwner;
+published
+end;|
+
+[igi | tiOPF - Inherited GetItem ]
+$(AttributesStart)
+EnableMakros=true
+AutoOnSpace=true
+RemoveChar=true
+$(AttributesEnd)
+result := inherited GetItems(i) as $Param(InheritedClass,default);|
+[isi | tiOPF - Inherited SetItems ]
+inherited SetItems(i, Value);
+[igo | tiOPF - Inherited GetOwner ]
+$(AttributesStart)
+AutoOnSpace=true
+EnableMakros=true
+RemoveChar=true
+$(AttributesEnd)
+result := (inherited GetOwner) as $Param(InheritedClass,default);|
+[iso | tiOPF - Inherited SetOwner ]
+inherited SetOwner(Value);
+[ia | tiOPF - Inherited Add ]
+result := inherited Add(AObject);
+[vr | tiOPF - Visitor Read ]
+TVisXXX_Read = class(TtiVisitorSelect)
+protected
+  function    AcceptVisitor: boolean; override;
+  procedure   Init; override;
+  procedure   SetupParams; override;
+  procedure   MapRowToObject; override;
+end;
+
+[vc | tiOPF - Create Visitor ]
+TVisXXX_Create = class(TtiVisitorUpdate)
+protected
+  function    AcceptVisitor: boolean; override;
+  procedure   Init; override;
+  procedure   SetupParams; override;
+end;
+
+[vu | tiOPF - Update Visitor ]
+TVisXXX_Update = class(TtiVisitorUpdate)
+protected
+  function    AcceptVisitor: boolean; override;
+  procedure   Init; override;
+  procedure   SetupParams; override;
+end;
+
+[vd | tiOPF - Delete Visitor ]
+TVisXXX_Delete = class(TtiVisitorUpdate)
+protected
+  function    AcceptVisitor: boolean; override;
+  procedure   Init; override;
+  procedure   SetupParams; override;
+end;
+
+[tivis | tiOPF - Create/Save/Delete Visitor ]
+$(AttributesStart)
+AutoOnSpace=true
+EnableMakros=true
+RemoveChar=true
+$(AttributesEnd)
+$Param(NewClass,default) = class(TtiVisitorUpdate)
+protected
+   function  AcceptVisitor: Boolean; override;
+   procedure Init; override;
+   procedure SetupParams; override;
+end;|
+
+[tivisread | tiOPF - Read Visitor]
+$(AttributesStart)
+AutoOnSpace=true
+RemoveChar=true
+EnableMakros=true
+$(AttributesEnd)
+$Param(NewClass,default) = class(TtiVisitorSelect)
+protected
+   function  AcceptVisitor: Boolean; override;
+   procedure Init; override;
+   procedure SetupParams; override;
+   procedure MapRowToObject; override;
+end;|
+
+[regv | tiOPF - Register Visitor]
+$(AttributesStart)
+AutoOnSpace=true
+RemoveChar=true
+$(AttributesEnd)
+gTIOPFManager.VisitorManager.RegisterVisitor('SaveXXX|', TVisXXX_Create);
+[execv | tiOPF - Execute Visitor ]
+$(AttributesStart)
+AutoOnSpace=true
+RemoveChar=true
+$(AttributesEnd)
+gTIOPFManager.VisitorManager.Execute('SaveLoadXXX|', self);
+[opfmgr | tiOPF - gTIOPFManager]
+$(AttributesStart)
+AutoOnLineBreak=true
+RemoveChar=true
+$(AttributesEnd)
+gTIOPFManager
+[gtiopfmanager | tiOPF - gTIOPFManager]
+$(AttributesStart)
+AutoOnLineBreak=true
+RemoveChar=true
+$(AttributesEnd)
+gTIOPFManager
+[modelmediator | tiOPF - Add a new model mediator]
+if not Assigned(FMediator) then
+begin
+  FMediator := TtiModelMediator.Create(self);
+  FMediator.AddProperty('|', ed);
+  FMediator.AddProperty('', ed);
+  FMediator.AddProperty('', ed);
+end;
+FMediator.Subject := Data;
+FMediator.Active := True;
+[avlog | tiOPF - AccetpVisitor log() line]
+Log([ClassName, Visited.ClassName, Visited.ObjectStateAsString, Result], lsAcceptVisitor);
+[l | tiOPF - Log line start]
+$(AttributesStart)
+EnableMakros=true
+$(AttributesEnd)
+Log('>> $ProcedureName()', lsDebug);
+[le | tiOPF - Log line end]
+$(AttributesStart)
+EnableMakros=true
+$(AttributesEnd)
+Log('<< $ProcedureName()', lsDebug);

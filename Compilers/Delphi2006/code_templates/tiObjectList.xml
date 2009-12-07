@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="tiol" invoke="auto">
+		<description>
+			TtiObjectList template;
+		</description>
+		<author>
+			Peter Hinrichsen
+		</author>
+		<point name="objectclass">
+			<hint>
+				Object's class
+			</hint>
+			<text>
+				TMyObject
+			</text>
+		</point>
+		<point name="objectparent">
+			<hint>
+				Object's parent
+			</hint>
+			<text>
+				TMyParent
+			</text>
+		</point>
+		<point name="itemclass">
+			<hint>
+				Item's class
+			</hint>
+			<text>
+				TMyItem
+			</text>
+		</point>
+		<code language="Delphi" context="methodbody" delimiter="|">
+		<![CDATA[
+|objectclass| = class(TtiObjectList)
+private
+protected
+  function    GetItems(i: integer): |itemclass|; reintroduce;
+  procedure   SetItems(i: integer; const AValue: |itemclass|); reintroduce;
+  function    GetParent: |objectparent|; reintroduce;
+public
+  property    Items[i:integer] : |itemclass| read GetItems write SetItems;
+  procedure   Add(AObject : |itemclass|); reintroduce;
+  property    Parent: |objectparent| read GetParent;
+published
+end;
+		]]>
+		</code>
+	</template>
+</codetemplate>

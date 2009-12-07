@@ -1,0 +1,48 @@
+#   Makefile.fpc for tiOPF 2.0.2.1
+
+[package]
+name=tiopf
+version=2.0.2.1
+
+[default]
+fpcdir=/home/michael/fpc
+
+[compiler]
+unittargetdir=lib/$(CPU_TARGET)-$(OS_TARGET)
+unitdir=../../Core/ ../../Options/ /home/graemeg/programming/3rdParty/FBlib/lib/$(CPU_TARGET)-$(OS_TARGET)/ /opt/lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/ /opt/lazarus/lcl/units/$(CPU_TARGET)-$(OS_TARGET)/$(LCL_PLATFORM)/ /opt/lazarus/packager/units/$(CPU_TARGET)-$(OS_TARGET)/ ./
+includedir=../../Core/ ./
+options=-dLINK_CSV -dLINK_TAB -dLINK_FBL -dLINK_XMLLIGHT -dLINK_ZEOS_FB15x -dUseCThreads -dLCL -dLCL$(LCL_PLATFORM) -S2 -gl
+
+[target]
+units=tiOPF
+
+[clean]
+files=$(wildcard $(COMPILER_UNITTARGETDIR)/*$(OEXT)) \
+      $(wildcard $(COMPILER_UNITTARGETDIR)/*$(PPUEXT)) \
+      $(wildcard $(COMPILER_UNITTARGETDIR)/*$(RSTEXT)) \
+      $(wildcard $(COMPILER_UNITTARGETDIR)/*.compiled) \
+      $(wildcard *$(OEXT)) $(wildcard *$(PPUEXT)) $(wildcard *$(RSTEXT))
+[prerules]
+# LCL Platform
+ifndef LCL_PLATFORM
+ifeq ($(OS_TARGET),win32)
+LCL_PLATFORM=win32
+else
+ifeq ($(OS_TARGET),win64)
+LCL_PLATFORM=win32
+else
+LCL_PLATFORM=gtk
+endif
+endif
+endif
+export LCL_PLATFORM
+
+[rules]
+.PHONY: cleartarget all
+
+cleartarget:
+        -$(DEL) $(COMPILER_UNITTARGETDIR)/tiopf$(PPUEXT)
+
+#all: tiOPF.pas
+#  cleartarget 
+#  tiOPF.pas

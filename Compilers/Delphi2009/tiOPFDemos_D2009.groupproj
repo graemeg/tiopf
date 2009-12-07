@@ -1,0 +1,254 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{62307db7-6c84-4eb8-87e0-6ce4adacce28}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="..\..\Demos\Demo_01_ReadMe\Demo_ReadMe.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_02_LoadPersistenceLayerIfDef\Demo_LoadPersistenceLayerIfDef.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_03_LoadPersistenceLayerUses\Demo_LoadPersistenceLayerUses.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_04_CreateDatabase\Demo_CreateDatabase.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_05_ConnectToDatabase\Demo_ConnectToDatabase.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_06_CreateTable\Demo_CreateTable.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_07_VisitorBasics\Demo_VisitorBasics.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_08_Collection\Demo_Collection.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_09_EditDataInGUI\Demo_EditDataInGUI.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_10_CollectionWithFilter\Demo_CollectionWithFilter.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_10a_CollectionWithCriteria\Demo_CollectionWithCriteria.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_11_OnetoMany\Demo_OneToMany.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_12_Inheritance\Demo_Inheritance.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_13_OneToOne\Demo_OneToOne.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_14_OrdinalTypes\Demo_OrdinalTypes.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_15_LookupList\Demo_LookupList.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_16_Dataset\Demo_TIDataSet.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_17_MastApp\Demo_MastApp.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="..\..\Demos\Demo_19_GUIWithMediators\Demo_GUIWithMediators.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<BorlandProject>
+					<Default.Personality/>
+				</BorlandProject>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="Demo_ReadMe">
+			<MSBuild Projects="..\..\Demos\Demo_01_ReadMe\Demo_ReadMe.dproj"/>
+		</Target>
+		<Target Name="Demo_ReadMe:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_01_ReadMe\Demo_ReadMe.dproj"/>
+		</Target>
+		<Target Name="Demo_ReadMe:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_01_ReadMe\Demo_ReadMe.dproj"/>
+		</Target>
+		<Target Name="Demo_LoadPersistenceLayerIfDef">
+			<MSBuild Projects="..\..\Demos\Demo_02_LoadPersistenceLayerIfDef\Demo_LoadPersistenceLayerIfDef.dproj"/>
+		</Target>
+		<Target Name="Demo_LoadPersistenceLayerIfDef:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_02_LoadPersistenceLayerIfDef\Demo_LoadPersistenceLayerIfDef.dproj"/>
+		</Target>
+		<Target Name="Demo_LoadPersistenceLayerIfDef:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_02_LoadPersistenceLayerIfDef\Demo_LoadPersistenceLayerIfDef.dproj"/>
+		</Target>
+		<Target Name="Demo_LoadPersistenceLayerUses">
+			<MSBuild Projects="..\..\Demos\Demo_03_LoadPersistenceLayerUses\Demo_LoadPersistenceLayerUses.dproj"/>
+		</Target>
+		<Target Name="Demo_LoadPersistenceLayerUses:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_03_LoadPersistenceLayerUses\Demo_LoadPersistenceLayerUses.dproj"/>
+		</Target>
+		<Target Name="Demo_LoadPersistenceLayerUses:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_03_LoadPersistenceLayerUses\Demo_LoadPersistenceLayerUses.dproj"/>
+		</Target>
+		<Target Name="Demo_CreateDatabase">
+			<MSBuild Projects="..\..\Demos\Demo_04_CreateDatabase\Demo_CreateDatabase.dproj"/>
+		</Target>
+		<Target Name="Demo_CreateDatabase:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_04_CreateDatabase\Demo_CreateDatabase.dproj"/>
+		</Target>
+		<Target Name="Demo_CreateDatabase:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_04_CreateDatabase\Demo_CreateDatabase.dproj"/>
+		</Target>
+		<Target Name="Demo_ConnectToDatabase">
+			<MSBuild Projects="..\..\Demos\Demo_05_ConnectToDatabase\Demo_ConnectToDatabase.dproj"/>
+		</Target>
+		<Target Name="Demo_ConnectToDatabase:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_05_ConnectToDatabase\Demo_ConnectToDatabase.dproj"/>
+		</Target>
+		<Target Name="Demo_ConnectToDatabase:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_05_ConnectToDatabase\Demo_ConnectToDatabase.dproj"/>
+		</Target>
+		<Target Name="Demo_CreateTable">
+			<MSBuild Projects="..\..\Demos\Demo_06_CreateTable\Demo_CreateTable.dproj"/>
+		</Target>
+		<Target Name="Demo_CreateTable:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_06_CreateTable\Demo_CreateTable.dproj"/>
+		</Target>
+		<Target Name="Demo_CreateTable:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_06_CreateTable\Demo_CreateTable.dproj"/>
+		</Target>
+		<Target Name="Demo_VisitorBasics">
+			<MSBuild Projects="..\..\Demos\Demo_07_VisitorBasics\Demo_VisitorBasics.dproj"/>
+		</Target>
+		<Target Name="Demo_VisitorBasics:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_07_VisitorBasics\Demo_VisitorBasics.dproj"/>
+		</Target>
+		<Target Name="Demo_VisitorBasics:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_07_VisitorBasics\Demo_VisitorBasics.dproj"/>
+		</Target>
+		<Target Name="Demo_Collection">
+			<MSBuild Projects="..\..\Demos\Demo_08_Collection\Demo_Collection.dproj"/>
+		</Target>
+		<Target Name="Demo_Collection:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_08_Collection\Demo_Collection.dproj"/>
+		</Target>
+		<Target Name="Demo_Collection:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_08_Collection\Demo_Collection.dproj"/>
+		</Target>
+		<Target Name="Demo_EditDataInGUI">
+			<MSBuild Projects="..\..\Demos\Demo_09_EditDataInGUI\Demo_EditDataInGUI.dproj"/>
+		</Target>
+		<Target Name="Demo_EditDataInGUI:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_09_EditDataInGUI\Demo_EditDataInGUI.dproj"/>
+		</Target>
+		<Target Name="Demo_EditDataInGUI:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_09_EditDataInGUI\Demo_EditDataInGUI.dproj"/>
+		</Target>
+		<Target Name="Demo_CollectionWithFilter">
+			<MSBuild Projects="..\..\Demos\Demo_10_CollectionWithFilter\Demo_CollectionWithFilter.dproj"/>
+		</Target>
+		<Target Name="Demo_CollectionWithFilter:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_10_CollectionWithFilter\Demo_CollectionWithFilter.dproj"/>
+		</Target>
+		<Target Name="Demo_CollectionWithFilter:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_10_CollectionWithFilter\Demo_CollectionWithFilter.dproj"/>
+		</Target>
+		<Target Name="Demo_CollectionWithCriteria">
+			<MSBuild Projects="..\..\Demos\Demo_10a_CollectionWithCriteria\Demo_CollectionWithCriteria.dproj"/>
+		</Target>
+		<Target Name="Demo_CollectionWithCriteria:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_10a_CollectionWithCriteria\Demo_CollectionWithCriteria.dproj"/>
+		</Target>
+		<Target Name="Demo_CollectionWithCriteria:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_10a_CollectionWithCriteria\Demo_CollectionWithCriteria.dproj"/>
+		</Target>
+		<Target Name="Demo_OneToMany">
+			<MSBuild Projects="..\..\Demos\Demo_11_OnetoMany\Demo_OneToMany.dproj"/>
+		</Target>
+		<Target Name="Demo_OneToMany:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_11_OnetoMany\Demo_OneToMany.dproj"/>
+		</Target>
+		<Target Name="Demo_OneToMany:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_11_OnetoMany\Demo_OneToMany.dproj"/>
+		</Target>
+		<Target Name="Demo_Inheritance">
+			<MSBuild Projects="..\..\Demos\Demo_12_Inheritance\Demo_Inheritance.dproj"/>
+		</Target>
+		<Target Name="Demo_Inheritance:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_12_Inheritance\Demo_Inheritance.dproj"/>
+		</Target>
+		<Target Name="Demo_Inheritance:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_12_Inheritance\Demo_Inheritance.dproj"/>
+		</Target>
+		<Target Name="Demo_OneToOne">
+			<MSBuild Projects="..\..\Demos\Demo_13_OneToOne\Demo_OneToOne.dproj"/>
+		</Target>
+		<Target Name="Demo_OneToOne:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_13_OneToOne\Demo_OneToOne.dproj"/>
+		</Target>
+		<Target Name="Demo_OneToOne:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_13_OneToOne\Demo_OneToOne.dproj"/>
+		</Target>
+		<Target Name="Demo_OrdinalTypes">
+			<MSBuild Projects="..\..\Demos\Demo_14_OrdinalTypes\Demo_OrdinalTypes.dproj"/>
+		</Target>
+		<Target Name="Demo_OrdinalTypes:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_14_OrdinalTypes\Demo_OrdinalTypes.dproj"/>
+		</Target>
+		<Target Name="Demo_OrdinalTypes:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_14_OrdinalTypes\Demo_OrdinalTypes.dproj"/>
+		</Target>
+		<Target Name="Demo_LookupList">
+			<MSBuild Projects="..\..\Demos\Demo_15_LookupList\Demo_LookupList.dproj"/>
+		</Target>
+		<Target Name="Demo_LookupList:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_15_LookupList\Demo_LookupList.dproj"/>
+		</Target>
+		<Target Name="Demo_LookupList:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_15_LookupList\Demo_LookupList.dproj"/>
+		</Target>
+		<Target Name="Demo_TIDataSet">
+			<MSBuild Projects="..\..\Demos\Demo_16_Dataset\Demo_TIDataSet.dproj"/>
+		</Target>
+		<Target Name="Demo_TIDataSet:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_16_Dataset\Demo_TIDataSet.dproj"/>
+		</Target>
+		<Target Name="Demo_TIDataSet:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_16_Dataset\Demo_TIDataSet.dproj"/>
+		</Target>
+		<Target Name="Demo_MastApp">
+			<MSBuild Projects="..\..\Demos\Demo_17_MastApp\Demo_MastApp.dproj"/>
+		</Target>
+		<Target Name="Demo_MastApp:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_17_MastApp\Demo_MastApp.dproj"/>
+		</Target>
+		<Target Name="Demo_MastApp:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_17_MastApp\Demo_MastApp.dproj"/>
+		</Target>
+		<Target Name="Demo_GUIWithMediators">
+			<MSBuild Projects="..\..\Demos\Demo_19_GUIWithMediators\Demo_GUIWithMediators.dproj"/>
+		</Target>
+		<Target Name="Demo_GUIWithMediators:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_19_GUIWithMediators\Demo_GUIWithMediators.dproj"/>
+		</Target>
+		<Target Name="Demo_GUIWithMediators:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_19_GUIWithMediators\Demo_GUIWithMediators.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="Demo_ReadMe;Demo_LoadPersistenceLayerIfDef;Demo_LoadPersistenceLayerUses;Demo_CreateDatabase;Demo_ConnectToDatabase;Demo_CreateTable;Demo_VisitorBasics;Demo_Collection;Demo_EditDataInGUI;Demo_CollectionWithFilter;Demo_CollectionWithCriteria;Demo_OneToMany;Demo_Inheritance;Demo_OneToOne;Demo_OrdinalTypes;Demo_LookupList;Demo_TIDataSet;Demo_MastApp;Demo_GUIWithMediators"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="Demo_ReadMe:Clean;Demo_LoadPersistenceLayerIfDef:Clean;Demo_LoadPersistenceLayerUses:Clean;Demo_CreateDatabase:Clean;Demo_ConnectToDatabase:Clean;Demo_CreateTable:Clean;Demo_VisitorBasics:Clean;Demo_Collection:Clean;Demo_EditDataInGUI:Clean;Demo_CollectionWithFilter:Clean;Demo_CollectionWithCriteria:Clean;Demo_OneToMany:Clean;Demo_Inheritance:Clean;Demo_OneToOne:Clean;Demo_OrdinalTypes:Clean;Demo_LookupList:Clean;Demo_TIDataSet:Clean;Demo_MastApp:Clean;Demo_GUIWithMediators:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="Demo_ReadMe:Make;Demo_LoadPersistenceLayerIfDef:Make;Demo_LoadPersistenceLayerUses:Make;Demo_CreateDatabase:Make;Demo_ConnectToDatabase:Make;Demo_CreateTable:Make;Demo_VisitorBasics:Make;Demo_Collection:Make;Demo_EditDataInGUI:Make;Demo_CollectionWithFilter:Make;Demo_CollectionWithCriteria:Make;Demo_OneToMany:Make;Demo_Inheritance:Make;Demo_OneToOne:Make;Demo_OrdinalTypes:Make;Demo_LookupList:Make;Demo_TIDataSet:Make;Demo_MastApp:Make;Demo_GUIWithMediators:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

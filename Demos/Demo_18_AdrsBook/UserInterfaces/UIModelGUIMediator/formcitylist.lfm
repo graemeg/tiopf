@@ -1,0 +1,70 @@
+object CityListFrm: TCityListFrm
+  Left = 350
+  Height = 300
+  Top = 285
+  Width = 400
+  HorzScrollBar.Page = 399
+  VertScrollBar.Page = 299
+  ActiveControl = btnEdit
+  Caption = 'City List'
+  ClientHeight = 300
+  ClientWidth = 400
+  OnDestroy = FormDestroy
+  OnShow = FormShow
+  object Panel1: TPanel
+    Height = 40
+    Width = 400
+    Align = alTop
+    ClientHeight = 40
+    ClientWidth = 400
+    TabOrder = 0
+    object btnEdit: TButton
+      Left = 8
+      Height = 25
+      Top = 8
+      Width = 75
+      BorderSpacing.InnerBorder = 4
+      Caption = 'Edit'
+      TabOrder = 0
+    end
+    object btnNew: TButton
+      Left = 88
+      Height = 25
+      Top = 8
+      Width = 75
+      BorderSpacing.InnerBorder = 4
+      Caption = 'New'
+      TabOrder = 1
+    end
+    object btnDelete: TButton
+      Left = 168
+      Height = 25
+      Top = 8
+      Width = 75
+      BorderSpacing.InnerBorder = 4
+      Caption = 'Delete'
+      TabOrder = 2
+    end
+  end
+  object LVCities: TListView
+    Left = 8
+    Height = 206
+    Top = 48
+    Width = 384
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Columns = <>
+    TabOrder = 1
+    OnDblClick = LVCitiesDblClick
+  end
+  object btnClose: TButton
+    Left = 312
+    Height = 25
+    Top = 264
+    Width = 75
+    Anchors = [akRight, akBottom]
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Close'
+    OnClick = btnCloseClick
+    TabOrder = 2
+  end
+end

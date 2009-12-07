@@ -1,0 +1,293 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <Name Value="tiOPF"/>
+    <AddToProjectUsesSection Value="False"/>
+    <Author Value="Graeme Geldenhuys"/>
+    <CompilerOptions>
+      <Version Value="8"/>
+      <SearchPaths>
+        <IncludeFiles Value="../../Core/"/>
+        <OtherUnitFiles Value="../../Core/;../../Options/"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <IncludeAssertionCode Value="True"/>
+          <AllowLabel Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <Other>
+        <Verbosity>
+          <ShowNotes Value="False"/>
+          <ShowGenInfo Value="False"/>
+        </Verbosity>
+        <WriteFPCLogo Value="False"/>
+        <CompilerMessages>
+          <IgnoredMessages idx5024="True"/>
+        </CompilerMessages>
+        <CustomOptions Value="-dLINK_CSV
+-dLINK_TAB
+-dLINK_FBLx
+-dLINK_SQLDB_IB
+-dLINK_SQLDB_PQx
+-dLINK_SQLDB_Oraclex
+-dLINK_SQLDB_SQLLite3x
+-dLINK_SQLDB_ODBCx
+-dLINK_SQLDB_MySQL40x
+-dLINK_SQLDB_MySQL41x
+-dLINK_SQLDB_MySQL50x
+-dLINK_XMLLIGHT
+-dLINK_ZEOS_FB15x
+-dUseCThreads
+"/>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="TechInsite Object Persistent Framework
+"/>
+    <License Value="Mozilla Public License 1.1 or Modified LGPL
+"/>
+    <Version Major="2" Release="4"/>
+    <Files Count="56">
+      <Item1>
+        <Filename Value="../../Core/tiBaseObject.pas"/>
+        <UnitName Value="tiBaseObject"/>
+      </Item1>
+      <Item2>
+        <Filename Value="../../Core/tiCommandLineParams.pas"/>
+        <UnitName Value="tiCommandLineParams"/>
+      </Item2>
+      <Item3>
+        <Filename Value="../../Core/tiCompress.pas"/>
+        <UnitName Value="tiCompress"/>
+      </Item3>
+      <Item4>
+        <Filename Value="../../Core/tiConstants.pas"/>
+        <UnitName Value="tiConstants"/>
+      </Item4>
+      <Item5>
+        <Filename Value="../../Core/tiDBConnectionPool.pas"/>
+        <UnitName Value="tiDBConnectionPool"/>
+      </Item5>
+      <Item6>
+        <Filename Value="../../Core/tiEncrypt.pas"/>
+        <UnitName Value="tiEncrypt"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../../Core/tiExcept.pas"/>
+        <UnitName Value="tiExcept"/>
+      </Item7>
+      <Item8>
+        <Filename Value="../../Core/tiLog.pas"/>
+        <UnitName Value="tiLog"/>
+      </Item8>
+      <Item9>
+        <Filename Value="../../Core/tiObject.pas"/>
+        <UnitName Value="tiObject"/>
+      </Item9>
+      <Item10>
+        <Filename Value="../../Core/tiOID.pas"/>
+        <UnitName Value="tiOID"/>
+      </Item10>
+      <Item11>
+        <Filename Value="../../Core/tiOPFManager.pas"/>
+        <UnitName Value="tiOPFManager"/>
+      </Item11>
+      <Item12>
+        <Filename Value="../../Core/tiPool.pas"/>
+        <UnitName Value="tiPool"/>
+      </Item12>
+      <Item13>
+        <Filename Value="../../Core/tiQuery.pas"/>
+        <UnitName Value="tiQuery"/>
+      </Item13>
+      <Item14>
+        <Filename Value="../../Core/tiStreams.pas"/>
+        <UnitName Value="tiStreams"/>
+      </Item14>
+      <Item15>
+        <Filename Value="../../Core/tiSyncObjs.pas"/>
+        <UnitName Value="tiSyncObjs"/>
+      </Item15>
+      <Item16>
+        <Filename Value="../../Core/tiThread.pas"/>
+        <UnitName Value="tiThread"/>
+      </Item16>
+      <Item17>
+        <Filename Value="../../Core/tiUtils.pas"/>
+        <UnitName Value="tiUtils"/>
+      </Item17>
+      <Item18>
+        <Filename Value="../../Core/tiVisitor.pas"/>
+        <UnitName Value="tiVisitor"/>
+      </Item18>
+      <Item19>
+        <Filename Value="../../Core/tiVisitorDB.pas"/>
+        <UnitName Value="tiVisitorDB"/>
+      </Item19>
+      <Item20>
+        <Filename Value="../../Core/tiDefines.inc"/>
+        <Type Value="Include"/>
+      </Item20>
+      <Item21>
+        <Filename Value="../../Core/tiOIDGUID.pas"/>
+        <UnitName Value="tiOIDGUID"/>
+      </Item21>
+      <Item22>
+        <Filename Value="../../Options/tiOIDInteger.pas"/>
+        <UnitName Value="tiOIDInteger"/>
+      </Item22>
+      <Item23>
+        <Filename Value="../../Options/tiCompressNone.pas"/>
+        <UnitName Value="tiCompressNone"/>
+      </Item23>
+      <Item24>
+        <Filename Value="../../Options/tiCompressZLib.pas"/>
+        <UnitName Value="tiCompressZLib"/>
+      </Item24>
+      <Item25>
+        <Filename Value="../../Options/tiEncryptSimple.pas"/>
+        <UnitName Value="tiEncryptSimple"/>
+      </Item25>
+      <Item26>
+        <Filename Value="../../Options/tiEncryptNone.pas"/>
+        <UnitName Value="tiEncryptNone"/>
+      </Item26>
+      <Item27>
+        <Filename Value="../../Options/tiEncryptDES.pas"/>
+        <UnitName Value="tiEncryptDES"/>
+      </Item27>
+      <Item28>
+        <Filename Value="../../Options/tiEncryptBlowfish.pas"/>
+        <UnitName Value="tiEncryptBlowfish"/>
+      </Item28>
+      <Item29>
+        <Filename Value="../../Options/tiOIDString.pas"/>
+        <UnitName Value="tiOIDString"/>
+      </Item29>
+      <Item30>
+        <Filename Value="../../Options/tiDataBuffer_Cli.pas"/>
+        <UnitName Value="tiDataBuffer_Cli"/>
+      </Item30>
+      <Item31>
+        <Filename Value="../../Options/tiDataBuffer_BOM.pas"/>
+        <UnitName Value="tiDataBuffer_BOM"/>
+      </Item31>
+      <Item32>
+        <Filename Value="../../Options/tiQueryTXTAbs.pas"/>
+        <UnitName Value="tiQueryTXTAbs"/>
+      </Item32>
+      <Item33>
+        <Filename Value="../../Options/tiTextParser.pas"/>
+        <UnitName Value="tiTextParser"/>
+      </Item33>
+      <Item34>
+        <Filename Value="../../Options/tiLogToConsole.pas"/>
+        <UnitName Value="tiLogToConsole"/>
+      </Item34>
+      <Item35>
+        <Filename Value="../../Options/tiXML.pas"/>
+        <UnitName Value="tiXML"/>
+      </Item35>
+      <Item36>
+        <Filename Value="../../Options/tiQueryCSV.pas"/>
+        <UnitName Value="tiQueryCSV"/>
+      </Item36>
+      <Item37>
+        <Filename Value="../../Options/tiQueryTAB.pas"/>
+        <UnitName Value="tiQueryTAB"/>
+      </Item37>
+      <Item38>
+        <Filename Value="../../Core/tiLogToFile.pas"/>
+        <UnitName Value="tiLogToFile"/>
+      </Item38>
+      <Item39>
+        <Filename Value="../../Core/tiCriteria.pas"/>
+        <UnitName Value="tiCriteria"/>
+      </Item39>
+      <Item40>
+        <Filename Value="../../Core/tiVisitorCriteria.pas"/>
+        <UnitName Value="tiVisitorCriteria"/>
+      </Item40>
+      <Item41>
+        <Filename Value="../../Options/tiXMLToTIDataset.pas"/>
+        <UnitName Value="tiXMLToTIDataSet"/>
+      </Item41>
+      <Item42>
+        <Filename Value="../../Options/tiQueryXMLLight.pas"/>
+        <UnitName Value="tiQueryXMLLight"/>
+      </Item42>
+      <Item43>
+        <Filename Value="../../Core/tiRTTI.pas"/>
+        <UnitName Value="tiRTTI"/>
+      </Item43>
+      <Item44>
+        <Filename Value="../../Core/tiTokenLibrary.pas"/>
+        <UnitName Value="tiTokenLibrary"/>
+      </Item44>
+      <Item45>
+        <Filename Value="../../Core/tiINI.pas"/>
+        <UnitName Value="tiINI"/>
+      </Item45>
+      <Item46>
+        <Filename Value="../../Options/tiQueue.pas"/>
+        <UnitName Value="tiQueue"/>
+      </Item46>
+      <Item47>
+        <Filename Value="../../Core/tiAutoMap.pas"/>
+        <UnitName Value="tiAutoMap"/>
+      </Item47>
+      <Item48>
+        <Filename Value="../../Core/tiVisitorDBAutoGen.pas"/>
+        <UnitName Value="tiVisitorDBAutoGen"/>
+      </Item48>
+      <Item49>
+        <Filename Value="../../Options/tiStructuredCSVReader.pas"/>
+        <UnitName Value="tiStructuredCSVReader"/>
+      </Item49>
+      <Item50>
+        <Filename Value="../../Options/tiStructuredCSVWriter.pas"/>
+        <UnitName Value="tiStructuredCSVWriter"/>
+      </Item50>
+      <Item51>
+        <Filename Value="../../Core/tiFilteredObjectList.pas"/>
+        <UnitName Value="tiFilteredObjectList"/>
+      </Item51>
+      <Item52>
+        <Filename Value="../../Core/tiBaseMediator.pas"/>
+        <UnitName Value="tiBaseMediator"/>
+      </Item52>
+      <Item53>
+        <Filename Value="../../Core/tiModelMediator.pas"/>
+        <UnitName Value="tiModelMediator"/>
+      </Item53>
+      <Item54>
+        <Filename Value="../../Options/tiQueryDataset.pas"/>
+        <UnitName Value="tiQueryDataset"/>
+      </Item54>
+      <Item55>
+        <Filename Value="../../Options/tiopfsqlscript.pas"/>
+        <UnitName Value="tiOPFSqlScript"/>
+      </Item55>
+      <Item56>
+        <Filename Value="../../Options/tiOIDInt64.pas"/>
+        <UnitName Value="tiOIDInt64"/>
+      </Item56>
+    </Files>
+    <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
+    <RequiredPkgs Count="1">
+      <Item1>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item1>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)/"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

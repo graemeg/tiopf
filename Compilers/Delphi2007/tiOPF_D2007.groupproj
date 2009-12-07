@@ -1,0 +1,84 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{1c9e5d12-f63f-420e-b3e5-ebe605a064ca}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="tiOPFCore.dproj" />
+    <Projects Include="tiOPFGUI.dproj" />
+    <Projects Include="tiOPFGUIDsgn.dproj" />
+    <Projects Include="tiOPFOptions.dproj" />
+    <Projects Include="tiOPFUnitTestsGUI.dproj" />
+    <Projects Include="tiOPFUnitTestsText.dproj" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="tiOPFCore">
+    <MSBuild Projects="tiOPFCore.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFCore:Clean">
+    <MSBuild Projects="tiOPFCore.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFCore:Make">
+    <MSBuild Projects="tiOPFCore.dproj" Targets="Make" />
+  </Target>
+  <Target Name="tiOPFOptions">
+    <MSBuild Projects="tiOPFOptions.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFOptions:Clean">
+    <MSBuild Projects="tiOPFOptions.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFOptions:Make">
+    <MSBuild Projects="tiOPFOptions.dproj" Targets="Make" />
+  </Target>
+  <Target Name="tiOPFGUI">
+    <MSBuild Projects="tiOPFGUI.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFGUI:Clean">
+    <MSBuild Projects="tiOPFGUI.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFGUI:Make">
+    <MSBuild Projects="tiOPFGUI.dproj" Targets="Make" />
+  </Target>
+  <Target Name="tiOPFGUIDsgn">
+    <MSBuild Projects="tiOPFGUIDsgn.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFGUIDsgn:Clean">
+    <MSBuild Projects="tiOPFGUIDsgn.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFGUIDsgn:Make">
+    <MSBuild Projects="tiOPFGUIDsgn.dproj" Targets="Make" />
+  </Target>
+  <Target Name="tiOPFUnitTestsGUI">
+    <MSBuild Projects="tiOPFUnitTestsGUI.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFUnitTestsGUI:Clean">
+    <MSBuild Projects="tiOPFUnitTestsGUI.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFUnitTestsGUI:Make">
+    <MSBuild Projects="tiOPFUnitTestsGUI.dproj" Targets="Make" />
+  </Target>
+  <Target Name="tiOPFUnitTestsText">
+    <MSBuild Projects="tiOPFUnitTestsText.dproj" Targets="" />
+  </Target>
+  <Target Name="tiOPFUnitTestsText:Clean">
+    <MSBuild Projects="tiOPFUnitTestsText.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="tiOPFUnitTestsText:Make">
+    <MSBuild Projects="tiOPFUnitTestsText.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="tiOPFCore;tiOPFOptions;tiOPFGUI;tiOPFGUIDsgn;tiOPFUnitTestsGUI;tiOPFUnitTestsText" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="tiOPFCore:Clean;tiOPFOptions:Clean;tiOPFGUI:Clean;tiOPFGUIDsgn:Clean;tiOPFUnitTestsGUI:Clean;tiOPFUnitTestsText:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="tiOPFCore:Make;tiOPFOptions:Make;tiOPFGUI:Make;tiOPFGUIDsgn:Make;tiOPFUnitTestsGUI:Make;tiOPFUnitTestsText:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>

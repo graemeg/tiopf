@@ -1,0 +1,15 @@
+tiOPF provides its source code under two flexible licenses, designed to
+meet the usage and distribution requirements of different types of users.
+
+tiOPF provides the following two sets of terms and conditions (dual-licensing).
+
+  Mozilla Public License 1.1.  See licensing.MPL-1.1.txt
+
+or
+
+  Modified LGPL 2 allowing static linking and is license compatible with
+  other GPL licenses.  See licensing.LGPL.txt and licensing.ModifiedLGPL.txt
+
+
+               ------------oOo------------
+

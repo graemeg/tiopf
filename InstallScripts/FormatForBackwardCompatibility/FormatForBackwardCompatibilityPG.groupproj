@@ -1,0 +1,34 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{4150f37f-63fa-44e9-8e68-e3d6e1d884a1}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="FormatForBackwardCompatibility.dproj" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="FormatForBackwardCompatibility">
+    <MSBuild Projects="FormatForBackwardCompatibility.dproj" Targets="" />
+  </Target>
+  <Target Name="FormatForBackwardCompatibility:Clean">
+    <MSBuild Projects="FormatForBackwardCompatibility.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="FormatForBackwardCompatibility:Make">
+    <MSBuild Projects="FormatForBackwardCompatibility.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="FormatForBackwardCompatibility" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="FormatForBackwardCompatibility:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="FormatForBackwardCompatibility:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>

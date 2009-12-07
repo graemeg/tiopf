@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <Name Value="tiopfLCL"/>
+    <AddToProjectUsesSection Value="False"/>
+    <Author Value="Graeme &amp; Michael"/>
+    <CompilerOptions>
+      <Version Value="8"/>
+      <SearchPaths>
+        <IncludeFiles Value="../../Core/"/>
+        <OtherUnitFiles Value="../../Core/;../../GUI/LCL/;../../GUI/"/>
+        <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <CStyleOperator Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <Other>
+        <CustomOptions Value="-dLINK_CSV
+-dLINK_TAB
+-dLINK_FBLx
+-dLINK_SQLDB_IB
+-dLINK_SQLDB_PQx
+-dLINK_SQLDB_Oraclex
+-dLINK_SQLDB_SQLLite3x
+-dLINK_SQLDB_ODBCx
+-dLINK_SQLDB_MySQL40x
+-dLINK_SQLDB_MySQL41x
+-dLINK_SQLDB_MySQL50x
+-dLINK_XMLLIGHT
+-dLINK_ZEOS_FB15x
+-dUseCThreads
+"/>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Description Value="Lazarus specific GUI support. This packages does not contain any of the tiOPF custom GUI components. Those are unsupported for Lazarus IDE.
+"/>
+    <License Value="Mozilla Public License 1.1 or Modified LGPL
+"/>
+    <Version Major="2" Release="5"/>
+    <Files Count="9">
+      <Item1>
+        <Filename Value="../../GUI/LCL/tiMediators.pas"/>
+        <UnitName Value="tiMediators"/>
+      </Item1>
+      <Item2>
+        <Filename Value="../../GUI/LCL/tiListMediators.pas"/>
+        <UnitName Value="tiListMediators"/>
+      </Item2>
+      <Item3>
+        <Filename Value="../../GUI/tiGUIINI.pas"/>
+        <UnitName Value="tiGUIINI"/>
+      </Item3>
+      <Item4>
+        <Filename Value="../../GUI/tiDialogs.pas"/>
+        <UnitName Value="tiDialogs"/>
+      </Item4>
+      <Item5>
+        <Filename Value="../../GUI/tiGUIConstants.pas"/>
+        <UnitName Value="tiGUIConstants"/>
+      </Item5>
+      <Item6>
+        <Filename Value="../../GUI/tiGUIUtils.pas"/>
+        <UnitName Value="tiGUIUtils"/>
+      </Item6>
+      <Item7>
+        <Filename Value="../../GUI/tiLogToGUI.pas"/>
+        <UnitName Value="tiLogToGUI"/>
+      </Item7>
+      <Item8>
+        <Filename Value="../../GUI/tiTreeBuildVisitor.pas"/>
+      </Item8>
+      <Item9>
+        <Filename Value="../../GUI/tiGenericTreeViewMediator.pas"/>
+      </Item9>
+    </Files>
+    <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="tiOPF"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)/"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

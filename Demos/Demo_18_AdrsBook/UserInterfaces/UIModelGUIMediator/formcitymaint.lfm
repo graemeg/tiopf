@@ -1,0 +1,88 @@
+object CityMaintFrm: TCityMaintFrm
+  Left = 375
+  Height = 207
+  Top = 201
+  Width = 259
+  HorzScrollBar.Page = 258
+  VertScrollBar.Page = 206
+  ActiveControl = edCityName
+  Caption = 'City Maintenance'
+  ClientHeight = 207
+  ClientWidth = 259
+  OnShow = FormShow
+  object Label1: TLabel
+    Left = 11
+    Height = 17
+    Top = 16
+    Width = 79
+    Caption = 'City name:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label2: TLabel
+    Left = 11
+    Height = 17
+    Top = 64
+    Width = 70
+    Caption = 'ZIP code:'
+    Color = clNone
+    ParentColor = False
+  end
+  object Label3: TLabel
+    Left = 11
+    Height = 17
+    Top = 112
+    Width = 58
+    Caption = 'Country'
+    Color = clNone
+    ParentColor = False
+  end
+  object edCityName: TEdit
+    Left = 11
+    Height = 23
+    Top = 32
+    Width = 184
+    OnChange = edCityNameChange
+    TabOrder = 0
+    Text = 'edCityName'
+  end
+  object edZip: TEdit
+    Left = 11
+    Height = 23
+    Top = 80
+    Width = 117
+    OnChange = edZipChange
+    TabOrder = 1
+    Text = 'edZip'
+  end
+  object cbCountry: TComboBox
+    Left = 11
+    Height = 25
+    Top = 128
+    Width = 184
+    AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+    MaxLength = 0
+    TabOrder = 2
+    Text = 'cbCountry'
+  end
+  object btnSave: TButton
+    Left = 95
+    Height = 25
+    Top = 176
+    Width = 75
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Save'
+    ModalResult = 1
+    TabOrder = 3
+  end
+  object btnCancel: TButton
+    Left = 176
+    Height = 25
+    Top = 176
+    Width = 75
+    BorderSpacing.InnerBorder = 4
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 4
+  end
+end

@@ -1,0 +1,64 @@
+object CountryListForm: TCountryListForm
+  Left = 329
+  Height = 300
+  Top = 175
+  Width = 400
+  Caption = 'Country list'
+  ClientHeight = 300
+  ClientWidth = 400
+  ParentFont = False
+  LCLVersion = '0.9.27'
+  object BAdd: TButton
+    Left = 13
+    Height = 25
+    Top = 9
+    Width = 75
+    Caption = '&Add'
+    OnClick = BAddClick
+    ParentFont = False
+    TabOrder = 0
+  end
+  object BEdit: TButton
+    Left = 95
+    Height = 25
+    Top = 9
+    Width = 75
+    Caption = '&Edit'
+    OnClick = BEditClick
+    ParentFont = False
+    TabOrder = 1
+  end
+  object BDelete: TButton
+    Left = 176
+    Height = 25
+    Top = 9
+    Width = 75
+    Caption = '&Delete'
+    OnClick = BDeleteClick
+    ParentFont = False
+    TabOrder = 2
+  end
+  object GCountries: TStringGrid
+    Left = 12
+    Height = 224
+    Top = 40
+    Width = 376
+    ExtendedSelect = True
+    FixedColor = clBtnFace
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll]
+    ParentColor = False
+    RowCount = 5
+    TabOrder = 3
+  end
+  object BClose: TButton
+    Left = 313
+    Height = 25
+    Top = 272
+    Width = 75
+    Caption = '&Close'
+    ModalResult = 1
+    ParentFont = False
+    TabOrder = 4
+  end
+end

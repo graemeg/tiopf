@@ -1,0 +1,39 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TFormMainOneToMany','FORMDATA',[
+  'TPF0'#18'TFormMainOneToMany'#17'FormMainOneToMany'#4'Left'#3#249#0#6'Height'
+  +#3#141#1#3'Top'#3#186#0#5'Width'#3#11#2#13'ActiveControl'#7#14'paeClientCoun'
+  +'t'#7'Caption'#6#17'FormMainOneToMany'#12'ClientHeight'#3#141#1#11'ClientWid'
+  +'th'#3#11#2#11'Font.Height'#2#245#9'Font.Name'#6#13'MS Sans Serif'#8'OnCreat'
+  +'e'#7#10'FormCreate'#9'OnDestroy'#7#11'FormDestroy'#8'ShowHint'#9#10'LCLVers'
+  +'ion'#6#6'0.9.27'#0#6'TLabel'#6'Label1'#4'Left'#2#4#6'Height'#2#14#3'Top'#2#8
+  +#5'Width'#2'('#7'Caption'#6#7'Clients'#11'ParentColor'#8#0#0#6'TLabel'#6'Lab'
+  +'el2'#4'Left'#2#8#6'Height'#2#14#3'Top'#3#224#0#5'Width'#2'['#7'Caption'#6#13
+  +'Phone numbers'#11'ParentColor'#8#0#0#7'TButton'#7'Button1'#4'Left'#3#152#1#6
+  +'Height'#2#25#3'Top'#3'M'#1#5'Width'#2'e'#6'Action'#7#5'aSave'#7'Anchors'#11
+  +#7'akRight'#8'akBottom'#0#8'TabOrder'#2#0#0#0#7'TButton'#7'Button2'#4'Left'#3
+  +#152#1#6'Height'#2#25#3'Top'#3'-'#1#5'Width'#2'e'#6'Action'#7#12'aShowObject'
+  +'s'#7'Anchors'#11#7'akRight'#8'akBottom'#0#8'TabOrder'#2#1#0#0#7'TButton'#7
+  +'btnRead'#4'Left'#3#152#1#6'Height'#2#25#3'Top'#3'm'#1#5'Width'#2'e'#6'Actio'
+  +'n'#7#5'aRead'#7'Anchors'#11#7'akRight'#8'akBottom'#0#8'TabOrder'#2#2#0#0#5
+  +'TEdit'#14'paeClientCount'#4'Left'#3#152#1#6'Height'#2')'#4'Hint'#6#12'Clien'
+  +'t count'#3'Top'#2#24#5'Width'#2'n'#21'Constraints.MinHeight'#2#23#8'TabOrde'
+  +'r'#2#3#0#0#5'TEdit'#19'paePhoneNumberCount'#4'Left'#3#152#1#6'Height'#2')'#4
+  +'Hint'#6#18'Phone number count'#3'Top'#2'H'#5'Width'#2'n'#21'Constraints.Min'
+  +'Height'#2#23#8'TabOrder'#2#4#0#0#7'TButton'#9'btnInsert'#4'Left'#3#152#1#6
+  +'Height'#2#25#3'Top'#2'w'#5'Width'#2'f'#6'Action'#7#14'aInsertClients'#8'Tab'
+  +'Order'#2#5#0#0#11'TStringGrid'#9'lvClients'#4'Left'#2#8#6'Height'#3#182#0#3
+  +'Top'#2#27#5'Width'#3'u'#1#9'FixedCols'#2#0#7'Options'#11#15'goFixedVertLine'
+  +#15'goFixedHorzLine'#10'goVertLine'#10'goHorzLine'#11'goRowSelect'#15'goThum'
+  +'bTracking'#14'goSmoothScroll'#0#8'TabOrder'#2#6#16'TitleFont.Height'#2#245
+  +#14'TitleFont.Name'#6#13'MS Sans Serif'#11'OnSelection'#7#18'lvClientsSelect'
+  +'ion'#0#0#11'TStringGrid'#14'lvPhoneNumbers'#4'Left'#2#12#6'Height'#3#146#0#3
+  +'Top'#3#243#0#5'Width'#3'q'#1#9'FixedCols'#2#0#8'TabOrder'#2#7#16'TitleFont.'
+  +'Height'#2#245#14'TitleFont.Name'#6#13'MS Sans Serif'#0#0#11'TActionList'#11
+  +'ActionList1'#8'OnUpdate'#7#17'ActionList1Update'#4'left'#3#152#1#3'top'#3
+  +#200#0#0#7'TAction'#5'aSave'#7'Caption'#6#4'Save'#9'OnExecute'#7#12'aSaveExe'
+  +'cute'#0#0#7'TAction'#5'aRead'#7'Caption'#6#4'Read'#9'OnExecute'#7#12'aReadE'
+  +'xecute'#0#0#7'TAction'#14'aInsertClients'#7'Caption'#6#14'Insert clients'#9
+  +'OnExecute'#7#21'aInsertClientsExecute'#0#0#7'TAction'#12'aShowObjects'#7'Ca'
+  +'ption'#6#12'Show objects'#9'OnExecute'#7#19'aShowObjectsExecute'#0#0#0#0
+]);

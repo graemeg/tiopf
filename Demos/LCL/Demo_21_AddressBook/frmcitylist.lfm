@@ -1,0 +1,66 @@
+object CityListForm: TCityListForm
+  Left = 413
+  Height = 315
+  Top = 279
+  Width = 420
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'CityListForm'
+  ClientHeight = 315
+  ClientWidth = 420
+  ParentFont = False
+  LCLVersion = '0.9.27'
+  object GCities: TStringGrid
+    Left = 8
+    Height = 224
+    Top = 40
+    Width = 392
+    ExtendedSelect = True
+    FixedColor = clBtnFace
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll]
+    ParentColor = False
+    RowCount = 5
+    TabOrder = 0
+  end
+  object BClose: TButton
+    Left = 325
+    Height = 25
+    Top = 280
+    Width = 75
+    Caption = '&Close'
+    ModalResult = 1
+    ParentFont = False
+    TabOrder = 1
+  end
+  object BAdd: TButton
+    Left = 8
+    Height = 25
+    Top = 6
+    Width = 75
+    Caption = '&Add'
+    OnClick = BAddClick
+    ParentFont = False
+    TabOrder = 2
+  end
+  object BEdit: TButton
+    Left = 92
+    Height = 25
+    Top = 6
+    Width = 75
+    Caption = '&Edit'
+    OnClick = BEditClick
+    ParentFont = False
+    TabOrder = 3
+  end
+  object BDelete: TButton
+    Left = 176
+    Height = 25
+    Top = 6
+    Width = 75
+    Caption = '&Delete'
+    OnClick = BDeleteClick
+    ParentFont = False
+    TabOrder = 4
+  end
+end

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{5BE68930-9402-465B-AACB-03AF8EF601E1}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  <Projects>
+      <Projects Name="tiOPFCore2006.bpl">tiOPFCore.bdsproj</Projects>
+      <Projects Name="tiOPFOptions2006.bpl">tiOPFOptions.bdsproj</Projects>
+      <Projects Name="tiOPFGUI2006.bpl">tiOPFGUI.bdsproj</Projects>
+      <Projects Name="tiOPFGUIDsgn2006.bpl">tiOPFGUIDsgn.bdsproj</Projects>
+      <Projects Name="tiOPFUnitTestsGUI.exe">tiOPFUnitTestsGUI.bdsproj</Projects>
+      <Projects Name="tiOPFUnitTestsText.exe">tiOPFUnitTestsText.bdsproj</Projects>
+      <Projects Name="Targets">tiOPFCore2006.bpl tiOPFOptions2006.bpl tiOPFGUI2006.bpl tiOPFGUIDsgn2006.bpl tiOPFUnitTestsGUI.exe tiOPFUnitTestsText.exe</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+	<StarTeamAssociation></StarTeamAssociation>
+	<StarTeamNonRelativeFiles></StarTeamNonRelativeFiles>
+</BorlandProject>

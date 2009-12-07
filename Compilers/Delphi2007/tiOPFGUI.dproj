@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{76ea9be1-08a3-4dcc-b6ac-ee3fe0ffb83d}</ProjectGuid>
+    <MainSource>tiOPFGUI.dpk</MainSource>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+    <DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Documents\RAD Studio\5.0\Bpl\tiOPFGUI2007.bpl</DCC_DependencyCheckOutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_DebugInformation>False</DCC_DebugInformation>
+    <DCC_WriteableConstants>True</DCC_WriteableConstants>
+    <DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+    <DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+    <DCC_DcuOutput>.\_Dcu</DCC_DcuOutput>
+    <DCC_ObjOutput>.\_Dcu</DCC_ObjOutput>
+    <DCC_HppOutput>.\_Dcu</DCC_HppOutput>
+    <DCC_UnitSearchPath>..\..\Core;..\..\GUI</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\Core;..\..\GUI</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\Core;..\..\GUI</DCC_ObjPath>
+    <DCC_IncludePath>..\..\Core;..\..\GUI</DCC_IncludePath>
+    <DCC_Define>PACKAGE;RELEASE</DCC_Define>
+    <DCC_UNSAFE_TYPE>True</DCC_UNSAFE_TYPE>
+    <DCC_UNSAFE_CODE>True</DCC_UNSAFE_CODE>
+    <DCC_UNSAFE_CAST>True</DCC_UNSAFE_CAST>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Version>7.0</Version>
+    <DCC_WriteableConstants>True</DCC_WriteableConstants>
+    <DCC_DcuOutput>.\_Dcu</DCC_DcuOutput>
+    <DCC_ObjOutput>.\_Dcu</DCC_ObjOutput>
+    <DCC_HppOutput>.\_Dcu</DCC_HppOutput>
+    <DCC_UnitSearchPath>..\..\Core;..\..\GUI</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\..\Core;..\..\GUI</DCC_ResourcePath>
+    <DCC_ObjPath>..\..\Core;..\..\GUI</DCC_ObjPath>
+    <DCC_IncludePath>..\..\Core;..\..\GUI</DCC_IncludePath>
+    <DCC_Define>PACKAGE</DCC_Define>
+    <DCC_UNSAFE_TYPE>True</DCC_UNSAFE_TYPE>
+    <DCC_UNSAFE_CODE>True</DCC_UNSAFE_CODE>
+    <DCC_UNSAFE_CAST>True</DCC_UNSAFE_CAST>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Delphi.Personality</Borland.Personality>
+    <Borland.ProjectType>Package</Borland.ProjectType>
+    <BorlandProject>
+<BorlandProject><Delphi.Personality><Parameters><Parameters Name="UseLauncher">False</Parameters><Parameters Name="LoadAllSymbols">True</Parameters><Parameters Name="LoadUnspecifiedSymbols">False</Parameters></Parameters><Package_Options><Package_Options Name="ImplicitBuild">True</Package_Options><Package_Options Name="DesigntimeOnly">False</Package_Options><Package_Options Name="RuntimeOnly">True</Package_Options><Package_Options Name="LibSuffix">2007</Package_Options></Package_Options><VersionInfo><VersionInfo Name="IncludeVerInfo">True</VersionInfo><VersionInfo Name="AutoIncBuild">False</VersionInfo><VersionInfo Name="MajorVer">1</VersionInfo><VersionInfo Name="MinorVer">0</VersionInfo><VersionInfo Name="Release">0</VersionInfo><VersionInfo Name="Build">0</VersionInfo><VersionInfo Name="Debug">False</VersionInfo><VersionInfo Name="PreRelease">False</VersionInfo><VersionInfo Name="Special">False</VersionInfo><VersionInfo Name="Private">False</VersionInfo><VersionInfo Name="DLL">False</VersionInfo><VersionInfo Name="Locale">3081</VersionInfo><VersionInfo Name="CodePage">1252</VersionInfo></VersionInfo><VersionInfoKeys><VersionInfoKeys Name="CompanyName"></VersionInfoKeys><VersionInfoKeys Name="FileDescription"></VersionInfoKeys><VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="InternalName"></VersionInfoKeys><VersionInfoKeys Name="LegalCopyright"></VersionInfoKeys><VersionInfoKeys Name="LegalTrademarks"></VersionInfoKeys><VersionInfoKeys Name="OriginalFilename"></VersionInfoKeys><VersionInfoKeys Name="ProductName"></VersionInfoKeys><VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys><VersionInfoKeys Name="Comments"></VersionInfoKeys></VersionInfoKeys><Source><Source Name="MainSource">tiOPFGUI.dpk</Source></Source><Excluded_Packages>
+      
+      
+      
+      
+      
+      
+      <Excluded_Packages Name="$(BDS)\bin\dclofficexp100.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+      <Excluded_Packages Name="$(BDS)\bin\dcloffice2k100.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+    </Excluded_Packages></Delphi.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Borland.Delphi.Targets" />
+  <ItemGroup>
+    <DelphiCompile Include="tiOPFGUI.dpk">
+      <MainSource>MainSource</MainSource>
+    </DelphiCompile>
+    <DCCReference Include="..\..\GUI\tiAnimatedGIF.pas" />
+    <DCCReference Include="..\..\GUI\tiButtons.pas" />
+    <DCCReference Include="..\..\GUI\tiCompositeMediators.pas" />
+    <DCCReference Include="..\..\GUI\tiCtrlButtonPanel.pas" />
+    <DCCReference Include="..\..\GUI\tiDialogs.pas" />
+    <DCCReference Include="..\..\GUI\tiFocusPanel.pas" />
+    <DCCReference Include="..\..\GUI\tiGenericEditMediators.pas" />
+    <DCCReference Include="..\..\GUI\tiGenericListMediators.pas" />
+    <DCCReference Include="..\..\GUI\tiGenericTreeViewMediator.pas" />
+    <DCCReference Include="..\..\GUI\tiGUIConstants.pas" />
+    <DCCReference Include="..\..\GUI\tiGUIINI.pas" />
+    <DCCReference Include="..\..\GUI\tiGUIUtils.pas" />
+    <DCCReference Include="..\..\GUI\tiHotImage.pas" />
+    <DCCReference Include="..\..\GUI\tiHyperlink.pas" />
+    <DCCReference Include="..\..\GUI\tiHyperlinkWithImage.pas" />
+    <DCCReference Include="..\..\GUI\tiImageMgr.pas" />
+    <DCCReference Include="..\..\GUI\tiJVBrowseFolder.pas" />
+    <DCCReference Include="..\..\GUI\tiListView.pas" />
+    <DCCReference Include="..\..\GUI\tiListViewCtrls.pas" />
+    <DCCReference Include="..\..\GUI\tiListViewDif.pas" />
+    <DCCReference Include="..\..\GUI\tiListViewPlus.pas" />
+    <DCCReference Include="..\..\GUI\tiLogReg.pas" />
+    <DCCReference Include="..\..\GUI\tiLogToErrorDialog.pas" />
+    <DCCReference Include="..\..\GUI\tiLogToGUI.pas" />
+    <DCCReference Include="..\..\GUI\tiMemoReadOnly.pas" />
+    <DCCReference Include="..\..\GUI\tiMulticastEvent.pas" />
+    <DCCReference Include="..\..\GUI\tiPerAwareCombosAbs.pas" />
+    <DCCReference Include="..\..\GUI\tiPerAwareCtrls.pas" />
+    <DCCReference Include="..\..\GUI\tiPerAwareDateRange.pas" />
+    <DCCReference Include="..\..\GUI\tiPerAwareDirectoryCombos.pas" />
+    <DCCReference Include="..\..\GUI\tiPerAwareFileCombos.pas" />
+    <DCCReference Include="..\..\GUI\tiPerAwareMultiSelect.pas" />
+    <DCCReference Include="..\..\GUI\tiReadOnly.pas" />
+    <DCCReference Include="..\..\GUI\tiResources.pas" />
+    <DCCReference Include="..\..\GUI\tiRoundedPanel.pas" />
+    <DCCReference Include="..\..\GUI\tiSpeedButton.pas" />
+    <DCCReference Include="..\..\GUI\tiSpin.pas" />
+    <DCCReference Include="..\..\GUI\tiSplitter.pas" />
+    <DCCReference Include="..\..\GUI\tiTreeBuildVisitor.pas" />
+    <DCCReference Include="..\..\GUI\tiTreeView.pas" />
+    <DCCReference Include="..\..\GUI\tiTreeViewChildForm.pas" />
+    <DCCReference Include="..\..\GUI\tiVirtualTrees.pas" />
+    <DCCReference Include="..\..\GUI\tiVTAbstract.pas" />
+    <DCCReference Include="..\..\GUI\tiVTExportCSV.pas" />
+    <DCCReference Include="..\..\GUI\tiVTExportHTML.pas" />
+    <DCCReference Include="..\..\GUI\tiVTFilter.pas" />
+    <DCCReference Include="..\..\GUI\tiVTListView.pas" />
+    <DCCReference Include="..\..\GUI\tiVTSearch.pas" />
+    <DCCReference Include="..\..\GUI\tiVTTreeView.pas" />
+    <DCCReference Include="..\..\GUI\VCL\tiListMediators.pas" />
+    <DCCReference Include="..\..\GUI\VCL\tiMediators.pas" />
+    <DCCReference Include="bdertl.dcp" />
+    <DCCReference Include="dbrtl.dcp" />
+    <DCCReference Include="designide.dcp" />
+    <DCCReference Include="rtl.dcp" />
+    <DCCReference Include="tiOPFCore.dcp" />
+    <DCCReference Include="tiOPFOptions.dcp" />
+    <DCCReference Include="vcl.dcp" />
+    <DCCReference Include="vclactnband.dcp" />
+    <DCCReference Include="vclimg.dcp" />
+    <DCCReference Include="vcljpg.dcp" />
+    <DCCReference Include="vclx.dcp" />
+    <DCCReference Include="xmlrtl.dcp" />
+  </ItemGroup>
+</Project>

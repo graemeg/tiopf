@@ -1,0 +1,12 @@
+object tidmDefaultActionValues: TtidmDefaultActionValues
+  left = 326
+  top = 110
+  Height = 150
+  HorizontalOffset = 374
+  VerticalOffset = 264
+  Width = 215
+  object ActionList1: TActionList
+    left = 16
+    top = 4
+  end
+end

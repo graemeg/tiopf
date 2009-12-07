@@ -1,0 +1,114 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{4448e5ec-9bb3-4477-868d-68c926f5c32f}</ProjectGuid>
+  </PropertyGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Projects Include="ApplicationServer\GUI\AdrsBookApplicationServerGUI.dproj" />
+    <Projects Include="ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" />
+    <Projects Include="ApplicationServer\Launcher\LauncherServer.dproj" />
+    <Projects Include="ApplicationServer\Service\AdrsBookApplicationServer.dproj" />
+    <Projects Include="Launcher\LauncherClient.dproj" />
+    <Projects Include="UnitTests\DUnitAdrsBookGUI.dproj" />
+    <Projects Include="UnitTests\DUnitAdrsBookText.dproj" />
+    <Projects Include="UserInterfaces\UIConsole\AdrsBookUIConsole.dproj" />
+    <Projects Include="UserInterfaces\UIModalForms\AdrsBookUIModalForms.dproj" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <Borland.Personality>Default.Personality</Borland.Personality>
+    <Borland.ProjectType />
+    <BorlandProject>
+<BorlandProject xmlns=""><Default.Personality></Default.Personality></BorlandProject></BorlandProject>
+  </ProjectExtensions>
+  <Target Name="DUnitAdrsBookGUI">
+    <MSBuild Projects="UnitTests\DUnitAdrsBookGUI.dproj" Targets="" />
+  </Target>
+  <Target Name="DUnitAdrsBookGUI:Clean">
+    <MSBuild Projects="UnitTests\DUnitAdrsBookGUI.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DUnitAdrsBookGUI:Make">
+    <MSBuild Projects="UnitTests\DUnitAdrsBookGUI.dproj" Targets="Make" />
+  </Target>
+  <Target Name="DUnitAdrsBookText">
+    <MSBuild Projects="UnitTests\DUnitAdrsBookText.dproj" Targets="" />
+  </Target>
+  <Target Name="DUnitAdrsBookText:Clean">
+    <MSBuild Projects="UnitTests\DUnitAdrsBookText.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="DUnitAdrsBookText:Make">
+    <MSBuild Projects="UnitTests\DUnitAdrsBookText.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer">
+    <MSBuild Projects="ApplicationServer\Service\AdrsBookApplicationServer.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer:Clean">
+    <MSBuild Projects="ApplicationServer\Service\AdrsBookApplicationServer.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookApplicationServer:Make">
+    <MSBuild Projects="ApplicationServer\Service\AdrsBookApplicationServer.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookApplicationServerGUI">
+    <MSBuild Projects="ApplicationServer\GUI\AdrsBookApplicationServerGUI.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookApplicationServerGUI:Clean">
+    <MSBuild Projects="ApplicationServer\GUI\AdrsBookApplicationServerGUI.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookApplicationServerGUI:Make">
+    <MSBuild Projects="ApplicationServer\GUI\AdrsBookApplicationServerGUI.dproj" Targets="Make" />
+  </Target>
+  <Target Name="LauncherServer">
+    <MSBuild Projects="ApplicationServer\Launcher\LauncherServer.dproj" Targets="" />
+  </Target>
+  <Target Name="LauncherServer:Clean">
+    <MSBuild Projects="ApplicationServer\Launcher\LauncherServer.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="LauncherServer:Make">
+    <MSBuild Projects="ApplicationServer\Launcher\LauncherServer.dproj" Targets="Make" />
+  </Target>
+  <Target Name="LauncherClient">
+    <MSBuild Projects="Launcher\LauncherClient.dproj" Targets="" />
+  </Target>
+  <Target Name="LauncherClient:Clean">
+    <MSBuild Projects="Launcher\LauncherClient.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="LauncherClient:Make">
+    <MSBuild Projects="Launcher\LauncherClient.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookUIModalForms">
+    <MSBuild Projects="UserInterfaces\UIModalForms\AdrsBookUIModalForms.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookUIModalForms:Clean">
+    <MSBuild Projects="UserInterfaces\UIModalForms\AdrsBookUIModalForms.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookUIModalForms:Make">
+    <MSBuild Projects="UserInterfaces\UIModalForms\AdrsBookUIModalForms.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookUIHTML">
+    <MSBuild Projects="ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookUIHTML:Clean">
+    <MSBuild Projects="ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookUIHTML:Make">
+    <MSBuild Projects="ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj" Targets="Make" />
+  </Target>
+  <Target Name="AdrsBookUIConsole">
+    <MSBuild Projects="UserInterfaces\UIConsole\AdrsBookUIConsole.dproj" Targets="" />
+  </Target>
+  <Target Name="AdrsBookUIConsole:Clean">
+    <MSBuild Projects="UserInterfaces\UIConsole\AdrsBookUIConsole.dproj" Targets="Clean" />
+  </Target>
+  <Target Name="AdrsBookUIConsole:Make">
+    <MSBuild Projects="UserInterfaces\UIConsole\AdrsBookUIConsole.dproj" Targets="Make" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookApplicationServer;AdrsBookApplicationServerGUI;LauncherServer;LauncherClient;AdrsBookUIModalForms;AdrsBookUIHTML;AdrsBookUIConsole" />
+  </Target>
+  <Target Name="Clean">
+    <CallTarget Targets="DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookApplicationServer:Clean;AdrsBookApplicationServerGUI:Clean;LauncherServer:Clean;LauncherClient:Clean;AdrsBookUIModalForms:Clean;AdrsBookUIHTML:Clean;AdrsBookUIConsole:Clean" />
+  </Target>
+  <Target Name="Make">
+    <CallTarget Targets="DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookApplicationServer:Make;AdrsBookApplicationServerGUI:Make;LauncherServer:Make;LauncherClient:Make;AdrsBookUIModalForms:Make;AdrsBookUIHTML:Make;AdrsBookUIConsole:Make" />
+  </Target>
+  <Import Condition="Exists('$(MSBuildBinPath)\Borland.Group.Targets')" Project="$(MSBuildBinPath)\Borland.Group.Targets" />
+</Project>
