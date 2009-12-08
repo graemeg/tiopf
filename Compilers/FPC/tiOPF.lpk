@@ -40,6 +40,7 @@
 -dLINK_XMLLIGHT
 -dLINK_ZEOS_FB15x
 -dUseCThreads
+-Xd
 "/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
