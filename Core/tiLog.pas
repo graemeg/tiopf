@@ -23,6 +23,7 @@ const
   csLog         = 'l'; // Command line parameter to turn logging on (default log to file)
   csLogVisual   = 'lv'; // Command line parameter to turn visual logging on
   csLogConsole  = 'lc'; // Command line parameter to turn console logging on
+  csLogDebugSvr = 'ls'; // Command line parameter to turn debug sever logging on
 
 type
 
