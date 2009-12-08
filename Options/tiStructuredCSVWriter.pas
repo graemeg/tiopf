@@ -34,8 +34,7 @@ implementation
 
 uses
   tiOPFManager,
-  tiConstants,
-  tiUtils;
+  tiConstants;
 
 { TtiStructuredCSVWriter }
 

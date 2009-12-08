@@ -83,10 +83,8 @@ implementation
 
 uses
   tiQuery,
-  tiUtils,
   tiOPFManager,
   tiConstants,
-  tiExcept,
   SysUtils;
 
 { TOIDInt64 }
