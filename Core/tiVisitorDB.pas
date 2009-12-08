@@ -105,7 +105,7 @@ type
 
   // Adds an owned query object
   // Note: It is not necessary to manually lock and unlock DBConnections
-  // from this level and below - TVisitorMgrDB does this for you.
+  // from this level and below - TtiObjectVisitorController does this for you.
   // Adds a pooled database connection
   TtiObjectVisitor = class(TtiVisitor)
   private
