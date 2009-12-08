@@ -96,8 +96,10 @@ uses
  ;
 
 type
+  {$IFNDEF FPC}
   PDWORD = ^DWORD;
   DWORD = Longword;
+  {$ENDIF}
   TDoubleDWORD = packed record
     L, R: DWORD;
   end;
