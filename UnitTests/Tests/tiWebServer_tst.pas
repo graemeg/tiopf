@@ -426,7 +426,7 @@ begin
     LHTTP.Post('http://localhost:' + IntToStr(cPort) + '/tiWebServerCGIForTesting.exe');
     LEncoded:= LHTTP.Output.DataString;
     LActual:= MimeDecodeString(LEncoded);
-    CheckEquals(Trim(LExpected), Trim(LActual));
+    Check(Trim(LExpected) = Trim(LActual));
   finally
     LHTTP.Free;
     LWebServer.Free;
