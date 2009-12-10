@@ -9766,7 +9766,7 @@ Comments=
       <Object Class="TFBVariable" XMLID="{455D163B-648D-46A5-ADF0-B10E5A791C47}">
         <Property MultiValue="0" name="Comment" type="string"></Property>
         <Property MultiValue="1" name="DefaultValue" type="string">
-          <![CDATA[Win32 Build #%version_build%: %report_fb_error_message%D7: %report_short_d7%, D2006: %report_short_d2006%, D2007: %report_short_d2007%]]>
+          <![CDATA[Win32 (tiOPF2) Build #%version_build%: %report_fb_error_message%D7: %report_short_d7%, D2006: %report_short_d2006%, D2007: %report_short_d2007%]]>
         </Property>
         <Property MultiValue="0" name="GroupName" type="string"></Property>
         <Property name="IsMacro" type="Boolean">True</Property>
