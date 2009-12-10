@@ -488,6 +488,10 @@ begin
       LIdentLong := 'report_long_d2007';
       LIdentShort := 'report_short_d2007';
     {$ENDIF}
+    {$IFDEF DELPHI2010}
+      LIdentLong := 'report_long_d2010';
+      LIdentShort := 'report_short_d2010';
+    {$ENDIF}
 
     if (LIdentLong = '') or (LIdentShort = '') then
       EtiOPFDUnitException.Create('Unknown Delphi version');
