@@ -543,7 +543,7 @@ end;
 
 procedure TtiTextTestListener.Write2File(const AFileName, AStr: string);
 var
-  lBuffer  : PChar;
+  lBuffer  : PAnsiChar;
   lLen    : integer;
   lFileStream : TFileStream;
 begin
@@ -554,7 +554,7 @@ begin
     lFileStream := TFileStream.Create(AFileName,
                                        fmCreate or fmShareDenyNone);
   try
-    lBuffer := PChar(AStr);
+    lBuffer := PAnsiChar(AnsiString(AStr));
     lLen := length(AStr);
     lFileStream.Seek(0, soFromEnd);
     lFileStream.write(lBuffer^, lLen);
