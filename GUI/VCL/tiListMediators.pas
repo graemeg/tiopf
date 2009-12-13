@@ -71,6 +71,7 @@ type
     function  View: TtiVTListView; reintroduce;
     procedure SetView(const AValue: TComponent); override;
     procedure HandleSelectionChanged; override;
+    procedure ItemDeleted(const ASubject: TtiObject); override;
   end;
 
 
@@ -493,6 +494,19 @@ begin
       View.Refresh(View.SelectedData);
   finally
     View.EndUpdate;
+  end;
+end;
+
+procedure TtiVTListViewMediatorView.ItemDeleted(const ASubject: TtiObject);
+var
+  LIndex: integer;
+begin
+  inherited ItemDeleted(ASubject);
+  if Active then
+  begin
+    LIndex := View.SelectedIndex;
+    View.Refresh;
+    View.SelectedIndex := LIndex; // Next or last item
   end;
 end;
 

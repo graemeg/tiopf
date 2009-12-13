@@ -213,6 +213,7 @@ type
     procedure StopObserving(ASubject: TtiObject); override;
   public
     destructor Destroy; override;
+    procedure Update(ASubject: TtiObject); override;
     property ListMediator: TtiCustomListMediatorView read FListMediator write FListMediator;
     property OnBeforeSetupField: TtiOnBeforeSetupField read FOnBeforeSetupField write FOnBeforeSetupField;
     property DisplayNames: string read GetDisplayNames;
@@ -1199,6 +1200,15 @@ end;
 procedure TtiListItemMediator.StopObserving(ASubject: TtiObject);
 begin
   FModel:=Nil;
+end;
+
+procedure TtiListItemMediator.Update(ASubject: TtiObject);
+begin
+  Assert(Model = ASubject);
+  inherited;
+  if ASubject.Deleted and Assigned(ListMediator) then
+    // WARNING: this may result in us being deleted.
+    ListMediator.ItemDeleted(ASubject);
 end;
 
 destructor TtiListItemMediator.Destroy;
