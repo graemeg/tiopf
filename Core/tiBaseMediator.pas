@@ -1001,7 +1001,9 @@ begin
   if FOrigStyle then
     Result := Format('%s (%d, "%s", %s)', [PropName, FieldWidth, Caption, origAlignChars[Alignment]])
   else
-    Result := Format('%s|%s|%d|%s', [PropName, AlignChars[Alignment], FieldWidth, Caption]);
+    Result := Format('%s%c%s%c%d%c%s', [PropName, CMediatorFieldSeparator,
+        AlignChars[Alignment], CMediatorFieldSeparator, FieldWidth,
+        CMediatorFieldSeparator, Caption]);
 end;
 
 procedure TtiMediatorFieldInfo.SetAsString(const AValue: string);
@@ -1013,7 +1015,7 @@ var
 begin
   I := 0;
   P1         := Pos('(', AVAlue);
-  P2         := Pos('|', AVAlue);
+  P2         := Pos(CMediatorFieldSeparator, AVAlue);
   // Have ( and Not (have | and | before ()
   FOrigStyle := (P1 <> 0) and ((P2 = 0) or (P2 > P1));
   if FOrigStyle then
@@ -1025,27 +1027,39 @@ begin
   end
   else
   begin
-    PropName := tiToken(AValue, '|', 1);
+    // Property name
+    PropName := tiToken(AValue, CMediatorFieldSeparator, 1);
     if (PropName = '') then
       MediatorError(Self,SErrInvalidFieldName, [Index + 1]);
     Caption    := PropName;
     Alignment  := taLeftJustify;
     FieldWidth := DefFieldWidth;
-    S          := tiToken(AValue, '|', 2);
-    if (S <> '') then
+    if tiNumToken(AValue, CMediatorFieldSeparator) > 1 then
     begin
-      if (length(S) <> 1) then
-        MediatorError(Self,SErrInvalidAlignmentChar, [S, Index + 1]);
-      for A := Low(Talignment) to High(TAlignment) do
-        if (Upcase(AlignChars[A]) = Upcase(S[1])) then
-          Alignment := A;
-      S := tiToken(AValue, '|', 3);
+      // Alignment
+      S := tiToken(AValue, CMediatorFieldSeparator, 2);
       if (S <> '') then
       begin
-        if not TryStrToInt(S, i) then
-          MediatorError(Self,SErrInvalidWidthSpecifier, [S]);
-        FieldWidth := I;
-        S          := tiToken(AValue, '|', 4);
+        if (length(S) <> 1) then
+          MediatorError(Self,SErrInvalidAlignmentChar, [S, Index + 1]);
+        for A := Low(Talignment) to High(TAlignment) do
+          if (Upcase(AlignChars[A]) = Upcase(S[1])) then
+            Alignment := A;
+      end;
+
+      // Field width
+      if tiNumToken(AValue, CMediatorFieldSeparator) > 2 then
+      begin
+        S := tiToken(AValue, CMediatorFieldSeparator, 3);
+        if (S <> '') then
+        begin
+          if not TryStrToInt(S, i) then
+            MediatorError(Self,SErrInvalidWidthSpecifier, [S]);
+          FieldWidth := I;
+        end;
+
+        // Caption
+        S := tiToken(AValue, CMediatorFieldSeparator, 4);
         if (S <> '') then
           Caption := S;
       end;
