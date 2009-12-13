@@ -19,7 +19,7 @@ uses
   ,ExtCtrls   { TLabeledEdit }
   ,ComCtrls   { TTrackBar }
   ,Spin       { TSpinEdit - standard component included in Lazarus LCL }
-  ,EditBtn  
+  ,EditBtn
   ,Graphics
   ;
 
@@ -28,15 +28,19 @@ type
   { Base class to handle TControl controls }
   TtiControlMediatorView = class(TtiMediatorView)
   private
+    FViewErrorVisible: boolean;
     FViewColor: TColor;
     FViewHint: string;
     FViewErrorColor: TColor;
+    procedure   SetViewErrorVisible(const AValue: boolean);
     procedure   SetViewErrorColor(const AValue: TColor);
+    procedure   SetViewState(const AColor: TColor; const AHint: string);
   protected
     function    GetCurrentControlColor: TColor; virtual;
     procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
   public
     constructor Create; override;
+    property    ViewErrorVisible: boolean read FViewErrorVisible write SetViewErrorVisible;
     property    ViewErrorColor: TColor read FViewErrorColor write SetViewErrorColor;
     procedure   SetView(const AValue: TComponent); override;
     function    View: TControl; reintroduce;
@@ -235,6 +239,7 @@ end;
 constructor TtiControlMediatorView.Create;
 begin
   inherited;
+  FViewErrorVisible := true;
   FViewErrorColor := clError;
 end;
 
@@ -259,10 +264,7 @@ begin
   begin
     // Restore state of previous view
     if View <> nil then
-    begin
-      View.Hint := FViewHint;
-      THackControl(View).Color := FViewColor;
-    end;
+      SetViewState(FViewColor, FViewHint);
 
     // Preserve state of new view
     if Assigned(LValue) then
@@ -280,7 +282,20 @@ begin
   if AValue <> FViewErrorColor then
   begin
     FViewErrorColor := AValue;
-    TestIfValid; // Update view
+    if ViewErrorVisible then
+      TestIfValid; // Update view
+  end;
+end;
+
+procedure TtiControlMediatorView.SetViewErrorVisible(const AValue: boolean);
+begin
+  if AValue <> FViewErrorVisible then
+  begin
+    FViewErrorVisible := AValue;
+    if FViewErrorVisible then
+      TestIfValid // Update view
+    else
+      SetViewState(GetCurrentControlColor, FViewHint);
   end;
 end;
 
@@ -290,22 +305,29 @@ var
 begin
   inherited UpdateGUIValidStatus(pErrors);
 
-  oError := pErrors.FindByErrorProperty(RootFieldName);
-  if oError <> nil then
+  if ViewErrorVisible then
   begin
-    THackControl(View).Color := ViewErrorColor;
-    View.Hint := oError.ErrorMessage;
-  end
-  else
-  begin
-    THackControl(View).Color := GetCurrentControlColor;
-    View.Hint := FViewHint;
+    oError := pErrors.FindByErrorProperty(RootFieldName);
+    if oError <> nil then
+      SetViewState(ViewErrorColor, oError.ErrorMessage)
+    else
+      SetViewState(GetCurrentControlColor, FViewHint);
   end;
 end;
 
 function TtiControlMediatorView.GetCurrentControlColor: TColor;
 begin
   result := ColorToRGB(FViewColor);
+end;
+
+procedure TtiControlMediatorView.SetViewState(const AColor: TColor;
+  const AHint: string);
+begin
+  if View <> nil then
+  begin
+    THackControl(View).Color := AColor;
+    View.Hint := AHint;
+  end;
 end;
 
 { TtiCustomEditMediatorView }

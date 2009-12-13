@@ -31,15 +31,19 @@ type
   { Base class to handle TControl controls }
   TtiControlMediatorView = class(TtiMediatorView)
   private
+    FViewErrorVisible: boolean;
     FViewColor: TColor;
     FViewHint: string;
     FViewErrorColor: TColor;
+    procedure   SetViewErrorVisible(const AValue: boolean);
     procedure   SetViewErrorColor(const AValue: TColor);
+    procedure   SetViewState(const AColor: TColor; const AHint: string);
   protected
     function    GetCurrentControlColor: TColor; virtual;
     procedure   UpdateGUIValidStatus(pErrors: TtiObjectErrors); override;
   public
     constructor Create; override;
+    property    ViewErrorVisible: boolean read FViewErrorVisible write SetViewErrorVisible;
     property    ViewErrorColor: TColor read FViewErrorColor write SetViewErrorColor;
     procedure   SetView(const AValue: TComponent); override;
     function    View: TControl; reintroduce;
@@ -241,6 +245,7 @@ end;
 constructor TtiControlMediatorView.Create;
 begin
   inherited;
+  FViewErrorVisible := true;
   FViewErrorColor := clError;
 end;
 
@@ -265,10 +270,7 @@ begin
   begin
     // Restore state of previous view
     if View <> nil then
-    begin
-      View.Hint := FViewHint;
-      THackControl(View).Color := FViewColor;
-    end;
+      SetViewState(FViewColor, FViewHint);
 
     // Preserve state of new view
     if Assigned(LValue) then
