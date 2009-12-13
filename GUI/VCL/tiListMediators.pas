@@ -112,7 +112,7 @@ type
 
   { Used internally for sub-mediators in tiVTListView mediator. Moved to interface
     section so it can be overridden. }
-  TtiVTtiListViewListItemMediator = class(TtiListItemMediator)
+  TtiVTListViewListItemMediator = class(TtiListItemMediator)
   private
     FView: TtiVTListView;
   public
@@ -621,9 +621,9 @@ begin
 end;
 
 
-{ TtiVTtiListViewListItemMediator }
+{ TtiVTListViewListItemMediator }
 
-constructor TtiVTtiListViewListItemMediator.CreateCustom(AModel: TtiObject;
+constructor TtiVTListViewListItemMediator.CreateCustom(AModel: TtiObject;
   AView: TtiVTListView; const AFieldsInfo: TtiMediatorFieldInfoList;
   IsObserving: Boolean);
 begin
@@ -634,10 +634,12 @@ begin
   Active := IsObserving; // Will attach
 end;
 
-procedure TtiVTtiListViewListItemMediator.Update(ASubject: TtiObject);
+procedure TtiVTListViewListItemMediator.Update(ASubject: TtiObject);
 begin
   Assert(Model = ASubject);
-  FView.RefreshObject(Model);
+  inherited Update(ASubject);
+  if (not ASubject.Deleted) or (ListMediator.ShowDeleted) then
+    View.RefreshObject(Model);
 end;
 
 
