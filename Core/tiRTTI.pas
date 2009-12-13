@@ -29,7 +29,7 @@ const
   // All string type properties
   ctkString = [tkChar, tkString, tkWChar, tkLString, tkWString
               {$IFDEF FPC},tkAString
-                {$IFDEF FPC_FULLVERSION>=20301},tkUString, tkUChar{$ENDIF}
+                {$IF FPC_FULLVERSION>=20301},tkUString, tkUChar{$ENDIF}
               {$ENDIF FPC}
               {$IFDEF UNICODE},tkUString{$ENDIF}];
   // Integer type properties
@@ -459,7 +459,7 @@ begin
   {$ENDIF}
   {$IFDEF FPC}
   tkAString,
-    {$IFDEF FPC_FULLVERSION>=20301}  // > FPC 2.3.1 only
+    {$IF FPC_FULLVERSION>=20301}  // > FPC 2.3.1 only
     tkUString,
     tkUChar,
     {$ENDIF}
