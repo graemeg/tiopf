@@ -78,6 +78,8 @@ type
   end;
 
 
+  TtiModelMediatorSubjectHelper = class;
+
   { TtiModelMediator }
 
   TtiModelMediator = class(TComponent)
@@ -85,7 +87,7 @@ type
     FActive: Boolean;
     FDefs: TtiPropertyLinkDefs;
     FSubject: TtiObject;
-    FSubjectObserver: TtiObserverProxy;
+    FSubjectHelper: TtiModelMediatorSubjectHelper;
     procedure CreateMediators;
     procedure SetActive(const AValue: Boolean);
     procedure SetPropertyLinkDefs(const AValue: TtiPropertyLinkDefs);
@@ -263,6 +265,22 @@ type
   published
     {: Design-time and run-time support for adding model mediators. }
     property ModelMediators: TtiModelMediatorCollection read FModelMediators write SetModelMediators;
+  end;
+
+
+  { TtiModelMediatorSubjectHelper }
+  
+  TtiModelMediatorSubjectHelper = class(TtiObject)
+  private
+    FSubject: TtiObject;
+    FOnUpdate: TtiObjectUpdateEvent;
+    procedure SetSubject(const AValue: TtiObject);
+  public
+    constructor Create(const ASubject: TtiObject;
+        const AOnUpdate: TtiObjectUpdateEvent); reintroduce; virtual;
+    destructor Destroy; override;
+    procedure Update(ASubject: TtiObject; AOperation: TNotifyOperation); override;
+    property Subject: TtiObject read FSubject write SetSubject;
   end;
 
 
@@ -452,7 +470,7 @@ begin
   if FSubject = AValue then
     Exit;
   FSubject := AValue;
-  FSubjectObserver.Subject := AValue;
+  FSubjectHelper.Subject := AValue;
   if (FSubject = nil) then
     Active := False
   else if Active then
@@ -549,13 +567,13 @@ begin
   inherited Create(AOwner);
   FDefs := CreatePropertyDefs;
   FDefs.FModelMediator := Self;
-  FSubjectObserver := TtiObserverProxy.Create(nil, SubjectUpdate);
+  FSubjectHelper := TtiModelMediatorSubjectHelper.Create(nil, SubjectUpdate);
 end;
 
 destructor TtiModelMediator.Destroy;
 begin
   Active := False;
-  FreeAndNil(FSubjectObserver);
+  FreeAndNil(FSubjectHelper);
   FreeAndNil(FDefs);
   inherited Destroy;
 end;
@@ -1119,6 +1137,47 @@ procedure TtiModelMediatorList.SubjectChanged(const AModelMediatorName: string);
 begin
   Assert(AModelMediatorName <> '', 'AModelMediatorName cannot be blank');
   GetItemByName(AModelMediatorName).ModelMediator.SubjectChanged;
+end;
+
+{ TtiModelMediatorSubjectHelper }
+
+constructor TtiModelMediatorSubjectHelper.Create(const ASubject: TtiObject;
+  const AOnUpdate: TtiObjectUpdateEvent);
+begin
+  Assert(Assigned(AOnUpdate), 'AOnUpdate should be assigned');
+  inherited Create;
+  
+  Subject := ASubject;
+  FOnUpdate := AOnUpdate;
+end;
+
+destructor TtiModelMediatorSubjectHelper.Destroy;
+begin
+  Subject := nil;
+  inherited;
+end;
+
+procedure TtiModelMediatorSubjectHelper.SetSubject(const AValue: TtiObject);
+begin
+  Assert(AValue.TestValid(TtiObject, true), CTIErrorInvalidObject);
+
+  if AValue = FSubject then
+    Exit; //==>
+
+  if Assigned(FSubject) then
+    FSubject.DetachObserver(Self);
+  FSubject := AValue;
+  if Assigned(FSubject) then
+    FSubject.AttachObserver(Self);
+end;
+
+procedure TtiModelMediatorSubjectHelper.Update(ASubject: TtiObject;
+  AOperation: TNotifyOperation);
+begin
+  inherited;
+  if (ASubject = Subject) and (AOperation = noFree) then
+    Subject := nil;
+  FOnUpdate(ASubject, AOperation);
 end;
 
 end.

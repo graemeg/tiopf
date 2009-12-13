@@ -20,14 +20,14 @@ uses
 type
   // forward declaration
   TtiMediatorView = class;
-  TtiCustomListMediatorView = class;
+  TtiCustomListMediatorView = Class;
 
   TtiObjectToGUIEvent = procedure(Sender: TtiMediatorView; Src: TtiObject; Dest: TComponent; var Handled: Boolean) of object;
   TtiGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject; var Handled: Boolean) of object;
   TtiMediatorEvent = procedure(AMediatorView: TtiMediatorView) of object;
   TtiComponentNotificationEvent = procedure(AComponent: TComponent; Operation: TOperation) of object;
 
-  TtiObjectUpdateMoment = (ouNone, ouOnChange, ouOnExit, ouCustom);
+  TtiObjectUpdateMoment = (ouOnChange, ouOnExit, ouCustom);
 
   TtiMediatorViewComponentHelper = class;
 
@@ -202,7 +202,6 @@ type
   TtiListItemMediator = class(TtiObject)
   private
     FModel: TtiObject;
-    FListMediator: TtiCustomListMediatorView;
     FActive: Boolean;
     FOnBeforeSetupField: TtiOnBeforeSetupField;
     function GetDisplayNames: string;
@@ -213,8 +212,6 @@ type
     procedure StopObserving(ASubject: TtiObject); override;
   public
     destructor Destroy; override;
-    procedure Update(ASubject: TtiObject); override;
-    property ListMediator: TtiCustomListMediatorView read FListMediator write FListMediator;
     property OnBeforeSetupField: TtiOnBeforeSetupField read FOnBeforeSetupField write FOnBeforeSetupField;
     property DisplayNames: string read GetDisplayNames;
     property FieldsInfo: TtiMediatorFieldInfoList read FFieldsInfo;
@@ -246,7 +243,7 @@ type
     procedure SetSelectedObject(const AValue: TtiObject); virtual;
     procedure CreateColumns; virtual; abstract;
     procedure ClearList; virtual; abstract;
-    function DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; virtual; abstract;
+    procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); virtual; abstract;
     procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); virtual;
     procedure ParseDisplayNames(const AValue: string);
     procedure CreateSubMediators; virtual;
@@ -265,7 +262,6 @@ type
     class function CompositeMediator: Boolean; override;
     procedure Update(ASubject: TtiObject; AOperation : TNotifyOperation); override;
     procedure HandleSelectionChanged; virtual; // Called from the GUI to trigger events
-    procedure ItemDeleted(const ASubject: TtiObject); virtual;
     property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
   published
     property OnBeforeSetupField: TtiOnBeforeSetupField read FOnBeforeSetupField write SetOnBeforeSetupField;
@@ -443,7 +439,6 @@ destructor TtiMediatorView.Destroy;
 begin
   if Assigned(FView) then
     FView.RemoveFreeNotification(FViewHelper);
-  Active := false;
   Subject := nil; // Will call DetachObserver
   FViewHelper.Free;
   inherited Destroy;
@@ -492,7 +487,7 @@ begin
         [FFieldName, FSubject.ClassName]);
   end;
 
-  //  View.ReadOnly := ReadOnly or IsPropReadOnly;
+  //  EditControl.ReadOnly := ReadOnly or IsPropReadOnly;
 end;
 
 procedure TtiMediatorView.DoOnChange(Sender: TObject);
@@ -507,7 +502,7 @@ begin
   Errors := TtiObjectErrors.Create;
   try
     Subject.IsValid(Errors);
-    UpdateGUIValidStatus(Errors); // always execute this as it also resets View
+    UpdateGUIValidStatus(Errors); // always execute this as it also resets EditControl
   finally
     Errors.Free;
   end;
@@ -527,10 +522,7 @@ end;
 procedure TtiMediatorView.SetView(const AValue: TComponent);
 begin
   if Assigned(FView) then
-  begin
     FView.RemoveFreeNotification(FViewHelper);
-    SetObjectUpdateMoment(ouNone);
-  end;
   FView := AValue;
   if Assigned(FView) then
     FView.FreeNotification(FViewHelper);
@@ -638,11 +630,6 @@ begin
     end
     else
       FSubject.DetachObserver(Self);
-  if Assigned(FView) then
-    if Active then
-      SetObjectUpdateMoment(FObjectUpdateMoment)
-    else
-      SetObjectUpdateMoment(ouNone);
 end;
 
 procedure TtiMediatorView.DoGUIToObject;
@@ -995,7 +982,6 @@ end;
 const
   AlignChars: array[TAlignMent] of char     = ('l', 'r', 'c');
   OrigAlignChars: array[TAlignMent] of char = ('<', '>', '|');
-  CMediatorFieldSeparator = '|';
 
 { TtiMediatorFieldInfo }
 
@@ -1011,9 +997,7 @@ begin
   if FOrigStyle then
     Result := Format('%s (%d, "%s", %s)', [PropName, FieldWidth, Caption, origAlignChars[Alignment]])
   else
-    Result := Format('%s%c%s%c%d%c%s', [PropName, CMediatorFieldSeparator,
-        AlignChars[Alignment], CMediatorFieldSeparator, FieldWidth,
-        CMediatorFieldSeparator, Caption]);
+    Result := Format('%s|%s|%d|%s', [PropName, AlignChars[Alignment], FieldWidth, Caption]);
 end;
 
 procedure TtiMediatorFieldInfo.SetAsString(const AValue: string);
@@ -1025,7 +1009,7 @@ var
 begin
   I := 0;
   P1         := Pos('(', AVAlue);
-  P2         := Pos(CMediatorFieldSeparator, AVAlue);
+  P2         := Pos('|', AVAlue);
   // Have ( and Not (have | and | before ()
   FOrigStyle := (P1 <> 0) and ((P2 = 0) or (P2 > P1));
   if FOrigStyle then
@@ -1037,39 +1021,27 @@ begin
   end
   else
   begin
-    // Property name
-    PropName := tiToken(AValue, CMediatorFieldSeparator, 1);
+    PropName := tiToken(AValue, '|', 1);
     if (PropName = '') then
       MediatorError(Self,SErrInvalidFieldName, [Index + 1]);
     Caption    := PropName;
     Alignment  := taLeftJustify;
     FieldWidth := DefFieldWidth;
-    if tiNumToken(AValue, CMediatorFieldSeparator) > 1 then
+    S          := tiToken(AValue, '|', 2);
+    if (S <> '') then
     begin
-      // Alignment
-      S := tiToken(AValue, CMediatorFieldSeparator, 2);
+      if (length(S) <> 1) then
+        MediatorError(Self,SErrInvalidAlignmentChar, [S, Index + 1]);
+      for A := Low(Talignment) to High(TAlignment) do
+        if (Upcase(AlignChars[A]) = Upcase(S[1])) then
+          Alignment := A;
+      S := tiToken(AValue, '|', 3);
       if (S <> '') then
       begin
-        if (length(S) <> 1) then
-          MediatorError(Self,SErrInvalidAlignmentChar, [S, Index + 1]);
-        for A := Low(Talignment) to High(TAlignment) do
-          if (Upcase(AlignChars[A]) = Upcase(S[1])) then
-            Alignment := A;
-      end;
-
-      // Field width
-      if tiNumToken(AValue, CMediatorFieldSeparator) > 2 then
-      begin
-        S := tiToken(AValue, CMediatorFieldSeparator, 3);
-        if (S <> '') then
-        begin
-          if not TryStrToInt(S, i) then
-            MediatorError(Self,SErrInvalidWidthSpecifier, [S]);
-          FieldWidth := I;
-        end;
-
-        // Caption
-        S := tiToken(AValue, CMediatorFieldSeparator, 4);
+        if not TryStrToInt(S, i) then
+          MediatorError(Self,SErrInvalidWidthSpecifier, [S]);
+        FieldWidth := I;
+        S          := tiToken(AValue, '|', 4);
         if (S <> '') then
           Caption := S;
       end;
@@ -1202,15 +1174,6 @@ begin
   FModel:=Nil;
 end;
 
-procedure TtiListItemMediator.Update(ASubject: TtiObject);
-begin
-  Assert(Model = ASubject);
-  inherited;
-  if ASubject.Deleted and Assigned(ListMediator) then
-    // WARNING: this may result in us being deleted.
-    ListMediator.ItemDeleted(ASubject);
-end;
-
 destructor TtiListItemMediator.Destroy;
 begin
   Active := False;
@@ -1333,7 +1296,6 @@ end;
 procedure TtiCustomListMediatorView.CreateSubMediators;
 var
   i: integer;
-  LItemMediator: TtiListItemMediator;
 begin
   CreateColumns;
   for i := 0 to Model.Count - 1 do
@@ -1342,10 +1304,7 @@ begin
       if i < MediatorList.Count then
         TtiListItemMediator(MediatorList[i]).Model := Model.Items[i]
       else
-      begin
-        LItemMediator := DoCreateItemMediator(Model.Items[i], i);
-        LItemMediator.ListMediator := Self;
-      end;
+        DoCreateItemMediator(Model.Items[i], i);
     end;
   for i := MediatorList.Count-1 downto Model.Count do
     DoDeleteItemMediator(I,TtiListItemMediator(MediatorList[i]));
@@ -1408,14 +1367,16 @@ end;
 procedure TtiCustomListMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 var
   M: TtiListItemMediator;
+  I: Integer;
 begin
   // Do not call inherited, it will rebuild the list !!
   Case AOperation of
-    noAddItem    : begin
-                     M := DoCreateItemMediator(ASubject,Model.Count-1); // always at the end...
-                     M.ListMediator := Self;
+    noAddItem    : DoCreateItemMediator(ASubject,Model.Count-1); // always at the end...
+    noDeleteItem : begin
+                     M := FindObjectMediator(ASubject,I);
+                     if M<>nil then
+                       DoDeleteItemMediator(I,M);
                    end;
-    noDeleteItem : ItemDeleted(ASubject);
     noFree       : if (ASubject = FSubject) then
                      Subject := nil;
     noChanged    : if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
@@ -1427,16 +1388,6 @@ end;
 procedure TtiCustomListMediatorView.HandleSelectionChanged;
 begin
   // do nothing. Descendants can complete this if needed.
-end;
-
-procedure TtiCustomListMediatorView.ItemDeleted(const ASubject: TtiObject);
-var
-  LItemMediator: TtiListItemMediator;
-  I: integer;
-begin
-  LItemMediator := FindObjectMediator(ASubject,I);
-  if Assigned(LItemMediator) then
-    DoDeleteItemMediator(I, LItemMediator);
 end;
 
 procedure TtiCustomListMediatorView.ParseDisplayNames(const AValue: string);
