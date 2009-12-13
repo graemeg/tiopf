@@ -55,7 +55,6 @@ type
     procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
-    destructor  Destroy; override;
     property    ControlReadOnlyColor: TColor read FControlReadOnlyColor write SetControlReadOnlyColor;
     function    View: TCustomEdit; reintroduce;
     class function ComponentClass: TClass; override;
@@ -318,16 +317,6 @@ begin
   GUIFieldName := 'Text';
 end;
 
-destructor TtiCustomEditMediatorView.Destroy;
-begin
-  if View <> nil then
-  begin
-    if Assigned(THackCustomEdit(View).OnChange) then
-      THackCustomEdit(View).OnChange := nil;
-  end;
-  inherited;
-end;
-
 class function TtiCustomEditMediatorView.ComponentClass: TClass;
 begin
   Result := TCustomEdit;
@@ -361,10 +350,15 @@ procedure TtiCustomEditMediatorView.SetObjectUpdateMoment(
 begin
   inherited;
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      THackCustomEdit(View).OnChange := @DoOnChange
-    else
-      THackCustomEdit(View).OnExit := @DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: THackCustomEdit(View).OnChange := @DoOnChange;
+      ouOnExit: THackCustomEdit(View).OnExit := @DoOnChange;
+      ouNone:
+      begin
+        THackCustomEdit(View).OnChange := nil;
+        THackCustomEdit(View).OnExit := nil;
+      end;
+    end;
 end;
 
 procedure TtiCustomEditMediatorView.SetupGUIandObject;
@@ -417,10 +411,15 @@ procedure TtiSpinEditMediatorView.SetObjectUpdateMoment(
 begin
   inherited;
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      View.OnChange := @DoOnChange
-    else
-      View.OnExit := @DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnChange := @DoOnChange;
+      ouOnExit: View.OnExit := @DoOnChange;
+      ouNone:
+      begin
+        View.OnChange := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 { TtiTrackBarMediatorView}
@@ -458,10 +457,15 @@ procedure TtiTrackBarMediatorView.SetObjectUpdateMoment(
 begin
   inherited;
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      View.OnChange := @DoOnChange
-    else
-      View.OnExit := @DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnChange := @DoOnChange;
+      ouOnExit: View.OnExit := @DoOnChange;
+      ouNone:
+      begin
+        View.OnChange := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 { TtiComboBoxMediatorView }
@@ -493,10 +497,15 @@ procedure TtiComboBoxMediatorView.SetObjectUpdateMoment(
 begin
   inherited;
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      View.OnChange := @DoOnChange
-    else
-      View.OnExit := @DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnChange := @DoOnChange;
+      ouOnExit: View.OnExit := @DoOnChange;
+      ouNone:
+      begin
+        View.OnChange := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 { TtiMemoMediatorView }
@@ -683,7 +692,15 @@ procedure TtiCheckBoxMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectU
 begin
   inherited SetObjectUpdateMoment(AValue);
   if View <> nil then
-    View.OnClick := @DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnClick := @DoOnChange;
+      ouOnExit: View.OnExit := @DoOnChange;
+      ouNone:
+      begin
+        View.OnClick := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 destructor TtiCheckBoxMediatorView.Destroy;
@@ -762,10 +779,15 @@ procedure TtiDateEditMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectU
 begin
   inherited SetObjectUpdateMoment(AValue);
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      View.OnChange := @DoOnChange
-    else
-      View.OnExit := @DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnChange := @DoOnChange;
+      ouOnExit: View.OnExit := @DoOnChange;
+      ouNone:
+      begin
+        View.OnChange := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 constructor TtiDateEditMediatorView.Create;

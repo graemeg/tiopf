@@ -526,7 +526,10 @@ end;
 procedure TtiMediatorView.SetView(const AValue: TComponent);
 begin
   if Assigned(FView) then
+  begin
     FView.RemoveFreeNotification(FViewHelper);
+    SetObjectUpdateMoment(ouNone);
+  end;
   FView := AValue;
   if Assigned(FView) then
     FView.FreeNotification(FViewHelper);
@@ -634,6 +637,11 @@ begin
     end
     else
       FSubject.DetachObserver(Self);
+  if Assigned(FView) then
+    if Active then
+      SetObjectUpdateMoment(FObjectUpdateMoment)
+    else
+      SetObjectUpdateMoment(ouNone);
 end;
 
 procedure TtiMediatorView.DoGUIToObject;

@@ -58,7 +58,6 @@ type
     procedure   SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment); override;
   public
     constructor Create; override;
-    destructor  Destroy; override;
     property    ControlReadOnlyColor: TColor read FControlReadOnlyColor write SetControlReadOnlyColor;
     function    View: TCustomEdit; reintroduce;
     class function ComponentClass: TClass; override;
@@ -287,7 +286,20 @@ begin
   if AValue <> FViewErrorColor then
   begin
     FViewErrorColor := AValue;
-    TestIfValid; // Update view
+    if ViewErrorVisible then
+      TestIfValid; // Update view
+  end;
+end;
+
+procedure TtiControlMediatorView.SetViewErrorVisible(const AValue: boolean);
+begin
+  if AValue <> FViewErrorVisible then
+  begin
+    FViewErrorVisible := AValue;
+    if FViewErrorVisible then
+      TestIfValid // Update view
+    else
+      SetViewState(GetCurrentControlColor, FViewHint);
   end;
 end;
 
@@ -297,22 +309,29 @@ var
 begin
   inherited UpdateGUIValidStatus(pErrors);
 
-  oError := pErrors.FindByErrorProperty(RootFieldName);
-  if oError <> nil then
+  if ViewErrorVisible then
   begin
-    THackControl(View).Color := ViewErrorColor;
-    View.Hint := oError.ErrorMessage;
-  end
-  else
-  begin
-    THackControl(View).Color := GetCurrentControlColor;
-    View.Hint := FViewHint;
+    oError := pErrors.FindByErrorProperty(RootFieldName);
+    if oError <> nil then
+      SetViewState(ViewErrorColor, oError.ErrorMessage)
+    else
+      SetViewState(GetCurrentControlColor, FViewHint);
   end;
 end;
 
 function TtiControlMediatorView.GetCurrentControlColor: TColor;
 begin
   result := ColorToRGB(FViewColor);
+end;
+
+procedure TtiControlMediatorView.SetViewState(const AColor: TColor;
+  const AHint: string);
+begin
+  if View <> nil then
+  begin
+    THackControl(View).Color := AColor;
+    View.Hint := AHint;
+  end;
 end;
 
 { TtiCustomEditMediatorView }
@@ -324,16 +343,6 @@ begin
   GUIFieldName := 'Text';
 end;
 
-destructor TtiCustomEditMediatorView.Destroy;
-begin
-  if View <> nil then
-  begin
-    if Assigned(THackCustomEdit(View).OnChange) then
-      THackCustomEdit(View).OnChange := nil;
-  end;
-  inherited;
-end;
-
 class function TtiCustomEditMediatorView.ComponentClass: TClass;
 begin
   Result := TCustomEdit;
@@ -341,8 +350,7 @@ end;
 
 function TtiCustomEditMediatorView.GetCurrentControlColor: TColor;
 begin
-  // In Delphi, TCustomEdit does not have a public ReadOnly property
-  if (View as TEdit).ReadOnly then
+  if THackCustomEdit(View).ReadOnly then
     result := ColorToRGB(ControlReadOnlyColor)
   else
     result := inherited GetCurrentControlColor;
@@ -368,10 +376,15 @@ procedure TtiCustomEditMediatorView.SetObjectUpdateMoment(
 begin
   inherited;
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      THackCustomEdit(View).OnChange := DoOnChange
-    else
-      THackCustomEdit(View).OnExit := DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: THackCustomEdit(View).OnChange := DoOnChange;
+      ouOnExit: THackCustomEdit(View).OnExit := DoOnChange;
+      ouNone:
+      begin
+        THackCustomEdit(View).OnChange := nil;
+        THackCustomEdit(View).OnExit := nil;
+      end;
+    end;
 end;
 
 procedure TtiCustomEditMediatorView.SetupGUIandObject;
@@ -424,10 +437,15 @@ procedure TtiSpinEditMediatorView.SetObjectUpdateMoment(
 begin
   inherited;
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      View.OnChange := DoOnChange
-    else
-      View.OnExit := DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnChange := DoOnChange;
+      ouOnExit: View.OnExit := DoOnChange;
+      ouNone:
+      begin
+        View.OnChange := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 { TtiTrackBarMediatorView}
@@ -465,10 +483,15 @@ procedure TtiTrackBarMediatorView.SetObjectUpdateMoment(
 begin
   inherited;
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      View.OnChange := DoOnChange
-    else
-      View.OnExit := DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnChange := DoOnChange;
+      ouOnExit: View.OnExit := DoOnChange;
+      ouNone:
+      begin
+        View.OnChange := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 { TtiComboBoxMediatorView }
@@ -500,10 +523,15 @@ procedure TtiComboBoxMediatorView.SetObjectUpdateMoment(
 begin
   inherited;
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnChange,ouCustom] then
-      View.OnChange := DoOnChange
-    else
-      View.OnExit := DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnChange := DoOnChange;
+      ouOnExit: View.OnExit := DoOnChange;
+      ouNone:
+      begin
+        View.OnChange := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 { TtiMemoMediatorView }
@@ -686,11 +714,20 @@ begin
   Result := TCheckBox;
 end;
 
-procedure TtiCheckBoxMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
+procedure TtiCheckBoxMediatorView.SetObjectUpdateMoment(
+  const AValue: TtiObjectUpdateMoment);
 begin
-  inherited SetObjectUpdateMoment(AValue);
+  inherited;
   if View <> nil then
-    View.OnClick := DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnClick := DoOnChange;
+      ouOnExit: View.OnExit := DoOnChange;
+      ouNone:
+      begin
+        View.OnClick := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 destructor TtiCheckBoxMediatorView.Destroy;
@@ -758,14 +795,20 @@ begin
   Result := TDateTimePicker;
 end;
 
-procedure TtiCalendarComboMediatorView.SetObjectUpdateMoment(const AValue: TtiObjectUpdateMoment);
+procedure TtiCalendarComboMediatorView.SetObjectUpdateMoment(
+  const AValue: TtiObjectUpdateMoment);
 begin
-  inherited SetObjectUpdateMoment(AValue);
+  inherited;
   if View <> nil then
-    if ObjectUpdateMoment in [ouOnchange,ouCustom] then
-      View.OnChange := DoOnChange
-    else
-      View.OnExit := DoOnChange;
+    case ObjectUpdateMoment of
+      ouOnChange, ouCustom: View.OnChange := DoOnChange;
+      ouOnExit: View.OnExit := DoOnChange;
+      ouNone:
+      begin
+        View.OnChange := nil;
+        View.OnExit := nil;
+      end;
+    end;
 end;
 
 procedure TtiCalendarComboMediatorView.DoObjectToGUI;
