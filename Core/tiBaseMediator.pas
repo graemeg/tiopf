@@ -202,6 +202,7 @@ type
   TtiListItemMediator = class(TtiObject)
   private
     FModel: TtiObject;
+    FListMediator: TtiCustomListMediatorView;
     FActive: Boolean;
     FOnBeforeSetupField: TtiOnBeforeSetupField;
     function GetDisplayNames: string;
@@ -212,6 +213,7 @@ type
     procedure StopObserving(ASubject: TtiObject); override;
   public
     destructor Destroy; override;
+    property ListMediator: TtiCustomListMediatorView read FListMediator write FListMediator;
     property OnBeforeSetupField: TtiOnBeforeSetupField read FOnBeforeSetupField write FOnBeforeSetupField;
     property DisplayNames: string read GetDisplayNames;
     property FieldsInfo: TtiMediatorFieldInfoList read FFieldsInfo;
@@ -243,7 +245,7 @@ type
     procedure SetSelectedObject(const AValue: TtiObject); virtual;
     procedure CreateColumns; virtual; abstract;
     procedure ClearList; virtual; abstract;
-    procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); virtual; abstract;
+    function DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; virtual; abstract;
     procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); virtual;
     procedure ParseDisplayNames(const AValue: string);
     procedure CreateSubMediators; virtual;
@@ -262,6 +264,7 @@ type
     class function CompositeMediator: Boolean; override;
     procedure Update(ASubject: TtiObject; AOperation : TNotifyOperation); override;
     procedure HandleSelectionChanged; virtual; // Called from the GUI to trigger events
+    procedure ItemDeleted(const ASubject: TtiObject); virtual;
     property SelectedObject: TtiObject read GetSelectedObject write SetSelectedObject;
   published
     property OnBeforeSetupField: TtiOnBeforeSetupField read FOnBeforeSetupField write SetOnBeforeSetupField;
@@ -1297,6 +1300,7 @@ end;
 procedure TtiCustomListMediatorView.CreateSubMediators;
 var
   i: integer;
+  LItemMediator: TtiListItemMediator;
 begin
   CreateColumns;
   for i := 0 to Model.Count - 1 do
@@ -1305,7 +1309,10 @@ begin
       if i < MediatorList.Count then
         TtiListItemMediator(MediatorList[i]).Model := Model.Items[i]
       else
-        DoCreateItemMediator(Model.Items[i], i);
+      begin
+        LItemMediator := DoCreateItemMediator(Model.Items[i], i);
+        LItemMediator.ListMediator := Self;
+      end;
     end;
   for i := MediatorList.Count-1 downto Model.Count do
     DoDeleteItemMediator(I,TtiListItemMediator(MediatorList[i]));
@@ -1368,16 +1375,14 @@ end;
 procedure TtiCustomListMediatorView.Update(ASubject: TtiObject; AOperation: TNotifyOperation);
 var
   M: TtiListItemMediator;
-  I: Integer;
 begin
   // Do not call inherited, it will rebuild the list !!
   Case AOperation of
-    noAddItem    : DoCreateItemMediator(ASubject,Model.Count-1); // always at the end...
-    noDeleteItem : begin
-                     M := FindObjectMediator(ASubject,I);
-                     if M<>nil then
-                       DoDeleteItemMediator(I,M);
+    noAddItem    : begin
+                     M := DoCreateItemMediator(ASubject,Model.Count-1); // always at the end...
+                     M.ListMediator := Self;
                    end;
+    noDeleteItem : ItemDeleted(ASubject);
     noFree       : if (ASubject = FSubject) then
                      Subject := nil;
     noChanged    : if FListChanged or (Model.Count<>MediatorList.Count) or (Model.Count=0) then // Safety measure
@@ -1389,6 +1394,16 @@ end;
 procedure TtiCustomListMediatorView.HandleSelectionChanged;
 begin
   // do nothing. Descendants can complete this if needed.
+end;
+
+procedure TtiCustomListMediatorView.ItemDeleted(const ASubject: TtiObject);
+var
+  LItemMediator: TtiListItemMediator;
+  I: integer;
+begin
+  LItemMediator := FindObjectMediator(ASubject,I);
+  if Assigned(LItemMediator) then
+    DoDeleteItemMediator(I, LItemMediator);
 end;
 
 procedure TtiCustomListMediatorView.ParseDisplayNames(const AValue: string);

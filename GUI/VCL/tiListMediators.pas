@@ -30,7 +30,7 @@ type
     function GetSelectedObject: TtiObject; override;
     procedure SetSelectedObject(const AValue: TtiObject); override;
     procedure CreateColumns; override;
-    procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
+    function DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
     procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); override;
     procedure SetupGUIandObject; override;
     procedure ClearList; override;
@@ -57,7 +57,7 @@ type
     function GetSelectedObject: TtiObject; override;
     procedure SetSelectedObject(const AValue: TtiObject); override;
     procedure CreateColumns; override;
-    procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
+    function DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
     procedure SetupGUIandObject; override;
     procedure ClearList; override;
     procedure RebuildList; override;
@@ -77,7 +77,7 @@ type
   { Composite mediator for TStringGrid }
   TtiStringGridMediatorView = class(TtiCustomListMediatorView)
   protected
-    procedure DoCreateItemMediator(AData: TtiObject; ARowIdx: integer); override;
+    function DoCreateItemMediator(AData: TtiObject; ARowIdx: integer): TtiListItemMediator; override;
     procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); override;
     function GetSelectedObject: TtiObject; override;
     procedure SetSelectedObject(const AValue: TtiObject); override;
@@ -184,19 +184,19 @@ begin
   Result := GetObjectFromItem(View.Selected);
 end;
 
-procedure TtiListViewMediatorView.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer);
+function TtiListViewMediatorView.DoCreateItemMediator(AData: TtiObject;
+  ARowIdx: integer): TtiListItemMediator;
 var
   li: TListItem;
-  m: TtiListViewListItemMediator;
 begin
   DataAndPropertyValid(AData);
   { Create ListItem and Mediator }
   View.Items.BeginUpdate;
   try
     li:=View.Items.Add;
-    m := TtiListViewListItemMediator.CreateCustom(AData, li, OnBeforeSetupField, FieldsInfo, Active);
-    li.Data := M;
-    MediatorList.Add(m);
+    result := TtiListViewListItemMediator.CreateCustom(AData, li, OnBeforeSetupField, FieldsInfo, Active);
+    li.Data := result;
+    MediatorList.Add(result);
   finally
     View.Items.EndUpdate;
   end;
@@ -479,15 +479,18 @@ begin
   end;
 end;
 
-procedure TtiVTListViewMediatorView.DoCreateItemMediator(AData: TtiObject;
-  ARowIdx: integer);
+function TtiVTListViewMediatorView.DoCreateItemMediator(AData: TtiObject;
+  ARowIdx: integer): TtiListItemMediator;
 begin
   DataAndPropertyValid(AData);
 
   View.BeginUpdate;
   try
-    MediatorList.Add(TtiVTtiListViewListItemMediator.CreateCustom(
-        AData, View, FieldsInfo, Active));
+    result := TtiVTListViewListItemMediator.CreateCustom(AData, View,
+        FieldsInfo, Active);
+    MediatorList.Add(result);
+    if Active then
+      View.Refresh(View.SelectedData);
   finally
     View.EndUpdate;
   end;
@@ -644,11 +647,11 @@ begin
   result := TStringGrid(inherited View);
 end;
 
-procedure TtiStringGridMediatorView.DoCreateItemMediator(AData: TtiObject; ARowIdx: integer);
+function TtiStringGridMediatorView.DoCreateItemMediator(AData: TtiObject;
+  ARowIdx: integer): TtiListItemMediator;
 var
   i: integer;
   lFieldName: string;
-  lMediatorView: TtiStringGridRowMediator;
 begin
 // graeme
 //  View.BeginUpdate;
@@ -660,9 +663,9 @@ begin
       lFieldName := FieldsInfo[i].PropName;
       View.Cells[i, ARowIdx+1] := tiGetProperty(AData, lFieldName);  // set Cell text
     end;
-    lMediatorView := TtiStringGridRowMediator.CreateCustom(AData, View, FieldsInfo, ARowIdx+1, Active);
-    View.Objects[0, ARowIdx+1] := lMediatorView;   // set Object reference inside grid
-    MediatorList.Add(lMediatorView);
+    result := TtiStringGridRowMediator.CreateCustom(AData, View, FieldsInfo, ARowIdx+1, Active);
+    View.Objects[0, ARowIdx+1] := result;   // set Object reference inside grid
+    MediatorList.Add(result);
   finally
 // graeme
 //    View.EndUpdate;
