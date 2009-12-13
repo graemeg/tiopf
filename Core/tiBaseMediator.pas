@@ -20,14 +20,14 @@ uses
 type
   // forward declaration
   TtiMediatorView = class;
-  TtiCustomListMediatorView = Class;
+  TtiCustomListMediatorView = class;
 
   TtiObjectToGUIEvent = procedure(Sender: TtiMediatorView; Src: TtiObject; Dest: TComponent; var Handled: Boolean) of object;
   TtiGUIToObjectEvent = procedure(Sender: TtiMediatorView; Src: TComponent; Dest: TtiObject; var Handled: Boolean) of object;
   TtiMediatorEvent = procedure(AMediatorView: TtiMediatorView) of object;
   TtiComponentNotificationEvent = procedure(AComponent: TComponent; Operation: TOperation) of object;
 
-  TtiObjectUpdateMoment = (ouOnChange, ouOnExit, ouCustom);
+  TtiObjectUpdateMoment = (ouNone, ouOnChange, ouOnExit, ouCustom);
 
   TtiMediatorViewComponentHelper = class;
 
@@ -487,7 +487,7 @@ begin
         [FFieldName, FSubject.ClassName]);
   end;
 
-  //  EditControl.ReadOnly := ReadOnly or IsPropReadOnly;
+  //  View.ReadOnly := ReadOnly or IsPropReadOnly;
 end;
 
 procedure TtiMediatorView.DoOnChange(Sender: TObject);
@@ -502,7 +502,7 @@ begin
   Errors := TtiObjectErrors.Create;
   try
     Subject.IsValid(Errors);
-    UpdateGUIValidStatus(Errors); // always execute this as it also resets EditControl
+    UpdateGUIValidStatus(Errors); // always execute this as it also resets View
   finally
     Errors.Free;
   end;
@@ -982,6 +982,7 @@ end;
 const
   AlignChars: array[TAlignMent] of char     = ('l', 'r', 'c');
   OrigAlignChars: array[TAlignMent] of char = ('<', '>', '|');
+  CMediatorFieldSeparator = '|';
 
 { TtiMediatorFieldInfo }
 
