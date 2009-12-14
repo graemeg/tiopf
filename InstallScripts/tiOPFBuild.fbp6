@@ -1871,24 +1871,9 @@ SVN revision:
 
 Summary:
   Build errors - %fbignorederrors%
-  Delphi 7 - %report_long_d7%
-  Delphi 2006 - %report_long_d2006%
-  Delphi 2007 - %report_long_d2007%
   Delphi 2010 - %report_long_d2010%
 
 Details:
-
-Delphi 7
-%report_unit_tests_d7%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-Delphi 2006
-%report_unit_tests_d2006%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-Delphi 2007
-%report_unit_tests_d2007%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 Delphi 2010
 %report_unit_tests_d2010%
@@ -1917,24 +1902,9 @@ SVN revision:
 
 Summary:
   Build errors - %fbignorederrors%
-  Delphi 7 - %report_long_d7%
-  Delphi 2006 - %report_long_d2006%
-  Delphi 2007 - %report_long_d2007%
   Delphi 2010 - %report_long_d2010%
 
 Details:
-
-Delphi 7
-%report_unit_tests_d7%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-Delphi 2006
-%report_unit_tests_d2006%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-
-Delphi 2007
-%report_unit_tests_d2007%
-* * * * * * * * * * * * *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 Delphi 2010
 %report_unit_tests_d2010%
@@ -2025,7 +1995,7 @@ Delphi 2010
               </Object>
               <Object Class="TFBAddressList" XMLID="{9D12846E-FB8C-406C-B220-6D6D40AAA7EA}">
                 <Property MultiValue="0" name="ListType" type="string">recipients</Property>
-                <Object Class="TFBEmailAddress" XMLID="{00B60618-3704-4F24-A47A-2404E655A199}">
+                <Object Class="TFBEmailAddress" XMLID="{0D82BB0B-000B-4E12-89EE-C7112E274F54}">
                   <Property MultiValue="0" name="Address" type="WideString">peter_hinrichsen@techinsite.com.au</Property>
                   <Property MultiValue="0" name="AddressType" type="WideString"></Property>
                   <Property name="Enabled" type="Boolean">True</Property>
@@ -8846,7 +8816,7 @@ Comments=
       <Object Class="TFBVariable" XMLID="{455D163B-648D-46A5-ADF0-B10E5A791C47}">
         <Property MultiValue="0" name="Comment" type="string"></Property>
         <Property MultiValue="1" name="DefaultValue" type="string">
-          <![CDATA[Win32 (tiOPF3) Build #%version_build%: %report_fb_error_message%D7: %report_short_d7%, D2006: %report_short_d2006%, D2007: %report_short_d2007%]]>
+          <![CDATA[Win32 (tiOPF3) Build #%version_build%: %report_fb_error_message%D2010: %report_short_d2010%]]>
         </Property>
         <Property MultiValue="0" name="GroupName" type="string"></Property>
         <Property name="IsMacro" type="Boolean">True</Property>
