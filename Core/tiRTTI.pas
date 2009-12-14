@@ -29,10 +29,8 @@ const
   // All string type properties
   ctkString = [tkChar, tkString, tkWChar, tkLString, tkWString
               {$IFDEF FPC},tkAString
-// Delphi does not appear to support COMPILER_CONSTANT>=999
-//                {$IF FPC_FULLVERSION>=20301},tkUString, tkUChar{$ENDIF}
-                ,tkUString, tkUChar
-              {$ENDIF FPC}
+                {$IF Defined(FPC) and (FPC_FULLVERSION >= 20301) },tkUString, tkUChar{$IFEND}
+              {$ENDIF}
               {$IFDEF UNICODE},tkUString{$ENDIF}];
   // Integer type properties
   ctkInt    = [tkInteger, tkInt64 {$IFDEF FPC},tkBool{$ENDIF}];
