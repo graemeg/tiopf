@@ -644,7 +644,9 @@ begin
   if View.ItemIndex < 0 then
     Exit; //==>
 
-  lValue := TtiObject(ValueList.Items[View.ItemIndex]);
+  // Can't use ValueList.Items[] when View has sorted = true, then the indices
+  // for ValueList and View.List are different for the same object
+  lValue := TtiObject(View.Items.Objects[View.ItemIndex]);
 
   lPropType := typinfo.PropType(Subject, FieldName);
   if lPropType = tkClass then
@@ -676,12 +678,13 @@ begin
   else
     RaiseMediatorError(cErrorPropertyNotClass);
 
-  for i := 0 to ValueList.Count - 1 do
-    if ValueList.Items[i] = lValue then
-    begin
-      View.ItemIndex := i;
-      Break; //==>
-    end;
+  // Can't use ValueList.Items[] when View has sorted = true, then the indices
+  // for ValueList and View.List are different for the same object
+  i := View.Items.count;
+  repeat
+     dec (i)
+  until (i < 0) or (View.Items.Objects[i] = lValue);
+  View.ItemIndex := i;
 
   SetOnChangeActive(true);
 end;
