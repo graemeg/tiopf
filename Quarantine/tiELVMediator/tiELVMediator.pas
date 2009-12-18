@@ -22,7 +22,7 @@ Type
     Function GetSelectedObject : TtiObject; Override;
     Procedure SetSelectedObject(Const AValue : TtiObject); Override;
     Procedure CreateColumns; Override;
-    Procedure DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer); Override;
+    Function DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer) : TtiListItemMediator; Override;
     Procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); Override;
     Procedure SetupGUIandObject; Override;
     Procedure ClearList; Override;
@@ -151,7 +151,7 @@ Begin
   Inherited;
 End;
 
-Procedure TtiEasyListViewMediatorView.DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer);
+Function TtiEasyListViewMediatorView.DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer) : TtiListItemMediator;
 Var
   lItem : TEasyItem;
   M : TtiEasyItemMediator;
@@ -163,6 +163,7 @@ Begin
     M := TtiEasyItemMediator.CreateCustom(AData, lItem, OnBeforeSetupField, FieldsInfo, Active);
     lItem.Data := M;
     MediatorList.Add(M);
+    Result := M;
   Finally
     View.EndUpdate;
   End;
