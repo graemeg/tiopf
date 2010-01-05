@@ -28,7 +28,7 @@ type
     FData: TtiObject;
     FEditedData: TtiObject;
 
-    FFormPopupButton: TtiSpeedButton;
+    FTriggeredByRect: TRect;
     FFormDisplayPosition: TPopupDisplayPosition;
 
     FAL        : TActionList;
@@ -51,7 +51,7 @@ type
     destructor Destroy; override;
     property Data : TtiObject read FData write SetData;
 
-    property FormPopupButton: TtiSpeedButton read FFormPopupButton write FFormPopupButton;
+    property TriggeredByRect: TRect read FTriggeredByRect write FTriggeredByRect;
     property FormDisplayPosition: TPopupDisplayPosition read FFormDisplayPosition write FFormDisplayPosition;
     property DoOnPopupOK: TNotifyEvent read FDoOnPopupOK write FDoOnPopupOK;
     property DoOnPopupCancel: TNotifyEvent read FDoOnPopupCancel write FDoOnPopupCancel;
@@ -62,7 +62,14 @@ type
         const AFormPopupButton: TtiSpeedButton;
         const AFormDisplayPosition: TPopupDisplayPosition;
         const ADoOnPopupOK: TNotifyEvent; const ADoOnPopupCancel: TNotifyEvent;
-        const ADeactivatePopupResult: TModalResult): TFormTIPopupData; virtual;
+        const ADeactivatePopupResult: TModalResult): TFormTIPopupData; overload; virtual;
+
+    class function Execute(const AOwner: TWinControl;
+        const AData : TtiObject;
+        const ATriggeredByRect: TRect;
+        const AFormDisplayPosition: TPopupDisplayPosition;
+        const ADoOnPopupOK: TNotifyEvent; const ADoOnPopupCancel: TNotifyEvent;
+        const ADeactivatePopupResult: TModalResult): TFormTIPopupData; overload; virtual;
   end;
 
 implementation
@@ -115,18 +122,22 @@ class function TFormTIPopupData.Execute(const AOwner: TWinControl;
   const AFormDisplayPosition: TPopupDisplayPosition;
   const ADoOnPopupOK: TNotifyEvent; const ADoOnPopupCancel: TNotifyEvent;
   const ADeactivatePopupResult: TModalResult): TFormTIPopupData;
+var
+  LTopLeft: TPoint;
+  LBottomRight: TPoint;
+  LRect: TRect;
 begin
-  Result := Create(AOwner);
-  Result.Data := AData;
-
-  Result.DoOnPopupOK := ADoOnPopupOK;
-  Result.DoOnPopupCancel := ADoOnPopupCancel;
-  Result.DeactivatePopupResult := ADeactivatePopupResult;
-
-  Result.FormPopupButton := AFormPopupButton;
-  Result.FormDisplayPosition := AFormDisplayPosition;
-  Result.SetFormPosition;
-  Result.Show;
+  LTopLeft:= AFormPopupButton.Parent.ClientToScreen(AFormPopupButton.BoundsRect.TopLeft);
+  LBottomRight:= AFormPopupButton.Parent.ClientToScreen(AFormPopupButton.BoundsRect.BottomRight);
+  LRect:= Rect(LTopLeft, LBottomRight);
+  Execute(
+    AOwner,
+    AData,
+    LRect,
+    AFormDisplayPosition,
+    ADoOnPopupOK,
+    ADoOnPopupCancel,
+    ADeactivatePopupResult);
 end;
 
 procedure TFormTIPopupData.FormCreate(Sender: TObject);
@@ -196,6 +207,23 @@ begin
   Result := FEditedData;
 end;
 
+class function TFormTIPopupData.Execute(const AOwner: TWinControl;
+  const AData: TtiObject; const ATriggeredByRect: TRect;
+  const AFormDisplayPosition: TPopupDisplayPosition; const ADoOnPopupOK,
+  ADoOnPopupCancel: TNotifyEvent;
+  const ADeactivatePopupResult: TModalResult): TFormTIPopupData;
+begin
+  Result := Create(AOwner);
+  Result.Data := AData;
+  Result.DoOnPopupOK := ADoOnPopupOK;
+  Result.DoOnPopupCancel := ADoOnPopupCancel;
+  Result.DeactivatePopupResult := ADeactivatePopupResult;
+  Result.TriggeredByRect:= ATriggeredByRect;
+  Result.FormDisplayPosition := AFormDisplayPosition;
+  Result.SetFormPosition;
+  Result.Show;
+end;
+
 procedure TFormTIPopupData.SetData(const AValue: TtiObject);
 begin
   FData := AValue;
@@ -205,26 +233,12 @@ begin
 end;
 
 procedure TFormTIPopupData.SetFormPosition;
-var
-  LBtnClientPos: TPoint;
-  LBtnScreenPos: TPoint;
 begin
-  Assert(FFormPopupButton <> nil, 'Cannot set popup form position if FormPopupButton is nil');
-
-  LBtnClientPos.X := FFormPopupButton.BoundsRect.Left;
+  Left := TriggeredByRect.Left;
   case FFormDisplayPosition of
-    pdpAbove: LBtnClientPos.Y := FFormPopupButton.BoundsRect.Top;
-    pdpBelow: LBtnClientPos.Y := FFormPopupButton.BoundsRect.Bottom;
+    pdpAbove: Top := TriggeredByRect.Top;
+    pdpBelow: Top := TriggeredByRect.Bottom;
   end;
-
-  LBtnScreenPos := FFormPopupButton.Parent.ClientToScreen(LBtnClientPos);
-
-  Left := LBtnScreenPos.X;
-  case FFormDisplayPosition of
-    pdpAbove: Top := LBtnScreenPos.Y - Height;
-    pdpBelow: Top := LBtnScreenPos.Y;
-  end;
-
 end;
 
 end.

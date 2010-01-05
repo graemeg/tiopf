@@ -39,6 +39,9 @@ object FormTIPopupData: TFormTIPopupData
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 0
+      DesignSize = (
+        400
+        30)
       object btnOK: TtiSpeedButton
         Left = 237
         Top = 4
