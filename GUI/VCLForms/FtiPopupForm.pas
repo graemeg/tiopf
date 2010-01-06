@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Buttons, tiSpeedButton, ExtCtrls, tiRoundedPanel, tiObject, ActnList;
+  Dialogs, Buttons, tiSpeedButton, ExtCtrls, tiRoundedPanel, tiObject, ActnList,
+  tiDataFormData;
 
 type
 
@@ -25,8 +26,7 @@ type
     procedure FormHide(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
-    FData: TtiObject;
-    FEditedData: TtiObject;
+    FFormData: TtiDataFormData;
 
     FTriggeredByRect: TRect;
     FFormDisplayPosition: TPopupDisplayPosition;
@@ -42,15 +42,18 @@ type
     function  FormDataIsEdited : boolean;
     procedure SetFormPosition;
   protected
+    function  CreateFormData: TtiDataFormData; virtual; abstract;
     procedure DoaCancelExecute(Sender: TObject); virtual;
     procedure DoaOKExecute(Sender: TObject); virtual;
-    procedure SetData(const AValue: TtiObject); virtual;
-    function  EditedData: TtiObject;
     function  FormIsValid : boolean; virtual;
+    function  GetData: TtiObject;
+    procedure SetData(const AValue: TtiObject); 
+    property  FormData: TtiDataFormData read FFormData;
+    procedure DoSetControlDataBindings; virtual;
   public
     destructor Destroy; override;
-    property Data : TtiObject read FData write SetData;
 
+    property Data: TtiObject read GetData write SetData;
     property TriggeredByRect: TRect read FTriggeredByRect write FTriggeredByRect;
     property FormDisplayPosition: TPopupDisplayPosition read FFormDisplayPosition write FFormDisplayPosition;
     property DoOnPopupOK: TNotifyEvent read FDoOnPopupOK write FDoOnPopupOK;
@@ -82,7 +85,7 @@ uses
 
 destructor TFormTIPopupData.Destroy;
 begin
-  FreeAndNil(FEditedData);
+  FFormData.Free;
   inherited;
 end;
 
@@ -104,16 +107,19 @@ end;
 
 procedure TFormTIPopupData.DoaOKExecute(Sender: TObject);
 begin
-  Assert(Data.TestValid(TtiObject), CTIErrorInvalidObject);
-  Assert(EditedData.TestValid(TtiObject), CTIErrorInvalidObject);
-  Data.Assign(EditedData);
-  Data.Dirty := true;
+  Assert(FormData.TestValid(TtiObject), CTIErrorInvalidObject);
+  FormData.PrepareSave;
 
   if Assigned(FDoOnPopupOK) then
     FDoOnPopupOK(Sender);
 
   ModalResult := mrOK;
   Close;
+end;
+
+procedure TFormTIPopupData.DoSetControlDataBindings;
+begin
+  // Implement in the concrete
 end;
 
 class function TFormTIPopupData.Execute(const AOwner: TWinControl;
@@ -130,18 +136,21 @@ begin
   LTopLeft:= AFormPopupButton.Parent.ClientToScreen(AFormPopupButton.BoundsRect.TopLeft);
   LBottomRight:= AFormPopupButton.Parent.ClientToScreen(AFormPopupButton.BoundsRect.BottomRight);
   LRect:= Rect(LTopLeft, LBottomRight);
-  Execute(
-    AOwner,
-    AData,
-    LRect,
-    AFormDisplayPosition,
-    ADoOnPopupOK,
-    ADoOnPopupCancel,
-    ADeactivatePopupResult);
+  result:=
+    Execute(
+      AOwner,
+      AData,
+      LRect,
+      AFormDisplayPosition,
+      ADoOnPopupOK,
+      ADoOnPopupCancel,
+      ADeactivatePopupResult);
 end;
 
 procedure TFormTIPopupData.FormCreate(Sender: TObject);
 begin
+  FFormData := CreateFormData;
+
   FAL := TActionList.Create(Self);
   FAL.OnUpdate := DoALUpdate;
 
@@ -160,9 +169,8 @@ end;
 
 function TFormTIPopupData.FormDataIsEdited: boolean;
 begin
-  Assert(Data.TestValid(TtiObject), CTIErrorInvalidObject);
-  Assert(EditedData.TestValid(TtiObject), CTIErrorInvalidObject);
-  Result := not Data.Equals(EditedData);
+  Assert(FormData.TestValid(TtiObject), CTIErrorInvalidObject);
+  Result:= FormData.IsDirty;
 end;
 
 procedure TFormTIPopupData.FormDeactivate(Sender: TObject);
@@ -185,8 +193,8 @@ end;
 
 function TFormTIPopupData.FormIsValid: boolean;
 begin
-  Assert(EditedData.TestValid(TtiObject), CTIErrorInvalidObject);
-  Result := true;
+  Assert(FormData.TestValid(TtiObject), CTIErrorInvalidObject);
+  Result := FormData.IsValid;
 end;
 
 procedure TFormTIPopupData.FormKeyDown(Sender: TObject; var Key: Word;
@@ -201,10 +209,9 @@ begin
   GAMS.FormMgr.ActiveForm.SetEscapeKeyEnabled(False);
 end;
 
-function TFormTIPopupData.EditedData: TtiObject;
+function TFormTIPopupData.GetData: TtiObject;
 begin
-  Assert(FEditedData.TestValid(TtiObject), CTIErrorInvalidObject);
-  Result := FEditedData;
+  result:= FFormData.Data;
 end;
 
 class function TFormTIPopupData.Execute(const AOwner: TWinControl;
@@ -226,10 +233,8 @@ end;
 
 procedure TFormTIPopupData.SetData(const AValue: TtiObject);
 begin
-  FData := AValue;
-  FEditedData := FData.Clone;
-  Assert(FData.TestValid(TtiObject), CTIErrorInvalidObject);
-  Assert(FEditedData.TestValid(TtiObject), CTIErrorInvalidObject);
+  FFormData.Data:= AValue;
+  DoSetControlDataBindings;
 end;
 
 procedure TFormTIPopupData.SetFormPosition;
