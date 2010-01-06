@@ -12,20 +12,9 @@ Uses Classes, MPCommonObjects, EasyListview, tiObject, Contnrs, tiBaseMediator;
 
 Type
   { Composite mediator for TEasyListView }
-  //TODO: View control moved to base TtiMediatorView. Change class as follows:
-  // - Delete FView private field.
-  // - Change property View to the following function, cast result as TEasyListView:
-  //   function  View: TEasyListView; reintroduce;
-  //     result := TEasyListView(inherited View);
-  // - Remove SetView, SetGUIControl and GetGUIControl methods.
-  // - Replace GUIControl := AView, with SetView(AView). [base class]
-  // - Replace FView in TtiEasyListViewMediatorView methods with View
-  //   (use <> nil instead of Assigned where applicable).
   TtiEasyListViewMediatorView = Class(TtiCustomListMediatorView)
   Private
     FObserversInTransit : TList;
-    FView : TEasyListView;
-    Procedure SetView(Const AValue : TEasyListView);
     Function ItemCompare(Sender : TCustomEasyListview;
       Column : TEasyColumn; Group : TEasyGroup; Item1, Item2 : TEasyItem;
       Var DoDefault : Boolean) : Integer;
@@ -33,10 +22,8 @@ Type
     Function GetSelectedObject : TtiObject; Override;
     Procedure SetSelectedObject(Const AValue : TtiObject); Override;
     Procedure CreateColumns; Override;
-    Procedure DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer); Override;
+    Function DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer) : TtiListItemMediator; Override;
     Procedure DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator); Override;
-    Function GetGUIControl : TComponent; Override;
-    Procedure SetGUIControl(Const AValue : TComponent); Override;
     Procedure SetupGUIandObject; Override;
     Procedure ClearList; Override;
     Procedure RebuildList; Override;
@@ -53,7 +40,7 @@ Type
     Destructor Destroy; Override;
     Procedure HandleSelectionChanged; Override;
   Published
-    Property View : TEasyListView Read FView Write SetView;
+    function View : TEasyListview; reintroduce;
   End;
 
   TtiEasyItemMediator = Class(TtiListItemMediator)
@@ -93,7 +80,7 @@ End;
 Procedure TtiEasyListViewMediatorView.ClearList;
 Begin
   MediatorList.Clear;
-  If Assigned(View) Then
+  If View <> Nil Then
     View.Items.Clear;
 End;
 
@@ -143,7 +130,7 @@ Begin
   OnBeforeSetupField := AOnBeforeSetupField;
   DisplayNames := ADisplayNames; // Will call ParseDisplaynames.
   Subject := AModel;
-  GUIControl := AView; // Will call SetupGUIandObject;
+  SetView(AView); // Will call SetupGUIandObject;
   CreateSubMediators;
   Active := AIsObserving; // Will attach/Detach
 End;
@@ -160,37 +147,38 @@ End;
 Destructor TtiEasyListViewMediatorView.Destroy;
 Begin
   IsObserving := False;
-  FView := Nil;
+ // FView := Nil;
   Inherited;
 End;
 
-Procedure TtiEasyListViewMediatorView.DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer);
+Function TtiEasyListViewMediatorView.DoCreateItemMediator(AData : TtiObject; ARowIdx : Integer) : TtiListItemMediator;
 Var
   lItem : TEasyItem;
   M : TtiEasyItemMediator;
 Begin
   DataAndPropertyValid(AData);
-  FView.BeginUpdate;
+  View.BeginUpdate;
   Try
-    lItem := FView.Items.Add;
+    lItem := View.Items.Add;
     M := TtiEasyItemMediator.CreateCustom(AData, lItem, OnBeforeSetupField, FieldsInfo, Active);
     lItem.Data := M;
     MediatorList.Add(M);
+    Result := M;
   Finally
-    FView.EndUpdate;
+    View.EndUpdate;
   End;
 End;
 
 Procedure TtiEasyListViewMediatorView.DoDeleteItemMediator(AIndex : Integer; AMediator : TtiListItemMediator);
 Begin
-  FView.Items.Delete(TtiEasyItemMediator(AMediator).FView.Index);
+  View.Items.Delete(TtiEasyItemMediator(AMediator).View.Index);
   Inherited DoDeleteItemMediator(AIndex, AMediator);
 End;
 
-Function TtiEasyListViewMediatorView.GetGUIControl : TComponent;
+{Function TtiEasyListViewMediatorView.GetGUIControl : TComponent;
 Begin
   Result := FView;
-End;
+End;}
 
 Function TtiEasyListViewMediatorView.GetObjectFromItem(AItem : TEasyItem) : TtiObject;
 Begin
@@ -202,10 +190,10 @@ End;
 
 Function TtiEasyListViewMediatorView.GetSelectedObject : TtiObject;
 Begin
-  If (FView.Selection.Count = 0) Then
+  If (View.Selection.Count = 0) Then
     Result := Nil
   Else
-    Result := GetObjectFromItem(FView.Selection.First);
+    Result := GetObjectFromItem(View.Selection.First);
 End;
 
 Procedure TtiEasyListViewMediatorView.HandleSelectionChanged;
@@ -286,12 +274,15 @@ End;
 
 Procedure TtiEasyListViewMediatorView.RebuildList;
 Begin
-  View.BeginUpdate;
-  Try
-    CreateColumns;
-    CreateSubMediators;
-  Finally
-    View.EndUpdate;
+  If (View <> Nil) Then
+  Begin
+    View.BeginUpdate;
+    Try
+      CreateColumns;
+      CreateSubMediators;
+    Finally
+      View.EndUpdate;
+    End;
   End;
 End;
 
@@ -302,21 +293,21 @@ Begin
   Inherited SetActive(AValue);
 End;
 
-Procedure TtiEasyListViewMediatorView.SetGUIControl(Const AValue : TComponent);
+{Procedure TtiEasyListViewMediatorView.SetGUIControl(Const AValue : TComponent);
 Begin
   FView := AValue As TEasyListview;
   Inherited SetGUIControl(AValue);
-End;
+End;}
 
 Procedure TtiEasyListViewMediatorView.SetSelectedObject(Const AValue : TtiObject);
 Var
   I : Integer;
 Begin
-  For I := 0 To Pred(FView.Items.Count) Do
+  For I := 0 To Pred(View.Items.Count) Do
   Begin
-    If TtiObject(FView.Items[I].Data) = AValue Then
+    If TtiObject(View.Items[I].Data) = AValue Then
     Begin
-      FView.Items[I].Selected := True;
+      View.Items[I].Selected := True;
       Exit; //==>
     End;
   End; { Loop }
@@ -324,23 +315,22 @@ End;
 
 Procedure TtiEasyListViewMediatorView.SetupGUIandObject;
 Begin
-  FView.Header.Columns.Clear;
-  FView.Items.Clear;
-  FView.View := elsReport;
-  FView.Header.Visible := True;
-  FView.Header.Draggable := True;
-  FView.DragManager.Enabled := True;
-  FView.Selection.FullRowSelect := True;
-  FView.Selection.FullItemPaint := True;
-  FView.Sort.AutoSort := True;
-  FView.OnItemCompare := ItemCompare;
+  View.Header.Columns.Clear;
+  View.Items.Clear;
+  View.View := elsReport;
+  View.Header.Visible := True;
+  View.Header.Draggable := True;
+  View.DragManager.Enabled := True;
+  View.Selection.FullRowSelect := True;
+  View.Selection.FullItemPaint := True;
+  View.Sort.AutoSort := True;
+  View.OnItemCompare := ItemCompare;
 End;
 
-Procedure TtiEasyListViewMediatorView.SetView(Const AValue : TEasyListView);
-Begin
-  FView := AValue;
-  SetGUIControl(AValue);
-End;
+function TtiEasyListViewMediatorView.View: TEasyListview;
+begin
+  Result := TEasyListview(Inherited View);
+end;
 
 { TtiEasyItemMediator }
 

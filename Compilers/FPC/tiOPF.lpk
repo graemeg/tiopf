@@ -40,6 +40,7 @@
 -dLINK_XMLLIGHT
 -dLINK_ZEOS_FB15x
 -dUseCThreads
+-Xd
 "/>
         <CompilerPath Value="$(CompPath)"/>
       </Other>
@@ -49,7 +50,7 @@
     <License Value="Mozilla Public License 1.1 or Modified LGPL
 "/>
     <Version Major="2" Release="4"/>
-    <Files Count="56">
+    <Files Count="57">
       <Item1>
         <Filename Value="../../Core/tiBaseObject.pas"/>
         <UnitName Value="tiBaseObject"/>
@@ -274,14 +275,11 @@
         <Filename Value="../../Options/tiOIDInt64.pas"/>
         <UnitName Value="tiOIDInt64"/>
       </Item56>
+      <Item57>
+        <Filename Value="../../Options/tiLogToDebugSvr.pas"/>
+      </Item57>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
-    <RequiredPkgs Count="1">
-      <Item1>
-        <PackageName Value="FCL"/>
-        <MinVersion Major="1" Valid="True"/>
-      </Item1>
-    </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)/"/>
     </UsageOptions>

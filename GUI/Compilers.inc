@@ -94,13 +94,13 @@
 
 {$ifdef Win32}
 
-  {$ifdef VER200}
-    {$define COMPILER_12}
+  {$ifdef VER210}
+    {$define COMPILER_14}
     {$define DELPHI}
-    {$define DELPHI_12}
+    {$define DELPHI_14}
   {$endif VER200}
 
-  {$ifdef VER200}
+  {$ifdef VER210}
     {$define COMPILER_12}
     {$define DELPHI}
     {$define DELPHI_12}
@@ -177,7 +177,7 @@
   {$endif}
 
   {$ifdef VER93}
-    {$define COMPILER_2} // C++ Builder v1 compiler is really v2 
+    {$define COMPILER_2} // C++ Builder v1 compiler is really v2
     {$define CPPB}
     {$define CPPB_1}
   {$endif}
@@ -279,7 +279,7 @@
     {$define DELPHI_12_UP}
   {$endif}
 
-  {$ifdef DELPHI_12}
+  {$ifdef DELPHI_14}
     {$define DELPHI_2_UP}
     {$define DELPHI_3_UP}
     {$define DELPHI_4_UP}
@@ -467,7 +467,7 @@
   {$define COMPILER_12_UP}
 {$endif}
 
-{$ifdef COMPILER_12}
+{$ifdef COMPILER_14}
   {$define COMPILER_1_UP}
   {$define COMPILER_2_UP}
   {$define COMPILER_3_UP}

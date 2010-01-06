@@ -71,23 +71,21 @@
       </Item7>
       <Item8>
         <Filename Value="../../GUI/tiTreeBuildVisitor.pas"/>
+        <UnitName Value="tiTreeBuildVisitor"/>
       </Item8>
       <Item9>
         <Filename Value="../../GUI/tiGenericTreeViewMediator.pas"/>
+        <UnitName Value="tiGenericTreeViewMediator"/>
       </Item9>
     </Files>
     <LazDoc Paths="../../../Docs/xml/core/;../../../Docs/xml/options/;../../../Docs/xml/gui/"/>
-    <RequiredPkgs Count="3">
+    <RequiredPkgs Count="2">
       <Item1>
         <PackageName Value="LCL"/>
       </Item1>
       <Item2>
         <PackageName Value="tiOPF"/>
       </Item2>
-      <Item3>
-        <PackageName Value="FCL"/>
-        <MinVersion Major="1" Valid="True"/>
-      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)/"/>

@@ -101,7 +101,6 @@ const
 implementation
 
 uses
-  tiBaseObject,
   tiQuery,
   tiConstants,
   tiOPFManager,

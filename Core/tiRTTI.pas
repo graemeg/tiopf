@@ -29,8 +29,8 @@ const
   // All string type properties
   ctkString = [tkChar, tkString, tkWChar, tkLString, tkWString
               {$IFDEF FPC},tkAString
-                {$IFDEF FPC_FULLVERSION>=20301},tkUString, tkUChar{$ENDIF}
-              {$ENDIF FPC}
+                {$IF Defined(FPC) and (FPC_FULLVERSION >= 20301) },tkUString, tkUChar{$IFEND}
+              {$ENDIF}
               {$IFDEF UNICODE},tkUString{$ENDIF}];
   // Integer type properties
   ctkInt    = [tkInteger, tkInt64 {$IFDEF FPC},tkBool{$ENDIF}];
@@ -459,10 +459,11 @@ begin
   {$ENDIF}
   {$IFDEF FPC}
   tkAString,
-    {$IFDEF FPC_FULLVERSION>=20301}  // > FPC 2.3.1 only
+// Delphi does not appear to support COMPILER_CONSTANT>=999
+//    {$IF FPC_FULLVERSION>=20301}  // > FPC 2.3.1 only
     tkUString,
     tkUChar,
-    {$ENDIF}
+//    {$ENDIF}
   {$ENDIF}
   tkWString    : result := tiTKString;
 

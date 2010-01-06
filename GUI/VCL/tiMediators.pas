@@ -225,19 +225,26 @@ const
 
 procedure RegisterFallBackMediators;
 begin
+{$IFDEF UNICODE}
+  gMediatorManager.RegisterMediator(TtiEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat, tkUString]);
+  gMediatorManager.RegisterMediator(TtiComboBoxMediatorView, TtiObject, [tkString,tkLString, tkUString]);
+  gMediatorManager.RegisterMediator(TtiMemoMediatorView, TtiObject, [tkString,tkLString, tkUString]);
+  gMediatorManager.RegisterMediator(TtiLabeledEditMediatorView, TtiObject, [tkString,tkLString,tkUString, tkInteger,tkFloat]);
+{$ELSE}
   gMediatorManager.RegisterMediator(TtiEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
-  gMediatorManager.RegisterMediator(TtiCheckBoxMediatorView, TtiObject, [tkInteger, tkEnumeration]); // ???  Delphi doesn't have a tkBool like FPC ???
   gMediatorManager.RegisterMediator(TtiComboBoxMediatorView, TtiObject, [tkString,tkLString]);
+  gMediatorManager.RegisterMediator(TtiMemoMediatorView, TtiObject, [tkString,tkLString]);
+  {$IFDEF DELPHI2006ORABOVE}
+    gMediatorManager.RegisterMediator(TtiLabeledEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
+  {$ENDIF}
+{$ENDIF}
+  gMediatorManager.RegisterMediator(TtiCheckBoxMediatorView, TtiObject, [tkInteger, tkEnumeration]); // ???  Delphi doesn't have a tkBool like FPC ???
   gMediatorManager.RegisterMediator(TtiComboBoxItemMediatorView, TtiObject, [tkInteger, tkEnumeration]);
   gMediatorManager.RegisterMediator(TtiDynamicComboBoxMediatorView, TtiObject, [tkClass]);
   gMediatorManager.RegisterMediator(TtiStaticTextMediatorView, TtiObject);
   gMediatorManager.RegisterMediator(TtiTrackBarMediatorView, TtiObject, [tkInteger]);
-  gMediatorManager.RegisterMediator(TtiMemoMediatorView, TtiObject, [tkString,tkLString]);
   gMediatorManager.RegisterMediator(TtiSpinEditMediatorView, TtiObject, [tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TtiCalendarComboMediatorView, TtiObject, [tkFloat]);
-{$IFDEF DELPHI2006ORABOVE}
-  gMediatorManager.RegisterMediator(TtiLabeledEditMediatorView, TtiObject, [tkString,tkLString,tkInteger,tkFloat]);
-{$ENDIF}
 end;
 
 { TtiControlMediatorView }
