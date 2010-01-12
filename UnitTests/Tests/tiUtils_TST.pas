@@ -2117,10 +2117,18 @@ type
 
 procedure TTestTIUtils.tiHasRTTIOnClass;
 begin
+{$IFDEF DELPHI2010ORABOVE}
+  Check(tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> true');
+{$ELSE}
   Check(not tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> false');
+{$ENDIF}
   Check(tiHasRTTI(TPersistent), 'tiHasRTTI(TPersistent) <> true');
   Check(tiHasRTTI(TCheckRTTI_1), 'tiHasRTTI(TCheckRTTI_1) <> true');
+{$IFDEF DELPHI2010ORABOVE}
+  Check(tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> true');
+{$ELSE}
   Check(not tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> false');
+{$ENDIF}
 end;
 
 
@@ -2129,7 +2137,11 @@ var
   lObj : TObject;
 begin
   lObj := TObject.Create;
+{$IFDEF DELPHI2010ORABOVE}
+  Check(tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> true');
+{$ELSE}
   Check(not tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> false');
+{$ENDIF}
   lObj.Free;
 
   lObj := TPersistent.Create;
@@ -2141,7 +2153,11 @@ begin
   lObj.Free;
 
   lObj := TCheckRTTI_2.Create;
+{$IFDEF DELPHI2010ORABOVE}
+  Check(tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> true');
+{$ELSE}
   Check(not tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> false');
+{$ENDIF}
   lObj.Free;
 end;
 
@@ -3585,6 +3601,10 @@ const
 
   CTempReadOnlyFileNameAAA = 'ReadOnly.AAA';
   CTempLockedFileNameAAA = 'Locked.AAA';
+
+  CDeleteEmptyDirectories = true;
+  CDontDeleteEmptyDirectories = false;
+
 var
   LDirectory: string;
   LSubDir1: string;
@@ -3627,7 +3647,7 @@ var
     tiUtils.tiSetFileDate(ADirectory + CTempFileNameBBB3, IncDay(LFileCutoffDate, +1));
   end;
 begin
-//  tiDeleteOldFiles(LDirectory, LWildCard, LDaysOld, LRecurseDirectories);
+//  tiDeleteOldFiles(LDirectory, LWildCard, LDaysOld, LRecurseDirectories, CDontDeleteEmptyDirectories);
 
   LDirectory := tiUtils.tiAddTrailingSlash(tiUtils.tiAddTrailingSlash(tiUtils.tiGetTempDir) + CTestDirectory);
   _CreateTempFiles(LDirectory);
@@ -3635,7 +3655,7 @@ begin
   //Check that out of date files matching wildcard are deleted.
   LWildCard  := '*.AAA';
   LRecurseDirectories := false;
-  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories);
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories, CDontDeleteEmptyDirectories);
 
   CheckEquals(false, FileExists(LDirectory + CTempFileNameAAA1));
   CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB1));
@@ -3654,7 +3674,7 @@ begin
 
   LWildCard  := '*.BBB';
   LRecurseDirectories := true;
-  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories);
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories, CDontDeleteEmptyDirectories);
 
   CheckEquals(true, FileExists(LDirectory + CTempFileNameAAA1));
   CheckEquals(false, FileExists(LDirectory + CTempFileNameBBB1));
@@ -3685,7 +3705,7 @@ begin
 
   LWildCard  := '*.AAA';
   LRecurseDirectories := false;
-  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories);
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories, CDontDeleteEmptyDirectories);
 
   CheckEquals(true, FileExists(LDirectory + CTempReadOnlyFileNameAAA));
   CheckEquals(false, FileExists(LDirectory + CTempFileNameAAA1));
@@ -3708,7 +3728,7 @@ begin
 
   LWildCard  := '*.AAA';
   LRecurseDirectories := false;
-  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories);
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld, LRecurseDirectories, CDontDeleteEmptyDirectories);
 
   CheckEquals(true, FileExists(LDirectory + CTempLockedFileNameAAA));
   CheckEquals(false, FileExists(LDirectory + CTempFileNameAAA1));
@@ -3719,6 +3739,33 @@ begin
   CheckEquals(true, FileExists(LDirectory + CTempFileNameBBB3));
 
   CloseFile(LLockedFile);
+
+  // Check optional delete directory if empty
+  _CreateTempFiles(LDirectory);
+  _CreateTempFiles(LSubDir1);
+  LWildCard  := '*.*';
+  LRecurseDirectories := true;
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld - 5, LRecurseDirectories, CDontDeleteEmptyDirectories);
+  CheckTrue(DirectoryExists(LSubDir1));
+
+  _CreateTempFiles(LDirectory);
+  _CreateTempFiles(LSubDir1);
+  LWildCard  := '*.*';
+  LRecurseDirectories := true;
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld - 5, LRecurseDirectories, CDeleteEmptyDirectories);
+  CheckFalse(DirectoryExists(LDirectory));
+
+  _CreateTempFiles(LDirectory);
+  _CreateTempFiles(LSubDir1);
+  LWildCard  := '*.AAA';
+  LRecurseDirectories := true;
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld - 5, LRecurseDirectories, CDeleteEmptyDirectories);
+  CheckTrue(DirectoryExists(LSubDir1));
+
+  LWildCard  := '*.BBB';
+  LRecurseDirectories := true;
+  tiUtils.tiDeleteOldFiles(LDirectory, LWildCard, CDaysOld - 5, LRecurseDirectories, CDeleteEmptyDirectories);
+  CheckFalse(DirectoryExists(LDirectory));
 
   //Clean up any left over files
   tiUtils.tiForceRemoveDir(LDirectory);

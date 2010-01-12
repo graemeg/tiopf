@@ -218,7 +218,9 @@ function tiReplaceFileNameReservedChars(const AString: string;
   {: Delete all the files that match AWildCard found in ADirectory}
   procedure tiDeleteFiles(const ADirectory, AWildCard: string);
   {: Delete all the files that match AWildCard found in ADirectory where file date modified is < CurrentDate - ADaysOld}
-  procedure tiDeleteOldFiles(const ADirectory, AWildCard: string; ADaysOld: Integer; const ARecurseDirectories: Boolean);
+  procedure tiDeleteOldFiles(const ADirectory, AWildCard: string;
+                             const ADaysOld: Integer; const ARecurseDirectories: Boolean;
+                             const ADeleteEmptyDirectories: Boolean);
   {: Delete a file, but without BDS2006 function inlining warning}
   function tiDeleteFile(const AFileName: string): boolean;
   // Does a directory have any subdirectories?
@@ -2189,8 +2191,9 @@ begin
   end;
 end;
 
-procedure tiDeleteOldFiles(const ADirectory, AWildCard: string; ADaysOld: Integer
-    ; const ARecurseDirectories: Boolean);
+procedure tiDeleteOldFiles(const ADirectory, AWildCard: string;
+  const ADaysOld: Integer; const ARecurseDirectories: Boolean;
+  const ADeleteEmptyDirectories: Boolean);
 var
   Lsl: TStringList;
   i : Integer;
@@ -2208,9 +2211,13 @@ begin
           raise EtiOPFFileSystemException.CreateFmt(cErrorCanNotDeleteFile, [Lsl.Strings[i]]);
     end;
     Lsl.Clear;
-    tiDirectoryTreeToStringList(ADirectory, lsl, ARecurseDirectories);
-    for i := lsl.Count - 1 downto 0 do
-      SysUtils.RemoveDir(lsl.Strings[i]);
+
+    if ADeleteEmptyDirectories then
+    begin
+      tiDirectoryTreeToStringList(ADirectory, lsl, ARecurseDirectories);
+      for i := lsl.Count - 1 downto 0 do
+        SysUtils.RemoveDir(lsl.Strings[i]);
+    end;
   finally
     Lsl.Free;
   end;

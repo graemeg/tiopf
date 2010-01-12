@@ -168,7 +168,6 @@ uses
   ,tiUtils
   ,tiCRC32
   ,tiExcept
-  ,tiLog
  ;
 
 var
@@ -474,7 +473,6 @@ begin
     if i < FRetryLimit - 1 then
     begin
       try
-        Log('Retry #' + IntToStr(i) + '. ' + AURL, lsWarning);
         DoGetOrPostBlock(
           AURL, AGetOrPostMethod, AInput,
           AOutput, ABlockIndex, ATransID,
