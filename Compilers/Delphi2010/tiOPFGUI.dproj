@@ -118,8 +118,16 @@
 			<DCCReference Include="..\..\GUI\tiLogToErrorDialog.pas"/>
 			<DCCReference Include="..\..\GUI\tiGUIConstants.pas"/>
 			<DCCReference Include="..\..\GUI\tiGUIINI.pas"/>
+			<DCCReference Include="..\..\GUI\tiVTAbstract.pas" />
+			<DCCReference Include="..\..\GUI\tiVTExportCSV.pas" />
+			<DCCReference Include="..\..\GUI\tiVTExportHTML.pas" />
+			<DCCReference Include="..\..\GUI\tiVTFilter.pas" />
+			<DCCReference Include="..\..\GUI\tiVTListView.pas" />
+			<DCCReference Include="..\..\GUI\tiVTSearch.pas" />
+			<DCCReference Include="..\..\GUI\tiVTTreeView.pas" />
 			<DCCReference Include="..\..\GUI\tiAnimatedGIF.pas"/>
 			<DCCReference Include="..\..\GUI\VCL\tiMediators.pas"/>
+			<DCCReference Include="..\..\GUI\VCL\tiListMediators.pas" />
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

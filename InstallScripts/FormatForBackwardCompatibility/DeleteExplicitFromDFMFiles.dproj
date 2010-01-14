@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{dfe62be3-905c-4e8c-ab2e-f0cf0c38e0fc}</ProjectGuid>
     <MainSource>DeleteExplicitFromDFMFiles.dpr</MainSource>
@@ -30,7 +30,7 @@
       <Parameters Name="UseLauncher">False</Parameters>
       <Parameters Name="LoadAllSymbols">True</Parameters>
       <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
-      <Parameters Name="RunParams">C:\SourceForge\TechInsite\tiOPF2\Trunk</Parameters>
+      <Parameters Name="RunParams">C:\SourceForge\TechInsite\tiOPF3\Trunk</Parameters>
     </Parameters>
     <VersionInfo>
       <VersionInfo Name="IncludeVerInfo">False</VersionInfo>

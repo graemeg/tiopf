@@ -1,7 +1,7 @@
 /opt/fpc/bin/fpc -S2cgi -O1 -gl -ve -l \
   -Fu/opt/lazarus/components/fpcunit/console/lib/i386-linux/ \
   -Fu/opt/lazarus/packager/units/i386-linux/ \
-  -Fu/home/graemeg/programming/3rdParty/tiOPF2/Source/3rdParty/FBLib/lib/i386-linux/ \
+  -Fu/home/graemeg/programming/3rdParty/tiOPF3/Source/3rdParty/FBLib/lib/i386-linux/ \
   -Fu/opt/dailybuilds/tiopf/Compilers/FPC/lib/i386-linux/ \
   -Fi/opt/dailybuilds/tiopf/Core/ \
   -Fu/opt/dailybuilds/tiopf/UnitTests/Common/ \

@@ -190,7 +190,7 @@ type
     procedure DoOnInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure DoOnInitChildren(Sender: TBaseVirtualTree; Node: PVirtualNode; var ChildCount: Cardinal);
     procedure DoOnFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
-    procedure DoOnGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
+    procedure DoOnGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: UnicodeString);
     procedure DoOnGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer);
     procedure DoOnCheckChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure DoOnChecking(Sender: TBaseVirtualTree; Node: PVirtualNode; var NewState: TCheckState;
@@ -414,7 +414,7 @@ begin
   VT.OnGetImageIndex := DoOnGetImageIndex;
 
   VT.TreeOptions.AnimationOptions := VT.TreeOptions.AnimationOptions + [toAnimatedToggle];
-  VT.CheckImageKind := ckSystem;
+  VT.CheckImageKind := ckSystemDefault;
   
   FVTDefaultDataMapping := TtiVTTVDataMapping.Create(nil);
   FVTDefaultDataMapping.DisplayPropName := 'Caption';
@@ -1383,7 +1383,7 @@ procedure TtiVTTreeView.DoOnGetText(
   Node: PVirtualNode;
   Column: TColumnIndex;
   TextType: TVSTTextType;
-  var CellText: WideString);
+  var CellText: UnicodeString);
 var
   LMapping: TtiVTTVDataMapping;
   LData: TtiObject;

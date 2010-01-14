@@ -747,8 +747,8 @@ type
   private
     FStream : TMemoryStream;
     function  GetSize    : integer;
-    function  GetAsString : string;
-    procedure SetAsString(const AValue: string);
+    function  GetAsString : AnsiString;
+    procedure SetAsString(const AValue: AnsiString);
     procedure SetSize(const AValue: integer);
   public
     constructor Create; override;
@@ -759,7 +759,7 @@ type
     procedure   SaveToFile(const AFileName : string);
     procedure   LoadFromFile(const AFileName : string);
     procedure   Clear;
-    property    AsString : string read GetAsString write SetAsString;
+    property    AsString : AnsiString read GetAsString write SetAsString;
   end;
 
 
@@ -1600,9 +1600,9 @@ begin
   FStream.SaveToFile(AFileName);
 end;
 
-function TPerStream.GetAsString: string;
+function TPerStream.GetAsString: AnsiString;
 var
-  ls : string;
+  ls : AnsiString;
 begin
   FStream.Seek(0,soFromBeginning);
   SetString(ls, nil, FStream.Size);
@@ -1610,12 +1610,12 @@ begin
   Result := ls;
 end;
 
-procedure TPerStream.SetAsString(const AValue: string);
+procedure TPerStream.SetAsString(const AValue: AnsiString);
 var
-  lpcText : PChar;
+  lpcText : PAnsiChar;
 begin
   FStream.Clear;
-  lpcText := PChar(AValue);
+  lpcText := PAnsiChar(AValue);
   FStream.WriteBuffer(lpcText^, length(lpcText));
 end;
 

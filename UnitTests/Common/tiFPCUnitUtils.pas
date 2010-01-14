@@ -95,7 +95,7 @@ end;
 
 
 initialization
-  GetTestRegistry.TestName := 'tiOPF2 Unit Tests';
+  GetTestRegistry.TestName := 'tiOPF3 Unit Tests';
 
 end.
 

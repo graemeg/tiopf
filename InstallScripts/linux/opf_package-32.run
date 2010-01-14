@@ -1,5 +1,5 @@
 /opt/fpc_2.3.1/bin/ppc386 -MObjFPC -S2cai -O1 -gl -ve \
-  -Fu/home/graemeg/programming/3rdParty/tiOPF2/Source/3rdParty/FBLib/lib/i386-linux/ \
+  -Fu/home/graemeg/programming/3rdParty/tiOPF3/Source/3rdParty/FBLib/lib/i386-linux/ \
   -Fi/opt/dailybuilds/tiopf/Core/ \
   -Fu/opt/dailybuilds/tiopf/Core/ \
   -Fu/opt/dailybuilds/tiopf/Options/ \

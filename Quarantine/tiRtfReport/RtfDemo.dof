@@ -31,12 +31,12 @@ ShowHints=1
 ShowWarnings=1
 UnitAliases=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 NamespacePrefix=
-SymbolDeprecated=1
-SymbolLibrary=1
+SymbolDeprecated=0
+SymbolLibrary=0
 SymbolPlatform=0
 UnitLibrary=0
 UnitPlatform=0
-UnitDeprecated=1
+UnitDeprecated=0
 HResultCompat=1
 HidingMember=1
 HiddenVirtual=1
@@ -126,11 +126,20 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=0.0.0.0
+FileVersion=1.0.0.0
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
-ProductVersion=
+ProductVersion=1.0.0.0
 Comments=
+[Excluded Packages]
+C:\TiOpf1\bin\dcltiPerAware.bpl=(untitled)
+C:\TiOpf1\Bin\tiPersistDataset.bpl=TtiDataset, TtiRecordDataset and TtiNestedDataset
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlSearchPath]
+Count=1
+Item0=..\D7

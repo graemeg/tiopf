@@ -208,8 +208,11 @@ end;
 { TtiScheduledFilePurgeDetails }
 
 procedure TtiScheduledFilePurgeDetails.DeleteOldFiles;
+const
+  CDontDeleteEmptyDirectories = false;
 begin
-  tiDeleteOldFiles(FDirectory, FFilenameWildCard, FFileDaysOld, FRecurseDirectories);
+  tiDeleteOldFiles(FDirectory, FFilenameWildCard, FFileDaysOld,
+      FRecurseDirectories, CDontDeleteEmptyDirectories);
 end;
 
 { TtiScheduledFilePurgeDetailsList }

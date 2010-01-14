@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{ccff691a-e6a7-4acd-9aa2-7333a9acba4e}</ProjectGuid>
     <MainSource>DeleteHistoryListsInDofFiles.dpr</MainSource>
@@ -38,7 +38,7 @@
     <Borland.ProjectType>VCLApplication</Borland.ProjectType>
     <BorlandProject>
 <BorlandProject xmlns=""> <Delphi.Personality>   <Parameters>
-      <Parameters Name="RunParams">C:\SourceForge\TechInsite\tiOPF2\Trunk</Parameters>
+      <Parameters Name="RunParams">C:\SourceForge\TechInsite\tiOPF3\Trunk</Parameters>
       <Parameters Name="UseLauncher">False</Parameters>
       <Parameters Name="LoadAllSymbols">True</Parameters>
       <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>

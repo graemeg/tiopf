@@ -9,6 +9,9 @@ uses
   Windows;
 
   procedure tiWin32RunEXEAndWait(const AEXE : string);
+  function tiCreateProcess(const AProcessName: string;
+      const ACommandLineParams: string;
+      var AProcessInfo: TProcessInformation): Boolean;
   function  tiWin32FileGetAttr(const AFileName : string): integer;
   function  tiWin32FileSetAttr(const AFileName: string; pAttr: Integer): Integer;
   function  tiWin32FindFirstFile(const APath: string; var  ASearchRec: TSearchRec): Integer;
@@ -172,6 +175,21 @@ begin
     False, 0, nil, nil, SI, PI);
   WaitForInputIdle(PI.hProcess, Infinite);
   WaitForSingleObject(PI.hProcess, Infinite);
+end;
+
+function tiCreateProcess(const AProcessName: string;
+  const ACommandLineParams: string;
+  var AProcessInfo: TProcessInformation): Boolean;
+var
+  LStartupInfo: TStartupInfo;
+const
+  CInheritParentHandlesFalse = false;
+begin
+  GetStartupInfo(LStartupInfo);
+  Result := CreateProcess(
+      PChar(AProcessName), PChar(ACommandLineParams), nil, nil,
+      cInheritParentHandlesFalse, 0, nil,
+      nil, LStartupInfo, AProcessInfo);
 end;
 
 {$IFNDEF FPC}

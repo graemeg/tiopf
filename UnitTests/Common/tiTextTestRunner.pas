@@ -353,7 +353,7 @@ procedure TtiTextTestListener.TestingStarts;
     write2Long('<html>');
     write2Long('<head>');
     write2Long('<meta content="text/html; charset=utf-8" http-equiv="content-type">');
-    write2Long('<title>tiOPF2 Unit Tests</title>');
+    write2Long('<title>tiOPF3 Unit Tests</title>');
     write2Long('</head> <body>');
     {$IFDEF DUNIT2}
       write2Long('<h2>DUnit2 testing of tiOPF (Delphi ' + pDelphiVersion + ')</h2>');

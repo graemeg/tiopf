@@ -19,7 +19,7 @@ type
     const AtiVT: TtiVTAbstract;
     const ANode: PVirtualNode;
     const AData: TtiObject;
-    var AHintText: WideString) of object;
+    var AHintText: UnicodeString) of object;
 
   TtiVTOnPaintText = procedure(
     const AtiVT: TtiVTAbstract;
@@ -69,7 +69,7 @@ type
     procedure SetOnGetNodeHint(const AValue: TtiVTOnGetHint);
     procedure DoOnGetHint(Sender: TBaseVirtualTree; ANode: PVirtualNode;
       Column: TColumnIndex; var ALineBreakStyle: TVTTooltipLineBreakStyle;
-      var AHintText: WideString);
+      var AHintText: UnicodeString);
     function GetScrollEvent: TVTScrollEvent;
     procedure SetScrollEvent(const AValue: TVTScrollEvent);
     function GetOnCollapsed: TVTChangeEvent;
@@ -475,7 +475,7 @@ end;
 
 procedure TtiVTAbstract.DoOnGetHint(Sender: TBaseVirtualTree;
   ANode: PVirtualNode; Column: TColumnIndex;
-  var ALineBreakStyle: TVTTooltipLineBreakStyle; var AHintText: WideString);
+  var ALineBreakStyle: TVTTooltipLineBreakStyle; var AHintText: UnicodeString);
 var
   LData: TtiObject;
 begin

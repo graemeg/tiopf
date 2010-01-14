@@ -16,11 +16,11 @@ directory.
 
 My directory layout looks like this:
 
-/tiOPF2
-  /Docs      <== from https://svn.sourceforge.net/svnroot/tiopf/tiOPF2_Docs
+/tiOPF3
+  /Docs      <== from https://svn.sourceforge.net/svnroot/tiopf/tiOPF3_Docs
     /html
     /xml
-  /Source    <== from https://svn.sourceforge.net/svnroot/tiopf/tiOPF2/Trunk
+  /Source    <== from https://svn.sourceforge.net/svnroot/tiopf/tiOPF3/Trunk
     /Compilers
       /Delphi7
       /Delphi2006

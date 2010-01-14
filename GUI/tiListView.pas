@@ -1298,7 +1298,8 @@ begin
   tkChar,
   tkWChar,
   tkLString,
-  tkWString    : result := lvtkString;
+  tkWString,
+  tkUString    : result := lvtkString;
 
   else
     raise exception.Create('Invalid property type passed to ' +

@@ -539,13 +539,17 @@ begin
       case VType of
         vtInteger:    lsLine := lsLine + IntToStr(VInteger);
         vtBoolean:    lsLine := lsLine + BoolChars[VBoolean];
-        vtChar:       lsLine := lsLine + VChar;
+        vtChar:       lsLine := lsLine + string(VChar);
+        vtWideChar:   lsLine := lsLine + VWideChar;
         vtExtended:   lsLine := lsLine + FloatToStr(VExtended^);
-        vtString:     lsLine := lsLine + VString^;
-        vtPChar:      lsLine := lsLine + VPChar;
+        vtString:     lsLine := lsLine + string(VString^);
+        vtPChar:      lsLine := lsLine + string(VPChar);
+        vtPWideChar:  lsLine := lsLine + VPWideChar;
         vtObject:     lsLine := lsLine + VObject.ClassName;
         vtClass:      lsLine := lsLine + VClass.ClassName;
         vtAnsiString: lsLine := lsLine + string(VAnsiString);
+        vtWideString: lsLine := lsLine + string(VWideString);
+        vtUnicodeString: lsLine := lsLine + string(VUnicodeString);
         vtCurrency:   lsLine := lsLine + CurrToStr(VCurrency^);
         vtVariant:
         begin

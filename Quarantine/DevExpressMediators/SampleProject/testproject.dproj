@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{92098cd5-4b2a-4044-8d93-25c0a0cae594}</ProjectGuid>
@@ -18,10 +18,10 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Version>7.0</Version>
     <DCC_Define>DEBUG</DCC_Define>
-    <DCC_UnitSearchPath>..\tiOPF2\Core;..\tiOPF2\GUI;..\tiOPF2\Options</DCC_UnitSearchPath>
-    <DCC_ResourcePath>..\tiOPF2\Core;..\tiOPF2\GUI;..\tiOPF2\Options</DCC_ResourcePath>
-    <DCC_ObjPath>..\tiOPF2\Core;..\tiOPF2\GUI;..\tiOPF2\Options</DCC_ObjPath>
-    <DCC_IncludePath>..\tiOPF2\Core;..\tiOPF2\GUI;..\tiOPF2\Options</DCC_IncludePath>
+    <DCC_UnitSearchPath>..\tiOPF3\Core;..\tiOPF3\GUI;..\tiOPF3\Options</DCC_UnitSearchPath>
+    <DCC_ResourcePath>..\tiOPF3\Core;..\tiOPF3\GUI;..\tiOPF3\Options</DCC_ResourcePath>
+    <DCC_ObjPath>..\tiOPF3\Core;..\tiOPF3\GUI;..\tiOPF3\Options</DCC_ObjPath>
+    <DCC_IncludePath>..\tiOPF3\Core;..\tiOPF3\GUI;..\tiOPF3\Options</DCC_IncludePath>
   </PropertyGroup>
   <ProjectExtensions>
     <Borland.Personality>Delphi.Personality</Borland.Personality>

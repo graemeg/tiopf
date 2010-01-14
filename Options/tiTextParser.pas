@@ -141,6 +141,7 @@ procedure TtiTextParser.Execute;
 var
   i: Integer;
   lChar: Char;
+  LAnsiChar: AnsiChar;
   lBufferIndex: Integer;
 begin
   Assert(Assigned(FOnNewLine), 'OnLineEnd not assigned');
@@ -163,7 +164,8 @@ begin
 
   for i := 0 to FStream.Size - 1 do
   begin
-    FStream.readBuffer(lChar, 1);
+    FStream.readBuffer(LAnsiChar, 1);
+    lChar := Char(LAnsiChar);
     Inc(FCol);
 
     // ToDo: Cell delim, line delim and quotes around strings should be

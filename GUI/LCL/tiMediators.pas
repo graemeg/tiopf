@@ -206,6 +206,7 @@ uses
   ,tiExcept
   ,tiGUIConstants   // for error color
   ,tiLog
+  ,tiRTTI
   ;
 
 type
@@ -221,17 +222,17 @@ const
 
 procedure RegisterFallBackMediators;
 begin
-  gMediatorManager.RegisterMediator(TtiEditMediatorView, TtiObject, [tkSString,tkAString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TtiEditMediatorView, TtiObject, ctkMultiCharString + [tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TtiCheckBoxMediatorView, TtiObject, [tkBool]);
-  gMediatorManager.RegisterMediator(TtiComboBoxMediatorView, TtiObject, [tkSString,tkAString]);
+  gMediatorManager.RegisterMediator(TtiComboBoxMediatorView, TtiObject, ctkMultiCharString);
   gMediatorManager.RegisterMediator(TtiComboBoxItemMediatorView, TtiObject, [tkInteger, tkEnumeration]);
   gMediatorManager.RegisterMediator(TtiStaticTextMediatorView, TtiObject);
   gMediatorManager.RegisterMediator(TtiTrackBarMediatorView, TtiObject, [tkInteger]);
   gMediatorManager.RegisterMediator(TtiDynamicComboBoxMediatorView, TtiObject, [tkClass]);
-  gMediatorManager.RegisterMediator(TtiMemoMediatorView, TtiObject, [tkSString,tkAString]);
+  gMediatorManager.RegisterMediator(TtiMemoMediatorView, TtiObject, ctkMultiCharString);
   gMediatorManager.RegisterMediator(TtiSpinEditMediatorView, TtiObject, [tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TtiDateEditMediatorView, TtiObject, [tkFloat]);
-  gMediatorManager.RegisterMediator(TtiLabeledEditMediatorView, TtiObject, [tkSString,tkAString,tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TtiLabeledEditMediatorView, TtiObject, ctkMultiCharString + [tkInteger,tkFloat]);
 end;
 
 { TtiControlMediatorView }

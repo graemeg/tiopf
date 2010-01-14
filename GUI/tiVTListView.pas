@@ -169,7 +169,7 @@ type
                               const AData: TtiObject;
                                     ANode: PVirtualNode;
                                     AColumn: TColumnIndex;
-                              var   AHintText: WideString) of object;
+                              var   AHintText: UnicodeString) of object;
 
   TtiVTFocusChangeEvent = procedure(pSender: TtiCustomVirtualTree;
                                     AData: TtiObject;
@@ -180,7 +180,7 @@ type
                                      const ptiListColumn : TtiVTColumn) of object;
 
   TtiVTOnIsValidColumnValue = procedure(AData: TtiObject; AColumn: TtiVTColumn;
-                                        var AValue: WideString;
+                                        var AValue: UnicodeString;
                                         var AIsValid: Boolean) of object;
 
   TvtSortDirection = (vtsdAscending, vtsdDescending);
@@ -241,7 +241,7 @@ type
     constructor Create(Collection : TCollection); override;
     destructor  Destroy; override;
     function    Clone : TtiVTColumn;
-    function    IsValidValue(AData: TtiObject; var AValue: WideString): Boolean;
+    function    IsValidValue(AData: TtiObject; var AValue: UnicodeString): Boolean;
     Procedure StoreWidth;
     Property StoredWidth : Integer Read FStoredWidth Write FStoredWidth;
   published
@@ -289,7 +289,7 @@ type
 
     procedure DoBeforeItemErase(Canvas: TCanvas; Node: PVirtualNode; ItemRect: TRect; var Color: TColor;
       var EraseAction: TItemEraseAction); override;
-    procedure DoGetText(Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var Text: WideString); override;
+    procedure DoGetText(Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var Text: UnicodeString); override;
     procedure DoFocusChange(Node: PVirtualNode; Column: TColumnIndex); override;
     function DoGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex;
       var Ghosted: Boolean; var Index: Integer): TCustomImageList; override;
@@ -427,8 +427,7 @@ type
     procedure SetOnGetNodeHint(const AValue: TtiVTOnNodeHint);
     procedure VTHeaderAdvancedHeaderDraw(Sender: TVTHeader;
       var PaintInfo: THeaderPaintInfo; const Elements: THeaderPaintElements);
-    procedure VTHeaderClick(Sender: TVTHeader; Column: TColumnIndex;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure VTHeaderClick(Sender: TVTHeader; AHitInfo: TVTHeaderHitInfo);
     procedure VTHeaderDrawQueryElements(Sender: TVTHeader;
       var PaintInfo: THeaderPaintInfo; var Elements: THeaderPaintElements);
 
@@ -442,7 +441,7 @@ type
     procedure VTEdited(Sender: TBaseVirtualTree; Node: PVirtualNode;
         Column: TColumnIndex);
     procedure VTNewText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-        Column: TColumnIndex; NewText: WideString);
+        Column: TColumnIndex; NewText: UnicodeString);
     procedure SetMultiSelect(const AValue: boolean);
     function GetSelectedCount: integer;
 
@@ -506,14 +505,14 @@ type
     function  CanEditRow: Boolean;
 
     procedure VTDoBeforeItemErase(Canvas: TCanvas; Node: PVirtualNode; ItemRect: TRect; var ItemColor: TColor; var EraseAction: TItemEraseAction); virtual;
-    procedure VTDoGetText(Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var Text: WideString); virtual;
+    procedure VTDoGetText(Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var Text: UnicodeString); virtual;
     procedure VTDoFocusChanged(Node: PVirtualNode; Column: TColumnIndex); virtual;
     procedure VTGetImageIndex(Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer);
     procedure VTInitNode(Parent, Node: PVirtualNode; var InitStates: TVirtualNodeInitStates); virtual;
     procedure VTInitChildren(Node: PVirtualNode;  var ChildCount: Cardinal); virtual;
     procedure DoOnPaintText(pSender: TBaseVirtualTree; const pTargetCanvas: TCanvas; pNode: PVirtualNode;  pColumn: TColumnIndex; pTextType: TVSTTextType);
-    procedure DoOnBeforeCellPaint(ASender: TBaseVirtualTree; ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex; ACellRect: TRect);
-    procedure DoOnGetHint(Sender: TBaseVirtualTree; ANode: PVirtualNode; Column: TColumnIndex; var ALineBreakStyle: TVTTooltipLineBreakStyle; var AHintText: WideString);
+    procedure DoOnBeforeCellPaint(ASender: TBaseVirtualTree; ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex; ACellPaintMode: TVTCellPaintMode; ACellRect: TRect; var AContentRect: TRect);
+    procedure DoOnGetHint(Sender: TBaseVirtualTree; ANode: PVirtualNode; Column: TColumnIndex; var ALineBreakStyle: TVTTooltipLineBreakStyle; var AHintText: UnicodeString);
 
     property AlternateRowColor: TColor read FAlternateRowColor write SetAlternateRowColor default cDefaultAlternateRowColor;
     property AlternateRowCount: Byte Read FAlternateRowCount Write FAlternateRowCount default cDefaultAlternateRowCount;
@@ -1039,7 +1038,7 @@ begin
   inherited;
 end;
 
-function TtiVTColumn.IsValidValue(AData: TtiObject; var AValue: WideString): Boolean;
+function TtiVTColumn.IsValidValue(AData: TtiObject; var AValue: UnicodeString): Boolean;
 var
   LIsValid: Boolean;
   LDummyInt: Integer;
@@ -1304,7 +1303,7 @@ function TtiVTEdit.IsValidValue: Boolean;
 var
   LColumn: TtiVTColumn;
   LData: TtiObject;
-  LText: WideString;
+  LText: UnicodeString;
 begin
   Result := True;
   if Assigned(Link) and Assigned(Link.tiTree) then
@@ -1958,7 +1957,6 @@ end;
 
 procedure TtiCustomVirtualTree.Refresh(const pSelectedData: TtiObject = nil);
 begin
-
   inherited Refresh;
   // ToDo: Can't get the thing to re-draw.
   // VT.Invalidate
@@ -2339,7 +2337,7 @@ begin
 end;
 
 procedure TtiCustomVirtualTree.VTDoGetText(Node: PVirtualNode;
-  Column: TColumnIndex; TextType: TVSTTextType; var Text: WideString);
+  Column: TColumnIndex; TextType: TVSTTextType; var Text: UnicodeString);
 var
   Obj: TtiObject;
 begin
@@ -2389,8 +2387,7 @@ begin
 end;
 
 procedure TtiCustomVirtualTree.VTHeaderClick(Sender: TVTHeader;
-  Column: TColumnIndex; Button: TMouseButton; Shift: TShiftState; X,
-  Y: Integer);
+  AHitInfo: TVTHeaderHitInfo);
 const
   // TvtSortDirection = (vtsdAscending, vtsdDescending);
   InvertSortDirection: array[TvtSortDirection] of TvtSortDirection
@@ -2405,9 +2402,9 @@ var
   LExistingSortOrder: boolean;
 
 begin
-  LColumn := Header.Columns[Column];
+  LColumn := Header.Columns[AHitInfo.Column];
 
-  if HeaderClickSorting {and (not LColumn.Derived) }and (Button = mbLeft)then
+  if HeaderClickSorting {and (not LColumn.Derived) }and (AHitInfo.Button = mbLeft)then
   begin
     ClearSearchState;
     LColumn.Style := vsOwnerDraw;
@@ -2418,7 +2415,7 @@ begin
     else
       LNewSortDirection := vtsdAscending;
 
-    if not (ssCtrl in Shift) then
+    if not (ssCtrl in AHitInfo.Shift) then
     begin
       SortOrders.Clear;
       SortOrders.Add(LColumn.FieldName, LNewSortDirection);
@@ -2435,7 +2432,7 @@ begin
     ApplySort(noGrouping);
 
     if Assigned(OnHeaderClick) then
-      OnHeaderClick(self, Header.Columns[Column]);
+      OnHeaderClick(self, Header.Columns[AHitInfo.Column]);
 
   end;
 
@@ -2499,7 +2496,7 @@ end;
 
 procedure TtiCustomVirtualTree.DoOnBeforeCellPaint(ASender: TBaseVirtualTree;
   ATargetCanvas: TCanvas; ANode: PVirtualNode; AColumn: TColumnIndex;
-  ACellRect: TRect);
+  ACellPaintMode: TVTCellPaintMode; ACellRect: TRect; var AContentRect: TRect);
 var
   LData: TtiObject;
 begin
@@ -2513,7 +2510,7 @@ end;
 
 procedure TtiCustomVirtualTree.DoOnGetHint(Sender: TBaseVirtualTree;
   ANode: PVirtualNode; Column: TColumnIndex;
-  var ALineBreakStyle: TVTTooltipLineBreakStyle; var AHintText: WideString);
+  var ALineBreakStyle: TVTTooltipLineBreakStyle; var AHintText: UnicodeString);
 var
   LData: TtiObject;
 begin
@@ -2777,7 +2774,7 @@ begin
 end;
 
 procedure TtiCustomVirtualTree.VTNewText(Sender: TBaseVirtualTree;
-  Node: PVirtualNode; Column: TColumnIndex; NewText: WideString);
+  Node: PVirtualNode; Column: TColumnIndex; NewText: UnicodeString);
 var
   LObj: TtiObject;
   LColumn: TtiVTColumn;
@@ -2860,7 +2857,7 @@ begin
 end;
 
 procedure TtiInternalVirtualTree.DoGetText(Node: PVirtualNode;
-  Column: TColumnIndex; TextType: TVSTTextType; var Text: WideString);
+  Column: TColumnIndex; TextType: TVSTTextType; var Text: UnicodeString);
 begin
   FtiOwner.VTDoGetText(Node, Column, TextType, Text);
 end;

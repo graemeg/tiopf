@@ -26,12 +26,19 @@ resourcestring
 
 const
   // Type kinds for use with tiGetPropertyNames
-  // All string type properties
-  ctkString = [tkChar, tkString, tkWChar, tkLString, tkWString
+  // Character type properties
+  ctkChar = [tkChar, tkWChar
+              {$IFDEF FPC}
+                {$IFDEF FPC_FULLVERSION>=20301},tkUChar{$ENDIF}
+              {$ENDIF FPC}];
+  // String type properties
+  ctkMultiCharString = [tkString, tkLString, tkWString
               {$IFDEF FPC},tkAString
-                {$IF Defined(FPC) and (FPC_FULLVERSION >= 20301) },tkUString, tkUChar{$IFEND}
-              {$ENDIF}
+                {$IFDEF FPC_FULLVERSION>=20301},tkUString{$ENDIF}
+              {$ENDIF FPC}
               {$IFDEF UNICODE},tkUString{$ENDIF}];
+  // All character and string type properties
+  ctkString = ctkChar + ctkMultiCharString;
   // Integer type properties
   ctkInt    = [tkInteger, tkInt64 {$IFDEF FPC},tkBool{$ENDIF}];
   // Float type properties
