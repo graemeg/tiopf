@@ -806,13 +806,13 @@ p_library_path=%delphi2010dir%\Lib\Indy10
             <Object Class="TTextReplaceAction" XMLID="{09D93E43-F92A-410D-B793-13B985A0CAB8}">
               <Property MultiValue="0" name="ActionComment" type="string"></Property>
               <Property MultiValue="1" name="ActionDescription" type="string">
-                <![CDATA[Text Replace - path_to_working_tiopf2]]>
+                <![CDATA[Text Replace - path_to_working_tiopf3]]>
               </Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
               <Property name="CaseSensitive" type="Boolean">False</Property>
               <Property MultiValue="1" name="Description" type="string">
-                <![CDATA[Text Replace - path_to_working_tiopf2]]>
+                <![CDATA[Text Replace - path_to_working_tiopf3]]>
               </Property>
               <Property name="DoNotValidateAction" type="Boolean">False</Property>
               <Property name="DoRepeat" type="Integer">0</Property>
@@ -831,9 +831,9 @@ p_library_path=%delphi2010dir%\Lib\Indy10
               <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
               <Property MultiValue="0" name="NewFileName" type="string">%path_to_working_innosetup_script_temp%</Property>
               <Property name="PauseInterval" type="Cardinal">0</Property>
-              <Property MultiValue="0" name="ReplaceText" type="string">%path_to_working_tiopf2%</Property>
+              <Property MultiValue="0" name="ReplaceText" type="string">%path_to_working_tiopf3%</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-              <Property MultiValue="0" name="SearchText" type="string">%%path_to_working_tiopf2%%</Property>
+              <Property MultiValue="0" name="SearchText" type="string">%%path_to_working_tiopf3%%</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
               <Property name="WholeWordsOnly" type="Boolean">False</Property>
             </Object>
@@ -8767,7 +8767,7 @@ Comments=
       </Object>
       <Object Class="TFBVariable" XMLID="{2C002CB6-2D3D-496F-AF33-7252A1B82CFC}">
         <Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\InstallScripts</Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF3%\InstallScripts</Property>
         <Property MultiValue="0" name="GroupName" type="string"></Property>
         <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
@@ -8812,7 +8812,7 @@ Comments=
         <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
         <Property name="MakeEnv" type="Boolean">False</Property>
-        <Property MultiValue="0" name="Name" type="string">path_to_working_tiOPF2</Property>
+        <Property MultiValue="0" name="Name" type="string">path_to_working_tiOPF3</Property>
         <Property name="VariableType" type="TFBVariableType">vtProject</Property>
       </Object>
       <Object Class="TFBVariable" XMLID="{B034E0AE-AC65-403C-84CA-D3FDA092E185}">
@@ -9012,7 +9012,7 @@ Comments=
       <Object Class="TFBVariable" XMLID="{10325ECE-2241-4852-8F5B-D86A13EDD063}">
         <Property MultiValue="0" name="Comment" type="string"></Property>
         <Property MultiValue="1" name="DefaultValue" type="string">
-          <![CDATA[%path_to_working_deploy%\Installing tiOPF2.chm]]>
+          <![CDATA[%path_to_working_deploy%\Installing tiOPF3.chm]]>
         </Property>
         <Property MultiValue="0" name="GroupName" type="string"></Property>
         <Property name="IsMacro" type="Boolean">True</Property>
@@ -9209,7 +9209,7 @@ Comments=
       </Object>
       <Object Class="TFBVariable" XMLID="{E64C3CCD-82F9-4610-BF93-ECC4771DD12D}">
         <Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\Compilers\Delphi%p_delphi_version%</Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF3%\Compilers\Delphi%p_delphi_version%</Property>
         <Property MultiValue="0" name="GroupName" type="string"></Property>
         <Property name="IsMacro" type="Boolean">True</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
@@ -9219,7 +9219,7 @@ Comments=
       </Object>
       <Object Class="TFBVariable" XMLID="{76A1CB5B-F989-44C6-A915-44F348BD318C}">
         <Property MultiValue="0" name="Comment" type="string"></Property>
-        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF2%\Core;%path_to_working_tiOPF2%\Options;%path_to_working_tiOPF2%\GUI</Property>
+        <Property MultiValue="0" name="DefaultValue" type="string">%path_to_working_tiOPF3%\Core;%path_to_working_tiOPF3%\Options;%path_to_working_tiOPF3%\GUI</Property>
         <Property MultiValue="0" name="GroupName" type="string"></Property>
         <Property name="IsMacro" type="Boolean">False</Property>
         <Property name="IsPersistent" type="Boolean">False</Property>
