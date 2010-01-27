@@ -128,6 +128,10 @@
   {$DEFINE DUNIT2ORFPC}
 {$ENDIF}
 
+{$IFDEF DELPHI2009ORABOVE}
+  tiOPF2 does not support Delphi 2009 or above. Please use tiOPF3.
+{$ENDIF}
+
 {: Enable the conditional define REFERENCE_COUNTING to enable reference counting
    on TtiBaseObject}
 {$DEFINE REFERENCE_COUNTING}
