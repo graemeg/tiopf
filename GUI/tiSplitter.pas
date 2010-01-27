@@ -112,7 +112,6 @@ type
     // Custom streaming methods to managed the controls owned by the two panels.
     procedure Loaded; override;
     procedure DefineProperties(Filer: TFiler); override;
-    procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
 
     {$IFNDEF FPC}
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
@@ -123,6 +122,7 @@ type
   public
     Constructor Create(AOwner : TComponent); override;
     Destructor  Destroy; override;
+    procedure GetChildren(Proc: TGetChildProc; Root: TComponent); override;
     Property    Panel1 : TtiSplitterPane read FPanel1;
     Property    Panel2 : TtiSplitterPane read FPanel2;
 

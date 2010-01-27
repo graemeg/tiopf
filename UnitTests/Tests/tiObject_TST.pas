@@ -53,7 +53,7 @@ type
     procedure Dirty;
     procedure Dirty_And_OID;
     procedure Index;
-    procedure Equals;
+    procedure tiObject_Equals;
     procedure ObjectStateAsString;
     procedure FindByOID;
     procedure FindWithMethod;
@@ -913,7 +913,7 @@ begin
 end;
 
 
-procedure TtiObjectTestCase.Equals;
+procedure TtiObjectTestCase.tiObject_Equals;
 var
   lObj1     : TtiObjectForTesting;
   lObj2     : TtiObjectForTesting;

@@ -245,6 +245,7 @@ procedure TtiLogToFile.WriteToOutput;
 var
   i: integer;
   LLine: string;
+  LLineAnsi: AnsiString;
   LFileStream: TFileStream;
 begin
   inherited WriteToOutput;
@@ -259,7 +260,8 @@ begin
       begin
         Assert(ListWorking.Items[i].TestValid(TtiLogEvent), CTIErrorInvalidObject);
         LLine := ListWorking.Items[i].AsLeftPaddedString + #13 + #10;
-        LFileStream.Write(PChar(LLine)^, Length(LLine));
+        LLineAnsi := AnsiString(LLine);
+        LFileStream.Write(PAnsiChar(LLineAnsi)^, Length(LLineAnsi));
       end;
     finally
       LFileStream.Free;

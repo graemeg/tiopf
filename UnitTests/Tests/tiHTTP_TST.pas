@@ -117,7 +117,9 @@ procedure RegisterTests;
 implementation
 uses
    tiTestDependencies
-  ,tiUtils 
+  ,tiUtils
+  ,tiWebServer
+  ,TestFramework
   ,SysUtils
   ,Registry
   ,Windows
@@ -125,7 +127,6 @@ uses
   ,tiHTTPMSXML
   ,tiConstants
   ,tiWebServerClientConnectionDetails
-  ,TestFramework
   ;
 
 const
@@ -171,7 +172,7 @@ procedure TTestTIHTTP.HTTPGet_Event(AContext:TIdContext;
   ARequestInfo: TIdHTTPRequestInfo; AResponseInfo: TIdHTTPResponseInfo);
 begin
   FDocName := Copy(ARequestInfo.Document, 2, Length(ARequestInfo.Document) - 1);
-  FParams := ARequestInfo.UnparsedParams;
+  FParams:= tiHTTPRequestInfoToParams(ARequestInfo);
   AResponseInfo.ContentText := MakeXMLResponse(FDocName, FParams);
 end;
 

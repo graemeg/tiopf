@@ -45,7 +45,7 @@ type
     function EqualsQueryField(const AFieldName: string; const AQuery: TtiBaseObject): boolean; virtual; abstract;
     procedure Assign(const ASource: TtiOID); reintroduce; virtual;
     function Compare(const ACompareWith: TtiOID): integer; virtual; abstract;
-    function Equals(const ACompareWith: TtiOID): boolean;
+    function Equals(const ACompareWith: TtiOID): boolean;  reintroduce; virtual;
     procedure SetToNull; virtual; abstract;
     function Clone: TtiOID;
     function NullOIDAsString: string; virtual; abstract;

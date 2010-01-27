@@ -1,5 +1,7 @@
 unit tiScheduledTasks;
 
+{$i tiDefines.inc}
+
 interface
 
 uses

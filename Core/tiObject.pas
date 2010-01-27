@@ -124,7 +124,7 @@ type
     constructor Create(const AOwner: TtiObject); overload; virtual;
     constructor Create(const AOwner: TtiObject; const ANullValidation: TtiNullValidation); overload; virtual;
     function    IsValidValue(const AErrors : TtiObjectErrors = nil): Boolean; virtual;
-    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; virtual; abstract;
+    function    Equals(const ACompareWith: TtiFieldAbs): Boolean; reintroduce; virtual; abstract;
     procedure   Assign(const AAssignFrom: TtiFieldAbs); virtual; abstract;
 
     property    Owner:            TtiObject         read FOwner;
@@ -412,7 +412,7 @@ type
     constructor CreateNew(const ADatabaseName: string = ''; const APersistenceLayerName: string = ''); overload; virtual;
     destructor  Destroy; override;
     {: Does this object equal another? }
-    function    Equals(const AData : TtiObject): boolean; virtual;
+    function    Equals(const AData : TtiObject): boolean; reintroduce; virtual;
     {: The OID of this object }
    {$IFDEF OID_AS_INT64}
       property    OID        : TtiOID                   read GetOID write SetOID;

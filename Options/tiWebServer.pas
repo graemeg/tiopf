@@ -109,7 +109,7 @@ type
   TtiWebServerAction_RunCGIExtension = class(TtiWebServerAction)
   private
     function ExecuteCGIApp(const ACGIApp, ARequestParams: string;
-      out AResponse: string): Cardinal;
+      out AResponse: AnsiString): Cardinal;
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
@@ -222,6 +222,7 @@ type
 
   end;
 
+function tiHTTPRequestInfoToParams(const ARequestInfo: TidHTTPRequestInfo): string;
 
 implementation
 uses
@@ -239,6 +240,16 @@ uses
   ,FileCtrl
   {$ENDIF}
 ;
+
+function tiHTTPRequestInfoToParams(const ARequestInfo: TidHTTPRequestInfo): string;
+begin
+  // ToDo: May want to work towards a case in the future:
+  //   case ARequestInfo.CommandType of ...
+  //   (hcUnknown, hcHEAD, hcGET, hcPOST, hcDELETE, hcPUT, hcTRACE, hcOPTION);
+  Result:= ARequestInfo.UnparsedParams;
+  if (Result = '') and Assigned(ARequestInfo.PostStream) then
+    Result:= tiStreamToString(ARequestInfo.PostStream);
+end;
 
 { TtiWebServer }
 
@@ -289,15 +300,15 @@ var
   LTransID:    Longword;
   LBlockCRC:   Longword;
   LResponseTIOPFBlockHeader: string;
-
-  LTemp: string; // Change to a stream
+  LTemp: string; // Change to a stream - might be a little faster
 
 begin
   LDocument := ARequestInfo.Document;
   if LDocument[1] = '/' then
     LDocument := Copy(LDocument, 2, Length(LDocument) - 1);
 
-  LParams:= ARequestInfo.UnparsedParams;
+  LParams:= tiHTTPRequestInfoToParams(ARequestInfo);
+
   LRequestTIOPFBlockHeader:= ARequestInfo.RawHeaders.Values[ctiOPFHTTPBlockHeader];
   tiHTTP.tiParseTIOPFHTTPBlockHeader(LRequestTIOPFBlockHeader, LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
 
@@ -708,7 +719,7 @@ procedure TtiWebServerAction_RunCGIExtension.Execute(
   const AResponseInfo: TIdHTTPResponseInfo);
 var
   LCGIApp : string;
-  LResponse : string;
+  LResponse : AnsiString;
   LExitCode : Integer;
   LConfig: TtiWebServerConfig;
 begin
@@ -749,7 +760,7 @@ begin
 end;
 
 function TtiWebServerAction_RunCGIExtension.ExecuteCGIApp(const ACGIApp,
-  ARequestParams: string; out AResponse: string): Cardinal;
+  ARequestParams: string; out AResponse: AnsiString): Cardinal;
 var
   LTempFileName: string;
 begin

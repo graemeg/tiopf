@@ -88,7 +88,8 @@ contains
   tiAnimatedGIF in '..\..\GUI\tiAnimatedGIF.pas',
   tiMediators in '..\..\GUI\VCL\tiMediators.pas',
   tiListMediators in '..\..\GUI\VCL\tiListMediators.pas',
-  tiVTSearch in '..\..\GUI\tiVTSearch.pas';
+  tiVTSearch in '..\..\GUI\tiVTSearch.pas',
+  tiVTAccessibilityFactory in '..\..\GUI\tiVTAccessibilityFactory.pas';
 
 {$I tiDefines.inc}
 

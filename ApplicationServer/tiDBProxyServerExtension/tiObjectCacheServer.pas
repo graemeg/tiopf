@@ -1,5 +1,7 @@
 unit tiObjectCacheServer;
 
+{$i tiDefines.inc}
+
 interface
 uses
   // tiOPF

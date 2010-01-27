@@ -71,7 +71,7 @@ type
     procedure Assign; virtual; abstract;
     procedure NullOIDAsString; virtual; abstract;
     procedure Compare;
-    procedure Equals;
+    procedure tiObject_Equals;
     procedure Clone;
   end;
 
@@ -223,7 +223,7 @@ begin
 end;
 
 
-procedure TTestTIOIDNonPersistent.Equals;
+procedure TTestTIOIDNonPersistent.tiObject_Equals;
 var
   lOID1:   TtiOID;
   lOID2:   TtiOID;

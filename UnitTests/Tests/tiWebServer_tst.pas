@@ -11,7 +11,7 @@ type
 
   TTestTIWebServerClientConnectionDetails = class(TtiTestCase)
   published
-    procedure Equals;
+    procedure tiWebServerClientConnectionDetails_Equals;
     procedure Assign;
   end;
 
@@ -441,7 +441,7 @@ end;
 procedure TtiWebServerTestCase.tiWebServer_TestWebServerCGIForTestingEXE;
 var
   LExpected: string;
-  LActual: string;
+  LActual: AnsiString;
   LPath: string;
   LEncode: string;
   LMaxCommandLineLength: Cardinal;
@@ -782,7 +782,7 @@ begin
   end;
 end;
 
-procedure TTestTIWebServerClientConnectionDetails.Equals;
+procedure TTestTIWebServerClientConnectionDetails.tiWebServerClientConnectionDetails_Equals;
 var
   LA: TtiWebServerClientConnectionDetails;
   LB: TtiWebServerClientConnectionDetails;

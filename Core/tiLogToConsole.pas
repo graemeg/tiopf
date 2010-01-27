@@ -27,6 +27,8 @@ type
 
 
 implementation
+uses
+  Windows;
 
 { TtiLogToConsole }
 

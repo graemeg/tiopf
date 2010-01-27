@@ -138,7 +138,7 @@ const
 
 function tiExecConsoleApp(const ApplicationName,
                         Parameters: String;
-                        var AppOutput: string;       {will receive output of child process}
+                        var AppOutput: AnsiString;       {will receive output of child process}
                         OnNewLine: TNotifyEvent;     {if assigned called on each new line}
                         ptiGetConsoleExecutableInfo: Boolean  {Confirm the exe can be run - requires exclusive access to the exe}
                        ): DWORD;
@@ -311,7 +311,7 @@ begin
 end;
 
 function tiExecConsoleApp(const ApplicationName, Parameters: String;
-                        var   AppOutput: string;     {will receive output of child process}
+                        var   AppOutput: AnsiString;     {will receive output of child process}
                         OnNewLine: TNotifyEvent;     {if assigned called on each new line}
                         ptiGetConsoleExecutableInfo: Boolean  {Confirm the exe can be run - requires exclusive access to the exe}
                        ): DWORD;
@@ -343,9 +343,9 @@ var
   TempHandle,
   WriteHandle,
   ReadHandle: THandle;
-  ReadBuf: array[0..$100] of Char;
+  ReadBuf: array[0..$100] of AnsiChar;
   BytesRead: Cardinal;
-  LineBuf: array[0..$100] of Char;
+  LineBuf: array[0..$100] of AnsiChar;
   LineBufPtr: Integer;
   Newline: Boolean;
   i: Integer;

@@ -252,7 +252,7 @@ end;
 procedure tiDUnitForceRemoveDir(const ADirectory : string);
 var
   LResult: DWord;
-  LOutput: string;
+  LOutput: AnsiString;
 
 begin
   // The easiest way I could think of to delete a directory and all

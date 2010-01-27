@@ -1,5 +1,7 @@
 unit tiTestSetup;
 
+{$i tiDefines.inc}
+
 interface
 uses
   tiBaseObject,

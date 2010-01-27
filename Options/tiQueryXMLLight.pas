@@ -81,7 +81,8 @@ procedure RegisterPersistenceLayer(const APersistenceLayers: TtiPersistenceLayer
 
 implementation
 uses
-   tiUtils
+   Classes
+  ,tiUtils
   ,tiOPFManager
   ,tiDataBuffer_BOM
   ,tiConstants

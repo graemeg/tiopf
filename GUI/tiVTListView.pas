@@ -344,7 +344,7 @@ type
   private
     FtiTree: TtiCustomVirtualTree;
   public
-    constructor Create(AtiTree: TtiCustomVirtualTree);
+    constructor Create(AtiTree: TtiCustomVirtualTree); reintroduce;
     property tiTree: TtiCustomVirtualTree read FtiTree;
   end;
 

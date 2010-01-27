@@ -82,6 +82,7 @@
 			<DCCReference Include="xmlrtl.dcp"/>
 			<DCCReference Include="vclimg.dcp"/>
 			<DCCReference Include="..\..\GUI\tiDialogs.pas"/>
+			<DCCReference Include="..\..\GUI\tiVirtualTrees.pas"/>
 			<DCCReference Include="..\..\GUI\tiButtons.pas"/>
 			<DCCReference Include="..\..\GUI\tiCtrlButtonPanel.pas"/>
 			<DCCReference Include="..\..\GUI\tiFocusPanel.pas"/>
@@ -107,27 +108,28 @@
 			<DCCReference Include="..\..\GUI\tiSplitter.pas"/>
 			<DCCReference Include="..\..\GUI\tiTreeView.pas"/>
 			<DCCReference Include="..\..\GUI\tiTreeViewChildForm.pas"/>
+			<DCCReference Include="..\..\GUI\tiVTListView.pas"/>
+			<DCCReference Include="..\..\GUI\tiVTTreeView.pas"/>
 			<DCCReference Include="..\..\GUI\tiGUIUtils.pas"/>
 			<DCCReference Include="..\..\GUI\tiTreeBuildVisitor.pas"/>
 			<DCCReference Include="..\..\GUI\tiGenericTreeViewMediator.pas"/>
 			<DCCReference Include="..\..\GUI\tiSpin.pas"/>
 			<DCCReference Include="..\..\GUI\tiHyperlinkWithImage.pas"/>
 			<DCCReference Include="..\..\GUI\tiHotImage.pas"/>
+			<DCCReference Include="..\..\GUI\tiVTExportCSV.pas"/>
+			<DCCReference Include="..\..\GUI\tiVTExportHTML.pas"/>
 			<DCCReference Include="..\..\GUI\tiLogToGUI.pas"/>
 			<DCCReference Include="..\..\GUI\tiLogReg.pas"/>
 			<DCCReference Include="..\..\GUI\tiLogToErrorDialog.pas"/>
 			<DCCReference Include="..\..\GUI\tiGUIConstants.pas"/>
+			<DCCReference Include="..\..\GUI\tiVTFilter.pas"/>
 			<DCCReference Include="..\..\GUI\tiGUIINI.pas"/>
-			<DCCReference Include="..\..\GUI\tiVTAbstract.pas" />
-			<DCCReference Include="..\..\GUI\tiVTExportCSV.pas" />
-			<DCCReference Include="..\..\GUI\tiVTExportHTML.pas" />
-			<DCCReference Include="..\..\GUI\tiVTFilter.pas" />
-			<DCCReference Include="..\..\GUI\tiVTListView.pas" />
-			<DCCReference Include="..\..\GUI\tiVTSearch.pas" />
-			<DCCReference Include="..\..\GUI\tiVTTreeView.pas" />
+			<DCCReference Include="..\..\GUI\tiVTAbstract.pas"/>
 			<DCCReference Include="..\..\GUI\tiAnimatedGIF.pas"/>
 			<DCCReference Include="..\..\GUI\VCL\tiMediators.pas"/>
-			<DCCReference Include="..\..\GUI\VCL\tiListMediators.pas" />
+			<DCCReference Include="..\..\GUI\VCL\tiListMediators.pas"/>
+			<DCCReference Include="..\..\GUI\tiVTSearch.pas"/>
+			<DCCReference Include="..\..\GUI\tiVTAccessibilityFactory.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -182,6 +184,8 @@
 						<Source Name="MainSource">tiOPFGUI.dpk</Source>
 					</Source>
 					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k140.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp140.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
 						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k140.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDS)\bin\dclofficexp140.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>

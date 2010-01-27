@@ -1,5 +1,7 @@
 unit tiCGIObjectCacheClient;
 
+{$I tiDefines.inc}
+
 interface
 uses
   // tiOPF
