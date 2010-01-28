@@ -995,16 +995,41 @@ p_library_path=%delphi2010dir%\Lib\Indy10
               <Property name="ShowProgress" type="Boolean">True</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             </Object>
-            <Object Class="TGroupAction" XMLID="{F43ADB80-A5E4-472D-8D64-9104342C43C1}">
-              <Property MultiValue="0" name="ActionComment" type="string"></Property>
-              <Property MultiValue="1" name="ActionDescription" type="string">
-                <![CDATA[Read DUnit results into variables]]>
+            <Object Class="TBuildScript" XMLID="{D4AD45E3-8F8C-4AF0-B6A1-BC4F3214CBEB}">
+              <Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
+              <Property MultiValue="0" name="Name" type="string">Condition</Property>
+              <Property MultiValue="1" name="Script" type="string">
+                <![CDATA[PROMPT_BUILD_SETUP_EXES = &quot;1&quot;]]>
               </Property>
+              <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
+            </Object>
+          </Object>
+          <Object Class="TGroupAction" XMLID="{F43ADB80-A5E4-472D-8D64-9104342C43C1}">
+            <Property MultiValue="0" name="ActionComment" type="string"></Property>
+            <Property MultiValue="1" name="ActionDescription" type="string">
+              <![CDATA[Read DUnit results into variables]]>
+            </Property>
+            <Property name="ActionTextColor" type="Cardinal">0</Property>
+            <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+            <Property MultiValue="1" name="Description" type="string">
+              <![CDATA[Read DUnit results into variables]]>
+            </Property>
+            <Property name="DoNotValidateAction" type="Boolean">False</Property>
+            <Property name="Enabled" type="WordBool">True</Property>
+            <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+            <Property name="HideActionFromLog" type="Boolean">False</Property>
+            <Property name="IgnoreFailure" type="WordBool">False</Property>
+            <Property name="LogActionProperties" type="Boolean">False</Property>
+            <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+            <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+            <Property name="PauseInterval" type="Cardinal">0</Property>
+            <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+            <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+            <Object Class="TFBTryAction" XMLID="{B64E7689-52ED-4CBB-B82A-9EE13528BD18}">
+              <Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="0" name="ActionDescription" type="string">Try</Property>
               <Property name="ActionTextColor" type="Cardinal">0</Property>
               <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-              <Property MultiValue="1" name="Description" type="string">
-                <![CDATA[Read DUnit results into variables]]>
-              </Property>
               <Property name="DoNotValidateAction" type="Boolean">False</Property>
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
@@ -1016,14 +1041,19 @@ p_library_path=%delphi2010dir%\Lib\Indy10
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-              <Object Class="TFBTryAction" XMLID="{B64E7689-52ED-4CBB-B82A-9EE13528BD18}">
+              <Object Class="TFileExistsAction" XMLID="{4EF6FCEC-8DDF-4CFE-8728-B4C4095076BC}">
                 <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="0" name="ActionDescription" type="string">Try</Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Check If [ %path_to_working_dunit_inifile% ] Exists]]>
+                </Property>
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
                 <Property name="DoNotValidateAction" type="Boolean">False</Property>
                 <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExistsMode" type="TFileExistsMode">feFailIfMissing</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_dunit_inifile%</Property>
+                <Property MultiValue="0" name="FileSet" type="string"></Property>
                 <Property name="HideActionFromLog" type="Boolean">False</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
                 <Property name="LogActionProperties" type="Boolean">False</Property>
@@ -1032,191 +1062,169 @@ p_library_path=%delphi2010dir%\Lib\Indy10
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Object Class="TFileExistsAction" XMLID="{4EF6FCEC-8DDF-4CFE-8728-B4C4095076BC}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Check If [ %path_to_working_dunit_inifile% ] Exists]]>
-                  </Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExistsMode" type="TFileExistsMode">feFailIfMissing</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property MultiValue="0" name="FileOrDirectory" type="WideString">%path_to_working_dunit_inifile%</Property>
-                  <Property MultiValue="0" name="FileSet" type="string"></Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                  <Property name="UseFileSpec" type="Boolean">True</Property>
-                  <Property MultiValue="0" name="Variable" type="string"></Property>
-                </Object>
-                <Object Class="TFBVariablesLoadAction" XMLID="{B3B21C87-2618-4A36-BB4C-7957B0862193}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Load Variables (Long) from INI]]>
-                  </Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property name="CreateVarInINIifNotExists" type="Boolean">False</Property>
-                  <Property MultiValue="1" name="Description" type="string">
-                    <![CDATA[Load Variables (Long) from INI]]>
-                  </Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
-                  <Property name="FailIfVariableNotInIniFile" type="Boolean">False</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="INIFile" type="string">%path_to_working_dunit_inifile%</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property MultiValue="0" name="SectionName" type="string">Report_Long</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                  <Property name="Variables" type="TStrings">
-                    <![CDATA[report_long_d2010
-]]>
-                  </Property>
-                  <Property name="VariableTypes" type="TStrings">
-                    <![CDATA[String
-]]>
-                  </Property>
-                </Object>
-                <Object Class="TFBVariablesLoadAction" XMLID="{4CBE3248-CA09-47BA-BBC6-6F107D38CC54}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Load Variables (Short) from INI]]>
-                  </Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property name="CreateVarInINIifNotExists" type="Boolean">False</Property>
-                  <Property MultiValue="1" name="Description" type="string">
-                    <![CDATA[Load Variables (Short) from INI]]>
-                  </Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
-                  <Property name="FailIfVariableNotInIniFile" type="Boolean">False</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="INIFile" type="string">%path_to_working_dunit_inifile%</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property MultiValue="0" name="SectionName" type="string">Report_Short</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                  <Property name="Variables" type="TStrings">
-                    <![CDATA[report_short_d2010
-]]>
-                  </Property>
-                  <Property name="VariableTypes" type="TStrings">
-                    <![CDATA[String
-]]>
-                  </Property>
-                </Object>
+                <Property name="UseFileSpec" type="Boolean">True</Property>
+                <Property MultiValue="0" name="Variable" type="string"></Property>
               </Object>
-              <Object Class="TFBExceptAction" XMLID="{1EAC4CB1-8CD3-4ED2-A997-03067CA251C6}">
+              <Object Class="TFBVariablesLoadAction" XMLID="{B3B21C87-2618-4A36-BB4C-7957B0862193}">
                 <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="0" name="ActionDescription" type="string">Catch</Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Load Variables (Long) from INI]]>
+                </Property>
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="CreateVarInINIifNotExists" type="Boolean">False</Property>
+                <Property MultiValue="1" name="Description" type="string">
+                  <![CDATA[Load Variables (Long) from INI]]>
+                </Property>
                 <Property name="DoNotValidateAction" type="Boolean">False</Property>
                 <Property name="Enabled" type="WordBool">True</Property>
-                <Property MultiValue="0" name="ErrorActionVariableName" type="string"></Property>
-                <Property MultiValue="0" name="ErrorsVariableName" type="string"></Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
+                <Property name="FailIfVariableNotInIniFile" type="Boolean">False</Property>
                 <Property name="HideActionFromLog" type="Boolean">False</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
+                <Property MultiValue="0" name="INIFile" type="string">%path_to_working_dunit_inifile%</Property>
                 <Property name="LogActionProperties" type="Boolean">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property MultiValue="0" name="SectionName" type="string">Report_Long</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                <Object Class="TSetVariableAction" XMLID="{F97C6990-9D6A-4CA9-85DD-945AD7593B15}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Set Variable report_long_d2010 to [ Unit tests faild to run ]]]>
-                  </Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property name="ApplyToExisting" type="Boolean">False</Property>
-                  <Property name="DoExpandExpression" type="Boolean">True</Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
-                  <Property MultiValue="1" name="NewValue" type="WideString">
-                    <![CDATA[Unit tests faild to run]]>
-                  </Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="VariableName" type="WideString">report_long_d2010</Property>
-                </Object>
-                <Object Class="TSetVariableAction" XMLID="{05E9FEE7-07DC-4A30-A4B7-05ECE91FA1D5}">
-                  <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                  <Property MultiValue="1" name="ActionDescription" type="string">
-                    <![CDATA[Set Variable report_short_d2010 to [ 0/0 ]]]>
-                  </Property>
-                  <Property name="ActionTextColor" type="Cardinal">0</Property>
-                  <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
-                  <Property name="ApplyToExisting" type="Boolean">False</Property>
-                  <Property name="DoExpandExpression" type="Boolean">True</Property>
-                  <Property name="DoNotValidateAction" type="Boolean">False</Property>
-                  <Property name="Enabled" type="WordBool">True</Property>
-                  <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
-                  <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
-                  <Property name="HideActionFromLog" type="Boolean">False</Property>
-                  <Property name="IgnoreFailure" type="WordBool">False</Property>
-                  <Property name="LogActionProperties" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="LogToVariable" type="string"></Property>
-                  <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
-                  <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
-                  <Property MultiValue="0" name="NewValue" type="WideString">0/0</Property>
-                  <Property name="PauseInterval" type="Cardinal">0</Property>
-                  <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
-                  <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-                  <Property MultiValue="0" name="VariableName" type="WideString">report_short_d2010</Property>
-                </Object>
+                <Property name="Variables" type="TStrings">
+                  <![CDATA[report_long_d2010
+]]>
+                </Property>
+                <Property name="VariableTypes" type="TStrings">
+                  <![CDATA[String
+]]>
+                </Property>
               </Object>
-              <Object Class="TFBEndBlockAction" XMLID="{64A26DDD-B611-4986-8315-65A701F440CD}">
+              <Object Class="TFBVariablesLoadAction" XMLID="{4CBE3248-CA09-47BA-BBC6-6F107D38CC54}">
                 <Property MultiValue="0" name="ActionComment" type="string"></Property>
-                <Property MultiValue="0" name="ActionDescription" type="string">End</Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Load Variables (Short) from INI]]>
+                </Property>
                 <Property name="ActionTextColor" type="Cardinal">0</Property>
                 <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="CreateVarInINIifNotExists" type="Boolean">False</Property>
+                <Property MultiValue="1" name="Description" type="string">
+                  <![CDATA[Load Variables (Short) from INI]]>
+                </Property>
                 <Property name="DoNotValidateAction" type="Boolean">False</Property>
                 <Property name="Enabled" type="WordBool">True</Property>
                 <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="FailIfVariableNotDefined" type="Boolean">True</Property>
+                <Property name="FailIfVariableNotInIniFile" type="Boolean">False</Property>
                 <Property name="HideActionFromLog" type="Boolean">False</Property>
                 <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="IgnoreFileNotFound" type="Boolean">False</Property>
+                <Property MultiValue="0" name="INIFile" type="string">%path_to_working_dunit_inifile%</Property>
                 <Property name="LogActionProperties" type="Boolean">False</Property>
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property MultiValue="0" name="SectionName" type="string">Report_Short</Property>
                 <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property name="Variables" type="TStrings">
+                  <![CDATA[report_short_d2010
+]]>
+                </Property>
+                <Property name="VariableTypes" type="TStrings">
+                  <![CDATA[String
+]]>
+                </Property>
               </Object>
+            </Object>
+            <Object Class="TFBExceptAction" XMLID="{1EAC4CB1-8CD3-4ED2-A997-03067CA251C6}">
+              <Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="0" name="ActionDescription" type="string">Catch</Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="DoNotValidateAction" type="Boolean">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property MultiValue="0" name="ErrorActionVariableName" type="string"></Property>
+              <Property MultiValue="0" name="ErrorsVariableName" type="string"></Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="HideActionFromLog" type="Boolean">False</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="LogActionProperties" type="Boolean">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+              <Object Class="TSetVariableAction" XMLID="{F97C6990-9D6A-4CA9-85DD-945AD7593B15}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Set Variable report_long_d2010 to [ Unit tests faild to run ]]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="ApplyToExisting" type="Boolean">False</Property>
+                <Property name="DoExpandExpression" type="Boolean">True</Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
+                <Property MultiValue="1" name="NewValue" type="WideString">
+                  <![CDATA[Unit tests faild to run]]>
+                </Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property MultiValue="0" name="VariableName" type="WideString">report_long_d2010</Property>
+              </Object>
+              <Object Class="TSetVariableAction" XMLID="{05E9FEE7-07DC-4A30-A4B7-05ECE91FA1D5}">
+                <Property MultiValue="0" name="ActionComment" type="string"></Property>
+                <Property MultiValue="1" name="ActionDescription" type="string">
+                  <![CDATA[Set Variable report_short_d2010 to [ 0/0 ]]]>
+                </Property>
+                <Property name="ActionTextColor" type="Cardinal">0</Property>
+                <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+                <Property name="ApplyToExisting" type="Boolean">False</Property>
+                <Property name="DoExpandExpression" type="Boolean">True</Property>
+                <Property name="DoNotValidateAction" type="Boolean">False</Property>
+                <Property name="Enabled" type="WordBool">True</Property>
+                <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+                <Property name="ForceType" type="TFBSetVariableForceType">ftDefault</Property>
+                <Property name="HideActionFromLog" type="Boolean">False</Property>
+                <Property name="IgnoreFailure" type="WordBool">False</Property>
+                <Property name="LogActionProperties" type="Boolean">False</Property>
+                <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+                <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+                <Property name="Modifier" type="TFBSetVariableModifier">smNone</Property>
+                <Property MultiValue="0" name="NewValue" type="WideString">0/0</Property>
+                <Property name="PauseInterval" type="Cardinal">0</Property>
+                <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+                <Property name="SuppressStatusMessages" type="Boolean">False</Property>
+                <Property MultiValue="0" name="VariableName" type="WideString">report_short_d2010</Property>
+              </Object>
+            </Object>
+            <Object Class="TFBEndBlockAction" XMLID="{64A26DDD-B611-4986-8315-65A701F440CD}">
+              <Property MultiValue="0" name="ActionComment" type="string"></Property>
+              <Property MultiValue="0" name="ActionDescription" type="string">End</Property>
+              <Property name="ActionTextColor" type="Cardinal">0</Property>
+              <Property MultiValue="0" name="ActionTypeID" type="string"></Property>
+              <Property name="DoNotValidateAction" type="Boolean">False</Property>
+              <Property name="Enabled" type="WordBool">True</Property>
+              <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
+              <Property name="HideActionFromLog" type="Boolean">False</Property>
+              <Property name="IgnoreFailure" type="WordBool">False</Property>
+              <Property name="LogActionProperties" type="Boolean">False</Property>
+              <Property MultiValue="0" name="LogToVariable" type="string"></Property>
+              <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
+              <Property name="PauseInterval" type="Cardinal">0</Property>
+              <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
+              <Property name="SuppressStatusMessages" type="Boolean">False</Property>
             </Object>
             <Object Class="TFBWriteToTextFileAction" XMLID="{FA137DE6-1EE9-40AA-B900-33D22FD1F09C}">
               <Property MultiValue="0" name="ActionComment" type="string"></Property>
@@ -1340,14 +1348,6 @@ p_library_path=%delphi2010dir%\Lib\Indy10
               <Property name="PauseInterval" type="Cardinal">0</Property>
               <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
               <Property name="SuppressStatusMessages" type="Boolean">False</Property>
-            </Object>
-            <Object Class="TBuildScript" XMLID="{D4AD45E3-8F8C-4AF0-B6A1-BC4F3214CBEB}">
-              <Property MultiValue="0" name="BreakPointsStore" type="string"></Property>
-              <Property MultiValue="0" name="Name" type="string">Condition</Property>
-              <Property MultiValue="1" name="Script" type="string">
-                <![CDATA[PROMPT_BUILD_SETUP_EXES = &quot;1&quot;]]>
-              </Property>
-              <Property MultiValue="0" name="ScriptLanguage" type="string">VBScript</Property>
             </Object>
           </Object>
           <Object Class="TGroupAction" XMLID="{EC7AF894-6E6C-49D3-862D-E372D5B13ACE}">
@@ -3053,7 +3053,6 @@ String
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-              <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
               <Property name="HideActionFromLog" type="Boolean">False</Property>
               <Property name="HintsAsError" type="Boolean">False</Property>
               <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -3202,7 +3201,6 @@ Comments=
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-              <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
               <Property name="HideActionFromLog" type="Boolean">False</Property>
               <Property name="HintsAsError" type="Boolean">False</Property>
               <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -3351,7 +3349,6 @@ Comments=
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-              <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
               <Property name="HideActionFromLog" type="Boolean">False</Property>
               <Property name="HintsAsError" type="Boolean">False</Property>
               <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -3500,7 +3497,6 @@ Comments=
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-              <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
               <Property name="HideActionFromLog" type="Boolean">False</Property>
               <Property name="HintsAsError" type="Boolean">False</Property>
               <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -3649,7 +3645,6 @@ Comments=
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-              <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
               <Property name="HideActionFromLog" type="Boolean">False</Property>
               <Property name="HintsAsError" type="Boolean">False</Property>
               <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -3798,7 +3793,6 @@ Comments=
               <Property name="Enabled" type="WordBool">True</Property>
               <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
               <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-              <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
               <Property name="HideActionFromLog" type="Boolean">False</Property>
               <Property name="HintsAsError" type="Boolean">False</Property>
               <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -4563,7 +4557,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -4712,7 +4705,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -4861,7 +4853,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -5010,7 +5001,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -5159,7 +5149,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -5308,7 +5297,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -5457,7 +5445,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -5606,7 +5593,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -5755,7 +5741,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -5904,7 +5889,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -6053,7 +6037,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -6202,7 +6185,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -6351,7 +6333,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -6500,7 +6481,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -6649,7 +6629,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -6798,7 +6777,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -6947,7 +6925,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -7096,7 +7073,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -7245,7 +7221,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -7394,7 +7369,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -7543,7 +7517,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -7692,7 +7665,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -7841,7 +7813,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -7990,7 +7961,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -8139,7 +8109,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
@@ -8288,7 +8257,6 @@ Comments=
             <Property name="Enabled" type="WordBool">True</Property>
             <Property name="ExpandActionLogTitle" type="Boolean">True</Property>
             <Property MultiValue="0" name="ExtraCommandline" type="WideString"></Property>
-            <Property MultiValue="0" name="GenTLBOptions" type="string"></Property>
             <Property name="HideActionFromLog" type="Boolean">False</Property>
             <Property name="HintsAsError" type="Boolean">False</Property>
             <Property MultiValue="0" name="IconFile" type="WideString"></Property>
