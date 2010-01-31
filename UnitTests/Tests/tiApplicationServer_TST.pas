@@ -29,7 +29,7 @@ uses
 
 procedure RegisterTests;
 begin
-  RegisterNonPersistentTest(TTestTIApplicationServer);
+  tiRegisterNonPersistentTest(TTestTIApplicationServer);
 end;
 
 const
