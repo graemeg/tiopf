@@ -100,6 +100,7 @@
 			<DCCReference Include="..\..\Options\tiQueue.pas"/>
 			<DCCReference Include="..\..\Options\tiRegistry.pas"/>
 			<DCCReference Include="..\..\Options\tiQueryDataset.pas"/>
+			<DCCReference Include="..\..\Options\tiDataset.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

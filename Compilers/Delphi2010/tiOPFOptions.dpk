@@ -68,7 +68,8 @@ contains
   tiSingleInstanceApp in '..\..\Options\tiSingleInstanceApp.pas',
   tiQueue in '..\..\Options\tiQueue.pas',
   tiRegistry in '..\..\Options\tiRegistry.pas',
-  tiQueryDataset in '..\..\Options\tiQueryDataset.pas';
+  tiQueryDataset in '..\..\Options\tiQueryDataset.pas',
+  tiDataset in '..\..\Options\tiDataset.pas';
 
 {$I tiDefines.inc}
 

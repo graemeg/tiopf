@@ -43,7 +43,6 @@ contains
   tiOPFControlsReg in '..\..\GUI\tiOPFControlsReg.pas',
   DtiDefaultActionValues in '..\..\GUI\DtiDefaultActionValues.pas' {tidmDefaultActionValues: TDataModule},
   tiTreeviewEditor in '..\..\GUI\tiTreeviewEditor.pas',
-  tiDataSet_Reg in '..\..\Options\tiDataSet_Reg.pas',
-  tiDataset in '..\..\Options\tiDataset.pas';
+  tiDataSet_Reg in '..\..\Options\tiDataSet_Reg.pas';
 
 end.
