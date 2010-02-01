@@ -146,8 +146,11 @@ procedure TtiDBPS_ExecuteRemoteXML.Execute(
   var   AContentType: string;
   var   AResponseCode: Integer;
   const AResponseInfo: TIdHTTPResponseInfo);
+var
+  LS: string;
 begin
-  tiStringToStream(ExecuteRemoteXML(ARequestParams), AResponse);
+  LS:=ExecuteRemoteXML(ARequestParams);
+  tiStringToStream(LS, AResponse);
 end;
 
 { TtiDBPS_TestAlive1 }

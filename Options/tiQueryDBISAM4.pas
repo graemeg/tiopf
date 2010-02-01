@@ -759,6 +759,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistDBISAM4;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + 'DBISAM';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.Username:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanCreateDatabase:= True;

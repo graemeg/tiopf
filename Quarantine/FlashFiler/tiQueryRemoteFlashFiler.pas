@@ -62,6 +62,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, cTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistRemoteFF;
   APersistenceLayerDefaults.DatabaseName:= cDefaultDatabaseDirectory;
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.Username:= '';
   APersistenceLayerDefaults.Password:= '';
   APersistenceLayerDefaults.CanCreateDatabase:= True;

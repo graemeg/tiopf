@@ -78,6 +78,7 @@ type
   {: Adds a reference to the appropriate persistence layer}
   TtiTestCaseWithPersistenceLayer = class(TtiTestCaseWithTestSetupData)
   private
+
     function    GetPersistenceLayer: TtiPersistenceLayer;
     procedure   CreateDBIfNotExists;
 

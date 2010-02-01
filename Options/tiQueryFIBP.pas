@@ -995,6 +995,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistFIBP;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.Username:= 'SYSDBA';
   APersistenceLayerDefaults.Password:= 'masterkey';
   APersistenceLayerDefaults.CanDropDatabase:= False;

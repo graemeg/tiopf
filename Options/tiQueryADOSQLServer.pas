@@ -196,6 +196,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistADOSQLServer;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + '.XXX';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.Username:= 'XXX';
   APersistenceLayerDefaults.Password:= 'XXX';
   APersistenceLayerDefaults.CanDropDatabase:= False;

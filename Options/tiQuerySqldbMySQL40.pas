@@ -64,6 +64,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistSqldbMySQL40;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName;
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= False;
   APersistenceLayerDefaults.Username:= 'root';
   APersistenceLayerDefaults.Password:= '';
   APersistenceLayerDefaults.CanCreateDatabase:= True;

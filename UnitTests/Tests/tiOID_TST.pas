@@ -21,6 +21,8 @@ type
   protected
     FOIDGeneratorClass: TtiOIDGeneratorClass;
     FOIDList:           TStringList;
+    FRepeatCount: integer;
+    FNumThreads: integer;
     procedure TestThenAddOIDAsString(const AOID: string);
     procedure SetUp; override;
     procedure TearDown; override;
@@ -151,12 +153,6 @@ uses
   tiOPFTestManager,
   tiTestDependencies,
   tiUtils;
-
-const
-  // Number of times to repeat NextOID test
-  // Set a high number for thorough testing (eg, 100000)
-  // Set a low number for quick testing (eg, 100)
-  CRepeatCount = 100;
 
 procedure RegisterTests;
 begin
@@ -529,9 +525,13 @@ end;
 procedure TTestTIOIDPersistent.Setup;
 begin
   inherited;
+  // Number of times to repeat NextOID test
+  // Set a high number for thorough testing (eg, 100000)
+  // Set a low number for quick testing (eg, 100)
+  FRepeatCount:= 100;
+  // 3 is the minimum for testing, 10 will give a more indepth test
+  FNumThreads:= 10;
   FOIDList := TStringList.Create;
-  GTIOPFManager.DefaultPersistenceLayerName := TestSetupData.PersistenceLayerName;
-  GTIOPFManager.DefaultDBConnectionName := TestSetupData.DBName;
 end;
 
 procedure TTestTIOIDPersistent.TearDown;
@@ -632,15 +632,13 @@ procedure TTestTIOIDPersistent.TtiNextOIDGeneratorAssignNextOIDMultiUser;
 var
   LList:       TtiThreadList;
   i:           integer;
-const
-  CNumThreads = 10; // 3 is the minimum for testing, 10 will give a more indepth test
 begin
   if PersistenceLayerSupportsMultiUser then
   begin
     LList       := TtiThreadList.Create;
     try
-      for i := 0 to CNumThreads - 1 do
-        LList.Add(TtiOIDGeneratorThread.Create(FOIDGeneratorClass, i, CRepeatCount, DatabaseName, PersistenceLayerName));
+      for i := 0 to FNumThreads - 1 do
+        LList.Add(TtiOIDGeneratorThread.Create(FOIDGeneratorClass, i, FRepeatCount, DatabaseName, PersistenceLayerName));
       LList.ResumeAll;
       LList.WaitForAll;
       for i := 0 to LList.Count - 1 do
@@ -663,7 +661,7 @@ begin
   Assert(Assigned(FOIDGeneratorClass), 'FOIDGeneratorClass not assigned');
   LNextOIDGenerator := FOIDGeneratorClass.Create;
   try
-    for i := 10 to CRepeatCount do
+    for i := 10 to FRepeatCount do
     begin
       LOID := FOIDGeneratorClass.OIDClass.Create;
       try
@@ -688,7 +686,7 @@ begin
   if PersistenceLayerSupportsMultiUser then
   begin
     SetAllowedLeakArray([32, 56]); // CoInitialize
-    LThread:= TtiOIDGeneratorThread.Create(FOIDGeneratorClass, 0, CRepeatCount, DatabaseName, PersistenceLayerName);
+    LThread:= TtiOIDGeneratorThread.Create(FOIDGeneratorClass, 0, FRepeatCount, DatabaseName, PersistenceLayerName);
     try
       LThread.Resume;
       LThread.WaitFor;
@@ -923,27 +921,39 @@ end;
 procedure TTestTIOIDPersistent.TtiObjectCreateNew;
 var
   LObject: TtiObject;
+  LDefaultPersistenceLayerName: string;
+  LDefaultDBConnectionName: string;
 begin
   SetAllowedLeakArray([32, 56, 88]); // CoInitialize
-  GTIOPFManager.DefaultOIDGenerator := FOIDGeneratorClass.Create;
+  LDefaultPersistenceLayerName:= GTIOPFManager.DefaultPersistenceLayerName;
+  LDefaultDBConnectionName:= GTIOPFManager.DefaultDBConnectionName;
+
+  GTIOPFManager.DefaultPersistenceLayerName:= PersistenceLayerName;
+  GTIOPFManager.DefaultDBConnectionName:= DatabaseName;
   try
-
-    LObject := TtiObject.Create;
+    GTIOPFManager.DefaultOIDGenerator := FOIDGeneratorClass.Create;
     try
-      CheckEquals(LObject.OID.NullOIDAsString, LObject.OID.AsString);
-    finally
-      LObject.Free;
-    end;
 
-    LObject := TtiObject.CreateNew;
-    try
-      CheckNotEquals(LObject.OID.NullOIDAsString, LObject.OID.AsString);
-    finally
-      LObject.Free;
-    end;
+      LObject := TtiObject.Create;
+      try
+        CheckEquals(LObject.OID.NullOIDAsString, LObject.OID.AsString);
+      finally
+        LObject.Free;
+      end;
 
+      LObject := TtiObject.CreateNew(nil, DatabaseName, PersistenceLayerName);
+      try
+        CheckNotEquals(LObject.OID.NullOIDAsString, LObject.OID.AsString);
+      finally
+        LObject.Free;
+      end;
+
+    finally
+      GTIOPFManager.DefaultOIDGenerator := GTIOPFTestManager.DefaultOIDGeneratorClass.Create;
+    end;
   finally
-    GTIOPFManager.DefaultOIDGenerator := GTIOPFTestManager.DefaultOIDGeneratorClass.Create;
+    GTIOPFManager.DefaultPersistenceLayerName:= LDefaultPersistenceLayerName;
+    GTIOPFManager.DefaultDBConnectionName:= LDefaultDBConnectionName;
   end;
 end;
 

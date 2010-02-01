@@ -79,6 +79,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName := cTIPersistSqldbIB;
   APersistenceLayerDefaults.DatabaseName      := CDefaultDatabaseDirectory + CDefaultDatabaseName + '.fdb';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.Username          := 'SYSDBA';
   APersistenceLayerDefaults.Password          := 'masterkey';
   APersistenceLayerDefaults.CanDropDatabase   := True;

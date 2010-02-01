@@ -300,7 +300,10 @@ var
   LDefault: string;
 begin
   Assert(FPersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
-  LDefault:= ExpandFileName(tiAddTrailingSlash(CDefaultTestDataDirectory) + FPersistenceLayerDefaults.DatabaseName);
+  if FPersistenceLayerDefaults.IsDatabaseNameFilePath then
+    LDefault:= ExpandFileName(tiAddTrailingSlash(CDefaultTestDataDirectory) + FPersistenceLayerDefaults.DatabaseName)
+  else
+    LDefault:= FPersistenceLayerDefaults.DatabaseName;
   Result:= ReadFromReg(
     FPersistenceLayerDefaults.PersistenceLayerName,
     'DBName',

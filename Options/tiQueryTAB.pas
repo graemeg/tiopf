@@ -193,6 +193,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistTab;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + 'Tab';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.Username:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanDropDatabase:= False;

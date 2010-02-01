@@ -238,7 +238,7 @@ begin
       FXMLWriterData.TableData +
       uXMLTags.DatabaseFooter;
     lResponse := tiCompressEncode(lResponse, cgsCompressZLib);
-    result := lResponse;
+    result:= LResponse;
     Assert(Trim(result) <> '', 'Error in result string.');
   except
     on e:exception do

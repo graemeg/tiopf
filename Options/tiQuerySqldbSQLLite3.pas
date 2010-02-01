@@ -64,6 +64,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistSqldbSQLLite3;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName + '.db';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.CanCreateDatabase:= True;
   APersistenceLayerDefaults.CanSupportMultiUser:= False;
   APersistenceLayerDefaults.CanSupportSQL:= True;

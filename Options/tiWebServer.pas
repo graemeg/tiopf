@@ -246,9 +246,10 @@ begin
   // ToDo: May want to work towards a case in the future:
   //   case ARequestInfo.CommandType of ...
   //   (hcUnknown, hcHEAD, hcGET, hcPOST, hcDELETE, hcPUT, hcTRACE, hcOPTION);
-  Result:= ARequestInfo.UnparsedParams;
-  if (Result = '') and Assigned(ARequestInfo.PostStream) then
-    Result:= tiStreamToString(ARequestInfo.PostStream);
+  if Assigned(ARequestInfo.PostStream) then
+    Result:= tiStreamToString(ARequestInfo.PostStream)
+  else
+    Result:= ARequestInfo.UnparsedParams;
 end;
 
 { TtiWebServer }

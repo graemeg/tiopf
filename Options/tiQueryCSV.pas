@@ -193,6 +193,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistCSV;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseDirectory + CDefaultDatabaseName + 'CSV';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.Username:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanDropDatabase:= False;

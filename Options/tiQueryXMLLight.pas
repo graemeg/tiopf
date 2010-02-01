@@ -350,6 +350,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= cTIPersistXMLLight;
   APersistenceLayerDefaults.DatabaseName:= CDefaultDatabaseName + '.XMLLight';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.UserName:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanDropDatabase:= False;

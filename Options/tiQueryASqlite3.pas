@@ -766,6 +766,7 @@ begin
   Assert(APersistenceLayerDefaults.TestValid, CTIErrorInvalidObject);
   APersistenceLayerDefaults.PersistenceLayerName:= CTIPersistASqlite3;
   APersistenceLayerDefaults.DatabaseName:= 'Demo.sqb';
+  APersistenceLayerDefaults.IsDatabaseNameFilePath:= True;
   APersistenceLayerDefaults.Username:= 'null';
   APersistenceLayerDefaults.Password:= 'null';
   APersistenceLayerDefaults.CanDropDatabase:= False;
