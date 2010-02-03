@@ -939,7 +939,7 @@ end;
 procedure TtiLogToCacheAbs.Init(const ASynchronized: Boolean);
 begin
   FListWorking := TtiLogEvents.Create;
-  FThrdLog     := TtiThrdLog.CreateExt(self); // Must call FThrdLog.Resume in the descandant classes
+  FThrdLog     := TtiThrdLog.CreateExt(self); // Must call FThrdLog.Start in the descandant classes
   FSynchronized := ASynchronized;
 end;
 

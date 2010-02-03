@@ -867,7 +867,7 @@ procedure TTestTIPersistenceLayers.DoThreadedDBConnectionPool(
     i : integer;
   begin
     for i := 0 to AList.Count - 1 do
-      TThread(AList.Items[i]).Resume;
+      TThread(AList.Items[i]).Start;
   end;
 
   procedure _WaitForThreads(AList : TList);

@@ -63,9 +63,7 @@ type
     procedure   Execute; override;
   end;
 
-
   TtiPooledItemEvent = procedure(const APooledItem : TtiPooledItem) of object;
-
 
   TtiPool = class(TtiBaseObject)
   private
@@ -424,20 +422,17 @@ end;
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 constructor TtiThrdPoolMonitor.CreateExt(APool: TtiPool);
 begin
-  Create(true);
+  Create(False);
   FreeOnTerminate := false;
   FPool := APool;
   Priority := tpLowest;
-  resume;
 end;
-
 
 procedure TtiThrdPoolMonitor.Execute;
 begin
   while SleepAndCheckTerminated(10000) do
     FPool.SweepForTimeOuts;
 end;
-
 
 // Scan the pool for items which have timed out and should be removed from
 // the pool

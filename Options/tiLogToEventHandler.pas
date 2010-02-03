@@ -49,7 +49,7 @@ begin
   else
     inherited Create;
   FOnLog := AOnLog;
-  ThrdLog.Resume;
+  ThrdLog.Start;
 end;
 
 procedure TtiLogToEventHandler.WriteToOutput;

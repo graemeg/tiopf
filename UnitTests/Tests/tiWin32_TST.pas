@@ -126,11 +126,10 @@ type
   constructor TThreadCoInitializeForTesting.Create(
     const ATestCase: TtiTestCase; const AIterations: Integer);
   begin
-    inherited Create(True);
+    inherited Create(False);
     FTestCase:= ATestCase;
     FIterations:= AIterations;
     FreeOnTerminate:= False;
-    Resume;
   end;
 
   procedure TThreadCoInitializeForTesting.Execute;

@@ -194,7 +194,7 @@ begin
 
   FTaskThread := TtiSceduledFilePurgeThread.Create(
       LTimeToPurge, FScheduledFilePurgeDetailsList);
-  FTaskThread.Resume;
+  FTaskThread.Start;
 end;
 
 destructor TtiScheduledFilePurge.Destroy;

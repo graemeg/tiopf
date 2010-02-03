@@ -639,7 +639,7 @@ begin
     try
       for i := 0 to FNumThreads - 1 do
         LList.Add(TtiOIDGeneratorThread.Create(FOIDGeneratorClass, i, FRepeatCount, DatabaseName, PersistenceLayerName));
-      LList.ResumeAll;
+      LList.StartAll;
       LList.WaitForAll;
       for i := 0 to LList.Count - 1 do
         _CheckForDuplicates(Self, LList.Items[i] as TtiOIDGeneratorThread);
@@ -688,7 +688,7 @@ begin
     SetAllowedLeakArray([32, 56]); // CoInitialize
     LThread:= TtiOIDGeneratorThread.Create(FOIDGeneratorClass, 0, FRepeatCount, DatabaseName, PersistenceLayerName);
     try
-      LThread.Resume;
+      LThread.Start;
       LThread.WaitFor;
     finally
       LThread.Free;

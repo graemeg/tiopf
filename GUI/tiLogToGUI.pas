@@ -77,7 +77,7 @@ begin
   {$IFNDEF FPC}
     FForm.Visible := true;
   {$ENDIF}
-  ThrdLog.Resume;
+  ThrdLog.Start;
 end;
 
 

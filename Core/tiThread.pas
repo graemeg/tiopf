@@ -81,7 +81,7 @@ type
     // ToDo: Should override Add() and check that the thread's FreeOnTerminate
     //       = False (WaitForAll will fail if FreeOnTerminate = True)
     procedure   WaitForAll;
-    procedure   ResumeAll;
+    procedure   StartAll;
   end;
 
   TtiThreadClass = class of TtiThread;
@@ -188,7 +188,6 @@ begin
   // after the inherited call may execute after the thread starts running.
   // Have never seen an error caused by this, but the code smells of trouble.
   Create(true);
-  resume;
 end;
 
 
@@ -300,12 +299,12 @@ begin
   FCritSect.Enter;
 end;
 
-procedure TtiThreadList.ResumeAll;
+procedure TtiThreadList.StartAll;
 var
   i: integer;
 begin
   for i := 0 to Count - 1 do
-    Items[i].Resume;
+    Items[i].Start;
 end;
 
 procedure TtiThreadList.Unlock;

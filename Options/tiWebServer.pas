@@ -897,7 +897,7 @@ end;
 procedure TtiBlockStreamCache.Start;
 begin
   FStarted:= True;
-  FSweeper.Resume;
+  FSweeper.Start;
 end;
 
 procedure TtiBlockStreamCache.SweepForTimeOuts;

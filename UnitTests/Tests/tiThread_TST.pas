@@ -11,6 +11,8 @@ type
   TTestTIThread = class(TtiTestCase)
   private
   published
+    procedure tiThread_Start;
+    procedure tiSleepThread_Start;
     procedure TListDeleteLeak;
     procedure TListDeleteNoLeak;
     procedure tiActiveThreadList;
@@ -75,6 +77,28 @@ begin
 //  CheckEquals(0, GTIOPFManager.ActiveThreadList.Count);
 end;
 
+type
+  TtiSleepThreadForTesting = class(TtiSleepThread)
+  public
+    procedure Execute; override;
+  end;
+
+  procedure TtiSleepThreadForTesting.Execute;
+  begin
+    Sleep(CSleep);
+  end;
+
+procedure TTestTIThread.tiSleepThread_Start;
+var
+  L: TtiSleepThreadForTesting;
+begin
+  L:= TtiSleepThreadForTesting.Create(True);
+  L.FreeOnTerminate:= True;
+  L.Start;
+  Sleep(CSleep*2);
+  Check(True);
+end;
+
 procedure TTestTIThread.tiThreadExplicitFree;
 //var
 //  LThread: TtiThreadForTesting;
@@ -90,7 +114,7 @@ begin
 //    LThread.Priority:= tpHighest;
 //    if GTIOPFManager.ActiveThreadList.Count > 1 then
 //      Fail(Format('Expected 1 thread, but found "%s"', [GTIOPFManager.ActiveThreadList.ActiveThreadNames]));
-//    LThread.Resume;
+//    LThread.Start;
 //    LThread.WaitFor;
 //  finally
 //    LThread.Free;
@@ -105,7 +129,7 @@ begin
   SetAllowedLeakArray([152]);
   LThread:= TtiThreadForTesting.Create(True);
   LThread.FreeOnTerminate:= True;
-  LThread.Resume;
+  LThread.Start;
   Sleep(CSleep*2);
   Check(True);
 end;
@@ -121,13 +145,24 @@ type
     Sleep(CSleep);
   end;
 
+procedure TTestTIThread.tiThread_Start;
+var
+  L: TtiThreadForTesting;
+begin
+  L:= TtiThreadForTesting.Create(True);
+  L.FreeOnTerminate:= True;
+  L.Start;
+  Sleep(CSleep*2);
+  Check(True);
+end;
+
 procedure TTestTIThread.TThreadFreeOnTerminate;
 var
   LThread: TThreadForTesting;
 begin
   LThread:= TThreadForTesting.Create(True);
   LThread.FreeOnTerminate:= True;
-  LThread.Resume;
+  LThread.Start;
   Sleep(CSleep*2);
   Check(True);
 end;
@@ -234,7 +269,7 @@ begin
   SetAllowedLeakArray([120]);
   LThread:= TThreadOnTerminateForTesting.Create(True);
   LThread.FreeOnTerminate:= True;
-  LThread.Resume;
+  LThread.Start;
   Sleep(CSleep*2);
   // LThread:= nil; // This won't do the trick
   Check(True);

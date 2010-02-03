@@ -40,6 +40,7 @@ type
     procedure DoLock_Unlock(ACount: integer);
   published
     procedure CreateAndDestroy;
+    procedure tiThrdPoolMonitor;
     procedure Lock_Unlock_1;
     procedure Lock_Unlock_10;
     procedure Lock_UnLock_Threaded;
@@ -143,7 +144,7 @@ begin
         lThrd.ItemCount := cThreadItemCount;
         lThrd.Pool := lPool;
         lList.Add(lThrd);
-        lThrd.Resume;
+        lThrd.Start;
         Sleep(20);
       end;
       for i := 0 to lList.Count - 1 do
@@ -280,6 +281,29 @@ begin
   end;
 end;
 
+
+type
+  TtiThrdPoolMonitorForTesting = class(TtiThrdPoolMonitor)
+  public
+    procedure Execute; override;
+  end;
+
+  procedure TtiThrdPoolMonitorForTesting.Execute;
+  begin
+    Sleep(200);
+  end;
+
+procedure TTestTiPool.tiThrdPoolMonitor;
+var
+  L: TtiThrdPoolMonitorForTesting;
+begin
+  L:= TtiThrdPoolMonitorForTesting.CreateExt(nil);
+  try
+    L.Terminate;
+  finally
+    L.Free;
+  end;
+end;
 
 procedure TTestTiPool.CreateAndDestroy;
 var

@@ -1537,7 +1537,7 @@ begin
   begin
     InserTtiObjectListForTesting(1, 1);
     LThread:= TtiObjectyListForTestingThread.Create(Self, DatabaseName, PersistenceLayerName, 1);
-    LThread.Resume;
+    LThread.Start;
     LThread.WaitFor;
     LThread.Free;
   end else

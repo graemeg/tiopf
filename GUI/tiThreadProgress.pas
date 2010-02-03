@@ -951,7 +951,7 @@ begin
     if Assigned(Thread.OnCancel) then
       Thread.OnCancel(Thread);
     Thread.ReturnValue := 1;
-    Thread.Resume;
+    Thread.Start;
     Thread.Terminate;
     FSpeedButton.Enabled := false;
     Text := cuWaitForTerminate;
@@ -1035,7 +1035,7 @@ end;
       Resume;
   end;
 
-  procedure TThreadDebugger.Resume;
+  procedure TThreadDebugger.Start;
   begin
     FbSuspended := false;
     Execute;

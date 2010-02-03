@@ -72,7 +72,7 @@ begin
   FFileName          := GetDefaultFileName;
   FFileCreateAttempts := CDefaultFileCreateAttempts;
   FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
-  ThrdLog.Resume;
+  ThrdLog.Start;
 end;
 
 
@@ -97,7 +97,7 @@ begin
   DeleteOldFileIfRequired;
   FFileCreateAttempts := CDefaultFileCreateAttempts;
   FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
-  ThrdLog.Resume;
+  ThrdLog.Start;
 end;
 
 
@@ -132,7 +132,7 @@ begin
   FFileName          := ExpandFileName(tiAddTrailingSlash(APath) + ExtractFileName(GetDefaultFileName));
   FFileCreateAttempts := CDefaultFileCreateAttempts;
   FFileCreateAttemptInterval := CDefaultFileCreateAttemptInterval; //ms
-  ThrdLog.Resume;
+  ThrdLog.Start;
 end;
 
 

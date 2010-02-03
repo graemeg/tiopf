@@ -676,7 +676,6 @@ begin
   Create(true);
   FreeOnTerminate := false;
   FPool := APool;
-  Resume;
 end;
 
 procedure TThrdStatefulDBConnectionPoolMonitor.Execute;
