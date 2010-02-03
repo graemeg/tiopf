@@ -637,7 +637,7 @@ begin
     case lState of
     xapsWaitForAttr : begin
                         if ((lContainsNodeTag) and (lChar = ' ')) or
-                           ((not lContainsNodeTag) and (lChar in ['a'..'z', 'A'..'Z', '0'..'9' ])) then
+                           ((not lContainsNodeTag) and CharInSet(lChar, ['a'..'z', 'A'..'Z', '0'..'9' ])) then
                         begin
                           Inc(lState);
                           if (not lContainsNodeTag) then

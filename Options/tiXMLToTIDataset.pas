@@ -507,7 +507,7 @@ begin
                         end;
                       end;
     xapsInAttrName : begin
-                        if lChar in [#32, '='] then
+                        if CharInSet(lChar, [#32, '=']) then
                         begin
                           Inc(lState);
                           lName := Copy(FXML, lStart, FPos - lStart);

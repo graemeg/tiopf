@@ -768,7 +768,7 @@ begin
     s := 'composite '
   else
     s := '';
-  Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
+//  Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
 
   if not (MinSubjectClass.inheritsfrom(TtiObjectList)) and MediatorClass.CompositeMediator then
     MediatorError(Self,sErrCompositeNeedsList, [MediatorClass.ClassName, MinSubjectClass.ClassName]);
@@ -787,7 +787,7 @@ begin
     s := 'composite '
   else
     s := '';
-  Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
+//  Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
 
   Result      := FDefs.AddDef;
   Result.MediatorClass := MediatorClass;
@@ -804,7 +804,7 @@ begin
     s := 'composite '
   else
     s := '';
-  Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
+//  Log(Format('Registering %smediator %s with subject %s', [s, MediatorClass.ClassName, MinSubjectClass.ClassName]), lsDebug);
 
   Result      := FDefs.AddDef;
   Result.MediatorClass := MediatorClass;

@@ -474,9 +474,11 @@ begin
         vtObject:     lsLine := lsLine + VObject.ClassName;
         vtClass:      lsLine := lsLine + VClass.ClassName;
         vtAnsiString: lsLine := lsLine + string(VAnsiString);
+        vtWideString: lsLine := lsLine + string(VWideString);
         vtCurrency:   lsLine := lsLine + CurrToStr(VCurrency^);
         vtVariant:    lsLine := lsLine + string(VVariant^);
         vtInt64:      lsLine := lsLine + IntToStr(VInt64^);
+        vtUnicodeString: lsLine := lsLine + string(VUnicodeString);
     end;
   end;
   tiShowMessage(lsLine);

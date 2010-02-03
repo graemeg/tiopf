@@ -2902,7 +2902,7 @@ begin
   lTruncChar := Length(AString);
   for i := Length(AString) downto 1 do
   begin
-    if AString[i] in cWhiteSpace then
+    if CharInSet(AString[i], cWhiteSpace) then
       Dec(lTruncChar)
     else
       Break; //==>
@@ -2941,7 +2941,7 @@ begin
     c := AValue[i];
     case State of
     STATE_BEGIN:
-      if c in atom_chars then
+      if CharInSet(c, atom_chars) then
         State := STATE_ATOM
       else if c = '"' then
         State := STATE_QTEXT
@@ -2952,14 +2952,14 @@ begin
         State := STATE_EXPECTING_SUBDOMAIN
       else if c = '.' then
         State := STATE_LOCAL_PERIOD
-      else if not (c in atom_chars) then
+      else if not CharInSet(c, atom_chars) then
         break;
     STATE_QTEXT:
       if c = '\' then
         State := STATE_QCHAR
       else if c = '"' then
         State := STATE_QUOTE
-      else if not (c in quoted_string_chars) then
+      else if not CharInSet(c, quoted_string_chars) then
         break;
     STATE_QCHAR:
       State := STATE_QTEXT;
@@ -2971,14 +2971,14 @@ begin
       else
         break;
     STATE_LOCAL_PERIOD:
-      if c in atom_chars then
+      if CharInSet(c, atom_chars) then
         State := STATE_ATOM
       else if c = '"' then
         State := STATE_QTEXT
       else
         break;
     STATE_EXPECTING_SUBDOMAIN:
-      if c in letters then
+      if CharInSet(c, letters) then
         State := STATE_SUBDOMAIN
       else
         break;
@@ -2988,10 +2988,10 @@ begin
         State := STATE_EXPECTING_SUBDOMAIN
       end else if c = '-' then
         State := STATE_HYPHEN
-      else if not (c in letters_digits) then
+      else if not CharInSet(c, letters_digits) then
         break;
     STATE_HYPHEN:
-      if c in letters_digits then
+      if CharInSet(c, letters_digits) then
         State := STATE_SUBDOMAIN
       else if c <> '-' then
         break;
@@ -3013,7 +3013,7 @@ begin
   //A filename can contain up to 255 characters, including spaces.
   // But, it cannot contain any of the following characters:
   // \ /: * ? " < > |
-  result := not (AFileNameChar in ExcludedChars);
+  result := not CharInSet(AFileNameChar, ExcludedChars);
 end;
 
 
@@ -3298,7 +3298,7 @@ begin
   Result := '';
   for I := 1 to Length(AString) do
   begin
-    if (AString[I] in UnsafeChars) or (AString[I] < #32) or (AString[I] >= #$80) then
+    if CharInSet(AString[I], UnsafeChars) or (AString[I] < #32) or (AString[I] >= #$80) then
       Result := Result + '%' + IntToHex(Ord(AString[I]), 2)
     else
       Result := Result + AString[I];
@@ -3413,10 +3413,10 @@ begin
   LResult := '';
   for i := 1 to Length(AString) do
   begin
-    if (AString[i] in ['*', '?', '<', '>', '"', '[', ']', ';', '|', '=', ',']) or
-        (AReplaceDot and (AString[i] in ['.'])) or 
-        (AReplaceSlashes and (AString[i] in ['/', '\'])) or 
-        (AReplaceColons and (AString[i] in [':'])) then
+    if CharInSet(AString[i], ['*', '?', '<', '>', '"', '[', ']', ';', '|', '=', ',']) or
+        (AReplaceDot and CharInSet(AString[i], ['.'])) or
+        (AReplaceSlashes and CharInSet(AString[i], ['/', '\'])) or
+        (AReplaceColons and CharInSet(AString[i], [':'])) then
     begin
       LResult := LResult + AReplaceWith;
     end else

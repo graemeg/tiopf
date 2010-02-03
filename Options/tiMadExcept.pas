@@ -45,7 +45,7 @@ procedure tiMadExceptMailBugReport(const AText: string);
 begin
   Assert(AText = AText);  // Getting rid of compiler hints, param not used.
   {$IFDEF madexcept}
-  MadExcept.AutoSendBugReport(AText, nil);
+  MadExcept.AutoSendBugReport(AnsiString(AText), nil);
   {$ENDIF}
 end;
 

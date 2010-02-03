@@ -10,7 +10,7 @@ uses
  ;
 
 const
-  cuSeedString : String = '12%6348i(oikruK**9oi57&^1`!@bd)';
+  cuSeedString : AnsiString = '12%6348i(oikruK**9oi57&^1`!@bd)';
 
 type
 
@@ -99,7 +99,7 @@ end;
 procedure TtiEncryptAbs.NewSeed;
 var
   i : integer;
-  ls : string;
+  ls : AnsiString;
 begin
   ls := '';
   for i := 1 to length(FSeed) do

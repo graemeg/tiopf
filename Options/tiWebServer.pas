@@ -439,9 +439,9 @@ begin
     end;
   end;
 
-  if not DirectoryExists(StaticPageLocation) then
+  if not DirectoryExists(StaticPageLocation) and (StaticPageLocation <> '') then
     ForceDirectories(StaticPageLocation);
-  if not DirectoryExists(StaticPageLocation) then
+  if not DirectoryExists(StaticPageLocation) and (StaticPageLocation <>'')then
     raise exception.create('Unable to locate or create directory for static pages <' + StaticPageLocation + '>');
   if not FileExists(tiAddTrailingSlash(StaticPageLocation) + 'default.htm') then
     CreateDefaultPage;

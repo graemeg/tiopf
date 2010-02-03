@@ -789,7 +789,7 @@ uses
 {$ENDIF}
 
 const
-  cValidFloatChrs : set of char = [ '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
+  cValidFloatChrs : set of AnsiChar = [ '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
   cIntEditMask        =    '#0' ;  //ipk 2001-03-01
   cFloatEditMask     : string = '' ;
 //  cusImageFilters     = 'Bitmap files|*.bmp|GIF files|*.gif|JPeg files|*.jpg|All files|*.*';
@@ -2048,7 +2048,7 @@ var i : integer;
 begin
   result := '';
   for i := 1 to length(sValue) do begin
-    if sValue[i] in cValidFloatChrs then begin
+    if CharInSet(sValue[i], cValidFloatChrs) then begin
       result := result + sValue[i];
     end;
   end;
@@ -2095,7 +2095,7 @@ begin
   end;
 
   // A numeric key?
-  if not (key in cValidFloatChrs) then
+  if not CharInSet(key, cValidFloatChrs) then
   begin
     key := char(0);
   end;

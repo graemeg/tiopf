@@ -3371,7 +3371,7 @@ begin
 
   // Must only contain alphanumeric characters.
   for I := 1 to Length(ATitle) do
-    if ATitle[I] in ['a'..'z','A'..'Z','0'..'9'] then
+    if CharInSet(ATitle[I], ['a'..'z','A'..'Z','0'..'9']) then
       Result := Result + ATitle[I];
 
   // Must start with non-digit.

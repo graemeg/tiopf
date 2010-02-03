@@ -329,8 +329,8 @@ of function
 }
 
 const
-  CR = #$0D;
-  LF = #$0A;
+  CR = AnsiChar(#$0D);
+  LF = AnsiChar(#$0A);
   TerminationWaitTime = 5000;
   ExeExt = '.EXE';
   ComExt = '.COM'; {the original dot com}
@@ -343,9 +343,9 @@ var
   TempHandle,
   WriteHandle,
   ReadHandle: THandle;
-  ReadBuf: array[0..$100] of AnsiChar;
+  ReadBuf: array[0..$1000] of AnsiChar;
   BytesRead: Cardinal;
-  LineBuf: array[0..$100] of AnsiChar;
+  LineBuf: array[0..$1000] of AnsiChar;
   LineBufPtr: Integer;
   Newline: Boolean;
   i: Integer;
@@ -359,7 +359,7 @@ procedure OutputLine;
 begin
   LineBuf[LineBufPtr]:= #0;
   if NewLine then
-    AppOutput := AppOutput + tiLineEnd + LineBuf
+    AppOutput := AppOutput + cLineEnding + LineBuf
   else
     AppOutput := AppOutput + LineBuf;
 {
