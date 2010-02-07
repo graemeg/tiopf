@@ -70,7 +70,7 @@ begin
   // this method
 //  AllowedMemoryLeakSize:= 152;
 //  CheckEquals(0, GTIOPFManager.ActiveThreadList.Count);
-//  LThread:= TtiThreadForTesting.CreateAndResume;
+//  LThread:= TtiThreadForTesting.CreateAndStart;
 //  LThread.Priority:= tpHighest;
 //  CheckEquals(1, GTIOPFManager.ActiveThreadList.Count);
 //  GTIOPFManager.ActiveThreadList.WaitForAll;

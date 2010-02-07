@@ -711,24 +711,6 @@ end;
 
 
 procedure TTestTIUtils.tiReadFileDateSize;
-  procedure _SetFileDate(AFileName: string; pDate: TDateTime);
-  var
-    lFileHandle: Integer;
-    lFileDate: integer;
-  begin
-    lFileDate := DateTimeToFileDate(pDate);
-    {$IFNDEF FPC}
-    lFileHandle := FileOpen(AFileName, fmOpenWrite or fmShareDenyNone);
-    try
-      FileSetDate(lFileHandle, lFileDate);
-    finally
-      FileClose(lFileHandle);
-    end;
-    {$ELSE}
-    FileSetDate(AFileName, lFileDate);
-    {$ENDIF}
-  end;
-
 var
   lTargetDate: TDateTime;
   lReadDate: TDateTime;
@@ -739,7 +721,7 @@ begin
   lFileName := TempFileName('DUnitTest.txt');
   tiCreateTextFileOfSize(lFileName, 100);
   lTargetDate := EncodeDate(1980, 1, 1);
-  _SetFileDate(lFileName, lTargetDate);
+  SysUtils.FileSetDate(lFileName, DateTimeToFileDate(lTargetDate));
   tiUtils.tiReadFileDateSize(lFileName, lReadDate, lReadSize);
   CheckEquals(lTargetDate, lReadDate, '#1');
   CheckEquals(lTargetDate, tiReadFileDate(LFileName), '#2');
@@ -757,7 +739,7 @@ begin
   lTargetDate := EncodeDate(2038, 01, 19);
   {$ENDIF}
 
-  _SetFileDate(lFileName, lTargetDate);
+  SysUtils.FileSetDate(lFileName, DateTimeToFileDate(lTargetDate));
   tiUtils.tiReadFileDateSize(lFileName, lReadDate, lReadSize);
   CheckEquals(lTargetDate, lReadDate, '#5');
   CheckEquals(lTargetDate, tiReadFileDate(LFileName), '#6');

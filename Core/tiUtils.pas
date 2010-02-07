@@ -2538,33 +2538,13 @@ end;
 
 procedure tiSetFileDate(const AFileName : string; const ADateTime : TDateTime);
 var
-  lFileDate  : Integer;
-  {$IFDEF MSWINDOWS}
-  lFileHandle : Integer;
-  {$ENDIF MSWINDOWS}
-  {$IFDEF UNIX}
-  lError     : Integer;
-  {$ENDIF UNIX}
+  LFileDate  : Integer;
+  LError     : Integer;
 begin
-  lFileDate  := DateTimeToFileDate(ADateTime);
-  {$IFDEF MSWINDOWS}
-  lFileHandle := FileOpen(AFileName, fmOpenWrite or fmShareDenyNone);
-  try
-    if lFileHandle > 0 then
-      FileSetDate(lFileHandle, lFileDate)
-    else
-      raise exception.Create('Unable to set file date on <' +
-                              AFileName);
-  finally
-    FileClose(lFileHandle);
-  end;
-  {$ENDIF MSWINDOWS}
-
-  {$IFDEF UNIX}
-    lError := FileSetDate(AFileName, lFileDate);
-    if lError <> 0 then
-      raise Exception.Create('Unable to set file date on <' + AFileName);
-  {$ENDIF UNIX}
+  LFileDate  := DateTimeToFileDate(ADateTime);
+  LError := FileSetDate(AFileName, LFileDate);
+  if LError <> 0 then
+    raise Exception.Create('Unable to set file date on <' + AFileName);
 end;
 
 
@@ -2778,7 +2758,7 @@ var
   lStream : TFileStream;
   lpcText : PAnsiChar;
 begin
-  lStream := TFileStream.Create(AFileName, fmCreate or fmShareCompat);
+  lStream := TFileStream.Create(AFileName, fmCreate or fmShareExclusive);
   try
     lpcText := PAnsiChar(AText);
     lStream.WriteBuffer(lpcText^, length(AText));

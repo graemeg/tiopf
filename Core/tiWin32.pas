@@ -2,6 +2,7 @@
 unit tiWin32;
 
 {$I tiDefines.inc}
+{$WARN SYMBOL_PLATFORM OFF} // This file is Win32 specific, so it's OK to have platform dependencies
 
 interface
 uses
@@ -280,7 +281,7 @@ end;
 
 function tiWin32FindFirstFile(const APath: string; var  ASearchRec: TSearchRec): Integer;
 begin
-  result := FindFirst(APath, faAnyFile-faSYSFile-faDirectory, ASearchRec);
+  result := FindFirst(APath, faAnyFile-faDirectory, ASearchRec);
 end;
 
 
