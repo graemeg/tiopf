@@ -772,6 +772,7 @@ var
   lsl : TStringList;
   lDate : TDateTime;
   lFileName  : string;
+  LFileAge: TDateTime;
 begin
   ForceDirectories(TempDirectory);
   lFileName := TempFileName('DUnitTest.txt');
@@ -782,11 +783,13 @@ begin
 
     lDate := EncodeDate(1980, 1, 1);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 1');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 1');
 
     lDate := EncodeDate(1980, 1, 1);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 2');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 2');
 
     {$IFDEF MSWINDOWS}
     lDate := EncodeDate(2090, 12, 31);
@@ -797,23 +800,28 @@ begin
     lDate := EncodeDate(2038, 01, 19);
     {$ENDIF}
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 3');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 3');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(1, 0, 0, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 4');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 4');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(12, 0, 0, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 5');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 5');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(23, 59, 59, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 6');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 6');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(06, 06, 06, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    CheckEquals(lDate, FileDateToDateTime(FileAge(lFileName)), cdtOneSecond, 'Failed on 7');
+    FileAge(lFileName, LFileAge);
+    CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 7');
     tiDeleteFile(lFileName);
 
   finally

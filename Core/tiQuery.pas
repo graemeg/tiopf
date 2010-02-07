@@ -136,9 +136,9 @@ type
                              AFieldWidth : integer = 0): TtiDBMetaDataField; overload;
     function    AddInstance : TtiDBMetaDataField; overload;
     // Don't use AddField. Use AddInstance instead
-    procedure   AddField(const AFieldName : string;
-                          const AFieldKind : TtiQueryFieldKind;
-                          AFieldWidth : integer = 0); deprecated;
+    //    procedure   AddField(const AFieldName : string;
+    //                          const AFieldKind : TtiQueryFieldKind;
+    //                          AFieldWidth : integer = 0); deprecated;
     procedure   Read(const ADBConnectionName: string  = ''; APersistenceLayerName : string = ''); override;
     function    FindByFieldName(const AFieldName : TFieldName): TtiDBMetaDataField;
     function    IndexOfFieldName(const AFieldName: TFieldName): Integer;
@@ -769,13 +769,6 @@ procedure TtiDBMetaDataTable.Add(AObject: TtiDBMetaDataField);
 begin
   inherited Add(AObject);
   FMaxFieldWidth := 0;
-end;
-
-// Don't use AddField. Use AddInstance instead
-procedure TtiDBMetaDataTable.AddField(const AFieldName: string;
-  const AFieldKind: TtiQueryFieldKind; AFieldWidth: integer);
-begin
-  AddInstance(AFieldName, AFieldKind, AFieldWidth);
 end;
 
 function TtiDBMetaDataTable.AddInstance(const AFieldName: string;

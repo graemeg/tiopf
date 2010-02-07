@@ -1059,7 +1059,7 @@ end;
 
 constructor TtiThreadProgress.Create(ACreateSuspended: Boolean);
 begin
-  inherited Create(true);
+  inherited Create(ACreateSuspended);
   gFormThreadProgress.AttachThread(self);
   AutoProgress := true;
   CanCancel := false;
@@ -1070,8 +1070,6 @@ begin
   //FCrtiSectLabelHotspotClick := TCriticalSection.Create;
   FProgInd.OnLabelHotspotClick := OnLabelHotspotClick;
   {$ENDIF}
-  if not ACreateSuspended then
-    Resume;
 end;
 
 function TFormThreadProgress.GetThreadCount: integer;

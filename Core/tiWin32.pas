@@ -280,7 +280,7 @@ end;
 
 function tiWin32FindFirstFile(const APath: string; var  ASearchRec: TSearchRec): Integer;
 begin
-  result := FindFirst(APath, faAnyFile-faVolumeID-faSYSFile-faDirectory, ASearchRec);
+  result := FindFirst(APath, faAnyFile-faSYSFile-faDirectory, ASearchRec);
 end;
 
 

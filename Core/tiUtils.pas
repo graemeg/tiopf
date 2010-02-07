@@ -2510,7 +2510,8 @@ end;
 
 function tiReadFileDate(const AFileName : string): TDateTime;
 begin
-  Result := FileDateToDateTime(FileAge(AFileName));
+  if not FileAge(AFileName, Result) then
+    result:= 0;
 end;
 
 
@@ -3628,7 +3629,7 @@ begin
     TIME_ZONE_ID_DAYLIGHT: Result := (TZI.Bias + TZI.DaylightBias) * cdtOneMinute;
     TIME_ZONE_ID_UNKNOWN: Result := TZI.Bias * cdtOneMinute;
   else
-    RaiseLastWin32Error;
+    RaiseLastOSError;
   end;
 end;
 

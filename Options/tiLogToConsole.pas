@@ -47,12 +47,12 @@ begin
   i := 1;
   while (i <= Length(Result)) do
   begin
-    if Result[i] in [#10,#13] then
+    if CharInSet(Result[i], [#10,#13]) then
     begin
       EndingStart := i;
       inc(i);
       if (i <= Length(Result)) and
-         (Result[i] in [#10,#13]) and
+          CharInSet(Result[i], [#10,#13]) and
          (Result[i] <> Result[i-1]) then
       begin
         inc(i);

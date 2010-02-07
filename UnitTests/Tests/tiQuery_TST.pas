@@ -323,7 +323,7 @@ procedure TTestTIDatabase.CreateTableDropTable;
       LTable := TtiDBMetaDataTable.Create;
       try
         LTable.Name := cTableNameCreateTable;
-        LTable.AddField(AFieldName, AFieldKind, AFieldWidth);
+        LTable.AddInstance(AFieldName, AFieldKind, AFieldWidth);
         CreateTable(LTable);
       finally
         LTable.Free;
@@ -1057,7 +1057,7 @@ begin
       LTable2 := TtiDBMetaDataTable.Create;
       try
         LTable2.Name := cTableNameCreateTable;
-        LTable1.AddField('test', qfkString, 10);
+        LTable1.AddInstance('test', qfkString, 10);
         LCount:= 0;
         LBulkTestStart:= tiGetTickCount;
         while (tiGetTickCount - LBulkTestStart) < (CTimingTestPeriod*1000) do
@@ -1216,15 +1216,15 @@ begin
   lList := TtiDBMetaDataTable.Create;
   try
     CheckEquals(0, lList.Count, 'Count');
-    lList.AddField('test1', qfkString, 10);
+    lList.AddInstance('test1', qfkString, 10);
     CheckEquals(1, lList.Count, 'Count');
-    lList.AddField('test2', qfkInteger);
+    lList.AddInstance('test2', qfkInteger);
     CheckEquals(2, lList.Count, 'Count');
-    lList.AddField('test3', qfkFloat);
+    lList.AddInstance('test3', qfkFloat);
     CheckEquals(3, lList.Count, 'Count');
-    lList.AddField('test4', qfkDateTime);
+    lList.AddInstance('test4', qfkDateTime);
     CheckEquals(4, lList.Count, 'Count');
-    lList.AddField('test5', qfkLogical);
+    lList.AddInstance('test5', qfkLogical);
     CheckEquals(5, lList.Count, 'Count');
     lList.Clear;
     CheckEquals(0, lList.Count, 'Count');

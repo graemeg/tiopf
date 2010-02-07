@@ -49,10 +49,9 @@ type
     procedure   DoOnTerminate(Sender: TObject); virtual;
     procedure SetText(const AValue: string); virtual;
   public
-    constructor Create; reintroduce; overload;
     constructor Create(ACreateSuspended: Boolean); overload; override;
     constructor Create(const ACreateSuspended: boolean; const AAddToActiveThreadList: boolean); reintroduce; overload;
-    constructor CreateAndResume; virtual; // See note in body of method
+    constructor CreateAndStart; virtual;
     destructor  Destroy; override;
     Property    Text: string read FText write SetText;
     property    Description: string read FDescription write FDescription;
@@ -182,12 +181,9 @@ end;
 
 { TtiThread }
 
-constructor TtiThread.CreateAndResume;
+constructor TtiThread.CreateAndStart;
 begin
-  // When overriding CreateAndResume, don't call inherited as any code
-  // after the inherited call may execute after the thread starts running.
-  // Have never seen an error caused by this, but the code smells of trouble.
-  Create(true);
+  Create(false);
 end;
 
 
@@ -231,11 +227,6 @@ end;
 procedure TtiThread.SetText(const AValue: string);
 begin
   FText := AValue;
-end;
-
-constructor TtiThread.Create;
-begin
-  Create(true);
 end;
 
 procedure TtiSleepThread.SetThreadName(const AName: string);
