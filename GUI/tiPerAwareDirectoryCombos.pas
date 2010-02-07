@@ -32,8 +32,7 @@ type
 
 implementation
 uses
-  FileCtrl
-  ,Dialogs
+   Dialogs
   ,Controls
   ,SysUtils
   ,tiUtils

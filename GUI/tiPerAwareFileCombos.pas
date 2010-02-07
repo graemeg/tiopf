@@ -19,7 +19,6 @@ uses
   buttons,
   extCtrls,
   printers,
-  fileCtrl,
   comctrls,
   registry,
   Menus,

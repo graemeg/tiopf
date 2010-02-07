@@ -73,7 +73,6 @@ uses
   tiFPCUnitUtils,
   {$ELSE}
   TestFramework,
-  FileCtrl,
   {$ENDIF}
   SysUtils,
   tiUtils,

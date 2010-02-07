@@ -57,7 +57,6 @@ uses
   tiFPCUnitUtils,
   {$ELSE}
   TestFramework,
-  FileCtrl,
   {$ENDIF}
   tiOPFTestManager,
   SysUtils,
