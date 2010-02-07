@@ -60,6 +60,9 @@ unit ADOX_TLB;
 {$IFDEF VER150}
   {$VARPROPSETTER ON}
 {$ENDIF}
+
+{$i tiDefines.inc}
+
 interface
 
 uses Windows, ActiveX, Classes, Graphics, OleServer, StdVCL

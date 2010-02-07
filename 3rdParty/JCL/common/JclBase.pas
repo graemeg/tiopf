@@ -39,6 +39,7 @@
 unit JclBase;
 
 {$I jcl.inc}
+{$i jclWarn.inc}
 
 interface
 

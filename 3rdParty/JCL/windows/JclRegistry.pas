@@ -46,6 +46,7 @@
 unit JclRegistry;
 
 {$I jcl.inc}
+{$i jclWarn.inc}
 
 interface
 

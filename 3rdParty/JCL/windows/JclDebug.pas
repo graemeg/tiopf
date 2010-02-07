@@ -45,6 +45,7 @@ unit JclDebug;
 interface
 
 {$I jcl.inc}
+{$i jclWarn.inc}
 
 uses
   {$IFDEF UNITVERSIONING}

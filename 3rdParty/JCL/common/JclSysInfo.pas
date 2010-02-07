@@ -63,6 +63,7 @@
 unit JclSysInfo;
 
 {$I jcl.inc}
+{$i jclWarn.inc}
 
 interface
 

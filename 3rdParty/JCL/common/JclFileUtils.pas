@@ -61,6 +61,7 @@ unit JclFileUtils;
 
 {$I jcl.inc}
 {$I crossplatform.inc}
+{$i jclWarn.inc}
 
 interface
 

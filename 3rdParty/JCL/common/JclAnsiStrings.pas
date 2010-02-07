@@ -55,6 +55,7 @@
 unit JclAnsiStrings; // former JclStrings
 
 {$I jcl.inc}
+{$i jclWarn.inc}
 
 interface
 

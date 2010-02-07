@@ -43,6 +43,7 @@ unit JclPeImage;
 
 {$I jcl.inc}
 {$I windowsonly.inc}
+{$i jclWarn.inc}
 
 interface
 
