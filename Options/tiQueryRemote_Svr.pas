@@ -671,7 +671,7 @@ end;
 
 constructor TThrdStatefulDBConnectionPoolMonitor.CreateExt(APool: TtiStatefulDBConnectionPool);
 begin
-  Create(true);
+  Create(false);
   FreeOnTerminate := false;
   FPool := APool;
 end;

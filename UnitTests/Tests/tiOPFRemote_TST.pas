@@ -111,6 +111,7 @@ uses
   SysUtils,
   tiTestDependencies,
   tiQuery,
+  tiQueryRemote_Svr,
   tiOPFTestCase,
   tiOPFTestManager,
   tiOPFManager;
@@ -194,37 +195,43 @@ procedure TTestTIDatabaseRemote.Transaction_TimeOut;
 var
   LQuery: TtiQuery;
   LDatabase: TtiDatabase;
+  LTimeOut: Extended;
 begin
   DropTable(cTableNameTestGroup);
   CreateTableTestGroup;
   InsertIntoTestGroup(1);
-
-  LDatabase:= DBConnectionPool.Lock;
+  LTimeOut:= GStatefulDBConnectionPool.TimeOut;
+  gStatefulDBConnectionPool.Timeout:= 0.1;
   try
-    LDatabase.StartTransaction;
-    LQuery := LDatabase.CreateAndAttachTIQuery;
+    LDatabase:= DBConnectionPool.Lock;
     try
       LDatabase.StartTransaction;
-      LQuery.SelectRow(cTableNameTestGroup, nil);
-      Check(not LQuery.EOF, 'Transaction not committed');
-      LQuery.Next;
-      Check(LQuery.EOF, 'Wrong number of records');
-      Sleep(Trunc(cDBProxyServerTimeOut * 60000 * 1.5));
+      LQuery := LDatabase.CreateAndAttachTIQuery;
       try
-        lDatabase.Commit;
-        Fail('tiDBProxyServer did not time out as expected');
-      except
-        on e: Exception do
-          Check(Pos('TIMED OUT', UpperCase(e.message)) <> 0,
-            'tiDBProxyServer did not raise the right exception. Exception message: ' + e.message);
+        LDatabase.StartTransaction;
+        LQuery.SelectRow(cTableNameTestGroup, nil);
+        Check(not LQuery.EOF, 'Transaction not committed');
+        LQuery.Next;
+        Check(LQuery.EOF, 'Wrong number of records');
+        Sleep(Trunc(gStatefulDBConnectionPool.Timeout * 60000 * 1.5));
+        try
+          lDatabase.Commit;
+          Fail('tiDBProxyServer did not time out as expected');
+        except
+          on e: Exception do
+            Check(Pos('TIMED OUT', UpperCase(e.message)) <> 0,
+              'tiDBProxyServer did not raise the right exception. Exception message: ' + e.message);
+        end;
+      finally
+        LQuery.Free;
       end;
     finally
-      LQuery.Free;
+      DBConnectionPool.UnLock(LDatabase);
     end;
+    DropTable(cTableNameTestGroup);
   finally
-    DBConnectionPool.UnLock(LDatabase);
+    gStatefulDBConnectionPool.Timeout:= LTimeOut;
   end;
-  DropTable(cTableNameTestGroup);
 end;
 
 { TTestTIPersistenceLayersRemote }
