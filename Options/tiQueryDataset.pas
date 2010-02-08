@@ -380,10 +380,8 @@ begin
     ftMemo,
     ftFmtMemo:
         Result := qfkLongString;
-    {$ifdef DELPHI10ORABOVE}
     ftWideMemo :
         Result := qfkLongString;
-    {$endif}
 
     else
       raise EtiOPFException.Create('Invalid Dataset.Fields[AIndex].DataType <' +

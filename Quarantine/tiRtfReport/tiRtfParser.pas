@@ -37,7 +37,7 @@ interface
 
 uses
   Classes, Windows, SysUtils, Forms, ContNrs, TypInfo, Graphics,
-  Jpeg, Db, {$IFDEF DELPHI6ORABOVE} Variants, {$ENDIF} tiPtnVisPerObj;
+  Jpeg, Db, Variants, tiPtnVisPerObj;
 
 type
   TtiRtfParser = class;

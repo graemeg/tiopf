@@ -55,10 +55,7 @@ uses
   {$IFDEF MSWINDOWS}
   ,Windows
   {$ENDIF}
-  {$ifndef Delphi6OrAbove}
-  ,FileCtrl
-  {$endif}
- ;
+  ;
 
 const
   CDefaultFileCreateAttempts = 20;

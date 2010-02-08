@@ -7,12 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, FtiPerEditDialog, tiReadOnly, StdCtrls, Buttons, tiMemoReadOnly,
-  ExtCtrls, tiFocusPanel, tiPerAwareCtrls, tiObject
-  {$IFDEF DELPHI6ORABOVE}
-  ,Variants
-  {$ENDIF}
-  ,Client_BOM
- ;
+  ExtCtrls, tiFocusPanel, tiPerAwareCtrls, tiObject, Variants, Client_BOM;
 
 type
   TFormClientAbsEdit = class(TFormTIPerEditDialog)

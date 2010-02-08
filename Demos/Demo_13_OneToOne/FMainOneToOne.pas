@@ -4,12 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, ActnList, StdCtrls, tiPerAwareCtrls, ExtCtrls, ComCtrls
-  {$IFDEF DELPHI6ORABOVE}
-  ,Variants
-  {$ENDIF}
-  ,Client_BOM, tiVTListView, tiObject, tiFocusPanel, tiVirtualTrees
- ;
+  Dialogs, ActnList, StdCtrls, tiPerAwareCtrls, ExtCtrls, ComCtrls, Variants,
+  Client_BOM, tiVTListView, tiObject, tiFocusPanel, tiVirtualTrees, tiVTAbstract;
 
 type
   TFormMainInheritance = class(TForm)

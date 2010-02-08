@@ -10,9 +10,7 @@ uses
 
 begin
   Application.Initialize;
-  {$ifdef DELPHI2007ORABOVE}
   Application.MainFormOnTaskbar := True;
-  {$endif}
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.

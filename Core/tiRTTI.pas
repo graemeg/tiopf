@@ -364,14 +364,14 @@ begin
   lCount := GetPropList(AClass.ClassInfo
                          ,lPropFilter
                          ,nil
-                         {$ifdef Delphi6OrAbove},false{$endif});
+                         ,false);
   lSize  := lCount * SizeOf(Pointer);
   GetMem(lList, lSize);
   try
      GetPropList(AClass.ClassInfo
                  ,lPropFilter
                  ,LList
-                 {$ifdef Delphi6OrAbove},false{$endif});
+                 ,false);
     for i := 0 to lcount - 1 do
       AStringList.Add(lList^[i]^.Name);
   finally
@@ -510,12 +510,10 @@ varUString      Delphi 2009 up, unicode string
 
   if tiIsVariantOfType(AValue, varSmallint) or
      tiIsVariantOfType(AValue, varInteger) or
-     {$ifdef Delphi6OrAbove}
      tiIsVariantOfType(AValue, varWord) or
      tiIsVariantOfType(AValue, varLongWord) or
      tiIsVariantOfType(AValue, varInt64) or
      tiIsVariantOfType(AValue, varShortInt) or
-     {$endif}
      tiIsVariantOfType(AValue, varByte) then
     Result := tiTKInteger
   else if tiIsVariantOfType(AValue, varSingle) or

@@ -1,9 +1,9 @@
 object FormMainInheritance: TFormMainInheritance
   Left = 297
   Top = 107
-  Width = 580
-  Height = 378
   Caption = 'FormMainInheritance'
+  ClientHeight = 344
+  ClientWidth = 572
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,6 +14,9 @@ object FormMainInheritance: TFormMainInheritance
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    572
+    344)
   PixelsPerInch = 96
   TextHeight = 13
   object paeClientCount: TtiPerAwareFloatEdit
@@ -24,6 +27,7 @@ object FormMainInheritance: TFormMainInheritance
     Anchors = [akTop]
     Constraints.MinHeight = 23
     TabOrder = 0
+    OnChangeDelayInterval = 0
     LabelStyle = lsTop
     LabelLayout = tlTop
     Caption = 'Client count'
@@ -85,6 +89,7 @@ object FormMainInheritance: TFormMainInheritance
     Height = 317
     Anchors = [akLeft, akTop, akRight, akBottom]
     Header.AutoSizeIndex = 0
+    Header.DefaultHeight = 17
     Header.Font.Charset = DEFAULT_CHARSET
     Header.Font.Color = clWindowText
     Header.Font.Height = -11
@@ -93,6 +98,7 @@ object FormMainInheritance: TFormMainInheritance
     Header.MainColumn = -1
     Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
+    EditInlineOnly = False
     ShowAlternateRowColor = False
     ShowNodeHint = False
     SortOrders.GroupColumnCount = 0
@@ -103,7 +109,9 @@ object FormMainInheritance: TFormMainInheritance
     VT.Width = 433
     VT.Height = 263
     VT.Align = alClient
+    VT.Colors.UnfocusedColor = clMedGray
     VT.Header.AutoSizeIndex = 0
+    VT.Header.DefaultHeight = 17
     VT.Header.Font.Charset = DEFAULT_CHARSET
     VT.Header.Font.Color = clWindowText
     VT.Header.Font.Height = -11
@@ -114,6 +122,7 @@ object FormMainInheritance: TFormMainInheritance
     VT.Header.Style = hsXPStyle
     VT.NodeDataSize = 4
     VT.TabOrder = 0
+    VT.TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
     VT.Columns = <>

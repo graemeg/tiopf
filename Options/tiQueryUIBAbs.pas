@@ -128,9 +128,7 @@ Uses
   , tiOPFManager
   , tiExcept
   , tiConstants
-{$IFDEF DELPHI6ORABOVE}
   , Variants
-{$ENDIF}
   ;
 
 Type

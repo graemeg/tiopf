@@ -64,42 +64,7 @@ const
   CTIProtocolFile = 'file';
   CTIProtocolSelf = 'self';
 
-{$IFDEF DELPHI5}
-  cPackageSuffix = '';
-  cCompilerName = 'Delphi 5';
-{$ENDIF}
-
-{$IFDEF DELPHI6}
-  cPackageSuffix = '60';
-  cCompilerName = 'Delphi 6';
-{$ENDIF}
-
-{$IFDEF DELPHI7}
-  cPackageSuffix = '70';
-  cCompilerName = 'Delphi 7';
-{$ENDIF}
-
-{$IFDEF DELPHI9}
-  cPackageSuffix = '90';
-  cCompilerName = 'Delphi 2005';
-{$ENDIF}
-
-{$IFDEF DELPHI10}
-  cPackageSuffix = '100';
-  cCompilerName = 'Delphi 2006';
-{$ENDIF}
-
-{$IFDEF DELPHI11}
-  cPackageSuffix = '110';
-  cCompilerName = 'Delphi 2007';
-{$ENDIF}
-
-{$IFDEF DELPHI12}
-  cPackageSuffix = '120';
-  cCompilerName = 'Delphi 2009';
-{$ENDIF}
-
-{$IFDEF DELPHI14}
+{$IFDEF DELPHI2010}
   cPackageSuffix = '140';
   cCompilerName = 'Delphi 2010';
 {$ENDIF}
@@ -259,12 +224,6 @@ const
   cuiBtnHeight    = 25;
   cuiBtnWidth     = 75;
   cuiImageWidth   = 32;
-
-{$ifndef Delphi6OrAbove}
-const
-  {$ifdef MSWINDOWS}PathDelim = '\';{$endif}
-  {$ifdef UNIX}PathDelim = '/';{$endif}
-{$endif}
 
   {: The maximum length a command passed to an console EXE can be. This length
      includes the exe path & name, and any parameters.}

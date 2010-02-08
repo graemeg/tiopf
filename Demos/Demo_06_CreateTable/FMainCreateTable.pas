@@ -6,13 +6,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls
-  {$IFDEF DELPHI6ORABOVE}
-  ,Variants
-  {$ENDIF}
-  ,tiMemoReadOnly
- ;
-
+  Dialogs, StdCtrls, Variants, tiMemoReadOnly;
 
 type
   TFormMainCreateTable = class(TForm)

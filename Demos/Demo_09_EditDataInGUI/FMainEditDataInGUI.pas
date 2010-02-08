@@ -7,11 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiPerAwareCtrls, ActnList,
-  Client_BOM, ComCtrls, tiVTListView, tiObject, tiVirtualTrees
-  {$IFDEF DELPHI6ORABOVE}
-  ,Variants
-  {$ENDIF}
- ;
+  Client_BOM, ComCtrls, tiVTListView, tiObject, tiVirtualTrees, Variants;
 
 type
   TForm2 = class(TForm)

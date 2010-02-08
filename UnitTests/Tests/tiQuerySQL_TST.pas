@@ -45,9 +45,6 @@ uses
   ,SysUtils
   ,tiUtils
   ,TypInfo
-  {$IFNDEF DELPHI6ORABOVE}
-  ,FileCtrl
-  {$ENDIF}
   ,tiTestFramework
   ,tiOPFTestCase
   ,tiQuery

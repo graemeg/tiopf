@@ -48,9 +48,7 @@ uses
   ,tiVisitorDB
   ,tiVisitorDB_Cli
   ,FMain
-  {$IFDEF DELPHI6ORABOVE}
   ,Variants
-  {$ENDIF}
  ;
 
 {$R *.dfm}

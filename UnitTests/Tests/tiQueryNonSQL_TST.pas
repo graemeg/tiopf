@@ -44,9 +44,6 @@ uses
   Windows,
   {$ENDIF}
   TypInfo,
-  {$IFNDEF DELPHI6ORABOVE}
-  FileCtrl,
-  {$ENDIF}
   SysUtils,
   Classes;
 

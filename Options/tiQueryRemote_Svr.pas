@@ -151,9 +151,7 @@ implementation
 uses
    tiUtils
   ,tiOPFManager
-  {$IFDEF DELPHI6ORABOVE}
   ,Variants
-  {$ENDIF}
   ,tiLog
   ,tiConstants
   ,tiXML

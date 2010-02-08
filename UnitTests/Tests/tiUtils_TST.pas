@@ -224,11 +224,7 @@ uses
   {$ENDIF}
   ,tiTestDependencies
   ,SysUtils
-  {$IFDEF DELPHI6ORABOVE}
   ,Variants
-  {$ELSE}
-  ,FileCtrl
-  {$ENDIF}
   ,TypInfo
   ,DateUtils
  ;
@@ -2107,18 +2103,10 @@ type
 
 procedure TTestTIUtils.tiHasRTTIOnClass;
 begin
-{$IFDEF DELPHI2010ORABOVE}
   Check(tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> true');
-{$ELSE}
-  Check(not tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> false');
-{$ENDIF}
   Check(tiHasRTTI(TPersistent), 'tiHasRTTI(TPersistent) <> true');
   Check(tiHasRTTI(TCheckRTTI_1), 'tiHasRTTI(TCheckRTTI_1) <> true');
-{$IFDEF DELPHI2010ORABOVE}
   Check(tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> true');
-{$ELSE}
-  Check(not tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> false');
-{$ENDIF}
 end;
 
 
@@ -2127,11 +2115,7 @@ var
   lObj : TObject;
 begin
   lObj := TObject.Create;
-{$IFDEF DELPHI2010ORABOVE}
   Check(tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> true');
-{$ELSE}
-  Check(not tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> false');
-{$ENDIF}
   lObj.Free;
 
   lObj := TPersistent.Create;
@@ -2143,11 +2127,7 @@ begin
   lObj.Free;
 
   lObj := TCheckRTTI_2.Create;
-{$IFDEF DELPHI2010ORABOVE}
   Check(tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> true');
-{$ELSE}
-  Check(not tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> false');
-{$ENDIF}
   lObj.Free;
 end;
 

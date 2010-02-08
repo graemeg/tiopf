@@ -169,9 +169,7 @@ type
     procedure   tiListToStreamDelims;
     procedure   tiListToStreamFields;
     procedure   GetEnumerator;
-{$IFDEF DELPHI9ORABOVE}
     procedure   ForIn;
-{$ENDIF}
   end;
 
 
@@ -3476,7 +3474,6 @@ begin
   end;
 end;
 
-{$IFDEF DELPHI9ORABOVE}
 procedure TtiObjectListTestCase.ForIn;
 var
   lList      : TtiObjectListForTesting;
@@ -3508,8 +3505,6 @@ begin
   end;
 
 end;
-{$ENDIF}
-
 
 procedure TtiObjectListTestCase.FreeDeleted;
 var

@@ -313,11 +313,7 @@ uses
   ,tiUtils
   ,tiLogToFile
   ,tiExcept
-  {$IFDEF DELPHI6ORABOVE}
   ,Variants
-  {$ELSE}
-  ,FileCtrl
-  {$ENDIF}
  ;
 
 

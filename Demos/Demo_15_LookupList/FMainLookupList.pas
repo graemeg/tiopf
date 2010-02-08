@@ -7,11 +7,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiObject, ActnList,
-  Client_BOM, tiListView, ComCtrls, tiVirtualTrees, tiVTListView
-  {$IFDEF DELPHI6ORABOVE}
-  ,Variants
-  {$ENDIF}
- ;
+  Client_BOM, tiListView, ComCtrls, tiVirtualTrees, tiVTListView,
+  Variants, tiVTAbstract;
 
 type
   TFormMainLookupList = class(TForm)

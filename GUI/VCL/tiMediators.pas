@@ -191,13 +191,11 @@ type
 
 
   { Base class to handle TLabeledEdit controls }
-{$IFDEF DELPHI2006ORABOVE}
   TtiLabeledEditMediatorView = class(TtiCustomEditMediatorView)
   public
     function    View: TLabeledEdit; reintroduce;
     class function ComponentClass: TClass; override;
   end;
-{$ENDIF}
 
 // Registering generic mediators which can handle most cases by default.
 procedure RegisterFallBackMediators;
@@ -236,9 +234,7 @@ begin
   gMediatorManager.RegisterMediator(TtiMemoMediatorView, TtiObject, ctkMultiCharString);
   gMediatorManager.RegisterMediator(TtiSpinEditMediatorView, TtiObject, [tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TtiCalendarComboMediatorView, TtiObject, [tkFloat]);
-{$IFDEF DELPHI2006ORABOVE}
   gMediatorManager.RegisterMediator(TtiLabeledEditMediatorView, TtiObject, ctkMultiCharString + [tkInteger,tkFloat]);
-{$ENDIF}
 end;
 
 { TtiControlMediatorView }
@@ -842,7 +838,6 @@ end;
 
 { TtiLabeledEditMediatorView }
 
-{$IFDEF DELPHI2006ORABOVE}
 class function TtiLabeledEditMediatorView.ComponentClass: TClass;
 begin
   Result := TLabeledEdit;
@@ -852,6 +847,5 @@ function TtiLabeledEditMediatorView.View: TLabeledEdit;
 begin
   result := TLabeledEdit(inherited View);
 end;
-{$ENDIF}
 
 end.

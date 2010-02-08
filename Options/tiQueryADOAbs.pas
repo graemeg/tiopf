@@ -494,9 +494,7 @@ begin
     ftDate, ftTime, ftDateTime :                result := qfkDateTime;
     ftBlob, ftGraphic, ftVarBytes :             result := qfkBinary  ;
     ftMemo, ftFmtMemo:                          result := qfkLongString;
-    {$ifdef DELPHI10ORABOVE}
     ftWideMemo :                                result := qfkLongString;
-    {$endif}
     else
       raise Exception.Create('Invalid FQuery.Fields[ AIndex ].DataType <' +
                       GetEnumName(TypeInfo(TFieldType), Ord(pDataType)) +

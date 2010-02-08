@@ -1,22 +1,7 @@
 //Delphi 14 (2010)
 {$IFDEF VER210}
-  {$DEFINE DELPHI5ORABOVE}
-  {$DEFINE DELPHI6ORABOVE}
-  {$DEFINE DELPHI7ORABOVE}
-  {$DEFINE DELPHI8ORABOVE}
-  {$DEFINE DELPHI9ORABOVE}
-  {$DEFINE DELPHI10ORABOVE}
-  {$DEFINE DELPHI2006ORABOVE}
-  {$DEFINE DELPHI11ORABOVE}
-  {$DEFINE DELPHI12ORABOVE}
-  {$DEFINE DELPHI13ORABOVE}
-  {$DEFINE DELPHI13}
-  {$DEFINE DELPHI14}
-  {$DEFINE DELPHI2007ORABOVE}
-  {$DEFINE DELPHI2009ORABOVE}
   {$DEFINE DELPHI2010ORABOVE}
   {$DEFINE DELPHI2010}
-  {. $DEFINE DOTNET}
   {$DEFINE MSWINDOWS}
   {$DEFINE GENERICS}
 {$ENDIF}
@@ -107,25 +92,21 @@
 {$IFDEF LINK_ZEOS_FB10}   {$DEFINE STATIC_PERLAYER_LINKING} {$ENDIF}
 {$IFDEF LINK_ZEOS_FB15}   {$DEFINE STATIC_PERLAYER_LINKING} {$ENDIF}
 
-
-
 {$IFDEF DELPHI2010ORABOVE}
-//  {$WARN SYMBOL_LIBRARY OFF}
-//  {$WARN UNIT_LIBRARY OFF}
-//  {$WARN UNIT_PLATFORM OFF}
+  // These warnings must remain off as there will always be unsafe code
   {$WARN UNSAFE_TYPE OFF}
   {$WARN UNSAFE_CODE OFF}
   {$WARN UNSAFE_CAST OFF}
-  // Turn off warning: [DCC Warning] tiOPFCore.dpk(67):
-  //   W1029 Duplicate constructor 'TtiLogToFile.CreateWithDateInFileName'
-  //   with identical parameters will be inacessible from C++
-  // ToDo: This compiles in D2007. Check other compiler versions.
+  // This warning should remain off as the duplicate constructor is convenient.
+  // W1029 Duplicate constructor 'TtiLogToCacheAbs.CreateSynchronized',
+  // 'TtiLogToFile.CreateOverwriteOld' & 'TtiLogToFile.CreateWithDateInFileName'
+  // with identical parameters will be inacessible from C++
   {$WARN DUPLICATE_CTOR_DTOR OFF}
+  // These warnings will be turned back on as we fix the Unicode related warnings
   {$WARN IMPLICIT_STRING_CAST OFF}
   {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
   {$WARN EXPLICIT_STRING_CAST OFF}
   {$WARN EXPLICIT_STRING_CAST_LOSS OFF}
-
 {$ENDIF}
 
 (*

@@ -8,11 +8,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiPerAwareCtrls, ActnList,
   Client_BOM, ComCtrls, tiVirtualTrees, tiVTListView, tiObject, Grids, DBGrids,
-  DB, tiDataset
-  {$IFDEF DELPHI6ORABOVE}
-  ,Variants
-  {$ENDIF}
-  ;
+  DB, tiDataset, Variants;
   
 
 type

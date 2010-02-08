@@ -12,15 +12,6 @@ uses
   IBSQL,
   IBHeader;
 
-// Turn this on if you have upgraded you IBX from the version that comes
-// out of the box with Delphi. If you have not upgraded your IBX components,
-// you will have to comment the $DEFINE below out.
-// IBX can be upgraded from:
-//   http://codecentral.borland.com/codecentral/ccweb.exe/author?authorid=102
-{$IFDEF DELPHI6ORABOVE}
-  {$DEFINE IBXx08ORABOVE}
-{$ENDIF}
-
 type
 
   TtiPersistenceLayerIBX = class(TtiPersistenceLayer)
@@ -66,12 +57,7 @@ type
   private
     FIBSQL: TIBSQL;
     FbActive: boolean;
-    // If you build is falling over here, see the note around line 50 on IBX versions.
-    {$IFDEF IBXx08ORABOVE}
-      function IBFieldKindToTIFieldKind(AData : TSQLVAR): TtiQueryFieldKind;
-    {$ELSE}
-      function IBFieldKindToTIFieldKind(AData : PXSQLVAR): TtiQueryFieldKind;
-    {$ENDIF}
+    function IBFieldKindToTIFieldKind(AData : TSQLVAR): TtiQueryFieldKind;
     procedure Prepare;
   protected
 
@@ -144,9 +130,7 @@ uses
   tiLog,
   TypInfo,
   SysUtils,
-{$IFDEF DELPHI6ORABOVE}
   Variants,
-{$ENDIF}
   tiOPFManager,
   tiObject,
   tiConstants,
@@ -608,12 +592,7 @@ function TtiQueryIBX.FieldKind(AIndex: integer): TtiQueryFieldKind;
 var
   lValue: string;
 begin
-  // See note at top of this file re IBX versions
-  {$IFDEF IBXx08ORABOVE}
-    result := IBFieldKindToTIFieldKind(FIBSQL.Fields[AIndex].SqlVar);
-  {$ELSE}
-    result := IBFieldKindToTIFieldKind(FIBSQL.Fields[AIndex].AsXSQLVAR);
-  {$ENDIF}
+  result := IBFieldKindToTIFieldKind(FIBSQL.Fields[AIndex].SqlVar);
   if (result = qfkString) then
   begin
     lValue := FIBSQL.Fields[AIndex].AsString;
@@ -638,15 +617,9 @@ end;
 // This code is cloned in TtiQueryBDEAbs - Looks like we need to abstract more
 // and introduce a TDataSet version of the TtiQuery
 
-{$IFDEF IBXx08ORABOVE}
 function TtiQueryIBX.IBFieldKindToTIFieldKind(AData : TSQLVar): TtiQueryFieldKind;
 begin
   case (AData.sqltype and (not 1))of
-{$ELSE}
-function TtiQueryIBX.IBFieldKindToTIFieldKind(AData : PXSQLVAR): TtiQueryFieldKind;
-begin
-  case (AData^.sqltype and (not 1))of
-{$ENDIF}
     SQL_TEXT, SQL_VARYING:                       result := qfkString;
     SQL_LONG, SQL_SHORT, SQL_INT64, SQL_QUAD:    if AData.SqlScale = 0 then
                                                    result := qfkInteger

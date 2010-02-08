@@ -293,9 +293,7 @@ uses
   ,tiStreams
   ,tiWebServerVersion
   ,SysUtils
-  {$IFDEF DELPHI6ORABOVE}
   ,Variants
-  {$ENDIF}
  ;
 
 var

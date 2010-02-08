@@ -48,9 +48,7 @@ uses
   ,tiConstants
   ,tiExcept
   ,SysUtils, DB
-{$IFDEF DELPHI6ORABOVE}
   ,Variants
-{$ENDIF}
  ;
 
 

@@ -158,9 +158,7 @@ uses
   ,Windows
   ,Controls
   ,SysUtils
-  {$IFDEF DELPHI6ORABOVE}
   ,Variants
-  {$ENDIF}
   ,OracleCI
   ;
 

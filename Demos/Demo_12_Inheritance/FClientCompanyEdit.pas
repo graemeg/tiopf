@@ -5,12 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, FClientAbsEdit, tiReadOnly, StdCtrls, tiMemoReadOnly, ExtCtrls,
-  tiFocusPanel, tiPerAwareCtrls, Buttons
-  {$IFDEF DELPHI6ORABOVE}
-  ,Variants
-  {$ENDIF}
-  ,tiObject
- ;
+  tiFocusPanel, tiPerAwareCtrls, Buttons, Variants, tiObject;
 
 type
   TFormClientCompanyEdit = class(TFormClientAbsEdit)

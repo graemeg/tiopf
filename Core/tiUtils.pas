@@ -12,9 +12,7 @@ uses
   ,Types
   ,Math
   ,Contnrs
-  {$IFDEF DELPHI6ORABOVE}
   ,Variants
-  {$ENDIF}
   {$IFDEF MSWINDOWS}
   ,Windows       // Graeme: This must appear before SyncObjs for Free Pascal!
   ,shellAPI

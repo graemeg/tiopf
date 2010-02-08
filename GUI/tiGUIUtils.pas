@@ -613,14 +613,7 @@ function tiEditFile(const AFileName : string): integer;
 var
   LHandle: THandle;
 begin
-  {$IFDEF DELPHI10ORABOVE}
-     LHandle:= Application.ActiveFormHandle;
-  {$ELSE}
-     if Assigned(Application.MainForm) then
-       LHandle:= Application.MainForm.Handle
-     else
-       LHandle:= 0;
-  {$ENDIF}
+  LHandle:= Application.ActiveFormHandle;
   result := ShellExecute(LHandle,
                          nil,
                          PChar(AFileName),

@@ -136,9 +136,7 @@ uses
   tiLog,
   TypInfo,
   SysUtils,
-{$IFDEF DELPHI6ORABOVE}
   Variants,
-{$ENDIF}
   tiOPFManager,
   tiObject,
   tiConstants,

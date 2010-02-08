@@ -888,11 +888,7 @@ end;
 //=== { TtiJvBrowseForFolderDialog } ===========================================
 function JvMakeObjectInstance(Method: TWndMethod): Pointer;
 begin
-  {$IFDEF DELPHI6ORABOVE}
   Result := Classes.MakeObjectInstance(Method);
-  {$ELSE}
-  Result := MakeObjectInstance(Method);
-  {$ENDIF DELPHI6ORABOVE}
 end;
 
 constructor TtiJvBrowseForFolderDialog.Create(AOwner: TComponent);
@@ -925,11 +921,7 @@ end;
 procedure JvFreeObjectInstance(ObjectInstance: Pointer);
 begin
   if ObjectInstance <> nil then
-    {$IFDEF DELPHI6ORABOVE}
     Classes.FreeObjectInstance(ObjectInstance);
-    {$ELSE}
-    FreeObjectInstance(ObjectInstance);
-    {$ENDIF DELPHI6ORABOVE}
 end;
 
 destructor TtiJvBrowseForFolderDialog.Destroy;

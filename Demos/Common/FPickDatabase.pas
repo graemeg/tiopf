@@ -7,11 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiPerAwareCtrls, Buttons,
-  tiSpeedButton, ActnList, Menus, tiPersistenceLayers, Contnrs
-  {$IFDEF DELPHI6ORABOVE}
-  ,Variants
-  {$ENDIF}
- ;
+  tiSpeedButton, ActnList, Menus, tiPersistenceLayers, Contnrs, Variants;
 
 const
   cINIIdentLastPerLayer = 'LastPerLayer';

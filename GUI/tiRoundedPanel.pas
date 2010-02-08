@@ -41,9 +41,7 @@ type
     property Font;
     {$IFNDEF FPC}
     property Locked;
-    {$IFDEF DELPHI7ORABOVE}
     property ParentBackground;
-    {$ENDIF}
     {$ENDIF}
     property ParentColor;
     property ParentCtl3D;

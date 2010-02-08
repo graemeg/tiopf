@@ -54,7 +54,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Db, TypInfo, Graphics, Controls,
-  {$IFDEF DELPHI6ORABOVE} Variants, {$ENDIF} {$ifndef fpc}SqlTimSt,{$endif} 
+  Variants, {$ifndef fpc}SqlTimSt,{$endif}
   tiObject {$ifdef UNICODE}, WideStrUtils {$endif}, tiUtils;
 
 type
