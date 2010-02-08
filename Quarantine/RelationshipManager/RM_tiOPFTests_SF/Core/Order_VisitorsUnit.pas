@@ -6,7 +6,7 @@ uses
   tiVisitorDB;
 
 type
-  TvisOrder_Read = class (TVisOwnedQrySelect)
+  TvisOrder_Read = class (TtiVisitorSelect)
   protected
     function  AcceptVisitor : boolean ; override ;
     procedure Init           ; override ;
@@ -14,21 +14,21 @@ type
     procedure MapRowToObject ; override ;
   end;
 
-  TVisOrder_Create = class( TVisOwnedQryUpdate )
+  TVisOrder_Create = class( TtiVisitorUpdate )
   protected
     function  AcceptVisitor : boolean ; override ;
     procedure Init           ; override ;
     procedure SetupParams    ; override ;
   end ;
 
-  TVisOrder_Update = class( TVisOwnedQryUpdate )
+  TVisOrder_Update = class( TtiVisitorUpdate )
   protected
     function  AcceptVisitor : boolean ; override ;
     procedure Init           ; override ;
     procedure SetupParams    ; override ;
   end ;
 
-  TVisOrder_Delete = class( TVisOwnedQryUpdate )
+  TVisOrder_Delete = class( TtiVisitorUpdate )
   protected
     function  AcceptVisitor : boolean ; override ;
     procedure Init          ; override ;
