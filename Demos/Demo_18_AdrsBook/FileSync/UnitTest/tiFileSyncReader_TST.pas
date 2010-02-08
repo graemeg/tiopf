@@ -63,7 +63,6 @@ uses
   ,tiFileName_BOM
   ,tiCRC32
   ,cFileSync
-  ,FileCtrl
   ,SysUtils
  ;
 

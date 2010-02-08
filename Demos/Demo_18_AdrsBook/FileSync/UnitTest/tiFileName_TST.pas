@@ -37,7 +37,6 @@ uses
   ,tiUtils
   ,tiCRC32
   ,SysUtils
-  ,FileCtrl
   ;
 
 const
