@@ -141,11 +141,6 @@ type
 implementation
 uses
   ClipBrd
-  {$IFDEF MSWINDOWS}
-  {$IFDEF DELPHI5}
-    ,FileCtrl
-  {$ENDIF}
-  {$ENDIF MSWINDOWS}
   {$IFDEF LINUX}
   ,Types
   {$ENDIF LINUX}

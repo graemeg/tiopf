@@ -6,9 +6,6 @@ interface
 uses
    tiQuery
   ,Classes
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
   ,tiDataBuffer_BOM
   ,Contnrs
   ,tiBaseObject

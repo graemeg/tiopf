@@ -236,9 +236,6 @@ uses
   ,tiWebServerConfig
   ,tiCRC32
   ,Math
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
 ;
 
 function tiHTTPRequestInfoToParams(const ARequestInfo: TidHTTPRequestInfo): string;

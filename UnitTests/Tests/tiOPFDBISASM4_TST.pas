@@ -68,9 +68,6 @@ uses
   SysUtils,
   tiUtils,
   tiTestDependencies,
-  {$IFDEF DELPHI5}
-  FileCtrl,
-  {$ENDIF}
   tiTestFramework;
 
 procedure RegisterTests;

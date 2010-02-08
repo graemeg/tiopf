@@ -47,9 +47,6 @@ uses
   ,tiConstants
   ,tiExcept
   ,SysUtils
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
  ;
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

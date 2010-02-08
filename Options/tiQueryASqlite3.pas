@@ -139,9 +139,6 @@ uses
   ,TypInfo
   ,tiOPFManager
   ,tiConstants
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
  ;
 
 

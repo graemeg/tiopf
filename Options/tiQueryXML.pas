@@ -141,9 +141,6 @@ uses
   ,tiWin32
   ,tiExcept
   ,SysUtils
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
  ;
 
 var

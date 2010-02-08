@@ -609,9 +609,6 @@ implementation
 uses
    tiExcept
   {$IFDEF MSWINDOWS}
-    {$IFDEF DELPHI5}
-    ,FileCtrl
-    {$ENDIF}
   ,tiWin32
     {$IFDEF FPC}
     ,winsysut

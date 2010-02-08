@@ -206,9 +206,6 @@ uses
   ,SyncObjs
   ,tiUtils
   ,tiConstants
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
   ,tiPersistenceLayers
   ,tiOPFManager
   ,tiOPFTestManager
