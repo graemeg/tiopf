@@ -13,18 +13,15 @@ type
   TClient = class;
   TClients = class;
 
-  TClientName = String[200];
-  TClientID   = String[9];
-
   TClients = class(TtiObjectList);
 
   TClient = class(TtiObject)
   private
-    FClientID: TClientID;
-    FClientName: TClientName;
+    FClientID: string;
+    FClientName: string;
   published
-    property    ClientName: TClientName read FClientName write FClientName;
-    property    ClientID  : TClientID read FClientID write FClientID;
+    property    ClientName: string read FClientName write FClientName;
+    property    ClientID  : string read FClientID write FClientID;
   end;
 
   TClientVisitor = class(TtiVisitor)

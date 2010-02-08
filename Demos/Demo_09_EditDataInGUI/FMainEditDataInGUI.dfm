@@ -14,6 +14,9 @@ object Form2: TForm2
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    490
+    199)
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
@@ -50,6 +53,7 @@ object Form2: TForm2
     Width = 369
     Height = 181
     Header.AutoSizeIndex = 0
+    Header.DefaultHeight = 17
     Header.Font.Charset = DEFAULT_CHARSET
     Header.Font.Color = clWindowText
     Header.Font.Height = -11
@@ -58,6 +62,7 @@ object Form2: TForm2
     Header.MainColumn = -1
     Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
+    EditInlineOnly = False
     ShowAlternateRowColor = False
     ShowNodeHint = False
     SortOrders.GroupColumnCount = 0
@@ -68,7 +73,9 @@ object Form2: TForm2
     VT.Width = 365
     VT.Height = 127
     VT.Align = alClient
+    VT.Colors.UnfocusedColor = clMedGray
     VT.Header.AutoSizeIndex = 0
+    VT.Header.DefaultHeight = 17
     VT.Header.Font.Charset = DEFAULT_CHARSET
     VT.Header.Font.Color = clWindowText
     VT.Header.Font.Height = -11
@@ -79,6 +86,7 @@ object Form2: TForm2
     VT.Header.Style = hsXPStyle
     VT.NodeDataSize = 4
     VT.TabOrder = 0
+    VT.TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
     VT.Columns = <>

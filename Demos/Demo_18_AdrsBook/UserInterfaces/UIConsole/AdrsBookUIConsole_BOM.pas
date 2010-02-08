@@ -65,6 +65,7 @@ type
 
 implementation
 uses
+  Classes,
   tiOPFManager,
   tiUtils,
   tiQueryIBX,

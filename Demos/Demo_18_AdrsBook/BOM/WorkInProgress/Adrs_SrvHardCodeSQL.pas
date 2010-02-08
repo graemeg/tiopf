@@ -43,7 +43,7 @@ type
 
   // Read the lookup lists
   //----------------------------------------------------------------------------
-  TVisLookupListRead = class(TVisOwnedQrySelect)
+  TVisLookupListRead = class(TtiVisitorSelect)
   private
     FLastLookupList: TLookupList;
   protected
@@ -55,7 +55,7 @@ type
 
   // Read the primary keys of all the companies in the database
   //----------------------------------------------------------------------------
-  TVisCompanyRead_PK = class(TVisOwnedQrySelect)
+  TVisCompanyRead_PK = class(TtiVisitorSelect)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -65,7 +65,7 @@ type
 
   // Read the primary keys of all the people in the database
   //----------------------------------------------------------------------------
-  TVisPersonRead_PK = class(TVisOwnedQrySelect)
+  TVisPersonRead_PK = class(TtiVisitorSelect)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -75,7 +75,7 @@ type
 
   // Read the primary keys of all the company employees in the database
   //----------------------------------------------------------------------------
-  TVisCompanyEmployeeRead_PK = class(TVisOwnedQrySelect)
+  TVisCompanyEmployeeRead_PK = class(TtiVisitorSelect)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -86,7 +86,7 @@ type
 
   // Read the details of one person
   //----------------------------------------------------------------------------
-  TVisPersonRead_Detail = class(TVisOwnedQrySelect)
+  TVisPersonRead_Detail = class(TtiVisitorSelect)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -96,7 +96,7 @@ type
 
   // Read the details of one company
   //----------------------------------------------------------------------------
-  TVisCompanyRead_Detail = class(TVisOwnedQrySelect)
+  TVisCompanyRead_Detail = class(TtiVisitorSelect)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -107,7 +107,7 @@ type
 
   // Read all the address(es) for a person
   //----------------------------------------------------------------------------
-  TVisAdrsRead = class(TVisOwnedQrySelect)
+  TVisAdrsRead = class(TtiVisitorSelect)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -117,7 +117,7 @@ type
 
   // Read all the EAddress(es) for a person
   //----------------------------------------------------------------------------
-  TVisEAdrsRead = class(TVisOwnedQrySelect)
+  TVisEAdrsRead = class(TtiVisitorSelect)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -127,7 +127,7 @@ type
 
   // Insert a new company
   //----------------------------------------------------------------------------
-  TVisCompanyCreate = class(TVisOwnedQryUpdate)
+  TVisCompanyCreate = class(TtiVisitorUpdate)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -136,7 +136,7 @@ type
 
   // Update an existing company
   //----------------------------------------------------------------------------
-  TVisCompanyUpdate = class(TVisOwnedQryUpdate)
+  TVisCompanyUpdate = class(TtiVisitorUpdate)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -145,7 +145,7 @@ type
 
   // Delete an existing company
   //----------------------------------------------------------------------------
-  TVisCompanyDelete = class(TVisOwnedQryUpdate)
+  TVisCompanyDelete = class(TtiVisitorUpdate)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -154,7 +154,7 @@ type
 
   // Insert a new person
   //----------------------------------------------------------------------------
-  TVisPersonCreate = class(TVisOwnedQryUpdate)
+  TVisPersonCreate = class(TtiVisitorUpdate)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -163,7 +163,7 @@ type
 
   // Update a person
   //----------------------------------------------------------------------------
-  TVisPersonUpdate = class(TVisOwnedQryUpdate)
+  TVisPersonUpdate = class(TtiVisitorUpdate)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -172,7 +172,7 @@ type
 
   // Delete a person
   //----------------------------------------------------------------------------
-  TVisPersonDelete = class(TVisOwnedQryUpdate)
+  TVisPersonDelete = class(TtiVisitorUpdate)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -181,7 +181,7 @@ type
 
   // Insert a new EAddress
   //----------------------------------------------------------------------------
-  TVisEAdrsCreate = class(TVisOwnedQryUpdate)
+  TVisEAdrsCreate = class(TtiVisitorUpdate)
   private
   protected
     function    AcceptVisitor: boolean; override;
@@ -191,7 +191,7 @@ type
 
   // Update an existing EAddress
   //----------------------------------------------------------------------------
-  TVisEAdrsUpdate = class(TVisOwnedQryUpdate)
+  TVisEAdrsUpdate = class(TtiVisitorUpdate)
   protected
     function    AcceptVisitor: boolean; override;
     procedure   Init                   ; override;
@@ -200,7 +200,7 @@ type
 
   // Delete an EAddress
   //----------------------------------------------------------------------------
-  TVisEAdrsDelete = class(TVisOwnedQryUpdate)
+  TVisEAdrsDelete = class(TtiVisitorUpdate)
   private
   protected
     function    AcceptVisitor: boolean; override;
@@ -210,7 +210,7 @@ type
 
   // Insert a new address
   //----------------------------------------------------------------------------
-  TVisAdrsCreate = class(TVisOwnedQryUpdate)
+  TVisAdrsCreate = class(TtiVisitorUpdate)
   private
   protected
     function    AcceptVisitor: boolean; override;
@@ -219,7 +219,7 @@ type
   end;
 
   //----------------------------------------------------------------------------
-  TVisAdrsUpdate = class(TVisOwnedQryUpdate)
+  TVisAdrsUpdate = class(TtiVisitorUpdate)
   private
   protected
     function    AcceptVisitor: boolean; override;
@@ -228,7 +228,7 @@ type
   end;
 
   //----------------------------------------------------------------------------
-  TVisAdrsDelete = class(TVisOwnedQryUpdate)
+  TVisAdrsDelete = class(TtiVisitorUpdate)
   private
   protected
     function    AcceptVisitor: boolean; override;

@@ -35,8 +35,16 @@ object FormPopulateDatabase: TFormPopulateDatabase
     Height = 23
     Constraints.MinHeight = 23
     TabOrder = 1
+    OnChangeDelayInterval = 0
+    LabelLayout = tlTop
     Caption = 'Count of client records'
     LabelWidth = 110
+    LabelFont.Charset = DEFAULT_CHARSET
+    LabelFont.Color = clBlack
+    LabelFont.Height = -11
+    LabelFont.Name = 'MS Sans Serif'
+    LabelFont.Style = []
+    LabelParentFont = False
     ReadOnly = False
     ValueAsString = '0'
     Precision = 0
@@ -53,5 +61,8 @@ object FormPopulateDatabase: TFormPopulateDatabase
     OnBtn2Click = tiButtonPanel1Btn2Click
     Btn1Enabled = True
     Btn2Enabled = True
+    DesignSize = (
+      404
+      31)
   end
 end

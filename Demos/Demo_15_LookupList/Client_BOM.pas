@@ -17,8 +17,6 @@ type
   TClient        = class;
   TClients       = class;
 
-  TClientName = String[200];
-
   TClients = class(TtiObjectList)
   private
   protected
@@ -33,7 +31,7 @@ type
 
   TClient = class(TtiObject)
   private
-    FClientName: TClientName;
+    FClientName: string;
     FClientSource: TClientSource;
     function    GetClientSouceAsGUIString: string;
     function    GetClientSourceOIDAsString: string;
@@ -48,7 +46,7 @@ type
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
     property    ClientSource: TClientSource read FClientSource write FClientSource;
   published
-    property    ClientName: TClientName read FClientName write FClientName;
+    property    ClientName: string read FClientName write FClientName;
     property    ClientSourceOIDAsString : string read GetClientSourceOIDAsString write SetClientSourceOIDAsString;
     property    ClientSourceAsGUIString : string read GetClientSouceAsGUIString  write SetClientSourceAsGUIString;
   end;

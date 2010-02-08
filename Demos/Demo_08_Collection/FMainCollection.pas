@@ -7,7 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, tiFocusPanel, tiPerAwareCtrls, ActnList,
-  Client_BOM, tiVirtualTrees, Variants, tiVTListView, tiObject;
+  Client_BOM, tiVirtualTrees, Variants, tiVTListView, tiObject, tiVTAbstract;
 
 type
   TFormCollection = class(TForm)
@@ -71,9 +71,9 @@ begin
   LTableMetaData:= TtiDBMetaDataTable.Create;
   try
     LTableMetaData.Name:= 'Client';
-    LTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
-    LTableMetaData.AddField('Client_Name',       qfkString, 200);
-    LTableMetaData.AddField('Client_ID',          qfkString,   9);
+    LTableMetaData.AddInstance('OID',               qfkString,  36); // Using GUID OIDs
+    LTableMetaData.AddInstance('Client_Name',       qfkString, 200);
+    LTableMetaData.AddInstance('Client_ID',          qfkString,   9);
     GTIOPFManager.CreateTable(LTableMetaData);
   finally
     LTableMetaData.Free;

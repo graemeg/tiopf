@@ -71,9 +71,9 @@ begin
   lTableMetaData:= TtiDBMetaDataTable.Create;
   try
     lTableMetaData.Name:= 'Client';
-    lTableMetaData.AddField('OID',          qfkString,  36); // Using GUID OIDs
-    lTableMetaData.AddField('Client_Name',  qfkString, 200);
-    lTableMetaData.AddField('Sex',          qfkString,   7);
+    lTableMetaData.AddInstance('OID',          qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddInstance('Client_Name',  qfkString, 200);
+    lTableMetaData.AddInstance('Sex',          qfkString,   7);
     GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;

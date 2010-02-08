@@ -11,7 +11,7 @@ uses
 type
 
   // TClientAbs
-  TVisClientAbs_Update = class(TVisOwnedQryUpdate)
+  TVisClientAbs_Update = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
@@ -24,7 +24,7 @@ type
     procedure Init          ; override;
   end;
 
-  TVisClientAbs_Delete = class(TVisOwnedQryUpdate)
+  TVisClientAbs_Delete = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
@@ -32,7 +32,7 @@ type
   end;
 
   // TClientCompany
-  TVisClientCompany_Read = class(TVisOwnedQrySelect)
+  TVisClientCompany_Read = class(TtiVisitorSelect)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
@@ -40,7 +40,7 @@ type
     procedure MapRowToObject; override;
   end;
 
-  TVisClientCompany_Update = class(TVisOwnedQryUpdate)
+  TVisClientCompany_Update = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
@@ -53,7 +53,7 @@ type
     procedure Init          ; override;
   end;
 
-  TVisClientCompany_Delete = class(TVisOwnedQryUpdate)
+  TVisClientCompany_Delete = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init         ; override;
@@ -61,7 +61,7 @@ type
   end;
 
   // TClientPerson
-  TVisClientPerson_Read = class(TVisOwnedQrySelect)
+  TVisClientPerson_Read = class(TtiVisitorSelect)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
@@ -69,7 +69,7 @@ type
     procedure MapRowToObject; override;
   end;
 
-  TVisClientPerson_Update = class(TVisOwnedQryUpdate)
+  TVisClientPerson_Update = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
@@ -82,7 +82,7 @@ type
     procedure Init          ; override;
   end;
 
-  TVisClientPerson_Delete = class(TVisOwnedQryUpdate)
+  TVisClientPerson_Delete = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init         ; override;

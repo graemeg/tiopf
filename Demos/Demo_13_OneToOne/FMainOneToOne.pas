@@ -161,8 +161,8 @@ begin
   lTableMetaData:= TtiDBMetaDataTable.Create;
   try
     lTableMetaData.Name:= 'Client';
-    lTableMetaData.AddField('OID',               qfkString,  36); // Using GUID OIDs
-    lTableMetaData.AddField('Client_Name',       qfkString,  200);
+    lTableMetaData.AddInstance('OID',               qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddInstance('Client_Name',       qfkString,  200);
     GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;
@@ -171,11 +171,11 @@ begin
   lTableMetaData:= TtiDBMetaDataTable.Create;
   try
     lTableMetaData.Name:= 'Adrs';
-    lTableMetaData.AddField('OID',       qfkString,  36); // Using GUID OIDs
-    lTableMetaData.AddField('Adrs_Text', qfkString, 240);
-    lTableMetaData.AddField('Locality',  qfkString,  46);
-    lTableMetaData.AddField('State',     qfkString,   3);
-    lTableMetaData.AddField('Post_Code', qfkString,   4);
+    lTableMetaData.AddInstance('OID',       qfkString,  36); // Using GUID OIDs
+    lTableMetaData.AddInstance('Adrs_Text', qfkString, 240);
+    lTableMetaData.AddInstance('Locality',  qfkString,  46);
+    lTableMetaData.AddInstance('State',     qfkString,   3);
+    lTableMetaData.AddInstance('Post_Code', qfkString,   4);
     GTIOPFManager.CreateTable(lTableMetaData);
   finally
     lTableMetaData.Free;

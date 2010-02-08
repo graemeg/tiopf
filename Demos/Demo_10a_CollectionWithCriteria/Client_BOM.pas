@@ -11,9 +11,6 @@ type
   TClient = class;
   TClients = class;
 
-  TClientName = String[200];
-  TClientID   = String[9];
-
   TClients = class(TtiFilteredObjectList)
   public
     procedure Read; override;
@@ -25,13 +22,13 @@ type
 
   TClient = class(TtiObject)
   private
-    FClientID: TClientID;
-    FClientName: TClientName;
+    FClientID: string;
+    FClientName: string;
   public
     constructor CreateNew(const pDatabaseName: string = ''; const pPersistenceLayerName: string = ''); override;
   published
-    property    ClientName: TClientName read FClientName write FClientName;
-    property    ClientID  : TClientID read FClientID write FClientID;
+    property    ClientName: string read FClientName write FClientName;
+    property    ClientID  : string read FClientID write FClientID;
   end;
 
 implementation

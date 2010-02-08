@@ -161,8 +161,7 @@ type
 
 implementation
 uses
-  FileCtrl  // DirectoryExists, FileExists
-  ,tiUtils  // tiDirectoryTreeToStringList
+   tiUtils  // tiDirectoryTreeToStringList
   ,tiDialogs
   ,tiConstants
   ,tiOPFManager

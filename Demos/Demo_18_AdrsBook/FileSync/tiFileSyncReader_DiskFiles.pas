@@ -45,7 +45,6 @@ uses
   ,Classes
   ,Windows
   ,SysUtils
-  ,FileCtrl
   ,cFileSync
  ;
 

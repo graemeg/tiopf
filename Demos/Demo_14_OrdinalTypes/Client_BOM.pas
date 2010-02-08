@@ -27,8 +27,6 @@ type
   TClient = class;
   TClients = class;
 
-  TClientName = String[200];
-
   TClients = class(TtiObjectList)
   private
   protected
@@ -44,7 +42,7 @@ type
   TClient = class(TtiObject)
   private
     FSex: TSex;
-    FClientName: TClientName;
+    FClientName: string;
     function    GetSexAsDBString: string;
     function    GetSexAsGUIString: string;
     procedure   SetSexAsDBString(const Value: string);
@@ -57,7 +55,7 @@ type
     function    IsValid(const AErrors: TtiObjectErrors): boolean; override;
     property    Sex: TSex read FSex write FSex;
   published
-    property    ClientName: TClientName read FClientName write FClientName;
+    property    ClientName: string read FClientName write FClientName;
     property    SexAsDBString: string read GetSexAsDBString write SetSexAsDBString;
     property    SexAsGUIString: string read GetSexAsGUIString write SetSexAsGUIString;
   end;

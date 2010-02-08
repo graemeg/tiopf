@@ -30,6 +30,7 @@ object FormCollection: TFormCollection
       Height = 23
       Constraints.MinHeight = 23
       TabOrder = 0
+      OnChangeDelayInterval = 0
       LabelLayout = tlTop
       Caption = 'OID'
       LabelFont.Charset = DEFAULT_CHARSET
@@ -50,6 +51,7 @@ object FormCollection: TFormCollection
       Height = 23
       Constraints.MinHeight = 23
       TabOrder = 1
+      OnChangeDelayInterval = 0
       LabelLayout = tlTop
       Caption = 'Client name'
       LabelFont.Charset = DEFAULT_CHARSET
@@ -70,6 +72,7 @@ object FormCollection: TFormCollection
       Height = 23
       Constraints.MinHeight = 23
       TabOrder = 2
+      OnChangeDelayInterval = 0
       LabelLayout = tlTop
       Caption = 'Client ID'
       LabelFont.Charset = DEFAULT_CHARSET
@@ -135,6 +138,7 @@ object FormCollection: TFormCollection
     Height = 289
     Align = alClient
     Header.AutoSizeIndex = 0
+    Header.DefaultHeight = 17
     Header.Font.Charset = DEFAULT_CHARSET
     Header.Font.Color = clWindowText
     Header.Font.Height = -11
@@ -143,6 +147,7 @@ object FormCollection: TFormCollection
     Header.MainColumn = -1
     Header.Options = [hoColumnResize, hoDrag, hoOwnerDraw, hoShowSortGlyphs, hoVisible]
     Header.Style = hsXPStyle
+    EditInlineOnly = False
     Searching = False
     ShowNodeHint = False
     SortOrders.GroupColumnCount = 0
@@ -152,7 +157,9 @@ object FormCollection: TFormCollection
     VT.Width = 589
     VT.Height = 259
     VT.Align = alClient
+    VT.Colors.UnfocusedColor = clMedGray
     VT.Header.AutoSizeIndex = 0
+    VT.Header.DefaultHeight = 17
     VT.Header.Font.Charset = DEFAULT_CHARSET
     VT.Header.Font.Color = clWindowText
     VT.Header.Font.Height = -11
@@ -163,6 +170,7 @@ object FormCollection: TFormCollection
     VT.Header.Style = hsXPStyle
     VT.NodeDataSize = 4
     VT.TabOrder = 0
+    VT.TreeOptions.MiscOptions = [toAcceptOLEDrop, toEditable, toFullRepaintOnResize, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick]
     VT.TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowRoot, toShowVertGridLines, toThemeAware, toUseBlendedImages]
     VT.TreeOptions.SelectionOptions = [toFullRowSelect]
     VT.Columns = <>

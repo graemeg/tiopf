@@ -1,9 +1,9 @@
 object FormMainOneToMany: TFormMainOneToMany
   Left = 202
   Top = 132
-  Width = 548
-  Height = 431
   Caption = 'FormMainOneToMany'
+  ClientHeight = 397
+  ClientWidth = 540
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,6 +13,9 @@ object FormMainOneToMany: TFormMainOneToMany
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  DesignSize = (
+    540
+    397)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -118,6 +121,7 @@ object FormMainOneToMany: TFormMainOneToMany
     Width = 369
     Height = 182
     Header.AutoSizeIndex = 0
+    Header.DefaultHeight = 17
     Header.Font.Charset = DEFAULT_CHARSET
     Header.Font.Color = clWindowText
     Header.Font.Height = -11
@@ -139,6 +143,7 @@ object FormMainOneToMany: TFormMainOneToMany
     VT.Align = alClient
     VT.Colors.UnfocusedColor = clMedGray
     VT.Header.AutoSizeIndex = 0
+    VT.Header.DefaultHeight = 17
     VT.Header.Font.Charset = DEFAULT_CHARSET
     VT.Header.Font.Color = clWindowText
     VT.Header.Font.Height = -11
@@ -166,6 +171,7 @@ object FormMainOneToMany: TFormMainOneToMany
     Width = 369
     Height = 146
     Header.AutoSizeIndex = 0
+    Header.DefaultHeight = 17
     Header.Font.Charset = DEFAULT_CHARSET
     Header.Font.Color = clWindowText
     Header.Font.Height = -11
@@ -187,6 +193,7 @@ object FormMainOneToMany: TFormMainOneToMany
     VT.Align = alClient
     VT.Colors.UnfocusedColor = clMedGray
     VT.Header.AutoSizeIndex = 0
+    VT.Header.DefaultHeight = 17
     VT.Header.Font.Charset = DEFAULT_CHARSET
     VT.Header.Font.Color = clWindowText
     VT.Header.Font.Height = -11

@@ -12,7 +12,7 @@ uses
 
 type
 
-  TVisClient_Read = class(TVisOwnedQrySelect)
+  TVisClient_Read = class(TtiVisitorSelect)
   private
     FClient: TClient;
   protected
@@ -22,21 +22,21 @@ type
     procedure MapRowToObject; override;
   end;
 
-  TVisClient_Create = class(TVisOwnedQryUpdate)
+  TVisClient_Create = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
     procedure SetupParams   ; override;
   end;
 
-  TVisClient_Update = class(TVisOwnedQryUpdate)
+  TVisClient_Update = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
     procedure SetupParams   ; override;
   end;
 
-  TVisClient_Delete = class(TVisOwnedQryUpdate)
+  TVisClient_Delete = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init         ; override;
@@ -44,21 +44,21 @@ type
     procedure Final(const AVisited: TtiObject); override;
   end;
 
-  TVisPhoneNumber_Create = class(TVisOwnedQryUpdate)
+  TVisPhoneNumber_Create = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
     procedure SetupParams   ; override;
   end;
 
-  TVisPhoneNumber_Update = class(TVisOwnedQryUpdate)
+  TVisPhoneNumber_Update = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init          ; override;
     procedure SetupParams   ; override;
   end;
 
-  TVisPhoneNumber_Delete = class(TVisOwnedQryUpdate)
+  TVisPhoneNumber_Delete = class(TtiVisitorUpdate)
   protected
     function  AcceptVisitor: boolean; override;
     procedure Init         ; override;
