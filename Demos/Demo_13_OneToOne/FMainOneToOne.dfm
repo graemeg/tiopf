@@ -14,9 +14,6 @@ object FormMainInheritance: TFormMainInheritance
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    540
-    343)
   PixelsPerInch = 96
   TextHeight = 13
   object Button2: TButton

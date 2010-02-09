@@ -28,11 +28,11 @@
 			<DCC_EXPLICIT_STRING_CAST>true</DCC_EXPLICIT_STRING_CAST>
 			<DCC_CVT_ACHAR_TO_WCHAR>true</DCC_CVT_ACHAR_TO_WCHAR>
 			<DCC_MapFile>3</DCC_MapFile>
-			<DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\3rdParty\DUnit;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\3rdParty\JCL\common;..\..\3rdParty\JCL\windows;..\..\3rdParty\JCL\include;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\..\..\3rdParty\FastMM;..\..\..\3rdParty\DUnit;..\..\..\3rdParty\JCL\common;..\..\..\3rdParty\JCL\windows;..\..\..\3rdParty\JCL\include;..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_ExeOutput>..\..\_bin</DCC_ExeOutput>
 			<DCC_DependencyCheckOutputName>..\..\_bin\tiOPFUnitTestsText.exe</DCC_DependencyCheckOutputName>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
-			<DCC_Define>DUNIT2;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;$(DCC_Define)</DCC_Define>
+			<DCC_Define>DEBUG;DUNIT2;USE_JEDI_JCL;LINK_XMLLIGHT;LINK_XML;LINK_CSV;LINK_TAB;LINK_BDEPARADOX;LINK_ADOACCESS;LINK_IBX;LINK_ADOSQLSERVERx;LINK_REMOTEx;LINK_DOAx;$(DCC_Define)</DCC_Define>
 			<DCC_Platform>x86</DCC_Platform>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_S>false</DCC_S>
@@ -48,9 +48,7 @@
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
-		<PropertyGroup Condition="'$(Cfg_2)'!=''">
-			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
-		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''"/>
 		<ItemGroup>
 			<DelphiCompile Include="tiOPFUnitTestsText.dpr">
 				<MainSource>MainSource</MainSource>

@@ -13,9 +13,6 @@ object FormMainLookupList: TFormMainLookupList
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  DesignSize = (
-    517
-    277)
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
