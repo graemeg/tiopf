@@ -690,8 +690,7 @@ begin
       InitSHFolder;
     if Assigned(SHGetFolderPathProc) and
       Succeeded(SHGetFolderPathProc(0, CSIDLLocations[LSpecialDirectory].CSIDL, 0, 0, Buffer)) then
-
-      APath := Buffer
+      APath := string(Buffer)
     else
       APath := '';
   finally

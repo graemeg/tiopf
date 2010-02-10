@@ -150,13 +150,13 @@ begin
      begin
        if ProxyInfo^.dwAccessType = INTERNET_OPEN_TYPE_PROXY then
        begin
-         ProxyStr := ProxyInfo^.lpszProxy;
+         ProxyStr := string(ProxyInfo^.lpszProxy);
          if not ParseIeProxyStr(ProxyStr) then
            FProxyServerActive := False
          else
          begin
            FProxyServerActive := True;
-           ProxyBypassStr := ProxyInfo^.lpszProxyBypass;
+           ProxyBypassStr := string(ProxyInfo^.lpszProxyBypass);
            ParseIeProxyBypassStr(ProxyBypassStr);
          end;
        end;

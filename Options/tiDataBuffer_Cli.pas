@@ -58,9 +58,9 @@ function  tiDataSetToHTMLV(   const pDataSet : TtiDataBuffer): string;
 type
   TExtractTokenEvent = procedure(AIndex : integer; const AValue : string) of object;
 
-function stExtractTokensL(const S : AnsiString;
-                           const Delims : AnsiString;
-                           QuoteChar : AnsiChar;
+function stExtractTokensL(const S : string;
+                           const Delims : string;
+                           QuoteChar : Char;
                            AllowNulls : Boolean;
                            pExtractTokenEvent : TExtractTokenEvent): Cardinal;
 
@@ -176,96 +176,7 @@ begin
 end;
 
 
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-//
-// No, I don't know any assembler...
-// The following routines (prefixed with st) where pasted from
-// TurboPowers SysTools, which is available on http://sourceforge.net
-// The aim of using these routines is go get the functionality from
-// stExtractTokensL which strips a string into tokens to be used as the
-// values in a data set read from a CSV file.
-//
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-{.Z+}
-type
-  stLStrRec = record
-    AllocSize : Longint;
-    RefCount : Longint;
-    Length   : Longint;
-  end;
-
-const
-  stStrOffset = SizeOf(stLStrRec);
-{.Z-}
-
-{ Delphi compatible defines }
-{$DEFINE USEASM}
-{$IFDEF FPC}
-{$IFNDEF CPU386}
-{$UNDEF USEASM}
-{$ENDIF}
-{$ENDIF}
-
-{$IFDEF USEASM}
-function stCharExistsL(const S : AnsiString; C : AnsiChar): Boolean; register;
-  {-Count the number of a given character in a string. }
-asm
-  push  ebx
-  xor   ecx, ecx
-  or    eax, eax
-  jz    @@Done
-  mov   ebx, [eax-stStrOffset].stLStrRec.Length
-  or    ebx, ebx
-  jz    @@Done
-  jmp   @@5
-
-@@Loop:
-  cmp   dl, [eax+3]
-  jne   @@1
-  inc   ecx
-  jmp   @@Done
-
-@@1:
-  cmp   dl, [eax+2]
-  jne   @@2
-  inc   ecx
-  jmp   @@Done
-
-@@2:
-  cmp   dl, [eax+1]
-  jne   @@3
-  inc   ecx
-  jmp   @@Done
-
-@@3:
-  cmp   dl, [eax+0]
-  jne   @@4
-  inc   ecx
-  jmp   @@Done
-
-@@4:
-  add   eax, 4
-  sub   ebx, 4
-
-@@5:
-  cmp   ebx, 4
-  jge   @@Loop
-
-  cmp   ebx, 3
-  je    @@1
-
-  cmp   ebx, 2
-  je    @@2
-
-  cmp   ebx, 1
-  je    @@3
-
-@@Done:
-  mov   eax, ecx
-  pop   ebx
-end;
-{$ELSE}
-function stCharExistsL(const S : AnsiString; C : AnsiChar): Boolean; register;
+function stCharExistsL(const S : string; C : Char): Boolean; register;
 
 Var
   I,L : Integer;
@@ -274,18 +185,17 @@ begin
   Result:=False;
   I:=1;
   L:=Length(S);
-  While (I<L) and Not Result do
+  While (I<=L) and Not Result do
     begin
     Result:=S[i]=C;
     Inc(I);
     end;
 end;
-{$ENDIF}
 
 
-function stExtractTokensL(const S : AnsiString;
-                           const Delims : AnsiString;
-                           QuoteChar : AnsiChar;
+function stExtractTokensL(const S : string;
+                           const Delims : string;
+                           QuoteChar : Char;
                            AllowNulls : Boolean;
                            pExtractTokenEvent : TExtractTokenEvent): Cardinal;
 var
@@ -294,7 +204,7 @@ var
            ScanQuotedTokenEnd,
            ScanNormalToken,
            ScanNormalTokenWithQuote);
-  CurChar   : AnsiChar;
+  CurChar   : Char;
   TokenStart : integer;
   Inx       : integer;
   lResult   : string;

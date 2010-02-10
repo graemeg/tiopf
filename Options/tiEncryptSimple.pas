@@ -18,18 +18,18 @@ type
   private
     function  SimpleEncrypt(const Source: AnsiString): AnsiString;
   protected
-    procedure SetSeed   (const AValue: ansistring); override;
+    procedure SetSeed   (const AValue: string); override;
   public
     constructor Create; override;
-    function    EncryptString(const psData : AnsiString): AnsiString; override;
-    function    DecryptString(const psData : AnsiString): AnsiString; override;
+    function    EncryptString(const psData : string): string; override;
+    function    DecryptString(const psData : string): string; override;
     procedure   EncryptStream(const pSrc, pDest : TStream); override;
     procedure   DecryptStream(const pSrc, pDest : TStream); override;
   end;
 
 
 const
-  cDefaultEncryptSeedString : String = '12%6348i(oikruK**9oi57&^1`!@bd)';
+  cDefaultEncryptSeedString : string = '12%6348i(oikruK**9oi57&^1`!@bd)';
 
 
 implementation
@@ -59,22 +59,24 @@ var
 begin
   SetLength(Result, Length(Source));
   for Index := 1 to Length(Source) do
-    Result[Index]:= ansichar((Ord(Seed[Index mod Length(Seed)]) xor Ord(Source[Index])));
+    Result[Index]:= AnsiChar((Ord(Seed[Index mod Length(Seed)]) xor Ord(Source[Index])));
 end;
 
 
-function TEncryptSimple.EncryptString(const psData : AnsiString): AnsiString;
+function TEncryptSimple.EncryptString(const psData : string): string;
 var
   OrdValue: Byte;
   Index: Integer;
   BitCount: Integer;
   BitValue: Byte;
   ByteValue: Byte;
-  Source: ansiString;
+  Source: AnsiString;
+  LAnsiResult: AnsiString;
 begin
+  LAnsiResult := '';
   ByteValue := Random(255) + 1;
-  Source := SimpleEncrypt(psData);
-  SetLength(Result, Length(Source) * 8);
+  Source := SimpleEncrypt(AnsiString(psData));
+  SetLength(LAnsiResult, Length(Source) * 8);
   for Index := 1 to Length(Source) do
   begin
     OrdValue := Ord(Source[Index]);
@@ -83,7 +85,7 @@ begin
       BitValue := Byte(OrdValue and (1 shl BitCount) = 1 shl BitCount);
       RandSeed := ByteValue;
       ByteValue := (((Random(255) + 1) div 2) * 2) + BitValue;
-      Result[(Index - 1) * 8 + BitCount + 1]:= AnsiChar(ByteValue);
+      LAnsiResult[(Index - 1) * 8 + BitCount + 1]:= AnsiChar(ByteValue);
     end;
   end;
 
@@ -93,24 +95,27 @@ begin
   begin
     Sleep(1);
     Randomize;
-    Result := Result + AnsiChar(Random(256));
+    LAnsiResult := LAnsiResult + AnsiChar(Random(256));
   end;
+  Result := string(LAnsiResult);
 end;
 
 
-function TEncryptSimple.DecryptString(const psData : AnsiString): AnsiString;
+function TEncryptSimple.DecryptString(const psData : string): string;
 var
-  ListText: ansistring;
-  EncryptedOrd: ansistring;
+  LsData: AnsiString;
+  ListText: AnsiString;
+  EncryptedOrd: AnsiString;
   OrdValue: Integer;
   Index: Integer;
   BitCount: Integer;
 begin
+  LsData := AnsiString(psData);
   Index := 1;
   ListText := '';
-  while Index < Length(psData) do
+  while Index < Length(LsData) do
   begin
-    EncryptedOrd := Copy(psData, Index, 8);
+    EncryptedOrd := Copy(LsData, Index, 8);
     if Length(EncryptedOrd) < 8 then
       Break;
     OrdValue := 0;
@@ -125,7 +130,7 @@ begin
     Inc(Index, 8);
   end;
 
-  result := SimpleEncrypt(ListText);
+  result := string(SimpleEncrypt(ListText));
 end;
 
 
@@ -136,7 +141,7 @@ begin
   pSrc.Seek(0, soFromBeginning);
   SetLength(ls, pSrc.Size);
   pSrc.ReadBuffer(ls[1], pSrc.Size);
-  ls := EncryptString(ls);
+  ls := AnsiString(EncryptString(string(ls)));
   pDest.WriteBuffer(Pointer(ls)^, Length(ls));
 end;
 
@@ -148,12 +153,12 @@ begin
   pSrc.Seek(0, soFromBeginning);
   SetLength(ls, pSrc.Size);
   pSrc.ReadBuffer(ls[1], pSrc.Size);
-  ls := DecryptString(ls);
+  ls := AnsiString(DecryptString(string(ls)));
   pDest.WriteBuffer(Pointer(ls)^, Length(ls));
 end;
 
 
-procedure TEncryptSimple.SetSeed(const AValue: ansistring);
+procedure TEncryptSimple.SetSeed(const AValue: string);
 begin
   inherited;
   if SameText(Seed, '') then // zero length not valid

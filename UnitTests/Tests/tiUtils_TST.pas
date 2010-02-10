@@ -800,8 +800,21 @@ begin
     tiUtils.tiSetFileDate(lFileName, lDate);
     FileAge(lFileName, LFileAge);
     CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 7');
-    tiDeleteFile(lFileName);
 
+    lDate := 0;
+    try
+      tiUtils.tiSetFileDate(lFileName, lDate);
+      Fail('Exception not raised when it should have been');
+    except
+      on e:exception do
+      begin
+        CheckIs(e, EtiOPFFileSystemException);
+        CheckExceptionMessage(CErrorSettingFileDate,
+        [lFileName, 87, SysErrorMessage(87)],
+        e);
+      end;
+    end;
+    tiDeleteFile(lFileName);
   finally
     lsl.Free;
   end;
@@ -899,8 +912,8 @@ procedure TTestTIUtils.tiMoveFile;
 var
   LFileNameFrom: string;
   LFileNameTo: string;
-  LFrom: ansistring;
-  LTo: ansistring;
+  LFrom: string;
+  LTo: string;
 begin
   ForceDirectories(TempDirectory);
 
@@ -2473,7 +2486,7 @@ end;
 procedure TTestTIUtils.tiFileToStream;
 var
   lSt: TStringStream;
-  lS: ansistring;
+  lS: string;
   lFileName: string;
   lsl: TStringList;
 begin

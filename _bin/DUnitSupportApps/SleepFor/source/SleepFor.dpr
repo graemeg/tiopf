@@ -12,7 +12,7 @@ uses
   tiCommandLineParams;
 
 var
-  LSecondsToSleep: Cardinal;
+  LSecondsToSleep: string;
   LFileName: string;
 
 const
@@ -22,14 +22,15 @@ const
 
 begin
 
-  Assert(gCommandLineParams.IsParam('s'), CUsage_Error);
-  Assert(gCommandLineParams.IsParam('f'), CUsage_Error);
-
-  LSecondsToSleep := tiStrToInt(gCommandLineParams.GetParam('s'));
-  LFileName       := gCommandLineParams.GetParam('f');
-  WriteLn('Before sleep message');
-  Sleep(LSecondsToSleep * 1000);
-  WriteLn('After sleep message');
-  tiStringToFile(gCommandLineParams.GetParam('s'), LFileName);
-
+  if (not gCommandLineParams.IsParam('s')) or
+     (not gCommandLineParams.IsParam('f')) then
+    WriteLn(CUsage_Error)
+  else begin
+    LSecondsToSleep := gCommandLineParams.GetParam('s');
+    LFileName:= gCommandLineParams.GetParam('f');
+    WriteLn('Before sleep message');
+    Sleep(StrToInt(LSecondsToSleep) * 1000);
+    WriteLn('After sleep message');
+    tiStringToFile(LSecondsToSleep, LFileName);
+  end;
 end.

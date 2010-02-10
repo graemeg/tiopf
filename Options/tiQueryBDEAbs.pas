@@ -171,7 +171,7 @@ end;
 
 procedure TtiQueryBDE.AssignParamToStream(const AName: string; const AStream : TStream);
 var
-  ls : ansistring;
+  ls : string;
 begin
   Assert(AStream <> nil, 'Stream not assigned');
   ls := FQuery.ParamByName(AName).Value;

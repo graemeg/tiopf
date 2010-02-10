@@ -10,7 +10,7 @@ uses
  ;
 
 const
-  cuSeedString : AnsiString = '12%6348i(oikruK**9oi57&^1`!@bd)';
+  cuSeedString : string = '12%6348i(oikruK**9oi57&^1`!@bd)';
 
 type
 
@@ -19,18 +19,18 @@ type
   // NewSeed method to increase security in comms apps
   TtiEncryptAbs = class(TObject)
   private
-    FSeed : ansistring;
+    FSeed : string;
     FIntSeed : Int64;
   protected
-    procedure SetSeed   (const AValue: ansistring); virtual;
+    procedure SetSeed   (const AValue: string); virtual;
     procedure SetIntSeed(const AValue: Int64); virtual;
   public
     constructor Create; virtual;
-    function    EncryptString(const psData : AnsiString): AnsiString; virtual; abstract;
-    function    DecryptString(const psData : AnsiString): AnsiString; virtual; abstract;
+    function    EncryptString(const psData : string): string; virtual; abstract;
+    function    DecryptString(const psData : string): string; virtual; abstract;
     procedure   EncryptStream(const pSrc, pDest : TStream); virtual; abstract;
     procedure   DecryptStream(const pSrc, pDest : TStream); virtual; abstract;
-    property    Seed   : ansistring read FSeed    write SetSeed;
+    property    Seed   : string read FSeed    write SetSeed;
     property    IntSeed : Int64  read FIntSeed write SetIntSeed;
     procedure   NewSeed;
   end;
@@ -99,7 +99,7 @@ end;
 procedure TtiEncryptAbs.NewSeed;
 var
   i : integer;
-  ls : AnsiString;
+  ls : string;
 begin
   ls := '';
   for i := 1 to length(FSeed) do
@@ -208,7 +208,7 @@ begin
   FIntSeed := AValue;
 end;
 
-procedure TtiEncryptAbs.SetSeed(const AValue: ansistring);
+procedure TtiEncryptAbs.SetSeed(const AValue: string);
 begin
   FSeed := AValue;
 end;

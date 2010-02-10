@@ -2051,16 +2051,16 @@ var
         if Assigned(tiFieldAbs) then
           lItem := tiFieldAbs.AsString
         else
-          lItem := TypInfo.GetPropValue(AObject, LPropInfo^.Name);
+          lItem := TypInfo.GetPropValue(AObject, string(LPropInfo^.Name));
       end
       else // tkEnumeration
       begin
         // If the property is an enumeration and the search is on a numeric value,
         // compare the ordinary values of the enumeration, instead of it' s name
         if VarIsNumeric(lSearch) then
-          lItem := TypInfo.GetOrdProp(AObject, LPropInfo^.Name)
+          lItem := TypInfo.GetOrdProp(AObject, string(LPropInfo^.Name))
         else
-          lItem := TypInfo.GetPropValue(AObject, LPropInfo^.Name);
+          lItem := TypInfo.GetPropValue(AObject, string(LPropInfo^.Name));
       end;
     end
     else
@@ -2069,7 +2069,7 @@ var
     // Just to be sure that I'm comparing the SAME kind of values,
     // plus Boolean types need some extra help under FPC
     if VarIsType(PropValue, varBoolean) then
-      lItem := Boolean(TypInfo.GetOrdProp(AObject, LPropInfo^.Name))
+      lItem := Boolean(TypInfo.GetOrdProp(AObject, string(LPropInfo^.Name)))
     else
     begin
       lVarType  := VarType(lItem);

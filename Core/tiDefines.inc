@@ -102,9 +102,7 @@
   // 'TtiLogToFile.CreateOverwriteOld' & 'TtiLogToFile.CreateWithDateInFileName'
   // with identical parameters will be inacessible from C++
   {$WARN DUPLICATE_CTOR_DTOR OFF}
-  // These warnings will be turned back on as we fix the Unicode related warnings
-  {$WARN IMPLICIT_STRING_CAST OFF}
-  {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
+  // These warnings might be turned back on as we fix the Unicode related warnings
   {$WARN EXPLICIT_STRING_CAST OFF}
   {$WARN EXPLICIT_STRING_CAST_LOSS OFF}
 {$ENDIF}

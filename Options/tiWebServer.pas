@@ -109,7 +109,7 @@ type
   TtiWebServerAction_RunCGIExtension = class(TtiWebServerAction)
   private
     function ExecuteCGIApp(const ACGIApp, ARequestParams: string;
-      out AResponse: AnsiString): Cardinal;
+      out AResponse: string): Cardinal;
   public
     function  CanExecute(const ADocument: string): boolean; override;
     procedure Execute(const ADocument: string; const ARequestParams: string;
@@ -717,7 +717,7 @@ procedure TtiWebServerAction_RunCGIExtension.Execute(
   const AResponseInfo: TIdHTTPResponseInfo);
 var
   LCGIApp : string;
-  LResponse : AnsiString;
+  LResponse : string;
   LExitCode : Integer;
   LConfig: TtiWebServerConfig;
 begin
@@ -758,7 +758,7 @@ begin
 end;
 
 function TtiWebServerAction_RunCGIExtension.ExecuteCGIApp(const ACGIApp,
-  ARequestParams: string; out AResponse: AnsiString): Cardinal;
+  ARequestParams: string; out AResponse: string): Cardinal;
 var
   LTempFileName: string;
 begin

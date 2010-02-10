@@ -842,7 +842,7 @@ begin
     Result := FMC.CompositeMediator
   else
   begin
-    N      := APropInfo^.Name;
+    N      := string(APropInfo^.Name);
     Result := True;
   end;
   if not Result then

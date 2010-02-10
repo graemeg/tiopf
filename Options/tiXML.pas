@@ -354,7 +354,7 @@ begin
     lCompress := gCompressFactory.CreateInstance(pCompression);
     try
       lCompress.CompressString(AValue,ls);
-      result := MimeEncodeString(ls);
+      result := MimeEncodeStringNoCRLF(ls);
     finally
       lCompress.Free;
     end;

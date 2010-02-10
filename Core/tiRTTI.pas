@@ -168,7 +168,7 @@ begin
       begin
         LPropInfo := tiGetPropInfo(AObject.ClassType, APropPath, @AObject);
         if Assigned(LPropInfo) and Assigned(LPropInfo.GetProc) then
-          Result := GetPropValue(AObject, LPropInfo^.Name)
+          Result := GetPropValue(AObject, string(LPropInfo^.Name))
         else
           Result:= Null;
       end;
@@ -198,18 +198,18 @@ begin
           else
             LValue:= APropValue;
           // Special handling if it's a boolean
-          if SameText(LPropInfo^.PropType^.Name, 'Boolean') then
-            tiSetBooleanPropValue(AObject, LPropInfo^.Name, LValue)
+          if SameText(string(LPropInfo^.PropType^.Name), 'Boolean') then
+            tiSetBooleanPropValue(AObject, string(LPropInfo^.Name), LValue)
           else
-            SetPropValue(AObject, LPropInfo^.Name, LValue);
+            SetPropValue(AObject, string(LPropInfo^.Name), LValue);
         end;
       tkSet:
         if VarToStr(APropValue) = '' then
-          SetPropValue(AObject, LPropInfo^.Name, '[]')
+          SetPropValue(AObject, string(LPropInfo^.Name), '[]')
         else
-          SetPropValue(AObject, LPropInfo^.Name, APropValue);
+          SetPropValue(AObject, string(LPropInfo^.Name), APropValue);
     else
-      SetPropValue(AObject, LPropInfo^.Name, APropValue);
+      SetPropValue(AObject, string(LPropInfo^.Name), APropValue);
     end;  { case }
   end;
 end;
@@ -373,7 +373,7 @@ begin
                  ,LList
                  ,false);
     for i := 0 to lcount - 1 do
-      AStringList.Add(lList^[i]^.Name);
+      AStringList.Add(string(lList^[i]^.Name));
   finally
     FreeMem(lList, lSize);
   end;
@@ -416,7 +416,7 @@ begin
 
   lPropInfo := GetPropInfo(AObject, APropName);
   Assert(lPropInfo <> nil, Format('Class %s has no published property %s', [AObject.ClassName, APropName]));
-  lPropTypeName := lPropInfo^.PropType^.Name;
+  lPropTypeName := string(lPropInfo^.PropType^.Name);
 
   // Check for a TDateTime
   if SameText(lPropTypeName, 'TDateTime') then

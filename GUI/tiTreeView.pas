@@ -1257,7 +1257,7 @@ begin
     GetPropList(pPersistent.ClassInfo, [tkClass], lList);
     for i := 0 to lcount - 1 do
      {$IFNDEF FPC}
-      psl.add(lList[i].Name);
+      psl.add(string(lList[i].Name));
       {$ELSE}
       psl.add(lList^[i]^.Name);
       {$ENDIF}

@@ -64,7 +64,7 @@ var
   lAfter    : TStringStream;
   lEncrypt  : TtiEncryptAbs;
   lZero     : Byte;
-  lsTest    : ansistring;
+  lsTest    : string;
 begin
 
   lBefore   := TStringStream.Create('');

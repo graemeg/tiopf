@@ -176,7 +176,7 @@ Begin
   Try
     GetPropList(FStoredObj.ClassInfo, ctkSimple, lList);
     For I := 0 To lPropCount - 1 Do
-      cmbProperties.Items.Add(lList[I].Name);
+      cmbProperties.Items.Add(string(lList[I].Name));
   Finally
     FreeMem(lList, lSize);
   End;

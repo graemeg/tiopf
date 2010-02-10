@@ -413,7 +413,7 @@ begin
   LExpected:= tiCreateStringOfSize(LSize);
   // The actual size of the string passed will be larger than
   // CMaximumCommandLineLength because MIME encoding inflates the string
-  LEncoded:= MimeEncodeString(LExpected);
+  LEncoded:= MimeEncodeStringNoCRLF(LExpected);
   LWebServer:= nil;
   LHTTP:= nil;
   try
@@ -441,7 +441,7 @@ end;
 procedure TtiWebServerTestCase.tiWebServer_TestWebServerCGIForTestingEXE;
 var
   LExpected: string;
-  LActual: AnsiString;
+  LActual: string;
   LPath: string;
   LEncode: string;
   LMaxCommandLineLength: Cardinal;
@@ -463,7 +463,7 @@ begin
   // Test a long string
   LActual:= '';
   LExpected:= tiCreateStringOfSize(20*1024);
-  tiExecConsoleApp(LPath, MimeEncodeString(LExpected), LActual, nil, False);
+  tiExecConsoleApp(LPath, MimeEncodeStringNoCRLF(LExpected), LActual, nil, False);
   CheckEquals(Trim(LExpected), Trim(MimeDecodeString(LActual)));
 
   // Test a string string on the limit

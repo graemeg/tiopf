@@ -224,9 +224,9 @@ function tiReplaceFileNameReservedChars(const AString: string;
   // Does a directory have any subdirectories?
   function  tiHasSubDirectory(AStartDir : string): boolean;
   // Write the string in AText to a file named AFileName
-  procedure tiStringToFile(const AText : ansistring; const AFileName: string);
+  procedure tiStringToFile(const AText : string; const AFileName: string);
   // Read a text file into a string
-  function  tiFileToString(const AFileName : TFileName): ansistring;
+  function  tiFileToString(const AFileName : TFileName): string;
   // Get the current directory
   // Extract a directory name to a certain level.
   // eg tiExtractDirToLevel('c:\temp\dir', 0) gives 'c:'
@@ -521,15 +521,15 @@ function tiReplaceFileNameReservedChars(const AString: string;
   // Returns the checksum of a string of numbers
   function tiCheckSum(const AValue: string): Integer;
   {: Write a string into a stream overwriting all contents}
-  procedure tiStringToStream(const AStr : ansistring; const AStream : TStream);
+  procedure tiStringToStream(const AStr : string; const AStream : TStream);
   {: Append a string to a stream}
-  procedure tiAppendStringToStream(const AStr : ansistring; const AStream : TStream);
+  procedure tiAppendStringToStream(const AStr : string; const AStream : TStream);
   {: Insert a string to a stream}
-  procedure tiInsertStringToStream(const AStr : ansistring; const AStream : TStream; APos: Longword);
+  procedure tiInsertStringToStream(const AStr : string; const AStream : TStream; APos: Longword);
   {: Read the entire contents of a stream as a string}
-  function  tiStreamToString(const AStream : TStream): ansistring; overload;
+  function  tiStreamToString(const AStream : TStream): string; overload;
   {: Read part of the contents of a stream as a string}
-  function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): ansistring; overload;
+  function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): string; overload;
   // Read a file into a stream
   procedure tiFileToStream(const AFileName : string; const AStream : TStream);
   // Save the contents of a stream to a file
@@ -2533,15 +2533,15 @@ end;
 
 procedure tiSetFileDate(const AFileName : string; const ADateTime : TDateTime);
 var
-  LFileDate  : Integer;
-  LError     : Integer;
+  LFileDate: Integer;
+  LExitCode: Integer;
 begin
   LFileDate  := DateTimeToFileDate(ADateTime);
-  LError := FileSetDate(AFileName, LFileDate);
-  if LError <> 0 then
-    raise Exception.Create('Unable to set file date on <' + AFileName);
+  LExitCode := FileSetDate(AFileName, LFileDate);
+  if LExitCode <> 0 then
+    raise EtiOPFFileSystemException.CreateFmt(
+      CErrorSettingFileDate, [AFileName, LExitCode, SysErrorMessage(LExitCode)]);
 end;
-
 
 function  Cr(const ACount : Byte = 1): string;
 begin
@@ -2601,38 +2601,45 @@ end;
 }
 
 
-procedure tiStringToStream(const AStr : ansistring; const AStream : TStream);
+procedure tiStringToStream(const AStr : string; const AStream : TStream);
 var
+  LAnsiStr: AnsiString;
   lBuffer : Pointer;
   lLen : integer;
 begin
-  lBuffer := Pointer(AStr);
-  lLen := length(AStr);
+  LAnsiStr := AnsiString(AStr);
+  lBuffer := Pointer(LAnsiStr);
+  lLen := length(LAnsiStr);
   AStream.Size := 0;
   AStream.write(lBuffer^, lLen);
   AStream.Position := 0;
 end;
 
 
-procedure tiAppendStringToStream(const AStr : ansistring; const AStream : TStream);
+procedure tiAppendStringToStream(const AStr : string; const AStream : TStream);
 var
+  LAnsiStr: AnsiString;
   lPC : Pointer;
 begin
   Assert(AStream <> nil, 'Stream unassigned.');
+  LAnsiStr := AnsiString(AStr);
   AStream.Position := AStream.Size;
-  lPC := Pointer(AStr);
-  AStream.WriteBuffer(lPC^, length(AStr));
+  lPC := Pointer(LAnsiStr);
+  AStream.WriteBuffer(lPC^, length(LAnsiStr));
 end;
 
 
-procedure tiInsertStringToStream(const AStr : ansistring; const AStream : TStream; APos: Longword);
+procedure tiInsertStringToStream(const AStr : string; const AStream : TStream; APos: Longword);
 var
+  LAnsiStr: AnsiString;
   LRHLength: Longword;
   LRHPChar: PChar;
 begin
   Assert(AStream <> nil, 'Stream unassigned.');
   Assert(APos <= AStream.Size, 'Pos > AStream.Size');
   Assert(APos <= AStream.Size, 'Pos > AStream.Size');
+
+  LAnsiStr := AnsiString(AStr);
 
   // Copy the RH portion to a string
   LRHLength:= AStream.Size - APos;
@@ -2647,7 +2654,7 @@ begin
     AStream.Position:= APos;
 
     // Append the new string + the RH portion
-    AStream.WriteBuffer(PAnsiChar(AStr)^, Length(AStr));
+    AStream.WriteBuffer(PAnsiChar(LAnsiStr)^, Length(LAnsiStr));
     AStream.WriteBuffer(LRHPChar^, LRHLength);
   finally
     FreeMem(LRHPChar);
@@ -2655,20 +2662,23 @@ begin
 end;
 
 
-function  tiStreamToString(const AStream : TStream): ansistring;
+function  tiStreamToString(const AStream : TStream): string;
 var
+  LAnsiStr: AnsiString;
   lPos : integer;
 begin
   lPos := AStream.Position;
   AStream.Position := 0;
-  SetLength(Result,  AStream.Size);
-  AStream.Read(Result[1], AStream.Size);
+  SetLength(LAnsiStr,  AStream.Size);
+  AStream.Read(LAnsiStr[1], AStream.Size);
   AStream.Position := lPos;
+  Result := string(LAnsiStr);
 end;
 
 
-function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): ansistring;
+function  tiStreamToString(const AStream : TStream; AStart, AEnd: Longword): string;
 var
+  LAnsiStr: AnsiString;
   LPos: Longword;
   LEnd: Longword;
   LSize: Longword;
@@ -2695,11 +2705,13 @@ begin
   LPos := AStream.Position;
   try
     AStream.Position := AStart;
-    SetLength(Result,  LSize);
-    AStream.Read(Result[1], LSize);
+    SetLength(LAnsiStr, LSize);
+    AStream.Read(LAnsiStr[1], LSize);
   finally
     AStream.Position:= LPos;
   end;
+
+  Result := string(LAnsiStr);
 end;
 
 procedure tiFileToStream(const AFileName : string; const AStream : TStream);
@@ -2748,33 +2760,37 @@ begin
 end;
 
 
-procedure tiStringToFile(const AText : ansistring; const AFileName: string);
+procedure tiStringToFile(const AText : string; const AFileName: string);
 var
+  LAnsiStr: AnsiString;
   lStream : TFileStream;
   lpcText : PAnsiChar;
 begin
   lStream := TFileStream.Create(AFileName, fmCreate or fmShareExclusive);
   try
-    lpcText := PAnsiChar(AText);
-    lStream.WriteBuffer(lpcText^, length(AText));
+    LAnsiStr := AnsiString(AText);
+    lpcText := PAnsiChar(LAnsiStr);
+    lStream.WriteBuffer(lpcText^, length(LAnsiStr));
   finally
     lStream.Free;
   end;
 end;
 
-function  tiFileToString(const AFileName : TFileName): ansistring;
+function  tiFileToString(const AFileName : TFileName): string;
 var
+  LAnsiStr: AnsiString;
   lFileStream: TFileStream;
 begin
-  result := '';
   lFileStream := TFileStream.Create(AFileName,
                                      fmOpenRead or fmShareDenyNone);
   try
-    SetLength(Result,  lFileStream.Size);
-    lFileStream.Read(Result[1], lFileStream.Size);
+    SetLength(LAnsiStr,  lFileStream.Size);
+    lFileStream.Read(LAnsiStr[1], lFileStream.Size);
   finally
     lFileStream.Free;
   end;
+
+  result := string(LAnsiStr);
 end;
 
 
@@ -3283,7 +3299,7 @@ end;
 
 function tiURIDecode(const AString: string): string;
 const
-  UnsafeChars: Array [0..6] of AnsiChar = ('*', '#', '%', '<', '>', '+', ' ');
+  UnsafeChars: Array [0..6] of Char = ('*', '#', '%', '<', '>', '+', ' ');
 
   function _ContainsEncodedChars(const AValue: string): Boolean;
   var

@@ -145,7 +145,7 @@ begin
     if SHGetFolderPath(0,ID or CSIDL_FLAG_CREATE,0,0,@APATH[0]) = S_OK then
     begin
       APtr    := PAnsiChar(@APath[0]);
-      Result  := IncludeTrailingPathDelimiter(APtr);
+      Result  := IncludeTrailingPathDelimiter(string(APtr));
     end;
   end;
 end;

@@ -22,7 +22,7 @@ uses
 function tiMadExceptBugReport(AException: Exception): string;
 begin
 {$IFDEF madexcept}
-  Result := MadExcept.CreateBugReport(etNormal, AException, nil, GetCurrentThreadID);
+  Result := string(MadExcept.CreateBugReport(etNormal, AException, nil, GetCurrentThreadID));
 {$ELSE}
   Result:= 'MadExcept not linked.'#13#13 + AException.message;
 {$ENDIF}
@@ -36,7 +36,7 @@ procedure tiMadExceptMailBugReport(const AException: Exception);
 begin
   Assert(AException = AException);  // Getting rid of compiler hints, param not used.
   {$IFDEF madexcept}
-  ls := MadExcept.CreateBugReport(etNormal, AException, nil, GetCurrentThreadID);
+  ls := string(MadExcept.CreateBugReport(etNormal, AException, nil, GetCurrentThreadID));
   tiMadExceptMailBugReport(ls);
   {$ENDIF}
 end;

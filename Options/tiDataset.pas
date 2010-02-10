@@ -761,7 +761,7 @@ procedure TTiCustomDataset.InternalInitFieldDefs;
     procedure AddFieldDef(PropInfo: PPropInfo;FieldType: TFieldType;FieldSize: integer = 0);
     var cFieldName: string;
     begin
-      cFieldName := cPrefix + PropInfo^.Name;
+      cFieldName := cPrefix + string(PropInfo^.Name);
       FieldDefs.Add(cFieldName, FieldType, FieldSize, false);
       if cPrefix <> ''
       then FObjectFields.AddObject(Uppercase(cFieldName), TObject(nParent));
@@ -813,11 +813,11 @@ procedure TTiCustomDataset.InternalInitFieldDefs;
               end;
             end;
             tkFloat: begin
-              if SameText(PropInfo^.PropType^.Name, 'TDate')
+              if SameText(string(PropInfo^.PropType^.Name), 'TDate')
               then AddFieldDef(PropInfo, ftDate)
-              else if SameText(PropInfo^.PropType^.Name, 'TTime')
+              else if SameText(string(PropInfo^.PropType^.Name), 'TTime')
               then AddFieldDef(PropInfo, ftTime)
-              else if SameText(PropInfo^.PropType^.Name, 'TDateTime')
+              else if SameText(string(PropInfo^.PropType^.Name), 'TDateTime')
               then AddFieldDef(PropInfo, ftDateTime)
               else begin
                 case TypeData^.FloatType of
@@ -838,7 +838,7 @@ procedure TTiCustomDataset.InternalInitFieldDefs;
                 if oClass.InheritsFrom(TtiObjectList)
                 then AddFieldDef(PropInfo, ftDataSet);
                 if(nDepth > 0)and oClass.InheritsFrom(TtiObject) then begin
-                  cParent := UpperCase(cPrefix + PropInfo^.Name);
+                  cParent := UpperCase(cPrefix + string(PropInfo^.Name));
                   nIndex := FObjectFields.AddObject(cParent, TObject(nParent));
                   GetFieldDefsRtti(oClass, cParent, nIndex, nDepth - 1);
                 end;
@@ -1067,7 +1067,7 @@ begin
       ftString:
       begin
 {$ifdef UNICODE}
-        SetStrProp(oObject, PropInfo, AnsiString(PAnsiChar(Buffer)));
+        SetStrProp(oObject, PropInfo, string(PAnsiChar(Buffer)));
 {$else}
         SetStrProp(oObject, PropInfo, PChar(Buffer));
 {$endif}
