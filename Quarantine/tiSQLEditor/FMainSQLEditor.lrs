@@ -1,0 +1,85 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TFormMain','FORMDATA',[
+  'TPF0'#9'TFormMain'#8'FormMain'#4'Left'#3#205#1#6'Height'#3#21#1#3'Top'#3#209
+  +#0#5'Width'#3'N'#1#18'HorzScrollBar.Page'#3'M'#1#18'VertScrollBar.Page'#3#245
+  +#0#7'Caption'#6#22' TechInsite SQL Editor'#11'Font.Height'#2#245#9'Font.Name'
+  +#6#13'MS Sans Serif'#4'Menu'#7#9'MainMenu1'#7'OnClose'#7#9'FormClose'#12'OnC'
+  +'loseQuery'#7#14'FormCloseQuery'#8'OnCreate'#7#10'FormCreate'#9'OnDestroy'#7
+  +#11'FormDestroy'#7'Visible'#9#0#10'TStatusBar'#2'SB'#6'Height'#2#24#3'Top'#3
+  +#222#0#5'Width'#3'N'#1#6'Panels'#14#1#5'Width'#3#150#0#0#1#5'Width'#3#150#0#0
+  +#0#0#0#9'TMainMenu'#9'MainMenu1'#6'Images'#7#10'ImageList1'#4'left'#2'$'#3't'
+  +'op'#2','#0#9'TMenuItem'#5'File1'#7'Caption'#6#5'&File'#0#9'TMenuItem'#9'Fil'
+  +'eopen1'#6'Action'#7#9'aFileOpen'#7'OnClick'#7#16'aFileOpenExecute'#0#0#9'TM'
+  +'enuItem'#9'Filesave1'#6'Action'#7#9'aFileSave'#7'OnClick'#7#16'aFileSaveExe'
+  +'cute'#0#0#9'TMenuItem'#7'Saveas1'#6'Action'#7#11'aFileSaveAs'#7'OnClick'#7
+  +#18'aFileSaveAsExecute'#0#0#9'TMenuItem'#4'New1'#6'Action'#7#4'aNew'#7'OnCli'
+  +'ck'#7#11'aNewExecute'#0#0#9'TMenuItem'#2'N2'#7'Caption'#6#1'-'#0#0#9'TMenuI'
+  +'tem'#6'Close1'#6'Action'#7#6'aClose'#7'OnClick'#7#13'aCloseExecute'#0#0#0#9
+  +'TMenuItem'#6'miEdit'#7'Caption'#6#5'&Edit'#0#0#9'TMenuItem'#6'Query1'#7'Cap'
+  +'tion'#6#6'&Query'#0#9'TMenuItem'#4'Run1'#6'Action'#7#4'aRun'#7'OnClick'#7#11
+  +'aRunExecute'#0#0#9'TMenuItem'#12'Runasscript1'#6'Action'#7#10'aRunScript'#7
+  +'OnClick'#7#17'aRunScriptExecute'#0#0#0#9'TMenuItem'#5'Help1'#7'Caption'#6#5
+  +'&Help'#0#9'TMenuItem'#6'About1'#6'Action'#7#6'aAbout'#7'OnClick'#7#13'aAbou'
+  +'tExecute'#0#0#9'TMenuItem'#2'N1'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#30'View'
+  +'databaseconnectiondetails1'#6'Action'#7#26'aDatabaseConnectionDetails'#7'On'
+  +'Click'#7'!aDatabaseConnectionDetailsExecute'#0#0#0#0#11'TActionList'#11'Act'
+  +'ionList1'#6'Images'#7#10'ImageList1'#8'OnUpdate'#7#19'ActionList1OnUpdate'#4
+  +'left'#2'H'#3'top'#2','#0#7'TAction'#9'aFileOpen'#7'Caption'#6#10'File &open'
+  +#18'DisableIfNoHandler'#9#10'ImageIndex'#2#0#9'OnExecute'#7#16'aFileOpenExec'
+  +'ute'#8'ShortCut'#3'O@'#0#0#7'TAction'#9'aFileSave'#7'Caption'#6#10'File &sa'
+  +'ve'#18'DisableIfNoHandler'#9#7'Enabled'#8#10'ImageIndex'#2#1#9'OnExecute'#7
+  +#16'aFileSaveExecute'#8'ShortCut'#3'S@'#0#0#7'TAction'#11'aFileSaveAs'#7'Cap'
+  +'tion'#6#8'Save &as'#18'DisableIfNoHandler'#9#9'OnExecute'#7#18'aFileSaveAsE'
+  +'xecute'#0#0#7'TAction'#4'aNew'#7'Caption'#6#4'&New'#18'DisableIfNoHandler'#9
+  +#10'ImageIndex'#2#2#9'OnExecute'#7#11'aNewExecute'#8'ShortCut'#3'N@'#0#0#7'T'
+  +'Action'#4'aRun'#7'Caption'#6#3'Run'#18'DisableIfNoHandler'#9#7'Enabled'#8#10
+  +'ImageIndex'#2#3#9'OnExecute'#7#11'aRunExecute'#8'ShortCut'#2'w'#0#0#7'TActi'
+  +'on'#10'aRunScript'#7'Caption'#6#14'Run as &script'#18'DisableIfNoHandler'#9
+  +#9'OnExecute'#7#17'aRunScriptExecute'#8'ShortCut'#3'w '#0#0#7'TAction'#6'aCl'
+  +'ose'#7'Caption'#6#6'&Close'#18'DisableIfNoHandler'#9#10'ImageIndex'#2#4#9'O'
+  +'nExecute'#7#13'aCloseExecute'#8'ShortCut'#3's@'#0#0#7'TAction'#6'aAbout'#7
+  +'Caption'#6#6'&About'#18'DisableIfNoHandler'#9#9'OnExecute'#7#13'aAboutExecu'
+  +'te'#0#0#7'TAction'#26'aDatabaseConnectionDetails'#7'Caption'#6' View databa'
+  +'se connection details'#18'DisableIfNoHandler'#9#9'OnExecute'#7'!aDatabaseCo'
+  +'nnectionDetailsExecute'#0#0#0#10'TImageList'#10'ImageList1'#4'left'#2'h'#3
+  +'top'#2','#6'Bitmap'#10#136#8#0#0'li'#5#0#0#0#16#0#0#0#16#0#0#0#186#1#0#0'/*'
+  +' XPM */'#10'static char *graphic[] = {'#10'"16 16 5 1",'#10'". c None",'#10
+  +'", c #000000",'#10'"- c #FFFF00",'#10'"* c #FFFFFF",'#10'"a c #848400",'#10
+  +'"................",'#10'".........,,,....",'#10'"........,...,.,.",'#10'"..'
+  +'...........,,.",'#10'".,,,........,,,.",'#10'",-*-,,,,,,,.....",'#10'",*-*-'
+  +'*-*-*,.....",'#10'",-*-*-*-*-,.....",'#10'",*-*-,,,,,,,,,,,",'#10'",-*-,aaa'
+  +'aaaaaa,.",'#10'",*-,aaaaaaaaa,..",'#10'",-,aaaaaaaaa,...",'#10'",,aaaaaaaaa'
+  +',....",'#10'",,,,,,,,,,,.....",'#10'"................",'#10'"..............'
+  +'.."}'#10#156#1#0#0'/* XPM */'#10'static char *graphic[] = {'#10'"16 16 3 1"'
+  +','#10'". c None",'#10'", c #000000",'#10'"- c #848400",'#10'"..............'
+  +'..",'#10'".,,,,,,,,,,,,,,.",'#10'".,-,........,.,.",'#10'".,-,........,,,."'
+  +','#10'".,-,........,-,.",'#10'".,-,........,-,.",'#10'".,-,........,-,.",'
+  +#10'".,-,........,-,.",'#10'".,--,,,,,,,,--,.",'#10'".,------------,.",'#10
+  +'".,--,,,,,,,,,-,.",'#10'".,--,,,,,,..,-,.",'#10'".,--,,,,,,..,-,.",'#10'".,'
+  +'--,,,,,,..,-,.",'#10'"..,,,,,,,,,,,,,.",'#10'"................"}'#10#171#1#0
+  +#0'/* XPM */'#10'static char *graphic[] = {'#10'"16 16 4 1",'#10'". c None",'
+  +#10'", c #000000",'#10'"- c #848484",'#10'"* c #FFFFFF",'#10'".,.....,......'
+  +',.",'#10'"..,....,.....,..",'#10'"................",'#10'"....------......"'
+  +','#10'"....*****-*,....",'#10'"....*****---....",'#10'"....********....",'
+  +#10'",,..********..,,",'#10'"....********....",'#10'"....********....",'#10
+  +'"....********....",'#10'"....********....",'#10'"................",'#10'"..'
+  +',..........,..",'#10'".,.....,......,.",'#10'".......,........"}'#10#186#1#0
+  ,#0'/* XPM */'#10'static char *graphic[] = {'#10'"16 16 5 1",'#10'". c None",'
+  +#10'", c #C6C6C6",'#10'"- c #000000",'#10'"* c #FFFF00",'#10'"a c #848484",'
+  +#10'"..,,,---------..",'#10'"..,,,-.*..*.-,..",'#10'"..,,-......-,,..",'#10
+  +'"..,,-*.*.*-,,,..",'#10'"..,-*.*.*-,,,,..",'#10'"..,-.*.*-----,..",'#10'"..'
+  +'-.***.***-,,..",'#10'"..-----*.*-,,,..",'#10'"..,,,-***-,,,,..",'#10'"..,,,'
+  +'-.*----,,..",'#10'"..,,-*****-,,,..",'#10'"..,,----*-,,,,..",'#10'"..,,,,-*'
+  +'-,,,,,..",'#10'"..,,,,--,,,,,,..",'#10'"..,,,a-,,,,,,,..",'#10'"..,,,-,,,,,'
+  +',,,.."}'#10#171#1#0#0'/* XPM */'#10'static char *graphic[] = {'#10'"16 16 4'
+  +' 1",'#10'". c None",'#10'", c #FF0000",'#10'"- c #840000",'#10'"* c #848484'
+  +'",'#10'"................",'#10'"...........,-,..",'#10'"...,-.....,---..",'
+  +#10'"..,--*...,---*..",'#10'"..,---*.,---*...",'#10'"...,---*---*....",'#10
+  +'"....,-----*.....",'#10'".....,----*.....",'#10'".....-----*.....",'#10'"..'
+  +'..,------*....",'#10'"...,--------*...",'#10'"..,----*-----*..",'#10'".,---'
+  +'-*.,----*..",'#10'".,---*...,--*...",'#10'".,--*.....,*....",'#10'"..**....'
+  +'........"}'#10#0#0#10'TPopupMenu'#5'pmRun'#4'left'#3#140#0#3'top'#2','#0#9
+  +'TMenuItem'#12'Runasscript2'#6'Action'#7#10'aRunScript'#7'OnClick'#7#17'aRun'
+  +'ScriptExecute'#0#0#0#0
+]);

@@ -1,0 +1,92 @@
+object FormSQLEditor: TFormSQLEditor
+  Left = 439
+  Height = 317
+  Top = 165
+  Width = 340
+  HorzScrollBar.Page = 339
+  VertScrollBar.Page = 316
+  BorderStyle = bsNone
+  Caption = 'FormSQLEditor'
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object pmSQL: TPopupMenu
+    left = 36
+    top = 244
+    object mnuRunQuery: TMenuItem
+      Action = aRunQuery
+      OnClick = aRunQueryExecute
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object FindinSQL1: TMenuItem
+      Action = aFindInSQL
+      OnClick = aFindInSQLExecute
+    end
+    object FindinSQLagain1: TMenuItem
+      Action = aFindInSQLAgain
+      OnClick = aFindInSQLAgainExecute
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object Copytoclipboard1: TMenuItem
+      Action = aCopyToClip
+      OnClick = aCopyToClipExecute
+    end
+    object mnuCopytoclipboard: TMenuItem
+      Action = aCopyToClipAsQuoted
+      OnClick = aCopyToClipAsQuotedExecute
+    end
+    object Pasteasquotedstringfromclipboard1: TMenuItem
+      Action = aPasteAsQuotedString
+      OnClick = aPasteAsQuotedStringExecute
+    end
+  end
+  object alMain: TActionList
+    OnUpdate = alMainUpdate
+    left = 108
+    top = 244
+    object aCopyToClipAsQuoted: TAction
+      Caption = 'Copy query to &clipboard as quoted string'
+      DisableIfNoHandler = True
+      OnExecute = aCopyToClipAsQuotedExecute
+    end
+    object aRunQuery: TAction
+      Caption = '&Run queryy'
+      DisableIfNoHandler = True
+      Hint = 'Run query'
+      OnExecute = aRunQueryExecute
+      ShortCut = 119
+    end
+    object aDefaultParams: TAction
+      Caption = 'aDefaultParams'
+      DisableIfNoHandler = True
+      Hint = 'Default params'
+    end
+    object aFindInSQL: TAction
+      Caption = 'F&ind in SQL'
+      DisableIfNoHandler = True
+      OnExecute = aFindInSQLExecute
+      ShortCut = 16454
+    end
+    object aFindInSQLAgain: TAction
+      Caption = 'Fi&nd in SQL again'
+      DisableIfNoHandler = True
+      OnExecute = aFindInSQLAgainExecute
+      ShortCut = 114
+    end
+    object aCopyToClip: TAction
+      Caption = 'Copy to clipboard'
+      DisableIfNoHandler = True
+      OnExecute = aCopyToClipExecute
+    end
+    object aPasteAsQuotedString: TAction
+      Caption = '&Paste as quoted string from clipboard'
+      DisableIfNoHandler = True
+      OnExecute = aPasteAsQuotedStringExecute
+    end
+  end
+end

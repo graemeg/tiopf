@@ -1,0 +1,298 @@
+object FormSQLMgrBrowse: TFormSQLMgrBrowse
+  Left = 428
+  Height = 295
+  Top = 262
+  Width = 481
+  HorzScrollBar.Page = 480
+  VertScrollBar.Page = 264
+  ActiveControl = LV
+  Caption = 'FormSQLMgrBrowse'
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Menu = MainMenu1
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  object sb: TStatusBar
+    Height = 24
+    Top = 241
+    Width = 481
+    Panels = <    
+      item
+        Width = 120
+      end    
+      item
+        Width = 200
+      end    
+      item
+        Width = 200
+      end    
+      item
+        Width = 120
+      end>
+  end
+  object ToolBar1: TToolBar
+    Height = 26
+    Width = 481
+    Caption = 'ToolBar1'
+    Flat = True
+    Images = ImageList1
+    TabOrder = 0
+    object ToolButton1: TToolButton
+      Left = 1
+      Top = 2
+      Action = aStructure
+    end
+    object ToolButton4: TToolButton
+      Left = 24
+      Top = 2
+      Action = aExport
+    end
+    object ToolButton5: TToolButton
+      Left = 47
+      Hint = 'Show this record in a popup window'
+      Top = 2
+      Action = aShowRecord
+    end
+    object ToolButton2: TToolButton
+      Left = 70
+      Top = 2
+      Width = 8
+      Caption = 'ToolButton2'
+      ImageIndex = 1
+      Style = tbsSeparator
+    end
+    object ToolButton3: TToolButton
+      Left = 78
+      Top = 2
+      Action = aClose
+    end
+  end
+  object LV: TListView
+    Left = 28
+    Height = 150
+    Top = 40
+    Width = 250
+    Columns = <>
+    PopupMenu = PopupMenu1
+    RowSelect = True
+    TabOrder = 1
+    ViewStyle = vsReport
+    OnDblClick = aShowRecordExecute
+  end
+  object StringGrid1: TStringGrid
+    Left = 296
+    Height = 100
+    Top = 64
+    Width = 200
+    ColCount = 5
+    FixedColor = clBtnFace
+    GridLineWidth = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll]
+    RowCount = 5
+    ScrollBars = ssAutoBoth
+    TabOrder = 2
+    TabStop = True
+  end
+  object DS: TDatasource
+    left = 32
+    top = 56
+  end
+  object PopupMenu1: TPopupMenu
+    Images = ImageList1
+    left = 64
+    top = 56
+    object Structure1: TMenuItem
+      Action = aStructure
+      OnClick = aStructureExecute
+    end
+    object ExporttoCSVfile1: TMenuItem
+      Action = aExport
+      OnClick = aExportExecute
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object Close1: TMenuItem
+      Action = aClose
+      OnClick = aCloseExecute
+    end
+  end
+  object ImageList1: TImageList
+    left = 96
+    top = 6
+    Bitmap = {
+      6C69040000001000000010000000BA0100002F2A2058504D202A2F0A73746174
+      69632063686172202A677261706869635B5D203D207B0A223136203136203520
+      31222C0A222E2063204E6F6E65222C0A222C20632023303030303030222C0A22
+      2D20632023383438343834222C0A222A20632023464646464646222C0A226120
+      632023303046464646222C0A222E2E2E2C2E2C2E2C2E2C2E2C2E2E2E2E222C0A
+      222E2E2C2E2C2D2C2D2C2D2C2D2C2E2E2E222C0A222E2C2E2E2C2D2C2D2C2D2C
+      2D2C2E2E2E222C0A222E2C2A2C2C2A2C2A2C2A2C2A2C2C2E2E222C0A222E2C2A
+      2C2A2A2A2A2A2A2A2A2A2C2E2E222C0A222E2C2A2C2A616161616161612A2C2E
+      2E222C0A222E2C2A2C2A2A2D2D2A2D2A2A2A2C2E2E222C0A222E2C2A2C2A6161
+      61616161612A2C2E2E222C0A222E2C2A2C2A2A2D2A2D2D2D2A2A2C2E2E222C0A
+      222E2C2A2C2A616161616161612A2C2E2E222C0A222E2C2A2C2A2A2D2D2D2A2A
+      2A2A2C2E2E222C0A222E2C2A2C2A616161616161612A2C2E2E222C0A222E2C2A
+      2C2A2A2A2A2A2A2A2A2A2C2E2E222C0A222E2C2A2C2A616161616161612A2C2E
+      2E222C0A222E2E2C2C2A2A2A2A2A2A2A2A2A2C2E2E222C0A222E2E2E2E2C2C2C
+      2C2C2C2C2C2C2E2E2E227D0AAB0100002F2A2058504D202A2F0A737461746963
+      2063686172202A677261706869635B5D203D207B0A2231362031362034203122
+      2C0A222E2063204E6F6E65222C0A222C20632023464630303030222C0A222D20
+      632023383430303030222C0A222A20632023383438343834222C0A222E2E2E2E
+      2E2E2E2E2E2E2E2E2E2E2E2E222C0A222E2E2E2E2E2E2E2E2E2E2E2C2D2C2E2E
+      222C0A222E2E2E2C2D2E2E2E2E2E2C2D2D2D2E2E222C0A222E2E2C2D2D2A2E2E
+      2E2C2D2D2D2A2E2E222C0A222E2E2C2D2D2D2A2E2C2D2D2D2A2E2E2E222C0A22
+      2E2E2E2C2D2D2D2A2D2D2D2A2E2E2E2E222C0A222E2E2E2E2C2D2D2D2D2D2A2E
+      2E2E2E2E222C0A222E2E2E2E2E2C2D2D2D2D2A2E2E2E2E2E222C0A222E2E2E2E
+      2E2D2D2D2D2D2A2E2E2E2E2E222C0A222E2E2E2E2C2D2D2D2D2D2D2A2E2E2E2E
+      222C0A222E2E2E2C2D2D2D2D2D2D2D2D2A2E2E2E222C0A222E2E2C2D2D2D2D2A
+      2D2D2D2D2D2A2E2E222C0A222E2C2D2D2D2D2A2E2C2D2D2D2D2A2E2E222C0A22
+      2E2C2D2D2D2A2E2E2E2C2D2D2A2E2E2E222C0A222E2C2D2D2A2E2E2E2E2E2C2A
+      2E2E2E2E222C0A222E2E2A2A2E2E2E2E2E2E2E2E2E2E2E2E227D0AC90100002F
+      2A2058504D202A2F0A7374617469632063686172202A677261706869635B5D20
+      3D207B0A22313620313620362031222C0A222E2063204E6F6E65222C0A222C20
+      632023303030303030222C0A222D20632023464646464646222C0A222A206320
+      23303046464646222C0A226120632023303038343834222C0A22622063202338
+      3438343834222C0A222E2E2E2E2E2E2E2E2E2E2E2E2E2E2E2E222C0A222E2E2E
+      2E2E2E2E2E2E2E2E2E2E2E2E2E222C0A222C2C2C2C2C2E2E2E2E2E2C2C2C2C2C
+      2E222C0A222C2D2D2D2D2C2E2E2E2C2A2A2A2A2C2E222C0A222E2C612A2A2D2C
+      2E2C2A6161622C2E2E222C0A222E2E2C612A2A2D2C2A6161622C2E2E2E222C0A
+      222E2E2E2C612A2A2D2C61622C2E2E2E2E222C0A222E2E2E2E2C612A2A2D2C2C
+      2E2E2E2E2E222C0A222E2E2E2E2C2C612A2A2D2C2E2E2E2E2E222C0A222E2E2E
+      2C2A612C612A2A2D2C2C2C2C2E222C0A222E2E2C2A6161612C612A2A2D2C612C
+      2E222C0A222E2C2A61616161612C612A2A2D2C2E2E222C0A222C626262626262
+      62622C612A2A2D2C2E222C0A222C2C2C2C2C2C2C2C2C2C2C616161612C222C0A
+      222E2E2E2E2E2E2E2E2E2E2E2C2C2C2C2C222C0A222E2E2E2E2E2E2E2E2E2E2E
+      2E2E2E2E2E227D0ABA0100002F2A2058504D202A2F0A73746174696320636861
+      72202A677261706869635B5D203D207B0A22313620313620352031222C0A222E
+      2063204E6F6E65222C0A222C20632023303030303030222C0A222D2063202330
+      3046464646222C0A222A20632023464646464646222C0A226120632023383438
+      343834222C0A222E2E2E2E2E2E2E2E2E2E2E2E2E2E2E2E222C0A222E2E2E2E2E
+      2E2E2E2E2E2E2E2E2E2E2E222C0A222E2C2C2C2C2C2C2C2C2C2C2C2C2C2E2E22
+      2C0A222C2E2E2E2E2E2E2E2E2E2E2E2E2E2C2E222C0A222C2E2C2C2C2C2C2C2C
+      2C2C2C2C2E2C2E222C0A222C2E2C2D2A2D2A2D2A2D2A2D2C2E2C2E222C0A222C
+      2E2C2A6161612A2D2A2D2A2C2E2C2E222C0A222C2E2C2D2A2D2A2D2A2D2A2D2C
+      2E2C2E222C0A222C2E2C2A616161616161612A2C2E2C2E222C0A222C2E2C2D2A
+      2D2A2D2A2D2A2D2C2E2C2E222C0A222C2E2C2A616161616161612A2C2E2C2E22
+      2C0A222C2E2C2D2A2D2A2D2A2D2A2D2C2E2C2E222C0A222C2E2C2C2C2C2C2C2C
+      2C2C2C2C2E2C2E222C0A222C2E2E2E2E2E2E2E2E2E2E2E2E2E2C2E222C0A222E
+      2C2C2C2C2C2C2C2C2C2C2C2C2C2E2E222C0A222E2E2E2E2E2E2E2E2E2E2E2E2E
+      2E2E2E227D0A
+    }
+  end
+  object ActionList1: TActionList
+    left = 128
+    top = 8
+    object aStructure: TAction
+      Caption = 'Structure'
+      DisableIfNoHandler = True
+      ImageIndex = 0
+      OnExecute = aStructureExecute
+      ShortCut = 16467
+    end
+    object aClose: TAction
+      Caption = 'Close'
+      DisableIfNoHandler = True
+      ImageIndex = 1
+      OnExecute = aCloseExecute
+      ShortCut = 27
+    end
+    object aExport: TAction
+      Caption = '&Export to CSV file'
+      DisableIfNoHandler = True
+      ImageIndex = 2
+      OnExecute = aExportExecute
+    end
+    object aSQLCreate: TAction
+      Caption = '&Create'
+      DisableIfNoHandler = True
+      OnExecute = aSQLCreateExecute
+    end
+    object aSQLUpdate: TAction
+      Caption = '&Update'
+      DisableIfNoHandler = True
+      OnExecute = aSQLUpdateExecute
+    end
+    object aSQLDelete: TAction
+      Caption = '&Delete'
+      DisableIfNoHandler = True
+      OnExecute = aSQLDeleteExecute
+    end
+    object aSQLRead: TAction
+      Caption = '&Read'
+      DisableIfNoHandler = True
+      OnExecute = aSQLReadExecute
+    end
+    object aSQLAsMapRowToObject: TAction
+      Caption = '&MapRowToObject'
+      DisableIfNoHandler = True
+      OnExecute = aSQLAsMapRowToObjectExecute
+    end
+    object aSQLAsSetupParams: TAction
+      Caption = '&SetupParams'
+      DisableIfNoHandler = True
+      OnExecute = aSQLAsSetupParamsExecute
+    end
+    object aSQLAsClassInterface: TAction
+      Caption = 'As &class interface'
+      DisableIfNoHandler = True
+      OnExecute = aSQLAsClassInterfaceExecute
+    end
+    object aShowRecord: TAction
+      Caption = 'Show this record'
+      DisableIfNoHandler = True
+      Hint = 'Show this record in a popup window'
+      ImageIndex = 3
+      OnExecute = aShowRecordExecute
+    end
+  end
+  object MainMenu1: TMainMenu
+    left = 160
+    top = 6
+    object File1: TMenuItem
+      Caption = '&File'
+      object Close2: TMenuItem
+        Action = aClose
+        OnClick = aCloseExecute
+      end
+    end
+    object SQL1: TMenuItem
+      Caption = '&SQL'
+      object aSQLCreate1: TMenuItem
+        Action = aSQLRead
+        OnClick = aSQLReadExecute
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+      object aSQLCreate2: TMenuItem
+        Action = aSQLCreate
+        OnClick = aSQLCreateExecute
+      end
+      object aSQLUpdate1: TMenuItem
+        Action = aSQLUpdate
+        OnClick = aSQLUpdateExecute
+      end
+      object aSQLDelete1: TMenuItem
+        Action = aSQLDelete
+        OnClick = aSQLDeleteExecute
+      end
+      object N3: TMenuItem
+        Caption = '-'
+      end
+      object Asclassinterface1: TMenuItem
+        Action = aSQLAsClassInterface
+        OnClick = aSQLAsClassInterfaceExecute
+      end
+      object SQLAsSetupParams1: TMenuItem
+        Action = aSQLAsSetupParams
+        OnClick = aSQLAsSetupParamsExecute
+      end
+      object aSQLAsMapRowToObject1: TMenuItem
+        Action = aSQLAsMapRowToObject
+        OnClick = aSQLAsMapRowToObjectExecute
+      end
+    end
+  end
+end

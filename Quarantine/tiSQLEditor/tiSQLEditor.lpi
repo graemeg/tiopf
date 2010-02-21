@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="/"/>
+    <Version Value="5"/>
+    <General>
+      <Flags>
+        <SaveOnlyProjectUnits Value="True"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <AutoCreateForms Value="False"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=""/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="4">
+      <Item1>
+        <PackageName Value="tiOPFGUI"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="tiOPF"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="SynEdit"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
+    </RequiredPackages>
+    <Units Count="6">
+      <Unit0>
+        <Filename Value="tiSQLEditor.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiSQLEditor"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="FMainSQLEditor.pas"/>
+        <ComponentName Value="FormMain"/>
+        <HasResources Value="True"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="FMainSQLEditor.lrs"/>
+        <UnitName Value="FMainSQLEditor"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="FSQLEditor.pas"/>
+        <ComponentName Value="FormSQLEditor"/>
+        <HasResources Value="True"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="FSQLEditor.lrs"/>
+        <UnitName Value="FSQLEditor"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="FSQLMgrBrowse.pas"/>
+        <ComponentName Value="FormSQLMgrBrowse"/>
+        <HasResources Value="True"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="FSQLMgrBrowse.lrs"/>
+        <UnitName Value="FSQLMgrBrowse"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="tiSQLMgrDataSet_Srv.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiSQLMgrDataSet_Srv"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="tiSQLMgrDataSet_BOM.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tiSQLMgrDataSet_BOM"/>
+      </Unit5>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <Target>
+      <Filename Value="bin/tiSQLEditor.exe"/>
+    </Target>
+    <Parsing>
+      <SyntaxOptions>
+        <AllowLabel Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Generate Value="Faster"/>
+    </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CustomOptions Value="-FUunits
+-dUseCThreads
+-dLINK_FBL
+
+"/>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+</CONFIG>

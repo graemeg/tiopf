@@ -1,0 +1,100 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TFormSQLMgrBrowse','FORMDATA',[
+  'TPF0'#17'TFormSQLMgrBrowse'#16'FormSQLMgrBrowse'#4'Left'#3#172#1#6'Height'#3
+  +''''#1#3'Top'#3#6#1#5'Width'#3#225#1#18'HorzScrollBar.Page'#3#224#1#18'VertS'
+  +'crollBar.Page'#3#8#1#13'ActiveControl'#7#2'LV'#7'Caption'#6#16'FormSQLMgrBr'
+  +'owse'#11'Font.Height'#2#245#9'Font.Name'#6#13'MS Sans Serif'#4'Menu'#7#9'Ma'
+  +'inMenu1'#7'OnClose'#7#9'FormClose'#8'OnCreate'#7#10'FormCreate'#9'OnDestroy'
+  +#7#11'FormDestroy'#0#10'TStatusBar'#2'sb'#6'Height'#2#24#3'Top'#3#241#0#5'Wi'
+  +'dth'#3#225#1#6'Panels'#14#1#5'Width'#2'x'#0#1#5'Width'#3#200#0#0#1#5'Width'
+  +#3#200#0#0#1#5'Width'#2'x'#0#0#0#0#8'TToolBar'#8'ToolBar1'#6'Height'#2#26#5
+  +'Width'#3#225#1#7'Caption'#6#8'ToolBar1'#4'Flat'#9#6'Images'#7#10'ImageList1'
+  +#8'TabOrder'#2#0#0#11'TToolButton'#11'ToolButton1'#4'Left'#2#1#3'Top'#2#2#6
+  +'Action'#7#10'aStructure'#0#0#11'TToolButton'#11'ToolButton4'#4'Left'#2#24#3
+  +'Top'#2#2#6'Action'#7#7'aExport'#0#0#11'TToolButton'#11'ToolButton5'#4'Left'
+  +#2'/'#4'Hint'#6'"Show this record in a popup window'#3'Top'#2#2#6'Action'#7
+  +#11'aShowRecord'#0#0#11'TToolButton'#11'ToolButton2'#4'Left'#2'F'#3'Top'#2#2
+  +#5'Width'#2#8#7'Caption'#6#11'ToolButton2'#10'ImageIndex'#2#1#5'Style'#7#12
+  +'tbsSeparator'#0#0#11'TToolButton'#11'ToolButton3'#4'Left'#2'N'#3'Top'#2#2#6
+  +'Action'#7#6'aClose'#0#0#0#9'TListView'#2'LV'#4'Left'#2#28#6'Height'#3#150#0
+  +#3'Top'#2'('#5'Width'#3#250#0#7'Columns'#14#0#9'PopupMenu'#7#10'PopupMenu1'#9
+  +'RowSelect'#9#8'TabOrder'#2#1#9'ViewStyle'#7#8'vsReport'#10'OnDblClick'#7#18
+  +'aShowRecordExecute'#0#0#11'TStringGrid'#11'StringGrid1'#4'Left'#3'('#1#6'He'
+  +'ight'#2'd'#3'Top'#2'@'#5'Width'#3#200#0#8'ColCount'#2#5#10'FixedColor'#7#9
+  +'clBtnFace'#13'GridLineWidth'#2#0#7'Options'#11#15'goFixedVertLine'#15'goFix'
+  +'edHorzLine'#10'goVertLine'#10'goHorzLine'#13'goRangeSelect'#14'goSmoothScro'
+  +'ll'#0#8'RowCount'#2#5#10'ScrollBars'#7#10'ssAutoBoth'#8'TabOrder'#2#2#7'Tab'
+  +'Stop'#9#0#0#11'TDatasource'#2'DS'#4'left'#2' '#3'top'#2'8'#0#0#10'TPopupMen'
+  +'u'#10'PopupMenu1'#6'Images'#7#10'ImageList1'#4'left'#2'@'#3'top'#2'8'#0#9'T'
+  +'MenuItem'#10'Structure1'#6'Action'#7#10'aStructure'#7'OnClick'#7#17'aStruct'
+  +'ureExecute'#0#0#9'TMenuItem'#16'ExporttoCSVfile1'#6'Action'#7#7'aExport'#7
+  +'OnClick'#7#14'aExportExecute'#0#0#9'TMenuItem'#2'N1'#7'Caption'#6#1'-'#0#0#9
+  +'TMenuItem'#6'Close1'#6'Action'#7#6'aClose'#7'OnClick'#7#13'aCloseExecute'#0
+  +#0#0#10'TImageList'#10'ImageList1'#4'left'#2'`'#3'top'#2#6#6'Bitmap'#10#6#7#0
+  +#0'li'#4#0#0#0#16#0#0#0#16#0#0#0#186#1#0#0'/* XPM */'#10'static char *graphi'
+  +'c[] = {'#10'"16 16 5 1",'#10'". c None",'#10'", c #000000",'#10'"- c #84848'
+  +'4",'#10'"* c #FFFFFF",'#10'"a c #00FFFF",'#10'"...,.,.,.,.,....",'#10'"..,.'
+  +',-,-,-,-,...",'#10'".,..,-,-,-,-,...",'#10'".,*,,*,*,*,*,,..",'#10'".,*,***'
+  +'******,..",'#10'".,*,*aaaaaaa*,..",'#10'".,*,**--*-***,..",'#10'".,*,*aaaaa'
+  +'aa*,..",'#10'".,*,**-*---**,..",'#10'".,*,*aaaaaaa*,..",'#10'".,*,**---****'
+  +',..",'#10'".,*,*aaaaaaa*,..",'#10'".,*,*********,..",'#10'".,*,*aaaaaaa*,..'
+  +'",'#10'"..,,*********,..",'#10'"....,,,,,,,,,..."}'#10#171#1#0#0'/* XPM */'
+  +#10'static char *graphic[] = {'#10'"16 16 4 1",'#10'". c None",'#10'", c #FF'
+  +'0000",'#10'"- c #840000",'#10'"* c #848484",'#10'"................",'#10'".'
+  +'..........,-,..",'#10'"...,-.....,---..",'#10'"..,--*...,---*..",'#10'"..,-'
+  +'--*.,---*...",'#10'"...,---*---*....",'#10'"....,-----*.....",'#10'".....,-'
+  +'---*.....",'#10'".....-----*.....",'#10'"....,------*....",'#10'"...,------'
+  +'--*...",'#10'"..,----*-----*..",'#10'".,----*.,----*..",'#10'".,---*...,--*'
+  +'...",'#10'".,--*.....,*....",'#10'"..**............"}'#10#201#1#0#0'/* XPM '
+  +'*/'#10'static char *graphic[] = {'#10'"16 16 6 1",'#10'". c None",'#10'", c'
+  +' #000000",'#10'"- c #FFFFFF",'#10'"* c #00FFFF",'#10'"a c #008484",'#10'"b '
+  +'c #848484",'#10'"................",'#10'"................",'#10'",,,,,.....'
+  +',,,,,.",'#10'",----,...,****,.",'#10'".,a**-,.,*aab,..",'#10'"..,a**-,*aab,'
+  +'...",'#10'"...,a**-,ab,....",'#10'"....,a**-,,.....",'#10'"....,,a**-,.....'
+  +'",'#10'"...,*a,a**-,,,,.",'#10'"..,*aaa,a**-,a,.",'#10'".,*aaaaa,a**-,..",'
+  +#10'",bbbbbbbb,a**-,.",'#10'",,,,,,,,,,,aaaa,",'#10'"...........,,,,,",'#10
+  +'"................"}'#10#186#1#0#0'/* XPM */'#10'static char *graphic[] = {'
+  +#10'"16 16 5 1",'#10'". c None",'#10'", c #000000",'#10'"- c #00FFFF",'#10'"'
+  +'* c #FFFFFF",'#10'"a c #848484",'#10'"................",'#10'".............'
+  +'...",'#10'".,,,,,,,,,,,,,..",'#10'",.............,.",'#10'",.,,,,,,,,,,,.,.'
+  +'",'#10'",.,-*-*-*-*-,.,.",'#10'",.,*aaa*-*-*,.,.",'#10'",.,-*-*-*-*-,.,.",'
+  +#10'",.,*aaaaaaa*,.,.",'#10'",.,-*-*-*-*-,.,.",'#10'",.,*aaaaaaa*,.,.",'#10
+  +'",.,-*-*-*-*-,.,.",'#10'",.,,,,,,,,,,,.,.",'#10'",.............,.",'#10'".,'
+  +',,,,,,,,,,,,..",'#10'"................"}'#10#0#0#11'TActionList'#11'ActionL'
+  +'ist1'#4'left'#3#128#0#3'top'#2#8#0#7'TAction'#10'aStructure'#7'Caption'#6#9
+  +'Structure'#18'DisableIfNoHandler'#9#10'ImageIndex'#2#0#9'OnExecute'#7#17'aS'
+  +'tructureExecute'#8'ShortCut'#3'S@'#0#0#7'TAction'#6'aClose'#7'Caption'#6#5
+  ,'Close'#18'DisableIfNoHandler'#9#10'ImageIndex'#2#1#9'OnExecute'#7#13'aClose'
+  +'Execute'#8'ShortCut'#2#27#0#0#7'TAction'#7'aExport'#7'Caption'#6#19'&Export'
+  +' to CSV file'#18'DisableIfNoHandler'#9#10'ImageIndex'#2#2#9'OnExecute'#7#14
+  +'aExportExecute'#0#0#7'TAction'#10'aSQLCreate'#7'Caption'#6#7'&Create'#18'Di'
+  +'sableIfNoHandler'#9#9'OnExecute'#7#17'aSQLCreateExecute'#0#0#7'TAction'#10
+  +'aSQLUpdate'#7'Caption'#6#7'&Update'#18'DisableIfNoHandler'#9#9'OnExecute'#7
+  +#17'aSQLUpdateExecute'#0#0#7'TAction'#10'aSQLDelete'#7'Caption'#6#7'&Delete'
+  +#18'DisableIfNoHandler'#9#9'OnExecute'#7#17'aSQLDeleteExecute'#0#0#7'TAction'
+  +#8'aSQLRead'#7'Caption'#6#5'&Read'#18'DisableIfNoHandler'#9#9'OnExecute'#7#15
+  +'aSQLReadExecute'#0#0#7'TAction'#20'aSQLAsMapRowToObject'#7'Caption'#6#15'&M'
+  +'apRowToObject'#18'DisableIfNoHandler'#9#9'OnExecute'#7#27'aSQLAsMapRowToObj'
+  +'ectExecute'#0#0#7'TAction'#17'aSQLAsSetupParams'#7'Caption'#6#12'&SetupPara'
+  +'ms'#18'DisableIfNoHandler'#9#9'OnExecute'#7#24'aSQLAsSetupParamsExecute'#0#0
+  +#7'TAction'#20'aSQLAsClassInterface'#7'Caption'#6#19'As &class interface'#18
+  +'DisableIfNoHandler'#9#9'OnExecute'#7#27'aSQLAsClassInterfaceExecute'#0#0#7
+  +'TAction'#11'aShowRecord'#7'Caption'#6#16'Show this record'#18'DisableIfNoHa'
+  +'ndler'#9#4'Hint'#6'"Show this record in a popup window'#10'ImageIndex'#2#3#9
+  +'OnExecute'#7#18'aShowRecordExecute'#0#0#0#9'TMainMenu'#9'MainMenu1'#4'left'
+  +#3#160#0#3'top'#2#6#0#9'TMenuItem'#5'File1'#7'Caption'#6#5'&File'#0#9'TMenuI'
+  +'tem'#6'Close2'#6'Action'#7#6'aClose'#7'OnClick'#7#13'aCloseExecute'#0#0#0#9
+  +'TMenuItem'#4'SQL1'#7'Caption'#6#4'&SQL'#0#9'TMenuItem'#11'aSQLCreate1'#6'Ac'
+  +'tion'#7#8'aSQLRead'#7'OnClick'#7#15'aSQLReadExecute'#0#0#9'TMenuItem'#2'N2'
+  +#7'Caption'#6#1'-'#0#0#9'TMenuItem'#11'aSQLCreate2'#6'Action'#7#10'aSQLCreat'
+  +'e'#7'OnClick'#7#17'aSQLCreateExecute'#0#0#9'TMenuItem'#11'aSQLUpdate1'#6'Ac'
+  +'tion'#7#10'aSQLUpdate'#7'OnClick'#7#17'aSQLUpdateExecute'#0#0#9'TMenuItem'
+  +#11'aSQLDelete1'#6'Action'#7#10'aSQLDelete'#7'OnClick'#7#17'aSQLDeleteExecut'
+  +'e'#0#0#9'TMenuItem'#2'N3'#7'Caption'#6#1'-'#0#0#9'TMenuItem'#17'Asclassinte'
+  +'rface1'#6'Action'#7#20'aSQLAsClassInterface'#7'OnClick'#7#27'aSQLAsClassInt'
+  +'erfaceExecute'#0#0#9'TMenuItem'#17'SQLAsSetupParams1'#6'Action'#7#17'aSQLAs'
+  +'SetupParams'#7'OnClick'#7#24'aSQLAsSetupParamsExecute'#0#0#9'TMenuItem'#21
+  +'aSQLAsMapRowToObject1'#6'Action'#7#20'aSQLAsMapRowToObject'#7'OnClick'#7#27
+  +'aSQLAsMapRowToObjectExecute'#0#0#0#0#0
+]);
