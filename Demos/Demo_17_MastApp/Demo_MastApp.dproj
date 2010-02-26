@@ -23,21 +23,20 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DependencyCheckOutputName>Demo_MastApp.exe</DCC_DependencyCheckOutputName>
+			<DCC_ExeOutput>..\_bin</DCC_ExeOutput>
+			<DCC_Define>LINK_XMLLIGHT;LINK_CSV;LINK_TAB;LINK_IBX;LINK_ADOACCESS;$(DCC_Define)</DCC_Define>
+			<DCC_DcuOutput>..\_dcu</DCC_DcuOutput>
+			<DCC_UnitSearchPath>..\..\Core;..\..\Options;..\..\GUI;..\Common;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_DependencyCheckOutputName>..\_bin\Demo_MastApp.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<Version>7.0</Version>
 			<DCC_DebugInformation>False</DCC_DebugInformation>
 			<DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
-			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
-			<DCC_DependencyCheckOutputName>..\_bin\Demo_MastApp.exe</DCC_DependencyCheckOutputName>
 			<Version>7.0</Version>
-			<DCC_Define>DEBUG;LINK_XMLLIGHT;LINK_CSV;LINK_TAB;LINK_IBX;LINK_ADOACCESS;$(DCC_Define)</DCC_Define>
-			<DCC_ExeOutput>..\_bin</DCC_ExeOutput>
-			<DCC_DcuOutput>..\_Dcu</DCC_DcuOutput>
 			<DCC_ObjOutput>..\_Dcu</DCC_ObjOutput>
 			<DCC_HppOutput>..\_Dcu</DCC_HppOutput>
 		</PropertyGroup>

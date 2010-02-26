@@ -23,23 +23,21 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DependencyCheckOutputName>AdrsBookApplicationServer.exe</DCC_DependencyCheckOutputName>
+			<DCC_UnitSearchPath>..\..\..\..\ApplicationServer;..\..\..\..\Core;..\..\..\..\Options;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_ExeOutput>..\..\_Bin</DCC_ExeOutput>
+			<DCC_DcuOutput>_dcu</DCC_DcuOutput>
+			<DCC_DependencyCheckOutputName>..\..\_Bin\AdrsBookApplicationServer.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<Version>7.0</Version>
 			<DCC_DebugInformation>False</DCC_DebugInformation>
 			<DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
 			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
-			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
-			<DCC_DependencyCheckOutputName>..\..\_Bin\AdrsBookApplicationServer.exe</DCC_DependencyCheckOutputName>
 			<Version>7.0</Version>
-			<DCC_ExeOutput>..\..\_Bin</DCC_ExeOutput>
-			<DCC_DcuOutput>_Dcu</DCC_DcuOutput>
 			<DCC_ObjOutput>_Dcu</DCC_ObjOutput>
 			<DCC_HppOutput>_Dcu</DCC_HppOutput>
-			<DCC_UnitSearchPath>..\..\..\..\3rdParty\Indy\System;..\..\..\..\3rdParty\Indy\Protocols;..\..\..\..\3rdParty\Indy\Core;..\..\..\..\3rdParty\JCL\common;..\..\..\..\3rdParty\JCL\windows;..\..\..\..\ApplicationServer;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_ResourcePath>..\..\..\..\3rdParty\Indy\System;..\..\..\..\3rdParty\Indy\Protocols;..\..\..\..\3rdParty\Indy\Core;..\..\..\..\3rdParty\JCL\common;..\..\..\..\3rdParty\JCL\windows;..\..\..\..\ApplicationServer;$(DCC_ResourcePath)</DCC_ResourcePath>
 			<DCC_ObjPath>..\..\..\..\3rdParty\Indy\System;..\..\..\..\3rdParty\Indy\Protocols;..\..\..\..\3rdParty\Indy\Core;..\..\..\..\3rdParty\JCL\common;..\..\..\..\3rdParty\JCL\windows;..\..\..\..\ApplicationServer;$(DCC_ObjPath)</DCC_ObjPath>
 			<DCC_IncludePath>..\..\..\..\3rdParty\Indy\System;..\..\..\..\3rdParty\Indy\Protocols;..\..\..\..\3rdParty\Indy\Core;..\..\..\..\3rdParty\JCL\common;..\..\..\..\3rdParty\JCL\windows;..\..\..\..\ApplicationServer;$(DCC_IncludePath)</DCC_IncludePath>
