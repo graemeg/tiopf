@@ -28,7 +28,7 @@
 			<DCC_EXPLICIT_STRING_CAST>true</DCC_EXPLICIT_STRING_CAST>
 			<DCC_CVT_ACHAR_TO_WCHAR>true</DCC_CVT_ACHAR_TO_WCHAR>
 			<DCC_MapFile>3</DCC_MapFile>
-			<DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\..\tiOPF3_3rdParty\DUnit;..\..\..\tiOPF3_3rdParty\JCL\common;..\..\..\tiOPF3_3rdParty\JCL\windows;..\..\..\tiOPF3_3rdParty\JCL\include;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+			<DCC_UnitSearchPath>..\..\UnitTests\Common;..\..\UnitTests\Tests;..\..\Core;..\..\Options;..\..\GUI;..\..\GUI\VCL;..\..\GUI\VCLForms;..\..\ApplicationServer;..\..\ApplicationServer\tiDBProxyServerExtension;..\..\..\3rdParty\DUnit;..\..\..\3rdParty\JCL\common;..\..\..\3rdParty\JCL\windows;..\..\..\3rdParty\JCL\include;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_ExeOutput>..\..\_bin</DCC_ExeOutput>
 			<DCC_DependencyCheckOutputName>..\..\_bin\tiOPFUnitTestsText.exe</DCC_DependencyCheckOutputName>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;$(DCC_UnitAlias)</DCC_UnitAlias>
