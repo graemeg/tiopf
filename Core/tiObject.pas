@@ -577,6 +577,8 @@ type
     procedure   Assign(const ASource : TtiObject); override;
     {: Assign the captions from all objects to the TStrings AList}
     procedure   AssignCaptions(const AStrings: TStrings);
+    {: Assign the captions & objects from all objects to the TStrings AList}
+    procedure   AssignCaptionsAndObjects(const AStrings: TStrings);
     {: The number of items in the list.}
     property    Count : integer read GetCount;
     {: The capacity (number of items with allocated memory) of the list.}
@@ -1971,6 +1973,15 @@ begin
   AStrings.Clear;
   for i := 0 to count - 1 do
     AStrings.Add(Items[i].Caption);
+end;
+
+procedure TtiObjectList.AssignCaptionsAndObjects(const AStrings: TStrings);
+var
+  i: Integer;
+begin
+  AStrings.Clear;
+  for i := 0 to count - 1 do
+    AStrings.AddObject(Items[i].Caption, Items[i]);
 end;
 
 procedure TtiObjectList.AssignClassProps(ASource: TtiObject);

@@ -64,6 +64,7 @@ type
     procedure AssignList;
     procedure AssignCompound;
     procedure AssignCaptions;
+    procedure AssignCaptionsAndObjects;
     procedure CloneFlat;
     procedure CloneList;
     procedure CloneCompound;
@@ -492,8 +493,38 @@ begin
     LObjectList.AssignCaptions(LStringList);
     CheckEquals(3, LStringList.Count);
     CheckEquals('0', LStringList.Strings[0]);
+    CheckNull(LStringList.Objects[0]);
     CheckEquals('1', LStringList.Strings[1]);
+    CheckNull(LStringList.Objects[1]);
     CheckEquals('2', LStringList.Strings[2]);
+    CheckNull(LStringList.Objects[2]);
+  finally
+    LObjectList.Free;
+    LStringList.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.AssignCaptionsAndObjects;
+var
+  LObjectList: TtiObjectList;
+  LStringList: TStringList;
+begin
+  LObjectList:= nil;
+  LStringList:= nil;
+  try
+    LObjectList := TtiObjectList.Create;
+    LStringList:= TStringList.Create;
+    LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
+    LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
+    LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
+    LObjectList.AssignCaptions(LStringList);
+    CheckEquals(3, LStringList.Count);
+    CheckEquals('0', LStringList.Strings[0]);
+    CheckSame(LObjectList.Items[0], LStringList.Objects[0]);
+    CheckEquals('1', LStringList.Strings[1]);
+    CheckSame(LObjectList.Items[1], LStringList.Objects[1]);
+    CheckEquals('2', LStringList.Strings[2]);
+    CheckSame(LObjectList.Items[2], LStringList.Objects[2]);
   finally
     LObjectList.Free;
     LStringList.Free;
