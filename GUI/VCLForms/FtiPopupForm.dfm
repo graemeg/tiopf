@@ -4,8 +4,8 @@ object FormTIPopupData: TFormTIPopupData
   BorderIcons = []
   BorderStyle = bsNone
   Caption = 'FormTIPopupData'
-  ClientHeight = 270
-  ClientWidth = 412
+  ClientHeight = 260
+  ClientWidth = 420
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,67 +24,63 @@ object FormTIPopupData: TFormTIPopupData
   object pnlBorder: TtiRoundedPanel
     Left = 0
     Top = 0
-    Width = 412
-    Height = 270
+    Width = 420
+    Height = 260
     CornerRadius = 5
     BorderColor = clBlack
     BorderThickness = 1
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 412
+    ExplicitHeight = 270
     object pnlButtons: TPanel
       Left = 6
-      Top = 234
-      Width = 400
+      Top = 224
+      Width = 408
       Height = 30
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitTop = 234
+      ExplicitWidth = 400
       DesignSize = (
-        400
+        408
         30)
-      object btnOK: TtiSpeedButton
-        Left = 237
-        Top = 4
+      object btnOK: TBitBtn
+        Left = 239
+        Top = 2
         Width = 75
-        Height = 22
-        Cursor = crHandPoint
+        Height = 25
         Anchors = [akRight, akBottom]
         Caption = 'OK'
-        Flat = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNavy
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsUnderline]
-        ParentFont = False
-        ImageRes = tiRINone
+        DoubleBuffered = True
+        ParentDoubleBuffered = False
+        TabOrder = 0
+        ExplicitLeft = 231
       end
-      object btnCancel: TtiSpeedButton
-        Left = 318
-        Top = 4
+      object btnCancel: TBitBtn
+        Left = 320
+        Top = 2
         Width = 75
-        Height = 22
-        Cursor = crHandPoint
+        Height = 25
         Anchors = [akRight, akBottom]
         Caption = 'Cancel'
-        Flat = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clNavy
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsUnderline]
-        ParentFont = False
-        ImageRes = tiRINone
+        DoubleBuffered = True
+        ParentDoubleBuffered = False
+        TabOrder = 1
+        ExplicitLeft = 312
       end
     end
     object pnlMain: TPanel
       Left = 6
       Top = 6
-      Width = 400
-      Height = 228
+      Width = 408
+      Height = 218
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitWidth = 400
+      ExplicitHeight = 228
     end
   end
 end

@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Buttons, tiSpeedButton, ExtCtrls, tiRoundedPanel, tiObject, ActnList,
-  tiDataFormData;
+  tiDataFormData, StdCtrls;
 
 type
 
@@ -16,9 +16,9 @@ type
   TFormTIPopupData = class(TForm)
     pnlBorder: TtiRoundedPanel;
     pnlButtons: TPanel;
-    btnOK: TtiSpeedButton;
-    btnCancel: TtiSpeedButton;
     pnlMain: TPanel;
+    btnOK: TBitBtn;
+    btnCancel: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
     procedure DoALUpdate(Action: TBasicAction; var Handled: Boolean);
@@ -30,6 +30,7 @@ type
 
     FTriggeredByRect: TRect;
     FFormDisplayPosition: TPopupDisplayPosition;
+    FLastErrorMessage: string;
 
     FAL        : TActionList;
     FaOK       : TAction;
@@ -45,7 +46,7 @@ type
     function  CreateFormData: TtiDataFormData; virtual; abstract;
     procedure DoaCancelExecute(Sender: TObject); virtual;
     procedure DoaOKExecute(Sender: TObject); virtual;
-    function  FormIsValid : boolean; virtual;
+    function  FormIsValid(out AMessage: string) : boolean; virtual;
     function  GetData: TtiObject;
     procedure SetData(const AValue: TtiObject); 
     property  FormData: TtiDataFormData read FFormData;
@@ -99,10 +100,19 @@ begin
 end;
 
 procedure TFormTIPopupData.DoALUpdate(Action: TBasicAction; var Handled: Boolean);
+var
+  LFormIsValid: boolean;
+  LMessage: string;
 begin
   Assert(FaOK <> nil, 'FaOK must be assigned');
   Assert(FaCancel <> nil, 'FaCancel must be assigned');
-  FaOK.Enabled := FormIsValid and FormDataIsEdited;
+  LFormIsValid:= FormIsValid(LMessage);
+  FaOK.Enabled := LFormIsValid and FormDataIsEdited;
+  if LMessage <> FLastErrorMessage then
+  begin
+    gAMS.FormErrorMessage:= LMessage;
+    FLastErrorMessage:= LMessage;
+  end;
 end;
 
 procedure TFormTIPopupData.DoaOKExecute(Sender: TObject);
@@ -150,6 +160,7 @@ end;
 procedure TFormTIPopupData.FormCreate(Sender: TObject);
 begin
   FFormData := CreateFormData;
+  FLastErrorMessage:= '';
 
   FAL := TActionList.Create(Self);
   FAL.OnUpdate := DoALUpdate;
@@ -191,10 +202,10 @@ begin
   GAMS.FormMgr.ActiveForm.SetEscapeKeyEnabled(True);
 end;
 
-function TFormTIPopupData.FormIsValid: boolean;
+function TFormTIPopupData.FormIsValid(out AMessage: string): boolean;
 begin
   Assert(FormData.TestValid(TtiObject), CTIErrorInvalidObject);
-  Result := FormData.IsValid;
+  Result := FormData.IsValid(AMessage);
 end;
 
 procedure TFormTIPopupData.FormKeyDown(Sender: TObject; var Key: Word;
