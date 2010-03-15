@@ -191,6 +191,8 @@ procedure TFormTIPopupData.FormDeactivate(Sender: TObject);
     AOnDeactivateAction.Execute;
   end;
 begin
+  FAL.OnUpdate:= nil;
+  gAMS.FormErrorMessage:= '';
   case FDeactivatePopupResult of
     mrOk:     _OnDeactivate(FaOK);
     mrCancel: _OnDeactivate(FaCancel);
