@@ -348,15 +348,20 @@ type
 
   // A wrapper for the TComboBox control that has items entered at design time
   TtiPerAwareComboBoxStatic = class(TtiPerAwareComboBoxAbs)
+  private
+  published
   protected
     function    GetValue: String; virtual;
     procedure   SetValue(const AValue: String); virtual;
+    function    GetValueObject: TtiObject;
+    procedure   SetValueObject(const AValue: TtiObject);
     function    GetItems: TStrings; virtual;
     procedure   SetItems(const AValue: TStrings); virtual;
     procedure   DataToWinControl; override;
     procedure   WinControlToData; override;
   published
     property Value : String read GetValue write SetValue;
+    property ValueObject: TtiObject read GetValueObject write SetValueObject;
     property Items : TStrings read GetItems write SetItems;
   end;
 
@@ -2890,6 +2895,14 @@ begin
   result := TComboBox(FWinControl).Text;
 end;
 
+function TtiPerAwareComboBoxStatic.GetValueObject: TtiObject;
+begin
+  if ItemIndex <> -1 then
+    result:= Items.Objects[ItemIndex] as TtiObject
+  else
+    result:= nil;
+end;
+
 procedure TtiPerAwareComboBoxStatic.SetItems(const AValue: TStrings);
 begin
   TComboBox(FWinControl).Items.Assign(AValue);
@@ -2900,6 +2913,15 @@ begin
   SetOnChangeActive(false);
   TComboBox(FWinControl).ItemIndex :=
     TComboBox(FWinControl).Items.IndexOf(AValue);
+  WinControlToData;
+  SetOnChangeActive(true);
+end;
+
+procedure TtiPerAwareComboBoxStatic.SetValueObject(const AValue: TtiObject);
+begin
+  SetOnChangeActive(false);
+  TComboBox(FWinControl).ItemIndex :=
+    TComboBox(FWinControl).Items.IndexOfObject(AValue);
   WinControlToData;
   SetOnChangeActive(true);
 end;
