@@ -87,6 +87,8 @@ type
     procedure FieldCurrency;
     procedure FieldCurrency_Equals;
     procedure FieldCurrency_Assign;
+    procedure FieldCurrency_Inc1;
+    procedure FieldCurrency_Inc2;
 
     procedure FieldDate;
     procedure FieldDate_Fail;
@@ -517,7 +519,7 @@ begin
     LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
     LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
     LObjectList.Add(TtiObjectForTestingAssignCaptions.Create);
-    LObjectList.AssignCaptions(LStringList);
+    LObjectList.AssignCaptionsAndObjects(LStringList);
     CheckEquals(3, LStringList.Count);
     CheckEquals('0', LStringList.Strings[0]);
     CheckSame(LObjectList.Items[0], LStringList.Objects[0]);
@@ -2430,6 +2432,57 @@ begin
     end;
   finally
     lF1.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.FieldCurrency_Inc1;
+var
+  LObj: TtiObject;
+  LField1:  TtiFieldCurrency;
+  LField2:  TtiFieldCurrency;
+begin
+  LObj := TtiObject.Create;
+  try
+    LField1:= nil;
+    LField2:= nil;
+    try
+      LField1:= TtiFieldCurrency.Create(LObj);
+      LField2:= TtiFieldCurrency.Create(LObj);
+      LField1.AsInteger:= 100;
+      LField2.AsInteger:= 1;
+      LField1.Inc(LField2);
+      CheckEquals(101, LField1.AsInteger);
+      LField2.AsInteger:= -1;
+      LField1.Inc(LField2);
+      CheckEquals(100, LField1.AsInteger);
+    finally
+      LField1.Free;
+      LField2.Free;
+    end;
+  finally
+    LObj.Free;
+  end;
+end;
+
+procedure TtiObjectTestCase.FieldCurrency_Inc2;
+var
+  LObj: TtiObject;
+  LField1:  TtiFieldCurrency;
+begin
+  LObj := TtiObject.Create;
+  try
+    LField1:= TtiFieldCurrency.Create(LObj);
+    try
+      LField1.AsInteger:= 100;
+      LField1.Inc(1);
+      CheckEquals(101, LField1.AsInteger);
+      LField1.Inc(-1);
+      CheckEquals(100, LField1.AsInteger);
+    finally
+      LField1.Free;
+    end;
+  finally
+    LObj.Free;
   end;
 end;
 

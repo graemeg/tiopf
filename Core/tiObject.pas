@@ -247,6 +247,8 @@ type
     property    AsFloat: Extended read GetAsFloat Write SetAsFloat;
     property    AsInteger: Int64 read FValue write SetAsInteger;
     property    AsCurrencyString: string read GetAsCurrencyString write SetAsCurrencyString;
+    procedure   Inc(const AField: TtiFieldCurrency); overload;
+    procedure   Inc(const AValue: integer); overload;
   end;
 
   {: Concrete persistent boolean field}
@@ -345,6 +347,7 @@ type
     procedure   SetDeleted(const AValue: boolean); virtual;
     procedure   SetDirty(const AValue: boolean); virtual;
     procedure   SetObjectState(const AValue: TPerObjectState); virtual;
+    function    GetObjectState: TPerObjectState; virtual;
     function    OIDGenerator: TtiOIDGenerator; virtual;
     {$IFDEF OID_AS_INT64}
     procedure   SetOID(const AValue: TtiOID); virtual;
@@ -420,7 +423,7 @@ type
       property    OID        : TtiOID                   read GetOID       ;
    {$ENDIF}
     {: The current state of this object}
-    property    ObjectState: TPerObjectState read FObjectState write SetObjectState;
+    property    ObjectState: TPerObjectState read GetObjectState write SetObjectState;
     {: The type of class that owns this object. If I am owned by a TtiObjectList,
        then my owner is the object responsible for my destruction.}
     property    Owner: TtiObject read GetOwner write SetOwner;
@@ -3509,6 +3512,16 @@ begin
     Result:= ''
 end;
 
+procedure TtiFieldCurrency.Inc(const AValue: integer);
+begin
+  AsInteger:= AsInteger + AValue;
+end;
+
+procedure TtiFieldCurrency.Inc(const AField: TtiFieldCurrency);
+begin
+  AsInteger:= AsInteger + AField.AsInteger;
+end;
+
 procedure TtiFieldCurrency.SetAsCurrencyString(const AValue: string);
 var
   LValue: string;
@@ -4183,6 +4196,11 @@ end;
 procedure TtiObject.StopObserving(ASubject: TtiObject);
 begin
   { Do nothing here. This will be implemented in decendant classes when needed }
+end;
+
+function TtiObject.GetObjectState: TPerObjectState;
+begin
+  result:= FObjectState;
 end;
 
 function TtiObject.GetObserverList: TList;
