@@ -15,10 +15,10 @@ uses
 
 const
   {$IFDEF MSWINDOWS}
-  CLocalINISettingsMessage = ' Edit the file for Expected value "C:\Documents and Settings\tipwh\Local Settings\Application Data\DUnitTIOPF\DUnitTIOPF.ini"';
+  CLocalINISettingsMessage1 = ' Edit the file for Expected value "%s"';
   {$ENDIF}
   {$IFDEF UNIX}
-  CLocalINISettingsMessage = ' Edit the file for Expected value "/home/<user>/.config/<appname>/DUnitTIOPF/DUnitTIOPF.ini"';
+  CLocalINISettingsMessage = ' Edit the file for Expected value "%s"';
   {$ENDIF}
 
 type
@@ -29,6 +29,7 @@ type
   private
     FLocalINISettings: TDUntiLocalSettings;
     function  BuildLongString : string;
+    function  LocalINISettingErrorMessage: string;
 
   protected
     // These methods exist in tiUtils, but have not been DUnit tested because
@@ -687,7 +688,7 @@ begin
   CheckEquals(
     FLocalINISettings.TempDir,
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetTempDir),
-    'TEMP directory (No trailing path delimiter)' + CLocalINISettingsMessage);
+    'TEMP directory (No trailing path delimiter)' + LocalINISettingErrorMessage);
 end;
 
 
@@ -697,7 +698,7 @@ begin
   CheckEquals(
     FLocalINISettings.WindowsSysDir,
     tiUtils.tiGetWindowsSysDir,
-    'Windows System Directory' + CLocalINISettingsMessage
+    'Windows System Directory' + LocalINISettingErrorMessage
   );
   {$ENDIF}
   {$IFDEF UNIX}
@@ -1849,7 +1850,7 @@ begin
   CheckEquals(
     FLocalINISettings.UserName,
     tiUtils.tiGetUserName,
-    'User''s name' + CLocalINISettingsMessage
+    'User''s name' + LocalINISettingErrorMessage
   );
 end;
 
@@ -1859,7 +1860,7 @@ begin
   CheckEquals(
     FLocalINISettings.ComputerName,
     tiUtils.tiGetComputerName,
-    'ComputerName' + CLocalINISettingsMessage
+    'ComputerName' + LocalINISettingErrorMessage
   );
 end;
 
@@ -2030,6 +2031,11 @@ begin
   Check(tiUtils.Lf(5) = #10 + #10 + #10 + #10 + #10);
 end;
 
+
+function TTestTIUtils.LocalINISettingErrorMessage: string;
+begin
+  result:= Format(CLocalINISettingsMessage1, [FLocalINISettings.FileName]);
+end;
 
 procedure TTestTIUtils.Cr;
 begin
@@ -2821,7 +2827,7 @@ begin
     FLocalINISettings.AppDataDirPrivate,
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppDataDirPrivate),
     'tiGetAppDataDirPrivate (No trailing path delimiter)' +
-    CLocalINISettingsMessage);
+    LocalINISettingErrorMessage);
 end;
 
 
@@ -2834,7 +2840,7 @@ begin
     FLocalINISettings.AppDataDirPublic,
     tiUtils.tiRemoveTrailingSlash(tiUtils.tiGetAppDataDirPublic),
     'tiGetAppDataDirPublic (No trailing path delimiter)' +
-    CLocalINISettingsMessage);
+    LocalINISettingErrorMessage);
 //  {$ENDIF}
 end;
 
