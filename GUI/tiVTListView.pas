@@ -444,6 +444,7 @@ type
         Column: TColumnIndex; NewText: UnicodeString);
     procedure SetMultiSelect(const AValue: boolean);
     function GetSelectedCount: integer;
+    function GetNearest: TtiObject;
 
     //
     //FOnDblClick  : TtiLVItemEditEvent;
@@ -561,7 +562,8 @@ type
     function    GetTextFromObject(AObj: TtiObject; AColumnIndex: TColumnIndex): string;
     procedure   SetTextInObject(AObj: TtiObject; AColumnIndex: TColumnIndex; AText: string);
 
-    procedure   Refresh(const pSelectedData: TtiObject = nil); reintroduce; overload; virtual;
+    procedure   Refresh(const ASelectedData: TtiObject = nil); reintroduce; overload; virtual;
+    procedure   Refresh(const ASelectedOID: string); reintroduce; overload; virtual;
     procedure   Refresh(const ASelectedList: TtiObjectList; AFocused: TtiObject); reintroduce; overload; virtual;
 
     //procedure   PositionCursor(AIndex : integer    ); overload;
@@ -575,6 +577,7 @@ type
     function    Focused: boolean; override;
 
     property    SelectedData : TtiObject read GetSelectedData write SetSelectedData;
+    property    Nearest: TtiObject read GetNearest; // For repositioning Selected after a delete
     property    SelectedIndex : integer read GetSelectedIndex write SetSelectedIndex;
     procedure   AssignSelectedDataList(const AList: TtiObjectList);
     property    SelectedCount: integer read GetSelectedCount;
@@ -721,7 +724,8 @@ type
     property OnExportedToFile: TtiVTExportedToFileEvent read FOnExportedToFile write SetOnExportedToFile;
     property OnExported: TtiVTExportedEvent read FOnExported write SetOnExported;
 
-    procedure Refresh(const pSelectedData: TtiObject = nil); override;
+    procedure Refresh(const ASelectedData: TtiObject = nil); override;
+    procedure Refresh(const ASelectedOID: string); override;
     procedure SetAllowedButtons(const AAllowedButtons: TtiLVVisibleButtons);
 
     property ButtonPanel: TtiCtrlBtnPnlAbs read GetButtonPanel;
@@ -1955,21 +1959,12 @@ begin
   end;
 end;
 
-procedure TtiCustomVirtualTree.Refresh(const pSelectedData: TtiObject = nil);
+procedure TtiCustomVirtualTree.Refresh(const ASelectedData: TtiObject = nil);
 begin
   inherited Refresh;
-  // ToDo: Can't get the thing to re-draw.
-  // VT.Invalidate
-  // VT.InvalidateToBottom(VT.TopNode);
-
   ConnectToData;
-
-  if pSelectedData <> nil then
-    SelectedData := pSelectedData;
-
-
-//  else
-//    First;
+  if ASelectedData <> nil then
+    SelectedData := ASelectedData;
 end;
 
 procedure TtiCustomVirtualTree.SetAlternateRowColor(const AValue: TColor);
@@ -2143,6 +2138,20 @@ begin
     FocusNode(lNode);
 end;
 
+function TtiCustomVirtualTree.GetNearest: TtiObject;
+var
+  LNode: PVirtualNode;
+begin
+  if VT.FocusedNode <> nil then
+  begin
+    LNode:= VT.FocusedNode.NextSibling;
+    if LNode = nil then
+      LNode:= VT.FocusedNode.PrevSibling;
+    Result := GetObjectFromNode(LNode);
+  end else
+    result:= nil;
+end;
+
 function TtiCustomVirtualTree.GetNodeFromObject(const AData: TtiObject): PVirtualNode;
 var
   LNode: PVirtualNode;
@@ -2205,6 +2214,17 @@ begin
   end;
   LNode := GetNodeFromObject(AFocused);
   VT.FocusedNode := LNode;
+end;
+
+procedure TtiCustomVirtualTree.Refresh(const ASelectedOID: string);
+var
+  LSelected: TtiObject;
+begin
+  if ASelectedOID <> '' then
+    LSelected:= Data.Find(ASelectedOID)
+  else
+    LSelected:= nil;
+  Refresh(LSelected);
 end;
 
 procedure TtiCustomVirtualTree.RefreshObject(AObject: TtiObject);
@@ -2280,10 +2300,9 @@ begin
     VT.IsVisible[ANode]:= True;
   if not VT.Selected[ANode] then
     VT.Selected[ANode]:= True;
-  if not VT.IsVisible[ANode] then
-    VT.ScrollIntoView(ANode, True, False);
   if VT.FocusedNode <> ANode then
     VT.FocusedNode := ANode;
+  VT.ScrollIntoView(ANode, False, False);
 end;
 
 procedure TtiCustomVirtualTree.SetSortOrders(const AValue: TtiVTSortOrders);
@@ -3158,6 +3177,12 @@ begin
     FSorted := True;
 end;
 
+procedure TtiCustomVirtualEditTree.Refresh(const ASelectedOID: string);
+begin
+  inherited;
+  DoRefreshButtons;
+end;
+
 procedure TtiCustomVirtualEditTree.DoMenuPopup(Sender: TObject);
 var
   i : Integer;
@@ -3365,7 +3390,7 @@ begin
     FCtrlBtnPnl.EnableButtons;
 end;
 
-procedure TtiCustomVirtualEditTree.Refresh(const pSelectedData: TtiObject);
+procedure TtiCustomVirtualEditTree.Refresh(const ASelectedData: TtiObject);
 begin
   inherited;
   DoRefreshButtons;
