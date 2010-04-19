@@ -130,6 +130,9 @@ type
     procedure CheckEquals(const AExpected, AActual: TtiFieldBoolean); overload;
     procedure CheckEquals(const AExpected, AActual: TtiFieldDateTime); overload;
     procedure CheckEquals(const AExpected, AActual: TtiFieldDate); overload;
+    {$IFNDEF OID_AS_INT64}
+    procedure CheckEquals(const AExpected, AActual: TtiOID); overload;
+    {$ENDIF}
     procedure CheckEquals(const AValue: string;    const AField: TtiFieldString); overload;
     procedure CheckEquals(const AValue: Integer;   const AField: TtiFieldInteger); overload;
     procedure CheckEquals(const AValue: Real;      const AField: TtiFieldFloat); overload;
@@ -1227,6 +1230,14 @@ begin
   CheckEquals(StrToInt(AExpected), AOID, AMessage);
   {$ENDIF}
 end;
+
+{$IFNDEF OID_AS_INT64}
+procedure TtiTestCase.CheckEquals(const AExpected, AActual: TtiOID);
+begin
+  Check(AExpected.Equals(AActual),
+    'Expected "' + AExpected.AsString + '" but found "' + AActual.AsString + '"');
+end;
+{$ENDIF}
 
 procedure TtiTestCase.CheckExceptionMessage(const AMessage: string;
   const AArgs: array of const; const AException: Exception);
