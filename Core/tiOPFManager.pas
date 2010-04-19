@@ -145,6 +145,12 @@ type
                           const ADBConnectionName : string = '';
                           const APersistenceLayerName    : string = '');
 
+    procedure   ExecInsertSQL( const ATable: string;
+                          const AFields : Array of string;
+                          const AValues : Array of Const;
+                          const ADBConnectionName : string = '';
+                          const APersistenceLayerName    : string = '');
+
     // These execute database independant commands
     procedure   CreateDatabase(const ADatabaseName: string;
                                const AUserName: string;
@@ -522,6 +528,32 @@ begin
     FCriticalSection.Leave;
   end;
   FActiveThreadList.Terminate;
+end;
+
+procedure TtiOPFManager.ExecInsertSQL(
+  const ATable: string;
+  const AFields: array of string;
+  const AValues: array of Const;
+  const ADBConnectionName, APersistenceLayerName: string);
+
+  procedure _PopulateParams(const AParams: TtiQueryParams; const AFields: array of string; const AValues: array of const);
+  var
+    i: integer;
+  begin
+    for i := 0 to High(AFields) do
+      AParams.SetValueAsVarRec(AFields[i], AValues[i]);
+  end;
+
+var
+  LParams: TtiQueryParams;
+begin
+  LParams:= TtiQueryParams.Create;
+  try
+    _PopulateParams(LParams, AFields, AValues);
+    InsertRow(ATable, LParams, ADBConnectionName, APersistenceLayerName);
+  finally
+    LParams.Free;
+  end;
 end;
 
 procedure TtiOPFManager.ExecSQL(const ASQL : string;

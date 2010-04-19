@@ -514,6 +514,7 @@ type
 
     procedure   SetValueFromProp(const AFieldMetaData : TtiObject; const APropName : string; const pParamName : string);
     procedure   SetValueAsVariant(const AName : string; const AValue : variant);
+    procedure   SetValueAsVarRec(const AName: string; const AValue: TVarRec);
   end;
 
 
@@ -1358,6 +1359,50 @@ begin
   else
     // handle other (unknown) types
     SetValueAsString(AName, AValue);
+  end;
+end;
+
+procedure TtiQueryParams.SetValueAsVarRec(const AName: string;
+  const AValue: TVarRec);
+begin
+  case AValue.VType of
+    vtInteger:       SetValueAsInteger(AName, AValue.VInteger);
+    vtBoolean:       SetValueAsBoolean(AName, AValue.VBoolean);
+    vtExtended:      SetValueAsFloat(  AName, AValue.VExtended^);
+    vtWideChar:      SetValueAsString( AName, String(AValue.VWideChar));
+    vtUnicodeString: SetValueAsString( AName, String(AValue.VUnicodeString));
+    // Implement (and unit test) as required
+    //    vtString:     result := result + QuotedStr(string(VString^));
+    //    vtChar:       result := result + QuotedStr(string(VChar));
+    //    vtPWideChar: SetValueAsString(AName, String(AValue.VPWideChar));
+    //    vtWideChar:   result := result + QuotedStr(string(VWideChar));
+    //    vtPChar:      result := result + QuotedStr(string(VPChar));
+    //    vtAnsiString: result := result + QuotedStr(string(VAnsiString));
+    //    vtWideString: result := result + QuotedStr(string(VWideString));
+    //    vtCurrency:   result := result + CurrToStr(VCurrency^);
+    //    vtVariant:    result := result + QuotedStr(string(VVariant^));
+    //    vtInt64:      result := result + IntToStr(VInt64^);
+  else
+    raise EtiOPFProgrammerException.CreateFmt('Invalid variant type. Index="%d"', [AValue.VType]);
+    // Here are the possible values
+    //  vtInteger       = 0;
+    //  vtBoolean       = 1;
+    //  vtChar          = 2;
+    //  vtExtended      = 3;
+    //  vtString        = 4;
+    //  vtPointer       = 5;
+    //  vtPChar         = 6;
+    //  vtObject        = 7;
+    //  vtClass         = 8;
+    //  vtWideChar      = 9;
+    //  vtPWideChar     = 10;
+    //  vtAnsiString    = 11;
+    //  vtCurrency      = 12;
+    //  vtVariant       = 13;
+    //  vtInterface     = 14;
+    //  vtWideString    = 15;
+    //  vtInt64         = 16;
+    //  vtUnicodeString = 17;
   end;
 end;
 

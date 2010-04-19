@@ -8,13 +8,11 @@ uses
   testregistry,
   {$ENDIF}
   tiTestFramework,
-  tiOPFTestCase
-  ,tiDBConnectionPool
-  ,tiQuery
-  ,SysUtils
-  ,Classes
- ;
-
+  tiOPFTestCase,
+  tiDBConnectionPool,
+  tiQuery,
+  SysUtils,
+  Classes;
 
 type
 
@@ -26,6 +24,7 @@ type
   published
     procedure   ConnectDatabase; virtual;
     procedure   tiOPFManager_ConnectDatabase; virtual;
+
     procedure   Database_Connect; virtual;
     procedure   DBConnectionPoolConnectDisconnect; virtual;
     procedure   NonThreadedDBConnectionPool; virtual;
@@ -38,6 +37,8 @@ type
     // ToDo: There are many tests on TtiPersistenceLayerList that must be tested here
   end;
 
+  TtiOPFManager_ExecInsertSQLCheckMethod = procedure(const AQuery: TtiQuery) of object;
+
   // Test TtiDatabase connectivity
   TTestTIDatabase = class(TtiTestCaseWithDatabaseConnection)
   protected
@@ -49,8 +50,22 @@ type
 
     procedure DatabaseExists; virtual; abstract;
     procedure CreateDatabase; virtual; abstract;
+    procedure tiOPFManager_DoExecInsertSQLCheck(const ACheckMethod: TtiOPFManager_ExecInsertSQLCheckMethod);
+    procedure tiOPFManager_DoExecInsertSQLCheckInteger(const AQuery: TtiQuery);
+    procedure tiOPFManager_DoExecInsertSQLCheckString(const AQuery: TtiQuery);
+    procedure tiOPFManager_DoExecInsertSQLCheckFloat(const AQuery: TtiQuery);
+    procedure tiOPFManager_DoExecInsertSQLCheckBoolean(const AQuery: TtiQuery);
+    procedure tiOPFManager_DoExecInsertSQLCheckDateTime(const AQuery: TtiQuery);
+    procedure tiOPFManager_DoExecInsertSQLCheckLongString(const AQuery: TtiQuery);
 
   published
+    procedure tiOPFManager_ExecInsertSQLInteger;
+    procedure tiOPFManager_ExecInsertSQLString;
+    procedure tiOPFManager_ExecInsertSQLFloat;
+    procedure tiOPFManager_ExecInsertSQLBoolean;
+    procedure tiOPFManager_ExecInsertSQLDateTime;
+    procedure tiOPFManager_ExecInsertSQLLongString;
+
     procedure CreateTIQuery;
     procedure CreateAndAttachTIQuery;
     procedure Transaction_InTransaction; virtual;
@@ -225,31 +240,29 @@ end;
 
 procedure TTestTIPersistenceLayers.tiOPFManager_ConnectDatabase;
 var
-  LTIOPFManager: TtiOPFManager;
+  LM: TtiOPFManager;
 begin
-  LTIOPFManager:= TtiOPFManager.Create;
+  LM:= TtiOPFManager.Create;
   try
-     LTIOPFManager.PersistenceLayers.__RegisterPersistenceLayer(TestSetupData.PersistenceLayerClass);
-     LTIOPFManager.ConnectDatabase(
+     LM.PersistenceLayers.__RegisterPersistenceLayer(TestSetupData.PersistenceLayerClass);
+     LM.ConnectDatabase(
        TestSetupData.DBName,
        TestSetupData.Username,
        TestSetupData.Password,
        '',
        TestSetupData.PersistenceLayerName);
      try
-       CheckEquals(TestSetupData.PersistenceLayerName, LTIOPFManager.DefaultPersistenceLayerName, 'PersistenceLayerName');
-       CheckNotNull(LTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
-       CheckEquals(TestSetupData.DBName, LTIOPFManager.DefaultDBConnectionName, 'DatabaseName');
+       CheckEquals(TestSetupData.PersistenceLayerName, LM.DefaultPersistenceLayerName, 'PersistenceLayerName');
+       CheckNotNull(LM.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+       CheckEquals(TestSetupData.DBName, LM.DefaultDBConnectionName, 'DatabaseName');
      finally
-       LTIOPFManager.DisconnectDatabase(TestSetupData.DBName, TestSetupData.PersistenceLayerName);
+       LM.DisconnectDatabase(TestSetupData.DBName, TestSetupData.PersistenceLayerName);
      end;
-     CheckNull(LTIOPFManager.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
+     CheckNull(LM.DefaultDBConnectionPool, 'DefaultDBConnectionPool');
   finally
-    LTIOPFManager.Free;
+    LM.Free;
   end;
 end;
-
-
 
 procedure TTestTIPersistenceLayers.Database_Connect;
 var
@@ -717,6 +730,141 @@ begin
   end;
 end;
 
+
+procedure TTestTIDatabase.tiOPFManager_DoExecInsertSQLCheck(const ACheckMethod: TtiOPFManager_ExecInsertSQLCheckMethod);
+var
+  LDatabase: TtiDatabase;
+  LQuery: TtiQuery;
+begin
+  LDatabase:= DBConnectionPool.Lock;
+  try
+    LDatabase.StartTransaction;
+    LQuery:= LDatabase.CreateAndAttachTIQuery;
+    try
+      LQuery.SelectRow(cTIQueryTableName, nil);
+      Check(not LQuery.EOF);
+      CheckEquals(2, LQuery.FieldCount);
+      CheckEquals('OID', UpperCase(LQuery.FieldName(0)));
+      CheckEquals(UpperCase(cTIQueryColName), UpperCase(LQuery.FieldName(1)));
+      ACheckMethod(LQuery);
+      LQuery.Next;
+      Check(LQuery.EOF);
+    finally
+      LQuery.Free;
+    end;
+  finally
+    DBConnectionPool.UnLock(LDatabase);
+  end;
+end;
+
+procedure TTestTIDatabase.tiOPFManager_DoExecInsertSQLCheckInteger(const AQuery: TtiQuery);
+begin
+  CheckEquals(100, AQuery.FieldAsInteger[cTIQueryColName]);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_DoExecInsertSQLCheckBoolean(
+  const AQuery: TtiQuery);
+begin
+  CheckEquals(True, AQuery.FieldAsBoolean[cTIQueryColName]);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_DoExecInsertSQLCheckDateTime(
+  const AQuery: TtiQuery);
+begin
+  CheckEquals(EncodeDate(2010, 01, 01), AQuery.FieldAsDateTime[cTIQueryColName]);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_DoExecInsertSQLCheckFloat(
+  const AQuery: TtiQuery);
+begin
+  CheckNearEnough(123.456, AQuery.FieldAsFloat[cTIQueryColName]);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_DoExecInsertSQLCheckLongString(
+  const AQuery: TtiQuery);
+begin
+  CheckEquals(LongString, AQuery.FieldAsString[cTIQueryColName]);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_DoExecInsertSQLCheckString(
+  const AQuery: TtiQuery);
+begin
+  CheckEquals('test', AQuery.FieldAsString[cTIQueryColName]);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_ExecInsertSQLBoolean;
+begin
+  CreateTableBoolean;
+  GTIOPFManager.ExecInsertSQL(
+    cTIQueryTableName,
+    [cTIQueryColName],
+    [True],
+    TestSetupData.DBName,
+    TestSetupData.PersistenceLayerName);
+  tiOPFManager_DoExecInsertSQLCheck(tiOPFManager_DoExecInsertSQLCheckBoolean);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_ExecInsertSQLDateTime;
+begin
+  CreateTableDateTime;
+  // The TVarRec container used to pass parameter values does not support
+  // TDateTime, but date as string appears to work.
+  GTIOPFManager.ExecInsertSQL(
+    cTIQueryTableName,
+    [cTIQueryColName],
+    [DateTimeToStr(EncodeDate(2010, 01, 01))],
+    TestSetupData.DBName,
+    TestSetupData.PersistenceLayerName);
+  tiOPFManager_DoExecInsertSQLCheck(tiOPFManager_DoExecInsertSQLCheckDateTime);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_ExecInsertSQLFloat;
+begin
+  CreateTableFloat;
+  GTIOPFManager.ExecInsertSQL(
+    cTIQueryTableName,
+    [cTIQueryColName],
+    [123.456],
+    TestSetupData.DBName,
+    TestSetupData.PersistenceLayerName);
+  tiOPFManager_DoExecInsertSQLCheck(tiOPFManager_DoExecInsertSQLCheckFloat);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_ExecInsertSQLInteger;
+begin
+  CreateTableInteger;
+  GTIOPFManager.ExecInsertSQL(
+    cTIQueryTableName,
+    [cTIQueryColName],
+    [100],
+    TestSetupData.DBName,
+    TestSetupData.PersistenceLayerName);
+  tiOPFManager_DoExecInsertSQLCheck(tiOPFManager_DoExecInsertSQLCheckInteger);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_ExecInsertSQLLongString;
+begin
+  CreateTableLongString;
+  GTIOPFManager.ExecInsertSQL(
+    cTIQueryTableName,
+    [cTIQueryColName],
+    [LongString],
+    TestSetupData.DBName,
+    TestSetupData.PersistenceLayerName);
+  tiOPFManager_DoExecInsertSQLCheck(tiOPFManager_DoExecInsertSQLCheckLongString);
+end;
+
+procedure TTestTIDatabase.tiOPFManager_ExecInsertSQLString;
+begin
+  CreateTableString;
+  GTIOPFManager.ExecInsertSQL(
+    cTIQueryTableName,
+    [cTIQueryColName],
+    ['test'],
+    TestSetupData.DBName,
+    TestSetupData.PersistenceLayerName);
+  tiOPFManager_DoExecInsertSQLCheck(tiOPFManager_DoExecInsertSQLCheckString);
+end;
 
 procedure TTestTIQueryAbs.SetUp;
 begin
