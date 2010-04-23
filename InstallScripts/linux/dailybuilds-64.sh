@@ -7,6 +7,7 @@
 
 TIOPF="/opt/dailybuilds/tiopf"              # tiOPF root directory
 SCRIPTS="$TIOPF/InstallScripts/linux"       # linux scripts directory
+FPC="/opt/fpc_2.4.1/x86_64-linux/bin/ppcx64"
 
 if [ -f $TIOPF/halt.tests ]; then
   echo "Remove the file 'halt.tests' if you want the tests to continue."
@@ -45,9 +46,9 @@ cd /opt/dailybuilds/results/
 
 # inject the SVN revision
 REV=`svnversion -n $TIOPF/`
-FPCVER=`/opt/fpc_2.3.1/bin/ppcx64 -iV`
-FPCCPU=`/opt/fpc_2.3.1/bin/ppcx64 -iTP`
-FPCHOST=`/opt/fpc_2.3.1/bin/ppcx64 -iTO`
+FPCVER=`$FPC -iV`
+FPCCPU=`$FPC -iTP`
+FPCHOST=`$FPC -iTO`
 sed "s/#REV/$REV/g" msg.txt > msg1.txt
 sed "s/#FPCVER/$FPCVER/g" msg1.txt > msg2.txt
 sed "s/#FPCCPU/$FPCCPU-$FPCHOST/g" msg2.txt > msg3.txt

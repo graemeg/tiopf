@@ -24,6 +24,7 @@ Persistence Layers Tested:
    CSV
    TAB
    XMLLight
+   FBLIB
    SqlDB - Firebird
    SqlDB - PostgreSQL
 
