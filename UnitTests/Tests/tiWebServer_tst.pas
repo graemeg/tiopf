@@ -16,6 +16,8 @@ type
   end;
 
   TtiWebServerTestCase = class(TtiTestCase)
+  private
+    procedure DotiWebServer_Default(const APageName: string);
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -35,7 +37,15 @@ type
     procedure tiWebServer_Create;
     procedure tiWebServer_CreateStartAndStop;
     procedure tiWebServer_Ignore;
-    procedure tiWebServer_Default;
+    procedure tiWebServer_Default_NoPageAvailable;
+    procedure tiWebServer_Default_DefaultHTMRootFolder;
+    procedure tiWebServer_Default_DefaultHTMRootSubFolder;
+    procedure tiWebServer_Default_DefaultHTMLRootFolder;
+    procedure tiWebServer_Default_DefaultHTMLRootSubFolder;
+    procedure tiWebServer_Default_IndexHTMRootFolder;
+    procedure tiWebServer_Default_IndexHTMRootSubFolder;
+    procedure tiWebServer_Default_IndexHTMLRootFolder;
+    procedure tiWebServer_Default_IndexHTMLRootSubFolder;
     procedure tiWebServer_CanNotFindPage;
     procedure tiWebServer_CanFindPage;
     procedure tiWebServer_GetLogFile;
@@ -321,7 +331,80 @@ begin
   end;
 end;
 
-procedure TtiWebServerTestCase.tiWebServer_Default;
+procedure TtiWebServerTestCase.DotiWebServer_Default(const APageName: string);
+var
+  LO: TtiWebServerForTesting;
+  LResult: string;
+  LFileName: string;
+  LPage: string;
+  LDir: string;
+begin
+  LPage:= '<html>test page</html>';
+  LFileName:= TempFileName(APageName);
+  LDir:= ExtractFilePath(LFileName);
+  tiForceDirectories(LDir);
+  try
+    tiStringToFile(LPage, LFileName);
+    LO:= TtiWebServerForTesting.Create(cPort);
+    try
+      // ToDo: This is too fragile. SleepSec must be set before the web server is
+      //       started but StaticPageLocation must be set after web server is started
+      LO.BlockStreamCache.SleepSec:= 0;
+      LO.Start;
+      LO.SetStaticPageLocation(TempDirectory);
+
+      LResult:= TestHTTPRequest(ExtractFilePath(APageName));
+      CheckEquals(LPage, LResult);
+
+    finally
+      LO.Free;
+    end;
+  finally
+    tiForceRemoveDir(LDir);
+  end ;
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_DefaultHTMRootFolder;
+begin
+  DotiWebServer_Default('default.htm');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_DefaultHTMRootSubFolder;
+begin
+  DotiWebServer_Default('subfolder\default.htm');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_DefaultHTMLRootFolder;
+begin
+  DotiWebServer_Default('default.html');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_DefaultHTMLRootSubFolder;
+begin
+  DotiWebServer_Default('subfolder\default.html');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_IndexHTMLRootFolder;
+begin
+  DotiWebServer_Default('index.html');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_IndexHTMLRootSubFolder;
+begin
+  DotiWebServer_Default('subfolder\index.html');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_IndexHTMRootFolder;
+begin
+  DotiWebServer_Default('index.htm');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_IndexHTMRootSubFolder;
+begin
+  DotiWebServer_Default('subfolder\index.htm');
+end;
+
+procedure TtiWebServerTestCase.tiWebServer_Default_NoPageAvailable;
 var
   LO: TtiWebServer;
   LResult: string;

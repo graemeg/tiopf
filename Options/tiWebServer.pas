@@ -202,6 +202,8 @@ type
     procedure ApplyResponseStreamToHTTPResponse(
                              AResponseInfo: TIdHTTPResponseInfo; AResponse: TStream;
                              const AResponseType: string; AResponseCode: Integer);
+    function  DefaultFileName(const ADir: string; out AFilePathAndName: string): boolean;
+    function  DefaultFileNameExists(const ADir: string): boolean;
     procedure CreateDefaultPage;
     procedure Sort;
 
@@ -271,6 +273,33 @@ begin
   Port:= APort;
 
   FBlockStreamCache:= TtiBlockStreamCache.Create;
+end;
+
+function TtiWebServer.DefaultFileName(const ADir: string;
+  out AFilePathAndName: string): boolean;
+var
+  LDir: string;
+begin
+  LDir:= tiStrTran(ADir, '/', '\');
+  LDir:= tiAddTrailingSlash(StaticPageLocation + LDir);
+  if FileExists(LDir + 'default.htm') then
+    AFilePathAndName:= LDir + 'default.htm'
+  else if FileExists(LDir + 'default.html') then
+    AFilePathAndName:= LDir + 'default.html'
+  else if FileExists(LDir + 'index.htm') then
+    AFilePathAndName:= LDir + 'index.htm'
+  else if FileExists(LDir + 'index.html') then
+    AFilePathAndName:= LDir + 'index.html'
+  else
+    AFilePathAndName:= '';
+  result:= AFilePathAndName <> '';
+end;
+
+function TtiWebServer.DefaultFileNameExists(const ADir: string): boolean;
+var
+  LDummy: string;
+begin
+  result:= DefaultFileName(ADir, LDummy);
 end;
 
 destructor TtiWebServer.Destroy;
@@ -424,6 +453,7 @@ end;
 procedure TtiWebServer.Start;
 var
   LConfig: TtiWebServerConfig;
+  LDefaultFileName: string;
 begin
   if ReadPageLocationAtStartup then
   begin
@@ -440,13 +470,20 @@ begin
     ForceDirectories(StaticPageLocation);
   if not DirectoryExists(StaticPageLocation) and (StaticPageLocation <>'')then
     raise exception.create('Unable to locate or create directory for static pages <' + StaticPageLocation + '>');
-  if not FileExists(tiAddTrailingSlash(StaticPageLocation) + 'default.htm') then
-    CreateDefaultPage;
 
+  if not DefaultFileNameExists('') then
+  begin
+    Log('No default file found in ' + StaticPageLocation);
+    Log('Default page being created...');
+    CreateDefaultPage;
+  end;
+
+  DefaultFileName('', LDefaultFileName);
   Log('Attempting to start HTTP server on port ' + IntToStr(FidHTTPServer.DefaultPort));
   FIdHTTPServer.Active := true;
   Log('HTTP server started');
   Log('Static web pages location "' + StaticPageLocation + '"');
+  Log('Default page location "' + LDefaultFileName + '"');
   Log('CGI-Bin location "' + FCGIBinLocation + '"');
 
   BlockStreamCache.Start;
@@ -506,10 +543,7 @@ end;
 
 function TtiWebServerAction_Default.CanExecute(const ADocument: string): boolean;
 begin
-  result := ((ADocument = '') and
-             (FileExists(StaticPageLocation + cDefaultPageName))) or
-            (SameText(ADocument, cDefaultPageName) and
-             (FileExists(StaticPageLocation + cDefaultPageName)));
+  result := Owner.DefaultFileNameExists(ADocument);
 end;
 
 procedure TtiWebServerAction_Default.Execute(
@@ -518,9 +552,12 @@ procedure TtiWebServerAction_Default.Execute(
         AContentType: string;
   var   AResponseCode: Integer;
   const AResponseInfo: TIdHTTPResponseInfo);
+var
+  LFileName: string;
 begin
-  Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
-  GetReturnPage(StaticPageLocation + cDefaultPageName, AResponse, AContentType);
+  Owner.DefaultFileName(ADocument, LFileName);
+  Log('Processing document <' + LFileName + '> in <' + ClassName + '>');
+  GetReturnPage(LFileName, AResponse, AContentType);
 end;
 
 { TtiWebServerAction }
@@ -779,8 +816,9 @@ end;
 
 procedure TtiWebServer.CreateDefaultPage;
 begin
+  Log('Createing default page: ' + tiAddTrailingSlash(StaticPageLocation) + cDefaultPageName);
   tiStringToFile(cDefaultPageText,
-                 tiAddTrailingSlash(StaticPageLocation) + 'default.htm');
+                 tiAddTrailingSlash(StaticPageLocation) + cDefaultPageName);
 end;
 
 { TtiWebServerAction_TestAlive }
