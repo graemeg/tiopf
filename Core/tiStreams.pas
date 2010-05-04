@@ -108,8 +108,10 @@ type
     property    BlockCount: Longword Read GetBlockCount;
     property    BlockAsString[ABlockIndex: Longword]: string Read GetBlockAsString Write SetBlockAsString;
     property    AsString: string Read GetAsString Write SetAsString;
-
   end;
+
+function  tiStreamToMIMEEncodeString(const AStream: TStream): string;
+procedure tiMIMEEncodeStringToStream(const AString: string; const AStream: TStream);
 
 {
 Unit:           DIMime.pas + DIMimeStreams.pas combined
@@ -814,6 +816,40 @@ begin
     end;
   finally
     InputStream.Free;
+  end;
+end;
+
+function tiStreamToMIMEEncodeString(const AStream: TStream): string;
+var
+  LStream : TStringStream;
+  LPos: integer;
+begin
+  LPos:= AStream.Position;
+  try
+    LStream := TStringStream.Create('');
+    try
+      AStream.Position := 0;
+      MimeEncodeStream(AStream, LStream);
+      result := LStream.DataString;
+    finally
+      LStream.Free;
+    end;
+  finally
+    AStream.Position:= LPos;
+  end;
+end;
+
+procedure tiMIMEEncodeStringToStream(const AString: string; const AStream: TStream);
+var
+  lStream: TStringStream;
+begin
+  lStream:= TStringStream.Create(AString);
+  try
+    AStream.Size := 0;
+    MimeDecodeStream(lStream, AStream);
+    AStream.Position := 0;
+  finally
+    lStream.Free;
   end;
 end;
 

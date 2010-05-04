@@ -2178,17 +2178,8 @@ begin
 end;
 
 function TtiQueryParamStream.GetValueAsString: string;
-var
-  lStream : TStringStream;
 begin
-  lStream := TStringStream.Create('');
-  try
-    FStream.Position := 0;
-    MimeEncodeStream(FStream, lStream);
-    result := lStream.DataString;
-  finally
-    lStream.Free;
-  end;
+  result:= tiStreamToMIMEEncodeString(FStream);
 end;
 
 procedure TtiQueryParamStream.SetValueAsStream(const AValue: TStream);
@@ -2204,17 +2195,8 @@ begin
 end;
 
 procedure TtiQueryParamStream.SetValueAsString(const AValue: string);
-var
-  lStream : TStringStream;
 begin
-  lStream := TStringStream.Create(AValue);
-  try
-    FStream.Size := 0;
-    MimeDecodeStream(lStream, FStream);
-    FStream.Position := 0;
-  finally
-    lStream.Free;
-  end;
+  tiMIMEEncodeStringToStream(AValue, FStream);
 end;
 
 { TtiQueryNonSQL }
