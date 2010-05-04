@@ -4,17 +4,16 @@ unit tiWebServer;
 
 interface
 uses
-   tiBaseObject
-  ,tiStreams
-  ,tiThread
-  ,SysUtils
-  ,SyncObjs
-  ,IdHTTPServer
-  ,IdCustomHTTPServer
-  ,IdContext
-  ,Contnrs
-  ,Classes
-;
+  tiBaseObject,
+  tiStreams,
+  tiThread,
+  SysUtils,
+  SyncObjs,
+  IdHTTPServer,
+  IdCustomHTTPServer,
+  IdContext,
+  Contnrs,
+  Classes;
 
 const
   cErrorInvalidCachedBlockStreamTransID = 'Invalid cached block TransID "%d"';
@@ -228,17 +227,17 @@ function tiHTTPRequestInfoToParams(const ARequestInfo: TidHTTPRequestInfo): stri
 
 implementation
 uses
-  tiConstants
-  ,tiExcept
-  ,tiWebServerConstants
-  ,tiUtils
-  ,tiLog
-  ,tiConsoleApp
-  ,tiHTTP
-  ,tiWebServerConfig
-  ,tiCRC32
-  ,Math
-;
+  tiConstants,
+  tiExcept,
+  tiWebServerConfig,
+  tiWebServerUtils,
+  tiWebServerConstants,
+  tiUtils,
+  tiLog,
+  tiConsoleApp,
+  tiHTTP,
+  tiCRC32,
+  Math;
 
 function tiHTTPRequestInfoToParams(const ARequestInfo: TidHTTPRequestInfo): string;
 begin
@@ -796,22 +795,8 @@ end;
 
 function TtiWebServerAction_RunCGIExtension.ExecuteCGIApp(const ACGIApp,
   ARequestParams: string; out AResponse: string): Cardinal;
-var
-  LTempFileName: string;
 begin
-  if Length(ACGIApp) + Length(ARequestParams) <= CMaximumCommandLineLength then
-    Result:= tiExecConsoleApp(ACGIApp, ARequestParams, AResponse, nil, false)
-  else begin
-    LTempFileName:= tiGetTempFile('tmp');
-    tiStringToFile(ARequestParams, LTempFileName);
-    try
-      Result:= tiExecConsoleApp(ACGIApp,
-        CCGIExtensionLargeParamFlag + '=' + LTempFileName,
-        AResponse, nil, false);
-    finally
-      tiDeleteFile(LTempFileName);
-    end;
-  end;
+  tiWebServerExecuteCGIApp(ARequestParams, AResponse, ACGIApp, Result);
 end;
 
 procedure TtiWebServer.CreateDefaultPage;
