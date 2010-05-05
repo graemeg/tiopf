@@ -180,6 +180,7 @@ type
     procedure tiStreamToString1;
     procedure tiStreamToString2;
     procedure tiStringToFile;
+    procedure tiAppendStringToFile;
     procedure tiStringToStream;
     procedure tiStripIntPrefix;
     procedure tiStrPos;
@@ -2571,6 +2572,11 @@ begin
   CheckEquals(' alpha', tiUtils.tiStripIntPrefix('1 alpha'));
   CheckEquals('.9 alpha', tiUtils.tiStripIntPrefix('1.9 alpha'));
   CheckEquals('$1 alpha', tiUtils.tiStripIntPrefix('$1 alpha'));
+end;
+
+procedure TTestTIUtils.tiAppendStringToFile;
+begin
+
 end;
 
 procedure TTestTIUtils.tiAppendStringToStream;

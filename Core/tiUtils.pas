@@ -225,6 +225,8 @@ function tiReplaceFileNameReservedChars(const AString: string;
   function  tiHasSubDirectory(AStartDir : string): boolean;
   // Write the string in AText to a file named AFileName
   procedure tiStringToFile(const AText : string; const AFileName: string);
+  // Append the string in AText to a file named AFileName
+  procedure tiAppendStringToFile(const AText : string; const AFileName: string);
   // Read a text file into a string
   function  tiFileToString(const AFileName : TFileName): string;
   // Get the current directory
@@ -2773,6 +2775,28 @@ begin
     lStream.WriteBuffer(lpcText^, length(LAnsiStr));
   finally
     lStream.Free;
+  end;
+end;
+
+{$MESSAGE 'To do: Unit test this code'}
+procedure tiAppendStringToFile(const AText : string; const AFileName: string);
+var
+  LAnsiStr: AnsiString;
+  lStream : TFileStream;
+  lpcText : PAnsiChar;
+begin
+  if not FileExists(AFileName) then
+    tiStringToFile(AText, AFileName)
+  else begin
+    lStream := TFileStream.Create(AFileName, fmOpenReadWrite or fmShareExclusive);
+    try
+      LAnsiStr := AnsiString(AText);
+      lpcText := PAnsiChar(LAnsiStr);
+      LStream.Position:= LStream.Size;
+      lStream.WriteBuffer(lpcText^, length(LAnsiStr));
+    finally
+      lStream.Free;
+    end;
   end;
 end;
 
