@@ -38,7 +38,9 @@ type
   public
     constructor Create(const AOwner : TtiWebServer; ASortOrder: Byte);
     function    CanExecute(const ADocument: string): boolean; virtual; abstract;
-    procedure   Execute(const ADocument: string; const ARequestParams: string;
+    procedure   Execute(const ADocument: string;
+                        const ARequestInfo: TIdHTTPRequestInfo;
+                        const ARequestParams: string;
                         const AResponse: TStream; var AContentType: string;
                         var   AResponseCode: Integer;
                         const AResponseInfo: TIdHTTPResponseInfo); virtual; abstract;
@@ -51,7 +53,9 @@ type
   TtiWebServerAction_Default = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -62,7 +66,9 @@ type
   TtiWebServerAction_Ignore = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -71,7 +77,9 @@ type
   TtiWebServerAction_CanNotFindPage = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -80,7 +88,9 @@ type
   TtiWebServerAction_GetLogFile = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -89,7 +99,9 @@ type
   TtiWebServerAction_CanFindPage = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -98,7 +110,9 @@ type
   TtiWebServerAction_ForceException = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -111,7 +125,9 @@ type
       out AResponse: string): Cardinal;
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -181,6 +197,7 @@ type
     FBlockStreamCache: TtiBlockStreamCache;
     FOnServerException: TtiWebServerExceptionEvent;
     FReadPageLocationAtStartup: Boolean;
+    FLogFullHTTPRequest: boolean;
     function GetActive: Boolean;
     function  GetPort: Integer;
     procedure SetPort(const AValue: Integer);
@@ -194,7 +211,9 @@ type
     procedure DoIDHTTPServerCommandGet(AContext:TIdContext;
                                        ARequestInfo: TIdHTTPRequestInfo;
                                        AResponseInfo: TIdHTTPResponseInfo); virtual;
-    procedure ProcessHTTPGet(const ADocument: string; const AParams: string;
+    procedure ProcessHTTPGet(const ADocument: string;
+                             const ARequestInfo: TIdHTTPRequestInfo;
+                             const AParams: string;
                              const AResponse: TStream; var AContentType: string;
                              var   AResponseCode: Integer;
                              const AResponseInfo: TIdHTTPResponseInfo);
@@ -310,7 +329,8 @@ begin
 end;
 
 procedure TtiWebServer.DoIDHTTPServerCommandGet(
-  AContext:TIdContext; ARequestInfo: TIdHTTPRequestInfo;
+  AContext:TIdContext;
+  ARequestInfo: TIdHTTPRequestInfo;
   AResponseInfo: TIdHTTPResponseInfo);
 var
   LDocument: string;
@@ -329,6 +349,22 @@ var
   LTemp: string; // Change to a stream - might be a little faster
 
 begin
+  if FLogFullHTTPRequest then
+  begin
+    Log('* * * * * * * * * *');
+    Log('--- RawHTTPCommand');
+    Log(ARequestInfo.RawHTTPCommand);
+    Log('--- FormParams');
+    Log(ARequestInfo.FormParams);
+    Log('--- Params.Text');
+    Log(ARequestInfo.Params.Text);
+//    if Assigned(ARequestInfo.PostStream) then
+//    begin
+//      Log('--- PostStream');
+//      Log(tiStreamToString(ARequestInfo.PostStream));
+//    end;
+  end;
+
   LDocument := ARequestInfo.Document;
   if LDocument[1] = '/' then
     LDocument := Copy(LDocument, 2, Length(LDocument) - 1);
@@ -346,13 +382,13 @@ begin
     // BlockSize = 0, so don't block result
     if (LBlockSize = 0) then
     begin
-      ProcessHTTPGet(LDocument, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
+      ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
       LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(0, 0, 0, 0, 0);
     end
     // BlockSize <> 0 and TransID = 0, a new blocked request
     else if (LBlockSize <> 0) and (LTransID = 0) then
     begin
-      ProcessHTTPGet(LDocument, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
+      ProcessHTTPGet(LDocument, ARequestInfo, LParams, LResponse, LContentType, LResponseCode, AResponseInfo);
       FBlockStreamCache.AddBlockStream(tiStreamToString(LResponse), LBlockSize, LTemp, LBlockCount, LTransID);
       tiStringToStream(LTemp, LResponse);
       LBlockCRC:= tiCRC32FromStream(LResponse);
@@ -409,8 +445,11 @@ begin
 end;
 
 procedure TtiWebServer.ProcessHTTPGet(
-  const ADocument: string; const AParams: string;
-  const AResponse: TStream; var AContentType: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const AParams: string;
+  const AResponse: TStream;
+  var   AContentType: string;
   var   AResponseCode: Integer;
   const AResponseInfo: TIdHTTPResponseInfo);
 var
@@ -424,7 +463,7 @@ begin
       if (FServerActions.Items[i] as TtiWebServerAction).CanExecute(ADocument) then
       begin
         LServerAction := (FServerActions.Items[i] as TtiWebServerAction);
-        LServerAction.Execute(ADocument, AParams, AResponse,
+        LServerAction.Execute(ADocument, ARequestInfo, AParams, AResponse,
                               AContentType, AResponseCode, AResponseInfo);
         Exit; //==>
       end;
@@ -460,6 +499,7 @@ begin
     try
       FStaticPageLocation:= tiAddTrailingSlash(LConfig.PathToStaticPages);
       FCGIBinLocation:= tiAddTrailingSlash(LConfig.PathToCGIBin);
+      FLogFullHTTPRequest:= LConfig.LogFullHTTPRequest;
     finally
       LConfig.Free;
     end;
@@ -484,6 +524,7 @@ begin
   Log('Static web pages location "' + StaticPageLocation + '"');
   Log('Default page location "' + LDefaultFileName + '"');
   Log('CGI-Bin location "' + FCGIBinLocation + '"');
+  Log('Log full HTTP request "' + tiBoolToStr(FLogFullHTTPRequest) + '"');
 
   BlockStreamCache.Start;
 
@@ -546,7 +587,9 @@ begin
 end;
 
 procedure TtiWebServerAction_Default.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream; var
         AContentType: string;
   var   AResponseCode: Integer;
@@ -664,7 +707,9 @@ begin
 end;
 
 procedure TtiWebServerAction_CanNotFindPage.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -693,7 +738,9 @@ begin
 end;
 
 procedure TtiWebServerAction_CanFindPage.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -711,7 +758,9 @@ begin
 end;
 
 procedure TtiWebServerAction_GetLogFile.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -746,7 +795,9 @@ begin
 end;
 
 procedure TtiWebServerAction_RunCGIExtension.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -816,7 +867,9 @@ begin
 end;
 
 procedure TtiWebServerAction_Ignore.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -977,9 +1030,14 @@ type
   ETIWebServerTestException = class(Exception)
   end;
 
-procedure TtiWebServerAction_ForceException.Execute(const ADocument,
-  ARequestParams: string; const AResponse: TStream; var AContentType: string;
-  var AResponseCode: Integer; const AResponseInfo: TIdHTTPResponseInfo);
+procedure TtiWebServerAction_ForceException.Execute(
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
+  const AResponse: TStream;
+  var AContentType: string;
+  var AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
   Raise ETIWebServerTestException.Create('A test exception has been raised on the server at your request');

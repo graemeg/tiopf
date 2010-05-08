@@ -112,6 +112,8 @@ type
 
 function  tiStreamToMIMEEncodeString(const AStream: TStream): string;
 procedure tiMIMEEncodeStringToStream(const AString: string; const AStream: TStream);
+function tiStreamReadToNextToken(const AStream: TStream; const AToken: string): string; overload;
+procedure tiStreamReadToNextToken(const AStream: TStream; const AToken: string; const AOutput: TStream); overload;
 
 {
 Unit:           DIMime.pas + DIMimeStreams.pas combined
@@ -898,7 +900,7 @@ begin
   AStream.Seek(lOldPos, soFromBeginning);
 end;
 
-function tiStreamReadLn(AStream: TStream; const ALineDelim: string): string;
+function tiStreamReadToNextToken(const AStream: TStream; const AToken: string): string;
 const
   cBufLen = 1024;
 var
@@ -911,7 +913,7 @@ var
   lLineDelimLen: integer;
   LAnsiResult: AnsiString;
 begin
-  lLineDelimLen := Length(ALineDelim);
+  lLineDelimLen := Length(AToken);
   lStart := AStream.Position;
   lPos := 0;
 
@@ -924,7 +926,7 @@ begin
       SetLength(lsAnsi, lReadCount);
     ls := string(lsAnsi);
 
-    lPos := Pos(ALineDelim, ls);
+    lPos := Pos(AToken, ls);
 
     if lPos <> 0 then
     begin
@@ -949,6 +951,65 @@ begin
   Result := string(LAnsiResult);
 end;
 
+procedure tiStreamReadToNextToken(const AStream: TStream; const AToken: string; const AOutput: TStream); overload;
+const
+  cBufLen = 1024;
+var
+  lPos : LongInt;
+  lReadCount: LongInt;
+  lTrim: LongInt;
+  lStart: Int64;
+  lsAnsi: ansistring;
+  ls: string;
+  lLineDelimLen: integer;
+  LOutputSize: integer;
+begin
+  lLineDelimLen := Length(AToken);
+  lStart := AStream.Position;
+  lPos := 0;
+
+  while (lPos = 0) and (AStream.Position <> AStream.Size) do
+  begin
+    SetLength(lsAnsi, cBufLen);
+    lReadCount := AStream.Read(lsAnsi[1], cBufLen);
+
+    if lReadCount < cBufLen then
+      SetLength(lsAnsi, lReadCount);
+    ls := string(lsAnsi);
+
+    lPos := Pos(AToken, ls);
+
+    if lPos <> 0 then
+    begin
+      lTrim := lReadCount - (lPos - 1);
+      LOutputSize:= (AStream.Position - lTrim - lStart);
+      AOutput.Size:= LOutputSize;
+      AOutput.Position:= 0;
+      if LOutputSize > 0 then
+      begin
+        AStream.Seek(lStart, soFromBeginning);
+        AOutput.CopyFrom(AStream, LOutputSize);
+        // skip over ALineDelim
+        AStream.Seek(lLineDelimLen, soFromCurrent);
+      end;
+    end
+    else if lReadCount = cBufLen then
+      // rewind far enough to handle partial ALineDelim at end of current buffer
+      AStream.Seek( 1 - lLineDelimLen, soFromCurrent)
+    else
+    begin
+      LOutputSize:=(AStream.Position - lStart);
+      AOutput.Size:= LOutputSize;
+      AOutput.Position:= 0;
+      if LOutputSize > 0 then
+      begin
+        AStream.Seek(lStart, soFromBeginning);
+        AOutput.CopyFrom(AStream, LOutputSize);
+      end;
+    end;
+  end;
+end;
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 // *
 // * TtiFileStream
@@ -962,7 +1023,7 @@ end;
 
 function TtiFileStream.ReadLn: string;
 begin
-  Result := tiStreamReadLn(Self, LineDelim);
+  Result := tiStreamReadToNextToken(Self, LineDelim);
 end;
 
 procedure TtiFileStream.Write(const AString: string);
@@ -1332,7 +1393,7 @@ end;
 
 function TtiLineStream.ReadLn: string;
 begin
-  Result := tiStreamReadLn(FStream, LineDelim);
+  Result := tiStreamReadToNextToken(FStream, LineDelim);
 end;
 
 function TtiLineStream.Seek(const Offset: Int64; Origin: TSeekOrigin): Int64;

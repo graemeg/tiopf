@@ -17,7 +17,9 @@ type
   TtiDBPS_ServerVersion = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var   AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -26,7 +28,9 @@ type
   TtiDBPS_ExecuteRemoteXML = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var   AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -35,7 +39,9 @@ type
   TtiDBPS_ForceException = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var   AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -45,7 +51,9 @@ type
   TtiDBPS_TestAlive = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var   AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -54,7 +62,9 @@ type
   TtiDBPS_TestAlive1 = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var   AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -63,7 +73,9 @@ type
   TtiDBPS_TestHTML = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var   AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -72,7 +84,9 @@ type
   TtiDBPS_TestXML = class(TtiWebServerAction)
   public
     function  CanExecute(const ADocument: string): boolean; override;
-    procedure Execute(const ADocument: string; const ARequestParams: string;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
                       const AResponse: TStream; var AContentType: string;
                       var   AResponseCode: Integer;
                       const AResponseInfo: TIdHTTPResponseInfo); override;
@@ -141,7 +155,9 @@ begin
 end;
 
 procedure TtiDBPS_ExecuteRemoteXML.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -161,7 +177,9 @@ begin
 end;
 
 procedure TtiDBPS_TestAlive1.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -203,7 +221,9 @@ begin
 end;
 
 procedure TtiDBPS_TestHTML.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -233,7 +253,9 @@ begin
 end;
 
 procedure TtiDBPS_TestXML.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -259,7 +281,9 @@ begin
 end;
 
 procedure TtiDBPS_TestAlive.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -309,7 +333,9 @@ begin
 end;
 
 procedure TtiDBPS_ServerVersion.Execute(
-  const ADocument: string; const ARequestParams: string;
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
   const AResponse: TStream;
   var   AContentType: string;
   var   AResponseCode: Integer;
@@ -336,9 +362,14 @@ begin
   result := SameText(ADocument, cgTIDBProxyServerException);
 end;
 
-procedure TtiDBPS_ForceException.Execute(const ADocument,
-  ARequestParams: string; const AResponse: TStream; var AContentType: string;
-  var AResponseCode: Integer; const AResponseInfo: TIdHTTPResponseInfo);
+procedure TtiDBPS_ForceException.Execute(
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
+  const AResponse: TStream;
+  var AContentType: string;
+  var AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 begin
   raise EtiOPFProgrammerException.CreateFmt(
     'Test exception raised at the request of the user at %s',

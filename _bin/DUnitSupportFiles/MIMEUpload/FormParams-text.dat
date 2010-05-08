@@ -1,0 +1,17 @@
+-----------------------------271572047223622
+Content-Disposition: form-data; name="pdf_file"; filename="ATestUpload.txt"
+Content-Type: text/plain
+
+AAAAAAAA
+BBBBBBBB
+CCCCCCCC
+
+-----------------------------271572047223622
+Content-Disposition: form-data; name="return_format"
+
+QIF
+-----------------------------271572047223622
+Content-Disposition: form-data; name="email"
+
+test
+-----------------------------271572047223622--

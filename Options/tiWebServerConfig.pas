@@ -14,6 +14,7 @@ type
     function GetPort: integer;
     function GetSendBugReportEmailOnCGIFailure: boolean;
     function GetLogToApplicationSubDirectory: boolean;
+    function GetLogFullHTTPRequest: boolean;
   protected
     function  GetRegistryValue(const AName, ADefault: string): string; virtual;
     function  GetINIFileName: string; virtual;
@@ -33,6 +34,7 @@ type
     procedure   RegisterLog; virtual;
     property    LogPathToSharedFiles: string Read GetLogPathToSharedFiles;
     property    LogToApplicationSubDirectory: boolean read GetLogToApplicationSubDirectory;
+    property    LogFullHTTPRequest: boolean read GetLogFullHTTPRequest;
     property    CGIExtensionLogging: boolean read GetCIGExtensionLogging;
 
     property    WebServiceShortName: string Read GetWebServiceShortName;
@@ -66,6 +68,8 @@ const
   cINILog_DefaultPathToSharedFiles = 'C:\TechInsite\Log';
   cINILog_CGIExtensionLogging = 'CGIExtensionLogging';
   CINILog_LogToApplicationSubDirectory = 'LogToApplicationSubDirectory';
+  CINILog_LogFullHTTPRequest = 'LogFullHTTPRequest';
+  CINILog_DefaultLogFullHTTPRequest = false;
 
   cINIService = 'Web Server';
   cINIService_ShortName = 'ShortName';
@@ -133,6 +137,11 @@ begin
   finally
     LRegistry.Free;
   end;
+end;
+
+function TtiWebServerConfig.GetLogFullHTTPRequest: boolean;
+begin
+  Result:= INI.ReadBool(cINILog, cINILog_LogFullHTTPRequest, cINILog_DefaultLogFullHTTPRequest);
 end;
 
 function TtiWebServerConfig.GetLogPathToSharedFiles: string;

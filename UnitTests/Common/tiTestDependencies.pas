@@ -78,6 +78,7 @@ uses
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
   ,tiWebServer_TST
+  ,tiMIMEMultiPartFormDataDecoder_tst
   {$IFDEF LINK_REMOTE}
   ,tiApplicationServer_TST
   {$ENDIF}
@@ -163,6 +164,7 @@ begin
   tiXMLToTIDataSet_TST.RegisterTests;
   tiHTTP_TST.RegisterTests;
   tiWebServer_TST.RegisterTests;
+  tiMIMEMultiPartFormDataDecoder_tst.RegisterTests;
   {$IFDEF LINK_REMOTE}
   tiApplicationServer_TST.RegisterTests;
   {$ENDIF}
