@@ -111,6 +111,21 @@ begin
   'MIMEUploadTest.txt');
 end;
 
+procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_FileData;
+begin
+
+end;
+
+procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_FileName;
+begin
+
+end;
+
+procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_StringValue;
+begin
+
+end;
+
 procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_Execute_PDF;
 begin
   MIMEiMultipartFormDataDecoder_Execute(
