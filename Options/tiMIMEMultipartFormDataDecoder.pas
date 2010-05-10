@@ -64,7 +64,6 @@ type
     destructor Destroy; override;
     property ItemList: TtiMIMEMultipartFormDataItemList read FItemList;
     procedure Execute(const AStream: TStream);
-    {$MESSAGE 'Unit test'}
     function  StringValue(const AFieldName: string): string;
     function  FileName(const AFieldName: string): string;
     procedure FileData(const AFieldName: string; const AData: TStream);

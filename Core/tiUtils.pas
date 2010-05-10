@@ -2778,7 +2778,6 @@ begin
   end;
 end;
 
-{$MESSAGE 'To do: Unit test this code'}
 procedure tiAppendStringToFile(const AText : string; const AFileName: string);
 var
   LAnsiStr: AnsiString;

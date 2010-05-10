@@ -24,6 +24,9 @@ type
     procedure MIMEiMultipartFormDataDecoder_Execute_bmp;
     procedure MIMEiMultipartFormDataDecoder_Execute_Doc;
     procedure MIMEiMultipartFormDataDecoder_Execute_PDF;
+    procedure MIMEiMultipartFormDataDecoder_StringValue;
+    procedure MIMEiMultipartFormDataDecoder_FileName;
+    procedure MIMEiMultipartFormDataDecoder_FileData;
   end;
 
 procedure RegisterTests;

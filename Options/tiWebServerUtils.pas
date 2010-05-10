@@ -10,7 +10,7 @@ implementation
 uses
   tiUtils,
   tiConstants,
-  tiConsoleApp;
+  tiConsoleApp, SysUtils;
 
 procedure tiWebServerExecuteCGIApp(const AParams: string; var AResponse: string; const ACGIApp: string; var Result: Cardinal);
 var
