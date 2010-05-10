@@ -20,6 +20,7 @@ type
       const ADataFileName: string);
   published
     procedure MIMEiMultipartFormDataDecoder_Execute_Text;
+    procedure MIMEiMultipartFormDataDecoder_Execute_Text_EmptyEmail;
     procedure MIMEiMultipartFormDataDecoder_Execute_bmp;
     procedure MIMEiMultipartFormDataDecoder_Execute_Doc;
     procedure MIMEiMultipartFormDataDecoder_Execute_PDF;
@@ -81,7 +82,6 @@ begin
     CheckEquals('email', LDecoder.ItemList.Items[2].FieldName);
     CheckEquals(AEmail, LDecoder.ItemList.Items[2].DataAsString);
 
-
   finally
     LStream.Free;
     LDecoder.Free;
@@ -94,6 +94,16 @@ begin
   'FormParams-text.dat',
   'QIF',
   'test',
+  'ATestUpload.txt',
+  'MIMEUploadTest.txt');
+end;
+
+procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_Execute_Text_EmptyEmail;
+begin
+  MIMEiMultipartFormDataDecoder_Execute(
+  'FormParams-text-emptyemail.dat',
+  'QIF',
+  '',
   'ATestUpload.txt',
   'MIMEUploadTest.txt');
 end;

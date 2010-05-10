@@ -627,6 +627,8 @@ procedure TtiWebServerAction.GetReturnPage(const ADocument: string; AResponse: T
       Result := 'application/octet-stream'
     else if pExt = 'zip' then
       Result := 'application/zip'
+    else if pExt = 'pdf' then
+      Result := 'application/pdf'
     else if pExt = 'jpg' then
       Result := '	image/jpeg'
     else if pExt = 'ico' then
@@ -645,6 +647,7 @@ begin
      (lExt = 'jpg') or
      (lExt = 'ico') or
      (lExt = 'exe') or
+     (lExt = 'pdf') or
      (lExt = 'zip') then
   begin
     tiFileToStream(ADocument, AResponse);

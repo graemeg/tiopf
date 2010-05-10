@@ -6,11 +6,14 @@ uses
   tiObject,
   Classes;
 
+const
+  CErrorCanNotFindFiledName = 'Can not find field "%s" in post data stream';
+
 type
 
+  TtiMIMEMultipartFormDataDecoder = class;
   TtiMIMEMultipartFormDataItemList = class;
   TtiMIMEMultipartFormDataItem = class;
-  TtiMIMEMultipartFormDataDecoder = class;
 
   TtiMIMEMultipartFormDataItemList = class(TtiObjectList)
   private
@@ -23,6 +26,7 @@ type
     property    Items[i:integer] : TtiMIMEMultipartFormDataItem read GetItems write SetItems;
     procedure   Add(const AObject : TtiMIMEMultipartFormDataItem); reintroduce;
     procedure   AddInstance(const AData: TStream);
+    function    Find(const AFieldNameToFind: string): TtiMIMEMultipartFormDataItem; reintroduce;
   end;
 
   TtiMIMEMultipartFormDataItem = class(TtiObject)
@@ -60,11 +64,18 @@ type
     destructor Destroy; override;
     property ItemList: TtiMIMEMultipartFormDataItemList read FItemList;
     procedure Execute(const AStream: TStream);
+    {$MESSAGE 'Unit test'}
+    function  StringValue(const AFieldName: string): string;
+    function  FileName(const AFieldName: string): string;
+    procedure FileData(const AFieldName: string; const AData: TStream);
   end;
 
 implementation
 uses
-  tiUtils, tiStreams, SysUtils ;
+  tiUtils,
+  tiStreams,
+  tiExcept,
+  SysUtils;
 
 { TtiMultipartFormDataDecoder }
 
@@ -97,6 +108,28 @@ begin
   end;
 end;
 
+procedure TtiMIMEMultipartFormDataDecoder.FileData(const AFieldName: string;
+  const AData: TStream);
+var
+  LItem: TtiMIMEMultipartFormDataItem;
+begin
+  LItem:= ItemList.Find(AFieldName);
+  if LItem = nil then
+    raise EtiOPFDataException.CreateFmt(CErrorCanNotFindFiledName, [AFieldName]);
+  tiCopyStream(LItem.Data, AData);
+end;
+
+function TtiMIMEMultipartFormDataDecoder.FileName(
+  const AFieldName: string): string;
+var
+  LItem: TtiMIMEMultipartFormDataItem;
+begin
+  LItem:= ItemList.Find(AFieldName);
+  if LItem = nil then
+    raise EtiOPFDataException.CreateFmt(CErrorCanNotFindFiledName, [AFieldName]);
+  result:= LItem.FileName;
+end;
+
 procedure TtiMIMEMultipartFormDataDecoder.GetBlockDelimeter(const AStream: TStream);
 begin
   AStream.Position:= 0;
@@ -116,6 +149,17 @@ begin
   finally
     LStream.Free;
   end;
+end;
+
+function TtiMIMEMultipartFormDataDecoder.StringValue(
+  const AFieldName: string): string;
+var
+  LItem: TtiMIMEMultipartFormDataItem;
+begin
+  LItem:= ItemList.Find(AFieldName);
+  if LItem = nil then
+    raise EtiOPFDataException.CreateFmt(CErrorCanNotFindFiledName, [AFieldName]);
+  result:= LItem.DataAsString;
 end;
 
 { TtMIMEiMultipartFormDataItem }
@@ -214,6 +258,7 @@ procedure TtiMIMEMultipartFormDataItemList.DeriveFieldValues(
 var
   LLine1: string;
   LLine2: string;
+  LByteCount: integer;
 begin
   AData.Position:= 0;
   LLine1:= (tiStreamReadToNextToken(AData, CrLf));
@@ -221,7 +266,23 @@ begin
   if Trim(LLine2) <> '' then
     tiStreamReadToNextToken(AData, CrLf);
   DeriveFieldMetaData(LLine1, AFieldName, AFileName);
-  AFieldData.CopyFrom(AData, AData.Size - AData.Position - 2);
+  LByteCount:= AData.Size - AData.Position - 2;
+  if LByteCount > 0 then
+    AFieldData.CopyFrom(AData, LByteCount);
+end;
+
+function TtiMIMEMultipartFormDataItemList.Find(
+  const AFieldNameToFind: string): TtiMIMEMultipartFormDataItem;
+var
+  i: Integer;
+begin
+  result:= nil;
+  for i := 0 to Count-1 do
+    if SameText(Items[i].FieldName, AFieldNameToFind) then
+    begin
+      result:= Items[i];
+      Exit; //==>
+    end;
 end;
 
 function TtiMIMEMultipartFormDataItemList.GetItems(
