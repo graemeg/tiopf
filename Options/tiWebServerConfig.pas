@@ -16,6 +16,7 @@ type
     function GetLogToApplicationSubDirectory: boolean;
     function GetLogFullHTTPRequest: boolean;
   protected
+    function  GetRegistryKey: string; virtual;
     function  GetRegistryValue(const AName, ADefault: string): string; virtual;
     function  GetINIFileName: string; virtual;
     property  INI: TtiINIFile Read FINI;
@@ -118,16 +119,19 @@ begin
   result := tiRemoveExtension(ExtractFileName(tiGetModuleFileName));
 end;
 
+function TtiWebServerConfig.GetRegistryKey: string;
+begin
+  result:= 'SOFTWARE\TechInsite\Shared';
+end;
+
 function TtiWebServerConfig.GetRegistryValue(const AName, ADefault: string): string;
 var
   LRegistry: TRegistry;
-const
-  cKey   = 'SOFTWARE\TechInsite\Shared';
 begin
   LRegistry := TRegistry.Create(HKEY_LOCAL_MACHINE);
   try
     LRegistry.RootKey := HKEY_LOCAL_MACHINE;
-    LRegistry.OpenKey(cKey, True);
+    LRegistry.OpenKey(GetRegistryKey, True);
     Result := LRegistry.ReadString(AName);
     if Result = '' then
     begin

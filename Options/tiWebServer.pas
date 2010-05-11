@@ -204,6 +204,7 @@ type
   protected
     procedure SetStaticPageLocation(const AValue: string); virtual;
     procedure SetCGIBinLocation(const AValue: string); virtual;
+    procedure SetLogFullHTTPRequest(const AValue: boolean);
 
     property  BlockStreamCache: TtiBlockStreamCache read FBlockStreamCache;
     property  ServerActions: TObjectList Read FServerActions;
@@ -224,6 +225,7 @@ type
     function  DefaultFileNameExists(const ADir: string): boolean;
     procedure CreateDefaultPage;
     procedure Sort;
+    procedure ReadPageLocation; virtual;
 
   public
     constructor Create(APort: integer); virtual;
@@ -486,12 +488,9 @@ begin
   end;
 end;
 
-{ TtiWebServerAction_ExecuteRemoteXML }
-
-procedure TtiWebServer.Start;
+procedure TtiWebServer.ReadPageLocation;
 var
   LConfig: TtiWebServerConfig;
-  LDefaultFileName: string;
 begin
   if ReadPageLocationAtStartup then
   begin
@@ -504,6 +503,15 @@ begin
       LConfig.Free;
     end;
   end;
+end;
+
+{ TtiWebServerAction_ExecuteRemoteXML }
+
+procedure TtiWebServer.Start;
+var
+  LDefaultFileName: string;
+begin
+  ReadPageLocation;
 
   if not DirectoryExists(StaticPageLocation) and (StaticPageLocation <> '') then
     ForceDirectories(StaticPageLocation);
@@ -559,6 +567,11 @@ begin
     FCGIBinLocation:= tiAddtrailingSlash(AValue)
   else
     FCGIBinLocation:= AValue;
+end;
+
+procedure TtiWebServer.SetLogFullHTTPRequest(const AValue: boolean);
+begin
+  FLogFullHTTPRequest:= AValue;
 end;
 
 procedure TtiWebServer.SetPort(const AValue: Integer);
