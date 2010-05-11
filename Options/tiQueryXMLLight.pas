@@ -247,9 +247,9 @@ end;
 
 procedure TtiDatabaseXMLLight.Read;
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
 begin
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
     lXMLToTIDataSets.DataSets := DataSets;
     lXMLToTIDataSets.OptXMLDBSize := FOptXMLDBSize;
@@ -274,11 +274,11 @@ end;
 
 procedure TtiDatabaseXMLLight.Save;
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
 begin
   if FReadOnly then
     Exit; //==>
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
     lXMLToTIDataSets.DataSets := DataSets;
     lXMLToTIDataSets.OptXMLDBSize := OptXMLDBSize;

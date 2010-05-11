@@ -29,13 +29,13 @@ type
 
   TtiDatabaseTXTAbs = class(TtiDatabase)
   private
-    FDataSets : TtiDataBuffers;
+    FDataSets : TtiDataBufferList;
     FInTransaction : boolean;
   protected
     FConnected : boolean;
     procedure   SetInTransaction(AValue : Boolean);
     function    GetConnected : boolean; override;
-    property    DataSets : TtiDataBuffers read FDataSets;
+    property    DataSets : TtiDataBufferList read FDataSets;
   public
     constructor Create; override;
     destructor  Destroy; override;
@@ -1016,7 +1016,7 @@ begin
   inherited;
   FConnected := false;
   FInTransaction := false;
-  FDataSets := TtiDataBuffers.Create;
+  FDataSets := TtiDataBufferList.Create;
 end;
 
 

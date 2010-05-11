@@ -44,8 +44,8 @@ type
   protected
     procedure   SetAsXML(const Value: string);
     procedure   ParamsToDataSet(const pDataSet: TtiDataBuffer);
-    procedure   AssignPropsFromDataSets(const pDataSets: TtiDataBuffers);
-    procedure   AssignItemsFromDataSets(const pDataSets: TtiDataBuffers); virtual ;
+    procedure   AssignPropsFromDataSets(const pDataSets: TtiDataBufferList);
+    procedure   AssignItemsFromDataSets(const pDataSets: TtiDataBufferList); virtual ;
     function    GetItems(i: integer): TtiPathName ; reintroduce ;
     procedure   SetItems(i: integer; const Value: TtiPathName ); reintroduce ;
   public
@@ -150,7 +150,7 @@ type
     procedure   FileNamesToDataSet(const pDataSet: TtiDataBuffer);
     function    GetAsXML: string;
   protected
-    procedure   AssignItemsFromDataSets(const pDataSets: TtiDataBuffers); override ;
+    procedure   AssignItemsFromDataSets(const pDataSets: TtiDataBufferList); override ;
     function    GetItems(i: integer): TtiFileName ; reintroduce ;
     procedure   SetItems(i: integer; const Value: TtiFileName ); reintroduce ;
   public
@@ -310,13 +310,13 @@ begin
   result := FStrPathAndName ;
 end ;
 
-procedure TtiFileNames.AssignItemsFromDataSets(const pDataSets: TtiDataBuffers);
+procedure TtiFileNames.AssignItemsFromDataSets(const pDataSets: TtiDataBufferList);
 var
   lDataSet: TtiDataBuffer;
   i : Integer ;
   lFileName: TtiFileName;
 begin
-  Assert( pDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject );
+  Assert( pDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject );
   lDataSet := pDataSets.FindByName(cFileNames_TableName);
   for i := 0 to lDataSet.Count - 1 do
   begin
@@ -366,16 +366,16 @@ end;
 
 function TtiFileNames.GetAsXML: string;
 var
-  lDSs: TtiDataBuffers;
+  lDSs: TtiDataBufferList;
   lDS:  TtiDataBuffer;
 begin
-  lDSs:= TtiDataBuffers.Create;
+  lDSs:= TtiDataBufferList.Create;
   try
     lDS:= lDSs.AddInstance;
     ParamsToDataSet(lDS);
     lDS:= lDSs.AddInstance;
     FileNamesToDataSet(lDS);
-    Result := tiTIDataSetsToXMLString(lDSs);
+    Result := tiTIDataBufferListToXMLString(lDSs);
   finally
     lDSs.Free;
   end;
@@ -387,7 +387,7 @@ begin
   try
     _AddMetaData(lDS);
     _AddData(lDS);
-    Result := tiTIDataSetToXMLString(lDS);
+    Result := tiTIDataBufferToXMLString(lDS);
   finally
     lDS.Free;
   end;
@@ -472,16 +472,16 @@ end;
 
 function TtiPathNames.GetAsXML: string;
 var
-  lDSs: TtiDataBuffers;
+  lDSs: TtiDataBufferList;
   lDS:  TtiDataBuffer;
 begin
-  lDSs:= TtiDataBuffers.Create;
+  lDSs:= TtiDataBufferList.Create;
   try
     lDS:= lDSs.AddInstance;
     ParamsToDataSet(lDS);
     lDS:= lDSs.AddInstance;
     PathNamesToDataSet(lDS);
-    Result := tiTIDataSetsToXMLString(lDSs);
+    Result := tiTIDataBufferListToXMLString(lDSs);
   finally
     lDSs.Free;
   end;
@@ -540,12 +540,12 @@ end;
 
 procedure TtiPathNames.SetAsXML(const Value: string);
 var
-  lDataSets: TtiDataBuffers;
+  lDataSets: TtiDataBufferList;
 begin
   Clear;
-  lDataSets:= TtiDataBuffers.Create;
+  lDataSets:= TtiDataBufferList.Create;
   try
-    tiXMLStringToTIDataSets(Value, lDataSets);
+    tiXMLStringToTIDataBufferList(Value, lDataSets);
     Assert(lDataSets.Count = 2, 'lDataSets.Count <> 2');
     AssignPropsFromDataSets(lDataSets);
     AssignItemsFromDataSets(lDataSets);
@@ -625,7 +625,7 @@ begin
   try
     _AddMetaData(lDS);
     _AddData(lDS);
-    Result := tiTIDataSetToXMLString(lDS);
+    Result := tiTIDataBufferToXMLString(lDS);
   finally
     lDS.Free;
   end;
@@ -633,13 +633,13 @@ end;
 
 procedure TtiFileName.SetAsXML(const Value: string);
 var
-  lDataSets: TtiDataBuffers;
+  lDataSets: TtiDataBufferList;
   lDataSet: TtiDataBuffer;
   lRow: TtiDataBufferRow;
 begin
-  lDataSets:= TtiDataBuffers.Create;
+  lDataSets:= TtiDataBufferList.Create;
   try
-    tiXMLStringToTIDataSets(Value, lDataSets);
+    tiXMLStringToTIDataBufferList(Value, lDataSets);
     Assert(lDataSets.Count = 1, 'lDataSets.Count <> 1');
     lDataSet := lDataSets.Items[0];
     Assert(lDataSet.Count = 1, 'lDataSet.Count <> 1');
@@ -655,11 +655,11 @@ begin
   end;
 end;
 
-procedure TtiPathNames.AssignPropsFromDataSets(const pDataSets: TtiDataBuffers);
+procedure TtiPathNames.AssignPropsFromDataSets(const pDataSets: TtiDataBufferList);
 var
   lDataSet: TtiDataBuffer ;
 begin
-  Assert( pDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject );
+  Assert( pDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject );
   lDataSet := pDataSets.FindByName(cParams_TableName);
   Assert( lDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject );
   Assert( lDataSet.Count = 1, 'lDataSet.Count <> 1');
@@ -667,13 +667,13 @@ begin
   Recurse  := lDataSet.Items[0].FindByFieldName(cParams_Field_Recurse).ValueAsBool;
 end;
 
-procedure TtiPathNames.AssignItemsFromDataSets(const pDataSets: TtiDataBuffers);
+procedure TtiPathNames.AssignItemsFromDataSets(const pDataSets: TtiDataBufferList);
 var
   i : Integer ;
   lDataSet: TtiDataBuffer ;
   lPathName : TtiPathName;
 begin
-  Assert( pDataSets.TestValid(TtiDataBuffers), CTIErrorInvalidObject );
+  Assert( pDataSets.TestValid(TtiDataBufferList), CTIErrorInvalidObject );
   lDataSet := pDataSets.FindByName(cPathNames_TableName);
   Assert( lDataSet.TestValid(TtiDataBuffer), CTIErrorInvalidObject );
   for i := 0 to lDataSet.Count - 1 do
@@ -705,7 +705,7 @@ begin
   try
     _AddMetaData(lDS);
     _AddData(lDS);
-    Result := tiTIDataSetToXMLString(lDS);
+    Result := tiTIDataBufferToXMLString(lDS);
   finally
     lDS.Free;
   end;
@@ -713,13 +713,13 @@ end;
 
 procedure TtiPathName.SetAsXML(const Value: string);
 var
-  lDataSets: TtiDataBuffers;
+  lDataSets: TtiDataBufferList;
   lDataSet: TtiDataBuffer;
   lRow: TtiDataBufferRow;
 begin
-  lDataSets:= TtiDataBuffers.Create;
+  lDataSets:= TtiDataBufferList.Create;
   try
-    tiXMLStringToTIDataSets(Value, lDataSets);
+    tiXMLStringToTIDataBufferList(Value, lDataSets);
     Assert(lDataSets.Count = 1, 'lDataSets.Count <> 1');
     lDataSet := lDataSets.Items[0];
     Assert(lDataSet.Count = 1, 'lDataSet.Count <> 1');

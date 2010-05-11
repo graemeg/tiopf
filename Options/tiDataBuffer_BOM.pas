@@ -29,12 +29,12 @@ type
 //  Add a ColNamesInFirstRow prop
 //  Write the tiQueryCSV class
 
-  TtiDataBuffers      = class;
+  TtiDataBufferList      = class;
   TtiDataBuffer       = class;
   TtiDataBufferRow    = class;
   TtiDataBufferCell   = class;
 
-  TtiDataBuffers = class(TtiBaseObject)
+  TtiDataBufferList = class(TtiBaseObject)
   private
     FList : TObjectList;
     function  GetItems(AIndex: Integer): TtiDataBuffer;
@@ -345,49 +345,49 @@ begin
   end;
 end;
 
-{ TtiDataBuffers }
+{ TtiDataBufferList }
 
-procedure TtiDataBuffers.Add(const AData: TtiDataBuffer);
+procedure TtiDataBufferList.Add(const AData: TtiDataBuffer);
 begin
   FList.Add(AData);
 end;
 
-function TtiDataBuffers.AddInstance(const AName: string): TtiDataBuffer;
+function TtiDataBufferList.AddInstance(const AName: string): TtiDataBuffer;
 begin
   result := TtiDataBuffer.Create;
   result.Name := AName;
   Add(result);
 end;
 
-procedure TtiDataBuffers.Clear;
+procedure TtiDataBufferList.Clear;
 begin
   FList.Clear;
 end;
 
-function TtiDataBuffers.Count: integer;
+function TtiDataBufferList.Count: integer;
 begin
   result := FList.Count;
 end;
 
-constructor TtiDataBuffers.Create;
+constructor TtiDataBufferList.Create;
 begin
   inherited;
   FList := TObjectList.Create(true);
 end;
 
-destructor TtiDataBuffers.Destroy;
+destructor TtiDataBufferList.Destroy;
 begin
   FList.Free;
   inherited;
 end;
 
-procedure TtiDataBuffers.Extract(const AValue: TtiDataBuffer);
+procedure TtiDataBufferList.Extract(const AValue: TtiDataBuffer);
 begin
   FList.Extract(AValue);
   FList.Capacity:= FList.Count; // To suppress a reported leak in testing
 end;
 
-function TtiDataBuffers.FindByName(const AName: string): TtiDataBuffer;
+function TtiDataBufferList.FindByName(const AName: string): TtiDataBuffer;
 var
   i : integer;
 begin
@@ -400,18 +400,18 @@ begin
     end;
 end;
 
-function TtiDataBuffers.GetItems(AIndex: Integer): TtiDataBuffer;
+function TtiDataBufferList.GetItems(AIndex: Integer): TtiDataBuffer;
 begin
   result := TtiDataBuffer(FList.Items[AIndex])
 end;
 
-procedure TtiDataBuffers.Remove(const AValue: TtiDataBuffer);
+procedure TtiDataBufferList.Remove(const AValue: TtiDataBuffer);
 begin
   FList.Remove(AValue);
   FList.Capacity:= FList.Count; // To suppress a reported leak in testing
 end;
 
-procedure TtiDataBuffers.SetItems(AIndex: Integer; const AValue: TtiDataBuffer);
+procedure TtiDataBufferList.SetItems(AIndex: Integer; const AValue: TtiDataBuffer);
 begin
   FList.Items[AIndex]:=AValue;
 end;

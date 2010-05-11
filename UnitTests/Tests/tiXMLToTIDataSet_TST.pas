@@ -14,9 +14,9 @@ uses
 
 type
 
-  // This makes public some protected methods in TXMLToDataSetReader so
+  // This makes public some protected methods in TtiXMLToDataBufferReader so
   // they can be tested
-  TXMLToDataSetReaderTest = class(TXMLToDataSetReader)
+  TtiXMLToDataBufferReaderTest = class(TtiXMLToDataBufferReader)
   private
     FTableName: string;
     FFieldName: string;
@@ -53,7 +53,7 @@ type
                 pFieldSize: Integer; const AValue : string;
                 pXMLFieldNameStyle: TtiXMLFieldNameStyle): string;
 
-    procedure CompoundDataToDataSets(const pDataSets: TtiDataBuffers;
+    procedure CompoundDataToDataSets(const pDataSets: TtiDataBufferList;
                                      pDataSetCount: Integer; pRowCount: Integer;
                                      pIncludeBinField : Boolean);
 
@@ -195,11 +195,11 @@ end;
 
 procedure TTestTIXMLtoTIDataSet.XMLToDataSetEmptyFile_Read;
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
   lResult         : string;
   lTarget         : string;
 begin
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
     lResult := lXMLToTIDataSets.AsString;
     lTarget := MakeXMLDatabase('');
@@ -211,14 +211,14 @@ end;
 
 procedure TTestTIXMLtoTIDataSet.XMLToDataSetEmptyFile_Write;
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets       : TtiDataBuffers;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
+  lDataSets       : TtiDataBufferList;
   ls              : string;
 begin
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
     ls := MakeXMLDatabase('');
-    lDataSets := TtiDataBuffers.Create;
+    lDataSets := TtiDataBufferList.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := ls;
@@ -245,8 +245,8 @@ procedure TTestTIXMLtoTIDataSet.DoXMLToDataSetMetaDataBuffered(
   const AFieldName : string; AFieldKind : TtiQueryFieldKind;
   pFieldSize : Integer);
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets       : TtiDataBuffers;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
+  lDataSets       : TtiDataBufferList;
   lDataSet        : TtiDataBuffer;
   lResult         : string;
   lAsString       : string;
@@ -254,9 +254,9 @@ begin
   lAsString := MakeXMLDatabaseWithMetaData(AFieldName, AFieldKind, pFieldSize);
 
   // Test Read
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
-    lDataSets       := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBufferList.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lDataSet := lDataSets.AddInstance('test');
@@ -271,9 +271,9 @@ begin
   end;
 
   // Test Write
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
-    lDataSets       := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBufferList.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := lAsString;
@@ -314,8 +314,8 @@ end;
 
 procedure TTestTIXMLtoTIDataSet.DoXMLToDataSetDataBuffered(const AFieldName: string;AFieldKind: TtiQueryFieldKind; pFieldSize: integer;const AValue : string);
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets       : TtiDataBuffers;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
+  lDataSets       : TtiDataBufferList;
   lDataSet        : TtiDataBuffer;
   lDataSetRow     : TtiDataBufferRow;
   lResult         : string;
@@ -324,9 +324,9 @@ begin
   lAsString := MakeXMLDatabaseWithData(AFieldName, AFieldKind, pFieldSize, AValue, xfnsString);
 
   // Test Read
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
-    lDataSets       := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBufferList.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lDataSet := lDataSets.AddInstance('test');
@@ -343,9 +343,9 @@ begin
   end;
 
   // Test Write
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
-    lDataSets       := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBufferList.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := lAsString;
@@ -666,8 +666,8 @@ procedure TTestTIXMLtoTIDataSet.CheckXMLDatabaseWithCompoundData(
   pRowCount : Integer;
   pIncludeBinField : Boolean);
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets       : TtiDataBuffers;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
+  lDataSets       : TtiDataBufferList;
   lDataSet        : TtiDataBuffer;
   lDataSetRow     : TtiDataBufferRow;
   lAsString2      : string;
@@ -679,9 +679,9 @@ var
 begin
 
   // Test Write
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
-    lDataSets       := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBufferList.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := AValue;
@@ -760,13 +760,13 @@ function TTestTIXMLtoTIDataSet.MakeXMLDatabaseCompoundWithReadWrite(
            pIncludeBinField : Boolean;
            pXMLFieldNameStyle: TtiXMLFieldNameStyle): string;
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets       : TtiDataBuffers;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
+  lDataSets       : TtiDataBufferList;
 begin
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
     lXMLToTIDataSets.XMLFieldNameStyle := pXMLFieldNameStyle;
-    lDataSets       := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBufferList.Create;
     try
       CompoundDataToDataSets(lDataSets, pDataSetCount, pRowCount, pIncludeBinField);
       lXMLToTIDataSets.DataSets := lDataSets;
@@ -783,15 +783,15 @@ procedure TTestTIXMLtoTIDataSet.DoXMLDBParser(
   const AFieldName: string; AFieldKind: TtiQueryFieldKind;
   pFieldSize: integer; const AValue: string);
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets       : TtiDataBuffers;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
+  lDataSets       : TtiDataBufferList;
   lAsString       : string;
 begin
   lAsString := MakeXMLDatabaseWithData(AFieldName, AFieldKind, pFieldSize, AValue, xfnsString);
   // Test Write
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
-    lDataSets       := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBufferList.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := lAsString;
@@ -815,15 +815,15 @@ procedure TTestTIXMLtoTIDataSet.DoXMLDBParserMetaData(
   const AFieldName: string; AFieldKind: TtiQueryFieldKind;
   pFieldSize: integer);
 var
-  lXMLToTIDataSets : TtiXMLToDataSetReadWriter;
-  lDataSets       : TtiDataBuffers;
+  lXMLToTIDataSets : TtiXMLToDataBufferReaderWriter;
+  lDataSets       : TtiDataBufferList;
   lAsString       : string;
 begin
   lAsString := MakeXMLDatabaseWithMetaData(AFieldName, AFieldKind, pFieldSize);
   // Test Write
-  lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+  lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
   try
-    lDataSets       := TtiDataBuffers.Create;
+    lDataSets       := TtiDataBufferList.Create;
     try
       lXMLToTIDataSets.DataSets := lDataSets;
       lXMLToTIDataSets.AsString := lAsString;
@@ -946,10 +946,10 @@ const
                    FValue          := 'l';
 }
 var
-  lXMLDBParser : TXMLToDataSetReaderTest;
+  lXMLDBParser : TtiXMLToDataBufferReaderTest;
 begin
   // Nasty, fragile test. Sorry.
-  lXMLDBParser := TXMLToDataSetReaderTest.Create;
+  lXMLDBParser := TtiXMLToDataBufferReaderTest.Create;
   try
     lXMLDBParser.OptXMLDBSize := optDBSizeOn;
     lXMLDBParser.XML := cTableXMLDBSizeOptOn;
@@ -1122,10 +1122,10 @@ const
   '</xmldocdata>';
 
 var
-  lXMLDBParser : TXMLToDataSetReaderTest;
+  lXMLDBParser : TtiXMLToDataBufferReaderTest;
 begin
   // Nasty, fragile test. Sorry.
-  lXMLDBParser := TXMLToDataSetReaderTest.Create;
+  lXMLDBParser := TtiXMLToDataBufferReaderTest.Create;
   try
     lXMLDBParser.OptXMLDBSize := optDBSizeOff;
     lXMLDBParser.XML := cTableXMLDBSizeOptOff;
@@ -1267,53 +1267,53 @@ begin
 
 end;
 
-{ TXMLToDataSetReaderTest }
+{ TtiXMLToDataBufferReaderTest }
 
-constructor TXMLToDataSetReaderTest.Create;
+constructor TtiXMLToDataBufferReaderTest.Create;
 begin
   inherited;
   FAttributes := TStringList.Create;
 end;
 
-destructor TXMLToDataSetReaderTest.Destroy;
+destructor TtiXMLToDataBufferReaderTest.Destroy;
 begin
   FAttributes.Free;
   inherited;
 end;
 
-procedure TXMLToDataSetReaderTest.DoAddCell(const AFieldName: string;pFieldValue: string);
+procedure TtiXMLToDataBufferReaderTest.DoAddCell(const AFieldName: string;pFieldValue: string);
 begin
   Attributes.Values[AFieldName]:= pFieldValue;
 end;
 
-procedure TXMLToDataSetReaderTest.DoAddField(const AFieldName, AFieldKind,pFieldSize: string);
+procedure TtiXMLToDataBufferReaderTest.DoAddField(const AFieldName, AFieldKind,pFieldSize: string);
 begin
   FFieldName:= AFieldName;
   FFieldKind:= AFieldKind;
   FFieldSize:= pFieldSize;
 end;
 
-procedure TXMLToDataSetReaderTest.DoAddRow;
+procedure TtiXMLToDataBufferReaderTest.DoAddRow;
 begin
   //
 end;
 
-procedure TXMLToDataSetReaderTest.DoAddTable(const ATableName: string);
+procedure TtiXMLToDataBufferReaderTest.DoAddTable(const ATableName: string);
 begin
   FTableName:= ATableName;
 end;
 
-procedure TXMLToDataSetReaderTest.Next;
+procedure TtiXMLToDataBufferReaderTest.Next;
 begin
   inherited;
 end;
 
-function TXMLToDataSetReaderTest.RestOfString: string;
+function TtiXMLToDataBufferReaderTest.RestOfString: string;
 begin
   result := Copy(XML,Pos,Len-Pos+1);
 end;
 
-function TXMLToDataSetReaderTest.NextChars(pNoOfChars: Cardinal): string;
+function TtiXMLToDataBufferReaderTest.NextChars(pNoOfChars: Cardinal): string;
 begin
   result := Copy(XML, Pos, pNoOfChars);
 end;
@@ -1334,15 +1334,15 @@ var
   lWrite : DWord;
   lMSPer100Rows : Extended;
   ls: string;
-  lXMLToTIDataSets    : TtiXMLToDataSetReadWriter;
-  lDataSets : TtiDataBuffers;
+  lXMLToTIDataSets    : TtiXMLToDataBufferReaderWriter;
+  lDataSets : TtiDataBufferList;
 begin
 
   ls := MakeXMLDatabaseCompoundWithReadWrite(1, cRowCount, False, pXMLFieldNameStyle);
 
-  lDataSets := TtiDataBuffers.Create;
+  lDataSets := TtiDataBufferList.Create;
   try
-    lXMLToTIDataSets := TtiXMLToDataSetReadWriter.Create;
+    lXMLToTIDataSets := TtiXMLToDataBufferReaderWriter.Create;
     try
       lXMLToTIDataSets.XMLFieldNameStyle := pXMLFieldNameStyle;
       lXMLToTIDataSets.DataSets := lDataSets;
@@ -1387,7 +1387,7 @@ begin
 end;
 
 procedure TTestTIXMLtoTIDataSet.CompoundDataToDataSets(
-  const pDataSets: TtiDataBuffers; pDataSetCount, pRowCount: Integer;
+  const pDataSets: TtiDataBufferList; pDataSetCount, pRowCount: Integer;
   pIncludeBinField: Boolean);
 var
   lDataSet        : TtiDataBuffer;
@@ -1445,12 +1445,12 @@ end;
 procedure TTestTIXMLtoTIDataSet.XMLToDataSetCompoundInvalidXML;
   procedure _DoTest(const pXML: string; pPass: Boolean; const pTestID: string);
   var
-    lXMLDBParser : TXMLToDataSetReaderTest;
+    lXMLDBParser : TtiXMLToDataBufferReaderTest;
     lPos: Cardinal;
   const
     cExceptionNotRaised = 'Exception not raised when it should have been';
   begin
-    lXMLDBParser := TXMLToDataSetReaderTest.Create;
+    lXMLDBParser := TtiXMLToDataBufferReaderTest.Create;
     try
       lXMLDBParser.OptXMLDBSize := optDBSizeOff;
       lXMLDBParser.XML := pXML;
