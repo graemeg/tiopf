@@ -1046,6 +1046,26 @@ type
   ETIWebServerTestException = class(Exception)
   end;
 
+type
+  TTestExceptionThread = class(TThread)
+  public
+    constructor Create(ASuspended: boolean);
+    procedure   Execute; override;
+  end;
+
+  constructor TTestExceptionThread.Create(ASuspended: boolean);
+  begin
+    inherited;
+    FreeOnTerminate:= True;
+  end;
+
+  procedure TTestExceptionThread.Execute;
+  begin
+    Sleep(100);
+    Log('About to raise a test exception');
+    raise ETIWebServerTestException.Create('A test exception has been raised on the server at your request at ' + tiDateTimeToStr(now));
+  end;
+
 procedure TtiWebServerAction_ForceException.Execute(
   const ADocument: string;
   const ARequestInfo: TIdHTTPRequestInfo;
@@ -1056,7 +1076,9 @@ procedure TtiWebServerAction_ForceException.Execute(
   const AResponseInfo: TIdHTTPResponseInfo);
 begin
   Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
-  Raise ETIWebServerTestException.Create('A test exception has been raised on the server at your request');
+  TTestExceptionThread.Create(false);
+  tiStringToStream('<html>A test exception was raised on the server at your request at ' +
+    tiDateTimeToStr(now) + '</html>', AResponse);
 end;
 
 end.
