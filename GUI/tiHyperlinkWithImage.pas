@@ -12,6 +12,7 @@ uses
   ,ExtCtrls
   ,tiHyperLink
   ,tiHotImage
+  ,ActnList
   {$IFDEF FPC}
   ,LMessages
   {$ENDIF}
@@ -42,8 +43,8 @@ type
     procedure CMMouseLeave(var Msg: TMessage); message CM_MOUSELEAVE;
     function  GetCaption: string;
     procedure SetCaption(const AValue: string);
-    function  GetAction: TBasicAction; reintroduce;
-    procedure SetAction(const AValue: TBasicAction);
+    function  GetAction: TAction; reintroduce;
+    procedure SetAction(const AValue: TAction);
     procedure SetGlyphDisabled(const AValue: TBitmap);
     procedure SetGlyphHot(const AValue: TBitmap);
     procedure SetGlyphNormal(const AValue: TBitmap);
@@ -59,7 +60,7 @@ type
     destructor  Destroy; override;
   published
     property Caption: string read GetCaption write SetCaption;
-    property Action: TBasicAction read GetAction write SetAction;
+    property Action: TAction read GetAction write SetAction;
     property GlyphNormal: TBitmap read FGlyphNormal write SetGlyphNormal;
     property GlyphHot: TBitmap read FGlyphHot write SetGlyphHot;
     property GlyphDisabled: TBitmap read FGlyphDisabled write SetGlyphDisabled;
@@ -139,9 +140,9 @@ begin
   inherited;
 end;
 
-function TtiHyperlinkWithImage.GetAction: TBasicAction;
+function TtiHyperlinkWithImage.GetAction: TAction;
 begin
-  result:= FHL.Action;
+  result:= FHL.Action as TAction;
 end;
 
 function TtiHyperlinkWithImage.GetCaption: string;
@@ -189,10 +190,14 @@ begin
    FHL.Action.OnExecute(Self);
 end;
 
-procedure TtiHyperlinkWithImage.SetAction(const AValue: TBasicAction);
+procedure TtiHyperlinkWithImage.SetAction(const AValue: TAction);
 begin
   FImage.Action:= AValue;
   FHL.Action:= AValue;
+  if AValue <> nil then
+    FHint:= AValue.Hint
+  else
+    FHint:= '';
 end;
 
 procedure TtiHyperlinkWithImage.SetCaption(const AValue: string);
