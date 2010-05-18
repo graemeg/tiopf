@@ -118,6 +118,17 @@ type
                       const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
+  TtiWebServerAction_ForceExceptionThread = class(TtiWebServerAction)
+  public
+    function  CanExecute(const ADocument: string): boolean; override;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
+                      const AResponse: TStream; var AContentType: string;
+                      var AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
+  end;
+
   // ToDo: Not a true CGI interface, but a hack. Change this to support true CGI
   TtiWebServerAction_RunCGIExtension = class(TtiWebServerAction)
   private
@@ -285,6 +296,7 @@ begin
   FServerActions.Add(TtiWebServerAction_GetLogFile.Create(   Self,  4));
   FServerActions.Add(TtiWebServerAction_RunCGIExtension.Create(Self, 5));
   FServerActions.Add(TtiWebServerAction_ForceException.Create(Self, 6));
+  FServerActions.Add(TtiWebServerAction_ForceExceptionThread.Create(Self, 7));
   FServerActions.Add(TtiWebServerAction_CanNotFindPage.Create(Self, High(Byte)));
 
   FIdHTTPServer := TIdHTTPServer.Create(Nil);
@@ -1036,10 +1048,10 @@ end;
 
 { TtiWebServerAction_ForceException }
 
-function TtiWebServerAction_ForceException.CanExecute(
+function TtiWebServerAction_ForceExceptionThread.CanExecute(
   const ADocument: string): boolean;
 begin
-  result := SameText(ADocument, CTIDBProxyForceException);
+  result := SameText(ADocument, CTIDBProxyForceExceptionThread);
 end;
 
 type
@@ -1066,7 +1078,7 @@ type
     raise ETIWebServerTestException.Create('A test exception has been raised on the server at your request at ' + tiDateTimeToStr(now));
   end;
 
-procedure TtiWebServerAction_ForceException.Execute(
+procedure TtiWebServerAction_ForceExceptionThread.Execute(
   const ADocument: string;
   const ARequestInfo: TIdHTTPRequestInfo;
   const ARequestParams: string;
@@ -1079,6 +1091,22 @@ begin
   TTestExceptionThread.Create(false);
   tiStringToStream('<html>A test exception was raised on the server at your request at ' +
     tiDateTimeToStr(now) + '</html>', AResponse);
+end;
+
+{ TtiWebServerAction_ForceException }
+
+function TtiWebServerAction_ForceException.CanExecute(
+  const ADocument: string): boolean;
+begin
+  result := SameText(ADocument, CTIDBProxyForceException);
+end;
+
+procedure TtiWebServerAction_ForceException.Execute(const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo; const ARequestParams: string;
+  const AResponse: TStream; var AContentType: string;
+  var AResponseCode: Integer; const AResponseInfo: TIdHTTPResponseInfo);
+begin
+  raise ETIWebServerTestException.Create('A test exception has been raised on the server at your request at ' + tiDateTimeToStr(now));
 end;
 
 end.

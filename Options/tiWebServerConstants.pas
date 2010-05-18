@@ -28,6 +28,7 @@ const
 
   cgTIDBProxyGetLog          = 'log';
   CTIDBProxyForceException   = 'ForceException';
+  CTIDBProxyForceExceptionThread   = 'ForceExceptionThread';
 
   cHTTPContentTypeTextHTML = 'text/html';
   
