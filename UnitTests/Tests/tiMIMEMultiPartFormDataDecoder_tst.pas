@@ -27,6 +27,8 @@ type
     procedure MIMEiMultipartFormDataDecoder_StringValue;
     procedure MIMEiMultipartFormDataDecoder_FileName;
     procedure MIMEiMultipartFormDataDecoder_FileData;
+    procedure MIMEiMultipartFormDataDecoder_ValueExists;
+    procedure MIMEiMultipartFormDataDecoder_SaveFileDataToFile;
   end;
 
 procedure RegisterTests;
@@ -121,7 +123,17 @@ begin
 
 end;
 
+procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_SaveFileDataToFile;
+begin
+
+end;
+
 procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_StringValue;
+begin
+
+end;
+
+procedure TtiMIMEMultiPartFormDataDecoderTestCase.MIMEiMultipartFormDataDecoder_ValueExists;
 begin
 
 end;

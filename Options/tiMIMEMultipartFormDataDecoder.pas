@@ -65,8 +65,10 @@ type
     property ItemList: TtiMIMEMultipartFormDataItemList read FItemList;
     procedure Execute(const AStream: TStream);
     function  StringValue(const AFieldName: string): string;
+    function  ValueExists(const AFieldName: string): boolean;
     function  FileName(const AFieldName: string): string;
     procedure FileData(const AFieldName: string; const AData: TStream);
+    procedure SaveFileDataToFile(const AFieldName: string; const AFileName: string);
   end;
 
 implementation
@@ -150,6 +152,20 @@ begin
   end;
 end;
 
+procedure TtiMIMEMultipartFormDataDecoder.SaveFileDataToFile(const AFieldName,
+  AFileName: string);
+var
+  LStream: TMemoryStream;
+begin
+  LStream:= TMemoryStream.Create;
+  try
+    FileData(AFieldName, LStream);
+    tiStreamToFile(AFileName, LStream);
+  finally
+    LStream.Free;
+  end;
+end;
+
 function TtiMIMEMultipartFormDataDecoder.StringValue(
   const AFieldName: string): string;
 var
@@ -159,6 +175,12 @@ begin
   if LItem = nil then
     raise EtiOPFDataException.CreateFmt(CErrorCanNotFindFiledName, [AFieldName]);
   result:= LItem.DataAsString;
+end;
+
+function TtiMIMEMultipartFormDataDecoder.ValueExists(
+  const AFieldName: string): boolean;
+begin
+  result:= ItemList.Find(AFieldName) <> nil;
 end;
 
 { TtMIMEiMultipartFormDataItem }
