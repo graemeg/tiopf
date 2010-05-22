@@ -58,6 +58,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
+    property Image: TtiHotImage read FImage;
   published
     property Caption: string read GetCaption write SetCaption;
     property Action: TAction read GetAction write SetAction;
