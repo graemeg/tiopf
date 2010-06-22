@@ -47,8 +47,9 @@ ToDo:
   Well, if anybody got ideas for this section, please email them!
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *}
-{$I tiDefines.inc}
 unit tiDataset;
+
+{$I tiDefines.inc}
 
 interface
 
