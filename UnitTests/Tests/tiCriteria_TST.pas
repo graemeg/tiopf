@@ -1322,7 +1322,8 @@ begin
     lCriteria.ClearAll;
     CheckFalse(lCriteria.HasCriteria, 'Failed at 4');
     lCriteria.AddOrderBy('FIELD_1');
-    CheckFalse(lCriteria.HasCriteria, 'Failed at 5');
+    CheckFalse(lCriteria.HasCriteria, 'Failed at 5.1');
+    CheckTrue(lCriteria.HasOrderBy, 'Failed at 5.2');
 
     // group by is no longer in HasCriteria as it doesn't work yet
     lCriteria.ClearAll;
