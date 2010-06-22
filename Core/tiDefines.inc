@@ -139,10 +139,12 @@
 // If Delphi 7, turn off UNSAFE_* Warnings (just until we have fixed them all)
 // We want the platform warnings as we are working towards Linux support.
 {$IFDEF DELPHI7ORABOVE}
-  {$WARN UNSAFE_CODE OFF}
-  {$WARN UNSAFE_TYPE OFF}
-  {$WARN UNSAFE_CAST OFF}
-  {$WARN DUPLICATE_CTOR_DTOR OFF}
+  {$IFNDEF FPC}
+    {$WARN UNSAFE_CODE OFF}
+    {$WARN UNSAFE_TYPE OFF}
+    {$WARN UNSAFE_CAST OFF}
+    {$WARN DUPLICATE_CTOR_DTOR OFF}
+  {$ENDIF}
 {$ENDIF}
 
 // Turn this on if you have SynEdit installed and want colour syntax hilighting in
@@ -218,23 +220,25 @@
 
 
 {$IFDEF DELPHI6ORABOVE}
-  {$WARN SYMBOL_DEPRECATED OFF}
-  {$WARN SYMBOL_PLATFORM OFF}
-  {$WARN SYMBOL_LIBRARY OFF}
-  {$WARN UNIT_LIBRARY OFF}
-  {$WARN UNIT_PLATFORM OFF}
-  {$IFDEF DELPHI7ORABOVE}
-    {$WARN UNSAFE_TYPE OFF}
-    {$WARN UNSAFE_CODE OFF}
-    {$WARN UNSAFE_CAST OFF}
-    {$IFDEF DELPHI2007ORABOVE}
-      // Turn off warning: [DCC Warning] tiOPFCore.dpk(67):
-      //   W1029 Duplicate constructor 'TtiLogToFile.CreateWithDateInFileName'
-      //   with identical parameters will be inacessible from C++
-      // ToDo: This compiles in D2007. Check other compiler versions.
-      {$WARN DUPLICATE_CTOR_DTOR OFF}
+  {$IFNDEF FPC}
+    {$WARN SYMBOL_DEPRECATED OFF}
+    {$WARN SYMBOL_PLATFORM OFF}
+    {$WARN SYMBOL_LIBRARY OFF}
+    {$WARN UNIT_LIBRARY OFF}
+    {$WARN UNIT_PLATFORM OFF}
+    {$IFDEF DELPHI7ORABOVE}
+      {$WARN UNSAFE_TYPE OFF}
+      {$WARN UNSAFE_CODE OFF}
+      {$WARN UNSAFE_CAST OFF}
+      {$IFDEF DELPHI2007ORABOVE}
+        // Turn off warning: [DCC Warning] tiOPFCore.dpk(67):
+        //   W1029 Duplicate constructor 'TtiLogToFile.CreateWithDateInFileName'
+        //   with identical parameters will be inacessible from C++
+        // ToDo: This compiles in D2007. Check other compiler versions.
+        {$WARN DUPLICATE_CTOR_DTOR OFF}
+      {$ENDIF}
     {$ENDIF}
-  {$ENDIF}
+  {$ENDIF FPC}
 {$ENDIF}
 
 (*
