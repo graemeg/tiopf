@@ -10,7 +10,8 @@ uses
 type
 
   TPopupDisplayPosition = (
-    pdpAbove,
+    pdpCoveringAndAbove,
+    pdpCoveringAndBelow,// was pdpAbove
     pdpBelow);
 
   TFormTIPopupData = class(TForm)
@@ -48,7 +49,7 @@ type
     procedure DoaOKExecute(Sender: TObject); virtual;
     function  FormIsValid(out AMessage: string) : boolean; virtual;
     function  GetData: TtiObject;
-    procedure SetData(const AValue: TtiObject); 
+    procedure SetData(const AValue: TtiObject);
     property  FormData: TtiDataFormData read FFormData;
     procedure DoSetControlDataBindings; virtual;
   public
@@ -254,7 +255,8 @@ procedure TFormTIPopupData.SetFormPosition;
 begin
   Left := TriggeredByRect.Left;
   case FFormDisplayPosition of
-    pdpAbove: Top := TriggeredByRect.Top;
+    pdpCoveringAndAbove: Top:= TriggeredByRect.Bottom - Height;
+    pdpCoveringAndBelow: Top := TriggeredByRect.Top;
     pdpBelow: Top := TriggeredByRect.Bottom;
   end;
 end;
