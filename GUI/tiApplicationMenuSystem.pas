@@ -109,6 +109,7 @@ type
 
     FTBDockTop: TTBXDock;
     FMainMenuBar : TTBXToolbar;
+    FStatusBar: TTBXStatusBar;
 
     FLastTBXSubItem : TTBXSubmenuItem;
     FLastToolBar :    TTBXToolbar;
@@ -234,6 +235,7 @@ type
      property    DPMessageBar : TTBXDockablePanel read FdpMessageBar;
      property    DPMenuSideBar : TTBXDockablePanel read FdpMenuSidebar;
      property    TBXHelpMenu : TTBXSubmenuItem read FtbxHelpMenu;
+     property    StatusBar: TTBXStatusBar read FStatusBar;
      property    ParentPnl : TPanel read GetParentPnl;
      property    HelpAvailable: Boolean read FHelpAvailable Write FHelpAvailable;
      property    HelpFileName: string read FHelpFileName;
@@ -809,28 +811,27 @@ var
   ltbMultiDockTop: TTBXMultiDock;
   ltbDockLeft: TTBXDock;
   ltbMultiDockLeft: TTBXMultiDock;
-  ltbxStatusBar: TTBXStatusBar;
   ltbDockRight: TTBXDock;
   ltbMultiDockRight: TTBXMultiDock;
 const
   cMessagePnlHeight = 80;
 begin
 
-  ltbxStatusBar:= TTBXStatusBar.Create(FMainForm);
-  ltbxStatusBar.Parent := FMainForm;
-  ltbxStatusBar.Font.Charset := DEFAULT_CHARSET;
-  ltbxStatusBar.Font.Color := clBlack;
-  ltbxStatusBar.Font.Height := -11;
-  ltbxStatusBar.Font.Name := 'Tahoma';
-  ltbxStatusBar.Font.Style := [];
-  ltbxStatusBar.HelpContext := FDefHelpContext;
-  FStatusPanelHint := ltbxStatusBar.Panels.Add;
+  FStatusBar:= TTBXStatusBar.Create(FMainForm);
+  FStatusBar.Parent := FMainForm;
+  FStatusBar.Font.Charset := DEFAULT_CHARSET;
+  FStatusBar.Font.Color := clBlack;
+  FStatusBar.Font.Height := -11;
+  FStatusBar.Font.Name := 'Tahoma';
+  FStatusBar.Font.Style := [];
+  FStatusBar.HelpContext := FDefHelpContext;
+  FStatusPanelHint := FStatusBar.Panels.Add;
   FStatusPanelHint.Size  := 220;
-  FStatusPanelMessage:= ltbxStatusBar.Panels.Add;
+  FStatusPanelMessage:= FStatusBar.Panels.Add;
   FStatusPanelMessage.StretchPriority := 1;
-  ltbxStatusBar.ParentShowHint := False;
-  ltbxStatusBar.ShowHint := True;
-  ltbxStatusBar.UseSystemFont := True;
+  FStatusBar.ParentShowHint := False;
+  FStatusBar.ShowHint := True;
+  FStatusBar.UseSystemFont := True;
 
   FtbDockTop:= TTBXDock.Create(FMainForm);
   FtbDockTop.Parent := FMainForm;
