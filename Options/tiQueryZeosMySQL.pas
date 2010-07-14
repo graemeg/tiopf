@@ -1,3 +1,22 @@
+{
+  This persistence layer uses Zeos MySQL components.
+
+  The connection string format is in the tiOPF connection format (host:database),
+  as used by most other persistence layers.
+
+  eg:
+
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.mysql',
+        'sysdba', 'masterkey', '');
+
+    ...or with extra connection parameters...
+
+    GTIOPFManager.ConnectDatabase('192.168.0.20:E:\Databases\Test.mysql',
+        'sysdba', 'masterkey', 'charset=UTF8,role=admin');
+
+  If you specify extra connection parameters (which are optional), they
+  are in name=value pairs and seperated by a comma - as shown above.
+}
 unit tiQueryZeosMySQL;
 
 {$I tiDefines.inc}
@@ -261,10 +280,21 @@ begin
   lParams := TStringList.Create;
   try
     lParams.Assign(Params);
-    Connection.Database := DatabaseName;
+
+    if tiNumToken(DatabaseName, ':') > 1 then
+    begin
+      // Assumes tiOPF's "databasehost:databasename" format.
+      Connection.HostName := tiToken(DatabaseName, ':', 1);
+      { we can't use tiToken(x,y,2) because Windows paths contain a : after the drive letter }
+      Connection.Database := Copy(DatabaseName, Length(Connection.HostName)+2, Length(DatabaseName));
+    end
+    else
+      Connection.Database := DatabaseName;
+
     Connection.User := UserName;
     Connection.Password := Password;
 
+	// just in case the default tiOPF connection format was not used
     if lParams.Values['HOSTNAME'] <> '' then
     begin
       Connection.HostName := lParams.Values['HOSTNAME'];
