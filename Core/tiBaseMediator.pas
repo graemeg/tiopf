@@ -1337,8 +1337,9 @@ var
 begin
   CreateColumns;
   for i := 0 to Model.Count - 1 do
-    begin
+  begin
     if (not Model.Items[i].Deleted) or FShowDeleted then
+    begin
       if i < MediatorList.Count then
         TtiListItemMediator(MediatorList[i]).Model := Model.Items[i]
       else
@@ -1347,6 +1348,7 @@ begin
         LItemMediator.ListMediator := Self;
       end;
     end;
+  end;
   for i := MediatorList.Count-1 downto Model.Count do
     DoDeleteItemMediator(I,TtiListItemMediator(MediatorList[i]));
   FListChanged:=False;
