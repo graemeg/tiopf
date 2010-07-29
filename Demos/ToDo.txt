@@ -1,37 +1,45 @@
-ToDo: Object relationship demos:
 
-X DBIndependantVisitors
+  tiOPF2 Object Relationship Demos todo list
 
-X One to many
+Legend
+======
+[ ] - not started yet
+[o] - started but not complete
+[x] - completed task.
 
-X  Query with a where clause
- 
-X Inheritance - One table per concrete class
 
-  One to One
+tiOPF2 Demos
+============
+[ ] - One to One
+[ ] - Many to Many: Client Interests  (Unknown, Sport, Reading, Cooking, Gardening)
+[ ] - n dimentional (recrusive) tree of objects
+[ ] - Loading objects in 'primary key' state
+[ ] - Lookup list
+[ ] - Ordinal property
+[ ] - Threaded loading in background
+[ ] - Incremental search against sql database
+[ ] - Multi database access
+[ ] - Null support
+[ ] - Custom visitor registration
+[ ] - Which class of OID?
+[ ] - Dunit example
+[o] - Full blown application. (Address Book)
+      Demo 21 uses the MGM mediators for the UI. Most of the features are
+      already implemented. This still missing.
+        - Undo support via Memento
+        - Consistent UI behaviour between LCL, VCL and fpGUI
+          eg: Double click on grid opens edit screen.
+              Disabling of menu items when appropriate.
+              Button visual feedback (enable/disable) based on status.
+              Show required fieds in different color if it has missing data.
 
-  Many to Many: Client Interests  (Unknown, Sport, Reading, Cooking, Gardening)
 
-  n dimentional (recrusive) tree of objects
+[x] - DBIndependantVisitors
+[x] - One to many
+[x] - Query with a where clause
+[x] - Inheritance - One table per concrete class
 
-  Loading objects in 'primary key' state
 
-  Lookup list
 
-  Ordinal property
 
-  Threaded loading in background
 
-  Incremental search against sql database
-
-  Multi database access
-
-  Null support
-
-  Custom visitor registration
-
-  Which class of OID?
-
-  Dunit example
-
-  Full blown application
