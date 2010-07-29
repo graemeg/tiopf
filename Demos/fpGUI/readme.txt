@@ -9,8 +9,10 @@ using the fpGUI Toolkit and also live in the fpGUI repository.
 For more information please see the fpGUI website:
    http://opensoft.homeip.net/fpgui/
 
-tiOPF support is store in the following fpGUI repository location:
-   https://fpgui.svn.sourceforge.net/svnroot/fpgui/trunk/extras/tiopf
+tiOPF support is stored in the following fpGUI repository location:
+   git clone git://fpgui.git.sourceforge.net/gitroot/fpgui/fpgui
+
+then look in the '/extras/tiopf' directory.
 
 
 Regards,
