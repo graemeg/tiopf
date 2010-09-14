@@ -124,6 +124,7 @@ type
     procedure tiHasRTTIOnClass;
     procedure tiHasRTTIOnObject;
     procedure tiHasSubDirectory;
+    procedure tiHTMLEncode;
     procedure tiIfInteger;
     procedure tiIfReal;
     procedure tiIfString;
@@ -199,6 +200,9 @@ type
     procedure tiTrimL;
     procedure tiTrimR;
     procedure tiTrimTrailingWhiteSpace;
+    procedure tiURIDecode;
+    procedure tiURIDecodeAll;
+    procedure tiURIEncode;
     procedure tiVariantArrayToString;
     procedure tiWeekNumber;
     procedure tiWildcardMatch;
@@ -628,6 +632,36 @@ begin
 end;
 
 
+procedure TTestTIUtils.tiURIDecode;
+begin
+  CheckEquals('', tiUtils.tiURIDecode(''), '1');
+  CheckEquals(
+      '!@#$^&*()_+-={}[]|\:;"''<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 ',
+      tiUtils.tiURIDecode('!@#$^&*()_+-={}[]|\:;"''<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '),
+      '2');
+  CheckEquals('%41*#%<>+ %5A', tiUtils.tiURIDecode('%41%2A%23%25%3C%3E%2B%20%5A'), '3');
+end;
+
+procedure TTestTIUtils.tiURIDecodeAll;
+begin
+  CheckEquals('', tiUtils.tiURIDecodeAll(''), '1');
+  CheckEquals(
+      '!@#$^&*()_+-={}[]|\:;"''<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 ',
+      tiUtils.tiURIDecodeAll('!@#$^&*()_+-={}[]|\:;"''<,>.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '),
+      '2');
+  CheckEquals('A*#%<>+ Z', tiUtils.tiURIDecodeAll('%41%2A%23%25%3C%3E%2B%20%5A'), '3');
+end;
+
+procedure TTestTIUtils.tiURIEncode;
+begin
+  CheckEquals('', tiUtils.tiURIEncode(''), '1');
+  CheckEquals(
+      '!@$^&()_-={}[]|\:;"'',.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890',
+      tiUtils.tiURIEncode('!@$^&()_-={}[]|\:;"'',.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'),
+      '2');
+  CheckEquals('A%2A%23%25%3C%3E%2B%20Z', tiUtils.tiURIEncode('A*#%<>+ Z'), '3');
+end;
+
 procedure TTestTIUtils.tiGetTempFile;
 var
   i : integer;
@@ -812,8 +846,8 @@ begin
       begin
         CheckIs(e, EtiOPFFileSystemException);
         CheckExceptionMessage(CErrorSettingFileDate,
-        [lFileName, 87, SysErrorMessage(87)],
-        e);
+            [lFileName, tiUtils.tiDateTimeToStr(lDate), 87,
+             SysErrorMessage(87)], e);
       end;
     end;
     tiDeleteFile(lFileName);
@@ -1379,6 +1413,16 @@ begin
   tiDUnitForceRemoveDir(lDirRoot);
 end;
 
+
+procedure TTestTIUtils.tiHTMLEncode;
+begin
+  CheckEquals('', tiUtils.tiHTMLEncode(''), '1');
+  CheckEquals(
+      '!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 ',
+      tiUtils.tiHTMLEncode('!@#$%^*()_+-={}[]|\:;,.?/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 '),
+      '2');
+  CheckEquals('A&amp;&lt;&gt;&quot;&apos;Z', tiUtils.tiHTMLEncode('A&<>"''Z'), '3');
+end;
 
 procedure TTestTIUtils.tiStringToFile;
 var

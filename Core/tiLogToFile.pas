@@ -28,7 +28,7 @@ type
     procedure SetFileCreateAttemptInterval(const Value: integer);
     procedure SetFileCreateAttempts(const Value: integer);
   protected
-    procedure WriteToOutput; override;
+    procedure WorkingListToOutput; override;
     procedure DeleteOldFileIfRequired;
   public
     // Require param to control max size of file
@@ -238,25 +238,21 @@ begin
   FFileCreateAttempts := Value;
 end;
 
-procedure TtiLogToFile.WriteToOutput;
+procedure TtiLogToFile.WorkingListToOutput;
 var
   i: integer;
   LLine: string;
   LLineAnsi: AnsiString;
   LFileStream: TFileStream;
 begin
-  inherited WriteToOutput;
-  if ListWorking.Count = 0 then
-    Exit; //==>
-
   if GetLogFileStream(LFileStream) then
   begin
     try
       LFileStream.Seek(0, soFromEnd);
-      for i := 0 to ListWorking.Count - 1 do
+      for i := 0 to WorkingList.Count - 1 do
       begin
-        Assert(ListWorking.Items[i].TestValid(TtiLogEvent), CTIErrorInvalidObject);
-        LLine := ListWorking.Items[i].AsLeftPaddedString + #13 + #10;
+        Assert(WorkingList.Items[i].TestValid(TtiLogEvent), CTIErrorInvalidObject);
+        LLine := WorkingList.Items[i].AsLeftPaddedString + #13 + #10;
         LLineAnsi := AnsiString(LLine);
         LFileStream.Write(PAnsiChar(LLineAnsi)^, Length(LLineAnsi));
       end;
@@ -266,8 +262,6 @@ begin
   end
   else
     raise ELogToFile.CreateFmt('Logging timeout trying to access "%s"', [GetFileName]);
-
-  ListWorking.Clear;
 end;
 
 procedure TtiLogToFile.ForceLogDirectory;

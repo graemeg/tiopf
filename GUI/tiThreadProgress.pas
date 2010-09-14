@@ -682,6 +682,7 @@ end;
 
 procedure TtiThreadProgress.DoOnTerminate(sender : TObject);
 begin
+  inherited;
   gFormThreadProgress.DetachThread(self);
 end;
 

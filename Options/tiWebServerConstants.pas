@@ -10,6 +10,7 @@ const
   cDocumentToIgnore = ' HTTP/1.1';
   cDefaultPageText = '<html><h2>TechInsite Web Server - Default Page</h2></html>';
   cErrorInServerExtension = 'Error in server extension: %s '+cLineEnding+'%s';
+  cPassThroughContentFilePrefix = 'PassThroughContentFile:';
 
   cTIDBProxyServerMutex          = 'tiDBProxyServerMutex'; // So INNO setup asks the user to shutdown first
   cErrorOnServer                 = '<html><body>Error on server: %s</body></html>';
@@ -31,7 +32,8 @@ const
   CTIDBProxyForceExceptionThread   = 'ForceExceptionThread';
 
   cHTTPContentTypeTextHTML = 'text/html';
-  
+  cHTTPContentTypeApplicationZip = 'application/x-zip-compressed';
+
   cTICGIExitCodeOK                                   = 0;
   cTICGIExitCodeUnknownException                     = 2000 ;
   cTICGIExitCodeCanNotCreateCacheDirectory           = 2001 ;

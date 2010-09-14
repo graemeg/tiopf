@@ -22,7 +22,7 @@ uses
   ,tiSpin     { TSpinEdit - tiSpin.pas cloned from Borland's Spin.pas so remove package import warning}
   {$ENDIF}
   ,ComCtrls   { TTrackBar, TDateTimePicker }
-  ,ExtCtrls   { TLabeledEdit }
+  ,ExtCtrls   { TLabeledEdit, TButtonedEdit }
   ,Graphics
   ;
 
@@ -197,6 +197,15 @@ type
     class function ComponentClass: TClass; override;
   end;
 
+
+  { Base class to handle TLabeledEdit controls }
+  TtiButtonedEditMediatorView = class(TtiCustomEditMediatorView)
+  public
+    function    View: TButtonedEdit; reintroduce;
+    class function ComponentClass: TClass; override;
+  end;
+
+
 // Registering generic mediators which can handle most cases by default.
 procedure RegisterFallBackMediators;
 
@@ -235,6 +244,7 @@ begin
   gMediatorManager.RegisterMediator(TtiSpinEditMediatorView, TtiObject, [tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TtiCalendarComboMediatorView, TtiObject, [tkFloat]);
   gMediatorManager.RegisterMediator(TtiLabeledEditMediatorView, TtiObject, ctkMultiCharString + [tkInteger,tkFloat]);
+  gMediatorManager.RegisterMediator(TtiButtonedEditMediatorView, TtiObject, ctkMultiCharString + [tkInteger,tkFloat]);
 end;
 
 { TtiControlMediatorView }
@@ -848,4 +858,17 @@ begin
   result := TLabeledEdit(inherited View);
 end;
 
+{ TtiButtonedEditMediatorView }
+
+class function TtiButtonedEditMediatorView.ComponentClass: TClass;
+begin
+  Result := TButtonedEdit;
+end;
+
+function TtiButtonedEditMediatorView.View: TButtonedEdit;
+begin
+  result := TButtonedEdit(inherited View);
+end;
+
 end.
+

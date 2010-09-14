@@ -2,10 +2,9 @@ object CityListForm: TCityListForm
   Left = 252
   Top = 180
   BorderIcons = [biSystemMenu]
-  BorderStyle = bsDialog
   Caption = 'CityListForm'
-  ClientHeight = 315
-  ClientWidth = 420
+  ClientHeight = 319
+  ClientWidth = 416
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,21 +12,28 @@ object CityListForm: TCityListForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = True
+  DesignSize = (
+    416
+    319)
   PixelsPerInch = 96
   TextHeight = 13
   object GCities: TStringGrid
     Left = 8
-    Top = 40
-    Width = 392
-    Height = 224
+    Top = 39
+    Width = 400
+    Height = 241
+    Anchors = [akLeft, akTop, akRight, akBottom]
     FixedCols = 0
     TabOrder = 0
+    ExplicitWidth = 402
+    ExplicitHeight = 243
   end
   object BClose: TButton
-    Left = 325
-    Top = 280
+    Left = 333
+    Top = 286
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Caption = '&Close'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -37,10 +43,12 @@ object CityListForm: TCityListForm
     ModalResult = 1
     ParentFont = False
     TabOrder = 1
+    ExplicitLeft = 335
+    ExplicitTop = 288
   end
   object BAdd: TButton
     Left = 8
-    Top = 6
+    Top = 8
     Width = 75
     Height = 25
     Caption = '&Add'
@@ -54,8 +62,8 @@ object CityListForm: TCityListForm
     OnClick = BAddClick
   end
   object BEdit: TButton
-    Left = 92
-    Top = 6
+    Left = 89
+    Top = 8
     Width = 75
     Height = 25
     Caption = '&Edit'
@@ -69,8 +77,8 @@ object CityListForm: TCityListForm
     OnClick = BEditClick
   end
   object BDelete: TButton
-    Left = 176
-    Top = 6
+    Left = 170
+    Top = 8
     Width = 75
     Height = 25
     Caption = '&Delete'

@@ -31,6 +31,9 @@ type
     procedure miEditEditClick(Sender: TObject);
     procedure miFileExitClick(Sender: TObject);
     procedure miSystemCitiesClick(Sender: TObject);
+    procedure miEditInsertClick(Sender: TObject);
+    procedure miEditDeleteClick(Sender: TObject);
+    procedure miSystemCountriesClick(Sender: TObject);
   private
     mContactList: TContacts_ListView_Mediator;
   public
@@ -63,6 +66,11 @@ begin
   mContactList.Free;
 end;
 
+procedure TMainFrm.miEditDeleteClick(Sender: TObject);
+begin
+ //
+end;
+
 procedure TMainFrm.miEditEditClick(Sender: TObject);
 var
   c: TContact;
@@ -77,6 +85,11 @@ begin
   end;
 end;
 
+procedure TMainFrm.miEditInsertClick(Sender: TObject);
+begin
+  //
+end;
+
 procedure TMainFrm.miFileExitClick(Sender: TObject);
 begin
   Close;
@@ -85,6 +98,11 @@ end;
 procedure TMainFrm.miSystemCitiesClick(Sender: TObject);
 begin
   TCityListFrm.ShowCities;
+end;
+
+procedure TMainFrm.miSystemCountriesClick(Sender: TObject);
+begin
+  //
 end;
 
 {$IFDEF FPC}

@@ -38,21 +38,21 @@ type
   // Log to an error form
   TLogToError = class(TtiLogToCacheAbs)
   private
-    FForm             : TLogErrorForm;
+    FForm: TLogErrorForm;
 
-    procedure ShowError;
+    procedure   ShowError;
   protected
-    function  AcceptEvent(const ADateTime : string;
-                           const AMessage : string;
-                           ASeverity : TtiLogSeverity): boolean; override;
-    procedure   WriteToOutput; override;
+    function    AcceptEvent(const ADateTime : string;
+                            const AMessage : string;
+                            ASeverity : TtiLogSeverity): boolean; override;
+    procedure   WorkingListToOutput; override;
   public
     constructor Create; override;
     destructor  Destroy; override;
     procedure   Log(const ADateTime : string;
-                     const AThreadID : string;
-                     const AMessage : string;
-                     ASeverity : TtiLogSeverity); override;
+                    const AThreadID : string;
+                    const AMessage : string;
+                    ASeverity : TtiLogSeverity); override;
   end;
 
 implementation
@@ -66,8 +66,6 @@ uses
 
 var
   lLog : TtiLogToFile;
-
-
 
 {$IFNDEF FPC}
   {$R *.dfm}
@@ -129,7 +127,6 @@ begin
   Close;
 end;
 
-
 constructor TLogToError.Create;
 begin
   // GUI output must be synchronized with the main thread.
@@ -151,17 +148,9 @@ begin
   result := (ASeverity = lsError);
 end;
 
-
-
-procedure TLogToError.WriteToOutput;
+procedure TLogToError.WorkingListToOutput;
 begin
-  inherited WriteToOutput;
-
-  if ListWorking.Count = 0 then
-    Exit; //==>
-
   ThrdLog.tiSynchronize(ShowError);
-
 end;
 
 procedure TLogToError.ShowError;
@@ -170,22 +159,20 @@ var
   lLogEvent : TtiLogEvent;
   lsMessage : string;
 begin
-
   if FForm.MemoLog.Lines.Count > 0 then begin
     FForm.MemoLog.Lines.Add('');
     FForm.MemoLog.Lines.Add('* * * * * * * * * * * * * * * * * * * * *');
     FForm.MemoLog.Lines.Add('');
   end;
 
-  for i := 0 to ListWorking.Count - 1 do begin
-    lLogEvent := TtiLogEvent(ListWorking.Items[i]);
+  for i := 0 to WorkingList.Count - 1 do begin
+    lLogEvent := TtiLogEvent(WorkingList.Items[i]);
     FForm.MemoLog.Lines.Add('An error occurred at: ' + lLogEvent.DateTime);
     FForm.MemoLog.Lines.Add('');
     lsMessage := tiStrTran(lLogEvent.LogMessage, #10, '');
     lsMessage := tiStrTran(lsMessage, #13, #13+#10);
     FForm.MemoLog.Lines.Add(lsMessage);
   end;
-  ListWorking.Clear;
 
   FForm.MemoLog.Selstart := 0;
   {$IFNDEF FPC}
@@ -198,7 +185,6 @@ begin
     FForm.Visible    := true;
     FForm.OKButton.SetFocus;
   end;
-
 end;
 
 

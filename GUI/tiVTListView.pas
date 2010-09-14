@@ -2421,6 +2421,9 @@ var
   LExistingSortOrder: boolean;
 
 begin
+  if AHitInfo.Column = NoColumn then
+    Exit; //==>
+
   LColumn := Header.Columns[AHitInfo.Column];
 
   if HeaderClickSorting {and (not LColumn.Derived) }and (AHitInfo.Button = mbLeft)then

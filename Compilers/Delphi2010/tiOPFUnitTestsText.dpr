@@ -1,6 +1,12 @@
 program tiOPFUnitTestsText;
 {$APPTYPE CONSOLE}
+
+{$I DUnit.inc}
+
 uses
+{$IFDEF FASTMM}
+  FastMM4,
+{$ENDIF}
   SysUtils,
   TestFrameWork,
   TextTestRunner,

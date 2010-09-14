@@ -22,7 +22,9 @@ type
     procedure DecompressBuffer(const AFrom: Pointer ; const AFromSize : Integer;
                                 out   ATo:   Pointer ; out   AToSize  : Integer); override;
     function  CompressString(  const AFrom : string; var ATo : string)  : Extended; override;
+    function  CompressString(  const AFrom : AnsiString; var ATo : AnsiString)  : Extended; override;
     procedure DecompressString(const AFrom : string; var ATo : string)  ; override;
+    procedure DecompressString(const AFrom : AnsiString; var ATo : AnsiString)  ; override;
     function  CompressFile(    const AFrom : string; const ATo : string): Extended; override;
     procedure DecompressFile(  const AFrom : string; const ATo : string); override;
   end;
@@ -76,6 +78,15 @@ end;
 // Compress a string
 function TtiCompressNone.CompressString(const AFrom: string;
   var ATo: string): Extended;
+begin
+  ATo := AFrom;
+  result := 100;
+end;
+
+
+// Compress a string
+function TtiCompressNone.CompressString(const AFrom: AnsiString;
+  var ATo: AnsiString): Extended;
 begin
   ATo := AFrom;
   result := 100;
@@ -148,9 +159,18 @@ begin
 end;
 
 
+// Decompress a string
+procedure TtiCompressNone.DecompressString(const AFrom: AnsiString;
+  var ATo: AnsiString);
+begin
+  ATo := AFrom;
+end;
+
+
 initialization
   // Register the TtiCompress with the CompressFactory
   gCompressFactory.RegisterClass(cgsCompressNone, TtiCompressNone);
   gtiCompressClass := TtiCompressNone;
 
 end.
+

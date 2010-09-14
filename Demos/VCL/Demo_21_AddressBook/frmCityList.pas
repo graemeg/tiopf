@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
-  model, tiModelMediator, ExtCtrls, Grids, StdCtrls;
+  ExtCtrls, Grids, StdCtrls, model, tiModelMediator;
 
 type
 
@@ -36,8 +36,11 @@ implementation
 {$R *.dfm}
 
 uses
-  tiBaseMediator,contactmanager,tiListMediators, frmEditCity;
-
+   tiBaseMediator
+  ,contactmanager
+  ,tiListMediators
+  ,frmEditCity
+  ;
 
 procedure ShowCities(const AList: TCityList);
 var
@@ -52,55 +55,7 @@ begin
   end;
 end;
 
-
 { TCityListForm }
-
-procedure TCityListForm.BEditClick(Sender: TObject);
-
-var
-  c: TCity;
-
-begin
-  c := TCity(TtiStringGridMediatorView(FMediator.FindByComponent(gCities).Mediator).SelectedObject);
-  if Assigned(c) then
-    if EditCity(c) then
-    begin
-      // we can save city here
-    end;
-end;
-
-procedure TCityListForm.BAddClick(Sender: TObject);
-
-var
-  c: TCity;
-
-begin
-  C:=TCity.Create;
-  if EditCity(c) then
-    begin
-    // we can save country here
-    gContactManager.CityList.Add(C);
-    end
-  else
-    c.Free;
-end;
-
-procedure TCityListForm.BDeleteClick(Sender: TObject);
-
-var
-  c: TCity;
-  M : TtiMediatorView;
-
-begin
-  M:=FMediator.FindByComponent(gCities).Mediator;
-  c := TCity(TtiStringGridMediatorView(M).SelectedObject);
-  if Assigned(c) then
-    begin
-    gContactManager.CityList.Extract(c);
-    M.ObjectToGui;
-    C.Deleted:=True;
-    end;
-end;
 
 procedure TCityListForm.SetData(const AValue: TCityList);
 begin
@@ -119,4 +74,43 @@ begin
   FMediator.Active := True;
 end;
 
+procedure TCityListForm.BAddClick(Sender: TObject);
+var
+  c: TCity;
+begin
+  C:=TCity.Create;
+  if EditCity(c) then
+    gContactManager.CityList.Add(C)
+  else
+    c.Free;
+end;
+
+procedure TCityListForm.BEditClick(Sender: TObject);
+var
+  c: TCity;
+begin
+  c := TCity(TtiStringGridMediatorView(FMediator.FindByComponent(gCities).Mediator).SelectedObject);
+  if Assigned(c) then
+    if EditCity(c) then
+    begin
+      // we can save here
+    end;
+end;
+
+procedure TCityListForm.BDeleteClick(Sender: TObject);
+var
+  c: TCity;
+  M : TtiMediatorView;
+begin
+  M:=FMediator.FindByComponent(gCities).Mediator;
+  c := TCity(TtiStringGridMediatorView(M).SelectedObject);
+  if Assigned(c) then
+  begin
+    gContactManager.CityList.Extract(c);
+    M.ObjectToGui;
+    C.Deleted:=True;
+  end;
+end;
+
 end.
+

@@ -117,11 +117,11 @@ type
   private
     FList: TObjectList;
     function GetItems(AIndex: Integer): TtiLogEvent;
+    function    Extract(const AItem: TtiLogEvent): TtiLogEvent;
   public
     constructor Create;
     destructor  Destroy; override;
     procedure   Add(AItem: TtiLogEvent);
-    function    Extract(const AItem: TtiLogEvent): TtiLogEvent;
     property    Items[AIndex: Integer]: TtiLogEvent Read GetItems;
     function    Count: Integer;
     procedure   Clear;
@@ -158,23 +158,24 @@ type
   TtiLogToList = class(TtiLogToAbs)
   private
     FEvents: TtiLogEvents;
-    FCritSect: TCriticalSection;
+    FEventsCritSect: TCriticalSection;
     function GetItems(AIndex: Integer): TtiLogEvent;
     function GetAsString: string;
+    function Extract(const AItem: TtiLogEvent): TtiLogEvent;
   protected
     procedure WriteToOutput; override;
-    property CritSect: TCriticalSection read FCritSect;
+    property EventsCritSect: TCriticalSection read FEventsCritSect;
   public
     constructor Create; override;
     destructor Destroy; override;
     procedure Log(const ADateTime: string; const AThreadID: string;
         const AMessage: string; ASeverity: TtiLogSeverity); override;
-    function Extract(const AItem: TtiLogEvent): TtiLogEvent;
     procedure Clear; virtual;
     procedure Purge; override;
     property Items[AIndex: Integer]: TtiLogEvent Read GetItems;
     property AsString: string read GetAsString;
     function Count: Integer;
+    function ErrorMessage(out AMessage: string): TtiLogSeverity;
   end;
 
 
@@ -201,17 +202,24 @@ type
   // Abstract base class to manage cached logging
   TtiLogToCacheAbs = class(TtiLogToList)
   private
-    FListWorking: TtiLogEvents;
+    FWorkingList: TtiLogEvents;
+    FWorkingListCritSect: TCriticalSection;
     FThrdLog: TtiThrdLog;
     FSynchronized: Boolean;
     FEnableCaching: boolean;
     procedure Init(const ASynchronized: Boolean);  // Called by all constructors.
     procedure SetEnableCaching(const AValue: boolean);
   protected
+    // Separate critical section for working list for output to allow
+    // output and more logging at the same time.
+    property  WorkingListCritSect: TCriticalSection read FWorkingListCritSect;
     property  ThrdLog: TtiThrdLog read FThrdLog;
-    property  ListWorking: TtiLogEvents read FListWorking;
+    property  WorkingList: TtiLogEvents read FWorkingList;
     procedure WriteToOutputSynchronized; override;
-    procedure WriteToOutput; override;
+    procedure WriteToOutput; override; // NOTE: Perform actual output in WorkingListToOutput
+    // NOTE: If you need to do anything in WorkingListToOutput that accesses
+    // the source event list (Items[], Count, Clear) you must lock EventsCritSect.
+    procedure WorkingListToOutput; virtual; abstract; // NOTE: Perform actual output here
   public
     // NOTE: Descendants need to call one of the following inherited constructors
     // depending on whether they need log output synchronized with the main thread.
@@ -239,7 +247,6 @@ type
     FCritSect: TCriticalSection;
     FLogLevel: TtiLogLevel;
     procedure SetSevToLog(const AValue: TtiSevToLog);
-    function  IsRegistered(const ALogToClass : TtiLogToClass): boolean;
     procedure SetLogLevel(const Value: TtiLogLevel);
     function  GetSevToLogAsString: string;
     procedure SetSevToLogAsString(const AValue: string);
@@ -248,6 +255,7 @@ type
     destructor  Destroy; override;
     procedure   RegisterLog(ALogTo : TtiLogToAbs); overload;
     procedure   RegisterLog(ALogTo : TtiLogToClass); overload;
+    function    IsRegistered(const ALogToClass : TtiLogToClass): boolean;
     function    FindByLogClass(ALogToClass : TtiLogToClass): TtiLogToAbs;
     procedure   Log(const AMessage : string;
                      const ASeverity : TtiLogSeverity = lsNormal); overload;
@@ -257,6 +265,8 @@ type
     property    SevToLog : TtiSevToLog read FSevToLog write SetSevToLog;
     property    SevToLogAsString: string read GetSevToLogAsString write SetSevToLogAsString;
     property    LogLevel: TtiLogLevel read FLogLevel write SetLogLevel;
+    // Note: If there is more than one TtiLogToFile registered we return the
+    // filename of the first.
     function    LogToFileName: string;
     procedure   Purge;
   end;
@@ -352,6 +362,12 @@ const
                    ,lsSQL
               ];
 
+  cErrorListStart = 'The following %s were encountered:<br><ul>';
+  cErrorsOnly = 'errors';
+  cWarningsOnly = 'warnings';
+  cErrorsAndWarnings = 'errors and warnings';
+  cErrorListItem = '<li>[<i>%s</i>] %s</li>';
+  cErrorListEnd = '</ul>';
 
 // The log is a singleton
 function GLog : TtiLog;
@@ -823,14 +839,14 @@ constructor TtiLogToList.Create;
 begin
   inherited;
   FEvents := TtiLogEvents.Create;
-  FCritSect := TCriticalSection.Create;
+  FEventsCritSect := TCriticalSection.Create;
 end;
 
 
 destructor TtiLogToList.Destroy;
 begin
   FEvents.Free;
-  FCritSect.Free;
+  FEventsCritSect.Free;
   inherited;
 end;
 
@@ -840,15 +856,64 @@ begin
   result := FEvents.Count;
 end;
 
+function TtiLogToList.ErrorMessage(
+  out AMessage: string): TtiLogSeverity;
+var
+  i: integer;
+  LWarningCount: Integer;
+  LErrorCount: Integer;
+  LErrorListStart: string;
+begin
+  Result := lsNormal;
+  AMessage := '';
+  EventsCritSect.Enter;
+  try
+    if Count > 0 then
+    begin
+      LWarningCount := 0;
+      LErrorCount := 0;
+      for i := 0 to Count - 1 do
+      begin
+        if Items[i].Severity = lsWarning then
+          Inc(LWarningCount);
+        if Items[i].Severity = lsError then
+          Inc(LErrorCount);
+      end;
 
+      if (LWarningCount = 0) and (LErrorCount > 0) then
+        LErrorListStart := Format(cErrorListStart, [cErrorsOnly])
+      else if (LWarningCount > 0) and (LErrorCount = 0) then
+        LErrorListStart := Format(cErrorListStart, [cWarningsOnly])
+      else if (LWarningCount > 0) and (LErrorCount > 0) then
+        LErrorListStart := Format(cErrorListStart, [cErrorsAndWarnings]);
+
+      AMessage := LErrorListStart;
+      for i := 0 to Count - 1 do
+      begin
+        if Result <> lsError then
+          Result := Items[i].Severity;
+        AMessage := AMessage + Format(cErrorListItem,
+            [Items[i].SeverityAsGUIString, Items[i].LogMessage]);
+      end;
+      AMessage := AMessage + cErrorListEnd;
+    end;
+  finally
+    EventsCritSect.Leave;
+  end;
+end;
 
 function TtiLogToList.GetAsString: string;
 var
   i: Integer;
 begin
   result := '';
-  for i := 0 to Count - 1 do
-    result := result + Format('[%s] %s', [Items[i].SeverityAsString, Items[i].LogMessage]);
+  EventsCritSect.Enter;
+  try
+    for i := 0 to Count - 1 do
+      result := result + Format('[%s] %s', [Items[i].SeverityAsString, Items[i].LogMessage]);
+  finally
+    EventsCritSect.Leave;
+  end;
 end;
 
 
@@ -866,11 +931,11 @@ end;
 
 procedure TtiLogToList.Clear;
 begin
-  CritSect.Enter;
+  EventsCritSect.Enter;
   try
     FEvents.Clear;
   finally
-    CritSect.Leave;
+    EventsCritSect.Leave;
   end;
 end;
 
@@ -883,7 +948,7 @@ begin
   if not AcceptEvent(ADateTime, AMessage, ASeverity) then
     Exit; //==>
 
-  CritSect.Enter;
+  EventsCritSect.Enter;
   try
     lLogEvent := TtiLogEvent.Create;
     lLogEvent.DateTime := ADateTime;
@@ -892,7 +957,7 @@ begin
     lLogEvent.ThreadID := AThreadID;
     FEvents.Add(lLogEvent);
   finally
-    CritSect.Leave;
+    EventsCritSect.Leave;
   end;
 end;
 
@@ -916,7 +981,7 @@ const
   CSynchronized = false;
 begin
   inherited Create;
-  FEnableCaching:= true;
+  FEnableCaching := true;
   Init(CSynchronized);
 end;
 
@@ -934,7 +999,8 @@ end;
 // Call from all constructors.
 procedure TtiLogToCacheAbs.Init(const ASynchronized: Boolean);
 begin
-  FListWorking := TtiLogEvents.Create;
+  FWorkingListCritSect := TCriticalSection.Create;
+  FWorkingList := TtiLogEvents.Create;
   FThrdLog     := TtiThrdLog.CreateExt(self); // Must call FThrdLog.Start in the descandant classes
   FSynchronized := ASynchronized;
 end;
@@ -944,7 +1010,8 @@ destructor TtiLogToCacheAbs.Destroy;
 begin
   Terminate;
   FThrdLog.Free;
-  FListWorking.Free;
+  FWorkingList.Free;
+  FWorkingListCritSect.Free;
   inherited;
 end;
 
@@ -988,14 +1055,41 @@ end;
 
 
 procedure TtiLogToCacheAbs.WriteToOutput;
+var
+  LItem: TtiLogEvent;
 begin
-  CritSect.Enter;
+  // Move the events to a working list to output them without stalling new
+  // log entries.
+  WorkingListCritSect.Enter;
   try
-    while Count > 0 do
-      FListWorking.Add(Extract(Items[0]));
-    Clear;
+    EventsCritSect.Enter;
+    try
+      while Count > 0 do
+      begin
+        LItem:= Items[0];
+        Assert(LItem.TestValid, CTIErrorInvalidObject);
+        Extract(LItem);
+        FWorkingList.Add(LItem);
+      end;
+    finally
+      EventsCritSect.Leave;
+    end;
   finally
-    CritSect.Leave;
+    WorkingListCritSect.Leave;
+  end;
+
+  // Write out the events from the working list.
+  WorkingListCritSect.Enter;
+  try
+    if WorkingList.Count > 0 then
+    begin
+      // NOTE: If you need to do anything in WorkingListToOutput that accesses
+      // the source event list (Items[], Count, Clear) you must lock EventsCritSect.
+      WorkingListToOutput;
+      WorkingList.Clear;
+    end;
+  finally
+    WorkingListCritSect.Leave;
   end;
 end;
 
@@ -1153,6 +1247,8 @@ function TtiLog.LogToFileName: string;
 var
   LLogTo: TtiLogToFile;
 begin
+  // Note: If there is more than one TtiLogToFile registered we return the
+  // filename of the first.
   LLogTo:= FindByLogClass(TtiLogToFile) as TtiLogToFile;
   if LLogTo <> nil then
     Result:= LLogTo.FileName
@@ -1177,16 +1273,6 @@ end;
 procedure TtiLog.RegisterLog(ALogTo : TtiLogToAbs);
 begin
   Assert(ALogTo.TestValid, CTIErrorInvalidObject);
-  // It would be nice to be able to have multiple instances of the same LogTo
-  // class, such as two TtiLogToFile, one main one logging to some admin
-  // area for critical errors and another temporarily used for debugging such
-  // that you can add the second without disturbing the first.
-  // What to do with TtiLog.LogToFileName?
-  if IsRegistered(TtiLogToClass(ALogTo.ClassType)) then
-  begin
-    ALogTo.Free;
-    Exit; //==>
-  end;
   FCritSect.Enter;
   try
     FLogToList.Add(ALogTo);
@@ -1220,6 +1306,7 @@ end;
 
 procedure TtiLogEvents.Add(AItem: TtiLogEvent);
 begin
+  Assert(AItem.TestValid, CTIErrorInvalidObject);
   FList.Add(AItem);
 end;
 

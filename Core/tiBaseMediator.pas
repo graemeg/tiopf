@@ -1006,6 +1006,16 @@ begin
     Result:=FPropName;
 end;
 
+// Field definitions:
+// New style:
+//   PropertyName|Alignment|FieldWidth|Caption
+//   Alignment is l (left), r (right), c (center)
+//   e.g. FirstName|r|100|First Name
+// or old style:
+//   PropertyName(FieldWidth,"Caption",Alignment)
+//   Alignment is < (left), > (right), | (center)
+//   e.g. FirstName(100,"First Name",>)
+
 function TtiMediatorFieldInfo.GetAsString: string;
 begin
   if FOrigStyle then

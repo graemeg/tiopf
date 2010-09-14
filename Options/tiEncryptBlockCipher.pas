@@ -246,20 +246,17 @@ end;
 
 function TtiEncryptBlockCipher.EncryptString(const psData: string): string;
 var
-  LsData: AnsiString;
-  LResult: AnsiString;
   lPS, lPD: PInt64;
   lSource: Int64;
   I: Integer;
   lNumBlocks: Longint;
   lNumPadBytes: Byte;
 begin
-  LsData := AnsiString(psData);
-  lNumBlocks := Length(LsData) div SizeOf(Int64);
-  lNumPadBytes := SizeOf(Int64) - Length(LsData) mod SizeOf(Int64);
-  SetLength(LResult, Succ(lNumBlocks) * SizeOf(Int64));
-  lPS := Pointer(LsData);
-  lPD := Pointer(LResult);
+  lNumBlocks := (Length(psData) * SizeOf(Char)) div SizeOf(Int64);
+  lNumPadBytes := SizeOf(Int64) - (Length(psData) * SizeOf(Char)) mod SizeOf(Int64);
+  SetLength(Result, (Succ(lNumBlocks) * SizeOf(Int64)) div SizeOf(Char));
+  lPS := Pointer(psData);
+  lPD := Pointer(Result);
   for I := 1 to lNumBlocks do begin
     lPD^:= EncryptedBlock(lPS^);
     Inc(lPS);
@@ -279,21 +276,18 @@ begin
   }
   Move(lPS^, lSource, SizeOf(Int64) - lNumPadBytes);
   lPD^:= EncryptedBlock(lSource);
-  Result := string(LResult);
 end;
 
 function TtiEncryptBlockCipher.DecryptString(const psData: string): string;
 var
-  LsData: AnsiString;
-  LResult: AnsiString;
   lDest: Int64;
   lPS, lPD: PInt64;
   I: Integer;
   lNumCiphertextBytes: Longint;
+  lNumContentBytes: Longint;
   lNumPadBytes: Byte;
 begin
-  LsData := AnsiString(psData);
-  lNumCiphertextBytes := Length(LsData);
+  lNumCiphertextBytes := Length(psData) * SizeOf(Char);
   if (lNumCiphertextBytes = 0) or
      (lNumCiphertextBytes mod SizeOf(Int64) <> 0) then
   begin
@@ -301,22 +295,22 @@ begin
                               [SizeOf(Int64)]);
   end;
   { Decrypt last block first. This tells us how many padding bytes there are. }
-  lPS := Pointer(LsData);
+  lPS := Pointer(psData);
   Inc(lPS, Pred(lNumCiphertextBytes div SizeOf(Int64)));
   lDest := DecryptedBlock(lPS^);
   lNumPadBytes := TFourByte(TDoubleDWORD(lDest).R).B4;
-  SetLength(LResult, lNumCiphertextBytes - lNumPadBytes);
+  lNumContentBytes := lNumCiphertextBytes - lNumPadBytes;
+  SetLength(Result, lNumContentBytes div SizeOf(Char));
   { From the last block, move only the non-padding bytes to the end of LResult. }
-  Move(lDest, LResult[lNumCiphertextBytes - SizeOf(Int64) + 1],
+  Move(lDest, Result[((lNumCiphertextBytes - SizeOf(Int64)) div SizeOf(Char)) + 1],
        SizeOf(Int64) - lNumPadBytes);
-  lPS := Pointer(LsData);
-  lPD := Pointer(LResult);
-  for I := 1 to Length(LResult) div SizeOf(Int64) do begin
+  lPS := Pointer(psData);
+  lPD := Pointer(Result);
+  for I := 1 to lNumContentBytes div SizeOf(Int64) do begin
     lPD^:= DecryptedBlock(lPS^);
     Inc(lPS);
     Inc(lPD);
   end;
-  Result := string(LResult);
 end;
 
 

@@ -1,6 +1,7 @@
 unit tiTextTestRunner;
 
 {$I tiDefines.inc}
+{$I DUnit.inc}
 
 interface
 uses
@@ -65,18 +66,6 @@ type
 function  tiRunTest(suite: ITest; exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult; overload;
 function  RunRegisteredTests(exitBehavior: TRunnerExitBehavior = rxbContinue): TTestResult; overload;
 procedure WriteEmptyLogs(AExitBehavior: TRunnerExitBehavior);
-
-// ToDo: We must be able to do better than this...
-{$UNDEF XMLLISTENER}
-{$IFNDEF VER130}
-  {$IFNDEF VER140}
-    {$IFNDEF CLR}
-      {$IFNDEF VER210}
-        {$DEFINE XMLLISTENER}
-      {$ENDIF}
-    {$ENDIF}
-  {$ENDIF}
-{$ENDIF}
 
 implementation
 uses

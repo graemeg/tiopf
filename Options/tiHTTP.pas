@@ -29,6 +29,8 @@ const
   ctiOPFHTTPBlockDelim = '/';
   ctiOPDHTTPNullBlockSize = 0;
   ctiOPFHTTPErrorCode= 'tiOPFErrorCode';
+  ctiOPFHTTPPassThroughHeader = 'tiOPFPassThrough';
+  ctiOPFHTTPIsPassThroughContent = 'true';
 
   CErrorHTTPRetryLimiteExceded = '%s (After %d attempts)';
 

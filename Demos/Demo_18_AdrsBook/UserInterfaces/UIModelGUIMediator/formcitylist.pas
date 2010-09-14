@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, {$IFDEF FPC}LResources,{$ENDIF} Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  Buttons, ComCtrls, views;
+  Buttons, ComCtrls, views, StdCtrls;
 
 type
   TCityListFrm = class(TForm)

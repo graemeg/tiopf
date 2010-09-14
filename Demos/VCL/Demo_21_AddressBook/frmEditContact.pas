@@ -15,7 +15,7 @@ type
     BCancel: TButton;
     Button2: TButton;
     BEdit: TButton;
-    BSave: TButton;
+    BOK: TButton;
     EFirstName: TEdit;
     ELastName: TEdit;
     EEmail: TEdit;
@@ -33,6 +33,7 @@ type
     procedure BDeleteClick(Sender: TObject);
     procedure BEditClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure BAddClick(Sender: TObject);
   private
     FData: TContact;
     FMediator: TtiModelMediator;
@@ -48,18 +49,17 @@ type
 
 function EditContact(AData: TContact): Boolean;
 
-
 var
   ContactEditForm: TContactEditForm;
-
 
 implementation
 
 {$R *.dfm}
 
 uses
-  frmEditAddress;
-
+   frmEditAddress
+  ,contactmanager
+  ;
 
 function EditContact(AData: TContact): Boolean;
 var
@@ -80,29 +80,7 @@ begin
   end;
 end;
 
-
 { TContactEditForm }
-
-procedure TContactEditForm.BEditClick(Sender: TObject);
-Var
-  A: TAddress;
-begin
-  A := TAddress(TtiListViewMediatorView(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
-  if Assigned(A) then
-    if EditAddress(A) then
-    begin
-      // do nothing
-    end;
-end;
-
-procedure TContactEditForm.BDeleteClick(Sender: TObject);
-Var
-  A : TAddress;
-begin
-  A := TAddress(TtiListViewMediatorView(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
-  if Assigned(A) then
-    A.Deleted:=True;
-end;
 
 procedure TContactEditForm.SetData(const AValue: TContact);
 begin
@@ -133,10 +111,10 @@ begin
     FAdrsMediator := TtiModelMediator.Create(self);
     FAdrsMediator.AddComposite({'AddressType.Name;}'AddressType4GUI(50,"Type");Nr;Street;Telephone1', lvAddresses);
   end;
+
   FAdrsMediator.Subject := FData.AddressList;
   FAdrsMediator.Active := True;
 end;
-
 
 procedure TContactEditForm.FormDestroy(Sender: TObject);
 begin
@@ -144,4 +122,39 @@ begin
   FMediator.Active := False;
 end;
 
+procedure TContactEditForm.BAddClick(Sender: TObject);
+var
+  A: TAddress;
+begin
+  A:=TAddress.CreateNew;
+  A.AddressType := gContactManager.AddressTypeList.Items[0];
+  A.City := gContactManager.CityList.Items[0];
+  if EditAddress(A) then
+    FData.AddressList.Add(A)
+  else
+    A.Free;
+end;
+
+procedure TContactEditForm.BEditClick(Sender: TObject);
+var
+  A: TAddress;
+begin
+  A := TAddress(TtiListViewMediatorView(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
+  if Assigned(A) then
+    if EditAddress(A) then
+    begin
+      // do nothing
+    end;
+end;
+
+procedure TContactEditForm.BDeleteClick(Sender: TObject);
+var
+  A : TAddress;
+begin
+  A := TAddress(TtiListViewMediatorView(FAdrsMediator.FindByComponent(lvAddresses).Mediator).SelectedObject);
+  if Assigned(A) then
+    A.Deleted:=True;
+end;
+
 end.
+

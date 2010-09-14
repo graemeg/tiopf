@@ -1,9 +1,10 @@
 object EditCityForm: TEditCityForm
   Left = 265
   Top = 210
-  Width = 373
-  Height = 222
+  BorderStyle = bsSingle
   Caption = 'Edit city'
+  ClientHeight = 201
+  ClientWidth = 265
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,10 +12,13 @@ object EditCityForm: TEditCityForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = True
+  DesignSize = (
+    265
+    201)
   PixelsPerInch = 96
   TextHeight = 16
   object LEName: TLabel
-    Left = 11
+    Left = 8
     Top = 8
     Width = 59
     Height = 16
@@ -30,7 +34,7 @@ object EditCityForm: TEditCityForm
     ParentFont = False
   end
   object Label2: TLabel
-    Left = 11
+    Left = 8
     Top = 59
     Width = 53
     Height = 16
@@ -46,8 +50,8 @@ object EditCityForm: TEditCityForm
     ParentFont = False
   end
   object LCBCountry: TLabel
-    Left = 11
-    Top = 107
+    Left = 8
+    Top = 110
     Width = 45
     Height = 16
     Caption = 'Co&untry'
@@ -62,8 +66,8 @@ object EditCityForm: TEditCityForm
     ParentFont = False
   end
   object EName: TEdit
-    Left = 11
-    Top = 27
+    Left = 8
+    Top = 30
     Width = 247
     Height = 23
     AutoSelect = False
@@ -79,8 +83,8 @@ object EditCityForm: TEditCityForm
     Text = 'EName'
   end
   object EZip: TEdit
-    Left = 11
-    Top = 78
+    Left = 8
+    Top = 81
     Width = 80
     Height = 23
     AutoSelect = False
@@ -96,8 +100,8 @@ object EditCityForm: TEditCityForm
     Text = 'EZip'
   end
   object CBCountry: TComboBox
-    Left = 11
-    Top = 126
+    Left = 8
+    Top = 132
     Width = 247
     Height = 24
     AutoComplete = False
@@ -107,19 +111,19 @@ object EditCityForm: TEditCityForm
     Font.Height = 0
     Font.Name = 'MS Sans Serif'
     Font.Style = []
-    ItemHeight = 16
     MaxLength = 65535
     ParentCtl3D = False
     ParentFont = False
     TabOrder = 2
     Text = 'CBCountry'
   end
-  object BSave: TButton
-    Left = 204
-    Top = 164
+  object BOK: TButton
+    Left = 101
+    Top = 168
     Width = 75
     Height = 25
-    Caption = 'Sa&ve'
+    Anchors = [akRight, akBottom]
+    Caption = '&OK'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = 0
@@ -130,10 +134,11 @@ object EditCityForm: TEditCityForm
     TabOrder = 3
   end
   object BCancel: TButton
-    Left = 284
-    Top = 164
+    Left = 182
+    Top = 168
     Width = 75
     Height = 25
+    Anchors = [akRight, akBottom]
     Caption = '&Cancel'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

@@ -29,7 +29,7 @@ const
 type
   PServiceDescriptionA = ^TServiceDescriptionA;
   PServiceDescriptionW = ^TServiceDescriptionW;
-  PServiceDescription = ^TServiceDescriptionA;
+  PServiceDescription = ^TServiceDescriptionW;
   _SERVICE_DESCRIPTIONA = record
     lpDescription: PChar;
   end;
@@ -67,7 +67,7 @@ type
 
   PServiceFailureActionsA = ^TServiceFailureActionsA;
   PServiceFailureActionsW = ^TServiceFailureActionsW;
-  PServiceFailureActions = ^TServiceFailureActionsA;
+  PServiceFailureActions = ^TServiceFailureActionsW;
   _SERVICE_FAILURE_ACTIONSA = record
     dwResetPeriod: DWORD;
     lpRebootMsg: PChar;
@@ -92,7 +92,7 @@ type
   {$EXTERNALSYM SERVICE_FAILURE_ACTIONSW}
   TServiceFailureActionsA = _SERVICE_FAILURE_ACTIONSA;
   TServiceFailureActionsW = _SERVICE_FAILURE_ACTIONSW;
-  TServiceFailureActions = TServiceFailureActionsA;
+  TServiceFailureActions = TServiceFailureActionsW;
 
   TChangeServiceConfig2 = function (hService: SC_HANDLE; dwInfoLevel: DWORD; lpInfo: Pointer): BOOL; stdcall;
 
@@ -124,7 +124,7 @@ begin
   AdvapiHandle := GetModuleHandle(advapi32);
   if AdvapiHandle <> 0 then
   begin
-    @_ChangeServiceConfig2 := GetProcAddress(AdvapiHandle, 'ChangeServiceConfig2A');
+    @_ChangeServiceConfig2 := GetProcAddress(AdvapiHandle, 'ChangeServiceConfig2W');
     if Assigned(_ChangeServiceConfig2) then
       Result := _ChangeServiceConfig2(hService, dwInfoLevel, lpInfo);
   end;

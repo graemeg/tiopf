@@ -1,10 +1,10 @@
 object MainFrm: TMainFrm
   Left = 194
   Top = 185
-  Width = 660
-  Height = 347
   ActiveControl = LVContacts
   Caption = 'AddressBook Demo using Model-GUI-Mediator'
+  ClientHeight = 293
+  ClientWidth = 652
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -32,12 +32,14 @@ object MainFrm: TMainFrm
       Caption = '&File'
       object miFileExit: TMenuItem
         Caption = 'E&xit'
+        OnClick = miFileExitClick
       end
     end
     object miEdit: TMenuItem
       Caption = '&Edit'
       object miEditInsert: TMenuItem
         Caption = '&Insert'
+        OnClick = miEditInsertClick
       end
       object miEditEdit: TMenuItem
         Caption = 'E&dit'
@@ -45,15 +47,18 @@ object MainFrm: TMainFrm
       end
       object miEditDelete: TMenuItem
         Caption = '&Delete'
+        OnClick = miEditDeleteClick
       end
     end
     object miSystem: TMenuItem
       Caption = '&System'
       object miSystemCountries: TMenuItem
         Caption = 'Country List'
+        OnClick = miSystemCountriesClick
       end
       object miSystemCities: TMenuItem
         Caption = 'City List'
+        OnClick = miSystemCitiesClick
       end
     end
   end

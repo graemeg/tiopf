@@ -122,10 +122,14 @@ type
   {: Normalize the string by replacing all repeated Spaces, Tabs and NewLines
     chars with a single space. It's so easy with Regular Expression!:(}
   function tiNormalizeStr(const AString: string): string;
-  {: Encode a URI, replacing characters with %HH as appropriate }
+  {: Encode a URI, replacing certain known characters with %HH values }
   function tiURIEncode(const AString: string): string;
-  {: Decode a URI, replacing %H with characters as appropriate }
+  {: Decode a URI, replacing certain known %HH values with characters }
   function tiURIDecode(const AString: string): string;
+  {: Decode a URI, replacing all %HH values with characters }
+  function tiURIDecodeAll(const AString: string): string;
+  {: Encode a string for display in HTML, replacing reserved characters with &xyz; as appropriate }
+  function tiHTMLEncode(const AString: string): string;
   {: Add the given prefix and suffix to the given string, optionally only if
     they are not already present }
   function tiEnclose(const AString: string;
@@ -2542,7 +2546,9 @@ begin
   LExitCode := FileSetDate(AFileName, LFileDate);
   if LExitCode <> 0 then
     raise EtiOPFFileSystemException.CreateFmt(
-      CErrorSettingFileDate, [AFileName, LExitCode, SysErrorMessage(LExitCode)]);
+      CErrorSettingFileDate, [
+        AFileName, tiDateTimeToStr(ADateTime),
+        LExitCode, SysErrorMessage(LExitCode)]);
 end;
 
 function  Cr(const ACount : Byte = 1): string;
@@ -3164,13 +3170,20 @@ begin
 end;
 
 
-// Cloned from IdSoapTestingUtils.pas (IndySoap) by Grahame Grieve & Andrew Cumming
+// Originally cloned from IdSoapTestingUtils.pas (IndySoap) by
+// Grahame Grieve & Andrew Cumming.
+// Modified to increase speed.
 function tiTestStreamsIdentical(AStream1, AStream2 : TStream; Var VMessage : string):boolean;
+const
+  CStreamCompareBufferSize = 1000;
 var
-  LByte1, LByte2 : byte;
+  LBytes1, LBytes2: array[0..CStreamCompareBufferSize-1] of byte;
+  LBytesRead1, LBytesRead2: Integer;
+  LPos1, LPos2: Int64;
+  I: Integer;
+  LDiffIndex: Integer;
+  LDiffPosition: Int64;
 begin
-  LByte1 := 0;    // stop the compiler from complaining
-  LByte2 := 0;
   result := true;
   if AStream1.Size <> AStream2.Size then
   begin
@@ -3186,16 +3199,45 @@ begin
     Exit; //==>
   end;
 
-  while (AStream1.Size - AStream1.Position > 0) do
-  begin
-    AStream1.Read(LByte1, 1);
-    AStream2.Read(LByte2, 1);
-    if LByte1 <> LByte2 then
+  LPos1 := AStream1.Position;
+  LPos2 := AStream2.Position;
+  try
+    // Compare contents. Buffered reads for increased speed.
+    while (AStream1.Size - AStream1.Position > 0) do
     begin
-      result := false;
-      VMessage := 'Streams Differ at position '+inttostr(AStream1.Position)+' of '+inttostr(AStream1.Size)+': '+inttostr(LByte1)+'/'+inttostr(LByte2);
-      Exit; //==>
+      LBytesRead1 := AStream1.Read(LBytes1, CStreamCompareBufferSize);
+      LBytesRead2 := AStream2.Read(LBytes2, CStreamCompareBufferSize);
+      if LBytesRead1 <> LBytesRead2 then
+      begin
+        // This should never happen.
+        result := false;
+        VMessage := 'Streams have different sizes ('+inttostr(AStream1.Size)+'/'+inttostr(AStream2.Size)+')';
+        Exit; //==>
+      end;
+
+      if not CompareMem(@LBytes1, @LBytes2, LBytesRead1) then
+      begin
+        result := false;
+        // Find position where they differ
+        LDiffIndex := AStream1.Position;
+        for I := 0 to LBytesRead1 - 1 do
+          if LBytes1[I] <> LBytes2[I] then
+          begin
+            LDiffIndex := I;
+            Break;
+          end;
+        LDiffPosition := AStream1.Position - LBytesRead1 + LDiffIndex;
+        VMessage := 'Streams Differ at position ' +
+            inttostr(LDiffPosition) + ' of ' +
+            inttostr(AStream1.Size) + ': ' +
+            inttostr(LBytes1[LDiffIndex]) + '/' +
+            inttostr(LBytes2[LDiffIndex]);
+        Exit; //==>
+      end;
     end;
+  finally
+    AStream1.Position := LPos1;
+    AStream2.Position := LPos2;
   end;
 end;
 
@@ -3251,31 +3293,31 @@ begin
   {$ELSE}
   if (ASubString <> nil) and (ASubString^ <> #0) and (AString <> nil) then
   begin
-     str := AString;
-     while str^ <> #0 do
-     begin
-       sub := ASubString;
-       // look for start of sub in str or end of str
-       while (str^ <> sub^) and (str^ <> #0) do
-         Inc(str);
-       // check end of str
-       if str^ <> #0 then
-       begin
-         // remember start of sub in str
-         Result := str;
-         // look for end of sub in str or end of sub or end of str
-         while (str^ = sub^) and (str^ <> #0) do
-         begin
-           Inc(str);
-           Inc(sub);
-         end;
-         // success if sub^ = #0
-         if sub^ = #0 then
-           exit;
-       end;
-     end;
-   end;
-   Result := nil;
+    str := AString;
+    while str^ <> #0 do
+    begin
+      sub := ASubString;
+      // look for start of sub in str or end of str
+      while (str^ <> sub^) and (str^ <> #0) do
+        Inc(str);
+      // check end of str
+      if str^ <> #0 then
+      begin
+        // remember start of sub in str
+        Result := str;
+        // look for end of sub in str or end of sub or end of str
+        while (str^ = sub^) and (str^ <> #0) do
+        begin
+          Inc(str);
+          Inc(sub);
+        end;
+        // success if sub^ = #0
+        if sub^ = #0 then
+          exit;
+      end;
+    end;
+  end;
+  Result := nil;
   {$ENDIF}
 end;
 
@@ -3356,6 +3398,64 @@ begin
       LResult := tiStrTran(LResult, LEncodedCharString, UnsafeChars[I]);
     end;
   Result := LResult;
+end;
+
+function tiURIDecodeAll(const AString: string): string;
+var
+  i: Integer;
+  j: Integer;
+  LCharValue: Integer;
+  LChar: Char;
+begin
+  SetLength(result, Length(AString));
+
+  i := 1;
+  j := 1;
+  while i <= Length(AString) - 2 do
+  begin
+    if (AString[i] = '%') and
+        TryStrToInt('$' + Copy(AString, i+1, 2), LCharValue) then
+    begin
+      LChar := Char(LCharValue);
+      Inc(i, 2);
+    end
+    else
+      LChar := AString[i];
+
+    result[j] := LChar;
+    Inc(i);
+    Inc(j);
+  end;
+
+  while i <= Length(AString) do
+  begin
+    result[j] := AString[i];
+    Inc(i);
+    Inc(j);
+  end;
+
+  SetLength(result, j - 1);
+end;
+
+function tiHTMLEncode(const AString: string): string;
+var
+  I: Integer;
+  C: Char;
+begin
+  Result := '';
+  for I := 1 to Length(AString) do
+  begin
+    C := AString[I];
+    case C of
+      '&': Result := Result + '&amp;';
+      '<': Result := Result + '&lt;';
+      '>': Result := Result + '&gt;';
+      '"': Result := Result + '&quot;';
+      '''': Result := Result + '&apos;';
+    else
+      Result := Result + C;
+    end;
+  end;
 end;
 
 function tiEnclose(

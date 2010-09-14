@@ -50,7 +50,7 @@ type
     AtiVTTreeView: TtiVTTreeView;
     ANode: PVirtualNode;
     AData: TtiObject;
-    var ANodeText: WideString) of object;
+    var ANodeText: UnicodeString) of object;
 
   TtiVTTVOnPaintText = procedure(
     AtiVTTreeView: TtiVTTreeView;
@@ -1387,7 +1387,7 @@ procedure TtiVTTreeView.DoOnGetText(
 var
   LMapping: TtiVTTVDataMapping;
   LData: TtiObject;
-  LCellText: WideString;
+  LCellText: UnicodeString;
 begin
   LMapping:= GetMappingForNode(Node);
 

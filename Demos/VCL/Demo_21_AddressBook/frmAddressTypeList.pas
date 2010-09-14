@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  model, tiModelMediator, Grids;
+  Grids, model, tiModelMediator;
 
 type
   TAddressTypeListForm = class(TForm)
@@ -36,14 +36,16 @@ implementation
 {$R *.dfm}
 
 uses
-  tiBaseMediator,contactmanager,tiListMediators;
+   tiBaseMediator
+  ,contactmanager
+  ,tiListMediators
+  ;
 
 Resourcestring
   SType    = 'Edit address type';
   SNewName = 'Type a new name for the address Type';
 
 procedure ShowAddressTypes(const AList: TAddressTypeList);
-
 var
   frm: TAddressTypeListForm;
 begin
@@ -56,69 +58,7 @@ begin
   end;
 end;
 
-
 { TAddressTypeListForm }
-
-Function TAddressTypeListForm.EditType(C : TAddressType) : Boolean;
-
-Var
-  S : String;
-
-begin
-  S:=C.Name;
-  Result:=InputQuery(SType,SNewName,S);
-  Result:=Result and (S<>'');
-  If Result then
-    C.Name := S;
-end;
-
-procedure TAddressTypeListForm.BEditClick(Sender: TObject);
-
-var
-  A : TAddressType;
-
-begin
-  A:= TAddressType(TtiStringGridMediatorView(FMediator.FindByComponent(gAddressTypes).Mediator).SelectedObject);
-  if Assigned(A) then
-    if EditType(A) then
-    begin
-      // we can save address type here
-    end;
-
-end;
-
-procedure TAddressTypeListForm.BAddClick(Sender: TObject);
-
-var
-  A: TAddressType;
-
-begin
-  A:=TAddressType.Create;
-  if EditType(A) then
-    begin
-    // we can save country here
-    gcontactmanager.AddressTypeList.Add(A);
-    end
-  else
-    A.Free;
-end;
-
-procedure TAddressTypeListForm.BDeleteClick(Sender: TObject);
-
-var
-  A: TAddressType;
-  M : TtiMediatorView;
-
-begin
-  M:=FMediator.FindByComponent(gAddressTypes).Mediator;
-  A := TAddressType(TtiStringGridMediatorView(M).SelectedObject);
-  if Assigned(A) then
-    begin
-    gContactManager.AddressTypeList.Extract(A);
-    M.ObjectToGui;
-    A.Deleted:=True;
-    end;
-end;
 
 procedure TAddressTypeListForm.SetData(const AValue: TAddressTypeList);
 begin
@@ -137,4 +77,54 @@ begin
   FMediator.Active := True;
 end;
 
+Function TAddressTypeListForm.EditType(C : TAddressType) : Boolean;
+var
+  S : String;
+begin
+  S:=C.Name;
+  Result:=InputQuery(SType,SNewName,S);
+  Result:=Result and (S<>'');
+  If Result then
+    C.Name := S;
+end;
+
+procedure TAddressTypeListForm.BAddClick(Sender: TObject);
+var
+  A: TAddressType;
+begin
+  A:=TAddressType.Create;
+  if EditType(A) then
+    gcontactmanager.AddressTypeList.Add(A)
+  else
+    A.Free;
+end;
+
+procedure TAddressTypeListForm.BEditClick(Sender: TObject);
+var
+  A : TAddressType;
+begin
+  A:= TAddressType(TtiStringGridMediatorView(FMediator.FindByComponent(gAddressTypes).Mediator).SelectedObject);
+  if Assigned(A) then
+    if EditType(A) then
+    begin
+      // we can save here
+    end;
+end;
+
+procedure TAddressTypeListForm.BDeleteClick(Sender: TObject);
+var
+  A: TAddressType;
+  M : TtiMediatorView;
+begin
+  M:=FMediator.FindByComponent(gAddressTypes).Mediator;
+  A := TAddressType(TtiStringGridMediatorView(M).SelectedObject);
+  if Assigned(A) then
+    begin
+    gContactManager.AddressTypeList.Extract(A);
+    M.ObjectToGui;
+    A.Deleted:=True;
+    end;
+end;
+
 end.
+

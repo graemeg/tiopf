@@ -358,10 +358,10 @@ var
 procedure OutputLine;
 begin
   LineBuf[LineBufPtr]:= #0;
+  AppOutput := AppOutput + string(LineBuf);
   if NewLine then
-    AppOutput := AppOutput + cLineEnding + string(LineBuf)
-  else
-    AppOutput := AppOutput + string(LineBuf);
+    AppOutput := AppOutput + cLineEnding;
+
 {
   with AppOutput do
   if Newline then
@@ -428,7 +428,7 @@ begin
   FillChar(ReadBuf, SizeOf(ReadBuf), 0);
   FillChar(SecurityAttributes, SizeOf(SecurityAttributes), 0);
   LineBufPtr:= 0;
-  Newline:= true;
+  Newline:= false;
   with SecurityAttributes do
   begin
     nLength:= Sizeof(SecurityAttributes);
@@ -534,12 +534,12 @@ begin
         begin
           if (ReadBuf[i] = LF) then
           begin
-            Newline:= true
-          end else
-          if (ReadBuf[i] = CR) then
-          begin
+            Newline:= true;
+            OutputLine;
+          end
+          else if (ReadBuf[i] = CR) then
             OutputLine
-          end else
+          else
           begin
             LineBuf[LineBufPtr]:= ReadBuf[i];
             Inc(LineBufPtr);

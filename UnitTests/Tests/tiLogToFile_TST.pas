@@ -24,10 +24,14 @@ type
     procedure LogLevel;
   end;
 
-  TestTtiLogToFile = class(TtiTestCase)
+  TtiLogToFileTestCase = class(TtiTestCase)
+  private
+    function LogFileLineCount(const AFileName: string): integer;
   published
-    procedure TestLogFileContention;
-    procedure Log;
+    procedure tiLog_TestLogFileContention;
+    procedure tiLog_Log;
+    procedure tiLog_Purge;
+    procedure tiLog_Free;
   end;
 
 procedure RegisterTests;
@@ -43,12 +47,14 @@ uses
   ,tiLog
   ,tiLogToFile
   ,tiUtils
+  ,SyncObjs
+  ,tiThread
   ;
 
 procedure RegisterTests;
 begin
   tiRegisterNonPersistentTest(TtiLogTestCase);
-  tiRegisterNonPersistentTest(TestTtiLogToFile);
+  tiRegisterNonPersistentTest(TtiLogToFileTestCase);
 end;
 
 type
@@ -69,7 +75,7 @@ const
     TtiLogToFile_4
   );
 
-procedure TestTtiLogToFile.Log;
+procedure TtiLogToFileTestCase.tiLog_Log;
 begin
   CheckEquals(False,
     (GLog.FindByLogClass(TtiLogToFile) as TtiLogToFile).EnableCaching,
@@ -79,7 +85,96 @@ begin
   // ToDo: Should check output in file
 end;
 
-procedure TestTtiLogToFile.TestLogFileContention;
+function TtiLogToFileTestCase.LogFileLineCount(
+  const AFileName: string): integer;
+var
+  LSL: TStringList;
+begin
+  LSL:= TStringList.Create;
+  try
+    LSL.LoadFromFile(AFileName);
+    result:= LSL.Count;
+  finally
+    LSL.Free;
+  end;
+end;
+
+type
+
+  TThreadWriteToLog = class(TtiSleepThread)
+  private
+    FLog: TtiLog;
+  public
+    constructor Create(const ALog: TtiLog); reintroduce;
+    procedure Execute; override;
+  end;
+
+  constructor TThreadWriteToLog.Create(const ALog: TtiLog);
+  begin
+    inherited Create(true);
+    FreeOnTerminate:= False;
+    FLog:= ALog;
+    SleepResponse := 10;
+  end;
+
+  procedure TThreadWriteToLog.Execute;
+  var
+    i: integer;
+  begin
+    SleepAndCheckTerminated(Random(500));
+    for i := 1 to 20000 do
+      FLog.Log(IntToStr(i), lsNormal);
+    FLog.Purge;
+  end;
+
+procedure TtiLogToFileTestCase.tiLog_Purge;
+var
+  LLog: TtiLog;
+  LThreadList: TtiThreadList;
+  i: Integer;
+const
+  CLogFileCount = 5;
+
+  function _FileName(const AIndex: Integer): string;
+  begin
+    result := tiAddTrailingSlash(TempDirectory) +
+        Format('LoggingTest%d.log', [AIndex]);
+  end;
+
+begin
+  Randomize;
+  LLog:= TtiLog.Create;
+  try
+    for i := 0 to CLogFileCount - 1 do
+      LLog.RegisterLog(TtiLogToFile.CreateWithFileName(TempDirectory,
+          ExtractFileName(_FileName(i)), true));
+
+    LThreadList:= TtiThreadList.Create;
+    try
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.StartAll;
+      LThreadList.WaitForAll;
+    finally
+      LThreadList.Free;
+    end;
+
+    for i := 0 to CLogFileCount - 1 do
+      CheckEquals(200000, LogFileLineCount(_FileName(i)));
+  finally
+    LLog.Free;
+  end;
+end;
+
+procedure TtiLogToFileTestCase.tiLog_TestLogFileContention;
 var
   LLoggers: array of TtiLogToFile;
   i,j: integer;
@@ -124,13 +219,46 @@ begin
   Check(True); // To suppress DUnit2's warnings
 end;
 
+procedure TtiLogToFileTestCase.tiLog_Free;
+var
+  LLog: TtiLog;
+  LThreadList: TtiThreadList;
+begin
+  LLog:= TtiLog.Create;
+  try
+    LLog.RegisterLog(TtiLogToFile.CreateWithFileName(TempDirectory, 'LoggingTest1.log', true));
+    LLog.RegisterLog(TtiLogToFile.CreateWithFileName(TempDirectory, 'LoggingTest2.log', true));
+    LLog.RegisterLog(TtiLogToFile.CreateWithFileName(TempDirectory, 'LoggingTest3.log', true));
+    LLog.RegisterLog(TtiLogToFile.CreateWithFileName(TempDirectory, 'LoggingTest4.log', true));
+    LLog.Log('test', lsNormal);
+    LThreadList:= TtiThreadList.Create;
+    try
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.Add(TThreadWriteToLog.Create(LLog));
+      LThreadList.StartAll;
+      LThreadList.WaitForAll;
+    finally
+      LThreadList.Free;
+    end;
+  finally
+    LLog.Free;
+  end;
+end;
+
 { TtiLogTestCase }
 
 procedure TtiLogTestCase.LogLevel;
 begin
  Check(True);
- // ToDo: Implement 
+ // ToDo: Implement
 end;
+
+{ TThreadWriteToLog }
+
+{ TThrdTestCritSect }
 
 end.
 

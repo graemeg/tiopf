@@ -35,6 +35,7 @@ type
     procedure GetReturnPage(const ADocument: string; AResponse: TStream; var AContentType: string);
     function  StaticPageLocation : string;
     function  CGIBinLocation : string;
+    function  PassThroughLocation: string;
   public
     constructor Create(const AOwner : TtiWebServer; ASortOrder: Byte);
     function    CanExecute(const ADocument: string): boolean; virtual; abstract;
@@ -144,6 +145,20 @@ type
                       const AResponseInfo: TIdHTTPResponseInfo); override;
   end;
 
+  TtiWebServerAction_PassThrough = class(TtiWebServerAction)
+  private
+    function ExecutePassThrough(const APassThroughApp, ARequestParams: string;
+      out AResponse: string): Cardinal;
+  public
+    function  CanExecute(const ADocument: string): boolean; override;
+    procedure Execute(const ADocument: string;
+                      const ARequestInfo: TIdHTTPRequestInfo;
+                      const ARequestParams: string;
+                      const AResponse: TStream; var AContentType: string;
+                      var AResponseCode: Integer;
+                      const AResponseInfo: TIdHTTPResponseInfo); override;
+  end;
+
   TtiCachedBlockStream = class(TtiBlockStream)
   private
     FTransID: Longword;
@@ -205,6 +220,7 @@ type
     FServerActions: TObjectList;
     FStaticPageLocation: string;
     FCGIBinLocation: string;
+    FPassThroughLocation: string;
     FBlockStreamCache: TtiBlockStreamCache;
     FOnServerException: TtiWebServerExceptionEvent;
     FReadPageLocationAtStartup: Boolean;
@@ -231,7 +247,8 @@ type
                              const AResponseInfo: TIdHTTPResponseInfo);
     procedure ApplyResponseStreamToHTTPResponse(
                              AResponseInfo: TIdHTTPResponseInfo; AResponse: TStream;
-                             const AResponseType: string; AResponseCode: Integer);
+                             const AResponseType: string; AResponseCode: Integer;
+                             const AContentEncoding: string);
     function  DefaultFileName(const ADir: string; out AFilePathAndName: string): boolean;
     function  DefaultFileNameExists(const ADir: string): boolean;
     procedure CreateDefaultPage;
@@ -246,6 +263,7 @@ type
     property    StaticPageLocation : string read FStaticPageLocation;
     property    ReadPageLocationAtStartUp: Boolean read FReadPageLocationAtStartup write FReadPageLocationAtStartup;
     property    CGIBinLocation    : string read FCGIBinLocation;
+    property    PassThroughLocation : string read FPassThroughLocation;
     property    OnServerException: TtiWebServerExceptionEvent read FOnServerException write FOnServerException;
 
 
@@ -297,6 +315,7 @@ begin
   FServerActions.Add(TtiWebServerAction_RunCGIExtension.Create(Self, 5));
   FServerActions.Add(TtiWebServerAction_ForceException.Create(Self, 6));
   FServerActions.Add(TtiWebServerAction_ForceExceptionThread.Create(Self, 7));
+  FServerActions.Add(TtiWebServerAction_PassThrough.Create(Self, 8));
   FServerActions.Add(TtiWebServerAction_CanNotFindPage.Create(Self, High(Byte)));
 
   FIdHTTPServer := TIdHTTPServer.Create(Nil);
@@ -352,6 +371,7 @@ var
   LResponse: TMemoryStream;
   LContentType: string;
   LResponseCode: Integer;
+  LPassThroughValue: string;
 
   LRequestTIOPFBlockHeader: string;
   LBlockIndex: Longword;
@@ -420,8 +440,20 @@ begin
       LResponseTIOPFBlockHeader:= tiHTTP.tiMakeTIOPFHTTPBlockHeader(LBlockIndex, LBlockCount, LBlockSize, LTransID, LBlockCRC);
     end;
 
-    ApplyResponseStreamToHTTPResponse(AResponseInfo, LResponse, LContentType, LResponseCode);
-    AResponseInfo.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= LResponseTIOPFBlockHeader;
+    LPassThroughValue := AResponseInfo.CustomHeaders.Values[ctiOPFHTTPPassThroughHeader];
+    if SameText(LPassThroughValue, ctiOPFHTTPIsPassThroughContent) then
+    begin
+      // _Entire_ response is PassThrough response content
+      AResponseInfo.HeaderHasBeenWritten := true; // suppress HTTP headers from response
+      ApplyResponseStreamToHTTPResponse(AResponseInfo, LResponse,
+          '' {AContentType}, LResponseCode, '' {AContentEncoding});
+    end
+    else
+    begin
+      ApplyResponseStreamToHTTPResponse(AResponseInfo, LResponse,
+          LContentType, LResponseCode, 'MIME');
+      AResponseInfo.CustomHeaders.Values[ctiOPFHTTPBlockHeader]:= LResponseTIOPFBlockHeader;
+    end;
 
   finally
     LResponse.Free;
@@ -438,7 +470,8 @@ procedure TtiWebServer.ApplyResponseStreamToHTTPResponse(
   AResponseInfo: TIdHTTPResponseInfo;
   AResponse: TStream;
   const AResponseType: string;
-  AResponseCode: Integer);
+  AResponseCode: Integer;
+  const AContentEncoding: string);
 var
   LTempResponse: TMemoryStream;
 begin
@@ -452,10 +485,10 @@ begin
     LTempResponse:= TMemoryStream.Create;
     tiCopyStream(AResponse, LTempResponse);
     AResponseInfo.ContentStream:= LTempResponse;
-    AResponseInfo.ContentType:= AResponseType;
     AResponseInfo.FreeContentStream:= True;
-    AResponseInfo.ContentEncoding:= 'MIME';
+    AResponseInfo.ContentEncoding:= AContentEncoding;
   end;
+  AResponseInfo.ContentType:= AResponseType;
 end;
 
 procedure TtiWebServer.ProcessHTTPGet(
@@ -510,6 +543,7 @@ begin
     try
       FStaticPageLocation:= tiAddTrailingSlash(LConfig.PathToStaticPages);
       FCGIBinLocation:= tiAddTrailingSlash(LConfig.PathToCGIBin);
+      FPassThroughLocation:= tiAddTrailingSlash(LConfig.PathToPassThrough);
       FLogFullHTTPRequest:= LConfig.LogFullHTTPRequest;
     finally
       LConfig.Free;
@@ -544,6 +578,7 @@ begin
   Log('Static web pages location "' + StaticPageLocation + '"');
   Log('Default page location "' + LDefaultFileName + '"');
   Log('CGI-Bin location "' + FCGIBinLocation + '"');
+  Log('Pass through location "' + FPassThroughLocation + '"');
   Log('Log full HTTP request "' + tiBoolToStr(FLogFullHTTPRequest) + '"');
 
   BlockStreamCache.Start;
@@ -677,6 +712,14 @@ begin
   begin
     tiFileToStream(ADocument, AResponse);
     AContentType:= _ExtToMIMEContentType(lExt)
+  end else if LExt = 'css' then
+  begin
+    tiFileToStream(ADocument, AResponse);
+    AContentType := 'text/css';
+  end else if LExt = 'js' then
+  begin
+    tiFileToStream(ADocument, AResponse);
+    AContentType := 'text/javascipt';
   end else if LExt= '' then
   begin
     if FileExists(tiSwapExt(ADocument, 'htm')) then
@@ -691,6 +734,12 @@ begin
     tiFileToStream(ADocument, AResponse);
     AContentType:= cHTTPContentTypeTextHTML;
   end;
+end;
+
+function TtiWebServerAction.PassThroughLocation: string;
+begin
+  Assert(Owner <> nil, 'Owner not assigned');
+  result := Owner.PassThroughLocation;
 end;
 
 function TtiWebServerAction.StaticPageLocation: string;
@@ -1101,12 +1150,135 @@ begin
   result := SameText(ADocument, CTIDBProxyForceException);
 end;
 
-procedure TtiWebServerAction_ForceException.Execute(const ADocument: string;
-  const ARequestInfo: TIdHTTPRequestInfo; const ARequestParams: string;
-  const AResponse: TStream; var AContentType: string;
-  var AResponseCode: Integer; const AResponseInfo: TIdHTTPResponseInfo);
+procedure TtiWebServerAction_ForceException.Execute(
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
 begin
   raise ETIWebServerTestException.Create('A test exception has been raised on the server at your request at ' + tiDateTimeToStr(now));
 end;
+
+{ TtiWebServerAction_PassThrough }
+
+function TtiWebServerAction_PassThrough.CanExecute(
+  const ADocument: string): boolean;
+var
+  LPassThrough: string;
+  LRequestArgs: TStrings;
+begin
+  LRequestArgs := TStringList.Create;
+  try
+    LRequestArgs := TStringList.Create;
+    LRequestArgs.Delimiter := '/';
+    LRequestArgs.StrictDelimiter := true;
+    LRequestArgs.DelimitedText := ADocument;
+    LPassThrough := PassThroughLocation + LRequestArgs[0];
+    Log('Processing TtiWebServerAction_PassThrough.CanExecute <' + LPassThrough  + '>');
+    result := (ADocument <> '') and FileExists(LPassThrough);
+  finally
+    LRequestArgs.Free;
+  end;
+
+end;
+
+procedure TtiWebServerAction_PassThrough.Execute(
+  const ADocument: string;
+  const ARequestInfo: TIdHTTPRequestInfo;
+  const ARequestParams: string;
+  const AResponse: TStream;
+  var   AContentType: string;
+  var   AResponseCode: Integer;
+  const AResponseInfo: TIdHTTPResponseInfo);
+var
+  LPassThroughApp : string;
+  LPassThroughTail: string;
+  LResponse : string;
+  LExitCode : Integer;
+  LConfig: TtiWebServerConfig;
+  LRequestArgs: TStrings;
+  LContentFileName: string;
+begin
+  Log('Processing document <' + ADocument + '> in <' + ClassName + '>');
+  try
+    LRequestArgs := TStringList.Create;
+    try
+      LRequestArgs.Delimiter := '/';
+      LRequestArgs.StrictDelimiter := true;
+      LRequestArgs.DelimitedText := ADocument;
+      LPassThroughApp := PassThroughLocation + LRequestArgs[0];
+      LPassThroughTail := ADocument;
+      Delete(LPassThroughTail, 1, Length(LRequestArgs[0]));
+      LResponse := '';
+      Log('About to call ' + LPassThroughApp + ' ' + LPassThroughTail +  ' ' + ARequestParams);
+    finally
+      LRequestArgs.Free;
+    end;
+
+    LExitCode := ExecutePassThrough(LPassThroughApp, LPassThroughTail + ' ' + ARequestParams, LResponse);
+    if LExitCode = 0 then
+    begin
+      AResponseInfo.CustomHeaders.Values[ctiOPFHTTPPassThroughHeader] :=
+        ctiOPFHTTPIsPassThroughContent;
+      // If returned text is the passthrough content file name then load
+      // response from the file, else response is returned text
+      if Copy(LResponse, 1, Length(cPassThroughContentFilePrefix)) = cPassThroughContentFilePrefix then
+      begin
+        LContentFileName := Trim(Copy(LResponse,
+            Length(cPassThroughContentFilePrefix) + 1, Length(LResponse)));
+        if (LContentFileName <> '') and FileExists(LContentFileName) then
+        begin
+          tiFileToStream(LContentFileName, AResponse);
+          tiDeleteFile(LContentFileName);
+        end
+        // else empty response
+      end
+      else
+        tiStringToStream(LResponse, AResponse);
+    end
+    else
+    begin
+      LResponse := Format(cErrorHTTPCGIExtension, [ADocument, LExitCode, LResponse]);
+      LogError(LResponse, false);
+      LConfig:= TtiWebServerConfig.Create;
+      try
+        //TODO: Add separate setting in config for PassThrough?
+        if LConfig.SendBugReportEmailOnCGIFailure then
+          tiMailBugReport(LResponse);
+      finally
+        LConfig.Free;
+      end;
+      tiStringToStream(LResponse, AResponse);
+      AResponseInfo.CustomHeaders.Values[ctiOPFHTTPErrorCode]:= IntToStr(LExitCode);
+    end;
+  except
+    on e:exception do
+    begin
+      LogError(e.message, false);
+      AResponseCode := cHTTPResponseCodeInternalError;
+      tiStringToStream(Format(cErrorInServerExtension, [ADocument, e.message]), AResponse);
+    end;
+  end;
+end;
+
+
+type
+  ETIWebServerPassThroughException = class(Exception)
+  end;
+
+function TtiWebServerAction_PassThrough.ExecutePassThrough(const APassThroughApp,
+  ARequestParams: string; out AResponse: string): Cardinal;
+begin
+  if Length(APassThroughApp) + Length(ARequestParams) <= CMaximumCommandLineLength then
+    Result:= tiExecConsoleApp(APassThroughApp, ARequestParams, AResponse, nil, false)
+  else
+    raise ETIWebServerPassThroughException.CreateFmt(
+      'PassThrough error: command-line too long: <%s>',
+      [APassThroughApp + ARequestParams]);
+end;
+
 
 end.

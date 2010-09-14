@@ -480,58 +480,60 @@ end;
 
 procedure TtiXMLToDataBufferReader.ParseForAttributesUntil(const pUntil: string);
 var
-  lState    : TtiXMLAttributeParseState;
-  lStart    : Cardinal;
-  lChar     : Char;
-  lName     : string;
-  lValue    : string;
-  lStr : string;
+  LState : TtiXMLAttributeParseState;
+  LStart : Cardinal;
+  LPChar : PChar;
+  LName  : string;
+  LValue : string;
+  LPUntil: PChar;
 begin
-  lState    := xapsWaitForAttr;
-  lStart    := 0; // To fix a compiler warning
+  LState := xapsWaitForAttr;
+  LStart := 0; // To fix a compiler warning
+  LPChar := @FXML[FPos];
+  LPUntil := tiStrPos(LPChar, PChar(pUntil));
   While (FPos <= FLen) do
   begin
-    lStr := Copy(FXML, FPos, Length(pUntil));
-    if (lStr = pUntil) then
+    if LPChar = LPUntil then
     begin
-      Inc(FPos,Length(pUntil));
+      Inc(FPos, Length(pUntil));
       Exit; //==>
     end;
-    lChar := FXML[FPos];
-    case lState of
+    case LState of
     xapsWaitForAttr : begin
-                        if lChar <> #32 then
+                        if LPChar^ <> #32 then
                         begin
-                          lStart := FPos;
-                          Inc(lState);
+                          LStart := FPos;
+                          Inc(LState);
                         end;
                       end;
     xapsInAttrName : begin
-                        if CharInSet(lChar, [#32, '=']) then
+                        if CharInSet(LPChar^, [#32, '=']) then
                         begin
-                          Inc(lState);
-                          lName := Copy(FXML, lStart, FPos - lStart);
+                          Inc(LState);
+                          LName := Copy(FXML, LStart, FPos - LStart);
                         end;
                       end;
     xapsWaitForAttrValue : begin
-                        if (lChar = '"') then
+                        if (LPChar^ = '"') then
                         begin
-                          Inc(lState);
-                          lStart := FPos;
+                          Inc(LState);
+                          LStart := FPos;
                         end;
                       end;
     xapsInAttrValue : begin
-                        if (lChar = '"') then
+                        if (LPChar^ = '"') then
                         begin
-                          lState := Low(TtiXMLAttributeParseState);
-                          lValue := Copy(FXML, lStart+1, FPos - lStart - 1);
-                          DoAddCell(lName, lValue);
+                          LState := Low(TtiXMLAttributeParseState);
+                          LValue := Copy(FXML, LStart+1, FPos - LStart - 1);
+                          DoAddCell(LName, LValue);
                         end;
                       end;
     else
       raise EtiOPFInternalException.Create(cErrorInvalidTXMLAttributeParseState);
     end;
-      Inc(FPos);
+
+    Inc(FPos);
+    Inc(LPChar);
   end;
 end;
 
@@ -638,7 +640,6 @@ begin
     lCell.ValueAsString := FXMLRCTrans.InsertReserved(rcXML, pFieldValue)
   else
     lCell.ValueAsString := pFieldValue;
-
 end;
 
 procedure TtiXMLToDataBufferReaderWriter.SetCompress(const AValue: string);

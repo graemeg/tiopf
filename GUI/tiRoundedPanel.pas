@@ -102,11 +102,11 @@ procedure TtiRoundedPanel.Paint;
   begin
     Canvas.Pen.Color := pColor;
     Canvas.Pen.Width := FBorderThickness * pPenFactor;
-    Canvas.RoundRect(pRect.Left, pRect.Top, pRect.Right, pRect.Bottom,
+    Canvas.RoundRect(pRect.Left + 2, pRect.Top + 2, pRect.Right - 2, pRect.Bottom - 2,
                      FCornerRadius*2, FCornerRadius*2);
     Canvas.Font.Color := clActiveCaption;
     if Caption <> '' then
-      Canvas.TextOut(FCornerRadius*2, -2, ' ' + Caption + ' ');
+      Canvas.TextOut(FCornerRadius*2 + 2, 0, ' ' + Caption + ' ');
   end;
 var
   lRect: TRect;

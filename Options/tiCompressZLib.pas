@@ -21,7 +21,9 @@ type
     procedure DecompressBuffer(const AFrom: Pointer ; const AFromSize : Integer;
                                 out   ATo:   Pointer ; out   AToSize  : Integer); override;
     function  CompressString(  const AFrom : string; var ATo : string)  : Extended; override;
+    function  CompressString(  const AFrom : AnsiString; var ATo : AnsiString)  : Extended; override;
     procedure DecompressString(const AFrom : string; var ATo : string)  ; override;
+    procedure DecompressString(const AFrom : AnsiString; var ATo : AnsiString)  ; override;
     function  CompressFile(    const AFrom : string; const ATo : string): Extended; override;
     procedure DecompressFile(  const AFrom : string; const ATo : string); override;
   end;
@@ -155,6 +157,28 @@ begin
   end;
 end;
 
+function TtiCompressZLib.CompressString(const AFrom: AnsiString;
+  var ATo: AnsiString): Extended;
+var
+  lStreamFrom : TMemoryStream;
+  lStreamTo  : TMemoryStream;
+begin
+  lStreamFrom := TMemoryStream.Create;
+  try
+    lStreamFrom.WriteBuffer(PAnsiChar(AFrom)^, Length(AFrom));
+    lStreamTo  := TMemoryStream.Create;
+    try
+      result := CompressStream(lStreamFrom, lStreamTo);
+      SetLength(ATo, LStreamTo.Size);
+      lStreamTo.ReadBuffer(PAnsiChar(ATo)^, lStreamTo.Size);
+    finally
+      lStreamTo.Free;
+    end;
+  finally
+    lStreamFrom.Free;
+  end;
+end;
+
 // Decompress a buffer
 procedure TtiCompressZLib.DecompressBuffer(const AFrom: Pointer;
   const AFromSize: Integer; out ATo: Pointer; out AToSize: Integer);
@@ -235,7 +259,7 @@ begin
 
 end;
 
-// Decompress a string
+// Decompress a Unicode string
 procedure TtiCompressZLib.DecompressString(const AFrom: string;
   var ATo: string);
 var
@@ -248,6 +272,29 @@ begin
     try
       DecompressStream(lStreamFrom, lStreamTo);
       ATo  := lStreamTo.DataString;
+    finally
+      lStreamTo.Free;
+    end;
+  finally
+    lStreamFrom.Free;
+  end;
+end;
+
+// Decompress an Ansi string
+procedure TtiCompressZLib.DecompressString(const AFrom: AnsiString;
+  var ATo: AnsiString);
+var
+  lStreamFrom : TMemoryStream;
+  lStreamTo  : TMemoryStream;
+begin
+  lStreamFrom := TMemoryStream.Create;
+  try
+    lStreamFrom.WriteBuffer(PAnsiChar(AFrom)^, Length(AFrom));
+    lStreamTo  := TMemoryStream.Create;
+    try
+      DecompressStream(lStreamFrom, lStreamTo);
+      SetLength(ATo, LStreamTo.Size);
+      lStreamTo.ReadBuffer(PAnsiChar(ATo)^, lStreamTo.Size);
     finally
       lStreamTo.Free;
     end;

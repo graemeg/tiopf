@@ -331,14 +331,16 @@ end;
 function tiDeCompressDecode(const AValue: string; const pCompression : string): string;
 var
   lCompress : TtiCompressAbs;
-  ls : string;
+  ls : AnsiString;
+  LResult: AnsiString;
 begin
   Result := '';   // lets keep the compiler happy
   // Should be pooling these, or using the one instance (is that thread safe?)
   lCompress := gCompressFactory.CreateInstance(pCompression);
   try
-    ls := MimeDecodeString(AValue);
-    lCompress.DeCompressString(ls, Result);
+    ls := MimeDecodeString(AnsiString(AValue));
+    lCompress.DeCompressString(ls, LResult);
+    Result := string(LResult);
   finally
     lCompress.Free;
   end;
@@ -348,13 +350,13 @@ end;
 function tiCompressEncode(const AValue: string; const pCompression : string): string;
 var
   lCompress : TtiCompressAbs;
-  ls : string;
+  ls : AnsiString;
 begin
   try
     lCompress := gCompressFactory.CreateInstance(pCompression);
     try
-      lCompress.CompressString(AValue,ls);
-      result := MimeEncodeStringNoCRLF(ls);
+      lCompress.CompressString(AnsiString(AValue),ls);
+      result := string(MimeEncodeStringNoCRLF(ls));
     finally
       lCompress.Free;
     end;
@@ -507,28 +509,6 @@ function CreateXMLReservedCharsTranslator: IXMLReservedCharsTranslator;
 begin
   result := TtiXMLReservedCharsTranslator.Create;
 end;
-
-
-{$IFDEF FPC}
-{ The assembly code caused AV's under Linux and wouldn't be platform independent
-  for other future *nix's. }
-procedure ResyncString(var AString: string; ANullTerminator: PChar);
-begin
-  // TODO: Fix problem mentioned below
-  { this realigns null terminator and length but only works if the
-    ANullTerminator = #0.  Also it creates a new string as result. }
-  AString := PChar(AString);
-end;
-{$ELSE}
-procedure ResyncString(AString: string; ANullTerminator: PChar); assembler;
-asm
-{     ->EAX     AString          }
-{       EDX     ANullTerminator  }
-        sub     edx, eax 
-        mov     [eax - $04],edx 
-end;
-{$ENDIF}
-
 
 
 (*
@@ -793,28 +773,8 @@ function TtiXMLReservedCharsTranslator.Remove(const ASource: string;
   const ALookup: TReplacementLookup;
   const ASubstMaxLength: integer): string;
 var
-{$ifdef UNICODE}
-  curChar: char;
-  i: integer;
-{$else}
   pSrc, pResult: PChar;
-{$endif}
-
 begin
-{$ifdef UNICODE}
-  // slower but safer (and works)
-  result:= '';
-  for i := 1 to length(ASource) do
-  begin
-    curChar:= ASource[i];
-
-    if(curChar <= char(255)) and (ALookup[curChar] <> nil) then
-      result:= result + ALookup[curChar].Replacement
-    else
-      result:= result + curChar;
-  end;
-
-{$else}
   if ASource = '' then begin
     Result := '';
     Exit; //==>
@@ -823,9 +783,8 @@ begin
   // max possible length = every char in ASource requires substitution
   // with maximum length escaped char
   SetLength(result, Length(ASource) * ASubstMaxLength * sizeof(char));
-  pSrc := Pointer(ASource);
-
-  pResult := Pointer(Result);
+  pSrc := PChar(ASource);
+  pResult := PChar(Result);
 
   // repeat till null terminator encountered
   while pSrc^ <> #0 do
@@ -852,31 +811,16 @@ begin
 
   // add null terminator
   pResult^:= #0;
-  // resync (Delphi string) length of result after pchar manipulations
-  ResyncString(Result, pResult);
-{$endif}
+  SetLength(result, pResult - PChar(result));
 end;
 
 
 function TtiXMLReservedCharsTranslator.Insert(const ASource: string;
   const AReplacements: array of TtiXMLReservedChar1): string;
 var
-{$ifdef UNICODE}
-{$else}
-  pMatch, pNull, pRemainder: PChar;
-
-{$endif}
+  pMatch, pResult, pRemainder, pNull: PChar;
   idx: integer;
 begin
-{$ifdef UNICODE}
-  // slower but working
-   Result:= ASource;
-   for idx := High(AReplacements) downto Low(AReplacements) do
-     with AReplacements[idx] do
-     begin
-       Result:= StringReplace(Result, EscWith, ResChar, [rfReplaceAll]);
-     end;
-{$else}
   if ASource = '' then begin
     Result := '';
     Exit; //==>
@@ -884,34 +828,51 @@ begin
 
   // copy of source as starting point
   result := ASource;
+  UniqueString(result); // Force unique copy so we don't change source
   // pointer to null terminator at end of result
-  pNull := pointer(cardinal(pointer(result)) + sizeof(char) * cardinal(Length(result)));
+  pNull := PChar(result) + Length(result);
 
   for idx := High(AReplacements) downto Low(AReplacements) do
-     with AReplacements[idx] do
-     begin
-       // look for occurence of EscWith - returns non-nil pointer
-       pMatch := tiStrPos(Pointer(result), Pointer(EscWith));
-       while pMatch <> nil do
-       begin
-         // pointer to portion of string beyond this instance of EscWith
-         pRemainder := pointer(cardinal(pMatch) + sizeof(char) * EscLen);
-         // insert ResChar
-         pMatch^:= ResChar;
-         Inc(pMatch);
-         // move remainder of string (beyond EscWith) down
-         Move(pRemainder^, pMatch^, sizeof(char) * (cardinal(pNull) - cardinal(pRemainder)));
-         // adjust position of null to match shift down of remainder
-         Dec(pNull, EscLen - 1);
-         // apply null terminator at end of "moved" block
-         pNull^:= #0;
-         // search for next EscWith...
-         pMatch := tiStrPos(pMatch, Pointer(EscWith));
-       end;
+    with AReplacements[idx] do
+    begin
+      pResult := PChar(result);
+      pRemainder := PChar(result);
 
-     end;
-  ResyncString(result, pNull);
-{$endif}
+      // look for occurence of EscWith - returns non-nil pointer
+      pMatch := tiStrPos(pRemainder, PChar(EscWith));
+      while pMatch <> nil do
+      begin
+        // Append previous remainder up to match
+        if pRemainder <> pResult then
+          Move(pRemainder^, pResult^, SizeOf(Char) * (pMatch - pRemainder));
+        Inc(pResult, pMatch - pRemainder);
+
+        // insert ResChar
+        pResult^:= ResChar;
+        Inc(pResult);
+
+        // pointer to portion of string beyond this instance of EscWith
+        pRemainder := pMatch + EscLen;
+
+        // search for next EscWith...
+        pMatch := tiStrPos(pRemainder, PChar(EscWith));
+      end;
+
+      if pRemainder <> pResult then
+      begin
+        if pRemainder <> pNull then
+        begin
+          // Append remainder after last match
+          Move(pRemainder^, pResult^, SizeOf(Char) * (pNull - pRemainder));
+          Inc(pResult, pNull - pRemainder);
+        end;
+        // apply null terminator at end of "moved" block
+        pResult^:= #0;
+        pNull := pResult;
+      end;
+    end;
+
+  SetLength(result, pNull - PChar(result));
 end;
 
 

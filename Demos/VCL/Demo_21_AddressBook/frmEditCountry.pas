@@ -33,10 +33,8 @@ implementation
 {$R *.dfm}
 
 function EditCountry(AData: TCountry): boolean;
-
 var
   frm: TEditCountryForm;
-
 begin
   frm:= TEditCountryForm.Create(nil);
   try
@@ -68,3 +66,4 @@ begin
 end;
 
 end.
+

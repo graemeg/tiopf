@@ -20,8 +20,10 @@ type
                                 out   ATo:   Pointer ; out   AToSize  : Integer): Extended; virtual; abstract;
     procedure DecompressBuffer(const AFrom: Pointer ; const AFromSize : Integer;
                                 out   ATo:   Pointer ; out   AToSize  : Integer); virtual; abstract;
-    function  CompressString(  const AFrom : string; var ATo : string): Extended; virtual; abstract;
-    procedure DecompressString(const AFrom : string; var ATo : string); virtual; abstract;
+    function  CompressString(  const AFrom : string; var ATo : string): Extended; overload; virtual; abstract;
+    function  CompressString(  const AFrom : AnsiString; var ATo : AnsiString)  : Extended; overload; virtual; abstract;
+    procedure DecompressString(const AFrom : string; var ATo : string); overload; virtual; abstract;
+    procedure DecompressString(const AFrom : AnsiString; var ATo : AnsiString); overload; virtual; abstract;
     function  CompressFile(    const AFrom : string; const ATo : string): Extended; virtual; abstract;
     procedure DecompressFile(  const AFrom : string; const ATo : string); virtual; abstract;
   end;

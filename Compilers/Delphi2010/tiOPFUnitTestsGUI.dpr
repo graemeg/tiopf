@@ -1,6 +1,11 @@
 program tiOPFUnitTestsGUI;
 
+{$I DUnit.inc}
+
 uses
+{$IFDEF FASTMM}
+  FastMM4,
+{$ENDIF}
   jclDebug,
   tiBaseObject,
   tiLog,

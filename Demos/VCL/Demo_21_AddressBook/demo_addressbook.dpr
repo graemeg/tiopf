@@ -27,6 +27,7 @@ begin
   ShortDateFormat := 'yyyy-mm-dd';
 
   Application.Initialize;
+  Application.Title := 'MGM Demo Addressbook';
   Application.CreateForm(TfrmDemoMain, frmDemoMain);
   Application.Run;
 end.

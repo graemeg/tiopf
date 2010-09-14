@@ -14,7 +14,7 @@ uses
   // DX units
   dxWinXPBar, dxCore, dxContainer,
   // Help units
-  ehshelprouter, ehsbase, ehswhatsthis,
+  ehswhatsthis,
   // HTML Viewer units
   Htmlview,
   // tiOPF units
@@ -149,7 +149,6 @@ type
     FPnlMessageText: TtiRoundedPanel;
     FlblMessage: THTMLViewer;
 
-    FHelpRouter : THelpRouter;
     FWhatsThis : TWhatsThis;
 
     FActionWindowPrevious : TAction;
@@ -201,8 +200,6 @@ type
                                   var pHContext: THelpContext; pX, pY: Integer);
     function  GetHelpContext(const pHelpItem : TObject): THelpContext;
     function  GetParentPnl: TPanel;
-    function  GetOnFindHelpFile: TOnFindHelpFileEvent;
-    procedure SetOnFindHelpFile(const AValue: TOnFindHelpFileEvent);
     procedure SetFormMessage(const AMessage: string; pMessageType: TtiUserFeedbackMessageType);
     procedure SetFormErrorMessage(const AMessage: string);
     procedure SetNavigationControlsEnabled(const AValue: Boolean);
@@ -246,7 +243,6 @@ type
      procedure   HelpJump(const pHelpTopic : string); overload;
      procedure   HelpJump(pHelpContext : integer); overload;
      procedure   HelpJump; overload;
-     property    OnFindHelpFile: TOnFindHelpFileEvent read GetOnFindHelpFile Write SetOnFindHelpFile;
      property    NavigationControlsEnabled: Boolean read FNavigationControlsEnabled Write SetNavigationControlsEnabled;
      property    FormCaption: TCaption read GetFormCaption Write SetFormCaption;
      property    MenuSideBarWidth: integer read GetMenuSideBarWidth write SetMenuSideBarWidth default CMenuSideBarWidth;
@@ -307,7 +303,8 @@ procedure CreateAMS(
 
 implementation
 uses
-   tiImageMgr
+  HTMLHelpViewer
+  ,tiImageMgr
   ,tiThreadProgress
   ,tiResources
   ,tiConstants
@@ -1402,7 +1399,7 @@ end;
 
 procedure TtiApplicationMenuSystem.DoHelpContents(Sender: TObject);
 begin
-  FHelpRouter.HelpContent;
+  Application.HelpShowTableOfContents;
 end;
 
 procedure TtiApplicationMenuSystem.DoHelpWhatsThis(Sender: TObject);
@@ -1424,12 +1421,6 @@ begin
   end else
   begin
     FHelpAvailable := True;
-    FHelpRouter:= THelpRouter.Create(MainForm);
-    FHelpRouter.HelpType := htHTMLhelp;
-    FHelpRouter.ShowType := stMain;
-    FHelpRouter.Helpfile := FHelpFileName;
-    FHelpRouter.ValidateID := False;
-
     FWhatsThis := TWhatsThis.Create(MainForm);
     FWhatsThis.F1Action := goContext; //goContext, goDefault, goTOC
     FWhatsThis.Options := [wtMenuRightClick{, wtNoContextHelp, wtNoContextMenu, wtInheritFormContext}];
@@ -1449,12 +1440,12 @@ end;
 
 procedure TtiApplicationMenuSystem.HelpJump(const pHelpTopic: string);
 begin
-  FHelpRouter.HelpJump(pHelpTopic);
+  Application.HelpJump(pHelpTopic);
 end;
 
 procedure TtiApplicationMenuSystem.HelpJump(pHelpContext: integer);
 begin
-  Application.helpcommand(HELP_CONTEXT, pHelpContext);
+  Application.HelpContext(pHelpContext);
 end;
 
 procedure TtiApplicationMenuSystem.HelpJump;
@@ -1487,18 +1478,6 @@ end;
 function TtiApplicationMenuSystem.GetStatusPannelMessage: string;
 begin
   result:= FStatusPanelMessage.Caption;
-end;
-
-function TtiApplicationMenuSystem.GetOnFindHelpFile: TOnFindHelpFileEvent;
-begin
-  Result := FHelpRouter.OnFindHelpFile;
-end;
-
-procedure TtiApplicationMenuSystem.SetOnFindHelpFile(
-  const AValue: TOnFindHelpFileEvent);
-begin
-  if FHelpRouter <> nil then
-    FHelpRouter.OnFindHelpFile := AValue;
 end;
 
 procedure TtiApplicationMenuSystem.SetStatusPannelMessage(const AValue: string);

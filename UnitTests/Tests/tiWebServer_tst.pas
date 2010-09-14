@@ -539,9 +539,7 @@ begin
   LActual:= '';
   LExpected:= 'abcd';
   tiExecConsoleApp(LPath, LExpected, LActual, nil, False);
-  CheckEquals(Trim(LExpected), Trim(LActual));
-  // Must do something about this leading CrLf that's being added
-  CheckEquals(#13#10+LExpected, LActual);
+  CheckEquals(LExpected, LActual);
 
   // Test a long string
   LActual:= '';

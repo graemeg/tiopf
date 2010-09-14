@@ -2727,7 +2727,7 @@ Comments=
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
                 <Property MultiValue="1" name="NewValue" type="WideString">
-                  <![CDATA[An error occurred in the application. The error log has been copied to Windows Clipboard. Please paste the contents of the clipboard (along with a descirption of what you where doing before the error) and email to helpdesk@nemmco.com.au]]>
+                  <![CDATA[An error occurred in the application. The error log has been copied to Windows Clipboard. Please paste the contents of the clipboard (along with a descirption of what you where doing before the error) and email to helpdesk@aemo.com.au]]>
                 </Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>
@@ -4638,7 +4638,7 @@ Comments=
                 <Property MultiValue="0" name="LogToVariable" type="string"></Property>
                 <Property name="MaxRetryAttempts" type="Cardinal">0</Property>
                 <Property MultiValue="1" name="NewValue" type="WideString">
-                  <![CDATA[An error occurred in the application. The error log has been copied to Windows Clipboard. Please paste the contents of the clipboard (along with a descirption of what you where doing before the error) and email to helpdesk@nemmco.com.au]]>
+                  <![CDATA[An error occurred in the application. The error log has been copied to Windows Clipboard. Please paste the contents of the clipboard (along with a descirption of what you where doing before the error) and email to helpdesk@aemo.com.au]]>
                 </Property>
                 <Property name="PauseInterval" type="Cardinal">0</Property>
                 <Property name="RetryPauseInterval" type="Cardinal">1000</Property>

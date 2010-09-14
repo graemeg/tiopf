@@ -24,6 +24,7 @@ type
     FOnLog: TtiWriteLogEvent;
   protected
     procedure WriteToOutput; override;
+    procedure WorkingListToOutput; override;
   public
     constructor Create(
         const AOnLog: TtiWriteLogEvent;
@@ -53,22 +54,22 @@ begin
 end;
 
 procedure TtiLogToEventHandler.WriteToOutput;
+begin
+  if (not ThrdLog.Terminated) and Assigned(FOnLog) then
+    inherited WriteToOutput;
+end;
+
+procedure TtiLogToEventHandler.WorkingListToOutput;
 var
   I: Integer;
 begin
-  if ThrdLog.Terminated or (not Assigned(FOnLog)) then
-    Exit; //==>
-
-  inherited WriteToOutput;
-
-  for I := 0 to Pred(ListWorking.Count) do
+  for I := 0 to Pred(WorkingList.Count) do
   begin
     if ThrdLog.Terminated then
       Break; //==>
-    FOnLog(Self, ListWorking.Items[I]);
+    FOnLog(Self, WorkingList.Items[I]);
   end;
-
-  ListWorking.Clear;
 end;
 
 end.
+

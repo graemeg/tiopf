@@ -7,20 +7,19 @@ unit views;
 interface
 
 uses
-  Classes, SysUtils, tiGenericListMediators, tiCompositeMediators,
-  tiGenericEditMediators;
-  
+  Classes, SysUtils, tiListMediators, tiMediators;
+
 type
 
   { List Meditators }
   
-  TContacts_ListView_Mediator = class(TtiCompositeListViewMediator)
+  TContacts_ListView_Mediator = class(TtiListViewMediatorView)
   public
     procedure SetupGUIandObject; override;
   end;
   
   
-  TCityList_ListView_Mediator = class(TtiCompositeListViewMediator)
+  TCityList_ListView_Mediator = class(TtiListViewMediatorView)
   public
     procedure SetupGUIandObject; override;
   end;
@@ -78,7 +77,9 @@ uses
 procedure TContacts_ListView_Mediator.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
+{$IFDEF FPC}
   View.ScrollBars:= ssAutoBoth;
+{$ENDIF}
   View.RowSelect:= True;
   View.ViewStyle:= vsReport;
 end;
@@ -96,7 +97,9 @@ end;
 procedure TCityList_ListView_Mediator.SetupGUIandObject;
 begin
   inherited SetupGUIandObject;
+{$IFDEF FPC}
   View.ScrollBars:= ssAutoBoth;
+{$ENDIF}
   View.RowSelect:= True;
   View.ViewStyle:= vsReport;
 end;

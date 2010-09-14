@@ -388,6 +388,32 @@ type
 
   PCardinal = ^Cardinal;
 
+function _OnlyAnsi(const s: string): boolean; overload;
+var
+  i: integer;
+begin
+  result := true;
+  for i := 1 to Length(s) do
+    if Ord(s[i]) > $7F then
+    begin
+      result := false;
+      break;
+    end;
+end;
+
+function _OnlyAnsi(const s: AnsiString): boolean; overload;
+var
+  i: integer;
+begin
+  result := true;
+  for i := 1 to Length(s) do
+    if Ord(s[i]) > $7F then
+    begin
+      result := false;
+      break;
+    end;
+end;
+
 function MimeEncodeString(const s: AnsiString): AnsiString;
 var
   l: Cardinal;
@@ -403,8 +429,20 @@ begin
 end;
 
 function MimeEncodeString(const s: string): string;
+var
+  LAnsiString: AnsiString;
+  LNumBytes: Longint;
 begin
-  result := string(MimeEncodeString(AnsiString(s)));
+  // If source contains non-Ansi characters then puch the byte data
+  // into an ansi string so as not to lose data in a string conversion.
+  if _OnlyAnsi(s) then
+    LAnsiString := AnsiString(s)
+  else begin
+    LNumBytes := Length(s) * SizeOf(Char);
+    SetLength(LAnsiString, LNumBytes);
+    Move(Pointer(s)^, Pointer(LAnsiString)^, LNumBytes);
+  end;
+  result := string(MimeEncodeString(LAnsiString));
 end;
 
 function MimeEncodeStringNoCRLF(const s: AnsiString): AnsiString;
@@ -422,8 +460,20 @@ begin
 end;
 
 function MimeEncodeStringNoCRLF(const s: string): string;
+var
+  LAnsiString: AnsiString;
+  LNumBytes: Longint;
 begin
-  result := string(MimeEncodeStringNoCRLF(AnsiString(s)));
+  // If source contains non-Ansi characters then push the byte data
+  // into an ansi string so as not to lose data in a string conversion.
+  if _OnlyAnsi(s) then
+    LAnsiString := AnsiString(s)
+  else begin
+    LNumBytes := Length(s) * SizeOf(Char);
+    SetLength(LAnsiString, LNumBytes);
+    Move(Pointer(s)^, Pointer(LAnsiString)^, LNumBytes);
+  end;
+  result := string(MimeEncodeStringNoCRLF(LAnsiString));
 end;
 
 function MimeDecodeString(const s: AnsiString): AnsiString;
@@ -446,8 +496,20 @@ begin
 end;
 
 function MimeDecodeString(const s: string): string;
+var
+  LAnsiString: AnsiString;
+  LNumUnicodeChars: Longint;
 begin
-  result := string(MimeDecodeString(AnsiString(s)));
+  LAnsiString := MimeDecodeString(AnsiString(s));
+  // If encoded contains non-Ansi characters then push the byte data
+  // back into a unicode string.
+  if _OnlyAnsi(LAnsiString) then
+    Result := string(LAnsiString)
+  else begin
+    LNumUnicodeChars := Length(LAnsiString) div SizeOf(Char);
+    SetLength(Result, LNumUnicodeChars);
+    Move(Pointer(LAnsiString)^, Pointer(Result)^, Length(LAnsiString));
+  end;
 end;
 
 procedure DecodeHttpBasicAuthentication(const BasicCredentials: AnsiString; out UserId, Password: AnsiString);

@@ -38,6 +38,10 @@ type
 
 implementation
 
+{$IFNDEF FPC}
+  {$R *.dfm}
+{$ENDIF}
+
 uses
   contactmanager;
 
@@ -47,7 +51,7 @@ procedure TCityMaintFrm.SetupMediators;
 begin
   mName:= TCity_Name_TEdit_Mediator.CreateCustom(edCityName, Data, 'Name', 'Text');
   mZip:= TCity_Zip_TEdit_Mediator.CreateCustom(edZip, Data, 'Zip', 'Text');
-  mCountry:= TCity_Country_TCombobox_Mediator.CreateCustom(gContactManager.CountryList, cbCountry, Data, 'Country');
+  mCountry:= TCity_Country_TCombobox_Mediator.CreateCustom(cbCountry, gContactManager.CountryList, 'Country',  'Country');
 
   Data.NotifyObservers;
 end;
