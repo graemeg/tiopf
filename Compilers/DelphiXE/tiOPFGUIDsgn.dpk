@@ -1,0 +1,48 @@
+package tiOPFGUIDsgn;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'TechInsite Object Persistence Framework (tiOPF) GUI Controls'}
+{$LIBSUFFIX 'XE'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+{$DEFINE PACKAGE}
+
+requires
+  vcl,
+  rtl,
+  vclx,
+  designide,
+  vclactnband,
+  tiOPFGUI,
+  tiOPFCore,
+  dbrtl;
+
+contains
+  tiSplitterEditor in '..\..\GUI\tiSplitterEditor.pas',
+  tiOPFControlsReg in '..\..\GUI\tiOPFControlsReg.pas',
+  DtiDefaultActionValues in '..\..\GUI\DtiDefaultActionValues.pas' {tidmDefaultActionValues: TDataModule},
+  tiTreeviewEditor in '..\..\GUI\tiTreeviewEditor.pas',
+  tiDataSet_Reg in '..\..\Options\tiDataSet_Reg.pas';
+
+end.

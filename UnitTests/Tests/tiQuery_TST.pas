@@ -812,7 +812,7 @@ begin
   GTIOPFManager.ExecInsertSQL(
     cTIQueryTableName,
     [cTIQueryColName],
-    [DateTimeToStr(EncodeDate(2010, 01, 01))],
+    [FormatDateTime('dd/mm/yyyy hh:nn:ss', EncodeDate(2010, 01, 01))],
     TestSetupData.DBName,
     TestSetupData.PersistenceLayerName);
   tiOPFManager_DoExecInsertSQLCheck(tiOPFManager_DoExecInsertSQLCheckDateTime);

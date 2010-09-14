@@ -64,9 +64,19 @@ const
   CTIProtocolFile = 'file';
   CTIProtocolSelf = 'self';
 
+{$IFDEF DELPHIXE}
+  cPackageSuffix = '220';
+  cCompilerName = 'Delphi XE';
+{$ENDIF}
+
 {$IFDEF DELPHI2010}
-  cPackageSuffix = '140';
+  cPackageSuffix = '210';
   cCompilerName = 'Delphi 2010';
+{$ENDIF}
+
+{$IFDEF DELPHI2009}
+  cPackageSuffix = '200';
+  cCompilerName = 'Delphi 2009';
 {$ENDIF}
 
 {$IFDEF FPC}

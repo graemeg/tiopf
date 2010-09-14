@@ -2078,12 +2078,15 @@ begin
 
   if FiPrecision > 0 then
   begin
-    if AnsiPos(FsEditMask, DecimalSeparator) <> 0 then
+    if AnsiPos(FsEditMask,
+        {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DecimalSeparator) <> 0 then
       FsEditMask := Copy(FsEditMask, 1, Pos(FsEditMask, '.') - 1);
     lFrac := '';
     for i := 1 to FiPrecision do
       lFrac := lFrac + '0';
-    FsEditMask := FsEditMask + DecimalSeparator + lFrac;
+    FsEditMask := FsEditMask +
+        {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DecimalSeparator +
+        lFrac;
   end;
   Value := Value;
 
@@ -3825,7 +3828,9 @@ end;
 constructor TtiPerAwareDateTimeEdit.Create(AOwner: TComponent);
 begin
   inherited;
-  FormatString := ShortDateFormat + ' ' + ShortTimeFormat;
+  FormatString :=
+      {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}ShortDateFormat + ' ' +
+      {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}ShortTimeFormat;
 end;
 
 procedure TtiPerAwareDateTimeEdit.DoValidation;
@@ -3840,7 +3845,7 @@ end;
 constructor TtiPerAwareTimeEdit.Create(AOwner: TComponent);
 begin
   inherited;
-  FormatString := ShortTimeFormat;
+  FormatString := {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}ShortTimeFormat;
 end;
 
 procedure TtiPerAwareTimeEdit.DoValidation;
@@ -3865,7 +3870,7 @@ end;
 constructor TtiPerAwareDateEdit.Create(AOwner: TComponent);
 begin
   inherited;
-  FormatString := ShortDateFormat;
+  FormatString := {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}ShortDateFormat;
 end;
 
 procedure TtiPerAwareDateEdit.DoValidation;
@@ -3888,9 +3893,11 @@ end;
 
 initialization
   // 02/01/2002, Ha-Hoe, Made change to decimal separator
-  cFloatEditMask     := '#' + ThousandSeparator  + '##0' ;
+  cFloatEditMask     := '#' +
+      {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}ThousandSeparator  +
+      '##0' ;
   cValidFloatChrs    :=
-    [ '-', DecimalSeparator ,
+    [ '-', {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DecimalSeparator ,
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
 
 end.

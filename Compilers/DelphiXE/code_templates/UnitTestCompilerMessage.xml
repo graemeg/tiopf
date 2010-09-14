@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="ut" invoke="auto">
+		<description>
+			{$MESSAGE 'To do: Unit test this code'};
+		</description>
+		<author>
+			Peter Hinrichsen
+		</author>
+		<code language="Delphi" context="methodbody" ><![CDATA[{$MESSAGE 'To do: Unit test this code'};]]>
+		</code>
+	</template>
+</codetemplate>

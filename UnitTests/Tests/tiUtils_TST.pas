@@ -1658,7 +1658,9 @@ var
   lDate : TDateTime;
   lExpected: string;
 begin
-  lExpected := Format(cExpected, [DateSeparator, DateSeparator]);
+  lExpected := Format(cExpected,
+      [{$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DateSeparator,
+       {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DateSeparator]);
   lDate := EncodeDate(2000, 1, 1) + EncodeTime(6, 30, 15, 10);
   Check(tiUtils.tiDateToStr(lDate) =
          lExpected,
@@ -1676,7 +1678,11 @@ var
   lDate: TDateTime;
   lExpected: string;
 begin
-  lExpected := Format(cExpected, [DateSeparator, DateSeparator, TimeSeparator, TimeSeparator]);
+  lExpected := Format(cExpected,
+      [{$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DateSeparator,
+       {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}DateSeparator,
+       {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}TimeSeparator,
+       {$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}TimeSeparator]);
   lDate := EncodeDate(2000, 1, 1) + EncodeTime(6, 30, 15, 10);
   Check(tiUtils.tiDateTimeToStr(lDate) =
          lExpected,

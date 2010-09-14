@@ -478,9 +478,17 @@ begin
       LIdentLong := 'report_long_d2007';
       LIdentShort := 'report_short_d2007';
     {$ENDIF}
+    {$IFDEF DELPHI2009}
+      LIdentLong := 'report_long_d2009';
+      LIdentShort := 'report_short_d2009';
+    {$ENDIF}
     {$IFDEF DELPHI2010}
       LIdentLong := 'report_long_d2010';
       LIdentShort := 'report_short_d2010';
+    {$ENDIF}
+    {$IFDEF DELPHIXE}
+      LIdentLong := 'report_long_dxe';
+      LIdentShort := 'report_short_dxe';
     {$ENDIF}
 
     if (LIdentLong = '') or (LIdentShort = '') then

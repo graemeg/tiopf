@@ -34743,7 +34743,8 @@ begin
       end;
   else
     if Format = CF_CSV then
-      S := ContentToText(Source, AnsiChar (ListSeparator)) + #0
+      S := ContentToText(Source,
+          AnsiChar ({$IFDEF DELPHIXEORABOVE}FormatSettings.{$ENDIF}ListSeparator)) + #0
     else
       if (Format = CF_VRTF) or (Format = CF_VRTFNOOBJS) then
         S := ContentToRTF(Source) + #0

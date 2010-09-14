@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<codetemplate	xmlns="http://schemas.borland.com/Delphi/2005/codetemplates"
+				version="1.0.0">
+	<template name="map" surround="true" invoke="auto">
+		<description>
+			RegisterMapping
+		</description>
+		<author>
+			Lee Jenkins
+		</author>
+    <point name="ClassToMap">
+			<hint>
+				Name of the class to map.
+			</hint>
+			<text>
+				TtiObject
+			</text>
+		</point>
+    <point name="TableName">
+			<hint>
+				Database table name.
+			</hint>
+			<text>
+				MyTable
+			</text>
+		</point>
+    <point name="AtribName">
+			<hint>
+      	Class Attribute
+			</hint>
+			<text>
+				MyClassProp
+			</text>
+		</point>
+    <point name="DBFieldName">
+			<hint>
+      	Database field name.
+			</hint>
+			<text>
+				MyFieldName
+			</text>
+		</point>
+		<code language="Delphi" context="methodbody" delimiter="|"><![CDATA[GTIOPFManager.ClassDBMappingMgr.RegisterMapping(|ClassToMap|,
+    '|TableName|', '|AtribName|', '|DBFieldName|');
+|end|]]>
+		</code>
+	</template>
+</codetemplate>
