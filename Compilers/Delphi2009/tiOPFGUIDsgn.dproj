@@ -84,8 +84,6 @@
 			</DCCReference>
 			<DCCReference Include="..\..\GUI\tiTreeviewEditor.pas"/>
 			<DCCReference Include="..\..\Options\tiDataSet_Reg.pas"/>
-			<DCCReference Include="..\..\Options\tiDataset.pas"/>
-			<DCCReference Include="vcljpg.dcp"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

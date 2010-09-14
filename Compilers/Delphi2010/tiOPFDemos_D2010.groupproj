@@ -81,6 +81,9 @@
 			<Projects Include="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="..\..\Demos\Demo_19_GUIWithMediators\Demo_GUIWithMediators.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -325,14 +328,23 @@
 		<Target Name="AdrsBookUIHTML:Make">
 			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_18_AdrsBook\ApplicationServer\HTMLClient\AdrsBookUIHTML.dproj"/>
 		</Target>
+		<Target Name="Demo_GUIWithMediators">
+			<MSBuild Projects="..\..\Demos\Demo_19_GUIWithMediators\Demo_GUIWithMediators.dproj"/>
+		</Target>
+		<Target Name="Demo_GUIWithMediators:Clean">
+			<MSBuild Targets="Clean" Projects="..\..\Demos\Demo_19_GUIWithMediators\Demo_GUIWithMediators.dproj"/>
+		</Target>
+		<Target Name="Demo_GUIWithMediators:Make">
+			<MSBuild Targets="Make" Projects="..\..\Demos\Demo_19_GUIWithMediators\Demo_GUIWithMediators.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="Demo_ReadMe;Demo_LoadPersistenceLayerIfDef;Demo_LoadPersistenceLayerUses;Demo_CreateDatabase;Demo_ConnectToDatabase;Demo_CreateTable;Demo_VisitorBasics;Demo_Collection;Demo_EditDataInGUI;Demo_CollectionWithFilter;Demo_CollectionWithCriteria;Demo_OneToMany;Demo_Inheritance;Demo_OneToOne;Demo_OrdinalTypes;Demo_LookupList;Demo_TIDataSet;Demo_MastApp;DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookUIConsole;AdrsBookUIModalForms;AdrsBookApplicationServerGUI;AdrsBookApplicationServer;LauncherServer;AdrsBookUIHTML"/>
+			<CallTarget Targets="Demo_ReadMe;Demo_LoadPersistenceLayerIfDef;Demo_LoadPersistenceLayerUses;Demo_CreateDatabase;Demo_ConnectToDatabase;Demo_CreateTable;Demo_VisitorBasics;Demo_Collection;Demo_EditDataInGUI;Demo_CollectionWithFilter;Demo_CollectionWithCriteria;Demo_OneToMany;Demo_Inheritance;Demo_OneToOne;Demo_OrdinalTypes;Demo_LookupList;Demo_TIDataSet;Demo_MastApp;DUnitAdrsBookGUI;DUnitAdrsBookText;AdrsBookUIConsole;AdrsBookUIModalForms;AdrsBookApplicationServerGUI;AdrsBookApplicationServer;LauncherServer;AdrsBookUIHTML;Demo_GUIWithMediators"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="Demo_ReadMe:Clean;Demo_LoadPersistenceLayerIfDef:Clean;Demo_LoadPersistenceLayerUses:Clean;Demo_CreateDatabase:Clean;Demo_ConnectToDatabase:Clean;Demo_CreateTable:Clean;Demo_VisitorBasics:Clean;Demo_Collection:Clean;Demo_EditDataInGUI:Clean;Demo_CollectionWithFilter:Clean;Demo_CollectionWithCriteria:Clean;Demo_OneToMany:Clean;Demo_Inheritance:Clean;Demo_OneToOne:Clean;Demo_OrdinalTypes:Clean;Demo_LookupList:Clean;Demo_TIDataSet:Clean;Demo_MastApp:Clean;DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookUIConsole:Clean;AdrsBookUIModalForms:Clean;AdrsBookApplicationServerGUI:Clean;AdrsBookApplicationServer:Clean;LauncherServer:Clean;AdrsBookUIHTML:Clean"/>
+			<CallTarget Targets="Demo_ReadMe:Clean;Demo_LoadPersistenceLayerIfDef:Clean;Demo_LoadPersistenceLayerUses:Clean;Demo_CreateDatabase:Clean;Demo_ConnectToDatabase:Clean;Demo_CreateTable:Clean;Demo_VisitorBasics:Clean;Demo_Collection:Clean;Demo_EditDataInGUI:Clean;Demo_CollectionWithFilter:Clean;Demo_CollectionWithCriteria:Clean;Demo_OneToMany:Clean;Demo_Inheritance:Clean;Demo_OneToOne:Clean;Demo_OrdinalTypes:Clean;Demo_LookupList:Clean;Demo_TIDataSet:Clean;Demo_MastApp:Clean;DUnitAdrsBookGUI:Clean;DUnitAdrsBookText:Clean;AdrsBookUIConsole:Clean;AdrsBookUIModalForms:Clean;AdrsBookApplicationServerGUI:Clean;AdrsBookApplicationServer:Clean;LauncherServer:Clean;AdrsBookUIHTML:Clean;Demo_GUIWithMediators:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="Demo_ReadMe:Make;Demo_LoadPersistenceLayerIfDef:Make;Demo_LoadPersistenceLayerUses:Make;Demo_CreateDatabase:Make;Demo_ConnectToDatabase:Make;Demo_CreateTable:Make;Demo_VisitorBasics:Make;Demo_Collection:Make;Demo_EditDataInGUI:Make;Demo_CollectionWithFilter:Make;Demo_CollectionWithCriteria:Make;Demo_OneToMany:Make;Demo_Inheritance:Make;Demo_OneToOne:Make;Demo_OrdinalTypes:Make;Demo_LookupList:Make;Demo_TIDataSet:Make;Demo_MastApp:Make;DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookUIConsole:Make;AdrsBookUIModalForms:Make;AdrsBookApplicationServerGUI:Make;AdrsBookApplicationServer:Make;LauncherServer:Make;AdrsBookUIHTML:Make"/>
+			<CallTarget Targets="Demo_ReadMe:Make;Demo_LoadPersistenceLayerIfDef:Make;Demo_LoadPersistenceLayerUses:Make;Demo_CreateDatabase:Make;Demo_ConnectToDatabase:Make;Demo_CreateTable:Make;Demo_VisitorBasics:Make;Demo_Collection:Make;Demo_EditDataInGUI:Make;Demo_CollectionWithFilter:Make;Demo_CollectionWithCriteria:Make;Demo_OneToMany:Make;Demo_Inheritance:Make;Demo_OneToOne:Make;Demo_OrdinalTypes:Make;Demo_LookupList:Make;Demo_TIDataSet:Make;Demo_MastApp:Make;DUnitAdrsBookGUI:Make;DUnitAdrsBookText:Make;AdrsBookUIConsole:Make;AdrsBookUIModalForms:Make;AdrsBookApplicationServerGUI:Make;AdrsBookApplicationServer:Make;LauncherServer:Make;AdrsBookUIHTML:Make;Demo_GUIWithMediators:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

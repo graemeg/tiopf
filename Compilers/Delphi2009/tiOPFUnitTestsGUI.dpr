@@ -1,4 +1,4 @@
-program DUnitTIOPFGui;
+program tiOPFUnitTestsGUI;
 
 uses
   tiBaseObject,

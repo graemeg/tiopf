@@ -110,6 +110,8 @@
 			<DCCReference Include="..\..\Core\tiFilteredObjectList.pas"/>
 			<DCCReference Include="..\..\Core\tiWin32.pas"/>
 			<DCCReference Include="..\..\Core\tiOIDGUID.pas"/>
+			<DCCReference Include="..\..\Core\tiBaseMediator.pas"/>
+			<DCCReference Include="..\..\Core\tiModelMediator.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

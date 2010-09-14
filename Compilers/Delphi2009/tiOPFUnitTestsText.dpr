@@ -1,4 +1,4 @@
-program DUnitTIOPFText;
+program tiOPFUnitTestsText;
 {$APPTYPE CONSOLE}
 uses
   FastMM4,

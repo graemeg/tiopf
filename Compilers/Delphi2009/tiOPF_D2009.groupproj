@@ -15,7 +15,10 @@
 			<Projects Include="tiOPFGUIDsgn.dproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="..\..\UnitTests\GUI\DUnitTIOPFGui2009.dproj">
+			<Projects Include="tiOPFUnitTestsGUI.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="tiOPFUnitTestsText.dproj">
 				<Dependencies/>
 			</Projects>
 		</ItemGroup>
@@ -64,23 +67,32 @@
 		<Target Name="tiOPFGUIDsgn:Make">
 			<MSBuild Targets="Make" Projects="tiOPFGUIDsgn.dproj"/>
 		</Target>
-		<Target Name="DUnitTIOPFGui2009">
-			<MSBuild Projects="..\..\UnitTests\GUI\DUnitTIOPFGui2009.dproj"/>
+		<Target Name="tiOPFUnitTestsGUI">
+			<MSBuild Projects="tiOPFUnitTestsGUI.dproj"/>
 		</Target>
-		<Target Name="DUnitTIOPFGui2009:Clean">
-			<MSBuild Targets="Clean" Projects="..\..\UnitTests\GUI\DUnitTIOPFGui2009.dproj"/>
+		<Target Name="tiOPFUnitTestsGUI:Clean">
+			<MSBuild Targets="Clean" Projects="tiOPFUnitTestsGUI.dproj"/>
 		</Target>
-		<Target Name="DUnitTIOPFGui2009:Make">
-			<MSBuild Targets="Make" Projects="..\..\UnitTests\GUI\DUnitTIOPFGui2009.dproj"/>
+		<Target Name="tiOPFUnitTestsGUI:Make">
+			<MSBuild Targets="Make" Projects="tiOPFUnitTestsGUI.dproj"/>
+		</Target>
+		<Target Name="tiOPFUnitTestsText">
+			<MSBuild Projects="tiOPFUnitTestsText.dproj"/>
+		</Target>
+		<Target Name="tiOPFUnitTestsText:Clean">
+			<MSBuild Targets="Clean" Projects="tiOPFUnitTestsText.dproj"/>
+		</Target>
+		<Target Name="tiOPFUnitTestsText:Make">
+			<MSBuild Targets="Make" Projects="tiOPFUnitTestsText.dproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="tiOPFCore;tiOPFOptions;tiOPFGUI;tiOPFGUIDsgn;DUnitTIOPFGui2009"/>
+			<CallTarget Targets="tiOPFCore;tiOPFOptions;tiOPFGUI;tiOPFGUIDsgn;tiOPFUnitTestsGUI;tiOPFUnitTestsText"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="tiOPFCore:Clean;tiOPFOptions:Clean;tiOPFGUI:Clean;tiOPFGUIDsgn:Clean;DUnitTIOPFGui2009:Clean"/>
+			<CallTarget Targets="tiOPFCore:Clean;tiOPFOptions:Clean;tiOPFGUI:Clean;tiOPFGUIDsgn:Clean;tiOPFUnitTestsGUI:Clean;tiOPFUnitTestsText:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="tiOPFCore:Make;tiOPFOptions:Make;tiOPFGUI:Make;tiOPFGUIDsgn:Make;DUnitTIOPFGui2009:Make"/>
+			<CallTarget Targets="tiOPFCore:Make;tiOPFOptions:Make;tiOPFGUI:Make;tiOPFGUIDsgn:Make;tiOPFUnitTestsGUI:Make;tiOPFUnitTestsText:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

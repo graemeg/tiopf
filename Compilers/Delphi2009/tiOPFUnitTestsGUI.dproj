@@ -1,11 +1,11 @@
 	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{f05032a3-ae2d-47b3-b655-390d052145f3}</ProjectGuid>
-			<MainSource>DUnitTIOPFGui.dpr</MainSource>
+			<MainSource>tiOPFUnitTestsGUI.dpr</MainSource>
 			<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 			<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
-			<DCC_DependencyCheckOutputName>..\..\_bin\DUnitTIOPFGui.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\_bin\tiOPFUnitTestsGUI.exe</DCC_DependencyCheckOutputName>
 			<ProjectVersion>12.0</ProjectVersion>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 		</PropertyGroup>
@@ -26,7 +26,7 @@
 			<DCC_ExeOutput>..\..\_bin</DCC_ExeOutput>
 			<DCC_BplOutput>_Dcu</DCC_BplOutput>
 			<DCC_UsePackage>vclx;vcl;dbrtl;Rave76VCL;bdertl;rtl;vclactnband;vcldb;vcldbx;dsnap;dsnapcon;TeeUI;TeeDB;Tee;adortl;vclib;ibxpress;IndyCore;IndySystem;IndyProtocols;xmlrtl;inet;intrawebdb_100_120;Intraweb_100_120;VclSmp;vclie;websnap;webdsnap;inetdbbde;inetdbxpress;soaprtl;vclribbon;dbexpress;DbxCommonDriver;DataSnapIndy10ServerTransport;DataSnapProviderClient;DataSnapServer;DbxClientDriver;DBXInterBaseDriver;DBXMySQLDriver;dbxcds;DBXSybaseASEDriver;DBXSybaseASADriver;DBXOracleDriver;DBXMSSQLDriver;DBXInformixDriver;DBXDb2Driver;RemObjects_WebBroker_D12;RemObjects_RODX_D12;RemObjects_BPDX_D12;RemObjects_Synapse_D12;RemObjects_Indy_D12;CodeSiteLoggingVcl;CodeSiteDBToolsVcl;tiOPFCore;tiOPFGUI;iw10tmsd2009;iw10tmsgridd2009;iw10tmsgridded2009;iw10tmsxlsd2009;Jcl;JclVcl;JvCoreD12R;JvSystemD12R;JvStdCtrlsD12R;JvAppFrmD12R;JvCmpD12R;JvCryptD12R;JvCtrlsD12R;JvCustomD12R;JvDBD12R;JvDlgsD12R;JvEDID12R;JvGlobusD12R;JvInterpreterD12R;JvJansD12R;JvManagedThreadsD12R;JvMMD12R;JvNetD12R;JvPageCompsD12R;JvRuntimeDesignD12R;JvTimeFrameworkD12R;JvValidatorsD12R;JvWizardD12R;fs12;frx12;frxcs12;fsDB12;frxDB12;fsBDE12;frxBDE12;fsADO12;frxADO12;fsIBX12;frxIBX12;frxDBX12;frxe12;fsTee12;frxTee12</DCC_UsePackage>
-			<DCC_DependencyCheckOutputName>..\..\_bin\DUnitTIOPFGui.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\_bin\tiOPFUnitTestsGUI.exe</DCC_DependencyCheckOutputName>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<Version>7.0</Version>
@@ -110,14 +110,14 @@
 						<Excluded_Packages Name="$(BDS)\bin\dclofficexp120.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>
 					<Source>
-						<Source Name="MainSource">DUnitTIOPFGui.dpr</Source>
+						<Source Name="MainSource">tiOPFUnitTestsGUI.dpr</Source>
 					</Source>
 				</Delphi.Personality>
 			</BorlandProject>
 			<ProjectFileVersion>12</ProjectFileVersion>
 		</ProjectExtensions>
 		<ItemGroup>
-			<DelphiCompile Include="DUnitTIOPFGui.dpr">
+			<DelphiCompile Include="tiOPFUnitTestsGUI.dpr">
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="..\Common\tiTestDependencies.pas"/>
