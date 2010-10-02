@@ -64,6 +64,7 @@ uses
   ,tiUtils
   ,tiTestDependencies
   ,tiExcept
+  ,tiConstants
   ,Classes
   ,SysUtils
   {$IFDEF MSWINDOWS}
@@ -140,7 +141,7 @@ var
   i, lCount: integer;
 
 const
-  testString: string = 'test' + #13#10;
+  testString: string = 'test' + cLineEnding;
 
 begin
   SetLength(ls, 0);
@@ -171,7 +172,7 @@ var
   i, lCount: integer;
 
 const
-  testString: string = 'test' + #13#10;
+  testString: string = 'test' + cLineEnding;
 
 begin
   SetLength(ls, 0);
@@ -603,8 +604,8 @@ begin
   lStream:= TtiPreSizedStream.Create(cStreamStartSize, cStreamGrowBy);
   try
     lStream.WriteLn('test');
-    CheckEquals(6, lStream.Size, 'Size');
-    CheckEquals('test'#13#10, lStream.AsString, 'AsString');
+    CheckEquals(4 + Length(tiLineEnd), lStream.Size, 'Size');
+    CheckEquals('test'+tiLineEnd, lStream.AsString, 'AsString');
   finally
     lStream.Free;
   end;
