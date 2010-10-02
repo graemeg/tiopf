@@ -130,6 +130,7 @@ type
     procedure tiIfString;
     procedure tiInsertStringToStream;
     procedure tiIntegerList;
+    procedure tiIntegerList_Sort;
     procedure tiIntlDateDispAsDateTime;
     procedure tiIntlDateStorAsDateTime;
     procedure tiIntToCommaStr;
@@ -3852,6 +3853,25 @@ begin
   end;
 end;
 
+procedure TTestTIUtils.tiIntegerList_Sort;
+var
+  L: TtiIntegerList;
+begin
+  L := TtiIntegerList.Create;
+  try
+    L.Add(5);
+    L.Add(2);
+    L.Add(1);
+    L.Add(6);
+    L.Sort;
+    CheckEquals(1, L.Items[0], 'Failed on 1');
+    CheckEquals(2, L.Items[1], 'Failed on 2');
+    CheckEquals(5, L.Items[2], 'Failed on 3');
+    CheckEquals(6, L.Items[3], 'Failed on 4');
+  finally
+    L.Free;
+  end;
+end;
 
 procedure TTestTIUtils.tiDateAsIntlDateDisp;
 var
