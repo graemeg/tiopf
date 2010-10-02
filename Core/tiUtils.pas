@@ -4044,7 +4044,7 @@ function _DoSort(Item1, Item2: Pointer): Integer;
 begin
   result:=
     CompareValue(
-      TtiIntegerListItem(Item2).AValue,
+      TtiIntegerListItem(Item1).AValue,
       TtiIntegerListItem(Item2).AValue);
 end;
 
