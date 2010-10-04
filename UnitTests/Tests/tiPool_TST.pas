@@ -186,7 +186,7 @@ var
   lItem1 : TtiBaseObject;
   lItem2 : TtiBaseObject;
 begin
-  lPool := TtiPoolForTesting.Create(0, 2);
+  lPool := TtiPoolForTesting.Create(1, 2);
   try
     lPool.SetTimeOut(0);
     lItem1 := lPool.Lock;
