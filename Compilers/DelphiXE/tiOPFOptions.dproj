@@ -113,6 +113,13 @@
 			<DCCReference Include="..\..\Options\tiRegistry.pas"/>
 			<DCCReference Include="..\..\Options\tiQueryDataset.pas"/>
 			<DCCReference Include="..\..\Options\tiDataset.pas"/>
+			<DCCReference Include="..\..\Options\tiGenericBase.pas"/>
+			<DCCReference Include="..\..\Options\tiGenericFilteredObjectList.pas"/>
+			<DCCReference Include="..\..\Options\tiGenericFilteredThreadList.pas"/>
+			<DCCReference Include="..\..\Options\tiGenericList.pas"/>
+			<DCCReference Include="..\..\Options\tiGenericThreadList.pas"/>
+			<DCCReference Include="..\..\Options\tiLogToEventHandler.pas"/>
+			<DCCReference Include="..\..\Options\tiMIMEMultipartFormDataDecoder.pas"/>
 			<BuildConfiguration Include="Debug">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

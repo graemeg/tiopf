@@ -1,5 +1,7 @@
 unit tiGenericFilteredObjectList;
 
+{$I tiDefines.inc}
+
 interface
 
 uses
