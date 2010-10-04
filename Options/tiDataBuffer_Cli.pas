@@ -274,7 +274,7 @@ begin
   Result:=False;
   I:=1;
   L:=Length(S);
-  While (I<L) and Not Result do
+  While (I<=L) and Not Result do
     begin
     Result:=S[i]=C;
     Inc(I);
