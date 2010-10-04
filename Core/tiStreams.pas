@@ -420,7 +420,7 @@ var
 begin
   if Pointer(s) <> nil then
     begin
-      l := PCardinal(Cardinal(s) - 4)^;
+      l := Length(s);
       SetString(Result, nil, MimeEncodedSize(l));
       MimeEncode(Pointer(s)^, l, Pointer(Result)^);
     end
@@ -483,7 +483,7 @@ var
 begin
   if Pointer(s) <> nil then
     begin
-      l := PCardinal(Cardinal(s) - 4)^;
+      l := Length(s);
       SetString(Result, nil, MimeDecodedSize(l));
       ByteBuffer := 0;
       ByteBufferSpace := 4;
@@ -524,7 +524,7 @@ begin
   p := Pointer(BasicCredentials);
   if p = nil then goto Fail;
 
-  l := Cardinal(Pointer(p - 4)^);
+  l := Length(BasicCredentials);
   if l <= LBasic then goto Fail;
 
   Dec(l, LBasic);
