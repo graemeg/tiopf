@@ -388,7 +388,7 @@ var
 begin
   if Pointer(s) = nil then
     goto NothingToDo;
-  l := Cardinal (Pointer (Cardinal (Pointer (s)) - 4)^);
+  l := Length(s);
   SetLength (Result, (l + 2) div 3 * 4);
   if Pointer (Result) = nil then
     goto NothingToDo;
@@ -407,8 +407,7 @@ var
  l: Cardinal;
 begin
  if Pointer (s) = nil then goto NothingToDo;
- { l := Length (s); }
- l := Cardinal (Pointer (Cardinal (Pointer (s)) - 4)^);
+ l := Length(s);
  SetLength (Result, (l + 3) div 4 * 3);
  if Pointer (Result) = nil then goto NothingToDo;
  ByteBuffer := 0;
