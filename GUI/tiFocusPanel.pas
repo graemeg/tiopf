@@ -96,10 +96,10 @@ begin
     try
       Canvas.Pen.Style := psDot;
       if pDraw then
-      Canvas.Pen.Color := clBlack
+        Canvas.Pen.Color := clBlack
       else
-      Canvas.Pen.Color := Color;
-      Canvas.Rectangle(lRect);
+        Canvas.Pen.Color := Color;
+      Canvas.FrameRect(lRect);
     finally
       Canvas.Pen.Style := lPenStyle;
     end;
