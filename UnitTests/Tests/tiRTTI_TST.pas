@@ -128,7 +128,11 @@ begin
     CheckEquals('ShortStringProp', lsl.Strings[0], 'Failed on ShortStringProp');
     CheckEquals('ReadOnlyShortStringProp', lsl.Strings[1], 'Failed on ReadOnlyShortStringProp');
 
+{$IF defined(FPC) and defined(FPC_WIDESTRING_EQUAL_UNICODESTRING)}
+    tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [ tkUString ]);
+{$ELSE}
     tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [ tkWString ]);
+{$ENDIF}
     CheckEquals(2, lsl.Count, 'Failed on WideStringProp');
     CheckEquals('WideStringProp', lsl.Strings[0], 'Failed on WideStringProp');
     CheckEquals('ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp');
@@ -232,7 +236,11 @@ begin
       CheckEquals('ShortStringProp', lsl.Strings[0], 'Failed on ShortStringProp');
       CheckEquals('ReadOnlyShortStringProp', lsl.Strings[1], 'Failed on ReadOnlyShortStringProp');
 
+{$IF defined(FPC) and defined(FPC_WIDESTRING_EQUAL_UNICODESTRING)}
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkUString ]);
+{$ELSE}
       tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkWString ]);
+{$ENDIF}
       CheckEquals(2, lsl.Count, 'Failed on WideStringProp');
       CheckEquals('WideStringProp', lsl.Strings[0], 'Failed on WideStringProp');
       CheckEquals('ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp');
