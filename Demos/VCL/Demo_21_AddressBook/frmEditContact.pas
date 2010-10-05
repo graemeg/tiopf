@@ -142,6 +142,7 @@ procedure TContactEditForm.FormDestroy(Sender: TObject);
 begin
   FAdrsMediator.Active := False;
   FMediator.Active := False;
+  FMemento.Free;
 end;
 
 end.

@@ -14,6 +14,10 @@ object frmDemoMain: TfrmDemoMain
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  DesignSize = (
+    810
+    342)
   PixelsPerInch = 96
   TextHeight = 13
   object btnAdd: TButton
