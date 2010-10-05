@@ -396,6 +396,7 @@ begin
   try
     if ARowIdx+1 = View.RowCount then // In case of add notification
       View.RowCount:=View.RowCount+1;
+    { ARowIdx+1 is because TStringGrid row 0 is the column header row - part of rowcount }
     for i := 0 to FieldsInfo.Count - 1 do
     begin
       lFieldName := FieldsInfo[i].PropName;
@@ -448,16 +449,16 @@ begin
       lColumnTotalWidth := lColumnTotalWidth + C.Width;
   end;
   if ShowDeleted then
-    View.RowCount := Model.Count+1
+    View.RowCount := Model.Count
   else
-    View.RowCount := Model.CountNotDeleted+1;
+    View.RowCount := Model.CountNotDeleted;
 end;
 
 procedure TtiStringGridMediatorView.SetupGUIandObject;
 
 begin
   //Setup default properties for the StringGrid
-  View.Options:=View.Options+[goRowSelect];
+  View.Options:=View.Options+[goRowSelect,goThumbTracking];
   // Rowcount is set after columns are created, because clearing columns
   //  resets rowcount.
 end;
