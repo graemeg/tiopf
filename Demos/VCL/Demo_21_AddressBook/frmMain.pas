@@ -34,6 +34,7 @@ type
     procedure MIExitClick(Sender: TObject);
     procedure EditContactClick(Sender: TObject);
     procedure btnShowClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     FMediator: TtiModelMediator;
     FDisplayList : TContactDisplayList;
@@ -160,6 +161,11 @@ begin
   C := D.Contact;
   if Assigned(C) then
     ShowMessage(C.AsDebugString);
+end;
+
+procedure TfrmDemoMain.FormDestroy(Sender: TObject);
+begin
+  FDisplayList.Free;
 end;
 
 end.

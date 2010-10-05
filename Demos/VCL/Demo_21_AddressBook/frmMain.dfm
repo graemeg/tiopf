@@ -1,9 +1,9 @@
 object frmDemoMain: TfrmDemoMain
   Left = 253
   Top = 351
+  Width = 818
+  Height = 395
   Caption = 'VCL Mediators Demo'
-  ClientHeight = 349
-  ClientWidth = 810
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,6 +14,7 @@ object frmDemoMain: TfrmDemoMain
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignSize = (
     810
     349)
