@@ -3686,7 +3686,7 @@ begin
       lFields.Add('IntProp');
       lFields.Add('DateTimeProp');
       lFields.Add('FloatProp');
-      lString2 := lList.AsString(',', #13#10, lFields);
+      lString2 := lList.AsString(',', cLineEnding, lFields);
     finally
       lFields.Free;
     end;
@@ -3716,7 +3716,7 @@ begin
       tiObject.tiListToCSV(lList, lFileName, lFields);
       lString1 := tiUtils.tiFileToString(lFileName);
       tiDeleteFile(lFileName);
-      lString2 := lList.AsString(',', #13#10, lFields);
+      lString2 := lList.AsString(',', cLineEnding, lFields);
     finally
       lFields.Free;
     end;

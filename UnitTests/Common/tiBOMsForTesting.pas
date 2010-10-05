@@ -696,7 +696,7 @@ begin
     lsl.Add('IntProp');
     lsl.Add('DateTimeProp');
     lsl.Add('FloatProp');
-    Result := AsString(',', CrLf, lsl);
+    Result := AsString(',', cLineEnding, lsl);
   finally
     lsl.Free;
   end;
