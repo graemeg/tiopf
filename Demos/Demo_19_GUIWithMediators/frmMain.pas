@@ -25,6 +25,7 @@ type
     procedure btnChgViaCodeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { The object we will be working with. }
     FPerson: TPerson;
@@ -94,6 +95,11 @@ end;
 procedure TForm1.FormShow(Sender: TObject);
 begin
   SetupMediators;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  FPerson.Free;
 end;
 
 end.
