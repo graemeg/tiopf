@@ -1037,7 +1037,7 @@ begin
     result := '';
     for i := 0 to ParamCount - 1 do
     begin
-      result := tiAddTrailingValue(result, CrLf, true);
+      result := tiAddTrailingValue(result, tiLineEnd, true);
       result := result +
                 ParamName(i) + ' := ';
       if ParamIsNull[ ParamName(i)] then      // Display the fact
