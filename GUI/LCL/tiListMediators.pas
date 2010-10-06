@@ -441,7 +441,7 @@ begin
       if View.Width > (lColumnTotalWidth + lGridNonContentWidth) then
       begin
         lLastColumnWidth := View.Width - (lColumnTotalWidth + lGridNonContentWidth);
-        if lLastColumnWidth > 10 then
+        if lLastColumnWidth > C.Width then   { only resize last column if content width is less than grid's width }
           C.Width := lLastColumnWidth;
       end;
     end
