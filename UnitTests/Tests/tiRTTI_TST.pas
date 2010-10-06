@@ -6,9 +6,6 @@ interface
 
 uses
   Classes
-  {$IFDEF FPC}
-  ,testregistry
-  {$ENDIF}
   ,tiTestFramework
   ,tiObject
   ,tiBOMsForTesting
@@ -18,7 +15,6 @@ type
 
   TTesttiRTTI = class(TtiTestCase)
   published
-
     procedure tiGetSimplePropType;
     procedure tiVarSimplePropType;
     procedure tiIsNumericProp;
@@ -28,14 +24,12 @@ type
     procedure tiIsReadWritePropClass;
     procedure tiIsPublishedProp_Simple;
     procedure tiIsPublishedProp_PropertyPath;
-
     procedure SetProperty_Simple;
     procedure SetProperty_PropertyPath;
     procedure GetProperty_Simple;
     procedure GetProperty_PropertyPath;
     procedure GetPropertyClass;
     procedure PropertyInheritsFrom;
-
   end;
   
 
@@ -171,7 +165,7 @@ begin
     CheckEquals(2, lsl.Count, 'Failed on Int64Prop');
     CheckEquals('Int64Prop', lsl.Strings[0], 'Failed on Int64Prop');
 
-    { Delphi doesn't have this type defined! }
+    { Delphi doesn't have this type defined }
     {$IFDEF FPC}
     tiRTTI.tiGetPropertyNames(TTestGetPropNames, lsl, [tkBool]);
     CheckEquals(2, lsl.Count, 'Failed on tkBool');
@@ -225,7 +219,9 @@ begin
   try
     lObj := TTestGetPropNames.Create;
     try
-      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkLString {$IFDEF FPC},tkAString{$ENDIF} {$IFDEF UNICODE} , tkUString {$ENDIF} ]);
+      tiRTTI.tiGetPropertyNames(lObj, lsl, [ tkLString
+          {$IFDEF FPC},tkAString{$ENDIF}
+          {$IFDEF UNICODE},tkUString{$ENDIF} ]);
       CheckEquals(3, lsl.Count, 'Failed on StringProp');
       CheckEquals('Caption',            lsl.Strings[0], 'Caption');
       CheckEquals('StringProp',         lsl.Strings[1], 'StringProp');
@@ -244,7 +240,6 @@ begin
       CheckEquals(2, lsl.Count, 'Failed on WideStringProp');
       CheckEquals('WideStringProp', lsl.Strings[0], 'Failed on WideStringProp');
       CheckEquals('ReadOnlyWideStringProp', lsl.Strings[1], 'Failed on ReadOnlyWideStringProp');
-
 
 {$IFDEF UNICODE}
 // char and wide char are the same...
@@ -333,7 +328,6 @@ var
 begin
   lObj := TTestGetPropNames.Create;
   try
-
     Check(tiRTTI.tiGetSimplePropType(lObj, 'StringProp')      = tiTKString, 'Failed on StringProp');
     Check(tiRTTI.tiGetSimplePropType(lObj, 'ShortStringProp') = tiTKString, 'Failed on ShortStringProp');
     Check(tiRTTI.tiGetSimplePropType(lObj, 'WideStringProp')  = tiTKString, 'Failed on WideStringProp');
