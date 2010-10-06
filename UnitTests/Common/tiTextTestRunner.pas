@@ -356,9 +356,9 @@ procedure TtiTextTestListener.TestingStarts;
     write2Long('<title>tiOPF2 Unit Tests</title>');
     write2Long('</head> <body>');
     {$IFDEF DUNIT2}
-      write2Long('<h2>DUnit2 testing of tiOPF (Delphi ' + pDelphiVersion + ')</h2>');
+      write2Long('<h2>DUnit2 testing of tiOPF (' + cCompilerName + ' ' + pDelphiVersion + ')</h2>');
     {$ELSE}
-      write2Long('<h2>DUnit testing of tiOPF (Delphi ' + pDelphiVersion + ')</h2>');
+      write2Long('<h2>DUnit testing of tiOPF (' + cCompilerName + ' ' + pDelphiVersion + ')</h2>');
     {$ENDIF}
     write2Long('<h3>Persistence layers to be tested</h3>' + tiLineEnd);
     write2Long('<table border="1" cellpadding="4" style="font-family: Courier New; font-size: 12px" >' + tiLineEnd);
