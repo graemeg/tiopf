@@ -459,7 +459,7 @@ procedure TtiStringGridMediatorView.SetupGUIandObject;
 
 begin
   //Setup default properties for the StringGrid
-  View.Options:=View.Options+[goRowSelect,goThumbTracking];
+  View.Options:=View.Options+[goColSizing,goRowSelect,goThumbTracking];
   // Rowcount is set after columns are created, because clearing columns
   //  resets rowcount.
 end;
