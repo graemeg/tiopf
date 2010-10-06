@@ -452,6 +452,7 @@ begin
     View.RowCount := Model.Count
   else
     View.RowCount := Model.CountNotDeleted;
+  View.FixedRows := 1;
 end;
 
 procedure TtiStringGridMediatorView.SetupGUIandObject;
