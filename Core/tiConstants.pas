@@ -105,7 +105,7 @@ const
 {$ENDIF}
 
 {$IFDEF FPC}
-  cPackageSuffix = '';
+  cPackageSuffix = '2.4.3';
   cCompilerName = 'Free Pascal';
 {$ENDIF}
 
@@ -235,7 +235,7 @@ const
   cLineEnding         = #13;    // Mac OS
   {$ENDIF}
   {$IFDEF MSWINDOWS}
-  cLineEnding         = #13#10; // Windows and default
+  cLineEnding         = #13#10; // Windows
   {$ENDIF}
 
 
