@@ -350,6 +350,7 @@ begin
   lDataType := FDataset.Fields[AIndex].DataType;
   case lDataType of
     ftString,
+    ftFixedChar,
     ftWideString:
         Result := qfkString;
 
