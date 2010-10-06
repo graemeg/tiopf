@@ -395,7 +395,7 @@ end;
 
 procedure TtiTextTestListener.WriteLn2Short(const AStr: string; pWriteTo: TtiTextListenerWriteTo);
 begin
-  Write2Short(AStr+ #13 + #10, pWriteTo);
+  Write2Short(AStr+ tiLineEnd, pWriteTo);
 end;
 
 procedure TtiTextTestListener.TestingEnds(testResult: TTestResult);
