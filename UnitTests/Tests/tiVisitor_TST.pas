@@ -208,6 +208,7 @@ procedure RegisterTests;
 implementation
 
 uses
+  tiConstants,
   tiUtils,
   tiOPFManager,
   tiTestDependencies,
@@ -784,11 +785,11 @@ begin
 
       lStream.Clear;
       lVis.WriteLn;
-      CheckEquals(#13 + #10, lStream.AsString, 'Failed on WriteLn ');
+      CheckEquals(cLineEnding, lStream.AsString, 'Failed on WriteLn ');
 
       lStream.Clear;
       lVis.WriteLn(cATestLine);
-      CheckEquals(cATestLine + #13 + #10, lStream.AsString, 'Failed on WriteLn(cATestLine) ');
+      CheckEquals(cATestLine + cLineEnding, lStream.AsString, 'Failed on WriteLn(cATestLine) ');
 
       lStream.Clear;
       lVisitedList := TTestVisitedListAndOwned.Create;
