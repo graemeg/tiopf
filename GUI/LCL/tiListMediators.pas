@@ -440,7 +440,7 @@ begin
       if View.Width > (lColumnTotalWidth + lGridNonContentWidth) then
       begin
         lLastColumnWidth := View.Width - (lColumnTotalWidth + lGridNonContentWidth);
-        if lLastColumnWidth > 10 then
+        if lLastColumnWidth > C.Width then   { only resize last column if content width is less than grid's width }
           C.Width := lLastColumnWidth;
       end;
     end
@@ -448,16 +448,17 @@ begin
       lColumnTotalWidth := lColumnTotalWidth + C.Width;
   end;
   if ShowDeleted then
-    View.RowCount := Model.Count+1
+    View.RowCount := Model.Count
   else
-    View.RowCount := Model.CountNotDeleted+1;
+    View.RowCount := Model.CountNotDeleted;
+  View.FixedRows := 1;
 end;
 
 procedure TtiStringGridMediatorView.SetupGUIandObject;
 
 begin
   //Setup default properties for the StringGrid
-  View.Options:=View.Options+[goRowSelect];
+  View.Options:=View.Options+[goColSizing,goRowSelect,goThumbTracking];
   // Rowcount is set after columns are created, because clearing columns
   //  resets rowcount.
 end;
