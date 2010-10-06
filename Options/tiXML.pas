@@ -2,6 +2,10 @@ unit tiXML;
 
 {$I tiDefines.inc}
 
+{$IFDEF FPC}
+  {$Define UNICODE}
+{$ENDIF}
+
 interface
 uses
   Classes

@@ -744,7 +744,7 @@ end;
 
 procedure TtiTestCaseWithDatabaseConnection.SetUp;
 begin
-  inherited;
+  inherited Setup;
   PersistenceLayer.DBConnectionPools.Connect(
     DatabaseName,
     DatabaseName,
