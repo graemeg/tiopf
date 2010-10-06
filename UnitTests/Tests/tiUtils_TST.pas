@@ -2111,17 +2111,24 @@ type
 
 procedure TTestTIUtils.tiHasRTTIOnClass;
 begin
-{$IFDEF DELPHI2010ORABOVE}
-  Check(tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> true');
+{$IFDEF FPC}
+    Check(tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> true');
+    Check(tiHasRTTI(TPersistent), 'tiHasRTTI(TPersistent) <> true');
+    Check(tiHasRTTI(TCheckRTTI_1), 'tiHasRTTI(TCheckRTTI_1) <> true');
+    Check(tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> true');
 {$ELSE}
-  Check(not tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> false');
-{$ENDIF}
-  Check(tiHasRTTI(TPersistent), 'tiHasRTTI(TPersistent) <> true');
-  Check(tiHasRTTI(TCheckRTTI_1), 'tiHasRTTI(TCheckRTTI_1) <> true');
-{$IFDEF DELPHI2010ORABOVE}
-  Check(tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> true');
-{$ELSE}
-  Check(not tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> false');
+  {$IFDEF DELPHI2010ORABOVE}
+    Check(tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> true');
+  {$ELSE}
+    Check(not tiHasRTTI(TObject), 'tiHasRTTI(TObject) <> false');
+  {$ENDIF}
+    Check(tiHasRTTI(TPersistent), 'tiHasRTTI(TPersistent) <> true');
+    Check(tiHasRTTI(TCheckRTTI_1), 'tiHasRTTI(TCheckRTTI_1) <> true');
+  {$IFDEF DELPHI2010ORABOVE}
+    Check(tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> true');
+  {$ELSE}
+    Check(not tiHasRTTI(TCheckRTTI_2), 'iHasRTTI(TCheckRTTI_2) <> false');
+  {$ENDIF}
 {$ENDIF}
 end;
 
@@ -2131,10 +2138,14 @@ var
   lObj : TObject;
 begin
   lObj := TObject.Create;
-{$IFDEF DELPHI2010ORABOVE}
-  Check(tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> true');
+{$IFDEF FPC}
+    Check(tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> true');
 {$ELSE}
-  Check(not tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> false');
+  {$IFDEF DELPHI2010ORABOVE}
+    Check(tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> true');
+  {$ELSE}
+    Check(not tiHasRTTI(lObj), 'tiHasRTTI(TObject) <> false');
+  {$ENDIF}
 {$ENDIF}
   lObj.Free;
 
@@ -2147,10 +2158,14 @@ begin
   lObj.Free;
 
   lObj := TCheckRTTI_2.Create;
-{$IFDEF DELPHI2010ORABOVE}
-  Check(tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> true');
+{$IFDEF FPC}
+    Check(tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> true');
 {$ELSE}
-  Check(not tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> false');
+  {$IFDEF DELPHI2010ORABOVE}
+    Check(tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> true');
+  {$ELSE}
+    Check(not tiHasRTTI(lObj), 'iHasRTTI(TCheckRTTI_2) <> false');
+  {$ENDIF}
 {$ENDIF}
   lObj.Free;
 end;
