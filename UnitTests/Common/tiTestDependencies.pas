@@ -35,6 +35,7 @@ uses
   ,tiLogToFile
   ,tiBOMsForTesting
   ,tiOIDForTesting
+  ,tiUtils
 
   ,tiBaseObject_TST
   ,tiUtils_TST
@@ -107,7 +108,7 @@ const
 
 procedure tiRegisterTests;
 begin
-  gLog.RegisterLog(TtiLogToFile.CreateWithFileName('', '', True));
+  gLog.RegisterLog(TtiLogToFile.CreateWithFileName(tiGetTempDir, '', True));
   (GLog.FindByLogClass(TtiLogToFile) as TtiLogToFile).EnableCaching:= False;
 
   GTIOPFManager.DefaultOIDGenerator:= TtiOIDGeneratorForTesting.Create;
