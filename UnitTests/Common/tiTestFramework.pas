@@ -11,27 +11,16 @@ uses
   ,tiExcept
   ,tiOID
   ,tiConstants
-  {$IFDEF FPC}
-  ,fpcunit
-  ,testregistry
-  ,testdecorator
-  {$ELSE}
   ,TestFramework
   ,TestExtensions
-  {$ENDIF}
   ,inifiles
   ,Classes
   ,SysUtils
   ;
 
-{ This lets us use a single include file for both the Interface and
-  Implementation sections. }
-{$define read_interface}
-{$undef read_implementation}
-
 const
   CErrorExceptionNotRaised = 'Exception not raised when it should have been';
-  {$IFDEF FPC}
+  {$IFDEF FPCx}
   sExpectedButWasFmt = 'Expected:'+cLineEnding+'"%s"'+cLineEnding+'But was:'+cLineEnding+'"%s"';
   sExpectedButWasAndMessageFmt = '%s' + cLineEnding + sExpectedButWasFmt;
   sMsgActualEqualsExpFmt = '%s'+cLineEnding+'Expected '+cLineEnding+'< %s > '+cLineEnding+'equals actual '+cLineEnding+'< %s >';
@@ -68,10 +57,9 @@ type
     FTempDirectory: string;
     function GetLongString: string;
   protected
-    procedure   SetUpOnce; {$IFDEF FPC}virtual;{$ELSE}override;{$ENDIF}
-    procedure   SetUp; override;
+    procedure   SetUpOnce; override;
     procedure   TearDown; override;
-    procedure   TearDownOnce; {$IFDEF FPC}virtual;{$ELSE}override;{$ENDIF}
+    procedure   TearDownOnce; override;
     function    TempFileName(const AFilename: string = ''): string;
     property    LongString : string read GetLongString;
     function    tstIntToStr(pInt:Integer):string;
@@ -82,17 +70,11 @@ type
     function    tstStrToStr(const AStr: string; const AInc: Integer): string;
     function    tstStrToInt(const AStr: string; const AInc: Integer): integer;
     function    tstStrToFloat(const AStr: string; const AInc: Integer): real;
-    procedure   LoadConfiguration(const iniFile :TCustomIniFile;
-                                  const Section :string); {$IFNDEF FPC}override;{$ENDIF}
+    procedure   LoadConfiguration(const iniFile :TCustomIniFile; const Section :string); override;
   public
-    {$IFDEF FPC}
-      // DUnit compatibility interface
-      {$I FPCUnitHelper_intf.inc}
-    {$ENDIF}
-    class function TempDirectory: string; virtual; // Remove thsi function, replace with PathToTestTempDirectory
+    class function TempDirectory: string; virtual; // Remove this function, replace with PathToTestTempDirectory
     class function PathToTestTempDirectory: string; // A better name
     function  PerformanceCounter: TtiPerformanceCounter;
-
     procedure Check(const ACondition: Boolean; AMessage: string; const AArgs: array of const); reintroduce; overload;
     function  AreStreamContentsSame(const pStream1, pStream2 : TStream; var AMessage : string): boolean;
     procedure CheckStreamContentsSame(const pStream1, pStream2 : TStream);
@@ -175,7 +157,6 @@ type
     procedure CheckExceptionMessage(const AMessage : string; const AException : Exception); overload;
     procedure CheckExceptionMessage(const AMessage : string; const AArgs: array of const; const AException : Exception); overload;
     procedure CheckDateTimeEquals(const AExpected, AActual: TDateTime; const AMessage: string = '');
-
   end;
 
   TtiTestCaseClass    = class of TtiTestCase;
@@ -202,11 +183,6 @@ uses
   ,tiConsoleApp
   {$ENDIF}
  ;
-
-{ This lets us use a single include file for both the Interface and
-  Implementation sections. }
-{$undef read_interface}
-{$define read_implementation}
 
 var
   UTempPath : string = '';
@@ -431,20 +407,6 @@ begin
   CheckEquals(DateTimeToStr(AExpected), DateTimeToStr(AActual), AMessage);
 end;
 
-{$IFDEF FPC}
-// DUnit compatibility interface
-  {$I FPCUnitHelper_impl.inc}
-{$ENDIF}
-
-
-procedure TtiTestCase.SetUp;
-begin
-  inherited;
-  {$IFDEF FPC}
-  SetupOnce;
-  {$ENDIF}
-end;
-
 procedure TtiTestCase.SetUpOnce;
 begin
   inherited;
@@ -593,10 +555,9 @@ procedure TtiTestCase.LoadConfiguration(const iniFile: TCustomIniFile;
 var
   LSubstSection: string;
 begin
+  { TODO -oGraeme : Might need mod for Linux executable names. }
   LSubstSection := AnsiReplaceStr(Section, 'Text.exe', 'GUI.exe');
-  {$IFNDEF FPC}
   inherited LoadConfiguration(inifile, LSubstSection);;
-  {$ENDIF}
 end;
 
 procedure TtiTestCase.CheckObjectState(

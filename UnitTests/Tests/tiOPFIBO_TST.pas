@@ -50,11 +50,7 @@ procedure RegisterTests;
 implementation
 
 uses
-  {$IFDEF FPC}
-  tiFPCUnitUtils,
-  {$ELSE}
   TestFramework,
-  {$ENDIF}
   tiOPFTestManager,
   SysUtils,
   tiUtils,

@@ -60,17 +60,10 @@ implementation
 
 uses
   tiConstants,
-  {$IFDEF FPC}
-  tiFPCUnitUtils,
-  {$ELSE}
   TestFramework,
-  {$ENDIF}
   SysUtils,
   tiUtils,
   tiTestDependencies,
-  {$IFDEF DELPHI5}
-  FileCtrl,
-  {$ENDIF}
   tiTestFramework;
 
 procedure RegisterTests;

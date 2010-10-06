@@ -6,9 +6,6 @@ interface
 
 uses
   Classes,  // needed for TStringList
-  {$IFDEF FPC}
-  testregistry,
-  {$ENDIF}
   tiTestFramework,
   tiObject;
 

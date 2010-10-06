@@ -55,11 +55,7 @@ uses
   tiUtils,
   tiTestDependencies,
   tiQuery,
-  {$IFDEF FPC}
-  tiFPCUnitUtils,
-  {$ELSE}
   TestFramework,
-  {$ENDIF}
   SysUtils;
 
 procedure RegisterTests;

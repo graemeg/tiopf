@@ -5,9 +5,6 @@ unit tiAutomapCriteria_TST;
 interface
 uses
   Classes  // needed for TStringList
-  {$IFDEF FPC}
-  ,testregistry
-  {$ENDIF}
   ,tiOPFTestCase
   ,tiObject
   ;

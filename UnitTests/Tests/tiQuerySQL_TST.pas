@@ -16,7 +16,7 @@ type
   published
     procedure GetSetSQL; override;
     procedure QueryType; override;
-    {$IFNDEF FPC}   { Temporary disabled for FPC - will fix soon (Graeme) }
+    {$IFNDEF FPCx}   { Temporary disabled for FPC - will fix soon (Graeme) }
     procedure ParamName; override;
     procedure ParamCount; override;
     procedure ParamsAsString; override;
@@ -45,9 +45,6 @@ uses
   ,SysUtils
   ,tiUtils
   ,TypInfo
-  {$IFNDEF DELPHI6ORABOVE}
-  ,FileCtrl
-  {$ENDIF}
   ,tiTestFramework
   ,tiOPFTestCase
   ,tiQuery
@@ -155,7 +152,7 @@ begin
 end;
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsBoolean;
 begin
   CreateTableInteger(Database);
@@ -174,7 +171,7 @@ end;
 {$ENDIF}
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsDateTime;
 var
   lDate : TDateTime;
@@ -194,7 +191,7 @@ end;
 {$ENDIF}
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsFloat;
 const
   cValue = 12345.6789;
@@ -213,7 +210,7 @@ end;
 {$ENDIF}
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsInteger;
 begin
   CreateTableInteger(Database);
@@ -230,7 +227,7 @@ end;
 {$ENDIF}
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsMacro;
 const
   cFields = 'Item_Str_Field';
@@ -246,7 +243,7 @@ end;
 {$ENDIF}
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsString;
 begin
   CreateTableString(Database);
@@ -263,7 +260,7 @@ end;
 {$ENDIF}
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamCount;
 begin
   CreateTableTestGroup(Database);
@@ -306,7 +303,7 @@ end;
 {$ENDIF}
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamIsNull;
 begin
   CreateTableTestGroup(Database);
@@ -324,7 +321,7 @@ end;
 {$ENDIF}
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamName;
 begin
   CreateTableTestGroup(Database);
@@ -352,7 +349,7 @@ end;
 {$ENDIF}
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamsAsString;
 var
   lResult : string;
@@ -420,7 +417,7 @@ begin
 end;
 
 
-{$IFNDEF FPC}
+{$IFNDEF FPCx}
 procedure TTestTIQuerySQL.ParamAsStream;
 var
   lStreamFrom : TStringStream;

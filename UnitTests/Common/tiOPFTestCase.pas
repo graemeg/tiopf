@@ -15,14 +15,8 @@ uses
   ,tiExcept
   ,tiPersistenceLayers
   ,tiDBConnectionPool
-  {$IFDEF FPC}
-  ,fpcunit
-  ,testregistry
-  ,testdecorator
-  {$ELSE}
   ,TestFramework
   ,TestExtensions
-  {$ENDIF}
   ,inifiles
   ,Classes
   ,SysUtils
@@ -60,7 +54,7 @@ const
 
 type
 
-  EtiOPFDUnitException = class(EtiOPFException);
+//  EtiOPFDUnitException = class(EtiOPFException);
 
   {: Adds the class function PersistenceLayerName, which must be overridden in
      the concrete classes. SetUpOnce uses PersistenceLayerName to find the
@@ -105,31 +99,24 @@ type
     function    GetDatabaseName: string;
     function    GetUserName: string;
     function    GetPassword: string;
-
   protected
-    procedure SetUpOnce; override;
-    procedure SetUp; override;
-    procedure TearDown; override;
-    procedure TearDownOnce; override;
-
+    procedure   SetUpOnce; override;
+    procedure   SetUp; override;
+    procedure   TearDown; override;
+    procedure   TearDownOnce; override;
     property    DatabaseName     : string read GetDatabaseName;
     property    UserName         : string read GetUserName;
     property    Password         : string read GetPassword;
-
-    property DBConnectionPool: TtiDBConnectionPool read FDBConnectionPool;
-
+    property    DBConnectionPool: TtiDBConnectionPool read FDBConnectionPool;
     procedure   CreateTable(const ATable : TtiDBMetaDataTable; const ADatabase: TtiDatabase = nil);
     procedure   InsertRow(const ATableName: string; AParams: TtiQueryParams; const ADatabase: TtiDatabase = nil);
     procedure   DropTable(const ATableName: string; const ADatabase: TtiDatabase = nil);
     procedure   DropCreatedTables;
-
     procedure   CreateTestTables; overload;
     procedure   EmptyTestTables;
-
     procedure   CreateTableTestBin( const ADatabase: TtiDatabase = nil);
     procedure   CreateTableTestGroup(const ADatabase: TtiDatabase = nil);
     procedure   InsertIntoTestGroup(const AValue : integer; const ADatabase: TtiDatabase = nil);
-
     procedure   CreateTableInteger(   const ADatabase : TtiDatabase = nil);
     procedure   CreateTableString(    const ADatabase : TtiDatabase = nil);
     procedure   CreateTableFloat(     const ADatabase : TtiDatabase = nil);
@@ -137,7 +124,6 @@ type
     procedure   CreateTableDateTime(  const ADatabase : TtiDatabase = nil);
     procedure   CreateTableLongString(const ADatabase : TtiDatabase = nil);
     procedure   CreateTableStream(    const ADatabase : TtiDatabase = nil);
-
   end;
 
 const

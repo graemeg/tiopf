@@ -28,11 +28,7 @@ procedure RegisterTests;
 
 implementation
 uses
-  {$IFDEF FPC}
-  TestRegistry
-  {$ELSE}
   TestFramework
-  {$ENDIF}
   ,tiPersistenceLayers
   ,tiOPFTestManager
   ,tiOPFManager

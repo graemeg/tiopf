@@ -9,9 +9,6 @@ uses
   ,tiObject
   ,tiPersistenceLayers
   ,tiOID
-  {$IFDEF FPC}
-  ,TestRegistry
-  {$ENDIF}
  ;
 
 const

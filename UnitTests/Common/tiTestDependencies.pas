@@ -4,12 +4,7 @@ unit tiTestDependencies;
 
 interface
 uses
-  {$IFDEF FPC}
-  testregistry,
-  tiFPCUnitUtils, // Helper functions to fake DUnit methods
-  {$ELSE}
   TestExtensions,
-  {$ENDIF}
   tiTestFramework,
   tiOPFTestCase;
 
@@ -29,8 +24,8 @@ uses
   {$ENDIF}
   IdThreadSafe
   ,IdGlobal
-  ,TestFramework,
 {$ENDIF}
+  TestFramework,
   SysUtils
 
   ,tiConstants
@@ -74,7 +69,7 @@ uses
   ,tiRTTI_TST
   ,tiTokenLibrary_TST
   ,tiBaseMediator_TST
-  {$IFNDEF FPC}
+  {$IFNDEF FPC}   // Windows + Delphi specific units
   ,tiXMLToTIDataSet_TST
   ,tiHTTP_TST
   ,tiWebServer_TST
@@ -103,7 +98,6 @@ uses
   ,tiOPFAsqlite3_TST
   //,tiOPFZeos_MySQL41_TST // No tests
   //,tiOPFZeos_MySQL50_TST // No tests
-
   ;
 
 const

@@ -4,9 +4,6 @@ unit tiQuery_TST;
 
 interface
 uses
-  {$IFDEF FPC}
-  testregistry,
-  {$ENDIF}
   tiTestFramework,
   tiOPFTestCase
   ,tiDBConnectionPool
@@ -41,15 +38,9 @@ type
   // Test TtiDatabase connectivity
   TTestTIDatabase = class(TtiTestCaseWithDatabaseConnection)
   protected
-
-    procedure CheckFieldMetaData(const pDBMetaDataTable : TtiDBMetaDataTable;
-                                   const AFieldName : string;
-                                   pKind : TtiQueryFieldKind;
-                                   pWidth : integer = 0);
-
+    procedure CheckFieldMetaData(const pDBMetaDataTable: TtiDBMetaDataTable; const AFieldName: string; pKind: TtiQueryFieldKind; pWidth: integer = 0);
     procedure DatabaseExists; virtual; abstract;
     procedure CreateDatabase; virtual; abstract;
-
   published
     procedure CreateTIQuery;
     procedure CreateAndAttachTIQuery;
@@ -206,9 +197,6 @@ uses
   ,SyncObjs
   ,tiUtils
   ,tiConstants
-  {$IFDEF DELPHI5}
-  ,FileCtrl
-  {$ENDIF}
   ,tiPersistenceLayers
   ,tiOPFManager
   ,tiOPFTestManager
@@ -216,6 +204,7 @@ uses
   ,tiThread
   ,tiStreams
   ,tiRTTI
+  ,tiExcept
  ;
 
 

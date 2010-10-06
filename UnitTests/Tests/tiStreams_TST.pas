@@ -4,9 +4,6 @@ unit tiStreams_TST;
 
 interface
 uses
-  {$IFDEF FPC}
-  testregistry,
-  {$ENDIF}
   tiTestFramework
  ;
 

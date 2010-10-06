@@ -5,9 +5,6 @@ unit tiUtils_TST;
 interface
 uses
   Classes  // needed for TStringList
-  {$IFDEF FPC}
-  ,testregistry
-  {$ENDIF}
   ,tiTestFramework
   ,tiDUnitINI
   ,math
@@ -225,11 +222,7 @@ uses
   {$ENDIF}
   ,tiTestDependencies
   ,SysUtils
-  {$IFDEF DELPHI6ORABOVE}
   ,Variants
-  {$ELSE}
-  ,FileCtrl
-  {$ENDIF}
   ,TypInfo
   ,DateUtils
  ;

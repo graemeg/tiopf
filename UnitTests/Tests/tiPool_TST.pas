@@ -4,9 +4,6 @@ unit tiPool_TST;
 
 interface
 uses
-  {$IFDEF FPC}
-  testregistry,
-  {$ENDIF}
   tiTestFramework
   ,tiPool
   ,tiBaseObject

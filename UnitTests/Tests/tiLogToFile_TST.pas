@@ -6,12 +6,7 @@ interface
 
 uses
   tiTestFramework
-  {$IFDEF FPC}
-  ,testregistry
-  ,testdecorator
-  {$ELSE}
   ,TestExtensions
-  {$ENDIF}
   ,SysUtils
   ,Classes
   ;

@@ -6,9 +6,6 @@ interface
 
 uses
   Classes
-  {$IFDEF FPC}
-  ,testregistry
-  {$ENDIF}
   ,tiTestFramework
   ;
 

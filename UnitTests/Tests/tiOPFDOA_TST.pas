@@ -51,11 +51,7 @@ implementation
 
 uses
   tiConstants,
-  {$IFDEF FPC}
-  tiFPCUnitUtils,
-  {$ELSE}
   TestFramework,
-  {$ENDIF}
   SysUtils,
   tiTestDependencies;
 

@@ -6,9 +6,6 @@ interface
 
 uses
   Classes,
-  {$IFDEF FPC}
-  testregistry,
-  {$ENDIF}
   tiTestFramework,
   tiOPFTestCase,
   tiOID;
@@ -528,7 +525,7 @@ end;
 
 procedure TTestTIOIDPersistent.Setup;
 begin
-  inherited;
+  inherited Setup;
   FOIDList := TStringList.Create;
   GTIOPFManager.DefaultPersistenceLayerName := TestSetupData.PersistenceLayerName;
   GTIOPFManager.DefaultDBConnectionName := TestSetupData.DBName;
@@ -559,7 +556,7 @@ type
     FPersistenceLayerName: string;
   public
     constructor Create(const AOIDGeneratorClass: TtiOIDGeneratorClass; const AIndex: integer;
-      const ARepeatCount: integer; const ADatabaseAliasName: string; const APersistenceLayerName: string);
+      const ARepeatCount: integer; const ADatabaseAliasName: string; const APersistenceLayerName: string); reintroduce;
     destructor Destroy; override;
     procedure Execute; override;
     property OIDList: TStringList read FOIDList;
@@ -635,6 +632,9 @@ var
 const
   CNumThreads = 10; // 3 is the minimum for testing, 10 will give a more indepth test
 begin
+  {$IFDEF FPC}
+  Fail('DUnit2 + FPC still have issues');
+  {$ENDIF}
   if PersistenceLayerSupportsMultiUser then
   begin
     LList       := TtiThreadList.Create;
@@ -658,6 +658,9 @@ var
   LOID: TtiOID;
   i:    integer;
 begin
+  {$IFDEF FPC}
+  Fail('DUnit2 + FPC still have issues');
+  {$ENDIF}
   SetAllowedLeakArray([32, 56]); // CoInitialize
 
   Assert(Assigned(FOIDGeneratorClass), 'FOIDGeneratorClass not assigned');
@@ -685,6 +688,9 @@ procedure TTestTIOIDPersistent.TtiNextOIDGeneratorAssignNextOIDThreaded;
 var
   LThread: TtiOIDGeneratorThread;
 begin
+  {$IFDEF FPC}
+  Fail('DUnit2 + FPC still have issues');
+  {$ENDIF}
   if PersistenceLayerSupportsMultiUser then
   begin
     SetAllowedLeakArray([32, 56]); // CoInitialize
@@ -960,7 +966,7 @@ end;
 
 procedure TTestTIOIDPersistentGUID.Setup;
 begin
-  inherited;
+  inherited Setup;
   CreateNextOIDStrTable; // Required here for testing persistence of GUID OID
   FOIDGeneratorClass    := TtiOIDGeneratorGUID;
 end;
@@ -1015,6 +1021,9 @@ end;
 
 procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDMultiUser;
 begin
+  {$IFDEF FPC}
+  Fail('DUnit2 + FPC still have issues');
+  {$ENDIF}
   AllowedMemoryLeakSize := 32;  //Sneaky way to get 4 values
   SetAllowedLeakArray([208, 265, 376]);
   inherited;
@@ -1022,12 +1031,18 @@ end;
 
 procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDSingleUser;
 begin
+  {$IFDEF FPC}
+  Fail('DUnit2 + FPC still have issues');
+  {$ENDIF}
   SetAllowedLeakArray([32, 208, 265]);
   inherited;
 end;
 
 procedure TTestTIOIDPersistentGUID.TtiNextOIDGeneratorAssignNextOIDThreaded;
 begin
+  {$IFDEF FPC}
+  Fail('DUnit2 + FPC still have issues');
+  {$ENDIF}
   SetAllowedLeakArray([32, 208, 265]);
   inherited;
 end;

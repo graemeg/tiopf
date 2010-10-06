@@ -60,10 +60,8 @@ implementation
 
 uses
   tiConstants,
-  {$IFDEF FPC}
-  tiFPCUnitUtils,
-  {$ELSE}
   TestFramework,
+  {$IFNDEF FPC}
   FileCtrl,
   {$ENDIF}
   tiOPFTestManager,

@@ -5,9 +5,6 @@ unit tiXML_TST;
 interface
 uses
   Classes
-  {$IFDEF FPC}
-  ,testregistry
-  {$ENDIF}
   ,tiXML
   ,tiTestFramework
  ;
