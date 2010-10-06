@@ -3,213 +3,99 @@ object MainForm: TMainForm
   Height = 460
   Top = 185
   Width = 600
-  HelpContext = 0
-  Align = alNone
-  AllowDropFiles = False
-  AutoSize = False
-  BorderIcons = [biSystemMenu, biMinimize, biMaximize]
-  BorderStyle = bsSizeable
+  ActiveControl = GContacts
   Caption = 'Demo 21 : Address book demo using MGM'
-  ChildSizing.LeftRightSpacing = 0
-  ChildSizing.TopBottomSpacing = 0
-  ChildSizing.HorizontalSpacing = 0
-  ChildSizing.VerticalSpacing = 0
-  ChildSizing.ControlsPerLine = 0
-  ClientHeight = 433
+  ClientHeight = 435
   ClientWidth = 600
-  DockSite = False
-  DragKind = dkDrag
-  DragMode = dmManual
-  Font.Height = 0
-  Font.Style = []
-  FormStyle = fsNormal
   Menu = MainMenu1
   OnCreate = FormCreate
-  ParentFont = False
   Position = poDesktopCenter
-  ShowInTaskBar = stDefault
-  UseDockManager = False
-  LCLVersion = '0.9.25'
-  WindowState = wsNormal
+  LCLVersion = '0.9.29'
   object ToolBar1: TToolBar
     Left = 0
     Height = 30
     Top = 0
     Width = 600
-    HelpContext = 0
-    AutoSize = False
-    BorderSpacing.Left = 0
-    BorderSpacing.Top = 0
-    BorderSpacing.Right = 0
-    BorderSpacing.Bottom = 0
-    BorderSpacing.Around = 0
-    BorderSpacing.CellAlignHorizontal = ccaFill
-    BorderSpacing.CellAlignVertical = ccaFill
-    BorderWidth = 0
     ButtonHeight = 26
     ButtonWidth = 26
     Caption = 'ToolBar1'
-    ChildSizing.LeftRightSpacing = 0
-    ChildSizing.TopBottomSpacing = 0
-    ChildSizing.HorizontalSpacing = 0
-    ChildSizing.VerticalSpacing = 0
-    ChildSizing.ControlsPerLine = 0
-    Ctl3D = False
-    DragCursor = crDrag
-    DragKind = dkDrag
-    DragMode = dmManual
-    EdgeInner = esRaised
-    EdgeOuter = esLowered
-    Font.Height = 0
-    Font.Style = []
     Images = ImageList1
     ParentFont = False
     TabOrder = 0
-    TabStop = False
     object TBAdd: TToolButton
       Left = 1
       Top = 2
-      HelpContext = 0
       Caption = 'TBAdd'
-      DragCursor = crDrag
-      DragKind = dkDrag
-      DragMode = dmManual
       ImageIndex = 0
       OnClick = MIAddContactClick
     end
     object TBEdit: TToolButton
-      Left = 27
+      Left = 29
       Top = 2
-      HelpContext = 0
       Caption = 'TBEdit'
-      DragCursor = crDrag
-      DragKind = dkDrag
-      DragMode = dmManual
       ImageIndex = 1
       OnClick = EditContactClick
     end
     object TBDelete: TToolButton
-      Left = 53
+      Left = 57
       Top = 2
-      HelpContext = 0
       Caption = 'TBDelete'
-      DragCursor = crDrag
-      DragKind = dkDrag
-      DragMode = dmManual
       ImageIndex = 2
       OnClick = DeleteContactClick
     end
   end
   object GContacts: TStringGrid
     Left = 0
-    Height = 403
+    Height = 405
     Top = 30
     Width = 600
-    HelpContext = 0
     Align = alClient
-    AutoAdvance = aaRight
-    AutoFillColumns = False
-    BorderSpacing.Left = 0
-    BorderSpacing.Top = 0
-    BorderSpacing.Right = 0
-    BorderSpacing.Bottom = 0
-    BorderSpacing.Around = 0
-    BorderSpacing.CellAlignHorizontal = ccaFill
-    BorderSpacing.CellAlignVertical = ccaFill
-    BorderStyle = bsSingle
-    ColCount = 5
-    DefaultColWidth = 64
-    DragCursor = crDrag
-    DragKind = dkDrag
-    DragMode = dmManual
-    FixedColor = clBtnFace
     FixedCols = 0
-    FixedRows = 1
-    Flat = False
-    Font.Height = 0
-    Font.Style = []
-    GridLineWidth = 1
-    HeaderHotZones = [gzFixedCols]
-    HeaderPushZones = [gzFixedCols]
-    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll]
-    RowCount = 5
-    ScrollBars = ssAutoBoth
     TabOrder = 1
-    TitleFont.Height = 0
-    TitleFont.Style = []
-    TitleStyle = tsLazarus
-    UseXORFeatures = False
   end
   object MainMenu1: TMainMenu
     left = 96
     top = 41
     object MIFile: TMenuItem
       Caption = '&File'
-      RightJustify = False
-      ShowAlwaysCheckable = False
       object MIExit: TMenuItem
         Caption = 'E&xit'
-        RightJustify = False
         ShortCut = 16465
-        ShowAlwaysCheckable = False
         OnClick = MIExitClick
       end
     end
     object MIEdit: TMenuItem
       Caption = '&Edit'
-      RightJustify = False
-      ShowAlwaysCheckable = False
       object MIAddContact: TMenuItem
         Caption = '&Add'
-        RightJustify = False
-        ShowAlwaysCheckable = False
         OnClick = MIAddContactClick
       end
       object MIEditContact: TMenuItem
         Caption = '&Edit'
-        RightJustify = False
-        ShowAlwaysCheckable = False
         OnClick = EditContactClick
       end
       object MIDeleteContact: TMenuItem
         Caption = '&Delete'
-        RightJustify = False
-        ShowAlwaysCheckable = False
       end
     end
     object MISystem: TMenuItem
       Caption = '&System'
-      RightJustify = False
-      ShowAlwaysCheckable = False
       object MICityList: TMenuItem
         Caption = '&City list'
-        RightJustify = False
-        ShowAlwaysCheckable = False
         OnClick = CityListClick
       end
       object MICountryList: TMenuItem
         Caption = 'C&ountry list'
-        RightJustify = False
-        ShowAlwaysCheckable = False
         OnClick = CountryListClick
       end
       object MIAddressTypeList: TMenuItem
         Caption = 'Address t&ype list'
-        RightJustify = False
-        ShowAlwaysCheckable = False
         OnClick = MIAddressTypeListClick
       end
     end
   end
   object ImageList1: TImageList
-    AllocBy = 4
-    BlendColor = clNone
-    BkColor = clNone
-    DrawingStyle = dsNormal
     Height = 24
-    ImageType = itImage
-    Masked = False
-    ShareImages = False
     Width = 24
     left = 55
     top = 62
@@ -433,4 +319,4 @@ object MainForm: TMainForm
       0000000000000000000000000000
     }
   end
-end
+end

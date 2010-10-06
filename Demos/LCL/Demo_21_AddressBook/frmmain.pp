@@ -133,7 +133,7 @@ begin
   RegisterFallBackListmediators;
   gcontactmanager.PopulateContacts;
   SetupMediators;
-  GContacts.OnHeaderClick  := @GContactsHeaderClick;
+  GContacts.OnHeaderClick := @GContactsHeaderClick;
 end;
 
 procedure TMainForm.CountryListClick(Sender: TObject);
@@ -146,7 +146,7 @@ begin
   if not Assigned(FMediator) then
   begin
     FMediator := TtiModelMediator.Create(self);
-    FMediator.AddComposite('FirstName;LastName(130);EMail(180);Mobile(130);Comments(200)', GContacts);
+    FMediator.AddComposite('FirstName(100);LastName(130);EMail(180);Mobile(130);Comments(200)', GContacts);
   end;
   FMediator.Subject := gContactManager.ContactList;
   FMediator.Active := True;
