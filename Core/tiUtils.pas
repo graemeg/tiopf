@@ -3860,9 +3860,12 @@ var
   LFileCreatedByCheck: Boolean;
   LFileName: string;
   LFilePath: string;
+  {$IFDEF UNIX}
+  h: THandle;
+  {$ENDIF}
 begin
   AErrorMsg := '';
-  LFileName := AFileName;
+  LFileName := tiFixPathDelim(AFileName);
   if FileExists(LFileName) and not tiIsFileReadOnly(LFileName) then
   begin
     result := true;
@@ -3870,6 +3873,27 @@ begin
   end else
   begin
 
+  {$IFDEF UNIX}
+    { TODO -oGraeme -cunix : I'll try and implement common behaviour to Windows. Problem being
+      that Linux filesystems allows just about any unicode character in the
+      file or directory name. }
+    try
+      h := FileCreate(LFileName);
+      try
+        Result := h <> -1;
+      finally
+        FileClose(h);
+        DeleteFile(LFileName);
+      end;
+    except
+      on E: Exception do
+      begin
+        AErrorMsg := E.Message;
+        Result := False;
+      end;
+    end;
+    exit;
+  {$ENDIF}
     LFilePath := ExtractFilePath(LFileName);
 
     AErrorMsg := _CheckValidPathStart(LFilePath);
