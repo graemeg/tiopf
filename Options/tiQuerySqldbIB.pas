@@ -248,6 +248,8 @@ begin
             Assert(not lQuery.FieldIsNull['field_sub_type'], 'field_sub_type is null');
             if lQuery.FieldAsInteger['field_sub_type'] = 1 then
               lField.Kind := qfkLongString
+            else if lQuery.FieldAsInteger['field_sub_type'] = 0 then
+              lField.Kind := qfkBinary
             else
               raise EtiOPFInternalException.Create(
                 'Invalid field_sub_type <' + IntToStr(lQuery.FieldAsInteger['field_sub_type']) + '>');
