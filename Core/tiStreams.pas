@@ -623,10 +623,7 @@ begin
   crPos := 0;
   lfPos := 0;
   // default
-  if (AStream.Size = 0) then
-    Result := tiLineEnd
-  else
-    Result := CrLf;
+  Result := cLineEnding;
 
   while (crPos = 0) and (lfPos = 0) and (AStream.Position <> AStream.Size) do
   begin
