@@ -383,30 +383,30 @@ var
 const
   // ToDo: Remove the trailing space after OID=X, 
   CAll =
-    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + #13#10 +
-    '  Prop1 = test prop 1' + #13#10 +
-    '  TtstAsDebugStringObject, posEmpty, OID=2, ' + #13#10 +
-    '    Prop2 = test prop 2' + #13#10 +
-    '  TtstAsDebugStringObject, posDelete, OID=3, **Dirty**' + #13#10 +
-    '    Prop2 = test prop 3' + #13#10 +
-    '  TtstAsDebugStringObject, posEmpty, OID=4, ' + #13#10 +
+    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + cLineEnding +
+    '  Prop1 = test prop 1' + cLineEnding +
+    '  TtstAsDebugStringObject, posEmpty, OID=2, ' + cLineEnding +
+    '    Prop2 = test prop 2' + cLineEnding +
+    '  TtstAsDebugStringObject, posDelete, OID=3, **Dirty**' + cLineEnding +
+    '    Prop2 = test prop 3' + cLineEnding +
+    '  TtstAsDebugStringObject, posEmpty, OID=4, ' + cLineEnding +
     '    Prop2 = test prop 4';
 
   CDeleted =
-    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + #13#10 +
-    '  Prop1 = test prop 1' + #13#10 +
-    '  TtstAsDebugStringObject, posEmpty, OID=2, ' + #13#10 +
-    '    Prop2 = test prop 2' + #13#10 +
-    '  TtstAsDebugStringObject, posEmpty, OID=4, ' + #13#10 +
+    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + cLineEnding +
+    '  Prop1 = test prop 1' + cLineEnding +
+    '  TtstAsDebugStringObject, posEmpty, OID=2, ' + cLineEnding +
+    '    Prop2 = test prop 2' + cLineEnding +
+    '  TtstAsDebugStringObject, posEmpty, OID=4, ' + cLineEnding +
     '    Prop2 = test prop 4';
 
   CChildren =
-    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + #13#10 +
+    'TtstAsDebugStringObjectList, Class name for TtstAsDebugStringObjectList, posEmpty, OID=1, **Dirty**' + cLineEnding +
     '  Prop1 = test prop 1';
 
   CData =
-  '  Prop1 = test prop 1' + #13#10 +
-  '      Prop2 = test prop 2' + #13#10 +
+  '  Prop1 = test prop 1' + cLineEnding +
+  '      Prop2 = test prop 2' + cLineEnding +
   '      Prop2 = test prop 3';
 
   CClassName =
