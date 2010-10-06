@@ -991,6 +991,8 @@ var
   LTable : TtiDBMetaDataTable;
   lParams : TtiQueryParams;
 begin
+  { TODO : For some reason the Next_OID table hangs around then this method fails. Why?  - graeme }
+  DropTable('Next_OID');
   LTable := TtiDBMetaDataTable.Create;
   try
     LTable.Name := 'Next_OID';
