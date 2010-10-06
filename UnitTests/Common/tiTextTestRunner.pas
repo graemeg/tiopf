@@ -237,7 +237,7 @@ begin
 
   LReportDir := gCommandLineParams.GetParam(CCommandLineParamLogTo);
   if LReportDir = '' then
-    LReportDir := ParamStr(0);
+    LReportDir := tiGetTempDir;
   LReportDir:= ExpandFileName(LReportDir);
 
   if Pos('.', LReportDir) <> 0 then
