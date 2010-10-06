@@ -39,6 +39,8 @@ type
   TTestTIAutoMapOperationSQLDB_IB = class(TTestTIAutoMapOperation)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure CollectionReadPKThreaded; override;
   end;
 
 
@@ -47,12 +49,16 @@ type
     class function PersistenceLayerName: string; override;
   published
     procedure TtiNextOIDGeneratorAssignNextOIDThreaded; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; override;
   end;
 
 
   TTestTIOIDPersistentIntegerSQLDB_IB = class(TTestTIOIDPersistentInteger)
   public
     class function PersistenceLayerName: string; override;
+  published
+    procedure TtiNextOIDGeneratorAssignNextOIDThreaded; override;
+    procedure TtiNextOIDGeneratorAssignNextOIDMultiUser; override;
   end;
 
 
@@ -170,6 +176,14 @@ begin
   Result := cTIPersistSqldbIB;
 end;
 
+procedure TTestTIAutoMapOperationSQLDB_IB.CollectionReadPKThreaded;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ENDIF}
+  inherited CollectionReadPKThreaded;
+end;
+
 { TTestTIOIDPersistentGUIDSQLDB_IB }
 
 class function TTestTIOIDPersistentGUIDSQLDB_IB.PersistenceLayerName: string;
@@ -185,11 +199,35 @@ begin
   inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
 end;
 
+procedure TTestTIOIDPersistentGUIDSQLDB_IB.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ENDIF}
+  inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
+end;
+
 { TTestTIOIDPersistentIntegerSQLDB_IB }
 
 class function TTestTIOIDPersistentIntegerSQLDB_IB.PersistenceLayerName: string;
 begin
   Result := cTIPersistSqldbIB;
+end;
+
+procedure TTestTIOIDPersistentIntegerSQLDB_IB.TtiNextOIDGeneratorAssignNextOIDThreaded;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ENDIF}
+  inherited TtiNextOIDGeneratorAssignNextOIDThreaded;
+end;
+
+procedure TTestTIOIDPersistentIntegerSQLDB_IB.TtiNextOIDGeneratorAssignNextOIDMultiUser;
+begin
+  {$IFDEF FPC}
+  Fail('This freezes up under FPC compiler.');
+  {$ENDIF}
+  inherited TtiNextOIDGeneratorAssignNextOIDMultiUser;
 end;
 
 end.
