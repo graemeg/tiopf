@@ -3,7 +3,7 @@
 
 TIOPF="/opt/dailybuilds/tiopf"
 FBLIB="$TIOPF/3rdParty/FBLib/lib/x86_64-linux"
-FPC="/opt/fpc_2.4.1/x86_64-linux/bin/ppcx64"
+FPC="/opt/fpc-2.4.3/x86_64-linux/bin/ppcx64"
 
 # Compile the FBLib library
 $FPC -Mobjfpc -S2cai -O1 -gl -ve \

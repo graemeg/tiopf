@@ -11,7 +11,7 @@
 <xsl:text>Content-Type: text/plain; charset=ISO-8859-1&#10;</xsl:text>
 <xsl:text>Content-Transfer-Encoding: 8bit&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
-<xsl:text>               tiOPF2 - FPCUnit Results&#10;</xsl:text>
+<xsl:text>               tiOPF2 - DUnit2 Results&#10;</xsl:text>
 <xsl:text>               ------------------------&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
 
@@ -26,14 +26,13 @@ Persistence Layers Tested:
    XMLLight
    FBLIB
    SqlDB - Firebird
-   SqlDB - PostgreSQL
 
 <xsl:call-template name="summary"/>
 
 <xsl:text>&#10;</xsl:text>
 <xsl:text>Details:&#10;</xsl:text>
-<xsl:text>  http://opensoft.homeip.net/tiopf/fpcunit/index32.html&#10;</xsl:text>
-<xsl:text>  http://opensoft.homeip.net/tiopf/fpcunit/index64.html&#10;</xsl:text>
+<xsl:text>  http://opensoft.homeip.net:8080/tiopf/fpcunit/index32.html&#10;</xsl:text>
+<xsl:text>  http://opensoft.homeip.net:8080/tiopf/fpcunit/index64.html&#10;</xsl:text>
 <xsl:text>&#10;</xsl:text>
 
 </xsl:template>

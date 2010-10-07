@@ -113,7 +113,6 @@ address
 {
 	background-color: red;
 	color: black;
-	font-size: 9pt;
 }
 
 .node_error
@@ -162,12 +161,10 @@ div.testcontent {
 a.folder {  font-family: arial;
             font-size: 9pt;
             padding:0px;
-            font-family : cursive;
 }
 
 /* Customize the "leaf" style here */
 a.leaf {
-	font-family: cursive;
 	padding:0px;
 	cursor:pointer; cursor:hand;   /* cross browser hack */
 	font-size : 9pt;                             
