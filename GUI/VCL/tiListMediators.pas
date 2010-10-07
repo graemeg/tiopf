@@ -38,9 +38,7 @@ type
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; ADisplayNames: string; AIsObserving: Boolean = True); reintroduce; overload;
     constructor CreateCustom(AModel: TtiObjectList; AView: TListView; AOnBeforeSetupField: TtiOnBeforeSetupField; ADisplayNames: string; AIsObserving: Boolean = True); reintroduce; overload;
     class function ComponentClass: TClass; override;
-    class function CompositeMediator: Boolean; override;
     function GetObjectFromItem(AItem: TListItem): TtiObject;
-    constructor Create; override;
     destructor Destroy; override;
     function  View: TListView; reintroduce;
     procedure HandleSelectionChanged; override;
@@ -142,7 +140,6 @@ implementation
 
 uses
   tiRTTI
-  ,Variants
   ;
 
 type
@@ -294,11 +291,6 @@ begin
     Result := TtiListItemMediator(AItem.Data).Model;
 end;
 
-constructor TtiListViewMediatorView.Create;
-begin
-  inherited Create;
-end;
-
 constructor TtiListViewMediatorView.CreateCustom(AModel: TtiObjectList;
     AView: TListView; ADisplayNames: string; AIsObserving: Boolean);
 var
@@ -351,12 +343,6 @@ begin
     end;
   end;
 end;
-
-class function TtiListViewMediatorView.CompositeMediator: Boolean;
-begin
-  Result:=True;
-end;
-
 
 { TtiListViewListItemMediator }
 

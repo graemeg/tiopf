@@ -88,12 +88,17 @@ type
 
   { Base class to handle TLabel controls }
   TtiStaticTextMediatorView = class(TtiControlMediatorView)
+  private
+    FFormatString: string;
+    procedure   SetFormatString(const AValue: string);
   protected
     procedure   SetupGUIandObject; override;
+    procedure   GetObjectPropValue(var AValue: Variant); override;
   public
     constructor Create; override;
     function    View: TLabel; reintroduce;
     class function ComponentClass: TClass; override;
+    property FormatString: string read FFormatString write SetFormatString;
   end;
 
 
@@ -207,6 +212,7 @@ uses
   ,tiGUIConstants   // for error color
   ,tiLog
   ,tiRTTI
+  ,tiUtils
   ;
 
 type
@@ -215,7 +221,6 @@ type
   THackCustomEdit = class(TCustomEdit);
 
 const
-  cErrorListHasNotBeenAssigned   = 'List has not been assigned';
   cErrorPropertyNotClass         = 'Property is not a class type!';
   cErrorAddingItemToCombobox     = 'Error adding list items to combobox ' +
                                    'Message: %s, Item Property Name: %s';
@@ -226,9 +231,9 @@ begin
   gMediatorManager.RegisterMediator(TtiCheckBoxMediatorView, TtiObject, [tkBool]);
   gMediatorManager.RegisterMediator(TtiComboBoxMediatorView, TtiObject, ctkMultiCharString);
   gMediatorManager.RegisterMediator(TtiComboBoxItemMediatorView, TtiObject, [tkInteger, tkEnumeration]);
+  gMediatorManager.RegisterMediator(TtiDynamicComboBoxMediatorView, TtiObject, [tkClass]);
   gMediatorManager.RegisterMediator(TtiStaticTextMediatorView, TtiObject);
   gMediatorManager.RegisterMediator(TtiTrackBarMediatorView, TtiObject, [tkInteger]);
-  gMediatorManager.RegisterMediator(TtiDynamicComboBoxMediatorView, TtiObject, [tkClass]);
   gMediatorManager.RegisterMediator(TtiMemoMediatorView, TtiObject, ctkMultiCharString);
   gMediatorManager.RegisterMediator(TtiSpinEditMediatorView, TtiObject, [tkInteger,tkFloat]);
   gMediatorManager.RegisterMediator(TtiDateEditMediatorView, TtiObject, [tkFloat]);
@@ -512,7 +517,7 @@ end;
 procedure TtiComboBoxMediatorView.DoObjectToGUI;
 begin
   View.ItemIndex :=
-      View.Items.IndexOf(Subject.PropValue[FieldName]);
+      View.Items.IndexOf(tiVariantAsStringDef(Subject.PropValue[FieldName]));
 end;
 
 procedure TtiComboBoxMediatorView.SetObjectUpdateMoment(
@@ -558,7 +563,7 @@ end;
 
 procedure TtiMemoMediatorView.DoObjectToGUI;
 begin
-  View.Lines.Text := Subject.PropValue[FieldName];
+  View.Lines.Text := tiVariantAsStringDef(Subject.PropValue[FieldName]);
 end;
 
 
@@ -666,11 +671,8 @@ begin
 
   //  Set the index only (We're assuming the item is present in the list)
   View.ItemIndex := -1;
-  if Subject = nil then
+  if (Subject = nil) or (not Assigned(ValueList)) then
     Exit; //==>
-
-  if not Assigned(ValueList) then
-    RaiseMediatorError(cErrorListHasNotBeenAssigned);
 
   lValue := nil;
   lPropType := typinfo.PropType(Subject, FieldName);
@@ -766,22 +768,19 @@ begin
   Result := TLabel;
 end;
 
-{ TtiComboBoxItemMediatorView }
-
-procedure TtiComboBoxItemMediatorView.DoGUIToObject;
+procedure TtiStaticTextMediatorView.SetFormatString(const AValue: string);
 begin
-  SetOrdProp(Subject, FieldName, View.ItemIndex);
+  if FFormatString <> AValue then
+  begin
+    FFormatString := AValue;
+    ObjectToGUI;
+  end;
 end;
 
-procedure TtiComboBoxItemMediatorView.DoObjectToGUI;
+procedure TtiStaticTextMediatorView.GetObjectPropValue(var AValue: Variant);
 begin
-  View.ItemIndex := GetOrdProp(Subject, FieldName);
-end;
-
-constructor TtiComboBoxItemMediatorView.Create;
-begin
-  inherited Create;
-  GUIFieldName := 'ItemIndex';
+  if FFormatString <> '' then
+    AValue := Format(FFormatString, [AValue]);
 end;
 
 { TtiDateEditMediatorView }
@@ -825,6 +824,24 @@ end;
 class function TtiDateEditMediatorView.ComponentClass: TClass;
 begin
   Result := TDateEdit;
+end;
+
+{ TtiComboBoxItemMediatorView }
+
+procedure TtiComboBoxItemMediatorView.DoGUIToObject;
+begin
+  SetOrdProp(Subject, FieldName, View.ItemIndex);
+end;
+
+procedure TtiComboBoxItemMediatorView.DoObjectToGUI;
+begin
+  View.ItemIndex := GetOrdProp(Subject, FieldName);
+end;
+
+constructor TtiComboBoxItemMediatorView.Create;
+begin
+  inherited Create;
+  GUIFieldName := 'ItemIndex';
 end;
 
 { TtiLabeledEditMediatorView }
