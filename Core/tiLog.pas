@@ -191,6 +191,9 @@ type
     procedure   SetLogTo(const AValue: TtiLogToCacheAbs);
     procedure   WriteToOutput;
   public
+    {$IFDEF FPC}
+    Finished: boolean;
+    {$ENDIF}
     constructor CreateExt(ALogTo : TtiLogToCacheAbs);
     procedure   Execute; override;
     property    Terminated;  // surfaced from protected
@@ -1046,8 +1049,14 @@ begin
   { graemeg: 2009-05-04
     FPC handles WaitFor slightly different under Unix enviroments, so I rather
     do the following which seems safer. Delphi could probably also use this
-    method. }
-  while not FThrdLog.Terminated do sleep(100);
+    method.
+    When FThrdLog's Execute() method is done, it will set Finished to True,
+    which we can then detect to know that the thread is done.
+
+    See the following URL for a more detailed explanation:
+      http://free-pascal-general.1045716.n5.nabble.com/TThread-WaitFor-not-returning-td2820297.html
+    }
+  while not FThrdLog.Finished do sleep(100);
   {$ELSE}
   FThrdLog.WaitFor;
   {$ENDIF}
@@ -1225,11 +1234,17 @@ end;
 
 procedure TtiThrdLog.Execute;
 begin
+  {$IFDEF FPC}
+  Finished := False;
+  {$ENDIF}
   while SleepAndCheckTerminated(200) do
     if FLogTo.Synchronized then
       Synchronize(WriteToOutput)
     else
       WriteToOutput;
+  {$IFDEF FPC}
+  Finished := True;
+  {$ENDIF}
 end;
 
 procedure TtiThrdLog.SetLogTo(const AValue: TtiLogToCacheAbs);
