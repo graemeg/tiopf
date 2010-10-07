@@ -424,7 +424,7 @@ var
 begin
   if Pointer(s) <> nil then
     begin
-      l := PCardinal(Cardinal(s) - 4)^;
+      l := Length(s);
       SetString(Result, nil, MimeEncodedSizeNoCRLF(l));
       MimeEncodeNoCRLF(Pointer(s)^, l, Pointer(Result)^);
     end
