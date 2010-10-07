@@ -785,6 +785,7 @@ var
   lDate : TDateTime;
   lFileName  : string;
   LFileAge: TDateTime;
+  fa: LongInt;
 begin
   ForceDirectories(TempDirectory);
   lFileName := TempFileName('DUnitTest.txt');
@@ -795,12 +796,14 @@ begin
 
     lDate := EncodeDate(1980, 1, 1);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    FileAge(lFileName, LFileAge);
+    fa := FileAge(lFileName);
+    LFileAge := FileDateToDateTime(fa);
     CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 1');
 
     lDate := EncodeDate(1980, 1, 1);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    FileAge(lFileName, LFileAge);
+    fa := FileAge(lFileName);
+    LFileAge := FileDateToDateTime(fa);
     CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 2');
 
     {$IFDEF MSWINDOWS}
@@ -812,27 +815,32 @@ begin
     lDate := EncodeDate(2038, 01, 19);
     {$ENDIF}
     tiUtils.tiSetFileDate(lFileName, lDate);
-    FileAge(lFileName, LFileAge);
+    fa := FileAge(lFileName);
+    LFileAge := FileDateToDateTime(fa);
     CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 3');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(1, 0, 0, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    FileAge(lFileName, LFileAge);
+    fa := FileAge(lFileName);
+    LFileAge := FileDateToDateTime(fa);
     CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 4');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(12, 0, 0, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    FileAge(lFileName, LFileAge);
+    fa := FileAge(lFileName);
+    LFileAge := FileDateToDateTime(fa);
     CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 5');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(23, 59, 59, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    FileAge(lFileName, LFileAge);
+    fa := FileAge(lFileName);
+    LFileAge := FileDateToDateTime(fa);
     CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 6');
 
     lDate := EncodeDate(2002, 1, 1) + EncodeTime(06, 06, 06, 0);
     tiUtils.tiSetFileDate(lFileName, lDate);
-    FileAge(lFileName, LFileAge);
+    fa := FileAge(lFileName);
+    LFileAge := FileDateToDateTime(fa);
     CheckEquals(lDate, LFileAge, cdtOneSecond, 'Failed on 7');
 
     lDate := 0;
